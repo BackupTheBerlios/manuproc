@@ -1,4 +1,4 @@
-// $Id: IntStringBox_sql.pgcc,v 1.5 2002/06/27 07:44:32 christof Exp $
+// $Id: IntStringBox_sql.pgcc,v 1.6 2003/10/06 12:04:23 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++ Copyright (C)
  *  1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -18,79 +18,88 @@
  */
 
 #include "IntStringBox.hh"
-exec sql include sqlca;
 #include <Aux/itos.h>
+#include <Aux/FetchIStream.h>
 
 bool IntStringBox::try_to_get_id()
 {
+ bool check_str2=(!_string2_.empty() && !string_2_info_only);
+
   std::string squery="select "+_int_;
   if(string_2_info_only) squery +=", "+_string2_ ;
-  squery +=" from "+_tabelle_+" where lower("+_string1_+
-     ")=lower('"+sc1_string->get_text()+"')";
-  if(!_string2_.empty() && !string_2_info_only) 
-      squery   +=" and lower("+_string2_+")=lower('"+sc2_string->get_text()+"') "; 
+  squery +=" from "+_tabelle_+joinstring+" where lower("+_string1_+")=lower(?)";
+  if(check_str2) 
+      squery   +=" and lower("+_string2_+")=lower(?)";
 
   if(eingeschraenkt)
     squery+=einschraenkung;
 
-  exec sql begin declare section;
-    char query[1024];
-    int ID;
-    char S2[50];
-  exec sql end declare section;
-  strncpy(query,squery.c_str(),sizeof(query));
-  exec sql prepare id_cursor_ from :query;
-  if(!string_2_info_only)  exec sql execute id_cursor_ into :ID;
-  else  exec sql execute id_cursor_ into :ID,:S2;
+  Query q(squery);
+
+  q << sc1_string->get_text();
+
+  if(check_str2) 
+	q << sc2_string->get_text();
+
   SQLerror::test(__FILELINE__,100);
   if (sqlca.sqlcode) return false;
-  id=ID;
+
+  FetchIStream is = q >> id;
   sc_int->set_text(itos(id));
-  if(string_2_info_only) sc2_string->set_text(S2);
+  if(string_2_info_only) 
+    {std::string s;
+     is >> s; 
+     sc2_string->set_text(s);
+    }
+
   activate();
   return true;
+
 }
 
 
 void IntStringBox::int_search(gboolean *_continue, GtkSCContext newsearch)
-{  exec sql begin declare section;
-     char nummer[16];
-     char query[1024];
-   exec sql end declare section;
+{
+
    try
    {  
+    static Transaction tr("",false);
+
       std::string squery;
+
       switch(newsearch)
       {  
          case GTK_SEARCH_OPEN:
-             squery = "select "+_int_+" from "+_tabelle_
-                  +" where text("+_int_+") like '"
-                 +sc_int->get_text()+"%'";
+	   {tr.open();
+           squery="declare int_search cursor for "
+		  "select "+_int_+" from "+_tabelle_+joinstring
+                  +" where text("+_int_+") like ? ";
 
 	   if(eingeschraenkt)
 	     squery+=einschraenkung;
 
 	    squery+=" order by "+_int_;
 
-             strncpy(query,squery.c_str(),sizeof(query));
-             exec sql prepare int_cursor_ from :query;
-      	    exec sql declare int_cursor cursor for int_cursor_;
-      	    tr.open();
-      	    exec sql open int_cursor;
-      	    SQLerror::test(__FILELINE__);
+            Query(squery) << (sc_int->get_text()+'%');
       	    // fall through
+	   }
       	 case GTK_SEARCH_FETCH:
-      	    exec sql fetch int_cursor into :nummer;
+	   {
+	    int intnr;
+ 	    (Query("fetch from int_search")).FetchOne() >> intnr;
       	    SQLerror::test(__FILELINE__,100);
       	    if (sqlca.sqlcode) return;
-      	    sc_int->add_item(nummer);
+      	    sc_int->add_item(itos(intnr));
       	    *_continue=true;
       	    break;
+	   }
       	 case GTK_SEARCH_CLOSE:
-      	    exec sql close int_cursor;
+	   {
+	    Query("close int_search");
       	    SQLerror::test(__FILELINE__);
       	    tr.commit();
       	    break;
+	   }
       }
    }
    catch (SQLerror &e)
@@ -100,51 +109,63 @@ void IntStringBox::int_search(gboolean *_continue, GtkSCContext newsearch)
 
 void IntStringBox::string2_search(gboolean *_continue, GtkSCContext newsearch)
 {
-//   scc_string->reset();
-   exec sql begin declare section;
-    char name[80];
-    char query[1024];
-   exec sql end declare section;
-   
    try
    {  
+    static Transaction tr("",false);
+
      std::string squery;
      switch(newsearch)
       {  case GTK_SEARCH_OPEN:
-            tr2.open();
-             squery = "select distinct "+_string2_+" from "+_tabelle_+" where "
-               +_string2_+" ilike '"+sc2_string->get_text()+"%'" ;
+            {
+	    tr.open();
+
+	    bool equal_op = !sc1_string->get_text().empty();
+
+             squery = "declare str2_search cursor for "
+		"select distinct "+_string2_+" from "+_tabelle_+
+		joinstring+" where "
+               +_string2_+" ilike ? " ;
              if(!_string1_.empty()) 
-		{if(sc1_string->get_text().empty())
-		   squery += "and "+_string1_+"ilike '"
-                 	 +sc1_string->get_text()+"%' ";
+		{if(!equal_op)
+		   squery += "and "+_string1_+" ilike ? ";
 		 else
-		   squery += "and lower("+_string1_+")=lower('"
-                 	 +sc1_string->get_text()+"') ";
+		   squery += "and lower("+_string1_+")=lower(?)";
 		}
 
 	   if(eingeschraenkt)
 	     squery+=einschraenkung;
 
-             squery +=(" order by "+_string2_);
-             strncpy(query,squery.c_str(),sizeof(query));
-             exec sql prepare string2_cursor_ from :query;
-      	    exec sql declare string2_cursor cursor for string2_cursor_;
-      	    exec sql open string2_cursor;
-      	    SQLerror::test(__FILELINE__);
+           squery +=(" order by "+_string2_);
+
+	   Query q(squery);
+	   q << (sc2_string->get_text()+'%');
+	     
+           if(!_string1_.empty())
+	     {if(equal_op)
+		q << sc1_string->get_text();
+	      else
+		q << (sc1_string->get_text()+'%');	
+	     }
+
       	    // fall through
+	   }
       	 case GTK_SEARCH_FETCH:
-       	    exec sql fetch string2_cursor into :name;
+	   {
+	    std::string name;
+ 	    (Query("fetch from str2_search")).FetchOne() >> name;
       	    SQLerror::test(__FILELINE__,100);
       	    if (sqlca.sqlcode) return;
       	    sc2_string->add_item(name);
       	    *_continue=true;
       	    break;
+	   }
       	 case GTK_SEARCH_CLOSE:
-      	    exec sql close string2_cursor;
+	   {
+	    Query("close str2_search");
       	    SQLerror::test(__FILELINE__);
-      	    tr2.commit();
+      	    tr.commit();
       	    break;
+	   }
       }
    }
    catch (SQLerror &e)
@@ -152,6 +173,75 @@ void IntStringBox::string2_search(gboolean *_continue, GtkSCContext newsearch)
    }
 }
 
+
+void IntStringBox::string1_search(gboolean *_continue, GtkSCContext newsearch)
+{
+   try
+   {  
+    static Transaction tr("",false);
+
+     std::string squery;
+     switch(newsearch)
+      {  case GTK_SEARCH_OPEN:
+            {
+	    tr.open();
+
+	    bool equal_op = !sc2_string->get_text().empty();
+
+             squery = "declare str1_search cursor for "
+		"select distinct "+_string1_+" from "+_tabelle_+
+		joinstring+" where "
+               +_string1_+" ilike ? " ;
+             if(!_string2_.empty()) 
+		{if(!equal_op)
+		   squery += "and "+_string2_+" ilike ? ";
+		 else
+		   squery += "and lower("+_string2_+")=lower(?)";
+		}
+
+	   if(eingeschraenkt)
+	     squery+=einschraenkung;
+
+           squery +=(" order by "+_string1_);
+
+	   Query q(squery);
+	   q << (sc1_string->get_text()+'%');
+	     
+           if(!_string2_.empty())
+	     {if(equal_op)
+		q << sc2_string->get_text();
+	      else
+		q << (sc2_string->get_text()+'%');	
+	     }
+
+      	    // fall through
+	   }
+      	 case GTK_SEARCH_FETCH:
+	   {
+	    std::string name;
+ 	    (Query("fetch from str1_search")).FetchOne() >> name;
+      	    SQLerror::test(__FILELINE__,100);
+      	    if (sqlca.sqlcode) return;
+      	    sc1_string->add_item(name);
+      	    *_continue=true;
+      	    break;
+	   }
+      	 case GTK_SEARCH_CLOSE:
+	   {
+	    Query("close str1_search");
+      	    SQLerror::test(__FILELINE__);
+      	    tr.commit();
+      	    break;
+	   }
+      }
+   }
+   catch (SQLerror &e)
+   {  std::cerr << e << '\n';
+   }
+}
+
+
+/* not FetchIStream
 void IntStringBox::string1_search(gboolean *_continue, GtkSCContext newsearch)
 {
    exec sql begin declare section;
@@ -164,8 +254,11 @@ void IntStringBox::string1_search(gboolean *_continue, GtkSCContext newsearch)
      std::string squery;
      switch(newsearch)
       {  case GTK_SEARCH_OPEN:
-            tr3.open();
-             squery = "select distinct "+_string1_+" from "+_tabelle_+" where "
+            {
+	     tr.open();
+             squery = "declare str1_search "
+		"select distinct "+_string1_+" from "+_tabelle_+
+		  joinstring+" where "
                   +_string1_+" ilike '"+sc1_string->get_text() +"%' ";
              if(!_string2_.empty()) 
 		{if(sc2_string->get_text().empty())
@@ -186,22 +279,29 @@ void IntStringBox::string1_search(gboolean *_continue, GtkSCContext newsearch)
       	    exec sql open string1_cursor;
       	    SQLerror::test(__FILELINE__);
       	    // fall through
+	   }
       	 case GTK_SEARCH_FETCH:
+	   {
        	    exec sql fetch string1_cursor into :name;
       	    SQLerror::test(__FILELINE__,100);
       	    if (sqlca.sqlcode) return;
       	    sc1_string->add_item(name);
       	    *_continue=true;
       	    break;
+	   }
       	 case GTK_SEARCH_CLOSE:
+	   {
       	    exec sql close string1_cursor;
       	    SQLerror::test(__FILELINE__);
       	    tr3.commit();
       	    break;
+	   }
       }
    }
    catch (SQLerror &e)
    {  std::cerr << e << '\n';
    }
 }
+*/
+
 

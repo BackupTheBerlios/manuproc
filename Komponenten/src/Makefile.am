@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.30 2003/05/14 07:25:08 christof Exp $
+# $Id: Makefile.am,v 1.31 2003/10/06 12:04:23 jacek Exp $
 AM_CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
@@ -41,7 +41,9 @@ include_HEADERS = datewin.h logwin.h \
 
 lib_LIBRARIES= libKomponenten.a
 
-libKomponenten_a_SOURCES=datewin.cc \
+libKomponenten_a_SOURCES= \
+	$(BUILT_SOURCES_L) \
+	datewin.cc \
 		logwin.cc EingabeBox.cc \
 		datewin_glade.cc \
 	IntStringBox_gui.cc \
@@ -55,7 +57,8 @@ libKomponenten_a_SOURCES=datewin.cc \
 	MyWindow.cc MyScale.cc logwin.cc TreeViewUtility.cc \
 	bool_properties.cc bool_ImageButton.cc \
 	IntStringBox_glade.cc IntStringPopup_glade.cc \
-	string_Label.cc Event.cc Association.cc
+	string_Label.cc Event.cc Association.cc \
+        KundenBox2.cc
 
 lateron= \
 		$(BUILT_SOURCES_L) \
@@ -71,11 +74,13 @@ lateron= \
       PreisBox.cc \
       WPreis.cc \
       LandesBox.cc \
-      KundenBox2.cc \
       ZahlungsArtBox.cc \
       end
 
-BUILT_SOURCES_L= ArtikelBox_sql.cc ProzessBox_sql.cc KundenBox_sql.cc $(LINKS) \
+BUILT_SOURCES_L= KundenBox_sql.cc $(LINKS) \
+	IntStringBox_sql.cc 
+
+lateron2 = ArtikelBox_sql.cc ProzessBox_sql.cc KundenBox_sql.cc $(LINKS) \
    WWaehrung_sql.cc WAuftragStatus_sql.cc \
    Optionmenu_Warengruppe_sql.cc IntStringBox_sql.cc AB_Breitensuche_sql.cc
 
