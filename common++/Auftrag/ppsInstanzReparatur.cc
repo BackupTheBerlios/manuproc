@@ -600,7 +600,7 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
 {  bool alles_ok=true;
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,ae,/*kinder.size(),*/analyse_only);
    
-   if (ae.Id()==AuftragBase::dispo_auftrag_id)
+   if (ae.Id()==AuftragBase::dispo_id)
    {  // 2er: Kinder gleiche instanz
       AuftragBase::mengen_t menge2;
       ArtikelStamm astamm(ae.Artikel());
@@ -640,13 +640,16 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
             {  analyse("Artikel oder Datum passt nicht",ae,j->AEB,j->Menge);
                goto weg;
             }
-            menge2+=j->Menge;
            }
+           menge2+=j->Menge;
            ++j;
          }
       }
       // 1. naiver Versuch einer Reparatur
-      if (ae.Instanz()->LagerInstanz() && menge2>astamm.getMindBest())
+      if (ae.Instanz()->LagerInstanz())
+      { ManuProC::Trace(AuftragBase::trace_channel,"",NV1(menge2),
+            NV1(astamm.getMindBest()));
+      if (menge2>astamm.getMindBest())
       { for (AufEintragZu::map_t::iterator i=kinder.begin();i!=kinder.end();++i)
         {  for (AufEintragZu::list_t::iterator j=i->second.begin();j!=i->second.end();)
            { analyse("Die Nachbestellungen übertreffen die Mindesmenge",ae,j->AEB,menge2);
@@ -655,6 +658,7 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
              alles_ok=false;
            }
         }
+      }
       }
       else if (!ae.Instanz()->LagerInstanz() && menge2!=ae.getStueck())
       {  analyse("2er: Zuordnungen!=eigene Menge",ae,menge2,ae.getStueck());

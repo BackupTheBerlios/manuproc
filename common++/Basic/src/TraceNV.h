@@ -1,4 +1,4 @@
-// $Id: TraceNV.h,v 1.1 2003/03/10 10:21:53 christof Exp $
+// $Id: TraceNV.h,v 1.2 2005/03/17 10:48:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,5 +27,8 @@
 template <class T> 
  struct ManuProC::NameValue_s<T> NV(const std::string &n, const T &v)
  { return ManuProC::NameValue_s<T>(n,v); }
+
+// NV1(a+b) gives NV("a+b",a+b)
+#define NV1(x) NV(#x,x)
 
 #endif

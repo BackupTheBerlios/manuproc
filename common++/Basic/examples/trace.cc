@@ -1,4 +1,4 @@
-// $Id: trace.cc,v 1.6 2003/07/04 11:09:35 christof Exp $
+// $Id: trace.cc,v 1.7 2005/03/17 10:48:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,11 +25,12 @@ static const UniqueValue::value_t trace_channel2=ManuProC::Tracer::channels.get(
 static ManuProC::Tracer::Environment trace_channel2e("TRACE",trace_channel2);
 
 void C()
-{  ManuProC::Trace _t(trace_channel, __FUNCTION__,1,2,3,4,5,6,7,8,9,10 );
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("first",1),
+            2,3,4,5,6,7,8,9,10 );
 }
 
 void B(int i,const std::string &t)
-{  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("i",i),NV("t",t));
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV1(i),NV1(t));
    C();
 }
 
