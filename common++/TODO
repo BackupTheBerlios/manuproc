@@ -1,3 +1,5 @@
+- der Mindestmengen Code _erzeugt_ unnötige leere zweier im Lager
+
 - EntryValue: PreSortedString (ein String zum Anzeigen und eine Zeilennummer
 		zum Sortieren)
 	Praktisch für Tree/List überschneidungen (Dispo)
@@ -38,8 +40,6 @@
 - Problem: Einen Auftrag 2mal planen zu unterschiedlichen Zeiten, welcher
 	wird zuerst produziert (Momentan zuletzt geplanter?)
 
-- graph: /////// hinter Datum könnte weg
-
 - distribute_children_artbaum könnte auch zum Bestellen verwendet werden?
 
 - Lieferschein Rückgängig reserviert in falscher Reihenfolge
@@ -47,6 +47,7 @@
 - Übernehmen des 2ers durch andere Aufträge wenn abbestellt
 
 - Termin bis (deadline) wichtig bei Maschinenplanung (Ketten, Dauer)
+	= Termin? (dann fehlt ein "Produktionsbeginn am")
 
 - Grafik über Liefertermine
 
