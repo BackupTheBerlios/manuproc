@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.25 2003/12/04 08:01:37 christof Exp $
+// $Id: AufEintragZu.h,v 1.26 2004/02/10 11:01:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -43,7 +43,7 @@ public:
         
 //        st_reflist(AufEintragBase aeb,ArtikelBase ab,mengen_t menge) 
 //              : AEB(aeb),Art(ab),Menge(menge) {}
-        st_reflist() : Menge(0) {}
+        st_reflist() : Menge() {}
 //        bool operator<(const st_reflist &b) const {return Art<b.Art;}
         bool operator==(const st_reflist &b) const 
                {return AEB==b.AEB && Art==b.Art && Menge==b.Menge ;}
@@ -60,11 +60,12 @@ public:
 public:
     AuftragBase::mengen_t getMenge(const AufEintragBase& aeb) const;
     // Eine Benachbarte Liste von Kind- bzw. Elternaufträgen:
-    static list_t get_Referenz_list(const AufEintragBase& aeb,bool kinder,bool artikel) throw(SQLerror);
+    static list_t get_Referenz_list(const AufEintragBase& aeb,bool kinder,bool artikel,bool sorted=true) throw(SQLerror);
     static const bool list_kinder=true;
     static const bool list_eltern=false;
     static const bool list_Artikel=true;
     static const bool list_ohneArtikel=false;
+    static const bool list_unsorted=false;
 
     static map_t get_Kinder_nach_Artikel(const AufEintragBase &aeb,bool kinder=list_kinder);
 

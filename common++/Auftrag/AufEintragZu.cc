@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.28 2003/12/04 08:01:37 christof Exp $
+// $Id: AufEintragZu.cc,v 1.29 2004/02/10 11:01:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -120,7 +120,7 @@ FetchIStream &operator>>(FetchIStream &i, AufEintragZu::st_reflist &rl)
 {  return i >> rl.AEB >> rl.Menge >> rl.Art >> rl.Pri;
 }
 
-AufEintragZu::list_t AufEintragZu::get_Referenz_list(const AufEintragBase& aeb,bool kinder,bool artikel) throw(SQLerror) 
+AufEintragZu::list_t AufEintragZu::get_Referenz_list(const AufEintragBase& aeb,bool kinder,bool artikel,bool sorted) throw(SQLerror) 
 {
  ManuProC::Trace _t(trace_channel, __FUNCTION__,aeb,kinder?"Kinder":"Eltern",artikel?"mit Artikel":"ohne Artikel");
 
@@ -144,11 +144,13 @@ AufEintragZu::list_t AufEintragZu::get_Referenz_list(const AufEintragBase& aeb,b
       "from auftragsentryzuordnung "
       +join+
       "where ("+specified+"instanz,"+specified+"auftragid,"
-      			+specified+"zeilennr) = (?,?,?) "
-      "order by ";
- if (!kinder) squery+="prioritaet,";
- squery+=selected+"instanz,"+selected+"auftragid,"+selected+"zeilennr";
- if (kinder) squery+=",prioritaet";
+      			+specified+"zeilennr) = (?,?,?) ";
+ if (sorted)
+ { squery+="order by ";
+   if (!kinder) squery+="prioritaet,";
+   squery+=selected+"instanz,"+selected+"auftragid,"+selected+"zeilennr";
+   if (kinder) squery+=",prioritaet";
+ }
  
  std::list<st_reflist> vaeb;
  (Query(squery).lvalue() << aeb).FetchArray(vaeb);
