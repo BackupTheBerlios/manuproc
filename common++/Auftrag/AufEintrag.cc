@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.103 2004/02/18 14:53:27 christof Exp $
+// $Id: AufEintrag.cc,v 1.104 2004/02/18 15:16:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -218,7 +218,8 @@ struct AufEintrag::Planen_undo_cb : public distribute_parents_cb
       else
       {  assert(delayed_reclaim::Active());
          mengen_t m2=quelle.MengeAendern(-m,true,ae,false);
-         assert(m==m2);
+//         assert(m==m2);
+         if (m!=m2) std::cerr << __FILELINE__ << ": " << m << "!=" << m2 << '\n';
          AufEintrag ae2(ae);
          ae2.Verzeigern(m2,false);
          return m2;
@@ -254,11 +255,12 @@ void AufEintrag::Verzeigern(mengen_t M, bool nach_oben)
     }
     else // planen rückgängig (Pfeile von oben ebenfalls anlegen)
     {  Transaction tr;
-       mengen_t m=M;
+       mengen_t m=-M;
        {  delayed_reclaim dlr;
           m=distribute_parents(*this,m,Planen_undo_cb(*this));
        }
-       assert(!m);
+       if (!!m) std::cerr << __FILELINE__ << ": " << m << '\n';
+//       assert(!m);
        tr.commit();
     }
 }
