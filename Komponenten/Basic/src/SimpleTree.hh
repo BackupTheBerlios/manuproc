@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.16 2003/09/30 15:59:19 jacek Exp $
+// $Id: SimpleTree.hh,v 1.17 2003/10/14 07:41:40 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -87,6 +87,11 @@ public:
 	{ return _node_selected; }
 	SigC::Signal0<void> &signal_reorder()
 	{ return _reorder; }
+	
+	void detach();
+	void attach();
+	void setDataVec(const std::vector<cH_RowDataBase> &d) 
+	{  detach(); SimpleTreeStore_Proxy::setDataVec(d); attach(); }
 };
 
 // I put the more esoteric features here, so they may not confuse the

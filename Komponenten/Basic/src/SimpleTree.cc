@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.18 2003/09/30 15:59:19 jacek Exp $
+// $Id: SimpleTree.cc,v 1.19 2003/10/14 07:41:40 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,10 +20,17 @@
 #include <SimpleTree.hh>
 #include <Misc/itos.h>
 
+void SimpleTree_Basic::detach()
+{  set_model(Glib::RefPtr<Gtk::TreeModel>());
+}
+
+void SimpleTree_Basic::attach()
+{  set_model(sts.m_refTreeStore);
+}
 
 SimpleTree_Basic::SimpleTree_Basic(unsigned maxcol)
 	: SimpleTreeStore_Proxy(maxcol)
-{  set_model(sts.m_refTreeStore);
+{  attach();
 
    for (unsigned int i=0;i<Cols();++i)
    {  Gtk::CellRendererText *crt = Gtk::manage(new Gtk::CellRendererText());
