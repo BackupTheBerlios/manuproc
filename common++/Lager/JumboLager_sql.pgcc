@@ -33,7 +33,7 @@ void JumboLager::Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jum
    const int uid,const std::string& user,const Zeitpunkt_new *zeit)
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
-  
+  Transaction tr;
   Zeitpunkt_new zeit_local_storage;
   exec sql begin declare section;
     int CODE=jumbo.Code()/10;
@@ -87,14 +87,16 @@ void JumboLager::Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jum
   jumbo.setInsLager_nodb(*zeit);
   if(jumbo.getStatus()==JumboRolle::ImLager) typ=Umraeumen;
   jumbo.setStatus_nodb(JumboRolle::Jumbo_Status(STATUS));
+  auftragsentry_verwaltung(typ,jumbo.Artikel(),jumbo.Meter(),uid);
   Jumbo_Log(jumbo,typ,uid,user,zeit);
-
+  tr.commit();
 }
 
 void JumboLager::Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,
    const int uid,const std::string& user,const Zeitpunkt_new *zeit)
 {  
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+  Transaction tr;
   Zeitpunkt_new zeit_local_storage;
   exec sql begin declare section;
     int CODE=jumbo.Code()/10;
@@ -137,9 +139,11 @@ void JumboLager::Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,
   jumbo.setVerarbDatum_nodb(*zeit);
   if (jumbo.getStatus()==JumboRolle::Verarbeitet) typ=SchonDraussen;
   jumbo.setStatus_nodb(JumboRolle::Jumbo_Status(STATUS));
+  auftragsentry_verwaltung(typ,jumbo.Artikel(),jumbo.Meter(),uid);
   Jumbo_Log(jumbo,typ,uid,user,zeit);
   // hupen
   if (throw100) throw SQLerror("Entnahme",100,"Rolle schon erfasst");
+  tr.commit();
 }
 
 void JumboLager::Jumbo_Log(const JumboRolle& jumbo,Jumbo_LogTyp typ,const int uid,const std::string& user,const Zeitpunkt_new *zeit)
@@ -161,6 +165,7 @@ void JumboLager::Jumbo_Log(const JumboRolle& jumbo,Jumbo_LogTyp typ,const int ui
   ///////////////////////////////////////////////////////////////
   // Jetzt die Lagerbewegung mit den offenen Aufträgen verrechen.
   // Einlagern wird durch BarcoNG geregelt.
+/*
   if(typ==Auslagern || typ==InventurMinus )
    {
      raus_aus_lager(jumbo.Artikel(),jumbo.Meter(),uid);
@@ -168,7 +173,7 @@ void JumboLager::Jumbo_Log(const JumboRolle& jumbo,Jumbo_LogTyp typ,const int ui
   else if(typ==Einlagern || typ==Zurueck || typ==InventurPlus ||
           typ==Einlagern_L || typ==Rest_L || typ==Rest)
      rein_ins_lager(jumbo.Artikel(),jumbo.Meter(),uid);
-#warning CHRISTOF: Bitte Typen fürs einlagern überprüfen
+*/
 } 
 
 std::vector<class LagerInhalt> JumboLager::LagerInhalt_(const ArtikelBase& artikel) const

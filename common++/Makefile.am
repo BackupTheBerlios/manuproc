@@ -93,6 +93,7 @@ libcommon___a_LIBADD= \
       Lager/Lager.o \
       Lager/LagerPlatz.o \
 		Lager/maschinen_geschwindigkeit_sql.o \
+      Lager/RohwarenLager.o \
       Lager/RohwarenLager_sql.o \
 		Lieferschein/LieferscheinEntry.o \
 		Lieferschein/LieferscheinEntry_sql.o \

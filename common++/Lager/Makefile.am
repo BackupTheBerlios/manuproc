@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.9 2002/11/22 15:31:05 christof Exp $
+# $Id: Makefile.am,v 1.10 2002/11/27 08:52:06 thoma Exp $
 
 ENDUSER=-DPETIG
 
@@ -10,7 +10,7 @@ noinst_LIBRARIES=libProdLager.a
 
 includedir=@includedir@/Lager
 
-libProdLager_a_SOURCES= $(PGCC_Sources) Lager.cc \
+libProdLager_a_SOURCES= $(PGCC_Sources) Lager.cc RohwarenLager.cc \
    LagerPlatz.cc JumboRolle.cc JumboLager.cc FertigWaren.cc
 
 libProdLager.a: $(libProdLager_a_OBJECTS) $(libProdLager_a_DEPENDENCIES)

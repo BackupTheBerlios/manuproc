@@ -1,4 +1,3 @@
-// $Id: JumboLager.cc,v 1.4 2002/11/27 08:52:06 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -17,17 +16,16 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "JumboLager.h"
+#include "RohwarenLager.h"
+#include <Misc/relops.h>
+#include <Misc/Trace.h>
 
 
-void JumboLager::auftragsentry_verwaltung(const Jumbo_LogTyp typ,const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const
+void RohwarenLager::auftragsentry_verwaltung(const RL_LogTyp typ,const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const
 {
-  if(typ==Auslagern || typ==InventurMinus )
-   {
+  if(typ==RLEntnehmen)
      raus_aus_lager(artikel,menge,uid);
-   }
-  else if(typ==Einlagern || typ==Zurueck || typ==InventurPlus ||
-          typ==Einlagern_L || typ==Rest_L || typ==Rest)
+  else if(typ==RLEinlagern)
      rein_ins_lager(artikel,menge,uid);
 }
 
