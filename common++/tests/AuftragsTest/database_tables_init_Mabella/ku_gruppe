@@ -30,6 +30,9 @@ GRANT INSERT,SELECT,UPDATE,DELETE ON TABLE ku_gruppe TO GROUP buro;
 COPY ku_gruppe (grpnr, name, obergruppe, kommentar) FROM stdin;
 1	Kunden	\N	\N
 3	Personen	\N	\N
+4	Lieferadresse	\N	\N
+5	Rechnungsadresse	\N	\N
+6	Auftragsadresse	\N	\N
 \.
 
 --
