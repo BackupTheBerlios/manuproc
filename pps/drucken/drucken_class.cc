@@ -941,12 +941,15 @@ void LR_Abstraktion::drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,
 
 #ifdef MABELLA_EXTENSIONS
 	if(s->Id()==ExtBezSchema::default_id && ean_code)
-     { neue_spalte( erste_spalte, os);
-	    os <<bez->Bezeichnung(2);
-	  }
+     	  { neue_spalte( erste_spalte, os);
+	    if(rabatt_bool)
+	      os <<"{\\small" << bez->Bezeichnung(2) <<"}";
+	    else
+	      os <<bez->Bezeichnung(2);
+     	  }
 	if(s->Id()==ExtBezSchema::default_id
 		&& s->Typ()==ArtikelTypID::aufgemachtes_Band)
-     { neue_spalte( erste_spalte, os);
+     	  { neue_spalte( erste_spalte, os);
 	    os << bez->Bezeichnung(3);
 	  }
 #endif 

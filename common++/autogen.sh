@@ -1,8 +1,8 @@
 libtoolize --force --copy
-autoheader2.50
-aclocal
-automake --add-missing --copy --gnu
-autoconf2.50
+autoheader
+aclocal-1.7
+automake-1.7 --add-missing --copy --gnu
+autoconf
 ./configure $*
 make
             

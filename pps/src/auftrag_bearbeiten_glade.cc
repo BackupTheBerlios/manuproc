@@ -121,7 +121,7 @@ auftrag_bearbeiten_glade::auftrag_bearbeiten_glade(
    mengeeinheit = manage(new class Gtk::Label("kg"));
    
    Gtk::Label *label67 = manage(new class Gtk::Label("Menge"));
-   Gtk::Adjustment *stkmtr_spinbutton_adj = manage(new class Gtk::Adjustment(0, 0, 1e+06, 1, 10, 10));
+   Gtk::Adjustment *stkmtr_spinbutton_adj = manage(new class Gtk::Adjustment(0, 1, 1e+06, 1, 10, 10));
    stkmtr_spinbutton = manage(new class Gtk::SpinButton(*stkmtr_spinbutton_adj, 1, 0));
    
    Gtk::Label *label29 = manage(new class Gtk::Label("Rabatt"));

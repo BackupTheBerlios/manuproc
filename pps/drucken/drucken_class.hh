@@ -59,7 +59,7 @@ public:
 
    const cH_PreisListe getPreisliste() const {
 	 if(Typ()==Auftrag) return u.a->getPreisliste();
-	 abort();
+	 return cH_PreisListe();
 	}
 
    LieferscheinEntryBase Lfrs() const {

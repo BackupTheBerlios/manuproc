@@ -108,7 +108,8 @@ void auftrag_bearbeiten::onSelArtikel()
  
     if(preisautomatik->get_active())
       {
-         Artikelpreis AP(kndrng,artikelbox->get_value(),1);
+         Artikelpreis AP(kndrng,artikelbox->get_value(),
+			stkmtr_spinbutton->get_value_as_int());
          if (AP.Gefunden())
             {artikel_preisliste=cH_PreisListe(AP.GefundenIn());
              preislisten->set_value(artikel_preisliste->Id());
@@ -119,7 +120,8 @@ void auftrag_bearbeiten::onSelArtikel()
     else
       artikel_preisliste=cH_PreisListe(preislisten->get_value());
 
-    Artikelpreis ap(artikel_preisliste->Id(),artikelbox->get_value(),1);
+    Artikelpreis ap(artikel_preisliste->Id(),artikelbox->get_value(),
+			stkmtr_spinbutton->get_value_as_int());		
     Rabatt_setzen(artikel_preisliste);
 #else
     // hmmm die Menge beeinflusst den Preis, also vielleicht später nochmal 
@@ -172,7 +174,7 @@ void auftrag_bearbeiten::clearEntry()
  aktaufeintrag=0;
  artikelbox->reset();
  on_preisautomatik_clicked();
- stkmtr_spinbutton->set_value(0);
+ stkmtr_spinbutton->set_value(1);
  WPreis->reset();
  selectedentry=-1;
  artikelbox->set_editable(true);
@@ -274,7 +276,39 @@ void auftrag_bearbeiten::on_stkmtr_spinbutton_activate()
        fillCList();
        auftrag_clist->grab_focus();
        auftrag_clist->moveto(selectedentry,0,.5,0);
+
+// ab hier den Preis noch mal setzten, da abhängig von der besellten Menge
+    WPreis->reset();
+#ifdef MABELLA_EXTENSIONS
+    cH_Kunde kndrng(kunde->Rngan());
+ 
+    if(preisautomatik->get_active())
+      {
+         Artikelpreis AP(kndrng,artikelbox->get_value(),
+			stkmtr_spinbutton->get_value_as_int());
+         if (AP.Gefunden())
+            {artikel_preisliste=cH_PreisListe(AP.GefundenIn());
+             preislisten->set_value(artikel_preisliste->Id());
+            }
+         else
+            artikel_preisliste=PreisListe::none_id;
       }
+    else
+      artikel_preisliste=cH_PreisListe(preislisten->get_value());
+
+    Artikelpreis ap(artikel_preisliste->Id(),artikelbox->get_value(),
+			stkmtr_spinbutton->get_value_as_int());	
+    Rabatt_setzen(artikel_preisliste);
+#else
+    Artikelpreis ap(kunde->preisliste(),artikelbox->get_value(),
+			stkmtr_spinbutton->get_value_as_int());	
+#endif
+
+    Preis p(ap.In(auftrag->getWaehrung()));
+    WPreis->set_value(p);
+    on_activate_wpreis();
+ 
+     }
  else
   if(stkmtr_spinbutton->get_value_as_int() > 0)
    { liefdatum_datewin->grab_focus();
@@ -438,7 +472,7 @@ void auftrag_bearbeiten::loadAuftrag(const AuftragBase& auftragbase)
  on_preisautomatik_clicked(); 
  fillMask();
  aktaufeintrag = 0;
- stkmtr_spinbutton->set_value(0);
+ stkmtr_spinbutton->set_value(1);
 // rabattentry_spinbutton->set_value(0);
  Rabatt_setzen(kunde,auftrag);
  WPreis->reset();
