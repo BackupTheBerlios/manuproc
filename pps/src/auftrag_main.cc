@@ -439,9 +439,16 @@ auftrag_main::auftrag_main()
 
 void auftrag_main::set_column_titles_of_simple_tree()
 {
+ cH_ExtBezSchema ebz(ExtBezSchema::default_id,offen_warengruppe->get_value());
+// ExtBezSchema::const_iterator bezit=ebz.begin();
+
  std::vector<std::string> ct;
  ct.push_back("Kunde");
  ct.push_back("Artikel");
+// ct.push_back((*ebz)[(1,1)].bezkomptext);
+// ct.push_back((*ebz)[(1,2)].bezkomptext);
+// ct.push_back((*ebz)[(1,3)].bezkomptext);
+// ct.push_back((*ebz)[(1,4)].bezkomptext);
  ct.push_back("Breite");
  ct.push_back("Farbe");
  ct.push_back("Aufmachung");

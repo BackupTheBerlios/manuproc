@@ -1146,7 +1146,7 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
 // ggf. Zweite Kopfzeile erzeigen
   if(schema_mem->Id() != schema_own->Id() && ean_code && Typ()!=Lieferschein)
     {
-     os << "\\\\[-1ex]&\\multicolumn{3}{l}{\\scriptsize{Ihre Artikelbezeichnung}}";
+     os << "\\\\[-1ex]&\\multicolumn{3}{l}{\\scriptsize{}}";
      os << "&\\multicolumn{4}{l}{\\scriptsize{";
      for(ExtBezSchema::const_sigiterator j=schema_own->sigbegin(1);
      				j!=schema_own->sigend(1);++j)

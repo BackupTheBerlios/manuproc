@@ -439,7 +439,10 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
       {  
 	cH_ExtBezSchema es(artikelbox->getBezSchema());
 	int sigfkz=1;
-	artikelbox->set_focus(sigfkz-1,es->sigsize(sigfkz)-1);
+	if(es->Typ()==ArtikelTyp::default_ID)
+	  artikelbox->set_focus(sigfkz-1,es->sigsize(sigfkz)-2);
+	else
+	  artikelbox->set_focus(sigfkz-1,es->sigsize(sigfkz)-1);
       }
 #else      
       else
