@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.16 2003/09/15 12:19:26 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.17 2003/09/15 14:39:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -167,13 +167,16 @@ AuftragBase::mengen_t AufEintrag::ArtikelInternAbbestellen_cb::operator()
    else
      { // [1er oder] 3er - dispo anlegen, Bestellpfeil erniedrigen
        assert(j.Id()>=handplan_auftrag_id);
+       AufEintragZu(mythis).setMengeDiff__(j,-M);
+#if 1       
        mengen_t noch_frei=AuftragBase::min(M,AE.getRestStk());
-#warning geht bei EinlagernIn+Automatisch einlagern von Teilmenge fehl?       
+//#warning geht bei EinlagernIn+Automatisch einlagern von Teilmenge fehl?       
        if (!!noch_frei)
        {  AuftragBase(j.Instanz(),dispo_auftrag_id)
        	     .BestellmengeAendern(noch_frei,AE.getLieferdatum(),AE.Artikel(),OPEN,j);
+          AE.DispoBeschraenken();
        }
-       AufEintragZu(mythis).setMengeDiff__(j,-M);
+#endif       
      }
    return M;
 }
@@ -289,16 +292,14 @@ void AufEintrag::DispoBeschraenken()
 
   mengen_t S=AufEintragZu::Summe(L,dispo_auftrag_id);
   if (getRestStk()<S)
-  {   ManuProC::Trace(trace_channel, __FILELINE__,
-  		"Dispo muss um ",S-getRestStk()," erniedrigt werden");
+  {   mengen_t noch_weg=S-getRestStk();
+      ManuProC::Trace(trace_channel, __FILELINE__,
+  		"Dispo muss um",noch_weg,"erniedrigt werden",S,getRestStk());
       for(AufEintragZu::list_t::const_iterator i=L.begin();i!=L.end();++i)
-      {
-        if(i->AEB.Id()==dispo_auftrag_id)
-         {
-           mengen_t M=min(i->Menge,S-getRestStk());
-           // warum nicht MengeAendern?
+      {  if(i->AEB.Id()==dispo_auftrag_id)
+         { mengen_t M=min(i->Menge,noch_weg);
            M=AufEintrag(i->AEB).MengeAendern(-M,false,*this);
-           S-=M;
+           noch_weg-=M;
          }
       }
   }
