@@ -606,5 +606,6 @@ gint auftrag_rechnung::on_bezahlt_toggled(GdkEventButton *ev)
    bezahlt->set_active(bezahlt->get_active());
   }
 
+ return false;
 }
 

@@ -549,7 +549,7 @@ void auftrag_main::get_ArtikelZusammensetzung(const AufEintrag& AE_Kunde,
      AufEintrag AE(i->AEB);
      AuftragBase::mengen_t planMenge=0,geliefertMenge=0;
      AuftragBase::mengen_t bestellMenge=AE.getStueck();
-     ArtikelBaum::menge_t faktor = ArtikelBaum(AE_Kunde.ArtId()).Faktor(i->Art);
+     ArtikelBaum::faktor_t faktor = ArtikelBaum(AE_Kunde.ArtId()).Faktor(i->Art);
      AuftragBase::mengen_t sollMenge=AE_Kunde.getStueck()*faktor;
 //     AuftragBase::mengen_t sollMenge=AE.getStueck();
      if(i->AEB.Id()!=0) // nur Mengen der geplante Aufträge berücksichtigen
@@ -967,8 +967,12 @@ void auftrag_main::on_togglebutton_bestellen_toggled()
    { 
      OptMen_Instanz_Bestellen->set_nur_geplant_von(instanz);
      if(OptMen_Instanz_Bestellen->get_menu()->items().empty())
-          OptMen_Instanz_Bestellen->hide();
-     else OptMen_Instanz_Bestellen->show();
+          {OptMen_Instanz_Bestellen->hide();
+          kunden_lieferant->show();
+          }
+     else {OptMen_Instanz_Bestellen->show();
+     	   kunden_lieferant->hide();
+     	  }
      frame_instanzen->show() ;
      maintree_s->set_selection_mode(GTK_SELECTION_MULTIPLE);
    }
