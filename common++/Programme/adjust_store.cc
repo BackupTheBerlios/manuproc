@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.11 2002/11/29 11:20:34 thoma Exp $
+// $Id: adjust_store.cc,v 1.12 2002/12/03 10:34:03 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -42,12 +42,25 @@ void usage(const std::string &s)
            "\tC: Es wird sichergestellt, daﬂ nur entweder 0er- oder 2er-Auftr‰ge\n"
            "\t   (pro Instanz,Artikel,Lieferdatum) existieren.\n";
  std::cerr << "USAGE:  ";
- std::cerr << s <<" -i<instanz> -a<aktion> [-d<database> -h<dbhost> -y] \n"
-           "wobei die aktion=[A|B|C] ist.\n"
-           "-y schaltet einen reinen Analysemodus ein, der keine Reparaturen vornimmt\n\n";
-
+ std::cerr << s <<" [-i<instanz>|-I]  -a<aktion> [-d<database> -h<dbhost> -y] \n"
+           "\twobei die aktion=[A|B|C] ist.\n"
+           "\t-y Analysemodus (keine Reparaturen)\n"
+           "\t-I f¸hrt die Tests f¸r alle Instanzen durch\n\n";
  exit(1);
 }
+
+void check_for(const std::string &pname,cH_ppsInstanz I,const std::string &aktion,const bool analyse_only)
+{   
+    if     (aktion=="A")
+     {
+      if(I->EigeneLagerKlasseImplementiert()) I->ReparaturLager(getuid(),analyse_only);
+      else cout << "F¸r "<<I << " ist keine eigene Lagerklasse implementiert: Test 'A' nicht mˆglich\n";
+     }
+    else if(aktion=="B" &&!I->KundenInstanz()) I->Reparatur_Konsistenz(analyse_only);
+    else if(aktion=="C" &&!I->KundenInstanz()) I->Reparatur_0er_und_2er(getuid(),analyse_only);
+    else usage(pname);
+}
+
 
 
 const static struct option options[]=
@@ -56,6 +69,7 @@ const static struct option options[]=
  { "database", required_argument,      NULL, 'd' },
  { "dbhost", required_argument,      NULL, 'h' },  
  { "analyse_only", no_argument,      NULL, 'y' },  
+ { "alle_Instanzen", no_argument,      NULL, 'I' },  
  { NULL,      0,       NULL, 0 }
 };
 
@@ -67,13 +81,15 @@ int main(int argc,char *argv[])
   std::string dbhost="";  
   std::string aktion;
   bool analyse_only=false;
+  bool all_instanz=false;
 
   if(argc==1) usage(argv[0]);
-  while ((opt=getopt_long(argc,argv,"h:d:i:a:",options,NULL))!=EOF)
+  while ((opt=getopt_long(argc,argv,"h:d:i:a:yI",options,NULL))!=EOF)
    {
     switch(opt)
      {
        case 'i' : instanz = ppsInstanz::ID(atoi(optarg));break;
+       case 'I' : all_instanz=true;break;
        case 'a' : aktion = optarg; break;
        case 'd' : database=optarg;break;
        case 'h' : dbhost=optarg;break;  
@@ -82,6 +98,10 @@ int main(int argc,char *argv[])
      }
    }
 
+  if     (instanz==ppsInstanzID::None && !all_instanz) usage(argv[0]);
+  else if(instanz!=ppsInstanzID::None &&  all_instanz) usage(argv[0]);
+
+
   ManuProC::PrintUncaughtExceptions();
   try{
     ManuProC::Connection conn;
@@ -89,11 +109,16 @@ int main(int argc,char *argv[])
     conn.setDbase(database);
     ManuProC::dbconnect(conn);
 
-    cH_ppsInstanz I(instanz);
-    if     (aktion=="A" && I->LagerInstanz())  I->ReparaturLager(getuid());
-    else if(aktion=="B" &&!I->KundenInstanz()) I->Reparatur_Konsistenz();
-    else if(aktion=="C" &&!I->KundenInstanz()) I->Reparatur_0er_und_2er(getuid());
-    else usage(argv[0]);
+    if(instanz!=ppsInstanzID::None) 
+      check_for(argv[0],cH_ppsInstanz(instanz),aktion,analyse_only);
+    else
+     { std::vector<cH_ppsInstanz> VI=cH_ppsInstanz::get_all_instanz();
+       for(std::vector<cH_ppsInstanz>::const_iterator i=VI.begin();i!=VI.end();++i)
+        {
+         if((*i)->KundenInstanz()) continue;
+         check_for(argv[0],*i,aktion,analyse_only);
+        }
+     }    
 
     ManuProC::dbdisconnect();
   }catch(SQLerror &e){std::cout << e<<'\n'; return 1;}

@@ -58,12 +58,14 @@ static int kein_fehler()
   return 0;
 }
 
+/*
 static void vergleichen(Check &C, Check::was_checken w, const std::string &zusatz, 
 	const std::string &name, bool mit_reparatur_programm)
 {   bool erfolgreich=C.teste(w,zusatz,mit_reparatur_programm);
     if(!erfolgreich) 
     { cout << name << " fehlgeschlagen\n"; exit(fehler()); }
 }
+*/
 
 int auftragstests(e_mode mode)
 {
@@ -321,6 +323,7 @@ std::cout << dummystring<<'\n';
       if(!erfolgreich) { cout << "Reparatur-Split-Test (Bandlager) \n";
                return fehler();}
 
+
       std::string qJ2="update rohjumbo set soll_meter=200 where "
          "(code,maschine,plan_datum,"
          " status,lauf,gang,wiederinslager,artikelid,rest,lagerplatz) "
@@ -329,7 +332,7 @@ std::cout << dummystring<<'\n';
       Query::Execute(qJ2);
       SQLerror::test(__FILELINE__);
       erfolgreich=C.teste(Check::Menge,"_split_reparatur_bandlager_minus",mit_reparatur_programm,true);
-      if(!erfolgreich) { cout << "Reparatur-Split-Test (BandlagerMinus) \n";
+     if(!erfolgreich) { cout << "Reparatur-Split-Test (BandlagerMinus) \n";
                return fehler();}
 
       std::string qB2="update rl_inhalt set kartons=4 where "
@@ -441,17 +444,24 @@ std::cout << "D13: "<<dummystring<<'\n';
       Query::Execute(q1);
       SQLerror::test(__FILELINE__);
       erfolgreich=C.teste(Check::Menge,"_Rep0er2ergleichzeitig",mit_reparatur_programm,true);
-      if(!erfolgreich) { cout << "Reparatur 0er und 2er gleichzeitig\n";
-      return fehler();} 
+      if(!erfolgreich) { cout << "Reparatur 0er und 2er gleichzeitig (Lager)\n";
+                         return fehler();} 
 
-#if 0
-      std::string q1="insert into auftragentry (auftragid,zeilennr,bestellt,"
+cout << "XXXXXXXXXXXX\n\n";
+//      erfolgreich=C.teste(Check::Menge,"_Rep0er2ergleichzeitig",mit_reparatur_programm,true);
+//      if(!erfolgreich) { cout << "Reparatur 0er und 2er gleichzeitig (Lager)\n";
+//                         return fehler();} 
+
+/*
+      std::string q2="insert into auftragentry (auftragid,zeilennr,bestellt,"
          " geliefert,lieferdate,artikelid,status,instanz)"
-         " values (2,5,3000,0,'1970-01-01',123755,1,4)";
-      Query::Execute(q1);
-#endif
-
-
+         " values (2,5,3000,0,'2011-01-01',123755,1,4)";
+      Query::Execute(q2);
+cout << "\n\n\nL O S \n\n";
+      erfolgreich=C.teste(Check::Menge,"_Rep0er2ergleichzeitig",mit_reparatur_programm,true);
+      if(!erfolgreich) { cout << "Reparatur 0er und 2er gleichzeitig (Produktionsinstanz)\n";
+                         return fehler();} 
+*/
       cout << "Reparatur 2er und 0er gleichzeitig erfolgreich\n";
                               
       break;

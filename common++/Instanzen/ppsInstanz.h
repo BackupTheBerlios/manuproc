@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.13 2002/11/26 14:50:51 thoma Exp $
+// $Id: ppsInstanz.h,v 1.14 2002/12/03 10:34:03 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -143,25 +143,25 @@ public:
                : table(t),column(c) {}};
 
       std::vector<LagerInhalt> getLagerInhalt() const;
-      void vormerkungen_subrahieren(int uid,const  std::vector<LagerInhalt> &LI) const;
+      void vormerkungen_subrahieren(int uid,const  std::vector<LagerInhalt> &LI,const bool analyse_only) const;
       void DispoAuftraege_anlegen(const int uid,const ArtikelBase &artikel,const fixedpoint<ManuProC::Precision::AuftragsMenge> &menge) const;
       // 0er und 2er müssen immer offen sein
-      void force_open_0er_und_2er() const throw(SQLerror);
+      void force_open_0er_und_2er(const bool analyse_only) const throw(SQLerror);
       // Alle Aufträge außer Kundenaufträgen und externen Bestellungen 
       // müssen die eigene KundenID haben
-      void force_eigene_KundenId() const throw(SQLerror);
-      void force_2er_0er_geliefert_ist_null() const throw(SQLerror);
+      void force_eigene_KundenId(const bool analyse_only) const throw(SQLerror);
+      void force_2er_0er_geliefert_ist_null(const bool analyse_only) const throw(SQLerror);
       void force_execute(const std::vector<st_table> &Vtable,
           const std::vector<ManuProcEntity<>::ID> &Vauftragid,
-          const int Wert,const std::string &was) const throw(SQLerror);
+          const int Wert,const std::string &was,const bool analyse_only) const throw(SQLerror);
 
 
  public:
       // Einlesen des Lagerinhalts und Anpassen der 2er unter Berücksichtigung der 1er
-      void ReparaturLager(const int uid) const throw(SQLerror);
+      void ReparaturLager(const int uid,const bool analyse_only) const throw(SQLerror);
       // Entweder existieren 0er oder es existieren 2er
-      void Reparatur_0er_und_2er(const int uid) const throw(SQLerror);
-      void Reparatur_Konsistenz() const throw(SQLerror);
+      void Reparatur_0er_und_2er(const int uid,const bool analyse_only) const throw(SQLerror);
+      void Reparatur_Konsistenz(const bool analyse_only) const throw(SQLerror);
 };
 
 

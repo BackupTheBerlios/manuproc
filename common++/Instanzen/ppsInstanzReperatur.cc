@@ -24,8 +24,9 @@
 #include <Misc/SQLerror.h>
 #include <sqlca.h>
 #include <Auftrag/AufEintragZuMengenAenderung.h>
+#include <Aux/Transaction.h>
 
-void ppsInstanz::Reparatur_0er_und_2er(int uid) const throw(SQLerror)
+void ppsInstanz::Reparatur_0er_und_2er(const int uid,const bool analyse_only) const throw(SQLerror)
 {
    assert(Id() != ppsInstanzID::Kundenauftraege);
    SQLFullAuftragSelector sel0er= SQLFullAuftragSelector::sel_Status(Id(),OPEN,AuftragBase::ungeplante_id);
@@ -47,8 +48,13 @@ void ppsInstanz::Reparatur_0er_und_2er(int uid) const throw(SQLerror)
          AuftragBase::mengen_t M=AuftragBase::min(i->getStueck(),A2er.getStueck());
          AuftragBase zielauftrag(Id(),AuftragBase::plan_auftrag_id);
 //cout << "RepLan: "<<*i<<'\t'<<zielauftrag<<"Menge: "<<M<<'\n';
-         i->Planen(uid,M,zielauftrag,i->getLieferdatum(),ManuProC::Auftrag::r_Reparatur);
-         L2er.begin()->updateStkDiffBase__(uid,-M);
+         if(analyse_only)
+           cout << "Analyse: Planen von "<<*i<<"  nach  "<<zielauftrag<<"\tMenge: "<<M<<'\n';
+         else
+          {
+            i->Planen(uid,M,zielauftrag,i->getLieferdatum(),ManuProC::Auftrag::r_Reparatur);
+            L2er.begin()->updateStkDiffBase__(uid,-M);
+          }
        }
     }
 }
@@ -67,26 +73,26 @@ struct st_table{std::string table; std::string column;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void ppsInstanz::Reparatur_Konsistenz() const throw(SQLerror)
+void ppsInstanz::Reparatur_Konsistenz(const bool analyse_only) const throw(SQLerror)
 {
   if(KundenInstanz()) return; // Finger WEG
-  force_eigene_KundenId();
-  force_open_0er_und_2er();
-  force_2er_0er_geliefert_ist_null();
+  force_eigene_KundenId(analyse_only);
+  force_open_0er_und_2er(analyse_only);
+  force_2er_0er_geliefert_ist_null(analyse_only);
 }
 
-void ppsInstanz::force_2er_0er_geliefert_ist_null() const throw(SQLerror)
+void ppsInstanz::force_2er_0er_geliefert_ist_null(const bool analyse_only) const throw(SQLerror)
 {
   std::vector<st_table> Vtable;
   Vtable.push_back(st_table("auftragentry","geliefert"));
   std::vector<AuftragBase::ID> Vauftragid;
   Vauftragid.push_back(AuftragBase::ungeplante_id);
   Vauftragid.push_back(AuftragBase::dispo_auftrag_id);
-  force_execute(Vtable,Vauftragid,0,"geliefert");
+  force_execute(Vtable,Vauftragid,0,"geliefert",analyse_only);
 }
 
 
-void ppsInstanz::force_open_0er_und_2er() const throw(SQLerror)
+void ppsInstanz::force_open_0er_und_2er(const bool analyse_only) const throw(SQLerror)
 {
   std::vector<st_table> Vtable;
   Vtable.push_back(st_table("auftragentry","status"));
@@ -94,12 +100,13 @@ void ppsInstanz::force_open_0er_und_2er() const throw(SQLerror)
   std::vector<AuftragBase::ID> Vauftragid;
   Vauftragid.push_back(AuftragBase::ungeplante_id);
   Vauftragid.push_back(AuftragBase::dispo_auftrag_id);
-  force_execute(Vtable,Vauftragid,OPEN,"Stati");
+  force_execute(Vtable,Vauftragid,OPEN,"Stati",analyse_only);
 }
 
 void ppsInstanz::force_execute(const std::vector<st_table> &Vtable,
           const std::vector<AuftragBase::ID> &Vauftragid,
-          const int Wert,const std::string &was) const throw(SQLerror)
+          const int Wert,const std::string &was,
+          const bool analyse_only) const throw(SQLerror)
 {
   for(std::vector<st_table>::const_iterator i=Vtable.begin();i!=Vtable.end();++i)
    {
@@ -108,27 +115,37 @@ void ppsInstanz::force_execute(const std::vector<st_table> &Vtable,
                   " and auftragid="; 
      for(std::vector<AuftragBase::ID>::const_iterator j=Vauftragid.begin();j!=Vauftragid.end();++j)
       {
+        Transaction tr;
         Query::Execute(com+=itos(*j));
         SQLerror::test(__FILELINE__,100);
         if(sqlca.sqlerrd[2])
-            std::cout << *j<<"er "+was+" ("<<Name()<<","<<*this<<") geändert: "<< sqlca.sqlerrd[2]<<'\n';
+         {
+           if(analyse_only) std::cout << "Analyse: ";
+           std::cout << *j<<"er "+was+" ("<<Name()<<","<<*this<<") geändert: "<< sqlca.sqlerrd[2]<<'\n';
+         }
+        if(!analyse_only) tr.commit();
       }
    }
 }
 
 
 
-void ppsInstanz::force_eigene_KundenId() const throw(SQLerror)
+void ppsInstanz::force_eigene_KundenId(const bool analyse_only) const throw(SQLerror)
 {
   if(KundenInstanz()) return; // Finger WEG
   if(!ExterneBestellung())  //Wirklich ALLE Aufträge haben die eigene KundenID
    {
+     Transaction tr;
      std::string com="update auftrag set kundennr="+itos(Kunde::eigene_id)+
                   " where instanz="+itos(Id())+" and kundennr!="+itos(Kunde::eigene_id);
      Query::Execute(com);
      SQLerror::test(__FILELINE__,100);
      if(sqlca.sqlerrd[2])
-       std::cout << "Für alle Auftrag-Id die Kunden geändert: "<< sqlca.sqlerrd[2]<<'\n';
+      {
+        if(analyse_only) std::cout << "Analyse: ";
+        std::cout << "Für alle Auftrag-Id die Kunden geändert: "<< sqlca.sqlerrd[2]<<'\n';
+      }
+     if(!analyse_only) tr.commit();
    }
   // else // NICHT die 20000er Aufträge
   std::vector<st_table> Vtable;
@@ -137,7 +154,7 @@ void ppsInstanz::force_eigene_KundenId() const throw(SQLerror)
   Vauftragid.push_back(AuftragBase::ungeplante_id);
   Vauftragid.push_back(AuftragBase::dispo_auftrag_id);
   Vauftragid.push_back(AuftragBase::plan_auftrag_id);
-  force_execute(Vtable,Vauftragid,Kunde::eigene_id,"Kunden");
+  force_execute(Vtable,Vauftragid,Kunde::eigene_id,"Kunden",analyse_only);
 }
 
 
@@ -145,14 +162,14 @@ void ppsInstanz::force_eigene_KundenId() const throw(SQLerror)
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-void ppsInstanz::ReparaturLager(const int uid) const throw(SQLerror)
+void ppsInstanz::ReparaturLager(const int uid,const bool analyse_only) const throw(SQLerror)
 {
   assert(LagerInstanz());
   std::vector<LagerInhalt> LI=getLagerInhalt(); 
-  vormerkungen_subrahieren(uid,LI);
+  vormerkungen_subrahieren(uid,LI,analyse_only);
 }
 
-void ppsInstanz::vormerkungen_subrahieren(int uid,const  std::vector<LagerInhalt> &LI) const
+void ppsInstanz::vormerkungen_subrahieren(int uid,const  std::vector<LagerInhalt> &LI,const bool analyse_only) const
 {
 //std::cout << "Anzahl der Artikel im Lager = "<<LI.size()<<'\n';
   for(std::vector<LagerInhalt>::const_iterator i=LI.begin();i!=LI.end();++i)
@@ -175,10 +192,15 @@ void ppsInstanz::vormerkungen_subrahieren(int uid,const  std::vector<LagerInhalt
          if(menge<0) // mehr Menge vorgeplant als vorhanden
            {
             set_dispo_to_zero=true;
-std::cout << "\t"<<AufEintragBase(*j)<<'\t'<<j->getRestStk()<<'\t'<<menge<<'\n';
-std::cout << "\t\tReparaturMenge: "<<-menge<<'\n';
-            j->updateStkDiffBase__(uid,menge);
-            AufEintragZuMengenAenderung::increase_parents__reduce_assingments(uid,*j,-menge);
+//std::cout << "\t"<<AufEintragBase(*j)<<'\t'<<j->getRestStk()<<'\t'<<menge<<'\n';
+//std::cout << "\t\tReparaturMenge: "<<-menge<<'\n';
+            if(analyse_only)
+              cout << "Analyse: Mengenupdate von "<<*j<<" Menge:"<<menge<<'\n';
+            else
+             {
+               j->updateStkDiffBase__(uid,menge);
+               AufEintragZuMengenAenderung::increase_parents__reduce_assingments(uid,*j,-menge);
+             }
             menge=0;
            }
        }
@@ -192,11 +214,20 @@ std::cout << "\t\tReparaturMenge: "<<-menge<<'\n';
          menge-=j->getRestStk();
 //std::cout << "\tDispo abziehne "<<AufEintragBase(*j)<<'\t'<<j->getRestStk()<<'\t'<<menge<<'\n';
          if(set_dispo_to_zero)
-           j->updateStkDiffBase__(uid,-j->getStueck());
+          {
+            if(analyse_only)
+              cout << "Analyse: Mengenupdate von "<<*j<<" Menge:"<<-j->getStueck()<<'\n';
+            else
+              j->updateStkDiffBase__(uid,-j->getStueck());
+          }
       }
-
      if(menge!=0 && !set_dispo_to_zero) 
-         DispoAuftraege_anlegen(uid,i->Artikel(),menge);
+      {
+        if(analyse_only)
+             cout << "Analyse: DispoAufträge_anlegen: "<<Name()<<'\t'<<i->Artikel()<<"\tMenge:"<<menge<<'\n';
+        else
+            DispoAuftraege_anlegen(uid,i->Artikel(),menge);
+      }
    }
 }   
 
