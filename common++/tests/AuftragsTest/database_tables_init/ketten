@@ -1,0 +1,64 @@
+--
+-- Selected TOC Entries:
+--
+DROP INDEX "ketten_speed";
+DROP INDEX "ketten_uniq";
+DROP TABLE "ketten";
+--
+-- TOC Entry ID 2 (OID 11499098)
+--
+-- Name: ketten Type: TABLE Owner: thoma
+--
+
+CREATE TABLE "ketten" (
+	"maschine" numeric(3,0) NOT NULL,
+	"schaerdatum" date NOT NULL,
+	"folgenr" integer NOT NULL,
+	"laenge" numeric(6,0) NOT NULL,
+	"planlaenge" numeric(6,0),
+	"stucklaenge" numeric(4,0),
+	"schussdichte" numeric(3,1),
+	"planmaschine" numeric(3,0),
+	"barcomaschine" numeric(3,0),
+	"abgeschnitten" numeric(6,0),
+	"abgzuletzt" timestamp with time zone,
+	"abgeschnitten0" numeric(6,0),
+	"abg0" timestamp with time zone,
+	"abgewebt" timestamp with time zone,
+	"geloescht" timestamp with time zone,
+	"geaendert" timestamp with time zone DEFAULT now(),
+	"ketteab" boolean,
+	"gedruckte_laeufe" numeric(2,0),
+	"flags" character(1),
+	"jahrgang" numeric(4,0) NOT NULL,
+	"kettid" integer DEFAULT nextval('ketten_kettid_seq'::text) NOT NULL,
+	"produktions_start" timestamp with time zone,
+	"produktions_ende" timestamp with time zone,
+	Constraint "ketten_pkey" Primary Key ("kettid")
+);
+
+--
+-- Data for TOC Entry ID 5 (OID 11499098)
+--
+-- Name: ketten Type: TABLE DATA Owner: thoma
+--
+
+
+COPY "ketten" FROM stdin;
+\.
+--
+-- TOC Entry ID 3 (OID 16135250)
+--
+-- Name: "ketten_uniq" Type: INDEX Owner: thoma
+--
+
+CREATE UNIQUE INDEX ketten_uniq ON ketten USING btree (maschine, schaerdatum);
+
+--
+-- TOC Entry ID 4 (OID 16135251)
+--
+-- Name: "ketten_speed" Type: INDEX Owner: thoma
+--
+
+CREATE INDEX ketten_speed ON ketten USING btree (geaendert);
+

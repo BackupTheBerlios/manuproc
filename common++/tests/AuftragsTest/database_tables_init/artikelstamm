@@ -1,0 +1,37 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "artikelstamm";
+--
+-- TOC Entry ID 2 (OID 16714847)
+--
+-- Name: artikelstamm Type: TABLE Owner: thoma
+--
+
+CREATE TABLE "artikelstamm" (
+	"id" integer DEFAULT nextval('artikelbezeichnun_artikelid_seq'::text) NOT NULL,
+	"warengruppe" smallint NOT NULL,
+	"stand" timestamp with time zone DEFAULT now(),
+	"bestellen_bei" integer,
+	"defaultschema" integer DEFAULT 1,
+	"internwarengruppe" smallint,
+	"einheit" integer,
+	"uid" integer,
+	Constraint "artikelstamm_pkey" Primary Key ("id")
+);
+
+--
+-- Data for TOC Entry ID 3 (OID 16714847)
+--
+-- Name: artikelstamm Type: TABLE DATA Owner: thoma
+--
+
+
+COPY "artikelstamm" FROM stdin;
+124555	3	1998-06-10 00:00:00+02	10	1000	\N	\N	\N
+124551	3	1998-06-15 00:00:00+02	2	1000	0	\N	\N
+123755	3	1997-12-31 23:59:59+01	8	1000	0	\N	\N
+210120	5	2002-05-31 12:17:37.547546+02	7	1	\N	\N	\N
+211007	4	2001-07-05 18:03:20+02	9	1	\N	\N	\N
+209813	4	2001-02-07 15:24:23+01	9	1	\N	\N	\N
+\.

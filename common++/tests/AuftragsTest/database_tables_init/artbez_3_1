@@ -1,0 +1,39 @@
+--
+-- Selected TOC Entries:
+--
+DROP INDEX "artbez_3_1_uniq";
+DROP TABLE "artbez_3_1";
+--
+-- TOC Entry ID 2 (OID 11499438)
+--
+-- Name: artbez_3_1 Type: TABLE Owner: thoma
+--
+
+CREATE TABLE "artbez_3_1" (
+	"id" integer DEFAULT nextval('artikelbezeichnun_artikelid_seq'::text) NOT NULL,
+	"artikel" character varying(5),
+	"breite" character varying(7),
+	"farbe" character varying(30),
+	"aufmachung" character varying(8),
+	"stand" timestamp with time zone DEFAULT now(),
+	Constraint "artbez_3_1_pkey" Primary Key ("id")
+);
+
+--
+-- Data for TOC Entry ID 4 (OID 11499438)
+--
+-- Name: artbez_3_1 Type: TABLE DATA Owner: thoma
+--
+
+
+COPY "artbez_3_1" FROM stdin;
+124551	1550	60	665	9999	1999-11-08 14:10:13+01
+\.
+--
+-- TOC Entry ID 3 (OID 16135272)
+--
+-- Name: "artbez_3_1_uniq" Type: INDEX Owner: thoma
+--
+
+CREATE UNIQUE INDEX artbez_3_1_uniq ON artbez_3_1 USING btree (artikel, breite, farbe, aufmachung);
+

@@ -1,0 +1,25 @@
+--
+-- Selected TOC Entries:
+--
+--
+-- TOC Entry ID 2 (OID 11499281)
+--
+-- Name: problems Type: TABLE Owner: thoma
+--
+DROP TABLE problems;
+
+CREATE TABLE "problems" (
+	"wann" timestamp with time zone DEFAULT now() NOT NULL,
+	"programm" text NOT NULL,
+	"text" text NOT NULL
+);
+
+--
+-- Data for TOC Entry ID 3 (OID 11499281)
+--
+-- Name: problems Type: TABLE DATA Owner: thoma
+--
+
+
+COPY "problems" FROM stdin;
+\.

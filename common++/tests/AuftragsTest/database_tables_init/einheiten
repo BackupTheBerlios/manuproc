@@ -1,0 +1,33 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "einheiten";
+--
+-- TOC Entry ID 2 (OID 11499427)
+--
+-- Name: einheiten Type: TABLE Owner: thoma
+--
+
+CREATE TABLE "einheiten" (
+	"id" integer NOT NULL,
+	"bez_menge" text,
+	"tex_menge" text,
+	"bez_anzahl" text,
+	"tex_anzahl" text,
+	"waehrung" integer,
+	Constraint "einheiten_pkey" Primary Key ("id")
+);
+
+--
+-- Data for TOC Entry ID 3 (OID 11499427)
+--
+-- Name: einheiten Type: TABLE DATA Owner: thoma
+--
+
+
+COPY "einheiten" FROM stdin;
+0	\N	\N	St.	\N	\N
+3	km	\N	Fd	\N	\N
+1	m	\N	St.	\N	\N
+2	kg	\N	St.	\N	\N
+\.

@@ -1,0 +1,27 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "lager_bewegung";
+--
+-- TOC Entry ID 2 (OID 11499142)
+--
+-- Name: lager_bewegung Type: TABLE Owner: thoma
+--
+
+CREATE TABLE "lager_bewegung" (
+	"code" numeric(7,0) NOT NULL,
+	"action" character(1) NOT NULL,
+	"name" character(4) NOT NULL,
+	"zeit" timestamp with time zone DEFAULT now(),
+	"lagerplatz" numeric(4,0)
+);
+
+--
+-- Data for TOC Entry ID 3 (OID 11499142)
+--
+-- Name: lager_bewegung Type: TABLE DATA Owner: thoma
+--
+
+
+COPY "lager_bewegung" FROM stdin;
+\.

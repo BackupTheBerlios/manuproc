@@ -1,0 +1,49 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "webangaben";
+--
+-- TOC Entry ID 2 (OID 11499291)
+--
+-- Name: webangaben Type: TABLE Owner: thoma
+--
+
+CREATE TABLE "webangaben" (
+	"artikel" integer NOT NULL,
+	"riet" character varying(100),
+	"schussdichte" numeric(2,0),
+	"schussmaterial" integer,
+	"fangfaden" integer,
+	"bemerkungen" character varying(256),
+	"kettlaenge" numeric(5,0),
+	"schnittlaenge" numeric(4,0),
+	"erstellt" timestamp with time zone,
+	"geaendert" timestamp with time zone,
+	Constraint "webangaben_pkey" Primary Key ("artikel")
+);
+
+--
+-- Data for TOC Entry ID 3 (OID 11499291)
+--
+-- Name: webangaben Type: TABLE DATA Owner: thoma
+--
+
+
+COPY "webangaben" FROM stdin;
+\.
+--
+-- TOC Entry ID 5 (OID 16135367)
+--
+-- Name: "RI_ConstraintTrigger_16135366" Type: TRIGGER Owner: thoma
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "webangaben"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'webangaben', 'artbez_4_1', 'UNSPECIFIED', 'schussmaterial', 'id');
+
+--
+-- TOC Entry ID 4 (OID 16135369)
+--
+-- Name: "RI_ConstraintTrigger_16135368" Type: TRIGGER Owner: thoma
+--
+
+CREATE CONSTRAINT TRIGGER "webangaben_fk0" AFTER INSERT OR UPDATE ON "webangaben"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('webangaben_fk0', 'webangaben', 'artbez_4_1', 'UNSPECIFIED', 'schussmaterial', 'id');
+

@@ -1,0 +1,75 @@
+--
+-- Selected TOC Entries:
+--
+DROP INDEX "rohjumbo_pkey";
+DROP INDEX "rohjumbo_speed";
+DROP INDEX "rohjumbo_kette";
+DROP INDEX "rohjumbo_idx1";
+DROP TABLE "rohjumbo";
+--
+-- TOC Entry ID 2 (OID 16637855)
+--
+-- Name: rohjumbo Type: TABLE Owner: thoma
+--
+
+CREATE TABLE "rohjumbo" (
+	"code" numeric(8,0) NOT NULL,
+	"maschine" numeric(3,0) NOT NULL,
+	"webmaschine" numeric(3,0),
+	"soll_meter" numeric(4,0),
+	"plan_datum" date NOT NULL,
+	"verarb_datum" timestamp with time zone,
+	"status" numeric(2,0) DEFAULT 0 NOT NULL,
+	"lauf" numeric(2,0) NOT NULL,
+	"gang" numeric(2,0) NOT NULL,
+	"barcoist" numeric(4,0),
+	"barcofert_datum" timestamp with time zone,
+	"wiederinslager" timestamp with time zone,
+	"artikelid" integer,
+	"inventur2000" boolean,
+	"action2000" character(1),
+	"rest" boolean DEFAULT 'f'::bool,
+	"lagerplatz" numeric(4,0)
+);
+
+--
+-- Data for TOC Entry ID 7 (OID 16637855)
+--
+-- Name: rohjumbo Type: TABLE DATA Owner: thoma
+--
+
+
+COPY "rohjumbo" FROM stdin;
+\.
+--
+-- TOC Entry ID 3 (OID 16692622)
+--
+-- Name: "rohjumbo_idx1" Type: INDEX Owner: thoma
+--
+
+CREATE UNIQUE INDEX rohjumbo_idx1 ON rohjumbo USING btree (code, lauf, gang);
+
+--
+-- TOC Entry ID 4 (OID 16692623)
+--
+-- Name: "rohjumbo_kette" Type: INDEX Owner: thoma
+--
+
+CREATE INDEX rohjumbo_kette ON rohjumbo USING btree (maschine, plan_datum);
+
+--
+-- TOC Entry ID 5 (OID 16692624)
+--
+-- Name: "rohjumbo_speed" Type: INDEX Owner: thoma
+--
+
+CREATE INDEX rohjumbo_speed ON rohjumbo USING btree (artikelid);
+
+--
+-- TOC Entry ID 6 (OID 16692625)
+--
+-- Name: "rohjumbo_pkey" Type: INDEX Owner: thoma
+--
+
+CREATE UNIQUE INDEX rohjumbo_pkey ON rohjumbo USING btree (code);
+

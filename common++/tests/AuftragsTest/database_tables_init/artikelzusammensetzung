@@ -1,0 +1,47 @@
+--
+-- Selected TOC Entries:
+--
+DROP INDEX "artikelzusamm_key";
+DROP INDEX "artikelzus_dbank_speed";
+DROP TABLE "artikelzusammensetzung";
+--
+-- TOC Entry ID 2 (OID 11499358)
+--
+-- Name: artikelzusammensetzung Type: TABLE Owner: thoma
+--
+
+CREATE TABLE "artikelzusammensetzung" (
+	"id" integer NOT NULL,
+	"prozessid" numeric(2,0) NOT NULL,
+	"altartikelid" integer NOT NULL,
+	"menge" numeric(9,5),
+	"stand" timestamp with time zone DEFAULT now() NOT NULL,
+	"uid" integer,
+	CONSTRAINT "artikelzus_loop" CHECK ((id <> altartikelid))
+);
+
+--
+-- Data for TOC Entry ID 5 (OID 11499358)
+--
+-- Name: artikelzusammensetzung Type: TABLE DATA Owner: thoma
+--
+
+
+COPY "artikelzusammensetzung" FROM stdin;
+\.
+--
+-- TOC Entry ID 3 (OID 16135242)
+--
+-- Name: "artikelzus_dbank_speed" Type: INDEX Owner: thoma
+--
+
+CREATE INDEX artikelzus_dbank_speed ON artikelzusammensetzung USING btree (altartikelid);
+
+--
+-- TOC Entry ID 4 (OID 16135243)
+--
+-- Name: "artikelzusamm_key" Type: INDEX Owner: thoma
+--
+
+CREATE INDEX artikelzusamm_key ON artikelzusammensetzung USING btree (id);
+

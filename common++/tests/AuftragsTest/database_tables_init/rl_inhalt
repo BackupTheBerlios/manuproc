@@ -1,0 +1,32 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "rl_inhalt";
+--
+-- TOC Entry ID 2 (OID 11499122)
+--
+-- Name: rl_inhalt Type: TABLE Owner: thoma
+--
+
+CREATE TABLE "rl_inhalt" (
+	"position_" character varying(4) NOT NULL,
+	"kartons" numeric(3,0),
+	"reste" numeric(2,0),
+	"kg_per_karton" numeric(4,1),
+	"material" integer NOT NULL,
+	"eingelagert" date NOT NULL,
+	"letzte_entnahme" date,
+	"letzter_ruecklauf" date,
+	"rest_kg" numeric(4,1),
+	Constraint "rl_inhalt_pkey" Primary Key ("position_")
+);
+
+--
+-- Data for TOC Entry ID 3 (OID 11499122)
+--
+-- Name: rl_inhalt Type: TABLE DATA Owner: thoma
+--
+
+
+COPY "rl_inhalt" FROM stdin;
+\.

@@ -1,0 +1,24 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "lastcode";
+--
+-- TOC Entry ID 2 (OID 11499144)
+--
+-- Name: lastcode Type: TABLE Owner: thoma
+--
+
+CREATE TABLE "lastcode" (
+	"code" numeric(7,0) NOT NULL
+);
+
+--
+-- Data for TOC Entry ID 3 (OID 11499144)
+--
+-- Name: lastcode Type: TABLE DATA Owner: thoma
+--
+
+
+COPY "lastcode" FROM stdin;
+204291
+\.

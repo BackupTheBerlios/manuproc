@@ -1,0 +1,11 @@
+#!/bin/bash
+OUT=_$1
+
+if [ $OUT == "_" ]; then  echo EXIT; exit ; fi
+
+
+pg_dump -i -c -O -x -T -t auftragsentryzuordnung testdb > auftragsentryzuordnung$OUT
+pg_dump -i -c -O -x -T -d -t auftragentry testdb |
+   sed s/,/@/4 | sed s/,/@/4 | sed s/,/Ü/17 | sed s/,/Ü/17 |
+   sed 's/\(.*\)\@\(.*\)\@\(.*\)/\1\,\3/' | 
+   sed 's/\(.*\)\Ü\(.*\)\Ü\(.*\)/\1\,\3/' > auftragentry$OUT

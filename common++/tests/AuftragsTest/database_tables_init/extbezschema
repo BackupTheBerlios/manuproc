@@ -1,0 +1,101 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "extbezschema";
+--
+-- TOC Entry ID 2 (OID 11499330)
+--
+-- Name: extbezschema Type: TABLE Owner: thoma
+--
+
+CREATE TABLE "extbezschema" (
+	"extartbezid" numeric(5,0) NOT NULL,
+	"bezkomptype" numeric(2,0) NOT NULL,
+	"bezkomptext" character varying(20) NOT NULL,
+	"separator" character(1),
+	"artikeltyp" smallint,
+	"signifikanz" smallint,
+	"spaltenname" character varying(20),
+	"textabformat" text DEFAULT 'c',
+	"jumbo_bez" text
+);
+
+--
+-- Data for TOC Entry ID 3 (OID 11499330)
+--
+-- Name: extbezschema Type: TABLE DATA Owner: thoma
+--
+
+
+COPY "extbezschema" FROM stdin;
+1	1	Art	 	5	1	art	l	\N
+1	1	Artikel	/	0	1	artikel	r	\N
+1000	1	Artikel	.	3	1	artikel	r	\N
+704	1	Artikel	/	0	1	artikel	l	\N
+1	1	Artikel	/	3	1	artikel	r	\N
+1	1	Material	 	4	1	matname	l	\N
+1000	2	Breite	.	3	1	breite	r	\N
+1	1	Typ	 	8	1	bezeichnung	l	\N
+1	2	Breite	/	0	1	breite	r	\N
+1000	3	Farbe	.	3	1	farbe	r	\N
+1000	6	ID	\N	3	3	id	X	\N
+1	2	Breite	/	3	1	breite	r	\N
+1	2	Garn	 	8	1	garntyp	l	\N
+1000	1	Artikel	/	0	1	artikel	l	\N
+1	2	Maß	 	4	1	mass	r	\N
+1	3	Farbe	 	4	1	farbe	l	\N
+629	5	ID	\N	3	2	id	X	\N
+1	3	Farbe	/	3	1	farbe	r	\N
+704	4	Meter	\N	3	1	aufmachung	X	9999
+629	4	Meter	\N	3	1	aufmachung	X	9999
+1	4	Zusatz	 	4	1	zusatz	X	\N
+1	5	ID	\N	3	2	id	X	\N
+1000	2	Breite	/	0	1	breite	l	\N
+1000	1	Garn-ID	 	4	2	their_id	r	\N
+1000	5	EAN-Code	\N	3	2	ean	X	\N
+362	4	Meter	\N	3	1	aufmachung	X	9999
+1000	3	Farbe	\N	0	1	farbe	X	\N
+1	4	Aufmachung	\N	3	1	aufmachung	X	9999
+704	3	Farbe	 	3	1	farbe	l	\N
+704	7	ID	\N	3	2	id	X	\N
+704	5	Name	 	3	-2	name	l	\N
+0	1	Artikel	\N	0	1	artikel	l	\N
+0	2	Breite	\N	0	1	breite	l	\N
+0	3	Farbe	\N	0	1	farbe	X	\N
+0	4	ID	\N	0	2	id	X	\N
+362	1	Artikel	 	3	1	artikel	r	\N
+362	2	Breite	 	3	1	breite	r	\N
+362	3	Farbe	 	3	1	farbe	r	\N
+629	1	Artikel	/	3	1	artikel	l	\N
+629	2	Breite	/	3	1	breite	l	\N
+629	3	Farbe	/	3	1	farbe	l	\N
+704	2	Breite	/	0	1	breite	l	\N
+704	2	Breite	 	3	1	breite	l	\N
+1	5	ID	\N	0	2	id	X	\N
+704	1	Artikel	 	3	1	artikel	l	\N
+1	2	ID	\N	11	2	id	X	\N
+1	1	Farbstoff	\N	9	1	art	X	\N
+1	1	Bezeichnung	\N	11	1	bezeichnung	X	\N
+1	3	ID	\N	5	2	id	X	\N
+1	7	ID	\N	4	3	id	X	\N
+1000	2	Fb.	\N	4	2	fb	X	\N
+1000	3	Bezeichnung	\N	4	1	bezeichnung	X	\N
+1	2	Größe	 	6	1	groesse	l	\N
+1	3	Zusatz	\N	6	1	zusatz	X	\N
+629	3	Farbe	\N	0	1	farbe	X	\N
+704	3	Farbe	\N	0	1	farbe	X	\N
+629	1	Artikel	/	0	1	artikel	l	\N
+629	2	Breite	/	0	1	breite	l	\N
+1	3	Farbe	\N	0	1	farbe	r	\N
+1	5	Hersteller	\N	4	1	hersteller	l	\N
+1	6	Abkürzung	\N	4	2	abkuerzung	X	\N
+704	6	Farbbezeichnung	\N	3	-2	farbbez	X	\N
+1	1	Typ	\N	10	1	text	X	\N
+1	2	Größe	\N	5	1	groesse	X	\N
+1	3	Farbe	\N	8	1	farbe	X	\N
+1000	4	Variante	\N	3	1	aufmachung	X	9999
+1	4	ID	\N	8	2	id	X	\N
+1	1	Karton	 	6	1	art	l	\N
+1	1	Text	\N	7	1	art	X	\N
+1000	4	ID	\N	4	3	id	X	\N
+\.
