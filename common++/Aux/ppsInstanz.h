@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.39 2002/02/12 15:46:42 cvs_malte Exp $
+// $Id: ppsInstanz.h,v 1.40 2002/03/07 09:29:32 cvs_malte Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -78,6 +78,7 @@ public:
  bool Lieferschein() const {return lieferschein;}
  std::string get_Name() const {return name;}
  std::string Name() const {return name;}
+ std::string shortName() const;
  ppsInstId LagerFuer() const { return lager_fuer; }
  bool LagerInstanz() const ;
  std::string LagerName() const {return lagername;}

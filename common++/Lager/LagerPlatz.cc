@@ -23,7 +23,7 @@ void LagerPlatz::DarstellungSetzen()
 {
   if(instanz == ppsInstanz::INST_BANDLAGER) darstellung=eInt;
   else if(instanz == ppsInstanz::INST_ROHLAGER) darstellung=eString;
-  else (!"LagerPlatz::DarstellungSetzen: False Instanz");
+  else assert(!"LagerPlatz::DarstellungSetzen: Falsche Instanz");
 }
 
 

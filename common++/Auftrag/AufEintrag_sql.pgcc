@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.2 2002/02/28 15:19:29 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.3 2002/03/20 07:43:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -52,8 +52,7 @@ void AufEintrag::setStatus(AufStatVal newstatus,bool force) throw(SQLerror)
   
  
  exec sql update auftragentry set status= :STATUS
-	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR 
-   and instanz =:INSTANZ;
+	where (instanz,auftragid,zeilennr)=(:INSTANZ,:AUFTRAGID,:ZEILENNR);
  SQLerror::test("setStatus: update auftragentry");
 
  if(newstatus==OPEN && auftragstatus==UNCOMMITED)
@@ -92,9 +91,7 @@ void AufEintrag::setStatus(AufStatVal newstatus,bool force) throw(SQLerror)
      {tr.rollback(); throw; }
   } 
 
- entrystatus=(AufStatVal)STATUS;
-//Ich fände es so schöner: MAT
-//entrystatus=newstatus;
+ entrystatus=newstatus;
  tr.commit(); 
 }
 
@@ -225,8 +222,7 @@ void AufEintrag::updatePreis(const Preis &pr) throw(SQLerror)
  
  exec sql update auftragentry 
  	set preis= :PREIS, preismenge= :PREISMENGE
- 	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR
-   and instanz=:INSTANZ;
+ 	where (instanz,auftragid,zeilennr)=(:INSTANZ,:AUFTRAGID,:ZEILENNR);
  SQLerror::test("updatePreis: update preis in auftragentry");
  preis=pr;
 }
@@ -241,8 +237,7 @@ void AufEintrag::updateRabatt(int rb) throw(SQLerror)
  exec sql end declare section;
 
  exec sql update auftragentry set rabatt= :RABATT/100.0
- 	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR
-   and instanz=:INSTANZ;
+ 	where (instanz,auftragid,zeilennr)=(:INSTANZ,:AUFTRAGID,:ZEILENNR);
  SQLerror::test("updateRabatt: update rabatt in auftragentry");
  
  rabatt=RABATT;
@@ -264,8 +259,7 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld) throw(SQLerror)
  ld.write_postgres(LIEFERDATUM,sizeof LIEFERDATUM);
  
  exec sql update auftragentry set lieferdate= :LIEFERDATUM
- 	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR
-   and instanz=:INSTANZ;
+ 	where (instanz,auftragid,zeilennr)=(:INSTANZ,:AUFTRAGID,:ZEILENNR);
  SQLerror::test("updateLiefDatum: update lieferdate in auftragentry");
 
  //update Lieferdatum für Instanzen
@@ -328,31 +322,8 @@ void AufEintrag::split(mengen_t newmenge, const Petig::Datum &newld) throw(SQLer
 
  insertNewEntry(newmenge,newld,artikel,entrystatus,true,preis,rabatt);
  updateStk(bestellt-newmenge,true);
-#warning WAS IST MIT DER GELIEFERTEN MENGE
+#warning WAS IST MIT DER GELIEFERTEN MENGE ? (immer noch unklar CP Mrz 02)
  
-/*   
- exec sql select (max(zeilennr))+1 into :ZEILENNR from auftragentry
-	where auftragid= :AUFTRAGID and instanz =:INSTANZ;
- SQLerror::test("split: select max(zeielnnr) auftragentry");
-
- exec sql insert into auftragentry (auftragid, zeilennr, artikelid,
-		bestellt, geliefert, lieferdate,
-		status,preis,rabatt,preismenge, waehrung)
-	values ( :AUFTRAGID, :ZEILENNR, :ARTIKELID,
-		:BESTELLT, :GELIEFERT, :LIEFERDATUM,
-		:STATUS, :PREIS, :RABATT/100.0,
-		:PREISMENGE, :WAEHRUNG);
- SQLerror::test("split: insert into auftragentry");
-*/
-/*
- exec sql update auftragentry set bestellt= :BESTELLT_OLD,
-	geliefert= :GELIEFERT_OLD
-	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR_OLD
-   and instanz=:INSTANZ;
- SQLerror::test("split: update auftragentry");
-*/
-
-
  if(STATUS==OPEN)
    {
     try 
@@ -397,7 +368,9 @@ AufEintrag::AufEintrag(const AufEintragBase &aebb) throw (SQLerror,NoAEB_Error)
 }
 
 int AufEintrag::Planen(mengen_t menge, const AuftragBase &zielauftrag)
-{  assert(!Id());
+{
+   assert(!Id());
+
    int znr=-1,dummy;
    mengen_t mdummy;
    if (!zielauftrag.existEntry(Artikel(),getLieferdatum(),znr,dummy,mdummy,OPEN))
@@ -485,7 +458,7 @@ cH_Lieferschein AufEintrag::getLieferschein() const
       (instanz,refauftragid,refzeilennr)=(:INSTANZ,:AUFID,:AUFZNR) limit 1;
 #warning kann es mehr als eine Zeile geben? 
  SQLerror::test(__FILELINE__,100);
- if(sqlca.sqlcode) // keine Zeile gefunden
+ if(sqlca.sqlcode) // keine Zeile gefunden ... warum nicht throw?
    return cH_Lieferschein(ppsInstanz::None,0);
  else 
    return cH_Lieferschein(Instanz(),LFRSID);

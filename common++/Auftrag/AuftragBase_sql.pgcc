@@ -52,7 +52,7 @@ bool AuftragBase::Exists() const throw(SQLerror)
   bool DUMMY;
  exec sql end declare section;
  exec sql select true into :DUMMY from auftrag where 
-	auftragid= :AUFTRAGID and instanz= :INSTANZ;
+	(instanz,auftragid)= (:INSTANZ,:AUFTRAGID);
  SQLerror::test(__FILELINE__,100);
  if(sqlca.sqlcode) return false;
  return true;
@@ -84,7 +84,7 @@ void AuftragBase::setStatusAuftragBase(AufStatVal st) const throw(SQLerror)
  exec sql end declare section;
 
  exec sql update auftrag set stat= :STATUS
-       where auftragid= :AUFTRAGID and instanz=:INSTANZ;
+       where (instanz,auftragid)= (:INSTANZ,:AUFTRAGID);
  SQLerror::test(__FILELINE__"Status setzen");
 }
 
@@ -118,7 +118,7 @@ int AuftragBase::insertNewEntry(const mengen_t bestellt,
  SQLerror::test("AufEintrag: lock auftragentry");	
 
  exec sql select coalesce(max(zeilennr)+1,1) into :ZEILENNR from auftragentry
-	where auftragid= :AUFTRAGID and instanz =:INSTANZ;
+	where (instanz,auftragid)= (:INSTANZ,:AUFTRAGID);
  SQLerror::test("generate next zeilennr");
 
  exec sql insert into auftragentry (instanz,auftragid, zeilennr,
@@ -190,7 +190,7 @@ bool AuftragBase::existEntry(const ArtikelBase& artikel,
  exec sql select zeilennr,neuzeilennr,bestellt into :ZEILENNR, :NEUZNR,:MENGE
    from auftragentry join auftragsentryzuordnung on
    (altauftragid,altinstanz,altzeilennr)=(auftragid,instanz,zeilennr)
-	where auftragid= :AUFTRAGID and instanz =:INSTANZ and
+	where (instanz,auftragid)= (:INSTANZ,:AUFTRAGID) and
       lieferdate=:LIEFERDATUM and artikelid=:ARTIKELID 
       and status=:STATUS limit 1;
  SQLerror::test(__FILELINE__,100);
@@ -199,19 +199,11 @@ bool AuftragBase::existEntry(const ArtikelBase& artikel,
   { 
     exec sql select zeilennr,bestellt into :ZEILENNR, :MENGE
       from auftragentry 
-   	where auftragid= :AUFTRAGID and instanz =:INSTANZ and
+   	where (instanz,auftragid)= (:INSTANZ,:AUFTRAGID) and 
       lieferdate=:LIEFERDATUM and artikelid=:ARTIKELID 
       and status=:STATUS limit 1;
     SQLerror::test(__FILELINE__,100);
    }
-/*
-cout << "select zeilennr,bestellt from auftragentry  join auftragsentryzuordnung on "
-"(altauftragid,altinstanz,altzeilennr)=(auftragid,instanz,zeilennr)"
-"where auftragid= "
-+itos(AUFTRAGID)+" and instanz="+itos(INSTANZ)+" and lieferdate='"
-+LIEFERDATUM+"' and artikelid="+itos(ARTIKELID)+" and status="
-+itos(STATUS)+"\n";
-*/
 
  if (sqlca.sqlcode==100) return false;
  else  {

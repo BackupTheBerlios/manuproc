@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.11 2002/02/28 15:19:29 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.12 2002/03/20 07:43:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -40,6 +40,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    char LKZ[4];
    int FLAECHE,MITARBEITER;
    double KUNDENUMSATZ,PLANUMSATZ,UMSATZ, RABATT,EINZUGRABATT,SKONTOSATZ;
+   bool ZEILENRABATT;
    int SKONTOFRIST;
    char VEREIN[31];
    bool BANKEINZUG,LIEFERADRESSE,RECHUNGSADRESSE,ENTSORGUNG,RNGANLFRA;
@@ -48,14 +49,14 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    int WAEHRUNGID;
    int VERKNR;
    exec sql end declare section;
-
+//Sonderpreislisten werden getrennt geholt
   
    Transaction tr;
  
    WAEHRUNGID = Waehrung::EUR;
 
 ///XXX STAND 'now' stimmt noch nicht MAT
-   exec sql select gruppennr, firma,coalesce(sortname,''),
+   exec sql select coalesce(gruppennr,0), firma,coalesce(sortname,''),
     coalesce(extartbezid,1),
 	 coalesce(strasse,''),
     coalesce(postanwvor,''),coalesce(postanwnach,''),
@@ -71,7 +72,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
       once it is read into the wrong variable */
          coalesce(kundenumsatz,0.0),
          coalesce(planumsatz,0.0),coalesce(umsatz,0.0),
-         coalesce(rabatt,0.0),coalesce(einzugrabatt,0.0),coalesce(skontofrist,0),
+         coalesce(rabatt,0.0),coalesce(zeilenrabatt,false),coalesce(einzugrabatt,0.0),coalesce(skontofrist,0),
          coalesce(verein,''),coalesce(bankeinzug,false), coalesce(notiz,''), 
          coalesce(stand,now()),	coalesce(lkz,''),
 	 coalesce(waehrungid,:WAEHRUNGID),
@@ -83,7 +84,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
            :PREISLISTE, :IDNR,
             :LIEFERADRESSE,:RECHUNGSADRESSE,:RNGANLFRA,
            :FLAECHE,:MITARBEITER,:KUNDENUMSATZ,:PLANUMSATZ,:UMSATZ,
-	   :RABATT,:EINZUGRABATT,:SKONTOFRIST, :VEREIN, :BANKEINZUG,
+	   :RABATT,:ZEILENRABATT,:EINZUGRABATT,:SKONTOFRIST, :VEREIN, :BANKEINZUG,
 	   :NOTIZ,:STAND, :LKZ, :WAEHRUNGID, :ENTSORGUNG, :SKONTOSATZ,:VERKNR
    	from kunden k left join banken b using(bankindex)
    	where kundennr= :ID;
@@ -121,6 +122,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    kundendaten.planumsatz=PLANUMSATZ;
    kundendaten.umsatz=UMSATZ;
    kundendaten.rabatt=RABATT;
+   kundendaten.zeilenrabatt=ZEILENRABATT;
    kundendaten.einzugrabatt=EINZUGRABATT;
    kundendaten.skontosatz=SKONTOSATZ;
    kundendaten.skontofrist=SKONTOFRIST;
@@ -132,108 +134,6 @@ Kunde::Kunde(ID _id) throw(SQLerror)
 
    verkaeufer.verknr=VERKNR;
 }
-
-/*
-void Kunde::update() throw(SQLerror)
-{
- exec sql begin declare section;
- char 	*IDNR, *FIRMA, *POSTANWVOR, *STRASSE,
-   	*POSTANWNACH, *HSNR, *PLZ, *POSTFACH, *POSTFPLZ,
-        *ORT, 
-        *SORTNAME;
- bool LIEFERADRESSE, RECHNUNGSADRESSE;
- unsigned int KUNDENNR, GRUPPENNR,RECHNUNG_AN, SCHEMA;  
-   int FLAECHE,MITARBEITER;
-   double KUNDENUMSATZ,PLANUMSATZ,UMSATZ, RABATT,EINZUGRABATT;
-   int SKONTOFRIST;
-   int BANKINDEX;
-   int IBANKINDEX=0;
-   int PREISLISTE;
-   char *VEREIN;
-   bool BANKEINZUG;
-   char *NOTIZ;
-   char *STAND;
- long long int KTONR;
- exec sql end declare section;
-
- GRUPPENNR=KundenGruppennr;
- KTONR=bankverb.konto;
- KUNDENNR = Kundennr;
- SCHEMA = schema;
- SORTNAME=(char *) adresse.sortname.c_str();
- FIRMA=(char *)adresse.firma.c_str();
- POSTANWVOR=(char *)adresse.postanwvor.c_str();
- STRASSE=(char *)adresse.strasse.c_str();
- HSNR=(char *)adresse.hsnr.c_str();
- POSTANWNACH=(char *)adresse.postanwnach.c_str();
- PLZ=(char *)adresse.plz.c_str();
- ORT=(char *)adresse.ort.c_str();
- POSTFACH=(char *)adresse.postfach.c_str();
- POSTFPLZ=(char *)adresse.postfachplz.c_str();
- IDNR=(char *)IDnr.c_str();
- STAND=(char *)kundendaten.stand.c_str();
- PREISLISTE=kundendaten.preisliste;
-
- LIEFERADRESSE = lieferadresse;
- RECHNUNGSADRESSE = rechnungsadresse;
- RECHNUNG_AN = rngan;
-
- FLAECHE=kundendaten.flaeche;
- MITARBEITER=kundendaten.mitarbeiter;
- KUNDENUMSATZ=kundendaten.kundenumsatz;
- PLANUMSATZ=kundendaten.planumsatz;
- UMSATZ=kundendaten.umsatz;
- RABATT=kundendaten.rabatt;
- EINZUGRABATT=kundendaten.einzugrabatt;
- SKONTOFRIST=kundendaten.skontofrist;
- VEREIN=(char *)kundendaten.verein.c_str();
- BANKEINZUG=kundendaten.bankeinzug;
- BANKINDEX=bankverb.bankindex;
- NOTIZ=(char *)kundendaten.notiz.c_str();
-
-
- if (BANKINDEX==0) IBANKINDEX=-1;
- Transaction tr;
-
- exec sql UPDATE kunden SET
-        kundennr                =       :KUNDENNR,
-        gruppennr               =       :GRUPPENNR,
-        sortname                =       :SORTNAME,
-        extartbezid             =       :SCHEMA,
-        firma                   =       :FIRMA,   
-        postanwvor              =       :POSTANWVOR,
-        strasse                 =       :STRASSE,   
-        hsnr                    =       :HSNR,      
-        postanwnach             =       :POSTANWNACH,
-        plz                     =       :PLZ,
-        ort                     =       :ORT,
-        postfach                =       :POSTFACH,
-        postfplz                =       :POSTFPLZ,
-        idnr                    =       :IDNR,
-        lieferadresse           =       :LIEFERADRESSE,
-        rechnungsadresse        =       :RECHNUNGSADRESSE,
-        rechnung_an             =       :RECHNUNG_AN,
-        flaeche                 =       :FLAECHE,
-        mitarbeiter             =       :MITARBEITER,
-        kundenumsatz            =       :KUNDENUMSATZ,
-        planumsatz              =       :PLANUMSATZ,
-        umsatz                  =       :UMSATZ,
-        rabatt                  =       :RABATT,
-        einzugrabatt            =       :EINZUGRABATT,
-        preisliste              =       :PREISLISTE,
-        skontofrist             =       :SKONTOFRIST,
-        verein                  =       :VEREIN,
-        bankeinzug              =       :BANKEINZUG,
-        bankindex               =       :BANKINDEX:IBANKINDEX,
-        ktonr                   =       :KTONR,
-        notiz                   =       :NOTIZ
-     WHERE kundennr = :KUNDENNR ;
-     SQLerror::test(__FILELINE__);
-
- tr.commit();
-
-}
-*/
 
 const cH_Kunde Kunde::newKunde(const Kunde::ID kid, const std::string &firma) throw(SQLerror)
 {
@@ -304,26 +204,6 @@ unsigned long int Kunde::neue_bank_anlegen(const std::string& name, unsigned lon
 }
 
 
-void Kunde::update_Bankeinzug(bool be) throw(SQLerror)
-{
- exec sql begin declare section;
- unsigned int KUNDENNR = Kundennr;
- bool BANKEINZUG = be;
- exec sql end declare section;
-
- Transaction tr;
-
- exec sql UPDATE kunden SET bankeinzug= :BANKEINZUG, stand= now()
-	WHERE kundennr = :KUNDENNR ;
- SQLerror::test(__FILELINE__);
-
- reread_Stand();
- 
- tr.commit();
-
-}
-
-
 void Kunde::reread_Stand() throw(SQLerror)
 {
  exec sql begin declare section;
@@ -338,34 +218,18 @@ void Kunde::reread_Stand() throw(SQLerror)
 
 }
 
-void Kunde::set_bankkonto(const unsigned long long int s) throw(SQLerror)
-{
- exec sql begin declare section;
- unsigned int KUNDENNR = Kundennr;
- long long KONTO = s;
- exec sql end declare section;
-
- Transaction tr;
-
- exec sql UPDATE kunden SET ktonr= :KONTO, stand= now()
-	WHERE kundennr = :KUNDENNR ;
- SQLerror::test(__FILELINE__);
-
- reread_Stand();
- tr.commit();
-
- bankverb.konto = s; 
-}
-
-vector<cH_Person> Kunde::getPersonen() const
+vector<Kunde::st_ansprech> Kunde::getPersonen() const
 {
   exec sql begin declare section;
       char *QUERY;
       int PERSNR;
+      char NOTIZ[1024];
+      char POSITION[100];
   exec sql end declare section;
 
-  string QU=string(" SELECT a.persnr FROM ku_person p, ku_ansprech a"
-         " WHERE p.persnr=a.persnr and a.kundennr =")+
+  std::string QU=" SELECT a.persnr,coalesce(a._position,''),coalesce(a.notiz,'') FROM "
+         "ku_person p, ku_ansprech a"
+         " WHERE p.persnr=a.persnr and a.kundennr ="+
          itos(Id())+" ORDER BY name";
 
   QUERY=(char*)QU.c_str();
@@ -376,13 +240,13 @@ vector<cH_Person> Kunde::getPersonen() const
   exec sql declare ein cursor for ein_ ;
   exec sql open ein;
   SQLerror::test(__FILELINE__);
-  vector<cH_Person> VP;
+  vector<st_ansprech> VP;
   while (true)
    {
-     exec sql fetch ein into :PERSNR;
+     exec sql fetch ein into :PERSNR,:POSITION,:NOTIZ;
      SQLerror::test(__FILELINE__,"ein",100);
      if (sqlca.sqlcode) break;
-     VP.push_back(cH_Person(PERSNR));
+     VP.push_back(st_ansprech(cH_Person(PERSNR),POSITION,NOTIZ));
    }
   exec sql close ein;
 
@@ -390,7 +254,7 @@ vector<cH_Person> Kunde::getPersonen() const
   return VP;  
 }
 
-vector<cH_Telefon> Kunde::getTelefon() const
+std::list<cH_Telefon> Kunde::getTelefon() const
 {
  exec sql begin declare section;
    int TELID;   
@@ -403,7 +267,7 @@ vector<cH_Telefon> Kunde::getTelefon() const
    SELECT telid FROM ku_telefon WHERE kundennr= :KUNDENNR and persnr is null;
  exec sql open telein;
  SQLerror::test(__FILELINE__);
- vector<cH_Telefon> T;
+ std::list<cH_Telefon> T;
  while(true)
    {
       exec sql fetch telein into :TELID;
@@ -481,7 +345,7 @@ void Kunde::update_e(UpdateBitsFirma e)
      else if (i==B_Mitarbeiter   ) query += "mitarbeiter  = "+itos(mitarbeiter())+",";
      else if (i==B_Kundenumsatz  ) query += "kundenumsatz  = "+dtos(kundenumsatz())+",";
      else if (i==B_Flaeche       ) query += "flaeche  = "+itos(flaeche())+",";
-     else if (i==B_Lkz           ) query += "lkz  = "+lkz()+",";
+     else if (i==B_Lkz           ) query += "lkz  = '"+lkz()+"',";
      else if (i==B_Verein     ) query += "verein = '"+verein()+"',";
    }
  query += "stand  = now() where kundennr = "+itos(Id());
@@ -500,6 +364,7 @@ void Kunde::update_e(UpdateBitsBank e)
      else if (i==B_Bankindex   ) query += "bankindex  = "+itos(getindex())+",";
      else if (i==B_Bankeinzug  ) query += "bankeinzug  = "+btos(bankeinzug())+",";
      else if (i==B_Rabatt      ) query += "rabatt      = "+dtos(rabatt())+",";
+     else if (i==B_Zeilenrabatt) query += "zeilenrabatt= "+btos(zeilenrabatt())+",";
      else if (i==B_Waehrungid  ) query += "waehrungid  = "+itos(getWaehrung()->Id())+",";
      else if (i==B_Einzugrabatt) query += "einzugrabatt= "+dtos(einzugrabatt())+",";
      else if (i==B_Skontosatz  ) query += "skontosatz  = "+dtos(skontosatz())+",";
@@ -529,4 +394,68 @@ void Kunde::update_e(UpdateBitsSonst e)
  SQLerror::test(__FILELINE__);
 } 
 
+const list<PreisListe::ID> Kunde::Sonderpreislisten() const
+{
+  exec sql begin declare section;
+   int P;
+   char query[1024];
+  exec sql end declare section;
+  Transaction tr;
+  list<PreisListe::ID> V;
+  int i=1;
+  while (true)
+   {
+     std::string squery="select sonder_pliste["+itos(i)+"] from kunden"
+         " where kundennr="+itos(Id());        
+     strncpy(query,squery.c_str(),sizeof(query));
+     exec sql prepare preiscursor_ from :query;
+     exec sql declare preiscursor cursor for preiscursor_;
+     exec sql open preiscursor;
+     exec sql fetch preiscursor into :P;
+     SQLerror::test(__FILELINE__,-209);
+     if(sqlca.sqlcode) break;
+     V.push_back(P);
+     ++i;
+   }
+ return V;
+}
+
+void Kunde::setSonderpreisliste(const std::list<PreisListe::ID>& VP) const
+{
+  std::string query="update kunden set sonder_pliste='{";
+  for(std::list<PreisListe::ID>::const_iterator i=VP.begin();i!=VP.end();)
+   {
+     query +=itos(*i);
+     ++i;
+     if(i!=VP.end()) query += ",";
+   }
+  query +="}' where kundennr="+itos(Id());
+  Query::Execute(query);  
+  SQLerror::test(__FILELINE__);
+}
+
+void Kunde::newKontaktperson(const cH_Person &Person) const
+{
+  std::string query="insert into ku_ansprech (kundennr,persnr) "
+      "values ("+itos(Id())+","+itos(Person->Id())+")";
+  Query::Execute(query);  
+  SQLerror::test(__FILELINE__);
+}
+
+void Kunde::updateKontaktperson(const st_ansprech &A) const
+{
+  std::string query="update ku_ansprech set _position='"+A.position
+      +"', notiz='"+A.notiz+"' "
+      " where (kundennr,persnr) = ("+itos(Id())+","+itos(A.Person->Id())+")";
+  Query::Execute(query);  
+  SQLerror::test(__FILELINE__);
+}
+
+void Kunde::deleteKontaktperson(const H_Kunde&K,const cH_Person &P)
+{
+  std::string query="delete from ku_ansprech  "
+      " where (kundennr,persnr) = ("+itos(K->Id())+","+itos(P->Id())+")";
+  Query::Execute(query);  
+  SQLerror::test(__FILELINE__);
+}
 

@@ -22,22 +22,31 @@
 #include <Auftrag/AuftragsEntryZuordnung.h>
 #include <Auftrag/selFullAufEntry.h>
 
-void Lager::abschreiben(ArtikelBase artikel,AuftragBase::mengen_t menge,
-                        bool lager_rein,
-                        ppsInstanz::ppsInstId abschreib_instanz,bool AuftragAbschreiben)
+
+void Lager::rein_ins_lager(ArtikelBase artikel,AuftragBase::mengen_t menge)
+{
+  bewegung(false,artikel,menge);
+}
+
+void Lager::raus_aus_lager(ArtikelBase artikel,AuftragBase::mengen_t menge)
+{
+  bewegung(true,artikel,menge);
+}
+
+void Lager::bewegung(bool raus,ArtikelBase artikel,AuftragBase::mengen_t menge)
 {
   assert(menge>=0);
-  if(abschreib_instanz==ppsInstanz::None) 
-   {
-     if(!lager_rein) abschreib_instanz = instanz;
-     else            abschreib_instanz = cH_ppsInstanz(instanz)->LagerFuer();
-   }
   try{
-    SQLFullAuftragSelector AEBabschreiben_(SQLFullAuftragSelector::sel_Kunde_Artikel
-                                    (abschreib_instanz,Kunde::default_id,artikel));
-
-    SelectedFullAufList AEBabschreiben(AEBabschreiben_);
-
+    ppsInstanz::ppsInstId abschreib_instanz=instanz;
+    SQLFullAuftragSelector AEBSEL(SQLFullAuftragSelector::sel_Artikel_Planung
+                                 (abschreib_instanz,artikel,true));
+    if(!raus) 
+         { instanz=cH_ppsInstanz(instanz)->LagerFuer();
+           AEBSEL = SQLFullAuftragSelector::sel_Artikel_Planung
+                                 (abschreib_instanz,artikel,false);
+           
+         }
+    SelectedFullAufList AEBabschreiben(AEBSEL);
     for(SelectedFullAufList::iterator i=AEBabschreiben.begin();i!=AEBabschreiben.end();++i)
       {
 //cout << "\nAufEintrag: "<<i->Instanz()->Name()<<' '<<i->Id()<<' '<<i->ZNr()<<'\n'
@@ -48,12 +57,8 @@ void Lager::abschreiben(ArtikelBase artikel,AuftragBase::mengen_t menge,
        if(i->getRestStk() >= menge) abschreibmenge = menge;
        else                         abschreibmenge = i->getRestStk();
 
-
-       if(AuftragAbschreiben)  i->abschreiben(abschreibmenge);
-
-       if(lager_rein) Lager_Vormerkungen(*i).artikel_vormerken(abschreibmenge);
-//       else           Lager_Vormerkungen(*i).artikel_ausliefern(abschreibmenge);
-       else           (*i).abschreiben(abschreibmenge);
+       if(raus) i->abschreiben(abschreibmenge);
+       else     Lager_Vormerkungen(*i).artikel_vormerken(abschreibmenge);
 
        menge-=abschreibmenge;
        if(!menge) break;
@@ -61,7 +66,6 @@ void Lager::abschreiben(ArtikelBase artikel,AuftragBase::mengen_t menge,
    } catch(SQLerror &e)
      { std::cout << e <<'\n';}
 }
-
 
 
 

@@ -1,4 +1,4 @@
-/* $Id: Zahlvorgang.h,v 1.3 2002/01/22 09:15:55 christof Exp $ */
+/* $Id: Zahlvorgang.h,v 1.4 2002/03/20 07:43:31 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -55,5 +55,7 @@ public:
 	}
 	Zahlvorgang(long zahlblz, long long zahlkonto, long betrag, bool euro,
 		std::string zahlname, std::string zweck, std::string myname) throw(Datenfehler); 
+
+	void addVerwendungszweck(const string s) {Verwendungszweck.push_back(s);}		
 };
 #endif

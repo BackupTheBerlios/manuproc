@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.10 2002/02/28 15:19:29 christof Exp $
+// $Id: Kunde.cc,v 1.11 2002/03/20 07:43:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,6 +20,7 @@
 #include "Kunde/Kunde.h"
 #include <Aux/Ausgabe_neu.h>
 #include <Aux/Transaction.h>
+#include <Kunde/Telefon.h>
 
 cH_Kunde::cache_t cH_Kunde::cache;
 H_Kunde::cache_t H_Kunde::cache;
@@ -63,7 +64,7 @@ const std::string Kunde::LaTeX_von() const
   return  s;
 }
 
-const std::string Kunde::LaTeX_an(bool liefer=false) const
+const std::string Kunde::LaTeX_an(bool liefer,TelArt telart) const
 {
   std::string strasse_postfach;
   std::string lkz_plz_ort = !adresse.lkz.empty() ? (adresse.lkz+"-") : "";
@@ -79,11 +80,11 @@ const std::string Kunde::LaTeX_an(bool liefer=false) const
       lkz_plz_ort += adresse.plz+" "+adresse.ort;
      }
 
-  std::string s="\n";
+  std::string s="\\parbox[t]{8cm}{\n";
 #ifndef MABELLA_EXTENSIONS
   s+="{\\large ";
 #endif
-  s+="Firma\\\\ ";
+  s+="Firma \\\\";
 
   s+= string2TeX(getName(),NEEDCHAR) +"\\\\";
   if (!postanwvor().empty()) s+= string2TeX(postanwvor(),NEEDCHAR) +"\\\\";
@@ -93,8 +94,17 @@ const std::string Kunde::LaTeX_an(bool liefer=false) const
 #ifndef MABELLA_EXTENSIONS
        					"}"
 #endif
-					   "\\\\\n";
-  return  s;
+					   "}\n";
+  std::string s2;
+  if(telart!=TEL_NONE)
+   {
+     std::list<cH_Telefon> T=getTelefon();
+     s2+="\\hfill\n\\parbox[t]{5cm}{\\scriptsize\\flushright~\n";
+     for(std::list<cH_Telefon>::const_iterator i=T.begin();i!=T.end();++i)
+      {s2+= "\t"+ (*i)->ArtString() +" "+(*i)->NummerStr()+"\\\\\n"; }
+     s2 +="}";
+   }
+  return  s+s2;
 }
 
 

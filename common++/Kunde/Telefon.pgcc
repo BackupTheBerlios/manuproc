@@ -1,4 +1,4 @@
-// $Id: Telefon.pgcc,v 1.10 2001/10/19 09:35:58 christof Exp $
+// $Id: Telefon.pgcc,v 1.16 2002/03/15 07:10:22 cvs_malte Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,20 +24,25 @@ exec sql include sqlca;
 
 
 Telefon::Telefon(ID _tid) throw(SQLerror)
+: telid(_tid), kunde(Kunde::none_id), person(Person::none_id)
 {
+ if(telid==none_id) return;
  exec sql begin declare section;
  int TELID=_tid;
  int KUNDENNR;
  int PERSNR;
- char NUMMER[21];
+ int NUMMER;
+ int VORWAHL;
+ int LAND;
  char ART[2];
  char *QU;
  exec sql end declare section;
- 
+
  Transaction tr;
 
- std::string qu = std::string ("select coalesce(kundennr,0),coalesce(persnr,0),"
-			"nummer,art from ku_telefon where ");
+ std::string qu = std::string ("select coalesce(kundennr,"+itos(Kunde::none_id)+"),"
+         "coalesce(persnr,"+itos(Person::none_id)+"),"
+			"coalesce(telnr,0),coalesce(vorwahl,0),ldkenn,art from ku_telefon where ");
  qu = qu+" telid="+itos(TELID);
 
  QU = (char*)qu.c_str();
@@ -47,32 +52,23 @@ Telefon::Telefon(ID _tid) throw(SQLerror)
  exec sql open TELCUR;
  SQLerror::test(__FILELINE__);
 
- exec sql fetch TELCUR into :KUNDENNR, :PERSNR, :NUMMER, :ART;
+ exec sql fetch TELCUR into :KUNDENNR, :PERSNR, :NUMMER, :VORWAHL, :LAND, :ART;
  SQLerror::test(__FILELINE__,"TELCUR");
  
  person=PERSNR;
  kunde=KUNDENNR;
- nummer=NUMMER;
- telart=(TelArt)ART[0];
+ nummer=st_nummer(LAND,VORWAHL,NUMMER,(TelArt)ART[0]);
 
  exec sql close TELCUR;
  tr.close();
 
 }
 
-vector<Telefon::st_tel> Telefon::get_Telefon(int nr,const std::string& mod) throw(SQLerror)
+std::list<Telefon::st_tel> Telefon::get_Telefon(int nr,const std::string& mod) throw(SQLerror)
 {
-/*
- exec sql begin declare section;
- int TELID;
- int KUNDENNR;
- int PERSNR;
- char *QU;
- exec sql end declare section;
-*/
  exec sql begin declare section;
  char *QU;
- char NUMMER[21];
+ int NUMMER, VORWAHL, LAND;
  char ART[2];
  int KUNDENNR;
  int PERSNR;
@@ -80,9 +76,7 @@ vector<Telefon::st_tel> Telefon::get_Telefon(int nr,const std::string& mod) thro
  
  Transaction trk;
 
-// std::string qu = std::string ("select coalesce(kundennr,0),coalesce(persnr,0),"
-//			"nummer,art from kunden_telefon where ");
- std::string qu = std::string ("select nummer,art,coalesce(kundennr,"+itos(Kunde::none_id)+"), \
+ std::string qu = std::string ("select ldkenn,coalesce(vorwahl,0),coalesce(nummer,0),art,coalesce(kundennr,"+itos(Kunde::none_id)+"), \
       coalesce(persnr,"+itos(Person::none_id)+") from ku_telefon where ");
  if (mod=="kundennr")  qu = qu+" kundennr="+itos(nr);
  else if (mod=="persnr")   qu = qu+"   persnr="+itos(nr);
@@ -96,10 +90,10 @@ vector<Telefon::st_tel> Telefon::get_Telefon(int nr,const std::string& mod) thro
 
  while (true)
   { 
-   exec sql fetch TEL into :NUMMER,:ART,:KUNDENNR,:PERSNR;
+   exec sql fetch TEL into :LAND,:VORWAHL,:NUMMER,:ART,:KUNDENNR,:PERSNR;
    SQLerror::test(__FILELINE__,100);
    if (sqlca.sqlcode) break;
-   vec_telefon.push_back(st_tel(NUMMER,ART,KUNDENNR,PERSNR));
+   vec_telefon.push_back(st_tel(st_nummer(LAND,VORWAHL,NUMMER,(TelArt)ART[0]),KUNDENNR,PERSNR));
   } 
  exec sql close TEL;
  trk.close();
@@ -110,23 +104,23 @@ void Telefon::update() const throw(SQLerror)
 {
  exec sql begin declare section;
  int TELID=telid;
- int KUNDENNR;
- int PERSNR;
- char *NUMMER;
+ int KUNDENNR=kunde;
+ int PERSNR=person;
+ int LAND=nummer.land;
+ int VORWAHL=nummer.vorwahl;
+ int NUMMER=nummer.nummer;
  char ART[1];
  exec sql end declare section;
  
  Transaction tr;
 
- KUNDENNR=kunde;
- PERSNR=person;
- NUMMER=(char*)nummer.c_str();
- ART[0]=telart; 
+ ART[0]=nummer.art; 
  
  if(kunde==Kunde::none_id && person==Person::none_id)
    throw(__FILELINE__"Kunde und Person dürfen nicht beide NULL sein");
 
- exec sql update ku_telefon set nummer= :NUMMER, art= :ART, 
+ exec sql update ku_telefon set land=:LAND, vorwahl=:VORWAHL,
+   telnr= :NUMMER, art= :ART, 
 	kundennr= :KUNDENNR, persnr= :PERSNR where telid= :TELID;
  SQLerror::test(__FILELINE__);
 
@@ -144,25 +138,34 @@ cH_Telefon::cH_Telefon(const Telefon::ID _tnr)
 
 std::string Telefon::ArtString() const 
 {
- switch(telart)
+ switch(nummer.art)
 	{
 	case TEL_TEL : return("Telefon"); break;
 	case TEL_FAX : return("Fax"); break;
 	case TEL_MOB : return("Mobil"); break;
+	case TEL_E_MAIL : return("e-mail"); break;
+	case TEL_HOMEPAGE : return("Homepage"); break;
 	default : return("-");
 	}
  return("-");
 }
 
+std::string Telefon::NummerStr() const
+{
+  return itos(nummer.land)+" "+itos(nummer.vorwahl)+" "+itos(nummer.nummer);
+}
+
 
 const cH_Telefon Telefon::newTelefon(const Kunde::ID kid,const Person::ID pid,
- 		const std::string &nr, const TelArt art) throw(SQLerror)
+ 		const st_nummer &nr) throw(SQLerror)
 {
  exec sql begin declare section;
  int TELID;
  int KUNDENNR;
  int PERSNR;
- int NUMMER;
+ int LAND=nr.land;
+ int VORWAHL=nr.vorwahl;
+ int NUMMER=nr.nummer;
  char ART[1];
  int IKUNDENNR=0, IPERSNR=0;
  exec sql end declare section;
@@ -176,16 +179,15 @@ const cH_Telefon Telefon::newTelefon(const Kunde::ID kid,const Person::ID pid,
  if(pid == Person::none_id) IPERSNR=-1;
  else PERSNR=pid;
 
- NUMMER=atoi(nr.c_str());
- ART[0]=art; 
+ ART[0]=nr.art; 
  
  exec sql select nextval('kunden_telefon_telid_seq') into :TELID;
  SQLerror::test(__FILELINE__);
 
  exec sql insert into ku_telefon
-		(telid,kundennr,persnr,telnr,art)
+		(telid,kundennr,persnr,ldkenn,vorwahl,telnr,art)
 	values 
-		(:TELID,:KUNDENNR:IKUNDENNR,:PERSNR:IPERSNR,:NUMMER,:ART);
+		(:TELID,:KUNDENNR:IKUNDENNR,:PERSNR:IPERSNR,:LAND,:VORWAHL,:NUMMER,:ART);
  SQLerror::test(__FILELINE__);
 
  tr.commit();
@@ -225,5 +227,15 @@ void Telefon::delPersonsTelefon(const ID pid) throw(SQLerror)
 }
 
 
+std::vector<pair<std::string,TelArt> > Telefon::getTelArtVec()
+{
+  vector<pair<std::string,TelArt> > V;
+  V.push_back(pair<std::string,TelArt>("Telefon",TEL_TEL));
+  V.push_back(pair<std::string,TelArt>("Fax",TEL_FAX));
+  V.push_back(pair<std::string,TelArt>("Mobil",TEL_MOB));
+//  V.push_back(pair<std::string,TelArt>("e-mail",TEL_E_MAIL));
+//  V.push_back(pair<std::string,TelArt>("Homepage",TEL_HOMEPAGE));
+  return V;
+}
 
 

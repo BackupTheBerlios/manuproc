@@ -1,4 +1,4 @@
-// $Id: Telefon.h,v 1.6 2002/02/28 15:19:29 christof Exp $
+// $Id: Telefon.h,v 1.7 2002/03/20 07:43:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,7 +24,9 @@
 #include<Aux/Datum.h>
 #include<Kunde/Kunde.h>
 #include<Kunde/Person.h>
+#include<list>
 #include<vector>
+#include<Kunde/TelefonArt.h>
 
 class cH_Telefon;
 
@@ -32,42 +34,47 @@ class Telefon : public HandleContent
 {
 public:
  typedef int ID;
+ const static int Landeskennzahl=49;
+ const static int Vorwahl=202;
 
  
  static const ID none_id=0;
- typedef enum {TEL_NONE=0,TEL_TEL='T',TEL_FAX='F',TEL_MOB='M',
-        TEL_E_MAIL='E',TEL_HOMEPAGE='W'} TelArt;
- struct st_tel{std::string nummer;std::string art;Kunde::ID kid;Person::ID pid;
-        st_tel(std::string n,std::string a,Kunde::ID k,Person::ID p) 
-        : nummer(n),art(a),kid(k),pid(p) {}};
+// typedef enum {TEL_NONE=0,TEL_TEL='T',TEL_FAX='F',TEL_MOB='M',
+//        TEL_E_MAIL='E',TEL_HOMEPAGE='W'} TelArt;
+ struct st_nummer{int land;int vorwahl;int nummer;TelArt art;
+        st_nummer():land(0),vorwahl(0),nummer(0),art(TEL_NONE) {}
+        st_nummer(int l,int v,int n,TelArt a) 
+                : land(l),vorwahl(v),nummer(n),art(a) {}};
+ struct st_tel{st_nummer nummer;Kunde::ID kid;Person::ID pid;
+        st_tel(st_nummer n,Kunde::ID k,Person::ID p) 
+        : nummer(n),kid(k),pid(p) {}};
  
 private: 
 
  ID telid;
- TelArt telart;
  Kunde::ID kunde;
  Person::ID person;
- std::string nummer;
- std::vector<st_tel> vec_telefon;
+ st_nummer nummer;
+ std::list<st_tel> vec_telefon;
  
  friend class Handle<const Telefon>;
  
 public:
- Telefon() : telid(none_id), telart(TEL_NONE), kunde(Kunde::none_id), 
+ Telefon() : telid(none_id), kunde(Kunde::none_id), 
  		person(Person::none_id) {}
  Telefon(ID _tid) throw(SQLerror);
- std::vector<Telefon::st_tel> get_Telefon(int nr,const std::string& mod) throw(SQLerror);
+ std::list<Telefon::st_tel> get_Telefon(int nr,const std::string& mod) throw(SQLerror);
 
  static const cH_Telefon newTelefon(const Kunde::ID kid, const Person::ID pid,
- 		const std::string &nr, const TelArt art) throw(SQLerror);
+ 		const st_nummer &nr) throw(SQLerror);
 
  static void delTelefon(const ID tid) throw(SQLerror);
  static void delPersonsTelefon(const ID pid) throw(SQLerror);
  
- std::string Nummer() const { return nummer; }
+ st_nummer Nummer() const { return nummer; }
+ std::string NummerStr() const;
  ID Id() const { return telid; } 
 
- TelArt Art() const { return telart; }
  std::string ArtString() const;
  Kunde::ID getKunde() const { return kunde; }
  Person::ID getPerson() const { return person; }
@@ -75,6 +82,10 @@ public:
  bool isPrivat() const { return (kunde==Kunde::none_id &&
  				 person!=Person::none_id); 
  			}
+// std::string PrivatStr() const {if (isPrivat()) return "*";else return "";}
+ static vector<pair<std::string,TelArt> > getTelArtVec();
+
+ bool operator==(const Telefon& b) const {return Id()==b.Id();}
 };
 
 

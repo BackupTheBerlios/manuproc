@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.4 2001/07/16 09:54:26 christof Exp $ */
+/* $Id: Datum.h,v 1.5 2002/03/20 07:43:31 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,6 +23,7 @@
 #include <iostream>
 #include <exception>
 #include <Aux/Kalenderwoche.h>
+#include <string>
 
 namespace Petig
 {
@@ -86,8 +87,10 @@ public:
 	
 	/// in Menschenlesbare Form bringen (NOT THREAD SAFE!)
 	const char *c_str() const throw(Datumsfehler);
+        const std::string Short() const throw(Datumsfehler);
 	/// in Postgres Repräsentation wandeln
 	void write_postgres(char *b,unsigned int sz) const throw(Datumsfehler);
+        std::string to_iso() const throw(Datumsfehler);
 	/// in Europäisches Format wandeln
 	void write_euro(char *b,unsigned int sz) const throw(Datumsfehler);
 	/// Gültigkeit testen

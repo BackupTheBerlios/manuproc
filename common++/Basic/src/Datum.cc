@@ -16,13 +16,14 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.5 2001/07/05 09:23:02 christof Exp $ */
+/* $Id: Datum.cc,v 1.6 2002/03/20 07:43:31 christof Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
 #include <Aux/string0.h>
 #include <iomanip.h>
 #include <stdlib.h>
+#include <Aux/itos.h>
 
 unsigned long Petig::Datum::getnum(const unsigned char *s,int len) throw()
 {  unsigned long num=0;
@@ -54,6 +55,21 @@ void Petig::Datum::write_euro(char *buf,unsigned int size) const throw(Petig::Da
 {	teste();
 	snprintf0(buf,size,"%d.%d.%04d",tag,monat,jahr);
 }
+
+
+const std::string Petig::Datum::Short() const throw(Datumsfehler)
+{
+  teste();
+  return itos(Tag())+"."+itos(Monat());
+}
+
+std::string Petig::Datum::to_iso() const throw(Datumsfehler)
+{
+ teste();
+ return itos(Jahr())+"-"+itos(Monat())+"-"+itos(Tag());
+} 
+
+
 
 void Petig::Datum::teste() const throw (Petig::Datumsfehler)
 {  int falsch=0;

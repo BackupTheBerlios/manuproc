@@ -1,4 +1,4 @@
-// $Id: Handles.h,v 1.8 2002/01/22 09:15:55 christof Exp $
+// $Id: Handles.h,v 1.9 2002/03/20 07:43:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -43,12 +43,13 @@ template <class T> class Handle;
 class HandleContent
 {	template<class T> friend class Handle;
 private:
-	mutable unsigned int _references;
+	mutable unsigned int _references:24;
+	bool _is_static:1;
 #ifdef DEBUG_HANDLE_CONTENT
-	mutable bool _watch_me;
+	mutable bool _watch_me:1;
 #endif	
 protected:	
-	HandleContent() : _references(0) 
+	HandleContent() : _references(0), _is_static(false)
 #ifdef DEBUG_HANDLE_CONTENT
 					, _watch_me(false)
 #endif
@@ -64,32 +65,43 @@ protected:
 #else
 	virtual ~HandleContent();
 
-	// emit message on destruction
 public:
+	// emit message on destruction
 	void WatchMe() const
 	{  _watch_me=true; }
 #endif	
 public:
 	void *ref()
-	{  _references++;
+	{  if (!is_static()) _references++;
 	   return this;
 	}
 
 	void *ref() const
-	{  _references++;
+	{  if (!is_static()) _references++;
 	   return static_cast<void*>(const_cast<HandleContent*>(this));
 	}
 
 	void unref() const
-	{  _references--;
-           if (!_references) delete this;
+	{  if (!is_static()) 
+	   {  _references--;
+              if (!_references) delete this;
+           }
+	}
+
+	// the return value is handy to call it right after object construction	
+	// (static initializers)
+	bool is_static(bool b)
+	{  _is_static=b;
+	   return b;
+	}
+
+	bool is_static() const
+	{  return _is_static;
 	}
 
 	// this would have been impossible with Stroustrup's handles	
 	static void unref(void *ptr)
-	{  HandleContent *d=static_cast<HandleContent*>(ptr);
-	   d->_references--;
-	   if (!d->_references) delete d;
+	{  static_cast<HandleContent*>(ptr)->unref();
 	}
 
 private:
@@ -109,8 +121,8 @@ public:
 	_this_t &operator=(const _this_t &b)
 	{  NOISE("Handle @" << _data << '.' << (_data?_data->_references:0) << "= @" << b._data << '.' << (b._data?b._data->_references:0) << '\n');
 	   // yes, I do not test b -- I consider b->nil as a bug
-	   b->_references++;
-	   if (_data)
+	   if (!b->is_static()) b->_references++;
+	   if (_data && !_data->is_static())
 	   {  _data->_references--;
               if (!_data->_references) delete _data;
            }
@@ -121,7 +133,8 @@ public:
 	// this STL functions do strange things, under investigation
 	Handle(const _this_t &b) : _data(b._data)
 	{  NOISE("Handle(@" << b._data << '.' << (b._data?b._data->_references:0) << ")\n");
-	   if (_data) _data->_references++; }
+	   if (_data && !_data->is_static()) _data->_references++; 
+	}
 	
 	// replace this default value FAST via *this=Something !!!
 	// usually this is only needed for cached values
@@ -130,7 +143,7 @@ public:
 	// without this test any std::exception in T::T(...) would kill your program
 	~Handle()
 	{  NOISE("~Handle" << _data << '.' << (_data?_data->_references:0) << '\n');
-	   if (_data) 
+	   if (_data && !_data->is_static()) 
 	   {  _data->_references--;
 	      if (!_data->_references) delete _data;
 	   }

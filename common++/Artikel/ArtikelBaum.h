@@ -1,4 +1,4 @@
-/* $Id: ArtikelBaum.h,v 1.9 2002/02/28 15:19:29 christof Exp $ */
+/* $Id: ArtikelBaum.h,v 1.10 2002/03/20 07:43:31 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -112,7 +112,7 @@ private:
 
 public:
  faktor_t Faktor(const ArtikelBase &kind) throw(SQLerror);
- int ArtikelBaum::Tiefe() const;
+ int Tiefe() const;
 
 };
 

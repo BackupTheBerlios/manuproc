@@ -92,6 +92,8 @@ class Lager {
                         (x.restrollen==y.restrollen && x.rollen<y.rollen));}
          };
 
+      void bewegung(bool raus,ArtikelBase artikel,AuftragBase::mengen_t menge);
+
    public:
       Lager(ppsInstanz::ppsInstId _instanz);
 
@@ -109,10 +111,8 @@ class Lager {
       std::vector<int> Jumbo_Inhalt(const LagerPlatz position) const; 
       std::list<Lager::st_menge_sortiert>  getMengeSorted(ArtikelBase artikel);
 
-      void abschreiben(ArtikelBase artikel,AuftragBase::mengen_t menge,
-                       bool lager_rein,
-                       ppsInstanz::ppsInstId abschreib_instanz=ppsInstanz::None,
-                       bool AuftragAbschreiben=true);
+      void rein_ins_lager(ArtikelBase artikel,AuftragBase::mengen_t menge);
+      void raus_aus_lager(ArtikelBase artikel,AuftragBase::mengen_t menge);
 
 };
 

@@ -1,4 +1,4 @@
-// $Id: Person.cc,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: Person.cc,v 1.2 2002/03/20 07:43:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,10 +20,29 @@
 
 #include "Kunde/Person.h"
 
+cH_Person::cache_t cH_Person::cache;  
+
+cH_Person::cH_Person(Person::ID id)
+{  
+   cH_Person *cached(cache.lookup(id));
+   if (cached) *this=*cached;
+   else
+   {   
+    *this=cH_Person(new Person(id));
+      cache.Register(id,*this);   
+   }
+}   
 
 
+/*
 cH_Person::cH_Person(Person::ID id)
 {
  *this=cH_Person(new Person(id));
 }
-
+*/
+/*
+H_Person::H_Person(Person::ID id)
+{
+ *this=H_Person(new Person(id));
+}
+*/

@@ -78,6 +78,14 @@ bool ppsInstanz::LagerInstanz() const
   return false;
 }
 
+std::string ppsInstanz::shortName() const
+{
+  std::string s=Name();
+  s=s.substr(0,2);
+  return s;
+}
+
+
 std::vector<cH_ppsInstanz> cH_ppsInstanz::get_all_instanz()
 {
  vector<cH_ppsInstanz> v;
@@ -100,3 +108,4 @@ std::vector<cH_ppsInstanz> cH_ppsInstanz::get_all_instanz()
  }catch(SQLerror &e){cerr << e<<'\n';}
  return v;
 }
+

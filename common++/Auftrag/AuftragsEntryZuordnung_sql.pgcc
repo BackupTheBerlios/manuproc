@@ -1,4 +1,4 @@
-// $Id: AuftragsEntryZuordnung_sql.pgcc,v 1.8 2002/02/28 15:19:29 christof Exp $
+// $Id: AuftragsEntryZuordnung_sql.pgcc,v 1.9 2002/03/20 07:43:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -40,17 +40,17 @@ list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list(const AufEintragB
  if(kinder)
     squery = "select neuauftragid,neuinstanz,neuzeilennr,menge,artikelid
       from auftragsentryzuordnung 
-      join auftragentry on (neuauftragid,neuinstanz,neuzeilennr)
-         = (auftragid,instanz,zeilennr)
-      where (altauftragid,altinstanz,altzeilennr) = 
-       ("+itos(aeb.Id())+","+itos(aeb.InstanzID())+","+itos(aeb.ZNr())+")";
+      join auftragentry on (neuinstanz,neuauftragid,neuzeilennr)
+         = (instanz,auftragid,zeilennr)
+      where (altinstanz,altauftragid,altzeilennr) = 
+       ("+itos(aeb.InstanzID())+","+itos(aeb.Id())+","+itos(aeb.ZNr())+")";
  else
     squery = "select altauftragid,altinstanz,altzeilennr,menge,artikelid
       from auftragsentryzuordnung 
-      join auftragentry on (altauftragid,altinstanz,altzeilennr)
-         = (auftragid,instanz,zeilennr)
-      where (neuauftragid,neuinstanz,neuzeilennr) = 
-       ("+itos(aeb.Id())+","+itos(aeb.InstanzID())+","+itos(aeb.ZNr())+")";
+      join auftragentry on (altinstanz,altauftragid,altzeilennr)
+         = (instanz,auftragid,zeilennr)
+      where (neuinstanz,neuauftragid,neuzeilennr) = 
+       ("+itos(aeb.InstanzID())+","+itos(aeb.Id())+","+itos(aeb.ZNr())+")";
  strncpy(query,squery.c_str(),sizeof(query));
  exec sql prepare ONAUF_ from :query;
 //std::cout << query<<"\n\n\n";
@@ -131,7 +131,7 @@ list<cH_Kunde> AufEintragZu::get_Referenz_Kunden_long() const throw(SQLerror)
     INSTANZ=i->AEB2.InstanzID();
     AUFTRAGID=i->AEB2.Id();
     exec sql select kundennr into :KUNDE from auftrag where
-      auftragid=:AUFTRAGID and instanz=:INSTANZ; 
+      (instanz,auftragid)=(:INSTANZ,:AUFTRAGID); 
     SQLerror::test(__FILELINE__);
     LK.push_back(cH_Kunde(KUNDE));
   }
@@ -192,8 +192,8 @@ void AufEintragZu::AuftragsEntryZuordnung(const mengen_t menge,
  exec sql end declare section;
  if(oldZnr!=0) db_aznr=oldZnr;
  exec sql insert into auftragsentryzuordnung
-   (altauftragid,altinstanz,altzeilennr,menge,neuauftragid,neuinstanz,neuzeilennr) values
-   (:db_aaid,:db_ains,:db_aznr,:db_menge,:db_naid,:db_nins,:db_nznr);
+   (altinstanz,altauftragid,altzeilennr, menge, neuinstanz,neuauftragid,neuzeilennr) values
+   (:db_ains,:db_aaid,:db_aznr, :db_menge, :db_nins,:db_naid,:db_nznr);
  SQLerror::test(__FILELINE__);
 }
 
@@ -212,19 +212,9 @@ void AufEintragZu::setMenge(const mengen_t menge,const AuftragBase& neuAuftrag,c
  exec sql end declare section;
  exec sql update auftragsentryzuordnung
    set menge=:db_menge where
-   (altauftragid,altinstanz,altzeilennr,neuauftragid,neuinstanz,neuzeilennr)
-    = (:db_aaid,:db_ains,:db_aznr,:db_naid,:db_nins,:db_nznr);
-//std::cout << "update auftragsentryzuordnung set menge="+itos(menge)+
-//" where (altauftragid,altinstanz,altzeilennr,neuauftragid,neuinstanz,neuzeilennr) = ("
-//+itos(db_aaid)+","+itos(db_ains)+","+itos(db_aznr)+","+itos(db_naid)+","
-//+itos(db_nins)+","+itos(db_nznr)+")\n";
+   (altinstanz,altauftragid,altzeilennr, neuinstanz,neuauftragid,neuzeilennr)
+    = (:db_ains,:db_aaid,:db_aznr, :db_nins,:db_naid,:db_nznr);
  SQLerror::test(__FILELINE__);
-/*
- SQLerror::test(__FILELINE__,100);
- if (sqlca.sqlcode) return false;
- else return true;
-*/
- 
 }
 
 bool AufEintragZu::setMengeDiff(const mengen_t menge,const AuftragBase& neuAuftrag,const int neuZnr)
@@ -240,12 +230,8 @@ bool AufEintragZu::setMengeDiff(const mengen_t menge,const AuftragBase& neuAuftr
  exec sql end declare section;
  exec sql update auftragsentryzuordnung
    set menge=menge+:db_menge where
-   (altauftragid,altinstanz,altzeilennr,neuauftragid,neuinstanz,neuzeilennr)
-    = (:db_aaid,:db_ains,:db_aznr,:db_naid,:db_nins,:db_nznr);
-//std::cout << "update auftragsentryzuordnung set menge="+itos(menge)+
-//" where (altauftragid,altinstanz,altzeilennr,neuauftragid,neuinstanz,neuzeilennr) = ("
-//+itos(db_aaid)+","+itos(db_ains)+","+itos(db_aznr)+","+itos(db_naid)+","
-//+itos(db_nins)+","+itos(db_nznr)+")\n";
+   (altinstanz,altauftragid,altzeilennr, neuinstanz,neuauftragid,neuzeilennr)
+    = (:db_ains,:db_aaid,:db_aznr, :db_nins,:db_naid,:db_nznr);
  SQLerror::test(__FILELINE__,100);
  if (sqlca.sqlcode) return false;
  else return true;
@@ -264,8 +250,8 @@ bool AufEintragZu::setKindZnr(const AuftragBase& neuAuftrag,const int neuZnr)
  exec sql end declare section;
  exec sql update auftragsentryzuordnung
    set neuzeilennr=:db_nznr where
-   (altauftragid,altinstanz,altzeilennr,neuauftragid,neuinstanz)
-    = (:db_aaid,:db_ains,:db_aznr,:db_naid,:db_nins);
+   (altinstanz,altauftragid,altzeilennr, neuinstanz,neuauftragid)
+    = (:db_ains,:db_aaid,:db_aznr, :db_nins,:db_naid);
  SQLerror::test(__FILELINE__);
  if (sqlca.sqlcode) return false;
  else return true;
@@ -287,17 +273,17 @@ void AufEintragZu::moveInstanz(const VonNachDel vdl,const AufEintragBase &oldAEB
    case Von:
     exec sql update auftragsentryzuordnung set 
       altauftragid=:db_naid, altinstanz=:db_nins, altzeilennr=:db_nznr where
-      (altauftragid,altinstanz,altzeilennr)=(:db_aaid,:db_ains,:db_aznr);
+      (altinstanz,altauftragid,altzeilennr)=(:db_ains,:db_aaid,:db_aznr);
     break;
    case Nach:
     exec sql update auftragsentryzuordnung set 
       neuauftragid=:db_naid, neuinstanz=:db_nins, neuzeilennr=:db_nznr where
-      (neuauftragid,neuinstanz,neuzeilennr)=(:db_aaid,:db_ains,:db_aznr);
+      (neuinstanz,neuauftragid,neuzeilennr)=(:db_ains,:db_aaid,:db_aznr);
     break;
    case Delete:
     exec sql delete from auftragsentryzuordnung where
-      (altauftragid,altinstanz,altzeilennr,neuauftragid,neuinstanz,neuzeilennr)
-     =(:db_aaid,:db_ains,:db_aznr,:db_naid,:db_nins,:db_nznr);
+      (altinstanz,altauftragid,altzeilennr, neuinstanz,neuauftragid,neuzeilennr)
+     =(:db_ains,:db_aaid,:db_aznr, :db_nins,:db_naid,:db_nznr);
     break;
   }
  SQLerror::test(__FILELINE__,100);
