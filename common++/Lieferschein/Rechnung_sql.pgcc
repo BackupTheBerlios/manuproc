@@ -305,11 +305,13 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
     if(i->getZusatzInfos().empty() || !(i->getZusatzInfos()[0].aeb.valid()))
        provsatz=lv.getKunde()->getProvSatz_Artikel(
 				ArtikelBase(i->Artikel()));
+
+    ArtikelTyp at(i->Artikel());
+    ek_preis=Artikelpreis(at.EK_PL()->Id(),i->Artikel(),
+    		AuftragBase::Gesamtmenge(i->Stueck(),i->Menge()).as_int());
+
     push_back(lineno,i->Artikel(),lfrs.Id(),i->ZNr(),i->Stueck(),i->Menge(),
 		p,rabatt,provsatz,ek_preis);
-
-    ek_preis=Artikelpreis(PreisListe::ID(99999),i->Artikel(),
-    		AuftragBase::Gesamtmenge(i->Stueck(),i->Menge()).as_int());
  }
 
 
