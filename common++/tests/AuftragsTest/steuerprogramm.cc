@@ -852,14 +852,14 @@ ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
        JR=JumboRolle::create(KK); // 102
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0);
        JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp1);
-       vergleichen(C,Check::Jumbo_richtig,mit_reparatur_programm);
+       vergleichen(C,Check::Jumbo,"_richtig","Jumbo richtig",mit_reparatur_programm);
        JR=JumboRolle::create(KK); // 103
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp1);
        JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0);
        JR=JumboRolle::create(KK); // 104
        JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp1);
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0);
-       vergleichen(C,Check::Jumbo_falsch,mit_reparatur_programm);
+       vergleichen(C,Check::Jumbo,"_falsch","Jumbo falsche Reihenfolge",mit_reparatur_programm);
        JR=JumboRolle::create(KK); // 105
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0);
        try // kein Log Eintrag ist richtig
@@ -872,7 +872,7 @@ ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
        JR=JumboRolle::create(KK);
        JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0);
        JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp1);
-       vergleichen(C,Check::Jumbo_doppelt,mit_reparatur_programm);
+       vergleichen(C,Check::Jumbo,"_doppelt","Jumbo doppelt Aus-/Einlagern",mit_reparatur_programm);
        break;
 #endif
      }

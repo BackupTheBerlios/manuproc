@@ -45,16 +45,10 @@ class Check
    		
    enum e_check {Jumbo_richtig,Jumbo_falsch,Jumbo_doppelt};
  private:
-   static was_checken WasChecken(e_check);
-   static std::string Zusatz(e_check);
-
    void dump(was_checken);
    bool vergleich(was_checken,const std::string &name);
  public:
    Check(){}; 
-   // old variant
-   bool teste(e_check check,bool mit_reparatur_programm,bool vor_dem_test_reparieren=false); 
-   // new variant (needs no enum) CP
    // Erfolgreich: true; sonst false
    bool teste(was_checken was, const std::string &name,bool mit_reparatur_programm,bool vor_dem_test_reparieren=false);
 };

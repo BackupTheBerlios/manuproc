@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.35 2002/12/19 13:57:22 thoma Exp $
+// $Id: Check.cc,v 1.36 2002/12/20 15:13:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -35,10 +35,6 @@ static std::string referenzdir="database_tables_test_Mabella/";
 #elif defined PETIG_TEST
 static std::string referenzdir="database_tables_test/";
 #endif
-
-bool Check::teste(e_check check,bool mit_reparatur_programm,bool vor_dem_test_reparieren)
-{  return teste(WasChecken(check),Zusatz(check),mit_reparatur_programm,vor_dem_test_reparieren);
-}
 
 bool Check::teste(was_checken check,const std::string &zusatz, bool mit_reparatur_programm,bool vor_dem_test_reparieren)
 {
@@ -93,31 +89,6 @@ bool Check::teste(was_checken check,const std::string &zusatz, bool mit_reparatu
    }  
   dump(check);  
   return vergleich(check,zusatz);
-}
-
-Check::was_checken Check::WasChecken(e_check check)
-{
-  switch (check)
-  {  
-   case Jumbo_richtig: case Jumbo_falsch: case Jumbo_doppelt:
-   	return Jumbo; // |Menge; ??
-   default: assert(!"never get here");
-//        return Menge;
-  }
-  assert(!"never get here"); abort();
-}
-
-std::string Check::Zusatz(e_check check)
-{  std::string zusatz;
-  switch(check)
-   {
-     // Jumbo 
-     case Jumbo_richtig : zusatz="_richtig"; break;
-     case Jumbo_falsch : zusatz="_falsch"; break;
-     case Jumbo_doppelt : zusatz="_doppelt"; break;
-     default: zusatz="_unbekannt"; break;
-   }
-   return zusatz;
 }
 
 bool Check::vergleich(was_checken was,const std::string &zusatz)
