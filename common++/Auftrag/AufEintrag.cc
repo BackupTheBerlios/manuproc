@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.109 2004/05/13 14:44:08 christof Exp $
+// $Id: AufEintrag.cc,v 1.110 2004/05/13 14:44:42 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -108,7 +108,7 @@ void AufEintrag::Planen(mengen_t menge, AufEintrag &ziel) throw(std::exception)
    assert(getLieferdatum()>=ziel.getLieferdatum());
    assert(Instanz()==ziel.Instanz() 
    	|| (Instanz()->alt_group_nr!=ppsInstanzID::None 
-   	    && Instanz()->alt_group_nr==ziel.Instanz()->alt_group_nr);
+   	    && Instanz()->alt_group_nr==ziel.Instanz()->alt_group_nr));
    mengen_t dispomenge;
    
    if (menge>getRestStk())
