@@ -1,19 +1,21 @@
 ?package(local.manuproc): \
-	command="eingangsrechnungen" \
+	command="@BINDIR@/eingangsrechnungen" \
 	needs="X11" \
 	icon="@PIXMAPDIR@/eingangsrechnungen.png" \
 	section="ManuProC/Fibu" \
 	title="Eingangsrechnungen" \
 	longtitle="bezahlte und unbezahlte Rechnungen (Lieferanten)"
+	
 ?package(local.manuproc): \
-	command="pps" \
+	command="@BINDIR@/pps" \
 	needs="X11" \
 	icon="@PIXMAPDIR@/pps.png" \
 	section="ManuProC/Fibu" \
-	title="Auftr‰ge" \
+	title="Auftr√§ge" \
 	longtitle="Auftragsabwicklung, Produktionsplanung"
+	
 ?package(local.manuproc): \
-	command="fibu" \
+	command="@BINDIR@/fibu" \
 	needs="X11" \
 	icon="@PIXMAPDIR@/fibu.png" \
 	section="ManuProC/Fibu" \
