@@ -1,4 +1,4 @@
-/* $Id: KettenGarn_CP.cc,v 1.16 2004/07/05 13:22:33 christof Exp $ */
+/* $Id: KettenGarn_CP.cc,v 1.17 2004/07/06 08:08:45 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,8 +22,6 @@
 #include <Faeden/Faden.hh>
 #include <Ketten/ArtikelGang.h>
 #include <Misc/TraceNV.h>
-
-#warning diese API unterstützt keine Kombinationen!!!
 
 static const UniqueValue::value_t trace_channel=ManuProC::Tracer::channels.get();
 static ManuProC::Tracer::Environment trace_channel_e("DEBUG_KETTEN",trace_channel);
@@ -190,12 +188,23 @@ bool KettenGarn::operator<(const KettenGarn_CP &b) const throw()
 	{  return (Index()<b.Index()) || 
 	          (Index()==b.Index() && Artikel()<b.Artikel() );}
 
-#if 0
+#if 1
 
 namespace {
 struct map_index_t
-{	ArtikelGang ag;
+{	ArtikelGang ag,ag2;
         unsigned scheibe;
+        
+        map_index_t(const ArtikelGang &a, unsigned s) : ag(a), scheibe(s) {}
+        map_index_t(const ArtikelGang &a, const ArtikelGang &b, unsigned s) 
+          : ag(a), ag2(b), scheibe(s) {}
+        bool operator==(const map_index_t &b) const
+        {  return ag==b.ag && ag==b.ag2 && scheibe==b.scheibe; }
+        bool operator<(const map_index_t &b) const
+        {  return ag<b.ag ||
+              (ag==b.ag && ag2<b.ag2) ||
+              (ag==b.ag && ag2==b.ag2 && scheibe<b.scheibe); 
+        }
 };
 }
 
@@ -204,55 +213,63 @@ std::vector<Kettscheibe> Kettscheibe::Load(const std::vector<ArtikelGang> &ag, u
    vec_t result;
    typedef std::map<map_index_t,Kettscheibe> map_t;
    map_t intermed;
-   
-  for (std::vector<ArtikelGang>::const_iterator gang=ag.begin();gang!=ag.end();++ag)
-  {
    try {
+   
+  for (std::vector<ArtikelGang>::const_iterator gang=ag.begin();gang!=ag.end();++gang)
+  {
    Webangaben wa(gang->art);
    wa.Load();
    Fadenliste fdl;
    fdl.Load(wa);
-   }
-   catch (SQLerror &e)
-   {  return std::vector<Kettscheibe>();
-   }
 
-   for (Fadenliste::const_iterator i=fdl.begin(); i!=fdl.end(); ++i)
-   {  unsigned max_fadenzahl=i->max_fadenzahl;
-      if (ag.gaenge==i->ausn_gaenge && i->ausn_maxfd) 
-         max_fadenzahl=i->ausn_maxfd;
-      else if (ag.gaenge==i->ausn_gaenge2 && i->ausn_maxfd2) 
-         max_fadenzahl=i->ausn_maxfd2;
-      
-      if (i->kettscheibe<1) continue;
-      if (i->kettscheibe>)
-      x.index=i->kettscheibe*2;
-      x.zeile=i->zeilennummer;
-      x.kettenzahl=ag.gaenge;
-      x.faeden=i->anzahl;
-      if (ag.gaenge==i->ausn_gaenge && i->ausn_faeden) 
-      	 x.faeden=i->ausn_faeden;
-      x.art=i->material;
+   for (Fadenliste::const_kettiterator i=fdl.kettbegin(); i!=fdl.kettend(); ++i)
+   {  if (!i->nr) continue;
+      Kettscheibe &x=intermed[map_index_t(*gang,i->nr)];
+      x.index=i->nr;
       x.laenge=laenge;
       if (i->verlaengern) 
       {  if (x.laenge<10000) x.laenge+=100; // 3040/35/420 v. 15.1.04
+#if 0      
          else if (x.laenge<=12000 || cH_ArtikelBezeichnung(i->material)->Komponente(0).substr(0,10)=="Poly verst")
             x.laenge+=200; // 3040/35/420 v. 15.1.04
+#endif            
          else 
             x.laenge+=500;
       }
-      // 2do: wiederholungen 
-      x.wiederholungen=1;
-      for (Fadenliste::const_repiterator r=fdl.repbegin();r!=fdl.repend();++r)
-      {  if (r->start==r->end && r->start==i->zeilennummer)
-         {  // Sonderfall: Einzelwiederholung
+      x.max_fadenzahl=i->max_fadenzahl;
+      if (gang->gaenge==i->ausn_gaenge && i->ausn_maxfd) 
+         x.max_fadenzahl=i->ausn_maxfd;
+      else if (gang->gaenge==i->ausn_gaenge2 && i->ausn_maxfd2) 
+         x.max_fadenzahl=i->ausn_maxfd2;
+      x.kettenzahl=gang->gaenge;
+      x.artikel.push_back(*gang);
+   }
+   for (Fadenliste::const_iterator i=fdl.begin(); i!=fdl.end(); ++i)
+   {  if (i->kettscheibe<1) continue;
+      Kettscheibe &y=intermed[map_index_t(*gang,i->kettscheibe)];
+      assert(y.index!=i->kettscheibe);
+      KS_Garn x;
+      x.zeile=i->zeilennummer;
+      x.faeden=i->anzahl;
+      if (gang->gaenge==i->ausn_gaenge && i->ausn_faeden) 
+      	 x.faeden=i->ausn_faeden;
+      x.material=i->material;
+   }
+
+#if 0
+   for (Fadenliste::const_repiterator r=fdl.repbegin();r!=fdl.repend();++r)
+   {  if (r->start==r->end && r->start==i->zeilennummer)
+      {  // Sonderfall: Einzelwiederholung
             x.faeden*=r->anzahl;
-         }
-         else if (r->start<=i->zeilennummer && i->zeilennummer<=r->end)
-         {  x.wiederholungen*=r->anzahl;
-         }
       }
-      x.min_max_fd=max_fadenzahl;
+      else if (r->start<=i->zeilennummer && i->zeilennummer<=r->end)
+      {  x.wiederholungen*=r->anzahl;
+      }
+   }
+#endif   
+  // Einzelwiederholungen komprimieren !!!
+
+#if 0
       // in gleich große Portionen teilen
       if (max_fadenzahl && x.faeden>max_fadenzahl) // && !(x.kettenzahl&1))
       {  unsigned ketten=(x.faeden*x.kettenzahl+max_fadenzahl-1)/max_fadenzahl;
@@ -268,7 +285,9 @@ std::vector<Kettscheibe> Kettscheibe::Load(const std::vector<ArtikelGang> &ag, u
          x.kettenzahl=anz_klein;
       }
       result.push_back(x);
+#endif      
    }
+#if 0
    // sortieren?
    std::sort(result.begin(),result.end(),KG_compare());
    // zusammenfassen?
@@ -297,26 +316,6 @@ std::vector<Kettscheibe> Kettscheibe::Load(const std::vector<ArtikelGang> &ag, u
       		NV("anz_fd",anz_fd));
       unsigned alte_kettenzahl=i->kettenzahl;
       unsigned neue_kettenzahl=alte_kettenzahl;
-      // be a little fuzzy (+1)
-      // weg?
-      if ((2*anz_fd == min_max_fd+1 || 3*anz_fd == min_max_fd+1) && ks_end-i==1)
-      {  neue_kettenzahl=(anz_fd*alte_kettenzahl+min_max_fd-1)/(min_max_fd+1);
-      }
-      else if (2*anz_fd <= min_max_fd && ks_end-i==1)
-      {  neue_kettenzahl=(anz_fd*alte_kettenzahl+min_max_fd-1)/min_max_fd;
-         if (!(ag.gaenge&1) && (neue_kettenzahl&1)
-         	// Sonderfall: Falls es _genau_ auf eine Kette passt nur eine
-         	&& (neue_kettenzahl>1 || min_max_fd!=alte_kettenzahl*anz_fd))
-         {  ManuProC::Trace(trace_channel,"",NV("neue_kettenzahl(Zwischenw.)",neue_kettenzahl));
-            ++neue_kettenzahl;
-         }
-      }
-      // aus 6 mach 4 (weg?)
-      else if (ks_end-i==1 && alte_kettenzahl==6 && anz_fd+anz_fd/2<=min_max_fd)
-         neue_kettenzahl=4;
-      // aus 8 mach 6 :-O (weg?)
-      else if (ks_end-i==1 && alte_kettenzahl==8 && (anz_fd*4/3)==min_max_fd)
-         neue_kettenzahl=6;
       ManuProC::Trace(trace_channel,"",NV("neue_kettenzahl",neue_kettenzahl));
       if (neue_kettenzahl!=alte_kettenzahl) // geht es auf?
       {  for (vec_t::iterator j=i;j!=ks_end;++j)
@@ -331,10 +330,20 @@ std::vector<Kettscheibe> Kettscheibe::Load(const std::vector<ArtikelGang> &ag, u
       }
       i=ks_end;
    }
-   std::vector<KettenGarn_CP> real_result;
+#endif
+   // kombinieren
+   // aufteilen
+   for (map_t::const_iterator i=intermed.begin();i!=intermed.end();++i)
+   {  if (i->second.index) result.push_back(i->second);
+   }
+   std::vector<Kettscheibe> real_result;
    real_result.reserve(result.size());
    for (vec_t::const_iterator i=result.begin();i!=result.end();++i)
       real_result.push_back(*i);
    return real_result;
+  }
+  catch (SQLerror &e)
+  {  return std::vector<Kettscheibe>();
+  }
 }
 #endif

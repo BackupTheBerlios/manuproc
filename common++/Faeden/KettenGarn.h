@@ -1,4 +1,4 @@
-/* $Id: KettenGarn.h,v 1.9 2004/07/05 16:24:18 christof Exp $ */
+/* $Id: KettenGarn.h,v 1.10 2004/07/06 08:08:45 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -35,6 +35,7 @@ struct KS_Garn
 	int Zeile() const throw() {  return zeile; }
 	int Faeden() const throw() {  return faeden; }
    unsigned Wiederholung_anzahl() const { return wiederholungen; }
+   KS_Garn() : zeile(), faeden(), wiederholungen(1) {}
 };
 
 struct Kettscheibe
@@ -47,6 +48,9 @@ struct Kettscheibe
         unsigned fadenzahl; // errechnet
         unsigned max_fadenzahl; 
 
+        Kettscheibe() : index(), laenge(), kettenzahl(), fadenzahl(), 
+            max_fadenzahl() 
+        {}
 // old routines
    int Index() const {return index;}
    int Kettenzahl() const throw() { return kettenzahl;}
