@@ -1,4 +1,4 @@
-// $Id: FertigWaren.h,v 1.12 2003/07/18 17:47:17 jacek Exp $
+// $Id: FertigWaren.h,v 1.13 2004/01/12 17:06:11 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -71,7 +71,9 @@ public:
  enum_Aktion Aktion() const {return aktion;}
  const ArtikelBase &Artikel() const { return artikel; }
  const std::string User() const { return uname;}
+private:
  void setUser(const std::string user) { uname=user;}
+public:
  int getUserID() const { return uid; }
   
  friend FetchIStream &operator>>(FetchIStream &is, FertigWaren &fw);

@@ -24,8 +24,9 @@ std::pair<Zeitpunkt_new,int> FertigWarenLager::letzteInventur()
 {
  
 
- Query q("select fw.datum, fw.bestand from fw_lager_buchung fw where fw.datum="
-	" (select max(lb.datum) from fw_lager_buchung lb where lb.aktion=?"
+ 
+ Query q("select fw.datum, fw.bestand from "+tabelle+" fw where fw.datum="
+	" (select max(lb.datum) from "+tabelle+" lb where lb.aktion=?"
 	"  and lb.artikelid=fw.artikelid) and fw.artikelid=?");
 
  q << char(FertigWaren::eInventur) << fw.Artikel().Id();
@@ -53,7 +54,7 @@ int FertigWarenLager::Bestand(ManuProC::Datum date)
   std::pair<Zeitpunkt_new,int> inventur=letzteInventur(); 
 
 
-  Query q("select coalesce(sum(menge),0) from fw_lager_buchung "
+  Query q("select coalesce(sum(menge),0) from "+tabelle+
 	" where artikelid=? and datum > ? and datum <= "
 	" (?||' 23:59:59')::timestamp and aktion != 'I'");
 
@@ -97,7 +98,7 @@ void FertigWarenLager::Buchen(FertigWaren::e_buchen buchen,
 
  Transaction tr;
 
- Query q("insert into fw_lager_buchung "
+ Query q("insert into "+tabelle+
       	" (artikelid,menge,datum,aktion,pid,lfrsid)"
         " values (?,?,?,?,?,?)");
 
@@ -139,7 +140,7 @@ void FertigWarenLager::Inventur()
 
  int alte_menge = Bestand();
 
- Query q("insert into fw_lager_buchung "
+ Query q("insert into  "+tabelle+
       	" (artikelid,menge,datum,aktion,pid,bestand)"
         " values (?,?,?,?,?,?)");
 

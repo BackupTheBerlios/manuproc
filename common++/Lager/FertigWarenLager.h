@@ -1,4 +1,4 @@
-// $Id: FertigWarenLager.h,v 1.13 2003/12/02 10:33:47 jacek Exp $
+// $Id: FertigWarenLager.h,v 1.14 2004/01/12 17:06:11 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -22,6 +22,8 @@
 
 #include "FertigWaren.h"
 #include "Lager.h"
+#include <Misc/FetchIStream.h>
+
 
 class FertigWarenLager : public LagerBase
 {
@@ -30,14 +32,44 @@ private:
 
    void Buchen(FertigWaren::e_buchen e,const ProductionContext &ctx);     
    
+   int lagerid;
+   std::string bezeichnung;
+   std::string tabelle;   
+   
+   void initLager() 
+   {
+    Query("select bezeichnung,tabelle from lager"
+       	    " where lagerid=?") << lagerid 
+       		>> bezeichnung >> tabelle;
+   }
+   
+   
 public:
+
+
+
+
 #if defined MABELLA_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
-      FertigWarenLager(const FertigWaren _fw) :
+    static const unsigned int default_lagerid=1;
+   
+      FertigWarenLager(const FertigWaren _fw, int lagid=default_lagerid) :
       		LagerBase(ppsInstanzID::Fertigwarenlager),
-      		fw(_fw)  
-      {}
-      FertigWarenLager() : LagerBase(ppsInstanzID::Fertigwarenlager),
-      		fw(FertigWaren()) {}
+      		fw(_fw),lagerid(lagid)  
+      {
+	initLager();
+      }
+      
+      FertigWarenLager(int lagid=default_lagerid) : 
+      		LagerBase(ppsInstanzID::Fertigwarenlager),
+      		fw(FertigWaren()), lagerid(lagid)
+      {
+       initLager();
+      }
+      
+  int Id() const { return lagerid; }
+  const std::string Bezeichnung() const { return bezeichnung; }
+  const std::string Tabelle() const { return tabelle; } 
+     
 #else
       FertigWarenLager(const FertigWaren _fw) :
       		LagerBase(ppsInstanzID::None),
