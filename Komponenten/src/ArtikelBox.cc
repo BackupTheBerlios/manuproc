@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.2 2001/06/08 19:32:00 christof Exp $
+// $Id: ArtikelBox.cc,v 1.3 2001/06/21 08:12:02 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -23,6 +23,8 @@
 #include <gtk--/box.h>
 #include <gtk--/paned.h>
 #include <algorithm>
+#include "stock_button_apply.xpm"
+#include "stock_button_cancel.xpm"
 
 void ArtikelBox::selectFunc(unsigned int sp,unsigned int l) throw(SQLerror)
 {
@@ -35,12 +37,12 @@ void ArtikelBox::selectFunc(unsigned int sp,unsigned int l) throw(SQLerror)
      }
    catch(SQLerror &e)
      {cerr << e.Code() << e.Message() << e.Context() << "\n";
-      pixmap->set(stock_button_cancel);
+      pixmap->set(stock_button_cancel_xpm);
       artikel=ArtikelBase();
      }
    return;
  }
- pixmap->set(stock_button_cancel);
+ pixmap->set(stock_button_cancel_xpm);
  artikel=ArtikelBase();
  
  combos[l][sp+1]->reset();
@@ -84,7 +86,7 @@ throw(SQLerror,ArtikelBoxErr)
 
  artikel=art;
 
- pixmap->set(stock_button_apply);
+ pixmap->set(stock_button_apply_xpm);
 
  ExtBezSchema::const_iterator ci = schema->begin();
 
@@ -132,7 +134,7 @@ void ArtikelBox::loadArtikel(unsigned int l) throw(SQLerror)
  try {
   cH_ArtikelBezeichnung bez(signifikanz[l],v,schema);
   artikel=bez->Id();
-  pixmap->set(stock_button_apply);
+  pixmap->set(stock_button_apply_xpm);
 
   ExtBezSchema::const_iterator ci = schema->begin();
   for (unsigned int j=0;j<=signifikanz.size();++j)
@@ -232,7 +234,7 @@ Gtk::Container* ArtikelBox::init_table(int l)
     if (i==0) 
      {
        Gtk::HBox *hb= manage(new Gtk::HBox());
-       pixmap= manage(new class Gtk::Pixmap(stock_button_cancel));
+       pixmap= manage(new class Gtk::Pixmap(stock_button_cancel_xpm));
        hb->pack_start(*pixmap,false,false);   pixmap->show();
        hb->pack_start(*lb);                   hb->show();
        table->attach(*hb,i,i+1,0,1);

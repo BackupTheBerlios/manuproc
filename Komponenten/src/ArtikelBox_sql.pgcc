@@ -21,6 +21,8 @@
 #include <Aux/itos.h>
 #include <algorithm>
 #include <unistd.h>
+#include "stock_button_apply.xpm"
+#include "stock_button_cancel.xpm"
 
 exec sql include sqlca;
 
@@ -31,7 +33,7 @@ void ArtikelBox::searchFunc(int *cont, GtkSCContext newsearch, unsigned int sp,u
  {switch(newsearch)
   { case GTK_SEARCH_OPEN:
     { 
-      pixmap->set(stock_button_cancel);
+      pixmap->set(stock_button_cancel_xpm);
       artikel=ArtikelBase();
  exec sql begin declare section;
    char *QUERY;
@@ -334,7 +336,7 @@ void ArtikelBox::Neuer_Eintrag()
   SQLerror::test(__FILELINE__);
      
   artikel=db_id;
-  pixmap->set(stock_button_apply);
+  pixmap->set(stock_button_apply_xpm);
 
   activate();
   }catch (SQLerror &e)   {  cerr << e << '\n';}

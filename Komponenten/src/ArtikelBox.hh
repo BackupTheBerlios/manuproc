@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.2 2001/06/08 19:32:00 christof Exp $
+// $Id: ArtikelBox.hh,v 1.3 2001/06/21 08:12:02 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -32,10 +32,6 @@
 #include <gtk--/eventbox.h>
 #include "SearchCombo.h"
 #include <gtk--/pixmap.h>
-#include "stock_button_apply.xpm"
-#include "stock_button_cancel.xpm"
-
-
 
 class ArtikelBoxErr
 {
