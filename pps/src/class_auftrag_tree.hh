@@ -22,8 +22,9 @@ public:
  { 
     switch (seqnr) {
       case auftrag_main::KUNDE : {
-       if(AM->get_Instanz()->Id()==ppsInstanzID::Kundenauftraege ||
-	  AM->get_Instanz()->ExterneBestellung())
+       if(AB.getKdNr()!=Kunde::default_id)
+//       AM->get_Instanz()->Id()==ppsInstanzID::Kundenauftraege ||
+//	  AM->get_Instanz()->ExterneBestellung())
         {
          if (AM->Kunden_nr_bool())
 	   return cH_EntryValueIntString(AB.getKdNr()); 
@@ -35,9 +36,7 @@ public:
          else
 	   return cH_EntryValueIntString(kd->sortname()); 
         }
-       else { 
-         return cH_EntryValue();
-         }
+       else return cH_EntryValue();
        }
       case auftrag_main::A1 ... auftrag_main::A4 : {
       	 ExtBezSchema::ID schema=1;
