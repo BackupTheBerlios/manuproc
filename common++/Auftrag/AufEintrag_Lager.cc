@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.30 2003/12/03 12:27:14 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.31 2003/12/03 14:03:08 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -158,8 +158,11 @@ AufEintragBase AufEintrag::default_opfer(cH_ppsInstanz i,mengen_t menge,const Ar
   			(i->Id(),Kunde::eigene_id,artikel,plan_auftrag_id,
   			 OPEN)));
    SelectedFullAufList L(sel);
-   if (L.empty()) return AufEintragBase();
-   return L.back();
+   for (SelectedFullAufList::const_reverse_iterator i=L.rbegin();
+   		i!=SelectedFullAufList::const_reverse_iterator(L.rend());++i)
+   {  if (!!i->getRestStk()) return *i;
+   }
+   return AufEintragBase();
 }
 
 AufEintragBase (*AufEintrag::opfer_auswaehlen)(cH_ppsInstanz,mengen_t,const ArtikelBase &)
