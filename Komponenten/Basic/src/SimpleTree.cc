@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.41 2003/12/27 01:16:15 christof Exp $
+// $Id: SimpleTree.cc,v 1.42 2004/01/05 12:42:16 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -97,7 +97,12 @@ void SimpleTree_Basic::on_title_clicked(unsigned nr)
    {  clicked_seq.push_back(idx);
       // if alles voll -> umsortieren
       if (clicked_seq.size()==Cols()) on_neuordnen_clicked();
-      else get_column(nr)->set_title(itos(clicked_seq.size()));
+      else 
+	{std::string tmptit(get_column(nr)->get_title());
+	 tmptit=std::string("(")+itos(clicked_seq.size())+")"+tmptit.substr(2);
+	 get_column(nr)->set_title(tmptit);
+	
+	}
    }
    else if (i==--clicked_seq.end())
    {  // umsortieren
