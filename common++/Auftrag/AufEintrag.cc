@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.108 2004/05/05 16:58:33 jacek Exp $
+// $Id: AufEintrag.cc,v 1.109 2004/05/13 14:44:08 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -106,15 +106,13 @@ void AufEintrag::Planen(mengen_t menge, AufEintrag &ziel) throw(std::exception)
    // dispo (2er) Auftrag anlegen bei Überplanung
    assert(Artikel()==ziel.Artikel());
    assert(getLieferdatum()>=ziel.getLieferdatum());
-   assert(Instanz()==ziel.Instanz()); // muss nicht ...
+   assert(Instanz()==ziel.Instanz() 
+   	|| (Instanz()->alt_group_nr!=ppsInstanzID::None 
+   	    && Instanz()->alt_group_nr==ziel.Instanz()->alt_group_nr);
    mengen_t dispomenge;
    
    if (menge>getRestStk())
-    { assert(!Instanz()->LagerInstanz()); // CP
-      // Produktionsplaner (ungetestet)
-      assert(ziel.Instanz()->GeplantVon()==ppsInstanzID::None);
-	    // hier wurde ehemals ein 2er im Planer angelegt
-	    // Code siehe CVS
+    { assert(!Instanz()->LagerInstanz());
 
       // nur soviel unten verwenden (tatsächlich zu uns ziehen,
       // 	Rest wird von uns in Ueberplanen bestellt)
