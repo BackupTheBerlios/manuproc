@@ -143,7 +143,8 @@ void lieferscheinliste::fill_tree()
         if (  (artbase.Id()==0 || artbase.Id()==j->ArtikelID())
             &&(radiobutton_alle_zeit_von->get_active() || datum_von < L->LsDatum())
             &&(radiobutton_alle_zeit_bis->get_active() || datum_bis > L->LsDatum())
-            &&(kundenid==0 || kundenid==(*i)->KdNr() ) ) 
+            &&(kundenid==0 || kundenid==(*i)->KdNr() ) 
+            && !j->ZusatzInfo())  // besser: auswählbar machen oder noch besser: smart
          {
            datavec.push_back(new Data_LListe(L,*j,R));
          }

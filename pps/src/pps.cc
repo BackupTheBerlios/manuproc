@@ -16,13 +16,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// generated 2000/11/22 20:43:27 MET by jacek@mimi.
-// using glademm V0.5.10
-//
-// newer (non customized) versions of this file go to auftrag.cc_glade
-
-// This file is for your program, I won't touch it again!
-
 #include <gnome--/main.h>
 
 #include "auftrag_main.hh"
@@ -39,7 +32,6 @@ Petig::Connection *Conn;
 
 int main(int argc, char **argv)
 {  
-
  Conn = new Petig::Connection();
  int i;
 
@@ -62,12 +54,12 @@ int main(int argc, char **argv)
  Petig::PrintUncaughtExceptions();
 
  meldung = new MyMessage();
- try{ Petig::dbconnect(*Conn); }
-  catch(SQLerror &e)
+ try{ 
+ Petig::dbconnect(*Conn); }
+ catch(SQLerror &e)
   { meldung->Show(e);
     return 1;
   }
-  
  cH_ppsInstanz instanz(ppsInstanz::INST_KNDAUF);
  if (argc-optind>1) instanz=cH_ppsInstanz(ppsInstanz::ID(atoi(argv[optind])));
 
@@ -76,12 +68,13 @@ int main(int argc, char **argv)
 
 weiter:
 
+// meines Wissens geht das gar nicht ... CP Feb02
  try{ m.run();}
    catch(SQLerror &e) {meldung->Show(e); goto weiter;}
 
  delete auftragmain;
  Petig::dbdisconnect_nt(Conn->Dbase());
- delete Conn;
  delete meldung;
+ delete Conn;
  return 0;
 }

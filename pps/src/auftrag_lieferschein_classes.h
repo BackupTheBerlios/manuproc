@@ -12,7 +12,7 @@
 #include<rowdata.h>
 #include<Artikel/ArtikelBezeichnung.h>
 #include<Artikel/Einheiten.h>
-#include<Auftrag/AufEintragBase.h>
+#include<Auftrag/AufEintrag.h>
 
 class Data_Lieferdaten : public RowDataBase
 {
@@ -47,12 +47,12 @@ class Data_Lieferdaten : public RowDataBase
                       std::string a;
                       if (stueck!=1)
                       {  a=Formatiere(stueck)
-                        + Einheit(liefentry.ArtikelID()).StueckEinheit();
+                        + Einheit(ArtikelBase(liefentry.ArtikelID())).StueckEinheit();
                       }
                       if (menge.Scaled()!=0)
                       {  if (stueck!=1) a+="*";
                          a+=Formatiere_short(menge)
-                     + Einheit(liefentry.ArtikelID()).MengenEinheit();
+                     + Einheit(ArtikelBase(liefentry.ArtikelID())).MengenEinheit();
                       }
                       if (liefentry.ZusatzInfo()) a="("+a+")";
                       return cH_EntryValueIntString(a);
@@ -85,40 +85,31 @@ class Data_Lieferdaten_Node : public TreeRow
 
 class Data_Lieferoffen : public RowDataBase
 {
-      AufEintragBase auftrag;
-      cH_ArtikelBezeichnung artbez;
-      int offen;
-      int geliefert;
-      Petig::Datum lieferdatum;
-      
+  AufEintrag AE;
+
   public:
-   Data_Lieferoffen(AufEintragBase& _auftrag, cH_ArtikelBezeichnung _artbez,
-         int _offen,int& _geliefert,Petig::Datum _lieferdatum    )
-      :auftrag(_auftrag),artbez(_artbez),offen(_offen),geliefert(_geliefert),
-        lieferdatum(_lieferdatum) {}
-
+   Data_Lieferoffen(const AufEintrag& ae) : AE(ae) {}
    enum SeqNr {AUFNR_SEQ=0,ARTIKEL_SEQ,LIEFDAT_SEQ,OFFMNG_SEQ,GELIEF_SEQ,};
-
    virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
     {
        switch(seqnr)
         {
          case AUFNR_SEQ :
-            return cH_EntryValueIntString(Formatiere(auftrag.Id(),0,6,"","",'0'));
+            return cH_EntryValueIntString(Formatiere(AE.Id(),0,6,"","",'0'));
          case ARTIKEL_SEQ :
-              return cH_EntryValueIntString(artbez->Bezeichnung());
+              return cH_EntryValueIntString(cH_ArtikelBezeichnung(AE.Artikel())->Bezeichnung());
          case LIEFDAT_SEQ :
-            return cH_EntryValueDatum(lieferdatum);
+            return cH_EntryValueDatum(AE.getLieferdatum());
+         case OFFMNG_SEQ :
+            return cH_EntryValueIntString(AE.getRestStk());
+         case GELIEF_SEQ :
+            return cH_EntryValueIntString(AE.getGeliefert());
          default : return cH_EntryValueIntString();
         }
     }
-
-   int get_Artikel_Id() const {return artbez->getArtid();}
-   int Offen() const { return offen;}
-   int get_Auftrag_Id() const { return auftrag.Id(); }
-   const AufEintragBase2 &AuftragEntry() const { return auftrag; }
-   void abschreiben(int menge);
-//   static void abschreiben(const AufEintragBase2 &auf,int menge) throw(SQLerror);   
+   const AufEintrag &getAufEintrag() const { return AE; }
+   void abschreiben(AuftragBase::mengen_t menge) 
+        {AE.abschreiben(menge); }
 };
 
 class cH_Data_Lieferoffen : public Handle<const Data_Lieferoffen>

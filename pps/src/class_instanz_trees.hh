@@ -6,27 +6,28 @@
 #include <Aux/itos.h>
 #include <Aux/Datum.h>
 #include <Auftrag/AuftragsEntryZuordnung.h>
+//#include <Auftrag/AufEintrag.h>
 
 //////////////////////////////////////////////////////////////////////
 
 class Data_neuer_auftrag : public RowDataBase
 {
    const auftrag_main *AM;
-   AufEintragBase AufEintrag;
+   AufEintrag aufeintrag;
 
 public:
    Data_neuer_auftrag(auftrag_main* _AM,
-      const AufEintragBase& selected_AufEintrag)
-      : AM(_AM),AufEintrag(selected_AufEintrag) {};
+      const AufEintrag& selected_AufEintrag)
+      : AM(_AM),aufeintrag(selected_AufEintrag) {};
 
    enum SPALTEN{KUNDE,ARTIKEL,MENGE,DATUM};
 
     virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
  { 
     switch (seqnr) {
-      case KUNDE : {//return cH_EntryValueIntString(AufEintrag.get_Kunde()->firma());
+      case KUNDE : {//return cH_EntryValueIntString(aufeintrag.get_Kunde()->firma());
          std::string k;
-         std::list<cH_Kunde> LK=AufEintragZu(AufEintrag).get_Referenz_Kunden();
+         std::list<cH_Kunde> LK=AufEintragZu(aufeintrag).get_Referenz_Kunden();
          if(LK.size()==1)
           {
             if (AM->Kunden_nr_bool()) return cH_EntryValueIntString((*LK.begin())->Id());
@@ -39,26 +40,26 @@ public:
          return cH_EntryValueIntString(k);
         }
       case ARTIKEL : {
-         cH_ArtikelBezeichnung AZ(AufEintrag.ArtId());
+         cH_ArtikelBezeichnung AZ(aufeintrag.ArtId());
          return cH_EntryValueIntString(AZ->Bezeichnung());
         }
-      case MENGE   : return cH_EntryValueIntString(itos(AufEintrag.getStueck()));
+      case MENGE   : return cH_EntryValueIntString(itos(aufeintrag.getStueck()));
       case DATUM   : {
          std::string lw;
          if (AM->Zeit_kw_bool())
-           { int lieferwoche = AufEintrag.getLieferdatum().KW().Woche();
-             int lieferjahr =  AufEintrag.getLieferdatum().KW().Jahr();
+           { int lieferwoche = aufeintrag.getLieferdatum().KW().Woche();
+             int lieferjahr =  aufeintrag.getLieferdatum().KW().Jahr();
              std::string lj=itos (lieferjahr).substr(2,2);
              lw = itos(lieferwoche)+"/"+lj;
            }
-         else lw =  AufEintrag.getLieferdatum().c_str();
+         else lw =  aufeintrag.getLieferdatum().c_str();
          return cH_EntryValueIntString(lw); 
         }
      }
    return cH_EntryValueIntString("?");
  }
- const AufEintragBase& get_AufEintragBase() const {return AufEintrag;}
- AufEintragBase& get_AufEintragBase()  {return AufEintrag;}
+ const AufEintrag& get_AufEintrag() const {return aufeintrag;}
+ AufEintrag& get_AufEintrag()  {return aufeintrag;}
 };
 
 class cH_Data_neuer_auftrag : public Handle<const Data_neuer_auftrag>

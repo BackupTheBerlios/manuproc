@@ -6,3 +6,11 @@
 
 - Lager: Versuch Mengen unter einem bestimmten Wert möglichst schnell
   wieder aufzufüllen (abhängig von der zukünftigen Bestellmenge ?)
+
+
+- Abspeichern der sichtbaren Spalten (Instanzabhängig)
+
+- Anzeige von Lageraufträgen (verplante Dinge)
+
+- Anzeige von 'Wieviel von Artikel jemals geplant' (Zeitfenster)
+

@@ -30,9 +30,9 @@
 
 class auftrag_bearbeiten : public auftrag_bearbeiten_glade
 {   
- ppsInstanz::ID instanz;
+ cH_ppsInstanz instanz;
  AuftragFull *auftrag;
- AufEintragBase *aktaufeintrag;
+ AufEintrag *aktaufeintrag;
  cH_Kunde kunde;
  gint aufentrystat_chid;
  gint aufstat_chid;
@@ -98,7 +98,7 @@ public:
  
  bool splitEntry();
 
-auftrag_bearbeiten(const AufEintragBase2& auftragbase);
+auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEintragBase& auftragbase);
 ~auftrag_bearbeiten();
 
 };

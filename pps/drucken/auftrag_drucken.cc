@@ -46,8 +46,8 @@ int main (int argc, char *argv[])
  bool toTeX=false;
  unsigned int auftragsnr = 0; 
  ppsInstanz::ppsInstId instanz = ppsInstanz::INST_KNDAUF;
- std::string database="petigdb";
- std::string dbhost="localhost";
+ std::string database="";
+ std::string dbhost="";
  
  int opt;
 
@@ -61,6 +61,7 @@ int main (int argc, char *argv[])
 		  else if(std::string("Lieferschein")==optarg) was=LR_Base::Lieferschein;
 		  else if(std::string("Auftrag")==optarg) was=LR_Base::Auftrag;
 		  else if(std::string("Intern")==optarg) was=LR_Base::Intern;
+		  else if(std::string("Extern")==optarg) was=LR_Base::Extern;
 		  else was=LR_Base::NICHTS;
 		break;
        case 'n' : auftragsnr=atoi(optarg);break;
@@ -70,11 +71,11 @@ int main (int argc, char *argv[])
 	case 'h' : dbhost=optarg;break; 
 	case 't' : toTeX=true;break; 
 	case '?':
-            std::cout << "$Id: auftrag_drucken.cc,v 1.10 2002/01/22 09:44:06 christof Exp $\n\n"
-                   "USAGE:" << argv[0] << " -n <Nr> [-a <Auftrag|Rechung|Lieferschein|Intern>] [-kft] [-i <Instanz>] [-d <Datenbank>]\n"
+            std::cout << "$Id: auftrag_drucken.cc,v 1.11 2002/03/20 08:03:36 christof Exp $\n\n"
+                   "USAGE:" << argv[0] << " -n <Nr> [-a <Auftrag|Rechung|Lieferschein|Intern|Extern>] [-kft] [-i <Instanz>] [-d <Datenbank>]\n"
 		"\n\t-t\t nur TeX file erzeugen ("<< (toTeX?"an":"aus")<< ")\n"
 		"\t-p\t drucken ("<< (plot?"an":"aus")<< ")\n"
-		"\t-a\t Aufrag(*), Rechnung, Lieferschein, Intern\n"
+		"\t-a\t Aufrag(*), Rechnung, Lieferschein, Intern, Extern\n"
 		"\t-n\t (A./R./L.)-Nummer (wichtig!)\n"
 		"\t-f\t auf Firmenpapier ("<< (firmenpapier?"an":"aus")<< ")\n"
 		"\t-f\t Kopien ("<< (kopie?"an":"aus")<< ")\n"
@@ -84,7 +85,6 @@ int main (int argc, char *argv[])
             exit(1);
     }
   }                 
-
   try {
       Petig::Connection conn;
       conn.setDbase(database);

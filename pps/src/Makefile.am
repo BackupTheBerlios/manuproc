@@ -39,10 +39,7 @@ BUILT_SOURCES= \
 	auftrag_bearbeiten_sql.cc \
 	auftrag_liefer_sql.cc \
 	auftrag_rechnung_sql.cc \
-   auftrag_main_sql.cc \
-   auftrag_main_instanz_sql.cc \
-   auftrag_lieferschein_classes_sql.cc \
-   auftrag_lieferschein_sql.cc
+   auftrag_main_instanz_sql.cc
 
 
 CXXFLAGS = @CXXFLAGS@ @KOMPONENTEN_INCLUDES@ @GNOMEMM_CFLAGS@ 

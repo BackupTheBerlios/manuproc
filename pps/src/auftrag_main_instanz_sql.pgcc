@@ -12,7 +12,7 @@ int auftrag_main::get_next_entry_znr(AuftragBase& auftrag)
    int db_maxznr;
  exec sql end declare section;
  db_aufid=auftrag.Id();
- db_instanz=auftrag.Instanz();
+ db_instanz=auftrag.InstanzID();
  exec sql SELECT coalesce(max(zeilennr),0) into :db_maxznr from auftragentry 
    where auftragid=:db_aufid and instanz=:db_instanz;
  SQLerror::test(__FILELINE__,100);
@@ -28,10 +28,11 @@ throw(SQLerror)
  int AUFID;
  char AUFIDCHR[10];
  char *PAT;
- int KUNDE=1;
- int INSTANZ;
+ int KUNDE;
+ int INSTANZ=instanz->Id();
  exec sql end declare section;
- INSTANZ=instanz->Id();
+ if(instanz->Lieferant()) KUNDE=kunden_lieferant->get_value() ;
+ else KUNDE=Kunde::default_id;
  static bool transaction = false;
   
  switch(newsearch)

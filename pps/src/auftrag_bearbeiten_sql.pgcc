@@ -1,4 +1,4 @@
-// $Id: auftrag_bearbeiten_sql.pgcc,v 1.6 2001/11/19 13:00:11 christof Exp $
+// $Id: auftrag_bearbeiten_sql.pgcc,v 1.7 2002/03/20 08:03:36 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -31,7 +31,7 @@ throw(SQLerror)
  char AUFIDCHR[10];
  char *PAT;
  int KUNDE;
- int INSTANZ=instanz;
+ int INSTANZ=instanz->Id();
  exec sql end declare section;
  static bool transaction = false;
  KUNDE= kundenbox->get_value();
@@ -90,7 +90,7 @@ throw(SQLerror)
 {
  exec sql begin declare section;
  int AUFID;
- int INSTANZ=instanz;
+ int INSTANZ=instanz->Id();
  char YOURAUFID[21];
  char *PAT;
  int KUNDE;

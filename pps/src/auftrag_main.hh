@@ -23,7 +23,7 @@
 #include <Artikel/Prozess.h>
 #include <vector>
 #include <Aux/ppsInstanz.h>
-#include <Auftrag/AufEintragBase.h>
+#include <Auftrag/AufEintrag.h>
 #include <Auftrag/AuftragFull.h>
 #include<Auftrag/selFullAufEntry.h>
 #include <Aux/Long.h>
@@ -33,10 +33,11 @@ class auftrag_main : public auftrag_main_glade
  SelectedFullAufList *allaufids;
  cH_ppsInstanz instanz;
  bool interne_namen_bool, zeit_kw_bool, kunden_nr_bool,
-      kunden_anr_bool,auftraege_mit_kunden_bool;
+      kunden_anr_bool, auftraege_mit_kunden_bool;
  AufStatVal selected_status;
- AufEintragBase *selected_AufEintrag;
+ AufEintrag *selected_AufEintrag;
  static const unsigned int Artikelgroesse = 4;
+ bool block_callback;
 
 public:
 
@@ -44,38 +45,44 @@ private:
    struct st_index {cH_ppsInstanz instanz; cH_Kunde Kunde; ArtikelBase artikel;
           st_index(cH_ppsInstanz i,cH_Kunde k,ArtikelBase a)
               : instanz(i),Kunde(k),artikel(a) {}
+          st_index(cH_ppsInstanz i,ArtikelBase a)
+              : instanz(i),Kunde(Kunde::default_id),artikel(a) {}
           bool operator<(const st_index& b) const
             {return instanz <b.instanz ||
                    (instanz==b.instanz && Kunde<b.Kunde )|| 
                    (instanz==b.instanz && Kunde==b.Kunde && artikel<b.artikel);} 
           };
-   struct st_mengen {long sollMenge;long planMenge;long bestellMenge;
-          st_mengen() : sollMenge(0),planMenge(0),bestellMenge(0) {} 
-          st_mengen(long s,long g,long b) 
-               : sollMenge(s),planMenge(g),bestellMenge(b) {} 
+   struct st_mengen {AuftragBase::mengen_t sollMenge, planMenge, bestellMenge, gelieferteMenge;
+          st_mengen() : sollMenge(0),planMenge(0),bestellMenge(0),gelieferteMenge(0) {} 
+          st_mengen(AuftragBase::mengen_t s,AuftragBase::mengen_t g,
+                    AuftragBase::mengen_t b,AuftragBase::mengen_t gl) 
+               : sollMenge(s),planMenge(g),bestellMenge(b),gelieferteMenge(gl) {} 
           st_mengen operator+=(const st_mengen& b)
-            { sollMenge     += b.sollMenge; 
+            { sollMenge      = b.sollMenge; 
               planMenge     += b.planMenge; 
               bestellMenge  += b.bestellMenge; 
+              gelieferteMenge+= b.gelieferteMenge; 
               return *this;
             }
            };
-//   typedef pair<ArtikelBase,st_mengen> artmeng;
    typedef pair<st_index,st_mengen> artmeng;
 
  std::vector<cH_Prozess> prozlist;
         
         friend class auftrag_main_glade;
+        void loadEinstellungen();
         void on_beenden_activate();
         void on_erfassen_activate();
         void on_neuladen_activate();
         void on_main_drucken_activate();
-        void on_abschreiben_activate();
+        void on_lieferscheine_activate();
     	  void on_rechnung_activate();
         void on_main_bezeichnung_activate();
+        std::string bool2str(bool b);
+        bool str2bool(std::string s,bool def);
         void on_zeitdarstellung_activate();
         void on_kundendarstellung_activate();
-        void on_materialbedarf_sortiert(){};
+        void on_materialbedarf_sortiert();
         void on_kunden_anr_activate();
         void on_offene_auftraege_activate();
         void on_auftraege_kunde_activate();
@@ -83,15 +90,16 @@ private:
         void on_leaf_selected(cH_RowDataBase d);
         void on_node_selected(const TreeRow &node);
         void on_unselect_row(gint row, gint column, GdkEvent *event);
+        void on_togglebutton_bestellen_toggled();
         void on_togglebutton_material_toggled();
         void on_togglebutton_auftraege_toggled();
+        void handle_togglebutton(char c);
         void show_selected_line();
         void on_button_auftrag_erledigt_clicked();
         void instanz_menge(const std::map<st_index,st_mengen>& map_allart);
-        void get_ArtikelZusammensetzung(const ArtikelBase& art,const AufEintragBase& AEB,std::map<st_index,st_mengen>& map_allart);
-        void get_ArtikelHerkunft(const ArtikelBase& art,const AufEintragBase& AEB,std::map<st_index,st_mengen>& map_allart);
-        void geplanteMenge(const AufEintragBase& AEB,std::map<ArtikelBase,Long>& planmap);
-        void getAufEintragBase_fromNode(TCListRow_API::const_iterator b,
+        void get_ArtikelZusammensetzung(const ArtikelBase& art,const AufEintrag& AEB,std::map<st_index,st_mengen>& map_allart);
+        void get_ArtikelHerkunft(const ArtikelBase& art,const AufEintrag& AEB,std::map<st_index,st_mengen>& map_allart);
+        void getAufEintrag_fromNode(TCListRow_API::const_iterator b,
             TCListRow_API::const_iterator e, std::map<st_index,st_mengen>& M);
         void fillStamm(int *cont, GtkSCContext newsearch);
 
@@ -100,14 +108,17 @@ private:
 
         void on_button_artikeleingabe_clicked();
         void menu_instanz();
-        std::map<int,std::string> get_all_instanz();
-        void instanz_selected(int _instanz_);
+
+        std::vector<cH_ppsInstanz> get_all_instanz();
+        void instanz_selected(const cH_ppsInstanz instanz);
 
 
 public:
   // Spaltenbezeichnungen
-   enum {KUNDE,A1,A2,A3,A4,LIEFERDATUM,AUFTRAG,VERARBEITUNG,METER,STUECK};
+   enum {KUNDE,A1,A2,A3,A4,LIEFERDATUM,AUFTRAG,LETZEPLANINSTANZ,
+         VERARBEITUNG,METER,STUECK};
 
+ cH_ppsInstanz Instanz() const {return instanz;}
  bool interneNamen_bool() const { return interne_namen_bool; }
  bool Zeit_kw_bool() const { return zeit_kw_bool; }
  bool Kunden_nr_bool() const { return kunden_nr_bool; }
@@ -120,20 +131,19 @@ private:
    // Ab hier für die Produktionsplanung ////////////////////////
    AuftragFull *instanz_auftrag;
 
-//   void neue_auftraege_beruecksichtigen(cH_ppsInstanz instanz); //WEG
-//   std::vector<AufEintragBase2> get_new_aufids(cH_ppsInstanz instanz); //WEG
+   void show_frame_instanzen_material();
    void on_searchcombo_auftragid_activate();
    void on_searchcombo_auftragid_search(int *cont, GtkSCContext newsearch) throw(SQLerror);
    void on_button_neue_anr_clicked();
+   void on_kunden_lieferant_activate();
    gint on_button_instanz_print_clicked(GdkEventButton *ev);
    void instanz_tree_titel_setzen();
    void neuer_auftrag_tree_titel_setzen();
-   void instanz_leaf_auftrag(AufEintragBase& selected_AufEintrag);
+   void instanz_leaf_auftrag(AufEintrag& selected_AufEintrag);
    void show_neuer_auftrag();
    void tree_neuer_auftrag_leaf_selected(cH_RowDataBase d);
    void loadAuftragInstanz(const AuftragBase& auftragbase);
    int get_next_entry_znr(AuftragBase& auftrag);
-//   void AuftragsEntryZuordnung(const AufEintragBase& AEB,long menge,const AuftragBase& AB,int znr);
    void on_togglebutton_geplante_menge_toggled();
    void on_button_Kunden_erledigt_clicked();
 };

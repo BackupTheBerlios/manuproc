@@ -2,29 +2,24 @@
 # using glademm V0.6.2_cvs
 #
 # newer (non customized) versions of this file go to Makefile.am_new
-bin_PROGRAMS = auftragserfassung auftragserfassung_neu
+noinst_PROGRAMS = auftragserfassung_neu produziert planung
 
-%.cc: %.pgcc ; @ECPG@ -o $*.cc $<
+#%.cc: %.pgcc ; @ECPG@ -o $*.cc $<
 
 
-auftragserfassung_SOURCES = \
-   $(BUILD_SOURCES) \
-	auftragserfassung.cc
+auftragserfassung_neu_SOURCES = auftragserfassung_neu.cc
 
-auftragserfassung_neu_SOURCES = \
-   $(BUILD_SOURCES) \
-   auftragserfassung_neu.cc
+produziert_SOURCES=produziert.cc
 
-BUILD_SOURCES = auftragserfassung_sql.cc
+planung_SOURCES=planung.cc
 
-noinst_HEADERS = \
-	auftragserfassung.hh
-	auftragserfassung_neu.hh
+noinst_HEADERS = auftragserfassung_neu.hh
 
 CXXFLAGS = @CXXFLAGS@ @KOMPONENTEN_INCLUDES@
 
-LDFLAGS= @LDFLAGS@ @KOMPONENTEN_LDFLAGS@
+LDFLAGS= @LDFLAGS@ @KOMPONENTEN_LDFLAGS@ 
+#-lefence
 
-
-auftragserfassung_LDADD = @LIBS@ @KOMPONENTEN_LIBS@
 auftragserfassung_neu_LDADD = @LIBS@ @KOMPONENTEN_LIBS@
+produziert_LDADD = @LIBS@ @KOMPONENTEN_LIBS@
+planung_LDADD = @LIBS@ @KOMPONENTEN_LIBS@

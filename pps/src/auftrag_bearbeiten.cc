@@ -24,7 +24,8 @@
 #include <Artikel/Artikelpreis.h>
 #include <Gtk_OStream.h>
 #include <Aux/Ausgabe_neu.h>
-
+#include <Aux/dbconnect.h>
+//#include <Auftrag/AufEintrag.h>
 
 //#include <Auftrag/AuftragsEntryZuordnung.h>
 
@@ -40,11 +41,9 @@ extern auftrag_bearbeiten *auftragbearbeiten;
 
 extern MyMessage *meldung;
 
-
-auftrag_bearbeiten::auftrag_bearbeiten(const AufEintragBase2& auftragbase)
-: kunde(Kunde::default_id)
+auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEintragBase& auftragbase)
+: instanz(_instanz), kunde(Kunde::default_id)
 {
- instanz = ppsInstanz::INST_KNDAUF;
  splitdialog=0;
  table_auftragseintraege->hide();
  scrolledwindow_auftraege->hide();
@@ -78,7 +77,7 @@ void auftrag_bearbeiten::onSelArtikel()
  WPreis->set_Einheit((std::string)e);
  try {
     WPreis->reset();
-    Artikelpreis ap(kunde->Preisliste(),artikelbox->get_value());
+    Artikelpreis ap(kunde->preisliste(),artikelbox->get_value());
     Preis p(ap.In(auftrag->getWaehrung()));
     WPreis->set_Waehrung(auftrag->getWaehrung());
     WPreis->set_all(p.Wert(),p.PreisMenge());
@@ -97,6 +96,7 @@ void auftrag_bearbeiten::on_auftrag_clist_select_row
  Einheit e(artikelbox->get_value());
  mengeeinheit->set_text((std::string)e);
  WPreis->set_Einheit((std::string)e);
+ WPreis->set_Waehrung(auftrag->getWaehrung());
  }
  catch(SQLerror &e)
    {meldung->Show(e); return;}
@@ -192,7 +192,7 @@ void auftrag_bearbeiten::on_stkmtr_spinbutton_activate()
  else
   if(stkmtr_spinbutton->get_value_as_int() > 0)
    {kw_spinbutton->grab_focus();
-    kw_spinbutton->select_region(0,kw_spinbutton->get_text().size());
+    kw_spinbutton->select_region(0,kw_spinbutton->get_text_length());
    }
 }
 
@@ -223,23 +223,25 @@ void auftrag_bearbeiten::on_kw_spinbutton_activate()
        auftrag_clist->moveto(selectedentry,0,.5,0);
       }
  jahr_spinbutton->grab_focus();
- jahr_spinbutton->select_region(0,jahr_spinbutton->get_text().size());
+ jahr_spinbutton->select_region(0,jahr_spinbutton->get_text_length());
  liefdatum_datewin->set_value(Petig::Datum(Kalenderwoche(kw_spinbutton->get_value_as_int(),jahr_spinbutton->get_value_as_int())));
 }
 
 void auftrag_bearbeiten::on_jahr_spinbutton_activate()
 {
   assert(auftrag); 
+  gtk_spin_button_update(kw_spinbutton->gtkobj());
+  gtk_spin_button_update(jahr_spinbutton->gtkobj());
   if (!aktaufeintrag) 
    {
      gtk_spin_button_update(jahr_spinbutton->gtkobj());
      on_kw_spinbutton_activate();
    }
   else
-   aktaufeintrag->updateLieferdatum(Kalenderwoche(
+    aktaufeintrag->updateLieferdatum(Kalenderwoche(
 	                             kw_spinbutton->get_value_as_int(),
 	                             jahr_spinbutton->get_value_as_int()));
-   aufentry_ok->grab_focus();
+    aufentry_ok->grab_focus();
 }
 
 void auftrag_bearbeiten::on_aufentry_abbruch_clicked()
@@ -268,37 +270,6 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
     }
 }
 
-/*
-void auftrag_bearbeiten::InstanzAuftraegeAnlegen(const Auftrag& altAuftrag,const int altZnr)
-{
-   ArtikelBase art=artikelbox->get_value();
-//   Petig::Datum lieferdatum=liefdatum_datewin->get_value();
-   long menge=stkmtr_spinbutton->get_value_as_int();
-   ArtikelBaum AB(art);
-   for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
-    {
-      InstanzAuftraegeAnlegenR(i->rohartikel,i->menge*menge,altAuftrag,altZnr);
-    }
-}
-
-void auftrag_bearbeiten::InstanzAuftraegeAnlegenR(const ArtikelBase& art,const long menge,
-                                                   const Auftrag& altAuftrag,const int altZnr)
-{
-   Petig::Datum lieferdatum=liefdatum_datewin->get_value();
-   ArtikelStamm AS(art);
-   Auftrag neuAuftrag(AuftragBase(AS.BestellenBei(),0));
-   int neuZnr = neuAuftrag.tryUpdateEntry(double(menge),lieferdatum,art);
-   AufEintragZu::AuftragsEntryZuordnung(altAuftrag,altZnr,menge,neuAuftrag,neuZnr);
-
-   ArtikelBaum AB(art);
-   for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
-    {
-      InstanzAuftraegeAnlegenR(i->rohartikel,i->menge*menge,altAuftrag,altZnr);
-    }
-}
-
-*/
-
 void auftrag_bearbeiten::on_showkal_button_clicked()
 {   
 }
@@ -317,7 +288,7 @@ void auftrag_bearbeiten::on_rabattentry_spinbutton_activate()
  else
    {
     stkmtr_spinbutton->grab_focus();
-    stkmtr_spinbutton->select_region(0,stkmtr_spinbutton->get_text().size()); 
+    stkmtr_spinbutton->select_region(0,stkmtr_spinbutton->get_text_length()); 
    }
 }
 
@@ -340,13 +311,14 @@ void auftrag_bearbeiten::loadAuftrag(const AuftragBase& auftragbase)
   { AuftragBase ab(auftragbase); // in case we got passed *auftrag ...
     if(auftrag) delete auftrag; 
     auftrag = new AuftragFull(ab);
-    auftrag->setWaehrung(kunde->getWaehrung()->Id());
   } catch(SQLerror &e)
   {
    meldung->Show(e); auftrag=NULL; return;}
  catch (Kalenderwoche::error &e)
  { std::cerr << "KW error\n";
  }
+
+ artikelbox->reset();
  fillMask();
  aktaufeintrag = 0;
  stkmtr_spinbutton->set_value(0);
@@ -354,7 +326,6 @@ void auftrag_bearbeiten::loadAuftrag(const AuftragBase& auftragbase)
  jahr_spinbutton->set_value(Petig::Datum::today().Jahr());
  rabattentry_spinbutton->set_value(0);
  WPreis->reset();
- artikelbox->reset();
  liefdatum_datewin->set_value(Petig::Datum::today());
  WAufEntryStat->set_history((AufStatVal)UNCOMMITED);
  table_auftragseintraege->show();
@@ -367,13 +338,12 @@ void auftrag_bearbeiten::fillMask()
  andererKunde(); // adjust Schema
  fillCList();
  WAufStat->set_history(auftrag->getStatus());
- aufnr_scombo->set_text(auftrag->getAuftragidToStr());
- youraufnr_scombo->set_text(auftrag->getYourAufNr());
+ aufnr_scombo->setContent(auftrag->getAuftragidToStr(),auftrag->Id());
+ youraufnr_scombo->setContent(auftrag->getYourAufNr(),auftrag->Id());
  aufbemerkung_entry->set_text(auftrag->getBemerkung());
 // jahrgang_spinbutton->set_value(auftrag->getJahrgang());
  aufdatum_datewin->set_value(auftrag->getDatum());
  bea_WWaehrung->set_History( auftrag->getWaehrung()->get_enum() );
- WPreis->set_Waehrung( auftrag->getWaehrung()->get_enum() );
 
  auftrag_clist->thaw();
 }
@@ -382,7 +352,12 @@ void auftrag_bearbeiten::andererKunde()
 {  kunde = kundenbox->get_value();
    cH_ExtBezSchema ebsh(kunde->getSchema(ArtikelTyp::AufgemachtesBand));
    artikelbox->setExtBezSchema(ebsh);
-    bea_WWaehrung->set_history(kunde->getWaehrung()->Id());
+    bea_WWaehrung->set_History(kunde->getWaehrung()->get_enum());
+    WPreis->set_Waehrung(kunde->getWaehrung()->get_enum() );
+#ifdef MABELLA_EXTENSIONS
+   artikelbox->NurWarenkorb(kunde->preisliste());
+   artikelbox->Einschraenken_b(true);
+#endif
 }
 
 void auftrag_bearbeiten::on_aufnrscombo_activate()
@@ -462,6 +437,7 @@ void auftrag_bearbeiten::on_clear_all()
  auftrag=0;
  aktaufeintrag=0; 
  kundenbox->reset();
+ artikelbox->reset();		// ich denke das sollte hier auch rein
  WAufStat->set_history((AufStatVal)UNCOMMITED);
  aufnr_scombo->reset();
  youraufnr_scombo->reset();
@@ -471,7 +447,7 @@ void auftrag_bearbeiten::on_clear_all()
  aufrabatt_spinbutton->set_value(0);
  zahlziel_datewin->set_value(Petig::Datum::today());
  zahlart->set_history(0);
- bea_WWaehrung->set_history(Waehrung::EUR);
+ bea_WWaehrung->set_History(Waehrung::EUR);
 }
 
 
@@ -487,7 +463,7 @@ void auftrag_bearbeiten::on_auftrag_abbruch_clicked()
 void auftrag_bearbeiten::on_auftrag_ok_clicked()
 {   
  try {
-   auftrag = new AuftragFull(Auftrag::Anlegen(instanz),kundenbox->get_value());
+   auftrag = new AuftragFull(Auftrag::Anlegen(instanz->Id()),kundenbox->get_value());
  	auftrag->setBemerkung(aufbemerkung_entry->get_text());
  	auftrag->setYourAufNr(youraufnr_scombo->get_text());
       AuftragBase ab(*auftrag);
@@ -509,6 +485,7 @@ void auftrag_bearbeiten::on_auftrag_ok_clicked()
 void auftrag_bearbeiten::on_kunden_activate()
 {   
  youraufnr_scombo->grab_focus();
+ andererKunde();
 }
 
 void auftrag_bearbeiten::on_aufbemerkung_activate()
@@ -520,14 +497,20 @@ void auftrag_bearbeiten::on_aufbemerkung_activate()
 
 void auftrag_bearbeiten::on_button_preview_clicked()
 {  if (!auftrag) return;
-   std::string command = "auftrag_drucken -a Auftrag -n "+itos(auftrag->Id())+" -i " + itos(instanz) ;
+   std::string art="Auftrag";
+   if(instanz!=ppsInstanz::Kundenauftraege) art="Extern";
+   std::string command = "auftrag_drucken -a "+art+" -n "+itos(auftrag->Id())+
+   		" -i " + itos(instanz->Id());
    system(command.c_str());
 }  
 
 void auftrag_bearbeiten::on_button_drucken_clicked()
 {
    if (!auftrag) return;
-   std::string command = "auftrag_drucken -a Auftrag "+itos(auftrag->Id())+" -p -i " + itos(instanz);
+   std::string art="Auftrag";
+   if(instanz!=ppsInstanz::Kundenauftraege) art="Extern";
+   std::string command = "auftrag_drucken -a "+art+" -n "+itos(auftrag->Id())+
+   	" -p -i " + itos(instanz->Id());
    system(command.c_str());
 }
 
@@ -547,7 +530,7 @@ void auftrag_bearbeiten::on_activate_wpreis()
  else
   {
    rabattentry_spinbutton->grab_focus();
-   rabattentry_spinbutton->select_region(0,rabattentry_spinbutton->get_text().size());
+   rabattentry_spinbutton->select_region(0,rabattentry_spinbutton->get_text_length());
   }
 }
 
@@ -569,6 +552,7 @@ void auftrag_bearbeiten::fillCList()
         << i->getEntryStatusStr()<<"\t"
         << i->LastEditDate()<<"\n";
      psum += i->GPreis();
+//cout << i->GPreis() << ":" << psum << "\n";     
    } 
   os << "\t\t\t\t-----------\n";
   os << "\t\t\tAuftragswert\t";

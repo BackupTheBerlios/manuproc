@@ -44,24 +44,21 @@ void LR_drucken::drucken(bool print,bool b_firmenpapier,bool b_kopie)
 
    if      (RL==LR_Base::Rechnung)      
     { RechnungVoll r(auftragsnr);
-      LR_Abstraktion(&r).drucken(os,b_kopie,instanz);
+      LR_Abstraktion(&r,b_firmenpapier).drucken(os,b_kopie,instanz);
     }
    else if (RL==LR_Base::Lieferschein)  
     { 
 #ifdef MABELLA_EXTENSIONS    
-      cH_LieferscheinVoll l(auftragsnr,true);
+      cH_LieferscheinVoll l(instanz,auftragsnr,true);
 #else
       cH_LieferscheinVoll l(instanz,auftragsnr);
 #endif
-      LR_Abstraktion(&*l).drucken(os,b_kopie,instanz);
+      LR_Abstraktion(&*l,b_firmenpapier).drucken(os,b_kopie,instanz);
     }
-   else if (RL==LR_Base::Auftrag)  
-    { AuftragFull a=AuftragFull(AuftragBase(cH_ppsInstanz(instanz),(int)auftragsnr));
-      LR_Abstraktion(&a).drucken(os,b_kopie,instanz);
-    }
-   else if (RL==LR_Base::Intern)  
-    { AuftragFull a=AuftragFull(AuftragBase(cH_ppsInstanz(instanz),(int)auftragsnr));
-      LR_Abstraktion(&a).drucken(os,b_kopie,instanz);
+   else if (RL==LR_Base::Auftrag || RL==LR_Base::Intern || RL==LR_Base::Extern)  
+    { 
+     AuftragFull a=AuftragFull(AuftragBase(cH_ppsInstanz(instanz),(int)auftragsnr));
+     LR_Abstraktion(RL,&a,b_firmenpapier).drucken(os,b_kopie,instanz);
     }
    else abort();
 }

@@ -16,13 +16,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// generated 2001/3/28 15:07:10 CEST by jacek@mimi.
-// using glademm V0.5_11f_cvs
-//
-// newer (non customized) versions of this file go to auftrag_rechnung.cc_new
-
-// This file is for your program, I won't touch it again!
-
 #include "config.h"
 #include "auftrag_rechnung.hh"
 #include<Aux/Ausgabe_neu.h>
@@ -35,6 +28,7 @@
 #include <Aux/dbconnect.h>
 extern MyMessage *meldung;
 //extern Petig::Connection *Conn;
+
 #include <Lieferschein/RechnungVoll.h>
 
 void auftrag_rechnung::on_rng_close()
@@ -73,7 +67,7 @@ void auftrag_rechnung::on_rng_preview()
    if (rngnr->get_text()=="") return;
    std::string command = "auftrag_drucken -a Rechnung -n "
          +rngnr->get_text()
-         +" -i "+itos(instanz->Id());
+         +" -i "+itos(instanz->Id()) ;
    system(command.c_str());
 }
 
@@ -88,13 +82,12 @@ gint auftrag_rechnung::on_rng_print(GdkEventButton *ev)
    if (ev->button==1)
     {
      std::string command = "auftrag_drucken "+firma+kopie+"-a Rechnung -n "+rngnr->get_text()
-         +" -p -i "+itos(instanz->Id())
-         ;
+         +" -p -i "+itos(instanz->Id()) ;
      system(command.c_str());
     }
    if (ev->button==2)
     {
-     std::string command = "auftrag_drucken --firma -a Rechnung -n "+rngnr->get_text()+" -p -i "+itos(instanz->Id());
+     std::string command = "auftrag_drucken --firma -a Rechnung -n "+rngnr->get_text()+" -p -i "+itos(instanz->Id()) ;
      system(command.c_str());
      command = "auftrag_drucken --kopie -a Rechnung -n "+rngnr->get_text()
          +" -p -i "+itos(instanz->Id());
@@ -193,6 +186,8 @@ void auftrag_rechnung::on_lieferkunde_activate()
 {
 // offene_lieferscheine->setKunde(cH_Kunde(lieferkunde->get_value()));
 // offene_lieferscheine->showOffLief();   
+ if(lieferkunde->get_value() != cH_Kunde(lieferkunde->get_value())->Rngan())
+   lieferkunde->set_value(cH_Kunde(lieferkunde->get_value())->Rngan());
  set_rtree_offen_content();
 }
 
@@ -288,7 +283,7 @@ void auftrag_rechnung::Preis_setzen()
 #warning TODO: nur aktiven Preis setzen, wenn selection
    RechnungVoll rg(rechnung.Id());
    for (RechnungVoll::iterator i=rg.begin();i!=rg.end();++i)
-   {  Artikelpreis p(cH_Kunde(lieferkunde->get_value())->Preisliste(),i->ArtikelID());
+   {  Artikelpreis p(cH_Kunde(lieferkunde->get_value())->preisliste(),i->ArtikelID());
       if (!!p)
       {  i->setzePreis(p.In(rg.getWaehrung()));
       }
@@ -300,7 +295,7 @@ void auftrag_rechnung::Preis_ergaenzen()
 {  RechnungVoll rg=rechnung.Id();
    for (RechnungVoll::iterator i=rg.begin();i!=rg.end();++i)
    {  if (!(i->getPreis()))
-      {  Artikelpreis p(cH_Kunde(lieferkunde->get_value())->Preisliste(),i->ArtikelID());
+      {  Artikelpreis p(cH_Kunde(lieferkunde->get_value())->preisliste(),i->ArtikelID());
          if (!(!p))
          {  i->setzePreis(p.In(rg.getWaehrung()));
          }

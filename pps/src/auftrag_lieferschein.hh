@@ -22,7 +22,7 @@
 
 #include<Lieferschein/LieferscheinVoll.h>
 #include<tclistrowdata.h>
-#include<Auftrag/AufEintragBase2.h>
+#include<Auftrag/AufEintragBase.h>
 
 class auftrag_lieferschein : public auftrag_lieferschein_glade
 {   
@@ -55,16 +55,9 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
         void liefzeile_delete();
         void on_button_liste_clicked();
 
-//	AufEintragBase2 auftragentry;
-//	ArtikelBase artikel;
-//	TreeRow *selectedrow;
-	
-	void clear_offauf();
-	// refresh display
+	void clear_input();
 	void display(int lfrsid);
-	void display(); // refresh current lfrs
 	void display2(int kdnr);
-	void display2(); // refresh current free list
 	
 public:
 	auftrag_lieferschein(cH_ppsInstanz _instanz);

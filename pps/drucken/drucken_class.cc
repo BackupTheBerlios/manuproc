@@ -22,6 +22,7 @@
 #include <Kunde/Kunde.h>
 #include <Gtk2TeX.h>
 #include <Aux/Ausgabe_neu.h>
+#include <Kunde/TelefonArt.h>
 
 #ifdef MABELLA_EXTENSIONS
 #define TABW	"17"
@@ -29,43 +30,12 @@
 #define TABW	"18"
 #endif
 
-const std::string Dform_TeX(unsigned int i)
-{  
-#if 0 // ich glaube das gibt es schon 
- std::string str;
- char d[20];   
- char tmp1[10];
- char tmp2[10];
- char tmp3[10];
- 
- snprintf(d,sizeof d,"%d",i);
-    
-    if (strlen(d) > 6)
-       {
-       strncpy(tmp1,d,3);strncpy(tmp2,d+3,3);strcpy(tmp3,d+6);
-       tmp1[3]=0; tmp2[3]=0;
-       snprintf(d,sizeof d,"%s\\,%s\\,%s",tmp1,tmp2,tmp3);
-       }
-    else if (strlen(d) > 3)
-       { strncpy(tmp1,d,3);strcpy(tmp2,d+3);
-       tmp1[3]=0;
-       snprintf(d,sizeof d,"%s\\,%s",tmp1,tmp2);
-       }
-    else
-       snprintf(d,sizeof d,"%s",d);
-
- return d;
-#else 
-  return FormatiereTeX(i);
-#endif
-}
-
-
-
 void LR_Abstraktion::calc_all(cH_Kunde k)
 {
  nettobetrag = betrag;
- entskosten = nettobetrag * (k->Entsorgung() ? 0.002 : 0.0);
+#ifdef MABELLA_EXTENSIONS 
+ entskosten = nettobetrag * (k->entsorgung() ? 0.002 : 0.0);
+#endif 
  entsbetrag = nettobetrag + entskosten;
  mwstbetrag = entsbetrag * 0.16;
  bruttobetrag = entsbetrag + mwstbetrag;
@@ -122,7 +92,7 @@ void LR_Abstraktion::drucken_header(std::ostream &os)
 
 #ifdef MABELLA_EXTENSIONS 
 if(!firmenpapier)
-   os << "\\raisebox{25pt}[0pt][0pt]{\\makebox[0pt][l]{\\kern+140pt\\psfig{file=/tmp/logo.eps}}}\n";
+   os << "\\raisebox{25pt}[0pt][0pt]{\\makebox[0pt][l]{\\kern+140pt\\psfig{file=/usr/share/mabella/logo.eps}}}\n";
 
    cH_Kunde kunde_an(KdNr());
    if(kunde_an->verein().size())
@@ -138,13 +108,16 @@ if(!firmenpapier)
 
 void LR_Abstraktion::drucken_footer(std::ostream &os)
 {
-  if (t==Rechnung)
+  cH_Kunde kunde_an(KdNr());
+    
+  if (Typ()==Rechnung)
    {
 #ifdef MABELLA_EXTENSIONS
-    cH_Kunde kunde_an(KdNr());
     os << "\\vspace{0.5cm}\n";
+    
     if(kunde_an->bankeinzug())
-      {os << std::string("Der Rechnungsbetrag ");
+      {
+       os << std::string("Der Rechnungsbetrag ");
        if(kunde_an->skontosatz())
       	 {os << "\\\\abzgl. "<<FormatiereTeX_short(kunde_an->skontosatz())
       	 	<<"\\% Skonto";
@@ -159,11 +132,30 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
        os << "wird ";
        if(u.r->getZahlziel().valid())
          os << " am "<<u.r->getZahlziel()<<"\\\\\n";
-       os << "von Ihrem Konto "<<Dform_TeX(kunde_an->getKtnr());
+       os << "von Ihrem Konto "<<FormatiereTeX(kunde_an->getKtnr());
        os << "\\\\\n bei der " <<kunde_an->getbank();
-       os << "\n BLZ "<<Dform_TeX(kunde_an->getblz())<<" abgebucht\\\\\n";
+       os << "\n BLZ "<<FormatiereTeX(kunde_an->getblz())<<" abgebucht\\\\\n";
       }
-
+    else
+      {
+       if(u.r->getZahlziel().valid())
+        {if(kunde_an->skontosatz())
+	  os << "Bei Zahlung bis zum "<<u.r->getZahlziel()<<" "
+	     << kunde_an->skontosatz()<<"\\.%% Skonto"
+	     << " = {\\bf "<<getWaehrung()->TeXsymbol()<<" "<<FormatiereTeX_Preis(skontobetrag)<<"}\\\\\n";
+	 else     
+	  os << "Zahlung bis zum "<<u.r->getZahlziel()<<" netto\\\\\n";
+	}
+       else
+        {if(kunde_an->skontosatz() && kunde_an->skontofrist())
+	  os << "Bei Zahlung bis zum "
+	     <<u.r->getDatum()+kunde_an->skontofrist()<<" "
+	     << kunde_an->skontosatz()<<"\\.%% Skonto"
+	     << " = {\\bf "<<getWaehrung()->TeXsymbol()<<" "<<FormatiereTeX_Preis(skontobetrag)<<"}\\\\\n";
+         else 	     
+	     os << "Zahlung sofort netto\\\\\n";
+	}         	 
+      }
 #else
      cH_Kunde kunde_von(1);
      os <<"\n\n\\footnotesize "<< kunde_von->getBank()<<"\\\\\n";
@@ -173,6 +165,29 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
 #endif
 
    }
+ else if(Typ()==Auftrag )
+   {
+   os << "\\vspace{0.5cm}\n";
+   os << "Die Lieferung erfolg frei Haus\\\\\n";
+   os << "Die Liefertermine bitte den einzelnen Positionen entnehmen\\\\\n";
+   if(kunde_an->bankeinzug())
+     {os << std::string("Der Rechnungsbetrag ");
+       if(kunde_an->skontosatz())
+      	 {os << "\\\\abzgl. "<<FormatiereTeX_short(kunde_an->skontosatz())
+      	 	<<"\\% Skonto";
+      	 }
+       if(kunde_an->einzugrabatt())
+      	 os << "\\\\abzgl. "<<FormatiereTeX_short(kunde_an->einzugrabatt())
+      	 	<<"\\% Abbuchungsrabatt\\\\";
+       os << "wird ";
+       if(u.r->getZahlziel().valid())
+         os << " am "<<u.r->getZahlziel()<<"\\\\\n";
+       os << "von Ihrem Konto "<<FormatiereTeX(kunde_an->getKtnr());
+       os << "\\\\\n bei der " <<kunde_an->getbank();
+       os << "\n BLZ "<<FormatiereTeX(kunde_an->getblz())<<" abgebucht\\\\\n";
+      }
+   }
+   
    
   Gtk2TeX::Footer(os);
 }
@@ -182,7 +197,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
 {instanz=_instanz;
  kopie=_kopie;
 
- if (t==Rechnung || (t==Auftrag && instanz==ppsInstanz::INST_KNDAUF)) 
+ if (Typ()==Rechnung || Typ()==Auftrag) 
  	preise_addieren=true;
  else preise_addieren=false;
 
@@ -208,14 +223,14 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
   { //********* je Durchlauf eine Tabelle ausgeben ********************
   
      ArtikelBase artikel_id  = (*i).ArtikelID();
-     cH_ArtikelBezeichnung bez(artikel_id,cH_Kunde(kunden_id)->getSchema()->Id());
-    cH_ExtBezSchema schema_mem = bez->getExtBezSchema();
+     cH_ArtikelBezeichnung bez(artikel_id,cH_Kunde(kunden_id)->getSchemaId());
+    schema_mem = bez->getExtBezSchema();
     Preis::preismenge_t preismenge_mem;
     Einheit einheit_mem = Einheit(artikel_id); 
 
 // falls Lieferschein sich geändert hat, neue Nummer unten ausgeben
 // merken welche Werte in der 1. Zeile stehen
-    if (t==Rechnung && (*i).Lfrs_Id()!=lfrsid_mem)
+    if (Typ()==Rechnung && (*i).Lfrs_Id()!=lfrsid_mem)
     {  lfrsid_drucken=true;
        lfrsid_mem=(*i).Lfrs_Id();
     }
@@ -223,7 +238,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
 #ifdef MABELLA_EXTENSIONS
 // falls Auftrag sich geändert hat, neue Nummer unten ausgeben
 // merken welche Werte in der 1. Zeile stehen
-    if (t==Lieferschein && (*i).AufId()!=aufid_mem)
+    if (Typ()==Lieferschein && (*i).AufId()!=aufid_mem)
     {  aufid_drucken=true;
        aufid_mem=(*i).AufId();
     }    
@@ -240,7 +255,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
     for (;j!=end() ;++j) 
       {
         ArtikelBase artikelbase  = (*j).ArtikelID();
-        cH_ArtikelBezeichnung bez(artikelbase,cH_Kunde(kunden_id)->getSchema()->Id());
+        cH_ArtikelBezeichnung bez(artikelbase,cH_Kunde(kunden_id)->getSchemaId());
         cH_ExtBezSchema schema = bez->getExtBezSchema();
         
         if (schema!=schema_mem) break; // Schema hat gewechselt
@@ -250,14 +265,14 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
         if ((*j).Stueck()!=1 || !(*j).Menge()) stueck_bool=true;
 
         						// was soll das? (!!)
-        if ((t==Rechnung || t==Lieferschein) && !!(*j).Menge())
+        if ((Typ()==Rechnung || Typ()==Lieferschein) && !!(*j).Menge())
            menge_bool=true;
         
-        if (t==Rechnung && lfrsid_mem != (*j).Lfrs_Id()) 
+        if (Typ()==Rechnung && lfrsid_mem != (*j).Lfrs_Id()) 
            break; // Lieferschein wechselt
 
 #ifdef MABELLA_EXTENSIONS           
-        if (t==Lieferschein && aufid_mem != (*j).AufId())
+        if (Typ()==Lieferschein && aufid_mem != (*j).AufId())
           break; // Auftrag wechselt
 #endif
 
@@ -265,8 +280,9 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
         {
            if ((*j).getPreis().PreisMenge() != preismenge_mem) 
               break; // Preismenge wechselt
-              
+#ifndef MABELLA_EXTENSIONS              
            if (!!(*j).Rabatt()) rabatt_bool=true;
+#endif           
         }
       }
 //******** die Tabelle die wir ausgeben können endet bei j *****************
@@ -342,21 +358,17 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
          ArtikelBase artikelbase  = (*k).ArtikelID();
      	 std::string linecolor;
 
-// für die erste Spalte braucht man kein "&", 
-// nach der letzten darf keines stehen ... daher dies
      	 bool erste_spalte=true;
-#define NEUE_SPALTE ({ if (!erste_spalte) os << " & "; else erste_spalte=false; })
      	 
 #ifdef MABELLA_EXTENSIONS
 	if(zeilen_passen_noch%2) os << "\\shaderow";
 #endif
          if ((*k).ZusatzInfo()) linecolor = "\\mygray";
          
-         cH_ArtikelBezeichnung bez(artikelbase,cH_Kunde(kunden_id)->getSchema()->Id());
          
          if (stueck_bool)
-         {  NEUE_SPALTE;
-            if ((!(*k).ZusatzInfo() || (*k).Stueck()!=1))
+         {  neue_spalte(erste_spalte,os);
+            if ((!(*k).ZusatzInfo() || !menge_bool))
             {  os <<linecolor ;
                os << FormatiereTeX((*k).Stueck());
                if (Einheit(artikelbase).StueckEinheit().size())
@@ -364,48 +376,67 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
             }
          }
          if (menge_bool) 
-            {  NEUE_SPALTE;
+            {  neue_spalte(erste_spalte,os);
                if (!(*k).ZusatzInfo()) 
                     os <<linecolor<< FormatiereTeX_short((*k).Menge())<<einheitsize <<Einheit(artikelbase).MengenEinheit() ;
             }
          if (stueck_bool && menge_bool)
-           { NEUE_SPALTE;
+           { neue_spalte(erste_spalte,os);
              os <<linecolor<< FormatiereTeX_short(fixedpoint<3>((*k).Stueck() * (*k).Menge()))<<einheitsize <<Einheit(artikelbase).TeX();
            }
-           
-	 for(ExtBezSchema::const_sigiterator l=schema_mem->sigbegin(signifikanz);l!=schema_mem->sigend(signifikanz);++l)
-	   { NEUE_SPALTE;
-	     if (!(*k).ZusatzInfo())
-	        os <<"{"<<linecolor<< Gtk2TeX::string2TeX((*bez)[l->bezkomptype]->getStrVal()) <<"}";
-	   }
-#ifdef MABELLA_EXTENSIONS
-	   NEUE_SPALTE;
-	   os << bez->Bezeichnung(3);
-#endif 
-	   
+
+
+         cH_ArtikelBezeichnung bez(artikelbase,cH_Kunde(kunden_id)->getSchemaId());
+         drucken_artikel(os,bez,(*k).ZusatzInfo(),linecolor,erste_spalte);
+         if(Typ()==Intern)
+           {  
+             std::list<AufEintragZu::st_reflist> L;
+             for(int run=0;run<2;++run)
+              {   
+               //Rohware
+               if(run==0)  L=(*k).get_Referenz_list_for_geplant(true); 
+               //geplant für
+               if(run==1) L = (*k).get_Referenz_list_for_geplant(false); 
+               neue_spalte(erste_spalte,os);
+               if(L.size()>1) os << "$\\left\\{\\mbox{" ;
+               os << "\\begin{tabular}{ll}  ";
+               for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();)
+                {
+                  cH_ArtikelBezeichnung bez2(AufEintrag(i->AEB2).ArtId());
+                  bool btmp=true; // in dieser Tabelle ist es IMMER die 'erste_spalte'
+                  AuftragBase::mengen_t menge=0;
+                  if(run==1 && L.size()>1) menge=i->Menge;
+                  drucken_artikel(os,bez2,(*k).ZusatzInfo(),linecolor,btmp,menge);
+                  ++i;
+                  if(i!=L.end()) os << "\\\\ ";
+                }
+               os << "\\end{tabular}\n";
+               if(L.size()>1) os << "}\\right\\}$" ;
+              }
+            }
+
          if (preise_addieren)       
-          { NEUE_SPALTE;
-            os <<linecolor<<FormatiereTeX_Preis( (*k).getPreis().Wert() );
+          { neue_spalte(erste_spalte,os);
+            os <<linecolor<<FormatiereTeX_Preis( (*k).getPreis(false).Wert() );
             if (rabatt_bool) 
-            {  NEUE_SPALTE; os << linecolor<<FormatiereTeX((*k).Rabatt()); }
+            {  neue_spalte(erste_spalte,os); os << linecolor<<FormatiereTeX((*k).Rabatt()); }
             fixedpoint<2> preis = (*k).getPreis().Gesamtpreis(getWaehrung(),(*k).Stueck(),(*k).Menge(),(*k).Rabatt());
             betrag+=preis;
             tabellenbetrag+=preis;
-            NEUE_SPALTE;
+            neue_spalte(erste_spalte,os);
             os <<linecolor<< FormatiereTeX(preis);
           }
 
 #ifdef PETIG_EXTENSIONS
-        if (t==Lieferschein) 
-          { NEUE_SPALTE;
+        if (Typ()==Lieferschein) 
+          { neue_spalte(erste_spalte,os);
             if ((*k).Palette()!=0) os << linecolor<<(*k).Palette();
-            NEUE_SPALTE;
+            neue_spalte(erste_spalte,os);
             os << linecolor << (*k).YourAuftrag()<<"\n";   
           }
 #endif
 
         os<<"\\\\\n";
-#undef NEUE_SPALTE        
         --zeilen_passen_noch;
       }
 #if 0  // Tabellensumme (needs more work, but I don't want to delete it)
@@ -418,8 +449,10 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
 
   if (preise_addieren) 
   //*********************** Summe bilden *********************************
-   { 
+   {
+    
 #warning Schätzwert: Zeilen fuer Summe benötigt   
+
      if (zeilen_passen_noch<10)
      {   // Tabelle beenden, preis ausgeben
          drucken_betrag(os,"Summe",betrag);
@@ -434,6 +467,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
      else 
      {  drucken_betrag(os,"Summe",betrag);
      }
+     
      
 #ifdef MABELLA_EXTENSIONS
 	calc_all(cH_Kunde(KdNr()));     
@@ -468,8 +502,10 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
 #endif
       
 #ifdef MABELLA_EXTENSIONS
- cH_Kunde kunde_an(KdNr());
- if(kunde_an->Entsorgung())
+ if(Typ() == Rechnung)
+ {
+  cH_Kunde kunde_an(KdNr());
+  if(kunde_an->entsorgung())
    {
     os << "&\\multicolumn{" << spaltenzahl-2 << 
    	"}{r}{Gesetzlicher Entsorgungskosten-Anteil VfW Reflora von 0,20\\%}"
@@ -485,7 +521,8 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
    os << zur_preisspalte << getWaehrung()->TeXsymbol() <<"&"<< FormatiereTeX(bruttobetrag) <<"\\\\"
      	"\\cline{"<<spaltenzahl<<"-"<<spaltenzahl<<"}\\\\[-12pt]\n"  
      	"\\cline{"<<spaltenzahl<<"-"<<spaltenzahl<<"}\n";  
-   os << "\\end{tabularx}\n\n";
+  }
+  os << "\\end{tabularx}\n\n";
 #else      
      fixedpoint<2> betrag_MwSt_ = betrag*0.16;
      os << zur_preisspalte << "+ 16\\% MwSt& "<< FormatiereTeX(betrag_MwSt_) <<"\\\\"
@@ -515,6 +552,33 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
   drucken_footer(os);
 }
 
+void LR_Abstraktion::drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,
+            bool zusatzinfo,std::string linecolor,bool &erste_spalte,
+            AuftragBase::mengen_t menge)
+{
+
+   if(Typ()==Intern||Typ()==Extern) 
+      { neue_spalte( erste_spalte, os);
+        if (!zusatzinfo)
+	        os <<"{"<<linecolor<< Gtk2TeX::string2TeX(bez->Bezeichnung()) ;
+           if(menge) os << " }&{"<<linecolor<<"("<<menge<<")";
+	        os <<"}";
+      }
+   else
+	 for(ExtBezSchema::const_sigiterator l=schema_mem->sigbegin(signifikanz);l!=schema_mem->sigend(signifikanz);++l)
+	   { neue_spalte( erste_spalte, os);
+	     if (!zusatzinfo)
+	        os <<"{"<<linecolor<< Gtk2TeX::string2TeX((*bez)[l->bezkomptype]->getStrVal()) <<"}";
+	   }
+
+#ifdef MABELLA_EXTENSIONS
+      neue_spalte( erste_spalte, os);
+	   os << bez->Bezeichnung(3);
+#endif 
+	   
+}
+
+
 
 void LR_Abstraktion::drucken_table_header(std::ostream &os,
    	const cH_ExtBezSchema &schema, 
@@ -533,11 +597,14 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
    if (stueck_bool) { tabcolumn+="r"; spaltenzahl++; }
    if (menge_bool) { tabcolumn+="r"; spaltenzahl++; }
   if (menge_bool && stueck_bool) { tabcolumn+="r"; spaltenzahl++; }
-  for(ExtBezSchema::const_sigiterator j=schema->sigbegin(signifikanz);j!=schema->sigend(signifikanz);++j)
-      { tabcolumn += j->TeXtabformat ; ++spaltenzahl ; }
+  if(Typ()==Intern||Typ()==Extern)
+     { tabcolumn += "ccc"; spaltenzahl+=3;}
+  else
+     for(ExtBezSchema::const_sigiterator j=schema->sigbegin(signifikanz);j!=schema->sigend(signifikanz);++j)
+         { tabcolumn += j->TeXtabformat ; ++spaltenzahl ; }
 
 #ifndef MABELLA_EXTENSIONS
-  if (t==Lieferschein)  // Palette + Auftrag
+  if (Typ()==Lieferschein)  // Palette + Auftrag
   { tabcolumn+="rr"; spaltenzahl+=2; }
 #else
   for(ExtBezSchema::const_sigiterator j=schema->sigbegin(3);j!=schema->sigend(3);++j)
@@ -548,72 +615,86 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
   {  tabcolumn+="r"; ++spaltenzahl;}
   if (preise_addieren)  // Einzelpreis, Gesamtpreis
   { tabcolumn+="rr"; spaltenzahl+=2; }
-  else if (t==Auftrag) 
+  else if (Typ()==Auftrag || Typ()==Intern||Typ()==Extern) 
   { tabcolumn+="X"; spaltenzahl+=1; }
 
   os << "\\settowidth{\\breite}{"<<ug<<" Bezeichnung}%\n";
 //  os << "\\vspace{-2ex}\n";
   os << "\\begin{tabularx}{" << TABW << "cm}{"<<tabcolumn<<"}"<<"\\\\\n";
 
-// für die erste Spalte braucht man kein "&", 
-// nach der letzten darf keines stehen ... daher dies
   bool erste_spalte=true;
-#define NEUE_SPALTE ({ if (!erste_spalte) os << " & "; else erste_spalte=false; })
   if (stueck_bool && menge_bool) 
-  {  NEUE_SPALTE;
+  {  neue_spalte( erste_spalte, os);
      os << "\\multicolumn{2}{c}{"<<ug<<"Menge}  "; 
-     NEUE_SPALTE;
+     neue_spalte( erste_spalte, os);
      os << "\\multicolumn{1}{c}{"<<sg<<"Gesamtmenge}  ";
   }
   else if (stueck_bool || menge_bool) 
-  {  NEUE_SPALTE;
+  {  neue_spalte( erste_spalte, os);
      os << "\\multicolumn{1}{c}{"<<ug<<"Menge}  ";
   }
-  for(ExtBezSchema::const_sigiterator j=schema->sigbegin(signifikanz);j!=schema->sigend(signifikanz);++j)
-  {  NEUE_SPALTE;
-     os << "\\mbox{"<<ug<<j->bezkomptext<<"}";
-  }
- 
+
+  if(Typ()==Intern)
+   { neue_spalte( erste_spalte, os); os<<"\\mbox{"<<ug<<"Artikel}";    
+     neue_spalte( erste_spalte, os); os<<"\\mbox{"<<ug<<"Rohware}";    
+     neue_spalte( erste_spalte, os); os<<"\\mbox{"<<ug<<"geplant für}";    
+   }
+  else if(Typ()==Extern)
+   { neue_spalte( erste_spalte, os); os<<"\\mbox{"<<ug<<"Artikel}";    
+   }
+  else
+     for(ExtBezSchema::const_sigiterator j=schema->sigbegin(signifikanz);j!=schema->sigend(signifikanz);++j)
+      { neue_spalte( erste_spalte, os);
+        os << "\\mbox{"<<ug<<j->bezkomptext<<"}";
+      }
 
 #ifndef MABELLA_EXTENSIONS
-  if (t==Lieferschein)
-   { NEUE_SPALTE;
+  if (Typ()==Lieferschein)
+   { neue_spalte( erste_spalte, os);
      os <<"\\multicolumn{1}{c}{" <<ug<<"Palette}";
-     NEUE_SPALTE;
+     neue_spalte( erste_spalte, os);
      os <<"\\multicolumn{1}{c}{" <<ug<<"Auftrag}";
    }
 #else
   for(ExtBezSchema::const_sigiterator j=schema->sigbegin(3);j!=schema->sigend(3);++j)
-  {  NEUE_SPALTE;
+  {  neue_spalte( erste_spalte, os);
      os << "\\mbox{"<<ug<<j->bezkomptext<<"}";
   }
 #endif
 
   if (preise_addieren)
    { // Preis ausgeben
-     NEUE_SPALTE;
+     neue_spalte( erste_spalte, os);
      os <<"\\multicolumn{1}{c}{"<<sg<<getWaehrung()->TeXsymbol();
      if (preismenge!=1 || !preiseinheit.empty()) os <<"\\,/";
      if (preismenge!=1) os << "\\,"<<preismenge;
      if (!preiseinheit.empty())  os << "\\,"<<preiseinheit;
      os  <<"} ";
-     if (rabatt_bool) { NEUE_SPALTE; os <<"\\multicolumn{1}{c}{"<<ug<<"Rabatt}"; }
+     if (rabatt_bool) { neue_spalte( erste_spalte, os); os <<"\\multicolumn{1}{c}{"<<ug<<"Rabatt}"; }
 #ifdef MABELLA_EXTENSIONS
-     NEUE_SPALTE;
+     neue_spalte( erste_spalte, os);
      os <<"\\multicolumn{1}{c}{"<<sg<<"{"<<getWaehrung()->TeXsymbol()<<" Wert}}"; 
 #else
-     NEUE_SPALTE;
+     neue_spalte(erste_spalte,os);
      os <<"\\multicolumn{1}{c}{"<<sg<<"{Gesamtpreis}}"; 
 #endif
    }
   os << "\\\\" "\\hline\n";
-#undef NEUE_SPALTE
   --zeilen_passen_noch;
 
   zur_preisspalte="";
   for (unsigned int i=0;i<spaltenzahl-2;++i)  zur_preisspalte+='&';  
 
   tabellenbetrag=0;
+}
+
+
+void LR_Abstraktion::neue_spalte(bool& erste_spalte, std::ostream &os)
+{
+// für die erste Spalte braucht man kein "&", 
+// nach der letzten darf keines stehen ... daher dies
+  if (!erste_spalte)  os << " & ";
+  else erste_spalte = false;
 }
 
 void LR_Abstraktion::drucken_betrag(std::ostream &os,const std::string &text, fixedpoint<2> betrag)
@@ -626,11 +707,10 @@ void LR_Abstraktion::drucken_betrag(std::ostream &os,const std::string &text, fi
 
 void LR_Abstraktion::page_header(std::ostream &os)
 {
- if(instanz->Id()!=ppsInstanz::INST_KNDAUF)
+ if(Typ()==LR_Base::Intern)
   {
    os <<"\\begin{flushleft}\n";
-//   os <<"Auftrag an "+instanz->get_Name()<<"\\\\\n";
-   os <<"Auftrag an "+instanz->get_Name()<<"\\hfill "<<
+   os <<"Auftrag " << RngNr() << " an "<<instanz->get_Name()<<"\\hfill "<<
          getDatum()<<"\\\\\n";
    os <<"\\end{flushleft}\n";
    zeilen_passen_noch=ZEILEN_SEITE_N;
@@ -641,7 +721,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
    os <<"\\begin{flushleft}\n";
    if (page_counter==1) // 1. Seite
     {
-     cH_Kunde kunde_von(1);
+     cH_Kunde kunde_von(Kunde::default_id);
 
 #ifdef MABELLA_EXTENSIONS
 	os << "\\begin{minipage}[b]{0.6\\linewidth}\n"
@@ -649,42 +729,59 @@ void LR_Abstraktion::page_header(std::ostream &os)
 #endif
 
      os << kunde_von->LaTeX_von()<<"\n\n";
-     os << kunde_an->LaTeX_an(t==Lieferschein)<<"\n\n";
+     TelArt telart=TEL_NONE;
+#ifdef PETIG_EXTENSIONS
+     if(Typ()==Extern || Typ()==Lieferschein || Typ()==Auftrag ) 
+         telart=TEL_FAX; // Im Moment werden alle Telefonnummern angezeigt
+#endif
+     os << kunde_an->LaTeX_an(Typ()==Lieferschein,telart)<<"\n\n";
 
 #ifdef MABELLA_EXTENSIONS
 	os << "\\end{flushleft}\\end{minipage}\\hfill\\begin{minipage}[b]{0.35\\linewidth}\n"
 	      "\\small\n"
 	      "\\sloppy\n"
 	      "\\begin{flushleft}\n";
-	if(!kunde_an->isLieferadresse() && t!=Lieferschein)
+	if(!kunde_an->isLieferadresse() && Typ()!=Lieferschein)
 		{
-		os << "Lieferung an\\\\\n"
-		   << string2TeX(kunde_an->firma()+"\\\\\n")
-		   << string2TeX(kunde_an->strasse()+"\\\\\n")
-		   << string2TeX(kunde_an->plz()+" "+kunde_an->ort()+"\\\\\n");
+		os << "Lieferung an:\\\\\n"
+		   << string2TeX(kunde_an->firma())+"\\\\\n"
+		   << string2TeX(kunde_an->strasse())+"\\\\\n"
+		   << string2TeX(kunde_an->plz()+" "+kunde_an->ort())+"\\\\\n\n";
+		os << "\\smallskip\n";   
 		}
-	os << "Bei Rückfragen\\\\\n"
-		<< "Telefon: 0202 6489250\\\\\n"
-		<< "Telefax: 0202 6489255\\\\\n"
+	os << "Bei Rückfragen:\\\\\n"
+		<< "Telefon: 0202 xxxxxxx\\\\\n"
+		<< "Telefax: 0202 xxxxxxx\\\\\n"
 		<< "E-Mail: mabella@wtal.de\\\\\n" 
-	      	<< "\\end{flushleft}\\fussy\\normalsize\\end{minipage}\\\\[15mm]\n";
+	      	<< "\\end{flushleft}\\fussy\\normalsize\\end{minipage}\\\\\n";
+        os << "\\bigskip\\bigskip";
 #endif
-
 	os << "\\bigskip";
-
+	
      zeilen_passen_noch=ZEILEN_SEITE_1;
     }
    else 
     {
-     os <<"\n\n\\vspace{1cm}\n";
-     os <<"\\large Firma\n\n"<< kunde_an->getName()<<"\n\n\\bigskip";
+#ifdef MABELLA_EXTENSIONS
+     os << "\\vspace*{1.2cm}\n";
+     if(!firmenpapier)
+        os << "\\raisebox{25pt}[0pt][0pt]{\\makebox[0pt][l]{\\kern+140pt\\psfig{file=/usr/share/mabella/logo.eps}}}\\\\\n";
+     os << "\\normalsize";        
+#else
+     os <<"\\large";
+#endif     
+
+     os <<" Firma\\\\"<< string2TeX(kunde_an->getName())<<"\\\\\\bigskip";
      zeilen_passen_noch=ZEILEN_SEITE_N;
     }
 
 #ifdef MABELLA_EXTENSIONS
-   os << "{\\Large "<<typString()<<" }";
+   os << "\\Large "<<typString()<<" ";
    os.width(6);os.fill('0');
-   os <<RngNr()<<" vom "<<getDatum() << "\\\\\n\n";
+   os <<RngNr()<<"\\small vom "<<getDatum();
+   if(Typ()==Auftrag) auftrag_von(os,class Auftrag(AuftragBase(
+   				ppsInstanz::Kundenauftraege,u.a->Id())),true);
+   else os << "\\\\\n";
    os << "Ihre Kundennummer: ";
    os.width(5);os.fill('0');
    os << kunde_an->Id() << "\\\\\n";
@@ -697,13 +794,13 @@ void LR_Abstraktion::page_header(std::ostream &os)
 
 
 #ifdef MABELLA_EXTENSIONS
-   if (page_counter==1 && (t==Lieferschein || t==Rechnung))
+   if (page_counter==1 && (Typ()==Lieferschein || Typ()==Rechnung))
     {os << "\\scriptsize{Sie erhielten zu unseren allgemeinen "
 	"Geschäftsbedingungen}\\\\\n";
      --zeilen_passen_noch; // immer besser
     }
 #else
-   if (page_counter==1 && t==Lieferschein)
+   if (page_counter==1 && Typ()==Lieferschein)
     {os << "Wir sandten Ihnen auf Ihre Rechung und Gefahr\n";
      --zeilen_passen_noch; // immer besser
     }
@@ -728,17 +825,24 @@ void LR_Abstraktion::lieferung_an(std::ostream &os, unsigned int lfrs_id, const 
 }
 
 #ifdef MABELLA_EXTENSIONS
-void LR_Abstraktion::auftrag_von(std::ostream &os, const class Auftrag &a)
-{ --zeilen_passen_noch;
-  os << "~\\\\Ihr Auftrag ";
-  os.width(6);os.fill('0'); os<< a.Id();
-  os << " vom "<< a.getDatum();
+void LR_Abstraktion::auftrag_von(std::ostream &os, const class Auftrag &a,
+				bool only_braces)
+{ 
+  if(! only_braces)
+    {--zeilen_passen_noch;
+     os << "~\\\\Ihr Auftrag ";
+     os.width(6);os.fill('0'); os<< a.Id();
+     os << " vom "<< a.getDatum();
+    }
+    
   if(a.getYourAufNr() != a.getBemerkung())
     {os <<" \\scriptsize{(";
-      if(a.getYourAufNr()!="") os << "Ihre Nr. "<<a.getYourAufNr();
-      if(a.getBemerkung()!="") os << "  "<<a.getBemerkung()<<")}";
+      if(!a.getYourAufNr().empty()) os << "Ihre Auf.Nr. "<<a.getYourAufNr()
+      			<< (a.getBemerkung().empty() ? ")}" : "; ");
+      if(!a.getBemerkung().empty()) os << "  "<<a.getBemerkung()<<")}";
     }
-  os << "\\normalsize\\\\[-2ex]\n";
+  os << "\\normalsize\\\\";
+  if(! only_braces) os << "[-2ex]\n";
   
 }
 #endif
