@@ -1,6 +1,6 @@
 libtoolize --force --copy
 autoheader
-aclocal
+aclocal -Imacros
 automake --add-missing --copy --gnu
 autoconf
 ./configure $*
