@@ -176,9 +176,9 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
 	page_header(os);
 	os << "\\bigskip\n";
 	}
-    os << mld->MLT(TXT_ZAHLUNG) << ": ";
+    os << mld->MLT(MultiL_Dict::TXT_ZAHLUNG) << ": ";
     getZahlungsart()->TeX_out(os,getWaehrung(),
-	skontobetrag,einzugbetrag,u.r->getZahlziel(),getDatum(),kunde_an);
+	skontobetrag,einzugbetrag,u.r->getZahlziel(),getDatum(),kunde_an,*mld);
     zeilen_passen_noch-=passende_zeilen;
 
 //    os << "\\\\Erfüllungsort und Gerichtsstand ist Wuppertal";
@@ -186,17 +186,17 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
     if(kunde_an->land()->Auslaender())
          {if(zeilen_passen_noch<(passende_zeilen+2)) {  os << "\\newpage\n";++page_counter; page_header(os);}
           cH_Kunde kunde_von(Kunde::eigene_id);
-	  os << "\\\\\\\\"<<mld->MLT(TXT_BANKVERB) <<": ";
-	  os << mld->MLT(TXT_KONTO) << " " << ulltos(kunde_von->getKtnr()) << ", ";
+	  os << "~\\\\~\\\\"<<mld->MLT(MultiL_Dict::TXT_BANKVERB) <<": ";
+	  os << mld->MLT(MultiL_Dict::TXT_KONTO) << " " << ulltos(kunde_von->getKtnr()) << ", ";
 	  os << "BLZ " << itos(kunde_von->getblz()) << ", ";	  
-	  os << mld->MLT(TXT_BANK) << " " << kunde_von->getbank();
+	  os << mld->MLT(MultiL_Dict::TXT_BANK) << " " << kunde_von->getbank();
 	  os << "~\\\\S.W.I.F.T.: WELA DE D1 VEL - IBANDE61334500000000240044\\\\\n";
 	  os << "BTN / HSC-Code / Num\\'{e}ro de Douane / Nomenclatura combinata : 58063210\\\\\n";
 	 }
 
 
   if(kunde_an->Auslaender())
-    { os << "~\\\\\\footnotesize - "<<mld->MLT(TXT_WARE_ZOLL)<<"\\\\\n";
+    { os << "~\\\\\\footnotesize - "<<mld->MLT(MultiL_Dict::TXT_WARE_ZOLL)<<"\\\\\n";
       os << "\\bigskip Made in Germany\n";
 
    try{u.r->setGewicht();}
@@ -241,13 +241,13 @@ catch(SQLerror &e) { cout << e; return; }
 #ifdef PETIG_EXTENSIONS
     os << "\\small Zahlung: "<< string2TeX(getZahlungsart()->getBezeichnung())<<"\\\\\n";
 #else
-    os << mld->MLT(TXT_ZAHLUNG) << ": "; 
-    getZahlungsart()->TeX_out(os,u.a->Zahlziel(),kunde_an,skontobetrag);
+    os << mld->MLT(MultiL_Dict::TXT_ZAHLUNG) << ": "; 
+    getZahlungsart()->TeX_out(os,u.a->Zahlziel(),kunde_an,skontobetrag,*mld);
 #endif
     zeilen_passen_noch-=8;
     os << "\\bigskip\n";
     if(kunde_an->get_lieferung_frei_haus()) 
-      os << "\\\\" << mld->MLT(TXT_LIEF_FREI) <<"\\\\\n";
+      os << "\\\\" << mld->MLT(MultiL_Dict::TXT_LIEF_FREI) <<"\\\\\n";
     os << "\\\\Die Liefertermine bitte den einzelnen Positionen entnehmen\\\\\n";
 
    }
@@ -1135,13 +1135,13 @@ void LR_Abstraktion::page_header(std::ostream &os)
     }
 
 #ifdef MABELLA_EXTENSIONS
-   os <<"\\hfill " << mld->MLT(TXT_SEITE) << " \\thepage\\\\\n";
+   os <<"\\hfill " << mld->MLT(MultiL_Dict::TXT_SEITE) << " \\thepage\\\\\n";
    os << "\\large "<<typString(gutschrift())<<" ";
    os.width(6);os.fill('0');
-   os <<RngNr()<<"\\normalsize ~" << mld->MLT(TXT_VOM)<<" " <<getDatum();
+   os <<RngNr()<<"\\normalsize ~" << mld->MLT(MultiL_Dict::TXT_VOM)<<" " <<getDatum();
 
    if(Typ()==Auftrag)
-     os <<"\\hfill "<<mld->MLT(TXT_DANKE_AUFTR)<<"\\normalsize\\\\\n ";
+     os <<"\\hfill "<<mld->MLT(MultiL_Dict::TXT_DANKE_AUFTR)<<"\\normalsize\\\\\n ";
    else
      os <<"~\\\\\n";
 

@@ -22,14 +22,14 @@ public:
 			{case Lieferschein : return std::string("Lieferschein"); break;
 			case Rechnung : 
 				if(gut) return std::string("Gutschrift");
-				else return mld->MLT(TXT_RECHNUNG); break;
+				else return mld->MLT(MultiL_Dict::TXT_RECHNUNG); break;
 			case Auftrag : 
 			     if(rueckstand)
 			       {ManuProC::Datum heute=ManuProC::Datum().today();
 			        return std::string("~\\\\Rückstand am ")+heute.c_str()+" zum Auftrag ";	
 				}
 			     else
-			     	return mld->MLT(TXT_AUFTRAG);
+			     	return mld->MLT(MultiL_Dict::TXT_AUFTRAG);
 			     break;     
 			case Intern : return std::string("Intern"); break;
 			case Extern : return std::string("Bestellung \\small Nr."); break;
