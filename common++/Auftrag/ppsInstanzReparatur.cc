@@ -504,7 +504,13 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
          
          AuftragBase::mengen_t richtigeMenge=
          	ae.getRestStk()*ab.Faktor(i->first);
-         if (menge!=richtigeMenge)
+         if (menge!=richtigeMenge && 
+         	between(menge,
+         		floor(ae.getRestStk()*ab.Faktor(i->first)),
+         		richtigeMenge))
+         {  analyse("Zuordnungen!=eigene RestMenge (aber innerhalb Rundungsfehler)",ae,menge,richtigeMenge);
+         }
+         else if (menge!=richtigeMenge)
          {  analyse("Zuordnungen!=eigene RestMenge",ae,menge,richtigeMenge);
             alles_ok=false;
             if (!analyse_only)

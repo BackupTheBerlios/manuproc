@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.47 2003/06/19 15:41:13 jacek Exp $ */
+/* $Id: AufEintrag.h,v 1.48 2003/06/23 07:08:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -99,9 +99,8 @@ public:
  AufEintrag() 
    : bestellt(0), geliefert(0), artikel(0ul), entrystatus((AufStatVal)UNCOMMITED),
    	letztePlanInstanz(ppsInstanzID::None),maxPlanInstanz(0), rabatt(0),
-   	kdnr(0), disponr(0), auftragstatus((AufStatVal)UNCOMMITED), 
-   	dispoentrynr(0),prozess(Prozess::default_id),
-   	provsatz(-1)
+   	provsatz(-1),kdnr(0), disponr(0), auftragstatus((AufStatVal)UNCOMMITED),
+   	dispoentrynr(0),prozess(Prozess::default_id)
  {}
  
  // Dieser ctor ist für AuftragFull::push_back

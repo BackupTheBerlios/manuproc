@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.20 2003/04/13 20:42:17 christof Exp $
+// $Id: fixedpoint.h,v 1.21 2003/06/23 07:08:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -225,6 +225,9 @@ public:
 	self_t abs() const
 	{  if (scaled<0) return -*this;
 	   else return *this;
+	}
+	Itype floor() const
+	{  return scaled/zehnhochplusI<decimals>();
 	}
 	
 	// to tell the compiler which way to prefer
