@@ -477,10 +477,11 @@ void auftrag_bearbeiten::Rabatt_setzen(const cH_Kunde &kunde,AuftragFull *a)
 
     if(rngk->zeilenrabatt())
      {
-      aufrabatt_spinbutton->set_sensitive(false);
-      aufrabatt_spinbutton->set_value(0);
+      aufrabatt_spinbutton->set_sensitive(true);
       rabattentry_spinbutton->set_sensitive(true);
       rabattentry_spinbutton->set_value(rngk->rabatt().as_float());
+      if(auftrag)
+        aufrabatt_spinbutton->set_value(auftrag->getAuftragsRabatt().as_float());      
      }          
     else
      {

@@ -51,13 +51,15 @@ void LR_Abstraktion::calc_all(cH_Kunde k)
 #endif 
  entsbetrag = nettobetrag + entskosten;
 
- if(!k->zeilenrabatt())
-     {
+// if(!k->zeilenrabatt())
+//     {
      fixedpoint<2> kunden_rabatt = Rabatt();
      fixedpoint<2> endrabatt = entsbetrag*kunden_rabatt/100;
      entsbetrag -= endrabatt;
-     }
-
+//     }
+ 
+ 
+ 
  if(!k->land()->Auslaender()) 
    mwstbetrag = entsbetrag * MWSTSATZ;
  else mwstbetrag=0;
@@ -596,7 +598,8 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
 
 #ifdef MABELLA_EXTENSIONS
 
-     if(!kunde_rng->zeilenrabatt())
+//     if(!kunde_rng->zeilenrabatt())
+     if(Rabatt()!=0.0)
      {
 #endif
      fixedpoint<2> kunden_rabatt = Rabatt();
