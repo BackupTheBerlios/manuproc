@@ -1896,7 +1896,7 @@ Auftrag</label>
 	<class>GtkButton</class>
 	<child_name>Toolbar:button</child_name>
 	<name>newauftrag_button</name>
-	<tooltip>neuer Auftrag: Kunde eingeben, dann hier drücken, dann Kundenauftrag eingeben, dann oberes OK anwählen</tooltip>
+	<cxx_visibility>protected</cxx_visibility>
 	<signal>
 	  <name>clicked</name>
 	  <handler>on_newauftrag_button_clicked</handler>
