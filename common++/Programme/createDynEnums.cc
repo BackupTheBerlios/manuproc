@@ -1,4 +1,4 @@
-// $Id: createDynEnums.cc,v 1.14 2004/03/26 13:20:37 jacek Exp $
+// $Id: createDynEnums.cc,v 1.15 2004/03/26 13:55:42 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: createDynEnums.cc,v 1.14 2004/03/26 13:20:37 jacek Exp $
+// $Id: createDynEnums.cc,v 1.15 2004/03/26 13:55:42 jacek Exp $
 
 #include <Misc/dbconnect.h>
 #include <Misc/FetchIStream.h>
@@ -84,7 +84,7 @@ int main()
       std::cout << "  namespace ArtikelTyp_Attributes {\n"
 		"   enum enum_t {\n";
       {  
-	const int attr_column=3; // ab der dritten Spalte stehen Attribute
+       int attr_column=0;
 
        std::cout << "LagerArtikel" << '=' << attr_column++ << ',';
        std::cout << "MitEAN" << '=' << attr_column++ << ',';

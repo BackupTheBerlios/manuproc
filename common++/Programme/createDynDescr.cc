@@ -1,4 +1,4 @@
-// $Id: createDynDescr.cc,v 1.1 2004/03/26 13:20:37 jacek Exp $
+// $Id: createDynDescr.cc,v 1.2 2004/03/26 13:55:42 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: createDynDescr.cc,v 1.1 2004/03/26 13:20:37 jacek Exp $
+// $Id: createDynDescr.cc,v 1.2 2004/03/26 13:55:42 jacek Exp $
 
 #include <Misc/dbconnect.h>
 #include <Misc/FetchIStream.h>
@@ -55,18 +55,42 @@ int main()
       std::cout << "//  DynamicDescriptions.h  created " << Zeitpunkt_new(time(0)) 
       		<< "\n"
       		"\n"
-		"#ifndef MANUPROC_DYNAMICENUMS_H\n"
-		"#define MANUPROC_DYNAMICENUMS_H\n"
+		"#ifndef MANUPROC_DYNAMICDESCR_H\n"
+		"#define MANUPROC_DYNAMICDESCR_H\n"
 		"\n"
-		"#define MANUPROC_DYNAMICENUMS_CREATED\n"
+		"#define MANUPROC_DYNAMICDESCR_CREATED\n"
 		"\n"
 		"namespace ManuProC {\n"
 		" namespace DynamicDescriptions {\n";
       
 
+     int oid;
+     Query("select oid from pg_class where relname='artbez_warengruppe'")
+	>> oid;
 
+     const int ab_spalte=3; // ab der Spalte stehen Attribute (bools)
 
-		"#endif // MANUPROC_DYNAMICENUMS_H\n";
+     Query q("select attname from pg_attribute where attrelid=?"
+	" and attnum>=? order by attnum");
+     q  << oid << ab_spalte;
+
+     std::cout << "  namespace ArtikelTyp {\n"
+		"   std::string attrcolumns[] = {\n";
+
+     while ((q >> is).good())
+         {  std::string colname;
+            is  >> colname;
+            std::cout << "\"" <<colname << "\"" << ',' << "\n";
+         }     
+
+      std::cout << "\n"
+      		"   };\n"
+      		"  }\n\n";
+
+     std::cout << " }\n"
+              "}\n"
+
+		"#endif // MANUPROC_DYNAMICDESCR_H\n";
       
       tr.close();
       ManuProC::dbdisconnect();
