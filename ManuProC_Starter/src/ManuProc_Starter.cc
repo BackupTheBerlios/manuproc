@@ -27,6 +27,12 @@ void ManuProc_Starter::on_lager_start_clicked()
  system(cmd.c_str());
 }
 
+void ManuProc_Starter::on_artikel_start_clicked()
+{  
+ std::string cmd("/bin/sh -c artikeleingabe &");
+ system(cmd.c_str());
+}
+
 void ManuProc_Starter::on_quit_clicked()
 {
  Gtk::Main::instance()->quit();

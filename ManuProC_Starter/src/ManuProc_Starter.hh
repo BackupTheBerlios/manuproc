@@ -18,6 +18,7 @@ class ManuProc_Starter : public ManuProc_Starter_glade
         void on_pps_start_clicked();
         void on_kunden_start_enter();
         void on_lager_start_clicked();
+        void on_artikel_start_clicked();
         void on_quit_clicked();
 };
 #endif
