@@ -235,53 +235,14 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
  	>> FetchIStream::MapNull(MAXZNR);
  MAXZNR++;
  
-/*
- exec sql insert into rechnungentry 
- 	(rngid,zeilennr, artikelid, lfrsid,lfrszeile, stueck,menge,
- 		preis,rabatt,preismenge,provsatz,ek_preis)
- 	(select :RNGID,l.zeile - :MINZNR + :MAXZNR,
- 		l.artikelid, l.lfrsid,l.zeile, l.stueck,l.menge,
- 		coalesce(ae.preis,0),coalesce(ae.rabatt,0),
- 		coalesce(ae.preismenge,1),ae.provsatz,
-		coalesce(p.preis/p.preismenge,0)
- 	 from lieferscheinentry l
- 	 	left join auftragentry ae 
- 	 	on (l.instanz,l.refauftragid,l.refzeilennr)
- 	 		= (ae.instanz,ae.auftragid,ae.zeilennr)
-		left join artikelpreise p
-		on (p.artikelid=ae.artikelid and p.kundennr=99999)
- 	 where (l.instanz,l.lfrsid)=(:INSTANZ,:LFRSID)
- 	 order by l.zeile);
-*/
-
-#if 0 // direkt einfügen
- Query("insert into rechnungentry "
- 	"(rngid,zeilennr, artikelid, lfrsid,lfrszeile, stueck,menge,"
- 		"preis,rabatt,preismenge,provsatz,ek_preis) "
- 	"(select ?,l.zeile+?,"
- 		"l.artikelid, l.lfrsid,l.zeile, l.stueck,l.menge,"
- 		"coalesce(ae.preis,0),coalesce(ae.rabatt,0),"
- 		"coalesce(ae.preismenge,1),ae.provsatz,"
-		"coalesce(p.preis/p.preismenge,0) "
- 	 "from lieferscheinentry l "
- 	 	"left join auftragentry ae "
- 	 	"on (l.instanz,l.refauftragid,l.refzeilennr)"
- 	 		"= (ae.instanz,ae.auftragid,ae.zeilennr) "
-		"left join artikelpreise p "
-		"on (p.artikelid=ae.artikelid and p.kundennr=99999) "
- 	 "where (l.instanz,l.lfrsid)=(?,?) "
- 	 "order by l.zeile)")
- 	 << Id() << (MAXZNR-MINZNR)
- 	 << lfrs.Instanz()->Id() << lfrs.Id();
- SQLerror::test(__FILELINE__); 
-#else // einfügen unter Programmkontrolle
  LieferscheinVoll lv(lfrs.Instanz(),lfrs.Id());
  
  unsigned lineno=MAXZNR;
  for (LieferscheinVoll::const_iterator i=lv.begin();i!=lv.end();++i)
  {  Preis p,ek_preis;
     AufEintragBase::rabatt_t rabatt;
-    fixedpoint<2> provsatz;
+    fixedpoint<2> provsatz=0;
+
     if (!i->getZusatzInfos().empty())
     {  if (i->getZusatzInfos()[0].aeb.valid())
        {  AufEintrag ae(i->getZusatzInfos()[0].aeb);
@@ -293,6 +254,19 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
           provsatz=ae.ProvSatz();
        }
     }
+
+    // ohne Auftrag, nur Lieferschein: z.B. Gutschrift
+    if(i->getZusatzInfos().empty() || !(i->getZusatzInfos()[0].aeb.valid()))
+      {
+       int at; // ArtikelTyp;
+       Query("select warengruppe from artikelstamm where id=?") 
+               << i->Artikel() >> at;
+       provsatz=lv.getKunde()->getProvSatz_Artikel(
+				ArtikelBase(i->Artikel()),
+       				(ArtikelTyp::ID)at);
+      }
+
+
     ek_preis=Artikelpreis(PreisListe::ID(99999),i->Artikel(),
     		AuftragBase::Gesamtmenge(i->Stueck(),i->Menge()).as_int());
     Query("insert into rechnungentry "
@@ -310,17 +284,19 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
 						p.BezugsMenge()));
     lineno++;
  }
-#endif 
+
 
  Query("update lieferschein set rngid=? "
  	"where (instanz,lfrsid)=(?,?)")
  	<< Id()
  	<< lfrs.Instanz()->Id() << lfrs.Id();
  Query("update lieferscheinentry set status=? where "
-	" (lfrsid,instanz)=(?,?) and status=? "
-	" and lagerid is not null")
+	" (lfrsid,instanz)=(?,?) and "
+	"((status=?  and lagerid is not null) or"
+	"(status=? and lagerid=0))")
  	<< (AufStatVal)CLOSED << lfrs.Id() << lfrs.Instanz()->Id()
-	<< (AufStatVal)OPEN;
+	<< (AufStatVal)OPEN
+	<< (AufStatVal)UNCOMMITED;
  SQLerror::test(__FILELINE__,100);
 
  tr.commit();

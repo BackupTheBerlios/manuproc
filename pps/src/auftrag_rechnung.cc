@@ -399,6 +399,7 @@ void auftrag_rechnung::lieferschein_uebernehmen()
        rechnung.addLieferschein(*chl);
    	 on_rngnr_activate();
       }
+    catch(SQLerror &e) {meldung->Show(e);return;}
     catch(std::exception &e) {std::cerr << e.what();}
 	}
    }

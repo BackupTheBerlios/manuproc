@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.43 2004/07/27 14:37:45 christof Exp $
+// $Id: Kunde.cc,v 1.44 2004/08/25 12:15:28 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -354,6 +354,60 @@ void Kunde::set_idnr(const std::string& s)
  IDnr = t;
 
 }
+
+
+fixedpoint<2> Kunde::getProvSatz_Artikel(const ArtikelBase art, ArtikelTyp::ID at) const throw(SQLerror)
+{
+ std::string tabelle="artbez_"+
+        itos(at)+"_"+
+        itos(ExtBezSchema::default_id);
+
+ fixedpoint<2> to_set=0;
+ int signatur=1;
+ int bezkomptype=1;
+
+    if(VerkNr()!=Kunde::none_id)
+      {
+       fixedpoint<2> ps1=0.0,ps2=0.0;
+       Query q("select provsatz1, provsatz2 from prov_verkaeufer where"
+	  " verknr=? and kundennr=?");
+       q << VerkNr() << Id();
+       SQLerror::test(__FILELINE__,100);
+
+       if(q.Result()!=100)
+         q  >> ps1 >> ps2;
+
+       if(ps1==ps2) to_set=ps1;
+       else
+	{
+        cH_ExtBezSchema ebz(ExtBezSchema::default_id,at);
+
+ 	const ExtBezSchema::BezKomp bk=(*ebz)
+			[std::pair<int,int>(bezkomptype,signatur)];
+	std::string first_komp_col=bk.spaltenname;
+
+	int psnr=0;
+	Query q("select provsatznr from prov_config p join "+tabelle+
+		" b on (b."+first_komp_col+"=p.artikel and b.id=?) "
+		"where kundennr=?");
+	q << art.Id() << Id();
+	SQLerror::test(__FILELINE__,100);	
+	
+	if(q.Result()!=100)
+	  {q >> psnr; 
+	   if(psnr==0) to_set=0.0;		// no Provision at all
+	   else if(psnr==1) to_set=ps2;		// excepted Provision
+	   else to_set=0.0;		// what to do else ?
+	  } // not found means default provision
+	else to_set=ps1;	// default ProvSatz
+
+ 	}
+       	
+      }
+ return to_set;
+
+}
+
 
 #if !defined(__GNUC__) || __GNUC__ > 2
 const Kunde::ID Kunde::eigene_id;
