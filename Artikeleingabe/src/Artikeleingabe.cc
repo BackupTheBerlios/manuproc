@@ -63,7 +63,7 @@ Artikeleingabe::Artikeleingabe(int argc, char **argv)
      FOR_EACH_CONST_TAG_OF(i,cont,"content")
        entries.push_back(i->Value());
      std::cerr << warengruppe << ':' << schema << ' ' << entries.size() << '\n';
-     top_notebook->set_current_page(1);
+     top_notebook->set_current_page(0);
      neuenArtikelAnlegen(warengruppe,schema,entries);
    }
    catch (std::exception &e)

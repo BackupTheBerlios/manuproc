@@ -109,6 +109,8 @@ class Artikeleingabe : public Artikeleingabe_glade
         void on_show_in_prlist_toggled();
         void on_change_no_instanz_toggled();
         void artikelbox_neu_activate();
+        void neuenArtikelAnlegen(unsigned warengruppe,unsigned schema,
+                const std::vector<std::string>&entries);
 
         void on_mindbest_check_toggled();
         void on_mindbestand_activate();
