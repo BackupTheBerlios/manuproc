@@ -894,7 +894,7 @@ void LR_Abstraktion::drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,
 #ifdef MABELLA_EXTENSIONS
 	if(s->Id()==ExtBezSchema::default_id && ean_code)
      { neue_spalte( erste_spalte, os);
-	    os <<"\\scriptsize " <<bez->Bezeichnung(2);
+	    os <<bez->Bezeichnung(2);
 	  }
 	if(s->Id()==ExtBezSchema::default_id
 		&& s->Typ()==ArtikelTypID::aufgemachtes_Band)
@@ -992,14 +992,21 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
 //        ueberschriften += "&\\mbox{"+ug + j->bezkomptext+"}";
         ueberschriften += "&\\mbox{"+ug +mld->MLT(MultiL_Dict::TXT_BEZEICHNUNG)+"}";
       }
+
+	// Wenn eigene Bezeichnung aber kein EAN dann in noch in einer Zeile
+	// auch beim Lieferschein nur eine Zeile
   if(schema_mem->Id() != schema_own->Id())
     {
      for(ExtBezSchema::const_sigiterator j=schema_own->sigbegin(1);
      				j!=schema_own->sigend(1);++j)
       { tabcolumn += j->TeXtabformat ; ++spaltenzahl ; 
-        ueberschriften += "&\\mbox{"+ug + j->bezkomptext+"}";
+        if(!ean_code || Typ()==Lieferschein)
+          ueberschriften += "&\\mbox{"+ug + j->bezkomptext+"}";
+	else
+          ueberschriften += "&";
       }    
-    }    
+
+   }
       
 //  if(Typ()==Rechnung)
 //    { tabcolumn += "X"; spaltenzahl++;
@@ -1051,12 +1058,12 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
 #endif
   
   os << "\\settowidth{\\breite}{"<<ug<<" "<<mld->MLT(MultiL_Dict::TXT_BEZEICHNUNG)<<"}%\n";
-#ifdef MABELLA_EXTENSIONS
-  os << "\\setlength{\\tabcolsep}{1.5mm}";
-#endif
+//#ifdef MABELLA_EXTENSIONS
+//  os << "\\setlength{\\tabcolsep}{1.5mm}";
+//#endif
   os << "\\begin{tabularx}{" << TABW << "cm}{"<<tabcolumn<<"}"<<"\\\\\n";
 
-  os << ueberschriften << "\\\\" "\\hline\n";
+  os << ueberschriften << "\\\\\n";
   --zeilen_passen_noch;
 
   if(preise_addieren && preisspalte>=2)
@@ -1064,6 +1071,21 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
      if(rabatt_bool) preisspalte+=2;
      for (unsigned int i=0;i<preisspalte-2;++i)  zur_preisspalte+='&';
     }
+
+// ggf. Zweite Kopfzeile erzeigen
+  if(schema_mem->Id() != schema_own->Id() && ean_code && Typ()!=Lieferschein)
+    {
+     os << "\\\\[-1ex]&\\multicolumn{3}{l}{\\scriptsize{Ihre Artikelbezeichnung}}";
+     os << "&\\multicolumn{4}{l}{";
+     for(ExtBezSchema::const_sigiterator j=schema_own->sigbegin(1);
+     				j!=schema_own->sigend(1);++j)
+       os << " " << j->bezkomptext << " " << j->separator;
+     os << "}\\\\\n";
+     --zeilen_passen_noch;
+    }
+
+  os << "\\hline\n";
+
 
   tabellenbetrag=0;
 }
