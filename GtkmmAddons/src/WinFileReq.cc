@@ -19,14 +19,19 @@ extern std::string utf82iso(const std::string &s);
 #ifndef __MINGW32__
 void WinFileReq::on_ok_button1_clicked()
 {  slot(get_filename());
-   destroy();
+   delete this;
+}
+
+void WinFileReq::on_cancel()
+{  delete this;
 }
 
 #include "WinFileReq_glade.cc"
 #endif
 
 WinFileReq::WinFileReq(const SigC::Slot1<void,const std::string &> &sl,const std::string &file,
-		std::string filter, std::string extension, std::string title, bool load)
+		std::string filter, std::string extension, std::string title, bool load,
+		Gtk::Window *parent)
 #ifndef __MINGW32__
 	: slot(sl)
 #endif
@@ -34,6 +39,7 @@ WinFileReq::WinFileReq(const SigC::Slot1<void,const std::string &> &sl,const std
 #ifndef __MINGW32__
    set_filename(file);
    set_title(title);
+   if (parent) set_transient_for(*parent);
 #else
    filter=utf82iso(filter);
    extension=utf82iso(extension);
