@@ -300,10 +300,10 @@
 	<handler>on_show_complete</handler>
 	<last_modification_time>Tue, 27 Jun 2000 08:03:52 GMT</last_modification_time>
       </signal>
-      <creation_function>ArtikelBox(cH_ExtBezSchema(1,ArtikelTyp::GewebtesBand))</creation_function>
+      <creation_function>ArtikelBox(cH_ExtBezSchema(1,0))</creation_function>
       <int1>0</int1>
       <int2>0</int2>
-      <last_modification_time>Wed, 30 Aug 2000 11:37:26 GMT</last_modification_time>
+      <last_modification_time>Thu, 18 Apr 2002 15:59:19 GMT</last_modification_time>
       <child>
 	<padding>0</padding>
 	<expand>True</expand>

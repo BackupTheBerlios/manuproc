@@ -22,13 +22,15 @@ PersonenBox::PersonenBox()
 {
   _tabelle_="ku_person";
   _string_="name";
+  _stringz_="vname";
   _int_="persnr";
-  setLabel("Id","Nachname");
+  setLabel("Id","Nachname","Vorname");
+  show_stringz(true);
 }
 
 void PersonenBox::set_value(int i)
 {  cH_Person PL(i);
-   IntStringBox::set_value(PL->Id(),PL->Name());
+   IntStringBox::set_value(PL->Id(),PL->Name(),PL->Vorname());
 }
 
 cH_Person PersonenBox::get_value()

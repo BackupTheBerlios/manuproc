@@ -1,4 +1,4 @@
-// $Id: datewin.h,v 1.3 2001/12/19 10:59:11 christof Exp $
+// $Id: datewin.h,v 1.4 2002/04/19 15:26:03 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,9 +26,19 @@ class datewin : public datewin_glade
 {  	friend class datewin_glade;
 	static gint try_grab_focus(GtkWidget *w,gpointer gp) throw();
         enum FELD {TAG=1,MONAT};
+        enum PAGE { p_Datum, p_Woche, p_Kalender, p_leer };
+
+	void on_activate(int i);
+        void datum_activate();
+        void kw_activate();
+        void on_day_selected();
+        void datum_setzen();
+        void save_settings() const;
+        int load_settings() const;
+
    public:
 	datewin();
-#if 1 // COMPATIBILITY ONLY
+#if 0 // COMPATIBILITY ONLY
 	Petig::Datum get_Datum() const throw()
 	{  return get_value(); }
 	void set_Datum(const Petig::Datum &d) throw()
@@ -36,8 +46,7 @@ class datewin : public datewin_glade
 #endif	
 	Petig::Datum get_value() const throw(); 
 	void set_value(const Petig::Datum &d) throw();
-	void setLabel(const std::string &s) {label1->set_text(s);}
-        void on_activate(int i);
+	void setLabel(const std::string &s);
 	
 	SigC::Signal0<void> activate;
 };

@@ -1,4 +1,4 @@
-// $Id: datewin.cc,v 1.2 2001/12/19 10:59:11 christof Exp $
+// $Id: datewin.cc,v 1.3 2002/04/19 15:26:03 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,37 +18,84 @@
  */
 
 #include "datewin.h"
+#include <Aux/itos.h>
+#include <Aux/Global_Settings.h>
+#include <unistd.h>
 
 datewin::datewin()
-{  Petig::Datum heute=Petig::Datum::today();
-   tag->set_value(heute.Tag());
-   monat->set_value(heute.Monat());
-   jahr->set_value(heute.Jahr());
+{  set_value(Petig::Datum::today());
    jahr->activate.connect(activate.slot());
    gtk_signal_connect(GTK_OBJECT(gtkobj()), "grab_focus",
     		GTK_SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
 }
 
 Petig::Datum datewin::get_value() const throw()
-{
-   gtk_spin_button_update(tag->gtkobj());
-   gtk_spin_button_update(monat->gtkobj());
-   gtk_spin_button_update(jahr->gtkobj());
-   return Petig::Datum(tag->get_value_as_int(),monat->get_value_as_int()
+{  Petig::Datum d;
+
+   switch(get_current_page_num())
+   {  case p_Datum:
+         tag->update();
+         monat->update();
+         jahr->update();
+         d=Petig::Datum(tag->get_value_as_int(),monat->get_value_as_int()
 		,jahr->get_value_as_int());
+         break;
+      case p_Woche:
+         kw_spinbutton->update();
+         jahr_spinbutton->update();
+         d=Petig::Datum(Kalenderwoche(kw_spinbutton->get_value_as_int(),
+         	jahr_spinbutton->get_value_as_int()));
+         break;
+      case p_Kalender:
+         {  guint y=0,m=0,day=0;
+            calendar1->get_date(&y,&m,&day);
+            d=Petig::Datum(day,m,y);
+         }
+         break;
+      case p_leer: break;
+   }
+//   const_cast<datewin*>(this)->set_value(d);
+   return d;
 }
 
 void datewin::set_value (const Petig::Datum &d) throw()
 {
-   tag->set_value (d.Tag());
-   monat->set_value (d.Monat());
-   jahr->set_value (d.Jahr());
+   if (d.valid())
+   {  tag->set_value (d.Tag());
+      monat->set_value (d.Monat());
+      jahr->set_value (d.Jahr());
+      kw_spinbutton->set_value(d.KW().Woche());
+      jahr_spinbutton->set_value(d.KW().Jahr());
+      calendar1->select_month(d.Monat(),d.Jahr());
+      calendar1->select_day(d.Tag());
+      set_page(load_settings());
+   }
+   else 
+   {  set_page(p_leer);
+   }
 }
 
 gint datewin::try_grab_focus(GtkWidget *w,gpointer gp) throw()
-{  assert(Gtk::HBox::isA((Gtk::Object *)gp)); // very weak check
-   ((datewin*)gp)->tag->grab_focus();
-   ((datewin*)gp)->tag->select_region(0,((datewin*)gp)->tag->get_text_length());
+{  assert(Gtk::Notebook::isA((Gtk::Object *)gp)); // very weak check
+   datewin *_this=static_cast<datewin*>(gp);
+   switch(_this->get_current_page_num())
+   {  case p_Datum:
+	  _this->tag->grab_focus();
+   	  _this->tag->select_region(0,_this->tag->get_text_length());
+   	  _this->monat->select_region(0,_this->monat->get_text_length());
+   	  _this->jahr->select_region(0,_this->jahr->get_text_length());
+   	  break;
+      case p_Woche:
+          _this->kw_spinbutton->grab_focus();
+   	  _this->kw_spinbutton->select_region(0,_this->kw_spinbutton->get_text_length());
+   	  _this->jahr_spinbutton->select_region(0,_this->jahr_spinbutton->get_text_length());
+   	  break;
+      case p_Kalender:
+          _this->calendar1->grab_focus();
+          break;
+      case p_leer:
+	  break;
+   }
    return true;
 }
 
@@ -68,3 +115,36 @@ void datewin::on_activate(int i)
    }
 }
 
+void datewin::setLabel(const std::string &s)
+{  set_show_tabs(!s.empty());
+   if (!s.empty()) label3->set_text(s);
+   std::cout << "datewin::setLabel("<<s<<");\n";
+}
+
+void datewin::datum_activate()
+{  save_settings();
+   set_value(get_value());
+   activate();
+}
+void datewin::kw_activate()
+{  save_settings();
+   set_value(get_value());
+   activate();
+}
+void datewin::on_day_selected()
+{  save_settings();
+   set_value(get_value());
+   activate();
+}
+void datewin::datum_setzen()
+{  set_page(load_settings());
+}
+
+void datewin::save_settings() const
+{  int u=getuid();
+   Global_Settings(u,"","datewin:page").set_Wert(itos(get_current_page_num()));
+}
+
+int datewin::load_settings() const
+{  return atoi(Global_Settings(getuid(),"","datewin:page").get_Wert().c_str());
+}

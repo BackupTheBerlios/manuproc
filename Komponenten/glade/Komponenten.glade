@@ -11,6 +11,7 @@
   <gnome_support>True</gnome_support>
   <gettext_support>False</gettext_support>
   <use_widget_names>True</use_widget_names>
+  <output_main_file>False</output_main_file>
 </project>
 
 <widget>
@@ -20,22 +21,170 @@
   <type>GTK_WINDOW_TOPLEVEL</type>
   <position>GTK_WIN_POS_NONE</position>
   <modal>False</modal>
-  <allow_shrink>False</allow_shrink>
+  <allow_shrink>True</allow_shrink>
   <allow_grow>True</allow_grow>
-  <auto_shrink>False</auto_shrink>
+  <auto_shrink>True</auto_shrink>
 
   <widget>
-    <class>GtkHBox</class>
+    <class>GtkNotebook</class>
     <name>datewin</name>
-    <border_width>1</border_width>
     <cxx_separate_file>True</cxx_separate_file>
     <cxx_separate_class>True</cxx_separate_class>
-    <homogeneous>False</homogeneous>
-    <spacing>1</spacing>
+    <cxx_visibility>protected</cxx_visibility>
+    <can_focus>True</can_focus>
+    <show_tabs>True</show_tabs>
+    <show_border>False</show_border>
+    <tab_pos>GTK_POS_LEFT</tab_pos>
+    <scrollable>True</scrollable>
+    <tab_hborder>0</tab_hborder>
+    <tab_vborder>0</tab_vborder>
+    <popup_enable>True</popup_enable>
+
+    <widget>
+      <class>GtkHBox</class>
+      <name>hbox9</name>
+      <border_width>1</border_width>
+      <homogeneous>False</homogeneous>
+      <spacing>1</spacing>
+
+      <widget>
+	<class>Placeholder</class>
+      </widget>
+
+      <widget>
+	<class>GtkSpinButton</class>
+	<name>tag</name>
+	<width>40</width>
+	<cxx_visibility>protected</cxx_visibility>
+	<can_focus>True</can_focus>
+	<signal>
+	  <name>activate</name>
+	  <handler>on_activate</handler>
+	  <after>True</after>
+	  <data>1</data>
+	  <last_modification_time>Thu, 22 Nov 2001 08:13:33 GMT</last_modification_time>
+	</signal>
+	<climb_rate>1</climb_rate>
+	<digits>0</digits>
+	<numeric>True</numeric>
+	<update_policy>GTK_UPDATE_ALWAYS</update_policy>
+	<snap>False</snap>
+	<wrap>True</wrap>
+	<value>1</value>
+	<lower>1</lower>
+	<upper>31</upper>
+	<step>1</step>
+	<page>7</page>
+	<page_size>7</page_size>
+	<child>
+	  <padding>0</padding>
+	  <expand>False</expand>
+	  <fill>False</fill>
+	</child>
+      </widget>
+
+      <widget>
+	<class>GtkLabel</class>
+	<name>label2</name>
+	<label>.</label>
+	<justify>GTK_JUSTIFY_CENTER</justify>
+	<wrap>False</wrap>
+	<xalign>0.5</xalign>
+	<yalign>0.5</yalign>
+	<xpad>0</xpad>
+	<ypad>0</ypad>
+	<child>
+	  <padding>0</padding>
+	  <expand>False</expand>
+	  <fill>False</fill>
+	</child>
+      </widget>
+
+      <widget>
+	<class>GtkSpinButton</class>
+	<name>monat</name>
+	<width>40</width>
+	<cxx_visibility>protected</cxx_visibility>
+	<can_focus>True</can_focus>
+	<signal>
+	  <name>activate</name>
+	  <handler>on_activate</handler>
+	  <after>True</after>
+	  <data>2</data>
+	  <last_modification_time>Thu, 22 Nov 2001 08:13:57 GMT</last_modification_time>
+	</signal>
+	<climb_rate>1</climb_rate>
+	<digits>0</digits>
+	<numeric>True</numeric>
+	<update_policy>GTK_UPDATE_ALWAYS</update_policy>
+	<snap>False</snap>
+	<wrap>True</wrap>
+	<value>1</value>
+	<lower>1</lower>
+	<upper>12</upper>
+	<step>1</step>
+	<page>3</page>
+	<page_size>3</page_size>
+	<child>
+	  <padding>0</padding>
+	  <expand>False</expand>
+	  <fill>False</fill>
+	</child>
+      </widget>
+
+      <widget>
+	<class>GtkLabel</class>
+	<name>label3</name>
+	<label>.</label>
+	<justify>GTK_JUSTIFY_CENTER</justify>
+	<wrap>False</wrap>
+	<xalign>0.5</xalign>
+	<yalign>0.5</yalign>
+	<xpad>0</xpad>
+	<ypad>0</ypad>
+	<child>
+	  <padding>0</padding>
+	  <expand>False</expand>
+	  <fill>False</fill>
+	</child>
+      </widget>
+
+      <widget>
+	<class>GtkSpinButton</class>
+	<name>jahr</name>
+	<width>55</width>
+	<cxx_visibility>protected</cxx_visibility>
+	<can_focus>True</can_focus>
+	<signal>
+	  <name>activate</name>
+	  <handler>datum_activate</handler>
+	  <after>True</after>
+	  <last_modification_time>Thu, 18 Apr 2002 16:48:38 GMT</last_modification_time>
+	</signal>
+	<climb_rate>1</climb_rate>
+	<digits>0</digits>
+	<numeric>True</numeric>
+	<update_policy>GTK_UPDATE_ALWAYS</update_policy>
+	<snap>False</snap>
+	<wrap>False</wrap>
+	<value>2002</value>
+	<lower>1800</lower>
+	<upper>2100</upper>
+	<step>1</step>
+	<page>10</page>
+	<page_size>10</page_size>
+	<child>
+	  <padding>0</padding>
+	  <expand>False</expand>
+	  <fill>False</fill>
+	</child>
+      </widget>
+    </widget>
 
     <widget>
       <class>GtkLabel</class>
-      <name>label1</name>
+      <child_name>Notebook:tab</child_name>
+      <name>label3</name>
       <cxx_visibility>protected</cxx_visibility>
       <label>Datum</label>
       <justify>GTK_JUSTIFY_CENTER</justify>
@@ -44,139 +193,168 @@
       <yalign>0.5</yalign>
       <xpad>0</xpad>
       <ypad>0</ypad>
-      <child>
-	<padding>0</padding>
-	<expand>False</expand>
-	<fill>False</fill>
-      </child>
     </widget>
 
     <widget>
-      <class>GtkSpinButton</class>
-      <name>tag</name>
-      <width>40</width>
-      <cxx_visibility>protected</cxx_visibility>
-      <can_focus>True</can_focus>
-      <signal>
-	<name>activate</name>
-	<handler>on_activate</handler>
-	<data>1</data>
-	<last_modification_time>Thu, 22 Nov 2001 08:13:33 GMT</last_modification_time>
-      </signal>
-      <climb_rate>1</climb_rate>
-      <digits>0</digits>
-      <numeric>True</numeric>
-      <update_policy>GTK_UPDATE_ALWAYS</update_policy>
-      <snap>False</snap>
-      <wrap>True</wrap>
-      <value>1</value>
-      <lower>1</lower>
-      <upper>31</upper>
-      <step>1</step>
-      <page>7</page>
-      <page_size>7</page_size>
-      <child>
-	<padding>0</padding>
-	<expand>False</expand>
-	<fill>False</fill>
-      </child>
+      <class>GtkHBox</class>
+      <name>hbox1</name>
+      <homogeneous>False</homogeneous>
+      <spacing>0</spacing>
+
+      <widget>
+	<class>GtkSpinButton</class>
+	<name>kw_spinbutton</name>
+	<cxx_visibility>protected</cxx_visibility>
+	<can_focus>True</can_focus>
+	<signal>
+	  <name>activate</name>
+	  <handler>grab_focus</handler>
+	  <object>jahr_spinbutton</object>
+	  <after>True</after>
+	  <last_modification_time>Thu, 18 Apr 2002 16:18:18 GMT</last_modification_time>
+	</signal>
+	<climb_rate>1</climb_rate>
+	<digits>0</digits>
+	<numeric>False</numeric>
+	<update_policy>GTK_UPDATE_ALWAYS</update_policy>
+	<snap>False</snap>
+	<wrap>False</wrap>
+	<value>1</value>
+	<lower>1</lower>
+	<upper>56</upper>
+	<step>1</step>
+	<page>4</page>
+	<page_size>4</page_size>
+	<child>
+	  <padding>0</padding>
+	  <expand>True</expand>
+	  <fill>True</fill>
+	</child>
+      </widget>
+
+      <widget>
+	<class>GtkLabel</class>
+	<name>label7</name>
+	<label>'</label>
+	<justify>GTK_JUSTIFY_CENTER</justify>
+	<wrap>False</wrap>
+	<xalign>0.5</xalign>
+	<yalign>0.5</yalign>
+	<xpad>0</xpad>
+	<ypad>0</ypad>
+	<child>
+	  <padding>0</padding>
+	  <expand>False</expand>
+	  <fill>False</fill>
+	</child>
+      </widget>
+
+      <widget>
+	<class>GtkSpinButton</class>
+	<name>jahr_spinbutton</name>
+	<cxx_visibility>protected</cxx_visibility>
+	<can_focus>True</can_focus>
+	<signal>
+	  <name>activate</name>
+	  <handler>kw_activate</handler>
+	  <after>True</after>
+	  <last_modification_time>Thu, 18 Apr 2002 16:48:25 GMT</last_modification_time>
+	</signal>
+	<climb_rate>1</climb_rate>
+	<digits>0</digits>
+	<numeric>False</numeric>
+	<update_policy>GTK_UPDATE_ALWAYS</update_policy>
+	<snap>False</snap>
+	<wrap>False</wrap>
+	<value>2002</value>
+	<lower>1800</lower>
+	<upper>2099</upper>
+	<step>1</step>
+	<page>10</page>
+	<page_size>10</page_size>
+	<child>
+	  <padding>0</padding>
+	  <expand>True</expand>
+	  <fill>True</fill>
+	</child>
+      </widget>
     </widget>
 
     <widget>
       <class>GtkLabel</class>
-      <name>label2</name>
-      <label>.</label>
+      <child_name>Notebook:tab</child_name>
+      <name>label4</name>
+      <label>Woche</label>
       <justify>GTK_JUSTIFY_CENTER</justify>
       <wrap>False</wrap>
       <xalign>0.5</xalign>
       <yalign>0.5</yalign>
       <xpad>0</xpad>
       <ypad>0</ypad>
-      <child>
-	<padding>0</padding>
-	<expand>False</expand>
-	<fill>False</fill>
-      </child>
     </widget>
 
     <widget>
-      <class>GtkSpinButton</class>
-      <name>monat</name>
-      <width>40</width>
-      <cxx_visibility>protected</cxx_visibility>
-      <can_focus>True</can_focus>
-      <signal>
-	<name>activate</name>
-	<handler>on_activate</handler>
-	<after>True</after>
-	<data>2</data>
-	<last_modification_time>Thu, 22 Nov 2001 08:13:57 GMT</last_modification_time>
-      </signal>
-      <climb_rate>1</climb_rate>
-      <digits>0</digits>
-      <numeric>True</numeric>
-      <update_policy>GTK_UPDATE_ALWAYS</update_policy>
-      <snap>False</snap>
-      <wrap>True</wrap>
-      <value>1</value>
-      <lower>1</lower>
-      <upper>12</upper>
-      <step>1</step>
-      <page>3</page>
-      <page_size>3</page_size>
-      <child>
-	<padding>0</padding>
-	<expand>False</expand>
-	<fill>False</fill>
-      </child>
+      <class>GtkHandleBox</class>
+      <name>handlebox1</name>
+      <shadow_type>GTK_SHADOW_NONE</shadow_type>
+      <handle_position>GTK_POS_RIGHT</handle_position>
+      <snap_edge>GTK_POS_TOP</snap_edge>
+
+      <widget>
+	<class>GtkCalendar</class>
+	<name>calendar1</name>
+	<cxx_visibility>protected</cxx_visibility>
+	<can_focus>True</can_focus>
+	<signal>
+	  <name>day_selected</name>
+	  <handler>on_day_selected</handler>
+	  <last_modification_time>Thu, 18 Apr 2002 16:49:08 GMT</last_modification_time>
+	</signal>
+	<show_heading>True</show_heading>
+	<show_day_names>True</show_day_names>
+	<no_month_change>False</no_month_change>
+	<show_week_numbers>True</show_week_numbers>
+	<week_start_monday>True</week_start_monday>
+      </widget>
     </widget>
 
     <widget>
       <class>GtkLabel</class>
-      <name>label3</name>
-      <label>.</label>
+      <child_name>Notebook:tab</child_name>
+      <name>label5</name>
+      <label>Kalender</label>
       <justify>GTK_JUSTIFY_CENTER</justify>
       <wrap>False</wrap>
       <xalign>0.5</xalign>
       <yalign>0.5</yalign>
       <xpad>0</xpad>
       <ypad>0</ypad>
-      <child>
-	<padding>0</padding>
-	<expand>False</expand>
-	<fill>False</fill>
-      </child>
     </widget>
 
     <widget>
-      <class>GtkSpinButton</class>
-      <name>jahr</name>
-      <width>55</width>
-      <cxx_visibility>protected</cxx_visibility>
+      <class>GtkButton</class>
+      <name>button1</name>
       <can_focus>True</can_focus>
+      <label>Datum setzen</label>
+      <relief>GTK_RELIEF_NORMAL</relief>
+    </widget>
+
+    <widget>
+      <class>GtkLabel</class>
+      <child_name>Notebook:tab</child_name>
+      <name>label6</name>
       <signal>
-	<name>activate</name>
-	<handler>activate</handler>
-	<after>True</after>
-	<last_modification_time>Thu, 22 Nov 2001 08:16:24 GMT</last_modification_time>
+	<name>clicked</name>
+	<handler>datum_setzen</handler>
+	<last_modification_time>Thu, 18 Apr 2002 16:20:23 GMT</last_modification_time>
       </signal>
-      <climb_rate>1</climb_rate>
-      <digits>0</digits>
-      <numeric>True</numeric>
-      <update_policy>GTK_UPDATE_ALWAYS</update_policy>
-      <snap>False</snap>
+      <label>leer</label>
+      <justify>GTK_JUSTIFY_CENTER</justify>
       <wrap>False</wrap>
-      <value>2000</value>
-      <lower>1970</lower>
-      <upper>2100</upper>
-      <step>1</step>
-      <page>10</page>
-      <page_size>10</page_size>
-      <child>
-	<padding>0</padding>
-	<expand>False</expand>
-	<fill>False</fill>
-      </child>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
     </widget>
   </widget>
 </widget>

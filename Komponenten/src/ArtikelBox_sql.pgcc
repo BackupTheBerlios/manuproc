@@ -224,7 +224,7 @@ void ArtikelBox::fuelleMenu()
          mi->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::setzeSchemaId),id[i]));
 
    	 if (!typ_ok)
-	     { if (schema->Typ()==ArtikelTyp::typ(id[i])) typ_ok=true;
+	     { if (schema->Typ()==ArtikelTyp::ID(id[i])) typ_ok=true;
 	       else if (!i) neuerTyp=id[i];
      	  }
        }
@@ -586,7 +586,6 @@ void ArtikelBox::where_what(std::string& where, std::string& what, bool jumbo)
   where += ")"; what+=")";
 }
 
-#ifdef PETIG_EXTENSIONS
 int ArtikelBox::artikel_exist(bool jumbo) 
 {
   unsigned int l=0; 
@@ -604,6 +603,7 @@ int ArtikelBox::artikel_exist(bool jumbo)
         if (j->spaltenname!="id") 
          {
            squery += j->spaltenname+"="  ;
+#ifdef PETIG_EXTENSIONS
            if(jumbo)
             {
               if (j->spaltenname!=schema->JumboSpalte()) 
@@ -614,6 +614,7 @@ int ArtikelBox::artikel_exist(bool jumbo)
                   squery += "'"+schema->JumboBez()+"'" ; 
             }
            else
+#endif           
             { if (!kombiniertbool) squery += "'"+combos[l][spalte]->get_text()+"'" ; 
               else                 squery += "'"+v[spalte]->getStrVal()+"'";
             }
@@ -642,7 +643,6 @@ int ArtikelBox::artikel_exist(bool jumbo)
  tr.close();
  return db_jumbo_id;
 }
-#endif
 
 void ArtikelBox::insert_into_artikelzusammensetzung(int id, int id_jumbo, int prozess,double menge)
 {

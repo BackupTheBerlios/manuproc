@@ -26,9 +26,9 @@ class WWaehrung : public Gtk::OptionMenu //, Waehrung
       {  return get_value()->Kurzbezeichnung(); }
       std::string Langbezeichnung() const
       {  return get_value()->Langbezeichnung(); }
-      void set_History(Waehrung::enum_t et) 
+      void set_History(WaehrungID::enum_t et) 
       {  set_value(et);}
-      Waehrung::enum_t get_enum() const
+      WaehrungID::enum_t get_enum() const
       {  return get_value()->get_enum(); }
 };
 #endif

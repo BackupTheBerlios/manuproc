@@ -1,4 +1,4 @@
-// $Id: window1.cc,v 1.9 2002/04/11 11:57:59 christof Exp $
+// $Id: window1.cc,v 1.10 2002/04/19 15:26:03 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,7 +22,7 @@
 #include <Artikel/ArtikelBezeichnung.h>
 
 void window1::andererKunde()
-{  artikelbox->setExtBezSchema(cH_Kunde(kundenbox->get_value())->getSchema());
+{  artikelbox->setExtBezSchema(cH_Kunde(kundenbox->get_value())->getSchema(0));
 }
 
 void window1::on_Beenden_activate()

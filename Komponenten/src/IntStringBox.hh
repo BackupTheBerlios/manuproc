@@ -1,5 +1,5 @@
 /*  libKomponenten: GUI components for ManuProC's libcommon++
- *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,45 +17,50 @@
  */
 
 // generated 2000/8/28 14:42:53 CEST by christof@puck.petig.de
-// using glademm V0.5.9a
+// using guimm V0.5.9a
 //
-// newer (non customized) versions of this file go to PreisBox.hh_glade
+// newer (non customized) versions of this file go to PreisBox.hh_gui
 
 // you might replace
-//    class Foo : public Foo_glade { ... };
+//    class Foo : public Foo_gui { ... };
 // by
-//    typedef Foo_glade Foo;
+//    typedef Foo_gui Foo;
 // if you didn't make any modifications to the widget
 
 #ifndef _INTSTRINGBOX_HH
-#  include "IntStringBox_glade.hh"
+#  include "IntStringBox_gui.hh"
 #  define _INTSTRINGBOX_HH
 
 #include <Aux/Transaction.h>
 
-class IntStringBox : public IntStringBox_glade
+class IntStringBox : public IntStringBox_gui
 {	
-  friend class IntStringBox_glade;
+  friend class IntStringBox_gui;
         void int_activate();
         void int_search(gboolean *_continue, GtkSCContext newsearch);
         void string_activate();
         void string_search(gboolean *_continue, GtkSCContext newsearch);
+        void stringz_activate();
+        void stringz_search(gboolean *_continue, GtkSCContext newsearch);
         static gint try_grab_focus(GtkWidget *w,gpointer gp);
 
 	int id;
-	Transaction tr,tr2;
+	Transaction tr,tr2,tr3;
    bool einschraenkung_b;
 protected:
-   std::string _tabelle_,_string_,_int_;
+   std::string _tabelle_,_string_,_stringz_,_int_;
 
 public:
 	IntStringBox();
-   void setLabel(std::string nr,std::string name);
+   void setLabel(const std::string &nr,const std::string &name,const std::string& namez="");
    void setLabel(long int nr);
 
 	int get_value() const { return id; }
-	void set_value(int i,const std::string &s) ;
+	void set_value(int i,const std::string &s,const std::string &sz="") ;
 	virtual void set_value(int i)=0 ;
+   void hide_int(bool b);
+   void show_stringz(bool b);
+   void stringz_set_sensitive(bool b);
 	void reset();
    void clear() {reset();}
 

@@ -65,7 +65,6 @@ class Data_Tel :  public RowDataBase
             case ART    :  
                std::string s=T->ArtString();
                if(T->isPrivat()) s+=" (privat)";
-cout << T->ArtString()<<' '<<T->isPrivat()<<' '<<s<<'\n';
                return cH_EntryValueIntString(s);
           }
          return cH_EntryValueIntString();

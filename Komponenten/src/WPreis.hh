@@ -55,7 +55,7 @@ class WPreis : public Gtk::Table
       {  return get_value().Wert(); }
       double get_Preismenge() const 
       {  return get_value().BezugsMenge(); }
-      Waehrung::enum_t get_Waehrung_enum() const 
+      WaehrungID::enum_t get_Waehrung_enum() const 
       {  return getWaehrung()->Id();}
       const Preis get_Preis() const 
       {  return get_value(); }
