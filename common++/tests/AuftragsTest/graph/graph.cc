@@ -1,4 +1,4 @@
-// $Id: graph.cc,v 1.26 2003/11/26 16:29:32 christof Exp $
+// $Id: graph.cc,v 1.27 2004/02/11 08:45:48 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -69,6 +69,7 @@ int main(int argc, char *argv[])
       case 'o': graph_data_node::start=atol(optarg); 
                 graph_data_node::limit=graph_data_node::start+1;
       		break;
+      default: usage(argv[0]); return 1;
      }
    }  
 
