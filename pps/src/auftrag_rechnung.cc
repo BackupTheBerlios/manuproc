@@ -323,12 +323,15 @@ void auftrag_rechnung::lieferschein_uebernehmen()
             }
            
           // Wenn Zahlungsziel schon vergangen, dann auf Standard setzten
+	  // bzw. das Zahlungsziel löschen
             
           cH_Zahlungsart za(rechnung.getZahlungsart());
-          if( ((zahlziel->get_value()-8)<rechnung.getDatum())
+          if( ((zahlziel->get_value())<rechnung.getDatum())
 		&& !za->getBankeinzug())
-            rechnung.setze_Zahlungsart(cH_Zahlungsart(
-            			Zahlungsart::default_Zahlart));
+            {
+//rechnung.setze_Zahlungsart(cH_Zahlungsart(Zahlungsart::default_Zahlart));
+	     rechnung.setze_Zahlziel(za->getZahlungstermin(rechnung.getDatum()));	
+	    }
 	     // bei Bankeinzug und vergangener Valuta, sofort einziehen
           else if( ((zahlziel->get_value())<rechnung.getDatum())
 		&& za->getBankeinzug())
