@@ -21,11 +21,11 @@ noinst_HEADERS = \
 	Artikeleingabe_glade.hh \
 	Artikeleingabe.hh 
 
-AM_CXXFLAGS = @GNOMEMM_CFLAGS@ @KOMPONENTEN_INCLUDES@
-LDFLAGS= @KOMPONENTEN_LDFLAGS@ @LDFLAGS@ 
+AM_CXXFLAGS = @KOMPONENTEN2_INCLUDES@
+LDFLAGS= @KOMPONENTEN2_LDFLAGS@ @LDFLAGS@ 
 
-artikeleingabe_LDADD = @LIBS@ @GNOMEMM_LIBS@ @KOMPONENTEN_LIBS@
-artikel_shell_LDADD = @LIBS@ @KOMPONENTEN_LIBS@
+artikeleingabe_LDADD = @LIBS@ @KOMPONENTEN2_LIBS@
+artikel_shell_LDADD = @LIBS@ @KOMPONENTEN2_LIBS@
 
 #artikel_delete: artikel_shell
 #	ln -s $< $@

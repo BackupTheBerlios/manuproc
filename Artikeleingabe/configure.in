@@ -1,13 +1,10 @@
 # generated 2001/9/18 9:40:08 CEST by thoma@Tiger.
 # using glademm V0.6.2_cvs
 
-AC_INIT(src/artikeleingabe.cc)
-AM_INIT_AUTOMAKE(artikeleingabe, 0.0)
-AM_CONFIG_HEADER(config.h)
-
-dnl Pick up the Gnome macros.
-AM_ACLOCAL_INCLUDE(macros)
-AM_MAINTAINER_MODE
+AC_PREREQ(2.50)
+AC_INIT(artikeleingabe, 0.0, [christof@petig-baender.de])
+AM_INIT_AUTOMAKE
+AC_CONFIG_HEADERS(config.h)
 
 AC_ISC_POSIX
 AC_PROG_CC
@@ -18,36 +15,8 @@ AC_PROG_CXX
 AC_PROG_CXXCPP
 AM_PROG_LIBTOOL
 
-# GNOME--:
-# (These macros are in the 'macros' directory)
-# GNOME_INIT sets the GNOME_CONFIG variable, among other things:
-GNOME_INIT
-GNOME_COMMON_INIT
-GNOME_COMPILE_WARNINGS
-#GNOME_X_CHECKS
-dnl Add the languages which your application supports here.
-ALL_LINGUAS=""
-#AM_GNOME_GETTEXT
-
-
-dnl Set PACKAGE_LOCALE_DIR in config.h.
-if test "x${prefix}" = "xNONE"; then
-  AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, "${ac_default_prefix}/${DATADIRNAME}/locale")
-else
-  AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, "${prefix}/${DATADIRNAME}/locale")
-fi
-
-# GNOME-CONFIG script knows about gnomemm:
-# ('gnome-config' is installed by GNOME)
-GNOMEMM_CFLAGS="`$GNOME_CONFIG --cflags gnomemm gnomeui`"
-GNOMEMM_LIBS="`$GNOME_CONFIG --libs gnomemm gnomeui`"
-AC_SUBST(GNOMEMM_CFLAGS)
-AC_SUBST(GNOMEMM_LIBS)
-
 AC_LANG_CPLUSPLUS
 
-PETIG_CHECK_KOMPONENTEN
-
-
+PETIG_CHECK_KOMPONENTEN2
 
 AC_OUTPUT(Makefile src/Makefile AufArtKonsistenz/Makefile macros/Makefile)

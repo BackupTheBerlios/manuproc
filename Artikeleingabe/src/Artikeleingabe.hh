@@ -8,7 +8,7 @@
 #include <Instanzen/ppsInstanz.h>
 #include <Artikel_Bestellen.hh>
 #include <Aux/Ausgabe_neu.h>
-#include <gtk--/notebook.h>
+#include <gtkmm/notebook.h>
 
 static const unsigned int MAXCOLUMN=10;
 
@@ -34,7 +34,7 @@ class Artikeleingabe : public Artikeleingabe_glade
         vec_artbase_t vec_artbase;
         instanz_spalte_t instanz_spalte;
 
-// ich denke ist unnötig, JJ 21.04.04
+// ich denke ist unnÃ¶tig, JJ 21.04.04
 //        ArtikelBase fuer_artikel,von_artikel;
 
         // keine Bezeichnung, leere Spalte
@@ -57,7 +57,7 @@ class Artikeleingabe : public Artikeleingabe_glade
         void get_artikel_list(ppsInstanz::ID instanz);
         void set_Data_from_artikelliste();
         void on_leaf_selected(cH_RowDataBase d);
-        void on_node_selected(const TCListNode &n);
+        void on_node_selected(const TreeRow &n);
         void on_unselect_row(gint row, gint column, GdkEvent *event);
         void Eingabe_fuer(const ArtikelBase& art);
         void Loeschen_von(const ArtikelBase& art);
@@ -89,7 +89,7 @@ class Artikeleingabe : public Artikeleingabe_glade
         void save_edited_artikel2();   
         bool update_edited_artikel2();
 
-//****** später
+//****** spÃ¤ter
         void on_button_verschmelzen_clicked();
 
 //****** edit ******

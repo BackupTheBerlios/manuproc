@@ -26,7 +26,7 @@ class Data_tree : public RowDataBase
 
 typedef Handle<const Data_tree> cH_Data_tree;
 
-class Data_Node : public TCListNode
+class Data_Node : public TreeRow
 {
     ArtikelBase artbase,artbase2;
  public:
@@ -38,8 +38,8 @@ class Data_Node : public TCListNode
     ArtikelBase Artikel() const {return artbase;}
     ArtikelBase Artikel2() const {return artbase2;}
 
-    Data_Node::Data_Node(guint deep,const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand, const TreeRow &suminit)
-        :TCListNode(deep,v,child_s_deep,child_s_data,expand) 
+    Data_Node::Data_Node(guint deep,const cH_EntryValue &v, guint child_s_deep,  const Handle<const TreeRow> const TreeRow &suminitsuminit)
+        :TreeRow(deep,v,child_s_deep,child_s_data,expand) 
     {  if (suminit.Leaf()) cumulate(child_s_data);
        else 
        {  artbase=dynamic_cast<const Data_Node&>(suminit).artbase;
@@ -47,7 +47,7 @@ class Data_Node : public TCListNode
        }
     }
 
-    static TCListNode *create(guint col, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand, const TreeRow &suminit)
+    static TreeRow *create(  const Handle<const TreeRow> const TreeRow &suminitsuminit)
        {  return new Data_Node(col,v,child_s_deep,child_s_data,expand,suminit);
        }
 };

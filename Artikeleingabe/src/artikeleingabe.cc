@@ -6,7 +6,7 @@
 // This file is for your program, I won't touch it again!
 
 #include <config.h>
-#include <gnome--/main.h>
+#include <gtkmm/main.h>
 
 #include "Artikeleingabe.hh"
 #include <Aux/dbconnect.h> 
@@ -17,14 +17,9 @@ MyMessage *mess;
 
 int main(int argc, char **argv)
 {
- Petig::PrintUncaughtExceptions();
- Petig::Connection conn;
+ ManuProC::PrintUncaughtExceptions();
+ ManuProC::Connection conn;
 
-#ifdef PETIG_EXTENSIONS
-// conn.setDbase("petigdb");
-#elif defined MABELLA_EXTENSIONS
-// conn.setDbase("mabelladb");
-#endif
  int i;
 
  while ((i = getopt(argc, argv, "h:d:")) != EOF)
@@ -39,11 +34,13 @@ int main(int argc, char **argv)
    }
 
      
- Gnome::Main m(PACKAGE, VERSION, 1, argv);
+ Gtk::Main m(argc, argv);
  try{ Petig::dbconnect(conn); 
- mess = manage(new MyMessage());
- manage(new class Artikeleingabe(argc,argv));
- m.run();
+ mess = new MyMessage();
+ Artikeleingabe *ae=new class Artikeleingabe(argc,argv));
+ m.run(*ae);
+ delete ae;
+ delete mess;
  }
  catch(SQLerror &e)
    { std::cerr<< e << '\n';

@@ -1,39 +1,54 @@
 #!/bin/sh
-# Run this to generate all the initial makefiles, etc.
-# generated 2001/9/18 9:40:08 CEST by thoma@Tiger.
-# using glademm V0.6.2_cvs
-# I didn't want to put a copy of 'macros' in every generated package
-# so I try to find them at autogen.sh time and copy them here.
-# (Normally if you have access to a cvs repository a copy of macros is
-# put into your directory at checkout time. E.g. cvs.gnome.org/gnome-common)
-if [ ! -e macros ]
-then
-  GLADE_MACROS=`which glade | sed -e 's-bin/glade-share/glade-'`
-  if [ -r $GLADE_MACROS/gnome/gnome.m4 ]
-  then
-    if cp --dereference /dev/null /dev/zero
-    then
-      cp -r --dereference $GLADE_MACROS/gnome macros
-    else
-      cp -r $GLADE_MACROS/gnome macros
-    fi
-  else
-    echo "I can't find glade's gnome m4 macros. Please copy them to ./macros and retry."
-    exit 2
-  fi
+# generated 2004/11/5 14:55:11 CET by christof@puck.petig-baender.de
+# using glademm V2.6.0_cvs
+
+if test ! -f install-sh ; then touch install-sh ; fi
+
+MAKE=`which gnumake`
+if test ! -x "$MAKE" ; then MAKE=`which gmake` ; fi
+if test ! -x "$MAKE" ; then MAKE=`which make` ; fi
+HAVE_GNU_MAKE=`$MAKE --version|grep -c "Free Software Foundation"`
+
+if test "$HAVE_GNU_MAKE" != "1"; then 
+echo Only non-GNU make found: $MAKE
+else
+echo `$MAKE --version | head -1` found
 fi
 
-srcdir=`dirname $0`
-test -z "$srcdir" && srcdir=.
+if which autoconf2.50 >/dev/null
+then AC_POSTFIX=2.50
+elif which autoconf >/dev/null
+then AC_POSTFIX=""
+else 
+  echo 'you need autoconfig (2.58+ recommended) to generate the Makefile'
+  exit 1
+fi
+echo `autoconf$AC_POSTFIX --version | head -1` found
 
-PKG_NAME="artikeleingabe"
+if which automake-1.9 >/dev/null
+then AM_POSTFIX=-1.9
+elif which automake-1.8 >/dev/null
+then AM_POSTFIX=-1.8
+elif which automake-1.7 >/dev/null
+then AM_POSTFIX=-1.7
+elif which automake-1.6 >/dev/null
+then AM_POSTFIX=-1.6
+elif which automake >/dev/null
+then AM_POSTFIX=""
+else
+  echo 'you need automake (1.8.3+ recommended) to generate the Makefile'
+  exit 1
+fi
+echo `automake$AM_POSTFIX --version | head -1` found
 
-(test -f $srcdir/configure.in \
-## put other tests here
-) || {
-    echo -n "**Error**: Directory "\`$srcdir\'" does not look like the"
-    echo " top-level $PKG_NAME directory"
-    exit 1
-}
+echo This script runs configure and make...
+echo You did remember necessary arguments for configure, right?
 
-. $srcdir/macros/autogen.sh
+# autoreconf$AC_POSTFIX -fim _might_ do the trick, too.
+#  chose to your taste
+aclocal$AM_POSTFIX
+libtoolize --force --copy
+autoheader$AC_POSTFIX
+automake$AM_POSTFIX --add-missing --copy --gnu
+autoconf$AC_POSTFIX
+./configure $* && $MAKE
