@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.26 2003/10/21 11:49:20 christof Exp $
+// $Id: SimpleTree.cc,v 1.27 2003/10/21 11:55:20 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -59,7 +59,7 @@ SimpleTree_Basic::SimpleTree_Basic(unsigned maxcol)
 }
 
 SimpleTree_Basic::~SimpleTree_Basic()
-{  delete menu;
+{  if (menu) delete menu;
 }
 
 void SimpleTree_Basic::on_title_clicked(unsigned nr)
@@ -172,7 +172,7 @@ void SimpleTree_Basic::fillMenu()
   add_mitem(menu,"Zurücksetzen",SigC::slot(*this,&SimpleTree_Basic::on_zuruecksetzen_clicked));
   add_mitem(menu,"Abbrechen",SigC::slot(*this,&SimpleTree_Basic::on_abbrechen_clicked));
 //  add_mitem(menu,"Neuordnen",SigC::slot(*this,&SimpleTree_Basic::Neuordnen));
-  Gtk::MenuItem *spalten=add_mitem(menu,"Sichtbare Spalten",SigC::Slot0<void>());
+//  Gtk::MenuItem *spalten=add_mitem(menu,"Sichtbare Spalten",SigC::Slot0<void>());
   add_mitem(menu,"Alles aufklappen",SigC::slot(*this,&SimpleTree_Basic::Expand_recursively));
   add_mitem(menu,"Alles zuklappen",SigC::slot(*this,&SimpleTree_Basic::Collapse));
 #if 0
