@@ -1,0 +1,43 @@
+--
+-- PostgreSQL database dump
+--
+
+SET client_encoding = 'LATIN1';
+SET check_function_bodies = false;
+
+SET SESSION AUTHORIZATION 'jacek';
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 3 (OID 83268281)
+-- Name: kontenrahmen; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE kontenrahmen (
+    nr numeric(5,0) NOT NULL,
+    zusatz character varying(2),
+    klasse numeric(2,0) DEFAULT 0 NOT NULL,
+    text character varying(80) NOT NULL,
+    geld_sach character(4),
+    steuersatz integer
+);
+
+
+--
+-- TOC entry 4 (OID 83268281)
+-- Name: kontenrahmen; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE kontenrahmen FROM PUBLIC;
+GRANT SELECT ON TABLE kontenrahmen TO umeyer;
+
+
+--
+-- TOC entry 5 (OID 83268284)
+-- Name: kontenrahmen_pkey; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE UNIQUE INDEX kontenrahmen_pkey ON kontenrahmen USING btree (nr);
+
+
