@@ -279,7 +279,9 @@ void auftrag_lieferschein::on_offen_leaf_selected(cH_RowDataBase d)
 
 void auftrag_lieferschein::fill_input(const AufEintrag& AE)
 {
-  fill_with(AE,Einheit(AE.Artikel()),AE.getRestStk().as_int(),1);
+  fill_with(AE,Einheit(AE.Artikel()),AE.getRestStk().as_int(),
+  Lieferschein::StandardLaenge(AE.Artikel()).as_int()
+  );
 }
 void auftrag_lieferschein::fill_input(const AufEintrag& AE,const LieferscheinEntry& LE)
 {
@@ -298,7 +300,7 @@ void auftrag_lieferschein::fill_with(const AufEintrag& AE,const Einheit& E,
   if (E.hatMenge())
    {
      label_menge->show();
-     liefermenge->set_value(Lieferschein::StandardLaenge(AE.Artikel()).as_int());
+//     liefermenge->set_value(Lieferschein::StandardLaenge(AE.Artikel()).as_int());
      liefermenge->show();
      liefermenge->set_value(menge);
      anzahl->set_value(stueck);
