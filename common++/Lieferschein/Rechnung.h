@@ -1,4 +1,4 @@
-/* $Id: Rechnung.h,v 1.25 2003/01/08 09:46:57 christof Exp $ */
+/* $Id: Rechnung.h,v 1.26 2003/03/31 15:38:17 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -48,7 +48,8 @@ private:
  mutable std::string notiz;
  mutable bool notiz_valid;
  fixedpoint<5> kurs;  
- 
+ int einzug_refnr;
+  
 public:
         
  Rechnung(ID rid) throw(SQLerror);
@@ -57,7 +58,11 @@ public:
               rngart(RART_NONE), zahlziel(ManuProC::Datum::today()),
               rgdatum(ManuProC::Datum::today()),waehrung(0),
               rabatt(0),zahlungsart(Zahlungsart::none_id),bezahlt(false),
-              entsorgung(false),notiz_valid(false),kurs(1) {} 
+              entsorgung(false),notiz_valid(false),kurs(1)
+#ifdef MABELLA_EXTENSIONS
+		,einzug_refnr(0)
+#endif
+               {} 
 
  const Kunde::ID KdNr() const {return kunde->Id();}
  const cH_Kunde getKunde() const { return kunde; }
@@ -88,6 +93,7 @@ public:
  bool Entsorgung() const { return entsorgung;}
  const std::string Notiz() const throw(SQLerror);
  void Notiz(const std::string _notiz) throw(SQLerror);
+ int getEinzugRefnr() const { return einzug_refnr; }
 };
 
 /*

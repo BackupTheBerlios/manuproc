@@ -23,7 +23,8 @@
 #include <Misc/Transaction.h>
 
 
-PreisListeFull::PreisListeFull(ID id, bool art_in_list) throw(SQLerror) : PreisListe(id)
+PreisListeFull::PreisListeFull(ID id, bool art_in_list,
+			ArtikelTyp at) throw(SQLerror) : PreisListe(id)
 {
  exec sql begin declare section;
  int ARTIKELID[100];
@@ -38,8 +39,9 @@ PreisListeFull::PreisListeFull(ID id, bool art_in_list) throw(SQLerror) : PreisL
  std::string plid=itos(PRLSNR);
 
  if(art_in_list)
-   {qu=std::string("select artikelid,preis,preismenge from artikelpreise"
- 	" where kundennr = ")+plid;
+   {qu=std::string("select artikelid,preis,preismenge from artikelpreise p"
+ 	" join artikelstamm s on (p.artikelid=s.id and "
+	" s.warengruppe="+itos(at.Id())+") where  kundennr = ")+plid;
    }
  else
    {
@@ -50,7 +52,7 @@ PreisListeFull::PreisListeFull(ID id, bool art_in_list) throw(SQLerror) : PreisL
 	" where not exists"
  	" (select p.artikelid from artikelpreise p"
 	"  where p.artikelid=s.id and kundennr = ")+plid+
-	") order by zeitpunkt";
+	") and s.warengruppe="+itos(at.Id())+" order by zeitpunkt";
    }
  QU = (char*)qu.c_str();
  

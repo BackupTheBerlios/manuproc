@@ -41,6 +41,7 @@ Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
    float RABATT;
    bool BEZAHLT;
    bool ENTSORGUNG=false;
+   int EINZUG_REFNR;
  exec sql end declare section;
 
  Transaction tr;
@@ -50,10 +51,11 @@ Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
          coalesce(zahlart,-1), zahlziel, 
  			coalesce(waehrung,1), coalesce(rabatt,0), bezahlt,
 			coalesce(entsorgung,false),
-			coalesce(kurs,1)
+			coalesce(kurs,1),
+			coalesce(einzug_refnr,0)
 		into :KDNR, :DATUM, :RNGART, :ZAHLART, :ZAHLZIEL:IZAHLZIEL,
 		   :WAEHRUNG, :RABATT, :BEZAHLT, :ENTSORGUNG,
-		   :KURS
+		   :KURS, :EINZUG_REFNR
  	from rechnung r where r.rngid = :RNGID ;
  #else
  exec sql select r.kundennr, date(r.datum), r.rngart, 
@@ -75,6 +77,7 @@ Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
  bezahlt=BEZAHLT;
  zahlziel= IZAHLZIEL ? ManuProC::Datum() : ManuProC::Datum(ZAHLZIEL);
  entsorgung=ENTSORGUNG;
+ einzug_refnr=EINZUG_REFNR;
 }
 
 Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
