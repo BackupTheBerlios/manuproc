@@ -1,4 +1,4 @@
-// $Id: mvc.cc,v 1.2 2002/07/08 08:10:29 christof Exp $
+// $Id: mvc.cc,v 1.3 2002/11/06 08:28:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -46,7 +46,7 @@ int main()
    }
    
    // now we test a structure with a shared signal
-   { MVC<pair<int,int> > model(pair<int,int>(1,2));
+   { MVC<std::pair<int,int> > model(std::pair<int,int>(1,2));
      View_int view(Model_ref<int>(model.Value().first, model.changed));
      View_int view2(Model_ref<int>(model.Value().second, model.changed));
      model.Assign(model.Value().first, 5);
@@ -54,7 +54,7 @@ int main()
    }
 
    // perhaps the ease recommends the extra bytes for a signal per element
-   { pair<MVC<int>,MVC<int> > model(pair<int,int>(1,2));
+   { pair<MVC<int>,MVC<int> > model(std::pair<int,int>(1,2));
      View_int view(model.first);
      View_int view2(model.second);
      model.first=5;
