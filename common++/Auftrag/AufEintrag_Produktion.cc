@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.20 2003/11/26 12:13:32 jacek Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.21 2003/12/02 14:51:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -68,12 +68,18 @@ AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
    if (elter.valid()) AufEintragZu(elter).Neu(ae,0);
    if (rekursiv)
    {  // NaechsteInstanz geht nicht wegen static (nächste wovon)
-      if (instanz->LagerInstanz())
-      {  cH_ppsInstanz pi=ppsInstanz::getProduktionsInstanz(artikel);
-         if (pi!=ppsInstanzID::None && !pi->ProduziertSelbst())
-            unbestellteMengeProduzieren(pi,artikel,menge,true,neuerAEB);
-      }
-      else
+//      if (instanz->LagerInstanz())
+//      {  mengen_t noch_prod=menge;
+         assert(!instanz->LagerInstanz());
+         // erst nach 2ern suchen
+         // unten als produziert markieren
+//         if (!!noch_prod)
+//         {  cH_ppsInstanz pi=ppsInstanz::getProduktionsInstanz(artikel);
+//            if (pi!=ppsInstanzID::None && !pi->ProduziertSelbst())
+//               unbestellteMengeProduzieren(pi,artikel,menge,true,neuerAEB);
+//         }
+//      }
+//      else
       {  ArtikelBaum AB(artikel);
          for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
          {  cH_ppsInstanz bi=ppsInstanz::getBestellInstanz(i->rohartikel);
