@@ -1,4 +1,4 @@
-/* $Id: Model_ref_bvector.h,v 1.3 2003/10/23 12:38:49 christof Exp $ */
+/* $Id: Model_ref_bvector.h,v 1.4 2004/11/12 08:10:55 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -27,7 +27,10 @@ typedef std::vector<bool>::reference bvector_reference;
 typedef std::vector<bool>::iterator bvector_iterator;
 typedef std::vector<bool>::reference bvector_item;
 
-class Model_ref<bvector_item>
+// #if gcc3?
+template <> 
+//
+ class Model_ref<bvector_item>
 {	bvector_iterator value;
 	SigC::Signal1<void,bvector_iterator> *changed;
 public:
