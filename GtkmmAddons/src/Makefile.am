@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.11 2004/01/29 14:43:49 christof Exp $
+# $Id: Makefile.am,v 1.12 2004/04/29 14:24:14 christof Exp $
 
 CLEANFILES = *~
 
@@ -32,10 +32,12 @@ gtkmm:
 SearchCombo.cc SearchCombo.h: gtkmm SearchCombo.hg SearchCombo.ccg
 	if [ ! -d private ] ; then mkdir private ; fi
 	echo perl -I$(GTKMMTOOLS)/pm $(GTKMMTOOLS)/gtkmmproc -I $(GTKMMTOOLS)/m4 --defs . SearchCombo . .
+	echo /usr/lib/glibmm-2.4/proc/gmmproc --defs . SearchCombo . .
 
 DoubleButton.cc DoubleButton.h: gtkmm DoubleButton.hg DoubleButton.ccg
 	if [ ! -d private ] ; then mkdir private ; fi
 	echo perl -I$(GTKMMTOOLS)/pm $(GTKMMTOOLS)/gtkmmproc -I $(GTKMMTOOLS)/m4 --defs . DoubleButton . .
+	echo /usr/lib/glibmm-2.4/proc/gmmproc --defs . DoubleButton . .
 
 gtksearchcombo.h gtksearchcombo.c doublebutton.c doublebutton.h \
 		: $(top_srcdir)/searchcombo/src/$@

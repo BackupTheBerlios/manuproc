@@ -3,7 +3,7 @@
 #include <gtkmm/DoubleButton.h>
 #include <gtkmm/private/DoubleButton_p.h>
 
-/* $Id: DoubleButton.cc,v 1.5 2004/01/29 14:59:55 christof Exp $ */
+/* $Id: DoubleButton.cc,v 1.6 2004/04/29 14:24:14 christof Exp $ */
 
 /* searchcombo.h
  * 
@@ -26,6 +26,9 @@
 
 #include <doublebutton.h>
 
+// for SigC 2.0
+#include <sigc++/slot.h>
+
 ManuProC::DoubleButton::DoubleButton() : Glib::ObjectBase(0), //Mark this class as gtkmmproc-generated, rather than a custom class, to allow vfunc optimisations.
   Gtk::Button(Glib::ConstructParams(doublebutton_class_.init(), (char*) 0))
 {  }
@@ -44,9 +47,14 @@ void DoubleButton_signal_secondpressed_callback(doublebutton* self, int button,v
   {
     try
     {
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+      if(sigc::slot_base *const slot = Glib::SignalProxyNormal::data_to_slot(data))
+        (*static_cast<SlotType*>(slot))(button);
+#else
       if(SigC::SlotNode *const slot = Glib::SignalProxyNormal::data_to_slot(data))
         (*(SlotType::Proxy)(slot->proxy_))
             (button, slot);
+#endif            
     }
     catch(...)
     {
@@ -88,10 +96,9 @@ const Glib::Class& DoubleButton_Class::init()
     // Glib::Class has to know the class init function to clone custom types.
     class_init_func_ = &DoubleButton_Class::class_init_function;
 
-    // TODO: This is currently just optimized away, apparently with no harm.
-    // Is it actually necessary?
+    // This is actually just optimized away, apparently with no harm.
     // Make sure that the parent type has been created.
-    CppClassParent::CppObjectType::get_type();
+    //CppClassParent::CppObjectType::get_type();
 
     // Create the wrapper type, with the same class/instance size as the base type.
     register_derived_type(doublebutton_get_type());
