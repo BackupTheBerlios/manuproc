@@ -16,3 +16,4 @@ LandesListe_sql.cc
 Adresse_sql.cc
 PreisListeFull_sql.cc
 Zahlungsart_sql.cc
+Lieferart_sql.cc
