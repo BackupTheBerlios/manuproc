@@ -1,4 +1,4 @@
-dnl $Id: petig.m4,v 1.51 2001/09/25 07:10:37 cvs_christof Exp $
+dnl $Id: petig.m4,v 1.52 2001/09/25 07:14:40 cvs_christof Exp $
 
 dnl Configure paths for some libraries
 dnl derived from kde's acinclude.m4
