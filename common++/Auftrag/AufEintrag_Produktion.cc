@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.13 2003/09/05 10:42:39 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.14 2003/09/08 08:11:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -350,7 +350,9 @@ void AufEintrag::ProduziertNG(mengen_t M,
       MengeAendern(-M.abs(),false,M>0 ? elter_alt : AufEintragBase(),
       		ManuProC::Auftrag::r_Produziert);
       if (M<0 && !getRestStk()) setStatus(AufStatVal(CLOSED),true);
-      AuftragBase zielauftrag(Instanz(),M>=0?plan_auftrag_id:ungeplante_id);
+      // mit M>0 bin ich mir nicht sicher ... CP
+     if (M>0 || !cH_ppsInstanz(Instanz()->EinlagernIn())->AutomatischEinlagern())
+     {AuftragBase zielauftrag(Instanz(),M>=0?plan_auftrag_id:ungeplante_id);
       AufStatVal st=(M<0) ? OPEN : CLOSED;
       neuerAEB=AufEintragBase(zielauftrag,
          	zielauftrag.PassendeZeile(getLieferdatum(),Artikel(),st));
@@ -362,6 +364,9 @@ void AufEintrag::ProduziertNG(mengen_t M,
       {  ae.abschreiben(M);
          AufEintragZu(elter_neu).Neu(neuerAEB,0);
       }
+     }
+     // nur um sicher zu gehen, dass ich an den richtigen Fall gedacht habe (Überproduktion) ...
+     else assert(getLieferdatum()==Lager::Lagerdatum());
    }
    
    KinderProduzieren(M,neuerAEB,ctx);

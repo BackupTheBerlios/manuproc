@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.19 2003/09/05 11:00:53 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.20 2003/09/08 08:11:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -90,7 +90,7 @@ public:
 	   // Optimierung: direkt 0er nehmen?
 #if 0	   
            // passenden 0er erhöhen
-            AuftragBase(child_ae.Instanz(),AuftragBase::ungeplante_id)
+            AuftragBase(child_ae.Instanz(),ungeplante_id)
               .BestellmengeAendern(m,child_ae.getLieferdatum(),child_ae.Artikel(),OPEN,j->AEB);
 #endif
 	   AufEintrag::ArtikelInternNachbestellen(mythis.Instanz(),m,
@@ -284,7 +284,7 @@ public:
            // Eltern des 0ers sind Eltern des 1ers, allerdings waren dessen 
            // Zuordnungen 0
            // Menge nachbestellen
-           AuftragBase zielauftrag(i.Instanz(),AuftragBase::ungeplante_id);
+           AuftragBase zielauftrag(i.Instanz(),ungeplante_id);
            AufEintragBase neuerAEB(zielauftrag,
                	zielauftrag.PassendeZeile(i.getLieferdatum(),i.Artikel(),OPEN));
            AufEintrag ae(neuerAEB);
@@ -324,12 +324,14 @@ void AufEintrag::WiederEinlagern(cH_ppsInstanz instanz,const ArtikelBase artikel
 }
 
 // ehemals von ProduziertNG kopiert ... aber anders?
+// etwas bestelltes wird eingelagert -> produziert markieren & vormerken (?)
 void AufEintrag::Einlagern2(mengen_t M,
 		const AufEintragBase &elter_alt,
 		const AufEintragBase &elter_neu,
 		const ProductionContext &ctx)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,
-			NV("this",*this),M,NV("alt",elter_alt),NV("neu",elter_neu));
+			NV("this",*this),M,NV("alt",elter_alt),NV("neu",elter_neu),
+			NV("ctx",ctx));
    if (!M) return;		
    assert(Instanz()->LagerInstanz());
    assert(Id()!=dispo_auftrag_id && Id()<handplan_auftrag_id);
@@ -342,7 +344,9 @@ void AufEintrag::Einlagern2(mengen_t M,
       if (!getRestStk()) setStatus(AufStatVal(CLOSED),true);
    }
    else // M>0
-   {  MengeAendern(-M,false,elter_alt,ManuProC::Auftrag::r_Produziert);
+   {  // hier stand mal false - wozu?
+      // true bewirkt in AP dass gelieferte Menge im Einkauf abbestellt wird
+      MengeAendern(-M,Id()==ungeplante_id,elter_alt,ManuProC::Auftrag::r_Produziert);
       AuftragBase zielauftrag(Instanz(),plan_auftrag_id);
       neuerAEB=AufEintragBase(zielauftrag,
          		zielauftrag.PassendeZeile(getLieferdatum(),Artikel(),OPEN));
