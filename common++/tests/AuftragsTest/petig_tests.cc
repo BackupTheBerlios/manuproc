@@ -752,7 +752,7 @@ static bool Repair_uncommitted(AufEintrag &AE)
    {  Query("update auftragentry set status=? "
            "where (instanz,auftragid,zeilennr)=(?,?,?)") 
            << UNCOMMITED << AEBP;
-      vergleichen(Check::Menge,"Ru_planung","Reparatur","R",true);
+      vergleichen(Check::Menge,"Ru_planung2","Reparatur","R",true);
    }
    return true;
 }
