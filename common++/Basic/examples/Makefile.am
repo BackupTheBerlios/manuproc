@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.22 2004/06/03 07:03:38 christof Exp $
+# $Id: Makefile.am,v 1.23 2004/06/03 08:48:22 christof Exp $
 	
 LDADD=$(top_srcdir)/src/libManuProC_Base.la @ECPG_LIBS@ @SIGC_LIBS@
 
@@ -17,7 +17,7 @@ B_SRCES=
 endif
 
 EXTRA_PROGRAMS=FetchIStream test_pgsql_conv testHandles testKW fixedpoint \
-	Zeitpunkt mvc trace rexml tagstream
+	Zeitpunkt mvc trace rexml tagstream tag_speed
 
 test_pgsql_conv_SOURCES=test_pgsql_conv.cc
 testHandles_SOURCES=testHandles.cc
@@ -29,6 +29,7 @@ FetchIStream_SOURCES=$(B_SRCES)
 mvc_SOURCES=mvc.cc
 rexml_SOURCES=rexml.cc
 tagstream_SOURCES=tagstream.cc
+tag_speed_SOURCES=tag_speed.cc
 
 tagstream.res: tagstream$(EXEEXT)
 	./tagstream | sed -e 's/P0x[0-9a-fA-F]*/P*/' \
