@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.21 2003/01/17 16:29:58 christof Exp $
+// $Id: FetchIStream.h,v 1.22 2003/01/29 13:56:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -135,8 +135,10 @@ public:
 	Query &operator<<(const std::string &str);
 	Query &operator<<(int i)
 	{  return operator<<(long(i)); }
+	Query &operator<<(unsigned long i);
 	Query &operator<<(long i);
-	Query &operator<<(unsigned i);
+	Query &operator<<(unsigned i)
+	{  return operator<< ((unsigned long)(i)); }
 	Query &operator<<(unsigned long long i);
 	Query &operator<<(double f);
 	Query &operator<<(bool b);
@@ -156,7 +158,7 @@ public:
 	template <class T>
 	 Query &operator<<(const NullIf<T> &n)
 	{  if (n.null) return operator<<(null());
-	   return operator<<(n.data);
+	   return (*this)<<(n.data);
 	}
 	
 	//--------------- result --------------------

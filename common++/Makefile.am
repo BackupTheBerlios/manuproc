@@ -9,8 +9,8 @@ libcommon___a_SOURCES=
 
 libcommon___a_LIBADD= \
 		Artikel/ArtikelBase.o \
-		Artikel/ArtikelBaum_new_del.cc \
-		Artikel/ArtikelBaum_sql.o \
+		Artikel/ArtikelBaum.o \
+		Artikel/ArtikelBaum_new_del.o \
 		Artikel/ArtikelBezeichnung.o \
       Artikel/ArtikelDispo_sql.o \
 		Artikel/ArtikelEAN_sql.o \

@@ -1,4 +1,4 @@
-// $Id: Prozess_sql.pgcc,v 1.9 2003/01/29 13:56:00 christof Exp $
+// $Id: Prozess_sql.pgcc,v 1.11 2003/01/29 13:58:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,6 +19,7 @@
 
 #include <Artikel/Prozess.h>
 #include <Misc/Rundungsmacros.h>
+#include <Misc/FetchIStream.h>
 
 exec sql include sqlca;
 
@@ -62,13 +63,6 @@ cH_Prozess::cH_Prozess(Prozess::ID pid)
       else *this=cH_Prozess(new Prozess(pid));
       cache.Register(pid,*this);
    }
-}
-
-FetchIStream &operator>>(FetchIStream &is, Prozess::ID &v)
-{  int i;
-   is >> i;
-   v=Prozess::ID(i);
-   return is;
 }
 
 FetchIStream &operator>>(FetchIStream &is, Prozess::ID &v)

@@ -1,4 +1,4 @@
-// $Id: selAufEntry_sql.pgcc,v 1.23 2003/01/15 15:10:16 christof Exp $
+// $Id: selAufEntry_sql.pgcc,v 1.24 2003/01/29 13:56:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,13 +26,6 @@ FetchIStream &operator>>(FetchIStream &is, AufStatVal &v)
 {  int i;
    is >> i;
    v=AufStatVal(i);
-   return is;
-}
-
-FetchIStream &operator>>(FetchIStream &is, Prozess::ID &v)
-{  int i;
-   is >> i;
-   v=Prozess::ID(i);
    return is;
 }
 
