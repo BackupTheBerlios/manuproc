@@ -454,6 +454,9 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
     stueck_bool=false;
     menge_bool=false;
     rabatt_bool=false;
+    palette_bool=false;
+    notice_column_bool=false;
+    bool notice_column_possible=true;
 //******** wieviele Zeilen passen denn maximal in diese Tabelle ************
     LR_Abstraktion::const_iterator j=i ;
     for (;j!=end() ;++j) 
@@ -502,6 +505,15 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
            if (!!(*j).Rabatt()) rabatt_bool=true;
 #endif
         }
+        if ((Typ()==Lieferschein || Typ()==Wareneingang) && notice_column_possible)
+        { if (!(*j).Text().empty())
+          { if ((*j).Text().size()>10) 
+              notice_column_bool=notice_column_possible=false; 
+            else notice_column_bool=true;
+          }
+        }
+        if ((Typ()==Lieferschein || Typ()==Wareneingang) && !palette_bool && (*j).Palette())
+          palette_bool=true;
       }
 //******** die Tabelle die wir ausgeben können endet bei j *****************
 
@@ -585,14 +597,16 @@ std::cout << "table ends\n";
         if(Typ()==Intern) AEB=(*k).getAEB();
         std::string YourAuftrag;
         std::vector<LieferscheinEntry::st_AuftragMenge> auftragmenge=(*k).getAuftragsMenge();
-        if (auftragmenge.size()==1) 
+        if (auftragmenge.size()==1)
            YourAuftrag=Auftrag::getYourAufNr(auftragmenge[0].ab);
+        if (!(*k).getRefOrder().empty())
+           YourAuftrag=(*k).getRefOrder();
         Zeile_Ausgeben(os,preismenge_mem,einheit_mem,einheitsize,
             (*k).Rest(),(*k).Artikel(),false,(*k).Stueck(),
             (*k).Menge(),(*k).getPreis(true),(*k).getPreis(false),
             (*k).Rabatt(),(*k).getLieferdatum(),(*k).Palette(),YourAuftrag,
 	    (*k).getPreisliste(),
-            AEB);
+            AEB,(*k).Text());
         if(auftragmenge.size()>1) 
          { 
            for(std::vector<LieferscheinEntry::st_AuftragMenge>::const_iterator 
@@ -602,7 +616,7 @@ std::cout << "table ends\n";
                0,(*k).Artikel(),true,einheit_mem.hatMenge()?1:l->menge.as_int(),
                einheit_mem.hatMenge()?l->menge:0,Preis(),Preis(),
                0,ManuProC::Datum(),0,Auftrag::getYourAufNr(l->ab),
-		(*k).getPreisliste(), AEB);
+		(*k).getPreisliste(), AEB,std::string());
             }           
          }
       }
@@ -767,7 +781,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
    const AuftragBase::rabatt_t &rabatt, const ManuProC::Datum &lieferdatum,
    const int palette, const std::string &your_auftrag,
    const cH_PreisListe pl,
-   const AufEintragBase AEB)
+   const AufEintragBase AEB, const std::string &notice)
 {
 #ifdef MABELLA_EXTENSIONS // gelieferte Zeilen nicht anzeigen beim Rückstand     
        if(Rueckstand() && rest==0) return;
@@ -957,10 +971,16 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 
 #ifdef PETIG_EXTENSIONS
         if (Typ()==Lieferschein || Typ()==Wareneingang) 
-          { neue_spalte(erste_spalte,os);
-            if (palette!=0) os << linecolor<<palette;
+          { if (palette_bool)
+            { neue_spalte(erste_spalte,os);
+              if (palette!=0) os << linecolor<<palette;
+            }
             neue_spalte(erste_spalte,os);
-            os << linecolor << your_auftrag<<"\n";   
+            os << linecolor << your_auftrag<<"\n";
+            if (notice_column_bool)
+            { neue_spalte(erste_spalte,os);
+              os << linecolor<< notice;
+            }
           }
 #endif
 
@@ -1143,13 +1163,18 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
       
 #else
   if (Typ()==Lieferschein || Typ()==Wareneingang)
-  { tabcolumn+="rr"; spaltenzahl+=2; 
-    ueberschriften += "&\\multicolumn{1}{c}{"+sg+"Palette}";
+  { if (palette_bool)
+    { tabcolumn+="r"; spaltenzahl++; 
+      ueberschriften += "&\\multicolumn{1}{c}{"+sg+"Palette}";
+    }
+    tabcolumn+="r"; spaltenzahl++; 
     ueberschriften += "&\\multicolumn{1}{c}{"+ug+"Auftrag}";
+    if (notice_column_bool)
+    { tabcolumn+="l"; spaltenzahl++; 
+      ueberschriften += "&\\multicolumn{1}{c}{"+ug+"Anmerkung}";
+    }
   }
 #endif
-
-
 
   if (preise_addieren)  // Einzelpreis, Gesamtpreis
   { 

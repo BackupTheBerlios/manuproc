@@ -126,6 +126,16 @@ public:
       if (Typ()==Rechnung) return u.r->AuftragId();
 	abort(); 
       }
+   const std::string &getRefOrder() const { 
+      if (Typ()==Lieferschein || Typ()==Wareneingang) 
+         return u.l->getRefOrder();
+	abort(); 
+      }
+   const std::string &Text() const { 
+      if (Typ()==Lieferschein || Typ()==Wareneingang) 
+         return u.l->Text();
+	abort(); 
+      }
 
    const ManuProC::Datum getLieferdatum() const {
 	   if((Typ()==Auftrag)||(Typ()==Extern)) return u.a->getLieferdatum(); 
@@ -208,6 +218,9 @@ class LR_Abstraktion: public LR_Base
  bool rabatt_bool:1;
  bool preise_addieren:1;
  bool ean_code:1;
+  // PETIG_EXTENSIONS
+ bool palette_bool:1; // whether palette is used
+ bool notice_column_bool:1; // whether there is space for inline 
 
  cH_ppsInstanz instanz;
  
@@ -256,13 +269,14 @@ private:
           const class RechnungVoll *r; 
           const class AuftragFull *a; } u;
 #define UEBLICHE_INITIALISIERUNG(fp,inst) \
-	stueck_bool(false), menge_bool(false), \
-	rabatt_bool(false), preise_addieren(false), ean_code(false), \
+	stueck_bool(), menge_bool(), \
+	rabatt_bool(), preise_addieren(), ean_code(), \
+	palette_bool(), notice_column_bool(), \
 	instanz(ppsInstanz::default_id), \
-	zeilen_passen_noch(0), page_counter(1), \
-	preisspalte(0), \
-	spaltenzahl(0), schema_mem(ExtBezSchema::default_ID), \
-	schema_own(ExtBezSchema::default_ID), copies("1,1,1")
+	zeilen_passen_noch(), page_counter(1), \
+	preisspalte(), \
+	spaltenzahl(), schema_mem(ExtBezSchema::default_ID), \
+	schema_own(ExtBezSchema::default_ID), copies("1,0,0")
 
 public:
 	
@@ -371,7 +385,7 @@ private:
         const AuftragBase::rabatt_t &rabatt, const ManuProC::Datum &lieferdatum,
         const int palette, const std::string &your_auftrag,
         const cH_PreisListe pl,
-        const AufEintragBase AEB=AufEintragBase()
+        const AufEintragBase AEB,const std::string &notice
         );
 
    void drucken_header(std::ostream &os);
