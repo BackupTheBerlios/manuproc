@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.27 2004/08/24 11:46:09 jacek Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.28 2004/08/24 14:06:14 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -206,7 +206,8 @@ const std::vector<cH_EntryValueIntString> &_val, const cH_ExtBezSchema &_schema)
 : schema(_schema)
 {
  *(ArtikelBase*)this=artikel;
- setzeExtBezSchema(_val,schema);
+// setzeExtBezSchema(_val,schema);
+ setzeExtBezSchema(schema);
 }
 
 cH_ArtikelBezeichnung::cache_t cH_ArtikelBezeichnung::cache;

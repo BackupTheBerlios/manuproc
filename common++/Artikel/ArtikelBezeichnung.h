@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.h,v 1.22 2004/08/24 11:46:09 jacek Exp $
+// $Id: ArtikelBezeichnung.h,v 1.23 2004/08/24 14:06:14 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -209,7 +209,7 @@ public:
 	cH_ArtikelBezeichnung(
 	              const ArtikelBase &artikel, 
 	              const std::vector<cH_EntryValueIntString> &values, 
-                      const cH_ExtBezSchema &schema=ExtBezSchema::default_id) throw()
+                      const cH_ExtBezSchema &schema) throw()
 		: Handle<const ArtikelBezeichnung>(new ArtikelBezeichnung(artikel,values,schema))
 	{}	
 	
