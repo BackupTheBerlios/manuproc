@@ -13,6 +13,7 @@
 #include <MyMessage.h>
 #include <itos.h>
 #include "kunden_selector.hh"
+#include <SearchComboContent.h>
 
 int main(int argc, char **argv)
 {  
@@ -175,10 +176,70 @@ void mpc_agent::on_artikel_activate_entry(int enr)
 
 void mpc_agent::on_menge_editing_done()
 {  
+ artikel_ok->grab_focus();
 }
 
 void mpc_agent::on_artikel_ok_clicked()
 {  
+ if(article_entry->sensitive() ||
+    width_entry->sensitive() ||
+    color_entry->sensitive() ||
+    makeup_entry->sensitive())
+  {
+   MyMessage msg("select an complete article before you press OK");
+   msg.set_transient_for(*this);
+   msg.run();
+   return;
+  }	
+  
+ if(!(menge->get_value_as_int()>0))
+  {
+   MyMessage msg("amount must be greater then 0");
+   msg.set_transient_for(*this);
+   msg.run();
+   return;
+  }
+
+
+ if(orderid->sensitive())
+  {
+   MyMessage msg("select or create one order first");
+   msg.set_transient_for(*this);
+   msg.run();
+   return;
+  }   
+
+
+ Query q("insert into auftragentry (aufid,vknr,artnr,breite,farbe,aufmachung,"
+ 	"ean,stueck,preis) values (?,?,?,?,?,?,null,?,null)");
+
+  std::cout << orderid->Content() <<"\n";
+
+ try{
+     q << orderid->Content() << VERKNR
+ 	<< article_entry->Content()
+ 	<< width_entry->Content()
+ 	<< color_entry->Content()
+ 	<< makeup_entry->Content()
+// 	<< Query::NullIf(ean_entry->Content())
+ 	<< menge->get_value_as_int();
+ 	
+ }
+ catch(SQLerror &e)
+  {
+   MyMessage msg(e);
+   msg.set_transient_for(*this);
+   msg.run();
+   return;
+  }    	
+ catch(SearchComboContent<std::string>::ContentError c)
+  {
+   MyMessage msg(c.what());
+   msg.set_transient_for(*this);
+   msg.run();
+   return;
+  }    	
+ 
 }
 
 void mpc_agent::on_artikel_cancel_clicked()
@@ -290,3 +351,5 @@ void mpc_agent::on_makeup_entry_activate()
  menge->grab_focus();
  makeup_entry->set_sensitive(false);
 }
+
+
