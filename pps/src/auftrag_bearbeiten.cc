@@ -172,7 +172,7 @@ void auftrag_bearbeiten::onSelArtikel()
 #endif
 
     Preis p(ap.In(auftrag->getWaehrung(),ap.PreisMenge() ));
-    WPreis->set_value(p);
+    WPreis->set_value(p,ap.MindMenge());
     artikel_preisliste_geaendert=false;
     if (!p.Wert()) // Wenn kein Preis gefunden eingeben
     {  WPreis->grab_focus();
@@ -722,9 +722,9 @@ void auftrag_bearbeiten::setAufEntries()
  stkmtr_spinbutton->set_value(aktaufeintrag->getStueck().as_int());
  liefdatum_datewin->set_value(aktaufeintrag->getLieferdatum());
 
- WPreis->set_Betrag(aktaufeintrag->EPreis().Wert().as_float());
+ WPreis->set_Betrag(aktaufeintrag->EPreis().Wert());
  rabattentry_spinbutton->set_value(aktaufeintrag->Rabatt().as_float());
- WPreis->set_Preismenge(aktaufeintrag->PreisMenge().as_float());
+ WPreis->set_Preismenge(aktaufeintrag->PreisMenge());
  
  WAufEntryStat->set_history(aktaufeintrag->getEntryStatus());
 }
