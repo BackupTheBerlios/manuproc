@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.29 2003/04/08 07:00:02 christof Exp $
+# $Id: Makefile.am,v 1.30 2003/05/14 07:25:08 christof Exp $
 AM_CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
@@ -22,7 +22,7 @@ LINKS= EingabeBox.cc EingabeBox.hh datewin.cc datewin.h \
 	bool_properties.hh bool_ImageButton.hh bool_CheckButton.hh \
 	int_SpinButton.hh string_Entry.hh GType_cH_EntryValue.h \
 	SimpleTree.hh ModelWidgetConnection.h string_Label.cc \
-	string_Label.hh
+	string_Label.hh Event.cc Association.h Association.cc
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
@@ -37,7 +37,7 @@ include_HEADERS = datewin.h logwin.h \
    Optionmenu_Warengruppe.hh PPixmap.hh \
    Optionmenu_Einheit.hh PreisBox.hh WTelefon.hh \
    IntStringBox.hh IntStringBox_gui.hh PersonenBox.hh \
-   LandesBox.hh KundenBox2.hh ZahlungsArtBox.hh 
+   LandesBox.hh KundenBox2.hh ZahlungsArtBox.hh  Association.h
 
 lib_LIBRARIES= libKomponenten.a
 
@@ -55,7 +55,7 @@ libKomponenten_a_SOURCES=datewin.cc \
 	MyWindow.cc MyScale.cc logwin.cc TreeViewUtility.cc \
 	bool_properties.cc bool_ImageButton.cc \
 	IntStringBox_glade.cc IntStringPopup_glade.cc \
-	string_Label.cc
+	string_Label.cc Event.cc Association.cc
 
 lateron= \
 		$(BUILT_SOURCES_L) \
