@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.46 2003/08/02 14:54:24 christof Exp $
+// $Id: get_data.cc,v 1.47 2003/08/06 09:17:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -21,6 +21,7 @@
 #include <fstream>
 #include "../steuerprogramm.hh"
 #include <Misc/relops.h>
+#include <Artikel/ArtikelBezeichnung.h>
 
 #ifdef  MANU_PROC_TEST
 static std::string referenzdir="../database_tables_test_ManuProC";
@@ -62,8 +63,9 @@ void graph_data_node::get_values_from_files()
         AuftragBase::mengen_t bestellt,geliefert;
         Petig::Datum datum;
         AufStatVal status=NOSTAT;
+        ArtikelBase artikel;
         std::string::size_type s1;
-        for(int j=0;j<8;++j)
+        for(int j=0;j<10;++j)
           {
            std::string trenner;
            if(j<2) trenner="-";
@@ -79,6 +81,7 @@ void graph_data_node::get_values_from_files()
            else if(j==5) try{  datum.from_postgres(zeile.substr(0,s1).c_str());         
                }catch(ManuProC::Datum::Formatfehler &e) {}
            else if(j==6) status=AufStatVal(atoi(zeile.substr(0,s1).c_str()));         
+           else if (j==9) artikel=ArtikelBase(atoi(zeile.substr(0,s1).c_str()));
            zeile=zeile.substr(s1+1);
           }
         if(instanz==ppsInstanzID::None) continue;
@@ -89,7 +92,7 @@ void graph_data_node::get_values_from_files()
 	{  schon_drin=std::find(list_auftrag.begin(),list_auftrag.end(),aeb)!=list_auftrag.end();
 	}
 	if (dont_hide_empty || bestellt!=geliefert || schon_drin)
-           list_auftrag.push_back(st_auftrag(aeb,bestellt,geliefert,status,datum,i->prefix));
+           list_auftrag.push_back(st_auftrag(aeb,bestellt,geliefert,status,datum,i->prefix,artikel));
       }
    }
 }
@@ -106,9 +109,10 @@ bool operator==(const graph_data_node::st_aebZ &a, const st_comp &b)
 }
 
 void graph_data_node::get_values_from_files_Z()
-{
-  for(std::vector<std::string>::const_iterator i=vec_files_auftragsentryzuordnung.begin();i!=vec_files_auftragsentryzuordnung.end();++i)
-   {
+{ unsigned fileindex=0;
+  for(std::vector<std::string>::const_iterator i=vec_files_auftragsentryzuordnung.begin();
+  		i!=vec_files_auftragsentryzuordnung.end();++i,++fileindex)
+   { 
      std::ifstream F((*i).c_str());
      if(!F) {std::cout <<"FEHLER: "<< *i<<" kann nicht geöffnet werden\n"; exit(1);}
      std::string zeile;
@@ -149,7 +153,7 @@ void graph_data_node::get_values_from_files_Z()
 		!=list_auftragszuordnung.end();
 	}
 	if (dont_hide_empty || !!menge || schon_drin)
-        list_auftragszuordnung.push_back(st_aebZ(aebALT,aebNEU,menge));
+        list_auftragszuordnung.push_back(st_aebZ(aebALT,aebNEU,menge,fileindex));
       }
    }
 }
@@ -181,7 +185,8 @@ void graph_data_node::fill_map()
 
 graph_data_node::st_node_strings graph_data_node::get_mengen_for_node(AufEintragBase aeb)
 {
-  std::string M,Mmem,Z,Zmem;
+  std::string M,Mmem,Z,Zmem,artikel_str;
+  ArtikelBase artikel;
   std::vector<st_auftrag> &V=map_aeb[aeb];
   for(std::vector<st_auftrag>::const_iterator j=V.begin();j!=V.end();++j)
     { std::string prefix=j->prefix;
@@ -197,12 +202,15 @@ graph_data_node::st_node_strings graph_data_node::get_mengen_for_node(AufEintrag
       if(Zmem != z )  Z+=prefix+z ;
       Z+="/";
       Zmem=z;
+      artikel=j->artikel;
     }
   std::string::size_type st1=M.find_last_of("/");
   if(st1!=std::string::npos) M.erase(st1,1);
   std::string::size_type st2=Z.find_last_of("/");
   if(st2!=std::string::npos) Z.erase(st2,1);
-  return st_node_strings(aeb,M,Z);
+  if (!artikel) artikel_str="?";
+  else artikel_str=cH_ArtikelBezeichnung(artikel)->Bezeichnung();
+  return st_node_strings(aeb,M,Z,artikel_str);
 }
 
 std::vector<std::pair<std::string,std::string> > graph_data_node::get_edges_for(AufEintragBase aeb)
@@ -210,43 +218,54 @@ std::vector<std::pair<std::string,std::string> > graph_data_node::get_edges_for(
   std::list<st_child> list_child;
   for(std::list<st_aebZ>::const_iterator i=list_auftragszuordnung.begin();i!=list_auftragszuordnung.end();++i)
    {
-     if(i->aebALT==aeb) list_child.push_back(st_child(i->aebNEU,i->menge));
+     if(i->aebALT==aeb) list_child.push_back(st_child(i->aebNEU,i->menge,i->fileindex));
    }
 
-  list_child.sort();
   std::vector<std::pair<std::string,std::string> > V;
-  AufEintragBase aeb_mem;
-  if(!list_child.empty()) aeb_mem=list_child.front().aeb;
-  std::string S,Mmem;
+  if(!list_child.empty()) 
+ {
+  list_child.sort(); // spannend, dass dies die Reihenfolge nicht stört ... CP
+  AufEintragBase aeb_mem=list_child.front().aeb;
+  std::vector<std::string> S(1);
+  AuftragBase::mengen_t Mmem;
+  unsigned fileindex_mem=unsigned(-1);
+  unsigned index=0;
   for(std::list<st_child>::const_iterator i=list_child.begin();i!=list_child.end();++i)
    {
-//cout <<"X\t" <<aeb<<'\t'<<i->aeb<<'\t'<<i->menge<<'\n';
      if(aeb_mem==i->aeb) 
-      {
-        std::string m=i->menge.String();
-        if(Mmem != m) S+=m;
-        S+="/";
-        Mmem=m;
+      { if (fileindex_mem==i->fileindex) 
+        { ++index; 
+          if (S.size()<index+1) S.resize(index+1);
+        }
+        else
+        { index=0; }
+        if (!S[index].empty()) S[index]+="/";
+        if(Mmem != i->menge) S[index]+=i->menge.String();
+        Mmem=i->menge;
       }
      else
-      {
-        std::string A=aeb_mem.Instanz()->Name()+"/"+itos(aeb_mem.Id())+"/"+itos(aeb_mem.ZNr());
-        std::string::size_type st1=S.find_last_of("/");
-        if(st1!=std::string::npos) S.erase(st1,1);
-        V.push_back(std::pair<std::string,std::string>(A,S));
+      { std::string S2;
+        for (std::vector<std::string>::const_iterator j=S.begin();j!=S.end();++j)
+        {  if (!S2.empty()) S2+="|";
+           S2+=*j;
+        }
+        V.push_back(std::pair<std::string,std::string>(aeb_mem.str(),S2));
 
-        S=i->menge.String()+"/";
-        Mmem=i->menge.String();
+	S.clear();
+        S.push_back(i->menge.String());
+        Mmem=i->menge;
         aeb_mem=i->aeb;
+        fileindex_mem=i->fileindex;
+        index=0;
       }
    }
- if(!list_child.empty())
-  {
-    std::string A=aeb_mem.Instanz()->Name()+"/"+itos(aeb_mem.Id())+"/"+itos(aeb_mem.ZNr());
-    std::string::size_type st1=S.find_last_of("/");
-    if(st1!=std::string::npos) S.erase(st1,1);
-    V.push_back(std::pair<std::string,std::string>(A,S));
-  }
+   std::string S2;
+        for (std::vector<std::string>::const_iterator i=S.begin();i!=S.end();++i)
+        {  if (!S2.empty()) S2+="|";
+           S2+=*i;
+        }
+        V.push_back(std::pair<std::string,std::string>(aeb_mem.str(),S2));
+ }
  return V;
 }
 

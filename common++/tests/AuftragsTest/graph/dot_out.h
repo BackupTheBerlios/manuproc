@@ -1,4 +1,4 @@
-// $Id: dot_out.h,v 1.14 2003/01/08 14:25:25 christof Exp $
+// $Id: dot_out.h,v 1.15 2003/08/06 09:17:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -26,20 +26,20 @@
 
 class Node
 {
-      const std::string bezeichner;
-      const unsigned int cluster_count;
-      const AufEintragBase auftrag;
+      std::string bezeichner;
+      unsigned int cluster_count;
+      AufEintragBase auftrag;
    public:
-      Node(std::string s,unsigned int cc,AufEintragBase a) : 
+      Node(const std::string &s,unsigned int cc,AufEintragBase a) : 
             bezeichner(s),cluster_count(cc),auftrag(a) {};
 
-      void write(std::ofstream &fout,AufEintragBase auftrag,std::string menge,std::string zusatz);
+      void write(std::ofstream &fout,AufEintragBase auftrag,
+      		const std::string &menge,const std::string &zusatz,
+      		const std::string &artikel);
       std::string Name() const {return bezeichner;}
       unsigned int ClusterCount() const {return cluster_count;}
 
       const AufEintragBase Auftrag() const{return auftrag;}
-      Node operator=(const Node &b)
-         {return Node(b.bezeichner,b.cluster_count,b.auftrag); }
       bool operator==(const Node &b)
          {return bezeichner==b.bezeichner && cluster_count==b.cluster_count;}
 

@@ -1,4 +1,4 @@
-// $Id: dot_out.cc,v 1.22 2003/08/02 14:54:24 christof Exp $
+// $Id: dot_out.cc,v 1.23 2003/08/06 09:17:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -19,8 +19,7 @@
 
 #include <fstream>
 #include "dot_out.h"
-#include <Artikel/ArtikelBezeichnung.h>
-#include <Auftrag/AufEintrag.h>
+#include <Auftrag/AufEintragBase.h>
 
 #define CUSTOM_ORDERNO 10
 
@@ -58,7 +57,8 @@ struct st_edge{Node node;std::string bez;std::vector<std::pair<std::string,std::
 
 std::string aeb_to_string(AufEintragBase aeb)
 {
-  return aeb.Instanz()->Name()+"/"+itos(aeb.Id())+"/"+itos(aeb.ZNr());
+  return aeb.str();
+  // Instanz()->Name()+"/"+itos(aeb.Id())+"/"+itos(aeb.ZNr());
 }
 
 void dot_out::write_node(std::ofstream &fout)
@@ -73,7 +73,7 @@ void dot_out::write_node(std::ofstream &fout)
    {
      graph_data_node::st_node_strings M=N.get_mengen_for_node(*i);
      Node node("my_"+itos(++cc),cc,M.auftrag);
-     node.write(fout,M.auftrag,M.mengen,M.zusatz);
+     node.write(fout,M.auftrag,M.mengen,M.zusatz,M.artikel);
      std::vector<std::pair<std::string,std::string> >  E=N.get_edges_for(*i);
      std::vector<std::pair<std::string,std::string> > Vchild;
      for(std::vector<std::pair<std::string,std::string> >::const_iterator j=E.begin();j!=E.end();++j)
@@ -103,15 +103,12 @@ void dot_out::write_node(std::ofstream &fout)
    }
 }
 
-void Node::write(std::ofstream &fout,AufEintragBase auftrag,std::string menge,std::string zusatz)
+void Node::write(std::ofstream &fout,AufEintragBase auftrag,
+		const std::string &menge,
+		const std::string &zusatz,const std::string &artikel)
 {
   std::string shape="Mrecord";
   if(Auftrag().Id()>=CUSTOM_ORDERNO || Auftrag().Id()==1) shape="record";
-  std::string artikel="?";
-  try{
-    artikel=cH_ArtikelBezeichnung(AufEintrag(auftrag).Artikel())->Bezeichnung();
-  }catch(AufEintrag::NoAEB_Error) {}
-  
   fout << "\n\tsubgraph p_"<<ClusterCount()<<" {\n"
           "\t\tnode [shape="<<shape<<"];\n"
           "\t\t"<<bezeichner<<" [label=\"{"<<aeb_to_string(auftrag)<<" | "<<artikel<<" | "<<zusatz<<" | "<<menge<<"}\"];\n"

@@ -1,4 +1,4 @@
-// $Id: get_data.h,v 1.23 2003/02/12 13:54:33 christof Exp $
+// $Id: get_data.h,v 1.24 2003/08/06 09:17:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -32,22 +32,30 @@ public:
       struct st_auftrag{AufEintragBase auftrag; AuftragBase::mengen_t bestellt;
                         AuftragBase::mengen_t geliefert;AufStatVal status;
                         Petig::Datum datum;std::string prefix;
+                        ArtikelBase artikel;
              st_auftrag(AufEintragBase a, AuftragBase::mengen_t b,
                          AuftragBase::mengen_t g,AufStatVal s,Petig::Datum d,
-                         std::string p)
-                :auftrag(a),bestellt(b),geliefert(g),status(s),datum(d),prefix(p) {}
+                         std::string p,ArtikelBase art)
+                :auftrag(a),bestellt(b),geliefert(g),status(s),datum(d),prefix(p),
+                	artikel(art) {}
              bool operator<(const st_auftrag &b) const {return auftrag<b.auftrag;}
              };
 
       struct st_aebZ{AufEintragBase aebALT;AufEintragBase aebNEU; AuftragBase::mengen_t menge;
-            st_aebZ(AufEintragBase a,AufEintragBase n,AuftragBase::mengen_t m)
-            : aebALT(a),aebNEU(n),menge(m) {}
-             bool operator<(const st_aebZ &b) const {return aebALT<b.aebALT;}
+      			unsigned fileindex;
+            st_aebZ(AufEintragBase a,AufEintragBase n,AuftragBase::mengen_t m,unsigned fi)
+            : aebALT(a),aebNEU(n),menge(m),fileindex(fi) {}
+             bool operator<(const st_aebZ &b) const 
+             {return aebALT<b.aebALT 
+             		|| (aebALT==b.aebALT && fileindex<b.fileindex);}
             };
       struct st_child{AufEintragBase aeb;AuftragBase::mengen_t menge;
-              st_child(AufEintragBase a,AuftragBase::mengen_t m) 
-               : aeb(a),menge(m){} 
-              bool operator<(const st_child &b) const {return aeb<b.aeb;}
+      		unsigned fileindex;
+              st_child(AufEintragBase a,AuftragBase::mengen_t m,unsigned fi) 
+               : aeb(a),menge(m),fileindex(fi){} 
+              bool operator<(const st_child &b) const 
+              {return aeb<b.aeb 
+             		|| (aeb==b.aeb && fileindex<b.fileindex);}
                };
       struct st_files{std::string filename;std::string prefix;
              st_files(std::string f) : filename(f) {}
@@ -72,10 +80,12 @@ public:
      std::vector<st_files> get_filenames() const {return filenames;}
      const std::string &get_title() const { return graphtitle; }
      std::list<AufEintragBase> get_existing_aeb() const;
+
      struct st_node_strings{AufEintragBase auftrag; std::string mengen;
-                            std::string zusatz;
-            st_node_strings(AufEintragBase a,std::string m,std::string z) 
-               : auftrag(a),mengen(m),zusatz(z) {} };
+                            std::string zusatz; std::string artikel;
+            st_node_strings(AufEintragBase a,const std::string &m,const std::string &z,const std::string &art) 
+               : auftrag(a),mengen(m),zusatz(z),artikel(art) {} };
+
      st_node_strings get_mengen_for_node(AufEintragBase aeb);
      std::vector<std::pair<std::string,std::string> >  get_edges_for(AufEintragBase aeb);
 
