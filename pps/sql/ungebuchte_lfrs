@@ -11,7 +11,8 @@ e.zeile as zeile, \
 l.datum as datum, \
 artikel||'/'||breite||'/'||farbe||'/'||aufmachung as artikel \
 from lieferschein l join lieferscheinentry e on \
-((l.lfrsid,l.instanz)=(e.lfrsid,e.instanz) and e.status=0) left join \
+((l.lfrsid,l.instanz)=(e.lfrsid,e.instanz) and e.status=0\
+ and e.lagerid!=0) left join \
 rechnung r on (r.rngid=l.rngid) join artbez_3_1 b on (b.id=e.artikelid) \
 where coalesce(r.rngart,'R')='R' order by l.lfrsid,e.zeile"
 
