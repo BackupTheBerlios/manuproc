@@ -1,4 +1,4 @@
-/* $Id: Message.h,v 1.2 2003/03/20 12:18:05 christof Exp $ */
+/* $Id: Message.h,v 1.3 2003/03/20 12:23:03 christof Exp $ */
 /*  Gtk--addons: a collection of gtk-- addons
     Copyright (C) 1998  Adolf Petig GmbH. & Co. KG
     Developed by Jacek Jakubowski <jacek@wtal.de>
@@ -26,6 +26,8 @@
 #include<gtkmm/box.h>
 #include<gtkmm/main.h>
 #include <string>
+#include <gtk/gtkmain.h>
+#include <gtk/gtkwidget.h>
 
 class Message : public Gtk::Dialog
 {
@@ -48,16 +50,14 @@ class Message : public Gtk::Dialog
         }
 
         void Show( const std::string &m )
-        {
-            Gtk::Main::instance()->grab_add( *this );
-            message.set( m );
+        {   gtk_grab_add(GTK_WIDGET(gobj()));
+            message.set_text( m );
             show();
         }
 
     private :
         void Hide()
-        {
-            ( Gtk::Main::instance() )->grab_remove( *this );
+        {   gtk_grab_remove(GTK_WIDGET(gobj()));
             hide();
         }
 };
