@@ -1,8 +1,8 @@
 #include <tclistnode.h>
 #include <Artikel/ArtikelMengeSumme.h>
-#include <Aux/EntryValueDatum.h>
-#include <Aux/EntryValueFixed.h>
-#include <Aux/EntryValueIntString.h>
+#include <Misc/EntryValueDatum.h>
+#include <Misc/EntryValueFixed.h>
+#include <Misc/EntryValueIntString.h>
 #include <Auftrag/AufEintragZu.h>
 
 std::ostream &operator<<(std::ostream &o, const ArtikelMenge &am);

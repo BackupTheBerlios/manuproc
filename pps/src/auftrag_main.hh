@@ -27,7 +27,7 @@
 #include <Auftrag/AuftragFull.h>
 #include <Auftrag/AufEintragZu.h>
 #include<Auftrag/selFullAufEntry.h>
-#include <Aux/Long.h>
+#include <Misc/Long.h>
 #include <Misc/UniqueValue.h>
 
 class auftrag_main : public auftrag_main_glade

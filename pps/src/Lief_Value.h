@@ -19,7 +19,7 @@
 #ifndef LIEF_VALUE_H
 #define LIEF_VALUE_H
 
-#include<Aux/EntryValueIntString.h>
+#include<Misc/EntryValueIntString.h>
 
 class Lief_Value : public EntryValueIntString
 {

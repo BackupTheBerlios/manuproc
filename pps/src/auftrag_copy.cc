@@ -11,7 +11,7 @@
 #include <sys/types.h>
 #include "auftrag_bearbeiten.hh"
 #include "MyMessage.h"  
-#include <Aux/Transaction.h>
+#include <Misc/Transaction.h>
 #include <memory>
 
 extern auftrag_bearbeiten *auftragbearbeiten;

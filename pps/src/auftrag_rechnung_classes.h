@@ -1,8 +1,8 @@
 #ifndef RECHNUNGTREEDATA
 #define RECHNUNGTREEDATA
-#include<Aux/EntryValueIntString.h>
-#include<Aux/Datum.h>
-#include<Aux/Ausgabe_neu.h>
+#include<Misc/EntryValueIntString.h>
+#include<Misc/Datum.h>
+#include<Misc/Ausgabe_neu.h>
 #include<Artikel/ArtikelBezeichnung.h>
 #include<Lieferschein/RechnungEntry.h>
 #include<Lieferschein/Lieferschein.h>

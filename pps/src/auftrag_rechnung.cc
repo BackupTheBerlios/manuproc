@@ -18,18 +18,18 @@
 
 #include "config.h"
 #include "auftrag_rechnung.hh"
-#include<Aux/Ausgabe_neu.h>
-#include<Aux/itos.h>
+#include<Misc/Ausgabe_neu.h>
+#include<Misc/itos.h>
 #include <Artikel/Artikelpreis.h>
 #include <gtk--/menu.h>
 #include <tclistleaf.h>
 #include "auftrag_rechnung_classes.h"
 #include "MyMessage.h"
-#include <Aux/dbconnect.h>
+#include <Misc/dbconnect.h>
 #include "ja_nein_frage.hh"
 extern MyMessage *meldung;
 
-#include <Aux/dbcapability.h>
+#include <Misc/dbcapability.h>
 extern DBCapability *dbcapability;
 //extern ManuProC::Connection *Conn;
 #include <Auftrag/AufEintrag.h>

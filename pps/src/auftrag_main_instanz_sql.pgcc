@@ -1,8 +1,8 @@
 #include "auftrag_main.hh"
-#include <Aux/SQLerror.h>
-#include <Aux/Transaction.h>
+#include <Misc/SQLerror.h>
+#include <Misc/Transaction.h>
 exec sql include sqlca;
-#include <Aux/FetchIStream.h>
+#include <Misc/FetchIStream.h>
 
 int auftrag_main::get_next_entry_znr(AuftragBase& auftrag)
 {

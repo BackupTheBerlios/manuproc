@@ -19,8 +19,8 @@
 #include"AufEintrag.h"
 #include"auftragbase.h"
 #include<stdio.h>
-#include <Aux/Transaction.h>
-#include<Aux/Changejournal.h>
+#include <Misc/Transaction.h>
+#include<Misc/Changejournal.h>
 
 exec sql include sqlca;
 

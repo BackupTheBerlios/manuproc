@@ -21,8 +21,8 @@
 
 
 #include <Message.h>
-#include <Aux/SQLerror.h>
-#include <Aux/itos.h>
+#include <Misc/SQLerror.h>
+#include <Misc/itos.h>
 
 class MyMessage : public Message
 {

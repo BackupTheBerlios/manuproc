@@ -1,4 +1,4 @@
-// $Id: auftrag_bearbeiten.hh,v 1.20 2003/06/18 11:02:22 jacek Exp $
+// $Id: auftrag_bearbeiten.hh,v 1.21 2003/07/08 10:18:17 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,7 +24,7 @@
 #include "termsplidial.hh"
 #include <Auftrag/AuftragFull.h>
 #include "aktAufEintrag.h"
-#include <Aux/SQLerror.h>
+#include <Misc/SQLerror.h>
 #include <Artikel/Prozess.h>
 #include <vector>
 

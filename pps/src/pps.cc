@@ -21,11 +21,12 @@
 #include "auftrag_main.hh"
 #include "auftrag_bearbeiten.hh"
 #include "auftragbase.h"
-#include <Aux/exception.h>
-#include <Aux/dbconnect.h>
+#include <Misc/exception.h>
+#include <Misc/dbconnect.h>
 #include "MyMessage.h"
 #include <Misc/Trace.h>
-#include <Aux/dbcapability.h>
+#include <Misc/dbcapability.h>
+#include <Misc/Event.h>
 
 MyMessage *meldung;
 auftrag_main *auftragmain;

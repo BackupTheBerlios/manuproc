@@ -30,7 +30,7 @@
 #include <Artikel/ArtikelStamm.h>
 #include <Artikel/Einheiten.h>
 #include <algorithm>
-#include <Aux/Global_Settings.h>
+#include <Misc/Global_Settings.h>
 #include "MyMessage.h"
 #include <PPixmap.hh>
 //#include <Lager/Lager_Vormerkungen.hh>
@@ -49,7 +49,7 @@ bool auftragflag;/* zeigt an ab wann auftragid in den Zeilen */
                         /* gespeichert werden soll */
 extern bool load_list;
 
-#include <Aux/Ausgabe_neu.h>
+#include <Misc/Ausgabe_neu.h>
 #include "aktAufEintrag.h" //wg. Lieferwoche ???
 #include <cstdio>
 #include "class_auftrag_tree.hh"

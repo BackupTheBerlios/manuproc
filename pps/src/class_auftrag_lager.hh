@@ -1,13 +1,13 @@
 #ifndef _CLASS_DATA_LAGER_HH
 #  define _CLASS_DATA_LAGER_HH
 
-#include <Aux/EntryValueEmptyInt.h>
-#include <Aux/EntryValueIntString.h>
-#include <Aux/EntryValueDatum.h>
-#include <Aux/EntryValueFixedEinheit.h>
-#include <Aux/itos.h>
-#include <Aux/Datum.h>
-#include <Aux/Ausgabe_neu.h>
+#include <Misc/EntryValueEmptyInt.h>
+#include <Misc/EntryValueIntString.h>
+#include <Misc/EntryValueDatum.h>
+#include <Misc/EntryValueFixedEinheit.h>
+#include <Misc/itos.h>
+#include <Misc/Datum.h>
+#include <Misc/Ausgabe_neu.h>
 #include <Auftrag/AufEintragZu.h>
 #include <tclistnode.h>
 //#include <Auftrag/AufEintrag.h>

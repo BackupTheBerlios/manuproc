@@ -3,9 +3,9 @@
 #ifndef LLISTE_CLASSES
 #define LLISTE_CLASSES
 
-#include <Aux/EntryValueBase.h>
+#include <Misc/EntryValueBase.h>
 
-#include <Aux/Datum.h>
+#include <Misc/Datum.h>
 #include <Lieferschein/LieferscheinList.h>
 #include <Lieferschein/LieferscheinEntry.h>
 #include <Lieferschein/Lieferschein.h>
@@ -14,7 +14,7 @@
 #include <tclistnode.h>
 #include <Artikel/Einheiten.h>
 #include <typeinfo>
-#include <Aux/Ausgabe_neu.h>
+#include <Misc/Ausgabe_neu.h>
 #include <Artikel/ArtikelMengeSumme.h>
 
 class Data_LListe : public RowDataBase

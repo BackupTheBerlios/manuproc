@@ -1,8 +1,8 @@
 
 #include "lieferscheinliste_classes.hh"
-#include <Aux/EntryValueIntString.h>
-#include <Aux/EntryValueDatum.h>
-#include <Aux/EntryValueQuartal.h>
+#include <Misc/EntryValueIntString.h>
+#include <Misc/EntryValueDatum.h>
+#include <Misc/EntryValueQuartal.h>
 
 
 const cH_EntryValue Data_LListe::Value(guint seqnr,gpointer gp) const

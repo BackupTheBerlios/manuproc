@@ -18,7 +18,7 @@
 
 #include"auftragbase.h"
 #include"AufEintrag.h"
-#include<Aux/Ausgabe_neu.h>
+#include<Misc/Ausgabe_neu.h>
 
 AufEintrag::AufEintrag(const SelectedAufentry &aufentry,
 			const cH_ExtBezSchema &schema)

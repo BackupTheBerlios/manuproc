@@ -18,7 +18,7 @@
 
 #include"AuftragFull.h"
 #include<Gtk_OStream.h>
-#include<Aux/Ausgabe_neu.h>
+#include<Misc/Ausgabe_neu.h>
 #include <gtk--/clist.h>
 
 int AuftragFull::insertNewEntry(const aktAufEintrag &aufentry, const cH_ExtBezSchema &ebsh) throw (SQLerror)

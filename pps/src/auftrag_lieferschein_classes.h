@@ -3,11 +3,11 @@
 
 #ifndef LIEFERSCHEINTREEDATA
 #define LIEFERSCHEINTREEDATA
-#include<Aux/EntryValueIntString.h>
-#include<Aux/EntryValueEmptyInt.h>
-#include<Aux/EntryValueDatum.h>
-#include<Aux/Datum.h>
-#include<Aux/Ausgabe_neu.h>
+#include<Misc/EntryValueIntString.h>
+#include<Misc/EntryValueEmptyInt.h>
+#include<Misc/EntryValueDatum.h>
+#include<Misc/Datum.h>
+#include<Misc/Ausgabe_neu.h>
 #include<Lieferschein/LieferscheinEntry.h>
 #include<Lieferschein/Lieferschein.h>
 #include<rowdata.h>

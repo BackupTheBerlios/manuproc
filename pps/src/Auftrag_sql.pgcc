@@ -20,9 +20,9 @@
 #include"auftrag_main.hh"
 #include<string.h>
 #include<strstream>
-#include<Aux/SQLerror.h>
+#include<Misc/SQLerror.h>
 #include<Auftrag/selAufEntry.h>
-#include <Aux/Transaction.h>
+#include <Misc/Transaction.h>
 exec sql include sqlca;
 
 extern auftrag_main *auftragmain;

@@ -18,13 +18,13 @@
 
 #include "auftrag_bearbeiten.hh"
 #include "auftrag_main.hh"
-#include <Aux/ctime_assert.h>
+#include <Misc/ctime_assert.h>
 #include <Artikel/Einheiten.h>
 #include <Artikel/ArtikelStamm.h>
 #include <Artikel/Artikelpreis.h>
 #include <Gtk_OStream.h>
-#include <Aux/Ausgabe_neu.h>
-#include <Aux/dbconnect.h>
+#include <Misc/Ausgabe_neu.h>
+#include <Misc/dbconnect.h>
 #include <unistd.h>
 //#include <Auftrag/ppsInstanzProduziert.h>
 #include "auftrag_copy.hh"

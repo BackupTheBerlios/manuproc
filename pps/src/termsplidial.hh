@@ -31,7 +31,7 @@
 #  include "termsplidial_glade.hh"
 #  define _TERMSPLIDIAL_HH
 
-#include<Aux/Datum.h>
+#include<Misc/Datum.h>
 
 class auftrag_bearbeiten;
 

@@ -19,7 +19,7 @@
 #include "auftrag_lieferschein.hh"
 #include"MyMessage.h"
 #include<Kunde/Kunde.h>
-#include<Aux/Ausgabe_neu.h>
+#include<Misc/Ausgabe_neu.h>
 #include<Lieferschein/LieferscheinEntry.h>
 #include <Auftrag/selFullAufEntry.h>
 #include<typeinfo>
@@ -31,7 +31,7 @@
 #include <Auftrag/AuftragFull.h>
 //#include "auftrag_main.hh"
 #include <unistd.h>
-#include <Aux/Trace.h>
+#include <Misc/Trace.h>
 
 extern MyMessage *meldung;
 extern auftrag_main *auftragmain;

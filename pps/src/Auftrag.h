@@ -22,11 +22,11 @@
 //#include"termsplidial.hh" // nicht hier !!!
 #include<Auftrag/auftrag_status.h> // hier ??
 #include <Auftrag/AuftragBase.h>
-#include<Aux/Datum.h>
-#include<Aux/Ausgabe_neu.h> // besser ins C!
+#include<Misc/Datum.h>
+#include<Misc/Ausgabe_neu.h> // besser ins C!
 #include<string>
-#include <Aux/Waehrung.h>
-#include <Aux/SQLerror.h>
+#include <Misc/Waehrung.h>
+#include <Misc/SQLerror.h>
 #include <Kunde/Kunde.h> // vielleicht auch Basisklasse erzeugen
 
 // extern termsplidial *splitdial;
