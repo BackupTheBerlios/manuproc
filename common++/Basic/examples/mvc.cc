@@ -1,4 +1,4 @@
-// $Id: mvc.cc,v 1.3 2002/11/06 08:28:44 christof Exp $
+// $Id: mvc.cc,v 1.4 2002/11/06 11:59:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -54,7 +54,7 @@ int main()
    }
 
    // perhaps the ease recommends the extra bytes for a signal per element
-   { pair<MVC<int>,MVC<int> > model(std::pair<int,int>(1,2));
+   { std::pair<MVC<int>,MVC<int> > model(std::pair<int,int>(1,2));
      View_int view(model.first);
      View_int view2(model.second);
      model.first=5;
