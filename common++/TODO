@@ -24,3 +24,12 @@
 	dadrin, dadrüber, 2 drüber
 
 - uid und reason entfernen
+
+- ausliefern mit ProdSelbst:
+	ProdNG: geschlossenen 1er Rückgängig machen wenn 0er ausgeliefert
+	wird. (dann neuen 1er anlegen)
+	
+- Rückmeldungen:
+	2er vergrößert = geplante Menge abbestellt (könnte sich eventuell
+		durch nachfolgende Neubestellung (split) erledigen)
+	0er mit "nahem" 

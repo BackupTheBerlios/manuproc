@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.1 2003/07/22 08:32:59 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.2 2003/07/22 11:54:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -234,8 +234,6 @@ void AufEintrag::WiederEinlagern(const int uid,cH_ppsInstanz instanz,const Artik
   {  mengen_t M=min(i->getGeliefert(),menge);
      if (!M) continue;
 
-     // das muss einfacher gehen ...
-     //i->ProduziertNG(-M);
      assert(i->Id()==plan_auftrag_id);
      i->abschreiben(-M);
      // Eltern des 0ers sind Eltern des 1ers, allerdings waren dessen 

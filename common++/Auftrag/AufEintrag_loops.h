@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.h,v 1.1 2003/07/22 08:13:27 christof Exp $ */
+/* $Id: AufEintrag_loops.h,v 1.2 2003/07/22 11:53:30 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,7 +30,7 @@ struct distribute_children_cb
 	virtual AuftragBase::mengen_t operator()(const ArtikelBase &,
 		const AufEintragBase &,AuftragBase::mengen_t) const=0;
 	// for the remainder
-	virtual void operator()(const ArtikelBase &,AuftragBase::mengen_t) const;
+	virtual void operator()(const ArtikelBase &,AuftragBase::mengen_t) const=0;
 };
 
 bool distribute_children(const AufEintragBase &startAEB,
@@ -41,7 +41,7 @@ bool distribute_children(const AufEintragBase &startAEB,
 struct distribute_parents_cb
 {	// return the amount of the third argument you processed
 	virtual AuftragBase::mengen_t operator()(const AufEintragBase &,
-				AuftragBase::mengen_t) const;
+				AuftragBase::mengen_t) const=0;
 };
 
 AuftragBase::mengen_t distribute_parents(const AufEintragBase &startAEB, 
@@ -49,7 +49,7 @@ AuftragBase::mengen_t distribute_parents(const AufEintragBase &startAEB,
 
 struct auf_positionen_verteilen_cb
 {	virtual AuftragBase::mengen_t operator()(AufEintrag &ae, 
-			AuftragBase::mengen_t abschreibmenge) const;
+			AuftragBase::mengen_t abschreibmenge) const=0;
 };
 
 AuftragBase::mengen_t auf_positionen_verteilen(
