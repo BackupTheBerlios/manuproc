@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.32 2003/12/03 15:01:25 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.33 2003/12/04 08:01:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -106,15 +106,24 @@ public:
 
 struct AufEintrag::Auslagern_cb : public auf_positionen_verteilen_cb
 {	bool fuer_auftraege;
-	ProductionContext2 ctx;
+	ProductionContext ctx;
 	
-	Auslagern_cb(bool fa, const ProductionContext2 &_ctx) 
+	Auslagern_cb(bool fa, const ProductionContext &_ctx) 
 		: fuer_auftraege(fa), ctx(_ctx) {}
 	mengen_t operator()(AufEintrag &ae, mengen_t abschreibmenge) const
 	{  if (ae.Id()==plan_auftrag_id)
 	   {  if (!fuer_auftraege)
-	         distribute_parents(ae,abschreibmenge,NeuBestellen(ae));
-	      else ae.abschreiben(abschreibmenge);
+	      {  distribute_parents(ae,abschreibmenge,NeuBestellen(ae));
+	         // Spezialfall durch unbestellteMengeProduzieren
+	         if (!!ctx.aeb && abschreibmenge>0) 
+	         {  AufEintragZu(ctx.aeb).Neu(ae,0);
+	            unbestellteMengeProduzieren2(ae.Instanz(),
+	                     ae.Artikel(),abschreibmenge,true,ctx.aeb,ctx.leb,
+	                     ManuProC::Datum());
+	         }
+	      }
+	      else 
+	         ae.abschreiben(abschreibmenge);
 	   }
 	   else
 	   {  assert(ae.Id()==dispo_auftrag_id);
@@ -122,7 +131,8 @@ struct AufEintrag::Auslagern_cb : public auf_positionen_verteilen_cb
 	      // als produziert markieren!
 	      if (fuer_auftraege)
 	         AufEintrag::unbestellteMengeProduzieren(ae.Instanz(),
-	         		ae.Artikel(),abschreibmenge);
+	         		ae.Artikel(),abschreibmenge,false,ctx.aeb);
+#warning warum false?	         		
 	   }
 	   return abschreibmenge;
 	}
@@ -132,7 +142,7 @@ struct AufEintrag::Auslagern_cb : public auf_positionen_verteilen_cb
 AuftragBase::mengen_t AufEintrag::Auslagern
 	(const AuftragBase &ab,const ArtikelBase &artikel,mengen_t menge, 
 	 bool fuer_auftraege,
-	 const ProductionContext2 &ctx)
+	 const ProductionContext &ctx)
 {  assert(ab.Instanz()->LagerInstanz());
    ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("ab",ab),
 		NV("artikel",artikel),NV("menge",menge),

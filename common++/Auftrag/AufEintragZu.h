@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.24 2003/09/11 12:18:46 christof Exp $
+// $Id: AufEintragZu.h,v 1.25 2003/12/04 08:01:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -86,6 +86,7 @@ public:
     __deprecated list_t get_Referenz_list_for_geplant_neu(bool kinder=false) const throw(SQLerror);
     // Für einen KOMPLETTEN Auftragsbaum nur_ende=false setzen
     // die folgende Funktion liefert sonst nur die Endaufträge OHNE Knoten
+// noch mal überdenken, was davon notwendig ist
     list_t get_Referenz_listFull(bool kinder,bool nur_ende=true) const throw(SQLerror);
                  //kinder=false:   Elternaufträge 
                  //kinder=true:    Kinderaufträge 
@@ -101,10 +102,7 @@ public:
 
     // Neue Einträg anlegen:
     void Neu(const AufEintragBase& neuAEB,const mengen_t menge);
-#if 0    
-    __deprecated void Neu(const AufEintragBase& neuAEB,const mengen_t menge,
-             const int oldZnr);
-#endif             
+
     // gibt die Menge zurück, die verändert wurde. Falls reduziert werden sollte
     // müssen die input/output menge nicht übereinstimmen, da keine negativen Mengen
     // bestellt werden können

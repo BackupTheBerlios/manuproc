@@ -1,4 +1,4 @@
-/* $Id: Verfuegbarkeit.h,v 1.2 2003/11/29 13:30:28 christof Exp $ */
+/* $Id: Verfuegbarkeit.h,v 1.3 2003/12/04 08:01:37 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -50,6 +50,7 @@ struct mapindex
 typedef std::map<mapindex,Mengen> map_t;
 
 void verfuegbar(const AufEintrag &ae, map_t &result, mengen_t menge=0, mengen_t offset=0);
-
+// Gegenrichtung
+void wozu_benoetigt(const AufEintrag &ae, map_t &result, mengen_t menge=0, mengen_t offset=0);
 }
 #endif

@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.26 2003/12/03 15:01:25 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.27 2003/12/04 08:01:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -100,7 +100,7 @@ AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
    if (instanz->LagerInstanz() && rekursiv) 
    // petig:S: Auslagern ruft uMP ohne rekursion auf
    {  Lager L(instanz);
-      L.raus_aus_lager(artikel,menge,true,ProductionContext(elter,ctx));
+      L.raus_aus_lager(artikel,menge,false,ProductionContext(elter,ctx));
       // bräuchten wir den AEB?
       return AufEintragBase();
    }

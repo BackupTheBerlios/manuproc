@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.45 2003/12/02 10:33:47 jacek Exp $
+// $Id: Lager.cc,v 1.46 2003/12/04 08:01:37 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -153,18 +153,19 @@ void LagerBase::raus_aus_lager(const ArtikelBase &artikel,
    // bei einem 2er 1er erzeugen
    if (menge!=0 && fuer_auftrag)
       menge=AufEintrag::Auslagern(
- 	  	AuftragBase(*this,AuftragBase::plan_auftrag_id),artikel,menge,fuer_auftrag,ctx.leb);
+ 	  	AuftragBase(*this,AuftragBase::plan_auftrag_id),artikel,menge,fuer_auftrag,ctx);
    if (menge!=0)
       menge=AufEintrag::Auslagern(
-      		AuftragBase(*this,AuftragBase::dispo_auftrag_id),artikel,menge,fuer_auftrag,ctx.leb);
+      		AuftragBase(*this,AuftragBase::dispo_auftrag_id),artikel,menge,fuer_auftrag,ctx);
    if (menge!=0 && !fuer_auftrag)
       menge=AufEintrag::Auslagern(
- 	  	AuftragBase(*this,AuftragBase::plan_auftrag_id),artikel,menge,fuer_auftrag,ctx.leb);
+ 	  	AuftragBase(*this,AuftragBase::plan_auftrag_id),artikel,menge,fuer_auftrag,ctx);
    
    if (menge!=0 && fuer_auftrag)
       // einfach als produziert vermerken
    {  if (menge>0)
-         AufEintrag::unbestellteMengeProduzieren(*this,artikel,menge);
+         AufEintrag::unbestellteMengeProduzieren
+         		(*this,artikel,menge,false,ctx.aeb,ctx.leb);
       else
          assert(menge>0);
    }

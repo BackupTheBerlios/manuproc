@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.27 2003/09/11 12:18:46 christof Exp $
+// $Id: AufEintragZu.cc,v 1.28 2003/12/04 08:01:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -226,14 +226,6 @@ void AufEintragZu::Neu(const AufEintragBase& neuAEB,const mengen_t menge)
     SQLerror::test(__FILELINE__);
  }
 }
-
-#if 0
-void AufEintragZu::Neu(const AufEintragBase& neuAEB,
-                       const mengen_t menge,const int oldZnr)
-{ if (oldZnr) Neu(AufEintragBase(AuftragBase(*this),oldZnr),menge);
-  else Neu(neuAEB,menge);
-}
-#endif
 
 namespace { struct pri_menge
 {  ManuProC::TimeStamp pri;

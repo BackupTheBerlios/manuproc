@@ -1,4 +1,4 @@
-// $Id: auftrag_repair.cc,v 1.4 2003/09/02 12:10:52 christof Exp $
+// $Id: auftrag_repair.cc,v 1.5 2003/12/04 08:01:37 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -80,7 +80,7 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,const bool analys
       else if (!(actions&b_tree)) // Meldung bei * unterdrücken
          std::cout << "\t"<< I << " 'A' nicht sinnvoll\n";
      }
-   reload:
+//   reload:
     if (actions&b_tree || actions&b_exclude)
     {  SQLFullAuftragSelector psel=SQLFullAuftragSelector::sel_InstanzAlle(I->Id());
        SelectedFullAufList K(psel);
