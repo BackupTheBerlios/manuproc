@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.44 2004/05/06 09:20:48 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.45 2004/05/06 09:24:51 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -171,6 +171,7 @@ private:
    const iterator &iterconv(vfunc_constiter_t iter) const;
    bool iter_valid(vfunc_constiter_t iter) const;
    void iterinit(vfunc_iter_t iter,const iterator &schema) const;
+   void iterclear(vfunc_iter_t iter) const;
    void iterinit(vfunc_iter_t iter,const const_iterator &schema) const;
    Path getPath(iterator it) const;
    TreeModel::iterator getIter(iterator it) const;

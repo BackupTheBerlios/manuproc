@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.66 2004/05/06 09:20:48 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.67 2004/05/06 09:24:51 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -629,6 +629,15 @@ void SimpleTreeStore::iterinit(vfunc_iter_t iter,const const_iterator &schema) c
    		iter STS_GTKMM_22_24(->,.)user_data,
    		iter STS_GTKMM_22_24(->,.)user_data2,
    		iter STS_GTKMM_22_24(->,.)user_data3);
+}
+
+void SimpleTreeStore::iterclear(vfunc_iter_t iter) const
+{  ManuProC::Trace(trace_channel,__FUNCTION__);
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+   iter=vfunc_iter_t();
+#else
+   memset(iter,0,sizeof(*iter));
+#endif
 }
 
 void SimpleTreeStore::iterinit(vfunc_iter_t iter,const iterator &schema) const
