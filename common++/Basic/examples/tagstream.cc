@@ -1,4 +1,4 @@
-// $Id: tagstream.cc,v 1.5 2004/06/03 07:02:18 christof Exp $
+// $Id: tagstream.cc,v 1.6 2004/06/03 07:14:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -45,6 +45,13 @@ int main()
    		    "<subsub attr=\"&amp;\"/>&amp;"
    		  "</sub>"
    		"</test>";
+      TagStream ts(Testcase1);
+      ts.debug(10);
+      ts.write(std::cout,true);
+      std::cout << '\n';
+   }
+   std::cout << "===== reading BOM =====\n";
+   {  const char * const Testcase1="﻿<?xml version=\"1.0\"?><test a=\"﻿\"/>";
       TagStream ts(Testcase1);
       ts.debug(10);
       ts.write(std::cout,true);

@@ -5,12 +5,12 @@
   "test" @* P*
     "test" @* P*
     .A="a"
-<?xml version="1.0" encoding="UTF-8"?><test><test A="a"/></test>
+﻿<?xml version="1.0" encoding="UTF-8"?><test><test A="a"/></test>
 ===== iso 8859-1 =====
 "" @* P0
   "?xml" @* P*
-  .version="1.0"
   .encoding="ISO-8859-1"
+  .version="1.0"
   "test" @* P*
     "süb"="èï" P*
     .ÄÖÜäöüß="�\x84�\x96�\x9Cäöü�\x9F°ué"
@@ -20,11 +20,18 @@
 ===== special chars =====
 "" @* P0
   "?xml" @* P*
-  .version="1.0"
   .encoding="ISO-8859-1"
+  .version="1.0"
   "test" @* P*
     "sub"="ü�\x83¤&<>"A" P*
       "subsub" @* P*
       .attr="&"
       ""="&" P*
 <?xml version="1.0" encoding="ISO-8859-1"?><test><sub>�ä&amp;&lt;&gt;&quot;A<subsub attr="&amp;"/>&amp;</sub></test>
+===== reading BOM =====
+"" @* P0
+  "?xml" @* P*
+  .version="1.0"
+  "test" @* P*
+  .a="﻿"
+﻿<?xml version="1.0" encoding="UTF-8"?><test a="﻿"/>
