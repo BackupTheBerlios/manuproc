@@ -68,6 +68,7 @@ class TreeBase : public TCList
  bool redisplay_recurse(TCListRow_API *a, const RowDataBase *r, guint col);
  void reihenfolge_anzeigen();
  void initDepth(TreeRow *tr, guint depth) const;
+ void on_Color(const Gtk::CheckMenuItem *sp);
  
 protected: 
  std::vector<cH_RowDataBase> datavec;

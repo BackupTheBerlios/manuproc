@@ -346,6 +346,12 @@ void TreeBase::Expand_recursively()
    thaw();
 }         
 
+void TreeBase::on_Color(const Gtk::CheckMenuItem *sp)
+{  color_bool=sp->get_active();
+   refillTCL();
+   save_remembered();
+}
+
 void TreeBase::fillMenu()
 { assert(menu==0); 
   menu=new Gtk::Menu();
@@ -357,7 +363,7 @@ void TreeBase::fillMenu()
    Gtk::MenuItem *spalten = manage(new class Gtk::MenuItem("Sichtbare Spalten"));
    Gtk::Menu *optionen_menu = manage(new class Gtk::Menu());
    Gtk::MenuItem *optionen = manage(new class Gtk::MenuItem("Optionen"));
-   menu->append(*neuordnen);   
+
    menu->append(*zuruecksetzen);     
    menu->append(*abbrechen);   
    menu->append(*spalten);
@@ -376,16 +382,19 @@ void TreeBase::fillMenu()
    Gtk::CheckMenuItem *titles = manage(new class Gtk::CheckMenuItem("Spaltenüberschriften anzeigen"));
    Gtk::CheckMenuItem *auffuellen = manage(new class Gtk::CheckMenuItem("Auffüllen mit Standardreihenfolge\n(statt der aktuellen)"));
    Gtk::CheckMenuItem *expandieren = manage(new class Gtk::CheckMenuItem("Gewählte Knoten expandieren"));
+   Gtk::CheckMenuItem *colorize = manage(new class Gtk::CheckMenuItem("farblich markieren"));
    Gtk::MenuItem *exp_all = manage(new class Gtk::MenuItem("Alle Knoten expandieren"));
    Gtk::MenuItem *col_all = manage(new class Gtk::MenuItem("Alle Knoten kollabieren"));
    optionen_menu->append(*titles);
    optionen_menu->append(*auffuellen);
    optionen_menu->append(*expandieren);
+   optionen_menu->append(*colorize);
    optionen_menu->append(*exp_all);
    optionen_menu->append(*col_all);
    titles->show();
    auffuellen->show();
    expandieren->show();
+   colorize->show();
    
    neuordnen->activate.connect(SigC::slot(this,&TreeBase::on_neuordnen_clicked));
    zuruecksetzen->activate.connect(SigC::slot(this,&TreeBase::on_zuruecksetzen_clicked));
@@ -400,6 +409,9 @@ void TreeBase::fillMenu()
 
    expandieren->set_active(expandieren_bool);
    expandieren->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::Expandieren),expandieren));
+
+   colorize->set_active(color_bool);
+   colorize->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::on_Color),colorize));
 
    exp_all->activate.connect(SigC::slot(this,&TreeBase::Expand_recursively));
    col_all->activate.connect(SigC::slot(this,&TreeBase::Collapse));
@@ -620,6 +632,7 @@ void TreeBase::save_remembered() const
    if (!titles_bool) flags+='T';
    if (auffuellen_bool) flags+='a';
    if (!expandieren_bool) flags+='E';
+   if (!color_bool) flags+='C';
    Global_Settings::create(getuid(),mem_prog,mem_inst+":visible",
    	itos(sichtbar)+','+itos(showdeep)+','+flags);
    std::string cseq;
@@ -640,6 +653,7 @@ void TreeBase::load_remembered()
    std::string visible=Global_Settings(getuid(),mem_prog,mem_inst+":visible").get_Wert();
    titles_bool=visible.find('T')==std::string::npos;
    expandieren_bool=visible.find('E')==std::string::npos;
+   color_bool=visible.find('C')==std::string::npos;
    
    std::string::size_type k0=visible.find(','),k1=std::string::npos;
    if (k0!=std::string::npos) 
