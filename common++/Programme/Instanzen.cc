@@ -1,4 +1,4 @@
-// $Id: Instanzen.cc,v 1.14 2004/01/30 08:58:55 christof Exp $
+// $Id: Instanzen.cc,v 1.15 2004/01/30 09:00:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
       
    std::vector<cH_ppsInstanz> VI=cH_ppsInstanz::get_all_instanz();
    for(std::vector<cH_ppsInstanz>::const_iterator i=VI.begin();i!=VI.end();++i)
-    {if (i->Id()==ppsInstanzID::Kundenauftraege) continue;
+    {if ((*i)->Id()==ppsInstanzID::Kundenauftraege) continue;
      AuftragBase AB(*i,AuftragBase::ungeplante_id);
      if (AB.create_if_not_exists(OPEN))
         std::cout << ((*i)->LagerInstanz()?"Lager ":"") 
