@@ -1,9 +1,9 @@
-# $Id: Makefile.am,v 1.33 2003/10/21 11:01:46 christof Exp $
+# $Id: Makefile.am,v 1.34 2003/11/04 08:48:59 christof Exp $
 
 SUBDIRS=AuftragsTest
 
-AM_CXXFLAGS=@CXXFLAGS@ @COMMONXX_INCLUDES@
-AM_LDFLAGS=@LDFLAGS@  @COMMONXX_LDFLAGS@
+AM_CXXFLAGS=@COMMONXX_INCLUDES@
+AM_LDFLAGS=@COMMONXX_LDFLAGS@
 LDADD=@COMMONXX_LIBS@
 
 tests: $(EXTRA_PROGRAMS)
@@ -16,7 +16,7 @@ EXTRA_PROGRAMS=preis test_Bankauftrag test_pgsql_conv testHandles \
 	ArtikelSumme long instanz_auftrag instanz_ArtikelBaum RL_lager \
    Jumbo_lager Lieferschein ppsInstanz auftrag_ohne_instanzen trans \
    ean artikelbaum mvc trace event_listen event_talk mvc2 \
-   vectormap intmap rexml
+   vectormap intmap rexml GlobalSettings
 
 ean_SOURCES=ean.cc
 artikelbaum_SOURCES=artikelbaum.cc
@@ -50,6 +50,7 @@ event_talk_SOURCES=event_talk.cc
 vectormap_SOURCES=vectormap.cc
 intmap_SOURCES=intmap.cc
 rexml_SOURCES=rexml.cc
+GlobalSettings_SOURCES=GlobalSettings.cc
 
 CLEANFILES= *~ $(LINKS) $(EXTRA_PROGRAMS)
 

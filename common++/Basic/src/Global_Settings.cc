@@ -29,10 +29,11 @@ std::string Global_Settings::get_Wert(const std::string &seperator,int field) co
   while (field>0)
   {  start=gs.find(seperator,start);
      if (start==std::string::npos) return "";
+     start+=seperator.size();
      --field;
   }
   std::string::size_type end=gs.find(seperator,start);
-  return std::string(gs,start+seperator.size(),end);
+  return std::string(gs,start,end);
 }
 
 void Global_Settings::set_Wert(const std::string& _wert)
