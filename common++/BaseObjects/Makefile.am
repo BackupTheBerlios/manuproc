@@ -14,7 +14,9 @@ libBaseObjects.a: $(libLieferschein_a_OBJECTS) $(libBaseObjects_a_DEPENDENCIE)
 
 CLEANFILES= *~ 
 
-BUILT_SOURCES=MVC.h
+BUILT_SOURCES=MVC.h Model.h
 
 MVC.h: 
 	-ln -sf ../Basic/src/MVC.h .
+Model.h: 
+	-ln -sf ../Basic/src/Model.h .
