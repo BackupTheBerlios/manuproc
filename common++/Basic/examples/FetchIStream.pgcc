@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.4 2001/12/04 11:24:00 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.5 2002/01/11 07:59:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -53,6 +53,26 @@ int main()
       std::cout << s << '\n';
    }
   }
+// test nasty error?
+{
+  cout << "------\n";
+  Transaction tr2;
+   Query query2("select 1;");
+   FetchIStream is2;
+   while ((query2>>is2).good())
+   {  std::string s;
+      is2 >> s;
+      std::cout << s << '\n';
+   }
+   Query query3("select 2;");
+   FetchIStream is3;
+   while ((query3>>is3).good())
+   {  std::string s;
+      is3 >> s;
+      std::cout << s << '\n';
+   }
+}   
+//   
    tr.commit();
    Petig::dbdisconnect();
    return 0;
