@@ -142,6 +142,10 @@ void auftrag_lieferschein::on_liefnr_activate()
  try{
  try{
    lieferschein = new Lieferschein(instanz,liefernr->Content());
+
+   if(lieferschein->KdNr()!=liefer_kunde->get_value())
+     liefer_kunde->set_value(lieferschein->KdNr());
+
    display(liefernr->Content());
  }catch(SearchComboContent<int>::ContentError &e)
  { display(atoi(liefernr->get_text().c_str()));
@@ -449,6 +453,12 @@ void auftrag_lieferschein::on_Palette_activate()
  ManuProC::Tracer::Enable(AuftragBase::trace_channel);
  if(lieferschein->Id()==LieferscheinBase::none_id) return;
 
+ if(lieferschein->RngNr() != ManuProcEntity<>::none_id)
+   {
+    meldung->Show("Berechnete Lieferscheine können nicht mehr geändert werden");
+    return;
+   }
+
   anzahl->update();
   liefermenge->update();
   Palette->update();
@@ -667,6 +677,12 @@ void auftrag_lieferschein::set_tree_offen_content()
 
 void auftrag_lieferschein::on_button_zeile_modifizieren_clicked()
 {
+ if(lieferschein->RngNr() != ManuProcEntity<>::none_id)
+   {
+    meldung->Show("Berechnete Lieferscheine können nicht mehr geändert werden");
+    return;
+   }
+
  try{
    cH_Data_Lieferdaten dt(tree_daten->getSelectedRowDataBase_as<cH_Data_Lieferdaten>());
    LieferscheinEntry LE = dt->get_LieferscheinEntry();
@@ -691,7 +707,10 @@ void auftrag_lieferschein::on_button_zeile_modifizieren_clicked()
        set_tree_offen_content();
     }
    set_tree_daten_content(lieferschein->Id());
-  } catch(std::exception &e) {std::cerr << e.what();}
+  } 
+ catch(SQLerror &e)
+   {meldung->Show(e); return;}
+ catch(std::exception &e) {std::cerr << e.what();}
 }
 
 void auftrag_lieferschein::on_checkbutton_ean_drucken_clicked()

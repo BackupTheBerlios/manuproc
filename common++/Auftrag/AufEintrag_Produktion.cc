@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.18 2003/09/11 16:59:23 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.19 2003/10/06 10:15:16 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -121,7 +121,7 @@ void AufEintrag::abschreiben(mengen_t menge) throw(SQLerror)
   mengen_t BESTELLT=getStueck();
   AufStatVal STATUS=getEntryStatus();
 
- if(menge>=0 && getCombinedStatus()!=(AufStatVal)OPEN)
+ if(menge>=0 && !in(getCombinedStatus(),(AufStatVal)OPEN,(AufStatVal)CLOSED))
     throw(SQLerror(__FILELINE__,-1,"Auftragszeile ist nicht offen sondern "+itos(STATUS)));
  if(menge<0 && getCombinedStatus()==(AufStatVal)UNCOMMITED)
     throw(SQLerror(__FILELINE__,-1,"Auftragszeile ist nicht bestätigt"));

@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.27 2003/07/03 06:47:10 christof Exp $ */
+/* $Id: Lieferschein.h,v 1.28 2003/10/06 10:15:16 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -94,7 +94,7 @@ class Lieferschein : public LieferscheinBase, public HandleContent
 #endif 
  const Preis::rabatt_t AufRabatt() const throw(SQLerror);
  
- int KdNr() const {return kunde->Id();}		
+ Kunde::ID KdNr() const {return kunde->Id();}		
  const cH_Kunde &getKunde() const {return kunde; }	
  int RngNr() const { return rngid; }
  void closeLfrs(); // setzt rngid auf 0  
