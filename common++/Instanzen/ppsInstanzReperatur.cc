@@ -34,7 +34,7 @@ void ppsInstanz::Reparatur_0er_und_2er(int uid) const throw(SQLerror)
       SQLFullAuftragSelector sel2er=SQLFullAuftragSelector::sel_Artikel_Planung_id(Id(),Kunde::eigene_id,i->Artikel(),AuftragBase::dispo_auftrag_id,OPEN,i->getLieferdatum());
       SelectedFullAufList L2er(sel2er);
       assert(L2er.empty() || L2er.size()==1);
-//cout << i->Instanz()<<'\t'<<i->Artikel()<<'\t'<<L2er.size()<<'\n';
+//std::cout << i->Instanz()<<'\t'<<i->Artikel()<<'\t'<<L2er.size()<<'\n';
       if(!L2er.empty() && L2er.begin()->getStueck()!=0) // Reparatur
        {
 assert(!"ReparaturProgramm\n");
@@ -104,7 +104,7 @@ void ppsInstanz::force_execute(const std::vector<st_table> &Vtable,
         Query::Execute(com+=itos(*j));
         SQLerror::test(__FILELINE__,100);
         if(sqlca.sqlerrd[2])
-            cout << *j<<"er "+was+" ("<<Name()<<","<<*this<<") geändert: "<< sqlca.sqlerrd[2]<<'\n';
+            std::cout << *j<<"er "+was+" ("<<Name()<<","<<*this<<") geändert: "<< sqlca.sqlerrd[2]<<'\n';
       }
    }
 }
@@ -121,7 +121,7 @@ void ppsInstanz::force_eigene_KundenId() const throw(SQLerror)
      Query::Execute(com);
      SQLerror::test(__FILELINE__,100);
      if(sqlca.sqlerrd[2])
-       cout << "Für alle Auftrag-Id die Kunden geändert: "<< sqlca.sqlerrd[2]<<'\n';
+       std::cout << "Für alle Auftrag-Id die Kunden geändert: "<< sqlca.sqlerrd[2]<<'\n';
    }
   // else // NICHT die 20000er Aufträge
   std::vector<st_table> Vtable;
@@ -152,7 +152,7 @@ std::cout << "Anzahl der Artikel im Lager = "<<LI.size()<<'\n';
    {
      bool set_dispo_to_zero=false;
      AuftragBase::mengen_t menge=i->GesamtMenge();
-cout <<i->Artikel().Id()<<' '<<cH_ArtikelBezeichnung(i->Artikel())->Bezeichnung()
+std::cout <<i->Artikel().Id()<<' '<<cH_ArtikelBezeichnung(i->Artikel())->Bezeichnung()
   <<'\t'<<menge<<'\n';
 
      // Vorgemerkte Menge (1er Aufträge) wieder abziehen
@@ -164,12 +164,12 @@ cout <<i->Artikel().Id()<<' '<<cH_ArtikelBezeichnung(i->Artikel())->Bezeichnung(
        {
          if(j->Id()!=AuftragBase::plan_auftrag_id) assert(!"never get here");
          menge-=j->getRestStk() ;
-cout << "\tPlanung abziehen "<<AufEintragBase(*j)<<'\t'<<j->getRestStk()<<'\t'<<menge<<'\n';
+std::cout << "\tPlanung abziehen "<<AufEintragBase(*j)<<'\t'<<j->getRestStk()<<'\t'<<menge<<'\n';
 //         assert(menge>=0);
          if(menge<0) // mehr Menge vorgeplant als vorhanden
            {
             set_dispo_to_zero=true;
-cout << "\t\tReparaturMenge: "<<-menge<<'\n';
+std::cout << "\t\tReparaturMenge: "<<-menge<<'\n';
             j->updateStkDiffBase__(uid,menge);
             menge=0;
            }
@@ -182,11 +182,11 @@ cout << "\t\tReparaturMenge: "<<-menge<<'\n';
          if(j->Id()!=AuftragBase::dispo_auftrag_id) assert(!"never get here");
          assert(j->getStueck()==j->getRestStk());
          menge-=j->getRestStk();
-cout << "\tDispo abziehne "<<AufEintragBase(*j)<<'\t'<<j->getRestStk()<<'\t'<<menge<<'\n';
+std::cout << "\tDispo abziehne "<<AufEintragBase(*j)<<'\t'<<j->getRestStk()<<'\t'<<menge<<'\n';
          if(set_dispo_to_zero)
            j->updateStkDiffBase__(uid,-j->getStueck());
       }
-cout << "Endmenge: "<<menge<<'\n';
+std::cout << "Endmenge: "<<menge<<'\n';
 
      if(menge!=0 && !set_dispo_to_zero) 
          DispoAuftraege_anlegen(uid,i->Artikel(),menge);
@@ -213,7 +213,7 @@ std::vector<LagerInhalt> ppsInstanz::getLagerInhalt() const
   else if(Id() == ppsInstanzID::Bandlager) LI=JumboLager().LagerInhalt();
   else 
 #endif 
-   { cout << Name()<<' '<<Id()<<' '<<ID()<<"\tKeine LagerKlasse implementiert\n";
+   { std::cout << Name()<<' '<<Id()<<' '<<ID()<<"\tKeine LagerKlasse implementiert\n";
      assert(!"never get here\n");
      return LI;
    }

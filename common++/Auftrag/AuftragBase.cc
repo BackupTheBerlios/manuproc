@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.11 2002/11/25 12:27:55 thoma Exp $
+// $Id: AuftragBase.cc,v 1.12 2002/11/27 08:10:31 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -187,3 +187,12 @@ void AuftragBase::menge_neu_verplanen(const int uid,cH_ppsInstanz instanz,const 
      if(menge==AuftragBase::mengen_t(0)) return;
    }
 }
+
+#if __GNUC__ > 2  // fragt nicht ...
+const AuftragBase::ID AuftragBase::handplan_auftrag_id,
+	AuftragBase::dispo_auftrag_id,
+	AuftragBase::plan_auftrag_id,
+	AuftragBase::invalid_id,
+	AuftragBase::none_id,
+	AuftragBase::ungeplante_id;
+#endif
