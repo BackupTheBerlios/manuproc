@@ -25,6 +25,11 @@ public:
  MyMessage(const std::string &s) : Gtk::MessageDialog(s)
  {
  }
+
+public:
+ void set_Message(const std::string msg) 
+   { set_message(msg); 
+   }
  
 };
 

@@ -83,6 +83,13 @@ void mpc_agent::on_activate_entry(int enr)
 
  try{
  Query q("select name,ort from kunden where kundennr=?");
+ if(q.Result()==100)
+   {
+    MyMessage msg("Customer not found");
+    msg.set_transient_for(*this);
+    msg.run();
+    return;
+   }
  q << atoi(kunde->get_value(enr).c_str());
  q >> name >> ort;
  }
@@ -92,7 +99,6 @@ void mpc_agent::on_activate_entry(int enr)
   msg.set_transient_for(*this);
   msg.run();
  }
-
    
  kunde->set_value(enr+1,name);
  kunde->set_value(enr+2,ort);

@@ -1,4 +1,4 @@
-/* $Id: SQLerror_sqlite.cc,v 1.2 2004/03/11 17:29:28 christof Exp $ */
+/* $Id: SQLerror_sqlite.cc,v 1.3 2004/05/07 09:48:23 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -65,7 +65,7 @@ void SQLerror_sqlite::test(const std::string &context,const std::string &cursor,
 }
 #endif
 
-int SQLerror_sqlite::SQLCode()
-{  return last_code; }
+//int SQLerror_sqlite::SQLCode()
+//{  return last_code; }
 
 #endif
