@@ -639,8 +639,8 @@ void Artikeleingabe::on_mindbest_check_toggled()
    }
  else
    {
-    mindbestand->set_value(-1);      
-    on_mindbestand_activate();    
+    ArtikelStamm as(artikelbox->get_value());
+    as.setMindBest(-1);    
     mindbestand->set_value(0);      
    }
 }
