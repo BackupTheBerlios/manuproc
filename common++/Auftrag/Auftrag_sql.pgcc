@@ -152,7 +152,7 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
 
 
  ExtraColumns ec("auftrag","instanz","auftragid");
- ec << *this;
+ ec << INSTANZ << AUFTRAGID;
  labelid = ec.get<int>("label");
 
  kundennr = KUNDENNR;
@@ -234,11 +234,11 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string &yaufnr) throw(S
 #endif
 
  ExtraColumns ec("auftrag","instanz","auftragid");
- ec << *this;
+ ec << INSTANZ << AUFTRAGID;
 
  if(ec.hasColumn("uid"))
-   Query("update auftrag set uid=? where (instanz,auftragid)=?")
-     << getuid() << *this;
+   Query("update auftrag set uid=? where (instanz,auftragid)=(?,?)")
+     << getuid() << INSTANZ << AUFTRAGID;
      
  exec sql select date(datum) into :DATUM from auftrag 
    where auftragid= :AUFTRAGID and instanz = :INSTANZ;
@@ -303,8 +303,8 @@ Auftrag::Auftrag(Anlegen2 AB, long kdnr, const std::string &yaufnr) throw(SQLerr
  ec << INSTANZ << AUFTRAGID;
 
  if(ec.hasColumn("uid"))
-   Query("update auftrag set uid=? where (instanz,auftragid)=?")
-     << getuid() << *this;
+   Query("update auftrag set uid=? where (instanz,auftragid)=(?,?)")
+     << getuid() << INSTANZ << AUFTRAGID;
 
  exec sql select date(datum) into :DATUM from auftrag 
    where auftragid= :AUFTRAGID and instanz = :INSTANZ;
