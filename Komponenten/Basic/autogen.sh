@@ -1,6 +1,11 @@
 libtoolize --force --copy
 autoheader
-aclocal -I macros
+if test -d macros
+then
+  aclocal -I macros
+else
+  aclocal
+fi
 automake --add-missing --copy --gnu
 autoconf
 ./configure $*

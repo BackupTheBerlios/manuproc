@@ -335,6 +335,11 @@
       <class>GtkButton</class>
       <name>button1</name>
       <can_focus>True</can_focus>
+      <signal>
+	<name>clicked</name>
+	<handler>datum_setzen</handler>
+	<last_modification_time>Thu, 18 Apr 2002 16:20:23 GMT</last_modification_time>
+      </signal>
       <label>Datum setzen</label>
       <relief>GTK_RELIEF_NORMAL</relief>
     </widget>
@@ -343,11 +348,6 @@
       <class>GtkLabel</class>
       <child_name>Notebook:tab</child_name>
       <name>label6</name>
-      <signal>
-	<name>clicked</name>
-	<handler>datum_setzen</handler>
-	<last_modification_time>Thu, 18 Apr 2002 16:20:23 GMT</last_modification_time>
-      </signal>
       <label>leer</label>
       <justify>GTK_JUSTIFY_CENTER</justify>
       <wrap>False</wrap>

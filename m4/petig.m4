@@ -153,33 +153,38 @@ then
     petig_postgresdir=`which ecpg | sed s+/bin/ecpg++`
   )
   ECPG="$petig_postgresdir/bin/ecpg"
-  if test ! -x  $ECPG; then
-     AC_MSG_ERROR([ecpg not found ($ECPG), please specify --with-postgresdir=PATH])
-  fi
-  AC_MSG_RESULT($ECPG)
-  
-  AC_MSG_CHECKING(for ECPG include files)
-  ECPG_PATH=`$ECPG -v 2>&1 | fgrep -v 'ecpg - ' | fgrep -v 'ecpg, the' | fgrep -v 'search starts here:' | fgrep -v 'nd of search list'`
-  ECPG_PATH_OK=0
-  for i in $ECPG_PATH
-  do
-    if test -r $i/ecpgerrno.h ; then ECPG_PATH_OK=1 ; fi
-    if (echo $i | fgrep -q include )
-    then
-      LDIR=`echo $i | sed s+/include+/lib+`
-      if test -d $LDIR
+  if test ! -x "$ECPG" ; then
+     AC_MSG_WARN([ecpg not found ($ECPG), please specify --with-postgresdir=PATH if needed])
+     ECPG_LIBS=""
+     ECPG_INCLUDES=""
+     ECPG_LDFLAGS=""
+  else     
+    AC_MSG_RESULT($ECPG)
+    
+    AC_MSG_CHECKING(for ECPG include files)
+    ECPG_PATH=`$ECPG -v 2>&1 | fgrep -v 'ecpg - ' | fgrep -v 'ecpg, the' | fgrep -v 'search starts here:' | fgrep -v 'nd of search list'`
+    ECPG_PATH_OK=0
+    for i in $ECPG_PATH
+    do
+      if test -r $i/ecpgerrno.h ; then ECPG_PATH_OK=1 ; fi
+      if (echo $i | fgrep -q include )
       then
-      	 dnl perhaps test for libpq etc.
-         ECPG_LDFLAGS="$ECPG_LDFLAGS -L$LDIR"
+        LDIR=`echo $i | sed s+/include+/lib+`
+        if test -d $LDIR
+        then
+        	 dnl perhaps test for libpq etc.
+           ECPG_LDFLAGS="$ECPG_LDFLAGS -L$LDIR"
+        fi
       fi
+      ECPG_INCLUDES="$ECPG_INCLUDES -I$i"
+    done
+    if test $ECPG_PATH_OK = 0
+    then
+      AC_MSG_ERROR([No ecpgerrno.h found. Please report. ($ECPG_PATH)])
+    else
+      AC_MSG_RESULT($ECPG_INCLUDES)
     fi
-    ECPG_INCLUDES="$ECPG_INCLUDES -I$i"
-  done
-  if test $ECPG_PATH_OK = 0
-  then
-    AC_MSG_ERROR([No ecpgerrno.h found. Please report. ($ECPG_PATH)])
-  else
-    AC_MSG_RESULT($ECPG_INCLUDES)
+    ECPG_LIBS='-lecpg -lpq -lcrypt'
   fi
   
   AC_SUBST(ECPG)
@@ -187,7 +192,6 @@ then
   ECPG_CFLAGS=$ECPG_INCLUDES
   AC_SUBST(ECPG_CFLAGS)
   AC_SUBST(ECPG_LDFLAGS)
-  ECPG_LIBS='-lecpg -lpq -lcrypt'
   AC_SUBST(ECPG_LIBS)
   ECPG_NODB_LIBS=""
   AC_SUBST(ECPG_NODB_LIBS)
