@@ -1,6 +1,6 @@
-// $Id: bool_CheckButton.cc,v 1.6 2003/03/07 08:10:25 christof Exp $
+// $Id: bool_CheckButton.cc,v 1.7 2003/04/07 13:18:50 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
- *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
+ *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -20,33 +20,25 @@
 
 #include "bool_CheckButton.hh"
 
-void bool_CheckButton::refresh(gpointer x)
-{  if (model.matches(x))
-   {  my_ch_con.block();
-      Gtk::CheckButton::set_active(model.get_value());
-      my_ch_con.unblock();
-   }
+void bool_CheckButton::Connection::model2widget()
+{  widget->set_active(model.get_value());
+}
+
+void bool_CheckButton::Connection::widget2model()
+{  model=widget->get_active();
+}
+
+SigC::Connection bool_CheckButton::Connection::connect()
+{  return widget->signal_toggled().connect(SigC::slot(*this,&bool_CheckButton::Connection::controller2model));
 }
 
 bool_CheckButton::bool_CheckButton(const Model_ref<T> &m, const std::string &text)
-	: Gtk::CheckButton(text), model(m)
-{  init();
+	: Gtk::CheckButton(text), conn(m,this)
+{  
 }
 
 bool_CheckButton::bool_CheckButton(const Model_ref<T> &m, Gtk::Widget &w)
-	: model(m)
+	: conn(m,this)
 {  Gtk::ToggleButton::add(w);
-   init();
 }   
 
-void bool_CheckButton::init()
-{  Gtk::ToggleButton::set_active(model.get_value());
-   my_ch_con=signal_toggled().connect(SigC::slot(*this,&bool_CheckButton::on_toggled));
-   ch_con=model.signal_changed().connect(SigC::slot(*this,&bool_CheckButton::refresh));
-};
-
-void bool_CheckButton::on_toggled()
-{  ch_con.block();
-   model=Gtk::CheckButton::get_active();
-   ch_con.unblock();
-}

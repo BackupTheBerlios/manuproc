@@ -1,6 +1,6 @@
-// $Id: bool_CheckButton.hh,v 1.4 2002/12/12 10:15:39 christof Exp $
+// $Id: bool_CheckButton.hh,v 1.5 2003/04/07 13:18:50 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
- *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
+ *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -22,16 +22,23 @@
 #define MANUPROC_WIDGETS_MVC_BOOL_H
 
 #include <gtkmm/checkbutton.h>
-#include <BaseObjects/Model.h>
+#include <ModelWidgetConnection.h>
 
 class bool_CheckButton : public Gtk::CheckButton
 {	typedef bool T;
-	SigC::Connection ch_con, my_ch_con;
-	Model_ref<T> model;
-
-	void init();
-	void refresh(gpointer);
-	void on_toggled();
+public:
+	class Connection : public ModelWidgetConnection<T,Gtk::ToggleButton>
+	{	void model2widget();
+		void widget2model();
+		SigC::Connection connect();
+	public:
+		Connection(widget_t *w=0) { set_widget(w); }
+		Connection(const Model_ref<T> &m, widget_t *w=0) 
+		: this_t(m) { set_widget(w); }
+	};
+private:
+	Connection conn;
+	
 	// explicitely forbid to use these (make them private)
 	bool get_active() const;
 	void set_active(bool);
