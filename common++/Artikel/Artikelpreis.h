@@ -1,4 +1,4 @@
-// $Id: Artikelpreis.h,v 1.9 2002/06/20 06:29:52 christof Exp $
+// $Id: Artikelpreis.h,v 1.10 2002/09/26 14:50:47 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -51,7 +51,7 @@ public:
 	
 	static void UnCache(const PreisListe::ID liste,const ArtikelBase &a);
 	static const Artikelpreis create(const PreisListe::ID liste,
-		const Preis &p, const ArtikelBase &a) throw(SQLerror);
+                  	const Preis &p, const ArtikelBase &a) throw(SQLerror);
 // tut nix sinnvolles, oder? MAT	void updatePreis(const Preis &p) throw(SQLerror);
 	void changePreis(const Preis &p) throw(SQLerror);
    static void remove(const PreisListe::ID liste,const ArtikelBase &a) throw(SQLerror);
