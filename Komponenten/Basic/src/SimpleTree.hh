@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.39 2004/07/01 07:13:46 christof Exp $
+// $Id: SimpleTree.hh,v 1.40 2004/12/04 10:53:34 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -121,6 +121,8 @@ public:
 	void Collapse();
 	void setTitles(const std::vector<std::string> &T);
 	void setAlignment(const std::vector<gfloat> &A);
+	
+	void debug();
 };
 
 // I put the more esoteric features here, so they may not confuse the

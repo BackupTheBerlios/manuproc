@@ -17,6 +17,7 @@ AM_CXXFLAGS = @KOMPONENTEN_INCLUDES@
 
 newtree_LDADD = @LIBS@ @KOMPONENTEN_LIBS@
 
-AM_LDFLAGS= @KOMPONENTEN_LDFLAGS@ -mwindows -Wl,--enable-runtime-pseudo-reloc
+AM_LDFLAGS= @KOMPONENTEN_LDFLAGS@ 
+#-mwindows -Wl,--enable-runtime-pseudo-reloc
 
 

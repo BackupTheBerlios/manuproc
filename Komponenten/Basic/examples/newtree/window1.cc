@@ -6,6 +6,10 @@
 #include <Misc/Trace.h>
 #include <iostream>
 #include <TreeModelDebug.h>
+//#include <Misc/TraceNV.h>
+//#include <gtkmm/treemodel.h>
+//#include <sigc++/compatibility.h>
+//#include <sigc++/bind.h>
 
 enum Spalten
 {  SP_ATT0, SP_ATT1, SP_ATT2, SP_ATT3, SP_ATT4, 
@@ -189,7 +193,8 @@ window1::window1() : st(SP_ANZ)
    }
 #endif
    st.set_remember("(example)","newtree");
-   TreeModelDebug(st.getTreeModel());
+//   TreeModelDebug(st.getTreeModel());
+   st.debug();
    
 //   ManuProC::Tracer::Enable(SimpleTreeStore::trace_channel);
 }
@@ -208,7 +213,8 @@ void window1::eine_weg()
 }
 
 void window1::refresh()
-{  st.getModel().signal_redraw_needed()();
+{  st.getModel().signal_please_detach()();
+   st.getModel().signal_please_attach()();
 }
 
 void window1::change1()

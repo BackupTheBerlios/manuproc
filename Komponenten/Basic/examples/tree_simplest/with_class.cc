@@ -1,4 +1,4 @@
-// $Id: with_class.cc,v 1.24 2004/05/04 08:10:49 christof Exp $
+// $Id: with_class.cc,v 1.25 2004/12/04 10:53:34 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -16,7 +16,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// $Id: with_class.cc,v 1.24 2004/05/04 08:10:49 christof Exp $
+// $Id: with_class.cc,v 1.25 2004/12/04 10:53:34 christof Exp $
 
 #include "config.h"
 #include "with_class.hh"
@@ -199,15 +199,15 @@ with_class::with_class()
    datavec.push_back(new MyRowData(1,"Y",2,3,"A"));
 #endif
 #if 1
-   for (int i=0;i<100000;++i)
+   for (int i=0;i<1000;++i)
       datavec.push_back(new MyRowData(i%4+1,/*"same" */
       std::string(1,char('A'+(i%3))),(i%5),(i%7),itos(i)));
 #endif
-#if 0
+#if 1
    datavec.push_back(new MyRowData(1,"1810",25,755,"25m"));
    datavec.push_back(new MyRowData(1,"1810",40,100,"9999"));
    datavec.push_back(new MyRowData(1,"1955",25,855,"50m"));
-   datavec.push_back(new MyRowData(1,"1955",40,210,"Jumbo"));
+   datavec.push_back(new MyRowData(1,"1955",40,210,"Jumbo ein ganz langer Text"));
 #endif
    treebase->set_NewNode(&SumNode::create);
    treebase->setDataVec(datavec);
@@ -222,4 +222,5 @@ with_class::with_class()
    }
 #endif   
    treebase->set_remember("(example)","with_class");
+   treebase->getStore()->RedisplayOnReorder();
 }

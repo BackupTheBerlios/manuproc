@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.47 2004/06/14 14:35:06 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.48 2004/12/04 10:53:34 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -144,6 +144,8 @@ private:
 	void load_remembered();
 
 	SigC::Signal1<void,guint> title_changed;
+	SigC::Signal0<void> please_detach;
+	SigC::Signal0<void> please_attach;
 	SigC::Signal0<void> spaltenzahl_geaendert;
 	SigC::Signal1<void,gpointer> signal_save;
 	SigC::Signal1<void,bvector_iterator> signal_visibly_changed;
@@ -151,7 +153,7 @@ private:
 	void on_title_changed(guint idx);
 	void on_visibly_changed(bvector_iterator it);
 	
-	SigC::Signal0<void> needs_redisplay;
+//	SigC::Signal0<void> needs_redisplay;
 	void redisplay();
 	void insertLine(Node &parent,const cH_RowDataBase &d, 
 			sequence_t::const_iterator q,guint deep,
@@ -259,6 +261,10 @@ public:
 	{  return title_changed; }
 	SigC::Signal0<void> &signal_spaltenzahl_geaendert()
 	{  return spaltenzahl_geaendert; }
+	SigC::Signal0<void> &signal_please_detach()
+	{  return please_detach; }
+	SigC::Signal0<void> &signal_please_attach()
+	{  return please_attach; }
 	const std::string getColTitle(guint idx) const;
 	
 	void set_NewNode(NewNode_fp n)
@@ -285,7 +291,7 @@ public:
 	void redisplay_old(cH_RowDataBase row, unsigned index);
 	
 	// all lines have changed - redisplay is needed!
-	SigC::Signal0<void> &signal_redisplay() {  return needs_redisplay; }
+//	SigC::Signal0<void> &signal_redisplay() {  return needs_redisplay; }
 	
 	// these are accessors for SimpleTreeStates
 	Model_ref<guint> ShowDeep() { return Model_ref<guint>(showdeep,signal_save); }
@@ -299,6 +305,8 @@ public:
 	unsigned visible_size() { return currseq.size(); }
 	void setSortierspalte(unsigned idx=invisible_column, bool invert=false);
 	bool getInvert() const { return invert_sortierspalte; }	
+	
+	void RedisplayOnReorder() { columns_are_equivalent=false; }
 };
 
 #endif

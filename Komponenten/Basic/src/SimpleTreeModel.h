@@ -1,4 +1,4 @@
-// $Id: SimpleTreeModel.h,v 1.11 2004/06/14 14:35:06 christof Exp $
+// $Id: SimpleTreeModel.h,v 1.12 2004/12/04 10:53:34 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -40,7 +40,9 @@ private:
 
 	SigC::Signal1<void,cH_RowDataBase> line_appended;
 	SigC::Signal1<void,cH_RowDataBase> line_to_remove;
-	SigC::Signal0<void> redraw_needed;
+//	SigC::Signal0<void> redraw_needed;
+	SigC::Signal0<void> please_detach;
+	SigC::Signal0<void> please_attach;
 	// a column was changed, change data, redraw?
 	SigC::Signal3<bool,cH_RowDataBase,unsigned,const std::string &> value_changed;
 	SigC::Signal1<void,guint> title_changed;
@@ -61,8 +63,14 @@ public:
 	{  return line_to_remove; }
 	SigC::Signal1<void,guint> &signal_title_changed()
 	{  return title_changed; }
-	SigC::Signal0<void> &signal_redraw_needed()
-	{  return redraw_needed; }
+//	SigC::Signal0<void> &signal_redraw_needed()
+//	{  return redraw_needed; }
+	// a big reorganization is about to occur
+	SigC::Signal0<void> &signal_please_detach()
+	{  return please_detach; }
+	// reorganization finished, you can redisplay
+	SigC::Signal0<void> &signal_please_attach()
+	{  return please_attach; }
 	SigC::Signal3<bool,cH_RowDataBase,unsigned,const std::string &> 
 		&signal_value_changed()
 	{  return value_changed; }

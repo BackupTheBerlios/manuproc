@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.53 2004/07/01 07:13:46 christof Exp $
+// $Id: SimpleTree.cc,v 1.54 2004/12/04 10:53:34 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -51,11 +51,13 @@ void SimpleTree_Basic::attach()
    if (sts->expandieren_bool && sts->ShowDeep().Value())
    {  aufklappen(this,Gtk::TreeModel::Path(),get_model()->children(),sts->ShowDeep().Value());
    }
+// (gtk_tree_view_set_headers_clickable): assertion `tree_view->priv->model != NULL'
+   set_headers_clickable();
 }
 
-void SimpleTree_Basic::on_redisplay()
-{  detach(); attach();
-}
+//void SimpleTree_Basic::on_redisplay()
+//{  detach(); attach();
+//}
 
 SimpleTree_Basic::SimpleTree_Basic(unsigned maxcol)
 	: SimpleTreeStore_Proxy(maxcol), button_press_vfunc(), menu()
@@ -63,7 +65,8 @@ SimpleTree_Basic::SimpleTree_Basic(unsigned maxcol)
    
    getStore()->signal_title_changed().connect(SigC::slot(*this,&SimpleTree_Basic::on_title_changed));
    get_selection()->signal_changed().connect(SigC::slot(*this,&SimpleTree_Basic::on_selection_changed));
-   getStore()->signal_redisplay().connect(SigC::slot(*this,&SimpleTree_Basic::on_redisplay));
+   getStore()->signal_please_detach().connect(SigC::slot(*this,&SimpleTree_Basic::detach));
+   getStore()->signal_please_attach().connect(SigC::slot(*this,&SimpleTree_Basic::attach));
    fillMenu();
    signal_button_press_event().connect(SigC::slot(*this,&SimpleTree_Basic::MouseButton),false);
    getStore()->signal_spaltenzahl_geaendert().connect(SigC::slot(*this,&SimpleTree_Basic::on_spaltenzahl_geaendert));
@@ -104,8 +107,8 @@ void SimpleTree_Basic::on_spaltenzahl_geaendert()
       }
       append_column(*pColumn);
    }
-   on_redisplay();
-   set_headers_clickable();
+// (gtk_tree_view_set_headers_clickable): assertion `tree_view->priv->model != NULL'
+//   set_headers_clickable(); 
 }
 
 void SimpleTree_Basic::on_title_clicked(unsigned nr)
@@ -382,3 +385,44 @@ void SimpleTree_Basic::setAlignment(const std::vector<gfloat> &A)
    alignment=A;
    on_spaltenzahl_geaendert();
 }
+
+static void sig0(const char * const x)
+{ std::cerr << x << "()\n";
+}
+
+static void sig1i(int i, const char * const x)
+{ std::cerr << x << "(" << i << ")\n";
+}
+
+static void sig1r(cH_RowDataBase r, const char * const x)
+{ std::cerr << x << "(" << &r << ")\n";
+}
+
+static void sig2pi(const Gtk::TreeModel::Path&p,const Gtk::TreeModel::iterator&i, const char * const x)
+{ std::cerr << x << "(" << p.to_string() << "," << i.get_stamp() << "," << i.gobj()->user_data << ")\n";
+}
+
+static void sig1p(const Gtk::TreeModel::Path&p, const char * const x)
+{ std::cerr << x << "(" << p.to_string() << ")\n";
+}
+
+static void sig3piI(const Gtk::TreeModel::Path&p,const Gtk::TreeModel::iterator&i, int *I, const char * const x)
+{ std::cerr << x << "(" << p.to_string() << "," << i.get_stamp() << "," << i.gobj()->user_data << "," << I << ")\n";
+}
+
+void SimpleTree_Basic::debug()
+{ getStore()->signal_please_detach().connect(SigC::bind(&sig0,"please_detach"));
+  getStore()->signal_please_attach().connect(SigC::bind(&sig0,"please_attach"));
+  getStore()->signal_spaltenzahl_geaendert().connect(SigC::bind(&sig0,"spaltenzahl_geaendert"));
+  getStore()->signal_title_changed().connect(SigC::bind(&sig1i,"title_changed"));
+  getModel().signal_line_appended().connect(SigC::bind(&sig1r,"line_appended"));
+  getModel().signal_line_to_remove().connect(SigC::bind(&sig1r,"line_to_remove"));
+  getModel().signal_please_detach().connect(SigC::bind(&sig0,"Model::please_detach"));
+  getModel().signal_please_attach().connect(SigC::bind(&sig0,"Model::please_attach"));
+  getStore()->signal_row_changed().connect(SigC::bind(&sig2pi,"row_changed"));
+  getStore()->signal_row_inserted().connect(SigC::bind(&sig2pi,"row_inserted"));
+  getStore()->signal_row_has_child_toggled().connect(SigC::bind(&sig2pi,"row_has_child_toggled"));
+  getStore()->signal_row_deleted().connect(SigC::bind(&sig1p,"row_deleted"));
+  getStore()->signal_rows_reordered().connect(SigC::bind(&sig3piI,"rows_reordered"));
+}
+

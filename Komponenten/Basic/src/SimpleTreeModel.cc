@@ -1,4 +1,4 @@
-// $Id: SimpleTreeModel.cc,v 1.5 2004/06/14 14:35:06 christof Exp $
+// $Id: SimpleTreeModel.cc,v 1.6 2004/12/04 10:53:34 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -38,13 +38,15 @@ void SimpleTreeModel::remove_line(const cH_RowDataBase &row)
 }
 
 void SimpleTreeModel::clear()
-{  datavec.clear();
-   redraw_needed();
+{  please_detach();
+   datavec.clear();
+   please_attach();
 }
 	
 void SimpleTreeModel::setDataVec(const std::vector<cH_RowDataBase> &d)
-{  datavec=d;
-   redraw_needed();
+{  please_detach();
+   datavec=d;
+   please_attach();
 }
 
 void SimpleTreeModel::setTitles(const std::vector<std::string> &T)

@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.82 2004/09/27 15:39:57 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.83 2004/12/04 10:53:34 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -224,7 +224,9 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
     (*i) = true;
    defaultSequence();
    getModel().signal_title_changed().connect(SigC::slot(*this,&SimpleTreeStore::on_title_changed));
-   getModel().signal_redraw_needed().connect(SigC::slot(*this,&SimpleTreeStore::redisplay));
+//   getModel().signal_redraw_needed().connect(SigC::slot(*this,&SimpleTreeStore::redisplay));
+   getModel().signal_please_detach().connect(please_detach.slot());
+   getModel().signal_please_attach().connect(SigC::slot(*this,&SimpleTreeStore::redisplay));
    getModel().signal_line_appended().connect(SigC::slot(*this,&SimpleTreeStore::on_line_appended));
    getModel().signal_line_to_remove().connect(SigC::slot(*this,&SimpleTreeStore::on_line_removed));
    signal_save.connect(SigC::slot(*this,&SimpleTreeStore::save_remembered1));
@@ -311,7 +313,8 @@ void SimpleTreeStore::resort(Node &parent, unsigned stop_at)
 
 void SimpleTreeStore::redisplay()
 {
- 
+ please_detach();
+ ++stamp;
 // liste loeschen
  root.children.clear();
 
@@ -327,12 +330,14 @@ void SimpleTreeStore::redisplay()
     root.fix_pointer();
 //    test();
  }
- needs_redisplay();
+// needs_redisplay();
+ please_attach();
 }
 
 void SimpleTreeStore::on_line_appended(cH_RowDataBase row)
 {  ManuProC::Trace(trace_channel,__FUNCTION__,row->Value(0,ValueData())->getStrVal(),
 		row->Value(1,ValueData())->getStrVal());
+   ++stamp;
    assert(sortierspalte==invisible_column);
    insertLine(root,row,currseq.begin(),0,true);
 }
@@ -450,7 +455,6 @@ SimpleTreeStore::iterator SimpleTreeStore::MoveTree(iterator current_iter,
    //		unterhalb von newnode, newchild ist dann im Baum)
    // oldnode ist jetzt die unnötige Node, newchild die alte Node
    std::swap(newchild,oldnode);
-   // row_has_child_toggled(oldnode), row_changed(oldnode)
 
    // newnode und oldnode vertauschen (newnode+Kinder sind dann wieder im Baum)
    //      nun muss newnode wieder leer sein und den Inhalt von newchild enthalten
@@ -466,11 +470,20 @@ SimpleTreeStore::iterator SimpleTreeStore::MoveTree(iterator current_iter,
    
 //   ManuProC::Trace(trace_channel,"",&oldnode,&newnode,&newchild);
 //   oldnode.fix_pointer();
+   if (live) 
+   { row_has_child_toggled(getPath(current_iter),getIter(current_iter));
+//     row_changed(getPath(current_iter),getIter(current_iter));
+     iterator child=current_iter->second.children.begin();
+     assert(child!=current_iter->second.children.end());
+     row_inserted(getPath(child),getIter(child));
+   }
    return current_iter;
 }
 
 void SimpleTreeStore::setSequence(const sequence_t &neu)
-{  currseq=neu; // Spaltenzahl anpassen?
+{  please_detach();
+   ++stamp;
+   currseq=neu; // Spaltenzahl anpassen?
    if (currseq.size()!=columns)
    {  columns=currseq.size();
       save_remembered();
@@ -478,9 +491,9 @@ void SimpleTreeStore::setSequence(const sequence_t &neu)
    }
    else if (columns_are_equivalent)
    {  for (unsigned i=0;i<Cols();++i) title_changed(i);
-      redisplay();
    }
    else spaltenzahl_geaendert();
+   redisplay();
 }
 
 unsigned SimpleTreeStore::ColumnFromIndex(unsigned idx) const
@@ -496,28 +509,49 @@ const UniqueValue::value_t SimpleTreeStore::trace_channel
 static ManuProC::Tracer::Environment trace_channele("TRACE",SimpleTreeStore::trace_channel);
 
 void SimpleTreeStore::on_line_removed(cH_RowDataBase r)
-{  std::list<iterator> l=find_row(r,true);
+{  ++stamp;
+   std::list<iterator> l=find_row(r,true);
    assert(sortierspalte==invisible_column);
    if (l.begin()!=l.end())
    {  ManuProC::Trace(trace_channel,__FUNCTION__,"depth=",l.size());
-      for (std::list<iterator>::const_reverse_iterator i=l.rbegin();
-      		i!=const_cast<const std::list<iterator>&>(l).rend();
-      		++i)
-      {  Handle<TreeRow> htr=(*i)->second.row;
-         if (htr)
-         {  htr->deduct(r);
-            row_changed(getPath(*i),getIter(*i));
-         }
-      }
       Path p=getPath(l.front());
-      if ((++l.begin())==l.end())
-         root.children.erase(*l.begin());
-      else
-      {  (*++l.begin())->second.children.erase(*l.begin());
+      std::list<iterator>::const_iterator parent_iter=++l.begin();
+      if (parent_iter==l.end()) 
+      // nur 1 iterator, das zu löschende Element ist dann Kind von root
+      { root.children.erase(l.front());
+        row_deleted(p);
       }
-      row_deleted(p);
+      else
+      { (*parent_iter)->second.children.erase(l.front());
+        row_deleted(p);
       // we might be able to eliminate the nodes if they no longer
       //   have children
+        for (std::list<iterator>::const_iterator i=parent_iter;i!=l.end();++i)
+        { if (&*(*i)->second.leafdata==&*r)
+          { if ((*i)->second.children.empty())
+            { std::list<iterator>::const_iterator parent_iter2=i;
+              ++parent_iter2;
+              Path p2=getPath(*i);
+              if (parent_iter2==l.end())
+                root.children.erase(*i);
+              else
+                (*parent_iter2)->second.children.erase(*i);
+              row_deleted(p2);
+              goto continue_outer;
+            }
+            else
+            { (*i)->second.leafdata=(*i)->second.children.begin()->second.leafdata;
+            }
+          }
+          { Handle<TreeRow> htr=(*i)->second.row;
+            if (htr)
+            { htr->deduct(r);
+              row_changed(getPath(*i),getIter(*i));
+            }
+          }
+         continue_outer: ;
+        }
+      }
    }
    else std::cerr << "line to remove not found\n";
 }
@@ -569,6 +603,7 @@ std::list<SimpleTreeStore::iterator> SimpleTreeStore::find_row(const cH_RowDataB
    return result;
 }
 
+#if 1 // wird das noch gebraucht?
 void SimpleTreeStore::redisplay_old(cH_RowDataBase data, unsigned index)
 {  unsigned col=ColumnFromIndex(index);
    if (col==invisible_column) return;
@@ -576,8 +611,10 @@ void SimpleTreeStore::redisplay_old(cH_RowDataBase data, unsigned index)
    if (rows.begin()!=rows.end())
    {  // Node & row=**rows.begin();
       // row[m_columns.cols[col]] = data->Value(index,ValueData())->getStrVal();
+      row_changed(getPath(rows.back()),getIter(rows.back()));
    }
 }
+#endif
 
 void SimpleTreeStore::set_tree_column_visibility(unsigned index,bool visible)
 {  ShowColumn(index)=visible;
@@ -585,7 +622,9 @@ void SimpleTreeStore::set_tree_column_visibility(unsigned index,bool visible)
 }
 
 Gtk::TreeModelFlags SimpleTreeStore::get_flags_vfunc() STS_VFUNC_CONST
-{  return Gtk::TreeModelFlags(0); }
+{  return Gtk::TreeModelFlags(0);
+  //Gtk::TREE_MODEL_ITERS_PERSIST; // Gtk::TreeModelFlags(0); 
+}
 int SimpleTreeStore::get_n_columns_vfunc() STS_VFUNC_CONST
 {  return unsigned(s_text_start)+max_column; }
 
@@ -992,7 +1031,9 @@ unsigned SimpleTreeStore::Node2nth_child(const Node &nd) const
 
 void SimpleTreeStore::setSortierspalte(unsigned s,bool i)
 {  if (sortierspalte!=s || i!=invert_sortierspalte)
-   {  sortierspalte=s;
+   {  please_detach();
+      ++stamp;
+      sortierspalte=s;
       invert_sortierspalte=i;
       redisplay();
    }
