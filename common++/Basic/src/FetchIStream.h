@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.35 2003/07/03 06:47:10 christof Exp $
+// $Id: FetchIStream.h,v 1.36 2003/07/03 07:06:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -230,8 +230,7 @@ public:
 	template <class T> void FetchArray(std::vector<T> &);
 	template <class T> void FetchArray(std::list<T> &);
 	template <class T1, class T2> void FetchArray(std::map<T1,T2> &);
-	// please do not use this variant in new code!
-	// template <class T> std::vector<T> FetchArray();
+	template <class T> void FetchArrayMap(std::vector<T> &,const T &nv=T());
 
 	template <class T> T FetchOne();
 	template <class T> void FetchOne(T &v);
@@ -254,6 +253,17 @@ void Query::FetchArray(std::vector<T> &res)
    while (((*this)>>embedded_iterator).good()) 
    { T x;
      embedded_iterator >> x;
+     embedded_iterator.ThrowIfNotEmpty(__FUNCTION__);
+     res.push_back(x);
+   }
+}
+
+template <class T> 
+void Query::FetchArrayMap(std::vector<T> &res, const T &nv)
+{  ThrowOnBad(__FUNCTION__);
+   while (((*this)>>embedded_iterator).good()) 
+   { T x;
+     embedded_iterator >> FetchIStream::MapNull(x,nv);
      embedded_iterator.ThrowIfNotEmpty(__FUNCTION__);
      res.push_back(x);
    }
