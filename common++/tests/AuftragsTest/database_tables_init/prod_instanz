@@ -16,6 +16,7 @@ CREATE TABLE "prod_instanz" (
 	"lieferschein" boolean,
 	"lagername" text,
 	"produziert_selbst" boolean,
+   "prod_dauer_tage" integer,
 	Constraint "prod_instanz_pkey" Primary Key ("insid")
 );
 
@@ -29,10 +30,10 @@ CREATE TABLE "prod_instanz" (
 COPY "prod_instanz" FROM stdin;
 6	(Garn-)Einkauf	\N	10	t	\N	\N
 1	Kundenauftr‰ge	\N	1	t	\N	\N
-4	Weberei	\N	6	\N	\N	\N
-10	Rollerei	\N	2	\N	\N	\N
-3	Druckerei	\N	3	\N	\N	\N
-2	F‰rberei	\N	4	\N	\N	\N
+4	Weberei	\N	6	\N	\N	\N	28
+10	Rollerei	\N	2	\N	\N	\N	2
+3	Druckerei	\N	3	\N	\N	\N	3
+2	F‰rberei	\N	4	\N	\N	\N	2
 5	Sch‰rerei	\N	8	\N	\N	\N
 7	Spritzgieﬂerei	\N	11	\N	\N	\N
 8	Bandlager	4	5	\N	rohjumbo	t

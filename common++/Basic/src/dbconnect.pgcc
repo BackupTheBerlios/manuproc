@@ -1,4 +1,4 @@
-// $Id: dbconnect.pgcc,v 1.10 2002/06/24 07:35:40 christof Exp $
+// $Id: dbconnect.pgcc,v 1.11 2002/06/27 07:26:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,7 +28,7 @@
 extern "C" { int snprintf(char *str, size_t size, const  char  *format, ...); }
 #endif
 
-void Petig::dbconnect(const Connection &c) throw(SQLerror)
+void ManuProC::dbconnect(const Connection &c) throw(SQLerror)
 {  exec sql begin declare section;
    char connstr[80];
    char NAME[80];
@@ -83,7 +83,7 @@ void Petig::dbconnect(const Connection &c) throw(SQLerror)
    SQLerror::test("dbconnect,datestyle=ISO");
 }
 
-void Petig::dbdisconnect(const std::string &name) throw(SQLerror)
+void ManuProC::dbdisconnect(const std::string &name) throw(SQLerror)
 {  if (name.empty()) 
    {  exec sql disconnect; }
    else 
@@ -97,7 +97,7 @@ void Petig::dbdisconnect(const std::string &name) throw(SQLerror)
    }
 }
 
-void Petig::dbdefault(const std::string &name) throw(SQLerror)
+void ManuProC::dbdefault(const std::string &name) throw(SQLerror)
 {  exec sql begin declare section;
    const char *NAME;
    exec sql end declare section;
@@ -108,21 +108,21 @@ void Petig::dbdefault(const std::string &name) throw(SQLerror)
    SQLerror::test("dbdefault");
 }
 
-void Petig::dbconnect_nt(const Connection &c) throw()
+void ManuProC::dbconnect_nt(const Connection &c) throw()
 {  try { dbconnect(c); }
    catch (SQLerror &e)
    {  std::cerr << e << '\n';
    }
 }
 
-void Petig::dbdisconnect_nt(const std::string &name) throw()
+void ManuProC::dbdisconnect_nt(const std::string &name) throw()
 {  try { dbdisconnect(name); }
    catch (SQLerror &e)
    {  std::cerr << e << '\n';
    }
 }
 
-void Petig::setDTstyle(char *style) throw(SQLerror)
+void ManuProC::setDTstyle(char *style) throw(SQLerror)
 {
  exec sql begin declare section;
  char ST[80];

@@ -249,7 +249,7 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
  mengen_t bestellmenge;
  if(lagermenge>=bestellt) bestellmenge = 0;
  else                     bestellmenge = bestellt-lagermenge;
-//cout << "Lagermenge ="<<lagermenge<<'\t'<< "bestellmenge = "<<bestellmenge<<'\n';
+//cout << Instanz()->Name()<<" Lagermenge ="<<lagermenge<<'\t'<< "bestellmenge = "<<bestellmenge<<'\n';
 
  if(force_new || !existEntry(artikel,lieferdatum,znr,neuznr,dummymenge,status))
   {
@@ -269,7 +269,8 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
   if(!dispoplanung)
    {    
 //cout << Instanz()->Name()<<' '<<Id()<<'\t'<<bestellmenge<<' '<<lagermenge<<' '<<bestellt<<'\n';
-     Lager_Vormerkungen(class AufEintrag(Instanz()->Id(),Id(),znr,bestellmenge,artikel,lieferdatum,status)).vormerken_oder_bestellen(uid,lagermenge,bestellt);
+//     if(Instanz()->LagerInstanz())
+        Lager_Vormerkungen(class AufEintrag(Instanz()->Id(),Id(),znr,bestellmenge,artikel,lieferdatum,status)).vormerken_oder_bestellen(uid,lagermenge,bestellt);
      AufEintragZu(altAEB).Neu(AufEintragBase(*this,znr),bestellt);
    }
   else 

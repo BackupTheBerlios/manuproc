@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.11 2002/06/24 07:35:40 christof Exp $ */
+/* $Id: Datum.h,v 1.12 2002/06/27 07:26:10 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,14 +25,14 @@
 #include <Misc/Kalenderwoche.h>
 #include <string>
 
-namespace Petig
+namespace ManuProC
 {
 class Datumsfehler;
 class Datum;
 };
 
 /// Ein Datum ist ungültig
-class Petig::Datumsfehler : public std::exception
+class ManuProC::Datumsfehler : public std::exception
 {  /// eine Kombination aus tagfalsch, monatfalsch, jahrfalsch
    int falsch;
 public:
@@ -44,12 +44,12 @@ public:
    	:  falsch(_falsch)
    {}
    friend std::ostream &operator<<(std::ostream&,const Datumsfehler &);
-   virtual const char* what() const throw() { return "Petig::Datumsfehler"; }
+   virtual const char* what() const throw() { return "ManuProC::Datumsfehler"; }
 };
 
-std::ostream &operator<<(std::ostream&,const Petig::Datumsfehler&);
+std::ostream &operator<<(std::ostream&,const ManuProC::Datumsfehler&);
 
-class Petig::Datum
+class ManuProC::Datum
 {	int tag;  	/* tt */ 
 	int monat;	/* mm */
 	int jahr;     /* jjjj */
@@ -57,7 +57,7 @@ class Petig::Datum
 public:
 	class Formatfehler : public std::exception 
 	{public:
-		virtual const char* what() const throw() { return "Petig::Datum::Formatfehler"; }
+		virtual const char* what() const throw() { return "ManuProC::Datum::Formatfehler"; }
 	};
 	
 	/// aus Tag, Monat, Jahr erzeugen
@@ -112,8 +112,9 @@ public:
             noch nicht implementiert */
         Datum &operator++();
         Datum operator++(int);
-        Datum operator+(int) const throw(Datumsfehler);
-        Datum &operator+=(int tage)
+        Datum operator+(unsigned int) const throw(Datumsfehler);
+        Datum operator-(unsigned int) const throw(Datumsfehler);
+        Datum &operator+=(unsigned int tage)
         {  return *this=*this+tage;
         }
         /** gestern
@@ -169,6 +170,11 @@ public:
 	bool valid() const throw();
 };
 
-std::ostream &operator<<(std::ostream&,const Petig::Datum&) throw();
+std::ostream &operator<<(std::ostream&,const ManuProC::Datum&) throw();
+
+namespace Petig
+{  using ManuProC::Datumsfehler;
+   using ManuProC::Datum;
+}
 
 #endif

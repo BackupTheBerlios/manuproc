@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.cc,v 1.6 2002/06/26 09:04:27 christof Exp $
+// $Id: steuerprogramm.cc,v 1.7 2002/06/27 07:26:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -95,6 +95,15 @@ void auftragstests(e_mode mode)
        AEP.Planen(UID,7000,true,PA,PLANDATUM4);
        C.teste(Check::Planen_Faerberei_teil);
        cout << "Teil-Planen der Färberei beendet\n\n";
+       }
+
+       {
+       Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Weberei),Kunde::default_id);
+       int weberei_znr=1;
+       AufEintrag AEP(AufEintragBase(ppsInstanzID::Weberei,AuftragBase::ungeplante_id,weberei_znr));
+       AEP.Planen(UID,5000,true,PA,PLANDATUM6);
+       C.teste(Check::Planen_Weberei1);
+       cout << "Planen der Weberei beendet\n\n";
        }
 
       break;

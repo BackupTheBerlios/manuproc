@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.16 2002/06/26 09:04:27 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.17 2002/06/27 07:26:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -36,6 +36,7 @@
 #endif
 #include <Artikel/ArtikelStamm.h>
 #include <Auftrag/Auftrag.h>
+#include <algorithm>
 
 exec sql include sqlca;
 
@@ -244,7 +245,10 @@ AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool in
    Transaction tr;
    exec sql lock auftragentry in exclusive mode;
    SQLerror::test("updateStkDiff: lock table auftragentry");
+
 //cout << *this<<"\tTry Menge= "<<menge<<'\t'<<getStueck()<<'\n';
+
+
 //ECPGdebug(true,stdout);
    mengen_t mt=updateStkDiffBase__(uid,menge);
 //ECPGdebug(false,0);
@@ -263,18 +267,36 @@ void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,void (*callbac
 {
   std::list<AufEintragZu::st_reflist> KindListeU = AufEintragZu(*this).get_Referenz_list_ungeplant();
  try{
+  std::vector<ArtikelBase> VA;
+  std::list<AufEintragZu::st_reflist> ZU;
   for(std::list<AufEintragZu::st_reflist>::iterator i=KindListeU.begin();i!=KindListeU.end();++i)
+   {
+     // Nach dem Planen kann es zu einem Auftrag mehrere Kindaufträge 
+     // mit demselben Artikel geben, nur bei EINEM darf die Menge geändert
+     // werden
+     std::vector<ArtikelBase>::iterator j=std::find(VA.begin(),VA.end(),i->Art);
+     if(j!=VA.end()) continue; // Artikel schon bekannt
+     if(i->Menge==mengen_t(0)) continue; // Es muß mindesten einen geben, der 
+                                         // Menge an seine Kinder weitergibt
+     VA.push_back(i->Art);
+     ZU.push_back(*i);
+   }
+
+  for(std::list<AufEintragZu::st_reflist>::iterator i=ZU.begin();i!=ZU.end();++i)
    {
      ArtikelBaum::faktor_t faktor = ArtikelBaum(ArtId()).Faktor(i->Art);
      AuftragBase::mengen_t menge=faktor*oldmenge;
+//if(i->AEB.Instanz()==ppsInstanzID::_Garn__Einkauf)
+//cout <<*this<<'\t'<<i->AEB<<"  M:"<<AufEintrag(i->AEB).getStueck()<<" "<<i->Art.Id()<<"\tRedmenge: "<<menge<<'\n';
      mengen_t mt=AufEintrag(i->AEB).updateStkDiff__(uid,menge,true,callback,argument);
      AufEintragZu(*this).setMengeDiff__(i->AEB,menge);
-
+//if(i->AEB.Instanz()==ppsInstanzID::_Garn__Einkauf)
+//cout <<i->AEB<<"  M:"<<AufEintrag(i->AEB).getStueck()<<'\n';
      if(mt!=mengen_t(menge)) // es konnte nicht alles bei ungeplanten reduziert werden
       {
         AuftragBase::mengen_t restmenge=mt-menge;
         assert(restmenge>AuftragBase::mengen_t(0));
-//cout<<"Ungeplante reichen nicht: " << *this<<'\t'<<i->AEB<<'\t'<<restmenge<<'\n';
+//cout<<"Ungeplante reichen nicht: "<<i->AEB<<' '<<restmenge<<'\n';
         i->AEB.move_menge_to_dispo_zuordnung_or_lager(restmenge,i->Art,uid);
       }
     }
@@ -425,7 +447,7 @@ AufEintrag::AufEintrag(const AufEintragBase &aebb) throw (SQLerror,NoAEB_Error)
 int AufEintrag::Planen(int uid,mengen_t menge,bool reduce_old,const AuftragBase &zielauftrag,
    const Petig::Datum &datum,bool rekursiv) throw(std::exception)
 {
-//cout << "\t\tPLANEN\t"<<menge<<'\n';
+//cout <<"\t\tPLANEN\t"<<*this<<' '<<menge<<'\t'<<getStueck()<<' '<<getRestStk()<<'\n';;
    assert(!Id());
    assert(Instanz()->LagerInstanz() || entrystatus==OPEN);
    assert(Instanz()->LagerInstanz() || auftragstatus==OPEN);
@@ -453,6 +475,7 @@ int AufEintrag::Planen(int uid,mengen_t menge,bool reduce_old,const AuftragBase 
    assert(menge>0);
    if(menge-getRestStk() > 0 )
     {
+//cout << *this<<'\t'<<menge<<' '<<getStueck()<<'\t'<<getRestStk()<<' '<<menge-getRestStk()<<'\n';
       assert(!Instanz()->LagerInstanz()); // Lager werden nicht überplant
       mengen_t dispomenge = menge-getRestStk();
       menge=getRestStk();      

@@ -67,6 +67,7 @@ void Check::vergleich(e_check check)
      case Planen_Faerberei_teil : zusatz="_planen_faerberei_teil"; break;
      case Planen_Faerberei : zusatz="_planen_faerberei"; break;
      case Planen_Weberei : zusatz="_planen_weberei"; break;
+     case Planen_Weberei1 : zusatz="_planen_weberei1"; break;
      case Split : zusatz="_split"; break;
      case Split_Rohwarenlager_einlagern : zusatz="_split_rohwarenlager_rein"; break;
      case Split_Rohwarenlager_auslagern : zusatz="_split_rohwarenlager_raus"; break;

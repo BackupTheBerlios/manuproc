@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.22 2002/06/26 09:04:27 christof Exp $
+// $Id: AufEintragBase.cc,v 1.23 2002/06/27 07:26:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -149,16 +149,18 @@ void AufEintragBase::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,Artik
  if(Instanz()->LagerInstanz())
   {
    H_Lager L(Instanz());
+//cout << "\tLager +"<<menge<<'\n';
    L->dispo_auftrag_aendern(artikel,menge);
    Lager_Vormerkungen::freigegeben_menge_neu_verplanen(Instanz(),artikel,menge,uid);
   }
 
  std::list<AufEintragZu::st_reflist> K=AufEintragZu(*this).get_Referenz_list(*this,true);
+//cout <<"K = "<<K.size()<<'\n';
  for (std::list<AufEintragZu::st_reflist>::const_iterator i=K.begin();i!=K.end();++i)
   {
     if(i->AEB.Id()==AuftragBase::ungeplante_id) continue;
     AufEintrag GeplanterAE(i->AEB);
-cout << GeplanterAE<<'\t'<<GeplanterAE.getRestStk()<<'\n';
+//cout << GeplanterAE<<'\t'<<GeplanterAE.getRestStk()<<'\n';
     AuftragBase::mengen_t M;
     if(GeplanterAE.getRestStk()>=menge)  M=menge;
     else M=GeplanterAE.getRestStk();
@@ -173,10 +175,14 @@ cout << GeplanterAE<<'\t'<<GeplanterAE.getRestStk()<<'\n';
     else
      {
        std::list<AufEintragZu::st_reflist> E=AufEintragZu(i->AEB).get_Referenz_list(i->AEB);
-       for (std::list<AufEintragZu::st_reflist>::const_iterator j=K.begin();j!=K.end();++j)
+//cout <<"E="<<E.size()<<'\n';
+       for (std::list<AufEintragZu::st_reflist>::const_iterator j=E.begin();j!=E.end();++j)
         {
+//cout << j->AEB<<' '<<i->AEB<<'\t'<<M<<'\n';
          if(j->AEB.Id()!=AuftragBase::dispo_auftrag_id) continue;
+//cout <<"Do it\n";
          AufEintragZu(j->AEB).setMengeDiff__(i->AEB,M);
+         j->AEB.updateStkDiffBase__(uid,M);
         }
      }
     menge-=M;

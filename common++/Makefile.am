@@ -69,6 +69,7 @@ libcommon___a_LIBADD= \
 		Faeden/Faden.o \
 		Faeden/Materialeigenschaft_sql.o \
 		Faeden/Schussfaeden.o \
+		Instanzen/Produktionsdauer.o \
 		Instanzen/Produziert.o \
 		Instanzen/ppsInstanz_sql.o \
 		Ketten/Kette.o \

@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.11 2002/06/24 07:35:40 christof Exp $ */
+/* $Id: Datum.cc,v 1.12 2002/06/27 07:26:10 christof Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
@@ -25,18 +25,18 @@
 #include <stdlib.h>
 #include <Misc/itos.h>
 
-unsigned long Petig::Datum::getnum(const unsigned char *s,int len) throw()
+unsigned long ManuProC::Datum::getnum(const unsigned char *s,int len) throw()
 {  unsigned long num=0;
    for (;len>0&&*s==' ';len--,s++);
    for (;len>0&&*s;len--,s++) if (isdigit(*s)) num=num*10+*s-'0';
    return num;
 }
 
-Petig::Datum Petig::Datum::today() throw()  
-{  return Petig::Datum(time(0));
+ManuProC::Datum ManuProC::Datum::today() throw()  
+{  return ManuProC::Datum(time(0));
 }
 
-Petig::Datum::Datum(time_t t) throw()  
+ManuProC::Datum::Datum(time_t t) throw()  
 {  struct tm *tm=localtime(&t);
    
    tag=tm->tm_mday;
@@ -45,25 +45,25 @@ Petig::Datum::Datum(time_t t) throw()
 }
 
 // not thread safe (at least)
-const char *Petig::Datum::c_str() const throw(Petig::Datumsfehler)
+const char *ManuProC::Datum::c_str() const throw(ManuProC::Datumsfehler)
 {	static char ret[11];
 	write_euro(ret,sizeof ret);
 	return ret;
 }
 
-void Petig::Datum::write_euro(char *buf,unsigned int size) const throw(Petig::Datumsfehler)
+void ManuProC::Datum::write_euro(char *buf,unsigned int size) const throw(ManuProC::Datumsfehler)
 {	teste();
 	snprintf0(buf,size,"%d.%d.%04d",tag,monat,jahr);
 }
 
 
-const std::string Petig::Datum::Short() const throw(Datumsfehler)
+const std::string ManuProC::Datum::Short() const throw(Datumsfehler)
 {
   teste();
   return itos(Tag())+"."+itos(Monat());
 }
 
-std::string Petig::Datum::to_iso() const throw(Datumsfehler)
+std::string ManuProC::Datum::to_iso() const throw(Datumsfehler)
 {
  teste();
  return itos(Jahr())+"-"+itos(Monat())+"-"+itos(Tag());
@@ -71,7 +71,7 @@ std::string Petig::Datum::to_iso() const throw(Datumsfehler)
 
 
 
-void Petig::Datum::teste() const throw (Petig::Datumsfehler)
+void ManuProC::Datum::teste() const throw (ManuProC::Datumsfehler)
 {  int falsch=0;
    if (tag<1 || tag>31) falsch|=Datumsfehler::tagfalsch;
    if (monat<1 || monat>12) falsch|=Datumsfehler::monatfalsch;
@@ -81,14 +81,14 @@ void Petig::Datum::teste() const throw (Petig::Datumsfehler)
    }
 }
 
-bool Petig::Datum::valid() const throw ()
+bool ManuProC::Datum::valid() const throw ()
 {  if (tag<1 || tag>31) return false;
    if (monat<1 || monat>12) return false;
    if (jahr<1800 || jahr>2999) return false;
    return true;
 }
 
-bool Petig::Datum::operator<(const Datum &b) const throw(Datumsfehler)
+bool ManuProC::Datum::operator<(const Datum &b) const throw(Datumsfehler)
 {  teste(); b.teste();
    if (jahr<b.jahr) return true;
    if (jahr>b.jahr) return false;
@@ -97,7 +97,7 @@ bool Petig::Datum::operator<(const Datum &b) const throw(Datumsfehler)
    return tag<b.tag;
 }
 
-int Petig::Datum::Julian() const throw(Datumsfehler)
+int ManuProC::Datum::Julian() const throw(Datumsfehler)
 {  teste();
    static const int monatsbeginn[10]=
 	{ /* 0,31, */ 59,90,120,151,181,212,243,273,304,334 };
@@ -105,7 +105,7 @@ int Petig::Datum::Julian() const throw(Datumsfehler)
    return tag+monatsbeginn[monat-3]+(Schaltjahr(jahr)?1:0);
 }
 
-int Petig::Datum::Internal() const throw(Datumsfehler)
+int ManuProC::Datum::Internal() const throw(Datumsfehler)
 {  teste();
 //const TageProVierJahre=1461; this uses integer arithmetic
    //return ((jahr-1900)*TageProVierJahre)/4+Julian();
@@ -115,11 +115,11 @@ int Petig::Datum::Internal() const throw(Datumsfehler)
    // zum 1.3.1900 wird falsch gerechnet ...
 }
 
-int Petig::Datum::operator-(const Datum &b) const throw(Datumsfehler)
+int ManuProC::Datum::operator-(const Datum &b) const throw(Datumsfehler)
 {  return Internal()-b.Internal();
 }
 
-Petig::Datum &Petig::Datum::operator--()
+ManuProC::Datum &ManuProC::Datum::operator--()
 {  teste();
    if (tag>1) tag--;
    else
@@ -133,13 +133,13 @@ Petig::Datum &Petig::Datum::operator--()
    return *this;
 }
 
-Petig::Datum Petig::Datum::operator--(int)
+ManuProC::Datum ManuProC::Datum::operator--(int)
 {  Datum temp(*this);
    --*this;
    return temp;
 }
 
-Petig::Datum &Petig::Datum::operator++()
+ManuProC::Datum &ManuProC::Datum::operator++()
 {  teste();
    if (tag<Tage_in_Monat()) tag++;
    else
@@ -153,13 +153,13 @@ Petig::Datum &Petig::Datum::operator++()
    return *this;
 }
 
-Petig::Datum Petig::Datum::operator++(int)
+ManuProC::Datum ManuProC::Datum::operator++(int)
 {  Datum temp(*this);
    ++*this;
    return temp;
 }
 
-Petig::Datum Petig::Datum::operator+(int tage) const throw(Datumsfehler)
+ManuProC::Datum ManuProC::Datum::operator+(unsigned int tage) const throw(Datumsfehler)
 {  teste();
    Datum ret(*this);
    ret.tag+=tage;
@@ -174,24 +174,39 @@ Petig::Datum Petig::Datum::operator+(int tage) const throw(Datumsfehler)
    return ret;
 }
 
-std::ostream &operator<<(std::ostream&o,const Petig::Datum&d) throw()
+ManuProC::Datum ManuProC::Datum::operator-(unsigned int tage) const throw(Datumsfehler)
+{  teste();
+   Datum ret(*this);
+   ret.tag-=tage;
+   while (ret.tag<1)
+   {  ret.monat--;
+      if (ret.monat<1)
+      {  ret.monat=12;
+         ret.jahr--;
+      }
+      ret.tag+=ret.Tage_in_Monat();
+   }
+   return ret;
+}
+
+std::ostream &operator<<(std::ostream&o,const ManuProC::Datum&d) throw()
 {  int w=o.width(); 
    char f=o.fill(); 
    o << d.tag << "." << setfill(f) << setw(w) << d.monat << "." << d.jahr;
    return o;
 }
 
-std::ostream &operator<<(std::ostream&o,const Petig::Datumsfehler &df)
-{  if (df.falsch&Petig::Datumsfehler::tagfalsch) o << "d";
-   if (df.falsch&Petig::Datumsfehler::monatfalsch) o << "m";
-   if (df.falsch&Petig::Datumsfehler::jahrfalsch) o << "y";
+std::ostream &operator<<(std::ostream&o,const ManuProC::Datumsfehler &df)
+{  if (df.falsch&ManuProC::Datumsfehler::tagfalsch) o << "d";
+   if (df.falsch&ManuProC::Datumsfehler::monatfalsch) o << "m";
+   if (df.falsch&ManuProC::Datumsfehler::jahrfalsch) o << "y";
    return o;
 }
 
 const static int seconds_per_day=60*60*24;
 const static int seconds_per_week=7*seconds_per_day;
 
-Petig::Datum::Datum(const Kalenderwoche &kw) throw(Datumsfehler)
+ManuProC::Datum::Datum(const Kalenderwoche &kw) throw(Datumsfehler)
 {  struct tm tm;
    memset(&tm,0,sizeof tm);
    tm.tm_mday=1;
@@ -212,7 +227,7 @@ Petig::Datum::Datum(const Kalenderwoche &kw) throw(Datumsfehler)
 //#define DEBUG(x) std::cout << x
 #define DEBUG(x)
 
-Kalenderwoche Petig::Datum::KW() const throw(Datumsfehler)
+Kalenderwoche ManuProC::Datum::KW() const throw(Datumsfehler)
 {  teste();
    struct tm tm;
    bool try_again=true;
@@ -259,7 +274,7 @@ previous_year:
    return Kalenderwoche(woche,tm.tm_year+1900);
 }
 
-int Petig::Datum::Wochentag(void) const throw(Datumsfehler)
+int ManuProC::Datum::Wochentag(void) const throw(Datumsfehler)
 {  teste();
    struct tm tm;
    memset(&tm,0,sizeof tm);
