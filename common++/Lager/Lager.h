@@ -1,4 +1,4 @@
-/* $Id: Lager.h,v 1.26 2003/07/18 11:05:28 christof Exp $ */
+/* $Id: Lager.h,v 1.27 2003/07/21 10:33:20 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -71,13 +71,20 @@ class LagerInhalt
 struct ProductionContext
 {  // Einlagern: Auftrag nach unten der erfüllt wird
    // Auslagern: Auftrag für den es ausgelagert wird
-   AufEintragBase aeb; 
+   AufEintragBase aeb;
+
+   // Betroffener Lagerauftrag (optional!)
+   AufEintragBase lager_aeb;
+   
    // zum Loggen: Lieferscheinzeile für diese Bewegung
    LieferscheinEntryBase leb; // Auslagern
    
    ProductionContext() {}
-   ProductionContext(const AufEintragBase &a,const LieferscheinEntryBase &l)
-   	: aeb(a), leb(l) {}
+   ProductionContext(const AufEintragBase &a,const LieferscheinEntryBase &l,
+   		const AufEintragBase &la=AufEintragBase())
+   	: aeb(a), lager_aeb(la), leb(l) {}
+   ProductionContext(const LieferscheinEntryBase &l)
+   	: leb(l) {}
 };
 std::ostream &operator<<(std::ostream &o,const ProductionContext &pc);
 

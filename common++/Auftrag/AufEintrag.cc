@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.83 2003/07/18 16:43:31 christof Exp $
+// $Id: AufEintrag.cc,v 1.84 2003/07/21 10:33:20 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -357,19 +357,35 @@ public:
 };}
 #endif
 
-AuftragBase::mengen_t AufEintrag::Auslagern
-	(cH_ppsInstanz inst,const ArtikelBase &artikel,mengen_t menge, 
-	 unsigned uid, bool fuer_auftraege,
-	 const ProductionContext &ctx)
+#if 0
+// nicht statisch der AufEintrag in Frage ist this
+void AufEintrag::Auslagern_sub
+	(mengen_t menge, unsigned uid, const ProductionContext2 &ctx)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,
-		NV("inst",inst),NV("artikel",artikel),NV("menge",menge),
-		NV("fuer_auftraege",fuer_auftraege),NV("ctx",ctx));
+		NV("this",*this),NV("menge",menge),NV("ctx",ctx));
+   
+}
+#endif
+
+void AufEintrag::Auslagern
+	(mengen_t menge, unsigned uid, const ProductionContext &ctx)
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
+		NV("ctx",ctx),NV("menge",menge));
    assert(ctx.aeb.valid());
-   assert(fuer_auftraege);
-   AufEintrag ae(ctx.aeb);
-   ArtikelBaum AE_artbaum(ae.Artikel());
-   // hinreichend anders als distribute_children ...
-   // (Reihenfolge umgekehrt, faktor etc.)
+   assert(Id()==plan_auftrag_id || Id()==ungeplante_id);
+
+   if (Id()==plan_auftrag_id)
+   {  // Zuordnung?
+      abschreiben(menge);
+   }
+   else if (Id()==ungeplante_id)
+   { 
+#warning Könnte von anderem Auftrag weggenommen worden sein    
+      MengeAendern(uid,-menge,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
+   }
+}
+#if 0   
+   
    AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel(ae));
    const AufEintragZu::list_t &l=MapArt[artikel];
    
@@ -403,6 +419,7 @@ AuftragBase::mengen_t AufEintrag::Auslagern
    else assert(!AE_menge2); // eventuell vergessen?
    return 0;
 }
+#endif
 
 namespace { class Einlagern_cb
 {	bool abbestellen;
@@ -958,7 +975,7 @@ public:
 	      {  AufEintragZu(alterAEB).setMengeDiff__(aeb,-M);
 		 Lager L(aeb.Instanz());
 		 // oder elter_neu?
-		 L.raus_aus_lager(art,M,uid,true,ProductionContext(alterAEB,ctx));
+		 L.raus_aus_lager(art,M,uid,true,ProductionContext(alterAEB,ctx,aeb));
 	      }
 	      else
 	         AufEintrag(aeb).ProduziertNG(uid,M,alterAEB,neuerAEB,ctx);

@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.33 2003/07/18 11:05:28 christof Exp $
+// $Id: Lager.cc,v 1.34 2003/07/21 10:33:20 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -85,13 +85,16 @@ void LagerBase::raus_aus_lager(const ArtikelBase &artikel,
      		NV("fuer_auftrag",fuer_auftrag),NV("ctx",ctx));
   Transaction tr;
 
-  if (!!ctx.aeb)
-  {  menge=AufEintrag::Auslagern(*this,artikel,menge,uid,fuer_auftrag,ctx);
+  if (ctx.lager_aeb.valid())
+  {  assert(fuer_auftrag);
+     AufEintrag(ctx.lager_aeb).Auslagern(menge,uid,ctx);
+#if 0     
      if (menge>0)
      {  AufEintrag::unbestellteMengeProduzieren(*this,artikel,menge,uid,false,ctx.aeb);
         menge=0;
      }
      assert(!menge);
+#endif     
   }
   else
   {
