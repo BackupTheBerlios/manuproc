@@ -343,8 +343,19 @@ void auftrag_bearbeiten::on_stkmtr_spinbutton_activate()
       {
        WPreis->reset();
 #ifdef MABELLA_EXTENSIONS
+       if(preisautomatik->get_active())
+         {
+          cH_Kunde kndrng(kunde->Rngan());
+          Artikelpreis AP(kndrng,artikelbox->get_value(),
+			stkmtr_spinbutton->get_value_as_int());
+          if (AP.Gefunden())
+             preislisten->set_value(AP.GefundenIn());
+	 }
+
        Artikelpreis ap(preislisten->get_value(),artikelbox->get_value(),
 			stkmtr_spinbutton->get_value_as_int());	
+
+       Rabatt_setzen(cH_PreisListe(preislisten->get_value()));
 #else
        Artikelpreis ap(kunde->preisliste(),artikelbox->get_value(),
 			stkmtr_spinbutton->get_value_as_int());	
