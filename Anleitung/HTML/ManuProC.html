@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>ManuProC.html</title>
-     
+                                   
   <meta http-equiv="content-type"
  content="text/html; charset=ISO-8859-1">
 </head>
@@ -15,11 +15,29 @@ Manufactor Program Collection <br>
   <li><a href="#Einleitung">Einleitung</a></li>
   <li><a href="#Voraussetzungen">Voraussetzungen</a></li>
   <li><a href="#Bestandteile_des_Paketes">Bestandteile des Paketes</a></li>
-  <li><a href="#Aufsetzen_der_Datenbank">Aufsetzen der Datenbank</a><br>
-  </li>
+  <li><a href="#Aufsetzen_der_Datenbank">Aufsetzen der Datenbank</a></li>
+              
+  <ul>
+    <li>Firmenspezifische Anpassungen</li>
+    
+    <ul>
+      <li><a href="#Preise">Preise</a><br>
+      </li>
+    
+    </ul>
+                        
+    <ul>
+      <li><a href="#Instanzen">Instanzen</a><br>
+      </li>
+      <li><a href="#Artikel_">Artikel</a><br>
+      </li>
+                        
+    </ul>
+              
+  </ul>
   <li><a href="#Kompilieren_und_Installieren">Kompilieren und Installieren</a></li>
   <li><a href="#Anleitung_zur_Benutzung_der_einzelnen">Die Programme im Einzelnen</a></li>
-  
+                 
   <ul>
     <li>Kundendaten</li>
     <li>Artikeleingabe<br>
@@ -28,13 +46,13 @@ Manufactor Program Collection <br>
     <li>Lager<br>
     </li>
     <li>pps</li>
-  
+                 
   </ul>
   <li><a href="#Hilfe_und_Kontakt">Hilfe und Kontakt</a><br>
   </li>
 </ul>
 <h2><a name="Einleitung"></a>Einleitung</h2>
-Hier soll eine Sammlung von Programmen entstehen, die besonders die Bed&uuml;rfnisse
+ManuProC ist eine Sammlung von Programmen, die besonders die Bed&uuml;rfnisse
 von Herstellern ber&uuml;cksichtigt.
 <p>Folgende Programme existieren schon:</p>
 <ul>
@@ -67,11 +85,11 @@ verarbeitet, das Metall wird in der<b>Schmelze</b> zu <b>Sch&auml;ften</b>
 gegossen. Sowohl die Griffe als auch die Sch&auml;fte wanderen ins <b>Zwischenlager</b>
 bevor sie <br>
 in der <b>Werkstatt</b> zu <b>Schraubenziehern</b> zusammengesetzt werden.
-Der <b>Verkauf</b> schlie&szlig;lich packt die Schraubenzieher in die Verpackungen
+Die <b>Aufmachung</b> schlie&szlig;lich packt die Schraubenzieher in die Verpackungen
 und liefert diese an die Kunden aus.<br>
       </td>
     </tr>
-  
+                 
   </tbody>
 </table>
 <br>
@@ -85,10 +103,15 @@ Zur Installation und zum Betrieb werden ben&ouml;tigt:<br>
   <li>Die SQL Datenbank PostgreSQL mit embedded SQL (7.2.2)</li>
   <li>Gnome/Gtk f&uuml;r die Benutzeroberfl&auml;che</li>
 </ul>
+Es wird davon ausgegangen, da&szlig; der Administrator, der das Programmpaket
+installieren will, einige grundlegende Kenntnissen &uuml;ber C++ und SQL beitzt.<br>
 <h2><a name="Bestandteile_des_Paketes"></a>Bestandteile des Paketes</h2>
 Das Programmpaket besteht aus mehreren Programmen, die &uuml;ber die Datenbank
 miteinander Daten austauschen. Im einzelnen sind dies:<br>
 <ul>
+  <li>ManuProcC-Base, ManuProcC-gtkmmAddons und ManuProcC-Komponenten: gemeinsame
+Programmbibliotheken aller Anwenderprogramme<br>
+  </li>
   <li>Kundendaten: Eingeben und Verwalten von Kunden-, Lieferanten- und Personendaten</li>
   <li>Artikeleingabe: Anlegen und Verwalten von Artikeln und deren Zusammengeh&ouml;rigkeit</li>
   <li>Preisliste: Eingeben und Verwalten von Artikelpreisen</li>
@@ -107,8 +130,524 @@ co Anleitung</font><br>
 danach wechselt man mit '<font color="#ff6666">cd Anleitung/datenbank</font>'
 das Verzeichnis und f&uuml;hrt den Befehl <font color="#ff6666">./initdb.script
 </font>aus. <br>
-Damit ist das Kundenprogramm bereits einsatzf&auml;hig, eine firmenspezifische
-Anpassung ist hier nicht n&ouml;tig.<br>
+Damit ist das Kundenprogramm bereits einsatzf&auml;hig. Eine firmenspezifische
+Anpassung ist jedoch dann n&ouml;tig, wenn f&uuml;r die Kunden 'Verk&auml;ufer'
+zust&auml;ndig sind. In dem Fall mu&szlig; die Tabelle <b>ku_verkaufer</b>
+editiert werden. Die Spaltenbezeichnungen d&uuml;rften selbsterkl&auml;rend
+sein. <br>
+<table cellpadding="2" cellspacing="2" border="0" width="100%"
+ bgcolor="#ffff00">
+  <tbody>
+    <tr>
+      <td valign="top">In der mitgelieferten Beispieltabelle sind die beiden
+Firmenbereits enthalten:<br>
+Die Firma Schrauben GmbH mit der Kundennummer <b>1</b> an. <br>
+Der Kunde Dreher AG mit der Kundennummer <b>1000</b>.<br>
+      </td>
+    </tr>
+                 
+  </tbody>
+</table>
+<br>
+<h3>Firmenspezifische Anpassungen</h3>
+<h4><a name="Instanzen"></a>Instanzen</h4>
+Eine Instanz ist eine bestimmte Produktionsstufe oder ein Lager. Jeder Artikel
+ist einer Instanz zugeordnet.<br>
+Die Tabelle <b>prod_instanz</b> mu&szlig; an die firmenspezifischen Gegebenheiten
+angepa&szlig;t werden.<br>
+<br>
+<table cellpadding="2" cellspacing="2" border="0" width="100%"
+ bgcolor="#ffff00">
+  <tbody>
+    <tr>
+      <td valign="top">Die Tabelle <b>prod_instanzen</b> wie folgt aus:<br>
+      
+      <table cellpadding="2" cellspacing="2" border="1" width="100%">
+        <tbody>
+          <tr>
+            <td valign="top" rowspan="1" colspan="3">Die Tabelle <b>prod_instanzen</b><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top"><b>Spaltenname</b></td>
+            <td valign="top"><b>Inhalt</b></td>
+            <td valign="top"><b>Erl&auml;uterung</b></td>
+          </tr>
+          <tr>
+            <td valign="top">insid<br>
+            </td>
+            <td valign="top">Eindeutige Identifikationsnummer f&uuml;r eine
+Instanz<br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">name<br>
+            </td>
+            <td valign="top">Bezeichnung der Instanz<br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">lager_fuer<br>
+            </td>
+            <td valign="top">Diese Instanz ist ein Lager f&uuml;r eine andere
+Instanz<br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">sortierung<br>
+            </td>
+            <td valign="top">Die Instanzen werden in dieser Reinfolge sortiert<br>
+            </td>
+            <td valign="top">Durch diese Spalte ist es m&ouml;glich Instanzen
+auch nachtr&auml;glich noch dazwischen zu schieben.<br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">lieferschein<br>
+            </td>
+            <td valign="top">F&uuml;r diese Instanzen kann man Lieferscheine
+schreiben<br>
+            </td>
+            <td valign="top">Wird vermutlich meistens f&uuml;r Wareneingang
+und Warenausgang ben&ouml;tigt.<br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">lagername<br>
+            </td>
+            <td valign="top">Name der Tabelle, die die Informationen &uuml;ber
+das Lager enth&auml;lt.<br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">produziert_selbst<br>
+            </td>
+            <td valign="top">Gibt an, ob diese Instanz selbsst&auml;ndig Informationen
+&uuml;ber Zu- und Abg&auml;nge von Auftr&auml;gen und Waren gibt.<br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">prod_dauer_tage<br>
+            </td>
+            <td valign="top">Gibt an, wie lange diese Instanz f&uuml;r die
+Abfertigung eines Auftrags ben&ouml;tigt. <br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+        
+        </tbody>      
+      </table>
+      <br>
+Die mitgelieferte Tabelle <b>prod_instanz</b> ist f&uuml;r die Firma Schrauben
+GmbH bereits fertig angepa&szlig;t.<br>
+      <br>
+      </td>
+    </tr>
+                 
+  </tbody>
+</table>
+<br>
+<br>
+<h4><a name="Artikel_"></a>Artikel<br>
+</h4>
+Zun&auml;chst mu&szlig; definiert werden, was einen <b>Artikel</b> &uuml;berhaupt
+ausmacht. Zun&auml;chst einmal ist ein Artikel durch eine Identifikationsnummer,
+die <b>ID</b> eindeutig bestimmt. Aber kaum eine Firma wird seine Artikel
+nur mit einer Nummer bezeichnen, sondern mit einer<b> </b><b>Artikelbezeichnung</b>,
+die aus einer oder mehreren Komponenten bestehen kann. Zus&auml;tzlich k&ouml;nnte
+es auch noch andere Bezeichnungen f&uuml;r denselben Artikel geben, etwa eine
+Abk&uuml;rzung oder einen EAN-Code. Au&szlig;erdem kann mehrere verschiedene
+<b>Warengruppen</b> geben, die jeweils andere <b>Bezeichnungsschema</b> haben.
+Um sie Sache noch komplizierter zu machen, kann es sein, da&szlig; Kunden
+und/oder Lieferanten andere Bezeichnungen f&uuml;r identische Artikel verwenden.
+Die Tabellen der Datenbank, die angepa&szlig;t werden m&uuml;ssen um dies
+zu Modellieren, sind <b>artbez_warengruppe</b>, <b>extbezschema</b>, <b>einheiten</b>,
+<b>artikelstamm</b> und <b>artbez_x_y</b>. Wie man dabei vorgeht erl&auml;utert
+das folgende Bespiel.<br>
+<br>
+<table bgcolor="#ffff00" width="100%" border="0" cellspacing="2"
+ cellpadding="2">
+  <tbody>
+    <tr>
+      <td valign="top">Es gibt die folgenden Warengruppen: <b>Rohware</b>,
+      <b>Griffe</b>, <b>Sch&auml;fte</b>, <b>Schraubenzieher</b>, <b>Verpackungen</b>
+und <b>Sortimente</b>.<br>
+Diese werden in die Tabelle <b>artbez_warengruppe</b> eingetragen, die Reinfolge
+ist dabei bliebig, die Nummerierung mu&szlig; eindeutig (aber nicht zwangsl&auml;ufig
+aufeinanderfolgend).&nbsp;<b> </b>Anschlie&szlig;end mu&szlig; die Tabelle
+      <b>extbezschema</b> gef&uuml;llt werden: <br>
+      <br>
+      <br>
+                                  
+      <table cellpadding="2" cellspacing="2" border="1" width="100%">
+        <tbody>
+          <tr>
+            <td valign="top" rowspan="1" colspan="3">Die Tabelle <b>extbezschema</b><br>
+            </td>
+          </tr>
+          <tr>
+            <td><b>Spaltenname</b><br>
+            </td>
+            <td valign="top"><b>Inhalt</b><br>
+            </td>
+            <td valign="top"><b>Erl&auml;uterung</b><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">extartbezid<br>
+            </td>
+            <td valign="top">Kundennummer<br>
+            </td>
+            <td valign="top">Es mu&szlig; nicht f&uuml;r jeden Kunden ein
+Schema definiert werden, sondern nur f&uuml;r solche, die andere Bezeichnungen
+verwenden.</td>
+          </tr>
+          <tr>
+            <td valign="top">bezkomptype<br>
+            </td>
+            <td valign="top">Reihnfolge der Komponenten<br>
+            </td>
+            <td valign="top">Eine Komponente ist ein Teil der Artikelbezeichnung.<br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">bezkomptext<br>
+            </td>
+            <td valign="top">Bezeichnung der Komponenten<br>
+            </td>
+            <td valign="top">Dieser Text wird dem Benutzer sp&auml;ter bei
+der Auswahl eines Artikel angezeigt.<br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">separator<br>
+            </td>
+            <td valign="top">Trennt die Komponenten<br>
+            </td>
+            <td valign="top">Hinter jeder Komponente kann(!) ein Separator
+stehen<br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">artikeltyp<br>
+            </td>
+            <td valign="top">Entspricht der Warengruppe<br>
+            </td>
+            <td valign="top">Der Wert, der in diese Spalte eingetragen wird,
+verkn&uuml;pft die Angaben in dieser Tabelle mit denen in der Tabelle <i>artbez_warengruppe</i><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">signifikanz<br>
+            </td>
+            <td valign="top">Komponenten mit derselben Signifikanz bezeichnen
+            <i>zusammen</i> einen Artikel<br>
+            </td>
+            <td valign="top">Eine positive Signifikanz bedeutet, da&szlig;
+ein Artikel durch diese Bezeichnung eindeutig bestimmt ist, eine negative
+Signifikanz bedeutet, da&szlig; die Artikelbezeichnung nicht eindeutig ist.<br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">spaltenname<br>
+            </td>
+            <td valign="top">Spaltenname in der Tabelle <i>artbez_x_y</i><br>
+            </td>
+            <td valign="top">s.u.<br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">textabformat<br>
+            </td>
+            <td valign="top">Tabellenspaltenformat<br>
+            </td>
+            <td valign="top">Die Spalten der einzelnen Artikelbezeichnungskomponenten
+werden beim Ausdruck von Auftr&auml;gen, Lieferscheinen und Rechnungen entsprechend
+dieses Parameters formatiert (LaTeX Syntax f&uuml;r die Umgebung <i>tabularx</i>).
+Im Allgemeinen ist es von Vorteil alle Komponenten linksb&uuml;ndig (l) zu
+setzen, und nur die jeweils letzte Komponente auf die komplette Tabellenbreite
+auszudehnen (X).<br>
+            </td>
+          </tr>
+                                                                
+        </tbody>                                  
+      </table>
+ <br>
+ Die mitgelieferte Tabelle <b>extbezschema</b> ist f&uuml;r die Firma Schrauben
+GmbH bereits fertig angepa&szlig;t. <br>
+      <br>
+      <br>
+Alle Artikel der Firma Schrauben GmbH sind in der Tabelle <b>artikelstamm</b>
+enthalten. Anders ausgedr&uuml;ckt: Ein Artikel, der hier nicht verzeichnet
+ist, den gibt es in der Firma auch nicht. Da ein Artikel immer auch eine
+Einheit haben kann empfihlt es sich, diese zun&auml;chst festzulegen.<br>
+             
+      <table cellpadding="2" cellspacing="2" border="1" width="100%">
+        <tbody>
+          <tr>
+            <td valign="top" rowspan="1" colspan="3">Die Tabelle <b>einheiten</b><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top"><b>Spaltenname<br>
+            </b></td>
+            <td valign="top"><b>Inhalt<br>
+            </b></td>
+            <td valign="top"><b>Erl&auml;uterung</b><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">id<br>
+            </td>
+            <td valign="top">Eindeutige Identifikationsnummer f&uuml;r die
+Einheit<br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">bez_menge<br>
+            </td>
+            <td valign="top">Die eigentliche Einheit (z.B. m, kg, km oder
+auch keine)<br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">tex_menge<br>
+            </td>
+            <td valign="top">???<br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">bez_anzahl<br>
+            </td>
+            <td valign="top">Diese Bezeichnung wird f&uuml;r die Einheit
+verwendet<br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">tex_anzahl<br>
+            </td>
+            <td valign="top">???<br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">waehrung<br>
+            </td>
+            <td valign="top">???<br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+                 
+        </tbody>             
+      </table>
+      <br>
+      <br>
+Die Tabellen <b>artikelstamm</b> wird hier nur kurz erl&auml;utert, sie wird
+genauso wie die Tabellen <b>artbez_x_y</b> mithilfe des Programmes <b>Artikeleingabe</b>
+gef&uuml;llt und verwaltet. Eine Anpassung mu&szlig; nicht vorgenommen werden.<br>
+      <br>
+             
+      <table cellpadding="2" cellspacing="2" border="1" width="100%">
+        <tbody>
+          <tr>
+            <td valign="top" rowspan="1" colspan="3">Die Tabelle <b>artikelstamm</b><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top"><b>Spaltenname</b><br>
+            </td>
+            <td valign="top"><b>Inhalt</b><br>
+            </td>
+            <td valign="top"><b>Erl&auml;uterung</b><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">id<br>
+            </td>
+            <td valign="top">Die Identifikationsnummer eines Artikels.<br>
+            </td>
+            <td valign="top">Eindeutige Nummer <br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">warengruppe<br>
+            </td>
+            <td valign="top">Entspricht dem Eintrag der Spalte <i>artikeltyp</i>
+aus der Tabelle <i>extbezschema.</i><br>
+            </td>
+            <td valign="top">Historisch bedingte Namensungleichheit :-(<br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">stand<br>
+            </td>
+            <td valign="top">Der Zeitpunkt zu dem der Artikel angelegt oder
+modifiziert wurde.<br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">bestellen_bei<br>
+            </td>
+            <td valign="top">Instanz ID bei der dieser Artikel bestellt wird.<br>
+            </td>
+            <td valign="top">Jeder Artikel wird bei einer bestimmten <a
+ href="#Instanzen"><b>Instanz</b></a>bestellt.&nbsp;</td>
+          </tr>
+          <tr>
+            <td valign="top">defaultschema<br>
+            </td>
+            <td valign="top">Die Kunden ID die standardm&auml;&szlig;ig f&uuml;r
+diesen Artikel verwendet wird.<br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">internwarengruppe<br>
+            </td>
+            <td valign="top">F&uuml;r Interne Abl&auml;ufe kann eine andere
+Warengruppe definiert werden.<br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">einheit<br>
+            </td>
+            <td valign="top">Einheitid des Artikels entsprechend der Tabelle
+            <i>einheiten.</i><br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">uid<br>
+            </td>
+            <td valign="top">User ID der Person, die den Artikel zuletzt
+ge&auml;ndert oder modifiziert hat.<br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+                 
+        </tbody>             
+      </table>
+      <br>
+      <br>
+F&uuml;r jede Kombination von Warengruppen <i>x</i> und Kundenbezeichnungsschema
+      <i>y</i> mu&szlig; eine Tabelle <i>artbez_x_y</i> angelegt werden.
+     <br>
+Das bedeutet, die Firma Schrauben GmbH ben&ouml;tigt die Tabellen <b>artbez_[1|2|3|4|5|6]_1</b>
+und <b>artbez_[4|6]_1000</b>. Jede dieser Tabellen besteht aus den in der
+Tabelle <b>extbezschema</b> angegebenen Spalten plus einer Spalte <i>stand</i>,
+die einen Zeitstempel enth&auml;lt. F&uuml;r die Firma Schrauben GmbH sind
+diese Tabellen fertig angelegt. Eine Besonderheit ist die Tabelle <b>artbez_4_1000</b>.
+Da sich die Artikel nur aufgrund des Separators unterscheiden, liegt es nahe
+f&uuml;r diese Tabelle einen <b>VIEW</b> auf <b>artbez_4_1</b> zu verweden.<br>
+      <br>
+      </td>
+    </tr>
+                 
+  </tbody>
+</table>
+<br>
+Wenn ein Artikel angelegt wird, dann wird er in die Tabellen <b>artikelstamm</b>
+und <b>artbez_x_y</b> eingetragen. Will man zu einer Artikel<b>-ID</b> (nur
+diese wird in Auftr&auml;gen, Lieferscheinen und Rechnungen gespeichert) die
+Artikel-<b>Bezeichnung</b> erhalten, so wird zun&auml;chst in der Tabelle
+artikelstamm nachgeschaut um was f&uuml;r eine Art Artikel es sich handelt
+und in welcher artbez_x_y Tabelle er abgelegt ist, bevor aus der entsprechenden
+artbez_x_y Tabelle die Korrekte Bezeichnung f&uuml;r diesen Artikel und Kunden
+geholt wird.<br>
+<br>
+<h4><a name="Preise"></a>Preise</h4>
+Jedem Kunden wird eine Preisliste zugeordnet. Dies geschieht mithilfe der
+Tabelle <b>ku_preisliste</b>.<br>
+<br>
+<table cellpadding="2" cellspacing="2" border="0" width="100%"
+ bgcolor="#ffff00">
+  <tbody>
+    <tr>
+      <td valign="top">             
+      <table cellpadding="2" cellspacing="2" border="1" width="100%">
+        <tbody>
+          <tr>
+            <td valign="top" rowspan="1" colspan="3">Die Tabelle <b>ku_preisliste</b><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top"><b>Spaltenname</b></td>
+            <td valign="top"><b>Inhalt</b></td>
+            <td valign="top"><b>Erl&auml;uterung</b></td>
+          </tr>
+          <tr>
+            <td valign="top">prlsnr<br>
+            </td>
+            <td valign="top">Eindeutige Nummer einer Preisliste<br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">notiz<br>
+            </td>
+            <td valign="top">Beschreibung der Preisliste<br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">waehrungid<br>
+            </td>
+            <td valign="top">W&auml;hrungsID nach Tabelle <b>waehrung</b><br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">bruttosatz<br>
+            </td>
+            <td valign="top">???<br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+                  
+        </tbody>             
+      </table>
+      <br>
+Die mitgelieferte Tabelle <b>prod_instanz</b> ist f&uuml;r die Firma Schrauben
+GmbH bereits fertig angepa&szlig;t.<br>
+      <br>
+      </td>
+    </tr>
+                 
+  </tbody>
+</table>
+<br>
 <br>
 <h2><a name="Kompilieren_und_Installieren"></a>Kompilieren und Installieren</h2>
 Ebenso wie die Tabellenschemata erh&auml;lt man die Quellen der einzelnen
@@ -124,6 +663,62 @@ cvs -z3 -d:pserver:anonymous@cvs.midgard.berlios.de:/cvsroot/midgard co GtkmmAdd
 <font color="#ff6666">cvs -z3 -d:pserver:anonymous@cvs.manuproc.berlios.de:/cvsroot/manuproc
 co Komponenten</font><br>
 es ist sicher von Vorteil vorher in ein leeres Verzeichnis zu wechseln :-)<br>
+<br>
+<h3>Firmenspezifische Anpassungen</h3>
+M&ouml;glicherweise m&uuml;ssen vor dem Kompilieren noch firmenspezifische
+Anpassungen vorgenommen werden:<br>
+Im Verzeichnis <b>commom++/DynamicEnums/DefaultValues.h</b>
+<table cellpadding="2" cellspacing="2" border="0" width="100%">
+  <tbody>
+    <tr>
+      <td valign="top" bgcolor="#ffff00"><br>
+      
+      <table cellpadding="2" cellspacing="2" border="1" width="100%">
+        <tbody>
+          <tr>
+            <td valign="top"><b>Parameter</b><br>
+            </td>
+            <td valign="top"><b>Erl&auml;uterung</b><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">EIGENE_KUNDENID<br>
+            </td>
+            <td valign="top">Die ID, die der eigenen Firma laut der Tabelle
+            <b>kunden</b> zugeordnet ist.<br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">DEFAULT_ARTIKELTYP<br>
+            </td>
+            <td valign="top">G&uuml;ltige Werte sind die, die in der Tabelle
+            <b>extbezschema</b> in der Spalte <i>artikeltyp</i> eingetargen
+sind und f&uuml;r die die Tabelle <b>artbez_<i>artikeltyp</i>_y</b> existiert.</td>
+          </tr>
+          <tr>
+            <td valign="top"><br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top"><br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+        
+        </tbody>      
+      </table>
+      <br>
+      <br>
+      </td>
+    </tr>
+  
+  </tbody>
+</table>
+<br>
+<br>
 Danach mu&szlig; zun&auml;chst im Verzeichnis&nbsp;<font color="#ff6666">
 m4<font color="#000000"> der Befehl <font color="#ff6666">make install<font
  color="#000000"> ausgef&uuml;hrt werden, bevor man <font
@@ -138,6 +733,12 @@ k&ouml;nnen kompiliert und installiert werden.<br>
 <b>Kundendaten:</b></font></font></font> &nbsp;<br>
 cvs -z3 -d:pserver:anonymous@cvs.manuproc.berlios.de:/cvsroot/manuproc co
 kundendaten</font><br>
+<b>Artikeleingabe:<br>
+</b><font color="#ff6666">cvs -z3 -d:pserver:anonymous@cvs.manuproc.berlios.de:/cvsroot/manuproc
+co Artikeleingabe</font><br>
+<b>Preis:<br>
+</b><font color="#ff6666">cvs -z3 -d:pserver:anonymous@cvs.manuproc.berlios.de:/cvsroot/manuproc
+co preise</font><br>
 <b>pps:</b><br>
 <font color="#ff6666">cvs -z3 -d:pserver:anonymous@cvs.manuproc.berlios.de:/cvsroot/manuproc
 co pps</font><br>
@@ -148,9 +749,10 @@ um die ausf&uuml;hrbaren Programme zu bauen mu&szlig; in den jeweiligen Unterver
  color="#ff6666"><font color="#000000"><font color="#ff6666"><font
  color="#000000"><font color="#ff6666">./autogen<font color="#000000"> ausgef&uuml;hrt
 werden.<br>
-</font></font></font></font></font></font><font color="#000000"><br>
-</font><br>
-<h2><a name="Anleitung_zur_Benutzung_der_einzelnen"></a>Die Programme im Einzelnen</h2>
+</font></font></font></font></font></font><br>
+<br>
+<h2><a name="Anleitung_zur_Benutzung_der_einzelnen"></a>Die Programme im
+Einzelnen</h2>
 <h2><a name="Hilfe_und_Kontakt"></a>Kontakt</h2>
 Entwickelt und gepflegt wird das Programmpaket von<br>
 <table cellpadding="1" cellspacing="0" border="0" width="40%">
@@ -169,9 +771,10 @@ Entwickelt und gepflegt wird das Programmpaket von<br>
       <td valign="top"><a href="mailto:thoma@uni-muenster.de">thoma@uni-muenster.de</a><br>
       </td>
     </tr>
-  
+                 
   </tbody>
 </table>
+<br>
 <br>
 <br>
 <br>
