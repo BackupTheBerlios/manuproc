@@ -129,9 +129,9 @@ void auftrag_main::neuladen()
 
 
 
-#define TEXCMD "tex2prn -2 -q -Phl1260"
+#define TEXCMD "tex2prn -2"
 
-#define TEXCMDVIEW "tex2prn -2 -G -Phl1260" // Preview
+#define TEXCMDVIEW "tex2prn -2 -G" // Preview
 
 static std::string print_cmd;
 
@@ -986,8 +986,10 @@ void auftrag_main::show_frame_instanzen_material()
 
 void auftrag_main::show_main_menu()
 {
-  if(instanz == ppsInstanzID::Kundenauftraege ||
-     instanz == ppsInstanzID::Einkauf
+  if(instanz == ppsInstanzID::Kundenauftraege 
+#ifdef MABELLA_EXTENSIONS  
+      || instanz == ppsInstanzID::Einkauf
+#endif      
     )
    {
      kundenauftragsnummer->show();

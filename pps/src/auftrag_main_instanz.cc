@@ -282,12 +282,12 @@ gint auftrag_main::on_button_instanz_print_clicked(GdkEventButton *ev)
   if(instanz->ExterneBestellung()) EI="Extern";
   if (ev->button==1)
    {
-     std::string s="auftrag_drucken -p -a "+EI+" -n "+searchcombo_auftragid->get_text()+" -i "+itos(instanz->Id());
+     std::string s="auftrag_drucken -Y0,0,1 -a"+EI+" -n"+searchcombo_auftragid->get_text()+" -i"+itos(instanz->Id());
      system(s.c_str());
    } 
   if (ev->button==3); 
    {
-     std::string s="auftrag_drucken -a "+EI+" -n "+searchcombo_auftragid->get_text()+" -i "+itos(instanz->Id());
+     std::string s="auftrag_drucken -G -a"+EI+" -n"+searchcombo_auftragid->get_text()+" -i"+itos(instanz->Id());
      system(s.c_str());
    }
  return false;

@@ -85,9 +85,9 @@ void auftrag_rechnung::on_rng_preview()
    std::string optionen;
    if(checkbutton_ean_drucken->get_active()) optionen =" --ean ";
    
-   std::string command = "auftrag_drucken -a Rechnung -n "
+   std::string command = "auftrag_drucken -G -aRechnung -n"
          +rngnr->get_text() 
-         +" -i "+itos(instanz->Id()) 
+         +" -i"+itos(instanz->Id()) 
          +optionen ;
    system(command.c_str());
 }
@@ -103,12 +103,16 @@ gint auftrag_rechnung::on_rng_print(GdkEventButton *ev)
    if (rngnr->get_text()=="") return false;
 //   std::string com="auftrag_drucken  -a Rechnung -n "+rngnr->get_text()+" -p -i "+itos(instanz->Id()) ;
    std::string optionen, opt_ean;
-   if(checkbutton_firmenpapier->get_active()) optionen +=" --firma ";
-   if(checkbutton_kopie->get_active())        optionen +=" --kopie " ;
+   if (checkbutton_firmenpapier->get_active() && !checkbutton_kopie->get_active())
+     optionen+=" -Y1,0,0 ";
+   else if (checkbutton_firmenpapier->get_active())
+     optionen+=" -Y0,1,0 ";
+   else
+     optionen+=" -Y0,0,1 ";
    if(checkbutton_ean_drucken->get_active())  opt_ean +=" --ean ";
 
-   std::string com="auftrag_drucken  -a Rechnung -n "
-         +rngnr->get_text()+" -p -i "+itos(instanz->Id())+opt_ean ;
+   std::string com="auftrag_drucken  -aRechnung -n"
+         +rngnr->get_text()+" -i"+itos(instanz->Id())+opt_ean ;
 
    if (ev->button==STD_MABELLA(1,3)) 
       system((com+optionen).c_str());
@@ -117,19 +121,19 @@ gint auftrag_rechnung::on_rng_print(GdkEventButton *ev)
 #ifdef MABELLA_EXTENSIONS
      system((com+optionen).c_str());
 #else
-     system((com+" --kopie").c_str());
-     system((com+" --firma").c_str());
+     system((com+" -Y1,0,1").c_str());
 #endif
     }
    if (ev->button==STD_MABELLA(3,1))
     {
      cH_Kunde k(rechnung.KdNr());
-     for(int i=0; i<k->anzahl_ausdruck_weissespapier() 
-		&& i<MAX_DRUCK_ANZAHL; i++)
-       system((com+" --kopie").c_str());
-     for(int i=0; i<k->anzahl_ausdruck_firmenpapier()
-		&& i<MAX_DRUCK_ANZAHL; i++)
-       system((com+" --firma").c_str());
+     std::string opt=" -Y";
+     if (k->anzahl_ausdruck_firmenpapier()>0)
+     {  opt+="1,"+itos(k->anzahl_ausdruck_firmenpapier()-1)+",";
+     }
+     else opt+="0,0,";
+     opt+=itos(k->anzahl_ausdruck_weissespapier());
+     system((com+opt).c_str());
     }
  return false;
 }

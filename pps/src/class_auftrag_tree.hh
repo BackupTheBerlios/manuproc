@@ -59,12 +59,14 @@ public:
 	       AM->get_Instanz()->Id()==ppsInstanzID::Kundenauftraege)
                auftrag =      AB.getYourAufNr() ;
             else                      
+#ifdef MABELLA_EXTENSIONS            
 	      if(AM->get_Instanz()->Id()==ppsInstanzID::Einkauf)
 		{if(AM->Kunden_anr_bool())
 		   auftrag = AB.getYourAufNr()+" - ";
 		 auftrag += itos(AB.getAuftragid());
 		}
 	      else
+#endif	      
                 auftrag = itos(AB.getAuftragid()) ;
 
             return cH_EntryValueIntString(auftrag);}

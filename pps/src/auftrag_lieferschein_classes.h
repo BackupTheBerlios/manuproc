@@ -174,9 +174,11 @@ public:
          case AUFNR_SEQ :
              {std::string artnr;
               artnr=Formatiere((unsigned long)AE.Id(),0,6,"","",'0');
+#ifdef MABELLA_EXTENSIONS              
               if(AM->get_Instanz()->Id()==ppsInstanzID::Einkauf &&
                      !AE.getYourAufNr().empty())
                     artnr=AE.getYourAufNr()+" - "+artnr;
+#endif                    
               return cH_EntryValueIntString(artnr);
               }
          case ARTIKEL_SEQ :

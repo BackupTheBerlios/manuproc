@@ -27,35 +27,39 @@ struct Configuration Configuration;
 enum {EAN=256, COMBINE};
 
 const static struct option options[]=
-{{ "firma",  no_argument, NULL, 'f' },
- { "kopie",  no_argument, NULL, 'k' },  
+{
+// { "firma",  no_argument, NULL, 'f' },
+// { "kopie",  no_argument, NULL, 'k' },  
  { "ean",  no_argument, NULL, EAN },  
  { "art",     required_argument,      NULL, 'a' }, 
  { "nr",     required_argument,      NULL, 'n' }, 
- { "print",     no_argument,      NULL, 'p' }, 
+// { "print",     no_argument,      NULL, 'p' }, 
  { "instanz", required_argument,      NULL, 'i' }, 
  { "database", required_argument,      NULL, 'd' }, 
  { "dbhost", required_argument,      NULL, 'h' }, 
  { "combine-names", no_argument, NULL, COMBINE },
+ { "copies",	required_argument, NULL, 'Y' },
+ { "preview",	no_argument, NULL, 'G' },
  { NULL,      0,       NULL, 0 }
 };       
 
 
-void usage(std::string n,bool toTeX,bool plot,bool firmenpapier,bool kopie,
-   ppsInstanz::ID instanz,std::string database,std::string dbhost)
+void usage(std::string n,ppsInstanz::ID instanz,std::string database,std::string dbhost)
 {
-   std::cout << "$Id: auftrag_drucken.cc,v 1.17 2003/04/11 09:13:43 christof Exp $\n\n"
-              "USAGE:" << n << " -n <Nr> [-a <Auftrag|Rechnung|Lieferschein|Intern|Extern>] [-kft] [-i <Instanz>] [-d <Datenbank>]\n"
-		"\n\t-t\t nur TeX file erzeugen ("<< (toTeX?"an":"aus")<< ")\n"
-		"\t-p\t drucken ("<< (plot?"an":"aus")<< ")\n"
+   std::cout << "$Id: auftrag_drucken.cc,v 1.18 2004/09/13 13:51:08 christof Exp $\n\n"
+              "USAGE:" << n << " -n <Nr> [-a <Typ>] [-kft] [-i <Instanz>] [-d <Datenbank>]\n"
+//		"\n\t-t\t nur TeX file erzeugen ("<< (toTeX?"an":"aus")<< ")\n"
+//		"\t-p\t drucken ("<< (plot?"an":"aus")<< ")\n"
 		"\t-a\t Aufrag(*), Rechnung, Lieferschein, Intern, Extern\n"
 		"\t-n\t (A./R./L.)-Nummer (wichtig!)\n"
-		"\t-f\t auf Firmenpapier ("<< (firmenpapier?"an":"aus")<< ")\n"
-		"\t-f\t Kopien ("<< (kopie?"an":"aus")<< ")\n"
+//		"\t-f\t auf Firmenpapier ("<< (firmenpapier?"an":"aus")<< ")\n"
+//		"\t-f\t Kopien ("<< (kopie?"an":"aus")<< ")\n"
 		"\t-i\t Instanz auswählen ("<< instanz<< ")\n"
 		"\t-d\t Datenbank ("<< database<< ")\n"
 		"\t-h\t DbHost ("<< dbhost<< ")\n"
+		"\t-Y <1,2,3>\t Originale, Kopien auf Firmenpapier, Kop. auf weiß\n"
 		"\t-R\t Rückstand zum Auftrag\n"
+		"\t-G\t Direkt anzeigen (kann nicht gedruckt werden)\n"
 		"\t--EAN\t Mit EAN-Code\n"
 		"\t-Z\t Rechnung sortieren nach Zeilennr\n";
             exit(1);
@@ -66,28 +70,21 @@ bool sort_by_rownr=false;
 
 int main (int argc, char *argv[])
 {
- bool firmenpapier=false;
- bool kopie=false;
  LR_Base::typ was=LR_Base::Auftrag;
- bool plot=false;
- bool toTeX=false;
  bool rueckstand=false;
  bool ean_code=false;
  unsigned int auftragsnr = 0; 
  ppsInstanz::ID instanz = ppsInstanzID::Kundenauftraege;
- std::string database="";
- std::string dbhost="";
- bool combine=false;
+ std::string database;
+ std::string dbhost;
 
  int opt;
 
- if(argc==1) usage(argv[0],toTeX,plot,firmenpapier,kopie,instanz,database,dbhost);
+ if(argc==1) usage(argv[0],instanz,database,dbhost);
 
- while ((opt=getopt_long(argc,argv,"ftka:n:pi:d:RZ",options,NULL))!=EOF)
+ while ((opt=getopt_long(argc,argv,"Ga:n:pi:d:RZY:",options,NULL))!=EOF)
   { switch (opt)
-    {  case 'f' : firmenpapier=true; break;
-       case 'k' : kopie=true; break;
-       case 'a' : if(std::string("Rechnung")==optarg) was=LR_Base::Rechnung;
+    {  case 'a' : if(std::string("Rechnung")==optarg) was=LR_Base::Rechnung;
 		  else if(std::string("Lieferschein")==optarg) was=LR_Base::Lieferschein;
 		  else if(std::string("Auftrag")==optarg) was=LR_Base::Auftrag;
 		  else if(std::string("Intern")==optarg) was=LR_Base::Intern;
@@ -96,15 +93,15 @@ int main (int argc, char *argv[])
 		break;
        case 'n' : auftragsnr=atoi(optarg);break;
        case 'i' : instanz=(ppsInstanz::ID)atoi(optarg);break;
-       case 'p' : plot=true;break;
 	case 'd' : database=optarg;break; 
 	case 'h' : dbhost=optarg;break; 
-	case 't' : toTeX=true;break; 
 	case 'R' : rueckstand=true; break;
 	case EAN : ean_code=true; break;
 	case COMBINE: Configuration.combine=true; break;
+	case 'Y' : Configuration.copies=optarg; break;
 	case 'Z' : sort_by_rownr=true; break;
-	case '?': usage(argv[0],toTeX,plot,firmenpapier,kopie,instanz,database,dbhost); break;
+	case '?': usage(argv[0],instanz,database,dbhost); break;
+	case 'G': Configuration.preview_only=true; break;
     }
   }                 
   try {
@@ -113,9 +110,8 @@ int main (int argc, char *argv[])
       conn.setHost(dbhost);
       ManuProC::dbconnect(conn);  
 
-      LR_drucken l(was,auftragsnr,plot,firmenpapier,
-			kopie,cH_ppsInstanz(instanz),
-			toTeX,rueckstand,ean_code);
+      LR_drucken l(was,auftragsnr,cH_ppsInstanz(instanz),
+			rueckstand,ean_code);
          
       ManuProC::dbdisconnect();
    } catch (SQLerror &e)

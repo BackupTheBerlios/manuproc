@@ -28,14 +28,14 @@ class LR_drucken
       const LR_Base::typ RL;
       std::string kopie;
       cH_ppsInstanz instanz;
-	   bool toTeX;
       bool rueckstand;
+      bool ean_code;
    private:
-      void drucken(bool print,bool b_firmenpapier,bool b_kopie,bool ean_code);
+      void drucken();
       std::string get_Zahlungsziel(int);
    public:
-      LR_drucken(const LR_Base::typ RL, unsigned int _auftragsnr,bool print, 
-           	bool b_firmenpapier,bool b_kopie,cH_ppsInstanz _instanz,
-		bool toTeX, bool rueckst=false,bool ean_code=false);
+      LR_drucken(const LR_Base::typ RL, unsigned int _auftragsnr,
+		cH_ppsInstanz _instanz,
+		bool rueckst=false,bool ean_code=false);
 };
 

@@ -205,9 +205,7 @@ void lieferscheinliste::on_button_close_clicked()
  destroy();
 }
 
-//#define TEXCMD "tex2prn -2 -q -Phl1260 -t landscape"
-#define TEXCMD "tex2prn -2 -G -Phl1260 -t landscape" // Preview
-
+#define TEXCMD "tex2prn -2 -tlandscape"
 
 gint lieferscheinliste::on_button_drucken_button_release_event(GdkEventButton *event)
 {

@@ -176,14 +176,11 @@ public:
 
 class LR_Abstraktion: public LR_Base
 {
- bool firmenpapier:1;
- bool kopie:1;
  bool stueck_bool:1;
  bool menge_bool:1;
  bool rabatt_bool:1;
  bool preise_addieren:1;
  bool ean_code:1;
- bool print:1;
 
  cH_ppsInstanz instanz;
  
@@ -222,6 +219,8 @@ class LR_Abstraktion: public LR_Base
 
  ManuProC::Datum min_liefdatum;
  std::string min_KWStr;
+ std::string copies;
+ 
 public:
   typedef LR_Iterator const_iterator;
 
@@ -230,16 +229,13 @@ private:
           const class RechnungVoll *r; 
           const class AuftragFull *a; } u;
 #define UEBLICHE_INITIALISIERUNG(fp,inst) \
-	firmenpapier(fp), kopie(false), stueck_bool(false), menge_bool(false), \
+	stueck_bool(false), menge_bool(false), \
 	rabatt_bool(false), preise_addieren(false), ean_code(false), \
-	print(false), \
 	instanz(ppsInstanz::default_id), \
 	zeilen_passen_noch(0), page_counter(1), \
 	preisspalte(0), \
 	spaltenzahl(0), schema_mem(ExtBezSchema::default_ID), \
-	schema_own(ExtBezSchema::default_ID)
-
-
+	schema_own(ExtBezSchema::default_ID), copies("1,1,1")
 
 public:
 	
@@ -260,9 +256,7 @@ public:
 	: LR_Base(_typ), UEBLICHE_INITIALISIERUNG(fp,a->Instanz())
   { u.a=a; }
 
-  bool Firmenpapier() const {return firmenpapier;}
   void setEAN(bool b) {ean_code=b;}
-  void setPrint(bool p) { print=p;}
   
   const_iterator begin() const { 
       if (Typ()==Rechnung)     return u.r->begin();
@@ -362,7 +356,7 @@ private:
 
    void calc_all(cH_Kunde k,bool mwst);
 public:
-   void drucken(std::ostream &os,bool kopie,const cH_ppsInstanz& instanz);
+   void drucken(std::ostream &os,const cH_ppsInstanz& instanz);
 };
 
 #endif

@@ -942,8 +942,8 @@ void auftrag_bearbeiten::on_button_preview_clicked()
    std::string optionen;
    if(checkbutton_ean_drucken->get_active()) optionen =" --ean ";
 
-   std::string command = "auftrag_drucken -a "+art+" -n "+itos(auftrag->Id())+
-   		" -i " + itos(instanz->Id())+optionen;
+   std::string command = "auftrag_drucken -G -a"+art+" -n"+itos(auftrag->Id())+
+   		" -i" + itos(instanz->Id())+optionen;
    system(command.c_str());
 }  
 
@@ -959,15 +959,15 @@ gint auftrag_bearbeiten::on_button_drucken_clicked(GdkEventButton *ev)
 
    if(ev->button==1)
    {
-   std::string command = "auftrag_drucken -f -a "+art+" -n "+itos(auftrag->Id())+
-   	" -p -i " + itos(instanz->Id())+optionen;
+   std::string command = "auftrag_drucken -Y1,0,0 -a"+art+" -n"+itos(auftrag->Id())+
+   	" -i" + itos(instanz->Id())+optionen;
    system(command.c_str());
    }
 
-  if(ev->button==2)
+  else if(ev->button==2)
    {
-   std::string command = "auftrag_drucken  -a "+art+" -n "+itos(auftrag->Id())+
-   	" -p -i " + itos(instanz->Id())+optionen;
+   std::string command = "auftrag_drucken -Y0,0,1 -a"+art+" -n"+itos(auftrag->Id())+
+   	" -i" + itos(instanz->Id())+optionen;
    system(command.c_str());
    }
  return false;
@@ -1071,9 +1071,9 @@ void auftrag_bearbeiten::on_rueckstand_clicked()
  if(instanz->ExterneBestellung()) typ="Extern";
  else typ="Auftrag";
 
- std::string command = std::string("auftrag_drucken -a ")+typ+
-	" -R -n "+itos(auftrag->Id())+
-   	" -p -i " + itos(instanz->Id());
+ std::string command = std::string("auftrag_drucken -Y1,0,0 -a")+typ+
+	" -R -n"+itos(auftrag->Id())+
+   	" -i" + itos(instanz->Id());
    system(command.c_str());  
 }
 

@@ -89,7 +89,7 @@ void LR_Abstraktion::drucken_header(std::ostream &os)
 {
  Gtk2TeX::HeaderFlags hf;
  
- hf.packages="pstricks,tabularx,eurosym";
+ hf.packages="pstricks,tabularx,eurosym,ifthen";
  hf.ptsize=12;
  hf.pagestyle="empty";
 
@@ -145,8 +145,9 @@ void LR_Abstraktion::drucken_header(std::ostream &os)
 
 #if defined MABELLA_EXTENSIONS && defined PRINT_LOGO
 
-if(!firmenpapier)
-   os << "\\raisebox{0cm}[0pt][0pt]{\\makebox[0pt][l]{\\kern+140pt\\psfig{file=/usr/share/mabella/logo.eps}}}\n";
+   os << "\\ifthenelse{\\kopie>2}"
+           "{\\raisebox{0cm}[0pt][0pt]{\\makebox[0pt][l]{\\kern+140pt\\psfig{file=/usr/share/mabella/logo.eps}}}}"
+           "{}\n";
 
    if(kunde_an->verein().size())
      os << "\\raisebox{-120pt}[0pt][0pt]{%%\n"
@@ -368,9 +369,8 @@ catch(SQLerror &e) { std::cout << e; return; }
 }
 
 
-void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _instanz)
+void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
 {instanz=_instanz;
- kopie=_kopie;
 
  if (Typ()==Rechnung || Typ()==Auftrag || Typ()==Extern) 
  	preise_addieren=true;
@@ -1254,8 +1254,8 @@ void LR_Abstraktion::page_header(std::ostream &os)
       zeilen_passen_noch=ZEILEN_SEITE_1;
     }
    os << "\\LARGE "<<typString()<<' '<<RngNr()<<"\\hfill\\normalsize "
-        <<(kopie?"Kopie, ":"");
-   os <<"\\hfill "<< getDatum() << "\\\\\n\n";
+       "\\ifthenelse{\\kopie>1}{Kopie, }{}"
+       "\\hfill "<< getDatum() << "\\\\\n\n";
    os <<string2TeX(getBemerkung())<<"\n\n";
   }
  else
@@ -1418,8 +1418,9 @@ void LR_Abstraktion::page_header(std::ostream &os)
    else 
     {
 #if defined MABELLA_EXTENSIONS && defined PRINT_LOGO
-     if(!firmenpapier)
-        os << "\\raisebox{0cm}[0pt][0pt]{\\makebox[0pt][l]{\\kern+140pt\\psfig{file=/usr/share/mabella/logo.eps}}}\\\\\n";
+   os << "\\ifthenelse{\\kopie>2}"
+        "{\\raisebox{0cm}[0pt][0pt]{\\makebox[0pt][l]{\\kern+140pt\\psfig{file=/usr/share/mabella/logo.eps}}}\\\\}"
+           "{}\n";
 #endif
 
 #ifdef MABELLA_EXTENSIONS
@@ -1488,7 +1489,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
    if (Typ()==Auftrag) os << "Auftragsbestätigung";
    else os << typString();
    os <<' '<<RngNr()<<"\\hfill\\normalsize "
-        <<(kopie?"Kopie, ":"");
+       "\\ifthenelse{\\kopie>1}{Kopie, }{}";
    os <<"Seite "<<page_counter;
    os <<"\\hfill "<< getDatum();
    if (Typ()==Auftrag && !YourAuftrag().empty()) 

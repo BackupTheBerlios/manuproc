@@ -99,8 +99,8 @@ void auftrag_lieferschein::on_lief_preview()
    if (liefernr->get_text()=="") return;
    std::string optionen;
    if(checkbutton_ean_drucken->get_active()) optionen =" --ean ";
-   std::string command = "auftrag_drucken -a Lieferschein -n "
-      +liefernr->get_text()+" -i "+ itos(instanz->Id())+optionen;
+   std::string command = "auftrag_drucken -G -aLieferschein -n"
+      +liefernr->get_text()+" -i"+ itos(instanz->Id())+optionen;
    system(command.c_str());
 }
 
@@ -108,9 +108,9 @@ void auftrag_lieferschein::on_lief_print()
 {  
    if (liefernr->get_text()=="") return;
    std::string optionen;
-   if(checkbutton_ean_drucken->get_active()) optionen =" --ean ";
-   std::string command = "auftrag_drucken -a Lieferschein -n "
-      +liefernr->get_text()+" -p -i "+ itos(instanz->Id())+optionen;
+   if(checkbutton_ean_drucken->get_active()) optionen =" --ean";
+   std::string command = "auftrag_drucken -aLieferschein -n"
+      +liefernr->get_text()+" -Y0,0,1 -i"+ itos(instanz->Id())+optionen;
    system(command.c_str()); 
 }
 
