@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.36 2003/01/08 09:46:57 christof Exp $
+// $Id: Kunde.h,v 1.37 2003/01/17 11:50:12 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -40,6 +40,7 @@ class cH_Kunde;
 class H_Kunde;
 class cH_Telefon;
 #include <Kunde/Zahlungsart.h>
+#include <Aux/multi_lang.h>
 
 class Kunde : public ManuProcEntity<>
 {
@@ -138,7 +139,10 @@ private:
     mutable bool prlist_valid:1;
 
    bool lieferung_frei_haus;
+   static MultiL_Dict *mld;
 public:
+	void setMLD(MultiL_Dict *mld) { this->mld=mld; }
+
 	static const ID default_id=ManuProC::DefaultValues::DefaultKundenId;
 	static const ID eigene_id=ManuProC::DefaultValues::EigeneKundenId;
 	Kunde(ID nr=default_id) throw(SQLerror);

@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.22 2003/01/08 09:46:57 christof Exp $
+// $Id: Kunde.cc,v 1.23 2003/01/17 11:50:12 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -125,8 +125,14 @@ const std::string Kunde::LaTeX_an(bool liefer,TelArt telart,
   std::string s=std::string("\\parbox[t]{")+width+"}{\n";
 #ifndef MABELLA_EXTENSIONS
   s+="\\large ";
-#endif
+  if(mld) 
+    s+=mld->MLT(MultiL_Dict::TXT_FIRMA)+" \\\\";
+  else
+    s+="Firma \\\\";
+#else
   s+="Firma \\\\";
+#endif
+
   s+= string2TeX(getName(),NEEDCHAR) +"\\\\";
   if (!postanwvor().empty()) s+= string2TeX(postanwvor(),NEEDCHAR) +"\\\\";
   s += string2TeX(strasse_postfach,NEEDCHAR); 
