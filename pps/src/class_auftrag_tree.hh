@@ -16,7 +16,7 @@ class Data_auftrag : public RowDataBase
 
 public:
    Data_auftrag(const AufEintrag& ab, auftrag_main* am) :
-      AB(ab),AM(am),menge(AB.ArtId(),AB.getRestStk().as_int()) {}
+      AB(ab),AM(am),menge(AB.Artikel(),AB.getRestStk().as_int()) {}
 
     virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
  { 
@@ -34,7 +34,7 @@ public:
       case auftrag_main::A1 ... auftrag_main::A4 : {
       	 ExtBezSchema::ID schema=1;
          if (!AM->interneNamen_bool()) schema = cH_Kunde(AB.getKdNr())->getSchemaId();
-         cH_ArtikelBezeichnung artbez(AB.ArtId(),schema);
+         cH_ArtikelBezeichnung artbez(AB.Artikel(),schema);
          return artbez->Komponente_als_EntryValue(seqnr-int(auftrag_main::A1));
          }
       case auftrag_main::LIEFERDATUM : {
@@ -96,6 +96,7 @@ public:
    int get_aid() const {return AB.getAuftragid();} 
    int get_zeilennr() const {return AB.getZnr();} 
    int get_Artikel_ID() const {return AB.ArtId();}
+   int get_Artikel() const {return AB.Artikel();}
    ManuProC::Datum get_Lieferdatum() const {return AB.getLieferdatum();}
    std::string ProzessText() const {return AB.getProzess()->getTyp()+" "+AB.getProzess()->getText() ;}
    AufEintrag& get_AufEintrag() const {return const_cast<AufEintrag&>(AB);}

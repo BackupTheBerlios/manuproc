@@ -26,7 +26,7 @@ class Data_Rechnung : public RowDataBase
            case LIEFNR_SEQ :
               return cH_EntryValueIntString(Formatiere(rentry.Lfrs().Id(),0,6,"","",'0'));
            case ARTIKEL_SEQ :
-              {cH_ArtikelBezeichnung AB(rentry.ArtikelID());
+              {cH_ArtikelBezeichnung AB(rentry.Artikel());
                return cH_EntryValueIntString(AB->Bezeichnung());
               }
            case STUECK_SEQ :
