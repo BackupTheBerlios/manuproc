@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.54 2004/05/25 11:46:52 christof Exp $
+// $Id: FetchIStream.h,v 1.55 2004/05/25 12:28:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -237,8 +237,8 @@ public:
 	void ThrowOnBad(const char *where) const;
 
 	static void Execute(const std::string &command) throw(SQLerror);
-	int Result() { return error; }
-	unsigned LinesAffected() { return lines; }
+	int Result() const { return error; }
+	unsigned LinesAffected() const { return lines; }
 	
 	void Check100() const throw(SQLerror);
 	

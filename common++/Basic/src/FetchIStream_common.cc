@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.11 2004/05/25 11:46:52 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.12 2004/05/25 12:28:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -48,8 +48,8 @@ void FetchIStream::mythrow(const SQLerror &e)
 }
 
 void Query::Check100() const throw(SQLerror)
-{  if (!params.complete()) mythrow(SQLerror(query,ECPG_TOO_FEW_ARGUMENTS,"to few input parameter"));
-   if (!LinesAffected()) mythrow(SQLerror(query,100,"no lines selected"));
+{  if (!params.complete()) FetchIStream::mythrow(SQLerror(query,ECPG_TOO_FEW_ARGUMENTS,"to few input parameter"));
+   if (!LinesAffected()) FetchIStream::mythrow(SQLerror(query,100,"no lines selected"));
 }
 
 Query &Query::operator>>(const check100 &s)
