@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.20 2002/12/05 14:54:18 thoma Exp $
+// $Id: adjust_store.cc,v 1.21 2002/12/09 11:22:28 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -48,7 +48,7 @@ void usage(const std::string &s)
            "\t                                    AuftragsARTIKEL.\n";
  std::cerr << "USAGE:  ";
  std::cerr << s <<" [-i<instanz>|-I]  -a<aktion> [-d<database> -h<dbhost> -y] \n"
-           "\twobei die aktion=[A|B|C] ist.\n"
+           "\twobei die aktion=[A|B|C|D|E|F|K] ist.\n"
            "\t-y Analysemodus (keine Reparaturen)\n"
            "\t-I führt die Tests für alle Instanzen durch\n\n";
  exit(1);

@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.32 2002/12/02 13:14:03 thoma Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.33 2002/12/09 11:22:28 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -245,6 +245,8 @@ AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool in
    SQLerror::test("updateStkDiff: lock table auftragentry");
    mengen_t mt=updateStkDiffBase__(uid,menge);
 
+//cout << "M;"<<menge<<'\t'<<mt<<'\n';
+
    if(instanzen || reason==ManuProC::Auftrag::r_Reparatur)
       updateStkDiffInstanz__(uid,mt,reason);
    bestellt+=menge;
@@ -287,7 +289,9 @@ void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,ManuProC::Auft
    {
      ArtikelBaum::faktor_t faktor = ArtikelBaum(ArtId()).Faktor(i->Art);
      AuftragBase::mengen_t menge=faktor*oldmenge;
+//cout <<*this<<'\t'<< menge<<'\t'<<faktor<<' '<<oldmenge<<'\n';
      AufEintrag AE(i->AEB);
+//cout <<AE<<'\n';
      mengen_t mt=AE.updateStkDiff__(uid,menge,true,reason);
      AufEintragZu(*this).setMengeDiff__(i->AEB,menge);
 

@@ -1,4 +1,4 @@
-// $Id: AufEintragZu_sql.pgcc,v 1.11 2002/11/22 15:31:05 christof Exp $
+// $Id: AufEintragZu_sql.pgcc,v 1.12 2002/12/09 11:22:28 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -79,6 +79,49 @@ std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list(const AufEin
  tr.close();
  return vaeb;
 }
+
+std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_without_child() const throw(SQLerror)
+{
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this);
+ exec sql begin declare section;
+  int INSTANZ[30],AUFTRAGID[30],ZEILENNR[30];
+  double MENGE[30];
+  char query[1024];
+ exec sql end declare section;
+ Transaction tr;
+ std::string squery;
+
+    squery = "select neuauftragid,neuinstanz,neuzeilennr,menge "
+      "from auftragsentryzuordnung "
+      "where (altinstanz,altauftragid,altzeilennr) = "
+      "("+itos(InstanzID())+","+itos(Id())+","+itos(ZNr())+")";
+
+ strncpy(query,squery.c_str(),sizeof(query));
+ exec sql prepare ONAUFC_ from :query;
+//std::cout << query<<"\n\n\n";
+ exec sql declare ONAUFC cursor for ONAUFC_;
+ exec sql open ONAUFC;
+ std::list<st_reflist> vaeb;
+ while(true)
+  {
+    exec sql fetch 30 in ONAUFC into :AUFTRAGID,:INSTANZ,:ZEILENNR,:MENGE;
+    SQLerror::test(__FILELINE__,100);
+    if (sqlca.sqlcode) break;
+    int j=sqlca.sqlerrd[2];
+    for (int i=0;i<j;++i)
+     {
+      vaeb.push_back(st_reflist(
+         AufEintragBase(cH_ppsInstanz((ppsInstanz::ID)INSTANZ[i]),
+             AUFTRAGID[i],ZEILENNR[i]),ArtikelBase(),MENGE[i]));
+     }
+    if(j<30) break;
+  }
+ exec sql close ONAUFC;
+ tr.close();
+ return vaeb;
+}
+
+
 
 
 std::list<cH_Kunde> AufEintragZu::get_Referenz_Kunden() const throw(SQLerror)

@@ -47,25 +47,64 @@ bool ppsInstanz::ReparaturK_Kundenzuordnung(const int uid,const bool analyse_onl
        }
       for(std::list<AufEintragZu::st_reflist>::const_iterator j=L.begin();j!=L.end();++j)
         {
+         try{ 
+          AufEintrag AE(j->AEB);
           if(j->Menge!=i->getStueck()) {
             alles_ok=false;
-            if(analyse_only) analyse("Menge des Kundenauftrags und der Zuordnung ans Kind stimmt nicht überein",*i,j->Menge,i->getStueck());
-            else assert(!"nicht implementiert");
+            if(analyse_only) analyse("Menge des Kundenauftrags und der Zuordnung ans Kind stimmt nicht überein",*i,i->getStueck(),j->Menge);
+            else MengenReparatur(uid,*i,j->AEB,j->Menge);
            }
-          AufEintrag AE(j->AEB);
           if(AE.Artikel()!=i->Artikel()){
             alles_ok=false;
-            if(analyse_only) analyse("Artikel des Kundenauftrags und dem Kind stimmt nicht überein",*i,AE.Artikel(),i->Artikel());
-            else assert(!"nicht implementiert");
+            if(analyse_only) analyse("Artikel des Kundenauftrags und dem Kind stimmt nicht überein",*i,i->Artikel(),AE.Artikel());
+            else Reparatur_Kundenauftrag_AE(uid,*i,AE,j->Menge);
            }
           if(AE.Instanz()!=I){
             alles_ok=false;
-            if(analyse_only) analyse("Instanzen des Kundenauftrags und des Kindes stimmt nicht überein",*i,AE.Instanz(),I);
+            if(analyse_only) analyse("Instanzen des Kundenauftrags und des Kindes stimmt nicht überein",*i,I,AE.Instanz());
+            else Reparatur_Kundenauftrag_AE(uid,*i,AE,j->Menge);
+           }
+          if(AE.getLieferdatum()!=i->getLieferdatum()){
+            alles_ok=false;
+            if(analyse_only) analyse("Datum des Kundenauftrags und des Kindes stimmt nicht überein",*i,i->getLieferdatum().to_iso(),AE.getLieferdatum().to_iso());
             else assert(!"nicht implementiert");
+           }
+         } catch(AufEintrag::NoAEB_Error &e) 
+           {  
+            if(analyse_only) analyse("Kundenauftrag-Zuordnung, zeigt ins nichts\n",*i,j->AEB,j->Menge);
+            else  Reparatur_Kundenauftrag_AEB(uid,*i,j->AEB,j->Menge);
            }
         }      
     }
   return alles_ok;
+}
+
+void ppsInstanz::Reparatur_Kundenauftrag_AE(const int uid,const AufEintrag &KundeAE,AufEintrag &KindAE,const AuftragBase::mengen_t &menge) const
+{
+  KindAE.updateStkDiff__(uid,-menge,true,ManuProC::Auftrag::r_Anlegen);  
+  Reparatur_Kundenauftrag_AEB(uid,KundeAE,KindAE,menge);
+}
+
+void ppsInstanz::Reparatur_Kundenauftrag_AEB(const int uid,const AufEintrag &KundeAE,const AufEintragBase &KindAE,const AuftragBase::mengen_t &menge) const
+{
+  AufEintragZu::remove(KundeAE,KindAE);
+  KundeAE.BaumAnlegen(KundeAE,uid);
+}
+
+void ppsInstanz::MengenReparatur(const int uid,const AufEintrag &AE,const AufEintragBase &AEB,const ABmt& zumenge) const 
+{
+   assert(AEB.Id()==AuftragBase::ungeplante_id);
+   AuftragBase::mengen_t diffmenge=AE.getStueck()-zumenge;
+   AufEintragZu(AE).setMengeDiff__(AEB,diffmenge);
+
+   AufEintrag::mengen_t verplante_menge=0;
+   std::list<AufEintragZu::st_reflist> L=AufEintragZu(AEB).get_Referenz_list_geplant(true);
+   for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+      verplante_menge+=i->Menge;
+   AufEintrag AEK(AEB);
+   AuftragBase::mengen_t sollmenge = verplante_menge + AEK.getStueck();
+   if(sollmenge!=AE.getStueck())
+     AEK.updateStkDiff__(uid,AE.getStueck()-sollmenge,true,ManuProC::Auftrag::r_Reparatur); 
 }
 
 
@@ -424,11 +463,14 @@ std::vector<LagerInhalt> ppsInstanz::getLagerInhalt() const
 
 void ppsInstanz::analyse(const std::string &s,const AufEintrag &AE,const std::string &x,const std::string &y) const
 {
-  cout << AE <<"  => "<<s<<"\t("<<x<<"), ("<<y<<")\n";
+  cout<<"Fehler Analyse: " << AE <<"  => "<<s<<"\t("<<x<<"), ("<<y<<")\n";
 }
 
 void ppsInstanz::analyse(const std::string &s,const AufEintrag &AE,const ABmt &x,const ABmt &y) const
 {analyse(s,AE,x.String(),y.String());}
+
+void ppsInstanz::analyse(const std::string &s,const AufEintrag &AE,const AufEintragBase &x,const ABmt &y) const
+{analyse(s,AE,x.Instanz()->Name()+"/"+itos(x.Id())+"/"+itos(x.ZNr()),y.String());}
 
 void ppsInstanz::analyse(const std::string &s,const AufEintrag &AE,const ArtikelBase &x,const ArtikelBase &y) const
 {analyse(s,AE,itos(x.Id()),itos(y.Id()));}

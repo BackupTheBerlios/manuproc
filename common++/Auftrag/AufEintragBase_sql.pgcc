@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.31 2002/11/22 15:31:05 christof Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.32 2002/12/09 11:22:28 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -183,6 +183,7 @@ AuftragBase::mengen_t AufEintragBase::updateStkDiffBase__(int uid,const mengen_t
  exec sql end declare section;
 
  Transaction tr;
+//ECPGdebug(true,stdout); 
 
  exec sql select bestellt,artikelid into :OLDMENGE,:ARTIKELID from auftragentry 
       where (instanz,auftragid,zeilennr) = (:INSTANZ,:AUFTRAGID,:ZEILENNR);
@@ -196,6 +197,7 @@ AuftragBase::mengen_t AufEintragBase::updateStkDiffBase__(int uid,const mengen_t
    lastedit_uid=:UID
    where (instanz,auftragid,zeilennr) = 
 	(:INSTANZ,:AUFTRAGID,:ZEILENNR);
+//ECPGdebug(false,0);
  SQLerror::test("updateStkDiff: update stk in auftragentry");
 
  pps_ChJournalEntry::newChange(

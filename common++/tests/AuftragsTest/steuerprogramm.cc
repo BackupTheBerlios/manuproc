@@ -43,7 +43,7 @@ enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
       LieferscheinJacek,
       ZweiKundenTest,ZweiKundenMengeFreigebenTest,ManuProCTest,
       JumboLager,Rep_Mabella,Rep_Petig_PhysikalischesLager,
-      Rep_Petig_0er_2er_gleichzeitig};
+      Rep_Petig_0er_2er_gleichzeitig,Rep_KundenProgramm};
 
 static int fehler()
 {
@@ -336,6 +336,61 @@ std::cout << dummystring<<'\n';
 #endif
       break;
      }
+    case Rep_KundenProgramm:
+     {
+       #ifndef REPARATUR_PROGRAMM_TESTEN
+          assert(!"FEHLER: MIT REPARATURPROGRAMM KOMPILIEREN\n");
+       #endif
+      {
+       std::string q1="update auftragentry set artikelid="+itos(ARTIKEL_ROLLEREIK.Id())+" where "
+                         " (auftragid,zeilennr,instanz) = (0,1,10)";                            
+       Query::Execute(q1);
+       SQLerror::test(__FILELINE__);
+
+       erfolgreich=C.teste(Check::Menge,"_reparatur_kunde",mit_reparatur_programm,true);
+       if(!erfolgreich) { cout << "Reparatur Kundenaufträge (Artikel)\n";
+                           return fehler();} 
+      }
+      {
+       std::string q2="update auftragsentryzuordnung set menge=300 where "
+                         " (altauftragid) = (20000)";                            
+       Query::Execute(q2);
+       SQLerror::test(__FILELINE__);
+       AufEintrag AE=AufEintrag(class AufEintragBase(class AuftragBase(ROLLEREI,AuftragBase::ungeplante_id),2));
+cout << "VOR: "<<AE.getStueck()<<'\n';       
+       AE.updateStkDiff__(UID,-100,true,ManuProC::Auftrag::r_Anlegen);
+cout << "NACH: "<<AE.getStueck()<<'\n';       
+
+       erfolgreich=C.teste(Check::Menge,"_reparatur_kunde",mit_reparatur_programm,true);
+       if(!erfolgreich) { cout << "Reparatur Kundenaufträge (Menge)\n";
+                           return fehler();} 
+      }
+
+#if 0
+      {
+       std::string q2a="update auftragentry set instanz=3 where "
+                         " (auftragid,zeilennr,instanz) = (0,1,10)";                            
+       std::string q2b="update auftragsentryzuordnung set neuinstanz=3 where "
+                         " (neuauftragid,neuinstanz) = (0,10)";                            
+       std::string q2c="update auftragsentryzuordnung set altinstanz=3 where "
+                         " (altauftragid,altinstanz) = (0,10)";                            
+cout << q2a<<'\n';
+       Query::Execute(q2a);
+       SQLerror::test(__FILELINE__);
+       Query::Execute(q2b);
+       SQLerror::test(__FILELINE__);
+       Query::Execute(q2c);
+       SQLerror::test(__FILELINE__);
+
+       erfolgreich=C.teste(Check::Menge,"_reparatur_kunde",mit_reparatur_programm);
+       if(!erfolgreich) { cout << "Reparatur Kundenaufträge (Instanz)\n";
+                           return fehler();} 
+      }
+#endif
+       cout << "Reparatur Kundeaufträge (Artikel, Instanz) erfolgreich\n";
+                               
+       break;
+     } 
     case Lagertest :
      {    
 #ifdef PETIG_TEST
@@ -862,6 +917,7 @@ void usage(const std::string &argv0,const std::string &argv1)
                   "\t(J)umboLager\n"
                   "\t(R)eparatur(P)hysikalischesLager\n"
                   "\t(R)eparatur_0er_2er_(g)leichzeitig\n"
+                  "\t(R)eparatur_(K)undenprogramm\n"
                   "\t(R)eparartur(M)Mabella, =0er+2er OPEN, bestellt=0, Kundenid=1]\n"
                   "\taufgerufen werden\n"
        << " nicht mit '"<<argv1<<"'\n";
@@ -892,7 +948,7 @@ int main(int argc,char *argv[])
    else if(std::string(argv[1])=="RM" || std::string(argv[1])=="ReparaturMabella")  mode=Rep_Mabella;
    else if(std::string(argv[1])=="RP")  mode=Rep_Petig_PhysikalischesLager;
    else if(std::string(argv[1])=="Rg")  mode=Rep_Petig_0er_2er_gleichzeitig;
-
+   else if(std::string(argv[1])=="RK")  mode=Rep_KundenProgramm;
    if(mode==None) { usage(argv[0],argv[1]); return 1; }
    
    cout << "Initalisierung der Datenbank ...";

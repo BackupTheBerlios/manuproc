@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.hh,v 1.23 2002/12/05 10:05:59 thoma Exp $
+// $Id: steuerprogramm.hh,v 1.24 2002/12/09 11:22:28 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -23,8 +23,8 @@
 #define REPARATUR_PROGRAMM_TESTEN
 
 //#define MANU_PROC_TEST
-#define MABELLA_TEST
-//#define PETIG_TEST
+//#define MABELLA_TEST
+#define PETIG_TEST
 
 #ifdef MANU_PROC_TEST
   #define MANU_DATAPATH "~/ManuProC/Anleitung/datenbank"
@@ -41,12 +41,16 @@
 
 #define MIT_ROHWARENLAGER
 #define MIT_BANDLAGER
+
+#define ROLLEREI (ppsInstanz::ID(10))
+
 #define LagerPlatzKupfer (LagerPlatz(ppsInstanzID::Rohwarenlager,KUPFER_LAGERPLATZ))
 #define LagerPlatzKupfer2 (LagerPlatz(ppsInstanzID::Rohwarenlager,KUPFER_LAGERPLATZ2))
 #define LagerPlatzAcetat (LagerPlatz(ppsInstanzID::Rohwarenlager,ACETAT_LAGERPLATZ))
 #define LagerPlatzJumbo (LagerPlatz(ppsInstanzID::Bandlager,JUMBO_LAGERPLATZ))
 
 #define ARTIKEL_ROLLEREI ArtikelBase(124555)
+#define ARTIKEL_ROLLEREIK ArtikelBase(124556)
 #define ARTIKEL_FAERBEREI ArtikelBase(124551)
 #define ARTIKEL_BANDLAGER ArtikelBase(123755)
 #define ARTIKEL_RINGE ArtikelBase(210120)

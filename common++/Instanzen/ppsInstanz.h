@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.19 2002/12/05 14:54:18 thoma Exp $
+// $Id: ppsInstanz.h,v 1.20 2002/12/09 11:22:28 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -33,6 +33,7 @@
 #include <BaseObjects/ManuProcEntity.h>
 
 class AufEintrag;
+class AufEintragBase;
 class ArtikelBase;
 class cH_ppsInstanz;
 class LagerInhalt;
@@ -165,9 +166,15 @@ public:
       bool check_E_geplant(const bool analyse_only,const AufEintrag &AE,const ABmt &Msum) const;
       bool check_F_dispo(const bool analyse_only,const AufEintrag &AE,const ABmt &Msum) const;
 
+      void Reparatur_Kundenauftrag_AE(const int uid,const AufEintrag &KundeAE,AufEintrag &KindAE,const ABmt &menge) const;
+      void Reparatur_Kundenauftrag_AEB(const int uid,const AufEintrag &KundeAE,const AufEintragBase &KindAE,const ABmt &menge) const;
+      void MengenReparatur(const int uid,const AufEintrag &AE,const AufEintragBase &AEB,const ABmt& zumenge) const;
+
+
       void analyse(const std::string &s,const AufEintrag &AE,const std::string &x,const std::string &y) const;
       // Wrapper:
       void analyse(const std::string &s,const AufEintrag &AE) const{analyse(s,AE,"","");}
+      void analyse(const std::string &s,const AufEintrag &AE,const AufEintragBase &x,const ABmt &y) const;
       void analyse(const std::string &s,const AufEintrag &AE,const ABmt &x,const ABmt &y) const;
       void analyse(const std::string &s,const AufEintrag &AE,const ArtikelBase &x,const ArtikelBase &y) const;
       void analyse(const std::string &s,const AufEintrag &AE,const cH_ppsInstanz &x,const cH_ppsInstanz &y) const;

@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.3 2002/12/05 09:30:27 thoma Exp $
+// $Id: AufEintragZu.cc,v 1.4 2002/12/09 11:22:28 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -27,15 +27,25 @@
 #include <Aux/Trace.h>
 
 
-std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_id(const int id,bool kinder) const throw(SQLerror)
+std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_id(const AuftragBase::ID id,bool kinder) const throw(SQLerror)
 {
    ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"Id=",id,"Kinder=",kinder);
    std::list<st_reflist> L=get_Referenz_list(*this,kinder);
+   std::list<st_reflist> N=select_Id(id,L);
+   if(N.empty() && kinder) // Für die Reparatur; ein Pfeil könnte ins nichts zeigen ...
+    {
+      L=get_Referenz_list_without_child();
+      N=select_Id(id,L);
+    }   
+   return N;
+}
+
+std::list<AufEintragZu::st_reflist> AufEintragZu::select_Id(const AuftragBase::ID id,const std::list<st_reflist> &L) const
+{
    std::list<st_reflist> N;
    for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
-     {
-       if(i->AEB.Id()==id) N.push_back(*i);
-     }
+       if(i->AEB.Id()==id) 
+         N.push_back(*i);
    return N;
 }
 

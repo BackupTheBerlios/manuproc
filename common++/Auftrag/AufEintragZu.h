@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.10 2002/11/22 15:31:05 christof Exp $
+// $Id: AufEintragZu.h,v 1.11 2002/12/09 11:22:28 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -33,7 +33,6 @@ class AufEintragZu : public AufEintragBase
 public:
  AufEintragZu(AufEintragBase aeb) 
   : AufEintragBase(aeb) {}
-//     : AEB(aeb) {}
 
  struct st_reflist {AufEintragBase AEB;ArtikelBase Art;mengen_t Menge;
          st_reflist(AufEintragBase aeb,ArtikelBase ab,mengen_t menge) 
@@ -45,7 +44,9 @@ public:
 
  enum VonNachDel {Von,Nach,Delete} ;
 
-  std::list<st_reflist> get_Referenz_list_id(const int id,bool kinder) const throw(SQLerror);
+  std::list<st_reflist> get_Referenz_list_id(const AuftragBase::ID id,bool kinder) const throw(SQLerror);
+  std::list<st_reflist> select_Id(const AuftragBase::ID id,const std::list<st_reflist> &L) const;
+  std::list<st_reflist> get_Referenz_list_without_child() const throw(SQLerror);
 
 public:
     AuftragBase::mengen_t getMenge(const AufEintragBase& aeb) const;

@@ -1,4 +1,4 @@
-// $Id: DataBase_init.cc,v 1.9 2002/11/28 15:59:28 thoma Exp $
+// $Id: DataBase_init.cc,v 1.10 2002/12/09 11:22:28 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -58,6 +58,9 @@ void DataBase_init::ArtikelBaum_anlegen()
   ArtikelBaum_anlegen_execute(ARTIKEL_FAERBEREI,PROZESS_DEFAULT,ARTIKEL_BANDLAGER,FAKTOR_BANDLAGER);
   ArtikelBaum_anlegen_execute(ARTIKEL_BANDLAGER,PROZESS_DEFAULT,ARTIKEL_ACETAT,FAKTOR_ACETAT);
   ArtikelBaum_anlegen_execute(ARTIKEL_BANDLAGER,PROZESS_DEFAULT,ARTIKEL_KUPFER,FAKTOR_KUPFER);
+
+  ArtikelBaum_anlegen_execute(ARTIKEL_ROLLEREIK,cH_Prozess(PROZESS_ROLLEREI_FAERBEREI),ARTIKEL_FAERBEREI);
+  ArtikelBaum_anlegen_execute(ARTIKEL_ROLLEREIK,PROZESS_DEFAULT,ARTIKEL_RINGE,FAKTOR_RINGE);
 }
 
 void DataBase_init::ArtikelBaum_anlegen_execute(const ArtikelBase &art,
