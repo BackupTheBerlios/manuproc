@@ -94,7 +94,7 @@ void Artikeleingabe::artikelbox_activate()
        
        mindbest_check->set_active(as.getCheckBest());
        mindbestand->set_sensitive(as.getCheckBest());
-       mindbestand->set_value(0);
+       mindbestand->set_value(as.getMindBest());
     }
    } catch (SQLerror &e)   {mess->Show(e);} 
  set_Data_from_artikelliste();
