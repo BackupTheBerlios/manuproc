@@ -1508,9 +1508,17 @@ void LR_Abstraktion::page_header(std::ostream &os)
 
 	if(kunde_an->VerkNr()!=Kunde::none_id && Typ()!=Extern)
 	  {
-//kunde_an->getVerkaeufer();
-           os << "\\vspace*{2mm}\\bf "<<mld->MLT(MultiL_Dict::TXT_BESUCHTSIE)<<":\\rm \\\\\n"
-           	<< string2TeX(kunde_an->VerkName()) <<"~\\\\\n";
+	   std::string fullname;
+	   cH_Kunde verk(kunde_an->VerkNr());
+
+	   if(verk->Rngan()==verk->Id())
+	      fullname=verk->getFullName();
+	   else
+	    {cH_Kunde v(verk->Rngan());
+	     fullname=v->getFullName();
+	    }
+             os << "\\vspace*{2mm}\\bf "<<mld->MLT(MultiL_Dict::TXT_BESUCHTSIE)<<":\\rm \\\\\n"
+           	<< string2TeX(fullname) <<"~\\\\\n";
           }
           
         os << "\\end{flushleft}\\fussy\\normalsize\\end{minipage}}\\\\\n";          
