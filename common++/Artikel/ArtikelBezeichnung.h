@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.h,v 1.20 2003/05/23 11:19:33 christof Exp $
+// $Id: ArtikelBezeichnung.h,v 1.21 2003/11/14 15:08:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -155,7 +155,9 @@ public:
  bool Jumbo() const { return (*this)[schema->JumboIndex()]->getStrVal()==schema->JumboBez(); }
 #endif
 
-
+  static void Anlegen(const cH_ExtBezSchema &schema,const ArtikelBase &art,
+  	const std::string &columns, const std::string &values);
+  static std::string Tabellenname(const cH_ExtBezSchema &s);
  
 // deprecated
 private:

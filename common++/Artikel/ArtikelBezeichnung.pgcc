@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.20 2003/05/23 11:19:33 christof Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.21 2003/11/14 15:08:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,6 +25,10 @@
 exec sql include sqlca;
 #include <Misc/FetchIStream.h>
 //#include <Misc/dbconnect.h>
+
+#ifdef MABELLA_EXTENSIONS
+#include <Aux/EAN.h>
+#endif
 
 ArtikelBezeichnung::ArtikelBezeichnung(const ArtikelBase &artikel, const cH_ExtBezSchema &_schema) throw()
  : ArtikelBase(artikel), schema(_schema)
@@ -199,8 +203,25 @@ const cH_EntryValue *ArtikelBezeichnung::const_sigiterator::operator->() const
 }
 #endif
 
+std::string ArtikelBezeichnung::Tabellenname(const cH_ExtBezSchema &s)
+{  return "artbez_"+itos(s->Typ().Id())+"_"+itos(s->Id());
+}
 
-
-
-
-
+void ArtikelBezeichnung::Anlegen(const cH_ExtBezSchema &schema,const ArtikelBase &art,
+  	const std::string &columns, const std::string &values)
+{  std::string col="(id,"+columns+",";
+   std::string val="("+itos(art.Id())+","+values+",";
+#ifdef MABELLA_EXTENSIONS  
+  if(schema->Id()==ExtBezSchema::default_id && schema->Typ() == ArtikelTyp::default_ID)
+     {
+     col +="ean,";
+     val += EAN::next_value()+",";
+     }  
+#endif
+   assert(col[col.size()-1]==',' && val[val.size()-1]==',');
+   col[col.size()-1]=')';
+   val[val.size()-1]=')';
+   
+   Query("insert into "+Tabellenname(schema) +" "+ col+" values "+val);
+   SQLerror::test(__FILELINE__,100);
+}

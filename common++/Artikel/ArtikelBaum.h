@@ -1,4 +1,4 @@
-/* $Id: ArtikelBaum.h,v 1.21 2003/09/02 12:10:52 christof Exp $ */
+/* $Id: ArtikelBaum.h,v 1.22 2003/11/14 15:08:43 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -114,6 +114,9 @@ public:
  faktor_t Faktor(const ArtikelBase &kind) throw(SQLerror);
  int Tiefe() const;
 	bool istKind(const ArtikelBase &kind) const;
+
+	static void Anlegen(const ArtikelBase &produkt,const ArtikelBase &edukt,
+		Prozess::ID proz, const faktor_t &menge);
 };
 
 #endif

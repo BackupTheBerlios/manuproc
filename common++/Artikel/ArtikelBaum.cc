@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.cc,v 1.11 2003/07/15 09:04:41 christof Exp $
+// $Id: ArtikelBaum.cc,v 1.12 2003/11/14 15:08:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -164,3 +164,13 @@ bool ArtikelBaum::istKind(const ArtikelBase &kind) const
    }
    return false;
 }
+
+void ArtikelBaum::Anlegen(const ArtikelBase &produkt,const ArtikelBase &edukt,
+		Prozess::ID proz, const faktor_t &menge)
+{Query("insert into artikelzusammensetzung "
+ 	"(id,prozessid,altartikelid,menge,uid)"
+        "values (?,?,?,?,?)")
+        << produkt.Id() << proz << edukt.Id() << menge
+        << getuid();
+}
+

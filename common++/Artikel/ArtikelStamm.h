@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.h,v 1.19 2003/10/22 12:59:35 jacek Exp $
+// $Id: ArtikelStamm.h,v 1.20 2003/11/14 15:08:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -86,6 +86,8 @@ public:
 	int getMindBest() const { return payload.mindbest; }
 	void setMindBest(int mb) throw(SQLerror);
 	
-	
+	static ArtikelBase Anlegen(ArtikelTyp::ID warengruppe,
+		int default_Schema,ppsInstanz::ID bestellen_bei=ppsInstanzID::None,
+		Einheit::ID einheit=EinheitID::None);
 };
 #endif
