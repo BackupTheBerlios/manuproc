@@ -1,4 +1,4 @@
-// $Id: owntreemodel.cc,v 1.1 2003/10/10 14:15:44 christof Exp $
+// $Id: owntreemodel.cc,v 1.2 2003/10/10 15:00:16 christof Exp $
 /*  ManuProcWidgets: ManuProC's GUI element library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,14 +19,15 @@
 
 #include <gtkmm/window.h>
 #include <gtkmm/treeview.h>
+#include <gtkmm/scrolledwindow.h>
 #include <gtkmm/main.h>
 #include <cassert>
 #include <vector>
 #include <cstdio>
 #include <iostream>
 
-static const unsigned columns=4;
-static const unsigned rows=10;
+static const unsigned columns=10;
+static const unsigned rows=10000;
 
 static std::string itoa(int i)
 {  char buf[20];
@@ -50,8 +51,7 @@ class MyTreeModel_Class : public Glib::Class
 };
 
 class MyTreeModel : public Glib::Object, public Gtk::TreeModel
-{  std::string data[rows][columns];
-   static MyTreeModel_Class myclass;
+{  static MyTreeModel_Class myclass;
 
    virtual Gtk::TreeModelFlags get_flags_vfunc()
    {  return Gtk::TreeModelFlags(0); }
@@ -62,7 +62,8 @@ class MyTreeModel : public Glib::Object, public Gtk::TreeModel
    virtual void get_value_vfunc(const TreeModel::iterator& iter, int column, 
    		GValue* value)
    {  g_value_init(value,G_TYPE_STRING);
-      g_value_set_static_string(value,data[iter2row(iter.gobj())][column].c_str());
+      std::string res=itoa(iter2row(iter.gobj()))+"-"+itoa(column);
+      g_value_set_string(value,res.c_str());
    }
    virtual bool iter_next_vfunc(GtkTreeIter* iter)
    {  iter2row(iter)++;
@@ -99,10 +100,7 @@ public:
      : Glib::ObjectBase("MyTreeModel"),
 //     typeid(MyTreeModel))
        Glib::Object(Glib::ConstructParams(myclass.init(), (char*) 0))
-   {  for (unsigned r=0;r<rows;++r)
-         for (unsigned c=0;c<columns;++c)
-         {  data[r][c]=itoa(r+c);
-         }
+   {  
    }
 };
 
@@ -145,18 +143,21 @@ int main(int argc,char **argv)
 {  Gtk::Main m(argc,argv);
    Gtk::Window w;
    Gtk::TreeView v;
+   Gtk::ScrolledWindow sw;
    Glib::RefPtr<Gtk::TreeModel> model
    	=Glib::RefPtr<Gtk::TreeModel>(new MyTreeModel);
    std::vector<Gtk::TreeModelColumn< int > > cols(columns);
    Gtk::TreeModel::ColumnRecord colrec;
    for (unsigned i=0;i<columns;++i) colrec.add(cols[i]);
-   w.add(v);
+   w.add(sw);
+   sw.add(v);
    v.set_model(model);
 
    for (unsigned i=0;i<columns;++i)
       v.append_column("data",cols[i]);
    
    v.show();
+   sw.show();
    w.show();
    m.run(w);
 }
