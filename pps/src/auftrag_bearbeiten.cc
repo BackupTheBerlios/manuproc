@@ -497,11 +497,14 @@ void auftrag_bearbeiten::Rabatt_setzen(const cH_Kunde &kunde,AuftragFull *a)
 }
 
 void auftrag_bearbeiten::Rabatt_setzen(const cH_PreisListe &liste)
-{if (!kunde->zeilenrabatt()) return;
+{
+ cH_Kunde rngk(kunde->isInGrp(KundengruppeID::Rechnungsadresse) ? kunde->Id() : kunde->Rngan());
+
+ if (!rngk->zeilenrabatt()) return;
  if (liste->festerRabatt())
     rabattentry_spinbutton->set_value(liste->getRabatt().as_float());
  else 
-    rabattentry_spinbutton->set_value(kunde->rabatt().as_float());
+    rabattentry_spinbutton->set_value(rngk->rabatt().as_float());
 }
 
 void auftrag_bearbeiten::andererKunde()
@@ -538,7 +541,7 @@ void auftrag_bearbeiten::andererKunde()
     
 #ifdef MABELLA_EXTENSIONS
    if(preisautomatik->get_active())
-     artikelbox->AlleWarenkorb(rngkd);
+     artikelbox->AlleWarenkorb(rngkd->Id());
    else
      artikelbox->EinWarenkorb(rngkd->preisliste());   
    artikelbox->Einschraenken_b(true);
