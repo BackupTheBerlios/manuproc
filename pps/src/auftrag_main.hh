@@ -35,7 +35,8 @@ class auftrag_main : public auftrag_main_glade
  SelectedFullAufList *allaufids;
  cH_ppsInstanz instanz;
  bool interne_namen_bool, zeit_kw_bool, kunden_nr_bool,
-      kunden_anr_bool, auftraege_mit_kunden_bool;
+      kunden_anr_bool, auftraege_mit_kunden_bool,
+	kunden_mit_ort;
  AufStatVal selected_status;
  AufEintrag *selected_AufEintrag;
  static const unsigned int Artikelgroesse = 4;
@@ -151,6 +152,7 @@ public:
  bool Zeit_kw_bool() const { return zeit_kw_bool; }
  bool Kunden_nr_bool() const { return kunden_nr_bool; }
  bool Kunden_anr_bool() const {return kunden_anr_bool;}
+ bool Kunden_mit_ort() const { return kunden_mit_ort;}
  cH_ppsInstanz get_Instanz() const {return instanz;}
  
  auftrag_main();

@@ -24,8 +24,15 @@ public:
       case auftrag_main::KUNDE : {
        if(AM->get_Instanz()->Id()==ppsInstanzID::Kundenauftraege)
         {
-         if (AM->Kunden_nr_bool()) return cH_EntryValueIntString(AB.getKdNr()); 
-         else  return cH_EntryValueIntString(cH_Kunde(AB.getKdNr())->sortname()); 
+         if (AM->Kunden_nr_bool())
+	   return cH_EntryValueIntString(AB.getKdNr()); 
+	 cH_Kunde kd(AB.getKdNr());
+	 if (AM->Kunden_mit_ort())
+	   {
+	    return cH_EntryValueIntString(kd->sortname()+"; "+kd->ort()); 
+	   }
+         else
+	   return cH_EntryValueIntString(kd->sortname()); 
         }
        else { 
          return cH_EntryValue();

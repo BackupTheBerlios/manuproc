@@ -249,6 +249,7 @@ void auftrag_main::on_kundendarstellung_activate()
 {
   if(block_callback) return;
   kunden_nr_bool=kunden_nr->get_active();
+  kunden_mit_ort=kunden_ort->get_active();
   fill_simple_tree();
   Global_Settings::create(int(getuid()),"pps","KundenNr",bool2str(kunden_nr_bool)); 
 }
@@ -750,7 +751,7 @@ void auftrag_main::on_button_auftrag_erledigt_clicked()
   try{
   try{
      cH_RowDataBase dt(maintree_s->getSelectedRowDataBase());
-     dynamic_cast<const Data_auftrag*>(&*dt)->get_AufEintrag().setStatus(CLOSED);
+     dynamic_cast<const Data_auftrag*>(&*dt)->get_AufEintrag().setStatus(CLOSED,int(getuid()));
      dynamic_cast<Data_auftrag&>(const_cast<RowDataBase&>(*dt)).redisplayMenge(maintree_s);
   }catch(SQLerror &e) {meldung->Show(e);}
   }catch(TreeBase::notLeafSelected &x) {std::cerr << x.what()<<'\n';}
@@ -941,7 +942,7 @@ void auftrag_main::show_frame_instanzen_material()
    }
   else 
    {
-     vpaned_an_mat->set_position(2*psize/3.);
+     vpaned_an_mat->set_position((int)(2*psize/3.));
      if(maintree_s->selection().size()!=0)
         maintree_s->moveto(maintree_s->selection().begin()->get_row_num(),0);
      else if(tree_lager_verplant->selection().size()!=0)

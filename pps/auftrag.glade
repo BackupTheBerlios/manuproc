@@ -461,6 +461,20 @@
 	      <last_modification_time>Wed, 29 Aug 2001 13:33:23 GMT</last_modification_time>
 	    </signal>
 	    <label>Kunden Name</label>
+	    <active>True</active>
+	    <always_show_toggle>True</always_show_toggle>
+	    <group>kunde</group>
+	  </widget>
+
+	  <widget>
+	    <class>GtkRadioMenuItem</class>
+	    <name>kunden_ort</name>
+	    <signal>
+	      <name>activate</name>
+	      <handler>on_kundendarstellung_activate</handler>
+	      <last_modification_time>Mon, 15 Sep 2003 13:30:06 GMT</last_modification_time>
+	    </signal>
+	    <label>Kunden name &amp; Ort</label>
 	    <active>False</active>
 	    <always_show_toggle>True</always_show_toggle>
 	    <group>kunde</group>
@@ -475,7 +489,7 @@
 	      <last_modification_time>Wed, 29 Aug 2001 13:33:23 GMT</last_modification_time>
 	    </signal>
 	    <label>Kunden Nr.</label>
-	    <active>True</active>
+	    <active>False</active>
 	    <always_show_toggle>True</always_show_toggle>
 	    <group>kunde</group>
 	  </widget>
@@ -678,7 +692,7 @@
 	      <last_modification_time>Wed, 20 Nov 2002 09:24:43 GMT</last_modification_time>
 	    </signal>
 	    <label>freie verfügbare Menge </label>
-	    <active>False</active>
+	    <active>True</active>
 	    <always_show_toggle>True</always_show_toggle>
 	    <group>auftrag_0_1_2_20000</group>
 	  </widget>
