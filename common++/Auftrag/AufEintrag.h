@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.63 2003/07/31 11:23:52 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.64 2003/07/31 11:32:58 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -290,7 +290,8 @@ public:
 	(const AuftragBase &ab,const ArtikelBase &artikel,mengen_t menge, 
 		unsigned uid,bool fuer_auftraege,
 		const ProductionContext2 &ctx);
- void Auslagern(mengen_t menge, unsigned uid, const ProductionContext &ctx);
+ mengen_t Auslagern(mengen_t menge, unsigned uid, const ProductionContext &ctx,
+ 							bool fuer_auftraege=true);
    // wird aufgerufen wenn Menge ins Lager kommt (LagerBase::rein_ins_lager)
    // kümmert sich um 1er und 2er
    // sollte Aufträge als produziert markieren

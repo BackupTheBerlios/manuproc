@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.8 2003/07/31 11:23:52 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.9 2003/07/31 11:32:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -158,8 +158,9 @@ AufEintragBase AufEintrag::default_opfer(cH_ppsInstanz i,mengen_t menge,const Ar
 AufEintragBase (*AufEintrag::opfer_auswaehlen)(cH_ppsInstanz,mengen_t,const ArtikelBase &)
 	= &AufEintrag::default_opfer;
 
-void AufEintrag::Auslagern
-	(mengen_t menge, unsigned uid, const ProductionContext &ctx)
+AuftragBase::mengen_t AufEintrag::Auslagern
+	(mengen_t menge, unsigned uid, const ProductionContext &ctx,
+		bool fuer_auftraege)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
 		NV("ctx",ctx),NV("menge",menge));
    assert(ctx.aeb.valid());
@@ -182,12 +183,13 @@ void AufEintrag::Auslagern
          brauch_noch=0;
       }
       else
-         brauch_noch=AufEintrag(opfer).Auslagern(brauch_noch,uid,ctx); // ,false);
+         brauch_noch=AufEintrag(opfer).Auslagern(brauch_noch,uid,ctx,false);
      }
       // produzieren
       unbestellteMengeProduzieren(Instanz(),Artikel(),menge,uid,true,
       		ctx.aeb/*oder *this?*/,ctx.leb);
    }
+   return 0;
 }
 
 namespace { class Einlagern_cb : public auf_positionen_verteilen_cb
