@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.cc,v 1.5 2003/01/08 09:46:58 christof Exp $
+// $Id: ppsInstanz.cc,v 1.6 2003/03/31 08:14:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -25,15 +25,15 @@
 
 int main()
 {
-  ManuProC::dbconnect();
-  cH_ppsInstanz I(ppsInstanz::INST_WEB);
+  ManuProC::dbconnect_nt();
+  cH_ppsInstanz I(ppsInstanzID::Weberei);
   std::map<cH_ppsInstanz,int> V;
-  V[cH_ppsInstanz(ppsInstanz::INST_SCHAER)]=1;
-  V[cH_ppsInstanz(ppsInstanz::INST_SPRITZ)]=2;
-  V[cH_ppsInstanz(ppsInstanz::INST_DRUCK)]=5;
-  V[cH_ppsInstanz(ppsInstanz::INST_WEB)]=6;
-  V[cH_ppsInstanz(ppsInstanz::INST_KNDAUF)]=3;
-  V[cH_ppsInstanz(ppsInstanz::INST_FAERB)]=4;
+  V[cH_ppsInstanz(ppsInstanzID::Schaererei)]=1;
+  V[cH_ppsInstanz(ppsInstanzID::Spritzgiesserei)]=2;
+  V[cH_ppsInstanz(ppsInstanzID::Druckerei)]=5;
+  V[cH_ppsInstanz(ppsInstanzID::Weberei)]=6;
+  V[cH_ppsInstanz(ppsInstanzID::Kundenauftraege)]=3;
+  V[cH_ppsInstanz(ppsInstanzID::Faerberei)]=4;
 
   for(std::map<cH_ppsInstanz,int>::const_iterator i=V.begin();i!=V.end();++i)
    {
