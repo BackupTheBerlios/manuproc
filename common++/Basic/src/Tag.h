@@ -1,4 +1,4 @@
-// $Id: Tag.h,v 1.5 2003/02/04 10:21:34 christof Exp $
+// $Id: Tag.h,v 1.6 2003/04/07 06:41:44 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2002  Christof Petig
  *
@@ -31,6 +31,9 @@ class Tag {
     	typedef std::vector <std::pair<std::string,std::string> > attvec_t;
     	attvec_t attributes;
     	std::vector <Tag> sub_specifications;
+    	Tag *parent_ptr;
+
+	void repair_back_pointer() throw();
 
 public: // nice to have for custom parsing
     	typedef std::vector<Tag>::difference_type difference_type;
@@ -43,12 +46,10 @@ public: // nice to have for custom parsing
     	 
 public:
     	Tag(const std::string &t,const std::string &v="") throw()
-		: type(t), value(v)
+		: type(t), value(v), parent_ptr(0)
 	{}
-	Tag &push_back(const Tag t) throw()
-	{  sub_specifications.push_back(t);
-	   return *(sub_specifications.end()-1);
-	}
+	// this makes a copy !!!
+	Tag &push_back(const Tag t) throw();
 	typedef std::vector<Tag>::iterator iterator;
 	typedef std::vector<Tag>::const_iterator const_iterator;
 	const_iterator begin() const throw()
@@ -67,6 +68,10 @@ public:
 	{  return sub_specifications.end(); }
 	Tag &back() throw()
 	{  return sub_specifications.back(); }
+	Tag *parent() throw()
+	{  return parent_ptr; }
+	const Tag *parent() const throw()
+	{  return parent_ptr; }
 	
 	const std::string Type() const throw()
 	{  return type; }
@@ -108,12 +113,12 @@ public:
 	
 	// values of substructures
 	bool hasTag(const std::string &typ) const throw();
-	void setValue(const std::string &tg,const std::string &value) throw();
+	void setValue(const std::string &key,const std::string &value) throw();
 	template <class T>
-	 T getValue(const std::string &tg) const;
+	 T getValue(const std::string &key) const;
 	template <class T>
-	 T getValue_def(const std::string &tg, const T &def) const throw()
-    	{  try { return getValue<T>(tg); } 
+	 T getValue_def(const std::string &key, const T &def) const throw()
+    	{  try { return getValue<T>(key); } 
     	   catch (std::out_of_range &e) { return def; }
     	}
 	
@@ -152,8 +157,8 @@ public:
 	{  return getValue_def<int>(typ,def); }
 	float getFloat(const std::string &typ,float def=0) const throw()
 	{  return getValue_def<float>(typ,def); }
-	void mark(const std::string &tg,const std::string &value) throw()
-	{  setValue(tg,value); }
+	void mark(const std::string &key,const std::string &value) throw()
+	{  setValue(key,value); }
 	
 #endif
 };
@@ -192,7 +197,7 @@ public:
 		(variable)!=(end); \
 		variable=(parent).find((variable)+1,(type)))
 
-// you can skip these declarations
+// you can skip these declarations while reading this file
 template <> std::string Tag::create_value<int>(const int &val);
 template <> std::string Tag::create_value<double>(const double &val);
 template <> std::string Tag::create_value<bool>(const bool &val);
@@ -213,7 +218,7 @@ inline void Tag::setBoolAttr(const std::string &name, bool val)
 // g++ 2.95 does not like these inlined
 template <class T>
  T Tag::parse_value_def(const std::string &val, const T &def)
-{  try { return parse_value(val); } 
+{  try { return parse_value<T>(val); } 
    catch (std::out_of_range &e) { return def; }
 }
 
@@ -225,9 +230,9 @@ template <class T>
 }
 
 template <class T>
- T Tag::getValue(const std::string &tg) const
-{  const_iterator t=find(begin(),tg);
-   if (t==end()) throw std::out_of_range(tg);
+ T Tag::getValue(const std::string &key) const
+{  const_iterator t=find(begin(),key);
+   if (t==end()) throw std::out_of_range(key);
    return parse_value<T>(t->Value());
 }
 

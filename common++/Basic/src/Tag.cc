@@ -1,4 +1,4 @@
-// $Id: Tag.cc,v 1.5 2003/01/24 08:56:29 christof Exp $
+// $Id: Tag.cc,v 1.6 2003/04/07 06:41:44 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2002  Christof Petig
  *
@@ -62,7 +62,7 @@ void Tag::debug(int recursion_depth,int indent) const
 {  std::cout << std::string(indent,' ') << '"' << Type() << '"';
    if (Value()[0]) std::cout << "=\"" << quote_nonprintable(Value()) << '"';
    else std::cout << " @" << this;
-   std::cout << "\n";
+   std::cout << " P" << parent_ptr << "\n";
    for (attvec_t::const_iterator i=attributes.begin();i!=attend();++i)
       std::cout << std::string(indent,' ') << '.' << i->first << "=\"" 
       	<< quote_nonprintable(i->second) << "\"\n";
@@ -121,9 +121,28 @@ std::string Tag::parse_value<std::string>(const std::string &value) throw(std::o
 {  return value;
 }
 
-void Tag::setValue(const std::string &tg,const std::string &value) throw()
-{  iterator t=find(begin(),tg);
-   if (t==end()) push_back(Tag(tg,value));
+void Tag::repair_back_pointer() throw()
+{  for (Tag::iterator i=begin();i!=end();++i)
+   {  i->parent_ptr=this;
+      if (i->begin()!=i->end()) i->repair_back_pointer();
+   }
+}
+
+Tag &Tag::push_back(const Tag t) throw()
+{  bool needs_fixing=sub_specifications.capacity()<=sub_specifications.size();
+   sub_specifications.push_back(t);
+   Tag &result=sub_specifications.back();
+   if (needs_fixing) repair_back_pointer();
+   else
+   {  result.parent_ptr=this;
+      result.repair_back_pointer();
+   }
+   return result;
+}
+
+void Tag::setValue(const std::string &key,const std::string &value) throw()
+{  iterator t=find(begin(),key);
+   if (t==end()) push_back(Tag(key,value));
    else (*t).Value(value);
 }
 
