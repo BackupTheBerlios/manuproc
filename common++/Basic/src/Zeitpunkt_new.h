@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.h,v 1.13 2003/07/17 10:50:15 christof Exp $
+// $Id: Zeitpunkt_new.h,v 1.14 2004/02/06 14:33:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -93,6 +93,9 @@ public:
    
    /// write into char[]
    void write(PostgresTimestamp a) const;
+   // convert to string
+   std::string write() const;
+   
    /// Differenz in min(Precision)
    int operator-(const Zeitpunkt_new &b) const throw();
    bool operator<(const Zeitpunkt_new &b) const throw();

@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.cc,v 1.9 2003/09/17 07:04:49 christof Exp $
+// $Id: Zeitpunkt_new.cc,v 1.10 2004/02/06 14:33:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -153,6 +153,13 @@ Zeitpunkt_new::Zeitpunkt_new(time_t t) throw()
 #endif
 }
 
+std::string Zeitpunkt_new::write() const
+{  if (!valid()) return std::string();
+   char buf[64];
+   write(PostgresTimestamp(buf,sizeof buf));
+   return buf;
+}
+
 #ifdef DEFAULT_DB // actually we should test for database support
 FetchIStream &operator>>(FetchIStream &is, Zeitpunkt_new &v)
 {  std::string s;
@@ -165,9 +172,7 @@ FetchIStream &operator>>(FetchIStream &is, Zeitpunkt_new &v)
 
 ArgumentList &operator<<(ArgumentList &q, const Zeitpunkt_new &v)
 {  if (!v.valid()) return q << Query::null();
-   char buf[64];
-   v.write(PostgresTimestamp(buf,sizeof buf));
-   q.add_argument('\''+std::string(buf)+'\'');
+   q.add_argument('\''+v.write()+'\'');
    return q;
 }
 #endif
