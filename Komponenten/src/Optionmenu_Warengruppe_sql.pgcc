@@ -76,7 +76,7 @@ void Optionmenu_Warengruppe::set_extartbezid(int extartbezid)
  tr.close();
   os << "-- Alle Gruppen --"; os.flush((void*)(ArtikelTyp::none_id));
  }
-  get_menu()->deactivate.connect(activate.slot());
+  get_menu()->signal_deactivate().connect(activate.slot());
 }
 
 void Optionmenu_Warengruppe::set_value(const ArtikelTyp& artikeltyp)
