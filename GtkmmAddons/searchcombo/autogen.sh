@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: autogen.sh,v 1.1 2003/01/06 15:07:32 christof Exp $
+# $Id: autogen.sh,v 1.2 2003/11/03 16:40:23 christof Exp $
 
 MAKE=`which gnumake`
 if test ! -x "$MAKE" ; then MAKE=`which gmake` ; fi

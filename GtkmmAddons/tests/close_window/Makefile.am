@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.1 2001/06/06 13:20:53 christof Exp $
+# $Id: Makefile.am,v 1.2 2003/11/03 16:39:54 christof Exp $
 
 EXTRA_PROGRAMS = close_window
 

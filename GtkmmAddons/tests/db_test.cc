@@ -1,4 +1,4 @@
-/* $Id: db_test.cc,v 1.4 2003/04/10 14:41:29 christof Exp $ */
+/* $Id: db_test.cc,v 1.5 2003/11/03 16:40:23 christof Exp $ */
 /*  Gtk--addons: a collection of gtk-- addons
     Copyright (C) 1998  Adolf Petig GmbH. & Co. KG
     Developed by Christof Petig <christof.petig@wtal.de>

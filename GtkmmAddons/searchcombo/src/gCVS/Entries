@@ -1,6 +1,8 @@
 /.cvsignore/1.1/Mon Apr 29 09:08:31 2002//
 /ChangeLog/1.2/Mon Apr 29 09:06:43 2002//
-/Makefile.am/1.3/Tue Sep 24 16:12:55 2002//
 /gtksearchcombo.c/1.13/Fri Nov 22 09:18:46 2002//
 /gtksearchcombo.h/1.6/Tue Sep 24 16:12:55 2002//
+/Makefile.am/1.4/Mon Nov  3 16:39:44 2003//
+/doublebutton.c/1.1/Mon Nov  3 16:39:44 2003//
+/doublebutton.h/1.1/Mon Nov  3 16:39:44 2003//
 D

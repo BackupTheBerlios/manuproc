@@ -1,4 +1,4 @@
-/* $Id: db_test.c,v 1.2 2003/04/08 06:57:13 christof Exp $ */
+/* $Id: db_test.c,v 1.3 2003/11/03 16:40:23 christof Exp $ */
 
 #include <gtk/gtk.h>
 #include "doublebutton.h"

@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: SelectMatching.h,v 1.2 2003/05/06 11:05:13 christof Exp $
+// $Id: SelectMatching.h,v 1.3 2003/11/03 16:40:23 christof Exp $
 
 #include <gtkmm/menu.h>
 #include <gtkmm/optionmenu.h>

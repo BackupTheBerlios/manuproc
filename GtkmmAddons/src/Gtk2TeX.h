@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: Gtk2TeX.h,v 1.1 2003/01/06 15:07:33 christof Exp $
+// $Id: Gtk2TeX.h,v 1.2 2003/11/03 16:40:23 christof Exp $
 
 #include <TeX.h>
 #include <iostream>

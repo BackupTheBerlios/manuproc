@@ -1,4 +1,4 @@
-/* $Id: gsc_test.c,v 1.1 2003/01/06 15:07:33 christof Exp $ */
+/* $Id: gsc_test.c,v 1.2 2003/11/03 16:40:23 christof Exp $ */
 
 #include <gtk/gtk.h>
 #include "gtksearchcombo.h"

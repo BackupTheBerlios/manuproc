@@ -1,4 +1,4 @@
-// $Id: WinFileReq.hh,v 1.3 2003/04/09 08:52:05 christof Exp $
+// $Id: WinFileReq.hh,v 1.4 2003/11/03 16:40:23 christof Exp $
 
 #ifndef _FILESELECTION1_HH
 #  define _FILESELECTION1_HH

@@ -1,4 +1,4 @@
-/* $Id: Message.h,v 1.3 2003/03/20 12:23:03 christof Exp $ */
+/* $Id: Message.h,v 1.4 2003/11/03 16:40:23 christof Exp $ */
 /*  Gtk--addons: a collection of gtk-- addons
     Copyright (C) 1998  Adolf Petig GmbH. & Co. KG
     Developed by Jacek Jakubowski <jacek@wtal.de>
