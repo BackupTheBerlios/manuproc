@@ -501,6 +501,9 @@ ArtikelBoxAnzeige ArtikelBoxAnzeige::Laden(cH_ExtBezSchema schema)
             res.anzeige_neg=strtol(val.substr(komma1+1,komma2-(komma1+1)).c_str(),0,10);
          }
    }
+   else
+   {  res.anzeige_pos=1;
+   }
    return res;
 }
 
