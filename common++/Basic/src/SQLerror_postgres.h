@@ -1,4 +1,4 @@
-/* $Id: SQLerror_postgres.h,v 1.6 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: SQLerror_postgres.h,v 1.7 2003/01/27 10:47:18 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,9 +28,6 @@
 #define _sql_STRING2__(a) #a
 #define _sql_STRING__(a) _sql_STRING2__(a)
 #define __FILELINE__ __FILE__":"_sql_STRING__(__LINE__)
-
-#define strcpyx(dest,src) strncpy0((dest),(src),sizeof(dest))
-#define sprintfx(dest,src,val...) snprintf0((dest),sizeof(dest),src,##val)
 
 #ifdef __cplusplus
 class SQLerror_postgres : public std::exception
@@ -64,10 +61,13 @@ public:
 		int codeok=0) // throw(SQLerror_postgres)
    {  test(context,std::string(cursor),codeok);
    }
+   
+   static int SQLCode();
 
 // with Transaction rollback - please use class Transaction where possible
 // I don't like it too much but I have no better idea, CP 2001-6-27
 
+private:
    static void test(const std::string &context,bool rollback)
    { test(context,"",0,rollback); }
    static void test(const std::string &context,int codeok,bool rollback)
