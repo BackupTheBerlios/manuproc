@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.51 2004/06/30 10:57:25 christof Exp $
+// $Id: SimpleTree.cc,v 1.52 2004/06/30 11:11:21 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -344,10 +344,16 @@ bool SimpleTree_Basic::MouseButton(GdkEventButton *event)
       Gtk::TreeViewColumn *col(0);
       int cell_x(0),cell_y(0);
       bool res=get_path_at_pos(int(event->x),int(event->y),path,col,cell_x,cell_y);
-      if (!res) return false;
+      if (!res || !col) return false;
       Gtk::TreeModel::iterator it=getTreeModel()->get_iter(path);
       if (!it) return false;
+      if ((*it)[getStore()->m_columns.childrens_deep]) return false; // node
       int idx=-1;
+      for (unsigned colno=0;colno<=Cols();++colno)
+         if (col==get_column(colno)) 
+         {  idx=getStore()->currseq[colno];
+            break;
+         }
       return (*button_press_vfunc)((*it)[getStore()->m_columns.leafdata],idx);
    }
    if (event->type == GDK_BUTTON_PRESS && event->button==3  && menu)
