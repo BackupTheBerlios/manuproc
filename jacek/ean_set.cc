@@ -144,7 +144,7 @@ bool ean_set::cell_out(std::ostream &o,cH_ArtikelBezeichnung  ab,bool last_col)
  if(ean.empty() || tabcol!="ean") return false;
  
  
- o << "{\\rule[-2.6ex]{0mm}{21.1mm} ";
+ o << "{\\rule[-2.6ex]{0mm}{21.18mm} ";
  o << "\\raisebox{1.2cm}[0pt][0pt]{\\makebox[0mm][s]{"
    << bez << "}} ";
  if(!ean.empty())  
@@ -173,7 +173,7 @@ void ean_set::begin_table(std::ostream &o) const
    tabformat+="|";
   }
   
- o << "\\begin{tabularx}{19.75cm}{"+tabformat+"}\\\\\n";
+ o << "\\begin{tabularx}{19.1cm}{"+tabformat+"}\\\\\n";
  
  o << "\\hline\n";
 }
@@ -184,7 +184,7 @@ void ean_set::TeX_out(std::ostream &o)
  o << "\\documentclass[a4paper]{article}\n"
    << "\\usepackage{tabularx,longtable,vmargin,helvetic}\n"
 //   << "\\setmarginsrb{9.75mm}{9.5mm}{0.0in}{0.0in}{0pt}{0pt}{0pt}{0pt}\n";
-   << "\\setmarginsrb{0.0mm}{10.7mm}{0.0mm}{10.7mm}{0pt}{0pt}{0pt}{0pt}\n";
+   << "\\setmarginsrb{4.0mm}{13.7mm}{5.0mm}{0.0mm}{0pt}{0pt}{0pt}{0pt}\n";
   
  o << "\\pagestyle{empty}\n";
   
@@ -193,6 +193,7 @@ void ean_set::TeX_out(std::ostream &o)
 
  o << "\\renewcommand{\\arraystretch}{0}\n"
    << "\\renewcommand{\\rmdefault}{phv}\n"
+   << "\\tabcolsep0mm\n"
    << "\\rm\\small";
 
  std::vector<cH_ArtikelBezeichnung>::const_iterator ei=eans.begin();
