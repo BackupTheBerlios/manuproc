@@ -752,13 +752,20 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
    {  analyse("Artikel auf falscher Instanz",ae,cH_ArtikelBezeichnung(ae.Artikel())->Bezeichnung(),itos(ae.Artikel().Id()));
      loeschen: 
       if (really_delete) 
-      {  Query("delete from auftragentry where (instanz,auftragid,zeilennr)=(?,?,?)")
+      {
+	// manuelle Bestellungen nicht anfassen
+	if(ae.Id() < AuftragBase::handplan_auftrag_id)
+	  analyse("AufEintrag bleibt bestehen weil handgeplant",ae,cH_ArtikelBezeichnung(ae.Artikel())->Bezeichnung(),itos(ae.Artikel().Id()));
+	else
+         {Query("delete from auftragentry where (instanz,auftragid,zeilennr)=(?,?,?)")
       		<< ae;
-      	 alles_ok=false;
+      	  alles_ok=false;
+	 }
       }
       else 
          std::cout << "$ delete from auftragentry where (instanz,auftragid,zeilennr)=("
 		<< ae.Instanz()->Id() << ',' << ae.Id() << ',' << ae.ZNr() << ");\n";
+
       return alles_ok;
       // besser: Kinder für diesen Auftrag nicht aufrufen
    }
