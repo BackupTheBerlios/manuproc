@@ -13,10 +13,15 @@ class Data_auftrag : public RowDataBase
    const AufEintrag &AB ;
    const auftrag_main *AM ;
    mutable ArtikelMenge menge;
+public:
+   std::string departments; // Abteilungen
+   int depth,max_depth;
 
 public:
    Data_auftrag(const AufEintrag& ab, auftrag_main* am) :
-      AB(ab),AM(am),menge(AB.Artikel(),AB.getRestStk().as_int()) {}
+      AB(ab),AM(am),menge(AB.Artikel(),AB.getRestStk().as_int()),
+      depth(),max_depth()
+   {}
 
     virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
  { 
@@ -76,12 +81,17 @@ public:
             return cH_EntryValueIntString(s);
          }
       case auftrag_main::VERARBEITUNG : {
+         if (max_depth) 
+           return cH_EntryValueIntString(itos(depth)+"/"+itos(max_depth));
+         return cH_EntryValue();
+#if 0         
          std::string verarbeitung;
          try {
             verarbeitung = AB.Planung();
          } catch (std::exception &e ) 
          { verarbeitung=e.what(); }
 	 return cH_EntryValueIntString(verarbeitung);
+#endif	 
 	 }
 #ifdef ANZEIGE_VON_STUECK_UND_METER_IN_PPS	 
       case auftrag_main::METER : 
@@ -105,7 +115,9 @@ public:
       	  return cH_EntryValueIntString(menge.abgeleiteteMenge());
       case auftrag_main::STUECK : 
           return cH_EntryValueIntString(menge.Menge());
-#endif          
+#endif
+      case auftrag_main::INSTANZEN:
+          return cH_EntryValueIntString(departments);
      }
    return cH_EntryValue();
  }
@@ -117,6 +129,7 @@ public:
    ArtikelBase get_Artikel() const {return AB.Artikel();}
    ManuProC::Datum get_Lieferdatum() const {return AB.getLieferdatum();}
    std::string ProzessText() const {return AB.getProzess()->getTyp()+" "+AB.getProzess()->getText() ;}
+   // wieso ist das hier veränderbar?
    AufEintrag& get_AufEintrag() const {return const_cast<AufEintrag&>(AB);}
    const ArtikelMenge getArtikelMenge() const { return menge; }
    void redisplayMenge(TreeBase *maintree_s) const

@@ -561,7 +561,9 @@ void auftrag_main::fill_simple_tree()
 }
 
 void auftrag_main::start_idle()
-{ idle_iter=allaufids->aufidliste.begin();
+{ // idle_iter=allaufids->aufidliste.begin();
+  idle_iter.clear();
+  idle_iter.push_back(maintree_s->begin());
   idle_con=Gtk::Main::idle.connect(slot(this,&auftrag_main::idle_fill));
 }
 
@@ -569,11 +571,51 @@ void auftrag_main::stop_idle()
 { idle_con.disconnect();
 }
 
+// dies sollte in gtk2 viel !!! effizienter gehen?
 gint auftrag_main::idle_fill()
-{ if (idle_iter!=allaufids->aufidliste.end())
-  {  std::cerr << *idle_iter << '\n';
-     ++idle_iter;
-     return idle_iter!=allaufids->aufidliste.end();
+{ if (!idle_iter.empty()) // allaufids->aufidliste.end())
+  {  //std::cerr << *idle_iter << '\n';
+     const TreeRow *tlr=reinterpret_cast<const TreeRow *>(idle_iter.back()->get_user_data());
+     if (tlr->Leaf())
+     {  Verfuegbarkeit::map_det_t res;
+        Handle<Data_auftrag> hda=tlr->LeafData()
+          .cast_dynamic<const Data_auftrag>()
+          .cast_const<Data_auftrag>();
+          
+        Verfuegbarkeit::benoetigt(hda->get_AufEintrag(),res);
+        std::string departments;
+        for (Verfuegbarkeit::map_det_t::const_iterator i=res.begin();
+                i!=res.end();++i)
+        {  if (!i->first.Instanz()->overview.empty() 
+                && departments.find(i->first.Instanz()->overview)==std::string::npos)
+             departments+=i->first.Instanz()->overview;
+        }
+        if (!departments.empty())
+        {  hda->departments=departments;
+           maintree_s->redisplay(idle_iter.back(),INSTANZEN);
+        }
+     }
+     else if (idle_iter.back()->begin()!=idle_iter.back()->end())
+     { idle_iter.push_back(idle_iter.back()->begin());
+       return 1;
+     }
+    reiterate:
+     ++idle_iter.back();
+     if (idle_iter.begin()+1==idle_iter.end()) // oberste Ebene
+     { if (idle_iter.back()==maintree_s->end())
+       { idle_iter.clear();
+         return 0;
+       }
+       return 1;
+     }
+     else
+     { // Ende des Elter erreicht?
+       if (idle_iter.back()==(*(idle_iter.end()-2))->end())
+       { idle_iter.pop_back();
+         goto reiterate;
+       }
+       return 1;
+     }
   }
   return 0;
 }

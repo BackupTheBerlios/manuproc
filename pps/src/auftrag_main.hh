@@ -144,7 +144,9 @@ private:
 
 	static std::string FirstRow(gpointer user_data, int deep, std::deque<guint> seq);
 
-	SelectedFullAufList::const_iterator idle_iter;
+//	SelectedFullAufList::const_iterator idle_iter;
+// this tree traversal stuff is menacing
+        std::vector<TCListRow_API::iterator> idle_iter;
 	gint idle_fill();
 	SigC::Connection idle_con;
 	void start_idle();
