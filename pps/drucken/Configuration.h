@@ -23,6 +23,8 @@ struct Configuration
 	bool preview_only;
 	std::string copies;
 	bool toTeX;
+	bool batch;
+	std::string texfile;
 	
 	Configuration() : combine(), preview_only(), copies("1,1,1"),
 				toTeX(false) {}

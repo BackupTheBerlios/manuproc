@@ -40,7 +40,7 @@ void LR_drucken::drucken()
    FILE *f;
 
    if(Configuration.toTeX)
-	f=popen("cat > ./rdr$$.tex","w");
+	f=popen(("cat > ./"+Configuration.texfile).c_str(),"w");
    else
    	f=popen(("tex2prn -2 -y -Y"+Configuration.copies
          +(Configuration.preview_only?" -G":"")).c_str(),"w");
