@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.19 2003/01/17 10:03:21 christof Exp $
+// $Id: FetchIStream.h,v 1.20 2003/01/17 16:27:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -105,6 +105,7 @@ class Query
 	unsigned params_needed;
 	std::string query;
 	std::vector<std::string> params;
+	FetchIStream embedded_iterator;
 	
 	// not possible yet (because result can not refcount)
 	const Query &operator=(const Query &);
@@ -114,25 +115,22 @@ class Query
 	void Execute();
 public:
 	Query(const std::string &command);
-	FetchIStream Fetch();
-	FetchIStream FetchOne();
+	~Query();
+
 	bool good() const 
 	{ return !eof; }
-	~Query();
 	void ThrowOnBad(const char *where) const;
 
 	static void Execute(const std::string &command);
 
-	template <class T> void FetchArray(std::vector<T> &);
-	template <class T> void FetchArray(std::list<T> &);
-	template <class T1, class T2> void FetchArray(std::map<T1,T2> &);
-	template <class T> std::vector<T> FetchArray();
-
-	template <class T> T FetchOne();
-	template <class T> void FetchOne(T &);
-
-	// must be already quoted
+	//-------------------- parameters ------------------
+	// must be already quoted for plain SQL inclusion
 	void add_argument(const std::string &s);
+
+	// for user defined << operators and temporary queries 
+	// 	you need to insert this one
+	// e.g. Query("...").lvalue() << your_type ...;
+	Query &lvalue() { return *this; }
 
 	Query &operator<<(const std::string &str);
 	Query &operator<<(int i)
@@ -148,12 +146,6 @@ public:
 	struct null { null(){} };
 	Query &operator<<(null n)
 	{  add_argument("null"); return *this; }
-	
-        Query &operator>>(FetchIStream &s);
-	template <class T> FetchIStream operator>>(T &x);
-	template <class T> FetchIStream operator>>(const FetchIStream::MapNull<T> &x);
-	template <class T> FetchIStream operator>>(const FetchIStream::WithIndicator<T> &x);
-	
 	template <class T>
 	 struct NullIf
 	{	T data;
@@ -166,37 +158,39 @@ public:
 	{  if (n.null) return operator<<(null());
 	   return operator<<(n.data);
 	}
+	
+	//--------------- result --------------------
+	FetchIStream &Fetch();
+	FetchIStream &FetchOne();
+	void Fetch(FetchIStream &);
+        Query &operator>>(FetchIStream &s);
+        // we might as well define >> for this
+	template <class T> void FetchArray(std::vector<T> &);
+	template <class T> void FetchArray(std::list<T> &);
+	template <class T1, class T2> void FetchArray(std::map<T1,T2> &);
+	// please do not use this variant in new code!
+	// template <class T> std::vector<T> FetchArray();
+
+	template <class T> T FetchOne();
+	template <class T> void FetchOne(T &);
+
+	template <class T> FetchIStream &operator>>(T &x)
+	{  return FetchOne() >> x; }
+	template <class T> FetchIStream &operator>>(const FetchIStream::MapNull<T> &x);
+	{  return FetchOne() >> x; }
+	template <class T> FetchIStream &operator>>(const FetchIStream::WithIndicator<T> &x);
+	{  return FetchOne() >> x; }
 };
 
-template <class T>
- FetchIStream Query::operator>>(T &x)
-{  FetchIStream res=FetchOne();
-   res >> x;
-   return res;
-}
-
-template <class T>
- FetchIStream Query::operator>>(const FetchIStream::MapNull<T> &x)
-{  FetchIStream res=FetchOne();
-   res >> x;
-   return res;
-}
-
-template <class T>
- FetchIStream Query::operator>>(const FetchIStream::WithIndicator<T> &x)
-{  FetchIStream res=FetchOne();
-   res >> x;
-   return res;
-}
-
+// we use the embedded FetchIStream but that's ok, 
+// 	since it makes no sense to mix us with Fetch[One]
 template <class T> 
 void Query::FetchArray(std::vector<T> &res)
 {  ThrowOnBad(__FUNCTION__);
-   FetchIStream is;
-   while (((*this)>>is).good()) 
+   while (((*this)>>embedded_iterator).good()) 
    { T x;
-     is >> x;
-     is.ThrowIfNotEmpty(__FUNCTION__);
+     embedded_iterator >> x;
+     embedded_iterator.ThrowIfNotEmpty(__FUNCTION__);
      res.push_back(x);
    }
 }
@@ -204,12 +198,11 @@ void Query::FetchArray(std::vector<T> &res)
 template <class T1, class T2> 
 void Query::FetchArray(std::map<T1,T2> &res)
 {  ThrowOnBad(__FUNCTION__);
-   FetchIStream is;
-   while (((*this)>>is).good()) 
+   while (((*this)>>embedded_iterator).good()) 
    { T1 x;
      T2 y;
-     is >> x >> y;
-     is.ThrowIfNotEmpty(__FUNCTION__);
+     embedded_iterator >> x >> y;
+     embedded_iterator.ThrowIfNotEmpty(__FUNCTION__);
      res[x]=y;
    }
 }
@@ -217,30 +210,22 @@ void Query::FetchArray(std::map<T1,T2> &res)
 template <class T> 
 void Query::FetchArray(std::list<T> &res)
 {  ThrowOnBad(__FUNCTION__);
-   FetchIStream is;
-   while (((*this)>>is).good()) 
+   while (((*this)>>embedded_iterator).good()) 
    { T x;
-     is >> x;
-     is.ThrowIfNotEmpty(__FUNCTION__);
+     embedded_iterator >> x;
+     embedded_iterator.ThrowIfNotEmpty(__FUNCTION__);
      res.push_back(x);
    }
 }
 
+// T a; FetchOne(a); variant
 template <class T>
 void Query::FetchOne(T &res)
 {  ThrowOnBad(__FUNCTION__);
-   FetchIStream is=FetchOne();
-   is >> res;
-   is.ThrowIfNotEmpty(__FUNCTION__);
+   (FetchOne() >> res).ThrowIfNotEmpty(__FUNCTION__);
 }
 
-template <class T>
-std::vector<T> Query::FetchArray()
-{  std::vector<T> res;
-   FetchArray(res);
-   return res;
-}
-
+// T a = q.FetchOne<T>(); variant (slower)
 template <class T>
 T Query::FetchOne()
 {  T res;

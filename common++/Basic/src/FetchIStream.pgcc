@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.26 2003/01/17 10:03:21 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.27 2003/01/17 16:27:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -272,12 +272,20 @@ Query &Query::operator<<(char i)
    return *this;
 }
 
-FetchIStream Query::Fetch()
+FetchIStream &Query::Fetch()
+{  Fetch(embebedded_iterator);
+   return embebedded_iterator;
+}
+
+void Query::Fetch(FetchIStream &is)
 {  if (!eof)
-   {  if (line<PQntuples(result)) return FetchIStream(result,line++);
+   {  if (line<PQntuples(result)) 
+      {  is=FetchIStream(result,line++);
+         return;
+      }
       eof=true;
    }
-   return FetchIStream((PGresult*)0);
+   is=FetchIStream();
 }
 
 Query::~Query()
@@ -294,15 +302,16 @@ void Query::Execute(const std::string &command)
 }
 
 Query &Query::operator>>(FetchIStream &s)
-{  s=Fetch();
+{  Fetch(s);
    return *this;
 }
 
-FetchIStream Query::FetchOne()
+FetchIStream &Query::FetchOne()
 {  ThrowOnBad(__FUNCTION__);
-   FetchIStream res=Fetch();
-   if (Fetch().good()) FetchIStream::mythrow(SQLerror(__FUNCTION__,-2,"more than one result"));
-   return res;
+   Fetch(embedded_iterator);
+   FetchIStream dummy;
+   if (Fetch(dummy).good()) FetchIStream::mythrow(SQLerror(__FUNCTION__,-2,"more than one result"));
+   return embedded_iterator;
 }
 
 void Query::ThrowOnBad(const char *where) const
