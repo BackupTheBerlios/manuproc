@@ -1,4 +1,4 @@
-// $Id: owntreemodel.cc,v 1.4 2003/10/13 06:34:15 christof Exp $
+// $Id: owntreemodel.cc,v 1.5 2003/10/15 13:41:27 christof Exp $
 /*  ManuProcWidgets: ManuProC's GUI element library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,10 +25,18 @@
 #include <vector>
 #include <cstdio>
 #include <iostream>
+
+//#define TRACE
+#ifdef TRACE
 #include <Misc/TraceNV.h>
 
 static const UniqueValue::value_t trace_channel=ManuProC::Tracer::channels.get();
 static ManuProC::Tracer::Environment trace_channele("TRACE",trace_channel);
+
+#define TRACE_FUN(chan,name,args...) ManuProC::Trace _t(chan,name,##args)
+#else
+#define TRACE_FUN(chan,name,args...)
+#endif
 
 static const unsigned columns=10;
 static const unsigned multiply1=1<<4;
@@ -77,10 +85,10 @@ class MyTreeModel : public Glib::Object, public Gtk::TreeModel
 {  static MyTreeModel_Class myclass;
 
    virtual Gtk::TreeModelFlags get_flags_vfunc()
-   {  ManuProC::Trace _t(trace_channel, __FUNCTION__);
+   {  TRACE_FUN(trace_channel, __FUNCTION__);
       return Gtk::TreeModelFlags(0); }
    virtual int get_n_columns_vfunc()
-   {  ManuProC::Trace _t(trace_channel, __FUNCTION__);
+   {  TRACE_FUN(trace_channel, __FUNCTION__);
       return columns; }
    virtual GType get_column_type_vfunc(int index)
    {  return G_TYPE_STRING; }
@@ -91,54 +99,65 @@ class MyTreeModel : public Glib::Object, public Gtk::TreeModel
       g_value_set_string(value,res.c_str());
    }
    virtual bool iter_next_vfunc(GtkTreeIter* iter)
-   {  ManuProC::Trace _t(trace_channel, __FUNCTION__,iter2row(iter));
+   {  TRACE_FUN(trace_channel, __FUNCTION__,iter2row(iter));
       unsigned d=depth(iter2row(iter));
-      iter2row(iter)+=multiply[d];
-      return rowno(iter2row(iter),d)<rows;
+      unsigned newline=iter2row(iter)+multiply[d];
+      if (rowno(newline,d)>=rows) return false;
+      iter2row(iter)=newline;
+      return true;
    }
    virtual bool iter_children_vfunc(GtkTreeIter* iter, const GtkTreeIter* parent)
-   {  ManuProC::Trace _t(trace_channel, __FUNCTION__,iter2row(parent));
+   {  TRACE_FUN(trace_channel, __FUNCTION__,iter2row(parent));
       unsigned d=depth(iter2row(parent))+1;
       if (d>maxdepth) return false;
       iter2row(iter)=multiply[d]+iter2row(parent);
       return true;
    }
    virtual bool iter_has_child_vfunc(const GtkTreeIter* iter)
-   {  ManuProC::Trace _t(trace_channel, __FUNCTION__,iter2row(iter));
+   {  TRACE_FUN(trace_channel, __FUNCTION__,iter2row(iter));
       return depth(iter2row(iter))<maxdepth;
    }
    virtual int iter_n_children_vfunc(const GtkTreeIter* iter)
-   {  ManuProC::Trace _t(trace_channel, __FUNCTION__,iter2row(iter));
+   {  TRACE_FUN(trace_channel, __FUNCTION__,iter2row(iter));
       return iter_has_child_vfunc(iter)?rows:0;
    }
    virtual bool iter_nth_child_vfunc(GtkTreeIter* iter, const GtkTreeIter* parent, int n)
-   {  ManuProC::Trace _t(trace_channel, __FUNCTION__,iter2row(parent),n);
+   {  TRACE_FUN(trace_channel, __FUNCTION__,parent?iter2row(parent):-1,n);
+      if (n>=rows) return false;
+      if (!parent)
+      {  iter2row(iter)=n;
+         return true;
+      }
       unsigned r=parent?iter2row(parent):0;
       unsigned d=depth(r)+1;
       if (d>maxdepth) return false;
       iter2row(iter)=n*multiply[d]+r;
-      return n<rows;
+      return true;
    }
    virtual bool iter_parent_vfunc(GtkTreeIter* iter, const GtkTreeIter* child)
-   {  ManuProC::Trace _t(trace_channel, __FUNCTION__,iter2row(child));
+   {  TRACE_FUN(trace_channel, __FUNCTION__,iter2row(child));
       unsigned d=depth(iter2row(child));
       if (!d) return false;
       iter2row(iter)=iter2row(child)%multiply[d];
       return true;
    }
    virtual Gtk::TreeModel::Path get_path_vfunc(const Gtk::TreeModel::iterator& iter)
-   {  ManuProC::Trace _t(trace_channel, __FUNCTION__,iter2row(iter->gobj()));
+   {  TRACE_FUN(trace_channel, __FUNCTION__,iter2row(iter->gobj()));
       return Gtk::TreeModel::Path();
    }
    virtual bool get_iter_vfunc(GtkTreeIter* iter, const Gtk::TreeModel::Path& path)
-   {  ManuProC::Trace _t(trace_channel, __FUNCTION__,path.to_string());
+   {  TRACE_FUN(trace_channel, __FUNCTION__,path.to_string());
       unsigned sz=path.size();
-      if (!sz || path[0]>=rows) return false;
-      iter2row(iter)=path[0];
-      for (unsigned j=1;j<maxdepth;++j)
+      if (!sz) return false;
+      unsigned newiter=path[0];
+      for (unsigned j=0;j<=maxdepth;++j)
       {  if (path[j]>=rows) return false;
-         if (sz==j) return true;
-         iter2row(iter)+=(path[j]+1)*multiply[j];
+         if (j) newiter+=(path[j]+1)*multiply[j];
+         if (j+1==sz)
+         {  iter2row(iter)=newiter;
+            TRACE_FUN(trace_channel,"result",iter2row(iter));
+            return true;
+         }
       }
       return false;
    }
