@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.32 2004/02/18 14:53:27 christof Exp $
+// $Id: AufEintragZu.cc,v 1.33 2004/02/20 09:43:56 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -243,13 +243,13 @@ AuftragBase::mengen_t AufEintragZu::setMengeDiff__(const AufEintragBase &neuAEB,
  ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,neuAEB,NV("Menge",menge));
  if (menge>=0) { Neu(neuAEB,menge); return menge; }
 // if(menge<0)
-  {  std::vector<pri_menge> V;
-#warning Locking ?
-     // select for update?
+  {  Transaction tr;
+     std::vector<pri_menge> V;
      (Query("select prioritaet,menge from auftragsentryzuordnung "
      	"where (altinstanz,altauftragid,altzeilennr, "
      	       "neuinstanz,neuauftragid,neuzeilennr)= (?,?,?, ?,?,?) "
-     	       "order by prioritaet desc")
+     	       "order by prioritaet desc "
+     	       "for update")
 	<< static_cast<const AufEintragBase&>(*this) << neuAEB)
 	.FetchArray(V);
      mengen_t noch_verteilen=menge;
@@ -286,6 +286,7 @@ AuftragBase::mengen_t AufEintragZu::setMengeDiff__(const AufEintragBase &neuAEB,
       loop_test:
         ;
      }
+     tr.commit();
      return menge-noch_verteilen;
   }
 }

@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.cc,v 1.16 2004/02/17 10:45:28 christof Exp $ */
+/* $Id: AufEintrag_loops.cc,v 1.17 2004/02/20 09:43:56 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -112,7 +112,8 @@ bool distribute_children(const AufEintragBase &startAEB,
  		AuftragBase::mengen_t menge,
  		const ArtikelBase &article, 
  		const distribute_children_cb &callee)
-{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,article,Nametrans(typeid(callee).name()));
+{  std::string callee_t=Nametrans(typeid(callee).name());
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,article,callee_t);
    AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel
    	(startAEB,AufEintragZu::list_kinder,AufEintragZu::list_unsorted));
    ArtikelBaum AE_artbaum(article);
@@ -132,13 +133,18 @@ std::cout << '\n';
       		=MinPfeil_or_MinGeliefert(*zuloop_var,AE_menge2);
          if (!mengen_var) continue;
 
-         mengen_var=callee(artloop_var->first,zuloop_var->AEB,mengen_var);
+         {ManuProC::Trace _t(AuftragBase::trace_channel,callee_t,artloop_var->first,zuloop_var->AEB,mengen_var);
+          mengen_var=callee(artloop_var->first,zuloop_var->AEB,mengen_var);
+         }
 
          AE_menge2-=mengen_var;
          if(!AE_menge2) break;
       }
       // pass the remainder
-      if (!!AE_menge2) callee(artloop_var->first,AE_menge2);
+      if (!!AE_menge2) 
+      {  ManuProC::Trace _t(AuftragBase::trace_channel,callee_t,artloop_var->first,AE_menge2);
+         callee(artloop_var->first,AE_menge2);
+      }
    }
    return !MapArt.empty();
 }
@@ -156,7 +162,8 @@ void distribute_children_artbaum(const AufEintragBase &startAEB,
  		AuftragBase::mengen_t menge,
  		const ArtikelBase &article, 
  		const distribute_children_cb &callee)
-{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,article,Nametrans(typeid(callee).name()));
+{  std::string callee_t=Nametrans(typeid(callee).name());
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,article,callee_t);
    AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel(startAEB));
    ArtikelBaum AE_artbaum(article);
    for(AufEintragZu::map_t::iterator artloop_var=MapArt.begin();artloop_var!=MapArt.end();++artloop_var)
@@ -169,22 +176,31 @@ void distribute_children_artbaum(const AufEintragBase &startAEB,
       		=MinPfeil_or_MinGeliefert(*zuloop_var,AE_menge2);
          if (!mengen_var) continue;
 
-         mengen_var=callee(artloop_var->first,zuloop_var->AEB,mengen_var);
+         {ManuProC::Trace _t(AuftragBase::trace_channel,callee_t,artloop_var->first,zuloop_var->AEB,mengen_var);
+          mengen_var=callee(artloop_var->first,zuloop_var->AEB,mengen_var);
+         }
 
          AE_menge2-=mengen_var;
          if(!AE_menge2) break;
       }
       // pass the remainder
-      if (!!AE_menge2) callee(artloop_var->first,AE_menge2);
+      if (!!AE_menge2) 
+      {  ManuProC::Trace _t(AuftragBase::trace_channel,callee_t,artloop_var->first,AE_menge2);
+         callee(artloop_var->first,AE_menge2);
+      }
    }
    ppsInstanz::ID next= startAEB.Instanz()->NaechsteInstanz(ArtikelStamm(article));
    if (next!=ppsInstanzID::None)
    {  if (MapArt.find(article)==MapArt.end()) 
+      {  ManuProC::Trace _t(AuftragBase::trace_channel,callee_t,article,menge);
          callee(article,menge);
+      }
    }
    else for(ArtikelBaum::const_iterator i=AE_artbaum.begin();i!=AE_artbaum.end();++i)
    {  if (MapArt.find(i->rohartikel)==MapArt.end())
+      {  ManuProC::Trace _t(AuftragBase::trace_channel,callee_t,i->rohartikel,menge*i->menge);
          callee(i->rohartikel,menge*i->menge);
+      }
    }
 }
 
@@ -201,7 +217,8 @@ bool distribute_children_twice(const AufEintragBase &startAEB,
  		AuftragBase::mengen_t menge,
  		const ArtikelBase &article, 
  		const distribute_children_twice_cb &callee)
-{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,article,Nametrans(typeid(callee).name()));
+{  std::string callee_t=Nametrans(typeid(callee).name());
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,article,callee_t);
    AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel(startAEB));
    ArtikelBaum AE_artbaum(article);
    for(AufEintragZu::map_t::iterator artloop_var=MapArt.begin();artloop_var!=MapArt.end();++artloop_var)
@@ -214,7 +231,9 @@ bool distribute_children_twice(const AufEintragBase &startAEB,
       		=MinPfeil_or_MinGeliefert(*zuloop_var,AE_menge2);
          if (!mengen_var) continue;
 
-         mengen_var=callee(artloop_var->first,zuloop_var->AEB,mengen_var,true);
+         {ManuProC::Trace _t(AuftragBase::trace_channel,callee_t,artloop_var->first,zuloop_var->AEB,mengen_var,true);
+          mengen_var=callee(artloop_var->first,zuloop_var->AEB,mengen_var,true);
+         }
 
 	 zuloop_var->Menge-=mengen_var; // for the second iteration
          AE_menge2-=mengen_var;
@@ -226,20 +245,26 @@ bool distribute_children_twice(const AufEintragBase &startAEB,
       		=MinPfeil_or_MinGeliefert(*zuloop_var,AE_menge2);
          if (!mengen_var) continue;
 
-         mengen_var=callee(artloop_var->first,zuloop_var->AEB,mengen_var,false);
+         {ManuProC::Trace _t(AuftragBase::trace_channel,callee_t,artloop_var->first,zuloop_var->AEB,mengen_var,true);
+          mengen_var=callee(artloop_var->first,zuloop_var->AEB,mengen_var,false);
+         }
 
          AE_menge2-=mengen_var;
          if(!AE_menge2) break;
       }
       // pass the remainder
-      if (!!AE_menge2) callee(artloop_var->first,AE_menge2);
+      if (!!AE_menge2) 
+      {  ManuProC::Trace _t(AuftragBase::trace_channel,callee_t,artloop_var->first,AE_menge2);
+         callee(artloop_var->first,AE_menge2);
+      }
    }
    return !MapArt.empty();
 }
 
 AuftragBase::mengen_t distribute_parents(const AufEintragBase &startAEB, 
 	AuftragBase::mengen_t menge,const distribute_parents_cb &callee)
-{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,Nametrans(typeid(callee).name()));
+{  std::string callee_t=Nametrans(typeid(callee).name());
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,callee_t);
 //   assert(menge>0);
    AufEintragZu::list_t Eltern =
         AufEintragZu::get_Referenz_list(startAEB,AufEintragZu::list_eltern,
@@ -249,7 +274,9 @@ AuftragBase::mengen_t distribute_parents(const AufEintragBase &startAEB,
    {  AuftragBase::mengen_t m=MinPfeil_or_MinGeliefert(*i,menge,true);
       if (!m) continue;
 
-      m=callee(i->AEB,m);
+      {ManuProC::Trace _t(AuftragBase::trace_channel,callee_t,i->AEB,m);
+       m=callee(i->AEB,m);
+      }
 
       menge-=m;
       if (!menge) break;
@@ -259,7 +286,8 @@ AuftragBase::mengen_t distribute_parents(const AufEintragBase &startAEB,
 
 AuftragBase::mengen_t auf_positionen_verteilen(const SQLFullAuftragSelector &selector,
  		AuftragBase::mengen_t menge, const auf_positionen_verteilen_cb &callee)
-{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,menge,Nametrans(typeid(callee).name()));
+{  std::string callee_t=Nametrans(typeid(callee).name());
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,menge,callee_t);
    SelectedFullAufList auftraglist=SelectedFullAufList(selector);
 
   AuftragBase::mengen_t m=menge;
@@ -270,7 +298,9 @@ AuftragBase::mengen_t auf_positionen_verteilen(const SQLFullAuftragSelector &sel
      else M=-AuftragBase::min(-m,i->getGeliefert());
      if (!M) continue;
 
-     M=callee(*i,M);
+     {ManuProC::Trace _t(AuftragBase::trace_channel,callee_t,*i,M);
+      M=callee(*i,M);
+     }
 
      m-=M;
      if(!m) break;
@@ -280,7 +310,8 @@ AuftragBase::mengen_t auf_positionen_verteilen(const SQLFullAuftragSelector &sel
 
 AuftragBase::mengen_t auf_positionen_verteilen_rev(const SQLFullAuftragSelector &selector,
  		AuftragBase::mengen_t menge, const auf_positionen_verteilen_cb &callee)
-{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,menge,Nametrans(typeid(callee).name()));
+{  std::string callee_t=Nametrans(typeid(callee).name());
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,menge,callee_t);
    SelectedFullAufList auftraglist=SelectedFullAufList(selector);
 
   AuftragBase::mengen_t m=menge;
@@ -291,7 +322,9 @@ AuftragBase::mengen_t auf_positionen_verteilen_rev(const SQLFullAuftragSelector 
      else M=-AuftragBase::min(-m,i->getGeliefert());
      if (!M) continue;
 
-     M=callee(*i,M);
+     {ManuProC::Trace _t(AuftragBase::trace_channel,callee_t,*i,M);
+      M=callee(*i,M);
+     }
 
      m-=M;
      if(!m) break;
