@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.11 2003/01/08 09:46:57 christof Exp $
+// $Id: Rechnung.cc,v 1.12 2003/09/16 11:21:27 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -54,4 +54,29 @@ void Rechnung::convert_to_gutschrift() throw(SQLerror)
 #endif
   tr.commit();
 }
+
+// zu Zahlender Betrag, inkl Zuschl., etc.
+Rechnung::geldbetrag_t Rechnung::Endbetrag(bool with_update_on_db=false) 
+const throw(SQLerror)
+{
+ bool brutto=false;
+ int stsatz=0;
+
+ fixedpoint<2> betrag=Betrag(brutto);
+ 
+ if(entsorgung)
+   betrag = betrag.as_float() * (1.0 + ENTSSATZ);
+
+ if(kunde->MwSt())
+    stsatz=MWSTSATZ;
+
+ if(with_update_on_db)
+  {
+   Query("update rechnung set betrag = ?, steuersatz=?"
+	" where rngid = ?") << betrag << stsatz << Id();
+   SQLerror::test(__FILELINE__);
+  }
+ return betrag;
+}
+
 

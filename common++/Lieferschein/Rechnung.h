@@ -1,4 +1,4 @@
-/* $Id: Rechnung.h,v 1.28 2003/06/19 12:48:11 jacek Exp $ */
+/* $Id: Rechnung.h,v 1.29 2003/09/16 11:21:27 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -29,6 +29,9 @@
 #include "LieferscheinBase.h"
 #include <Kunde/Zahlungsart.h>
 #include <Misc/Handles.h>
+
+#define ENTSSATZ	0.002
+#define MWSTSATZ	16
 
 class Rechnung : public RechnungBase
 {
@@ -72,7 +75,7 @@ public:
 
 // don't know where is using this and i assume a bug in it. 
  geldbetrag_t Betrag(bool brutto=false) const throw(SQLerror);
- 
+ geldbetrag_t Endbetrag(bool with_update_on_db) const throw(SQLerror);
  cP_Waehrung getWaehrung() const { return waehrung; }
  void setzeWaehrung(const cP_Waehrung &w) throw(SQLerror);
  ExtBezSchema::ID getSchema() { return kunde->getSchemaId(); }

@@ -22,6 +22,7 @@
 #include <Misc/FetchIStream.h>
 exec sql include sqlca;
 
+
 Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
 : RechnungBase(rid), kunde(Kunde::default_id), 
    zahlungsart(Zahlungsart::none_id),notiz_valid(false)
@@ -297,6 +298,7 @@ void Rechnung::setze_Rabatt(rabatt_t r) throw(SQLerror)
  SQLerror::test(__FILELINE__);
 }
 
+// nur Warenwert, ohne MwSt., ggf. rabattiert
 Rechnung::geldbetrag_t Rechnung::Betrag(bool brutto) const throw(SQLerror)
 {
  exec sql begin declare section;
@@ -323,6 +325,9 @@ Rechnung::geldbetrag_t Rechnung::Betrag(bool brutto) const throw(SQLerror)
 
  return (IBETRAG ? 0 : BETRAG);
 }
+
+
+
 
 void RechnungBase::setEingezogen(int refnr, bool bezahlt) throw(SQLerror)
 {
