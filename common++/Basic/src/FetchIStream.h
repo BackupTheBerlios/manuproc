@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.29 2003/05/09 10:01:33 christof Exp $
+// $Id: FetchIStream.h,v 1.30 2003/05/15 14:23:06 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -143,7 +143,7 @@ public:
 
 	//-------------------- parameters ------------------
 	// must be already quoted for plain SQL inclusion
-	void add_argument(const std::string &s);
+	ArgumentList &add_argument(const std::string &s);
 
 	ArgumentList &operator<<(const std::string &str);
 	ArgumentList &operator<<(int i)
@@ -199,7 +199,7 @@ public:
 
 	//-------------------- parameters ------------------
 	// must be already quoted for plain SQL inclusion
-	void add_argument(const std::string &s);
+	ArgumentList &add_argument(const std::string &s);
 
 	// for user defined << operators and temporary queries 
 	// 	you need to insert this one
