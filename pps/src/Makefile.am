@@ -12,13 +12,8 @@ auftrag_SOURCES = $(BUILT_SOURCES) \
 	OffLief_Tree.cc \
 	auftrag_rechnung.cc \
 	auftrag_rechnung_glade.cc \
-	Lief_Leaf.cc \
-	Lief_Node.cc \
-	Lief_TCList.cc \
-	Lief_RowData.cc \
-	OffAuf_Leaf.cc \
-	OffAuf_Node.cc \
-	OffAuf_TCList.cc \
+	Lief_Tree.cc \
+	OffAuf_Tree.cc \
 	OffAuf_RowData.cc \
 	aktAufEintrag.cc \
 	Auftrag.cc \
@@ -29,7 +24,6 @@ auftrag_SOURCES = $(BUILT_SOURCES) \
 	auftragliste.cc \
 	auftrag_main_glade.cc \
 	auftrag_main.cc \
-	glademm_support.cc \
 	MainTree.cc \
 	myRow.cc \
 	auftragentry.cc \
@@ -46,7 +40,6 @@ noinst_HEADERS = \
 	auftragliste.hh \
 	auftrag_main_glade.hh \
 	auftrag_main.hh \
-	glademm_support.hh \
 	auftrag_rechnung_glade.hh \
 	auftrag_rechnung.hh \
 	Rg_Tree.h \
