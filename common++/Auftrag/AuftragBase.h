@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.49 2003/07/03 09:15:16 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.50 2003/07/03 13:42:39 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -47,6 +47,8 @@ class AuftragBase
    // warum umbenennen?
    static const ID none_id       = ManuProcEntity<>::none_id ;
    static const ID ungeplante_id    =  0;
+   
+   static const int jahresmultiplikator = 10000;
 
    static const ID PlanId_for(const cH_ppsInstanz &instanz);
 
@@ -123,6 +125,8 @@ public:
    // gibt Zeilennr zurück
    int existEntry(const ArtikelBase& artid, const ManuProC::Datum& lieferdatum,
                   const AufStatVal status, mengen_t& menge_out) const throw();
+
+   static int aktuellesJahr();
 };
 
 std::ostream &operator<<(std::ostream &o,const AuftragBase &a);
