@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.28 2004/05/05 12:01:01 christof Exp $
+// $Id: ArtikelBox.cc,v 1.29 2004/09/13 09:11:34 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -33,6 +33,10 @@
 #include <gtk/gtksignal.h>
 #include <gtkmm/stock.h>
 #include <gdkmm/pixbufloader.h>
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#include <sigc++/bind.h>
+#include <sigc++/compatibility.h>
+#endif
 
 ArtikelBox::st_default::st_default()
 :
