@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.21 2002/12/05 14:11:03 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.22 2002/12/05 14:20:22 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -53,12 +53,12 @@ class SimpleTreeStore : public SigC::Object, public SimpleTreeModel_Proxy
 	// sadly there's no real const_iterator
 	typedef Gtk::TreeStore::iterator const_iterator;
 	typedef Gtk::TreeStore::iterator iterator;
+	typedef std::deque<guint> sequence_t;
 
 protected:
 	friend class SimpleTree_Basic;
 
 	Glib::RefPtr<Gtk::TreeStore> m_refTreeStore;
-	typedef std::deque<guint> sequence_t;
 	sequence_t currseq; 
 
 private:

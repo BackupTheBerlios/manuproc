@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.18 2002/12/05 14:11:03 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.19 2002/12/05 14:20:22 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -114,11 +114,11 @@ void SimpleTreeStore::set_remember(const std::string &program, const std::string
    }
 }
 
-SimpleTreeStore::SimpleTreeStore(int cols,int attrs)
-	: node_creation(0), columns(cols),
+SimpleTreeStore::SimpleTreeStore(int max_col)
+	: node_creation(0), columns(max_col), max_column(max_col),
 	  showdeep(0), gp(0), 
 	  auffuellen_bool(false), expandieren_bool(false),
-	  color_bool(false), m_columns(cols)
+	  color_bool(false), m_columns(max_col)
 {  m_refTreeStore=Gtk::TreeStore::create(m_columns);
    defaultSequence();
    getModel().signal_title_changed().connect(SigC::slot(*this,&SimpleTreeStore::on_title_changed));

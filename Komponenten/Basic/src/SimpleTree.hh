@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.10 2002/12/05 14:11:03 christof Exp $
+// $Id: SimpleTree.hh,v 1.11 2002/12/05 14:20:22 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,7 +28,9 @@ class SimpleTreeStore_Proxy
 	SimpleTreeStore sts;
 public:
 	typedef SimpleTreeStore::sequence_t sequence_t;
-	SimpleTreeStore_Proxy(unsigned int max_cols) : sts(cols) {}
+	typedef SimpleTreeStore::const_iterator const_iterator;
+
+	SimpleTreeStore_Proxy(unsigned int max_cols) : sts(max_cols) {}
 
 	void set_remember(const std::string &program, const std::string &instance) {  sts.set_remember(program,instance); }
 	guint Cols() const  { return sts.Cols();}
@@ -41,7 +43,6 @@ public:
 	const std::string getColTitle(guint idx) const { return sts.getColTitle(idx); }
 	void set_NewNode(SimpleTreeStore::NewNode_fp n) { sts.set_NewNode(n); }
 
-	typedef SimpleTreeStore::const_iterator const_iterator;
 	const_iterator begin() const { return sts.begin(); }
 	const_iterator end() const { return sts.end(); }
 	void set_tree_column_visibility(unsigned index,bool visible)

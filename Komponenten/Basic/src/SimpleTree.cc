@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.13 2002/12/05 14:11:03 christof Exp $
+// $Id: SimpleTree.cc,v 1.14 2002/12/05 14:20:22 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,11 +20,11 @@
 #include <SimpleTree.hh>
 #include <Misc/itos.h>
 
-SimpleTree_Basic::SimpleTree_Basic(unsigned int cols,int attrs)
-	: SimpleTreeStore_Proxy(cols,attrs)
+SimpleTree_Basic::SimpleTree_Basic(unsigned maxcol)
+	: SimpleTreeStore_Proxy(maxcol)
 {  set_model(sts.m_refTreeStore);
 
-   for (unsigned int i=0;i<cols;++i)
+   for (unsigned int i=0;i<Cols();++i)
    {  append_column("",sts.m_columns.cols[i]);
       get_column(i)->signal_clicked().connect(SigC::bind(SigC::slot(*this,&SimpleTree_Basic::on_title_clicked),i));
    }
