@@ -21,6 +21,7 @@
 #include <cstdio>
 #include "drucken_class.hh"
 #include <Instanzen/ppsInstanz.h>
+#include <Misc/FILEstream.h>
 
 extern bool sort_by_rownr;
 

@@ -25,7 +25,8 @@
 #include <Kunde/TelefonArt.h>
 #include <pwd.h>
 #include <unistd.h>
-#include <Aux/multi_lang.h>
+#include <Misc/multi_lang.h>
+#include <Misc/relops.h>
 
 #define TABW	"18"
 
@@ -208,7 +209,7 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
 
    try{u.r->setGewicht();}
 
-catch(SQLerror &e) { cout << e; return; }
+catch(SQLerror &e) { std::cout << e; return; }
 
    if(u.r->Pakete())
      os << "\\\\\\normalsize " << u.r->Pakete() << " "<< 
@@ -292,8 +293,8 @@ catch(SQLerror &e) { cout << e; return; }
        snprintf(buf,sizeof buf,
 		mld->MLT(MultiL_Dict::PRINTF_LIEFBESTEHT2).c_str(),
     			u.l->Pakete(),(u.l->Pakete()==1 ? 
-				(endE+string(".\n")).c_str():
-				(endM+string(".\n")).c_str() ));
+				(endE+std::string(".\n")).c_str():
+				(endM+std::string(".\n")).c_str() ));
        os << ( (mld->getSprId()==2 || 
 		mld->getSprId()==3)   ? "" : " ") << buf;
       }
@@ -833,7 +834,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 	    Kalenderwoche kw(lieferdatum.KW());
 	    char jahr[3];
 	    snprintf(jahr,3,"%02d",kw.Jahr()%100);
-	    string kws = kw.valid() ? itos(kw.Woche())+"'"+jahr : "-";
+	    std::string kws = kw.valid() ? itos(kw.Woche())+"'"+jahr : "-";
 #ifndef MABELLA_EXTENSIONS
 	    os << linecolor << kws;
 #endif
@@ -1309,7 +1310,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
    os.width(5);os.fill('0');
    os << kunde_an->Id() << "\\hfill "<<
    	(kunde_an->idnr().empty() ? "" : mld->MLT(MultiL_Dict::TXT_USTID)
-			+string(": ")+kunde_an->idnr()) << "\\\\\n";
+			+std::string(": ")+kunde_an->idnr()) << "\\\\\n";
 
 
 #else
