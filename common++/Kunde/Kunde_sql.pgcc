@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.32 2003/02/17 16:23:38 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.33 2003/02/26 11:57:35 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -693,6 +693,17 @@ std::string Kunde::getABI_Code(bool force) const
  return abi;
 }
 
+
+std::string Kunde::getABIBankName(bool force) const
+{
+ if(abi.size() && !force)
+   return bankname;
+
+ init_AuslandZahlung();
+
+ return bankname;
+}
+
 void Kunde::init_AuslandZahlung() const throw(SQLerror)
 {
  exec sql begin declare section;
@@ -700,6 +711,7 @@ void Kunde::init_AuslandZahlung() const throw(SQLerror)
  char *CAB=0;
  char *ABI=0;
  char *IBAN=0;
+ char *BANK=0;
  int ICAB,IABI,IIBAN;
  exec sql end declare section;
 
@@ -715,6 +727,14 @@ void Kunde::init_AuslandZahlung() const throw(SQLerror)
     abi=std::string(ABI);
     cab=std::string(CAB);
     iban=std::string(IBAN);
+
+    exec sql select bankname into :BANK from banken_abicab
+	where abi = :ABI;
+    SQLerror::test(__FILELINE__,100);
+    if(sqlca.sqlcode==100)
+      bankname="!! UNBEKANNT !!";
+    else
+      bankname=BANK;
    }
     
  ECPGfree_auto_mem(); 
