@@ -25,8 +25,7 @@
 #include<vector>
 #include"tclistrowdata.h"
 
-class TCListNode;
-class TCListLeaf;
+class TCListRowData;
 class cH_RowDataBase;
 
 class TreeBase : public TCList
@@ -76,11 +75,12 @@ protected:
  virtual void setSequence();
  virtual const std::string getColTitle(guint seq) const;
  // einen neuen Ast erzeugen, deep ist die Spalte, v der Wert dieser Spalte
- virtual TCListNode *NewNode
- 		(guint deep, const cH_EntryValue &v, bool expand);
+ virtual TCListRowData *NewNode
+ 		(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand);
  // ein neues Blatt erzeugen, deep ist die Spalte, seqnr der Werteindex
  // deep == Attrs() !
- virtual TCListLeaf *NewLeaf
+ // eigentlich Unsinn, das hier zu überladen ...
+ virtual TCListRowData *NewLeaf
  		(guint deep, const cH_EntryValue &v, const cH_RowDataBase &d);
 
  virtual void setColTitles();
@@ -110,7 +110,7 @@ public:
  
  void clear();
  SigC::Signal1<void,cH_RowDataBase> leaf_selected;
- SigC::Signal1<void,const TCListNode &> node_selected;
+ SigC::Signal1<void,const TCListRowData &> node_selected;
  
  struct SelectionError : public std::exception
  {  virtual const char* what() const throw() { return "TreeBase::SelectionError"; }
@@ -128,9 +128,24 @@ public:
  {  virtual const char* what() const throw() { return "TreeBase::notLeafSelected"; }
     notLeafSelected() {}
  };
+ struct noNodeSelected : public SelectionError
+ {  virtual const char* what() const throw() { return "TreeBase::noNodeSelected"; }
+    noNodeSelected() {}
+ };
+ struct multipleNodesSelected : public SelectionError
+ {  virtual const char* what() const throw() { return "TreeBase::multipleNodesSelected"; }
+    multipleNodesSelected() {}
+ };
+ struct notNodeSelected : public SelectionError
+ {  virtual const char* what() const throw() { return "TreeBase::notNodeSelected"; }
+    notNodeSelected() {}
+ };
  
  cH_RowDataBase getSelectedRowDataBase() const 
  	throw(noRowSelected,multipleRowsSelected,notLeafSelected);
+ std::vector<cH_RowDataBase> getSelectedRowDataBase_vec() const 
+ 	throw(notLeafSelected);
+
  template <class T,class CT> T getSelectedRowDataBase_as() const
 // this could be optimzed to avoid the dynamic_cast within 
 // cH_RowDataBase::operator*, but it does not hurt that much
@@ -139,24 +154,32 @@ public:
  template <class T> T getSelectedRowDataBase_as() const
  {  return getSelectedRowDataBase_as<T,typename T::ContentType>(); 
  }
+
+
+// TCListNode &getSelectedNode() const 
+ TCListRowData &getSelectedNode() const 
+ 	throw(noNodeSelected,multipleNodesSelected,notNodeSelected);
+ template <class T> T &getSelectedNode_as() const
+ {  return dynamic_cast<T&>(getSelectedNode());
+ }
 };
 
 ///////////////////////////////////////////////////////////////////
 // newer, more simplyfied API:
 class SimpleTree : public TreeBase
 {protected:
- typedef TCListNode *(*NewNode_fp)
- 		(guint deep, const cH_EntryValue &v, bool expand);
+ typedef TCListRowData *(*NewNode_fp)
+ 		(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand);
 
  std::vector<std::string> titles;
  NewNode_fp node_creation;
  
 // @ ins cc file ?
- static TCListNode *defaultNewNode
- 		(guint deep, const cH_EntryValue &v, bool expand);
- virtual TCListNode *NewNode
- 		(guint deep, const cH_EntryValue &v, bool expand)
- {  return (*node_creation)(deep,v,expand); }
+ static TCListRowData *defaultNewNode
+ 		(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand);
+ virtual TCListRowData *NewNode
+ 		(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand)
+ {  return (*node_creation)(deep,v,child_s_deep,child_s_data,expand); }
 public:
  SimpleTree(guint cols, guint attr, const std::vector<std::string>& T
                                 ,const std::vector<cH_RowDataBase>& D)

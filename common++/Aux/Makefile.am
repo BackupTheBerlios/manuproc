@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.10 2001/10/02 15:26:22 christof Exp $
+# $Id: Makefile.am,v 1.11 2001/11/05 08:58:29 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -45,7 +45,7 @@ include_HEADERS=Ausgabe.h Ausgabe_neu.h Datum.h \
 		IOerror.h Postgres.h \
 		Rundungsmacros.h SQLerror.h \
 		SQLerror_postgres.h Zeitpunkt_new.h \
-		EntryValue.h dbconnect.h Kalenderwoche.h mystream.h \
+		dbconnect.h Kalenderwoche.h mystream.h \
 		Handles.h Cache_Pointer.h CacheStatic.h \
 		EntryValueBase.h safemap.h string0.h \
 		Transaction.h Waehrung.h Pointer.h \

@@ -21,6 +21,9 @@
 #include<Aux/ppsInstanz.h>
 #include <Aux/Datum.h>
 #include <Artikel/ArtikelBase.h>
+#include <Aux/Preis.h>
+
+class AufEintragBase;
 
 // hier sollten noch viel mehr Funktionen aus Auftrag rein !!!
 
@@ -37,9 +40,10 @@ class AuftragBase
         ppsInstanz::ID Instanz() const {return instanz->Id(); }
 	bool valid() const { return auftragid!=0; }
 
-        // gibt Zeilennummer zurück, MAT
-        int insertNewEntry(unsigned long int bestellt, 
-                Petig::Datum lieferdatum, ArtikelBase::ID artid) throw(SQLerror);
+        int insertNewEntry(const unsigned long int bestellt, 
+                const Petig::Datum lieferdatum, const ArtikelBase::ID artid,
+                const Preis& preis=Preis(),const fixedpoint<2> rabatt=0) const throw(SQLerror);
+//        int insertNewEntry(const AufEintragBase& a) const;
 };
 
 #endif

@@ -15,7 +15,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// $Id: with_class.cc,v 1.9 2001/10/23 08:56:40 christof Exp $
+// $Id: with_class.cc,v 1.10 2001/11/05 08:57:31 christof Exp $
 
 #include "config.h"
 #include "with_class.hh"
@@ -40,7 +40,7 @@ class MyRowData : public RowDataBase
  
 public:
 
- MyRowData(int i,const std::string &s,int _i2,int _i3,const std::string _s1)
+ MyRowData(int i,const std::string &s,int _i2,int _i3,const std::string &_s1)
 	: intval(i),i2(_i2),i3(_i3),stringval(s),s1(_s1) {}
 	
  virtual const cH_EntryValue Value(guint _seqnr,gpointer gp) const
@@ -53,7 +53,7 @@ public:
 		 case SP_ATT4 : return cH_EntryValueIntString(s1);
 // 		 case SP_SUM0 ... SP_SUM2 : return cH_EntryValueIntString(Data(_seqnr-SP_SUM0));
  		 case SP_SUM0 : return cH_EntryValueIntString(Data(_seqnr));
- 		 default : return cH_EntryValueIntString("?");
+ 		 default : return cH_EntryValue();
 		}
 	}
  int Data(int i) const
@@ -91,11 +91,10 @@ public:
       }
    }
 
- SumNode(guint col, const cH_EntryValue &v, bool expand)
-//   : TCListNode(col, v, expand), sum0(0),sum1(0),sum2(0) {}
-   : TCListNode(col, v, expand), sum0(0) {}
- static TCListNode *create(guint col, const cH_EntryValue &v, bool expand)
-    {  return new SumNode(col,v,expand); }
+ SumNode(guint col, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand)
+   : TCListNode(col, v, child_s_deep, child_s_data, expand), sum0(0) {}
+ static TCListNode *create(guint col, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand)
+    {  return new SumNode(col,v, child_s_deep, child_s_data, expand); }
 };
 
 #if 1
@@ -156,9 +155,22 @@ with_class::with_class()
 //   v[SP_SUM2]="summe 3";
    treebase->setTitles(v);
    std::vector <cH_RowDataBase> datavec;
+#if 0
    datavec.push_back(new MyRowData(1,"X",2,3,"A"));
    datavec.push_back(new MyRowData(2,"Y",2,3,"A"));
    datavec.push_back(new MyRowData(10,"Z",2,3,"A"));
+#endif
+#if 0
+   for (int i=0;i<100/*00*/;++i)
+      datavec.push_back(new MyRowData(i%4+1,"same" /*
+      string(1,char('A'+(i%3)))*/,(i%5),(i%7),itos(i)));
+#endif
+#if 1
+   datavec.push_back(new MyRowData(1,"1810",25,755,"25m"));
+   datavec.push_back(new MyRowData(1,"1810",40,100,"9999"));
+   datavec.push_back(new MyRowData(1,"1955",25,855,"50m"));
+   datavec.push_back(new MyRowData(1,"1955",40,210,"Jumbo"));
+#endif
    treebase->setDataVec(datavec);
    
    treebase->leaf_selected.connect(SigC::slot(this,&with_class::on_leaf_selected));

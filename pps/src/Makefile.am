@@ -8,9 +8,7 @@
 bin_PROGRAMS = pps
 
 pps_SOURCES = $(BUILT_SOURCES) \
-	AuftragEntry2.cc \
 	AuftragFull2.cc \
-	aktAufEintrag.cc \
 	auftrag_main.cc \
 	auftrag_main_glade.cc \
    auftrag_main_instanz.cc \
@@ -43,7 +41,6 @@ noinst_HEADERS = \
 	termsplidial_glade.hh 
 
 BUILT_SOURCES= \
-	AuftragEntry_sql.cc \
 	auftrag_bearbeiten_sql.cc \
 	auftrag_liefer_sql.cc \
 	auftrag_rechnung_sql.cc \
@@ -58,4 +55,6 @@ CXXFLAGS = @CXXFLAGS@ @KOMPONENTEN_INCLUDES@ @GNOMEMM_CFLAGS@
 LDFLAGS= @LDFLAGS@ @KOMPONENTEN_LDFLAGS@
 
 pps_LDADD =  @LIBS@ @KOMPONENTEN_LIBS@ @GNOMEMM_LIBS@
+
+CLEANFILES = *~ *_new $(BUILT_SOURCES) *_old
 

@@ -3,10 +3,11 @@
 
 #include <gtk--/table.h>
 //#include <gtk--/eventbox.h>
-//#include <Aux/Waehrung.h>
+#include <Aux/Waehrung.h>
 #include <gtk--/spinbutton.h>
 #include <gtk--/label.h>
 #include "WWaehrung.hh"
+#include <Artikel/Preis.h>
 
 class WPreis : public Gtk::Table 
 {
@@ -19,6 +20,7 @@ class WPreis : public Gtk::Table
       void preismenge();
       void einheit();
       bool wwaehrung_bool;
+      cP_Waehrung chwaehrung;
    public:
 //      WPreis() { WPreis(0); }
       WPreis(bool wwaehrung);
@@ -35,11 +37,10 @@ class WPreis : public Gtk::Table
       double get_Betrag() const {gtk_spin_button_update(SP->gtkobj());return SP->get_value_as_float();}
       double get_Preismenge() const {gtk_spin_button_update(SP2->gtkobj());return SP2->get_value_as_float();}
       Waehrung::enum_t get_Waehrung_enum() const {return WW->get_enum();}
+      Preis get_Preis() const ;
 
       void reset();
       void set_all(double d1, double d2);
       int get_text_length(){return SP->get_text().size();}
-#warning diese Funktion wird nur von pps gebraucht, warum versteh ich aber nicht. MAT
-         
 };
 #endif

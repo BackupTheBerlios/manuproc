@@ -59,18 +59,19 @@ vector<AufEintragBase2> auftrag_main::get_new_aufids(cH_ppsInstanz instanz)
  return vec_newaufein;
 }
 
-void auftrag_main::AuftragsEntryZuordnung(const AufEintragBase& AEB,const AuftragBase& AB,int znr)
+void auftrag_main::AuftragsEntryZuordnung(const AufEintragBase& AEB,long menge, const AuftragBase& AB,int znr)
 {
  exec sql begin declare section;
   int db_aaid=AEB.getAuftragid();
   int db_ains=AEB.getAuftragInstanz();
   int db_aznr=AEB.getZnr();
+  long db_menge=menge;
   int db_naid=AB.Id();
   int db_nins=AB.Instanz();
   int db_nznr=znr;
  exec sql end declare section;
  exec sql insert into auftragsentryzuordnung 
-   (altauftragid,altinstanz,altzeilennr,neuauftragid,neuinstanz,neuzeilennr) values
-   (:db_aaid,:db_ains,:db_aznr,:db_naid,:db_nins,:db_nznr);
+   (altauftragid,altinstanz,altzeilennr,menge,neuauftragid,neuinstanz,neuzeilennr) values
+   (:db_aaid,:db_ains,:db_aznr,:db_menge,:db_naid,:db_nins,:db_nznr);
  SQLerror::test(__FILELINE__);
 }

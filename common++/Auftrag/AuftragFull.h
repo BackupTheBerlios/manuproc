@@ -41,20 +41,22 @@ public:
 	AuftragFull(Auftrag::Anlegen _instanz, long kundennr, int jahr=0) throw(SQLerror);
 	
 	void deleteEintrag(int zeilennr, int idx) throw(SQLerror);	
-	bool existsAufEntry(int idx) const
-	{ return ((uint)idx) < eintragliste.size(); }
+//	bool existsAufEntry(int idx) const
+//	{ return ((uint)idx) < eintragliste.size(); }
 	const AufEintragBase &getAufEntry(int idx) const 
-	{ return eintragliste[idx];}
+	        { return eintragliste[idx];}
 	AufEintragBase &getAufEntry(int idx)  
-	{ return eintragliste[idx];}
+        	{ return eintragliste[idx];}
+	AufEintragBase getAufEntry_by_znr(int znr)  
+        	{ return eintragliste[get_index_by_znr(znr)];}
         int get_index_by_znr(int znr);
-	void setStatusEntry(int idx, AufStatVal st) {eintragliste[idx].setStatus(st);}
-	void setStatusEntryZnr(int znr, AufStatVal st) {eintragliste[get_index_by_znr(znr)].setStatus(st);}
-	void updateStk(int idx, long stk) { eintragliste[idx].updateStk(stk);}	
-	void updatePreis(int idx, const Preis &pr) { eintragliste[idx].updatePreis(pr); }	
-	void updateLieferdatum(int idx, const Petig::Datum &ld) 
-			{ eintragliste[idx].updateLieferdatum(ld);}			
-	void updateRabatt(int idx, int r) { eintragliste[idx].updateRabatt(r); }
+//	void setStatusEntry(int idx, AufStatVal st) {eintragliste[idx].setStatus(st);}
+//	void setStatusEntryZnr(int znr, AufStatVal st) {eintragliste[get_index_by_znr(znr)].setStatus(st);}
+//	void updateStk(int idx, long stk) { eintragliste[idx].updateStk(stk);}	
+//	void updatePreis(int idx, const Preis &pr) { eintragliste[idx].updatePreis(pr); }	
+//	void updateLieferdatum(int idx, const Petig::Datum &ld) 
+//			{ eintragliste[idx].updateLieferdatum(ld);}			
+//	void updateRabatt(int idx, int r) { eintragliste[idx].updateRabatt(r); }
 	void split(int idx, const Petig::Datum &liefdatum, int menge)
 		{ eintragliste[idx].split(menge, liefdatum);}
 	
@@ -68,7 +70,8 @@ public:
 	void fillCList(Gtk::CList &list);
 //	void fillCListEntry(Gtk::CList &list, int idx);
 	
-	// komische Funktion ... Schema ueberdenken ???
-	int insertNewEntry(const aktAufEintrag &aufentry,const cH_ExtBezSchema &ebsh) throw (SQLerror);
+	int insertNewEntry( unsigned long int bestellt,
+               Petig::Datum lieferdatum, ArtikelBase::ID artid,
+               Preis preis=Preis(), fixedpoint<2> rabatt=fixedpoint<2>(0)) throw (SQLerror);
 };
 #endif

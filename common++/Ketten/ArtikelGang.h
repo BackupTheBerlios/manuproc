@@ -1,4 +1,4 @@
-/* $Id: ArtikelGang.h,v 1.2 2001/07/05 09:23:02 christof Exp $ */
+/* $Id: ArtikelGang.h,v 1.3 2001/11/05 08:58:29 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,18 +23,28 @@
 #include <Artikel/ArtikelBezeichnung.h>
 
 class ArtikelGang {
+//        int index;
 	int gaenge;
 	ArtikelBase art;
 
 public:
 	typedef ArtikelBase::ID ID;
-	ArtikelGang(int g,ID id) : gaenge(g), art(id)
-	{}
+//Braucht man das noch? MAT	ArtikelGang(int g,ID id) : index(0), gaenge(g), art(id) {}
+	ArtikelGang(int g,ArtikelBase id) : gaenge(g), art(id) {}
+	ArtikelGang() : gaenge(0), art(0) {}
+//	ArtikelGang(int i,int g,ArtikelBase id) : index(i), gaenge(g), art(id) {}
 	bool operator==(const ArtikelGang &b) const throw()
 	{  return Id()==b.Id(); }
+
 // this is for convenience only	
 	const cH_ArtikelBezeichnung Bezeichnung(const cH_ExtBezSchema &h) const throw()
 	{  return cH_ArtikelBezeichnung(art,h); }
+
+//        void set_Index(int i) {index=i;}
+//        int Index() const {return index;}
+        ArtikelBase Artikel() const {return art;}
+        bool Valid() const {if(Id()&&gaenge) return true; return false;}
+
 	const ID &Id() const
 	{  return art.Id(); }
 	int Gaenge() const throw()

@@ -1,4 +1,4 @@
-// $Id: Changejournal_sql.pgcc,v 1.5 2001/10/23 08:45:18 christof Exp $
+// $Id: Changejournal_sql.pgcc,v 1.6 2001/11/05 08:58:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -38,7 +38,6 @@ throw(SQLerror)
  double DELTA;
  char CHTYPE;
  int ARTIKELID;
- int INEWVAL=0, IDELTA=0;
  exec sql end declare section;
  
  Transaction tr;
@@ -52,7 +51,7 @@ throw(SQLerror)
  else CHID=change; 
 
  ARTIKELID=art.Id();
- AUFID=aufe.AufId();
+ AUFID=aufe.Id();
  ZEILENNR=aufe.ZNr();
  NEWVAL=_newval;
  DELTA=_delta; 
@@ -63,7 +62,7 @@ throw(SQLerror)
  		delta, chtype)
  	values
  	(:INSID, :CHID, :ARTIKELID, :AUFID, :ZEILENNR,
- 	 :NEWVAL:INEWVAL, :DELTA:IDELTA, :CHTYPE);
+ 	 :NEWVAL, :DELTA, :CHTYPE);
  SQLerror::test(__FILELINE__":pps_ChJournalEntry::newChange:"
     			"insert into prod_changejournal");
 
@@ -90,7 +89,6 @@ throw(SQLerror)
  double DELTA;
  char CHTYPE;
  int ARTIKELID;
- int INEWDAT=0, IDELTA=0;
  exec sql end declare section;
  
  Transaction tr;
@@ -104,7 +102,7 @@ throw(SQLerror)
  else CHID=change; 
 
  ARTIKELID=art.Id();
- AUFID=aufe.AufId();
+ AUFID=aufe.Id();
  ZEILENNR=aufe.ZNr();
  _newdat.write_postgres(NEWDAT, sizeof NEWDAT);
  DELTA=_delta; 
@@ -115,7 +113,7 @@ throw(SQLerror)
  		delta, chtype)
  	values
  	(:INSID, :CHID, :ARTIKELID, :AUFID, :ZEILENNR,
- 	 :NEWDAT:INEWDAT, :DELTA:IDELTA, :CHTYPE);
+ 	 :NEWDAT, :DELTA, :CHTYPE);
  SQLerror::test(__FILELINE__":pps_ChJournalEntry::newChange:"
     			"insert into prod_changejournal");
 
@@ -152,10 +150,10 @@ throw(SQLerror)
  Transaction tr;
  
  exec sql select datum,status,artikelid,auftragid,auftragzeile,
- 		new_val,new_dat,delta,chtype
+ 		coalesce(new_val,0),new_dat,coalesce(delta,0),chtype
  	into
- 		:DATUM, :STATUS, :ARTIKELID, :AUFID, :ZEILENNR, :NEWVAL:INEWVAL,
- 		:NEWDATUM:INEWDATUM, :DELTA:IDELTA, :CHTYPE
+ 		:DATUM, :STATUS, :ARTIKELID, :AUFID, :ZEILENNR, :NEWVAL,
+ 		:NEWDATUM:INEWDATUM, :DELTA, :CHTYPE
  	from prod_changejournal
  	where insid= :INSID and chid= :CHID;
  SQLerror::test(__FILELINE__":pps_ChJournalEntry::pps_ChJournalEntry:"
@@ -167,9 +165,9 @@ throw(SQLerror)
  status = (ChJStatVal)STATUS;
  artikel = ArtikelBase(ARTIKELID);
  auftragentry = AufEintragBase2((ppsInstanz::ID)INSID,AUFID,ZEILENNR);
- newval = INEWVAL ? 0 : NEWVAL;
+ newval = NEWVAL;
  newdate = INEWDATUM ? Petig::Datum() : Petig::Datum(NEWDATUM);
- delta = IDELTA ? 0 : DELTA;
+ delta = DELTA;
  type = (ChJType)CHTYPE;   
 
 }

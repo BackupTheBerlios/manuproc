@@ -16,6 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <Aux/dbconnect.h>
 #include "drucken.hh"
 #include "getopt.h"
 
@@ -28,6 +29,7 @@ const static struct option options[]=
  { "nr",     required_argument,      NULL, 'n' }, 
  { "plot",     no_argument,      NULL, 'p' }, 
  { "instanz", required_argument,      NULL, 'i' }, 
+ { "database", required_argument,      NULL, 'd' }, 
  { NULL,      0,       NULL, 0 }
 };       
 
@@ -35,31 +37,48 @@ int main (int argc, char *argv[])
 {
  bool firmenpapier=false;
  bool kopie=false;
- std::string was;
+ LR_Base::typ was;
  bool plot=false;
+ bool toTeX=false;
  unsigned int auftragsnr = 0; 
  ppsInstanz::ppsInstId instanz = ppsInstanz::INST_KNDAUF;
- 
+ string database="petigdb";
  
  int opt;
- while ((opt=getopt_long(argc,argv,"fka:n:pi:",options,NULL))!=EOF)
+
+ if(argc==1) exit(1);
+
+ while ((opt=getopt_long(argc,argv,"ftka:n:pi:d:",options,NULL))!=EOF)
   { switch (opt)
     {  case 'f' : firmenpapier=true; break;
        case 'k' : kopie=true; break;
-       case 'a' : was=optarg;break;
+       case 'a' : if(string("Rechnung")==optarg) was=LR_Base::Rechnung;
+		  else if(string("Lieferschein")==optarg) was=LR_Base::Lieferschein;
+		  else if(string("Auftrag")==optarg) was=LR_Base::Auftrag;
+		  else was=LR_Base::NICHTS;
+		break;
        case 'n' : auftragsnr=atoi(optarg);break;
        case 'i' : instanz=(ppsInstanz::ppsInstId)atoi(optarg);break;
        case 'p' : plot=true;break;
+	case 'd' : database=optarg;break; 
+	case 't' : toTeX=true;break; 
+	case '?':
+            cout << "$Id: auftrag_drucken.cc,v 1.8 2001/11/05 08:58:53 christof Exp $\n\n"
+                   "USAGE:" << argv[0] << " [-a <Auftrag|Rechung|Lieferschein|Intern> -n <Nr> -k <kopien>][-f][-i <Instanz>][-t][-v][-d<dbase>] ...\n"
+		"\n\t-t\t nur TeX file erzeugen\n"
+		"\t-p\t drucken \n"
+		"\t-a\t Aufrag, Rechnung, Lieferschein, Intern\n"
+		"\t-n\t Papiernummer\n"
+		"\t-f\t auf Firmenpapier\n"
+		"\t-i\t Instanz auswählen\n"
+		"\t-d\t Datenbank\n";
+            exit(1);
     }
   }                 
- if (was != "Rechnung" && was!= "Lieferschein" && was!="Auftrag" && was !="Intern" )
-    {cerr<<"FEHLER: -a (--art) Argument von "<<argv[0]<<" muß 'Rechnung' oder 'Lieferschein' oder 'Auftrag' oder 'Intern' sein \n"; return 1;}
- if (!auftragsnr) 
-    {cerr<<"FEHLER: -n (--nr) Argument von "<<argv[0]<<" muß Nummer der Rechnung, des Lieferscheins oder des Auftrags sein\n"; return 1;}
 
   try {
       Petig::Connection conn;
-      conn.setDbase("petigdb");
+      conn.setDbase(database);
       Petig::dbconnect(conn);  
 
 //      LR_drucken l("Lieferschein",10025,"Preview",instanz);
@@ -68,7 +87,8 @@ int main (int argc, char *argv[])
 
       std::string p="Preview";
       if(plot) p="Plot";
-      LR_drucken l(was,auftragsnr,p,firmenpapier,kopie,cH_ppsInstanz(instanz));      
+      LR_drucken l(was,auftragsnr,p,firmenpapier,
+			kopie,cH_ppsInstanz(instanz),toTeX);      
          
       Petig::dbdisconnect();
    } catch (SQLerror &e)

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.7 2001/10/23 08:45:18 christof Exp $
+// $Id: AufEintragBase.cc,v 1.8 2001/11/05 08:58:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,55 +27,44 @@ AufEintragBase::AufEintragBase(ppsInstanz::ID _instanz,int _auftragid, int _zeil
 	int _dispoentrynr, int _disponr, int _jahrgang,
 	AufStatVal _aufstatus,
 	int _kdnr, const std::string _youraufnr,
-	const std::string _prozdate,
+	const Petig::Datum& _prozdate,
 	int _prozess,
 	const Preis &_preis, int _rabatt,
-	AufStatVal _entrystatus, const Petig::Datum _lasteditdate,
-	const cH_ExtBezSchema schema) throw()
+	AufStatVal _entrystatus, const Petig::Datum _lasteditdate) throw()
 : AufEintragBase2(_instanz,_auftragid,_zeilennr),
-  artikel(0ul),
-  prozess(Prozess::default_id)
+ artikel(_artikel),
+ dispoentrynr(_dispoentrynr),
+ disponr(_disponr),
+ status(_aufstatus),
+ entrystatus(_entrystatus),
+ kdnr(_kdnr),
+ youraufnr(_youraufnr),
+ geliefert(_geliefert),
+ lieferdatum(_lieferdatum),
+ lasteditdate(_lasteditdate),
+ jahrgang(_jahrgang),
+ prozess(Prozess::default_id),
+ bestellt(_bestellt),
+ preis(_preis),
+ rabatt(_rabatt)
 {
- artikel=cH_AufArtikel((AufArtikel::ID)_artikel,schema);
- kdnr = _kdnr;
- bestellt = _bestellt;
- lieferdatum = _lieferdatum;
- dispoentrynr = _dispoentrynr;
- kdnr = _kdnr;
- jahrgang = _jahrgang;
-
- float tmpstkgr = artikel->Stueckgroesse();
- tmpstkgr = tmpstkgr ? tmpstkgr : 1;
- menge = _bestellt*tmpstkgr;
- rest = (_bestellt-_geliefert)*tmpstkgr;
- geliefert = _geliefert;
- status=_aufstatus;
- entrystatus=_entrystatus;
- lasteditdate=_lasteditdate;
- dispoentrynr = _dispoentrynr;
- disponr = _disponr;
- youraufnr = _youraufnr;
-
  prozess=cH_Prozess(_prozess ? _prozess : cH_Prozess::default_pid);
  if(! _prozess) prozdate=Petig::Datum();
  else prozdate.from_postgres(_prozdate.c_str());
-
- preis=_preis;
- rabatt=_rabatt;
 }
 	
 
 
 
 std::ostream &operator<<(std::ostream &o,const AufEintragBase &aeb)
-{  o << "{artikel="<< aeb.artikel->Bezeichnung() << "Instanz = "<<aeb.instanz->Id()<< " menge="
-	<<aeb.menge << " dispoentrynr="
+{  o << "{artikel="<< cH_ArtikelBezeichnung(aeb.artikel)->Bezeichnung() << "Instanz = "<<aeb.instanz->Id()<< " menge="
+	<</*aeb.menge <<*/ " dispoentrynr="
 	<<aeb.dispoentrynr
 	<< " auftragid="<<aeb.auftragid
 	<<" zeilennr="<<aeb.zeilennr << " bestellt="<<aeb.bestellt
-	<<" geliefert="<<aeb.geliefert << " rest=" << aeb.rest
+	<<" geliefert="<<aeb.geliefert << " rest=" /*<< aeb.rest*/
 	<<" lieferdatum="<< aeb.lieferdatum.c_str() << " meterprostk="<<
-	 aeb.artikel->Stueckgroesse()<<
+	 /*aeb.artikel->Stueckgroesse()<<*/
 	 "Auftrag-Prozess="<<aeb.prozess->Id()<<
 	 "Prozess-Datum="<<aeb.prozdate<<
 	 "Preis"<<aeb.preis<<
@@ -87,33 +76,10 @@ std::ostream &operator<<(std::ostream &o,const AufEintragBase &aeb)
 }
 
 
-#warning geht so nicht mehr (Umstellung von ArtikelZusammensetzung)
-double AufArtikel::Stueckgroesse() const
-{ return ArtikelBaum::Stueckgroesse();
-}
-
-cH_AufArtikel::cache_t cH_AufArtikel::cache;
-
-cH_AufArtikel::cH_AufArtikel(AufArtikel::ID pid, const cH_ExtBezSchema &schema)
-{  cH_AufArtikel *cached(cache.lookup(pid));
-   if (cached) *this=*cached;
-   else
-   {  if (pid==default_pid) *this=cH_AufArtikel(new AufArtikel());
-      else *this=cH_AufArtikel(new AufArtikel(pid,schema));
-      cache.Register(pid,*this);
-   }
-}
-
-cH_AufArtikel::cH_AufArtikel(AufArtikel::ID pid)
-{  cH_AufArtikel *cached(cache.lookup(pid));
-   if (cached) *this=*cached;
-   else
-   {  if (pid==default_pid) *this=cH_AufArtikel(new AufArtikel());
-      else *this=cH_AufArtikel(new AufArtikel(ArtikelBase(pid)));
-      cache.Register(pid,*this);
-   }
-}
-
+//#warning geht so nicht mehr (Umstellung von ArtikelZusammensetzung)
+//double AufArtikel::Stueckgroesse() const
+//{ return ArtikelBaum::Stueckgroesse();
+//}
 
 const Preis AufEintragBase::GPreis() const
 { return preis.In(preis.getWaehrung(),bestellt)*(1-rabatt/10000.0);
@@ -143,3 +109,9 @@ const std::string AufEintragBase::getEntryStatusStr() const
 }
 
 
+bool AufEintragBase::allesOK() const
+{
+ if (!getStueck()) return false;
+ if (!getLieferdatum().valid()) return false;
+ return true;
+}

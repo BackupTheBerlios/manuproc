@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.18 2001/10/18 10:03:15 cvs_christof Exp $
+// $Id: ppsInstanz.h,v 1.19 2001/10/23 13:50:29 cvs_malte Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,7 +23,7 @@
 #include <string>
 #include <Aux/Handles.h>
 #include <Aux/CacheStatic.h>
-
+#include <Artikel/Prozess.h>
 
 class ppsInstanz : public HandleContent
 {
@@ -57,6 +57,7 @@ public:
 // absolet void set_Instanz(ppsInstId iid) {instid=iid; get_name();}
  ppsInstId Id() const { return instid; }
  std::string get_Name() const {return name;}
+ cH_Prozess get_Prozess() const;
  
  operator ppsInstId () const {return instid;}
  void set(ppsInstId i) {instid=i; get_name();}

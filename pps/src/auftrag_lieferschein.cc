@@ -296,7 +296,7 @@ void auftrag_lieferschein::on_Palette_activate()
      if (!auftragnr->get_text().size() && artikelbox->get_value().Id())
      {  SQLFullAuftragSelector psel(SQLFullAuftragSelector::sel_Kunde_Artikel
      		(instanz->Id(),liefer_kunde->get_value(),artikelbox->get_value().Id()));
-     	SelectedFullAufList list(psel,cH_ExtBezSchema(1,ExtBezSchema::default_Typ));
+     	SelectedFullAufList list(psel);
      	Transaction tr;
      	int _anzahl=anzahl->get_value_as_int();
      	float menge(_anzahl);

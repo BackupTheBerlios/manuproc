@@ -1,4 +1,4 @@
-// $Id: selAufEntry_sql.pgcc,v 1.11 2001/10/23 08:45:18 christof Exp $
+// $Id: selAufEntry_sql.pgcc,v 1.12 2001/11/05 08:58:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,19 +19,12 @@
 
 #include <Auftrag/selFullAufEntry.h>
 #include <Aux/Transaction.h>
+#include <Aux/Datum.h>
 
 exec sql include sqlca;
 
-SelectedFullAufList::SelectedFullAufList(const SQLFullAuftragSelector &selector)
-	throw(SQLerror)
-{
-  *this=SelectedFullAufList(selector,cH_ExtBezSchema(/*KDNR[i]*/1,ExtBezSchema::default_Typ));
-}
-
-// wozu das Schema? CP
-
 SelectedFullAufList::SelectedFullAufList
-	(const SQLFullAuftragSelector &selector, cH_ExtBezSchema schema)
+	(const SQLFullAuftragSelector &selector)
 throw(SQLerror)
 {
  exec sql begin declare section;
@@ -89,24 +82,26 @@ throw(SQLerror)
 
 	   int j=sqlca.sqlerrd[2];
            for (int i=0;i<j;++i)
-           { try {
+           { 
+         try {
+//         Petig::Datum datum(); datum->from_postgres(PROZESSDATUM[i]);
 	      aufidliste.push_back(
 			AufEintragBase((ppsInstanz::ID)INSTANZ[i],
 			AUFID[i], ZNUMMER[i], BESTELLT[i], ARTIKELID[i],
-	ILIEFERDATUM[i] ? Petig::Datum() : Petig::Datum(LIEFERDATUM[i]),
+      	ILIEFERDATUM[i] ? Petig::Datum() : Petig::Datum(LIEFERDATUM[i]),
 			GELIEFERT[i],
 			IDISPOENTNR[i] ? 0 : DISPOENTNR[i],
 			IDISPONR[i] ? 0 : DISPONR[i],
 			JAHRGANG[i], (AufStatVal)STATUS[i], KDNR[i],
 			IYOURAUFNR[i] ? std::string("") : std::string(YOURAUFNR[i]),
-			std::string(PROZESSDATUM[i]),PROZESSID[i],
+			Petig::Datum(PROZESSDATUM[i])
+//Petig::Datum()
+         ,PROZESSID[i],
 			Preis(IPREIS[i] ? 0 : PREIS[i],
 				IWAEHRUNG[i] ? Waehrung::ID(0):Waehrung::ID(WAEHRUNG[i]),
 				PREISMENGE[i]),
 			IRABATT[i] ? 0 : RABATT[i],
-		(AufStatVal)ENTRYSTATUS[i],Petig::Datum(LASTEDITDATE[i]),
-			schema
-			));
+		(AufStatVal)ENTRYSTATUS[i],Petig::Datum(LASTEDITDATE[i])	));
 	      } catch (SQLerror &e)
 	      {  std::cerr << e << '\n';
 	      }
@@ -179,19 +174,18 @@ void SelectedFullAufList::insert(const AuftragBase& auftrag, int znr) throw(SQLe
 	      aufidliste.push_back(
 			AufEintragBase((ppsInstanz::ID)INSTANZ,
 			AUFID, ZNUMMER, BESTELLT, ARTIKELID,
-	ILIEFERDATUM ? Petig::Datum() : Petig::Datum(LIEFERDATUM),
+      	ILIEFERDATUM ? Petig::Datum() : Petig::Datum(LIEFERDATUM),
 			GELIEFERT,
 			IDISPOENTNR ? 0 : DISPOENTNR,
 			IDISPONR ? 0 : DISPONR,
 			JAHRGANG, (AufStatVal)STATUS, KDNR,
 			IYOURAUFNR ? std::string("") : std::string(YOURAUFNR),
-			std::string(PROZESSDATUM),PROZESSID,
+			Petig::Datum(PROZESSDATUM),PROZESSID,
 			Preis(IPREIS ? 0 : PREIS,
 				IWAEHRUNG ? Waehrung::ID(0):Waehrung::ID(WAEHRUNG),
 				PREISMENGE),
 			IRABATT ? 0 : RABATT,
-			(AufStatVal)ENTRYSTATUS,Petig::Datum(LASTEDITDATE),
-			cH_ExtBezSchema(KDNR,ExtBezSchema::default_Typ)
+			(AufStatVal)ENTRYSTATUS,Petig::Datum(LASTEDITDATE)
 			));
 
 	exec sql close AUFENTRYINSERT;

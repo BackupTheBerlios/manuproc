@@ -22,23 +22,10 @@
 #include <Lieferschein/RechnungVoll.h>
 #include <Auftrag/AuftragFull.h>
 #include <fstream>
-//#include <cstdio>
-//#include <Gtk2TeX.h>
-//#include <Artikel/Einheiten.h>
+#include "lr_base.h"
 
 #define ZEILEN_SEITE_1 33
 #define ZEILEN_SEITE_N 37
-
-
-
-class LR_Base
-{
-public:
-   enum typ {Lieferschein, Rechnung, Auftrag, NICHTS}; 
-protected:
-   typ t; 
-   LR_Base(typ _t) : t(_t) {}
-};
 
 
 class LR_Entry: public LR_Base
@@ -61,7 +48,7 @@ public:
 
    const ArtikelBase::ID ArtikelID() const {
       if (t==Rechnung)     return u.r->ArtikelID();
-      if (t==Auftrag)      return u.a->ArtikelID();
+      if (t==Auftrag)      return u.a->Id();
       if (t==Lieferschein) return u.r->ArtikelID(); abort();}
    const Preis getPreis() const {  
       if (t==Auftrag)      return u.a->EPreis(); 
@@ -74,7 +61,7 @@ public:
       if (t==Rechnung)     return u.r->Rabatt(); return 0;}
    fixedpoint<2> Menge() const { 
       if (t==Rechnung)     return u.r->Menge(); 
-      if (t==Auftrag)      return u.a->getMeter(); 
+      if (t==Auftrag)      return fixedpoint<2>(0) ;//u.a->getMeter(); 
       if (t==Lieferschein) return (float)(u.l->Menge()); abort();}
    int Stueck() const { 
       if (t==Rechnung)     return u.r->Stueck(); 
@@ -140,20 +127,27 @@ public:
 
 class LR_Abstraktion: public LR_Base
 {
+ bool firmenpapier;
 public:
   typedef LR_Iterator const_iterator;
+
   union { const LieferscheinVoll *l; 
           const class RechnungVoll *r; 
           const class AuftragFull *a; } u;
 public:
-  LR_Abstraktion():LR_Base(NICHTS) {}
-  LR_Abstraktion(const LieferscheinVoll *l) : LR_Base(Lieferschein) 
+  LR_Abstraktion():LR_Base(NICHTS),firmenpapier(false) {}
+  LR_Abstraktion(const LieferscheinVoll *l, bool fp=false) 
+		: LR_Base(Lieferschein), firmenpapier(fp)
   { u.l=l; }
-  LR_Abstraktion(const class RechnungVoll *r) : LR_Base(Rechnung) 
+  LR_Abstraktion(const RechnungVoll *r, bool fp=false) 
+		: LR_Base(Rechnung), firmenpapier(fp)
   { u.r=r; }
-  LR_Abstraktion(const class AuftragFull *a) : LR_Base(Auftrag) 
+  LR_Abstraktion(const AuftragFull *a, bool fp=false) 
+		: LR_Base(Auftrag), firmenpapier(fp)
   { u.a=a; }
 
+ bool Firmenpapier() const {return firmenpapier;}
+  
   const_iterator begin() const { 
       if (t==Rechnung)     return u.r->begin();
       if (t==Auftrag)      return u.a->begin();
@@ -186,11 +180,15 @@ public:
       if (t==Rechnung)     return u.r->Id(); 
       if (t==Auftrag)      return u.a->Id(); 
       if (t==Lieferschein) return u.l->Id(); abort(); }
-   string Was()         const {
+
+//dafür gibt es jetzt typString() Methode
+/*   string Was()         const {
       if (t==Rechnung)     return "Rechnung"; 
       if (t==Auftrag)      return "Auftrag"; 
       if (t==Lieferschein) return "Lieferschein"; abort(); }
+*/
 
+   typ Typ()         const { return t; }
 
 
    void drucken_header(ofstream &os);

@@ -41,6 +41,7 @@ protected:
 	cP_Waehrung waehrung;
 private:
 	std::string tmpstr;
+	int getAuftragid() const { return auftragid; } //use:=> Id()
 	
 public:
 	// Diese Strukturen dienen dazu, das Anlegen explizit anzufordern
@@ -72,7 +73,6 @@ public:
 	
         const Petig::Datum &getDatum() const { return datum; } 
 	AufStatVal getStatus() const { return status; }
-	int getAuftragid() const { return auftragid; }
         ppsInstanz::ID Instanz() const {return instanz->Id();}
 	std::string getAuftragidToStr() const;
 	std::string getYourAufNr() const { return youraufnr;}

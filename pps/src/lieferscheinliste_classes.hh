@@ -29,16 +29,11 @@ class Data_LListe : public RowDataBase
     virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
       {
 
-//static int cn=0;
-//cout << "show\t"<<++cn<<'\n';
        switch(seqnr) {
          case ARTIKEL ... AUFMACHUNG: {
-            ArtikelBase A(entry.ArtikelID());
-            cH_ArtikelBezeichnung AB(A,ExtBezSchema::default_ID);
-            return cH_EntryValueIntString(AB->Komponente(seqnr));
-//            return cH_EntryValueIntString(A.Id());
+            cH_ArtikelBezeichnung AB(entry.ArtikelID());
+            return AB->Komponente_als_EntryValue(seqnr-ARTIKEL);
           }
-//         case KUNDE : return cH_EntryValueIntString(liefer->KdNr());
          case KUNDE : return cH_EntryValueIntString(cH_Kunde(liefer->KdNr())->firma());
          case STUECK : {
               Einheit E(entry.ArtikelID());
@@ -54,14 +49,7 @@ class Data_LListe : public RowDataBase
          case LIEFERDATUM : return cH_EntryValueDatum( liefer->LsDatum());
          case GELIEFERTAM : return cH_EntryValueDatum( liefer->getDatum());
          case RECHNUNG : return cH_EntryValueIntString( liefer->RngNr());
-         case RECHNUNGSDATUM : {
-//            try {Rechnung R(liefer->RngNr()); 
-//                 return cH_EntryValueIntString( R.getDatum().c_str());
-//               }
-//            catch (SQLerror &e) {cerr<<e<<'\n';
-            return cH_EntryValueIntString(rechnung.getDatum().c_str());
-//               }
-          }
+         case RECHNUNGSDATUM : return cH_EntryValueDatum(rechnung.getDatum());
          case SUM_ARTIKEL: {
             Einheit E(entry.ArtikelID());
             std::string es = E.StueckEinheit();
@@ -71,7 +59,7 @@ class Data_LListe : public RowDataBase
             return cH_EntryValueIntString(s);
           } 
         }
-       return cH_EntryValueIntString("?");
+       return cH_EntryValue();
       }
    int Stueck() const {return entry.Stueck();}
    fixedpoint<3> Menge() const {return entry.Menge();}
@@ -127,13 +115,13 @@ class Data_ListeNode : public TCListNode
               return cH_EntryValueIntString(s);
             }
         }
-      return cH_EntryValueIntString("");
+      return cH_EntryValue();
     }
- Data_ListeNode::Data_ListeNode(guint deep,const cH_EntryValue &v, bool expand)
-   :TCListNode(deep,v,expand) {}
+ Data_ListeNode::Data_ListeNode(guint deep,const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data,bool expand)
+   :TCListNode(deep,v,child_s_deep,child_s_data,expand) {}
 
-  static TCListNode *create(guint col, const cH_EntryValue &v, bool expand)
-  {  return new Data_ListeNode(col,v,expand);
+  static TCListNode *create(guint col, const cH_EntryValue &v,guint child_s_deep, cH_RowDataBase child_s_data, bool expand)
+  {  return new Data_ListeNode(col,v,child_s_deep,child_s_data,expand);
   }
 };
 

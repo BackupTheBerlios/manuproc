@@ -1,4 +1,4 @@
-/* $Id: EntryValueBase.h,v 1.6 2001/10/08 09:08:12 christof Exp $ */
+/* $Id: EntryValueBase.h,v 1.7 2001/11/05 08:58:29 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -32,7 +32,7 @@ public:
  virtual operator bool() const;
  
  virtual int getIntVal() const { return 0; }
- virtual const std::string getStrVal() const { return "?"; }
+ virtual const std::string getStrVal() const { return ""; }
  virtual bool operator==(const EntryValueBase &v) const;
  virtual bool operator<(const EntryValueBase &v) const;
  ~EntryValueBase() {}

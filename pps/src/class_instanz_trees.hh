@@ -23,9 +23,19 @@ public:
     virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
  { 
     switch (seqnr) {
-      case KUNDE : return cH_EntryValueIntString(AufEintrag.get_Kunde()->firma());
+      case KUNDE : {//return cH_EntryValueIntString(AufEintrag.get_Kunde()->firma());
+         std::string k;
+         list<cH_Kunde> LK=AufEintrag.get_Referenz_Kunden();
+//cout << "Kundenliste " <<LK.size()<<'\n';
+         for (list<cH_Kunde>::const_iterator i=LK.begin();i!=LK.end();)
+           { k+=(*i)->firma();
+             if (++i != LK.end()) k+=", ";
+           }
+//         return cH_EntryValueIntString(AB.get_Kunde()->firma());
+         return cH_EntryValueIntString(k);
+        }
       case ARTIKEL : {
-         cH_ArtikelBezeichnung AZ(AufEintrag.ArtikelID());
+         cH_ArtikelBezeichnung AZ(AufEintrag.ArtId());
          return cH_EntryValueIntString(AZ->Bezeichnung());
         }
       case MENGE   : return cH_EntryValueIntString(itos(AufEintrag.getStueck()));

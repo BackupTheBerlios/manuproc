@@ -1,4 +1,4 @@
-// $Id: KpK_get_artikel.pgcc,v 1.4 2001/10/23 08:45:19 christof Exp $
+// $Id: KpK_get_artikel.pgcc,v 1.5 2001/11/05 08:58:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,35 +25,27 @@ exec sql include sqlca;
 
 const std::vector <ArtikelGang> &KettplanKette::get_artikel_sorted()
 {  if (valid&VA_ARTIKEL) return artikel;
-   if (artikel.size())
-   {  std::cerr << (*this) << " KettplanKette::get_artikel_sorted() schon voll\n";
-      return artikel;
-   }
-   
+   if (artikel.size()) artikel.clear();
    // einlesen, sortieren, erzeugen
    exec sql begin declare section;
    int refmasch;
    char refdate[11];
    int GAENGE[10];
    long ID[10];
-   char TEXT[10][81];
-   int IID[10];
    exec sql end declare section;
    
    write(refmasch,refdate,sizeof refdate);
-   exec sql select s.gaenge,s.artikelid,e.text
-        into :GAENGE, :ID :IID, :TEXT
-   	from schaertabelle s, extartbez e
+   exec sql select gaenge,coalesce(artikelid,0)
+        into :GAENGE, :ID
+   	from schaertabelle s
    	where maschine= :refmasch and schaerdatum= :refdate
-   	 and s.artikelid=e.artikelid and kundennr=1 and bezkomptype=0
-   	order by e.text limit 10;
+   	order by artikelbezeichnung(artikelid) limit 10;
    SQLerror::test(__FILELINE__,100);
-//std::cout << refmasch<<"\t"<<refdate<<"\n";//<<GAENGE[i]<<"\t"<<ID[i]<<"\n";
+
    for (int i=0;i<sqlca.sqlerrd[2];++i)
-   {  if (IID[i]) continue;
-#warning TEXT is ignored - why?
-      artikel.push_back(ArtikelGang(GAENGE[i],IID[i]?0:ID[i]/* ,TEXT*/));
+   {  artikel.push_back(ArtikelGang(GAENGE[i],ID[i]));
    }
+
    valid|=VA_ARTIKEL;
    return artikel;
 }

@@ -1,4 +1,4 @@
-// $Id: KettplanKette2.pgcc,v 1.5 2001/10/23 08:45:19 christof Exp $
+// $Id: KettplanKette2.pgcc,v 1.6 2001/11/05 08:58:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,6 +20,7 @@
 
 #include "KettplanKette.h"
 #include "Maschtyp.h"
+#include <Aux/Transaction.h>
 
 exec sql include sqlca;
 exec sql include ecpgerrno;
@@ -39,7 +40,7 @@ Maschtyp Maschtyp::getMaschtyp(int nr) throw(SQLerror)
    return Maschtyp(gaenge,(const char*)typ);
 }
 
-int KettplanKette::defaultKettlaenge() throw(SQLerror)
+int KettplanKette::defaultKettlaenge() const throw(SQLerror)
 {  Maschtyp mt=Maschtyp::getMaschtyp(planMaschine());
    exec sql begin declare section;
    int refmasch;
@@ -194,7 +195,7 @@ void KettplanKette::setzeBarcoMasch(int m) throw(SQLerror)
    SQLerror::test(__FILELINE__);
 }
 
-int KettplanKette::Kettlaenge() throw()
+int KettplanKette::Kettlaenge() const throw()
 {  if (valid&VA_KETTLEN) return kettlaenge;
 
   try
@@ -411,3 +412,124 @@ Petig::Datum KettplanKette::Fertig_am() const throw(SQLerror)
 {
 }
 */
+
+
+void KettplanKette::save_Kette() const
+{
+ exec sql begin declare section;
+   int MASCHINE=Maschine(),  KETTLAENGE=kettlaenge;
+   char DATUM[30];
+   int JAHRGANG=Schaerdatum().Jahr();
+ exec sql end declare section;
+ Schaerdatum().write_postgres(DATUM,sizeof DATUM);
+ exec sql INSERT INTO ketten 
+      (laenge, maschine, planmaschine, folgenr, schaerdatum, jahrgang)
+   SELECT :KETTLAENGE, :MASCHINE,
+            :MASCHINE, coalesce(max(folgenr)+1,0), :DATUM,
+            :JAHRGANG
+    FROM ketten WHERE planmaschine= :MASCHINE;
+
+// exec sql insert into ketten (maschine,schaerdatum,laenge)
+//                      values (:MASCHINE,:DATUM,:LAENGE);
+ SQLerror::test("Kettplakette::save_Kette(): Kette schon eingetragen");
+}
+
+void KettplanKette::save_Artikel(const ArtikelGang& artikel) const
+{
+ exec sql begin declare section;
+   int MASCHINE=Maschine();
+   int GAENGE=artikel.Gaenge();
+   int ARTIKEL=artikel.Id();
+   char DATUM[30];
+ exec sql end declare section;
+ Schaerdatum().write_postgres(DATUM,sizeof DATUM);
+ exec sql insert into schaertabelle 
+    (maschine,schaerdatum,gaenge,menge,status,jahrgang,artikelid)
+     values (:MASCHINE,:DATUM,:GAENGE,0,1,0,:ARTIKEL);
+ SQLerror::test("Kette::save(): Artikel schon eingetragen");
+}
+
+void KettplanKette::delete_Artikel(const ArtikelGang& artikel) const
+{
+ exec sql begin declare section;
+   int MASCHINE=Maschine();
+   int GAENGE=artikel.Gaenge();
+   int ARTIKEL=artikel.Id();
+   char DATUM[30];
+ exec sql end declare section;
+ Schaerdatum().write_postgres(DATUM,sizeof DATUM);
+ exec sql delete from schaertabelle where maschine=:MASCHINE and
+   schaerdatum=:DATUM and gaenge=:GAENGE and artikelid=:ARTIKEL;  
+ SQLerror::test("Kette::delete(): Artikel schon weg");
+}
+
+int KettplanKette::get_aktual_Index(const ArtikelGang& artikel) const
+{
+ exec sql begin declare section;
+   int GAENGE=artikel.Gaenge();
+   int ARTIKEL=artikel.Id();
+   int INDEX;
+ exec sql end declare section;
+ exec sql select coalesce(max(ketten_index),0) into :INDEX from ketten_garn
+   where gaenge=:GAENGE and artikel=:ARTIKEL;  
+ SQLerror::test(__FILELINE__);
+ return INDEX;
+}
+
+
+
+void KettplanKette::delete_Garn(const ArtikelGang& artikel, const KettenGarn& garn) const
+{
+ exec sql begin declare section;
+  int ARTIKEL=artikel.Id();
+  int GAENGE=artikel.Gaenge();
+  int FAEDEN=garn.Faeden();
+  int GARN=garn.Id();
+  int ZEILE=garn.Zeile();
+  int KETTEN=garn.Kettenzahl();
+  int KETTENINDEX=garn.Index();
+ exec sql end declare section;
+ exec sql delete from ketten_garn where 
+    artikel=:ARTIKEL and gaenge=:GAENGE and ketten=:KETTEN and
+    zeile=:ZEILE and faeden=:FAEDEN and garn=:GARN and ketten_index=:KETTENINDEX;
+ SQLerror::test("Kette::delete(): Garn schon weg");
+}
+
+void KettplanKette::save_Garn(const ArtikelGang& artikel, const KettenGarn& garn) const
+{
+ exec sql begin declare section;
+  int ARTIKEL=artikel.Id();
+  int GAENGE=artikel.Gaenge();
+  int FAEDEN=garn.Faeden();
+  int GARN=garn.Id();
+  int ZEILE=garn.Zeile();
+  int KETTEN=garn.Kettenzahl();
+  int KETTENINDEX=garn.Index();
+ exec sql end declare section;
+ exec sql insert into ketten_garn
+      (artikel,gaenge,ketten,zeile,faeden,garn,ketten_index) values
+      (:ARTIKEL,:GAENGE,:KETTEN,:ZEILE,:FAEDEN,:GARN,:KETTENINDEX);   
+ SQLerror::test(__FILELINE__);
+}
+
+vector<KettenGarn> KettplanKette::load_Garn(const ArtikelGang& artikel) const
+{
+ exec sql begin declare section;
+  int ARTIKEL=artikel.Id();
+  int GAENGE=artikel.Gaenge();
+  int FAEDEN, GARN,ZEILE,KETTEN,INDEX;
+ exec sql end declare section;
+ Transaction tr;
+ exec sql declare garnein cursor for select  faeden,garn,ketten,zeile,ketten_index
+   from ketten_garn where artikel=:ARTIKEL and gaenge=:GAENGE;
+ exec sql open garnein;
+ vector<KettenGarn> v;
+ while (true)
+  {
+    exec sql fetch garnein into :FAEDEN,:GARN,:KETTEN,:ZEILE,:INDEX;
+    SQLerror::test(__FILELINE__,100);
+    if (sqlca.sqlcode) break;
+    v.push_back(KettenGarn(INDEX,ZEILE,KETTEN,FAEDEN,GARN));
+  }
+ return v;
+}

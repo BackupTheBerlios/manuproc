@@ -24,6 +24,7 @@
 #include <Aux/Transaction.h>
 exec sql include sqlca;
 #include <Auftrag/selFullAufEntry.h>
+#include <Aux/string0.h>
 
 void Auftrag::deleteAuftrag() throw(SQLerror)
 {exec sql begin declare section;
@@ -121,23 +122,22 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
  char BEMERKUNG[21];
  int JAHRGANG;
  int WAEHRUNG;
- int IKUNDENNR, IDATUM, IYOURAUFNR, IBEMERKUNG, IWAEHRUNG;
  exec sql end declare section;
 
- exec sql select kundennr, date(datum), stat, youraufnr, bemerkung,
+ exec sql select coalesce(kundennr,0), date(coalesce(datum,now())), 
+ 		stat, coalesce(youraufnr,''), coalesce(bemerkung,''),
 		jahrgang, coalesce(waehrung,1)
-	into 	:KUNDENNR:IKUNDENNR, :DATUM:IDATUM, 
-		:STATUS, :YOURAUFNR:IYOURAUFNR, :BEMERKUNG:IBEMERKUNG,
-		:JAHRGANG, :WAEHRUNG:IWAEHRUNG
+	into 	:KUNDENNR, :DATUM, :STATUS, :YOURAUFNR, :BEMERKUNG,
+		:JAHRGANG, :WAEHRUNG
 	from auftrag where auftragid = :AUFTRAGID and instanz = :INSTANZ ;
  SQLerror::test(__FILELINE__"Auftrag laden");
 
- kundennr = IKUNDENNR ? 0 : KUNDENNR;
+ kundennr = KUNDENNR;
  datum.from_postgres(DATUM);
  wrkstatus = LOADED;
  status = (AufStatVal)STATUS;
- youraufnr = IYOURAUFNR ? "" : YOURAUFNR;
- bemerkung = IBEMERKUNG ? "" : BEMERKUNG;
+ youraufnr = YOURAUFNR;
+ bemerkung = BEMERKUNG;
  jahrgang = JAHRGANG;
  waehrung = cP_Waehrung(WAEHRUNG);
 }
@@ -242,17 +242,13 @@ void Auftrag::setYourAufNr(const std::string &yanr) throw(SQLerror)
  int AUFTRAGID=Id();
  int INSTANZ=int(Instanz());
  char YOURAUFNR[21];
- int IYOURAUFNR;
  exec sql end declare section;
 
  youraufnr=yanr;
 
- if(youraufnr!="")
-   {strncpy(YOURAUFNR,youraufnr.c_str(),20);YOURAUFNR[20]=0;IYOURAUFNR=0;}
- else  
-   {YOURAUFNR[0]=0;IYOURAUFNR=-1;}
+ strncpy0(YOURAUFNR,youraufnr.c_str(),20);
 
- exec sql update auftrag set youraufnr= :YOURAUFNR:IYOURAUFNR
+ exec sql update auftrag set youraufnr= nullif(:YOURAUFNR,'')
 	where auftragid= :AUFTRAGID and instanz = :INSTANZ;
  SQLerror::test("setYourAufNr: update youraufnr");
 }
@@ -266,7 +262,7 @@ int Auftrag::getIdFromYourAufId(const char *youraufid) throw(SQLerror)
  exec sql end declare section;
  INSTANZ=int(Instanz());
 
- strncpy(YOURAUFNR,youraufid,20); YOURAUFNR[20]=0;
+ strncpy0(YOURAUFNR,youraufid,20);
 
  exec sql select auftragid into :AUFTRAGID from auftrag
 	where youraufnr= :YOURAUFNR and instanz =:INSTANZ;

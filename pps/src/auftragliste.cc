@@ -54,7 +54,7 @@ void auftragliste::fill_tree()
    AufStatVal stat=WAufStat->get_Status();
    SelectedFullAufList *allaufids;
    SQLFullAuftragSelector psel= SQLFullAuftragSelector::sel_Status(instanz->Id(),(AufStatVal)stat);
-   allaufids = new SelectedFullAufList(psel,cH_ExtBezSchema(1,ExtBezSchema::default_Typ));
+   allaufids = new SelectedFullAufList(psel);
 
  vector<cH_RowDataBase> datavec;
 
@@ -81,7 +81,7 @@ void auftragliste::on_leaf_selected(cH_RowDataBase d)
 void auftragliste::on_button_erfassen_clicked()
 {
 // hide();
- if (!selected_Auftrag.AufId()) return; 
+ if (!selected_Auftrag.Id()) return; 
  try
  { manage(new auftrag_bearbeiten(selected_Auftrag));
  } catch (SQLerror &e)

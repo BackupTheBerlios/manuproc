@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.9 2001/10/23 08:45:18 christof Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.10 2001/11/05 08:58:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,6 +24,7 @@
 #include "auftrag_status.h"
 #include <Aux/Changejournal.h>
 #include "selFullAufEntry.h"
+
 
 exec sql include sqlca;
 
@@ -56,7 +57,7 @@ void AufEintragBase::setStatus(AufStatVal st) throw(SQLerror)
     pps_ChJournalEntry::newChange(
 			instanz,
 			AufEintragBase2(instanz,AUFTRAGID,ZEILENNR),
-			ArtikelBase(artikel->Id()),
+			artikel,
 			(double)bestellt,
 			(double)bestellt,
 			pps_ChJournalEntry::CH_MENGE);
@@ -71,7 +72,7 @@ void AufEintragBase::setStatus(AufStatVal st) throw(SQLerror)
     pps_ChJournalEntry::newChange(
 			instanz,
 			AufEintragBase2(instanz,AUFTRAGID,ZEILENNR),
-			ArtikelBase(artikel->Id()),
+			artikel,
 			(double)geliefert,
 			(double)geliefert-bestellt,
 			pps_ChJournalEntry::CH_MENGE);
@@ -107,7 +108,7 @@ void AufEintragBase::updateStk(long stk) throw(SQLerror)
      pps_ChJournalEntry::newChange(
   			instanz,
   			AufEintragBase2(instanz,AUFTRAGID,ZEILENNR),
-  			ArtikelBase(artikel->Id()),
+  			artikel,
   			(double)BESTELLT,
   			(double)(BESTELLT-bestellt),
   			pps_ChJournalEntry::CH_MENGE);
@@ -179,7 +180,7 @@ void AufEintragBase::updateLieferdatum(const Petig::Datum &ld) throw(SQLerror)
      pps_ChJournalEntry::newChange(
   			instanz,
   			AufEintragBase2(instanz,AUFTRAGID,ZEILENNR),
-  			ArtikelBase(artikel->Id()),
+  			artikel,
   			ld,
   			(double)(ld-getLieferdatum()),
   			pps_ChJournalEntry::CH_LIEFDAT);
@@ -197,9 +198,8 @@ void AufEintragBase::split(int newmenge, const Petig::Datum &newld) throw(SQLerr
  exec sql begin declare section;
  int AUFTRAGID=auftragid;
  int INSTANZ=instanz->Id();
- int ROHARTID=artikel->getRohArtid();
  int ZEILENNR_OLD=zeilennr;
- long ARTIKELID=artikel->getArtid();
+ long ARTIKELID=artikel.Id();
  long BESTELLT=newmenge;
  long BESTELLT_OLD=bestellt-newmenge;
  int STATUS=status;
@@ -236,10 +236,10 @@ void AufEintragBase::split(int newmenge, const Petig::Datum &newld) throw(SQLerr
 	where auftragid= :AUFTRAGID and instanz =:INSTANZ;
  SQLerror::test("split: select max(zeielnnr) auftragentry");
 
- exec sql insert into auftragentry (auftragid, rohartikelid, zeilennr, artikelid,
+ exec sql insert into auftragentry (auftragid, zeilennr, artikelid,
 		bestellt, geliefert, lieferdate,
 		status,preis,rabatt,preismenge, waehrung)
-	values ( :AUFTRAGID, nullif(:ROHARTID,0), :ZEILENNR, :ARTIKELID,
+	values ( :AUFTRAGID, :ZEILENNR, :ARTIKELID,
 		:BESTELLT, :GELIEFERT, :LIEFERDATUM,
 		:STATUS, :PREIS, :RABATT/100.0,
 		:PREISMENGE, :WAEHRUNG);
@@ -280,7 +280,7 @@ void AufEintragBase::split(int newmenge, const Petig::Datum &newld) throw(SQLerr
 
 AufEintragBase::AufEintragBase(const AufEintragBase2 &aebb) throw (SQLerror)
   : AufEintragBase2(aebb), 
-    artikel(0,cH_ExtBezSchema(ExtBezSchema::default_ID)),
+    artikel(0),
     prozess(Prozess::default_id)
 {
  try{
@@ -294,68 +294,89 @@ AufEintragBase::AufEintragBase(const AufEintragBase2 &aebb) throw (SQLerror)
 
 void AufEintragBase::abschreiben(int menge) throw(SQLerror)
 {
-/*
-<<<<<<< AufEintragBase_sql.pgcc
- exec sql begin declare section;
- int AUFID=Id();
- int AUFZNR=ZNr();
- int INSTANZ=Instanz();
- int STATUS; 
- int BESTELLT;
- int GELIEFERT;
- exec sql end declare section;
- 
- Transaction tr;
-// AUFID=Id();
-// AUFZNR=aeb.ZNr();
-// INSTANZ=aeb.Instanz();
- exec sql lock table auftragentry in exclusive mode;
- exec sql select bestellt, geliefert, status
-   into :BESTELLT, :GELIEFERT, :STATUS
-   from auftragentry where
-   auftragid = :AUFID and zeilennr = :AUFZNR and instanz=:INSTANZ;
- SQLerror::test(__FILELINE__);
- if(STATUS!=(AufStatVal)OPEN) throw("Auftragszeile ist bereits geschlossen");
- GELIEFERT+=menge;
- if(GELIEFERT>=BESTELLT) STATUS=(AufStatVal)CLOSED;
- exec sql update auftragentry set geliefert= :GELIEFERT, status= :STATUS
-   where auftragid= :AUFID and zeilennr= :AUFZNR and instanz=:INSTANZ;  
- SQLerror::test(__FILELINE__);
- tr.commit();
-
- geliefert=GELIEFERT;
-// rest = bestellt-geliefert; //Stueckgröße wird nicht berücksichtigt
-//cout << bestellt<<'-'<<geliefert<<'='<<rest<<'\n';
-// geplante_menge=menge;
-// status=(AufStatVal)STATUS;
-*/
  geliefert=AufEintragBase2::abschreiben(menge);
- rest = bestellt-geliefert;
+// rest = bestellt-geliefert;
  if(geliefert>=bestellt) status=(AufStatVal)CLOSED;
 }
 
 
-cH_Kunde AufEintragBase::get_Kunde() const throw(SQLerror)
+list<pair<AufEintragBase2,long> > AufEintragBase::get_Referenz_list(const AufEintragBase2& aeb) const throw(SQLerror) 
 {
  exec sql begin declare section;
-  int INSTANZ=getAuftragInstanz();
-  int AUFTRAGID=getAuftragid();
-  int ZEILENNR=getZnr();
-  int OLDINSTANZ,OLDAUFTRAGID,OLDZEILENNR;
-  int KUNDE;
+  int INSTANZ=aeb.Instanz();
+  int AUFTRAGID=aeb.Id();
+  int ZEILENNR=aeb.ZNr();
+  int OLDINSTANZ[30],OLDAUFTRAGID[30],OLDZEILENNR[30];
+  long MENGE[30];
  exec sql end declare section;
- while (true)
+ Transaction tr;
+ exec sql declare ONAUF cursor for select altauftragid,altinstanz,altzeilennr,menge
+   from auftragsentryzuordnung where neuauftragid=:AUFTRAGID and 
+      neuinstanz=:INSTANZ and neuzeilennr=:ZEILENNR;
+ exec sql open ONAUF;
+          
+ list<pair<AufEintragBase2, long> > vaeb;
+ while(true)
   {
-    exec sql select altauftragid,altinstanz,altzeilennr 
-      into :OLDAUFTRAGID,:OLDINSTANZ,:OLDZEILENNR
-      from auftragsentryzuordnung where
-      neuauftragid=:AUFTRAGID and neuinstanz=:INSTANZ and neuzeilennr=:ZEILENNR;
+    exec sql fetch 20 in ONAUF into :OLDAUFTRAGID,:OLDINSTANZ,:OLDZEILENNR,:MENGE;
     SQLerror::test(__FILELINE__,100);
     if (sqlca.sqlcode) break;
-    INSTANZ=OLDINSTANZ; AUFTRAGID=OLDAUFTRAGID; ZEILENNR=OLDZEILENNR;
+    int j=sqlca.sqlerrd[2];
+    for (int i=0;i<j;++i)
+     {
+      vaeb.push_back(pair<AufEintragBase2,long> 
+            ( AufEintragBase2(cH_ppsInstanz((ppsInstanz::ppsInstId)OLDINSTANZ[i]),
+                               OLDAUFTRAGID[i],OLDZEILENNR[i]),MENGE[i]));
+     }
+    if(j<30) break;
   }
- exec sql select kundennr into :KUNDE from auftrag where
-   auftragid=:AUFTRAGID and instanz=:INSTANZ; 
- SQLerror::test(__FILELINE__);
- return cH_Kunde(KUNDE);
+ return vaeb;
+}
+
+list<pair<AufEintragBase2,long> > AufEintragBase::get_Referenz_AufEintragBase2(bool ursprung) const throw(SQLerror)
+{
+ AufEintragBase2 aeb=*this;
+ list<pair<AufEintragBase2,long> > tv=get_Referenz_list(aeb);
+ if(!ursprung) return tv;
+ list<pair<AufEintragBase2,long> > vaeb;
+ list<pair<AufEintragBase2,long> > tvxx;
+reloop:
+ tv.merge(tvxx);
+ for (list<pair<AufEintragBase2,long> >::iterator i=tv.begin();i!=tv.end();++i)
+   {
+     tvxx=get_Referenz_list(i->first);
+     if (tvxx.size()==0) vaeb.splice(vaeb.end(),tv,i) ;
+     else tv.erase(i) ;
+     goto reloop;
+   }
+ return vaeb;
+}
+
+list<cH_Kunde> AufEintragBase::get_Referenz_Kunden_long() const throw(SQLerror)
+{
+ list<cH_Kunde> LK;
+ list<pair<AufEintragBase2,long> > vaeb = get_Referenz_AufEintragBase2();
+ exec sql begin declare section;
+  int KUNDE;
+  int INSTANZ;
+  int AUFTRAGID;
+ exec sql end declare section;
+ for (list<pair<AufEintragBase2,long> >::const_iterator i=vaeb.begin();i!=vaeb.end();++i)
+  {
+    INSTANZ=i->first.Instanz();
+    AUFTRAGID=i->first.Id();
+    exec sql select kundennr into :KUNDE from auftrag where
+      auftragid=:AUFTRAGID and instanz=:INSTANZ; 
+    SQLerror::test(__FILELINE__);
+    LK.push_back(cH_Kunde(KUNDE));
+  }
+ return LK;
+}
+
+list<cH_Kunde> AufEintragBase::get_Referenz_Kunden() const throw(SQLerror)
+{
+ list<cH_Kunde> LK = get_Referenz_Kunden_long();
+ LK.sort();
+ LK.unique(); // Entfernt Duplikate
+ return LK;
 }

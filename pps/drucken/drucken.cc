@@ -22,9 +22,9 @@
 #include "drucken_class.hh"
 #include <Aux/ppsInstanz.h>
 
-LR_drucken::LR_drucken(string RL_, unsigned int auftragsnr_, string view_plot,
-   bool b_firmenpapier,bool b_kopie, cH_ppsInstanz _instanz)
-: auftragsnr(auftragsnr_),RL(RL_),instanz(_instanz)
+LR_drucken::LR_drucken(const LR_Base::typ RL_, unsigned int auftragsnr_, string view_plot,
+   bool b_firmenpapier,bool b_kopie, cH_ppsInstanz _instanz, bool _toTeX=false)
+: auftragsnr(auftragsnr_),RL(RL_),instanz(_instanz),toTeX(_toTeX)
 {
  LR_drucken::drucken(view_plot,b_firmenpapier,b_kopie);
 }
@@ -36,24 +36,25 @@ void LR_drucken::drucken(string view_plot,bool b_firmenpapier,bool b_kopie)
    string texplotter= " -Phl1260 ";
    if (b_firmenpapier) texplotter = " -Phl1260lt ";
    FILE *f;
-   if (view_plot=="Preview") f=popen("tex2prn -2 -G ","w");
-   if (view_plot=="Plot") f=popen(("tex2prn -q -2 "+texplotter).c_str(),"w");
+   if(toTeX) f=popen("cat > ./rdr$$.tex","w");
+   else if (view_plot=="Preview") f=popen("tex2prn -2 -G ","w");
+   else if (view_plot=="Plot") f=popen(("tex2prn -q -2 "+texplotter).c_str(),"w");
 
    ofstream os(fileno(f));
 
-   if      (RL=="Rechnung")      
+   if      (RL==LR_Base::Rechnung)      
     { RechnungVoll r(auftragsnr);
       LR_Abstraktion(&r).drucken_table(os,kopie,instanz);
     }
-   else if (RL=="Lieferschein")  
+   else if (RL==LR_Base::Lieferschein)  
     { cH_LieferscheinVoll l(auftragsnr);
       LR_Abstraktion(&*l).drucken_table(os,kopie,instanz);
     }
-   else if (RL=="Auftrag")  
+   else if (RL==LR_Base::Auftrag)  
     { AuftragFull a=AuftragBase(cH_ppsInstanz(instanz),(int)auftragsnr);
       LR_Abstraktion(&a).drucken_table(os,kopie,instanz);
     }
-   else if (RL=="Intern")  
+   else if (RL==LR_Base::Intern)  
     { AuftragFull a=AuftragBase(cH_ppsInstanz(instanz),(int)auftragsnr);
       LR_Abstraktion(&a).drucken_table(os,kopie,instanz);
     }

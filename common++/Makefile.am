@@ -83,6 +83,6 @@ libcommon___a_LIBADD= \
 		Lieferschein/RechnungEntry_sql.o \
       Lieferschein/RechnungVoll_sql.o \
       ProdInstanz/ProdInstanz_sql.o \
-      ProdInstanz/maschinen_geschwindigkeit_sql.o
+      ProdInstanz/maschinen_geschwindigkeit_sql.o \
 		ostream/time_t_ostr.o
 

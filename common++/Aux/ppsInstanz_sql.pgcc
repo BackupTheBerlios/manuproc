@@ -26,3 +26,18 @@ void ppsInstanz::get_name()
  if(sqlca.sqlcode) *db_name=0;
  name=db_name;
 }
+
+cH_Prozess ppsInstanz::get_Prozess() const
+{
+  #warning das sollte iegentlich in die Datenbank, oder MAT
+  int pid;
+  if (instid==INST_FAERB)      pid=Prozess::Faerben;
+  else if (instid==INST_DRUCK) pid=Prozess::Drucken;
+  else if (instid==INST_DRUCK) pid=Prozess::Drucken;
+  else if (instid==INST_WEB)   pid=Prozess::Weben;
+  else if (instid==INST_SCHAER)pid=Prozess::Schaeren;
+  else if (instid==INST_SPRITZ)pid=Prozess::Giessen;
+
+  else pid = 31;
+  return cH_Prozess(pid);
+}

@@ -21,42 +21,35 @@
 #include <Aux/Transaction.h>
 #include<Aux/Changejournal.h>
 #include <Auftrag/auftrag_status.h>
+#include "AufEintragBase.h"
 
 exec sql include sqlca;
 
-int AuftragBase::insertNewEntry(unsigned long int bestellt, 
-  Petig::Datum lieferdatum, ArtikelBase::ID artid) throw(SQLerror)
+
+
+int AuftragBase::insertNewEntry(const unsigned long int bestellt, 
+  const Petig::Datum lieferdatum,const ArtikelBase::ID artid,
+  const Preis& preis,const fixedpoint<2> rabatt) const throw(SQLerror)
 {
  exec sql begin declare section;
- int AUFTRAGID;
- long ARTIKELID;
- int INSTANZ;
+ int AUFTRAGID =Id();
+ long ARTIKELID=artid;
+ int INSTANZ =Instanz();
  int ZEILENNR;
- int BESTELLT;
+ int BESTELLT=bestellt;
  char LIEFERDATUM[21];
- double PREIS=0;
- int RABATT=0;
- float PREISMENGE=0;
- int STATUS;
+ double PREIS=preis.Wert();
+ int RABATT=rabatt;
+ float PREISMENGE=preis.PreisMenge();
+ int STATUS=OPEN;
  exec sql end declare section;
  
- AUFTRAGID = Id();
- INSTANZ = Instanz();
-
- STATUS=(AufStatVal)OPEN;
-
- BESTELLT = bestellt;
+// STATUS=(AufStatVal)OPEN;
  lieferdatum.write_postgres(LIEFERDATUM,sizeof LIEFERDATUM);
-// PREIS = aufentry.getPreis().Wert();
-// RABATT = aufentry.Rabatt();
-// PREISMENGE = aufentry.Preismenge();
 
  Transaction tr;
  exec sql lock table auftragentry in exclusive mode;
  SQLerror::test("AufEintrag: lock auftragentry");	
-
- ARTIKELID=artid;
-// artikel=cH_AufArtikel(ARTIKELID,schema);
 
  exec sql select coalesce(max(zeilennr)+1,1) into :ZEILENNR from auftragentry
 	where auftragid= :AUFTRAGID and instanz =:INSTANZ;
@@ -69,13 +62,7 @@ int AuftragBase::insertNewEntry(unsigned long int bestellt,
 		:ARTIKELID, :STATUS, :PREIS/100.0, :RABATT/100.0,
 		:PREISMENGE);
  SQLerror::test(__FILELINE__" insert into auftragentry");	
-
 	
- auftragid = AUFTRAGID;
- instanz = (ppsInstanz::ID)INSTANZ;
- bestellt = BESTELLT;
- lieferdatum = Petig::Datum(LIEFERDATUM);
-
  if(Instanz()==ppsInstanz::INST_KNDAUF)
   { try{
      pps_ChJournalEntry::newChange(

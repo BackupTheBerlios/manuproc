@@ -26,7 +26,7 @@
 #include "auftrag_main.hh"
 #include "auftrag_bearbeiten.hh"
 #include"auftragbase.h"
-#include<Auftrag/selFullAufEntry.h>
+//#include<Auftrag/selFullAufEntry.h>
 #include<Auftrag/AufEintragBase2.h>
 #include<Auftrag/auftrag_status.h>
 #include"auftrag_lieferschein.hh"
@@ -46,7 +46,7 @@
 
 extern MyMessage *meldung;
 
-SelectedFullAufList *allaufids;
+//SelectedFullAufList *allaufids;
 extern auftrag_main *auftragmain;
 
 
@@ -99,6 +99,7 @@ static string shorten_some(int col,const string &title,gpointer user_data)
 	!strncmp(title.c_str(),"Breite",6) ||
 	!strncmp(title.c_str(),"Farbe",5) ||
 	!strncmp(title.c_str(),"Aufmachung",10) ||
+	!strncmp(title.c_str(),"Lieferwoche",11) ||
 	!strncmp(title.c_str(),"offen ",6))
       return "\\tiny "+Gtk2TeX::string2TeX(title);
    else
@@ -143,16 +144,12 @@ void auftrag_main::on_main_bezeichnung_activate()
  for(vector<AufEintragBase>::iterator j = allaufids->aufidliste.begin();
         j!=allaufids->aufidliste.end(); ++j)
      {
-//      AufEintrag &af = aufentrymap[(*j).mapKey()];
-//      if(interne_namen) cs = cH_ExtBezSchema(af.getKdNr(),ExtBezSchema::default_Typ);
-//      af.setArtikelBezeichnung(cs);
-
       if (selected_AufEintrag)
        {
          if(interne_namen) cs = cH_ExtBezSchema((*selected_AufEintrag).getKdNr(),ExtBezSchema::default_Typ);
-         (*selected_AufEintrag).setArtikelBezeichnung(cs);
+//??MAT         (*selected_AufEintrag).setArtikelBezeichnung(cs);
        }
-     else         
+      else         
        if(interne_namen) cs = cH_ExtBezSchema(1,ExtBezSchema::default_Typ);
      }
  fill_simple_tree();
@@ -224,10 +221,7 @@ void auftrag_main::fill_simple_tree()
 //cout << "I="<<instanz->get_Name()<<"\t";
  if(!allaufids) 
    { SQLFullAuftragSelector psel= SQLFullAuftragSelector::sel_Status(instanz->Id(),(AufStatVal)OPEN);
-     if(interne_namen)
-       allaufids = new SelectedFullAufList(psel,
-			cH_ExtBezSchema(1,ExtBezSchema::default_Typ));
-     else allaufids = new SelectedFullAufList(psel);
+     allaufids = new SelectedFullAufList(psel);
    }
 //cout << allaufids->size()<<"\n";
 
@@ -248,6 +242,7 @@ void auftrag_main::on_node_selected(const TCListNode &node)
 
 void auftrag_main::on_leaf_selected(cH_RowDataBase d)
 {
+ try{
  const Data_auftrag *dt=dynamic_cast<const Data_auftrag*>(&*d);
  selected_AufEintrag = &dt->get_AufEintragBase();
 
@@ -258,9 +253,10 @@ void auftrag_main::on_leaf_selected(cH_RowDataBase d)
  if(instanz->Id() != 1) instanz_leaf_auftrag(*selected_AufEintrag);
 
  // Zum Anzeigen der benötigten Menge
-     vector<pair<ArtikelBase,long long int> > vec_artbase;
-     vec_artbase.push_back(pair<ArtikelBase,long long int>(ArtikelBase(selected_Artikel),dt->offene_Stueck()));
-     instanz_menge(vec_artbase);
+ vector<pair<ArtikelBase,long long int> > vec_artbase;
+ vec_artbase.push_back(pair<ArtikelBase,long long int>(ArtikelBase(selected_Artikel),dt->offene_Stueck()));
+ instanz_menge(vec_artbase);
+ }catch(std::exception &e) {cerr<<e.what();}
 }
 
 void auftrag_main::on_togglebutton_material_toggled()
@@ -491,25 +487,26 @@ void auftrag_main::neue_auftraege_beruecksichtigen(cH_ppsInstanz instanz)
   vector<AufEintragBase2> new_aufids =  get_new_aufids(instanz);
   Global_Settings GS(0,"pps",instanz->get_Name());
   GS.update_Date();
-  Auftrag A(AuftragBase(instanz->Id(), 0));
-
+ try{ 
+  Auftrag A(AuftragBase(instanz->Id(), 0)); 
 //cout << "Neue Aufträge "<<new_aufids.size()<<'\n';
   unsigned int count=0;
   for (vector<AufEintragBase2>::const_iterator i=new_aufids.begin();i!=new_aufids.end();++i)
    {
      AufEintragBase AEB(*i);
-     ArtikelBaumFull ABF(AEB.ArtikelID());
+     ArtikelBaumFull ABF(AEB.ArtId());
      map<ArtikelBase,fixedpoint<5> > artmap = ABF.get_Artikel_Map();
      for (map<ArtikelBase,fixedpoint<5> >::const_iterator m=artmap.begin();m!=artmap.end();++m)
       {
         if(ArtikelStamm(m->first.Id()).BestellenBei() == instanz)
          {
             int znr = A.insertNewEntry(double(m->second) * AEB.getStueck(),AEB.getLieferdatum(),m->first.Id());
-            AuftragsEntryZuordnung(AEB,A,znr);
+            AuftragsEntryZuordnung(AEB,AEB.getStueck(),A,znr);
             ++count;
          }
       }
    }
   info_label_instanzen->set_text("Es sind "+itos(count)+" neue Zeilen hinzugekommen.     ");
   info_label_instanzen->show();
+ }catch(...){}
 }

@@ -1,4 +1,4 @@
-// $Id: Handles.h,v 1.5 2001/10/16 06:54:53 christof Exp $
+// $Id: Handles.h,v 1.6 2001/11/05 08:58:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -102,6 +102,18 @@ public:
 	}
 	bool operator!=(const _this_t &s) const
 	{  return (*_data)!=(*s);
+	}
+	bool operator<(const _this_t &s) const
+	{  return (*_data)<(*s);
+	}
+	bool operator>(const _this_t &s) const
+	{  return (*_data)>(*s);
+	}
+	bool operator<=(const _this_t &s) const
+	{  return (*_data)<=(*s);
+	}
+	bool operator>=(const _this_t &s) const
+	{  return (*_data)>=(*s);
 	}
 	bool operator!() const
 	{  return _data==0;

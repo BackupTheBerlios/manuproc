@@ -14,7 +14,7 @@ int main(int argc, char **argv)
 {   
    
    Gtk::Main m(&argc, &argv);
-manage(new class simplest());
+//manage(new class simplest());
 manage(new class with_class());
    m.run();
    return 0;

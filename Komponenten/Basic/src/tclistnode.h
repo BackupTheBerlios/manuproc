@@ -16,29 +16,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistnode.h,v 1.9 2001/10/02 15:28:01 christof Exp $
+// $Id: tclistnode.h,v 1.10 2001/11/05 08:57:31 christof Exp $
 
 #ifndef KOMPONENTEN_TCLISTNODE
 #define KOMPONENTEN_TCLISTNODE
 
-#include"treebase.h"
 #include"tclistrowdata.h"
-#include"rowdata.h"
 
-class TCListNode : public TCListRowData
-{public:
- TCListNode(guint deep, const cH_EntryValue &v, bool expand)
- 	: TCListRowData(v,deep,false,expand)
- {}
-
- // ehemals getSumCol (Vorsicht der Index hat sich geaendert!!!)
- virtual const cH_EntryValue Value (guint col,gpointer gp) const;
- virtual void cumulate(const cH_RowDataBase &rd) {} 
- virtual void orderit(const cH_RowDataBase &rd) {}
-
- // ruft Value auf
- void refreshSum(const TreeBase &tb);
- 
- virtual const std::vector<std::string> getColEntries(const TreeBase &tb) const;
-};
 #endif

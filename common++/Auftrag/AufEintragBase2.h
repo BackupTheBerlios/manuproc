@@ -1,4 +1,4 @@
-// $Id: AufEintragBase2.h,v 1.18 2001/10/19 11:15:32 christof Exp $
+// $Id: AufEintragBase2.h,v 1.21 2001/10/31 14:50:31 cvs_malte Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -49,10 +49,9 @@ public:
  
  int ZNr() const { return zeilennr; }
  bool valid() const { return AuftragBase::valid(); }
- 
-// deprecatetd
- int AufId() const { return Id(); }
- ppsInstanz::ID InstId() const { return AuftragBase::Instanz(); }
+
+ bool operator<(const AufEintragBase2& b) const 
+        {return Id()<b.Id();}
 };
 
 #endif

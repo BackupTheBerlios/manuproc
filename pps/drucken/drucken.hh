@@ -16,23 +16,24 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <Aux/dbconnect.h>
-#include <Aux/itos.h>
+
 #include <Aux/ppsInstanz.h>
 #include <string>
-#include <fstream>
-#include <Kunde/Kunde.h>
-#include <Artikel/ArtikelBezeichnung.h>
+#include "lr_base.h"
+
 
 class LR_drucken 
 {
       unsigned int auftragsnr;
-      const string RL;
+      const LR_Base::typ RL;
       string kopie;
       cH_ppsInstanz instanz;
+	bool toTeX;
    private:
       void drucken(string view_plot,bool b_firmenpapier,bool b_kopie);
    public:
-      LR_drucken(string RL, unsigned int auftragsnr,string view_plot, 
-           bool b_firmenpapier,bool b_kopie,cH_ppsInstanz _instanz);
+      LR_drucken(const LR_Base::typ RL, unsigned int auftragsnr,string view_plot, 
+           	bool b_firmenpapier,bool b_kopie,cH_ppsInstanz _instanz,
+		bool toTeX);
 };
+

@@ -32,9 +32,11 @@
 #include <Auftrag/AufEintragBase.h>
 #include <Faeden/Schussfaeden.hh>
 #include <Auftrag/AuftragFull.h>
+#include<Auftrag/selFullAufEntry.h>
 
 class auftrag_main : public auftrag_main_glade
 {   
+ SelectedFullAufList *allaufids;
  cH_ppsInstanz instanz;
  bool interne_namen, zeit_kw_bool, kunden_nr_bool,kunden_anr_bool;
 // AufEintragBase2 selected_Auftrag;
@@ -109,7 +111,7 @@ private:
    void tree_neuer_auftrag_leaf_selected(cH_RowDataBase d);
    void loadAuftrag(const AuftragBase& auftragbase);
    int get_next_entry_znr(AuftragBase& auftrag);
-   void AuftragsEntryZuordnung(const AufEintragBase& AEB,const AuftragBase& AB,int znr);
+   void AuftragsEntryZuordnung(const AufEintragBase& AEB,long menge,const AuftragBase& AB,int znr);
 };
 
 class Data_auftrag : public RowDataBase
@@ -138,10 +140,18 @@ public:
             return cH_EntryValueIntString(K->firma()); 
           }
         }
-       else return cH_EntryValueIntString(AB.get_Kunde()->firma());
+       else { std::string k;
+         list<cH_Kunde> LK=AB.get_Referenz_Kunden();
+         for (list<cH_Kunde>::const_iterator i=LK.begin();i!=LK.end();)
+           { k+=(*i)->firma();
+             if (++i != LK.end()) k+=", ";
+           }
+//         return cH_EntryValueIntString(AB.get_Kunde()->firma());
+         return cH_EntryValueIntString(k);
+         }
        }
       case A1 ... A4 : {
-         int artikelid          = AB.ArtikelID();
+         int artikelid          = AB.ArtId();
          cH_ExtBezSchema schema = 1;
          ArtikelBase artbase=ArtikelBase(artikelid);
          cH_ArtikelBezeichnung artbez(artbase.Id(),schema);
@@ -173,8 +183,9 @@ public:
 	 return cH_EntryValueIntString(verarbeitung);
 	 }
       case METER : {
-         int offene_meter    = AB.getRest();     
-         return cH_EntryValueIntString(Formatiere(offene_meter));   }
+//         int offene_meter    = AB.getRest();     
+//         return cH_EntryValueIntString(Formatiere(offene_meter));   }
+      }
       case STUECK : {
          int offene_stueck   = AB.getRestStk();
          return cH_EntryValueIntString(Formatiere(offene_stueck)); }
@@ -183,12 +194,12 @@ public:
  }
 
    int offene_Stueck()const {return AB.getRestStk();}
-   int offene_Meter() const {return AB.getRest();}
+//   int offene_Meter() const {return AB.getRest();}
 //   void delete_StueckMeter()  {deleted=true;
 //      AB }
    int get_aid() const {return AB.getAuftragid();} 
    int get_zeilennr() const {return AB.getZnr();} 
-   int get_Artikel_ID() const {return AB.ArtikelID();}
+   int get_Artikel_ID() const {return AB.ArtId();}
    Petig::Datum get_Lieferdatum() const {return AB.getLieferdatum();}
    std::string ProzessText() const {return AB.getProzess()->getTyp()+" "+AB.getProzess()->getText() ;}
    AufEintragBase& get_AufEintragBase() const {return const_cast<AufEintragBase&>(AB);}
@@ -205,15 +216,16 @@ public:
 
 class Data_Node : public TCListNode
 {
- int sum_meter, sum_stueck;
+ int /*sum_meter,*/ sum_stueck;
+// na, wäre da eine map nicht sinnvoller ?
  vector<pair<ArtikelBase,long long int> > vec_artbase;
 
 public:
  virtual void cumulate(const cH_RowDataBase &rd)
    {
-    guint meter = (dynamic_cast<const Data_auftrag &>(*rd)).offene_Meter();
+//    guint meter = (dynamic_cast<const Data_auftrag &>(*rd)).offene_Meter();
     guint stueck= (dynamic_cast<const Data_auftrag &>(*rd)).offene_Stueck();
-    sum_meter += meter;
+//    sum_meter += meter;
     sum_stueck+= stueck;
     ArtikelBase AB((dynamic_cast<const Data_auftrag &>(*rd)).get_Artikel_ID());
     vec_artbase.push_back(pair<ArtikelBase,long long int>(AB,stueck));
@@ -221,21 +233,21 @@ public:
   const cH_EntryValue Value(guint index,gpointer gp) const
    {
     switch(index) 
-      { case 8 : return cH_EntryValueIntString(Formatiere(sum_meter));
+      { //case 8 : return cH_EntryValueIntString(Formatiere(sum_meter));
         case 9 : return cH_EntryValueIntString(Formatiere(sum_stueck));
         default : return cH_EntryValueIntString("-");
       }
    }
- Data_Node::Data_Node(guint deep,const cH_EntryValue &v, bool expand)
-   :TCListNode(deep,v,expand), sum_meter(0),sum_stueck(0) {}
+ Data_Node::Data_Node(guint deep,const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data,bool expand)
+   :TCListNode(deep,v,child_s_deep,child_s_data,expand), /*sum_meter(0),*/sum_stueck(0) {}
 
  int Sum_Stueck() const { return sum_stueck; }
- int Sum_Meter() const { return sum_meter; }
+// int Sum_Meter() const { return sum_meter; }
 
  vector<pair<ArtikelBase,long long int> > get_vec_ArtikelBase_Stueck() const {return vec_artbase;}
 
- static TCListNode *create(guint col, const cH_EntryValue &v, bool expand)
-  {  return new Data_Node(col,v,expand);
+ static TCListNode *create(guint col, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data,bool expand)
+  {  return new Data_Node(col,v,child_s_deep,child_s_data,expand);
    }
 };
 

@@ -1,4 +1,4 @@
-/* $Id: EntryValue.h,v 1.4 2001/07/16 09:54:26 christof Exp $ */
+/* $Id: EntryValue.h,v 1.5 2001/11/05 08:58:29 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,65 +17,4 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef ENTRYVALUE_H
-#define ENTRYVALUE_H
-
 #error please use EntryValueBase.h !!!
-
-#include<stdio.h>
-#include"Datum.h"
-#include"Artikel/Prozess.h"
-
-#define SUBID_SPAWN     1
-#define SUBID_WORK      2
-#define SUBID_DONE      3
-
-
-class EntryValue
-{
- std::string strval;
- int intval;
- bool infinity;
-// this does not belong here !!! put into a child class!!!
- bool prozess;
- Petig::Datum datum;
-
- struct {
-  int p_id;
-  std::string p_label;
-  std::string p_text;
-  Petig::Datum p_datum;
-  int p_subid;
-  } pval;
-// end child class
- 
-public:
-
- EntryValue()
-   {intval=-1;infinity=true;strval="-";prozess=false;}
- EntryValue(int v);
- EntryValue(const std::string &s);
- EntryValue(const char x[])
- { *this=EntryValue(std::string(x)); }
- EntryValue(const cH_Prozess &p, int subid, const Petig::Datum &d);
- EntryValue(const Petig::Datum &d);
-   
- operator const std::string() const { return strval;}
- operator int() const { return infinity ? -1 : intval;}
- operator bool() const;
-
-// das Alles sollte glaube ich weg 
- int getIntVal() const { return infinity ? -1:intval;}
- const std::string getStrVal() const { return strval;}
- const std::string getStrProzVal() const { return strval; }
-// bis hier
- int getSubIdVal() const { return prozess ? pval.p_subid:-1;}
- int getProzIdVal() const { return prozess ? pval.p_id:-1;} 
- const Petig::Datum Datum() const { return datum; }
-  
- bool operator==(const EntryValue &v) const;
- bool operator<(const EntryValue &v) const;
-};
-
-#endif // ENTRYVALH
-

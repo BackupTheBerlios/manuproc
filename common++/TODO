@@ -6,4 +6,8 @@
   überdenken, vor allem in Zusammenhang mit automake
   Ich denke, das hat sich erledigt. CP 2000-8-30
   
-- EntryValue zerschlagen!!!
++ EntryValue zerschlagen!!!
+
+- EntryValue: PreSortedString (ein String zum Anzeigen und eine Zeilennummer
+		zum Sortieren)
+	Praktisch für Tree/List überschneidungen (Dispo)

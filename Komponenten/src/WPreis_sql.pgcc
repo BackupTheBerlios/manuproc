@@ -53,7 +53,7 @@ void WPreis::waehrung()
    }
   else
    {
-     LA=manage(new Gtk::Label("DM"));
+     LA=manage(new Gtk::Label("XXX"));
      LA->set_alignment(0, 0.5);
      LA->show();
      attach(*LA,2,3,0,1);
@@ -81,6 +81,15 @@ void WPreis::einheit()
 
 void WPreis::set_Waehrung(const cP_Waehrung &w) 
 { 
+  chwaehrung=w;
   if (wwaehrung_bool)  WW->set_History(w->get_enum());
   else LA->set_text(w->Kurzbezeichnung());
+}
+
+Preis WPreis::get_Preis() const
+{
+  if(wwaehrung_bool) 
+   return Preis(get_Betrag(),cP_Waehrung(get_Waehrung_enum()),get_Preismenge());
+  else 
+   return Preis(get_Betrag(),chwaehrung,get_Preismenge());
 }

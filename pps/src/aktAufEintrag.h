@@ -38,10 +38,11 @@
 #include <Aux/Preis.h>
 #include <Aux/Datum.h>
 
-class AufEintrag;
+//class AufEintrag;
 
 class aktAufEintrag
 {
+/*
  int stueck;
  bool stk_ok;
  Petig::Datum lieferdatum;
@@ -81,6 +82,7 @@ public:
  void setArtikel(const ArtikelBase &a) { artikel=a; }	  
  void setPreis(const Preis &p) { preis = p; }
  void setRabatt(int r) { rabatt = r; }
+*/
 };
 
 #endif

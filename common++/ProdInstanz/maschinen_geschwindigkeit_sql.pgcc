@@ -21,7 +21,7 @@ Maschinen_Geschwindigkeit::Maschinen_Geschwindigkeit(ArtikelBase artikel, const 
    if (sqlca.sqlcode) 
      {
       bekannt = 2;
-      exec sql select min(case when gebrauchte_zeit!=interval('0sec') then
+      exec sql select min(case when gebrauchte_zeit!='0sec'::interval then
       produzierte_menge/date_part('epoch',gebrauchte_zeit)*3600*24
       else null end) into :db_speed
       from maschinen_geschwindigkeit where art_id=:db_art_id ;
@@ -31,7 +31,7 @@ Maschinen_Geschwindigkeit::Maschinen_Geschwindigkeit(ArtikelBase artikel, const 
    if (sqlca.sqlcode) 
      {
       bekannt = 3;
-      exec sql select min(case when gebrauchte_zeit!=interval('0sec') then
+      exec sql select min(case when gebrauchte_zeit!='0sec'::interval then
       produzierte_menge/date_part('epoch',gebrauchte_zeit)*3600*24
       else null end) into :db_speed
       from maschinen_geschwindigkeit where masch_typ = :db_masch_typ ;
@@ -41,7 +41,7 @@ Maschinen_Geschwindigkeit::Maschinen_Geschwindigkeit(ArtikelBase artikel, const 
    if (sqlca.sqlcode) 
      {
       bekannt = 4;
-      exec sql select min(case when gebrauchte_zeit!=interval('0sec') then
+      exec sql select min(case when gebrauchte_zeit!='0sec'::interval then
       produzierte_menge/date_part('epoch',gebrauchte_zeit)*3600*24
       else null end) into :db_speed
       from maschinen_geschwindigkeit ;

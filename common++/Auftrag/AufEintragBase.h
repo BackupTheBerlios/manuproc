@@ -1,4 +1,4 @@
-/* $Id: AufEintragBase.h,v 1.12 2001/10/23 08:45:18 christof Exp $ */
+/* $Id: AufEintragBase.h,v 1.13 2001/11/05 08:58:29 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -36,88 +36,15 @@
 #include <map>
 #include <string>
 #include <vector>
-
-class cH_AufArtikel;
-
-// Diese Klasse kann weg -> ArtikelBase !!! CP 10'01
-
-class AufArtikel : public ArtikelBaum, protected HandleContent
-{friend class cH_AufArtikel;
- friend class Handle<const AufArtikel>;
-
- ArtikelBase rohartikel; // = webartikel = rohrohroh...artikel
- cH_ArtikelBezeichnung bez;
-
- // Muﬂ das privat?
- AufArtikel(const std::vector<cH_EntryValue> &_values, const cH_ExtBezSchema &schema)
- 	: bez(1,_values,schema)
- 	{
- 	 ArtikelBaum::setID(bez->Id());
- 	}
- 
-public:
-
- void setArtikelBezeichnung(const cH_ExtBezSchema &cs) 
- 	{ bez= cH_ArtikelBezeichnung(Id(),cs->Id()); }
- static const ID default_id=0;
-
- AufArtikel(const ID &stamp,const cH_ExtBezSchema &schema)
- 	: ArtikelBaum(stamp),ArtikelBase(stamp),bez(stamp,schema->Id())
- 	{}
- AufArtikel(const cH_ExtBezSchema &schema) 
- 	: bez(ID(),schema->Id()) {}
- AufArtikel() : bez(cH_ArtikelBezeichnung::Default())
- 	{}
-
- AufArtikel(const ArtikelBase &artb, const cH_ExtBezSchema &schema)
- 	: ArtikelBaum(artb.Id()), ArtikelBase(artb),  bez(artb,schema->Id())
- 	{ }
- AufArtikel(const ArtikelBase &artb)
- 	: ArtikelBaum(artb.Id()), ArtikelBase(artb),  bez(artb)
- 	{ }
-
- double Stueckgroesse() const;
- const ID getRohArtid() const 
- { return rohartikel.Id(); }
- void setRohArtid(const ID i) // besser const ArtikelBase & !
- { rohartikel=ArtikelBase(i); }
- 
- // ArtikelBezeichnung
- typedef ArtikelBezeichnung::const_sigiterator const_iterator;
-  const_iterator begin() const { return bez->begin(); }
-  const_iterator end() const { return bez->end(); }
-  int size() const { return bez->size(); }
-  const cH_EntryValue operator[](int feld) const
-  {  return (*bez)[feld]; }
-  std::string Bezeichnung(int sign=1,char seperator=0,int felder=-1) const throw()
-  {  return bez->Bezeichnung(sign,seperator,felder); }
-  const cH_ExtBezSchema getExtBezSchema() const throw()
-  {  return bez->getExtBezSchema(); }
-};
-
-
-
-class cH_AufArtikel : public Handle<const AufArtikel>
-{
-private:
- typedef CacheStatic<AufArtikel::ID,cH_AufArtikel> cache_t;
- static cache_t cache;
- cH_AufArtikel(const AufArtikel *p) : Handle<const AufArtikel>(p) {}
- friend cache_t::stl_type;
- cH_AufArtikel() {}
-
-public:
- static const AufArtikel::ID default_pid=AufArtikel::default_id;
- cH_AufArtikel(AufArtikel::ID pid, const cH_ExtBezSchema &schema);
- cH_AufArtikel(AufArtikel::ID pid);
-};
-
+#include <list>
 
 
 class AufEintragBase : public AufEintragBase2
 {
+// int Id() const; //Use ArtId()
+
 protected: 
- cH_AufArtikel artikel;
+ ArtikelBase artikel;
 
  int dispoentrynr;
  int disponr;
@@ -129,12 +56,12 @@ protected:
  std::string youraufnr;
  long bestellt;    /* St¸ck */
  long geliefert;   /* St¸ck */
- double rest;        /* Meter */
- double menge;        /* Meter */
+// double rest;        /* Meter */
+// double menge;        /* Meter */
 // long geplante_menge;
  Petig::Datum lieferdatum;
  Petig::Datum lasteditdate;
- int jahrgang;
+ int jahrgang; // soll bald weg
  cH_Prozess prozess;
  Petig::Datum prozdate;
 
@@ -147,7 +74,7 @@ public:
    	disponr(0), status((AufStatVal)OPEN), entrystatus((AufStatVal)OPEN),
    	kdnr(0), 
    	bestellt(0),
-   	geliefert(0), rest(0), menge(0), jahrgang(0), prozess(Prozess::default_id),
+   	geliefert(0), jahrgang(0), prozess(Prozess::default_id),
 	rabatt(0)
  {}
 
@@ -157,30 +84,30 @@ public:
 	int _dispoentrynr, int _disponr, int _jahrgang,
 	AufStatVal _aufstatus,
 	int _kdnr, const std::string _youraufnr,
-	const std::string _prozdate,
+	const Petig::Datum& _prozdate,
 	int _prozess,
 	const Preis &_preis, int _rabatt,
-	AufStatVal _entrystat, const Petig::Datum _lasteditdate,
-	const cH_ExtBezSchema schema) throw();
+	AufStatVal _entrystat, const Petig::Datum _lasteditdate) throw();
  AufEintragBase(const AufEintragBase2 &aebb) throw (SQLerror);
 	
  void updateDispoENr(int dinr) throw(SQLerror);
  void updateStk(long stk) throw(SQLerror);
  void updateLieferdatum(const Petig::Datum &ld) throw(SQLerror);	
+ void updateLieferdatum(const Kalenderwoche &K) {updateLieferdatum(Petig::Datum(K));}	
  void updatePreis(const Preis &pr) throw(SQLerror);
  void updateRabatt(int rb) throw(SQLerror);
  void setStatus(AufStatVal st) throw(SQLerror);		
  void split(int newmenge, const Petig::Datum &newld) throw(SQLerror);
 // void setPlanMeter(long gm) { geplante_menge=gm; }
  
- long getMeter() const { return (long)menge; }
+// long getMeter() const { return (long)menge; } 
 // long getPlanMeter() const { return geplante_menge; }
- long getRest() const { if(entrystatus==CLOSED)return 0; return (long)rest; }	
+// long getRest() const { if(entrystatus==CLOSED)return 0; return (long)rest; }	
  long getStueck() const { return bestellt;}
  long getRestStk() const {if(entrystatus==CLOSED)return 0; return bestellt-geliefert;}
  long getGeliefert() const { return geliefert;}
- long getGeliefertM() const { return long(
- 		(geliefert*(artikel->Stueckgroesse()*10.0))/10);}
+//A long getGeliefertM() const { return long(
+//A 		(geliefert*(artikel->Stueckgroesse()*10.0))/10);}
 // const char *getLastDate() const { return lasteditdate.c_str();}
 // const char *getLastEdit() const { return lastedit.c_str(); }
  AufStatVal getAufStatus() const { return status; }
@@ -198,18 +125,24 @@ public:
  const Petig::Datum getProzDat() const { return prozdate;} 
  cH_Prozess getProzess() const { return prozess;}
  const cP_Waehrung getWaehrung() const { return preis.getWaehrung(); }
- const Preis GPreis() const;
+ const Preis GPreis() const; // Gesamtpreis
  void setVerarbeitung(const cH_Prozess p);
- const Preis EPreis() const { return preis;}
+ const Preis EPreis() const { return preis;} // Einzelpreis
  int Rabatt() const { return rabatt;}
  float PreisMenge() const { return preis.PreisMenge(); }
- const ArtikelBase::ID &ArtikelID() const { return artikel->Id(); }
  void abschreiben(int menge) throw(SQLerror);
- cH_Kunde get_Kunde() const throw(SQLerror);
+ bool allesOK() const;
+private:
+ list<cH_Kunde> get_Referenz_Kunden_long() const throw(SQLerror);
+public:
+ list<pair<AufEintragBase2,long> > get_Referenz_list(const AufEintragBase2& aeb) const throw(SQLerror);
+ list<pair<AufEintragBase2,long> > get_Referenz_AufEintragBase2(bool ursprung=true) const throw(SQLerror);
+ list<cH_Kunde> get_Referenz_Kunden() const throw(SQLerror);
+ ArtikelBase::ID ArtId() const {return artikel.Id();}
   
 
- void setArtikelBezeichnung(const cH_ExtBezSchema &cs)
- 	{const_cast<AufArtikel&>(*artikel).setArtikelBezeichnung(cs); } 
+// void setArtikelBezeichnung(const cH_ExtBezSchema &cs)
+// 	{const_cast<AufArtikel&>(*artikel).setArtikelBezeichnung(cs); } 
   
  friend std::ostream &operator<<(std::ostream &o,const AufEintragBase &aeb);
 };

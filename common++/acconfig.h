@@ -24,3 +24,8 @@
 
 /* whether to enable Mabella extensions */
 #undef MABELLA_EXTENSIONS
+
+#ifdef COMPILING_CXX
+#undef PACKAGE
+#undef VERSION
+#endif

@@ -1,4 +1,4 @@
-/* $Id: selFullAufEntry.h,v 1.7 2001/07/16 09:54:26 christof Exp $ */
+/* $Id: selFullAufEntry.h,v 1.8 2001/11/05 08:58:29 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -36,7 +36,6 @@ public:
  std::vector<AufEintragBase> aufidliste;
 
  SelectedFullAufList(const SQLFullAuftragSelector &sel)	throw(SQLerror);
- SelectedFullAufList(const SQLFullAuftragSelector &sel,	cH_ExtBezSchema es) throw(SQLerror);
  // besser ist ein AufEintragBase2 als Argument
  void insert(const AuftragBase& auftrag, int znr) throw(SQLerror);
  const_iterator begin() const { return aufidliste.begin(); }

@@ -8,9 +8,10 @@ bin_PROGRAMS = auftragserfassung
 
 
 auftragserfassung_SOURCES = \
+   $(BUILD_SOURCES) \
 	auftragserfassung.cc      
 
-#BUILD_SOURCES = auftragserfassung_sql.cc
+BUILD_SOURCES = auftragserfassung_sql.cc
 
 noinst_HEADERS = \
 	auftragserfassung.hh

@@ -101,7 +101,7 @@ class Data_Lieferoffen : public RowDataBase
        switch(seqnr)
         {
          case AUFNR_SEQ :
-            return cH_EntryValueIntString(Formatiere(auftrag.AufId(),0,6,"","",'0'));
+            return cH_EntryValueIntString(Formatiere(auftrag.Id(),0,6,"","",'0'));
          case ARTIKEL_SEQ :
               return cH_EntryValueIntString(artbez->Bezeichnung());
          case LIEFDAT_SEQ :
@@ -112,7 +112,7 @@ class Data_Lieferoffen : public RowDataBase
 
    int get_Artikel_Id() const {return artbez->getArtid();}
    int Offen() const { return offen;}
-   int get_Auftrag_Id() const { return auftrag.AufId(); }
+   int get_Auftrag_Id() const { return auftrag.Id(); }
    const AufEintragBase2 &AuftragEntry() const { return auftrag; }
    void abschreiben(int menge);
 //   static void abschreiben(const AufEintragBase2 &auf,int menge) throw(SQLerror);   

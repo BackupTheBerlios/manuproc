@@ -31,7 +31,7 @@
 //typedef map<int ,AufEintrag *> X;
 //extern X aufentrymap;
 
-extern SelectedFullAufList *allaufids;
+//extern SelectedFullAufList *allaufids;
 extern auftrag_main *auftragmain;
 extern auftrag_bearbeiten *auftragbearbeiten;
 
@@ -64,9 +64,9 @@ auftrag_bearbeiten::auftrag_bearbeiten(const AufEintragBase2& auftragbase)
  jahr_spinbutton->set_value(Petig::Datum::today().Jahr());
  newauftrag=false;
  
- aktaufeintrag = new aktAufEintrag();
+ aktaufeintrag = 0;
  selectedentry=-1;
- auftrag=NULL;
+ auftrag = 0;
  if(auftragbase.Id())
    {
     loadAuftrag(auftragbase);
@@ -76,48 +76,35 @@ auftrag_bearbeiten::auftrag_bearbeiten(const AufEintragBase2& auftragbase)
        auftrag_clist->row(auftragbase.ZNr()-1).select();
       }
    }
-// warum nicht mit glade?
- artikelbox->activate.connect(SigC::slot(this,&auftrag_bearbeiten::onSelArtikel));
 }
 
 void auftrag_bearbeiten::onSelArtikel()
-{aktaufeintrag->setArtikel(artikelbox->get_value());
+{
+// aktaufeintrag->setArtikel(artikelbox->get_value());
+ assert(auftrag);
+ assert(!aktaufeintrag);
+// aktaufeintrag=AufEintragBase(AufEintragBase2(,artikelbox->get_value(),));
  Einheit e(artikelbox->get_value());
  mengeeinheit->set_text((string)e);
  WPreis->set_Einheit((string)e);
  try {
     WPreis->reset();
-    WPreis->set_Waehrung(auftrag->getWaehrung());
     Artikelpreis ap(kunde->Preisliste(),artikelbox->get_value());
-    if (auftrag)
-    {  Preis p(ap.In(auftrag->getWaehrung()));
-       WPreis->set_all(p.Wert(),p.PreisMenge());
-    }
-    else
-    {  
-#warning soll das wirklich 0 sein für die preismenge und nicht ein?
-#warning von WPreis->reset() wird es jetzt auf 1 gesetzt.
-//       preismenge->set_value(0); // ALT
-       WPreis->reset();
-    }
- } catch (SQLerror &e)
- {  cerr << e <<'\n';
- }
- 
+    Preis p(ap.In(auftrag->getWaehrung()));
+    WPreis->set_Waehrung(auftrag->getWaehrung());
+    WPreis->set_all(p.Wert(),p.PreisMenge());
+  } catch (SQLerror &e) 
+  {  cerr << e <<'\n';  }
  stkmtr_spinbutton->grab_focus();
-
-#warning was macht 'select_region'??? Wenn es das macht, was ich glaube, dann 
-#warning ist es überflüssig, oder? MAT
-// stkmtr_spinbutton->select_region(0,preis_spinbutton->get_text().size());
  stkmtr_spinbutton->select_region(0,WPreis->get_text_length());
 }
 
 void auftrag_bearbeiten::on_auftrag_clist_select_row
 				(gint row, gint column, GdkEvent *event)
 {   
- if(!auftrag || !auftrag->existsAufEntry(row)) return;
- AufEintragBase &aufe=auftrag->getAufEntry(row);
- try{artikelbox->set_value(ArtikelBase(aufe.ArtikelID()));
+ assert(auftrag);
+ aktaufeintrag = &auftrag->getAufEntry(row);
+ try{artikelbox->set_value(ArtikelBase(aktaufeintrag->ArtId()));
  Einheit e(artikelbox->get_value());
  mengeeinheit->set_text((string)e);
  WPreis->set_Einheit((string)e);
@@ -126,12 +113,12 @@ void auftrag_bearbeiten::on_auftrag_clist_select_row
    {meldung->Show(e); return;}
  catch(ArtikelBoxErr &e)
    {meldung->Show(e.ErrMsg()); return;}
- aktaufeintrag->fill(aufe);
+// aktaufeintrag->fill(aufe);
  setAufEntries();
  selectedentry=row;
  artikelbox->set_editable(false);
 
- WAufStat->set_History(aufe.getAufStatus());
+ WAufStat->set_History(aktaufeintrag->getAufStatus());
  aufentry_ok->set_sensitive(false);
  aufentry_abbruch->set_sensitive(false);
 }
@@ -144,18 +131,16 @@ void auftrag_bearbeiten::on_auftrag_clist_unselect_row
 
 void auftrag_bearbeiten::clearEntry()
 {
- aktaufeintrag->clear();
+ aktaufeintrag=0;
+// aktaufeintrag->clear();
  artikelbox->reset();
  stkmtr_spinbutton->set_value(0);
-// WPreis->set_Betrag(0); Alternative zu
  WPreis->reset();
  kw_spinbutton->set_value(1);
  jahr_spinbutton->set_value(Petig::Datum::today().Jahr());
 // liefdatum_datewin->set_value(Petig::Datum::today());
  selectedentry=-1;
  artikelbox->set_editable(true);
-#warning wozu ist das 'set_sensitive' an dieser Stelle gut? MAT
-// aufentrystat->set_sensitive(true); //ALT
  WAufEntryStat->set_history((AufStatVal)UNCOMMITED);
  aufentry_ok->set_sensitive(true);
  aufentry_abbruch->set_sensitive(true);
@@ -178,9 +163,10 @@ void auftrag_bearbeiten::on_newauftrag_button_clicked()
 }
 
 void auftrag_bearbeiten::auftragstatus_geaendert()
-{ if (auftrag)
-  { // auftrag->setStatusAuftrag((AufStatVal)get_active_index(aufstat->get_menu())); // ALT
-     auftrag->setStatusAuftrag(WAufStat->get_Status()); // NEU
+{ 
+ if (auftrag)
+  { 
+     auftrag->setStatusAuftrag(WAufStat->get_Status());
      loadAuftrag(*auftrag);
   }
 }
@@ -208,76 +194,82 @@ void auftrag_bearbeiten::on_jahrgang_spinbutton_activate()
 
 void auftrag_bearbeiten::on_stkmtr_spinbutton_activate()
 {   
- gtk_spin_button_update(stkmtr_spinbutton->gtkobj());
- if (!aktaufeintrag) return;
-
- if(aktaufeintrag->getZln()>0)
-      {auftrag->updateStk(selectedentry,stkmtr_spinbutton->get_value_as_int());
-       auftrag_clist->freeze();
-       loadAuftrag(*auftrag);
-       auftrag_clist->thaw();
-       artikelbox->reset();
+ assert(auftrag);
+ if(aktaufeintrag)
+      {
+       gtk_spin_button_update(stkmtr_spinbutton->gtkobj());
+       aktaufeintrag->updateStk(stkmtr_spinbutton->get_value_as_int());
+//       auftrag_clist->freeze();
+//       loadAuftrag(*auftrag);
+//       auftrag_clist->thaw();
+//       artikelbox->reset();
 //       aufentrystat->set_sensitive(false);
-	auftrag_clist->grab_focus();
+       auftrag->fillCList(*auftrag_clist);
+       auftrag_clist->grab_focus();
        auftrag_clist->moveto(selectedentry,0,.5,0);
       }
  else
-  if(aktaufeintrag->setStk(stkmtr_spinbutton->get_value_as_int()))
+  if(stkmtr_spinbutton->get_value_as_int() > 0)
    {kw_spinbutton->grab_focus();
     kw_spinbutton->select_region(0,kw_spinbutton->get_text().size());
    }
 }
 
 void auftrag_bearbeiten::on_lieferdatum_activate()
-{   if (!aktaufeintrag) return;
- if(aktaufeintrag->getZln()>0)
-      {auftrag->updateLieferdatum(selectedentry,
-			liefdatum_datewin->get_value());
-       auftrag_clist->freeze();
-       loadAuftrag(*auftrag);
-       auftrag_clist->thaw();
-       artikelbox->reset();
+{   
+  assert(auftrag);
+  if(aktaufeintrag)
+      {aktaufeintrag->updateLieferdatum(liefdatum_datewin->get_value());
+//       auftrag_clist->freeze();
+//       loadAuftrag(*auftrag);
+//       auftrag_clist->thaw();
+//       artikelbox->reset();
 //       aufentrystat->set_sensitive(false);
-	auftrag_clist->grab_focus();
+       auftrag->fillCList(*auftrag_clist);
+	    auftrag_clist->grab_focus();
        auftrag_clist->moveto(selectedentry,0,.5,0);
       }
  else
-  if(aktaufeintrag->setLieferdatum(liefdatum_datewin->get_value()))
-     aufentry_ok->grab_focus();
+//  aktaufeintrag->updateLieferdatum(liefdatum_datewin->get_value());
+  aufentry_ok->grab_focus();
 }
 
 
 void auftrag_bearbeiten::on_kw_spinbutton_activate()
-{if (!aktaufeintrag) return;
- gtk_spin_button_update(kw_spinbutton->gtkobj());
-
- if(aktaufeintrag->getZln()>0)
-      {auftrag->updateLieferdatum(selectedentry,
-		Petig::Datum(Kalenderwoche(kw_spinbutton->get_value_as_int(),
-			      jahr_spinbutton->get_value_as_int())) );
-       auftrag_clist->freeze();
-       loadAuftrag(*auftrag);
-       auftrag_clist->thaw();
-       artikelbox->reset();
+{
+ assert(auftrag);
+ if(aktaufeintrag)
+   {
+     gtk_spin_button_update(kw_spinbutton->gtkobj());
+      aktaufeintrag->updateLieferdatum(Petig::Datum(Kalenderwoche(kw_spinbutton->get_value_as_int(),
+               			      jahr_spinbutton->get_value_as_int())) );
+//       auftrag_clist->freeze();
+//       loadAuftrag(*auftrag);
+//       auftrag_clist->thaw();
+//       artikelbox->reset();
 //       aufentrystat->set_sensitive(false);
-	auftrag_clist->grab_focus();
+       auftrag->fillCList(*auftrag_clist);
+       auftrag_clist->grab_focus();
        auftrag_clist->moveto(selectedentry,0,.5,0);
       }
  jahr_spinbutton->grab_focus();
  jahr_spinbutton->select_region(0,jahr_spinbutton->get_text().size());
+ liefdatum_datewin->set_value(Petig::Datum(Kalenderwoche(kw_spinbutton->get_value_as_int(),jahr_spinbutton->get_value_as_int())));
 }
 
 void auftrag_bearbeiten::on_jahr_spinbutton_activate()
-{if (!aktaufeintrag) return;
- gtk_spin_button_update(jahr_spinbutton->gtkobj());
-
- if(aktaufeintrag->getZln()>0)
-   on_kw_spinbutton_activate();
- else
-   if(aktaufeintrag->setLieferdatum(Kalenderwoche(
-	kw_spinbutton->get_value_as_int(),
-	jahr_spinbutton->get_value_as_int())))
-     aufentry_ok->grab_focus();
+{
+  assert(auftrag); 
+  if (!aktaufeintrag) 
+   {
+     gtk_spin_button_update(jahr_spinbutton->gtkobj());
+     on_kw_spinbutton_activate();
+   }
+  else
+   aktaufeintrag->updateLieferdatum(Kalenderwoche(
+	                             kw_spinbutton->get_value_as_int(),
+	                             jahr_spinbutton->get_value_as_int()));
+   aufentry_ok->grab_focus();
 }
 
 void auftrag_bearbeiten::on_aufentry_abbruch_clicked()
@@ -287,80 +279,75 @@ void auftrag_bearbeiten::on_aufentry_abbruch_clicked()
 }
 
 void auftrag_bearbeiten::on_aufentry_ok_clicked()
-{if (!aktaufeintrag) return;
- if(aktaufeintrag->allesOK())
-   if(auftrag)
-     {
-      int znr=auftrag->insertNewEntry(*aktaufeintrag,artikelbox->getBezSchema());
-      allaufids->insert(*auftrag,znr);
-      // perhaps the user want's to preserve lieferdatum ?
-#warning TODO: Lieferdatum erhalten      
-      aktaufeintrag->clear(); 
-// bei Gelegenheit in eigene Funktion
- auftrag_clist->freeze();
- auftrag_clist->clear();
- auftrag->fillCList(*auftrag_clist);
- auftrag_clist->thaw();
-#warning die nächste Zeile sorgt dafür, daß nach dem OK für einen Artikel
-#warning nicht wieder alles zurückgestellt wird (vor allem wg. des Liefer-
-#warning datums, aber ich glaube, auf den Rest kann auch verzichtet werden, oder MAT
-//      setAufEntries();
+{
+ assert(auftrag);
+ if (!aktaufeintrag)
+   {
+     gtk_spin_button_update(stkmtr_spinbutton->gtkobj());
+     int znr=auftrag->AuftragFull::insertNewEntry(
+               stkmtr_spinbutton->get_value_as_int(),
+               liefdatum_datewin->get_value(),
+               artikelbox->get_value().Id(),
+               WPreis->get_Preis(),
+               fixedpoint<2>(rabattentry_spinbutton->get_value_as_float()));
+//      allaufids->insert(*auftrag,znr);
+
+      aktaufeintrag = &(auftrag->getAufEntry_by_znr(znr));
+      auftrag->fillCList(*auftrag_clist);
+      setAufEntries();
       artikelbox->reset();
-       artikelbox->grab_focus();
+      artikelbox->grab_focus();
      }
 }
-
-
 
 void auftrag_bearbeiten::on_showkal_button_clicked()
 {   
 }
 
 void auftrag_bearbeiten::on_rabattentry_spinbutton_activate()
-{ if (!aktaufeintrag) return;
- gtk_spin_button_update(rabattentry_spinbutton->gtkobj());
-
- if(aktaufeintrag->getZln()>0)
-      {auftrag->updateRabatt(selectedentry,
-		(int)((rabattentry_spinbutton->get_value_as_float()+.0005)*100));
-       auftrag_clist-> freeze();
-       loadAuftrag(*auftrag);
-       auftrag_clist->thaw();
-       artikelbox->reset();
+{
+ assert(auftrag);
+ if (aktaufeintrag) 
+   {
+     gtk_spin_button_update(rabattentry_spinbutton->gtkobj());
+     aktaufeintrag->updateRabatt((int)((rabattentry_spinbutton->get_value_as_float()+.0005)*100));
+//       auftrag_clist-> freeze();
+//       loadAuftrag(*auftrag);
+//       auftrag_clist->thaw();
+//       artikelbox->reset();
 //       aufentrystat->set_sensitive(false);
+       auftrag->fillCList(*auftrag_clist);
        auftrag_clist->grab_focus();
        auftrag_clist->moveto(selectedentry,0,.5,0);
       }
  else
-   {aktaufeintrag->setRabatt(
-		(int)((rabattentry_spinbutton->get_value_as_float()+.0005)*100));  
+   {//aktaufeintrag->setRabatt(
+	//	   (int)((rabattentry_spinbutton->get_value_as_float()+.0005)*100));  
     stkmtr_spinbutton->grab_focus();
     stkmtr_spinbutton->select_region(0,stkmtr_spinbutton->get_text().size()); 
    }
-
 }
 
 void auftrag_bearbeiten::on_aufentrystat_optionmenu_clicked()
 {
-if (!aktaufeintrag) return;
-  if(selectedentry>=0)
-      {
-       auftrag->setStatusEntry(selectedentry,
-         WAufEntryStat->get_Status());
-       auftrag_clist->freeze();
-       loadAuftrag(*auftrag); 
-       auftrag_clist->thaw();
-       artikelbox->reset();
+  if (aktaufeintrag)
+    {
+       aktaufeintrag->setStatus(WAufEntryStat->get_Status());
+//       auftrag_clist->freeze();
+//       loadAuftrag(*auftrag); 
+//       auftrag_clist->thaw();
+//       artikelbox->reset();
 //       aufentrystat->set_sensitive(false);
+       auftrag->fillCList(*auftrag_clist);
 	    auftrag_clist->grab_focus();
        auftrag_clist->moveto(selectedentry,0,.5,0);
-      }
+    }
 }
 
 /*
 void auftrag_bearbeiten::on_preismenge_activate()
-{   if (!aktaufeintrag) return;
- if(aktaufeintrag->getZln()>0)
+{   if (!aktaufeintrag.valid()) return;
+ if(aktaufeintrag.getZnr()>0)
       {
 //       auftrag->updatePreismenge(selectedentry,preismenge->get_value_as_int());
 // was ist denn das alles? CP			
@@ -385,7 +372,7 @@ void auftrag_bearbeiten::on_preis_spinbutton_activate()
 // Preis pr(preis_spinbutton->get_value_as_float(),auftrag->getWaehrung()); // ALT
  Preis pr(WPreis->get_Betrag(),auftrag->getWaehrung());
 
- if(aktaufeintrag->getZln()>0)
+ if(aktaufeintrag.getZnr()>0)
       {
        auftrag->updatePreis(selectedentry,pr);
        auftrag_clist-> freeze();
@@ -398,8 +385,8 @@ void auftrag_bearbeiten::on_preis_spinbutton_activate()
       }
  else
   {
-   aktaufeintrag->setPreis(pr);
-//   aktaufeintrag->setPreismenge(preismenge->get_value_as_float());
+   aktaufeintrag.setPreis(pr);
+//   aktaufeintrag.setPreismenge(preismenge->get_value_as_float());
    rabattentry_spinbutton->grab_focus();
    rabattentry_spinbutton->select_region(0,rabattentry_spinbutton->get_text().size());      
   }
@@ -420,20 +407,17 @@ void auftrag_bearbeiten::loadAuftrag(const AuftragBase& auftragbase)
  { cerr << "KW error\n";
  }
  fillMask();
- aktaufeintrag->clear();
+ aktaufeintrag = 0;
  stkmtr_spinbutton->set_value(0);
  kw_spinbutton->set_value(0);
  jahr_spinbutton->set_value(Petig::Datum::today().Jahr());
  rabattentry_spinbutton->set_value(0);
-// WPreis->set_Betrag(0); alternative zu
  WPreis->reset();
  artikelbox->reset();
  liefdatum_datewin->set_value(Petig::Datum::today());
- WAufEntryStat->set_history((AufStatVal)UNCOMMITED); //NEU
-
+ WAufEntryStat->set_history((AufStatVal)UNCOMMITED);
  table_auftragseintraege->show();
  scrolledwindow_auftraege->show();
-
 }
 
 void auftrag_bearbeiten::fillMask() 
@@ -451,6 +435,7 @@ void auftrag_bearbeiten::fillMask()
  aufdatum_datewin->set_value(auftrag->getDatum());
 // Neues WWaehrungswidget
  bea_WWaehrung->set_History( auftrag->getWaehrung()->get_enum() );
+ WPreis->set_Waehrung( auftrag->getWaehrung()->get_enum() );
 
  auftrag_clist->thaw();
 }
@@ -494,16 +479,16 @@ void auftrag_bearbeiten::on_zahlzieldatewin_activate()
 
 auftrag_bearbeiten::~auftrag_bearbeiten()
 {
- delete(aktaufeintrag);
+// if(aktaufeintrag) delete(aktaufeintrag);
  if(auftrag) delete(auftrag);
  auftrag=NULL;
 }
 
 void auftrag_bearbeiten::setAufEntries()
 {
- aktAufEintrag *a=aktaufeintrag;
+// aktAufEintrag *a=aktaufeintrag;
 #warning fehlt hier nicht der Artikel?
-
+/*
  stkmtr_spinbutton->set_value(a->getStk());
  kw_spinbutton->set_value(a->getKW().Woche());
  jahr_spinbutton->set_value(a->getKW().Jahr());
@@ -516,6 +501,19 @@ void auftrag_bearbeiten::setAufEntries()
 #warning set_sensitiv gibt es nicht für spinbutons ?
 // preismenge->set_sensitiv(false);
  WAufEntryStat->set_history(a->getStatus()); //NEU
+*/
+ assert(aktaufeintrag);
+ stkmtr_spinbutton->set_value(aktaufeintrag->getStueck());
+ kw_spinbutton->set_value(aktaufeintrag->getLieferdatum().KW().Woche());
+ jahr_spinbutton->set_value(aktaufeintrag->getLieferdatum().KW().Jahr());
+ liefdatum_datewin->set_value(aktaufeintrag->getLieferdatum());
+
+ WPreis->set_Betrag(aktaufeintrag->GPreis().Wert());
+ rabattentry_spinbutton->set_value(aktaufeintrag->Rabatt()/100.0);
+ WPreis->set_Preismenge(aktaufeintrag->PreisMenge());
+ 
+#warning set_sensitiv gibt es nicht für spinbutons ?
+ WAufEntryStat->set_history(aktaufeintrag->getEntryStatus());
 }
 
 void auftrag_bearbeiten::on_splitten()
@@ -546,8 +544,8 @@ void auftrag_bearbeiten::on_clear_all()
  auftrag_clist->clear();
  auftrag_clist->thaw();
  if(auftrag) delete(auftrag);
- auftrag=NULL;
- 
+ auftrag=0;
+ aktaufeintrag=0; 
  kundenbox->reset();
  WAufStat->set_history((AufStatVal)UNCOMMITED);
  aufnr_scombo->reset();
@@ -627,33 +625,27 @@ void auftrag_bearbeiten::on_button_drucken_clicked()
 
 void auftrag_bearbeiten::on_activate_wpreis()
 {
-  if (!aktaufeintrag) return;
-  WPreis->update();
-  Preis pr(WPreis->get_Betrag(),auftrag->getWaehrung(),WPreis->get_Preismenge());
-  bea_WWaehrung->set_History(WPreis->get_Waehrung_enum());
-  waehrung_geaendert();
-  if(aktaufeintrag->getZln()>0)
-      {
-       auftrag->updatePreis(selectedentry,pr);
-       auftrag_clist-> freeze();
-       loadAuftrag(*auftrag);
-       auftrag_clist->thaw();
-       artikelbox->reset();
+  assert(auftrag);
+  if (aktaufeintrag)
+   {
+     WPreis->update();
+     Preis pr(WPreis->get_Betrag(),auftrag->getWaehrung(),WPreis->get_Preismenge());
+//  bea_WWaehrung->set_History(WPreis->get_Waehrung_enum());
+//  waehrung_geaendert();
+
+     aktaufeintrag->updatePreis(pr);
+//       auftrag_clist-> freeze();
+//       loadAuftrag(*auftrag);
+//       auftrag_clist->thaw();
+//       artikelbox->reset();
 //       aufentrystat->set_sensitive(false);
-       auftrag_clist->grab_focus();
-       auftrag_clist->moveto(selectedentry,0,.5,0);
-      }
+     auftrag->fillCList(*auftrag_clist);
+     auftrag_clist->grab_focus();
+     auftrag_clist->moveto(selectedentry,0,.5,0);
+   }
  else
   {
-#warning Dieser 'else' Teil war NICHT Bestandteil von 'on_preismenge_activate()'
-#warning aber soweit ich das sehe, schadet es auch nicht ihn auszuführen.
-#warning da durch diese neue Konstruktion einige Zeilen (und eine Funktion)
-#warning wegfallen finde ich sie eleganter MAT
-   aktaufeintrag->setPreis(pr);
-//   aktaufeintrag->setPreismenge(preismenge->get_value_as_float());
    rabattentry_spinbutton->grab_focus();
    rabattentry_spinbutton->select_region(0,rabattentry_spinbutton->get_text().size());
   }
-//  on_preis_spinbutton_activate(); // ALT MIT 'else'  
-//  on_preismenge_activate();  // ALT OHNE 'else'
 }

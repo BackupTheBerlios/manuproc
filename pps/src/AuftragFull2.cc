@@ -22,49 +22,29 @@
 #include <gtk--/clist.h>
 #include "AufEintrag.h"
 
-int AuftragFull::insertNewEntry(const aktAufEintrag &aufentry, const cH_ExtBezSchema &ebsh) throw (SQLerror)
-{
-// AufEintrag tmp(aufentry, AuftragBase((ppsInstanz::ID)instanz,auftragid), wrkstatus, ebsh);
- AufEintrag tmp(aufentry, AuftragBase(instanz,auftragid), wrkstatus, ebsh);
- eintragliste.push_back(tmp);
- return tmp.getZnr();
-}
-
 void AuftragFull::fillCList(Gtk::CList &list)
 {
+ list.freeze();
+ list.clear();
  Gtk::OStream os(&list);
  Preis psum;
 
  for(const_iterator i = begin(); i!=end(); ++i)
     {
-      cH_ArtikelBezeichnung AB(ArtikelBase(i->ArtikelID()));
-      os << i->getStueck()<<"\t"<<AB->Bezeichnung()<<"\t"<<i->getMeter()<<"\t"
-        << i->getRest()<<"\t"<<i->GPreis().Wert()<<"\t"
+      cH_ArtikelBezeichnung AB(ArtikelBase(i->ArtId()));
+      os << i->getStueck()<<"\t"<<AB->Bezeichnung()<<"\t"/*<<i->getMeter()*/<<"\t"
+        << i->getRestStk()<<"\t"<<i->GPreis().Wert()<<"\t"
         <<i->getLieferdatum()
         << "\t"<<i->getEntryStatusStr()<<"\t"<<i->LastEditDate()<<"\n";
-//    os << AufEintrag(*i);	
      psum+=(*i).GPreis();
     }
 
-/*
- os << "\t\t\t\t\t\t\t-----------\n";
- os << "\t\t\t\t\t\tAuftragswert\t";
- os << Formatiere(psum.Wert()) << "\n";
-*/
  os << "\t\t\t\t-----------\n";
  os << "\t\t\tAuftragswert\t";
  os << Formatiere(psum.Wert()) << "\n";
 
  for(guint i=0; i<list.columns().size();++i)
    list.set_column_auto_resize(i,true);
+ list.thaw();
 }
 
-#if 0
-void AuftragFull::fillCListEntry(Gtk::CList &list, int idx)
-{
- Gtk::OStream os(&list, idx, (ios::out|ios::trunc), true);
-
- for(const_iterator i = begin(); i!=end(); ++i)
-    os << AufEintrag(*i);	
-}
-#endif

@@ -1,4 +1,4 @@
-// $Id: abschreiben.cc,v 1.1 2001/10/23 08:58:47 christof Exp $
+// $Id: abschreiben.cc,v 1.2 2001/11/05 08:58:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -40,9 +40,9 @@ int main()
    {  AuftragFull af(id);
       for (AuftragFull::const_iterator i=af.begin(); i!=af.end(); ++i)
       {  zeile=*i;
-         std::cout << i->getMeter() << "m " << i->getRest() << "mR ("
+         std::cout << i->getStueck() << "m " << i->getRestStk() << "mR ("
          	<< i->getRestStk() << "R) " << i->getLieferdatum() << " "
-         	<< cH_ArtikelBezeichnung(i->ArtikelID())->Bezeichnung()
+         	<< cH_ArtikelBezeichnung(i->Id())->Bezeichnung()
          	<< " " << int(i->getEntryStatus()) << '\n';
       }
    }
@@ -51,9 +51,9 @@ int main()
 
    {  AuftragFull af(id);
       for (AuftragFull::const_iterator i=af.begin(); i!=af.end(); ++i)
-      {  std::cout << i->getMeter() << "m " << i->getRest() << "mR ("
+      {  std::cout << i->getStueck() << "m " << i->getRestStk() << "mR ("
          	<< i->getRestStk() << "R) " << i->getLieferdatum() << " "
-         	<< cH_ArtikelBezeichnung(i->ArtikelID())->Bezeichnung() 
+         	<< cH_ArtikelBezeichnung(i->Id())->Bezeichnung() 
          	<< " " << int(i->getEntryStatus()) << '\n';
       }
    }
@@ -62,9 +62,9 @@ int main()
 
    {  AuftragFull af(id);
       for (AuftragFull::const_iterator i=af.begin(); i!=af.end(); ++i)
-      {  std::cout << i->getMeter() << "m " << i->getRest() << "mR ("
+      {  std::cout << i->getStueck() << "m " << i->getRestStk() << "mR ("
          	<< i->getRestStk() << "R) " << i->getLieferdatum() << " "
-         	<< cH_ArtikelBezeichnung(i->ArtikelID())->Bezeichnung()
+         	<< cH_ArtikelBezeichnung(i->Id())->Bezeichnung()
          	<< " " << int(i->getEntryStatus()) << '\n';
       }
    }

@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.7 2001/10/23 08:45:19 christof Exp $
+// $Id: Kunde.h,v 1.8 2001/11/05 08:58:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -200,6 +200,11 @@ public:
         
         unsigned long int neue_bank_anlegen(const std::string& name, unsigned long int blz);        
         void get_blz_from_bankindex(unsigned int bankindex);
+
+        bool operator==(const Kunde& b) const
+                {return Id()==b.Id();} 
+        bool operator<(const Kunde& b) const
+                {return Id()<b.Id();} 
 };
 
 class cH_Kunde : public Handle<const Kunde>
@@ -214,7 +219,10 @@ public:
 	typedef Kunde::ID ID;
 	static const ID default_id=Kunde::default_id;
 	cH_Kunde(ID nr);
- 
+        bool operator==(const cH_Kunde& b) const
+                {return (*this)->Id()==b->Id();} 
+        bool operator<(const cH_Kunde& b) const
+                {return (*this)->Id()<b->Id();} 
 };
 
 class H_Kunde : public Handle<Kunde>

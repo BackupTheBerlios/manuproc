@@ -16,30 +16,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistleaf.h,v 1.4 2001/08/05 20:37:15 thoma Exp $
+// $Id: tclistleaf.h,v 1.5 2001/11/05 08:57:31 christof Exp $
 
 #ifndef KOMPONENTEN_TCLISTLEAF
 #define KOMPONENTEN_TCLISTLEAF
 
 #include"tclistrowdata.h"
-#include"rowdata.h"
-#include"treebase.h"
 
-class TCListLeaf : public TCListRowData
-{protected:
-	cH_RowDataBase leafdata;
-  
-public:
- TCListLeaf(guint deep, const cH_EntryValue &v, const cH_RowDataBase &d)
-	: TCListRowData(v,deep,true,false), leafdata(d)
-{}
-
-// virtual void cumulate(const cH_RowDataBase &rd)
-// {};
-// virtual void refreshSum(const TreeBase &tb) {};
-
- 
- const cH_RowDataBase LeafData() const { return leafdata; }
- const std::vector<std::string> getColEntries(const TreeBase &tb) const;
-};
 #endif

@@ -1,6 +1,21 @@
 #include "AuftragFull.h"
 #include <Auftrag/selFullAufEntry.h>
 
+
+int AuftragFull::insertNewEntry(unsigned long int bestellt,
+               Petig::Datum lieferdatum, ArtikelBase::ID artid,
+               Preis preis, fixedpoint<2> rabatt) throw (SQLerror)
+{
+  int znr=AuftragBase::insertNewEntry(bestellt,lieferdatum,artid,preis,rabatt);
+  eintragliste.push_back(AufEintragBase(
+      Instanz(),Id(),znr,bestellt,artid,lieferdatum,
+      0,0,0,getJahrgang(),getStatus(),getKundennr(),getYourAufNr(),
+      Petig::Datum(),Prozess::default_id,preis,rabatt,OPEN,
+      Petig::Datum::today()));
+  return znr;
+}
+
+
 void AuftragFull::deleteEintrag(int zeilennr, int idx) throw(SQLerror)
 {Auftrag::deleteEintrag(zeilennr);
  iterator i = begin()+idx;

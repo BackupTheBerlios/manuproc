@@ -1,3 +1,21 @@
+Fri, 26 Oct 2001 23:46:39 +0200
+	Die API hat immerhin 8 Monate gehalten ...
+	
+	es gibt keine getrennten Node/Leafklassen mehr, schließlich
+	unterscheiden sich die Datenstrukturen nicht mehr
+	
+	... Konstruktoren umstellen:
+	TCListNode(guint _deep_, const cH_EntryValue &_value_, bool _expand_)
+	->  TreeRow(_deep_, _value_, 
+			guint child_s_deep, cH_RowDataBase child_s_data, 
+								_expand_);
+	// to paste click here ->  child_s_deep,child_s_data,
+	TCListLeaf(guint _deep_, const cH_EntryValue &_value_, 
+						const cH_RowDataBase &_data_)
+	->  TreeRow(_deep_, _value_, 0, _data_);
+	
+	es gibt nun TreeRow *TreeRow::create(obige Argumente);
+
 Don,  8 Jun 2000 12:22:29 +0200
 	CP: Material reagiert nun auf Gtk_Widget::grab_focus sendet activate
 

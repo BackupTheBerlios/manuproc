@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema_sql.pgcc,v 1.7 2001/10/23 08:45:18 christof Exp $
+// $Id: ExtBezSchema_sql.pgcc,v 1.8 2001/11/05 08:58:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -38,15 +38,7 @@ ExtBezSchema::ExtBezSchema(ID eid,const ArtikelTyp &t) throw(SQLerror)
 {
  exec sql begin declare section;
  int EXTARTBEZID=eid;
- int BEZKOMPTYPE;
- char BEZKOMPTEXT[21];
- char SEPARATOR[2];
- char SPALTENNAME[21];
- char TEXTABFORMAT[10];
- int ISEPARATOR;
- int SIGNIFIKANZ;
  int TYP=t;
- char JUMBOBEZ[10];
  exec sql end declare section;
  bool IDseen=false; // hack?
  int maxBKT=0;
@@ -66,17 +58,31 @@ ExtBezSchema::ExtBezSchema(ID eid,const ArtikelTyp &t) throw(SQLerror)
 
  while(!sqlca.sqlcode)
    {
-    exec sql fetch from BEZKOMP 
+    exec sql begin declare section;
+    int BEZKOMPTYPE[20];
+    char BEZKOMPTEXT[20][21];
+    char SEPARATOR[20][2];
+    char SPALTENNAME[20][21];
+    char TEXTABFORMAT[20][10];
+    int SIGNIFIKANZ[20];
+    char JUMBOBEZ[20][10];
+    exec sql end declare section;
+    exec sql fetch 20 from BEZKOMP 
 	into :BEZKOMPTYPE, :BEZKOMPTEXT, :SEPARATOR,
 		:SPALTENNAME, :SIGNIFIKANZ, :TEXTABFORMAT, :JUMBOBEZ ;
     SQLerror::test(__FILELINE__"ExtBezSchema::ExtBezSchema","BEZKOMP",100);
     if(sqlca.sqlcode==100) break;
-    bezkomps.push_back(BezKomp(BEZKOMPTYPE,BEZKOMPTEXT,
-    		SEPARATOR,SPALTENNAME,SIGNIFIKANZ,TEXTABFORMAT));
-    if (!IDseen && std::string(SPALTENNAME)=="id") IDseen=true;
-    if (BEZKOMPTYPE>maxBKT) maxBKT=BEZKOMPTYPE;
-    if ((std::string)JUMBOBEZ!="") 
-      { jumbobez=JUMBOBEZ; jumboindex=BEZKOMPTYPE;jumbotitel=BEZKOMPTEXT;jumbospalte=SPALTENNAME;}
+    unsigned int lines=sqlca.sqlerrd[2];
+    for (unsigned int i=0;i<lines;++i)
+    {  bezkomps.push_back(BezKomp(BEZKOMPTYPE[i],BEZKOMPTEXT[i],
+    		SEPARATOR[i],SPALTENNAME[i],SIGNIFIKANZ[i],TEXTABFORMAT[i]));
+       if (!IDseen && std::string(SPALTENNAME[i])=="id") IDseen=true;
+       if (BEZKOMPTYPE[i]>maxBKT) maxBKT=BEZKOMPTYPE[i];
+       if ((std::string)JUMBOBEZ[i]!="") 
+       { jumbobez=JUMBOBEZ[i]; jumboindex=BEZKOMPTYPE[i];
+       	 jumbotitel=BEZKOMPTEXT[i];jumbospalte=SPALTENNAME[i];}
+    }
+    if (lines<20) break;
    }
  exec sql close BEZKOMP;
  if (!IDseen) bezkomps.push_back(BezKomp(maxBKT+1,"ID","","id",99,"r"));

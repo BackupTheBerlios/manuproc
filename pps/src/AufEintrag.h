@@ -28,14 +28,11 @@
 #include <Aux/SQLerror.h>
 #include <iostream>
 
+
 class AufEintrag : public AufEintragBase
 {	
-public:
-#if 0
- AufEintrag(const SelectedAufentry &aufentry, const cH_ExtBezSchema &schema)
-	 :AufEintragBase(aufentry,schema)
- {}
-#endif 
+//public:
+/*
  AufEintrag(const aktAufEintrag &aufentry,const AuftragBase& auftrag, int wrkst,
  				const cH_ExtBezSchema &schema) throw(SQLerror);
  AufEintrag() {} ;
@@ -45,9 +42,9 @@ public:
  const ArtikelBase::ID &ArtikelID() const { return artikel->Id(); }
 
  friend std::ostream &operator<<(std::ostream &o,const AufEintrag &a);
+*/
 };
 
-//typedef map<int,AufEintrag> AUFENTRYMAP;
-typedef std::vector<AufEintrag> AufEintragList;
+//typedef std::vector<AufEintrag> AufEintragList;
 
 #endif

@@ -16,19 +16,3 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include"tclistleaf.h"
-#include <Aux/EntryValueIntString.h> ///
-
-const std::vector<std::string> TCListLeaf::getColEntries(const TreeBase &tb) const
-{
- std::vector<std::string> v(tb.Cols());
-
- for(guint i=0; i<(guint)deep; ++i)  v[i]="";
-
- v[deep]=value->getStrVal();
-
- for(guint i=deep+1;i<(guint)tb.Cols();++i) 
-    v[i]=LeafData()->Value(i,tb.ValueData())->getStrVal();
-
- return v;
-}

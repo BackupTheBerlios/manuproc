@@ -25,18 +25,25 @@
 
 void LR_Abstraktion::drucken_header(ofstream &os)
 {
-   os << "\\documentclass[12pt,a4paper]{article}\n";
-   os <<    "\\usepackage{isolatin1,t1enc,german,helvetic,vmargin}\n";
+
+ os << "\\documentclass[12pt,a4paper]{article}\n";
+#ifdef MABELLA_EXTENSIONS
+ os << 	"\\usepackage{isolatin1,t1enc,german,times,vmargin,color}\n"
+	"\\usepackage{epsfig}\n"
+	"\\usepackage{graphics}\n"
+	"\\setmarginsrb{2.00cm}{2.8cm}{1.25cm}{1in}{0pt}{0pt}{0pt}{0pt}\n"
+	"\\definecolor{backg}{gray}{0.985}\n"
+	"\\newcommand{\\shaderow}{\\raisebox{-1pt}[0pt][0pt]{\\makebox[0pt][l]{\\kern-70pt\\colorbox{backg}%%\n"
+		"{\\rule{0pt}{9pt}\\rule{\\paperwidth}{0pt}}}}}\n";
+#else
+ os << "\\usepackage{isolatin1,t1enc,german,helvetic,vmargin}\n";
+ os << "\\setmarginsrb{2.25cm}{2.8cm}{3.25cm}{1in}{0pt}{0pt}{0pt}{0pt}\n";
+#endif
+
    os <<    "\\usepackage{pstricks}\n";
    os <<    "\\usepackage{tabularx}\n";
    os <<    "\\usepackage{eurosym}\n";
    os <<    "\\renewcommand{\\rmdefault}{phv}\n";
-   os <<    "\\setmarginsrb{2.25cm}{2.8cm}{3.25cm}{1in}{0pt}{0pt}{0pt}{0pt}\n";
-//   os <<    "\\DeclareFontFamily{T1}{peur}{}\n";
-//   os <<    "\\DeclareFontShape{T1}{peur}{m}{n}{<-> peurr}{}\n";
-//   os <<    "\\newcommand{\\nullpf}{--{}--}\n";
-//   os <<    "\\newlength{\\breite} \n";
-//   os <<    "\\newrgbcolor{mygray}{0.5 1 0.75}";
    os <<    "\\newrgbcolor{mygray}{0.75 0.75 0.75}\n";
    os <<    "\\newlength{\\breite}\n";
    os <<    "\n";
@@ -53,11 +60,17 @@ void LR_Abstraktion::drucken_header(ofstream &os)
    os <<    "     \\hbox to 0pt{\\hspace*{-24truemm}\\vbox{\\hrule width 7truemm}\\hss}%\n";
    os <<    "     \\vss}\\nointerlineskip\n";
    os <<    "\\vspace*{1.2cm}%\n";
+
+#ifdef MABELLA_EXTENSIONS 
+if(!firmenpapier)
+  os << "\\raisebox{120pt}[0pt][0pt]{\\makebox[0pt][l]{\\kern+140pt\\psfig{file=/tmp/logo.eps}}}\n";
+#endif
+
 }
 
 void LR_Abstraktion::drucken_footer(ofstream &os)
 {
-  if (Was()=="Rechnung")
+  if (t==Rechnung)
    {
      cH_Kunde kunde_von(1);
      os <<"\n\n\\footnotesize "<< kunde_von->getBank()<<"\\\\\n";
@@ -77,7 +90,7 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie,const cH_pps
  unsigned int spaltenzahl=0;
  unsigned int warengruppen_count=1;
  string waehrung;
- if (Was()=="Rechnung") waehrung = getWaehrung()->TeXsymbol();
+ if (t==Rechnung) waehrung = getWaehrung()->TeXsymbol();
  cH_ExtBezSchema schema_mem(ExtBezSchema::default_ID);
  vector<fixedpoint<2> > preissum_warengruppe(warengruppen_count);
  vector<fixedpoint<2> > preissum_zeile;
@@ -100,23 +113,23 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie,const cH_pps
     Einheit einheit_mem = Einheit(artikel_id); 
     unsigned int tabellen_zeile=0;
 
-    if (Was()!="Auftrag" && (*i).Lfrs_Id()!=lfrsid_mem ) 
+    if (t==Auftrag && (*i).Lfrs_Id()!=lfrsid_mem ) 
       { class Lieferschein l((*i).Lfrs_Id());
         string sKunde;
         cH_Kunde k(l.KdNr()); 
         if (l.KdNr() != kunden_id) sKunde = k->firma();
         else sKunde = "";
-        if (Was()=="Rechnung")
+        if (t==Rechnung)
        	   lieferung_an(os,(*i).Lfrs_Id(),l.getDatum(),sKunde); 
         ++zeilen_count;    
         ++tabellen_zeile;
       }
-    if (Was()=="Rechnung")
+    if (t==Rechnung)
       {
        preismenge_mem = (*i).getPreis().PreisMenge();
        lfrsid_mem=(*i).Lfrs_Id();
       } 
-    if (Was()=="Auftrag")
+    if (t==Auftrag)
       {
        preismenge_mem = (*i).getPreis().PreisMenge();
       } 
@@ -126,7 +139,7 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie,const cH_pps
         ArtikelBase artikel_id  = (*j).ArtikelID();
         cH_ArtikelBezeichnung bez(artikel_id,cH_Kunde(kunden_id)->getSchema()->Id());
         cH_ExtBezSchema schema = bez->getExtBezSchema();
-        if (Was()=="Rechnung")       
+        if (t==Rechnung)       
          {
            if (schema!=schema_mem  || lfrsid_mem != (*j).Lfrs_Id() ||
                (*j).getPreis().PreisMenge() != preismenge_mem ||
@@ -135,16 +148,16 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie,const cH_pps
            if ((*j).Menge()!=fixedpoint<2>(0)) menge_bool=true;
            if ((*j).Rabatt()!=fixedpoint<2>(0)) rabatt_bool=true;
          }
-        else if (Was()=="Auftrag")       
+        else if (t==Auftrag)       
          {
            if (schema!=schema_mem  || 
                (*j).getPreis().PreisMenge() != preismenge_mem ||
                Einheit(artikel_id) != einheit_mem ) break;
            if ((*j).Stueck()!=1) stueck_bool=true;
-           if ((*j).Menge()!=fixedpoint<2>(0)) menge_bool=true;
+//           if ((*j).Menge()!=fixedpoint<2>(0)) menge_bool=true;
            if ((*j).Rabatt()!=fixedpoint<2>(0)) rabatt_bool=true;
          }
-        else if (Was()=="Lieferschein")       
+        else if (t==Lieferschein)       
          {
            if (schema!=schema_mem || Einheit(artikel_id) != einheit_mem ) break;
            if ((*j).Menge()!=fixedpoint<2>(0)) menge_bool=true;
@@ -163,7 +176,7 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie,const cH_pps
            ||zeilen_count-1>=ZEILEN_SEITE_N && page_count!=1 )
           {
             fixedpoint<2> vortrag;
-            if (Was()=="Rechnung" && tabellen_zeile)
+            if (t==Rechnung && tabellen_zeile)
                vortrag = drucken_table_preissum_warengruppe(os,
                   preissum_zeile,preissum_warengruppe,spaltenzahl,"Übertrag");
             os << "\\end{tabularx}\n";
@@ -173,7 +186,7 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie,const cH_pps
             spaltenzahl = drucken_table_header(os,schema_mem,signifikanz,stueck_bool,menge_bool,rabatt_bool,preismenge_mem,waehrung,Einheit(artikel_id).TeX(),instanz);
             tabellen_zeile=0;
             ++zeilen_count;
-            if (Was()=="Rechnung")
+            if (t==Rechnung)
 	        {	
    	       for (unsigned int i=0;i<spaltenzahl-2;++i) os << "&";
                   os << "Vortrag & "<< FormatiereTeX(vortrag) <<"\\\\";
@@ -192,7 +205,7 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie,const cH_pps
          ++zeilen_count;
          ++tabellen_zeile;
 //os << zeilen_count<<"  ";
-        if(Was()!="Auftrag")
+        if(t!=Auftrag)
           {if (stueck_bool && (!(*k).ZusatzInfo() || (*k).Stueck()!=1))
             {  os <<linecolor ;
              	// if ((*k).ZusatzInfo()) os << '(';
@@ -208,7 +221,7 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie,const cH_pps
                }
            }
          if (stueck_bool && menge_bool)
-           { if (Was()=="Auftrag") os << linecolor << FormatiereTeX_short(fixedpoint<3>((*k).Stueck() ))<<einheitsize <<Einheit(artikel_id).TeX();
+           { if (t==Auftrag) os << linecolor << FormatiereTeX_short(fixedpoint<3>((*k).Stueck() ))<<einheitsize <<Einheit(artikel_id).TeX();
              else os <<linecolor<< FormatiereTeX_short(fixedpoint<3>((*k).Stueck() * (*k).Menge()))<<einheitsize <<Einheit(artikel_id).TeX();
              os <<" & ";
            }
@@ -216,7 +229,7 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie,const cH_pps
 	   { if ((*k).ZusatzInfo()) os << "&";
              else os <<"{"<<linecolor<< Gtk2TeX::string2TeX((*bez)[l->bezkomptype]->getStrVal()) <<"}&";
 	   }
-         if(Was()=="Rechnung")       
+         if(t==Rechnung)       
           {
             os <<linecolor<<FormatiereTeX_Preis( (*k).getPreis().Wert() )<<" & ";
             if (rabatt_bool) os<<linecolor<<FormatiereTeX((*k).Rabatt())<<" & ";
@@ -224,7 +237,7 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie,const cH_pps
             preissum_zeile.push_back(  preis  ) ;
             os <<linecolor<< FormatiereTeX(preissum_zeile[preissum_zeile.size()-1]);
           }
-         else if(Was()=="Auftrag" && instanz->Id()==ppsInstanz::INST_KNDAUF)       
+         else if(t==Auftrag && instanz->Id()==ppsInstanz::INST_KNDAUF)       
           {
             os <<linecolor<<FormatiereTeX_Preis( (*k).getPreis().Wert() )<<" & ";
             if (rabatt_bool) os<<linecolor<<FormatiereTeX((*k).Rabatt())<<" & ";
@@ -232,14 +245,14 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie,const cH_pps
             preissum_zeile.push_back(  preis  ) ;
             os <<linecolor<< FormatiereTeX(preissum_zeile[preissum_zeile.size()-1]);
           }
-        else if (Was()=="Lieferschein") 
+        else if (t==Lieferschein) 
           {
             if ((*k).Palette()!=0) os <<linecolor<<(*k).Palette();
             os<<" & "<<linecolor << (*k).YourAuftrag()<<"\n";   
           }
         os<<"\\\\\n";
       }
-   if (Was()=="Rechnung")
+   if (t==Rechnung)
     {
       drucken_table_preissum_warengruppe(os,
             preissum_zeile,preissum_warengruppe,spaltenzahl);
@@ -252,7 +265,7 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie,const cH_pps
    i=j;
   }
 
-  if (Was()=="Rechnung") 
+  if (t==Rechnung) 
    {
      os << "\\bigskip\\begin{tabularx}{18cm}{rrr}\n";
 //     os << "\\begin{tabularx}{18cm}{rrr}\n";
@@ -305,7 +318,7 @@ unsigned int LR_Abstraktion::drucken_table_header(ofstream &os,
   string sg ="\\scriptsize\\mygray "; // Größe der Überschriften
   string tabcolumn="";
   unsigned int spaltenzahl=2;
-  if(Was()!="Auftrag")
+  if(t!=Auftrag)
    { if (stueck_bool) { tabcolumn+="r"; spaltenzahl+=1; }
      if (menge_bool) { tabcolumn+="r"; spaltenzahl+=1; }
    }
@@ -315,14 +328,14 @@ unsigned int LR_Abstraktion::drucken_table_header(ofstream &os,
       { tabcolumn += j->TeXtabformat ; ++spaltenzahl ; }
 //      { tabcolumn += "X" ; ++spaltenzahl ; }
   tabcolumn+="rr";
-  if(Was()=="Rechnung" || Was()=="Auftrag") 
+  if(t==Rechnung || t==Auftrag) 
      if (rabatt_bool) {tabcolumn+="X";++spaltenzahl;}
 
   os << "\\settowidth{\\breite}{"<<ug<<" Bezeichnung}";
   os << "\n\\vspace{-2ex}\n";
   os << "\\begin{tabularx}{18cm}{"<<tabcolumn<<"}"<<"\\\\\n";
 
-  if(Was()!="Auftrag")
+  if(t!=Auftrag)
    { if (stueck_bool)  os << "\\multicolumn{1}{c}{"<<ug<<"Stück}  &  ";
      if (menge_bool)   os << "\\multicolumn{1}{c}{"<<ug<<"Menge} & ";
    }
@@ -330,7 +343,7 @@ unsigned int LR_Abstraktion::drucken_table_header(ofstream &os,
     os << "\\multicolumn{1}{c}{"<<sg<<" {Gesamtmenge}}  & ";
   for(ExtBezSchema::const_sigiterator j=schema->sigbegin(signifikanz);j!=schema->sigend(signifikanz);++j)
         os << "\\mbox{"<<ug<<j->bezkomptext<<"}&";
-  if (Was()=="Rechnung"|| (Was()=="Auftrag" && instanz->Id()==ppsInstanz::INST_KNDAUF))
+  if (t==Rechnung|| (t==Auftrag && instanz->Id()==ppsInstanz::INST_KNDAUF))
    {
      os <<"\\multicolumn{1}{c}{"<<sg<<waehrung;
      if (preismenge!=1 || einheit!="") os <<"\\,/";
@@ -340,7 +353,7 @@ unsigned int LR_Abstraktion::drucken_table_header(ofstream &os,
      if (rabatt_bool) os <<"\\multicolumn{1}{c}{"<<ug<<"Rabatt} & ";
      os <<"\\multicolumn{1}{c}{"<<sg<<"{Gesamtpreis}} "; 
    }
-  if (Was()=="Lieferschein")
+  if (t==Lieferschein)
    {
      os <<"\\multicolumn{1}{c}{" <<ug<<"Palette} & ";
      os <<"\\multicolumn{1}{c}{" <<ug<<"Auftrag} ";
@@ -385,16 +398,16 @@ void LR_Abstraktion::page_header(int page,ofstream &os,const string& kopie,const
     {
      cH_Kunde kunde_von(1);
      os << kunde_von->LaTeX_von()<<"\n\n\\bigskip";
-     os << kunde_an->LaTeX_an(Was())<<"\n\n\\bigskip";
+     os << kunde_an->LaTeX_an(typString())<<"\n\n\\bigskip";
     }
    else 
     {
      os <<"\n\n\\vspace{1cm}\n";
      os <<"\\large Firma\n\n"<< kunde_an->getName()<<"\n\n\\bigskip";
     }
-   os << "\\LARGE "<<Was()<<": "<<RngNr()<<"\\hfill\\normalsize "
+   os << "\\LARGE "<<t<<": "<<RngNr()<<"\\hfill\\normalsize "
         <<kopie<<" Seite "<<page<<"\\hfill "<< getDatum() << "\\\\[1ex]\n\n";
-   if (page==1 && Was()!="Auftrag")
+   if (page==1 && t!=Auftrag)
     {
      os << "\\scriptsize Wir sandten Ihnen auf Ihre Rechung und Gefahr\n";
     }

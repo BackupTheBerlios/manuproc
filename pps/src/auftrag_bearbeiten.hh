@@ -31,8 +31,8 @@
 class auftrag_bearbeiten : public auftrag_bearbeiten_glade
 {   
  ppsInstanz::ID instanz;
- AuftragFull *auftrag;      
- aktAufEintrag *aktaufeintrag;  
+ AuftragFull *auftrag;
+ AufEintragBase *aktaufeintrag;
  cH_Kunde kunde;
  gint aufentrystat_chid;
  gint aufstat_chid;

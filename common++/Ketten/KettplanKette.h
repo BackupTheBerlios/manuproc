@@ -1,4 +1,4 @@
-// $Id: KettplanKette.h,v 1.3 2001/07/05 09:23:02 christof Exp $
+// $Id: KettplanKette.h,v 1.4 2001/11/05 08:58:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,15 +20,25 @@
 
 #ifndef KETTPLANKETTE_HH
 #define KETTPLANKETTE_HH
-#include <Ketten/Kette.h>
-#include "Ketten/ArtikelGang.h"
+#include "Kette.h"
+#include "ArtikelGang.h"
+#include "KettenGarn.h"
 #include <Aux/SQLerror.h>
 
 /*#warning this class is obselete (barco will vanish!) */
 
 class KettplanKette : public Kette {
+public:
+	static const int VA_PLAN=1;
+	static const int VA_KETTLEN=2;
+	static const int VA_STUECKLEN=4;
+	static const int VA_SCHUSS=8;
+	static const int VA_WEBMASCH=16;
+	static const int VA_ARTIKEL=0x20;
+
+private:
 	int planmasch;
-	int kettlaenge;
+	mutable int kettlaenge;
 	int stuecklaenge;
 	float schussdichte;
 	int webmasch;
@@ -38,12 +48,7 @@ class KettplanKette : public Kette {
         unsigned int abgeschnitten;
 	std::vector <ArtikelGang> artikel; // sortiert ??
 	mutable int valid;
-	static const int VA_PLAN=1;
-	static const int VA_KETTLEN=2;
-	static const int VA_STUECKLEN=4;
-	static const int VA_SCHUSS=8;
-	static const int VA_WEBMASCH=16;
-	static const int VA_ARTIKEL=0x20;
+
 public:
 	typedef std::vector <ArtikelGang>::const_iterator const_iterator;
 	const_iterator begin()
@@ -53,8 +58,19 @@ public:
 	{ if (!(valid&VA_ARTIKEL)) get_artikel();
 	   return artikel.end(); }
 	
+	KettplanKette()
+		: Kette(), planmasch(0), kettlaenge(0), stuecklaenge(0), 
+		  schussdichte(0), webmasch(0),
+		  valid(0)
+	{}
+
 	KettplanKette(int m,const Petig::Datum _schaerdatum)
 		: Kette(m,_schaerdatum), planmasch(0), kettlaenge(0), stuecklaenge(0), 
+		  schussdichte(0), webmasch(0),
+		  valid(0)
+	{}
+	KettplanKette(int m,const Petig::Datum _schaerdatum,int l)
+		: Kette(m,_schaerdatum), planmasch(0), kettlaenge(l), stuecklaenge(0), 
 		  schussdichte(0), webmasch(0),
 		  valid(0)
 	{}
@@ -74,9 +90,9 @@ public:
 		  valid(0)
 	{}
 	
-	int Kettlaenge() throw();
+	int Kettlaenge() const throw();
 	int Stuecklaenge() throw();
-	int defaultKettlaenge() throw(SQLerror);
+	int defaultKettlaenge() const throw(SQLerror);
 	int defaultStuecklaenge() throw(SQLerror);
 	float defaultSchussdichte() throw(SQLerror);
 	void Schussdichte(float sd) throw(SQLerror);
@@ -100,6 +116,15 @@ public:
 	const std::vector <ArtikelGang> &get_artikel()
 	{  return get_artikel_sorted(); }
 	const std::vector <ArtikelGang> &get_artikel_sorted();
+
+        void save_Kette() const;
+        void save_Artikel(const ArtikelGang& artikel) const;
+        void delete_Artikel(const ArtikelGang& artikel) const;
+        int get_aktual_Index(const ArtikelGang& artikel) const;
+        void save_Garn(const ArtikelGang& artikel, const KettenGarn& garn) const;
+        void delete_Garn(const ArtikelGang& artikel, const KettenGarn& garn) const;
+        vector<KettenGarn> load_Garn(const ArtikelGang& artikel) const;
+
 private:
 	int holePlanMaschine() const throw(SQLerror);
 	void LaengenArtikel(int &art,int &br);
@@ -110,5 +135,9 @@ public: // deprecated!!!
 	{  Schussdichte(sd); }
 	/// deprecate[Ad, use BarcoMasch(int m)
 	void setzeBarcoMasch(int m) throw(SQLerror);
+	
+	void UnCache(int what) const
+	{  valid&=~what;
+	}
 };
 #endif
