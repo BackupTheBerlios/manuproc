@@ -1,4 +1,4 @@
-// $Id: testKW.cc,v 1.9 2004/05/03 13:07:38 christof Exp $
+// $Id: testKW.cc,v 1.10 2004/05/03 13:15:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -75,17 +75,14 @@ int main()
    d=ManuProC::Datum(1,1,2004);
    std::cout << d << " = " << d.KW() << '\n';
 
-   d=ManuProC::Datum(2,5,2004);
-   std::cout << d << " = " << d.KW() << '\n';
-
    d=ManuProC::Datum(3,5,2004);
    std::cout << d << " = " << d.KW() << '\n';
 
-   kw=Kalenderwoche(18,1970);
+   kw=Kalenderwoche(18,2004);
    d=ManuProC::Datum(kw);
    std::cout << "KW "<<kw << " = "<<d << " = " << d.KW() << '\n';
 
-   kw=Kalenderwoche(19,1970);
+   kw=Kalenderwoche(19,2004);
    d=ManuProC::Datum(kw);
    std::cout << "KW "<<kw << " = "<<d << " = " << d.KW() << '\n';
 
