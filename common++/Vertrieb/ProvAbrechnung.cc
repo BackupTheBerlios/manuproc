@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung.cc,v 1.3 2003/01/08 09:46:58 christof Exp $ */
+/* $Id: ProvAbrechnung.cc,v 1.4 2003/06/20 14:34:19 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,10 +24,22 @@ const ProvAbrechnung::ID ProvAbrechnung::getNextAbrNr(const Kunde::ID verkid) th
 {
  ProvAbrechnung::ID abrid;
  
- std::string qu="select coalesce(max(provnr),0)+1 from prov_abrechnung"
- 	" where verknr="+itos(verkid);
- 	
- Query(qu).FetchOne(abrid);	 
+ Query("select coalesce(max(provnr),0)+1 from prov_abrechnung"
+ 	" where verknr=?")
+	<< itos(verkid) >> abrid;
 
  return abrid;
 }
+
+const ManuProC::Datum ProvAbrechnung::getNextVomDate(const Kunde::ID verkid) throw(SQLerror)
+{
+ ManuProC::Datum newvom;
+ 
+ Query("select coalesce(max(bis)+1,date('1970-01-01')) from prov_abrechnung"
+       " where verknr=?")
+	<< itos(verkid) >> newvom; 
+
+ return newvom;
+}
+
+

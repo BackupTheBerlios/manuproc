@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnungEntry_sql.pgcc,v 1.8 2003/04/17 09:22:13 jacek Exp $ */
+/* $Id: ProvAbrechnungEntry_sql.pgcc,v 1.9 2003/06/20 14:34:19 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -69,7 +69,6 @@ void ProvAbrechnungEntry::newAbrechnungEntries(
  int ABRNR=_abrnr;
  int VERKNR=_verknr;
  int RNGID=rng.Id();
- float PROVSATZ;
  int KUNDENNR;
  exec sql end declare section;
 
@@ -77,13 +76,9 @@ void ProvAbrechnungEntry::newAbrechnungEntries(
 
  KUNDENNR=rng.KdNr();
 
- exec sql select provsatz1 into :PROVSATZ from prov_verkaeufer
-	where verknr=:VERKNR and kundennr=:KUNDENNR;
- SQLerror::test(__FILELINE__);
 
-
- exec sql insert into prov_entry (provnr,verknr,rngid,zeilennr,provsatz)
-	(select :ABRNR,:VERKNR,rngid,zeilennr,:PROVSATZ
+ exec sql insert into prov_entry (provnr,verknr,rngid,zeilennr)
+	(select :ABRNR,:VERKNR,rngid,zeilennr
  	 from rechnungentry where rngid=:RNGID);
  SQLerror::test(__FILELINE__,100);
 

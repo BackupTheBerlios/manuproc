@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung_sql.pgcc,v 1.4 2003/05/30 11:57:59 jacek Exp $ */
+/* $Id: ProvAbrechnung_sql.pgcc,v 1.5 2003/06/20 14:34:19 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -29,18 +29,20 @@ throw(SQLerror)
  int VERKNR=verkid;
  char *DATUM=0;
  char *BIS=0;
+ char *VOM=0;
  char *NOTIZ=0;
  exec sql end declare section;
 
 
- exec sql select datum,bis,notiz into
- 	:DATUM,:BIS,:NOTIZ from prov_abrechnung
+ exec sql select datum,bis,vom,notiz into
+ 	:DATUM,:BIS,:VOM,:NOTIZ from prov_abrechnung
  	where (verknr,provnr) = (:VERKNR,:PROVNR);
  SQLerror::test(__FILELINE__);
  
  verkaeufer=VERKNR;
  datum=ManuProC::Datum(DATUM);
  bis=ManuProC::Datum(BIS);
+ vom=ManuProC::Datum(VOM);
  notiz=NOTIZ;
 
  ECPGfree_auto_mem();
@@ -50,23 +52,26 @@ throw(SQLerror)
 
 ProvAbrechnung* ProvAbrechnung::newProvAbrechnung(const Kunde::ID verkid,
  		ProvAbrechnung::ID abrnr, ManuProC::Datum _bis,
+		ManuProC::Datum _vom,
  		const std::string _notiz) throw(SQLerror)
 {
  exec sql begin declare section;
  int PROVNR=abrnr;
  int VERKNR=verkid;
  char *BIS;
+ char *VOM;
  char *NOTIZ;
  exec sql end declare section;
 
  if(!_bis.valid()) _bis=ManuProC::Datum::today();
 
  BIS=(char*)_bis.to_iso().c_str();
+ VOM=(char*)_vom.to_iso().c_str();
  NOTIZ=(char*)_notiz.c_str();
 
  exec sql insert into prov_abrechnung
-	(provnr,verknr,datum,bis,notiz) values 
-	(:PROVNR,:VERKNR,date(now()),:BIS,:NOTIZ);
+	(provnr,verknr,datum,bis,vom,notiz) values 
+	(:PROVNR,:VERKNR,date(now()),:BIS,:VOM,:NOTIZ);
  SQLerror::test(__FILELINE__);
  
  return new ProvAbrechnung(verkid,abrnr);
@@ -85,11 +90,12 @@ void ProvAbrechnung::loadEntries(std::string sql_order) throw(SQLerror)
  
  std::vector<FetchStruct> st;
 
- std::string qu="select rngid,zeilennr,provsatz from prov_entry"
-	" where provnr="+itos(Id())+" and verknr="+itos(verkaeufer)+
-	sql_order;
+ Query Q("select p.rngid,p.zeilennr,coalesce(e.provsatz,0) from prov_entry p"
+	" join rechnungentry e on (p.rngid=e.rngid and p.zeilennr=e.zeilennr"
+	" and (p.provnr,p.verknr)=(?,?)) "+sql_order);
 
- Query Q(qu);
+ Q << itos(Id()) << itos(verkaeufer);
+
  SQLerror::test(__FILELINE__,100);
 
  if(!Q.good()) return;  // sqlcode=100

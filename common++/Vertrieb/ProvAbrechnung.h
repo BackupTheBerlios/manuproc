@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung.h,v 1.6 2003/06/02 09:46:57 jacek Exp $ */
+/* $Id: ProvAbrechnung.h,v 1.7 2003/06/20 14:34:19 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -34,6 +34,7 @@ class ProvAbrechnung : public ManuProcEntity<>
  Kunde::ID verkaeufer;
  ManuProC::Datum datum;
  ManuProC::Datum bis;
+ ManuProC::Datum vom;
  std::string notiz;
  std::vector<ProvAbrechnungEntry*> entries;
  bool entries_valid;
@@ -49,6 +50,7 @@ public:
  Kunde::ID VerkNr() const { return verkaeufer; }
  const ManuProC::Datum getDatum() const { return datum; }
  const ManuProC::Datum getBis() const { return bis; }
+ const ManuProC::Datum getVom() const { return vom; }
 
  const_iterator begin() const
  	{ return entries.begin(); }
@@ -56,9 +58,12 @@ public:
  	{ return entries.end(); } 	
 
  static ProvAbrechnung* newProvAbrechnung(const Kunde::ID verkid,
- 		ProvAbrechnung::ID abrnr, ManuProC::Datum bis,
+ 		ProvAbrechnung::ID abrnr, 
+ 		ManuProC::Datum bis,
+ 		ManuProC::Datum vom,
  		const std::string _notiz) throw(SQLerror);
  static const ProvAbrechnung::ID getNextAbrNr(const Kunde::ID verk) throw(SQLerror);
+ static const ManuProC::Datum getNextVomDate(const Kunde::ID verk) throw(SQLerror); 
 
  std::vector<ProvAbrechnungEntry*>::const_iterator begin()
  	{ return entries.begin(); }
