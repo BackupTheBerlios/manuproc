@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnungEntry.h,v 1.7 2003/09/12 13:03:39 jacek Exp $ */
+/* $Id: ProvAbrechnungEntry.h,v 1.8 2003/12/16 15:36:47 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -36,6 +36,7 @@ class ProvAbrechnungEntry : public ManuProcEntity<>
  fixedpoint<2> provsatz;
  fixedpoint<2> provision;
  const Kunde::ID verknr;
+ float rng_rabatt; 	// Gesamtrabattsatz auf der Rechnung
 
 public:
 
@@ -44,7 +45,8 @@ public:
  const Preis Umsatz() const { return umsatz; } 
 
  ProvAbrechnungEntry() : rngentry(RechnungEntryBase()),
- 	provsatz(0.0), provision(0.0),verknr(Kunde::none_id) {}
+ 	provsatz(0.0), provision(0.0),verknr(Kunde::none_id),
+ 	rng_rabatt(0.0) {}
  	
 // ProvAbrechnungEntry(const ManuProcEntity<>::ID _abrnr, 
 // 	const Kunde::ID _verknr, const RechnungEntry::ID _rngid,
@@ -52,12 +54,13 @@ public:
 	
  ProvAbrechnungEntry(const ManuProcEntity<>::ID _abrnr, 
  	const Kunde::ID _verknr, const RechnungEntry::ID _rngid,
-	int zeilennr, fixedpoint<2> _psatz) throw(SQLerror); 		
+	int zeilennr, fixedpoint<2> _psatz,
+	float rng_rabattsatz) throw(SQLerror); 		
 
  virtual ~ProvAbrechnungEntry() {};
 
  std::string getRngToStr() const { return rngentry.getRngidToStr(); }
- 
+ float getRngRabattsatz() const { return rng_rabatt; }
  const RechnungEntry& RngEntry() const { return rngentry; }
  
  ManuProcEntity<>::ID Id() const { return entityid;} 		     

@@ -1,4 +1,4 @@
-// $Id: Preis.h,v 1.18 2003/11/18 16:50:56 jacek Exp $
+// $Id: Preis.h,v 1.19 2003/12/16 15:36:47 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -119,6 +119,8 @@ public:
 	bool operator!() const
 	{  return !pfennig_cent;
 	}
+	
+	void roundForOut() { pfennig_cent=(geldbetrag_out)pfennig_cent;}
 };
 
 std::ostream &operator<<(std::ostream &,const Preis &p);

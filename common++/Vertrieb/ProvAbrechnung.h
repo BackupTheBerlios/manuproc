@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung.h,v 1.11 2003/07/17 10:07:03 jacek Exp $ */
+/* $Id: ProvAbrechnung.h,v 1.12 2003/12/16 15:36:47 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -86,6 +86,7 @@ private:
  typedef struct {int rngid;
 	 int zeilennr;
 	 float provsatz;
+	 float rngrabatt;
 	} FetchStruct;
 	
  friend FetchIStream &operator>>(FetchIStream &is, FetchStruct &st);

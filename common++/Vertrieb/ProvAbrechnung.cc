@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung.cc,v 1.6 2003/07/17 10:07:03 jacek Exp $ */
+/* $Id: ProvAbrechnung.cc,v 1.7 2003/12/16 15:36:47 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -49,13 +49,40 @@ const ManuProC::Datum ProvAbrechnung::getNextVomDate(const Kunde::ID verkid) thr
 fixedpoint<2> ProvAbrechnung::getAuszahlung() const
 {
  fixedpoint<2> summe=0;
+ fixedpoint<2> rng_summe=0;
+
+ RechnungBase::ID tmprid=RechnungBase::none_id;
+ float rabatt;
 
  for(std::vector<ProvAbrechnungEntry*>::const_iterator i=entries.begin();
 	i!=entries.end(); ++i)
-    summe+=(*i)->Provision();   
+    {
+     if(tmprid != (*i)->RngEntry().Id())
+      {
+       if(tmprid != RechnungBase::none_id)
+         {
+	  float rabfkt = (100 - rabatt)/100.0;
+          rng_summe = rng_summe * rabfkt;
+	  summe+=rng_summe;
+	 }
+       rng_summe=0;
+       tmprid=(*i)->RngEntry().Id();
+       rabatt=(*i)->getRngRabattsatz();
+      }
+
+     rng_summe+=(*i)->Provision();   
+    }
+
+ if(tmprid!=RechnungBase::none_id)
+   {
+    float rabfkt = (100 - rabatt)/100.0;
+    rng_summe = rng_summe * rabfkt;
+    summe+=rng_summe;
+   }
+
 
  cH_Kunde vk(verkaeufer);
- if(!vk->Auslaender())
+ if(vk->MwSt())
    summe = summe * (fixedpoint<2>(1) + ((float)MWST/100));
 
  return summe; 
