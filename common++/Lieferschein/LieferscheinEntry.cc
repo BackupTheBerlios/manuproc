@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.41 2003/09/05 10:42:39 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.42 2003/09/11 08:22:16 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -47,7 +47,8 @@
 #endif
 
 std::ostream &operator<<(std::ostream &o, const LieferscheinEntryBase &b)
-{  return o << b.Instanz()->Id() << '.' << b.Id() << '.' << b.ZNr();
+{  if (!b.valid()) return o << "n.a.";
+   return o << b.Instanz()->Id() << '.' << b.Id() << '.' << b.ZNr();
 }
 
 bool LieferscheinEntry::Valid() const

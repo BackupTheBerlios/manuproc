@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.22 2003/09/10 07:05:25 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.23 2003/09/11 08:22:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -372,7 +372,9 @@ void AufEintrag::Einlagern2(mengen_t M,
    else // M>0
    {  // hier stand mal false - wozu?
       // true bewirkt in AP dass gelieferte Menge im Einkauf abbestellt wird
-      MengeAendern(-M,Id()==ungeplante_id,elter_alt,ManuProC::Auftrag::r_Produziert);
+      // false bewirkt in L dass geliefert und nicht abbestellt wird
+      bool instanzen=(Id()==ungeplante_id && Instanz()->AutomatischEinlagern());
+      MengeAendern(-M,instanzen,elter_alt,ManuProC::Auftrag::r_Produziert);
       AuftragBase zielauftrag(Instanz(),plan_auftrag_id);
       neuerAEB=AufEintragBase(zielauftrag,
          		zielauftrag.PassendeZeile(getLieferdatum(),Artikel(),OPEN));
