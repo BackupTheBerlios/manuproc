@@ -32,9 +32,9 @@ COPY "prod_instanz" FROM stdin;
 1	Kundenauftr‰ge	\N	1	t	\N	t	\N	\N	\N	P
 11	Packerei	\N	5	\N	\N	\N	1	\N	\N	P
 35	Einkauf	\N	60	t	\N	t	30	30	\N	P
-5	Schraubenzieherlager	10	50	t	\N	t	\N	\N	t	L
+5	Schraubenzieherlager	10	50	t	\N	t	\N	\N	t	l
 20	Gieﬂerei	\N	6	t	\N	t	5	\N	\N	P
-30	Rohwarenlager	35	52	\N	\N	\N	\N	\N	t	L
+30	Rohwarenlager	35	52	\N	\N	\N	\N	\N	t	l
 10	Werkstatt	\N	4	\N	\N	t	1	5	\N	P
 21	Schmelze	\N	7	\N	\N	\N	10	\N	\N	P
 \.
