@@ -69,6 +69,8 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
    std::string nuraktiv(" and coalesce(aktiv,true)=true");
    kundenbox->Einschraenkung(nuraktiv,true);
    kundenbox->EinschraenkenKdGr(KundengruppeID::Auftragsadresse);
+   kundenbox->setExpandStr1(true);
+   kundenbox->setExpandStr2(true);
    checkbutton_ean_drucken->show();
 #endif 
 

@@ -503,6 +503,8 @@ auftrag_rechnung::auftrag_rechnung(cH_ppsInstanz _instanz)
   std::string nuraktiv(" and coalesce(aktiv,true)=true");
   lieferkunde->Einschraenkung(nuraktiv,true);
   lieferkunde->EinschraenkenKdGr(KundengruppeID::Auftragsadresse);      
+  lieferkunde->setExpandStr1(true);
+  lieferkunde->setExpandStr2(true);
   checkbutton_ean_drucken->show(); 
   button_lieferscheine_aufraumen->hide();
 #endif

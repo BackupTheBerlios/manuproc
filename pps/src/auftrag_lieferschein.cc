@@ -340,6 +340,9 @@ auftrag_lieferschein::auftrag_lieferschein(cH_ppsInstanz _instanz)
   liefer_kunde->EinschraenkenKdGr(KundengruppeID::Auftragsadresse);
 #endif
 
+  liefer_kunde->setExpandStr1(true);
+  liefer_kunde->setExpandStr2(true);
+
 #ifdef MABELLA_EXTENSIONS
  button_zeile_uebernehmen->set_sensitive(false);
  button_kompletter_auftrag->set_sensitive(false);
