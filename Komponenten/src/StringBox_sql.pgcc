@@ -1,0 +1,76 @@
+// $Id: StringBox_sql.pgcc,v 1.2 2004/11/08 07:55:09 christof Exp $
+/*  libKomponenten: GUI components for ManuProC's libcommon++ Copyright (C)
+ *  2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include "StringBox.hh"
+
+StringBox::StringBox() 
+: tr("",false)
+{  search.connect(SigC::slot(this,&StringBox::string1_search));
+}
+
+void StringBox::reset()
+{  SearchCombo::reset();
+   reset_signal();
+}
+
+exec sql include sqlca;
+
+void StringBox::string1_search(gboolean *_continue, GtkSCContext newsearch)
+{
+   exec sql begin declare section;
+    char name[80];
+    char query[1024];
+   exec sql end declare section;
+   
+   try
+   {  
+     std::string squery;
+     switch(newsearch)
+      {  case GTK_SEARCH_OPEN:
+         case GTK_SEARCH_REOPEN:
+            tr.open();
+             squery = "select distinct "+_string1_+" from "+_tabelle_+" where ";
+             if (newsearch==GTK_SEARCH_OPEN) squery+=_string1_+" ilike '"+get_text() +"%' ";
+             else squery+="true ";
+             squery +=(" order by "+_string1_);
+             strncpy(query,squery.c_str(),sizeof(query));
+             exec sql prepare string1_cursor_ from :query;
+      	    exec sql declare string1_cursor cursor for string1_cursor_;
+      	    exec sql open string1_cursor;
+      	    SQLerror::test(__FILELINE__);
+      	    // fall through
+      	 case GTK_SEARCH_FETCH:
+       	    exec sql fetch string1_cursor into :name;
+      	    SQLerror::test(__FILELINE__,100);
+      	    if (sqlca.sqlcode) return;
+      	    add_item(name);
+      	    *_continue=true;
+      	    break;
+      	 case GTK_SEARCH_CLOSE:
+      	    exec sql close string1_cursor;
+      	    SQLerror::test(__FILELINE__);
+      	    tr.commit();
+      	    break;
+      }
+   }
+   catch (SQLerror &e)
+   {  std::cerr << e << '\n';
+   }
+}
+
