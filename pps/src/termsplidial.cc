@@ -36,7 +36,7 @@ void termsplidial::on_okbutton_clicked()
 
 void termsplidial::on_cancbutton_clicked()
 {
- hide();
+// hide();
  destroy();    
 }
 

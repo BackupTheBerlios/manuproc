@@ -84,14 +84,14 @@ void auftrag_main::save_WindowSize()
 
 void auftrag_main::on_erfassen_activate()
 {   
-    hide();
+//    hide();
     try
     { if (selected_AufEintrag) manage(new auftrag_bearbeiten(instanz,selected_AufEintrag));
 //      else  manage(new auftrag_bearbeiten(instanz,AufEintragBase(instanz->Id())));
       else  manage(new auftrag_bearbeiten(instanz,0));
     } catch (SQLerror &e)
     {  std::cerr << e << '\n';
-       show();
+//       show();
     } 
     selected_AufEintrag=0;
 }

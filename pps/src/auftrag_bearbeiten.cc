@@ -49,7 +49,7 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
 : instanz(_instanz), auftrag(0), aktaufeintrag(0), kunde(Kunde::default_id),
 	aufentrystat_chid(0), aufstat_chid(0), selectedentry(-1),
 	artikel_preisliste_geaendert(false), newauftrag(false),
-	splitdialog(0),
+	splitdialog(NULL),
 	new_aufid_from_copy(AuftragBase::none_id)
 {
  MyWindow::setPositionSize(*this,"pps");
@@ -194,7 +194,6 @@ gint auftrag_bearbeiten::on_aufrabatt_spinbutton_focus_out_event(GdkEventFocus *
 void auftrag_bearbeiten::on_backtomain_button_clicked()
 {if (splitdialog) { splitdialog->destroy(); splitdialog=0; }
  destroy();
- auftragmain->show(); 
  MyWindow::setPositionSize(*auftragmain,"pps");
 }
 
