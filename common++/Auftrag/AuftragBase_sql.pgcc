@@ -72,7 +72,7 @@ void AuftragBase::insertNewEntry(unsigned long int bestellt,
 
 	
  auftragid = AUFTRAGID;
- instanz = (ppsInstanz::ppsInstId)INSTANZ;
+ instanz = (ppsInstanz::ID)INSTANZ;
 // zeilennr = ZEILENNR;
  bestellt = BESTELLT;
 // menge = bestellt*artikel->Stueckgroesse();

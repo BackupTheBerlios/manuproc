@@ -41,10 +41,11 @@ private:
 	std::string tmpstr;
 	
 public:
-//	Auftrag(ppsInstanz::ppsInstId instanz,int auftragid) throw(SQLerror);
+//	Auftrag(ppsInstanz::ID instanz,int auftragid) throw(SQLerror);
 	Auftrag(const AuftragBase& auftrag) throw(SQLerror);
 	// neuen Auftrag anlegen
-        Auftrag(ppsInstanz::ppsInstId instanz, long kundennr, int jahr=0) throw(SQLerror);
+        Auftrag(const AuftragBase& AB, long kundennr, int jahr=0) throw(SQLerror);
+        Auftrag(ppsInstanz::ID instanz, long kundennr, int jahr=0) throw(SQLerror);
 //        void newArtWrkar(aktAufEintrag &entry) throw(SQLerror);
         void deleteAuftrag() throw(SQLerror);
 	void deleteEintrag(int zeilennr) throw(SQLerror);
@@ -58,7 +59,7 @@ public:
         const Petig::Datum &getDatum() const { return datum; } 
 	AufStatVal getStatus() const { return status; }
 	int getAuftragid() const { return auftragid; }
-        ppsInstanz Instanz() const {return instanz;}
+        ppsInstanz::ID Instanz() const {return instanz->Id();}
 	std::string getAuftragidToStr() const;
 	std::string getYourAufNr() const { return youraufnr;}
 	std::string getBemerkung() const { return bemerkung;}

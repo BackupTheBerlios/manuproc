@@ -109,6 +109,34 @@ public:
  void clear();
  SigC::Signal1<void,cH_RowDataBase> leaf_selected;
  SigC::Signal1<void,const TCListNode &> node_selected;
+ 
+ struct SelectionError : public std::exception
+ {  virtual const char* what() const throw() { return "TreeBase::SelectionError"; }
+    SelectionError() {}
+ };
+ struct noRowSelected : public SelectionError
+ {  virtual const char* what() const throw() { return "TreeBase::noRowSelected"; }
+    noRowSelected() {}
+ };
+ struct multipleRowsSelected : public SelectionError
+ {  virtual const char* what() const throw() { return "TreeBase::multipleRowsSelected"; }
+    multipleRowsSelected() {}
+ };
+ struct notLeafSelected : public SelectionError
+ {  virtual const char* what() const throw() { return "TreeBase::notLeafSelected"; }
+    notLeafSelected() {}
+ };
+ 
+ cH_RowDataBase getSelectedRowDataBase() const 
+ 	throw(noRowSelected,multipleRowsSelected,notLeafSelected);
+ template <class T,class CT> T getSelectedRowDataBase_as() const
+// this could be optimzed to avoid the dynamic_cast within 
+// cH_RowDataBase::operator*, but it does not hurt that much
+ {  return T(dynamic_cast<CT*>(&*getSelectedRowDataBase()));
+ }
+ template <class T> T getSelectedRowDataBase_as() const
+ {  return getSelectedRowDataBase_as<T,typename T::ContentType>(); 
+ }
 };
 
 ///////////////////////////////////////////////////////////////////

@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.5 2001/08/31 10:03:07 christof Exp $
+# $Id: Makefile.am,v 1.6 2001/10/08 09:08:13 christof Exp $
 
 CXXFLAGS=-s @ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -26,7 +26,8 @@ Zeitpunkt_SOURCES=Zeitpunkt.cc
 CLEANFILES= *~ $(LINKS)
 
 LINKS=testHandles.cc testKW.cc test_pgsql_conv.cc FetchIStream.pgcc \
-	fixedpoint.cc Zeitpunkt.cc insert_bestellen_bei.pgcc
+	fixedpoint.cc Zeitpunkt.cc 
+#insert_bestellen_bei.pgcc
 
 $(LINKS):
 	ln -sf ../Basic/examples/$@ .

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.3 2001/07/16 09:54:26 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.4 2001/10/08 09:08:12 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,7 +22,6 @@
 #define LIEFERENTRY
 
 #include<Aux/SQLerror.h>
-#include<Aux/Datum.h>
 #include<Artikel/ArtikelBase.h>
 #include<Auftrag/AufEintragBase2.h>
 #include"LieferscheinBase.h"
@@ -40,7 +39,7 @@ class LieferscheinEntry : public LieferscheinBase
  bool zusatzinfo;
 
 public:
-        LieferscheinEntry(int lfrsid) throw(SQLerror);
+//???MAT        LieferscheinEntry(int lfrsid) throw(SQLerror);
 //        std::vector<st_lfrsentry> get_Entrys() const {return lfrsentry; }
   
 

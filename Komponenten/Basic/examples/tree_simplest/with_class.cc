@@ -15,7 +15,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// $Id: with_class.cc,v 1.7 2001/08/20 08:34:01 christof Exp $
+// $Id: with_class.cc,v 1.8 2001/10/08 09:10:18 christof Exp $
 
 #include "config.h"
 #include "with_class.hh"
@@ -41,7 +41,7 @@ class MyRowData : public RowDataBase
 public:
 
  MyRowData(int i,const std::string &s,int _i2,int _i3,const std::string _s1)
-	: intval(i),stringval(s),i2(_i2),i3(_i3),s1(_s1) {}
+	: intval(i),i2(_i2),i3(_i3),stringval(s),s1(_s1) {}
 	
  virtual const cH_EntryValue Value(guint _seqnr,gpointer gp) const
 	{	
@@ -62,10 +62,12 @@ public:
     return intval*intval;
  }
 
- vector<cH_EntryValueIntString> get_orderd(guint _seqnr) const
+#if 0
+ std::vector<cH_EntryValueIntString> get_orderd(guint _seqnr) const
    {
      
    }
+#endif   
 };
 
 class SumNode : public TCListNode
@@ -92,42 +94,48 @@ public:
  SumNode(guint col, const cH_EntryValue &v, bool expand)
 //   : TCListNode(col, v, expand), sum0(0),sum1(0),sum2(0) {}
    : TCListNode(col, v, expand), sum0(0) {}
+ static TCListNode *create(guint col, const cH_EntryValue &v, bool expand)
+    {  return new SumNode(col,v,expand); }
 };
 
-
-
-#if 0
+#if 1
 // this creates a nice Handle class for convenience
 // not strictly needed
 class cH_MyRowData : public cH_RowDataBase
 {
- cH_MyRowData(const MyRowData *r) : cH_RowDataBase(r) {}
 public:
+ typedef const MyRowData ContentType;
+ cH_MyRowData(ContentType *r) : cH_RowDataBase(r) {}
 //  cH_MyRowData() {}  // not recommended
- cH_MyRowData(int i,const std::string &s)
-	: cH_RowDataBase(new MyRowData(i,s)) {}
+ cH_MyRowData(int i,const std::string &s,int _i2,int _i3,const std::string _s1)
+//	: cH_RowDataBase(new MyRowData(i,s)) {}
+	: cH_RowDataBase(new MyRowData(i,s,_i2,_i3,_s1)) {}
  cH_MyRowData(const cH_RowDataBase &d)
 // better check here ...
  	: cH_RowDataBase(d) {}
- const MyRowData *operator*()
- 	{  return dynamic_cast<MyRowData*>(&**this); }
+ ContentType *operator*() const
+ 	{  return &((Handle<const ContentType>*)this)->operator*(); }
+ ContentType *operator->() const
+ 	{  return &((Handle<const ContentType>*)this)->operator*(); }
 };
 #endif
 
 void with_class::on_leaf_selected(cH_RowDataBase d)
-{  const MyRowData *dt=dynamic_cast<const MyRowData*>(&*d);
+{  //const MyRowData *dt=dynamic_cast<const MyRowData*>(&*d);
 // cH_MyRowData dt(d); // looks better, eh?
-   std::cout << "Data " << dt->Data(0) << ',' << dt->Data(1) << ',' << dt->Data(2) << '\n';
-}
-
-static TCListNode *create_MyNode(guint col, const cH_EntryValue &v, bool expand)
-{  
-//cout << col << "\n";
- return new SumNode(col,v,expand);
+   try
+   {  // test this variant, too
+//      cH_MyRowData dt=treebase->getSelectedRowDataBase_as<cH_MyRowData,const MyRowData>();
+      cH_MyRowData dt=treebase->getSelectedRowDataBase_as<cH_MyRowData>();
+      std::cout << "Data " << dt->Data(0) << ',' << dt->Data(1) << ',' << dt->Data(2) << '\n';
+   }
+   catch (const std::exception &e)
+   {  std::cerr << e.what() << '\n';
+   }
 }
 
 with_class::with_class()
-{  std::vector <string> v(treebase->Cols());
+{  std::vector <std::string> v(treebase->Cols());
    v[SP_ATT0]="Integer";
    v[SP_ATT1]="String";
    v[SP_ATT2]="something else";
@@ -144,5 +152,5 @@ with_class::with_class()
    treebase->setDataVec(datavec);
    
    treebase->leaf_selected.connect(SigC::slot(this,&with_class::on_leaf_selected));
-   treebase->set_NewNode(&create_MyNode);
+   treebase->set_NewNode(&SumNode::create);
 }

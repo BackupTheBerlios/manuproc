@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: rowdata.h,v 1.5 2001/06/29 11:30:18 christof Exp $
+// $Id: rowdata.h,v 1.6 2001/10/08 09:10:18 christof Exp $
 
 #ifndef KOMPONENTEN_ROWDATA_H
 #define KOMPONENTEN_ROWDATA_H
@@ -33,12 +33,12 @@ public:
  virtual ~RowDataBase(){}
 };
 
-class cH_RowDataBase : public const_Handle<RowDataBase>
+class cH_RowDataBase : public Handle<const RowDataBase>
 {
 protected:
  cH_RowDataBase() {}
 public:
- cH_RowDataBase(const RowDataBase *r) : const_Handle<RowDataBase>(r){}
+ cH_RowDataBase(const RowDataBase *r) : Handle<const RowDataBase>(r){}
 };
 
 #endif

@@ -408,6 +408,7 @@ void auftrag_main::on_button_auftraege_clicked()
 
 void auftrag_main::on_button_artikeleingabe_clicked()
 {
+cout << selected_Artikel.Id()<<'\n';
  if (selected_Artikel.Id())
   {
     std::string s = "artikeleingabe "+itos(selected_Artikel.Id());
@@ -438,7 +439,7 @@ void auftrag_main::menu_instanz()
 
 void auftrag_main::instanz_selected(int _instanz_)
 {
-  instanz=(ppsInstanz::ppsInstId) _instanz_;
+  instanz=(ppsInstanz::ID) _instanz_;
 cout << instanz->get_Name()<<'\n';
 //  neue_auftraege_beruecksichtigen(instanz);
   on_neuladen_activate();

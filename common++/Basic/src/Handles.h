@@ -1,4 +1,4 @@
-// $Id: Handles.h,v 1.3 2001/10/02 20:24:04 christof Exp $
+// $Id: Handles.h,v 1.4 2001/10/08 09:08:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -39,11 +39,9 @@
 #endif
 
 template <class T> class Handle;
-template <class T> class const_Handle;
 
 class HandleContent
 {	template<class T> friend class Handle;
-	template<class T> friend class const_Handle;
 private:
 	mutable unsigned int _references;
 protected:	
@@ -63,73 +61,14 @@ private:
 };
 
 template <class T> class Handle
-{private:
-	T *_data;
-	typedef class Handle<T> _this_t;
+{public:
+	typedef T ContentType;
+private:
+	ContentType *_data;
+	typedef class Handle<ContentType> _this_t;
 public:
 	_this_t &operator=(const _this_t &b)
-	{  b->_references++;
-	   if (_data)
-	   {  _data->_references--;
-	      if (!_data->_references) delete _data;
-	   }
- 	   _data=b._data;
- 	   return *this;
-	}
-	
-	Handle(const _this_t &b) : _data(b._data)
-	{  _data->_references++; }
-	
-	// replace this default value FAST via *this=Something !!!
-	Handle() : _data(0) {}
-	
-	~Handle()
-	{  _data->_references--;
-	   if (!_data->_references) delete _data;
-	}
-	
-	bool operator==(const _this_t &s) const
-	{  return (*_data)==(*s);
-	}
-
-	T *operator->() const
-	{  return _data;
-	}
-	
-	T &operator*() const
-	{  return *_data;
-	}
-	
-	Handle(T *b) : _data(b)
-	{  _data->_references++;
-	}
-
-	void *ref() const
-	{  _data->_references++;
-	   return _data;
-	}
-	
-	void unref() const
-	{  _data->_references--;
-	   // we should at least have one referrer left - us
-	   assert(_data->_references);
-	}
-
-	// this would have been impossible with Stroustrup's handles	
-	static void unref(void *ptr)
-	{  T *d=static_cast<T*>(ptr);
-	   d->_references--;
-	   if (!d->_references) delete d;
-	}
-};
-
-template <class T> class const_Handle
-{private:
-	const T *_data;
-	typedef class const_Handle<T> _this_t;
-public:
-	_this_t &operator=(const _this_t &b)
-	{  NOISE("const_Handle @" << _data << '.' << (_data?_data->_references:0) << "= @" << b._data << '.' << (b._data?b._data->_references:0) << '\n');
+	{  NOISE("Handle @" << _data << '.' << (_data?_data->_references:0) << "= @" << b._data << '.' << (b._data?b._data->_references:0) << '\n');
 	   // yes, I do not test b -- I consider b->nil as a bug
 	   b->_references++;
 	   if (_data)
@@ -141,17 +80,17 @@ public:
 	}
 	
 	// this STL functions do strange things, under investigation
-	const_Handle(const _this_t &b) : _data(b._data)
-	{  NOISE("const_Handle(@" << b._data << '.' << (b._data?b._data->_references:0) << ")\n");
+	Handle(const _this_t &b) : _data(b._data)
+	{  NOISE("Handle(@" << b._data << '.' << (b._data?b._data->_references:0) << ")\n");
 	   if (_data) _data->_references++; }
 	
 	// replace this default value FAST via *this=Something !!!
 	// usually this is only needed for cached values
-	const_Handle() : _data(0) { NOISE("const_Handle()\n"); }
+	Handle() : _data(0) { NOISE("Handle()\n"); }
 	
 	// without this test any std::exception in T::T(...) would kill your program
-	~const_Handle()
-	{  NOISE("~const_Handle" << _data << '.' << (_data?_data->_references:0) << '\n');
+	~Handle()
+	{  NOISE("~Handle" << _data << '.' << (_data?_data->_references:0) << '\n');
 	   if (_data) 
 	   {  _data->_references--;
 	      if (!_data->_references) delete _data;
@@ -162,20 +101,20 @@ public:
 	{  return (*_data)==(*s);
 	}
 
-	const T *operator->() const
-	{  NOISE("*const_Handle" << _data << '.' << (_data?_data->_references:0) << '\n');
+	ContentType *operator->() const
+	{  NOISE("*Handle" << _data << '.' << (_data?_data->_references:0) << '\n');
 	   return _data;
 	}
 	
-	const T &operator*() const
+	ContentType &operator*() const
 	{  return *_data;
 	}
 	
-	const_Handle(const T *b) : _data(b)
-	{  NOISE("const_Handle(from " << b << '.' << (b?b->_references:0) << ")\n");
+	Handle(ContentType *b) : _data(b)
+	{  NOISE("Handle(from " << b << '.' << (b?b->_references:0) << ")\n");
 	   _data->_references++;
 	}
-	
+
 	void *ref() const
 	{  _data->_references++;
 	   return _data;
@@ -189,12 +128,24 @@ public:
 
 	// this would have been impossible with Stroustrup's handles	
 	static void unref(void *ptr)
-	{  T *d=static_cast<T*>(ptr);
+	{  ContentType *d=static_cast<ContentType*>(ptr);
 	   d->_references--;
 	   if (!d->_references) delete d;
 	}
-	
-//	T &operator T() { return *_data; } ???
+
+//	ContentType &operator ContentType() { return *_data; } ???
 };
+
 #undef NOISE
+
+#if 0
+template <class T>
+ class const_Handle : public Handle<const T>
+{public:
+	const_Handle(const _this_t &b) : Handle<const T>(b) {}
+	const_Handle() {}
+	const_Handle(ContentType *b) : Handle<const T>(b) {}
+};
+#endif
+
 #endif

@@ -19,7 +19,8 @@
 
 
 #include"auftrag_rechnung.hh"
-
+#include <Aux/Transaction.h>
+#include"auftrag_rechnung_classes.h"
 exec sql include sqlca;
 
 void auftrag_rechnung::on_rngnr_search(int *_continue, GtkSCContext newsearch)
@@ -75,3 +76,31 @@ void auftrag_rechnung::on_rngnr_search(int *_continue, GtkSCContext newsearch)
   }
 }
 
+void auftrag_rechnung::set_rtree_offen_content()
+{
+ exec sql begin declare section;
+  int LFRSID;
+  int KDNR;
+ exec sql end declare section;
+ KDNR=rechnung.KdNr();
+
+ exec sql declare offliefcur cursor for
+   select lfrsid from 
+   lieferschein l join kunden k using (kundennr)
+   where k.rechnung_an= :KDNR and l.rngid is null;
+ Transaction tr;
+ exec sql open offliefcur;
+ SQLerror::test(__FILELINE__":set_tree_offen_content()");
+
+ vector<cH_RowDataBase> datavec;
+ while(true)
+  {
+   exec sql fetch offliefcur into :LFRSID;
+   SQLerror::test(__FILELINE__": set_tree_offen_content:fetch lfrsid","offliefcur",100);
+   if(sqlca.sqlcode==100) break;
+   
+   datavec.push_back(new Data_RLieferoffen(LFRSID));
+  }
+ exec sql close offliefcur;
+ tr.close();
+}

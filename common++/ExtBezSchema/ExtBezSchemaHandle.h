@@ -1,4 +1,4 @@
-// $Id: ExtBezSchemaHandle.h,v 1.2 2001/07/05 09:23:02 christof Exp $
+// $Id: ExtBezSchemaHandle.h,v 1.3 2001/10/08 09:08:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,7 +26,7 @@
 // Handle class to make passing ExtBezSchemas faster and easier
 // (java like reference counting)
 
-class cH_ExtBezSchema : public const_Handle<ExtBezSchema>
+class cH_ExtBezSchema : public Handle<const ExtBezSchema>
 {	
 	// cache
 	struct CacheIndex
@@ -41,7 +41,7 @@ class cH_ExtBezSchema : public const_Handle<ExtBezSchema>
 	typedef CacheStatic<CacheIndex,cH_ExtBezSchema> cache_t;
 	static cache_t cache;
 	cH_ExtBezSchema(const ExtBezSchema *s)
-		: const_Handle<ExtBezSchema>(s) {}
+		: Handle<const ExtBezSchema>(s) {}
 //	friend cache_t::stl_type;
 	friend class std::map<cH_ExtBezSchema::CacheIndex, cH_ExtBezSchema>;
 	cH_ExtBezSchema() {} // for the map

@@ -39,7 +39,7 @@ public:
  	LieferscheinVoll(int lid) throw(SQLerror) ;
  	void deleteRow(const LieferscheinEntry &le);
 
- const std::vector<LieferscheinEntry> &LsEntries() { return lsentry; }
+ const std::vector<LieferscheinEntry> &LsEntries() const { return lsentry; }
 
  const_iterator begin() const
  { return lsentry.begin();} 
@@ -48,6 +48,17 @@ public:
  size_t size() const
  { return lsentry.size();}
 };
+
+class cH_LieferscheinVoll : public Handle<const LieferscheinVoll>
+{
+protected:
+//public:
+  cH_LieferscheinVoll() {}
+ public:
+  cH_LieferscheinVoll(LieferscheinVoll *r) : Handle<const LieferscheinVoll>(r){}
+  cH_LieferscheinVoll(Lieferschein::ID id) : Handle<const LieferscheinVoll>(new LieferscheinVoll(id)){}
+};
+  
 
 #endif
 

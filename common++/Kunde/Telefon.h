@@ -1,4 +1,4 @@
-// $Id: Telefon.h,v 1.3 2001/07/05 09:23:02 christof Exp $
+// $Id: Telefon.h,v 1.4 2001/10/08 09:08:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -50,7 +50,7 @@ private:
  std::string nummer;
  std::vector<st_tel> vec_telefon;
  
- friend class const_Handle<Telefon>;
+ friend class Handle<const Telefon>;
  
 public:
  Telefon() : telid(none_id), telart(TEL_NONE), kunde(Kunde::none_id), 
@@ -77,9 +77,9 @@ public:
 };
 
 
-class cH_Telefon : public const_Handle<Telefon>
+class cH_Telefon : public Handle<const Telefon>
 {	
-  cH_Telefon(const Telefon *p) : const_Handle<Telefon>(p) {}	
+  cH_Telefon(const Telefon *p) : Handle<const Telefon>(p) {}	
   cH_Telefon() {}
 public:
 	cH_Telefon(const Telefon::ID _tid);

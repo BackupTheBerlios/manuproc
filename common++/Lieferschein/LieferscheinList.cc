@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList.cc,v 1.3 2001/10/01 12:55:41 christof Exp $ */
+/* $Id: LieferscheinList.cc,v 1.4 2001/10/08 09:08:12 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,17 +20,6 @@
 
 
 #include"LieferscheinList.h"
-
-LieferscheinList &LieferscheinList::operator=(const LieferscheinList &source)
-{
- sellist=source.sellist;
- return *this;
-}
-
-LieferscheinList::LieferscheinList(const LieferscheinList &source)
-:sellist(source.sellist)
-{}
-
 
 /*
 std::ostream &operator<<(std::ostream &o,const LieferscheinList &l)

@@ -40,7 +40,6 @@ auftrag_bearbeiten *auftragbearbeiten;
 
 int main(int argc, char **argv)
 {  
- ppsInstanz instanz;
 
  Petig::Connection conn;
  conn.setDbase("petigdb");
@@ -71,8 +70,8 @@ int main(int argc, char **argv)
     return 1;
   }
   
- if (argc-optind>1) instanz=ppsInstanz::ppsInstId(atoi(argv[optind]));
- else instanz=ppsInstanz(ppsInstanz::INST_KNDAUF);
+ cH_ppsInstanz instanz(ppsInstanz::INST_KNDAUF);
+ if (argc-optind>1) instanz=cH_ppsInstanz(ppsInstanz::ID(atoi(argv[optind])));
 
   auftragmain = new auftrag_main();
 // auftrag_lieferschein *al = new auftrag_lieferschein();

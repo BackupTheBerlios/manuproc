@@ -1,4 +1,4 @@
-// $Id: selAufEntry_sql.pgcc,v 1.9 2001/10/02 15:26:22 christof Exp $
+// $Id: selAufEntry_sql.pgcc,v 1.10 2001/10/08 09:08:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -91,7 +91,7 @@ throw(SQLerror)
            for (int i=0;i<j;++i)
            { try {
 	      aufidliste.push_back(
-			AufEintragBase((ppsInstanz::ppsInstId)INSTANZ[i],
+			AufEintragBase((ppsInstanz::ID)INSTANZ[i],
 			AUFID[i], ZNUMMER[i], BESTELLT[i], ARTIKELID[i],
 	ILIEFERDATUM[i] ? Petig::Datum() : Petig::Datum(LIEFERDATUM[i]),
 			GELIEFERT[i],
@@ -177,7 +177,7 @@ void SelectedFullAufList::insert(const AuftragBase& auftrag, int znr) throw(SQLe
 						"AUFENTRYINSERT");
 
 	      aufidliste.push_back(
-			AufEintragBase((ppsInstanz::ppsInstId)INSTANZ,
+			AufEintragBase((ppsInstanz::ID)INSTANZ,
 			AUFID, ZNUMMER, BESTELLT, ARTIKELID,
 	ILIEFERDATUM ? Petig::Datum() : Petig::Datum(LIEFERDATUM),
 			GELIEFERT,

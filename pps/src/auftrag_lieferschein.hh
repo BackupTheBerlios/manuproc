@@ -27,8 +27,16 @@
 class auftrag_lieferschein : public auftrag_lieferschein_glade
 {   
         cH_ppsInstanz instanz;
+        H_Lieferschein lieferschein;
         
         friend class auftrag_lieferschein_glade;
+        void set_tree_titles();
+        void set_tree_daten_content(LieferscheinBase::ID lfrsid);
+        void set_tree_offen_content();
+        void on_daten_leaf_selected(cH_RowDataBase d);
+        void on_offen_leaf_selected(cH_RowDataBase d);
+        void on_unselectrow_offauf(int row, int col, GdkEvent* b);
+        bool deleteLiefEntry();
         void on_liefer_close();
         void on_liefer_neu();
         void on_lief_save();
@@ -41,19 +49,15 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
         void on_liefermenge_activate();
         void on_newlieferentry_ok();
         void on_newlieferentryall_ok();
-        void on_selectrow_offauf(int row, int col, GdkEvent* b);
-        void on_unselectrow_offauf(int row, int col, GdkEvent* b);
         void on_Palette_activate();
         void on_artikelbox_activate();
 
- 	     void on_selectrow_lieferschein(int row, int col, GdkEvent* b);
-	     void on_unselectrow_lieferschein(int row, int col, GdkEvent* b);
         void liefzeile_delete();
         void on_button_liste_clicked();
 
-	AufEintragBase2 auftragentry;
-	ArtikelBase artikel;
-	TCListRowData *selectedrow;
+//	AufEintragBase2 auftragentry;
+//	ArtikelBase artikel;
+//	TCListRowData *selectedrow;
 	
 	void clear_offauf();
 	// refresh display

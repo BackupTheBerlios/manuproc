@@ -1,4 +1,4 @@
-/* $Id: Prozess.h,v 1.3 2001/10/01 12:55:40 christof Exp $ */
+/* $Id: Prozess.h,v 1.4 2001/10/08 09:08:12 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,7 +30,7 @@ class cH_Prozess;
 class Prozess : protected HandleContent
 {	// friend class ProzessHandle;
 	friend class cH_Prozess;
-	friend class const_Handle<Prozess>;
+	friend class Handle<const Prozess>;
 public:
 	typedef int ID;
 	static const ID default_id=0;
@@ -61,13 +61,13 @@ public:
  ID Id() const { return prozessid; }
 };
 
-class cH_Prozess : public const_Handle<Prozess>
+class cH_Prozess : public Handle<const Prozess>
 {
 private:
 	// cache
 	typedef CacheStatic<Prozess::ID,cH_Prozess> cache_t;
 	static cache_t cache;
-	cH_Prozess(const Prozess *p) : const_Handle<Prozess>(p) {}
+	cH_Prozess(const Prozess *p) : Handle<const Prozess>(p) {}
 //	friend cache_t::stl_type;
 	friend class std::map<int, cH_Prozess>;
 	cH_Prozess() {}

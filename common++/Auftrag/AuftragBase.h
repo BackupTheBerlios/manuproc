@@ -25,15 +25,14 @@
 class AuftragBase
 {
  protected:
-        ppsInstanz::ppsInstId instanz; 	
+        cH_ppsInstanz instanz; 	
  	int auftragid;	
  public:
-	AuftragBase() : instanz(ppsInstanz::INST_KNDAUF), auftragid(0) {}
-	AuftragBase(const ppsInstanz &_instanz) throw() : instanz(_instanz.Id()), auftragid(0) {}
-	AuftragBase(ppsInstanz::ppsInstId _instanz, int aufid) throw() : instanz(_instanz), auftragid(aufid) {}
+	AuftragBase() : instanz(ppsInstanz::INST_NONE), auftragid(0) {}
+	AuftragBase(cH_ppsInstanz _instanz, int aufid=0) throw() : instanz(_instanz), auftragid(aufid) {}
 	int Id() const {return auftragid;}
         void set_Id(int i) {auftragid = i;}
-        ppsInstanz::ppsInstId Instanz() const {return instanz; }
+        ppsInstanz::ID Instanz() const {return instanz->Id(); }
 	bool valid() const { return auftragid!=0; }
 
         void insertNewEntry(unsigned long int bestellt, 

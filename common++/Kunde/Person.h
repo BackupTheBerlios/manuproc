@@ -1,4 +1,4 @@
-// $Id: Person.h,v 1.3 2001/07/05 09:23:02 christof Exp $
+// $Id: Person.h,v 1.4 2001/10/08 09:08:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -47,7 +47,7 @@ private:
  std::string notiz;
  std::vector<Person::st_person> vec_person;
  
- friend class const_Handle<Person>;
+ friend class Handle<const Person>;
  static const ID _illegal=-1; 
 
 public:
@@ -82,9 +82,9 @@ public:
 };
 
 
-class cH_Person : public const_Handle<Person>
+class cH_Person : public Handle<const Person>
 {	
-  cH_Person(const Person *p) : const_Handle<Person>(p) {}	
+  cH_Person(const Person *p) : Handle<const Person>(p) {}	
   cH_Person() {}
 public:
 	typedef Person::ID ID;

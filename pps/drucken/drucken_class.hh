@@ -93,7 +93,8 @@ public:
 class LR_Iterator: public LR_Base
 {
    typedef LR_Iterator self;  
-   union u_t { LieferscheinVoll::const_iterator l; RechnungVoll::const_iterator r;
+   union u_t { LieferscheinVoll::const_iterator l; 
+   	       RechnungVoll::const_iterator r;
                AuftragFull::const_iterator a;
             u_t(const LieferscheinVoll::const_iterator &_l) : l(_l) {}
             u_t(const RechnungVoll::const_iterator         &_r) : r(_r) {}
@@ -141,8 +142,9 @@ class LR_Abstraktion: public LR_Base
 {
 public:
   typedef LR_Iterator const_iterator;
-  union {const LieferscheinVoll *l; const class RechnungVoll *r; 
-   const class AuftragFull *a;} u;
+  union { const LieferscheinVoll *l; 
+          const class RechnungVoll *r; 
+          const class AuftragFull *a; } u;
 public:
   LR_Abstraktion():LR_Base(NICHTS) {}
   LR_Abstraktion(const LieferscheinVoll *l) : LR_Base(Lieferschein) 

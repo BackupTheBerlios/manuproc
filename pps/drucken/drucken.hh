@@ -29,26 +29,9 @@ class LR_drucken
       unsigned int auftragsnr;
       const string RL;
       string kopie;
-      ppsInstanz::ppsInstId instanz;
+      ppsInstanz::ID instanz;
    private:
-//      const static float DM_EURO=1.95583;
       void drucken(string view_plot);
-//      void drucken_header(ofstream &os);
-//      unsigned int sql_kundennr(const string& RL,unsigned int auftragsnr);
-//      void drucken_footer(ofstream &os);
-//        void drucken_table(ofstream &os,unsigned int kunden_id,string RL);
-//      void drucken_table_lieferschein(ofstream &os,unsigned int kunden_id);
-//      void drucken_table_rechnung(ofstream &os,unsigned int kunden_id);
-//      fixedpoint<2> drucken_table_rechnung_preissum_warengruppe(ofstream &os,
-//         vector<fixedpoint<2> >& preissum_zeile, vector<fixedpoint<2> >& preissum_warengruppe,
-//         unsigned int spaltenzahl,string text="");
-//      void drucken_table_new_page_header(ofstream& os,unsigned int page_count);
-//      unsigned int drucken_table_rechnung_header(ofstream &os,
-//         cH_ExtBezSchema& schema,unsigned int signifikanz,
-//         bool menge_bool, bool rabatt_bool,float preismenge,string waehrung,
-//         string einheit);
-//      unsigned int sql_artid();
-//     unsigned int sql_warengruppe(unsigned int artikel_id);
    public:
-      LR_drucken(string RL, unsigned int auftragsnr,string view_plot, ppsInstanz::ppsInstId _instanz);
+      LR_drucken(string RL, unsigned int auftragsnr,string view_plot, ppsInstanz::ID _instanz);
 };

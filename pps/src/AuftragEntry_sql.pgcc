@@ -68,7 +68,7 @@ AufEintrag::AufEintrag(const aktAufEintrag &aufentry,const AuftragBase& auftrag,
  SQLerror::test(__FILELINE__" insert into auftragentry");	
 	
  auftragid = AUFTRAGID;
- instanz = (ppsInstanz::ppsInstId)INSTANZ;
+ instanz = (ppsInstanz::ID)INSTANZ;
  zeilennr = ZEILENNR;
  bestellt = BESTELLT;
  menge = bestellt*artikel->Stueckgroesse();

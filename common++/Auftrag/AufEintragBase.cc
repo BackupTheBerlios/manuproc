@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.5 2001/07/16 09:54:26 christof Exp $
+// $Id: AufEintragBase.cc,v 1.6 2001/10/08 09:08:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,7 +21,7 @@
 #include <Aux/string0.h>
  
 
-AufEintragBase::AufEintragBase(ppsInstanz::ppsInstId _instanz,int _auftragid, int _zeilennr, int _bestellt,
+AufEintragBase::AufEintragBase(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, int _bestellt,
 	int _artikel, const Petig::Datum _lieferdatum,
 	int _geliefert,
 	int _dispoentrynr, int _disponr, int _jahrgang,
@@ -68,7 +68,7 @@ AufEintragBase::AufEintragBase(ppsInstanz::ppsInstId _instanz,int _auftragid, in
 
 
 std::ostream &operator<<(std::ostream &o,const AufEintragBase &aeb)
-{  o << "{artikel="<< aeb.artikel->Bezeichnung() << "Instanz = "<<aeb.instanz<< " menge="
+{  o << "{artikel="<< aeb.artikel->Bezeichnung() << "Instanz = "<<aeb.instanz->Id()<< " menge="
 	<<aeb.menge << " dispoentrynr="
 	<<aeb.dispoentrynr
 	<< " auftragid="<<aeb.auftragid

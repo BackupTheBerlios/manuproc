@@ -483,3 +483,18 @@ TCListLeaf *TreeBase::NewLeaf
 TCListNode *SimpleTree::defaultNewNode
  		(guint deep, const cH_EntryValue &v, bool expand)
 {  return new TCListNode(deep,v,expand); }
+
+cH_RowDataBase TreeBase::getSelectedRowDataBase() const
+	throw(noRowSelected,multipleRowsSelected,notLeafSelected)
+{  SelectionList::iterator b=selection().begin(),
+			e=selection().end(),
+			second=b/* +1 */;
+   if (b==e) throw noRowSelected();
+   ++second;
+   if (second!=e) throw multipleRowsSelected();
+   // perhaps put this into another function
+   TCListRow_API *tclapi=(TCListRow_API*)(b->get_data());
+   TCListRowData *selectedrow=(TCListRowData*)(*tclapi).get_user_data();
+   if (!selectedrow->Leaf()) throw notLeafSelected();
+   return (dynamic_cast<TCListLeaf*>(selectedrow))->LeafData();
+}

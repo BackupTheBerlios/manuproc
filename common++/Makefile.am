@@ -56,10 +56,10 @@ libcommon___a_LIBADD= \
 		Bank/Datenfehler.o \
 		Bank/Zahlvorgang.o \
 		ExtBezSchema/ExtBezSchema_sql.o \
-      Faeden/Bindung.o \
       Faeden/Bindung_sql.o \
-      Faeden/Faden.o \
+      Faeden/Bindung.o \
       Faeden/Faden_sql.o \
+      Faeden/Faden.o \
       Faeden/Materialeigenschaft_sql.o \
       Faeden/Schussfaeden.o \
 		Ketten/Kette.o \

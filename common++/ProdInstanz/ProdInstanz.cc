@@ -10,7 +10,7 @@ ProdInstanz::ProdInstanz(Petig::Datum bd, ArtikelBase a)
 }
 */
 
-ProdInstanz::ProdInstanz(int _auftragid, ppsInstanz::ppsInstId _instanz,
+ProdInstanz::ProdInstanz(int _auftragid, ppsInstanz::ID _instanz,
    Petig::Datum _bestelldatum, ArtikelBase _artikel, double _menge,
    std::string _status)
 : auftragid(_auftragid), instanz(_instanz), bestell_datum(_bestelldatum), 
@@ -30,7 +30,7 @@ ProdInstanz::ProdInstanz(int _auftragid, ppsInstanz::ppsInstId _instanz,
          ArtikelBase AB(ab->rohartikel);
          ArtikelStamm AS(AB);
          double menge = menge_bestellt*ab->menge;
-         ppsInstanz::ppsInstId bestellen_bei=AS.BestellenBei()->Id();
+         ppsInstanz::ID bestellen_bei=AS.BestellenBei()->Id();
          ProdInstanz PI(auftragid,bestellen_bei,bestell_datum,AB,menge,status); 
        }
     }

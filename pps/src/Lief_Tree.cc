@@ -1,4 +1,4 @@
-// $Id: Lief_Tree.cc,v 1.18 2001/10/02 16:04:46 cvs_christof Exp $
+// $Id: Lief_Tree.cc,v 1.19 2001/10/05 07:34:25 cvs_malte Exp $
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -57,11 +57,11 @@ TCListNode *Lief_TCList::NewNode(guint deep, const cH_EntryValue &v, bool expand
 void Lief_TCList::showLieferschein(LieferscheinBase::ID lfrsid)
 {
  if(lfrsid!=LieferscheinBase::none_id)
-   {try{ lieferschein=LieferscheinVoll(lfrsid); }
+   {try{ lieferschein=cH_LieferscheinVoll(lfrsid); }
     catch(SQLerror &e)
 	{ meldung->Show(e); return; }
    }
- else lieferschein=LieferscheinVoll();
+// else lieferschein=cH_LieferscheinVoll();
 
  detach_from_clist();
  

@@ -29,7 +29,7 @@
 class Lief_RowData : public RowDataBase
 {
  friend class cH_RowData;
- friend class const_Handle<Lief_RowData>;
+ friend class Handle<const Lief_RowData>;
 
  LieferscheinEntry liefentry;
  cH_ArtikelBezeichnung artikelbez;

@@ -1,4 +1,4 @@
-// $Id: Changejournal.h,v 1.3 2001/06/22 09:42:44 christof Exp $
+// $Id: Changejournal.h,v 1.4 2001/10/08 09:08:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,19 +27,19 @@
 class pps_ChJournalEntryBase
 {
 protected:
- ppsInstanz instanz; 	//Instanz
+ cH_ppsInstanz instanz; 	//Instanz
  int chid;	//Ändrung
   
 public:
  typedef int CID;
  
- pps_ChJournalEntryBase(ppsInstanz::ppsInstId i,int c)
+ pps_ChJournalEntryBase(ppsInstanz::ID i,int c)
  	: instanz(i), chid(c) {}
  	
  CID CId() { return chid; } 
- ppsInstanz::ppsInstId IId() { return instanz.Id(); }
+ ppsInstanz::ID IId() { return instanz->Id(); }
 
- pps_ChJournalEntryBase() : chid(0) {}
+ pps_ChJournalEntryBase() : instanz(ppsInstanz::default_id), chid(0) {}
 };
 
 class pps_ChJournalEntry : public pps_ChJournalEntryBase
@@ -59,22 +59,16 @@ private:
  ChJType type;   
 
 public:
- static const pps_ChJournalEntry newChange(ppsInstanz::ppsInstId instid,
+ static const pps_ChJournalEntry newChange(cH_ppsInstanz inst,
  		const AufEintragBase2 &aufe, const ArtikelBase &art,
  		double _newval, double _delta, ChJType _type,
  		CID change=0) throw(SQLerror);
  	
- static const pps_ChJournalEntry newChange(ppsInstanz::ppsInstId instanz,
+ static const pps_ChJournalEntry newChange(cH_ppsInstanz inst,
  		const AufEintragBase2 &aufe, const ArtikelBase &art,
  		const Petig::Datum &_newdat, double _delta, ChJType _type,
  		CID change=0) throw(SQLerror); 	
  		
- pps_ChJournalEntry(ppsInstanz::ppsInstId instid, CID change) throw(SQLerror);
+ pps_ChJournalEntry(cH_ppsInstanz instid, CID change) throw(SQLerror);
 
 };
-
-
-
-
-
-

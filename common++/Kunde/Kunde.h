@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.5 2001/07/05 09:23:02 christof Exp $
+// $Id: Kunde.h,v 1.6 2001/10/08 09:08:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -98,7 +98,7 @@ private:
 	Bankverbindung bankverb;
         Kundendaten kundendaten;
 	
-	friend class const_Handle<Kunde>;
+	friend class Handle<const Kunde>;
 	friend class Handle<Kunde>;
 	static const ID _wir=1;
 	static const ID _illegal=-1;
@@ -203,11 +203,11 @@ public:
         void get_blz_from_bankindex(unsigned int bankindex);
 };
 
-class cH_Kunde : public const_Handle<Kunde>
+class cH_Kunde : public Handle<const Kunde>
 {	// cache
         typedef CacheStatic<Kunde::ID,cH_Kunde> cache_t;
         static cache_t cache;
-  cH_Kunde(const Kunde *p) : const_Handle<Kunde>(p) {}	
+  cH_Kunde(const Kunde *p) : Handle<const Kunde>(p) {}	
 //        friend cache_t::stl_type;
 	friend class std::map<int, cH_Kunde>;
         cH_Kunde() {}

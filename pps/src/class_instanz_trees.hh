@@ -39,12 +39,12 @@ public:
  Petig::Datum get_Datum() const {return datum;}
 };
 
-class cH_Data_instanz_herkunft : public const_Handle<Data_instanz_herkunft>
+class cH_Data_instanz_herkunft : public Handle<const Data_instanz_herkunft>
 {
 protected:
  cH_Data_instanz_herkunft() {}
 public:
- cH_Data_instanz_herkunft(Data_instanz_herkunft *r) : const_Handle<Data_instanz_herkunft>(r){}
+ cH_Data_instanz_herkunft(Data_instanz_herkunft *r) : Handle<const Data_instanz_herkunft>(r){}
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -108,12 +108,12 @@ public:
  int getZnr() const {return znr;}
 };
 
-class cH_Data_neuer_auftrag : public const_Handle<Data_neuer_auftrag>
+class cH_Data_neuer_auftrag : public Handle<const Data_neuer_auftrag>
 {
 protected:
  cH_Data_neuer_auftrag() {}
 public:
- cH_Data_neuer_auftrag(Data_neuer_auftrag *r) : const_Handle<Data_neuer_auftrag>(r){}
+ cH_Data_neuer_auftrag(Data_neuer_auftrag *r) : Handle<const Data_neuer_auftrag>(r){}
 };
 
 #endif

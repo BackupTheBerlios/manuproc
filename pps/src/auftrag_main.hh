@@ -106,7 +106,7 @@ private:
    void on_button_neue_anr_clicked();
    gint on_eventbox_instanz_button_press_event(GdkEventButton *event);
    void instanz_menu();
-   void an_instanz_selected(ppsInstanz::ppsInstId insnr);
+   void an_instanz_selected(ppsInstanz::ID insnr);
    void on_instanz_auftrag_status_activate();
    void on_instanz_eintrag_status_activate();
    void instanz_tree_titel_setzen();
@@ -194,12 +194,12 @@ public:
    AufEintragBase& get_AufEintragBase() const {return const_cast<AufEintragBase&>(AB);}
 };
 
-class cH_Data_auftrag : public const_Handle<Data_auftrag>
+class cH_Data_auftrag : public Handle<const Data_auftrag>
 {
 protected:
  cH_Data_auftrag() {}
 public:
- cH_Data_auftrag(Data_auftrag *r) : const_Handle<Data_auftrag>(r){}
+ cH_Data_auftrag(Data_auftrag *r) : Handle<const Data_auftrag>(r){}
 };
 
 

@@ -30,7 +30,7 @@
 
 class auftrag_bearbeiten : public auftrag_bearbeiten_glade
 {   
- ppsInstanz instanz;
+ ppsInstanz::ID instanz;
  AuftragFull *auftrag;      
  aktAufEintrag *aktaufeintrag;  
  cH_Kunde kunde;

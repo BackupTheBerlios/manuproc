@@ -74,7 +74,7 @@ gint auftrag_main::on_eventbox_instanz_button_press_event(GdkEventButton *event)
  return true;
 }
 
-void auftrag_main::an_instanz_selected(ppsInstanz::ppsInstId insnr)
+void auftrag_main::an_instanz_selected(ppsInstanz::ID insnr)
 {
  an_instanz =cH_ppsInstanz(insnr);
  label_an_instanz->set_text(an_instanz->get_Name());

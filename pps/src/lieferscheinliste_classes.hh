@@ -137,10 +137,10 @@ class Data_ListeNode : public TCListNode
   }
 };
 
-class cH_Data_LListe : public const_Handle<Data_LListe>
+class cH_Data_LListe : public Handle<const Data_LListe>
 {
 protected:
  cH_Data_LListe() {}
 public:   
- cH_Data_LListe(Data_LListe *r) : const_Handle<Data_LListe>(r) {}
+ cH_Data_LListe(Data_LListe *r) : Handle<const Data_LListe>(r) {}
 };

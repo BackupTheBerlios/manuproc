@@ -20,14 +20,23 @@
 #  include "auftrag_rechnung_glade.hh"
 #  define _AUFTRAG_RECHNUNG_HH
 
-#include<Kunde/Kunde.h>
+#include<Aux/ppsInstanz.h>
+#include<Lieferschein/Rechnung.h>
 
 class auftrag_rechnung : public auftrag_rechnung_glade
 {   
         cH_ppsInstanz instanz;
         friend class auftrag_rechnung_glade;
         SigC::Connection timeout_connection;
+//        RechnungVoll rechnungvoll;
+        Rechnung rechnung;
 
+        void set_tree_titles();
+        void set_rtree_daten_content(RechnungBase::ID rngid);
+        void set_rtree_offen_content();
+        void on_rdaten_leaf_selected(cH_RowDataBase d);
+        void on_roffen_leaf_selected(cH_RowDataBase d);
+        void newRechnung(const Kunde::ID kid);
         void on_rng_close();
         void on_rng_neu();
         void on_rng_save();
@@ -39,21 +48,21 @@ class auftrag_rechnung : public auftrag_rechnung_glade
         void on_rngnr_activate();
         void on_rngnr_search(int *_continue, GtkSCContext newsearch);
         void on_lieferkunde_activate();
-        void on_selectrow_rechnung(int row, int col, GdkEvent* b);
-        void on_unselectrow_rechnung(int row, int col, GdkEvent* b);
+//        void on_selectrow_rechnung(int row, int col, GdkEvent* b);
+        void on_unselectrow_rtree(int row, int col, GdkEvent* b);
         void preis_activate();
         void lieferschein_uebernehmen();
-        void on_selectrow_offlief(int row, int col, GdkEvent* b);
-        void on_unselectrow_offlief(int row, int col, GdkEvent* b);        
+//        void on_selectrow_offlief(int row, int col, GdkEvent* b);
+        void on_unselectrow_rtree_offen(int row, int col, GdkEvent* b);        
         void Preis_setzen();
         void Preis_ergaenzen();
         void waehrung_geaendert();
 	void rabatt_geaendert();
 	void redisplay();
 
- TCListRowData *selectedrow_lief;
- TCListRowData *selectedrow_rng;
- cH_Kunde kunde;
+// TCListRowData *selectedrow_lief;
+// TCListRowData *selectedrow_rng;
+// cH_Kunde kunde;
 
 public:
  auftrag_rechnung(cH_ppsInstanz _instanz); 

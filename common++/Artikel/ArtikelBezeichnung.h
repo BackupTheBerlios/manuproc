@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.h,v 1.6 2001/10/02 20:24:04 christof Exp $
+// $Id: ArtikelBezeichnung.h,v 1.7 2001/10/08 09:08:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -31,7 +31,7 @@
 class cH_ArtikelBezeichnung;
 
 class ArtikelBezeichnung : public virtual ArtikelBase, protected HandleContent
-{	friend class const_Handle<ArtikelBezeichnung>;
+{	friend class Handle<const ArtikelBezeichnung>;
 	friend class cH_ArtikelBezeichnung;
 public:
 	typedef std::vector<cH_EntryValue>::const_iterator const_iterator;
@@ -80,6 +80,16 @@ private:
  	cH_ExtBezSchema schema;
 	std::vector<cH_EntryValue> value;
 
+ // eigentlich nicht so toll wird aber ab und an intern verwendet
+ const ArtikelBezeichnung &operator=(const ArtikelBezeichnung &b)
+ {  *(ArtikelBase*)this=(const ArtikelBase&)b;
+    schema=b.schema;
+    value=b.value;
+    return *this;
+ }
+ void setID(const ArtikelBase::ID &id) throw(SQLerror)
+ {  *this=ArtikelBezeichnung(id,schema->Id()); }
+
 public:
  ArtikelBezeichnung(const ArtikelBase &artikel,
  	const ExtBezSchema::ID schema=ExtBezSchema::default_id) throw();
@@ -124,15 +134,13 @@ public:
  const cH_EntryValue operator[](int feld) const throw(SQLerror)
  {  return feld<(int)value.size()?value[feld]:cH_EntryValueIntString("?"); }
 
-#warning geht so nicht mehr 
-// void setID(const ArtikelBase::ID &id) throw(SQLerror)
-// {  *this=ArtikelBezeichnung(id,schema->Id()); }
+ 
 
 // deprecated
  ArtikelBezeichnung(const ArtikelBase &artikel,const cH_ExtBezSchema &schema) throw();
 };
 
-class cH_ArtikelBezeichnung : public const_Handle<ArtikelBezeichnung>
+class cH_ArtikelBezeichnung : public Handle<const ArtikelBezeichnung>
 {	// cache
 	struct cache_key
 	{  ExtBezSchema::ID sid;
@@ -147,7 +155,7 @@ class cH_ArtikelBezeichnung : public const_Handle<ArtikelBezeichnung>
 	static cache_t cache;
 	
 	cH_ArtikelBezeichnung(const ArtikelBezeichnung *b)
-		: const_Handle<ArtikelBezeichnung>(b) {}
+		: Handle<const ArtikelBezeichnung>(b) {}
 //	friend cache_t::stl_type;
 	friend class std::map<cache_key, cH_ArtikelBezeichnung>;
 	cH_ArtikelBezeichnung() {}
@@ -161,13 +169,13 @@ public:
 /// Artikel zu der externen Bezeichnung für einen Kunden erzeugen 
 /// (ID nach Bezeichnung ermitteln)
 	cH_ArtikelBezeichnung(int signifikanz, const std::vector<cH_EntryValue> &values, const cH_ExtBezSchema &schema) throw(SQLerror)
-		: const_Handle<ArtikelBezeichnung>(new ArtikelBezeichnung(signifikanz,values,schema))
+		: Handle<const ArtikelBezeichnung>(new ArtikelBezeichnung(signifikanz,values,schema))
 	{}
 /// default ctor
 	class Default {};
 	// call it like: cH_ArtikelBezeichnung(cH_ArtikelBezeichnung::Default());
 	cH_ArtikelBezeichnung(const Default &d) 
-		: const_Handle<ArtikelBezeichnung>(new ArtikelBezeichnung())
+		: Handle<const ArtikelBezeichnung>(new ArtikelBezeichnung())
 	{}
 };
 

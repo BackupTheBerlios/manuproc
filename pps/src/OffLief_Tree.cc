@@ -65,24 +65,6 @@ void OffLief_TCList::showOffLief()
  thaw();
 }
 
-/*
-TCListNode *OffLief_TCList::NewNode(guint deep,const cH_EntryValue &v, bool expand)
-{
- return new OffLief_Node(deep,v,expand);
-}
-*/
-// OffLief_TCList end
-
-
-
-// OffLief_Node begin
-
-/*
-OffLief_Node::OffLief_Node(guint deep, const cH_EntryValue &v, bool expand) 
- : TCListNode(deep,v,expand)
-{}
-*/
-
 // OffLief_Node end
 #include<Aux/Ausgabe_neu.h>
 #include <Aux/EntryValueIntString.h>

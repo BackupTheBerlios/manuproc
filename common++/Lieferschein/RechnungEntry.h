@@ -51,7 +51,7 @@ public:
                         lieferzeile(lifz)
                 {};
 
- float Menge() const { return menge; }
+ fixedpoint<3> Menge() const { return menge; }
  int Stueck() const { return stueck; }
  LieferscheinBase::ID Lfrs_Id() const { return lfrsid; }
  int Lfrs_ZNr() const { return lieferzeile; }

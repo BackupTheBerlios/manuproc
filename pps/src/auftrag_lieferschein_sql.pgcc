@@ -1,0 +1,69 @@
+#include "auftrag_lieferschein.hh"
+#include<Aux/Transaction.h>
+#include "auftrag_lieferschein_classes.h"
+#include <Auftrag/auftrag_status.h>
+
+exec sql include sqlca;
+
+void auftrag_lieferschein::set_tree_offen_content()
+{
+ tree_offen->clear();
+
+ exec sql begin declare section;
+ int KUNDENNR;     
+ int AUFID[20];    
+ int INSTANZ[20];  
+ int ZNR[20];      
+ int ARTNR[20];    
+ int BESTELLT[20]; 
+ int GELIEFERT[20];
+ char LIEFDATUM[20][20];
+ short ILIEFDATUM[20];
+ int AUFST;
+ exec sql end declare section;
+
+ Transaction tr;
+
+ AUFST = (AufStatVal)OPEN;
+ KUNDENNR=liefer_kunde->get_value();
+
+ exec sql declare LOADOFFAUF cursor for
+   select e.instanz, e.auftragid, e.zeilennr, e.artikelid, e.bestellt,
+      e.geliefert, e.lieferdate
+   from auftragentry e, auftrag a where
+      e.instanz = a.instanz and
+      e.auftragid=a.auftragid and
+      a.kundennr= :KUNDENNR and  
+      e.status = a.stat and
+      a.stat = :AUFST;
+
+ exec sql open LOADOFFAUF;
+ SQLerror::test(__FILELINE__"loadOffAuf:select from auftragentry");
+
+ vector<cH_RowDataBase> datavec;
+ bool weiter=true;
+ while (weiter)
+  {
+   exec sql fetch 20 in LOADOFFAUF into
+   :INSTANZ, :AUFID,:ZNR,:ARTNR,:BESTELLT,:GELIEFERT,:LIEFDATUM:ILIEFDATUM;
+   SQLerror::test(__FILELINE__":loadOffAuf: fetch offliefcur",100);
+   weiter=(sqlca.sqlcode==0);   
+
+   for(int i=0;i<sqlca.sqlerrd[2];++i)
+    {
+      AufEintragBase2 AEB((ppsInstanz::ID)INSTANZ[i],AUFID[i],ZNR[i]);
+//      cH_ArtikelBezeichnung ABEZ(ArtikelBase(ARTNR[i]));
+      cH_ArtikelBezeichnung ABEZ(ARTNR[i]);
+      datavec.push_back(new Data_Lieferoffen(AEB,ABEZ,BESTELLT[i]-GELIEFERT[i], GELIEFERT[i],
+         ILIEFDATUM[i] ?Petig::Datum::today():Petig::Datum(LIEFDATUM[i])));
+    }
+   weiter=(sqlca.sqlerrd[2]==20);
+
+//   H_Lieferschein L(LFRSID);
+//   LieferscheinEntry LE(LFRSID);
+  }
+ exec sql close LOADOFFAUF;
+ tr.close();
+ tree_offen->setDataVec(datavec);
+
+}

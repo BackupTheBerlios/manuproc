@@ -63,7 +63,7 @@ public:
 class Rg_RowData : public RowDataBase
 {
  friend class cH_RowData;
- friend class const_Handle<Rg_RowData>;
+ friend class Handle<const Rg_RowData>;
 
  RechnungEntry rechnungentry;
  cH_ArtikelBezeichnung artikelbez;

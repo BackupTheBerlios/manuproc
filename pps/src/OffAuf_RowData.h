@@ -30,7 +30,7 @@
 class OffAuf_RowData : public RowDataBase
 {
  friend class cH_RowData;
- friend class const_Handle<OffAuf_RowData>;
+ friend class Handle<const OffAuf_RowData>;
 
  AufEintragBase2 auftrag;
  cH_ArtikelBezeichnung artikel;

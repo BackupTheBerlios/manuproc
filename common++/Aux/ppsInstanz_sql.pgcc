@@ -4,7 +4,7 @@ exec sql include sqlca;
 
 cH_ppsInstanz::cache_t cH_ppsInstanz::cache;
 
-cH_ppsInstanz::cH_ppsInstanz(ppsInstanz::ppsInstId iid) 
+cH_ppsInstanz::cH_ppsInstanz(ppsInstanz::ID iid) 
 { 
  cH_ppsInstanz *cached(cache.lookup(iid));
  if (cached) *this=*cached;

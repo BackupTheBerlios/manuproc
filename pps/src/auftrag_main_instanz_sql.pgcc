@@ -50,7 +50,7 @@ void auftrag_main::instanz_menu()
       Gtk::MenuItem *mi = manage(new class Gtk::MenuItem(db_name));
       menu_an_instanz->append(*mi);
       mi->activate.connect(SigC::bind(SigC::slot(this,&auftrag_main::an_instanz_selected)
-            ,(ppsInstanz::ppsInstId)db_insnr));
+            ,(ppsInstanz::ID)db_insnr));
       mi->show();
    }
 

@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.12 2001/10/02 08:47:31 christof Exp $
+// $Id: ppsInstanz.h,v 1.15 2001/10/05 15:42:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -38,6 +38,9 @@ private:
  void get_name();
  
 public:
+ typedef ppsInstId ID;
+ static const ID default_id=INST_NONE;
+ 
  ppsInstanz(ppsInstId iid) : instid(iid) {get_name();}
  ppsInstanz() : instid(INST_NONE) {}
 
@@ -50,15 +53,15 @@ public:
   
 };
 
-class cH_ppsInstanz : public const_Handle<ppsInstanz>
+class cH_ppsInstanz : public Handle<const ppsInstanz>
 {
-     typedef CacheStatic<ppsInstanz::ppsInstId,cH_ppsInstanz> cache_t;
+     typedef CacheStatic<ppsInstanz::ID,cH_ppsInstanz> cache_t;
      static cache_t cache;
-     cH_ppsInstanz(const ppsInstanz *s) : const_Handle<ppsInstanz>(s) {};
-     friend class std::map<ppsInstanz::ppsInstId,cH_ppsInstanz>;
+     cH_ppsInstanz(const ppsInstanz *s) : Handle<const ppsInstanz>(s) {};
+     friend class std::map<ppsInstanz::ID,cH_ppsInstanz>;
      cH_ppsInstanz(){};
   public:
-     cH_ppsInstanz(ppsInstanz::ppsInstId iid);
+     cH_ppsInstanz(ppsInstanz::ID iid);
 
      bool operator==(const cH_ppsInstanz &b) const {return (*this)->Id()==b->Id();}
 };

@@ -1,4 +1,4 @@
-// $Id: Changejournal_sql.pgcc,v 1.3 2001/06/25 08:13:37 christof Exp $
+// $Id: Changejournal_sql.pgcc,v 1.4 2001/10/08 09:08:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,14 +23,14 @@
 exec sql include sqlca;
 
 const pps_ChJournalEntry pps_ChJournalEntry::newChange(
-		ppsInstanz::ppsInstId instid,
+		cH_ppsInstanz instid,
  		const AufEintragBase2 &aufe, const ArtikelBase &art,
  		double _newval, double _delta, ChJType _type,
  		CID change)
 throw(SQLerror)
 {
  exec sql begin declare section;
- int INSID=instid;
+ int INSID=instid->Id();
  int CHID;
  int AUFID;
  int ZEILENNR;
@@ -67,7 +67,7 @@ throw(SQLerror)
  SQLerror::test(__FILELINE__":pps_ChJournalEntry::newChange:"
     			"insert into prod_changejournal");
 
- pps_ChJournalEntry retval((ppsInstanz::ppsInstId)INSID,CHID);
+ pps_ChJournalEntry retval((ppsInstanz::ID)INSID,CHID);
 
  tr.commit();
 
@@ -75,14 +75,14 @@ throw(SQLerror)
 }
 
 const pps_ChJournalEntry pps_ChJournalEntry::newChange(
-		ppsInstanz::ppsInstId instid,
+		cH_ppsInstanz instid,
  		const AufEintragBase2 &aufe, const ArtikelBase &art,
  		const Petig::Datum &_newdat, double _delta, ChJType _type,
  		CID change)
 throw(SQLerror)
 {
  exec sql begin declare section;
- int INSID=instid;
+ int INSID=instid->Id();
  int CHID;
  int AUFID;
  int ZEILENNR;
@@ -119,7 +119,7 @@ throw(SQLerror)
  SQLerror::test(__FILELINE__":pps_ChJournalEntry::newChange:"
     			"insert into prod_changejournal");
 
- pps_ChJournalEntry retval((ppsInstanz::ppsInstId)INSID,CHID);
+ pps_ChJournalEntry retval((ppsInstanz::ID)INSID,CHID);
 
  tr.commit();
 
@@ -130,11 +130,11 @@ throw(SQLerror)
 
 
 
-pps_ChJournalEntry::pps_ChJournalEntry(ppsInstanz::ppsInstId instid, CID change)
+pps_ChJournalEntry::pps_ChJournalEntry(cH_ppsInstanz instid, CID change)
 throw(SQLerror)
 {
  exec sql begin declare section;
- int INSID=instid;
+ int INSID=instid->Id();
  int CHID=change;
  int AUFID;
  int ZEILENNR;
@@ -161,12 +161,12 @@ throw(SQLerror)
  SQLerror::test(__FILELINE__":pps_ChJournalEntry::pps_ChJournalEntry:"
 	 		"select from prod_changejournal");
  
- instanz = ppsInstanz(instid);
+ instanz = cH_ppsInstanz(instid);
  chid = change;
  datum = Petig::Datum(DATUM);
  status = (ChJStatVal)STATUS;
  artikel = ArtikelBase(ARTIKELID);
- auftragentry = AufEintragBase2((ppsInstanz::ppsInstId)INSID,AUFID,ZEILENNR);
+ auftragentry = AufEintragBase2((ppsInstanz::ID)INSID,AUFID,ZEILENNR);
  newval = INEWVAL ? 0 : NEWVAL;
  newdate = INEWDATUM ? Petig::Datum() : Petig::Datum(NEWDATUM);
  delta = IDELTA ? 0 : DELTA;

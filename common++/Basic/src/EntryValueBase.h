@@ -1,4 +1,4 @@
-/* $Id: EntryValueBase.h,v 1.5 2001/10/01 12:55:40 christof Exp $ */
+/* $Id: EntryValueBase.h,v 1.6 2001/10/08 09:08:12 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -38,13 +38,13 @@ public:
  ~EntryValueBase() {}
 };
 
-class cH_EntryValue : public const_Handle<EntryValueBase>
+class cH_EntryValue : public Handle<const EntryValueBase>
 {protected:
 // cH_EntryValue() {}
- cH_EntryValue(const EntryValueBase *r) : const_Handle<EntryValueBase>(r){}
+ cH_EntryValue(const EntryValueBase *r) : Handle<const EntryValueBase>(r){}
 public:
  cH_EntryValue() 
- : const_Handle<EntryValueBase>(new EntryValueBase())
+ : Handle<const EntryValueBase>(new EntryValueBase())
  {}
  ~cH_EntryValue() {}
 };

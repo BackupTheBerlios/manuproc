@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.7 2001/10/01 12:55:40 christof Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.8 2001/10/08 09:08:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,11 +28,10 @@ exec sql include sqlca;
 void AufEintragBase::setStatus(AufStatVal st) throw(SQLerror)
 {exec sql begin declare section;
  int AUFTRAGID = auftragid;
- int INSTANZ;
+ int INSTANZ=instanz->Id();
  int ZEILENNR = zeilennr;
  int STATUS=st;
  exec sql end declare section;
- INSTANZ=instanz;
 
 #warning was ist mit status (Auftragsstatus), kann das ignoriert werden?
  if(entrystatus == CLOSED) return; // nichts geht mehr
@@ -87,11 +86,10 @@ void AufEintragBase::setStatus(AufStatVal st) throw(SQLerror)
 void AufEintragBase::updateStk(long stk) throw(SQLerror)
 {exec sql begin declare section;
  int AUFTRAGID = auftragid;
- int INSTANZ;
+ int INSTANZ=instanz->Id();
  int ZEILENNR = zeilennr;
  long BESTELLT = stk;
  exec sql end declare section;
- INSTANZ=instanz;
 
  Transaction tr;
 
@@ -124,14 +122,11 @@ void AufEintragBase::updatePreis(const Preis &pr) throw(SQLerror)
 {exec sql begin declare section;
  int AUFTRAGID = auftragid;
  int ZEILENNR = zeilennr;
- int INSTANZ;
- float PREIS;
- int PREISMENGE;
+ int INSTANZ=instanz->Id();
+ float PREIS=pr.Wert();
+ int PREISMENGE=pr.PreisMenge();
  exec sql end declare section;
- INSTANZ=instanz;
 #warning PREISMENGE->float
- PREIS=pr.Wert();
- PREISMENGE=pr.PreisMenge();
 // WAEHRUNG=pr.getWaehrung()->Id();
  exec sql update auftragentry 
  	set preis= :PREIS, preismenge= :PREISMENGE
@@ -145,11 +140,10 @@ void AufEintragBase::updatePreis(const Preis &pr) throw(SQLerror)
 void AufEintragBase::updateRabatt(int rb) throw(SQLerror)
 {exec sql begin declare section;
  int AUFTRAGID = auftragid;
- int INSTANZ;
+ int INSTANZ=instanz->Id();
  int ZEILENNR = zeilennr;
  int RABATT = rb;
  exec sql end declare section;
- INSTANZ=instanz; 
 
  exec sql update auftragentry set rabatt= :RABATT/100.0
  	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR
@@ -163,11 +157,10 @@ void AufEintragBase::updateRabatt(int rb) throw(SQLerror)
 void AufEintragBase::updateLieferdatum(const Petig::Datum &ld) throw(SQLerror)
 {exec sql begin declare section;
  int AUFTRAGID = auftragid;
- int INSTANZ;
+ int INSTANZ=instanz->Id();
  int ZEILENNR = zeilennr;
  char LIEFERDATUM[21];
  exec sql end declare section;
- INSTANZ=instanz;
 
  Transaction tr;
 
@@ -202,7 +195,7 @@ void AufEintragBase::split(int newmenge, const Petig::Datum &newld) throw(SQLerr
 {
  exec sql begin declare section;
  int AUFTRAGID;
- int INSTANZ;
+ int INSTANZ=instanz->Id();
  int ROHARTID;
  int ZEILENNR;
  int ZEILENNR_OLD;
@@ -223,7 +216,6 @@ void AufEintragBase::split(int newmenge, const Petig::Datum &newld) throw(SQLerr
  if(status==CLOSED) return;
 
  AUFTRAGID=auftragid;
- INSTANZ=instanz;
  ZEILENNR_OLD=zeilennr;
  ARTIKELID=artikel->getArtid();
  ROHARTID=artikel->getRohArtid();

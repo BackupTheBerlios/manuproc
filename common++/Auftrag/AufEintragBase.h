@@ -1,4 +1,4 @@
-/* $Id: AufEintragBase.h,v 1.9 2001/07/16 09:54:26 christof Exp $ */
+/* $Id: AufEintragBase.h,v 1.10 2001/10/08 09:08:12 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -41,7 +41,7 @@ class cH_AufArtikel;
 
 class AufArtikel : public ArtikelBaum, protected HandleContent
 {friend class cH_AufArtikel;
- friend class const_Handle<AufArtikel>;
+ friend class Handle<const AufArtikel>;
 
  ArtikelBase rohartikel; // = webartikel = rohrohroh...artikel
  cH_ArtikelBezeichnung bez;
@@ -92,12 +92,12 @@ public:
 
 
 
-class cH_AufArtikel : public const_Handle<AufArtikel>
+class cH_AufArtikel : public Handle<const AufArtikel>
 {
 private:
  typedef CacheStatic<AufArtikel::ID,cH_AufArtikel> cache_t;
  static cache_t cache;
- cH_AufArtikel(const AufArtikel *p) : const_Handle<AufArtikel>(p) {}
+ cH_AufArtikel(const AufArtikel *p) : Handle<const AufArtikel>(p) {}
  friend cache_t::stl_type;
  cH_AufArtikel() {}
 
@@ -144,7 +144,7 @@ public:
 	rabatt(0)
  {}
 
- AufEintragBase(ppsInstanz::ppsInstId _instanz,int _auftragid, int _zeilennr, int _bestellt,
+ AufEintragBase(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, int _bestellt,
 	int _artikel, const Petig::Datum _lieferdatum,
 	int _geliefert,
 	int _dispoentrynr, int _disponr, int _jahrgang,
@@ -176,7 +176,7 @@ public:
  AufStatVal getAufStatus() const { return status; }
  int getZnr() const { return zeilennr;}
  int getAuftragid() const {return auftragid;}
- ppsInstanz::ppsInstId getAuftragInstanz() const {return instanz;}
+ ppsInstanz::ID getAuftragInstanz() const {return instanz->Id();}
  AufStatVal getEntryStatus() const { return entrystatus;}
  const std::string getEntryStatusStr() const;
  const Petig::Datum LastEditDate() const { return lasteditdate; }

@@ -7,3 +7,6 @@
 - Fri,  2 Mar 2001 09:37:32 +0100
 	FetchIStream programmiert (braucht vermutlich pgsql 7.1 zum
 				compilieren)
+
+- Mon,  8 Oct 2001 11:09:37 +0200
+	const_Handle -> Handle<const, jede Menge bugfixes etc.

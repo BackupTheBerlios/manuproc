@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList.h,v 1.3 2001/10/01 12:55:41 christof Exp $ */
+/* $Id: LieferscheinList.h,v 1.4 2001/10/08 09:08:12 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -55,17 +55,12 @@ public:
  { unsigned long int id;
    sel_ArtikelId(unsigned long int k):id(k){}
  }; 
-
-
-
  
  LieferscheinList() throw(SQLerror);
  LieferscheinList(const sel_KundenId &selparam) throw(SQLerror);
  LieferscheinList(const sel_ArtikelId &selparam) throw(SQLerror);
  LieferscheinList(const sel_GeliefStat &selparam) throw(SQLerror);
  LieferscheinList(const sel_DPDLNr &selparam) throw(SQLerror);
- LieferscheinList &operator=(const LieferscheinList &source);
- LieferscheinList(const LieferscheinList &source);
 
  void fuelle(const std::string &query) throw(SQLerror);
  std::string SQuery();
@@ -77,7 +72,3 @@ public:
 };
 
 #endif
-
-
-
-

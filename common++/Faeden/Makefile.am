@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.1 2001/10/01 13:03:01 christof Exp $
+# $Id: Makefile.am,v 1.2 2001/10/08 09:08:12 christof Exp $
 
 CXXFLAGS=@CXXFLAGS@ @ECPG_INCLUDES@ 
 
@@ -8,7 +8,8 @@ noinst_PROGRAMS=libFaeden.o
 
 includedir=@includedir@/Faeden
 
-libFaeden_o_SOURCES= $(PGCC_SOURCES) $(BUILT_SOURCES)
+libFaeden_o_SOURCES= $(PGCC_SOURCES) \
+	Faden.cc Bindung.cc
 
 libFaeden.o : $(libFaeden_o_OBJECTS) $(libFaeden_o_DEPENDENCIES)
 	touch $@
@@ -16,7 +17,7 @@ libFaeden.o : $(libFaeden_o_OBJECTS) $(libFaeden_o_DEPENDENCIES)
 PGCC_SOURCES= Bindung_sql.cc Faden_sql.cc Schussfaeden.cc \
    Materialeigenschaft_sql.cc
 
-BUILT_SOURCES= $(PGCC_SOURCES) Faden.cc Bindung.cc
+BUILT_SOURCES= $(PGCC_SOURCES) 
 
 include_HEADERS=Bindung.hh Faden.hh Schussfaeden.hh Materialeigenschaft.hh
 

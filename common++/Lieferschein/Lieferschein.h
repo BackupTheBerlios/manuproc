@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.4 2001/10/01 12:55:41 christof Exp $ */
+/* $Id: Lieferschein.h,v 1.5 2001/10/08 09:08:12 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -72,13 +72,24 @@ class Lieferschein : public LieferscheinBase, public HandleContent
 };
 
 
-class cH_Lieferschein : public const_Handle<Lieferschein>
+class cH_Lieferschein : public Handle<const Lieferschein>
 {
+ friend class std::map<int,cH_Lieferschein> ;
 protected:
-//public:
  cH_Lieferschein() {}
 public:
- cH_Lieferschein(Lieferschein *r) : const_Handle<Lieferschein>(r){}
+ cH_Lieferschein(Lieferschein *r) : Handle<const Lieferschein>(r){}
+ cH_Lieferschein(Lieferschein::ID i) : Handle<const Lieferschein>(new Lieferschein(i)){}
+};
+
+class H_Lieferschein : public Handle<Lieferschein>
+{
+ friend class std::map<int,H_Lieferschein> ;
+protected:
+public:
+ H_Lieferschein(): Handle<Lieferschein> (new Lieferschein()) {}
+ H_Lieferschein(Lieferschein *r) : Handle<Lieferschein>(r){}
+ H_Lieferschein(Lieferschein::ID i) : Handle<Lieferschein>(new Lieferschein(i)){}
 };
 
 /*

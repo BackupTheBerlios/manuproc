@@ -59,7 +59,7 @@ public:
 class OffLief_RowData : public RowDataBase
 {
  friend class cH_RowData;
- friend class const_Handle<OffLief_RowData>;
+ friend class Handle<const OffLief_RowData>;
 
  Lieferschein lieferschein;
   

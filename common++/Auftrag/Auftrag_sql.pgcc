@@ -180,12 +180,17 @@ AuftragFull::AuftragFull(const AuftragBase& auftrag) throw(SQLerror)
  }
 }
 
-AuftragFull::AuftragFull(ppsInstanz::ppsInstId instanz, long kundennr, int jahr) throw(SQLerror)
+AuftragFull::AuftragFull(ppsInstanz::ID instanz, long kundennr, int jahr) throw(SQLerror)
 	: Auftrag(instanz, kundennr,jahr)
 {  // braucht nicht geladen zu werden
 }
 
-Auftrag::Auftrag(ppsInstanz::ppsInstId _instanz, long kdnr,int jahr) throw(SQLerror)
+//AuftragFull::AuftragFull(const AuftragBase &AB, long kundennr, int jahr) throw(SQLerror)
+//	: Auftrag(AB, kundennr,jahr)
+//{  // braucht nicht geladen zu werden
+//}
+
+Auftrag::Auftrag(ppsInstanz::ID _instanz, long kdnr,int jahr) throw(SQLerror)
 {
  instanz=_instanz;
  exec sql begin declare section;
@@ -195,7 +200,7 @@ Auftrag::Auftrag(ppsInstanz::ppsInstId _instanz, long kdnr,int jahr) throw(SQLer
  int KUNDENNR=kdnr;
  int JAHRGANG=jahr;
  int STATUS;
- int INSTANZ=instanz;
+ int INSTANZ=instanz->Id();
  exec sql end declare section;
 
  Transaction tr;
@@ -231,6 +236,56 @@ Auftrag::Auftrag(ppsInstanz::ppsInstId _instanz, long kdnr,int jahr) throw(SQLer
 
  tr.commit();
 }
+
+Auftrag::Auftrag(const AuftragBase &AB, long kdnr, int jahr) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int AUFTRAGID;
+ char DATUM[11];
+ int YEAR;
+ int KUNDENNR=kdnr;
+ int JAHRGANG=jahr;
+ int STATUS;
+ int INSTANZ;
+ exec sql end declare section;
+ AUFTRAGID=AB.Id();
+ INSTANZ=AB.Instanz();
+ STATUS = OPEN;
+
+ Transaction tr;
+/*
+ exec sql lock table auftrag in exclusive mode;
+ SQLerror::test(__FILELINE__"lock table auftrag");
+
+ exec sql select date_part('year',date(now()))%100.0 into :YEAR;
+ SQLerror::test(__FILELINE__"select year");
+*/ 
+/*
+ exec sql select coalesce(max(auftragid)+1,:YEAR*10000) 
+ 		into :AUFTRAGID from auftrag 
+ 		where auftragid between (:YEAR*10000) and (:YEAR+1)*10000-1
+ 		and instanz=:INSTANZ;
+ SQLerror::test("Auftrag: select neue auftragid");
+*/
+ exec sql insert into auftrag (auftragid, kundennr, status, jahrgang, 
+				stat, waehrung, instanz)
+ 	values (:AUFTRAGID, :KUNDENNR, :STATUS, :JAHRGANG, 0, 1,:INSTANZ);
+ SQLerror::test(__FILELINE__" insert auftrag with auftragid 0");
+  
+ exec sql select date(datum) into :DATUM from auftrag 
+   where auftragid= :AUFTRAGID and instanz = :INSTANZ;
+ SQLerror::test("Aufrtag: select datum");
+
+ auftragid = AUFTRAGID;
+ kundennr = kdnr;
+ datum.from_postgres(DATUM);
+ wrkstatus= INSERTED;
+ status=(AufStatVal)STATUS;
+ jahrgang = JAHRGANG;
+
+ tr.commit();
+}
+
 
 void Auftrag::setBemerkung(const std::string &bem) throw(SQLerror)
 {

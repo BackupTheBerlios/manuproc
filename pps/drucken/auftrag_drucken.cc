@@ -30,8 +30,8 @@ int main (int argc, char *argv[])
   if (p!="Preview" && p!= "Plot")
     {cerr<<"FEHLER: 3. Argument von "<<argv[0]<<" muß 'Preview' oder 'Plot' sein und nicht '"<<p<<"'\n"; return 1;}
 
-  ppsInstanz::ppsInstId instanz;
-  if (argc==5) instanz = (ppsInstanz::ppsInstId)atoi(argv[4]);
+  ppsInstanz::ID instanz;
+  if (argc==5) instanz = (ppsInstanz::ID)atoi(argv[4]);
   else instanz = ppsInstanz::INST_KNDAUF;
 
   try {

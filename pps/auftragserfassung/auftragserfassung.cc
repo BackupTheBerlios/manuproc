@@ -25,7 +25,7 @@ int main(int argc,char *argv[])
      // INST_FAERB = 2
      // INST_DRUCK = 3
      // INST_SCHAER = 5 
-     ppsInstanz::ppsInstId ppsInst = (ppsInstanz::ppsInstId)atoi(argv[1]);
+     ppsInstanz::ID ppsInst = (ppsInstanz::ID)atoi(argv[1]);
      if (ppsInst==ppsInstanz::INST_BANDLAGER) instanz_to = cH_ppsInstanz(ppsInstanz::INST_BANDLAGER);
      else if (ppsInst==ppsInstanz::INST_WEB) instanz_to = cH_ppsInstanz(ppsInstanz::INST_WEB);
      else if (ppsInst==ppsInstanz::INST_FAERB) instanz_to = cH_ppsInstanz(ppsInstanz::INST_FAERB);
