@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.cc,v 1.1 2003/07/22 08:13:27 christof Exp $ */
+/* $Id: AufEintrag_loops.cc,v 1.2 2003/07/23 08:14:24 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,11 +24,26 @@
 #include <Auftrag/sqlAuftragSelector.h>
 #include <Auftrag/selFullAufEntry.h>
 
+static std::string Nametrans(std::string n)
+{  if (n[0]=='N')
+   {  const char *x=n.c_str()+1,*end=0;
+      long num=strtol(x,const_cast<char**>(&end),10);
+      if (end) num+=end-x;
+      n=n.substr(num+1);
+   }
+   if ('0' <= n[0] && n[0] <= '9')
+   {  const char *x=n.c_str(),*end=0;
+      long num=strtol(x,const_cast<char**>(&end),10);
+      if (end) n=n.substr(end-x,num);
+   }
+   return n;
+}
+
 bool distribute_children(const AufEintragBase &startAEB,
  		AuftragBase::mengen_t menge,
  		const ArtikelBase &article, 
  		const distribute_children_cb &callee)
-{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,article,typeid(callee).name());
+{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,article,Nametrans(typeid(callee).name()));
    AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel(startAEB));
    ArtikelBaum AE_artbaum(article);
    for(AufEintragZu::map_t::const_iterator artloop_var=MapArt.begin();artloop_var!=MapArt.end();++artloop_var)
@@ -59,7 +74,7 @@ bool distribute_children(const AufEintragBase &startAEB,
 
 AuftragBase::mengen_t distribute_parents(const AufEintragBase &startAEB, 
 	AuftragBase::mengen_t menge,const distribute_parents_cb &callee)
-{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,typeid(callee).name());
+{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,Nametrans(typeid(callee).name()));
    assert(menge>0);
    AufEintragZu::list_t Eltern =
         AufEintragZu::get_Referenz_list(startAEB,AufEintragZu::list_eltern,
@@ -78,11 +93,32 @@ AuftragBase::mengen_t distribute_parents(const AufEintragBase &startAEB,
 
 AuftragBase::mengen_t auf_positionen_verteilen(const SQLFullAuftragSelector &selector,
  		AuftragBase::mengen_t menge, const auf_positionen_verteilen_cb &callee)
-{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,menge,typeid(callee).name());
+{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,menge,Nametrans(typeid(callee).name()));
    SelectedFullAufList auftraglist=SelectedFullAufList(selector);
 
   AuftragBase::mengen_t m=menge;
   for (SelectedFullAufList::iterator i=auftraglist.begin();i!=auftraglist.end();++i)
+   {
+     AuftragBase::mengen_t M;
+     if (menge>=0) M=AuftragBase::min(i->getRestStk(),m);
+     else M=-AuftragBase::min(-m,i->getGeliefert());
+     if (!M) continue;
+
+     M=callee(*i,M);
+
+     m-=M;
+     if(!m) break;
+   }
+   return m;
+}
+
+AuftragBase::mengen_t auf_positionen_verteilen_rev(const SQLFullAuftragSelector &selector,
+ 		AuftragBase::mengen_t menge, const auf_positionen_verteilen_cb &callee)
+{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,menge,typeid(callee).name());
+   SelectedFullAufList auftraglist=SelectedFullAufList(selector);
+
+  AuftragBase::mengen_t m=menge;
+  for (SelectedFullAufList::reverse_iterator i=auftraglist.rbegin();i!=auftraglist.rend();++i)
    {
      AuftragBase::mengen_t M;
      if (menge>=0) M=AuftragBase::min(i->getRestStk(),m);
