@@ -1,4 +1,4 @@
-/* $Id: Kettscheibe.h,v 1.2 2004/02/25 10:06:19 christof Exp $ */
+/* $Id: Kettscheibe.h,v 1.3 2004/02/25 10:17:18 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -18,8 +18,8 @@
  */
 
 
-#ifndef KETTSCHEIBE_HH
-#define KETTSCHEIBE_HH
+#ifndef _23D27F5D_9506_4442_A6EB_5BDEACA00236
+#define _23D27F5D_9506_4442_A6EB_5BDEACA00236
 
 #include <vector>
 #include <Artikel/ArtikelBase.h>

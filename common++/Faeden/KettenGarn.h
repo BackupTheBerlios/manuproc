@@ -1,4 +1,4 @@
-/* $Id: KettenGarn.h,v 1.2 2004/02/25 10:06:19 christof Exp $ */
+/* $Id: KettenGarn.h,v 1.3 2004/02/25 10:17:18 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,8 +17,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef KETTENGARN_HH
-#define KETTENGARN_HH
+#ifndef _989D4D79_BC5D_4151_BF8F_5DC6C209D019
+#define _989D4D79_BC5D_4151_BF8F_5DC6C209D019
 #include <Artikel/ArtikelBezeichnung.h>
 #include <Faeden/Kettscheibe.h>
 class ArtikelGang;
