@@ -1,4 +1,4 @@
-// generated 2004/3/15 11:10:58 CET by jacek@jaceksdell.(none)
+// generated 2004/3/12 22:15:24 CET by jacek@jaceksdell.(none)
 // using glademm V2.0.0b
 //
 // newer (non customized) versions of this file go to mpc_agent.cc_new
@@ -12,6 +12,11 @@
 
 int main(int argc, char **argv)
 {  
+#if defined(ENABLE_NLS)
+   bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
+   bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
+   textdomain (GETTEXT_PACKAGE);
+#endif //ENABLE_NLS
    
    Gtk::Main m(&argc, &argv);
 

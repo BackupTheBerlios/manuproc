@@ -1,4 +1,4 @@
-# generated 2004/3/15 11:10:58 CET by jacek@jaceksdell.(none)
+# generated 2004/3/12 22:15:24 CET by jacek@jaceksdell.(none)
 # using glademm V2.0.0b
 
 AC_INIT(src/mpc_agent.cc)
@@ -14,10 +14,41 @@ AC_PROG_CXX
 AC_PROG_CXXCPP
 AM_PROG_LIBTOOL
 
+dnl *************************************************
+dnl gettext support
+dnl *************************************************
+
+GETTEXT_PACKAGE=mpc_agent
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE")
+
+dnl Add the languages which your application supports here.
+ALL_LINGUAS=""
+AM_GNU_GETTEXT
+
+dnl Set PACKAGE_LOCALE_DIR in config.h.
+if test "x${prefix}" = "xNONE"; then
+  AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, "${ac_default_prefix}/${DATADIRNAME}/locale")
+else
+  AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, "${prefix}/${DATADIRNAME}/locale")
+fi
+
 AC_LANG_CPLUSPLUS
+
 
 PKG_CHECK_MODULES(GTKMM,[gtkmm-2.0 >= 2.2.8])
 AC_SUBST(GTKMM_CFLAGS)
 AC_SUBST(GTKMM_LIBS)
+PETIG_CHECK_KOMPONENTEN2
 
-AC_OUTPUT(Makefile src/Makefile )
+if echo __MINGW32__ | $CPP - - | fgrep -q __MINGW32__
+then mingw=false
+else mingw=true 
+fi
+AM_CONDITIONAL(WINDOWS, test x$mingw = xtrue)
+
+
+
+AC_OUTPUT(Makefile src/Makefile  po/Makefile.in m4/Makefile )
+
+
