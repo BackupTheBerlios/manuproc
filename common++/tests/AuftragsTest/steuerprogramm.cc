@@ -341,6 +341,7 @@ std::cout << dummystring<<'\n';
      }
     case Rep_Zuordnungen:
      {
+      #ifdef PETIG_TEST
        #ifndef REPARATUR_PROGRAMM_TESTEN
           assert(!"FEHLER: MIT REPARATURPROGRAMM KOMPILIEREN\n");
        #endif
@@ -381,6 +382,7 @@ std::cout << dummystring<<'\n';
       }
       cout << "Reparatur-Test (Petig, Zuordnungen) erfolgreich\n";
       break;      
+      #endif
      }
     case Rep_KundenProgramm:
      {
