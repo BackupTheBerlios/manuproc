@@ -30,7 +30,7 @@ void ppsInstanz::Reparatur_0er_und_2er(int uid) const throw(SQLerror)
    assert(Id() != ppsInstanzID::Kundenauftraege);
    SQLFullAuftragSelector sel0er= SQLFullAuftragSelector::sel_Status(Id(),OPEN,AuftragBase::ungeplante_id);
    SelectedFullAufList AL(sel0er);
-//cout << "AL.size()\t"<<AL.size()<<'\n';
+//cout << "REPARATUR 2er 0er AL.size()\t"<<AL.size()<<'\n';
    for(SelectedFullAufList::iterator i=AL.begin();i!=AL.end();++i)
     {
       SQLFullAuftragSelector sel2er;
@@ -46,7 +46,7 @@ void ppsInstanz::Reparatur_0er_und_2er(int uid) const throw(SQLerror)
          AufEintrag A2er=*(L2er.begin());
          AuftragBase::mengen_t M=AuftragBase::min(i->getStueck(),A2er.getStueck());
          AuftragBase zielauftrag(Id(),AuftragBase::plan_auftrag_id);
-//         i->Planen(uid,M,zielauftrag,i->getLieferdatum(),ManuProC::Auftrag::r_Reparatur);
+//cout << "RepLan: "<<*i<<'\t'<<zielauftrag<<"Menge: "<<M<<'\n';
          i->Planen(uid,M,zielauftrag,i->getLieferdatum(),ManuProC::Auftrag::r_Reparatur);
        }
     }

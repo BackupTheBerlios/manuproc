@@ -308,7 +308,7 @@ std::cout << dummystring<<'\n';
       Query::Execute(qB);
       SQLerror::test(__FILELINE__);
       erfolgreich=C.teste(Check::Menge,"_split_reparatur",mit_reparatur_programm,true);
-      if(!erfolgreich) { cout << "Reparatur-Split-Test (Garnlager) auslagern\n";
+      if(!erfolgreich) { cout << "Reparatur-Split-Test (Garnlager) \n";
                return fehler();}
 
       std::string qJ="insert into rohjumbo (code,maschine,soll_meter,plan_datum,"
@@ -318,7 +318,7 @@ std::cout << dummystring<<'\n';
       Query::Execute(qJ);
       SQLerror::test(__FILELINE__);
       erfolgreich=C.teste(Check::Menge,"_split_reparatur_bandlager",mit_reparatur_programm,true);
-      if(!erfolgreich) { cout << "Reparatur-Split-Test (Bandlager) auslagern\n";
+      if(!erfolgreich) { cout << "Reparatur-Split-Test (Bandlager) \n";
                return fehler();}
 
       std::string qJ2="update rohjumbo set soll_meter=200 where "
@@ -329,7 +329,7 @@ std::cout << dummystring<<'\n';
       Query::Execute(qJ2);
       SQLerror::test(__FILELINE__);
       erfolgreich=C.teste(Check::Menge,"_split_reparatur_bandlager_minus",mit_reparatur_programm,true);
-      if(!erfolgreich) { cout << "Reparatur-Split-Test (BandlagerMinus) auslagern\n";
+      if(!erfolgreich) { cout << "Reparatur-Split-Test (BandlagerMinus) \n";
                return fehler();}
 
       std::string qB2="update rl_inhalt set kartons=4 where "
@@ -339,10 +339,8 @@ std::cout << dummystring<<'\n';
       Query::Execute(qB2);
       SQLerror::test(__FILELINE__);
       erfolgreich=C.teste(Check::Menge,"_split_reparatur_garnlager_minus",mit_reparatur_programm,true);
-      if(!erfolgreich) { cout << "Reparatur-Split-Test (BandlagerMinus) auslagern\n";
+      if(!erfolgreich) { cout << "Reparatur-Split-Test (GarnalgerMinus) \n";
                return fehler();}
-
-
 
       cout << "Reparatur-Test (Petig, Physikalisches Lager) erfolgreich\n";
 
@@ -866,7 +864,8 @@ void usage(const std::string &argv0,const std::string &argv1)
                   "\t(J)umboLager\n"
                   "\t(R)eparatur(P)hysikalischesLager\n"
                   "\t(R)eparatur_0er_2er_(g)leichzeitig\n"
-                  "\t(R)eparartur(M)Mabella] aufgerufen werden\n"
+                  "\t(R)eparartur(M)Mabella, =0er+2er OPEN, bestellt=0, Kundenid=1]\n"
+                  "\taufgerufen werden\n"
        << " nicht mit '"<<argv1<<"'\n";
   exit(1);
 }

@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.15 2002/11/25 15:21:52 thoma Exp $
+// $Id: AufEintrag.cc,v 1.16 2002/12/02 13:14:03 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -133,11 +133,13 @@ void AufEintrag::move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"To=",AEB,"Menge=",menge,"Reason=",reason);
   Transaction tr;
+
   if(reason==ManuProC::Auftrag::r_Produziert || 
      reason==ManuProC::Auftrag::r_Planen || 
-     reason==ManuProC::Auftrag::r_Closed)
+     reason==ManuProC::Auftrag::r_Closed  ||
+     reason==ManuProC::Auftrag::r_Reparatur)
    {
-     mengen_t mt1=updateStkDiff__(uid,-menge,false);
+     mengen_t mt1=updateStkDiff__(uid,-menge,false,reason);
      assert(-menge==mt1);
    }
   mengen_t mt2=AufEintrag(AEB).updateStkDiff__(uid,menge,false);
@@ -174,11 +176,8 @@ void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,int uid,M
     if(Instanz()->LagerInstanz())
      {
       mengen_t mt=i->AEB.updateStkDiffBase__(uid,-M);
-
-//      Lager L(Instanz()->Id());
       dispo_auftrag_aendern(uid,Instanz(),Artikel(),M);
       menge_neu_verplanen(uid,Instanz(),Artikel(),M,reason);
-
       assert(mt==mengen_t(-M));
      }
     else
@@ -273,6 +272,7 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
            }
          else
            {
+//cout << "ELSEn";
            }
        }
     }
@@ -281,7 +281,6 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
 
    std::list<AufEintragZu::st_reflist> ReferenzAufEintrag =
 			         AufEintragZu(*this).get_Referenz_listFull(false);
-
    for (std::list<AufEintragZu::st_reflist>::iterator i=ReferenzAufEintrag.begin();i!=ReferenzAufEintrag.end();++i)
     {
      if(i->AEB.Instanz()->Id()!=ppsInstanzID::Kundenauftraege) continue;

@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.14 2002/11/28 15:59:28 thoma Exp $
+// $Id: get_data.cc,v 1.15 2002/12/02 13:14:03 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -296,6 +296,9 @@ std::vector<graph_data_node::st_files> graph_data_node::Sfiles()
   vec_files.push_back(st_files("split_rohwarenlager_rein","+100"));  
   vec_files.push_back(st_files("split_rohwarenlager_raus","-100"));  
   vec_files.push_back(st_files("split_reparatur","R"));  
+  vec_files.push_back(st_files("split_reparatur_bandlager","RB"));  
+  vec_files.push_back(st_files("split_reparatur_bandlager_minus","RBM"));  
+  vec_files.push_back(st_files("split_reparatur_garnlager_minus","RGM"));  
   return vec_files;
 }
 

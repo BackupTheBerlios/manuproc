@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.24 2002/11/29 15:49:56 thoma Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.25 2002/12/02 13:14:03 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -189,7 +189,15 @@ const Preis::rabatt_t Lieferschein::AufRabatt() const throw(SQLerror)
 
 LieferscheinBase::mengen_t Lieferschein::StandardLaenge(const ArtikelBase artikel) throw (SQLerror)
 {
-  return 1;
+ exec sql begin declare section;
+  int A = artikel.Id();
+  float M;
+ exec sql end declare section;
+ exec sql select menge into :M from lieferscheinentry e, lieferschein l 
+   where artikelid=:A and l.lfrsid=e.lfrsid order by datum desc limit 1;
+ SQLerror::test(__FILELINE__,100);
+ if (sqlca.sqlcode) return 1;
+ return M;
 }
 
 

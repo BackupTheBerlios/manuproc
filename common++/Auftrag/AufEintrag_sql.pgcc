@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.31 2002/11/28 15:59:27 thoma Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.32 2002/12/02 13:14:03 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -243,12 +243,9 @@ AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool in
    Transaction tr;
    exec sql lock auftragentry in exclusive mode;
    SQLerror::test("updateStkDiff: lock table auftragentry");
-
-//ECPGdebug(true,stdout);
    mengen_t mt=updateStkDiffBase__(uid,menge);
-//ECPGdebug(false,0);
 
-   if(instanzen)
+   if(instanzen || reason==ManuProC::Auftrag::r_Reparatur)
       updateStkDiffInstanz__(uid,mt,reason);
    bestellt+=menge;
 
