@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.48 2004/02/02 16:59:02 jacek Exp $
+// $Id: Lager.cc,v 1.49 2004/02/02 18:34:52 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -64,6 +64,7 @@ void Lager::rein_ins_lager(const ArtikelBase &artikel,
 
  FertigWaren fw(artikel,a,menge.as_int(),ctx.leb.Id());
  FertigWarenLager fwl(fw,ctx.leb.lagerid);
+ ctx.fuer_auftrag=produziert;
  fwl.Einlagern(ctx);
 #else
  LagerBase::rein_ins_lager(artikel,menge,produziert,ctx); 
@@ -99,6 +100,7 @@ void Lager::raus_aus_lager(const ArtikelBase &artikel,
 
  FertigWaren fw(artikel,a,menge.as_int(),ctx.leb.Id());
  FertigWarenLager fwl(fw,ctx.leb.lagerid);
+ ctx.fuer_auftrag=fuer_auftrag;
  fwl.Auslagern(ctx);
 #else
  LagerBase::raus_aus_lager(artikel,menge,fuer_auftrag,ctx); 
@@ -123,6 +125,7 @@ void LagerBase::rein_ins_lager(const ArtikelBase &artikel,
 	NV("this",*this),NV("Artikel",artikel),NV("Menge",menge),
      	NV("produziert",produziert),NV("ctx",ctx));
   // vielleicht doch besser nach AufEintrag?
+  ctx.fuer_auftrag=produziert;
   AufEintrag::Einlagern(*this,artikel,menge,produziert,ctx);
 }
 
@@ -134,6 +137,8 @@ void LagerBase::raus_aus_lager(const ArtikelBase &artikel,
      		NV("artikel",artikel),NV("menge",menge),
      		NV("fuer_auftrag",fuer_auftrag),NV("ctx",ctx));
   Transaction tr;
+
+  ctx.fuer_auftrag=fuer_auftrag;
 
   if (ctx.lager_aeb.valid())
   {  assert(fuer_auftrag);

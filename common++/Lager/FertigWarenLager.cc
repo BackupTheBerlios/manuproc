@@ -112,10 +112,12 @@ void FertigWarenLager::Buchen(FertigWaren::e_buchen buchen,
  SQLerror::test(__FILELINE__);   
 
  if(buchen == FertigWaren::Rein)
-   rein_ins_lager(fw.Artikel(),fw.Stk(FertigWaren::AsIs),true,ctx);
+   rein_ins_lager(fw.Artikel(),fw.Stk(FertigWaren::AsIs),
+					ctx.fuer_auftrag,ctx);
  else
  if(buchen == FertigWaren::Raus)
-   raus_aus_lager(fw.Artikel(),fw.Stk(FertigWaren::AsIs),true,ctx);
+   raus_aus_lager(fw.Artikel(),fw.Stk(FertigWaren::AsIs),
+					ctx.fuer_auftrag,ctx);
  else
  if(buchen == FertigWaren::WiederRein)
    wiedereinlagern(fw.Artikel(), fw.Stk(FertigWaren::Rein));

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinBase.h,v 1.15 2004/02/02 16:59:02 jacek Exp $ */
+/* $Id: LieferscheinBase.h,v 1.16 2004/02/02 18:34:52 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -40,7 +40,7 @@ public:
 	static const ID none_id=_illegal;
 	
 	LieferscheinBase() : instanz(ppsInstanzID::None), lieferid(none_id),
-				lagerid() {}
+				lagerid(1) {}
 	LieferscheinBase(const cH_ppsInstanz& _instanz,int lid) 
 	     : instanz(_instanz), lieferid(lid), lagerid(1) {}
 

@@ -287,7 +287,8 @@ void auftrag_bearbeiten::waehrung_geaendert()
 {
 try { 
  if (auftrag)
-   {  auftrag->setWaehrung(bea_WWaehrung->get_enum());
+   {
+      auftrag->setWaehrung(bea_WWaehrung->get_enum());
       WPreis->set_Waehrung(cP_Waehrung(bea_WWaehrung->get_enum()));
    }
  }
