@@ -1,6 +1,6 @@
-/* $Id: EntryValueEmptyInt.h,v 1.9 2002/10/24 14:06:49 thoma Exp $ */
+/* $Id: EntryValueEmptyInt.h,v 1.10 2003/04/23 09:19:20 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,26 +20,19 @@
 #ifndef ENTRYVALUEEMPTYINT_H
 #define ENTRYVALUEEMPTYINT_H
 
-#include <Misc/EntryValueBase.h>
-#include <Misc/itos.h>
+#include <Misc/EntryValueIntString.h>
+#include <Misc/compiler_ports.h>
 
-class EntryValueEmptyInt : public EntryValueBase
+class EntryValueEmptyInt : public EntryValueIntString
 {
- int intval;
- double dval;
- std::string strval;
+ double dval; // absolute nonsense - is this an int or is it a double?
+
+private: // never never use this nonsense, use a EV_fixedpoint
+ EntryValueEmptyInt(double d);
  
 public:
-
- EntryValueEmptyInt() : intval(int_NaN), dval(double_NaN) {}
- EntryValueEmptyInt(int v):intval(v), dval(double_NaN)
-     { if (v!=0) strval=itos(v); else strval=""; }
- EntryValueEmptyInt(double v):intval(int_NaN), dval(v)
-     { if (v!=0) strval=dtos(v); else strval=""; }
-   
- virtual int getIntVal() const { return intval;}
- virtual double getDoubleVal() const { return dval;}
- virtual const std::string getStrVal() const { return strval;}
+ EntryValueEmptyInt(int v) : EntryValueIntString(v)
+     { if (!v) strval=""; }
 };
 
 class cH_EntryValueEmptyInt : public cH_EntryValue

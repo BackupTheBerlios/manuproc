@@ -1,4 +1,4 @@
-/* $Id: EntryValueIntString.h,v 1.12 2003/03/24 13:35:19 christof Exp $ */
+/* $Id: EntryValueIntString.h,v 1.13 2003/04/23 09:19:20 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,7 +25,7 @@
 
 class EntryValueIntString : public EntryValueBase
 {
- friend class EntryValueIntGermanString;
+protected:
  int intval;
  std::string strval;
 

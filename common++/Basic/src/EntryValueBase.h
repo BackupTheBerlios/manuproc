@@ -1,4 +1,4 @@
-/* $Id: EntryValueBase.h,v 1.13 2002/10/24 14:06:49 thoma Exp $ */
+/* $Id: EntryValueBase.h,v 1.14 2003/04/23 09:19:20 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,6 +21,7 @@
 #define ENTRY_VALUEBASE_H
 #include <Misc/Handles.h>
 #include <string>
+#include <Misc/compiler_ports.h>
 
 class EntryValueBase : public HandleContent
 // opaque Data Type which is accessible as an int value or as a string
@@ -29,17 +30,25 @@ public:
  static const int int_NaN=-1;
  static const double double_NaN=-1;
  virtual operator const std::string() const { return getStrVal(); }
- virtual operator int() const { return getIntVal(); }
- virtual operator double() const { return getDoubleVal(); }
- virtual operator bool() const;
- 
- virtual int getIntVal() const { return 0; }
- virtual double getDoubleVal() const { return double_NaN; }
- virtual bool getBoolVal() const { return false; }
- virtual const std::string getStrVal() const { return ""; }
+ virtual const std::string getStrVal() const { return std::string(); }
  virtual bool operator==(const EntryValueBase &v) const;
  virtual bool operator<(const EntryValueBase &v) const;
  ~EntryValueBase() {}
+
+// CP: I don't like these functions here, they should get replaced by the 
+// correct dynamic_cast construction, we can't add a function here for every 
+// type we define
+// a string and operator< are needed for proper display, these are not needed
+
+ __deprecated virtual double getDoubleVal() const { return double_NaN; }
+ __deprecated virtual bool getBoolVal() const { return false; }
+ __deprecated virtual operator double() const { return getDoubleVal(); }
+ __deprecated virtual operator bool() const;
+
+// CP: I'm not happy with these either 
+// but they offered nice sorting fallback in the past
+ /*__deprecated*/ virtual operator int() const { return getIntVal(); }
+ /*__deprecated*/ virtual int getIntVal() const { return int_NaN; }
 };
 
 class cH_EntryValue : public Handle<const EntryValueBase>
