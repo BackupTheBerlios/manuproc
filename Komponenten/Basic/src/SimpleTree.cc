@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.31 2003/11/11 08:11:56 christof Exp $
+// $Id: SimpleTree.cc,v 1.32 2003/11/12 11:03:14 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -187,6 +187,9 @@ void SimpleTree_Basic::fillMenu()
   Gtk::MenuItem *spalten=add_mitem(menu,"Sichtbare Spalten");
   Gtk::Menu *spalten_menu=manage(new Gtk::Menu);
   spalten->set_submenu(*spalten_menu);
+  Gtk::TearoffMenuItem *tomi=manage(new Gtk::TearoffMenuItem());
+  spalten_menu->append(*tomi);
+  tomi->show();
    for (guint i=0;i<Cols();++i)
     { bvector_item_CheckMenuItem *sp = manage(new bvector_item_CheckMenuItem
     			(getStore()->ShowColumn(i),getColTitle(i)));
