@@ -1,4 +1,4 @@
-// $Id: int_ImageButton.cc,v 1.2 2004/07/16 06:58:44 christof Exp $
+// $Id: int_ImageButton.cc,v 1.3 2004/07/16 22:42:12 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -65,5 +65,5 @@ void int_ImageButton::Connection::add_entry(int value, Glib::RefPtr<Gdk::Pixbuf>
 				const std::string &tooltip)
 {  props[value].pixbuf=pixbuf;
    props[value].tooltip=tooltip;
-   if (model.Value()==value) model2widget();
+   if (!!model && model.Value()==value) model2widget();
 }

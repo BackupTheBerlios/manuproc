@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.80 2004/06/14 14:35:06 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.81 2004/07/16 22:42:11 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -212,7 +212,12 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
 #ifndef OLD_MODEL
   //We need to specify a particular get_type() from one of the virtual base classes, but they should
   //both return the same piece of data.
-  Gtk::TreeModel::add_interface( Glib::Object::get_type() );
+  {static bool inited=false;
+   if (!inited)
+   { Gtk::TreeModel::add_interface( Glib::Object::get_type() );
+     inited=true;
+   }
+  }
 #endif
   vec_hide_cols.resize(Cols());
   for (std::vector<bool>::iterator i=vec_hide_cols.begin();i!=vec_hide_cols.end();++i)
