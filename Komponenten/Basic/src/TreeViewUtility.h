@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.h,v 1.1 2002/12/16 08:29:56 christof Exp $
+// $Id: TreeViewUtility.h,v 1.2 2002/12/18 16:37:44 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -40,7 +40,7 @@ public:
 	void attach_to(Gtk::TreeView &tv);
 	const std::vector<Gtk::TreeModelColumn<Glib::ustring> > &Columns() const
 	{  return cols; }
-	Glib::RefPtr<Gtk::ListStore> get_list()
+	Glib::RefPtr<Gtk::ListStore> get_store()
 	{ return m_refStore; }
 };
 
