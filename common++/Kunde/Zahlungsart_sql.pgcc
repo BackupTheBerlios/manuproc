@@ -1,4 +1,4 @@
-/* $Id: Zahlungsart_sql.pgcc,v 1.17 2003/03/10 08:49:53 christof Exp $ */
+/* $Id: Zahlungsart_sql.pgcc,v 1.18 2003/03/10 08:55:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,7 +18,7 @@
  */
 
 #include "Zahlungsart.h"
-#include <Misc/FetchIStream.h>
+#include <Misc/FetchIStream_ops.h>
 
 static const char * const to_select = 
 	"kurzbezeichnung,bezeichnung,"
@@ -40,14 +40,14 @@ FetchIStream &operator>>(FetchIStream &is, Zahlungsart &za)
    is >> FetchIStream::MapNull<std::string>(za.kurzbezeichung,std::string())
       >> FetchIStream::MapNull<std::string>(za.bezeichnung,std::string())
       >> FetchIStream::MapNull<int>(za.zahlungsfrist,0)
-      >> FetchIStream::MapNull<fixedpoint<2>(satz[1],0)
+      >> FetchIStream::MapNull<fixedpoint<2> >(satz[1],0)
       >> FetchIStream::MapNull<int>(frist[1],0)
-      >> FetchIStream::MapNull<fixedpoint<2>(satz[2],0)
+      >> FetchIStream::MapNull<fixedpoint<2> >(satz[2],0)
       >> FetchIStream::MapNull<int>(frist[2],0)
-      >> FetchIStream::MapNull<fixedpoint<2>(satz[3],0)
+      >> FetchIStream::MapNull<fixedpoint<2> >(satz[3],0)
       >> FetchIStream::MapNull<int>(frist[3],0)
 #ifdef MABELLA_EXTENSIONS      
-      >> FetchIStream::MapNull<fixedpoint<2>(za.einzugrabatt,0)
+      >> FetchIStream::MapNull<fixedpoint<2> >(za.einzugrabatt,0)
       >> FetchIStream::MapNull<bool>(za.bankeinzug,false)
       >> FetchIStream::MapNull<bool>(za.monatsende,false)
       >> FetchIStream::MapNull<std::string>(verfahren,std::string())
@@ -57,9 +57,9 @@ FetchIStream &operator>>(FetchIStream &is, Zahlungsart &za)
    if (!verfahren.empty()) za.setVerfahren(verfahren);
    else za.verfahren=Zahlungsart::NONE;
 
-   if(satz[1]!=0) vec_skonto.push_back(st_skonto(frist[1],satz[1]));
-   if(satz[2]!=0) vec_skonto.push_back(st_skonto(frist[2],satz[2]));
-   if(satz[3]!=0) vec_skonto.push_back(st_skonto(frist[3],satz[3]));
+   if(satz[1]!=0) za.vec_skonto.push_back(Zahlungsart::st_skonto(frist[1],satz[1]));
+   if(satz[2]!=0) za.vec_skonto.push_back(Zahlungsart::st_skonto(frist[2],satz[2]));
+   if(satz[3]!=0) za.vec_skonto.push_back(Zahlungsart::st_skonto(frist[3],satz[3]));
    return is;      
 }
 
