@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.37 2004/03/22 18:09:10 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.38 2004/09/08 09:46:02 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -115,7 +115,8 @@ public:
  __deprecated AufEintragBase getAufEintragBase() const {return VZusatz.at(0).aeb; }
  __deprecated bool ZusatzInfo() const { return true; }
 #endif 
- 
+
+
 private:
  static void deleteMe(const LieferscheinEntry &lse) throw(SQLerror);
  void deleteZusatzEntry(const AufEintragBase &Z) throw(SQLerror);
