@@ -1,4 +1,4 @@
-// $Id: recodestream.h,v 1.1 2002/12/16 09:42:36 christof Exp $
+// $Id: recodestream.h,v 1.2 2002/12/26 21:24:53 christof Exp $
 /*  Midgard Character Generator
  *  Copyright (C) 2001 Christof Petig
  *
@@ -19,7 +19,7 @@
 
 #ifndef RECODESTREAM_H
 #define RECODESTREAM_H
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(SIGC1_2)
 
 #include <iostream>
 
@@ -39,7 +39,7 @@ protected:
          }
          return c;
       }
-   streamsize xsputn(const char_type* __s, streamsize __n)
+   std::streamsize xsputn(const char_type* __s, std::streamsize __n)
    {  o << utf82iso(std::string(__s,__n));
       return __n;
    }
