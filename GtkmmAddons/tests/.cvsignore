@@ -1,0 +1,13 @@
+Makefile
+Makefile.in
+sccont_test
+clist
+nsc_test
+
+os_list
+tclist
+tree
+close_window
+.libs
+.deps
+.depend

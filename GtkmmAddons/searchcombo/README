@@ -1,0 +1,8 @@
+
+This directory contains a custom widget which resembles a combo box, but
+the popuplist's items are dynamically requested via the 'search' signal.
+
+See tests for an example.
+
+some general hints:
+grab_focus should not precede a reset, since it restarts the search.

@@ -1,0 +1,49 @@
+Fri, 20 Sep 2002 12:26:21 +0200
+	gtk2.0
+
+Mit Aug  9 13:17:46 CEST 2000
+	implemented set_value_in_list and get_selected_index
+
+Mit,  7 Jun 2000 09:21:34 +0200
+	implemented OPEN,FETCH,CLOSE logic (close was missing)
+	conditionally deferred search to idle time
+
+Wed Nov 17 09:21:00 MET 1999
+	gave up and moved gtksearchcombo to subdir src
+
+Wed Nov 17 09:14:02 MET 1999
+	set_editable now renders widget (in)sensitive
+
+Wed Nov 17 08:49:22 MET 1999
+	renamed selected to activate. So gtksearchcombo acts more like an entry.
+
+* Fri Oct 22 15:52:22 MEST 1999
+	
+	grab focus on a searchcombo will forward the focus to it's entry
+
+* gtksearchcombo.*			Fri Oct 22 15:15:39 MEST 1999
+	
+	fixed bug in reset: didn't start a new search if last finished
+
+* gtksearchcombo.*			Wed Oct 13 15:52:16 MEST 1999
+
+	grab_focus, set_editable and trigger_search added
+
+* tests/gsc_test.c			Wed Oct 13 09:51:10 MEST 1999
+
+	selection of a directory triggers new search, as you might expect
+
+* gtksearchcombo.*			Wed Oct 13 08:17:06 MEST 1999
+
+	implemented autoexpand and tab-completion
+	added some set_value functions
+
+* gtksearchcombo.c			Wed Sep 15 17:43:57 MEST 1999
+
+	fixed endless loop with empty result
+	
+* tests/gsc_test.c			Wed Sep 15 17:00:00 MEST 1999
+
+	implemented a file selection widget as a good example, still not
+	perfect, but you get the idea
+

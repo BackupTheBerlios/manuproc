@@ -1,0 +1,11 @@
+--- Makefile.am.orig	Wed May 12 08:46:57 1999
++++ Makefile.am	Mon Jun 21 14:57:07 1999
+@@ -71,5 +71,6 @@
+ 	gbvscale.c \
+ 	gbvscrollbar.c \
+ 	gbvseparator.c \
+-	gbwindow.c
+-
++	gbwindow.c \
++	gbsearchcombo.c \
++	gbtclist.c

@@ -1,0 +1,6 @@
+This directory contains patches and files to include TCList and SearchCombo
+support into glade. Glade-- support will come real soon now.
+
+simply call autopatch to patch your glade version then compile and enjoy.
+
+PS: Do not expect these widgets to work within C. They are C++ based.

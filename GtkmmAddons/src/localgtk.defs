@@ -1,0 +1,202 @@
+;; -*- scheme -*-
+; object definitions ...
+(define-object SearchCombo
+  (in-module "Gtk")
+  (parent "GtkHBox")
+  (c-name "GtkSearchCombo")
+  (gtype-id "GTK_TYPE_SEARCH_COMBO")
+)
+
+;; Enumerations and flags ...
+
+(define-enum SCContext
+  (in-module "Gtk")
+  (c-name "GtkSCContext")
+  (gtype-id "GTK_TYPE_SC_CONTEXT")
+  (values
+    '("fetch" "GTK_SEARCH_FETCH")
+    '("open" "GTK_SEARCH_OPEN")
+    '("close" "GTK_SEARCH_CLOSE")
+  )
+)
+
+
+;; From gtksearchcombo.h
+
+(define-function gtk_searchcombo_get_type
+  (c-name "gtk_searchcombo_get_type")
+  (return-type "GtkType")
+)
+
+(define-method get_text
+  (of-object "GtkSearchCombo")
+  (c-name "gtk_searchcombo_get_text")
+  (return-type "const-gchar*")
+)
+
+(define-method set_text
+  (of-object "GtkSearchCombo")
+  (c-name "gtk_searchcombo_set_text")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "text")
+  )
+)
+
+(define-method add_item
+  (of-object "GtkSearchCombo")
+  (c-name "gtk_searchcombo_add_item")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "text")
+  )
+)
+
+(define-method reset
+  (of-object "GtkSearchCombo")
+  (c-name "gtk_searchcombo_reset")
+  (return-type "none")
+)
+
+(define-method set_case_sensitive
+  (of-object "GtkSearchCombo")
+  (c-name "gtk_searchcombo_set_case_sensitive")
+  (return-type "none")
+  (parameters
+    '("gboolean" "val")
+  )
+)
+
+(define-method set_autoexpand
+  (of-object "GtkSearchCombo")
+  (c-name "gtk_searchcombo_set_autoexpand")
+  (return-type "none")
+  (parameters
+    '("gboolean" "val")
+  )
+)
+
+(define-method set_always_fill
+  (of-object "GtkSearchCombo")
+  (c-name "gtk_searchcombo_set_always_fill")
+  (return-type "none")
+  (parameters
+    '("gboolean" "val")
+  )
+)
+
+(define-method set_enable_tab
+  (of-object "GtkSearchCombo")
+  (c-name "gtk_searchcombo_set_enable_tab")
+  (return-type "none")
+  (parameters
+    '("gboolean" "val")
+  )
+)
+
+(define-method set_editable
+  (of-object "GtkSearchCombo")
+  (c-name "gtk_searchcombo_set_editable")
+  (return-type "none")
+  (parameters
+    '("gboolean" "val")
+  )
+)
+
+(define-method trigger_search
+  (of-object "GtkSearchCombo")
+  (c-name "gtk_searchcombo_trigger_search")
+  (return-type "none")
+)
+
+(define-method grab_focus
+  (of-object "GtkSearchCombo")
+  (c-name "gtk_searchcombo_grab_focus")
+  (return-type "none")
+)
+
+(define-method set_start_on_idle
+  (of-object "GtkSearchCombo")
+  (c-name "gtk_searchcombo_set_start_on_idle")
+  (return-type "none")
+  (parameters
+    '("gboolean" "val")
+  )
+)
+
+(define-method set_value_in_list
+  (of-object "GtkSearchCombo")
+  (c-name "gtk_searchcombo_set_value_in_list")
+  (return-type "none")
+  (parameters
+    '("gboolean" "val")
+    '("gboolean" "ok_if_empty")
+  )
+)
+
+(define-method get_selected_index
+  (of-object "GtkSearchCombo")
+  (c-name "gtk_searchcombo_get_selected_index")
+  (return-type "gint")
+)
+
+(define-method get_size
+  (of-object "GtkSearchCombo")
+  (c-name "gtk_searchcombo_get_size")
+  (return-type "guint")
+)
+
+
+;; From ../searchcombo/src/gtksearchcombo.h
+
+(define-enum-extended SCContext
+  (in-module "Gtk")
+  (c-name "GtkSCContext")
+  (values
+    '("fetch" "GTK_SEARCH_FETCH" "0")
+    '("open" "GTK_SEARCH_OPEN" "1")
+    '("close" "GTK_SEARCH_CLOSE" "2")
+  )
+)
+
+;; by hand ... ?
+
+(define-property case-sensitive
+  (of-object "GtkSearchCombo")
+  (prop-type "GParamBoolean")
+  (readable #t)
+  (writable #t)
+  (construct-only #f)
+)
+
+(define-property allow-empty
+  (of-object "GtkSearchCombo")
+  (prop-type "GParamBoolean")
+  (readable #t)
+  (writable #t)
+  (construct-only #f)
+)
+
+(define-property value-in-list
+  (of-object "GtkSearchCombo")
+  (prop-type "GParamBoolean")
+  (readable #t)
+  (writable #t)
+  (construct-only #f)
+)
+
+(define-signal activate
+  (of-object "GtkSearchCombo")   
+  (return-type "void")
+  (when "first")
+)
+
+(define-signal search
+  (of-object "GtkSearchCombo")
+  (return-type "void")  
+  (when "first")
+  (parameters  
+    '("gboolean*" "cont")
+    '("GtkSCContext" "context")
+  )
+)  

@@ -1,0 +1,17 @@
+Version 0.3
+
+idle fill start added 
+close logic added (search(,NULL,GTK_SEARCH_CLOSE,))
+
+Version 0.2
+
+source tree reorganized
+
+Version 0.1
+
+API change: renamed selected to activate
+
+Version 0.0.1
+
+initial public release of the restructured package
+

@@ -1,0 +1,24 @@
+#!/bin/sh
+
+if [ "x$1" = "x" ]
+then
+   echo 'USAGE: autopatch <glade directory>'
+   exit 1
+fi
+
+if [ ! -d "$1" ]
+then
+   echo "$1" is not a directory
+   exit 1
+fi
+
+if [ ! -e "$1/glade/gbwidget.h" ]
+then
+   echo "$1/glade/gbwidget.h" not found - wrong directory?
+   exit 1
+fi
+
+cat glade_gtk12lib.c.patch | (cd "$1/glade" ; patch -s )
+cat Makefile.am.patch | (cd "$1/glade/gbwidgets" ; patch -s )
+cp gb*.c "$1/glade/gbwidgets"
+cp *.xpm "$1/glade/graphics"

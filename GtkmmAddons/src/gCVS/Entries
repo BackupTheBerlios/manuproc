@@ -1,0 +1,26 @@
+/.cvsignore/1.2/Mon Apr 29 09:08:31 2002//
+/Gtk_OStream_stream.cc/1.4/Mon Apr 29 09:06:44 2002//
+/Picture.cc/1.3/Mon Apr 29 09:06:44 2002//
+/Picture.h/1.3/Mon Apr 29 09:06:44 2002//
+/green_minus.xpm/1.1/Mon Apr 29 09:06:44 2002//
+/red_plus.xpm/1.1/Mon Apr 29 09:06:44 2002//
+D/private////
+/Gtk2TeX.cc/1.18/Tue Sep 24 16:12:55 2002//
+/Gtk2TeX.h/1.14/Tue Sep 24 16:12:55 2002//
+/Gtk_OStream.h/1.8/Tue Sep 24 16:12:55 2002//
+/Gtk_OStream_label.cc/1.5/Tue Sep 24 16:12:55 2002//
+/Gtk_OStream_optionmenu.cc/1.5/Tue Sep 24 16:12:55 2002//
+/Makefile.am/1.22/Tue Sep 24 16:12:55 2002//
+/Message.h/1.6/Tue Sep 24 16:12:55 2002//
+/Picture2.cc/1.3/Fri Jun 28 07:26:15 2002//
+/Picture2.h/1.6/Tue Sep 24 16:12:55 2002//
+/SearchCombo.cc/1.3/Result of merge/-ko/
+/SearchCombo.ccg/1.3/Tue Sep 24 16:14:13 2002//
+/SearchCombo.h/1.3/Fri Nov 22 09:13:35 2002/-ko/
+/SearchCombo.hg/1.4/Tue Sep 24 16:14:13 2002//
+/SearchComboContent.h/1.12/Tue Sep 24 16:12:55 2002//
+/SelectMatching.h/1.6/Tue Sep 24 16:12:55 2002//
+/TeX.cc/1.3/Fri Nov 22 09:18:47 2002//
+/TeX.h/1.2/Wed Jul  3 08:15:55 2002//
+/localgtk.defs/1.3/Tue Sep 24 16:14:13 2002//
+/string_width.cc/1.3/Tue Sep 24 16:12:55 2002//

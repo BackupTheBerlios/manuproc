@@ -1,0 +1,31 @@
+## $Id: configure.in,v 1.1 2003/01/06 15:07:30 christof Exp $
+#
+# process this file with GNU autoconf to produce a configure script.
+#
+# parts taken from glade--, guppi2
+
+AC_INIT(src/Gtk_OStream.h)
+AM_INIT_AUTOMAKE(GtkmmAddons, 1.3.0)
+AM_CONFIG_HEADER(config.h)
+
+#INCLUDES=-I/home/share/safeSTL
+
+AC_PREFIX_DEFAULT(/usr/local)
+
+AC_PROG_CC
+AC_PROG_CXX
+AM_PROG_LIBTOOL
+AC_LANG_CPLUSPLUS
+
+AC_SUBST(CFLAGS)
+AC_SUBST(CPPFLAGS)
+AC_SUBST(LDFLAGS)
+
+AC_HEADER_STDC
+
+PKG_CHECK_MODULES(GTKMM,[gtkmm-2.0 >= 1.3.20])
+
+AC_CONFIG_SUBDIRS( searchcombo )
+AM_CONDITIONAL(INSTALL_WIDGET, false )
+
+AC_OUTPUT(Makefile src/Makefile tests/Makefile tests/close_window/Makefile)

@@ -1,0 +1,5 @@
+when using vector<const string>
+the following strange warnings occur
+
+/usr/include/g++/stl_construct.h:45: warning: passing `const string *' as
+argument 2 of `operator new(size_t, void *)' discards const

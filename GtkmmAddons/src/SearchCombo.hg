@@ -1,0 +1,111 @@
+/* $Id: SearchCombo.hg,v 1.1 2003/01/06 15:07:33 christof Exp $ */
+
+/* searchcombo.h
+ * 
+ * Copyright (C) 1999-2002 Adolf Petig GmbH & Co. KG
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the Free
+ * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
+//#include <glibmm/listhandle.h>
+//#include <glibmm/helperlist.h>
+#include <gtkmm/box.h>
+#include <gtksearchcombo.h>
+//#include <gtkmm/entry.h>
+//#include <gtkmm/item.h>
+_DEFS(gtkmm,localgtk)
+_PINCLUDE(gtkmm/private/box_p.h)
+
+namespace Gtk
+{
+
+_WRAP_ENUM(SCContext, GtkSCContext)
+
+//: SearchCombo widget
+//- A combo is a compound widget which crosses a text entry area and a pull
+//- down list.  It may allow text entry or it may just allow list
+//- values depending on the settings.  
+class SearchCombo : public HBox
+{
+  _CLASS_GTKOBJECT(SearchCombo,GtkSearchCombo,GTK_SEARCH_COMBO,Gtk::HBox,GtkHBox)
+  _IGNORE(gtk_searchcombo_grab_focus)
+
+public:
+  explicit SearchCombo(bool always_fill=false, bool autoexpand=false);
+  
+  _WRAP_SIGNAL(void activate(), "activate");
+  _WRAP_SIGNAL(void search(gboolean *cont,GtkSCContext context), "search");
+  
+//  WRAP_MEMBER(value,value_in_list,value_in_list,bool,guint);
+//  WRAP_MEMBER(value,ok_if_empty,ok_if_empty,bool,guint);
+//  WRAP_MEMBER(value,case_sensitive,case_sensitive,bool,guint);
+//  WRAP_MEMBER(value,always_fill,always_fill,bool,guint);
+//  WRAP_MEMBER(value,enable_tab,enable_tab,bool,guint);
+//  WRAP_MEMBER(value,autoexpand,autoexpand,bool,guint);
+//  WRAP_MEMBER(value,start_idle,start_idle,bool,guint);
+  
+  /** Allow direct text entry
+   * Whether the text in the entry must be or not be in the list.
+   *
+   * @param value Set to true if the value must be in list.
+   *
+   * @param empty Set to true if the text area is allowed to be empty.
+   */
+  _WRAP_METHOD(void set_value_in_list(bool value = true, bool empty = false), gtk_searchcombo_set_value_in_list)
+
+  /** Sets list case sensitive
+   * Determines if the list items and text comparisons for
+   * set_use_arrows_always() should be case sensitive.
+   */
+  _WRAP_METHOD(void set_case_sensitive(bool val = true), gtk_searchcombo_set_case_sensitive)
+
+  //: Append an item.
+  _WRAP_METHOD(void add_item(const Glib::ustring &text), gtk_searchcombo_add_item)
+  
+  //: clear entry+list, mark for research
+  _WRAP_METHOD(void reset(), gtk_searchcombo_reset)
+
+  //: set text no research
+  _WRAP_METHOD(void set_text(const Glib::ustring &text), gtk_searchcombo_set_text)
+  
+  _WRAP_METHOD(Glib::ustring get_text() const, gtk_searchcombo_get_text)
+//  const Glib::ustring get_text() const;
+  
+  _WRAP_METHOD(void set_always_fill(bool val), gtk_searchcombo_set_always_fill)
+  _WRAP_METHOD(void set_enable_tab(bool val), gtk_searchcombo_set_enable_tab)
+  _WRAP_METHOD(guint get_size() const, gtk_searchcombo_get_size)
+
+  //: set sensitivity
+  _WRAP_METHOD(void set_editable(bool val), gtk_searchcombo_set_editable)
+
+  //: autoexpand - think twice!
+  _WRAP_METHOD(void set_autoexpand(bool val), gtk_searchcombo_set_autoexpand)
+    
+  _WRAP_METHOD(void trigger_search(), gtk_searchcombo_trigger_search)
+
+  _WRAP_METHOD(void set_start_on_idle(bool val), gtk_searchcombo_set_start_on_idle)
+    
+  _WRAP_METHOD(gint get_selected_index() const, gtk_searchcombo_get_selected_index)
+   
+    bool empty() const {  return !get_size(); }
+    guint size() const {  return get_size(); }
+
+  _WRAP_PROPERTY("case-sensitive", bool)
+  _WRAP_PROPERTY("allow-empty", bool)   
+  _WRAP_PROPERTY("value-in-list", bool) 
+};
+
+} /* namespace Gtk */
+

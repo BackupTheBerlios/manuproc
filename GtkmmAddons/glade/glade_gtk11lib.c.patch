@@ -1,0 +1,39 @@
+--- glade_gtk11lib.c.orig	Mon Mar 15 14:10:20 1999
++++ glade_gtk11lib.c	Fri Mar 19 11:24:07 1999
+@@ -91,6 +91,8 @@
+ GbWidget *gb_font_selection_init ();
+ GbWidget *gb_font_selection_dialog_init ();
+ GbWidget *gb_calendar_init();
++GbWidget *gb_searchcombo_init ();
++GbWidget *gb_tclist_init ();
+ 
+ /* The first layout is Martijn's. The second is Damon's. Let's vote on it! */
+ 
+@@ -116,6 +118,7 @@
+   { "GtkTree", gb_tree_init },
+   { "GtkCList", gb_clist_init },
+   { "GtkCTree", gb_ctree_init },
++  { "TCList", gb_tclist_init },
+   { "GtkImage", gb_image_init },
+   { "GtkPixmap", gb_pixmap_init },
+   { "GtkDrawingArea", gb_drawing_area_init },
+@@ -123,6 +126,7 @@
+   { "GtkVScale", gb_vscale_init },
+   { "GtkOptionMenu", gb_option_menu_init },
+   { "GtkCombo", gb_combo_init },
++  { "SearchComboBox", gb_searchcombo_init },
+   { "GtkSpinButton", gb_spin_button_init },
+   { "GtkCurve", gb_curve_init },
+   { "GtkGammaCurve", gb_gamma_curve_init },
+@@ -220,9 +224,11 @@
+   { "GtkTree", gb_tree_init },
+   { "GtkCList", gb_clist_init },
+   { "GtkCTree", gb_ctree_init },
++  { "TCList", gb_tclist_init },
+ 
+   { "GtkOptionMenu", gb_option_menu_init },
+   { "GtkCombo", gb_combo_init },
++  { "SearchComboBox", gb_searchcombo_init },
+   { "GtkSpinButton", gb_spin_button_init },
+   { "GtkProgressBar", gb_progress_bar_init },
+ 

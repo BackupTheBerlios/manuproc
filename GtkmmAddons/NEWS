@@ -1,0 +1,31 @@
+
+	separated non Gtk depending things to TeX
+	Gtk2TeX: more header flags, styles etc.
+	Fixed awkward user response in GtkSearchCombo
+	(complete on enter, do not open again after successful selection)
+	new TCListRow_API::reparent(ourparent,newparent) function
+	
+	OStream flush now accepts a DestroyNotify
+	fixed OStream OptionMenu and List (manage missing)
+
+Version 0.5.4
+	Gtk::OStream for OptionMenu
+
+Version 0.3.0
+	SearchCombo: reflect low level GtkSearchCombo changes (close, idle)
+
+Version 0.2.0
+
+SearchCombo: rename selected to activate (more like entry)
+	    set_editable makes entry (in)sensitive
+
+Version 0.1.0
+
+searchcombo Version 0.1.0
+gcc-2.95 fixes
+some minor bug fixes and tweaks
+
+Version 0.0.1
+
+initial public release of the restructured package
+

@@ -1,0 +1,13 @@
+Wed, 30 Jan 2002 12:41:07 +0100
+	do not autocomplete on enter if !value_in_list
+
+Mit,  7 Jun 2000 09:12:31 +0200
+	implemented OPEN,FETCH,CLOSE logic (close was missing)
+	conditionally deferred search to idle time
+
+Tue Nov 30 12:42:02 MET 1999
+	autocomplete on enter (convenient, if it annoys you
+		set autocomplete_on_activate to false)
+
+Wed Nov 17 09:25:46 MET 1999
+	moved source files from .. into here

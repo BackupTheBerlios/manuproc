@@ -1,0 +1,30 @@
+## $Id: configure.in,v 1.1 2003/01/06 15:07:32 christof Exp $
+#
+# process this file with GNU autoconf to produce a configure script.
+#
+# parts taken from glade--, guppi2
+
+AC_INIT(src/gtksearchcombo.h)
+
+AM_INIT_AUTOMAKE(gtksearchcombo, 0.3.1)
+AM_CONFIG_HEADER(config.h)
+
+AC_PREFIX_DEFAULT(/usr/local)
+
+AC_PROG_CC
+AM_PROG_LIBTOOL
+
+AC_SUBST(CFLAGS)
+AC_SUBST(CPPFLAGS)
+AC_SUBST(LDFLAGS)
+
+AC_HEADER_STDC
+
+PKG_CHECK_MODULES(GTK,[gtk+-2.0 >= 2.0.5])
+AC_SUBST(GTK_CFLAGS)
+AC_SUBST(GTK_LIBS)
+
+AM_CONDITIONAL(INSTALL_WIDGET, test ! -r ../src/SearchCombo.gen_h )
+
+AC_OUTPUT(Makefile src/Makefile tests/Makefile )
+

@@ -1,0 +1,31 @@
+--- glade_gtk12lib.c.orig	Mon Sep  6 08:03:18 1999
++++ glade_gtk12lib.c	Tue Nov 16 16:08:17 1999
+@@ -94,6 +94,8 @@
+ GbWidget *gb_calendar_init();
+ GbWidget *gb_custom_init();
+ GbWidget *gb_layout_init();
++GbWidget *gb_searchcombo_init ();
++GbWidget *gb_tclist_init ();
+ 
+ /* The first layout is Martijn's. The second is Damon's. Let's vote on it! */
+ 
+@@ -130,6 +132,9 @@
+   { "GtkCurve", gb_curve_init },
+   { "GtkGammaCurve", gb_gamma_curve_init },
+   { "GtkPreview", gb_preview_init },
++  { "TCList", gb_tclist_init },
++  { "SearchComboBox", gb_searchcombo_init },
++  { "GtkSearchCombo", gb_searchcombo_init },
+   { NULL, NULL }
+ };
+ 
+@@ -289,6 +294,9 @@
+   { "GtkInputDialog", gb_input_dialog_init },
+   { "Custom", gb_custom_init }, /* Our special custom widget. */
+   { "GtkArrow", gb_arrow_init },
++  { "TCList", gb_tclist_init },
++  { "SearchComboBox", gb_searchcombo_init },
++  { "GtkSearchCombo", gb_searchcombo_init },
+ 
+   { NULL, NULL }
+ };

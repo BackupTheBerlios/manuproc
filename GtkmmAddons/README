@@ -1,0 +1,37 @@
+	Gtk--Addons - a set of extensions to gtk[--]
+
+The 'searchcombo' directory contains a new widget which resembles the combo
+widget but operates on a dynamically (re)constructed list. Take a look at
+the example in 'searchcombo/tests' to get an idea.
+
+The 'src' directory contains some Gtkmm addons, which can be used 
+independently: Take them as a bunch of code snippets, feel free to 
+use them in your [L]GPL programs.
+
+- Gtkmm_OStream: An ostream implementation for Lists and CLists
+
+- Search_ComboBox: Frontend for a huge database. Selecting initials
+	will pop up the list, any unique selection will close it and emit
+	a signal. Fully gtkmm-signal driven. Great.
+
+- TCList: A C++ level (interfacing to CList, no new widget) implementation
+	of a columned tree, quite similar to CTree but notably different in
+	appearance. I prefer this one for database visualizations.
+
+- more_param.h: Additional second user argument for some connect_to_*
+
+- Picture: A simple C++ abstraction for a pixmap, might got irrelevant 
+	by recent gnome/gtk development
+	
+- string_width: determine the length of a string in pixels (very old)
+
+- Message: a simple implementation of a blocking message window
+
+- there are examples for most of these in the 'tests' directory
+
+
+- documentation might be generated using DOC++
+- if you use gnome please ignore Message.h, it's obselete.
+- they have been tested with gtkmm 1.0.2, gtk 1.2.3 and egcs 1.1.1
+
+The LICENSE is LGPL.

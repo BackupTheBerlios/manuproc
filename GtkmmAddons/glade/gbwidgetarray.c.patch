@@ -1,0 +1,38 @@
+--- gbwidgetarray.c.orig	Tue Nov 24 19:46:16 1998
++++ gbwidgetarray.c	Thu Dec 17 17:21:53 1998
+@@ -96,6 +96,8 @@
+ GbWidget *gb_menu_item_init ();
+ GbWidget *gb_check_menu_item_init ();
+ GbWidget *gb_radio_menu_item_init ();
++GbWidget *gb_searchcombo_init ();
++GbWidget *gb_tclist_init ();
+ 
+ #ifdef GTK_HAVE_FEATURES_1_1_0
+ GbWidget *gb_ctree_init ();
+@@ -125,8 +127,10 @@
+   "GtkRadioButton", gb_radio_button_init,
+   "GtkOptionMenu", gb_option_menu_init,
+   "GtkCombo", gb_combo_init,
++  "SearchComboBox", gb_searchcombo_init,
+   "GtkList", gb_list_init,
+   "GtkCList", gb_clist_init,
++  "TCList", gb_tclist_init,
+   "GtkTree", gb_tree_init,
+   "GtkSpinButton", gb_spin_button_init,
+   "GtkHScale", gb_hscale_init,
+@@ -202,6 +206,7 @@
+ 
+   "GtkOptionMenu", gb_option_menu_init,
+   "GtkCombo", gb_combo_init,
++  "SearchComboBox", gb_searchcombo_init,
+   "GtkSpinButton", gb_spin_button_init,
+   "GtkText", gb_text_init,
+ 
+@@ -214,6 +219,7 @@
+   "GtkTree", gb_tree_init,
+   "GtkCList", gb_clist_init,
+   "GtkCTree", gb_ctree_init,
++  "TCList", gb_tclist_init,
+ 
+   "GtkHRuler", gb_hruler_init,
+   "GtkVRuler", gb_vruler_init,
