@@ -1,4 +1,4 @@
-/* $Id: Bankauftrag.h,v 1.8 2003/04/18 11:23:39 jacek Exp $ */
+/* $Id: Bankauftrag.h,v 1.9 2003/11/07 11:12:50 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,7 +33,7 @@ class Bankauftrag
 	int dtausfile;
 	
 	long long Kontosumme;
-	long BLZsumme;
+	long long BLZsumme;
 	int anzahlDatensaetze;
 	long long Betragssumme;
 	

@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.cc,v 1.14 2003/11/07 11:12:50 jacek Exp $ */
+/* $Id: Ausgabe_neu.cc,v 1.15 2003/11/07 11:16:42 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -179,7 +179,7 @@ const std::string FormatiereEmptyInt(long Zahl)
   if(Zahl==0) return "";
   std::string s;
   if(Zahl>=0) return Formatiere((unsigned long)Zahl);
-  else        return "-"+Formatiere((unsigned long)(Zahl*-1));
+  else        return "-"+Formatiere((unsigned long)-Zahl);
   abort();//never get here
 }
 
