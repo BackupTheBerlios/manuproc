@@ -1,4 +1,4 @@
-// $Id: WPreis.hh,v 1.8 2002/07/08 08:26:54 christof Exp $
+// $Id: WPreis.hh,v 1.10 2002/07/08 08:43:50 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
