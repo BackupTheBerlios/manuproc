@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.cc,v 1.20 2002/11/25 15:21:52 thoma Exp $
+// $Id: steuerprogramm.cc,v 1.21 2002/11/26 14:50:51 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -45,7 +45,7 @@ enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
       LieferscheintestZusatz,Lieferscheintest_ZweiterAuftrag_frueheresDatum,
       LieferscheinJacek,
       ZweiKundenTest,ZweiKundenMengeFreigebenTest,ManuProCTest,
-      JumboLager};
+      JumboLager,Rep_Mabella};
 
 int fehler()
 {
@@ -296,7 +296,7 @@ cout << dummystring<<'\n';
       RohwarenLager::st_rohlager stRL(LagerPlatzKupfer2,100,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
       std::string dummystring;
       RL.RL_Einlagern(LagerPlatzKupfer2,stRL,UID,dummystring);
-cout << dummystring<<'\n';
+cout << "D0: "<<dummystring<<'\n';
 //      Lager RL((cH_ppsInstanz(ppsInstanzID::Rohwarenlager)));
 //      RL.rein_ins_lager(ARTIKEL_KUPFER,100,UID);
       erfolgreich=C.teste(Check::Rohwarenlager_einlagern,mit_reparatur_programm);
@@ -304,9 +304,12 @@ cout << dummystring<<'\n';
                return fehler();}
 
 //      RL.raus_aus_lager(ARTIKEL_KUPFER,120,UID);
-      RohwarenLager::st_rohlager stRL2(LagerPlatzKupfer2,120,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
+      RohwarenLager::st_rohlager stRL2(LagerPlatzKupfer2,100,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
       RL.RL_Entnahme(stRL2,UID,dummystring);
-cout << dummystring<<'\n';
+cout << "D1: "<<dummystring<<'\n';
+      RohwarenLager::st_rohlager stRL3(LagerPlatzKupfer,2,10,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
+      RL.RL_Entnahme(stRL3,UID,dummystring);
+cout << "D2:" <<dummystring<<'\n';
       erfolgreich=C.teste(Check::Rohwarenlager_auslagern,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Rohwarenlager auslagern\n";
                return fehler();}
@@ -535,6 +538,7 @@ cout << dummystring<<'\n';
        break;
      }
     case LieferscheinJacek:
+    case Rep_Mabella:
      {
 #ifdef MABELLA_TEST
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
@@ -615,8 +619,40 @@ cout << dummystring<<'\n';
         erfolgreich=C.teste(Check::ZweiAuftraege_anlegen,mit_reparatur_programm);
         if(!erfolgreich) { cout << "Einkauf eines nicht-bestelleten Artikel (Mabella) \n\n"; return fehler();}       
       }
-
       cout << "Test für Mabella erfolgreich\n";
+      
+      if(mode!=Rep_Mabella) break;
+#ifndef REPARATUR_PROGRAMM_TESTEN
+      assert(!"FEHLER: MIT REPARATURPROGRAMM KOMPILIEREN\n");
+#endif
+      // Test 1a: 0er und 2er != OPEN
+      // Test 1b: KundenID!=eigene_id
+      // Test 1c: 0er und 2er bestellt != 0
+      std::string q1="update auftragentry set status="+itos(CLOSED)+" where "
+                     "(instanz=2 or instanz=3 or instanz=4) and "
+                     "(auftragid=0 or auftragid=2)";
+      Query::Execute(q1);
+      SQLerror::test(__FILELINE__);
+      std::string q1b="update auftrag set stat="+itos(CLOSED)+" where "
+                     "(instanz=2 or instanz=3 or instanz=4) and "
+                     "(auftragid=0 or auftragid=2)";
+      Query::Execute(q1b);
+      SQLerror::test(__FILELINE__);
+      std::string q2="update auftrag set kundennr="+itos(2)+" where "
+                     "(instanz=2 or instanz=3 or instanz=4) and "
+                     "(auftragid=0 or auftragid=2 or auftragid=1)";
+      Query::Execute(q2);
+      SQLerror::test(__FILELINE__);
+      std::string q3="update auftragentry set geliefert="+itos(333)+" where "
+                     "(instanz=2 or instanz=3 or instanz=4) and "
+                     "(auftragid=0 or auftragid=2)";
+      Query::Execute(q3);
+      SQLerror::test(__FILELINE__);
+
+      erfolgreich=C.teste(Check::ZweiAuftraege_anlegen,mit_reparatur_programm,true);
+      if(!erfolgreich) { cout << "Reparatur (Mabella) \n\n"; return fehler();}       
+      
+      cout << "Reparatur-Test für Mabella erfolgreich\n";
 
 #endif
       break;
@@ -735,7 +771,8 @@ void usage(const std::string &argv0,const std::string &argv1)
                   "\t(Z)wei(K)unden)\n"
                   "\t(Z)wei(K)unden(M)engeFreigeben\n"
                   "\t(M)anu(P)roCTest\n"
-                  "\t(J)umboLager] aufgerufen werden\n"
+                  "\t(J)umboLager\n"
+                  "\t(R)eparartur(M)Mabella] aufgerufen werden\n"
        << " nicht mit '"<<argv1<<"'\n";
   exit(1);
 }
@@ -761,6 +798,7 @@ int main(int argc,char *argv[])
    else if(std::string(argv[1])=="ZKM"|| std::string(argv[1])=="ZweiKundenMengeFreigebenTest")  mode=ZweiKundenMengeFreigebenTest;
    else if(std::string(argv[1])=="MP" || std::string(argv[1])=="ManuProCTest")  mode=ManuProCTest;
    else if(std::string(argv[1])=="J" || std::string(argv[1])=="JumboLager")  mode=JumboLager;
+   else if(std::string(argv[1])=="RM" || std::string(argv[1])=="ReparaturMabella")  mode=Rep_Mabella;
 
    if(mode==None) { usage(argv[0],argv[1]); return 1; }
    

@@ -34,7 +34,7 @@ void ppsInstanz::Reparatur_0er_und_2er(int uid) const throw(SQLerror)
       SQLFullAuftragSelector sel2er=SQLFullAuftragSelector::sel_Artikel_Planung_id(Id(),Kunde::eigene_id,i->Artikel(),AuftragBase::dispo_auftrag_id,OPEN,i->getLieferdatum());
       SelectedFullAufList L2er(sel2er);
       assert(L2er.empty() || L2er.size()==1);
-cout << i->Instanz()<<'\t'<<i->Artikel()<<'\t'<<L2er.size()<<'\n';
+//cout << i->Instanz()<<'\t'<<i->Artikel()<<'\t'<<L2er.size()<<'\n';
       if(!L2er.empty() && L2er.begin()->getStueck()!=0) // Reparatur
        {
 assert(!"ReparaturProgramm\n");
@@ -62,7 +62,7 @@ struct st_table{std::string table; std::string column;
 
 void ppsInstanz::Reparatur_Konsistenz() const throw(SQLerror)
 {
-  if(!KundenInstanz()) return; // Finger WEG
+  if(KundenInstanz()) return; // Finger WEG
   force_eigene_KundenId();
   force_open_0er_und_2er();
   force_2er_0er_geliefert_ist_null();
@@ -104,7 +104,7 @@ void ppsInstanz::force_execute(const std::vector<st_table> &Vtable,
         Query::Execute(com+=itos(*j));
         SQLerror::test(__FILELINE__,100);
         if(sqlca.sqlerrd[2])
-            cout << *j<<"er "+was+" geändert: "<< sqlca.sqlerrd[2]<<'\n';
+            cout << *j<<"er "+was+" ("<<Name()<<","<<*this<<") geändert: "<< sqlca.sqlerrd[2]<<'\n';
       }
    }
 }
@@ -113,7 +113,7 @@ void ppsInstanz::force_execute(const std::vector<st_table> &Vtable,
 
 void ppsInstanz::force_eigene_KundenId() const throw(SQLerror)
 {
-  if(!KundenInstanz()) return; // Finger WEG
+  if(KundenInstanz()) return; // Finger WEG
   if(!ExterneBestellung())  //Wirklich ALLE Aufträge haben die eigene KundenID
    {
      std::string com="update auftrag set kundennr="+itos(Kunde::eigene_id)+
@@ -213,9 +213,11 @@ std::vector<LagerInhalt> ppsInstanz::getLagerInhalt() const
   else if(Id() == ppsInstanzID::Bandlager) LI=JumboLager().LagerInhalt();
   else 
 #endif 
-   { cout << Name()<<' '<<Id()<<' '<<ID()<<'\n';
-     assert (!"Lager nicht implementiert\n");
+   { cout << Name()<<' '<<Id()<<' '<<ID()<<"\tKeine LagerKlasse implementiert\n";
+     assert(!"never get here\n");
+     return LI;
    }
   LagerBase::LagerInhaltSum(LI);
   return LI;
 }
+

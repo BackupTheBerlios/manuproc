@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.30 2002/11/22 15:31:05 christof Exp $
+// $Id: AufEintragBase.cc,v 1.31 2002/11/26 14:50:51 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -89,7 +89,9 @@ void AufEintragBase::PlanenDispo(int uid,const ArtikelBase& artikel,mengen_t men
    bool automatisch_geplant=false;
    if(Id()==plan_auftrag_id)  automatisch_geplant=true  ;
    dispoAEB.InstanzAuftraegeAnlegen(AE,menge,uid,automatisch_geplant);
-   if(automatisch_geplant)  AE.abschreiben(menge,ManuProcEntity<>::none_id) ;
+   if(automatisch_geplant)  
+     AE.updateStkDiffBase__(uid,-menge);
+//alter Code:   AE.abschreiben(menge,ManuProcEntity<>::none_id) ;
 }
 
 

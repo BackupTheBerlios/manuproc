@@ -43,7 +43,7 @@ GRANT INSERT,SELECT,RULE,UPDATE,DELETE,REFERENCES,TRIGGER on "prod_instanz" to "
 
 
 COPY "prod_instanz" FROM stdin;
-2	Fertigware	3	2	f	\N	f	\N	\N	t	L	f	\N
+2	Fertigware	3	2	f	\N	f	\N	\N	t	l	f	\N
 1	Kundenaufträge	\N	1	t	\N	t	\N	\N	\N	P	f	\N
 4	Einkauf	\N	4	t	\N	t	\N	2	\N	P	t	3
 5	Weberei	\N	5	t	\N	t	\N	2	\N	P	\N	3

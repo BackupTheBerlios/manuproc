@@ -67,9 +67,16 @@ cH_Prozess ppsInstanz::get_Prozess() const
 bool ppsInstanz::LagerInstanz() const
 {
   if (LagerFuer()!=ppsInstanzID::None) return true;
+  if(typ=='L' || typ=='l') return true;
+  return false;
+}
+
+bool ppsInstanz::EigeneLagerKlasseImplementiert() const
+{
   if(typ=='L') return true;
   return false;
 }
+
 
 bool ppsInstanz::ProduktionsInstanz() const
 {

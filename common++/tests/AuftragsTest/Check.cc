@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.16 2002/11/22 15:19:37 thoma Exp $
+// $Id: Check.cc,v 1.17 2002/11/26 14:50:51 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -36,25 +36,29 @@ static std::string referenzdir="database_tables_test_Mabella/";
 static std::string referenzdir="database_tables_test/";
 #endif
 
-bool Check::teste(e_check check,bool mit_reparatur_programm)
+bool Check::teste(e_check check,bool mit_reparatur_programm,bool vor_dem_test_reparieren)
 {
   dump(check);  
-  bool b=vergleich(check);
-  if(!mit_reparatur_programm || !b) return b;
+  if(!vor_dem_test_reparieren)
+   {
+     bool b=vergleich(check);
+     if(!mit_reparatur_programm || !b) return b;
+   }
   std::vector<cH_ppsInstanz> VI=cH_ppsInstanz::get_all_instanz();
   for(std::vector<cH_ppsInstanz>::const_iterator i=VI.begin();i!=VI.end();++i)
    {
      if((*i)->KundenInstanz()) continue;
      std::string com="../../Programme/adjust_store -i "+itos((*i)->Id())+" -a B";
      system(com.c_str());
-     if((*i)->LagerInstanz())
+     if((*i)->LagerInstanz() && (*i)->EigeneLagerKlasseImplementiert())
       {
         std::string com="../../Programme/adjust_store -i "+itos((*i)->Id())+" -a A";
-//        system(com.c_str());
+        system(com.c_str());
       }
      std::string com2="../../Programme/adjust_store -i "+itos((*i)->Id())+" -a C";
      system(com2.c_str());
    }  
+  dump(check);  
   return vergleich(check);
 }
 

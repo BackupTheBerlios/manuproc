@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.12 2002/11/25 15:21:52 thoma Exp $
+// $Id: ppsInstanz.h,v 1.13 2002/11/26 14:50:51 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -87,6 +87,7 @@ private:
  ID LagerFuer() const { return lager_fuer; }
 public:
  bool LagerInstanz() const ;
+ bool EigeneLagerKlasseImplementiert() const;
  bool ProduktionsInstanz() const ;
  bool PlanungsInstanz() const ;
  ID EinlagernIn() const { return einlagern_in;}
