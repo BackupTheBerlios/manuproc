@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.cc,v 1.4 2003/01/31 16:23:15 christof Exp $
+// $Id: ArtikelBaum.cc,v 1.5 2003/01/31 16:55:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -144,7 +144,7 @@ int ArtikelBaum::Tiefe() const
 
 void ArtikelBaum::Sort()
 {
- sort(zusammensetzung.begin(),zusammensetzung.end());
+ std::sort(zusammensetzung.begin(),zusammensetzung.end());
 }
 
 
