@@ -281,27 +281,31 @@ catch(SQLerror &e) { std::cout << e; return; }
 #endif
 
    }
- else if(Typ()==Auftrag && !Rueckstand())
+ else if(Typ()==Auftrag)
    {
-    os << "\\bigskip\n";
-    if(zeilen_passen_noch<8) {  
-	os << "\\newpage\n";
-	++page_counter; 
-	page_header(os);
-	os << "\\bigskip\n";
-	}
-#ifdef PETIG_EXTENSIONS
-    os << "\\small Zahlung: "<< string2TeX(getZahlungsart()->getBezeichnung())<<"\\\\\n";
-#else
-    os << mld->MLT(MultiL_Dict::TXT_ZAHLUNG) << ": "; 
-    getZahlungsart()->TeX_out(os,u.a->Zahlziel(),kunde_an,skontobetrag,*mld);
-#endif
-    zeilen_passen_noch-=8;
-    os << "\\bigskip\n";
-    if(kunde_an->get_lieferung_frei_haus()) 
-      os << "\\\\" << mld->MLT(MultiL_Dict::TXT_LIEF_FREI) <<"\\\\\n";
+    if(!Rueckstand())
+      {
+       os << "\\bigskip\n";
+       if(zeilen_passen_noch<8) {  
+            os << "\\newpage\n";
+            ++page_counter; 
+            page_header(os);
+            os << "\\bigskip\n";
+            }
+    #ifdef PETIG_EXTENSIONS
+        os << "\\small Zahlung: "<< string2TeX(getZahlungsart()->getBezeichnung())<<"\\\\\n";
+    #else
+        os << mld->MLT(MultiL_Dict::TXT_ZAHLUNG) << ": "; 
+        getZahlungsart()->TeX_out(os,u.a->Zahlziel(),kunde_an,skontobetrag,*mld);
+    #endif
+        zeilen_passen_noch-=8;
+        os << "\\bigskip\n";
+        if(kunde_an->get_lieferung_frei_haus()) 
+          os << "\\\\" << mld->MLT(MultiL_Dict::TXT_LIEF_FREI) <<"\\\\\n";
+      }
+    else os << "\\bigskip\n";  
 #ifndef PETIG_EXTENSIONS      
-    os << "\\\\"<<mld->MLT(MultiL_Dict::TXT_LIEFERWOCHE)<<": "<<min_KWStr<<"\\\\\n";
+    os << "~\\\\"<<mld->MLT(MultiL_Dict::TXT_LIEFERWOCHE)<<": "<<min_KWStr<<"\\\\\n";
 #endif    
 
    }
