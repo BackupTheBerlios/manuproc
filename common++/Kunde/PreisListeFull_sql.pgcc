@@ -40,7 +40,7 @@ PreisListeFull::PreisListeFull(ID id, bool art_in_list,
  std::string plid=itos(PRLSNR);
 
  if(art_in_list)
-   {qu=std::string("select artikelid,preis,preismenge,mindestmenge from artikelpreise p"
+   {qu=std::string("select artikelid,preis,preismenge,coalesce(mindestmenge,1) from artikelpreise p"
  	" join artikelstamm s on (p.artikelid=s.id and "
 	" s.warengruppe="+itos(at.Id())+") where  kundennr = ")+plid;
    }
