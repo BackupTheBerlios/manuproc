@@ -146,8 +146,9 @@ bool ArtikelBox::BreitenSuche_switch(BreitenSuche_switch_arg a)
          combos[k][v.size()-1]->get_entry()->set_position(-1);
          combos[k][v.size()-1]->trigger_search();
          block_selection=true;
-         combos[k][v.size()-1]->grab_focus();
+         combos[k][v.size()-1]->get_entry()->grab_focus();
          block_selection=false;
+         combos[k][v.size()-1]->get_entry()->select_region(0,0);
       }
    return false;
 }
