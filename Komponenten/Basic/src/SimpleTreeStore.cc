@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.37 2003/11/19 14:02:22 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.38 2003/11/20 13:27:33 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -69,7 +69,7 @@ void SimpleTreeStore::default_save(const std::string&program, const std::string&
 void SimpleTreeStore::save_remembered() const
 {  std::pair<std::string,std::string> value;
 
-   if (block_save) return;
+   if (block_save || (mem_prog.empty() && mem_inst.empty())) return;
    unsigned int sichtbar=0,bit=1;
    for (std::vector<bool>::const_iterator i=vec_hide_cols.begin();
    		bit && i!=vec_hide_cols.end();++i,bit<<=1)
@@ -95,7 +95,8 @@ void SimpleTreeStore::save_remembered() const
 }
 
 void SimpleTreeStore::load_remembered()
-{  std::pair<std::string,std::string> value=default_load(mem_prog, mem_inst);
+{  if (mem_prog.empty() && mem_inst.empty()) return;
+   std::pair<std::string,std::string> value=default_load(mem_prog, mem_inst);
 
 //   titles_bool=value.second.find('T')==std::string::npos;
    expandieren_bool=value.second.find('E')==std::string::npos;
@@ -660,7 +661,7 @@ bool SimpleTreeStore::iter_nth_child_vfunc(GtkTreeIter* iter, const GtkTreeIter*
 bool SimpleTreeStore::iter_parent_vfunc(GtkTreeIter* iter, const GtkTreeIter* child)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,child->user_data);
    iterator c=iterconv(child);
-   if (!c->second.parent) return false;  
+   if (!c->second.parent || c->second.parent==&root) return false;  
    iterator p=iterbyNode(*c->second.parent);
    if (p==c->second.parent->parent->children.end()) return false;
    iterinit(iter,p);

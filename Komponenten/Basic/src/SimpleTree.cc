@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.32 2003/11/12 11:03:14 christof Exp $
+// $Id: SimpleTree.cc,v 1.33 2003/11/20 13:27:33 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,8 +27,23 @@ void SimpleTree_Basic::detach()
 {  set_model(Glib::RefPtr<Gtk::TreeModel>());
 }
 
+static void aufklappen(Gtk::TreeView *tv,Gtk::TreeModel::Path path,
+			const Gtk::TreeModel::Children &ch, int depth)
+{  path.down();
+   for (Gtk::TreeModel::iterator i=ch.begin();i!=ch.end();++i,path.next())
+   {  if (!i->children().empty())
+      {  assert(tv->expand_row(path,false));
+         if (depth>1) aufklappen(tv,path,i->children(),depth-1);
+      }
+   }
+}
+
 void SimpleTree_Basic::attach()
 {  set_model(sts);
+   // aufklappen
+   if (sts->expandieren_bool && sts->ShowDeep().Value())
+   {  aufklappen(this,Gtk::TreeModel::Path(),get_model()->children(),sts->ShowDeep().Value());
+   }
 }
 
 void SimpleTree_Basic::on_redisplay()
@@ -102,9 +117,11 @@ void SimpleTree_Basic::on_zuruecksetzen_clicked()
 }
 
 void SimpleTree_Basic::on_neuordnen_clicked()
-{   getStore()->fillSequence(clicked_seq);
-      getStore()->setSequence(clicked_seq);
-      clicked_seq.clear();
+{  if (!clicked_seq.empty()) getStore()->ShowDeep()=clicked_seq.size()-1;
+   getStore()->fillSequence(clicked_seq);
+   getStore()->setSequence(clicked_seq);
+   clicked_seq.clear();
+   getStore()->save_remembered();
 }
 
 void SimpleTree_Basic::on_title_changed(guint nr)
@@ -163,14 +180,29 @@ std::vector<cH_RowDataBase> SimpleTree::getSelectedRowDataBase_vec() const
 }
 
 
-static Gtk::MenuItem *add_mitem(Gtk::Menu *m,const std::string text)
+static Gtk::MenuItem *add_mitem(Gtk::Menu *m,const std::string &text,const Model_ref<bvector_item> &model)
+{  bvector_item_CheckMenuItem *it = 
+	manage(new bvector_item_CheckMenuItem(model,text));
+   m->append(*it);
+   it->show();
+   return it;
+}
+
+static Gtk::MenuItem *add_mitem(Gtk::Menu *m,const std::string &text,const Model_ref<bool> &model)
+{  bool_CheckMenuItem *it = manage(new bool_CheckMenuItem(model,text));
+   m->append(*it);
+   it->show();
+   return it;
+}
+
+static Gtk::MenuItem *add_mitem(Gtk::Menu *m,const std::string &text)
 {  Gtk::MenuItem *it=manage(new class Gtk::MenuItem(text));
    m->append(*it);
    it->show();
    return it;
 }
 
-static Gtk::MenuItem *add_mitem(Gtk::Menu *m,const std::string text,const SigC::Slot0<void> &callback)
+static Gtk::MenuItem *add_mitem(Gtk::Menu *m,const std::string &text,const SigC::Slot0<void> &callback)
 {  Gtk::MenuItem *it=add_mitem(m,text);
    it->signal_activate().connect(callback);
    return it;
@@ -191,21 +223,15 @@ void SimpleTree_Basic::fillMenu()
   spalten_menu->append(*tomi);
   tomi->show();
    for (guint i=0;i<Cols();++i)
-    { bvector_item_CheckMenuItem *sp = manage(new bvector_item_CheckMenuItem
-    			(getStore()->ShowColumn(i),getColTitle(i)));
-      spalten_menu->append(*sp);
-      sp->show();
-    }
+      add_mitem(spalten_menu,getColTitle(i),getStore()->ShowColumn(i));
 
   Gtk::MenuItem *optionen=add_mitem(menu,"Optionen");
   Gtk::Menu *optionen_menu=manage(new Gtk::Menu);
   add_mitem(optionen_menu,"Spaltenüberschriften anzeigen")->set_sensitive(false); // Model
-  add_mitem(optionen_menu,"Auffüllen mit Standardreihenfolge\n(statt der aktuellen)")->set_sensitive(false); // Model
-  	// OptionAuffullen()
-  add_mitem(optionen_menu,"Gewählte Knoten expandieren")->set_sensitive(false); // Model
-        // OptionExpandieren()
-  add_mitem(optionen_menu,"farblich markieren")->set_sensitive(false); // Model
-        // OptionColor()
+  add_mitem(optionen_menu,"Auffüllen mit Standardreihenfolge\n"
+	  	"(statt der aktuellen)",getStore()->OptionAuffullen());
+  add_mitem(optionen_menu,"Ausgewählte Spalten aufklappen",getStore()->OptionExpandieren());
+  add_mitem(optionen_menu,"Tiefe farblich markieren",getStore()->OptionColor());
 
   optionen->set_submenu(*optionen_menu);
   add_mitem(menu,"Alles aufklappen",SigC::slot(*this,&SimpleTree_Basic::Expand_recursively));
