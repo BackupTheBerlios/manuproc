@@ -112,7 +112,11 @@ int main(int argc,char *argv[])
 {  putenv("LANG=C"); // omit any locale oddities/changes
    bool clean_only=true;
 
+#ifdef PETIG_TEST
+   AuftragBase::setzeAktuellesJahr(2000);
+#else
    AuftragBase::setzeAktuellesJahr(2003);
+#endif
    static struct option long_options[] = {
      { "verbose", no_argument, 0, 'v' },
      { "repair", no_argument, 0, 'r' },

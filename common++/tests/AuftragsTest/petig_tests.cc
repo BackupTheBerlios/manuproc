@@ -251,7 +251,7 @@ static bool Rep_Zuordnungen(AufEintrag &AE)
       }
       {
         Query::Execute("update auftragentry set geliefert=16555 where "
-            "(instanz,auftragid)=(2,30000)");
+            "(instanz,auftragid)=(2,3)");
         SQLerror::test(__FILELINE__);
         vergleichen(Check::Menge,"rep_pfE","Reparatur-Zuordungen ()","E",true);
       }
@@ -273,7 +273,7 @@ static bool Rep_KundenProgramm(AufEintrag &AE)
       }
       {
        std::string q2="update auftragsentryzuordnung set menge=300 where "
-                         " (altauftragid) = (30000)";
+                         " (altauftragid) = (3)";
        Query::Execute(q2);
        SQLerror::test(__FILELINE__);
        AufEintrag AE=AufEintrag(class AufEintragBase(class AuftragBase(ROLLEREI,AuftragBase::ungeplante_id),2));
