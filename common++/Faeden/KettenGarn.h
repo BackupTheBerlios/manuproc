@@ -1,4 +1,4 @@
-/* $Id: KettenGarn.h,v 1.11 2004/02/25 10:03:09 christof Exp $ */
+/* $Id: KettenGarn.h,v 1.1 2004/02/25 10:03:09 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -40,13 +40,13 @@ public:
 	KettenGarn_MT(int i,int z,int k,int f,ArtikelBase id,int l,std::string w) 
 	        : index(i), zeile(z),kettenzahl(k),faeden(f), art(id),laenge(l),
 	          wiederholung(w) {}
-	bool operator==(const KettenGarn_MT &b) const throw()
+	bool operator==(const KettenGarn &b) const throw()
 	{  return Index()==b.Index() && 
 	          Artikel()==b.Artikel() &&
 	          Faeden()==b.Faeden() &&
 	          Kettenzahl()==b.Kettenzahl() &&
 	          Laenge()==b.Laenge() ;}
-	bool operator<(const KettenGarn_MT &b) const throw()
+	bool operator<(const KettenGarn &b) const throw()
 	{  return (Index()<b.Index()) || 
 	          (Index()==b.Index() && Artikel()<b.Artikel() );}
 	          

@@ -1,4 +1,4 @@
-/* $Id: Kettscheibe.h,v 1.1 2004/02/25 10:03:09 christof Exp $ */
+/* $Id: Kettscheibe.h,v 1.2 2004/02/25 10:06:19 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -24,7 +24,7 @@
 #include <vector>
 #include <Artikel/ArtikelBase.h>
 
-class Kettscheibe_MT //: Kette
+class Kettscheibe_CP //: Kette
 {
       int index;
    public:
@@ -43,16 +43,16 @@ class Kettscheibe_MT //: Kette
       
    public:
 
-      Kettscheibe(int i) : index(i) {}
+      Kettscheibe_CP(int i) : index(i) {}
 
       int Index() const {return index;}
-      void setKombiniert(st_kombi b) {kombiniert_mit.push_back(b);}
+//      void setKombiniert(st_kombi b) {kombiniert_mit.push_back(b);}
       const std::vector<st_kombi>& getKombiniert() const {return kombiniert_mit;}
 
-      bool operator==(const Kettscheibe& b) const {return Index()==b.Index();}
-      bool operator<(const Kettscheibe& b) const {return Index()<b.Index();}
+      bool operator==(const Kettscheibe_CP& b) const {return Index()==b.Index();}
+      bool operator<(const Kettscheibe_CP& b) const {return Index()<b.Index();}
 };
 
-typedef Kettscheibe_MT Kettscheibe;
+typedef Kettscheibe_CP Kettscheibe;
 
 #endif
