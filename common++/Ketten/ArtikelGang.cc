@@ -1,4 +1,4 @@
-/* $Id: ArtikelGang.cc,v 1.11 2003/01/08 09:46:57 christof Exp $ */
+/* $Id: ArtikelGang.cc,v 1.12 2003/10/02 07:40:30 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -17,11 +17,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <Ketten/ArtikelGang.h>
+#include <Ketten/ArtikelGang_Malte.h>
 #include <Misc/FetchIStream.h>
 #include <Misc/mystring.h>
 
-void ArtikelGang::delete_Garn(const KettenGarn& garn) const  throw(SQLerror)
+void ArtikelGang_Malte::delete_Garn(const KettenGarn& garn) const  throw(SQLerror)
 {
  std::string S="delete from ketten_garn where (artikel,gaenge,ketten,zeile,"
       "faeden,garn,ketten_index) = ("
@@ -36,7 +36,7 @@ void ArtikelGang::delete_Garn(const KettenGarn& garn) const  throw(SQLerror)
  SQLerror::test("Kette::delete(): Garn schon weg");
 }
 
-void ArtikelGang::save_Garn(const KettenGarn& garn/*,std::list<ArtikelGang> KombiArtikel*/) const  throw(SQLerror)
+void ArtikelGang_Malte::save_Garn(const KettenGarn& garn/*,std::list<ArtikelGang> KombiArtikel*/) const  throw(SQLerror)
 {
  std::string S="insert into ketten_garn "
    " (artikel,gaenge,ketten,zeile,faeden,garn,ketten_index,laenge/*,kombinierte_kette*/,wiederholung) values "
@@ -73,7 +73,7 @@ void ArtikelGang::save_Garn(const KettenGarn& garn/*,std::list<ArtikelGang> Komb
 
 
 /*
-void ArtikelGang::delete_kombi_kette(int kombiniert) const  throw(SQLerror)
+void ArtikelGang_Malte::delete_kombi_kette(int kombiniert) const  throw(SQLerror)
 {
  assert(kombiniert!=Kettscheibe::nicht_kombinierte_kette);
  std::string S="delete from ketten_garn where (kombinierte_kette)"
@@ -84,7 +84,7 @@ void ArtikelGang::delete_kombi_kette(int kombiniert) const  throw(SQLerror)
 */
 
 
-std::string ArtikelGang::getWiederholung(const e_wiederholung &ew) const
+std::string ArtikelGang_Malte::getWiederholung(const e_wiederholung &ew) const
 {
   std::vector<KettenGarn> K=load_Garn(0);  
   char maxchar='A'-1;
@@ -104,7 +104,7 @@ std::string ArtikelGang::getWiederholung(const e_wiederholung &ew) const
   return B;
 }
 
-void ArtikelGang::setKombinierteKette(int index, Kettscheibe::st_kombi b) const
+void ArtikelGang_Malte::setKombinierteKette(int index, Kettscheibe::st_kombi b) const
 {
   for(std::list<Kettscheibe>::iterator i=kettscheiben.begin();i!=kettscheiben.end();++i)
    {
@@ -113,7 +113,7 @@ void ArtikelGang::setKombinierteKette(int index, Kettscheibe::st_kombi b) const
    }
 }
 
-std::string ArtikelGang::KombiniertMit_c_str(const KettenGarn& garn) const
+std::string ArtikelGang_Malte::KombiniertMit_c_str(const KettenGarn& garn) const
 {
   std::string s;
   for(std::list<Kettscheibe>::const_iterator i=kettscheiben.begin();i!=kettscheiben.end();++i)
@@ -129,7 +129,7 @@ std::string ArtikelGang::KombiniertMit_c_str(const KettenGarn& garn) const
   return s;
 }
 
-std::vector<Kettscheibe::st_kombi> ArtikelGang::KombiniertMit(const KettenGarn& garn) const
+std::vector<Kettscheibe::st_kombi> ArtikelGang_Malte::KombiniertMit(const KettenGarn& garn) const
 {
   for(std::list<Kettscheibe>::const_iterator i=kettscheiben.begin();i!=kettscheiben.end();++i)
    {

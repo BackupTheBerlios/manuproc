@@ -1,4 +1,4 @@
-// $Id: KpK_get_artikel.pgcc,v 1.13 2003/05/23 11:19:33 christof Exp $
+// $Id: KpK_get_artikel.pgcc,v 1.14 2003/10/02 07:40:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -47,14 +47,15 @@ const std::vector <ArtikelGang> &KettplanKette::get_artikel_sorted() const
    int m=sqlca.sqlerrd[2];
    for (int i=0;i<m;++i)
    {
-     artikel.push_back(ArtikelGang(GAENGE[i],ArtikelBase(ID[i]),true,Kettlaenge()));
+     artikel.push_back(ArtikelGang(GAENGE[i],ArtikelBase(ID[i]))); // ,true,Kettlaenge()));
    }
    valid|=VA_ARTIKEL;
    get_kombiartikel();
    return artikel;
 }
 
-const std::vector <ArtikelGang>& KettplanKette::get_kombiartikel() const
+#if 0
+const std::vector <ArtikelGang_Malte>& KettplanKette::get_kombiartikel() const
 {
   assert(VA_ARTIKEL);
   exec sql begin declare section;
@@ -96,3 +97,4 @@ const std::vector <ArtikelGang>& KettplanKette::get_kombiartikel() const
   return artikel;
 }
 
+#endif

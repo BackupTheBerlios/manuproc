@@ -1,4 +1,4 @@
-// $Id: KettplanKette.h,v 1.13 2003/01/08 09:46:57 christof Exp $
+// $Id: KettplanKette.h,v 1.14 2003/10/02 07:40:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,7 +22,7 @@
 #define KETTPLANKETTE_HH
 
 #include "Kette.h"
-#include "ArtikelGang.h"
+#include "ArtikelGang_Malte.h"
 #include "KettenGarn.h"
 #include <Misc/SQLerror.h>
 
@@ -48,8 +48,8 @@ private:
 	mutable std::vector <ArtikelGang> artikel; // sortiert nach Namen (?)
 	mutable int valid;
 
-#define USUAL_INIT planmasch(0), kettlaenge(0), stuecklaenge(0), \
-		schussdichte(0), webmasch(0), abgeschnitten(0), valid(0)
+#define USUAL_INIT planmasch(), kettlaenge(), stuecklaenge(), \
+		schussdichte(), webmasch(), abgeschnitten(), valid()
 
 public:
 	typedef std::vector <ArtikelGang>::const_iterator const_iterator;
@@ -106,7 +106,7 @@ public:
 	{  return get_artikel_sorted(); }
 	const std::vector <ArtikelGang> &get_artikel_sorted() const;
  private:
-   const std::vector <ArtikelGang>& get_kombiartikel() const;
+   const std::vector <ArtikelGang_Malte>& get_kombiartikel() const;
  public:
 
 
@@ -130,32 +130,6 @@ private:
 	/// deprecate[Ad, use BarcoMasch(int m)
 	void setzeBarcoMasch(int m) throw(SQLerror);
 	
-public: // deprecated!!!
-	
-
-#if 0
-private:
-	// should kill this
-	KettplanKette(int m,const ManuProC::Datum _schaerdatum)
-		: Kette(m,_schaerdatum), USUAL_INIT
-	{}
-
-	// an this strange beast ...
-	KettplanKette(int m,const ManuProC::Datum _schaerdatum,int l)
-		: Kette(m,_schaerdatum), USUAL_INIT
-	{ kettlaenge=l; valid|=VA_KETTLEN; }
-	// kill this
-	KettplanKette(int m,const char *adabasDatum)
-		: Kette(m,adabasDatum), planmasch(0), kettlaenge(0), stuecklaenge(0), 
-		  schussdichte(0), webmasch(0),
-		  valid(0)
-	{}
-	KettplanKette(const char *barcoformat)
-		: Kette(barcoformat), planmasch(0), kettlaenge(0), stuecklaenge(0), 
-		  schussdichte(0), webmasch(0),
-		  valid(0)
-	{}
-#endif	
 #undef USUAL_INIT
 };
 #endif

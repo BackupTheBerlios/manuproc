@@ -1,4 +1,4 @@
-/* $Id: ArtikelGang.h,v 1.8 2002/09/18 08:58:34 christof Exp $ */
+/* $Id: ArtikelGang.h,v 1.9 2003/10/02 07:40:30 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,20 +21,16 @@
 #define ARTIKELGANG_HH
 #include <Artikel/ArtikelBase.h>
 #include <Artikel/ArtikelBezeichnung.h>
-#include <Ketten/Kettscheibe.h>
-#include <Ketten/KettenGarn.h>
-//class Kettscheibe;
 
 class ArtikelGang {
+protected:
 	int gaenge;
 	ArtikelBase art;
-   mutable std::list<Kettscheibe> kettscheiben;
-//   mutable int index; // Kettenindex für die Kombinierte Kette
 
 public:
 	typedef ArtikelBase::ID ID;
-	ArtikelGang(int g,ArtikelBase id,bool load_garn=false,int kettlaenge=0) : gaenge(g), art(id)
-	      { if(load_garn) load_Garn(kettlaenge);  }
+	ArtikelGang(int g,ArtikelBase id) 
+	  : gaenge(g), art(id) {}
 	ArtikelGang() : gaenge(0), art(0) {}
 	bool operator==(const ArtikelGang &b) const throw()
 	{  return Id()==b.Id() && Gaenge()==b.Gaenge() ;}
@@ -50,18 +46,8 @@ public:
 
 	const ID &Id() const {  return art.Id(); }
 	int Gaenge() const throw() {  return gaenge; }
-   void setKombinierteKette(int index,Kettscheibe::st_kombi b) const ;
-   std::list<Kettscheibe>& getKettscheiben() {return kettscheiben;}
-   std::string KombiniertMit_c_str(const KettenGarn& garn) const;
-   std::vector<Kettscheibe::st_kombi> KombiniertMit(const KettenGarn& garn) const;
-
-   void save_Garn(const KettenGarn& garn/*,std::list<ArtikelGang> KombiArtikel*/) const  throw(SQLerror);
-   void delete_Garn(const KettenGarn& garn) const  throw(SQLerror);
-   std::vector<KettenGarn> load_Garn(int kettlaenge) const;
-
-   enum e_wiederholung{Next,Same};
-   std::string getWiederholung(const e_wiederholung &ew) const;
 };
 
 extern std::ostream& operator<<(std::ostream &o,const ArtikelGang &ag);
+
 #endif
