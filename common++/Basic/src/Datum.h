@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.6 2002/04/19 06:23:22 christof Exp $ */
+/* $Id: Datum.h,v 1.7 2002/04/19 15:16:36 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.8 2001/12/27 09:44:42 christof Exp $
+# $Id: Makefile.am,v 1.9 2002/04/19 15:16:36 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -10,22 +10,26 @@ includedir=@includedir@/ManuProC_Base
 
 LDFLAGS=@LDFLAGS@ @ECPG_LDFLAGS@
 
+if DATABASE
+DB_SRCES=dbconnect.cc SQLerror_postgres.cc Transaction.cc FetchIStream.cc
+else 
+DB_SRCES=
+endif
+
 libManuProC_Base_a_SOURCES=Ausgabe_neu.cc Datum.cc IOerror.cc \
 		postgres_conversion.cc Zeitpunkt_new.cc \
 		Zeitpunkt_new_ostr.cc \
 		Zeitpunkt_new_write.cc string0.c \
-		auto_conversion.cc $(PGCC_SOURCES) \
+		auto_conversion.cc $(DB_SRCES) \
 		exception.cc itos.cc \
 		time_t_ostr.cc \
       EntryValueBase.cc \
       EntryValueIntString.cc EntryValueDatum.cc
 
-PGCC_SOURCES=   dbconnect.cc SQLerror_postgres.cc Transaction.cc \
-	FetchIStream.cc
 EXTRA_DIST=dbconnect.pgcc SQLerror_postgres.pgcc Transaction.pgcc \
 	FetchIStream.pgcc
 
-BUILT_SOURCES=Aux ostream $(PGCC_SOURCES)
+BUILT_SOURCES=Aux ostream $(DB_SRCES)
 
 include_HEADERS=Ausgabe_neu.h CacheStatic.h Cache_Pointer.h Datum.h Handles.h \
 	IOerror.h Kalenderwoche.h Pointer.h Postgres.h Rundungsmacros.h \
