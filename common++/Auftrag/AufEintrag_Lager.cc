@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.16 2003/09/02 15:48:58 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.17 2003/09/04 09:46:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -166,11 +166,15 @@ AuftragBase::mengen_t AufEintrag::Auslagern
    assert(Id()==plan_auftrag_id || Id()==ungeplante_id);
 
    if (Id()==plan_auftrag_id)
-   {  // Zuordnung?
-      abschreiben(menge);
+   {  // Zuordnung muss Instanz darüber machen 
+      if (fuer_auftraege) abschreiben(menge);
+      else
+      {  MengeNeubestellen(menge);
+      }
    }
    else if (Id()==ungeplante_id)
    {  // abbestellen
+      assert(fuer_auftraege);
       MengeAendern(-menge,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
       // LagerMenge reduzieren (wir sollen ja das Lager führen)
       mengen_t brauch_noch=menge;

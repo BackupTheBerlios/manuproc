@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.11 2003/09/02 12:10:52 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.12 2003/09/04 09:46:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -194,10 +194,12 @@ public:
 		: alterAEB(aAEB), neuerAEB(nAEB), ctx(_ctx) {}
 	AuftragBase::mengen_t operator()(const ArtikelBase &art,
 		const AufEintragBase &aeb,AuftragBase::mengen_t M,bool first) const
-	{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("aeb",aeb),NV("M",M));
+	{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
+			NV("aeb",aeb),NV("M",M),NV("first",first));
 	   if (!aeb.Instanz()->ProduziertSelbst())
 	   {  if (aeb.Instanz()->LagerInstanz())
-	      {  AufEintragZu(alterAEB).setMengeDiff__(aeb,-M);
+	      {  // Zuordnung anpassen
+	         AufEintragZu(alterAEB).setMengeDiff__(aeb,-M);
 		 Lager L(aeb.Instanz());
 		 // oder elter_neu?
 		 L.raus_aus_lager(art,M,true,ProductionContext(alterAEB,ctx,aeb));
