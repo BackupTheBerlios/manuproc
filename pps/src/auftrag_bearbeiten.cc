@@ -587,11 +587,12 @@ void auftrag_bearbeiten::andererKunde()
    artikelbox->Einschraenken_b(true);
    checkbutton_ean_drucken->set_active(kunde->showEAN());
    newauftrag_button->set_sensitive(kunde->Aktiv());
-//   auftrag_ok->set_sensitive(false);
    if(kunde->Aktiv())
       _tooltips.set_tip(*kundenbox,NULL,"");
    else
-     _tooltips.set_tip(*kundenbox,"Der Kunde ist gesperrt","");
+     {_tooltips.set_tip(*kundenbox,"Der Kunde ist gesperrt","");
+      auftrag_ok->set_sensitive(false);
+     }
 #endif
 
    zahlart->set_value(rngkd->zahlungsart()->Id());
