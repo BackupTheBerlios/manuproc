@@ -1,4 +1,4 @@
-// $Id: with_class.cc,v 1.20 2002/12/04 11:20:15 christof Exp $
+// $Id: with_class.cc,v 1.21 2003/10/07 06:30:23 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -16,7 +16,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// $Id: with_class.cc,v 1.20 2002/12/04 11:20:15 christof Exp $
+// $Id: with_class.cc,v 1.21 2003/10/07 06:30:23 christof Exp $
 
 #include "config.h"
 #include "with_class.hh"
@@ -195,7 +195,7 @@ with_class::with_class()
    datavec.push_back(new MyRowData(1,"Y",2,3,"A"));
 #endif
 #if 1
-   for (int i=0;i<100;++i)
+   for (int i=0;i<10000;++i)
       datavec.push_back(new MyRowData(i%4+1,/*"same" */
       std::string(1,char('A'+(i%3))),(i%5),(i%7),itos(i)));
 #endif
@@ -209,7 +209,7 @@ with_class::with_class()
    treebase->setDataVec(datavec);
    
    treebase->signal_leaf_selected().connect(SigC::slot(*this,&with_class::on_leaf_selected));
-#if 1   
+#if 0   
    treebase->selectMatchingLines(2);
 
    {  OutputFunctor of(std::cout);

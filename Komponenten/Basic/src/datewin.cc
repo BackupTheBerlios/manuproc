@@ -1,4 +1,4 @@
-// $Id: datewin.cc,v 1.15 2003/10/06 13:21:27 jacek Exp $
+// $Id: datewin.cc,v 1.16 2003/10/07 06:30:23 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,13 +23,14 @@
 #include <unistd.h>
 #include <iostream>
 #include <cassert>
+#include <gtk/gtksignal.h>
 
 datewin::datewin(const std::string &inst) : block(false), 
 	expandyear(true),instance(inst)
 {  set_value(ManuProC::Datum::today());
    jahr->signal_activate().connect(activate.slot());
-   gtk_signal_connect_after(Gtk::OBJECT(gobj()), "grab_focus",
-    		Gtk::SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
+   gtk_signal_connect_after(GTK_OBJECT(gobj()), "grab_focus",
+    		GTK_SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
    set_scrollable(false); // for now ...
    
    tag->signal_changed().connect(changed.slot());
@@ -42,7 +43,7 @@ datewin::datewin(const std::string &inst) : block(false),
 ManuProC::Datum datewin::get_value() const throw()
 {  ManuProC::Datum d;
 
-   switch(get_current_page_num())
+   switch(get_current_page())
    {  case p_Datum:
          tag->update();
          monat->update();
@@ -58,7 +59,7 @@ ManuProC::Datum datewin::get_value() const throw()
          break;
       case p_Kalender:
          {  guint y=0,m=0,day=0;
-            calendar1->get_date(&y,&m,&day);
+            calendar1->get_date(y,m,day);
             d=ManuProC::Datum(day,m+1,y,expandyear);
          }
          break;
@@ -84,20 +85,23 @@ void datewin::set_value (const ManuProC::Datum &d) throw()
       // Tag ist in Kalenderwochendarstellung nicht exakt darstellbar
       // (Informationsverlust) => Datum nehmen
       if (pg==p_Woche && d.Tag()!=ManuProC::Datum(d.KW()).Tag()) pg=p_Datum;
-      set_page(pg);
+      set_current_page(pg);
    }
    else 
    {  block=true;
-      set_page(p_leer);
+      set_current_page(p_leer);
       block=false;
    }
    changed();
 }
 
 gint datewin::try_grab_focus(GtkWidget *w,gpointer gp) throw()
-{  assert(Gtk::Notebook::isA((Gtk::Object *)gp)); // very weak check
+{datewin *this2((datewin*)gp);
+ Gtk::Notebook *n=dynamic_cast<Gtk::Notebook*>(this2);
+ assert(n!=NULL); // very weak check
+
    datewin *_this=static_cast<datewin*>(gp);
-   switch(_this->get_current_page_num())
+   switch(_this->get_current_page())
    {  case p_Datum:
    	  _this->jahr->select_region(0,_this->jahr->get_text_length());
    	  _this->monat->select_region(0,_this->monat->get_text_length());
@@ -161,12 +165,12 @@ void datewin::datum_setzen()
 {  if (!tag->get_value_as_int())
    {  set_value(ManuProC::Datum::today());
    }
-   else set_page(load_settings());
+   else set_current_page(load_settings());
 }
 
 void datewin::save_settings() const
 {  int u=getuid();
-   Global_Settings(u,instance,"datewin:page").set_Wert(itos(get_current_page_num()));
+   Global_Settings(u,instance,"datewin:page").set_Wert(itos(get_current_page()));
 }
 
 int datewin::load_settings() const

@@ -1,4 +1,4 @@
-// $Id: datewin.h,v 1.12 2003/10/06 13:21:27 jacek Exp $
+// $Id: datewin.h,v 1.13 2003/10/07 06:30:23 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -53,8 +53,14 @@ class datewin : public datewin_glade
 	void setLabel(const std::string &s);
 	void setInstance(const std::string &s);
 	void setExpandYear(bool exp) { expandyear=exp; }
+	
+private:	
 	SigC::Signal0<void> activate;
 	SigC::Signal0<void> changed;
+public:
+        SigC::Signal0<void> &signal_activate() { return activate; }
+        SigC::Signal0<void> &signal_changed() { return changed; }        
+
 };
 
 // compatibility
