@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.4 2001/07/05 09:23:02 christof Exp $
+# $Id: Makefile.am,v 1.5 2001/10/01 12:55:40 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -8,7 +8,7 @@ noinst_PROGRAMS=libArtikel.o
 
 includedir=@includedir@/Artikel
 
-libArtikel_o_SOURCES=Aufmachung.cc Preis.cc \
+libArtikel_o_SOURCES=Aufmachung.cc Preis.cc ArtikelBaumFull.cc \
 	$(BUILT_SOURCES_P) Artikelpreis.cc
 
 libArtikel.o: $(libArtikel_o_OBJECTS) $(libArtikel_o_DEPENDENCIES)
@@ -22,7 +22,7 @@ BUILT_SOURCES_P=ArtikelBaum.cc ArtikelBezeichnung.cc \
 
 include_HEADERS=ArtikelBase.h ArtikelBaum.h ArtikelBezeichnung.h \
 	Artikelpreis.h Aufmachung.h Misc.h Preis.h Prozess.h Prozesspreis.h \
-	Einheiten.h ArtikelTyp.h ArtikelStamm.h
+	Einheiten.h ArtikelTyp.h ArtikelStamm.h ArtikelBaumFull.h
 
 CLEANFILES= *~ *.pct *.prot $(BUILT_SOURCES_P) *_p.cc
 

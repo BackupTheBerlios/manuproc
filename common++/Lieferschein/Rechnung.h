@@ -20,12 +20,13 @@
 #define RECHNUNG__
 
 #include"RechnungBase.h"
-#include"RechnungEntry.h"
+//#include"RechnungEntry.h"
+#include<Aux/Waehrung.h>
 #include<Aux/SQLerror.h>
 #include<Aux/Datum.h>
 #include<Kunde/Kunde.h>
 #include <vector>
-
+#include "LieferscheinBase.h"
 
 class Rechnung : public RechnungBase
 {
@@ -37,17 +38,18 @@ private:
  RngArt rngart;
  Petig::Datum zahlziel;
  Petig::Datum rgdatum;
- std::vector<RechnungEntry> REntries;
  cP_Waehrung waehrung;
  fixedpoint<2> rabatt;
  bool bezahlt;
 
 public:
- typedef std::vector<RechnungEntry>::const_iterator const_iterator;
- typedef std::vector<RechnungEntry>::iterator iterator;
         
  Rechnung(int rid) throw(SQLerror);
  Rechnung(const cH_Kunde k,int jahr=0) throw(SQLerror);
+ Rechnung() : RechnungBase(none_id), kunde(Kunde::none_id), 
+              rngart(RART_NONE), zahlziel(Petig::Datum::today()),
+              rgdatum(Petig::Datum::today()),waehrung(0),
+              rabatt(0),bezahlt(false) {} 
 
  const Kunde::ID KdNr() const {return kunde->Id();}
  const cH_Kunde getKunde() const { return kunde; }
@@ -56,15 +58,9 @@ public:
  const RngArt rngArt() const {return rngart; } 
  fixedpoint<2> Rabatt() const { return rabatt; }
  
- const_iterator begin() const { return REntries.begin();}
- const_iterator end() const { return REntries.end();}
- iterator begin() { return REntries.begin();}
- iterator end() { return REntries.end();}
- size_t size() const { return REntries.size();}
  cP_Waehrung getWaehrung() const { return waehrung; }
  void setzeWaehrung(const cP_Waehrung &w) throw(SQLerror);
  ExtBezSchema::ID getSchema() { return kunde->getSchema()->Id(); }
- void deleteRow(const RechnungEntry &re);
  bool Bezahlt() const { return bezahlt; }
  void addLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror);
  void deleteLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror);

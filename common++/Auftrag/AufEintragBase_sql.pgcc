@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.6 2001/07/16 09:54:26 christof Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.7 2001/10/01 12:55:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -127,16 +127,14 @@ void AufEintragBase::updatePreis(const Preis &pr) throw(SQLerror)
  int INSTANZ;
  float PREIS;
  int PREISMENGE;
- int WAEHRUNG;
  exec sql end declare section;
  INSTANZ=instanz;
 #warning PREISMENGE->float
-
- PREIS=preis.Wert();
- PREISMENGE=preis.PreisMenge();
- WAEHRUNG=preis.getWaehrung()->Id();
+ PREIS=pr.Wert();
+ PREISMENGE=pr.PreisMenge();
+// WAEHRUNG=pr.getWaehrung()->Id();
  exec sql update auftragentry 
- 	set preis= :PREIS, waehrung= :WAEHRUNG, preismenge= :PREISMENGE
+ 	set preis= :PREIS, preismenge= :PREISMENGE
  	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR
    and instanz=:INSTANZ;
  SQLerror::test("updatePreis: update preis in auftragentry");

@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.5 2001/07/16 09:54:26 christof Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.6 2001/10/01 12:55:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -32,25 +32,25 @@ ArtikelBezeichnung::ArtikelBezeichnung(const ArtikelBase &artikel, const cH_ExtB
 }
 
 ArtikelBezeichnung::ArtikelBezeichnung(const ArtikelBase &artikel, ExtBezSchema::ID _schema) throw()
- : ArtikelBase(artikel), schema(1)
+ : ArtikelBase(artikel), schema(ExtBezSchema::default_ID)
 {  try
    {  ArtikelStamm AS( artikel );
-      try { setzeExtBezSchema(cH_ExtBezSchema(_schema,AS.Warengruppe()));
-          }
-      catch (SQLerror &e)
-         {  // this is too narrow since the tables simply might lack existance
-            // if (e.Code()!=100) throw; // die
-            try {
-                  setzeExtBezSchema(cH_ExtBezSchema(AS.defaultSchema(),AS.Warengruppe()));
-                }
-            catch (SQLerror &e) 
-               { // if (e.Code()!=100) throw; // die
-               }
-         }
+      try 
+      { setzeExtBezSchema(cH_ExtBezSchema(_schema,AS.Warengruppe(_schema)));
+      } catch (SQLerror &e)
+      { try 
+        {  // requested schema, default type
+          setzeExtBezSchema(cH_ExtBezSchema(_schema,
+		   			AS.Warengruppe(AS.defaultSchema())));
+        } catch (SQLerror &e) 
+        {try // last resort: default
+         {  setzeExtBezSchema(cH_ExtBezSchema(AS.defaultSchema(),
+		   			AS.Warengruppe(AS.defaultSchema())));
+         } catch (SQLerror &e) { } 
+        }
+      }
    }
-  catch (SQLerror &e)
-   { // if (e.Code()!=100) throw; // die
-   }
+  catch (SQLerror &e) { }
 }
 
 void ArtikelBezeichnung::setzeExtBezSchema(const cH_ExtBezSchema &_schema) throw(SQLerror)
@@ -105,7 +105,9 @@ std::string ArtikelBezeichnung::Bezeichnung(int signifikanz, char separator,int 
     int f=0;
     const_sigiterator end=sigend(signifikanz);
     for (const_sigiterator i=sigbegin(signifikanz);i!=end;++i)
-    {  ret+=value[i.BezKomp().bezkomptype]->getStrVal();
+    {  if (i.BezKomp().bezkomptype<0 || i.BezKomp().bezkomptype>value.size()) 
+    	  continue;
+       ret+=value[i.BezKomp().bezkomptype]->getStrVal();
        if (separator)
        {  const_sigiterator h=i;
           ++h;
@@ -118,6 +120,18 @@ std::string ArtikelBezeichnung::Bezeichnung(int signifikanz, char separator,int 
     {  for (;f<felder;++f) ret+=char(separator);
     } 
     return ret;
+}
+
+std::string ArtikelBezeichnung::Komponente(int feldnr,int signifikanz) const throw()
+{
+    const_sigiterator end=sigend(signifikanz);
+    int f=0;
+    for (const_sigiterator i=sigbegin(signifikanz);i!=end;++i,++f)
+    { if (i.BezKomp().bezkomptype<0 || i.BezKomp().bezkomptype>value.size()) 
+    	  continue;
+      if (f==feldnr) return value[i.BezKomp().bezkomptype]->getStrVal();
+    }
+ return "";
 }
 
 ArtikelBezeichnung::ArtikelBezeichnung(int signifikanz, const std::vector<cH_EntryValue> &_val, const cH_ExtBezSchema &_schema) throw(SQLerror)
@@ -168,7 +182,7 @@ cH_ArtikelBezeichnung::cH_ArtikelBezeichnung(const ArtikelBase &artikel,const cH
 {  *this=cH_ArtikelBezeichnung(artikel,schema->Id());
 }
 
-cH_ArtikelBezeichnung::cH_ArtikelBezeichnung(const ArtikelBase &artikel,const ExtBezSchema::ID &id) throw(SQLerror)
+cH_ArtikelBezeichnung::cH_ArtikelBezeichnung(const ArtikelBase &artikel,const ExtBezSchema::ID id) throw(SQLerror)
 {  cH_ArtikelBezeichnung *cached(cache.lookup(cache_key(artikel.Id(),id)));
    if (cached) *this=*cached;
    else

@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.pgcc,v 1.4 2001/08/20 08:24:31 christof Exp $
+// $Id: ArtikelBaum.pgcc,v 1.5 2001/10/01 12:55:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -18,6 +18,10 @@
  */
 
 #include <Artikel/ArtikelBaum.h>
+#include <Artikel/ArtikelBezeichnung.h>
+#include <Faeden/Schussfaeden.hh>
+#include <Faeden/Faden.hh>
+#include <Faeden/Materialeigenschaft.hh>
 exec sql include sqlca;
 
 ArtikelBaum::cache_t ArtikelBaum::cache;
@@ -35,15 +39,16 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
     int PROZESSID[30];
     float MENGE[30];
     int IMENGE[30];
+    int BESTELLEN_BEI;
     exec sql end declare section;
     
-    ARTIKELID=Id();
-    exec sql select altartikelid, prozessid, menge
+   ARTIKELID=Id();
+   exec sql select az.altartikelid, az.prozessid, az.menge
         into :ALTARTIKELID, :PROZESSID, :MENGE:IMENGE
- 	from artikelzusammensetzung
+ 	from artikelzusammensetzung az
 	where id= :ARTIKELID limit 30;
-    SQLerror::test(__FILELINE__,100);
-    if (!sqlca.sqlcode) 
+   SQLerror::test(__FILELINE__,100);
+   if (!sqlca.sqlcode) 
     {  int anz=sqlca.sqlerrd[2];
        for (int i=0;i<anz;++i)
        {  RohArtikel ra;
@@ -54,6 +59,103 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
           zusammensetzung.push_back(ra);
        }
     }
-    cache.Register(Id(),zusammensetzung);
+   exec sql select coalesce(bestellen_bei,0) into :BESTELLEN_BEI 
+      from artikelstamm where id=:ARTIKELID;
+   SQLerror::test(__FILELINE__);
+   if(BESTELLEN_BEI==ppsInstanz::INST_BANDLAGER || 
+      BESTELLEN_BEI==ppsInstanz::INST_WEB)
+     {
+       Schussfaeden schussfaeden;
+       Fadenliste fadenliste;
+       Bindungsliste bindungsliste;
+       try {                  
+          schussfaeden.Load(ARTIKELID);
+          bindungsliste.Load();
+          fadenliste.Load(ARTIKELID,bindungsliste);
+         }
+       catch(SQLerror &e) {/*std::cerr << e << '\n';*/}
+       for (Fadenliste::const_iterator i=fadenliste.sumbegin();i!=fadenliste.sumend();++i)
+        {
+          double gewicht_kg_m = i->get_Gewicht_kg_pro_km_Faden()/1000.;
+          RohArtikel ra;
+          ra.rohartikel=i->getMaterial();
+          ra.menge= i->getAnzahl()*gewicht_kg_m;
+          ra.erzeugung=cH_Prozess(31);
+          zusammensetzung.push_back(ra);
+        }
+       ArtikelBezeichnung bez(Id(),cH_ExtBezSchema(1,ArtikelTyp::GewebtesBand));
+       int breite_mm(bez[2]->getIntVal());
+       int anzschfaed=0;
+       for (Schussfaeden::const_iterator i=schussfaeden.begin();i!=schussfaeden.end();++i)
+            anzschfaed+=i->getAnzahl();  
+       for (Schussfaeden::const_iterator i=schussfaeden.begin();i!=schussfaeden.end();++i)
+        {
+          Materialeigenschaft M(i->getMaterial());
+          // Gewicht in kg/m ==> 1/cm*mm*(1cm/10mm) * g/10km*(kg/1000g)*(km/1000m)
+          double gewicht_kg_m = 2*schussfaeden.Schussdichte_cm()*
+            (i->getAnzahl()/(float)anzschfaed)*breite_mm
+             * M.Gewicht_g_10km() * 0.00000001 ;
+          RohArtikel ra;
+          ra.rohartikel=i->getMaterial();
+          ra.menge= i->getAnzahl()*gewicht_kg_m;
+          ra.erzeugung=cH_Prozess(31);
+          zusammensetzung.push_back(ra);
+        }
+      gleiche_Faeden_summieren();
+     }
+   cache.Register(Id(),zusammensetzung);
  }
 }
+
+void ArtikelBaum::gleiche_Faeden_summieren()
+{
+ map<unsigned int,fixedpoint<5> > mmap;
+ for(vector<RohArtikel>::iterator i=zusammensetzung.begin();i!=zusammensetzung.end();++i)
+   mmap[(*i).rohartikel] += (*i).menge;
+ for (map<unsigned int,fixedpoint<5> >::iterator m=mmap.begin();m!=mmap.end();++m)
+   for(vector<RohArtikel>::iterator i=zusammensetzung.begin();i!=zusammensetzung.end();++i)
+      if ((*i).rohartikel == m->first ) (*i).menge=m->second;
+ // Duplikate entfernen
+ sort(zusammensetzung.begin(),zusammensetzung.end());
+ zusammensetzung.erase(unique(zusammensetzung.begin(),zusammensetzung.end()),zusammensetzung.end());
+}
+
+
+void ArtikelBaum::new_Artikel(ArtikelBase fuer_artikel,const RohArtikel& RA)
+{
+ if (RA.rohartikel==0 || RA.menge==fixedpoint<5>(0) ) abort();
+ exec sql begin declare section;
+    int ARTIKELID;
+    int ALTARTIKELID;
+    int PROZESS;
+    float MENGE;
+ exec sql end declare section;
+ ARTIKELID=fuer_artikel.Id();
+ ALTARTIKELID=RA.rohartikel;
+ PROZESS=RA.erzeugung->Id();
+ MENGE=RA.menge;
+ exec sql insert into artikelzusammensetzung 
+   (id,prozessid,altartikelid,menge,stand) values 
+   (:ARTIKELID,:PROZESS,:ALTARTIKELID,:MENGE,now()) ;
+ SQLerror::test(__FILELINE__);
+}
+
+void ArtikelBaum::delete_Artikel(ArtikelBase fuer_artikel,ArtikelBase von_artikel)
+{
+ exec sql begin declare section;
+    int ARTIKELID;
+    int ALTARTIKELID;
+ exec sql end declare section;
+ ARTIKELID=fuer_artikel.Id();
+ ALTARTIKELID=von_artikel.Id();
+
+ exec sql delete from artikelzusammensetzung 
+   where id=:ARTIKELID and altartikelid=:ALTARTIKELID;
+ SQLerror::test(__FILELINE__,100);
+}
+
+
+void ArtikelBaum::UnCache(const ArtikelBase &stamp)
+{  cache.deregister(stamp.Id());
+}
+

@@ -17,9 +17,57 @@
  */
 
 #include"RechnungEntry.h"
+#include"Rechnung.h"
 #include<Aux/Transaction.h>
 
 exec sql include sqlca;
+
+
+RechnungEntry::RechnungEntry(const RechnungBase& rechnung)
+{
+ exec sql begin declare section;
+   int ARTIKELID, ZEILENNR, STUECK, LFRSID;
+   float PREISMENGE;
+   float MENGE;
+   float PREIS;
+  char LIEFERDATUM[21];
+   int RNGID;
+   float RABATT;
+ exec sql end declare section;
+ RNGID=rechnung.Id();
+ Transaction tr;
+ exec sql declare rein cursor for
+   select ry.artikelid,
+      ry.zeilennr, coalesce(ry.menge,0), coalesce(ry.preis,0),
+      coalesce(ry.stueck,1), coalesce(ry.preismenge,1), coalesce(ry.rabatt,0),
+      coalesce(l.geliefertam,l.datum,date('today')), ry.lfrsid
+   from rechnungentry ry 
+   left join lieferschein l on ry.lfrsid=l.lfrsid
+   where ry.rngid = :RNGID 
+   order by ry.zeilennr;
+ exec sql open rein;
+ SQLerror::test(__FILELINE__);
+ while (true)
+   {
+    exec sql fetch rein into
+         :ARTIKELID, :ZEILENNR, :MENGE, :PREIS, :STUECK, 
+         :PREISMENGE, :RABATT, :LIEFERDATUM, :LFRSID ;
+    SQLerror::test(__FILELINE__,100);
+    if (sqlca.sqlcode) break;
+
+    zeilennr = ZEILENNR;
+    artikel=ARTIKELID;
+    stueck=STUECK;
+    menge=MENGE;
+    preis=Preis(PREIS,Rechnung(rechnung.Id()).getWaehrung(),PREISMENGE);
+    rabatt=RABATT;
+    lieferdatum.from_postgres(LIEFERDATUM);
+    lfrsid=LFRSID;
+   }
+ exec sql close rein;
+ tr.close();
+}
+
 
 void RechnungEntry::deleteEntry(const RechnungEntry &re) throw(SQLerror)
 {

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList.h,v 1.2 2001/07/05 09:23:02 christof Exp $ */
+/* $Id: LieferscheinList.h,v 1.3 2001/10/01 12:55:41 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,10 +28,10 @@
 
 class LieferscheinList
 {
- std::vector<Lieferschein> sellist;
+ std::vector<cH_Lieferschein> sellist;
 
 public:
- typedef std::vector<Lieferschein>::const_iterator const_iterator;
+ typedef std::vector<cH_Lieferschein>::const_iterator const_iterator;
  const_iterator begin()
    {return sellist.begin();}
  const_iterator end()
@@ -41,22 +41,39 @@ public:
  { bool geliefert;
    sel_GeliefStat(bool g):geliefert(g){}
  }; 
-
+ 
  struct sel_DPDLNr 
  { int dpdlnr;
    sel_DPDLNr(int d):dpdlnr(d){}
  }; 
 
+ struct sel_KundenId 
+ { unsigned long int id;
+   sel_KundenId(unsigned long int k):id(k){}
+ }; 
+ struct sel_ArtikelId 
+ { unsigned long int id;
+   sel_ArtikelId(unsigned long int k):id(k){}
+ }; 
 
+
+
+ 
+ LieferscheinList() throw(SQLerror);
+ LieferscheinList(const sel_KundenId &selparam) throw(SQLerror);
+ LieferscheinList(const sel_ArtikelId &selparam) throw(SQLerror);
  LieferscheinList(const sel_GeliefStat &selparam) throw(SQLerror);
  LieferscheinList(const sel_DPDLNr &selparam) throw(SQLerror);
  LieferscheinList &operator=(const LieferscheinList &source);
  LieferscheinList(const LieferscheinList &source);
+
+ void fuelle(const std::string &query) throw(SQLerror);
+ std::string SQuery();
  
- bool setDPDData(int dpdlnr) throw(SQLerror);
+// bool setDPDData(int dpdlnr) throw(SQLerror);
  unsigned int Size() {return sellist.size();}
  
- friend std::ostream &operator<<(std::ostream &o,const LieferscheinList &l);
+// friend std::ostream &operator<<(std::ostream &o,const LieferscheinList &l);
 };
 
 #endif

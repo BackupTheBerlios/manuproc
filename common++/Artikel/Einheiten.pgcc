@@ -1,4 +1,4 @@
-// $Id: Einheiten.pgcc,v 1.3 2001/07/05 09:23:02 christof Exp $
+// $Id: Einheiten.pgcc,v 1.4 2001/10/01 12:55:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,7 +22,8 @@ exec sql include sqlca;
 #include <Artikel/ArtikelBaum.h>
 #include <Artikel/ArtikelTyp.h>
 
-// furs erste sollte das funktionieren .. spater per Datenbank
+// furs erste sollte das funktionieren .. spater per Datenbank CP(?)
+// ... aber dann bitte mit cache MAT
 Einheit::Einheit(const ArtikelBase &ab) throw(SQLerror)
 {  switch((ArtikelTyp::typ)ArtikelTyp::vonArtikel(ab))
    {  case ArtikelTyp::GewebtesBand:
@@ -34,7 +35,9 @@ Einheit::Einheit(const ArtikelBase &ab) throw(SQLerror)
          {  ArtikelBaum baum(ab);
             float stkgr(baum.Stueckgroesse());
             // this is because Prozess_sql.pgcc is mad (Jumbo = 1m)
-            if (stkgr && stkgr!=1) einh=EINH_STUECK;
+#warning Totaler Blödsinn, die Einheit sollte in ArtikelStamm stehen
+		// das ist dann flexibler und portabler !
+            if (baum.size()<=1 && stkgr && stkgr!=1) einh=EINH_STUECK;
             else einh=EINH_METER;
             break;
          }

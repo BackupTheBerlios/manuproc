@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.3 2001/06/27 08:04:09 christof Exp $ */
+/* $Id: Lieferschein.h,v 1.4 2001/10/01 12:55:41 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,9 +26,10 @@
 #include<Aux/Datum.h>
 #include<Kunde/Kunde.h>
 #include <vector>
+#include <Aux/Handles.h>
+#include <Aux/CacheStatic.h>
 
-
-class Lieferschein : public LieferscheinBase
+class Lieferschein : public LieferscheinBase, public HandleContent
 {
  Petig::Datum lsdatum;
  cH_Kunde kunde;
@@ -70,4 +71,36 @@ class Lieferschein : public LieferscheinBase
  void setDatum(const Petig::Datum &d) throw(SQLerror);
 };
 
+
+class cH_Lieferschein : public const_Handle<Lieferschein>
+{
+protected:
+//public:
+ cH_Lieferschein() {}
+public:
+ cH_Lieferschein(Lieferschein *r) : const_Handle<Lieferschein>(r){}
+};
+
+/*
+class cached_Lieferschein : public cH_Lieferschein
+{
+   cH_Lieferschein lieferschein;
+
+   typedef CacheStatic<int,cH_Lieferschein> cache_t;
+   static cache_t cache;
+ public:
+   cached_Lieferschein(int lid) ;
+};
+
+cached_Lieferschein::cache_t cached_Lieferschein::cache;
+
+cached_Lieferschein::cached_Lieferschein(int lid)
+{
+      cH_Lieferschein *cached(cache.lookup(lid));
+      if (cached) { lieferschein = *cached; return; }
+      lieferschein = new Lieferschein(lid);
+      
+      cache.Register(lid,lieferschein);
+}
+*/
 #endif

@@ -42,7 +42,8 @@ class RechnungEntry : protected RechnungBase
  int lieferzeile;
  
 public:
-  
+
+ RechnungEntry(const RechnungBase& rechnung);  
  RechnungEntry(int l, int z,int a, int s,float m,const Preis &p, float r,
                         Petig::Datum ld, int lid,int lifz)
   		: RechnungBase(l),zeilennr(z),artikel(a),stueck(s),menge(m),preis(p),

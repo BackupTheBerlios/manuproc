@@ -1,4 +1,4 @@
-// $Id: Preis.h,v 1.2 2001/07/05 09:23:02 christof Exp $
+// $Id: Preis.h,v 1.3 2001/10/01 12:55:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,7 +27,7 @@
 class Preis
 {
 private:
-	typedef fixedpoint<2> pfennig_cent_t;
+	typedef fixedpoint<3> pfennig_cent_t;
 	pfennig_cent_t pfennig_cent;
     	float preismenge; // 100 == /100m
     	cP_Waehrung waehrung;

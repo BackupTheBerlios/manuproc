@@ -23,7 +23,7 @@
 
 int main()
 {  const char *ts="1999-08-20 06:33:50+02";
-   std::cout << ts << " = " 
-   	<< time_t_wrapper(Zeitpunkt_new(PostgresTimestamp(ts))) << '\n';
+//   std::cout << ts << " = " 
+//   	<< time_t_wrapper(Zeitpunkt_new(PostgresTimestamp(ts))) << '\n';
    return 0;
 }

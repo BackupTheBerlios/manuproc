@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.3 2001/06/06 07:27:39 christof Exp $
+# $Id: configure.in,v 1.4 2001/10/01 12:55:40 christof Exp $
 
 AC_INIT(Artikel/ArtikelBase.h)
 
@@ -49,5 +49,5 @@ LIBS=@ECPG_LIBS@
 AC_OUTPUT(Makefile Artikel/Makefile Auftrag/Makefile \
 	Aux/Makefile Bank/Makefile ExtBezSchema/Makefile Ketten/Makefile \
 	Kunde/Makefile Lieferschein/Makefile ostream/Makefile \
-	tests/Makefile Material/Makefile)
+	tests/Makefile Material/Makefile ProdInstanz/Makefile Faeden/Makefile )
 

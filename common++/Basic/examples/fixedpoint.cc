@@ -1,4 +1,4 @@
-// $Id: fixedpoint.cc,v 1.5 2001/06/27 08:04:09 christof Exp $
+// $Id: fixedpoint.cc,v 1.6 2001/10/01 12:55:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -40,5 +40,13 @@ int main()
    std::cout << FormatiereTeX_short(fixedpoint<5>(12.4)) << '\n';
    // compile time assertion
    std::cout << Formatiere(12.45) << '\n';
+   
+   std::cout << (fixedpoint<2>(1)==fixedpoint<2>(1.00)?"1==1.00":"1!=1.00") << '\n';
+   
+   // this is an overflow!!!
+   std::cout << (fixedpoint<5>(15000.00015)*10l) << '\n';
+   std::cout << (fixedpoint<5,double,long long>(15000.00015)*10ll) << '\n';
+   std::cout << (fixedpoint<5,double,long long>(15000.00015)*=10) << '\n';
+   
    return 0;
 }

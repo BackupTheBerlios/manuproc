@@ -54,39 +54,6 @@ Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
  rgdatum=Petig::Datum(DATUM);
  bezahlt=BEZAHLT;
 
- // 2.Teil
- exec sql begin declare section;
-   int ARTIKELID, ZEILENNR, STUECK, LFRSID;
-   float PREISMENGE;
-   float MENGE;
-   float PREIS;
-  char LIEFERDATUM[21];
- exec sql end declare section;
-
- exec sql declare rein cursor for
-   select ry.artikelid,
-      ry.zeilennr, coalesce(ry.menge,0), coalesce(ry.preis,0),
-      coalesce(ry.stueck,1), coalesce(ry.preismenge,1), coalesce(ry.rabatt,0),
-      coalesce(l.geliefertam,l.datum,date('today')), ry.lfrsid
-   from rechnungentry ry 
-   left join lieferschein l on ry.lfrsid=l.lfrsid
-   where ry.rngid = :RNGID 
-   order by ry.zeilennr;
- exec sql open rein;
- SQLerror::test(__FILELINE__);
- while (true)
-   {
-    exec sql fetch rein into
-         :ARTIKELID, :ZEILENNR, :MENGE, :PREIS, :STUECK, 
-         :PREISMENGE, :RABATT, :LIEFERDATUM, :LFRSID ;
-    SQLerror::test(__FILELINE__,100);
-    if (sqlca.sqlcode) break;
-
-    REntries.push_back(RechnungEntry(RNGID,ZEILENNR,ARTIKELID,STUECK,MENGE,
-                               Preis(PREIS,waehrung,PREISMENGE),RABATT,LIEFERDATUM,LFRSID,0));
-   }
- exec sql close rein;
- tr.close();
 
 }
 
@@ -153,7 +120,7 @@ void Rechnung::deleteLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror)
  
  RNGID=Id();
  LFRSID=lfrsid;
-
+/*
  std::vector<RechnungEntry>::iterator i;
  std::vector<RechnungEntry>::iterator j=end();
  for(i=begin();i!=j;)
@@ -164,6 +131,10 @@ void Rechnung::deleteLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror)
 	  }
 	 ++i;
 	}
+*/
+#warning das alte funktionierte nicht fehlerfrei, ich hoffe
+#warning daa  neue (nur eine Zeile!) erfüllt auch seinen Zweck MAT
+ exec sql delete from rechnungentry where lfrsid=:LFRSID and rngid=:RNGID; 
 
  exec sql update lieferschein set rngid=null where lfrsid= :LFRSID;
  SQLerror::test(__FILELINE__);

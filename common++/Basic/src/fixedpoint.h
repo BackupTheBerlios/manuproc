@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.4 2001/06/27 08:04:09 christof Exp $
+// $Id: fixedpoint.h,v 1.5 2001/10/01 12:55:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -48,7 +48,7 @@ static inline double zehnhochplus<0>()
 template <int N> 
 static inline int zehnhochplusI()
 {  typedef typename ctime_assert<(N>0)>::_true failed;
-   return 10*zehnhochplus<N-1>();
+   return 10*zehnhochplusI<N-1>();
 }
 
 template <>
@@ -67,8 +67,15 @@ extern "C"
 
 template <int decimals=2,class Ftype=double,class Itype=long>
 class fixedpoint
-{	Itype scaled; // scaled to integer
-	typedef fixedpoint<decimals> self_t;
+{
+public:
+	struct ScaledValue
+	{  Itype wert;
+	   ScaledValue(Itype w) : wert(w) {}
+	};
+private:
+	Itype scaled; // scaled to integer
+	typedef fixedpoint<decimals,Ftype,Itype> self_t;
 	typedef Ftype _Ftype;
 	typedef Itype _Itype;
 	const static int _decimals=decimals;
@@ -79,11 +86,18 @@ public:
 	{  *this=strtod(val.c_str(),0);
 	}
 	fixedpoint(Ftype d) { *this=d; }
+	fixedpoint(ScaledValue val) { scaled=val.wert; }
+	
 	self_t operator=(Ftype d)
 	{  scaled=Itype(d*zehnhochplus<decimals>()+(d>0?.5:-.5));
    	   return *this;
 	}
+#if 1 // undefine this if you suspect trouble
 	operator Ftype() const
+	{  return scaled*zehnhochminus<decimals>();
+	}
+#endif
+	Ftype as_float() const
 	{  return scaled*zehnhochminus<decimals>();
 	}
 	self_t operator*(Itype b) const
@@ -92,7 +106,7 @@ public:
 	   return res;
 	}
 	Ftype operator*(Ftype b) const
-	{  return b*(Ftype)*this;
+	{  return b* this->as_float();
 	}
 	self_t operator+(const self_t b) const
 	{  self_t res;
@@ -114,14 +128,23 @@ public:
 	   return *this;
 	}
 	self_t operator*=(const Ftype f)
-	{  scaled=int(scaled*f+(f>0?.5:-.5));
+	{  scaled=Itype(scaled*f+(f>0?.5:-.5));
 	   return *this;
 	}
 	self_t operator-=(const self_t b)
 	{  scaled-=b.scaled;
 	   return *this;
 	}
+	
+	bool operator==(const self_t b) const
+	{  return scaled==b.scaled;
+	}
+	bool operator!=(const self_t b) const
+	{  return scaled!=b.scaled;
+	}
+	
 	// do we really need this function?
+        // yes, I do MAT
 	std::string String() const
 	{  char buf[64];
 	   snprintf(buf,sizeof buf,"%.*f",decimals,Ftype(*this));
@@ -142,11 +165,11 @@ public:
 	// conversion operators
 	template <int decimals2,class Ftype2,class Itype2>
 	 fixedpoint(const fixedpoint<decimals2,Ftype2,Itype2> &f)
-	{  *this=(Ftype)(Ftype2)f;
+	{  *this=(Ftype)(f.as_float());
 	}
 	template <int decimals2,class Ftype2,class Itype2>
 	 const self_t &operator=(const fixedpoint<decimals2,Ftype2,Itype2> &f)
-	{  *this=(Ftype)(Ftype2)f;
+	{  *this=(Ftype)(f.as_float());
 	   return *this;
 	}
 };

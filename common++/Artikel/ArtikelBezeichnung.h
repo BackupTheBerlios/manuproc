@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.h,v 1.4 2001/07/16 09:54:26 christof Exp $
+// $Id: ArtikelBezeichnung.h,v 1.5 2001/10/01 12:55:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -91,6 +91,7 @@ public:
  ArtikelBezeichnung(int signifikanz, const std::vector<cH_EntryValue> &values, const cH_ExtBezSchema &schema) throw(SQLerror);
 
  std::string Bezeichnung(int signifikanz=1, char separator=0,int felder=-1) const throw();
+ std::string Komponente(int feldnr,int signifikanz=1) const throw();
  
  void setzeExtBezSchema(const cH_ExtBezSchema &schema) throw(SQLerror);
  const cH_ExtBezSchema getExtBezSchema() const throw()
@@ -154,7 +155,7 @@ public:
 	// please use variant 2
 	cH_ArtikelBezeichnung(const ArtikelBase &artikel,const cH_ExtBezSchema &schema) throw(SQLerror);
 	// recommended variant!
-	cH_ArtikelBezeichnung(const ArtikelBase &artikel,const ExtBezSchema::ID &id) throw(SQLerror);
+	cH_ArtikelBezeichnung(const ArtikelBase &artikel,const ExtBezSchema::ID id=ExtBezSchema::default_id) throw(SQLerror);
 
 /// Artikel zu der externen Bezeichnung für einen Kunden erzeugen 
 /// (ID nach Bezeichnung ermitteln)

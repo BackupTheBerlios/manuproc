@@ -14,11 +14,11 @@ libLieferschein.o: $(libLieferschein_o_OBJECTS) $(libLieferschein_o_DEPENDENCIES
         
 BUILT_SOURCES=LieferscheinEntry_sql.cc LieferscheinList_sql.cc \
 	Lieferschein_sql.cc Rechnung_sql.cc RechnungEntry_sql.cc \
-   LieferscheinVoll_sql.cc
+   LieferscheinVoll_sql.cc RechnungVoll_sql.cc
 
 include_HEADERS=LieferscheinBase.h LieferscheinEntry.h Lieferschein.h \
 		LieferscheinList.h LieferscheinVoll.h \
-		RechnungBase.h Rechnung.h RechnungEntry.h
+		RechnungBase.h Rechnung.h RechnungEntry.h RechnungVoll.h
 
 CLEANFILES= *~ *.pct *.prot $(BUILT_SOURCES)
 

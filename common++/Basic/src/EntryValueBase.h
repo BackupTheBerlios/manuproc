@@ -1,4 +1,4 @@
-/* $Id: EntryValueBase.h,v 1.4 2001/07/16 09:54:26 christof Exp $ */
+/* $Id: EntryValueBase.h,v 1.5 2001/10/01 12:55:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -46,6 +46,7 @@ public:
  cH_EntryValue() 
  : const_Handle<EntryValueBase>(new EntryValueBase())
  {}
+ ~cH_EntryValue() {}
 };
 
 #endif // ENTRYVALH

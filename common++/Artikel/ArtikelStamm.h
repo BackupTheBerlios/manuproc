@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.h,v 1.2 2001/08/27 09:33:49 christof Exp $
+// $Id: ArtikelStamm.h,v 1.3 2001/10/01 12:55:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,17 +23,23 @@
 #include <Artikel/ArtikelBase.h>
 #include <Artikel/ArtikelTyp.h>
 #include <Aux/CacheStatic.h>
+#include <Aux/ppsInstanz.h>
+
 
 class ArtikelStamm
-{	
+{	// we can't include ExtBezSchema.h, so we duplicate what we need
+	typedef int ExtBezSchema_ID;
+	static const ExtBezSchema_ID ExtBezSchema_default_ID=1;
+	
 	struct payload_t
 	{  ArtikelTyp::typ typ,interntyp;
-	   int bestellen_bei;
-	   int defaultschema;
+	   cH_ppsInstanz bestellen_bei;
+	   ExtBezSchema_ID defaultschema;
 	   
 	   payload_t() 
 	   : typ((ArtikelTyp::typ)0), interntyp((ArtikelTyp::typ)0),
-	                 bestellen_bei(1), defaultschema(1) {}
+	                 bestellen_bei(cH_ppsInstanz(ppsInstanz::INST_NONE)), 
+	                 defaultschema(ExtBezSchema_default_ID) {}
 	};
 	
 	ArtikelBase art;
@@ -47,9 +53,13 @@ public:
 	{  return payload.typ; }
 	ArtikelTyp::typ InternWarengruppe() const
 	{  return payload.interntyp; }
-	int BestellenBei() const
+	ArtikelTyp::typ Warengruppe(ExtBezSchema_ID id) const
+	{  return id==ExtBezSchema_default_ID?payload.interntyp:payload.typ; }
+	cH_ppsInstanz BestellenBei() const
 	{  return payload.bestellen_bei; }
 	int defaultSchema() const
 	{  return payload.defaultschema; }
+
+        static void set_BestellenBei(const ArtikelBase &artikel,const ppsInstanz::ppsInstId instanz);
 };
 #endif

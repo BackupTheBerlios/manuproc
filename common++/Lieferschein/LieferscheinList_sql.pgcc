@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList_sql.pgcc,v 1.2 2001/07/05 09:23:02 christof Exp $ */
+/* $Id: LieferscheinList_sql.pgcc,v 1.3 2001/10/01 12:55:41 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,6 +23,7 @@
 
 exec sql include sqlca;
 
+/*
 // caller needs to roll back if transaction is already open and false is given
 // back
 bool LieferscheinList::setDPDData(int dpdlnr) throw(SQLerror)
@@ -49,69 +50,86 @@ bool LieferscheinList::setDPDData(int dpdlnr) throw(SQLerror)
  tr.commit();
  return true;
 }
+*/
 
+LieferscheinList::LieferscheinList() throw(SQLerror)
+{
+ std::string squery = SQuery();
+ fuelle(squery);
+}
 
-LieferscheinList::LieferscheinList(const sel_GeliefStat &sp)
-throw(SQLerror)
+LieferscheinList::LieferscheinList(const sel_KundenId &selparam) throw(SQLerror)
+{
+ std::string squery = SQuery();
+ squery += " where kundennr = "+itos(selparam.id);
+ fuelle(squery);
+}
+LieferscheinList::LieferscheinList(const sel_ArtikelId &selparam) throw(SQLerror)
+{
+ std::string squery = SQuery();
+ squery += " where exists (select true from lieferscheinentry where 
+     lieferscheinentry.lfrsid =  lieferschein.lfrsid 
+     and artikelid ="+itos(selparam.id)+")";
+ fuelle(squery);
+}
+
+std::string LieferscheinList::SQuery() 
+{
+ std::string squery = "select lfrsid,kundennr,datum,coalesce(rngid,0),
+      coalesce(pakete,0),coalesce(paeckchen,0),
+      coalesce(cast(geliefertam as text),''),
+      coalesce(dpdliefnr,0) from lieferschein";
+ return squery;
+}
+
+void LieferscheinList::fuelle(const std::string &squery) throw(SQLerror)
 {
  exec sql begin declare section;
  int LFRSID;
  int KDNR;
  int RNGID;
- short IRNGID;
  char DATUM[11];
- short IDATUM;
  int PAECKCHEN, PAKETE;
- short IPAKETE,IPAECKCHEN;
  char GELIEFERTAM[11];
- short IGELIEFERTAM=-1;
  int DPDLIEFNR;
- short IDPDLIEFNR; 
+ char query[1024];
  exec sql end declare section;
- 
- if(sp.geliefert) 
-   {exec sql select lieflist(lfrsid,kundennr,datum,rngid,pakete,paeckchen,
-				date(geliefertam), dpdliefnr)
-	from lieferschein 
-	where geliefertam is not null order by lfrsid;
-    SQLerror::test(__FILELINE__,100);
-    if(sqlca.sqlcode) return;
-   }
- else  
-   {exec sql select lieflist(lfrsid,kundennr,date(datum),rngid,pakete,paeckchen,
-				'', dpdliefnr)
-	from lieferschein 
-	where geliefertam is null order by lfrsid;
-    SQLerror::test(__FILELINE__,100);
-    if(sqlca.sqlcode) return;
-   }   
- 
- while(!sqlca.sqlcode)
+
+ snprintf(query,sizeof(query),squery.c_str());
+ Transaction tr;
+ exec sql prepare llist_ein_ from :query ;
+ exec sql declare llist_ein cursor for llist_ein_ ;
+ exec sql open llist_ein;
+ SQLerror::test(__FILELINE__);
+ while(true)
    {
-    exec sql fetch from lieflist
-		into :LFRSID, :KDNR, :DATUM:IDATUM, :RNGID:IRNGID,
-			:PAKETE:IPAKETE, :PAECKCHEN:IPAECKCHEN,
-			:GELIEFERTAM, :DPDLIEFNR:IDPDLIEFNR;
+    exec sql fetch from llist_ein
+		into :LFRSID, :KDNR, :DATUM, :RNGID,
+			:PAKETE, :PAECKCHEN,
+			:GELIEFERTAM, :DPDLIEFNR;
     SQLerror::test(__FILELINE__,100);
     if(sqlca.sqlcode) break;
-   
+
     Petig::Datum d,gelam;
-    if(IDATUM) d=Petig::Datum();
-    else d.from_postgres(DATUM);
-    if(IGELIEFERTAM) gelam=Petig::Datum();
+    d.from_postgres(DATUM);
+    std::string geliefertam = GELIEFERTAM;
+    if(geliefertam=="") gelam=Petig::Datum();
     else gelam.from_postgres(GELIEFERTAM);
-
-    sellist.push_back(Lieferschein(LieferscheinBase(LFRSID),d,
-    			KDNR,IRNGID?0:RNGID,IPAECKCHEN?0:PAECKCHEN,
-			IPAKETE?0:PAKETE,gelam,
-			IDPDLIEFNR ? 0 : DPDLIEFNR) );
+    sellist.push_back(new Lieferschein(LieferscheinBase(LFRSID),d,
+    			KDNR,RNGID,PAECKCHEN,PAKETE,gelam,DPDLIEFNR) );
    } 
-
+ tr.close();
 }
 
+LieferscheinList::LieferscheinList(const sel_DPDLNr &sp) throw(SQLerror)
+{
+ std::string squery = SQuery();
+ squery += " where dpdliefnr = "+itos(sp.dpdlnr);
+ fuelle(squery);
+}
 
-LieferscheinList::LieferscheinList(const sel_DPDLNr &sp)
-throw(SQLerror)
+/*
+LieferscheinList::LieferscheinList(const sel_DPDLNr &sp) throw(SQLerror)
 {
  exec sql begin declare section;
  int LFRSID;
@@ -153,8 +171,5 @@ throw(SQLerror)
 			IPAKETE?0:PAKETE,gelam,
 			DPDLIEFNR) );
    } 
-
 }
-
-
-
+*/

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList.cc,v 1.2 2001/07/05 09:23:02 christof Exp $ */
+/* $Id: LieferscheinList.cc,v 1.3 2001/10/01 12:55:41 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -32,9 +32,10 @@ LieferscheinList::LieferscheinList(const LieferscheinList &source)
 {}
 
 
-
+/*
 std::ostream &operator<<(std::ostream &o,const LieferscheinList &l)
 {  for(unsigned int i=0; i<l.sellist.size(); ++i)
 	o << l.sellist[i].Id() << "\n"; 
    return o;
 }
+*/

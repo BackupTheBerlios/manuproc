@@ -10,3 +10,4 @@ Prozess_sql.cc
 Prozesspreis.cc
 ArtikelTyp.cc
 Einheiten.cc
+ArtikelStamm.cc

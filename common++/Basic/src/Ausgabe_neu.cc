@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.cc,v 1.3 2001/06/27 08:04:09 christof Exp $ */
+/* $Id: Ausgabe_neu.cc,v 1.4 2001/10/01 12:55:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -131,4 +131,35 @@ const std::string Formatiere(unsigned long Zahl,
    const std::string res(os.str());
    os.freeze(0);
    return res;
+}
+
+
+template <int decimals,class Ftype,class Itype>
+ const std::string FormatiereTeX_Preis
+	(const fixedpoint <decimals,Ftype,Itype> &Zahl)
+{  const Itype divisor=zehnhochplusI<decimals-2>();
+   std::string result=
+	FormatiereTeX(fixedpoint<2>(fixedpoint<2>::ScaledValue(Zahl.Scaled()/divisor)));
+   const Itype rest=Zahl.Scaled()%divisor;
+   if (rest)
+   {  result+=std::string("$^{")
+            + Formatiere(rest,0,decimals-2,"","",'0') + "}$";
+   }
+   return result;
+}
+
+template<> const std::string FormatiereTeX_Preis<3>(const fixedpoint<3> &Zahl)
+{  typedef long Itype;
+   const Itype divisor=10;
+   std::string result=
+	FormatiereTeX(fixedpoint<2>(fixedpoint<2>::ScaledValue(Zahl.Scaled()/divisor)));
+   const Itype rest=Zahl.Scaled()%divisor;
+   if (rest)
+   {  result+=std::string("$^{")+ char('0'+rest) + "}$";
+   }
+   return result;
+}
+
+template<> const std::string FormatiereTeX_Preis<2>(const fixedpoint<2> &Zahl)
+{  return FormatiereTeX(Zahl);
 }

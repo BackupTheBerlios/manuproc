@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.8 2001/08/31 10:03:07 christof Exp $
+# $Id: Makefile.am,v 1.9 2001/10/01 12:55:40 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -20,7 +20,8 @@ libAux.o: $(libAux_o_OBJECTS) $(libAux_o_DEPENDENCIES)
 	touch $@
 
 PGCC_SOURCES=   dbconnect.cc SQLerror_postgres.cc Transaction.cc \
-		Waehrung_sql.cc Changejournal_sql.cc FetchIStream.cc
+		Waehrung_sql.cc Changejournal_sql.cc FetchIStream.cc \
+      ppsInstanz_sql.cc
 
 LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
 	Datum.cc Datum.h Handles.h IOerror.cc IOerror.h Kalenderwoche.h Pointer.h \
@@ -33,7 +34,7 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
 	FetchIStream.pgcc FetchIStream.h ctime_assert.h \
    EntryValueBase.cc EntryValueBase.h EntryValueIntString.cc \
    EntryValueIntString.h EntryValueEmptyInt.h EntryValueDatum.h \
-   EntryValueDatum.cc EmptyInt_4TeX.h
+   EntryValueDatum.cc EmptyInt_4TeX.h EntryValueFixed.h
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
@@ -50,7 +51,8 @@ include_HEADERS=Ausgabe.h Ausgabe_neu.h Datum.h \
 		Transaction.h Waehrung.h Pointer.h \
 		Changejournal.h ppsInstanz.h EntryValueIntString.h \
 		exception.h itos.h fixedpoint.h FetchIStream.h \
-		ctime_assert.h EntryValueEmptyInt.h EntryValueDatum.h
+		ctime_assert.h EntryValueEmptyInt.h EntryValueDatum.h \
+		EntryValueFixed.h
 
 CLEANFILES= *~ $(BUILT_SOURCES)
 
