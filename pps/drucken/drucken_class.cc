@@ -73,7 +73,7 @@ void LR_Abstraktion::drucken_header(std::ostream &os)
 	"\\newlength{\\breite}\n"
 	"\\setlength{\\topsep}{0pt}\n"
 	"\\setlength{\\partopsep}{0pt}\n"
-	"\\setlength{\\textheight}{27.0cm}\n";  // na, ob das sinnvoll ist?
+	"\\setlength{\\textheight}{26.0cm}\n";  // na, ob das sinnvoll ist?
 
 #ifdef MABELLA_EXTENSIONS
  hf.helvetica=false;
@@ -164,9 +164,9 @@ catch(SQLerror &e) { cout << e; return; }
    if(u.r->Pakete())
      os << "\\\\\\normalsize " << u.r->Pakete() << " Parcel/Pallet\\hfill\n";
    if(u.r->BruttoGew())
-     os << "gross: " <<u.r->BruttoGew() << " kgs\\hfill\n";
+     os << "gross: " <<FormatiereTeX(u.r->BruttoGew()) << " kgs\\hfill\n";
    if(u.r->NettoGew())
-     os << "net: " <<u.r->NettoGew() << " kgs\\\\\n";
+     os << "net: " <<FormatiereTeX(u.r->NettoGew()) << " kgs\\\\\n";
    }
 
 
@@ -233,6 +233,11 @@ catch(SQLerror &e) { cout << e; return; }
 	os << "~" << string2TeX(Notiz(),sf)<<"~" << "\\\\\n";
 	}
 
+ if(kunde_an->land()->Auslaender())
+   if(kunde_an->land()->LKZ()=="N")
+     os << "~\\\\Der Ausführer dieser Waren auf die sich dieses Handelspapier"
+	" bezieht, erklärt, daß diese Waren soweit nicht anders angegeben,"
+	" präferenzbegünstigte BRD Ursprungswaren sind.";
   Gtk2TeX::Footer(os);
 }
 
@@ -459,7 +464,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
          }
          if (menge_bool) 
             {  neue_spalte(erste_spalte,os);
-               if (!(*k).ZusatzInfo()) 
+               if (!(*k).ZusatzInfo() || !stueck_bool) 
                     os <<linecolor<< FormatiereTeX_short((*k).Menge())<<einheitsize <<Einheit(artikelbase).MengenEinheit_TeX() ;
             }
          if (stueck_bool && menge_bool)
@@ -1054,8 +1059,10 @@ void LR_Abstraktion::page_header(std::ostream &os)
 
 #ifdef MABELLA_EXTENSIONS
    if (page_counter==1 && (Typ()==Lieferschein || Typ()==Rechnung))
-    {os << "\\scriptsize{Sie erhielten zu unseren allgemeinen "
-	"Geschäftsbedingungen}\\\\\n";
+    {os << "\\scriptsize{Sie erhielten zu unseren allgemeinen Geschäftsbedingungen}";
+     if(Typ()==Rechnung)
+       os <<  "\\hfill \\scriptsize{unsere Steuernummer: 5131/5923/0168}\\\\\n";
+     else os << "\\\\\n";
      --zeilen_passen_noch; // immer besser
     }
 #else

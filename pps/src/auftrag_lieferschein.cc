@@ -92,7 +92,7 @@ void auftrag_lieferschein::display(int lfrsid)
  vbox_eingabe->show();
  tree_daten->show();
  liefdate->set_value(lieferschein->getDatum());
-#ifdef MABELLA_EXTENSIONS
+#ifdef DPD_LIEFERSCHEINE
  entry_dpdnr->set_text(itos0p(lieferschein->getDPDlnr(),Lieferschein::Offen));
  spinbutton_pakete->set_value(lieferschein->Pakete());
  spinbutton_paeckchen->set_value(lieferschein->Paeckchen());
@@ -139,7 +139,7 @@ void auftrag_lieferschein::on_lieferkunde_activate()
 try{display2(liefer_kunde->get_value());
  liefernr->reset();
  } catch(SQLerror &e) {meldung->Show(e);}
-#ifdef MABELLA_EXTENSIONS
+#ifdef EAN_AUSDRUCKEN_IN_PPS
  cH_Kunde k(liefer_kunde->get_value());
  checkbutton_ean_drucken->set_active(k->showEAN());   
 #endif 
@@ -154,7 +154,7 @@ try{
 }
 
 
-#ifdef MABELLA_EXTENSIONS
+#ifdef DPD_LIEFERSCHEINE
 
 void auftrag_lieferschein::on_button_rng_erledigt_clicked()
 {  
@@ -315,17 +315,18 @@ void auftrag_lieferschein::on_unselectrow_offauf(int row, int col, GdkEvent* b)
 auftrag_lieferschein::auftrag_lieferschein(cH_ppsInstanz _instanz)
 :instanz(_instanz) //, show_offen(true)
 {
-#ifdef PETIG_EXTENSIONS
- table_mabella->hide();
-// show_offen=false;
+#ifndef DPD_LIEFERSCHEINE
+ table_DPD->hide();
 #endif
+#ifdef EAN_AUSDRUCKEN_IN_PPS
+  checkbutton_ean_drucken->show();
+#endif 
 
-#ifdef MABELLA_EXTENSIONS
+#ifndef PETIG_EXTENSIONS
   std::string nurliefer(" and lieferadresse=true  and coalesce(aktiv,true)=true");
   liefer_kunde->Einschraenkung(nurliefer);
   liefer_kunde->Einschraenken(true);     
-  checkbutton_ean_drucken->show();
-#endif 
+#endif
 
  set_tree_titles();
  liefernr->set_value_in_list(false,false);
