@@ -30,8 +30,11 @@
 #include <sys/types.h>
 #include <algo.h>
 #include <functional>
+#include <Misc/Event.h>
 
-
+#ifndef SIGC1_2
+#include <sigc++/func_slot.h>
+#endif
 
 namespace // index_t and payload_t should not be globally visible
 {
@@ -45,7 +48,6 @@ struct index_t
    bool operator<(const index_t &b) const 
    { return liste<b.liste || (liste==b.liste && art<b.art); }
 };
-
 
 
 class Preis_lseq : public unary_function<std::pair<int,Preis>,bool>
@@ -76,13 +78,29 @@ struct payload_t
    payload_t() : errechnet(false),gefunden(false) {}
 };
 
-
-
-
-
 typedef CacheStatic<index_t,payload_t> cache_t;
 
 static cache_t cache;
+
+static void PreisGeaendert_cb(const std::string &key, const std::string &value)
+{  std::string::size_type komma=key.find(',');
+   if (komma==std::string::npos) return;
+   int liste=atoi(key.substr(0,komma).c_str());
+   int artikel=atoi(key.substr(komma+1).c_str());
+   Artikelpreis::UnCache(PreisListe::ID(liste),ArtikelBase(artikel));
+}
+
+static void callback_registrieren()
+{  ManuProC::Event::connect("artikelpreis",SigC::slot(&PreisGeaendert_cb));
+}
+
+namespace {
+struct dummy
+{	dummy() { callback_registrieren(); }
+};
+}
+
+static dummy dummy2;
 
 Artikelpreis::Artikelpreis(const PreisListe::ID liste,const ArtikelBase &a,
 				int bestellmenge)
@@ -130,7 +148,8 @@ Artikelpreis::Artikelpreis(const PreisListe::ID liste,const ArtikelBase &a,
 }
 
 void Artikelpreis::UnCache(const PreisListe::ID liste,const ArtikelBase &ab)
-{  cache.deregister(index_t(liste,ab.Id()));
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__, NV("liste",liste), NV("artikel",ab));
+   cache.deregister(index_t(liste,ab.Id()));
 };
 
 Artikelpreis::Artikelpreis(const cH_Kunde &k,const ArtikelBase &a, 
@@ -356,3 +375,4 @@ FetchIStream &operator>>(FetchIStream &is,std::pair<int,Preis::geldbetrag_t> &ag
 
 const UniqueValue::value_t Artikelpreis::trace_channel=ManuProC::Tracer::channels.get();
 static ManuProC::Tracer::Environment trace_channel_e("DEBUG_PREIS",Artikelpreis::trace_channel);
+
