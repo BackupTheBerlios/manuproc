@@ -79,7 +79,7 @@ dnl   #ifndef _testpkg_const
 dnl   #define _testpkg_const const
 dnl   #endif
 dnl
-dnl @version $Id: ax_prefix_config_h.m4,v 1.6 2004/05/19 09:36:31 christof Exp $
+dnl @version $Id: ax_prefix_config_h.m4,v 1.7 2004/09/27 13:20:25 christof Exp $
 dnl @author  Guiodo Draheim <guidod@gmx.de>
 dnl
 AC_DEFUN([AX_PREFIX_CONFIG_H],[AC_REQUIRE([AC_CONFIG_HEADER])
