@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.33 2004/10/15 15:40:08 christof Exp $
+// $Id: db_upgrade.cc,v 1.34 2004/10/19 10:50:36 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -238,6 +238,10 @@ int main(int argc,char *argv[])
   }
   check_column("auftrag","uid","integer");
   check_column("auftrag","label","integer");
+
+  // free text
+  check_column("auftragentry","text","text");
+  check_column("lieferscheinentry","text","text");
 
   ManuProC::dbdisconnect();
   return 0;
