@@ -1,4 +1,4 @@
-/* $Id: db_test.cc,v 1.3 2003/04/10 07:27:42 christof Exp $ */
+/* $Id: db_test.cc,v 1.4 2003/04/10 14:41:29 christof Exp $ */
 /*  Gtk--addons: a collection of gtk-- addons
     Copyright (C) 1998  Adolf Petig GmbH. & Co. KG
     Developed by Christof Petig <christof.petig@wtal.de>
@@ -75,7 +75,7 @@ class testwindow : public Gtk::Window
 	    }{ Glib::RefPtr<Gdk::PixbufLoader> loader=Gdk::PixbufLoader::create();
 	       loader->write(gruen_jpeg_data, gruen_jpeg_size);
 	       loader->close();
-	       cbutton.add(loader->get_pixbuf(),"gruen",SigC::bind(SigC::slot(*this,&testwindow::on_cclicked),"gruen"));
+	       cbutton.add(loader->get_pixbuf(),"grün",SigC::bind(SigC::slot(*this,&testwindow::on_cclicked),"gruen"));
 	    }{ Glib::RefPtr<Gdk::PixbufLoader> loader=Gdk::PixbufLoader::create();
 	       loader->write(gelb_jpeg_data, gelb_jpeg_size);
 	       loader->close();
