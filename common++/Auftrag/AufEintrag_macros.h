@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_macros.h,v 1.8 2003/03/19 08:31:49 christof Exp $ */
+/* $Id: AufEintrag_macros.h,v 1.9 2003/03/25 17:07:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -34,7 +34,7 @@
  */
 
 template <class T>
- void distribute_children(const AufEintragBase &startAEB,
+ bool distribute_children(const AufEintragBase &startAEB,
  		AuftragBase::mengen_t menge,
  		const ArtikelBase &article, const T &callee)
 {  AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel(startAEB));
@@ -57,6 +57,7 @@ template <class T>
       // pass the remainder
       if (!!AE_menge2) callee(artloop_var->first,AE_menge2);
    }
+   return !MapArt.empty();
 }
 
 /* callee needs:
