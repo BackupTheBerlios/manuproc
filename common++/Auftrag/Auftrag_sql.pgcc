@@ -153,6 +153,7 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
  char *NOTIZ=0;
  int INVALID_ENTITY;
  int DEFAULT_WID;
+ int VERKNR,IVERKNR;
  exec sql end declare section;
  INVALID_ENTITY=ManuProcEntity<>::none_id;
 
@@ -165,10 +166,10 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
  		stat, coalesce(youraufnr,''), coalesce(bemerkung,''),
 		 coalesce(waehrung,:DEFAULT_WID),coalesce(rabatt,0),
 		zahlungsziel, coalesce(zahlart,:NONE_ID),
-		coalesce(notiz,'')
+		coalesce(notiz,''),verknr
 	into 	:KUNDENNR, :DATUM, :STATUS, :YOURAUFNR, :BEMERKUNG,
 		 :WAEHRUNG,:RABATT,:ZAHLZIEL:IZAHLZIEL, :ZAHLART,
-		:NOTIZ
+		:NOTIZ,:VERKNR:IVERKNR
 	from auftrag where (auftragid,instanz) = (:AUFTRAGID,:INSTANZ) ;
  SQLerror::test(__FILELINE__"Auftrag laden");
 
@@ -184,6 +185,7 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
  zahlart = cH_Zahlungsart(ZAHLART);
  notiz=NOTIZ;
  notiz_valid=true;
+ verknr = IVERKNR == 0 ? VERKNR : Kunde::none_id;
  ECPGfree_auto_mem();
 }
 
@@ -330,6 +332,22 @@ void Auftrag::setBemerkung(const std::string &bem) throw(SQLerror)
 	where auftragid= :AUFTRAGID and instanz=:INSTANZ;
  SQLerror::test("setBemerkung: update bemerkung");
 }
+
+
+void Auftrag::setVerknr(const Kunde::ID vid) throw(SQLerror)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
+ exec sql begin declare section;
+ int AUFTRAGID=Id();
+ int INSTANZ=int(Instanz());
+ int VERKNR=vid;
+ exec sql end declare section;
+
+ exec sql update auftrag set verknr= nullif(:VERKNR,Kunde::none_id)
+	where auftragid= :AUFTRAGID and instanz=:INSTANZ;
+ SQLerror::test("setVerknr: update verknr");
+}
+
 
 void Auftrag::setYourAufNr(const std::string &yanr) throw(SQLerror)
 {
