@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.25 2004/05/04 09:09:14 jacek Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.26 2004/05/13 10:39:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -224,7 +224,7 @@ void ArtikelBezeichnung::Anlegen(const cH_ExtBezSchema &schema,const ArtikelBase
      }  
 #endif
 
-#ifdef MABELLA_EXTENSIONS
+#if defined MABELLA_EXTENSIONS && defined(MANUPROC_DYNAMICENUMS_CREATED)
    int prozess=40; // Rollen allgemein   
    if(ArtikelTyp::hasAttribute(schema->Typ(),
 	  ManuProC::DynamicEnums::ArtikelTyp_Attributes::bez_as_view))

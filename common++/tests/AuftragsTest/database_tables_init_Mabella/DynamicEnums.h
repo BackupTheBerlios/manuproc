@@ -11,8 +11,16 @@ namespace ManuProC {
    enum enum_t {
     None=-1,gewebtes_Band=0,gefaerbtes_Band=1,bedrucktes_Band=2,aufgemachtes_Band=3,Garn_per_kg=4,Spulen=5,Kartonagen=6,Sonstiges=7,Lohn=8,Farben___Pigmente=9,Etiketten=10,Garn_per_km=11,Musterkarten=12,
    };
+
+const static enum enum_t defaultArtikelTyp=aufgemachtes_Band;
   }
 
+  namespace ArtikelTyp_Attributes {
+   enum enum_t {
+
+   };
+  }  
+     
   namespace Einheiten {
    enum enum_t {
     None=-1, St_=0,m=1,kg=2,Fd_km=3,DM=4,Euro=5,Pfund=6,
