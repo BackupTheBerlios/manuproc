@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.5 2002/01/22 09:15:55 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.6 2002/01/23 13:43:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -33,7 +33,7 @@ class LieferscheinEntry : public LieferscheinBase
  ArtikelBase artikel;
  AufEintragBase2 refauftrag;
  int stueck;
- fixedpoint<3> menge;
+ mengen_t menge;
  int palette;
  std::string yourauftrag;
  bool zusatzinfo;
@@ -49,19 +49,19 @@ public:
 // erzeugen entsprechende Zeilen in der Datenbank 	
  	LieferscheinEntry(const LieferscheinBase &lsb,	
  			const AufEintragBase2 &auf,
- 			const ArtikelBase &art, int anzahl, fixedpoint<3> menge,
+ 			const ArtikelBase &art, int anzahl, mengen_t menge,
  			int _palette=0,bool zusatzinfo=false) throw(SQLerror);
  	LieferscheinEntry(const LieferscheinBase &lsb,	
- 			const ArtikelBase &art, int anzahl, fixedpoint<3> menge,
+ 			const ArtikelBase &art, int anzahl, mengen_t menge,
  			int _palette=0,bool zusatzinfo=false) throw(SQLerror);
 // Konstruktor mit Datenbankdaten 			
-        LieferscheinEntry(const cH_ppsInstanz& _instanz,int l,int z,int a, int s,fixedpoint<3> m,int p,
+        LieferscheinEntry(const cH_ppsInstanz& _instanz,int l,int z,int a, int s,mengen_t m,int p,
         		const std::string &y,bool zi,const AufEintragBase2 &aeb)
                 : LieferscheinBase(_instanz,l),zeilennr(z),artikel(a),refauftrag(aeb),
                 	stueck(s),menge(m),palette(p),yourauftrag(y),
                 	zusatzinfo(zi) 
                 {};
- fixedpoint<3> Menge() const { return menge; }
+ mengen_t Menge() const { return menge; }
  int Anzahl() const { return stueck; }
  int Stueck() const { return stueck; }
  int Palette() const { return palette; }

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry_sql.pgcc,v 1.7 2002/01/22 09:15:55 christof Exp $ */
+/* $Id: LieferscheinEntry_sql.pgcc,v 1.8 2002/01/23 13:43:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -60,7 +60,7 @@ LieferscheinEntry::LieferscheinEntry(const LieferscheinBase &lsbase, int zeile)
 
 LieferscheinEntry::LieferscheinEntry(const LieferscheinBase &lsb,
 	const AufEintragBase2 &auf, const ArtikelBase &art, int anzahl,
-	fixedpoint<3> _menge,int _palette, bool _zusatzinfo)
+	mengen_t _menge,int _palette, bool _zusatzinfo)
 throw(SQLerror) : LieferscheinBase(lsb),artikel(art),
 			refauftrag(auf),stueck(anzahl),menge(_menge),
 			palette(_palette), zusatzinfo(_zusatzinfo)
@@ -68,9 +68,9 @@ throw(SQLerror) : LieferscheinBase(lsb),artikel(art),
  exec sql begin declare section;
  int INSTANZ=Instanz();
  int LFRSID=Id();
- int ARTIKELID=art.Id();
- int REFAUFID=art.Id();
- int REFZEILENNR;
+ int ARTIKELID=artikel.Id();
+ int REFAUFID=refauftrag.Id();
+ int REFZEILENNR=refauftrag.ZNr();
  int STK=stueck;
  int ZEILE;
  float MENGE=menge;
@@ -88,10 +88,10 @@ throw(SQLerror) : LieferscheinBase(lsb),artikel(art),
  SQLerror::test(__FILELINE__":LieferscheinEntry: select max(zeilennr)");
 
  exec sql insert into lieferscheinentry 
- 		(lfrsid,zeile,artikelid, refauftragid, refzeilennr, stueck,
+ 		(instanz,lfrsid,zeile,artikelid, refauftragid, refzeilennr, stueck,
 		menge,palette,zusatzinfo)
  	values
- 		(:LFRSID,:ZEILE,:ARTIKELID,nullif(:REFAUFID,0),
+ 		(:INSTANZ,:LFRSID,:ZEILE,:ARTIKELID,nullif(:REFAUFID,0),
  		 nullif(:REFZEILENNR,0),:STK,nullif(:MENGE,0),:PALETTE,:ZUSATZINFO);
  SQLerror::test(__FILELINE__":LieferscheinEntry: insert into lieferscheinentry");
 
@@ -103,7 +103,7 @@ throw(SQLerror) : LieferscheinBase(lsb),artikel(art),
 
 LieferscheinEntry::LieferscheinEntry(const LieferscheinBase &lsb,
 			const ArtikelBase &art, int anzahl,
-			fixedpoint<3> _menge,int _palette, bool zusatz)
+			mengen_t _menge,int _palette, bool zusatz)
 							throw(SQLerror) 
 {  *this=LieferscheinEntry(lsb,AufEintragBase2(Instanz(),0,0),art,anzahl,_menge,_palette,zusatz);
 }

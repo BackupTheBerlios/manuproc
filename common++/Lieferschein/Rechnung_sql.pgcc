@@ -221,7 +221,7 @@ void Rechnung::setzeWaehrung(const cP_Waehrung &w) throw(SQLerror)
  SQLerror::test(__FILELINE__);
 }
 
-void Rechnung::setze_Rabatt(fixedpoint<2> r) throw(SQLerror)
+void Rechnung::setze_Rabatt(rabatt_t r) throw(SQLerror)
 {  rabatt=r;
  exec sql begin declare section;
  int RNGID;
@@ -234,7 +234,7 @@ void Rechnung::setze_Rabatt(fixedpoint<2> r) throw(SQLerror)
  SQLerror::test(__FILELINE__);
 }
 
-fixedpoint<2> Rechnung::Betrag() const throw(SQLerror)
+Rechnung::geldbetrag_t Rechnung::Betrag() const throw(SQLerror)
 {
  exec sql begin declare section;
  float BETRAG;

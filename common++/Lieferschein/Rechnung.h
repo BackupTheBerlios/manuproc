@@ -20,7 +20,6 @@
 #define RECHNUNG__
 
 #include"RechnungBase.h"
-//#include"RechnungEntry.h"
 #include<Aux/Waehrung.h>
 #include<Aux/SQLerror.h>
 #include<Aux/Datum.h>
@@ -42,7 +41,7 @@ private:
  cH_Zahlungsart zahlungsart;
  Petig::Datum rgdatum;
  cP_Waehrung waehrung;
- fixedpoint<2> rabatt;
+ rabatt_t rabatt;
  bool bezahlt;
 
 public:
@@ -60,8 +59,8 @@ public:
  
 // std::string RngArt() const {return rngart; } 
  const RngArt rngArt() const {return rngart; } 
- fixedpoint<2> Rabatt() const { return rabatt; }
- fixedpoint<2> Betrag() const throw(SQLerror);
+ rabatt_t Rabatt() const { return rabatt; }
+ geldbetrag_t Betrag() const throw(SQLerror);
  
  cP_Waehrung getWaehrung() const { return waehrung; }
  void setzeWaehrung(const cP_Waehrung &w) throw(SQLerror);
@@ -69,7 +68,7 @@ public:
  bool Bezahlt() const { return bezahlt; }
  void addLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror);
  void deleteLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror);
- void setze_Rabatt(fixedpoint<2> r) throw(SQLerror);
+ void setze_Rabatt(rabatt_t r) throw(SQLerror);
  const Petig::Datum getDatum() const { return rgdatum; }
  const Petig::Datum getZahlziel() const { return zahlziel; }
  void setze_Datum(Petig::Datum rgdatum) throw(SQLerror);

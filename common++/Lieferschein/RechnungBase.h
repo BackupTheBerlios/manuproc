@@ -1,4 +1,4 @@
-/* $Id: RechnungBase.h,v 1.2 2002/01/22 09:15:55 christof Exp $ */
+/* $Id: RechnungBase.h,v 1.3 2002/01/23 13:43:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,7 +21,9 @@
 #ifndef RECHNUNGBASE
 #define RECHNUNGBASE
 
-#include<Aux/SQLerror.h>
+#include <Aux/SQLerror.h>
+#include <Artikel/Preis.h>
+#include <Lieferschein/LieferscheinBase.h>
 
 class RechnungBase
 {
@@ -31,6 +33,9 @@ class RechnungBase
  public:
 	typedef int ID;
 	static const ID none_id=_illegal;
+	typedef Preis::rabatt_t rabatt_t; // in Prozent
+	typedef Preis::geldbetrag_t geldbetrag_t;
+	typedef LieferscheinBase::mengen_t mengen_t;
 	
 	RechnungBase() : rngid(none_id) {}
 	RechnungBase(int rid) : rngid(rid) {}

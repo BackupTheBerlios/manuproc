@@ -1,4 +1,4 @@
-/* $Id: LieferscheinBase.h,v 1.2 2002/01/22 09:15:55 christof Exp $ */
+/* $Id: LieferscheinBase.h,v 1.3 2002/01/23 13:43:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,6 +21,7 @@
 #ifndef LIEFERBASE
 #define LIEFERBASE
 #include<Aux/ppsInstanz.h>
+#include <Aux/fixedpoint.h>
 
 class LieferscheinBase
 {
@@ -29,6 +30,7 @@ class LieferscheinBase
   	int lieferid;	
 	static const int _illegal=-1;
  public:
+ 	typedef fixedpoint<3> mengen_t;
 	typedef int ID;
 	static const ID none_id=_illegal;
 	

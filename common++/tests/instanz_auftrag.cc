@@ -1,4 +1,4 @@
-// $Id: instanz_auftrag.cc,v 1.4 2002/01/22 09:15:55 christof Exp $
+// $Id: instanz_auftrag.cc,v 1.5 2002/01/23 13:43:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -57,14 +57,14 @@ int main()
    try{
    Petig::dbconnect();
    AuftragBase id;
-   {  Auftrag a=Auftrag(Auftrag::Anlegen(ppsInstanz::Kundenauftraege), Kunde::default_id);
+   {  Auftrag a=Auftrag(Auftrag::Anlegen(ppsInstanz::Kundenauftraege), 10000);
       a.setStatusAuftragBase(OPEN);
       id=a;
       std::cout << "Auftrag " << a.Id() << '\n';
    
       Petig::Datum date(1,1,2012);
       int znr;
-      znr=a.insertNewEntry(10000, date, 218843,OPEN,true);
+      znr=a.insertNewEntry(1000, date, 210014,OPEN,true);
 //      znr=a.insertNewEntry(2000, date, 218849,UNCOMMITED,true);
    }
    std::vector<AufEintragBase> VAEB=showTest(id);
@@ -86,8 +86,8 @@ int main()
 
    std::cout << "\n Nach dem Test:\n\n";
    showTest(id);
-   Auftrag(id).setStatusAuftrag_(CLOSED);
 */
+   Auftrag(id).setStatusAuftrag_(OPEN);
    }catch(SQLerror &e){std::cout << e<<'\n';}
    return 0;
 }

@@ -1,4 +1,4 @@
-// $Id: Preis.cc,v 1.7 2001/10/23 08:45:18 christof Exp $
+// $Id: Preis.cc,v 1.8 2002/01/23 13:43:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,7 +25,7 @@
 #include <iomanip.h>
 #include <Aux/Ausgabe_neu.h>
 
-Preis::pfennig_cent_t Preis::Wert_fr(cP_Waehrung tp,preismenge_t stueckgr) const throw()
+Preis::geldbetrag_t Preis::Wert_fr(cP_Waehrung tp,preismenge_t stueckgr) const throw()
 {  float result=pfennig_cent;
    preismenge_t preism=preismenge;
    if (!preism) preism=1;
@@ -67,13 +67,13 @@ const std::string Preis::Typtext() const
 {  return waehrung->Kurzbezeichnung() + '/'+ Formatiere_short(preismenge);
 }
 
-Preis::pfennig_cent_t Preis::Gesamtpreis(cP_Waehrung w,int anzahl,float menge,const fixedpoint<rabattnachkommastellen> &rabatt) const
+Preis::geldbetrag_t Preis::Gesamtpreis(cP_Waehrung w,int anzahl,float menge,const rabatt_t &rabatt) const
 {  if (!*this) return 0;
    if (!menge) menge=1;
    return (In(w,menge*anzahl)*(1-0.01*double(rabatt))).Wert();
 }
 
-const Preis Preis::Gesamtpreis(int anzahl,float menge,const fixedpoint<rabattnachkommastellen> &rabatt) const
+const Preis Preis::Gesamtpreis(int anzahl,float menge,const rabatt_t &rabatt) const
 {  if (!*this) return *this;
    if (!menge) menge=1;
    return In(waehrung,menge*anzahl)*(1-0.01*double(rabatt));

@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.11 2002/01/22 09:15:55 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.12 2002/01/23 13:43:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -90,7 +90,21 @@ FetchIStream &FetchIStream::operator>>(float &f)
    // exec sql get descriptor X value :spalte :data = data;
    ECPGget_desc(__LINE__,const_cast<char*>(descriptor.c_str()),spalte,ECPGd_data,
 		ECPGt_float,&(data),1L,1L,sizeof(float), ECPGd_EODT);
-   SQLerror::test("FetchIStream::>>(int):data");
+   SQLerror::test("FetchIStream::>>(float):data");
+   f=data;
+   return *this;
+}
+
+FetchIStream &FetchIStream::operator>>(double &f)
+{  exec sql begin declare section;
+   int spalte=naechstesFeld++;
+   double data=0;
+   exec sql end declare section;
+   
+   // exec sql get descriptor X value :spalte :data = data;
+   ECPGget_desc(__LINE__,const_cast<char*>(descriptor.c_str()),spalte,ECPGd_data,
+		ECPGt_double,&(data),1L,1L,sizeof(double), ECPGd_EODT);
+   SQLerror::test("FetchIStream::>>(double):data");
    f=data;
    return *this;
 }

@@ -30,13 +30,19 @@
 
 class RechnungEntry : protected RechnungBase
 {
+public:
+  typedef RechnungBase::rabatt_t rabatt_t;
+  typedef RechnungBase::geldbetrag_t geldbetrag_t;
+  typedef RechnungBase::mengen_t mengen_t;
+
+private:
  int zeilennr;
  ArtikelBase artikel;
  AufEintragBase2 refauftrag;
  int stueck;
- float menge;
+ mengen_t menge;
  Preis preis;
- fixedpoint<2> rabatt;
+ rabatt_t rabatt;
  Petig::Datum lieferdatum;
  LieferscheinBase::ID lfrsid;
  int lieferzeile;
@@ -44,22 +50,22 @@ class RechnungEntry : protected RechnungBase
 public:
 
  RechnungEntry(const RechnungBase& rechnung);  
- RechnungEntry(int l, int z,int a, int s,float m,const Preis &p, float r,
+ RechnungEntry(int l, int z,int a, int s,mengen_t m,const Preis &p, rabatt_t r,
                         Petig::Datum ld, int lid,int lifz)
   		: RechnungBase(l),zeilennr(z),artikel(a),stueck(s),menge(m),preis(p),
                         rabatt(r),lieferdatum(ld),lfrsid(lid),
                         lieferzeile(lifz)
                 {};
 
- fixedpoint<3> Menge() const { return menge; }
+ mengen_t Menge() const { return menge; }
  int Stueck() const { return stueck; }
  LieferscheinBase::ID Lfrs_Id() const { return lfrsid; }
  int Lfrs_ZNr() const { return lieferzeile; }
  const Preis getPreis() const { return preis;}
  // Waehrung muss zu der in Rechnung passen (kein Vergleich)
  void setzePreis(const Preis &p) throw (SQLerror);
- fixedpoint<2> Rabatt() const { return rabatt;}
- float PreisMenge() const {return preis.PreisMenge();}
+ rabatt_t Rabatt() const { return rabatt;}
+ Preis::preismenge_t PreisMenge() const {return preis.PreisMenge();}
  const ArtikelBase::ID ArtikelID() const { return artikel.Id(); }
  Petig::Datum LieferDatum() const {return lieferdatum; }
  int Zeile() const { return zeilennr; }

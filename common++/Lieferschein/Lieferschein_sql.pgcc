@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.7 2002/01/22 09:15:55 christof Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.8 2002/01/23 13:43:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -43,7 +43,7 @@ try{
 		coalesce(pakete,0),date(coalesce(geliefertam,datum)),dpdliefnr
 		into :KDNR, :DATUM, :RNGID, :PAECKCHEN, :PAKETE,
 		:GELIEFERTAM:IGELIEFERTAM, :DPDLIEFNR:IDPDLIEFNR
- 	from lieferschein where lfrsid = :LFRSID and instanz=:INSTANZ;
+ 	from lieferschein where (instanz,lfrsid) = (:INSTANZ,:LFRSID);
  SQLerror::test(__FILELINE__);
  
  kunde=cH_Kunde(KDNR);

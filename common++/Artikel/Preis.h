@@ -1,4 +1,4 @@
-// $Id: Preis.h,v 1.7 2002/01/22 09:15:55 christof Exp $
+// $Id: Preis.h,v 1.8 2002/01/23 13:43:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -31,10 +31,12 @@ public:
 //	typedef unsigned int preismenge_t;
 	static const unsigned int nachkommastellen=2;
 	static const unsigned int rabattnachkommastellen=2;
-	typedef fixedpoint<nachkommastellen> pfennig_cent_t;
+	typedef fixedpoint<nachkommastellen> geldbetrag_t;
+	typedef geldbetrag_t pfennig_cent_t;
+	typedef fixedpoint<rabattnachkommastellen> rabatt_t;
 
 private:
-	pfennig_cent_t pfennig_cent;
+	geldbetrag_t pfennig_cent;
     	preismenge_t preismenge; // 100 == /100m
     	cP_Waehrung waehrung;
     	bool short_shl:1;
@@ -50,7 +52,7 @@ public:
 		: pfennig_cent(dm_euro), 
 		  preismenge(pmenge), waehrung(w), 
 		  short_shl(false) {}
-	Preis(pfennig_cent_t dm_euro, cP_Waehrung w,preismenge_t pmenge=1)
+	Preis(geldbetrag_t dm_euro, cP_Waehrung w,preismenge_t pmenge=1)
 		: pfennig_cent(dm_euro), 
 		  preismenge(pmenge), waehrung(w), 
 		  short_shl(false) {}
@@ -60,10 +62,10 @@ public:
 	int Wert_i(cP_Waehrung tp,preismenge_t pmenge=0) const throw()
 	{  return Wert_fr(tp,pmenge).Scaled(); }
 	
-	pfennig_cent_t Wert_fr(cP_Waehrung tp,preismenge_t pmenge=0) const throw();
-	pfennig_cent_t Wert(cP_Waehrung tp,preismenge_t pmenge=0) const throw()
+	geldbetrag_t Wert_fr(cP_Waehrung tp,preismenge_t pmenge=0) const throw();
+	geldbetrag_t Wert(cP_Waehrung tp,preismenge_t pmenge=0) const throw()
 	{ return Wert_fr(tp,pmenge); }
-	pfennig_cent_t Wert() const { return pfennig_cent; }
+	geldbetrag_t Wert() const { return pfennig_cent; }
 	
 	/// Vorsicht: rundet auf linken Typ
 	Preis operator+(const Preis &b) const;
@@ -103,8 +105,8 @@ public:
 	}
 	// Preis Gesamtpreis(cP_Waehrung tp,preismenge_t stkgr=0) const;
 	
-	pfennig_cent_t Gesamtpreis(cP_Waehrung w,int anzahl,float menge,const fixedpoint<rabattnachkommastellen> &rabatt=fixedpoint<rabattnachkommastellen>(0.0)) const;
-	const Preis Gesamtpreis(int anzahl,float menge,const fixedpoint<rabattnachkommastellen> &rabatt=fixedpoint<rabattnachkommastellen>(0.0)) const;
+	geldbetrag_t Gesamtpreis(cP_Waehrung w,int anzahl,float menge,const rabatt_t &rabatt=rabatt_t(0.0)) const;
+	const Preis Gesamtpreis(int anzahl,float menge,const rabatt_t &rabatt=rabatt_t(0.0)) const;
 	
 	void short_format(bool b=true)
 	{  short_shl=b; }
