@@ -1,4 +1,4 @@
-/* $Id: EmptyInt_4TeX.h,v 1.3 2002/07/05 12:35:01 christof Exp $ */
+/* $Id: EmptyInt_4TeX.h,v 1.4 2002/11/20 22:26:15 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,8 +21,12 @@
 #include <string>
 #include <Misc/itos.h>
 
-std::string EmptyInt_4TeX(int i)
-    {if (i==0) return ""; 
+std::string EmptyInt_4TeX(int i,int breite=0)
+    {if (i==0) 
+       { std::string s;
+         for(int i=0;i<=breite;++i) s+="~";
+         return s; 
+       }
      else return itos(i);
     }
 /*
