@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.27 2003/07/17 13:59:05 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.28 2003/07/17 14:04:00 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,7 +21,7 @@
 #ifndef LIEFERENTRY_H
 #define LIEFERENTRY_H
 
-#include <Lieferschein/LieferscheinBase.h>
+#include <Lieferschein/LieferscheinEntryBase.h>
 #include <Misc/SQLerror.h>
 #include <Artikel/ArtikelBase.h>
 #include <Auftrag/AufEintragBase.h>
