@@ -49,6 +49,7 @@ Artikeleingabe::Artikeleingabe(int argc, char **argv)
 #endif
 #ifdef PETIG_EXTENSIONS
  no_instanz->set_active(false);
+ Artikel_Bestellen_bei->set_sensitive(true);
 #endif
 
  if (argc==2 && !strncmp(argv[1],"<?xml ",6))
@@ -62,6 +63,8 @@ Artikeleingabe::Artikeleingabe(int argc, char **argv)
      FOR_EACH_CONST_TAG_OF(i,cont,"content")
        entries.push_back(i->Value());
      std::cerr << warengruppe << ':' << schema << ' ' << entries.size() << '\n';
+     top_notebook->set_current_page(1);
+     neuenArtikelAnlegen(warengruppe,schema,entries);
    }
    catch (std::exception &e)
    { std::cerr << "Exception " << e.what() << '\n';
