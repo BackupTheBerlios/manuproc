@@ -2,13 +2,13 @@
 -- PostgreSQL database dump
 --
 
+\connect - jacek
+
 SET search_path = public, pg_catalog;
 
-ALTER TABLE ONLY public.artikelgruppen DROP CONSTRAINT artikelgruppen_pkey;
-DROP INDEX public.artikelgruppen_defgrp;
-DROP TABLE public.artikelgruppen;
 --
--- TOC entry 2 (OID 17499)
+-- TOC entry 2 (OID 11715644)
+-- Name: artikelgruppen; Type: TABLE; Schema: public; Owner: jacek
 --
 
 CREATE TABLE artikelgruppen (
@@ -22,26 +22,35 @@ CREATE TABLE artikelgruppen (
 
 
 --
--- TOC entry 3 (OID 17499)
+-- TOC entry 3 (OID 11715644)
+-- Name: artikelgruppen; Type: ACL; Schema: public; Owner: jacek
 --
 
 REVOKE ALL ON TABLE artikelgruppen FROM PUBLIC;
 GRANT SELECT ON TABLE artikelgruppen TO PUBLIC;
 
 
+--
+-- Data for TOC entry 6 (OID 11715644)
+-- Name: artikelgruppen; Type: TABLE DATA; Schema: public; Owner: jacek
+--
+
 COPY artikelgruppen (bezeichnung, "schema", warengruppe, bestellen_bei, einheit, defaultgrp) FROM stdin;
 Band	1	3	3	0	t
 \.
 
+
 --
--- TOC entry 4 (OID 7854293)
+-- TOC entry 4 (OID 11715650)
+-- Name: artikelgruppen_defgrp; Type: INDEX; Schema: public; Owner: jacek
 --
 
 CREATE UNIQUE INDEX artikelgruppen_defgrp ON artikelgruppen USING btree (defaultgrp);
 
 
 --
--- TOC entry 5 (OID 17504)
+-- TOC entry 5 (OID 11715651)
+-- Name: artikelgruppen_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
 --
 
 ALTER TABLE ONLY artikelgruppen

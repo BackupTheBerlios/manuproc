@@ -2,14 +2,13 @@
 -- PostgreSQL database dump
 --
 
-
+\connect - jacek
 
 SET search_path = public, pg_catalog;
 
-DROP INDEX public.artikelzusamm_key;
-DROP TABLE public.artikelzusammensetzung;
 --
--- TOC entry 2 (OID 960266)
+-- TOC entry 2 (OID 11715445)
+-- Name: artikelzusammensetzung; Type: TABLE; Schema: public; Owner: jacek
 --
 
 CREATE TABLE artikelzusammensetzung (
@@ -23,7 +22,8 @@ CREATE TABLE artikelzusammensetzung (
 
 
 --
--- TOC entry 3 (OID 960266)
+-- TOC entry 3 (OID 11715445)
+-- Name: artikelzusammensetzung; Type: ACL; Schema: public; Owner: jacek
 --
 
 REVOKE ALL ON TABLE artikelzusammensetzung FROM PUBLIC;
@@ -31,12 +31,21 @@ GRANT SELECT ON TABLE artikelzusammensetzung TO PUBLIC;
 
 
 --
--- TOC entry 4 (OID 1752084)
+-- Data for TOC entry 5 (OID 11715445)
+-- Name: artikelzusammensetzung; Type: TABLE DATA; Schema: public; Owner: jacek
 --
 
-copy artikelzusammensetzung (id, prozessid, altartikelid, menge, stand, uid) from stdin;
-1	12	2	25	2004-5-13	100
+COPY artikelzusammensetzung (id, prozessid, altartikelid, menge, stand, uid) FROM stdin;
+1	12	2	25.00000	2004-05-13 00:00:00+02	100
+38393	31	38389	1.00000	2004-10-20 14:17:22+02	\N
 \.
 
+
+--
+-- TOC entry 4 (OID 11715449)
+-- Name: artikelzusamm_key; Type: INDEX; Schema: public; Owner: jacek
+--
+
 CREATE INDEX artikelzusamm_key ON artikelzusammensetzung USING btree (id);
+
 

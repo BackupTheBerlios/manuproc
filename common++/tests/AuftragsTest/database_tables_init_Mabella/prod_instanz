@@ -2,23 +2,25 @@
 -- PostgreSQL database dump
 --
 
+\connect - jacek
+
 SET search_path = public, pg_catalog;
 
-DROP TABLE public.prod_instanz;
 --
--- TOC entry 2 (OID 7855143)
+-- TOC entry 2 (OID 11715750)
+-- Name: prod_instanz; Type: TABLE; Schema: public; Owner: jacek
 --
 
 CREATE TABLE prod_instanz (
-    insid numeric(2,0),
-    name character varying(20),
+    insid numeric(2,0) NOT NULL,
+    name character varying(20) NOT NULL,
     lager_fuer integer,
     sortierung integer,
     lieferschein boolean,
     lagername text,
     produziert_selbst boolean,
     prod_dauer_tage integer,
-    einlagern_in numeric(2,0),
+    einlagern_in integer,
     automatisch_einlagern boolean,
     typ character(1),
     externe_bestellung boolean,
@@ -29,15 +31,84 @@ CREATE TABLE prod_instanz (
 
 
 --
--- Data for TOC entry 3 (OID 7855143)
+-- TOC entry 3 (OID 11715750)
+-- Name: prod_instanz; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE prod_instanz FROM PUBLIC;
+
+
+--
+-- Data for TOC entry 5 (OID 11715750)
+-- Name: prod_instanz; Type: TABLE DATA; Schema: public; Owner: jacek
 --
 
 COPY prod_instanz (insid, name, lager_fuer, sortierung, lieferschein, lagername, produziert_selbst, prod_dauer_tage, einlagern_in, automatisch_einlagern, typ, externe_bestellung, geplant_von, overview, alt_group_nr) FROM stdin;
-3	Einkauf	\N	3	t	\N	t	\N	2	f	P	t	\N	\N	3
+1	Kundenaufträge	\N	1	t	\N	t	\N	\N	\N	P	f	\N	\N	\N
+3	Einkauf	\N	3	t	\N	t	\N	2	f	P	t	\N	\N	\N
 2	Fertigwarenlager	3	2	f	rl_inhalt	f	\N	\N	t	L	\N	\N	\N	\N
-1	Kundenaufträge	\N	1	t	\N	t	\N	\N	\N	P	\N	\N	\N	\N
-4	Rollerei	\N	4	t	\N	t	\N	2	f	P	\N	\N	\N	3
-5	Weberei	\N	5	t	\N	t	\N	\N	f	P	\N	\N	\N	\N
+4	Musterung	\N	4	f	\N	t	\N	\N	f	P	t	\N	\N	\N
 \.
+
+
+--
+-- TOC entry 4 (OID 11715759)
+-- Name: prod_instanz_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY prod_instanz
+    ADD CONSTRAINT prod_instanz_pkey PRIMARY KEY (insid);
+
+
+--
+-- TOC entry 6 (OID 11715761)
+-- Name: RI_ConstraintTrigger_11715761; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER UPDATE ON prod_instanz
+    FROM prod_changejournal
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');
+
+
+--
+-- TOC entry 7 (OID 11715762)
+-- Name: RI_ConstraintTrigger_11715762; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER DELETE ON prod_instanz
+    FROM prod_changejournal
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_noaction_del" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');
+
+
+--
+-- TOC entry 8 (OID 11715763)
+-- Name: RI_ConstraintTrigger_11715763; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER DELETE ON prod_instanz
+    FROM prod_changejournal
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_noaction_del" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');
+
+
+--
+-- TOC entry 9 (OID 11715764)
+-- Name: RI_ConstraintTrigger_11715764; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER UPDATE ON prod_instanz
+    FROM prod_changejournal
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');
 
 

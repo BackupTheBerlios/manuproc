@@ -1,0 +1,56 @@
+--
+-- PostgreSQL database dump
+--
+
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 2 (OID 11715766)
+-- Name: artbez_12_1; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE artbez_12_1 (
+    id integer NOT NULL,
+    kollektion text,
+    bezeichnung text,
+    stand timestamp(0) with time zone DEFAULT now()
+);
+
+
+--
+-- TOC entry 3 (OID 11715766)
+-- Name: artbez_12_1; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE artbez_12_1 FROM PUBLIC;
+
+
+--
+-- Data for TOC entry 6 (OID 11715766)
+-- Name: artbez_12_1; Type: TABLE DATA; Schema: public; Owner: jacek
+--
+
+COPY artbez_12_1 (id, kollektion, bezeichnung, stand) FROM stdin;
+38393	X-mas	gesamt	2004-10-20 14:15:45+02
+\.
+
+
+--
+-- TOC entry 5 (OID 11715772)
+-- Name: artbez_12_1_uniq_new; Type: INDEX; Schema: public; Owner: jacek
+--
+
+CREATE UNIQUE INDEX artbez_12_1_uniq_new ON artbez_12_1 USING btree (kollektion, bezeichnung);
+
+
+--
+-- TOC entry 4 (OID 11715773)
+-- Name: artbez_12_1_pkey_new; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY artbez_12_1
+    ADD CONSTRAINT artbez_12_1_pkey_new PRIMARY KEY (id);
+
+
