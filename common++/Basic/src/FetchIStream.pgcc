@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.49 2004/03/10 14:37:14 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.50 2004/03/11 14:35:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,45 +17,22 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ManuProCConfig.h>
+// NOTE that this code might be duplicated for SQLite
 
+#include <ManuProCConfig.h>
+#ifndef MPC_SQLITE
 #include <Misc/FetchIStream.h>
 #include <Misc/SQLerror.h>
 
-#ifdef MPC_SQLITE
-int sqlite_error;
-int sqlite_lines;
-#else
 exec sql include sqlca;
-#endif
 
-#include <Misc/itos.h>
-#include <locale.h>
-#include <cassert>
+//#include <cassert>
 
 #ifdef OLD_ECPG
 #define ECPGdo300
 #else
 #define ECPGdo300 0,1,
 #endif
-
-namespace {
-	struct debug_environment
-	{  bool on;
-	   debug_environment();
-	};
-}
-
-debug_environment::debug_environment() : on(false)
-{  if (getenv("SQLOPT") && getenv("SQLOPT")==std::string("-E")) on=true;
-}
-
-static debug_environment debugging;
-
-void FetchIStream::mythrow(const SQLerror &e)
-{  if (debugging.on) std::cerr << e << '\n';
-   throw e;
-}
 
 #define DEBUG_FIS(x) std::cerr << x << '\n'
 // ,y...) x,##y
@@ -101,102 +78,16 @@ int FetchIStream::getIndicator() const
    return -PQgetisnull(result, zeile, naechstesFeld);
 }
 
-FetchIStream &FetchIStream::operator>>(char &c)
-{  std::string s;
-   *this >> s;
-   if (s.size()>1) mythrow(SQLerror("FetchIStream>>char&",ECPG_DATA_NOT_ARRAY,"data too long"));
-   c=*s.c_str();
-   return *this;
-}
-
-FetchIStream &FetchIStream::operator>>(int &i)
-{  std::string s;
-   *this >> s;
-   i=strtol(s.c_str(),0,10);
-   return *this;
-}
-
-FetchIStream &FetchIStream::operator>>(long &i)
-{  std::string s;
-   *this >> s;
-   i=strtol(s.c_str(),0,10);
-   return *this;
-}
-
-#ifndef __MINGW32__
-FetchIStream &FetchIStream::operator>>(long long &i)
-{  std::string s;
-   *this >> s;
-   i=strtoll(s.c_str(),0,10);
-   return *this;
-}
-#endif
-
-FetchIStream &FetchIStream::operator>>(unsigned &i)
-{  std::string s;
-   *this >> s;
-   i=strtoul(s.c_str(),0,10);
-   return *this;
-}
-
-FetchIStream &FetchIStream::operator>>(unsigned long &i)
-{  std::string s;
-   *this >> s;
-   i=strtoul(s.c_str(),0,10);
-   return *this;
-}
-
-FetchIStream &FetchIStream::operator>>(float &f)
-{  double d=0;
-   *this >> d;
-   f=d;
-   return *this;
-}
-
-FetchIStream &FetchIStream::operator>>(double &f)
-{  std::string s;
-   *this >> s;
-   /* Make sure we do NOT honor the locale for numeric input */
-   /* since the database gives the standard decimal point */
-   std::string oldlocale= setlocale(LC_NUMERIC, NULL);
-   setlocale(LC_NUMERIC, "C");
-   f=strtod(s.c_str(),0);
-   setlocale(LC_NUMERIC, oldlocale.c_str());
-   return *this;
-}
-
-FetchIStream &FetchIStream::operator>>(bool &b)
-{  std::string s;
-   *this >> s;
-   b=s[0]=='t' || s[0]=='T' || s[0]=='1';
-   return *this;
-}
 
 /// QUERY
 
 // note cursor is the name for both the cursor and the descriptor
 void Query::Execute() throw(SQLerror)
-{
-#ifdef MPC_SQLITE
-   if(database.empty())
-     throw SQLerror(__FUNCTION__,SQLITE_ERROR,"no SQLite Database specified");
-
-   char *msgbuf=0;
-   sqlite *db=sqlite_open(database.c_str(),0,&msgbuf);
-   if(db==0)
-     throw SQLerror(__FUNCTION__,SQLITE_ERROR,msgbuf);
-   int rc=sqlite_exec(db, query.c_str(), Query::SQLiteCallBack, 0, &msgbuf);   
-   sqlite_error=rc;
-   if(rc!=SQLITE_OK)
-     throw SQLerror(__FUNCTION__,rc,msgbuf);
- 
-   sqlite_close(db);
-#else
-   exec sql begin declare section;
+{  exec sql begin declare section;
    char *COMMAND=const_cast<char*>(query.c_str());
    exec sql end declare section;
 
-   eof=false;   
+   eof=false;
 //   exec sql allocate descriptor X;
 sqlca.sqlcode=0;
    ECPGallocate_desc(__LINE__, descriptor.c_str());
@@ -207,6 +98,8 @@ sqlca.sqlcode=0;
    	ECPGt_EOIT,
    	ECPGt_descriptor, descriptor.c_str(), 0L, 0L, 0L,
    	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EORT);
+   error=sqlca.sqlcode;
+   lines=sqlca.sqlerrd[2];
    if (sqlca.sqlcode && sqlca.sqlcode!=100)
    {  eof=true;
       FetchIStream::mythrow(SQLerror(query)); 
@@ -215,153 +108,17 @@ sqlca.sqlcode=0;
    {  DEBUG_FIS("no lines returned/changed");
    }
    result=*(ECPGdescriptor_lvalue(__LINE__,descriptor.c_str()));
-#endif
-
 }
-
-// copied from ecpg/lib/execute.c
-static const char *next_insert(const char *text)
-{   const char       *ptr = text;
-    bool        string = false;
-
-    for (; *ptr != '\0' && (*ptr != '?' || string); ptr++)
-    {   if (*ptr == '\\')       /* escape character */
-            ptr++;
-        else if (*ptr == '\'')
-            string = string ? false : true;
-    }
-
-    return (*ptr == '\0') ? 0 : ptr;
-}
-
 
 // note cursor is the name for both the cursor and the descriptor
-Query::Query(const std::string &command,const std::string db)
+Query::Query(const std::string &command)
 : descriptor(std::string("Query")+ulltos(reinterpret_cast<unsigned long long>(this))), 
-	eof(true), line(), 
-#ifdef MPC_SQLITE
-	database(db),
-#else
-	result(), 
-#endif
-	query(command), num_params()
+	eof(true), line(), result(), query(command), num_params(), 
+	error(ECPG_TOO_FEW_ARGUMENTS), lines()
 {  const char *p=query.c_str();
    while ((p=next_insert(p))) { ++num_params; ++p; }
    params.setNeededParams(num_params);
    Execute_if_complete();
-}
-
-void Query::Execute_if_complete()
-{  if (params.complete())
-   {  std::string expanded;
-      const char *p=query.c_str();
-      const char *last=p;
-      ArgumentList::const_iterator piter=params.begin();
-      
-      do
-      {  p=next_insert(p);
-         if (!p) expanded+=last;
-         else
-         {  expanded+=std::string(last,p-last);
-            assert(piter!=params.end());
-            expanded+=*piter;
-            ++p;
-            ++piter;
-            last=p;
-         }
-      } while(p);
-      query=expanded;
-      Execute();
-   }
-}
-
-Query &Query::add_argument(const std::string &s)
-{  params.add_argument(s);
-   Execute_if_complete();
-   return *this;
-}
-
-ArgumentList &ArgumentList::add_argument(const std::string &x)
-{  if (complete())
-      FetchIStream::mythrow(SQLerror("",ECPG_TOO_MANY_ARGUMENTS,"too many arguments"));
-   params.push_back(x);
-   --params_needed;
-   return *this;
-}
-
-ArgumentList &ArgumentList::operator<<(const std::string &str)
-{  std::string p="'";
-   for (std::string::const_iterator i=str.begin();i!=str.end();++i)
-   {  if (*i=='\'' || *i=='\\') p+=*i;
-      p+=*i;
-   }
-   p+='\'';
-   return add_argument(p);
-}
-
-ArgumentList &ArgumentList::operator<<(long i)
-{  return add_argument(itos(i));
-}
-
-ArgumentList &ArgumentList::operator<<(unsigned long i)
-{  return add_argument(ulltos(i));
-}
-
-ArgumentList &ArgumentList::operator<<(unsigned long long i)
-{  return add_argument(ulltos(i));
-}
-
-ArgumentList &ArgumentList::operator<<(double i)
-{  return add_argument(dtos(i));
-}
-
-ArgumentList &ArgumentList::operator<<(bool i)
-{  return add_argument(btos(i));
-}
-
-ArgumentList &ArgumentList::operator<<(char i)
-{  char x[4];
-   x[0]='\'';
-   x[1]=i;
-   x[2]='\'';
-   x[3]=0;
-   return add_argument(x);
-}
-
-ArgumentList &ArgumentList::operator<<(const ArgumentList &list)
-{  for (const_iterator i=list.begin();i!=list.end();++i) 
-      add_argument(*i);
-   return *this;
-}
-
-FetchIStream &Query::Fetch()
-{  Fetch(embedded_iterator);
-   return embedded_iterator;
-}
-
-void Query::Fetch(FetchIStream &is)
-{  if (!params.complete())
-      FetchIStream::mythrow(SQLerror(query,ECPG_TOO_FEW_ARGUMENTS,"to few input parameter"));
-
-#ifdef MPC_SQLITE
-   if (!eof)
-   {  if (line<result.size()) 
-      {  is=FetchIStream(result,line++);
-         return;
-      }
-      eof=true;
-   }
-#else
-   if (!eof)
-   {  if (line<PQntuples(result)) 
-      {  is=FetchIStream(result,line++);
-         return;
-      }
-      eof=true;
-   }
-#endif
-
- is=FetchIStream();
 }
 
 Query::~Query()
@@ -385,84 +142,32 @@ Query::~Query()
    }
 }
 
-
-#ifdef MPC_SQLITE
-int Query::SQLiteCallBack(void *db_struct,int argc, char **argv, char **colname)
-{
- sqlite_lines=0;
- for(int i=0; i<argc; i++){
-    printf("%s = %s\n", colname[i], argv[i] ? argv[i] : "NULL");
-    sqlite_lines++;
-  }
- return 0;
+void Query::Fetch(FetchIStream &is)
+{  if (!params.complete())
+      FetchIStream::mythrow(SQLerror(query,ECPG_TOO_FEW_ARGUMENTS,"to few input parameter"));
+   if (!eof)
+   {  if (line<PQntuples(result)) 
+      {  is=FetchIStream(result,line++);
+         return;
+      }
+      eof=true;
+   }
+ is=FetchIStream();
 }
-#endif
-
 
 void Query::Execute(const std::string &command,const std::string database) throw(SQLerror)
-{
-#ifdef MPC_SQLITE
-   if(database.empty())
-     throw SQLerror(__FUNCTION__,SQLITE_ERROR,"no SQLite Database specified");
-
-   char *msgbuf=0;
-   sqlite *db=sqlite_open(database.c_str(),0,&msgbuf);
-   if(db==0)
-     throw SQLerror(__FUNCTION__,SQLITE_ERROR,msgbuf);
-   int rc=sqlite_exec(db, command.c_str(), Query::SQLiteCallBack, 0, &msgbuf);   
-   sqlite_error=rc;
-   if(rc!=SQLITE_OK)
-     throw SQLerror(__FUNCTION__,rc,msgbuf);
- 
-   sqlite_close(db);
-#else
-   exec sql begin declare section;
+{  exec sql begin declare section;
    char *COMMAND=const_cast<char*>(command.c_str());
    exec sql end declare section;
 
    exec sql execute immediate :COMMAND;
-#endif
-}
-
-Query &Query::operator>>(FetchIStream &s)
-{  Fetch(s);
-   return *this;
-}
-
-FetchIStream &Query::FetchOne()
-{  ThrowOnBad(__FUNCTION__);
-   Fetch(embedded_iterator);
-   FetchIStream dummy;
-   Fetch(dummy);
-   if (good()) FetchIStream::mythrow(SQLerror(__FUNCTION__,-2,"more than one result"));
-   return embedded_iterator;
-}
-
-void Query::ThrowOnBad(const char *where) const
-{  if (!good()) 
-   {  SQLerror::test(__FUNCTION__); 
-      FetchIStream::mythrow(SQLerror(__FUNCTION__,-1,"unspecific bad result")); 
-   }
 }
 
 int Query::Code() {  
-
-#ifdef MPC_SQLITE
-	return sqlite_error;
-#else
 	return sqlca.sqlcode; 
-#endif
-
 }
 
 unsigned Query::Lines() { 
-#ifdef MPC_SQLITE
-	return sqlite_lines;
-#else
 	return sqlca.sqlerrd[2]; 
-#endif
-
 }
-
-
-
+#endif

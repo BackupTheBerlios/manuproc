@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.45 2004/03/11 13:49:22 christof Exp $
+// $Id: FetchIStream.h,v 1.46 2004/03/11 14:35:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -44,6 +44,7 @@ private:
 	
 #ifdef MPC_SQLITE
 	const char * const * result;
+	unsigned nfields;
 #else	
 	const PGresult * /* const */ result;
 #endif	
@@ -80,7 +81,7 @@ public:
 	  : naechstesFeld(0), zeile(line), result(res)
 	{}
 #else
-	FetchIStream(const char *const *res=0, int line=0);
+	FetchIStream(const char *const *res=0, unsigned nfields=0, int line=0);
 #endif
 	
 	int getIndicator() const;
@@ -198,6 +199,7 @@ class Query : public Query_types
 	int line;
 #ifdef MPC_SQLITE
 	const char * const *result;
+	unsigned nfields;
 #else	
 	const PGresult *result;
 #endif	
@@ -205,6 +207,8 @@ class Query : public Query_types
 	ArgumentList params;
 	unsigned num_params;
 	FetchIStream embedded_iterator;
+	int error; // error after execution
+	unsigned lines; // lines affected
 	
 	// not possible yet (because result can not refcount)
 	const Query &operator=(const Query &);
@@ -223,8 +227,12 @@ public:
 	void ThrowOnBad(const char *where) const;
 
 	static void Execute(const std::string &command) throw(SQLerror);
-	static int Code(); // SQLCA.sqlcode
-	static unsigned Lines(); // SQLCA.sqlerrd[2]
+	int Error() { return error; }
+	unsigned LinesAffected() { return lines; }
+#ifndef MPC_SQLITE  // please migrate to the functions above
+	static __deprecated int Code(); // SQLCA.sqlcode
+	static __deprecated unsigned Lines(); // SQLCA.sqlcode
+#endif
 
 	//-------------------- parameters ------------------
 	// must be already quoted for plain SQL inclusion
@@ -269,6 +277,13 @@ public:
 	{  return FetchOne() >> x; }
 	template <class T> FetchIStream &operator>>(const FetchIStream::WithIndicator_s<T> &x)
 	{  return FetchOne() >> x; }
+
+	// SQLOPT=-E turns this on
+	struct debug_environment
+	{  bool on;
+	   debug_environment();
+	};
+	static debug_environment debugging;
 };
 
 // we use the embedded FetchIStream but that's ok, 

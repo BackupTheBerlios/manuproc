@@ -1,4 +1,4 @@
-/* $Id: SQLerror_sqlite.h,v 1.1 2004/03/11 12:17:32 christof Exp $ */
+/* $Id: SQLerror_sqlite.h,v 1.2 2004/03/11 14:35:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -36,12 +36,9 @@ class SQLerror_sqlite : public std::exception
    std::string name;
 //   char separator;
    
-   static int last_code;
-   static std::string last_error;
-
 public:
    ~SQLerror_sqlite() throw() {}
-   SQLerror_sqlite(const std::string &context) throw();
+//   SQLerror_sqlite(const std::string &context) throw();
    SQLerror_sqlite(const std::string &context,int code,const std::string &name) throw();
    
    virtual const char* what() const throw() { return "SQLerror"; }
