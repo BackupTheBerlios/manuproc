@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.19 2003/05/12 07:26:50 christof Exp $ */
+/* $Id: Datum.h,v 1.20 2003/05/14 11:19:31 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -74,13 +74,13 @@ public:
 	/// aus Tag, Monat, Jahr erzeugen (expandyear lässt 2stelliges Jahr zu)
 	Datum(int t, int m, int j,bool expandyear=true) throw(Datumsfehler);
 	
-	Datum() throw() : woche(0),woche_jahrdiff(0),quart(0),
-	tag(0),monat(0),jahr(0)
+	Datum() throw() : woche(),woche_jahrdiff(),quart(),
+	tag(),monat(),jahr()
 	{} /* initialize as invalid */
 	 
 	/** Datum aus const char * erzeugen, Format erraten */
-	Datum(const char *datum) throw(Datumsfehler) :
-	woche(0),woche_jahrdiff(0),quart(0)
+	Datum(const char *datum) throw(Datumsfehler,Formatfehler) :
+		woche(),woche_jahrdiff(),quart()
 	{  this->from_auto(datum);  }
 	/// Datum aus time_t (time(3)) erzeugen
 	explicit Datum(time_t t) throw();
