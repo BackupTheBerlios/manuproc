@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.20 2003/03/13 08:19:54 christof Exp $
+# $Id: Makefile.am,v 1.21 2003/05/09 10:19:02 christof Exp $
 
 ENDUSER=-DPETIG
 
@@ -16,7 +16,7 @@ libAuftrag_a_SOURCES=AufEintrag.cc AufEintragBase.cc AuftragBase.cc \
    ppsInstanzReparatur.cc AufEintrag_ro.cc
 
 libAuftrag.a: $(libAuftrag_a_OBJECTS) $(libAuftrag_a_DEPENDENCIES)
-	touch $@
+	(for i in $(libAuftrag_a_OBJECTS) ; do echo Auftrag/$$i ; done ) >$@
 
 BUILT_SOURCES_P= AuftragBase_sql.cc selAufEntry_sql.cc\
 		Auftrag_sql.cc AuftragFull_sql.cc 

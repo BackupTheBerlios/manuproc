@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.13 2003/01/31 16:35:50 christof Exp $
+# $Id: Makefile.am,v 1.14 2003/05/09 10:19:02 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -14,7 +14,7 @@ libInstanzen_a_SOURCES= $(PGCC_Sources) Produktionsdauer.cc \
       ppsInstanz.cc 
 
 libInstanzen.a: $(libInstanzen_a_OBJECTS) $(libInstanzen_a_DEPENDENCIES)
-	touch $@
+	(for i in $(libInstanzen_a_OBJECTS) ; do echo Instanzen/$$i ; done ) >$@
 
 #LINKS= 
 

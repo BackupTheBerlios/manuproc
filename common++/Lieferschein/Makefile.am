@@ -11,7 +11,7 @@ libLieferschein_a_SOURCES=Lieferschein.cc LieferscheinEntry.cc \
       Rechnung.cc 
 
 libLieferschein.a: $(libLieferschein_a_OBJECTS) $(libLieferschein_a_DEPENDENCIES)
-	touch $@
+	(for i in $(libLieferschein_a_OBJECTS) ; do echo Lieferschein/$$i ; done ) >$@
         
 BUILT_SOURCES=LieferscheinEntry_sql.cc LieferscheinList_sql.cc \
 	Lieferschein_sql.cc Rechnung_sql.cc RechnungEntry_sql.cc \

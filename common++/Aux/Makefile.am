@@ -1,18 +1,18 @@
-# $Id: Makefile.am,v 1.34 2003/05/09 09:49:25 christof Exp $
+# $Id: Makefile.am,v 1.35 2003/05/09 10:19:02 christof Exp $
 
 AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@ @SIGC_CFLAGS@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
 
-noinst_LIBRARIES=libAux.a
+noinst_LIBRARIES=libMisc.a
 
-includedir=@includedir@/Aux
+includedir=@includedir@/Misc
 
 PGCC_Sources=dbconnect.cc SQLerror_postgres.cc Transaction.cc \
 		Waehrung_sql.cc Changejournal_sql.cc FetchIStream.cc \
       Global_Settings_sql.cc EAN_sql.cc 
 
-libAux_a_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
+libMisc_a_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
 		postgres_conversion.cc Zeitpunkt_new.cc \
 		Zeitpunkt_new_ostr.cc Global_Settings.cc \
 		Zeitpunkt_new_write.cc string0.c mystring.cc \
@@ -21,11 +21,11 @@ libAux_a_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
 		exception.cc itos.cc EntryValueDatum.cc Handles.cc EAN.cc \
 		EntryValueQuartal.cc Trace.cc FetchIStream_ops.cc \
 		dbcapability.cc Tag.cc TagStream.cc \
-		multi_lang.cc EntryValueTimeStamp.cc
-		
+		multi_lang.cc EntryValueTimeStamp.cc \
+		Event.cc
 
-libAux.a: $(libAux_a_OBJECTS) $(libAux_a_DEPENDENCIES)
-	touch $@
+libMisc.a: $(libMisc_a_OBJECTS) $(libMisc_a_DEPENDENCIES)
+	(for i in $(libMisc_a_OBJECTS) ; do echo Misc/$$i ; done ) >$@
 
 LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
 	Datum.cc Datum.h Handles.h Handles.cc \
@@ -42,7 +42,8 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
    EntryValueDatum.cc EmptyInt_4TeX.h EntryValueFixed.h Long.h \
    Trace.h Trace.cc relops.h EntryValueFixedEinheit.h UniqueValue.h \
    compiler_ports.h FILEstream.h TagStream.cc TagStream.h Tag.cc Tag.h \
-   TraceNV.h TimeStamp.h EntryValueTimeStamp.cc EntryValueTimeStamp.h
+   TraceNV.h TimeStamp.h EntryValueTimeStamp.cc EntryValueTimeStamp.h \
+   Event.h Event.cc
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .

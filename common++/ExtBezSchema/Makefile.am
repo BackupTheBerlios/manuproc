@@ -9,7 +9,7 @@ includedir=@includedir@/ExtBezSchema
 libExtBezSchema_a_SOURCES=$(BUILT_SOURCES)
 
 libExtBezSchema.a: $(libExtBezSchema_a_OBJECTS) $(libExtBezSchema_a_DEPENDENCIES)
-	touch $@
+	(for i in $(libExtBezSchema_a_OBJECTS) ; do echo ExtBezSchema/$$i ; done ) >$@
 
 BUILT_SOURCES=ExtBezSchema_sql.cc
 

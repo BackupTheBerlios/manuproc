@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.10 2002/11/27 08:52:06 thoma Exp $
+# $Id: Makefile.am,v 1.11 2003/05/09 10:19:02 christof Exp $
 
 ENDUSER=-DPETIG
 
@@ -14,7 +14,7 @@ libProdLager_a_SOURCES= $(PGCC_Sources) Lager.cc RohwarenLager.cc \
    LagerPlatz.cc JumboRolle.cc JumboLager.cc FertigWaren.cc
 
 libProdLager.a: $(libProdLager_a_OBJECTS) $(libProdLager_a_DEPENDENCIES)
-	touch $@
+	(for i in $(libProdLager_a_OBJECTS) ; do echo Lager/$$i ; done ) >$@
 
 PGCC_Sources= Lager_Dispo_sql.cc \
    maschinen_geschwindigkeit_sql.cc JumboRolle_sql.cc \

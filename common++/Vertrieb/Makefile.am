@@ -9,7 +9,7 @@ includedir=@includedir@/Vertrieb
 libVertrieb_a_SOURCES=$(BUILT_SOURCES) ProvAbrechnung.cc
 
 libVertrieb.a: $(libVertrieb_a_OBJECTS) $(libVertrieb_a_DEPENDENCIES)
-	touch $@
+	(for i in $(libVertrieb_a_OBJECTS) ; do echo Vertrieb/$$i ; done ) >$@
         
 BUILT_SOURCES=ProvAbrechnung_sql.cc ProvAbrechnungEntry_sql.cc
 
