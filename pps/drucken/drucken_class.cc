@@ -278,17 +278,22 @@ catch(SQLerror &e) { cout << e; return; }
       {std::string endE,endM;
        if(mld->getSprId() == 4)
 	 {endE="o";endM="i";}
-       if(mld->getSprId() == 2)
+       else if(mld->getSprId() == 2)
 	 {endE="";endM="s";}
-	else
+	else if(mld->getSprId() == 3)
+	 {endE="colis";endM="palettes";}
+	else if(mld->getSprId() == 1)
 	 {endE="";endM="en";}
+	else
+	 {endE="";endM="";}
  
        snprintf(buf,sizeof buf,
 		mld->MLT(MultiL_Dict::PRINTF_LIEFBESTEHT2).c_str(),
     			u.l->Pakete(),(u.l->Pakete()==1 ? 
 				(endE+string(".\n")).c_str():
 				(endM+string(".\n")).c_str() ));
-       os << (mld->getSprId()==2 ? "" : " ") << buf;
+       os << ( (mld->getSprId()==2 || 
+		mld->getSprId()==3)   ? "" : " ") << buf;
       }
     else os << ".\n";	
 	
