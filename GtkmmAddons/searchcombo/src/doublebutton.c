@@ -1,4 +1,4 @@
-// $Id: doublebutton.c,v 1.2 2003/04/07 16:58:43 christof Exp $
+// $Id: doublebutton.c,v 1.3 2003/04/08 06:57:13 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -99,23 +99,32 @@ void doublebutton_paint         (DoubleButton    *button,
 #define arrow_size 10
 // y[x]=arrow_size/2*sqrt(1-(x/(arrow_size/2))^2);
 // select cast (5*sqrt(1- (3/5.0)*(3/5.0)) as numeric(10,0));
+
+#if arrow_size/2 == 5
 unsigned ycircle[arrow_size/2]= { 5, 5, 5, 4, 3 };
+#elif arrow_size/2 == 4
+unsigned ycircle[arrow_size/2]= { 4, 4, 3, 2 };
+#else
+#error unsupported arrow size
+#endif
 
-//GdkColor black;
-//gdk_colormap_alloc_color(colormap, color, false, true);
 
-static void draw_circle_arrow(GdkWindow *window, GdkGC *gc, int x,int y)
+static void draw_circle_arrow(GtkWidget *widget, int x,int y)
 {  unsigned int i;
+   GdkWindow *window= widget->window;
+   GdkGC *gc;
    
-   gdk_gc_set_foreground(gc, black);
+   gc = (widget)->style->text_gc[GTK_STATE_ACTIVE];
    for (i=0; i<arrow_size/2; ++i)
    {  gdk_draw_line(window, gc, x+arrow_size/2-i, y+arrow_size/2-ycircle[i],
    		x+arrow_size/2-i, y+arrow_size/2+ycircle[i]);
+      gdk_draw_line(window, gc, x+arrow_size/2+i, y+arrow_size/2-ycircle[i],
+   		x+arrow_size/2+i, y+arrow_size/2+ycircle[i]);
    }
-   gdk_gc_set_foreground(gc, white);
+   gc = (widget)->style->base_gc[GTK_STATE_ACTIVE];
    for (i=0; i<arrow_size/2; ++i)
-   {  gdk_draw_line(window, gc, x+arrow_size/4+i, y+arrow_size/4+i/2,
-   		x+arrow_size/4+i, y+3*arrow_size/4-i/2);
+   {  gdk_draw_line(window, gc, x+arrow_size/4+i+1, y+arrow_size/4+i/2+1,
+   		x+arrow_size/4+i+1, y+3*arrow_size/4-i/2);
    }
 }
 
@@ -124,16 +133,10 @@ doublebutton_expose (GtkWidget      *widget, GdkEventExpose *event)
 {
   if (GTK_WIDGET_DRAWABLE (widget))
     {
-#if 0
-      GtkButton *button = GTK_BUTTON (widget);
-      
-      _gtk_button_paint (button, &event->area,
-			 GTK_WIDGET_STATE (widget),
-			 button->depressed ? GTK_SHADOW_IN : GTK_SHADOW_OUT,
-			 "button", "buttondefault");
-#endif      
       (* GTK_WIDGET_CLASS (parent_class)->expose_event) (widget, event);
-//      draw_circle_arrow(x,y);
+      draw_circle_arrow(widget, 
+      		widget->allocation.x+widget->allocation.width-arrow_size,
+      		widget->allocation.y+widget->allocation.height-arrow_size);
     }
   
   return FALSE;
@@ -142,11 +145,12 @@ doublebutton_expose (GtkWidget      *widget, GdkEventExpose *event)
 static gboolean
 doublebutton_button_press (GtkWidget      *widget, GdkEventButton *event)
 {
-  GtkButton *button;
-
   if (event->type == GDK_BUTTON_PRESS)
-    { printf("doublebutton_button_press(%d,%d)\n",(int)event->x,(int)event->y);
-      (* GTK_WIDGET_CLASS (parent_class)->button_press_event) (widget, event);
+    { if (event->x>widget->allocation.width-arrow_size &&
+	    	event->y>widget->allocation.height-arrow_size)
+	 g_signal_emit_by_name(widget, "secondpressed", event->button);
+      else
+         (* GTK_WIDGET_CLASS (parent_class)->button_press_event) (widget, event);
     }
 
   return TRUE;

@@ -1,4 +1,4 @@
-/* $Id: db_test.c,v 1.1 2003/04/07 16:28:13 christof Exp $ */
+/* $Id: db_test.c,v 1.2 2003/04/08 06:57:13 christof Exp $ */
 
 #include <gtk/gtk.h>
 #include "doublebutton.h"
@@ -38,10 +38,12 @@ int main( int   argc,
     doublebutton2 = doublebutton_new ();
     label1 = gtk_label_new("Button1");
     label2 = gtk_label_new("Button2");
-//    gtk_signal_connect (GTK_OBJECT (doublebutton1), "secondpressed",
-//			GTK_SIGNAL_FUNC (secondclicked), doublebutton1);
+    gtk_signal_connect (GTK_OBJECT (doublebutton1), "secondpressed",
+			GTK_SIGNAL_FUNC (secondclicked), doublebutton1);
     gtk_signal_connect (GTK_OBJECT (doublebutton1), "clicked",
 			GTK_SIGNAL_FUNC (clicked), doublebutton1);
+    gtk_signal_connect (GTK_OBJECT (doublebutton2), "secondpressed",
+			GTK_SIGNAL_FUNC (secondclicked), doublebutton2);
     gtk_signal_connect (GTK_OBJECT (doublebutton2), "clicked",
 			GTK_SIGNAL_FUNC (clicked), doublebutton2);
     gtk_container_add (GTK_CONTAINER (doublebutton1), GTK_WIDGET(label1));
