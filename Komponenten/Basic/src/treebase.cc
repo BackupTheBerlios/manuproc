@@ -230,10 +230,9 @@ void TreeBase::insertIntoTCL(TCListRow_API *tclapi,const TreeBase &tb,
  if(lfind!=lend) // einfuegen
    { // gleicher Wert
     if((*ev) == *reinterpret_cast<TCListRowData*>((*lfind).get_user_data())->Value())
-     {
-      reinterpret_cast<TCListNode*>((*lfind).get_user_data())->cumulate(v);
-      if(!reinterpret_cast<TCListNode*>((*lfind).get_user_data())->Leaf())
-	{selseq.pop_front();
+     { if(!reinterpret_cast<TCListRowData*>((*lfind).get_user_data())->Leaf())
+	{reinterpret_cast<TCListNode*>((*lfind).get_user_data())->cumulate(v);
+	 selseq.pop_front();
 	 ++deep;
          insertIntoTCL((&*lfind),tb,v,selseq,deep);
 	}

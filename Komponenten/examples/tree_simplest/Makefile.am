@@ -8,8 +8,7 @@ BUILT_SOURCES=$(LINKS)
 
 LINKS=simplest.hh with_class.hh tree.cc simplest.cc \
 	with_class.cc simplest_glade.hh with_class_glade.hh \
-	simplest_glade.cc tree.glade with_class_glade.cc \
-	TreeWithSums.hh
+	simplest_glade.cc tree.glade with_class_glade.cc 
 
 $(LINKS):
 	ln -sf ../../Basic/examples/tree_simplest/$@ .
@@ -27,10 +26,8 @@ noinst_HEADERS = \
 	simplest.hh \
 	simplest_glade.hh
 
-CXXFLAGS = @CXXFLAGS@  -I$(top_srcdir)/src @COMMONGTK_INCLUDES@ \
-		@COMMONXX_INCLUDES@
+CXXFLAGS = @CXXFLAGS@  @KOMPONENTEN_INCLUDES@ 
 
-tree_LDADD = @LIBS@ $(top_srcdir)/src/libKomponenten.a \
-        @COMMONGTK_LIBS@ @COMMONXX_LIBS@
+tree_LDADD = @LIBS@ @KOMPONENTEN_LIBS@
 
-LDFLAGS= @LDFLAGS@ @COMMONXX_LDFLAGS@ @COMMONGTK_LDFLAGS@
+LDFLAGS= @LDFLAGS@ @KOMPONENTEN_LDFLAGS@
