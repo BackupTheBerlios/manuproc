@@ -337,7 +337,7 @@ Rechnung::geldbetrag_t Rechnung::Betrag(bool brutto) const throw(SQLerror)
     q >> FetchIStream::MapNull(betrag,0.0);   
    }
  else
-   {Query q("select  sum(round((round(preis*((100-rabatt)/100), case "
+   {Query q("select  sum(round((round(preis*((100-coalesce(rabatt,0))/100), case "
 	" when (preis*?)%10!=0 then ? else 2 end))*"
 	"((coalesce(menge,1)*stueck)) / "
 	" (coalesce(preismenge,1)),2))" 
