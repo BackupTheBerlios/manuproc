@@ -1,4 +1,4 @@
-/* $Id: Adresse.h,v 1.7 2003/01/08 09:46:57 christof Exp $ */
+/* $Id: Adresse.h,v 1.8 2003/03/25 10:38:12 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,16 +25,17 @@ class Adresse
 {  int kundennr;
    char IDnr[21];
    std::string firma;
-   char postanwvor[41];
+   std::string postanwvor;
    std::string strasse;
-   char postanwnach[41];
+   std::string postanwnach;
    std::string hsnr;
    std::string PLZ;
    std::string postfach;
    std::string postfPLZ;
    std::string ort;
    bool rng_an_postfach;
-   char landname[41];
+   std::string landname;
+   std::string lkz;
    char postfachname[41];
    bool lieferadresse;
 
@@ -44,11 +45,13 @@ class Adresse
    const std::string Hsnr() const { return hsnr;}
    const std::string Ort() const { return ort;}
    const std::string Plz() const { return PLZ;}
+   const std::string PostAnwVor() const { return postanwvor; }
+   const std::string PostAnwNach() const { return postanwnach; }   
  
 #warning alte Methoden; bitte ersetzen
 // sollen weg
    const char *getFirma() { return firma.c_str();}
-   const char *getPostAnwVor() { return postanwvor;}
+   const char *getPostAnwVor() { return postanwvor.c_str();}
    const char *getStrasse() { return strasse.c_str();}
    const char *getHsnr() { return hsnr.c_str();}
    const char *getOrt() { return ort.c_str();}
