@@ -380,7 +380,12 @@ void ArtikelBox::Benutzerprofil_speichern()
 
 void ArtikelBox::Neuer_Eintrag()
 {
-// if(kombiniertbool) return;
+  /* testen, ob Artikel schon existiert */
+  if(artikel_exist(false)!=ArtikelBase::none_id) 
+    {
+      std::cerr<<"FEHLER: Artikel existiert schon\n";
+      return; 
+    }
 
  try {
 // hier (und weiter unten) sollte man irgendwann mal 'ID' und 'EAN-Code' in die 
@@ -403,12 +408,6 @@ void ArtikelBox::Neuer_Eintrag()
       }
 #endif
    }
-  /* testen, ob Artikel schon existiert */
-  if(artikel_exist(false)!=ArtikelBase::none_id) 
-    {
-      std::cerr<<"FEHLER: Artikel existiert schon\n";
-      return; 
-    }
   int db_id,db_id_jumbo;
   Transaction tr;
 
