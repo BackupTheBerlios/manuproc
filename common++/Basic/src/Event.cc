@@ -1,4 +1,4 @@
-// $Id: Event.cc,v 1.5 2003/05/12 08:09:31 christof Exp $
+// $Id: Event.cc,v 1.6 2004/03/11 09:55:06 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -57,8 +57,8 @@ void ManuProC::Event::read_notifications()
    Query("select max(zeit) from events") >> bis;
    if (!bis.valid()) return;
    if (!last_processed.valid()) last_processed=ManuProC::TimeStamp("1970-1-1");
-   Query q("select channel,key,data from events "
-   	"where ? < zeit and zeit <= ? order by zeit");
+   Query q("SELECT channel,key,data FROM events "
+   	"WHERE ? < zeit and zeit <= ? ORDER BY zeit");
    q << last_processed << bis;
    FetchIStream is;
    while ((q >> is).good())
@@ -79,9 +79,10 @@ void ManuProC::Event::read_notifications()
 }
 
 ManuProC::Event::Event(const std::string &channel,const std::string &key,const std::string &data)
-{  Query("insert into events (zeit,channel,key,data) values (now(),?,?,?)")
+{  Query("INSERT INTO events (zeit,channel,key,data) VALUES (now(),?,?,?)")
 	<< channel << Query::NullIf(key) << Query::NullIf(data);
    Query("NOTIFY events");
+   Query("DELETE FROM events WHERE zeit+'10min'<now()");
 }
 
 namespace {
@@ -99,7 +100,7 @@ void ManuProC::Event::connect(bool ignore_old)
    connected=true;
    PGconnection=ECPGget_connection(0)->connection;
    if (ignore_old)
-   {  Query("select now()") >> last_processed;
+   {  Query("SELECT now()") >> last_processed;
       while (PQnotifies((PGconn *)PGconnection));
    }
    else read_notifications();
