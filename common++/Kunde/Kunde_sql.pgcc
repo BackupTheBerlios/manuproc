@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.63 2004/08/19 17:43:11 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.64 2004/08/19 17:45:38 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -1011,6 +1011,13 @@ void Kunde::set_schema(ID s) throw(SQLerror)
  try{
  Query("update kunden set extartbezid=? where kundennr=?")
 	<< s << Id();
+ }
+
+ catch(SQLerror &e)
+ { SQLerror::test(__FILELINE__,100);
+   return; 
+ }
+
  schema = s; 
 } 
 

@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.63 2004/08/05 10:20:32 jacek Exp $
+// $Id: Kunde.h,v 1.64 2004/08/19 17:43:11 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -362,7 +362,7 @@ public:
         void set_postfachplz(const std::string& s){adresse.postfachplz = s; } 
         void set_land(cH_LandesListe i){adresse.land = i; } 
         void set_UnsereKundenNr(const std::string& s){adresse.unsere_kundennr = s; } 
-        void set_schema(ID s){schema = s; } 
+        void set_schema(ID s) throw(SQLerror);
 
         void set_planumsatz(const fixedpoint<2> s){kundendaten.planumsatz = s; }
         void set_rabatt(const fixedpoint<2> s){kundendaten.rabatt = s; }
