@@ -19,22 +19,21 @@ void mpc_agent::on_orderid_search(gboolean *cont,GtkSCContext context)
     if(!kunde->get_value(KDBOX_NR).empty())
        squery+=std::string(" and kdnr=?");
 
-    Query qu(squery);
 
     switch(context)
 	{  
          case GTK_SEARCH_OPEN:
 	 case GTK_SEARCH_REOPEN:
-           {
-	    qu << VERKNR;
-            if(!kunde->get_value(KDBOX_NR).empty())
-	      qu << kunde->get_value(KDBOX_NR);
-	    // fall through
-	   }
 
 	 case GTK_SEARCH_FETCH:
 	   // dont need idle loops here. It is rapid enouth from SQLite.
 	   {
+            Query qu(squery);
+            
+	    qu << VERKNR;
+            if(!kunde->get_value(KDBOX_NR).empty())
+	      qu << kunde->get_value(KDBOX_NR);	   
+	   
 	    int aufid;
 	    FetchIStream fi=qu.Fetch();
  	    while(fi.good())
