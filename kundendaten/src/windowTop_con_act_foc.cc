@@ -82,7 +82,7 @@ void windowTop::changedFktS(Kunde::UpdateBitsSonst e)
   UpdateSonst =  Kunde::UpdateBitsSonst(UpdateSonst|e);
      if      (e==Kunde::FRechnungan ) kundendaten->RngAn(rng_an->get_value());
      else if (e==Kunde::FLieferscheinan ) kundendaten->LfrAn(lfr_an->get_value());
-     else if (e==Kunde::FExtartbezid) kundendaten->set_schema(cH_Kunde(extartbez->get_value())->getSchemaId());
+     else if (e==Kunde::FExtartbezid) kundendaten->set_schema(extartbez->get_value());
      else if (e==Kunde::FNotiz      ) kundendaten->set_notiz(textNotiz->get_chars(0,textNotiz->get_length()));
      else if (e==Kunde::FEntsorgung ) kundendaten->entsorgung(checkbutton_entsorgung->get_active());
      else if (e==Kunde::Flieferung_frei_haus ) kundendaten->set_lieferung_frei_haus(checkbutton_lieferung_frei_haus->get_active());
