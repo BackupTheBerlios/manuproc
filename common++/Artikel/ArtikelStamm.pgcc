@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.14 2002/02/28 15:19:29 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.15 2002/04/03 06:38:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -102,7 +102,8 @@ void ArtikelStamm::set_BestellenBei(const ArtikelBase &artikel,const ppsInstanz:
    int BESTELLEN_BEI=instanz;
   exec sql end declare section;
   exec sql update artikelstamm set stand=now(),bestellen_bei=:BESTELLEN_BEI
-      where id =:ID and bestellen_bei!=:BESTELLEN_BEI;
+      where id =:ID 
+      and (bestellen_bei!=:BESTELLEN_BEI or bestellen_bei is null);
   SQLerror::test(__FILELINE__,100);
 
   // Und nun noch raus aus dem Cache

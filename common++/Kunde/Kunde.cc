@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.11 2002/03/20 07:43:31 christof Exp $
+// $Id: Kunde.cc,v 1.12 2002/04/03 06:38:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -45,7 +45,7 @@ H_Kunde::H_Kunde(Kunde::ID id)
 }
 
 
-const std::string Kunde::LaTeX_von() const
+const std::string Kunde::LaTeX_von(Kunde::ID kundennummer_von) const
 {
   std::string s="\\underline{\\scriptsize ";
   s+= string2TeX(getName()+", ");
@@ -59,7 +59,7 @@ const std::string Kunde::LaTeX_von() const
   else
     s+= string2TeX(adresse.strasse +" "+adresse.hsnr+", "+
 		lkz+adresse.plz+" "+adresse.ort);
- 
+  if(kundennummer_von!=none_id) s+="\\qquad KdNr: "+Kunde(kundennummer_von).UnsereKundenNr(); 
   s+= "}\\\\[3mm]\n";
   return  s;
 }

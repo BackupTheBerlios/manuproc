@@ -57,6 +57,7 @@ public:
 	void set_value(int i,const std::string &s) ;
 	virtual void set_value(int i)=0 ;
 	void reset();
+   void clear() {reset();}
 
 //   void Einschraenken_b(bool an);
 	

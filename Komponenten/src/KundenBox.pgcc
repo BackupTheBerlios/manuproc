@@ -16,12 +16,6 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// generated 2000/8/28 14:42:53 CEST by christof@puck.petig.de
-// using glademm V0.5.9a
-//
-// newer (non customized) versions of this file go to KundenBox.cc_glade
-
-// This file is for your program, I won't touch it again!
 
 #include "KundenBox.hh"
 exec sql include sqlca;
@@ -98,12 +92,13 @@ void KundenBox::Name_search(gboolean *_continue, GtkSCContext newsearch)
             tr2.open();
 
              if(einschraenkung_b)
-               squery = "select DISTINCT k.firma, e.extartbezid from 
+               squery = "select DISTINCT coalesce(sortname,k.firma), k.kundennr from 
                   extbezschema e join kunden k on (e.extartbezid=k.kundennr)
-                  where k.firma ilike '"+kundenname->get_text()+"%'";
+                  where coalesce(sortname,k.firma) ilike '"+kundenname->get_text()+"%'";
              else
-               squery = "select firma,kundennr from kunden where firma ilike '"+
-                  kundenname->get_text() +"%' order by firma";             
+               squery = "select coalesce(sortname,firma),kundennr from kunden "
+               	  "where coalesce(sortname,firma) ilike '"+
+                  kundenname->get_text() +"%' order by firma";
              strncpy(query,squery.c_str(),sizeof(query));
              exec sql prepare kubo_name_ from :query;
       	    exec sql declare kubo_name cursor for kubo_name_;

@@ -60,7 +60,7 @@ public:
 // std::string RngArt() const {return rngart; } 
  const RngArt rngArt() const {return rngart; } 
  rabatt_t Rabatt() const { return rabatt; }
- geldbetrag_t Betrag() const throw(SQLerror);
+ geldbetrag_t Betrag(bool brutto=false) const throw(SQLerror);
  
  cP_Waehrung getWaehrung() const { return waehrung; }
  void setzeWaehrung(const cP_Waehrung &w) throw(SQLerror);

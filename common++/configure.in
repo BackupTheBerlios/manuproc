@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.10 2002/02/28 15:19:29 christof Exp $
+# $Id: configure.in,v 1.11 2002/04/03 06:38:09 christof Exp $
 
 AC_INIT(Artikel/ArtikelBase.h)
 
@@ -32,6 +32,18 @@ PETIG_CHECK_POSTGRES
 
 DEFAULT_DB=$USER
 DEFAULT_DBHOST="localhost"
+
+case `hostname -f` in
+   petig.petig.de|petig.petig-baender.de) 
+   	DEFAULT_DB=petigdb DEFAULT_DBHOST=petig ;;
+   *.petig.de|*.petig-baender.de) DEFAULT_DB=petigdb ;;
+   *.jacek.de) DEFAULT_DB=petigdb ;;
+   Tiger) DEFAULT_DB=petigdb ;;
+   *.mabella.de) DEFAULT_DB=mabelladb DEFAULT_DBHOST=mabella ;;
+esac
+AC_DEFINE_UNQUOTED(DEFAULT_DB, "$DEFAULT_DB" )
+AC_DEFINE_UNQUOTED(DEFAULT_DBHOST, "$DEFAULT_DBHOST" )
+AC_MSG_RESULT($DEFAULT_DB@$DEFAULT_DBHOST)
 
 LIBS=@ECPG_LIBS@
 

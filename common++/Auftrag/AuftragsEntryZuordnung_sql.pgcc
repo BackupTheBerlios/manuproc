@@ -1,4 +1,4 @@
-// $Id: AuftragsEntryZuordnung_sql.pgcc,v 1.9 2002/03/20 07:43:31 christof Exp $
+// $Id: AuftragsEntryZuordnung_sql.pgcc,v 1.10 2002/04/03 06:38:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -27,7 +27,8 @@
 
 exec sql include sqlca;
 
-list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list(const AufEintragBase& aeb,bool kinder) const throw(SQLerror) 
+
+std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list(const AufEintragBase& aeb,bool kinder) const throw(SQLerror) 
 {
  exec sql begin declare section;
   int INSTANZ[30],AUFTRAGID[30],ZEILENNR[30];
@@ -74,6 +75,19 @@ list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list(const AufEintragB
  exec sql close ONAUF;
  tr.close();
  return vaeb;
+}
+
+
+std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_ungeplant(const AufEintragBase& aeb,bool kinder) const throw(SQLerror)
+{
+   std::list<st_reflist> L=get_Referenz_list(aeb,kinder);
+   std::list<st_reflist> N;
+   for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+     {
+       if(i->AEB2.Id()==0)
+         N.push_back(*i);
+     }
+   return N;
 }
 
 list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_listFull(bool kinder,bool nur_ende) const throw(SQLerror)

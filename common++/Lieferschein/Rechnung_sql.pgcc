@@ -235,14 +235,19 @@ void Rechnung::setze_Rabatt(rabatt_t r) throw(SQLerror)
  SQLerror::test(__FILELINE__);
 }
 
-Rechnung::geldbetrag_t Rechnung::Betrag() const throw(SQLerror)
+Rechnung::geldbetrag_t Rechnung::Betrag(bool brutto) const throw(SQLerror)
 {
  exec sql begin declare section;
  float BETRAG;
  int RNGID= Id();
  exec sql end declare section;
 
- exec sql select  sum(round((round(preis*((100-rabatt)/100),2))*stueck,2)) 
+ if(brutto)
+   exec sql select  sum(round(preis*stueck,2)) 
+	into :BETRAG from rechnungentry
+	where rngid = :RNGID;   
+ else
+   exec sql select  sum(round((round(preis*((100-rabatt)/100),2))*stueck,2)) 
 	into :BETRAG from rechnungentry
 	where rngid = :RNGID; 
 

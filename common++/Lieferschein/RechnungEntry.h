@@ -62,7 +62,8 @@ public:
  LieferscheinBase::ID Lfrs_Id() const { return lfrsid; }
  int Lfrs_ZNr() const { return lieferzeile; }
  const Preis getPreis(bool brutto=true) const 
- { if(brutto) return preis;
+ { 
+   if(brutto) return preis;
    else return preis.Gesamtpreis(1,0,rabatt); 
  }
  // Waehrung muss zu der in Rechnung passen (kein Vergleich)

@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.13 2002/03/20 07:43:31 christof Exp $
+// $Id: Kunde.h,v 1.14 2002/04/03 06:38:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -55,6 +55,7 @@ public:
    std::string ort;
    std::string landname;
    std::string lkz;
+   std::string unsere_kundennr;
   };
  typedef struct st_adresse Adresse;  
  
@@ -63,8 +64,11 @@ public:
     std::string bank;
     unsigned int blz;
     unsigned long long int konto;
+    int lieferantenkonto;
+    int gegenkonto;
     const std::string getBankverb() const { return  bank+": BLZ "+itos(blz)+", Kto.Nr. "+ulltos(konto);}
-    st_bankverb():bankindex(0),blz(0),konto(0) {}
+    st_bankverb():bankindex(0),blz(0),konto(0),
+    lieferantenkonto(0),gegenkonto(0) {}
    };
  typedef struct st_bankverb Bankverbindung;
 
@@ -131,7 +135,7 @@ public:
 	static const ID none_id=_illegal;
 	Kunde(ID nr=default_id) throw(SQLerror);
 	static const cH_Kunde newKunde(const Kunde::ID kid, const std::string &firma) throw(SQLerror);
-        const std::string LaTeX_von() const;
+        const std::string LaTeX_von(Kunde::ID kundennummer_von=none_id) const;
         const std::string LaTeX_an(bool liefer,TelArt telart=TEL_NONE) const;
         
         const std::string getBank() const { return bankverb.getBankverb(); }
@@ -139,6 +143,8 @@ public:
         const unsigned int getblz() const { return bankverb.blz; }
         const std::string getbank() const { return bankverb.bank; }
         const int getindex() const { return bankverb.bankindex; }
+        const int getLieferantenkonto() const {return bankverb.lieferantenkonto;}
+        const int getGegenkonto() const {return bankverb.gegenkonto;}
 
         const std::string sortname() const { return adresse.sortname; }
         const std::string firma() const { return adresse.firma; }
@@ -152,6 +158,7 @@ public:
         const std::string postfachplz() const { return adresse.postfachplz; }
 //        const std::string land() const { return adresse.land; }
         const std::string lkz() const { return adresse.lkz; }
+        const std::string UnsereKundenNr() const {return adresse.unsere_kundennr;}
 
         const long int flaeche() const { return kundendaten.flaeche; }
         const long int mitarbeiter() const { return kundendaten.mitarbeiter; }
@@ -205,10 +212,11 @@ public:
            B_Postfachplz,B_Ort,B_Lieferadresse,B_Rechnungadresse,
            B_Rng_an_postfach,B_MaxAnzA};
         enum B_UPDATE_BITS_FIRMA{B_Planumsatz,B_Umsatz,B_Mitarbeiter,
-           B_Kundenumsatz,B_Flaeche,B_Lkz,B_Verein,B_MaxAnzF};
+           B_Kundenumsatz,B_Flaeche,B_Lkz,B_UnsereKundenNr,B_Verein,B_MaxAnzF};
         enum B_UPDATE_BITS_BANK{B_Ktonr,B_Blz,B_Bankindex,B_Bankeinzug,
            B_Rabatt,B_Zeilenrabatt,B_Waehrungid,B_Einzugrabatt,
-           B_Skontosatz,B_Skontofrist,B_MaxAnzB};
+           B_Skontosatz,B_Skontofrist,B_Lieferantenkonto,
+           B_Gegenkonto,B_MaxAnzB};
         enum B_UPDATE_BITS_SONST{B_Rechnungan,B_Extartbezid,
            B_Preisliste,B_Notiz,B_Entsorgung,B_Verknr,B_Kalkulation,
            B_Stand,B_KP_Position,B_KP_Notiz,B_MaxAnzS};
@@ -223,13 +231,15 @@ public:
            FRng_an_postfach=1<<B_Rng_an_postfach};
          enum UpdateBitsFirma{FPlanumsatz=1<<B_Planumsatz,FUmsatz=1<<B_Umsatz,
            FMitarbeiter=1<<B_Mitarbeiter,FKundenumsatz=1<<B_Kundenumsatz,
-           FFlaeche=1<<B_Flaeche,FLkz=1<<B_Lkz,FVerein=1<<B_Verein};
+           FFlaeche=1<<B_Flaeche,FLkz=1<<B_Lkz,FUnsereKundenNr=1<<B_UnsereKundenNr,
+           FVerein=1<<B_Verein};
          enum UpdateBitsBank{FKtonr=1<<B_Ktonr,FBlz=1<<B_Blz,
            FBankindex=1<<B_Bankindex,FBankeinzug=1<<B_Bankeinzug,
            FRabatt=1<<B_Rabatt,FZeilenrabatt=1<<B_Zeilenrabatt,
            FWaehrungid=1<<B_Waehrungid,
            FEinzugrabatt=1<<B_Einzugrabatt,FSkontosatz=1<<B_Skontosatz,
-           FSkontofrist=1<<B_Skontofrist};
+           FSkontofrist=1<<B_Skontofrist,FLieferantenkonto=1<<B_Lieferantenkonto,
+           FGegenkonto=1<<B_Gegenkonto};
          enum UpdateBitsSonst{FRechnungan=1<<B_Rechnungan,
            FExtartbezid=1<<B_Extartbezid,FPreisliste=1<<B_Preisliste,
            FNotiz=1<<B_Notiz,FEntsorgung=1<<B_Entsorgung,
@@ -275,6 +285,7 @@ public:
         void set_postfachplz(const std::string& s){adresse.postfachplz = s; } 
         void set_idnr(const std::string& s){IDnr = s; } 
         void set_lkz(const std::string& s){adresse.lkz = s; } 
+        void set_UnsereKundenNr(const std::string& s){adresse.unsere_kundennr = s; } 
         void set_schema(ID s){schema = s; } 
 
         void set_planumsatz(const fixedpoint<2> s){kundendaten.planumsatz = s; }
@@ -292,6 +303,8 @@ public:
         void set_notiz(const std::string& s){kundendaten.notiz = s; } 
         void set_bankindex(const int s){bankverb.bankindex = s; } 
         void set_bank_konto(const unsigned long long int s) {bankverb.konto = s;} 
+        void set_Lieferantenkonto(const int i) {bankverb.lieferantenkonto=i;}
+        void set_Gegenkonto(const int i) {bankverb.gegenkonto=i;}
         // set_bankkonto machte einen Datenbankzugriff
 
         void setSonderpreisliste(const list<PreisListe::ID>& VP) const;

@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.12 2002/03/20 07:43:31 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.13 2002/04/03 06:38:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -48,6 +48,8 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    char STAND[50];
    int WAEHRUNGID;
    int VERKNR;
+   int LIEFERANTENKONTO,GEGENKONTO;
+   char UNSERE_KUNDENNR[128];
    exec sql end declare section;
 //Sonderpreislisten werden getrennt geholt
   
@@ -77,7 +79,8 @@ Kunde::Kunde(ID _id) throw(SQLerror)
          coalesce(stand,now()),	coalesce(lkz,''),
 	 coalesce(waehrungid,:WAEHRUNGID),
 	 coalesce(entsorgung,false), coalesce(skontosatz,0),
-    coalesce(verknr,0)
+    coalesce(verknr,0),coalesce(lieferantenkonto,0),
+    coalesce(gegenkonto,0),coalesce(unsere_kundennr,'')
    	into :GRUPPENID ,:NAME, :SORTNAME, :BEZSCHEMA, :STRASSE, :POSTANWVOR, :POSTANWNACH,
            :HSNR, :PLZ, :POSTFACH,
            :POSTFACHPLZ, :ORT, :KTONR, :BLZ, :BANKNAME, :BANKINDEX, :RNG_AN,
@@ -85,7 +88,8 @@ Kunde::Kunde(ID _id) throw(SQLerror)
             :LIEFERADRESSE,:RECHUNGSADRESSE,:RNGANLFRA,
            :FLAECHE,:MITARBEITER,:KUNDENUMSATZ,:PLANUMSATZ,:UMSATZ,
 	   :RABATT,:ZEILENRABATT,:EINZUGRABATT,:SKONTOFRIST, :VEREIN, :BANKEINZUG,
-	   :NOTIZ,:STAND, :LKZ, :WAEHRUNGID, :ENTSORGUNG, :SKONTOSATZ,:VERKNR
+	   :NOTIZ,:STAND, :LKZ, :WAEHRUNGID, :ENTSORGUNG, :SKONTOSATZ,:VERKNR,
+      :LIEFERANTENKONTO,:GEGENKONTO,:UNSERE_KUNDENNR
    	from kunden k left join banken b using(bankindex)
    	where kundennr= :ID;
 
@@ -104,6 +108,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    adresse.postfachplz=POSTFACHPLZ;
    adresse.ort=ORT;
    adresse.lkz = LKZ;
+   adresse.unsere_kundennr = UNSERE_KUNDENNR;
    IDnr=IDNR;
    lieferadresse=LIEFERADRESSE;
    rechnungsadresse=RECHUNGSADRESSE;
@@ -112,6 +117,8 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    bankverb.blz=strtoul(BLZ,NULL,10);
    bankverb.bank=BANKNAME;
    bankverb.bankindex=BANKINDEX;
+   bankverb.lieferantenkonto=LIEFERANTENKONTO;
+   bankverb.gegenkonto=GEGENKONTO;
    rngan=RNG_AN;
    kundendaten.preisliste=PREISLISTE;
    entsorg = ENTSORGUNG;
@@ -346,6 +353,7 @@ void Kunde::update_e(UpdateBitsFirma e)
      else if (i==B_Kundenumsatz  ) query += "kundenumsatz  = "+dtos(kundenumsatz())+",";
      else if (i==B_Flaeche       ) query += "flaeche  = "+itos(flaeche())+",";
      else if (i==B_Lkz           ) query += "lkz  = '"+lkz()+"',";
+     else if (i==B_UnsereKundenNr) query += "unsere_kundennr  = '"+UnsereKundenNr()+"',";
      else if (i==B_Verein     ) query += "verein = '"+verein()+"',";
    }
  query += "stand  = now() where kundennr = "+itos(Id());
@@ -369,6 +377,8 @@ void Kunde::update_e(UpdateBitsBank e)
      else if (i==B_Einzugrabatt) query += "einzugrabatt= "+dtos(einzugrabatt())+",";
      else if (i==B_Skontosatz  ) query += "skontosatz  = "+dtos(skontosatz())+",";
      else if (i==B_Skontofrist ) query += "skontofrist = "+itos(skontofrist())+",";
+     else if (i==B_Lieferantenkonto ) query += "lieferantenkonto = "+itos(getLieferantenkonto())+",";
+     else if (i==B_Gegenkonto  ) query += "gegenkonto = "+itos(getGegenkonto())+",";
    }
  query += "stand  = now() where kundennr = "+itos(Id());
  Query::Execute(query);

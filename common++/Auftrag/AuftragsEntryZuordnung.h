@@ -1,4 +1,4 @@
-// $Id: AuftragsEntryZuordnung.h,v 1.9 2002/02/28 15:19:29 christof Exp $
+// $Id: AuftragsEntryZuordnung.h,v 1.10 2002/04/03 06:38:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -29,7 +29,6 @@
 class AufEintragZu : public AufEintragBase
 {
  AufEintragBase AEB;
-// mutable int tiefe; // Geasamtmenge der zu planenden Instanzen
 
 public:
  AufEintragZu(AufEintragBase aeb) 
@@ -45,6 +44,8 @@ private:
 public:
     // Eine Benachbarte Liste von Kind- bzw. Elternaufträgen:
     std::list<st_reflist> get_Referenz_list(const AufEintragBase& aeb,bool kinder=false) const throw(SQLerror);
+    // Eine Benachbarte Liste von Kind- bzw. Elternaufträgen aber nur ungeplante Aufträge:
+    std::list<st_reflist> get_Referenz_list_ungeplant(const AufEintragBase& aeb,bool kinder=false) const throw(SQLerror);
     // Eine Benachbarte Liste von Kind- bzw. Elternaufträgen des zu mir gehörenden
     // geplanten Auftrags holen
     std::list<st_reflist> get_Referenz_list_for_geplant(bool kinder=false) const throw(SQLerror);

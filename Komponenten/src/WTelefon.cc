@@ -54,7 +54,7 @@ WTelefon::WTelefon()
   frame_land->add(*spinbutton_land);
 
   Gtk::Frame *frame_vorwahl=manage(new class Gtk::Frame("Vorwahl   "));
-  Gtk::Adjustment *spinbutton_vorwahl_adj = manage(new class Gtk::Adjustment(0, 0, 999999, 1, 10, 10));
+  Gtk::Adjustment *spinbutton_vorwahl_adj = manage(new class Gtk::Adjustment(0, 0, 9999999, 1, 10, 10));
   spinbutton_vorwahl = manage(new class Gtk::SpinButton(*spinbutton_vorwahl_adj, 1, 0));
   spinbutton_vorwahl->activate.connect_after(SigC::slot(this,&WTelefon::spinbutton_vorwahl_activate));
   frame_vorwahl->set_label_align(0, 0);
@@ -62,7 +62,7 @@ WTelefon::WTelefon()
   frame_vorwahl->add(*spinbutton_vorwahl);
 
   Gtk::Frame *frame_nummer=manage(new class Gtk::Frame("Nummer         "));
-  Gtk::Adjustment *spinbutton_nummer_adj = manage(new class Gtk::Adjustment(0, 0, 999999, 1, 10, 10));
+  Gtk::Adjustment *spinbutton_nummer_adj = manage(new class Gtk::Adjustment(0, 0, 99999999, 1, 10, 10));
   spinbutton_nummer = manage(new class Gtk::SpinButton(*spinbutton_nummer_adj, 1, 0));
   spinbutton_nummer->activate.connect_after(SigC::slot(this,&WTelefon::spinbutton_nummer_activate));
   frame_nummer->set_label_align(0, 0);
@@ -188,4 +188,5 @@ void WTelefon::clear() const
  spinbutton_vorwahl->set_value(Telefon::Vorwahl);
  spinbutton_nummer->set_value(0);
  spinbutton_land->grab_focus();
+ tree->clear();
 }
