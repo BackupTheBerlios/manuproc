@@ -1,4 +1,4 @@
-// $Id: warp_order_align.cc,v 1.1 2004/11/04 17:17:53 christof Exp $
+// $Id: warp_order_align.cc,v 1.2 2004/11/04 17:25:43 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -61,7 +61,11 @@ int main()
       { orderentry=new AufEintrag(aeb);
       }
       catch (AufEintrag::NoAEB_Error &e)
-      { // orderentry=new AufEintrag(
+      { a->insert(aeb.ZNr(),j->Gaenge()*kpk.Kettlaenge(),
+            // Datum???
+            i->Schaerdatum()+30,j->Artikel(),
+            OPEN,true);
+        orderentry=new AufEintrag(aeb);
       }
       catch (std::exception &e)
       { std::cerr << e.what() << '\n';
