@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.13 2002/12/03 11:38:39 thoma Exp $
+// $Id: adjust_store.cc,v 1.14 2002/12/03 13:54:17 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -40,7 +40,11 @@ void usage(const std::string &s)
            "\tB3:Es wird sichergestellt, daß für 0er- und 2er-Aufträge die gelieferte\n"
            "\t   Menge null ist.\n"
            "\tC: Es wird sichergestellt, daß nur entweder 0er- oder 2er-Aufträge\n"
-           "\t   (pro Instanz,Artikel,Lieferdatum) existieren.\n";
+           "\t   (pro Instanz,Artikel,Lieferdatum) existieren.\n"
+           "\tD: Es wird überprüft, ob die Summe der Zuordnungen VON 0er-Aufträgen\n"
+           "     AN 1|20000er genauso groß ist wie die Menge im 1|20000er.\n";
+           "\tE: Es wird überprüft, ob die Summe der Zuordnungen VON 2er-Aufträgen\n"
+           "     AN 1|20000er genauso groß ist wie die Menge im 2er.\n";
  std::cerr << "USAGE:  ";
  std::cerr << s <<" [-i<instanz>|-I]  -a<aktion> [-d<database> -h<dbhost> -y] \n"
            "\twobei die aktion=[A|B|C] ist.\n"
@@ -58,6 +62,8 @@ void check_for(const std::string &pname,cH_ppsInstanz I,const std::string &aktio
      }
     else if(aktion=="B" &&!I->KundenInstanz()) I->Reparatur_Konsistenz(analyse_only);
     else if(aktion=="C" &&!I->KundenInstanz()) I->Reparatur_0er_und_2er(getuid(),analyse_only);
+    else if(aktion=="D" &&!I->KundenInstanz()) I->Reparatur_0_ZuSumme_1(getuid(),analyse_only);
+    else if(aktion=="E" &&!I->KundenInstanz()) I->Reparatur_2_ZuSumme_1(getuid(),analyse_only);
     else usage(pname);
 }
 

@@ -22,12 +22,60 @@
 #include <Lager/JumboLager.h>
 #include <Lager/RohwarenLager.h>
 #include <Misc/SQLerror.h>
+#include <Misc/Trace.h>
 #include <sqlca.h>
 #include <Auftrag/AufEintragZuMengenAenderung.h>
 #include <Aux/Transaction.h>
 
+
+void ppsInstanz::Reparatur_0_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror)
+{
+   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
+  Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::plan_auftrag_id,false,ungeplant);
+}
+
+void ppsInstanz::Reparatur_2_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror)
+{
+   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
+  if(LagerInstanz()) {cout << "Sinnlos für LagerInstanz\n"; return;}
+  else
+     Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::dispo_auftrag_id,true,geplant);
+}
+
+void ppsInstanz::Reparatur_Zuordnungen(const int uid,const bool analyse_only,
+   const AuftragBase::ID auftragid,const bool kinder,const e_zumode zumode) const throw(SQLerror)
+{
+   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
+   assert(Id() != ppsInstanzID::Kundenauftraege);
+   SQLFullAuftragSelector sel1er= SQLFullAuftragSelector::sel_Status(Id(),OPEN,auftragid);
+   SelectedFullAufList AL1(sel1er);
+cout << "Size: "<< AL1.size()<<'\t'<<'\n';
+   for(SelectedFullAufList::iterator i=AL1.begin();i!=AL1.end();++i)
+    {
+      AuftragBase::mengen_t Msum=0;
+      std::list<AufEintragZu::st_reflist> L;
+      switch (zumode) {
+         case ungeplant: L=AufEintragZu(*i).get_Referenz_list_ungeplant(kinder); break;
+         case geplant:  L=AufEintragZu(*i).get_Referenz_list_geplant(kinder); break;
+        }
+      for(std::list<AufEintragZu::st_reflist>::const_iterator j=L.begin();j!=L.end();++j)
+        {
+          Msum+=j->Menge;
+cout << *i<<'\t'<<j->AEB<<'\t'<<j->Menge<<'\t'<<Msum<<'\n';
+        }
+      if(Msum!=i->getStueck())
+       {
+         if(analyse_only) std::cout << "Zuord.-Summen ("<<Msum<<") stimmen nicht ("<<i->getStueck()<<") für "<<*i<<'\n';
+         else assert(!"nicht implementiert\n");
+       }
+    }
+} 
+
+////////////////////////////////////////////////////////////////////////////
+
 void ppsInstanz::Reparatur_0er_und_2er(const int uid,const bool analyse_only) const throw(SQLerror)
 {
+   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
    assert(Id() != ppsInstanzID::Kundenauftraege);
    SQLFullAuftragSelector sel0er= SQLFullAuftragSelector::sel_Status(Id(),OPEN,AuftragBase::ungeplante_id);
    SelectedFullAufList AL(sel0er);
@@ -47,8 +95,9 @@ void ppsInstanz::Reparatur_0er_und_2er(const int uid,const bool analyse_only) co
        {
          if(j->getLieferdatum()>i->getLieferdatum()) continue;
          AuftragBase::mengen_t M=AuftragBase::min(menge0er,j->getStueck());
+         if(M==0) continue;
          AuftragBase zielauftrag(Id(),AuftragBase::plan_auftrag_id);
-//cout << "RepLan: "<<*i<<'\t'<<zielauftrag<<"Menge: "<<M<<'\n';
+cout << "RepLan: "<<*i<<'\t'<<zielauftrag<<"Menge: "<<M<<'\n';
          if(analyse_only)
            cout << "Analyse: Planen von "<<*i<<"  nach  "<<zielauftrag<<"\tMenge: "<<M<<'\n';
          else
@@ -79,6 +128,7 @@ struct st_table{std::string table; std::string column;
 
 void ppsInstanz::Reparatur_Konsistenz(const bool analyse_only) const throw(SQLerror)
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
   if(KundenInstanz()) return; // Finger WEG
   force_eigene_KundenId(analyse_only);
   force_open_0er_und_2er(analyse_only);
@@ -87,6 +137,7 @@ void ppsInstanz::Reparatur_Konsistenz(const bool analyse_only) const throw(SQLer
 
 void ppsInstanz::force_2er_0er_geliefert_ist_null(const bool analyse_only) const throw(SQLerror)
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
   std::vector<st_table> Vtable;
   Vtable.push_back(st_table("auftragentry","geliefert"));
   std::vector<AuftragBase::ID> Vauftragid;
@@ -98,6 +149,7 @@ void ppsInstanz::force_2er_0er_geliefert_ist_null(const bool analyse_only) const
 
 void ppsInstanz::force_open_0er_und_2er(const bool analyse_only) const throw(SQLerror)
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
   std::vector<st_table> Vtable;
   Vtable.push_back(st_table("auftragentry","status"));
   Vtable.push_back(st_table("auftrag","stat"));
@@ -112,6 +164,7 @@ void ppsInstanz::force_execute(const std::vector<st_table> &Vtable,
           const int Wert,const std::string &was,
           const bool analyse_only) const throw(SQLerror)
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
   for(std::vector<st_table>::const_iterator i=Vtable.begin();i!=Vtable.end();++i)
    {
      std::string com="update "+i->table+" set "+i->column+"="+itos(Wert)+
@@ -136,6 +189,7 @@ void ppsInstanz::force_execute(const std::vector<st_table> &Vtable,
 
 void ppsInstanz::force_eigene_KundenId(const bool analyse_only) const throw(SQLerror)
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
   if(KundenInstanz()) return; // Finger WEG
   if(!ExterneBestellung())  //Wirklich ALLE Aufträge haben die eigene KundenID
    {
@@ -168,6 +222,7 @@ void ppsInstanz::force_eigene_KundenId(const bool analyse_only) const throw(SQLe
 
 void ppsInstanz::ReparaturLager(const int uid,const bool analyse_only) const throw(SQLerror)
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
   assert(LagerInstanz());
   std::vector<LagerInhalt> LI=getLagerInhalt(); 
   vormerkungen_subrahieren(uid,LI,analyse_only);
@@ -176,6 +231,7 @@ void ppsInstanz::ReparaturLager(const int uid,const bool analyse_only) const thr
 void ppsInstanz::vormerkungen_subrahieren(int uid,const  std::vector<LagerInhalt> &LI,const bool analyse_only) const
 {
 //std::cout << "Anzahl der Artikel im Lager = "<<LI.size()<<'\n';
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
   for(std::vector<LagerInhalt>::const_iterator i=LI.begin();i!=LI.end();++i)
    {
      bool set_dispo_to_zero=false;
@@ -239,6 +295,7 @@ void ppsInstanz::vormerkungen_subrahieren(int uid,const  std::vector<LagerInhalt
 #include <Aux/Trace.h>
 void ppsInstanz::DispoAuftraege_anlegen(const int uid,const ArtikelBase &artikel,const AuftragBase::mengen_t &menge) const
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
    assert(EigeneLagerKlasseImplementiert());
 std::cout << "Mengenänderung im Lager "<<Name()<<'\t'<<menge<<'\n';
    if(menge>=0)
@@ -249,6 +306,7 @@ std::cout << "Mengenänderung im Lager "<<Name()<<'\t'<<menge<<'\n';
 
 std::vector<LagerInhalt> ppsInstanz::getLagerInhalt() const
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
   std::vector<LagerInhalt> LI;
 #if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
   if(Id() == ppsInstanzID::Rohwarenlager)  LI=RohwarenLager().LagerInhalt();

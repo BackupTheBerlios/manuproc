@@ -260,6 +260,7 @@ int auftragstests(e_mode mode)
        if(!erfolgreich) { cout << "Planen der Weberei \n\n";
                return fehler();}
        }
+
 #ifdef PETIG_TEST
        Lieferschein liefs(ppsInstanzID::_Garn__Einkauf,cH_Kunde(Kunde::eigene_id));
        liefs.push_back(ARTIKEL_ACETAT,1,66,0);

@@ -8,132 +8,217 @@ digraph G {
 		center=true;
 
 	node [shape=record];
-		filenames [label="{mit_lager_open | Rep0er2ergleichzeitig | Rep0er2ergleichzeitigP}|{ | L | P}"];
+		filenames [label="{mit_lager_open | planen_kupfer | planen_faerberei_teil}|{ | K | F}"];
 
 
 	subgraph p_1 {
 		node [shape=record];
-		my_1 [label="{Kundenaufträge/20000/1 | 1271.35.760.25 | (31.12.2010,1)/L:/P: | 400/L:/P:}"];
+		my_1 [label="{Kundenaufträge/20000/1 | 1271.35.760.25 | (31.12.2010,1)/K:/F: | 400/K:/F:}"];
 		fontsize=12;}
 
 	subgraph p_2 {
 		node [shape=Mrecord];
-		my_2 [label="{Rollerei/0/1 | 1271.35.760.25 | (31.12.2010,1)/L:/P: | 400/L:/P:}"];
+		my_2 [label="{Rollerei/0/1 | 1271.35.760.25 | (31.12.2010,1)/K:/F: | 400/K:/F:}"];
 		fontsize=12;}
 
 	subgraph p_3 {
 		node [shape=Mrecord];
-		my_3 [label="{Färberei/0/1 | 1550/60/665 | (29.12.2010,1)/L:/P: | 10000/L:/P:}"];
+		my_3 [label="{Färberei/0/1 | 1550/60/665 | (29.12.2010,1)/K:/F: | 10000/K:/F:3000}"];
 		fontsize=12;}
 
 	subgraph p_4 {
 		node [shape=Mrecord];
-		my_4 [label="{Bandlager/0/1 | 1271/35/760 | (27.12.2010,1)/L:/P: | 8000/L:5000/P:}"];
+		my_4 [label="{Färberei/0/2 | 1550/60/665 | F:(31.12.2004,1) | F:0}"];
 		fontsize=12;}
 
 	subgraph p_5 {
 		node [shape=record];
-		my_5 [label="{Bandlager/1/1 | 1271/35/760 | (27.12.2010,1)/L:/P: | 2000/L:5000/P:}"];
+		my_5 [label="{Färberei/20000/1 | 1550/60/665 | F:(31.12.2004,1) | F:7000}"];
 		fontsize=12;}
 
 	subgraph p_6 {
 		node [shape=Mrecord];
-		my_6 [label="{Bandlager/2/1 | 1271/35/760 | (1.1.1970,1)/L:/P: | 0/L:/P:}"];
+		my_6 [label="{Bandlager/0/1 | 1271/35/760 | (27.12.2010,1)/K:/F: | 8000/K:/F:3000}"];
 		fontsize=12;}
 
 	subgraph p_7 {
 		node [shape=Mrecord];
-		my_7 [label="{Weberei/0/1 | 1271/35/760 | (27.12.2010,1)/L:/P: | 8000/L:5000/P:2000}"];
+		my_7 [label="{Bandlager/0/2 | 1271/35/760 | F:(29.12.2004,1) | F:5000}"];
 		fontsize=12;}
 
 	subgraph p_8 {
 		node [shape=record];
-		my_8 [label="{Weberei/1/1 | 1271/35/760 | P:(27.12.2010,1) | P:3000}"];
+		my_8 [label="{Bandlager/1/1 | 1271/35/760 | (27.12.2010,1)/K:/F: | 2000/K:/F:0}"];
 		fontsize=12;}
 
 	subgraph p_9 {
-		node [shape=Mrecord];
-		my_9 [label="{Weberei/2/5 | 1271/35/760 | P:(1.1.2009,1) | P:0}"];
+		node [shape=record];
+		my_9 [label="{Bandlager/1/2 | 1271/35/760 | F:(29.12.2004,1) | F:2000}"];
 		fontsize=12;}
 
 	subgraph p_10 {
 		node [shape=Mrecord];
-		my_10 [label="{Rohwarenlager/0/1 | Kupferdraht 0,10mm   daVinci | (29.11.2010,1)/L:/P: | 58/L:28/P:0}"];
+		my_10 [label="{Bandlager/2/1 | 1271/35/760 | (1.1.1970,1)/K:/F: | 0/K:/F:}"];
 		fontsize=12;}
 
 	subgraph p_11 {
 		node [shape=Mrecord];
-		my_11 [label="{Rohwarenlager/0/2 | Acetat 133dTex arnica  daVinci | (29.11.2010,1)/L:/P: | 24/L:6/P:0}"];
+		my_11 [label="{Weberei/0/1 | 1271/35/760 | (27.12.2010,1)/K:/F: | 8000/K:/F:3000}"];
 		fontsize=12;}
 
 	subgraph p_12 {
-		node [shape=record];
-		my_12 [label="{Rohwarenlager/1/1 | Kupferdraht 0,10mm   daVinci | (29.11.2010,1)/L:/P: | 22/L:/P:20}"];
+		node [shape=Mrecord];
+		my_12 [label="{Weberei/0/2 | 1271/35/760 | F:(29.12.2004,1) | F:5000}"];
 		fontsize=12;}
 
 	subgraph p_13 {
-		node [shape=record];
-		my_13 [label="{Rohwarenlager/1/2 | Acetat 133dTex arnica  daVinci | (29.11.2010,1)/L:/P: | 24/L:/P:12}"];
+		node [shape=Mrecord];
+		my_13 [label="{Rohwarenlager/0/1 | Kupferdraht 0,10mm   daVinci | (29.11.2010,1)/K:/F: | 58/K:/F:30}"];
 		fontsize=12;}
 
 	subgraph p_14 {
 		node [shape=Mrecord];
-		my_14 [label="{Rohwarenlager/2/1 | Kupferdraht 0,10mm   daVinci | (1.1.1970,1)/L:/P: | 0/L:/P:2}"];
+		my_14 [label="{Rohwarenlager/0/2 | Acetat 133dTex arnica  daVinci | (29.11.2010,1)/K:/F: | 24/K:/F:18}"];
 		fontsize=12;}
 
 	subgraph p_15 {
 		node [shape=Mrecord];
-		my_15 [label="{Rohwarenlager/2/2 | Acetat 133dTex arnica  daVinci | (1.1.1970,1)/L:/P: | 0/L:/P:12}"];
+		my_15 [label="{Rohwarenlager/0/3 | Kupferdraht 0,10mm   daVinci | F:(1.12.2004,1) | F:28}"];
 		fontsize=12;}
 
 	subgraph p_16 {
 		node [shape=Mrecord];
-		my_16 [label="{(Garn-)Einkauf/0/1 | Kupferdraht 0,10mm   daVinci | (29.11.2010,1)/L:/P: | 58/L:28/P:0}"];
+		my_16 [label="{Rohwarenlager/0/4 | Acetat 133dTex arnica  daVinci | F:(1.12.2004,1) | F:6}"];
 		fontsize=12;}
 
 	subgraph p_17 {
-		node [shape=Mrecord];
-		my_17 [label="{(Garn-)Einkauf/0/2 | Acetat 133dTex arnica  daVinci | (29.11.2010,1)/L:/P: | 24/L:6/P:0}"];
+		node [shape=record];
+		my_17 [label="{Rohwarenlager/1/1 | Kupferdraht 0,10mm   daVinci | (29.11.2010,1)/K:/F: | 22/K:/F:0}"];
 		fontsize=12;}
 
 	subgraph p_18 {
+		node [shape=record];
+		my_18 [label="{Rohwarenlager/1/2 | Acetat 133dTex arnica  daVinci | (29.11.2010,1)/K:/F: | 24/K:/F:0}"];
+		fontsize=12;}
+
+	subgraph p_19 {
+		node [shape=record];
+		my_19 [label="{Rohwarenlager/1/3 | Kupferdraht 0,10mm   daVinci | F:(1.12.2004,1) | F:22}"];
+		fontsize=12;}
+
+	subgraph p_20 {
+		node [shape=record];
+		my_20 [label="{Rohwarenlager/1/4 | Acetat 133dTex arnica  daVinci | F:(1.12.2004,1) | F:24}"];
+		fontsize=12;}
+
+	subgraph p_21 {
 		node [shape=Mrecord];
-		my_18 [label="{Spritzgießerei/0/1 | Ringe 12 mm | (29.12.2010,1)/L:/P: | 800/L:/P:}"];
+		my_21 [label="{Rohwarenlager/2/1 | Kupferdraht 0,10mm   daVinci | (1.1.1970,1)/K:/F: | 0/K:/F:}"];
+		fontsize=12;}
+
+	subgraph p_22 {
+		node [shape=Mrecord];
+		my_22 [label="{Rohwarenlager/2/2 | Acetat 133dTex arnica  daVinci | (1.1.1970,1)/K:/F: | 0/K:/F:}"];
+		fontsize=12;}
+
+	subgraph p_23 {
+		node [shape=Mrecord];
+		my_23 [label="{(Garn-)Einkauf/0/1 | Kupferdraht 0,10mm   daVinci | (29.11.2010,1)/K:/F: | 58/K:/F:30}"];
+		fontsize=12;}
+
+	subgraph p_24 {
+		node [shape=Mrecord];
+		my_24 [label="{(Garn-)Einkauf/0/2 | Acetat 133dTex arnica  daVinci | (29.11.2010,1)/K:/F: | 24/K:0/F:}"];
+		fontsize=12;}
+
+	subgraph p_25 {
+		node [shape=Mrecord];
+		my_25 [label="{(Garn-)Einkauf/0/3 | Acetat 133dTex arnica  daVinci | K:(31.12.2005,1)/F: | K:0/F:}"];
+		fontsize=12;}
+
+	subgraph p_26 {
+		node [shape=Mrecord];
+		my_26 [label="{(Garn-)Einkauf/0/4 | Kupferdraht 0,10mm   daVinci | F:(1.12.2004,1) | F:28}"];
+		fontsize=12;}
+
+	subgraph p_27 {
+		node [shape=Mrecord];
+		my_27 [label="{(Garn-)Einkauf/0/5 | Acetat 133dTex arnica  daVinci | F:(1.12.2004,1) | F:6}"];
+		fontsize=12;}
+
+	subgraph p_28 {
+		node [shape=Mrecord];
+		my_28 [label="{(Garn-)Einkauf/2/1 | Acetat 133dTex arnica  daVinci | K:(31.12.2005,1)/F: | K:76/F:82}"];
+		fontsize=12;}
+
+	subgraph p_29 {
+		node [shape=record];
+		my_29 [label="{(Garn-)Einkauf/20000/1 | Acetat 133dTex arnica  daVinci | K:(31.12.2005,1)/F: | K:100/F:}"];
+		fontsize=12;}
+
+	subgraph p_30 {
+		node [shape=Mrecord];
+		my_30 [label="{Spritzgießerei/0/1 | Ringe 12 mm | (29.12.2010,1)/K:/F: | 800/K:/F:}"];
 		fontsize=12;}
 
 	my_1 -> my_2 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="400//"];
 
-	my_2 -> my_3 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="10000//"];
+	my_2 -> my_3 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="10000//3000"];
 
-	my_2 -> my_18 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="800//"];
+	my_2 -> my_4 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="7000"];
 
-	my_3 -> my_4 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="10000//"];
+	my_2 -> my_30 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="800//"];
 
-	my_4 -> my_5 [fontsize=12,labeldistance=3.5,labelangle=90, labelfontsize=14,labelfontcolor=black,headlabel="2000/5000/", weight=-1];
-	{rank=same;my_4 my_5}
+	my_3 -> my_6 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="10000//3000"];
 
-	my_4 -> my_7 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="8000/5000/"];
+	my_4 -> my_5 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="7000"];
 
-	my_7 -> my_8 [fontsize=12,labeldistance=3.5,labelangle=90, labelfontsize=14,labelfontcolor=black,headlabel="3000", weight=-1];
-	{rank=same;my_7 my_8}
+	my_4 -> my_7 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="7000"];
 
-	my_7 -> my_10 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="80/50/20"];
+	my_6 -> my_8 [fontsize=12,labeldistance=3.5,labelangle=90, labelfontsize=14,labelfontcolor=black,headlabel="2000//0", weight=-1];
+	{rank=same;my_6 my_8}
 
-	my_7 -> my_11 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="48/30/12"];
+	my_6 -> my_11 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="8000//3000"];
 
-	my_9 -> my_8 [fontsize=12,labeldistance=3.5,labelangle=90, labelfontsize=14,labelfontcolor=black,headlabel="0", weight=-1];
-	{rank=same;my_9 my_8}
+	my_7 -> my_9 [fontsize=12,labeldistance=3.5,labelangle=90, labelfontsize=14,labelfontcolor=black,headlabel="2000", weight=-1];
+	{rank=same;my_7 my_9}
 
-	my_10 -> my_12 [fontsize=12,labeldistance=3.5,labelangle=90, labelfontsize=14,labelfontcolor=black,headlabel="22//20", weight=-1];
-	{rank=same;my_10 my_12}
+	my_7 -> my_12 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="5000"];
 
-	my_10 -> my_16 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="58/28/0"];
+	my_11 -> my_13 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="80//30"];
 
-	my_11 -> my_13 [fontsize=12,labeldistance=3.5,labelangle=90, labelfontsize=14,labelfontcolor=black,headlabel="24//12", weight=-1];
-	{rank=same;my_11 my_13}
+	my_11 -> my_14 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="48//18"];
 
-	my_11 -> my_17 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="24/6/0"];
-		label="Rep_Petig_0er_2er_gleichzeitig"
+	my_12 -> my_15 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="50"];
+
+	my_12 -> my_16 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="30"];
+
+	my_13 -> my_17 [fontsize=12,labeldistance=3.5,labelangle=90, labelfontsize=14,labelfontcolor=black,headlabel="22//0", weight=-1];
+	{rank=same;my_13 my_17}
+
+	my_13 -> my_23 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="58//30"];
+
+	my_14 -> my_18 [fontsize=12,labeldistance=3.5,labelangle=90, labelfontsize=14,labelfontcolor=black,headlabel="24//0", weight=-1];
+	{rank=same;my_14 my_18}
+
+	my_14 -> my_24 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="24/0/"];
+
+	my_14 -> my_25 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="24/18"];
+
+	my_15 -> my_19 [fontsize=12,labeldistance=3.5,labelangle=90, labelfontsize=14,labelfontcolor=black,headlabel="22", weight=-1];
+	{rank=same;my_15 my_19}
+
+	my_15 -> my_26 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="28"];
+
+	my_16 -> my_20 [fontsize=12,labeldistance=3.5,labelangle=90, labelfontsize=14,labelfontcolor=black,headlabel="24", weight=-1];
+	{rank=same;my_16 my_20}
+
+	my_16 -> my_27 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="6"];
+
+	my_25 -> my_29 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="24/18"];
+
+	my_28 -> my_29 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="76/82"];
+		label="Planungs Test"
 		labelloc=top
 }
 END

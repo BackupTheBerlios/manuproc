@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.14 2002/12/03 10:34:03 thoma Exp $
+// $Id: ppsInstanz.h,v 1.15 2002/12/03 13:54:17 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -36,6 +36,7 @@ class AufEintrag;
 class ArtikelBase;
 class cH_ppsInstanz;
 class LagerInhalt;
+class AuftragBase;
 
 namespace ppsInstanzID=ManuProC::DynamicEnums::Instanzen;
 namespace ManuProC{ struct st_produziert; }
@@ -155,6 +156,9 @@ public:
           const std::vector<ManuProcEntity<>::ID> &Vauftragid,
           const int Wert,const std::string &was,const bool analyse_only) const throw(SQLerror);
 
+      enum e_zumode{ungeplant,geplant};
+      void Reparatur_Zuordnungen(const int uid,const bool analyse_only,
+         const  ManuProcEntity<>::ID auftragid,const bool kinder,const e_zumode zumode) const throw(SQLerror);
 
  public:
       // Einlesen des Lagerinhalts und Anpassen der 2er unter Berücksichtigung der 1er
@@ -162,6 +166,11 @@ public:
       // Entweder existieren 0er oder es existieren 2er
       void Reparatur_0er_und_2er(const int uid,const bool analyse_only) const throw(SQLerror);
       void Reparatur_Konsistenz(const bool analyse_only) const throw(SQLerror);
+      // Summe aller 0er-Zuordnungen zu einem 1|20000 = Menge des 1|20000
+      void Reparatur_0_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror);
+      // Summe aller 2er-Zuordnungen zu einem 1|20000 = Menge des 1|20000
+      void Reparatur_2_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror);
+      
 };
 
 
