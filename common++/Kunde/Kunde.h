@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.53 2003/06/20 18:14:10 jacek Exp $
+// $Id: Kunde.h,v 1.54 2003/07/21 12:41:35 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -213,6 +213,7 @@ public:
 
         const std::string getName() const {  return adresse.firma; }
         const std::string getName2() const {  return adresse.name2; }        
+        const std::string getFullName() const;
         const std::string getSortName() const {  return adresse.sortname; }
         ID Id() const {  return entityid; }
 //        ID GruppenId() const {  return KundenGruppennr; }

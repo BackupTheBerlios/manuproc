@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.37 2003/06/20 18:14:10 jacek Exp $
+// $Id: Kunde.cc,v 1.38 2003/07/21 12:41:35 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -49,6 +49,19 @@ H_Kunde::H_Kunde(Kunde::ID id)
      *this=H_Kunde(new Kunde(id));
       cache.Register(id,*this);
    }
+}
+
+
+
+const std::string Kunde::getFullName() const
+{
+ std::string ret;
+
+ ret=adresse.firma;
+ if(isInGrp(KundengruppeID::Personen))
+   ret += " "+adresse.name2;
+
+ return ret;
 }
 
 
