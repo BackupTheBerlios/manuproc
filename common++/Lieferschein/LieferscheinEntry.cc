@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.57 2004/02/12 10:41:31 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.58 2004/02/12 14:28:38 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -175,8 +175,8 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
        }
      }
 
-  if(new_status==STORNO)
-    updateLieferscheinMenge(0,0);
+//  if(new_status==STORNO)
+//    updateLieferscheinMenge(0,0);
 
   } // END OF if(new_status==OPEN || new_status==STORNO)
 

@@ -194,8 +194,14 @@ void Rechnung::deleteLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
  
  Query("delete from rechnungentry where lfrsid=? and rngid=?")
  	<< lfrs.Id() << Id(); 
- Query("update lieferschein set rngid=null where lfrsid=?")
- 	<< lfrs.Id();
+ Query("update lieferschein set rngid=null where "
+	" (lfrsid,instanz)=(?,?)")
+ 	<< lfrs.Id() << lfrs.Instanz()->Id();
+
+ Query("update lieferscheinentry set status=? where "
+	" (lfrsid,instanz)=(?,?)")
+ 	<< (AufStatVal)OPEN << lfrs.Id() << lfrs.Instanz()->Id();
+
  SQLerror::test(__FILELINE__);
  tr.commit();
  
@@ -300,6 +306,10 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
  	"where (instanz,lfrsid)=(?,?)")
  	<< Id()
  	<< lfrs.Instanz()->Id() << lfrs.Id();
+ Query("update lieferscheinentry set status=? where "
+	" (lfrsid,instanz)=(?,?)")
+ 	<< (AufStatVal)CLOSED << lfrs.Id() << lfrs.Instanz()->Id();
+
  SQLerror::test(__FILELINE__);
  tr.commit();
 }
