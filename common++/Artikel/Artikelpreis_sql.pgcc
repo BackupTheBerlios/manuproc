@@ -1,4 +1,4 @@
-// $Id: Artikelpreis_sql.pgcc,v 1.18 2003/06/05 11:00:01 christof Exp $
+// $Id: Artikelpreis_sql.pgcc,v 1.19 2003/06/05 12:48:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -151,7 +151,7 @@ void Artikelpreis::UnCache(const PreisListe::ID liste,const ArtikelBase &ab)
 };
 
 Artikelpreis::Artikelpreis(const cH_Kunde &k,const ArtikelBase &a, 
-				int bestellmenge=1)
+				int bestellmenge)
 	: errechnet(false), gefunden(false), gefunden_in(ManuProcEntity<>::none_id)
 {  Artikelpreis ap;
 
@@ -176,7 +176,7 @@ Artikelpreis::Artikelpreis(const cH_Kunde &k,const ArtikelBase &a,
 
 const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
 		const Preis &p, const ArtikelBase &a,
-		int mindmenge=1,
+		int mindmenge,
 		std::vector<std::string> ins_all_komp) throw(SQLerror)
 {
  exec sql begin declare section;
