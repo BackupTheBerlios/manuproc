@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.13 2004/09/24 22:52:15 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.14 2004/10/22 15:28:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -366,4 +366,24 @@ int Query::Code()
 
 bool FetchIStream::good() const
 {  return result && naechstesFeld<nfields; }
+
+void FetchIStream::Fake::init()
+{  result=malloc(sizeof(*result));
+   *result=0;
+   nfields=1;
+}
+
+FetchIStream::Fake::Fake(const std::string &val) : value(val)
+{  init();
+   result[0]=value.c_str();
+}
+
+FetchIStream::Fake::Fake(const Fake &a) : value(a.value)
+{  init();
+   if (a.result[0]) result[0]=value.c_str();
+}
+
+FetchIStream::Fake::~Fake()
+{  if (result) free(result);
+}
 #endif
