@@ -35,6 +35,6 @@ COPY "prod_instanz" FROM stdin;
 5	Schraubenzieherlager	10	50	t	\N	t	\N	\N	t	l	\N	\N
 20	Gieﬂerei	\N	6	t	\N	t	5	\N	\N	P	\N	\N
 30	Rohwarenlager	35	52	\N	\N	\N	\N	\N	t	l	\N	\N
-10	Werkstatt	\N	4	\N	\N	t	1	5	\N	P	\N	\N
+10	Werkstatt	\N	4	t	\N	t	1	5	\N	P	\N	\N
 21	Schmelze	\N	7	\N	\N	\N	10	\N	\N	P	\N	\N
 \.
