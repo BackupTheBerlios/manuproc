@@ -1,4 +1,4 @@
-// $Id: dbconnect_shared.cc,v 1.1 2004/03/11 12:17:32 christof Exp $
+// $Id: dbconnect_shared.cc,v 1.2 2004/03/11 15:17:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -62,7 +62,13 @@ void ManuProC::dbconnect(const Connection &c) throw(SQLerror)
    char *zErrMsg = 0;
    db_connection=sqlite_open(c.Dbase().c_str(),0,&zErrMsg);
    // don't we have to free zErrMsg?
-   if (!db_connection) throw(SQLerror("dbconnect",-1,zErrMsg));
+   if (!db_connection) 
+   {  std::string err=zErrMsg;
+      sqlite_freemem(zErrMsg);
+      throw(SQLerror("dbconnect",-1,err));
+   }
+   // sollte nicht passieren ...
+   if (zErrMsg) sqlite_freemem(zErrMsg);
    Global_Settings::database_connected();
 }
 

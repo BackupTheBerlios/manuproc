@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.4 2004/03/11 14:49:25 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.5 2004/03/11 15:17:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,19 +17,23 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ManuProCConfig.h>
-
-#include <Misc/FetchIStream.h>
-#include <Misc/SQLerror.h>
-
-#include <Misc/itos.h>
 #include <locale.h>
 #include <cassert>
+#include <ManuProCConfig.h>
+#include <Misc/FetchIStream.h>
+#include <Misc/SQLerror.h>
+#include <Misc/itos.h>
 
-#ifdef OLD_ECPG
-#define ECPGdo300
-#else
-#define ECPGdo300 0,1,
+#ifdef MPC_SQLITE
+#include <sqlite.h>
+#include <Misc/dbconnect.h>
+
+#define ECPG_TOO_MANY_ARGUMENTS         -201
+#define ECPG_TOO_FEW_ARGUMENTS          -202
+#define ECPG_MISSING_INDICATOR          -209
+#define ECPG_DATA_NOT_ARRAY             -211
+#define ECPG_UNKNOWN_DESCRIPTOR         -240
+#define ECPG_INVALID_DESCRIPTOR_INDEX   -241
 #endif
 
 Query::debug_environment::debug_environment() : on(false)
@@ -281,15 +285,19 @@ int FetchIStream::getIndicator() const
 
 // note cursor is the name for both the cursor and the descriptor
 void Query::Execute() throw(SQLerror)
-{
+{  char **result=0;
    char *msgbuf=0;
-   sqlite *db=sqlite_open(database.c_str(),0,&msgbuf);
-   if(db==0)
-     throw SQLerror(__FUNCTION__,SQLITE_ERROR,msgbuf);
-   int rc=sqlite_exec(db, query.c_str(), Query::SQLiteCallBack, 0, &msgbuf);   
-   sqlite_error=rc;
+   int rows,cols;
+   int rc=sqlite_get_table(ManuProC::db_connection, query.c_str(), 
+   		&result, &rows, &cols, &msgbuf);
    if(rc!=SQLITE_OK)
-     throw SQLerror(__FUNCTION__,rc,msgbuf);
+   {  std::string err=msgbuf;
+      sqlite_freemem(msgbuf);
+      throw SQLerror(__FUNCTION__,rc,msgbuf);
+   }
+   lines=rows;
+   nfields=cols;
+   if (msgbuf) sqlite_freemem(msgbuf);
 }
 
 void Query::Fetch(FetchIStream &is)
@@ -298,25 +306,13 @@ void Query::Fetch(FetchIStream &is)
 
    if (!eof)
    {  if (line<lines) 
-      {  ++line;
-         is=FetchIStream(result+(line*nfields),line-1,nfields);
+      {  is=FetchIStream(result+((line+1)*nfields),line,nfields);
+         ++line;
          return;
       }
       eof=true;
    }
   is=FetchIStream();
-}
-
-void Query::Execute(const std::string &command,const std::string database) throw(SQLerror)
-{
-   char *msgbuf=0;
-   sqlite *db=sqlite_open(database.c_str(),0,&msgbuf);
-   if(db==0)
-     throw SQLerror(__FUNCTION__,SQLITE_ERROR,msgbuf);
-   int rc=sqlite_exec(db, command.c_str(), Query::SQLiteCallBack, 0, &msgbuf);   
-   sqlite_error=rc;
-   if(rc!=SQLITE_OK)
-     throw SQLerror(__FUNCTION__,rc,msgbuf);
 }
 
 #endif
