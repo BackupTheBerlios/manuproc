@@ -1,4 +1,4 @@
-// $Id: FertigWarenLager.h,v 1.11 2003/07/25 16:26:36 jacek Exp $
+// $Id: FertigWarenLager.h,v 1.12 2003/07/29 09:15:03 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -36,11 +36,15 @@ public:
       		LagerBase(ppsInstanzID::Fertigwarenlager),
       		fw(_fw)  
       {}
+      FertigWarenLager() : LagerBase(ppsInstanzID::Fertigwarenlager),
+      		fw(FertigWaren()) {}
 #else
       FertigWarenLager(const FertigWaren _fw) :
       		LagerBase(ppsInstanzID::None),
       		fw(_fw)  
       {}
+      FertigWarenLager() : LagerBase(ppsInstanzID::None),
+      		fw(FertigWaren()) {}
 #endif
 
    ArtikelBase Artikel() const {return fw.Artikel();}

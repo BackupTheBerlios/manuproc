@@ -22,6 +22,7 @@
 #include <Lager/Lager.h>
 #include <Lager/JumboLager.h>
 #include <Lager/RohwarenLager.h>
+#include <Lager/FertigWarenLager.h>
 //#include <Misc/SQLerror.h>
 #include <Misc/TraceNV.h>
 //#include <sqlca.h>
@@ -220,8 +221,8 @@ std::vector<LagerInhalt> ppsInstanzReparatur::getLagerInhalt() const
   else if(Instanz() == ppsInstanzID::Bandlager) LI=JumboLager().LagerInhalt();
   else 
 #elif defined MABELLA_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
-  if(Instanz() == ppsInstanzID::FertigWarenLager)  
-	LI=FertigWarenLager::LagerInhalt();
+  if(Instanz() == ppsInstanzID::Fertigwarenlager)  
+	LI=FertigWarenLager().LagerInhalt();
   else 
 #endif 
    { std::cout << Instanz()<<' '<<"\tKeine LagerKlasse implementiert\n";

@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.37 2003/07/25 12:46:01 jacek Exp $
+// $Id: Lager.cc,v 1.38 2003/07/29 09:15:03 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -24,7 +24,10 @@
 #include <Misc/TraceNV.h>
 #include <Misc/FetchIStream.h>
 #include <Auftrag/AufEintrag.h>
+
+#ifndef MABELLA_LAGERHACK
 #include "FertigWarenLager.h"
+#endif
 
 std::ostream &operator<<(std::ostream &o,const ProductionContext &pc)
 {  o << pc.aeb << '|' << pc.leb;
@@ -49,6 +52,8 @@ void Lager::rein_ins_lager(const ArtikelBase &artikel,
 	const AuftragBase::mengen_t &menge,unsigned uid,bool produziert,
 	        const ProductionContext &ctx) const
 {  
+#ifndef MABELLA_LAGERHACK
+
 #ifdef MABELLA_EXTENSIONS
  FertigWaren::enum_Aktion a;
  if(ctx.leb.valid()) a=(FertigWaren::enum_Aktion)'L';
@@ -60,6 +65,12 @@ void Lager::rein_ins_lager(const ArtikelBase &artikel,
 #else
  LagerBase::rein_ins_lager(artikel,menge,uid,produziert,ctx); 
 #endif
+
+#else
+ LagerBase::rein_ins_lager(artikel,menge,uid,produziert,ctx); 
+#endif
+
+
 
 }
 
@@ -73,6 +84,8 @@ void Lager::raus_aus_lager(const ArtikelBase &artikel,
 	AuftragBase::mengen_t menge,unsigned uid,bool fuer_auftrag,
 	        const ProductionContext &ctx) const
 {  
+#ifndef MABELLA_LAGERHACK
+
 #ifdef MABELLA_EXTENSIONS
  FertigWaren::enum_Aktion a;
  if(ctx.leb.valid()) a=(FertigWaren::enum_Aktion)'L';
@@ -84,7 +97,15 @@ void Lager::raus_aus_lager(const ArtikelBase &artikel,
 #else
  LagerBase::raus_aus_lager(artikel,menge,uid,fuer_auftrag,ctx); 
 #endif
+
+#else
+
+ LagerBase::raus_aus_lager(artikel,menge,uid,fuer_auftrag,ctx); 
+
+#endif
 }
+
+
 
 
 

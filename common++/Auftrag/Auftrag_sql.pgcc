@@ -493,7 +493,7 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
       	" from prov_verkaeufer v, prov_config c"
 	" join "+tabelle+" b on (b.artikel=c.artikel) "
       	" where b.id=auftragentry.artikelid"
-      	" and v.verknr=? and v.kundennr=?)"
+      	" and v.verknr=? and c.kundennr=v.kundennr and v.kundennr=?)"
       	" where (instanz,auftragid,zeilennr)=(?,?,?)")
       	<< getVerknr()
       	<< getKundennr()

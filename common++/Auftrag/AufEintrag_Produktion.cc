@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.4 2003/07/25 12:53:17 jacek Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.5 2003/07/29 09:15:03 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -38,7 +38,11 @@
 #include <Auftrag/selFullAufEntry.h>
 
 #ifdef MABELLA_EXTENSIONS
-//#include <Lager/FertigWarenLager.h>
+
+#ifdef MABELLA_LAGERHACK
+#include <Lager/FertigWarenLager.h>
+#endif
+
 #include <Artikel/ArtikelBase.h>
 #endif
 
@@ -169,18 +173,21 @@ void AufEintrag::ProduziertNG(mengen_t M,const ProductionContext2 &ctx)
    	 assert(!"Rest geblieben");
    }
 
-//#ifdef MABELLA_EXTENSIONS
-// MABELLA FERTIGLAGER HACK
+#ifdef MABELLA_EXTENSIONS
 
-//if(Instanz() == ppsInstanzID::Kundenauftraege)
-//  {  FertigWaren fw(artikel,(FertigWaren::enum_Aktion)'L',
-//                      M.abs().as_int(),ctx.Id());
-//     FertigWarenLager fwl(fw);
-//     if(M < 0) fwl.Einlagern();
-//     else if(M > 0) fwl.Auslagern();
-//  }
+#ifdef MABELLA_LAGERHACK
 
-// #endif
+if(Instanz() == ppsInstanzID::Kundenauftraege)
+  {  FertigWaren fw(artikel,(FertigWaren::enum_Aktion)'L',
+                      M.abs().as_int(),ctx.Id());
+     FertigWarenLager fwl(fw);
+     if(M < 0) fwl.Einlagern();
+     else if(M > 0) fwl.Auslagern();
+  }
+#endif
+
+#endif
+
 }
 
 namespace {
