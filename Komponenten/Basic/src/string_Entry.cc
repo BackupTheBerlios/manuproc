@@ -1,4 +1,4 @@
-// $Id: string_Entry.cc,v 1.6 2004/04/30 13:31:02 christof Exp $
+// $Id: string_Entry.cc,v 1.7 2004/05/03 07:53:27 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -19,7 +19,9 @@
  */
 
 #include "string_Entry.hh"
-#include <sigc++/compatibility.h>
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#  include <sigc++/compatibility.h>
+#endif
 
 void string_Entry::Connection::keypress()
 {  any_change=true;
