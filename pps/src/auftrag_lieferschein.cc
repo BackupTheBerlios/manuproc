@@ -114,7 +114,7 @@ try{
    else if (artikelbox->getBezSchema()->Id() != k->getSchemaId())
     { artikelbox->setExtBezSchema(k->getSchema(ArtikelTypID::Band)); }
 #else
-   artikelbox->setExtBezSchema(k->getSchema(ArtikelTypID::aufgemachtes_Band));
+   artikelbox->setExtBezSchema(k->getSchema(ManuProC::DefaultValues::ArtikelTyp));
 #endif
    artikelbox->setExtBezSchemaID(k->getSchemaId());
  }

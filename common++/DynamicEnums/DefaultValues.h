@@ -1,4 +1,4 @@
-/* $Id: DefaultValues.h,v 1.3 2002/09/27 09:14:41 thoma Exp $ */
+/* $Id: DefaultValues.h,v 1.4 2002/09/27 13:01:39 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -33,7 +33,7 @@ namespace ManuProC {
 
 
 #ifdef MABELLA_EXTENSIONS
-  const static ManuProC::DynamicEnums::ArtikelTyp::enum_t  ArtikelTyp=3;
+  const static ManuProC::DynamicEnums::ArtikelTyp::enum_t  ArtikelTyp=ManuProC::DynamicEnums::aufgemachtes_Band;
   const static ManuProC::DynamicEnums::Prozesse::enum_t  Prozess=ManuProC::DynamicEnums::Prozesse::Verarbeitung;
 #elif defined PETIG_EXTENSIONS
   const static ManuProC::DynamicEnums::ArtikelTyp::enum_t  ArtikelTyp=ManuProC::DynamicEnums::ArtikelTyp::Band;
