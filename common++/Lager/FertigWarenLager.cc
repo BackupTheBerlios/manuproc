@@ -112,8 +112,6 @@ void FertigWarenLager::Buchen(FertigWaren::e_buchen buchen,
 
  SQLerror::test(__FILELINE__);   
 
- fw.setStk(fw.Stk(buchen));
-
  if(buchen == FertigWaren::Rein)
    rein_ins_lager(fw.Artikel(),fw.Stk(FertigWaren::AsIs),true,ctx);
  else
@@ -122,6 +120,8 @@ void FertigWarenLager::Buchen(FertigWaren::e_buchen buchen,
  else
  if(buchen == FertigWaren::WiederRein)
    wiedereinlagern(fw.Artikel(), fw.Stk(FertigWaren::Rein));
+
+ fw.setStk(fw.Stk(buchen));
 
  tr.commit();
 }
@@ -155,8 +155,6 @@ void FertigWarenLager::Inventur()
    << fw.getUserID()
    << fw.Bestand();
 
- fw.setStk(buchmenge);
-
 
  SQLerror::test(__FILELINE__);   
 
@@ -166,6 +164,8 @@ void FertigWarenLager::Inventur()
  else
  if(buchmenge < 0)
    raus_aus_lager(fw.Artikel(),fw.Stk(FertigWaren::Raus),false);
+
+ fw.setStk(buchmenge);
 
  tr.commit();
 }

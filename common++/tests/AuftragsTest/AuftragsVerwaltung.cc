@@ -1,4 +1,4 @@
-// $Id: AuftragsVerwaltung.cc,v 1.17 2003/11/25 16:38:21 jacek Exp $
+// $Id: AuftragsVerwaltung.cc,v 1.18 2003/12/02 14:06:50 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -48,14 +48,13 @@ void AuftragsVerwaltung::kunden_bestellmenge_aendern(AufEintrag &AE,AuftragBase:
 
 AufEintragBase AuftragsVerwaltung::anlegen2()
 {
-   Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
+   Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE2);
 #ifdef MANU_PROC_TEST
    return auftrag.push_back(300,DATUM,ARTIKEL_SORTIMENT_BUNT,OPEN,true);
 #elif defined PETIG_TEST 
    return auftrag.push_back(300,DATUM,ARTIKEL_ROLLEREI,OPEN,true);
 #elif defined MABELLA_TEST 
-assert(!"never get here");
-   return auftrag.push_back(400,DATUM,ARTIKEL_TRIO,UNCOMMITED,true);
+   return auftrag.push_back(8,DATUM,ARTIKEL_TRIO,OPEN,true);
 #endif
 }
 

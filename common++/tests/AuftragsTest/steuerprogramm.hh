@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.hh,v 1.42 2003/09/02 12:10:52 christof Exp $
+// $Id: steuerprogramm.hh,v 1.43 2003/12/02 14:06:50 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -104,6 +104,7 @@
 
 #define KUNDE 11302
 #define KUNDE2 20104
+#define LIEFERANT 1
 
 #endif
 
