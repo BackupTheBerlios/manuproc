@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.45 2003/01/30 16:32:11 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.46 2003/01/31 07:23:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -44,6 +44,8 @@
 
 exec sql include sqlca;
 
+// Menge wurde geliefert. Um die Pfeile über uns muss sich jemand anderes
+// kümmern - sinnvoll?
 void AufEintrag::abschreiben(mengen_t menge,
     ManuProcEntity<>::ID lfrsid) throw(SQLerror)
 {
@@ -58,8 +60,8 @@ void AufEintrag::abschreiben(mengen_t menge,
   int BESTELLT=getStueck().as_int();
   char LASTDATE[21];
  exec sql end declare section;
+ // Ihhh
  Petig::Datum::today().write_postgres(LASTDATE,sizeof LASTDATE);
-//if(Id()==2) ECPGdebug(1,stdout);
 
  if(menge>=0 && getEntryStatus()!=(AufStatVal)OPEN) 
     throw(SQLerror(__FILELINE__,-1,"Auftragszeile ist nicht offen sondern "+itos(STATUS)));
@@ -78,6 +80,7 @@ void AufEintrag::abschreiben(mengen_t menge,
  Transaction tr;
  exec sql lock table auftragentry in exclusive mode;
  bool delete_entry=false;
+
 #ifdef PETIG_EXTENSIONS
   if(menge<0 &&
      Instanz()!=ppsInstanzID::Kundenauftraege && 
@@ -90,6 +93,7 @@ void AufEintrag::abschreiben(mengen_t menge,
      if(BESTELLT==0 && GELIEFERT==0 &&  STATUS==CLOSED) delete_entry=true;
    }   
 #endif
+
  if(delete_entry)
    exec sql delete from auftragentry       
      where (instanz,auftragid,zeilennr) = (:INSTANZ,:AUFID,:AUFZNR);
@@ -100,7 +104,7 @@ void AufEintrag::abschreiben(mengen_t menge,
  SQLerror::test(__FILELINE__);
 
 #ifdef MABELLA_EXTENSIONS // Lager updaten
-#warning Jacek: ist das wirklich noch sinnvoll? CP
+#warning Jacek: Das muss raus, sobald es mehrstufig ist
  if(Instanz() == ppsInstanzID::Kundenauftraege)
    {
     FertigWaren fw(Artikel(),(FertigWaren::enum_Aktion)'L',menge.as_int(),lfrsid);
@@ -112,11 +116,8 @@ void AufEintrag::abschreiben(mengen_t menge,
  geliefert=GELIEFERT;
  if(geliefert>=bestellt) entrystatus=(AufStatVal)CLOSED;
 
-#ifdef PETIG_EXTENSIONS
+ // zumindest 2er werden nie geschlossen, nur auf 0 gesetzt
  if(STATUS!=oldstatus && Id()!=dispo_auftrag_id)
-#else
- if(STATUS!=oldstatus)
-#endif
      setStatus(AufStatVal(STATUS),getuid(),true);
 
  tr.commit();
