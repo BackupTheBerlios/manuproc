@@ -505,7 +505,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
 #ifdef MABELLA_EXTENSIONS
      if (zeilen_passen_noch<5)
 #else
-     if (zeilen_passen_noch<10)     
+     if (zeilen_passen_noch<8)
 #endif     
      {   // Tabelle beenden, preis ausgeben
          drucken_betrag(os,"Summe",betrag);
@@ -517,6 +517,8 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
          spaltenzahl=4;
          preisspalte=spaltenzahl;
          zur_preisspalte="&&";
+         os << zur_preisspalte << "Summe & "<< FormatiereTeX(betrag) <<"\\\\";
+         --zeilen_passen_noch;
      }
      else 
      {  
@@ -791,6 +793,9 @@ void LR_Abstraktion::drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,
 	   { neue_spalte( erste_spalte, os);
 	     if (!zusatzinfo)
 	        os <<"{"<<linecolor<< Gtk2TeX::string2TeX((*bez)[l->bezkomptype]->getStrVal()) <<"}";
+#ifdef PETIG_EXTENSIONS // lieber zuwenige Zeilen als Umbruch riskieren
+	     if ((*bez)[l->bezkomptype]->getStrVal().size()>31) --zeilen_passen_noch;
+#endif	        
 	   }
 
 #ifdef MABELLA_EXTENSIONS
@@ -845,7 +850,7 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
      ueberschriften="\\multicolumn{2}{c}{"+ug+"Menge}";
    
      tabcolumn+="r"; spaltenzahl++; 
-     ueberschriften+="&\\multicolumn{1}{c}{"+ug+"Gesamtmenge}";
+     ueberschriften+="&\\multicolumn{1}{c}{"+sg+"Gesamtmenge}";
    }
   
   if(Typ()==Intern)
@@ -895,7 +900,7 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
 #else
   if (Typ()==Lieferschein)
   { tabcolumn+="rr"; spaltenzahl+=2; 
-    ueberschriften += "&\\multicolumn{1}{c}{"+ug+"Palette}";
+    ueberschriften += "&\\multicolumn{1}{c}{"+sg+"Palette}";
     ueberschriften += "&\\multicolumn{1}{c}{"+ug+"Auftrag}";
   }
 #endif
@@ -954,7 +959,12 @@ void LR_Abstraktion::drucken_betrag(std::ostream &os,const std::string &text, fi
 {
 
   os << "\\cline{"<<preisspalte<<"-"<<preisspalte<<"}"<<"\n";
-  os << zur_preisspalte << text << " " << getWaehrung()->TeXsymbol() << '&' << FormatiereTeX(betrag)<<"\\\\\n";
+  os << zur_preisspalte << text << " " ;
+#ifndef MABELLA_EXTENSIONS // also ich brauch das nicht ...  
+  if (text.empty()) 
+#endif
+     os << getWaehrung()->TeXsymbol() ;
+  os << '&' << FormatiereTeX(betrag)<<"\\\\\n";
   --zeilen_passen_noch;
 }
 
