@@ -36,6 +36,7 @@
 
 #define BEZEICHNUNG_SIGNIFIKANZ		3
 #define EAN_SIGNIFIKANZ			2
+#define ROWS_FOR_TABLE_HEADER		6
 
 bool ents_flag=false;
 
@@ -492,7 +493,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
      bool neue_seite=false;
 //----------------- Seitenumbruch ? -------------------------------
      // 3+1+1 Mindestzeilen bei langer Tabelle, 1 Zeile f. Header angenommen
-     if (zeilen_passen_noch<5 && 
+     if (zeilen_passen_noch<ROWS_FOR_TABLE_HEADER && 
      	zeilen_passen_noch<(j-i)
      	+1 // für Kopfzeile
      	+(preise_addieren?1:0) // für Übertrag
@@ -514,6 +515,8 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
      else if (preise_addieren && i!=begin()) // da ist noch was offen ...
      		// bug (?) in tabularx (zu großer Abstand) beheben
         os << "\\end{tabularx}~\\\\[-1ex]\n";
+
+std::cout << "table ends\n";
 
 //------------------------- Kopf -------------------------
     if (lfrsid_drucken)
