@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.27 2003/07/03 17:23:10 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.28 2003/07/04 06:37:37 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -111,10 +111,10 @@ void LieferscheinEntry::changeMenge(int stueck, mengen_t menge, const Liefersche
             neuerAEB=AufEintrag::unbestellteMengeProduzieren(Instanz(),artikel,abmenge2,getuid());
          addZusatzEntry(neuerAEB,abmenge2);
       }
-      showZusatzInfos();
+//      showZusatzInfos();
      }
      else
-     {showZusatzInfos();
+     {//showZusatzInfos();
       zusaetze_t VZ=getZusatzInfos();
       for(LieferscheinEntry::zusaetze_t::reverse_iterator i=VZ.rbegin();i!=VZ.rend();++i)
       {
@@ -211,6 +211,7 @@ FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry& z)
  { LieferscheinEntry::mengen_t m=z.menge;
    if (!m) m=1;
    z.VZusatz.push_back(LieferscheinEntry::st_AufEintragMenge(refauftrag,z.stueck*m)); 
+ }  
  else
    z.ZusaetzeLaden();
  return is;  
@@ -319,6 +320,7 @@ void LieferscheinEntry::updateZusatzEntry(const AufEintragBase &Z,const AuftragB
   {  assert (VZusatz[0].aeb==Z);
      VZusatz[0].menge=menge;
      setZusatzInfos();
+     return;
   }
   std::string Q="update lieferscheinentryzusatz set menge=?"
       " where (instanz,lfrsid,lfsznr) = (?,?,?) and ";
@@ -382,10 +384,13 @@ void LieferscheinEntry::addZusatzEntry(const AufEintragBase &AEB,const mengen_t 
 { ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("this",*this),
 	NV("AEB",AEB),NV("menge",menge));
   for (zusaetze_t::const_iterator i=VZusatz.begin();i!=VZusatz.end();++i)
+  {  ManuProC::Trace(AuftragBase::trace_channel, __FILELINE__, NV("i->aeb",i->aeb),
+  		NV("AEB",AEB));
      if (i->aeb==AEB)
      {  updateZusatzEntry(AEB,i->menge+menge);
         return;
      }
+  }
   bool nek0=NurEinKind(VZusatz);
   // dummy Eintrag wegnehmen
   if (nek0 && !VZusatz[0].aeb && !VZusatz[0].menge)
