@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.24 2002/12/11 11:25:57 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.25 2002/12/11 11:47:48 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -103,6 +103,8 @@ private:
 	
 	void on_line_appended(cH_RowDataBase);
 	void on_line_removed(cH_RowDataBase);
+	void on_value_changed(cH_RowDataBase r,guint idx);
+	Gtk::TreeStore::iterator find_row(cH_RowDataBase,bool optimize=false);
 public:
 	struct ModelColumns : public Gtk::TreeModelColumnRecord
 	{  std::vector<Gtk::TreeModelColumn<Glib::ustring> > cols;

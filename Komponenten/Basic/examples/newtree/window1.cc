@@ -192,4 +192,3 @@ void window1::eine_weg()
 void window1::refresh()
 {  st.getModel().signal_redraw_needed()();
 }
-                

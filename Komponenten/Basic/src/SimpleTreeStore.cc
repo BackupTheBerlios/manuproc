@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.21 2002/12/11 11:25:57 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.22 2002/12/11 11:47:48 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -137,6 +137,8 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
    getModel().signal_title_changed().connect(SigC::slot(*this,&SimpleTreeStore::on_title_changed));
    getModel().signal_redraw_needed().connect(SigC::slot(*this,&SimpleTreeStore::redisplay));
    getModel().signal_line_appended().connect(SigC::slot(*this,&SimpleTreeStore::on_line_appended));
+   getModel().signal_line_to_remove().connect(SigC::slot(*this,&SimpleTreeStore::on_line_removed));
+   getModel().signal_value_changed().connect(SigC::slot(*this,&SimpleTreeStore::on_value_changed));
   vec_hide_cols.resize(Cols());
   for (std::vector<bool>::iterator i=vec_hide_cols.begin();i!=vec_hide_cols.end();++i)
     (*i) = true;
@@ -450,3 +452,15 @@ unsigned SimpleTreeStore::ColumnFromIndex(unsigned idx) const
 
 const UniqueValue::value_t SimpleTreeStore::trace_channel
       = ManuProC::Tracer::channels.get();
+
+void SimpleTreeStore::on_line_removed(cH_RowDataBase r)
+{
+}
+
+void SimpleTreeStore::on_value_changed(cH_RowDataBase r,guint idx)
+{
+}
+
+Gtk::TreeStore::iterator SimpleTreeStore::find_row(cH_RowDataBase r,bool optimize)
+{
+}
