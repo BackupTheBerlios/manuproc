@@ -1,4 +1,4 @@
-// $Id: Artikelpreis.h,v 1.22 2003/09/15 11:20:21 jacek Exp $
+// $Id: Artikelpreis.h,v 1.23 2004/06/29 23:37:27 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -73,6 +73,7 @@ public:
                	const Preis &p, const ArtikelBase &a,
 		int mindmenge,      	
                	std::vector<std::string> ins_all_komp=std::vector<std::string>(),
+                const PreisListe::ID compare_with_pl=PreisListe::none_id,
                	bool new_staffel=false) throw(SQLerror);
 
 

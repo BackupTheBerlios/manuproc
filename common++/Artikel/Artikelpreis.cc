@@ -204,6 +204,7 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
 		const Preis &p, const ArtikelBase &a,
 		int mindmenge,
 		std::vector<std::string> ins_all_komp,
+	        const PreisListe::ID compare_with_pl,
 		bool newstaffel) throw(SQLerror)
 {
  int UID;
@@ -231,6 +232,12 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
     query+=" not exists (select true from artikelpreise p "
 	"where "+artbez_tabelle+".id=p.artikelid and p.kundennr=?"
 	" and p.mindestmenge=?)";
+
+	// only those articles, which exist in this list
+    if(compare_with_pl!=PreisListe::none_id)
+      query+=" and exists (select true from artikelpreise p1 "
+	"where "+artbez_tabelle+".id=p1.artikelid and p1.kundennr="
+	+itos(compare_with_pl)+")";
 
     if(newstaffel) // no new articles; only new preisstaffel for existing
       query+=" and exists (select true from artikelpreise p "
