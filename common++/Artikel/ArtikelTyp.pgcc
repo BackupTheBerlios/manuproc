@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.pgcc,v 1.14 2004/03/31 10:47:17 jacek Exp $
+// $Id: ArtikelTyp.pgcc,v 1.15 2004/11/29 14:39:06 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -92,6 +92,16 @@ std::string ArtikelTyp::get_string(ID t)
  if (sqlca.sqlcode) *TYP = 0;
  return TYP;
 }
+
+
+cH_PreisListe ArtikelTyp::EK_PL() throw(SQLerror)
+{
+ ExtraColumns at("artikelgruppen","warengruppe");
+ at << Id();
+ if(at.hasColumn("ek_
+
+}
+
 
 // to be honest this belongs into ArtikelBase.cc
 #if __GNUC__>2

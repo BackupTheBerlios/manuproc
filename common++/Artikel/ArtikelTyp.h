@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.h,v 1.21 2004/03/31 10:47:17 jacek Exp $
+// $Id: ArtikelTyp.h,v 1.22 2004/11/29 14:39:06 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -57,6 +57,7 @@ public:
 	
 	ArtikelTyp(const ArtikelBase &ab) throw(SQLerror);
 	ArtikelTyp(const ArtikelBase &ab,ID id) throw(SQLerror);
+	cH_PreisListe EK_PL() throw(SQLerror);
 
 	static ArtikelTyp vonArtikel(const ArtikelBase &ab) throw(SQLerror)
 	{  return ArtikelTyp(ab); }
