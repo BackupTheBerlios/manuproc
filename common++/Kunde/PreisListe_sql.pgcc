@@ -1,5 +1,5 @@
 
-// $Id: PreisListe_sql.pgcc,v 1.15 2005/03/10 15:38:38 jacek Exp $
+// $Id: PreisListe_sql.pgcc,v 1.16 2005/03/15 16:21:48 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -120,3 +120,21 @@ void PreisListe::setRabatt(bool fest, rabatt_t rab) throw(SQLerror)
  rabatt=rab;
  rabatt_gesetzt=fest;
 }
+
+
+
+PreisListe::ID PreisListe::RealId() const 
+{ 
+ if(isDepending()) return pl_parent; 
+ return Id();
+}
+
+const std::string PreisListe::getPreisSelClausel() const 
+{
+ if(isDepending()) return (std::string("round(preis*")+
+     fkt_parent.String()+",2)+"+add_parent.String());
+     
+ return "preis";    
+}
+
+

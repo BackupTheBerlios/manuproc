@@ -114,16 +114,17 @@ struct dummy
 
 static dummy dummy2;
 
-Artikelpreis::Artikelpreis(const PreisListe::ID liste,const ArtikelBase &a,
+Artikelpreis::Artikelpreis(const cH_PreisListe liste,const ArtikelBase &a,
 				int bestellmenge)
 	: errechnet(false), gefunden(false),
-	  gefunden_in(ManuProcEntity<>::none_id),mindestmenge(1)
+	  gefunden_in(ManuProcEntity<>::none_id),mindestmenge(1),
+	  pl_parent(liste->ParentID())
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__, 
-	NV("Liste",liste), NV("Artikel",a), NV("Menge",bestellmenge));
-   payload_t *cached=cache.lookup(index_t(liste,a.Id()));
+	NV("Liste",liste->Id()), NV("Artikel",a), NV("Menge",bestellmenge));
+   payload_t *cached=cache.lookup(index_t(liste->Id(),a.Id()));
    if (cached) { try {
 		 std::pair<int,Preis> p=cached->get_preis(bestellmenge);
-		 setPreis(a.Id(),p.second,liste,
+		 setPreis(a.Id(),p.second,liste->Id(),
 				cached->errechnet);
 		 mindestmenge=p.first;
 	 	 gefunden=cached->gefunden;
@@ -137,9 +138,22 @@ Artikelpreis::Artikelpreis(const PreisListe::ID liste,const ArtikelBase &a,
 		}
    else
    {
-      Query q("select preis, mindestmenge, preismenge, waehrung"
-	      	" from artikelpreise where (artikelid,kundennr)=(?,?)");
-      q << a.Id() << liste;
+    std::string sel_preis=liste->getPreisSelClausel();
+    PreisListe::ID plid=liste->RealId();
+    
+    std::string query("select 0 as priority,");
+    query+=sel_preis+", mindestmenge, preismenge, waehrung"
+	      	" from artikelpreise where (artikelid,kundennr)=(?,?)";
+    if(liste->isDepending())
+      {query+=" UNION "
+              "(select 1 as priority,preis,mindestmenge,preismenge,waehrung"
+              " from artikelpreise where (artikelid,kundennr)=("+
+              itos(a.Id())+","+itos(liste->Id())+"))"
+              " order by mindestmenge,priority";
+      }
+      
+      Query q(query);	      	
+      q << a.Id() << plid;
       payload_t pyl(!q.Result(), false);
       FetchIStream is;
       if (!q.Result())
@@ -147,8 +161,8 @@ Artikelpreis::Artikelpreis(const PreisListe::ID liste,const ArtikelBase &a,
          { geldbetrag_t PREIS;
       	   preismenge_t PREISMENGE;
            int WAEHRUNG;
-           int MINDESTMENGE;
-           is >> PREIS >> FetchIStream::MapNull(MINDESTMENGE,1) 
+           int MINDESTMENGE, PRIOR;
+           is >> PRIOR >> PREIS >> FetchIStream::MapNull(MINDESTMENGE,1) 
            	>> FetchIStream::MapNull(PREISMENGE,1) >> WAEHRUNG;
            is.ThrowIfNotEmpty(__FUNCTION__);
 	  pyl.preis[MINDESTMENGE]=
@@ -157,7 +171,7 @@ Artikelpreis::Artikelpreis(const PreisListe::ID liste,const ArtikelBase &a,
 
 	  try {
 	  std::pair<int,Preis> p=pyl.get_preis(bestellmenge);
-	  setPreis(a.Id(),p.second,liste,false);
+	  setPreis(a.Id(),p.second,liste->Id(),false);
 	  mindestmenge=p.first;
 	  }
 	  catch(PreisMindMenge_NotFound &p)
@@ -165,12 +179,12 @@ Artikelpreis::Artikelpreis(const PreisListe::ID liste,const ArtikelBase &a,
 	     gefunden=false;
 	     std::cout << "MindMenge not found:"<<p.menge<<"\n";
    	     ManuProC::Trace(trace_channel,__FILELINE__,NV("db",static_cast<const Preis&>(*this)));
-	     cache.Register(index_t(liste,a.Id()), pyl);
+	     cache.Register(index_t(liste->Id(),a.Id()), pyl);
 	    }
 	  ManuProC::Trace(trace_channel,__FILELINE__,NV("db",static_cast<const Preis&>(*this)));
       }
          
-      cache.Register(index_t(liste,a.Id()), pyl);
+      cache.Register(index_t(liste->Id(),a.Id()), pyl);
    }
 }
 
@@ -186,7 +200,7 @@ Artikelpreis::Artikelpreis(const cH_Kunde &k,const ArtikelBase &a,
 
    for (std::list<std::pair<int,PreisListe::ID> >::const_iterator i=k->Preislisten().begin();
    	i!=k->Preislisten().end();++i)
-   {  ap=Artikelpreis(i->second,a,bestellmenge);
+   {  ap=Artikelpreis(cH_PreisListe(i->second),a,bestellmenge);
       if (ap.Gefunden()) { *this=ap; return; }
    }
 
@@ -296,7 +310,7 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
 
  tr.commit();
   
- return Artikelpreis(liste,a,mindmenge);
+ return Artikelpreis(cH_PreisListe(liste),a,mindmenge);
 }
 
 

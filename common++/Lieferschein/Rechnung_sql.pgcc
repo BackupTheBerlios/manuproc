@@ -309,7 +309,7 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
 				ArtikelBase(i->Artikel()));
 
     ArtikelTyp at(i->Artikel());
-    ek_preis=Artikelpreis(at.EK_PL()->Id(),i->Artikel(),
+    ek_preis=Artikelpreis(at.EK_PL(),i->Artikel(),
     		AuftragBase::Gesamtmenge(i->Stueck(),i->Menge()).as_int());
 
     push_back(lineno,i->Artikel(),lfrs.Id(),i->ZNr(),i->Stueck(),i->Menge(),

@@ -1,4 +1,4 @@
-// $Id: Artikelpreis.h,v 1.24 2004/09/20 15:49:44 christof Exp $
+// $Id: Artikelpreis.h,v 1.25 2005/03/15 16:21:47 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2004 Adolf Petig GmbH & Co. KG
  *		 written by Christof Petig
@@ -33,6 +33,7 @@ class Artikelpreis : public Preis
 {	bool errechnet:1;
         bool gefunden:1;
         PreisListe::ID gefunden_in;
+        PreisListe::ID pl_parent;
         ArtikelBase::ID artikel;
         int mindestmenge;
         
@@ -41,9 +42,11 @@ class Artikelpreis : public Preis
 	void setPreis(const ArtikelBase::ID art, const Preis &p, 
 		PreisListe::ID wo=ManuProcEntity<>::none_id, bool e=false)
 	{  artikel=art; getPreis()=p; errechnet=e; gefunden=true; gefunden_in=wo; 
+	   pl_parent=ManuProcEntity<>::none_id; 
 	}
 	Artikelpreis()
 	: errechnet(false), gefunden(false), gefunden_in(ManuProcEntity<>::none_id),
+	  pl_parent(ManuProcEntity<>::none_id),
 	  mindestmenge(1) 
 	{}
 
@@ -61,12 +64,13 @@ public:
 	const Preis &getPreis() const
 	{  return (const Preis &)*this; }
 	Artikelpreis(const cH_Kunde &k,const ArtikelBase &a, int bestellmenge=1);
-	Artikelpreis(const PreisListe::ID liste,const ArtikelBase &a, int bestellmenge=1);
+	Artikelpreis(const cH_PreisListe liste,const ArtikelBase &a, int bestellmenge=1);
 
 	bool istErrechnet() const { return errechnet; }
 	bool Gefunden() const { return gefunden; }
 	int MindMenge() const { return mindestmenge; }
 	PreisListe::ID GefundenIn() const { return gefunden_in; }
+	PreisListe::ID getParent() const { return pl_parent; }	
 	const ArtikelBase::ID Artikel() const { return artikel; }
 	
 	static void UnCache(const PreisListe::ID liste,const ArtikelBase &a);

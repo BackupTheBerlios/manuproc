@@ -1,4 +1,4 @@
-// $Id: PreisListe.h,v 1.14 2005/03/10 15:38:38 jacek Exp $
+// $Id: PreisListe.h,v 1.15 2005/03/15 16:21:47 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -63,7 +63,9 @@ public:
   void setRabatt(bool fest, rabatt_t rab) throw(SQLerror);
   PlArt Art() const { return art; }
   const std::string ViewTabelle() const { return view_tabelle; }
-  bool isDepending() const { return (pl_parent!=none_id); }
+  bool isDepending() const { return (pl_parent!=none_id); }       
+  PreisListe::ID RealId() const;
+  const std::string getPreisSelClausel() const;
 };
 
 

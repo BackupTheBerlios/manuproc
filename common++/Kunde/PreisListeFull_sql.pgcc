@@ -44,17 +44,8 @@ void PreisListeFull::load_preisliste(bool with_artbez,
  payoff.erase(payoff.begin(),payoff.end());
 
   
- std::string plid;
- std::string preis_sel;
- if(isDepending())
-   {preis_sel=std::string("round(preis*")+fkt_parent.String()+
-                       ",2)+"+add_parent.String();
-    plid=itos(ParentID());
-   }
- else
-   {preis_sel="preis";
-    plid=itos(id);  
-   }
+ std::string plid=itos(RealId());
+ std::string preis_sel=getPreisSelClausel();
  
  if(art_in_list)
    {qu=std::string("select ");
