@@ -6537,13 +6537,12 @@ Zuschlag
     </widget>
 
     <widget>
-      <class>GtkTable</class>
-      <name>table15</name>
-      <rows>1</rows>
-      <columns>3</columns>
-      <homogeneous>False</homogeneous>
-      <row_spacing>0</row_spacing>
-      <column_spacing>0</column_spacing>
+      <class>GtkScrolledWindow</class>
+      <name>scrolledwindow18</name>
+      <hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
+      <vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
+      <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
+      <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
       <child>
 	<left_attach>0</left_attach>
 	<right_attach>1</right_attach>
@@ -6551,7 +6550,7 @@ Zuschlag
 	<bottom_attach>2</bottom_attach>
 	<xpad>0</xpad>
 	<ypad>0</ypad>
-	<xexpand>True</xexpand>
+	<xexpand>False</xexpand>
 	<yexpand>False</yexpand>
 	<xshrink>True</xshrink>
 	<yshrink>True</yshrink>
@@ -6560,491 +6559,507 @@ Zuschlag
       </child>
 
       <widget>
-	<class>GtkFrame</class>
-	<name>frame27</name>
-	<label>Zeitraumauswahl</label>
-	<label_xalign>0</label_xalign>
-	<shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	<child>
-	  <left_attach>2</left_attach>
-	  <right_attach>3</right_attach>
-	  <top_attach>0</top_attach>
-	  <bottom_attach>1</bottom_attach>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>False</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>False</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>False</xfill>
-	  <yfill>False</yfill>
-	</child>
+	<class>GtkViewport</class>
+	<name>viewport5</name>
+	<shadow_type>GTK_SHADOW_IN</shadow_type>
 
 	<widget>
-	  <class>GtkHBox</class>
-	  <name>hbox19</name>
+	  <class>GtkTable</class>
+	  <name>table15</name>
+	  <rows>1</rows>
+	  <columns>3</columns>
 	  <homogeneous>False</homogeneous>
-	  <spacing>0</spacing>
-
-	  <widget>
-	    <class>GtkVBox</class>
-	    <name>fixed2</name>
-	    <homogeneous>False</homogeneous>
-	    <spacing>0</spacing>
-	    <child>
-	      <padding>0</padding>
-	      <expand>False</expand>
-	      <fill>True</fill>
-	    </child>
-
-	    <widget>
-	      <class>GtkRadioButton</class>
-	      <name>radiobutton_alle_zeit_von</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <can_focus>True</can_focus>
-	      <signal>
-		<name>toggled</name>
-		<handler>on_radiobutton_zeit_toggled</handler>
-		<last_modification_time>Fri, 14 Sep 2001 09:53:02 GMT</last_modification_time>
-	      </signal>
-	      <label>Zeige vom Anfang</label>
-	      <active>True</active>
-	      <draw_indicator>True</draw_indicator>
-	      <group>zeit</group>
-	      <child>
-		<padding>0</padding>
-		<expand>False</expand>
-		<fill>True</fill>
-	      </child>
-	    </widget>
-
-	    <widget>
-	      <class>GtkRadioButton</class>
-	      <name>radiobutton_nur_zeit_von</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <can_focus>True</can_focus>
-	      <signal>
-		<name>toggled</name>
-		<handler>on_radiobutton_zeit_toggled</handler>
-		<last_modification_time>Fri, 14 Sep 2001 09:52:36 GMT</last_modification_time>
-	      </signal>
-	      <label>Zeige vom</label>
-	      <active>False</active>
-	      <draw_indicator>True</draw_indicator>
-	      <group>zeit</group>
-	      <child>
-		<padding>0</padding>
-		<expand>False</expand>
-		<fill>True</fill>
-	      </child>
-	    </widget>
-
-	    <widget>
-	      <class>Custom</class>
-	      <name>Wdatum_von</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <signal>
-		<name>activate</name>
-		<handler>datum_von_activate</handler>
-		<last_modification_time>Fri, 14 Sep 2001 08:22:53 GMT</last_modification_time>
-	      </signal>
-	      <creation_function>Datewin</creation_function>
-	      <int1>0</int1>
-	      <int2>0</int2>
-	      <last_modification_time>Fri, 14 Sep 2001 08:22:30 GMT</last_modification_time>
-	      <child>
-		<padding>0</padding>
-		<expand>False</expand>
-		<fill>True</fill>
-	      </child>
-	    </widget>
-	  </widget>
-
-	  <widget>
-	    <class>GtkVBox</class>
-	    <name>fixed4</name>
-	    <homogeneous>False</homogeneous>
-	    <spacing>0</spacing>
-	    <child>
-	      <padding>0</padding>
-	      <expand>False</expand>
-	      <fill>True</fill>
-	    </child>
-
-	    <widget>
-	      <class>GtkRadioButton</class>
-	      <name>radiobutton_alle_zeit_bis</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <can_focus>True</can_focus>
-	      <signal>
-		<name>toggled</name>
-		<handler>on_radiobutton_zeit_2_toggled</handler>
-		<last_modification_time>Mon, 17 Sep 2001 08:38:31 GMT</last_modification_time>
-	      </signal>
-	      <label>bis heute</label>
-	      <active>True</active>
-	      <draw_indicator>True</draw_indicator>
-	      <group>zeit_2</group>
-	      <child>
-		<padding>0</padding>
-		<expand>False</expand>
-		<fill>True</fill>
-	      </child>
-	    </widget>
-
-	    <widget>
-	      <class>GtkRadioButton</class>
-	      <name>radiobutton_nur_zeit_bis</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <can_focus>True</can_focus>
-	      <signal>
-		<name>toggled</name>
-		<handler>on_radiobutton_zeit_2_toggled</handler>
-		<last_modification_time>Mon, 17 Sep 2001 08:38:23 GMT</last_modification_time>
-	      </signal>
-	      <label>bis zum</label>
-	      <active>False</active>
-	      <draw_indicator>True</draw_indicator>
-	      <group>zeit_2</group>
-	      <child>
-		<padding>0</padding>
-		<expand>False</expand>
-		<fill>True</fill>
-	      </child>
-	    </widget>
-
-	    <widget>
-	      <class>Custom</class>
-	      <name>Wdatum_bis</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <signal>
-		<name>activate</name>
-		<handler>datum_bis_activate</handler>
-		<last_modification_time>Mon, 17 Sep 2001 08:38:46 GMT</last_modification_time>
-	      </signal>
-	      <creation_function>Datewin</creation_function>
-	      <int1>0</int1>
-	      <int2>0</int2>
-	      <last_modification_time>Fri, 14 Sep 2001 08:22:30 GMT</last_modification_time>
-	      <child>
-		<padding>0</padding>
-		<expand>True</expand>
-		<fill>True</fill>
-	      </child>
-	    </widget>
-	  </widget>
+	  <row_spacing>0</row_spacing>
+	  <column_spacing>0</column_spacing>
 
 	  <widget>
 	    <class>GtkFrame</class>
-	    <name>frame28</name>
-	    <label>Kummulieren</label>
+	    <name>frame27</name>
+	    <label>Zeitraumauswahl</label>
 	    <label_xalign>0</label_xalign>
 	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
 	    <child>
-	      <padding>0</padding>
-	      <expand>False</expand>
-	      <fill>False</fill>
+	      <left_attach>2</left_attach>
+	      <right_attach>3</right_attach>
+	      <top_attach>0</top_attach>
+	      <bottom_attach>1</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>False</xfill>
+	      <yfill>False</yfill>
 	    </child>
 
 	    <widget>
-	      <class>GtkVBox</class>
-	      <name>vbox12</name>
+	      <class>GtkHBox</class>
+	      <name>hbox19</name>
 	      <homogeneous>False</homogeneous>
 	      <spacing>0</spacing>
 
 	      <widget>
-		<class>GtkOptionMenu</class>
-		<name>date_cumulate</name>
-		<cxx_visibility>protected</cxx_visibility>
-		<can_focus>True</can_focus>
-		<items>Datum
-Woche
-Monat
-Quartal
-Jahr
-</items>
-		<initial_choice>0</initial_choice>
+		<class>GtkVBox</class>
+		<name>fixed2</name>
+		<homogeneous>False</homogeneous>
+		<spacing>0</spacing>
+		<child>
+		  <padding>0</padding>
+		  <expand>False</expand>
+		  <fill>True</fill>
+		</child>
+
+		<widget>
+		  <class>GtkRadioButton</class>
+		  <name>radiobutton_alle_zeit_von</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <can_focus>True</can_focus>
+		  <signal>
+		    <name>toggled</name>
+		    <handler>on_radiobutton_zeit_toggled</handler>
+		    <last_modification_time>Fri, 14 Sep 2001 09:53:02 GMT</last_modification_time>
+		  </signal>
+		  <label>Zeige vom Anfang</label>
+		  <active>True</active>
+		  <draw_indicator>True</draw_indicator>
+		  <group>zeit</group>
+		  <child>
+		    <padding>0</padding>
+		    <expand>False</expand>
+		    <fill>True</fill>
+		  </child>
+		</widget>
+
+		<widget>
+		  <class>GtkRadioButton</class>
+		  <name>radiobutton_nur_zeit_von</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <can_focus>True</can_focus>
+		  <signal>
+		    <name>toggled</name>
+		    <handler>on_radiobutton_zeit_toggled</handler>
+		    <last_modification_time>Fri, 14 Sep 2001 09:52:36 GMT</last_modification_time>
+		  </signal>
+		  <label>Zeige vom</label>
+		  <active>False</active>
+		  <draw_indicator>True</draw_indicator>
+		  <group>zeit</group>
+		  <child>
+		    <padding>0</padding>
+		    <expand>False</expand>
+		    <fill>True</fill>
+		  </child>
+		</widget>
+
+		<widget>
+		  <class>Custom</class>
+		  <name>Wdatum_von</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <signal>
+		    <name>activate</name>
+		    <handler>datum_von_activate</handler>
+		    <last_modification_time>Fri, 14 Sep 2001 08:22:53 GMT</last_modification_time>
+		  </signal>
+		  <creation_function>Datewin</creation_function>
+		  <int1>0</int1>
+		  <int2>0</int2>
+		  <last_modification_time>Fri, 14 Sep 2001 08:22:30 GMT</last_modification_time>
+		  <child>
+		    <padding>0</padding>
+		    <expand>False</expand>
+		    <fill>True</fill>
+		  </child>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkVBox</class>
+		<name>fixed4</name>
+		<homogeneous>False</homogeneous>
+		<spacing>0</spacing>
+		<child>
+		  <padding>0</padding>
+		  <expand>False</expand>
+		  <fill>True</fill>
+		</child>
+
+		<widget>
+		  <class>GtkRadioButton</class>
+		  <name>radiobutton_alle_zeit_bis</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <can_focus>True</can_focus>
+		  <signal>
+		    <name>toggled</name>
+		    <handler>on_radiobutton_zeit_2_toggled</handler>
+		    <last_modification_time>Mon, 17 Sep 2001 08:38:31 GMT</last_modification_time>
+		  </signal>
+		  <label>bis heute</label>
+		  <active>True</active>
+		  <draw_indicator>True</draw_indicator>
+		  <group>zeit_2</group>
+		  <child>
+		    <padding>0</padding>
+		    <expand>False</expand>
+		    <fill>True</fill>
+		  </child>
+		</widget>
+
+		<widget>
+		  <class>GtkRadioButton</class>
+		  <name>radiobutton_nur_zeit_bis</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <can_focus>True</can_focus>
+		  <signal>
+		    <name>toggled</name>
+		    <handler>on_radiobutton_zeit_2_toggled</handler>
+		    <last_modification_time>Mon, 17 Sep 2001 08:38:23 GMT</last_modification_time>
+		  </signal>
+		  <label>bis zum</label>
+		  <active>False</active>
+		  <draw_indicator>True</draw_indicator>
+		  <group>zeit_2</group>
+		  <child>
+		    <padding>0</padding>
+		    <expand>False</expand>
+		    <fill>True</fill>
+		  </child>
+		</widget>
+
+		<widget>
+		  <class>Custom</class>
+		  <name>Wdatum_bis</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <signal>
+		    <name>activate</name>
+		    <handler>datum_bis_activate</handler>
+		    <last_modification_time>Mon, 17 Sep 2001 08:38:46 GMT</last_modification_time>
+		  </signal>
+		  <creation_function>Datewin</creation_function>
+		  <int1>0</int1>
+		  <int2>0</int2>
+		  <last_modification_time>Fri, 14 Sep 2001 08:22:30 GMT</last_modification_time>
+		  <child>
+		    <padding>0</padding>
+		    <expand>True</expand>
+		    <fill>True</fill>
+		  </child>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkFrame</class>
+		<name>frame28</name>
+		<label>Kummulieren</label>
+		<label_xalign>0</label_xalign>
+		<shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
 		<child>
 		  <padding>0</padding>
 		  <expand>False</expand>
 		  <fill>False</fill>
 		</child>
+
+		<widget>
+		  <class>GtkVBox</class>
+		  <name>vbox12</name>
+		  <homogeneous>False</homogeneous>
+		  <spacing>0</spacing>
+
+		  <widget>
+		    <class>GtkOptionMenu</class>
+		    <name>date_cumulate</name>
+		    <cxx_visibility>protected</cxx_visibility>
+		    <can_focus>True</can_focus>
+		    <items>Datum
+Woche
+Monat
+Quartal
+Jahr
+</items>
+		    <initial_choice>0</initial_choice>
+		    <child>
+		      <padding>0</padding>
+		      <expand>False</expand>
+		      <fill>False</fill>
+		    </child>
+		  </widget>
+		</widget>
 	      </widget>
 	    </widget>
 	  </widget>
-	</widget>
-      </widget>
-
-      <widget>
-	<class>GtkFrame</class>
-	<name>frame26</name>
-	<label>Artikelauswahl</label>
-	<label_xalign>0</label_xalign>
-	<shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	<child>
-	  <left_attach>1</left_attach>
-	  <right_attach>2</right_attach>
-	  <top_attach>0</top_attach>
-	  <bottom_attach>1</bottom_attach>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>False</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>False</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>False</xfill>
-	  <yfill>False</yfill>
-	</child>
-
-	<widget>
-	  <class>GtkVBox</class>
-	  <name>fixed1</name>
-	  <homogeneous>False</homogeneous>
-	  <spacing>0</spacing>
 
 	  <widget>
-	    <class>GtkRadioButton</class>
-	    <name>radiobutton_alle_artikel</name>
-	    <cxx_visibility>protected</cxx_visibility>
-	    <can_focus>True</can_focus>
-	    <signal>
-	      <name>toggled</name>
-	      <handler>on_radiobutton_artikel_toggled</handler>
-	      <last_modification_time>Fri, 14 Sep 2001 09:47:16 GMT</last_modification_time>
-	    </signal>
-	    <label>Zeige alle Artikel</label>
-	    <active>True</active>
-	    <draw_indicator>True</draw_indicator>
-	    <group>artikel</group>
+	    <class>GtkFrame</class>
+	    <name>frame26</name>
+	    <label>Artikelauswahl</label>
+	    <label_xalign>0</label_xalign>
+	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
 	    <child>
-	      <padding>0</padding>
-	      <expand>False</expand>
-	      <fill>True</fill>
-	    </child>
-	  </widget>
-
-	  <widget>
-	    <class>GtkHBox</class>
-	    <name>hbox18</name>
-	    <homogeneous>False</homogeneous>
-	    <spacing>0</spacing>
-	    <child>
-	      <padding>0</padding>
-	      <expand>False</expand>
-	      <fill>True</fill>
+	      <left_attach>1</left_attach>
+	      <right_attach>2</right_attach>
+	      <top_attach>0</top_attach>
+	      <bottom_attach>1</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>False</xfill>
+	      <yfill>False</yfill>
 	    </child>
 
 	    <widget>
-	      <class>GtkRadioButton</class>
-	      <name>radiobutton_nur_artikel</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <can_focus>True</can_focus>
-	      <signal>
-		<name>toggled</name>
-		<handler>on_radiobutton_artikel_toggled</handler>
-		<last_modification_time>Fri, 14 Sep 2001 09:45:37 GMT</last_modification_time>
-	      </signal>
-	      <label>Zeige nur Artikel</label>
-	      <active>False</active>
-	      <draw_indicator>True</draw_indicator>
-	      <group>artikel</group>
-	      <child>
-		<padding>0</padding>
-		<expand>False</expand>
-		<fill>False</fill>
-	      </child>
-	    </widget>
+	      <class>GtkVBox</class>
+	      <name>fixed1</name>
+	      <homogeneous>False</homogeneous>
+	      <spacing>0</spacing>
 
-	    <widget>
-	      <class>GtkCheckButton</class>
-	      <name>first_komponent</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <can_focus>True</can_focus>
-	      <label>nur Art.Nr. einschränken</label>
-	      <active>True</active>
-	      <draw_indicator>True</draw_indicator>
-	      <child>
-		<padding>0</padding>
-		<expand>False</expand>
-		<fill>False</fill>
-	      </child>
-	    </widget>
-	  </widget>
+	      <widget>
+		<class>GtkRadioButton</class>
+		<name>radiobutton_alle_artikel</name>
+		<cxx_visibility>protected</cxx_visibility>
+		<can_focus>True</can_focus>
+		<signal>
+		  <name>toggled</name>
+		  <handler>on_radiobutton_artikel_toggled</handler>
+		  <last_modification_time>Fri, 14 Sep 2001 09:47:16 GMT</last_modification_time>
+		</signal>
+		<label>Zeige alle Artikel</label>
+		<active>True</active>
+		<draw_indicator>True</draw_indicator>
+		<group>artikel</group>
+		<child>
+		  <padding>0</padding>
+		  <expand>False</expand>
+		  <fill>True</fill>
+		</child>
+	      </widget>
 
-	  <widget>
-	    <class>Custom</class>
-	    <name>artikelbox</name>
-	    <cxx_visibility>protected</cxx_visibility>
-	    <signal>
-	      <name>activate</name>
-	      <handler>artikelbox_activate</handler>
-	      <last_modification_time>Thu, 13 Sep 2001 12:54:26 GMT</last_modification_time>
-	    </signal>
-	    <creation_function>ArtikelBox</creation_function>
-	    <int1>1</int1>
-	    <int2>0</int2>
-	    <last_modification_time>Thu, 13 Sep 2001 12:53:30 GMT</last_modification_time>
-	    <child>
-	      <padding>0</padding>
-	      <expand>True</expand>
-	      <fill>True</fill>
-	    </child>
-	  </widget>
-	</widget>
-      </widget>
+	      <widget>
+		<class>GtkHBox</class>
+		<name>hbox18</name>
+		<homogeneous>False</homogeneous>
+		<spacing>0</spacing>
+		<child>
+		  <padding>0</padding>
+		  <expand>False</expand>
+		  <fill>True</fill>
+		</child>
 
-      <widget>
-	<class>GtkFrame</class>
-	<name>frame25</name>
-	<label>Kundenauswahl</label>
-	<label_xalign>0</label_xalign>
-	<shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	<child>
-	  <left_attach>0</left_attach>
-	  <right_attach>1</right_attach>
-	  <top_attach>0</top_attach>
-	  <bottom_attach>1</bottom_attach>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>False</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>False</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>False</xfill>
-	  <yfill>False</yfill>
-	</child>
+		<widget>
+		  <class>GtkRadioButton</class>
+		  <name>radiobutton_nur_artikel</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <can_focus>True</can_focus>
+		  <signal>
+		    <name>toggled</name>
+		    <handler>on_radiobutton_artikel_toggled</handler>
+		    <last_modification_time>Fri, 14 Sep 2001 09:45:37 GMT</last_modification_time>
+		  </signal>
+		  <label>Zeige nur Artikel</label>
+		  <active>False</active>
+		  <draw_indicator>True</draw_indicator>
+		  <group>artikel</group>
+		  <child>
+		    <padding>0</padding>
+		    <expand>False</expand>
+		    <fill>False</fill>
+		  </child>
+		</widget>
 
-	<widget>
-	  <class>GtkVBox</class>
-	  <name>fixed3</name>
-	  <homogeneous>False</homogeneous>
-	  <spacing>0</spacing>
+		<widget>
+		  <class>GtkCheckButton</class>
+		  <name>first_komponent</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <can_focus>True</can_focus>
+		  <label>nur Art.Nr. einschränken</label>
+		  <active>True</active>
+		  <draw_indicator>True</draw_indicator>
+		  <child>
+		    <padding>0</padding>
+		    <expand>False</expand>
+		    <fill>False</fill>
+		  </child>
+		</widget>
+	      </widget>
 
-	  <widget>
-	    <class>GtkRadioButton</class>
-	    <name>radiobutton_alle_kunden</name>
-	    <cxx_visibility>protected</cxx_visibility>
-	    <can_focus>True</can_focus>
-	    <signal>
-	      <name>toggled</name>
-	      <handler>on_radiobutton_kunde_toggled</handler>
-	      <last_modification_time>Fri, 14 Sep 2001 14:53:12 GMT</last_modification_time>
-	    </signal>
-	    <label>alle</label>
-	    <active>True</active>
-	    <draw_indicator>True</draw_indicator>
-	    <group>kunde</group>
-	    <child>
-	      <padding>0</padding>
-	      <expand>False</expand>
-	      <fill>True</fill>
-	    </child>
-	  </widget>
-
-	  <widget>
-	    <class>GtkHBox</class>
-	    <name>hbox29</name>
-	    <homogeneous>False</homogeneous>
-	    <spacing>0</spacing>
-	    <child>
-	      <padding>0</padding>
-	      <expand>False</expand>
-	      <fill>True</fill>
-	    </child>
-
-	    <widget>
-	      <class>GtkRadioButton</class>
-	      <name>radiobutton_nur_kunde</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <can_focus>True</can_focus>
-	      <signal>
-		<name>toggled</name>
-		<handler>on_radiobutton_kunde_toggled</handler>
-		<last_modification_time>Fri, 14 Sep 2001 14:40:31 GMT</last_modification_time>
-	      </signal>
-	      <label>einen</label>
-	      <active>False</active>
-	      <draw_indicator>True</draw_indicator>
-	      <group>kunde</group>
-	      <child>
-		<padding>0</padding>
-		<expand>False</expand>
-		<fill>False</fill>
-	      </child>
-	    </widget>
-
-	    <widget>
-	      <class>GtkRadioButton</class>
-	      <name>radiobutton_kundengruppe</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <can_focus>True</can_focus>
-	      <signal>
-		<name>toggled</name>
-		<handler>on_radiobutton_kunde_toggled</handler>
-		<last_modification_time>Fri, 14 Sep 2001 14:40:31 GMT</last_modification_time>
-	      </signal>
-	      <label>Gruppe</label>
-	      <active>False</active>
-	      <draw_indicator>True</draw_indicator>
-	      <group>kunde</group>
-	      <child>
-		<padding>0</padding>
-		<expand>False</expand>
-		<fill>False</fill>
-	      </child>
+	      <widget>
+		<class>Custom</class>
+		<name>artikelbox</name>
+		<cxx_visibility>protected</cxx_visibility>
+		<signal>
+		  <name>activate</name>
+		  <handler>artikelbox_activate</handler>
+		  <last_modification_time>Thu, 13 Sep 2001 12:54:26 GMT</last_modification_time>
+		</signal>
+		<creation_function>ArtikelBox</creation_function>
+		<int1>1</int1>
+		<int2>0</int2>
+		<last_modification_time>Thu, 13 Sep 2001 12:53:30 GMT</last_modification_time>
+		<child>
+		  <padding>0</padding>
+		  <expand>True</expand>
+		  <fill>True</fill>
+		</child>
+	      </widget>
 	    </widget>
 	  </widget>
 
 	  <widget>
-	    <class>GtkHBox</class>
-	    <name>hbox30</name>
-	    <homogeneous>False</homogeneous>
-	    <spacing>0</spacing>
+	    <class>GtkFrame</class>
+	    <name>frame25</name>
+	    <label>Kundenauswahl</label>
+	    <label_xalign>0</label_xalign>
+	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
 	    <child>
-	      <padding>0</padding>
-	      <expand>True</expand>
-	      <fill>True</fill>
+	      <left_attach>0</left_attach>
+	      <right_attach>1</right_attach>
+	      <top_attach>0</top_attach>
+	      <bottom_attach>1</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>False</xfill>
+	      <yfill>False</yfill>
 	    </child>
 
 	    <widget>
-	      <class>Custom</class>
-	      <name>kundenbox</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <signal>
-		<name>activate</name>
-		<handler>kundenbox_activate</handler>
-		<last_modification_time>Fri, 14 Sep 2001 14:42:38 GMT</last_modification_time>
-	      </signal>
-	      <creation_function>KundenBox2</creation_function>
-	      <int1>0</int1>
-	      <int2>0</int2>
-	      <last_modification_time>Wed, 15 May 2002 16:08:35 GMT</last_modification_time>
-	      <child>
-		<padding>0</padding>
-		<expand>True</expand>
-		<fill>True</fill>
-	      </child>
-	    </widget>
+	      <class>GtkVBox</class>
+	      <name>fixed3</name>
+	      <homogeneous>False</homogeneous>
+	      <spacing>0</spacing>
 
-	    <widget>
-	      <class>Custom</class>
-	      <name>kundengruppe</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <visible>False</visible>
-	      <signal>
-		<name>activate</name>
-		<handler>kundengruppe_activate</handler>
-		<last_modification_time>Tue, 05 Aug 2003 10:29:24 GMT</last_modification_time>
-	      </signal>
-	      <creation_function>Optionmenu_Kundengruppe</creation_function>
-	      <int1>0</int1>
-	      <int2>0</int2>
-	      <last_modification_time>Tue, 05 Aug 2003 10:31:39 GMT</last_modification_time>
-	      <child>
-		<padding>0</padding>
-		<expand>True</expand>
-		<fill>True</fill>
-	      </child>
+	      <widget>
+		<class>GtkRadioButton</class>
+		<name>radiobutton_alle_kunden</name>
+		<cxx_visibility>protected</cxx_visibility>
+		<can_focus>True</can_focus>
+		<signal>
+		  <name>toggled</name>
+		  <handler>on_radiobutton_kunde_toggled</handler>
+		  <last_modification_time>Fri, 14 Sep 2001 14:53:12 GMT</last_modification_time>
+		</signal>
+		<label>alle</label>
+		<active>True</active>
+		<draw_indicator>True</draw_indicator>
+		<group>kunde</group>
+		<child>
+		  <padding>0</padding>
+		  <expand>False</expand>
+		  <fill>True</fill>
+		</child>
+	      </widget>
+
+	      <widget>
+		<class>GtkHBox</class>
+		<name>hbox29</name>
+		<homogeneous>False</homogeneous>
+		<spacing>0</spacing>
+		<child>
+		  <padding>0</padding>
+		  <expand>False</expand>
+		  <fill>True</fill>
+		</child>
+
+		<widget>
+		  <class>GtkRadioButton</class>
+		  <name>radiobutton_nur_kunde</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <can_focus>True</can_focus>
+		  <signal>
+		    <name>toggled</name>
+		    <handler>on_radiobutton_kunde_toggled</handler>
+		    <last_modification_time>Fri, 14 Sep 2001 14:40:31 GMT</last_modification_time>
+		  </signal>
+		  <label>einen</label>
+		  <active>False</active>
+		  <draw_indicator>True</draw_indicator>
+		  <group>kunde</group>
+		  <child>
+		    <padding>0</padding>
+		    <expand>False</expand>
+		    <fill>False</fill>
+		  </child>
+		</widget>
+
+		<widget>
+		  <class>GtkRadioButton</class>
+		  <name>radiobutton_kundengruppe</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <can_focus>True</can_focus>
+		  <signal>
+		    <name>toggled</name>
+		    <handler>on_radiobutton_kunde_toggled</handler>
+		    <last_modification_time>Fri, 14 Sep 2001 14:40:31 GMT</last_modification_time>
+		  </signal>
+		  <label>Gruppe</label>
+		  <active>False</active>
+		  <draw_indicator>True</draw_indicator>
+		  <group>kunde</group>
+		  <child>
+		    <padding>0</padding>
+		    <expand>False</expand>
+		    <fill>False</fill>
+		  </child>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkHBox</class>
+		<name>hbox30</name>
+		<homogeneous>False</homogeneous>
+		<spacing>0</spacing>
+		<child>
+		  <padding>0</padding>
+		  <expand>True</expand>
+		  <fill>True</fill>
+		</child>
+
+		<widget>
+		  <class>Custom</class>
+		  <name>kundenbox</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <signal>
+		    <name>activate</name>
+		    <handler>kundenbox_activate</handler>
+		    <last_modification_time>Fri, 14 Sep 2001 14:42:38 GMT</last_modification_time>
+		  </signal>
+		  <creation_function>KundenBox2</creation_function>
+		  <int1>0</int1>
+		  <int2>0</int2>
+		  <last_modification_time>Wed, 15 May 2002 16:08:35 GMT</last_modification_time>
+		  <child>
+		    <padding>0</padding>
+		    <expand>True</expand>
+		    <fill>True</fill>
+		  </child>
+		</widget>
+
+		<widget>
+		  <class>Custom</class>
+		  <name>kundengruppe</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <visible>False</visible>
+		  <signal>
+		    <name>activate</name>
+		    <handler>kundengruppe_activate</handler>
+		    <last_modification_time>Tue, 05 Aug 2003 10:29:24 GMT</last_modification_time>
+		  </signal>
+		  <creation_function>Optionmenu_Kundengruppe</creation_function>
+		  <int1>0</int1>
+		  <int2>0</int2>
+		  <last_modification_time>Tue, 05 Aug 2003 10:31:39 GMT</last_modification_time>
+		  <child>
+		    <padding>0</padding>
+		    <expand>True</expand>
+		    <fill>True</fill>
+		  </child>
+		</widget>
+	      </widget>
 	    </widget>
 	  </widget>
 	</widget>
