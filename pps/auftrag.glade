@@ -7759,7 +7759,6 @@ Jahr
 	      <class>Custom</class>
 	      <name>prov_verkaeufer</name>
 	      <cxx_visibility>protected</cxx_visibility>
-	      <sensitive>False</sensitive>
 	      <signal>
 		<name>activate</name>
 		<handler>on_prov_verk_activate</handler>

@@ -8,6 +8,9 @@
 #include "config.h"
 #include "auftrag_provision.hh"
 #include <Gtk_OStream.h>
+#include "MyMessage.h"  
+
+extern MyMessage *meldung;
 
 auftrag_provision::auftrag_provision(AuftragFull *auftrag) :
 auf(auftrag)
@@ -62,10 +65,43 @@ void auftrag_provision::on_prov_cancel_clicked()
 
 void auftrag_provision::on_prov_enable_toggled()
 {  
+ if(prov_enable->get_active())
+   {
+    cH_Kunde kunde(auf->getKundennr());
+    try {
+    	auf->set_VerkNr(kunde->getVerkNr());
+    }
+    catch(SQLerror &e)
+    {
+    	meldung->Show(e); return;
+    }
+//    prov_verkaeufer->grab_focus();
+    verkprov_frame->set_sensitive(true));
+   }
+ else
+  {
+    try {
+    	auf->set_VerkNr(Kunde::none_id);
+    }
+    catch(SQLerror &e)
+    {
+    	meldung->Show(e); return;
+    }
+    verkprov_frame->set_sensitive(false));
+  }
+   
 }
 
 void auftrag_provision::on_prov_verk_activate()
-{  
+{
+ cH_Kunde verkaeufer(prov_verkaufer()->get_value());
+
+ try {
+   auf->setVerkNr(verkaeufer->Id());
+ }
+ throw(SQLerror &e)
+   { meldung(e); }
+  
 }
 
 
