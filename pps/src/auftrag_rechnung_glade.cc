@@ -525,7 +525,7 @@ auftrag_rechnung_glade::auftrag_rechnung_glade(
    rabatt_typ->get_menu()->deactivate.connect(SigC::slot(this, &auftrag_rechnung_glade::rabatt_geaendert));
    rabatt_wert->activate.connect(SigC::slot(this, &auftrag_rechnung_glade::rabatt_geaendert));
    zahlziel->activate.connect(SigC::slot(this, &auftrag_rechnung_glade::on_zahlziel_activate));
-   bezahlt->button_release_event.connect(SigC::slot(this, &auftrag_rechnung_glade::on_bezahlt_toggled));
+   bezahlt->button_release_event.connect_after(SigC::slot(this, &auftrag_rechnung_glade::on_bezahlt_toggled));
    rtree_daten->leaf_selected.connect(SigC::slot(this, &auftrag_rechnung_glade::on_rdaten_leaf_selected));
    rtree_daten->unselect_row.connect(SigC::slot(this, &auftrag_rechnung_glade::on_unselectrow_rtree));
    rng_notiz->changed.connect(SigC::slot(this, &auftrag_rechnung_glade::on_notiz_changed));

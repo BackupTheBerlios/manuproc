@@ -231,7 +231,7 @@ catch(SQLerror &e) { cout << e; return; }
     zeilen_passen_noch-=8;
     os << "\\bigskip\n";
     if(kunde_an->get_lieferung_frei_haus()) 
-      os << "Die Lieferung erfolgt frei Haus\\\\\n";
+      os << "\\\\Die Lieferung erfolgt frei Haus\\\\\n";
     os << "\\\\Die Liefertermine bitte den einzelnen Positionen entnehmen\\\\\n";
 
    }
@@ -594,7 +594,11 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
      --zeilen_passen_noch;
 
      cP_Waehrung andere_waehrung=getWaehrung();
+#ifdef MABELLA_EXTENSIONS
+     bool umrechnen=false;
+#else
      bool umrechnen=andere_waehrung != cP_Waehrung(WaehrungID::EUR);
+#endif
 
      if (umrechnen) 
      {  andere_waehrung = cP_Waehrung(WaehrungID::EUR);
