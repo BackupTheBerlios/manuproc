@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.25 2002/12/04 09:09:25 thoma Exp $
+// $Id: Kunde_sql.pgcc,v 1.26 2002/12/18 12:45:39 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -641,6 +641,16 @@ void Kunde::showEAN(bool ea) throw(SQLerror)
 }
 
 #ifdef MABELLA_EXTENSIONS
+std::string Kunde::getIBAN_Code() const throw(SQLerror)
+{
+ if(iban.size())
+   return iban;
+ 
+ getRiBa_Code();
+
+ return iban;
+}
+
 std::pair<std::string,std::string> Kunde::getRiBa_Code() const throw(SQLerror)
 {
  if(cab.size() && abi.size())
@@ -650,14 +660,18 @@ std::pair<std::string,std::string> Kunde::getRiBa_Code() const throw(SQLerror)
  unsigned int KUNDENNR = entityid;
  char *CAB=0;
  char *ABI=0;
+ char *IBAN=0;
+ int ICAB,IABI,IIBAN;
  exec sql end declare section;
 
- exec sql select cab,abi into :CAB,:ABI from riba_code where
+ exec sql select iban,cab,abi 
+	into :IBAN:IIBAN,:CAB:ICAB,:ABI:IABI from riba_code where
 	kundennr= :KUNDENNR;
  SQLerror::test(__FILELINE__);
 
  abi=string(ABI);
  cab=string(CAB);
+ iban=string(IBAN);
  
  ECPGfree_auto_mem(); 
  return std::pair<std::string,std::string>(cab,abi);
