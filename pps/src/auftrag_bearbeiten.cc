@@ -345,7 +345,7 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
        }
       else if(instanz->ExterneBestellung())
        {
-#warning AUSKOMMENTIERT !!!
+#warning AUSKOMMENTIERT, weil es nicht kompiliert !!!
 /*
          AuftragBase AB(*auftrag);
          ManuProC::st_produziert sp(artikelbox->get_value(),stkmtr_spinbutton->get_value_as_int(),

@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.59 2003/06/19 15:41:13 jacek Exp $
+// $Id: AufEintrag.cc,v 1.60 2003/06/19 15:50:25 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -1042,7 +1042,7 @@ fixedpoint<2> AufEintrag::ProvSatz() const throw(SQLerror)
 {
  if(provsatz!=-1) return provsatz;
 
- Query("select provsatz from autragentry where"
+ Query("select provsatz from auftragentry where"
 	" (instanz,auftragid,zeilennr) = (?,?,?)")
  	<< InstanzID() << Id() << getZnr() >> provsatz;
 
