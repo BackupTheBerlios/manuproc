@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.26 2003/03/25 16:29:37 jacek Exp $ */
+/* $Id: Lieferschein.cc,v 1.27 2003/04/03 11:47:54 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,6 +26,12 @@
 #include <unistd.h> 
 #include <Misc/TraceNV.h>
 
+#ifdef MABELLA_EXTENSIONS
+#include <Lager/FertigWaren.h>
+#include <Artikel/ArtikelBase.h>
+#endif
+
+
 Lieferschein::Lieferschein(const LieferscheinBase &lsbase, const ManuProC::Datum &_lsdatum,
 int _kdnr,int _rngid, int _paeckchen, int _pakete, const ManuProC::Datum &_geliefertam,
 int _dpdlnr)
@@ -50,6 +56,7 @@ static void unbestellteMengeProduzieren(cH_ppsInstanz instanz,
 void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl, 
 		mengen_t mengeneinheit, int palette)
 {  
+
    // Eine Instanz, die Lieferscheine schreibt, produziert auch selber (assert in ppsInstanz).
    // Wenn man einn Lieferschein schriebe, ohne daß diese Instanz 
    // selber produzierte, würde doppelt produziert werden.
@@ -57,14 +64,17 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("artikel",artikel),
            NV("anzahl",anzahl),NV("mengeneinheit",mengeneinheit),NV("palette",palette));
    Transaction tr;
-   SQLFullAuftragSelector psel(SQLFullAuftragSelector::sel_Artikel_Planung_id
-   			(instanz->Id(),getKunde()->Id(),artikel,AuftragBase::handplan_auftrag_id));
-   SelectedFullAufList auftraglist(psel);
 
    AuftragBase::mengen_t menge(anzahl);
    Einheit e(artikel);
    if (!e.hatMenge()) mengeneinheit=0;
    else menge *= mengeneinheit.as_float();
+
+#ifndef MABELLA_EXTENSIONS // auf keinen Fall nach offenen Aufträgen suchen
+
+   SQLFullAuftragSelector psel(SQLFullAuftragSelector::sel_Artikel_Planung_id
+   			(instanz->Id(),getKunde()->Id(),artikel,AuftragBase::handplan_auftrag_id));
+   SelectedFullAufList auftraglist(psel);
 
    if (auftraglist.aufidliste.begin()==auftraglist.aufidliste.end())
      // kann nicht abschreiben
@@ -96,6 +106,20 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
          // da ist noch ein Rest geblieben, setzt ZusatzInfo
          unbestellteMengeProduzieren(Instanz(),artikel,menge,LE);
    }
+#else
+ if(menge>0)
+   {LieferscheinEntry LE=LieferscheinEntry::create(*this, artikel, anzahl,mengeneinheit,palette,false);
+    unbestellteMengeProduzieren(Instanz(),artikel,menge,LE);
+    if(Instanz() == ppsInstanzID::Kundenauftraege)
+      {
+       FertigWaren fw(artikel,(FertigWaren::enum_Aktion)'L',
+			menge.as_int(),Id());
+       if(menge < 0) fw.Einlagern(1);
+       else if(menge > 0) fw.Auslagern(1);
+      }
+   }
+#endif
+
    tr.commit();
 }
 
