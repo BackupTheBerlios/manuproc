@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.5 2003/07/29 09:15:03 jacek Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.6 2003/08/11 15:45:06 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -86,7 +86,7 @@ AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
 }
 
 // etwas bestelltes wird produziert
-namespace { class MichProduzieren : public distribute_parents_cb
+class AufEintrag::MichProduzieren : public distribute_parents_cb
 {	AufEintrag &mythis;
 	unsigned uid;
 	ProductionContext2 ctx;
@@ -98,7 +98,7 @@ public:
 	}
 	MichProduzieren(AufEintrag &_mythis,const ProductionContext2 &_ctx) 
 		: mythis(_mythis), uid(getuid()), ctx(_ctx) {}
-};}
+};
 
 // Menge wurde geliefert.
 // Um die Pfeile über uns muss sich jemand anderes kümmern
@@ -190,8 +190,7 @@ if(Instanz() == ppsInstanzID::Kundenauftraege)
 
 }
 
-namespace {
-class ProduziertNG_cb2 : public distribute_children_twice_cb
+class AufEintrag::ProduziertNG_cb2 : public distribute_children_twice_cb
 {  unsigned uid;
    AufEintragBase alterAEB,neuerAEB;
    ProductionContext2 ctx;
@@ -246,10 +245,8 @@ public:
 	   AufEintrag::unbestellteMengeProduzieren(wo,art,M,uid,true,neuerAEB,ctx);
 	}
 };
-}
 
-namespace {
-class ProduziertRueckgaengig2 : public distribute_children_cb
+class AufEintrag::ProduziertRueckgaengig2 : public distribute_children_cb
 {  unsigned uid;
    AufEintrag alterAEB;
 public:
@@ -288,7 +285,6 @@ public:
 	   	<< " von "<< art.Id() <<  '\n';
 	}
 };
-}
 
 // similar to move_to
 // Produktion im Lager bedeutet:
