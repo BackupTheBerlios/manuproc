@@ -1,4 +1,4 @@
-// $Id: Zuordnung_zeigen.cc,v 1.3 2003/05/26 07:52:29 christof Exp $
+// $Id: Zuordnung_zeigen.cc,v 1.4 2003/05/26 15:33:03 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -22,6 +22,7 @@
 #include <Auftrag/AufEintragZu.h>
 #include <Auftrag/AufEintrag.h>
 #include <Misc/exception.h>
+#include <Misc/FetchIStream.h>
 
 static void show(const AufEintrag &ae)
 {  std::cout << ae << ": " << ae.getStueck();
@@ -45,6 +46,13 @@ static void show(const AufEintragBase &ae, bool kinder, int indent=0)
    }
 }
 
+static void show_all(const AufEintragBase &ae)
+{  show(ae);
+   show(ae,AufEintragZu::list_kinder);
+   show(ae,AufEintragZu::list_eltern);
+
+}
+
 int main(int argc,char *argv[])
 {  if (argc<4) 
    {  std::cerr << "Usage: " << argv[0] << " <instanz> <id> <zeile>\n";
@@ -52,14 +60,22 @@ int main(int argc,char *argv[])
    }
    ppsInstanz::ID instanz=ppsInstanz::ID(atoi(argv[1]));
    int id=atoi(argv[2]),zeile=atoi(argv[3]);
-   if (int(instanz)<1 || id<0 || zeile<1) return 2;
+   if (int(instanz)<1 || id<0) return 2;
 
    ManuProC::PrintUncaughtExceptions();
    ManuProC::dbconnect();
-   
-   show(AufEintragBase(instanz,id,zeile));
-   show(AufEintragBase(instanz,id,zeile),AufEintragZu::list_kinder);
-   std::cout << "\nEltern\n";
-   show(AufEintragBase(instanz,id,zeile),AufEintragZu::list_eltern);
+
+   if (zeile>0)
+   { show_all(AufEintragBase(instanz,id,zeile));
+   }
+   else
+   {  Query q("select zeilennr from auftragentry "
+   	"where (instanz,auftragid)=(?,?) order by zeilennr");
+      q << AuftragBase(instanz,id);
+      FetchIStream is;
+      while ((q>>is).good())
+      {  show_all(AufEintragBase(instanz,id,is.Fetch<int>()));
+      }
+   }
    ManuProC::dbdisconnect();
 }
