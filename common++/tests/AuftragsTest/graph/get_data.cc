@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.47 2003/08/06 09:17:53 christof Exp $
+// $Id: get_data.cc,v 1.48 2003/08/06 09:45:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -22,6 +22,10 @@
 #include "../steuerprogramm.hh"
 #include <Misc/relops.h>
 #include <Artikel/ArtikelBezeichnung.h>
+#include <Misc/TraceNV.h>
+
+static const UniqueValue::value_t trace_channel=ManuProC::Tracer::channels.get();
+static ManuProC::Tracer::Environment trace_channele("DEBUG",trace_channel);
 
 #ifdef  MANU_PROC_TEST
 static std::string referenzdir="../database_tables_test_ManuProC";
@@ -194,20 +198,17 @@ graph_data_node::st_node_strings graph_data_node::get_mengen_for_node(AufEintrag
       
       std::string m=j->bestellt.String();
       if(j->geliefert!=AuftragBase::mengen_t(0)) m+="("+j->geliefert.String()+")";
+      if (!M.empty()) M+="/";
       if(Mmem != m) M+=prefix+m;
-      M+=+"/";
       Mmem=m;
 
       std::string z="("+std::string(j->datum.c_str())+","+itos(j->status)+")";
+      if (!Z.empty()) Z+="/";
       if(Zmem != z )  Z+=prefix+z ;
       Z+="/";
       Zmem=z;
       artikel=j->artikel;
     }
-  std::string::size_type st1=M.find_last_of("/");
-  if(st1!=std::string::npos) M.erase(st1,1);
-  std::string::size_type st2=Z.find_last_of("/");
-  if(st2!=std::string::npos) Z.erase(st2,1);
   if (!artikel) artikel_str="?";
   else artikel_str=cH_ArtikelBezeichnung(artikel)->Bezeichnung();
   return st_node_strings(aeb,M,Z,artikel_str);
@@ -230,15 +231,17 @@ std::vector<std::pair<std::string,std::string> > graph_data_node::get_edges_for(
   AuftragBase::mengen_t Mmem;
   unsigned fileindex_mem=unsigned(-1);
   unsigned index=0;
+  ManuProC::Trace _t(trace_channel, __FUNCTION__,aeb);
   for(std::list<st_child>::const_iterator i=list_child.begin();i!=list_child.end();++i)
-   {
+   { ManuProC::Trace _t(trace_channel, "for",NV("fileindex",i->fileindex),
+   		NV("menge",i->menge),NV("aeb",i->aeb));
      if(aeb_mem==i->aeb) 
       { if (fileindex_mem==i->fileindex) 
         { ++index; 
           if (S.size()<index+1) S.resize(index+1);
         }
         else
-        { index=0; }
+        { index=0; fileindex_mem=i->fileindex; }
         if (!S[index].empty()) S[index]+="/";
         if(Mmem != i->menge) S[index]+=i->menge.String();
         Mmem=i->menge;
@@ -246,7 +249,7 @@ std::vector<std::pair<std::string,std::string> > graph_data_node::get_edges_for(
      else
       { std::string S2;
         for (std::vector<std::string>::const_iterator j=S.begin();j!=S.end();++j)
-        {  if (!S2.empty()) S2+="|";
+        {  if (!S2.empty()) S2+="\\n";
            S2+=*j;
         }
         V.push_back(std::pair<std::string,std::string>(aeb_mem.str(),S2));
@@ -261,7 +264,7 @@ std::vector<std::pair<std::string,std::string> > graph_data_node::get_edges_for(
    }
    std::string S2;
         for (std::vector<std::string>::const_iterator i=S.begin();i!=S.end();++i)
-        {  if (!S2.empty()) S2+="|";
+        {  if (!S2.empty()) S2+="\\n";
            S2+=*i;
         }
         V.push_back(std::pair<std::string,std::string>(aeb_mem.str(),S2));
