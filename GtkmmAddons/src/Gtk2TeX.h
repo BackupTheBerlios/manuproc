@@ -1,5 +1,5 @@
 /*  Gtk--addons: a collection of gtk-- addons
- *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 2001-2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -16,11 +16,10 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: Gtk2TeX.h,v 1.3 2003/11/10 08:23:45 christof Exp $
+// $Id: Gtk2TeX.h,v 1.4 2003/11/11 10:15:28 christof Exp $
 
 #include <TeX.h>
 #include <iostream>
-#if 0
 #include <gtkmm/treeview.h>
 
 namespace Gtk2TeX
@@ -38,7 +37,7 @@ namespace Gtk2TeX
 		ColumnType_cb columntype_cb;
 		Row_cb preline_cb,postline_cb;
 		Simple_cb prehead_cb,posthead_cb,postlist_cb;
-		// Glib::RefPtr<Gtk::TreeSelection> selection;
+		Glib::RefPtr<Gtk::TreeSelection> selection;
 		// there's no selection ctor ... so 
 		gint first_line,last_line;
 		gpointer user_data;
@@ -58,4 +57,3 @@ namespace Gtk2TeX
 	
 	std::ostream &TreeView2Table(std::ostream &os,const Gtk::TreeView *cl,const TableFlags &fl=TableFlags());
 };
-#endif

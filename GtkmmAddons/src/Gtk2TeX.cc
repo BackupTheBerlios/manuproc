@@ -1,5 +1,5 @@
 /*  Gtk--addons: a collection of gtk-- addons
- *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 2001-2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: Gtk2TeX.cc,v 1.3 2003/11/10 08:23:45 christof Exp $
+// $Id: Gtk2TeX.cc,v 1.4 2003/11/11 10:15:28 christof Exp $
 
 #include "Gtk2TeX.h"
 
@@ -27,6 +27,7 @@ static bool is_lines(const std::string &s)
    return true;
 }
 
+#if 0
 static void CList2Table_sub(std::ostream &os,const Gtk::CList *cl,const Gtk2TeX::TableFlags &fl,const Gtk::CList::Row &y,bool is_last_line)
 {  bool has_lines(false),has_text(false);
    int col(1);
@@ -148,3 +149,4 @@ std::ostream &Gtk2TeX::CList2Table(std::ostream &os,const Gtk::CList *cl,const T
    return os;
 }
 
+#endif
