@@ -5,7 +5,7 @@
 
 #include <glibmm.h>
 
-/* $Id: SearchCombo.h,v 1.1 2002/12/12 07:51:56 christof Exp $ */
+/* $Id: SearchCombo.hg,v 1.1.1.1 2003/01/06 15:07:33 christof Exp $ */
 
 /* searchcombo.h
  * 

@@ -3,7 +3,7 @@
 #include <gtkmm/SearchCombo.h>
 #include <gtkmm/private/SearchCombo_p.h>
 
-/* $Id: SearchCombo.ccg,v 1.3 2002/09/24 13:58:33 christof Exp $ */
+/* $Id: SearchCombo.ccg,v 1.1.1.1 2003/01/06 15:07:33 christof Exp $ */
 
 /* searchcombo.h
  * 
