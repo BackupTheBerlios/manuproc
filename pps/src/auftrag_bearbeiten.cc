@@ -475,11 +475,22 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
    }
   }
  
-  if(  auftrag->existsEntry(artikelbox->get_value().Id(),
+
+  if(instanz->ExterneBestellung())
+    {if(  auftrag->existsEntry(artikelbox->get_value().Id(),
+  		WAufEntryStat->get_Status(), liefdatum_datewin->get_value()) )
+     {meldung->Show("Der Artikel ist in diesem Auftrag bereits erfaßt");
+      return;
+     }
+    }
+  else
+    {
+     if(  auftrag->existsEntry(artikelbox->get_value().Id(),
   		       WAufEntryStat->get_Status()) )
-   {meldung->Show("Der Artikel ist in diesem Auftrag bereits erfaßt");
-    return;
-   }	           
+     {meldung->Show("Der Artikel ist in diesem Auftrag bereits erfaßt");
+      return;
+     }
+    }	           
    
 #endif
       if(instanz==ppsInstanzID::Kundenauftraege || instanz->ExterneBestellung())

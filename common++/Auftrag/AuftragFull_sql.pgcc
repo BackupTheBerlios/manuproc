@@ -21,7 +21,6 @@
 #include <Auftrag/selFullAufEntry.h>
 #include <Misc/Trace.h>
 
-
 void AuftragFull::push_back(AufEintrag aeb)
 {
   eintragliste.push_back(aeb);
@@ -134,6 +133,34 @@ throw(SQLerror)
  	auftragid=:AUFID and instanz=:INSTANZ and 
  	artikelid=:ARTIKELID and
 	status=:STATUS;
+ SQLerror::test(__FILELINE__,100);
+ 
+ return (sqlca.sqlcode!=100);
+}
+
+
+bool AuftragFull::existsEntry(const ArtikelBase::ID art, AufStatVal stat,
+        		ManuProC::Datum lieferdatum) throw(SQLerror)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
+ exec sql begin declare section;
+ int AUFID=Id();
+ int INSTANZ=Instanz();
+ int ARTIKELID=art;
+ int STATUS=stat;
+ int BESTELLT;
+ char *LIEFDAT;
+ exec sql end declare section;
+
+ std::string lfdat=lieferdatum.postgres_null_if_invalid();
+
+ LIEFDAT=(char*)lfdat.c_str();
+
+ exec sql select bestellt into :BESTELLT from auftragentry where
+ 	auftragid=:AUFID and instanz=:INSTANZ and 
+ 	artikelid=:ARTIKELID and
+	status=:STATUS and
+	lieferdate=:LIEFDAT;
  SQLerror::test(__FILELINE__,100);
  
  return (sqlca.sqlcode!=100);
