@@ -1256,6 +1256,17 @@ void LR_Abstraktion::page_header(std::ostream &os)
 		   << string2TeX(kunde_an->plz()+" "+kunde_an->ort())+"\\\\\n\n";
 		os << "\\smallskip\n";   
 		}
+	else
+	if(!kunde_an->isInGrp(KundengruppeID::Lieferadresse) && 
+		(Typ()==Auftrag || Typ()==Rechnung))
+		{
+		os << "\\bf "<<mld->MLT(MultiL_Dict::TXT_LIEFADRESSE)<<":\\rm\\\\\n"
+		   << string2TeX(kunde_an->firma())+"\\\\\n"
+		   << string2TeX(kunde_an->strasse())+" "
+		   << string2TeX(kunde_an->hausnr())+"\\\\\n"		   
+		   << string2TeX(kunde_an->plz()+" "+kunde_an->ort())+"\\\\\n\n";
+		os << "\\smallskip\n";   
+		}
 		
 	if(kunde_rng->getBetreuer()!=Person::none_id)
 	  {cH_Person betr(kunde_rng->getBetreuer());
