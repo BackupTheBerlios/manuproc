@@ -18,80 +18,54 @@
  */
 
 #include "ppsInstanz.h"
-#include <Misc/Transaction.h>
-exec sql include sqlca;
+#include <Misc/FetchIStream.h>
 
+FetchIStream &operator>>(FetchIStream &is, ppsInstanz::ID &v)
+{  int i;
+   is >> i;
+   v=ppsInstanz::ID(i);
+   return is;
+}
+
+FetchIStream &operator>>(FetchIStream &is, cH_ppsInstanz &v)
+{  int i;
+   is >> i;
+   v=ppsInstanz::ID(i);
+   return is;
+}
+
+FetchIStream &operator>>(FetchIStream &is, ppsInstanz &i)
+{  is >> i.name 
+	>> FetchIStream::MapNull<ppsInstanz::ID>(i.lager_fuer,ppsInstanzID::None)
+	>> i.sortierung
+	>> FetchIStream::MapNull<bool>(i.lieferschein,false)
+	>> FetchIStream::MapNull<bool>(i.produziert_selbst,false)
+	>> FetchIStream::MapNull<std::string>(i.lagername,"")
+	>> FetchIStream::MapNull<int>(i.produktionsdauer_tage,0)
+	>> FetchIStream::MapNull<ppsInstanz::ID>(i.einlagern_in,ppsInstanzID::None)
+	>> FetchIStream::MapNull<bool>(i.automatisch_einlagern,false)
+	>> i.typ
+	>> FetchIStream::MapNull<bool>(i.externe_bestellung,false)
+	>> FetchIStream::MapNull<ppsInstanz::ID>(i.geplant_von,ppsInstanzID::None);
+ assert(i.typ=='L' || i.typ=='l' || i.typ=='P' || i.typ=='E');
+ return is;
+}
 
 void ppsInstanz::get_name() throw(SQLerror)
 {
  if(instid == ppsInstanzID::None) return;
-
- exec sql begin declare section;
-   char *db_name=0;
-   int db_nr=instid,db_lager_fuer,db_sortierung,db_produktionsdauer_tage;
-   int db_geplant_von;
-   int IN;
-   int db_einlagern_in;
-   bool db_liefer,db_produziert_selbst,db_automatisch_einlagern;
-   bool db_externe_bestellung;
-   char db_lagername[50];
-   char db_typ;
- exec sql end declare section;
- IN=ppsInstanzID::None;
- exec sql select name,coalesce(lager_fuer,:IN),sortierung ,
-      coalesce(lieferschein,'f'),coalesce(produziert_selbst,'f'),
-      coalesce(lagername,''),coalesce(prod_dauer_tage,0),
-      coalesce(einlagern_in,:IN),coalesce(automatisch_einlagern,'f'),
-      typ,coalesce(externe_bestellung,'f'),coalesce(geplant_von,:IN)
-      into :db_name,:db_lager_fuer,:db_sortierung ,:db_liefer,
-      :db_produziert_selbst,:db_lagername,:db_produktionsdauer_tage,
-      :db_einlagern_in,:db_automatisch_einlagern,:db_typ,
-      :db_externe_bestellung,:db_geplant_von
-      from prod_instanz where insid= :db_nr;
- SQLerror::test(__FILELINE__);
-// if(sqlca.sqlcode) *db_name=0;
-
-//cout << instid<< ' ' <<db_name<<' '<<db_lager_fuer<<' '
-//<<db_sortierung<<' '<<db_liefer<<' '<<db_lagername<<'\n';
- name=db_name;
- lager_fuer=ID(db_lager_fuer);
- sortierung=db_sortierung;
- lieferschein=db_liefer;
- produziert_selbst=db_produziert_selbst;
- lagername=db_lagername;
- produktionsdauer_tage=db_produktionsdauer_tage;
- einlagern_in=ID(db_einlagern_in);
- automatisch_einlagern=db_automatisch_einlagern;
- typ=db_typ;
- geplant_von=ID(db_geplant_von);
- externe_bestellung=db_externe_bestellung;
-
- assert(typ=='L' || typ=='l' || typ=='P' || typ=='E');
- ECPGfree_auto_mem();
-
+ Query("select name,lager_fuer,sortierung,"
+      "lieferschein,produziert_selbst,lagername,prod_dauer_tage,"
+      "einlagern_in,automatisch_einlagern,typ,externe_bestellung,geplant_von "
+      "from prod_instanz where insid=?") << instid >> *this;
 }
 
 
 std::vector<cH_ppsInstanz> cH_ppsInstanz::get_all_instanz() throw(SQLerror)
 {
- std::vector<cH_ppsInstanz> v;
-
-  exec sql begin declare section;
-    int db_i;
-  exec sql end declare section;
-  exec sql declare ins_ein cursor for select insid from 
-      prod_instanz order by sortierung;
-  Transaction tr;
-  exec sql open ins_ein;
-  SQLerror::test(__FILELINE__);
-  while (true)
-   {
-     exec sql fetch ins_ein into :db_i;
-     SQLerror::test(__FILELINE__,100);
-     if (sqlca.sqlcode) break;
-     v.push_back(cH_ppsInstanz(ppsInstanz::ID(db_i)));
-   }
-
- return v;
+  std::vector<cH_ppsInstanz> v;
+  Query("select insid from prod_instanz order by sortierung")
+  	.FetchArray(v);
+  return v;
 }
 

@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.43 2003/01/15 15:10:16 christof Exp $
+// $Id: get_data.cc,v 1.44 2003/02/12 13:54:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -31,6 +31,7 @@ static std::string referenzdir="../database_tables_test";
 #endif
 
 bool graph_data_node::show_referenz;
+bool graph_data_node::dont_hide_empty;
 unsigned graph_data_node::limit=~0;
 unsigned graph_data_node::start=0;
 
@@ -40,6 +41,10 @@ graph_data_node::graph_data_node(const std::string &mode)
    get_values_from_files();
    fill_map();
    get_values_from_files_Z();
+}
+
+bool operator==(const graph_data_node::st_auftrag &a, const AufEintragBase &b)
+{  return a.auftrag==b;
 }
 
 void graph_data_node::get_values_from_files()
@@ -79,9 +84,25 @@ void graph_data_node::get_values_from_files()
         if(instanz==ppsInstanzID::None) continue;
         AufEintragBase aeb(instanz,id,znr);
 
-        list_auftrag.push_back(st_auftrag(aeb,bestellt,geliefert,status,datum,i->prefix));
+	bool schon_drin=false;
+	if (!dont_hide_empty && bestellt==geliefert)
+	{  schon_drin=std::find(list_auftrag.begin(),list_auftrag.end(),aeb)!=list_auftrag.end();
+	}
+	if (dont_hide_empty || bestellt!=geliefert || schon_drin)
+           list_auftrag.push_back(st_auftrag(aeb,bestellt,geliefert,status,datum,i->prefix));
       }
    }
+}
+
+namespace {
+struct st_comp
+{	AufEintragBase aebALT, aebNEU;
+	st_comp(AufEintragBase a,AufEintragBase n) : aebALT(a), aebNEU(n) {}
+};
+ }
+
+bool operator==(const graph_data_node::st_aebZ &a, const st_comp &b)
+{  return a.aebALT==b.aebALT && a.aebNEU==b.aebNEU;
 }
 
 void graph_data_node::get_values_from_files_Z()
@@ -105,13 +126,11 @@ void graph_data_node::get_values_from_files_Z()
            if(j==2||j==5) trenner="|";
            else trenner ="-";
            s1=zeile.find(trenner);
-//           if     (j==0) instanzALT=cH_ppsInstanz(ppsInstanz::ID(atoi(zeile.substr(0,s1).c_str())));
            if     (j==0) { int i=atoi(zeile.substr(0,s1).c_str());
                            if(i!=0) instanzALT=cH_ppsInstanz(ppsInstanz::ID(i));
                   }
            else if(j==1) idALT=atoi(zeile.substr(0,s1).c_str());
            else if(j==2) znrALT=atoi(zeile.substr(0,s1).c_str());         
-//           else if(j==3) instanzNEU=cH_ppsInstanz(ppsInstanz::ID(atoi(zeile.substr(0,s1).c_str())));
            if     (j==3) { int i=atoi(zeile.substr(0,s1).c_str());
                            if(i!=0) instanzNEU=cH_ppsInstanz(ppsInstanz::ID(i));
                   }
@@ -123,7 +142,13 @@ void graph_data_node::get_values_from_files_Z()
         if(instanzALT==ppsInstanzID::None) continue;
         AufEintragBase aebALT(instanzALT,idALT,znrALT);
         AufEintragBase aebNEU(instanzNEU,idNEU,znrNEU);
-//cout <<"XX\t"<< aebALT<<'\t'<<aebNEU<<'\t'<<menge<<'\n';
+
+	bool schon_drin=false;
+	if (!dont_hide_empty && !menge)
+	{  schon_drin=std::find(list_auftragszuordnung.begin(),list_auftragszuordnung.end(),st_comp(aebALT,aebNEU))
+		!=list_auftragszuordnung.end();
+	}
+	if (dont_hide_empty || !!menge || schon_drin)
         list_auftragszuordnung.push_back(st_aebZ(aebALT,aebNEU,menge));
       }
    }

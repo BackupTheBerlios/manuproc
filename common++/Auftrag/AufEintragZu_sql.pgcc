@@ -1,4 +1,4 @@
-// $Id: AufEintragZu_sql.pgcc,v 1.18 2003/02/10 14:33:59 christof Exp $
+// $Id: AufEintragZu_sql.pgcc,v 1.19 2003/02/12 13:54:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -104,12 +104,9 @@ std::list<AufEintragBase> AufEintragZu::get_AufEintragList_from_Artikel
   return L;
 }
 
-void AufEintragZu::Neu(const AufEintragBase& neuAEB,
-                       const mengen_t menge,const int oldZnr)
-{ AufEintragBase vonAEB(*this);
-  if (oldZnr) vonAEB=AufEintragBase(AuftragBase(*this),oldZnr);
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,vonAEB,
-      "--",menge,"-->",neuAEB,oldZnr?" OldZNr ":"");
+void AufEintragZu::Neu(const AufEintragBase& neuAEB,const mengen_t menge)
+{ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
+      "--",menge,"-->",neuAEB);
 
  // erst erhöhen versuchen 
  try{ mengen_t mt=setMengeDiff__(neuAEB,menge); 
@@ -120,9 +117,15 @@ void AufEintragZu::Neu(const AufEintragBase& neuAEB,
          "(altinstanz,altauftragid,altzeilennr, menge, "
            "neuinstanz,neuauftragid,neuzeilennr) "
          "values (?,?,?, ?, ?,?,?)").lvalue() 
-      << vonAEB << menge << neuAEB;
+      << static_cast<const AufEintragBase &>(*this) << menge << neuAEB;
     SQLerror::test(__FILELINE__);
  }
+}
+
+void AufEintragZu::Neu(const AufEintragBase& neuAEB,
+                       const mengen_t menge,const int oldZnr)
+{ if (oldZnr) Neu(AufEintragBase(AuftragBase(*this),oldZnr),menge);
+  else Neu(neuAEB,menge);
 }
 
 #include <Misc/itos.h>

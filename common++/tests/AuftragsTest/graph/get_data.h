@@ -1,4 +1,4 @@
-// $Id: get_data.h,v 1.22 2003/01/15 15:10:16 christof Exp $
+// $Id: get_data.h,v 1.23 2003/02/12 13:54:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -28,6 +28,7 @@
 
 class graph_data_node
 {
+public:
       struct st_auftrag{AufEintragBase auftrag; AuftragBase::mengen_t bestellt;
                         AuftragBase::mengen_t geliefert;AufStatVal status;
                         Petig::Datum datum;std::string prefix;
@@ -43,7 +44,6 @@ class graph_data_node
             : aebALT(a),aebNEU(n),menge(m) {}
              bool operator<(const st_aebZ &b) const {return aebALT<b.aebALT;}
             };
-  public:
       struct st_child{AufEintragBase aeb;AuftragBase::mengen_t menge;
               st_child(AufEintragBase a,AuftragBase::mengen_t m) 
                : aeb(a),menge(m){} 
@@ -81,6 +81,7 @@ class graph_data_node
 
 // global parameters - evil ... but I don't want to rewrite the program
 	static bool show_referenz;
+	static bool dont_hide_empty;
 	// limit number of files to display
 	static unsigned limit,start;
 };

@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum_new_del.cc,v 1.2 2003/02/10 14:33:59 christof Exp $
+// $Id: ArtikelBaum_new_del.cc,v 1.3 2003/02/12 13:54:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, 
  *  written by Malte Thoma and Christof Petig
@@ -123,11 +123,11 @@ void ArtikelBaum::reduceChildren(int uid,const AufEintrag& AEB,
                                  const AufEintrag& oldAEB,
                                  AufEintragBase::mengen_t menge) 
 {
-  // ManuProC::Trace _tr(AuftragBase::trace,__FUNCTION__,AEB,oldAEB,menge);
+  ManuProC::Trace _t(AuftragBase::trace_channel,__FUNCTION__,AEB,oldAEB,menge);
 
   const_cast<AufEintrag&>(AEB).MengeAendern(uid,-menge,false,oldAEB,ManuProC::Auftrag::r_Anlegen);
 
-  AufEintragZu::list_t L=AufEintragZu(AEB).get_Referenz_list(AEB,true);
+  AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(AEB,AufEintragZu::list_kinder);
   for(AufEintragZu::list_t::iterator i=L.begin();i!=L.end();++i)
      reduceChildren(uid,AufEintrag(i->AEB),AEB,i->Menge);
 }        

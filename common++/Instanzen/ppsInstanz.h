@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.25 2003/02/10 14:33:59 christof Exp $
+// $Id: ppsInstanz.h,v 1.26 2003/02/12 13:54:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -37,7 +37,7 @@ namespace ManuProC{ struct st_produziert; }
 
 class cH_ppsInstanz;
 class ArtikelBase;
-
+class FetchIStream;
 
 class ppsInstanz : public HandleContent
 {
@@ -57,6 +57,7 @@ private:
  ID geplant_von;
  bool externe_bestellung;
 
+ friend FetchIStream &operator>>(FetchIStream &,ppsInstanz&);
  void get_name() throw(SQLerror);
  void check() const; 
 public:
@@ -142,9 +143,8 @@ class cH_ppsInstanz : public Handle<const ppsInstanz>
 {
      typedef CacheStatic<ppsInstanz::ID,cH_ppsInstanz> cache_t;
      static cache_t cache;
-     friend class std::map<ppsInstanz::ID,cH_ppsInstanz>;
-     cH_ppsInstanz(){};
   public:
+     cH_ppsInstanz(){};
      cH_ppsInstanz(ppsInstanz::ID iid);
      cH_ppsInstanz(const ppsInstanz *s) : Handle<const ppsInstanz>(s) {};
 
@@ -159,5 +159,7 @@ class cH_ppsInstanz : public Handle<const ppsInstanz>
 };
 
 std::ostream &operator<<(std::ostream &o,const cH_ppsInstanz &i);
+FetchIStream &operator>>(FetchIStream &is, ppsInstanz::ID &v);
+FetchIStream &operator>>(FetchIStream &is, cH_ppsInstanz &i);
 
 #endif

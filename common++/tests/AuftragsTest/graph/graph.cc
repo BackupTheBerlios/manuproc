@@ -1,4 +1,4 @@
-// $Id: graph.cc,v 1.22 2003/01/15 15:10:16 christof Exp $
+// $Id: graph.cc,v 1.23 2003/02/12 13:54:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -34,6 +34,8 @@ const static struct option options[]=
  { "referenz", no_argument, 0, 'r' },
  { "limit", required_argument, 0, 'l' },
  { "start", required_argument, 0, 's' },
+ { "only", required_argument, 0, 'o' },
+ { "dont-hide", no_argument, 0, 'h' },
  { NULL,      0,       NULL, 0 }
 };       
         
@@ -46,26 +48,31 @@ void usage(std::string s)
        << "\t -r --referenz\tReferenz anzeigen\n"
        << "\t -s --start <number>\tErster angezeigter Schritt\n"
        << "\t -l --limit <number>\tLetzter angezeigter Schritt\n"
+       << "\t -o --only <number>\tNur einen Zustand anzeigen\n"
+       << "\t -h --dont-hide\tLeere Aufträge anzeigen\n"
        << "\n";
 }
 
 
 int main(int argc, char *argv[])
 {
-  if(argc!=2 && argc!=3) {usage(argv[0]); exit(1);}
-
   dot_out::e_colour colour=dot_out::Black;
   int opt;
-  while ((opt=getopt_long(argc,argv,"s:bcrl:",options,NULL))!=EOF)
+  while ((opt=getopt_long(argc,argv,"s:bcrl:o:h",options,NULL))!=EOF)
    { switch (opt) {
       case 'b' : colour=dot_out::Black; break;
       case 'c' : colour=dot_out::Colour; break;
       case 'r' : graph_data_node::show_referenz=true; break;
       case 'l': graph_data_node::limit=atol(optarg); break;
       case 's': graph_data_node::start=atol(optarg); break;
+      case 'h': graph_data_node::dont_hide_empty=true; break;
+      case 'o': graph_data_node::start=atol(optarg); 
+                graph_data_node::limit=graph_data_node::start+1;
+      		break;
      }
    }  
 
+  if (optind!=argc-1) {usage(argv[0]); exit(1);}
   std::string mode=argv[optind];
   Petig::PrintUncaughtExceptions();
   try{try{

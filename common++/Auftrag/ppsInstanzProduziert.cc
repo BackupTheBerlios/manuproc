@@ -1,4 +1,4 @@
-// $Id: ppsInstanzProduziert.cc,v 1.3 2003/02/10 14:33:59 christof Exp $
+// $Id: ppsInstanzProduziert.cc,v 1.4 2003/02/12 13:54:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -53,8 +53,7 @@ void ppsInstanz::Produziert(ManuProC::st_produziert &P,ManuProC::Auftrag::Action
  if(P.AE.valid()) // direktes Abschreiben ohne Suche von offenen Aufträgen
      { 
        P.AE.abschreiben(P.menge,P.lfrsid);
-       P.Reduce_DispoEltern(P.AE,P.menge);      
-       AufEintragZuMengenAenderung::Change_Zuordnung_to_Children(true,P.AE,-P.menge);
+//       AufEintragZuMengenAenderung::Change_Zuordnung_to_Children(true,P.AE,-P.menge);
        rekursion(P);
        tr.commit();
        return;
@@ -122,7 +121,7 @@ void ppsInstanz::Lager_abschreiben(ManuProC::st_produziert &P) const
   tr.commit();
 }
 
-
+#if 1
 void ppsInstanz::rekursion(ManuProC::st_produziert &P) const 
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
@@ -170,6 +169,7 @@ void ppsInstanz::rekursion(ManuProC::st_produziert &P) const
        I->Produziert(sp);
      }
 }
+#endif
 
 AuftragBase::mengen_t ManuProC::st_produziert::abschreiben_oder_reduzieren(ppsInstanz::ID instanz,int id,AuftragBase::mengen_t abmenge,bool planen_und_abschreiben_von_ungeplaneten)
 {
@@ -238,32 +238,7 @@ AuftragBase::mengen_t ManuProC::st_produziert::abschreiben_oder_reduzieren(ppsIn
 
 
 // Name unsinnig, menge: unnötiges Argument
-void ManuProC::st_produziert::Reduce_DispoEltern(const AufEintrag &aeb,AuftragBase::mengen_t menge)
-{
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AEB=",aeb);
-  AufEintragZu::list_t L=AufEintragZu(aeb).get_Referenz_list(aeb,false);
-
-  AuftragBase::mengen_t S=0;
-  for(AufEintragZu::list_t::const_iterator i=L.begin();i!=L.end();++i)
-   {
-     if(i->AEB.Id()==AuftragBase::dispo_auftrag_id) S+=i->Menge;
-   }
-  if (aeb.getRestStk()<S)
-  {   for(AufEintragZu::list_t::const_iterator i=L.begin();i!=L.end();++i)
-      {
-        if(i->AEB.Id()==AuftragBase::dispo_auftrag_id)
-         {
-           AufEintrag AE(i->AEB);
-//           assert(i->Menge==AE.getStueck());
-           AuftragBase::mengen_t M=AuftragBase::min(i->Menge,S-aeb.getRestStk());
-           AufEintrag(i->AEB).updateStkDiffBase__(uid,-M);
-           AufEintragZu(i->AEB).setMengeDiff__(aeb,-M);
-           S-=M;
-         } 
-      }  
-  }
-}
-
+// -> AufEintrag::DispoBeschraenken
 
 void ManuProC::st_produziert::Reduce_Zuordnung_And_2er_Parent(const AufEintrag &ae,AuftragBase::mengen_t menge)
 {

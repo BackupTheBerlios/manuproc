@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.14 2003/02/10 14:33:59 christof Exp $
+// $Id: AufEintragZu.h,v 1.15 2003/02/12 13:54:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -25,6 +25,7 @@
 #include <Auftrag/auftrag_status.h>
 #include <list>
 #include <Kunde/Kunde.h>
+#include <Misc/compiler_ports.h>
 
 class AufEintragZu : public AufEintragBase
 {
@@ -90,15 +91,17 @@ public:
 
 
     // Neue Einträg anlegen:
-    void Neu(const AufEintragBase& neuAEB,const mengen_t menge,
-             const int oldZnr=0);
-
-    // Menge eines alten Eintrags ändern:
-    bool setMenge(const AufEintragBase& neuAEB,const mengen_t menge);
+    void Neu(const AufEintragBase& neuAEB,const mengen_t menge);
+    __deprecated void Neu(const AufEintragBase& neuAEB,const mengen_t menge,
+             const int oldZnr);
     // gibt die Menge zurück, die verändert wurde. Falls reduziert werden sollte
     // müssen die input/output menge nicht übereinstimmen, da keine negativen Mengen
     // bestellt werden können
+    // äquivalent zu Neu?
     mengen_t setMengeDiff__(const AufEintragBase& neuAEB,mengen_t menge);
+
+    // Menge eines alten Eintrags ändern:
+    bool setMenge(const AufEintragBase& neuAEB,const mengen_t menge);
     AuftragBase::mengen_t verteileMenge(list_t L, AuftragBase::mengen_t menge, bool add);
     
 

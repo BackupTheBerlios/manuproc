@@ -7,6 +7,7 @@ updateStkDiffInstanz__	=>	ArtikelInternNach/Abbestellen
 tryUpdateEntry	=>	BestellmengeAendern
 ArtikelImLager	=>	VerfuegbareMenge
 reduce_zuordung_to_20000er_from_2er	=>	freie_dispomenge_verwenden
+st_produziert::Reduce_DispoEltern => AE.DispoBeschraenken
 
 Ideen zum Produktionsplaner:
  - Bestellung wird in andere Instanz verschoben und neu verzeigert, der

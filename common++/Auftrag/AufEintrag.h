@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.29 2003/02/10 14:33:59 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.30 2003/02/12 13:54:32 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -195,7 +195,8 @@ private:
 
  void LagerMenge_beruecksichtigen(const int uid,const mengen_t &lagermengediff,const AufEintragBase &ElternAEB) ;
 
-
+// muss beim abschreiben geschehen
+ void DispoBeschraenken(int uid);
 
 public:
  AufEintragBase getFirstKundenAuftrag() const;
