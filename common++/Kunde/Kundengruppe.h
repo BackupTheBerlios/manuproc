@@ -33,6 +33,7 @@ public:
  std::string Kommentar() const { return kommentar; } 
  
  friend FetchIStream &operator>>(FetchIStream &is, Kundengruppe &kg);
+ friend FetchIStream &operator>>(FetchIStream &is, Kundengruppe::ID &kgid); 
 
 };
 

@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.39 2003/04/08 21:29:45 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.40 2003/04/09 20:34:17 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,7 +27,9 @@ exec sql include sqlca;
 
 Kunde::Kunde(ID _id) throw(SQLerror) 
 : ManuProcEntity<>(_id), KundenGruppennr(0),schema(ExtBezSchema::default_id),rngan(0),
-  rng_an_postfach(false),lieferadresse(false),rechnungsadresse(false),
+  rng_an_postfach(false),
+//lieferadresse(false),
+rechnungsadresse(false),
   entsorg(false),
   waehrung(WaehrungID::EUR),lieferung_frei_haus(true)
 { 
@@ -135,7 +137,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    adresse.land = cH_LandesListe(LANDESID);
    adresse.unsere_kundennr = UNSERE_KUNDENNR;
    IDnr=IDNR;
-   lieferadresse=LIEFERADRESSE;
+//   lieferadresse=LIEFERADRESSE;
    rechnungsadresse=RECHUNGSADRESSE;
    rng_an_postfach=RNGANLFRA;
    bankverb.konto=strtoll(KTONR,NULL,10);
@@ -383,10 +385,13 @@ void Kunde::update_e(UpdateBitsAdresse e)
   for(B_UPDATE_BITS_ADRESSE i=B_UPDATE_BITS_ADRESSE(0);i<B_MaxAnzA;++i)
    {
      if(!(e&(1<<i))) continue;
-     if      (i==B_Gruppennr  ) query += "gruppennr = '"+itos(GruppenId())+"',";
-     else if (i==B_Sortname   ) query += "sortname = nullif('"+sortname()+"',''),";
+//     if      (i==B_Gruppennr  ) query += "gruppennr = '"+itos(GruppenId())+"',";
+//     else 
+     if (i==B_Sortname   ) query += "sortname = nullif('"+sortname()+"',''),";
      else if (i==B_Idnr       ) query += "idnr = '"+idnr()+"',";
      else if (i==B_Firma      ) query += "firma  = '"+firma()+"',";
+     else if (i==B_Name2      ) query += "name2  = '"+name2()+"',";
+     else if (i==B_BrAnrede   ) query += "branr  = '"+itos(Anrede()->Id())+"',";
      else if (i==B_Postanwvor ) query += "postanwvor  = '"+postanwvor()+"',";
      else if (i==B_Strasse    ) query += "strasse  = '"+strasse()+"',";
      else if (i==B_Postanwnach) query += "postanwnach  = '"+postanwnach()+"',";
@@ -398,6 +403,7 @@ void Kunde::update_e(UpdateBitsAdresse e)
      else if (i==B_Lkz           ) query += "landid  = '"+itos(land()->Id())+"',";
      else if (i==B_Lieferadresse  ) query += "lieferadresse  = "+btos(isLieferadresse())+",";
      else if (i==B_Rechnungadresse) query += "rechnungsadresse  = "+btos(isRechnungsadresse())+",";
+     else if (i==B_Auftragadresse) query += "auftragsadresse  = "+btos(isAuftragsadresse())+",";
      else if (i==B_Rng_an_postfach) query += "rng_an_postfach  = "+btos(Rng_an_postfach())+",";
    }
  query += "stand  = now() where kundennr = "+itos(Id());

@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.42 2003/04/08 16:40:52 jacek Exp $
+// $Id: Kunde.h,v 1.43 2003/04/09 20:34:17 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -35,6 +35,7 @@
 #include <DynamicEnums/DefaultValues.h>
 #include <utility> // for pair
 #include <Kunde/Kundengruppe.h>
+#include <Kunde/Lieferart.h>
 
 class cH_Kunde;
 class H_Kunde;
@@ -49,7 +50,7 @@ public:
  struct st_adresse
   {std::string firma;
    std::string name2;
-   int branr;
+   cH_Anrede branr;
    std::string sortname;
    std::string postanwvor;
    std::string strasse;
@@ -72,9 +73,11 @@ public:
     int lieferantenkonto;
     int gegenkonto;
     cH_Zahlungsart zahlungsart;
+    cH_Lieferart lieferart;
     const std::string getBankverb() const { return  bank+": BLZ "+itos(blz)+", Kto.Nr. "+ulltos(konto);}
     st_bankverb():bankindex(0),blz(0),konto(0),
-    lieferantenkonto(0),gegenkonto(0),zahlungsart(Zahlungsart::none_id) {}
+    lieferantenkonto(0),gegenkonto(0),zahlungsart(Zahlungsart::none_id),
+    lieferart(Lieferart::none_id) {}
    };
  typedef struct st_bankverb Bankverbindung;
 
@@ -114,12 +117,15 @@ private:
 	ID KundenGruppennr;
 	ExtBezSchema::ID schema;
 	std::string IDnr;
+
+  mutable std::vector<Kundengruppe::ID> gruppen;
 	
 	ID rngan;
 	ID lfran;
         bool rng_an_postfach:1;
-        bool lieferadresse:1;
+//        bool lieferadresse:1;
         bool rechnungsadresse:1;
+        bool auftragsadresse:1;
         bool entsorg:1;
         mutable bool isaktiv:1;
         mutable bool preisautomatik:1;
@@ -168,6 +174,8 @@ public:
         const int getGegenkonto() const {return bankverb.gegenkonto;}
         const cH_Zahlungsart zahlungsart() const { return bankverb.zahlungsart; }
 
+	const cH_Anrede Anrede() const { return adresse.branr; }
+	const std::string name2() const { return adresse.name2; }
         const std::string sortname() const { return adresse.sortname; }
         const std::string firma() const { return adresse.firma; }
         const std::string postanwvor() const { return adresse.postanwvor; }
@@ -208,9 +216,11 @@ public:
         cH_ExtBezSchema getSchema(class ArtikelTyp t) const
         	{  return cH_ExtBezSchema(schema,t); }
         ExtBezSchema::ID getSchemaId() const {  return schema; }
-        bool isLieferadresse() const { return lieferadresse; }
+        bool isLieferadresse() const;
         bool isRechnungsadresse() const { return rechnungsadresse; }
+        bool isAuftragsadresse() const { return auftragsadresse; }        
         ID Rngan() const { return rngan; }
+        ID Lfran() const { return lfran; }        
         bool entsorgung() const { return entsorg; }
         bool Rng_an_postfach() const {return rng_an_postfach;}
         bool Auslaender() const { return adresse.land->Auslaender(); }
@@ -237,10 +247,13 @@ public:
         void setBetreuer(const Person::ID) throw(SQLerror);
 
   private:
-        enum B_UPDATE_BITS_ADRESSE{B_Gruppennr,B_Sortname,B_Idnr,B_Firma,
+  	void load_Gruppen() const throw(SQLerror);
+  
+        enum B_UPDATE_BITS_ADRESSE{B_Name2,B_Sortname,B_Idnr,B_Firma,
            B_Postanwvor,B_Strasse,B_Postanwnach,B_Hsnr,B_Plz,B_Postfach,
            B_Postfachplz,B_Ort,B_Lkz,B_Lieferadresse,B_Rechnungadresse,
-           B_Rng_an_postfach,B_MaxAnzA};
+           B_Auftragadresse,
+           B_Rng_an_postfach,B_MaxAnzA,B_BrAnrede};
         enum B_UPDATE_BITS_FIRMA{B_Planumsatz,B_Umsatz,B_Mitarbeiter,
            B_Kundenumsatz,B_Flaeche,B_UnsereKundenNr,B_Verein,B_MaxAnzF};
         enum B_UPDATE_BITS_BANK{B_Ktonr,B_Blz,B_Bankindex,
@@ -251,16 +264,19 @@ public:
            B_Preisliste,B_Notiz,B_Entsorgung,B_Verknr,B_Kalkulation,
            B_Stand,B_KP_Position,B_KP_Notiz,
            B_AnzAusFirmenPapier,B_AnzAusWeissesPapier,
-           B_lieferung_frei_haus,B_Betreuer,B_MaxAnzS};
+           B_lieferung_frei_haus,B_Betreuer,B_MaxAnzS,
+           B_GebDatum};
  public: 
-         enum UpdateBitsAdresse {FGruppennr=1<<B_Gruppennr,
+         enum UpdateBitsAdresse {FName2=1<<B_Name2,
            FSortname=1<<B_Sortname,FIdnr=1<<B_Idnr,FFirma=1<<B_Firma,
            FPostanwvor=1<<B_Postanwvor,FStrasse=1<<B_Strasse,
            FPostanwnach=1<<B_Postanwnach,FHsnr=1<<B_Hsnr,FPlz=1<<B_Plz,
            FPostfach=1<<B_Postfach,FPostfachplz=1<<B_Postfachplz,
            FOrt=1<<B_Ort,FLkz=1<<B_Lkz,FLieferadresse=1<<B_Lieferadresse,
            FRechnungadresse=1<<B_Rechnungadresse,
-           FRng_an_postfach=1<<B_Rng_an_postfach};
+           FAuftragadresse=1<<B_Auftragadresse,
+           FRng_an_postfach=1<<B_Rng_an_postfach,
+           FBranr=1<<B_BrAnrede};
          enum UpdateBitsFirma{FPlanumsatz=1<<B_Planumsatz,FUmsatz=1<<B_Umsatz,
            FMitarbeiter=1<<B_Mitarbeiter,FKundenumsatz=1<<B_Kundenumsatz,
            FFlaeche=1<<B_Flaeche,FUnsereKundenNr=1<<B_UnsereKundenNr,
@@ -280,7 +296,8 @@ public:
             FAnzAusFirmenPapier=1<<B_AnzAusFirmenPapier,
             FAnzAusWeissesPapier=1<<B_AnzAusWeissesPapier,
             Flieferung_frei_haus=1<<B_lieferung_frei_haus,
-            FBetreuer=1<<B_Betreuer};
+            FBetreuer=1<<B_Betreuer,
+            FGebDatum=1<<B_GebDatum};
             
 
         void update_e(UpdateBitsAdresse e);
@@ -288,14 +305,16 @@ public:
         void update_e(UpdateBitsBank e);
         void update_e(UpdateBitsSonst e);
 
-	void delete_Kunde(Kunde::ID kid) throw(SQLerror);
+//	void delete_Kunde(Kunde::ID kid) throw(SQLerror);
         unsigned int nextval();
         
 	void reread_Stand() throw(SQLerror);                
 	
-	void isLieferadresse(bool is) { lieferadresse=is; }
+	void isLieferadresse(bool is);
 	void isRechnungsadresse(bool is) { rechnungsadresse=is; }
+	void isAuftragsadresse(bool is) { auftragsadresse=is; }	
 	void RngAn(const Kunde::ID kid) { rngan=kid; }
+	void LfrAn(const Kunde::ID kid) { lfran=kid; }	
         void Rng_an_postfach(bool b) {rng_an_postfach=b;}
         void entsorgung(bool b) { entsorg=b; }
 
@@ -313,6 +332,7 @@ public:
         void set_gruppen_nr(const ID i) {KundenGruppennr=i;}
         void set_sortname(const std::string& s) {adresse.sortname = s; } 
         void set_firma(const std::string& s){adresse.firma = s; } 
+        void set_name2(const std::string& s){adresse.name2 = s; }
         void set_postanwvor(const std::string& s){adresse.postanwvor = s; } 
         void set_strasse(const std::string& s){adresse.strasse = s; } 
         void set_hausnr(const std::string& s){adresse.hsnr = s; }  
@@ -342,6 +362,7 @@ public:
         void set_Lieferantenkonto(const int i) {bankverb.lieferantenkonto=i;}
         void set_Gegenkonto(const int i) {bankverb.gegenkonto=i;}
         void set_Zahlungsart(cH_Zahlungsart i) {bankverb.zahlungsart=i; }
+        void set_Anrede(const cH_Anrede &s) { adresse.branr=s; }
 
         // Notfall API sollte ersetzt werden MAT
         fixedpoint<2> skontosatz() const {return zahlungsart()->getSkonto(1).skontosatz;} 

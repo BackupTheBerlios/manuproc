@@ -17,6 +17,10 @@ FetchIStream &operator>>(FetchIStream &is,Kundengruppe &kg)
  	>> kg.grpname 
  	>> FetchIStream::MapNull(kg.kommentar,std::string());
  } 
+ 
+FetchIStream &operator>>(FetchIStream &is,Kundengruppe::ID &kgid)
+ {  return is >> (int)kgid; 
+ }  
 
 cH_Kundengruppe::cH_Kundengruppe(Kundengruppe::ID _id,
 	const std::string _obg,

@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.24 2003/01/17 14:40:32 jacek Exp $
+// $Id: Kunde.cc,v 1.25 2003/04/09 20:34:17 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,6 +21,7 @@
 #include <Misc/Ausgabe_neu.h>
 #include <Misc/Transaction.h>
 #include <Kunde/Telefon.h>
+#include <DynamicEnums/DynamicEnums.h>
 
 std::ostream &operator<<(std::ostream &o,const cH_Kunde &k)
 {return o<<k->firma()<<"("<<k->Id()<<")";}
@@ -160,4 +161,45 @@ const PreisListe::ID Kunde::preisliste() const
  
  return preislisten.empty() ? PreisListe::none_id : preislisten.front().second;
 }
+
+
+bool Kunde::isLieferadresse() const 
+{
+ std::vector<cH_Kundengruppe>::const_iterator f;
+ 
+ if(!gruppen.size())
+   return (find(gruppen.begin(),gruppen.end(),
+   		KundengruppeID::Lieferadresse)!=
+   		gruppen.end());
+  
+ load_Gruppen();
+   
+ return (find(gruppen.begin(),gruppen.end(),
+ 		KundengruppeID::Lieferadresse)!=
+   		gruppen.end());
+}
+
+void Kunde::isLieferadresse(bool is) 
+{
+ if(is)
+   Query("insert into ku_gruppen_map (kundennr,grpnr)"
+       " values (?,?)") << Id() << KundengruppeID::Lieferadresse;
+ else       
+   Query("delete from ku_gruppen_map "
+       " where (kundennr,grpnr) = (?,?)") << Id() << KundengruppeID::Lieferadresse;
+}
+
+
+
+void Kunde::load_Gruppen() const throw(SQLerror)
+{
+ std::string qu="select grpnr from ku_gruppen_map"
+ 	" where kundenr=?";
+ gruppen.erase(gruppen.begin(),gruppen.end());
+ 
+ (Query(qu) << Id()).FetchArray(gruppen);
+
+}
+
+
 
