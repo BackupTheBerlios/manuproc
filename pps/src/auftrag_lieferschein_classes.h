@@ -66,7 +66,7 @@ class Data_Lieferdaten : public RowDataBase
       case LIEFZEILE_SEQ : return cH_EntryValueIntString(zeile);
       case VOMLAGER_SEQ : 
       	if(liefentry.Status()==(AufStatVal)UNCOMMITED)
-      	  return cH_EntryValueIntString("-");
+      	  return cH_EntryValueIntString(" UNGEBUCHT ");
       	else
       	  return cH_EntryValueIntString(liefentry.lagerid);
       default : return cH_EntryValue();
