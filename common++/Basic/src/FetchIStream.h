@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.40 2004/03/10 08:38:07 thoma Exp $
+// $Id: FetchIStream.h,v 1.41 2004/03/10 14:29:41 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,8 +25,9 @@
 #include <map>
 #include <pair.h>
 #include <Misc/SQLerror.h>
+#include <ManuProCConfig.h>
 
-#ifdef SQLITE
+#ifdef MPC_SQLLITE
 #include <sqlite.h>
 #endif
 
@@ -42,7 +43,7 @@ private:
 	int naechstesFeld;
 	/* const */ int zeile;
 	
-#ifdef SQLITE
+#ifdef MPC_SQLLITE
 	typedef std::map<int,std::pair<std::string column,std::string data> > SQLiteResult;
 	SQLiteResult result;
 #else	
@@ -193,7 +194,7 @@ class Query : public Query_types
 {	std::string descriptor;
 	bool eof;
 	int line;
-#ifdef SQLITE
+#ifdef MPC_SQLLITE
 	std::string database;
 	
 	static int SQLiteCallBack(void *db_struct,int argc, 
