@@ -1,4 +1,4 @@
-// $Id: ppsInstanzProduziert.cc,v 1.5 2003/03/10 14:44:14 christof Exp $
+// $Id: ppsInstanzProduziert.cc,v 1.6 2003/03/12 09:06:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -173,7 +173,9 @@ void ppsInstanz::rekursion(ManuProC::st_produziert &P) const
 }
 #endif
 
-AuftragBase::mengen_t ManuProC::st_produziert::abschreiben_oder_reduzieren(ppsInstanz::ID instanz,int id,AuftragBase::mengen_t abmenge,bool planen_und_abschreiben_von_ungeplaneten)
+AuftragBase::mengen_t ManuProC::st_produziert::abschreiben_oder_reduzieren
+	(ppsInstanz::ID instanz,int id,AuftragBase::mengen_t abmenge,
+		bool planen_und_abschreiben_von_ungeplaneten)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
    "Instanz=",instanz,"AuftragID=",id,"AEB=",AE,

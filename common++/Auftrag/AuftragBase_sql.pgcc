@@ -160,9 +160,14 @@ int AuftragBase::PassendeZeile(const ManuProC::Datum lieferdatum,const ArtikelBa
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Artikel",artikel),
          NV("LieferDatum",lieferdatum),NV("Status",status));
- assert(status==OPEN || Id()==ppsInstanzID::Kundenauftraege);
- // Auftrag anlegen, wenn noch nicht da
- create_if_not_exists(status);
+ // spezieller Fall für unbestellte Lieferungen
+ if (status==CLOSED && Id()==plan_auftrag_id)
+    create_if_not_exists(OPEN);
+ else
+ {  assert(status==OPEN || Instanz()->Id()==ppsInstanzID::Kundenauftraege);
+    // Auftrag anlegen, wenn noch nicht da
+    create_if_not_exists(status);
+ }
  
  int znr=ManuProcEntity<>::none_id,neuznr=ManuProcEntity<>::none_id;
  mengen_t dummy=0;

@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.26 2003/03/10 14:44:14 christof Exp $
+// $Id: Lager.cc,v 1.27 2003/03/12 09:06:29 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -41,33 +41,34 @@ void LagerBase::rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::men
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
      NV("Lager",*this),NV("Artikel",artikel),NV("Menge",menge));
   assert(menge>=0);
-
-  AuftragBase::menge_neu_verplanen(uid,*this,artikel,menge);
+  // vielleicht doch besser nach AufEintrag?
+  AufEintrag::Einlagern(uid,*this,artikel,menge);
 }
 
-void LagerBase::raus_aus_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const 
+void LagerBase::raus_aus_lager(const ArtikelBase &artikel,AuftragBase::mengen_t menge,const int uid) const 
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
-     NV("Artikel",artikel),NV("Menge",menge));
+     				NV("artikel",artikel),NV("menge",menge));
   assert(menge>=0);
 
     assert((*this)->ProduziertSelbst());
-//    (*this)->Lager_abschreiben(artikel,menge,uid);
 //  assert(LagerInstanz());
   Transaction tr;
-#warning hier fehlt etwas !!!
-#if 0  
-  AuftragBase::mengen_t restmenge=P.abschreiben_oder_reduzieren(Id(),
-                    AuftragBase::plan_auftrag_id,P.menge,true);
-  if(restmenge>0)
-   {
-     AuftragBase::mengen_t restmenge2=P.abschreiben_oder_reduzieren(Id(),
-                  AuftragBase::dispo_auftrag_id,restmenge,true);
-     if(restmenge2!=AuftragBase::mengen_t(0) && !PlanungsInstanz()) 
-         P.fehler(*this,P.Mehr_produziert_als_moeglich,
-               AuftragBase::dispo_auftrag_id,P.menge,restmenge2) ;
-   }
-#endif   
+
+  // alle Aufträge zu einem Artikel suchen, 1er vor 2er, 0er nicht
+  // geringstes Datum zuerst, abschreiben
+  // bei einem 2er 1er erzeugen
+  
+  menge=AufEintrag::Auslagern(
+	  	AuftragBase(*this,AuftragBase::plan_auftrag_id),artikel,menge,uid);
+  if (menge!=0)
+     menge=AufEintrag::Auslagern(
+     		AuftragBase(*this,AuftragBase::dispo_auftrag_id),artikel,menge,uid);
+  
+  if (menge!=0)
+     // einfach als produziert vermerken
+     AufEintrag::unbestellteMengeProduzieren(*this,artikel,menge,uid);
+  
   tr.commit();
 }
 

@@ -1,4 +1,4 @@
-/* $Id: Lager.h,v 1.16 2003/03/10 14:44:14 christof Exp $ */
+/* $Id: Lager.h,v 1.17 2003/03/12 09:06:29 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -95,7 +95,7 @@ class LagerBase : public cH_ppsInstanz
 
    protected:
      void rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const;
-     void raus_aus_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const;
+     void raus_aus_lager(const ArtikelBase &artikel,AuftragBase::mengen_t menge,const int uid) const;
 };
 
 class Lager : LagerBase

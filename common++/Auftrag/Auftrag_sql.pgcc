@@ -418,7 +418,8 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
    STATUS=OPEN;   
 #endif
 
- if(STATUS!=getStatus()) setStatusAuftragBase(AufStatVal(STATUS));
+ if(STATUS!=getStatus() && STATUS==OPEN) 
+    setStatusAuftragBase(AufStatVal(STATUS));
 
 
  lieferdatum.write_postgres(LIEFERDATUM,sizeof LIEFERDATUM);

@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.60 2003/03/10 14:44:14 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.61 2003/03/12 09:06:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -280,6 +280,8 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(int uid,mengen_t menge,bool insta
  if (!!menge2) 
  { menge2=updateStkDiffBase__(uid,menge2);
    bestellt+=menge2;
+   if (menge2>0 && entrystatus==CLOSED) 
+      setStatus(OPEN,uid,true);
  }
 
  if (ElternAEB.valid()) 
@@ -512,15 +514,23 @@ class ProduziertNG_cb
 {	AufEintrag &mythis;
 	unsigned uid;
 public:	
-	void operator()(const AufEintragBase &elter,AuftragBase::mengen_t m) const
-	{  mythis.ProduziertNG(uid,m,elter,elter);
+	AuftragBase::mengen_t operator()(const AufEintragBase &elter,AuftragBase::mengen_t m) const
+	{  if (elter.Id()==AuftragBase::dispo_auftrag_id) return 0;
+	   mythis.ProduziertNG(uid,m,elter,elter);
+	   return m;
 	}
 	ProduziertNG_cb(AufEintrag &_mythis) : mythis(_mythis), uid(getuid()) {}
 };
 }
 
 void AufEintrag::ProduziertNG(AuftragBase::mengen_t M)
-{  distribute_parents(*this,M,ProduziertNG_cb(*this));
+{  if (Id()>=handplan_auftrag_id || Id()==plan_auftrag_id)
+   {  ProduziertNG(getuid(),M,AufEintragBase(),AufEintragBase());
+   }
+   else
+   {  if (distribute_parents(*this,M,ProduziertNG_cb(*this))!=0)
+   	 assert(!"Rest geblieben");
+   }
 }
 
 namespace {
@@ -546,37 +556,29 @@ void AufEintrag::ProduziertNG(unsigned uid, AuftragBase::mengen_t M,
 		const AufEintragBase &elter_neu)
 {  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,M,elter_alt,elter_neu);
    assert(M>=0); // notwendig?
+   assert(Id()!=dispo_auftrag_id);
    
    AufEintragBase neuerAEB=*this;
-   if (Instanz()->LagerInstanz()) // && Id()==ungeplante_id)
-   {  assert(Id()==ungeplante_id);
-      MengeAendern(uid,-M,false,elter_alt,ManuProC::Auftrag::r_Produziert);
-      // Menge wird woanders vorgemerkt ... wo? CP
-      // he, deshalb habe ich keinen neuerAEB zum verzeigern ...
-   }
-   else if (Id()==AuftragBase::plan_auftrag_id 
+   if (Id()==AuftragBase::plan_auftrag_id 
 	|| Id()>=AuftragBase::handplan_auftrag_id)
-   {  // auch in Produziert()
-      // könnte man vorziehen, wenn unten elter_alt wegfallen würde
-      AufEintragZu(elter_alt).setMengeDiff__(*this,-M);
-      // neuerAEB=*this;
+   {  assert(!Instanz()->LagerInstanz());
       abschreiben(M);
    }
    else
    {  // keine Rekursion!  // und für Lager?
       MengeAendern(uid,-M,false,elter_alt,ManuProC::Auftrag::r_Produziert);
       AuftragBase zielauftrag(Instanz(),plan_auftrag_id);
-      zielauftrag.create_if_not_exists(OPEN);
       neuerAEB=AufEintragBase(zielauftrag,
       		zielauftrag.PassendeZeile(getLieferdatum(),Artikel(),OPEN,uid));
-      // elter_neu übergeben?
       AufEintrag ae(neuerAEB);
-      ae.MengeAendern(uid,M,false,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
-      ae.abschreiben(M);
+      ae.MengeAendern(uid,M,false,
+      		Instanz()->LagerInstanz()?elter_neu:AufEintragBase(),
+      		ManuProC::Auftrag::r_Produziert);
+      if (!Instanz()->LagerInstanz())
+      {  ae.abschreiben(M);
+         AufEintragZu(elter_neu).Neu(neuerAEB,0);
+      }
    }
-   // Pfeil mindestens anlegen, wenn auch mit Menge 0
-   if (elter_alt!=elter_neu) 
-      AufEintragZu(elter_neu).setMengeDiff__(neuerAEB,0);
    // Kinder bearbeiten
    distribute_children(*this,M,Artikel(),ProduziertNG_cb2(uid,*this,neuerAEB));
 
@@ -605,7 +607,6 @@ void AufEintrag::ProduktionRueckgaengig(AuftragBase::mengen_t M)
 #endif
 
 // auf noch offene Menge beschränken
-// uid mitgeben?
 void AufEintrag::DispoBeschraenken(int uid)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);

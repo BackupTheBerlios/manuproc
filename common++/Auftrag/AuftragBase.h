@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.42 2003/03/08 08:51:54 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.43 2003/03/12 09:06:29 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -31,6 +31,7 @@ class AufEintragBase;
 #include <BaseObjects/ManuProcEntity.h>
 class FetchIStream;
 #include <Misc/UniqueValue.h>
+#include <Misc/compiler_ports.h>
 
 class AuftragBase
 {
@@ -69,12 +70,6 @@ class AuftragBase
    bool editierbar() const;
    void setStatusAuftragBase(AufStatVal st) const throw(SQLerror);
    void setRabatt(const rabatt_t auftragsrabatt) const throw(SQLerror);
-
-   // wird aufgerufen wenn Menge ins Lager kommt (LagerBase::rein_ins_lager)
-   // kümmert sich um 1er und 2er
-   // sollte Aufträge als produziert markieren
-   static void menge_neu_verplanen(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
-         const mengen_t &menge,const ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Produziert) throw(SQLerror);
    
    struct st_BestellmengeAendern{bool automatisch_geplant;bool force_new;bool dispoplanung;
           explicit st_BestellmengeAendern() : automatisch_geplant(false),force_new(false),dispoplanung(false){}
@@ -97,6 +92,7 @@ class AuftragBase
    bool operator==(const AuftragBase &b) const 
       {return instanz==b.instanz && auftragid==b.auftragid;}
 
+   // Varianten für negative Zahlen??? kommt häufiger vor?
    static mengen_t min(const mengen_t &x,const mengen_t &y);
    static mengen_t max(const mengen_t &x,const mengen_t &y);
 
@@ -108,11 +104,12 @@ public:
 // wird in AufEintrag_sql.pgcc verwendet
    // könnte eigentlich durch 
    // AuftragBase(instanz,AB::dispo_auftrag_id).BestellmengeAendern 
-   // ersetzt werden 
-   static void dispo_auftrag_aendern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
+   // ersetzt werden (menge,datum,artikel,OPEN,uid,AufEintragBase())
+   static __deprecated void dispo_auftrag_aendern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
       const mengen_t &menge,const ManuProC::Datum &datum,const AufEintragBase &kindAEB) ;
 // Iiii bah - überprüfen!
-   // -> BestellmengeAendern ???
+// zu viele merkwürdige Argumente
+   // -> BestellmengeAendern ??? PassendeZeile?
    bool existEntry(const ArtikelBase& artid,
                         const ManuProC::Datum& lieferdatum,
                         int& znr,int &newznr, mengen_t& menge, const AufStatVal status

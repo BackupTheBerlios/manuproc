@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.33 2003/03/10 14:44:14 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.34 2003/03/12 09:06:29 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -168,13 +168,12 @@ public:
  rabatt_t Rabatt() const { return rabatt;}
  Preis::preismenge_t PreisMenge() const { return preis.PreisMenge(); }
 
-//   friend void ppsInstanz::Produziert(ManuProC::st_produziert &P,ManuProC::Auftrag::Action reason) const;
    friend class AufEintragBase;
+
+private:
  // das lfrsid ist nur für alten Code (und nur Kundenauftr.) von Mabella
  // , soll weg!
-public: // sollte nur von Lieferschein aufgerufen werden
  void abschreiben(mengen_t menge,ManuProcEntity<>::ID lfrsid=ManuProcEntity<>::none_id) throw(SQLerror);
-private: 
  void Produziert_0er(mengen_t menge);
 
 public:
@@ -216,7 +215,7 @@ public:
  int Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
       const ManuProC::Datum &datum, ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Planen,
          AufEintragBase *verplanter_aeb=0,bool rekursiv=false) throw(std::exception);
- void ProduktionsPlanung(int uid,mengen_t menge,const AuftragBase &zielauftrag,
+ __deprecated void ProduktionsPlanung(int uid,mengen_t menge,const AuftragBase &zielauftrag,
       const ManuProC::Datum &datum,cH_ppsInstanz instanz) throw(std::exception);
  // 2er anlegen, Material bestellen
  // *this ist der ZielAufEintrag
@@ -226,13 +225,28 @@ public:
 // *this => Der reservierte 1er; ae => Der ungeplante 0er
 //?? void menge_fuer_aeb_freigeben(const mengen_t &menge,AufEintrag &ae,const int uid);
 
+ // brauche ich noch ein statisches ProduziertNG (das nur eine Instanz erhält?)
  // z.B. (getRestStk())
  void ProduziertNG(AuftragBase::mengen_t M);
 //internal ?
  void ProduziertNG(unsigned uid, AuftragBase::mengen_t M,
 		const AufEintragBase &elter_alt,
 		const AufEintragBase &elter_neu);
-
+ // neuen (geschlossenen) 1er erzeugen (völlig unverzeigert)
+ static AufEintragBase unbestellteMengeProduzieren(cH_ppsInstanz instanz,
+ 		const ArtikelBase &artikel,
+ 		mengen_t menge, unsigned uid);
+ // aus dem Lager auslagern (abschreiben), ehemals abschreiben_oder_reduzieren
+ // wird üblicherweise erst für 1er dann 2er aufgerufen
+ // mit ProduziertNG vereinen?
+ static mengen_t Auslagern
+	(const AuftragBase &ab,const ArtikelBase &artikel,mengen_t menge, unsigned uid);
+   // wird aufgerufen wenn Menge ins Lager kommt (LagerBase::rein_ins_lager)
+   // kümmert sich um 1er und 2er
+   // sollte Aufträge als produziert markieren
+   // ehemals AuftragBase::menge_neu_verplanen
+   static void Einlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
+         const mengen_t &menge,const ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Produziert) throw(SQLerror);
 };
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.24 2003/01/08 09:03:41 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.25 2003/03/12 09:06:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -184,9 +184,7 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel_Planung_id &sel
      }
     else
      {
-       clau+=" and a.auftragid!="+itos(AuftragBase::dispo_auftrag_id) + 
-	          " and a.auftragid!="+itos(AuftragBase::plan_auftrag_id) + 
-	          " and a.auftragid!="+itos(AuftragBase::ungeplante_id) + 
+       clau+=" and a.auftragid>="+itos(AuftragBase::handplan_auftrag_id) + 
 	          " order by e.lieferdate, e.auftragid , e.zeilennr ";
      }
    }

@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.33 2003/03/10 14:44:14 christof Exp $
+// $Id: AufEintrag.cc,v 1.34 2003/03/12 09:06:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -134,19 +134,16 @@ void AufEintrag::move_to(int uid,AufEintrag ziel,AuftragBase::mengen_t menge,Man
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("To",ziel),NV("Menge",menge),NV("Reason",reason));
   Transaction tr;
 
+  assert(reason==ManuProC::Auftrag::r_Planen);
   AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(*this,
 		AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
   for(AufEintragZu::list_t::reverse_iterator i=L.rbegin();i!=L.rend();++i)
   { AuftragBase::mengen_t M=AuftragBase::min(i->Menge,menge);
     if (!M) continue;
+
     MengeAendern(uid,-M,true,i->AEB,reason);
-    if (reason!=ManuProC::Auftrag::r_Produziert)
-    {  ziel.MengeAendern(uid,M,true,i->AEB,reason);
-    }
-    else
-    {  ziel.MengeAendern(uid,M,true,i->AEB,reason);
-       ziel.WurdeProduziert(M,i->AEB);
-    }
+    ziel.MengeAendern(uid,M,true,i->AEB,reason);
+
     menge-=M;
     if(!menge) break;
   }
@@ -185,7 +182,6 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
    assert(auftragstatus==OPEN);
    assert(menge>0);
    assert(reason==ManuProC::Auftrag::r_Planen);
-//   	 || reason==ManuProC::Auftrag::r_Produziert);
    assert(!Instanz()->LagerInstanz());
    assert(!rekursiv);
 
@@ -254,12 +250,15 @@ void AufEintrag::ProduktionsPlanung(int uid,mengen_t menge,const AuftragBase &zi
 {
 //   Transaction tr;
    assert(!"AufEintrag::ProduktionsPlanung called");
+#if 0
    assert(Id()==AuftragBase::ungeplante_id);
    AufEintragBase newAEB;
    Planen(uid,menge,zielauftrag,datum,ManuProC::Auftrag::r_Planen,&newAEB);
    AuftragBase zielauftrag_instanz(instanz,AuftragBase::ungeplante_id);
-   int znr=zielauftrag_instanz.BestellmengeAendern(menge,datum,Artikel(),OPEN,uid,newAEB);
+   //int znr=
+   zielauftrag_instanz.BestellmengeAendern(menge,datum,Artikel(),OPEN,uid,newAEB);
 //   tr.commit();
+#endif
 }
 
 
@@ -280,3 +279,113 @@ void AufEintrag::Ueberplanen(int uid,const ArtikelBase& artikel,mengen_t menge,c
    // zusätzliche Menge vermerken und Material bestellen
    MengeAendern(uid,menge,true,AufEintragBase(),ManuProC::Auftrag::r_Anlegen); // oder Planen?
 }
+
+AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
+                const ArtikelBase &artikel,mengen_t menge,unsigned uid)
+{  // Code wie in ProduziertNG
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,instanz,
+			   NV("artikel",artikel),NV("menge",menge));
+   Transaction tr;
+   AuftragBase zielauftrag(instanz,AuftragBase::plan_auftrag_id);
+   AufEintragBase neuerAEB(zielauftrag,   
+                       zielauftrag.PassendeZeile(ManuProC::Datum(1,1,1970),artikel,CLOSED,getuid()));
+   AufEintrag ae(neuerAEB);
+   ae.MengeAendern(uid,menge,false,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
+   ae.abschreiben(menge);
+   tr.commit();
+   return neuerAEB;
+}
+
+AuftragBase::mengen_t AufEintrag::Auslagern
+	(const AuftragBase &ab,const ArtikelBase &artikel,mengen_t menge, unsigned uid)
+{  assert(ab.Instanz()->LagerInstanz());
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,ab,
+				   NV("artikel",artikel),NV("menge",menge));
+   SQLFullAuftragSelector sel =
+  	SQLFullAuftragSelector(
+  		SQLFullAuftragSelector::sel_Artikel_Planung_id
+  			(ab.Instanz()->Id(),Kunde::eigene_id,artikel,ab.Id()));
+  // Menge<0 => CLOSED als zusätzliches Argument
+  
+  SelectedFullAufList L(sel);
+  
+  for(SelectedFullAufList::iterator i=L.begin();i!=L.end();++i)
+  {  AuftragBase::mengen_t abschreibmenge;
+     //if(abmenge>=0) 
+     abschreibmenge=AuftragBase::min(menge,i->getRestStk());
+     //else abschreibmenge=-AuftragBase::min(-abmenge,i->getGeliefert());
+     if (!abschreibmenge) continue;
+     
+     if (ab.Id()==AuftragBase::plan_auftrag_id)
+        i->abschreiben(abschreibmenge);
+     else
+     {  assert(ab.Id()==AuftragBase::dispo_auftrag_id);
+        abschreibmenge=-i->updateStkDiffBase__(uid,-abschreibmenge);
+        // als produziert markieren!
+        AufEintrag::unbestellteMengeProduzieren(ab.Instanz(),artikel,
+        			abschreibmenge,uid);
+     }
+     
+     menge-=abschreibmenge;
+     if(!menge) break;
+  }
+  return menge;
+}
+
+// Ins Lager gekommene Menge neu vormerken
+   // wird aufgerufen wenn Menge ins Lager kommt (LagerBase::rein_ins_lager)
+   // und gibt reservierte Menge zurück
+   // sollte Aufträge als produziert markieren
+// ehemals AuftragBase::menge_neu_verplanen
+void AufEintrag::Einlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
+         const mengen_t &menge,const ManuProC::Auftrag::Action reason) throw(SQLerror)
+{
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("Instanz",instanz),
+   NV("Artikel",artikel),NV("Menge",menge),NV("Reason",reason));
+
+  assert(reason==ManuProC::Auftrag::r_Produziert);
+  assert(instanz->LagerInstanz());
+  assert(menge>=0);
+  if(menge==0) return;
+  
+  Transaction tr;
+
+  SQLFullAuftragSelector sel(SQLFullAuftragSelector::
+      sel_Artikel_Planung_id(instanz->Id(),
+      Kunde::eigene_id,artikel,AuftragBase::ungeplante_id));
+  SelectedFullAufList auftraglist=SelectedFullAufList(sel);
+  
+  mengen_t m=menge;
+  for (SelectedFullAufList::iterator i=auftraglist.begin();i!=auftraglist.end();++i)
+   {
+     AuftragBase::mengen_t M=AuftragBase::min(i->getRestStk(),m);
+     if (!M) continue;
+
+     AufEintragZu::list_t eltern 
+     	= AufEintragZu::get_Referenz_list(*i,AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
+     for (AufEintragZu::list_t::const_iterator j=eltern.begin();
+     		j!=eltern.end();++j)
+     {  // Sortierung egal?
+        AuftragBase::mengen_t m2=AuftragBase::min(j->Menge,M);
+        if (!m2) continue;
+
+        // unser Datum gibt dann auch den passenden 1er an.
+        // Zuordnung erniedrigen, 1er erzeugen, 
+        i->ProduziertNG(uid,m2,j->AEB,j->AEB);
+
+        M-=m2;
+        m-=m2;
+        
+        if(!M) break;
+     }
+     if(!m) break;
+   }
+   
+   if (m!=0)
+   {  AuftragBase(instanz,AuftragBase::dispo_auftrag_id).
+   		BestellmengeAendern(m,LagerBase::Lagerdatum(),artikel,
+	   		OPEN,uid,AufEintragBase());
+   }
+   tr.commit();
+}
+

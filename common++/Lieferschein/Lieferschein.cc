@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.24 2003/03/10 14:44:14 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.25 2003/03/12 09:06:29 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -40,16 +40,10 @@ static void unbestellteMengeProduzieren(cH_ppsInstanz instanz,
 	const ArtikelBase &artikel,
 	LieferscheinEntry::mengen_t menge,
 	LieferscheinEntry &LE)
-{  if (instanz!=ppsInstanzID::Kundenauftraege) 
-   {  // Code wie in AufEintrag::ProduziertNG
-       AuftragBase zielauftrag(instanz,AuftragBase::plan_auftrag_id);
-       AufEintragBase neuerAEB(zielauftrag,   
-                       zielauftrag.PassendeZeile(ManuProC::Datum(1,1,1970),artikel,OPEN,getuid()));
-       AufEintrag ae(neuerAEB);
-       ae.MengeAendern(getuid(),menge,false,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
-       ae.abschreiben(menge);
-       LE.setZusatzInfo(neuerAEB,menge);
-   }
+{  AufEintragBase neuerAEB;
+   if (instanz!=ppsInstanzID::Kundenauftraege) 
+      neuerAEB=AufEintrag::unbestellteMengeProduzieren(instanz,artikel,menge,getuid());
+   LE.setZusatzInfo(neuerAEB,menge);
 }
 
 void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl, 
@@ -63,7 +57,7 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
            NV("anzahl",anzahl),NV("mengeneinheit",mengeneinheit),NV("palette",palette));
    Transaction tr;
    SQLFullAuftragSelector psel(SQLFullAuftragSelector::sel_Artikel_Planung_id
-   			(instanz->Id(),getKunde()->Id(),artikel.Id(),AuftragBase::handplan_auftrag_id));
+   			(instanz->Id(),getKunde()->Id(),artikel,AuftragBase::handplan_auftrag_id));
    SelectedFullAufList auftraglist(psel);
 
    AuftragBase::mengen_t menge(anzahl);
@@ -86,23 +80,20 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
    // stueckeln (1*Lieferung, dann Zuordnung)
    {  LieferscheinEntry LE=LieferscheinEntry::create(*this,artikel,anzahl,mengeneinheit,palette,true);
 
-        for (SelectedFullAufList::iterator i=auftraglist.aufidliste.begin();
+      for (SelectedFullAufList::iterator i=auftraglist.aufidliste.begin();
      	        !!menge && i!=auftraglist.aufidliste.end(); ++i)
-        {  
-           AuftragBase::mengen_t abmenge(menge);
-           if (i->getRestStk()<abmenge) abmenge=i->getRestStk();
+      {  AuftragBase::mengen_t abmenge=AuftragBase::min(menge,i->getRestStk());
+         if (!abmenge) continue;
            
-           LE.setZusatzInfo(*i,abmenge);
-           i->Produziert(abmenge,Id());
-           menge-=abmenge;
-    	   }
-        if (!!menge)
-        {  
-           LE.setZusatzInfo(AufEintragBase(),menge);
-        }
-    if(menge>0)
-    // da ist noch ein Rest geblieben
-       unbestellteMengeProduzieren(Instanz(),artikel,menge,LE);
+         LE.setZusatzInfo(*i,abmenge);
+         i->Produziert(abmenge,Id());
+           
+         menge-=abmenge;
+         if (!menge) break;
+      }
+      if(menge>0)
+         // da ist noch ein Rest geblieben, setzt ZusatzInfo
+         unbestellteMengeProduzieren(Instanz(),artikel,menge,LE);
    }
    tr.commit();
 }
