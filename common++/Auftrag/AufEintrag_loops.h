@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.h,v 1.7 2004/02/11 08:33:42 christof Exp $ */
+/* $Id: AufEintrag_loops.h,v 1.8 2004/02/11 09:16:16 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,23 +25,6 @@
 class SQLFullAuftragSelector;
 class AufEintrag;
 class AufEintragBase;
-
-#if 0
-template <class T>
-class relop2stl
-{	typedef int (*compare_func)(const T &a, const T &b);
-	compare_func compare;
-public:
-	relop2stl() : compare() {}
-	explicit relop2stl(compare_func f) : compare(f) {}
-	void operator=(compare_func f) 
-	{ compare=f; }
-	bool operator==(const T &a, const T &b) const
-	{  return !(*compare)(a,b); }
-	bool operator<(const T &a, const T &b) const
-	{  return (*compare)(a,b)<0; }
-};
-#endif
 
 struct distribute_children_cb
 {	// return the amount of the third argument you processed

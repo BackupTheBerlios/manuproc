@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.cc,v 1.10 2004/02/11 08:33:42 christof Exp $ */
+/* $Id: AufEintrag_loops.cc,v 1.11 2004/02/11 09:16:16 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,8 +25,9 @@
 #include <Auftrag/selFullAufEntry.h>
 #include <Artikel/ArtikelStamm.h>
 
+// Kinder !!! d.h. nicht nach Priorität
 bool distribute_children_cb::operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const
-{  return a.Pri<b.Pri || (a.Pri==b.Pri && a.AEB<b.AEB);
+{  return a.AEB<b.AEB || (a.AEB==b.AEB && a.Pri<b.Pri);
 }
 
 bool distribute_children_twice_cb::operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const
@@ -84,6 +85,10 @@ public:
 	{  return c(a,b); }
 };}
 
+ostream &operator<<(ostream &o,const AufEintragZu::st_reflist &r)
+{  return o << r.Pri << ':' << r.AEB;
+}
+
 bool distribute_children(const AufEintragBase &startAEB,
  		AuftragBase::mengen_t menge,
  		const ArtikelBase &article, 
@@ -96,6 +101,12 @@ bool distribute_children(const AufEintragBase &startAEB,
    {  ArtikelBaum::faktor_t AE_faktor = AE_artbaum.Faktor(artloop_var->first);
       AuftragBase::mengen_t AE_menge2=AE_faktor*menge;
       artloop_var->second.sort(sort_wrapper(callee));
+if (ManuProC::Tracer::enabled(AuftragBase::trace_channel))
+{   std::ostream_iterator<AufEintragZu::st_reflist> os(std::cout," ");
+std::cout << "after sort ";
+std::copy(artloop_var->second.begin(),artloop_var->second.end(),os);
+std::cout << '\n';
+}
       for(AufEintragZu::list_t::const_iterator zuloop_var=artloop_var->second.begin();
 	   		zuloop_var!=artloop_var->second.end();++zuloop_var)
       {  AuftragBase::mengen_t mengen_var
