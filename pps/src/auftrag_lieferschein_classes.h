@@ -14,7 +14,6 @@
 #include<Artikel/ArtikelBezeichnung.h>
 #include<Artikel/Einheiten.h>
 #include<Auftrag/AufEintrag.h>
-//#include <Instanzen/Produziert.h>
 #include <Instanzen/ppsInstanzProduziert.h>
 #include <unistd.h>
 
@@ -71,6 +70,7 @@ class Data_Lieferdaten : public RowDataBase
   int get_Lieferschein_Id() const {return liefentry.Id();}
   LieferscheinEntry get_LieferscheinEntry() const {return liefentry;}
   AufEintragBase getAufEintragBase() const {return liefentry.getAufEintragBase();}
+  bool istZusatzinfo() const {return zusatzinfo;}
 };
 
 class cH_Data_Lieferdaten : public Handle<const Data_Lieferdaten>

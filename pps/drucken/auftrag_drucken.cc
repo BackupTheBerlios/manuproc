@@ -42,7 +42,7 @@ const static struct option options[]=
 void usage(std::string n,bool toTeX,bool plot,bool firmenpapier,bool kopie,
    ppsInstanz::ID instanz,std::string database,std::string dbhost)
 {
-   std::cout << "$Id: auftrag_drucken.cc,v 1.14 2002/11/05 11:19:44 thoma Exp $\n\n"
+   std::cout << "$Id: auftrag_drucken.cc,v 1.15 2002/11/22 16:47:38 christof Exp $\n\n"
               "USAGE:" << n << " -n <Nr> [-a <Auftrag|Rechnung|Lieferschein|Intern|Extern>] [-kft] [-i <Instanz>] [-d <Datenbank>]\n"
 		"\n\t-t\t nur TeX file erzeugen ("<< (toTeX?"an":"aus")<< ")\n"
 		"\t-p\t drucken ("<< (plot?"an":"aus")<< ")\n"
@@ -106,7 +106,7 @@ int main (int argc, char *argv[])
       ManuProC::dbconnect(conn);  
 
       LR_drucken l(was,auftragsnr,plot,firmenpapier,
-			kopie,cH_ppsInstanz(instanz),toTeX,rueckstand,ean_code);      
+			kopie,cH_ppsInstanz(instanz),toTeX,rueckstand,ean_code);
          
       ManuProC::dbdisconnect();
    } catch (SQLerror &e)

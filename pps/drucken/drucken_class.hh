@@ -260,7 +260,7 @@ public:
    cP_Waehrung getWaehrung() const { 
       if (Typ()==Auftrag || Typ()==Intern||Typ()==Extern)      return u.a->getWaehrung(); 
       if (Typ()==Rechnung)     return u.r->getWaehrung(); abort(); }
-   fixedpoint<2> Rabatt() const { 
+   AuftragBase::rabatt_t Rabatt() const { 
       if (Typ()==Auftrag) return  u.a->getAuftragsRabatt();
       if (Typ()==Intern||Typ()==Extern)      return 0; 
       if (Typ()==Rechnung)     return u.r->Rabatt(); abort();}
@@ -280,13 +280,13 @@ public:
       if (Typ()==Rechnung)     return u.r->getZahlungsart(); 
       if (Typ()==Auftrag)     return u.a->Zahlart(); 
 	abort(); }
-   fixedpoint<2> Skontosatz() const {
+   AuftragBase::rabatt_t Skontosatz() const {
 	if (Typ()==Rechnung)
 	  return u.r->getZahlungsart()->getSkonto(1).skontosatz; 
 	if (Typ()==Auftrag)
 	  return u.a->Zahlart()->getSkonto(1).skontosatz; 
 	  abort();}
-   fixedpoint<2> Einzugrabatt() const {
+   AuftragBase::rabatt_t Einzugrabatt() const {
 	if( Typ()==Rechnung)
 	  return u.r->getZahlungsart()->getEinzugrabatt();
 	if (Typ()==Auftrag)
@@ -312,9 +312,9 @@ private:
         const Preis::preismenge_t &preismenge_mem,
         const Einheit &einheit_mem,const std::string &einheitsize,
         const AuftragBase::mengen_t rest,const ArtikelBase &artikelbase,
-        const bool zusatzinfo,const int stueck, const AuftragBase::mengen_t &menge,
+        const bool zusatzinfo,const int stueck, const LieferscheinBase::mengen_t &menge,
         const Preis &BruttoPreis, const Preis &NettoPreis,
-        const fixedpoint<2> &rabatt, const ManuProC::Datum &lieferdatum,
+        const AuftragBase::rabatt_t &rabatt, const ManuProC::Datum &lieferdatum,
         const int palette, const std::string &your_auftrag,
         const AufEintragBase AEB=AufEintragBase()
         );

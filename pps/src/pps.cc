@@ -25,10 +25,12 @@
 #include <Aux/dbconnect.h>
 #include "MyMessage.h"
 #include <Misc/Trace.h>
+#include <Aux/dbcapability.h>
 
 MyMessage *meldung;
 auftrag_main *auftragmain;
 ManuProC::Connection *Conn;
+DBCapability *dbcapability;
 
 int main(int argc, char **argv)
 {  
@@ -57,11 +59,15 @@ int main(int argc, char **argv)
  
  meldung = new MyMessage();
  try{ 
- ManuProC::dbconnect(*Conn); }
+ ManuProC::dbconnect(*Conn); 
+ dbcapability=new DBCapability();
+ }
  catch(SQLerror &e)
   { meldung->Show(e);
     return 1;
   }
+  
+  
 // cH_ppsInstanz instanz(ppsInstanzID::Kundenauftraege);
 // if (argc-optind>1) instanz=cH_ppsInstanz(ppsInstanz::ID(atoi(argv[optind])));
 

@@ -12,7 +12,7 @@ class Data_auftrag : public RowDataBase
 {
    const AufEintrag &AB ;
    const auftrag_main *AM ;
-   ArtikelMenge menge;
+   mutable ArtikelMenge menge;
 
 public:
    Data_auftrag(const AufEintrag& ab, auftrag_main* am) :
@@ -28,24 +28,6 @@ public:
          else  return cH_EntryValueIntString(cH_Kunde(AB.getKdNr())->sortname()); 
         }
        else { 
-#if 0       
-	 std::string k;
-         std::list<cH_Kunde> LK=AufEintragZu(AB).get_Referenz_Kunden();
-         // Bei mehr als einem Kunden nur noch die ID anzeigen
-         if(LK.size()==1)
-          {
-            if (AM->Kunden_nr_bool()) return cH_EntryValueIntString((*LK.begin())->Id());
-            else return cH_EntryValueIntString((*LK.begin())->firma());
-          }
-         else
-          for (std::list<cH_Kunde>::const_iterator i=LK.begin();i!=LK.end();)
-           { //k+=(*i)->firma();
-             //if (++i != LK.end()) k+=", ";
-               k+=itos((*i)->Id());
-               if (++i != LK.end()) k+=", ";
-           }
-         return  cH_EntryValueIntString(k);
-#endif
          return cH_EntryValue();
          }
        }
@@ -64,18 +46,10 @@ public:
       case auftrag_main::LETZTELIEFERUNG : {
           return cH_EntryValueDatum(AB.LetzteLieferung());
        }
-/*
-      case auftrag_main::LIEFERUNGAM : {
-         AuftragBase::mengen_t menge =AB.getGeliefert();
-         if(menge==AuftragBase::mengen_t(0)) return cH_EntryValueIntString("");
-         cH_Lieferschein LE=AB.getLieferschein();
-         std::string s=LE->LsDatum().c_str();         
-         return cH_EntryValueIntString(itos(menge)+" am "+s);
-       }
-*/
       case auftrag_main::AUFTRAG : {
             std::string auftrag;
-            if(AM->Kunden_anr_bool()) auftrag =      AB.getYourAufNr() ;
+            if(AM->Kunden_anr_bool() && AM->get_Instanz()->Id()==ppsInstanzID::Kundenauftraege) 
+               auftrag =      AB.getYourAufNr() ;
             else                      auftrag = itos(AB.getAuftragid()) ;
             return cH_EntryValueIntString(auftrag);}
       case auftrag_main::LETZEPLANINSTANZ :{
@@ -91,24 +65,22 @@ public:
          { verarbeitung=e.what(); }
 	 return cH_EntryValueIntString(verarbeitung);
 	 }
-#ifdef PETIG_EXTENSIONS	 
+#ifdef ANZEIGE_VON_STUECK_UND_METER_IN_PPS	 
       case auftrag_main::METER : 
-         if (AM->Instanz()==ppsInstanzID::Rohwarenlager ||
-         	AM->Instanz()==ppsInstanzID::_Garn__Einkauf)
+         if (AM->Instanz()==ppsInstanzID::_Garn__Einkauf)
             return cH_EntryValueIntString(menge.abgeleiteteMenge());
          else
          {ArtikelMenge::mengen_t m=menge.getMenge(EinheitID::m);
           if (!m) return cH_EntryValue();
-          else return cH_EntryValueFixed<ArtikelMenge::nachkommastellen>(m);
+          else return cH_EntryValueFixed<ManuProC::Precision::ArtikelMenge>(m);
          }
       case auftrag_main::STUECK : 
-         if (AM->Instanz()==ppsInstanzID::Rohwarenlager ||
-         	AM->Instanz()==ppsInstanzID::_Garn__Einkauf)
+         if (AM->Instanz()==ppsInstanzID::_Garn__Einkauf)
             return cH_EntryValueIntString(menge.Menge());
          else
          {ArtikelMenge::mengen_t m=menge.getMenge(Einheit::Stueck);
           if (!m) return cH_EntryValue();
-          else return cH_EntryValueFixed<ArtikelMenge::nachkommastellen>(m);
+          else return cH_EntryValueFixed<ManuProC::Precision::ArtikelMenge>(m);
          }
 #else
       case auftrag_main::METER : 
@@ -128,16 +100,13 @@ public:
    std::string ProzessText() const {return AB.getProzess()->getTyp()+" "+AB.getProzess()->getText() ;}
    AufEintrag& get_AufEintrag() const {return const_cast<AufEintrag&>(AB);}
    const ArtikelMenge getArtikelMenge() const { return menge; }
-   void redisplayMenge(TreeBase *maintree_s) 
-   {  menge=ArtikelMenge(AB.ArtId(),AB.getRestStk().as_int());
-      maintree_s->redisplay(this,auftrag_main::METER);
-      maintree_s->redisplay(this,auftrag_main::STUECK);
-   }
-   void redisplayLetzePlanInstanz(TreeBase *maintree_s,const AufEintrag &ae)
-    {
-      const_cast<AufEintrag&>(AB)=ae;
-      maintree_s->redisplay(this,auftrag_main::LETZEPLANINSTANZ);
+   void redisplayMenge(TreeBase *maintree_s) const
+    {  menge=ArtikelMenge(AB.ArtId(),AB.getRestStk().as_int());
+       maintree_s->redisplay(this,auftrag_main::METER);
+       maintree_s->redisplay(this,auftrag_main::STUECK);
     }
+   void redisplayLetzePlanInstanz(TreeBase *maintree_s) const
+       {maintree_s->redisplay(this,auftrag_main::LETZEPLANINSTANZ);}
 };
 
 struct cH_Data_auftrag : public Handle<const Data_auftrag>
@@ -148,7 +117,6 @@ struct cH_Data_auftrag : public Handle<const Data_auftrag>
 class Data_Node : public TreeRow
 {
   ArtikelMengeSumme sum;
-// std::map<ArtikelBase,double> map_artbase;
 
 public:
  virtual void cumulate(const cH_RowDataBase &rd)
@@ -159,16 +127,16 @@ public:
    {
     switch(index) 
       { 
-#ifdef PETIG_EXTENSIONS	 
+#ifdef ANZEIGE_VON_STUECK_UND_METER_IN_PPS	 
       case auftrag_main::METER : 
          {ArtikelMengeSumme::mengen_t m=sum.Summe(EinheitID::m);
           if (!m) return cH_EntryValue();
-          else return cH_EntryValueFixed<ArtikelMenge::nachkommastellen,double,long long>(m);
+          else return cH_EntryValueFixed<ManuProC::Precision::ArtikelMenge,double,long long>(m);
          }
       case auftrag_main::STUECK : 
          {ArtikelMengeSumme::mengen_t m=sum.Summe(Einheit::Stueck);
           if (!m) return cH_EntryValue();
-          else return cH_EntryValueFixed<ArtikelMenge::nachkommastellen,double,long long>(m);
+          else return cH_EntryValueFixed<ManuProC::Precision::ArtikelMenge,double,long long>(m);
          }
 #else
         case auftrag_main::METER : return cH_EntryValueIntString(sum.abgeleiteteMenge());
@@ -188,8 +156,5 @@ public:
    {  return new Data_Node(col,v,child_s_deep,child_s_data,expand,suminit);
    }
 
-// std::vector<pair<ArtikelBase,long long int> > get_vec_ArtikelBase_Stueck() const {return vec_artbase;}
-// std::map<ArtikelBase,double> get_map_ArtikelBase_Stueck() const {return map_artbase;}
-//  std::map<AufEintrag,double> get_map_AufEintrag_Stueck() const;
 };
 

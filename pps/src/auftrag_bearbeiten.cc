@@ -74,7 +74,7 @@ Mittlere Maustaste: 1 Kopie","");
  zahlziel_datewin->setLabel(std::string("Zahlungsziel"));
  aufdatum_datewin->setLabel(std::string("Auftragsdatum"));
 
- if(auftragbase)
+ if(auftragbase && auftragbase->editierbar())
    {
     loadAuftrag(*auftragbase);
     if(auftragbase->ZNr())
@@ -255,7 +255,7 @@ void auftrag_bearbeiten::on_stkmtr_spinbutton_activate()
        	AuftragBase::mengen_t(stkmtr_spinbutton->get_value_as_int())-
         aktaufeintrag->getStueck();
        			
-       AuftragBase::mengen_t mt=aktaufeintrag->updateStkDiff__(getuid(),diffmenge,true,AufEintragBase::r_Standard);
+       AuftragBase::mengen_t mt=aktaufeintrag->updateStkDiff__(getuid(),diffmenge,true,ManuProC::Auftrag::r_Anlegen);
        assert(mt==diffmenge);
        fillCList();
        auftrag_clist->grab_focus();
@@ -289,6 +289,7 @@ void auftrag_bearbeiten::on_aufentry_abbruch_clicked()
 
 void auftrag_bearbeiten::on_aufentry_ok_clicked()
 {
+ try{
  if(!auftrag)
    {meldung->Show("Bitte zuerst einen Auftrag auswählen oder einen neuen Auftrag erzeugen");
     return;
@@ -334,8 +335,10 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
          ManuProC::st_produziert sp(artikelbox->get_value(),stkmtr_spinbutton->get_value_as_int(),
                getuid(),Kunde::eigene_id,LieferscheinBase::none_id,AB,liefdatum_datewin->get_value());
          instanz->Planen(sp);
-         AufEintragBase aeb(AB,sp.ZNr);
-         auftrag->AuftragFull::push_back(AufEintrag(aeb));
+         AufEintrag AE((AufEintragBase(AB,sp.ZNr)));
+         AE.updatePreis(WPreis->get_Preis());
+         AE.updateRabatt(rabattentry_spinbutton->get_value_as_float());
+         auftrag->AuftragFull::push_back(AE);
        }
       else assert(!"never get here");
       fillCList();
@@ -354,6 +357,7 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
       }
 #endif
     }
+ }catch(SQLerror &e) {meldung->Show(e);}
 }
 
 void auftrag_bearbeiten::on_preis_changed()
@@ -487,6 +491,10 @@ void auftrag_bearbeiten::Rabatt_setzen(const cH_PreisListe &liste)
 void auftrag_bearbeiten::andererKunde()
 {  
    kunde = kundenbox->get_value();
+ 
+   aufnr_scombo->reset();
+   youraufnr_scombo->reset();
+ 
    Rabatt_setzen(kunde);
 #ifdef MABELLA_EXTENSIONS
    std::string eins_prlist(" and exists (select prlsnr from ku_warenkorb"

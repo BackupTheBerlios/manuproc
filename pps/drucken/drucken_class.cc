@@ -397,7 +397,11 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
      	zeilen_passen_noch<(j-i)
      	+1 // für Kopfzeile
      	+(preise_addieren?1:0) // für Übertrag
-     	+(lfrsid_drucken?2:0)) // für Lieferschein X am Y an Z
+     	+(lfrsid_drucken?2:0) // für Lieferschein X am Y an Z
+#ifdef MABELLA_EXTENSIONS
+	+(Typ()==Rechnung ? 1:0) // für Unsere Auftragsnr.....
+#endif
+	)
      {   // Tabelle beenden, preis ausgeben
          if (preise_addieren)
          {  drucken_betrag(os,"Übertrag",betrag);
@@ -460,9 +464,9 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
            for(std::vector<LieferscheinEntry::st_zusatz>::const_iterator l=VZ.begin();l!=VZ.end();++l)
             {
               Zeile_Ausgeben(os,preismenge_mem,einheit_mem,einheitsize,
-               0,(*k).Artikel(),true,1,
-               l->menge,Preis(),Preis(),
-               fixedpoint<2>(0),ManuProC::Datum(),(*k).Palette(),l->yourauftrag,
+               0,(*k).Artikel(),true,einheit_mem.hatMenge()?1:l->menge.as_int(),
+               einheit_mem.hatMenge()?l->menge:0,Preis(),Preis(),
+               fixedpoint<2>(0),ManuProC::Datum(),0,l->yourauftrag,
                l->aeb);
             }           
          }
@@ -614,13 +618,12 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
    const Preis::preismenge_t &preismenge_mem,
    const Einheit &einheit_mem,const std::string &einheitsize,
    const AuftragBase::mengen_t rest,const ArtikelBase &artikelbase,
-   const bool zusatzinfo,const int stueck, const AuftragBase::mengen_t &menge,
+   const bool zusatzinfo,const int stueck, const LieferscheinBase::mengen_t &menge,
    const Preis &BruttoPreis, const Preis &NettoPreis,
-   const fixedpoint<2> &rabatt, const ManuProC::Datum &lieferdatum,
+   const AuftragBase::rabatt_t &rabatt, const ManuProC::Datum &lieferdatum,
    const int palette, const std::string &your_auftrag,
    const AufEintragBase AEB)
 {
-
 #ifdef MABELLA_EXTENSIONS // gelieferte Zeilen nicht anzeigen beim Rückstand     
        if(Rueckstand())
          if(rest==0)
@@ -679,6 +682,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
             }
          if (stueck_bool && menge_bool)
            { neue_spalte(erste_spalte,os);
+             // diese Hartcodierung von 3 sieht nicht gut aus CP
              os <<linecolor<< FormatiereTeX_short(fixedpoint<3>(stueck * menge))<<einheitsize <<Einheit(artikelbase).TeX();
            }
 
@@ -1149,7 +1153,7 @@ void LR_Abstraktion::lieferung_an(std::ostream &os, unsigned int lfrs_id,
 //#endif  
   os << "Unsere Lieferung "<<lfrs_id;
   os << " am "<<datum;
-  if(!sKunde.empty())  os << " an "<<sKunde ;
+  if(!sKunde.empty())  os << " an "<< string2TeX(sKunde);
   os << "\\\\[-2ex]\n";
 //  os << "\\end{flushleft}\n";
 }

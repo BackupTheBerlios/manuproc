@@ -74,8 +74,7 @@ void auftrag_main::tree_neuer_auftrag_leaf_selected(cH_RowDataBase d)
   Transaction tr;
   if(!IA.deleteAuftragEntry())  // Auftrag hat noch Kinder?
    {
-     info_label_instanzen->set_text("Auftrag kann nicht gelöscht werden, es gibt noch Kindaufträge"); 
-     info_label_instanzen->show();
+     meldung->Show("Auftrag kann nicht gelöscht werden, es gibt noch Kindaufträge"); 
      return;
    }
   for (std::list<AufEintragZu::st_reflist>::iterator i=ReferenzAufEintragK.begin();i!=ReferenzAufEintragK.end();++i)
@@ -116,65 +115,136 @@ void auftrag_main::on_button_instanz_get_selection_clicked()
   if(!Datum_instanz->get_value().valid()) 
       { meldung->Show("Datum ist ungültig");
                          return; }
+  try{ 
 
-  std::vector<cH_RowDataBase> V;
-  try{ V=maintree_s->getSelectedRowDataBase_vec();
-     }catch(TreeBase::notLeafSelected) {meldung->Show("Fehler: Keine Knoten anwählen"); return;}
-  ArtikelBase artikel;
-  AuftragBase::mengen_t menge=0;
-  std::vector<AufEintrag> VAE;
-  for(std::vector<cH_RowDataBase>::const_iterator i=V.begin();i!=V.end();++i)
+  std::vector<cH_RowDataBase> VAE=ausgewaehlte_artikel();
+  if(VAE.empty()) {meldung->Show("Nichts ausgewählt"); return;}
+  if(!alle_ausgewaehlten_artikel_gleich(VAE))
    {
-     const Data_auftrag *dt=dynamic_cast<const Data_auftrag*>(&*(*i));
-     AufEintrag AE=dt->get_AufEintrag();
-     // Alle Ausgewählten Zeilen müssen den selben Artikel beinhalten
-     if(artikel==ArtikelBase::none_id) artikel=AE.Artikel();
-     else { if(artikel!=AE.Artikel() && togglebutton_geplante_menge->get_active() ) 
-       {meldung->Show("Die Artikel der ausgewählten Zeilen sind nicht einheitlich.\n Wenn eine Menge vorgegeben wird, dann müssen sie es sein.");
-        return; }}
-     menge += AE.getRestStk();
-     VAE.push_back(AE);
+    for(std::vector<cH_RowDataBase>::iterator i=VAE.begin();i!=VAE.end();++i)
+     {
+      const Data_auftrag &dt=dynamic_cast<const Data_auftrag&>(**i);
+      AufEintrag &AE=const_cast<Data_auftrag&>(dt).get_AufEintrag();
+      if(!OptMen_Instanz_Bestellen->is_visible())
+         AE.Planen(getuid(),AE.getRestStk(),*instanz_auftrag,Datum_instanz->get_value());
+      else
+         AE.ProduktionsPlanung(getuid(),AE.getRestStk(),*instanz_auftrag,Datum_instanz->get_value(),OptMen_Instanz_Bestellen->get_value());
+//         AE.ProduktionsPlanung(OptMen_Instanz_Bestellen->get_value(),
+//                               AE.getRestStk(),Datum_instanz->get_value(),getuid());
+     }     
    }
-  bool mengenplanung=false;
-  if (togglebutton_geplante_menge->get_active())
+  else
    {
      spinbutton_geplante_menge->update();
-     AuftragBase::mengen_t m=spinbutton_geplante_menge->get_value_as_int();
-     if(VAE.size()>1 && m < menge)
-       {meldung->Show("Sind mehrere Zeilen mit demselben Artikel gewählt und es wird eine Menge vorgegeben,\nso muß diese Menge größer sein als die Summer der Mengen der Einzelzeilen.");
+     AuftragBase::mengen_t spinmenge=spinbutton_geplante_menge->get_value_as_int();
+     AuftragBase::mengen_t mindestmenge=restmengensumme_aller_ausgewaehlten_artikel(VAE);
+     if(spinmenge<mindestmenge && VAE.size()>1)
+       {meldung->Show("Sind mehrere Zeilen gewählt muß die Bestellmenge mindestens so groß sein wie die Summer der Restmengen.");
         return; }
-     menge=m-menge;
-     if(menge!=0) mengenplanung=true;
-   }   
-   // Planen
-  try{
-    for(std::vector<AufEintrag>::iterator i=VAE.begin();i!=VAE.end();++i)
-     {
-       AuftragBase::mengen_t m=i->getRestStk();
-       if(mengenplanung && i+1 == VAE.end() )  m+=menge;
-       i->Planen(getuid(),m,true,*instanz_auftrag,Datum_instanz->get_value());
-     }     
+     for(std::vector<cH_RowDataBase>::iterator i=VAE.begin();i!=VAE.end();++i)
+      {
+       const Data_auftrag &dt=dynamic_cast<const Data_auftrag&>(**i);
+       AufEintrag &AE=const_cast<Data_auftrag&>(dt).get_AufEintrag();
+       AuftragBase::mengen_t M=AE.getRestStk();       
+       spinmenge -= M;
+       assert(spinmenge>=0 || VAE.size()==1);
+       if(i+1 == VAE.end() )  {M+=spinmenge; spinmenge=0;}
+  
+       if(!OptMen_Instanz_Bestellen->is_visible())
+         AE.Planen(getuid(),M,*instanz_auftrag,Datum_instanz->get_value());
+       else
+         AE.ProduktionsPlanung(getuid(),M,*instanz_auftrag,Datum_instanz->get_value(),OptMen_Instanz_Bestellen->get_value());
+//         AE.ProduktionsPlanung(OptMen_Instanz_Bestellen->get_value(),
+//                               M,Datum_instanz->get_value(),getuid());
+      }     
+   }  
 
-  for(std::vector<cH_RowDataBase>::const_iterator i=V.begin();i!=V.end();++i)
-   {
-#warning Das geht so nicht :-( Vermutung: Das push_back legt eine Kopie an?
-#warning wie geht es dann?
-     dynamic_cast<Data_auftrag&>(const_cast<RowDataBase&>(**i)).redisplayMenge(maintree_s);
-   }
   loadAuftragInstanz(*instanz_auftrag);
-  }catch(SQLerror &e) {meldung->Show(e);}
+  for(std::vector<cH_RowDataBase>::iterator i=VAE.begin();i!=VAE.end();++i)
+   {
+     const Data_auftrag &dt=dynamic_cast<const Data_auftrag&>(**i);
+     dt.redisplayMenge(maintree_s);
+   }
+  maintree_s->unselect_all();
+
+   }catch(TreeBase::notLeafSelected) 
+     {meldung->Show("Nichts gewählt"); }
+}
+
+bool auftrag_main::alle_ausgewaehlten_artikel_gleich(std::vector<cH_RowDataBase> L)
+{
+  if(L.empty()) L=ausgewaehlte_artikel();
+  assert(!L.empty());
+  const Data_auftrag &dt=dynamic_cast<const Data_auftrag&>(*(L.front()));
+  ArtikelBase artikel(dt.get_AufEintrag().Artikel());
+  for(std::vector<cH_RowDataBase>::const_iterator i=L.begin();i!=L.end();++i)
+   {
+     const Data_auftrag &dt=dynamic_cast<const Data_auftrag&>(**i);
+     if(artikel!=dt.get_AufEintrag().Artikel())  return false;
+   }
+  return true;
+}
+
+AuftragBase::mengen_t auftrag_main::restmengensumme_aller_ausgewaehlten_artikel(std::vector<cH_RowDataBase> L)
+{
+  if(L.empty()) L=ausgewaehlte_artikel();
+  assert(!L.empty());
+  AuftragBase::mengen_t M=0;
+  for(std::vector<cH_RowDataBase>::const_iterator i=L.begin();i!=L.end();++i)
+   {
+     const Data_auftrag &dt=dynamic_cast<const Data_auftrag&>(**i);
+     M+=dt.get_AufEintrag().getRestStk();
+   }
+  return M;
+}
+
+
+std::vector<cH_RowDataBase> auftrag_main::ausgewaehlte_artikel()
+{
+  std::vector<cH_RowDataBase> V;
+  try{ V=maintree_s->getSelectedRowDataBase_vec();
+     }catch(TreeBase::notLeafSelected) 
+     {meldung->Show("Fehler: Keine Knoten anwählen"); }
+  return V;
 }
 
 
 void auftrag_main::instanz_auftrag_anlegen(AufEintrag& AE)
 // entspricht 'on_leaf_selected' im Hauptbaum
 {
-  Datum_instanz->set_value(AE.getLieferdatum());
   try{
-  cH_RowDataBase dt(maintree_s->getSelectedRowDataBase());
-  dynamic_cast<Data_auftrag&>(const_cast<RowDataBase&>(*dt)).redisplayMenge(maintree_s);
+   if(maintree_s->getSelectedRowDataBase_vec().size()==1)
+    {
+      spinbutton_geplante_menge->set_value(AE.getRestStk().as_int());
+      Datum_instanz->set_value(AE.getLieferdatum());
+      frame_mengen_eingabe->show();
+    }
+   else // mehrere Zeilen gewählt
+    {
+      if(alle_ausgewaehlten_artikel_gleich())       
+       {
+         spinbutton_geplante_menge->update();
+         int m=spinbutton_geplante_menge->get_value_as_int();
+         spinbutton_geplante_menge->set_value(m+AE.getRestStk().as_int());
+       }
+      else frame_mengen_eingabe->hide() ;   
+      if(Datum_instanz->get_value()>AE.getLieferdatum())
+         Datum_instanz->set_value(AE.getLieferdatum());
+    }
   }catch(TreeBase::multipleRowsSelected) {}
 }
+
+void auftrag_main::on_leaf_unselected(cH_RowDataBase d)
+{ 
+ try{
+   const Data_auftrag *dt=dynamic_cast<const Data_auftrag*>(&*d);
+   AufEintrag &AE=dt->get_AufEintrag();
+   spinbutton_geplante_menge->update();
+   int m=spinbutton_geplante_menge->get_value_as_int();
+   spinbutton_geplante_menge->set_value(m-AE.getRestStk().as_int());
+  }catch(std::exception &e) {std::cerr<<e.what();}
+}
+
 
 void auftrag_main::show_neuer_auftrag()
 {
@@ -213,6 +283,7 @@ gint auftrag_main::on_button_instanz_print_clicked(GdkEventButton *ev)
  return false;
 }
 
+/*
 void auftrag_main::on_togglebutton_geplante_menge_toggled()
 {
  if (togglebutton_geplante_menge->get_active())
@@ -224,9 +295,11 @@ void auftrag_main::on_togglebutton_geplante_menge_toggled()
  else
    spinbutton_geplante_menge->hide();  
 }
+*/
 
 void auftrag_main::on_button_Kunden_erledigt_clicked()
 {
+/* nicht implementiert
  if(!allaufids) 
    { SQLFullAuftragSelector psel= SQLFullAuftragSelector::sel_Status(instanz->Id(),(AufStatVal)OPEN);
      allaufids = new SelectedFullAufList(psel);
@@ -249,6 +322,7 @@ void auftrag_main::on_button_Kunden_erledigt_clicked()
     }
   }
   if(change) on_neuladen_activate() ;
+*/
 }
 
 

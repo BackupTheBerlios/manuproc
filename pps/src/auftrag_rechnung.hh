@@ -61,6 +61,7 @@ class auftrag_rechnung : public auftrag_rechnung_glade
 
         void waehrung_geaendert();
 	void rabatt_geaendert();
+        gint on_bezahlt_toggled(GdkEventButton *ev);
         void on_zahlziel_activate();
 	void redisplay();
    void on_button_gutschrift_clicked();

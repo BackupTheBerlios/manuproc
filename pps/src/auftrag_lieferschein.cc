@@ -118,6 +118,7 @@ try{
  liefer_kunde->set_value(kdnr);
  set_tree_offen_content();
  cH_Kunde k(kdnr);
+ vbox_eingabe->show();
 
 #ifdef PETIG_EXTENSIONS 
    if(instanz->EinlagernIn()!=ppsInstanzID::None)
@@ -154,7 +155,7 @@ try{display2(liefer_kunde->get_value());
  cH_Kunde k(liefer_kunde->get_value());
  checkbutton_ean_drucken->set_active(k->showEAN());   
 #endif 
- set_tree_offen_content();
+// set_tree_offen_content();
 }
 
 void auftrag_lieferschein::on_liefdate_activate()
@@ -283,9 +284,11 @@ void auftrag_lieferschein::fill_input(const AufEintrag& AE)
 void auftrag_lieferschein::fill_input(const AufEintrag& AE,const LieferscheinEntry& LE)
 {
   // Zusatzinfos dürfen nicht geändert werden:
-  if(LE.Valid() && LE.ZusatzInfo()) 
-   { button_zeile_modifizieren->set_sensitive(false) ; 
-     return; }
+//  if(LE.Valid() && LE.ZusatzInfo()) 
+//   {
+//  if( 
+//     button_zeile_modifizieren->set_sensitive(false) ; 
+//     return; }
   fill_with(AE,Einheit(LE.Artikel()),LE.Stueck(),LE.Menge().as_float());
   Palette->set_value(LE.Palette());
 }
@@ -350,6 +353,7 @@ auftrag_lieferschein::auftrag_lieferschein(cH_ppsInstanz _instanz)
 
  tree_daten->hide();
  vbox_eingabe->hide();
+ liefdate->setLabel("");
 }
 
 void auftrag_lieferschein::set_tree_titles()
@@ -434,6 +438,8 @@ void auftrag_lieferschein::clear_input()
 void auftrag_lieferschein::on_Palette_activate()
 { 
 //ManuProC::Tracer::Enable(ManuProC::Tracer::Artikel);
+ if(lieferschein->Id()==LieferscheinBase::none_id) return;
+
   anzahl->update();
   liefermenge->update();
   Palette->update();
@@ -488,6 +494,8 @@ void auftrag_lieferschein::on_Palette_activate()
 
 void auftrag_lieferschein::on_newlieferentryall_ok()
 {   
+ if(lieferschein->Id()==LieferscheinBase::none_id) return;
+ 
   if (!tree_offen->selection().size()) 
    { 
      meldung->Show("Keine Zeile selektiert");
@@ -509,6 +517,8 @@ void auftrag_lieferschein::on_newlieferentryall_ok()
 
 void auftrag_lieferschein::auftragzeile_zeile_uebernehmen(const AufEintrag &AE)
 {
+ if(lieferschein->Id()==LieferscheinBase::none_id) return;
+ 
    Einheit e(AE.Artikel());
    AufEintrag ae(AE);
    lieferschein->push_back(ae,AE.Artikel(), AE.getRestStk().as_int(),
@@ -563,7 +573,8 @@ void auftrag_lieferschein::on_daten_leaf_selected(cH_RowDataBase d)
  AufEintrag AE;
  try{ AE=dt->getAufEintragBase();}
  catch(AufEintrag::NoAEB_Error &e){}
- button_zeile_modifizieren->set_sensitive(true);
+ if(dt->istZusatzinfo()) button_zeile_modifizieren->set_sensitive(false);
+ else                    button_zeile_modifizieren->set_sensitive(true);
  fill_input(AE,dt->get_LieferscheinEntry());
  }catch(std::exception &e) {cerr << e.what()<<'\n';}
 }

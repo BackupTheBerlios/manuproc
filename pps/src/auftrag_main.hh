@@ -41,6 +41,7 @@ class auftrag_main : public auftrag_main_glade
  static const unsigned int Artikelgroesse = 4;
  bool block_callback;
 
+ AuftragBase::ID SelectedAuftragsId() const;
 public:
 
 private:
@@ -96,10 +97,16 @@ private:
         void on_storno_auftraege_activate();
         void on_unbest_auftraege_activate();
         void statusaenderung();
+        // AuftragsID
+        void on_plan_menge_menu_activate(); //0er Aufträge
+        void on_ungeplante_menge_menu_activate(); // 1er und 20000er
+        void on_dispo_menge_menu_activate(); //2er Aufträge
+        void auftrags_id_aenderung();
 
         void on_auftraege_kunde_activate();
         gint on_mainprint_button_clicked(GdkEventButton *ev);
         void on_leaf_selected(cH_RowDataBase d);
+        void on_leaf_unselected(cH_RowDataBase d);
         void on_node_selected(const TreeRow &node);
         void show_something_for(AufEintrag& selAufEintrag);
         void on_unselect_row(gint row, gint column, GdkEvent *event);
@@ -128,6 +135,8 @@ private:
          
         void on_button_faerben_clicked(); 
 
+	static std::string FirstRow(gpointer user_data, int deep, deque<guint> seq);
+
 public:
   // Spaltenbezeichnungen
    enum {KUNDE,A1,A2,A3,A4,LIEFERDATUM,AUFTRAG,LETZEPLANINSTANZ,
@@ -147,6 +156,7 @@ private:
    AuftragFull *instanz_auftrag;
 
    void show_frame_instanzen_material();
+   void show_main_menu();
    void on_searchcombo_auftragid_activate();
    void on_searchcombo_auftragid_search(int *cont, GtkSCContext newsearch) throw(SQLerror);
    void on_button_neue_anr_clicked();
@@ -155,6 +165,9 @@ private:
    void instanz_tree_titel_setzen();
    void neuer_auftrag_tree_titel_setzen();
    void instanz_auftrag_anlegen(AufEintrag& AE);
+   std::vector<cH_RowDataBase> ausgewaehlte_artikel();
+   bool alle_ausgewaehlten_artikel_gleich(std::vector<cH_RowDataBase> L=std::vector<cH_RowDataBase>());
+   AuftragBase::mengen_t restmengensumme_aller_ausgewaehlten_artikel(std::vector<cH_RowDataBase> L=std::vector<cH_RowDataBase>());
    void show_neuer_auftrag();
    void tree_neuer_auftrag_leaf_selected(cH_RowDataBase d);
    void loadAuftragInstanz(const AuftragBase& auftragbase);
@@ -162,11 +175,12 @@ private:
    void on_togglebutton_geplante_menge_toggled();
    void on_button_Kunden_erledigt_clicked();
    void on_button_instanz_get_selection_clicked();
+   void on_OptMenu_Instanz_Bestellen_activate(){};
 
   // Ab hier fürs Lager
   void lager_zeigen();
   void lager_ueberschrift();
-  SelectedFullAufList lager_auftraege();
+//  SelectedFullAufList lager_auftraege();
   struct st_tree_lager {AufEintrag AE;AuftragBase::mengen_t verplant;
                         AuftragBase::mengen_t bestellt;
        st_tree_lager(AufEintrag ae, AuftragBase::mengen_t v,AuftragBase::mengen_t b)

@@ -27,6 +27,9 @@
 #include "MyMessage.h"
 #include <Aux/dbconnect.h>
 extern MyMessage *meldung;
+
+#include <Aux/dbcapability.h>
+extern DBCapability *dbcapability;
 //extern ManuProC::Connection *Conn;
 #include <Auftrag/AufEintrag.h>
 
@@ -188,8 +191,12 @@ void auftrag_rechnung::on_rngnr_activate()
  optionmenu_zahlart->set_history(rechnung.getZahlungsart()->Id());
 
  gint pos=0; 
+ rng_notiz->delete_text(0,-1);
+ rng_notiz_save->set_sensitive(false);
  rng_notiz->insert_text(rechnung.Notiz().c_str(),rechnung.Notiz().size(),&pos);
  rng_notiz_save->set_sensitive(false);
+
+ bezahlt->set_active(rechnung.Bezahlt());
 
  rtree_daten->show();
 // vbox_n_b_lieferscheine->show();
@@ -438,8 +445,13 @@ Mittlere Maustaste: 1 Kopie","");
    optionmenu_zahlart->get_menu()->deactivate.connect(SigC::slot(static_cast<class auftrag_rechnung*>(this), &auftrag_rechnung::optionmenu_zahlart_deactivate));
    rngdatum->setLabel("");
    zahlziel->setLabel("");
-//   rtree_daten->hide();
+   lieferscheindatum->setLabel("");
+   rtree_daten->hide();
    on_button_allopen_clicked();   
+   
+// set GUI for DBCapabilities
+ DBCapability::WhiteColumn wc("rechnung","bezahlt");
+ bezahlt->set_sensitive(dbcapability->isWhite(DBCapability::ColAct(wc,DBCapability::UPDATE)) );
 }
 
 void auftrag_rechnung::set_tree_titles()
@@ -575,3 +587,24 @@ void auftrag_rechnung::on_notiz_save_clicked()
     rechnung.Notiz(rng_notiz->get_chars(0,rng_notiz->get_length()));
   rng_notiz_save->set_sensitive(false);
 }
+
+gint auftrag_rechnung::on_bezahlt_toggled(GdkEventButton *ev)
+{ 
+ DBCapability::WhiteColumn wc("rechnung","bezahlt");
+ if(dbcapability->isWhite(DBCapability::ColAct(wc,DBCapability::UPDATE)) )
+   {
+    try{
+    if(rechnung.Id()!=Rechnung::none_id)
+      rechnung.setBezahlt(bezahlt->get_active());
+    }
+    catch(SQLerror &e){meldung->Show(e);
+      bezahlt->set_active(bezahlt->get_active());
+      }
+   }   
+ else
+  {meldung->Show("keine Berechtigung");  
+   bezahlt->set_active(bezahlt->get_active());
+  }
+
+}
+
