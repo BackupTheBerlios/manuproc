@@ -1,4 +1,4 @@
-// $Id: AufEintragZuMengenAenderung.h,v 1.6 2003/01/15 15:10:16 christof Exp $
+// $Id: AufEintragZuMengenAenderung.h,v 1.7 2003/05/16 06:43:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -20,34 +20,36 @@
 //#include <Auftrag/AufEintragZu.h>  
 //#include <Misc/Transaction.h>
 #include <Auftrag/AufEintragBase.h>
+#include <Misc/compiler_ports.h>
 
+#warning deprecated header included
 
 namespace AufEintragZuMengenAenderung {
 
   // Beim 'vormerken' eines Artikels 
-  void change_parent(const int uid,const AufEintragBase &old_parent,
+  __deprecated void change_parent(const int uid,const AufEintragBase &old_parent,
                               const AufEintragBase &new_parent,
                               const AuftragBase::mengen_t &menge) throw(SQLerror);
 
   // Beim 'schnappen' eines anderen geplanten Auftrags werden die 
   // Eltern-'0er' des 'child_aeb=1er' erhöht, die
   // Zuordnung wird reduzieren
-  void increase_parents__reduce_assingments(const int uid,
+  __deprecated void increase_parents__reduce_assingments(const int uid,
                      const AufEintragBase &child_aeb,
                      AuftragBase::mengen_t menge) throw(SQLerror);
 
-  void Change_Zuordnung_to_Children(const bool child,const AufEintrag &AE,
+  __deprecated void Change_Zuordnung_to_Children(const bool child,const AufEintrag &AE,
                         const AuftragBase::mengen_t &menge) throw(SQLerror);
 
   // beim 'planen' eines AufEintrags
-  void move_zuordnung_zu_geplantem(const int uid,
+  __deprecated void move_zuordnung_zu_geplantem(const int uid,
                                    AufEintrag &AE0er, 
                                    AufEintrag &AE1er,
                                    AuftragBase::mengen_t menge,
                                    ManuProC::Auftrag::Action reason) throw(SQLerror);
 
    // ElternAEB erhält Menge vom 2er
-   void freie_dispomenge_verwenden(const int uid,
+   __deprecated void freie_dispomenge_verwenden(const int uid,
          const AufEintrag &AE2er,AuftragBase::mengen_t menge,const AufEintragBase &ElternAEB) throw(SQLerror);
 }
 

@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.20 2003/03/10 14:44:14 christof Exp $
+// $Id: AufEintragZu.h,v 1.21 2003/05/16 06:43:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -67,21 +67,21 @@ public:
     static map_t get_Kinder_nach_Artikel(const AufEintragBase &aeb,bool kinder=list_kinder);
 
     // Eine Benachbarte Liste von (Kind-)aufträgen aber nur ungeplante(0er) Aufträge:
-    list_t get_Referenz_list_ungeplant(bool kinder=true,bool artikel=list_ohneArtikel) const throw(SQLerror)
+    __deprecated list_t get_Referenz_list_ungeplant(bool kinder=true,bool artikel=list_ohneArtikel) const throw(SQLerror)
       {return get_Referenz_list_id(AuftragBase::ungeplante_id,kinder,artikel);}
 
     // Eine Benachbarte Liste von (Kind-)aufträgen aber nur dispo(2er) Aufträge:
-    list_t get_Referenz_list_dispo(bool kinder=true) const throw(SQLerror)
+    __deprecated list_t get_Referenz_list_dispo(bool kinder=true) const throw(SQLerror)
       {return get_Referenz_list_id(AuftragBase::dispo_auftrag_id,kinder);}
 
     // Eine Benachbarte Liste von (Kind-)aufträgen aber nur geplante(1|20000er) Aufträge:
-    list_t get_Referenz_list_geplant(bool kinder=true) const throw(SQLerror);
+    __deprecated list_t get_Referenz_list_geplant(bool kinder=true) const throw(SQLerror);
 
     // Eine Benachbarte Liste von Kind- bzw. Elternaufträgen des zu mir gehörenden
     // geplanten Auftrags holen
-    list_t get_Referenz_list_for_geplant(bool kinder=false) const throw(SQLerror);
+    __deprecated list_t get_Referenz_list_for_geplant(bool kinder=false) const throw(SQLerror);
 
-    list_t get_Referenz_list_for_geplant_neu(bool kinder=false) const throw(SQLerror);
+    __deprecated list_t get_Referenz_list_for_geplant_neu(bool kinder=false) const throw(SQLerror);
     // Für einen KOMPLETTEN Auftragsbaum nur_ende=false setzen
     // die folgende Funktion liefert sonst nur die Endaufträge OHNE Knoten
     list_t get_Referenz_listFull(bool kinder,bool nur_ende=true) const throw(SQLerror);

@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.39 2003/03/26 15:13:17 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.40 2003/05/16 06:43:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -133,6 +133,7 @@ private:
 public:
  void updateLieferdatum(const ManuProC::Datum &ld,int uid) throw(SQLerror);	
  void updateLieferdatum(const Kalenderwoche &K,int uid) {updateLieferdatum(ManuProC::Datum(K),uid);}	
+ // was ist das denn? CP
  void updateLieferdatumInstanz(const ManuProC::Datum &ld) throw(SQLerror);	
  void updatePreis(const Preis &pr) throw(SQLerror);
  void updateRabatt(rabatt_t rb) throw(SQLerror);
