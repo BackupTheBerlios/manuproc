@@ -312,7 +312,7 @@ AC_DEFUN([PETIG_CHECK_GTKMM],
 [
 if test "x$GTKMM_CFLAGS" == "x"
 then
-  AM_PATH_GTKMM(1.2.0,,AC_MSG_ERROR(Cannot find Gtk-- Version 1.2.x))
+  m4_ifdef([AM_PATH_GTKMM],[AM_PATH_GTKMM(1.2.0,,AC_MSG_ERROR(Cannot find Gtk-- Version 1.2.x))],[])
 fi
 GTKMM_INCLUDES="$GTKMM_CFLAGS"
 AC_SUBST(GTKMM_INCLUDES)
