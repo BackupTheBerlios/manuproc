@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.13 2002/12/03 09:21:57 christof Exp $
+# $Id: Makefile.am,v 1.14 2002/12/03 09:34:51 christof Exp $
 CXXFLAGS=@CXXFLAGS@ @COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
@@ -13,7 +13,7 @@ lib_LIBRARIES= libManuProC_Widgets.a
 EXTRA_PROGRAMS=dummy
 
 libManuProC_Widgets_a_SOURCES=EingabeBox.cc \
-		bool_CheckButton.cc bool_CheckMenuItem.cc int_RadioButtons.cc \
+		bool_CheckButton.cc bool_CheckMenuItem.cc \
 		int_SpinButton.cc string_Entry.cc \
 		SimpleTreeModel.cc SimpleTreeStore.cc \
 		GType_cH_EntryValue.cc SimpleTree.cc
