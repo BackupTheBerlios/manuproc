@@ -21,6 +21,8 @@ void WinFileReq::on_ok_button1_clicked()
 {  slot(get_filename());
    destroy();
 }
+
+#include "WinFileReq_glade.cc"
 #endif
 
 WinFileReq::WinFileReq(const SigC::Slot1<void,const std::string &> &sl,const std::string &file,
