@@ -50,6 +50,8 @@ enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
       Rep_Kunden_Zuordnungen};
 
 static ostream *testlog;
+// for more output ...
+bool verbose=false;
 
 static void vergleichen(Check &C, Check::was_checken w, const std::string &zusatz, 
         const std::string &name, bool mit_reparatur_programm)
@@ -1081,14 +1083,16 @@ int main(int argc,char *argv[])
    if(mode==None) { usage(argv[0],argv[1]); return 1; }
    
    cout << "Initalisierung der Datenbank ...";
+   std::string kill_output=" >/dev/null";
+   if (verbose) kill_output="";
 #ifdef MANU_PROC_TEST
-   system((std::string(MANU_DATAPATH)+"/initdb.script "+MANU_DATAPATH).c_str());
+   system((std::string(MANU_DATAPATH)+"/initdb.script "+MANU_DATAPATH+kill_output).c_str());
    putenv("PGDATABASE=anleitungdb");
 #elif defined MABELLA_TEST
-   system((std::string(MANU_DATAPATH)+"/initdb.script "+MANU_DATAPATH).c_str());
+   system((std::string(MANU_DATAPATH)+"/initdb.script "+MANU_DATAPATH+kill_output).c_str());
    putenv("PGDATABASE=mabella_test_db");
 #elif defined PETIG_TEST
-   system("database_tables_init/initdb.script");
+   system("database_tables_init/initdb.script"+kill_output);
    putenv("PGDATABASE=testdb");
 #endif
    cout << "...beendet\n";
