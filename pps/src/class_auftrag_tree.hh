@@ -55,9 +55,18 @@ public:
        }
       case auftrag_main::AUFTRAG : {
             std::string auftrag;
-            if(AM->Kunden_anr_bool() && AM->get_Instanz()->Id()==ppsInstanzID::Kundenauftraege) 
+            if(AM->Kunden_anr_bool() && 
+	       AM->get_Instanz()->Id()==ppsInstanzID::Kundenauftraege)
                auftrag =      AB.getYourAufNr() ;
-            else                      auftrag = itos(AB.getAuftragid()) ;
+            else                      
+	      if(AM->get_Instanz()->Id()==ppsInstanzID::Einkauf)
+		{if(AM->Kunden_anr_bool())
+		   auftrag = AB.getYourAufNr()+" - ";
+		 auftrag += itos(AB.getAuftragid());
+		}
+	      else
+                auftrag = itos(AB.getAuftragid()) ;
+
             return cH_EntryValueIntString(auftrag);}
       case auftrag_main::LETZEPLANINSTANZ :{
             std::string s = cH_ppsInstanz(AB.LetztePlanInstanz())->shortName()+" ";

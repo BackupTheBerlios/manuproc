@@ -986,7 +986,9 @@ void auftrag_main::show_frame_instanzen_material()
 
 void auftrag_main::show_main_menu()
 {
-  if(instanz == ppsInstanzID::Kundenauftraege)
+  if(instanz == ppsInstanzID::Kundenauftraege ||
+     instanz == ppsInstanzID::Einkauf
+    )
    {
      kundenauftragsnummer->show();
      interne_auftragsnummer->show();
