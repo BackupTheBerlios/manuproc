@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.h,v 1.11 2004/01/30 17:00:16 christof Exp $
+// $Id: TreeViewUtility.h,v 1.12 2004/01/30 17:06:58 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -60,6 +60,7 @@ public:
 	void append(const gchar* text[]);
 	void freeze() {}
 	void thaw() {}
+	void clear() { get_store()->clear(); }
 };
 
 class CList : public Gtk::TreeView
