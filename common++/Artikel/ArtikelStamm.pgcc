@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.34 2003/11/14 15:08:43 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.35 2003/11/17 10:32:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,6 +22,7 @@
 #include <Instanzen/ppsInstanz.h>
 #include <Misc/Trace.h>
 #include <Misc/FetchIStream.h>
+#include <unistd.h>
 
 ArtikelStamm::cache_t ArtikelStamm::cache;
 
