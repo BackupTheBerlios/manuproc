@@ -60,6 +60,12 @@ public:
 	{ return p.first <= bestellmenge; }
 };
 
+struct PreisMindMenge_NotFound : public std::exception
+{
+ int menge;
+ ~PreisMindMenge_NotFound() throw() {}
+ PreisMindMenge_NotFound(int m) : menge(m) {}
+};
 
 struct payload_t
 {  
@@ -70,11 +76,13 @@ struct payload_t
    bool gefunden;
    payload_t(bool gef, bool e=true)
    	: errechnet(e), gefunden(gef) {}
-   std::pair<int,Preis> get_preis(int bestellmenge=1)
+   std::pair<int,Preis> get_preis(int bestellmenge=1) 
+				throw(PreisMindMenge_NotFound)
 	{ Pmap::reverse_iterator p=find_if(preis.rbegin(),preis.rend(),
 			Preis_lseq(bestellmenge));
 	  if(p!=preis.rend()) return (*p);
-	  else return std::pair<int,Preis>(1,Preis());
+//	  else return std::pair<int,Preis>(1,Preis());
+	  else throw PreisMindMenge_NotFound(bestellmenge);
 	}
    payload_t() : errechnet(false),gefunden(false) {}
 };
@@ -110,18 +118,24 @@ Artikelpreis::Artikelpreis(const PreisListe::ID liste,const ArtikelBase &a,
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__, 
 	NV("Liste",liste), NV("Artikel",a), NV("Menge",bestellmenge));
    payload_t *cached=cache.lookup(index_t(liste,a.Id()));
-   if (cached) { std::pair<int,Preis> p=cached->get_preis(bestellmenge);
+   if (cached) { try {
+		 std::pair<int,Preis> p=cached->get_preis(bestellmenge);
 		 setPreis(a.Id(),p.second,liste,
 				cached->errechnet);
 		 mindestmenge=p.first;
 	 	 gefunden=cached->gefunden;
+		 }
+		 catch(PreisMindMenge_NotFound &p)
+		   {gefunden=false;
+	            std::cout << "MindMenge not found:"<<p.menge<<"\n";
+ 		    ManuProC::Trace(trace_channel,__FILELINE__,NV("cache",static_cast<const Preis&>(*this)));
+		   }
  		 ManuProC::Trace(trace_channel,__FILELINE__,NV("cache",static_cast<const Preis&>(*this)));
 		}
    else
    {
       Query q("select preis, mindestmenge, preismenge, waehrung"
 	      	" from artikelpreise where (artikelid,kundennr)=(?,?)");
-	// kein order by ??? CP	      	
       q << a.Id() << liste;
       payload_t pyl(!Query::Code(), false);
       FetchIStream is;
@@ -138,9 +152,18 @@ Artikelpreis::Artikelpreis(const PreisListe::ID liste,const ArtikelBase &a,
 		Preis(PREIS,Waehrung::ID(WAEHRUNG),PREISMENGE);
 	 }
 
+	  try {
 	  std::pair<int,Preis> p=pyl.get_preis(bestellmenge);
 	  setPreis(a.Id(),p.second,liste,false);
 	  mindestmenge=p.first;
+	  }
+	  catch(PreisMindMenge_NotFound &p)
+	    {
+	     gefunden=false;
+	     std::cout << "MindMenge not found:"<<p.menge<<"\n";
+   	     ManuProC::Trace(trace_channel,__FILELINE__,NV("db",static_cast<const Preis&>(*this)));
+	     cache.Register(index_t(liste,a.Id()), pyl);
+	    }
 	  ManuProC::Trace(trace_channel,__FILELINE__,NV("db",static_cast<const Preis&>(*this)));
       }
          
