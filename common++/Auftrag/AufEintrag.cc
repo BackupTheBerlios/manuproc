@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.19 2002/12/19 16:22:20 thoma Exp $
+// $Id: AufEintrag.cc,v 1.20 2002/12/19 16:32:33 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -230,7 +230,6 @@ void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,const Art
 }
 #endif
 
-
 void AufEintrag::Produziert(mengen_t menge,
    ManuProcEntity<>::ID lfrsid) throw(SQLerror)
 {
@@ -314,15 +313,11 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
   if(reason==ManuProC::Auftrag::r_Planen) 
    {
      updateStkDiff__(uid,-menge,true,reason);     
-//     BaumAnlegen(*this,uid,true);
+     InstanzAuftraegeAnlegen(AE1er,menge,uid);
 //      updateStkDiff__(uid,-menge,true,reason);
    }
-
-  AE1er.updateStkDiff__(uid,menge,false,reason);
-
-
-//  if(reason==ManuProC::Auftrag::r_Anlegen) 
-//   InstanzAuftraegeAnlegen(AE1er,menge,uid);
+//  else
+     AE1er.updateStkDiff__(uid,menge,false,reason);
 
 //   move_to(uid,AufEintragBase(zielauftrag,znr),menge,reason);
 
