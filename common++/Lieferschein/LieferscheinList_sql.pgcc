@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList_sql.pgcc,v 1.24 2003/10/02 10:19:49 christof Exp $ */
+/* $Id: LieferscheinList_sql.pgcc,v 1.25 2004/02/05 17:59:26 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -156,8 +156,9 @@ std::string LieferscheinList::SQuery(bool no_gts)
         " coalesce(dpdliefnr,0) from lieferschein li";
 
  if(no_gts)
-     squery+=" left join rechnung r on (r.rngid=li.rngid) "
-             " where coalesce(r.rngart,'R')='R' ";
+     squery+=" where not exists (select true from rechnung r"
+		" where r.rngid=li.rngid and r.rngart='G') ";
+
 
  return squery;
 }
