@@ -1,4 +1,4 @@
-// $Id: auftrag_bearbeiten_sql.pgcc,v 1.9 2003/01/30 16:59:55 christof Exp $
+// $Id: auftrag_bearbeiten_sql.pgcc,v 1.10 2003/09/22 09:29:03 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -88,9 +88,10 @@ throw(SQLerror)
  exec sql begin declare section;
  int AUFID;
  int INSTANZ=instanz->Id();
- char YOURAUFID[21];
+ char *YOURAUFID=0;
  char *PAT;
  int KUNDE;
+ int UNIQUE_KUNDENNR;
  exec sql end declare section;
  static Transaction tr("",false);
  KUNDE= kundenbox->get_value();
@@ -105,7 +106,7 @@ throw(SQLerror)
        
        tr.open();
        exec sql declare YOURAUFNR_CURSOR cursor for
-       		select auftragid, youraufnr
+       		select auftragid, youraufnr, kundennr
        		from auftrag where
        		youraufnr like :PAT
                 and (:KUNDE<1 or kundennr=:KUNDE)
@@ -118,14 +119,20 @@ throw(SQLerror)
            
   case GTK_SEARCH_FETCH :
        {
-        exec sql fetch YOURAUFNR_CURSOR into :AUFID, :YOURAUFID;
+
+        exec sql fetch YOURAUFNR_CURSOR into :AUFID, :YOURAUFID,
+		:UNIQUE_KUNDENNR;
 	SQLerror::test(__FILELINE__":on_youraufnrscombo_search: "
 			" fetch cursor YOURAUFNR_CURSOR",100);
 			
 	if(sqlca.sqlcode==100){*_continue=false; break; }
 	
+//	std::string yaufid(YOURAUFID);
+//	yaufid+=" ( "+itos(UNIQUE_KUNDENNR)+" )";
+
 	youraufnr_scombo->add_item(YOURAUFID,AUFID);
 	*_continue=true;
+	ECPGfree_auto_mem();
         break;
        }
  

@@ -29,6 +29,8 @@
 //#include <Auftrag/ppsInstanzProduziert.h>
 #include "auftrag_copy.hh"
 #include "auftrag_provision.hh"
+#include "ja_nein_frage.hh"
+
 
 #ifndef OLD
 #include<Auftrag/selFullAufEntry.h>
@@ -73,6 +75,7 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
    kundenbox->setExpandStr1(true);
    kundenbox->setExpandStr2(true);
    checkbutton_ean_drucken->show();
+   youraufnr_scombo->set_value_in_list(false,false);
 #endif 
 
  zahlart->hide_int(true);
@@ -80,7 +83,7 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
  
  zahlziel_datewin->setLabel(std::string(""));
  zahlziel_datewin->set_value(ManuProC::Datum());
- aufdatum_datewin->setLabel(std::string("Auftragsdatum"));
+ aufdatum_datewin->setLabel("");
 
  if(auftragbase && auftragbase->editierbar())
    {
@@ -615,6 +618,16 @@ void auftrag_bearbeiten::on_youraufnrscombo_activate()
 { 
  if(newauftrag)
    jahrgang_spinbutton->grab_focus();
+ else if(auftrag)
+  {
+   ja_nein_frage jnf("Sie verändern gerade die Auftragsnummer des Kunde. "
+			" Wollen Sie wirklich fortfahren ?");
+   jnf.set_transient_for(*this);
+   int ret=jnf.run();
+   if(ret==0)
+     auftrag->setYourAufNr(youraufnr_scombo->get_text());
+   return;
+  }
  else
   try{
    loadAuftrag(AuftragBase(instanz,youraufnr_scombo->Content()));
