@@ -99,6 +99,7 @@ public:
 };
 
 
+
 class LiefHasStatus : public std::unary_function<LieferscheinEntry,bool>
 {
  AufStatVal status;
@@ -109,7 +110,11 @@ public:
    {
     Handle<const Data_Lieferdaten> h_ld=
     	l.cast_dynamic<const Data_Lieferdaten>();
-    if(status == h_ld->get_LieferscheinEntry().Status()) return true;
+    if(status == h_ld->get_LieferscheinEntry().Status())
+      {if(status!=(AufStatVal)UNCOMMITED) return true;
+       if(h_ld->get_LieferscheinEntry().lagerid==ManuProcEntity<>::none_id)
+         return true;
+      }
     return false;
    }
 };

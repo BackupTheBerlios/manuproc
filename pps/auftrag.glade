@@ -9128,10 +9128,10 @@ Jahr
       <child_name>GnomeDialog:action_area</child_name>
       <name>dialog-action_area5</name>
       <layout_style>GTK_BUTTONBOX_END</layout_style>
-      <spacing>8</spacing>
+      <spacing>0</spacing>
       <child_min_width>85</child_min_width>
       <child_min_height>27</child_min_height>
-      <child_ipad_x>7</child_ipad_x>
+      <child_ipad_x>0</child_ipad_x>
       <child_ipad_y>0</child_ipad_y>
       <child>
 	<padding>0</padding>
@@ -9162,6 +9162,15 @@ Jahr
 	<can_default>True</can_default>
 	<can_focus>True</can_focus>
 	<stock_button>GNOME_STOCK_BUTTON_CANCEL</stock_button>
+      </widget>
+
+      <widget>
+	<class>GtkButton</class>
+	<name>button41</name>
+	<can_default>True</can_default>
+	<can_focus>True</can_focus>
+	<label>Nein, nicht mehr fragen</label>
+	<stock_pixmap>GNOME_STOCK_PIXMAP_PREFERENCES</stock_pixmap>
       </widget>
     </widget>
 
@@ -9202,22 +9211,52 @@ Jahr
       </widget>
 
       <widget>
-	<class>GtkLabel</class>
-	<name>text</name>
-	<cxx_visibility>protected</cxx_visibility>
-	<label> </label>
-	<justify>GTK_JUSTIFY_CENTER</justify>
-	<wrap>False</wrap>
-	<xalign>0.5</xalign>
-	<yalign>0.5</yalign>
-	<xpad>0</xpad>
-	<ypad>0</ypad>
+	<class>GtkVBox</class>
+	<name>vbox23</name>
+	<homogeneous>False</homogeneous>
+	<spacing>0</spacing>
 	<child>
 	  <padding>0</padding>
 	  <expand>False</expand>
 	  <fill>False</fill>
 	</child>
+
+	<widget>
+	  <class>GtkLabel</class>
+	  <name>text</name>
+	  <cxx_visibility>protected</cxx_visibility>
+	  <label>label</label>
+	  <justify>GTK_JUSTIFY_CENTER</justify>
+	  <wrap>False</wrap>
+	  <xalign>0.5</xalign>
+	  <yalign>0.5</yalign>
+	  <xpad>0</xpad>
+	  <ypad>0</ypad>
+	  <child>
+	    <padding>0</padding>
+	    <expand>False</expand>
+	    <fill>False</fill>
+	  </child>
+	</widget>
       </widget>
+    </widget>
+
+    <widget>
+      <class>GtkLabel</class>
+      <name>text2</name>
+      <cxx_visibility>protected</cxx_visibility>
+      <label>label</label>
+      <justify>GTK_JUSTIFY_CENTER</justify>
+      <wrap>False</wrap>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
+      <child>
+	<padding>0</padding>
+	<expand>False</expand>
+	<fill>False</fill>
+      </child>
     </widget>
   </widget>
 </widget>

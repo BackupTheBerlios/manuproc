@@ -96,6 +96,7 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
         void liefzeile_delete();
         void on_button_liste_clicked();
         void on_lager_buchen_clicked();
+	void erledigt_markieren();
 	void on_lagerwahl_changed();
 
 	void clear_input();

@@ -966,6 +966,21 @@ void auftrag_lieferschein::on_lieferkunde_reset()
 std::cout << "KUNDE reset\n";
 }
 
+
+void auftrag_lieferschein::erledigt_markieren()
+{
+ if(lieferschein)
+   {
+    Query("update lieferscheinentry set lagerid=0 where "
+	"(lfrsid,instanz)=(?,?) and status=?"
+	" and lagerid is null") 
+	<< lieferschein->Id() 
+	<< lieferschein->Instanz()->Id()
+	<< (AufStatVal)UNCOMMITED;
+    SQLerror::test(__FILELINE__,100);
+   }
+}
+
 void auftrag_lieferschein::on_lager_buchen_clicked()
 {
    buchen_dialog bd(!instanz->ExterneBestellung());
@@ -1027,6 +1042,10 @@ void auftrag_lieferschein::on_lager_buchen_clicked()
    else
    if(ret==1)
      destroy();
+   if(ret==3)
+     {erledigt_markieren();
+      destroy();
+     }
    else
      return;
 }
