@@ -23,6 +23,7 @@
 #include"SearchCombo.h"
 #include<vector>
 #include<string>
+#include <cassert>
 
 template<class T>
 class SearchComboContent : public Gtk::SearchCombo
@@ -67,9 +68,8 @@ template<class T>
 void SearchComboContent<T>::add_item(const std::string &text, const T &item)
 {
  if(size()==0)
-   content.erase(content.begin(),content.end());
- 
- assert(size()==content.size());
+   content.clear();
+ else assert(size()==content.size());
 
  Gtk::SearchCombo::add_item(text);
  content.push_back(item);
@@ -80,7 +80,9 @@ void SearchComboContent<T>::add_item(const std::string &text, const T &item)
 template<class T>
 const T &SearchComboContent<T>::Content() const
 {
- assert(size()==content.size());
+ if(size()==0 && content.begin()!=content.end())
+   const_cast<std::vector<T>&>(content).clear();
+ else assert(size()==content.size());
  
  if(empty()) throw ContentError();
  
@@ -95,7 +97,7 @@ const T &SearchComboContent<T>::Content() const
 
 template<class T>
 void SearchComboContent<T>::reset()
-{ content.erase(content.begin(),content.end());
+{ content.clear();
   Gtk::SearchCombo::reset();
 }
 
