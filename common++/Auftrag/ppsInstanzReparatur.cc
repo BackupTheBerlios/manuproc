@@ -90,16 +90,22 @@ bool ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al, const b
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-bool ppsInstanzReparatur::ReparaturLager(const bool analyse_only) const throw(SQLerror)
+bool ppsInstanzReparatur::ReparaturLager(const bool analyse_only,
+		const ArtikelBase::ID aid) const throw(SQLerror)
 { ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Instanz());
   assert(Instanz()->LagerInstanz());
   std::vector<LagerInhalt> LI=getLagerInhalt(); 
 
-  Query q("select distinct artikelid from auftragentry where instanz=? "
-  	"and status=?");
-  q << Instanz()->Id() << OPEN;
   std::vector<ArtikelBase> arts;
-  q.FetchArray(arts);
+  if(aid==ArtikelBase::none_id)
+   {
+    Query q("select distinct artikelid from auftragentry where instanz=? "
+  	"and status=?");
+    q << Instanz()->Id() << OPEN;
+    q.FetchArray(arts);
+   }
+  else
+   arts.push_back(ArtikelBase(aid));
   
   for (std::vector<ArtikelBase>::const_iterator i=arts.begin();i!=arts.end();++i)
   {  std::vector<LagerInhalt>::const_iterator j=LI.begin();

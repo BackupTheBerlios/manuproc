@@ -1,4 +1,4 @@
-// $Id: ppsInstanzReparatur.h,v 1.19 2004/05/03 12:23:38 christof Exp $
+// $Id: ppsInstanzReparatur.h,v 1.20 2004/05/04 10:44:20 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -64,7 +64,8 @@ class ppsInstanzReparatur : public cH_ppsInstanz
 
  public:
       // Einlesen des Lagerinhalts und Anpassen der 2er unter Berücksichtigung der 1er
-      bool ReparaturLager(const bool analyse_only) const throw(SQLerror);
+      bool ReparaturLager(const bool analyse_only,
+      		const ArtikelBase::ID aid=ArtikelBase::none_id) const throw(SQLerror);
       // Entweder existieren 0er oder es existieren 2er
       // void Reparatur_0er_und_2er(const bool analyse_only) const throw(SQLerror);
       bool Reparatur_0er_und_2er(SelectedFullAufList &L,const bool analyse_only) const throw(SQLerror);

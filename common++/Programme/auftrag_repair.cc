@@ -1,4 +1,4 @@
-// $Id: auftrag_repair.cc,v 1.8 2004/05/03 13:25:18 christof Exp $
+// $Id: auftrag_repair.cc,v 1.9 2004/05/04 10:44:20 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -57,17 +57,19 @@ static void usage(const std::string &s)
 
  std::cerr << "USAGE:  ";
  std::cerr << s <<" [-i<instanz>|-I]  -a<aktion> [-d<database>] [-h<dbhost>] [-l|-y] \n"
-           "\twobei die aktion=[A|C|X|T|*] ist.\n"
+           "\twobei die aktion=[A|C|X|T|*] [-A<Id>] ist.\n"
            "\t-y Analysemodus (keine Reparaturen)\n"
            "\t-s Warnungen unterdrücken\n"
            "\t-l Reparatur wiederholen bis keine Fehler mehr auftreten\n"
            "\t-I führt die Tests für alle Instanzen durch\n\n"
            "most common use:\n"
+	   "\t-A nur für den Artikel mit der Id durchführen"
            "\t./auftrag_repair -l -I -a\\*\trepair all (-aD to delete unneeded)\n";
  exit(1);
 }
 
-static bool check_for(const std::string &pname,cH_ppsInstanz I,const bool analyse_only)
+static bool check_for(const std::string &pname,cH_ppsInstanz I,
+		const bool analyse_only,const ArtikelBase::ID aid)
 {  AuftragBase::tolerate_inconsistency=true;
    ppsInstanzReparatur RI(I->Id());
    bool alles_ok=true;
@@ -75,7 +77,7 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,const bool analys
      {
       if(I->EigeneLagerKlasseImplementiert())
         try
-        {alles_ok&=RI.ReparaturLager(analyse_only);
+        {alles_ok&=RI.ReparaturLager(analyse_only,aid);
         } catch (SQLerror &e)
         {  std::cout << "SQL Fehler " << e << '\n';
            alles_ok=false;
@@ -85,7 +87,8 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,const bool analys
      }
 //   reload:
     if (actions&b_tree || actions&b_exclude)
-    {  SQLFullAuftragSelector psel=SQLFullAuftragSelector::sel_InstanzAlle(I->Id());
+    {  SQLFullAuftragSelector psel=
+		SQLFullAuftragSelector::sel_InstanzAlle(I->Id(),aid);
        SelectedFullAufList K(psel);
       if (actions&b_exclude)
       {  alles_ok&=RI.Reparatur_0er_und_2er(K,analyse_only);
@@ -129,6 +132,7 @@ int main(int argc,char *argv[])
 {
   int opt;
   ppsInstanz::ID instanz= ppsInstanzID::None;
+  ArtikelBase::ID artikelid=ArtikelBase::none_id;
   std::string database="";
   std::string dbhost="";
   bool analyse_only=false;
@@ -137,7 +141,7 @@ int main(int argc,char *argv[])
   int loops=0;
 
   if(argc==1) usage(argv[0]);
-  while ((opt=getopt_long(argc,argv,"h:d:i:a:yItls",options,NULL))!=EOF)
+  while ((opt=getopt_long(argc,argv,"h:d:i:a:yItlsA:",options,NULL))!=EOF)
    {
     switch(opt)
      {
@@ -156,6 +160,7 @@ int main(int argc,char *argv[])
        case 'l' : loop=true; break;
        case 's' : ppsInstanzReparatur::silence_warnings=true; break;
        case 't' : ManuProC::Tracer::Enable(AuftragBase::trace_channel); break;
+       case 'A' : artikelid=atoi(optarg);break;
        case '?' : usage(argv[0]);
      }
    }
@@ -185,7 +190,7 @@ restart:
        }
     }
     if(instanz!=ppsInstanzID::None)
-      alles_ok&=check_for(argv[0],cH_ppsInstanz(instanz),analyse_only);
+	alles_ok&=check_for(argv[0],cH_ppsInstanz(instanz),analyse_only,artikelid);
     else
      { std::vector<cH_ppsInstanz> VI=cH_ppsInstanz::get_all_instanz();
        for(std::vector<cH_ppsInstanz>::const_iterator i=VI.begin();i!=VI.end();++i)
@@ -193,7 +198,7 @@ restart:
          if((*i)->KundenInstanz()) actions-=b_exclude;
          if((*i)->LagerInstanz() && !(*i)->EigeneLagerKlasseImplementiert())
             actions-=b_physical;
-         alles_ok&=check_for(argv[0],*i,analyse_only);
+         alles_ok&=check_for(argv[0],*i,analyse_only,artikelid);
          actions=save;
         }
      }

@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.34 2004/02/18 17:38:02 jacek Exp $
+// $Id: sqlAuftragSelector.cc,v 1.35 2004/05/04 10:44:20 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -165,8 +165,14 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_AufidZnr& selstr)
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_InstanzAlle& selstr)
 {
- setClausel(FULL_SELECT_FROM_WHERE
-	   " and a.instanz="+itos(selstr.instanz));
+ std::string cl=FULL_SELECT_FROM_WHERE;
+
+ cl+=std::string(" and a.instanz="+itos(selstr.instanz));
+
+ if(selstr.artikel!=ArtikelBase::none_id)
+   cl+=std::string(" and e.artikelid=")+itos(selstr.artikel);
+
+ setClausel(cl);
 }
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Jahr_Artikel &selstr)
