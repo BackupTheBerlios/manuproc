@@ -14,7 +14,6 @@ CREATE TABLE "auftrag" (
 	"auftragid" integer NOT NULL,
 	"kundennr" integer NOT NULL,
 	"datum" timestamp with time zone DEFAULT now() NOT NULL,
-	"status" character varying(10) DEFAULT '' NOT NULL,
 	"youraufnr" character varying(20),
 	"bemerkung" text,
 	"dispoid" integer,
@@ -44,12 +43,4 @@ COPY "auftrag" FROM stdin;
 --
 
 CREATE UNIQUE INDEX auftrag_pkey ON auftrag USING btree (instanz, auftragid);
-
---
--- TOC Entry ID 4 (OID 16637854)
---
--- Name: "auftrag_speed" Type: INDEX Owner: thoma
---
-
-CREATE INDEX auftrag_speed ON auftrag USING btree (status, auftragid);
 
