@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.26 2004/01/21 13:00:31 jacek Exp $
+// $Id: db_upgrade.cc,v 1.27 2004/02/02 13:39:29 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -185,6 +185,9 @@ int main(int argc,char *argv[])
   
   // Buchung
   check_column("buchung","waehrung","integer");
+  
+  //
+  check_column("rechnung_zahlungsart","frist_monate","integer");
   
   ManuProC::dbdisconnect();
   return 0;
