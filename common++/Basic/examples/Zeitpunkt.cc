@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt.cc,v 1.6 2002/06/24 07:35:40 christof Exp $
+// $Id: Zeitpunkt.cc,v 1.7 2003/01/15 12:11:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -39,5 +39,6 @@ int main()
    TEST2("31.12.2001");
    TEST2("2001-2-3 4:5:6.7");
    TEST2("2001-2-3 4:5:6.7+2");
+   TEST2(static_cast<time_t>(time(0)));
    return 0;
 }

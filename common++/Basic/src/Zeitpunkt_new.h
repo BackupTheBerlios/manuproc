@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.h,v 1.8 2002/06/27 07:42:50 christof Exp $
+// $Id: Zeitpunkt_new.h,v 1.9 2003/01/15 12:11:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -88,8 +88,8 @@ public:
    Zeitpunkt_new(const PostgresTimestamp &a)
    {  *this=Zeitpunkt_new((const char *)a);
    }
-   Zeitpunkt_new(const char *a);
-   Zeitpunkt_new(time_t t) throw();
+   explicit Zeitpunkt_new(const char *a);
+   explicit Zeitpunkt_new(time_t t) throw();
    
    /// write into char[]
    void write(PostgresTimestamp a) const;
