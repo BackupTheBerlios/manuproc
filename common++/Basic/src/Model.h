@@ -1,4 +1,4 @@
-/* $Id: MVC.h,v 1.7 2002/12/02 12:17:58 christof Exp $ */
+/* $Id: Model.h,v 1.1 2002/12/02 12:17:58 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,11 +18,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef MANUPROC_MVC_H
-#define MANUPROC_MVC_H
-
-#warning Using MVC.h is deprecated, please use Model.h
-
+#ifndef MANUPROC_MODEL_H
+#define MANUPROC_MODEL_H
 #ifndef SIGC1_2
 #include <sigc++/basic_signal.h>
 #else
@@ -33,7 +30,7 @@
 // signal environment. But the syntax is so complex it's hardly worth 
 // the gain. But a shared signal handler will benefit from it, too.
 
-class MVC_Base
+class Model_Base
 {public:
 	SigC::Signal1<void,void*> changed;
 	SigC::Signal1<void,void*> &signal_changed()
@@ -41,16 +38,16 @@ class MVC_Base
 };
 
 template <class T>
- class MVC : public MVC_Base
+ class Model : public Model_Base
 {	T value;
 
 	// not a good idea to use these, use a ref
-	MVC(const MVC<T> &x);
-	const MVC &operator=(const MVC<T> &x);
+	Model(const Model<T> &x);
+	const Model &operator=(const Model<T> &x);
 public:
-	MVC() {}
-//	MVC(const MVC<T> &x) : value(x.value) {}
-	MVC(const T &v) : value(v) {}
+	Model() {}
+//	Model(const Model<T> &x) : value(x.value) {}
+	Model(const T &v) : value(v) {}
 	// g++ 2.95 does not use this ...
 	operator T() const
 	{  return value; }
@@ -59,7 +56,7 @@ public:
 	{  return value; }
 	const T &Value() const
 	{  return value; }
-	// only use this to create a MVC_ref !!!
+	// only use this to create a Model_ref !!!
 	T &Value() 
 	{  return value; }
 	
@@ -82,14 +79,14 @@ public:
 //  - is this a good idea? we'll see ...
 
 // if we see that we don't need the extra functionality:
-// template <class T> typedef MVC<T> &Model_ref;
+// template <class T> typedef Model<T> &Model_ref;
 
 template <class T>
  class Model_ref
 {	T *value;
 	SigC::Signal1<void,void*> *changed;
 public:
-	Model_ref(MVC<T> &model)
+	Model_ref(Model<T> &model)
 	: value(&model.Value()), changed(&model.changed) {}
 	Model_ref(T &v, SigC::Signal1<void,void*> &sig)
 	: value(&v), changed(&sig) {}
