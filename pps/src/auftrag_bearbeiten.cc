@@ -65,6 +65,10 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
  liefdatum_datewin->set_page(1); // KW
 #endif
 
+#ifdef MABELLA_EXTENSIONS
+ masseneingabe1->set_active(false);
+#endif
+
  WAufStat->set_history((AufStatVal)OPEN);
 #ifdef MABELLA_EXTENSIONS
  table_vorraetige_menge->show();

@@ -5086,7 +5086,7 @@ Fertig</label>
 		<update_policy>GTK_UPDATE_ALWAYS</update_policy>
 		<snap>False</snap>
 		<wrap>False</wrap>
-		<value>1</value>
+		<value>0</value>
 		<lower>0</lower>
 		<upper>1e+06</upper>
 		<step>1</step>
