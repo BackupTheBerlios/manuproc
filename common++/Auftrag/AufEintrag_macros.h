@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_macros.h,v 1.6 2003/03/13 08:19:54 christof Exp $ */
+/* $Id: AufEintrag_macros.h,v 1.7 2003/03/17 08:29:46 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,33 +21,6 @@
 #define CXX_AUFTRAG_AUFEINTRAGMACROS_H
 
 #include <Auftrag/AufEintragZu.h>
-
-#if 0
-/* Yes I know that macros like these are regarded macro abuse,
-	but they certainly reduce code duplication and I don't like
-	creating function objects everywhere, CP */
-/* hmmm, perhaps there's no alternative to function objects ... */
-
-// distribute an amount to several children, scale the amount by the
-// article history dependant multiplication factor
-
-#define BEGIN_AE_DISTRIBUTE_CHILDREN(startAEB,menge,article,artloop_var,zuloop_var,mengen_var) \
-	AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel(startAEB)); \
-	ArtikelBaum AE_artbaum(article); \
-	for(AufEintragZu::map_t::const_iterator artloop_var=MapArt.begin();artloop_var!=MapArt.end();++artloop_var) \
-	{  ArtikelBaum::faktor_t AE_faktor = AE_artbaum.Faktor(artloop_var->first); \
-	   AuftragBase::mengen_t AE_menge2=AE_faktor*menge; \
-	   for(AufEintragZu::list_t::const_iterator zuloop_var=artloop_var->second.begin(); \
-	   		zuloop_var!=artloop_var->second.end();++zuloop_var) \
-	   {  mengen_t mengen_var=AuftragBase::min(zuloop_var->Menge,AE_menge2); \
-	      if (!mengen_var) continue;
-	      
-#define END_AE_DISTRIBUTE_CHILDREN(mengen_var) \
-	      AE_menge2-=mengen_var; \
-	      if(!AE_menge2) break; \
-	   } \
-	}
-#endif	
 
 // one might do this with inheritance instead of templates
 
@@ -105,6 +78,32 @@ template <class T>
       if (!menge) break;
    }
    return menge;
+}
+
+#if 0
+template <class T,class U>
+ void fuer_jede_position(const T &selector, const U &callee)
+{
+}
+#endif
+
+template <class T>
+ AuftragBase::mengen_t auf_positionen_verteilen(const SQLFullAuftragSelector &selector, 
+ 		AuftragBase::mengen_t menge, const T &callee)
+{ SelectedFullAufList auftraglist=SelectedFullAufList(selector);
+  
+  AuftragBase::mengen_t m=menge;
+  for (SelectedFullAufList::iterator i=auftraglist.begin();i!=auftraglist.end();++i)
+   {
+     AuftragBase::mengen_t M=AuftragBase::min(i->getRestStk(),m);
+     if (!M) continue;
+
+     M=callee(*i,M);
+     
+     m-=M;
+     if(!m) break;
+   }
+   return m;
 }
 
 #endif

@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.35 2003/03/13 08:19:54 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.36 2003/03/17 08:29:46 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -170,10 +170,11 @@ public:
 
    friend class AufEintragBase;
 
+// intern aber public
+ void abschreiben(mengen_t menge,ManuProcEntity<>::ID lfrsid=ManuProcEntity<>::none_id) throw(SQLerror);
 private:
  // das lfrsid ist nur für alten Code (und nur Kundenauftr.) von Mabella
  // , soll weg!
- void abschreiben(mengen_t menge,ManuProcEntity<>::ID lfrsid=ManuProcEntity<>::none_id) throw(SQLerror);
  void Produziert_0er(mengen_t menge);
 
 public:
@@ -248,6 +249,10 @@ public:
    // ehemals AuftragBase::menge_neu_verplanen
    static void Einlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
          const mengen_t &menge,const ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Produziert) throw(SQLerror);
+// intern aber public
+   static void MengeVormerken(cH_ppsInstanz instanz,const ArtikelBase &artikel,
+		mengen_t menge, bool abbestellen=false);
+         
 };
 
 #endif

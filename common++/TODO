@@ -2,8 +2,5 @@
 		zum Sortieren)
 	Praktisch für Tree/List überschneidungen (Dispo)
 
-+ Auslagern muss programmiert werden (ProduziertNG)
-- kunde_ueberlieferung: erzeugt neuen 1er in Rollerei: warum?
-
 replace 	"\*=",\*,	NV("\0",\1),
 		,"\*=",\*)	,NV("\0",\1))
