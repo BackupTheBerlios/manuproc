@@ -22,7 +22,8 @@ public:
  { 
     switch (seqnr) {
       case auftrag_main::KUNDE : {
-       if(AM->get_Instanz()->Id()==ppsInstanzID::Kundenauftraege)
+       if(AM->get_Instanz()->Id()==ppsInstanzID::Kundenauftraege ||
+	  AM->get_Instanz()->ExterneBestellung())
         {
          if (AM->Kunden_nr_bool())
 	   return cH_EntryValueIntString(AB.getKdNr()); 

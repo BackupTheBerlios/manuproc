@@ -482,7 +482,10 @@ void auftrag_main::set_column_titles_of_simple_tree()
 {
  const int signif=1;
  std::vector<std::string> ct;
- ct.push_back("Kunde");
+ if(instanz->ExterneBestellung())
+   ct.push_back("Lieferant");
+ else
+   ct.push_back("Kunde");
 
  int i=0;
  try
@@ -503,7 +506,11 @@ void auftrag_main::set_column_titles_of_simple_tree()
    ct.push_back("");
 
  ct.push_back("Lieferwoche");
- ct.push_back("Auftrag");
+ if(instanz->ExterneBestellung())
+   ct.push_back("Bestellung");
+ else
+   ct.push_back("Auftrag");
+
  ct.push_back("L.P.");
  ct.push_back("Ver.");
  ct.push_back("Letze Lieferung");
@@ -982,7 +989,7 @@ void auftrag_main::instanz_selected(const cH_ppsInstanz _instanz)
 
   block_callback=true;
   togglebutton_material->set_active(false);
-  togglebutton_auftraege->set_active(false);
+  togglebutton_auftraege->set_active(true);
   togglebutton_bestellen->set_active(false);
 
   AufEintrag AEK;
@@ -993,11 +1000,11 @@ void auftrag_main::instanz_selected(const cH_ppsInstanz _instanz)
      maintree_s->Expand_recursively();
      maintree_s->selectFirstMatchingLine(show_maching_compare(AEK));
      if(maintree_s->selection().begin()!=maintree_s->selection().end())
-{
+ {
 //cout << "Row: "<<maintree_s->selection().begin()->get_row_num()<<'\n';
 #warning Das move to funktioniert leider nicht MAT
         maintree_s->moveto(maintree_s->selection().begin()->get_row_num(),0,0.5,0);
-}
+ }
    }
 
   if(instanz->KundenInstanz())
@@ -1009,6 +1016,8 @@ void auftrag_main::instanz_selected(const cH_ppsInstanz _instanz)
   show_frame_instanzen_material();   
   show_main_menu();
   block_callback=false;
+
+  set_column_titles_of_simple_tree();    
 
   neuladen();
 

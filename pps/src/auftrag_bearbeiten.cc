@@ -77,7 +77,12 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
 
 //   std::string nuraktiv(" and coalesce(aktiv,true)=true");
 //   kundenbox->Einschraenkung(nuraktiv,true);
-   kundenbox->EinschraenkenKdGr(KundengruppeID::Auftragsadresse);
+   if(instanz->Id()==ppsInstanzID::Kundenauftraege)
+     kundenbox->EinschraenkenKdGr(KundengruppeID::Auftragsadresse);
+   else
+     if(instanz->ExterneBestellung())
+       kundenbox->EinschraenkenKdGr(KundengruppeID::Lieferanten);
+
    kundenbox->setExpandStr1(true);
    kundenbox->setExpandStr2(true);
    checkbutton_ean_drucken->show();
@@ -440,6 +445,14 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
          AE.updateRabatt(rabattentry_spinbutton->get_value_as_float());
          auftrag->AuftragFull::push_back(AE);
 */         
+         auftrag->AuftragFull::push_back(
+               stkmtr_spinbutton->get_value_as_int(),
+               liefdatum_datewin->get_value(),
+               artikelbox->get_value(),
+               WAufEntryStat->get_Status(),
+               WPreis->get_Preis(),
+               rabattentry_spinbutton->get_value_as_float(),
+               artpreis);
        }
       else assert(!"never get here");
       fillCList();
@@ -625,6 +638,14 @@ void auftrag_bearbeiten::andererKunde()
    std::string eins_prlist(" and exists (select prlsnr from ku_warenkorb"
    	" where prlsnr=ku_preisliste.prlsnr and kundennr=");
    eins_prlist+=itos(kunde->Rngan())+")";
+
+   std::string EK_VK;
+   if(!instanz->ExterneBestellung())
+     EK_VK=" and art='V' ";
+   else EK_VK=" and art='E' ";
+
+   eins_prlist+=EK_VK;
+
    preislisten->Einschraenkung(eins_prlist);
    preislisten->set_value(rngkd->preisliste());
    Rabatt_setzen(cH_PreisListe(rngkd->preisliste()));

@@ -35,7 +35,14 @@ AufEintragBase AuftragFull::push_back(AuftragBase::mengen_t bestellt,
                Preis preis, fixedpoint<2> rabatt,const cH_PreisListe &preisliste) throw (SQLerror)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
-  AufEintragBase newAEB=Auftrag::push_back(bestellt,lieferdatum,artid,status,true,preis,rabatt,preisliste);
+
+#warning WARNING this bool must be replaced by apropriate call of Planen()
+  bool setInstanzAuftraege(instanz->Id()==ppsInstanzID::Kundenauftraege);
+
+  AufEintragBase newAEB=Auftrag::push_back(bestellt,lieferdatum,artid,status,
+		setInstanzAuftraege,
+		preis,rabatt,preisliste);
+
   AufEintrag tmpae(newAEB,
       bestellt,artid,lieferdatum,getStatus(),getKundennr(),getYourAufNr(),
       preis,rabatt,status,preisliste);
