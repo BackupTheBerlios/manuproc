@@ -26,6 +26,7 @@ struct Configuration
 	bool batch;
 	std::string printer;	
 	std::string texfile;
+	std::string order_clausel;
 	
 	Configuration() : combine(), preview_only(), copies("1,1,1"),
 			printer("ps"), toTeX(false) {}
