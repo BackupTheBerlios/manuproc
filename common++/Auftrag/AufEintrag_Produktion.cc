@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.22 2003/12/02 15:08:09 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.23 2003/12/03 09:36:45 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -56,6 +56,13 @@ AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
 			   NV("artikel",artikel),NV("menge",menge),NV("rekursiv",rekursiv),
 			   NV("elter",elter),NV("ctx",ctx),NV("termin",termin));
    assert(instanz!=ppsInstanzID::Kundenauftraege && instanz!=ppsInstanzID::None);
+   if (instanz->LagerInstanz()) // && rekursiv)
+   {  assert(rekursiv);
+      Lager L(instanz);
+      L.raus_aus_lager(artikel,menge,true,ProductionContext(elter,ctx));
+      // bräuchten wir den AEB?
+      return AufEintragBase();
+   }
    if (!termin.valid()) termin=ManuProC::Datum(1,1,1970);
    Transaction tr;
    AuftragBase zielauftrag(instanz,plan_auftrag_id);
