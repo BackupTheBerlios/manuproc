@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.36 2002/12/24 08:25:22 thoma Exp $
+// $Id: get_data.cc,v 1.37 2003/01/06 14:56:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -250,6 +250,10 @@ void graph_data_node::get_files(const std::string &mode)
   {  i.getline(buf,sizeof buf);
      std::string line=buf;
      if (line.empty()) continue;
+     if (line[0]=='#' && line.size()>=2)
+     {  graphtitle=line.substr(2);
+        continue;
+     }
      std::string::size_type space1,space2;
      space1=line.find(' ');
      if (space1==std::string::npos) continue;
@@ -261,8 +265,8 @@ std::cerr << line.substr(space1+1,space2-space1-1) << ',' << line.substr(space2+
   }
   for(std::vector<st_files>::const_iterator i=filenames.begin();i!=filenames.end();++i)
    {
-     vec_files_auftragentry.push_back(st_files(referenzdir+"/auftragentry"+i->filename,i->prefix));
-     vec_files_auftragsentryzuordnung.push_back(referenzdir+"/auftragsentryzuordnung"+i->filename);
+     vec_files_auftragentry.push_back(st_files(referenzdir+"/auftragentry_"+i->filename,i->prefix));
+     vec_files_auftragsentryzuordnung.push_back(referenzdir+"/auftragsentryzuordnung_"+i->filename);
    }
 }
 

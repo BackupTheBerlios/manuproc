@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.36 2002/12/20 15:13:00 christof Exp $
+// $Id: Check.cc,v 1.37 2003/01/06 14:56:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -115,7 +115,7 @@ bool Check::vergleich(was_checken was,const std::string &zusatz)
 
   for (std::vector<std::string>::const_iterator i=files.begin();i!=files.end();++i)
   {  std::string fz1=tempdir+*i;
-     std::string fz2=referenzdir+*i+zusatz;
+     std::string fz2=referenzdir+*i+"_"+zusatz;
       
 #ifdef CREATE_TEST_DATABASE
 #warning WARNUNG: 

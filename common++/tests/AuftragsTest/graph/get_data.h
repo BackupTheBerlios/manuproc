@@ -1,4 +1,4 @@
-// $Id: get_data.h,v 1.17 2002/12/20 16:17:09 christof Exp $
+// $Id: get_data.h,v 1.18 2003/01/06 14:56:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -68,6 +68,7 @@ class graph_data_node
       std::list<st_auftrag> list_auftrag;
       std::map<AufEintragBase,std::vector<st_auftrag> > map_aeb;
       std::list<st_aebZ> list_auftragszuordnung;
+      std::string graphtitle;
 
      void get_files(const std::string &mode); 
      void get_values_from_files();
@@ -98,6 +99,7 @@ class graph_data_node
      graph_data_node(const std::string &mode);
 
      std::vector<st_files> get_filenames() const {return filenames;}
+     const std::string &get_title() const { return graphtitle; }
      std::list<AufEintragBase> get_existing_aeb() const;
      struct st_node_strings{AufEintragBase auftrag; std::string mengen;
                             std::string zusatz;
