@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.41 2003/05/22 12:50:48 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.42 2003/05/22 13:54:25 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -145,7 +145,7 @@ public:
 
  int split(int uid,mengen_t newmenge, const ManuProC::Datum &newld,bool dispoplanung=false) throw(SQLerror);
  mengen_t getStueck() const { return bestellt;}
- mengen_t getRestStk() const {if(entrystatus==CLOSED)return 0; return bestellt-geliefert;}
+ mengen_t getRestStk() const; // Statusabhängig ...
  mengen_t getGeliefert() const { return geliefert;}
  AufStatVal getAufStatus() const { return auftragstatus; }
  int getZnr() const { return zeilennr;}

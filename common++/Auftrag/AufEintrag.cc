@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.45 2003/05/22 13:25:48 christof Exp $
+// $Id: AufEintrag.cc,v 1.46 2003/05/22 13:54:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -1007,4 +1007,10 @@ AuftragBase::mengen_t AufEintrag::ProdRueckgaengigMenge(mengen_t max_neg) const
    for (AufEintragZu::list_t::iterator i=Eltern.begin();i!=Eltern.end();++i)
       res-=i->Menge;
    return -AuftragBase::min(res,-max_neg);
+}
+
+AuftragBase::mengen_t AufEintrag::getRestStk() const
+{  if (in(entrystatus,CLOSED,STORNO)) return 0;
+   if (in(auftragstatus,CLOSED,STORNO)) return 0;
+   return bestellt-geliefert;
 }
