@@ -184,7 +184,7 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
 //    os << "\\\\Erfüllungsort und Gerichtsstand ist Wuppertal";
 
     if(kunde_an->land()->Auslaender())
-         {if(zeilen_passen_noch<(passende_zeilen+2)) {  os << "\\newpage\n";++page_counter; page_header(os);}
+         {if(zeilen_passen_noch<(passende_zeilen)) {  os << "\\newpage\n";++page_counter; page_header(os);}
           cH_Kunde kunde_von(Kunde::eigene_id);
 	  if(!getZahlungsart()->getBankeinzug())
 	    {
@@ -202,7 +202,7 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
 
   if(kunde_an->land()->Auslaender())
     { os << "~\\\\\\footnotesize - "<<mld->MLT(MultiL_Dict::TXT_WARE_ZOLL)<<"\\\\\\\\\n";
-      os << "\\bigskip Made in Germany\n";
+      os << "\\bigskip "<< mld->MLT(MultiL_Dict::TXT_MADEINGER) <<"\n";
 
    try{u.r->setGewicht();}
 
