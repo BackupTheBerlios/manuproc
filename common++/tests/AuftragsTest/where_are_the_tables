@@ -1,6 +1,6 @@
 #!/bin/sh
 DBLINE=`fgrep DEFAULT_DB ../../ManuProCConfig.h`
-DB=`echo $DBLINE|read a b c ; echo $c`
+DB=`echo $DBLINE | ( read a b c d ; echo $c )`
 DB2=`echo $DB | sed -e 's/"//g' `
 
 case $DB2 in
@@ -14,7 +14,7 @@ case $DB2 in
 		echo database_tables_init_Mabella
 		;;
 	*)
-		echo >&2 Unknown default database.
+		echo >&2 Unknown default database $DB2.
 		exit 1
 		;;
 esac
