@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.60 2004/02/13 10:23:56 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.61 2004/02/16 19:49:10 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -194,10 +194,21 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
   // END OF   
   // if(new_status==OPEN || ((status==OPEN || status==CLOSED) && new_status==STORNO))
 
+
+#ifdef MABELLA_EXTENSIONS // doch LiefZeile löschen wenn storno
+ if(new_status==STORNO)
+   {Query("delete from lieferscheinentry  where "
+	"(lfrsid,instanz,zeile)=(?,?,?)")
+	<< Id() << Instanz()->Id() << Zeile();
+   }
+ else
+#endif
+  {
  Query("update lieferscheinentry set status=? where "
 	"(lfrsid,instanz,zeile)=(?,?,?)")
 	<< Query::NullIf(new_status,(AufStatVal)NOSTAT)
 	<< Id() << Instanz()->Id() << Zeile();
+  }
 
  tr.commit();  
 }

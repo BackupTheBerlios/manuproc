@@ -1,4 +1,4 @@
-/* $Id: LieferscheinVoll.cc,v 1.17 2004/02/12 15:18:18 jacek Exp $ */
+/* $Id: LieferscheinVoll.cc,v 1.18 2004/02/16 19:49:10 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -38,12 +38,16 @@ void LieferscheinVoll::deleteRow(LieferscheinEntry &le)
 LieferscheinVoll::LieferscheinVoll(const cH_ppsInstanz& _instanz,int lid,bool auforder) throw(SQLerror)
 : Lieferschein(_instanz,lid)
 {
+ AufStatVal st=(AufStatVal)STORNO;
+
   (Query(std::string("select lfrsid, zeile, artikelid, stueck, menge, palette, "
 	  "zusatzinfo, instanz, refauftragid, refzeilennr, lagerid, status"
-	  " from lieferscheinentry ly "
-	  " where (instanz,lfrsid) = (?,?) order by ")+
-		  (auforder ? "refauftragid,zeile":"zeile")) 
-  	<< Instanz()->Id() << Id())
+	  " from lieferscheinentry ly left join artbez_3_1 b "
+	  " on (b.id=ly.artikelid) "
+	  " where (instanz,lfrsid) = (?,?) "
+	  " and status not in (?) order by ")+
+		  (auforder ? "refauftragid,artikel,breite,farbe":"zeile")) 
+  	<< Instanz()->Id() << Id() << st)
   	.FetchArray(lsentry);
 }
 

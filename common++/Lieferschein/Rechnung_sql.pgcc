@@ -199,7 +199,7 @@ void Rechnung::deleteLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
  	<< lfrs.Id() << lfrs.Instanz()->Id();
 
  Query("update lieferscheinentry set status=? where "
-	" (lfrsid,instanz)=(?,?)")
+	" (lfrsid,instanz)=(?,?) and status=2")
  	<< (AufStatVal)OPEN << lfrs.Id() << lfrs.Instanz()->Id();
 
  SQLerror::test(__FILELINE__);
@@ -216,7 +216,8 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
 
  Transaction tr;
 
- Query("select min(zeile) from lieferscheinentry where (instanz,lfrsid)=(?,?)")
+ Query("select min(zeile) from lieferscheinentry where "
+	" (instanz,lfrsid)=(?,?) and status in (0,1) ")
  	<< lfrs.Instanz()->Id() << lfrs.Id()
  	>> FetchIStream::MapNull(MINZNR);
  Query("lock table rechnungentry in exclusive mode"); 
@@ -307,7 +308,7 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
  	<< Id()
  	<< lfrs.Instanz()->Id() << lfrs.Id();
  Query("update lieferscheinentry set status=? where "
-	" (lfrsid,instanz)=(?,?)")
+	" (lfrsid,instanz)=(?,?) and status in (0,1)")
  	<< (AufStatVal)CLOSED << lfrs.Id() << lfrs.Instanz()->Id();
 
  SQLerror::test(__FILELINE__);

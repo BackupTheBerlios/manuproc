@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung.h,v 1.14 2004/01/24 13:55:32 jacek Exp $ */
+/* $Id: ProvAbrechnung.h,v 1.15 2004/02/16 19:50:49 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -86,6 +86,8 @@ public:
  		const ManuProC::Datum vom) throw(SQLerror);
  static const ManuProC::Datum getNextVomDate(const Kunde::ID verk) throw(SQLerror); 
 
+ std::string Notiz() const { return notiz; }
+ 
  std::vector<ProvAbrechnungEntry*>::const_iterator begin()
  	{ return entries.begin(); }
  std::vector<ProvAbrechnungEntry*>::const_iterator end()
