@@ -1,4 +1,4 @@
-// $Id: Association.cc,v 1.4 2004/05/03 13:59:05 christof Exp $
+// $Id: Association.cc,v 1.5 2004/07/16 06:58:43 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -24,6 +24,7 @@
 #include "int_SpinButton.hh"
 #include "string_Entry.hh"
 #include "string_Label.hh"
+#include "int_ImageButton.hh"
 #include <glibmm/quark.h>
 #include <memory>
 
@@ -50,16 +51,16 @@ void ManuProC::attach(Glib::Object &widget, SigC::Object &connobj,
 }
 
 template <class T,class W,class C>
- static typename C::Connection::this_t &Association_impl(W &w)
+ static typename C::Connection &Association_impl(W &w)
 {  SigC::Object *r=0;
    if ((r=lookup(w))) 
 #if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
       // since sigc::trackable is not polymorphic ...
-      return *static_cast<typename C::Connection::this_t *>(r);
+      return *static_cast<typename C::Connection *>(r);
 #else
-      return *dynamic_cast<typename C::Connection::this_t *>(r);
+      return *dynamic_cast<typename C::Connection *>(r);
 #endif      
-   typename C::Connection::this_t *r2=new typename C::Connection(&w);
+   typename C::Connection *r2=new typename C::Connection(&w);
    attach(w,*r2);
    return *r2;
 }
@@ -82,4 +83,12 @@ ModelWidgetConnection<std::string,Gtk::Label> &ManuProC::Association(Gtk::Label 
 
 ModelWidgetConnection<bool,Gtk::CheckMenuItem> &ManuProC::Association(Gtk::CheckMenuItem &w)
 {  return Association_impl<bool,Gtk::CheckMenuItem,bool_CheckMenuItem>(w);
+}
+
+ModelWidgetConnection<int,Gtk::Image> &ManuProC::Association(Gtk::EventBox &e,Gtk::Image &i)
+{  int_ImageButton::Connection &res
+      =Association_impl<int,Gtk::Image,int_ImageButton>(i);
+   res.set_widget(&i,&e);
+   e.set_events(Gdk::BUTTON_PRESS_MASK); // really ?
+   return res;
 }

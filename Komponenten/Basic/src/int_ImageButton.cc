@@ -1,6 +1,6 @@
-// $Id: int_ImageButton.cc,v 1.1 2004/07/15 08:10:00 christof Exp $
+// $Id: int_ImageButton.cc,v 1.2 2004/07/16 06:58:44 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
- *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
+ *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -19,14 +19,23 @@
  */
 
 #include "int_ImageButton.hh"
+#include <gtkmm/tooltips.h>
 
 bool int_ImageButton::Connection::toggle(GdkEventButton *ev)
-{  model=!model.Value();
+{  if (props.empty()) return false;
+   std::map<int,properties>::const_iterator i=props.find(model.Value());
+   if (i==props.end()) i=props.begin();
+   else 
+   {  ++i;
+      if (i==props.end()) i=props.begin();
+   }
+   model=i->first;
    return false;
 }
 
 void int_ImageButton::Connection::model2widget()
-{  widget->set(model.Value()?on:off);
+{  widget->set(props[model.Value()].pixbuf);
+   if (tips) tips->set_tip(*eventbox, props[model.Value()].tooltip);
 }
 
 SigC::Connection int_ImageButton::Connection::connect()
@@ -38,14 +47,11 @@ void int_ImageButton::Connection::disconnect()
 {  toggleconn.disconnect();
 }
 
-int_ImageButton::int_ImageButton(const Model_ref<T> &m, 
-		const Glib::RefPtr<Gdk::Pixbuf> &_off,
-		const Glib::RefPtr<Gdk::Pixbuf> &_on)
-	: conn(m), imag(0)
+int_ImageButton::int_ImageButton(const Model_ref<T> &m)
+	: conn(m), imag()
 {  set_events(Gdk::BUTTON_PRESS_MASK);
    imag=Gtk::manage(new Gtk::Image());
    add(*imag);
-   conn.set_images(_off,_on);
    conn.set_widget(imag,this);
    imag->show();
 };
@@ -55,9 +61,9 @@ void int_ImageButton::Connection::set_widget(widget_t *w,Widget *ev)
    this_t::set_widget(w);
 }
 
-void int_ImageButton::Connection::set_images(const Glib::RefPtr<Gdk::Pixbuf> &_off,
-				const Glib::RefPtr<Gdk::Pixbuf> &_on)
-{  off=_off;
-   on=_on;
-   if (widget) model2widget();
+void int_ImageButton::Connection::add_entry(int value, Glib::RefPtr<Gdk::Pixbuf> pixbuf, 
+				const std::string &tooltip)
+{  props[value].pixbuf=pixbuf;
+   props[value].tooltip=tooltip;
+   if (model.Value()==value) model2widget();
 }

@@ -1,6 +1,6 @@
-// $Id: int_ImageButton.hh,v 1.1 2004/07/15 08:10:00 christof Exp $
+// $Id: int_ImageButton.hh,v 1.2 2004/07/16 06:58:44 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
- *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
+ *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -24,14 +24,22 @@
 #include <gtkmm/eventbox.h>
 #include <ModelWidgetConnection.h>
 #include <gtkmm/image.h>
+#include <map>
+namespace Gtk { class Tooltips; }
 
 class int_ImageButton : public Gtk::EventBox
 {	typedef int T;
 public:
 	class Connection : public ModelWidgetConnection<T,Gtk::Image>
-	{	Glib::RefPtr<Gdk::Pixbuf> off,on;
+	{	struct properties
+		{  Glib::RefPtr<Gdk::Pixbuf> pixbuf;
+		   std::string tooltip;
+		};
+		std::map<int,properties> props;
 		Gtk::Widget *eventbox;
 		SigC::Connection toggleconn;
+		// tooltips
+		Gtk::Tooltips *tips;
 
 		void model2widget();
 		void widget2model() {}
@@ -40,19 +48,25 @@ public:
 		
 		bool toggle(GdkEventButton *ev);
 	public:
-		Connection(const Model_ref<T> &m) : this_t(m), eventbox(0) { }
+		Connection(const Model_ref<T> &m) : this_t(m), eventbox(), tips() { }
+		Connection(Widget *w) : eventbox(w), tips() { }
 		void set_widget(widget_t *w, Widget *eventbox=0);
-		void set_images(const Glib::RefPtr<Gdk::Pixbuf> &off,
-				const Glib::RefPtr<Gdk::Pixbuf> &on);
+		void add_entry(int value, Glib::RefPtr<Gdk::Pixbuf> pixbuf, 
+				const std::string &tooltip=std::string());
+		void set_tooltips(Gtk::Tooltips *_tips) 
+		{ tips=_tips; }
 	};
 private:
 	Connection conn;
 	Gtk::Image *imag;
 
 public:
-	int_ImageButton(const Model_ref<T> &model, 
-		const Glib::RefPtr<Gdk::Pixbuf> &off,
-		const Glib::RefPtr<Gdk::Pixbuf> &on);
+	int_ImageButton(const Model_ref<T> &model);
+	void add_entry(int value, Glib::RefPtr<Gdk::Pixbuf> pixbuf, 
+				const std::string &tooltip=std::string())
+	{  conn.add_entry(value,pixbuf,tooltip); }
+	void set_tooltips(Gtk::Tooltips *_tips) 
+	{ conn.set_tooltips(_tips); }
 };
 
 #endif

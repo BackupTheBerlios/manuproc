@@ -1,4 +1,4 @@
-// $Id: Association.h,v 1.3 2003/11/29 13:33:21 christof Exp $
+// $Id: Association.h,v 1.4 2004/07/16 06:58:44 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -28,7 +28,7 @@
 
 namespace Gtk
 { class SpinButton; class Entry; class CheckButton; class Label; 
-  class CheckMenuItem; class ToggleButton;
+  class CheckMenuItem; class ToggleButton; class Image; class EventBox;
 }
 
 namespace Glib { class Object; }
@@ -39,9 +39,10 @@ namespace ManuProC
     ModelWidgetConnection<bool,Gtk::ToggleButton> &Association(Gtk::ToggleButton &);
     ModelWidgetConnection<bool,Gtk::CheckMenuItem> &Association(Gtk::CheckMenuItem &);
     ModelWidgetConnection<std::string,Gtk::Label> &Association(Gtk::Label &);
+    ModelWidgetConnection<int,Gtk::Image> &Association(Gtk::EventBox &,Gtk::Image &);
 
-// attach an object to an widget    
-    void ManuProC::attach(Glib::Object &widget, SigC::Object &connobj, 
+// attach an object to a widget    
+    void attach(Glib::Object &widget, SigC::Object &connobj, 
 	std::auto_ptr<Glib::Quark> &q,const char * const qname);
 }
 #endif
