@@ -1,6 +1,8 @@
 EXPORTS
 	_Z10FormatiereRSomjjPKcS1_c 
+	_Z10FormatiereRSoyjjPKcS1_c 
 	_Z10FormatieremjjPKcS0_c 
+	_Z10FormatiereyjjPKcS0_c 
 	_Z10string2TeXSsi 
 	_Z13FormatiereTeXILi2EdlEKSsRK10fixedpointIXT_ET0_T1_E 
 	_Z18FormatiereEmptyIntl 
@@ -25,11 +27,21 @@ EXPORTS
 	_ZN13Zeitpunkt_newcvlEv 
 	_ZN14EntryValueBaseD0Ev 
 	_ZN14EntryValueBaseD1Ev 
-	_ZN14EntryValueBaseD2Ev 
 	_ZN15EntryValueDatumD0Ev 
 	_ZN15EntryValueDatumD1Ev 
 	_ZN15EntryValueMonatD0Ev 
 	_ZN15EntryValueMonatD1Ev 
+	_ZN15Global_Settings12default_loadEiRKSsS1_ 
+	_ZN15Global_Settings12default_saveEiRKSsS1_S1_ 
+	_ZN15Global_Settings6createEiRKSsS1_S1_ 
+	_ZN15Global_Settings8set_WertERKSs 
+	_ZN15Global_Settings8set_implEPFSsiRKSsS1_EPFviS1_S1_S1_E 
+	_ZN15Global_Settings9load_implE DATA
+	_ZN15Global_Settings9save_implE DATA
+	_ZN15Global_SettingsC1EiRKSsS1_ 
+	_ZN15Global_SettingsC2EiRKSsS1_ 
+	_ZN17EntryValueQuartalD0Ev 
+	_ZN17EntryValueQuartalD1Ev 
 	_ZN19EntryValueIntStringC1ERKSs 
 	_ZN19EntryValueIntStringC1Ei 
 	_ZN19EntryValueIntStringC2ERKSs 
@@ -57,8 +69,6 @@ EXPORTS
 	_ZN3Tag7setAttrERKSsS1_ 
 	_ZN3Tag8setValueERKSsS1_ 
 	_ZN3Tag9push_backES_ 
-	_ZN3TagC1ERKS_ 
-	_ZN3TagD1Ev 
 	_ZN7IOerrorC1ERKSs 
 	_ZN7IOerrorC1ERKSsi 
 	_ZN7IOerrorC1Ev 
@@ -115,6 +125,7 @@ EXPORTS
 	_ZN9TagStreamC2Ev 
 	_ZN9TagStreamD1Ev 
 	_ZN9TagStreamD2Ev 
+	_ZNK10fixedpointILi2EdlE6StringEbjPKcS2_c 
 	_ZNK12germanstringltERKS_ 
 	_ZNK13Kalenderwoche5error4whatEv 
 	_ZNK13Zeitpunkt_new12calculate_TZEi 
@@ -144,6 +155,12 @@ EXPORTS
 	_ZNK15EntryValueMonat9getStrValEv 
 	_ZNK15EntryValueMonateqERK14EntryValueBase 
 	_ZNK15EntryValueMonatltERK14EntryValueBase 
+	_ZNK15Global_Settings8get_WertERKSsi 
+	_ZNK15Global_Settings9get_Wert0ERKSsi 
+	_ZNK17EntryValueQuartal9getIntValEv 
+	_ZNK17EntryValueQuartal9getStrValEv 
+	_ZNK17EntryValueQuartaleqERK14EntryValueBase 
+	_ZNK17EntryValueQuartalltERK14EntryValueBase 
 	_ZNK19EntryValueIntString10getBoolValEv 
 	_ZNK19EntryValueIntString9getIntValEv 
 	_ZNK19EntryValueIntString9getStrValEv 
@@ -186,39 +203,39 @@ EXPORTS
 	_ZNK9TagStream10getContentEv 
 	_ZNK9TagStream11recode_loadERKSs 
 	_ZNK9TagStream11recode_saveERKSs 
-	_ZNK9TagStream5writeERSo 
-	_ZNK9TagStream5writeERSoRK3Tagib 
+	_ZNK9TagStream5writeERSoRK3Tagibb 
+	_ZNK9TagStream5writeERSob 
+	_ZNSaI3TagED1Ev 
 	_ZNSs12_S_constructIN9__gnu_cxx17__normal_iteratorIPKcSsEEEEPcT_S6_RKSaIcESt20forward_iterator_tag 
-	_ZNSs12_S_constructIPcEES0_T_S1_RKSaIcESt20forward_iterator_tag 
 	_ZNSsC1IN9__gnu_cxx17__normal_iteratorIPKcSsEEEET_S5_RKSaIcE 
-	_ZNSsC1IPcEET_S1_RKSaIcE 
 	_ZNSt12_Vector_baseI3TagSaIS0_EEC2EjRKS1_ 
-	_ZNSt12_Vector_baseISt4pairISsSsESaIS1_EEC2EjRKS2_ 
+	_ZNSt12_Vector_baseI3TagSaIS0_EED2Ev 
+	_ZNSt12_Vector_baseISt4pairISsSsESaIS1_EED2Ev 
 	_ZNSt12out_of_rangeD0Ev 
 	_ZNSt12out_of_rangeD1Ev 
 	_ZNSt14__simple_allocI3TagSt24__default_alloc_templateILb1ELi0EEE10deallocateEPS0_j 
 	_ZNSt14__simple_allocI3TagSt24__default_alloc_templateILb1ELi0EEE8allocateEj 
-	_ZNSt14__simple_allocISt4pairISsSsESt24__default_alloc_templateILb1ELi0EEE10deallocateEPS1_j 
 	_ZNSt14__simple_allocISt4pairISsSsESt24__default_alloc_templateILb1ELi0EEE8allocateEj 
+	_ZNSt15basic_streambufIcSt11char_traitsIcEE13_S_pback_sizeE DATA
 	_ZNSt15basic_stringbufIcSt11char_traitsIcESaIcEED1Ev 
 	_ZNSt6vectorI3TagSaIS0_EE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPS0_S2_EERKS0_ 
+	_ZNSt6vectorI3TagSaIS0_EE20_M_allocate_and_copyIN9__gnu_cxx17__normal_iteratorIPKS0_S2_EEEEPS0_jT_SA_ 
 	_ZNSt6vectorI3TagSaIS0_EED1Ev 
 	_ZNSt6vectorI3TagSaIS0_EEaSERKS2_ 
 	_ZNSt6vectorISt4pairISsSsESaIS1_EE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPS1_S3_EERKS1_ 
+	_ZNSt6vectorISt4pairISsSsESaIS1_EE20_M_allocate_and_copyIN9__gnu_cxx17__normal_iteratorIPKS1_S3_EEEEPS1_jT_SB_ 
 	_ZNSt6vectorISt4pairISsSsESaIS1_EED1Ev 
 	_ZNSt6vectorISt4pairISsSsESaIS1_EEaSERKS3_ 
+	_ZSt13__destroy_auxIPSt4pairISsSsEEvT_S3_12__false_type 
 	_ZSt24__uninitialized_copy_auxIN9__gnu_cxx17__normal_iteratorIP3TagSt6vectorIS2_SaIS2_EEEES7_ET0_T_S9_S8_12__false_type 
 	_ZSt24__uninitialized_copy_auxIN9__gnu_cxx17__normal_iteratorIPK3TagSt6vectorIS2_SaIS2_EEEEPS2_ET0_T_SB_SA_12__false_type 
 	_ZSt24__uninitialized_copy_auxIN9__gnu_cxx17__normal_iteratorIPKSt4pairISsSsESt6vectorIS3_SaIS3_EEEEPS3_ET0_T_SC_SB_12__false_type 
 	_ZSt24__uninitialized_copy_auxIN9__gnu_cxx17__normal_iteratorIPSt4pairISsSsESt6vectorIS3_SaIS3_EEEES8_ET0_T_SA_S9_12__false_type 
-	_ZSt3minIjERKT_S2_S2_ 
 	_ZSt4findIN9__gnu_cxx17__normal_iteratorIP3TagSt6vectorIS2_SaIS2_EEEESsET_S8_S8_RKT0_St26random_access_iterator_tag 
 	_ZSt4findIN9__gnu_cxx17__normal_iteratorIPK3TagSt6vectorIS2_SaIS2_EEEESsET_S9_S9_RKT0_St26random_access_iterator_tag 
 	_ZSt4findIN9__gnu_cxx17__normal_iteratorIPKSt4pairISsSsESt6vectorIS3_SaIS3_EEEESsET_SA_SA_RKT0_St26random_access_iterator_tag 
 	_ZSt4findIN9__gnu_cxx17__normal_iteratorIPKcSsEEcET_S5_S5_RKT0_St26random_access_iterator_tag 
 	_ZSt4findIN9__gnu_cxx17__normal_iteratorIPSt4pairISsSsESt6vectorIS3_SaIS3_EEEESsET_S9_S9_RKT0_St26random_access_iterator_tag 
-	_ZSt6__copyIPK3TagPS0_ET0_T_S5_S4_St26random_access_iterator_tag 
-	_ZSt6__copyIPKSt4pairISsSsEPS1_ET0_T_S6_S5_St26random_access_iterator_tag 
 	_ZSteqRKSt4pairISsSsERKSs 
 	_ZStplIcSt11char_traitsIcESaIcEESbIT_T0_T1_EPKS3_RKS6_ 
 	_ZStplIcSt11char_traitsIcESaIcEESbIT_T0_T1_ERKS6_S8_ 
@@ -226,6 +243,7 @@ EXPORTS
 	_ZTI14EntryValueBase DATA
 	_ZTI15EntryValueDatum DATA
 	_ZTI15EntryValueMonat DATA
+	_ZTI17EntryValueQuartal DATA
 	_ZTI19EntryValueIntString DATA
 	_ZTI19EntryValueTimeStamp DATA
 	_ZTI23EntryValueKalenderwoche DATA
@@ -242,6 +260,7 @@ EXPORTS
 	_ZTS14EntryValueBase DATA
 	_ZTS15EntryValueDatum DATA
 	_ZTS15EntryValueMonat DATA
+	_ZTS17EntryValueQuartal DATA
 	_ZTS19EntryValueIntString DATA
 	_ZTS19EntryValueTimeStamp DATA
 	_ZTS23EntryValueKalenderwoche DATA
@@ -258,6 +277,7 @@ EXPORTS
 	_ZTV14EntryValueBase DATA
 	_ZTV15EntryValueDatum DATA
 	_ZTV15EntryValueMonat DATA
+	_ZTV17EntryValueQuartal DATA
 	_ZTV19EntryValueIntString DATA
 	_ZTV19EntryValueTimeStamp DATA
 	_ZTV23EntryValueKalenderwoche DATA
@@ -266,9 +286,7 @@ EXPORTS
 	_ZTVN13Kalenderwoche5errorE DATA
 	_ZTVN8ManuProC12DatumsfehlerE DATA
 	_ZTVN8ManuProC5Datum12FormatfehlerE DATA
-	_ZTVSt11logic_error DATA
 	_ZTVSt12out_of_range DATA
-	_ZTVSt9exception DATA
 	_ZlsRSoRK13Zeitpunkt_new 
 	_ZlsRSoRK14time_t_wrapper 
 	_ZlsRSoRK2tm 
@@ -276,15 +294,3 @@ EXPORTS
 	_ZlsRSoRKN8ManuProC5DatumE 
 	snprintf0 
 	strncpy0 
-	_ZNK15Global_Settings8get_WertERKSsi
-	_ZNK15Global_Settings8get_WertEv
-	_ZNK15Global_Settings9get_Wert0ERKSsi
-	_ZN15Global_Settings8set_WertERKSs
-	_ZN15Global_SettingsC2EiRKSsS1_
-	_ZN15Global_SettingsC1EiRKSsS1_
-	_ZN15Global_Settings6createEiRKSsS1_S1_
-	_ZN15Global_Settings12default_loadEiRKSsS1_
-	_ZN15Global_Settings12default_saveEiRKSsS1_S1_
-	_ZN15Global_Settings8set_implEPFSsiRKSsS1_EPFviS1_S1_S1_E
-	_ZN15Global_Settings9save_implE DATA
-	_ZN15Global_Settings9load_implE DATA
