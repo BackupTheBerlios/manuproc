@@ -113,7 +113,7 @@ static bool Funktionstest(AufEintrag &AE)
   }
   { //Auftrag a(AE);
     assert((Query("select verknr from auftrag where (instanz,auftragid)=(?,?)")
-          << AuftragBase(a)).FetchOne<int>()==uv);
+          << AuftragBase(AE)).FetchOne<int>()==uv);
  }}
 #endif 
   return true;
