@@ -2,6 +2,7 @@
 //#include <Aux/Transaction.h>
 #include <Aux/EntryValueIntString.h>
 #include "Auftrag/auftrag_status.h"
+#include <Auftrag/AuftragBase.h>
 #include <Artikel/ArtikelBezeichnung.h>
 exec sql include sqlca;
 
@@ -35,7 +36,7 @@ void Artikeleingabe::get_artikel_list(ppsInstanz::ID instanz)
      exec sql fetch allartein into :ID;
      SQLerror::test(__FILELINE__,100);
      if(sqlca.sqlcode) break;
-     vec_artbase.push_back(ID);
+     vec_artbase.push_back(ArtikelBase(ID));
    }
   exec sql close allartein;
   tr.close();
@@ -44,11 +45,11 @@ void Artikeleingabe::get_artikel_list(ppsInstanz::ID instanz)
 
 void Artikeleingabe::fill_eingabebox(int nr)
 {
-   if (nr==1) 
+   if (nr==AuftragBase::plan_auftrag_id) 
     { vec_eingabe.clear();
       list_sig.clear();
     }
-   if (nr==2) 
+   if (nr==AuftragBase::dispo_auftrag_id) 
     { vec_alias_eingabe.clear();
       list_sig2.clear();
     }
@@ -57,12 +58,12 @@ void Artikeleingabe::fill_eingabebox(int nr)
       char db_bezV[20][50],db_spaV[20][50]; 
    exec sql end declare section;
    cH_ExtBezSchema schema = artikelbox->getBezSchema();
-   if(nr==1)
+   if(nr==AuftragBase::plan_auftrag_id)
      {
       db_atyp=schema->Typ();
       db_aid =schema->Id();
      }
-   if(nr==2)
+   if(nr==AuftragBase::dispo_auftrag_id)
      {
       if(alias_schema->get_value()==1) 
          db_atyp=alias_warengruppe->get_value();
@@ -82,28 +83,28 @@ void Artikeleingabe::fill_eingabebox(int nr)
    if (!sqlca.sqlcode)
    {  
      int sanz = sqlca.sqlerrd[2];
-     if(nr==1) eingabebox->set_size(sanz);
-     if(nr==2) alias_eingabe->set_size(sanz);
+     if(nr==AuftragBase::plan_auftrag_id) eingabebox->set_size(sanz);
+     if(nr==AuftragBase::dispo_auftrag_id) alias_eingabe->set_size(sanz);
      cH_ArtikelBezeichnung AB(artikelbox->get_value(),db_aid);
      int sigmem=-99;
      int x=-1;
      for (int i=0;i<sanz;++i)
       {
 //        if (!strncmp(db_bezV[i],"ID",sizeof db_bezV[i] )) continue;
-        if (nr==1) 
+        if (nr==AuftragBase::plan_auftrag_id) 
            { vec_eingabe.push_back(st_eingabe(db_spaV[i],db_sigV[i]));
              list_sig.push_back(db_sigV[i]); }
-        if (nr==2) 
+        if (nr==AuftragBase::dispo_auftrag_id) 
            { vec_alias_eingabe.push_back(st_eingabe(db_spaV[i],db_sigV[i]));
              list_sig2.push_back(db_sigV[i]); }
-        if(nr==1)eingabebox->set_label(i,db_bezV[i]);
-        if(nr==2)alias_eingabe->set_label(i,db_bezV[i]);
+        if(nr==AuftragBase::plan_auftrag_id)eingabebox->set_label(i,db_bezV[i]);
+        if(nr==AuftragBase::dispo_auftrag_id)alias_eingabe->set_label(i,db_bezV[i]);
         if(sigmem==db_sigV[i]) ++x;
         else {x=0;sigmem=db_sigV[i];}
-        if(nr==1)eingabebox->set_value(i,AB->Komponente(x,db_sigV[i]));
-	if(nr==2)
+        if(nr==AuftragBase::plan_auftrag_id)eingabebox->set_value(i,AB->Komponente(x,db_sigV[i]));
+	if(nr==AuftragBase::dispo_auftrag_id)
 	  {alias_eingabe->set_value(i,"");
-	   if(db_aid==AB->getExtBezSchema()->Id()) // defaultschema will ich nicht sehen
+	   if(((ExtBezSchema::ID)db_aid)==AB->getExtBezSchema()->Id()) // defaultschema will ich nicht sehen
 	     alias_eingabe->set_value(i,AB->Komponente(x,db_sigV[i]));
 	  }
 	
@@ -238,7 +239,8 @@ void Artikeleingabe::on_button_verschmelzen_clicked()
 {
   ArtikelBase neu_art = artikelbox->get_value();
   ArtikelBase alt_art = artbox_verschmelzen->get_value();
-  if(neu_art==0 || alt_art ==0) return;
+  if(neu_art.Id()==ArtikelBase::none_id || 
+	alt_art.Id()==ArtikelBase::none_id) return;
   exec sql begin declare section;
 
   exec sql end declare section;

@@ -43,7 +43,7 @@ Artikeleingabe::Artikeleingabe(int argc, char **argv)
 
  if (argc==2) 
  {top_notebook->set_page(2);
-  artikelbox->set_value(atoi(argv[1]));
+  artikelbox->set_value(ArtikelBase(atoi(argv[1])));
   artikelbox_activate();}
 }
 
@@ -80,7 +80,7 @@ void Artikeleingabe::artikelbox_activate()
  try {
     ArtikelBase AB(artikelbox->get_value());
     if (AB.Id()!=ArtikelBase::none_id)
-    {  vec_artbase.push_back(AB.Id());
+    {  vec_artbase.push_back(AB);
        ArtikelStamm as(AB);
 
        show_in_prlist->set_active(as.getAktive()); 
@@ -491,13 +491,7 @@ void Artikeleingabe::on_alias_eingabe_activate()
   }
   catch(SQLerror &e)
     {std::cerr<<e<<'\n';
-      if(e.Code()==-400)
-     	{std::string msg("Die Bezeichnung ");
-     	 msg=msg+alias_eingabe->get_value(0)+"... existiert schon";
-     	 mess->Show(msg);
-     	}
-     else
-        mess->Show(e);
+     mess->Show(e);
     }
 }
 
@@ -599,7 +593,7 @@ void Artikeleingabe::on_no_instanz_toggled()
 
 void Artikeleingabe::on_show_in_prlist_toggled()
 {
- if(artikelbox->get_value() == ArtikelBase::none_id) return;
+ if(artikelbox->get_value().Id() == ArtikelBase::none_id) return;
  
  try{
  ArtikelStamm::setAktive(artikelbox->get_value(),show_in_prlist->get_active()); 
@@ -612,7 +606,7 @@ void Artikeleingabe::on_show_in_prlist_toggled()
 
 void Artikeleingabe::on_change_no_instanz_toggled()
 { 
- if(artikelbox->get_value() == ArtikelBase::none_id) return;
+ if(artikelbox->get_value().Id() == ArtikelBase::none_id) return;
  
  try{
  if(change_no_instanz->get_active())
