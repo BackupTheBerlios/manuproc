@@ -1,4 +1,4 @@
-// $Id: AufEintragZuMengenAenderung.cc,v 1.14 2003/02/13 13:08:26 christof Exp $
+// $Id: AufEintragZuMengenAenderung.cc,v 1.15 2003/02/14 07:22:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -30,7 +30,7 @@ void AufEintragZuMengenAenderung::change_parent(const int uid,
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
       "Old_AEB=",old_parent,"New_AEB=",new_parent,"Menge=",menge);
-  AufEintragZu::list_t K=AufEintragZu(old_parent).get_Referenz_list(old_parent,true);
+  AufEintragZu::list_t K=AufEintragZu(old_parent).get_Referenz_list(old_parent,true,AufEintragZu::list_ohneArtikel);
   for(AufEintragZu::list_t::const_iterator i=K.begin();i!=K.end();++i)
    {
      AufEintragZu(new_parent).Neu(i->AEB,menge); // Neu versucht zunächst ein update
@@ -43,7 +43,7 @@ void AufEintragZuMengenAenderung::increase_parents__reduce_assingments(const int
                      const AufEintragBase &child_aeb,AuftragBase::mengen_t menge) throw(SQLerror)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AEB=",child_aeb,"Menge=",menge);
-  AufEintragZu::list_t L=AufEintragZu(child_aeb).get_Referenz_list(child_aeb);
+  AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(child_aeb,AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
   for(AufEintragZu::list_t::iterator j=L.begin();j!=L.end();++j)
     {
       AuftragBase::mengen_t m=AuftragBase::min(j->Menge,menge);
@@ -97,7 +97,7 @@ void AufEintragZuMengenAenderung::move_zuordnung_zu_geplantem(const int uid,
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AE0er=",AE0er,"AE1er=",AE1er,"Menge=",menge);
   assert(!"AufEintragZuMengenAenderung::move_zuordnung_zu_geplantem  called");
-  AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(AE0er);
+  AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(AE0er,AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
   for(AufEintragZu::list_t::reverse_iterator i=L.rbegin();i!=L.rend();++i)
    {
     AuftragBase::mengen_t M=AuftragBase::min(i->Menge,menge);

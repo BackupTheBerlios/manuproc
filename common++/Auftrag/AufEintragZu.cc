@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.8 2003/02/10 14:33:59 christof Exp $
+// $Id: AufEintragZu.cc,v 1.9 2003/02/14 07:22:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -30,7 +30,7 @@
 AufEintragZu::list_t AufEintragZu::get_Referenz_list_id(const AuftragBase::ID id,bool kinder) const throw(SQLerror)
 {
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"Id=",id,"Kinder=",kinder);
-   std::list<st_reflist> L=get_Referenz_list(*this,kinder);
+   std::list<st_reflist> L=get_Referenz_list(*this,kinder,list_ohneArtikel); // kinder/* oder false? */);
    std::list<st_reflist> N=select_Id(id,L);
    if(N.empty() && kinder) // Für die Reparatur; ein Pfeil könnte ins nichts zeigen ...
     {
@@ -84,14 +84,14 @@ AufEintragZu::list_t AufEintragZu::get_Referenz_list_geplant(bool kinder) const 
 AufEintragZu::list_t AufEintragZu::get_Referenz_listFull(bool kinder,bool nur_ende) const throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"Kinder=",kinder,"NurEnde=",nur_ende);
- std::list<st_reflist> tv=get_Referenz_list(*this,kinder);
+ std::list<st_reflist> tv=get_Referenz_list(*this,kinder,list_ohneArtikel);
  std::list<st_reflist> vaeb;
  std::list<st_reflist> tvxx;
 reloop:
  tv.splice(tv.end(),tvxx);
  for (std::list<st_reflist>::iterator i=tv.begin();i!=tv.end();++i)
    {
-     tvxx=get_Referenz_list(i->AEB,kinder);
+     tvxx=get_Referenz_list(i->AEB,kinder,list_ohneArtikel);
      if(nur_ende)
       {
         if (tvxx.empty()) vaeb.splice(vaeb.end(),tv,i) ;
@@ -108,12 +108,12 @@ AufEintragZu::list_t AufEintragZu::get_Referenz_list_for_geplant(bool kinder) co
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"Kinder=",kinder);
   // Ungeplante Referenz Aufträge
-  std::list<st_reflist> URA=get_Referenz_list(*this,false);
+  std::list<st_reflist> URA=get_Referenz_list(*this,false,list_ohneArtikel);
  //NEU
   std::list<st_reflist> L;
   for(std::list<st_reflist>::const_iterator i=URA.begin();i!=URA.end();++i)
    {
-     std::list<st_reflist> l=AufEintragZu(i->AEB).get_Referenz_list(i->AEB,kinder);
+     std::list<st_reflist> l=AufEintragZu(i->AEB).get_Referenz_list(i->AEB,kinder,list_ohneArtikel);
      if(kinder) // sich selber aus der Liste entfernen
         for (std::list<st_reflist>::iterator j=l.begin();j!=l.end();++j)
            if(j->AEB==*this) {L.erase(j); break;}
