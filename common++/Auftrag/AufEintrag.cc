@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.61 2003/06/23 11:45:07 christof Exp $
+// $Id: AufEintrag.cc,v 1.62 2003/06/23 12:03:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -903,13 +903,14 @@ public:
 	
 	// Überproduktion
 	void operator()(const ArtikelBase &art,AuftragBase::mengen_t M) const
-	{  //assert(!"needed");
+	{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("M",M));
+	   //assert(!"needed");
 	   ArtikelStamm as(art);
 	   cH_ppsInstanz next=alterAEB.Instanz()->NaechsteInstanz(as);
 	   if (next==ppsInstanzID::None)
 	      next=ppsInstanz::getBestellInstanz(as);
 	   if (alterAEB.Id()==AuftragBase::ungeplante_id && next->ProduziertSelbst())
-	   {  AufEintrag::ArtikelInternNachbestellen(next,M,
+	   {  AufEintrag::ArtikelInternNachbestellen(next,-M,
 	   		alterAEB.getLieferdatum()
 	   		  -alterAEB.Instanz()->ProduktionsDauer(),
 	   		art,uid,alterAEB);
