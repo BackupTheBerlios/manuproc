@@ -1241,7 +1241,7 @@ Aufträgen anzeigen</property>
 	    <widget class="GtkTable" id="table_preis">
 	      <property agent="glademm" name="cxx_separate_class">True</property>
 	      <property name="visible">True</property>
-	      <property name="n_rows">3</property>
+	      <property name="n_rows">4</property>
 	      <property name="n_columns">1</property>
 	      <property name="homogeneous">False</property>
 	      <property name="row_spacing">4</property>
@@ -1488,6 +1488,96 @@ Aufträgen anzeigen</property>
 		  <property name="right_attach">1</property>
 		  <property name="top_attach">0</property>
 		  <property name="bottom_attach">1</property>
+		  <property name="x_options">fill</property>
+		</packing>
+	      </child>
+
+	      <child>
+		<widget class="GtkHBox" id="hbox6">
+		  <property name="visible">True</property>
+		  <property name="homogeneous">False</property>
+		  <property name="spacing">0</property>
+
+		  <child>
+		    <widget class="GtkScrolledWindow" id="scrolledwindow2">
+		      <property name="visible">True</property>
+		      <property name="can_focus">True</property>
+		      <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+		      <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+		      <property name="shadow_type">GTK_SHADOW_NONE</property>
+		      <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
+
+		      <child>
+			<widget class="Custom" id="preisstaffel">
+			  <property agent="glademm" name="cxx_visibility">protected</property>
+			  <property name="visible">True</property>
+			  <property name="creation_function">SimpleTree(6)</property>
+			  <property name="int1">0</property>
+			  <property name="int2">0</property>
+			  <property name="last_modification_time">Mon, 29 Nov 2004 16:43:30 GMT</property>
+			</widget>
+		      </child>
+		    </widget>
+		    <packing>
+		      <property name="padding">0</property>
+		      <property name="expand">True</property>
+		      <property name="fill">True</property>
+		    </packing>
+		  </child>
+
+		  <child>
+		    <widget class="GtkToolbar" id="toolbar3">
+		      <property name="visible">True</property>
+		      <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+		      <property name="toolbar_style">GTK_TOOLBAR_ICONS</property>
+		      <property name="tooltips">True</property>
+		      <property name="show_arrow">False</property>
+
+		      <child>
+			<widget class="GtkToolItem" id="toolitem1">
+			  <property name="visible">True</property>
+			  <property name="visible_horizontal">True</property>
+			  <property name="visible_vertical">True</property>
+			  <property name="is_important">False</property>
+
+			  <child>
+			    <widget class="GtkButton" id="button2">
+			      <property name="visible">True</property>
+			      <property name="can_focus">True</property>
+			      <property name="label">gtk-delete</property>
+			      <property name="use_stock">True</property>
+			      <property name="relief">GTK_RELIEF_NONE</property>
+			      <property name="focus_on_click">True</property>
+			      <signal name="activate" handler="staffelzeile_loeschen" last_modification_time="Mon, 29 Nov 2004 16:49:49 GMT"/>
+			    </widget>
+			  </child>
+			</widget>
+			<packing>
+			  <property name="expand">False</property>
+			  <property name="homogeneous">False</property>
+			</packing>
+		      </child>
+
+		      <child>
+			<placeholder/>
+		      </child>
+
+		      <child>
+			<placeholder/>
+		      </child>
+		    </widget>
+		    <packing>
+		      <property name="padding">0</property>
+		      <property name="expand">False</property>
+		      <property name="fill">False</property>
+		    </packing>
+		  </child>
+		</widget>
+		<packing>
+		  <property name="left_attach">0</property>
+		  <property name="right_attach">1</property>
+		  <property name="top_attach">3</property>
+		  <property name="bottom_attach">4</property>
 		  <property name="x_options">fill</property>
 		</packing>
 	      </child>

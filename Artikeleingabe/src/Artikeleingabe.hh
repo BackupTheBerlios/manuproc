@@ -1,4 +1,4 @@
-// $Id: Artikeleingabe.hh,v 1.11 2004/11/29 16:38:51 christof Exp $
+// $Id: Artikeleingabe.hh,v 1.12 2004/11/29 18:05:07 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -152,5 +152,6 @@ private:
         void mindestmenge_activate();
         void preis_uebernehmen();
         void andere_Liste();
+        void staffelzeile_loeschen();
 };
 #endif
