@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.94 2004/01/21 16:08:46 jacek Exp $
+// $Id: AufEintrag.cc,v 1.95 2004/01/25 22:06:31 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -405,6 +405,7 @@ void AufEintrag::setProvSatz(const fixedpoint<2> ps) throw(SQLerror)
  provsatz=ps;
 }
 
+/*
 void AufEintrag::setDefaultProvSatz() throw(SQLerror)
 {
  std::string tabelle="artbez_"+
@@ -428,5 +429,5 @@ void AufEintrag::setDefaultProvSatz() throw(SQLerror)
 
  ProvSatz();
 }
-
+*/
 
