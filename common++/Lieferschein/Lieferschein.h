@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.22 2002/11/29 11:29:29 thoma Exp $ */
+/* $Id: Lieferschein.h,v 1.23 2002/11/29 11:30:16 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -103,7 +103,7 @@ class Lieferschein : public LieferscheinBase, public HandleContent
 
  // Rechnungsnummer von Lieferscheinen ohne Entrys auf '0' setzen
  static void aufraumen() throw(SQLerror);
- static mengen_t StandardLaenge(const ArtikelBase artikel);
+ static mengen_t StandardLaenge(const ArtikelBase artikel) throw(SQLerror);
 
 };
 

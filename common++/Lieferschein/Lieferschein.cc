@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.18 2002/11/22 15:31:05 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.19 2002/11/29 11:29:29 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -178,5 +178,11 @@ void Lieferschein::setGewichtBrutto(const fixedpoint<1> i) throw(SQLerror)
  Query::Execute(query);
  SQLerror::test(__FILELINE__);
 }
+
+LieferscheinBase::mengen_t LieferscheinBase::StandardLaenge(const ArtikelBase artikel)
+{
+  return 1;
+}
+
 
 #endif
