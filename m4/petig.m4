@@ -1,4 +1,4 @@
-dnl $Id: petig.m4,v 1.67 2003/07/31 07:58:51 christof Exp $
+dnl $Id: petig.m4,v 1.68 2003/08/06 11:37:58 christof Exp $
 
 dnl Configure paths for some libraries
 dnl derived from kde's acinclude.m4
@@ -355,6 +355,9 @@ COMMONXX_LIBS="$COMMONXX_LIBS $SIGC_LIBS"
 AC_DEFUN(PETIG_CHECK_KOMPONENTEN,
 [
 PETIG_CHECK_LIB(Komponenten,Komponenten,KOMPONENTEN,ManuProC_Widgets,COMMONXX,COMMONGTK)
+if test "x$SIGC1_2" != x
+then AC_MSG_ERROR([ManuProC_Base/common++ was not configured with sigc++ 1.0 support])
+fi
 ])
 
 AC_DEFUN(PETIG_CHECK_COMMONGTK,
@@ -371,7 +374,8 @@ AC_DEFUN(PETIG_CHECK_KOMPONENTEN2,
 [
 PETIG_CHECK_LIB(Komponenten,Komponenten2,KOMPONENTEN2,ManuProC_Widgets,COMMONXX,COMMONGTK2)
 if test "x$SIGC1_2" = x
-   AC_MSG_ERROR([ManuProC_Base/common++ was not configured with sigc++ 1.2 support])
+then AC_MSG_ERROR([ManuProC_Base/common++ was not configured with sigc++ 1.2 support])
+fi   
 ])
 
 AC_DEFUN(PETIG_CHECK_BARCOLIB,
