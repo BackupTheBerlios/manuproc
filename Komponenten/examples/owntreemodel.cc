@@ -1,4 +1,4 @@
-// $Id: owntreemodel.cc,v 1.3 2003/10/10 16:14:47 christof Exp $
+// $Id: owntreemodel.cc,v 1.4 2003/10/13 06:34:15 christof Exp $
 /*  ManuProcWidgets: ManuProC's GUI element library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,16 +25,22 @@
 #include <vector>
 #include <cstdio>
 #include <iostream>
+#include <Misc/TraceNV.h>
+
+static const UniqueValue::value_t trace_channel=ManuProC::Tracer::channels.get();
+static ManuProC::Tracer::Environment trace_channele("TRACE",trace_channel);
 
 static const unsigned columns=10;
-static const unsigned rows=100;
-static const unsigned multiply1=1<<8;
+static const unsigned multiply1=1<<4;
 static const unsigned multiply2=multiply1*multiply1;
-static const unsigned multiply3=multiply2*multiply1;
-static const unsigned int maxdepth=3;
+static const unsigned multiply4=multiply2*multiply2;
+static const unsigned int maxdepth=7;
+static const unsigned rows=multiply1-2;
 
 static const unsigned multiply[maxdepth+1]=
-{  1,multiply1,multiply2,multiply3 };
+{  1,multiply1,multiply2,multiply2*multiply1,
+   multiply4,multiply4*multiply1,multiply4*multiply2,multiply4*multiply2*multiply1
+};
 
 static std::string itoa(int i)
 {  char buf[20];
@@ -52,9 +58,7 @@ static unsigned iter2row(const GtkTreeIter* iter)
 }
 
 unsigned depth(unsigned i)
-{  if (i>=multiply[3]) return 3;
-   if (i>=multiply[2]) return 2;
-   if (i>=multiply[1]) return 1;
+{  for (unsigned j=maxdepth;j>0;--j) if (i>=multiply[j]) return j;
    return 0;
 }
 
@@ -73,9 +77,11 @@ class MyTreeModel : public Glib::Object, public Gtk::TreeModel
 {  static MyTreeModel_Class myclass;
 
    virtual Gtk::TreeModelFlags get_flags_vfunc()
-   {  return Gtk::TreeModelFlags(0); }
+   {  ManuProC::Trace _t(trace_channel, __FUNCTION__);
+      return Gtk::TreeModelFlags(0); }
    virtual int get_n_columns_vfunc()
-   {  return columns; }
+   {  ManuProC::Trace _t(trace_channel, __FUNCTION__);
+      return columns; }
    virtual GType get_column_type_vfunc(int index)
    {  return G_TYPE_STRING; }
    virtual void get_value_vfunc(const TreeModel::iterator& iter, int column, 
@@ -85,58 +91,54 @@ class MyTreeModel : public Glib::Object, public Gtk::TreeModel
       g_value_set_string(value,res.c_str());
    }
    virtual bool iter_next_vfunc(GtkTreeIter* iter)
-   {  unsigned d=depth(iter2row(iter));
+   {  ManuProC::Trace _t(trace_channel, __FUNCTION__,iter2row(iter));
+      unsigned d=depth(iter2row(iter));
       iter2row(iter)+=multiply[d];
       return rowno(iter2row(iter),d)<rows;
    }
    virtual bool iter_children_vfunc(GtkTreeIter* iter, const GtkTreeIter* parent)
-   {  unsigned d=depth(iter2row(parent))+1;
+   {  ManuProC::Trace _t(trace_channel, __FUNCTION__,iter2row(parent));
+      unsigned d=depth(iter2row(parent))+1;
       if (d>maxdepth) return false;
       iter2row(iter)=multiply[d]+iter2row(parent);
       return true;
    }
    virtual bool iter_has_child_vfunc(const GtkTreeIter* iter)
-   {  return depth(iter2row(iter))<maxdepth;
+   {  ManuProC::Trace _t(trace_channel, __FUNCTION__,iter2row(iter));
+      return depth(iter2row(iter))<maxdepth;
    }
    virtual int iter_n_children_vfunc(const GtkTreeIter* iter)
-   {  return iter_has_child_vfunc(iter)?rows:0;
+   {  ManuProC::Trace _t(trace_channel, __FUNCTION__,iter2row(iter));
+      return iter_has_child_vfunc(iter)?rows:0;
    }
    virtual bool iter_nth_child_vfunc(GtkTreeIter* iter, const GtkTreeIter* parent, int n)
-   {  unsigned r=parent?iter2row(parent):0;
+   {  ManuProC::Trace _t(trace_channel, __FUNCTION__,iter2row(parent),n);
+      unsigned r=parent?iter2row(parent):0;
       unsigned d=depth(r)+1;
       if (d>maxdepth) return false;
       iter2row(iter)=n*multiply[d]+r;
       return n<rows;
    }
    virtual bool iter_parent_vfunc(GtkTreeIter* iter, const GtkTreeIter* child)
-   {  unsigned d=depth(iter2row(child));
+   {  ManuProC::Trace _t(trace_channel, __FUNCTION__,iter2row(child));
+      unsigned d=depth(iter2row(child));
       if (!d) return false;
       iter2row(iter)=iter2row(child)%multiply[d];
       return true;
    }
    virtual Gtk::TreeModel::Path get_path_vfunc(const Gtk::TreeModel::iterator& iter)
-   {  return Gtk::TreeModel::Path();
+   {  ManuProC::Trace _t(trace_channel, __FUNCTION__,iter2row(iter->gobj()));
+      return Gtk::TreeModel::Path();
    }
    virtual bool get_iter_vfunc(GtkTreeIter* iter, const Gtk::TreeModel::Path& path)
-   {  if (!path.size() || path[0]>=rows) return false;
-      if (path.size()==1)
-      {  iter2row(iter)=path[0];
-         return true;
-      }
-      if (path[1]>=rows) return false;
-      if (path.size()==2)
-      {  iter2row(iter)=path[0]+(path[1]+1)*multiply1;
-         return true;
-      }
-      if (path[2]>=rows) return false;
-      if (path.size()==3)
-      {  iter2row(iter)=path[0]+(path[1]+1)*multiply1+(path[2]+1)*multiply2;
-         return true;
-      }
-      if (path[3]>=rows) return false;
-      if (path.size()==4)
-      {  iter2row(iter)=path[0]+(path[1]+1)*multiply1+(path[2]+1)*multiply2+(path[3]+1)*multiply3;
-         return true;
+   {  ManuProC::Trace _t(trace_channel, __FUNCTION__,path.to_string());
+      unsigned sz=path.size();
+      if (!sz || path[0]>=rows) return false;
+      iter2row(iter)=path[0];
+      for (unsigned j=1;j<maxdepth;++j)
+      {  if (path[j]>=rows) return false;
+         if (sz==j) return true;
+         iter2row(iter)+=(path[j]+1)*multiply[j];
       }
       return false;
    }
