@@ -850,7 +850,7 @@ void auftrag_main::instanz_selected(const cH_ppsInstanz _instanz)
 
   block_callback=true;
   togglebutton_material->set_active(false);
-  togglebutton_auftraege->set_active(true);
+  togglebutton_auftraege->set_active(false);
   togglebutton_bestellen->set_active(false);
 
   AufEintrag AEK;
