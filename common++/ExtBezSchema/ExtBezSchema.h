@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema.h,v 1.15 2003/01/08 09:46:56 christof Exp $
+// $Id: ExtBezSchema.h,v 1.16 2003/03/24 13:56:26 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,6 +24,7 @@
 #include<string>
 #include <Misc/Handles.h>
 #include <Artikel/ArtikelTyp.h>
+#include <Aux/multi_lang.h>
 
 class cH_ExtBezSchema;
 
@@ -42,13 +43,16 @@ public:
 		int signifikanz;
 		int folgenr_in_sig;
 		std::string TeXtabformat;
+		MultiL_Dict::LangTXT textid; // for multilanguage text settings
 
 		BezKomp(int _bztyp, const std::string &_bztxt, 
 			const std::string &_bzsep, const std::string &sname,
-			int sign,int snr,std::string texf)
+			int sign,int snr,std::string texf, 
+			MultiL_Dict::LangTXT _textid)
 		: bezkomptype(_bztyp), bezkomptext(_bztxt), separator(_bzsep)
 			, spaltenname(sname), signifikanz(sign), 
-			folgenr_in_sig(snr),TeXtabformat(texf)
+			folgenr_in_sig(snr),TeXtabformat(texf),
+			textid(_textid)
 		{}
 	};
 	typedef std::vector<BezKomp>::const_iterator const_iterator;
@@ -170,6 +174,7 @@ public:
 
  bool operator==(const ExtBezSchema &b) const
  { return Id()==b.Id() && Typ()==b.Typ(); }
+ 
 };
 
 #endif

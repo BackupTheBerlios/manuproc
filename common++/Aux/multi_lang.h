@@ -81,7 +81,9 @@ public:
 		PRINTF_ZAHLUNG7=66,
 		TXT_EU_WARE_ISRAEL=67,
 		TXT_DEN=68,
-		PRINTF_ZAHLUNG8=69,		
+		PRINTF_ZAHLUNG8=69,
+		KARTENNR=70,
+		KOLLEKTION=71,
 	     } LangTXT;
 
  MultiL_Dict(int sprache, int default_spr=1);

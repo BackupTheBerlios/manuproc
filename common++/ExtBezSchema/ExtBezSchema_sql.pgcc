@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema_sql.pgcc,v 1.16 2003/01/08 09:46:56 christof Exp $
+// $Id: ExtBezSchema_sql.pgcc,v 1.17 2003/03/24 13:56:26 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -44,11 +44,12 @@ ExtBezSchema::ExtBezSchema(ID eid,const ArtikelTyp &t) throw(SQLerror)
  int maxBKT=0;
 
  std::string squery;
-   squery = "select bezkomptype, bezkomptext, coalesce(separator,''), 
- 		coalesce(spaltenname,bezkomptext), coalesce(signifikanz,0),
-		coalesce(textabformat,'c'),coalesce(jumbo_bez,'')
- 	from extbezschema
-	where extartbezid= "+itos(eid)+" and artikeltyp="+itos(t)
+   squery = "select bezkomptype, bezkomptext, coalesce(separator,''), "
+ 	    " coalesce(spaltenname,bezkomptext), coalesce(signifikanz,0), "
+	    " coalesce(textabformat,'c'),coalesce(jumbo_bez,''),"
+	    " coalesce(textid,0) "
+ 	" from extbezschema"
+	" where extartbezid= "+itos(eid)+" and artikeltyp="+itos(t)
 	+" order by signifikanz,bezkomptype" ;
  strncpy(query,squery.c_str(),sizeof(query));
 
@@ -72,10 +73,12 @@ ExtBezSchema::ExtBezSchema(ID eid,const ArtikelTyp &t) throw(SQLerror)
     char TEXTABFORMAT[20][10];
     int SIGNIFIKANZ[20];
     char JUMBOBEZ[20][10];
+    int TEXTID[20];
     exec sql end declare section;
     exec sql fetch 20 from BEZKOMP 
 	into :BEZKOMPTYPE, :BEZKOMPTEXT, :SEPARATOR,
-		:SPALTENNAME, :SIGNIFIKANZ, :TEXTABFORMAT, :JUMBOBEZ ;
+		:SPALTENNAME, :SIGNIFIKANZ, :TEXTABFORMAT, :JUMBOBEZ,
+		:TEXTID ;
     SQLerror::test(__FILELINE__"ExtBezSchema::ExtBezSchema","BEZKOMP",100);
     if(sqlca.sqlcode==100) break;
     unsigned int lines=sqlca.sqlerrd[2];
@@ -85,7 +88,8 @@ ExtBezSchema::ExtBezSchema(ID eid,const ArtikelTyp &t) throw(SQLerror)
 	  {tmp_sig=SIGNIFIKANZ[i]; folgenr_in_sig=0;}
        bezkomps.push_back(BezKomp(BEZKOMPTYPE[i],BEZKOMPTEXT[i],
     		SEPARATOR[i],SPALTENNAME[i],SIGNIFIKANZ[i],
-		folgenr_in_sig++,TEXTABFORMAT[i]));
+		folgenr_in_sig++,TEXTABFORMAT[i],
+		(MultiL_Dict::LangTXT)TEXTID[i]));
        if (!IDseen && std::string(SPALTENNAME[i])=="id") IDseen=true;
        if (BEZKOMPTYPE[i]>maxBKT) maxBKT=BEZKOMPTYPE[i];
        if ((std::string)JUMBOBEZ[i]!="") 
@@ -100,7 +104,8 @@ ExtBezSchema::ExtBezSchema(ID eid,const ArtikelTyp &t) throw(SQLerror)
  exec sql close BEZKOMP;
  if (bezkomps.empty()) 
     throw SQLerror(__FILELINE__,100,"Schema leer = nicht vorhanden");
- if (!IDseen) bezkomps.push_back(BezKomp(maxBKT+1,"ID","","id",99,-1,"r"));
+ if (!IDseen) bezkomps.push_back(BezKomp(maxBKT+1,"ID","","id",99,-1,"r",
+		(MultiL_Dict::LangTXT)0));
 }
 
 size_t ExtBezSchema::sigsize(int signifikanz) const

@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.26 2003/03/20 17:30:33 jacek Exp $
+// $Id: sqlAuftragSelector.cc,v 1.27 2003/03/24 13:56:38 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -50,7 +50,7 @@
 #define FULL_FROM_SORT(s) "(auftrag a join auftragentry e using (instanz,auftragid))" \
 	" left join auftrag_prozess p" \
 	" using (instanz,auftragid,zeilennr) " \
-	" join "+s+" ab on (artikelid=id) "
+	" left join "+s+" ab on (artikelid=id) "
 	
 #define FULL_SELECT_FROM_SORT_WHERE(s) "select " FULL_SELECTIONS \
 	" from " FULL_FROM_SORT(s) " where true "	
