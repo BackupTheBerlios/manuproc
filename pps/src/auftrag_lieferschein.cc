@@ -173,6 +173,7 @@ void auftrag_lieferschein::on_liefnr_activate()
    spinbutton_paeckchen->grab_focus();
  }
  }catch(std::exception &e) {std::cerr<<e.what();}
+ lager_buchen->set_sensitive(true); 
 }
 
 void auftrag_lieferschein::on_lieferkunde_activate()
@@ -945,9 +946,10 @@ void auftrag_lieferschein::on_lager_buchen_clicked()
       }
       catch(SQLerror &e) {meldung->Show(e); tr.rollback(); return;}
 
-      lager_buchen->set_sensitive(false);
       tr.commit();
+      datavec_liefoff.clear();
       on_liefnr_activate();     
+      lager_buchen->set_sensitive(false);
      }
    else
    if(ret==1)
