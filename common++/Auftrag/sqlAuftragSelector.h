@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.21 2003/03/20 17:30:33 jacek Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.22 2003/04/28 09:29:46 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -127,6 +127,15 @@ public:
     {}
   };
  SQLFullAuftragSelector(const sel_Kunde_Status &selstr);
+
+ struct sel_InstanzAlle
+  { ppsInstanz::ID instanz;
+    
+    sel_InstanzAlle(ppsInstanz::ID i) 
+    : instanz(i)
+    {}
+  };
+ SQLFullAuftragSelector(const sel_InstanzAlle &selstr);
 
  void setClausel(const std::string &cl) { clausel = cl;}
  const std::string getClausel() const { return clausel; }

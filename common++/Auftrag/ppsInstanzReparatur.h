@@ -1,4 +1,4 @@
-// $Id: ppsInstanzReparatur.h,v 1.2 2003/02/10 14:33:59 christof Exp $
+// $Id: ppsInstanzReparatur.h,v 1.3 2003/04/28 09:29:46 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -101,6 +101,9 @@ class ppsInstanzReparatur : public ppsInstanz
       bool ReparaturST_AuftragsZuordnung(const int uid,const bool analyse_only,const bool kinder) const;
       // Lager-Zuordnungen
       bool ReparaturH_LagerZuordnungen(const int uid,const bool analyse_only) const;
+      
+      bool SummeEltern(AufEintrag &ae, const AufEintragZu::list_t &eltern, bool analyse_only) const;
+      bool SummeKinder(AufEintrag &ae, const AufEintragZu::map_t &kinder, bool analyse_only) const;
 };
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.27 2003/03/24 13:56:38 jacek Exp $
+// $Id: sqlAuftragSelector.cc,v 1.28 2003/04/28 09:29:46 christof Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -139,6 +139,12 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_AufidZnr& selstr)
 	   " and (a.instanz, a.auftragid, e.zeilennr)="
 	   "("+itos(selstr.auftrag_znr.InstanzID())+", "
 	   +itos(selstr.auftrag_znr.Id())+", "+itos(selstr.auftrag_znr.ZNr())+")");
+}
+
+SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_InstanzAlle& selstr)
+{
+ setClausel(FULL_SELECT_FROM_WHERE
+	   " and a.instanz="+itos(selstr.instanz));
 }
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Jahr_Artikel &selstr)

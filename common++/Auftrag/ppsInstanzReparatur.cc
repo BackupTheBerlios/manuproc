@@ -748,3 +748,19 @@ void ppsInstanzReparatur::analyse(const std::string &s,const AufEintrag &AE,cons
 void ppsInstanzReparatur::analyse(const std::string &s,const AufEintrag &AE,const cH_ppsInstanz &x,const cH_ppsInstanz &y) const
 {analyse(s,AE,x->Name(),y->Name());}
 
+bool ppsInstanzReparatur::SummeEltern(AufEintrag &ae, const AufEintragZu::list_t &eltern, bool analyse_only) const
+{  // schauen ob Sum(eltern)=offeneMenge,
+   // wenn produziert selbst kann Sum(eltern) niedriger sein (sollte aber nicht)
+   
+   // Sum zu groﬂ: nachbestellen
+   // Sum zu klein: abbestellen (falls 0er, bei 1er 2er erzeugen)
+   return true;
+}
+
+bool ppsInstanzReparatur::SummeKinder(AufEintrag &ae, const AufEintragZu::map_t &kinder, bool analyse_only) const
+{  // schauen ob offeneMenge=Sum(kinder)
+   
+   // Sum zu klein: nachbestellen
+   // Sum zu gross: abbestellen (falls 0er, bei 1er 2er erzeugen)
+   return true;
+}

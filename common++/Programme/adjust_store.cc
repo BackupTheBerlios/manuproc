@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.27 2003/01/31 16:23:15 christof Exp $
+// $Id: adjust_store.cc,v 1.28 2003/04/28 09:29:46 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -41,16 +41,19 @@ void usage(const std::string &s)
            "\t   Menge null ist.\n"
            "\tC: Es wird sichergestellt, daﬂ nur entweder 0er- oder 2er-Auftr‰ge\n"
            "\t   (pro Instanz,Artikel,Lieferdatum) existieren.\n"
-           "\tD: Zuordnungen VON 0er-Auftr‰gen AN 1|20000 existieren auf EINER Instanz NICHT.\n"
-           "\tE: Summe der Zuordnungen VON 2er-Auftr‰gen AN 1|20000 == 2.getStueck().\n"
-           "\tF: Summe der Zuordnungen VON 2er-Auftr‰gen AN 1|20000 <= 1|20000.getRestStueck().\n"
+           "\tD: Zuordnungen VON 0er-Auftr‰gen AN 1|3 existieren auf EINER Instanz NICHT.\n"
+           "\t\t(beheben: 0er erniedrigen, Bestellung nach unten auf 1er ¸bertragen)\n"
+           "\tE: Summe der Zuordnungen VON 2er-Auftr‰gen AN 1|3 == 2.getStueck().\n"
+           "\tF: Summe der Zuordnungen VON 2er-Auftr‰gen AN 1|3 <= 1|3.getRestStueck().\n"
            "\tG: Kundenauftr‰ge und 2er haben keine Eltern.\n"
            "\tH: LagerInstanzen: 1er haben keine Kinder, 2er haben weder Kinder noch Eltern\n"
            "\tK: Zuordnungen VON Kundenauftr‰gen: ZuordnungsMENGE,AuftragsINSTANZ,\n"
            "\t                                    AuftragsARTIKEL.\n"
            "\tS: Zuordnungen AN einen Auftrag (von den Eltern) testen\n"
            "\tT: Zuordnungen VON einen Auftrag (an die Kinder) testen\n"
-           "\tKK:Kinder der Kundenauftr‰ge an die noch benˆtigte Menge anpassen\n";
+           "\tKK:Kinder der Kundenauftr‰ge an die noch benˆtigte Menge anpassen\n"
+           "\t*: Alle Analysen/Reparaturen auf einmal (meist mit -I) (auﬂer A,KK)\n";
+           
  std::cerr << "USAGE:  ";
  std::cerr << s <<" [-i<instanz>|-I]  -a<aktion> [-d<database> -h<dbhost> -y] \n"
            "\twobei die aktion=[A|B|C|D|E|F|K] ist.\n"
@@ -68,6 +71,8 @@ bool check_for(const std::string &pname,cH_ppsInstanz I,const std::string &aktio
       if(I->EigeneLagerKlasseImplementiert()) RI.ReparaturLager(getuid(),analyse_only);
       else std::cout << "\t"<< I << "'A' nicht sinnvoll\n";
      }
+    else if(aktion=="KK"&& I->KundenInstanz()) alles_ok=RI.ReparaturKK_KundenKinder(getuid(),analyse_only);
+    // ab hier alles einlesen, dann die tests durchf¸hren
     else if(aktion=="B" &&!I->KundenInstanz()) RI.Reparatur_Konsistenz(analyse_only);
     else if(aktion=="C" &&!I->KundenInstanz()) RI.Reparatur_0er_und_2er(getuid(),analyse_only);
     else if(aktion=="D" &&!I->KundenInstanz()) alles_ok=RI.ReparaturD_0_ZuSumme_1(getuid(),analyse_only);
@@ -78,7 +83,6 @@ bool check_for(const std::string &pname,cH_ppsInstanz I,const std::string &aktio
     else if(aktion=="K" && I->KundenInstanz()) alles_ok=RI.ReparaturK_Kundenzuordnung(getuid(),analyse_only);
     else if(aktion=="S")                       alles_ok=RI.ReparaturST_AuftragsZuordnung(getuid(),analyse_only,false);
     else if(aktion=="T")                       alles_ok=RI.ReparaturST_AuftragsZuordnung(getuid(),analyse_only,true);
-    else if(aktion=="KK"&& I->KundenInstanz()) alles_ok=RI.ReparaturKK_KundenKinder(getuid(),analyse_only);
     else usage(pname);
    return alles_ok;
 }
