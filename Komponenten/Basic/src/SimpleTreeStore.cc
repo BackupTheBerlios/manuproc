@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.40 2003/12/11 16:37:57 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.41 2003/12/19 21:43:19 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -156,10 +156,11 @@ static MyTreeModel_Class myclass;
 void SimpleTreeStore::on_visibly_changed(bvector_iterator it)
 { if (it!=bvector_iterator())
   {if (!*it) // Spalte versteckt
-   {  for (sequence_t::iterator i=currseq.begin();i!=currseq.end();++i)
+   {  for (sequence_t::iterator i=currseq.begin();i!=currseq.end();)
       {  if (!ColumnVisible(*i))
          {  i=currseq.erase(i);
          }
+         else ++i;
       }
    }
    else // Spalte hinzugekommen
