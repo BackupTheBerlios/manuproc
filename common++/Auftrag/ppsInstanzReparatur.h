@@ -1,4 +1,4 @@
-// $Id: ppsInstanzReparatur.h,v 1.13 2003/06/18 07:45:51 christof Exp $
+// $Id: ppsInstanzReparatur.h,v 1.14 2003/06/23 15:29:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,6 +22,7 @@
 
 #include <Instanzen/ppsInstanz.h>
 #include <Auftrag/AufEintrag.h>
+#include <stdexcept>
 class LagerInhalt;
 class SelectedFullAufList;
 
@@ -31,6 +32,13 @@ class ppsInstanzReparatur : public cH_ppsInstanz
    ppsInstanzReparatur(ppsInstanz::ID iid=ppsInstanzID::None)
       : cH_ppsInstanz(iid) {}
    const cH_ppsInstanz &Instanz() const { return *this; }
+   
+   struct reload : public std::exception
+   {	virtual const char* what() const throw() 
+        { return "ppsInstanzReparatur::reload"; }
+        reload() {}
+   };
+                
 
  /////////////////////////////////////////////////////////////////////////
  // Reparatur

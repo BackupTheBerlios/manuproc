@@ -520,15 +520,9 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
                                 richtigeMenge-menge,newdate,i->first,uid,ae);
                }
                else // Sum zu gross: abbestellen (falls 0er, ...
-               {  if (ae.Instanz()==ppsInstanzID::Kundenauftraege
-               		|| ae.Id()==AuftragBase::ungeplante_id)
+               {  //if (ae.Instanz()==ppsInstanzID::Kundenauftraege
+               	  //	|| ae.Id()==AuftragBase::ungeplante_id)
                   {  KinderErniedrigen(ae,i->second,menge-richtigeMenge,uid);
-                  }
-                  else // bei 1er 2er erzeugen/-höhen)
-                  {  assert(ae.Id()>=AuftragBase::handplan_auftrag_id);
-                     AuftragBase(make_value(Instanz()),AuftragBase::dispo_auftrag_id)
-                     	.BestellmengeAendern((menge-richtigeMenge)/ab.Faktor(i->first).as_float(),
-                     		newdate,ae.Artikel(),OPEN,uid,ae);
                   }
                }
             }
