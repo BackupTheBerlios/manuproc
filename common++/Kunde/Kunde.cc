@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.35 2003/05/30 11:57:59 jacek Exp $
+// $Id: Kunde.cc,v 1.36 2003/06/20 17:34:23 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -137,9 +137,9 @@ const std::string Kunde::LaTeX_an(bool liefer,TelArt telart,
 #ifdef MANUPROC_DYNAMICENUMS_CREATED
   if(isInGrp(KundengruppeID::Personen))
    { 
-   if(!getName2().empty())
-     s+=string2TeX(getName2(),NEEDCHAR)+" ";
-    s+=string2TeX(getName(),NEEDCHAR)+ "~\\\\";
+   if(!getName().empty())
+     s+=string2TeX(getName(),NEEDCHAR)+" ";
+    s+=string2TeX(getName2(),NEEDCHAR)+ "~\\\\";
    }
   else
    {
@@ -184,14 +184,19 @@ const PreisListe::ID Kunde::preisliste() const
 bool Kunde::isInGrp(const Kundengruppe::ID gid) const 
 {
 #ifdef MANUPROC_DYNAMICENUMS_CREATED
- std::vector<cH_Kundengruppe>::const_iterator f;
  
- if(gruppen.size())
-   return (find(gruppen.begin(),gruppen.end(),gid)!=gruppen.end());
-  
- load_Gruppen();
-   
- return (find(gruppen.begin(),gruppen.end(),gid)!=gruppen.end());
+ if(gruppen.empty())
+   load_Gruppen();
+
+ if(gruppen.empty()) return false;
+
+ for(std::vector<Kundengruppe::ID>::const_iterator f=gruppen.begin(); 
+	f!=gruppen.end(); ++f)
+    {if(*f == gid) return true;
+std::cout << "KgGrp" << *f << "gid:" << gid <<"\n";
+    }
+
+ return false;
 #else
  return false;
 #endif
@@ -227,7 +232,7 @@ bool Kunde::isLieferadresse() const
 #ifdef MANUPROC_DYNAMICENUMS_CREATED
  std::vector<cH_Kundengruppe>::const_iterator f;
  
- if(gruppen.size())
+ if(gruppen.empty())
    return (std::find(gruppen.begin(),gruppen.end(),
    		KundengruppeID::Lieferadresse)!=
    		gruppen.end());
@@ -241,7 +246,7 @@ bool Kunde::isLieferadresse() const
  return false;
 #endif
 }
-up to here ******+*/
+
 
 
 void Kunde::isLieferadresse(bool is) 
@@ -276,15 +281,30 @@ void Kunde::isAuftragsadresse(bool is)
 }
 
 
-
+up to here ******+*/
 
 void Kunde::load_Gruppen() const throw(SQLerror)
 {
- std::string qu="select grpnr from ku_gruppen_map"
- 	" where kundennr=?";
  gruppen.erase(gruppen.begin(),gruppen.end());
+
+ Query q("select grpnr from ku_gruppen_map"
+ 	" where kundennr=?");
  
- (Query(qu) << Id()).FetchArray(gruppen);
+ q << Id();
+
+ int ret;
+
+ FetchIStream fi=q.Fetch();
+
+ while(fi.good())
+   {fi >> ret;
+    gruppen.push_back((Kundengruppe::ID)ret);
+    fi=q.Fetch();
+   }
+
+ for(std::vector<Kundengruppe::ID>::const_iterator f=gruppen.begin(); 
+	f!=gruppen.end(); ++f)
+    std::cout << "geladen:" << (*f) << "\n";
 
 }
 

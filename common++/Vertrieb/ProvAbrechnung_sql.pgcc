@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung_sql.pgcc,v 1.5 2003/06/20 14:34:19 jacek Exp $ */
+/* $Id: ProvAbrechnung_sql.pgcc,v 1.6 2003/06/20 17:34:23 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -65,9 +65,13 @@ ProvAbrechnung* ProvAbrechnung::newProvAbrechnung(const Kunde::ID verkid,
 
  if(!_bis.valid()) _bis=ManuProC::Datum::today();
 
- BIS=(char*)_bis.to_iso().c_str();
- VOM=(char*)_vom.to_iso().c_str();
+ std::string strvom(_vom.to_iso());
+ VOM=(char*)strvom.c_str();
+ std::string strbis(_bis.to_iso());
+ BIS=(char*)strbis.c_str();
+
  NOTIZ=(char*)_notiz.c_str();
+
 
  exec sql insert into prov_abrechnung
 	(provnr,verknr,datum,bis,vom,notiz) values 
