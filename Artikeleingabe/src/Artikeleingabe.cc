@@ -88,7 +88,7 @@ void Artikeleingabe::artikelbox_activate()
        show_in_prlist->set_active(as.getAktive()); 
        cH_ppsInstanz pi(as.BestellenBei());
        change_no_instanz->set_active(pi->Id()==ppsInstanzID::None);
-       no_instanz->set_active(change_no_instanz->get_active());       
+//       no_instanz->set_active(change_no_instanz->get_active());       
 
 //       optionmenu_instanz->set_value(pi->Id());
        Artikel_Bestellen_bei->set_value(pi->Id());
@@ -110,7 +110,9 @@ void Artikeleingabe::artikelbox_activate()
  alias_warengruppe->set_value(artikelbox->getBezSchema()->Typ());
  fill_eingabebox(2);
 
+ top_notebook->grab_focus();
 }
+
 
 void Artikeleingabe::on_alias_warengruppe_activate()
 {
@@ -370,7 +372,7 @@ void Artikeleingabe::on_Artikel_Bestellen_activate()
 
 void Artikeleingabe::optionmenu_bestellen_bei_activate()
 {
- if (!!(artikelbox->get_value())) return;
+ if (!(artikelbox->get_value())) return;
  ppsInstanz::ID oldInstanz=ArtikelStamm(artikelbox->get_value()).BestellenBei()->Id();
  ppsInstanz::ID newInstanz = Artikel_Bestellen_bei->get_value()->Id(); 
  if(oldInstanz==newInstanz) return;
@@ -583,7 +585,7 @@ void Artikeleingabe::on_notebook1_switch_page(GtkNotebookPage *p0, guint p1)
 
 void Artikeleingabe::on_no_instanz_toggled()
 {
- if(!bestellen_bei_changed) return;
+
 
  if(no_instanz->get_active())
    {standard_instanz->set_sensitive(false);
@@ -614,26 +616,30 @@ void Artikeleingabe::on_show_in_prlist_toggled()
 
 void Artikeleingabe::on_change_no_instanz_toggled()
 { 
- if(!artikelbox->get_value()) return;
- 
+ ppsInstanz::ID pid=change_no_instanz->get_active() ?
+		 ppsInstanzID::None : Artikel_Bestellen_bei->get_value()->Id();
  try{
- if(change_no_instanz->get_active())
-   ArtikelStamm::set_BestellenBei(artikelbox->get_value(),ppsInstanzID::None); 
- else   
-   ArtikelStamm::set_BestellenBei(artikelbox->get_value(),
-   			Artikel_Bestellen_bei->get_value()->Id());
- Artikel_Bestellen_bei->set_sensitive(!change_no_instanz->get_active());   
+   if(!!artikelbox->get_value())
+     {ArtikelStamm::set_BestellenBei(artikelbox->get_value(),pid);
+     }
  }
  catch(SQLerror &e)
-  {mess->Show(e); 
+  {
+   Artikel_Bestellen_bei->set_sensitive(!change_no_instanz->get_active());   
+   mess->Show(e); 
   } 
+ Artikel_Bestellen_bei->set_sensitive(!change_no_instanz->get_active());   
 }
 
 
 
 void Artikeleingabe::on_mindbest_check_toggled()
 {
+
+
  mindbestand->set_sensitive(mindbest_check->get_active());
+
+ if(!artikelbox->get_value()) return;
 
  if(mindbest_check->get_active())
    {mindbestand->set_value(0);  
