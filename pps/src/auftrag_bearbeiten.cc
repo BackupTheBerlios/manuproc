@@ -140,7 +140,7 @@ void auftrag_bearbeiten::on_auftrag_clist_select_row
 {   
  assert(auftrag);
  aktaufeintrag = &auftrag->getAufEntry(row);
- try{artikelbox->set_value(ArtikelBase(aktaufeintrag->ArtId()));
+ try{artikelbox->set_value(aktaufeintrag->Artikel());
  Einheit e(artikelbox->get_value());
  mengeeinheit->set_text((std::string)e);
  WPreis->set_Einheit((std::string)e);
@@ -803,7 +803,7 @@ void auftrag_bearbeiten::fillCList()
    {
      os << znr++ <<'\t'
      	<< i->getStueck()<<'\t'
-        << cH_ArtikelBezeichnung(ArtikelBase(i->ArtId()))->Bezeichnung()<<'\t'
+        << cH_ArtikelBezeichnung(i->Artikel())->Bezeichnung()<<'\t'
         << '\t'
         << i->getRestStk()<<'\t'
         << Formatiere(i->EPreis().Wert())<<'\t'

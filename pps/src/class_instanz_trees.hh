@@ -40,7 +40,7 @@ public:
          return cH_EntryValueIntString(k);
         }
       case ARTIKEL : {
-         cH_ArtikelBezeichnung AZ(aufeintrag.ArtId());
+         cH_ArtikelBezeichnung AZ(aufeintrag.Artikel());
          return cH_EntryValueIntString(AZ->Bezeichnung());
         }
       case MENGE   : return cH_EntryValueIntString(aufeintrag.getStueck().as_int());
