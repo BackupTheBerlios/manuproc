@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.46 2003/05/07 13:25:00 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.47 2003/06/18 10:17:57 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -868,6 +868,52 @@ void Kunde::setFixeNotiz(const NotizZiel nz, const std::string n) throw(SQLerror
  std::string query="update kunden set "+column+"=? where kundennr=?";
  Query(query) << n << entityid;
  SQLerror::test(__FILELINE__);
+}
+
+int Kunde::getAbrZyklus() const throw(SQLerror)
+{int ret;
+ try{
+ Query("select coalesce(abrzyklus_mon,1) from ku_verkaeufer where vknr=?")
+	<< Id() >> ret;
+ }
+
+ catch(SQLerror &e)
+ { SQLerror::test(__FILELINE__,100);
+   return 0; 
+ }
+
+ return ret;
+ 
+}
+
+void Kunde::setAbrZyklus(int mon) const throw(SQLerror)
+{
+ try{
+ Query("update ku_verkaeufer set abrzyklus_mon=? where vknr=?")
+	<< mon << Id();
+ }
+
+ catch(SQLerror &e)
+ { SQLerror::test(__FILELINE__,100);
+   return; 
+ }
+ 
+}
+
+fixedpoint<2> Kunde::getProvAbschlag() const throw(SQLerror)
+{
+ fixedpoint<2> ret;
+ try{
+ Query("select coalesce(abschlag,0) from ku_verkaeufer where vknr=?")
+	<< Id() >> ret;
+ }
+
+ catch(SQLerror &e)
+ { SQLerror::test(__FILELINE__,100);
+   return 0; 
+ }
+
+ return ret;
 }
 
 #endif

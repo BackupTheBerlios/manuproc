@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.5 2003/06/12 14:59:49 christof Exp $
+// $Id: db_upgrade.cc,v 1.6 2003/06/18 10:17:57 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -68,8 +68,18 @@ int main(int argc,char *argv[])
   // Auftragsbestätigung an andere Adresse
   check_column("kunden","ab_an_rngadresse","bool");
   
-  // Verkäufernr (?)
+  // Verkäufernr
   check_column("auftrag","verknr","integer");
+  check_column("auftragentry","provsatz","numeric(4,2)");
+  
+  // Verkäuferspezifische Daten
+	// es gibt noch die alte Spalte verknr mit anderem Nummernkreis,
+	// wegfallen soll. Danach vknr -> verknr umbennenen
+  check_column("ku_verkaeufer","vknr","numeric(5)");
+	// Nur Abschlag pro Abrechnung. 
+  check_column("ku_verkaeufer","abschlag","numeric(5)");
+	// Abrechnung alle "mon" Monate
+  check_column("ku_verkaeufer","abrzyklus_mon","numeric(2)");  
   
   ManuProC::dbdisconnect();
   return 0;

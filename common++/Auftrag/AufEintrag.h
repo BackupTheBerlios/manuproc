@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.44 2003/06/16 16:35:07 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.45 2003/06/18 10:17:57 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -70,7 +70,8 @@ private:
 
  Preis preis;
  rabatt_t rabatt;
-
+ fixedpoint<2> provsatz;
+ 
 private: // weg von hier!
  Kunde::ID kdnr;
  std::string youraufnr;
@@ -186,6 +187,10 @@ public:
  cH_PreisListe getPreisliste() const {return preisliste;}
  rabatt_t Rabatt() const { return rabatt;}
  Preis::preismenge_t PreisMenge() const { return preis.PreisMenge(); }
+ fixedpoint<2> ProvSatz() const { return provsatz; }
+ fixedpoint<2> DefaultProvSatz() const throw(SQLerror); 
+ void setDefaultProvSatz() throw(SQLerror);
+ void setProvSatz(const fixedpoint<2> ps) throw(SQLerror);
 
    friend class AufEintragBase;
 

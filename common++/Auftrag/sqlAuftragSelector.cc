@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.28 2003/04/28 09:29:46 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.29 2003/06/18 10:17:57 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -40,7 +40,8 @@
 	"coalesce(e.rabatt,0.0), " \
 	"e.status,coalesce(e.lastedit_uid,0),e.lasteditdate," \
 	"e.letzte_lieferung," \
-	"coalesce(e.preisliste,"+itos(ManuProcEntity<>::none_id)+") "
+	"coalesce(e.preisliste,"+itos(ManuProcEntity<>::none_id)+"), " \
+	"e.provsatz "
 
 #define FULL_FROM "(auftrag a join auftragentry e using (instanz,auftragid))" \
 	" left join auftrag_prozess p" \

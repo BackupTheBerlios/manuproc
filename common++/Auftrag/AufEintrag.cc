@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.56 2003/06/17 11:47:26 christof Exp $
+// $Id: AufEintrag.cc,v 1.57 2003/06/18 10:17:57 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -1031,3 +1031,39 @@ AuftragBase::mengen_t AufEintrag::getRestStk() const
    if (in(auftragstatus,CLOSED,STORNO)) return 0;
    return bestellt-geliefert;
 }
+
+void AufEintrag::setProvSatz(const fixedpoint<2> ps) throw(SQLerror)
+{
+ Query q("update auftragentry set provsatz=? where"
+	" (instanz,auftragid,zeilennr) = (?,?,?)");
+
+ q << ps << InstanzID() << Id() << getZnr();
+ SQLerror::test(__FILELINE__);
+ provsatz=ps;
+}
+
+
+void AufEintrag::setDefaultProvSatz() throw(SQLerror)
+{
+ Query q("update auftragentry set provsatz="
+	"(select case when provsatznr=1 then provsatz1 else provsatz2 end"
+	" from auftragentry e join auftrag a on (e.instanz=a.instanz"
+	" and e.auftragid=a.auftragid and "
+	" (a.instanz,a.auftragid,e.zeilennr)=(?,?,?))"
+	" join prov_config c using (artikelid) join"
+	" prov_verkaufer v on (v.kundennr=a.kundennr and v.verknr=a.verknr))"
+	" where (e.instanz,e.auftragid,e.zeilennr)=(?,?,?)");
+
+ q << InstanzID() << Id() << getZnr() << InstanzID() << Id() << getZnr();
+
+ SQLerror::test(__FILELINE__);
+
+ Query("select provsatz from auftragentry where "
+	"(instanz,auftragid,zeilennr)=(?,?,?)")
+	<< InstanzID() << Id() << getZnr()
+ 	>> provsatz;
+
+ SQLerror::test(__FILELINE__);
+}
+
+

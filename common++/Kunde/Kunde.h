@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.51 2003/05/07 13:25:00 jacek Exp $
+// $Id: Kunde.h,v 1.52 2003/06/18 10:17:57 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -416,6 +416,9 @@ public:
 	std::string getABIBankName(bool force=false) const;
 	void setABI_CAB(const std::string abi, const std::string cab) const throw(SQLerror);
 	void setIBAN(const std::string iban) const throw(SQLerror);	
+	int getAbrZyklus() const throw(SQLerror);
+	void setAbrZyklus(int mon) const throw(SQLerror);
+	fixedpoint<2> getProvAbschlag() const throw(SQLerror);
 #endif
 
  int Sprache() const throw(SQLerror);

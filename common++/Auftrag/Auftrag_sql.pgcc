@@ -350,6 +350,7 @@ void Auftrag::setVerknr(const Kunde::ID vid) throw(SQLerror)
  exec sql update auftrag set verknr=:VERKNR:IVERKNR
 	where auftragid= :AUFTRAGID and instanz=:INSTANZ;
  SQLerror::test("setVerknr: update verknr");
+ verknr=vid;
 }
 
 

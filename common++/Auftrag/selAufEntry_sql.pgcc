@@ -1,4 +1,4 @@
-// $Id: selAufEntry_sql.pgcc,v 1.28 2003/03/24 12:12:10 christof Exp $
+// $Id: selAufEntry_sql.pgcc,v 1.29 2003/06/18 10:17:57 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -69,7 +69,8 @@ FetchIStream &operator>>(FetchIStream &is, AufEintrag &ae)
    	>> ae.lasteditdate_uid
    	>> ae.lasteditdate 
    	>> ae.letzte_lieferung
-   	>> ae.preisliste;
+   	>> ae.preisliste
+	>> FetchIStream::MapNull(ae.provsatz,0);
 
    ae.prozess=cH_Prozess(prozid ? prozid : cH_Prozess::default_pid);
    if(! prozid) ae.prozdate=ManuProC::Datum();
