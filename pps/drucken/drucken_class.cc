@@ -761,7 +761,12 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 	if(schema_own->Id() != schema_mem->Id())
 	  {
 	   cH_ArtikelBezeichnung own_bez(artikelbase,schema_own->Id());
-	   drucken_artikel(os,own_bez,false,linecolor,erste_spalte,schema_own);
+	   if(!ean_code || Typ()==Lieferschein)
+	     drucken_artikel(os,own_bez,false,linecolor,erste_spalte,schema_own);
+	   else // nur Auffüllen; die Daten kommen in die zweite Spalte
+	     {for(int signc=0;signc<schema_own->size(1);signc++)
+	       os << "&"; 
+	     }
 	  }
 #endif         
          
@@ -851,6 +856,19 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 
         os<<"\\\\\n";
         --zeilen_passen_noch;
+
+#ifdef MABELLA_EXTENSIONS
+	if(schema_own->Id() != schema_mem->Id() && ean_code && Typ()!=Lieferschein)
+	  {
+	   cH_ArtikelBezeichnung own_bez(artikelbase,schema_own->Id());
+	   os << "&&&&";
+           if(schema_own->Id()!=own_bez->getExtBezSchema()->Id())
+	     drucken_artikel(os,own_bez,false,linecolor,erste_spalte,schema_own);
+	   os << "\\multicolumn{4}{l}{" <<own_bez->Bezeichnung()<<"}";
+	   os << "\\\\\n";
+           --zeilen_passen_noch;
+	  }
+#endif         
 }
 
 
@@ -1058,12 +1076,12 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
 #endif
   
   os << "\\settowidth{\\breite}{"<<ug<<" "<<mld->MLT(MultiL_Dict::TXT_BEZEICHNUNG)<<"}%\n";
-//#ifdef MABELLA_EXTENSIONS
-//  os << "\\setlength{\\tabcolsep}{1.5mm}";
-//#endif
+#ifdef MABELLA_EXTENSIONS
+  os << "\\setlength{\\tabcolsep}{1.5mm}";
+#endif
   os << "\\begin{tabularx}{" << TABW << "cm}{"<<tabcolumn<<"}"<<"\\\\\n";
 
-  os << ueberschriften << "\\\\\n";
+  os << ueberschriften;
   --zeilen_passen_noch;
 
   if(preise_addieren && preisspalte>=2)
@@ -1076,13 +1094,14 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
   if(schema_mem->Id() != schema_own->Id() && ean_code && Typ()!=Lieferschein)
     {
      os << "\\\\[-1ex]&\\multicolumn{3}{l}{\\scriptsize{Ihre Artikelbezeichnung}}";
-     os << "&\\multicolumn{4}{l}{";
+     os << "&\\multicolumn{4}{l}{\\scriptsize{";
      for(ExtBezSchema::const_sigiterator j=schema_own->sigbegin(1);
      				j!=schema_own->sigend(1);++j)
        os << " " << j->bezkomptext << " " << j->separator;
-     os << "}\\\\\n";
+     os << "}}\\\\\n";
      --zeilen_passen_noch;
     }
+  else os << "\\\\\n";
 
   os << "\\hline\n";
 
