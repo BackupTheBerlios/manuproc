@@ -7,7 +7,7 @@ case $TABLES in
    	ALLTESTS="MP AP ZK"
    	;;
    database_tables_init)
-   	ALLTESTS="M P S L Z D Ls Lm LZ LA ZK ZKM J ZI ZI2 AL Pt V RP Rg RK RZ RKZ"
+   	ALLTESTS="M P S L Z D Ls Lm LZ LA ZK ZKM J ZI ZI2 AL Pt V V2 V3 RP Rg RK RZ RKZ"
    	;;
    database_tables_init_Mabella)
    	ALLTESTS="ZK AM roll minMen"
