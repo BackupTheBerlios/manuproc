@@ -3,7 +3,7 @@
 export PGHOST=localhost
 
 dropdb mabella_test_db
-createdb initmabella_test_db
+createdb mabella_test_db
 
 P="database_tables_init_Mabella"
 

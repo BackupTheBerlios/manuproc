@@ -1009,6 +1009,7 @@ void usage(const std::string &argv0,const std::string &argv1)
                   "\tZweiterAuftrag_frueheres(D)atum|\n"
                   "\t(L)iefer(s)cheine|(L)ieferscheine(m)engen|\n"
                   "\t(L)ieferschein(Z)usatzeintrag|(L)ieferscheinZweiter(A)uftrag_frueheresDatum|\n"
+                  "\t(L)ieferschein(J)acek\n"
                   "\t(Z)wei(K)unden)\n"
                   "\t(Z)wei(K)unden(M)engeFreigeben\n"
                   "\t(M)anu(P)roCTest\n"
