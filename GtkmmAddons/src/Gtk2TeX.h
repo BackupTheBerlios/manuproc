@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: Gtk2TeX.h,v 1.7 2003/12/11 08:40:55 jacek Exp $
+// $Id: Gtk2TeX.h,v 1.8 2003/12/30 08:34:59 christof Exp $
 
 #include <TeX.h>
 #include <iostream>
@@ -42,7 +42,10 @@ namespace Gtk2TeX
 		int deep;
 		std::deque<guint> sequence; // sequence of cols
 
-		// e.g. by tv->get_selection()->get_selected(tv->get_model());
+		// e.g. by tv->get_selection()->get_selected();
+		// because of a gtkmm bug :-( you have to use
+		// const_cast<Gtk::TreeIter&>(tf.selection)
+		//	=tv->get_selection()->get_selected();
 		Gtk::TreeModel::const_iterator selection;
 		// Glib::RefPtr<Gtk::TreeSelection> selection;
 		// there's no selection ctor ... so 
