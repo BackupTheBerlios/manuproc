@@ -1,4 +1,4 @@
-/* $Id: ArtikelImLager.cc,v 1.2 2002/12/10 12:28:50 thoma Exp $ */
+/* $Id: ArtikelImLager.cc,v 1.3 2002/12/20 13:00:11 thoma Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -53,5 +53,16 @@ ArtikelImLager::ArtikelImLager(const cH_ppsInstanz &instanz,const ArtikelBase &a
    }
  assert(menge_dispo_auftraege>=0);
  assert(menge_plan_auftraege>=0);
+}
+
+void ArtikelImLager::reduce_in_dispo(const int uid,AuftragBase::mengen_t menge)
+{
+  for(std::vector<AufEintrag>::iterator i=V_dispo_auftraege.begin();i!=V_dispo_auftraege.end();++i)
+   {
+     AuftragBase::mengen_t M=AuftragBase::min(i->getRestStk(),menge);
+     i->updateStkDiffBase__(uid,-M);
+     menge-=M;
+     if(menge==0) break;
+   }
 }
 

@@ -1,4 +1,4 @@
-/* $Id: ArtikelImLager.h,v 1.1 2002/11/22 15:58:20 christof Exp $ */
+/* $Id: ArtikelImLager.h,v 1.2 2002/12/20 13:00:11 thoma Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -40,6 +40,8 @@ class ArtikelImLager : public ArtikelBase
 
       std::vector<AufEintrag> getDispoAuftraege() const {return V_dispo_auftraege;}
       std::vector<AufEintrag> getPlanAuftraege() const {return V_plan_auftraege;}
+
+      void reduce_in_dispo(const int uid,AuftragBase::mengen_t menge);
 };
 
 #endif

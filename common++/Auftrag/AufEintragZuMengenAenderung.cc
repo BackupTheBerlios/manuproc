@@ -1,4 +1,4 @@
-// $Id: AufEintragZuMengenAenderung.cc,v 1.6 2002/12/19 16:22:20 thoma Exp $
+// $Id: AufEintragZuMengenAenderung.cc,v 1.7 2002/12/20 13:00:11 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -49,7 +49,16 @@ void AufEintragZuMengenAenderung::increase_parents__reduce_assingments(const int
       AuftragBase::mengen_t m=AuftragBase::min(j->Menge,menge);
 
       AufEintragZu(j->AEB).setMengeDiff__(child_aeb,-m);
-      AufEintrag(j->AEB).updateStkDiff__(uid,m,true,ManuProC::Auftrag::r_Produziert);
+      AufEintrag cAE(child_aeb);
+      // Den er suchen
+      int znr,dummy;
+      AufEintragBase::mengen_t M_;
+      AuftragBase AB_(child_aeb.Instanz(),AuftragBase::ungeplante_id);
+      AB_.existEntry(cAE.Artikel(),cAE.getLieferdatum(),znr,dummy,M_,OPEN);
+//      AufEintrag(j->AEB).updateStkDiff__(uid,m,true,ManuProC::Auftrag::r_Produziert);
+      AufEintragBase AEB_(AB_,znr);
+      AufEintrag(AEB_).updateStkDiff__(uid,m,true,ManuProC::Auftrag::r_Produziert);
+      AufEintragZu(j->AEB).setMengeDiff__(AEB_,m);
       menge-=m;
       if(menge==AuftragBase::mengen_t(0)) break;
     }         

@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.37 2002/12/19 16:22:20 thoma Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.38 2002/12/20 13:00:11 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -236,7 +236,7 @@ void AufEintrag::setInstanzen(const AufStatVal newstatus,const int uid,const Pet
 
 AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool instanzen,ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Menge=",menge,"Instanzen(bool)=",instanzen,"Reason=",reason);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AE=",*this,"Menge=",menge,"Instanzen(bool)=",instanzen,"Reason=",reason);
  if(reason==ManuProC::Auftrag::r_None) assert(!instanzen);
  if(menge==mengen_t(0))  return menge;
  if(auftragstatus==OPEN || auftragstatus==UNCOMMITED)
@@ -244,6 +244,27 @@ AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool in
    Transaction tr;
    exec sql lock auftragentry in exclusive mode;
    SQLerror::test("updateStkDiff: lock table auftragentry");
+
+   // Lager berücksichtigen
+   if(menge>0 && Id()==AuftragBase::ungeplante_id)
+    {
+      ArtikelImLager AIL(Instanz(),Artikel(),getLieferdatum());
+      if(AIL.getMengeDispo()>0) 
+       {
+cout << "Lagermenge: "<<AIL.getMengeDispo()<<'\n';
+         mengen_t lagermengediff;
+         if(AIL.getMengeDispo()>menge) {lagermengediff=menge; menge=0; }
+         else             {menge-=AIL.getMengeDispo(); lagermengediff=AIL.getMengeDispo();}
+         AIL.reduce_in_dispo(uid,lagermengediff);         
+         // Eltern 0er holen
+         std::list<AufEintragZu::st_reflist> L=AufEintragZu(*this).get_Referenz_list_ungeplant(false);
+         assert(L.size()==1);
+         AufEintragBase ElternAEB=L.begin()->AEB;
+         AufEintragZu(ElternAEB).setMengeDiff__(*this,-lagermengediff);
+         AuftragBase AB1er(Instanz(),AuftragBase::plan_auftrag_id);
+         AB1er.tryUpdateEntry(lagermengediff,getLieferdatum(),Artikel(),OPEN,uid,ElternAEB);
+       }     
+    }
    mengen_t mt=updateStkDiffBase__(uid,menge);
 
 //cout << "M;"<<menge<<'\t'<<mt<<'\n';
@@ -267,9 +288,6 @@ void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,ManuProC::Auft
    "Reason=",reason);
  std::list<AufEintragZu::st_reflist> KindListeU = AufEintragZu(*this).get_Referenz_list(*this,true);
  try{
-//  std::vector<ArtikelBase> VA;
-//  std::list<AufEintragZu::st_reflist> ZU;
-
 /*
   if(reason==ManuProC::Auftrag::r_Anlegen || reason==ManuProC::Auftrag::r_Closed) 
          ZU=KindListeU;
@@ -295,8 +313,6 @@ void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,ManuProC::Auft
        }
 */
      }
-
-//  for(std::list<AufEintragZu::st_reflist>::iterator i=ZU.begin();i!=ZU.end();++i)
   for(MapArt_t::iterator i=MapArt.begin();i!=MapArt.end();++i)
    {
      ArtikelBaum::faktor_t faktor = ArtikelBaum(ArtId()).Faktor(i->first);
@@ -309,7 +325,11 @@ void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,ManuProC::Auft
         mengen_t M=menge;
         if(M<0) M=-AuftragBase::min(j->Menge,M.abs());
         if(j->AEB.Id()==AuftragBase::ungeplante_id || j->AEB.Instanz()->LagerInstanz())
+{
+//cout << "HIER: "<<AE<<'\t'<<M<<'\t';
            M=AE.updateStkDiff__(uid,M,true,reason);
+//cout <<'\t'<< M<<'\n';
+}
         else 
           {
             assert(j->AEB.Id()!=AuftragBase::dispo_auftrag_id);
@@ -337,6 +357,18 @@ void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,ManuProC::Auft
   }catch(NoAEB_Error &e) 
   {std::cerr <<"Falsche Anzahl von AufEinträgen: "<<e.what()<<'\n'; 
    exit(1);}
+
+  if(KindListeU.empty()) // Neuer Code: neuanlegen
+   {
+     if(Instanz()->LagerInstanz())
+       {
+        AuftragBase AB(ppsInstanz::getProduktionsInstanz(Artikel()),AuftragBase::ungeplante_id);
+        AB.tryUpdateEntry(oldmenge,getLieferdatum(),Artikel(),OPEN,uid,*this);
+       }
+     else
+       InstanzAuftraegeAnlegen(*this,oldmenge,uid,true);
+   }
+
 
 #if 0
   // Wenn ein 0er ein geplantes Kind hat, für das noch freie Menge (2er)
@@ -520,6 +552,7 @@ AufEintrag::AufEintrag(const AufEintragBase &aebb) throw (SQLerror,NoAEB_Error)
 }
 
 
+#if 0
 void AufEintrag::moveInstanz(int uid,const AuftragBase &newAuftrag) throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"NewAuftrag=",newAuftrag);
@@ -581,6 +614,7 @@ void AufEintrag::moveInstanz(int uid,const AuftragBase &newAuftrag) throw(SQLerr
  else AufEintragZu::moveInstanz(AufEintragZu::Von,oldAEB,*this);
  AufEintragZu::moveInstanz(AufEintragZu::Nach,oldAEB,*this);
 }
+#endif
 
 
 

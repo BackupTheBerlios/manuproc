@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.h,v 1.38 2002/11/25 15:21:52 thoma Exp $
+// $Id: AufEintragBase.h,v 1.39 2002/12/20 13:00:11 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -75,18 +75,21 @@ public:
  // Planen
  // *this ist der ZielAufEintragBase
  void PlanenDispo(int uid,const ArtikelBase& artikel,mengen_t menge,const ManuProC::Datum &datum);
+/*
  void vormerken_oder_bestellen(int uid,const AuftragBase::mengen_t &vormerkmenge,
             AuftragBase::mengen_t bestellmenge,
             const ArtikelBase &artikel,const Petig::Datum &lieferdatum,
             std::vector<AufEintrag> dispo_auftrag,
             AuftragBase::st_tryUpdateEntry st_bool=st_tryUpdateEntry()) const throw(SQLerror);
+*/
 private:
 // friend class LagerBase;
  friend class AuftragBase;
+/*
  void AufEintragBase::artikel_vormerken_oder_schnappen(bool schnappen,AuftragBase::mengen_t menge,
       const ArtikelBase &artikel,int uid,ManuProC::Auftrag::Action reason,
       std::vector<AufEintrag> dispo_auftrag) const ;
-
+*/
 
 public:
 

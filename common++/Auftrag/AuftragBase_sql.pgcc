@@ -173,7 +173,24 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
  Transaction tr;
  exec sql lock table auftragentry in exclusive mode;
  SQLerror::test(__FILELINE__);  
+ 
+ // neuer Code bis #if0
 
+ if(!existEntry(artikel,lieferdatum,znr,neuznr,altemenge,status))
+  {
+    Auftrag A(*this);
+    AufEintragBase newaeb=A.push_back(0,lieferdatum,artikel,status,uid,false)  ;
+    znr=newaeb.ZNr();
+   }
+ AufEintragBase NeuAEB(*this,znr);
+ if(NeuAEB.Id()!=AuftragBase::dispo_auftrag_id) 
+      AufEintragZu(altAEB).Neu(NeuAEB,bestellt);
+ AufEintrag(NeuAEB).updateStkDiff__(uid,bestellt,true,ManuProC::Auftrag::r_Anlegen);
+ if(NeuAEB.Id()==AuftragBase::dispo_auftrag_id)
+      AufEintragZu(NeuAEB).Neu(altAEB,bestellt);
+
+
+#if 0
  ArtikelImLager AIL(instanz,artikel,lieferdatum);
  AuftragBase::mengen_t lagermenge=AIL.getMengeDispo();
 
@@ -207,6 +224,7 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
      if(altAEB.valid())
         AufEintragZu(class AufEintragBase(*this,znr)).Neu(altAEB,bestellt);
    }
+#endif
   tr.commit();
   return znr;
 }

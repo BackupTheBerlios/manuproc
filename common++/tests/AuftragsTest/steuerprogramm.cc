@@ -237,6 +237,7 @@ cout << "A\n";
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::_Garn__Einkauf),Kunde::default_id);
        int kupfer_znr=2;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::_Garn__Einkauf,AuftragBase::ungeplante_id,kupfer_znr));
+
        AEP.Planen(UID,100,PA,PLANDATUM5);
        erfolgreich=C.teste(Check::Menge,"_planen_kupfer",mit_reparatur_programm);
        if(!erfolgreich) { cout << "Planen des Kupfereinkaufs \n\n";
@@ -249,6 +250,7 @@ cout << "B\n";
        int faerberei_znr=1;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Faerberei,AuftragBase::ungeplante_id,faerberei_znr));
 ManuProC::Tracer::Enable(AuftragBase::trace_channel);
+cout << "LOS GEHTS\n";
        AEP.Planen(UID,7000,PA,PLANDATUM4);
        erfolgreich=C.teste(Check::Menge,"_planen_faerberei_teil",mit_reparatur_programm);
        if(!erfolgreich) { cout << "Teil-Planen der Färberei \n\n";

@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.21 2002/12/19 13:57:21 thoma Exp $ */
+/* $Id: AufEintrag.h,v 1.22 2002/12/20 13:00:11 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -180,7 +180,7 @@ public:
 
 
  // wird von Artikeleingabe verwendet; gibt Zeilennummer zurück;
- void moveInstanz(int uid,const AuftragBase& auftrag) throw(SQLerror);
+//Alter Code: void moveInstanz(int uid,const AuftragBase& auftrag) throw(SQLerror);
 
  cH_Lieferschein getLieferschein() const ;
 private:

@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.18 2002/12/19 16:22:20 thoma Exp $
+// $Id: AuftragBase.cc,v 1.19 2002/12/20 13:00:11 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -85,11 +85,13 @@ void AuftragBase::InstanzAuftraegeAnlegen(const AufEintrag& AE,mengen_t menge,in
       AuftragBase neuAuftrag(ppsInstanz::getBestellInstanz(i->rohartikel),ungeplante_id);
       // Instanzen, die selber Produzieren dürfen bei einer automatischen
       // Auftragsplanung (AuftragID=plan_auftrag_id=1)
-      // NICHT erhöt werden.
+      // NICHT erhöht werden.
+/*Alter Code
       if(neuAuftrag.Instanz()->ProduziertSelbst() && automatisch_geplant)
          continue;
-
+*/
       Petig::Datum newdate=AE.getLieferdatum()-Instanz()->ProduktionsDauer();
+
       st_tryUpdateEntry st(automatisch_geplant);
       neuAuftrag.tryUpdateEntry(i->menge*menge,newdate,
                  i->rohartikel,AE.getEntryStatus(),uid,AE,st);
@@ -176,7 +178,7 @@ void AuftragBase::menge_neu_verplanen(const int uid,cH_ppsInstanz instanz,const 
    {
      AuftragBase::mengen_t M=AuftragBase::min(i->getRestStk(),m);
      ArtikelImLager AIL(instanz,i->Artikel(),i->getLieferdatum());
-     i->artikel_vormerken_oder_schnappen(false,M,i->Artikel(),uid,reason,AIL.getDispoAuftraege());
+//Alter Code     i->artikel_vormerken_oder_schnappen(false,M,i->Artikel(),uid,reason,AIL.getDispoAuftraege());
      if(reason==ManuProC::Auftrag::r_Anlegen || reason==ManuProC::Auftrag::r_Planen||
         reason==ManuProC::Auftrag::r_Closed)
             i->updateStkDiffInstanz__(uid,-M,reason);

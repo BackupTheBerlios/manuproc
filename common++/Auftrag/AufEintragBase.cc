@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.33 2002/12/13 09:27:21 thoma Exp $
+// $Id: AufEintragBase.cc,v 1.34 2002/12/20 13:00:11 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -137,6 +137,7 @@ void AufEintragBase::ExistMenge(const std::string &s) const
 }
 
 
+#if 0
 void AufEintragBase::vormerken_oder_bestellen(int uid,const AuftragBase::mengen_t &vormerkmenge,
             AuftragBase::mengen_t bestellmenge,
             const ArtikelBase &artikel,const Petig::Datum &lieferdatum,
@@ -146,7 +147,6 @@ void AufEintragBase::vormerken_oder_bestellen(int uid,const AuftragBase::mengen_
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Vormerkmenge=",vormerkmenge,
       "Bestellmenge=",bestellmenge);
   assert(vormerkmenge<=bestellmenge);
-
 
   // 1. Fall: Reicht die Menge, die wir bekommen haben aus?
   if(vormerkmenge>mengen_t(0))
@@ -226,4 +226,5 @@ void AufEintragBase::artikel_vormerken_oder_schnappen(bool schnappen,AuftragBase
 
 }
 
+#endif
             
