@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.16 2002/12/04 17:27:27 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.17 2002/12/04 17:31:10 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -42,6 +42,7 @@ public:
 	void setDataVec(const SimpleTreeModel::datavec_t &d) {  model->setDataVec(d); }
 	const SimpleTreeModel::datavec_t &getDataVec() const { return model->getDataVec(); }
 	void setTitles(const std::vector<std::string>& T) {  model->setTitles(T); }
+	void clear() { model->clear(); }
 };
 
 class SimpleTreeStore : public SigC::Object, public SimpleTreeModel_Proxy
@@ -71,7 +72,7 @@ private:
 
 	std::string mem_prog,mem_inst;
 	
-	std::vector<Gdk_Color> colors;
+//	std::vector<Gdk_Color> colors;
 	static const unsigned num_colors=8;
 
 	void save_remembered() const;

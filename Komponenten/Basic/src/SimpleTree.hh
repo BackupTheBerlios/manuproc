@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.7 2002/12/04 11:20:15 christof Exp $
+// $Id: SimpleTree.hh,v 1.8 2002/12/04 17:27:27 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -43,16 +43,22 @@ public:
 	typedef SimpleTreeStore::const_iterator const_iterator;
 	const_iterator begin() const { return sts.begin(); }
 	const_iterator end() const { return sts.end(); }
+	void set_tree_column_visibility(unsigned index,bool visible)
+	{  sts.set_tree_column_visibility(index,visible); }
+	void clear() { sts.clear(); }
 };
 
 // I took the more esoteric features out to SimpleTree, 
 // so they do not confuse the beginner
 class SimpleTree_Basic : public Gtk::TreeView, public SimpleTreeStore_Proxy
 {private:
+	std::deque<guint> clicked_seq;
+
 	void on_title_changed(guint nr);
 	void on_selection_changed();
 	SigC::Signal1<void,cH_RowDataBase> _leaf_selected;
 	SigC::Signal1<void,const TreeRow &> _node_selected;
+	SigC::Signal0<void> _reorder;
 	
 public:
 	SimpleTree_Basic(unsigned int cols,int attrs=-1);
@@ -73,7 +79,16 @@ public:
 	SimpleTree(guint columns=0,guint attr=-1) : 
 		SimpleTree_Basic(columns,attr)
 	{}
-	
+	SimpleTree(guint cols, guint attr, const std::vector<std::string>& T
+                                ,const std::vector<cH_RowDataBase>& D)
+	: SimpleTree_Basic(cols,attr)
+	{  setTitles(T);
+	   setDataVec(D);
+	}
+	SimpleTree(guint cols, guint attr, const std::vector<std::string>& T)
+	: SimpleTree_Basic(cols,attr)
+	{  setTitles(T);
+	}	
 private:
  // strictly this belongs into SimpleTreeStore
  template <class T> 
@@ -161,24 +176,18 @@ public:
  template <class T> void ForEachLeaf(T &t) const
  {  ForEachLeaf2(begin(),end(),t); }
  
+ void Expand_recursively();
+ void Collapse();
 };
 
 #if 0
-#include <deque>
 #include <gtkmm/menu.h>
 #include <gtkmm/checkmenuitem.h>
 
 class SimpleTree : public Gtk::TreeView
-{
-	std::deque<guint> clicked_seq;
- 
- Gtk::Menu *menu;  
+{Gtk::Menu *menu;  
  Gtk::CheckMenuItem *titles_menu;
  bool titles_bool:1; 
- 
-
- std::vector<Gdk_Color> colors;
- static const unsigned int num_colors=8;
  
  void Titles(Gtk::CheckMenuItem *titles);
  void Auffuellen(Gtk::CheckMenuItem *auffuellen);
@@ -202,83 +211,11 @@ class SimpleTree : public Gtk::TreeView
  void on_Color(const Gtk::CheckMenuItem *sp);
  
 protected: 
-
- // set column names, fill data and display
- // also see discussion in treebase.cc
- void init();
  // StandardReihenfolge setzen
  virtual void setSequence();
- virtual const std::string getColTitle(guint seq) const;
-
-// virtual void setColTitles();
-// virtual void fillDataVec() {};
- void fillTCL();
- void refillTCL(bool clear_me=true);
 
 public:
- TreeBase(guint cols, guint attr=0);
- ~TreeBase();
- void setDataVec(const std::vector<cH_RowDataBase> &d,bool clear_me=true) 
- { datavec=d; 
-   refillTCL(clear_me);
- };
- void redisplay(cH_RowDataBase row,guint index);
- 
- static void Expand_recursively(TCListRow_API &api);
- void Expand_recursively();
- void Collapse(){collapse();}
- 
  void show_titles(bool show);
- void set_tree_column_visibility(unsigned int column,bool visible);
- 
- void clear();
- SigC::Signal1<void,cH_RowDataBase> leaf_selected;
- SigC::Signal1<void,const TreeRow &> node_selected;
- SigC::Signal0<void> reorder;
- 
- 
-
-
-protected:
-
-// @ ins cc file ?
- static TreeRow *defaultNewNode
- 		(guint deep, const cH_EntryValue &v, guint child_s_deep, 
- 		cH_RowDataBase child_s_data, bool expand,
- 		const TreeRow &suminit);
- virtual TreeRow *NewNode
- 		(guint deep, const cH_EntryValue &v, guint child_s_deep, 
- 		cH_RowDataBase child_s_data, bool expand,
- 		const TreeRow &suminit)
- {  return (*node_creation)(deep,v,child_s_deep,child_s_data,expand,suminit); }
-public:
- SimpleTree(guint cols, guint attr, const std::vector<std::string>& T
-                                ,const std::vector<cH_RowDataBase>& D)
-   : TreeBase(cols,attr), titles(T), node_creation(&defaultNewNode)
-   {  datavec=D;
-      // make sure this is not called if you derive this from class !
-      init(); 
-   }
- SimpleTree(guint cols, guint attr, const std::vector<std::string>& T)
-   : TreeBase(cols,attr), titles(T), node_creation(&defaultNewNode)
-   {  // make sure this is not called if you derive this from class !
-      init(); 
-   }
- SimpleTree(guint cols, guint attr=0)
-   : TreeBase(cols,attr), node_creation(&defaultNewNode)
-   {  }
- 
- void setTitles(const std::vector<std::string>& T)
-   {  titles=T;
-      setColTitles();
-   }
-
- const std::string getColTitle(guint seq) const
-   {  if (seq>=0 && seq<titles.size()) return titles[seq];
-      return ""; 
-   }
-  
- void set_NewNode(NewNode_fp x) { node_creation=x; }
 };
   
 #endif

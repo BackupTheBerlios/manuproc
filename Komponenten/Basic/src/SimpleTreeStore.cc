@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.14 2002/12/04 09:22:14 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.15 2002/12/04 17:27:27 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -167,6 +167,16 @@ void SimpleTreeStore::defaultSequence()
    for(guint i=0; i<Cols(); ++i) currseq.push_back(i);
 }
 
+void SimpleTreeStore::SummenAnzeigen(Gtk::TreeModel::Children parent)
+{for(iterator i = parent.begin(); i!=parent.end(); ++i)
+ {  Handle<TreeRow> htr=(*i)[m_columns.row];
+    if (htr) SummenAnzeigen(*i,htr);
+
+    Gtk::TreeModel::Children ch=i->children();
+    if (ch.begin()!=ch.end()) SummenAnzeigen(ch);
+ }
+}
+
 void SimpleTreeStore::redisplay()
 {
  
@@ -178,35 +188,20 @@ void SimpleTreeStore::redisplay()
 
 // neu einordnen, Summen berechnen
  for(; i!=j; ++i)
-    insertLine(m_refTreeStore->children(),*i,currseq,0);
+    insertLine(m_refTreeStore->children(),*i,currseq.begin(),0,false);
+
+ SummenAnzeigen(m_refTreeStore->children());
 
 #if 0
-// Summen anzeigen
- for(TCListRow_API::iterator i = begin(); i!=end(); ++i)
- {  if (!((TreeRow*)(*i).get_user_data())->Leaf())
-   	((TreeRow*)(*i).get_user_data())->refreshSum(*this);
- }
  show_or_hide_Spalten();
  expand();
-
-//CList Breite anpassen
- for (unsigned int i=0;i<Cols();++i)
-        set_column_auto_resize(i,true);
-
  // callback breitstellen:
  reorder();
 #endif
 }
 
 void SimpleTreeStore::on_line_appended(cH_RowDataBase row)
-{  insertLine(m_refTreeStore->children(),row,currseq,0);
-// Summen neu anzeigen (hmmm, overkill!)
-#if 0
- for(TCListRow_API::iterator i = begin(); i!=end(); ++i)
- {  if (!((TreeRow*)(*i).get_user_data())->Leaf())
-   	((TreeRow*)(*i).get_user_data())->refreshSum(*this);
- }
-#endif
+{  insertLine(m_refTreeStore->children(),row,currseq.begin(),0,true);
 }
 
 namespace {
@@ -231,19 +226,31 @@ public:
 #define NurEinKind(x) ((x).begin()!=(x).end() && ++((x).begin()) == (x).end())
 #define MehrAlsEinKind(x) ((x).begin()!=(x).end() && ++((x).begin()) != (x).end())
 
+void SimpleTreeStore::SummenAnzeigen(const Gtk::TreeRow &row,const Handle<TreeRow> &htr)
+{  assert(htr);
+   assert(row[m_columns.childrens_deep]!=0);
+   unsigned i=row[m_columns.childrens_deep];
+   if (i<Cols()) 
+      row[m_columns.cols[i]]= "... "+htr->Value(currseq[i],ValueData())->getStrVal();
+   for (++i;i<Cols();++i)
+      row[m_columns.cols[i]]= htr->Value(currseq[i],ValueData())->getStrVal();
+}
+
 void SimpleTreeStore::insertLine(Gtk::TreeModel::Children parent,
-            const cH_RowDataBase &v, std::deque<guint> selseq, guint deep)
-{
+            const cH_RowDataBase &v,  std::deque<guint>::const_iterator seqit,
+            guint deep, bool summe_aktualisieren)
+{if (seqit==currseq.end()) return;
 recurse:
  Gtk::TreeStore::iterator current_iter=parent.begin();
  Gtk::TreeStore::iterator apiend = parent.end();
  Gtk::TreeStore::iterator upper_b=apiend;
- guint seqnr=selseq.front();	
+ std::deque<guint>::const_iterator seqlast=--currseq.end();
+ guint seqnr=*seqit;
  cH_EntryValue ev=v->Value(seqnr,ValueData());
 
 // node/leaf mit Wert<=ev suchen
 // optimization: we expect to need upper_bound if this is the last attribute
- if (!MehrAlsEinKind(selseq))
+ if (seqit==seqlast) // !MehrAlsEinKind(selseq))
  {  std::pair<Gtk::TreeStore::iterator,Gtk::TreeStore::iterator> range 
  		= std::equal_range(current_iter,apiend,ev,
  				CompareValue(m_columns.value));
@@ -258,37 +265,41 @@ recurse:
    {//----------------- gleicher Wert ------------------
     if ((ev) == (*current_iter)[m_columns.value])
      { 
-      if (MehrAlsEinKind(selseq)) // ???? wenn Blatt noch nicht erreicht ???
+      if (seqit!=seqlast)
+      // MehrAlsEinKind(selseq)) // ???? wenn Blatt noch nicht erreicht ???
       				// SimpleTree2: Summen stehen mit drin ...
       // eine neue Node erzeugen(?)
       {  cH_RowDataBase v2=(*current_iter)[m_columns.leafdata];
          guint child_s_deep=deep;
 
 	do 
-	{selseq.pop_front();
+	{seqit++;
 	 ++child_s_deep;
 	 
 	 // darum muss sich eine andere Node kümmern
          if (child_s_deep==(*current_iter)[m_columns.childrens_deep])
          {weiter_unten_einhaengen:
             Handle<TreeRow> htr=(*current_iter)[m_columns.row];
-            if (!!htr) htr->cumulate(v);
+            if (htr) 
+            {  htr->cumulate(v);
+               if (summe_aktualisieren) SummenAnzeigen(*current_iter,htr);
+            }
             // goto ist schneller als (end?)rekursion !!!
             parent=current_iter->children();
             deep=child_s_deep;
             goto recurse;
-            // insertLine(current_iter->children(),v,selseq,child_s_deep);
+            // insertLine(current_iter->children(),v,seqit,child_s_deep);
             // return;
          }
          
-        } while (MehrAlsEinKind(selseq) 
-			&& v->Value(selseq.front(),ValueData())
-				==v2->Value(selseq.front(),ValueData()));
+        } while (seqit!=seqlast // MehrAlsEinKind(selseq) 
+			&& v->Value(*seqit,ValueData())
+				==v2->Value(*seqit,ValueData()));
          
 	 // mitten in current_iter einfügen 
 	 // (current_iter wandert nach unten rechts)
          // (man könnte dies auch aufbrechen nennen)
-         current_iter= MoveTree (current_iter,deep,child_s_deep,selseq.front());
+         current_iter= MoveTree (current_iter,deep,child_s_deep,*seqit);
          goto weiter_unten_einhaengen;
       }
       else // Blatt erreicht
