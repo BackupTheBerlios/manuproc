@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.54 2004/02/12 09:02:30 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.55 2004/02/12 09:03:23 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -364,7 +364,7 @@ LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
 void LieferscheinEntry::deleteEntry(LieferscheinEntry &lse) throw(SQLerror)
 {
 #warning ganz schlechte Idee ... entweder wir brauchen das gleiche Lieferscheinobjekt oder gar keins ...
- lse.changeMenge(0,0,*cH_Lieferschein(Instanz(),Id()),false);
+ lse.changeMenge(0,0,*cH_Lieferschein(lse.Instanz(),lse.Id()),false);
  deleteMe(lse);
 }
 
