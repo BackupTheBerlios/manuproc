@@ -215,11 +215,11 @@ std::vector<LagerInhalt> ppsInstanzReparatur::getLagerInhalt() const
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Instanz());
   std::vector<LagerInhalt> LI;
-#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
+#if defined(PETIG_EXTENSIONS) && defined(MANUPROC_DYNAMICENUMS_CREATED)
   if(Instanz() == ppsInstanzID::Rohwarenlager)  LI=RohwarenLager().LagerInhalt();
   else if(Instanz() == ppsInstanzID::Bandlager) LI=JumboLager().LagerInhalt();
   else 
-#elsif defined MABELLA_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
+#elif defined MABELLA_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
   if(Instanz() == ppsInstanzID::FertigWarenLager)  
 	LI=FertigWarenLager::LagerInhalt();
   else 
