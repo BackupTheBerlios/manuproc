@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.21 2002/12/20 13:00:11 thoma Exp $
+// $Id: AufEintrag.cc,v 1.22 2002/12/20 15:35:40 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -131,6 +131,7 @@ std::string AufEintrag::Planung() const
 
 
 
+#if 0
 void AufEintrag::move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,ManuProC::Auftrag::Action reason) throw(std::exception)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"To=",AEB,"Menge=",menge,"Reason=",reason);
@@ -149,7 +150,7 @@ void AufEintrag::move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,
   AufEintragZu(*this).Neu(AEB,menge); 
   tr.commit();
 }      
-
+#endif
 
 AufEintragBase AufEintrag::getFirstKundenAuftrag() const
 {
@@ -312,13 +313,13 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
 
   if(reason==ManuProC::Auftrag::r_Planen) 
    {
-     updateStkDiff__(uid,-menge,true,reason);     
+     updateStkDiff__(uid,-menge,true,AufEintragBase(),reason);     
      if(!Instanz()->LagerInstanz() && Id()!=AuftragBase::plan_auftrag_id)
         InstanzAuftraegeAnlegen(AE1er,menge,uid);
 //      updateStkDiff__(uid,-menge,true,reason);
    }
 //  else
-     AE1er.updateStkDiff__(uid,menge,false,reason);
+     AE1er.updateStkDiff__(uid,menge,false,AufEintragBase(),reason);
 
 //   move_to(uid,AufEintragBase(zielauftrag,znr),menge,reason);
 
@@ -369,6 +370,7 @@ void AufEintrag::ProduktionsPlanung(int uid,mengen_t menge,const AuftragBase &zi
 }
 
 
+#if 0
 void AufEintrag::menge_fuer_aeb_freigeben(const mengen_t &menge,AufEintrag &ae,const int uid)
 {
   Transaction tr;  
@@ -392,4 +394,5 @@ void AufEintrag::menge_fuer_aeb_freigeben(const mengen_t &menge,AufEintrag &ae,c
 
  tr.commit();
 }
+#endif
 

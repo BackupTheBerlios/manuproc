@@ -1,4 +1,4 @@
-/* $Id: ArtikelBaum.h,v 1.16 2002/12/13 09:27:21 thoma Exp $ */
+/* $Id: ArtikelBaum.h,v 1.17 2002/12/20 15:35:39 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -113,9 +113,9 @@ public:
  static void new_Artikel(int uid,ArtikelBase fuer_artikel,const RohArtikel& RA);
  static void delete_Artikel(int uid,ArtikelBase fuer_artikel,ArtikelBase von_artikel);
 private:
- static void delete_from_zuordnung(int uid,ArtikelBase alt_artikel,ArtikelBase kind_artikel); 
- static void reduceChildren(int uid,const AufEintrag& AEB,const AufEintrag& oldAEB,AufEintragBase::mengen_t menge);
- static void create_in_zuordnung(int uid,ArtikelBase alt_artikel,ArtikelBase kind_artikel,fixedpoint<5> RohMenge); 
+//ALter Code static void delete_from_zuordnung(int uid,ArtikelBase alt_artikel,ArtikelBase kind_artikel); 
+//Alter Code static void reduceChildren(int uid,const AufEintrag& AEB,const AufEintrag& oldAEB,AufEintragBase::mengen_t menge);
+//Alter Code static void create_in_zuordnung(int uid,ArtikelBase alt_artikel,ArtikelBase kind_artikel,fixedpoint<5> RohMenge); 
 
 public:
  faktor_t Faktor(const ArtikelBase &kind) throw(SQLerror);

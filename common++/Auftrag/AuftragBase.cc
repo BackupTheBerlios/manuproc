@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.19 2002/12/20 13:00:11 thoma Exp $
+// $Id: AuftragBase.cc,v 1.20 2002/12/20 15:35:40 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -181,7 +181,7 @@ void AuftragBase::menge_neu_verplanen(const int uid,cH_ppsInstanz instanz,const 
 //Alter Code     i->artikel_vormerken_oder_schnappen(false,M,i->Artikel(),uid,reason,AIL.getDispoAuftraege());
      if(reason==ManuProC::Auftrag::r_Anlegen || reason==ManuProC::Auftrag::r_Planen||
         reason==ManuProC::Auftrag::r_Closed)
-            i->updateStkDiffInstanz__(uid,-M,reason);
+            i->updateStkDiffInstanz__(uid,-M,AufEintragBase(),reason);
      m-=M;
      if(menge==AuftragBase::mengen_t(0)) return;
    }

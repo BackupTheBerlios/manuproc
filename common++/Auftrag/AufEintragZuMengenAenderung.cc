@@ -1,4 +1,4 @@
-// $Id: AufEintragZuMengenAenderung.cc,v 1.7 2002/12/20 13:00:11 thoma Exp $
+// $Id: AufEintragZuMengenAenderung.cc,v 1.8 2002/12/20 15:35:40 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -57,7 +57,7 @@ void AufEintragZuMengenAenderung::increase_parents__reduce_assingments(const int
       AB_.existEntry(cAE.Artikel(),cAE.getLieferdatum(),znr,dummy,M_,OPEN);
 //      AufEintrag(j->AEB).updateStkDiff__(uid,m,true,ManuProC::Auftrag::r_Produziert);
       AufEintragBase AEB_(AB_,znr);
-      AufEintrag(AEB_).updateStkDiff__(uid,m,true,ManuProC::Auftrag::r_Produziert);
+      AufEintrag(AEB_).updateStkDiff__(uid,m,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
       AufEintragZu(j->AEB).setMengeDiff__(AEB_,m);
       menge-=m;
       if(menge==AuftragBase::mengen_t(0)) break;

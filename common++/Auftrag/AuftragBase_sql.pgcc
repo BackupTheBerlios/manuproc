@@ -185,7 +185,7 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
  AufEintragBase NeuAEB(*this,znr);
  if(NeuAEB.Id()!=AuftragBase::dispo_auftrag_id) 
       AufEintragZu(altAEB).Neu(NeuAEB,bestellt);
- AufEintrag(NeuAEB).updateStkDiff__(uid,bestellt,true,ManuProC::Auftrag::r_Anlegen);
+ AufEintrag(NeuAEB).updateStkDiff__(uid,bestellt,true,altAEB,ManuProC::Auftrag::r_Anlegen);
  if(NeuAEB.Id()==AuftragBase::dispo_auftrag_id)
       AufEintragZu(NeuAEB).Neu(altAEB,bestellt);
 

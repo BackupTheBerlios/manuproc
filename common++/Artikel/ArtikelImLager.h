@@ -1,4 +1,4 @@
-/* $Id: ArtikelImLager.h,v 1.2 2002/12/20 13:00:11 thoma Exp $ */
+/* $Id: ArtikelImLager.h,v 1.3 2002/12/20 15:35:39 thoma Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -32,6 +32,8 @@ class ArtikelImLager : public ArtikelBase
       std::vector<AufEintrag> V_dispo_auftraege;
       std::vector<AufEintrag> V_plan_auftraege;
 
+      void reduce_in_dispo_or_plan(const bool dispo,const int uid,AuftragBase::mengen_t menge) const;
+
    public:
       ArtikelImLager(const cH_ppsInstanz &instanz,const ArtikelBase &artikel,const Petig::Datum &datum) throw(SQLerror);
 
@@ -41,7 +43,10 @@ class ArtikelImLager : public ArtikelBase
       std::vector<AufEintrag> getDispoAuftraege() const {return V_dispo_auftraege;}
       std::vector<AufEintrag> getPlanAuftraege() const {return V_plan_auftraege;}
 
-      void reduce_in_dispo(const int uid,AuftragBase::mengen_t menge);
+      void reduce_in_dispo(const int uid,AuftragBase::mengen_t menge) const
+         {reduce_in_dispo_or_plan(true,uid,menge);}
+      void reduce_in_plan(const int uid,AuftragBase::mengen_t menge) const
+         {reduce_in_dispo_or_plan(false,uid,menge);}
 };
 
 #endif

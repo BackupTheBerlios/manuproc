@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum_sql.pgcc,v 1.13 2002/12/13 09:27:21 thoma Exp $
+// $Id: ArtikelBaum_sql.pgcc,v 1.14 2002/12/20 15:35:39 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -182,10 +182,12 @@ void ArtikelBaum::new_Artikel(int uid,ArtikelBase fuer_artikel,const RohArtikel&
    (:ARTIKELID,:PROZESS,:ALTARTIKELID,nullif(:MENGE,0.0),now(),:UID) ;
  SQLerror::test(__FILELINE__);
 
- create_in_zuordnung(uid,fuer_artikel,RA.rohartikel,RA.menge);
+
+//Alter Code create_in_zuordnung(uid,fuer_artikel,RA.rohartikel,RA.menge);
  tr.commit();
 }
 
+#if 0
 void ArtikelBaum::create_in_zuordnung(int uid,ArtikelBase alt_artikel,ArtikelBase kind_artikel,faktor_t RohMenge)
 {
 //  std::list<AufEintragBase> elternliste = AufEintragZu::get_AufEintragList_from_Artikel(alt_artikel,ArtikelStamm(alt_artikel).BestellenBei()->Id(),NOSTAT);
@@ -207,6 +209,7 @@ void ArtikelBaum::create_in_zuordnung(int uid,ArtikelBase alt_artikel,ArtikelBas
                         kind_artikel,AE.getEntryStatus(),uid,AEB);
    }  
 }
+#endif
 
 void ArtikelBaum::delete_Artikel(int uid,ArtikelBase fuer_artikel,ArtikelBase von_artikel)
 {
@@ -220,7 +223,7 @@ void ArtikelBaum::delete_Artikel(int uid,ArtikelBase fuer_artikel,ArtikelBase vo
    where id=:ARTIKELID and altartikelid=:ALTARTIKELID;
  SQLerror::test(__FILELINE__,100);
 
- delete_from_zuordnung(uid,fuer_artikel,von_artikel);
+//Alter Code delete_from_zuordnung(uid,fuer_artikel,von_artikel);
  tr.commit();
 }
 
@@ -229,6 +232,7 @@ void ArtikelBaum::delete_Artikel(int uid,ArtikelBase fuer_artikel,ArtikelBase vo
           :AEB(_AEB),oldAEB(_oldAEB),menge(_menge) {} };
 
 
+#if 0
 void ArtikelBaum::delete_from_zuordnung(int uid,ArtikelBase alt_artikel,ArtikelBase kind_artikel)
 {
      exec sql begin declare section;
@@ -283,8 +287,10 @@ void ArtikelBaum::delete_from_zuordnung(int uid,ArtikelBase alt_artikel,ArtikelB
                where artikelid=:KINDARTID) and menge=0 ;
      SQLerror::test(__FILELINE__,100);
 }
+#endif
 
 
+#if 0
 void ArtikelBaum::reduceChildren(int uid,const AufEintrag& AEB,
                                  const AufEintrag& oldAEB,
                                  AufEintragBase::mengen_t menge) 
@@ -304,6 +310,7 @@ void ArtikelBaum::reduceChildren(int uid,const AufEintrag& AEB,
      reduceChildren(uid,AufEintrag(i->AEB),AEB,i->Menge);
    }
 }        
+#endif
 
 void ArtikelBaum::Sort()
 {

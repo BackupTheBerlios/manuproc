@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.22 2002/12/20 13:00:11 thoma Exp $ */
+/* $Id: AufEintrag.h,v 1.23 2002/12/20 15:35:40 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -44,6 +44,7 @@ class cH_Lieferschein;
 
 
 class Lager;
+class ArtikelImLager;
 
 class AufEintrag : public AufEintragBase
 {
@@ -115,10 +116,10 @@ public:
 
 	
  void updateDispoENr(int dinr) throw(SQLerror);
- mengen_t updateStkDiff__(int uid,mengen_t menge,bool instanzen,ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_None) throw(SQLerror);
+ mengen_t updateStkDiff__(int uid,mengen_t menge,bool instanzen,const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_None) throw(SQLerror);
 private:
- void move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,ManuProC::Auftrag::Action reason) throw(std::exception);
- void updateStkDiffInstanz__(int uid,mengen_t menge,ManuProC::Auftrag::Action reason) throw(SQLerror);
+//? void move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,ManuProC::Auftrag::Action reason) throw(std::exception);
+ void updateStkDiffInstanz__(int uid,mengen_t menge,const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason) throw(SQLerror);
  void move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,const ArtikelBase artikel,int uid,ManuProC::Auftrag::Action reason);
 
 public:
@@ -130,7 +131,6 @@ public:
  void setLetzteLieferung(const ManuProC::Datum &datum) throw(SQLerror);
  // Ist (uid!=0) wird lasteditdate verändert.
  void setStatus(AufStatVal newstatus,int uid,bool force=false) throw(SQLerror);		
-// void setInstanzen(AufStatVal newstatus,int uid,ManuProC::Datum lieferdate,mengen_t part,int myznr=-1,int yourznr=-1);
  void setInstanzen(const AufStatVal newstatus,const int uid,const Petig::Datum &lieferdate,const mengen_t &Menge,const int myznr=-1,const int yourznr=-1);
 
  int split(int uid,mengen_t newmenge, const ManuProC::Datum &newld,bool dispoplanung=false) throw(SQLerror);
@@ -185,6 +185,11 @@ public:
  cH_Lieferschein getLieferschein() const ;
 private:
  std::vector<AufEintragBase> getKundenAuftragV() const;
+
+ void LagerMenge_beruecksichtigen(const int uid,const mengen_t &lagermengediff,const AufEintragBase &ElternAEB) ;
+
+
+
 public:
  AufEintragBase getFirstKundenAuftrag() const;
 
@@ -203,7 +208,7 @@ public:
 
 // Eine bereits vorgemerkte Menge einem anderen AufEintag zuordnen
 // *this => Der reservierte 1er; ae => Der ungeplante 0er
- void menge_fuer_aeb_freigeben(const mengen_t &menge,AufEintrag &ae,const int uid);
+//?? void menge_fuer_aeb_freigeben(const mengen_t &menge,AufEintrag &ae,const int uid);
 
 };
 
