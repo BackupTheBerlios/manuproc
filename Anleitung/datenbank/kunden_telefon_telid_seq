@@ -12,5 +12,5 @@ CREATE SEQUENCE "kunden_telefon_telid_seq" start 1 increment 1 maxvalue 21474836
 --
 --
 
--- SELECT setval ('"kunden_telefon_telid_seq"', 4, true);
+SELECT setval ('"kunden_telefon_telid_seq"', 1, false);
 

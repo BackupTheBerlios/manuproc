@@ -1,0 +1,26 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "artbez_warengruppe";
+--
+--
+--
+
+CREATE TABLE "artbez_warengruppe" (
+	"id" smallint,
+	"text" character varying(40)
+);
+
+--
+--
+--
+
+
+COPY "artbez_warengruppe" FROM stdin;
+1	Rohware
+2	Griffe
+3	Schäfte
+4	Schraubenzieher
+5	Verpackungen
+6	Sortimente
+\.

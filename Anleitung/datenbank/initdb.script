@@ -8,7 +8,11 @@ createdb anleitungdb
 P="."
 
 for i in \
+   artbez_warengruppe \
+   artikelstamm \
    banken \
+   einheiten \
+   extbezschema \
    global_settings \
    kunden \
    ku_ansprech \

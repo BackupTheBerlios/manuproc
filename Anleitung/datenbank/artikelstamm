@@ -1,0 +1,27 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "artikelstamm";
+--
+--
+--
+
+CREATE TABLE "artikelstamm" (
+	"id" integer DEFAULT nextval('artikelbezeichnun_artikelid_seq'::text) NOT NULL,
+	"warengruppe" integer NOT NULL,
+	"stand" timestamp with time zone DEFAULT now(),
+	"bestellen_bei" integer,
+	"defaultschema" integer DEFAULT 1,
+	"internwarengruppe" integer,
+	"einheit" integer,
+	"uid" integer,
+	Constraint "artikelstamm_pkey" Primary Key ("id")
+);
+
+--
+--
+--
+
+
+COPY "artikelstamm" FROM stdin;
+\.
