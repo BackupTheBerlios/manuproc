@@ -19,6 +19,11 @@ void lieferscheinliste::kundenbox_activate()
  radiobutton_nur_kunde->set_active(true);
 }
 
+void lieferscheinliste::kundengruppe_activate()
+{   // @@@
+ radiobutton_kundengruppe->set_active(true);
+}
+
 void lieferscheinliste::artikelbox_activate()
 {   
  artbase.setID(artikelbox->get_value().Id()); 
@@ -76,15 +81,20 @@ void lieferscheinliste::on_radiobutton_artikel_toggled()
 void lieferscheinliste::on_radiobutton_kunde_toggled()
 {
  if (radiobutton_alle_kunden->get_active())
-   {  kundenbox->hide();
-      kundenid = ManuProcEntity<>::none_id;
+   {  kundenid = ManuProcEntity<>::none_id;
    }
  if (radiobutton_nur_kunde->get_active())
-   {  
-      kundenbox->reset();
+   {  kundenbox->reset();
       kundenbox->grab_focus();
       kundenbox->show();
    }
+ else kundenbox->hide();
+ if (radiobutton_kundengruppe->get_active())
+   {  kundengruppe->reset();
+      kundengruppe->grab_focus();
+      kundengruppe->show();
+   }
+ else kundengruppe->hide();
 }
 
 
