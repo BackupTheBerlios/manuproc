@@ -1,4 +1,4 @@
-// $Id: warp_order_align.cc,v 1.2 2004/11/04 17:25:43 christof Exp $
+// $Id: warp_order_align.cc,v 1.3 2004/11/05 09:26:15 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -67,8 +67,16 @@ int main()
             OPEN,true);
         orderentry=new AufEintrag(aeb);
       }
-      catch (std::exception &e)
-      { std::cerr << e.what() << '\n';
+      if (orderentry->Artikel()!=j->Artikel())
+        std::cout << *orderentry << " falscher Artikel " 
+            << orderentry->Artikel() << "!=" <<j->Artikel() <<'\n';
+      if (orderentry->getStueck()!=j->Gaenge()*kpk.Kettlaenge())
+        std::cout << *orderentry << " falsche Menge " 
+            << orderentry->getStueck() << "!=" << (j->Gaenge()*kpk.Kettlaenge()) <<'\n';
+      if (orderentry->getGeliefert()!=j->Gaenge()*kpk.Abgeschnitten())
+      { std::cout << *orderentry << " Lieferung " 
+            << orderentry->getGeliefert() << "!=" << (j->Gaenge()*kpk.Abgeschnitten()) <<'\n';
+        orderentry->abschreiben(j->Gaenge()*kpk.Abgeschnitten()-orderentry->getGeliefert().as_int());
       }
     }
   }
