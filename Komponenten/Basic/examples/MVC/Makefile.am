@@ -13,9 +13,9 @@ noinst_HEADERS = \
 	window1_glade.hh \
 	window1.hh 
 	
-window1_glade.hh: mvc.glade 
-	glade-- --baseclass mvc.glade
-	rm `cat ../UNNEEDED_FILES `
+#window1_glade.hh: mvc.glade 
+#	glade-- --baseclass mvc.glade
+#	rm `cat ../UNNEEDED_FILES `
 
 CXXFLAGS = @CXXFLAGS@ @KOMPONENTEN_INCLUDES@
 
