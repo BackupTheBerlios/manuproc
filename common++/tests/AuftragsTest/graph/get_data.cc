@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.38 2003/01/06 16:36:31 christof Exp $
+// $Id: get_data.cc,v 1.39 2003/01/06 17:26:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -29,14 +29,13 @@ static std::string referenzdir="../database_tables_test_Mabella";
 static std::string referenzdir="../database_tables_test";
 #endif
 
+bool graph_data_node::show_referenz;
 
 graph_data_node::graph_data_node(const std::string &mode)
 {
    get_files(mode);
    get_values_from_files();
    fill_map();
-//   fill_vec_AM();
-
    get_values_from_files_Z();
 }
 
@@ -265,220 +264,12 @@ void graph_data_node::get_files(const std::string &mode)
      		line.substr(space2+1,space3-space2-1)));
 //std::cerr << line.substr(space1+1,space2-space1-1) << ',' << line.substr(space2+1) << ",\n";
   }
+  std::string dir=referenzdir;
+  if (!use_referenz) dir="../results";
   for(std::vector<st_files>::const_iterator i=filenames.begin();i!=filenames.end();++i)
    {
-     vec_files_auftragentry.push_back(st_files(referenzdir+"/auftragentry_"+i->filename,i->prefix));
-     vec_files_auftragsentryzuordnung.push_back(referenzdir+"/auftragsentryzuordnung_"+i->filename);
+     vec_files_auftragentry.push_back(st_files(dir+"/auftragentry_"+i->filename,i->prefix));
+     vec_files_auftragsentryzuordnung.push_back(dir+"/auftragsentryzuordnung_"+i->filename);
    }
 }
 
-#if 0
-std::vector<graph_data_node::st_files> graph_data_node::Mfiles()
-{
-  std::vector<st_files>  vec_files;
-  vec_files.push_back(st_files("mit_lager_open"));  
-  vec_files.push_back(st_files("menge_plus"));  
-  vec_files.push_back(st_files("menge_minus"));  
-  vec_files.push_back(st_files("datumsaenderung","D"));  
-  vec_files.push_back(st_files("menge_minus_bandlager"));  
-  vec_files.push_back(st_files("status_closed","C"));  
-  return vec_files;
-}
-
-std::vector<graph_data_node::st_files> graph_data_node::Pfiles()
-{
-  std::vector<st_files>  vec_files;
-  vec_files.push_back(st_files("mit_lager_open"));  
-  vec_files.push_back(st_files("planen_kupfer","K"));  
-  vec_files.push_back(st_files("planen_faerberei_teil","F"));  
-  vec_files.push_back(st_files("planen_webereiP","P"));  
-/*
-  vec_files.push_back(st_files("planen_einkauf_lieferschein","L"));  
-*/
-  return vec_files;
-}
-
-std::vector<graph_data_node::st_files> graph_data_node::Sfiles()
-{
-  std::vector<st_files>  vec_files;
-  vec_files.push_back(st_files("mit_lager_open"));  
-  vec_files.push_back(st_files("split"));  
-  vec_files.push_back(st_files("split_rohwarenlager_rein","+100"));  
-  vec_files.push_back(st_files("split_rohwarenlager_raus","-100"));  
-  vec_files.push_back(st_files("split_reparatur","R"));  
-  vec_files.push_back(st_files("split_reparatur_bandlager","RB"));  
-  vec_files.push_back(st_files("split_reparatur_bandlager_minus","RBM"));  
-//  vec_files.push_back(st_files("split_reparatur_garnlager_minus","RGM"));  
-  return vec_files;
-}
-
-std::vector<graph_data_node::st_files> graph_data_node::Lfiles()
-{
-  std::vector<st_files>  vec_files;
-  vec_files.push_back(st_files("mit_lager_open"));  
-  vec_files.push_back(st_files("rohwarenlager_rein","+100"));  
-  vec_files.push_back(st_files("rohwarenlager_raus","-120"));  
-  vec_files.push_back(st_files("planen_weberei_fuer_lager","W"));  
-  vec_files.push_back(st_files("bandlager_rein","+12000"));  
-  vec_files.push_back(st_files("kunde_teillieferung","T"));  
-  vec_files.push_back(st_files("kunde_ueberlieferung","Ü"));  
-  return vec_files;
-}
-
-std::vector<graph_data_node::st_files> graph_data_node::Zfiles()
-{
-  std::vector<st_files>  vec_files;
-  vec_files.push_back(st_files("mit_lager_open"));  
-  vec_files.push_back(st_files("planen_fuer_zweiten_auftrag","P"));  
-  vec_files.push_back(st_files("zwei_auftraege_anlegen","Z"));  
-  return vec_files;
-}
-
-std::vector<graph_data_node::st_files> graph_data_node::Dfiles()
-{
-  std::vector<st_files>  vec_files;
-  vec_files.push_back(st_files("mit_lager_open"));  
-  vec_files.push_back(st_files("zwei_auftraege_datum"));  
-  vec_files.push_back(st_files("zwei_auftraege_datum_abschreiben","A"));  
-  vec_files.push_back(st_files("zwei_auftraege_datum_closed","C"));  
-  vec_files.push_back(st_files("zwei_auftraege_weberei_planen","P"));  
-  vec_files.push_back(st_files("erster_auftrag_closed","CL"));  
-  return vec_files;
-}
-
-std::vector<graph_data_node::st_files> graph_data_node::Lsfiles()
-{
-  std::vector<st_files>  vec_files;
-  vec_files.push_back(st_files("mit_lager_open"));  
-  vec_files.push_back(st_files("LS_teillieferung"));  
-  vec_files.push_back(st_files("LS_zeileloeschen"));  
-  vec_files.push_back(st_files("LS_volllieferung"));  
-  return vec_files;
-}
-
-std::vector<graph_data_node::st_files> graph_data_node::Lmfiles()
-{
-  std::vector<st_files>  vec_files;
-  vec_files.push_back(st_files("mit_lager_open"));  
-  vec_files.push_back(st_files("LS_mengenaenderung_minus"));  
-  vec_files.push_back(st_files("LS_mengenaenderung_plus"));  
-  return vec_files;
-}
-
-std::vector<graph_data_node::st_files> graph_data_node::LZfiles()
-{
-  std::vector<st_files>  vec_files;
-  vec_files.push_back(st_files("mit_lager_open"));  
-  vec_files.push_back(st_files("LSZ"));  
-  vec_files.push_back(st_files("LSZP","Plus"));  
-  vec_files.push_back(st_files("LSZM","Minus"));  
-  vec_files.push_back(st_files("LSZMK","Minus Kunde"));  
-  return vec_files;
-}
-
-std::vector<graph_data_node::st_files> graph_data_node::LAfiles()
-{
-  std::vector<st_files>  vec_files;
-  vec_files.push_back(st_files("mit_lager_open"));  
-  vec_files.push_back(st_files("zwei_auftraege_datum","D"));  
-  vec_files.push_back(st_files("LSZA","T"));  
-  vec_files.push_back(st_files("LSZAV","V"));  
-  return vec_files;
-}
-
-std::vector<graph_data_node::st_files> graph_data_node::LSJfiles()
-{
-  std::vector<st_files>  vec_files;
-  vec_files.push_back(st_files("mit_lager_open"));  
-  vec_files.push_back(st_files("LS_volllieferung","V"));  
-  vec_files.push_back(st_files("LS_mengenaenderung_minus","M"));  
-  vec_files.push_back(st_files("PP","PPW"));  
-  vec_files.push_back(st_files("PPE","PPE"));  
-  vec_files.push_back(st_files("planen_kupfer","E"));  
-  vec_files.push_back(st_files("LSZ","LW"));  
-  vec_files.push_back(st_files("LSZP","LWV"));  
-  vec_files.push_back(st_files("LSZM","LWZ"));  
-  vec_files.push_back(st_files("zwei_auftraege_anlegen",""));
-  return vec_files;
-}
-
-
-
-std::vector<graph_data_node::st_files> graph_data_node::ZKfiles()
-{
-  std::vector<st_files>  vec_files;
-  vec_files.push_back(st_files("mit_lager_open"));  
-  vec_files.push_back(st_files("ZK_anlegen"));  
-  vec_files.push_back(st_files("ZK_abschreiben1T"));  
-  vec_files.push_back(st_files("ZK_abschreiben2T"));  
-  vec_files.push_back(st_files("ZK_abschreiben1U"));  
-  return vec_files;
-}
-
-std::vector<graph_data_node::st_files> graph_data_node::ZKMfiles()
-{
-  std::vector<st_files>  vec_files;
-  vec_files.push_back(st_files("mit_lager_open"));  
-  vec_files.push_back(st_files("ZK_anlegen"));  
-  vec_files.push_back(st_files("ZKM"));  
-  return vec_files;
-}
-
-std::vector<graph_data_node::st_files> graph_data_node::ManuProCfiles()
-{
-  std::vector<st_files>  vec_files;
-  vec_files.push_back(st_files("mit_lager_open"));  
-  vec_files.push_back(st_files("planen_kupfer","P"));  
-  vec_files.push_back(st_files("LS_teillieferung","L"));  
-  vec_files.push_back(st_files("planen_weberei_fuer_lager","P2"));  
-  vec_files.push_back(st_files("LS_volllieferung","L2"));  
-  vec_files.push_back(st_files("planen_faerberei_teil","PG"));  
-  vec_files.push_back(st_files("LSZ","LG"));  
-  vec_files.push_back(st_files("LSZP","LW"));  
-  vec_files.push_back(st_files("LSZM","LR"));  
-  vec_files.push_back(st_files("LSZMK","LK"));  
-  vec_files.push_back(st_files("LSZA","LKÜ"));  
-  return vec_files;
-}
-
-
-std::vector<graph_data_node::st_files> graph_data_node::Rep02gleichzeitigfiles()
-{
-  std::vector<st_files>  vec_files;
-  vec_files.push_back(st_files("mit_lager_open"));  
-  vec_files.push_back(st_files("Rep0er2ergleichzeitig","L"));  
-  vec_files.push_back(st_files("Rep0er2ergleichzeitigP","P"));  
-  return vec_files;
-}
-
-std::vector<graph_data_node::st_files> graph_data_node::RepKunde_files()
-{
-  std::vector<st_files>  vec_files;
-  vec_files.push_back(st_files("mit_lager_open"));  
-  vec_files.push_back(st_files("reparatur_kunde",""));  
-  vec_files.push_back(st_files("reparatur_kunde_instanz",""));  
-  vec_files.push_back(st_files("reparatur_kunde_datum","D"));  
-  return vec_files;
-}
-
-std::vector<graph_data_node::st_files> graph_data_node::RepZu_files()
-{
-  std::vector<st_files>  vec_files;
-  vec_files.push_back(st_files("mit_lager_open"));  
-  vec_files.push_back(st_files("rep_pf","P"));  
-  vec_files.push_back(st_files("rep_pfE","E"));  
-  return vec_files;
-}
-
-std::vector<graph_data_node::st_files> graph_data_node::RepKuZu_files()
-{
-  std::vector<st_files>  vec_files;
-  vec_files.push_back(st_files("mit_lager_open"));  
-  vec_files.push_back(st_files("rep_zwei_auftraege_anlegen"));  
-  vec_files.push_back(st_files("rep_planen_spritz"));  
-  vec_files.push_back(st_files("rep_planen_spritz2"));  
-  vec_files.push_back(st_files("rep_lieferschein","L"));  
-  return vec_files;
-}
-
-#endif

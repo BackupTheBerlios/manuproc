@@ -1,4 +1,4 @@
-// $Id: graph.cc,v 1.17 2002/12/20 16:17:09 christof Exp $
+// $Id: graph.cc,v 1.18 2003/01/06 17:26:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -31,13 +31,14 @@
 const static struct option options[]=
 {{ "black",  no_argument, NULL, 'b' },
  { "colour",  no_argument, NULL, 'c' },
+ { "referenz", no_argument, 0, 'r' },
  { NULL,      0,       NULL, 0 }
 };       
         
 
 void usage(std::string s)
 {
-  cout << "USAGE: " << s <<" [-bg] <Dateiprefix z.B. M,P oder S>\n";
+  cout << "USAGE: " << s <<" [-bgr] <Dateisammlung z.B. M,P oder S, X=Legende>\n";
 #if 0
        << "\t\t[P]lanung \n"
        << "\t\t[S]plit \n"
@@ -58,8 +59,10 @@ void usage(std::string s)
        << "\t\t[RKZ] Rep_Petig_Kunden_Zuordung\n"
        << "\t\t[X]  LEGENDE \n";
 #endif       
-  cout << "\t -b --black [default] "
-       << "\t -c --colour\n\n";
+  cout << "\t -b --black [default]\n"
+       << "\t -c --colour\n"
+       << "\t -r --referenz\n"
+       << "\n";
 }
 
 
@@ -69,10 +72,11 @@ int main(int argc, char *argv[])
 
   dot_out::e_colour colour=dot_out::Black;
   int opt;
-  while ((opt=getopt_long(argc,argv,"bc",options,NULL))!=EOF)
+  while ((opt=getopt_long(argc,argv,"bcr",options,NULL))!=EOF)
    { switch (opt) {
       case 'b' : colour=dot_out::Black; break;
       case 'c' : colour=dot_out::Colour; break;
+      case 'r' : graph_data_node::show_referenz=true; break;
      }
    }  
 

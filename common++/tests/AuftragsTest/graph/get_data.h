@@ -1,4 +1,4 @@
-// $Id: get_data.h,v 1.18 2003/01/06 14:56:15 christof Exp $
+// $Id: get_data.h,v 1.19 2003/01/06 17:26:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -25,15 +25,6 @@
 #include <map>
 #include <list>
 #include <Auftrag/AufEintragBase.h>
-
-#if 0
-enum emode {None,Legende,Menge,Planung,Split,Lager,ZweiAuftraege,
-   ZweiterAuftrag_frueheresDatum,Lieferschein,LieferscheinMenge,
-   LieferscheinZusatz,LieferscheinZweiAuftraege,LieferscheinJacek,
-   ZweiKunden,ZweiKundenMengeFreigeben,
-   ManuProCTest,Rep_Petig_0er_2er_gleichzeitig,
-   Rep_Petig_Kunde,Rep_Petig_Zuordung,Rep_Petig_Kunden_Zuordung};
-#endif   
 
 class graph_data_node
 {
@@ -74,26 +65,6 @@ class graph_data_node
      void get_values_from_files();
      void get_values_from_files_Z();
      void fill_map();
-#if 0     
-     std::vector<st_files> Mfiles();
-     std::vector<st_files> Pfiles();
-     std::vector<st_files> Sfiles();
-     std::vector<st_files> Lfiles();
-     std::vector<st_files> Zfiles();
-     std::vector<st_files> Dfiles();
-     std::vector<st_files> Lsfiles();
-     std::vector<st_files> Lmfiles();
-     std::vector<st_files> LZfiles();
-     std::vector<st_files> LAfiles();
-     std::vector<st_files> LSJfiles();
-     std::vector<st_files> ZKfiles();
-     std::vector<st_files> ZKMfiles();
-     std::vector<st_files> ManuProCfiles();
-     std::vector<st_files> Rep02gleichzeitigfiles();
-     std::vector<st_files> RepKunde_files();
-     std::vector<st_files> RepZu_files();
-     std::vector<st_files> RepKuZu_files();
-#endif     
      std::vector<st_files> filenames;
   public:
      graph_data_node(const std::string &mode);
@@ -108,6 +79,7 @@ class graph_data_node
      st_node_strings get_mengen_for_node(AufEintragBase aeb);
      std::vector<pair<std::string,std::string> >  get_edges_for(AufEintragBase aeb);
 
+	static bool show_referenz;
 };
 
 #endif
