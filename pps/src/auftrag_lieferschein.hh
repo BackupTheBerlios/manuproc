@@ -70,6 +70,8 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
         gint on_spinbutton_netto_focus_out_event(GdkEventFocus *ev){return false;}
 #endif
         void on_liefer_close();
+        void on_ungeb_lief_show_activate();
+        void on_ungeb_lief_print_activate();
         gint on_liefer_delete(GdkEventAny *ev);
         void on_liefer_neu();
         void on_lief_save();

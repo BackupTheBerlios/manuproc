@@ -3862,6 +3862,42 @@ Auftrag</label>
 	    <active>True</active>
 	    <always_show_toggle>True</always_show_toggle>
 	  </widget>
+
+	  <widget>
+	    <class>GtkMenuItem</class>
+	    <name>ungebuchte_lief1</name>
+	    <label>ungebuchte Lief.</label>
+	    <right_justify>False</right_justify>
+
+	    <widget>
+	      <class>GtkMenu</class>
+	      <name>ungebuchte_lief1_menu</name>
+
+	      <widget>
+		<class>GtkMenuItem</class>
+		<name>anzeigen1</name>
+		<signal>
+		  <name>activate</name>
+		  <handler>on_ungeb_lief_show_activate</handler>
+		  <last_modification_time>Thu, 26 Feb 2004 15:24:55 GMT</last_modification_time>
+		</signal>
+		<label>anzeigen</label>
+		<right_justify>False</right_justify>
+	      </widget>
+
+	      <widget>
+		<class>GtkMenuItem</class>
+		<name>drucken1</name>
+		<signal>
+		  <name>activate</name>
+		  <handler>on_ungeb_lief_print_activate</handler>
+		  <last_modification_time>Thu, 26 Feb 2004 15:24:55 GMT</last_modification_time>
+		</signal>
+		<label>drucken</label>
+		<right_justify>False</right_justify>
+	      </widget>
+	    </widget>
+	  </widget>
 	</widget>
       </widget>
     </widget>
