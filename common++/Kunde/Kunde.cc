@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.25 2003/04/09 20:34:17 jacek Exp $
+// $Id: Kunde.cc,v 1.26 2003/04/11 07:21:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -165,6 +165,7 @@ const PreisListe::ID Kunde::preisliste() const
 
 bool Kunde::isLieferadresse() const 
 {
+#ifdef MANUPROC_DYNAMICENUMS_CREATED
  std::vector<cH_Kundengruppe>::const_iterator f;
  
  if(!gruppen.size())
@@ -177,16 +178,21 @@ bool Kunde::isLieferadresse() const
  return (find(gruppen.begin(),gruppen.end(),
  		KundengruppeID::Lieferadresse)!=
    		gruppen.end());
+#else
+ return false;
+#endif
 }
 
 void Kunde::isLieferadresse(bool is) 
 {
+#ifdef MANUPROC_DYNAMICENUMS_CREATED
  if(is)
    Query("insert into ku_gruppen_map (kundennr,grpnr)"
        " values (?,?)") << Id() << KundengruppeID::Lieferadresse;
  else       
    Query("delete from ku_gruppen_map "
        " where (kundennr,grpnr) = (?,?)") << Id() << KundengruppeID::Lieferadresse;
+#endif       
 }
 
 

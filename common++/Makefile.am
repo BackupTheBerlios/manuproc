@@ -73,6 +73,8 @@ libcommon___a_LIBADD= \
 		Kunde/Kunde.o \
 		Kunde/Kunde_sql.o \
 		Kunde/LandesListe_sql.o \
+		Kunde/Lieferart_sql.o \
+		Kunde/Lieferart.o \
 		Kunde/Person.o \
 		Kunde/Person_sql.o \
 		Kunde/PreisListeFull_sql.o \
