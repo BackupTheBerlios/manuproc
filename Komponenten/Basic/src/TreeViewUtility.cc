@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.cc,v 1.3 2003/03/17 17:59:26 christof Exp $
+// $Id: TreeViewUtility.cc,v 1.4 2003/03/18 09:09:22 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,6 +18,7 @@
  */
 
 #include "TreeViewUtility.h"
+#include <stdarg.h>
 
 TreeViewUtility::CListEmulator::CListEmulator(const std::vector<Glib::ustring> &t)
 	: cols(t.size()), titles(t)
@@ -43,4 +44,29 @@ void TreeViewUtility::CListEmulator::attach_to(Gtk::TreeView &tv)
 TreeViewUtility::CListEmulator2::CListEmulator2(const std::vector<Glib::ustring> &titles)
   : emu(titles)
 {  emu.attach_to(*this);
+}
+
+TreeViewUtility::CListEmulator2::CListEmulator2(const char *title1, ...)
+  : emu()
+{  va_list ap;
+   va_start(ap,title1);
+   std::vector<Glib::ustring> titles;
+   titles.push_back(title1);
+   const char *t;
+   while ((t=va_arg(ap,const char *)))
+   {  titles.push_back(t);
+   }
+   va_end(ap);
+   emu.set_titles(titles);
+   emu.attach_to(*this);
+}
+
+void TreeViewUtility::CListEmulator::set_titles(const std::vector<Glib::ustring> &_titles)
+{  unsigned old_size=titles.size(),new_size=_titles.size();
+   assert(new_size>old_size); // nur vergrößern
+   cols.resize(new_size);
+   titles=_titles;
+   for (unsigned i=old_size;i<new_size;++i)
+      add(cols[i]);
+   m_refStore=Gtk::ListStore::create(*this);
 }
