@@ -44,9 +44,12 @@ GRANT SELECT ON TABLE artikelstamm TO PUBLIC;
 ALTER TABLE ONLY artikelstamm
     ADD CONSTRAINT artikelstamm_pkey PRIMARY KEY (id);
 
+delete from artikelstamm;
 
 COPY artikelstamm (id, warengruppe, stand, bestellen_bei, defaultschema, internwarengruppe, einheit, uid, aktiv, auslauf, wertabschlag, mindbestand) FROM stdin;
 38389	3	2002-05-14 23:59:07+02	2	1	3	0	\N	t	t	\N	0
 38391	3	2002-05-14 23:59:07+02	2	1	3	0	\N	t	t	\N	0
 38392	3	2002-05-14 23:59:07+02	2	1	3	0	\N	t	t	\N	0
+1	3	2004-05-14 23:59:07+02	2	1	3	0	\N	t	t	\N	0
+2	3	2004-05-14 23:59:07+02	5	1	3	1	\N	t	t	\N	0
 \.

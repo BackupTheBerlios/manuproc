@@ -36,4 +36,6 @@ GRANT SELECT ON TABLE artikelzusammensetzung TO PUBLIC;
 
 CREATE INDEX artikelzusamm_key ON artikelzusammensetzung USING btree (id);
 
-
+copy artikelzusammensetzung (id, prozessid, altartikelid, menge, uid) from stdin;
+2	12	1	25	100
+\.
