@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.21 2004/06/03 07:02:18 christof Exp $
+# $Id: Makefile.am,v 1.22 2004/06/03 07:03:38 christof Exp $
 	
 LDADD=$(top_srcdir)/src/libManuProC_Base.la @ECPG_LIBS@ @SIGC_LIBS@
 
@@ -33,6 +33,9 @@ tagstream_SOURCES=tagstream.cc
 tagstream.res: tagstream$(EXEEXT)
 	./tagstream | sed -e 's/P0x[0-9a-fA-F]*/P*/' \
 		-e 's/@0x[0-9a-fA-F]*/@*/' >tagstream.res
+		
+test_tagstream: tagstream.res
+	diff -u tagstream.out tagstream.res | less
 
 CLEANFILES= *~ $(EXTRA_PROGRAMS)
 
