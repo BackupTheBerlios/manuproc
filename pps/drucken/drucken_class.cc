@@ -1100,7 +1100,11 @@ void LR_Abstraktion::page_header(std::ostream &os)
      os <<"\\large";
 #endif     
 
-     os <<"\nFirma "<< string2TeX(kunde_an->getName())<<"\\\\\\bigskip";
+     if(!kunde_an->isRechnungsadresse() && Typ()==Rechnung)
+       os <<"\nFirma "<< string2TeX(kunde_rng->getName())<<"\\\\\\bigskip";
+     else
+       os <<"\nFirma "<< string2TeX(kunde_an->getName())<<"\\\\\\bigskip";
+       
      zeilen_passen_noch=ZEILEN_SEITE_N;
     }
 
