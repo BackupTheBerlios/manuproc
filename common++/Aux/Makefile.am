@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.48 2003/12/23 00:10:09 christof Exp $
+# $Id: Makefile.am,v 1.49 2004/01/09 15:25:08 christof Exp $
 
 AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@ @SIGC_CFLAGS@
 
@@ -48,7 +48,8 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
    EntryValueIntGermanString.cc EntryValueIntGermanString.h \
    recodestream.h bitmask.h TemporaryValue.h vectormap.h intmap.h \
    libManuProC_Base_dll.h Global_Settings.h Global_Settings.cc \
-   Global_Settings_sql.pgcc EntryValueSort.h EntryValueSort.cc
+   Global_Settings_sql.pgcc EntryValueSort.h EntryValueSort.cc \
+   EntryValueInvert.h
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
