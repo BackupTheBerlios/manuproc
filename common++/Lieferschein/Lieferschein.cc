@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.45 2004/02/23 13:54:15 jacek Exp $ */
+/* $Id: Lieferschein.cc,v 1.46 2004/03/03 15:32:06 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -100,7 +100,7 @@ void Lieferschein::closeLfrs()
 	" and status=? ")
  	<< (AufStatVal)CLOSED << Instanz()->Id() << Id() <<
 	   (AufStatVal)OPEN;
- SQLerror::test(__FILELINE__);
+ SQLerror::test(__FILELINE__,100);
 }
 
 
