@@ -1,4 +1,4 @@
-// $Id: Event.h,v 1.1 2003/05/09 10:04:42 christof Exp $
+// $Id: Event.h,v 1.2 2003/05/09 11:07:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -52,6 +52,9 @@ public:
    	static void connect_gtk(bool ignore_old=true);
    	
    	static bool look_for_notifications();
+
+	// file descriptor to select for notifications
+   	static int filedesc();
 };
 }
 

@@ -1,4 +1,4 @@
-// $Id: Event.cc,v 1.1 2003/05/09 10:04:42 christof Exp $
+// $Id: Event.cc,v 1.2 2003/05/09 11:07:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -91,6 +91,11 @@ void ManuProC::Event::connect(bool ignore_old)
       while (PQnotifies((PGconn *)PGconnection));
    }
    else read_notifications();
+}
+
+int ManuProC::Event::filedesc()
+{  if (!connected) return -1;
+   return PQsocket((PGconn *)PGconnection);
 }
 
 // connect_gtk() :
