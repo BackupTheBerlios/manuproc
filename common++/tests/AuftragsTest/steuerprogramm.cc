@@ -46,6 +46,16 @@ enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
       Rep_Petig_0er_2er_gleichzeitig,Rep_KundenProgramm,Rep_Zuordnungen,
       Rep_Kunden_Zuordnungen};
 
+static ostream *testlog;
+
+static void vergleichen(Check &C, Check::was_checken w, const std::string &zusatz, 
+        const std::string &name, bool mit_reparatur_programm)
+{   testlog << int(C) << ' ' << zusatz << ' ' << name << '\n';
+    bool erfolgreich=C.teste(w,zusatz,mit_reparatur_programm);
+    if(!erfolgreich) 
+    { cout << name << " fehlgeschlagen\n"; exit(fehler()); }
+}
+
 static int fehler()
 {
   cerr << "ABBRUCH \n";
@@ -1039,30 +1049,32 @@ void usage(const std::string &argv0,const std::string &argv1)
 int main(int argc,char *argv[])
 {
 
-   if(argc==1) usage(argv[0],"");
+   if(argc==1) { usage(argv[0],""); return 1; }
    e_mode mode=None;
-   if(std::string(argv[1])=="M" || std::string(argv[1])=="Mengentest") mode=Mengentest;
-   else if(std::string(argv[1])=="P" || std::string(argv[1])=="Plantest")  mode=Plantest;
-   else if(std::string(argv[1])=="L" || std::string(argv[1])=="Lagertest")  mode=Lagertest;
-   else if(std::string(argv[1])=="S" || std::string(argv[1])=="Splittest")  mode=Splittest;
-   else if(std::string(argv[1])=="Z" || std::string(argv[1])=="ZweiAuftraege")  mode=ZweiAuftraege;
-   else if(std::string(argv[1])=="D" || std::string(argv[1])=="ZweiterAuftrag_frueheresDatum")  mode=ZweiterAuftrag_frueheresDatum;
-   else if(std::string(argv[1])=="Ls" || std::string(argv[1])=="Lieferscheintest")  mode=Lieferscheintest;
-   else if(std::string(argv[1])=="Lm" || std::string(argv[1])=="LieferscheintestMenge")  mode=LieferscheintestMenge;
-   else if(std::string(argv[1])=="LZ" || std::string(argv[1])=="LieferscheintestZusatz")  mode=LieferscheintestZusatz;
-   else if(std::string(argv[1])=="LA" || std::string(argv[1])=="Lieferscheintest_ZweiterAuftrag_frueheresDatum")  mode=Lieferscheintest_ZweiterAuftrag_frueheresDatum;
-   else if(std::string(argv[1])=="LA" || std::string(argv[1])=="Lieferscheintest_ZweiterAuftrag_frueheresDatum")  mode=Lieferscheintest_ZweiterAuftrag_frueheresDatum;
-   else if(std::string(argv[1])=="LJ" || std::string(argv[1])=="Lieferscheintest_ZweiterAuftrag_frueheresDatum")  mode=LieferscheinJacek;
-   else if(std::string(argv[1])=="ZK" || std::string(argv[1])=="ZweiKunden")  mode=ZweiKundenTest;
-   else if(std::string(argv[1])=="ZKM"|| std::string(argv[1])=="ZweiKundenMengeFreigebenTest")  mode=ZweiKundenMengeFreigebenTest;
-   else if(std::string(argv[1])=="MP" || std::string(argv[1])=="ManuProCTest")  mode=ManuProCTest;
-   else if(std::string(argv[1])=="J" || std::string(argv[1])=="JumboLager")  mode=JumboLager;
-   else if(std::string(argv[1])=="RM" || std::string(argv[1])=="ReparaturMabella")  mode=Rep_Mabella;
-   else if(std::string(argv[1])=="RP")  mode=Rep_Petig_PhysikalischesLager;
-   else if(std::string(argv[1])=="Rg")  mode=Rep_Petig_0er_2er_gleichzeitig;
-   else if(std::string(argv[1])=="RK")  mode=Rep_KundenProgramm;
-   else if(std::string(argv[1])=="RZ")  mode=Rep_Zuordnungen;
-   else if(std::string(argv[1])=="RKZ") mode=Rep_Kunden_Zuordnungen;
+   
+   std::string mode_str=argv[1];
+   if(mode_str=="M" || mode_str=="Mengentest") mode=Mengentest;
+   else if(mode_str=="P" || mode_str=="Plantest")  mode=Plantest;
+   else if(mode_str=="L" || mode_str=="Lagertest")  mode=Lagertest;
+   else if(mode_str=="S" || mode_str=="Splittest")  mode=Splittest;
+   else if(mode_str=="Z" || mode_str=="ZweiAuftraege")  mode=ZweiAuftraege;
+   else if(mode_str=="D" || mode_str=="ZweiterAuftrag_frueheresDatum")  mode=ZweiterAuftrag_frueheresDatum;
+   else if(mode_str=="Ls" || mode_str=="Lieferscheintest")  mode=Lieferscheintest;
+   else if(mode_str=="Lm" || mode_str=="LieferscheintestMenge")  mode=LieferscheintestMenge;
+   else if(mode_str=="LZ" || mode_str=="LieferscheintestZusatz")  mode=LieferscheintestZusatz;
+   else if(mode_str=="LA" || mode_str=="Lieferscheintest_ZweiterAuftrag_frueheresDatum")  mode=Lieferscheintest_ZweiterAuftrag_frueheresDatum;
+   else if(mode_str=="LA" || mode_str=="Lieferscheintest_ZweiterAuftrag_frueheresDatum")  mode=Lieferscheintest_ZweiterAuftrag_frueheresDatum;
+   else if(mode_str=="LJ" || mode_str=="Lieferscheintest_ZweiterAuftrag_frueheresDatum")  mode=LieferscheinJacek;
+   else if(mode_str=="ZK" || mode_str=="ZweiKunden")  mode=ZweiKundenTest;
+   else if(mode_str=="ZKM"|| mode_str=="ZweiKundenMengeFreigebenTest")  mode=ZweiKundenMengeFreigebenTest;
+   else if(mode_str=="MP" || mode_str=="ManuProCTest")  mode=ManuProCTest;
+   else if(mode_str=="J" || mode_str=="JumboLager")  mode=JumboLager;
+   else if(mode_str=="RM" || mode_str=="ReparaturMabella")  mode=Rep_Mabella;
+   else if(mode_str=="RP")  mode=Rep_Petig_PhysikalischesLager;
+   else if(mode_str=="Rg")  mode=Rep_Petig_0er_2er_gleichzeitig;
+   else if(mode_str=="RK")  mode=Rep_KundenProgramm;
+   else if(mode_str=="RZ")  mode=Rep_Zuordnungen;
+   else if(mode_str=="RKZ") mode=Rep_Kunden_Zuordnungen;
    if(mode==None) { usage(argv[0],argv[1]); return 1; }
    
    cout << "Initalisierung der Datenbank ...";
@@ -1080,6 +1092,9 @@ int main(int argc,char *argv[])
 
    Petig::PrintUncaughtExceptions();
    try{
+   mkdir("files.log",0777);
+   ofstream logstream(("files.log/"+mode_str).c_str());
+   testlog=&logstream;
    Petig::dbconnect();  
 
 //ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
