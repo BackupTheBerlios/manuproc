@@ -7552,14 +7552,14 @@ Jahr
 	<child>
 	  <padding>0</padding>
 	  <expand>False</expand>
-	  <fill>True</fill>
+	  <fill>False</fill>
 	</child>
 
 	<widget>
 	  <class>GtkTable</class>
 	  <name>table27</name>
 	  <rows>2</rows>
-	  <columns>2</columns>
+	  <columns>1</columns>
 	  <homogeneous>False</homogeneous>
 	  <row_spacing>0</row_spacing>
 	  <column_spacing>0</column_spacing>
@@ -7593,7 +7593,7 @@ Jahr
 	      <child>
 		<padding>0</padding>
 		<expand>False</expand>
-		<fill>True</fill>
+		<fill>False</fill>
 	      </child>
 
 	      <widget>
@@ -7618,7 +7618,7 @@ Jahr
 	      <child>
 		<padding>0</padding>
 		<expand>False</expand>
-		<fill>True</fill>
+		<fill>False</fill>
 	      </child>
 
 	      <widget>
@@ -7652,7 +7652,7 @@ Jahr
 	      <xshrink>False</xshrink>
 	      <yshrink>False</yshrink>
 	      <xfill>True</xfill>
-	      <yfill>True</yfill>
+	      <yfill>False</yfill>
 	    </child>
 
 	    <widget>
