@@ -1,4 +1,4 @@
-// $Id: Faden.hh,v 1.10 2004/02/26 11:18:40 christof Exp $
+// $Id: Faden.hh,v 1.11 2004/05/27 10:15:06 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -37,13 +37,21 @@ struct Faden {
         ArtikelBase material;
         Bindung bindung;
         int kettscheibe;
+
         unsigned max_kettlaenge;
         unsigned max_fadenzahl;
+        bool verlaengern;
+        unsigned ausn_gaenge,ausn_faeden,ausn_maxfd;
+        unsigned ausn_gaenge2,ausn_maxfd2;
         
 	friend std::ostream& operator<< (std::ostream&, const Faden&);
 public:
 	Faden (int zeilennr, unsigned int anzahl, ArtikelBase::ID, Bindung=Bindung());
-	Faden() : zeilennummer(-1), anzahl(), kettscheibe(-1), max_kettlaenge(), max_fadenzahl() {}
+	Faden() : zeilennummer(-1), anzahl(), kettscheibe(-1), 
+		max_kettlaenge(), max_fadenzahl(), verlaengern(), 
+		ausn_gaenge(), ausn_faeden(), ausn_maxfd(),
+		ausn_gaenge2(), ausn_maxfd2()
+	{}
 	bool operator== (const Faden&) const;
 	bool operator!= (const Faden&) const;
 	int getAnzahl() const { return anzahl; }

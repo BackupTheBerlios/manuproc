@@ -1,4 +1,4 @@
-// $Id: Faden.cc,v 1.19 2004/03/09 16:26:20 jacek Exp $
+// $Id: Faden.cc,v 1.20 2004/05/27 10:15:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -45,7 +45,9 @@ int Faden::displayBreite() const
 
 Faden::Faden (int znr, unsigned int z, ArtikelBase::ID s, Bindung b) 
 : zeilennummer(znr), anzahl(z), material(s), bindung(b), kettscheibe(-1),
-	max_kettlaenge(), max_fadenzahl()
+	max_kettlaenge(), max_fadenzahl(), verlaengern(),
+	ausn_gaenge(), ausn_faeden(), ausn_maxfd(),
+	ausn_gaenge2(), ausn_maxfd2()
 {
 }
 
@@ -390,7 +392,13 @@ static FetchIStream &operator>>(FetchIStream &is, Faden &f)
 {  is >> f.zeilennummer >> f.anzahl >> f.material >> f.bindung
    	>> FetchIStream::MapNull(f.kettscheibe,-1)
    	>> FetchIStream::MapNull(f.max_kettlaenge)
-   	>> FetchIStream::MapNull(f.max_fadenzahl);
+   	>> FetchIStream::MapNull(f.max_fadenzahl)
+   	>> FetchIStream::MapNull(f.verlaengern)
+   	>> FetchIStream::MapNull(f.ausn_gaenge)
+   	>> FetchIStream::MapNull(f.ausn_faeden)
+   	>> FetchIStream::MapNull(f.ausn_maxfd)
+   	>> FetchIStream::MapNull(f.ausn_gaenge2)
+   	>> FetchIStream::MapNull(f.ausn_maxfd2);
    return is;
 }
 
@@ -409,7 +417,8 @@ void Fadenliste::Load(const Webangaben &wa)
    if (!!wa.VarianteVon()) ab=wa.VarianteVon();
       
       Query q("select zeilennummer, anzahl, material, bindung, kettscheibe, "
-      	"max_kettlaenge, max_fadenzahl "
+      	"max_kettlaenge,max_fadenzahl,verlaengern,"
+      	"ausn_gaenge,ausn_faeden,ausn_maxfd,ausn_gaenge2,ausn_maxfd2 "
       	"from webang_faeden where artikel=? order by zeilennummer");
       q << ab;
       while ((q>>is).good())
