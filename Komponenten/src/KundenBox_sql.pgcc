@@ -1,4 +1,4 @@
-// $Id: KundenBox_sql.pgcc,v 1.3 2003/10/06 12:07:22 jacek Exp $
+// $Id: KundenBox_sql.pgcc,v 1.4 2003/10/06 12:17:28 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -131,7 +131,8 @@ void KundenBox::Name_search(gboolean *_continue, GtkSCContext newsearch)
 
 gint KundenBox::try_grab_focus(GtkWidget *w,gpointer gp)
 {  KundenBox *this2((KundenBox*)gp);
-   assert(Gtk::Table::isA(this2)); // very weak check
+   Gtk::Table *t=dynamic_cast<Gtk::Table *>(this2);
+   assert(t!=NULL); // very weak check
    this2->kundennr->grab_focus();
    return true;
 }
