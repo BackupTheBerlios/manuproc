@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.42 2003/06/24 08:18:20 christof Exp $
+// $Id: adjust_store.cc,v 1.43 2003/06/24 08:38:45 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -80,13 +80,18 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,const bool analys
       if (actions&b_exclude) alles_ok&=RI.Reparatur_0er_und_2er(K,analyse_only);
       if (actions&b_tree)
       {AuftragBase::tolerate_inconsistency=true;
-       for(SelectedFullAufList::iterator i = K.begin();i!=K.end(); ++i)
-       {  AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(*i,
+       try
+       {for(SelectedFullAufList::iterator i = K.begin();i!=K.end(); ++i)
+        {  AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(*i,
        			AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
        	  alles_ok&=RI.Eltern(*i,eltern,analyse_only,actions&b_raise);
        	  alles_ok&=RI.Lokal(*i,analyse_only);
        	  AufEintragZu::map_t kinder=AufEintragZu::get_Kinder_nach_Artikel(*i);
        	  alles_ok&=RI.Kinder(*i,kinder,analyse_only);
+        }
+       } catch (SQLerror &e)
+       {  std::cout << "SQL Fehler " << e << '\n';
+          alles_ok=false;
        }
       }
     }
@@ -113,6 +118,7 @@ int main(int argc,char *argv[])
   bool analyse_only=false;
   bool all_instanz=false;
   bool loop=false;
+  int loops=0;
 
   if(argc==1) usage(argv[0]);
   while ((opt=getopt_long(argc,argv,"h:d:i:a:yItl",options,NULL))!=EOF)
@@ -149,6 +155,7 @@ int main(int argc,char *argv[])
     ManuProC::dbconnect(conn);
 
 restart:
+    ++loops;
     alles_ok=true;
     if (actions&b_links && !analyse_only)
     {  Query("delete from auftragsentryzuordnung where not exists "
@@ -173,11 +180,13 @@ restart:
          actions=save;
         }
      }    
-    if (loop && !alles_ok) 
+    if (loop && !alles_ok && loops < 99) 
     {  std::cout << "adjust_store: repairing again\n";
        goto restart;
     }
     
+    if (loop && loops>1)
+       std::cout << "adjust_store: repairing took " << loops << " loops\n";
     ManuProC::dbdisconnect();
   }catch(SQLerror &e){std::cout << e<<'\n'; return 1;}
   return !alles_ok;
