@@ -65,7 +65,7 @@ windowTop::windowTop()
  kundenauswahl->EinschraenkenKdGr(gruppenwahl->get_value());
  kundenauswahl->setExpandStr1(true);
  kundenauswahl->setExpandStr2(true); 
- geburtstag->setLabel("Geburtstag");
+ geburtstag->setLabel("");
  geburtstag->setExpandYear(false);
  
  rng_an->EinschraenkenKdGr(KundengruppeID::Rechnungsadresse);
