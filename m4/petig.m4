@@ -1,4 +1,4 @@
-dnl $Id: petig.m4,v 1.68 2003/08/06 11:37:58 christof Exp $
+dnl $Id: petig.m4,v 1.69 2003/10/28 12:02:59 christof Exp $
 
 dnl Configure paths for some libraries
 dnl derived from kde's acinclude.m4
@@ -252,14 +252,14 @@ then
     $3_LDFLAGS=""
     $3_LIBS="$TEMP/lib$1.a"
     AC_MSG_RESULT($$3_INCLUDES)
-  elif test -r "../$4/lib$4.a"
+  elif test -r "../$4/lib$4.a" -o -r "../$4/lib$4.la"
   then 
     TEMP=`cd ../$4 ; pwd` 
     $3_INCLUDES="-I$TEMP"
     $3_LDFLAGS="-L$TEMP"
     $3_LIBS="-l$4"
     AC_MSG_RESULT($$3_INCLUDES)
-  elif test -r "../$4/src/lib$4.a"
+  elif test -r "../$4/src/lib$4.a" -o -r "../$4/src/lib$4.la"
   then 
     TEMP=`cd ../$4/src ; pwd` 
     $3_INCLUDES="-I$TEMP"
