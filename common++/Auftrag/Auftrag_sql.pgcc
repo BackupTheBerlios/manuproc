@@ -507,18 +507,19 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
     if(getVerknr()!=Kunde::none_id)
       {
        float ps1=0.0,ps2=0.0,to_set;
-       Query("select provsatz1, provsatz2 from prov_verkaeufer where"
-	  " verknr=? and kundennr=?") << getVerknr() << getKundennr()
-	  >> ps1 >> ps2;
+       Query q("select provsatz1, provsatz2 from prov_verkaeufer where"
+	  " verknr=? and kundennr=?");
+       q << getVerknr() << getKundennr();
        SQLerror::test(__FILELINE__,100);
+
+       if(q.Code()!=100)
+         q  >> ps1 >> ps2;
 
        if(ps1==ps2) to_set=ps1;
        else
 	{
         cH_ExtBezSchema ebz(ExtBezSchema::default_id,ExtBezSchema::default_Typ);
 
-        std::string tabelle="artbez_"+itos(ExtBezSchema::default_Typ)+"_"+
-        		itos(ExtBezSchema::default_id);  
  	const ExtBezSchema::BezKomp bk=(*ebz)[std::pair<int,int>(1,1)];
 	std::string first_komp_col=bk.spaltenname;
 
