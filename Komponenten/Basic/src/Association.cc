@@ -1,4 +1,4 @@
-// $Id: Association.cc,v 1.1 2003/05/09 20:56:00 christof Exp $
+// $Id: Association.cc,v 1.2 2003/09/18 16:16:05 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -54,22 +54,22 @@ template <class T,class W,class C>
    return *r2;
 }
 
-ModelWidgetConnection<int,Gtk::SpinButton> &Association(Gtk::SpinButton &w)
+ModelWidgetConnection<int,Gtk::SpinButton> &ManuProC::Association(Gtk::SpinButton &w)
 {  return Association_impl<int,Gtk::SpinButton,int_SpinButton>(w);
 }
 
-ModelWidgetConnection<std::string,Gtk::Entry> &Association(Gtk::Entry &w)
+ModelWidgetConnection<std::string,Gtk::Entry> &ManuProC::Association(Gtk::Entry &w)
 {  return Association_impl<std::string,Gtk::Entry,string_Entry>(w);
 }
 
-ModelWidgetConnection<bool,Gtk::ToggleButton> &Association(Gtk::ToggleButton &w)
+ModelWidgetConnection<bool,Gtk::ToggleButton> &ManuProC::Association(Gtk::ToggleButton &w)
 {  return Association_impl<bool,Gtk::ToggleButton,bool_CheckButton>(w);
 }
 
-ModelWidgetConnection<std::string,Gtk::Label> &Association(Gtk::Label &w)
+ModelWidgetConnection<std::string,Gtk::Label> &ManuProC::Association(Gtk::Label &w)
 {  return Association_impl<std::string,Gtk::Label,string_Label>(w);
 }
 
-ModelWidgetConnection<bool,Gtk::CheckMenuItem> &Association(Gtk::CheckMenuItem &w)
+ModelWidgetConnection<bool,Gtk::CheckMenuItem> &ManuProC::Association(Gtk::CheckMenuItem &w)
 {  return Association_impl<bool,Gtk::CheckMenuItem,bool_CheckMenuItem>(w);
 }

@@ -1,4 +1,4 @@
-// $Id: Association.h,v 1.1 2003/05/09 20:56:00 christof Exp $
+// $Id: Association.h,v 1.2 2003/09/18 16:16:05 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -32,7 +32,7 @@ namespace Gtk
 namespace ManuProC
 {   ModelWidgetConnection<int,Gtk::SpinButton> &Association(Gtk::SpinButton &);
     ModelWidgetConnection<std::string,Gtk::Entry> &Association(Gtk::Entry &);
-    ModelWidgetConnection<bool,Gtk::ToggleButton> &Association(Gtk::CheckButton &);
+    ModelWidgetConnection<bool,Gtk::ToggleButton> &Association(Gtk::ToggleButton &);
     ModelWidgetConnection<bool,Gtk::CheckMenuItem> &Association(Gtk::CheckMenuItem &);
     ModelWidgetConnection<std::string,Gtk::Label> &Association(Gtk::Label &);
 }
