@@ -1,4 +1,4 @@
-// $Id: Gtk_OStream.cc,v 1.6 2004/04/29 14:24:40 christof Exp $
+// $Id: Gtk_OStream.cc,v 1.7 2004/11/08 14:59:29 christof Exp $
 /*  Gtk--addons: a collection of gtk-- addons
     Copyright (C) 2002  Adolf Petig GmbH. & Co. KG
     Developed by Christof Petig <christof.petig@wtal.de>
@@ -55,8 +55,7 @@ std::streamsize Gtk::OStream::default_data(const char *s,std::streamsize n)
 }
 
 Gtk::OStreamBase::~OStreamBase(void)
-{   flush();
-    if (close_impl) (dynamic_cast<Gtk::OStream*>(this)->*close_impl)();
+{   // flush(); can't help any more, this is destroyed
 }
 
 void Gtk::OStreamBase::flush(gpointer _user_data,GtkDestroyNotify d)
@@ -73,4 +72,5 @@ void Gtk::OStreamBase::flush(gpointer _user_data,GtkDestroyNotify d)
 
 Gtk::OStream::~OStream()
 {  flush(); // flush before we destroy ourselves
+   if (close_impl) (dynamic_cast<Gtk::OStream*>(this)->*close_impl)();
 }
