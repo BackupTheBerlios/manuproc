@@ -128,8 +128,8 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie)
                (*j).getPreis().PreisMenge() != preismenge_mem ||
                Einheit(artikel_id) != einheit_mem ) break;
            if ((*j).Stueck()!=1) stueck_bool=true;
-           if ((*j).Menge()!=0) menge_bool=true;
-           if ((*j).Rabatt()!=0) rabatt_bool=true;
+           if ((*j).Menge()!=fixedpoint<2>(0)) menge_bool=true;
+           if ((*j).Rabatt()!=fixedpoint<2>(0)) rabatt_bool=true;
          }
         else if (Was()=="Auftrag")       
          {
@@ -137,13 +137,13 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie)
                (*j).getPreis().PreisMenge() != preismenge_mem ||
                Einheit(artikel_id) != einheit_mem ) break;
            if ((*j).Stueck()!=1) stueck_bool=true;
-           if ((*j).Menge()!=0) menge_bool=true;
-           if ((*j).Rabatt()!=0) rabatt_bool=true;
+           if ((*j).Menge()!=fixedpoint<2>(0)) menge_bool=true;
+           if ((*j).Rabatt()!=fixedpoint<2>(0)) rabatt_bool=true;
          }
         else if (Was()=="Lieferschein")       
          {
            if (schema!=schema_mem || Einheit(artikel_id) != einheit_mem ) break;
-           if ((*j).Menge()!=0) menge_bool=true;
+           if ((*j).Menge()!=fixedpoint<2>(0)) menge_bool=true;
            if ((*j).Stueck()!=1) stueck_bool=true;
          }
         else abort();
@@ -189,7 +189,7 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie)
 	   }
          if(Was()=="Rechnung")       
           {
-            os <<linecolor<<FormatiereTeX( (*k).getPreis().Wert() )<<" & ";
+            os <<linecolor<<FormatiereTeX_Preis( (*k).getPreis().Wert() )<<" & ";
             if (rabatt_bool) os<<linecolor<<FormatiereTeX((*k).Rabatt())<<" & ";
             fixedpoint<2> preis = (*k).getPreis().Gesamtpreis(getWaehrung(),(*k).Stueck(),(*k).Menge(),(*k).Rabatt());
             preissum_zeile.push_back(  preis  ) ;
@@ -197,7 +197,7 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie)
           }
          else if(Was()=="Auftrag")       
           {
-            os <<linecolor<<FormatiereTeX( (*k).getPreis().Wert() )<<" & ";
+            os <<linecolor<<FormatiereTeX_Preis( (*k).getPreis().Wert() )<<" & ";
             if (rabatt_bool) os<<linecolor<<FormatiereTeX((*k).Rabatt())<<" & ";
             fixedpoint<2> preis = (*k).getPreis().Gesamtpreis(getWaehrung(),(*k).Stueck(),(*k).Menge(),(*k).Rabatt());
             preissum_zeile.push_back(  preis  ) ;
