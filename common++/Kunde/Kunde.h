@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.50 2003/04/24 13:44:36 jacek Exp $
+// $Id: Kunde.h,v 1.51 2003/05/07 13:25:00 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -124,6 +124,7 @@ private:
 	ID rngan;
 	ID lfran;
         bool rng_an_postfach:1;
+        bool ab_an_rngadresse:1;        
 //        bool lieferadresse:1;
 //        bool rechnungsadresse:1;
 //        bool auftragsadresse:1;
@@ -230,6 +231,7 @@ public:
         ID Lfran() const { return lfran; }        
         bool entsorgung() const { return entsorg; }
         bool Rng_an_postfach() const {return rng_an_postfach;}
+        bool AB_an_rngadresse() const {return ab_an_rngadresse;}        
         bool Auslaender() const { return adresse.land->Auslaender(); }
         bool EU() const { return adresse.land->EU(); }
 	bool Preisautomatik() const { return preisautomatik;}
@@ -324,6 +326,7 @@ public:
 	void RngAn(const Kunde::ID kid) { rngan=kid; }
 	void LfrAn(const Kunde::ID kid) { lfran=kid; }	
         void Rng_an_postfach(bool b) {rng_an_postfach=b;}
+        void AB_an_rngadresse(bool b) throw(SQLerror);        
         void entsorgung(bool b) { entsorg=b; }
 
 	ID Schema() const { return schema; }

@@ -1940,7 +1940,7 @@
 			<bottom_attach>1</bottom_attach>
 			<xpad>0</xpad>
 			<ypad>0</ypad>
-			<xexpand>True</xexpand>
+			<xexpand>False</xexpand>
 			<yexpand>True</yexpand>
 			<xshrink>False</xshrink>
 			<yshrink>False</yshrink>
@@ -1950,23 +1950,20 @@
 
 		      <widget>
 			<class>GtkCheckButton</class>
-			<name>checkbuttonRchngAdr</name>
-			<border_width>2</border_width>
-			<width>0</width>
-			<height>0</height>
+			<name>checkbuttonAuftrAdr</name>
 			<cxx_visibility>protected</cxx_visibility>
 			<can_focus>True</can_focus>
-			<label>Rechnungsadresse</label>
+			<label>Auftragsadresse</label>
 			<active>True</active>
 			<draw_indicator>True</draw_indicator>
 			<child>
-			  <left_attach>2</left_attach>
-			  <right_attach>3</right_attach>
+			  <left_attach>0</left_attach>
+			  <right_attach>1</right_attach>
 			  <top_attach>0</top_attach>
 			  <bottom_attach>1</bottom_attach>
 			  <xpad>0</xpad>
 			  <ypad>0</ypad>
-			  <xexpand>True</xexpand>
+			  <xexpand>False</xexpand>
 			  <yexpand>False</yexpand>
 			  <xshrink>False</xshrink>
 			  <yshrink>False</yshrink>
@@ -1993,7 +1990,7 @@
 			  <bottom_attach>1</bottom_attach>
 			  <xpad>0</xpad>
 			  <ypad>0</ypad>
-			  <xexpand>True</xexpand>
+			  <xexpand>False</xexpand>
 			  <yexpand>False</yexpand>
 			  <xshrink>False</xshrink>
 			  <yshrink>False</yshrink>
@@ -2004,15 +2001,18 @@
 
 		      <widget>
 			<class>GtkCheckButton</class>
-			<name>checkbuttonAuftrAdr</name>
+			<name>checkbuttonRchngAdr</name>
+			<border_width>2</border_width>
+			<width>0</width>
+			<height>0</height>
 			<cxx_visibility>protected</cxx_visibility>
 			<can_focus>True</can_focus>
-			<label>Auftragsadresse</label>
+			<label>Rechnungsadresse</label>
 			<active>True</active>
 			<draw_indicator>True</draw_indicator>
 			<child>
-			  <left_attach>0</left_attach>
-			  <right_attach>1</right_attach>
+			  <left_attach>2</left_attach>
+			  <right_attach>3</right_attach>
 			  <top_attach>0</top_attach>
 			  <bottom_attach>1</bottom_attach>
 			  <xpad>0</xpad>
@@ -2051,15 +2051,47 @@
 		  </child>
 
 		  <widget>
-		    <class>GtkCheckButton</class>
-		    <name>checkbutton_rng_an_postfach</name>
-		    <width>0</width>
-		    <height>0</height>
-		    <cxx_visibility>protected</cxx_visibility>
-		    <can_focus>True</can_focus>
-		    <label>Rechnung an Postfach</label>
-		    <active>False</active>
-		    <draw_indicator>True</draw_indicator>
+		    <class>GtkHBox</class>
+		    <name>hbox19</name>
+		    <homogeneous>False</homogeneous>
+		    <spacing>0</spacing>
+
+		    <widget>
+		      <class>GtkCheckButton</class>
+		      <name>checkbutton_rng_an_postfach</name>
+		      <width>0</width>
+		      <height>0</height>
+		      <cxx_visibility>protected</cxx_visibility>
+		      <can_focus>True</can_focus>
+		      <label>Rechnung an Postfach</label>
+		      <active>False</active>
+		      <draw_indicator>True</draw_indicator>
+		      <child>
+			<padding>0</padding>
+			<expand>False</expand>
+			<fill>False</fill>
+		      </child>
+		    </widget>
+
+		    <widget>
+		      <class>GtkCheckButton</class>
+		      <name>ab_an_rngadresse</name>
+		      <cxx_visibility>protected</cxx_visibility>
+		      <can_focus>True</can_focus>
+		      <signal>
+			<name>toggled</name>
+			<handler>on_ab_an_rngadresse_toggled</handler>
+			<last_modification_time>Wed, 07 May 2003 11:38:14 GMT</last_modification_time>
+		      </signal>
+		      <label>AB an Rng.-Adresse</label>
+		      <active>False</active>
+		      <draw_indicator>True</draw_indicator>
+		      <child>
+			<padding>0</padding>
+			<expand>False</expand>
+			<fill>False</fill>
+		      </child>
+		    </widget>
 		  </widget>
 		</widget>
 

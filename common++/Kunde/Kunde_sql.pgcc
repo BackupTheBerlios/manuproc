@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.45 2003/04/24 13:44:36 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.46 2003/05/07 13:25:00 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,6 +28,7 @@ exec sql include sqlca;
 Kunde::Kunde(ID _id) throw(SQLerror) 
 : ManuProcHandle<>(_id), KundenGruppennr(0),schema(ExtBezSchema::default_id),rngan(0),
   rng_an_postfach(false),
+  ab_an_rngadresse(false),
 //lieferadresse(false),
 //rechnungsadresse(false),
   entsorg(false),
@@ -50,7 +51,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    int ZAHLUNGSART;
    char VEREIN[31];
 /*   bool LIEFERADRESSE,RECHUNGSADRESSE; */
-   bool ENTSORGUNG,RNGANLFRA;
+   bool ENTSORGUNG,RNGANLFRA,ABANRNG;
    char NOTIZ[2048];
    char STAND[50];
    int WAEHRUNGID;
@@ -87,6 +88,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
          coalesce(idnr,''),
 /*         coalesce(lieferadresse,false), coalesce(rechnungsadresse,false), */
          coalesce(rng_an_postfach,false),
+	 coalesce(ab_an_rngadresse,false),
          coalesce(flaeche,0),coalesce(mitarbeiter,0),
    /* the 0.0s are to make typing more strict, which gives an error
       once it is read into the wrong variable */
@@ -110,7 +112,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
 	   :LFR_AN, :BRANRID, :GEBDATUM:IGEBDATUM,
            :IDNR,
 /*           :LIEFERADRESSE,:RECHUNGSADRESSE, */
-	   :RNGANLFRA,
+	   :RNGANLFRA,:ABANRNG,
            :FLAECHE,:MITARBEITER,:KUNDENUMSATZ,:PLANUMSATZ,:UMSATZ,
 	   :RABATT,:ZEILENRABATT,:ZAHLUNGSART, :VEREIN, 
 	   :NOTIZ,:STAND, :LANDESID, :WAEHRUNGID, :ENTSORGUNG, :VERKNR,
@@ -142,6 +144,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
 //   lieferadresse=LIEFERADRESSE;
 //   rechnungsadresse=RECHUNGSADRESSE;
    rng_an_postfach=RNGANLFRA;
+   ab_an_rngadresse=ABANRNG;
    bankverb.konto=strtoll(KTONR,NULL,10);
    bankverb.blz=strtoul(BLZ,NULL,10);
    bankverb.bank=BANKNAME;

@@ -168,6 +168,9 @@ void windowTop::clear_entrys()
    kundendaten=H_Kunde(Kunde::none_id);
 //   telefon.erase(telefon.begin(),telefon.end());
 
+   ab_an_rngadresse->set_active(false);
+   checkbutton_rng_an_postfach->set_active(false);
+
    clear_update_bits();
    fire_enabled=true;
    kunden_status->set_active(true);
@@ -494,4 +497,10 @@ void windowTop::on_clear_button_clicked()
  on_gruppenwahl_activate();
 }
 
+
+void windowTop::on_ab_an_rngadresse_toggled()
+{
+ if(kundendaten->Id()==Kunde::none_id) return;
+   kundendaten->AB_an_rngadresse(ab_an_rngadresse->get_active());  
+}
 

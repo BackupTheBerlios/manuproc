@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.31 2003/04/18 11:26:57 jacek Exp $
+// $Id: Kunde.cc,v 1.32 2003/05/07 13:25:00 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -278,6 +278,21 @@ void Kunde::load_Gruppen() const throw(SQLerror)
  
  (Query(qu) << Id()).FetchArray(gruppen);
 
+}
+
+
+
+void Kunde::AB_an_rngadresse(bool b) throw(SQLerror)
+{
+ Transaction tr;
+ 
+ Query q("update kunden set ab_an_rngadresse=? where kundennr=?");
+ 
+ q << b << Id();
+ 
+ tr.commit();
+ ab_an_rngadresse=b;
+ 
 }
 
 
