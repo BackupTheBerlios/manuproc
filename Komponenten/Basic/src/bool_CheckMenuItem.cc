@@ -1,4 +1,4 @@
-// $Id: bool_CheckMenuItem.cc,v 1.5 2003/04/07 13:26:32 christof Exp $
+// $Id: bool_CheckMenuItem.cc,v 1.6 2003/10/22 12:04:50 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -20,6 +20,7 @@
 
 #include "bool_CheckMenuItem.hh"
 #include "bool_properties.hh"
+#include <bvector_item_CheckMenuItem.hh>
 
 void bool_CheckMenuItem::Connection::model2widget()
 {  widget->set_active(model.get_value());
@@ -46,5 +47,28 @@ bool_CheckMenuItem::bool_CheckMenuItem(const Model_ref<T> &m, Gtk::Widget &w)
 
 void bool_CheckMenuItem::setSensitive(const Model_ref<bool> &s,bool i)
 {  Gtk::AssociateSensitivity(this,s,i);
+}
+
+void bvector_item_CheckMenuItem::Connection::model2widget()
+{  widget->set_active(model.get_value());
+}
+
+void bvector_item_CheckMenuItem::Connection::widget2model()
+{  model=widget->get_active();
+}
+
+SigC::Connection bvector_item_CheckMenuItem::Connection::connect()
+{  return widget->signal_toggled().connect(SigC::slot(*this,&bvector_item_CheckMenuItem::Connection::controller2model));
+}
+
+bvector_item_CheckMenuItem::bvector_item_CheckMenuItem(const Model_ref<T> &m, const std::string &text)
+	: Gtk::CheckMenuItem(text), conn(m,this)
+{  
+};
+
+bvector_item_CheckMenuItem::bvector_item_CheckMenuItem(const Model_ref<T> &m, Gtk::Widget &w)
+	: conn(m,this)
+{
+ Gtk::CheckMenuItem::add(w);
 }
 

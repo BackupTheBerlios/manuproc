@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.24 2003/10/21 11:47:38 christof Exp $
+// $Id: SimpleTree.hh,v 1.25 2003/10/22 12:04:50 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -109,6 +109,7 @@ public:
 
  void Expand_recursively();
  void Collapse();
+	void setTitles(const std::vector<std::string>& T);
 };
 
 // I put the more esoteric features here, so they may not confuse the

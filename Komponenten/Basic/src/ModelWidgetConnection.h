@@ -1,4 +1,4 @@
-// $Id: ModelWidgetConnection.h,v 1.6 2003/05/19 13:11:13 christof Exp $
+// $Id: ModelWidgetConnection.h,v 1.7 2003/10/22 12:04:50 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -25,10 +25,10 @@
 #include <sigc++/object.h>
 #include <glib/gtypes.h>
 
-template <class T,class W>
+template <typename T,typename W,typename ID=gpointer>
  class ModelWidgetConnection : public SigC::Object
 {public: // protected:  work around a g++ 3.3.0 bug
-	typedef ModelWidgetConnection<T,W> this_t;
+	typedef ModelWidgetConnection<T,W,ID> this_t;
 	typedef W widget_t;
 	
 protected:
@@ -44,7 +44,7 @@ protected:
 	virtual void disconnect() { cm_con.disconnect(); }
 
 private:
-	void refresh(gpointer x)
+	void refresh(ID x)
 	{  if (model.matches(x)) model2view();
 	}
 protected:

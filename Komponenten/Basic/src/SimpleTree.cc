@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.28 2003/10/22 07:58:48 christof Exp $
+// $Id: SimpleTree.cc,v 1.29 2003/10/22 12:04:50 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,6 +20,7 @@
 #include <SimpleTree.hh>
 #include <Misc/itos.h>
 #include <gtkmm/menu.h>
+#include <bvector_item_CheckMenuItem.hh>
 #include <bool_CheckMenuItem.hh>
 
 void SimpleTree_Basic::detach()
@@ -185,15 +186,13 @@ void SimpleTree_Basic::fillMenu()
   optionen->set_submenu(*optionen_menu);
   add_mitem(menu,"Alles aufklappen",SigC::slot(*this,&SimpleTree_Basic::Expand_recursively));
   add_mitem(menu,"Alles zuklappen",SigC::slot(*this,&SimpleTree_Basic::Collapse));
-#if 0
    for (guint i=0;i<Cols();++i)
-    {
-      Gtk::CheckMenuItem *sp = manage(new class Gtk::CheckMenuItem(getColTitle(i)));
+    { bvector_item_CheckMenuItem *sp = manage(new bvector_item_CheckMenuItem
+    			(getStore()->ShowColumn(i),getColTitle(i)));
       spalten_menu->append(*sp);
-      if (vec_hide_cols[i]) sp->set_active(true);
       sp->show();
-      sp->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::welche_Spalten),i,sp));
     }
+#if 0
    menu->append(*optionen);
    optionen->set_submenu(*optionen_menu);
    Gtk::CheckMenuItem *titles = manage(new class Gtk::CheckMenuItem("Spaltenüberschriften anzeigen"));
@@ -234,4 +233,10 @@ bool SimpleTree_Basic::MouseButton(GdkEventButton *event)
       return true;
    }
    return false;
+}
+
+void SimpleTree_Basic::setTitles(const std::vector<std::string>& T)
+{  SimpleTreeStore_Proxy::setTitles(T);
+   delete menu; menu=0;
+   fillMenu();
 }

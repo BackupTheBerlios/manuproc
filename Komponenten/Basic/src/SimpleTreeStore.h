@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.33 2003/10/20 10:27:39 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.34 2003/10/22 12:04:50 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,7 +30,7 @@
 #include <list>
 #include <utility>
 #include <map>
-#include <BaseObjects/Model.h>
+#include <BaseObjects/Model_ref_bvector.h>
 
 // for easily accessing model methods
 class SimpleTreeModel_Proxy
@@ -136,6 +136,7 @@ private:
 	SigC::Signal1<void,guint> title_changed;
 	SigC::Signal0<void> spaltenzahl_geaendert;
 	SigC::Signal1<void,gpointer> signal_save;
+	SigC::Signal1<void,bvector_iterator> signal_visibly_changed;
 	void save_remembered1(gpointer) { save_remembered(); }
 	void on_title_changed(guint idx);
 	
@@ -257,6 +258,8 @@ public:
 	// these are accessors for SimpleTreeStates
 	Model_ref<guint> ShowDeep() { return Model_ref<guint>(showdeep,signal_save); }
 	Model_ref<bool> ShowColor() { return Model_ref<bool>(color_bool,signal_save); }
+	Model_ref<bvector_item> ShowColumn(unsigned idx) 
+	{ return Model_ref<bvector_item>(vec_hide_cols.begin()+idx,signal_visibly_changed); }
 	
 	unsigned visible_size() { return currseq.size(); }
 };
