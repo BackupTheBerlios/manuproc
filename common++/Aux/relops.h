@@ -1,7 +1,6 @@
-// $Id: EAN_sql.pgcc,v 1.8 2002/10/11 08:37:51 christof Exp $
-/*  libKomponenten: GUI components for ManuProC's libcommon++
- *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
- *                             written by Christof Petig and Malte Thoma
+/* $Id: relops.h,v 1.1 2002/10/11 08:37:28 christof Exp $ */
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -12,27 +11,23 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */ 
-    
-exec sql include sqlca;
-#include <Aux/Transaction.h>
-#include <EAN.h>
-#include <Aux/itos.h>
+ */
 
-std::string EAN::next_value()
-{
-  exec sql begin declare section;
-   char *RESULT=0; 
-  exec sql end declare section;
-  exec sql select max(substr(ean,0,13)) into :RESULT from artbez_3_1;
+// sometimes it is handy to have the std:: functions from stl_relops.h
+// in global namespace
 
-  unsigned long long int ean=strtoll(RESULT,NULL,10);
-  ean+=1;
-  ECPGfree_auto_mem();
-  return add_Pruefsumme(ulltos(ean));                
-}    
-                 
+// please do not include this file in any header file !!!!!
+
+#ifndef MANUPROC_RELOPS_H
+#define MANUPROC_RELOPS_H
+
+#include <utility>
+#if __GNUC__ > 2
+namespace using std::rel_ops;
+#endif
+
+#endif

@@ -1,4 +1,4 @@
-// $Id: Waehrung.h,v 1.11 2002/05/09 12:45:59 christof Exp $
+// $Id: Waehrung.h,v 1.12 2002/10/11 08:37:51 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -56,6 +56,7 @@ public:
  const std::string Langbezeichnung() const { return lang; }
  const std::string TeXsymbol() const  { return tex; }
  bool operator==(const Waehrung &b) const { return wid==b.wid; }
+ bool operator!=(const Waehrung &b) const { return wid!=b.wid; }
 }; 
 
 // Vorsicht !!! Dass dies ein cP ist, funktioniert nur wegen des Caches

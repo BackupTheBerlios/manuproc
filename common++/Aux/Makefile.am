@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.18 2002/07/15 15:37:53 christof Exp $
+# $Id: Makefile.am,v 1.19 2002/10/11 08:37:51 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -18,7 +18,8 @@ libAux_a_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
 		Zeitpunkt_new_write.cc string0.c mystring.cc \
 		EntryValueBase.cc EntryValueIntString.cc \
 		auto_conversion.cc $(PGCC_Sources) AdminProblems.cc \
-		exception.cc itos.cc EntryValueDatum.cc Handles.cc EAN.cc
+		exception.cc itos.cc EntryValueDatum.cc Handles.cc EAN.cc \
+		EntryValueQuartal.cc
 
 libAux.a: $(libAux_a_OBJECTS) $(libAux_a_DEPENDENCIES)
 	touch $@
@@ -35,7 +36,8 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
 	FetchIStream.pgcc FetchIStream.h ctime_assert.h \
    EntryValueBase.cc EntryValueBase.h EntryValueIntString.cc \
    EntryValueIntString.h EntryValueEmptyInt.h EntryValueDatum.h \
-   EntryValueDatum.cc EmptyInt_4TeX.h EntryValueFixed.h Long.h
+   EntryValueDatum.cc EmptyInt_4TeX.h EntryValueFixed.h Long.h \
+  EntryValueQuartal.h
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
@@ -53,7 +55,8 @@ include_HEADERS=Ausgabe.h Ausgabe_neu.h Datum.h \
 		Changejournal.h EntryValueIntString.h \
 		exception.h itos.h fixedpoint.h FetchIStream.h \
 		ctime_assert.h EntryValueEmptyInt.h EntryValueDatum.h \
-		EntryValueFixed.h Global_Settings.h EAN.h AdminProblems.h
+		EntryValueFixed.h Global_Settings.h EAN.h AdminProblems.h \
+		EntryValueQuartal.h
 
 CLEANFILES= *~ $(BUILT_SOURCES)
 
