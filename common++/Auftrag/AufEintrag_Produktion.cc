@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.24 2003/12/03 09:49:41 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.25 2003/12/03 09:58:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -259,57 +259,9 @@ public:
 	   cH_ppsInstanz wo=ppsInstanz::getBestellInstanz(art);
 	   if (wo==neuerAEB.Instanz()) wo=ppsInstanz::getProduktionsInstanz(art);
 	   assert(wo!=neuerAEB.Instanz());
-	   if (wo->LagerInstanz())
-	   {  Lager L(wo);
-	      L.raus_aus_lager(art,M,true,ProductionContext(neuerAEB,ctx));
-	   }
-	   else
-	      AufEintrag::unbestellteMengeProduzieren(wo,art,M,true,neuerAEB,ctx);
+	   AufEintrag::unbestellteMengeProduzieren(wo,art,M,true,neuerAEB,ctx);
 	}
 };
-
-#if 0
-// noch erforderlich???
-class AufEintrag::ProduziertRueckgaengig2 : public distribute_children_cb
-{  AufEintrag alterAEB;
-public:
-	ProduziertRueckgaengig2(const AufEintrag &aAEB)
-		: alterAEB(aAEB) {}
-	AuftragBase::mengen_t operator()(const ArtikelBase &art,
-		const AufEintragBase &aeb,AuftragBase::mengen_t M) const
-	{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("aeb",aeb),NV("M",M));
-	   if (aeb.Instanz()->ProduziertSelbst())
-           {  AufEintragZu(alterAEB).setMengeDiff__(aeb,-M);
-              AuftragBase::mengen_t m2=AufEintrag(aeb).AnElternMengeAnpassen();
-              if (!!m2) // siehe ZI2 (1er im Lager)
-              {  M+=m2;
-                 assert(M<=0);
-                 AufEintragZu(alterAEB).setMengeDiff__(aeb,-m2);
-              }
-           }
-           return M;
-	}
-
-	// Überproduktion
-	void operator()(const ArtikelBase &art,AuftragBase::mengen_t M) const
-	{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("M",M));
-	   //assert(!"needed");
-	   assert(M<0);
-	   ArtikelStamm as(art);
-	   cH_ppsInstanz next=alterAEB.Instanz()->NaechsteInstanz(as);
-	   if (next==ppsInstanzID::None)
-	      next=ppsInstanz::getBestellInstanz(as);
-	   if (/*alterAEB.Id()==AuftragBase::ungeplante_id &&*/ next->ProduziertSelbst())
-	   {  AufEintrag::ArtikelInternNachbestellen(next,-M,
-	   		alterAEB.getLieferdatum()
-	   		  -alterAEB.Instanz()->ProduktionsDauer(),
-	   		art,alterAEB);
-	   }
-	   else std::cout << "ProduziertRueckgaengig2: Überproduktion " << M
-	   	<< " von "<< art.Id() <<  '\n';
-	}
-};
-#endif
 
 // similar to move_to
 // Produktion im Lager bedeutet:
