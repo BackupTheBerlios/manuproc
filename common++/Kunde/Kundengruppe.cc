@@ -12,7 +12,10 @@ Kundengruppe::Kundengruppe(ID kgid, const std::string _grpnm,
 
 
 FetchIStream &operator>>(FetchIStream &is,Kundengruppe &kg)
- {  return is >> kg >> kg.obergruppe >> kg.grpname >> kg.kommentar;
+ {  return is >> kg 
+ 	>> FetchIStream::MapNull(kg.obergruppe,std::string()) 
+ 	>> kg.grpname 
+ 	>> FetchIStream::MapNull(kg.kommentar,std::string());
  } 
 
 cH_Kundengruppe::cH_Kundengruppe(Kundengruppe::ID _id,
@@ -34,7 +37,10 @@ FetchIStream &operator>>(FetchIStream &is,cH_Kundengruppe &kg)
    std::string _obg;
    std::string _bez;
    std::string _komm;
-   is >> _id >> _obg >> _bez >> _komm;
+   is >> _id 
+   >> FetchIStream::MapNull(_obg,std::string()) 
+   >> _bez 
+   >> FetchIStream::MapNull(_komm,std::string());  
    cH_Kundengruppe ch_kg((Kundengruppe::ID)_id,_obg,_bez,_komm);
    kg=ch_kg;
    return is;
