@@ -1,4 +1,4 @@
-// $Id: event_listen.cc,v 1.1 2003/05/09 11:08:06 christof Exp $
+// $Id: event_listen.cc,v 1.2 2003/05/09 12:06:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,9 +26,16 @@ static void Event(const std::string &c,const std::string &k,const std::string &d
 {  std::cout << "Event[" << c << "," << k << "] " << d << '\n';
 }
 
-int main()
+static void Event2(const std::string &k,const std::string &d)
+{  std::cout << "Event[" << k << "] " << d << '\n';
+}
+
+int main(int argc, char **argv)
 {  ManuProC::dbconnect();
    ManuProC::Event::connect();
+   
+   if (argc>1) ManuProC::Event::signal_event(argv[1]).connect(&Event2);
+   else ManuProC::Event::signal_event().connect(&Event);
    
    while (ManuProC::Event::filedesc()>0)
    {  fd_set rfds;

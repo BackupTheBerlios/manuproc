@@ -1,4 +1,4 @@
-// $Id: Event.cc,v 1.2 2003/05/09 11:07:28 christof Exp $
+// $Id: Event.cc,v 1.3 2003/05/09 12:06:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -63,6 +63,7 @@ void ManuProC::Event::read_notifications()
       event_sig(channel,key,data);
       channels[channel](key,data);
    }
+   tr.commit();
    last_processed=bis;
 }
 
