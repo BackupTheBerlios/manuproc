@@ -38,15 +38,18 @@ FetchIStream &operator>>(FetchIStream &is, ppsInstanz &i)
 {  is >> i.name 
 	>> FetchIStream::MapNull(i.lager_fuer,ppsInstanzID::None)
 	>> i.sortierung
-	>> FetchIStream::MapNull(i.lieferschein,false)
-	>> FetchIStream::MapNull(i.produziert_selbst,false)
-	>> FetchIStream::MapNull(i.lagername,std::string())
-	>> FetchIStream::MapNull(i.produktionsdauer_tage,0)
+	>> FetchIStream::MapNull(i.lieferschein)
+	>> FetchIStream::MapNull(i.produziert_selbst)
+	>> FetchIStream::MapNull(i.lagername)
+	>> FetchIStream::MapNull(i.produktionsdauer_tage)
 	>> FetchIStream::MapNull(i.einlagern_in,ppsInstanzID::None)
-	>> FetchIStream::MapNull(i.automatisch_einlagern,false)
+	>> FetchIStream::MapNull(i.automatisch_einlagern)
 	>> i.typ
-	>> FetchIStream::MapNull(i.externe_bestellung,false)
-	>> FetchIStream::MapNull(i.geplant_von,ppsInstanzID::None);
+	>> FetchIStream::MapNull(i.externe_bestellung)
+	>> FetchIStream::MapNull(i.geplant_von,ppsInstanzID::None)
+	>> FetchIStream::MapNull(i.overview)
+	>> FetchIStream::MapNull(i.alt_group_nr,ppsInstanzID::None)
+	;
  assert(i.typ=='L' || i.typ=='l' || i.typ=='P' || i.typ=='E');
  return is;
 }

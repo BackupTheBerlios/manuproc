@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.29 2003/06/03 16:38:30 christof Exp $
+// $Id: ppsInstanz.h,v 1.30 2004/05/13 09:19:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -56,7 +56,11 @@ private:
  char typ;
  ID geplant_von;
  bool externe_bestellung;
+public: // see Stroustrup about OO abuse
+ std::string overview; // short hint on which intance is used in pps
+ ID alt_group_nr; // group of equivalent instances
 
+private:
  friend FetchIStream &operator>>(FetchIStream &,ppsInstanz&);
  void get_name() throw(SQLerror);
  void check() const; 
@@ -66,12 +70,12 @@ public:
  ppsInstanz(ID iid=ppsInstanzID::None) : instid(iid),
                       lager_fuer(ppsInstanzID::None),
                       einlagern_in(ppsInstanzID::None),
-                      sortierung(0),
-                      lieferschein(false),produziert_selbst(false),
-                      automatisch_einlagern(false),
-                      produktionsdauer_tage(0),      
+                      sortierung(),
+                      lieferschein(),produziert_selbst(),
+                      automatisch_einlagern(),
+                      produktionsdauer_tage(),      
                       typ('0'),geplant_von(ppsInstanzID::None),
-                      externe_bestellung(false)
+                      externe_bestellung()
                       {get_name(); check(); }
 
  ID Id() const { return instid; }
