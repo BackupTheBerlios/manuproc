@@ -95,9 +95,10 @@ void windowTop::changedFktS(Kunde::UpdateBitsSonst e)
      else if (e==Kunde::FGebDatum	) kundendaten->setGebDatum(geburtstag->get_value());
      else std::cerr<< "Falsche Funktion konektiert\n";
 
-  if(e==Kunde::FNotiz || e==Kunde::FRechnungan || e==Kunde::FExtartbezid 
-      || e==Kunde::FPreisliste || e==Kunde::FEntsorgung || 
-         e==Kunde::FVerknr || e==Kunde::Flieferung_frei_haus)
+  if(e==Kunde::FNotiz || e==Kunde::FRechnungan || e==Kunde::FLieferscheinan 
+	|| e==Kunde::FExtartbezid 
+      	|| e==Kunde::FPreisliste || e==Kunde::FEntsorgung 
+	|| e==Kunde::FVerknr || e==Kunde::Flieferung_frei_haus)
     saveAll();
 //wirklich bei jedem Changed von Notiz speichern?
 }
