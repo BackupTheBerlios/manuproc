@@ -1,24 +1,35 @@
 #!/bin/sh
 
-GLOBAL_VER=3
+GLOBAL_VER=20041025-1
 USER="Christof Petig <christof@petig-baender.de>"
 
 calculate_deps() {
-  DEPENDS=
+  DEPENDS=mingw32
   SUMMARY="$ARCHIVE_NAME"
   DESCRIPTION="converted from $ARCHIVE_NAME by gtkwin2deb"
   case "$1" in
+    gtkdep) EXTRA_FILES="lib/libgdi32.la lib/libiconv.la lib/libintl.la"
+      ;;
+    glib) EXTRA_FILES="lib/libglib-2.0.la lib/libgmodule-2.0.la lib/libgobject-2.0.la"
+      ;;
     gtk+) DEPENDS="mingw32 mingw32-glib-dev mingw32-pango-dev mingw32-atk-dev"
+      EXTRA_FILES="lib/libgdk_pixbuf-2.0.la lib/libgdk-win32-2.0.la lib/libgtk-win32-2.0.la"
       ;;
     pango) DEPENDS="mingw32 mingw32-glib-dev"
+      EXTRA_FILES="lib/libpango-1.0.la lib/libpangowin32-1.0.la"
       ;;
     atk) DEPENDS="mingw32 mingw32-glib-dev"
+      EXTRA_FILES="lib/libatk-1.0.la"
       ;;
     gtkmm) DEPENDS="mingw32 mingw32-gtk+-dev mingw32-glibmm-dev"
+      EXTRA_FILES="lib/libatkmm-1.0.la lib/libgdkmm-2.0.la lib/libgtkmm-2.0.la lib/libpangomm-1.0.la"
       ;;
     glibmm) DEPENDS="mingw32 mingw32-glib-dev mingw32-sigc++-dev"
+      EXTRA_FILES="lib/libglibmm-2.0.la"
       ;;
-    *) DEPENDS="mingw32"
+    sigc++) EXTRA_FILES="lib/libsigc-2.0.la"
+      ;;
+    sqlite) EXTRA_FILES="lib/libsqlite.la"
       ;;
   esac
 }
