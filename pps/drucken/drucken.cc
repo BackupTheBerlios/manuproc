@@ -39,7 +39,6 @@ void LR_drucken::drucken(bool print,bool b_firmenpapier,bool b_kopie)
    if(toTeX) f=popen("cat > ./rdr$$.tex","w");
    else if (!print) f=popen("tex2prn -2 -G ","w");
    else f=popen(("tex2prn -q -2 "+texplotter).c_str(),"w");
-
    std::ofstream os(fileno(f));
 
    if      (RL==LR_Base::Rechnung)      

@@ -1397,20 +1397,6 @@
 	<widget>
 	  <class>GtkButton</class>
 	  <child_name>Toolbar:button</child_name>
-	  <name>erfassen_button</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <signal>
-	    <name>clicked</name>
-	    <handler>on_erfassen_activate</handler>
-	    <last_modification_time>Fri, 01 Dec 2000 10:36:38 GMT</last_modification_time>
-	  </signal>
-	  <label>erfassen</label>
-	  <stock_pixmap>GNOME_STOCK_PIXMAP_PROPERTIES</stock_pixmap>
-	</widget>
-
-	<widget>
-	  <class>GtkButton</class>
-	  <child_name>Toolbar:button</child_name>
 	  <name>mainprint_button</name>
 	  <cxx_visibility>protected</cxx_visibility>
 	  <signal>
@@ -1439,6 +1425,23 @@
 	<widget>
 	  <class>GtkButton</class>
 	  <child_name>Toolbar:button</child_name>
+	  <name>erfassen_button</name>
+	  <cxx_visibility>protected</cxx_visibility>
+	  <signal>
+	    <name>clicked</name>
+	    <handler>on_erfassen_activate</handler>
+	    <last_modification_time>Fri, 01 Dec 2000 10:36:38 GMT</last_modification_time>
+	  </signal>
+	  <label>Auftrag</label>
+	  <stock_pixmap>GNOME_STOCK_PIXMAP_BOOK_RED</stock_pixmap>
+	  <child>
+	    <new_group>True</new_group>
+	  </child>
+	</widget>
+
+	<widget>
+	  <class>GtkButton</class>
+	  <child_name>Toolbar:button</child_name>
 	  <name>lieferschein_button</name>
 	  <cxx_visibility>protected</cxx_visibility>
 	  <signal>
@@ -1448,9 +1451,6 @@
 	  </signal>
 	  <label>Liefersch.</label>
 	  <stock_pixmap>GNOME_STOCK_PIXMAP_BOOK_GREEN</stock_pixmap>
-	  <child>
-	    <new_group>True</new_group>
-	  </child>
 	</widget>
 
 	<widget>
@@ -1539,7 +1539,7 @@
 	    <handler>on_button_auftrag_erledigt_clicked</handler>
 	    <last_modification_time>Thu, 29 Nov 2001 17:43:35 GMT</last_modification_time>
 	  </signal>
-	  <label>Auftrag</label>
+	  <label>erledigt</label>
 	  <stock_pixmap>GNOME_STOCK_PIXMAP_TRASH</stock_pixmap>
 	  <child>
 	    <new_group>True</new_group>
@@ -1557,7 +1557,7 @@
 	    <handler>on_button_Kunden_erledigt_clicked</handler>
 	    <last_modification_time>Thu, 29 Nov 2001 17:45:32 GMT</last_modification_time>
 	  </signal>
-	  <label>Aufträge</label>
+	  <label>aufräumen</label>
 	  <stock_pixmap>GNOME_STOCK_PIXMAP_TRASH_FULL</stock_pixmap>
 	</widget>
       </widget>

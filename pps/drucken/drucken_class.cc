@@ -157,7 +157,7 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
 	}         	 
       }
 #else
-     cH_Kunde kunde_von(1);
+     cH_Kunde kunde_von(Kunde::default_id);
      os <<"\n\n\\footnotesize "<< kunde_von->getBank()<<"\\\\\n";
      os << "Zahlung: "<< getZahlungsart()->Bezeichnung()<<"\\\\\n";
      os <<"Die Lieferung erfolgt zu den Einheitsbedingungen der deutschen Texttilindustrie\\\\\n";
@@ -262,11 +262,13 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
         
         if (Einheit(artikelbase) != einheit_mem ) break;  // Einheit wechselt
         
-        if ((*j).Stueck()!=1 || !(*j).Menge()) stueck_bool=true;
 
-        						// was soll das? (!!)
-        if ((Typ()==Rechnung || Typ()==Lieferschein) && !!(*j).Menge())
-           menge_bool=true;
+        if(Typ()==Rechnung || Typ()==Lieferschein)
+          {
+            if ((*j).Stueck()!=1 || !(*j).Menge()) stueck_bool=true;
+            if ((*j).Menge())                      menge_bool=true;
+          }
+        else  stueck_bool=true  ;
         
         if (Typ()==Rechnung && lfrsid_mem != (*j).Lfrs_Id()) 
            break; // Lieferschein wechselt
@@ -371,14 +373,17 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
             if ((!(*k).ZusatzInfo() || !menge_bool))
             {  os <<linecolor ;
                os << FormatiereTeX((*k).Stueck());
-               if (Einheit(artikelbase).StueckEinheit().size())
-                  os <<'{'<< einheitsize <<Einheit(artikelbase).StueckEinheit() <<'}';
+               std::string einheit;
+               if(Typ()==Rechnung || Typ()==Lieferschein) einheit=Einheit(artikelbase).StueckEinheit_TeX();
+               else einheit=Einheit(artikelbase).TeX();
+               if (einheit.size()) 
+                    os <<'{'<< einheitsize <<einheit <<'}';
             }
          }
          if (menge_bool) 
             {  neue_spalte(erste_spalte,os);
                if (!(*k).ZusatzInfo()) 
-                    os <<linecolor<< FormatiereTeX_short((*k).Menge())<<einheitsize <<Einheit(artikelbase).MengenEinheit() ;
+                    os <<linecolor<< FormatiereTeX_short((*k).Menge())<<einheitsize <<Einheit(artikelbase).MengenEinheit_TeX() ;
             }
          if (stueck_bool && menge_bool)
            { neue_spalte(erste_spalte,os);
@@ -417,7 +422,8 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
 
          if (preise_addieren)       
           { neue_spalte(erste_spalte,os);
-            os <<linecolor<<FormatiereTeX_Preis( (*k).getPreis(false).Wert() );
+//            os <<linecolor<<FormatiereTeX_Preis( (*k).getPreis(false).Wert() );
+            os <<linecolor<<FormatiereTeX_Preis( (*k).getPreis().Wert() );
             if (rabatt_bool) 
             {  neue_spalte(erste_spalte,os); os << linecolor<<FormatiereTeX((*k).Rabatt()); }
             fixedpoint<2> preis = (*k).getPreis().Gesamtpreis(getWaehrung(),(*k).Stueck(),(*k).Menge(),(*k).Rabatt());
@@ -547,7 +553,6 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
 
    }
 //  os << "\\end{flushright}\n";
-
 
   drucken_footer(os);
 }
@@ -727,8 +732,8 @@ void LR_Abstraktion::page_header(std::ostream &os)
 	os << "\\begin{minipage}[b]{0.6\\linewidth}\n"
 	   << "\\begin{flushleft}\n";
 #endif
-
-     os << kunde_von->LaTeX_von()<<"\n\n";
+     if(Extern)      os << kunde_von->LaTeX_von(KdNr())<<"\n\n"  ;
+     else            os << kunde_von->LaTeX_von()<<"\n\n"  ;
      TelArt telart=TEL_NONE;
 #ifdef PETIG_EXTENSIONS
      if(Typ()==Extern || Typ()==Lieferschein || Typ()==Auftrag ) 

@@ -58,8 +58,9 @@ void auftrag_main::on_erfassen_activate()
 {   
     hide();
     try
-    { if (selected_AufEintrag) manage(new auftrag_bearbeiten(instanz,*selected_AufEintrag));
-      else  manage(new auftrag_bearbeiten(instanz,AufEintragBase(instanz->Id())));
+    { if (selected_AufEintrag) manage(new auftrag_bearbeiten(instanz,selected_AufEintrag));
+//      else  manage(new auftrag_bearbeiten(instanz,AufEintragBase(instanz->Id())));
+      else  manage(new auftrag_bearbeiten(instanz,0));
     } catch (SQLerror &e)
     {  std::cerr << e << '\n';
        show();
@@ -344,6 +345,8 @@ void auftrag_main::on_leaf_selected(cH_RowDataBase d)
  const Data_auftrag *dt=dynamic_cast<const Data_auftrag*>(&*d);
  selected_AufEintrag = &dt->get_AufEintrag();
 
+//cout << "SE="<< selected_AufEintrag<<'\t'<<selected_AufEintrag->Instanz()->Name()<<' '<<selected_AufEintrag->Id()<<' '<<selected_AufEintrag->ZNr()<<'\n';;
+
  if(instanz->Id() != 1 && !togglebutton_material->get_active()
                        && !togglebutton_auftraege->get_active()) 
       instanz_leaf_auftrag(*selected_AufEintrag);
@@ -572,7 +575,7 @@ void auftrag_main::on_button_auftrag_erledigt_clicked()
 void auftrag_main::on_button_artikeleingabe_clicked()
 {
 //std::cout << selected_Artikel.Id()<<'\n';
- if (selected_AufEintrag && selected_AufEintrag->ArtId())
+ if (selected_AufEintrag )//sonst geht das nur bei Kundenaufträgen->  && selected_AufEintrag->ArtId())
   {
     std::string s = "artikeleingabe "+itos(selected_AufEintrag->ArtId())+" &";
     system(s.c_str());
@@ -652,27 +655,36 @@ void auftrag_main::instanz_selected(const cH_ppsInstanz _instanz)
 
 void auftrag_main::show_frame_instanzen_material()
 {
+ // noch nicht implementiert ?
+ button_Kunden_erledigt->hide();
+
  if (instanz->Id() == ppsInstanz::Kundenauftraege)
    {
-    mainprint_button->show();
-    rechnung_button->show();
-    button_auftrag_erledigt->show();
-    button_Kunden_erledigt->hide();
     maintree_s->set_column_visibility(KUNDE,true);
     maintree_s->set_column_visibility(AUFTRAG,true);
     maintree_s->set_column_visibility(LETZEPLANINSTANZ,true);
+
+    mainprint_button->show();
+    rechnung_button->show();
+    button_auftrag_erledigt->show();
+    togglebutton_auftraege->hide();
    }
   else 
    { 
     maintree_s->set_column_visibility(KUNDE,false); 
     maintree_s->set_column_visibility(AUFTRAG,false); 
     maintree_s->set_column_visibility(LETZEPLANINSTANZ,false);
+
     mainprint_button->hide();
     rechnung_button->hide();
     button_auftrag_erledigt->hide();
+    togglebutton_auftraege->show();
+
+    // warum fehlt das denn bei Kundenaufträgen ? CP
     neuer_auftrag_tree_titel_setzen(); // Kann auch in den Konstruktor MAT
     tree_neuer_auftrag->clear();
     Datum_instanz->setLabel("");
+
     spinbutton_geplante_menge->hide();
     searchcombo_auftragid->reset();
     togglebutton_geplante_menge->set_active(false);
@@ -681,15 +693,19 @@ void auftrag_main::show_frame_instanzen_material()
 
   // frame_instanzen
 
+  erfassen_button->show(); 
+  // Grund: auch in der Färberei könnte es nett sein, sich Aufträge anzusehen
+  // oder welche einzugeben.
+  // auch wenn es vielleicht noch nicht funktioniert
+
   if(instanz->Lieferschein())
    { lieferschein_button->show();
-     erfassen_button->show();
-     togglebutton_bestellen->hide();
+     togglebutton_bestellen->hide(); 
+     // Hmmm, bin ich noch nicht von überzeugt (CP)
    }
   else
    {
     lieferschein_button->hide();
-    erfassen_button->hide();
     togglebutton_bestellen->show();
    }
 

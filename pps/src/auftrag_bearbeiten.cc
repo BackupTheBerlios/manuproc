@@ -41,7 +41,7 @@ extern auftrag_bearbeiten *auftragbearbeiten;
 
 extern MyMessage *meldung;
 
-auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEintragBase& auftragbase)
+auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEintragBase *auftragbase)
 : instanz(_instanz), kunde(Kunde::default_id)
 {
  splitdialog=0;
@@ -57,13 +57,14 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
  aktaufeintrag = 0;
  selectedentry=-1;
  auftrag = 0;
- if(auftragbase.Id())
+// if(auftragbase.Id()) // sonst geht es nur bei Kundenaufträgen
+ if(auftragbase)
    {
-    loadAuftrag(auftragbase);
-    if(auftragbase.ZNr())
+    loadAuftrag(*auftragbase);
+    if(auftragbase->ZNr())
       {
-       auftrag_clist->moveto(auftragbase.ZNr()-1,0,.5,0);
-       auftrag_clist->row(auftragbase.ZNr()-1).select();
+       auftrag_clist->moveto(auftragbase->ZNr()-1,0,.5,0);
+       auftrag_clist->row(auftragbase->ZNr()-1).select();
       }
    }
 }

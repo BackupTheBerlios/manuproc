@@ -98,7 +98,7 @@ public:
  
  bool splitEntry();
 
-auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEintragBase& auftragbase);
+auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEintragBase *auftragbase);
 ~auftrag_bearbeiten();
 
 };
