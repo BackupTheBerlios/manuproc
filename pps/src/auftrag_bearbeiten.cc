@@ -79,6 +79,7 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
    checkbutton_ean_drucken->show();
    youraufnr_scombo->set_value_in_list(false,false);
    jahrgang_spinbutton->set_sensitive(false);
+   artikelbox->set_always_fill(true);
 #endif 
 
  zahlart->hide_int(true);
@@ -124,8 +125,11 @@ void auftrag_bearbeiten::showBestandData()
 
 void auftrag_bearbeiten::onSelArtikel()
 {
- assert(auftrag);
+ if(!auftrag) return;
+ if(auftrag->Id()==AuftragBase::none_id) return;
+
  assert(!aktaufeintrag);
+
  Einheit e(artikelbox->get_value());
  mengeeinheit->set_text((std::string)e);
  WPreis->set_Einheit(e);
