@@ -23,9 +23,11 @@ class petig_we : public petig_we_glade
    ArtikelBase	artikel;
    std::vector<std::string> artbez;
    int stueck;
+   bool zi;
+   LieferscheinEntry::zusaetze_t zinfo;
    ArtikelMenge::mengen_t menge;
    std::string auftrag_referenz;
-   we_entry() : stueck(0),menge(0) {}
+   we_entry() : stueck(0),zinfo(false),menge(0) {}
    };
  std::vector<struct we_entry> we_ls;
  

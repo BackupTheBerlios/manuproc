@@ -60,7 +60,8 @@ void petig_we::on_petig_we_ok_clicked()
        "artikelkomponente(artikelid,?,1,2), "
        "artikelkomponente(artikelid,?,1,3), "
        "artikelkomponente(artikelid,?,1,4), "
-       "stueck,menge from mabella_lieferscheinentry l left "
+       "l.stueck,l.menge,l.zusatzinfo,l.lfrsid,l.zeile,l.instanz "
+       " from mabella_lieferscheinentry l left "
        " join auftrag a on (a.auftragid=l.refauftragid and "
        " a.instanz=l.instanz) where lfrsid=?");
      
@@ -72,15 +73,21 @@ void petig_we::on_petig_we_ok_clicked()
    {
     struct we_entry ws;
     std::string bk;
+    int lsid,znr,insid;
+    
     is >> FetchIStream::MapNull(ws.auftrag_referenz,"");
     for(int i=0; i<4; i++)
       {is >> FetchIStream::MapNull(bk,"");
        ws.artbez.push_back(bk);
       }
-    is >> ws.stueck >> FetchIStream::MapNull(ws.menge,0);
+    is >> ws.stueck >> FetchIStream::MapNull(ws.menge,0)
+      >> FetchIStream::MapNull(ws.zinfo,false)
+      >> lsid >> znr >> insid;
     we_ls.push_back(ws);
     is=q.Fetch();
    }
+   
+   
    
  ManuProC::dbdisconnect(c_to_p.Name());   
  ManuProC::dbdefault(); // set to default
