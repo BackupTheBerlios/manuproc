@@ -576,7 +576,7 @@ gint auftrag_main::idle_fill()
 { if (!idle_iter.empty()) // allaufids->aufidliste.end())
   {  //std::cerr << *idle_iter << '\n';
      const TreeRow *tlr=reinterpret_cast<const TreeRow *>(idle_iter.back()->get_user_data());
-     if (tlr->Leaf())
+     if (tlr->Leaf() && maintree_s->ColumnVisible(INSTANZEN))
      {  Verfuegbarkeit::map_det_t res;
         Handle<Data_auftrag> hda=tlr->LeafData()
           .cast_dynamic<const Data_auftrag>()
