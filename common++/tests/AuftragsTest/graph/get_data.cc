@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.49 2003/08/07 08:13:00 christof Exp $
+// $Id: get_data.cc,v 1.50 2003/09/12 11:06:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -224,8 +224,8 @@ std::vector<std::pair<std::string,std::string> > graph_data_node::get_edges_for(
 
   std::vector<std::pair<std::string,std::string> > V;
   if(!list_child.empty()) 
- {
-  list_child.sort(); // spannend, dass dies die Reihenfolge nicht stört ... CP
+ {// nach ziel sortieren
+  list_child.sort(); // spannend, dass dies die fileindex Reihenfolge nicht stört ... CP
   AufEintragBase aeb_mem=list_child.front().aeb;
   std::vector<std::string> S(1);
   std::vector<AuftragBase::mengen_t> Mmem(1);
@@ -243,8 +243,11 @@ std::vector<std::pair<std::string,std::string> > graph_data_node::get_edges_for(
         }
         else
         { index=0; fileindex_mem=i->fileindex; }
-        if (!S[index].empty()) S[index]+="/";
-        if(Mmem[index] != i->menge || S[index].empty()) 
+        bool was_empty=S[index].empty();
+        if (!was_empty) S[index]+="/";
+        else if (!vec_files_auftragentry[i->fileindex].prefix.empty())
+           S[index]=vec_files_auftragentry[i->fileindex].prefix+":";
+        if(Mmem[index] != i->menge || was_empty) 
         {  S[index]+=i->menge.String();
            Mmem[index]=i->menge;
         }
@@ -258,7 +261,10 @@ std::vector<std::pair<std::string,std::string> > graph_data_node::get_edges_for(
         V.push_back(std::pair<std::string,std::string>(aeb_mem.str(),S2));
 
 	S.clear();
-        S.push_back(i->menge.String());
+	std::string n=i->menge.String();
+	if (!vec_files_auftragentry[i->fileindex].prefix.empty())
+	   n=vec_files_auftragentry[i->fileindex].prefix+":"+n;
+        S.push_back(n);
         Mmem.clear();
         Mmem.push_back(i->menge);
         aeb_mem=i->aeb;
