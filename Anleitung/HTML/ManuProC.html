@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>ManuProC.html</title>
+     
   <meta http-equiv="content-type"
  content="text/html; charset=ISO-8859-1">
 </head>
@@ -18,6 +19,7 @@ Manufactor Program Collection <br>
   </li>
   <li><a href="#Kompilieren_und_Installieren">Kompilieren und Installieren</a></li>
   <li><a href="#Anleitung_zur_Benutzung_der_einzelnen">Die Programme im Einzelnen</a></li>
+  
   <ul>
     <li>Kundendaten</li>
     <li>Artikeleingabe<br>
@@ -26,6 +28,7 @@ Manufactor Program Collection <br>
     <li>Lager<br>
     </li>
     <li>pps</li>
+  
   </ul>
   <li><a href="#Hilfe_und_Kontakt">Hilfe und Kontakt</a><br>
   </li>
@@ -68,6 +71,7 @@ Der <b>Verkauf</b> schlie&szlig;lich packt die Schraubenzieher in die Verpackung
 und liefert diese an die Kunden aus.<br>
       </td>
     </tr>
+  
   </tbody>
 </table>
 <br>
@@ -93,8 +97,9 @@ Lieferscheinen und Rechnungen</li>
 </ul>
 <h2><a name="Aufsetzen_der_Datenbank"></a>Aufsetzen der Datenbank</h2>
 Zun&auml;chsteinmal mu&szlig; man sich die Tabellenschemata aus dem CVS-Repository
-besorgen. Dazu f&uuml;hrt man nacheinander die beiden folgenden Befehle in
-einem leeren Verzeichnis aus:<br>
+besorgen. Dazu f&uuml;hrt man nacheinander die beiden folgenden Befehle (bei
+der Frage nach dem Passwort einfach 'Enter' dr&uuml;cken) in einem leeren
+Verzeichnis aus:<br>
 <font color="#ff6666">cvs -d:pserver:anonymous@cvs.manuproc.berlios.de:/cvsroot/manuproc
 login</font><br>
 <font color="#ff6666">cvs -z3 -d:pserver:anonymous@cvs.manuproc.berlios.de:/cvsroot/manuproc
@@ -102,10 +107,50 @@ co Anleitung</font><br>
 danach wechselt man mit '<font color="#ff6666">cd Anleitung/datenbank</font>'
 das Verzeichnis und f&uuml;hrt den Befehl <font color="#ff6666">./initdb.script
 </font>aus. <br>
+Damit ist das Kundenprogramm bereits einsatzf&auml;hig, eine firmenspezifische
+Anpassung ist hier nicht n&ouml;tig.<br>
 <br>
 <h2><a name="Kompilieren_und_Installieren"></a>Kompilieren und Installieren</h2>
-<h2><a name="Anleitung_zur_Benutzung_der_einzelnen"></a>Die Programme im
-Einzelnen</h2>
+Ebenso wie die Tabellenschemata erh&auml;lt man die Quellen der einzelnen
+Programme aus dem CVS-Repository nach dem anmelden<br>
+<font color="#ff6666">cvs -d:pserver:anonymous@cvs.manuproc.berlios.de:/cvsroot/manuproc
+login</font><br>
+mit den Befehlen<br>
+<font color="#ff6666">cvs -z3 -d:pserver:anonymous@cvs.manuproc.berlios.de:/cvsroot/manuproc
+co m4</font><br>
+<font color="#ff6666">cvs -z3 -d:pserver:anonymous@cvs.manuproc.berlios.de:/cvsroot/manuproc
+co common++<br>
+cvs -z3 -d:pserver:anonymous@cvs.midgard.berlios.de:/cvsroot/midgard co GtkmmAddons</font><br>
+<font color="#ff6666">cvs -z3 -d:pserver:anonymous@cvs.manuproc.berlios.de:/cvsroot/manuproc
+co Komponenten</font><br>
+es ist sicher von Vorteil vorher in ein leeres Verzeichnis zu wechseln :-)<br>
+Danach mu&szlig; zun&auml;chst im Verzeichnis&nbsp;<font color="#ff6666">
+m4<font color="#000000"> der Befehl <font color="#ff6666">make install<font
+ color="#000000"> ausgef&uuml;hrt werden, bevor man <font
+ color="#ff6666">./autogen</font> nacheinander in den Verzeichnissen<font
+ color="#ff6666">commen++</font>, </font></font></font>GtkmmAddons/searchcombo</font>,
+<font color="#ff6666">GtkmmAddons</font> <font color="#ff6666"><font
+ color="#000000"><font color="#ff6666"><font color="#000000">und <font
+ color="#ff6666">Komponenten</font> ausf&uuml;hrt. <br>
+<br>
+Damit sind die Bibliotheken der Basisklassen fertig, und die Anwenderprogramme
+k&ouml;nnen kompiliert und installiert werden.<br>
+<b>Kundendaten:</b></font></font></font> &nbsp;<br>
+cvs -z3 -d:pserver:anonymous@cvs.manuproc.berlios.de:/cvsroot/manuproc co
+kundendaten</font><br>
+<b>pps:</b><br>
+<font color="#ff6666">cvs -z3 -d:pserver:anonymous@cvs.manuproc.berlios.de:/cvsroot/manuproc
+co pps</font><br>
+<font color="#ff6666"><font color="#000000"><font color="#ff6666"><font
+ color="#000000"><br>
+um die ausf&uuml;hrbaren Programme zu bauen mu&szlig; in den jeweiligen Unterverzeichnissen
+(kundendaten, pps) der Befehl </font></font></font></font><font
+ color="#ff6666"><font color="#000000"><font color="#ff6666"><font
+ color="#000000"><font color="#ff6666">./autogen<font color="#000000"> ausgef&uuml;hrt
+werden.<br>
+</font></font></font></font></font></font><font color="#000000"><br>
+</font><br>
+<h2><a name="Anleitung_zur_Benutzung_der_einzelnen"></a>Die Programme im Einzelnen</h2>
 <h2><a name="Hilfe_und_Kontakt"></a>Kontakt</h2>
 Entwickelt und gepflegt wird das Programmpaket von<br>
 <table cellpadding="1" cellspacing="0" border="0" width="40%">
@@ -116,7 +161,7 @@ Entwickelt und gepflegt wird das Programmpaket von<br>
     </tr>
     <tr>
       <td valign="top">Jacek Jakubowski</td>
-      <td valign="top"><a href="mailto:%20jacek@wtal.de">&nbsp;jacek@wtal.de</a><br>
+      <td valign="top"><a href="mailto:jacek@wtal.de">jacek@wtal.de</a><br>
       </td>
     </tr>
     <tr>
@@ -124,6 +169,7 @@ Entwickelt und gepflegt wird das Programmpaket von<br>
       <td valign="top"><a href="mailto:thoma@uni-muenster.de">thoma@uni-muenster.de</a><br>
       </td>
     </tr>
+  
   </tbody>
 </table>
 <br>
