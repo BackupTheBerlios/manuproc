@@ -362,7 +362,7 @@ std::cout << dummystring<<'\n';
        AufEintrag AE=AufEintrag(class AufEintragBase(class AuftragBase(ROLLEREI,AuftragBase::ungeplante_id),2));
        AE.MengeAendern(UID,-100,true,AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
 
-       vergleichen(C,Check::Menge,"reparatur_kunde","Reparatur Kundenaufträge (Menge)","",true);
+       vergleichen(C,Check::Menge,"reparatur_kunde_menge","Reparatur Kundenaufträge (Menge)","",true);
       }
 
       {
