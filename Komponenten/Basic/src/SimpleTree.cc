@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.25 2003/10/21 11:47:38 christof Exp $
+// $Id: SimpleTree.cc,v 1.26 2003/10/21 11:49:20 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -168,8 +168,8 @@ static Gtk::MenuItem *add_mitem(Gtk::Menu *m,const std::string text,const SigC::
 void SimpleTree_Basic::fillMenu()
 {  assert(menu==0); 
   menu=new Gtk::Menu();
-  // Hauptmenü
-  add_mitem(menu,"Zurücksetzen",SigC::slot(*this,&SimpleTree_Basic::on_zuruecksetzen_clicked));
+  // HauptmenÃ¼
+  add_mitem(menu,"ZurÃ¼cksetzen",SigC::slot(*this,&SimpleTree_Basic::on_zuruecksetzen_clicked));
   add_mitem(menu,"Abbrechen",SigC::slot(*this,&SimpleTree_Basic::on_abbrechen_clicked));
 //  add_mitem(menu,"Neuordnen",SigC::slot(*this,&SimpleTree_Basic::Neuordnen));
   Gtk::MenuItem *spalten=add_mitem(menu,"Sichtbare Spalten",SigC::Slot0<void>());
@@ -177,7 +177,7 @@ void SimpleTree_Basic::fillMenu()
   add_mitem(menu,"Alles zuklappen",SigC::slot(*this,&SimpleTree_Basic::Collapse));
 #if 0
    Gtk::MenuItem *neuordnen = manage(new class Gtk::MenuItem("Neuordnen"));
-   Gtk::MenuItem *zuruecksetzen = manage(new class Gtk::MenuItem("Zurücksetzen"));
+   Gtk::MenuItem *zuruecksetzen = manage(new class Gtk::MenuItem("ZurÃ¼cksetzen"));
    Gtk::MenuItem *abbrechen = manage(new class Gtk::MenuItem("Abbrechen"));
    Gtk::Menu *spalten_menu = manage(new class Gtk::Menu());
    Gtk::MenuItem *spalten = manage(new class Gtk::MenuItem("Sichtbare Spalten"));
@@ -199,9 +199,9 @@ void SimpleTree_Basic::fillMenu()
     }
    menu->append(*optionen);
    optionen->set_submenu(*optionen_menu);
-   Gtk::CheckMenuItem *titles = manage(new class Gtk::CheckMenuItem("Spaltenüberschriften anzeigen"));
-   Gtk::CheckMenuItem *auffuellen = manage(new class Gtk::CheckMenuItem("Auffüllen mit Standardreihenfolge\n(statt der aktuellen)"));
-   Gtk::CheckMenuItem *expandieren = manage(new class Gtk::CheckMenuItem("Gewählte Knoten expandieren"));
+   Gtk::CheckMenuItem *titles = manage(new class Gtk::CheckMenuItem("SpaltenÃ¼berschriften anzeigen"));
+   Gtk::CheckMenuItem *auffuellen = manage(new class Gtk::CheckMenuItem("AuffÃ¼llen mit Standardreihenfolge\n(statt der aktuellen)"));
+   Gtk::CheckMenuItem *expandieren = manage(new class Gtk::CheckMenuItem("GewÃ¤hlte Knoten expandieren"));
    Gtk::CheckMenuItem *colorize = manage(new class Gtk::CheckMenuItem("farblich markieren"));
    Gtk::MenuItem *exp_all = manage(new class Gtk::MenuItem("Alle Knoten expandieren"));
    Gtk::MenuItem *col_all = manage(new class Gtk::MenuItem("Alle Knoten kollabieren"));

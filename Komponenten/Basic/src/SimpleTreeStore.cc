@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.31 2003/10/20 07:41:30 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.32 2003/10/21 11:49:20 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -189,7 +189,7 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
   assert(colors.size()==num_colors);
 }
 
-// eigentlich müssen versteckte Spalten gar nicht hinzugenommen werden
+// eigentlich mÃ¼ssen versteckte Spalten gar nicht hinzugenommen werden
 // aber wie dann das Model neu aufbauen?
 
 #define MC_ADD(name) add(name); assert(name.index()==int(s_##name));
@@ -224,7 +224,7 @@ void SimpleTreeStore::defaultSequence()
    for(guint i=0; i<MaxCol(); ++i) currseq.push_back(i);
 }
 
-#warning: auffüllen Standard, aktuelle
+#warning: auffÃ¼llen Standard, aktuelle
 void SimpleTreeStore::fillSequence(sequence_t &seq) const
 {  for(guint i=0; i<MaxCol(); ++i) 
       if (ColumnVisible(i) && std::find(seq.begin(),seq.end(),i)==seq.end())
@@ -303,7 +303,7 @@ void SimpleTreeStore::insertLine(Node &parent,
 	{seqit++;
 	 ++child_s_deep;
 	 
-	 // darum muss sich eine andere Node kümmern
+	 // darum muss sich eine andere Node kÃ¼mmern
          if (child_s_deep==current_iter->second.childrens_deep)
          {weiter_unten_einhaengen:
             Handle<TreeRow> htr=current_iter->second.row;
@@ -320,21 +320,21 @@ void SimpleTreeStore::insertLine(Node &parent,
 			&& v->Value(*seqit,ValueData())
 				==v2->Value(*seqit,ValueData()));
          
-	 // mitten in current_iter einfügen 
+	 // mitten in current_iter einfÃ¼gen 
 	 // (current_iter wandert nach unten rechts)
-         // (man könnte dies auch aufbrechen nennen)
+         // (man kÃ¶nnte dies auch aufbrechen nennen)
  	 current_iter= MoveTree (current_iter,deep,child_s_deep,*seqit,live);
          goto weiter_unten_einhaengen;
       }
       else // Blatt erreicht
-      {  // als letztes der Gleichen an parent anhängen
+      {  // als letztes der Gleichen an parent anhÃ¤ngen
          // upper_b steht schon richtig (s.o.)
          current_iter=upper_b;
       }
      }
    }
-   // --------------- kleinerer Wert (davor Einfügen) ----------   
-   //----------------- oder am Ende der Liste: anhängen ---------------------
+   // --------------- kleinerer Wert (davor EinfÃ¼gen) ----------   
+   //----------------- oder am Ende der Liste: anhÃ¤ngen ---------------------
    iterator newnode=parent.children.insert(current_iter,std::make_pair(ev,Node(deep,&parent,v)));
    if (live) row_inserted(getPath(newnode),getIter(newnode));
 }                                
@@ -366,21 +366,21 @@ SimpleTreeStore::iterator SimpleTreeStore::MoveTree(iterator current_iter,
          htr->cumulate(oldnode.leafdata);
    }
 
-   // ein Kind an newnode anfügen (newchild)
+   // ein Kind an newnode anfÃ¼gen (newchild)
    cH_EntryValue val=oldnode.leafdata->Value(value_index,ValueData());
    newnode.children.insert(std::make_pair(val,Node(deep,oldnode.parent)));
-   // dieser Knoten wird als oldnode im Baum hängen
+   // dieser Knoten wird als oldnode im Baum hÃ¤ngen
    Node &newchild=newnode.children.begin()->second;
 
-   // newchild und oldnode vertauschen (Unterbaum ist dann außerhalb des Baumes
+   // newchild und oldnode vertauschen (Unterbaum ist dann auÃŸerhalb des Baumes
    //		unterhalb von newnode, newchild ist dann im Baum)
-   // oldnode ist jetzt die unnötige Node, newchild die alte Node
+   // oldnode ist jetzt die unnÃ¶tige Node, newchild die alte Node
    std::swap(newchild,oldnode);
    // row_has_child_toggled(oldnode), row_changed(oldnode)
 
    // newnode und oldnode vertauschen (newnode+Kinder sind dann wieder im Baum)
    //      nun muss newnode wieder leer sein und den Inhalt von newchild enthalten
-   // oldnode ist jetzt die neue Eltern-Node, newnode ist jetzt die unnötige
+   // oldnode ist jetzt die neue Eltern-Node, newnode ist jetzt die unnÃ¶tige
    std::swap(newnode,oldnode);
    newchild.parent=&oldnode;
    newchild.deep=child_s_deep;
@@ -397,7 +397,7 @@ SimpleTreeStore::iterator SimpleTreeStore::MoveTree(iterator current_iter,
 
 void SimpleTreeStore::setSequence(const sequence_t &neu)
 {  currseq=neu; // Spaltenzahl anpassen?
-#warning Spaltenzahl geändert?
+#warning Spaltenzahl geÃ¤ndert?
    for (unsigned i=0;i<Cols();++i) title_changed(i);
    redisplay();
 }
