@@ -800,6 +800,7 @@
 		      <property name="width_request">60</property>
 		      <property agent="glademm" name="cxx_visibility">protected</property>
 		      <property name="visible">True</property>
+		      <property name="can_focus">True</property>
 		      <property name="label" translatable="yes">OK</property>
 		      <property name="use_underline">True</property>
 		      <property name="stock_pixmap">gtk-ok</property>
