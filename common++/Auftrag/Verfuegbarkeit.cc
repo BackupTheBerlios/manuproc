@@ -1,4 +1,4 @@
-/* $Id: Verfuegbarkeit.cc,v 1.5 2003/12/08 07:41:18 christof Exp $ */
+/* $Id: Verfuegbarkeit.cc,v 1.6 2004/02/05 11:06:30 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -79,7 +79,9 @@ AuftragBase::mengen_t verf_recurse::operator()(const ArtikelBase &art,
 }
 
 void verf_recurse::operator()(const ArtikelBase &art,AuftragBase::mengen_t m) const
-{  if (!!lastinst)
+{  cH_ppsInstanz bi=ppsInstanz::getBestellInstanz(art);
+   if (bi==ppsInstanzID::Kundenauftraege || bi==ppsInstanzID::None) return;
+   if (!!lastinst)
    {  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("art",art),
 		NV("lastinst",lastinst),NV("m",m));
       result[Verfuegbarkeit::mapindex(lastinst,art)].error+=m;
