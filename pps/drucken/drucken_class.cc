@@ -496,7 +496,9 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
      
     std::string einheitsize = "\\scriptsize \\,";
     if (neue_seite && preise_addieren)
-    {  os << zur_preisspalte <<mld->MLT(MultiL_Dict::TXT_VORTRAG)<<" & "<< FormatiereTeX(betrag) <<"\\\\";
+    {  
+     os << "\\multicolumn{" << preisspalte-1 << 
+   	"}{r}{"<<mld->MLT(MultiL_Dict::TXT_VORTRAG)<<"} & "<< FormatiereTeX(betrag) <<"\\\\";
        --zeilen_passen_noch;
     }
 
@@ -619,7 +621,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
   if(Typ() == Rechnung || Typ()==Auftrag)
   {
   if(ents_flag)
-   {os << "&\\multicolumn{" << preisspalte-2 << 
+   {os << "\\multicolumn{" << preisspalte-1 << 
    	"}{r}{Gesetzlicher Entsorgungskosten-Anteil VfW Reflora von "
 	<< FormatiereTeX(fixedpoint<1>(ENTSSATZ*100.0)) << "\\%}"
    	"& " << FormatiereTeX(entskosten) << "\\\\\n";
@@ -699,7 +701,9 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
             page_header(os);
 	    drucken_table_header(os,schema_mem,preismenge_mem,einheit_mem.TeX(*mld));
             if (preise_addieren)
-            {  os << zur_preisspalte << mld->MLT(MultiL_Dict::TXT_VORTRAG)<<" & "<< FormatiereTeX(betrag) <<"\\\\";
+            { os << "\\multicolumn{" << preisspalte-1 << 
+   			"}{r}{"<<mld->MLT(MultiL_Dict::TXT_VORTRAG)<<"} & "<< FormatiereTeX(betrag) <<"\\\\";
+//            os << zur_preisspalte << mld->MLT(MultiL_Dict::TXT_VORTRAG)<<" & "<< FormatiereTeX(betrag) <<"\\\\";
                --zeilen_passen_noch;
             }
           }
@@ -1057,7 +1061,9 @@ void LR_Abstraktion::drucken_betrag(std::ostream &os,const std::string &text, fi
 {
 
   os << "\\cline{"<<preisspalte<<"-"<<preisspalte<<"}"<<"\n";
-  os << zur_preisspalte << text << " " ;
+  os << "\\multicolumn{" << preisspalte-1 << 
+   	"}{r}{"<<text<<" }";  
+//  os << zur_preisspalte << text << " " ;
 #ifndef MABELLA_EXTENSIONS // also ich brauch das nicht ...  
   if (text.empty()) 
 #endif

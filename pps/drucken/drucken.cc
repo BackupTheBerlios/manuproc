@@ -52,11 +52,7 @@ void LR_drucken::drucken(bool print,bool b_firmenpapier,bool b_kopie,bool ean_co
    FILE *f;
    if(toTeX) f=popen("cat > ./rdr$$.tex","w");
    else if (!print) f=popen("tex2prn -2 -G ","w");
-#ifdef MABELLA_EXTENSIONS
-   else f=popen(("tex2prn "+texplotter).c_str(),"w");
-#else
    else f=popen(("tex2prn -q -2 "+texplotter).c_str(),"w");
-#endif
 
    std::ofstream os(fileno(f));
 
