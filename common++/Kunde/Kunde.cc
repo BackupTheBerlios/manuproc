@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.38 2003/07/21 12:41:35 jacek Exp $
+// $Id: Kunde.cc,v 1.39 2003/07/30 10:18:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -58,9 +58,10 @@ const std::string Kunde::getFullName() const
  std::string ret;
 
  ret=adresse.firma;
+#ifdef MANUPROC_DYNAMICENUMS_CREATED 
  if(isInGrp(KundengruppeID::Personen))
    ret += " "+adresse.name2;
-
+#endif
  return ret;
 }
 
