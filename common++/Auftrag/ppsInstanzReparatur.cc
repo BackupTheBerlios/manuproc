@@ -868,7 +868,7 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
       if (really_delete) 
       {
 	// manuelle Bestellungen nicht anfassen
-	if(ae.Id() < AuftragBase::handplan_auftrag_id)
+	if(ae.Id() >= AuftragBase::handplan_auftrag_id)
 	  analyse("AufEintrag bleibt bestehen weil handgeplant",ae,cH_ArtikelBezeichnung(ae.Artikel())->Bezeichnung(),itos(ae.Artikel().Id()));
 	else
          {Query("delete from auftragentry where (instanz,auftragid,zeilennr)=(?,?,?)")
