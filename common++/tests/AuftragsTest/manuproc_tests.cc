@@ -113,11 +113,25 @@ static bool AutoProduktion()
       AufEintragBase aeb=A.push_back(10,DATUM,ArtikelBase(40),OPEN,true);
       vergleichen(Check::Lieferschein|Check::Menge,"ap_auftrag","Auftrag anlegen","");
       
+      Lieferschein liefs(ppsInstanz::ID(41),cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
+      int lznr=liefs.push_back(ArtikelBase(41),5);
+      vergleichen(Check::Lieferschein|Check::Menge,"ap_liefern_prod","Lieferung Edukt","LE");
+
+      LieferscheinEntryBase lsb(liefs,lznr);
+      LieferscheinEntry(lsb).changeMenge(0,0,liefs,false);
+      vergleichen(Check::Lieferschein|Check::Menge,"ap_liefern_weg","Lieferung Edukt zurücknehmen","-E");
       
+      Lieferschein liefs2(ppsInstanzID::Kundenauftraege,KUNDE);
+      int lznr2=liefs2.push_back(ArtikelBase(40),5);
+      vergleichen(Check::Lieferschein|Check::Menge,"ap_liefern","Lieferung Produkt","L");
+
+      LieferscheinEntryBase lsb2(liefs2,lznr2);
+      LieferscheinEntry(lsb2).changeMenge(0,0,liefs2,false);
+      vergleichen(Check::Lieferschein|Check::Menge,"ap_zurueck","Lieferung Produkt zurücknehmen","-");
       }
    return true;
 }
 
-static TestReihe ManuProCTest_(&AutoProduktion,"automatisches Produzieren","AP");
+static TestReihe AutoProduktion_(&AutoProduktion,"automatisches Produzieren","AP");
 
 #endif
