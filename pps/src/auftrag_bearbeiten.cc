@@ -362,8 +362,7 @@ void auftrag_bearbeiten::on_stkmtr_spinbutton_activate()
        	AuftragBase::mengen_t(stkmtr_spinbutton->get_value_as_int())-
         aktaufeintrag->getStueck();
        			
-       AuftragBase::mengen_t mt=aktaufeintrag->MengeAendern
-	(diffmenge,true,AufEintragBase());
+       AuftragBase::mengen_t mt=aktaufeintrag->MengeAendern(diffmenge);
        assert(mt==diffmenge);
        fillCList();
        auftrag_clist->grab_focus();
