@@ -129,12 +129,12 @@ public:
    const std::string &getRefOrder() const { 
       if (Typ()==Lieferschein || Typ()==Wareneingang) 
          return u.l->getRefOrder();
-	abort(); 
+      return std::string(); 
       }
    const std::string &Text() const { 
       if (Typ()==Lieferschein || Typ()==Wareneingang) 
          return u.l->Text();
-	abort(); 
+      return std::string(); 
       }
 
    const ManuProC::Datum getLieferdatum() const {
