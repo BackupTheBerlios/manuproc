@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.cc,v 1.20 2003/01/08 09:46:57 christof Exp $
+// $Id: Zahlungsart.cc,v 1.21 2003/01/16 15:06:06 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -46,7 +46,7 @@ const ManuProC::Datum Zahlungsart::getZahlungstermin
  
  ManuProC::Datum termin(rgdatum+zahlungsfrist);
  
- if(!zahlungsfrist) termin=rgdatum+getSkonto(0).skontofrist;
+ if(!zahlungsfrist && !bankeinzug) termin=rgdatum+getSkonto(0).skontofrist;
 
  if(monatsende)
    {
