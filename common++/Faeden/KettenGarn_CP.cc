@@ -1,4 +1,4 @@
-/* $Id: KettenGarn_CP.cc,v 1.20 2004/07/06 13:23:37 christof Exp $ */
+/* $Id: KettenGarn_CP.cc,v 1.21 2004/07/06 13:54:41 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -234,12 +234,7 @@ std::vector<Kettscheibe> Kettscheibe::Load(const std::vector<ArtikelGang> &ag, u
       x.laenge=laenge;
       if (i->verlaengern) 
       {  if (x.laenge<10000) x.laenge+=100; // 3040/35/420 v. 15.1.04
-#if 0      
-         else if (x.laenge<=12000 || cH_ArtikelBezeichnung(i->material)->Komponente(0).substr(0,10)=="Poly verst")
-            x.laenge+=200; // 3040/35/420 v. 15.1.04
-#endif            
-         else 
-            x.laenge+=500;
+         else x.laenge+=500;
       }
       x.max_fadenzahl=i->max_fadenzahl;
       if (gang->gaenge==i->ausn_gaenge && i->ausn_maxfd) 
@@ -299,56 +294,43 @@ std::vector<Kettscheibe> Kettscheibe::Load(const std::vector<ArtikelGang> &ag, u
          else ++j;
       }
    }
-#if 0
-   // sortieren?
-   std::sort(result.begin(),result.end(),KG_compare());
-   for (vec_t::iterator i=result.begin();i!=result.end();)
-   {  vec_t::iterator ks_end=i;
-      unsigned min_max_fd=i->min_max_fd;
-      unsigned anz_fd=0;
-      while (ks_end!=result.end() && ks_end->index==i->index)
-      {  if (ks_end->min_max_fd<min_max_fd) min_max_fd=ks_end->min_max_fd;
-         anz_fd+=ks_end->faeden*ks_end->wiederholungen;
-         assert(ks_end->kettenzahl==i->kettenzahl);
-         ++ks_end;
-      }
-      ManuProC::Trace(trace_channel,"",NV("min_max_fd",min_max_fd),
-      		NV("anz_fd",anz_fd));
-      unsigned alte_kettenzahl=i->kettenzahl;
-      unsigned neue_kettenzahl=alte_kettenzahl;
-      ManuProC::Trace(trace_channel,"",NV("neue_kettenzahl",neue_kettenzahl));
-      if (neue_kettenzahl!=alte_kettenzahl) // geht es auf?
-      {  for (vec_t::iterator j=i;j!=ks_end;++j)
-            if ((alte_kettenzahl*j->faeden) % neue_kettenzahl) 
-               neue_kettenzahl=alte_kettenzahl;
-      }
-      if (neue_kettenzahl!=alte_kettenzahl) // dann kombinieren?
-      {  for (vec_t::iterator j=i;j!=ks_end;++j)
-         {  j->kettenzahl=neue_kettenzahl;
-            j->faeden=(alte_kettenzahl*j->faeden)/ neue_kettenzahl;
-         }
-      }
-      i=ks_end;
+   // Polyesterketten etwas weniger verlängern
+   // 3040/35/420 v. 15.1.04
+   for (map_t::iterator i=intermed.begin();i!=intermed.end();++i)
+   {  Kettscheibe &x=i->second;
+      if (laenge<=12000 && x.laenge==laenge+500 && x.faeden.size()==1
+          && cH_ArtikelBezeichnung(x.faeden.begin()->material)
+              ->Komponente(0).substr(0,10)=="Poly verst")
+         x.laenge-=300;
    }
-#endif
 reloop:
    // kombinieren
    for (map_t::iterator i=intermed.begin();i!=intermed.end();++i)
    {  Kettscheibe &x=i->second;
       // Einschränkung auf x.faeden.size()==1 später aufheben
-      if (x.max_fadenzahl && 3*x.fadenzahl<=x.max_fadenzahl 
-            && !(x.kettenzahl%3) && x.faeden.size()==1)
-      {  x.kettenzahl/=3;
-         x.fadenzahl*=3;
-         x.faeden.begin()->faeden*=3;
-         goto reloop;
-      }
       if (x.max_fadenzahl && 2*x.fadenzahl<=x.max_fadenzahl 
-            && !(x.kettenzahl%2) && x.faeden.size()==1)
-      {  x.kettenzahl/=2;
-         x.fadenzahl*=2;
-         x.faeden.begin()->faeden*=2;
-         goto reloop;
+                                          && x.faeden.size()==1)
+      {  unsigned neue_kettenzahl=(x.fadenzahl*x.kettenzahl+x.max_fadenzahl-1)
+                    /x.max_fadenzahl;
+         if (!!(x.kettenzahl&1) && (neue_kettenzahl&1)
+         	// Sonderfall: Falls es _genau_ auf eine Kette passt nur eine
+         	&& (neue_kettenzahl>1 || x.max_fadenzahl!=x.kettenzahl*x.fadenzahl))
+         {  ManuProC::Trace(trace_channel,"",NV("neue_kettenzahl(Zwischenw.)",neue_kettenzahl));
+            ++neue_kettenzahl;
+         }
+         if (neue_kettenzahl!=x.kettenzahl) // geht es auf?
+         {  if ((x.kettenzahl*x.faeden.begin()->faeden) % neue_kettenzahl)
+               neue_kettenzahl=x.kettenzahl;
+            else if ((x.kettenzahl*x.fadenzahl) % neue_kettenzahl)
+               neue_kettenzahl=x.kettenzahl;
+         }
+         if (neue_kettenzahl<x.kettenzahl)
+         {  x.faeden.begin()->faeden=(x.kettenzahl*x.faeden.begin()->faeden)
+                     /neue_kettenzahl;
+            x.fadenzahl=(x.kettenzahl*x.fadenzahl)/neue_kettenzahl;
+            x.kettenzahl=neue_kettenzahl;
+            goto reloop;
+         }
       }
    }
    // aufteilen
