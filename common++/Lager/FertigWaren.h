@@ -1,4 +1,4 @@
-// $Id: FertigWaren.h,v 1.9 2003/07/15 13:18:25 jacek Exp $
+// $Id: FertigWaren.h,v 1.10 2003/07/15 15:01:15 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -43,7 +43,7 @@ private:
 
 
 public:
- enum e_buchen{Rein,Raus,AsIs};
+ enum e_buchen{Rein,Raus,WiederRein,AsIs};
 
  FertigWaren(ArtikelBase a,enum_Aktion a2,int s,
  		ManuProcEntity<>::ID lfrsid=ManuProcEntity<>::none_id)

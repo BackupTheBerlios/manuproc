@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.33 2003/07/08 08:29:10 jacek Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.34 2003/07/15 15:01:15 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -143,15 +143,16 @@ void LieferscheinEntry::changeMenge(int stueck, mengen_t menge, const Liefersche
 
   updateLieferscheinMenge(stueck,menge);
 
-#ifdef MABELLA_EXTENSIONS // auf keinen Fall nach offenen Aufträgen suchen
-#warning Uebler Hack, muss weg wenn Mabella Instanzen hat!
-  if(Instanz() == ppsInstanzID::Kundenauftraege)
-  {  FertigWaren fw(artikel,(FertigWaren::enum_Aktion)'L',
-  			abmenge.abs().as_int(),Id());
-     if(abmenge < 0) fw.Einlagern(1);
-     else if(abmenge > 0) fw.Auslagern(1);
-   }
-#endif
+//#ifdef MABELLA_EXTENSIONS // auf keinen Fall nach offenen Aufträgen suchen
+//#warning Uebler Hack, muss weg wenn Mabella Instanzen hat!
+//  if(Instanz() == ppsInstanzID::Kundenauftraege)
+//  {  FertigWaren fw(artikel,(FertigWaren::enum_Aktion)'L',
+//  			abmenge.abs().as_int(),Id());
+//     if(abmenge < 0) fw.Einlagern(1);
+//     else if(abmenge > 0) fw.Auslagern(1);
+//   }
+//#endif
+
   tr.commit();
 }
 

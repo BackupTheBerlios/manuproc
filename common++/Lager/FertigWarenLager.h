@@ -1,4 +1,4 @@
-// $Id: FertigWarenLager.h,v 1.7 2003/07/15 13:18:25 jacek Exp $
+// $Id: FertigWarenLager.h,v 1.8 2003/07/15 15:01:15 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -21,8 +21,9 @@
 #  define _FERTIGWARENLAGER_HH
 
 #include "FertigWaren.h"
+#include "Lager.h"
 
-class FertigWarenLager 
+class FertigWarenLager : public LagerBase
 {
 private:
    FertigWaren fw;
@@ -30,7 +31,17 @@ private:
    void Buchen(FertigWaren::e_buchen e);     
    
 public:
-   FertigWarenLager(const FertigWaren _fw) : fw(_fw) {}
+#if defined MABELLA_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
+      FertigWarenLager(const FertigWaren _fw) :
+      		LagerBase(ppsInstanzID::Fertigwarenlager),
+      		fw(_fw)  
+      {}
+#else
+      FertigWarenLager(const FertigWaren _fw) :
+      		LagerBase(ppsInstanzID::None),
+      		fw(_fw)  
+      {}
+#endif
 
    ArtikelBase Artikel() const {return fw.Artikel();}
    std::pair<Zeitpunkt_new,int> letzteInventur();
@@ -39,6 +50,7 @@ public:
    
   void Einlagern() {Buchen(FertigWaren::Rein);}
   void Auslagern() {Buchen(FertigWaren::Raus);}
+  void WiederEinlagern() {Buchen(FertigWaren::WiederRein);}
   void Inventur();
   
 };

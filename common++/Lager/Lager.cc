@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.29 2003/07/04 14:33:59 christof Exp $
+// $Id: Lager.cc,v 1.30 2003/07/15 15:01:15 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -34,6 +34,28 @@ Lager::Lager(cH_ppsInstanz instanz)
      assert(!"Use class 'JumboLager()' instead of 'Lager(ppsInstanzID::Bandlager)'\n");
 #endif        
 }
+
+
+
+void Lager::rein_ins_lager(const ArtikelBase &artikel,
+	const AuftragBase::mengen_t &menge,unsigned uid,bool produziert) const
+{  
+ LagerBase::rein_ins_lager(artikel,menge,uid,produziert); 
+}
+
+void Lager::wiedereinlagern(const ArtikelBase &artikel,
+	const AuftragBase::mengen_t &menge,unsigned uid) const
+{  
+ LagerBase::wiedereinlagern(artikel,menge,uid); 
+}
+
+void Lager::raus_aus_lager(const ArtikelBase &artikel,
+	AuftragBase::mengen_t menge,unsigned uid,bool fuer_auftrag) const
+{  
+ LagerBase::raus_aus_lager(artikel,menge,uid,fuer_auftrag); 
+}
+
+
 
 
 void LagerBase::rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid,bool produziert) const
