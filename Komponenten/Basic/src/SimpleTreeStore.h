@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.42 2004/05/05 12:27:28 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.43 2004/05/06 08:03:13 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -31,6 +31,13 @@
 #include <utility>
 #include <map>
 #include <BaseObjects/Model_ref_bvector.h>
+
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#  define STS_GTKMM_22_24(a,b) b
+#else
+#  define STS_GTKMM_22_24(a,b) a
+#endif
+#define STS_VFUNC_CONST STS_GTKMM_22_24(,const)
 
 // for easily accessing model methods
 class SimpleTreeModel_Proxy
@@ -161,17 +168,29 @@ private:
    const iterator &iterconv(const GtkTreeIter* iter) const;
    void iterinit(GtkTreeIter* iter,const iterator &schema) const;
    void iterinit(GtkTreeIter* iter,const const_iterator &schema) const;
-   Gtk::TreeModel::Path getPath(iterator it) const;
-   Gtk::TreeModel::iterator getIter(iterator it) const;
+   Path getPath(iterator it) const;
+   TreeModel::iterator getIter(iterator it) const;
    
    iterator iterbyNode(Node &nd) const;
    iterator iterbyValue(Node &parent,const cH_EntryValue &val) const;
    unsigned Node2nth_child(const Node &nd) const;
 
 // vfunc overrides for my tree model
-   virtual Gtk::TreeModelFlags get_flags_vfunc();
-   virtual int get_n_columns_vfunc();
-   virtual GType get_column_type_vfunc(int index);
+   virtual Gtk::TreeModelFlags get_flags_vfunc() STS_VFUNC_CONST;
+   virtual int get_n_columns_vfunc() STS_VFUNC_CONST;
+   virtual GType get_column_type_vfunc(int index) STS_VFUNC_CONST;
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+   virtual void get_value_vfunc(const TreeModel::iterator& iter, int column, Glib::ValueBase& value) const;
+   bool iter_next_vfunc(const TreeModel::iterator& iter, TreeModel::iterator& iter_next) const;
+   virtual bool iter_children_vfunc(const TreeModel::iterator& parent, TreeModel::iterator& iter) const;
+   virtual bool iter_has_child_vfunc(const TreeModel::iterator& iter) const;
+   virtual int iter_n_children_vfunc(const TreeModel::iterator& iter) const;
+   virtual int iter_n_root_children_vfunc() const;
+   virtual bool iter_nth_child_vfunc(const TreeModel::iterator& parent, int n, TreeModel::iterator& iter) const;
+   virtual bool iter_nth_root_child_vfunc(int n, TreeModel::iterator& iter) const;
+   virtual bool iter_parent_vfunc(const TreeModel::iterator& child, TreeModel::iterator& iter) const;
+   virtual bool get_iter_vfunc(const Path& path, TreeModel::iterator& iter) const;
+#else
    virtual void get_value_vfunc(const TreeModel::iterator& iter, int column, GValue* value);
    virtual bool iter_next_vfunc(GtkTreeIter* iter);
    virtual bool iter_children_vfunc(GtkTreeIter* iter, const GtkTreeIter* parent);
@@ -179,8 +198,9 @@ private:
    virtual int iter_n_children_vfunc(const GtkTreeIter* iter);
    virtual bool iter_nth_child_vfunc(GtkTreeIter* iter, const GtkTreeIter* parent, int n);
    virtual bool iter_parent_vfunc(GtkTreeIter* iter, const GtkTreeIter* child);
-   virtual Gtk::TreeModel::Path get_path_vfunc(const Gtk::TreeModel::iterator& iter);
-   virtual bool get_iter_vfunc(GtkTreeIter* iter, const Gtk::TreeModel::Path& path);
+   virtual bool get_iter_vfunc(GtkTreeIter* iter, const Path& path);
+#endif
+   virtual Path get_path_vfunc(const TreeModel::iterator& iter) STS_VFUNC_CONST;
    
    void resort(SimpleTreeStoreNode&, unsigned);
    void test();
@@ -244,7 +264,7 @@ public:
 	const_iterator end() const
 	{  return root.children.end();
 	}
-	Gtk::TreeModel::const_iterator getIter(const_iterator it) const;
+	TreeModel::const_iterator getIter(const_iterator it) const;
 
 	void setSequence(const sequence_t &seq);
 	

@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.61 2004/05/05 13:32:30 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.62 2004/05/06 08:03:13 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -506,7 +506,7 @@ void SimpleTreeStore::on_line_removed(cH_RowDataBase r)
             row_changed(getPath(*i),getIter(*i));
          }
       }
-      Gtk::TreeModel::Path p=getPath(l.front());
+      Path p=getPath(l.front());
       if ((++l.begin())==l.end())
          root.children.erase(*l.begin());
       else
@@ -581,13 +581,13 @@ void SimpleTreeStore::set_tree_column_visibility(unsigned index,bool visible)
    on_visibly_changed(vec_hide_cols.begin()+index);
 }
 
-Gtk::TreeModelFlags SimpleTreeStore::get_flags_vfunc()
+Gtk::TreeModelFlags SimpleTreeStore::get_flags_vfunc() STS_VFUNC_CONST
 {  return Gtk::TreeModelFlags(0); }
-int SimpleTreeStore::get_n_columns_vfunc()
+int SimpleTreeStore::get_n_columns_vfunc() STS_VFUNC_CONST
 {  return unsigned(s_text_start)+max_column; }
 
 // speed this up by an array?
-GType SimpleTreeStore::get_column_type_vfunc(int index)
+GType SimpleTreeStore::get_column_type_vfunc(int index) STS_VFUNC_CONST
 {  switch(e_spalten(index))
    {  case s_row: return m_columns.row.type();
       case s_deep: return m_columns.deep.type();
@@ -630,49 +630,57 @@ void SimpleTreeStore::iterinit(GtkTreeIter* iter,const iterator &schema) const
 {  iterinit(iter,static_cast<const_iterator>(schema));
 }
 
-void SimpleTreeStore::get_value_vfunc(const TreeModel::iterator& iter, int column, GValue* value)
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#else
+#define VALUE_INIT0(type) \
+	g_value_init(value,(type))
+#define VALUE_INIT2(name,val) \
+	VALUE_INIT0(m_columns.name.type()); \
+	g_value_set_boxed(value,(val))
+#define VALUE_INIT(name) VALUE_INIT2(name,&nd.name)
+#define VALUE_STRING(val) \
+	g_value_set_string(value,(val).c_str())
+#endif	
+
+void SimpleTreeStore::get_value_vfunc(const TreeModel::iterator& iter, 
+		int column, STS_GTKMM_22_24(GValue*,Glib::ValueBase&) value) STS_VFUNC_CONST
 {  g_return_if_fail (iter->gobj()->stamp == stamp);
    Node &nd=iterconv(iter->gobj())->second;
    switch(e_spalten(column))
-   {  case s_row: g_value_init(value,m_columns.row.type());
-   	 g_value_set_boxed(value,&nd.row);
+   {  case s_row: VALUE_INIT(row);
          return;
-      case s_deep: g_value_init(value,m_columns.deep.type());
-   	 g_value_set_uint(value,nd.deep);
+      case s_deep: VALUE_INIT(deep);
          return;
-      case s_childrens_deep: g_value_init(value,m_columns.childrens_deep.type());
-   	 g_value_set_uint(value,nd.childrens_deep);
+      case s_childrens_deep: VALUE_INIT(childrens_deep);
          return;
-      case s_leafdata: g_value_init(value,m_columns.leafdata.type());
-   	 g_value_set_boxed(value,&nd.leafdata);
+      case s_leafdata: VALUE_INIT(leafdata);
          return;
-      case s_background: g_value_init(value,m_columns.background.type());
-         g_value_set_boxed(value,colors[nd.deep%num_colors].gobj());
+      case s_background: VALUE_INIT2(background,colors[nd.deep%num_colors].gobj());
          return;
       default:
          if (int(s_text_start)<=column && column<int(s_text_start)+int(max_column))
-         {  g_value_init(value,G_TYPE_STRING);
+         {  VALUE_INIT0(G_TYPE_STRING);
             int colno=column-int(s_text_start);
             if (colno<0 || colno>=int(Cols())) return;
             unsigned idx=currseq[colno];
             if (nd.row)
             {  if (colno<int(nd.deep)) return;
                if (colno<int(nd.childrens_deep))
-               {  g_value_set_string(value,nd.leafdata->Value(idx,ValueData())->getStrVal().c_str());
+               {  VALUE_STRING(nd.leafdata->Value(idx,ValueData())->getStrVal());
                   return;
                }
                const Glib::ustring s=nd.row->Value(idx,ValueData())->getStrVal();
-                  g_value_set_string(value,s.c_str());
+                  VALUE_STRING(s);
             }
             else if (nd.childrens_deep) // node
             {  if (unsigned(colno)>nd.childrens_deep || unsigned(colno)<nd.deep) 
                   return;
                if (colno!=int(nd.childrens_deep))
-                  g_value_set_string(value,nd.leafdata->Value(idx,ValueData())->getStrVal().c_str());
+                  VALUE_STRING(nd.leafdata->Value(idx,ValueData())->getStrVal());
             }
             else // leaf
             {  if (unsigned(colno)<nd.deep) return;
-               g_value_set_string(value,nd.leafdata->Value(idx,ValueData())->getStrVal().c_str());
+               VALUE_STRING(nd.leafdata->Value(idx,ValueData())->getStrVal());
             }
          }
          return;
