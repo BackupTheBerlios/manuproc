@@ -86,6 +86,7 @@ int auftragstests(e_mode mode)
       vergleichen(C,Check::Menge,"_mit_lager_open","Öffnen des Auftrags",mit_reparatur_programm);
    }
 
+//exit(0);
    switch(mode) {
     case ManuProCTest :
      {
@@ -216,13 +217,12 @@ cout << "B\n";
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Faerberei),Kunde::default_id);
        int faerberei_znr=1;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Faerberei,AuftragBase::ungeplante_id,faerberei_znr));
-ManuProC::Tracer::Enable(AuftragBase::trace_channel);
-cout << "LOS GEHTS\n";
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
+//cout << "LOS GEHTS\n";
        AEP.Planen(UID,7000,PA,PLANDATUM4);
        vergleichen(C,Check::Menge,"_planen_faerberei_teil","Teil-Planen der Färberei",mit_reparatur_programm);
        }
 cout << "C\n";
-exit(0);
        {
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Weberei),Kunde::default_id);
        int weberei_znr=1;
@@ -230,6 +230,7 @@ exit(0);
        AEP.Planen(UID,5000,PA,PLANDATUM6);
        vergleichen(C,Check::Menge,"_planen_webereiP","Planen der Weberei",mit_reparatur_programm);
        }
+cout << "D\n";
 
 #ifdef PETIG_TEST
        Lieferschein liefs(ppsInstanzID::_Garn__Einkauf,cH_Kunde(Kunde::eigene_id));
@@ -363,7 +364,7 @@ std::cout << dummystring<<'\n';
        Query::Execute(q2);
        SQLerror::test(__FILELINE__);
        AufEintrag AE=AufEintrag(class AufEintragBase(class AuftragBase(ROLLEREI,AuftragBase::ungeplante_id),2));
-       AE.updateStkDiff__(UID,-100,true,ManuProC::Auftrag::r_Anlegen);
+       AE.updateStkDiff__(UID,-100,true,AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
 
        vergleichen(C,Check::Menge,"_reparatur_kunde","Reparatur Kundenaufträge (Menge)",mit_reparatur_programm,true);
       }
@@ -826,7 +827,8 @@ ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
          AufEintragBase Von(AuftragBase(I,AuftragBase::plan_auftrag_id),znrvon);
          int znrnach=2;
          AufEintrag Fuer((class AufEintragBase(AuftragBase(I,AuftragBase::ungeplante_id),znrnach)));
-         AufEintrag(Von).menge_fuer_aeb_freigeben(3000,Fuer,getuid());
+#warning Test neu designen
+//         AufEintrag(Von).menge_fuer_aeb_freigeben(3000,Fuer,getuid());
          vergleichen(C,Check::Menge,"_ZKM","Menge freigeben für einen anderen Auftrag",mit_reparatur_programm);
        }
 

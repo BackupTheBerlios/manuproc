@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.39 2002/12/20 15:35:40 thoma Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.40 2002/12/24 08:25:22 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -238,16 +238,22 @@ void AufEintrag::setInstanzen(const AufStatVal newstatus,const int uid,const Pet
 void AufEintrag::LagerMenge_beruecksichtigen(const int uid,
    const mengen_t &lagermengediff,const AufEintragBase &ElternAEB)
 {
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AE=",*this,"ElternAEB=",ElternAEB,"Menge=",lagermengediff);
   AufEintragZu(ElternAEB).setMengeDiff__(*this,-lagermengediff);
-  AuftragBase AB1er(Instanz(),AuftragBase::plan_auftrag_id);
-cout << "LAGER BERÜCK: "<<AB1er<<'\t'<<lagermengediff<<'\n';
-  AB1er.tryUpdateEntry(lagermengediff,getLieferdatum(),Artikel(),OPEN,uid,ElternAEB);
+  if(Instanz()->LagerInstanz())
+   {
+     AuftragBase AB1er(Instanz(),AuftragBase::plan_auftrag_id);
+//cout << "LAGER BERÜCK: "<<AB1er<<'\t'<<lagermengediff<<'\n';
+     AB1er.tryUpdateEntry(lagermengediff,getLieferdatum(),Artikel(),OPEN,uid,ElternAEB);
+   }
 }
 
 AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool instanzen,
      const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AE=",*this,"Menge=",menge,"Instanzen(bool)=",instanzen,"Reason=",reason);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AE=",*this,
+   "ElternAEB=",ElternAEB,
+   "Menge=",menge,"Instanzen(bool)=",instanzen,"Reason=",reason);
  if(reason==ManuProC::Auftrag::r_None) assert(!instanzen);
  if(menge==mengen_t(0))  return menge;
  if(auftragstatus==OPEN || auftragstatus==UNCOMMITED)
@@ -257,12 +263,16 @@ AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool in
    SQLerror::test("updateStkDiff: lock table auftragentry");
 
    // Lager berücksichtigen und vormerkungen schnappen
-   if(menge>0 && Id()==AuftragBase::ungeplante_id &&ElternAEB.valid())
+   mengen_t M_dispo=0,M_plan=0;
+   ArtikelImLager AIL(Instanz(),Artikel(),getLieferdatum());
+   if(menge>0 && Id()==AuftragBase::ungeplante_id && ElternAEB.valid())
     {
-      ArtikelImLager AIL(Instanz(),Artikel(),getLieferdatum());
+//      ArtikelImLager AIL(Instanz(),Artikel(),getLieferdatum());
+//   mengen_t M_dispo=0,M_plan=0;
       if(AIL.getMengeDispo()>0 || AIL.getMengePlan()>0) 
        {
-         mengen_t M_dispo,M_plan;
+cout << "LagerMenge vorhanden: "<<*this<<'\t'<<AIL.getMengeDispo()<<'\t'<<AIL.getMengePlan()<<'\n';
+//         mengen_t M_dispo,M_plan;
          if(AIL.getMengeDispo()>menge) 
                { M_dispo=menge; menge=0; }
          else  {menge-=AIL.getMengeDispo(); M_dispo=AIL.getMengeDispo();}
@@ -272,19 +282,21 @@ AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool in
                { M_plan=menge; menge=0; }
            else {menge-=AIL.getMengePlan();M_plan=AIL.getMengePlan();}          
           }
-         LagerMenge_beruecksichtigen(uid,M_dispo+M_plan,ElternAEB);
-         if(M_dispo>0) AIL.reduce_in_dispo(uid,M_dispo);         
-         if(M_plan>0)  AIL.reduce_in_plan(uid,M_plan);         
        }     
     }
    mengen_t mt=updateStkDiffBase__(uid,menge);
 
-//cout << "M;"<<menge<<'\t'<<mt<<'\n';
-
 //   if(instanzen || reason==ManuProC::Auftrag::r_Reparatur)
    if((!Instanz()->LagerInstanz() || Id()==AuftragBase::ungeplante_id) && 
          instanzen)
-      updateStkDiffInstanz__(uid,mt,ElternAEB,reason);
+      updateStkDiffInstanz__(uid,mt,*this,reason);
+
+   if(M_dispo>0) AIL.reduce_in_dispo(uid,M_dispo);         
+   if(M_plan>0)  AIL.reduce_in_plan(uid,M_plan);         
+   if(M_dispo>0 || M_plan>0)
+      LagerMenge_beruecksichtigen(uid,M_dispo+M_plan,ElternAEB);
+
+
    bestellt+=menge;
 
    tr.commit();
@@ -296,8 +308,8 @@ AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool in
 
 void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"OldMenge=",oldmenge,
-   "Reason=",reason);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
+   "ElternAEB=",ElternAEB,"OldMenge=",oldmenge,"Reason=",reason);
  std::list<AufEintragZu::st_reflist> KindListeU = AufEintragZu(*this).get_Referenz_list(*this,true);
  try{
 /*
@@ -313,17 +325,6 @@ void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,const AufEintr
       // mit demselben Artikel geben, nur bei EINEM darf die Menge geändert
       // werden
       MapArt[i->Art].push_back(*i);
-/*
-      std::vector<ArtikelBase>::iterator j=std::find(VA.begin(),VA.end(),i->Art);
-      if(j!=VA.end()) continue; // Artikel schon bekannt
-      // Nur wenn es keinen mit einer Menge!=null gibt diesen erhöhen.
-      std::list<AufEintragZu::st_reflist>::iterator e=i;
-      if(i->Menge!=mengen_t(0) || (ZU.empty() && KindListeU.end()==++e) )
-       {                                         
-         VA.push_back(i->Art);
-         ZU.push_back(*i);
-       }
-*/
      }
   for(MapArt_t::iterator i=MapArt.begin();i!=MapArt.end();++i)
    {
@@ -344,8 +345,10 @@ void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,const AufEintr
 }
         else 
           {
+//cout <<"assert: "<< ElternAEB<<'\t'<<oldmenge<<' '<<M<<'\t'<<j->AEB<<'\t'<<reason<<'\n';
             assert(j->AEB.Id()!=AuftragBase::dispo_auftrag_id);
-            assert(M<0);
+//            assert(M<0);
+            if(M<0)
             dispo_auftrag_aendern(uid,j->AEB.Instanz(),i->first,-M,AE.getLieferdatum(),j->AEB);             
           } 
         AufEintragZu(*this).setMengeDiff__(j->AEB,M);

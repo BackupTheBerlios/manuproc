@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.22 2002/12/20 15:35:40 thoma Exp $
+// $Id: AufEintrag.cc,v 1.23 2002/12/24 08:25:22 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -316,9 +316,9 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
      updateStkDiff__(uid,-menge,true,AufEintragBase(),reason);     
      if(!Instanz()->LagerInstanz() && Id()!=AuftragBase::plan_auftrag_id)
         InstanzAuftraegeAnlegen(AE1er,menge,uid);
-//      updateStkDiff__(uid,-menge,true,reason);
    }
 //  else
+//     AE1er.updateStkDiff__(uid,menge,true,AufEintragBase(),reason);
      AE1er.updateStkDiff__(uid,menge,false,AufEintragBase(),reason);
 
 //   move_to(uid,AufEintragBase(zielauftrag,znr),menge,reason);

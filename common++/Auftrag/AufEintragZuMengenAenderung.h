@@ -1,4 +1,4 @@
-// $Id: AufEintragZuMengenAenderung.h,v 1.3 2002/12/19 13:57:21 thoma Exp $
+// $Id: AufEintragZuMengenAenderung.h,v 1.4 2002/12/24 08:25:22 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -45,6 +45,10 @@ namespace AufEintragZuMengenAenderung {
                                    AufEintrag &AE1er,
                                    AuftragBase::mengen_t menge,
                                    ManuProC::Auftrag::Action reason) throw(SQLerror);
+
+   void reduce_zuordung_to_20000er_from_2er(const int uid,
+         const AufEintrag &AE2er,AuftragBase::mengen_t menge) throw(SQLerror);
+
 
 }
 
