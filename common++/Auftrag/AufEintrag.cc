@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.97 2004/02/13 17:38:07 christof Exp $
+// $Id: AufEintrag.cc,v 1.98 2004/02/16 07:37:46 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -66,7 +66,6 @@ std::string AufEintrag::Planung() const
   return itos(maxPlanInstanz)+"/"+itos(tiefe);
 }
 
-// reason kann weg
 void AufEintrag::move_to(AufEintrag ziel,mengen_t menge) throw(std::exception)
 {
   ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,NV("To",ziel),NV("Menge",menge));
@@ -211,9 +210,14 @@ void AufEintrag::Verzeigern()
     {  SQLFullAuftragSelector sel(make_value(SQLFullAuftragSelector::sel_Artikel_Planung_id
     		(Instanz()->Id(),Kunde::eigene_id,Artikel(),ungeplante_id,
     			OPEN)));
-       mengen_t m=auf_positionen_verteilen(sel,getRestStk(),Planen_cb(*this));
+       Transaction tr;
+       mengen_t m=getRestStk();
+       // Menge wird gleich häppchenweise wieder hinzugebucht
+       MengeAendern(-m,false,AufEintragBase());
+       m=auf_positionen_verteilen(sel,m,Planen_cb(*this));
        // 2er anlegen
        if (!!m) Ueberplanen(Artikel(),m,getLieferdatum());
+       tr.commit();
     }
 }
 
