@@ -24,9 +24,10 @@ struct Configuration
 	std::string copies;
 	bool toTeX;
 	bool batch;
+	std::string printer;	
 	std::string texfile;
 	
 	Configuration() : combine(), preview_only(), copies("1,1,1"),
-				toTeX(false) {}
+			printer("ps"), toTeX(false) {}
 };
 extern struct Configuration Configuration;

@@ -30,7 +30,7 @@ const static struct option options[]=
 {
 // { "firma",  no_argument, NULL, 'f' },
  { "toTeX",  required_argument, NULL, 't' },  
- { "batch",  no_argument, NULL, 'B' },  
+ { "batch",  required_argument, NULL, 'B' },  
  { "ean",  no_argument, NULL, EAN },  
  { "art",     required_argument,      NULL, 'a' }, 
  { "nr",     required_argument,      NULL, 'n' }, 
@@ -47,10 +47,10 @@ const static struct option options[]=
 
 void usage(std::string n,ppsInstanz::ID instanz,std::string database,std::string dbhost)
 {
-   std::cout << "$Id: auftrag_drucken.cc,v 1.20 2004/09/22 09:14:12 jacek Exp $\n\n"
+   std::cout << "$Id: auftrag_drucken.cc,v 1.21 2004/09/28 08:24:54 jacek Exp $\n\n"
               "USAGE:" << n << " -n <Nr> [-a <Typ>] [-kft] [-i <Instanz>] [-d <Datenbank>]\n"
 		"\n\t-t<file>\t nur TeX file erzeugen und uneter <file> speichern("<< (Configuration.toTeX?"an":"aus")<< ")\n"
-		"\n\t-B\t batch mode; kein GUI ("<< (Configuration.batch?"an":"aus")<< ")\n"
+		"\n\t-B<printer>\t batch mode on <printer>; kein GUI ("<< (Configuration.batch?"an":"aus")<< ")\n"
 //		"\t-p\t drucken ("<< (plot?"an":"aus")<< ")\n"
 		"\t-a\t Aufrag(*), Rechnung, Lieferschein, Intern, Extern\n"
 		"\t-n\t (A./R./L.)-Nummer (wichtig!)\n"
@@ -84,7 +84,7 @@ int main (int argc, char *argv[])
 
  if(argc==1) usage(argv[0],instanz,database,dbhost);
 
- while ((opt=getopt_long(argc,argv,"Ga:n:pi:d:RZY:t:",options,NULL))!=EOF)
+ while ((opt=getopt_long(argc,argv,"Ga:n:pi:d:RZY:t:B:",options,NULL))!=EOF)
   { switch (opt)
     {  case 'a' : if(std::string("Rechnung")==optarg) was=LR_Base::Rechnung;
 		  else if(std::string("Lieferschein")==optarg) was=LR_Base::Lieferschein;
@@ -101,7 +101,9 @@ int main (int argc, char *argv[])
         case 't' : Configuration.toTeX=true; 
 		   Configuration.texfile=optarg;
 		break;
-        case 'B' : Configuration.batch=true; break;
+        case 'B' : Configuration.batch=true;
+		   Configuration.printer=optarg;
+		 break;
 	case EAN : ean_code=true; break;
 	case COMBINE: Configuration.combine=true; break;
 	case 'Y' : Configuration.copies=optarg; break;

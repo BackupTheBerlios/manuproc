@@ -42,7 +42,10 @@ void LR_drucken::drucken()
    if(Configuration.toTeX)
 	f=popen(("cat > ./"+Configuration.texfile).c_str(),"w");
    else
-   	f=popen(("tex2prn -2 -y -Y"+Configuration.copies
+     if(Configuration.batch)
+   	f=popen(("tex2prn -2 -i -P"+Configuration.printer).c_str(),"w");
+   else
+   	f=popen(("tex2prn -2 -Y"+Configuration.copies
          +(Configuration.preview_only?" -G":"")).c_str(),"w");
 
    oFILEstream os(f);
