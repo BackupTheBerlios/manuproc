@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.9 2002/09/18 08:58:34 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.10 2002/09/19 15:04:45 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -41,20 +41,17 @@ void LieferscheinEntry::setPalette(int p) throw(SQLerror)
 bool LieferscheinEntry::changeMenge(int stueck,mengen_t menge) throw(SQLerror)
 {
   if(ZusatzInfo()) {cerr <<"Mengenänderung für Zusatzinfos nicht möglich\n" ;return false;}
+  if(stueck==Stueck() && menge==Menge()) return true ; //nichts geändert
+
   Transaction tr;
   mengen_t abmenge=Abschreibmenge(stueck,menge);
 
-cout << "LE: "<<abmenge<<'\n';
-  if(abmenge==mengen_t(0)) return true ;//nichts geändert
-
   if(RefAuftrag().valid()) // Keine Zusatzinfos
    {
-cout << "A\t"<<RefAuftrag().valid()<<'\t'<<RefAuftrag().Id()<<'\t'<<Zeile()<<'\n';
      AufEintragBase AEB(RefAuftrag(),AufZeile());
      try{
        AufEintrag AE(AEB);
        mengen_t rest=AE.getRestStk();
-//cout << abmenge<<'\t'<<rest<<'\t'<<(abmenge > rest ) <<'\n';
        if(abmenge > rest ) return false;
        updateLieferscheinMenge(stueck,menge);
        AE.abschreiben(abmenge,Id());
@@ -62,23 +59,18 @@ cout << "A\t"<<RefAuftrag().valid()<<'\t'<<RefAuftrag().Id()<<'\t'<<Zeile()<<'\n
    }
   else // Zusatzinfos ODER kein Referenzauftrag
    {
-cout <<"B\n";
      LieferscheinEntry LE=*this;
      std::vector<LieferscheinEntry> VLE;
      do
       {
         try{
         LE=LieferscheinEntry(LieferscheinEntryBase(Instanz(),Id(),1+LE.Zeile()));
-cout << "a\n";
-        if(LE.ZusatzInfo())
-         {
-           VLE.push_back(LE);
-         }
+        if(LE.ZusatzInfo())  VLE.push_back(LE);
         }catch(SQLerror &e) {cerr<< e<<'\n'; break;}
       } while (LE.ZusatzInfo()) ;
-cout << "LS: HIer\n";
-     bool ok=menge_bei_zusatzinfos_abschreiben(VLE,abmenge);
-     if(!ok) return false;
+//     bool ok=menge_bei_zusatzinfos_abschreiben(VLE,abmenge);
+      menge_bei_zusatzinfos_abschreiben(VLE,stueck,menge);
+//     if(!ok) return false;
      updateLieferscheinMenge(stueck,menge);
    }
   tr.commit();
@@ -89,15 +81,84 @@ cout << "LS: HIer\n";
 void LieferscheinEntry::updateLieferscheinMenge(int stueck,mengen_t menge)  throw(SQLerror)
 {
    std::string Q1="update lieferscheinentry set stueck="+itos(stueck)
-         +", menge="+itos(menge)+" where (instanz,lfrsid,zeile)=("
+         +", menge=nullif("+itos(menge)+",0) where (instanz,lfrsid,zeile)=("
          +itos(Instanz())+","+itos(Id())+","+itos(Zeile())+")";
    Query::Execute(Q1);
    SQLerror::test(__FILELINE__);
 }
 
-bool LieferscheinEntry::menge_bei_zusatzinfos_abschreiben(std::vector<LieferscheinEntry>& VLE,mengen_t abmenge)
+//bool LieferscheinEntry::menge_bei_zusatzinfos_abschreiben(std::vector<LieferscheinEntry>& VLE,mengen_t abmenge)
+void LieferscheinEntry::menge_bei_zusatzinfos_abschreiben(std::vector<LieferscheinEntry>& VLE,int stueck,mengen_t menge)
 {
- if(VLE.empty()) return true; // Zeile ohne Referenzauftrag
+  if(VLE.empty()) return;
+//  AuftragBase::mengen_t kundenmenge(0);
+  // Erhöhen
+//cout << stueck<<' '<<menge<<'\n';
+   AuftragBase::mengen_t km(0);
+   int ks(0),AuftragS=0;
+   for(std::vector<LieferscheinEntry>::iterator i=VLE.begin();i!=VLE.end();++i)
+    {
+      if(i->RefAuftrag().valid()) // Kundenauftrag vorhanden
+       {
+         AufEintrag AE(i->getAufEintragBase());
+         if(AE.getEntryStatus()==CLOSED)
+          {  ks+=i->Stueck(); km+=i->Menge(); }
+       } // der Auftrag OHNE Kundenreferenzauftrag steht am Ende
+      else 
+       {
+         int S=stueck-ks;
+         AuftragBase::mengen_t M=menge-km;
+         if(S<0) { AuftragS=S;S=0;} 
+         i->updateLieferscheinMenge(S,M);
+       }
+    } 
+
+  // Jetzt die Kundenaufträge behandeln
+//  bool del_line=false;
+  if(AuftragS)
+   {
+    assert(AuftragS<0);
+//cout <<"AAAAAA\n";
+    mengen_t abmenge=Abschreibmenge(stueck,menge);
+    for(std::vector<LieferscheinEntry>::reverse_iterator i=VLE.rbegin();i!=VLE.rend();++i)
+     {
+      if(i->RefAuftrag().valid()) // Kundenauftrag vorhanden
+       {
+         AufEintrag AE(i->getAufEintragBase());
+         mengen_t M=AuftragS;
+         if(AE.getStueck()<M) M=-AE.getStueck();
+//cout << "Be HERE\t"<<i->Stueck()<<' '<<i->Menge()<<'\t'<<M<<'\n';
+         AE.abschreiben(M,Id());
+         // Lieferscheinentry:
+         if(i->Stueck()==1)
+             i->updateLieferscheinMenge(1,i->Menge()+M);
+         else if(i->Menge()==mengen_t(0))
+             i->updateLieferscheinMenge(i->Stueck()+int(M),mengen_t(0));
+         else assert(!"");
+         abmenge+=M;
+         if(!abmenge) break;
+       }
+     }
+   }  
+
+   for(std::vector<LieferscheinEntry>::iterator i=VLE.begin();i!=VLE.end();++i)
+    {
+     // Neuerzeugung mit aktueller Menge
+     LieferscheinEntry LE((LieferscheinEntryBase(*i)));
+     if( (LE.Stueck()==1          && LE.Menge()==mengen_t(0)) ||
+         (LE.Menge()==mengen_t(0) && LE.Stueck()==0) )
+     {
+      std::string Q1 = "delete from lieferscheinentry where "
+        "(instanz,lfrsid,zeile) = ("
+        +itos(i->Instanz())+","+itos(i->Id())+","+itos(i->Zeile())+")";
+      Query::Execute(Q1);
+      SQLerror::test(__FILELINE__);
+     }
+    }
+//      
+
+/*
+//cout << "Reduzieren? "<<abmenge<<'\n';
  // Reduziern
  if(abmenge<mengen_t(0))
   {
@@ -109,6 +170,9 @@ bool LieferscheinEntry::menge_bei_zusatzinfos_abschreiben(std::vector<Liefersche
     mengen_t M;
     if(aufmenge<=abs(abmenge)) M=-aufmenge;
     else                       M=abmenge;
+
+//cout << i->Zeile()<<'\t'<<M<<'\t'<<i->AufZeile()<<' '
+//<<i->RefAuftrag().valid()<<'\n';
     if(i->RefAuftrag().valid()) 
      { AufEintragBase AEB(i->RefAuftrag(),i->AufZeile());
        AufEintrag(AEB).abschreiben(M,Id());
@@ -141,13 +205,15 @@ bool LieferscheinEntry::menge_bei_zusatzinfos_abschreiben(std::vector<Liefersche
    {
 return false;
    }
-return true;
+*/
+//return true;
 }
 
 LieferscheinBase::mengen_t LieferscheinEntry::Abschreibmenge(int stueck,mengen_t menge) const
 {
    int stueckdiff =   stueck - Stueck();
    mengen_t mengediff = menge - Menge();
+//cout << stueck<<'-'<<Stueck()<<'='<<stueckdiff<<'\n';
    if(!stueckdiff && !mengediff) return mengen_t(0); // nichts geändert
    mengen_t abmenge;
    if(!menge && stueckdiff)  abmenge=stueckdiff;

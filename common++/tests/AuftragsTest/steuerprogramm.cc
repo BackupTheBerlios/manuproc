@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.cc,v 1.12 2002/09/18 08:58:34 christof Exp $
+// $Id: steuerprogramm.cc,v 1.13 2002/09/19 15:04:45 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -35,7 +35,9 @@
 
 
 enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
-      ZweiterAuftrag_frueheresDatum,Lieferscheintest,JumboLager};
+      ZweiterAuftrag_frueheresDatum,Lieferscheintest,LieferscheintestMenge,
+      LieferscheintestZusatz,
+      JumboLager};
 
 int fehler()
 {
@@ -257,12 +259,70 @@ int auftragstests(e_mode mode)
        liefs.push_back(ARTIKEL_ROLLEREI,450,0,0);
        erfolgreich=C.teste(Check::LieferscheinVoll);
        if(!erfolgreich) { cout << "Lieferschein mit Volllieferung \n\n"; return fehler();}
+      
+       break;
+     }
+    case LieferscheintestMenge:
+     {
+       Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
+       liefs.push_back(ARTIKEL_ROLLEREI,150,0,0);
+       erfolgreich=C.teste(Check::LieferscheinTeil);
+       if(!erfolgreich) { cout << "Lieferschein mit Teillieferung anlegen\n\n"; return fehler();}
 
-       int stueck=40;
-       AuftragBase::mengen_t menge=2;
+       int stueck=140;
+       AuftragBase::mengen_t menge=0;
+       int lznr=1;
+       LieferscheinEntry le(LieferscheinEntryBase(liefs,lznr));
        le.changeMenge(stueck,menge);
+       erfolgreich=C.teste(Check::LieferscheinMengenaenderungMinus);
+       if(!erfolgreich) { cout << "Lieferschein Mengenaenderung Minus \n\n"; return fehler();}
+
+       stueck=400;
+       LieferscheinEntry le2(LieferscheinEntryBase(liefs,lznr));
+       le2.changeMenge(stueck,menge);
        erfolgreich=C.teste(Check::LieferscheinMengenaenderungPlus);
        if(!erfolgreich) { cout << "Lieferschein Mengenaenderung Plus \n\n"; return fehler();}
+
+       break;
+     }
+    case LieferscheintestZusatz:
+     {
+       Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
+       liefs.push_back(ARTIKEL_ROLLEREI,550,0,0);
+       erfolgreich=C.teste(Check::LieferscheinZusatz);
+       if(!erfolgreich) { cout << "Lieferschein mit Zusatzeintrag anlegen\n\n"; return fehler();}
+
+       int stueck=633;
+       AuftragBase::mengen_t menge=0;
+       int lznr=2;
+       LieferscheinEntry le(LieferscheinEntryBase(liefs,lznr));
+       le.changeMenge(stueck,menge);
+       erfolgreich=C.teste(Check::LieferscheinZusatz);
+       if(!erfolgreich) { cout << "Lieferscheinentry mit Zusatzeintrag darf sich nicht ändern lassen Minus \n\n"; return fehler();}
+
+       lznr=3;
+       LieferscheinEntry le2(LieferscheinEntryBase(liefs,lznr));
+       le2.changeMenge(stueck,menge);
+       erfolgreich=C.teste(Check::LieferscheinZusatz);
+       if(!erfolgreich) { cout << "Lieferscheinentry mit Zusatzeintrag darf sich nicht ändern lassen Minus \n\n"; return fehler();}
+
+       lznr=1;
+       LieferscheinEntry le3(LieferscheinEntryBase(liefs,lznr));
+       le3.changeMenge(stueck,menge);
+       erfolgreich=C.teste(Check::LieferscheinZusatzPlus);
+       if(!erfolgreich) { cout << "Lieferscheinentry mit Zusatzeintrag Plus \n\n"; return fehler();}
+
+       LieferscheinEntry le4(LieferscheinEntryBase(liefs,lznr));
+       stueck=450;
+       le4.changeMenge(stueck,menge);
+       erfolgreich=C.teste(Check::LieferscheinZusatzMinus);
+       if(!erfolgreich) { cout << "Lieferscheinentry mit Zusatzeintrag Minus \n\n"; return fehler();}
+
+       LieferscheinEntry le5(LieferscheinEntryBase(liefs,lznr));
+       stueck=350;
+       le4.changeMenge(stueck,menge);
+       erfolgreich=C.teste(Check::LieferscheinZusatzMinusKunde);
+       if(!erfolgreich) { cout << "Lieferscheinentry mit Zusatzeintrag Minus Kunde \n\n"; return fehler();}
 
        break;
      }
@@ -314,7 +374,7 @@ int auftragstests(e_mode mode)
 
 void usage(const std::string &argv0,const std::string &argv1)
 {
-  cerr << argv0 <<" muß mit [(M)engentest|(P)lantest|(L)agertest|(S)plittest,(Z)weiAuftraege,ZweiterAuftrag_frueheres(D)atum,(L)iefer(s)cheine,(J)umboLager] aufgerufen werden\n"
+  cerr << argv0 <<" muß mit [(M)engentest|(P)lantest|(L)agertest|(S)plittest,(Z)weiAuftraege,ZweiterAuftrag_frueheres(D)atum,(L)iefer(s)cheine,(L)ieferscheine(M)engen,(L)ieferschein(Z)usatzeintrag,(J)umboLager] aufgerufen werden\n"
        << " nicht mit '"<<argv1<<"'\n";
   exit(1);
 }
@@ -330,6 +390,8 @@ int main(int argc,char *argv[])
    else if(std::string(argv[1])=="Z" || std::string(argv[1])=="ZweiAuftraege")  mode=ZweiAuftraege;
    else if(std::string(argv[1])=="D" || std::string(argv[1])=="ZweiterAuftrag_frueheresDatum")  mode=ZweiterAuftrag_frueheresDatum;
    else if(std::string(argv[1])=="Ls" || std::string(argv[1])=="Lieferscheintest")  mode=Lieferscheintest;
+   else if(std::string(argv[1])=="Lm" || std::string(argv[1])=="Lieferscheintest")  mode=LieferscheintestMenge;
+   else if(std::string(argv[1])=="LZ" || std::string(argv[1])=="Lieferscheintest")  mode=LieferscheintestZusatz;
    else if(std::string(argv[1])=="J" || std::string(argv[1])=="JumboLager")  mode=JumboLager;
 
    if(mode==None) { usage(argv[0],argv[1]); return 1; }

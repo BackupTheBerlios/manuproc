@@ -1,4 +1,4 @@
-// $Id: Check.hh,v 1.10 2002/09/18 08:58:34 christof Exp $
+// $Id: Check.hh,v 1.11 2002/09/19 15:04:45 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -47,7 +47,9 @@ class Check
                  Jumbo_richtig,Jumbo_falsch,Jumbo_doppelt,
                  Kunden_Teillieferung,Kunden_Ueberlieferung,
                  LieferscheinTeil,LieferscheinZeileLoeschen,LieferscheinVoll,
-                 LieferscheinMengenaenderungPlus,LieferscheinMengenaenderungMinus};
+                 LieferscheinMengenaenderungPlus,LieferscheinMengenaenderungMinus,
+                 LieferscheinZusatz,LieferscheinZusatzPlus,LieferscheinZusatzMinus,
+                 LieferscheinZusatzMinusKunde};
  private:
    void dump(e_check);
    bool vergleich(e_check);

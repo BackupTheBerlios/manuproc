@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.13 2002/09/02 13:04:04 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.14 2002/09/19 15:04:45 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -59,7 +59,8 @@ class LieferscheinEntry : public LieferscheinEntryBase
  bool zusatzinfo;
 
    void updateLieferscheinMenge(int stueck,mengen_t menge)  throw(SQLerror);
-   bool menge_bei_zusatzinfos_abschreiben(std::vector<LieferscheinEntry>& VLE,mengen_t menge);
+//   bool menge_bei_zusatzinfos_abschreiben(std::vector<LieferscheinEntry>& VLE,mengen_t menge);
+   void menge_bei_zusatzinfos_abschreiben(std::vector<LieferscheinEntry>& VLE,int stueck,mengen_t menge);
    mengen_t Abschreibmenge(int stueck,mengen_t menge) const;
 
 public:

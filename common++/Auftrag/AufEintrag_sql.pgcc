@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.22 2002/09/18 08:58:34 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.23 2002/09/19 15:04:45 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -71,17 +71,26 @@ void AufEintrag::abschreiben(mengen_t menge,
 
  Transaction tr;
  exec sql lock table auftragentry in exclusive mode;
+ bool delete_entry=false;
 #ifdef PETIG_EXTENSIONS
   if(menge<0 &&
      Instanz()!=ppsInstanzID::Kundenauftraege && 
      !Instanz()->ProduziertSelbst() && 
      Id()==AuftragBase::plan_auftrag_id)
-  BESTELLT+=int(menge);
-  if(BESTELLT<0) BESTELLT=0;
+   {
+     BESTELLT+=int(menge);
+     if(BESTELLT<0) BESTELLT=0;
+     if(BESTELLT==GELIEFERT) STATUS=CLOSED;
+     if(BESTELLT==0 && GELIEFERT==0 &&  STATUS==CLOSED) delete_entry=true;
+   }   
 #endif
- exec sql update auftragentry set geliefert= :GELIEFERT, status= :STATUS,
-   bestellt = :BESTELLT      
-   where (instanz,auftragid,zeilennr) = (:INSTANZ,:AUFID,:AUFZNR);
+ if(delete_entry)
+   exec sql delete from auftragentry       
+     where (instanz,auftragid,zeilennr) = (:INSTANZ,:AUFID,:AUFZNR);
+ else
+   exec sql update auftragentry set geliefert= :GELIEFERT, status= :STATUS,
+     bestellt = :BESTELLT      
+     where (instanz,auftragid,zeilennr) = (:INSTANZ,:AUFID,:AUFZNR);
  SQLerror::test(__FILELINE__);
 
 // TODO: Jacek, das muss später rein!
@@ -90,8 +99,6 @@ void AufEintrag::abschreiben(mengen_t menge,
    { static bool tested=false; // nur einmal testen
      assert(tested || cH_ppsInstanz(ppsInstanzID::Kundenauftraege)->ProduziertSelbst());
      if (!tested) tested=true;
-     // das ist noch nicht für negative Produktion ausgereift ... oder? 
-     // zumindest ist es noch nicht getestet ... MAT
      Produziert(class ArtikelStamm(artikel).BestellenBei(),artikel,menge,getuid()).NichtSelbst();
    }
 #endif
@@ -497,7 +504,6 @@ int AufEintrag::Planen(int uid,mengen_t menge,bool reduce_old,const AuftragBase 
                                                 // das macht insertNewEntry
    Auftrag(zielauftrag).setStatusAuftrag_(OPEN);
 
-
    // wenn Lieferdatum rekursiv korrigieren (VOR dem Planen)
    if(datum!=getLieferdatum())
     {
@@ -538,6 +544,7 @@ int AufEintrag::Planen(int uid,mengen_t menge,bool reduce_old,const AuftragBase 
    for (std::list<AufEintragZu::st_reflist>::iterator i=ReferenzAufEintrag.begin();i!=ReferenzAufEintrag.end();++i)
     {
      if(i->AEB.Instanz()->Id()!=ppsInstanzID::Kundenauftraege) continue;
+if(zielauftrag.Id()==AuftragBase::plan_auftrag_id) continue;
      i->AEB.setLetztePlanungFuer(instanz);
      i->AEB.calculateProzessInstanz();
     }

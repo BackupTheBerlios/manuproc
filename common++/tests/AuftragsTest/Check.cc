@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.10 2002/09/18 08:58:34 christof Exp $
+// $Id: Check.cc,v 1.11 2002/09/19 15:04:45 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -48,7 +48,9 @@ bool Check::vergleich(e_check check)
   	   break;
    case LieferscheinTeil: case LieferscheinZeileLoeschen:
    case LieferscheinVoll: case LieferscheinMengenaenderungPlus:
-   case LieferscheinMengenaenderungMinus:
+   case LieferscheinMengenaenderungMinus: case LieferscheinZusatz:
+   case LieferscheinZusatzPlus: case LieferscheinZusatzMinus:
+   case LieferscheinZusatzMinusKunde:
         files.push_back("lieferschein");
         files.push_back("lieferscheinentry");
    default: 
@@ -97,6 +99,11 @@ bool Check::vergleich(e_check check)
      case LieferscheinZeileLoeschen : zusatz="_LS_zeileloeschen"; break;
      case LieferscheinVoll: zusatz="_LS_volllieferung"; break;
      case LieferscheinMengenaenderungPlus : zusatz="_LS_mengenaenderung_plus"; break;
+     case LieferscheinMengenaenderungMinus : zusatz="_LS_mengenaenderung_minus"; break;
+     case LieferscheinZusatz : zusatz="_LSZ"; break;
+     case LieferscheinZusatzPlus : zusatz="_LSZP"; break;
+     case LieferscheinZusatzMinus: zusatz="_LSZM"; break;
+     case LieferscheinZusatzMinusKunde: zusatz="_LSZMK"; break;
 
      // Jumbo 
      case Jumbo_richtig : zusatz="_richtig"; break;
@@ -150,7 +157,10 @@ void Check::dump(e_check check)
   }
   else if(check == LieferscheinTeil || check == LieferscheinZeileLoeschen
           || check == LieferscheinVoll || check==LieferscheinMengenaenderungPlus
-          || LieferscheinMengenaenderungMinus)
+          || check == LieferscheinMengenaenderungMinus 
+          || check == LieferscheinZusatz || check == LieferscheinZusatzPlus
+          || check == LieferscheinZusatzMinus 
+          || check == LieferscheinZusatzMinusKunde)
   {  
      unlink((tempdir+"lieferschein").c_str());
      unlink((tempdir+"lieferscheinentry").c_str());
