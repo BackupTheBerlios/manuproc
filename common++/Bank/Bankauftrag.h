@@ -1,4 +1,4 @@
-/* $Id: Bankauftrag.h,v 1.7 2003/01/08 09:46:56 christof Exp $ */
+/* $Id: Bankauftrag.h,v 1.8 2003/04/18 11:23:39 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -55,7 +55,7 @@ public :
 			
 	Bankauftrag &operator<<(const Zahlvorgang &z) throw(IOerror);
 	void printEinzugListe() throw(IOerror);
-	void close() throw(IOerror);
+	void close(bool nodisk=false) throw(IOerror);
 	static void string2Bank(char *buf,const char *s) throw (Datenfehler);
 	static void string2Bank(char *buf,std::string s) throw (Datenfehler)
 	{  string2Bank(buf,s.c_str()); }
