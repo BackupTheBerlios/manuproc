@@ -54,7 +54,7 @@ void LR_drucken::drucken(bool print,bool b_firmenpapier,bool b_kopie,bool ean_co
    else if (!print) f=popen("tex2prn -2 -G ","w");
    else f=popen(("tex2prn -q -2 "+texplotter).c_str(),"w");
 
-   std::ofstream os(fileno(f));
+   oFILEstream os(f);
 
 
    if      (RL==LR_Base::Rechnung)      
@@ -89,5 +89,6 @@ void LR_drucken::drucken(bool print,bool b_firmenpapier,bool b_kopie,bool ean_co
      LRA.drucken(os,b_kopie,instanz);
     }
    else abort();
+   pclose(f);
 }
 

@@ -113,7 +113,7 @@ public:
 class LR_Iterator: public LR_Base
 {
    typedef LR_Iterator self;  
-   union u_t { LieferscheinVoll::const_iterator l; 
+   struct u_t { LieferscheinVoll::const_iterator l; 
    	         RechnungVoll::const_iterator r;
                AuftragFull::const_iterator a;
             u_t(const LieferscheinVoll::const_iterator &_l) : l(_l) {}
