@@ -1,6 +1,6 @@
 #!/bin/sh
 
-GLOBAL_VER=20041025-2
+GLOBAL_VER=20041025-3
 USER="Christof Petig <christof@petig-baender.de>"
 
 calculate_deps() {
@@ -22,11 +22,11 @@ calculate_deps() {
     atk) DEPENDS="mingw32, mingw32-glib-dev"
       EXTRA_FILES="lib/libatk-1.0.la"
       ;;
-    gtkmm) DEPENDS="mingw32, mingw32-gtk+-dev, mingw32-glibmm-dev"
-      EXTRA_FILES="lib/libatkmm-1.0.la lib/libgdkmm-2.0.la lib/libgtkmm-2.0.la lib/libpangomm-1.0.la"
+    gtkmm) DEPENDS="mingw32, mingw32-gtk+-dev, mingw32-glibmm-dev (>= 2.4)"
+      EXTRA_FILES="lib/libatkmm-1.6.la lib/libgdkmm-2.4.la lib/libgtkmm-2.4.la lib/libpangomm-1.4.la"
       ;;
-    glibmm) DEPENDS="mingw32, mingw32-glib-dev, mingw32-sigc++-dev"
-      EXTRA_FILES="lib/libglibmm-2.0.la"
+    glibmm) DEPENDS="mingw32, mingw32-glib-dev, mingw32-sigc++-dev (>= 2.0)"
+      EXTRA_FILES="lib/libglibmm-2.4.la"
       ;;
     sigc++) EXTRA_FILES="lib/libsigc-2.0.la"
       ;;
