@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.36 2003/07/03 07:06:25 christof Exp $
+// $Id: FetchIStream.h,v 1.37 2003/10/23 14:35:42 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -29,7 +29,10 @@ extern "C" {
 }
 
 class FetchIStream
-{	int naechstesFeld;
+{public:
+	struct check_eol { check_eol() {} };
+private:
+	int naechstesFeld;
 	/* const */ int zeile;
 	const PGresult * /* const */ result;
 
@@ -78,6 +81,8 @@ public:
 	FetchIStream &operator>>(double &f);
 	FetchIStream &operator>>(bool &b);
 	FetchIStream &operator>>(char &c);
+	void operator>>(const check_eol &eol)
+	{ ThrowIfNotEmpty("check_eol"); }
 	
 	template <class T> static WithIndicator_s<T> WithIndicator(T &v,int &i)
 	{ return WithIndicator_s<T>(v,i); }
@@ -127,6 +132,7 @@ struct Query_types
 		template <class U> NullIf_s(const T &a,const U &b) : data(a), null(a==b) {}
 	};
 	struct null { null(){} };
+	typedef FetchIStream::check_eol check_eol;
 };
 
 class ArgumentList
