@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.25 2003/12/03 09:58:40 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.26 2003/12/03 15:01:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -46,6 +46,47 @@
 #include <Artikel/ArtikelBase.h>
 #endif
 
+AufEintragBase AufEintrag::unbestellteMengeProduzieren2(cH_ppsInstanz instanz,
+                const ArtikelBase &artikel,mengen_t menge,bool rekursiv,
+                const AufEintragBase &elter,const ProductionContext2 &ctx,
+                ManuProC::Datum termin)
+{  if (!termin.valid()) termin=ManuProC::Datum(1,1,1970);
+   Transaction tr;
+   AuftragBase zielauftrag(instanz,plan_auftrag_id);
+   AufEintragBase neuerAEB(zielauftrag,
+                       zielauftrag.PassendeZeile(termin,artikel,CLOSED));
+   AufEintrag ae(neuerAEB);
+   // elter kann nicht übergeben werden, da sonst bereits mit Menge angelegt
+   ae.MengeAendern(menge,false,AufEintragBase());
+   ae.abschreiben(menge);
+   if (elter.valid()) AufEintragZu(elter).Neu(ae,0);
+   // weiter unten als produziert markieren
+   if (rekursiv)
+   {  if (instanz->LagerInstanz())
+      {  cH_ppsInstanz pi=ppsInstanz::getProduktionsInstanz(artikel);
+         if (pi!=ppsInstanzID::None && !pi->ProduziertSelbst())
+            unbestellteMengeProduzieren(pi,artikel,menge,true,neuerAEB);
+      }
+      else
+      {  ArtikelBaum AB(artikel);
+         for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
+         {  cH_ppsInstanz bi=ppsInstanz::getBestellInstanz(i->rohartikel);
+            if (bi!=ppsInstanzID::None && !bi->ProduziertSelbst())
+               unbestellteMengeProduzieren(bi,i->rohartikel,i->menge*menge,
+               		true,neuerAEB);
+         }
+      }
+   }
+   cH_ppsInstanz EI=instanz->EinlagernIn();
+   if(EI->AutomatischEinlagern())
+   {  assert(instanz->ProduziertSelbst()); // sonst Endlosrekursion
+      ManuProC::Trace(trace_channel, "AutomatischEinlagern");
+      Lager(EI).rein_ins_lager(artikel,menge,true,ProductionContext(neuerAEB,ctx));
+   }
+   tr.commit();
+   return neuerAEB;
+}
+
 AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
                 const ArtikelBase &artikel,mengen_t menge,bool rekursiv,
                 const AufEintragBase &elter,const ProductionContext2 &ctx,
@@ -56,39 +97,15 @@ AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
 			   NV("artikel",artikel),NV("menge",menge),NV("rekursiv",rekursiv),
 			   NV("elter",elter),NV("ctx",ctx),NV("termin",termin));
    assert(instanz!=ppsInstanzID::Kundenauftraege && instanz!=ppsInstanzID::None);
-   if (instanz->LagerInstanz() && rekursiv) // petig:S: Auslagern ruft uMP auf
+   if (instanz->LagerInstanz() && rekursiv) 
+   // petig:S: Auslagern ruft uMP ohne rekursion auf
    {  Lager L(instanz);
       L.raus_aus_lager(artikel,menge,true,ProductionContext(elter,ctx));
       // bräuchten wir den AEB?
       return AufEintragBase();
    }
-   if (!termin.valid()) termin=ManuProC::Datum(1,1,1970);
-   Transaction tr;
-   AuftragBase zielauftrag(instanz,plan_auftrag_id);
-   AufEintragBase neuerAEB(zielauftrag,
-                       zielauftrag.PassendeZeile(termin,artikel,CLOSED));
-   AufEintrag ae(neuerAEB);
-   // elter kann nicht übergeben werden, da sonst bereits mit Menge angelegt
-   ae.MengeAendern(menge,false,AufEintragBase());
-   ae.abschreiben(menge);
-   if (elter.valid()) AufEintragZu(elter).Neu(ae,0);
-   if (rekursiv)
-      {  ArtikelBaum AB(artikel);
-         for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
-         {  cH_ppsInstanz bi=ppsInstanz::getBestellInstanz(i->rohartikel);
-            if (bi!=ppsInstanzID::None && !bi->ProduziertSelbst())
-               unbestellteMengeProduzieren(bi,i->rohartikel,i->menge*menge,
-               		true,neuerAEB);
-         }
-      }
-   cH_ppsInstanz EI=instanz->EinlagernIn();
-   if(EI->AutomatischEinlagern())
-   {  assert(instanz->ProduziertSelbst()); // sonst Endlosrekursion
-      ManuProC::Trace(trace_channel, "AutomatischEinlagern");
-      Lager(EI).rein_ins_lager(artikel,menge,true,ProductionContext(neuerAEB,ctx));
-   }
-   tr.commit();
-   return neuerAEB;
+   else return unbestellteMengeProduzieren2(instanz,artikel,menge,rekursiv,
+   							elter,ctx,termin);
 }
 
 // etwas bestelltes wird produziert

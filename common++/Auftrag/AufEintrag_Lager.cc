@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.31 2003/12/03 14:03:08 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.32 2003/12/03 15:01:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -217,6 +217,8 @@ AuftragBase::mengen_t AufEintrag::Auslagern
       ManuProC::Trace(trace_channel,"",NV("opfer",opfer));
       if (!opfer)
       {  std::cerr << "LOG: ausgeliefert ohne Lagermenge von "<< Artikel()<<"\n";
+         unbestellteMengeProduzieren2(Instanz(),Artikel(),menge,true,
+                         ctx.aeb,ctx.leb,getLieferdatum());
          brauch_noch=0;
       }
       else 
