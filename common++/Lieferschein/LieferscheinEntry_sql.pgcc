@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry_sql.pgcc,v 1.29 2003/03/20 13:41:57 christof Exp $ */
+/* $Id: LieferscheinEntry_sql.pgcc,v 1.30 2003/03/20 15:32:01 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,9 +24,16 @@
 #include<Auftrag/auftrag_status.h>
 #include <unistd.h>
 #include<Misc/FetchIStream.h>
-#include <Misc/FetchIStream_fixedpoint.h>
-exec sql include sqlca;
 
+FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry::st_zusatz& z)
+{
+  return is >> z.aeb /*>> z.stueck*/ >> z.menge 
+  	>> FetchIStream::MapNull<std::string>(z.yourauftrag,"");
+}
+
+Query &operator<<(Query &q, const LieferscheinEntryBase &leb)
+{  return q << leb.Instanz()->Id() << leb.Id() << leb.Zeile();
+}
 
 FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry& z)
 {
@@ -35,27 +42,17 @@ FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry& z)
  z.instanz=z.refauftrag.Instanz();
  
  if(!z.zusatzinfo) return is;
- std::string zquery="select lyz.instanz,coalesce(lyz.auftragid,"
-   +itos(AuftragBase::none_id)+")"
-   ",coalesce(lyz.auftragznr,"+itos(AufEintragBase::none_znr)+"),"
-   " lyz.menge, "
-   "coalesce(youraufnr,'') "
-   " from lieferscheinentryzusatz lyz "
-  " left join auftrag a on (lyz.instanz,lyz.auftragid) =(a.instanz,a.auftragid) " 
-  " where (lyz.instanz,lyz.lfrsid,lyz.lfsznr) = ("
-   +itos(z.Instanz()->Id())+","+itos(z.Id())+","+itos(z.Zeile())+") "
-   " order by lyz.auftragid,lyz.auftragznr";
- Query(zquery).FetchArray(z.VZusatz);
+ // ohne youraufnr könnte ich auf den join verzichten ...
+ (Query("select lyz.instanz,coalesce(lyz.auftragid,?),coalesce(lyz.auftragznr,?),"
+   "lyz.menge,youraufnr "
+   "from lieferscheinentryzusatz lyz "
+   "left join auftrag a on (lyz.instanz,lyz.auftragid) =(a.instanz,a.auftragid) " 
+   "where (lyz.instanz,lyz.lfrsid,lyz.lfsznr) = (?,?,?) "
+   "order by lyz.auftragid,lyz.auftragznr").lvalue()
+	<< AuftragBase::none_id << AufEintragBase::none_znr
+ 	<< z)
+ 	.FetchArray(z.VZusatz);
  return is;  
-}
-
-FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry::st_zusatz& z)
-{
-  return is >> z.aeb /*>> z.stueck*/ >>z.menge >> z.yourauftrag;
-}
-
-Query &operator<<(Query &q, const LieferscheinEntryBase &leb)
-{  return q << leb.Instanz()->Id() << leb.Id() << leb.Zeile();
 }
 
 LieferscheinEntry::LieferscheinEntry(const LieferscheinEntryBase &lsbase)
@@ -70,7 +67,7 @@ LieferscheinEntry::LieferscheinEntry(const LieferscheinEntryBase &lsbase)
   " from lieferscheinentry ly "
   " left join auftrag a on (ly.refauftragid,ly.instanz) = (a.auftragid,a.instanz)"
   " where (ly.instanz,ly.lfrsid,ly.zeile) = (?,?,?)";
- (Query(qstr) << *this).FetchOne(*this);
+ (Query(qstr).lvalue() << *this).FetchOne(*this);
 }
 
 LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
@@ -87,45 +84,30 @@ LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
  LE.palette=_palette;
  LE.zusatzinfo=_zusatzinfo;
 
-
-//ECPGdebug(true,stdout);
- exec sql begin declare section;
-  int INSTANZ=LE.Instanz()->Id();
-  int LFRSID=LE.Id();
-  int ARTIKELID=LE.Artikel().Id();
-  int REFAUFID=LE.RefAuftrag().Id();
-  int REFZEILENNR=LE.AufZeile();
-  int STK=LE.Stueck();
-  int ZEILE;
-  float MENGE=LE.Menge().as_float();
-  int PALETTE=LE.Palette();
-  bool ZUSATZINFO=LE.ZusatzInfo();
- exec sql end declare section;
-
  Transaction tr;
- 
- exec sql lock table lieferscheinentry in exclusive mode;
+ Query("lock table lieferscheinentry in exclusive mode");
  SQLerror::test(__FILELINE__":LieferscheinEntry: lock table");
  
- exec sql select coalesce(max(zeile)+1,1) into :ZEILE from lieferscheinentry
-	where (instanz,lfrsid)=(:INSTANZ,:LFRSID) ;
+ Query("select coalesce(max(zeile)+1,1) from lieferscheinentry "
+	"where (instanz,lfrsid)=(?,?)")
+	<< lsb.Instanz()->Id() << lsb.Id()
+	>> LE.zeilennr;
  SQLerror::test(__FILELINE__":LieferscheinEntry: select max(zeilennr)");
 
- exec sql insert into lieferscheinentry 
- 		(instanz,lfrsid,zeile,artikelid, refauftragid, refzeilennr, stueck,
-		menge,palette,zusatzinfo)
- 	values
- 		(:INSTANZ,:LFRSID,:ZEILE,:ARTIKELID,nullif(:REFAUFID,0),
- 		 nullif(:REFZEILENNR,0),:STK,nullif(:MENGE,0),:PALETTE,:ZUSATZINFO);
+ Query("insert into lieferscheinentry"
+ 		"(instanz,lfrsid,zeile, artikelid, refauftragid,refzeilennr, stueck,"
+		"menge,palette,zusatzinfo)"
+ 	"values (?,?,?, ?, ?,?, ?,?,?,?)").lvalue()
+ 	<< LE << art.Id() << Query::NullIf<int>(LE.RefAuftrag().Id(),0)
+ 	<< Query::NullIf<int>(LE.AufZeile(),0)
+ 	<< LE.Stueck() 
+ 	<< Query::NullIf<mengen_t>(LE.Menge(),0)
+ 	<< LE.Palette() << LE.ZusatzInfo();
  SQLerror::test(__FILELINE__":LieferscheinEntry: insert into lieferscheinentry");
-
- LE.zeilennr=ZEILE;
  
  tr.commit();
-//ECPGdebug(false,stdout);
  return LE;
 }
-
 
 LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
 			const ArtikelBase &art, int anzahl,
@@ -143,9 +125,10 @@ void LieferscheinEntry::deleteEntry(LieferscheinEntry &lse) throw(SQLerror)
 void LieferscheinEntry::setZusatzInfo(const AufEintragBase &AEB,const mengen_t &menge) throw(SQLerror)
 {
   Query("insert into lieferscheinentryzusatz (instanz,lfrsid,lfsznr,"
-      "auftragid,auftragznr,menge) values (?,?,?, ?,?, ?)") << *this 
+      "auftragid,auftragznr,menge) values (?,?,?, ?,?, ?)").lvalue() 
+	<< *this 
   	<< Query::NullIf<int>(AEB.Id(),ManuProcEntity<>::none_id)
-  	<< Query::NullIf<int>(AEB.ZNr(),ManuProcEintrag::none_znr);
+  	<< Query::NullIf<int>(AEB.ZNr(),ManuProcEintrag::none_znr)
   	<< menge;
   SQLerror::test(__FILELINE__);
 }

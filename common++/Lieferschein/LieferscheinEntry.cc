@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.19 2003/03/10 14:44:14 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.20 2003/03/20 15:32:01 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -32,10 +32,9 @@ bool LieferscheinEntry::Valid() const
 
 void LieferscheinEntry::setPalette(int p) throw(SQLerror)
 {
-  std::string Q="update lieferscheinentry set palette="+itos(p)
-                 +" where (instanz,lfrsid,zeile)=("
-                 +itos(Instanz()->Id())+","+itos(Id())+","+itos(Zeile())+")";
-  Query::Execute(Q);
+  Query("update lieferscheinentry set palette=? "
+	"where (instanz,lfrsid,zeile)=(?,?,?)")
+	<< p << *this;
   SQLerror::test(__FILELINE__);
 }
 
@@ -49,14 +48,16 @@ bool LieferscheinEntry::changeMenge(int stueck,mengen_t menge) throw(SQLerror)
 
   AuftragBase::mengen_t abmenge=Abschreibmenge(stueck,menge);
 
-//cout << "Abschreibmenge="<<abmenge<<'\n';
   if(RefAuftrag().valid()) // => Keine Zusatzinfos
    {
      AufEintragBase AEB(RefAuftrag(),AufZeile());
      try{
        AufEintrag AE(AEB);
-       if     (abmenge>AuftragBase::mengen_t(0) &&  abmenge > AE.getRestStk()) return false;
-       else if(abmenge<AuftragBase::mengen_t(0) && -abmenge > AE.getGeliefert())  return false;
+          // (intern Überlieferungen verbieten?)
+//       if (abmenge>0 && abmenge>AE.getRestStk() 
+//       		&& Instanz()!=ppsInstanzID::Kundenauftraege) 
+//       	  return false;
+       if(abmenge<0 && -abmenge>AE.getGeliefert())  return false;
        AE.Produziert(abmenge,Id());
      }catch(AufEintrag::NoAEB_Error &e){std::cerr << AEB<<" existiert nicht\n"; return false;}
    }
@@ -129,21 +130,6 @@ LieferscheinBase::mengen_t LieferscheinEntry::Abschreibmenge(int stueck,mengen_t
    if(menge!=0 || Menge()!=0) neue_menge=neue_menge*menge;
    
    return neue_menge-alte_menge;
-/*
-   int stueckdiff =   stueck - Stueck();
-   mengen_t mengediff = menge - Menge();
-//cout << stueck<<'-'<<Stueck()<<'='<<stueckdiff<<'\n';
-   if(!stueckdiff && !mengediff) return mengen_t(0); // nichts geändert
-   mengen_t abmenge;
-   if(!menge && stueckdiff)  abmenge=stueckdiff;
-   else 
-     {  
-       if      (menge==Menge())   abmenge = stueckdiff*menge;
-       else if (stueck==Stueck()) abmenge = stueck*mengediff;
-       else  abmenge = menge*mengen_t(stueck) - Menge()*mengen_t(Stueck());
-     }
-  return abmenge;
-*/
 }
 
 void LieferscheinEntry::updateZusatzEntry(const st_zusatz &Z,const AuftragBase::mengen_t &menge) throw(SQLerror)

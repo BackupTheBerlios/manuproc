@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.18 2003/01/08 09:46:57 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.19 2003/03/20 15:32:01 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,10 +21,10 @@
 #ifndef LIEFERENTRY
 #define LIEFERENTRY
 
-#include<Misc/SQLerror.h>
-#include<Artikel/ArtikelBase.h>
-#include<Auftrag/AufEintragBase.h>
-#include"LieferscheinBase.h"
+#include <Misc/SQLerror.h>
+#include <Artikel/ArtikelBase.h>
+#include <Auftrag/AufEintragBase.h>
+#include <Lieferschein/LieferscheinBase.h>
 #include <Misc/fixedpoint.h>
 #include <BaseObjects/ManuProcEintrag.h>
 
@@ -110,6 +110,7 @@ private:
  friend FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry &aeb);
 };
 
-//FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry &aeb);
+class Query;
+Query& operator<<(Query &,const LieferscheinEntryBase &aeb);
 
 #endif

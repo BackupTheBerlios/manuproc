@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.28 2003/03/19 14:12:22 jacek Exp $
+// $Id: ArtikelStamm.pgcc,v 1.29 2003/03/20 15:32:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,52 +18,52 @@
  */
 
 #include <Artikel/ArtikelStamm.h>
-//#include <Artikel/ArtikelBaum.h>
 #include <Artikel/ArtikelBezeichnung.h>
-exec sql include sqlca;
-//#include <Misc/itos.h>
 #include <Instanzen/ppsInstanz.h>
 #include <Misc/Trace.h>
-
+#include <Misc/FetchIStream.h>
 
 ArtikelStamm::cache_t ArtikelStamm::cache;
+
+FetchIStream &operator>>(FetchIStream &is, ArtikelTypID::enum_t &e)
+{  e = ArtikelTypID::enum_t(is.Fetch<int>());
+   return is;
+}
+
+FetchIStream &operator>>(FetchIStream &is, Einheit &e)
+{  e = Einheit(Einheit::ID(is.Fetch<int>()));
+   return is;
+}
 
 ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
 	: art(ab)
 {
    ManuProC::Trace _t(trace_channel, __FUNCTION__,ab.Id());  
-//std::cout << "ArtikelStamm(Id):" << ab.Id() << "\n";
    payload_t *cached(cache.lookup(ab.Id()));
    if (cached) 
    {  payload=*cached;
       return;
    }
-   int itmp=ppsInstanzID::None;
-   exec sql begin declare section;
-    int id,typ,inttyp;
-    int best_bei,defschem;
-    int best_bei_default=itmp;
-    int einheit, ieinheit;
-    int mindbestand, imindbestand;
-   exec sql end declare section;
-   id=ab.Id();
+   int ieinheit=0;
 
-//std::cout << "ArtikelStamm "<<itos(id)<<'\n';      
-   exec sql select warengruppe,coalesce(internwarengruppe,warengruppe)
-      ,coalesce(bestellen_bei,:best_bei_default),coalesce(defaultschema,1),
-      einheit, mindbestand
-   	into :typ, :inttyp, :best_bei, :defschem, :einheit :ieinheit,
-	:mindbestand:imindbestand
-   	from artikelstamm where id= :id;
-   SQLerror::test(__FILELINE__);
-   
-   payload.typ=(ArtikelTyp::ID)typ;
-   payload.interntyp=(ArtikelTyp::ID)inttyp;
-   payload.bestellen_bei=cH_ppsInstanz(ppsInstanz::ID(best_bei));
-   payload.defaultschema=defschem;
-   payload.mindbest=imindbestand==0 ? mindbestand : NO_CHECK;
-   if (!ieinheit) payload.einh=Einheit::ID(einheit);
-   else
+   Query q("select warengruppe,coalesce(internwarengruppe,warengruppe),"
+	"bestellen_bei,defaultschema,einheit"
+#ifdef MABELLA_EXTENSIONS	
+	",mindbestand"
+#endif
+	" from artikelstamm where id=?");
+   q << ab.Id();
+   FetchIStream is=q.FetchOne();
+   is >> payload.typ >> payload.interntyp
+      >> FetchIStream::MapNull<cH_ppsInstanz>(payload.bestellen_bei,ppsInstanzID::None)
+      >> FetchIStream::MapNull<ExtBezSchema_ID>(payload.defaultschema,1)
+      >> FetchIStream::WithIndicator<Einheit>(payload.einh,ieinheit)
+#ifdef MABELLA_EXTENSIONS
+      >> FetchIStream::MapNull<int>(payload.mindbest,NO_CHECK)
+#endif
+      ;
+      
+   if (ieinheit) 
    {  payload.einh=EinheitID::St_;
 
 #if defined(PETIG_EXTENSIONS) && defined(MANUPROC_DYNAMICENUMS_CREATED)
@@ -98,19 +98,11 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
 
 void ArtikelStamm::set_BestellenBei(const ArtikelBase &artikel,const ppsInstanz::ID instanz)
 {
-  exec sql begin declare section;
-   int ID=artikel.Id();
-   int BESTELLEN_BEI=instanz;
-   int IBESTELLEN_BEI=0;
-  exec sql end declare section;
-
-  if(instanz==ppsInstanzID::None)
-    IBESTELLEN_BEI=-1;
-
-  exec sql update artikelstamm set stand=now(),
-	bestellen_bei=:BESTELLEN_BEI:IBESTELLEN_BEI
-      where id =:ID 
-      and (bestellen_bei!=:BESTELLEN_BEI or bestellen_bei is null);
+  Query("update artikelstamm set stand=now(),bestellen_bei=? "
+  	"where id=? and (bestellen_bei!=? or bestellen_bei is null)").lvalue()
+  	<< Query::NullIf<ppsInstanz::ID>(instanz,ppsInstanzID::None)
+  	<< artikel.Id() 
+  	<< instanz;
   SQLerror::test(__FILELINE__,100);
 
   // Und nun noch raus aus dem Cache
@@ -119,12 +111,11 @@ void ArtikelStamm::set_BestellenBei(const ArtikelBase &artikel,const ppsInstanz:
 
 void ArtikelStamm::setEinheit(const ArtikelBase &artikel,const Einheit e)
 {
-  exec sql begin declare section;
-   int ID=artikel.Id();
-   int EINHEIT=e.Id();
-  exec sql end declare section;
-  exec sql update artikelstamm set stand=now(),einheit=:EINHEIT
-      where id =:ID and (einheit!=:EINHEIT or einheit is null);
+  Query("update artikelstamm set stand=now(),einheit=? "
+  	"where id=? and (einheit!=? or einheit is null)").lvalue()
+  	<< e.Id()
+  	<< artikel.Id() 
+  	<< e.Id();
   SQLerror::test(__FILELINE__,100);
 
   // Und nun noch raus aus dem Cache
@@ -133,44 +124,23 @@ void ArtikelStamm::setEinheit(const ArtikelBase &artikel,const Einheit e)
 
 
 void ArtikelStamm::setAktive(const ArtikelBase &artikel, bool ak) throw(SQLerror)
-{
- exec sql begin declare section;
- int ARTID=artikel.Id();
- bool AKTIV=ak;
- exec sql end declare section;
-
- exec sql update artikelstamm set aktiv=:AKTIV where id=:ARTID;
- SQLerror::test(__FILELINE__);
+{ Query("update artikelstamm set stand=now(),aktiv=? where id=?").lvalue()
+  	<< ak << artikel.Id();
+  SQLerror::test(__FILELINE__,100);
 
   cache.deregister(artikel.Id());
 }
 
 bool ArtikelStamm::getAktive() const throw(SQLerror)
-{
- exec sql begin declare section;
- int ARTID=art.Id();
- bool AKTIV;
- exec sql end declare section;
-
- exec sql select aktiv into :AKTIV from  artikelstamm where id=:ARTID;
- SQLerror::test(__FILELINE__);
- return AKTIV;
+{  return (Query("select aktiv from artikelstamm where id=?") << art.Id())
+	.FetchOne<bool>();
 }
 
 
 void ArtikelStamm::setMindBest(int mb) throw(SQLerror)
-{
- exec sql begin declare section;
- int ARTID=art.Id();
- int MINDBEST=mb;
- int IMINDBEST=0;
- exec sql end declare section;
-
- if(mb==NO_CHECK) IMINDBEST=-1;
- 
- exec sql update artikelstamm set mindbestand=:MINDBEST:IMINDBEST
-	where id=:ARTID;
- SQLerror::test(__FILELINE__);
+{ Query("update artikelstamm set stand=now(),mindbestand=? where id=?").lvalue()
+  	<< Query::NullIf<int>(mb,NO_CHECK) << art.Id();
+  SQLerror::test(__FILELINE__,100);
 
  cache.deregister(art.Id());
 }
@@ -178,3 +148,5 @@ void ArtikelStamm::setMindBest(int mb) throw(SQLerror)
 
 const UniqueValue::value_t ArtikelStamm::trace_channel
       = ManuProC::Tracer::channels.get();
+
+const int ArtikelStamm::NO_CHECK;

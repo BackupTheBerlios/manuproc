@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum_new_del.cc,v 1.3 2003/02/12 13:54:32 christof Exp $
+// $Id: ArtikelBaum_new_del.cc,v 1.4 2003/03/20 15:32:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, 
  *  written by Malte Thoma and Christof Petig
@@ -24,7 +24,6 @@
 #include <Auftrag/AuftragsBaum.h>
 #include <Auftrag/AufEintragZu.h>
 #include <Misc/Transaction.h>
-#include <Misc/FetchIStream_fixedpoint.h>
 
 void ArtikelBaum::new_Artikel(int uid,ArtikelBase fuer_artikel,const RohArtikel& RA)
 {assert(RA.rohartikel.Id()!=0);

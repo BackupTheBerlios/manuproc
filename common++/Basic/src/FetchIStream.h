@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.22 2003/01/29 13:56:00 christof Exp $
+// $Id: FetchIStream.h,v 1.23 2003/03/20 15:32:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -91,6 +91,12 @@ public:
 	   }
 	   else *this >> mn.var;
 	   return *this;
+	}
+	template <class T>
+	 T Fetch()
+	{  T res;
+	   *this >> res;
+	   return res;
 	}
 	
 	void ThrowIfNotEmpty(const char *where);

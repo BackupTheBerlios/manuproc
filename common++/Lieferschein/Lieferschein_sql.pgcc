@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.29 2003/03/10 14:44:14 christof Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.30 2003/03/20 15:32:01 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -83,13 +83,8 @@ try{
 
 void Lieferschein::setDPDDatum() const throw(SQLerror)
 {
- exec sql begin declare section;
- int INSTANZ=Instanz()->Id();
- int LFRSID=Id();
- exec sql end declare section;
-
- exec sql update lieferschein set geliefertam=now()
- 	where (instanz,lfrsid) = (:INSTANZ,:LFRSID) ;
+ Query("update lieferschein set geliefertam=now() "
+ 	"where (instanz,lfrsid)=(?,?)") << Instanz()->Id() << Id();
  SQLerror::test(__FILELINE__);
 }
 
