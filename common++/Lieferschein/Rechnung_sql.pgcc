@@ -274,7 +274,7 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
  }
 #endif 
 
- Query("exec sql update lieferschein set rngid=? "
+ Query("update lieferschein set rngid=? "
  	"where (instanz,lfrsid)=(?,?)")
  	<< Id()
  	<< lfrs.Instanz()->Id() << lfrs.Id();
