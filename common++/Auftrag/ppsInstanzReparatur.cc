@@ -637,7 +637,12 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
    if (ae.Instanz()!=ppsInstanzID::Kundenauftraege 
    	&& !in(ae.Instanz(),ppsInstanz::getBestellInstanz(as),
    			ppsInstanz::getProduktionsInstanz(as))
-   	&& !ppsInstanz::getBestellInstanz(as)->PlanungsInstanz())
+   	&& !ppsInstanz::getBestellInstanz(as)->PlanungsInstanz()
+   	// falsche Artikel im Lager zulassen (wenn extern verwaltet)
+   	&& !(ae.Instanz()->LagerInstanz() 
+   		&& ae.Id()==AuftragBase::dispo_auftrag_id 
+   		&& ae.Instanz()->EigeneLagerKlasseImplementiert()
+   		&& !!ae.getRestStk()))
    {  analyse("Artikel auf falscher Instanz",ae,cH_ArtikelBezeichnung(ae.Artikel())->Bezeichnung(),itos(ae.Artikel().Id()));
      loeschen: 
       alles_ok=false;
