@@ -390,6 +390,7 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
 
 #ifdef MABELLA_EXTENSIONS // auf keinen Fall Preis=0.0 akzeptieren
  if(!(WPreis->get_Preis()!=Preis(0.0,WPreis->get_Preis().getWaehrung())) )
+  if(ArtikelTyp(artikelbox->get_value())==ArtikelTypID::aufgemachtes_Band)
    {meldung->Show("Preis 0,00 ist nicht erlaubt");
     return;
    }
