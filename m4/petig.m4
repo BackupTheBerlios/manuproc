@@ -1,4 +1,4 @@
-dnl $Id: petig.m4,v 1.72 2004/04/29 16:27:08 christof Exp $
+dnl $Id: petig.m4,v 1.73 2004/05/17 13:07:59 christof Exp $
 
 dnl Configure paths for some libraries
 dnl derived from kde's acinclude.m4
@@ -396,7 +396,7 @@ then
 	COMMONXX_LIBS="$COMMONXX_LIBS $ECPG_LIBS"
 else
 	AC_MSG_RESULT("SQLite") 
-	COMMONXX_LDFLAGS="$COMMONXX_LDFLAGS -lqlite"
+	COMMONXX_LDFLAGS="$COMMONXX_LDFLAGS -lsqlite"
 fi
 
 ])
