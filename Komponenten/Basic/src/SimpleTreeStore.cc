@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.4 2002/11/22 14:28:20 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.5 2002/11/26 08:04:21 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -141,6 +141,7 @@ SimpleTreeStore::ModelColumns::ModelColumns(int _cols)
 //      assert(c.index()==i);
    }
    add(row);
+   add(node_val);
 }
 
 // CellItem ^= TreeRow
@@ -194,9 +195,10 @@ void SimpleTreeStore::redisplay()
  reorder();
 #endif
 }
+#endif
 
 void TreeBase::on_line_appended(cH_RowDataBase row)
-{  insertLine((TCListRow_API*)this,*this,row,currseq,0);
+{  insertLine(get_iter("0"),row,currseq,0);
 // Summen neu anzeigen (hmmm, overkill!)
 #if 0
  for(TCListRow_API::iterator i = begin(); i!=end(); ++i)
@@ -206,32 +208,35 @@ void TreeBase::on_line_appended(cH_RowDataBase row)
 #endif
 }
 
-#if 0
-bool operator < (const TCListRow_API &a, const cH_EntryValue &b)
+bool operator < (const TreeStore::iterator &a, const cH_EntryValue &b)
 {  return *(reinterpret_cast<TreeRow*>(a.get_user_data())->Value()) < *b;
 }
 
-bool operator < (const cH_EntryValue &a, const TCListRow_API &b)
+bool operator < (const cH_EntryValue &a, const TreeStore::iterator &b)
 {  return *a < *(reinterpret_cast<TreeRow*>(b.get_user_data())->Value());
 }
-#endif
 
 //#define DEBUG_NEW
 
-void TreeBase::insertIntoTCL(TCListRow_API *parent, const TreeBase &tree,
+// these macros are a lot faster than x.size() because that needs a division
+#define KeinKind(x) ((x).begin()==(x).end())
+#define NurEinKind(x) ((x).begin()!=(x).end() && ++((x).begin()) == (x).end())
+#define MehrAlsEinKind(x) ((x).begin()!=(x).end() && ++((x).begin()) != (x).end())
+
+void TreeBase::insertLine(TreeStore::iterator &parent,
             const cH_RowDataBase &v, std::deque<guint> selseq, guint deep)
 {
 recurse:
- TCListRow_API::iterator current_iter=parent->begin();
- TCListRow_API::iterator apiend = parent->end();
- TCListRow_API::iterator upper_b=apiend;
+ TreeStore::iterator current_iter=parent->begin();
+ TreeStore::iterator apiend = parent->end();
+ TreeStore::iterator upper_b=apiend;
  guint seqnr=selseq.front();	
  cH_EntryValue ev=v->Value(seqnr,ValueData());
 
 // node/leaf mit Wert<=ev suchen
 // optimization: we expect to need upper_bound if this is the last attribute
  if (!MehrAlsEinKind(selseq))
- {  std::pair<TCListRow_API::iterator,TCListRow_API::iterator> range 
+ {  std::pair<TreeStore::iterator,TreeStore::iterator> range 
  		= std::equal_range(current_iter,apiend,ev);
     current_iter=range.first;	// lower_bound
     upper_b=range.second;	// upper_bound

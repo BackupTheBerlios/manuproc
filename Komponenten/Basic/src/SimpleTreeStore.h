@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.5 2002/11/22 14:28:20 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.6 2002/11/26 08:04:21 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -82,6 +82,7 @@ public:
 	struct ModelColumns : public Gtk::TreeModelColumnRecord
 	{  std::vector<Gtk::TreeModelColumn<Glib::ustring> > cols;
 	   Gtk::TreeModelColumn<cH_RowDataBase> row;
+	   Gtk::TreeModelColumn<cH_EntryValue> node_val;
 	   // TreeRow tr;
 	   
 	   ModelColumns(int cols);
