@@ -15,6 +15,9 @@
 #include "kunden_selector.hh"
 #include <SearchComboContent.h>
 #include "yes_no_dialog.hh"
+#include "mpc_export.hh"
+
+mpc_agent *mpca;
 
 int main(int argc, char **argv)
 {  
@@ -27,25 +30,22 @@ int main(int argc, char **argv)
    ManuProC::Connection conn;
    Gtk::Main m(&argc, &argv);
 
-   mpc_agent *mpc;
 
    try {
 
       conn.setDbase("mpc.data");
       ManuProC::dbconnect(conn);  
 
-      mpc=new mpc_agent();
+      mpca=manage(new mpc_agent());
 
       m.run();
 
       Petig::dbdisconnect();
    } catch (SQLerror &e)
    {  std::cerr << e << '\n';
-      free(mpc);
       return 1;
    }
 
-   free(mpc);
    return 0;
 }
 
@@ -425,5 +425,14 @@ void mpc_agent::on_order_leaf_selected(cH_RowDataBase leaf)
 void mpc_agent::on_order_leaf_unselected()
 {  
  artikel_del->set_sensitive(false);
+}
+
+void mpc_agent::on_senden_clicked()
+{
+ if(orderid->sensitive()) return; //nix selectiert
+ mpc_export mpx;
+ mpx.set_transient_for(*this);
+ int ret;
+ ret=mpx.run();
 }
 

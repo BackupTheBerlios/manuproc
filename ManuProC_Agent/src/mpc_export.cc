@@ -9,34 +9,40 @@
 #include "mpc_export.hh"
 #include <gtkmm/fileselection.h>
 #include <MyMessage.h>
-#include <WinFileReq.hh>
+//#include <WinFileReq.hh>
 #include <gtkmm/entry.h>
+#include "mpc_export.hh"
+#include "mpc_agent.hh"
+
+
+extern mpc_agent *mpca;
+
+void mpc_export::set_entry_text(const std::string &s)
+{
+export_file_name->set_text(s);
+}
 
 void mpc_export::on_file_select_clicked()
 {  
-// Gtk::FileSelection fs;
-// int ret;
-// fs.set_transient_for(*this);
+ Gtk::FileSelection fs(export_file_name->get_text());
+ int ret;
+ fs.set_transient_for(*this);
 
-// ret=fs.run();
-// fs.get_filename();
+ ret=fs.run();
+ std::cout << "ret:" << ret << "\n";
+ if(ret==Gtk::RESPONSE_OK)
+   export_file_name->set_text(fs.get_filename());
 
-  	SigC::Slot1<void,const std::string &> s(*export_file_name,&Gtk::Entry::set_text);
-
- WinFileReq(
-	s,
- 	"",
- 	"",
- 	"",
- 	"Export to file",
- 	false,
- 	*this);
 }
 
 void mpc_export::on_do_file_export_clicked()
-{  
+{
+ mpca->export_xml(export_file_name->get_text());
+ export_close->activate(); 
 }
 
 void mpc_export::on_do_file_send_clicked()
 {  
+ export_close->activate(); 
 }
+

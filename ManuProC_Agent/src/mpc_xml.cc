@@ -8,6 +8,7 @@
 
 void mpc_agent::on_senden_clicked()
 {
+ if(orderid->sensitive()) return; //nix selectiert
  mpc_export mpx;
  mpx.set_transient_for(*this);
  int ret;
@@ -15,11 +16,9 @@ void mpc_agent::on_senden_clicked()
 
 }
 
-/*
- std::string file="/dev/stdout";
- if(orderid->sensitive()) return; //nix selectiert
+void mpc_agent::export_xml(const std::string file)
+{
  std::string ord_id=itos(orderid->get_value());
-
 
  TagStream ts;
  ts.setEncoding("ISO-8859-1");
@@ -58,4 +57,4 @@ void mpc_agent::on_senden_clicked()
 
 }
 
-*/
+

@@ -59,8 +59,11 @@ class mpc_agent : public mpc_agent_glade
 	int create_new_order(int kdnr);
 	void artikel_clean();
 
+
 public:
  mpc_agent();
+ void export_xml(const std::string file);
+
 
 };
 #endif
