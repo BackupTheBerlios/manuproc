@@ -19,7 +19,7 @@ void windowTop::saveKundenKontakt()
      std::string s=textPersonenFirmaNotiz->get_chars(0,textPersonenFirmaNotiz->get_length());
      Kunde::st_ansprech P;
      if(!get_selected_person(P)) return;
-     Kunde::st_ansprech A(P.Person->Id(),entryPersonenPosition->get_text(),s);
+     Kunde::st_ansprech A(P.Person,entryPersonenPosition->get_text(),s);
      kundendaten->updateKontaktperson(A);
      // Jetzt noch die gespeicherte Struktur ändern
      Kunde::st_ansprech &B=*(static_cast<Kunde::st_ansprech*>(clistPersonenListe->selection().begin()->get_data()));
@@ -27,7 +27,7 @@ void windowTop::saveKundenKontakt()
      B.notiz=s;
      Gtk::CList::SelectionList::iterator b = clistPersonenListe->selection().begin();
      Gtk::CList::SelectionList::iterator e = clistPersonenListe->selection().end();
-     if(b==e) assert(!"Kann nicht sein");
+     if(b==e) assert(!"Interner Fehler: bitte beim Support melden");
 #warning nach dem Editieren wird in der clist die Position noch nicht richtig gesetzt
 //     b[2];
 //     Gtk::CList::Row *row;
@@ -49,14 +49,15 @@ void windowTop::show_kontaktpersonen()
    // Personen
 
    clistPersonenListe->clear();
-   textPersonenNotiz->delete_text(0,textPersonenNotiz->get_length());
+//   textPersonenNotiz->delete_text(0,textPersonenNotiz->get_length());
    textPersonenFirmaNotiz->delete_text(0,textPersonenFirmaNotiz->get_length());
    Gtk::OStream os(clistPersonenListe);
 
    AnsprechPersonen=kundendaten->getPersonen();
    for (std::vector<Kunde::st_ansprech>::iterator i=AnsprechPersonen.begin();i!=AnsprechPersonen.end();++i)
       {
-         os <<i->Person->Name()<<"\t"<<i->Person->Vorname()<<"\t"
+       cH_Kunde p(i->Person);
+         os <<p->getName()<<"\t"<<p->getName2()<<"\t"
             <<i->position<<"\n";
          os.flush(gpointer(&*i));
       }
@@ -83,7 +84,7 @@ void windowTop::on_KontaktPersonTelefon_activate(cH_Telefon ct)
   Kunde::st_ansprech P;
   if(!get_selected_person(P)) return;
   try{
-  KontaktPersonenTel->showTel(P.Person->getTelefon(kundendaten->Id(),true));
+  KontaktPersonenTel->showTel(kundendaten->getTelefon(P.Person));
   
   }catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e);}
 }
@@ -93,17 +94,17 @@ void windowTop::on_clistPersonenListe_select_row(gint row, gint column, GdkEvent
 {
   Kunde::st_ansprech P;
   if(!get_selected_person(P)) return;
-  KontaktPersonenBox->set_value(P.Person->Id());
+  KontaktPersonenBox->set_value(P.Person);
   entryPersonenPosition->set_text(P.position);
-  KontaktPersonenTel->showTel(P.Person->getTelefon(kundendaten->Id()));
+  KontaktPersonenTel->showTel(kundendaten->getTelefon(P.Person));
   zeige_notiz(P);
   button_kontakt_loeschen->set_sensitive(true);
-  KontaktPersonenTel->setKdPer(kundendaten->Id(),P.Person->Id());
+  KontaktPersonenTel->setKdPer(kundendaten->Id(),P.Person);
 }
 
 void windowTop::on_clistPersonenListe_unselect_row(gint row, gint column, GdkEvent *event)
 {
-   textPersonenNotiz->delete_text(0,textPersonenNotiz->get_length());
+//   textPersonenNotiz->delete_text(0,textPersonenNotiz->get_length());
    textPersonenFirmaNotiz->delete_text(0,textPersonenFirmaNotiz->get_length());
    button_kontakt_loeschen->set_sensitive(false);
 }
@@ -111,16 +112,16 @@ void windowTop::on_clistPersonenListe_unselect_row(gint row, gint column, GdkEve
 void windowTop::zeige_notiz(Kunde::st_ansprech &P)
 {
   std::string N=P.notiz;
-  textPersonenNotiz->delete_text(0,textPersonenNotiz->get_length());
+//  textPersonenNotiz->delete_text(0,textPersonenNotiz->get_length());
   textPersonenFirmaNotiz->delete_text(0,textPersonenFirmaNotiz->get_length());
-  gint pos=0,pos2=0;
-  textPersonenNotiz->insert_text(P.Person->Notiz().c_str(), P.Person->Notiz().size(),&pos);
+  gint pos2=0;
+//  textPersonenNotiz->insert_text(P.Person->Notiz().c_str(), P.Person->Notiz().size(),&pos);
   textPersonenFirmaNotiz->insert_text(N.c_str(), N.size(),&pos2);
 }
 
 void windowTop::on_button_kontakt_loeschen_clicked()
 {
- cH_Person P=KontaktPersonenBox->get_value();
+ cH_Kunde P=KontaktPersonenBox->get_value();
  Kunde::deleteKontaktperson(kundendaten,P); 
  show_kontaktpersonen();
 }

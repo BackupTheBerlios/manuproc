@@ -55,7 +55,7 @@ void windowTop::kunden_activate()
    assert(UpdateBank==0);
    assert(UpdateSonst==0);
 //   assert(UpdatePerson==0);
-   if(UpdatePerson!=0) std::cout << UpdatePerson<<'\n';
+//   if(UpdatePerson!=0) std::cout << UpdatePerson<<'\n';
 //   clear_update_bits();
 
    kundendaten=H_Kunde(kundenauswahl->get_value());
@@ -66,7 +66,7 @@ void windowTop::kunden_activate()
 
 
    show_kundendaten();
-   KundenTelefon->setKdPer(kundendaten->Id(),Person::none_id);
+   KundenTelefon->setKdPer(kundendaten->Id(),Kunde::none_id);
    notebook_main->set_page(PAGE_KUNDE);
 }
 

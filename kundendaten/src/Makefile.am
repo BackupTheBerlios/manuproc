@@ -25,9 +25,9 @@ kundendaten_SOURCES = \
 	dialogError.cc \
    windowTop_Details.cc \
    windowTop_Kontaktperson.cc \
-   windowTop_Person.cc \
    windowTop_kunde.cc \
    windowTop_Gruppen.cc
+#   windowTop_Person.cc \   
 
 
 noinst_HEADERS = \

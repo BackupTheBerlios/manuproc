@@ -16,13 +16,13 @@ class windowTop : public windowTop_glade
 {   
        H_Kunde kundendaten;
        std::vector<Kunde::st_ansprech> AnsprechPersonen;
-       cH_Person person;        
+       cH_Kunde person;        
 
         Transaction transaction; // Für die SearchCombos
         friend class windowTop_glade;
         enum enum_notebook{PAGE_KUNDE,PAGE_DETAILS,PAGE_ZAHLUNG,
 			PAGE_KONTAKTPERSON,
-			PAGE_PERSON, PAGE_NOTIZEN, PAGE_GRUPPEN};
+			PAGE_NOTIZEN, PAGE_GRUPPEN};
         enum enum_zahl_verfahren{PAGE_DTAUS,PAGE_RIBA,PAGE_LCR};
         void on_notebook1_switch_page(Gtk::Notebook_Helpers::Page* page,guint pagenr);
         void on_gruppenwahl_activate();
@@ -31,7 +31,7 @@ class windowTop : public windowTop_glade
         Kunde::UpdateBitsFirma UpdateFirma;
         Kunde::UpdateBitsBank UpdateBank;
         Kunde::UpdateBitsSonst UpdateSonst;
-        Person::UpdateBits UpdatePerson;
+//        Person::UpdateBits UpdatePerson;
 
 //        list<PreisListe::ID> sonder_preis_liste;
 
@@ -51,9 +51,9 @@ class windowTop : public windowTop_glade
         gint focus_outFktF(GdkEventFocus *ev,Kunde::UpdateBitsFirma e);
         gint focus_outFktB(GdkEventFocus *ev,Kunde::UpdateBitsBank e);
         gint focus_outFktS(GdkEventFocus *ev,Kunde::UpdateBitsSonst e);
-        void changedFktP(Person::UpdateBits e);
-        void activateFktP(Person::UpdateBits e);
-        gint focus_outFktP(GdkEventFocus *ev,Person::UpdateBits e);
+//        void changedFktP(Person::UpdateBits e);
+//        void activateFktP(Person::UpdateBits e);
+//        gint focus_outFktP(GdkEventFocus *ev,Person::UpdateBits e);
 
         void on_landesbox_activate();
         void on_entry_blz_activate();
@@ -73,6 +73,7 @@ class windowTop : public windowTop_glade
         void clear_entrys();
         void on_gruppe_in_clicked();
         void on_gruppe_out_clicked();
+        void on_entryPersonenPosition_activate();
 
      void kunden_activate();
      void on_kunden_reset();
@@ -161,12 +162,14 @@ class windowTop : public windowTop_glade
         void update_person();
         void clear_PersonenEntrys();
 
+/* faellt alles weg, da Personen über die Hauptmaske bearbeitet werden
         //Neue Personen
         void show_neue_personen_daten(cH_Person &P);
         void on_entryPersonenDatenName_activate();
         void on_entryPersonenDatenVorname_activate();
         void geburtstag_activate();
         void on_comboentryPersonenDatenAnrede_activate();
+*/
 
 	void load_notizen();
 

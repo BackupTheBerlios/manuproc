@@ -31,7 +31,7 @@ void windowTop::on_notebook1_switch_page(Gtk::Notebook_Helpers::Page* page,guint
                                    table_kontaktperson->set_sensitive(false);
                                 else show_kontaktpersonen(); 
                                 break; 
-     case PAGE_PERSON         : show_privatpersonen(); break; 
+//     case PAGE_PERSON         : show_privatpersonen(); break; 
      case PAGE_NOTIZEN		: 
      	try { load_notizen(); }
         catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e);}
@@ -44,13 +44,14 @@ void windowTop::on_notebook1_switch_page(Gtk::Notebook_Helpers::Page* page,guint
 }
 
 windowTop::windowTop()
-: kundendaten(Kunde::none_id),person(Person::none_id),
+: kundendaten(Kunde::none_id),person(Kunde::none_id),
    transaction("",false), 
    UpdateAdresse(Kunde::UpdateBitsAdresse(0)),
    UpdateFirma(Kunde::UpdateBitsFirma(0)), 
    UpdateBank(Kunde::UpdateBitsBank(0)), 
-   UpdateSonst(Kunde::UpdateBitsSonst(0)), 
-   UpdatePerson(Person::UpdateBits(0)), fire_enabled(true),
+   UpdateSonst(Kunde::UpdateBitsSonst(0)),
+// UpdatePerson(Person::UpdateBits(0)), 
+   fire_enabled(true),
    allgrp(NULL),wahlgrp(NULL),bankid(0)
 {
  clear_entrys();
@@ -73,7 +74,9 @@ windowTop::windowTop()
 
   betreuer->setExpandStr1(true);
   betreuer->setExpandStr2(true); 
-
+#ifdef MABELLA_EXTENSIONS  
+  betreuer->set_gruppe(KundengruppeID::Personen);
+#endif
 
  scc_verkaeufer->reset();
 #ifdef MABELLA_EXTENSIONS 
@@ -92,7 +95,7 @@ void windowTop::saveAll()
    if(UpdateFirma!=0) kundendaten->update_e(UpdateFirma);
    if(UpdateBank!=0) kundendaten->update_e(UpdateBank);
    if(UpdateSonst!=0) kundendaten->update_e(UpdateSonst);
-   if (UpdatePerson!=0) update_person();
+//   if (UpdatePerson!=0) update_person();
    
    clear_update_bits();
    
@@ -104,7 +107,7 @@ void windowTop::clear_update_bits()
    UpdateFirma=Kunde::UpdateBitsFirma(0);
    UpdateBank=Kunde::UpdateBitsBank(0);
    UpdateSonst=Kunde::UpdateBitsSonst(0);
-   UpdatePerson=Person::UpdateBits(0);
+//   UpdatePerson=Person::UpdateBits(0);
 }
 
 gint windowTop::on_delete_event(GdkEventAny*)
@@ -543,5 +546,9 @@ void windowTop::on_ab_an_rngadresse_toggled()
 void windowTop::scc_verkaeufer_reset()
 {  
 
+}
+
+void windowTop::on_entryPersonenPosition_activate()
+{  
 }
 

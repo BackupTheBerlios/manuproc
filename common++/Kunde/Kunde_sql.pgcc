@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.65 2004/10/11 16:44:10 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.66 2004/10/11 16:53:10 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -367,7 +367,7 @@ std::vector<Kunde::st_ansprech> Kunde::getPersonen() const
   std::string QU=" SELECT a.persnr,coalesce(a._position,''),coalesce(a.notiz,'') FROM "
          "kunden p, ku_ansprech a"
          " WHERE p.kundennr=a.persnr and a.kundennr ="+
-         itos(Id())+" ORDER BY name";
+         itos(Id())+" ORDER BY name2";
 
   QUERY=(char*)QU.c_str();
 

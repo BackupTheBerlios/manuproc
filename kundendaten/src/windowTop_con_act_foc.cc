@@ -382,6 +382,7 @@ void windowTop::connectFkt()
   /////////////////////////////////////////////////////////////////////////
   // Person
   ////////////////////////////////////////////////////////////////////////
+/*
   entryPersonenDatenName->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktP),Person::FName));
   entryPersonenDatenName->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktP),Person::FName));
   entryPersonenDatenName->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktP),Person::FName));
@@ -394,7 +395,7 @@ void windowTop::connectFkt()
   textPersonenPrivatNotiz->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktP),Person::FNotiz));
   textPersonenPrivatNotiz->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktP),Person::FNotiz));
   textPersonenPrivatNotiz->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktP),Person::FNotiz));
-
+*/
 
 
 }
@@ -403,6 +404,7 @@ void windowTop::connectFkt()
 // Person
 ///////////////////////////////////////////////////////////////////////////
 
+/*
 void windowTop::changedFktP(Person::UpdateBits e)
 {
   if(!fire_enabled) return;
@@ -417,6 +419,7 @@ void windowTop::changedFktP(Person::UpdateBits e)
     update_person();
 }
 
+
 void windowTop::activateFktP(Person::UpdateBits e)
 {
      if      (e==Person::FName    ) entryPersonenDatenVorname->grab_focus();
@@ -427,12 +430,15 @@ void windowTop::activateFktP(Person::UpdateBits e)
      else std::cerr<< "Falsche Funktion konektiert\n";
 }
 
+
 gint windowTop::focus_outFktP(GdkEventFocus *ev,Person::UpdateBits e)
 {
   update_person();
   return 0;
 }
+*/
 
+/*
 void windowTop::update_person()
 {
   try{
@@ -441,5 +447,5 @@ void windowTop::update_person()
    if(kundendaten->Id()!=Kunde::none_id) show_kontaktpersonen();
   }catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e);}
 }
-
+*/
 
