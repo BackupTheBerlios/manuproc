@@ -29,6 +29,17 @@ exec sql include sqlca;
 #include <Misc/relops.h>
 #include <Misc/Trace.h>
 
+std::string RohwarenLager::st_rohlager::Menge_als_Text() const
+{  std::string s;
+   if (kartons) s+=itos(kartons)+" Kartons à " + itos(kg_pro_karton)+ "kg ";
+   if (reste||reste_kg) s+=itos(reste) +" Reste="+ itos(reste_kg) + "kg";
+   if (s.empty()) s="(keine Menge)";
+   return s;
+}
+
+AuftragBase::mengen_t RohwarenLager::st_rohlager::Menge_fuer_Auftrag() const
+{  return kartons*kg_pro_karton  + reste_kg;
+}
 
 bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,const int uid,std::string &os,bool force,bool ist_leer)
 {
@@ -49,39 +60,43 @@ bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,const int uid,std::string 
   SQLerror::test(__FILELINE__,100);
   if (sqlca.sqlcode==100) // nichts drin
    {
-     os+="           an Position " +rohlager.position.SPosition()+" steht nichts";
+     os+="An Position " +rohlager.position.SPosition()+" steht nichts mehr.";
      return false;
    }
 
   st_rohlager was_ist_drin = RL_Inhalt(rohlager.position);
+  
   if(!force)
    {
      if(was_ist_drin.artikel!=rohlager.artikel)
       {
-        os+="  an Position "+rohlager.position.SPosition()+" befindet sich"
+        os+="Auf "+rohlager.position.SPosition()+" steht "
            +cH_ArtikelBezeichnung(was_ist_drin.artikel)->Bezeichnung() 
-           +" vom "+was_ist_drin.datum.c_str()+" ("+itos(was_ist_drin.kartons)+"K.à "
-            + itos(was_ist_drin.kg_pro_karton)+ "kg " +itos(was_ist_drin.reste) +"R.="
-            + itos(was_ist_drin.reste_kg) + "kg)\n";
+           +" vom "+was_ist_drin.datum.c_str()
+           +" ("+was_ist_drin.Menge_als_Text()+")\n";
         return false;
       }
-     if(ist_leer && (was_ist_drin.kartons!=rohlager.kartons ||
+     if (ist_leer && (was_ist_drin.kartons!=rohlager.kartons ||
                      was_ist_drin.reste!=rohlager.reste ||
                       was_ist_drin.reste_kg!=rohlager.reste_kg))
-       {
-         os+="Warnung: Laut Daten müßten sich dort ("+rohlager.position.SPosition()
-            +") noch "+itos(was_ist_drin.kartons)+"Kartons, (a "+itos(was_ist_drin.kg_pro_karton)+"kg) und " 
-            +itos(was_ist_drin.reste)+" Reste("+itos(was_ist_drin.reste_kg) + "kg)\n";
-       }
+     {
+         os+="Info: Auf " + rohlager.position.SPosition()
+            +" standen noch "+was_ist_drin.Menge_als_Text()+'\n';
+     }
      else if(!ist_leer && (was_ist_drin.kartons<rohlager.kartons ||
                      was_ist_drin.reste<rohlager.reste ||
                       was_ist_drin.reste_kg<rohlager.reste_kg))
-       {
-         os+="Warnung: Laut Daten befinden sich dort ("+rohlager.position.SPosition()
-            +") nur "+itos(was_ist_drin.kartons)+"Kartons, (a "+itos(was_ist_drin.kg_pro_karton)+"kg) und "
-            +itos(was_ist_drin.reste)+" Reste("+itos(was_ist_drin.reste_kg) + "kg)\n";
-       }
+     {  os+="Info: Auf "+rohlager.position.SPosition()
+            +" standen nur noch "+was_ist_drin.Menge_als_Text() + '\n';
+     }
     }
+   else // force
+       {
+         os+="Info: Auf "+rohlager.position.SPosition() + " stand "
+           +cH_ArtikelBezeichnung(was_ist_drin.artikel)->Bezeichnung() 
+           +" vom "+was_ist_drin.datum.c_str()
+           +" ("+was_ist_drin.Menge_als_Text()+")\n";
+       }
 
   std::string misc;
   if(ist_leer || force)
@@ -90,26 +105,30 @@ bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,const int uid,std::string 
       SQLerror::test(__FILELINE__);                  
       if(force) misc="lösc";
       else misc="leer";
+      rohlager=was_ist_drin;
     }  
   else 
     {
+      rohlager.kg_pro_karton=was_ist_drin.kg_pro_karton;
       KARTONS=was_ist_drin.kartons-rohlager.kartons;
-      if (KARTONS<0) KARTONS=0;
+      if (KARTONS<0) 
+      { KARTONS=0; rohlager.kartons=was_ist_drin.kartons; }
       RESTE=was_ist_drin.reste-rohlager.reste;
-      if (RESTE<0) RESTE=0;
+      if (RESTE<0) 
+      { RESTE=0; rohlager.reste=was_ist_drin.reste; }
       RESTE_KG=was_ist_drin.reste_kg-rohlager.reste_kg; ;   
-      if (RESTE_KG<0) RESTE_KG=0;
+      if (RESTE_KG<0) 
+      { RESTE_KG=0; rohlager.reste_kg=was_ist_drin.reste_kg; }
 
-       exec sql update rl_inhalt set kartons= :KARTONS, reste= :RESTE,
+      exec sql update rl_inhalt set kartons= :KARTONS, reste= :RESTE,
           rest_kg=:RESTE_KG, letzte_entnahme= :DATUM 
           where position_= :POSITION;
        SQLerror::test(__FILELINE__);                  
     }
-   rohlager.kg_pro_karton=was_ist_drin.kg_pro_karton;
 
-#warning Christof, bist Du sicher, daß 'force' mit 'was_ist_drin' und nicht mit 'rohlager' gekoppelt werden muß?
-   if (force) RL_Log(was_ist_drin,RLEntnehmen,uid,misc);
-   else       RL_Log(rohlager,RLEntnehmen,uid,misc);
+   raus_aus_lager(rohlager.artikel,rohlager.Menge_fuer_Auftrag(),uid);
+   RL_Log(rohlager,RLEntnehmen,uid,misc);
+
    tr.commit();
    return true;
 }
@@ -144,6 +163,7 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
         values (:POSITION, :KARTONS, :MATERIAL, :KG_PER_KARTON,
               nullif(:RESTE,0), nullif(:RESTE_KG,0), :DATUM);
       SQLerror::test(__FILELINE__);
+      rein_ins_lager(rohlager.artikel,rohlager.Menge_fuer_Auftrag(),uid);
       RL_Log(rohlager,RLEinlagern,uid);
       tr.commit();
       return true;
@@ -152,13 +172,16 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
    {
      st_rohlager was_ist_drin = RL_Inhalt(rohlager.position);
      if(force) // überschreiben, ohne Rücksicht auf Material
-      {
+      { RL_Entnahme(was_ist_drin,uid,os,true,true);
+        if (!os.empty()) os+='\n';
+        tr.close();
+        tr.open(); // neue Transaktion beginnen
         exec sql update rl_inhalt set 
            kartons=:KARTONS, material=:MATERIAL, 
            kg_per_karton=:KG_PER_KARTON, reste=nullif(:RESTE,0), 
            rest_kg=nullif(:RESTE_KG,0), eingelagert=:DATUM where position_=:POSITION;
         SQLerror::test(__FILELINE__);
-        RL_Log(was_ist_drin,RLEntnehmen,uid,"lösc");
+        rein_ins_lager(rohlager.artikel,rohlager.Menge_fuer_Auftrag(),uid);
         RL_Log(rohlager,RLEinlagern,uid);
         tr.commit();
         return true;
@@ -183,6 +206,7 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
                        reste=nullif(:RESTE,0), rest_kg=nullif(:RESTE_KG,0),
                         eingelagert=:DATUM where position_=:POSITION;
               SQLerror::test(__FILELINE__);
+              rein_ins_lager(rohlager.artikel,rohlager.Menge_fuer_Auftrag(),uid);
               RL_Log(rohlager,RLEinlagern,uid);
               tr.commit();
               return true;
@@ -212,13 +236,6 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
 
 void RohwarenLager::RL_Log(const st_rohlager& rohlager,RL_LogTyp typ,const int uid,const std::string& misc)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
-  ///////////////////////////////////////////////////////////////
-  AuftragBase::mengen_t menge = rohlager.kartons*rohlager.kg_pro_karton 
-                                    + rohlager.reste_kg;
-  auftragsentry_verwaltung(typ,rohlager.artikel,menge,uid);
-
-
   exec sql begin declare section;
    int KARTONS=rohlager.kartons;
    int KG_PER_KARTON=rohlager.kg_pro_karton;
@@ -234,23 +251,12 @@ void RohwarenLager::RL_Log(const st_rohlager& rohlager,RL_LogTyp typ,const int u
   strncpy0(MISC,misc.c_str(),sizeof(MISC));
 
   rohlager.datum.write_postgres(DATUM,sizeof DATUM);
-  if(typ==RLEinlagern)
-   {
-    exec sql insert into rl_log 
+  exec sql insert into rl_log 
        (zeit,position_, kartons, MATERIAL, KG_PER_KARTON, typ, valuta, reste, rest_kg,misc)
        values (now(),:POSITION,:KARTONS,:MATERIAL,:KG_PER_KARTON,:TYP,:DATUM,
             :RESTE,:RESTE_KG,nullif(:MISC,''));
-   }
-  else if(typ==RLEntnehmen)
-   {
-    exec sql insert into rl_log 
-       (zeit,position_, kartons, MATERIAL, KG_PER_KARTON, typ, valuta, reste, rest_kg,misc)
-       values (now()-timespan('1 sec'),:POSITION,:KARTONS,:MATERIAL,
-            :KG_PER_KARTON,:TYP,:DATUM,:RESTE,:RESTE_KG,nullif(:MISC,''));
-   }
-  else assert(!"RohwarenLager::RL_Log: Falscher Typ\n");
   SQLerror::test(__FILELINE__);
- }
+}
 
 
 RohwarenLager::st_rohlager RohwarenLager::RL_Inhalt(const LagerPlatz position) const

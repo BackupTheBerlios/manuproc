@@ -1,4 +1,4 @@
-/* $Id: RohwarenLager.h,v 1.7 2002/11/27 08:52:06 thoma Exp $ */
+/* $Id: RohwarenLager.h,v 1.8 2002/11/27 13:26:51 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -21,21 +21,30 @@
 #define _ROHWARENLAGER_HH_
 
 #include "Lager.h"
+#include <Auftrag/AuftragBase.h>
 
 class RohwarenLager : public LagerBase
 {
    public:
       enum RL_LogTyp { RLNone, RLEntnehmen='E', RLEinlagern='L' };
-      struct st_rohlager{LagerPlatz position;int kartons;int kg_pro_karton;
-            int reste;int reste_kg; ArtikelBase artikel; ManuProC::Datum datum;
+      struct st_rohlager
+      {     LagerPlatz position;
+	    int kartons;
+	    int kg_pro_karton;
+            int reste;
+            int reste_kg; 
+            ArtikelBase artikel; 
+            ManuProC::Datum datum;
+            
            st_rohlager( LagerPlatz p,int k,int kpk,int r,int rkg, 
                         ArtikelBase a, ManuProC::Datum d)
             : position(p),kartons(k),kg_pro_karton(kpk),reste(r),
                reste_kg(rkg),artikel(a),datum(d) {}
-             void setPosition(const LagerPlatz p) {position=p;}
-             bool empty() 
-               {if (kartons==0 && reste==0) return true;
-                else return false;} };       
+           void setPosition(const LagerPlatz p) {position=p;}
+           bool empty() const { return kartons==0 && reste==0; }
+           std::string Menge_als_Text() const;
+           AuftragBase::mengen_t Menge_fuer_Auftrag() const;
+      };       
 
    private:
 

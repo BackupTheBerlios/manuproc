@@ -11,8 +11,7 @@
   104 | A      | TEST |        713
   105 | B      | TEST |          0
   105 | 2      | TEST |          0
-  105 | 2      | TEST |          0
   106 | A      | TEST |        712
   106 | 1      | TEST |        713
-(14 rows)
+(13 rows)
 

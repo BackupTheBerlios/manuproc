@@ -1,4 +1,4 @@
-/* $Id: JumboLager.h,v 1.7 2002/11/27 08:52:06 thoma Exp $ */
+/* $Id: JumboLager.h,v 1.8 2002/11/27 13:26:51 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -38,7 +38,6 @@ class JumboLager : public LagerBase
       static const float reste_faktor = 0.3;
 
       void Jumbo_Log(const JumboRolle& jumbo,Jumbo_LogTyp typ,const int uid,const std::string& user,const Zeitpunkt_new *zeit);
-      void auftragsentry_verwaltung(const Jumbo_LogTyp typ,const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const;
       virtual std::vector<class LagerInhalt> LagerInhalt_(const ArtikelBase& artikel=ArtikelBase()) const;
 
   public:

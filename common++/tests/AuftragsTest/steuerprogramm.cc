@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.cc,v 1.22 2002/11/27 12:35:52 thoma Exp $
+// $Id: steuerprogramm.cc,v 1.23 2002/11/27 13:26:51 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -732,20 +732,20 @@ cout << dummystring<<'\n';
        		zp0b("2002-3-1 11:02");
        JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0);
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp1);
-       JR=JumboRolle::create(KK);
+       JR=JumboRolle::create(KK); // 102
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0);
        JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp1);
        erfolgreich=C.teste(Check::Jumbo_richtig,mit_reparatur_programm);
-       JR=JumboRolle::create(KK);
+       JR=JumboRolle::create(KK); // 103
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp1);
        JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0);
-       JR=JumboRolle::create(KK);
+       JR=JumboRolle::create(KK); // 104
        JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp1);
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0);
        erfolgreich=C.teste(Check::Jumbo_falsch,mit_reparatur_programm);
-       JR=JumboRolle::create(KK);
+       JR=JumboRolle::create(KK); // 105
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0);
-       try
+       try // kein Log Eintrag ist richtig
        {JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0b);
         assert(!"Jumbo_Entnahme sollte 100 werfen");
        }catch (SQLerror &e)
