@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.15 2002/12/05 17:51:35 christof Exp $
+// $Id: SimpleTree.cc,v 1.16 2002/12/19 07:42:45 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -95,3 +95,18 @@ cH_RowDataBase SimpleTree::getSelectedRowDataBase() const
    }
    else throw noRowSelected(); // oder multipleRowsSelected()
 }
+
+void SimpleTree::Expand_recursively()
+{
+#warning 2do expand
+}
+
+std::vector<cH_RowDataBase> SimpleTree::getSelectedRowDataBase_vec() const
+{  std::vector<cH_RowDataBase> result;
+   try {
+#warning 2do multiple rows
+      result.push_back(getSelectedRowDataBase());
+   } catch (...) {}
+   return result;
+}
+

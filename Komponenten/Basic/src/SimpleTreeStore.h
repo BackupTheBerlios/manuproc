@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.29 2002/12/18 17:41:24 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.30 2002/12/19 07:42:45 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -165,8 +165,6 @@ public:
 	{  return m_refTreeStore->children().end();
 	}
 
-	void set_tree_column_visibility(unsigned int column,bool visible);
-	
 	void setSequence(const sequence_t &seq);
 	
 	unsigned ColumnFromIndex(unsigned) const;
@@ -175,6 +173,7 @@ public:
 	
 	bool ColumnVisible(unsigned idx) const
 	{  return vec_hide_cols.at(idx); }
+	void set_tree_column_visibility(unsigned index,bool visible);
 
 	static const unsigned invisible_column=unsigned(-1);
 	
