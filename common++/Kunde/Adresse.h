@@ -1,4 +1,4 @@
-/* $Id: Adresse.h,v 1.8 2003/03/25 10:38:12 jacek Exp $ */
+/* $Id: Adresse.h,v 1.9 2003/06/25 12:40:04 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -62,7 +62,7 @@ class Adresse
 //   int getPlz() const { return PLZ;}
    int putIntoNLines(char **buf,int num,int len,bool TeX=false) const throw();
    Adresse(int kdnr) throw(SQLerror);
-   int Kundennr() const throw();
+   int Kundennr() const throw() {return kundennr;}
    void mark_Lieferanschrift() throw() { lieferadresse=true; }
 };
 
