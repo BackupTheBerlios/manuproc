@@ -317,7 +317,7 @@ cout << '\n';
 	 
 	 if (current_tclr->Leaf()) newnode->cumulate(v2);
 	 current_tclr->getTCL_API()->reparent(*parent,*newnode->getTCL_API());
-cout << child_s_deep << ':' << selseq.front() << '\n';
+//cout << child_s_deep << ':' << selseq.front() << '\n';
 	 current_tclr->ValueDeep(v2->Value(selseq.front(),ValueData()),child_s_deep);
 
 	 // das neue Blatt einsortieren

@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistrowdata.cc,v 1.4 2001/11/05 08:57:31 christof Exp $
+// $Id: tclistrowdata.cc,v 1.5 2001/11/05 09:38:53 christof Exp $
 
 #include <tclistrowdata.h>
 #include <treebase.h>
@@ -76,15 +76,16 @@ void TCListRowData::refreshSum(const TreeBase &tb)
 
 const std::vector<std::string> TCListRowData::getColEntries(const TreeBase &tb) const
 {std::vector<std::string> v(tb.Cols());
+ std::deque<guint> order=tb.get_seq();
 
  v[deep]=value->getStrVal();
  
  if (Leaf())
     for(guint i=deep+1;i<(guint)tb.Cols();++i)
-        v[i]=LeafData()->Value(i,tb.ValueData())->getStrVal();
+        v[i]=LeafData()->Value(order[i],tb.ValueData())->getStrVal();
  else
     for(guint i=deep+1;i<(guint)Children_s_Deep();++i)
-        v[i]=LeafData()->Value(i,tb.ValueData())->getStrVal();
+        v[i]=LeafData()->Value(order[i],tb.ValueData())->getStrVal();
  return v;
 }
 
