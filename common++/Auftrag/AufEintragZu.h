@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.6 2002/07/05 12:35:01 christof Exp $
+// $Id: AufEintragZu.h,v 1.7 2002/07/15 15:37:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -54,6 +54,10 @@ public:
     // Eine Benachbarte Liste von (Kind-)aufträgen aber nur ungeplante(0er) Aufträge:
     std::list<st_reflist> get_Referenz_list_ungeplant(bool kinder=true) const throw(SQLerror)
       {return get_Referenz_list_id(AuftragBase::ungeplante_id,kinder);}
+
+    // Eine Benachbarte Liste von (Kind-)aufträgen aber nur dispo(2er) Aufträge:
+    std::list<st_reflist> get_Referenz_list_dispo(bool kinder=true) const throw(SQLerror)
+      {return get_Referenz_list_id(AuftragBase::dispo_auftrag_id,kinder);}
 
     // Eine Benachbarte Liste von (Kind-)aufträgen aber nur geplante(1er) Aufträge:
     std::list<st_reflist> get_Referenz_list_geplant(bool kinder=true) const throw(SQLerror);

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.h,v 1.32 2002/06/27 07:42:50 christof Exp $
+// $Id: AufEintragBase.h,v 1.33 2002/07/15 15:37:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -84,7 +84,7 @@ public:
                          ArtikelBase artikel,AufStatVal status,
                          int uid,bool dispoplanung);
 
-void move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,ArtikelBase artikel,int uid);
+ void move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,ArtikelBase artikel,int uid,bool produziert);
 
 
  bool operator<(const AufEintragBase& b) const 

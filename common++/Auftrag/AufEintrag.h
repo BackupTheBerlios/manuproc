@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.11 2002/06/27 07:42:50 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.12 2002/07/15 15:37:52 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -43,6 +43,8 @@ class cH_Lieferschein;
 
 class AufEintrag : public AufEintragBase
 {
+ friend class Lager_Vormerkungen;
+
  public:
   enum e_problems{Geplant,Geplant_nolager,Lager,Geliefert,GeliefertFatal};
   struct st_problems{e_problems art; AufEintragBase AEB; mengen_t menge_input;
@@ -121,12 +123,11 @@ public:
 
 	
  void updateDispoENr(int dinr) throw(SQLerror);
- mengen_t updateStkDiff__(int uid,mengen_t menge,bool instanzen /*=true*/,
-           void (*callback)(void *,st_problems)=0,void* argument=0) throw(SQLerror);
- void move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,bool reduce_old) throw(std::exception);
-// void updateStk(mengen_t stk,bool instanz) throw(SQLerror);
+ mengen_t updateStkDiff__(int uid,mengen_t menge,bool instanzen,bool produziert
+          /* void (*callback)(void *,st_problems)=0,void* argument=0*/) throw(SQLerror);
 private:
- void updateStkDiffInstanz__(int uid,mengen_t menge,void (*callback)(void *,st_problems),void* argument) throw(SQLerror);
+ void move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,bool reduce_old) throw(std::exception);
+ void updateStkDiffInstanz__(int uid,mengen_t menge,bool produziert/*void (*callback)(void *,st_problems),void* argument*/) throw(SQLerror);
 public:
  void updateLieferdatum(const ManuProC::Datum &ld,int uid) throw(SQLerror);	
  void updateLieferdatum(const Kalenderwoche &K,int uid) {updateLieferdatum(ManuProC::Datum(K),uid);}	

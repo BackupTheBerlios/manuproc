@@ -45,3 +45,6 @@ psql testdb -q < $P/$i
 done
 
 ../../Programme/Instanzen testdb
+
+#psql testdb -c "vacuum analyze"
+

@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.cc,v 1.9 2002/07/05 12:35:02 christof Exp $
+// $Id: steuerprogramm.cc,v 1.10 2002/07/15 15:37:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -71,7 +71,7 @@ void auftragstests(e_mode mode)
       C.teste(Check::Menge_MinusMinus);
       cout << "Reduzieren der Auftragmenge unter Bandlagerbestand beendet\n\n";
 
-      AE.setStatus(CLOSED,UID);
+      AufEintrag(AEB).setStatus(CLOSED,UID);
       C.teste(Check::StatusClosed);
       cout << "Statussänderung (Closed) beendet\n\n";
 
@@ -87,7 +87,6 @@ void auftragstests(e_mode mode)
        C.teste(Check::Planen_Kupfer);
        cout << "Planen des Kupfereinkaufs beendet\n\n";
        }
-
        {
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Faerberei),Kunde::default_id);
        int faerberei_znr=1;
@@ -113,7 +112,7 @@ void auftragstests(e_mode mode)
       AE.split(UID,300,SPLITDATUM);
       C.teste(Check::Split);
       cout << "Splitten einer Auftragszeile beendet\n\n";
-/*
+
       H_Lager RL((cH_ppsInstanz(ppsInstanzID::Rohwarenlager)));
       RL->rein_ins_lager(ARTIKEL_KUPFER,100,UID);
       C.teste(Check::Split_Rohwarenlager_einlagern);
@@ -122,7 +121,7 @@ void auftragstests(e_mode mode)
       RL->raus_aus_lager(ARTIKEL_KUPFER,100,UID);
       C.teste(Check::Split_Rohwarenlager_auslagern);
       cout << "Rohwarenlager auslagern\n";
-*/
+
       break;
      }
     case Lagertest :
@@ -148,11 +147,15 @@ void auftragstests(e_mode mode)
       BL->rein_ins_lager(ARTIKEL_BANDLAGER,12000,UID);
       C.teste(Check::Bandlager_einlagern);
       cout << "Bandlager einlagern\n";
-/*
-      AEB.abschreiben(300);
+
+      AufEintrag(AEB).abschreiben(300);
       C.teste(Check::Kunden_Teillieferung);
-      cout << "Bandlager einlagern\n";
-*/      
+      cout << "Kunde Teillieferung\n";
+
+      AufEintrag(AEB).abschreiben(120);
+      C.teste(Check::Kunden_Ueberlieferung);
+      cout << "Kunde Überlieferung\n";
+
       break;
      }
     case ZweiAuftraege:
@@ -177,6 +180,25 @@ void auftragstests(e_mode mode)
        AufEintragBase AEB=auftrag.anlegen3();
        C.teste(Check::ZweiterAuftrag_frueheresDatum);
        cout << "Anlegen eines zweiten (offenen) Auftrags ["<<AEB<<"] mit früherem Liefertermin beendet\n\n";
+
+       AufEintrag(AEB).abschreiben(200);
+       C.teste(Check::ZweiterAuftrag_frueheresDatum_abschreiben);
+       cout << "Teil-Abschreiben des zweiten Auftrags ["<<AEB<<"] beendet\n\n";
+
+       AufEintrag(AEB).setStatus(CLOSED,UID);
+       C.teste(Check::ZweiterAuftrag_frueheresDatum_closed);
+       cout << "Statussänderung (Closed) beendet\n\n";
+
+
+      Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Weberei),Kunde::default_id);
+      int weberei_znr=1;
+      AufEintrag AEP(AufEintragBase(ppsInstanzID::Weberei,AuftragBase::ungeplante_id,weberei_znr));
+      assert(AEP.getStueck()==AEP.getRestStk());
+      AEP.Planen(UID,7000,true,PA,PLANDATUM5);
+      C.teste(Check::Planen_WebereiD);
+      cout << "Planen der Weberei beendet\n\n";
+
+       
       break;
      }    
     case JumboLager:

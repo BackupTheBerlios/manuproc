@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.cc,v 1.9 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: Ausgabe_neu.cc,v 1.10 2002/07/15 15:37:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -175,3 +175,4 @@ template<> const std::string FormatiereTeX_Preis<3>(const fixedpoint<3> &Zahl)
 template<> const std::string FormatiereTeX_Preis<2>(const fixedpoint<2> &Zahl)
 {  return FormatiereTeX(Zahl);
 }
+

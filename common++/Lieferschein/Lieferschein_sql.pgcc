@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.14 2002/07/05 12:35:01 christof Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.15 2002/07/15 15:37:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -184,7 +184,7 @@ const ManuProC::Datum Lieferschein::getMaxZahlziel() const throw(SQLerror)
 {
  exec sql begin declare section;
  int LFRSID=Id();
- char *DATUM;
+ char *DATUM=0;
  int IDATUM;
  int INSTANZ=Instanz();
  exec sql end declare section;
@@ -195,7 +195,13 @@ const ManuProC::Datum Lieferschein::getMaxZahlziel() const throw(SQLerror)
    	(e.instanz,e.lfrsid)=(:INSTANZ,:LFRSID);
  SQLerror::test(__FILELINE__);
 
- return (IDATUM==0 ? ManuProC::Datum(DATUM) : ManuProC::Datum());
+
+ ManuProC::Datum d;
+ if(IDATUM==0)
+   d = ManuProC::Datum(DATUM);
+
+ ECPGfree_auto_mem();
+ return d;
 }
 #endif
 

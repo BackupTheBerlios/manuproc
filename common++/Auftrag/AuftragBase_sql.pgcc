@@ -239,7 +239,8 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
  exec sql lock table auftragentry in exclusive mode;
  SQLerror::test(__FILELINE__);  
  AuftragBase::mengen_t lagermenge=Lager_Vormerkungen::artikel_auf_lager(artikel,instanz,lieferdatum,AuftragBase::dispo_auftrag_id);
-//cout << Instanz()->Name()<<"   Lagermenge = "<<lagermenge<<'\n';
+// AuftragBase::mengen_t lagermenge2=Lager_Vormerkungen::artikel_auf_lager(artikel,instanz,lieferdatum,AuftragBase::PlanId_for(instanz),false);
+//cout << Instanz()->Name()<<"   Lagermenge = "<<lagermenge<<' '<<lagermenge2<<'\n';
  mengen_t auftragbestellmenge;
  if(lagermenge>=bestellt) {auftragbestellmenge = 0; lagermenge=bestellt;}
  else                      auftragbestellmenge = bestellt-lagermenge;
@@ -264,6 +265,8 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
   if(!dispoplanung)
    {    
      AufEintragZu(altAEB).Neu(AufEintragBase(*this,znr),bestellt);
+//cout << AufEintragBase(*this,znr)<<'\t'<<altemenge<<'+'<<auftragbestellmenge<<'\t'
+//<<bestellt<<' '<<lagermenge<<'\n';
      Lager_Vormerkungen(class AufEintrag(Instanz()->Id(),Id(),znr,
             altemenge+auftragbestellmenge,artikel,lieferdatum,status)).
             vormerken_oder_bestellen(uid,lagermenge,bestellt);

@@ -1,4 +1,4 @@
-// $Id: Check.hh,v 1.7 2002/07/05 12:35:02 christof Exp $
+// $Id: Check.hh,v 1.8 2002/07/15 15:37:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -41,9 +41,11 @@ class Check
                  Rohwarenlager_auslagern,Bandlager_auslagern,
                  Planen_Kupfer,Planen_WebereiL,Planen_WebereiP,Planen_Faerberei_teil,Planen_Faerberei,
                  Split,Split_Rohwarenlager_einlagern,Split_Rohwarenlager_auslagern,
-                 Planen_Faerberei_ueber,ZweiAuftraege_anlegen,ZweiterAuftrag_frueheresDatum,
+                 Planen_Faerberei_ueber,ZweiAuftraege_anlegen,
+                 ZweiterAuftrag_frueheresDatum,ZweiterAuftrag_frueheresDatum_abschreiben,
+                 ZweiterAuftrag_frueheresDatum_closed,Planen_WebereiD,
                  Jumbo_richtig,Jumbo_falsch,Jumbo_doppelt,
-                 Kunden_Teillieferung};
+                 Kunden_Teillieferung,Kunden_Ueberlieferung};
  private:
    void dump(e_check);
    void vergleich(e_check);

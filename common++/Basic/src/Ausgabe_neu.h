@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.h,v 1.13 2002/06/24 07:35:40 christof Exp $ */
+/* $Id: Ausgabe_neu.h,v 1.14 2002/07/15 15:37:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -102,5 +102,6 @@ template <int decimals,class Ftype,class Itype>
 
 template <int decimals,class Ftype,class Itype>
  const std::string FormatiereTeX_Preis(const fixedpoint<decimals,Ftype,Itype> &Zahl);
+
 
 #endif

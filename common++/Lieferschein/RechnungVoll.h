@@ -54,6 +54,8 @@ public:
  iterator end()  { return rentry.end();}   
  size_t size() const { return rentry.size();}
 
+ void convert_to_gutschrift();
+
 #ifdef MABELLA_EXTENSIONS
  void setGewicht() const throw(SQLerror);
  fixedpoint<1> const NettoGew() const {return netto_gewicht;}

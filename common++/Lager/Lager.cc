@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.10 2002/07/05 12:35:01 christof Exp $
+// $Id: Lager.cc,v 1.11 2002/07/15 15:37:53 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -61,7 +61,7 @@ void Lager::rein_ins_lager(ArtikelBase artikel,AuftragBase::mengen_t menge,int u
   try{
      Transaction tr;
      dispo_auftrag_aendern(artikel,menge);
-     Lager_Vormerkungen::freigegeben_menge_neu_verplanen(instanz,artikel,menge,uid);
+     Lager_Vormerkungen::freigegeben_menge_neu_verplanen(instanz,artikel,menge,uid,true);
      cH_ppsInstanz I(instanz);
      Produziert(I->LagerFuer(),artikel,menge,uid).NichtSelbst();
      tr.commit();

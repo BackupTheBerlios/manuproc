@@ -58,6 +58,7 @@ libcommon___a_LIBADD= \
 		Aux/dbconnect.o \
 		Aux/exception.o \
 		Aux/itos.o \
+		Aux/mystring.o \
 		Aux/postgres_conversion.o \
 		Aux/string0.o \
 		Bank/Bankauftrag.o \

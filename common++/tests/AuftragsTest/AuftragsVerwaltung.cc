@@ -1,4 +1,4 @@
-// $Id: AuftragsVerwaltung.cc,v 1.2 2002/07/05 12:35:02 christof Exp $
+// $Id: AuftragsVerwaltung.cc,v 1.3 2002/07/15 15:37:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -29,6 +29,7 @@
 
 void Problems(void *,AufEintrag::st_problems e)
 {
+assert(!"never get here\n");
   switch (e.art) {
      case AufEintrag::Geplant :
         cout << "WARNUNG: es werden "<<e.menge_input<<" in Auftrag "<<e.AEB
@@ -73,7 +74,6 @@ void AuftragsVerwaltung::kunden_bestellmenge_aendern(AufEintragBase aeb,AuftragB
 {
    AufEintrag AE(aeb);
    AuftragBase::mengen_t diffmenge=menge-AE.getStueck();
-//TESTEN, es darf NICHT kompilieren   AufEintrag(aeb).updateStkDiff__(diffmenge,true,&Problems);
    AufEintrag(aeb).updateStkDiff__(UID,diffmenge,true,&Problems);
 }
 

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.25 2002/07/05 12:35:01 christof Exp $
+// $Id: AufEintragBase.cc,v 1.26 2002/07/15 15:37:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -135,7 +135,7 @@ int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
 #include <Lager/Lager.h>
 #include <Lager/Lager_Vormerkungen.h>
 
-void AufEintragBase::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,ArtikelBase artikel,int uid)
+void AufEintragBase::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,ArtikelBase artikel,int uid,bool produziert)
 {
  std::list<AufEintragZu::st_reflist> K=AufEintragZu(*this).get_Referenz_list(*this,true);
  for (std::list<AufEintragZu::st_reflist>::const_iterator i=K.begin();i!=K.end();++i)
@@ -154,7 +154,7 @@ void AufEintragBase::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,Artik
 
       H_Lager L(Instanz());
       L->dispo_auftrag_aendern(artikel,M);
-      Lager_Vormerkungen::freigegeben_menge_neu_verplanen(Instanz(),artikel,M,uid);
+      Lager_Vormerkungen::freigegeben_menge_neu_verplanen(Instanz(),artikel,M,uid,produziert);
 
       assert(mt==mengen_t(-M));
      }

@@ -1,7 +1,6 @@
-// $Id: Lager_Vormerkungen.cc,v 1.49 2002/07/04 10:34:49 cvs_christof Exp $
-/*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
- *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
+// $Id: Lager_Vormerkungen.cc,v 1.52 2002/07/11 07:07:40 malte Exp $
+/*  libcommonc++: ManuProC's main OO library Copyright (C) 2002 Adolf Petig
+ *  GmbH & Co. KG written by Jacek Jakubowski, Christof Petig, Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -42,13 +41,13 @@ void Lager_Vormerkungen::vormerken_oder_bestellen(int uid,
       AuftragBase::mengen_t vormerkmenge,
       AuftragBase::mengen_t bestellmenge)
 {
+//cout << "Vormerken: "<<*this<<'\n';
+//cout <<"\tMenge zum VORMERKEN="<<vormerkmenge<<'\n';
+//cout <<"\tMenge zum BESTELLEN="<<bestellmenge<<'\n';
   assert(vormerkmenge<=bestellmenge);
   std::vector<pair<AufEintragBase,AuftragBase::mengen_t> >  dispo_auftrag; 
 //  AuftragBase::mengen_t menge_im_lager=artikel_auf_lager(dispo_auftrag);
 
-//cout << "Vormerken: "<<*this<<'\n';
-//cout <<"\tMenge zum VORMERKEN="<<vormerkmenge<<'\n';
-//cout <<"\tMenge zum BESTELLEN="<<bestellmenge<<'\n';
   if(vormerkmenge>mengen_t(0))
      artikel_vormerken_oder_schnappen(false,vormerkmenge,Artikel(),uid,dispo_auftrag,false);      
   bestellmenge-=vormerkmenge;
@@ -79,7 +78,7 @@ void Lager_Vormerkungen::vormerken_oder_bestellen(int uid,
     }
   else
     {
-     InstanzAuftraegeAnlegen(Artikel(),ZNr(),getLieferdatum(),getEntryStatus(),uid,bestellmenge);
+      InstanzAuftraegeAnlegen(Artikel(),ZNr(),getLieferdatum(),getEntryStatus(),uid,bestellmenge);
     }
  return ;
 }
@@ -113,8 +112,6 @@ void Lager_Vormerkungen::artikel_vormerken_oder_schnappen(bool schnappen,Auftrag
 //cout << i->first<<'\t'<<AufEintrag(i->first).getStueck()<<' '
 //<<AufEintrag(i->first).getRestStk()<<'\n';
      AuftragBase::mengen_t mt=i->first.updateStkDiffBase__(uid,-use_menge);
-//cout << i->first<<'\t'<<AufEintrag(i->first).getStueck()<<' '
-//<<AufEintrag(i->first).getRestStk()<<'\n';
      assert(mt==-use_menge);
 
      if(schnappen)
@@ -135,7 +132,7 @@ void Lager_Vormerkungen::artikel_vormerken_oder_schnappen(bool schnappen,Auftrag
   if(Instanz()->LagerInstanz()) // neuen 1er anlegen
    {
      if(schnappen) assert(reduce_old);
-//cout << "PP1\t"<<*this<<'\t'<<getRestStk()<<' '<<menge<<'\n';
+//cout << "PP1\t"<<*this<<'\t'<<getRestStk()<<' '<<menge<<'\t'<<'\n';
      Planen(uid,menge,reduce_old,AuftragBase(Instanz()->Id(),AuftragBase::plan_auftrag_id),
             getLieferdatum()); 
 //cout << "PP2\t"<<*this<<'\t'<<getRestStk()<<' '<<menge<<'\n';
@@ -154,7 +151,7 @@ void Lager_Vormerkungen::reduce_old_plan_auftrag(int uid,AufEintragBase aeb,meng
       if(j->Menge >= M) m=M;
       else              m=j->Menge;
       AufEintragZu(j->AEB).setMengeDiff__(aeb,-m);
-      AufEintrag(j->AEB).updateStkDiff__(uid,m,true);
+      AufEintrag(j->AEB).updateStkDiff__(uid,m,true,true);
       M-=m;
       if(M==AuftragBase::mengen_t(0)) break;
     }         
@@ -177,7 +174,7 @@ int ProdLager::Lieferzeit_in_Tagen()
 
 
 void Lager_Vormerkungen::freigegeben_menge_neu_verplanen(cH_ppsInstanz instanz,
-               const ArtikelBase& artikel,AuftragBase::mengen_t menge,int uid)
+               const ArtikelBase& artikel,AuftragBase::mengen_t menge,int uid,bool produziert)
 {
 //cout << "Lager für Artikel: "<<cH_ArtikelBezeichnung(artikel)->Bezeichnung()
 //<<"\tMenge: "<<menge<<'\n';
@@ -187,25 +184,18 @@ void Lager_Vormerkungen::freigegeben_menge_neu_verplanen(cH_ppsInstanz instanz,
 
   SQLFullAuftragSelector sel(SQLFullAuftragSelector::sel_Artikel_Planung_id(instanz->Id(),artikel,AuftragBase::ungeplante_id));
   SelectedFullAufList auftraglist=SelectedFullAufList(sel);
-  for (SelectedFullAufList::const_iterator i=auftraglist.begin();i!=auftraglist.end();++i)
+  for (SelectedFullAufList::iterator i=auftraglist.begin();i!=auftraglist.end();++i)
    {
      AuftragBase::mengen_t fehlende_menge = i->getRestStk();
      if(fehlende_menge==AuftragBase::mengen_t(0)) continue;
-     if(fehlende_menge>=menge)
-      {
-//cout <<" Freigegeben und KOMPLETT neu vorgemerkt für: "<<AufEintragBase(*i)<<' '<<fehlende_menge<<' '<< menge <<'\n';;
-        std::vector<pair<AufEintragBase,AuftragBase::mengen_t> > dummy;
-        Lager_Vormerkungen(*i).artikel_vormerken_oder_schnappen(false,menge,i->Artikel(),uid,dummy,true);
-        return;
-      }
-     else
-      {
-//cout <<" Freigegeben und TEILWEISE neu vorgemerkt für: "<<AufEintragBase(*i)<<' '<< menge << ' '<<fehlende_menge <<'\n';;
-        std::vector<pair<AufEintragBase,AuftragBase::mengen_t> > dummy;
-        Lager_Vormerkungen(*i).artikel_vormerken_oder_schnappen(false,fehlende_menge,i->Artikel(),uid,dummy,true);
-        menge-=fehlende_menge;
-      }
-     assert(menge>=AuftragBase::mengen_t(0));
+     AuftragBase::mengen_t M;
+
+     if(fehlende_menge>=menge) M=menge;
+     else M=fehlende_menge;
+     menge-=M;
+     std::vector<pair<AufEintragBase,AuftragBase::mengen_t> > dummy;
+     Lager_Vormerkungen(*i).artikel_vormerken_oder_schnappen(false,M,i->Artikel(),uid,dummy,true);
+     if(!produziert) i->updateStkDiffInstanz__(uid,-M,produziert/*,0,0*/);
      if(menge==AuftragBase::mengen_t(0)) return;
    }
 //if(auftraglist.empty()) cout << "Kein Auftrag zum neuverplanen\n";
@@ -237,15 +227,14 @@ AuftragBase::mengen_t  Lager_Vormerkungen::artikel_auf_lager(const ArtikelBase &
   for (SelectedFullAufList::const_iterator j=auftraglist.begin();j!=auftraglist.end();++j)
    {
      // Nur wenn die freie Menge VOR dem Liefertermin frei wird
-//cout << "Sel: "<<j->Instanz()->Name()<<'\t'<<j->getLieferdatum() <<">="
-//<<datum<<'\t';
+//cout << "Sel: "<<j->Id()<<' '<<j->Instanz()->Name()<<'\t'<<j->getLieferdatum() <<">="
+//<<datum<<'\t'<<j->getRestStk()<<'\n';
 
      if(j->Id()==AuftragBase::dispo_auftrag_id)
       { assert(j->getRestStk()==j->getStueck());
-        if(j->getLieferdatum() >= datum) continue;  }
-     else if(j->Id()==AuftragBase::plan_auftrag_id)
+        if(j->getLieferdatum() > datum) continue;  }
+     else 
       { if(j->getLieferdatum() <= datum) continue; }
-     else assert(!"Never get here");
 
      menge+=j->getRestStk();        
      V_dispo_auftrag.push_back(pair<AufEintragBase,AuftragBase::mengen_t>(*j,j->getRestStk()));
@@ -268,6 +257,27 @@ void Lager_Vormerkungen::move_menge_from_dispo_to_plan(int uid,AufEintragBase di
      assert(//i->AEB.Id()!=AuftragBase::ungeplante_id &&
             i->AEB.Id()!=AuftragBase::dispo_auftrag_id &&
             i->AEB.Id()!=AuftragBase::plan_auftrag_id);
+//cout << "\t"<<*this<<'\t'<<i->AEB<<'\t'<<menge<<'\n';
+     AufEintragZu(*this).Neu(i->AEB,menge); // Neu macht auch update
+     AufEintragZu(dispo_aeb).Neu(i->AEB,-menge); // Neu macht auch update
+   }
+return;
+}
+
+void Lager_Vormerkungen::move_menge_from_dispo_to_plan2(int uid,AufEintragBase dispo_aeb,mengen_t menge)
+{
+  assert(Id()==AuftragBase::ungeplante_id);
+  AufEintrag dae(dispo_aeb);
+  std::list<AufEintragZu::st_reflist> K=AufEintragZu(dispo_aeb).get_Referenz_list(dispo_aeb,true);
+//cout << "Move to dispo "<<*this<<'\t'<<menge<<'\t'<<dispo_aeb<<'\n';
+//  assert(K.size()==1);
+  for(std::list<AufEintragZu::st_reflist>::const_iterator i=K.begin();i!=K.end();++i)
+   {
+/*
+     assert(//i->AEB.Id()!=AuftragBase::ungeplante_id &&
+            i->AEB.Id()!=AuftragBase::dispo_auftrag_id &&
+            i->AEB.Id()!=AuftragBase::plan_auftrag_id);
+*/
 //cout << "\t"<<*this<<'\t'<<i->AEB<<'\t'<<menge<<'\n';
      AufEintragZu(*this).Neu(i->AEB,menge); // Neu macht auch update
      AufEintragZu(dispo_aeb).Neu(i->AEB,-menge); // Neu macht auch update

@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.19 2002/07/05 12:35:01 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.20 2002/07/15 15:37:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -37,6 +37,8 @@
 #include <Artikel/ArtikelStamm.h>
 #include <Auftrag/Auftrag.h>
 #include <algorithm>
+#include <unistd.h>
+#include <Instanzen/Produziert.h>
 
 exec sql include sqlca;
 
@@ -64,12 +66,6 @@ void AufEintrag::abschreiben(mengen_t menge,
  if(GELIEFERT>=getStueck()) STATUS=(AufStatVal)CLOSED;
  else if(menge<0 && GELIEFERT<getStueck()) STATUS=(AufStatVal)OPEN;
 
-#ifdef PETIG_EXTENSIONS
- if(STATUS!=oldstatus && Id()!=dispo_auftrag_id)
-#else
- if(STATUS!=oldstatus)
-#endif
-     setStatus(AufStatVal(STATUS),true);
 
  Transaction tr;
  exec sql lock table auftragentry in exclusive mode;
@@ -78,10 +74,10 @@ void AufEintrag::abschreiben(mengen_t menge,
  SQLerror::test(__FILELINE__);
  
 #ifdef PETIG_EXTENSIONS
- // Um die Instanzen darunter kümmern:
-// if(Id()!=dispo_auftrag_id)
-//assert(!"Hier sollte 'produziert werden, oder?");
-//    abschreiben_fuer_Instanzen(menge);
+  if(Instanz()==ppsInstanzID::Kundenauftraege)
+   {
+      Produziert(class ArtikelStamm(artikel).BestellenBei(),artikel,menge,getuid()).NichtSelbst();
+   }
 #endif
 
 #ifdef MABELLA_EXTENSIONS // Lager updaten
@@ -91,27 +87,37 @@ void AufEintrag::abschreiben(mengen_t menge,
 #endif
 
  setLetzteLieferung(Petig::Datum::today());
- tr.commit();
-//if(Id()==2) exit(0);
+
 
  geliefert=GELIEFERT;
  if(geliefert>=bestellt) entrystatus=(AufStatVal)CLOSED;
+
+#ifdef PETIG_EXTENSIONS
+ if(STATUS!=oldstatus && Id()!=dispo_auftrag_id)
+#else
+ if(STATUS!=oldstatus)
+#endif
+     setStatus(AufStatVal(STATUS),true);
+
+ tr.commit();
 }
 
 
 void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerror)
 {
  if(newstatus == STORNO) force=true;
-
+ if(newstatus == STORNO && getGeliefert()!=mengen_t(0))  return;
  if(entrystatus == CLOSED && !force ) return; // nichts geht mehr
  if(newstatus == UNCOMMITED) return; // zurück geht nicht, nur vor
  if(entrystatus == newstatus) return;     // nichts geändert
  if(newstatus == OPEN && entrystatus != UNCOMMITED && !force) return;
 
-
  Transaction tr; 
  exec sql lock auftragentry in exclusive mode;
  SQLerror::test("setStatus: lock table auftragentry");
+
+ if(newstatus == CLOSED || newstatus == STORNO)
+     updateStkDiffInstanz__(uid,-getRestStk(),false/*0,0*/);    
   
  std::string sqlcommand = "update auftragentry set status="+itos(newstatus);
  if(uid) sqlcommand+=", lasteditdate = now(), lastedit_uid="+itos(uid);
@@ -138,9 +144,6 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
     else 
       InstanzAuftraegeAnlegen(artikel,ZNr(),lieferdatum,newstatus,uid,bestellt);
    }
- else  // Status für die Instanzen setzen
-    setInstanzen(newstatus,uid,getLieferdatum(),getStueck());
-
  if(newstatus==OPEN)
    {
     pps_ChJournalEntry::newChange(
@@ -197,12 +200,10 @@ void AufEintrag::setInstanzen(AufStatVal newstatus,int uid,Petig::Datum lieferda
          {
             mengen_t mts=AufEintragZu(*this).setMengeDiff__(AE,-Mzuordnung);
             assert(mts==-Mzuordnung);
-            try{ mengen_t mt=AufEintragZu(class AufEintragBase(*this,myznr)).setMengeDiff__(AEBZ,Mzuordnung);
-                 assert(mt>=0); } catch(SQLerror &e)
-               {AufEintragZu(class AufEintragBase(*this,myznr)).Neu(AEBZ,Mzuordnung); }
+             AufEintragZu(class AufEintragBase(*this,myznr)).Neu(AEBZ,Mzuordnung); // 'Neu' versucht erst ein 'update'
          }
      }
-   mengen_t mt=AE.updateStkDiff__(uid,-Mauftrag,false); // macht auch das Lager
+   mengen_t mt=AE.updateStkDiff__(uid,-Mauftrag,false,false); // macht auch das Lager
    if(auftragstatus==UNCOMMITED && newstatus==OPEN ) 
       AE.setStatusAuftragBase(newstatus);
 
@@ -217,10 +218,9 @@ void AufEintrag::setInstanzen(AufStatVal newstatus,int uid,Petig::Datum lieferda
 }
 
 
-AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool instanzen,
-   void (*callback)(void *,st_problems),void* argument) throw(SQLerror)
+AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool instanzen,bool produziert
+/*   void (*callback)(void *,st_problems),void* argument*/) throw(SQLerror)
 {
-
  if(menge==mengen_t(0))  return menge;
  if(auftragstatus==OPEN || auftragstatus==UNCOMMITED)
   {
@@ -233,7 +233,7 @@ AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool in
 //ECPGdebug(false,0);
 
    if(instanzen)
-      updateStkDiffInstanz__(uid,mt,callback,argument);
+      updateStkDiffInstanz__(uid,mt,produziert/*,callback,argument*/);
 
    bestellt+=menge;
 
@@ -244,7 +244,8 @@ AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool in
 }
 
 
-void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,void (*callback)(void *,st_problems),void* argument) throw(SQLerror){
+void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,bool produziert /*void (*callback)(void *,st_problems),void* argument*/) throw(SQLerror)
+{
   std::list<AufEintragZu::st_reflist> KindListeU = AufEintragZu(*this).get_Referenz_list_ungeplant();
  try{
   std::vector<ArtikelBase> VA;
@@ -256,29 +257,63 @@ void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,void (*callbac
      // werden
      std::vector<ArtikelBase>::iterator j=std::find(VA.begin(),VA.end(),i->Art);
      if(j!=VA.end()) continue; // Artikel schon bekannt
-     if(i->Menge==mengen_t(0)) continue; // Es muß mindesten einen geben, der 
-                                         // Menge an seine Kinder weitergibt
-     VA.push_back(i->Art);
-     ZU.push_back(*i);
+     // Nur wenn es keinen mit einer Menge!=null gibt diesen erhöhen.
+     std::list<AufEintragZu::st_reflist>::iterator e=i;
+     if(i->Menge!=mengen_t(0) || (ZU.empty() && KindListeU.end()==++e) )
+      {                                         
+        VA.push_back(i->Art);
+        ZU.push_back(*i);
+      }
    }
 
   for(std::list<AufEintragZu::st_reflist>::iterator i=ZU.begin();i!=ZU.end();++i)
    {
      ArtikelBaum::faktor_t faktor = ArtikelBaum(ArtId()).Faktor(i->Art);
      AuftragBase::mengen_t menge=faktor*oldmenge;
-     mengen_t mt=AufEintrag(i->AEB).updateStkDiff__(uid,menge,true,callback,argument);
+     AufEintrag AE(i->AEB);
+     mengen_t mt=AE.updateStkDiff__(uid,menge,true,produziert/*,callback,argument*/);
      AufEintragZu(*this).setMengeDiff__(i->AEB,menge);
+
      if(mt!=mengen_t(menge)) // es konnte nicht alles bei ungeplanten reduziert werden
       {
         AuftragBase::mengen_t restmenge=mt-menge;
         assert(restmenge>AuftragBase::mengen_t(0));
-        i->AEB.move_menge_to_dispo_zuordnung_or_lager(restmenge,i->Art,uid);
+        i->AEB.move_menge_to_dispo_zuordnung_or_lager(restmenge,i->Art,uid,produziert);
       }
     }
 
   }catch(NoAEB_Error &e) 
   {cerr <<"Falsche Anzahl von AufEinträgen: "<<e.what()<<'\n'; 
    exit(1);}
+
+  // Wenn ein 0er ein geplantes Kind hat, für das noch freie Menge (2er)
+  // verfügbar ist ...
+  std::list<AufEintragZu::st_reflist> KindListeG = AufEintragZu(*this).get_Referenz_list(*this,true);
+  mengen_t restmenge=oldmenge;
+  for(std::list<AufEintragZu::st_reflist>::iterator i=KindListeG.begin();i!=KindListeG.end();++i)
+   {
+     //nur die 20000 sind wichtig
+     if(i->AEB.Id()!=AuftragBase::dispo_auftrag_id &&
+        i->AEB.Id()!=AuftragBase::plan_auftrag_id &&
+        i->AEB.Id()!=AuftragBase::ungeplante_id )
+      {
+        mengen_t M=mengen_t(0);
+        std::list<AufEintragZu::st_reflist> DispoList=AufEintragZu(i->AEB).get_Referenz_list_dispo(false);
+        assert(DispoList.empty() || DispoList.size()==1);
+        for(std::list<AufEintragZu::st_reflist>::iterator j=DispoList.begin();j!=DispoList.end();++j)
+         {
+           M=j->Menge;
+           if(M>restmenge) M=restmenge;
+           AufEintragZu(j->AEB).Neu(i->AEB,-M);
+           j->AEB.updateStkDiffBase__(uid,-M);
+         }
+        AufEintragZu(*this).Neu(i->AEB,M);
+        updateStkDiffBase__(uid,-M);
+        restmenge-=M;
+        if(restmenge==mengen_t(0)) break;
+      }
+   }  
+
 }
 
 
@@ -378,16 +413,18 @@ int AufEintrag::split(int uid,mengen_t newmenge, const Petig::Datum &newld,bool 
  exec sql lock auftragentry in exclusive mode;
  SQLerror::test("split: lock table auftragentry");
 
+
+ mengen_t mt=updateStkDiff__(uid,-newmenge,true,false/*,callback,argument*/);
+ assert(mt==-newmenge);
+
  int ZEILENNR;
  if(Instanz()==ppsInstanzID::Kundenauftraege)
    ZEILENNR=insertNewEntry(newmenge,newld,artikel,entrystatus,uid,true,preis,rabatt);
  else
    ZEILENNR=split_zuordnungen_to(newmenge,newld,artikel,entrystatus,uid,dispoplanung);
 
- mengen_t mt=updateStkDiff__(uid,-newmenge,true,callback,argument);
- assert(mt==-newmenge);
-
-
+// mengen_t mt=updateStkDiff__(uid,-newmenge,true,callback,argument);
+// assert(mt==-newmenge);
 
  if(STATUS==OPEN)
    {   pps_ChJournalEntry::newChange(
@@ -414,9 +451,7 @@ AufEintrag::AufEintrag(const AufEintragBase &aebb) throw (SQLerror,NoAEB_Error)
     (SQLFullAuftragSelector::sel_AufidZnr(aebb)));
 
   if ( aufids.aufidliste.size()!=1 ) throw NoAEB_Error(aufids.aufidliste.size());
-//  assert(aufids.aufidliste.size()==1);
 
-//  (*this)=aufids.aufidliste[0];
   *this=*(aufids.aufidliste.begin());
  } catch (SQLerror &e) {std::cerr << e <<'\n';}
 }
@@ -446,17 +481,25 @@ int AufEintrag::Planen(int uid,mengen_t menge,bool reduce_old,const AuftragBase 
 
    int znr=-1,dummy;
    mengen_t mdummy;
+
    if (!zielauftrag.existEntry(Artikel(),datum,znr,dummy,mdummy,entrystatus))
       znr = zielauftrag.insertNewEntry(0,datum,Artikel(),entrystatus,uid,false);
 
    if(menge==AuftragBase::mengen_t(0)) return znr;
    assert(menge>0);
-   if(menge-getRestStk() > 0 )
+   if(menge-getRestStk() > 0  )
     {
-      assert(!Instanz()->LagerInstanz()); // Lager werden nicht überplant
-      mengen_t dispomenge = menge-getRestStk();
-      menge=getRestStk();      
-      AufEintragBase(zielauftrag,znr).PlanenDispo(uid,Artikel(),dispomenge,datum);
+      if(!Instanz()->LagerInstanz()) // Lager werden nicht überplant
+       {
+         mengen_t dispomenge = menge-getRestStk();
+         menge=getRestStk();      
+         AufEintragBase(zielauftrag,znr).PlanenDispo(uid,Artikel(),dispomenge,datum);
+       }
+      else
+       {
+cout << *this<<' '<<getRestStk()<<' '<<'\t'<<menge<<'\t';
+cout << AufEintragBase(zielauftrag,znr)<<'\n';         
+       }
     }
 
    move_to(uid,AufEintragBase(zielauftrag,znr),menge,reduce_old);
@@ -505,7 +548,6 @@ void AufEintrag::moveInstanz(int uid,const AuftragBase &newAuftrag) throw(SQLerr
  mengen_t mt=oldAEB.updateStkDiffBase__(uid,-menge);
  assert(mt==-menge);
 
-
  AuftragBase::mengen_t lagermenge=Lager_Vormerkungen::artikel_auf_lager(artikel,instanz,lieferdatum,AuftragBase::dispo_auftrag_id);
  mengen_t bestellmenge;
  if(lagermenge>=bestellt) bestellmenge = 0;
@@ -515,6 +557,7 @@ void AufEintrag::moveInstanz(int uid,const AuftragBase &newAuftrag) throw(SQLerr
                             getEntryStatus(),uid,false,EPreis(),Rabatt());
  Lager_Vormerkungen(class AufEintrag(newAuftrag.Instanz()->Id(),newAuftrag.Id()
          ,zeilennr,menge,Artikel(),getLieferdatum(),getEntryStatus())).vormerken_oder_bestellen(uid,bestellt-bestellmenge,bestellt);
+
 
 // exec sql delete from prod_changejournal where 
 //      (insid,auftragid,auftragzeile)=(:OLDINSTANZ,:OLDAUFTRAGID,:OLDZEILENNR);
@@ -542,6 +585,8 @@ void AufEintrag::moveInstanz(int uid,const AuftragBase &newAuftrag) throw(SQLerr
  else AufEintragZu::moveInstanz(AufEintragZu::Von,oldAEB,*this);
  AufEintragZu::moveInstanz(AufEintragZu::Nach,oldAEB,*this);
 }
+
+
 
 
 cH_Lieferschein AufEintrag::getLieferschein() const

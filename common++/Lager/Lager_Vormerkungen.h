@@ -1,4 +1,4 @@
-/* $Id: Lager_Vormerkungen.h,v 1.16 2002/07/04 10:34:50 cvs_christof Exp $ */
+/* $Id: Lager_Vormerkungen.h,v 1.18 2002/07/11 07:07:42 malte Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -34,12 +34,15 @@ class Lager_Vormerkungen : AufEintrag
                    std::vector<pair<AufEintragBase,AuftragBase::mengen_t> >&dispo_auftrag,
                    const Petig::Datum &datum,int auftragsid);
 //      int Lieferzeit_in_Tagen(); 
-        void move_menge_from_dispo_to_plan(int uid,AufEintragBase dispo_aeb,mengen_t menge);
         void reduce_old_plan_auftrag(int uid,AufEintragBase dispo_aeb,mengen_t menge);
+ 
+        void move_menge_from_dispo_to_plan(int uid,AufEintragBase dispo_aeb,mengen_t menge);
 
    public:
       Lager_Vormerkungen(const AufEintrag&);
 
+ 
+        void move_menge_from_dispo_to_plan2(int uid,AufEintragBase dispo_aeb,mengen_t menge);
       // verfügbare Menge für einen Artikel bestimmen
       static AuftragBase::mengen_t artikel_auf_lager(const ArtikelBase artikel,cH_ppsInstanz instanz,const Petig::Datum &datum,int auftragsid)
          { std::vector<pair<AufEintragBase,AuftragBase::mengen_t> > d;
@@ -50,16 +53,13 @@ class Lager_Vormerkungen : AufEintrag
       void vormerken_oder_bestellen(int uid,AuftragBase::mengen_t vormerkmenge,AuftragBase::mengen_t bestellmenge);
 
       // Das macht das einlagern:
-      static void freigegeben_menge_neu_verplanen(cH_ppsInstanz instanz,const ArtikelBase& artikel,AuftragBase::mengen_t menge,int uid);
+      static void freigegeben_menge_neu_verplanen(cH_ppsInstanz instanz,const ArtikelBase& artikel,AuftragBase::mengen_t menge,int uid,bool produziert);
  private:
-      void reduziere_ungeplant(int uid,AuftragBase::mengen_t menge);
+//      void reduziere_ungeplant(int uid,AuftragBase::mengen_t menge);
       // vorgemerkt wird ein 2er Artikel
       // geschnappt wird ein 1er Artikel
       void artikel_vormerken_oder_schnappen(bool schnappen,AuftragBase::mengen_t menge,const ArtikelBase &artikel,int uid,
          std::vector<pair<AufEintragBase,AuftragBase::mengen_t> > dispo_auftrag,bool reduce_old);
-
-//      void artikel_schnappen(AuftragBase::mengen_t menge,const ArtikelBase &artikel,int uid,
-//         std::vector<pair<AufEintragBase,AuftragBase::mengen_t> > dispo_auftrag);
 
 };
 

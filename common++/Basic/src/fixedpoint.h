@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.13 2002/06/24 07:35:40 christof Exp $
+// $Id: fixedpoint.h,v 1.14 2002/07/15 15:37:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -114,6 +114,9 @@ public:
 	}
 	Ftype operator*(Ftype b) const
 	{  return b* this->as_float();
+	}
+	Ftype operator/(Ftype b) const
+	{  return this->as_float()/b;
 	}
 	self_t operator+(const self_t b) const
 	{  self_t res;

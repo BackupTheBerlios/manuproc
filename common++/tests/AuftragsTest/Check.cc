@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.7 2002/07/05 12:35:02 christof Exp $
+// $Id: Check.cc,v 1.8 2002/07/15 15:37:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -55,30 +55,43 @@ void Check::vergleich(e_check check)
   switch(check)
    {
      case Open : zusatz="_mit_lager_open"; break;
+
+     // Mengentest
      case Menge_Plus : zusatz="_menge_plus"; break;
      case Menge_Minus : zusatz="_menge_minus"; break;
-     case Menge_MinusMinus : zusatz="_menge_minus_bandlager"; break;
-     case Rohwarenlager_einlagern : zusatz="_rohwarenlager_rein"; break;
-     case Bandlager_einlagern : zusatz="_bandlager_rein"; break;
-     case Rohwarenlager_auslagern : zusatz="_rohwarenlager_raus"; break;
-     case Bandlager_auslagern : zusatz="_bandlager_raus"; break;
      case Datumsaenderung : zusatz="_datumsaenderung"; break;
+     case Menge_MinusMinus : zusatz="_menge_minus_bandlager"; break;
      case StatusClosed : zusatz="_status_closed"; break;
+     // Plantest
      case Planen_Kupfer : zusatz="_planen_kupfer"; break;
      case Planen_Faerberei_teil : zusatz="_planen_faerberei_teil"; break;
-     case Planen_Faerberei : zusatz="_planen_faerberei"; break;
-     case Planen_WebereiL : zusatz="_planen_weberei_fuer_lager"; break;
      case Planen_WebereiP : zusatz="_planen_webereiP"; break;
+     // Splittest
      case Split : zusatz="_split"; break;
      case Split_Rohwarenlager_einlagern : zusatz="_split_rohwarenlager_rein"; break;
      case Split_Rohwarenlager_auslagern : zusatz="_split_rohwarenlager_raus"; break;
+     // Lagertest
+     case Rohwarenlager_einlagern : zusatz="_rohwarenlager_rein"; break;
+     case Rohwarenlager_auslagern : zusatz="_rohwarenlager_raus"; break;
+     case Planen_WebereiL : zusatz="_planen_weberei_fuer_lager"; break;
+     case Bandlager_einlagern : zusatz="_bandlager_rein"; break;
+     case Kunden_Teillieferung : zusatz="_kunde_teillieferung"; break;
+     case Kunden_Ueberlieferung : zusatz="_kunde_ueberlieferung"; break;
+     // Zwei Aufträge
      case Planen_Faerberei_ueber : zusatz="_planen_fuer_zweiten_auftrag"; break;
      case ZweiAuftraege_anlegen : zusatz="_zwei_auftraege_anlegen"; break;
+     // Zweiter Auftrag früheres Datum
      case ZweiterAuftrag_frueheresDatum : zusatz="_zwei_auftraege_datum"; break;
+     case ZweiterAuftrag_frueheresDatum_abschreiben : zusatz="_zwei_auftraege_datum_abschreiben"; break;
+     case ZweiterAuftrag_frueheresDatum_closed : zusatz="_zwei_auftraege_datum_closed"; break;
+     case Planen_WebereiD : zusatz="_zwei_auftraege_weberei_planen"; break;
+
+     case Bandlager_auslagern : assert(!"absolet"); zusatz="_bandlager_raus"; break;
+     case Planen_Faerberei : assert(!"absolet"); zusatz="_planen_faerberei"; break;
+
      case Jumbo_richtig : zusatz="_richtig"; break;
      case Jumbo_falsch : zusatz="_falsch"; break;
      case Jumbo_doppelt : zusatz="_doppelt"; break;
-     case Kunden_Teillieferung : zusatz=""; break;
    }
    
   for (std::vector<std::string>::const_iterator i=files.begin();i!=files.end();++i)

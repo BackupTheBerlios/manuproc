@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.16 2002/07/08 08:10:29 christof Exp $
+# $Id: Makefile.am,v 1.17 2002/07/15 15:37:53 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -19,7 +19,7 @@ endif
 libManuProC_Base_a_SOURCES=Ausgabe_neu.cc Datum.cc IOerror.cc \
 		postgres_conversion.cc Zeitpunkt_new.cc \
 		Zeitpunkt_new_ostr.cc \
-		Zeitpunkt_new_write.cc string0.c \
+		Zeitpunkt_new_write.cc string0.c mystring.c \
 		auto_conversion.cc \
 		exception.cc itos.cc \
 		time_t_ostr.cc \
@@ -34,7 +34,7 @@ BUILT_SOURCES=Misc ostream $(DB_SRCES)
 include_HEADERS=Ausgabe_neu.h CacheStatic.h Cache_Pointer.h Datum.h Handles.h \
 	IOerror.h Kalenderwoche.h Pointer.h Postgres.h Rundungsmacros.h \
 	SQLerror.h SQLerror_postgres.h Transaction.h Zeitpunkt_new.h \
-	dbconnect.h exception.h fixedpoint.h itos.h safemap.h string0.h \
+	dbconnect.h exception.h fixedpoint.h itos.h safemap.h string0.h mystring.h \
 	c++ostream.h mystream.h FetchIStream.h ctime_assert.h \
    EntryValueBase.h EntryValueIntString.h  EntryValueEmptyInt.h \
    	EntryValueDatum.h EmptyInt_4TeX.h Long.h MVC.h

@@ -1,4 +1,4 @@
-// $Id: auto_conversion.cc,v 1.8 2002/06/27 07:42:50 christof Exp $
+// $Id: auto_conversion.cc,v 1.9 2002/07/15 15:37:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,7 +25,9 @@
 #include <cstdlib>
 
 void ManuProC::Datum::from_auto(const char *datum,const char **endptr) throw(Datumsfehler,Formatfehler)
-{   if (!*datum) 
+{   
+  while(isspace(*datum)) ++datum; 
+  if (!*datum) 
     {  if (endptr) *endptr=datum;
        *this=Datum();
        return; 
@@ -33,8 +35,7 @@ void ManuProC::Datum::from_auto(const char *datum,const char **endptr) throw(Dat
 
     int numlen(0);
     const char *ptr=0;
-    for (const char *s=datum;isdigit(*s);s++,numlen++);
-
+    for (const char *s=datum;isdigit(*s);s++,numlen++) ;
     if (numlen>=6) // Adabas internal, obsolete?
     {  tag = getnum((const unsigned char*)datum+6, 2);
 	monat = getnum((const unsigned char*)datum+4, 2);
@@ -42,7 +43,8 @@ void ManuProC::Datum::from_auto(const char *datum,const char **endptr) throw(Dat
 	if (endptr) *endptr=datum+8;
     }
     else if (numlen==4) // ISO
-    {  if (datum[numlen]!='-') throw Formatfehler();
+    {  
+       if (datum[numlen]!='-') throw Formatfehler();
        jahr = getnum((const unsigned char*)datum, numlen);
        ptr=const_cast<char*>(datum+numlen+1);
        monat = strtol(ptr,const_cast<char**>(&ptr),10);

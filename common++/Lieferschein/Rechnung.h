@@ -1,4 +1,4 @@
-/* $Id: Rechnung.h,v 1.16 2002/07/05 12:35:01 christof Exp $ */
+/* $Id: Rechnung.h,v 1.17 2002/07/15 15:37:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -60,6 +60,7 @@ public:
 // std::string RngArt() const {return rngart; } 
  const RngArt rngArt() const {return rngart; } 
  void setRngArt(const RngArt &art) throw(SQLerror);
+ void convert_to_gutschrift() throw(SQLerror);
  rabatt_t Rabatt() const { return rabatt; }
  geldbetrag_t Betrag(bool brutto=false) const throw(SQLerror);
  

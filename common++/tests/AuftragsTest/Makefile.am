@@ -1,8 +1,10 @@
-# $Id: Makefile.am,v 1.2 2002/06/20 09:35:15 christof Exp $
+# $Id: Makefile.am,v 1.3 2002/07/15 15:37:53 christof Exp $
 
 CXXFLAGS=@CXXFLAGS@ @COMMONXX_INCLUDES@
 LDFLAGS=@LDFLAGS@  @COMMONXX_LDFLAGS@
 LDADD=@COMMONXX_LIBS@
+
+SUBDIRS=graph
 
 all: $(EXTRA_PROGRAMS)
 

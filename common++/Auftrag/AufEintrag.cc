@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.7 2002/07/05 12:35:01 christof Exp $
+// $Id: AufEintrag.cc,v 1.8 2002/07/15 15:37:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -157,10 +157,10 @@ void AufEintrag::move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,
   Transaction tr;
   if(reduce_old)
    {
-     mengen_t mt1=updateStkDiff__(uid,-menge,false);
+     mengen_t mt1=updateStkDiff__(uid,-menge,false,true);
      assert(-menge==mt1);
    }
-  mengen_t mt2=AufEintrag(AEB).updateStkDiff__(uid,+menge,false);
+  mengen_t mt2=AufEintrag(AEB).updateStkDiff__(uid,+menge,false,true);
   assert(menge==mt2);
   AufEintragZu(*this).Neu(AEB,menge); 
   tr.commit();
