@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.36 2003/03/17 08:29:46 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.37 2003/03/17 13:35:42 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -171,10 +171,8 @@ public:
    friend class AufEintragBase;
 
 // intern aber public
- void abschreiben(mengen_t menge,ManuProcEntity<>::ID lfrsid=ManuProcEntity<>::none_id) throw(SQLerror);
+ void abschreiben(mengen_t menge) throw(SQLerror);
 private:
- // das lfrsid ist nur für alten Code (und nur Kundenauftr.) von Mabella
- // , soll weg!
  void Produziert_0er(mengen_t menge);
 
 public:

@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.38 2003/03/17 09:01:25 jacek Exp $
+// $Id: AufEintrag.cc,v 1.39 2003/03/17 13:35:42 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -396,9 +396,9 @@ void AufEintrag::Einlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase
 // wo wird der 2er reduziert?
 // wo werden die Instanzen darunter behandelt?
 // ==> WurdeProduziert macht das ganze rekusiv
-void AufEintrag::abschreiben(mengen_t menge,ManuProcEntity<>::ID lfrsid) throw(SQLerror)
+void AufEintrag::abschreiben(mengen_t menge) throw(SQLerror)
 {int uid=getuid();
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("Menge",menge),NV("Lfrsid",lfrsid));
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("Menge",menge));
 
   mengen_t GELIEFERT=getGeliefert()+menge;
   mengen_t BESTELLT=getStueck();
