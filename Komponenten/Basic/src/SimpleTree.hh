@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.34 2004/05/05 12:27:28 christof Exp $
+// $Id: SimpleTree.hh,v 1.35 2004/05/17 08:40:43 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -194,16 +194,24 @@ public:
 
  cH_RowDataBase getSelectedRowDataBase() const
  	throw(noRowSelected,multipleRowsSelected,notLeafSelected);
+ cH_RowDataBase getCursorRowDataBase() const
+ 	throw(noRowSelected,multipleRowsSelected,notLeafSelected);
  std::vector<cH_RowDataBase> getSelectedRowDataBase_vec() const 
  	throw(notLeafSelected);
 
+#if 0 // deprecated
  template <class T,class CT> T getSelectedRowDataBase_as2() const
 // this could be optimzed to avoid the dynamic_cast within 
 // cH_RowDataBase::operator*, but it does not hurt that much
  {  return T(dynamic_cast<CT*>(&*getSelectedRowDataBase()));
  }
+#endif
  template <class T> T getSelectedRowDataBase_as() const
- {  return getSelectedRowDataBase_as2<T,typename T::ContentType>(); 
+// {  return getSelectedRowDataBase_as2<T,typename T::ContentType>(); 
+ {  return T::cast_dynamic(getSelectedRowDataBase()); 
+ }
+ template <class T> T getCursorRowDataBase_as() const
+ {  return T::cast_dynamic(getCursorRowDataBase()); 
  }
  Handle<const TreeRow> getSelectedNode() const 
  	throw(noNodeSelected,multipleNodesSelected,notNodeSelected);
