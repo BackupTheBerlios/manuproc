@@ -292,9 +292,14 @@ void auftrag_bearbeiten::on_newauftrag_button_clicked()
 
 void auftrag_bearbeiten::auftragstatus_geaendert()
 { 
+ int oldstat=WAufStat->get_Status();
  if (auftrag)
-  { 
-     auftrag->setStatusAuftragFull(WAufStat->get_Status());
+  { try{
+     auftrag->setStatusAuftragFull(WAufStat->get_Status());}
+     catch(SQLerror &e)
+      {meldung->Show(e); 
+       WAufStat->set_history((AufStatVal)oldstat);
+       return;}    
   }
 }
 
