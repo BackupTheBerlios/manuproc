@@ -11,6 +11,7 @@
 #include <sys/types.h>
 #include "auftrag_bearbeiten.hh"
 #include "MyMessage.h"  
+#include <Aux/Transaction.h>
 
 extern auftrag_bearbeiten *auftragbearbeiten;
 extern MyMessage *meldung;
@@ -32,6 +33,8 @@ auftrag_copy::auftrag_copy(AuftragFull *auftrag)
 
 void auftrag_copy::on_copy_ok_clicked()
 {  
+ Transaction tr;
+
  try {
    AuftragFull *auftrag = new AuftragFull(Auftrag::Anlegen(
    		alt_auftrag->Instanz()),
@@ -50,12 +53,48 @@ void auftrag_copy::on_copy_ok_clicked()
        }
 
 
-	int stueck=stueck_uebernehmen->active() ? neu_stueck:0;
-	ManuProC::Datum ld=liefdate_uebernehmen.activate() 
-			? neu_liefdate : ManuProC::Datum();
+	int stueck=0;
+	if(stueck_uebernehmen->get_active())
+	  {
+	   if(!neu_stueck->get_value_as_int()>0)
+	    {meldung->Show("Stück muß größer als 0 sein");
+    	     return;
+    	    }
+	   stueck=neu_stueck->get_value_as_int();
+	  }			
 			
-				
 			
+	ManuProC::Datum ld;
+	if(liefdate_uebernehmen->get_active())
+	  {
+	   if(!neu_lieferdatum->get_value().valid())
+	     {meldung->Show("Ungültiges Lieferdatum");
+    	      return;
+    	     }	   
+	   ld=neu_lieferdatum->get_value();
+	  }
+			
+			
+	AuftragBase::ID neu_aufid=auftrag->Id();
+	ppsInstanz::ID iid=auftrag->Instanz();
+
+
+	((Query("insert into auftragentry (auftragid,zeilennr,bestellt,"
+		"geliefert,lastedit_uid,artikelid,status,preis,"
+		"rabatt,lieferdate,preismenge,instanz,preisliste) "
+		"(select ?,zeilennr,?,0,?,artikelid,0,preis,rabatt,?,"
+		"preismenge,instanz,preisliste from auftragentry"
+		" where (auftragid,instanz)=(?,?))")
+		<< neu_aufid
+		).add_argument(
+			stueck==0 ? "bestellt" : itos(stueck))
+		<< getuid()
+		).add_argument(
+			ld.valid() ? 
+			std::string("'")+ld.postgres_null_if_invalid()+"'" : "lieferdate") 
+		<< alt_auftrag->Id()
+		<< alt_auftrag->Instanz();
+	SQLerror::test(__FILELINE__);
 
       auftrag->setStatusAuftragFull((AufStatVal)OPEN,getuid()); 
       auftragbearbeiten->new_aufid_from_copy=auftrag->Id();
@@ -66,6 +105,8 @@ void auftrag_copy::on_copy_ok_clicked()
     auftragbearbeiten->new_aufid_from_copy=AuftragBase::none_id;
     return;
    }
+   
+ tr.commit();  
 }
 
 void auftrag_copy::on_copy_cancel_clicked()
