@@ -1,4 +1,4 @@
-// $Id: with_class.cc,v 1.21 2003/10/07 06:30:23 christof Exp $
+// $Id: with_class.cc,v 1.22 2003/10/08 11:48:41 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -16,7 +16,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// $Id: with_class.cc,v 1.21 2003/10/07 06:30:23 christof Exp $
+// $Id: with_class.cc,v 1.22 2003/10/08 11:48:41 christof Exp $
 
 #include "config.h"
 #include "with_class.hh"
@@ -25,6 +25,7 @@
 #include <Misc/EntryValueEmptyInt.h>
 #include <TreeRow.h>
 #include <iostream>
+#include <Misc/itos.h>
 
 void with_class::on_Beenden_activate()
 {   Gtk::Main::instance()->quit();
