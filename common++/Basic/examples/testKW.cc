@@ -1,4 +1,4 @@
-// $Id: testKW.cc,v 1.8 2004/05/03 12:23:38 christof Exp $
+// $Id: testKW.cc,v 1.9 2004/05/03 13:07:38 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -75,23 +75,19 @@ int main()
    d=ManuProC::Datum(1,1,2004);
    std::cout << d << " = " << d.KW() << '\n';
 
-   d=ManuProC::Datum(28,2,2004);
-   std::cout << d << " = " << d.KW() << '\n';
-
-   d=ManuProC::Datum(1,3,2004);
-   std::cout << d << " = " << d.KW() << '\n';
-
-   d=ManuProC::Datum(1,4,2004);
-   std::cout << d << " = " << d.KW() << '\n';
-
-   d=ManuProC::Datum(1,5,2004);
-   std::cout << d << " = " << d.KW() << '\n';
-
    d=ManuProC::Datum(2,5,2004);
    std::cout << d << " = " << d.KW() << '\n';
 
    d=ManuProC::Datum(3,5,2004);
    std::cout << d << " = " << d.KW() << '\n';
+
+   kw=Kalenderwoche(18,1970);
+   d=ManuProC::Datum(kw);
+   std::cout << "KW "<<kw << " = "<<d << " = " << d.KW() << '\n';
+
+   kw=Kalenderwoche(19,1970);
+   d=ManuProC::Datum(kw);
+   std::cout << "KW "<<kw << " = "<<d << " = " << d.KW() << '\n';
 
    d=ManuProC::Datum::today();
    std::cout << "today = "<<d << " = " << d.KW() << '\n';

@@ -1,4 +1,4 @@
-// $Id: Datum.cc,v 1.28 2004/03/08 17:18:15 christof Exp $
+// $Id: Datum.cc,v 1.29 2004/05/03 13:07:38 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.28 2004/03/08 17:18:15 christof Exp $ */
+/* $Id: Datum.cc,v 1.29 2004/05/03 13:07:38 christof Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
@@ -321,7 +321,8 @@ previous_year:
       tm.tm_year--;
       goto previous_year;
    }
-   int _woche=(current-monday)/seconds_per_week+1;
+   // diese Rundung ist wegen Sommerzeit erforderlich
+   int _woche=(current-monday+60*60)/seconds_per_week+1;
    if (_woche>52 && try_again)
    {  tm.tm_year++;
       try_again=false;
