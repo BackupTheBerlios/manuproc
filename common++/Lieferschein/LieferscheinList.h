@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList.h,v 1.5 2001/12/05 07:55:59 christof Exp $ */
+/* $Id: LieferscheinList.h,v 1.6 2002/01/22 09:15:55 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -29,6 +29,7 @@
 class LieferscheinList
 {
  std::vector<cH_Lieferschein> sellist;
+ cH_ppsInstanz instanz;
 
 public:
  typedef std::vector<cH_Lieferschein>::const_iterator const_iterator;
@@ -47,9 +48,9 @@ public:
    sel_ArtikelId(unsigned long int k):id(k){}
  }; 
  
- LieferscheinList() throw(SQLerror);
- LieferscheinList(const sel_KundenId &selparam) throw(SQLerror);
- LieferscheinList(const sel_ArtikelId &selparam) throw(SQLerror);
+ LieferscheinList(const cH_ppsInstanz instanz) throw(SQLerror);
+ LieferscheinList(const cH_ppsInstanz instanz,const sel_KundenId &selparam) throw(SQLerror);
+ LieferscheinList(const cH_ppsInstanz instanz,const sel_ArtikelId &selparam) throw(SQLerror);
 
 #ifdef MABELLA_EXTENSIONS
  struct sel_GeliefStat 
@@ -63,7 +64,7 @@ public:
  }; 
 
 
- LieferscheinList(const sel_GeliefStat &selparam) throw(SQLerror);
+ LieferscheinList(const cH_ppsInstanz instanz,const sel_GeliefStat &selparam) throw(SQLerror);
  LieferscheinList(const sel_DPDLNr &selparam) throw(SQLerror);
  bool setDPDData(int dpdlnr) throw(SQLerror);
 #endif

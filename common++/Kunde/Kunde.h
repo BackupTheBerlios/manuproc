@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.10 2002/01/11 07:59:28 christof Exp $
+// $Id: Kunde.h,v 1.11 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -77,10 +77,11 @@ public:
     std::string notiz; 
     Petig::Datum stand;
     fixedpoint<2> einzugrabatt;
+    fixedpoint<2> skontosatz;    
     st_kddata()
     	:flaeche(0),mitarbeiter(0),planumsatz(0),umsatz(0),kundenumsatz(0),
     	 kalkulation(0),rabatt(0),skontofrist(0),preisliste(0),bankeinzug(false),
-    	 einzugrabatt(0) {}
+    	 einzugrabatt(0),skontosatz(0) {}
    };
  typedef struct st_kddata Kundendaten;
 
@@ -94,6 +95,7 @@ private:
         bool rng_an_postfach;
         bool lieferadresse;
         bool rechnungsadresse;
+        bool entsorgung;
         
 	Adresse adresse;
 	Bankverbindung bankverb;
@@ -138,6 +140,7 @@ public:
         const fixedpoint<2> umsatz() const { return kundendaten.umsatz; }
         const fixedpoint<2> rabatt() const { return kundendaten.rabatt; }
         const fixedpoint<2> einzugrabatt() const { return kundendaten.einzugrabatt; }
+        const fixedpoint<2> skontosatz() const { return kundendaten.skontosatz; }
         const ID Preisliste() const { return kundendaten.preisliste; }
         const int skontofrist() const { return kundendaten.skontofrist; }
         const std::string verein() const { return kundendaten.verein; }
@@ -155,6 +158,7 @@ public:
         bool isLieferadresse() const { return lieferadresse; }
         bool isRechnungsadresse() const { return rechnungsadresse; }
         ID Rngan() const { return rngan; }
+        bool Entsorgung() const { return entsorgung; }
 
 
 	void update() throw(SQLerror);
@@ -196,6 +200,7 @@ public:
         void set_preisliste(const ID s){kundendaten.preisliste = s; update();}
         void set_skontofrist(const int s){kundendaten.skontofrist = s; update();}
         void set_einzugrabatt(const fixedpoint<2> s){kundendaten.einzugrabatt = s; update();}
+        void set_skontosatz(const fixedpoint<2> s){kundendaten.skontosatz = s; update();}        
         void set_notiz(const std::string& s){kundendaten.notiz = s; update();} 
         void set_bankindex(const int s){bankverb.bankindex = s; update();} 
         void set_bankkonto(const unsigned long long int s){bankverb.konto = s; update();} 

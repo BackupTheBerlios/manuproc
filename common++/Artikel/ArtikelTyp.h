@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.h,v 1.5 2001/10/23 08:45:18 christof Exp $
+// $Id: ArtikelTyp.h,v 1.6 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -44,25 +44,27 @@ public:
 	   BedrucktesBand=JumboRollen, 
 	   AufgemachtesBand=Band,
 	   Seitenscheiben=Spulen };
+        typedef typ ID;
+
 private:
-        typedef unsigned int ID;
-	typ t;
+	ID t;
 	
 public:
-	ArtikelTyp(typ a) : t(a) {}
-	ArtikelTyp(int a) : t((typ)a) {}
-	operator typ() const { return t; }
+	ArtikelTyp(ID a) : t(a) {}
+	ArtikelTyp(int a) : t((ID)a) {}
+	operator ID() const { return t; }
 	operator int() const { return int(t); }
-	// warum nicht der default operator? CP 2001-3-1
-	const ArtikelTyp &operator=(const ArtikelTyp &b) { t=b.t; return *this; }
+	ID Id() const { return t; }
+
 	bool operator==(const ArtikelTyp &b) const { return t==b.t; }
-	bool operator==(ArtikelTyp::typ b) const { return t==b; }
+	bool operator==(ID b) const { return t==b; }
 	bool operator<(const ArtikelTyp &b) const { return t<b.t; }
 	
 	ArtikelTyp(const ArtikelBase &ab) throw(SQLerror);
 	ArtikelTyp(const ArtikelBase &ab,ID id) throw(SQLerror);
+
 	static ArtikelTyp vonArtikel(const ArtikelBase &ab) throw(SQLerror)
 	{  return ArtikelTyp(ab); }
-        static std::string get_string(typ t);
+        static std::string get_string(ID t);
 };
 #endif

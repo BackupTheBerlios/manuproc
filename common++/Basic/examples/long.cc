@@ -1,4 +1,4 @@
-// $Id: long.cc,v 1.2 2001/12/05 07:55:59 christof Exp $
+// $Id: long.cc,v 1.3 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,14 +23,14 @@
 
 int main()
 {  Long l;
-   cout << l << '\n';
+   std::cout << l << '\n';
    l+=2;
-   cout << l << '\n';
+   std::cout << l << '\n';
    l+=Long(3);
-   cout << l << '\n';
-   cout << ++l << '\n';
-   cout << l++ << '\n';
-   cout << l << '\n';
+   std::cout << l << '\n';
+   std::cout << ++l << '\n';
+   std::cout << l++ << '\n';
+   std::cout << l << '\n';
    return 0;
 }
 // 0 2 5 6 6 7

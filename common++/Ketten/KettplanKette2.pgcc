@@ -1,4 +1,4 @@
-// $Id: KettplanKette2.pgcc,v 1.7 2002/01/11 07:59:28 christof Exp $
+// $Id: KettplanKette2.pgcc,v 1.8 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -529,7 +529,7 @@ vector<KettenGarn> KettplanKette::load_Garn(const ArtikelGang& artikel) const
    ketten_index,coalesce(laenge,:DEFAUTLAENGE)
    from ketten_garn where artikel=:ARTIKEL and gaenge=:GAENGE;
  exec sql open garnein;
- vector<KettenGarn> v;
+ std::vector<KettenGarn> v;
  while (true)
   {
     exec sql fetch garnein into :FAEDEN,:GARN,:KETTEN,:ZEILE,:INDEX,:LAENGE;

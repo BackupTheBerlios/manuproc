@@ -43,18 +43,6 @@ void Auftrag::deleteAuftrag() throw(SQLerror)
 }
 
 
-void Auftrag::setJahrgang(int jahr) throw(SQLerror)
-{
- exec sql begin declare section;
- int JAHRGANG = jahr;
- int AUFTRAGID = Id();
- int INSTANZ = int(Instanz());
- exec sql end declare section;
-
- exec sql update auftrag set jahrgang = :JAHRGANG 
-   where auftragid= :AUFTRAGID and instanz = :INSTANZ;
- SQLerror::test(__FILELINE__"Jahrgang setzen");
-}
 
 void Auftrag::setWaehrung(cP_Waehrung w) throw(SQLerror)
 {
@@ -111,30 +99,28 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
  int STATUS;
  char YOURAUFNR[21];
  char BEMERKUNG[21];
- int JAHRGANG;
  int WAEHRUNG;
  exec sql end declare section;
 
  exec sql select coalesce(kundennr,0), date(coalesce(datum,now())), 
  		stat, coalesce(youraufnr,''), coalesce(bemerkung,''),
-		jahrgang, coalesce(waehrung,1)
+		 coalesce(waehrung,1)
 	into 	:KUNDENNR, :DATUM, :STATUS, :YOURAUFNR, :BEMERKUNG,
-		:JAHRGANG, :WAEHRUNG
+		 :WAEHRUNG
 	from auftrag where auftragid = :AUFTRAGID and instanz = :INSTANZ ;
  SQLerror::test(__FILELINE__"Auftrag laden");
 
  kundennr = KUNDENNR;
  datum.from_postgres(DATUM);
- wrkstatus = LOADED;
+// wrkstatus = LOADED;
  status = (AufStatVal)STATUS;
  youraufnr = YOURAUFNR;
  bemerkung = BEMERKUNG;
- jahrgang = JAHRGANG;
- waehrung = cP_Waehrung(WAEHRUNG);
+ waehrung = cP_Waehrung(Waehrung::ID(WAEHRUNG));
 }
 
 
-Auftrag::Auftrag(Anlegen _instanz, long kdnr,int jahr) throw(SQLerror)
+Auftrag::Auftrag(Anlegen _instanz, long kdnr) throw(SQLerror)
 	: AuftragBase(cH_ppsInstanz(_instanz))
 {
  exec sql begin declare section;
@@ -142,8 +128,7 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr,int jahr) throw(SQLerror)
  char DATUM[11];
  int YEAR;
  int KUNDENNR=kdnr;
- int JAHRGANG=jahr;
- int STATUS;
+ int STATUS=OPEN;
  int INSTANZ=Instanz();
  exec sql end declare section;
 
@@ -161,10 +146,9 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr,int jahr) throw(SQLerror)
  		and instanz=:INSTANZ;
  SQLerror::test("Auftrag: select neue auftragid");
 
- STATUS = OPEN;
- exec sql insert into auftrag (auftragid, kundennr, status, jahrgang, 
+ exec sql insert into auftrag (auftragid, kundennr, 
 				stat, waehrung, instanz)
- 	values (:AUFTRAGID, :KUNDENNR, :STATUS, :JAHRGANG, 0, 1,:INSTANZ);
+ 	values (:AUFTRAGID, :KUNDENNR, 0, 1,:INSTANZ);
  SQLerror::test(__FILELINE__" insert into auftrag");
   
  exec sql select date(datum) into :DATUM from auftrag 
@@ -173,30 +157,28 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr,int jahr) throw(SQLerror)
 
  kundennr = kdnr;
  datum.from_postgres(DATUM);
- wrkstatus= INSERTED;
+// wrkstatus= INSERTED;
  status=(AufStatVal)STATUS;
- jahrgang = JAHRGANG;
  auftragid= AUFTRAGID;
 
  tr.commit();
 }
 
-Auftrag::Auftrag(Anlegen2 AB, long kdnr, int jahr) throw(SQLerror)
+Auftrag::Auftrag(Anlegen2 AB, long kdnr) throw(SQLerror)
 	: AuftragBase(AB)
 {
  exec sql begin declare section;
  int AUFTRAGID=Id();
  char DATUM[11];
  int KUNDENNR=kdnr;
- int JAHRGANG=jahr;
  int STATUS = OPEN;
  int INSTANZ =Instanz();
  exec sql end declare section;
 
  Transaction tr;
- exec sql insert into auftrag (auftragid, kundennr, status, jahrgang, 
+ exec sql insert into auftrag (auftragid, kundennr,  
 				stat, waehrung, instanz)
- 	values (:AUFTRAGID, :KUNDENNR, :STATUS, :JAHRGANG, 0, 1,:INSTANZ);
+ 	values (:AUFTRAGID, :KUNDENNR, :STATUS, 1,:INSTANZ);
  SQLerror::test(__FILELINE__" insert auftrag with auftragid 0");
   
  exec sql select date(datum) into :DATUM from auftrag 
@@ -205,9 +187,8 @@ Auftrag::Auftrag(Anlegen2 AB, long kdnr, int jahr) throw(SQLerror)
 
  kundennr = kdnr;
  datum.from_postgres(DATUM);
- wrkstatus= INSERTED;
+// wrkstatus= INSERTED;
  status=(AufStatVal)STATUS;
- jahrgang = JAHRGANG;
 
  tr.commit();
 }

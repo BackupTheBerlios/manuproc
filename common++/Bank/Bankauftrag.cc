@@ -1,4 +1,4 @@
-/* $Id: Bankauftrag.cc,v 1.3 2002/01/11 07:59:28 christof Exp $ */
+/* $Id: Bankauftrag.cc,v 1.4 2002/01/22 09:15:55 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -45,7 +45,7 @@ void Bankauftrag::string2Bank(char *buf,const char *s) throw (Datenfehler)
 }
 
 Bankauftrag::Bankauftrag(char _kennz, long myblz, std::string myname,long long mykonto,
-			const string TeX_cmd) throw(IOerror,Datenfehler)
+			const std::string TeX_cmd) throw(IOerror,Datenfehler)
 	: druckerpipe(0), dtausfile(-1), Kontosumme(0), BLZsumme(0),
 	  anzahlDatensaetze(0), Betragssumme(0), Kennziffer(_kennz),
 	  eigeneBLZ(0), eigenesKonto(0), eigenerName(myname), Auftragsart(0), 
@@ -87,7 +87,7 @@ Bankauftrag::Bankauftrag(char _kennz, long myblz, std::string myname,long long m
 //   eigenerName=a1.c_str();
    fprintf(druckerpipe,
    "\\documentclass[12pt]{article}\n"
-   "\\usepackage{isolatin1,t1enc,german,vmargin,longtable}\n"
+   "\\usepackage{isolatin1,t1enc,german,vmargin,longtable,eurosym}\n"
    "\\setmarginsrb{0.5in}{0.5in}{0.5in}{0.5in}{2\\baselineskip}{\\baselineskip}{0pt}{0pt}\n"
 #if 0   
    "\\makeatletter\n"
@@ -147,12 +147,12 @@ Bankauftrag &Bankauftrag::operator<<(const Zahlvorgang &z) throw(IOerror)
   // Satz C ausgeben
 {  char buf[128];
 
-   z.fillBuffer(buf,0,eigeneBLZ,eigenesKonto,eigenerName,Auftragsart);
+   z.fillBuffer(buf,sizeof buf,0,eigeneBLZ,eigenesKonto,eigenerName,Auftragsart);
    if (write(dtausfile,buf,128)!=128) throw IOerror();
-   z.fillBuffer(buf,1,eigeneBLZ,eigenesKonto,eigenerName,Auftragsart);
+   z.fillBuffer(buf,sizeof buf,1,eigeneBLZ,eigenesKonto,eigenerName,Auftragsart);
    if (write(dtausfile,buf,128)!=128) throw IOerror();
    if (z.Bloecke()>2)
-   {  z.fillBuffer(buf,2,eigeneBLZ,eigenesKonto,eigenerName,Auftragsart);
+   {  z.fillBuffer(buf,sizeof buf,2,eigeneBLZ,eigenesKonto,eigenerName,Auftragsart);
       if (write(dtausfile,buf,128)!=128) throw IOerror();
    }
    BLZsumme+=z.BLZ; 
@@ -194,7 +194,7 @@ void Bankauftrag::close() throw(IOerror)
    
    fprintf(druckerpipe,   "\\hline\\\\[2cm]\n"
    "Disketten - Nr.&\\rule{2cm}{0.5pt}\\\\[2ex]\n"
-   "Summe  Datensätze C (DM):&%s\\\\\n",Formatiere((unsigned long long)Betragssumme,2).c_str());
+   "Summe  Datensätze C (\\euro{}):&%s\\\\\n",Formatiere((unsigned long long)Betragssumme,2).c_str());
    fprintf(druckerpipe,"Anzahl Datensätze C:&%d\\\\\n",anzahlDatensaetze);
    fprintf(druckerpipe,"Summe der Kontonummern:&%s\\\\\n",Formatiere((unsigned long long)Kontosumme).c_str());
    fprintf(druckerpipe,"Summe der Bankleitzahlen:&%s\\\\[2cm]\n",Formatiere(BLZsumme).c_str());
@@ -211,10 +211,14 @@ void Bankauftrag::close() throw(IOerror)
    char buf[128];
 /* Datensatz E */
    snprintf0(buf,sizeof buf,"0128E     %07d",anzahlDatensaetze);
-   snprintf0(buf+17,sizeof(buf)-17,"%013llu",Betragssumme);
+
+   memset(buf+17,'0',13); /* nur EURO geht jetzt */
+/*   snprintf0(buf+17,sizeof(buf)-17,"%013llu",Betragssumme);*/
    snprintf0(buf+30,sizeof(buf)-30,"%017llu",Kontosumme);
    snprintf0(buf+47,sizeof(buf)-47,"%017lu",BLZsumme);
-   memset(buf+64,'0',13); memset(buf+77,' ',51);
+   snprintf0(buf+64,sizeof(buf)-64,"%013llu",Betragssumme);
+/*   memset(buf+64,'0',13); */
+   memset(buf+77,' ',51);
    if (write(dtausfile,buf,128)!=128) throw IOerror();
    if (::close(dtausfile)) throw IOerror();
 

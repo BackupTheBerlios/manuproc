@@ -1,4 +1,4 @@
-// $Id: AufEintragBase2.pgcc,v 1.29 2002/01/09 14:55:30 cvs_malte Exp $
+// $Id: AufEintragBase2.pgcc,v 1.30 2002/01/21 16:49:19 cvs_christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -73,12 +73,12 @@ bool AufEintragBase2::deleteAuftragEntry() const throw(SQLerror)
  // Löschen aus Auftragszuordnung
  exec sql delete from auftragsentryzuordnung where neuauftragid=:AUFTRAGID
       and neuinstanz=:INSTANZ and neuzeilennr=:ZEILENNR;
- SQLerror::test(__FILELINE__+(string)" DELETE AUFTRAG 1");
+ SQLerror::test(__FILELINE__+(std::string)" DELETE AUFTRAG 1");
 
  // Löschen aus Auftragentry
  exec sql delete from auftragentry where auftragid=:AUFTRAGID
       and zeilennr =:ZEILENNR and instanz=:INSTANZ;
- SQLerror::test(__FILELINE__+(string)" DELETE AUFTRAG 2");
+ SQLerror::test(__FILELINE__+(std::string)" DELETE AUFTRAG 2");
  return true;
 }
 

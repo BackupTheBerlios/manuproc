@@ -36,7 +36,7 @@ public:
         typedef std::vector<LieferscheinEntry>::const_iterator const_iterator;
 
  	LieferscheinVoll() : Lieferschein() {};
- 	LieferscheinVoll(int lid) throw(SQLerror) ;
+ 	LieferscheinVoll(const cH_ppsInstanz& _instanz,int lid, bool auforder=false) throw(SQLerror) ;
  	void deleteRow(const LieferscheinEntry &le);
 
  const std::vector<LieferscheinEntry> &LsEntries() const { return lsentry; }
@@ -56,7 +56,8 @@ protected:
   cH_LieferscheinVoll() {}
  public:
   cH_LieferscheinVoll(LieferscheinVoll *r) : Handle<const LieferscheinVoll>(r){}
-  cH_LieferscheinVoll(Lieferschein::ID id) : Handle<const LieferscheinVoll>(new LieferscheinVoll(id)){}
+  cH_LieferscheinVoll(const cH_ppsInstanz& _instanz,Lieferschein::ID id,bool auforder=false) 
+  	: Handle<const LieferscheinVoll>(new LieferscheinVoll(_instanz,id,auforder)){}
 };
   
 

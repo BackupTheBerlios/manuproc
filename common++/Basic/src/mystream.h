@@ -1,4 +1,4 @@
-// $Id: mystream.h,v 1.2 2001/06/27 08:04:09 christof Exp $
+// $Id: mystream.h,v 1.3 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,7 +25,7 @@ class mystream : public ostrstream
 public:
   const std::string str(bool erase=false) 
   {  (*this) << '\0'; 
-     const std::string res(this->ostrstream::str());
+     const std::string res(this->std::ostrstream::str());
      freeze(0);
      if(erase) seekp(0); 
      return res;

@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.9 2001/12/05 07:55:59 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.10 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,7 +25,7 @@
 #define FULL_SELECTIONS "a.instanz, a.auftragid, e.zeilennr, bestellt, " \
 	"e.artikelid, e.rohartikelid, " \
 	"e.lieferdate, geliefert, " \
-	"a.jahrgang, a.stat, " \
+	"a.stat, " \
 	"a.kundennr, youraufnr, coalesce(p.prozessid,0), " \
 	"coalesce(p.letztePlanInstanz,0), " \
    	"coalesce(p.maxPlanInstanz,0), " \
@@ -85,8 +85,8 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Jahr_Artikel &selstr)
  }
              
  setClausel(FULL_SELECT_FROM_WHERE
-	     " where (a.jahrgang="+jahr+
-	     " or e.lieferdate between date('"+jahr+"-1-1') and date('"+jahr+"-12-31')) "
+	     " where ("
+	     " e.lieferdate between date('"+jahr+"-1-1') and date('"+jahr+"-12-31')) "
 	     " and artikelid in ("+artids +
 	     ") and a.instanz="+itos(selstr.instanz));
 }
@@ -98,7 +98,7 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Kunde_Artikel &selstr)
 	     " and a.instanz="+itos(selstr.instanz) +
 	     " and e.status=" + itos(OPEN) +
 	     " and a.kundennr=" + itos(selstr.kundennr) +
-	     " and artikelid="+itos(selstr.artikelid) +
+	     " and artikelid="+itos(selstr.artikel.Id()) +
 	     " order by e.lieferdate");
 }
 

@@ -36,11 +36,12 @@ class LagerPlatz
      bool eInt_valid();
 
   public:
+     LagerPlatz() : i_position(0){}
      LagerPlatz(ppsInstanz::ppsInstId i, std::string p)
          : instanz(i), s_position(p) ,i_position(INOPOS) 
             {DarstellungSetzen();}
      LagerPlatz(ppsInstanz::ppsInstId i, int p)
-         : instanz(i), s_position(""), i_position(i)
+         : instanz(i), s_position(""), i_position(p)
             {DarstellungSetzen();}
 
      std::string SPosition() const 
@@ -57,6 +58,14 @@ class LagerPlatz
           else if(darstellung==eInt) return eInt_valid(); 
           abort();
          }
+
+     bool operator<(const LagerPlatz& b) const
+      {
+        if(darstellung==eInt) return IPosition()<b.IPosition();
+        else return SPosition()<b.SPosition();
+        abort();
+      }
+
 };
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.pgcc,v 1.14 2002/01/11 07:59:28 christof Exp $
+// $Id: ArtikelBaum.pgcc,v 1.15 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -60,7 +60,7 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
        for (int i=0;i<anz;++i)
        {  RohArtikel ra;
           ra.rohartikel=ALTARTIKELID[i];
-          ra.erzeugung=cH_Prozess(PROZESSID[i]);
+          ra.erzeugung=cH_Prozess(Prozess::ID(PROZESSID[i]));
           ra.menge= IMENGE[i] ? ra.erzeugung->getMtrProStk() : MENGE[i];
           if (!ra.menge) ra.menge=1; // 0 ist Unsinn!?
           zusammensetzung.push_back(ra);
@@ -109,7 +109,7 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
           RohArtikel ra;
           ra.rohartikel=i->getMaterial();
           ra.menge= gewicht_kg_m;
-          ra.erzeugung=cH_Prozess(31);
+          ra.erzeugung=cH_Prozess(Prozess::Verarbeitung);
           zusammensetzung.push_back(ra);
         }
       gleiche_Faeden_summieren();
@@ -163,8 +163,9 @@ void ArtikelBaum::new_Artikel(ArtikelBase fuer_artikel,const RohArtikel& RA)
 
 void ArtikelBaum::create_in_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel,menge_t RohMenge)
 {
+#warning erstezen durch FullAuftragSelector? MAT
   std::list<AufEintragBase2> elternliste = AufEintragZu::get_AufEintragList_from_Artikel(alt_artikel,ArtikelStamm(alt_artikel).BestellenBei()->Id(),NOSTAT);
-//cout << "Create :"<<elternliste.size()<<"\n\n\n\n";
+//std::cout << "Create :"<<elternliste.size()<<"\n\n\n\n";
   for(std::list<AufEintragBase2>::const_iterator e=elternliste.begin();e!=elternliste.end();++e)
    {
      AufEintragBase AEB(*e);
@@ -239,7 +240,7 @@ void ArtikelBaum::delete_from_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind
       }
      exec sql close mein;
      
-     for(vector<st_aam>::const_iterator i=V.begin();i!=V.end();++i)
+     for(std::vector<st_aam>::const_iterator i=V.begin();i!=V.end();++i)
       {
         reduceChildren(i->AEB,i->oldAEB,i->menge);
       }
@@ -263,16 +264,16 @@ void ArtikelBaum::reduceChildren(const AufEintragBase& AEB,
                                  const AufEintragBase& oldAEB,
                                  AufEintragBase2::mengen_t menge) 
 {
-//cout << AEB.Instanz()<<' '<<AEB.ZNr()<<'\t'
+//std::cout << AEB.Instanz()<<' '<<AEB.ZNr()<<'\t'
 //<<oldAEB.Instanz()<<' '<<oldAEB.ZNr()<<'\t'<<menge<<'\n';
 
   const_cast<AufEintragBase&>(AEB).updateStk(AEB.getStueck()-menge,false);
   AufEintragZu(oldAEB).setMengeDiff(-menge,AEB,AEB.ZNr());
   std::list<AufEintragZu::st_reflist> L=AufEintragZu(AEB).get_Referenz_list(AEB,true);
-//cout << '\t'<<L.size()<<'\n';
+//std::cout << '\t'<<L.size()<<'\n';
   for(std::list<AufEintragZu::st_reflist>::iterator i=L.begin();i!=L.end();++i)
    {
-//cout << '\t'<<i->AEB2.Instanz()<<' '<<i->AEB2.ZNr()<<'\t'<<i->Menge<<'\n';
+//std::cout << '\t'<<i->AEB2.Instanz()<<' '<<i->AEB2.ZNr()<<'\t'<<i->Menge<<'\n';
      reduceChildren(AufEintragBase(i->AEB2),AEB,i->Menge);
    }
 }        

@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.23 2002/01/08 09:23:07 cvs_malte Exp $
+// $Id: ppsInstanz.h,v 1.25 2002/01/21 15:17:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,7 +30,7 @@ class ppsInstanz : public HandleContent
 public:
  enum ppsInstId {INST_NONE,INST_KNDAUF=1,
  	None=INST_NONE, Kundenauftraege=INST_KNDAUF, 
-#if (defined PETIG_EXTENSIONS) || (defined MABELLA_EXTENSIONS)
+#if defined(PETIG_EXTENSIONS) || defined(MABELLA_EXTENSIONS)
  	INST_FAERB=2,INST_DRUCK=3,INST_WEB=4,
         INST_SCHAER=5,INST_SPRITZ=7,INST_GARNEINKAUF=6,INST_BANDLAGER=8,
         INST_ROHLAGER=9,
@@ -81,13 +81,14 @@ class cH_ppsInstanz : public Handle<const ppsInstanz>
 {
      typedef CacheStatic<ppsInstanz::ID,cH_ppsInstanz> cache_t;
      static cache_t cache;
-     cH_ppsInstanz(const ppsInstanz *s) : Handle<const ppsInstanz>(s) {};
      friend class std::map<ppsInstanz::ID,cH_ppsInstanz>;
      cH_ppsInstanz(){};
   public:
      cH_ppsInstanz(ppsInstanz::ID iid);
+     cH_ppsInstanz(const ppsInstanz *s) : Handle<const ppsInstanz>(s) {};
 
-     bool operator==(const cH_ppsInstanz &b) const {return (*this)->Id()==b->Id();}
+     bool operator==(const cH_ppsInstanz &b) const 
+     {return (*this)->Id()==b->Id();}
 };
 
 #endif

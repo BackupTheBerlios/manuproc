@@ -29,6 +29,8 @@ std::string itos(int i)
  snprintf(buffer,sizeof buffer,"%i",i);
  return(buffer);
 }
+
+
 std::string dtos(double i)
 {
  char buffer[100];

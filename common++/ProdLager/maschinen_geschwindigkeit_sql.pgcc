@@ -1,7 +1,7 @@
 #include "maschinen_geschwindigkeit.hh"
 exec sql include sqlca;
 
-Maschinen_Geschwindigkeit::Maschinen_Geschwindigkeit(ArtikelBase artikel, const string& maschtyp)
+Maschinen_Geschwindigkeit::Maschinen_Geschwindigkeit(ArtikelBase artikel, const std::string& maschtyp)
 {
    exec sql begin declare section;
       char db_masch_typ[17];
@@ -10,7 +10,7 @@ Maschinen_Geschwindigkeit::Maschinen_Geschwindigkeit(ArtikelBase artikel, const 
    exec sql end declare section;
    db_art_id=artikel.Id();
    strncpy(db_masch_typ,maschtyp.c_str(),sizeof(db_masch_typ));
-//cout << "\n"<<db_art_id<<"\t"<<db_masch_typ<<"\n\n";
+//std::cout << "\n"<<db_art_id<<"\t"<<db_masch_typ<<"\n\n";
    // 1. Fall: Artikel+Maschine bekannt ///////////////////////////////////
    bekannt = 1;
    exec sql select produzierte_menge/date_part('epoch',gebrauchte_zeit)*3600*24 

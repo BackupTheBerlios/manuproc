@@ -10,23 +10,26 @@ ProdLager::ProdLager(const AufEintragBase& aeb)
 : AEB(aeb)
 {
   check_artikel_ist_lagerartikel();
+}
 
+void ProdLager::vormerken_oder_bestellen()
+{
   AuftragBase::mengen_t menge_im_lager=artikel_auf_lager(AEB.Artikel());
 cout << "\nProdLager: ";
 cout << "Von Artikel "<<cH_ArtikelBezeichnung(AEB.ArtId())->Bezeichnung()<<
 " ist "<<menge_im_lager<<" im Lager vorhanden\n";
 cout <<"bestellt sind "<<AEB.getRestStk()<<'\n';
 
-  if (aeb.getRestStk() <= menge_im_lager) // Artikel vormerken
+  if (AEB.getRestStk() <= menge_im_lager) // Artikel vormerken
     {
 cout << "Lager reicht aus\n";
-      artikel_vormerken(aeb.getRestStk());
+      artikel_vormerken(AEB.getRestStk());
     }
   else  
     { 
 cout <<"Lager reicht nicht aus\n";
       if(menge_im_lager) artikel_vormerken(menge_im_lager);
-      AuftragBase::mengen_t fehlende_menge=aeb.getRestStk()-menge_im_lager;
+      AuftragBase::mengen_t fehlende_menge=AEB.getRestStk()-menge_im_lager;
       cH_ppsInstanz bestellen_bei(ArtikelStamm(AEB.ArtId()).BestellenBei()->LagerFuer());
       AuftragBase AB(bestellen_bei);
 cout << "tryUpdate Menge= "<<fehlende_menge<<'\n';

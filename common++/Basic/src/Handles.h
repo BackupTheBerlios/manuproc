@@ -1,4 +1,4 @@
-// $Id: Handles.h,v 1.7 2001/12/19 11:02:08 christof Exp $
+// $Id: Handles.h,v 1.8 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,7 +20,7 @@
 // Handle class to make passing Objects faster and easier
 // (java like reference counting)
 
-// WARNING: I don't know whether this is exception safe !!!!!!!
+// WARNING: I don't know whether this is std::exception safe !!!!!!!
 
 #ifndef HANDLES_H
 #define HANDLES_H

@@ -93,7 +93,7 @@ void RechnungEntry::deleteEntry(const RechnungEntry &re) throw(SQLerror)
 void RechnungEntry::setzePreis(const Preis &p) throw (SQLerror)
 {  preis=p;
    exec sql begin declare section;
-   int RNGID,ZNR,PREISMENGE,WAEHRUNG;
+   int RNGID,ZNR,PREISMENGE;
    float PREIS;
    exec sql end declare section;
    

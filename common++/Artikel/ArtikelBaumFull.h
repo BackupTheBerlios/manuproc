@@ -8,16 +8,17 @@
 class ArtikelBaumFull
 {
  private: 
-//   map<ArtikelBase,fixedpoint<5,double,long long int> > map_artikel;
-   map<ArtikelBase,fixedpoint<5> > map_artikel;
+//   std::map<ArtikelBase,fixedpoint<5,double,long long int> > map_artikel;
+   std::map<ArtikelBase,fixedpoint<5> > map_artikel;
    int tiefe;
    
 //   void ArtikelBaum_Pfad(ArtikelBase AB,fixedpoint<5,double,long long> menge);
    void ArtikelBaum_Pfad(ArtikelBase AB,fixedpoint<5> menge);
- public:
+// public:
+private:
    ArtikelBaumFull(ArtikelBase artbase);
-//   map<ArtikelBase,fixedpoint<5,double,long long int> > get_Artikel_Map() const {return map_artikel;}
-   map<ArtikelBase,fixedpoint<5> > get_Artikel_Map() const {return map_artikel;}
+//   std::map<ArtikelBase,fixedpoint<5,double,long long int> > get_Artikel_Map() const {return map_artikel;}
+   std::map<ArtikelBase,fixedpoint<5> > get_Artikel_Map() const {return map_artikel;}
    int Tiefe() const {return tiefe;}
 };
 

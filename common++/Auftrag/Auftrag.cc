@@ -22,5 +22,4 @@
 std::string Auftrag::getAuftragidToStr() const
 { return Formatiere(auftragid,0,6,"","",'0'); }
 
-std::string Auftrag::getJahrgangStr() const 
-{ return Formatiere(jahrgang,0,4,"",""); }
+

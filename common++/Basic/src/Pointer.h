@@ -1,4 +1,4 @@
-// $Id: Pointer.h,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: Pointer.h,v 1.2 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -34,7 +34,7 @@ public:
 	// replace this default value FAST via *this=Something !!!
 	Pointer() : _data(0) {}
 
-	// BEWARE: might not act like expected	
+	// BEWARE: might not act like expected, it compares content not address
 	bool operator==(const _this_t &s) const
 	{  return (*_data)==(*s);
 	}
@@ -49,31 +49,10 @@ public:
 	
 	Pointer(T *b) : _data(b)
 	{  }
-};
 
-template <class T> class const_Pointer
-{private:
-	const T *_data;
-	typedef class const_Pointer<T> _this_t;
-public:
-	// replace this default value FAST via *this=Something !!!
-	// usually this is only needed for cached values
-	const_Pointer() : _data(0) { }
-	
-	// BEWARE: might not act like expected
-	bool operator==(const _this_t &s) const
-	{  return (*_data)==(*s);
+	// difference to handles: I cant do this with the object itself
+	void *ref() const
+	{  return (void*)_data;
 	}
-
-	const T *operator->() const
-	{  return _data;
-	}
-	
-	const T &operator*() const
-	{  return *_data;
-	}
-	
-	const_Pointer(const T *b) : _data(b)
-	{  }
 };
 #endif

@@ -1,7 +1,7 @@
 #include "Faden.hh"
 #include "Materialeigenschaft.hh"
 
-ostream& operator<< (ostream& os, const Faden& f)
+std::ostream& operator<< (std::ostream& os, const Faden& f)
 {
    os << f.anzahl  << ", " << f.material << ", " << f.bindung;
    return os;
@@ -10,7 +10,7 @@ ostream& operator<< (ostream& os, const Faden& f)
 
 int Faden::displayBreite() const
 {
- const string tmp=bindung.extraFunctionData(Bindung::EFFBREITE);
+ const std::string tmp=bindung.extraFunctionData(Bindung::EFFBREITE);
  if(bindung.haveExtraFunction(Bindung::EFFBREITE))
    return atoi(tmp.c_str());
  else
@@ -64,9 +64,9 @@ int Fadenliste::add (Faden f, const unsigned int r)
 
    if (row < liste.size())
    {
-      vector<Faden>::iterator li = liste.begin();
+      std::vector<Faden>::iterator li = liste.begin();
       liste.insert (li+row, f);
-      vector<unsigned int>::iterator ri = repnumliste.begin();
+      std::vector<unsigned int>::iterator ri = repnumliste.begin();
       repnumliste.insert (ri+row, repnumliste [row]);
    }
    else
@@ -76,8 +76,8 @@ int Fadenliste::add (Faden f, const unsigned int r)
       row = liste.size() - 1;
    }
 
-   vector<Faden>::iterator si = sumliste.begin();
-   vector<Faden>::iterator sie = sumliste.end();
+   std::vector<Faden>::iterator si = sumliste.begin();
+   std::vector<Faden>::iterator sie = sumliste.end();
    while ((si != sie) && (*si != f))
    {
       si++;
@@ -96,8 +96,8 @@ int Fadenliste::add (Faden f, const unsigned int r)
       si->setAnzahl (si->getAnzahl() + f.getAnzahl() * repnumliste [row]);
    sort_sumliste();
 
-   vector<Wiederholung>::reverse_iterator i = repliste.rbegin();
-   vector<Wiederholung>::reverse_iterator ie = repliste.rend();
+   std::vector<Wiederholung>::reverse_iterator i = repliste.rbegin();
+   std::vector<Wiederholung>::reverse_iterator ie = repliste.rend();
    while ((i != ie) && (i->getEnd() >= row))
    {
       unsigned int s = i->getStart();
@@ -122,8 +122,8 @@ bool Fadenliste::del (const unsigned int row, unsigned int& index)
    }
    f = &(liste [row]);
 
-   vector<Faden>::iterator si = sumliste.begin();
-   vector<Faden>::iterator sie = sumliste.end();
+   std::vector<Faden>::iterator si = sumliste.begin();
+   std::vector<Faden>::iterator sie = sumliste.end();
    index = 0;
    while ((si != sie) && (*si != *f))
    {
@@ -145,8 +145,8 @@ bool Fadenliste::del (const unsigned int row, unsigned int& index)
    }
    sort_sumliste();
 
-   vector<Wiederholung>::reverse_iterator i = repliste.rbegin();
-   vector<Wiederholung>::reverse_iterator ie = repliste.rend();
+   std::vector<Wiederholung>::reverse_iterator i = repliste.rbegin();
+   std::vector<Wiederholung>::reverse_iterator ie = repliste.rend();
    while ((i != ie) && (i->getEnd() >= row))
    {
       unsigned int s = i->getStart();
@@ -157,15 +157,15 @@ bool Fadenliste::del (const unsigned int row, unsigned int& index)
          i->setEnd (e-1);
       if ((s == row) && (e == row))
       {
-         vector<Wiederholung>::iterator ib = i.base();
+         std::vector<Wiederholung>::iterator ib = i.base();
          repliste.erase (--ib);
       }
       i++;
    }
 
-   vector<Faden>::iterator li = liste.begin();
+   std::vector<Faden>::iterator li = liste.begin();
    liste.erase (li+row);
-   vector<unsigned int>::iterator ri = repnumliste.begin();
+   std::vector<unsigned int>::iterator ri = repnumliste.begin();
    repnumliste.erase (ri+row);
    return erased;
 }
@@ -176,8 +176,8 @@ bool Fadenliste::rep_add (const unsigned int s, const unsigned int e, const unsi
       return false;
    Wiederholung w (s,e,a);
 
-   vector<Wiederholung>::iterator i = repliste.begin();
-   vector<Wiederholung>::iterator ie = repliste.end();
+   std::vector<Wiederholung>::iterator i = repliste.begin();
+   std::vector<Wiederholung>::iterator ie = repliste.end();
    while ((i != ie) && (*i < w))
       i++;
    if (i == ie)
@@ -187,13 +187,13 @@ bool Fadenliste::rep_add (const unsigned int s, const unsigned int e, const unsi
    else
       repliste.insert (i, w);
 
-   vector<unsigned int>::iterator ri = repnumliste.begin();
-   vector<Faden>::iterator fi = liste.begin();
+   std::vector<unsigned int>::iterator ri = repnumliste.begin();
+   std::vector<Faden>::iterator fi = liste.begin();
    for (unsigned int i = w.getStart(); i <= w.getEnd(); i++)
    {
       Faden f = *(fi+i);
-      vector<Faden>::iterator si = sumliste.begin();
-      vector<Faden>::iterator sie = sumliste.end();
+      std::vector<Faden>::iterator si = sumliste.begin();
+      std::vector<Faden>::iterator sie = sumliste.end();
       while ((si != sie) && (*si != f))
          si++;
       if (si == sie)
@@ -212,8 +212,8 @@ bool Fadenliste::rep_del (const unsigned int s, const unsigned int e)
       return false;
    Wiederholung w (s,e,1);
 
-   vector<Wiederholung>::iterator i = repliste.begin();
-   vector<Wiederholung>::iterator ie = repliste.end();
+   std::vector<Wiederholung>::iterator i = repliste.begin();
+   std::vector<Wiederholung>::iterator ie = repliste.end();
    while ((i != ie) && (*i != w))
       i++;
    if (i == ie)
@@ -222,15 +222,15 @@ bool Fadenliste::rep_del (const unsigned int s, const unsigned int e)
    int anzahl = i->getAnzahl();
    repliste.erase (i);
 
-   vector<unsigned int>::iterator ri = repnumliste.begin();
-   vector<Faden>::iterator fi = liste.begin();
+   std::vector<unsigned int>::iterator ri = repnumliste.begin();
+   std::vector<Faden>::iterator fi = liste.begin();
    for (unsigned int i = w.getStart(); i <= w.getEnd(); i++)
    {
       *(ri+i) /= anzahl;
 
       Faden f = *(fi+i);
-      vector<Faden>::iterator si = sumliste.begin();
-      vector<Faden>::iterator sie = sumliste.end();
+      std::vector<Faden>::iterator si = sumliste.begin();
+      std::vector<Faden>::iterator sie = sumliste.end();
       while ((si != sie) && (*si != f))
          si++;
       if (si == sie)
@@ -255,8 +255,8 @@ void Fadenliste::erase()
 
 void Fadenliste::print_out() const
 {
-   ostream_iterator<Faden> ostream (cout, "\n");
-   copy (liste.begin(), liste.end(), ostream);
+   ostream_iterator<Faden> oit(std::cout, "\n");
+   copy (liste.begin(), liste.end(), oit);
 }
 
 class Anzahl_Descending
@@ -270,9 +270,9 @@ void Fadenliste::sort_sumliste()
 {  sort(sumliste.begin(),sumliste.end(),Anzahl_Descending());
 }
 
-void Fadenliste::EntfalteWiederholungen_recurse(vector<Faden> &liste_out,
-	vector<Wiederholung>::const_iterator ri,vector<Faden>::const_iterator i,
-	vector<Faden>::const_iterator e,unsigned int index) const
+void Fadenliste::EntfalteWiederholungen_recurse(std::vector<Faden> &liste_out,
+	std::vector<Wiederholung>::const_iterator ri,std::vector<Faden>::const_iterator i,
+	std::vector<Faden>::const_iterator e,unsigned int index) const
 {reloop:
    if (i==e) return;
    // Zeilen vor der aktuellen Wiederholung
@@ -282,13 +282,13 @@ void Fadenliste::EntfalteWiederholungen_recurse(vector<Faden> &liste_out,
    }
    if (ri==repend() || i==e) return;
    // Wiederholung
-   vector<Faden>::const_iterator new_end(i);
+   std::vector<Faden>::const_iterator new_end(i);
    ++new_end; // Muss ja eine Zeile nach der Wiederholung stehen
    for (unsigned int j=ri->getStart();j<ri->getEnd();++j) 
    {  if (new_end==e) return; // da ist was schiefgelaufen !!!
       ++new_end;
    }
-   vector<Wiederholung>::const_iterator next_ri(ri);
+   std::vector<Wiederholung>::const_iterator next_ri(ri);
    ++next_ri;
    for (unsigned int j=0;j<ri->getAnzahl();++j)
       EntfalteWiederholungen_recurse(liste_out,next_ri,i,new_end,index);
@@ -299,7 +299,7 @@ void Fadenliste::EntfalteWiederholungen_recurse(vector<Faden> &liste_out,
    goto reloop;
 }
 
-void Fadenliste::EntfalteWiederholungen(vector<Faden> &liste_out) const
+void Fadenliste::EntfalteWiederholungen(std::vector<Faden> &liste_out) const
 {  int index=0;
    liste_out.clear();
    EntfalteWiederholungen_recurse(liste_out,repbegin(),begin(),end(),index);

@@ -1,4 +1,4 @@
-// $Id: ArtikelSumme.cc,v 1.1 2001/12/04 08:44:58 christof Exp $
+// $Id: ArtikelSumme.cc,v 1.2 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,12 +23,12 @@
 #include <Artikel/ArtikelBezeichnung.h>
 #include <Aux/dbconnect.h>
 
-ostream &operator<<(ostream &o, const ArtikelMenge &am)
+std::ostream &operator<<(std::ostream &o, const ArtikelMenge &am)
 {  return o << cH_ArtikelBezeichnung(am.Artikel())->Bezeichnung() << ":\t"
 	<< am.Menge() << "\t| " << am.abgeleiteteMenge();
 }
 
-ostream &operator<<(ostream &o, const ArtikelMengeSumme &ams)
+std::ostream &operator<<(std::ostream &o, const ArtikelMengeSumme &ams)
 {  return o << ams.Menge() << "\t| " << ams.abgeleiteteMenge();
 }
 
@@ -36,25 +36,25 @@ int main()
 {  Petig::dbconnect();
    ArtikelMengeSumme ams;
    ArtikelMenge am=ArtikelMenge(218290,100);
-   cout << ams << '\n';
-   cout << '+' << am << '\n';
+   std::cout << ams << '\n';
+   std::cout << '+' << am << '\n';
    ams.cumulate(am);
-   cout << "=\t" << ams << '\n';
+   std::cout << "=\t" << ams << '\n';
    am=ArtikelMenge(218219,32);
-   cout << '+' << am << '\n';
+   std::cout << '+' << am << '\n';
    ams.cumulate(am);
-   cout << "=\t" << ams << '\n';
+   std::cout << "=\t" << ams << '\n';
    am=ArtikelMenge(218325,4,3000);
-   cout << '+' << am << '\n';
+   std::cout << '+' << am << '\n';
    ams.cumulate(am);
-   cout << "=\t" << ams << '\n';
+   std::cout << "=\t" << ams << '\n';
    am=ArtikelMenge(126712,2,4000);
-   cout << '+' << am << '\n';
+   std::cout << '+' << am << '\n';
    ams.cumulate(am);
-   cout << "=\t" << ams << '\n';
+   std::cout << "=\t" << ams << '\n';
    am=ArtikelMenge(38213,1,1.5);
-   cout << '+' << am << '\n';
+   std::cout << '+' << am << '\n';
    ams.cumulate(am);
-   cout << "=\t" << ams << '\n';
+   std::cout << "=\t" << ams << '\n';
    return 0;
 }

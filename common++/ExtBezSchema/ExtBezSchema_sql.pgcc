@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema_sql.pgcc,v 1.10 2002/01/11 07:59:28 christof Exp $
+// $Id: ExtBezSchema_sql.pgcc,v 1.11 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -55,7 +55,7 @@ bool ExtBezSchema::exist_schema_for_typ(ID eid,const ArtikelTyp &t)
 ExtBezSchema::ExtBezSchema(ID eid,const ArtikelTyp &t) throw(SQLerror)
 	: typ(t)
 {
-//cout << "ExtBezSchema: " <<eid<<' '<<t<<'\n';
+//std::cout << "ExtBezSchema: " <<eid<<' '<<t<<'\n';
 //  int EXTARTBEZID=eid;
 //  int TYP=t;
  exec sql begin declare section;

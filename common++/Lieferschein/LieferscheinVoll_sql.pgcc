@@ -1,4 +1,4 @@
-/* $Id: LieferscheinVoll_sql.pgcc,v 1.7 2001/10/17 06:36:27 christof Exp $ */
+/* $Id: LieferscheinVoll_sql.pgcc,v 1.11 2002/01/21 17:04:18 cvs_christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,44 +22,41 @@
 #include<Aux/Transaction.h>
 exec sql include sqlca;
 
-LieferscheinVoll::LieferscheinVoll(int lid) throw(SQLerror)
-: Lieferschein(lid)
+LieferscheinVoll::LieferscheinVoll(const cH_ppsInstanz& _instanz,int lid,bool auforder) throw(SQLerror)
+: Lieferschein(_instanz,lid)
 {
-try{
- exec sql begin declare section;
-  int ARTIKELID[30], STUECK[30], PALETTE[30], ZEILE[30], LFRSID=lid;
-  char YOURAUFTRAG[30][21];
-  float MENGE[30];
-  bool ZUSATZINFO[30];
-  int REFAUFTRAG[30],REFAUFZEILE[30];
- exec sql end declare section;
-
+ std::string qstr =
+  "select ly.artikelid, ly.zeile, coalesce(ly.stueck,0), "
+  " coalesce(ly.menge,0), coalesce(ly.palette,0), coalesce(youraufnr,''),"
+  "coalesce(ly.zusatzinfo,'f'), coalesce(refauftragid,0),"
+  " coalesce(refzeilennr,0)"
+  " from lieferscheinentry ly ";
+ if (auforder) qstr+=" left join auftrag a on ly.refauftragid = a.auftragid";
+ qstr+= " where (ly.instanz,ly.lfrsid) = ("+itos(Instanz())+","+itos(Id())+") order by "+
+  auforder ? "zeile":"ly.refauftragid";
+  
+ int artikelid,stueck,palette,zeile,lfrsid;
+ int refauftrag,refaufzeile;
+ std::string yourauftrag;
+ float menge;
+ bool zusatzinfo;
+  
  Transaction tr;
- exec sql declare lein cursor for
-   select ly.artikelid, ly.zeile, coalesce(ly.stueck,0), coalesce(ly.menge,0), 
-   	coalesce(ly.palette,0), coalesce(youraufnr,''),
-	coalesce(ly.zusatzinfo,'f'), coalesce(refauftragid,0),
-	coalesce(refzeilennr,0)
-   from lieferscheinentry ly 
-   left join auftrag a on ly.refauftragid = a.auftragid
-   where ly.lfrsid = :LFRSID order by zeile;
- exec sql open lein;
- SQLerror::test(__FILELINE__);
- while (true)
-   {
-    exec sql fetch 30 in lein into
-         :ARTIKELID, :ZEILE, :STUECK, :MENGE, :PALETTE, :YOURAUFTRAG,
-	 :ZUSATZINFO, :REFAUFTRAG, :REFAUFZEILE;
-    SQLerror::test(__FILELINE__,100);
-    if (sqlca.sqlcode) break;
-    unsigned int lines=sqlca.sqlerrd[2];
-    for (unsigned int i=0;i<lines;++i)
-	lsentry.push_back(LieferscheinEntry(LFRSID,ZEILE[i],ARTIKELID[i],
-		STUECK[i],MENGE[i],PALETTE[i],YOURAUFTRAG[i],ZUSATZINFO[i],
-		AufEintragBase2(ppsInstanz::INST_KNDAUF,REFAUFTRAG[i],REFAUFZEILE[i])));
-    if (lines<30) break;
+ 
+ Query query(qstr);
+ FethcIStream is=query.Fetch();
+ while((query>>is).good())
+   {is >> artikelid >> zeile >> stueck >> menge >> palette 
+   	>> yourauftrag >> zusatzinfo >> refauftrag >> refaufzeile;
+   
+    lsentry.push_back(LieferscheinEntry(Instanz(),Id(),zeile,artikelid,
+		stueck,menge,palette,yourauftrag,zusatzinfo,
+		AufEintragBase2(ppsInstanz::INST_KNDAUF,refauftrag,refaufzeile)));
    }
- exec sql close lein;
+ SQLerror_test("LieferscheinVoll::LieferscheinVoll",100);
+
  tr.close();
- }catch (SQLerror &e) {cerr <<e<<'\n';}
 }
+
+
+

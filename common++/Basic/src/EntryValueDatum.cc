@@ -1,4 +1,4 @@
-/* $Id: EntryValueDatum.cc,v 1.2 2001/12/04 08:42:10 christof Exp $ */
+/* $Id: EntryValueDatum.cc,v 1.3 2002/01/22 09:15:55 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -63,7 +63,7 @@ const std::string EntryValueKalenderwoche::getStrVal() const
 {
   int lieferwoche = datum.Woche();
   int lieferjahr = datum.Jahr();
-  string lj=itos (lieferjahr).substr(2);
+  std::string lj=itos (lieferjahr).substr(2);
   return itos(lieferwoche)+"'"+lj;
 }
 

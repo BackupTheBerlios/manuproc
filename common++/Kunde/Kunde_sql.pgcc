@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.9 2002/01/11 07:59:28 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.10 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -31,10 +31,10 @@ Kunde::Kunde(ID _id) throw(SQLerror)
          PLZ[11],POSTFACHPLZ[11],KTONR[11],BLZ[11],POSTANWVOR[41],POSTANWNACH[41];
    char LKZ[4];
    int FLAECHE,MITARBEITER;
-   double KUNDENUMSATZ,PLANUMSATZ,UMSATZ, RABATT,EINZUGRABATT;
+   double KUNDENUMSATZ,PLANUMSATZ,UMSATZ, RABATT,EINZUGRABATT,SKONTOSATZ;
    int SKONTOFRIST;
    char VEREIN[31];
-   bool BANKEINZUG,LIEFERADRESSE,RECHUNGSADRESSE;
+   bool BANKEINZUG,LIEFERADRESSE,RECHUNGSADRESSE,ENTSORGUNG;
    char NOTIZ[2048];
    char STAND[50];
    int WAEHRUNGID;
@@ -61,7 +61,8 @@ Kunde::Kunde(ID _id) throw(SQLerror)
          coalesce(rabatt,0),coalesce(einzugrabatt,0),coalesce(skontofrist,0),
          coalesce(verein,''),coalesce(bankeinzug,false), coalesce(notiz,''), 
          coalesce(stand,'now'),	coalesce(lkz,''),
-	 coalesce(waehrungid,:WAEHRUNGID)
+	 coalesce(waehrungid,:WAEHRUNGID),
+	 coalesce(entsorgung,false), coalesce(skontosatz,0)
    	into :NAME, :SORTNAME, :BEZSCHEMA, :STRASSE, :POSTANWVOR, :POSTANWNACH,
            :HSNR, :PLZ, :POSTFACH,
            :POSTFACHPLZ, :ORT, :KTONR, :BLZ, :BANKNAME, :BANKINDEX, :RNG_AN,
@@ -69,7 +70,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
             :LIEFERADRESSE,:RECHUNGSADRESSE,
            :FLAECHE,:MITARBEITER,:KUNDENUMSATZ,:PLANUMSATZ,:UMSATZ,
 	   :RABATT,:EINZUGRABATT,:SKONTOFRIST,:VEREIN,:BANKEINZUG,
-	   :NOTIZ,:STAND, :LKZ, :WAEHRUNGID
+	   :NOTIZ,:STAND, :LKZ, :WAEHRUNGID, :ENTSORGUNG, :SKONTOSATZ
    	from kunden k left join banken b using(bankindex)
    	where kundennr= :ID;
 
@@ -96,6 +97,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    bankverb.bankindex=BANKINDEX;
    rngan=RNG_AN;
    kundendaten.preisliste=PREISLISTE;
+   entsorgung = ENTSORGUNG;
 
    kundendaten.flaeche = FLAECHE;
    kundendaten.mitarbeiter=MITARBEITER;
@@ -104,12 +106,13 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    kundendaten.umsatz=UMSATZ;
    kundendaten.rabatt=RABATT;
    kundendaten.einzugrabatt=EINZUGRABATT;
+   kundendaten.skontosatz=SKONTOSATZ;
    kundendaten.skontofrist=SKONTOFRIST;
    kundendaten.verein=VEREIN;
    kundendaten.bankeinzug=BANKEINZUG;
    kundendaten.stand=STAND;
    kundendaten.notiz=NOTIZ;
-   waehrung = cP_Waehrung(WAEHRUNGID);
+   waehrung = cP_Waehrung(Waehrung::ID(WAEHRUNGID));
 }
 
 

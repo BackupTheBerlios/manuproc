@@ -1,4 +1,4 @@
-/* $Id: Prozess.h,v 1.7 2001/12/04 08:42:10 christof Exp $ */
+/* $Id: Prozess.h,v 1.8 2002/01/22 09:15:55 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -32,12 +32,12 @@ class Prozess : protected HandleContent
 	friend class cH_Prozess;
 	friend class Handle<const Prozess>;
 public:
-	typedef int ID;
-	
 	enum ID2
 	{  None=0, Drucken=1, Faerben=30, Verarbeitung=31, Aequivalenz=38,
 		Weben=42, Schaeren=43, Verpacken=44, Giessen=45,
 		Rollen_Jumbo=16, Rollen=46 };
+	typedef ID2 ID;
+
 	static const ID default_id=None;
         static const ID standard_id=Verarbeitung;
 
@@ -49,7 +49,7 @@ private:
 
 public:
  Prozess(ID pid) throw(SQLerror);
- Prozess() : prozessid(0), meterprostk(0)
+ Prozess() : prozessid(default_id), meterprostk(0)
  {}
  // wird diese Routine noch verwendet? CP 2000-08-16
  // wurde in ProzessBox verwendet - jetzt nicht mehr
@@ -66,6 +66,9 @@ public:
  ID Id() const { return prozessid; }
 
  bool operator==(const Prozess& b) const {return Id()==b.Id();}
+ bool operator!=(const Prozess& b) const {return Id()!=b.Id();}
+ bool operator==(const ID b) const {return Id()==b;}
+ bool operator!=(const ID b) const {return Id()!=b;}
 };
 
 class cH_Prozess : public Handle<const Prozess>
@@ -76,7 +79,7 @@ private:
 	static cache_t cache;
 	cH_Prozess(const Prozess *p) : Handle<const Prozess>(p) {}
 //	friend cache_t::stl_type;
-	friend class std::map<int, cH_Prozess>;
+	friend class std::map<Prozess::ID, cH_Prozess>;
 	cH_Prozess() {}
 public:
 	static const Prozess::ID default_pid=Prozess::default_id;

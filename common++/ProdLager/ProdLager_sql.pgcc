@@ -3,35 +3,85 @@
 exec sql include sqlca;
 #include <Aux/SQLerror.h>
 #include <Aux/itos.h>
-#include "produktion_status.h"
-
+#include <ProdLager/JumboRolle.h>
 
 void ProdLager::artikel_vormerken(AuftragBase::mengen_t menge)
 {
   exec sql begin declare section;
    int db_id=AEB.ArtId();
    double db_menge = menge;
-   int db_status;
    char db_lieferdatum[21];
    int db_von_auftragid=AEB.Id();
    int db_von_auftraginstanz=AEB.Instanz();
    int db_von_auftragznr=AEB.ZNr();
   exec sql end declare section;
-  db_status=ProdStatus::VORGEMERKT;
   AEB.getLieferdatum().write_postgres(db_lieferdatum,sizeof db_lieferdatum);
-  exec sql insert into prod_lager 
+  try{
+    exec sql update prod_lager set menge=menge+:db_menge, lasteditdate=now()
+      where 
       (artikelid,von_auftrag_id,von_auftrag_instanz,von_auftrag_znr,
-         menge,lieferdatum,status,lasteditdate) values
+         lieferdatum) =
       (:db_id,:db_von_auftragid,:db_von_auftraginstanz,:db_von_auftragznr,
-         :db_menge,:db_lieferdatum,:db_status,now());
-  SQLerror::test(__FILELINE__);
+         :db_lieferdatum);
+    SQLerror::test(__FILELINE__);
+   }
+  catch (SQLerror &e)
+   {
+    exec sql insert into prod_lager 
+      (artikelid,von_auftrag_id,von_auftrag_instanz,von_auftrag_znr,
+         menge,lieferdatum,lasteditdate) values
+      (:db_id,:db_von_auftragid,:db_von_auftraginstanz,:db_von_auftragznr,
+         :db_menge,:db_lieferdatum,now());
+    SQLerror::test(__FILELINE__);
+   }
 }
+
+void ProdLager::artikel_ausliefern(AuftragBase::mengen_t menge)
+{
+  exec sql begin declare section;
+   int db_id=AEB.ArtId();
+   double db_menge;
+   char db_lieferdatum[21];
+   int db_von_auftragid=AEB.Id();
+   int db_von_auftraginstanz;
+   int db_von_auftragznr=AEB.ZNr();
+  exec sql end declare section;
+  db_von_auftraginstanz=cH_ppsInstanz(AEB.Instanz())->LagerFuer();
+  AEB.getLieferdatum().write_postgres(db_lieferdatum,sizeof db_lieferdatum);
+  exec sql select menge into:db_menge from prod_lager where 
+      (artikelid,von_auftrag_id,von_auftrag_instanz,von_auftrag_znr,
+         lieferdatum) =
+      (:db_id,:db_von_auftragid,:db_von_auftraginstanz,:db_von_auftragznr,
+         :db_lieferdatum);
+
+  if(db_menge<=menge)
+   {
+    exec sql delete from prod_lager where
+      (artikelid,von_auftrag_id,von_auftrag_instanz,von_auftrag_znr,
+         lieferdatum) =
+      (:db_id,:db_von_auftragid,:db_von_auftraginstanz,:db_von_auftragznr,
+         :db_lieferdatum);
+     SQLerror::test(__FILELINE__);
+   }
+  else 
+   {
+     db_menge=menge;
+     exec sql update prod_lager set menge=menge-:db_menge where 
+      (artikelid,von_auftrag_id,von_auftrag_instanz,von_auftrag_znr,
+         lieferdatum) =
+      (:db_id,:db_von_auftragid,:db_von_auftraginstanz,:db_von_auftragznr,
+         :db_lieferdatum);
+    SQLerror::test(__FILELINE__);
+   }
+}
+
+
 
 
 
 static const float reste_faktor = 0.25;
 
-double ProdLager::artikel_auf_lager(const ArtikelBase& artikel)
+AuftragBase::mengen_t  ProdLager::artikel_auf_lager(const ArtikelBase& artikel)
 {
   std::string lagername = artikel_lagername(artikel);
 
@@ -42,13 +92,14 @@ double ProdLager::artikel_auf_lager(const ArtikelBase& artikel)
   exec sql end declare section;
   std::string squery;
   if (lagername=="rl_inhalt")
-   squery = "SELECT coalesce(kartons,0)*coalesce(kg_per_karton,0),
-                    coalesce(reste,0)  *coalesce(kg_per_karton,0) 
+   squery = "SELECT coalesce(kartons*kg_per_karton,0),
+                    coalesce(rest_kg,0) 
                from rl_inhalt where material="+itos(artikel.Id());
   else if (lagername=="rohjumbo")
-   squery += " SELECT coalesce(barcoist,soll_meter), coalesce(rest,'false')
+   squery += " SELECT coalesce(barcoist,soll_meter,0), coalesce(rest,'false')
          from rohjumbo 
-         where artikelid = "+itos(artikel.Id()) ;
+         where artikelid = "+itos(artikel.Id()) +" and  status="+
+         itos(JumboRolle::ImLager) ;
   else abort();
 
   strncpy(query,squery.c_str(),sizeof(query));
@@ -73,25 +124,27 @@ double ProdLager::artikel_auf_lager(const ArtikelBase& artikel)
         summe += db_menge + db_restmenge * reste_faktor;
    }
   exec sql close menge_ein;
-
+cout << "Im Lager: "<<summe<<" von "<<cH_ArtikelBezeichnung(artikel)->Bezeichnung()<<'\n'; 
   ///////////////////////////////////////////////////////
   // und nun die vorgemerkte Menge wieder abziehen
-  squery = "select menge from prod_lager where \
-      artikelid="+itos(+artikel.Id())+" and status="+itos(ProdStatus::VORGEMERKT);
+  squery = "select menge from prod_lager where artikelid="+itos(+artikel.Id());
   strncpy(query,squery.c_str(),sizeof(query));
   exec sql prepare menge_aus_ from :query;
   exec sql declare menge_aus cursor for menge_aus_;
   exec sql open menge_aus;
   SQLerror::test(__FILELINE__);
+//std::cout << artikel.Id()<<'\t'<<summe<<' ';
   while(true)
    {
      exec sql fetch menge_aus into :db_menge;
      SQLerror::test(__FILELINE__,100);
      if (sqlca.sqlcode) break;
+cout << "\n\nVorgemerkt: "<<db_menge<<'\n';
      summe-=db_menge;
    }
   exec sql close menge_aus;
   tr.close();
+//std::cout << summe<<'\n';
   assert(summe>=0);
   return summe;
 }

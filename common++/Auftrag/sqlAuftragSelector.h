@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.11 2001/12/05 07:55:59 christof Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.12 2002/01/22 09:15:55 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -59,7 +59,7 @@ public:
 
     sel_Jahr_Artikel(ppsInstanz::ID i, unsigned int j, ArtikelBase::ID a) 
     	: jahr(j), instanz(i) { artikelid.push_back(a); }
-    sel_Jahr_Artikel(ppsInstanz::ID i, unsigned int j,const vector<ArtikelBase::ID> &a) 
+    sel_Jahr_Artikel(ppsInstanz::ID i, unsigned int j,const std::vector<ArtikelBase::ID> &a) 
     	: jahr(j), artikelid(a), instanz(i) {}
   };
  SQLFullAuftragSelector(const sel_Jahr_Artikel &selstr);
@@ -67,11 +67,11 @@ public:
  struct sel_Kunde_Artikel
 // wird zum Abschreiben verwendet
 // d.h. sortiert nach Lieferdatum (asc)
-  { unsigned int kundennr;
-    unsigned int artikelid;
+  { Kunde::ID kundennr;
+    ArtikelBase artikel;
     ppsInstanz::ID instanz;
-    sel_Kunde_Artikel(ppsInstanz::ID i, unsigned int k,unsigned int a) 
-    : kundennr(k), artikelid(a), instanz(i)
+    sel_Kunde_Artikel(ppsInstanz::ID i, Kunde::ID k,ArtikelBase a) 
+    : kundennr(k), artikel(a), instanz(i)
     {}
   };
  SQLFullAuftragSelector(const sel_Kunde_Artikel &selstr);

@@ -1,4 +1,4 @@
-/* $Id: Zahlvorgang.cc,v 1.2 2001/07/05 09:23:02 christof Exp $ */
+/* $Id: Zahlvorgang.cc,v 1.3 2002/01/22 09:15:55 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,8 +23,8 @@
 
 Zahlvorgang::Zahlvorgang(long zahlblz, long long zahlkonto,
                 long betrag /* in Pf/Cent */, bool euro,
-                std::vector<string> zahlname, std::vector<string> zweck,
-                std::vector<string> myname) throw(Datenfehler)
+                std::vector<std::string> zahlname, std::vector<std::string> zweck,
+                std::vector<std::string> myname) throw(Datenfehler)
 {  BLZ=zahlblz;
    Konto=zahlkonto;
    Betrag=betrag;
@@ -34,7 +34,7 @@ Zahlvorgang::Zahlvorgang(long zahlblz, long long zahlkonto,
    Auftraggeber.insert(Auftraggeber.end(),myname.begin(),myname.end());
    // check
    if (BLZ<10000000 || BLZ >=90000000) throw Datenfehler("BLZ falsch");
-   if (Euro) throw Datenfehler("Euro geht noch nicht");
+//   if (Euro) throw Datenfehler("Euro geht noch nicht");
    if (Name.size()>1) throw Datenfehler("Es muß (noch) genau ein Name angegeben sein");
 //   if (Auftraggeber.size()!=1) throw Datenfehler("Es muß (noch) genau ein Auftraggeber angegeben sein");
    if (Verwendungszweck.size()>4) throw Datenfehler("Zu viele Verwendungszwecke");
@@ -64,22 +64,27 @@ int Zahlvorgang::packeVerwendung()
 }
 #endif
 
-void Zahlvorgang::fillBuffer(char *buf,int num,long eigeneBLZ,
+void Zahlvorgang::fillBuffer(char *buf,unsigned int bufsize, int num,long eigeneBLZ,
 	long long eigenesKonto,std::string eigenerName,char typ) const throw()
 {  switch (num)
    {  case 0:
    /* Datensatz C1 */
-         snprintf0(buf,sizeof buf,"%04dC%08ld",187+29*extraZeilen(),eigeneBLZ); /* C3 */
-         snprintf0(buf+13,sizeof(buf)-13,"%08ld",BLZ); /* C4 */
-         snprintf0(buf+21,sizeof(buf)-21,"%010llu",Konto); /* C5 */
+         snprintf0(buf,bufsize,"%04dC%08ld",187+29*extraZeilen(),eigeneBLZ); /* C3 */
+         snprintf0(buf+13,bufsize-13,"%08ld",BLZ); /* C4 */
+         snprintf0(buf+21,bufsize-21,"%010llu",Konto); /* C5 */
          memset(buf+31,'0',13); /* C6 */
          memcpy(buf+44,typ=='G'?"51000":"05000",5); /* C7a+b */
          buf[49]=' ';  /* C8 */
-         snprintf0(buf+50,sizeof(buf)-50,"0%010lu",Betrag); /* C9 */
-         snprintf0(buf+61,sizeof(buf)-61,"%08ld",eigeneBLZ); /* C10 */
-         snprintf0(buf+69,sizeof(buf)-69,"%010llu",eigenesKonto); /* C11 */ 
-         /* EURO Umrechnung - hat NULL zu enthalten */
-         memset(buf+79,'0',11); /* C12 */
+	 if(Euro)
+		memset(buf+50,'0',11); /* C9 */
+	 else
+           	snprintf0(buf+50,bufsize-50,"0%010lu",Betrag); /* C9 */
+         snprintf0(buf+61,bufsize-61,"%08ld",eigeneBLZ); /* C10 */
+         snprintf0(buf+69,bufsize-69,"%010llu",eigenesKonto); /* C11 */ 
+	 if(!Euro)
+         	memset(buf+79,'0',11); /* C12 */
+	 else
+		snprintf0(buf+79,bufsize-79,"0%010lu",Betrag); /* C9 */
          memcpy(buf+90,"   ",3);  /* C13 */
          Bankauftrag::string2Bank(buf+93,Name[0]); /* C14a */
          memset(buf+120,' ',8); /* C14b */
@@ -91,7 +96,9 @@ void Zahlvorgang::fillBuffer(char *buf,int num,long eigeneBLZ,
          else
             Bankauftrag::string2Bank(buf,eigenerName);
          Bankauftrag::string2Bank(buf+27,Verwendungszweck[0]); /* C16 */
-         snprintf0(buf+54,sizeof(buf)-54,"   %02d",extraZeilen()); /* C17+C18 */
+	 if(Euro) memset(buf+54,'1',1); /*C17a*/
+	 else memset(buf+54,' ',1); /*C17a*/
+         snprintf0(buf+55,bufsize-55,"  %02d",extraZeilen()); /* C17b+C18 */
          if (Verwendungszweck.size()>1) 
          { buf[59]='0'; buf[60]='2'; Bankauftrag::string2Bank(buf+61,Verwendungszweck[1]); }
          else memset(buf+59,' ',29); /* C19-C20 */

@@ -25,11 +25,12 @@
 #include <Auftrag/auftrag_status.h>
 //#include <Aux/Datum.h>
 class AufEintragBase;
-
+#include <Kunde/Kunde.h>
 // hier sollten noch viel mehr Funktionen aus Auftrag rein !!!
 
 class AuftragBase
 {
+        bool Exists() const throw(SQLerror) ;
  public:
         typedef fixedpoint<0> mengen_t;
 
@@ -43,12 +44,14 @@ class AuftragBase
 	        :instanz(_instanz), auftragid(aufid) 
 	        {}
 	AuftragBase(cH_ppsInstanz _instanz, int aufid,int kid) throw(SQLerror) ;
+        
 	int Id() const {return auftragid;}
         void set_Id(int i) {auftragid = i;}
         ppsInstanz::ID Instanz() const {return instanz->Id(); }
 	bool valid() const { return auftragid!=0; }
         void setStatusAuftragBase(AufStatVal st) const throw(SQLerror);
 
+        void create_if_not_exists(AufStatVal status,Kunde::ID kunde=Kunde::default_id) const;
         int insertNewEntry(const mengen_t bestellt, 
                 const Petig::Datum lieferdatum, const ArtikelBase& artikel,
                 const AufStatVal status,const bool setInstanzAuftraege,
@@ -66,6 +69,9 @@ class AuftragBase
                 AufStatVal status,
                 const AuftragBase& altAuftrag,int altZnr
                 ) const throw(SQLerror);
+
+	// wandelt enum in std::string um
+	static const std::string getStatusStr(AufStatVal a);
 };
 
 #endif

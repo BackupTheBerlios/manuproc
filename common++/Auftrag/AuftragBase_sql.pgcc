@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <Auftrag/AuftragBase.h>
+#include <Auftrag/Auftrag.h>
 #include<stdio.h>
 #include <Aux/Transaction.h>
 #include<Aux/Changejournal.h>
@@ -44,6 +44,36 @@ AuftragBase::AuftragBase(cH_ppsInstanz _instanz, int aufid,int kid) throw(SQLerr
  *this=AuftragBase(instanz,ID);
 }
 
+bool AuftragBase::Exists() const throw(SQLerror)
+{
+ exec sql begin declare section;
+  int AUFTRAGID=Id();
+  int INSTANZ=int(Instanz());
+  bool DUMMY;
+ exec sql end declare section;
+ exec sql select true into :DUMMY from auftrag where auftragid=:AUFTRAGID and instanz=:INSTANZ;
+ SQLerror::test(__FILELINE__,100);
+ if(sqlca.sqlcode) return false;
+ return true;
+}
+
+void AuftragBase::create_if_not_exists(AufStatVal status,Kunde::ID kunde) const
+{
+cout << "create_if_not_exists: "<<Exists()<<'\n';
+  if(Exists()) return;
+cout << "Anlegen "<<Instanz()<<' '<<Id()<<'\n';
+  exec sql begin declare section;
+   int AUFTRAGID=Id();
+   int INSTANZ=int(Instanz());
+   int KUNDE=kunde;
+   int STATUS=status;
+  exec sql end declare section;
+  exec sql insert into auftrag (instanz,auftragid,kundennr,stat) 
+      values (:INSTANZ,:AUFTRAGID,:KUNDE,:STATUS);
+ SQLerror::test(__FILELINE__);
+}
+
+
 void AuftragBase::setStatusAuftragBase(AufStatVal st) const throw(SQLerror)
 {
  exec sql begin declare section;
@@ -65,7 +95,7 @@ int AuftragBase::insertNewEntry(const mengen_t bestellt,
   const AufStatVal status,const bool setInstanzAuftraege,
   const Preis& preis,const fixedpoint<2> rabatt) const throw(SQLerror)
 {
-//cout << "insertfunktion: "<<bestellt<<' '
+//std::cout << "insertfunktion: "<<bestellt<<' '
 //   <<cH_ArtikelBezeichnung(artikel)->Bezeichnung()<<' '<<Id()<<'\n';
  exec sql begin declare section;
  int AUFTRAGID =Id();
@@ -111,12 +141,14 @@ int AuftragBase::insertNewEntry(const mengen_t bestellt,
     catch(SQLerror &e)
       {tr.rollback(); throw; }
   }
-//cout <<"INSTANZ\n";
+//std::cout <<"INSTANZ\n";
  // Kundenaufträge legen automatisch einen Auftrag bei der entsprechenden Instanz 
  // für denselben Artikel an.
  if(Instanz()==ppsInstanz::INST_KNDAUF)
   {
     AuftragBase AB(ArtikelStamm(artikel).BestellenBei());   
+//std::cout << "Neuer Auftrag in Datenbank:\n";
+//    Auftrag AB(class Auftrag::Anlegen(class ArtikelStamm(artikel).BestellenBei()->Id()),Kunde::default_id);   
     AB.tryUpdateEntry(bestellt,lieferdatum,artikel,status,*this,ZEILENNR);
   }
  else if(setInstanzAuftraege)
@@ -135,7 +167,7 @@ void AuftragBase::InstanzAuftraegeAnlegen(const ArtikelBase& artikel,
     {
       AuftragBase neuAuftrag(ArtikelStamm(i->rohartikel).BestellenBei(),0);
       neuAuftrag.tryUpdateEntry(double(i->menge)*menge,lieferdatum,
-         i->rohartikel,status,*this,altZnr);
+                                i->rohartikel,status,*this,altZnr);
     }
 }
 
@@ -183,7 +215,7 @@ cout << "select zeilennr,bestellt from auftragentry  join auftragsentryzuordnung
 
  if (sqlca.sqlcode==100) return false;
  else  {
-//cout << "EXIST=TRUE\n";
+//std::cout << "EXIST=TRUE\n";
     znr=ZEILENNR;
     newznr=NEUZNR;
     menge=MENGE;
@@ -197,7 +229,10 @@ void AuftragBase::tryUpdateEntry(mengen_t bestellt,
   AufStatVal status,const AuftragBase& altAuftrag, const int altZnr) 
       const throw(SQLerror)
 {
+ create_if_not_exists(status);
+//std::cout << "Try: "<<altAuftrag.Instanz()<<' '<<altAuftrag.Id()<<' '<<altZnr<<'\n';
  AufEintragBase2 XAEB(altAuftrag,altZnr);
+//std::cout << "\tErfolg\n";
 /*
  if(ppsInstanz::LagerInstanz(Instanz()))
    {
@@ -217,11 +252,11 @@ cout << "Neu\n";
     if(ppsInstanz::LagerInstanz(Instanz()))
      {
        znr=insertNewEntry(bestellt,lieferdatum,artikel,status,false)  ;
-       ProdLager(class AufEintragBase(class AufEintragBase2(*this,znr)));
+       ProdLager(class AufEintragBase(class AufEintragBase2(*this,znr))).vormerken_oder_bestellen();
      }
     else 
        znr=insertNewEntry(bestellt,lieferdatum,artikel,status,true)  ;
-//cout << "Zeile: "<<znr<<'\n';
+//std::cout << "Zeile: "<<znr<<'\n';
    AufEintragZu(XAEB).AuftragsEntryZuordnung(bestellt,*this,znr);
   }
  else
@@ -232,15 +267,25 @@ cout << "Alt\t"<<znr<<' '<<altZnr<<' '<<neuznr<<' '
         AufEintragZu(XAEB).AuftragsEntryZuordnung(bestellt,*this,znr);
 
    AufEintragBase2(instanz,auftragid,znr).updateStkDiff(bestellt);
-//cout << "\t"<<instanz->Name()<<' '<<auftragid<<' '<<znr<<' '
+//std::cout << "\t"<<instanz->Name()<<' '<<auftragid<<' '<<znr<<' '
 //<<cH_ArtikelBezeichnung(artikel)->Bezeichnung()<<' '<<menge<<'+'<<bestellt<<' '<<status<<'\n';
-//cout << "Alt\t"<<znr<<' '<<altZnr<<' '<<AufEintragBase2(instanz,auftragid,znr).ZNr()<<'\n';
+//std::cout << "Alt\t"<<znr<<' '<<altZnr<<' '<<AufEintragBase2(instanz,auftragid,znr).ZNr()<<'\n';
     if(ppsInstanz::LagerInstanz(Instanz()))
-       ProdLager(class AufEintragBase(class AufEintragBase2(*this,znr)));
+      ProdLager(class AufEintragBase(class AufEintragBase2(*this,znr))).vormerken_oder_bestellen();
     else 
       InstanzAuftraegeAnlegen(artikel,znr,lieferdatum,status, bestellt) ;
   }
-
   tr.commit();
-//  return znr;
 }
+
+const std::string AuftragBase::getStatusStr(AufStatVal a)
+{
+ switch(a)
+   {case (AufStatVal)UNCOMMITED : return "unbestätigt"; 
+    case (AufStatVal)OPEN : return "offen"; 
+    case (AufStatVal)CLOSED : return "fertig";
+    case (AufStatVal)STORNO : return "storno";
+   }
+ return "-";
+}
+

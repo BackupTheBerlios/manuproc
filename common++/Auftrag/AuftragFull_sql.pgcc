@@ -10,7 +10,7 @@ int AuftragFull::insertNewEntry(unsigned long int bestellt,
   int znr=AuftragBase::insertNewEntry(bestellt,lieferdatum,artid,status,true,preis,rabatt);
   eintragliste.push_back(AufEintragBase(
       Instanz(),Id(),znr,bestellt,artid,lieferdatum,
-      0,0,0,getJahrgang(),getStatus(),getKundennr(),getYourAufNr(),
+      0,0,0,getStatus(),getKundennr(),getYourAufNr(),
       Petig::Datum(),Prozess::default_id,0,0,preis,rabatt,status,
       Petig::Datum::today()));
   return znr;
@@ -38,8 +38,8 @@ AuftragFull::AuftragFull(const AuftragBase& auftrag) throw(SQLerror)
  }
 }
 
-AuftragFull::AuftragFull(Anlegen instanz, long kundennr, int jahr) throw(SQLerror)
-	: Auftrag(instanz, kundennr,jahr)
+AuftragFull::AuftragFull(Anlegen instanz, long kundennr) throw(SQLerror)
+	: Auftrag(instanz, kundennr)
 {  // braucht nicht geladen zu werden
 }
 

@@ -17,7 +17,7 @@ class AuftragsBaum
                 };
 
  private:
-        typedef vector<st_AuftragsBlatt> auftragsbaum_t;
+        typedef std::vector<st_AuftragsBlatt> auftragsbaum_t;
  public:
         typedef auftragsbaum_t::const_iterator const_iterator;
         

@@ -1,4 +1,4 @@
-/* $Id: Zahlvorgang.h,v 1.2 2001/07/05 09:23:02 christof Exp $ */
+/* $Id: Zahlvorgang.h,v 1.3 2002/01/22 09:15:55 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,11 +30,11 @@ class Zahlvorgang
    long long Konto;
    long Betrag;
    bool Euro;
-   std::vector<string> Name;
-   std::vector<string> Verwendungszweck;
-   std::vector<string> Auftraggeber;
+   std::vector<std::string> Name;
+   std::vector<std::string> Verwendungszweck;
+   std::vector<std::string> Auftraggeber;
    
-   void fillBuffer(char *buf,int num,long eigeneBLZ,long long eigenesKonto,
+   void fillBuffer(char *buf,unsigned bufsize,int num,long eigeneBLZ,long long eigenesKonto,
    		std::string eigenerName,char typ) const throw();
    int Bloecke() const throw();
    int extraZeilen() const throw();
@@ -45,13 +45,13 @@ class Zahlvorgang
 public:
 	Zahlvorgang(long zahlblz, long long zahlkonto, 
 		long betrag /* in Pf/Cent */, bool euro,
-		std::vector<string> zahlname, std::vector<string> zweck, 
-		std::vector<string> myname) throw(Datenfehler);
+		std::vector<std::string> zahlname, std::vector<std::string> zweck, 
+		std::vector<std::string> myname) throw(Datenfehler);
 	Zahlvorgang(long zahlblz, long long zahlkonto, 
 		long betrag /* in Pf */,
-		std::vector<string> zahlname, std::vector<string> zweck, 
-		std::vector<string> myname) throw(Datenfehler)
-	{  Zahlvorgang(zahlblz,zahlkonto,betrag,false,zahlname,zweck,myname);
+		std::vector<std::string> zahlname, std::vector<std::string> zweck, 
+		std::vector<std::string> myname) throw(Datenfehler)
+	{  Zahlvorgang(zahlblz,zahlkonto,betrag,true,zahlname,zweck,myname);
 	}
 	Zahlvorgang(long zahlblz, long long zahlkonto, long betrag, bool euro,
 		std::string zahlname, std::string zweck, std::string myname) throw(Datenfehler); 

@@ -1,4 +1,4 @@
-/* $Id: Bankauftrag.h,v 1.3 2002/01/11 07:59:28 christof Exp $ */
+/* $Id: Bankauftrag.h,v 1.4 2002/01/22 09:15:55 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -50,7 +50,7 @@ class Bankauftrag
 	int erzeugeDiskette() throw(IOerror);
 public :
 	Bankauftrag(char _kennz, long myblz, std::string myname,long long mykonto,
-						const string TeX_cmd)
+						const std::string TeX_cmd)
 						throw(IOerror,Datenfehler);
 			
 	Bankauftrag &operator<<(const Zahlvorgang &z) throw(IOerror);
@@ -67,6 +67,7 @@ public :
 	void setze_logfile(FILE *f) { logfile=f; }
 	static const std::string BLZFormat(long BLZ) throw(Datenfehler);
 	static const std::string BLZ2Bankname(long BLZ) throw(SQLerror);
+	long getKennziffer() const { return Kennziffer; }
 };
 
 #endif

@@ -23,19 +23,25 @@
 #include <Auftrag/AufEintragBase.h>
 #include <Aux/ppsInstanz.h>
 
+// soll umbenannt werden in Lager_Vormerkungen
 class ProdLager {
 
       AufEintragBase AEB;
-      void check_artikel_ist_lagerartikel();
 
-      double artikel_auf_lager(const ArtikelBase& artikel);
-      std::string artikel_lagername(const ArtikelBase& artikel);
-      void artikel_vormerken(AuftragBase::mengen_t menge);
+      void check_artikel_ist_lagerartikel();
+      static AuftragBase::mengen_t artikel_auf_lager(const ArtikelBase& artikel);
+      static std::string artikel_lagername(const ArtikelBase& artikel);
 //      int Lieferzeit_in_Tagen(); 
 
    public:
       ProdLager(const AufEintragBase&);
 
+      // Das macht ein Auftrag:
+      void vormerken_oder_bestellen();
+      // Das macht das einlagern:
+      void artikel_vormerken(AuftragBase::mengen_t menge);
+      // Das macht das herausholen:
+      void artikel_ausliefern(AuftragBase::mengen_t menge);
 };
 
 #endif

@@ -1,4 +1,4 @@
-/* $Id: AufEintragBase.h,v 1.20 2002/01/07 16:23:09 christof Exp $ */
+/* $Id: AufEintragBase.h,v 1.21 2002/01/22 09:15:55 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -49,19 +49,15 @@ protected:
  int dispoentrynr;
  int disponr;
  
- AufStatVal status; /* Status des zugehörigen Auftrages */
+ AufStatVal auftragstatus; /* Status des zugehörigen Auftrages */
  AufStatVal entrystatus; /* Status des zugehörigen Eintrags */
  
  int kdnr;
  std::string youraufnr;
  mengen_t bestellt;    /* Stück */
  mengen_t geliefert;   /* Stück */
-// double rest;        /* Meter */
-// double menge;        /* Meter */
-// long geplante_menge;
  Petig::Datum lieferdatum;
  Petig::Datum lasteditdate;
- int jahrgang; // soll bald weg
  cH_Prozess prozess;
  int letztePlanInstanz,maxPlanInstanz;
  Petig::Datum prozdate;
@@ -70,12 +66,21 @@ protected:
  int rabatt;     // % * 100
  	
 public:
+ struct Error : public std::exception
+   {  virtual const char* what() const throw() { return "AufEintragBase::AufEintragBaseError"; }
+       Error() {}
+   };
+ struct NoAEB_Error : public std::exception
+   {  virtual const char* what() const throw() { return "AufEintragBase::NoAEB_Error"; }
+       NoAEB_Error() {}
+   };
+
  AufEintragBase() 
    : artikel(0ul), dispoentrynr(0),
-   	disponr(0), status((AufStatVal)UNCOMMITED), entrystatus((AufStatVal)UNCOMMITED),
+   	disponr(0), auftragstatus((AufStatVal)UNCOMMITED), entrystatus((AufStatVal)UNCOMMITED),
    	kdnr(0), 
    	bestellt(0),
-   	geliefert(0), jahrgang(0), prozess(Prozess::default_id),
+   	geliefert(0), prozess(Prozess::default_id),
    	letztePlanInstanz(0),maxPlanInstanz(0),
 	rabatt(0)
  {}
@@ -84,14 +89,15 @@ public:
         mengen_t _bestellt,
 	int _artikel, const Petig::Datum _lieferdatum,
 	mengen_t _geliefert,
-	int _dispoentrynr, int _disponr, int _jahrgang,
+	int _dispoentrynr, int _disponr, 
 	AufStatVal _aufstatus,
 	int _kdnr, const std::string _youraufnr,
 	const Petig::Datum& _prozdate,
 	int _prozess,int _letztePlanInstanz, int _maxPlanInstanz,
 	const Preis &_preis, int _rabatt,
 	AufStatVal _entrystat, const Petig::Datum _lasteditdate) throw();
- AufEintragBase(const AufEintragBase2 &aebb) throw (SQLerror);
+ AufEintragBase(const AufEintragBase2 &aebb) throw (SQLerror,NoAEB_Error);
+
 	
  void updateDispoENr(int dinr) throw(SQLerror);
  void updateStk(mengen_t stk,bool instanz) throw(SQLerror);
@@ -101,8 +107,8 @@ public:
  void updateLieferdatumInstanz(const Petig::Datum &ld) throw(SQLerror);	
  void updatePreis(const Preis &pr) throw(SQLerror);
  void updateRabatt(int rb) throw(SQLerror);
- void setStatus(AufStatVal st) throw(SQLerror);		
- void setInstanzen(AufStatVal status,Petig::Datum lieferdate,mengen_t part,int myznr=-1,int yourznr=-1);
+ void setStatus(AufStatVal newstatus) throw(SQLerror);		
+ void setInstanzen(AufStatVal newstatus,Petig::Datum lieferdate,mengen_t part,int myznr=-1,int yourznr=-1);
  void split(mengen_t newmenge, const Petig::Datum &newld) throw(SQLerror);
 // void setPlanMeter(mengen_t gm) { geplante_menge=gm; }
  
@@ -116,7 +122,7 @@ public:
 //A 		(geliefert*(artikel->Stueckgroesse()*10.0))/10);}
 // const char *getLastDate() const { return lasteditdate.c_str();}
 // const char *getLastEdit() const { return lastedit.c_str(); }
- AufStatVal getAufStatus() const { return status; }
+ AufStatVal getAufStatus() const { return auftragstatus; }
  int getZnr() const { return zeilennr;}
  int getAuftragid() const {return auftragid;}
  ppsInstanz::ID getAuftragInstanz() const {return instanz->Id();}
@@ -127,7 +133,6 @@ public:
  int getDispoENr() const { return dispoentrynr;}
  const Petig::Datum getLieferdatum() const { return lieferdatum;}
  int getKdNr() const { return kdnr;}
- int getJahrgang() const { return jahrgang;}
  const Petig::Datum getProzDat() const { return prozdate;} 
  cH_Prozess getProzess() const { return prozess;}
 // void calculateProzessInstanz();

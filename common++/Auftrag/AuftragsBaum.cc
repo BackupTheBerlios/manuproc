@@ -5,11 +5,11 @@
 
 AuftragsBaum::AuftragsBaum(const AufEintragBase2 aeb,bool kinder)
 {
- list<AufEintragZu::st_reflist> tv=AufEintragZu(aeb).get_Referenz_list(aeb,kinder);
- list<AufEintragZu::st_reflist> tvxx;
+ std::list<AufEintragZu::st_reflist> tv=AufEintragZu(aeb).get_Referenz_list(aeb,kinder);
+ std::list<AufEintragZu::st_reflist> tvxx;
 reloop:
  tv.splice(tv.end(),tvxx);
- for (list<AufEintragZu::st_reflist>::iterator i=tv.begin();i!=tv.end();++i)
+ for (std::list<AufEintragZu::st_reflist>::iterator i=tv.begin();i!=tv.end();++i)
    {
      st_AuftragsBlatt AuftragsBlatt(i->AEB2,i->AB,i->Menge);
      auftragsbaum.push_back(AuftragsBlatt);

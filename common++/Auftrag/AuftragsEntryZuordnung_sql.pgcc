@@ -1,4 +1,4 @@
-// $Id: AuftragsEntryZuordnung_sql.pgcc,v 1.4 2002/01/11 07:59:28 christof Exp $
+// $Id: AuftragsEntryZuordnung_sql.pgcc,v 1.5 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -53,10 +53,10 @@ list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list(const AufEintragB
        ("+itos(aeb.Id())+","+itos(aeb.Instanz())+","+itos(aeb.ZNr())+")";
  strncpy(query,squery.c_str(),sizeof(query));
  exec sql prepare ONAUF_ from :query;
-//cout << query<<"\n\n\n";
+//std::cout << query<<"\n\n\n";
  exec sql declare ONAUF cursor for ONAUF_;
  exec sql open ONAUF;
- list<st_reflist> vaeb;
+ std::list<st_reflist> vaeb;
  while(true)
   {
     exec sql fetch 30 in ONAUF into :AUFTRAGID,:INSTANZ,:ZEILENNR,:MENGE,:ARTIKEL;
@@ -76,19 +76,23 @@ list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list(const AufEintragB
  return vaeb;
 }
 
-list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_listFull(bool kinder) const throw(SQLerror)
+list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_listFull(bool kinder,bool nur_ende) const throw(SQLerror)
 {
-// AufEintragBase2 aeb=*this;
- list<st_reflist> tv=get_Referenz_list(AEB,kinder);
- list<st_reflist> vaeb;
- list<st_reflist> tvxx;
+ std::list<st_reflist> tv=get_Referenz_list(AEB,kinder);
+ std::list<st_reflist> vaeb;
+ std::list<st_reflist> tvxx;
+ ++tiefe;
 reloop:
  tv.splice(tv.end(),tvxx);
- for (list<st_reflist>::iterator i=tv.begin();i!=tv.end();++i)
+ for (std::list<st_reflist>::iterator i=tv.begin();i!=tv.end();++i)
    {
      tvxx=get_Referenz_list(i->AEB2,kinder);
-     if (tvxx.size()==0) vaeb.splice(vaeb.end(),tv,i) ;
-     else tv.erase(i) ; 
+     if(nur_ende)
+      {
+        if (tvxx.size()==0) vaeb.splice(vaeb.end(),tv,i) ;
+        else tv.erase(i) ; 
+      }
+     else vaeb.splice(vaeb.end(),tv,i) ;
      goto reloop;
    }
  return vaeb;
@@ -97,15 +101,15 @@ reloop:
 
 list<cH_Kunde> AufEintragZu::get_Referenz_Kunden_long() const throw(SQLerror)
 {
- list<cH_Kunde> LK;
-// list<st_reflist> vaeb = get_Referenz_AufEintragBase2();
- list<st_reflist> vaeb = get_Referenz_listFull(false);
+ std::list<cH_Kunde> LK;
+// std::list<st_reflist> vaeb = get_Referenz_AufEintragBase2();
+ std::list<st_reflist> vaeb = get_Referenz_listFull(false);
  exec sql begin declare section;
   int KUNDE;
   int INSTANZ;
   int AUFTRAGID;
  exec sql end declare section;
- for (list<st_reflist>::const_iterator i=vaeb.begin();i!=vaeb.end();++i)
+ for (std::list<st_reflist>::const_iterator i=vaeb.begin();i!=vaeb.end();++i)
   {
     INSTANZ=i->AEB2.Instanz();
     AUFTRAGID=i->AEB2.Id();
@@ -119,7 +123,7 @@ list<cH_Kunde> AufEintragZu::get_Referenz_Kunden_long() const throw(SQLerror)
 
 list<cH_Kunde> AufEintragZu::get_Referenz_Kunden() const throw(SQLerror)
 {
- list<cH_Kunde> LK = get_Referenz_Kunden_long();
+ std::list<cH_Kunde> LK = get_Referenz_Kunden_long();
  LK.sort();
  LK.unique();
  return LK;
@@ -137,7 +141,7 @@ std::list<AufEintragBase2> AufEintragZu::get_AufEintragList_from_Artikel
       where artikelid="+itos(artikel.Id()) +
       " and instanz!="+itos(ppsInstanz::INST_KNDAUF) //Nur interne Aufträge sind interessant
       +" and auftragid=0"; // Nur die UNGEPLANTEN Aufträge bekommen neue Kinder
-  if(status!=NOSTAT) squery += "and status="+itos(status);
+  if(status!=NOSTAT) squery += " and status="+itos(status);
   strncpy(query,squery.c_str(),sizeof(query));
   Transaction tr;
   exec sql prepare AELfAein_ from :query ;
@@ -151,40 +155,50 @@ std::list<AufEintragBase2> AufEintragZu::get_AufEintragList_from_Artikel
      SQLerror::test(__FILELINE__,100);
      if (sqlca.sqlcode) break;
      L.push_back(AufEintragBase2(instanz,db_auftragid,db_zeilennr));
-//cout << "Liste: "<<I->Name()<<' '<<db_auftragid<<' '<<db_zeilennr<<'\n';
+//std::cout << "Liste: "<<I->Name()<<' '<<db_auftragid<<' '<<db_zeilennr<<'\n';
    }  
   return L;
 }
 
+/*
 AufEintragBase2 AufEintragZu::get_AufEintrag_from_Artikel_by_Lfdate   
                (const ArtikelBase& artikel,ppsInstanz::ppsInstId instanz)
 {
   std::list<AufEintragBase2> LI=get_AufEintragList_from_Artikel(artikel,instanz,OPEN);
-  std::list<st_reflist> LR;
-  for(std::list<AufEintragBase2>::const_iterator i=LI.begin();i!=LI.end();++i)
-   {
-     std::list<st_reflist> LRtmp = AufEintragZu(*i).get_Referenz_listFull(false);
-     LR.splice(LR.end(),LRtmp);
-   }
+
+//  std::list<st_reflist> LR;
+//  for(std::list<AufEintragBase2>::const_iterator i=LI.begin();i!=LI.end();++i)
+//   {
+//     std::list<st_reflist> LRtmp = AufEintragZu(*i).get_Referenz_listFull(false);
+//     LR.splice(LR.end(),LRtmp);
+//   }
+
   Petig::Datum lieferdatum;
   AufEintragBase2 AEB;
-  if(LR.begin()!=LR.end()) 
+  if(LI.begin()!=LI.end()) //LI->LR ab hier
   { 
     // lieferdatum initialisieren
-    lieferdatum=AufEintragBase(LR.begin()->AEB2).getLieferdatum();
-    AEB=LR.begin()->AEB2;
-    for(std::list<st_reflist>::const_iterator i=LR.begin();i!=LR.end();++i)
+//    lieferdatum=AufEintragBase(LI.begin()->AEB2).getLieferdatum();
+    lieferdatum=AufEintragBase(*(LI.begin())).getLieferdatum();
+//    AEB=LI.begin()->AEB2;
+    AEB=*(LI.begin());
+//    for(std::list<st_reflist>::const_iterator i=LR.begin();i!=LR.end();++i)
+    for(std::list<AufEintragBase2>::const_iterator i=LI.begin();i!=LI.end();++i)
      {
-       Petig::Datum ld=AufEintragBase(i->AEB2).getLieferdatum();
+//       Petig::Datum ld=AufEintragBase(i->AEB2).getLieferdatum();
+       Petig::Datum ld=AufEintragBase(*i).getLieferdatum();
        if(ld<lieferdatum) 
         {
-          AEB=i->AEB2;
+//          AEB=i->AEB2;
+          AEB=*i;
           lieferdatum=ld;
         }
      }
     }
+cout << "Offener Auftrag: "<<AEB.Instanz()<<' '<<AEB.Id()<<' '<<AEB.ZNr()<<'\n';
   return AEB;
 }
+*/
 
 void AufEintragZu::AuftragsEntryZuordnung(const mengen_t menge,
                               const AuftragBase& neuAuftrag,const int neuZnr,
@@ -223,7 +237,7 @@ void AufEintragZu::setMenge(const mengen_t menge,const AuftragBase& neuAuftrag,c
    set menge=:db_menge where
    (altauftragid,altinstanz,altzeilennr,neuauftragid,neuinstanz,neuzeilennr)
     = (:db_aaid,:db_ains,:db_aznr,:db_naid,:db_nins,:db_nznr);
-//cout << "update auftragsentryzuordnung set menge="+itos(menge)+
+//std::cout << "update auftragsentryzuordnung set menge="+itos(menge)+
 //" where (altauftragid,altinstanz,altzeilennr,neuauftragid,neuinstanz,neuzeilennr) = ("
 //+itos(db_aaid)+","+itos(db_ains)+","+itos(db_aznr)+","+itos(db_naid)+","
 //+itos(db_nins)+","+itos(db_nznr)+")\n";
@@ -251,7 +265,7 @@ bool AufEintragZu::setMengeDiff(const mengen_t menge,const AuftragBase& neuAuftr
    set menge=menge+:db_menge where
    (altauftragid,altinstanz,altzeilennr,neuauftragid,neuinstanz,neuzeilennr)
     = (:db_aaid,:db_ains,:db_aznr,:db_naid,:db_nins,:db_nznr);
-//cout << "update auftragsentryzuordnung set menge="+itos(menge)+
+//std::cout << "update auftragsentryzuordnung set menge="+itos(menge)+
 //" where (altauftragid,altinstanz,altzeilennr,neuauftragid,neuinstanz,neuzeilennr) = ("
 //+itos(db_aaid)+","+itos(db_ains)+","+itos(db_aznr)+","+itos(db_naid)+","
 //+itos(db_nins)+","+itos(db_nznr)+")\n";

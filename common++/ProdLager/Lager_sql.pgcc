@@ -23,34 +23,36 @@
 #include <Aux/string0.h>
 exec sql include sqlca;
 #include <Aux/SQLerror.h>
+#include <Aux/Transaction.h>
 #include <Aux/itos.h>
-#include <Auftrag/AufEintragBase.h>
-#include <Auftrag/AuftragsEntryZuordnung.h>
 
 
 
-bool Lager::Jumbo_Einlagern(st_bandlager bandlager,Jumbo_LogTyp typ)
+void Lager::Jumbo_Einlagern(JumboRolle& jumbo,Jumbo_LogTyp typ,const std::string& user
+   ,const Zeitpunkt_new *zeit)
 {
-/*
   exec sql begin declare section;
-    int CODE=bandlager.code/10;
-    int STATUS=bandlager.status;
-    char DSTAMP[32];
-    short IDSTAMP; 
+    int CODE=jumbo.Code()/10;
+    int STATUS;
     char ACTION[2];
-    char NAME[5]; 
-    int LAGERPLATZ=bandlager.position.IPosition();
-    bool REST=bandlager.rest;
+    int LAGERPLATZ=jumbo.LagerPosition().IPosition();
+    bool REST;
     bool DUMMY;   
     char ZEIT[32];
+    char DSTAMP[32];
   exec sql end declare section;
+  REST = (typ==Rest || typ==Rest_L);
+  STATUS=JumboRolle::ImLager;
+  if ( zeit && jumbo.VerarbDatum().valid() &&  *zeit<jumbo.VerarbDatum()) 
+   { STATUS=JumboRolle::Verarbeitet;
+     LAGERPLATZ=0;
+   }
 
-  if (bandlager.zp) bandlager.zp->write(PostgresTimestamp(ZEIT,sizeof ZEIT));
+  if (zeit) zeit->write(PostgresTimestamp(ZEIT,sizeof ZEIT));
   else strncpy0(ZEIT,"now",sizeof ZEIT);
-  strncpy0(NAME,bandlager.username.c_str(),sizeof(NAME));
 
   exec sql select true into :DUMMY from rohjumbo where code= :CODE;
-  SQLerror::test(__FILELINE__,100)
+  SQLerror::test(__FILELINE__,100);
   if (sqlca.sqlcode==100)
    {
      exec sql insert into rohjumbo 
@@ -70,16 +72,127 @@ bool Lager::Jumbo_Einlagern(st_bandlager bandlager,Jumbo_LogTyp typ)
   exec sql update rohjumbo
        set wiederinslager=:ZEIT,rest= :REST,status=:STATUS ,
              lagerplatz=nullif(:LAGERPLATZ,0)
-           where (wiederinslager is null or verarb_datum > wiederinslager)
-           and code= :CODE; // where status!=2
-*/ 
+           where code= :CODE;
+  SQLerror::test("LagerSQL einlagern");
+
+
+  exec sql select coalesce(text(wiederinslager),'') into :DSTAMP from rohjumbo where code= :CODE;
+  SQLerror::test("JumboRolle::buchen: Einlagern",true);
+  if(!*DSTAMP)
+      throw SQLerror("JumboRolle::buchen:\tEinlagern\tInkonsistenz");
+
+  jumbo.setInsLager(Zeitpunkt_new(DSTAMP));
+  if(jumbo.getStatus()==JumboRolle::ImLager)
+      typ=Umraeumen;
+  jumbo.setStatus(JumboRolle::Jumbo_Status(STATUS));
+  Jumbo_Log(jumbo,typ,user,zeit);
 }
 
-bool Lager::Jumbo_Entnahme(st_bandlager bandlager,Jumbo_LogTyp typ)
+void Lager::Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,
+   const std::string& user,const Zeitpunkt_new *zeit)
 {
+  exec sql begin declare section;
+    int CODE=jumbo.Code()/10;
+    int STATUS;
+    char ACTION[2];
+    char ZEIT[32];
+    char DSTAMP[32];
+  exec sql end declare section;
+  STATUS=JumboRolle::Verarbeitet;
+  if (zeit && jumbo.InsLagerDatum().valid() && *zeit<jumbo.InsLagerDatum()) STATUS=JumboRolle::ImLager;
+  if (zeit) zeit->write(PostgresTimestamp(ZEIT,sizeof ZEIT));
+  else strncpy0(ZEIT,"now",sizeof ZEIT);
+  
+  exec sql  update rohjumbo set verarb_datum=:ZEIT, status=:STATUS, 
+      lagerplatz=null 
+      where   ((verarb_datum is null and wiederinslager is not null)
+                 or (wiederinslager > verarb_datum))
+      and code= :CODE;  
+  SQLerror::test("JumboRolle::buchen entnahme",100);
+  if (sqlca.sqlcode==100)
+   {
+      Jumbo_Log(jumbo,SchonDraussen,user,zeit);
+      exec sql update rohjumbo set status=:STATUS, lagerplatz=null where code= :CODE;
+      throw SQLerror("JumboRolle::buchen",100,"Rolle ist nicht (mehr) im Lager");
+   }
+  exec sql select coalesce(text(verarb_datum),'') into :DSTAMP from rohjumbo where code= :CODE;
+  SQLerror::test("JumboRolle::buchen: Auslagern",true);
+  if(!*DSTAMP) 
+     throw SQLerror("JumboRolle::buchen: Auslagern Inkonsistenz");
+
+  jumbo.setVerarbDatum(Zeitpunkt_new(DSTAMP));
+  jumbo.setStatus(JumboRolle::Jumbo_Status(STATUS));
+  Jumbo_Log(jumbo,typ,user,zeit);
 }
 
- 
+void Lager::Jumbo_Log(const JumboRolle& jumbo,Jumbo_LogTyp typ,const std::string& user,const Zeitpunkt_new *zeit)
+{
+  exec sql begin declare section;
+   int CODE=jumbo.Code()/10;
+   char ACTION=typ;
+   char NAME[5];
+   char ZEIT[15];
+   int POSITION=jumbo.LagerPosition().IPosition();
+  exec sql end declare section;
+  if (zeit) zeit->write(PostgresTimestamp(ZEIT,sizeof ZEIT));
+  else strncpy0(ZEIT,"now",sizeof ZEIT);
+  strncpy0(NAME,user.c_str(),sizeof(NAME));
+  exec sql  insert into lager_bewegung 
+      (code,action,name,lagerplatz,zeit) 
+      values (:CODE,:ACTION,:NAME,:POSITION, :ZEIT);  
+  abschreiben(jumbo.Artikel(),jumbo.Meter(),RLNone,typ);
+} 
+
+std::vector<int> Lager::Jumbo_Inhalt(const LagerPlatz position) const
+{
+  exec sql begin declare section;
+   int CODE;
+   int POSITION=position.IPosition();
+  exec sql end declare section;
+  exec sql declare posein cursor for select code 
+      from rohjumbo where lagerplatz = :POSITION;
+  Transaction tr;
+  exec sql open posein;
+  std::vector<int> vi;
+  while(true)
+   {
+    exec sql fetch posein into :CODE;
+    SQLerror::test(__FILELINE__,100);  
+    if (sqlca.sqlcode) break;
+    vi.push_back(CODE);
+   }
+  exec sql close posein;
+  tr.close();
+  return vi;
+}
+
+std::vector<Lager::st_wo_ist_wieviel> Lager::getPosition(ArtikelBase artikel)
+{
+ exec sql begin declare section; 
+   int METER,CODE,POSITION;
+   bool REST;
+   int ARTIKEL=artikel.Id();
+ exec sql end declare section; 
+ exec sql declare artein cursor for select lagerplatz,code,
+      coalesce(barcoist,soll_meter),rest
+      from rohjumbo where artikelid= :ARTIKEL;
+  Transaction tr;
+  exec sql open artein;
+  std::vector<st_wo_ist_wieviel> vi;
+  ppsInstanz::ppsInstId inst=ppsInstanz::INST_BANDLAGER;
+  while(true)
+   {
+    exec sql fetch posein into :POSITION,:CODE,:METER,:REST;
+    SQLerror::test(__FILELINE__,100);  
+    if (sqlca.sqlcode) break;
+    vi.push_back(st_wo_ist_wieviel(LagerPlatz(inst,POSITION),METER,REST,CODE));
+   }
+  exec sql close artein;
+  tr.close();
+  return vi;
+}
+
+
 
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
@@ -159,8 +272,8 @@ bool Lager::RL_Entnahme(st_rohlager& rohlager,std::string &os,bool force,bool is
        SQLerror::test(__FILELINE__);                  
     }
    rohlager.kg_pro_karton=was_ist_drin.kg_pro_karton;
-   if (force) RL_Log(was_ist_drin,Entnehmen,misc);
-   else       RL_Log(rohlager,Entnehmen,misc);
+   if (force) RL_Log(was_ist_drin,RLEntnehmen,misc);
+   else       RL_Log(rohlager,RLEntnehmen,misc);
    return true;
 }
 
@@ -193,7 +306,7 @@ bool Lager::RL_Einlagern(st_rohlager& rohlager,std::string &os,bool force)
         values (:POSITION, :KARTONS, :MATERIAL, :KG_PER_KARTON,
               nullif(:RESTE,0), nullif(:RESTE_KG,0), :DATUM);
       SQLerror::test(__FILELINE__);
-      RL_Log(rohlager,Einlagern);
+      RL_Log(rohlager,RLEinlagern);
       return true;
    }
   else  // ups, auf dieser Position liegt schon etwas
@@ -206,8 +319,8 @@ bool Lager::RL_Einlagern(st_rohlager& rohlager,std::string &os,bool force)
            kg_per_karton=:KG_PER_KARTON, reste=nullif(:RESTE,0), 
            rest_kg=nullif(:RESTE_KG,0), eingelagert=:DATUM where position_=:POSITION;
         SQLerror::test(__FILELINE__);
-        RL_Log(was_ist_drin,Entnehmen,"lösc");
-        RL_Log(rohlager,Einlagern);
+        RL_Log(was_ist_drin,RLEntnehmen,"lösc");
+        RL_Log(rohlager,RLEinlagern);
         return true;
       }
      else // mal schauen ...
@@ -230,7 +343,7 @@ bool Lager::RL_Einlagern(st_rohlager& rohlager,std::string &os,bool force)
                        reste=nullif(:RESTE,0), rest_kg=nullif(:RESTE_KG,0),
                         eingelagert=:DATUM where position_=:POSITION;
               SQLerror::test(__FILELINE__);
-              RL_Log(rohlager,Einlagern);
+              RL_Log(rohlager,RLEinlagern);
               return true;
             }
            else 
@@ -273,14 +386,14 @@ void Lager::RL_Log(const st_rohlager& rohlager,RL_LogTyp typ,const std::string& 
   strncpy0(MISC,misc.c_str(),sizeof(MISC));
 
   rohlager.datum.write_postgres(DATUM,sizeof DATUM);
-  if(typ==Einlagern)
+  if(typ==RLEinlagern)
    {
     exec sql insert into rl_log 
        (zeit,position_, kartons, MATERIAL, KG_PER_KARTON, typ, valuta, reste, rest_kg,misc)
        values (now(),:POSITION,:KARTONS,:MATERIAL,:KG_PER_KARTON,:TYP,:DATUM,
             :RESTE,:RESTE_KG,nullif(:MISC,''));
    }
-  else if(typ==Entnehmen)
+  else if(typ==RLEntnehmen)
    {
     exec sql insert into rl_log 
        (zeit,position_, kartons, MATERIAL, KG_PER_KARTON, typ, valuta, reste, rest_kg,misc)
@@ -293,31 +406,11 @@ void Lager::RL_Log(const st_rohlager& rohlager,RL_LogTyp typ,const std::string& 
   // Jetzt die Lagerbewegung mit den offenen Aufträgen verrechen
   AuftragBase::mengen_t menge = rohlager.kartons*rohlager.kg_pro_karton 
                                  + rohlager.reste_kg;
-  abschreiben(typ,rohlager.artikel,menge);
-}
-
-void Lager::abschreiben(RL_LogTyp typ,ArtikelBase artikel,AuftragBase::mengen_t menge)
-{
-  while(true)
-   {
-     AufEintragBase2 AEB2;
-     if(typ==Entnehmen)
-        AEB2= AufEintragZu::get_AufEintrag_from_Artikel_by_Lfdate
-                              (artikel,instanz);
-     else if(typ==Einlagern)
-        AEB2 =AufEintragZu::get_AufEintrag_from_Artikel_by_Lfdate
-                              (artikel,cH_ppsInstanz(instanz)->LagerFuer());
-     AufEintragBase AEB(AEB2);
-     if(AEB.getRestStk() >= menge)
-       { AEB2.abschreiben(menge);
-         break;
-       }
-     else AEB2.abschreiben(AEB.getRestStk());
-   }
+  abschreiben(rohlager.artikel,menge,typ,None);
 }
 
 
-Lager::st_rohlager Lager::RL_Inhalt(const LagerPlatz position)
+Lager::st_rohlager Lager::RL_Inhalt(const LagerPlatz position) const
 {
   exec sql begin declare section;
    int KARTONS, KG_PER_KARTON, RESTE, RESTE_KG, MATERIAL;

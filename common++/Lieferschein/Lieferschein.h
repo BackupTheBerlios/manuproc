@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.6 2001/12/05 07:55:59 christof Exp $ */
+/* $Id: Lieferschein.h,v 1.7 2002/01/22 09:15:55 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -43,20 +43,20 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  	Lieferschein(const LieferscheinBase &source)
  		: LieferscheinBase(source), kunde(Kunde::none_id)  {}
  		
- 	Lieferschein() : LieferscheinBase(none_id),
+ 	Lieferschein() : LieferscheinBase(),
  			lsdatum(Petig::Datum::today()),
  			kunde(Kunde::none_id),rngid(0),
  			paeckchen(0),pakete(0),
  			geliefertam(Petig::Datum::today()),
  			dpdliefnr(0) {}
  			
- 	Lieferschein(int lid) throw(SQLerror);
+ 	Lieferschein(const cH_ppsInstanz& instanz,int lid) throw(SQLerror);
 	Lieferschein(const LieferscheinBase &lsbase,
 			const Petig::Datum &_lsdatum,
 			int _kdnr, int _rngid, int _paeckchen, int _pakete,
 			const Petig::Datum &_geliefertam,int _dpdlnr); 
 			
- Lieferschein(cH_Kunde k,int jahr=0) throw(SQLerror);
+ Lieferschein(const cH_ppsInstanz& instanz,cH_Kunde k,int jahr=0) throw(SQLerror);
 			
  void setDPDlnr(int dpdlnr) const throw(SQLerror);
  void setDPDDatum() const throw(SQLerror);
@@ -82,7 +82,8 @@ protected:
  cH_Lieferschein() {}
 public:
  cH_Lieferschein(Lieferschein *r) : Handle<const Lieferschein>(r){}
- cH_Lieferschein(Lieferschein::ID i) : Handle<const Lieferschein>(new Lieferschein(i)){}
+ cH_Lieferschein(const cH_ppsInstanz& instanz,Lieferschein::ID i) 
+        : Handle<const Lieferschein>(new Lieferschein(instanz,i)){}
 };
 
 class H_Lieferschein : public Handle<Lieferschein>
@@ -92,7 +93,8 @@ protected:
 public:
  H_Lieferschein(): Handle<Lieferschein> (new Lieferschein()) {}
  H_Lieferschein(Lieferschein *r) : Handle<Lieferschein>(r){}
- H_Lieferschein(Lieferschein::ID i) : Handle<Lieferschein>(new Lieferschein(i)){}
+ H_Lieferschein(const cH_ppsInstanz& instanz,Lieferschein::ID i) 
+     : Handle<Lieferschein>(new Lieferschein(instanz,i)){}
 };
 
 /*

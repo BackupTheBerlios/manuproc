@@ -1,4 +1,4 @@
-// $Id: abschreiben.cc,v 1.5 2002/01/02 15:31:17 christof Exp $
+// $Id: abschreiben.cc,v 1.6 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -47,7 +47,7 @@ int main()
       }
    }
    
-   cout << "1x abschreiben " << zeile.abschreiben(15000) << '\n';
+   std::cout << "1x abschreiben " << zeile.abschreiben(15000) << '\n';
 
    {  AuftragFull af(id);
       for (AuftragFull::const_iterator i=af.begin(); i!=af.end(); ++i)
@@ -58,7 +58,7 @@ int main()
       }
    }
 
-   cout << "2x abschreiben " << zeile.abschreiben(16000) << '\n';
+   std::cout << "2x abschreiben " << zeile.abschreiben(16000) << '\n';
 
    {  AuftragFull af(id);
       for (AuftragFull::const_iterator i=af.begin(); i!=af.end(); ++i)

@@ -1,4 +1,4 @@
-// $Id: Waehrung_sql.pgcc,v 1.7 2001/12/23 21:42:15 christof Exp $
+// $Id: Waehrung_sql.pgcc,v 1.8 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,12 +30,12 @@ Waehrung::Waehrung(WaehID id) throw(SQLerror)
  double DMFKT;
  exec sql end declare section;
  
- exec sql select kurz, coalesce(lang,kurz), dmfkt 
+ exec sql select kurz, coalesce(lang,kurz), dmfkt
  	into :KURZ, :LANG, :DMFKT
  	from waehrung where wid= :WID;
  SQLerror::test(__FILELINE__":Waehrung: select from waehrung");
 
- wid=WID;
+ wid=ID(WID);
  kurz = KURZ;
  lang = LANG;
  dmfkt = DMFKT;

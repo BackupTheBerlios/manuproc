@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.18 2002/01/07 16:23:09 christof Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.19 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -29,22 +29,22 @@
 
 exec sql include sqlca;
 
-void AufEintragBase::setStatus(AufStatVal _status) throw(SQLerror)
+void AufEintragBase::setStatus(AufStatVal newstatus) throw(SQLerror)
 {exec sql begin declare section;
  int AUFTRAGID = auftragid;
  int INSTANZ=instanz->Id();
  int ZEILENNR = zeilennr;
- int STATUS=_status;
+ int STATUS=newstatus;
  exec sql end declare section;
 
 // Braucht man die Warnung noch? 14.11.2001 MAT
 #warning was ist mit status (Auftragsstatus), kann das ignoriert werden?
  if(entrystatus == CLOSED) return; // nichts geht mehr
- if(_status == UNCOMMITED) return; // zurück geht nicht, nur vor
- if(entrystatus == _status) return;     // nichts geändert
+ if(newstatus == UNCOMMITED) return; // zurück geht nicht, nur vor
+ if(entrystatus == newstatus) return;     // nichts geändert
 
 #warning Das kann nicht mehr vorkommen MAT 5.12.01 und darf weg, oder?
- if(_status == OPEN && entrystatus != UNCOMMITED) return; // nur UNCOMMITED->OPEN
+ if(newstatus == OPEN && entrystatus != UNCOMMITED) return; // nur UNCOMMITED->OPEN
 
  Transaction tr; 
  exec sql lock auftragentry in exclusive mode;
@@ -56,13 +56,13 @@ void AufEintragBase::setStatus(AufStatVal _status) throw(SQLerror)
    and instanz =:INSTANZ;
  SQLerror::test("setStatus: update auftragentry");
 
- if(STATUS==OPEN && status==UNCOMMITED)
-    setStatusAuftragBase(_status);
+ if(newstatus==OPEN && auftragstatus==UNCOMMITED)
+    setStatusAuftragBase(newstatus);
 
  // Status für die Instanzen setzen
- setInstanzen(_status,getLieferdatum(),getStueck());
+ setInstanzen(newstatus,getLieferdatum(),getStueck());
 
- if(_status==OPEN)
+ if(newstatus==OPEN)
   {try 
    {
     pps_ChJournalEntry::newChange(
@@ -76,7 +76,7 @@ void AufEintragBase::setStatus(AufStatVal _status) throw(SQLerror)
    catch(SQLerror &e)
      {tr.rollback(); throw; }
   }
- else if(_status==CLOSED && entrystatus!=UNCOMMITED) 
+ else if(newstatus==CLOSED && entrystatus!=UNCOMMITED) 
  // UNCOMMITED->CLOSED => kein Eintrag
   {try 
    {
@@ -93,71 +93,69 @@ void AufEintragBase::setStatus(AufStatVal _status) throw(SQLerror)
   } 
 
  entrystatus=(AufStatVal)STATUS;
+//Ich fände es so schöner: MAT
+//entrystatus=newstatus;
  tr.commit(); 
 }
 
-void AufEintragBase::setInstanzen(AufStatVal status,Petig::Datum lieferdate,mengen_t Menge,int myznr,int yourznr)
+void AufEintragBase::setInstanzen(AufStatVal newstatus,Petig::Datum lieferdate,mengen_t Menge,int myznr,int yourznr)
 {
  std::list<AufEintragZu::st_reflist> KindListe = AufEintragZu(*this).get_Referenz_list(*this,true);
  for(std::list<AufEintragZu::st_reflist>::const_iterator i=KindListe.begin();i!=KindListe.end();++i)
   {
     ArtikelBaum::menge_t f=ArtikelBaum(artikel).Faktor(i->AB);
     mengen_t M=Menge*f;    
-//cout << "setStatusInstanz: Ich bin  : "<<Instanz()<<' '<<Id()<<' '<<ZNr()<<'\t';
-//cout << " Kinde ist: "<<i->AEB2.Instanz()<<' '<<i->AEB2.Id()<<' '<<i->AEB2.ZNr()<<'\n';
+//std::cout << "\n\nsetStatusInstanz: Ich bin  : "<<Instanz()<<' '<<Id()<<' '<<ZNr()<<'\t';
+//std::cout << " Kinde ist: "<<i->AEB2.Instanz()<<' '<<i->AEB2.Id()<<' '<<i->AEB2.ZNr()<<'\n';
    AufEintragBase AEB(i->AEB2);
    // AufEintrag splitten und Anlegen in der Zuordnungsliste
    int znr=0,newznr=0; mengen_t menge=0;
-   if(!i->AEB2.existEntry(i->AB,lieferdate,znr,newznr,menge,status))
+   if(!i->AEB2.existEntry(i->AB,lieferdate,znr,newznr,menge,newstatus))
      {
-//cout << "DEBUG 2\n";
-      znr=AEB.insertNewEntry(M,lieferdate,i->AB,status,false);
+      znr=AEB.insertNewEntry(M,lieferdate,i->AB,newstatus,false);
       if(Instanz()==ppsInstanz::INST_KNDAUF) 
             AufEintragZu(*this).setKindZnr(AEB,znr);
       else 
          {
             AufEintragZu(*this).AuftragsEntryZuordnung(M,AEB,znr,myznr);
-//            AufEintragZu(*this).setMenge(i->Menge-M,AEB,AEB.ZNr());
             AufEintragZu(*this).setMengeDiff(-M,AEB,AEB.ZNr());
          }
-//cout << "DEBUG 3\n";
      }
    else
      {
-cout << "existEntry :"<<Instanz()<<' '<<Id()<<' '<<AEB.Instanz()<<' '
-      <<AEB.Id()<<" Myznr:"<<myznr<<" Yourznr: "<<yourznr<<" Znr: "<<znr
-<<" NEWZnr: "<<newznr<<'\t';
-cout << menge<<'+'<<M<<'='<<menge+M<<'\n';
-
-//      AufEintragBase(class AufEintragBase2(AEB,znr)).updateStkDiff(menge+M);
+//std::cout << "existEntry :"<<Instanz()<<' '<<Id()<<' '<<AEB.Instanz()<<' '
+//      <<AEB.Id()<<" Myznr:"<<myznr<<" Yourznr: "<<yourznr<<" Znr: "<<znr
+//<<" NEWZnr: "<<newznr<<'\t';
+//std::cout << menge<<'+'<<M<<'='<<menge+M<<'\n';
       AufEintragBase2(AEB,znr).updateStkDiff(M);
       if(Instanz()==ppsInstanz::INST_KNDAUF) 
             AufEintragZu(*this).setKindZnr(AEB,znr);
       else 
          {
-//cout<<"Reduce:   "<<Id()<<' '<<ZNr()<<'\t'<<AEB.Id()<<' '<<AEB.ZNr()<<'\t'<<i->Menge<<'\n';
+//std::cout<<"Reduce:   "<<Id()<<' '<<ZNr()<<'\t'<<AEB.Id()<<' '<<AEB.ZNr()<<'\t'<<i->Menge<<'\n';
             AufEintragZu(*this).setMengeDiff(-M,AEB,AEB.ZNr());
-//cout<<"Increase: "<<Id()<<' '<<myznr<<'\t'<<AEB.Id()<<' '<<znr<<'\n';
+//std::cout<<"Increase: "<<Id()<<' '<<myznr<<'\t'<<AEB.Id()<<' '<<znr<<'\n';
             if(!AufEintragZu(class AufEintragBase2(*this,myznr)).setMengeDiff(M,AEB,znr))
                 AufEintragZu(class AufEintragBase2(*this,myznr)).AuftragsEntryZuordnung(M,AEB,znr);
          }
      }
    AEB.updateStk(AEB.getStueck()-M,false);
-   AufEintragBase(i->AEB2).setInstanzen(status,lieferdate,M,znr,newznr);
+   AEB.setStatusAuftragBase(newstatus);
+   AufEintragBase(i->AEB2).setInstanzen(newstatus,lieferdate,M,znr,newznr);
   }
 }
 
 
 void AufEintragBase::updateStk(mengen_t stk,bool instanz) throw(SQLerror)
 {
- if(status==OPEN || status==UNCOMMITED)
+ if(auftragstatus==OPEN || auftragstatus==UNCOMMITED)
   {
    Transaction tr;
    exec sql lock auftragentry in exclusive mode;
    SQLerror::test("updateStk: lock table auftragentry");
 
 //   AufEintragBase2::updateStk(stk,stk-bestellt,artikel,status);
-//cout << "AufEintragBase::updateStk: "<<stk<<' '<<bestellt<<'\n';
+//std::cout << "AufEintragBase::updateStk: "<<stk<<' '<<bestellt<<'\n';
    AufEintragBase2::updateStkDiff(stk-bestellt);
    if(instanz) updateStkInstanz(stk,bestellt);
    bestellt=stk;
@@ -172,8 +170,8 @@ void AufEintragBase::updateStkInstanz(mengen_t neu_stk,mengen_t alt_stk) throw(S
    {
      AufEintragBase AEB(i->AEB2);
      ArtikelBaum::menge_t faktor = ArtikelBaum(ArtId()).Faktor(i->AB);
-//cout << i->AEB2.Instanz()<<' '<<i->AEB2.ZNr()<<'\t';
-//cout << i->Menge<<' '<<AEB.getStueck()<<' '<<getStueck()*faktor<<' '<<alt_stk*faktor<<' '<<neu_stk*faktor<<' '<<'\n';
+//std::cout << i->AEB2.Instanz()<<' '<<i->AEB2.ZNr()<<'\t';
+//std::cout << i->Menge<<' '<<AEB.getStueck()<<' '<<getStueck()*faktor<<' '<<alt_stk*faktor<<' '<<neu_stk*faktor<<' '<<'\n';
      mengen_t neue_menge=neu_stk*faktor;
      mengen_t alte_menge=alt_stk*faktor;
      AEB.updateStk(AEB.getStueck()+neue_menge-alte_menge,true);
@@ -237,9 +235,9 @@ void AufEintragBase::updateLieferdatum(const Petig::Datum &ld) throw(SQLerror)
  SQLerror::test("updateLiefDatum: update lieferdate in auftragentry");
 
  //update Lieferdatum für Instanzen
- setInstanzen(status,ld,getStueck());
+ setInstanzen(entrystatus,ld,getStueck()); // status->entrystatus
 
- if(status==OPEN)
+ if(entrystatus==OPEN)// status->entrystatus
   {
    try 
     {
@@ -261,6 +259,8 @@ void AufEintragBase::updateLieferdatum(const Petig::Datum &ld) throw(SQLerror)
 
 void AufEintragBase::split(mengen_t newmenge, const Petig::Datum &newld) throw(SQLerror)
 {
+ if(entrystatus==CLOSED) return;
+
  exec sql begin declare section;
  int AUFTRAGID=auftragid;
  int INSTANZ=instanz->Id();
@@ -268,7 +268,7 @@ void AufEintragBase::split(mengen_t newmenge, const Petig::Datum &newld) throw(S
  long ARTIKELID=artikel.Id();
  double BESTELLT=newmenge;
  double BESTELLT_OLD=bestellt-newmenge;
- int STATUS=status;
+ int STATUS=entrystatus;
  float PREIS = preis.Wert();
  int RABATT = rabatt;
  float PREISMENGE = preis.PreisMenge();
@@ -280,7 +280,6 @@ void AufEintragBase::split(mengen_t newmenge, const Petig::Datum &newld) throw(S
  char LIEFERDATUM[21];
  exec sql end declare section;
  
- if(status==CLOSED) return;
 
  newld.write_postgres(LIEFERDATUM,sizeof LIEFERDATUM);
  
@@ -298,7 +297,7 @@ void AufEintragBase::split(mengen_t newmenge, const Petig::Datum &newld) throw(S
  exec sql lock auftragentry in exclusive mode;
  SQLerror::test("split: lock table auftragentry");
 
- insertNewEntry(newmenge,newld,artikel,status,true,preis,rabatt);
+ insertNewEntry(newmenge,newld,artikel,entrystatus,true,preis,rabatt);
  updateStk(bestellt-newmenge,true);
 #warning WAS IST MIT DER GELIEFERTEN MENGE
  
@@ -352,7 +351,7 @@ void AufEintragBase::split(mengen_t newmenge, const Petig::Datum &newld) throw(S
  tr.commit();
 }
 
-AufEintragBase::AufEintragBase(const AufEintragBase2 &aebb) throw (SQLerror)
+AufEintragBase::AufEintragBase(const AufEintragBase2 &aebb) throw (SQLerror,NoAEB_Error)
   : AufEintragBase2(aebb), 
     artikel(0),
     prozess(Prozess::default_id)
@@ -360,7 +359,10 @@ AufEintragBase::AufEintragBase(const AufEintragBase2 &aebb) throw (SQLerror)
  try{
   SelectedFullAufList aufids((SQLFullAuftragSelector)
     (SQLFullAuftragSelector::sel_AufidZnr(aebb)));
-  assert(aufids.aufidliste.size()==1);
+
+  if ( aufids.aufidliste.size()!=1 ) throw NoAEB_Error();
+//  assert(aufids.aufidliste.size()==1);
+
   (*this)=aufids.aufidliste[0];
  } catch (SQLerror &e) {std::cerr << e <<'\n';}
 }

@@ -88,11 +88,13 @@ libcommon___a_LIBADD= \
 		Lieferschein/RechnungEntry_sql.o \
 		Lieferschein/RechnungVoll_sql.o \
 		Lieferschein/Zahlungsart_sql.o \
-		ProdLager/ProdLager.o \
-		ProdLager/ProdLager_sql.o \
+		ProdLager/JumboRolle.o \
+		ProdLager/JumboRolle_sql.o \
+      ProdLager/LagerPlatz.o \
       ProdLager/Lager.o \
       ProdLager/Lager_sql.o \
-      ProdLager/RL_Lagerplatz.o \
+		ProdLager/ProdLager.o \
+		ProdLager/ProdLager_sql.o \
 		ProdLager/maschinen_geschwindigkeit_sql.o \
 		ostream/time_t_ostr.o
 

@@ -1,4 +1,4 @@
-// $Id: instanz_auftrag.cc,v 1.3 2002/01/11 07:59:28 christof Exp $
+// $Id: instanz_auftrag.cc,v 1.4 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -28,10 +28,10 @@
 void showChildren(AufEintragBase2 AEB)
 {
   AuftragsBaum AB(AEB,true);
-  cout << "Self: "<<AEB.Instanz()<<' '<<AEB.Id()<<' '<<AEB.ZNr()<<' '<<'\n';
+  std::cout << "Self: "<<AEB.Instanz()<<' '<<AEB.Id()<<' '<<AEB.ZNr()<<' '<<'\n';
   for (AuftragsBaum::const_iterator i=AB.begin();i!=AB.end();++i)
    {
-     cout <<i->AEB2.Instanz()<<' '<<i->AEB2.Id()<<' '<<i->AEB2.ZNr()
+     std::cout <<i->AEB2.Instanz()<<' '<<i->AEB2.Id()<<' '<<i->AEB2.ZNr()
          <<' '<<cH_ArtikelBezeichnung(i->AB)->Bezeichnung()
          <<'\t'<<i->menge<<' '
          <<'\t'<<cH_ArtikelBezeichnung(i->AB)->Bezeichnung()<<' '
@@ -42,7 +42,7 @@ void showChildren(AufEintragBase2 AEB)
 vector<AufEintragBase> showTest(Auftrag id)
 {
    AuftragFull af(id);
-   vector<AufEintragBase> VAEB;
+   std::vector<AufEintragBase> VAEB;
    for (AuftragFull::const_iterator i=af.begin(); i!=af.end(); ++i)
     {  
       showChildren(*i);
@@ -54,28 +54,29 @@ vector<AufEintragBase> showTest(Auftrag id)
 
 int main()
 {  Petig::PrintUncaughtExceptions();
+   try{
    Petig::dbconnect();
-   
    AuftragBase id;
    {  Auftrag a=Auftrag(Auftrag::Anlegen(ppsInstanz::Kundenauftraege), Kunde::default_id);
+      a.setStatusAuftragBase(OPEN);
       id=a;
       std::cout << "Auftrag " << a.Id() << '\n';
    
-      Petig::Datum date(15,1,2011);
+      Petig::Datum date(1,1,2012);
       int znr;
-      znr=a.insertNewEntry(10000, date, 218843,UNCOMMITED,true);
+      znr=a.insertNewEntry(10000, date, 218843,OPEN,true);
 //      znr=a.insertNewEntry(2000, date, 218849,UNCOMMITED,true);
    }
-   vector<AufEintragBase> VAEB=showTest(id);
+   std::vector<AufEintragBase> VAEB=showTest(id);
 /*
    static const int TESTZEILE = 1;
    int znr=0;
 //   Petig::Datum newdate(3,3,2100);
-   for(vector<AufEintragBase>::iterator i=VAEB.begin();i!=VAEB.end();++i)
+   for(std::vector<AufEintragBase>::iterator i=VAEB.begin();i!=VAEB.end();++i)
     {
       if(++znr==TESTZEILE)
        {
-//         cout << "TEST für AEB: "<<i->Instanz()<<' '<<i->Id()<<' '<<i->ZNr()<<' '<<i->getStueck()<<'\n';
+//         std::cout << "TEST für AEB: "<<i->Instanz()<<' '<<i->Id()<<' '<<i->ZNr()<<' '<<i->getStueck()<<'\n';
 //           i->updateStk(10000,true); // Neue Menge 
 //           i->updateLieferdatum(newdate); // Neues Lieferdatum
 //           i->setStatus(OPEN); // Neuer Status
@@ -83,9 +84,10 @@ int main()
        }
     }
 
-   cout << "\n Nach dem Test:\n\n";
+   std::cout << "\n Nach dem Test:\n\n";
    showTest(id);
    Auftrag(id).setStatusAuftrag_(CLOSED);
 */
+   }catch(SQLerror &e){std::cout << e<<'\n';}
    return 0;
 }

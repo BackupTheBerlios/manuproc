@@ -37,7 +37,7 @@ private:
 public:
 	AuftragFull(const AuftragBase& auftrag) throw(SQLerror);
 	// neuen Auftrag anlegen
-	AuftragFull(Auftrag::Anlegen _instanz, long kundennr, int jahr=0) throw(SQLerror);
+	AuftragFull(Auftrag::Anlegen _instanz, long kundennr) throw(SQLerror);
 	
 	void deleteEintrag(int zeilennr, int idx) throw(SQLerror);	
 	const AufEintragBase &getAufEntry(int idx) const 
@@ -57,7 +57,7 @@ public:
 	size_t size() const { return eintragliste.size(); }
 	
 	// these do not belong here - they are part of pps
-	void fillCList(Gtk::CList &list);
+//	void fillCList(Gtk::CList &clist);
 	
 	int insertNewEntry(unsigned long int bestellt,
                Petig::Datum lieferdatum, ArtikelBase::ID artid,

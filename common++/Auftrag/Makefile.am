@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.6 2001/12/05 07:55:59 christof Exp $
+# $Id: Makefile.am,v 1.7 2002/01/22 09:15:55 christof Exp $
 
 ENDUSER=-DPETIG
 
@@ -11,7 +11,7 @@ noinst_PROGRAMS=libAuftrag.o
 includedir=@includedir@/Auftrag
 
 # this gives us free compilation
-libAuftrag_o_SOURCES=AufEintragBase.cc selAufEntry.cc \
+libAuftrag_o_SOURCES=AufEintragBase.cc \
 	sqlAuftragSelector.cc Auftrag.cc $(BUILT_SOURCES_P) AuftragsBaum.cc 
 
 libAuftrag.o: $(libAuftrag_o_OBJECTS) $(libAuftrag_o_DEPENDENCIES)

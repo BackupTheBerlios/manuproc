@@ -52,7 +52,7 @@ Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
  kunde=cH_Kunde(KDNR);
  rngart = (RngArt)RNGART[0];
  zahlungsart = cH_Zahlungsart(ZAHLART);
- waehrung=cP_Waehrung(WAEHRUNG);
+ waehrung=cP_Waehrung(Waehrung::ID(WAEHRUNG));
  rabatt=RABATT;
  rgdatum=Petig::Datum(DATUM);
  bezahlt=BEZAHLT;
@@ -241,9 +241,29 @@ fixedpoint<2> Rechnung::Betrag() const throw(SQLerror)
  int RNGID= Id();
  exec sql end declare section;
 
- exec sql select sum(preis) into :BETRAG from rechnungentry
+ exec sql select  sum(round((round(preis*((100-rabatt)/100),2))*stueck,2)) 
+	into :BETRAG from rechnungentry
 	where rngid = :RNGID; 
 
  return BETRAG;
 }
+
+void RechnungBase::setEingezogen(int refnr) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int RNGID;
+ int REFNR;
+ exec sql end declare section;
+
+ Transaction tr;
+
+ RNGID = rngid;
+ REFNR = refnr;
+
+ exec sql update rechnung set bezahlt=true, einzug_refnr= :REFNR
+	where rngid= :RNGID;
+
+ tr.commit();
+}
+
 

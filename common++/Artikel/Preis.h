@@ -1,4 +1,4 @@
-// $Id: Preis.h,v 1.6 2001/10/23 08:45:18 christof Exp $
+// $Id: Preis.h,v 1.7 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -54,7 +54,7 @@ public:
 		: pfennig_cent(dm_euro), 
 		  preismenge(pmenge), waehrung(w), 
 		  short_shl(false) {}
-	Preis() : pfennig_cent(0), preismenge(1), waehrung(0), 
+	Preis() : pfennig_cent(0), preismenge(1), waehrung(Waehrung::default_id), 
 	          short_shl(false) {}
 	
 	int Wert_i(cP_Waehrung tp,preismenge_t pmenge=0) const throw()

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList_sql.pgcc,v 1.6 2001/12/05 07:55:59 christof Exp $ */
+/* $Id: LieferscheinList_sql.pgcc,v 1.7 2002/01/22 09:15:55 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,24 +25,30 @@ exec sql include sqlca;
 
 
 
-LieferscheinList::LieferscheinList() throw(SQLerror)
+LieferscheinList::LieferscheinList(const cH_ppsInstanz _instanz) throw(SQLerror)
+: instanz(_instanz)
 {
  std::string squery = SQuery();
  fuelle(squery);
 }
 
-LieferscheinList::LieferscheinList(const sel_KundenId &selparam) throw(SQLerror)
+LieferscheinList::LieferscheinList(const cH_ppsInstanz _instanz,const sel_KundenId &selparam) throw(SQLerror)
+: instanz(_instanz)
 {
  std::string squery = SQuery();
- squery += " where kundennr = "+itos(selparam.id);
+ squery += " where (instanz,kundennr) = ("
+   +itos(instanz->Id())+","+itos(selparam.id)+")";
  fuelle(squery);
 }
-LieferscheinList::LieferscheinList(const sel_ArtikelId &selparam) throw(SQLerror)
+LieferscheinList::LieferscheinList(const cH_ppsInstanz _instanz,const sel_ArtikelId &selparam) throw(SQLerror)
+: instanz(_instanz)
 {
  std::string squery = SQuery();
- squery += " where exists (select true from lieferscheinentry where 
-     lieferscheinentry.lfrsid =  lieferschein.lfrsid 
-     and artikelid ="+itos(selparam.id)+")";
+ squery += " where exists (select true from lieferscheinentry ly where 
+     ly.lfrsid =  lieferschein.lfrsid and
+     ly.instanz =  lieferschein.instanz
+     and ly.instanz ="+itos(instanz->Id())+
+     " and artikelid ="+itos(selparam.id)+")";
  fuelle(squery);
 }
 
@@ -88,7 +94,7 @@ void LieferscheinList::fuelle(const std::string &squery) throw(SQLerror)
     std::string geliefertam = GELIEFERTAM;
     if(geliefertam=="") gelam=Petig::Datum();
     else gelam.from_postgres(GELIEFERTAM);
-    sellist.push_back(new Lieferschein(LieferscheinBase(LFRSID),d,
+    sellist.push_back(new Lieferschein(LieferscheinBase(instanz,LFRSID),d,
     			KDNR,RNGID,PAECKCHEN,PAKETE,gelam,DPDLIEFNR) );
    } 
  tr.close();
@@ -97,20 +103,23 @@ void LieferscheinList::fuelle(const std::string &squery) throw(SQLerror)
 
 #ifdef MABELLA_EXTENSIONS
 
-LieferscheinList::LieferscheinList(const sel_DPDLNr &sp) throw(SQLerror)
+LieferscheinList::LieferscheinList(const cH_ppsInstanz _instanz,const sel_DPDLNr &sp) throw(SQLerror)
+: instanz(_instanz)
 {
  std::string squery = SQuery();
- squery += " where dpdliefnr = "+itos(sp.dpdlnr);
+ squery += " where dpdliefnr = "+itos(sp.dpdlnr)+" and instanz ="+itos(instanz->Id());
  fuelle(squery);
 }
 
-LieferscheinList::LieferscheinList(const sel_GeliefStat &sp) throw(SQLerror)
+LieferscheinList::LieferscheinList(const cH_ppsInstanz _instanz,const sel_GeliefStat &sp) throw(SQLerror)
+: instanz(_instanz)
 {
  std::string squery = SQuery();
  if(sp.geliefert)
 	 squery += " where dpdliefnr is not null";
  else
 	 squery += " where dpdliefnr is null";
+ squery += " and instanz = "+itos(instanz->Id());
 
  fuelle(squery);
 }

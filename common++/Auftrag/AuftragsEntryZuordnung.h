@@ -1,4 +1,4 @@
-// $Id: AuftragsEntryZuordnung.h,v 1.5 2002/01/11 07:59:28 christof Exp $
+// $Id: AuftragsEntryZuordnung.h,v 1.6 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -29,10 +29,11 @@
 class AufEintragZu : public AufEintragBase2
 {
  AufEintragBase2 AEB;
+ mutable int tiefe; // Geasamtmenge der zu planenden Instanzen
 
 public:
  AufEintragZu(AufEintragBase2 aeb) 
-     : AEB(aeb) {}
+     : AEB(aeb), tiefe(-1) {}
 
  struct st_reflist {AufEintragBase2 AEB2;ArtikelBase AB;mengen_t Menge;
          st_reflist(AufEintragBase2 aeb2,ArtikelBase ab,mengen_t menge) 
@@ -42,15 +43,21 @@ private:
 public:
     // Eine Benachbarte Liste von Kind- bzw. Elternaufträgen:
     std::list<st_reflist> get_Referenz_list(const AufEintragBase2& aeb,bool kinder=false) const throw(SQLerror);
-    // Für einen KOMPLETTEN Auftragsbaum die Klasse AuftragsBaum verwenden  
-    // die folgende Funktion liefert nur die Endaufträge OHNE Knoten
-    std::list<st_reflist> get_Referenz_listFull(bool kinder) const throw(SQLerror);
+    // Für einen KOMPLETTEN Auftragsbaum die Klasse AuftragsBaum verwenden oder nur_ende=false setzen
+    // die folgende Funktion liefert sonst nur die Endaufträge OHNE Knoten
+    std::list<st_reflist> get_Referenz_listFull(bool kinder,bool nur_ende=true) const throw(SQLerror);
                  //kinder=false:   Elternaufträge 
                  //kinder=true:    Kinderaufträge 
+    // Um diesen Werte zu erhalten muß zuvor(!) get_Referenz_listFull(kinder,false);
+    // aufgerufen werden.
+    int Tiefe() const {return tiefe;}
+
 
     std::list<cH_Kunde> get_Referenz_Kunden() const throw(SQLerror);
+/*
     static AufEintragBase2 get_AufEintrag_from_Artikel_by_Lfdate   
                    (const ArtikelBase& artikel,ppsInstanz::ppsInstId instanz);
+*/
     static std::list<AufEintragBase2> get_AufEintragList_from_Artikel
                (const ArtikelBase& artikel,ppsInstanz::ppsInstId instanz,AufStatVal status);
 

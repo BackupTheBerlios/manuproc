@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.9 2002/01/11 07:59:28 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.10 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,7 +28,7 @@ ArtikelStamm::cache_t ArtikelStamm::cache;
 ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
 	: art(ab)
 {
-//cout << "ArtikelStamm(Id):" << ab.Id() << "\n";
+//std::cout << "ArtikelStamm(Id):" << ab.Id() << "\n";
    payload_t *cached(cache.lookup(ab.Id()));
    if (cached) 
    {  payload=*cached;
@@ -41,7 +41,7 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
    exec sql end declare section;
    id=ab.Id();
 
-//cout << "ArtikelStamm "<<itos(id)<<'\n';      
+//std::cout << "ArtikelStamm "<<itos(id)<<'\n';      
    exec sql select warengruppe,coalesce(internwarengruppe,warengruppe)
       ,coalesce(bestellen_bei,1),coalesce(defaultschema,1),
       einheit

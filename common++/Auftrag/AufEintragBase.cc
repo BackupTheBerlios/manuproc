@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.13 2002/01/07 16:23:09 christof Exp $
+// $Id: AufEintragBase.cc,v 1.14 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,13 +20,14 @@
 #include"AufEintragBase.h"
 #include <Aux/string0.h>
 //#include <Aux/ppsInstanz.h>
-#include <Auftrag/AuftragsBaum.h> 
+//#include <Auftrag/AuftragsBaum.h> 
 #include <Artikel/ArtikelBaumFull.h>
+#include <Auftrag/AuftragsEntryZuordnung.h>
 
 AufEintragBase::AufEintragBase(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, mengen_t _bestellt,
 	int _artikel, const Petig::Datum _lieferdatum,
 	mengen_t _geliefert,
-	int _dispoentrynr, int _disponr, int _jahrgang,
+	int _dispoentrynr, int _disponr,
 	AufStatVal _aufstatus,
 	int _kdnr, const std::string _youraufnr,
 	const Petig::Datum& _prozdate,
@@ -37,14 +38,13 @@ AufEintragBase::AufEintragBase(ppsInstanz::ID _instanz,int _auftragid, int _zeil
  artikel(_artikel),
  dispoentrynr(_dispoentrynr),
  disponr(_disponr),
- status(_aufstatus),
+ auftragstatus(_aufstatus),
  entrystatus(_entrystatus),
  kdnr(_kdnr),
  youraufnr(_youraufnr),
  geliefert(_geliefert),
  lieferdatum(_lieferdatum),
  lasteditdate(_lasteditdate),
- jahrgang(_jahrgang),
  prozess(Prozess::default_id),
  letztePlanInstanz(_letztePlanInstanz),
  maxPlanInstanz(_maxPlanInstanz),
@@ -52,7 +52,7 @@ AufEintragBase::AufEintragBase(ppsInstanz::ID _instanz,int _auftragid, int _zeil
  preis(_preis),
  rabatt(_rabatt)
 {
- prozess=cH_Prozess(_prozess ? _prozess : cH_Prozess::default_pid);
+ prozess=cH_Prozess(Prozess::ID(_prozess ? _prozess : cH_Prozess::default_pid));
  if(! _prozess) prozdate=Petig::Datum();
  else prozdate.from_postgres(_prozdate.c_str());
 }
@@ -99,21 +99,13 @@ void AufEintragBase::setVerarbeitung(const cH_Prozess p)
 void AufEintragBase::abschreiben(mengen_t menge) throw(SQLerror)
 {
  geliefert=AufEintragBase2::abschreiben(menge);
-// rest = bestellt-geliefert;
- if(geliefert>=bestellt) status=(AufStatVal)CLOSED;
+ if(geliefert>=bestellt) entrystatus=(AufStatVal)CLOSED;
 }
 
 
 
 const std::string AufEintragBase::getEntryStatusStr() const
-{
- switch(entrystatus)
-   {case (AufStatVal)UNCOMMITED : return "unbestätigt"; 
-    case (AufStatVal)OPEN : return "offen"; 
-    case (AufStatVal)CLOSED : return "fertig";
-    case (AufStatVal)STORNO : return "storno";
-   }
- return "-";
+{  return AuftragBase::getStatusStr(entrystatus);
 }
 
 
@@ -137,7 +129,7 @@ std::vector<pair<cH_Prozess,long> > AufEintragBase::getProzess2() const
         cH_ppsInstanz(AufEintragBase(i->AEB2).getAuftragInstanz())->get_Prozess(),
         i->menge));
 
-//cout << "Auftrag: "<<Id()<<' '<<Instanz()
+//std::cout << "Auftrag: "<<Id()<<' '<<Instanz()
 //     <<"\tKinder : " <<i->AEB2.Id()<<' ' <<i->AEB2.Instanz()<<'\n';
    }
  return L;
@@ -159,7 +151,10 @@ std::string AufEintragBase::getProzess2_c_str() const
 */
 std::string AufEintragBase::Planung() const
 {
-  int tiefe = ArtikelBaumFull(ArtId()).Tiefe();
+//  int tiefe = ArtikelBaumFull(ArtId()).Tiefe();
+  AufEintragZu AEZ(*this);
+  AEZ.get_Referenz_listFull(true,false); // nur um die Tiefe zu berechnen
+  int tiefe = AEZ.Tiefe();
   return itos(maxPlanInstanz)+"/"+itos(tiefe);  
 //  return cH_ppsInstanz((ppsInstanz::ppsInstId)letztePlanInstanz)->Name();  
 }
@@ -168,9 +163,9 @@ std::string AufEintragBase::Planung() const
 /*
 long AufEintragBase::get_Referenz_AufEintragBase2_Summe(int instanz,bool ursprung,bool kinder) const throw(SQLerror)
 {
-  list<pair<AufEintragBase2,long> > L=get_Referenz_AufEintragBase2(ursprung,kinder);
+  std::list<pair<AufEintragBase2,long> > L=get_Referenz_AufEintragBase2(ursprung,kinder);
   long int summe=0;
-  for(list<pair<AufEintragBase2,long> >::const_iterator i=L.begin();i!=L.end();++i)
+  for(std::list<pair<AufEintragBase2,long> >::const_iterator i=L.begin();i!=L.end();++i)
    {
      //Aufträge mit Id=0 sind ungeplant!
      if(i->first.Instanz()==instanz && i->first.Id()!=0)

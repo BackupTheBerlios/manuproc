@@ -1,4 +1,4 @@
-// $Id: Handles.cc,v 1.1 2001/12/17 11:15:18 cvs_christof Exp $
+// $Id: Handles.cc,v 1.2 2002/01/21 17:04:03 cvs_christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,8 +24,8 @@
 
 HandleContent::~HandleContent()
 {  if (_references) 
-      cerr << "Handled Object @"<<(void*)this<<" ("<<typeid(*this).name() <<") still referenced on destruction\n";
+      std::cerr << "Handled Object @"<<(void*)this<<" ("<<typeid(*this).name() <<") still referenced on destruction\n";
    if (_watch_me)
-      cerr << "Handled Object @"<<(void*)this<<" ("<<typeid(*this).name() <<") destruction\n";
+      std::cerr << "Handled Object @"<<(void*)this<<" ("<<typeid(*this).name() <<") destruction\n";
 }
 #endif

@@ -1,4 +1,4 @@
-// $Id: testExtBezHandle.cc,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: testExtBezHandle.cc,v 1.2 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,7 +24,7 @@
 
 int main()
 {  Petig::dbconnect_nt();
-   cH_Prozess ph(1);
+   cH_Prozess ph(Prozess::ID(1));
    cH_ExtBezSchema h(1);
    return 0;
 }

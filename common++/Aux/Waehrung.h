@@ -1,4 +1,4 @@
-// $Id: Waehrung.h,v 1.5 2001/08/20 08:24:31 christof Exp $
+// $Id: Waehrung.h,v 1.6 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,26 +26,24 @@
 class Waehrung
 {
 public:
- typedef int WaehID;
- typedef WaehID ID;
-
 // muesste aus Datenbank generiert werden 
  enum enum_t { DM=1, EUR, USD };
- static const enum_t default_id=DM;
+ static const enum_t default_id=EUR;
+ typedef enum_t ID;
+ typedef ID WaehID; // older variant
  
 private:
- WaehID wid;  
+ ID wid;  
  std::string kurz;
  std::string lang;
  double dmfkt;
 
 public:
- Waehrung(WaehID id) throw(SQLerror);
- Waehrung() : wid(0), dmfkt(0) {}
-// Waehrung() {Waehrung(DM);}
- Waehrung(WaehID id, const std::string k, const std::string l, double f)
+ Waehrung(ID id) throw(SQLerror);
+ Waehrung() : wid(default_id), dmfkt(0) {}
+ Waehrung(ID id, const std::string k, const std::string l, double f)
  	: wid(id), kurz(k), lang(l), dmfkt(f) {}
- WaehID Id() const { return wid; }
+ ID Id() const { return wid; }
  
  enum_t get_enum() const {return (enum_t)wid;} // finde ich praktischer als Id() MAT
  static double Umrechnung(const Waehrung &von, const Waehrung &nach);
@@ -56,17 +54,19 @@ public:
  bool operator==(const Waehrung &b) const { return wid==b.wid; }
 }; 
 
-class cP_Waehrung : public const_Pointer<Waehrung>
+// Vorsicht !!! Dass dies ein cP ist, funktioniert nur wegen des Caches
+class cP_Waehrung : public Pointer<const Waehrung>
 {public:
-	typedef Waehrung::WaehID WaehID;
+	typedef Waehrung::ID ID;
+	typedef Waehrung::ID WaehID; // old variant
 private:
 	// cache
-	typedef CacheStatic<WaehID,Waehrung> cache_t;
+	typedef CacheStatic<ID,Waehrung> cache_t;
 	static cache_t cache;
 
-	cP_Waehrung(const Waehrung *w) : const_Pointer<Waehrung>(w) {}
 public:
 	cP_Waehrung() {}
-	cP_Waehrung(WaehID id);
+	cP_Waehrung(ID id);
+	cP_Waehrung(const Waehrung *w) : Pointer<const Waehrung>(w) {}
 };
 #endif 

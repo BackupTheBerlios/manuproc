@@ -1,4 +1,4 @@
-// $Id: KettplanKette.h,v 1.4 2001/11/05 08:58:29 christof Exp $
+// $Id: KettplanKette.h,v 1.5 2002/01/22 09:15:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -123,7 +123,7 @@ public:
         int get_aktual_Index(const ArtikelGang& artikel) const;
         void save_Garn(const ArtikelGang& artikel, const KettenGarn& garn) const;
         void delete_Garn(const ArtikelGang& artikel, const KettenGarn& garn) const;
-        vector<KettenGarn> load_Garn(const ArtikelGang& artikel) const;
+        std::vector<KettenGarn> load_Garn(const ArtikelGang& artikel) const;
 
 private:
 	int holePlanMaschine() const throw(SQLerror);

@@ -1,4 +1,4 @@
-/* $Id: RechnungBase.h,v 1.1 2001/04/23 08:11:59 christof Exp $ */
+/* $Id: RechnungBase.h,v 1.2 2002/01/22 09:15:55 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,6 +21,7 @@
 #ifndef RECHNUNGBASE
 #define RECHNUNGBASE
 
+#include<Aux/SQLerror.h>
 
 class RechnungBase
 {
@@ -35,6 +36,8 @@ class RechnungBase
 	RechnungBase(int rid) : rngid(rid) {}
 
 	ID Id() const {return rngid;}
+	
+	void setEingezogen(int refnr) throw(SQLerror);
 };
 
 #endif
