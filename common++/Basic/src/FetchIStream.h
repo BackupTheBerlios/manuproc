@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.48 2004/03/11 14:44:42 christof Exp $
+// $Id: FetchIStream.h,v 1.49 2004/03/11 14:47:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -232,7 +232,7 @@ public:
 	void ThrowOnBad(const char *where) const;
 
 	static void Execute(const std::string &command) throw(SQLerror);
-	int Error() { return error; }
+	int Result() { return error; }
 	unsigned LinesAffected() { return lines; }
 #ifndef MPC_SQLITE  // please migrate to the functions above
 	static __deprecated int Code(); // SQLCA.sqlcode
