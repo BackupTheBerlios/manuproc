@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.29 2003/07/03 06:47:10 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.30 2003/07/03 08:20:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -292,3 +292,11 @@ void Lieferschein::setVerknr(const Kunde::ID vknr) throw(SQLerror)
  verknr=vknr;
 }
 #endif
+
+void Lieferschein::setDatum(const ManuProC::Datum &d) throw(SQLerror)
+{  
+ Query("update lieferschein set geliefertam=? where 
+ 	(instanz,lfrsid) = (?,?)") 
+ 	<< d << Instanz()->Id() << Id() ;
+ SQLerror::test(__FILELINE__);
+}

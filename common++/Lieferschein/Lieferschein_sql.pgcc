@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.35 2003/07/03 06:47:10 christof Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.36 2003/07/03 08:20:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -139,19 +139,5 @@ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,_instanz,NV("Kunde",
  rngid=ManuProcEntity<>::none_id;
 
  tr.commit();
-}
-
-void Lieferschein::setDatum(const ManuProC::Datum &d) throw(SQLerror)
-{  
- exec sql begin declare section;
- int LFRSID=Id();
- int INSTANZ=Instanz()->Id();
- char DATUM[20];
- exec sql end declare section;
- 
- d.write_postgres(DATUM,sizeof DATUM);
- exec sql update lieferschein set geliefertam=:DATUM where 
- 	(instanz,lfrsid) = (:INSTANZ,:LFRSID) ;
- SQLerror::test(__FILELINE__);
 }
 
