@@ -1,4 +1,4 @@
-// $Id: ArtikelSumme.cc,v 1.7 2003/01/08 09:46:58 christof Exp $
+// $Id: ArtikelSumme.cc,v 1.8 2004/07/26 16:21:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -35,49 +35,59 @@ std::ostream &operator<<(std::ostream &o, const ArtikelMengeSumme &ams)
 int main()
 {  ManuProC::dbconnect();
    ArtikelMengeSumme ams;
-   ArtikelMenge am=ArtikelMenge(218290,100);
+   ArtikelMenge am=ArtikelMenge(ArtikelBase(218290),100);
    std::cout << ams << '\n';
    std::cout << '+' << am << '\n';
    ams.cumulate(am);
    std::cout << "=\t" << ams << '\n';
-   am=ArtikelMenge(218219,32);
+   am=ArtikelMenge(ArtikelBase(218219),32);
    std::cout << '+' << am << '\n';
    ams.cumulate(am);
    std::cout << "=\t" << ams << '\n';
-   am=ArtikelMenge(218325,4,3000);
+   am=ArtikelMenge(ArtikelBase(218325),4,3000);
    std::cout << '+' << am << '\n';
    ams.cumulate(am);
    std::cout << "=\t" << ams << '\n';
-   am=ArtikelMenge(126712,2,4000);
+   am=ArtikelMenge(ArtikelBase(126712),2,4000);
    std::cout << '+' << am << '\n';
    ams.cumulate(am);
    std::cout << "=\t" << ams << '\n';
-   am=ArtikelMenge(38213,1,1.5);
+   am=ArtikelMenge(ArtikelBase(38213),1,1.5);
    std::cout << '+' << am << '\n';
    ams.cumulate(am);
    std::cout << "=\t" << ams << '\n';
    std::cout << "-----------------\n";
    ams=ArtikelMengeSumme();
-   am=ArtikelMenge(210967,900000);
+   am=ArtikelMenge(ArtikelBase(210967),900000);
    std::cout << ams << '\n';
    std::cout << '+' << am << '\n';
    ams.cumulate(am);
    std::cout << "=\t" << ams << '\n';
-   am=ArtikelMenge(210967,100000);
+   am=ArtikelMenge(ArtikelBase(210967),100000);
    std::cout << ams << '\n';
    std::cout << '+' << am << '\n';
    ams.cumulate(am);
    std::cout << "=\t" << ams << '\n';
-   am=ArtikelMenge(221118,250);
+   am=ArtikelMenge(ArtikelBase(221118),250);
    std::cout << ams << '\n';
    std::cout << '+' << am << '\n';
    ams.cumulate(am);
    std::cout << "=\t" << ams << '\n';
-   am=ArtikelMenge(221120,1250);
+   am=ArtikelMenge(ArtikelBase(221120),1250);
    std::cout << ams << '\n';
    std::cout << '+' << am << '\n';
    ams.cumulate(am);
    std::cout << "=\t" << ams << '\n';
-   
+
+   std::cout << "\n----------\n";
+   ams=ArtikelMengeSumme();
+   ams.cumulate(ArtikelMenge(ArtikelBase(210967),20000000));
+   std::cout << "=\t" << ams << '\n';
+   ams.cumulate(ArtikelMenge(ArtikelBase(210967),20000000));
+   ams.cumulate(ArtikelMenge(ArtikelBase(210967),20000000));
+   std::cout << ams.Summe(Einheit(ManuProC::DynamicEnums::Einheiten::m)) << '\n';
+   std::cout << (ams.Summe().begin()->second/100) << '\n';
+   std::cout << fixedpoint<2,double,long long>(60000000) << '\n';
+   std::cout << "=\t" << ams << '\n';
    return 0;
 }

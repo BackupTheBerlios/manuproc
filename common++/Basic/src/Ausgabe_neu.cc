@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.cc,v 1.16 2004/02/29 21:32:32 christof Exp $ */
+/* $Id: Ausgabe_neu.cc,v 1.17 2004/07/26 16:21:43 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -257,3 +257,26 @@ const std::string Formatiere_short(unsigned int i)
 {  return Formatiere(i);
 }
 #endif
+
+#define FP_STR(D,F,I) \
+std::string fixedpoint<D,F,I>::String(bool _short, unsigned int Ziellaenge, \
+		const char *TausenderTrennzeichen,const char *Komma,\
+		char fuehrendesZeichen) const\
+{  const char *sign="";\
+   unsigned I val=Scaled();\
+   if (Scaled()<0) \
+   {  sign="-"; \
+      val=-Scaled(); \
+      if (Ziellaenge) --Ziellaenge;\
+   }\
+   unsigned scale=Scale();\
+   if (_short) while (scale>0 && !(val%10)) { val/=10; --scale; }\
+   return sign+Formatiere(val,scale,Ziellaenge,TausenderTrennzeichen,Komma,' ');\
+}
+
+FP_STR(0,double,long)
+FP_STR(1,double,long)
+FP_STR(2,double,long)
+FP_STR(2,double,long long)
+FP_STR(3,double,long)
+FP_STR(5,double,long)

@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.22 2003/09/17 07:04:49 christof Exp $
+// $Id: fixedpoint.h,v 1.23 2004/07/26 16:21:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -56,9 +56,6 @@ static inline int zehnhochplusI()
 template <>
 static inline int zehnhochplusI<0>()
 { return 1; }
-
-const std::string Formatiere(unsigned long,
-                unsigned int,unsigned int,const char *,const char *,char);
 
 template <int decimals=2,class Ftype=double,class Itype=long>
 class fixedpoint
@@ -184,18 +181,7 @@ public:
 	
 	std::string String(bool _short=false, unsigned int Ziellaenge=0,
 		const char *TausenderTrennzeichen="",const char *Komma=".",
-		char fuehrendesZeichen=' ') const
-	{  const char *sign="";
-           unsigned long val=Scaled();
-           if (Scaled()<0) 
-           {  sign="-"; 
-              val=-Scaled(); 
-              if (Ziellaenge) --Ziellaenge;
-           }
-           unsigned scale=Scale();
-           if (_short) while (scale>0 && !(val%10)) { val/=10; --scale; }
-           return sign+Formatiere(val,scale,Ziellaenge,TausenderTrennzeichen,Komma,' ');
-	}
+		char fuehrendesZeichen=' ') const;
 	Itype Scaled() const { return scaled; }
 	size_t Scale() const { return decimals; }
 	
