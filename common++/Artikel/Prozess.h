@@ -1,4 +1,4 @@
-/* $Id: Prozess.h,v 1.6 2001/11/05 08:58:29 christof Exp $ */
+/* $Id: Prozess.h,v 1.7 2001/12/04 08:42:10 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -37,7 +37,7 @@ public:
 	enum ID2
 	{  None=0, Drucken=1, Faerben=30, Verarbeitung=31, Aequivalenz=38,
 		Weben=42, Schaeren=43, Verpacken=44, Giessen=45,
-		Rollen_Jumbo=16 };
+		Rollen_Jumbo=16, Rollen=46 };
 	static const ID default_id=None;
         static const ID standard_id=Verarbeitung;
 

@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.6 2001/11/19 12:49:24 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.7 2001/12/04 08:42:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,7 +26,9 @@ ArtikelStamm::cache_t ArtikelStamm::cache;
 
 ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
 	: art(ab)
-{  payload_t *cached(cache.lookup(ab.Id()));
+{
+//cout << "ArtikelStamm(Id):" << ab.Id() << "\n";
+   payload_t *cached(cache.lookup(ab.Id()));
    if (cached) 
    {  payload=*cached;
       return;
@@ -34,7 +36,7 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
    exec sql begin declare section;
     int id,typ,inttyp;
     int best_bei,defschem;
-    int einheit,ieinheit;
+    int einheit, ieinheit;
    exec sql end declare section;
    id=ab.Id();
 
@@ -53,7 +55,7 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
    if (!ieinheit) payload.einh=Einheit(einheit);
    else
    {  payload.einh=EINH_STUECK;
-#ifdef PETIG_EXTENSIONS
+
       switch(payload.interntyp)
       {  case ArtikelTyp::JumboRollen:
             payload.einh=EINH_METER; break;
@@ -80,7 +82,6 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
          case ArtikelTyp::Lohn:
             payload.einh=EINH_FDKM; break;
       }
-#endif
    }
    cache.Register(ab.Id(),payload);
 }

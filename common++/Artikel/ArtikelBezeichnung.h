@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.h,v 1.11 2001/11/19 12:49:24 christof Exp $
+// $Id: ArtikelBezeichnung.h,v 1.12 2001/12/04 08:42:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -119,9 +119,9 @@ public:
      cH_EntryValue b3=b.Komponente_als_EntryValue(2);
      cH_EntryValue b4=b.Komponente_als_EntryValue(3);
      return   a1 <b1 || 
-             (a1==b1 && a2 <b2 ||
-                       (a2==b2 && a3 <b3 ||
-                                  a3==b3 && a4 <b4));
+             (a1==b1 && (a2 <b2 ||
+                       (a2==b2 && (a3 <b3 ||
+                                  (a3==b3 && a4 <b4)))));
          }
 
 // bloedes Konzept !!! eine Map waere besser als dieser HACK (erhoehen um 1)

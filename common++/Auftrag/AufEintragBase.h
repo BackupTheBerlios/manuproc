@@ -1,4 +1,4 @@
-/* $Id: AufEintragBase.h,v 1.15 2001/11/19 12:49:24 christof Exp $ */
+/* $Id: AufEintragBase.h,v 1.16 2001/12/04 08:42:10 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -63,6 +63,7 @@ protected:
  Petig::Datum lasteditdate;
  int jahrgang; // soll bald weg
  cH_Prozess prozess;
+ int letztePlanInstanz,maxPlanInstanz;
  Petig::Datum prozdate;
 
  Preis preis;
@@ -75,6 +76,7 @@ public:
    	kdnr(0), 
    	bestellt(0),
    	geliefert(0), jahrgang(0), prozess(Prozess::default_id),
+   	letztePlanInstanz(0),maxPlanInstanz(0),
 	rabatt(0)
  {}
 
@@ -85,7 +87,7 @@ public:
 	AufStatVal _aufstatus,
 	int _kdnr, const std::string _youraufnr,
 	const Petig::Datum& _prozdate,
-	int _prozess,
+	int _prozess,int _letztePlanInstanz, int _maxPlanInstanz,
 	const Preis &_preis, int _rabatt,
 	AufStatVal _entrystat, const Petig::Datum _lasteditdate) throw();
  AufEintragBase(const AufEintragBase2 &aebb) throw (SQLerror);
@@ -124,8 +126,9 @@ public:
  int getJahrgang() const { return jahrgang;}
  const Petig::Datum getProzDat() const { return prozdate;} 
  cH_Prozess getProzess() const { return prozess;}
- std::vector<pair<cH_Prozess,long> > getProzess2() const;
- std::string getProzess2_c_str() const;
+// void calculateProzessInstanz();
+// std::vector<pair<cH_Prozess,long> > getProzess2() const;
+// std::string getProzess2_c_str() const;
  const cP_Waehrung getWaehrung() const { return preis.getWaehrung(); }
  const Preis GPreis() const; // Gesamtpreis
  void setVerarbeitung(const cH_Prozess p);
@@ -134,21 +137,39 @@ public:
  float PreisMenge() const { return preis.PreisMenge(); }
  void abschreiben(int menge) throw(SQLerror);
  bool allesOK() const;
+ std::string Planung() const;
+/*
+ struct st_reflist {AufEintragBase2 AEB2;ArtikelBase AB;long Menge;
+        st_reflist(AufEintragBase2 aeb2,ArtikelBase ab,long menge)
+           :AEB2(aeb2),AB(ab),Menge(menge){}};
 private:
  list<cH_Kunde> get_Referenz_Kunden_long() const throw(SQLerror);
 public:
- list<pair<AufEintragBase2,long> > get_Referenz_list(const AufEintragBase2& aeb,bool kinder=false) const throw(SQLerror);
- list<pair<AufEintragBase2,long> > get_Referenz_AufEintragBase2(bool ursprung=true,bool kinder=false) const throw(SQLerror);
-                //false: Alle Referenzaufträge 
-                //true:  Alle Kinderaufträge
- list<cH_Kunde> get_Referenz_Kunden() const throw(SQLerror);
+ // Eine Benachbarte Liste von Kind- bzw. Elternaufträgen:
+ list<st_reflist> get_Referenz_list(const AufEintragBase2& aeb,bool kinder=false) const throw(SQLerror);
+ // Für einen KOMPLETTEN Auftragsbaum bitte die Klasse AuftragsBaum verwenden
+ // die folgende Funktion liefert nur die Endaufträge OHNE Knoten
+ list<st_reflist> get_Referenz_listFull(bool kinder) const throw(SQLerror);
+                //kinder=false:   Elternaufträge 
+                //kinder=true:    Kinderaufträge
+*/
+/*
+ list<st_reflist> get_Referenz_AufEintragBase2(bool ursprung=true,bool kinder=false) const throw(SQLerror);
+                //Ursprung=false: Nur die benachbarten Aufträge 
+                //Ursprung=true:  Alle (Referenz-)Aufträge 
+                //kinder=false:   Elternaufträge 
+                //kinder=true:    Kinderaufträge
+*/
+// long get_Referenz_AufEintragBase2_Summe(int instanz,bool ursprung=true,bool kinder=false) const throw(SQLerror);
+// list<cH_Kunde> get_Referenz_Kunden() const throw(SQLerror);
  ArtikelBase::ID ArtId() const {return artikel.Id();}
 
+/*
  static std::list<AufEintragBase2> get_AufEintragList_from_Artikel
                (const ArtikelBase& artikel,const cH_ppsInstanz& instanz);
  static AufEintragBase2 get_AufEintrag_from_Artikel_by_Lfdate
                (const ArtikelBase& artikel,const cH_ppsInstanz& instanz); 
-  
+*/  
 
 // void setArtikelBezeichnung(const cH_ExtBezSchema &cs)
 // 	{const_cast<AufArtikel&>(*artikel).setArtikelBezeichnung(cs); } 

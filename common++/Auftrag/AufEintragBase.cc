@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.10 2001/11/19 12:49:24 christof Exp $
+// $Id: AufEintragBase.cc,v 1.11 2001/12/04 08:42:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,6 +21,7 @@
 #include <Aux/string0.h>
 //#include <Aux/ppsInstanz.h>
 #include <Auftrag/AuftragsBaum.h> 
+#include <Artikel/ArtikelBaumFull.h>
 
 AufEintragBase::AufEintragBase(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, int _bestellt,
 	int _artikel, const Petig::Datum _lieferdatum,
@@ -29,7 +30,7 @@ AufEintragBase::AufEintragBase(ppsInstanz::ID _instanz,int _auftragid, int _zeil
 	AufStatVal _aufstatus,
 	int _kdnr, const std::string _youraufnr,
 	const Petig::Datum& _prozdate,
-	int _prozess,
+	int _prozess,int _letztePlanInstanz, int _maxPlanInstanz,
 	const Preis &_preis, int _rabatt,
 	AufStatVal _entrystatus, const Petig::Datum _lasteditdate) throw()
 : AufEintragBase2(_instanz,_auftragid,_zeilennr),
@@ -45,6 +46,8 @@ AufEintragBase::AufEintragBase(ppsInstanz::ID _instanz,int _auftragid, int _zeil
  lasteditdate(_lasteditdate),
  jahrgang(_jahrgang),
  prozess(Prozess::default_id),
+ letztePlanInstanz(_letztePlanInstanz),
+ maxPlanInstanz(_maxPlanInstanz),
  bestellt(_bestellt),
  preis(_preis),
  rabatt(_rabatt)
@@ -93,6 +96,14 @@ void AufEintragBase::setVerarbeitung(const cH_Prozess p)
  prozdate=Petig::Datum().today();
 }
 
+void AufEintragBase::abschreiben(int menge) throw(SQLerror)
+{
+ geliefert=AufEintragBase2::abschreiben(menge);
+// rest = bestellt-geliefert;
+ if(geliefert>=bestellt) status=(AufStatVal)CLOSED;
+}
+
+
 
 const std::string AufEintragBase::getEntryStatusStr() const
 {
@@ -113,24 +124,43 @@ bool AufEintragBase::allesOK() const
  return true;
 }
 
+/*
+void AufEintragBase::calculateProzessInstanz()
+{
+  assert (Instanz()==ppsInstanz::Kundenauftraege);
+  AuftragsBaum AB(*this,true);
+  int anz=0;
+  for(AuftragsBaum::const_iterator i=AB.begin();i!=AB.end();++i)
+   {
+     if(i->AEB2.Id()==0) continue; // 0 = ungeplante Aufträge
+     if(AufEintragBase(i->AEB2).getStueck() == i->menge)
+       ++anz;
+   }
+//   setMaxPlanInstanz(i->AEB2.Instanz());
+   setMaxPlanInstanz(anz);
+}   
+*/
 
+
+/*
 std::vector<pair<cH_Prozess,long> > AufEintragBase::getProzess2() const
 {
   AuftragsBaum AB(*this,true);
   std::vector<pair<cH_Prozess,long> > L;
   for(AuftragsBaum::const_iterator i=AB.begin();i!=AB.end();++i)
    {
-     if(i->AEB2.Id()!=0) // 0 = ungeplante Aufträge       
-       L.push_back(pair<cH_Prozess,long>(
-         cH_ppsInstanz(AufEintragBase(i->AEB2).getAuftragInstanz())->get_Prozess(),
-         i->menge));
+     if(i->AEB2.Id()==0) continue; // 0 = ungeplante Aufträge       
+     L.push_back(pair<cH_Prozess,long>(
+        cH_ppsInstanz(AufEintragBase(i->AEB2).getAuftragInstanz())->get_Prozess(),
+        i->menge));
 
 //cout << "Auftrag: "<<Id()<<' '<<Instanz()
 //     <<"\tKinder : " <<i->AEB2.Id()<<' ' <<i->AEB2.Instanz()<<'\n';
    }
  return L;
 }
-
+*/
+/*
 std::string AufEintragBase::getProzess2_c_str() const
 {
  std::vector<pair<cH_Prozess,long> > L=getProzess2();
@@ -143,33 +173,57 @@ std::string AufEintragBase::getProzess2_c_str() const
   }
  return s;
 }
+*/
+std::string AufEintragBase::Planung() const
+{
+  int tiefe = ArtikelBaumFull(ArtId()).Tiefe();
+  return itos(maxPlanInstanz)+"/"+itos(tiefe);  
+}
 
 
+/*
 AufEintragBase2 AufEintragBase::get_AufEintrag_from_Artikel_by_Lfdate   
                (const ArtikelBase& artikel,const cH_ppsInstanz& instanz)
 {
   std::list<AufEintragBase2> LI=get_AufEintragList_from_Artikel(artikel,instanz);
-  std::list<pair<AufEintragBase2,long> > LR;
+  std::list<st_reflist> LR;
   for(std::list<AufEintragBase2>::const_iterator i=LI.begin();i!=LI.end();++i)
    {
-     std::list<pair<AufEintragBase2,long> > LRtmp =
-               AufEintragBase(*i).get_Referenz_AufEintragBase2();
-     LR.merge(LRtmp); 
+     std::list<st_reflist> LRtmp =
+               AufEintragBase(*i).get_Referenz_listFull(false);
+     LR.splice(LR.end(),LRtmp);
    }
   Petig::Datum lieferdatum;
   AufEintragBase2 AEB;
   // lieferdatum initialisieren
   if(LR.begin()!=LR.end()) 
-  { lieferdatum=AufEintragBase(LR.begin()->first).getLieferdatum();
-    AEB=LR.begin()->first;
-   for(std::list<pair<AufEintragBase2,long> >::const_iterator i=LR.begin();i!=LR.end();++i)
+  { lieferdatum=AufEintragBase(LR.begin()->AEB2).getLieferdatum();
+    AEB=LR.begin()->AEB2;
+   for(std::list<st_reflist>::const_iterator i=LR.begin();i!=LR.end();++i)
    {
-    Petig::Datum ld=AufEintragBase(i->first).getLieferdatum();
+    Petig::Datum ld=AufEintragBase(i->AEB2).getLieferdatum();
     if(ld<lieferdatum) 
       {
-        AEB=i->first;
+        AEB=i->AEB2;
         lieferdatum=ld;
       }
    }
   }
 }
+*/
+
+/*
+long AufEintragBase::get_Referenz_AufEintragBase2_Summe(int instanz,bool ursprung,bool kinder) const throw(SQLerror)
+{
+  list<pair<AufEintragBase2,long> > L=get_Referenz_AufEintragBase2(ursprung,kinder);
+  long int summe=0;
+  for(list<pair<AufEintragBase2,long> >::const_iterator i=L.begin();i!=L.end();++i)
+   {
+     //Aufträge mit Id=0 sind ungeplant!
+     if(i->first.Instanz()==instanz && i->first.Id()!=0)
+        summe+=i->second;
+   }
+  return summe;
+}
+
+*/

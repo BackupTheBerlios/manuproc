@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.8 2001/11/05 08:58:29 christof Exp $
+// $Id: Kunde.h,v 1.9 2001/12/04 08:42:11 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -110,7 +110,7 @@ public:
 	Kunde(ID nr=default_id) throw(SQLerror);
 	static const cH_Kunde newKunde(const Kunde::ID kid, const std::string &firma) throw(SQLerror);
         const std::string LaTeX_von() const;
-        const std::string LaTeX_an(const std::string& wo) const;
+        const std::string LaTeX_an(bool liefer) const;
         
         const std::string getBank() const { return bankverb.getBankverb(); }
         const unsigned long long int getKtnr() const { return bankverb.konto; }

@@ -1,4 +1,4 @@
-/* $Id: EntryValueDatum.cc,v 1.1 2001/08/20 08:26:21 christof Exp $ */
+/* $Id: EntryValueDatum.cc,v 1.2 2001/12/04 08:42:10 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,6 +19,7 @@
 
 #include <Aux/EntryValueDatum.h>
 #include <typeinfo> // for bad_cast
+#include <Aux/itos.h>
 
 bool EntryValueDatum::operator==(const EntryValueBase &v) const
 {  try
@@ -37,3 +38,34 @@ bool EntryValueDatum::operator<(const EntryValueBase &v) const
    {  return false;
    }
 }
+
+///////////////////////////////////////////////////////////////////////
+
+bool EntryValueKalenderwoche::operator==(const EntryValueBase &v) const
+{  try
+   {  const EntryValueKalenderwoche &b=dynamic_cast<const EntryValueKalenderwoche &>(v);
+      return datum==b.datum;
+   } catch (std::bad_cast &e)
+   {  return false;
+   }
+}
+
+bool EntryValueKalenderwoche::operator<(const EntryValueBase &v) const
+{  try
+   {  const EntryValueKalenderwoche &b=dynamic_cast<const EntryValueKalenderwoche &>(v);
+      return datum<b.datum;
+   } catch (std::bad_cast &e)
+   {  return false;
+   }
+}
+
+const std::string EntryValueKalenderwoche::getStrVal() const
+{
+  int lieferwoche = datum.Woche();
+  int lieferjahr = datum.Jahr();
+  string lj=itos (lieferjahr).substr(2);
+  return itos(lieferwoche)+"'"+lj;
+}
+
+
+

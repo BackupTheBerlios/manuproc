@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.pgcc,v 1.7 2001/10/23 08:45:18 christof Exp $
+// $Id: ArtikelBaum.pgcc,v 1.8 2001/12/04 08:42:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -109,7 +109,7 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
      }          
     }
     catch (SQLerror &e)
-    {  cerr << "Kein ArtikelStamm zu " << Id() << '\n';
+    {  std::cerr << "Kein ArtikelStamm zu " << Id() << '\n';
     }
 #endif
 
@@ -119,11 +119,11 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
 
 void ArtikelBaum::gleiche_Faeden_summieren()
 {
- map<unsigned int,fixedpoint<5> > mmap;
- for(vector<RohArtikel>::iterator i=zusammensetzung.begin();i!=zusammensetzung.end();++i)
+ std::map<unsigned int,fixedpoint<5> > mmap;
+ for(std::vector<RohArtikel>::iterator i=zusammensetzung.begin();i!=zusammensetzung.end();++i)
    mmap[(*i).rohartikel] += (*i).menge;
- for (map<unsigned int,fixedpoint<5> >::iterator m=mmap.begin();m!=mmap.end();++m)
-   for(vector<RohArtikel>::iterator i=zusammensetzung.begin();i!=zusammensetzung.end();++i)
+ for (std::map<unsigned int,fixedpoint<5> >::iterator m=mmap.begin();m!=mmap.end();++m)
+   for(std::vector<RohArtikel>::iterator i=zusammensetzung.begin();i!=zusammensetzung.end();++i)
       if ((*i).rohartikel == m->first ) (*i).menge=m->second;
  // Duplikate entfernen
  sort(zusammensetzung.begin(),zusammensetzung.end());

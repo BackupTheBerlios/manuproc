@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.2 2001/06/27 08:04:09 christof Exp $
+// $Id: FetchIStream.h,v 1.3 2001/12/04 08:42:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,10 +25,12 @@ class FetchIStream
 {	std::string descriptor;
 	int naechstesFeld;
 public:
-	FetchIStream(const std::string &descr)
+	FetchIStream(const std::string &descr="")
 		: descriptor(descr), naechstesFeld(1)
 	{}
 	int getIndicator() const;
+	bool good() const
+	{  return !descriptor.empty(); }
 	
 	FetchIStream &operator>>(std::string &str);
 	FetchIStream &operator>>(int &i);
@@ -72,5 +74,21 @@ public:
 	   return *this;
 	}
 };
+
+class Query
+{	std::string cursor;
+	bool eof;
+public:
+	Query(const std::string &command);
+	FetchIStream Fetch();
+	bool good() const 
+	{ return !eof; }
+	~Query();
+};
+
+static inline Query &operator>>(Query &q, FetchIStream &s)
+{  s=q.Fetch();
+   return q;
+}
 
 #endif

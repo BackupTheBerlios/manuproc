@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.3 2001/10/23 08:45:18 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.4 2001/12/04 08:42:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,6 +19,8 @@
 
 #include <Aux/FetchIStream.h>
 #include <Aux/SQLerror.h>
+exec sql include sqlca;
+#include <Aux/itos.h>
 
 // ecpg intcoming descriptor has to be FetchIStream
 
@@ -102,3 +104,46 @@ FetchIStream &FetchIStream::operator>>(bool &b)
    return *this;
 }
 
+// note cursor is the name for both the cursor and the descriptor
+Query::Query(const std::string &command)
+: cursor(std::string("Query")+itos(reinterpret_cast<int>(this))), eof(false)
+{  exec sql begin declare section;
+   char *COMMAND=const_cast<char*>(command.c_str());
+   exec sql end declare section;
+   
+//   exec sql allocate descriptor X;
+   ECPGallocate_desc(__LINE__, cursor.c_str());
+   if (sqlca.sqlcode) eof=true;
+   exec sql prepare query from :COMMAND;
+//   exec sql declare Z cursor for query;
+//   exec sql open Z;
+   string cursorcmd("declare "+cursor+" cursor for ?");
+   ECPGdo(__LINE__, NULL, const_cast<char*>(cursorcmd.c_str()),
+   	ECPGt_char_variable,(ECPGprepared_statement("query")),1L,1L,
+   	1*sizeof(char), ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+   	ECPGt_EOIT, ECPGt_EORT);
+   if (sqlca.sqlcode) eof=true;
+}
+
+FetchIStream Query::Fetch()
+{  if (!eof)
+   {  // exec sql fetch from Z into descriptor X;
+      string cursorcmd("fetch from "+cursor);
+      ECPGdo_descriptor(__LINE__, NULL, cursor.c_str(),cursorcmd.c_str());
+      // new syntax:
+      // ECPGdo(__LINE__, NULL, cursorcmd.c_str(), ECPGt_EOIT, 
+	//	ECPGt_descriptor, cursor.c_str(), 0L, 0L, 0L, 
+	//	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EORT);
+      if (sqlca.sqlcode) eof=true;
+      else return FetchIStream(cursor);
+   }
+   return FetchIStream();
+}
+
+Query::~Query()
+{  string cursorcmd("close "+cursor);
+//   exec sql close Z;
+   ECPGdo(__LINE__, NULL, const_cast<char*>(cursorcmd.c_str()), ECPGt_EOIT, ECPGt_EORT);
+//   exec sql deallocate descriptor X;
+   ECPGdeallocate_desc(__LINE__, cursor.c_str());
+}

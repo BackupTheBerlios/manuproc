@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.7 2001/10/23 08:45:19 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.8 2001/12/04 08:42:11 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -29,6 +29,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    char SORTNAME[31], IDNR[21];
    char NAME[61], STRASSE[36], HSNR[8], POSTFACH[21],ORT[31],BANKNAME[31],
          PLZ[11],POSTFACHPLZ[11],KTONR[11],BLZ[11],POSTANWVOR[41],POSTANWNACH[41];
+   char LKZ[4];
    int FLAECHE,MITARBEITER;
    double KUNDENUMSATZ,PLANUMSATZ,UMSATZ, RABATT,EINZUGRABATT;
    int SKONTOFRIST;
@@ -56,14 +57,15 @@ Kunde::Kunde(ID _id) throw(SQLerror)
          coalesce(planumsatz,0),coalesce(umsatz,0),
          coalesce(rabatt,0),coalesce(einzugrabatt,0),coalesce(skontofrist,0),
          coalesce(verein,''),coalesce(bankeinzug,false), coalesce(notiz,''), 
-         coalesce(stand,'now')
+         coalesce(stand,'now'),	coalesce(lkz,'')
    	into :NAME, :SORTNAME, :BEZSCHEMA, :STRASSE, :POSTANWVOR, :POSTANWNACH,
            :HSNR, :PLZ, :POSTFACH,
            :POSTFACHPLZ, :ORT, :KTONR, :BLZ, :BANKNAME, :BANKINDEX, :RNG_AN,
            :PREISLISTE, :IDNR,
             :LIEFERADRESSE,:RECHUNGSADRESSE,
            :FLAECHE,:MITARBEITER,:KUNDENUMSATZ,:PLANUMSATZ,:UMSATZ,
-           :RABATT,:EINZUGRABATT,:SKONTOFRIST,:VEREIN,:BANKEINZUG,:NOTIZ,:STAND
+	   :RABATT,:EINZUGRABATT,:SKONTOFRIST,:VEREIN,:BANKEINZUG,
+	   :NOTIZ,:STAND, :LKZ
    	from kunden k left join banken b using(bankindex)
    	where kundennr= :ID;
 
@@ -80,6 +82,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    adresse.postfach=POSTFACH;
    adresse.postfachplz=POSTFACHPLZ;
    adresse.ort=ORT;
+   adresse.lkz = LKZ;
    IDnr=IDNR;
    lieferadresse=LIEFERADRESSE;
    rechnungsadresse=RECHUNGSADRESSE;
@@ -278,14 +281,10 @@ void Kunde::update_Bankeinzug(bool be) throw(SQLerror)
 {
  exec sql begin declare section;
  unsigned int KUNDENNR = Kundennr;
- int BANKEINZUG = be;
+ bool BANKEINZUG = be;
  exec sql end declare section;
 
  Transaction tr;
-
-cout << BANKEINZUG;  
-if(BANKEINZUG) cout << "wahr";
-else cout << "falsch";
 
  exec sql UPDATE kunden SET bankeinzug= :BANKEINZUG, stand= now()
 	WHERE kundennr = :KUNDENNR ;

@@ -1,0 +1,31 @@
+#include "Zahlungsart.hh"
+#include <Aux/SQLerror.h>
+exec sql include sqlca;
+
+cH_Zahlungsart::cache_t cH_Zahlungsart::cache;
+
+cH_Zahlungsart::cH_Zahlungsart(Zahlungsart::ID iid)
+{ 
+ cH_Zahlungsart *cached(cache.lookup(iid));
+ if (cached) *this=*cached;
+ else 
+  { *this=cH_Zahlungsart(new Zahlungsart(iid));
+    cache.Register(iid,*this);
+  }
+}
+
+Zahlungsart::Zahlungsart(int _id)
+:id(_id)
+{
+ if(id==none_id) return;
+ exec sql begin declare section;
+   int ID=id;
+   char KB[50],B[200];
+ exec sql end declare section;
+ exec sql select kurzbezeichnung,coalesce(bezeichnung,kurzbezeichnung)
+    into :KB,:B
+    from  rechnung_zahlungsart where id=:ID;
+ SQLerror::test(__FILELINE__);
+ kurzbezeichnung=KB;
+ bezeichnung=B;
+}

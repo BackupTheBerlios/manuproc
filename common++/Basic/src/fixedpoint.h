@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.5 2001/10/01 12:55:40 christof Exp $
+// $Id: fixedpoint.h,v 1.6 2001/12/04 08:42:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -60,10 +60,11 @@ static inline int zehnhochplusI<0>()
 #include <iostream>
 
 // I don't want to include <cstdio>
+#ifndef _STDIO_H
 extern "C" 
 {  int snprintf(char *str, size_t size, const  char  *format, ...);
 };
-
+#endif
 
 template <int decimals=2,class Ftype=double,class Itype=long>
 class fixedpoint

@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.7 2001/11/19 12:49:24 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.8 2001/12/04 08:42:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,13 +27,14 @@
 	" e.lieferdate, geliefert," \
 	" a.jahrgang, a.stat," \
 	" a.kundennr, youraufnr, coalesce(p.prozessid,0)," \
+   " coalesce(p.letztePlanInstanz,0), coalesce(p.maxPlanInstanz,0), "\
 	" date(coalesce(p.datum,now()))," \
 	" e.preis, int4(e.rabatt*100), coalesce(e.preismenge,1), a.waehrung," \
 	" e.status, e.lasteditdate "
 
 #define FULL_FROM "(auftrag a join auftragentry e using (instanz,auftragid))" \
 	" left join auftrag_prozess p" \
-	" on (e.instanz,e.auftragid,e.zeilennr)=(1,p.auftragid,p.zeilennr) "
+	" on (e.instanz,e.auftragid,e.zeilennr)=(p.instanz,p.auftragid,p.zeilennr) "
 
 #define FULL_SELECT_FROM_WHERE "select " FULL_SELECTIONS \
 	" from " FULL_FROM  

@@ -10,7 +10,7 @@ int AuftragFull::insertNewEntry(unsigned long int bestellt,
   eintragliste.push_back(AufEintragBase(
       Instanz(),Id(),znr,bestellt,artid,lieferdatum,
       0,0,0,getJahrgang(),getStatus(),getKundennr(),getYourAufNr(),
-      Petig::Datum(),Prozess::default_id,preis,rabatt,OPEN,
+      Petig::Datum(),Prozess::default_id,0,0,preis,rabatt,OPEN,
       Petig::Datum::today()));
   return znr;
 }

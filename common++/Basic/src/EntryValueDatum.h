@@ -1,4 +1,4 @@
-/* $Id: EntryValueDatum.h,v 1.1 2001/08/20 08:26:21 christof Exp $ */
+/* $Id: EntryValueDatum.h,v 1.2 2001/12/04 08:42:10 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,6 +22,7 @@
 
 #include <Aux/EntryValueBase.h>
 #include <Aux/Datum.h>
+#include <Aux/Kalenderwoche.h>
 
 class EntryValueDatum : public EntryValueBase
 {
@@ -44,5 +45,29 @@ public:
  cH_EntryValueDatum(const Petig::Datum &v) 
  : cH_EntryValue(new EntryValueDatum(v)) {}
 };
+
+class EntryValueKalenderwoche : public EntryValueBase
+{
+ Kalenderwoche datum;
+
+public:
+ EntryValueKalenderwoche(const Kalenderwoche &v) 
+ : datum(v) {}
+   
+ virtual bool operator==(const EntryValueBase &v) const;
+ virtual bool operator<(const EntryValueBase &v) const;
+ const Kalenderwoche &KW() const { return datum; }
+ virtual int getIntVal() const { return int_NaN;}
+ virtual const std::string getStrVal() const ;
+};
+
+class cH_EntryValueKalenderwoche : public cH_EntryValue
+{
+public:
+ cH_EntryValueKalenderwoche(const Kalenderwoche &v) 
+ : cH_EntryValue(new EntryValueKalenderwoche(v)) {}
+};
+
+
   
 #endif 

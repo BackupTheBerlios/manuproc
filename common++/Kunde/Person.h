@@ -1,4 +1,4 @@
-// $Id: Person.h,v 1.4 2001/10/08 09:08:12 christof Exp $
+// $Id: Person.h,v 1.5 2001/12/04 08:42:11 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -44,6 +44,7 @@ private:
  std::string position;
  Petig::Datum gebdatum;
  std::string anrede;
+ int branr_id;
  std::string notiz;
  std::vector<Person::st_person> vec_person;
  
@@ -56,7 +57,7 @@ public:
  Person() : kundennr(0), personennr(0) {}
  Person(ID pid) throw(SQLerror);
  static cH_Person newPerson(const Kunde::ID _knr, const std::string &_name, const std::string &_vorname,
- 	const std::string &_pos, const Petig::Datum &gd, const std::string &_anrede,
+ 	const std::string &_pos, const Petig::Datum &gd, const int _branr_id,
  	const std::string &_not) throw(SQLerror);
  std::vector<Person::st_person> get_Person(ID nr) throw(SQLerror);
  

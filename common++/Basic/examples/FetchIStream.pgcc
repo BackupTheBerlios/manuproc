@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.2 2001/06/27 08:04:09 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.3 2001/12/04 08:42:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,27 +27,25 @@ exec sql whenever sqlerror do X();
 #define X() throw SQLerror(__FILELINE__)
 
 int main()
-{  Petig::dbconnect();
+{  Petig::dbconnect(Petig::Connection("","template1"));
    exec sql allocate descriptor mydesc;
    
    Transaction tr;
-   exec sql declare c cursor for select now(),date('yesterday'),null,null,
-   	200,20.5,'t';
-   exec sql open c;
-   exec sql fetch from c into sql descriptor mydesc;
+  {
+   Query query("select now(),date('yesterday'),null,null,200,20.5,'t'");
    std::string s,s2,s3,s4;
    bool b;
    int i;
    float f;
    int ind3=0;
    
-   FetchIStream is("mydesc");
+   FetchIStream is=query.Fetch();
    is >> s >> s2 >> FetchIStream::WithIndicator<std::string>(s3,ind3)
       >> FetchIStream::MapNull<std::string>(s4,"<NULL>")
       >> i >> f >> b;
    std::cout << s << ", " << s2 << ", " << ind3 << ", " << s4 << '\n';
    std::cout << i << ", " << f << ", " << b << '\n';
-   exec sql close c;
+  }
    tr.commit();
    Petig::dbdisconnect();
    return 0;

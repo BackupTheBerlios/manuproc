@@ -1,4 +1,4 @@
-/* $Id: ArtikelBaum.h,v 1.3 2001/10/01 12:55:40 christof Exp $ */
+/* $Id: ArtikelBaum.h,v 1.4 2001/12/04 08:42:10 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -61,7 +61,7 @@ public:
 	   {}
 	};
 private:
-	typedef vector<RohArtikel> zusammensetzung_t;
+	typedef std::vector<RohArtikel> zusammensetzung_t;
 public:
 	typedef zusammensetzung_t::const_iterator const_iterator;
 
@@ -81,6 +81,8 @@ public:
 // hier passiert alles, ungeschickter Name
  void setID(const ID &id) throw(SQLerror);
  
+ bool empty() const
+ {  return zusammensetzung.empty(); }
  size_t size() const
  {  return zusammensetzung.size(); }
  const_iterator begin() const

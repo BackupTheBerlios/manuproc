@@ -9,9 +9,10 @@ class AuftragsBaum
  public:
         struct st_AuftragsBlatt
                 { AufEintragBase2 AEB2; 
+                  ArtikelBase AB;
                   long menge;
-                  st_AuftragsBlatt(AufEintragBase2 a,long m)
-                    : AEB2(a),menge(m) {} 
+                  st_AuftragsBlatt(AufEintragBase2 a,ArtikelBase ab,long m)
+                    : AEB2(a),AB(ab),menge(m) {} 
                 };
 
  private:
@@ -24,9 +25,9 @@ class AuftragsBaum
         
  public:
         AuftragsBaum(const AufEintragBase2 aeb,bool kinder=false); 
-                //false: Alle Referenzaufträge
-                //true:  Alle Kinderaufträge
-                
+                //kinder=false: Alle Elternaufträge
+                //kinder=true : Alle Kinderaufträge
+                                                
          size_t size() const
           {  return auftragsbaum.size(); }
          const_iterator begin() const

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase2.h,v 1.22 2001/11/06 14:40:34 cvs_malte Exp $
+// $Id: AufEintragBase2.h,v 1.29 2001/11/27 08:09:38 cvs_christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,6 +23,9 @@
 #include<Aux/SQLerror.h>
 #include<Aux/ppsInstanz.h>
 #include <Auftrag/AuftragBase.h>
+#include <list>
+class cH_Kunde;
+
 
 // eigentlich AufEintragBaseBase
 
@@ -46,12 +49,54 @@ public:
  // gibt gelieferte Menge zurück
  int abschreiben(int menge) const throw(SQLerror);
  bool deleteAuftragEntry() const throw(SQLerror);
- 
- int ZNr() const { return zeilennr; }
- bool valid() const { return AuftragBase::valid(); }
 
- bool operator<(const AufEintragBase2& b) const 
+                                                          
+    void setLetztePlanungFuer(int planinstanz) const throw(SQLerror);
+    void calculateProzessInstanz();
+    void setMaxPlanInstanz(int planinstanz) const throw(SQLerror);
+ 
+    int ZNr() const { return zeilennr; }
+    bool valid() const { return AuftragBase::valid(); }
+
+    bool operator<(const AufEintragBase2& b) const 
         {return Id()<b.Id();}
+    bool operator==(const AufEintragBase2& b) const 
+        {return Id()==b.Id();}
 };
+
+class AufEintragBaseList : public AufEintragBase2
+{
+ AufEintragBase2 AEB;
+
+public:
+ AufEintragBaseList(AufEintragBase2 aeb) 
+     : AEB(aeb) {}
+
+ struct st_reflist {AufEintragBase2 AEB2;ArtikelBase AB;long Menge;
+         st_reflist(AufEintragBase2 aeb2,ArtikelBase ab,long menge) 
+              :AEB2(aeb2),AB(ab),Menge(menge){}};
+private:
+   std::list<cH_Kunde> get_Referenz_Kunden_long() const throw(SQLerror);
+public:
+    // Eine Benachbarte Liste von Kind- bzw. Elternaufträgen:
+    std::list<st_reflist> get_Referenz_list(const AufEintragBase2& aeb,bool kinder=false) const throw(SQLerror);
+    // Für einen KOMPLETTEN Auftragsbaum bitte die Klasse AuftragsBaum verwenden  
+    // die folgende Funktion liefert nur die Endaufträge OHNE Knoten
+    std::list<st_reflist> get_Referenz_listFull(bool kinder) const throw(SQLerror);
+                 //kinder=false:   Elternaufträge 
+                 //kinder=true:    Kinderaufträge 
+
+    std::list<cH_Kunde> get_Referenz_Kunden() const throw(SQLerror);
+    AufEintragBase2 get_AufEintrag_from_Artikel_by_Lfdate   
+                   (const ArtikelBase& artikel,const cH_ppsInstanz& instanz);
+
+    static std::list<AufEintragBase2> get_AufEintragList_from_Artikel
+               (const ArtikelBase& artikel,const cH_ppsInstanz& instanz);
+//#warning was will der compiler von mir ??? MAT
+//    static AufEintragBase2 get_AufEintrag_from_Artikel_by_Lfdate
+//               (const ArtikelBase& artikel,const cH_ppsInstanz& instanz);
+   
+};
+
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.5 2001/10/23 08:45:19 christof Exp $
+// $Id: Kunde.cc,v 1.6 2001/12/04 08:42:11 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -46,34 +46,49 @@ H_Kunde::H_Kunde(Kunde::ID id)
 const std::string Kunde::LaTeX_von() const
 {
   std::string s="\\underline{\\scriptsize ";
-  s+= string2TeX(getName() +", Postfach "+adresse.postfach+", "+
-				adresse.postfachplz+" "+adresse.ort); 
+  s+= string2TeX(getName()+", ");
+
+  if(adresse.postfach.size())
+    s+= string2TeX(adresse.postfach +", Postfach "+adresse.postfach+", "+
+		adresse.lkz+"-"+adresse.postfachplz+" "+adresse.ort); 
+  else
+    s+= string2TeX(adresse.strasse +" "+adresse.hsnr+", "+
+		adresse.lkz+"-"+adresse.plz+" "+adresse.ort);
+ 
   s+= "}\\\\[3mm]\n";
   return  s;
 }
 
-const std::string Kunde::LaTeX_an(const std::string& wo) const
+const std::string Kunde::LaTeX_an(bool liefer=false) const
 {
   std::string adr0,adr1,adr2,adr3;
-  if ((wo=="Lieferschein" || !rng_an_postfach || !adresse.postfach.size()) && adresse.strasse.size())
-   {
-     adr0 = postanwvor();
-     adr1 += adresse.strasse+ " " +adresse.hsnr;
-     adr2 =  adresse.plz+" "+adresse.ort;
-     adr3 = postanwnach();
-   }
-  else 
-   {
-     adr1 = "Postfach "+adresse.postfach;
-     adr2 =  adresse.postfachplz+" "+adresse.ort;
-   }
 
+  adr2 = adresse.lkz.size() ? (adresse.lkz+"-") : "";
+
+  if (!liefer && adresse.postfach.size() && rng_an_postfach)
+     {
+      adr1 = "Postfach "+adresse.postfach;
+      adr2 +=  adresse.postfachplz+" "+adresse.ort;
+     }
+     else
+     { 
+      adr0 = postanwvor();
+      adr1 = adresse.strasse+ " " +adresse.hsnr;
+      adr2 += adresse.plz+" "+adresse.ort;
+      adr3 = postanwnach();
+     }
+
+#ifdef MABELLA_EXTENSIONS
+  std::string s="\nFirma\\\\ ";
+#else
   std::string s="{\\large Firma\\\\ ";
+#endif
+
   s+= string2TeX(getName()) +"\\\\";
-  if (postanwvor()!="") s+= string2TeX(adr0) +"\\\\";
+  if (postanwvor().size()) s+= string2TeX(adr0) +"\\\\";
   s += string2TeX(adr1); 
-  if (postanwnach()!="") s+= "\\\\" + string2TeX(adr3) ;
-  s += "\\\\[1ex]" + string2TeX(adr2) +"}\\\\\n";
+  if (postanwnach().size()) s+= "\\\\" + string2TeX(adr3) ;
+  s += "\\\\[1ex]" + string2TeX(adr2) +"\\\\\n";
   return  s;
 }
 
