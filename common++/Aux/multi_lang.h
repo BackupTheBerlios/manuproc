@@ -77,7 +77,7 @@ public:
  MultiL_Dict() : sprid(-1) {}
  std::string MLT(const LangTXT textid);
  bool valid() const { return sprid!=-1; }
-
+ int getSprId() const { return sprid; }
 };
 
 

@@ -186,11 +186,17 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
     if(kunde_an->land()->Auslaender())
          {if(zeilen_passen_noch<(passende_zeilen+2)) {  os << "\\newpage\n";++page_counter; page_header(os);}
           cH_Kunde kunde_von(Kunde::eigene_id);
-	  os << "~\\\\~\\\\"<<mld->MLT(MultiL_Dict::TXT_BANKVERB) <<": ";
-	  os << mld->MLT(MultiL_Dict::TXT_KONTO) << " " << ulltos(kunde_von->getKtnr()) << ", ";
-	  os << "BLZ " << itos(kunde_von->getblz()) << ", ";	  
-	  os << mld->MLT(MultiL_Dict::TXT_BANK) << " " << kunde_von->getbank();
-	  os << "~\\\\S.W.I.F.T.: WELA DE D1 VEL - IBANDE61334500000000240044\\\\\n";
+	  if(!getZahlungsart()->getBankeinzug())
+	    {
+	     os << "~\\\\~\\\\"<<mld->MLT(MultiL_Dict::TXT_BANKVERB) <<": ";
+	     os << mld->MLT(MultiL_Dict::TXT_KONTO) << " " << ulltos(kunde_von->getKtnr()) << ", ";
+	     os << "BLZ " << itos(kunde_von->getblz()) << ", ";	  
+	     os << mld->MLT(MultiL_Dict::TXT_BANK) << " " << kunde_von->getbank();
+	     os << "~\\\\S.W.I.F.T.: WELA DE D1 VEL - IBANDE61334500000000240044\\\\\n";
+	    }
+	  else
+	    os << "~\\\\~\\\\\n";
+
 	  os << mld->MLT(MultiL_Dict::TXT_BTN)<<": 58063210\n";
 	 }
 
@@ -203,11 +209,12 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
 catch(SQLerror &e) { cout << e; return; }
 
    if(u.r->Pakete())
-     os << "\\\\\\normalsize " << u.r->Pakete() << " Parcel/Pallet\\hfill\n";
+     os << "\\\\\\normalsize " << u.r->Pakete() << " "<< 
+		mld->MLT(MultiL_Dict::TXT_PACKSPALLET)<<"\\hfill\n";
    if(u.r->BruttoGew().as_float())
-     os << "gross: " <<FormatiereTeX(u.r->BruttoGew()) << " kgs\\hfill\n";
+     os << mld->MLT(MultiL_Dict::TXT_GEWBRUTTO)<<": " <<FormatiereTeX(u.r->BruttoGew()) << " kg\\hfill\n";
    if(u.r->NettoGew().as_float())
-     os << "net: " <<FormatiereTeX(u.r->NettoGew()) << " kgs\\\\\n";
+     os << mld->MLT(MultiL_Dict::TXT_GEWNETTO)<<": " <<FormatiereTeX(u.r->NettoGew()) << " kg\\\\\n";
    }
 
 
@@ -268,10 +275,18 @@ catch(SQLerror &e) { cout << e; return; }
     			u.l->Paeckchen());
     os << buf;
     if(u.l->Pakete())
-      {
+      {std::string endE,endM;
+       if(mld->getSprId() == 4)
+	 {endE="o";endM="i";}
+	else
+	 {endE="";endM="en";}
+ 
        snprintf(buf,sizeof buf,
 		mld->MLT(MultiL_Dict::PRINTF_LIEFBESTEHT2).c_str(),
-    			u.l->Pakete(),(u.l->Pakete()==1 ? ".\n":"n.\n"));
+    			u.l->Pakete(),(u.l->Pakete()==1 ? 
+				(endE+string(".\n")).c_str():
+				(endM+string(".\n")).c_str() ));
+       os << buf;
       }
     else os << ".\n";	
 	
