@@ -13,8 +13,8 @@ main_SOURCES = \
 	window1.cc 
 
 noinst_HEADERS = \
-	window1_glade.hh \
-	window1.hh 
+	window1_glade.hh window1.hh \
+	MyLeaf.h MyNode.h MyRowData.hh MyTreeBase.hh MyValue.h
 
 CXXFLAGS = @CXXFLAGS@ -I$(top_srcdir)/src \
 	@COMMONGTK_INCLUDES@ @COMMONXX_INCLUDES@
