@@ -241,25 +241,16 @@ void TreeBase::refillTCL()
 }
 
 
-// einordnen, Summen berechnen
+#ifdef NEW_INSERT
 void TreeBase::insertIntoTCL(TCListRow_API *tclapi,const TreeBase &tb,
-				const cH_RowDataBase &v,std::deque<guint> selseq,guint deep)
+                                const cH_RowDataBase &v,std::deque<guint> selseq,guint deep)
 {
  TCListRow_API::iterator lfind = tclapi->begin();
  TCListRow_API::iterator lend = tclapi->end();
 
  guint seqnr=selseq.front();	
 
- // ist das nicht deep?
-// #warning drop this line later 
-// assert(Attrs() - selseq.size()+1 ==deep);
-// const guint spaltenr = Attrs() - selseq.size()+1;
- 
-
-// if (show_column_nr(spaltenr)-1) return;
-
- cH_EntryValue ev=v->Value(seqnr,gp);
-
+ cH_EntryValue ev=v->Value(seqnr,ValueData());
 
  while((lfind!=lend) &&
    *( reinterpret_cast<TCListRowData*>((*lfind).get_user_data())->Value()) < (*ev))
@@ -267,8 +258,8 @@ void TreeBase::insertIntoTCL(TCListRow_API *tclapi,const TreeBase &tb,
 
  if(lfind!=lend) // einfuegen
    { // gleicher Wert
-    if((*ev) == *reinterpret_cast<TCListRowData*>((*lfind).get_user_data())->Value())
-     { 
+    if((ev) == reinterpret_cast<TCListRowData*>((*lfind).get_user_data())->Value())
+     { // ist es eine Node? dann anhaengen
        if(!reinterpret_cast<TCListRowData*>((*lfind).get_user_data())->Leaf())
          {
           reinterpret_cast<TCListNode*>((*lfind).get_user_data())->cumulate(v);
@@ -276,6 +267,10 @@ void TreeBase::insertIntoTCL(TCListRow_API *tclapi,const TreeBase &tb,
 	       ++deep;
           insertIntoTCL((&*lfind),tb,v,selseq,deep);
 	      }
+      else // aus dem Leaf eine Node machen, wenn geeignet
+      {  // v und 
+         TCListNode *newnode=NewNode(deep,v->Value(seqnr,ValueData()),deep < showdeep);
+      }
       return;
      }
      // kleinerer Wert
@@ -300,9 +295,7 @@ void TreeBase::insertIntoTCL(TCListRow_API *tclapi,const TreeBase &tb,
     if(selseq.size()>1) // noch nicht am Blatt
 	  {
    	 TCListNode *newnode=NewNode(deep,v->Value(seqnr,ValueData()),deep < showdeep);
-//cout << "u1\t"<<&v<< ' ' << typeid(*newnode).name() << '\n';
 	    newnode->cumulate(v);
-//cout << "u2\n";
    	 newnode->initTCL(tclapi,tb); 
        selseq.pop_front();
        ++deep;
@@ -314,7 +307,80 @@ void TreeBase::insertIntoTCL(TCListRow_API *tclapi,const TreeBase &tb,
 	    newleaf->initTCL(tclapi,tb); 
 	   }
     }
+}                                
+
+#else
+// einordnen, Summen berechnen
+void TreeBase::insertIntoTCL(TCListRow_API *tclapi,const TreeBase &tb,
+				const cH_RowDataBase &v,std::deque<guint> selseq,guint deep)
+{
+ TCListRow_API::iterator lfind = tclapi->begin();
+ TCListRow_API::iterator lend = tclapi->end();
+
+ guint seqnr=selseq.front();	
+
+ cH_EntryValue ev=v->Value(seqnr,ValueData());
+
+
+ while((lfind!=lend) &&
+   *( reinterpret_cast<TCListRowData*>((*lfind).get_user_data())->Value()) < (*ev))
+   lfind++;
+
+ if(lfind!=lend) // einfuegen
+   { // gleicher Wert
+    if((*ev) == *reinterpret_cast<TCListRowData*>((*lfind).get_user_data())->Value())
+     { 
+       if(!reinterpret_cast<TCListRowData*>((*lfind).get_user_data())->Leaf())
+         {
+          reinterpret_cast<TCListNode*>((*lfind).get_user_data())->cumulate(v);
+          selseq.pop_front();
+	       ++deep;
+          insertIntoTCL((&*lfind),tb,v,selseq,deep);
+	      }
+      else
+      {  // einfach an parent anhängen
+         reinterpret_cast<TCListNode*>(tclapi->get_user_data())->cumulate(v);
+         TCListLeaf *newleaf=NewLeaf(deep,ev,v);
+	 newleaf->initTCL(tclapi,lend,tb);
+      }
+      return;
+     }
+     // kleinerer Wert
+  if(selseq.size()>1) // noch nicht am Blatt
+	{
+	 TCListNode *newnode=NewNode(deep,ev,deep < showdeep);
+	 newnode->cumulate(v);
+	 newnode->initTCL(tclapi,lfind,tb); // ,deep);
+         selseq.pop_front();
+         ++deep;
+         // koennte abgekuerzt werden, ist einzelne Node ohne Kinder
+	 insertIntoTCL(newnode->getTCL_API(),tb,v,selseq,deep);
+	}
+     else
+	{
+	 TCListLeaf *newleaf=NewLeaf(deep,ev,v);
+	 newleaf->initTCL(tclapi,lfind,tb); // ,deep);
+	}
+   }
+ else // anhaengen
+   {
+    if(selseq.size()>1) // noch nicht am Blatt
+	  {
+   	 TCListNode *newnode=NewNode(deep,ev,deep < showdeep);
+	    newnode->cumulate(v);
+   	 newnode->initTCL(tclapi,tb); 
+       selseq.pop_front();
+       ++deep;
+	    insertIntoTCL(newnode->getTCL_API(),tb,v,selseq,deep);
+	   }
+     else
+	   {
+	    TCListLeaf *newleaf=NewLeaf(deep,ev,v);
+	    newleaf->initTCL(tclapi,tb); 
+	   }
+    }
 }
+#endif
 
 void TreeBase::Expand_recursively(TCListRow_API &api)
 {  api.expand();

@@ -31,6 +31,7 @@ simplest::simplest()
    datavec.push_back(cH_RowDataStrings("1","C","<none>","8"));
    datavec.push_back(cH_RowDataStrings("2","A","<none>","2"));
    datavec.push_back(cH_RowDataStrings("10","B","<none>","3"));
+   datavec.push_back(cH_RowDataStrings("10","B","<none>","3"));
    treebase->setDataVec(datavec);
    
    treebase->leaf_selected.connect(SigC::slot(this,&simplest::on_leaf_selected));
