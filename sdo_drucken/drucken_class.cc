@@ -301,7 +301,7 @@ catch(SQLerror &e) { std::cout << e; return; }
 //        {std::string name =  getpwuid(getuid())->pw_gecos;
 //	 os <<name<<"\\\\\n";
 //	}
-    os << "\\\\Wir bitten um Zusendung einer Auftragsbestätigung\\\\\n";
+//    os << "\\\\Wir bitten um Zusendung einer Auftragsbestätigung\\\\\n";
 
    }
  else if(Typ()==Lieferschein)
@@ -1390,8 +1390,12 @@ void LR_Abstraktion::page_header(std::ostream &os)
           }
        else
 	{   	
-	os << "\\bf Bei Rückfragen:\\rm \\\\\n"
-		<< mld->MLT(MultiL_Dict::TXT_TELEFON)<<": "<<kunde_von->get_first_telefon(TEL_TEL)<<"\\\\\n"
+	if(Typ()==Extern)
+	  os << "\\bf "<<mld->MLT(MultiL_Dict::EINKAUF_ABTLG) <<":\\rm \\\\\n";
+	else
+	  os << "\\bf Bei Rückfragen:\\rm \\\\\n";
+
+	os << mld->MLT(MultiL_Dict::TXT_TELEFON)<<": "<<kunde_von->get_first_telefon(TEL_TEL)<<"\\\\\n"
 		<< mld->MLT(MultiL_Dict::TXT_TELEFAX)<<": "<<kunde_von->get_first_telefon(TEL_FAX)<<"\\\\\n"
         	<< "E-Mail: "<<kunde_von->get_first_telefon(TEL_E_MAIL)<<"\\\\\n";
         }
@@ -1449,8 +1453,9 @@ void LR_Abstraktion::page_header(std::ostream &os)
    os <<RngNr()<<"\\small ~" << mld->MLT(MultiL_Dict::TXT_VOM)
 		<<" " <<getDatum()<<". ";
    if(Typ()==Extern)
-     os << "\n~\\\\\\small Die Bestellnummer bitte immer auf Auftragsbestätigung,"
-	   " Lieferschein und Rechnung angeben \\small\\\\[.5ex]\n";
+//     os << "\n~\\\\\\small Die Bestellnummer bitte immer auf Auftragsbestätigung,"
+//	   " Lieferschein und Rechnung angeben \\small\\\\[.5ex]\n";
+     os << "\n~\\\\\\small "<<mld->MLT(MultiL_Dict::BESTELL_TEXT)  <<" \\small\\\\[.5ex]\n";
 
 
    if(Typ()==Auftrag  && page_counter==1 && !Rueckstand())
@@ -1465,7 +1470,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
 
    
    if(Typ()==Extern)
-     {os << "Ihre Lieferantennummer: ";
+     {os << mld->MLT(MultiL_Dict::TXT_IHRE_LIEFERNR) <<": ";
       os.width(5);os.fill('0');
       os << kunde_an->Id();
      } 
