@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.cc,v 1.7 2003/03/24 10:54:01 christof Exp $
+// $Id: ArtikelBaum.cc,v 1.8 2003/05/20 10:01:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -163,3 +163,9 @@ ArtikelBaum::faktor_t ArtikelBaum::Faktor(const ArtikelBase &kind) throw(SQLerro
    return result;
 }
 
+bool ArtikelBaum::istKind(const ArtikelBase &kind) const
+{  for (const_iterator i=begin();i!=end();++i)
+   {  if (i->rohartikel==kind) return true;
+   }
+   return false;
+}
