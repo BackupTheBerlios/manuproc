@@ -1,4 +1,4 @@
-/* $Id: Message.h,v 1.1 2003/01/06 15:07:33 christof Exp $ */
+/* $Id: Message.h,v 1.2 2003/03/20 12:18:05 christof Exp $ */
 /*  Gtk--addons: a collection of gtk-- addons
     Copyright (C) 1998  Adolf Petig GmbH. & Co. KG
     Developed by Jacek Jakubowski <jacek@wtal.de>
@@ -44,7 +44,7 @@ class Message : public Gtk::Dialog
             message.show();
             hbox.show();
 
-            okbutton.clicked.connect(SigC::slot(this,&Message::Hide));
+            okbutton.signal_clicked().connect(SigC::slot(*this,&Message::Hide));
         }
 
         void Show( const std::string &m )
