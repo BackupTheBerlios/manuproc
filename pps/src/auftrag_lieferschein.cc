@@ -169,6 +169,7 @@ void auftrag_lieferschein::on_liefnr_activate()
      }
 
    display(liefernr->Content());
+   anzahl->grab_focus();
 
  }catch(SearchComboContent<int>::ContentError &e)
  {
@@ -408,6 +409,10 @@ auftrag_lieferschein::auftrag_lieferschein(cH_ppsInstanz _instanz)
 // tree_daten->hide();
 // vbox_eingabe->hide();
  liefdate->setLabel("");
+#ifdef LIEFERSCHEINE_IMMER_BESTAETIGT
+ lager_buchen->hide();
+ tree_daten->set_tree_column_visibility(Data_Lieferdaten::VOMLAGER_SEQ,false);
+#endif
 }
 
 void auftrag_lieferschein::set_tree_titles()
