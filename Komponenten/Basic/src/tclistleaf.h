@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistleaf.h,v 1.2 2001/06/25 08:20:23 christof Exp $
+// $Id: tclistleaf.h,v 1.3 2001/06/29 11:30:18 christof Exp $
 
 #ifndef KOMPONENTEN_TCLISTLEAF
 #define KOMPONENTEN_TCLISTLEAF
@@ -26,22 +26,19 @@
 #include"treebase.h"
 
 class TCListLeaf : public TCListRowData
-{
-protected:
- cH_RowDataBase leafdata;
+{protected:
+	cH_RowDataBase leafdata;
   
 public:
- static const bool show=false;
+ TCListLeaf(guint deep, const cH_EntryValue &v, const cH_RowDataBase &d)
+	: TCListRowData(v,deep,true,false), leafdata(d)
+{}
 
- TCListLeaf(int _seqnr, gpointer _g, const cH_RowDataBase &v, int deep);
- void initTCL(TCListRow_API *api, TCListRow_API::iterator davor,
- 			const TreeBase &tb,int deep);
- void initTCL(TCListRow_API *api, const TreeBase &tb,int deep);
+// virtual void cumulate(const cH_RowDataBase &rd)
+// {};
+// virtual void refreshSum(const TreeBase &tb) {};
  
- virtual void cumulate(const cH_RowDataBase &rd, int seqnr,gpointer gp) const{};
  const cH_RowDataBase LeafData() const { return leafdata; }
- virtual void refreshSum(const TreeBase &tb) {};
+ const std::vector<std::string> getColEntries(const TreeBase &tb) const;
 };
-
-
 #endif

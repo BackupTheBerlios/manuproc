@@ -18,45 +18,22 @@
 
 #include<Aux/Ausgabe_neu.h>
 #include"MyNode.h"
+#include <Aux/EntryValueIntString.h>
 
-MyNode::MyNode(int _seqnr, gpointer gp, 
-		const cH_RowDataBase &v, 
-		int deep) 
- : TCListNode(_seqnr,gp, v,deep), sum1(0),sum2(0)
-{}
-
-
-void MyNode::cumulate(const cH_RowDataBase &rd, int seqnr,gpointer gp) const
+void MyNode::cumulate(const cH_RowDataBase &rd)
 {
  sum1+= (dynamic_cast<const MyRowData &>(*rd)).Data1();
  sum2+= (dynamic_cast<const MyRowData &>(*rd)).Data2();
 }
 
-const string MyNode::getSumCol(int col)
+const cH_EntryValue MyNode::Value(guint index,gpointer gp) const
 {
- switch(col)
-   { case 0 :
-	return Formatiere(sum1);
-	break;
-     case 1 :
-	return Formatiere(sum2);
-	break;
-     default : return("-");
+ switch(index)
+   { case 3 :
+	return cH_EntryValueIntString(sum1);
+     case 4 :
+	return cH_EntryValueIntString(sum2);
+     default : 
+     	return cH_EntryValueIntString("-");
    }
 }
-
-/*
-const vector<string> MyNode::getColEntries(int cols)
-{
- static vector<string> v;
-
- v=TCListRowData::getColEntries(cols);
-
- v[3]=Formatiere(sum1);
- v[4]=Formatiere(sum2);
-
- cout << "getColEntries Node\n";
- return v;
-
-}
-*/

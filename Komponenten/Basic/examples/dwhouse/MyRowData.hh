@@ -33,11 +33,13 @@ public:
  MyRowData(int a1,int a2, int a3, int d1 ,int d2)
 	: attr1(a1),attr2(a2),attr3(a3),data1(d1),data2(d2) {}
 	
- virtual const cH_EntryValue Value(int _seqnr) const
+ virtual const cH_EntryValue Value(guint _seqnr,gpointer x) const
 	{switch(_seqnr)
 		{case 0 : return cH_MyValue(attr1); break;
 		 case 1 : return cH_MyValue(attr2); break;
 		 case 2 : return cH_MyValue(attr3); break;
+		 case 3 : return cH_MyValue(data1); break;
+		 case 4 : return cH_MyValue(data2); break;
  		 default : return cH_MyValue("-"); break;
 		}
 	}

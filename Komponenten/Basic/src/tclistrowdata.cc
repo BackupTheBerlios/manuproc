@@ -16,45 +16,20 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+// $Id: tclistrowdata.cc,v 1.3 2001/06/29 11:30:18 christof Exp $
 
-#include"tclistrowdata.h"
-#include<stdio.h>
+#include <tclistrowdata.h>
+#include <treebase.h>
 
-bool TCListRowData::operator==(const TCListRowData &v) const
+void TCListRowData::initTCL(TCListRow_API *api, TCListRow_API::iterator davor,
+			const TreeBase &tb) // ,int deep)
 {
- if((*value) == *(v.Value())) return true;
- return false;
+ listrow = api->insert(davor, getColEntries(tb.Cols()),leaf?-1:deep+1,expand);
+ listrow->set_user_data(this);
 }
 
-bool TCListRowData::operator<(const TCListRowData &v) const
+void TCListRowData::initTCL(TCListRow_API *api, const TreeBase &tb) // ,int deep)
 {
- if((*value) < *(v.Value())) return true;
- return false;
+ listrow = api->push_back(getColEntries(tb.Cols()),leaf?-1:deep+1,expand);
+ listrow->set_user_data(this);
 }
-
-
-const string TCListRowData::getColText()
-{
- return value->getStrVal();
-}
-
-const vector<string> TCListRowData::getColEntries(int treecols)
-{
- vector<string> v;
-
-// das kann man aber zu 2 Zeilen zusammenfassen CP 2001-3-2
- for(int i=0; i<deep; ++i)  v.push_back("");
-
- v.push_back(value->getStrVal());
-
- for(int i=deep+1;i<treecols;++i) 
-   v.push_back("");
-
- return v;
-}
-
-TCListRowData::TCListRowData(const cH_EntryValue &v, int _deep, bool _leaf)
-	: value(v), deep(_deep),leaf(_leaf)
-{}
-
-

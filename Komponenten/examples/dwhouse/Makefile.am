@@ -6,7 +6,7 @@ noinst_PROGRAMS = main
 
 BUILT_SOURCES=$(LINKS)
 
-LINKS=MyLeaf.cc MyLeaf.h MyNode.cc MyNode.h MyRowData.hh MyTreeBase.cc \
+LINKS=MyNode.cc MyNode.h MyRowData.hh MyTreeBase.cc \
 	MyTreeBase.hh MyValue.h dwhouse.glade main.cc window1.cc \
 	window1.hh window1_glade.cc window1_glade.hh
 

@@ -21,23 +21,17 @@
 
 class MyTreeBase : public TreeBase
 {
- int custom_data; // Kundennr z.B.
-// vector<string> vec_col;
-// vector<vector<int> > vec_data;
+// int custom_data; // Kundennr z.B.
 
 public:
  virtual void fillDataVec();
-
 
  MyTreeBase(guint cols, guint attr=0):TreeBase(cols,attr)
 	{ // make sure this is not called if you derive this from class !
 	  init(); 
 	}
 
- TCListNode *NewNode(guint _seqnr, gpointer gp, const cH_RowDataBase &v, guint deep);
-
- TCListLeaf *NewLeaf(guint _seqnr, gpointer gp, const cH_RowDataBase &v, guint deep);
+ TCListNode *NewNode(guint deep, const cH_EntryValue &v, bool expand);
 
  const string getColTitle(guint seq) const;
-
 };

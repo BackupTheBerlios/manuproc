@@ -82,8 +82,9 @@ void TreeBase::summen_knoepfe()
 }
 
 TreeBase::TreeBase(guint cols, guint attr) : 
-	TCList(cols), showdeep(0), attrcount(attr ? attr : cols), menu(0),
-	auffuellen_bool(false), expandieren_bool(true),stutzen_bool(true), gp(0)
+	TCList(cols), showdeep(0), attrcount(attr ? attr : cols),
+	gp(0), menu(0),
+	auffuellen_bool(false), expandieren_bool(true),stutzen_bool(true)
 {
   this->button_press_event.connect(SigC::slot(this,&TreeBase::MouseButton));
   click_column.connect(SigC::slot(this,&TreeBase::on_click_column));
@@ -122,16 +123,6 @@ void TreeBase::setColTitles()
  column_titles_show();
  if (!menu) fillMenu();
 }
-
-#if 0 // this is missing so many things that I will comment it out !!!
-TreeBase::TreeBase(const vector<string> &cols) : 
-		TCList(cols),showdeep(0),attrcount(cols.size()) 
-{
- click_column.connect(SigC::slot(this,&TreeBase::on_click_column));
- for(guint i=1; i<=attrcount; ++i)
-   seq.push_back(i);
-}
-#endif
 
 bool TreeBase::stutzen(TCListRow_API *parent, TCListRow_API *we,
 						TCList &tclist,guint deep)
@@ -200,7 +191,9 @@ void TreeBase::refillTCL()
 
 // Summen anzeigen
  for(TCListRow_API::iterator i = begin(); i!=end(); ++i)
-   ((TCListRowData*)(*i).get_user_data())->refreshSum(*this);
+ {  if (!((TCListRowData*)(*i).get_user_data())->Leaf())
+   	((TCListNode*)(*i).get_user_data())->refreshSum(*this);
+ }
 
  show_or_hide_Spalten();
  expand();
@@ -219,7 +212,12 @@ void TreeBase::insertIntoTCL(TCListRow_API *tclapi,const TreeBase &tb,
  TCListRow_API::iterator lend = tclapi->end();
 
  guint seqnr=selseq.front();	
- guint spaltenr = Attrs() - selseq.size()+1;
+
+ // ist das nicht deep?
+// #warning drop this line later 
+// assert(Attrs() - selseq.size()+1 ==deep);
+// const guint spaltenr = Attrs() - selseq.size()+1;
+ 
 
 // if (show_column_nr(spaltenr)-1) return;
 
@@ -229,64 +227,52 @@ void TreeBase::insertIntoTCL(TCListRow_API *tclapi,const TreeBase &tb,
    *( reinterpret_cast<TCListRowData*>((*lfind).get_user_data())->Value()) < (*ev))
    lfind++;
 	
- if(lfind!=lend)
-   {
+ if(lfind!=lend) // einfuegen
+   { // gleicher Wert
     if((*ev) == *reinterpret_cast<TCListRowData*>((*lfind).get_user_data())->Value())
      {
-      reinterpret_cast<TCListNode*>((*lfind).get_user_data())->cumulate(v,seqnr,gp);
+      reinterpret_cast<TCListNode*>((*lfind).get_user_data())->cumulate(v);
       if(!reinterpret_cast<TCListNode*>((*lfind).get_user_data())->Leaf())
 	{selseq.pop_front();
-         insertIntoTCL((&*lfind),tb,v,selseq,++deep);
+	 ++deep;
+         insertIntoTCL((&*lfind),tb,v,selseq,deep);
 	}
       return;
      }
-
+     // kleinerer Wert
     if(selseq.size()>1) // noch nicht am Blatt
 	{
-	 TCListNode *newnode=NewNode(seqnr,gp,v,deep);
-    if (spaltenr < showdeep) newnode->set_Show(true);
-	 newnode->cumulate(v,seqnr,gp);
-	 newnode->initTCL(tclapi,lfind,tb,deep);
+	 TCListNode *newnode=NewNode(deep,v->Value(seqnr,ValueData()),deep < showdeep);
+	 newnode->cumulate(v);
+	 newnode->initTCL(tclapi,lfind,tb); // ,deep);
          selseq.pop_front();
-	 insertIntoTCL(newnode->getTCL_API(),tb,v,selseq,++deep);
+         ++deep;
+         // koennte abgekuerzt werden, ist einzelne Node ohne Kinder
+	 insertIntoTCL(newnode->getTCL_API(),tb,v,selseq,deep);
 	}
      else
 	{
-	 TCListLeaf *newleaf=NewLeaf(seqnr,gp,v,deep); 
-	 newleaf->initTCL(tclapi,lfind,tb,deep);
+	 TCListLeaf *newleaf=NewLeaf(deep,v->Value(seqnr,ValueData()),v);
+	 newleaf->initTCL(tclapi,lfind,tb); // ,deep);
 	}
    }
- else
+ else // anhaengen
    {
     if(selseq.size()>1) // noch nicht am Blatt
 	{
-	 TCListNode *newnode=NewNode(seqnr,gp,v,deep);
-    if (spaltenr < showdeep) newnode->set_Show(true);
-	 newnode->cumulate(v,seqnr,gp);
-	 newnode->initTCL(tclapi,tb,deep);
+	 TCListNode *newnode=NewNode(deep,v->Value(seqnr,ValueData()),deep < showdeep);
+	 newnode->cumulate(v);
+	 newnode->initTCL(tclapi,tb); // ,deep);
          selseq.pop_front();
-	 insertIntoTCL(newnode->getTCL_API(),tb,v,selseq,++deep);
+         ++deep;
+	 insertIntoTCL(newnode->getTCL_API(),tb,v,selseq,deep);
 	}
      else
 	{
-	 TCListLeaf *newleaf=NewLeaf(seqnr,gp,v,deep); 
-	 newleaf->initTCL(tclapi,tb,deep);
+	 TCListLeaf *newleaf=NewLeaf(deep,v->Value(seqnr,ValueData()),v);
+	 newleaf->initTCL(tclapi,tb); // ,deep);
 	}
    }
-
-}
-
-
-TCListNode *TreeBase::NewNode(guint _seqnr, gpointer _gp,const cH_RowDataBase &v, 
-				guint deep)
-{
- return new TCListNode(_seqnr,_gp,v,deep); 
-}
-
-TCListLeaf *TreeBase::NewLeaf(guint _seqnr, gpointer _gp,const cH_RowDataBase &v, 
-				guint deep)
-{
- return new TCListLeaf(_seqnr,_gp,v,deep); 
 }
 
 
@@ -433,3 +419,15 @@ void TreeBase::on_row_select(int row, int col, GdkEvent* b)
   if(!selectedrow->Leaf()) return;
   leaf_selected((dynamic_cast<TCListLeaf*>(selectedrow))->LeafData());
 }
+
+TCListNode *TreeBase::NewNode
+ 		(guint deep, const cH_EntryValue &v, bool expand)
+{  return new TCListNode(deep,v,expand); }
+
+TCListLeaf *TreeBase::NewLeaf
+ 		(guint deep, const cH_EntryValue &v, const cH_RowDataBase &d)
+{  return new TCListLeaf(deep,v,d); }
+
+TCListNode *SimpleTree::defaultNewNode
+ 		(guint deep, const cH_EntryValue &v, bool expand)
+{  return new TCListNode(deep,v,expand); }

@@ -20,13 +20,9 @@
 #include"MyTreeBase.hh"
 #include"MyRowData.hh"
 #include"MyNode.h"
-#include"MyLeaf.h"
-
-
 
 void MyTreeBase::fillDataVec()
 {
-
  datavec.push_back(cH_MyRowData(1,3,3,10,11)); 
  datavec.push_back(cH_MyRowData(2,2,3,10,11)); 
  datavec.push_back(cH_MyRowData(2,2,4,10,11)); 
@@ -52,16 +48,8 @@ const string MyTreeBase::getColTitle(guint col) const
 }
 
  
-TCListNode *MyTreeBase::NewNode(guint _seqnr, gpointer gp,
-        const cH_RowDataBase &v, guint deep)
+TCListNode *MyTreeBase::NewNode(guint deep, const cH_EntryValue &v, bool expand)
 {
- return new  MyNode(_seqnr,gp, v,deep);
+ return new  MyNode(deep, v, expand);
 }
 
-TCListLeaf *MyTreeBase::NewLeaf(guint _seqnr, gpointer gp,
-	const cH_RowDataBase &v, guint deep)
-{
- return new MyLeaf(_seqnr,gp,v,deep);
-}
-
- 

@@ -16,25 +16,18 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
 #include"tclistleaf.h"
 
-
-
-TCListLeaf::TCListLeaf(int _seqnr,gpointer _g ,const cH_RowDataBase &v, int deep)
-	: TCListRowData(v->Value(_seqnr,_g),deep,true),leafdata(v)
-{}
-
-void TCListLeaf::initTCL(TCListRow_API *api, TCListRow_API::iterator davor,
-			const TreeBase &tb,int deep)
+const vector<string> TCListLeaf::getColEntries(const TreeBase &tb) const
 {
- listrow = api->insert(davor,getColEntries(tb.Cols()),-1,show);
- listrow->set_user_data(this);
-}
+ vector<string> v(tb.Cols());
 
-void TCListLeaf::initTCL(TCListRow_API *api, const TreeBase &tb,int deep)
-{
- listrow = api->push_back(getColEntries(tb.Cols()),-1,show);
- listrow->set_user_data(this);
-}
+ for(guint i=0; i<(guint)deep; ++i)  v[i]="";
 
+ v[deep]=value->getStrVal();
+
+ for(guint i=deep+1;i<(guint)tb.Cols();++i) 
+    v[i]=LeafData()->Value(i,tb.ValueData())->getStrVal();
+
+ return v;
+}

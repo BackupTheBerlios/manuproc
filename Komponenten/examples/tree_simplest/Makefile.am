@@ -8,7 +8,8 @@ BUILT_SOURCES=$(LINKS)
 
 LINKS=simplest.hh with_class.hh tree.cc simplest.cc \
 	with_class.cc simplest_glade.hh with_class_glade.hh \
-	simplest_glade.cc tree.glade with_class_glade.cc
+	simplest_glade.cc tree.glade with_class_glade.cc \
+	TreeWithSums.hh
 
 $(LINKS):
 	ln -sf ../../Basic/examples/tree_simplest/$@ .

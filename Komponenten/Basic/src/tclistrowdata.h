@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistrowdata.h,v 1.3 2001/06/27 08:05:51 christof Exp $
+// $Id: tclistrowdata.h,v 1.4 2001/06/29 11:30:18 christof Exp $
 
 #ifndef TCLISTROWDATA
 #define TCLISTROWDATA
@@ -30,32 +30,45 @@ class cH_RowDataBase;
 class TreeBase;
 
 class TCListRowData 
-{
+{protected:
+	TCListRow_API *listrow;
+	cH_EntryValue value;
+	bool leaf:1, expand:1;
+	int deep;
+	
+	friend class TreeBase;
+ 
+ 	// wegen virtuellen Funktionen nicht Teil des Konstruktors
+ 	// wird direkt danach aufgerufen
+	void initTCL(TCListRow_API *api, TCListRow_API::iterator davor,
+			const TreeBase &tb);  // ,int deep);
+	void initTCL(TCListRow_API *api, const TreeBase &tb); // ,int deep);
+	TCListRow_API *getTCL_API() { return listrow; }
+	const TCListRow_API *getTCL_API() const { return listrow; }
 
-protected:
- TCListRow_API *listrow;
- cH_EntryValue value;
- bool leaf;
- int deep;
- 
-public: 
- virtual void cumulate(const cH_RowDataBase &rd, int seqnr,gpointer gp) const=0;
- virtual const vector<string> getColEntries(int cols);
- virtual const string getColText();
- virtual void refreshSum(const TreeBase &tb)=0;
- 
- TCListRowData(const cH_EntryValue &v, int _deep, bool _leaf);
- TCListRow_API *getTCL_API() const { return listrow; }
+	void Leaf(bool l) { leaf=l; } // I prefer this one, CP
+	void setLeaf(bool l) { leaf=l; }
+public:
+ TCListRowData(const cH_EntryValue &v, int _deep, bool _leaf, bool exp)
+   : listrow(0), value(v), leaf(_leaf), expand(exp), deep(_deep)
+ {}
  virtual ~TCListRowData() {}
 
- bool operator==(const TCListRowData &v) const;
- bool operator<(const TCListRowData &v) const;
+ virtual const vector<string> getColEntries(const TreeBase &tb) const=0;
+// nur fuer nodes
+// virtual void cumulate(const cH_RowDataBase &rd, int seqnr,gpointer gp)=0;
+// nur fuer nodes
+// virtual void refreshSum(const TreeBase &tb)=0;
+ 
+ bool operator==(const TCListRowData &v) const
+ {  return (*value) == *(v.Value()); }
+ bool operator<(const TCListRowData &v) const
+ {  return (*value) < *(v.Value()); }
 
  const cH_EntryValue Value() const { return value; }
+ virtual const string getColText() const { return value->getStrVal(); }
 
  bool Leaf() { return leaf; }
- void setLeaf(bool l) { leaf=l; }
 };
 
 #endif
-

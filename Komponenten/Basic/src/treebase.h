@@ -29,7 +29,6 @@ class TCListNode;
 class TCListLeaf;
 class cH_RowDataBase;
 
-
 class TreeBase : public TCList
 {
  guint showdeep;
@@ -40,10 +39,9 @@ class TreeBase : public TCList
  gpointer gp;
  
  Gtk::Menu *menu;  
- bool auffuellen_bool; 
- bool expandieren_bool; 
-
- bool stutzen_bool;
+ bool auffuellen_bool:1; 
+ bool expandieren_bool:1; 
+ bool stutzen_bool:1;
  
  void Auffuellen(Gtk::CheckMenuItem *auffuellen);
  void Expandieren(Gtk::CheckMenuItem *expandieren);
@@ -72,51 +70,66 @@ protected:
  // StandardReihenfolge setzen
  virtual void setSequence();
  virtual const string getColTitle(guint seq) const;
- virtual TCListNode *NewNode(guint _seqnr, gpointer _gp,const cH_RowDataBase &v,
- 				guint deep);			 	
- virtual TCListLeaf *NewLeaf(guint _seqnr, gpointer _gp,const cH_RowDataBase &v,
- 				guint deep);			 	 				
+ // einen neuen Ast erzeugen, deep ist die Spalte, v der Wert dieser Spalte
+ virtual TCListNode *NewNode
+ 		(guint deep, const cH_EntryValue &v, bool expand);
+ // ein neues Blatt erzeugen, deep ist die Spalte, seqnr der Werteindex
+ // deep == Attrs() !
+ virtual TCListLeaf *NewLeaf
+ 		(guint deep, const cH_EntryValue &v, const cH_RowDataBase &d);
+
  virtual void setColTitles();
  virtual void fillDataVec() {};
  void fillTCL();
  void refillTCL();
 
 public:
-
  TreeBase(guint cols, guint attr=0);
  ~TreeBase();
  guint Attrs() const { return attrcount; }
  guint Cols() const { return columns().size();}
- void set_value_data(gpointer _p) {gp = _p;}
  void setDataVec(const vector<cH_RowDataBase> &d) 
  { datavec=d; 
    refillTCL();
  };
+ void set_value_data(gpointer _p) {gp = _p;}
+ gpointer ValueData() const { return gp; }
  void Stutzen ( bool s) {stutzen_bool=s;}
  
  void clear();
  SigC::Signal1<void,cH_RowDataBase> leaf_selected;
 };
 
+// newer, more simplyfied API:
 class SimpleTree : public TreeBase
-{
+{protected:
+ typedef TCListNode *(*NewNode_fp)
+ 		(guint deep, const cH_EntryValue &v, bool expand);
+
  vector<string> titles;
+ NewNode_fp node_creation;
  
+// @ ins cc file ?
+ static TCListNode *defaultNewNode
+ 		(guint deep, const cH_EntryValue &v, bool expand);
+ virtual TCListNode *NewNode
+ 		(guint deep, const cH_EntryValue &v, bool expand)
+ {  return (*node_creation)(deep,v,expand); }
 public:
  SimpleTree(guint cols, guint attr, const vector<string>& T
                                 ,const vector<cH_RowDataBase>& D)
-   : TreeBase(cols,attr), titles(T) 
+   : TreeBase(cols,attr), titles(T), node_creation(&defaultNewNode)
    {  datavec=D;
       // make sure this is not called if you derive this from class !
       init(); 
    }
  SimpleTree(guint cols, guint attr, const vector<string>& T)
-   : TreeBase(cols,attr), titles(T) 
+   : TreeBase(cols,attr), titles(T), node_creation(&defaultNewNode)
    {  // make sure this is not called if you derive this from class !
       init(); 
    }
  SimpleTree(guint cols, guint attr=0)
-   : TreeBase(cols,attr)
+   : TreeBase(cols,attr), node_creation(&defaultNewNode)
    {  }
  
  void setTitles(const vector<string>& T)
@@ -128,6 +141,8 @@ public:
    {  if (seq>=0 && seq<titles.size()) return titles[seq];
       return ""; 
    }
+  
+ void set_NewNode(NewNode_fp x) { node_creation=x; }
 };
   
 #endif

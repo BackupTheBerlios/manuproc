@@ -3,3 +3,64 @@ Don,  8 Jun 2000 12:22:29 +0200
 
 Mit Jun  7 12:49:25 CEST 2000
 	CP: auf neue SearchCombo umgestellt
+	
+- TreeBase: V0.5 (Fri, 29 Jun 2001 10:16:34 +0200)
+
+Es gibt einen Tag TREEBASE_0_0 fuer uralte Programme
+
+Porting from 0.0 to 0.5:
+	Im Zweifelsfall anhand von examples/tree_simplest/with_class.cc 
+		neuschreiben! (60-90% des Codes faellt weg)
+
+Es gibt einen Tag TREEBASE_0_2 fuer alte Programme
+
+	cumulate hat nun nur noch ein Argument (const cH_RowDataBase &rd)
+	und ist nicht mehr const. Standard ist nichts.
+	
+	getSumCol heisst nun Value() mit den normalen Argumenten
+	und ist nun const. Standard ist "".
+	Vorsicht der Index hat sich geaendert!!!
+	
+	TCListNode ist nun 16 Bytes Nutzdaten klein und damit genau so groß
+	wie TCListRowData.
+	
+	Value hat nun ein guint Argument.
+	
+	NewNode und NewLeaf: 1. hat sich die Argumentreihenfolge
+		geaendert (ist so logischer) 2. sind andere Argumente
+		(sinnvoller) erforderlich:
+	NewNode: (guint deep, const cH_EntryValue &v, bool expand)
+	NewLeaf: (guint deep, const cH_EntryValue &v, const cH_RowDataBase &v)
+	
+	geaenderte Konstruktoren fuer Node und Leaf! (s.o.)
+
+	Man kann nun in SimpleTree die Nodeerzeugung angeben (Funktion)
+	
+	initTCL nimmt nun deep aus this statt als Argument (gleicher Wert)
+	
+TODO: Standardreihenfolge in SimpleTree	
+	TCListRowData hat einen Bloeden Namen -> TreeRow ?
+
+Porting 0.2 to 0.5:
+	RowDataBase: Value hat nun ein guint Argument (1.) !!!
+		[virtual const cH_EntryValue Value(guint index,gpointer gp) const]
+		Die Kompatibilitaet Value mit einem Argument ist weggefallen
+	TCListNode: mutable kann wegfallen
+		cumulate hat nur noch ein Argument und ist nicht mehr const !!!
+		[virtual void cumulate(const cH_RowDataBase &rd)]
+		getSumCol heisst nun Value und hat andere argumente !!!
+			Index zaehlt nun von vorne an (wie bei RowDataBase)
+		[virtual const cH_EntryValue Value(guint index,gpointer gp) const]
+		der Konstruktor hat andere Argumente !!!
+		[(guint col, const cH_EntryValue &v, bool expand)]
+		die natuerlich so weiterzureichen sind
+	TreeBase/SimpleTree
+		Das Summieren kann nun ohne eigene Klasse erfolgen 
+		(siehe examples/tree_simplest/with_class.h)
+		NewNode/NewLeaf sind nun unnoetig und die Argumente
+				 haben sich geaendert
+	TCListLeaf: 
+		der Konstruktor hat andere Argumente !!!
+		[(guint deep, const cH_EntryValue &v, const cH_RowDataBase &d)]
+		die natuerlich so weiterzureichen sind
+		

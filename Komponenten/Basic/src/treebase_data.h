@@ -27,7 +27,7 @@
 #include <tclistrowdata.h>
 
 class RowDataStrings : public RowDataBase
-{static const int max_arguments=6;
+{static const guint max_arguments=6;
  
  string data[max_arguments];
 public:
@@ -43,7 +43,7 @@ public:
  }
 	
 
- virtual const cH_EntryValue Value(int _seqnr, gpointer gp) const
+ virtual const cH_EntryValue Value(guint _seqnr, gpointer gp) const
  {if (_seqnr>=0 && _seqnr<max_arguments) return cH_EntryValueIntString(data[_seqnr]);
   return cH_EntryValueIntString("");
  }

@@ -16,61 +16,30 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistnode.cc,v 1.3 2001/06/27 08:05:51 christof Exp $
+// $Id: tclistnode.cc,v 1.4 2001/06/29 11:30:18 christof Exp $
 
-#include"tclistnode.h"
-#include"rowdata.h"
-#include"Aux/Ausgabe_neu.h"
+#include <tclistnode.h>
+#include <Aux/EntryValueIntString.h>
 
-void TCListNode::cumulate(const cH_RowDataBase &rd, int seqnr, gpointer gp) const
-{
- sumvalue+=rd->Value(seqnr,gp)->getIntVal();
+const cH_EntryValue TCListNode::Value(guint col, gpointer gp) const
+{ return cH_EntryValueIntString("");
 }
 
-const string TCListNode::getSumCol(int col)
-{
- return Formatiere(sumvalue);
-}
-
-TCListNode::TCListNode(int _seqnr, gpointer _gp, const cH_RowDataBase &v, 
-			int deep) :
-	TCListRowData(v->Value(_seqnr,_gp),deep,false),show(false), sumvalue(0)
-{}
-
-//#include <typeinfo>
-
-void TCListNode::initTCL(TCListRow_API *api, TCListRow_API::iterator davor,
-			const TreeBase &tb,int deep)
-{
-// cerr << typeid(*this).name() << '\n';
-// listrow = api->insert(davor, getColEntries(tb.Cols(),tb.Attrs()),deep+1,show);
- listrow = api->insert(davor, getColEntries(tb.Cols()),deep+1,show);
- listrow->set_user_data(this);
-}
-
-void TCListNode::initTCL(TCListRow_API *api, const TreeBase &tb,int deep)
-{
-//cerr << typeid(*this).name() << '\n';
-// listrow = api->push_back(getColEntries(tb.Cols(),tb.Attrs()),deep+1,show);
- listrow = api->push_back(getColEntries(tb.Cols()),deep+1,show);
- listrow->set_user_data(this);
-}
-
-
+// errechnete Summe in CList anzeigen
 void TCListNode::refreshSum(const TreeBase &tb)
-{
- TCListRow_API::iterator i = listrow->begin();
- 
- int scols=tb.Cols()-tb.Attrs();
+{for(guint i=tb.Attrs();i<tb.Cols();i++)
+   dynamic_cast<TCListRow*>(listrow)
+   	->relabel(i, Value(i,tb.ValueData())->getStrVal());
 
- for(int i=0;i<scols;i++)
-   dynamic_cast<TCListRow*>(listrow)->relabel(tb.Attrs()+i, getSumCol(i));
-
- while(i!=listrow->end())
-   {
-    if( !((TCListRowData*)(*i).get_user_data())->Leaf() )
+ for (TCListRow_API::iterator i = listrow->begin();i!=listrow->end();++i)
+ {  if (!((TCListRowData*)(*i).get_user_data())->Leaf())
 	 ((TCListNode*)(*i).get_user_data())->refreshSum(tb);
-    ++i;
-   }
+ }
 }
 
+const vector<string> TCListNode::getColEntries(const TreeBase &tb) const
+{vector<string> v(tb.Cols());
+ for(guint i=0; i<tb.Cols(); ++i)
+    v[i]= (i==(guint)deep ? value->getStrVal() : "");
+ return v;
+}

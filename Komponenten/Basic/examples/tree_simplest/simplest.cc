@@ -15,7 +15,8 @@ void simplest::on_Beenden_activate()
 }
 
 void simplest::on_leaf_selected(cH_RowDataBase d)
-{  cout << (string)*(d->Value(0)) << ',' << (string)*(d->Value(1)) << ',' << (string)*(d->Value(2)) <<'\n';
+{  cout << d->Value(0,0)->getStrVal() << ',' << d->Value(1,0)->getStrVal() 
+	<< ',' << d->Value(2,0)->getStrVal() <<'\n';
 }
 
 simplest::simplest()

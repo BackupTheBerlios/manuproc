@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: rowdata.h,v 1.4 2001/06/27 08:05:51 christof Exp $
+// $Id: rowdata.h,v 1.5 2001/06/29 11:30:18 christof Exp $
 
 #ifndef KOMPONENTEN_ROWDATA_H
 #define KOMPONENTEN_ROWDATA_H
@@ -29,16 +29,8 @@
 class RowDataBase : public HandleContent
 {
 public:
- virtual const cH_EntryValue Value(int _seqnr,gpointer _g) const
- { return Value(_seqnr) ; }
-
+ virtual const cH_EntryValue Value(guint _seqnr,gpointer _g) const=0;
  virtual ~RowDataBase(){}
-
- // old interface, deprecated
- virtual const cH_EntryValue Value(int _seqnr) const
- { assert(!"this should never get called"); 
-   return Value(_seqnr); // this endless recursion is never reached
- }; 
 };
 
 class cH_RowDataBase : public const_Handle<RowDataBase>
