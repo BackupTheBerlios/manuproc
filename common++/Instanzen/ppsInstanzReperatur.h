@@ -1,4 +1,4 @@
-// $Id: ppsInstanzReperatur.h,v 1.3 2002/12/10 14:04:00 thoma Exp $
+// $Id: ppsInstanzReperatur.h,v 1.4 2002/12/13 09:27:21 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -69,6 +69,8 @@ class ppsInstanzReparatur : public ppsInstanz
       void Reparatur_Kundenauftrag_AEB(const int uid,const AufEintrag &KundeAE,const AufEintragBase &KindAE,const ABmt &menge) const;
       void MengenReparatur(const int uid,const AufEintrag &AE, AufEintrag &AEB,const ABmt& zumenge) const;
 
+      bool KK_teste_summen_fuer(const AufEintragBase aeb,const ArtikelBase KundenArtikel,const int uid,const bool analyse_only) const;
+
 
       void analyse(const std::string &s,const AufEintrag &AE,const std::string &x,const std::string &y) const;
       // Wrapper:
@@ -91,6 +93,8 @@ class ppsInstanzReparatur : public ppsInstanz
       bool ReparaturF_2_ZuSumme_1Rest(const int uid,const bool analyse_only) const throw(SQLerror);
       // Zuordnung von Kunden an Bestell-Instanz' entspricht Kundenbestellmenge
       bool ReparaturK_Kundenzuordnung(const int uid,const bool analyse_only) const;
+      bool ReparaturKK_KundenKinder(const int uid,const bool analyse_only) const;
+
 };
 
 #endif

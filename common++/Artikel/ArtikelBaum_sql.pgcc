@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum_sql.pgcc,v 1.12 2002/11/22 15:31:04 christof Exp $
+// $Id: ArtikelBaum_sql.pgcc,v 1.13 2002/12/13 09:27:21 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -128,8 +128,11 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
  }
 }
 
+#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
+
 void ArtikelBaum::gleiche_Faeden_summieren()
 {
+ typedef fixedpoint<3> menge_t;
  std::map<unsigned int,menge_t > mmap;
  for(std::vector<RohArtikel>::iterator i=zusammensetzung.begin();i!=zusammensetzung.end();++i)
    mmap[(*i).rohartikel.Id()] += (*i).menge;
@@ -141,6 +144,7 @@ void ArtikelBaum::gleiche_Faeden_summieren()
  zusammensetzung.erase(unique(zusammensetzung.begin(),zusammensetzung.end()),zusammensetzung.end());
 }
 
+#endif
 
 int ArtikelBaum::Tiefe() const
 {

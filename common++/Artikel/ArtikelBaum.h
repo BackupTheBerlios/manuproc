@@ -1,4 +1,4 @@
-/* $Id: ArtikelBaum.h,v 1.15 2002/06/20 06:29:52 christof Exp $ */
+/* $Id: ArtikelBaum.h,v 1.16 2002/12/13 09:27:21 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -36,8 +36,7 @@ class ArtikelBaum : public virtual ArtikelBase
         mutable int tiefe;
         static const int NoDepth=-1;
 public:
-	typedef fixedpoint<3> menge_t;
-	typedef fixedpoint<5> faktor_t;
+	typedef fixedpoint<ManuProC::Precision::ArtikelBaumFaktor> faktor_t;
 	struct RohArtikel
 	{  ArtikelBase			rohartikel;
 	   // in Einheit(rohartikel)/Einheit(ArtikelBase)
@@ -74,8 +73,9 @@ public:
 
 private:
 	zusammensetzung_t zusammensetzung;
-        void gleiche_Faeden_summieren();
-
+#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
+   void gleiche_Faeden_summieren();
+#endif
  	// cache
 	typedef CacheStatic<ID,zusammensetzung_t> cache_t;
 	static cache_t cache;

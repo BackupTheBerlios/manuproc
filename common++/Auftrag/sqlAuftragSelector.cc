@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.22 2002/11/22 15:31:05 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.23 2002/12/13 09:27:21 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -101,7 +101,6 @@ std::string SQLFullAuftragSelector::IDQualifier(AuftragBase::ID id)
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Status& selstr)
 {
  std::string cl=FULL_SELECT_FROM_WHERE 
-   " and bestellt!=0 "
     + IDQualifier(selstr.id) +" and "
     + StatusQualifier(selstr.status)+
    " and a.instanz="+itos(selstr.instanz);
@@ -181,14 +180,14 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel_Planung_id &sel
     if(selstr.auftragid!=AuftragBase::handplan_auftrag_id)
      {
        clau+=" and a.auftragid="+itos(selstr.auftragid) +
-             " order by e.lieferdate";
+             " order by e.lieferdate, e.auftragid , e.zeilennr  ";
      }
     else
      {
        clau+=" and a.auftragid!="+itos(AuftragBase::dispo_auftrag_id) + 
 	          " and a.auftragid!="+itos(AuftragBase::plan_auftrag_id) + 
 	          " and a.auftragid!="+itos(AuftragBase::ungeplante_id) + 
-	          " order by e.lieferdate";
+	          " order by e.lieferdate, e.auftragid , e.zeilennr ";
      }
    }
   else if(selstr.status==CLOSED)

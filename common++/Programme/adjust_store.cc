@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.23 2002/12/10 10:41:33 christof Exp $
+// $Id: adjust_store.cc,v 1.24 2002/12/13 09:27:21 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -45,7 +45,8 @@ void usage(const std::string &s)
            "\tE: Summe der Zuordnungen VON 2er-Aufträgen AN 1|20000 == 2.getStueck().\n"
            "\tF: Summe der Zuordnungen VON 2er-Aufträgen AN 1|20000 <= 1|20000.getRestStueck().\n"
            "\tK: Zuordnungen VON Kundenaufträgen: ZuordnungsMENGE,AuftragsINSTANZ,\n"
-           "\t                                    AuftragsARTIKEL.\n";
+           "\t                                    AuftragsARTIKEL.\n"
+           "\tKK:Kinder der Kundenaufträge an die noch benötigte Menge anpassen\n";
  std::cerr << "USAGE:  ";
  std::cerr << s <<" [-i<instanz>|-I]  -a<aktion> [-d<database> -h<dbhost> -y] \n"
            "\twobei die aktion=[A|B|C|D|E|F|K] ist.\n"
@@ -69,10 +70,10 @@ bool check_for(const std::string &pname,cH_ppsInstanz I,const std::string &aktio
     else if(aktion=="E" &&!I->KundenInstanz()) alles_ok=RI.ReparaturE_2_ZuSumme_1(getuid(),analyse_only);
     else if(aktion=="F" &&!I->KundenInstanz()) alles_ok=RI.ReparaturF_2_ZuSumme_1Rest(getuid(),analyse_only);
     else if(aktion=="K" && I->KundenInstanz()) alles_ok=RI.ReparaturK_Kundenzuordnung(getuid(),analyse_only);
+    else if(aktion=="KK"&& I->KundenInstanz()) alles_ok=RI.ReparaturKK_KundenKinder(getuid(),analyse_only);
     else usage(pname);
    return alles_ok;
 }
-
 
 
 const static struct option options[]=

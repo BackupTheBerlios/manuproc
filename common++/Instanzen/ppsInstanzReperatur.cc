@@ -28,6 +28,83 @@
 #include <Aux/Transaction.h>
 #include <Misc/relops.h>
 
+
+bool ppsInstanzReparatur::ReparaturKK_KundenKinder(const int uid,const bool analyse_only) const
+{
+  SQLFullAuftragSelector psel=SQLFullAuftragSelector::sel_Status(ppsInstanzID::Kundenauftraege,OPEN,AuftragBase::plan_auftrag_id);
+  SelectedFullAufList K(psel);
+  bool alles_ok=true;
+  for(SelectedFullAufList::const_iterator i = K.begin();i!=K.end(); ++i)
+   {
+     std::list<AufEintragZu::st_reflist> L=AufEintragZu(*i).get_Referenz_list_ungeplant(true);
+     assert(L.size()==1);
+     for(std::list<AufEintragZu::st_reflist>::const_iterator j=L.begin();j!=L.end();++j)
+      { 
+        bool ok=KK_teste_summen_fuer(j->AEB,i->Artikel(),uid,analyse_only);
+        if(!ok) alles_ok=false;
+      }
+   }
+  return alles_ok;
+}
+
+bool ppsInstanzReparatur::KK_teste_summen_fuer(const AufEintragBase aeb,const ArtikelBase KundenArtikel,const int uid,const bool analyse_only) const
+{
+  assert(aeb.Id()==AuftragBase::ungeplante_id);
+  AufEintrag AE0(aeb);
+  AuftragBase::mengen_t KundenMenge=0;
+  // Kunden-Eltern
+  {
+  std::list<AufEintragZu::st_reflist> L=AufEintragZu(aeb).get_Referenz_listFull(false);
+  for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+    if(i->AEB.Instanz()->KundenInstanz())
+       KundenMenge+= AufEintrag(i->AEB).getRestStk();
+  }
+  ArtikelBaum::faktor_t F=ArtikelBaum(KundenArtikel).Faktor(AE0.Artikel());
+  KundenMenge = KundenMenge*F;
+  // Geplane Kinder
+  AuftragBase::mengen_t PlanMenge=0;
+  {
+  std::list<AufEintragZu::st_reflist> L=AufEintragZu(aeb).get_Referenz_list_geplant();
+  for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+   {
+     // Und deren Dispo-Eltern
+     AuftragBase::mengen_t DispoMenge=0;
+     std::list<AufEintragZu::st_reflist> D=AufEintragZu(i->AEB).get_Referenz_list_dispo(false);
+cout << "\tDispo: "<<D.size()<<'\n';
+     for(std::list<AufEintragZu::st_reflist>::const_iterator j=D.begin();j!=D.end();++j)
+      { assert(j->AEB.Id()==AuftragBase::dispo_auftrag_id);
+        DispoMenge += j->Menge;
+      }
+     AufEintrag DispoAE(i->AEB);
+     PlanMenge += DispoAE.getRestStk() - DispoMenge;
+   }
+  }
+cout << "AUSGABE: "<<aeb<<'\t'<< KundenMenge <<" = "<< AE0.getStueck()
+<<" + "<< PlanMenge<<'\t';
+ if(KundenMenge != AE0.getStueck() + PlanMenge )
+  {
+cout << "\tFehler";
+/*
+   if(analyse_only) analyse("Von Kunden benötigte Menge (KM="+KundenMenge.String()+") stimmt nicht mit \n"
+      " offener Menge (OM="+AE0.getStueck().String()+") und"
+      " der geplanter Menge (GM="+PlanMenge.String()+") überein.\n"
+      " KM = OM + Summe(GM - Summe(DispoMenge))\n",AE0);
+   else assert(!"nicht implementiertn");
+*/
+  }
+cout << "\n";
+
+  // und nun rekursiv
+  std::list<AufEintragZu::st_reflist> L=AufEintragZu(aeb).get_Referenz_list_ungeplant();
+  for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+   {
+     ArtikelBaum::faktor_t F=ArtikelBaum(KundenArtikel).Faktor(AufEintrag(i->AEB).Artikel());
+     KK_teste_summen_fuer(i->AEB,KundenArtikel,uid,analyse_only);
+   }
+}
+
+////////////////////////////////////////////////////////////////////////////
+
 bool ppsInstanzReparatur::ReparaturK_Kundenzuordnung(const int uid,const bool analyse_only) const
 {
    bool alles_ok=true;
@@ -139,6 +216,7 @@ bool ppsInstanzReparatur::Reparatur_Zuordnungen(const int uid,const bool analyse
    assert(Id() != ppsInstanzID::Kundenauftraege);
    SQLFullAuftragSelector sel1er= SQLFullAuftragSelector::sel_Status(Id(),OPEN,auftragid);
    SelectedFullAufList AL1(sel1er);
+//cout << AL1.size()<<'\n';
    for(SelectedFullAufList::iterator i=AL1.begin();i!=AL1.end();++i)
     {
       AuftragBase::mengen_t Msum=0, M0sum=0;

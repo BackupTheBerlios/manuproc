@@ -358,7 +358,7 @@ std::cout << dummystring<<'\n';
             "(instanz,auftragid)=(2,2)");
         SQLerror::test(__FILELINE__);
         erfolgreich=C.teste(Check::Menge,"_rep_pf",mit_reparatur_programm,true);
-        if(!erfolgreich) { cout << "Reparatur-Zuordungen () \n";
+        if(!erfolgreich) { cout << "Reparatur-Zuordungen (1) \n";
                return fehler();}
       }
       {
@@ -369,7 +369,7 @@ std::cout << dummystring<<'\n';
             "(altinstanz,altauftragid,neuinstanz)=(2,2,2)");
         SQLerror::test(__FILELINE__);
         erfolgreich=C.teste(Check::Menge,"_rep_pf",mit_reparatur_programm,true);
-        if(!erfolgreich) { cout << "Reparatur-Zuordungen () \n";
+        if(!erfolgreich) { cout << "Reparatur-Zuordungen (2) \n";
                return fehler();}
       }
       {
@@ -510,7 +510,7 @@ std::cout << "D2:" <<dummystring<<'\n';
       if(!erfolgreich) { cout << "Planen der Weberei zum späteren Test des Bandlagers \n\n";
                return fehler();}
 
-//ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
       DataBase_init::createJumbo(-10,12000);
 std::cout << dummystring<<'\n';
       erfolgreich=C.teste(Check::Menge,"_bandlager_rein",mit_reparatur_programm);

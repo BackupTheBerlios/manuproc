@@ -1,4 +1,4 @@
-// $Id: ppsInstanzProduziert.cc,v 1.12 2002/12/10 12:28:50 thoma Exp $
+// $Id: ppsInstanzProduziert.cc,v 1.13 2002/12/13 09:27:21 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -259,7 +259,7 @@ AuftragBase::mengen_t ManuProC::st_produziert::abschreiben_oder_reduzieren(ppsIn
         i->abschreiben(abschreibmenge,lfrsid);
         if(abschreibmenge<0) // Zuordnung reduzieren beim abbestellen
               Reduce_Zuordnung_Add_Parent(*i,abschreibmenge);
-        else  Reduce_Zuordnung_And_2er_Parent(*i,abschreibmenge);
+        else Reduce_Zuordnung_And_2er_Parent(*i,abschreibmenge);
        }
      abmenge-=abschreibmenge;
      if(!abmenge) break;
@@ -293,17 +293,21 @@ void ManuProC::st_produziert::Reduce_DispoEltern(const AufEintragBase &aeb,Auftr
 }
 
 
-void ManuProC::st_produziert::Reduce_Zuordnung_And_2er_Parent(const AufEintragBase &aeb,AuftragBase::mengen_t menge)
+void ManuProC::st_produziert::Reduce_Zuordnung_And_2er_Parent(const AufEintrag &ae,AuftragBase::mengen_t menge)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AEB=",aeb,
-   "Menge=",menge);
- std::list<AufEintragZu::st_reflist> L=AufEintragZu(aeb).get_Referenz_list_dispo(false);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AEB=",ae,"Menge=",menge);
+ std::list<AufEintragZu::st_reflist> L=AufEintragZu(ae).get_Referenz_list_dispo(false);
  for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
   {
-    AuftragBase::mengen_t m=AufEintragZu(i->AEB).setMengeDiff__(aeb,-menge);
-    i->AEB.updateStkDiffBase__(uid,m);
-    if(m==menge) break;
-    menge-=m;
+//cout <<"XXXXX:"<< ae<<'\t'<<ae.getRestStk()<<'\t'<<i->Menge<<'\t'<<-menge<<'\n';
+    if(ae.getRestStk()>=i->Menge) break;
+//cout << "DOIT\n";
+    AuftragBase::mengen_t M=i->Menge-ae.getRestStk();
+    AufEintragZu(i->AEB).setMengeDiff__(ae,-M);
+    i->AEB.updateStkDiffBase__(uid,-M);
+    menge-=M;
+    assert(menge>=0);
+    if(!menge) break;
   }
 }
 

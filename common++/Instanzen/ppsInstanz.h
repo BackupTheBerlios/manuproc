@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.22 2002/12/10 09:55:00 thoma Exp $
+// $Id: ppsInstanz.h,v 1.23 2002/12/13 09:27:21 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -95,9 +95,9 @@ public:
  
 
  cH_Prozess get_Prozess() const;
-private:
-  // Gegenteil von 'Lieferant' ist 'Kunde'
- bool Lieferant() const { return instid!=ppsInstanzID::Kundenauftraege; }
+//private:
+// Gegenteil von 'Lieferant' ist 'Kunde'
+// bool Lieferant() const { return instid!=ppsInstanzID::Kundenauftraege; }
 public:
  bool KundenInstanz() const {return instid==ppsInstanzID::Kundenauftraege; }
  int ProduktionsDauer() const {return produktionsdauer_tage;}

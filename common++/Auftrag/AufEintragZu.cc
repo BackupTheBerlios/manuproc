@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.5 2002/12/10 12:28:50 thoma Exp $
+// $Id: AufEintragZu.cc,v 1.6 2002/12/13 09:27:21 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -58,14 +58,13 @@ std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_geplant(bool
 
  std::list<st_reflist> L=get_Referenz_list(*this,kinder);
  std::list<st_reflist> N;
-// if(!Instanz()->PlanungsInstanz())
-  for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
-   {
+ for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+  {
      if(i->AEB.Id()!=AuftragBase::dispo_auftrag_id &&
         i->AEB.Id()!=AuftragBase::ungeplante_id &&
         i->AEB.Id()!=AuftragBase::invalid_id ) 
        N.push_back(*i);
-   }
+  }
 /*
  else 
    { assert(kinder);
