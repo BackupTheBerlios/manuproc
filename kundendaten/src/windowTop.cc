@@ -160,7 +160,8 @@ void windowTop::clear_entrys()
    iban_save->set_sensitive(false);
    iban_abbruch->set_sensitive(false);      
    riba_save->set_sensitive(false);
-   riba_abbruch->set_sensitive(false);      
+   riba_abbruch->set_sensitive(false);     
+   zahlverfahren_book->set_page(PAGE_DTAUS); 
 }
 
 
@@ -268,12 +269,14 @@ gint windowTop::on_abi_entry_changed(GdkEventFocus *e)
 {
  riba_save->set_sensitive(true);
  riba_abbruch->set_sensitive(true);  
+ return false;
 }
 
 gint windowTop::on_cab_entry_changed(GdkEventFocus *e)
 {  
  riba_save->set_sensitive(true);
  riba_abbruch->set_sensitive(true);  
+ return false; 
 }
 
 
@@ -281,6 +284,7 @@ gint windowTop::on_iban_entry_changed(GdkEventFocus *e)
 {
  iban_save->set_sensitive(true);
  iban_abbruch->set_sensitive(true);    
+ return false;  
 }
 
 void windowTop::on_zahlverfahren_book_switch_page(Gtk::Notebook_Helpers::Page *p0, guint pagenr)
