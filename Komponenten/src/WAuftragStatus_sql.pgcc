@@ -24,7 +24,7 @@
 WAuftragStatus::WAuftragStatus()
 {
   fuelleMenu();
-//  show();  // sollte das Widget dadrüber tun!
+//  show();  // sollte das Widget dadrÃ¼ber tun!
 }
 
 void WAuftragStatus::set_value(AufStatVal a)
@@ -52,6 +52,6 @@ void WAuftragStatus::fuelleMenu()
    ::add(os,STORNO);
   }
 
-// erst NACH dem zerstören von 'os' existiert das Menu 
-  get_menu()->deactivate.connect(activate.slot());
+// erst NACH dem zerstÃ¶ren von 'os' existiert das Menu 
+  get_menu()->signal_deactivate().connect(activate.slot());
 }

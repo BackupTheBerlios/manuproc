@@ -1,4 +1,4 @@
-// $Id: WPreis.hh,v 1.18 2004/11/16 11:46:46 christof Exp $
+// $Id: WPreis.hh,v 1.19 2004/11/16 11:47:51 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,10 +21,10 @@
 #ifndef _WPREIS_HH
 #  define _WPREIS_HH
 
-#include <gtk--/table.h>
+#include <gtkmm/table.h>
 #include <Aux/Waehrung.h>
-#include <gtk--/spinbutton.h>
-#include <gtk--/label.h>
+#include <gtkmm/spinbutton.h>
+#include <gtkmm/label.h>
 #include "WWaehrung.hh"
 #include <Artikel/Preis.h>
 #include <Artikel/Artikelpreis.h>

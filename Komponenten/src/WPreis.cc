@@ -1,4 +1,4 @@
-// $Id: WPreis.cc,v 1.4 2004/11/16 11:46:46 christof Exp $
+// $Id: WPreis.cc,v 1.5 2004/11/16 11:47:51 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,14 +21,14 @@
 #include "WPreis.hh"
 //#include <Aux/Transaction.h>
 //#include <Aux/SQLerror.h>
-#include <gtk--/adjustment.h>
+#include <gtkmm/adjustment.h>
 
 // strictly these are part of the ctor
 
 gint WPreis::try_grab_focus(GtkWidget *w,gpointer gp)
 { 
    WPreis *this2((WPreis*)gp);
-   assert(Gtk::Table::isA(this2)); // very weak check
+   assert(dynamic_cast<Gtk::Table*>(this2)); // very weak check
    this2->SP->grab_focus();
    this2->SP->select_region(0,-1);
    return true;
@@ -41,8 +41,8 @@ void WPreis::betrag()
 		ManuProC::Precision::GeldBetrag));
   SP->set_usize(80,-1);
   SP->show();
-  SP->activate.connect(activate.slot());
-  SP->changed.connect(preis_changed.slot());
+  SP->signal_activate().connect(activate.slot());
+  SP->signal_changed().connect(preis_changed.slot());
   attach(*SP,1,2,0,1);
 }
 void WPreis::waehrung()
@@ -50,7 +50,7 @@ void WPreis::waehrung()
   if (wwaehrung_bool)
    {
      WW=manage(new WWaehrung(WWaehrung::KURZ));
-     WW->activate.connect(activate.slot());
+     WW->signal_activate().connect(activate.slot());
      attach(*WW,2,3,0,1);
    }
   else
@@ -64,14 +64,14 @@ void WPreis::waehrung()
 void WPreis::preismenge()
 {
   Gtk::Label *LAp=manage(new Gtk::Label("per"));
-  LAp->set_justify(GTK_JUSTIFY_RIGHT);
+  LAp->set_justify(Gtk::JUSTIFY_RIGHT);
   LAp->show();
   attach(*LAp,0,1,1,2);
   Gtk::Adjustment *SP_adj = manage(new class Gtk::Adjustment(1, 0, 10000, 1, 10, 10));
   SP2=manage(new class Gtk::SpinButton(*SP_adj, 3, 0));
   SP2->set_usize(80,-1);
   SP2->show();
-  SP2->activate.connect(activate.slot());
+  SP2->signal_activate().connect(activate.slot());
   attach(*SP2,1,2,1,2);
 }
 
@@ -87,7 +87,7 @@ void WPreis::mindmenge()
 {
  LabMindMenge=manage(new Gtk::Label("ab "+
 		itos(mindestmenge)+" "+LA2->get_text()));
- LabMindMenge->set_justify(GTK_JUSTIFY_RIGHT);
+ LabMindMenge->set_justify(Gtk::JUSTIFY_RIGHT);
  LabMindMenge->set_alignment(0, 0.5);
  LabMindMenge->show();
  attach(*LabMindMenge,0,1,0,1);
@@ -104,13 +104,13 @@ WPreis::WPreis(bool wwaehrung)
   einheit(); 
   mindmenge();
   set_Waehrung(Waehrung::default_id);
-  gtk_signal_connect_after(GTK_OBJECT(gtkobj()), "grab_focus",GTK_SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
+  gtk_signal_connect_after(Gtk::OBJECT(gobj()), "grab_focus",Gtk::SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
 }
 
 void WPreis::update()
 {
-  gtk_spin_button_update(SP->gtkobj());
-  gtk_spin_button_update(SP2->gtkobj());
+  gtk_spin_button_update(SP->gobj());
+  gtk_spin_button_update(SP2->gobj());
 }
 
 void WPreis::reset()

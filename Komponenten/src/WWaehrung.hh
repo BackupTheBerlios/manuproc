@@ -1,4 +1,4 @@
-// $Id: WWaehrung.hh,v 1.15 2004/11/16 11:46:46 christof Exp $
+// $Id: WWaehrung.hh,v 1.16 2004/11/16 11:47:51 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,7 +21,7 @@
 #ifndef _WWaehrung_HH
 #  define _WWaehrung_HH
 
-#include <gtk--/optionmenu.h>
+#include <gtkmm/optionmenu.h>
 #include <Aux/Waehrung.h>
 #include <vector>
 

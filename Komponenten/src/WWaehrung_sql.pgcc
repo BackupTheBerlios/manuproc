@@ -27,7 +27,7 @@ exec sql include sqlca;
 WWaehrung::WWaehrung(darstellung kl)
 {
   fuelleMenu(kl);
-//   show(); // sollte das Objekt darüber tun !
+//   show(); // sollte das Objekt darÃ¼ber tun !
 }
 
 cP_Waehrung WWaehrung::get_value() const
@@ -68,7 +68,7 @@ void WWaehrung::fuelleMenu(darstellung kl)
    exec sql close wae_ein;
    tr.close();   
   }
-// erst NACH dem zerstören von 'os' existiert das Menu 
-  get_menu()->deactivate.connect(activate.slot());
+// erst NACH dem zerstÃ¶ren von 'os' existiert das Menu 
+  get_menu()->signal_deactivate().connect(activate.slot());
 }
 
