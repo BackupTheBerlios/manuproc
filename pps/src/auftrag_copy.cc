@@ -103,7 +103,7 @@ void auftrag_copy::on_copy_ok_clicked()
       std::auto_ptr<AuftragFull> full(new AuftragFull(
       	AuftragBase(auftrag->Instanz(),auftrag->Id())));
 
-      full->setStatusAuftragFull((AufStatVal)OPEN,getuid()); 
+      full->setStatusAuftragFull((AufStatVal)OPEN); 
       auftragbearbeiten->new_aufid_from_copy=auftrag->Id();
       }
       

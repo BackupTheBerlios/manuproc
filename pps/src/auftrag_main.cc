@@ -750,7 +750,7 @@ void auftrag_main::on_button_auftrag_erledigt_clicked()
   try{
   try{
      cH_RowDataBase dt(maintree_s->getSelectedRowDataBase());
-     dynamic_cast<const Data_auftrag*>(&*dt)->get_AufEintrag().setStatus(CLOSED,int(getuid()));
+     dynamic_cast<const Data_auftrag*>(&*dt)->get_AufEintrag().setStatus(CLOSED);
      dynamic_cast<Data_auftrag&>(const_cast<RowDataBase&>(*dt)).redisplayMenge(maintree_s);
   }catch(SQLerror &e) {meldung->Show(e);}
   }catch(TreeBase::notLeafSelected &x) {std::cerr << x.what()<<'\n';}

@@ -226,7 +226,7 @@ void auftrag_bearbeiten::auftragstatus_geaendert()
 { 
  if (auftrag)
   { 
-     auftrag->setStatusAuftragFull(WAufStat->get_Status(),int(getuid()));
+     auftrag->setStatusAuftragFull(WAufStat->get_Status());
   }
 }
 
@@ -315,7 +315,7 @@ void auftrag_bearbeiten::on_lieferdatum_activate()
 {   
   assert(auftrag);
   if(aktaufeintrag  && ppsInstanzID::Kundenauftraege)
-      {aktaufeintrag->updateLieferdatum(liefdatum_datewin->get_value(),getuid());
+      {aktaufeintrag->updateLieferdatum(liefdatum_datewin->get_value());
        fillCList();
 	    auftrag_clist->grab_focus();
        auftrag_clist->moveto(selectedentry,0,.5,0);
@@ -440,7 +440,7 @@ void auftrag_bearbeiten::on_aufentrystat_optionmenu_clicked()
 {
   if (aktaufeintrag)
     {
-       aktaufeintrag->setStatus(WAufEntryStat->get_Status(),int(getuid()));
+       aktaufeintrag->setStatus(WAufEntryStat->get_Status());
        fillCList();
 	    auftrag_clist->grab_focus();
        auftrag_clist->moveto(selectedentry,0,.5,0);
@@ -658,7 +658,7 @@ bool auftrag_bearbeiten::splitEntry()
  if(!newmenge) {meldung->Show(std::string("Menge nicht korrekt")); return false;}
  
  // Malte: welchen Wert muss dispoplanung haben?
- try{aktaufeintrag->split(getuid(),newmenge, newlief);}
+ try{aktaufeintrag->split(newmenge, newlief);}
  catch(SQLerror &e)
   {meldung->Show(e); return false;}    
  loadAuftrag(*auftrag);
@@ -722,7 +722,7 @@ void auftrag_bearbeiten::on_auftrag_ok_clicked()
       loadAuftrag(ab);
 
 // auf offen setzen
-      auftrag->setStatusAuftragFull((AufStatVal)OPEN,getuid()); 
+      auftrag->setStatusAuftragFull((AufStatVal)OPEN); 
       WAufEntryStat->set_history((AufStatVal)OPEN); 
       WAufStat->set_history((AufStatVal)OPEN); 
 

@@ -27,7 +27,7 @@ void auftrag_main::on_button_neue_anr_clicked()
       { meldung->Show("Keine Lieferantennummer vergeben");
         return;}
     instanz_auftrag = new AuftragFull(Auftrag::Anlegen(instanz->Id()),kid);
-    instanz_auftrag->setStatusAuftragFull(OPEN,int(getuid()));
+    instanz_auftrag->setStatusAuftragFull(OPEN);
     AuftragBase ab(*instanz_auftrag);
     loadAuftragInstanz(ab);
     searchcombo_auftragid->setContent(instanz_auftrag->getAuftragidToStr(),'0');
@@ -88,12 +88,12 @@ void auftrag_main::tree_neuer_auftrag_leaf_selected(cH_RowDataBase d)
     try{ 
        if(i->AEB.Id()==AuftragBase::ungeplante_id)
          {
-          AuftragBase::mengen_t mt=i->AEB.updateStkDiffBase__(getuid(),i->Menge);
+          AuftragBase::mengen_t mt=i->AEB.updateStkDiffBase__(i->Menge);
           assert(mt==i->Menge);
          }
        else if(i->AEB.Id()==AuftragBase::dispo_auftrag_id)
          {
-          AuftragBase::mengen_t mt=i->AEB.updateStkDiffBase__(getuid(),-i->Menge);
+          AuftragBase::mengen_t mt=i->AEB.updateStkDiffBase__(-i->Menge);
           assert(mt==-i->Menge);
          }
        else assert(!"never get here\n");
@@ -125,11 +125,11 @@ void auftrag_main::on_button_instanz_get_selection_clicked()
       const Data_auftrag &dt=dynamic_cast<const Data_auftrag&>(**i);
       AufEintrag &AE=const_cast<Data_auftrag&>(dt).get_AufEintrag();
       if(!OptMen_Instanz_Bestellen->is_visible())
-         AE.Planen(getuid(),AE.getRestStk(),*instanz_auftrag,Datum_instanz->get_value());
+         AE.Planen(AE.getRestStk(),*instanz_auftrag,Datum_instanz->get_value());
 //      else
-//         AE.ProduktionsPlanung(getuid(),AE.getRestStk(),*instanz_auftrag,Datum_instanz->get_value(),OptMen_Instanz_Bestellen->get_value());
+//         AE.ProduktionsPlanung(AE.getRestStk(),*instanz_auftrag,Datum_instanz->get_value(),OptMen_Instanz_Bestellen->get_value());
 //         AE.ProduktionsPlanung(OptMen_Instanz_Bestellen->get_value(),
-//                               AE.getRestStk(),Datum_instanz->get_value(),getuid());
+//                               AE.getRestStk(),Datum_instanz->get_value());
      }     
    }
   else
@@ -150,11 +150,11 @@ void auftrag_main::on_button_instanz_get_selection_clicked()
        if(i+1 == VAE.end() )  {M+=spinmenge; spinmenge=0;}
   
        if(!OptMen_Instanz_Bestellen->is_visible())
-         AE.Planen(getuid(),M,*instanz_auftrag,Datum_instanz->get_value());
+         AE.Planen(M,*instanz_auftrag,Datum_instanz->get_value());
 //       else
-//         AE.ProduktionsPlanung(getuid(),M,*instanz_auftrag,Datum_instanz->get_value(),OptMen_Instanz_Bestellen->get_value());
+//         AE.ProduktionsPlanung(M,*instanz_auftrag,Datum_instanz->get_value(),OptMen_Instanz_Bestellen->get_value());
 //         AE.ProduktionsPlanung(OptMen_Instanz_Bestellen->get_value(),
-//                               M,Datum_instanz->get_value(),getuid());
+//                               M,Datum_instanz->get_value());
       }     
    }  
 
