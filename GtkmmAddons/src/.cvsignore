@@ -1,5 +1,4 @@
 .gtkmmheader*
-private
 .deps
 Makefile.in
 Makefile
