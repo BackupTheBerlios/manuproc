@@ -1,4 +1,4 @@
-/* $Id: Adresse.h,v 1.2 2001/07/05 09:23:02 christof Exp $ */
+/* $Id: Adresse.h,v 1.3 2001/12/05 07:55:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -29,9 +29,9 @@ class Adresse
    std::string strasse;
    char postanwnach[41];
    std::string hsnr;
-   int PLZ;
-   long postfach;
-   int postfPLZ;
+   string PLZ;
+   string postfach;
+   string postfPLZ;
    std::string ort;
    bool rng_an_postfach;
    char landname[41];
@@ -39,12 +39,24 @@ class Adresse
    bool lieferadresse;
 
  public:
+   const string Strasse() const { return strasse;}
+   const string Firma() const { return firma;}
+   const string Hsnr() const { return hsnr;}
+   const string Ort() const { return ort;}
+   const string Plz() const { return PLZ;}
+ 
+#warning alte Methoden; bitte ersetzen
+// sollen weg
    const char *getFirma() { return firma.c_str();}
    const char *getPostAnwVor() { return postanwvor;}
    const char *getStrasse() { return strasse.c_str();}
    const char *getHsnr() { return hsnr.c_str();}
-   int getPlz() { return PLZ;}
    const char *getOrt() { return ort.c_str();}
+//   bis hierher
+
+
+
+//   int getPlz() const { return PLZ;}
    int putIntoNLines(char **buf,int num,int len,bool TeX=false) const throw();
    Adresse(int kdnr) throw(SQLerror);
    int Kundennr() const throw();

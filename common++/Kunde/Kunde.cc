@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.6 2001/12/04 08:42:11 christof Exp $
+// $Id: Kunde.cc,v 1.7 2001/12/05 07:55:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -67,8 +67,10 @@ const std::string Kunde::LaTeX_an(bool liefer=false) const
 
   if (!liefer && adresse.postfach.size() && rng_an_postfach)
      {
+      adr0 = postanwvor();
       adr1 = "Postfach "+adresse.postfach;
       adr2 +=  adresse.postfachplz+" "+adresse.ort;
+      adr3 = postanwnach();
      }
      else
      { 

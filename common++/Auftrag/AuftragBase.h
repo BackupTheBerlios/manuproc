@@ -22,7 +22,8 @@
 #include <Aux/Datum.h>
 #include <Artikel/ArtikelBase.h>
 #include <Aux/Preis.h>
-
+#include <Auftrag/auftrag_status.h>
+//#include <Aux/Datum.h>
 class AufEintragBase;
 
 // hier sollten noch viel mehr Funktionen aus Auftrag rein !!!
@@ -45,8 +46,26 @@ class AuftragBase
 	bool valid() const { return auftragid!=0; }
 
         int insertNewEntry(const unsigned long int bestellt, 
-                const Petig::Datum lieferdatum, const ArtikelBase::ID artid,
+                const Petig::Datum lieferdatum, const ArtikelBase& artikel,
+                const AufStatVal status,
                 const Preis& preis=Preis(),const fixedpoint<2> rabatt=0) const throw(SQLerror);
+        void InstanzAuftraegeAnlegen(const ArtikelBase& art,const int altZnr,
+                const Petig::Datum& lieferdatum, const AufStatVal status, 
+                const long menge) const; 
+/*
+        void InstanzAuftraegeAnlegenR(const ArtikelBase& art,const double menge,
+                const AuftragBase& altAuftrag,const int altZnr,
+                         const Petig::Datum& lieferdatum, 
+                         const AufStatVal status) const;
+*/
+        bool existEntry(const ArtikelBase& artid,
+                        const Petig::Datum& lieferdatum,
+                        int& znr, long int& menge, const AufStatVal status
+                        ) const throw(SQLerror);
+        int tryUpdateEntry(long int bestellt, 
+                const Petig::Datum lieferdatum, const ArtikelBase& artikel,
+                AufStatVal status) const throw(SQLerror);
+        
 //        int insertNewEntry(const AufEintragBase& a) const;
 };
 

@@ -3,35 +3,38 @@
 exec sql include sqlca;
 #include <Aux/SQLerror.h>
 #include <Aux/itos.h>
+#include "produktion_status.h"
 
 
 void ProdInstanz::artikel_vormerken()
 {
   exec sql begin declare section;
-   int db_id;
-   double db_menge = menge_bestellt;
-   char db_status[20];
-   char db_zu_wann[21];
-   int db_von_auftrag=auftragid;
+   int db_id=AEB.ArtId();
+   double db_menge = AEB.getRestStk();
+   int db_status;
+   char db_lieferdatum[21];
+   int db_von_auftragid=AEB.Id();
+   int db_von_auftraginstanz=AEB.Instanz();
+   int db_von_auftragznr=AEB.ZNr();
   exec sql end declare section;
-  db_id=artikel.Id();
-  strncpy(db_status,status.c_str(),sizeof(db_status));
-  bestell_datum.write_postgres(db_zu_wann,sizeof db_zu_wann);
-  exec sql insert into prod_vorgemerkt 
-      (id,von_auftrag_id,wieviel,zu_wann,status) values
-      (:db_id,:db_von_auftrag,:db_menge,:db_zu_wann,:db_status);
+  db_status=ProdStatus::VORGEMERKT;
+  AEB.getLieferdatum().write_postgres(db_lieferdatum,sizeof db_lieferdatum);
+  exec sql insert into prod_lager 
+      (id,von_auftrag_id,von_auftrag_instanz,von_auftrag_znr,
+         menge,lieferdatum,status) values
+      (:db_id,:db_von_auftragid,:db_von_auftraginstanz,:db_von_auftragznr,
+         :db_menge,:db_lieferdatum,:db_status);
   SQLerror::test(__FILELINE__);
-
 }
 
 
 
 static const float reste_faktor = 0.25;
 
-void ProdInstanz::artikel_auf_lager()
+double ProdInstanz::artikel_auf_lager(const ArtikelBase& artikel)
 {
-  std::string lagername = artikel_lagername();
-  if (lagername=="") return;
+  std::string lagername = artikel_lagername(artikel);
+  if (lagername=="") return 0;
 
   exec sql begin declare section;
    char query[1024]; 
@@ -40,12 +43,6 @@ void ProdInstanz::artikel_auf_lager()
   exec sql end declare section;
   std::string squery;
   if (lagername=="rl_inhalt")
-/*   squery = "SELECT cast(sum(coalesce(kartons,0)
-               *coalesce(kg_per_karton,0)) as float) +
-               sum(0.5*cast(coalesce(reste,0)*coalesce(kg_per_karton,0) as float))
-               from rl_inhalt where material="+itos(artikel.Id())
-               +" group by material";
-*/
    squery = "SELECT coalesce(kartons,0)*coalesce(kg_per_karton,0),
                     coalesce(reste,0)  *coalesce(kg_per_karton,0) 
                from rl_inhalt where material="+itos(artikel.Id());
@@ -78,25 +75,24 @@ void ProdInstanz::artikel_auf_lager()
         summe += db_menge + db_restmenge * reste_faktor;
    }
   exec sql close menge_ein;
-  tr.close();
-  menge_vorraetig = summe;
-}
 
-std::string ProdInstanz::artikel_lagername()
-{
-  exec sql begin declare section;
-   int db_id, db_bestellen_bei;
-  exec sql end declare section;
-  db_id = artikel.Id();
-  exec sql select bestellen_bei into :db_bestellen_bei from 
-      artikelstamm where id = :db_id;
+  ///////////////////////////////////////////////////////
+  // und nun die vorgemerkte Menge wieder abziehen
+  squery = "select menge from prod_lager where \
+      artikelid="+itos(+artikel.Id())+" and status="+itos(ProdStatus::VORGEMERKT);
+  strncpy(query,squery.c_str(),sizeof(query));
+  exec sql prepare menge_aus_ from :query;
+  exec sql declare menge_aus cursor for menge_aus_;
+  exec sql open menge_aus;
   SQLerror::test(__FILELINE__);
-
-  std::string lagername;
-  switch (db_bestellen_bei) {
-      case 8 : { lagername = "rohjumbo" ; einheit="m"; break;}
-      case 9 : { lagername = "rl_inhalt" ; einheit="kg"; break;}
-      default : lagername =""; einheit="";
+  while(true)
+   {
+     exec sql fetch menge_aus into :db_menge;
+     summe-=db_menge;
    }
-  return lagername;
+  exec sql close menge_aus;
+  tr.close();
+  assert(summe>=0);
+  return summe;
 }
+

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.13 2001/12/04 08:42:10 christof Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.14 2001/12/05 07:55:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -18,31 +18,32 @@
  */
 
 #include <Auftrag/AufEintragBase.h>
+#include <Auftrag/AuftragsBaum.h>
 #include <stdio.h>
 #include <Aux/string0.h>
 #include <Aux/Transaction.h>
 #include "auftrag_status.h"
 #include <Aux/Changejournal.h>
 #include "selFullAufEntry.h"
-
+#include <Auftrag/AuftragsEntryZuordnung.h>
 
 exec sql include sqlca;
 
-void AufEintragBase::setStatus(AufStatVal st) throw(SQLerror)
+void AufEintragBase::setStatus(AufStatVal status) throw(SQLerror)
 {exec sql begin declare section;
  int AUFTRAGID = auftragid;
  int INSTANZ=instanz->Id();
  int ZEILENNR = zeilennr;
- int STATUS=st;
+ int STATUS=status;
  exec sql end declare section;
 
 // Braucht man das noch? 14.11.2001 MAT
 #warning was ist mit status (Auftragsstatus), kann das ignoriert werden?
  if(entrystatus == CLOSED) return; // nichts geht mehr
- if(st == UNCOMMITED) return; // zurück geht nicht, nur vor
- if(entrystatus == st) return;     // nichts geändert
+ if(status == UNCOMMITED) return; // zurück geht nicht, nur vor
+ if(entrystatus == status) return;     // nichts geändert
 
- if(st == OPEN && entrystatus != UNCOMMITED) return; // nur UNCOMMITED->OPEN
+ if(status == OPEN && entrystatus != UNCOMMITED) return; // nur UNCOMMITED->OPEN
 
  Transaction tr; 
  
@@ -50,9 +51,11 @@ void AufEintragBase::setStatus(AufStatVal st) throw(SQLerror)
 	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR 
    and instanz =:INSTANZ;
  SQLerror::test("setStatus: update auftragentry");
+ 
+ // Status für die Instanzen setzen
+ setStatusInstanz(status);
 
-
- if(st==OPEN)
+ if(status==OPEN)
   {try 
    {
     pps_ChJournalEntry::newChange(
@@ -66,7 +69,7 @@ void AufEintragBase::setStatus(AufStatVal st) throw(SQLerror)
    catch(SQLerror &e)
      {tr.rollback(); throw; }
   }
- else if(st==CLOSED && entrystatus!=UNCOMMITED) 
+ else if(status==CLOSED && entrystatus!=UNCOMMITED) 
  // UNCOMMITED->CLOSED => kein Eintrag
   {try 
    {
@@ -86,9 +89,34 @@ void AufEintragBase::setStatus(AufStatVal st) throw(SQLerror)
  tr.commit(); 
 }
 
+void AufEintragBase::setStatusInstanz(AufStatVal status)
+{
+  AuftragsBaum baum(*this,true);
+  for(AuftragsBaum::const_iterator i=baum.begin();i!=baum.end();++i)
+   {
+//     double menge=getStueck() * i->Faktor(Artikel(),i->AB);
+     double menge=getStueck() * ArtikelBaum(Artikel()).Faktor(i->AB);
+cout <<"Stück  "<< getStueck()<<'\t';
+cout <<"Faktor "<< ArtikelBaum(Artikel()).Faktor(i->AB)<<'\t';
+cout <<"Status "<< status<<'\n';
+cout <<i->AEB2.Instanz()<<' '<<i->AEB2.Id()<<' '<<i->AEB2.ZNr()<<' '
+      << i->menge<<'\t'<<menge<<'\n';
+     i->AEB2.updateStk(i->menge-menge,menge,i->AB,status);
+     int znr = i->AEB2.tryUpdateEntry(menge,getLieferdatum(),i->AB,status);
+     AufEintragZu::AuftragsEntryZuordnung(*this,ZNr(),menge,i->AEB2,znr);
+   }
+}
+
 
 void AufEintragBase::updateStk(long stk) throw(SQLerror)
-{exec sql begin declare section;
+{
+ if(status==OPEN)
+  {
+   AufEintragBase2::updateStk(stk,stk-bestellt,artikel,status);
+   bestellt=stk;
+  }
+/*
+ exec sql begin declare section;
  int AUFTRAGID = auftragid;
  int INSTANZ=instanz->Id();
  int ZEILENNR = zeilennr;
@@ -101,7 +129,7 @@ void AufEintragBase::updateStk(long stk) throw(SQLerror)
  	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR
    and instanz =:INSTANZ;
  SQLerror::test("updateStk: update stk in auftragentry");
- 
+
  if(status==OPEN)
   {
    try 
@@ -117,9 +145,9 @@ void AufEintragBase::updateStk(long stk) throw(SQLerror)
    catch(SQLerror &e)
      {tr.rollback(); throw; }
   }
- 
  bestellt=BESTELLT;
  tr.commit(); 
+*/
 }
 
 void AufEintragBase::updatePreis(const Preis &pr) throw(SQLerror)

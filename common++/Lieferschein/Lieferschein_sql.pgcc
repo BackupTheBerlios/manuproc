@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.5 2001/10/23 08:45:19 christof Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.6 2001/12/05 07:55:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -60,7 +60,7 @@ try{
  }catch (SQLerror &e) {cerr <<e<<'\n';}
 }
 
-void Lieferschein::setDPDlnr(int dpdlnr) throw(SQLerror)
+void Lieferschein::setDPDlnr(int dpdlnr) const throw(SQLerror)
 {
  exec sql begin declare section;
  int DPDLIEFNR=dpdlnr;
@@ -73,7 +73,7 @@ void Lieferschein::setDPDlnr(int dpdlnr) throw(SQLerror)
 }
 
 // und was ist mit setDatum
-void Lieferschein::setDPDDatum() throw(SQLerror)
+void Lieferschein::setDPDDatum() const throw(SQLerror)
 {
  exec sql begin declare section;
  int LFRSID=lieferid;

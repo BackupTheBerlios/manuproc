@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.pgcc,v 1.8 2001/12/04 08:42:10 christof Exp $
+// $Id: ArtikelBaum.pgcc,v 1.9 2001/12/05 07:55:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,6 +23,9 @@
 #include <Faeden/Faden.hh>
 #include <Faeden/Materialeigenschaft.hh>
 #include <Artikel/ArtikelStamm.h>
+#include <Auftrag/AufEintragBase.h>
+#include <Auftrag/AuftragsEntryZuordnung.h>
+#include <list>
 exec sql include sqlca;
 
 ArtikelBaum::cache_t ArtikelBaum::cache;
@@ -119,12 +122,12 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
 
 void ArtikelBaum::gleiche_Faeden_summieren()
 {
- std::map<unsigned int,fixedpoint<5> > mmap;
+ std::map<unsigned int,menge_t > mmap;
  for(std::vector<RohArtikel>::iterator i=zusammensetzung.begin();i!=zusammensetzung.end();++i)
-   mmap[(*i).rohartikel] += (*i).menge;
- for (std::map<unsigned int,fixedpoint<5> >::iterator m=mmap.begin();m!=mmap.end();++m)
+   mmap[(*i).rohartikel.Id()] += (*i).menge;
+ for (std::map<unsigned int,menge_t >::iterator m=mmap.begin();m!=mmap.end();++m)
    for(std::vector<RohArtikel>::iterator i=zusammensetzung.begin();i!=zusammensetzung.end();++i)
-      if ((*i).rohartikel == m->first ) (*i).menge=m->second;
+      if ((*i).rohartikel.Id() == m->first ) (*i).menge=m->second;
  // Duplikate entfernen
  sort(zusammensetzung.begin(),zusammensetzung.end());
  zusammensetzung.erase(unique(zusammensetzung.begin(),zusammensetzung.end()),zusammensetzung.end());
@@ -133,7 +136,7 @@ void ArtikelBaum::gleiche_Faeden_summieren()
 
 void ArtikelBaum::new_Artikel(ArtikelBase fuer_artikel,const RohArtikel& RA)
 {
- if (RA.rohartikel==0 || RA.menge==fixedpoint<5>(0) ) abort();
+ if (RA.rohartikel.Id()==0 || RA.menge==menge_t(0) ) abort();
  exec sql begin declare section;
     int ARTIKELID;
     int ALTARTIKELID;
@@ -141,27 +144,75 @@ void ArtikelBaum::new_Artikel(ArtikelBase fuer_artikel,const RohArtikel& RA)
     float MENGE;
  exec sql end declare section;
  ARTIKELID=fuer_artikel.Id();
- ALTARTIKELID=RA.rohartikel;
+ ALTARTIKELID=RA.rohartikel.Id();
  PROZESS=RA.erzeugung->Id();
  MENGE=RA.menge;
  exec sql insert into artikelzusammensetzung 
    (id,prozessid,altartikelid,menge,stand) values 
    (:ARTIKELID,:PROZESS,:ALTARTIKELID,:MENGE,now()) ;
  SQLerror::test(__FILELINE__);
+
+ create_in_zuordnung(fuer_artikel,RA.rohartikel,RA.menge);
 }
+
+void ArtikelBaum::create_in_zuordnung(ArtikelBase fuer_artikel,ArtikelBase von_artikel,fixedpoint<5> RohMenge)
+{
+  cH_ppsInstanz instanz = ArtikelStamm(von_artikel).BestellenBei();
+  std::list<AufEintragBase2> elternliste = AufEintragZu::get_AufEintragList_from_Artikel(von_artikel,instanz,NOSTAT);
+
+  for(std::list<AufEintragBase2>::const_iterator e=elternliste.begin();e!=elternliste.end();++e)
+   {
+//    int neuInstanz=ArtikelStamm(fuer_artikel).BestellenBei()->Id();
+    AuftragBase neuAuftrag(ArtikelStamm(fuer_artikel).BestellenBei()->Id(),0); // bestellen mit Auftrags ID 0
+    AufEintragBase AEB(*e);
+    double menge = AEB.getStueck() * RohMenge;
+    int neuZnr = neuAuftrag.tryUpdateEntry(menge,AEB.getLieferdatum(),
+                                    fuer_artikel,AEB.getEntryStatus());
+    AufEintragZu::AuftragsEntryZuordnung(*e,e->ZNr(),menge,neuAuftrag,neuZnr);
+   }  
+}
+
+
 
 void ArtikelBaum::delete_Artikel(ArtikelBase fuer_artikel,ArtikelBase von_artikel)
 {
  exec sql begin declare section;
-    int ARTIKELID;
-    int ALTARTIKELID;
+    int ARTIKELID   = fuer_artikel.Id();
+    int ALTARTIKELID= von_artikel.Id();
  exec sql end declare section;
- ARTIKELID=fuer_artikel.Id();
- ALTARTIKELID=von_artikel.Id();
 
  exec sql delete from artikelzusammensetzung 
    where id=:ARTIKELID and altartikelid=:ALTARTIKELID;
  SQLerror::test(__FILELINE__,100);
+
+ delete_from_zuordnung(fuer_artikel,von_artikel);
+}
+
+void ArtikelBaum::delete_from_zuordnung(ArtikelBase fuer_artikel,ArtikelBase von_artikel)
+{
+  cH_ppsInstanz instanz = ArtikelStamm(von_artikel).BestellenBei();
+  std::list<AufEintragBase2> elternliste = AufEintragZu::get_AufEintragList_from_Artikel(von_artikel,instanz,NOSTAT);
+  instanz = ArtikelStamm(fuer_artikel).BestellenBei();
+  std::list<AufEintragBase2> kindliste = AufEintragZu::get_AufEintragList_from_Artikel(fuer_artikel,instanz,NOSTAT);
+
+  exec sql begin declare section;
+   int ALTINSTANZ,NEUINSTANZ,ALTID,NEUID,ALTZNR,NEUZNR;
+  exec sql end declare section;
+  for(std::list<AufEintragBase2>::const_iterator e=elternliste.begin();e!=elternliste.end();++e)
+   {
+    ALTINSTANZ=e->Instanz();
+    ALTID=e->Id();
+    ALTZNR=e->ZNr();
+    for(std::list<AufEintragBase2>::const_iterator k=kindliste.begin();k!=kindliste.end();++k)
+     {
+       NEUINSTANZ=k->Instanz();
+       NEUID=k->Id();
+       NEUZNR=k->ZNr();
+       exec sql delete from auftragsentryzuordnung 
+         where altauftragid=:ALTID and altinstanz=:ALTINSTANZ and altzeilennr=:ALTZNR
+         and   neuauftragid=:NEUID and neuinstanz=:NEUINSTANZ and neuzeilennr=:NEUZNR;
+     }  
+   }
 }
 
 
@@ -169,3 +220,12 @@ void ArtikelBaum::UnCache(const ArtikelBase &stamp)
 {  cache.deregister(stamp.Id());
 }
 
+ArtikelBaum::menge_t ArtikelBaum::Faktor(const ArtikelBase &kind) throw(SQLerror)
+{  if (kind==static_cast<const ArtikelBase &>(*this)) return 1;
+   menge_t result=0;
+   for (const_iterator i=begin();i!=end();++i)
+   {  if (i->rohartikel==kind) result+=i->menge;
+      else result+=i->menge*ArtikelBaum(i->rohartikel).Faktor(kind);
+   }
+   return result;
+}

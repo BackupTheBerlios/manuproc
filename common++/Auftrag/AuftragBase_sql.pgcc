@@ -22,6 +22,8 @@
 #include<Aux/Changejournal.h>
 #include <Auftrag/auftrag_status.h>
 #include "AufEintragBase.h"
+#include <Artikel/ArtikelStamm.h>
+#include <Auftrag/AuftragsEntryZuordnung.h>
 
 exec sql include sqlca;
 
@@ -44,12 +46,13 @@ AuftragBase::AuftragBase(cH_ppsInstanz _instanz, int aufid,int kid) throw(SQLerr
 
 
 int AuftragBase::insertNewEntry(const unsigned long int bestellt, 
-  const Petig::Datum lieferdatum,const ArtikelBase::ID artid,
+  const Petig::Datum lieferdatum,const ArtikelBase& artikel,
+  const AufStatVal status,
   const Preis& preis,const fixedpoint<2> rabatt) const throw(SQLerror)
 {
  exec sql begin declare section;
  int AUFTRAGID =Id();
- long ARTIKELID=artid;
+ long ARTIKELID=artikel.Id();
  int INSTANZ =Instanz();
  int ZEILENNR;
  int BESTELLT=bestellt;
@@ -57,10 +60,9 @@ int AuftragBase::insertNewEntry(const unsigned long int bestellt,
  double PREIS=preis.Wert();
  int RABATT=rabatt;
  float PREISMENGE=preis.PreisMenge();
- int STATUS=OPEN;
+ int STATUS=status;
  exec sql end declare section;
  
-// STATUS=(AufStatVal)OPEN;
  lieferdatum.write_postgres(LIEFERDATUM,sizeof LIEFERDATUM);
 
  Transaction tr;
@@ -84,7 +86,7 @@ int AuftragBase::insertNewEntry(const unsigned long int bestellt,
      pps_ChJournalEntry::newChange(
                         instanz,
 			AufEintragBase2(instanz,AUFTRAGID,ZEILENNR),
-                        ArtikelBase(ARTIKELID),
+                        artikel,
                         (double)BESTELLT,
                         (double)BESTELLT,
                         pps_ChJournalEntry::CH_MENGE);
@@ -92,8 +94,100 @@ int AuftragBase::insertNewEntry(const unsigned long int bestellt,
     catch(SQLerror &e)
       {tr.rollback(); throw; }
   }
+ InstanzAuftraegeAnlegen(artikel,ZEILENNR,lieferdatum,status,bestellt);
 
  tr.commit();
  return ZEILENNR;
 }
 
+void AuftragBase::InstanzAuftraegeAnlegen(const ArtikelBase& artikel,
+      const int altZnr,const Petig::Datum& lieferdatum,
+      const AufStatVal status, const long menge) const
+{
+   ArtikelBaum AB(artikel);
+   for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
+    {
+      AuftragBase neuAuftrag(ArtikelStamm(i->rohartikel).BestellenBei(),0);
+      int neuZnr = neuAuftrag.tryUpdateEntry(double(i->menge)*menge,lieferdatum,i->rohartikel,status);
+      AufEintragZu::AuftragsEntryZuordnung(*this,altZnr,double(i->menge)*menge,neuAuftrag,neuZnr);
+//if(ArtikelStamm(i->rohartikel).BestellenBei()->Id()!=9)
+cout << "Bestellt: "<<cH_ArtikelBezeichnung(i->rohartikel)->Bezeichnung()
+<<' '<< double(i->menge)*menge<<" bei "<<ArtikelStamm(i->rohartikel).BestellenBei()->Name()
+<<" Zeile: "<<neuZnr<<" Id()= "<<Id()<<'\n';
+
+//      InstanzAuftraegeAnlegenR(i->rohartikel,double(i->menge)*menge,*this,altZnr,
+//                  lieferdatum,status);
+    }
+}
+
+/* 
+void AuftragBase::InstanzAuftraegeAnlegenR(const ArtikelBase& art,const double menge,
+    const AuftragBase& altAuftrag,const int altZnr,
+    const Petig::Datum& lieferdatum,
+    const AufStatVal status) const
+{
+// Hier könnte man die Menge Artikelabhängig und das Lieferdatum
+// Instanzabhängig machen (dann beachte aber auch ArtikelBaum::create_in_zuordnung)
+   ArtikelStamm AS(art);
+   AuftragBase neuAuftrag(AS.BestellenBei(),0);
+   int neuZnr = neuAuftrag.tryUpdateEntry(double(menge),lieferdatum,art,status);
+   AufEintragZu::AuftragsEntryZuordnung(altAuftrag,altZnr,menge,neuAuftrag,neuZnr);
+
+cout << "Bestellt: "<<cH_ArtikelBezeichnung(art)->Bezeichnung()
+<<' '<< menge<<" bei "<<ArtikelStamm(art).BestellenBei()->Name()<<'\n';
+
+// Das hier führt zum doppelten Anlegen der Aufträge MAT
+//  ArtikelBaum AB(art);
+//   for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
+//    {
+//      InstanzAuftraegeAnlegenR(i->rohartikel,i->menge*menge,altAuftrag,altZnr,
+//                                 lieferdatum,status);
+//    }
+}
+*/ 
+
+bool AuftragBase::existEntry(const ArtikelBase& artikel,
+                             const Petig::Datum& lieferdatum,
+                             int& znr,long int& menge,
+                             AufStatVal status) const throw(SQLerror)
+{
+ exec sql begin declare section;
+   int AUFTRAGID =Id();
+   long ARTIKELID=artikel.Id();
+   int INSTANZ =Instanz();
+   int ZEILENNR;
+   long MENGE;
+   char LIEFERDATUM[21];
+   int STATUS=status;
+ exec sql end declare section;
+ lieferdatum.write_postgres(LIEFERDATUM,sizeof LIEFERDATUM);
+
+ exec sql select zeilennr,bestellt into :ZEILENNR, :MENGE
+   from auftragentry
+	where auftragid= :AUFTRAGID and instanz =:INSTANZ and
+      lieferdate=:LIEFERDATUM and artikelid=:ARTIKELID 
+      and status=:STATUS limit 1;
+ SQLerror::test(__FILELINE__,100);
+ if (sqlca.sqlcode==100) return false;
+ else  {
+    znr=ZEILENNR;
+    menge=MENGE;
+    return true;  }
+}
+
+int AuftragBase::tryUpdateEntry(long int bestellt, 
+  const Petig::Datum lieferdatum,const ArtikelBase& artikel,AufStatVal status
+    ) const throw(SQLerror)
+{
+ int znr=-99;
+ long menge=0;
+ Transaction tr;
+ exec sql lock table auftragentry in exclusive mode;
+ SQLerror::test(__FILELINE__);  
+ if(!existEntry(artikel,lieferdatum,znr,menge,status))
+      znr=insertNewEntry(bestellt,lieferdatum,artikel,status)  ;
+ else
+  AufEintragBase2(instanz,auftragid,znr).updateStk(menge+bestellt,bestellt,artikel,status);
+  tr.commit();
+  return znr;
+}

@@ -3,27 +3,25 @@
 #include <Artikel/ArtikelBaum.h>
 #include "maschinen_geschwindigkeit.hh"
 
-/*
-ProdInstanz::ProdInstanz(Petig::Datum bd, ArtikelBase a)
-: bestell_datum(bd), artikel(a), menge_bestellt(0)
+ProdInstanz::ProdInstanz(const AufEintragBase& aeb)
+: AEB(aeb)
 {
-}
-*/
-
-ProdInstanz::ProdInstanz(int _auftragid, ppsInstanz::ID _instanz,
-   Petig::Datum _bestelldatum, ArtikelBase _artikel, double _menge,
-   std::string _status)
-: auftragid(_auftragid), instanz(_instanz), bestell_datum(_bestelldatum), 
-   artikel(_artikel), menge_vorraetig(0), menge_bestellt(_menge),
-   status(_status)
-{
-  artikel_auf_lager();
-  if (menge_bestellt >= Menge_im_Lager()) // Artikel vormerken
+  double menge_im_lager artikel_auf_lager(aeb.Artikel());
+  if (aeb.getRestStk() <= menge_im_lager) // Artikel vormerken
     {
       artikel_vormerken();
     }
-  else // Rohware(n) bestellen
+  else 
     { 
+      int instanz = ArtikelStamm(artikel).BestellenBei()->Id();
+#warning TODO
+      switch (instanz) {
+        case 8 : {  ;  break;}
+        case 9 : {  ; break;}
+        assert(!"ProdInstanz nur für Instanz 8 und 9 (=Lager) implementiert");
+         }
+
+/*
       ArtikelBaum AB(artikel);
       for (ArtikelBaum::const_iterator ab=AB.begin();ab!=AB.end();++ab)
        {
@@ -33,6 +31,7 @@ ProdInstanz::ProdInstanz(int _auftragid, ppsInstanz::ID _instanz,
          ppsInstanz::ID bestellen_bei=AS.BestellenBei()->Id();
          ProdInstanz PI(auftragid,bestellen_bei,bestell_datum,AB,menge,status); 
        }
+*/
     }
 }
 
@@ -47,3 +46,17 @@ int ProdInstanz::Lieferzeit_in_Tagen()
    }
   return dauer;
 }
+
+std::string ProdInstanz::artikel_lagername(const ArtikelBase& artikel)
+{
+  int instanz = ArtikelStamm(artikel).BestellenBei()->Id();
+  std::string lagername;
+  switch (instanz) {
+      case 8 : { lagername = "rohjumbo" ;  break;}
+      case 9 : { lagername = "rl_inhalt" ; break;}
+      default : lagername =""; einheit=""; 
+         assert(!"ProdInstanz nur für Instanz 8 und 9 (=Lager) implementiert");
+   }
+  return lagername;
+}
+ 

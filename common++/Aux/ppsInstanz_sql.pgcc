@@ -30,13 +30,12 @@ void ppsInstanz::get_name()
 cH_Prozess ppsInstanz::get_Prozess() const
 {
   int pid;
-  if (instid==INST_FAERB)      pid=Prozess::Faerben;
-  else if (instid==INST_DRUCK) pid=Prozess::Drucken;
-  else if (instid==INST_DRUCK) pid=Prozess::Drucken;
-  else if (instid==INST_WEB)   pid=Prozess::Weben;
-  else if (instid==INST_SCHAER)pid=Prozess::Schaeren;
-  else if (instid==INST_SPRITZ)pid=Prozess::Giessen;
-
-  else pid = 31;
-  return cH_Prozess(pid);
+  switch(instid) {
+	case  INST_FAERB : return cH_Prozess(Prozess::Faerben);break;
+	case  INST_DRUCK : return cH_Prozess(Prozess::Drucken);break;
+	case  INST_WEB : return cH_Prozess(Prozess::Weben);break;
+	case  INST_SCHAER : return cH_Prozess(Prozess::Schaeren);break;
+	case  INST_SPRITZ : return cH_Prozess(Prozess::Giessen);break;
+        default : return cH_Prozess(Prozess::Verarbeitung); break;
+	}
 }

@@ -1,4 +1,4 @@
-/* $Id: AufEintragBase.h,v 1.16 2001/12/04 08:42:10 christof Exp $ */
+/* $Id: AufEintragBase.h,v 1.17 2001/12/05 07:55:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -72,7 +72,7 @@ protected:
 public:
  AufEintragBase() 
    : artikel(0ul), dispoentrynr(0),
-   	disponr(0), status((AufStatVal)OPEN), entrystatus((AufStatVal)OPEN),
+   	disponr(0), status((AufStatVal)UNCOMMITED), entrystatus((AufStatVal)UNCOMMITED),
    	kdnr(0), 
    	bestellt(0),
    	geliefert(0), jahrgang(0), prozess(Prozess::default_id),
@@ -80,7 +80,8 @@ public:
 	rabatt(0)
  {}
 
- AufEintragBase(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, int _bestellt,
+ AufEintragBase(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, 
+        int _bestellt,
 	int _artikel, const Petig::Datum _lieferdatum,
 	int _geliefert,
 	int _dispoentrynr, int _disponr, int _jahrgang,
@@ -99,6 +100,7 @@ public:
  void updatePreis(const Preis &pr) throw(SQLerror);
  void updateRabatt(int rb) throw(SQLerror);
  void setStatus(AufStatVal st) throw(SQLerror);		
+ void setStatusInstanz(AufStatVal status);
  void split(int newmenge, const Petig::Datum &newld) throw(SQLerror);
 // void setPlanMeter(long gm) { geplante_menge=gm; }
  
@@ -138,38 +140,10 @@ public:
  void abschreiben(int menge) throw(SQLerror);
  bool allesOK() const;
  std::string Planung() const;
-/*
- struct st_reflist {AufEintragBase2 AEB2;ArtikelBase AB;long Menge;
-        st_reflist(AufEintragBase2 aeb2,ArtikelBase ab,long menge)
-           :AEB2(aeb2),AB(ab),Menge(menge){}};
-private:
- list<cH_Kunde> get_Referenz_Kunden_long() const throw(SQLerror);
-public:
- // Eine Benachbarte Liste von Kind- bzw. Elternaufträgen:
- list<st_reflist> get_Referenz_list(const AufEintragBase2& aeb,bool kinder=false) const throw(SQLerror);
- // Für einen KOMPLETTEN Auftragsbaum bitte die Klasse AuftragsBaum verwenden
- // die folgende Funktion liefert nur die Endaufträge OHNE Knoten
- list<st_reflist> get_Referenz_listFull(bool kinder) const throw(SQLerror);
-                //kinder=false:   Elternaufträge 
-                //kinder=true:    Kinderaufträge
-*/
-/*
- list<st_reflist> get_Referenz_AufEintragBase2(bool ursprung=true,bool kinder=false) const throw(SQLerror);
-                //Ursprung=false: Nur die benachbarten Aufträge 
-                //Ursprung=true:  Alle (Referenz-)Aufträge 
-                //kinder=false:   Elternaufträge 
-                //kinder=true:    Kinderaufträge
-*/
-// long get_Referenz_AufEintragBase2_Summe(int instanz,bool ursprung=true,bool kinder=false) const throw(SQLerror);
-// list<cH_Kunde> get_Referenz_Kunden() const throw(SQLerror);
- ArtikelBase::ID ArtId() const {return artikel.Id();}
 
-/*
- static std::list<AufEintragBase2> get_AufEintragList_from_Artikel
-               (const ArtikelBase& artikel,const cH_ppsInstanz& instanz);
- static AufEintragBase2 get_AufEintrag_from_Artikel_by_Lfdate
-               (const ArtikelBase& artikel,const cH_ppsInstanz& instanz); 
-*/  
+ ArtikelBase::ID ArtId() const {return artikel.Id();}
+ ArtikelBase Artikel() const {return artikel;}
+
 
 // void setArtikelBezeichnung(const cH_ExtBezSchema &cs)
 // 	{const_cast<AufArtikel&>(*artikel).setArtikelBezeichnung(cs); } 

@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.h,v 1.12 2001/12/04 08:42:10 christof Exp $
+// $Id: ArtikelBezeichnung.h,v 1.13 2001/12/05 07:55:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -152,6 +152,7 @@ public:
 
 #ifdef PETIG_EXTENSIONS
  int Breite() const { return Komponente_als_EntryValue(1,1)->getIntVal(); }
+ bool Jumbo() const { return (*this)[schema->JumboIndex()]->getStrVal()==schema->JumboBez(); }
 #endif
 
 // deprecated

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.11 2001/12/04 08:42:10 christof Exp $
+// $Id: AufEintragBase.cc,v 1.12 2001/12/05 07:55:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -108,7 +108,7 @@ void AufEintragBase::abschreiben(int menge) throw(SQLerror)
 const std::string AufEintragBase::getEntryStatusStr() const
 {
  switch(entrystatus)
-   {case (AufStatVal)UNCOMMITED : return "ubestätigt"; 
+   {case (AufStatVal)UNCOMMITED : return "unbestätigt"; 
     case (AufStatVal)OPEN : return "offen"; 
     case (AufStatVal)CLOSED : return "fertig";
     case (AufStatVal)STORNO : return "storno";
@@ -123,23 +123,6 @@ bool AufEintragBase::allesOK() const
  if (!getLieferdatum().valid()) return false;
  return true;
 }
-
-/*
-void AufEintragBase::calculateProzessInstanz()
-{
-  assert (Instanz()==ppsInstanz::Kundenauftraege);
-  AuftragsBaum AB(*this,true);
-  int anz=0;
-  for(AuftragsBaum::const_iterator i=AB.begin();i!=AB.end();++i)
-   {
-     if(i->AEB2.Id()==0) continue; // 0 = ungeplante Aufträge
-     if(AufEintragBase(i->AEB2).getStueck() == i->menge)
-       ++anz;
-   }
-//   setMaxPlanInstanz(i->AEB2.Instanz());
-   setMaxPlanInstanz(anz);
-}   
-*/
 
 
 /*
@@ -178,39 +161,9 @@ std::string AufEintragBase::Planung() const
 {
   int tiefe = ArtikelBaumFull(ArtId()).Tiefe();
   return itos(maxPlanInstanz)+"/"+itos(tiefe);  
+//  return cH_ppsInstanz((ppsInstanz::ppsInstId)letztePlanInstanz)->Name();  
 }
 
-
-/*
-AufEintragBase2 AufEintragBase::get_AufEintrag_from_Artikel_by_Lfdate   
-               (const ArtikelBase& artikel,const cH_ppsInstanz& instanz)
-{
-  std::list<AufEintragBase2> LI=get_AufEintragList_from_Artikel(artikel,instanz);
-  std::list<st_reflist> LR;
-  for(std::list<AufEintragBase2>::const_iterator i=LI.begin();i!=LI.end();++i)
-   {
-     std::list<st_reflist> LRtmp =
-               AufEintragBase(*i).get_Referenz_listFull(false);
-     LR.splice(LR.end(),LRtmp);
-   }
-  Petig::Datum lieferdatum;
-  AufEintragBase2 AEB;
-  // lieferdatum initialisieren
-  if(LR.begin()!=LR.end()) 
-  { lieferdatum=AufEintragBase(LR.begin()->AEB2).getLieferdatum();
-    AEB=LR.begin()->AEB2;
-   for(std::list<st_reflist>::const_iterator i=LR.begin();i!=LR.end();++i)
-   {
-    Petig::Datum ld=AufEintragBase(i->AEB2).getLieferdatum();
-    if(ld<lieferdatum) 
-      {
-        AEB=i->AEB2;
-        lieferdatum=ld;
-      }
-   }
-  }
-}
-*/
 
 /*
 long AufEintragBase::get_Referenz_AufEintragBase2_Summe(int instanz,bool ursprung,bool kinder) const throw(SQLerror)

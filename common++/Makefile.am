@@ -32,6 +32,7 @@ libcommon___a_LIBADD= \
 		Auftrag/Auftrag.o \
 		Auftrag/Auftrag_sql.o \
 		Auftrag/AuftragFull_sql.o \
+		Auftrag/AuftragsEntryZuordnung_sql.o \
 		Aux/Ausgabe_neu.o \
 		Aux/Changejournal_sql.o \
 		Aux/Datum.o \
@@ -74,6 +75,7 @@ libcommon___a_LIBADD= \
 		Kunde/Person.o \
 		Kunde/Person_sql.o \
 		Kunde/Telefon.o \
+		Kunde/Adresse.o \
 		Lieferschein/Lieferschein.o \
 		Lieferschein/LieferscheinEntry_sql.o \
 		Lieferschein/LieferscheinList.o \

@@ -1,4 +1,4 @@
-// $Id: Changejournal_sql.pgcc,v 1.6 2001/11/05 08:58:29 christof Exp $
+// $Id: Changejournal_sql.pgcc,v 1.7 2001/12/05 07:55:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,6 +22,9 @@
 
 exec sql include sqlca;
 
+#warning so wie ich das sehe, ist die Instanz hier VÖLLIG 
+#warning überflüssig, weil sie bereits im AufEintragBase2 enthalten
+#warning ist, soll ich das umarbeiten? MAT 29.11.01
 const pps_ChJournalEntry pps_ChJournalEntry::newChange(
 		cH_ppsInstanz instid,
  		const AufEintragBase2 &aufe, const ArtikelBase &art,

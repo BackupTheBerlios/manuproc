@@ -1,4 +1,4 @@
-/* $Id: ArtikelBaum.h,v 1.4 2001/12/04 08:42:10 christof Exp $ */
+/* $Id: ArtikelBaum.h,v 1.5 2001/12/05 07:55:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -33,28 +33,30 @@
 class ArtikelBaum : public virtual ArtikelBase
 {
 public:
+	typedef fixedpoint<5> menge_t;
 	struct RohArtikel
-	{  ID			rohartikel;
+	{  ArtikelBase			rohartikel;
 	   // in Einheit(rohartikel)/Einheit(ArtikelBase)
 	   // ist ein Faktor
-	   fixedpoint<5>	menge; 
+	   menge_t	menge; 
 	   
 	   // eigentlich relativ uninteressant?
 	   cH_Prozess		erzeugung;
 	   
-	   RohArtikel() : rohartikel(0), menge(0), 
+	   RohArtikel() : menge(0), 
 	                  erzeugung(Prozess::default_id) 
 	   {}
-      RohArtikel(ID _rohartikel,fixedpoint<5> _menge)
+      RohArtikel(ArtikelBase _rohartikel,menge_t _menge)
               :rohartikel(_rohartikel),menge(_menge),
                erzeugung(Prozess::default_id)
       {}
 
       bool operator==(const RohArtikel &b) const {return (*this).rohartikel==b.rohartikel;}
       bool operator<(const RohArtikel &b) const {return (*this).rohartikel<b.rohartikel;}
-      
+
+//private:
 	   // obsolete, compatibility only!
-	   RohArtikel(const ID &_altartikel,cH_Prozess proz)
+	   RohArtikel(const ArtikelBase &_altartikel,cH_Prozess proz)
 	   	: rohartikel(_altartikel), 
 	   	  menge(proz->getMtrProStk()), 
 	   	  erzeugung(proz)
@@ -92,14 +94,21 @@ public:
 
  static void UnCache(const ArtikelBase &stamp);
 
+// Hrmpf, warum sind das keine Members?
 // Für einen neuen Artikel:
  static void new_Artikel(ArtikelBase fuer_artikel,const RohArtikel& RA);
  static void delete_Artikel(ArtikelBase fuer_artikel,ArtikelBase von_artikel);
+private:
+ static void delete_from_zuordnung(ArtikelBase fuer_artikel,ArtikelBase von_artikel); 
+ static void create_in_zuordnung(ArtikelBase fuer_artikel,ArtikelBase von_artikel,fixedpoint<5> RohMenge); 
 
+public:
+ menge_t Faktor(const ArtikelBase &kind) throw(SQLerror);
 
 // -------------------------------------------
 // ab hier alles veraltet, INFORMATIONSVERLUST !!!
-
+// Private seit 30.11.01 MAT - das kann CVS auch sagen ... CP
+private:
  ArtikelBaum(const ID &stamp,const ID &_altartikel,cH_Prozess proz)
   : ArtikelBase(stamp)
  {  if (_altartikel) zusammensetzung.push_back(RohArtikel(_altartikel,proz)); }
@@ -114,7 +123,7 @@ public:
  }
  const ID ParentArtikelID() const
  {  if (zusammensetzung.size()==0) return 0;
-    return zusammensetzung[0].rohartikel;
+    return zusammensetzung[0].rohartikel.Id();
  }
 
  const cH_Prozess getErzeugendenProzess() const
@@ -122,11 +131,10 @@ public:
     return zusammensetzung[0].erzeugung;
  }
 
- fixedpoint<5> Stueckgroesse() const
+ menge_t Stueckgroesse() const
  {  if (zusammensetzung.size()==0) return 0;
     return zusammensetzung[0].menge;
  }
-
 };
 
 #endif

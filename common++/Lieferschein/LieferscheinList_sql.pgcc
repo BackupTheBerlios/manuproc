@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList_sql.pgcc,v 1.5 2001/10/23 08:45:19 christof Exp $ */
+/* $Id: LieferscheinList_sql.pgcc,v 1.6 2001/12/05 07:55:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,34 +23,7 @@
 
 exec sql include sqlca;
 
-/*
-// caller needs to roll back if transaction is already open and false is given
-// back
-bool LieferscheinList::setDPDData(int dpdlnr) throw(SQLerror)
-{
- Transaction tr;
- exec sql lock lieferschein in share row exclusive mode;
- SQLerror::test(__FILELINE__"lock");
 
-// warum nicht for ???
- std::vector<Lieferschein>::iterator i = sellist.begin();
-
- try{
-     while(i!=sellist.end())
-       {(*i).setDPDlnr(dpdlnr);
-        (*i).setDPDDatum();
-        ++i;
-       }
-    }         
- catch(SQLerror &e)
-   {tr.rollback();
-    return false;
-   }
- 
- tr.commit();
- return true;
-}
-*/
 
 LieferscheinList::LieferscheinList() throw(SQLerror)
 {
@@ -121,6 +94,9 @@ void LieferscheinList::fuelle(const std::string &squery) throw(SQLerror)
  tr.close();
 }
 
+
+#ifdef MABELLA_EXTENSIONS
+
 LieferscheinList::LieferscheinList(const sel_DPDLNr &sp) throw(SQLerror)
 {
  std::string squery = SQuery();
@@ -128,48 +104,42 @@ LieferscheinList::LieferscheinList(const sel_DPDLNr &sp) throw(SQLerror)
  fuelle(squery);
 }
 
-/*
-LieferscheinList::LieferscheinList(const sel_DPDLNr &sp) throw(SQLerror)
+LieferscheinList::LieferscheinList(const sel_GeliefStat &sp) throw(SQLerror)
 {
- exec sql begin declare section;
- int LFRSID;
- int KDNR;
- int RNGID;
- int IRNGID;
- char DATUM[11];
- int IDATUM;
- int PAECKCHEN, PAKETE;
- int IPAKETE,IPAECKCHEN;
- char GELIEFERTAM[11];
- int IGELIEFERTAM=-1;
- int DPDLIEFNR=sp.dpdlnr;
- exec sql end declare section;
- 
- exec sql select lieflist(lfrsid,kundennr,date(datum),rngid,pakete,
-				paeckchen,date(geliefertam))
-	from lieferschein 
-	where dpdliefnr= :DPDLIEFNR order by lfrsid;
- SQLerror::test(__FILELINE__);
+ std::string squery = SQuery();
+ if(sp.geliefert)
+	 squery += " where dpdliefnr is not null";
+ else
+	 squery += " where dpdliefnr is null";
 
- 
- while(!sqlca.sqlcode)
-   {
-    exec sql fetch from lieflist
-		into :LFRSID, :KDNR, :DATUM:IDATUM, :RNGID:IRNGID,
-		:PAKETE:IPAKETE, :PAECKCHEN:IPAECKCHEN, :GELIEFERTAM;
-    SQLerror::test(__FILELINE__,100);
-    if(sqlca.sqlcode==100) break;
-
-    Petig::Datum d,gelam;
-    if(IDATUM) d=Petig::Datum();
-    else d.from_postgres(DATUM);
-    if(IGELIEFERTAM) gelam=Petig::Datum();
-    else gelam.from_postgres(GELIEFERTAM);
-
-    sellist.push_back(Lieferschein(LieferscheinBase(LFRSID),d,
-    			KDNR,IRNGID?0:RNGID,IPAECKCHEN?0:PAECKCHEN,
-			IPAKETE?0:PAKETE,gelam,
-			DPDLIEFNR) );
-   } 
+ fuelle(squery);
 }
-*/
+
+
+// caller needs to roll back if transaction is already open and false is given
+// back
+bool LieferscheinList::setDPDData(int dpdlnr) throw(SQLerror)
+{
+ Transaction tr;
+ exec sql lock lieferschein in share row exclusive mode;
+ SQLerror::test(__FILELINE__"lock");
+
+ try{
+   for(std::vector<cH_Lieferschein>::iterator i = sellist.begin();
+	i!=sellist.end(); ++i)
+       {(*i)->setDPDlnr(dpdlnr);
+        (*i)->setDPDDatum();
+       }
+    }         
+
+ catch(SQLerror &e)
+   {tr.rollback();
+    return false;
+   }
+ 
+ tr.commit();
+ return true;
+}
+
+
+#endif

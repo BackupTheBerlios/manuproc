@@ -1,6 +1,5 @@
-/* $Id: LieferscheinList.cc,v 1.5 2001/12/05 07:55:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,13 +17,11 @@
  */
 
 
+#ifndef PRODSTATUS
+#define PRODSTATUS
 
-#include"LieferscheinList.h"
-
-/*
-std::ostream &operator<<(std::ostream &o,const LieferscheinList &l)
-{  for(unsigned int i=0; i<l.sellist.size(); ++i)
-	o << l.sellist[i].Id() << "\n"; 
-   return o;
+namespace ProdStatus
+{
+  typedef enum {VORGEMERKT=1, AUSGELIEFERT, STORNO} ProdStatVal;
 }
-*/
+#endif

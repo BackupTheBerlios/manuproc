@@ -4,13 +4,14 @@
 
 int AuftragFull::insertNewEntry(unsigned long int bestellt,
                Petig::Datum lieferdatum, ArtikelBase::ID artid,
+               AufStatVal status,
                Preis preis, fixedpoint<2> rabatt) throw (SQLerror)
 {
-  int znr=AuftragBase::insertNewEntry(bestellt,lieferdatum,artid,preis,rabatt);
+  int znr=AuftragBase::insertNewEntry(bestellt,lieferdatum,artid,status,preis,rabatt);
   eintragliste.push_back(AufEintragBase(
       Instanz(),Id(),znr,bestellt,artid,lieferdatum,
       0,0,0,getJahrgang(),getStatus(),getKundennr(),getYourAufNr(),
-      Petig::Datum(),Prozess::default_id,0,0,preis,rabatt,OPEN,
+      Petig::Datum(),Prozess::default_id,0,0,preis,rabatt,status,
       Petig::Datum::today()));
   return znr;
 }

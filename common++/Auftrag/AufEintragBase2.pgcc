@@ -1,4 +1,4 @@
-// $Id: AufEintragBase2.pgcc,v 1.20 2001/11/26 14:44:33 cvs_malte Exp $
+// $Id: AufEintragBase2.pgcc,v 1.25 2001/11/30 17:00:18 cvs_malte Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,6 +22,7 @@
 #include <Aux/Transaction.h>
 #include <Auftrag/auftrag_status.h>
 #include <Auftrag/AuftragsBaum.h> 
+#include <Aux/Changejournal.h>
 
 exec sql include sqlca;
 
@@ -117,163 +118,6 @@ int AufEintragBase2::abschreiben(int menge) const throw(SQLerror)
 
 
 
-
-list<AufEintragBaseList::st_reflist> AufEintragBaseList::get_Referenz_list(const AufEintragBase2& aeb,bool kinder) const throw(SQLerror) 
-{
- exec sql begin declare section;
-  int INSTANZ[30],AUFTRAGID[30],ZEILENNR[30];
-  long MENGE[30];
-  int ARTIKEL[30];
-  char query[1024];
- exec sql end declare section;
- Transaction tr;
- std::string squery;
- if(kinder)
-    squery = "select neuauftragid,neuinstanz,neuzeilennr,menge,artikelid
-      from auftragsentryzuordnung 
-      join auftragentry on (neuauftragid,neuinstanz,neuzeilennr)
-         = (auftragid,instanz,zeilennr)
-      where (altauftragid,altinstanz,altzeilennr) = 
-       ("+itos(aeb.Id())+","+itos(aeb.Instanz())+","+itos(aeb.ZNr())+")";
- else
-    squery = "select altauftragid,altinstanz,altzeilennr,menge,artikelid
-      from auftragsentryzuordnung 
-      join auftragentry on (altauftragid,altinstanz,altzeilennr)
-         = (auftragid,instanz,zeilennr)
-      where (neuauftragid,neuinstanz,neuzeilennr) = 
-       ("+itos(aeb.Id())+","+itos(aeb.Instanz())+","+itos(aeb.ZNr())+")";
- strncpy(query,squery.c_str(),sizeof(query));
- exec sql prepare ONAUF_ from :query;
-cout << query<<"\n\n\n";
- exec sql declare ONAUF cursor for ONAUF_;
- exec sql open ONAUF;
-          
- list<st_reflist> vaeb;
- while(true)
-  {
-    exec sql fetch 30 in ONAUF into :AUFTRAGID,:INSTANZ,:ZEILENNR,:MENGE,:ARTIKEL;
-    SQLerror::test(__FILELINE__,100);
-    if (sqlca.sqlcode) break;
-    int j=sqlca.sqlerrd[2];
-    for (int i=0;i<j;++i)
-     {
-      vaeb.push_back(st_reflist(
-         AufEintragBase2(cH_ppsInstanz((ppsInstanz::ppsInstId)INSTANZ[i]),
-             AUFTRAGID[i],ZEILENNR[i]),ARTIKEL[i],MENGE[i]));
-     }
-    if(j<30) break;
-  }
- return vaeb;
-}
-
-list<AufEintragBaseList::st_reflist> AufEintragBaseList::get_Referenz_listFull(bool kinder) const throw(SQLerror)
-{
-// AufEintragBase2 aeb=*this;
- list<st_reflist> tv=get_Referenz_list(AEB,kinder);
- list<st_reflist> vaeb;
- list<st_reflist> tvxx;
-reloop:
- tv.splice(tv.end(),tvxx);
- for (list<st_reflist>::iterator i=tv.begin();i!=tv.end();++i)
-   {
-     tvxx=get_Referenz_list(i->AEB2,kinder);
-     if (tvxx.size()==0) vaeb.splice(vaeb.end(),tv,i) ;
-     else tv.erase(i) ; 
-     goto reloop;
-   }
- return vaeb;
-}
-
-
-list<cH_Kunde> AufEintragBaseList::get_Referenz_Kunden_long() const throw(SQLerror)
-{
- list<cH_Kunde> LK;
-// list<st_reflist> vaeb = get_Referenz_AufEintragBase2();
- list<st_reflist> vaeb = get_Referenz_listFull(false);
- exec sql begin declare section;
-  int KUNDE;
-  int INSTANZ;
-  int AUFTRAGID;
- exec sql end declare section;
- for (list<st_reflist>::const_iterator i=vaeb.begin();i!=vaeb.end();++i)
-  {
-    INSTANZ=i->AEB2.Instanz();
-    AUFTRAGID=i->AEB2.Id();
-    exec sql select kundennr into :KUNDE from auftrag where
-      auftragid=:AUFTRAGID and instanz=:INSTANZ; 
-    SQLerror::test(__FILELINE__);
-    LK.push_back(cH_Kunde(KUNDE));
-  }
- return LK;
-}
-
-list<cH_Kunde> AufEintragBaseList::get_Referenz_Kunden() const throw(SQLerror)
-{
- list<cH_Kunde> LK = get_Referenz_Kunden_long();
- LK.sort();
- LK.unique();
- return LK;
-}
-
-std::list<AufEintragBase2> AufEintragBaseList::get_AufEintragList_from_Artikel
-               (const ArtikelBase& artikel,const cH_ppsInstanz& instanz)
-{
-  std::list<AufEintragBase2> L;
-  exec sql begin declare section;
-   char query[1024];
-   int db_auftragid,db_zeilennr;
-  exec sql end declare section;
-  std::string squery = "select auftragid,zeilennr from auftragentry
-      where artikelid="+itos(artikel.Id())+" 
-      and instanz="+itos(instanz->Id())+" and status="+itos(OPEN);
-  strncpy(query,squery.c_str(),sizeof(query));
-  Transaction tr;
-  exec sql prepare AELfAein_ from :query ;
-  exec sql declare AELfAein cursor for AELfAein_ ;
-
-  exec sql open AELfAein;
-  SQLerror::test(__FILELINE__);
-  while(true)
-   {
-     exec sql fetch AELfAein into :db_auftragid,:db_zeilennr;
-     SQLerror::test(__FILELINE__,100);
-     if (sqlca.sqlcode) break;
-     L.push_back(AufEintragBase2(instanz,db_auftragid,db_zeilennr));
-   }  
-  return L;
-}
-
-/* siehe headerfile
-AufEintragBase2 AufEintragBaseList::get_AufEintrag_from_Artikel_by_Lfdate   
-               (const ArtikelBase& artikel,const cH_ppsInstanz& instanz)
-{
-  std::list<AufEintragBase2> LI=get_AufEintragList_from_Artikel(artikel,instanz);
-  std::list<st_reflist> LR;
-  for(std::list<AufEintragBase2>::const_iterator i=LI.begin();i!=LI.end();++i)
-   {
-     std::list<st_reflist> LRtmp =
-               AufEintragBase(*i).get_Referenz_listFull(false);
-     LR.splice(LR.end(),LRtmp);
-   }
-  Petig::Datum lieferdatum;
-  AufEintragBase2 AEB;
-  // lieferdatum initialisieren
-  if(LR.begin()!=LR.end()) 
-  { lieferdatum=AufEintragBase(LR.begin()->AEB2).getLieferdatum();
-    AEB=LR.begin()->AEB2;
-   for(std::list<st_reflist>::const_iterator i=LR.begin();i!=LR.end();++i)
-   {
-    Petig::Datum ld=AufEintragBase(i->AEB2).getLieferdatum();
-    if(ld<lieferdatum) 
-      {
-        AEB=i->AEB2;
-        lieferdatum=ld;
-      }
-   }
-  }
-}
-*/
-
 void AufEintragBase2::setLetztePlanungFuer(int planinstanz) const throw(SQLerror)
 {
  assert (Instanz()==ppsInstanz::Kundenauftraege);
@@ -308,19 +152,12 @@ void AufEintragBase2::calculateProzessInstanz()
   assert (Instanz()==ppsInstanz::Kundenauftraege);
   AuftragsBaum AB(*this,true);
   int anz=0;
-cout << "CALCULATE :"<<AB.size()<<'\n';
   for(AuftragsBaum::const_iterator i=AB.begin();i!=AB.end();++i)
    {
-cout << "Auftragid = "<<i->AEB2.Id()<<'\t'<<i->AEB2.Instanz()<<'\n';
      if(i->AEB2.Id()==0) continue; // 0 = ungeplante Aufträge
-cout << Id()<<'\t'<<Instanz()<<'\t'
- << cH_ArtikelBezeichnung(AufEintragBase(*this).ArtId())->Bezeichnung()<<'\t'
- << AufEintragBase(i->AEB2).getStueck()
- <<'\t'<<i->menge<<'\n';
      if(AufEintragBase(i->AEB2).getStueck() == i->menge)
        ++anz;
    }
-//   setMaxPlanInstanz(i->AEB2.Instanz());
    setMaxPlanInstanz(anz);
 }   
 
@@ -345,3 +182,33 @@ void AufEintragBase2::setMaxPlanInstanz(int maxplaninstanz) const throw(SQLerror
 }
 
 
+void AufEintragBase2::updateStk(long newstk,long diff,
+   const ArtikelBase& artikel,AufStatVal status) const throw(SQLerror)
+{
+ exec sql begin declare section;
+ int AUFTRAGID = auftragid;
+ int INSTANZ=instanz->Id();
+ int ZEILENNR = zeilennr;  
+ long BESTELLT = newstk;
+ int STATUS=status;
+ exec sql end declare section;
+
+ Transaction tr;
+
+ exec sql update auftragentry set bestellt= :BESTELLT
+   where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR
+   and instanz =:INSTANZ and status=STATUS;
+ SQLerror::test("updateStk: update stk in auftragentry");
+// if(status==OPEN)
+  {
+   try
+    { 
+     pps_ChJournalEntry::newChange(
+         instanz, *this,
+         artikel,(double)newstk,(double)diff,pps_ChJournalEntry::CH_MENGE);
+    }
+   catch(SQLerror &e)
+     {tr.rollback(); throw; }
+  }
+ tr.commit(); 
+}

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList.h,v 1.4 2001/10/08 09:08:12 christof Exp $ */
+/* $Id: LieferscheinList.h,v 1.5 2001/12/05 07:55:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -37,15 +37,6 @@ public:
  const_iterator end()
    {return sellist.end();}
 
- struct sel_GeliefStat 
- { bool geliefert;
-   sel_GeliefStat(bool g):geliefert(g){}
- }; 
- 
- struct sel_DPDLNr 
- { int dpdlnr;
-   sel_DPDLNr(int d):dpdlnr(d){}
- }; 
 
  struct sel_KundenId 
  { unsigned long int id;
@@ -59,13 +50,26 @@ public:
  LieferscheinList() throw(SQLerror);
  LieferscheinList(const sel_KundenId &selparam) throw(SQLerror);
  LieferscheinList(const sel_ArtikelId &selparam) throw(SQLerror);
+
+#ifdef MABELLA_EXTENSIONS
+ struct sel_GeliefStat 
+ { bool geliefert;
+   sel_GeliefStat(bool g):geliefert(g){}
+ }; 
+ 
+ struct sel_DPDLNr 
+ { int dpdlnr;
+   sel_DPDLNr(int d):dpdlnr(d){}
+ }; 
+
+
  LieferscheinList(const sel_GeliefStat &selparam) throw(SQLerror);
  LieferscheinList(const sel_DPDLNr &selparam) throw(SQLerror);
+ bool setDPDData(int dpdlnr) throw(SQLerror);
+#endif
 
  void fuelle(const std::string &query) throw(SQLerror);
  std::string SQuery();
- 
-// bool setDPDData(int dpdlnr) throw(SQLerror);
  unsigned int Size() {return sellist.size();}
  
 // friend std::ostream &operator<<(std::ostream &o,const LieferscheinList &l);

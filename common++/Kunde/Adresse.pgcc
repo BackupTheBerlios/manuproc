@@ -1,4 +1,4 @@
-/* $Id: Adresse.pgcc,v 1.15 2001/10/19 09:35:54 christof Exp $ */
+/* $Id: Adresse.pgcc,v 1.16 2001/12/04 21:21:42 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -36,11 +36,11 @@ Adresse::Adresse(int kdnr) throw(SQLerror)
    char STRASSE[36];
    char POSTANWNACH[41];
    char HSNR[8];
-   int _PLZ;
-   long POSTFACH;
-   int POSTFPLZ;
+   char _PLZ[11];
+   char POSTFACH[21];
+   char POSTFPLZ[11];
    char ORT[31];
-   int RNG_AN_POSTFACH;
+   bool RNG_AN_POSTFACH;
    char LANDNAME[41];
    char POSTFACHNAME[41];
    char ISOCODE[4];
@@ -52,34 +52,36 @@ Adresse::Adresse(int kdnr) throw(SQLerror)
 
    exec sql SELECT firma, postanwvor, strasse, hsnr, postanwnach,
          	plz, ort, postfach, postfplz, rng_an_postfach, idnr 
-	into :FIRMA, :POSTANWVOR :IPOSTANWVOR, :STRASSE :ISTRASSE,
-   		:HSNR :IHSNR, :POSTANWNACH :IPOSTANWNACH, :_PLZ :IPLZ,
-   		:ORT :IORT, :POSTFACH :IPOSTFACH,
-   		:POSTFPLZ :IPOSTFPLZ, :RNG_AN_POSTFACH :IRNG_AN_POSTFACH,
-   		:IDNR :IIDNR
+	into :FIRMA, :POSTANWVOR:IPOSTANWVOR, :STRASSE:ISTRASSE,
+   		:HSNR:IHSNR, :POSTANWNACH:IPOSTANWNACH, :_PLZ:IPLZ,
+   		:ORT:IORT, :POSTFACH:IPOSTFACH, 
+   		:POSTFPLZ:IPOSTFPLZ, :RNG_AN_POSTFACH:IRNG_AN_POSTFACH,
+   		:IDNR:IIDNR
    	FROM kunden
    	WHERE kundennr= :KUNDENNR;
    SQLerror::test(__FILELINE__" select from kunden");
    
-   if (IRNG_AN_POSTFACH) RNG_AN_POSTFACH=0;
+   if (IRNG_AN_POSTFACH) RNG_AN_POSTFACH=false;
    if (IPOSTANWVOR) POSTANWVOR[0]=0;
    if (IPOSTANWNACH) POSTANWNACH[0]=0;
    if (ISTRASSE) STRASSE[0]=0;
    if (IHSNR) HSNR[0]=0;
    if (IORT) ORT[0]=0;
-   if (IPLZ) _PLZ=NULL_VALUE;
-   if (IPOSTFPLZ) POSTFPLZ=NULL_VALUE;
-   if (IPOSTFACH) POSTFACH=NULL_VALUE;
+   if (IPLZ) _PLZ[0]=0;
+   if (IPOSTFPLZ) POSTFPLZ[0]=0;
+   if (IPOSTFACH) POSTFACH[0]=0;
    if (!IIDNR && IDNR[0])
     { int i;
       for (i=0;i<3 && isalpha(IDNR[i]);i++) 
          ISOCODE[i]=tolower((unsigned char)IDNR[i]);
       ISOCODE[i]=0;
-      exec sql SELECT landname, postfachname 
+
+/*      exec sql SELECT landname, postfachname 
       	into :LANDNAME :ILANDNAME, :POSTFACHNAME :IPOSTFACHNAME
       	FROM AUSLAND  where isocode= :ISOCODE;
       SQLerror::test(__FILELINE__"SELECT DIRECT FROM AUSLAND",100);
       if(sqlca.sqlcode) IPOSTFACHNAME=ILANDNAME=-1;
+*/
     }
    else 
      IPOSTFACHNAME=ILANDNAME=-1;
@@ -110,8 +112,8 @@ static const std::string Dform(unsigned int i,bool TeX=false) throw()
 int Adresse::putIntoNLines(char **buf,int num,int len,bool TeX) const throw()
 {  int lines=0,line=0;
    bool postfachflag=false;
-   bool ausland=landname[0]!=0;
-   bool postfach_valid=postfach!=NULL_VALUE && (ausland || postfPLZ!=NULL_VALUE);
+//   bool ausland=landname[0]!=0;
+   bool postfach_valid = postfach!="" && postfPLZ!="";
    
    for (int i=0;i<num;i++) buf[i][0]=0;
    if (firma!="") lines++;
@@ -123,15 +125,18 @@ int Adresse::putIntoNLines(char **buf,int num,int len,bool TeX) const throw()
    if (postfachflag || strasse[0] || hsnr[0]) lines++;
    if (postanwnach[0]) lines++;
    if (ort!="") lines++;
-   if (ausland) lines++;
+//   if (ausland) lines++;
    
-   if (!ausland && lines<num && num>4) 
+//   if (!ausland && lines<num && num>4) 
+   if (lines<num && num>4) 
    { strncpy0(buf[line++],"Firma",len); lines++; }
    if (firma!="") strncpy0(buf[line++],TeX?string2TeX(firma).c_str():firma.c_str(),len);
    if (postanwvor[0] && lines<=num) strncpy0(buf[line++],TeX?string2TeX(postanwvor).c_str():postanwvor,len);
    if (postfachflag) 
-   {  if (TeX) snprintf0(buf[line++],len,"%s~%s",string2TeX(postfachname).c_str(),Dform(postfach,true).c_str());
-      else snprintf0(buf[line++],len,"%s %s",postfachname,Dform(postfach).c_str());
+   {  if (TeX) snprintf0(buf[line++],len,"%s~%s",string2TeX(postfachname).c_str(),
+			Dform(atoi(postfach.c_str()),true).c_str());
+      else snprintf0(buf[line++],len,"%s %s",postfachname,
+			Dform(atoi(postfach.c_str())).c_str());
    }
    else if (strasse!="" || hsnr!="")
    {  if (TeX) snprintf0(buf[line++],len,"%s~%s",string2TeX(strasse).c_str(),
@@ -139,15 +144,17 @@ int Adresse::putIntoNLines(char **buf,int num,int len,bool TeX) const throw()
       else snprintf0(buf[line++],len,"%s %s",strasse.c_str(),hsnr.c_str());
    }
    if (postanwnach[0] && line+1<num) strncpy0(buf[line++],TeX?string2TeX(postanwnach).c_str():postanwnach,len);
-   if (line+1+ausland<num) { buf[line++][0]=0; lines++; }
+//   if (line+1+ausland<num) { buf[line++][0]=0; lines++; }
+   if (line+1<num) { buf[line++][0]=0; lines++; }
    if (ort!="" && line<num) 
-   {  if (PLZ!=NULL_VALUE) 
+   {  if (PLZ!="") 
          snprintf0(buf[line++],len,"%05d%c%s",
-         	postfachflag?postfPLZ:PLZ,
+         	postfachflag ? atoi(postfPLZ.c_str()) : atoi(PLZ.c_str()),
          	TeX?'~':' ',TeX?string2TeX(ort).c_str():ort.c_str());
       else 
          strncpy0(buf[line++],TeX?string2TeX(ort).c_str():ort.c_str(),len);
    }
+/*
    if (ausland)
    {  if (line<num) strncpy0(buf[line++],TeX?string2TeX(landname).c_str():landname,len);
       else 
@@ -157,9 +164,11 @@ int Adresse::putIntoNLines(char **buf,int num,int len,bool TeX) const throw()
          {  buf[line-1][ortlen]=' ';
             strncpy0(buf[line-1]+ortlen+1,TeX?string2TeX(landname).c_str():landname,len-ortlen-1);
          }
-         else /* geht halt nicht :-( */;
+         else ; // geht halt nicht :-(
       }
    }
+*/
+
    return line;
 }
 

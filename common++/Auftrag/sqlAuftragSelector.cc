@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.8 2001/12/04 08:42:10 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.9 2001/12/05 07:55:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,19 +22,21 @@
 #include <Aux/itos.h>
 #include<auftrag_status.h>
 
-#define FULL_SELECTIONS "a.instanz, a.auftragid, e.zeilennr, bestellt," \
-	" e.artikelid, e.rohartikelid," \
-	" e.lieferdate, geliefert," \
-	" a.jahrgang, a.stat," \
-	" a.kundennr, youraufnr, coalesce(p.prozessid,0)," \
-   " coalesce(p.letztePlanInstanz,0), coalesce(p.maxPlanInstanz,0), "\
-	" date(coalesce(p.datum,now()))," \
-	" e.preis, int4(e.rabatt*100), coalesce(e.preismenge,1), a.waehrung," \
-	" e.status, e.lasteditdate "
+#define FULL_SELECTIONS "a.instanz, a.auftragid, e.zeilennr, bestellt, " \
+	"e.artikelid, e.rohartikelid, " \
+	"e.lieferdate, geliefert, " \
+	"a.jahrgang, a.stat, " \
+	"a.kundennr, youraufnr, coalesce(p.prozessid,0), " \
+	"coalesce(p.letztePlanInstanz,0), " \
+   	"coalesce(p.maxPlanInstanz,0), " \
+	"date(coalesce(p.datum,now())), " \
+	"e.preis, int4(e.rabatt*100), " \
+	"coalesce(e.preismenge,1), a.waehrung, " \
+	"e.status, e.lasteditdate "
 
 #define FULL_FROM "(auftrag a join auftragentry e using (instanz,auftragid))" \
 	" left join auftrag_prozess p" \
-	" on (e.instanz,e.auftragid,e.zeilennr)=(p.instanz,p.auftragid,p.zeilennr) "
+	" using (instanz,auftragid,zeilennr) "
 
 #define FULL_SELECT_FROM_WHERE "select " FULL_SELECTIONS \
 	" from " FULL_FROM  
@@ -43,12 +45,17 @@
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Status& selstr)
 {
  const std::string status(itos(selstr.status));
- setClausel(FULL_SELECT_FROM_WHERE
-	" where a.stat="+status+
-	" and e.status="+status +
-	" and a.instanz="+itos(selstr.instanz)
-	);	
-
+ std::string wq;
+ switch (selstr.status) {
+   case OPEN       : wq="  a.stat="+status+" and e.status="+status; break;
+   case UNCOMMITED : wq=" ((a.stat="+status+" and e.status!="+itos(STORNO)+")"+
+                        " or (a.stat!="+itos(STORNO)+" and e.status="+status+"))"; 
+                     break;
+   case STORNO     : wq=" (a.stat="+status+" or e.status="+status+")";break;
+   case CLOSED     : wq=" (a.stat="+status+" or e.status="+status+")";
+   }
+ setClausel(FULL_SELECT_FROM_WHERE " where "+
+   wq+" and a.instanz="+itos(selstr.instanz));
 }
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Aufid& selstr)
@@ -70,12 +77,18 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_AufidZnr& selstr)
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Jahr_Artikel &selstr)
 {
  const std::string jahr(itos(selstr.jahr));
-
+ std::string artids;
+ for (std::vector<ArtikelBase::ID>::const_iterator i=selstr.artikelid.begin();
+ 		i!=selstr.artikelid.end();++i)
+ {  if (i!=selstr.artikelid.begin())  artids+=',';
+    artids+=itos(*i);
+ }
+             
  setClausel(FULL_SELECT_FROM_WHERE
 	     " where (a.jahrgang="+jahr+
 	     " or e.lieferdate between date('"+jahr+"-1-1') and date('"+jahr+"-12-31')) "
-	     " and artikelid="+itos(selstr.artikelid) +
-	     " and a.instanz="+itos(selstr.instanz));
+	     " and artikelid in ("+artids +
+	     ") and a.instanz="+itos(selstr.instanz));
 }
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Kunde_Artikel &selstr)

@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.7 2001/12/04 08:42:10 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.8 2001/12/05 07:55:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,7 +18,8 @@
  */
 
 #include <Artikel/ArtikelStamm.h>
-#include <Artikel/ArtikelBaum.h>
+//#include <Artikel/ArtikelBaum.h>
+#include <Artikel/ArtikelBezeichnung.h>
 exec sql include sqlca;
 //#include <Aux/itos.h>
 
@@ -64,10 +65,12 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
             {  cache.Register(ab.Id(),payload); 
                // since ArtikelBaum tries to read bestellen_bei
                // we would loop forever if not registered here
-               ArtikelBaum baum(ab);
-               float stkgr(baum.Stueckgroesse());
+//               ArtikelBaum baum(ab);
+               cH_ArtikelBezeichnung AB(ab);
+//               float stkgr(baum.Stueckgroesse());
                // this is because Prozess_sql.pgcc is mad (Jumbo = 1m)
-               if (baum.size()<=1 && stkgr && stkgr!=1) payload.einh=EINH_STUECK;
+//               if (baum.size()<=1 && stkgr && stkgr!=1) payload.einh=EINH_STUECK;
+               if (!AB->Jumbo()) payload.einh=EINH_STUECK;
                else payload.einh=EINH_METER;
                break;
             }

@@ -70,8 +70,9 @@ public:
 	void fillCList(Gtk::CList &list);
 //	void fillCListEntry(Gtk::CList &list, int idx);
 	
-	int insertNewEntry( unsigned long int bestellt,
+	int insertNewEntry(unsigned long int bestellt,
                Petig::Datum lieferdatum, ArtikelBase::ID artid,
+               AufStatVal status,
                Preis preis=Preis(), fixedpoint<2> rabatt=fixedpoint<2>(0)) throw (SQLerror);
 };
 #endif
