@@ -1,4 +1,4 @@
-// $Id: Handles.h,v 1.12 2002/05/09 12:46:00 christof Exp $
+// $Id: Handles.h,v 1.13 2002/11/29 08:25:48 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -66,7 +66,7 @@ public:
 	{  _watch_me=true; }
 #endif	
 	void *ref()
-	{  /* if (!is_static()) */ _references++;
+	{  if (this) _references++;
 	   return this;
 	}
 
@@ -76,7 +76,7 @@ public:
 	}
 
 	void unref() const
-	{  /* if (!is_static()) */
+	{  if (this)
 	   {  _references--;
               if (!is_static() && !_references) delete this;
            }
@@ -122,8 +122,7 @@ private:
 public:
 	_this_t &operator=(const _this_t &b)
 	{  NOISE("Handle @" << _data << '.' << (_data?_data->_references:0) << "= @" << b._data << '.' << (b._data?b._data->_references:0) << '\n');
-	   // yes, I do not test b -- I consider b->nil as a bug
-	   b->ref();
+	   if (b._data) b._data->ref();
 	   if (_data) _data->unref();
  	   _data=b._data;
  	   return *this;
@@ -163,6 +162,11 @@ public:
 	bool operator>=(const _this_t &s) const
 	{  return (*_data)>=(*s);
 	}
+	
+	// Ich hoffe, diese Konversion tut niemandem weh? Sonst bitte Meldung
+	operator bool() const
+	{  return _data!=0;
+	}
 	bool operator!() const
 	{  return _data==0;
 	}
@@ -178,7 +182,7 @@ public:
 	
 	Handle(ContentType *b) : _data(b)
 	{  NOISE("Handle(from " << b << '.' << (b?b->_references:0) << ")\n");
-	   _data->ref();
+	   if (_data) _data->ref();
 	}
 
 //	ContentType &operator ContentType() { return *_data; } ???
