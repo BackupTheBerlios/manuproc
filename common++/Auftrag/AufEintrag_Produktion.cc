@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.21 2003/12/02 14:51:18 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.22 2003/12/02 15:08:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -267,7 +267,12 @@ public:
 	   cH_ppsInstanz wo=ppsInstanz::getBestellInstanz(art);
 	   if (wo==neuerAEB.Instanz()) wo=ppsInstanz::getProduktionsInstanz(art);
 	   assert(wo!=neuerAEB.Instanz());
-	   AufEintrag::unbestellteMengeProduzieren(wo,art,M,true,neuerAEB,ctx);
+	   if (wo->LagerInstanz())
+	   {  Lager L(wo);
+	      L.raus_aus_lager(art,M,true,ProductionContext(neuerAEB,ctx));
+	   }
+	   else
+	      AufEintrag::unbestellteMengeProduzieren(wo,art,M,true,neuerAEB,ctx);
 	}
 };
 
