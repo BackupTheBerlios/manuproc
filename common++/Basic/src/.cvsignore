@@ -12,3 +12,5 @@ ManuProCConfig.h
 stamp-h
 stamp-h1
 stamp-h.in
+libManuProC_Base.rc
+Global_Settings_sql.cc
