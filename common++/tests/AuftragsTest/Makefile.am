@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.7 2003/07/08 07:14:05 christof Exp $
+# $Id: Makefile.am,v 1.8 2003/07/14 07:16:10 christof Exp $
 
 AM_CXXFLAGS=@COMMONXX_INCLUDES@
 AM_LDFLAGS=@COMMONXX_LDFLAGS@
@@ -17,6 +17,5 @@ steuerprogramm_SOURCES=steuerprogramm.cc DataBase_init.cc \
 
 CLEANFILES= *~ $(EXTRA_PROGRAMS)
 
-DynamicEnums:
-#	ln -sf database_tables_init DynamicEnums # petig
-	ln -sf ../../../Anleitung/datenbank DynamicEnums # anleitung
+DynamicEnums: ../../ManuProCConfig.h
+	ln -sf `./where_are_the_tables` DynamicEnums
