@@ -1,4 +1,4 @@
-// $Id: Waehrung.h,v 1.16 2003/05/09 20:56:30 christof Exp $
+// $Id: Waehrung.h,v 1.17 2003/09/23 14:50:19 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,6 +25,9 @@
 #include <Misc/CacheStatic.h>
 #include <Misc/Pointer.h>
 
+class FetchIStream; 
+
+
 namespace WaehrungID = ManuProC::DynamicEnums::Waehrung;
 
 class Waehrung
@@ -40,6 +43,8 @@ private:
  std::string kurz,tex;
  std::string lang;
  double faktor;
+
+ friend FetchIStream &operator>>(FetchIStream &is, ID &wid);
 
 public:
  Waehrung(ID id) throw(SQLerror);
@@ -60,6 +65,9 @@ public:
  bool operator==(const Waehrung &b) const { return wid==b.wid; }
  bool operator!=(const Waehrung &b) const { return wid!=b.wid; }
 }; 
+
+
+
 
 // Vorsicht !!! Dass dies ein cP ist, funktioniert nur wegen des Caches
 // und der Tatsache dass sich praktisch nie etwas hier dran aendern wird
