@@ -10,7 +10,7 @@ const cH_EntryValue Data_LListe::Value(guint seqnr,gpointer gp) const
 
  switch(seqnr) {
    case ARTIKEL ... AUFMACHUNG: {
-      cH_ArtikelBezeichnung AB(entry.ArtikelID());
+      cH_ArtikelBezeichnung AB(ArtikelBase(entry.ArtikelID()));
       return AB->Komponente_als_EntryValue(seqnr-ARTIKEL);
     }
    case KUNDE : return cH_EntryValueIntString(cH_Kunde(liefer->KdNr())->firma());
