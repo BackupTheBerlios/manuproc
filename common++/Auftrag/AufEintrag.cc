@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.52 2003/05/26 13:43:27 christof Exp $
+// $Id: AufEintrag.cc,v 1.53 2003/06/03 16:38:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -32,6 +32,7 @@
 #include <Lieferschein/Lieferschein.h>
 #include <Auftrag/AufEintrag_macros.h>
 #include <Misc/inbetween.h>
+#include <Artikel/ArtikelStamm.h>
 
 #ifdef MABELLA_EXTENSIONS
 #include <Lager/FertigWaren.h>
@@ -571,7 +572,7 @@ void AufEintrag::ArtikelInternNachbestellen(int uid,mengen_t menge,
   assert(menge>0);
   assert(Id()!=dispo_auftrag_id);
 
-  ppsInstanz::ID next=Instanz()->NaechsteInstanz(Artikel());
+  ppsInstanz::ID next=Instanz()->NaechsteInstanz(ArtikelStamm(Artikel()));
   if (next!=ppsInstanzID::None)
   {  AufEintrag::ArtikelInternNachbestellen(next,menge,getLieferdatum(),
   			Artikel(),uid,*this);

@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.28 2003/05/02 06:13:55 christof Exp $
+// $Id: ppsInstanz.h,v 1.29 2003/06/03 16:38:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -36,6 +36,7 @@ namespace ppsInstanzID=ManuProC::DynamicEnums::Instanzen;
 
 class cH_ppsInstanz;
 class ArtikelBase;
+class ArtikelStamm;
 class FetchIStream;
 
 class ppsInstanz : public HandleContent
@@ -93,7 +94,7 @@ public:
  bool ExterneBestellung() const {return externe_bestellung;}
  ID GeplantVon() const {return geplant_von;} 
  // nächste Instanz für einen Artikel (dort wird von hier bestellt)
- ID NaechsteInstanz(const ArtikelBase &art) const;
+ ID NaechsteInstanz(const ArtikelStamm &art) const;
 
  cH_Prozess get_Prozess() const;
 //private:
@@ -122,6 +123,8 @@ public:
 
  static cH_ppsInstanz getBestellInstanz(const ArtikelBase &artikel);
  static cH_ppsInstanz getProduktionsInstanz(const ArtikelBase &artikel);
+ static cH_ppsInstanz getBestellInstanz(const ArtikelStamm &artikel);
+ static cH_ppsInstanz getProduktionsInstanz(const ArtikelStamm &artikel);
 
  //////////////////////////////////////////////////////////////////////////
  // Für die Produktion

@@ -31,6 +31,7 @@
 #include <unistd.h>
 #include <Misc/inbetween.h>
 #include <Misc/compiler_ports.h>
+#include <Artikel/ArtikelStamm.h>
 
 void ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al, const bool analyse_only) const throw(SQLerror)
 {  unsigned uid=getuid();
@@ -388,7 +389,8 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
    }
    else // 0er, 1er, 3er
    {  ArtikelBaum ab(ae.Artikel());
-      ppsInstanz::ID next=ae.Instanz()->NaechsteInstanz(ae.Artikel());
+      ArtikelStamm as(ae.Artikel());
+      ppsInstanz::ID next=ae.Instanz()->NaechsteInstanz(as);
       ManuProC::Datum newdate=ae.getLieferdatum()-ae.Instanz()->ProduktionsDauer();
       
       for (AufEintragZu::map_t::iterator i=kinder.begin();i!=kinder.end();++i)
@@ -542,13 +544,16 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
       ae.kdnr=Kunde::eigene_id;
    }
    
+   ArtikelStamm as(ae.Artikel());
    if (ae.Instanz()!=ppsInstanzID::Kundenauftraege 
-   	&& !in(ae.Instanz(),ppsInstanz::getBestellInstanz(ae.Artikel()),
-   			ppsInstanz::getProduktionsInstanz(ae.Artikel()))
-   	&& !ppsInstanz::getBestellInstanz(ae.Artikel())->PlanungsInstanz())
+   	&& !in(ae.Instanz(),ppsInstanz::getBestellInstanz(as),
+   			ppsInstanz::getProduktionsInstanz(as))
+   	&& !ppsInstanz::getBestellInstanz(as)->PlanungsInstanz())
    {  alles_ok=false;
-      analyse("Artikel auf falscher Instanz",ae,cH_ArtikelBezeichnung(ae.Artikel())->Bezeichnung());
+      analyse("Artikel auf falscher Instanz",ae,cH_ArtikelBezeichnung(ae.Artikel())->Bezeichnung(),itos(ae.Artikel().Id()));
       // den lösche ich aber nicht automatisch!
+      std::cout << "$ delete from aufeintragbase where (instanz,auftragid,zeile)=("
+      	<< ae.Instanz()->Id() << ',' << ae.Id() << ',' << ae.ZNr() << ");\n";
    }
    
    if (ae.Id()==AuftragBase::plan_auftrag_id)
@@ -556,6 +561,8 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
       {  alles_ok=false;   
          analyse("Es darf keine 1er bei den Kundenaufträgen geben",ae);
          // Bitte von Hand reparieren!
+         std::cout << "$ delete from aufeintragbase where (instanz,auftragid,zeile)=("
+ 	     	<< ae.Instanz()->Id() << ',' << ae.Id() << ',' << ae.ZNr() << ");\n";
       }
       else if (!!ae.getRestStk() && !ae.Instanz()->LagerInstanz())
       {  alles_ok=false;

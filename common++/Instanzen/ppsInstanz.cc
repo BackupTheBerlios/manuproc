@@ -90,9 +90,13 @@ bool ppsInstanz::PlanungsInstanz() const
   return false;
 }
 
-cH_ppsInstanz ppsInstanz::getBestellInstanz(const ArtikelBase &artikel)
+cH_ppsInstanz ppsInstanz::getBestellInstanz(const ArtikelBase &artikel) 
+{  return getBestellInstanz(ArtikelStamm(artikel));
+}
+
+cH_ppsInstanz ppsInstanz::getBestellInstanz(const ArtikelStamm &artikel)
 {
-   cH_ppsInstanz I=ArtikelStamm(artikel).BestellenBei();
+   cH_ppsInstanz I=artikel.BestellenBei();
    if( I->ProduktionsInstanz())
     {  if(I->EinlagernIn()!=ppsInstanzID::None) return I->EinlagernIn();
        return I;
@@ -102,8 +106,12 @@ cH_ppsInstanz ppsInstanz::getBestellInstanz(const ArtikelBase &artikel)
 }
 
 cH_ppsInstanz ppsInstanz::getProduktionsInstanz(const ArtikelBase &artikel) 
+{  return getProduktionsInstanz(ArtikelStamm(artikel));
+}
+
+cH_ppsInstanz ppsInstanz::getProduktionsInstanz(const ArtikelStamm &artikel) 
 {
-   cH_ppsInstanz I=ArtikelStamm(artikel).BestellenBei();
+   cH_ppsInstanz I=artikel.BestellenBei();
    if(I->ProduktionsInstanz()) return I;
    return cH_ppsInstanz(I->LagerFuer());
 }
@@ -130,7 +138,7 @@ int ProdLager::Lieferzeit_in_Tagen()
 }
 */
 
-ppsInstanz::ID ppsInstanz::NaechsteInstanz(const ArtikelBase &art) const
+ppsInstanz::ID ppsInstanz::NaechsteInstanz(const ArtikelStamm &art) const
 {  ppsInstanz::ID next=ppsInstanzID::None;
    if (Id()==ppsInstanzID::Kundenauftraege) next=getBestellInstanz(art)->Id();
    else if (LagerInstanz()) next=getProduktionsInstanz(art)->Id();
