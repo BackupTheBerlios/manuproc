@@ -13,6 +13,12 @@ namespace ManuProC {
    };
   }
 
+  namespace ArtikelTyp_Attributes {
+   enum enum_t {
+LagerArtikel=0,MitEAN=1,
+   };
+  }
+
   namespace Einheiten {
    enum enum_t {
     None=-1, St_=0,m=1,kg=2,Fd_km=3,h=4,
