@@ -1,28 +1,64 @@
-<reason> = [ManuProC::Auftrag::] r_Anlegen
+<reason> = [ManuProC::Auftrag::] r_Anlegen 
+<Id> = [AuftragBase::] ungeplante_id plan_auftrag_id dispo_auftrag_id
+			handplan_auftrag_id (0 1 2 3+)
 
 ??? kann automatisch_anlegen weg?
+??? welchen Sinn hat reason noch?
+??? st_BestellmengeAendern soll weg
+??? existEntry -wahrscheinlich-> BestellmengeAendern
+... menge_neu_verplanen => Einlagern ?
 
 - Auf _Ein_ tragsmenge ändern:
-	AE.updateStkDiff__(getuid(),<deltamenge>,true,AufEintragBase(),<reason>);
+	AE.MengeAendern(getuid(),<deltamenge>,true,AufEintragBase(),<reason>);
 	// true wegen rekursiv
 	// wozu wird Eltern AEB benötigt? für Rekursion?
 
 - Neuen Auftrag anlegen:
 	A.push_back(...); ?
 
+- Menge einlagern:
+	AB::menge_neu_verplanen(<uid>,<instanz>,<artikel>,<menge>,
+			ManuProC::Auftrag::r_Produziert);
+		kümmert sich um 1er und 2er
+
 [intern:]
 - Dispo anlegen:
 	PlanenDispo(<uid>,<Artikel>,<menge>,<datum>);
 
-- Artikelmenge in bestimmtem Auftrag ändern
-	AB.tryUpdateEntry(<deltamenge>,<datum>,<artikel>,OPEN,<uid>,
-		<hinzuzeigender Eintrag>,
-		<st_tryUpdateEntry(<automatisch?>,false,true)>);
-		
-  tryUpdateEntry(<deltamenge>,<datum>,<artikel>,<status>,<uid>,
-		altAEB?, wahnsinnige_unbenutzte_parameter)
-	2er: keine Rekursion, Pfeil _zu_ altAEB wird erhöht
-	sonst: Rekursion, Pfeil _von_ altAEB wird erhöht
+- Artikelmenge in bestimmtem Auftrag ändern 
+		(ElternAEB darf invalid sein (Lager))
+	(ehemals tryUpdateEntry)
+	
+	AB.BestellmengeAendern(<deltamenge>,<datum>,<artikel>,<status>OPEN,
+		<uid>,<hinzuzeigender Eintrag, ElternAEB>,
+		<st_BestellmengeAendern(<automatisch?>,false,true)>);
+	2er: keine Rekursion, Pfeil _zu_ ElternAEB wird erhöht
+	sonst: Rekursion, Pfeil _von_ ElternAEB wird erhöht
+	! st_BestellmengeAendern soll weg
+	gibt passenden EintragBase zurück
 
-- interne Aufträge anlegen (wohl eher updateStkDiff__ aufrufen?)
-#	AEB.InstanzAuftraegeAnlegen(AE=?AEB, <menge>,<UID>[,<automatisch?>]);
+- interne Aufträge anlegen (besser updateStkDiff__ aufrufen?)
+	// ehemals InstanzAuftraegeAnlegen, BaumAnlegen,
+	// 		updateStkDiffInstanz__
+	AEB.ArtikelInternNachbestellen(<uid>,<menge>,<reason>);
+	
+	AE.updateStkDiffInstanz__(<uid>,Menge,AufEintragBase(),<reason>);
+		wird von setStatus(->CLOSED/STORNO) aufgerufen -M
+		sollte von setStatus(->OPEN) aufgerufen werden +M
+		wird von updateStkDiff__ aufgerufen (wenn sinnvoll)
+
+		sorgt für das interne Bestellen eines Artikels
+		sollte Verschiedenes tun je nach sign(M)
+		
+		=> ArtikelInternNachbestellen
+		=> ArtikelInternAbbestellen
+
+- 2er und 1er(Lager) berücksichtigen
+	AIL.reduce_in_dispo(<uid>,<menge>)
+	AIL.reduce_in_plan(<uid>,<menge>)
+
+- menge_neu_verplanen(<uid>,<instanz>,<artikel>,<menge>,<reason>)
+	Ins Lager gekommene Menge neu vormerken ?
+	-- Alter Code !!!
+	=> jetzt in VerfuegbareMenge
+

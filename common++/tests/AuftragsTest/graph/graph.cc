@@ -1,4 +1,4 @@
-// $Id: graph.cc,v 1.21 2003/01/08 14:25:25 christof Exp $
+// $Id: graph.cc,v 1.22 2003/01/15 15:10:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -33,6 +33,7 @@ const static struct option options[]=
  { "colour",  no_argument, NULL, 'c' },
  { "referenz", no_argument, 0, 'r' },
  { "limit", required_argument, 0, 'l' },
+ { "start", required_argument, 0, 's' },
  { NULL,      0,       NULL, 0 }
 };       
         
@@ -40,30 +41,11 @@ const static struct option options[]=
 void usage(std::string s)
 {
   std::cout << "USAGE: " << s <<" [-bgr] <Dateisammlung z.B. M,P oder S, X=Legende>\n";
-#if 0
-       << "\t\t[P]lanung \n"
-       << "\t\t[S]plit \n"
-       << "\t\t[L]ager \n"
-       << "\t\t[Z]wei Aufträge \n"
-       << "\t\t[D]atum des zweiten Auftrags früher \n"
-       << "\t\t[Ls] Lieferschein \n"
-       << "\t\t[Lm] Lieferschein Mengenänderung\n"
-       << "\t\t[LZ] Lieferschein mit Zustazeinträgen\n"
-       << "\t\t[LA] Lieferschein mit Zwei Aufträgen\n"
-       << "\t\t[LJ] Lieferschein für Jacek\n"
-       << "\t\t[ZK] Zwei Kunden Zwei Aufträgen\n"
-       << "\t\t[ZKM] Zwei Kunden Zwei Aufträgen, Menge freigeben\n"
-       << "\t\t[MP] ManuProC\n"
-       << "\t\t[Rg] Rep_Petig_0er_2er_gleichzeitig\n"
-       << "\t\t[RK] Rep_Petig_Kunde\n"
-       << "\t\t[RZ] Rep_Petig_Zuordung\n"
-       << "\t\t[RKZ] Rep_Petig_Kunden_Zuordung\n"
-       << "\t\t[X]  LEGENDE \n";
-#endif       
   std::cout << "\t -b --black [default]\n"
        << "\t -c --colour\n"
        << "\t -r --referenz\tReferenz anzeigen\n"
-       << "\t -l --limit <number>\tHöchstanzahl von angezeigten Schritten\n"
+       << "\t -s --start <number>\tErster angezeigter Schritt\n"
+       << "\t -l --limit <number>\tLetzter angezeigter Schritt\n"
        << "\n";
 }
 
@@ -74,12 +56,13 @@ int main(int argc, char *argv[])
 
   dot_out::e_colour colour=dot_out::Black;
   int opt;
-  while ((opt=getopt_long(argc,argv,"bcrl:",options,NULL))!=EOF)
+  while ((opt=getopt_long(argc,argv,"s:bcrl:",options,NULL))!=EOF)
    { switch (opt) {
       case 'b' : colour=dot_out::Black; break;
       case 'c' : colour=dot_out::Colour; break;
       case 'r' : graph_data_node::show_referenz=true; break;
       case 'l': graph_data_node::limit=atol(optarg); break;
+      case 's': graph_data_node::start=atol(optarg); break;
      }
    }  
 

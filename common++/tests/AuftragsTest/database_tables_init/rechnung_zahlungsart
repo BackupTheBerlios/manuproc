@@ -1,40 +1,45 @@
 --
--- Selected TOC Entries:
---
---
--- TOC Entry ID 2 (OID 26006288)
---
--- Name: rechnung_zahlungsart Type: TABLE Owner: christof
+-- PostgreSQL database dump
 --
 
-drop table rechnung_zahlungsart;
-drop INDEX rechnung_zahlungsziel_pkey;
+SET search_path = public, pg_catalog;
 
-CREATE TABLE "rechnung_zahlungsart" (
-	"id" integer NOT NULL,
-	"kurzbezeichnung" text NOT NULL,
-	"bezeichnung" text,
-	"einzugrabatt" numeric(3,1),
-	"bankeinzug" boolean,
-	"zahlungsfrist" integer,
-	"skontosatz_1" numeric(3,1),
-	"skontofrist_1" integer,
-	"skontosatz_2" numeric(3,1),
-	"skontofrist_2" integer,
-	"skontosatz_3" numeric(3,1),
-	"skontofrist_3" integer,
-   "monatsende" bool,
-   verfahren text,
-	Constraint "rechnung_zahlungsziel_pkey" Primary Key ("id")
+--
+-- TOC entry 2 (OID 6295512)
+--
+
+CREATE TABLE rechnung_zahlungsart (
+    id integer NOT NULL,
+    kurzbezeichnung text NOT NULL,
+    bezeichnung text,
+    einzugrabatt numeric(3,1),
+    bankeinzug boolean,
+    zahlungsfrist integer,
+    skontosatz_1 numeric(3,1),
+    skontofrist_1 integer,
+    skontosatz_2 numeric(3,1),
+    skontofrist_2 integer,
+    skontosatz_3 numeric(3,1),
+    skontofrist_3 integer,
+    monatsende boolean,
+    verfahren text
 );
 
+
 --
--- Data for TOC Entry ID 3 (OID 26006288)
---
--- Name: rechnung_zahlungsart Type: TABLE DATA Owner: christof
+-- Data for TOC entry 4 (OID 6295512)
 --
 
-
-COPY "rechnung_zahlungsart" FROM stdin;
-0	sofort, ohne Abzug	sofort ohne Abzüge	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+COPY rechnung_zahlungsart (id, kurzbezeichnung, bezeichnung, einzugrabatt, bankeinzug, zahlungsfrist, skontosatz_1, skontofrist_1, skontosatz_2, skontofrist_2, skontosatz_3, skontofrist_3, monatsende, verfahren) FROM stdin;
+0	sofort, ohne Abzug	sofort ohne Abzüge	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
 \.
+
+
+--
+-- TOC entry 3 (OID 6295517)
+--
+
+ALTER TABLE ONLY rechnung_zahlungsart
+    ADD CONSTRAINT rechnung_zahlungsziel_pkey PRIMARY KEY (id);
+
+

@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.22 2003/01/08 09:46:57 christof Exp $
+// $Id: Lager.cc,v 1.23 2003/01/15 15:10:16 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -43,20 +43,7 @@ void LagerBase::rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::men
      "Lager=",*this,"Artikel=",artikel,"Menge=",menge);
   assert(menge>=0);
 
-     Transaction tr;
-     AuftragBase::dispo_auftrag_aendern(uid,*this,artikel,menge,LagerBase::Lagerdatum(),AufEintragBase());
-     AuftragBase::menge_neu_verplanen(uid,*this,artikel,menge,ManuProC::Auftrag::r_Produziert);     
-
-     ManuProC::st_produziert sp(artikel,menge,uid);
-     
-     if(ppsInstanz::getProduktionsInstanz(artikel)->PlanungsInstanz())
-        (*this)->Produziert(sp,ManuProC::Auftrag::r_Produziert);
-     else if(!ppsInstanz::getProduktionsInstanz(artikel)->ProduziertSelbst())
-           ppsInstanz::getProduktionsInstanz(artikel)->Produziert(sp);
-
-
-     tr.commit();
-
+  AuftragBase::menge_neu_verplanen(uid,*this,artikel,menge);
 }
 
 void LagerBase::raus_aus_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const 
@@ -69,43 +56,8 @@ void LagerBase::raus_aus_lager(const ArtikelBase &artikel,const AuftragBase::men
 
      ManuProC::st_produziert sp(artikel,menge,uid);
      (*this)->Lager_abschreiben(sp);
-
 }
 
-
-/*
-void LagerBase::menge_neu_verplanen(int uid,
-              const ArtikelBase& artikel,AuftragBase::mengen_t menge,
-              const ManuProC::Auftrag::Action reason) throw(SQLerror)
-{
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Instanz=",*this,
-   "Artikel=",artikel,"Menge=",menge,
-     "Reason=",reason);
-
-  assert(menge>=0);
-  if(menge==AuftragBase::mengen_t(0)) return;
-
-  SQLFullAuftragSelector sel(SQLFullAuftragSelector::
-      sel_Artikel_Planung_id((*this)->Id(),
-      Kunde::eigene_id,artikel,AuftragBase::ungeplante_id));
-  SelectedFullAufList auftraglist=SelectedFullAufList(sel);
-  
-  for (SelectedFullAufList::iterator i=auftraglist.begin();i!=auftraglist.end();++i)
-   {
-     if(i->getRestStk()==AuftragBase::mengen_t(0)) continue;
-     AuftragBase::mengen_t M=i->getRestStk();
-     if(M>=menge) M=menge;
-
-     ArtikelImLager AIL(*this,i->Artikel(),i->getLieferdatum());
-     i->artikel_vormerken_oder_schnappen(false,M,i->Artikel(),uid,reason,AIL.getDispoAuftraege());
-     if(reason==ManuProC::Auftrag::r_Anlegen || reason==ManuProC::Auftrag::r_Planen||
-        reason==ManuProC::Auftrag::r_Closed)    
-            i->updateStkDiffInstanz__(uid,-M,reason);
-     menge-=M;
-     if(menge==AuftragBase::mengen_t(0)) return;
-   }
-}
-*/
 
 std::vector<class LagerInhalt> LagerBase::LagerInhalt()  const
 {

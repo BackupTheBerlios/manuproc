@@ -1,4 +1,4 @@
-/* $Id: ArtikelImLager.cc,v 1.6 2003/01/08 08:41:00 christof Exp $ */
+/* $Id: VerfuegbareMenge.cc,v 1.2 2003/01/15 15:10:16 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -17,18 +17,22 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "ArtikelImLager.h"
+#include "VerfuegbareMenge.h"
 #include <Misc/Trace.h>
 #include <Auftrag/selFullAufEntry.h>
 #include <Misc/relops.h>
 
-ArtikelImLager::ArtikelImLager(const cH_ppsInstanz &instanz,const ArtikelBase &artikel,
-   const Petig::Datum &datum) throw(SQLerror)
-: menge_dispo_auftraege(0),menge_plan_auftraege(0)
+VerfuegbareMenge::VerfuegbareMenge(const cH_ppsInstanz &_instanz,const ArtikelBase &artikel,
+   const Petig::Datum &_datum) throw(SQLerror)
+: ArtikelBase(artikel), menge_dispo_auftraege(0),menge_plan_auftraege(0),
+	datum(_datum), instanz(_instanz)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
      "Instanz=",instanz,"Artikel=",artikel);
 
+#warning SQL Anfrage optimierbar CP
+// wahrscheinlich wäre ein selector 2er (und im Lager 1er) bez. Datum
+// sinnvoll !!!
   SelectedFullAufList auftraglist=SelectedFullAufList(SQLFullAuftragSelector::
      sel_Kunde_Artikel(instanz->Id(),Kunde::eigene_id,artikel));
   for (SelectedFullAufList::const_iterator i=auftraglist.begin();i!=auftraglist.end();++i)
@@ -39,21 +43,17 @@ ArtikelImLager::ArtikelImLager(const cH_ppsInstanz &instanz,const ArtikelBase &a
      else if(i->Id()==AuftragBase::dispo_auftrag_id)
       {
         assert(i->getRestStk()==i->getStueck());
-//cout << *i<<'\t'<<i->getLieferdatum() <<' '<< datum<<'\n';
+        ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,i->getLieferdatum());
         if(i->getLieferdatum() > datum) continue;
-//cout << "\tdispo OK\n";
-std::cout << "LD A: "<<i->Artikel()<<'\t'<<i->getRestStk()<<' '<<*i<<'\n';
+	ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,i->getRestStk(),*i);
         menge_dispo_auftraege+=i->getRestStk();
         V_dispo_auftraege.push_back(*i);
       }
      else // AuftragBase::handplan_auftrag_id || plan_auftrag_id
       {
-//cout<<"ART:"<<i->Artikel().Id() << i->Artikel()<<'\n';
-//if(i->Artikel().Id()!=209813 &&
-//   i->Artikel().Id()!=211007) continue;
         if(i->getLieferdatum() <= datum) continue; 
         if(!i->Instanz()->LagerInstanz()) continue;
-std::cout << "LD B: "<<i->Artikel()<<'\t'<<i->getRestStk()<<' '<<*i<<'\n';
+	ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,i->getRestStk(),*i);
         menge_plan_auftraege+=i->getRestStk();
         V_plan_auftraege.push_back(*i);
       }
@@ -63,22 +63,35 @@ std::cout << "LD B: "<<i->Artikel()<<'\t'<<i->getRestStk()<<' '<<*i<<'\n';
 }
 
 #include <Auftrag/AufEintragZuMengenAenderung.h>
-void ArtikelImLager::reduce_in_dispo_or_plan(const bool dispo,const int uid,AuftragBase::mengen_t menge) const
+
+AuftragBase::mengen_t VerfuegbareMenge::reduce_in_dispo_or_plan(const bool dispo,const int uid,AuftragBase::mengen_t menge,const AufEintragBase &ElternAEB) const
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
-     "Menge=",menge);
-  std::vector<AufEintrag> V=V_dispo_auftraege;
-  if(!dispo) V=V_plan_auftraege;
+     instanz,ArtikelBase(*this),dispo?"dispo":"plan","Menge=",menge,"ElternAEB=",ElternAEB);
+  const std::vector<AufEintrag> &V=dispo?V_dispo_auftraege:V_plan_auftraege;
+
+  AuftragBase::mengen_t wieviel_geschafft=0;
   std::vector<AufEintrag>::const_reverse_iterator e=V.rend();
   for(std::vector<AufEintrag>::const_reverse_iterator i=V.rbegin();i!=e;++i)
    {
      AuftragBase::mengen_t M=AuftragBase::min(i->getRestStk(),menge);
-//cout << "reduce_in_dispo_or_plan  "<<*i<<'\t'<<dispo<<'\t'<<M<<'\n';
+     ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,*i,M);
      i->updateStkDiffBase__(uid,-M);
-     if(!dispo)  AufEintragZuMengenAenderung::increase_parents__reduce_assingments(uid,*i,M);
-     if(!i->Instanz()->LagerInstanz()) AufEintragZuMengenAenderung::reduce_zuordung_to_20000er_from_2er(uid,*i,M);
+     
+     if(!dispo)  
+        AufEintragZuMengenAenderung::increase_parents__reduce_assingments(uid,*i,M);
+     if(!instanz->LagerInstanz())
+     {  AufEintragZuMengenAenderung::freie_dispomenge_verwenden(uid,*i,M,ElternAEB);
+     }
+     wieviel_geschafft+=M;
      menge-=M;
      if(menge==0) break;
    }
+   if (wieviel_geschafft!=0 && instanz->LagerInstanz())
+   {  AuftragBase vormerkungen(instanz,AuftragBase::plan_auftrag_id);
+      vormerkungen.BestellmengeAendern(wieviel_geschafft,datum,ArtikelBase(*this),OPEN,uid,
+			ElternAEB,AuftragBase::st_BestellmengeAendern());
+   }
+   return wieviel_geschafft;
 }
 

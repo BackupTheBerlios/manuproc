@@ -13,7 +13,6 @@ libcommon___a_LIBADD= \
 		Artikel/ArtikelBezeichnung.o \
       Artikel/ArtikelDispo_sql.o \
 		Artikel/ArtikelEAN_sql.o \
-      Artikel/ArtikelImLager.o \
 		Artikel/ArtikelMengeSumme.o \
 		Artikel/Artikelpreis_sql.o \
 		Artikel/ArtikelStamm.o \
@@ -25,6 +24,7 @@ libcommon___a_LIBADD= \
 		Artikel/Preis.o \
 		Artikel/Prozesspreis.o \
 		Artikel/Prozess_sql.o \
+      Auftrag/VerfuegbareMenge.o \
 		Auftrag/AufEintragBase.o \
 		Auftrag/AufEintragBase_sql.o \
 		Auftrag/AufEintrag.o \
@@ -112,9 +112,8 @@ libcommon___a_LIBADD= \
 		Misc/auto_conversion.o \
 		Misc/Changejournal_sql.o \
 		Misc/Datum.o \
-		Misc/dbconnect.o \
 		Misc/dbcapability.o \
-		Misc/multi_lang.o \
+		Misc/dbconnect.o \
 		Misc/EAN.o \
 		Misc/EAN_sql.o \
 		Misc/EntryValueBase.o \
@@ -129,6 +128,7 @@ libcommon___a_LIBADD= \
 		Misc/Handles.o \
 		Misc/IOerror.o \
 		Misc/itos.o \
+		Misc/multi_lang.o \
 		Misc/mystring.o \
 		Misc/postgres_conversion.o \
 		Misc/SQLerror_postgres.o \
@@ -140,11 +140,11 @@ libcommon___a_LIBADD= \
 		Misc/Zeitpunkt_new_ostr.o \
 		Misc/Zeitpunkt_new_write.o \
 		ostream/time_t_ostr.o \
-	Vertrieb/ProvAbrechnung_sql.o \
+	Vertrieb/ProvAbrechnungEntry_sql.o \
 	Vertrieb/ProvAbrechnung.o \
-	Vertrieb/ProvAbrechnungEntry_sql.o
+	Vertrieb/ProvAbrechnung_sql.o 
 
 BUILT_SOURCES=Misc
 
-Misc: Misc
+Misc:
 	ln -sf Aux Misc

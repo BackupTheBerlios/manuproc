@@ -1,4 +1,4 @@
-// $Id: FetchIStream_ops.h,v 1.1 2002/11/22 15:53:52 christof Exp $
+// $Id: FetchIStream_ops.h,v 1.2 2003/01/15 15:10:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,5 +24,10 @@
 
 namespace ManuProC { class Datum; }
 FetchIStream &operator>>(FetchIStream &is, ManuProC::Datum &v);
+Query &operator<<(Query &, const ManuProC::Datum &v);
+
+class Zeitpunkt_new;
+FetchIStream &operator>>(FetchIStream &is, Zeitpunkt_new &v);
+Query &operator<<(Query &, const Zeitpunkt_new &v);
 
 #endif

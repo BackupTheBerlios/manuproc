@@ -1,4 +1,4 @@
-// $Id: ppsInstanzProduziert.h,v 1.10 2002/12/17 22:40:14 jacek Exp $
+// $Id: ppsInstanzProduziert.h,v 1.11 2003/01/15 15:10:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -60,7 +60,7 @@ namespace ManuProC{
       AuftragBase::mengen_t abschreiben_oder_reduzieren(ppsInstanz::ID instanz,int id,AuftragBase::mengen_t abmenge,bool planen_und_abschreiben_von_ungeplaneten);
       void Reduce_Zuordnung_Add_Parent(const AufEintragBase &aeb,AuftragBase::mengen_t menge);
       void Reduce_Zuordnung_And_2er_Parent(const AufEintrag &ae,AuftragBase::mengen_t menge);
-      void Reduce_DispoEltern(const AufEintragBase &aeb,AuftragBase::mengen_t menge);
+      void Reduce_DispoEltern(const AufEintrag &aeb,AuftragBase::mengen_t menge);
       void check_dispo_auftraege(ppsInstanz::ID instanz);
       AuftragBase::mengen_t get_Menge_for(ppsInstanz::ID instanz,int id_);
       void fehler(ppsInstanz::ID instanz,Probleme typ,int id,AuftragBase::mengen_t m1,

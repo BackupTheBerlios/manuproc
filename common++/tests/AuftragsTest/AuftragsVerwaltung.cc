@@ -1,4 +1,4 @@
-// $Id: AuftragsVerwaltung.cc,v 1.12 2003/01/08 09:46:58 christof Exp $
+// $Id: AuftragsVerwaltung.cc,v 1.13 2003/01/15 15:10:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -44,7 +44,7 @@ void AuftragsVerwaltung::kunden_bestellmenge_aendern(AufEintragBase aeb,AuftragB
 {
    AufEintrag AE(aeb);
    AuftragBase::mengen_t diffmenge=menge-AE.getStueck();
-   AufEintrag(aeb).updateStkDiff__(UID,diffmenge,true,AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
+   AufEintrag(aeb).MengeAendern(UID,diffmenge,true,AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
 }
 
 AufEintragBase AuftragsVerwaltung::anlegen2()

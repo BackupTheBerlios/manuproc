@@ -1,4 +1,4 @@
-// $Id: selAufEntry_sql.pgcc,v 1.22 2003/01/08 09:03:41 christof Exp $
+// $Id: selAufEntry_sql.pgcc,v 1.23 2003/01/15 15:10:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -98,7 +98,7 @@ SelectedFullAufList::SelectedFullAufList
 
 
 void SelectedFullAufList::insert(const AufEintragBase& aeb) throw(SQLerror)
-{	Query q=Query(SQLFullAuftragSelector(
-                SQLFullAuftragSelector::sel_AufidZnr(aeb)).getClausel());
+{	SQLFullAuftragSelector sel((SQLFullAuftragSelector::sel_AufidZnr(aeb)));
+        Query q(sel.getClausel()); 
         q.FetchArray(aufidliste);
 }

@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.25 2003/01/08 17:40:43 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.26 2003/01/15 15:10:16 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -44,7 +44,7 @@ class cH_Lieferschein;
 
 
 class Lager;
-class ArtikelImLager;
+class VerfuegbareMenge;
 
 class AufEintrag : public AufEintragBase
 {
@@ -116,10 +116,16 @@ public:
 
 	
  void updateDispoENr(int dinr) throw(SQLerror);
- mengen_t updateStkDiff__(int uid,mengen_t menge,bool instanzen,const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_None) throw(SQLerror);
+ mengen_t MengeAendern(int uid,mengen_t menge,bool instanzen,const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_None) throw(SQLerror);
 private:
-//? void move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,ManuProC::Auftrag::Action reason) throw(std::exception);
+  // nimmt alle Zuordnungen mit (oben & unten)
+  void move_to(int uid,AufEintrag ziel,AuftragBase::mengen_t menge,ManuProC::Auftrag::Action reason) throw(std::exception);
  void updateStkDiffInstanz__(int uid,mengen_t menge,const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason) throw(SQLerror);
+ static AufEintragBase ArtikelInternNachbestellen(const cH_ppsInstanz &wo,
+ 	mengen_t menge,const ManuProC::Datum &lieferdatum,const ArtikelBase& artikel,
+ 	int uid,const AufEintragBase& ElternAEB);
+ void ArtikelInternAbbestellen(int uid,mengen_t menge,
+ 	const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason) const;
  void move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,const ArtikelBase artikel,int uid,ManuProC::Auftrag::Action reason);
 
 public:
@@ -168,6 +174,9 @@ private:
     ManuProcEntity<>::ID lfrsid) throw(SQLerror);
 
 public:
+ // wird z.B. von push_back verwendet
+ void ArtikelInternNachbestellen(int uid,mengen_t menge,
+ 	ManuProC::Auftrag::Action reason) const;
  void Produziert(mengen_t menge,ManuProcEntity<>::ID lfrsid) throw(SQLerror);
 
  bool allesOK() const;

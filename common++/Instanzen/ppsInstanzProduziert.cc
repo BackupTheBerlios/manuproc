@@ -1,4 +1,4 @@
-// $Id: ppsInstanzProduziert.cc,v 1.17 2003/01/08 09:46:57 christof Exp $
+// $Id: ppsInstanzProduziert.cc,v 1.18 2003/01/15 15:10:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -47,7 +47,7 @@ void ppsInstanz::Planen(ManuProC::st_produziert &P) const throw(SQLerror)
        {
          // 0er erzeugen
          AuftragBase AB(this,AuftragBase::ungeplante_id);
-         AB.tryUpdateEntry(0,P.lieferdatum,P.artikel,OPEN,P.uid,AufEintragBase());
+         AB.BestellmengeAendern(0,P.lieferdatum,P.artikel,OPEN,P.uid,AufEintragBase());
          P.abschreiben_oder_reduzieren(Id(),
                   AuftragBase::ungeplante_id,P.menge,false);
        }
@@ -268,33 +268,31 @@ AuftragBase::mengen_t ManuProC::st_produziert::abschreiben_oder_reduzieren(ppsIn
 }
 
 
-
-void ManuProC::st_produziert::Reduce_DispoEltern(const AufEintragBase &aeb,AuftragBase::mengen_t menge)
+// Name unsinnig, menge: unnötiges Argument
+void ManuProC::st_produziert::Reduce_DispoEltern(const AufEintrag &aeb,AuftragBase::mengen_t menge)
 {
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AEB=",aeb,"Menge=",menge);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AEB=",aeb);
   std::list<AufEintragZu::st_reflist> L=AufEintragZu(aeb).get_Referenz_list(aeb,false);
+
+  AuftragBase::mengen_t S=0;
   for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
    {
-     if (i->AEB.Id()==AuftragBase::ungeplante_id)
-      {  
-         AuftragBase::mengen_t M=AuftragBase::min(i->Menge,menge);
-         menge-=i->Menge;
-         if(M>0) AufEintragZu(i->AEB).setMengeDiff__(aeb,-M);
-      }
+     if(i->AEB.Id()==AuftragBase::dispo_auftrag_id) S+=i->Menge;
    }
-  for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
-   {
-     if(i->AEB.Id()==AuftragBase::dispo_auftrag_id)
+  if (aeb.getRestStk()<S)
+  {   for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
       {
-        AufEintrag AE(i->AEB);
-        assert(i->Menge==AE.getStueck());
-        AuftragBase::mengen_t M=AuftragBase::min(i->Menge,menge);
-//cout << "Reduce_DispoEltern: "<<i->Menge<<' '<<menge<<'='<<M<<'\n';
-        AufEintrag(i->AEB).updateStkDiffBase__(uid,-M);
-        AufEintragZu(i->AEB).setMengeDiff__(aeb,-M);
-        menge-=M;
-      } 
-   }  
+        if(i->AEB.Id()==AuftragBase::dispo_auftrag_id)
+         {
+           AufEintrag AE(i->AEB);
+//           assert(i->Menge==AE.getStueck());
+           AuftragBase::mengen_t M=AuftragBase::min(i->Menge,S-aeb.getRestStk());
+           AufEintrag(i->AEB).updateStkDiffBase__(uid,-M);
+           AufEintragZu(i->AEB).setMengeDiff__(aeb,-M);
+           S-=M;
+         } 
+      }  
+  }
 }
 
 

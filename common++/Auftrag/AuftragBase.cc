@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.21 2003/01/08 09:03:41 christof Exp $
+// $Id: AuftragBase.cc,v 1.22 2003/01/15 15:10:16 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,7 +25,7 @@
 #include <Auftrag/auftrag_status.h>
 #include "AufEintrag.h"
 #include <Artikel/ArtikelStamm.h>
-#include <Artikel/ArtikelImLager.h>
+#include <Auftrag/VerfuegbareMenge.h>
 #include <Auftrag/AufEintragZu.h>
 #include <Misc/Trace.h>
 #include <Lager/Lager.h>
@@ -49,54 +49,34 @@ FetchIStream& operator>>(FetchIStream& is,AuftragBase::mengen_t &menge)
 }
 */
 
-
+#if 0
+// könnte vielleicht ersetzt werden ???
+// ist jetzt ArtikelInternNachbestellen
 void AuftragBase::BaumAnlegen(const AufEintrag& AE,int uid,bool setInstanzAuftraege) const
 {
-   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
+   ManuProC::Trace _t(AuftragBase::trace_channel, std::string("OLD.")+__FUNCTION__,*this,
       "Artikel=",AE.Artikel(),
       "Status=",AE.getEntryStatus(),"LieferDatum=",AE.getLieferdatum(),
       "Menge=",AE.getStueck(),"setInstanzAuftrag=",setInstanzAuftraege);
-  if(Instanz()==ppsInstanzID::Kundenauftraege)
-   {
-      cH_ppsInstanz i=ppsInstanz::getBestellInstanz(AE.Artikel());
-      if (i!=ppsInstanzID::None && i!=ppsInstanzID::Kundenauftraege)
-        {
-           AuftragBase AB(ppsInstanz::getBestellInstanz(AE.Artikel()),AuftragBase::ungeplante_id);
-           AB.tryUpdateEntry(AE.getStueck(),AE.getLieferdatum(),AE.Artikel(),AE.getEntryStatus(),uid,AE);
-        }
-   }
-  else if(setInstanzAuftraege)
-     InstanzAuftraegeAnlegen(AE,AE.getStueck(),uid);
+   assert(Instanz()==ppsInstanzID::Kundenauftraege ? setInstanzAuftraege : true);
+  if(setInstanzAuftraege)
+     AE.ArtikelInternNachbestellen(uid,AE.getRestStk(),AE,ManuProC::Auftrag::r_Anlegen);
 }
+#endif
 
-
+#if 0
 /* 'AE.getStueck()' ist die GESAMTMenge 
    'menge' ist die AKTUELLE geänderte Menge
 */
+// Code ist jetzt in ArtikelInternNachbestellen
 void AuftragBase::InstanzAuftraegeAnlegen(const AufEintrag& AE,mengen_t menge,int uid,bool automatisch_geplant) const
-{
-   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
+{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
       "Artikel=",AE.Artikel(),
       "Status=",AE.getEntryStatus(),"LieferDatum=",AE.getLieferdatum(),
       "Menge=",menge);
-   ArtikelBaum AB(AE.Artikel());
-   for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
-    {
-      AuftragBase neuAuftrag(ppsInstanz::getBestellInstanz(i->rohartikel),ungeplante_id);
-      // Instanzen, die selber Produzieren dürfen bei einer automatischen
-      // Auftragsplanung (AuftragID=plan_auftrag_id=1)
-      // NICHT erhöht werden.
-/*Alter Code
-      if(neuAuftrag.Instanz()->ProduziertSelbst() && automatisch_geplant)
-         continue;
-*/
-      Petig::Datum newdate=AE.getLieferdatum()-Instanz()->ProduktionsDauer();
-
-      st_tryUpdateEntry st(automatisch_geplant);
-      neuAuftrag.tryUpdateEntry(i->menge*menge,newdate,
-                 i->rohartikel,AE.getEntryStatus(),uid,AE,st);
-    }
+   AE.ArtikelInternNachbestellen(uid,menge,ManuProC::Auftrag::r_Anlegen);
 }
+#endif
 
 const std::string AuftragBase::getStatusStr(AufStatVal a)
 {
@@ -133,40 +113,36 @@ bool AuftragBase::editierbar() const
   return true;
 }
 
+// könnte eigentlich ersetzt werden IMHO
+// wird aufgerufen von rein_ins_lager (+), ArtikelInternAbbestellen (-),
+// 
 void AuftragBase::dispo_auftrag_aendern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,const mengen_t &menge,
          const ManuProC::Datum &datum,const AufEintragBase &kindAEB)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
      "Artikel=",artikel,"Menge=",menge);
-   AuftragBase da(instanz,AuftragBase::dispo_auftrag_id);
-   int znr=-1,newznr=-1;
-   AuftragBase::mengen_t oldmenge;
-   bool alt=da.existEntry(artikel,datum,znr,newznr,oldmenge,OPEN);
-   if(alt)
-     {
-      AuftragBase::mengen_t mt=AufEintragBase(da,znr).updateStkDiffBase__(uid,menge);
-      assert(mt==menge);
-     }
-   else
-     {
-      Auftrag A(da);
-      znr=A.push_back(menge,datum,artikel,OPEN,uid,false).ZNr();
-     }
-   if(kindAEB.valid())
-      AufEintragZu(class AufEintragBase(da,znr)).setMengeDiff__(kindAEB,menge);
+   AuftragBase(instanz,AuftragBase::dispo_auftrag_id)
+   	.BestellmengeAendern(menge,datum,artikel,OPEN,uid,kindAEB);
 }
 
-
+// Ins Lager gekommene Menge neu vormerken
+   // wird aufgerufen wenn Menge ins Lager kommt (LagerBase::rein_ins_lager)
+   // und gibt reservierte Menge zurück
+   // sollte Aufträge als produziert markieren
 void AuftragBase::menge_neu_verplanen(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
          const mengen_t &menge,const ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Instanz=",instanz,
-   "Artikel=",artikel,"Menge=",menge,
-     "Reason=",reason);
+   "Artikel=",artikel,"Menge=",menge,"Reason=",reason);
 
+//  assert(reason==ManuProC::Auftrag::r_Anlegen || reason==ManuProC::Auftrag::r_Planen||
+//        reason==ManuProC::Auftrag::r_Closed || 
+  assert(reason==ManuProC::Auftrag::r_Produziert);
   assert(instanz->LagerInstanz());
   assert(menge>=0);
   if(menge==0) return;
+  
+  Transaction tr;
 
   SQLFullAuftragSelector sel(SQLFullAuftragSelector::
       sel_Artikel_Planung_id(instanz->Id(),
@@ -177,14 +153,28 @@ void AuftragBase::menge_neu_verplanen(const int uid,cH_ppsInstanz instanz,const 
   for (SelectedFullAufList::iterator i=auftraglist.begin();i!=auftraglist.end();++i)
    {
      AuftragBase::mengen_t M=AuftragBase::min(i->getRestStk(),m);
-     ArtikelImLager AIL(instanz,i->Artikel(),i->getLieferdatum());
-//Alter Code     i->artikel_vormerken_oder_schnappen(false,M,i->Artikel(),uid,reason,AIL.getDispoAuftraege());
-     if(reason==ManuProC::Auftrag::r_Anlegen || reason==ManuProC::Auftrag::r_Planen||
-        reason==ManuProC::Auftrag::r_Closed)
-            i->updateStkDiffInstanz__(uid,-M,AufEintragBase(),reason);
+#warning this seems fishy CP     
+     // 0er abbestellen, aber wo wird der 1er erhöht?
+     // 0er nicht abbestellen sondern als Produziert markieren!!!
+     // i->updateStkDiffInstanz__(uid,-M,AufEintragBase(),reason);
+     // produziert markieren
+//#error hier gehts weiter     
      m-=M;
-     if(menge==AuftragBase::mengen_t(0)) return;
+     if(!m) break;
    }
+   
+   if (m!=0)
+   {  AuftragBase::dispo_auftrag_aendern(uid,instanz,artikel,m,LagerBase::Lagerdatum(),AufEintragBase());
+   }
+#if 0 // na ... wozu soll das CP
+     ManuProC::st_produziert sp(artikel,menge,uid);
+     
+     if(ppsInstanz::getProduktionsInstanz(artikel)->PlanungsInstanz())
+        (*this)->Produziert(sp,ManuProC::Auftrag::r_Produziert);
+     else if(!ppsInstanz::getProduktionsInstanz(artikel)->ProduziertSelbst())
+           ppsInstanz::getProduktionsInstanz(artikel)->Produziert(sp);
+#endif
+   tr.commit();
 }
 
 #if __GNUC__ > 2  // fragt nicht ...

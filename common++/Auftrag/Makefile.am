@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.15 2002/11/22 15:31:05 christof Exp $
+# $Id: Makefile.am,v 1.16 2003/01/15 15:10:16 christof Exp $
 
 ENDUSER=-DPETIG
 
@@ -13,7 +13,7 @@ includedir=@includedir@/Auftrag
 # this gives us free compilation
 libAuftrag_a_SOURCES=AufEintrag.cc AufEintragBase.cc AuftragBase.cc \
 	sqlAuftragSelector.cc Auftrag.cc $(BUILT_SOURCES_P) AuftragsBaum.cc \
-   AufEintragZuMengenAenderung.cc AufEintragZu.cc
+   AufEintragZuMengenAenderung.cc AufEintragZu.cc VerfuegbareMenge.cc
 
 libAuftrag.a: $(libAuftrag_a_OBJECTS) $(libAuftrag_a_DEPENDENCIES)
 	touch $@

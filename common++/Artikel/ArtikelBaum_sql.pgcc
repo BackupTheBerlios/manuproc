@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum_sql.pgcc,v 1.15 2003/01/08 09:46:56 christof Exp $
+// $Id: ArtikelBaum_sql.pgcc,v 1.16 2003/01/15 15:10:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -205,7 +205,7 @@ void ArtikelBaum::create_in_zuordnung(int uid,ArtikelBase alt_artikel,ArtikelBas
      AufEintragBase::mengen_t menge=AE.getStueck()*RohMenge;
 //     AuftragBase AB(ArtikelStamm(kind_artikel).BestellenBei(),0); 
      AuftragBase AB(ppsInstanz::getBestellInstanz(kind_artikel),0); 
-     AB.tryUpdateEntry(menge,AE.getLieferdatum(),
+     AB.BestellmengeAendern(menge,AE.getLieferdatum(),
                         kind_artikel,AE.getEntryStatus(),uid,AEB);
    }  
 }
@@ -298,7 +298,7 @@ void ArtikelBaum::reduceChildren(int uid,const AufEintrag& AEB,
 //std::cout << AEB.Instanz()<<' '<<AEB.ZNr()<<'\t'
 //<<oldAEB.Instanz()<<' '<<oldAEB.ZNr()<<'\t'<<menge<<'\n';
 
-  const_cast<AufEintrag&>(AEB).updateStkDiff__(uid,-menge,false,ManuProC::Auftrag::r_Anlegen);
+  const_cast<AufEintrag&>(AEB).MengeAendern(uid,-menge,false,ManuProC::Auftrag::r_Anlegen);
   AuftragBase::mengen_t mt2=AufEintragZu(oldAEB).setMengeDiff__(AEB,-menge);
 //cout << oldAEB<<'\t'<<AEB<<'\t'<<-menge<<'\t'<<'\t'<<mt2<<'\n';
   assert(mt2==-menge);

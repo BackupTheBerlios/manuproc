@@ -247,14 +247,14 @@ bool ppsInstanzReparatur::ReparaturK_Kundenzuordnung(const int uid,const bool an
 
 void ppsInstanzReparatur::Reparatur_Kundenauftrag_AE(const int uid,const AufEintrag &KundeAE,AufEintrag &KindAE,const AuftragBase::mengen_t &menge) const
 {
-  KindAE.updateStkDiff__(uid,-menge,true,KundeAE,ManuProC::Auftrag::r_Anlegen);  
+  KindAE.MengeAendern(uid,-menge,true,KundeAE,ManuProC::Auftrag::r_Anlegen);  
   Reparatur_Kundenauftrag_AEB(uid,KundeAE,KindAE,menge);
 }
 
 void ppsInstanzReparatur::Reparatur_Kundenauftrag_AEB(const int uid,const AufEintrag &KundeAE,const AufEintragBase &KindAE,const AuftragBase::mengen_t &menge) const
 {
   AufEintragZu::remove(KundeAE,KindAE);
-  KundeAE.BaumAnlegen(KundeAE,uid);
+  KundeAE.ArtikelInternNachbestellen(uid,KundeAE.getRestStk(),ManuProC::Auftrag::r_Anlegen);
 }
 
 void ppsInstanzReparatur::MengenReparatur(const int uid,const AufEintrag &AE,AufEintrag &AEK,const ABmt& zumenge) const 
@@ -269,7 +269,7 @@ void ppsInstanzReparatur::MengenReparatur(const int uid,const AufEintrag &AE,Auf
       verplante_menge+=i->Menge;
    AuftragBase::mengen_t sollmenge = verplante_menge + AEK.getStueck();
    if(sollmenge!=AE.getStueck())
-     AEK.updateStkDiff__(uid,AE.getStueck()-sollmenge,true,AufEintragBase(),ManuProC::Auftrag::r_Reparatur); 
+     AEK.MengeAendern(uid,AE.getStueck()-sollmenge,true,AufEintragBase(),ManuProC::Auftrag::r_Reparatur); 
 }
 
 
@@ -398,7 +398,7 @@ void ppsInstanzReparatur::check_D_ungeplantReparatur(const int uid,const AufEint
    {
      AuftragBase::mengen_t M=AuftragBase::min(i->Menge,DiffMenge);
 //std::cout << "REP3: "<<i->AEB<<'\t'<<M<<'\n';
-     AufEintrag(i->AEB).updateStkDiff__(uid,M,true,ManuProC::Auftrag::r_Reparatur);
+     AufEintrag(i->AEB).MengeAendern(uid,M,true,ManuProC::Auftrag::r_Reparatur);
      AufEintragZu(i->AEB).setMengeDiff__(AE,-M);
      DiffMenge -= M;
      if(!DiffMenge) return;

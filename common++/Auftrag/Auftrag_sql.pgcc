@@ -393,6 +393,8 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
    "Menge=",bestellt,"Datum=",lieferdatum,
    "Artikel=",artikel,
    "Status=",status,"InstanzAufträgeSetzen=",setInstanzAuftraege);
+ assert(Instanz()==ppsInstanzID::Kundenauftraege ^ setInstanzAuftraege==false);
+  // wieso auch nicht ... CP
  exec sql begin declare section;
  int AUFTRAGID =Id();
  long ARTIKELID=artikel.Id();
@@ -455,10 +457,12 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
  // Kundenaufträge legen automatisch einen Auftrag bei der entsprechenden Instanz 
  // für denselben Artikel an.
  AufEintragBase AEB(*this,ZEILENNR);
- if(status!=UNCOMMITED) // Nur offene Aufträge kümmern sich um andere Instanzen
-   {
+ if(status==OPEN && setInstanzAuftraege) // Nur offene Aufträge werden nach unten bestellt
+   {  // alles andere wäre komisch ... oder?
+      assert(Instanz()==ppsInstanzID::Kundenauftraege);
+
       AufEintrag AE(AEB);
-      BaumAnlegen(AE,uid,setInstanzAuftraege);
+      AE.ArtikelInternNachbestellen(uid,bestellt,ManuProC::Auftrag::r_Anlegen);
     }
  tr.commit();
  return AEB;

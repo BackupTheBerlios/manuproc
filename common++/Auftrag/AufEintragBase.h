@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.h,v 1.41 2003/01/08 17:40:43 christof Exp $
+// $Id: AufEintragBase.h,v 1.42 2003/01/15 15:10:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -77,7 +77,7 @@ public:
             AuftragBase::mengen_t bestellmenge,
             const ArtikelBase &artikel,const Petig::Datum &lieferdatum,
             std::vector<AufEintrag> dispo_auftrag,
-            AuftragBase::st_tryUpdateEntry st_bool=st_tryUpdateEntry()) const throw(SQLerror);
+            AuftragBase::st_BestellmengeAendern st_bool=st_BestellmengeAendern()) const throw(SQLerror);
 */
 private:
 // friend class LagerBase;

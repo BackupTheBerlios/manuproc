@@ -233,9 +233,9 @@ static int auftragstests(e_mode mode, bool mit_reparatur_programm)
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Weberei),Kunde::default_id);
        int weberei_znr=1;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Weberei,AuftragBase::ungeplante_id,weberei_znr));
-ManuProC::Tracer::Enable(AuftragBase::trace_channel);
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
        AEP.Planen(UID,5000,PA,PLANDATUM6);
-ManuProC::Tracer::Enable(AuftragBase::trace_channel,false);
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel,false);
        vergleichen(C,Check::Menge,"planen_webereiP","Planen der Weberei","P",mit_reparatur_programm);
        }
        ManuProC::Trace(log_trace,__FILELINE__);
@@ -358,7 +358,7 @@ std::cout << dummystring<<'\n';
        Query::Execute(q2);
        SQLerror::test(__FILELINE__);
        AufEintrag AE=AufEintrag(class AufEintragBase(class AuftragBase(ROLLEREI,AuftragBase::ungeplante_id),2));
-       AE.updateStkDiff__(UID,-100,true,AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
+       AE.MengeAendern(UID,-100,true,AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
 
        vergleichen(C,Check::Menge,"reparatur_kunde","Reparatur Kundenaufträge (Menge)","",mit_reparatur_programm,true);
       }
@@ -702,7 +702,7 @@ std::cout << "D13: "<<dummystring<<'\n';
 
       {// Einkauf liefert Vollmenge
        Lieferschein liefs(EINKAUF,cH_Kunde(KUNDE2));
-ManuProC::Tracer::Enable(AuftragBase::trace_channel);
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
        liefs.push_back(ARTIKEL_TRIO,25,0,0);
        vergleichen(C,Check::Menge|Check::Lieferschein,"LSZM","Lieferschein im Einkauf Weberei mit Restlieferung (Mabella)","",mit_reparatur_programm);
       }
@@ -867,15 +867,19 @@ int main(int argc,char *argv[])
      { "verbose", no_argument, 0, 'v' },
      { "repair", no_argument, 0, 'r' },
      { "continue", no_argument, 0, 'c' },
+     { "trace", no_argument, 0, 't' },
      { 0,0,0,0 },
    };
    
    int opt;
-   while ((opt=getopt_long(argc,argv,"vrc",long_options,0))!=-1)
+   while ((opt=getopt_long(argc,argv,"vrct",long_options,0))!=-1)
     switch(opt)
    {  case 'v': verbose=true; break;
       case 'r': mit_reparatur_programm=true; break;
       case 'c': do_not_stop=true; break;
+      case 't': ManuProC::Tracer::Enable(AuftragBase::trace_channel);
+      	ManuProC::Tracer::Enable(log_trace);
+      	break;
       default: usage(argv[0],""); return 1;
    }
 

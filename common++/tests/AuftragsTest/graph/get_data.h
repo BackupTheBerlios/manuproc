@@ -1,4 +1,4 @@
-// $Id: get_data.h,v 1.21 2003/01/08 14:25:25 christof Exp $
+// $Id: get_data.h,v 1.22 2003/01/15 15:10:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -82,7 +82,7 @@ class graph_data_node
 // global parameters - evil ... but I don't want to rewrite the program
 	static bool show_referenz;
 	// limit number of files to display
-	static unsigned limit;
+	static unsigned limit,start;
 };
 
 #endif

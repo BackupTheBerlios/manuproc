@@ -1,14 +1,16 @@
-- Mon,  3 Jul 2000 17:48:03 +0200
-	Adabas entfernt
+Neue Funktionen:
 
-- Fri, 23 Feb 2001 17:47:01 +0100
-	Basic abgespalten
+AufEintrag::updateStkDiff__ 	=>	MengeAendern
+InstanzAuftraegeAnlegen	=>	ArtikelInternNachbestellen
+BaumAnlegen	=>	ArtikelInternNachbestellen
+updateStkDiffInstanz__	=>	ArtikelInternNach/Abbestellen
+tryUpdateEntry	=>	BestellmengeAendern
+ArtikelImLager	=>	VerfuegbareMenge
+reduce_zuordung_to_20000er_from_2er	=>	freie_dispomenge_verwenden
 
-- Thu, 10 May 2001 17:45:00 +0200
-	Speicherverbrauch halbiert: touch statt ld in den Unterverzeichnissen
-
-CP Thu, 17 May 2001 17:31:44 +0200
-	db* Funktionen mit optionalem Namensargument
-
-CP Fri May 18 09:50:59 MEST 2001
-	artikelbezeichnung durch artikelzusammensetzung+artikelstamm ersetzt
+Ideen zum Produktionsplaner:
+ - Bestellung wird in andere Instanz verschoben und neu verzeigert, der
+ 	alte Eintrag verschwindet völlig
+ - Was tun bei Überplanung in Instanzen darunter ?
+ 	- überplanen im Planer? 2er im Planer anlegen?
+ 	- Problem auf Prodplaner verschieben (der muss nachsehen)?

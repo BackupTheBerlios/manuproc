@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.42 2003/01/08 14:25:25 christof Exp $
+// $Id: get_data.cc,v 1.43 2003/01/15 15:10:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -32,6 +32,7 @@ static std::string referenzdir="../database_tables_test";
 
 bool graph_data_node::show_referenz;
 unsigned graph_data_node::limit=~0;
+unsigned graph_data_node::start=0;
 
 graph_data_node::graph_data_node(const std::string &mode)
 {
@@ -246,6 +247,7 @@ void graph_data_node::get_files(const std::string &mode)
      exit(1);
   }
   char buf[1024];
+  int linenum=0;
   while (!i.eof())
   {  i.getline(buf,sizeof buf);
      std::string line=buf;
@@ -261,10 +263,11 @@ void graph_data_node::get_files(const std::string &mode)
      if (space2==std::string::npos) continue;
      space3=line.find(' ',space2+1);
      if (space3==std::string::npos) continue;
-     filenames.push_back(st_files(line.substr(space1+1,space2-space1-1),
+     if (linenum>=start && linenum<limit)
+     {  filenames.push_back(st_files(line.substr(space1+1,space2-space1-1),
      		line.substr(space2+1,space3-space2-1)));
-     if (filenames.size()==limit) break;
-//std::cerr << line.substr(space1+1,space2-space1-1) << ',' << line.substr(space2+1) << ",\n";
+     }
+     ++linenum;
   }
   std::string dir=referenzdir;
   if (!show_referenz) dir="../results";

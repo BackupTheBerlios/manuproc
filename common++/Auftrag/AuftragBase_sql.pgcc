@@ -25,7 +25,7 @@
 #include <Artikel/ArtikelStamm.h>
 #include <Auftrag/AufEintragZu.h>
 #include <Misc/Trace.h>
-#include <Artikel/ArtikelImLager.h>
+#include <Auftrag/VerfuegbareMenge.h>
 
 exec sql include sqlca;
 
@@ -106,8 +106,7 @@ void AuftragBase::setRabatt(const rabatt_t auftragsrabatt) const throw(SQLerror)
  SQLerror::test(__FILELINE__"Rabatt setzen");
 }
 
-
-
+// braucht irgendjemand newznr?, sonst könnte ein join wegfallen!!!
 
 bool AuftragBase::existEntry(const ArtikelBase& artikel,
                              const ManuProC::Datum& lieferdatum,
@@ -156,81 +155,50 @@ bool AuftragBase::existEntry(const ArtikelBase& artikel,
     return true;  }
 }
 
-int AuftragBase::tryUpdateEntry(mengen_t bestellt, 
+// wird von ArtikelInternNachbestellen, dispo_auftrag_aendern verwendet
+int AuftragBase::BestellmengeAendern(mengen_t deltamenge, 
   const ManuProC::Datum lieferdatum,const ArtikelBase& artikel,
   AufStatVal status,int uid,const AufEintragBase& altAEB,
-  st_tryUpdateEntry st_bool) const throw(SQLerror)
+  st_BestellmengeAendern st_bool) const throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"Artikel=",artikel,
-         "Menge=",bestellt,"AltAEB=",altAEB,
+         "Menge=",deltamenge,"AltAEB=",altAEB,
          "LieferDatum=",lieferdatum,
          "Status=",status);
-// weggefallen         
-// ,"ForceNew=",st_bool.force_new, "DispoPlanung=",st_bool.dispoplanung);
-
+ assert(status==OPEN || Id()==ppsInstanzID::Kundenauftraege);
  create_if_not_exists(status);
  int znr=ManuProcEntity<>::none_id,neuznr=ManuProcEntity<>::none_id;
- mengen_t altemenge=0;
+
  Transaction tr;
  exec sql lock table auftragentry in exclusive mode;
  SQLerror::test(__FILELINE__);  
  
  // neuer Code bis #if0
 
- if(!existEntry(artikel,lieferdatum,znr,neuznr,altemenge,status))
+ mengen_t dummy=0;
+ if(!existEntry(artikel,lieferdatum,znr,neuznr,dummy,status))
   {
     Auftrag A(*this);
+    // warum nicht direkt mit Menge?
     AufEintragBase newaeb=A.push_back(0,lieferdatum,artikel,status,uid,false)  ;
     znr=newaeb.ZNr();
    }
 
  bool kein_dispo= Id()!=dispo_auftrag_id;
  AufEintragBase NeuAEB(*this,znr);
- 
+
+ // ist die Reihenfolge hier wichtig?
+     // ändert Neu den Eintrag? 
  // dispo=> andere Richtung des Pfeils muss geändert werden 
- if (kein_dispo) // NeuAEB.Id()!=AuftragBase::dispo_auftrag_id) 
-      AufEintragZu(altAEB).Neu(NeuAEB,bestellt);
+ if (kein_dispo && altAEB.valid())
+      AufEintragZu(altAEB).Neu(NeuAEB,deltamenge);
+
  // rekursion nur falls kein DispoAuftrag 
- AufEintrag(NeuAEB).updateStkDiff__(uid,bestellt,kein_dispo,altAEB,ManuProC::Auftrag::r_Anlegen);
- if (!kein_dispo) // NeuAEB.Id()==AuftragBase::dispo_auftrag_id)
-      AufEintragZu(NeuAEB).Neu(altAEB,bestellt);
+ AufEintrag(NeuAEB).MengeAendern(uid,deltamenge,kein_dispo,altAEB,ManuProC::Auftrag::r_Anlegen);
 
+ if (!kein_dispo && altAEB.valid())
+      AufEintragZu(NeuAEB).Neu(altAEB,deltamenge);
 
-#if 0
- ArtikelImLager AIL(instanz,artikel,lieferdatum);
- AuftragBase::mengen_t lagermenge=AIL.getMengeDispo();
-
- mengen_t auftragbestellmenge;
- if(lagermenge>=bestellt) {auftragbestellmenge = 0; lagermenge=bestellt;}
- else                      auftragbestellmenge = bestellt-lagermenge;
-
- if(st_bool.force_new || !existEntry(artikel,lieferdatum,znr,neuznr,altemenge,status))
-  {
-    Auftrag A(*this);
-    AufEintragBase newaeb=A.push_back(auftragbestellmenge,lieferdatum,artikel,status,uid,false)  ;
-    znr=newaeb.ZNr();
-   }
- else
-   {
-     if(!!auftragbestellmenge)
-      {
-       mengen_t mt=AufEintragBase(instanz,auftragid,znr).updateStkDiffBase__(uid,auftragbestellmenge);
-       assert(mt==auftragbestellmenge);
-      }
-   }
-  if(!st_bool.dispoplanung)
-   {    
-     if(altAEB.valid())
-        AufEintragZu(altAEB).Neu(AufEintragBase(*this,znr),bestellt);
-      AufEintragBase(*this,znr).vormerken_oder_bestellen(uid,lagermenge,
-         bestellt,artikel,lieferdatum,AIL.getDispoAuftraege(),st_bool);
-   }
-  else 
-   {
-     if(altAEB.valid())
-        AufEintragZu(class AufEintragBase(*this,znr)).Neu(altAEB,bestellt);
-   }
-#endif
   tr.commit();
   return znr;
 }

@@ -1,4 +1,4 @@
-// $Id: FetchIStream_ops.cc,v 1.1 2002/11/22 15:53:52 christof Exp $
+// $Id: FetchIStream_ops.cc,v 1.2 2003/01/15 15:10:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,6 +19,7 @@
 
 #include <Misc/FetchIStream_ops.h>
 #include <Misc/Datum.h>
+#include <Misc/Zeitpunkt_new.h>
 
 FetchIStream &operator>>(FetchIStream &is, ManuProC::Datum &v)
 {  std::string s;
@@ -27,5 +28,27 @@ FetchIStream &operator>>(FetchIStream &is, ManuProC::Datum &v)
    if (ind==-1) v=ManuProC::Datum();
    else v.from_postgres(s.c_str());
    return is;
+}
+
+Query &operator<<(Query &q, const ManuProC::Datum &v)
+{  q.add_argument(v.postgres_null_if_invalid());
+   return q;
+}
+
+FetchIStream &operator>>(FetchIStream &is, Zeitpunkt_new &v)
+{  std::string s;
+   int ind;
+   is >> FetchIStream::WithIndicator<std::string>(s,ind);
+   if (ind==-1) v=Zeitpunkt_new();
+   else v=Zeitpunkt_new(s.c_str());
+   return is;
+}
+
+Query &operator<<(Query &q, const Zeitpunkt_new &v)
+{  if (!v.valid()) return q << Query::null();
+   char buf[64];
+   v.write(PostgresTimestamp(buf,sizeof buf));
+   q.add_argument(buf);
+   return q;
 }
 

@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.40 2002/12/19 16:22:20 thoma Exp $ */
+/* $Id: AuftragBase.h,v 1.41 2003/01/15 15:10:16 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -39,7 +39,7 @@ class AuftragBase
    typedef fixedpoint<ManuProC::Precision::AuftragsMenge> mengen_t;
    typedef Preis::rabatt_t rabatt_t;
    typedef ManuProcEntity<>::ID ID;
-   static const ID handplan_auftrag_id =  20000; // gemeint sind alle Aufträge, die NICHT 0,1,2 sind
+   static const ID handplan_auftrag_id =  3; // gemeint sind alle Aufträge, die NICHT 0,1,2 sind
    static const ID dispo_auftrag_id =  2;
    static const ID plan_auftrag_id  =  1;
    static const ID invalid_id       = ManuProcEntity<>::none_id ;
@@ -70,32 +70,23 @@ class AuftragBase
    void setStatusAuftragBase(AufStatVal st) const throw(SQLerror);
    void setRabatt(const rabatt_t auftragsrabatt) const throw(SQLerror);
 
-
-   static void dispo_auftrag_aendern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
-      const mengen_t &menge,const ManuProC::Datum &datum,const AufEintragBase &kindAEB) ;
+   // wird aufgerufen wenn Menge ins Lager kommt (LagerBase::rein_ins_lager)
+   // kümmert sich um 1er und 2er
+   // sollte Aufträge als produziert markieren
    static void menge_neu_verplanen(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
-         const mengen_t &menge,const ManuProC::Auftrag::Action reason) throw(SQLerror);
+         const mengen_t &menge,const ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Produziert) throw(SQLerror);
    
-
-   void create_if_not_exists(AufStatVal status,Kunde::ID kunde=Kunde::default_id) const;
-   void BaumAnlegen(const AufEintrag& AE,int uid,bool setInstanzAuftraege=true) const;
-   void InstanzAuftraegeAnlegen(const AufEintrag& AE,mengen_t menge,int uid,bool automatisch_geplant=false) const;
-   bool existEntry(const ArtikelBase& artid,
-                        const ManuProC::Datum& lieferdatum,
-                        int& znr,int &newznr, mengen_t& menge, const AufStatVal status
-                        ) const throw(SQLerror);
-   struct st_tryUpdateEntry{bool automatisch_geplant;bool force_new;bool dispoplanung;
-          explicit st_tryUpdateEntry() : automatisch_geplant(false),force_new(false),dispoplanung(false){}
-          explicit st_tryUpdateEntry(bool a) : automatisch_geplant(a),force_new(false),dispoplanung(false){}
-          explicit st_tryUpdateEntry(bool a,bool b,bool c) 
+   struct st_BestellmengeAendern{bool automatisch_geplant;bool force_new;bool dispoplanung;
+          explicit st_BestellmengeAendern() : automatisch_geplant(false),force_new(false),dispoplanung(false){}
+          explicit st_BestellmengeAendern(bool a) : automatisch_geplant(a),force_new(false),dispoplanung(false){}
+          explicit st_BestellmengeAendern(bool a,bool b,bool c) 
             : automatisch_geplant(a),force_new(b),dispoplanung(c){}
          };
    // gibt Zeilennummer zurück
-   int tryUpdateEntry(mengen_t bestellt, 
+   int BestellmengeAendern(mengen_t bestellt, 
                const ManuProC::Datum lieferdatum, const ArtikelBase& artikel,
                AufStatVal status,int uid,const AufEintragBase& altAEB,
-               st_tryUpdateEntry st_bool=st_tryUpdateEntry()) const throw(SQLerror);
-
+               st_BestellmengeAendern st_bool=st_BestellmengeAendern()) const throw(SQLerror);
 
 	// wandelt enum in std::string um
 	static const std::string getStatusStr(AufStatVal a);
@@ -107,6 +98,22 @@ class AuftragBase
    static mengen_t max(const mengen_t &x,const mengen_t &y);
 
    static const UniqueValue::value_t trace_channel;
+
+public:
+// wird in Instanzen.cc verwendet
+   void create_if_not_exists(AufStatVal status,Kunde::ID kunde=Kunde::default_id) const;
+// wird in AufEintrag_sql.pgcc verwendet
+   // könnte eigentlich durch 
+   // AuftragBase(instanz,AB::dispo_auftrag_id).BestellmengeAendern 
+   // ersetzt werden 
+   static void dispo_auftrag_aendern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
+      const mengen_t &menge,const ManuProC::Datum &datum,const AufEintragBase &kindAEB) ;
+// Iiii bah - überprüfen!
+   // -> BestellmengeAendern ???
+   bool existEntry(const ArtikelBase& artid,
+                        const ManuProC::Datum& lieferdatum,
+                        int& znr,int &newznr, mengen_t& menge, const AufStatVal status
+                        ) const throw(SQLerror);
 };
 
 std::ostream &operator<<(std::ostream &o,const AuftragBase &a);
