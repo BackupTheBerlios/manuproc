@@ -360,10 +360,10 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
 // os << "\\begin{flushright}\n";
  os << "\\normalsize\n";
 
- LieferscheinBase::ID lfrsid_mem=-1;
+ LieferscheinBase::ID lfrsid_mem=LieferscheinBase::none_id;
  bool lfrsid_drucken=false;
 #ifdef MABELLA_EXTENSIONS 
- int aufid_mem=-1;
+ int aufid_mem=AuftragBase::none_id;
  bool aufid_drucken=false;
 #endif
 
@@ -501,7 +501,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
 #endif
 
 #ifdef MABELLA_EXTENSIONS    
-    if(aufid_drucken)
+    if(aufid_drucken && aufid_mem!=AuftragBase::none_id)
     {   AuftragBase ab(ppsInstanzID::Kundenauftraege, aufid_mem);
     	class Auftrag a(ab);
        	auftrag_von(os,a);
