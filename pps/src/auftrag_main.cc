@@ -228,6 +228,7 @@ void auftrag_main::on_rechnung_activate()
  manage (new auftrag_rechnung(instanz));
 }
 
+// eigentlich sind diese Routine Bestandteil von Tag (in C++)
 std::string auftrag_main::bool2str(bool b)
 {
   if(b) return "true";
@@ -268,13 +269,18 @@ void auftrag_main::on_zeitdarstellung_activate()
   fill_simple_tree();
   Global_Settings::create(int(getuid()),"pps","KalenderWoche",bool2str(zeit_kw_bool)); 
 }
+
+enum { KD_NAME, KD_NAME_ORT, KD_NR };
+
 void auftrag_main::on_kundendarstellung_activate()
 {
   if(block_callback) return;
   kunden_nr_bool=kunden_nr->get_active();
   kunden_mit_ort=kunden_ort->get_active();
   fill_simple_tree();
-  Global_Settings::create(int(getuid()),"pps","KundenNr",bool2str(kunden_nr_bool)); 
+  Global_Settings::create(int(getuid()),"pps","KundenNr",
+  	itos(kunden_nr_bool?KD_NR:(kunden_mit_ort?KD_NAME_ORT:KD_NAME)));
+//  bool2str(kunden_nr_bool)); 
 }
 void auftrag_main::on_materialbedarf_sortiert()
 {
@@ -379,8 +385,26 @@ void auftrag_main::loadEinstellungen()
   kalenderwoche->set_active(zeit_kw_bool);
 
   bs=Global_Settings(int(getuid()),"pps","KundenNr").get_Wert(); 
+#if 1 // backward compatible
   kunden_nr_bool=str2bool(bs,false);
-  kunden_nr->set_active(kunden_nr_bool);
+  bool valid=str2bool(bs,false)==str2bool(bs,true);
+  int was_denn=valid?(kunden_nr_bool?KD_NR:KD_NAME_ORT):atoi(bs.c_str());
+#else
+  int was_denn=atoi(bs.c_str());
+#endif
+  switch (was_denn)
+  {  case KD_NR: kunden_nr->set_active(true);
+        kunden_nr_bool=true;
+        break;
+     case KD_NAME_ORT: kunden_ort->set_active(true);
+        kunden_nr_bool=false;
+        kunden_mit_ort=true;
+        break;
+     case KD_NAME: kunden_name1->set_active(true);
+        kunden_nr_bool=false;
+        kunden_mit_ort=false;
+        break;
+  }
 
   bs=Global_Settings(int(getuid()),"pps","Materialbedarf_Artikelsortiert").get_Wert(); 
   materialbedarf_sortiert_nach_artikel->set_active(str2bool(bs,true));
