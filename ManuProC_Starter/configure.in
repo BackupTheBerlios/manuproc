@@ -1,0 +1,23 @@
+# generated 2004/5/7 15:30:30 CEST by jacek@jaceksdell.(none)
+# using glademm V2.0.0b
+
+AC_INIT(src/manuproc_starter.cc)
+AM_INIT_AUTOMAKE(manuproc_starter, 0.0)
+AM_CONFIG_HEADER(config.h)
+
+AC_ISC_POSIX
+AC_PROG_CC
+AM_PROG_CC_STDC
+AC_HEADER_STDC
+AC_PROG_CPP
+AC_PROG_CXX
+AC_PROG_CXXCPP
+AM_PROG_LIBTOOL
+
+AC_LANG_CPLUSPLUS
+
+PKG_CHECK_MODULES(GTKMM,[gtkmm-2.0 >= 2.2.8])
+AC_SUBST(GTKMM_CFLAGS)
+AC_SUBST(GTKMM_LIBS)
+
+AC_OUTPUT(Makefile src/Makefile )

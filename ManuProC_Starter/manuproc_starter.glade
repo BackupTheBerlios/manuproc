@@ -1,0 +1,86 @@
+<?xml version="1.0" standalone="no"?> <!--*- mode: xml -*-->
+<!DOCTYPE glade-interface SYSTEM "http://glade.gnome.org/glade-2.0.dtd">
+
+<glade-interface>
+
+<widget class="GtkWindow" id="ManuProc_Starter">
+  <property name="visible">True</property>
+  <property name="title" translatable="yes">ManuProC_Starter</property>
+  <property name="type">GTK_WINDOW_TOPLEVEL</property>
+  <property name="window_position">GTK_WIN_POS_NONE</property>
+  <property name="modal">False</property>
+  <property name="resizable">False</property>
+  <property name="destroy_with_parent">False</property>
+
+  <child>
+    <widget class="GtkVBox" id="vbox1">
+      <property name="visible">True</property>
+      <property name="homogeneous">False</property>
+      <property name="spacing">0</property>
+
+      <child>
+	<widget class="GtkToolbar" id="toolbar1">
+	  <property name="visible">True</property>
+	  <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+	  <property name="toolbar_style">GTK_TOOLBAR_BOTH</property>
+	  <property name="tooltips">True</property>
+
+	  <child>
+	    <widget class="button" id="pps_start">
+	      <property agent="glademm" name="cxx_visibility">protected</property>
+	      <property name="visible">True</property>
+	      <property name="label" translatable="yes">PPS</property>
+	      <property name="use_underline">True</property>
+	      <property name="stock_pixmap">gtk-execute</property>
+	      <signal name="clicked" handler="on_pps_start_clicked" last_modification_time="Fri, 07 May 2004 12:48:59 GMT"/>
+	    </widget>
+	  </child>
+
+	  <child>
+	    <widget class="button" id="kunden_start">
+	      <property agent="glademm" name="cxx_visibility">protected</property>
+	      <property name="visible">True</property>
+	      <property name="label" translatable="yes">Kunden</property>
+	      <property name="use_underline">True</property>
+	      <property name="stock_pixmap">gtk-open</property>
+	      <signal name="enter" handler="on_kunden_start_enter" last_modification_time="Fri, 07 May 2004 12:49:10 GMT"/>
+	    </widget>
+	  </child>
+
+	  <child>
+	    <widget class="button" id="lager_start">
+	      <property agent="glademm" name="cxx_visibility">protected</property>
+	      <property name="visible">True</property>
+	      <property name="label" translatable="yes">Lager</property>
+	      <property name="use_underline">True</property>
+	      <property name="stock_pixmap">gtk-paste</property>
+	      <signal name="clicked" handler="on_lager_start_clicked" last_modification_time="Fri, 07 May 2004 12:49:34 GMT"/>
+	    </widget>
+	  </child>
+
+	  <child>
+	    <widget class="button" id="quit">
+	      <property agent="glademm" name="cxx_visibility">protected</property>
+	      <property name="visible">True</property>
+	      <property name="label" translatable="yes">Beenden</property>
+	      <property name="use_underline">True</property>
+	      <property name="stock_pixmap">gtk-quit</property>
+	      <property name="new_group">True</property>
+	      <signal name="clicked" handler="on_quit_clicked" last_modification_time="Fri, 07 May 2004 13:26:17 GMT"/>
+	    </widget>
+	    <packing>
+	      <property name="new_group">True</property>
+	    </packing>
+	  </child>
+	</widget>
+	<packing>
+	  <property name="padding">0</property>
+	  <property name="expand">False</property>
+	  <property name="fill">False</property>
+	</packing>
+      </child>
+    </widget>
+  </child>
+</widget>
+
+</glade-interface>
