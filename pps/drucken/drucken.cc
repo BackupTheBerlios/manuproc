@@ -73,7 +73,7 @@ void LR_drucken::drucken(bool print,bool b_firmenpapier,bool b_kopie,bool ean_co
    else if (RL==LR_Base::Lieferschein)  
     { 
 #ifdef MABELLA_EXTENSIONS    
-      cH_LieferscheinVoll l(instanz,auftragsnr);
+      cH_LieferscheinVoll l(instanz,auftragsnr,true);
 #else
       cH_LieferscheinVoll l(instanz,auftragsnr);
 #endif
