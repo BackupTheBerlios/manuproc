@@ -20,6 +20,7 @@
 #include"Rechnung.h"
 #include<Misc/Transaction.h>
 #include <Auftrag/AufEintrag.h>
+#include <Misc/FetchIStream.h>
 exec sql include sqlca;
 
 std::map<int,struct RechnungEntryBase::rng_payoff> RechnungEntryBase::rgdata;
@@ -79,52 +80,32 @@ Preis RechnungEntry::getAuftragsPreis()
 
 void RechnungEntryBase::deleteEntry(const RechnungEntryBase &re) throw(SQLerror)
 {
- exec sql begin declare section;
- int RNGID=re.Id();
- int ZNR=re.Zeile();
- exec sql end declare section;
-
- exec sql delete from rechnungentry where rngid= :RNGID and 
-		zeilennr= :ZNR;
- SQLerror::test(__FILELINE__);
+ Query("delete from rechnungentry where rngid=? and zeilennr=?")
+ 	<< re.Id() << re.Zeile();
 }
 
 void RechnungEntry::setzePreis(const Preis &p) throw (SQLerror)
 {  preis=p;
-   exec sql begin declare section;
-   int RNGID=Id(),ZNR=Zeile();
-   float PREISMENGE=p.BezugsMenge().as_float();
-   float PREIS=p.Wert().as_float();
-   exec sql end declare section;
-   
-   if(RgArt() == RART_GUT) PREIS*=-1.0;
-
-    exec sql update rechnungentry
-   	set preismenge=:PREISMENGE, preis=:PREIS
-   	where (rngid,zeilennr)= (:RNGID,:ZNR);
-   SQLerror::test(__FILELINE__);
+   Query("update rechnungentry set preismenge=?, preis=? "
+   	"where (rngid,zeilennr)=(?,?)")
+   	<< p.BezugsMenge() << RgArt()==RART_GUT?-p.Wert():p.Wert()
+   	<< Id() << Zeile();
 }
 
 
 
 void RechnungEntryBase::setRgPayOff(int _rngid) throw(SQLerror)
 {
- exec sql begin declare section;
- int RNGID=_rngid;
- char *DATUM=0;
+ ManuProC::Datum DATUM;
  bool BEZAHLT;
  int KUNDENNR;
- char RNGART[1];
- exec sql end declare section;
+ char RNGART;
 
- exec sql select datum,coalesce(bezahlt,false),kundennr,rngart into 
-	:DATUM,:BEZAHLT,:KUNDENNR,:RNGART 
-	from rechnung where rngid=:RNGID;
- SQLerror::test(__FILELINE__);
-
+ Query("select datum,coalesce(bezahlt,false),kundennr,rngart "
+ 	"from rechnung where rngid=?")
+ 	<< _rngid
+ 	>> DATUM >> BEZAHLT >> KUNDENNR >> RNGART;
  rgdata[RNGID]=rng_payoff(DATUM,BEZAHLT,KUNDENNR,(RngArt)RNGART[0]);
-
- ECPGfree_auto_mem();
 }
 
 const ManuProC::Datum RechnungEntry::RgDatum() const throw(SQLerror)
