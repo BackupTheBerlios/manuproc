@@ -1,4 +1,4 @@
-// $Id: Preis.cc,v 1.20 2003/11/18 13:46:36 jacek Exp $
+// $Id: Preis.cc,v 1.21 2003/11/18 16:50:56 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -90,9 +90,9 @@ Preis::geldbetrag_t Preis::Gesamtpreis(const cP_Waehrung w,int anzahl,preismenge
    if(rescale)
      {// Rabattieren?
       if (!!rabatt) result.pfennig_cent=
-		fixedpoint<2>(result.pfennig_cent*(1.0-0.01*rabatt.as_float()));
+		Preis::geldbetrag_out(result.pfennig_cent*(1.0-0.01*rabatt.as_float()));
       // mit Menge multiplizieren
-      return fixedpoint<2>(result.In(result.waehrung,menge*anzahl).Wert());
+      return Preis::geldbetrag_out(result.In(result.waehrung,menge*anzahl).Wert());
      }
    else
 #endif

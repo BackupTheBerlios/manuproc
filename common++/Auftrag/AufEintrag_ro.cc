@@ -1,4 +1,4 @@
-// $Id: AufEintrag_ro.cc,v 1.4 2003/09/15 11:58:40 jacek Exp $
+// $Id: AufEintrag_ro.cc,v 1.5 2003/11/18 16:50:56 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -69,15 +69,22 @@ AufEintrag::AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr,
 	
 
 const Preis AufEintrag::GPreis() const
-{ return preis.Gesamtpreis(1,bestellt.as_float(),rabatt);
+#warning newly changed; not tested
+{ 
+ Preis ret(preis.Gesamtpreis(preis.getWaehrung(),bestellt.as_int(),0.0,rabatt),
+		preis.getWaehrung());
+ return ret;
 }
 
 const Preis AufEintrag::EPreis(bool brutto) const
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
+
  if(brutto) return preis;
  else
- return preis.Gesamtpreis(preis.PreisMenge().as_int(),0,rabatt);
+#warning newly changed; not tested
+ return Preis(preis.Gesamtpreis(preis.getWaehrung(),0,0.0,rabatt),
+		preis.getWaehrung());
 }
 
 const std::string AufEintrag::getEntryStatusStr() const
