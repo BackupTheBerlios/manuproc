@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.4 2001/06/06 07:27:39 christof Exp $
+# $Id: Makefile.am,v 1.5 2001/06/22 07:29:02 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -30,7 +30,9 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
 	auto_conversion.cc dbconnect.h dbconnect.pgcc \
 	exception.cc exception.h fixedpoint.cc fixedpoint.h mystream.h \
 	postgres_conversion.cc safemap.h string0.c string0.h itos.cc itos.h \
-	FetchIStream.pgcc FetchIStream.h ctime_assert.h
+	FetchIStream.pgcc FetchIStream.h ctime_assert.h \
+   EntryValueBase.cc EntryValueBase.h EntryValueIntString.cc \
+   EntryValueIntString.h EntryValueEmptyInt.h
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
@@ -47,7 +49,7 @@ include_HEADERS=Ausgabe.h Ausgabe_neu.h Datum.h \
 		Transaction.h Waehrung.h Pointer.h \
 		Changejournal.h ppsInstanz.h EntryValueIntString.h \
 		exception.h itos.h fixedpoint.h FetchIStream.h \
-		ctime_assert.h
+		ctime_assert.h EntryValueEmptyInt.h
 
 CLEANFILES= *~ $(BUILT_SOURCES)
 

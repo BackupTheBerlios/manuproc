@@ -1,4 +1,4 @@
-/* $Id: EntryValueIntString.h,v 1.1 2001/06/20 11:25:26 cvs_malte Exp $ */
+/* $Id: EntryValueEmptyInt.h,v 1.1 2001/06/22 07:29:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,22 +17,21 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef ENTRYVALUEINTSTRING_H
-#define ENTRYVALUEINTSTRING_H
+#ifndef ENTRYVALUEEMPTYINT_H
+#define ENTRYVALUEEMPTYINT_H
 
 #include <Aux/EntryValueBase.h>
 
-class EntryValueIntString : public EntryValueBase
+class EntryValueEmptyInt : public EntryValueBase
 {
  int intval;
  string strval;
-
+ 
 public:
 
- EntryValueIntString() : intval(int_NaN), strval("-")
-   {}
- EntryValueIntString(int v);
- EntryValueIntString(const string &s);
+ EntryValueEmptyInt() : intval(int_NaN) {}
+ EntryValueEmptyInt(int v):intval(v)
+     { if (v!=0) strval=itos(v); else strval=""; }
    
  operator const string() const { return strval;}
  operator int() const { return intval;}
@@ -41,11 +40,10 @@ public:
  const string getStrVal() const { return strval;}
 };
 
-class cH_EntryValueIntString : public cH_EntryValue
+class cH_EntryValueEmptyInt : public cH_EntryValue
 {
 public:
- cH_EntryValueIntString(int v) : cH_EntryValue(new EntryValueIntString(v)) {}
- cH_EntryValueIntString(const string &s) : cH_EntryValue(new EntryValueIntString(s)) {}
+ cH_EntryValueEmptyInt(int v) : cH_EntryValue(new EntryValueEmptyInt(v)) {}
 };
   
 #endif // ENTRYVALH
