@@ -1,4 +1,4 @@
-/* $Id: Ueberweisung.h,v 1.3 2003/04/26 11:12:44 jacek Exp $ */
+/* $Id: Ueberweisung.h,v 1.4 2003/04/30 08:26:28 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -52,12 +52,27 @@ class Ueberweisung : public ManuProcEntity<>
    
    int buchungskonto;
    int buchungsjournal;
+
 public:
+
+   typedef struct {
+      long blz;
+      long long konto;
+      long ownblz;
+      long long ownkonto;   
+      fixedpoint<2> betrag;
+      ManuProC::Datum erfasstam;
+      int erfasstdurch;
+      std::string auftraggeber;
+      std::string empfaenger;
+      std::vector<std::string> vzweck;
+      } InsertStr;
+
 
   Ueberweisung(ManuProcEntity<>::ID uid) throw(SQLerror);
   Ueberweisung();
 
-  static Ueberweisung &newUeberweisung() throw(SQLerror);
+  static Ueberweisung *newUeberweisung(const InsertStr &is) throw(SQLerror);
 
   ID Id() const { return ID(entityid); }
 

@@ -1,4 +1,4 @@
-/* $Id: Ueberweisung.cc,v 1.3 2003/04/26 11:12:44 jacek Exp $ */
+/* $Id: Ueberweisung.cc,v 1.4 2003/04/30 08:26:28 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,6 +19,7 @@
 
 
 #include "Ueberweisung.h"
+#include <Aux/Transaction.h>
 #include <pwd.h>
 #include <sys/types.h>
         
@@ -79,12 +80,40 @@ Ueberweisung::Ueberweisung()
 {}
 
 
-Ueberweisung &Ueberweisung::newUeberweisung() throw(SQLerror)
+Ueberweisung *Ueberweisung::newUeberweisung(const InsertStr &is) throw(SQLerror)
 {
-
-
-
-
+ Transaction tr;
+ 
+ Ueberweisung::ID ui;
+ 
+ Query("select nextval('ueberweisung_seq')") >> ui;
+ SQLerror::test(__FILELINE__);
+ 
+ Query("insert into ueberweisungen "
+ 	" (id,eigenes_konto,eigene_blz,dest_konto,dest_blz,"
+ 	"  betrag,auftraggeber,empfaenger,verwendungszweck0,"
+ 	"  verwendungszweck1,"
+ 	"  verwendungszweck2,"
+ 	"  verwendungszweck3,"
+ 	"  eingegeben_am,eingegebndurch) values "
+ 	" (?,?,?,?,?,"
+ 	"  ?,?,?,?,?,?,?,"
+ 	"  now(),?)") << ui << 
+ 	(long long unsigned int)(is.ownkonto) << 
+ 	is.ownblz << 
+ 	(long long unsigned int)(is.konto) << 
+ 	is.blz <<
+ 	is.betrag << is.auftraggeber << is.empfaenger <<
+ 	is.vzweck[0] << is.vzweck[1] << is.vzweck[2] << is.vzweck[2] <<
+ 	is.erfasstdurch;
+ SQLerror::test(__FILELINE__);
+ 
+ Ueberweisung *u = new Ueberweisung(ui);
+ SQLerror::test(__FILELINE__); 
+ 
+ tr.commit();
+ 
+ return u;
 }
 
 
