@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.19 2003/10/06 10:15:16 jacek Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.20 2003/11/26 12:13:32 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -179,7 +179,7 @@ void AufEintrag::ProduziertNG(mengen_t M,const ProductionContext2 &ctx)
    	 assert(!"Rest geblieben");
    }
 
-#if defined MABELLA_EXTENSIONS && defined MABELLA_LAGERHACK
+#if defined(MABELLA_EXTENSIONS) && defined(MABELLA_LAGERHACK)
 
 if(Instanz() == ppsInstanzID::Kundenauftraege)
   {  FertigWaren fw(artikel,(FertigWaren::enum_Aktion)'L',

@@ -198,8 +198,7 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
     query="select id from "+artbez_tabelle+" where ";
     for(std::vector<std::string>::const_iterator s=ins_all_komp.begin();
 	s!=ins_all_komp.end(); ++s)
-	{
-	 ExtBezSchema::BezKomp bk=(*ebz)[*s];
+	{ ExtBezSchema::BezKomp bk=(*ebz)[*s];
 	   query+=bk.spaltenname+"='"+
 	   ab->Komponente(bk.folgenr_in_sig,bk.signifikanz)+"' and ";
 	}
@@ -272,34 +271,44 @@ void Artikelpreis::changePreis(const Preis &p, int newmindmenge) throw(SQLerror)
 	<< ARTIKELID << gefunden_in << MINDESTMENGE
 	>> PREIS_ALT;
 
- Query("insert into preis_change_journal "
+ const ArtikelBase abase(artikel);
+ cH_ArtikelBezeichnung ab(abase);
+ cH_ExtBezSchema ebz=ab->getExtBezSchema();
+ std::string artbez_tabelle=" artbez_"+itos(ebz->Typ().Id())+"_"+itos(ebz->Id());
+
+ std::string query("insert into preis_change_journal "
 	"(artikelid,prlsnr,zeitpunkt,preis_alt,preis_neu,uid,mindestmenge) "
 	"(select artikelid, ?, now(), preis, ?, ?, ? "
 	"from artikelpreise where kundennr=? and "
 	"mindestmenge=? and "
 	"artikelid in "
-	"(select a.id from artbez_3_1 a join artbez_3_1 b "
-	"on ( a.artikel=b.artikel and "
-		"a.breite=b.breite and "
-		"a.aufmachung=b.aufmachung "
-		"and b.id=?)"
-	"))")
-	<< gefunden_in << p.Wert() << UID << NEWMINDMENGE
+	"(select a.id from "+artbez_tabelle+" a join "+
+	artbez_tabelle+" b on ( ");
+
+ std::string join_komponenten;
+ for(ExtBezSchema::const_psigiterator bezit=ebz->psigbegin(true);
+	bezit!=ebz->psigend(true); ++bezit)
+    join_komponenten+="a."+bezit->spaltenname+"=b."+bezit->spaltenname+" and ";
+
+ join_komponenten+=" b.id=?";
+ query+=join_komponenten+")))";
+
+ Query(query) << gefunden_in << p.Wert() << UID << NEWMINDMENGE
 	<< gefunden_in << MINDESTMENGE 
 	<< ARTIKELID;
+
  SQLerror::test(__FILELINE__);	
  
- Query("update artikelpreise set "
+ query=std::string("update artikelpreise set "
  	"preis=?,preismenge=?,waehrung=?,mindestmenge=? "
 	"where kundennr=? and "
 	"mindestmenge=? and artikelid in "
-	"(select a.id from artbez_3_1 a join artbez_3_1 b "
-	"on (	a.artikel=b.artikel and "
-		"a.breite=b.breite and "
-		"a.aufmachung=b.aufmachung and "
-		"b.id=?)"
-	")")
-	<< p.Wert() << p.PreisMenge() << p.getWaehrung()->Id() 
+	"(select a.id from "+artbez_tabelle+" a join "+
+	artbez_tabelle+" b on (	");
+
+ query+=join_komponenten+"))";
+
+ Query(query) << p.Wert() << p.PreisMenge() << p.getWaehrung()->Id() 
 	<< NEWMINDMENGE
 	<< gefunden_in << MINDESTMENGE 
 	<< ARTIKELID;

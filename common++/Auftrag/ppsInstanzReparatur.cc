@@ -217,7 +217,7 @@ std::vector<LagerInhalt> ppsInstanzReparatur::getLagerInhalt() const
   if(Instanz() == ppsInstanzID::Rohwarenlager)  LI=RohwarenLager().LagerInhalt();
   else if(Instanz() == ppsInstanzID::Bandlager) LI=JumboLager().LagerInhalt();
   else 
-#elif defined MABELLA_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
+#elif defined(MABELLA_EXTENSIONS) && defined(MANUPROC_DYNAMICENUMS_CREATED)
   if(Instanz() == ppsInstanzID::Fertigwarenlager)  
 	LI=FertigWarenLager().LagerInhalt();
   else 
