@@ -38,15 +38,15 @@ PreisListeFull::PreisListeFull(ID id, bool art_in_list) throw(SQLerror) : PreisL
  std::string plid=itos(PRLSNR);
 
  if(art_in_list)
-   {qu=string("select artikelid,preis,preismenge from artikelpreise"
+   {qu=std::string("select artikelid,preis,preismenge from artikelpreise"
  	" where kundennr = ")+plid;
    }
  else
    {
-    qu=string("select id,coalesce(preis_alt,0),0 from artikelstamm s "
+    qu=std::string("select id,coalesce(preis_alt,0),0 from artikelstamm s "
 	" left join preis_change_journal c on "
 	" (c.artikelid=s.id and c.prlsnr=")+plid;
-    qu+=string(" and preis_alt is not null and cast(preis_neu as float) = 0.0)"
+    qu+=std::string(" and preis_alt is not null and cast(preis_neu as float) = 0.0)"
 	" where not exists"
  	" (select p.artikelid from artikelpreise p"
 	"  where p.artikelid=s.id and kundennr = ")+plid+
