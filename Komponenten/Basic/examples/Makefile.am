@@ -1,2 +1,9 @@
 SUBDIRS=newtree tree_simplest dwhouse MVC
 
+EXTRA_PROGRAMS = Event
+
+AM_CXXFLAGS=@KOMPONENTEN_INCLUDES@
+
+Event_SOURCES=Event.cc
+
+Event_LDADD=@KOMPONENTEN_LIBS@

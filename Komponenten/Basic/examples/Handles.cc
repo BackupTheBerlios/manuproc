@@ -1,4 +1,4 @@
-// $Id: Handles.cc,v 1.3 2002/06/24 07:45:24 christof Exp $
+// $Id: Handles.cc,v 1.4 2003/05/11 22:09:28 christof Exp $
 /*  ManuProcWidgets: ManuProC's GUI element library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,12 +20,12 @@
 
 #include <Misc/Handles.h>
 #include <iostream>
-#include <gtk--/window.h>
-#include <gtk--/main.h>
-#include <gtk--/clist.h>
-#include <gtk--/box.h>
-#include <gtk--/optionmenu.h>
-#include <gtk--/scrolledwindow.h>
+#include <gtkmm/window.h>
+#include <gtkmm/main.h>
+#include <gtkmm/clist.h>
+#include <gtkmm/box.h>
+#include <gtkmm/optionmenu.h>
+#include <gtkmm/scrolledwindow.h>
 #include <Gtk_OStream.h>
 
 class A : public HandleContent
@@ -82,7 +82,7 @@ void MeinFenster::on_clist1_select_row(gint row, gint column, GdkEvent *event)
 }
 
 MeinFenster::MeinFenster()
-  : Gtk::Window(GTK_WINDOW_TOPLEVEL), clist1(0), optionmenu1(0)
+  : Gtk::Window(Gtk::WINDOW_TOPLEVEL), clist1(0), optionmenu1(0)
 {
    Gtk::Window *window1=this;
    clist1 = manage(new class Gtk::CList(2));
@@ -119,13 +119,12 @@ MeinFenster::MeinFenster()
     os << "3"; os.flush(Ah(3)->ref(),&A::unref);
     os << "4"; os.flush(Ah(4)->ref(),&A::unref);
    }
-   clist1->select_row.connect(SigC::slot(this, &MeinFenster::on_clist1_select_row));
-   optionmenu1->get_menu()->deactivate.connect(SigC::slot(this, &MeinFenster::om_clicked));
+   clist1->signal_select_row().connect(SigC::slot(*this, &MeinFenster::on_clist1_select_row));
+   optionmenu1->get_menu()->signal_deactivate().connect(SigC::slot(*this, &MeinFenster::om_clicked));
 }
 
 int main(int argc, char **argv)
 {  Gtk::Main m(&argc, &argv);
-   manage(new MeinFenster());
-   m.run();
+   m.run(*new MeinFenster());
    return 0;   
 }
