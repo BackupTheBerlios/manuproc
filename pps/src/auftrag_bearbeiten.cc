@@ -445,6 +445,11 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
 #endif
       if(instanz==ppsInstanzID::Kundenauftraege || instanz->ExterneBestellung())
        {
+         if(instanz->ExterneBestellung())
+            WAufEntryStat->set_history((AufStatVal)UNCOMMITED); 
+         else
+            WAufEntryStat->set_history((AufStatVal)OPEN); 
+
          auftrag->push_back(
                stkmtr_spinbutton->get_value_as_int(),
                liefdatum_datewin->get_value(),
