@@ -429,9 +429,9 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
    }	           
    
 #endif
-      if(instanz==ppsInstanzID::Kundenauftraege)
+      if(instanz==ppsInstanzID::Kundenauftraege || instanz->ExterneBestellung())
        {
-         auftrag->AuftragFull::push_back(
+         auftrag->push_back(
                stkmtr_spinbutton->get_value_as_int(),
                liefdatum_datewin->get_value(),
                artikelbox->get_value(),
@@ -440,29 +440,10 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
                rabattentry_spinbutton->get_value_as_float(),
                artpreis);
        }
-      else if(instanz->ExterneBestellung())
-       {
-#warning AUSKOMMENTIERT, weil es nicht kompiliert !!!
-/*
-         AuftragBase AB(*auftrag);
-         ManuProC::st_produziert sp(artikelbox->get_value(),stkmtr_spinbutton->get_value_as_int(),
-               getuid(),Kunde::eigene_id,LieferscheinBase::none_id,AB,liefdatum_datewin->get_value());
-         instanz->Planen(sp);
-         AufEintrag AE((AufEintragBase(AB,sp.ZNr)));
-         AE.updatePreis(WPreis->get_Preis());
-         AE.updateRabatt(rabattentry_spinbutton->get_value_as_float());
-         auftrag->AuftragFull::push_back(AE);
-*/         
-         auftrag->AuftragFull::push_back(
-               stkmtr_spinbutton->get_value_as_int(),
-               liefdatum_datewin->get_value(),
-               artikelbox->get_value(),
-               WAufEntryStat->get_Status(),
-               WPreis->get_Preis(),
-               rabattentry_spinbutton->get_value_as_float(),
-               artpreis);
-       }
-      else assert(!"never get here");
+      else 
+      { meldung->Show("In dieser Produktionsebene können keine Aufträge geschrieben werden");
+        return;
+      }
       fillCList();
       if (!masseneingabe1->get_active())
       {  artikelbox->reset();
