@@ -403,7 +403,7 @@ std::cout << dummystring<<'\n';
           assert(!"FEHLER: MIT REPARATURPROGRAMM KOMPILIEREN\n");
        #endif
        AufEintragBase AEB=auftrag.anlegen2();
-       vergleichen(C,Check::Menge,"_rep_zwei_auftraege_anlegen","Anlegen eines zweiten (offenen) Auftrags ["<<AEB<<"] \n\n",mit_reparatur_programm);
+       vergleichen(C,Check::Menge,"_rep_zwei_auftraege_anlegen","Anlegen eines zweiten (offenen) Auftrags ["+AEB.str()+"]",mit_reparatur_programm);
       {
        Auftrag PA=Auftrag(Auftrag::Anlegen(SPRITZGIESSEREI),ManuProC::DefaultValues::EigeneKundenId);
        AufEintrag AEP((AufEintragBase(SPRITZGIESSEREI,AuftragBase::ungeplante_id,1)));
@@ -535,7 +535,7 @@ std::cout << "D13: "<<dummystring<<'\n';
        vergleichen(C,Check::Menge,"_planen_fuer_zweiten_auftrag","Über-Planen der Färberei \n\n",mit_reparatur_programm);
        }
        AufEintragBase AEB=auftrag.anlegen2();
-       vergleichen(C,Check::Menge,"_zwei_auftraege_anlegen","Anlegen eines zweiten (offenen) Auftrags ["<<AEB<<"] \n\n",mit_reparatur_programm);
+       vergleichen(C,Check::Menge,"_zwei_auftraege_anlegen","Anlegen eines zweiten (offenen) Auftrags ["+AEB.str()+"] \n\n",mit_reparatur_programm);
       cout << "ZweiAufträge-Test erfolgreich\n";
 
        break;
@@ -547,13 +547,13 @@ std::cout << "D13: "<<dummystring<<'\n';
 
        AufEintragBase AEB=auftrag.anlegen3();
 
-       vergleichen(C,Check::Menge,"_zwei_auftraege_datum","Anlegen eines zweiten (offenen) Auftrags ["<<AEB<<"] mit früherem Liefertermin \n\n",mit_reparatur_programm);
+       vergleichen(C,Check::Menge,"_zwei_auftraege_datum","Anlegen eines zweiten (offenen) Auftrags ["+AEB.str()+"] mit früherem Liefertermin \n\n",mit_reparatur_programm);
 
        {
           AufEintrag AE(AEB);
         AE.Produziert(200,Lieferschein::none_id);
        }
-       vergleichen(C,Check::Menge,"_zwei_auftraege_datum_abschreiben","Teil-Abschreiben des zweiten Auftrags ["<<AEB<<"] \n\n",mit_reparatur_programm);
+       vergleichen(C,Check::Menge,"_zwei_auftraege_datum_abschreiben","Teil-Abschreiben des zweiten Auftrags ["+AEB.str()+"] \n\n",mit_reparatur_programm);
 
 //ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
 
@@ -630,7 +630,7 @@ std::cout << "D13: "<<dummystring<<'\n';
     case Lieferscheintest_ZweiterAuftrag_frueheresDatum:
      {
        AufEintragBase AEB=auftrag.anlegen3();
-       vergleichen(C,Check::Menge,"_zwei_auftraege_datum","Anlegen eines zweiten (offenen) Auftrags ["<<AEB<<"] mit früherem Liefertermin \n\n",mit_reparatur_programm);
+       vergleichen(C,Check::Menge,"_zwei_auftraege_datum","Anlegen eines zweiten (offenen) Auftrags ["+AEB.str()+"] mit früherem Liefertermin \n\n",mit_reparatur_programm);
 
 #ifdef PETIG_TEST
 
@@ -790,7 +790,7 @@ ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
     case ZweiKundenTest:
      {
        AufEintragBase AEB2=auftrag.anlegenK();
-       vergleichen(C,Check::Menge,"_ZK_anlegen","Anlegen eines zweiten (offenen) Auftrags für einen anderen Kunden ["<<AEB<<"] \n\n",mit_reparatur_programm);
+       vergleichen(C,Check::Menge,"_ZK_anlegen","Anlegen eines zweiten (offenen) Auftrags für einen anderen Kunden ["+AEB.str()+"] \n\n",mit_reparatur_programm);
 
       {AufEintrag AE(AEB);
         AE.Produziert(300,Lieferschein::none_id);
@@ -815,10 +815,10 @@ ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
      }
     case ZweiKundenMengeFreigebenTest:
      {
-      #ifdef PETIG_TEST
+#      ifdef PETIG_TEST
 
        AufEintragBase AEB2=auftrag.anlegenK();
-       vergleichen(C,Check::Menge,"_ZK_anlegen","Anlegen eines zweiten (offenen) Auftrags für einen anderen Kunden ["<<AEB<<"] \n\n",mit_reparatur_programm);
+       vergleichen(C,Check::Menge,"_ZK_anlegen","Anlegen eines zweiten (offenen) Auftrags für einen anderen Kunden ["+AEB.str()+"] \n\n",mit_reparatur_programm);
 
        {
          cH_ppsInstanz I(ppsInstanzID::Bandlager);
