@@ -919,14 +919,14 @@ void auftrag_main::show_frame_instanzen_material()
   if(instanz == ppsInstanzID::Kundenauftraege)
    {
     togglebutton_bestellen->hide(); 
-    mainprint_button->show();
+//    mainprint_button->show();
     rechnung_button->show();
     togglebutton_auftraege->hide();
     button_faerben->show();    
    }
   else
    {
-    mainprint_button->hide();
+//    mainprint_button->hide();
     rechnung_button->hide();
     button_faerben->hide();    
    }
