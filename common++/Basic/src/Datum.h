@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.23 2004/02/16 10:36:12 christof Exp $ */
+/* $Id: Datum.h,v 1.24 2004/03/08 16:12:41 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -43,9 +43,7 @@ public:
    static const int tagfalsch=1;
    static const int monatfalsch=2;
    static const int jahrfalsch=4;
-   Datumsfehler(int _falsch) throw() 
-   	:  falsch(_falsch)
-   {}
+   Datumsfehler(int _falsch) throw();
    friend std::ostream &operator<<(std::ostream&,const Datumsfehler &);
    virtual const char* what() const throw() { return "ManuProC::Datumsfehler"; }
 };

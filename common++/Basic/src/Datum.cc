@@ -1,4 +1,4 @@
-// $Id: Datum.cc,v 1.26 2004/02/16 10:36:12 christof Exp $
+// $Id: Datum.cc,v 1.27 2004/03/08 16:12:41 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.26 2004/02/16 10:36:12 christof Exp $ */
+/* $Id: Datum.cc,v 1.27 2004/03/08 16:12:41 christof Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
@@ -356,6 +356,11 @@ ManuProC::Datum::Datum(int t, int m, int j,bool expandyear) throw(Datumsfehler)
    }
    teste();
 }
+
+// damit man endlich mal einen Breakpoint drauf setzen kann ...
+ManuProC::Datumsfehler::Datumsfehler(int _falsch) throw()
+	:  falsch(_falsch)
+{}
 
 #ifdef DEFAULT_DB // actually we should test for database support
 FetchIStream &operator>>(FetchIStream &is, ManuProC::Datum &v)
