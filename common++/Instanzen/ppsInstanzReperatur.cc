@@ -194,13 +194,20 @@ std::cout << "Endmenge: "<<menge<<'\n';
 }   
 
 
+#include <Aux/Trace.h>
 void ppsInstanz::DispoAuftraege_anlegen(const int uid,const ArtikelBase &artikel,const AuftragBase::mengen_t &menge) const
 {
-//   AuftragBase da(this,AuftragBase::dispo_auftrag_id);
+   assert(EigeneLagerKlasseImplementiert());
+   LagerBase(this).rein_ins_lager(artikel,menge,uid);
+/*
    bool alt=AuftragBase::dispo_auftrag_aendern(uid,this,artikel,menge);  
    const std::string ab=cH_ArtikelBezeichnung(artikel)->Bezeichnung();
    if(alt) std::cout << "Update von "<<ab<<"\tum "<<menge<<'\n';
    else    std::cout << "Neuanlegen von "<<ab<<"\tmit "<<menge<<'\n';
+
+   if(menge!>0)
+      AuftragBase::menge_neu_verplanen(uid,this,artikel,menge,ManuProC::Auftrag::r_Produziert);
+*/   
 }
 
 

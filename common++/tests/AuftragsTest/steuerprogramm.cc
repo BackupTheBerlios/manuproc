@@ -43,7 +43,7 @@ enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
       LieferscheintestZusatz,Lieferscheintest_ZweiterAuftrag_frueheresDatum,
       LieferscheinJacek,
       ZweiKundenTest,ZweiKundenMengeFreigebenTest,ManuProCTest,
-      JumboLager,Rep_Mabella};
+      JumboLager,Rep_Mabella,Rep_Petig_PhysikalischesLager};
 
 static int fehler()
 {
@@ -224,7 +224,7 @@ int auftragstests(e_mode mode)
                return fehler();}
 
       cout << "Mengen Test erfolgreich\n";
-
+             
       break;
      }
     case Plantest:
@@ -269,6 +269,7 @@ int auftragstests(e_mode mode)
       break;
      }
     case Splittest :
+    case Rep_Petig_PhysikalischesLager:
      {
       AE.split(UID,300,SPLITDATUM);
       erfolgreich=C.teste(Check::Split,mit_reparatur_programm);
@@ -293,6 +294,34 @@ std::cout << dummystring<<'\n';
       if(!erfolgreich) { cout << "Rohwarenlager auslagern\n";
                return fehler();}
       cout << "Split-Test erfolgreich\n";
+
+      if(mode!=Rep_Petig_PhysikalischesLager) break;
+      #ifndef REPARATUR_PROGRAMM_TESTEN
+        assert(!"FEHLER: MIT REPARATURPROGRAMM KOMPILIEREN\n");
+      #endif
+      // Physikalisches Lager ändern 
+//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+      std::string qB="insert into rl_inhalt (position_,kartons,reste,kg_per_karton,"
+         " material,eingelagert,rest_kg)"
+         " values ('07D5',10,0,5,211007,'2002-11-28',0)";
+      Query::Execute(qB);
+      SQLerror::test(__FILELINE__);
+      erfolgreich=C.teste(Check::Menge,"_split_reparatur",mit_reparatur_programm,true);
+      if(!erfolgreich) { cout << "Reparatur-Split-Test (Garnlager) auslagern\n";
+               return fehler();}
+
+      std::string qJ="insert into rohjumbo (code,maschine,soll_meter,plan_datum,"
+         " status,lauf,gang,wiederinslager,artikelid,rest,lagerplatz) "
+         " values (101,212,700,'2002-11-28',2,1,1,'2002-01-01 12:00:00+01',"
+         " 123755,false,712)";
+      Query::Execute(qJ);
+      SQLerror::test(__FILELINE__);
+      erfolgreich=C.teste(Check::Menge,"_split_reparatur",mit_reparatur_programm,true);
+      if(!erfolgreich) { cout << "Reparatur-Split-Test (Bandlager) auslagern\n";
+               return fehler();}
+
+      cout << "Reparatur-Test (Petig, Physikalisches Lager) erfolgreich\n";
+
 #endif
       break;
      }
@@ -330,22 +359,8 @@ std::cout << "D2:" <<dummystring<<'\n';
       if(!erfolgreich) { cout << "Planen der Weberei zum späteren Test des Bandlagers \n\n";
                return fehler();}
 
-/*
-      Lager BL((cH_ppsInstanz(ppsInstanzID::Bandlager)));
-      BL.rein_ins_lager(ARTIKEL_BANDLAGER,12000,UID);
-*/
-      class JumboLager JL;
-      Kette K(MASCHIENE-10,SCHAERDATUM);
-      std::vector <ArtikelGang> artgang;
-      artgang.push_back(ArtikelGang(GAENGE,ARTIKEL_BANDLAGER));
-      KettplanKette KK=KettplanKette::create(K,artgang,12000,12000); 
-      vector<JumboRolle> JR=JumboRolle::create(KK);
-      assert(JR.size()==1);
-      Zeitpunkt_new zp("2002-1-1 12:00");
-
 //ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
-
-      JL.Jumbo_Einlagern(LagerPlatzJumbo,JR.front(),JumboLager::Einlagern,UID,"testuser",&zp);
+      DataBase_init::createJumbo(-10,12000);
 std::cout << dummystring<<'\n';
       erfolgreich=C.teste(Check::Bandlager_einlagern,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Bandlager einlagern\n";
@@ -367,7 +382,7 @@ std::cout << dummystring<<'\n';
                return fehler();} 
 
       // test von force, leer, etc
-#if 1
+#if 0
       dummystring="";
       RohwarenLager::st_rohlager stRL10(LagerPlatzKupfer2,6,35,1,7,ARTIKEL_ACETAT,ManuProC::Datum().today());
       RL.RL_Einlagern(LagerPlatzKupfer2,stRL10,UID,dummystring,true);
@@ -796,13 +811,15 @@ std::cout << "D13: "<<dummystring<<'\n';
 void usage(const std::string &argv0,const std::string &argv1)
 {
   cerr << argv0 <<" muß mit [(M)engentest|(P)lantest|(L)agertest|\n"
-                  "\t(S)plittest|(Z)weiAuftraege|ZweiterAuftrag_frueheres(D)atum|\n"
+                  "\t(S)plittest|(Z)weiAuftraege|"
+                  "\tZweiterAuftrag_frueheres(D)atum|\n"
                   "\t(L)iefer(s)cheine|(L)ieferscheine(m)engen|\n"
                   "\t(L)ieferschein(Z)usatzeintrag|(L)ieferscheinZweiter(A)uftrag_frueheresDatum|\n"
                   "\t(Z)wei(K)unden)\n"
                   "\t(Z)wei(K)unden(M)engeFreigeben\n"
                   "\t(M)anu(P)roCTest\n"
                   "\t(J)umboLager\n"
+                  "\t(R)eparatur(P)hysikalischesLager\n"
                   "\t(R)eparartur(M)Mabella] aufgerufen werden\n"
        << " nicht mit '"<<argv1<<"'\n";
   exit(1);
@@ -830,6 +847,7 @@ int main(int argc,char *argv[])
    else if(std::string(argv[1])=="MP" || std::string(argv[1])=="ManuProCTest")  mode=ManuProCTest;
    else if(std::string(argv[1])=="J" || std::string(argv[1])=="JumboLager")  mode=JumboLager;
    else if(std::string(argv[1])=="RM" || std::string(argv[1])=="ReparaturMabella")  mode=Rep_Mabella;
+   else if(std::string(argv[1])=="RP" || std::string(argv[1])=="Rep_Petig_PhysikalischesLager")  mode=Rep_Petig_PhysikalischesLager;
 
    if(mode==None) { usage(argv[0],argv[1]); return 1; }
    
