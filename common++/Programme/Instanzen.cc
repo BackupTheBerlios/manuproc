@@ -1,4 +1,4 @@
-// $Id: Instanzen.cc,v 1.12 2003/01/08 09:46:57 christof Exp $
+// $Id: Instanzen.cc,v 1.13 2003/07/11 10:31:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -44,15 +44,15 @@ int main(int argc, char *argv[])
    for(std::vector<cH_ppsInstanz>::const_iterator i=VI.begin();i!=VI.end();++i)
     {
      AuftragBase AB(*i,AuftragBase::ungeplante_id);
-     AB.create_if_not_exists(OPEN,Kunde::default_id);
-//     if(!(*i)->LagerInstanz()) continue;
-     std::cout << "Lager Aufträge initialisieren: "<<(*i)->Name()<<' '
-          <<(*i)->Id()<<' '<<(*i)->LagerInstanz()<<'\n';
+     if (AB.create_if_not_exists(OPEN))
+        std::cout << ((*i)->LagerInstanz()?"Lager ":"") 
+     	  << "Auftrag erzeugt "<< AB << '\n';
      AuftragBase ABL(*i,AuftragBase::plan_auftrag_id);
-     ABL.create_if_not_exists(OPEN,Kunde::default_id);
-     std::cout << "Dispo Aufträge initialisieren: "<<(*i)->Name()<<' '<<(*i)->Id()<<'\n';
+     if (ABL.create_if_not_exists(OPEN))
+        std::cout << "Auftrag erzeugt "<< ABL << '\n';
      AuftragBase ABD(*i,AuftragBase::dispo_auftrag_id);
-     ABD.create_if_not_exists(OPEN,Kunde::default_id);
+     if (ABD.create_if_not_exists(OPEN))
+        std::cout << "Auftrag erzeugt "<< ABD << '\n';
     }
 
  }catch(SQLerror &e){std::cout << e<<'\n';}

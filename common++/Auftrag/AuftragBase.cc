@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.41 2003/07/11 10:13:35 christof Exp $
+// $Id: AuftragBase.cc,v 1.42 2003/07/11 10:31:10 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -176,14 +176,15 @@ bool AuftragBase::Exists() const throw(SQLerror)
  	.FetchOne<bool>();
 }
 
-void AuftragBase::create_if_not_exists(AufStatVal status,Kunde::ID kunde) const
+bool AuftragBase::create_if_not_exists(AufStatVal status,Kunde::ID kunde) const
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Status",status),NV("Kunde",kunde));
-  if(Exists()) return;
+  if(Exists()) return false;
   Query("insert into auftrag (instanz,auftragid,kundennr,stat) "
   	"values (?,?,?,?)").lvalue()
   	<< *this << kunde << status;
  SQLerror::test(__FILELINE__);
+ return true;
 }
 
 

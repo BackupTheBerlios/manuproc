@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.51 2003/07/03 15:54:52 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.52 2003/07/11 10:31:10 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -109,7 +109,7 @@ public:
    Kunde::ID getVerknr() const throw(SQLerror);	
 
 // wird in Instanzen.cc verwendet
-   void create_if_not_exists(AufStatVal status,Kunde::ID kunde=Kunde::default_id) const;
+   bool create_if_not_exists(AufStatVal status,Kunde::ID kunde=Kunde::default_id) const;
 // wird in AufEintrag_sql.pgcc verwendet
    // könnte eigentlich durch 
    // AuftragBase(instanz,AB::dispo_auftrag_id).BestellmengeAendern 
