@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.41 2004/04/29 10:50:48 christof Exp $
+# $Id: configure.in,v 1.42 2004/04/29 10:52:03 christof Exp $
 
 AC_PREREQ(2.50)
 AC_INIT(libcommon++, 0.0, [manuproc-developer-de@berlios.de])
@@ -20,7 +20,7 @@ AC_SUBST(CXXFLAGS)
 m4_ifdef([AM_PATH_SIGC],[],[AC_DEFUN(AM_PATH_SIGC,[$3])])
 
 AC_ARG_ENABLE(sigc1-0, [  --enable-sigc1-0	prefer sigc 1.0],
-	[AM_PATH_SIGC(1.0.0,,AC_MSG_ERROR("SigC++ 1.0.0 or newer not found or broken - see config.log for details."))],
+	[AM_PATH_SIGC(1.0.0,[mpc_sigc_version=0x100],AC_MSG_ERROR("SigC++ 1.0.0 or newer not found or broken - see config.log for details."))],
 	[PKG_CHECK_MODULES(SIGC,[sigc++-2.0 >= 1.9.15],[
 		AC_SUBST(SIGC_CFLAGS)
 		AC_SUBST(SIGC_LIBS)
