@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.h,v 1.16 2002/12/18 11:29:41 jacek Exp $
+// $Id: Zahlungsart.h,v 1.17 2003/01/06 00:16:01 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,6 +28,7 @@
 #include <Aux/Waehrung.h>
 #include <Aux/fixedpoint.h>
 #include <Aux/Datum.h>
+#include <Aux/multi_lang.h>
 
 class cH_Kunde;
 
@@ -79,12 +80,14 @@ public:
 		const fixedpoint<2> einzugrabattbetrag, 
 		const ManuProC::Datum &zahlziel,
 		const ManuProC::Datum &rgdatum,		
-		const cH_Kunde k) const;
+		const cH_Kunde k,
+		MultiL_Dict &mld) const;
 		
     void TeX_out(std::ostream &os,
 		const ManuProC::Datum &zahlziel,
 		const cH_Kunde k,
-		const fixedpoint<2> skontobetrag) const;
+		const fixedpoint<2> skontobetrag,
+		MultiL_Dict &mld) const;
 
     bool operator==(const Zahlungsart& b) const
               {return Id()==b.Id();} 

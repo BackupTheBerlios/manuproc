@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.cc,v 1.17 2002/12/19 11:10:19 jacek Exp $
+// $Id: Zahlungsart.cc,v 1.18 2003/01/06 00:16:01 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -62,8 +62,14 @@ void Zahlungsart::TeX_out(std::ostream &os,
 		const fixedpoint<2> einzugrabattbetrag, 
 		const ManuProC::Datum &zahlziel,
 		const ManuProC::Datum &rgdatum,
-		const cH_Kunde k) const
+		const cH_Kunde k,
+		MultiL_Dict &mld) const
 {
+ char strbuf[1000];
+ int BSIZE=sizeof strbuf;
+ 
+ typedef MultiL_Dict TID;
+
  if(bankeinzug)
   {
   if(verfahren==LCR)
@@ -149,10 +155,10 @@ void Zahlungsart::TeX_out(std::ostream &os,
 	}
       else
         if(zahlungsfrist)
-	     {if(Id()==3)
-                os << "Zahlung innerhalb " << zahlungsfrist << " (dann bis Monatsende) Tage netto.";
-	      else
-                os << "Zahlung innerhalb " << zahlungsfrist << " Tage netto.";
+	     {snprintf(strbuf,BSIZE,mld.MLT(
+	     	(monatsende ? TID::PRINTF_ZAHLUNG2 : TID::PRINTF_ZAHLUNG1)).c_str(),
+	     	zahlungsfrist);
+             os << strbuf;
 	     }
          else
              os << "Zahlung sofort netto\\\\\n";
@@ -164,7 +170,8 @@ void Zahlungsart::TeX_out(std::ostream &os,
 void Zahlungsart::TeX_out(std::ostream &os,
 		const ManuProC::Datum &zahlziel,
 		const cH_Kunde k,
-		const fixedpoint<2> skontobetrag) const
+		const fixedpoint<2> skontobetrag,
+		MultiL_Dict &mld) const
 {
  if(bankeinzug)
   {
@@ -239,7 +246,7 @@ void Zahlungsart::TeX_out(std::ostream &os,
       else        
         if(zahlungsfrist)
 	     {if(Id()==3)
-            os << "Zahlung innerhalb " << zahlungsfrist << " (dann bis Monatsende) Tage netto.";
+            os << "Zahlung innerhalb " << zahlungsfrist << "  Tage (dann bis Monatsende) netto.";
 	      else
             os << "Zahlung innerhalb " << zahlungsfrist << " Tage netto.";
 	     }

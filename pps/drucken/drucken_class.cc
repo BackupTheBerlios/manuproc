@@ -25,7 +25,7 @@
 #include <Kunde/TelefonArt.h>
 #include <pwd.h>
 #include <unistd.h>
-#include "multi_lang.h"
+#include <Aux/multi_lang.h>
 
 #define TABW	"18"
 
@@ -176,6 +176,7 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
 	page_header(os);
 	os << "\\bigskip\n";
 	}
+    os << mld->MLT(TXT_ZAHLUNG) << ": ";
     getZahlungsart()->TeX_out(os,getWaehrung(),
 	skontobetrag,einzugbetrag,u.r->getZahlziel(),getDatum(),kunde_an);
     zeilen_passen_noch-=passende_zeilen;
@@ -240,6 +241,7 @@ catch(SQLerror &e) { cout << e; return; }
 #ifdef PETIG_EXTENSIONS
     os << "\\small Zahlung: "<< string2TeX(getZahlungsart()->getBezeichnung())<<"\\\\\n";
 #else
+    os << mld->MLT(TXT_ZAHLUNG) << ": "; 
     getZahlungsart()->TeX_out(os,u.a->Zahlziel(),kunde_an,skontobetrag);
 #endif
     zeilen_passen_noch-=8;

@@ -114,6 +114,7 @@ libcommon___a_LIBADD= \
 		Misc/Datum.o \
 		Misc/dbconnect.o \
 		Misc/dbcapability.o \
+		Misc/multi_lang.o \
 		Misc/EAN.o \
 		Misc/EAN_sql.o \
 		Misc/EntryValueBase.o \

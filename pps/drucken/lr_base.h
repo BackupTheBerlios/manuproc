@@ -5,7 +5,7 @@
 
 #include<Aux/Datum.h>
 #include<string>
-#include "multi_lang.h"
+#include <Aux/multi_lang.h>
 
 extern MultiL_Dict *mld;
 
