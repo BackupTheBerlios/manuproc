@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.35 2004/02/17 12:22:12 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.36 2004/02/19 14:14:52 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -203,8 +203,15 @@ void AufEintrag::ProduziertNG(mengen_t M,const ProductionContext2 &ctx)
 
            FertigWarenLager fwl(fw,ctx.lagerid);
 
+	   try {
            if(M < 0) fwl.Einlagern(ctx);
            else if(M > 0) fwl.Auslagern(ctx);
+	   }
+	   catch(LagerError &e)
+	     {
+	      std::cerr << e << "\n";
+	      return;
+	     }
         }
      }
 #endif

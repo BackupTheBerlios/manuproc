@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.64 2004/02/18 17:38:02 jacek Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.65 2004/02/19 14:14:52 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -532,7 +532,7 @@ std::vector<LieferscheinEntry::st_AuftragMenge> LieferscheinEntry::getAuftragsMe
 void LieferscheinEntry::setLagerid(int _lagid) throw(SQLerror)
 {
  Query("update lieferscheinentry set lagerid=? where "
-	"(lfrsid,zeile,instanz)=(?,?,?) ")
+	"(instanz,lfrsid,zeile)=(?,?,?) ")
 	<< Query::NullIf(_lagid,-1) << *this;
  lagerid=_lagid;
 }

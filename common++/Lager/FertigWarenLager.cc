@@ -20,6 +20,7 @@
 #include <Misc/Transaction.h>
 #include <Misc/TraceNV.h>
 
+
 const unsigned int FertigWarenLager::default_lagerid=1;
 
 std::pair<Zeitpunkt_new,int> FertigWarenLager::letzteInventur()
@@ -84,7 +85,7 @@ std::vector<class LagerInhalt> FertigWarenLager::LagerInhalt_
 
 
 void FertigWarenLager::Buchen(FertigWaren::e_buchen buchen,
-		const ProductionContext &ctx)
+		const ProductionContext &ctx) throw(LagerError)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
 	NV("buchen",int(buchen)),NV("artikel",fw.Artikel()),
@@ -97,6 +98,20 @@ void FertigWarenLager::Buchen(FertigWaren::e_buchen buchen,
  Query("select now()") >> z;
 
  Transaction tr;
+
+#warning NO NEGATIV AMOUNT NOW
+// we do not accept negativ mount from now on
+
+
+// Wenn Bestand würde <0 sein und es war Auslagern, dann Exception 
+// bei Einlagern ist es OK, weil man sonst nie von den negative Zahlen
+// wegkommt, ohne eine komplette Inventur 
+ int bestand=Bestand();
+ if( ((bestand+fw.Stk(buchen))) < 0  &&
+	buchen==FertigWaren::Raus
+   )
+   throw(LagerError("NEGATIVER BESTAND !",fw.Artikel().Id()));
+   
 
  Query q("insert into "+tabelle+
       	" (artikelid,menge,datum,aktion,pid,lfrsid)"
@@ -130,7 +145,7 @@ void FertigWarenLager::Buchen(FertigWaren::e_buchen buchen,
 }
 
 
-void FertigWarenLager::Inventur()
+void FertigWarenLager::Inventur() throw(LagerError)
 {
  assert(fw.Artikel().Id() != ArtikelBase::none_id);
 
@@ -150,6 +165,12 @@ void FertigWarenLager::Inventur()
   
  int buchmenge=fw.Stk(FertigWaren::AsIs)-alte_menge;
  fw.setBestand(fw.Stk(FertigWaren::AsIs));
+
+#warning NO NEGATIV AMOUNT NOW
+// we do not accept negativ mount from now on
+
+ if(fw.Bestand()<0)
+   throw(LagerError("NEGATIVER BESTAND !",fw.Artikel().Id()));
 
  q << fw.Artikel().Id()
    << buchmenge
@@ -172,4 +193,12 @@ void FertigWarenLager::Inventur()
 
  tr.commit();
 }
+
+std::ostream &operator<<(std::ostream &o,const LagerError &e) throw()
+{  o<<e.Text();
+   if (e.ArtID()!=ArtikelBase::none_id)
+      o <<': internal article ID '<<itos(e.ArtID());
+   return o;
+}
+
 

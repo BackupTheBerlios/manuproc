@@ -1,4 +1,4 @@
-// $Id: FertigWarenLager.h,v 1.19 2004/02/03 13:06:06 jacek Exp $
+// $Id: FertigWarenLager.h,v 1.20 2004/02/19 14:14:52 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -25,12 +25,33 @@
 #include <Misc/FetchIStream.h>
 
 
+class LagerError : public std::exception
+{
+ std::string text;
+ ArtikelBase::ID aid;
+ 
+public:
+ LagerError() throw() : text("unbekannter Lagerfehler"), aid(ArtikelBase::none_id) {}
+ LagerError(const std::string t) throw() : text(t), aid(ArtikelBase::none_id) {}
+ LagerError(const std::string t, const ArtikelBase::ID _id) throw() : 
+ 	text(t), aid(ArtikelBase::none_id) {}
+ ~LagerError() throw() {}
+ std::string Text() const throw() { return text; }
+ ArtikelBase::ID ArtID() const throw() { return aid; }
+ friend std::ostream &operator<<(std::ostream&,const LagerError &)
+ 					throw();
+ 
+};
+
+
+
 class FertigWarenLager : public LagerBase
 {
 private:
    FertigWaren fw;
 
-   void Buchen(FertigWaren::e_buchen e,const ProductionContext &ctx);     
+   void Buchen(FertigWaren::e_buchen e,const ProductionContext &ctx)
+   							throw(LagerError);
    
    int lagerid;
    std::string bezeichnung;
@@ -98,10 +119,11 @@ public:
   void Einlagern(const ProductionContext &ctx) {Buchen(FertigWaren::Rein,ctx);}
   void Auslagern(const ProductionContext &ctx) {Buchen(FertigWaren::Raus,ctx);}
   void WiederEinlagern() {Buchen(FertigWaren::WiederRein,ProductionContext());}
-  void Inventur();
+  void Inventur() throw(LagerError);
   const FertigWaren &getFertigWaren() const { return fw; }
   virtual std::vector<class LagerInhalt> LagerInhalt_
   		(const ArtikelBase& artikel) const;
 };
+
 
 #endif
