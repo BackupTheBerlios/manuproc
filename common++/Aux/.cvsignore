@@ -7,6 +7,8 @@ Changejournal_sql.cc
 ctime_assert.h
 Datum.cc
 Datum.h
+dbcapability.cc
+dbcapability.h
 dbconnect.cc
 dbconnect.h
 dbconnect.pgcc
