@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.2 2001/04/23 12:05:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,7 +25,7 @@
 Kunde::Kunde(ID _id) throw(SQLerror) 
 : Kundennr(_id), schema(ExtBezSchema::default_id)
 {  exec sql begin declare section;
-   int ID=_id,BEZSCHEMA,BANKINDEX;
+   int ID=_id,BEZSCHEMA,BANKINDEX,RNG_AN,PREISLISTE;
    char SORTNAME[31];
    char NAME[61], STRASSE[36], HSNR[8], POSTFACH[21],ORT[31],BANKNAME[31],
          PLZ[11],POSTFACHPLZ[11],KTONR[11],BLZ[11];
@@ -39,9 +39,11 @@ Kunde::Kunde(ID _id) throw(SQLerror)
 	 coalesce(strasse,''),
          coalesce(hsnr,''),coalesce(plz,''),coalesce(postfach,''),
          coalesce(postfplz,''),coalesce(ort,''),coalesce(text(ktonr),''),
-         coalesce(text(b.blz),''), coalesce(b.name,''), coalesce(b.bankindex,0)
+         coalesce(text(b.blz),''), coalesce(b.name,''), coalesce(b.bankindex,0),
+         coalesce(rechnung_an,kundennr), coalesce(preisliste,kundennr)
    	into :NAME, :SORTNAME, :BEZSCHEMA, :STRASSE, :HSNR, :PLZ, :POSTFACH,
-           :POSTFACHPLZ, :ORT, :KTONR, :BLZ, :BANKNAME, :BANKINDEX
+           :POSTFACHPLZ, :ORT, :KTONR, :BLZ, :BANKNAME, :BANKINDEX, :RNG_AN,
+           :PREISLISTE
    	from kunden k left join banken b using(bankindex)
    	where kundennr= :ID;
    SQLerror::test(__FILELINE__);
@@ -59,6 +61,8 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    bankverb.blz=strtoul(BLZ,NULL,10);
    bankverb.bank=BANKNAME;
    bankverb.bankindex=BANKINDEX;
+   rngan=RNG_AN;
+   preisliste=PREISLISTE;
 }
 
 

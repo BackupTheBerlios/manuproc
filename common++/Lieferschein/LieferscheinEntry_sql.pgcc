@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry_sql.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $ */
+/* $Id: LieferscheinEntry_sql.pgcc,v 1.2 2001/04/23 12:05:50 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -78,6 +78,7 @@ throw(SQLerror) : LieferscheinBase(lsb),artikel(art),
  int IMENGE;
  int PALETTE=palette;
  bool ZUSATZINFO=zusatzinfo;
+ int IREFAUFID,IREFZEILENNR;
  exec sql end declare section;
 
  Transaction tr;
@@ -87,8 +88,8 @@ throw(SQLerror) : LieferscheinBase(lsb),artikel(art),
  
  LFRSID=Id();
  ARTIKELID=art.Id();
- REFAUFID=auf.Id();
- REFZEILENNR=auf.ZNr();
+ REFAUFID=auf.Id(); IREFAUFID=REFAUFID?0:-1;
+ REFZEILENNR=auf.ZNr(); IREFZEILENNR=REFZEILENNR?0:-1;
  STK=stueck;
  MENGE=menge;
  IMENGE=MENGE?0:-1;
@@ -101,7 +102,8 @@ throw(SQLerror) : LieferscheinBase(lsb),artikel(art),
  		(lfrsid,zeile,artikelid, refauftragid, refzeilennr, stueck,
 		menge,palette,zusatzinfo)
  	values
- 		(:LFRSID,:ZEILE,:ARTIKELID,:REFAUFID,:REFZEILENNR,:STK,
+ 		(:LFRSID,:ZEILE,:ARTIKELID,:REFAUFID:IREFAUFID,
+ 		 :REFZEILENNR:IREFZEILENNR,:STK,
  		 :MENGE:IMENGE,:PALETTE,:ZUSATZINFO);
  SQLerror::test(__FILELINE__":LieferscheinEntry: insert into lieferscheinentry");
 

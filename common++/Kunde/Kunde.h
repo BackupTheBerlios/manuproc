@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: Kunde.h,v 1.2 2001/04/23 12:05:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -69,7 +69,7 @@ public:
     int kalkulation;
     fixedpoint<2> rabatt;
     int skontofrist; 
-    ID preisliste; 
+    ID preisliste;  // gibt es schon unten ...
     string verein; 
     bool bankeinzug;
     string notiz; 
@@ -88,7 +88,7 @@ private:
 	ExtBezSchema::ID schema;
 	string IDnr;
 	
-	ID rngan;
+	ID rngan,preisliste;
         bool rng_an_postfach;
         bool lieferadresse;
         bool rechnungsadresse;
@@ -133,9 +133,12 @@ public:
 
 	void update() throw(SQLerror);
 	
+	// HE und was ist mit der Datenbank? CP
 	void isLieferadresse(bool is) { lieferadresse=is; }
 	void isRechnungsadresse(bool is) { rechnungsadresse=is; }
 	void RngAn(const Kunde::ID kid) { rngan=kid; }
+
+	ID Preisliste() const { return preisliste; }
 };
 
 class cH_Kunde : public const_Handle<Kunde>
