@@ -1,4 +1,4 @@
-// $Id: artikelid.c,v 1.1 2004/10/13 10:02:50 jacek Exp $
+// $Id: artikelid.c,v 1.2 2004/10/13 10:43:52 jacek Exp $
 
 #include "postgres.h"
 #include "executor/spi.h"	/* this is what you need to work with SPI */
