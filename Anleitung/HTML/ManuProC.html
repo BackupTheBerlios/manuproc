@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>ManuProC.html</title>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+</head>
+<body text="#000000" link="#0000ee" alink="#0000ee" vlink="#551a8b">
+<h1>ManuProC</h1>
+Manufactor Program Collection <br>
+<br>
+<h2>Inhalt</h2>
+<ul>
+  <li><a href="#Einleitung">Einleitung</a></li>
+  <li><a href="#Voraussetzungen">Voraussetzungen</a></li>
+  <li><a href="#Bestandteile_des_Paketes">Bestandteile des Paketes</a></li>
+  <li><a href="#Aufsetzen_der_Datenbank">Aufsetzen der Datenbank</a><br>
+  </li>
+  <li><a href="#Kompilieren_und_Installieren">Kompilieren und Installieren</a></li>
+  <li><a href="#Anleitung_zur_Benutzung_der_einzelnen">Die Programme im Einzelnen</a></li>
+  <ul>
+    <li>Kundendaten</li>
+    <li>Artikeleingabe<br>
+  </li>
+    <li>Preisliste</li>
+    <li>Lager<br>
+    </li>
+    <li>pps</li>
+  </ul>
+  <li><a href="#Hilfe_und_Kontakt">Hilfe und Kontakt</a><br>
+  </li>
+</ul>
+<h2><a name="Einleitung"></a>Einleitung</h2>
+Hier soll eine Sammlung von Programmen entstehen, die besonders die Bed&uuml;rfnisse
+von Herstellern ber&uuml;cksichtigt.
+<p>Folgende Programme existieren schon:</p>
+<ul>
+  <li>ein Warenwirtschaftssystem / Produktionsplanung</li>
+  <li>Lagerhaltungsprogramme</li>
+  <li>Buchhaltung</li>
+  <li>Rechnungswesen&nbsp;</li>
+</ul>
+Folgende &Uuml;berlegungen lagen dem Design zugrunde:
+<ul>
+  <li>verschiedene Kunden sollen frei in der Gestaltung ihrer Artikelbezeichnungen
+sein</li>
+  <li>es gibt sehr verschiedenartige Artikel</li>
+  <li>die zum Teil im eigenen Hause gefertigt werden</li>
+</ul>
+<br>
+<table cellpadding="2" cellspacing="2" border="0" width="100%"
+ bgcolor="#ffff00">
+  <tbody>
+    <tr>
+      <td valign="top">Diese Anleitung beschreibt, wie das ManuProC-System
+f&uuml;r eine Firma, die Schraubenzieher herstellt angepa&szlig;t, installiert,
+aufgesetzt und benutzt wird.<br>
+Es wird angenommen, da&szlig; die Firma 'Schrauben GmbH' als Rohmaterialen
+      <b>Kunststoff</b> f&uuml;r die Griffe, <b>Pigmente</b> um die Kunststoffgriffe
+zu f&auml;rben und <b>Metall</b> einkauft. Diese Waren werden, genauso wie
+die <b>Verpackungen</b> im <b>Rohwarenlager</b> zwischenlagert. Der Kunststoff
+und die Pigmente werden dann in der <b>Gie&szlig;erei</b> zu <b>Griffen</b>
+verarbeitet, das Metall wird in der<b>Schmelze</b> zu <b>Sch&auml;ften</b>
+gegossen. Sowohl die Griffe als auch die Sch&auml;fte wanderen ins <b>Zwischenlager</b>
+bevor sie <br>
+in der <b>Werkstatt</b> zu <b>Schraubenziehern</b> zusammengesetzt werden.
+Der <b>Verkauf</b> schlie&szlig;lich packt die Schraubenzieher in die Verpackungen
+und liefert diese an die Kunden aus.<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<h2><a name="Voraussetzungen"></a>Voraussetzungen</h2>
+Zur Installation und zum Betrieb werden ben&ouml;tigt:<br>
+<ul>
+  <li>Linux</li>
+  <li>Kompiler: &nbsp; g++ (&gt;=2.95)</li>
+  <li>automake</li>
+  <li>Die SQL Datenbank PostgreSQL mit embedded SQL (7.2.2)</li>
+  <li>Gnome/Gtk f&uuml;r die Benutzeroberfl&auml;che</li>
+</ul>
+<h2><a name="Bestandteile_des_Paketes"></a>Bestandteile des Paketes</h2>
+Das Programmpaket besteht aus mehreren Programmen, die &uuml;ber die Datenbank
+miteinander Daten austauschen. Im einzelnen sind dies:<br>
+<ul>
+  <li>Kundendaten: Eingeben und Verwalten von Kunden-, Lieferanten- und Personendaten</li>
+  <li>Artikeleingabe: Anlegen und Verwalten von Artikeln und deren Zusammengeh&ouml;rigkeit</li>
+  <li>Preisliste: Eingeben und Verwalten von Artikelpreisen</li>
+  <li>pps: Eingabe und Verwaltung von externen und internen Auftr&auml;gen,
+Lieferscheinen und Rechnungen</li>
+</ul>
+<h2><a name="Aufsetzen_der_Datenbank"></a>Aufsetzen der Datenbank</h2>
+Zun&auml;chsteinmal mu&szlig; man sich die Tabellenschemata aus dem CVS-Repository
+besorgen. Dazu f&uuml;hrt man nacheinander die beiden folgenden Befehle in
+einem leeren Verzeichnis aus:<br>
+<br>
+cvs -d:pserver:anonymous@cvs.manuproc.berlios.de:/cvsroot/manuproc login<br>
+cvs -z3 -d:pserver:anonymous@cvs.manuproc.berlios.de:/cvsroot/manuproc co
+Anleitung<br>
+<br>
+danach wechselt man mit 'cd Anleitung/datenbank' das Verzeichnis und f&uuml;hrt
+den Befehl<br>
+<br>
+./initdb.script<br>
+<br>
+aus.<br>
+<br>
+<h2><a name="Kompilieren_und_Installieren"></a>Kompilieren und Installieren</h2>
+<h2><a name="Anleitung_zur_Benutzung_der_einzelnen"></a>Die Programme im
+Einzelnen</h2>
+<h2><a name="Hilfe_und_Kontakt"></a>Kontakt</h2>
+Entwickelt und gepflegt wird das Programmpaket von<br>
+<table cellpadding="1" cellspacing="0" border="0" width="40%">
+  <tbody>
+    <tr>
+      <td valign="top">Christof Petig</td>
+      <td valign="top"><a href="mailto:christof@petig-baender.de">christof@petig-baender.de</a></td>
+    </tr>
+    <tr>
+      <td valign="top">Jacek Jakubowski</td>
+      <td valign="top"><a href="mailto:%20jacek@wtal.de">&nbsp;jacek@wtal.de</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top">Malte Thoma</td>
+      <td valign="top"><a href="mailto:thoma@uni-muenster.de">thoma@uni-muenster.de</a><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<br>
+</body>
+</html>
