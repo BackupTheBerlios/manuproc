@@ -2,16 +2,13 @@
 -- PostgreSQL database dump
 --
 
-
+\connect - jacek
 
 SET search_path = public, pg_catalog;
 
-DROP INDEX public.auftragentry_aufidinst;
-DROP INDEX public.auftragentry_pkey;
-DROP INDEX public.auftragentry_artikelid;
-DROP TABLE public.auftragentry;
 --
--- TOC entry 2 (OID 2053694)
+-- TOC entry 2 (OID 7694207)
+-- Name: auftragentry; Type: TABLE; Schema: public; Owner: jacek
 --
 
 CREATE TABLE auftragentry (
@@ -27,7 +24,7 @@ CREATE TABLE auftragentry (
     artikelid integer NOT NULL,
     rohartikelid integer,
     status smallint,
-    preis numeric(7,2),
+    preis_old numeric(7,2),
     rabatt numeric(4,2),
     dummy integer,
     lieferdate date,
@@ -36,35 +33,67 @@ CREATE TABLE auftragentry (
     preisliste integer,
     letzte_lieferung timestamp with time zone,
     lastedit_uid integer,
-    provsatz numeric(4,2)
+    provsatz numeric(4,2),
+    preis numeric(8,3),
+    text text
 );
 
 
 --
--- TOC entry 3 (OID 2053694)
+-- TOC entry 3 (OID 7694207)
+-- Name: auftragentry; Type: ACL; Schema: public; Owner: jacek
 --
 
 REVOKE ALL ON TABLE auftragentry FROM PUBLIC;
 
 
 --
--- TOC entry 4 (OID 2146768)
+-- TOC entry 4 (OID 8949252)
+-- Name: auftragentry_artikelid; Type: INDEX; Schema: public; Owner: jacek
 --
 
 CREATE INDEX auftragentry_artikelid ON auftragentry USING btree (artikelid);
 
 
 --
--- TOC entry 6 (OID 2146769)
+-- TOC entry 6 (OID 8949253)
+-- Name: auftragentry_pkey; Type: INDEX; Schema: public; Owner: jacek
 --
 
 CREATE UNIQUE INDEX auftragentry_pkey ON auftragentry USING btree (auftragid, zeilennr, instanz);
 
 
 --
--- TOC entry 5 (OID 2146770)
+-- TOC entry 5 (OID 8949254)
+-- Name: auftragentry_aufidinst; Type: INDEX; Schema: public; Owner: jacek
 --
 
 CREATE INDEX auftragentry_aufidinst ON auftragentry USING btree (auftragid, instanz);
+
+
+--
+-- TOC entry 7 (OID 8949316)
+-- Name: RI_ConstraintTrigger_8949316; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER chjour_constr
+    AFTER UPDATE ON auftragentry
+    FROM prod_changejournal
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('chjour_constr', 'prod_changejournal', 'auftragentry', 'UNSPECIFIED', 'auftragid', 'auftragid', 'auftragzeile', 'zeilennr');
+
+
+--
+-- TOC entry 8 (OID 8949317)
+-- Name: RI_ConstraintTrigger_8949317; Type: TRIGGER; Schema: public; Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER chjour_constr
+    AFTER DELETE ON auftragentry
+    FROM prod_changejournal
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_noaction_del" ('chjour_constr', 'prod_changejournal', 'auftragentry', 'UNSPECIFIED', 'auftragid', 'auftragid', 'auftragzeile', 'zeilennr');
 
 

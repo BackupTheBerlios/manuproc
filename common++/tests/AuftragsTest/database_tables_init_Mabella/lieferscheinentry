@@ -2,16 +2,13 @@
 -- PostgreSQL database dump
 --
 
-
+\connect - jacek
 
 SET search_path = public, pg_catalog;
 
-DROP TRIGGER "RI_ConstraintTrigger_1752153" ON public.lieferscheinentry;
-ALTER TABLE ONLY public.lieferscheinentry DROP CONSTRAINT lieferscheinentry_pkey;
-DROP INDEX public.lieferscheinentry_artid;
-DROP TABLE public.lieferscheinentry;
 --
--- TOC entry 2 (OID 960321)
+-- TOC entry 2 (OID 7694326)
+-- Name: lieferscheinentry; Type: TABLE; Schema: public; Owner: jacek
 --
 
 CREATE TABLE lieferscheinentry (
@@ -24,34 +21,41 @@ CREATE TABLE lieferscheinentry (
     palette numeric(3,0),
     menge numeric(8,2),
     zusatzinfo boolean,
-    instanz integer not null
+    instanz integer NOT NULL,
+    lagerid integer,
+    status smallint,
+    text text
 );
 
 
 --
--- TOC entry 3 (OID 960321)
+-- TOC entry 3 (OID 7694326)
+-- Name: lieferscheinentry; Type: ACL; Schema: public; Owner: jacek
 --
 
 REVOKE ALL ON TABLE lieferscheinentry FROM PUBLIC;
 
 
 --
--- TOC entry 4 (OID 1752120)
+-- TOC entry 4 (OID 8949277)
+-- Name: lieferscheinentry_artid; Type: INDEX; Schema: public; Owner: jacek
 --
 
 CREATE INDEX lieferscheinentry_artid ON lieferscheinentry USING btree (artikelid);
 
 
 --
--- TOC entry 5 (OID 960323)
+-- TOC entry 5 (OID 7694328)
+-- Name: lieferscheinentry_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
 --
 
 ALTER TABLE ONLY lieferscheinentry
-    ADD CONSTRAINT lieferscheinentry_pkey PRIMARY KEY (instanz,lfrsid, zeile);
+    ADD CONSTRAINT lieferscheinentry_pkey PRIMARY KEY (lfrsid, zeile, instanz);
 
 
 --
--- TOC entry 6 (OID 1752153)
+-- TOC entry 6 (OID 8949324)
+-- Name: RI_ConstraintTrigger_8949324; Type: TRIGGER; Schema: public; Owner: jacek
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>"

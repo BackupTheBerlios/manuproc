@@ -2,47 +2,55 @@
 -- PostgreSQL database dump
 --
 
+\connect - jacek
+
 SET search_path = public, pg_catalog;
 
-DROP TABLE public.artbez_warengruppe;
 --
--- TOC entry 2 (OID 7855542)
+-- TOC entry 2 (OID 7693500)
+-- Name: artbez_warengruppe; Type: TABLE; Schema: public; Owner: jacek
 --
 
 CREATE TABLE artbez_warengruppe (
     id smallint,
     text character varying(40),
+    lagerartikel boolean,
     mit_ean boolean,
+    null_preis_check boolean,
+    mit_bezeichnung boolean,
     bez_as_view boolean,
-    lagerartikel boolean
+    color_same_price boolean,
+    provision boolean
 );
 
 
 --
--- TOC entry 3 (OID 7855542)
+-- TOC entry 3 (OID 7693500)
+-- Name: artbez_warengruppe; Type: ACL; Schema: public; Owner: jacek
 --
 
 REVOKE ALL ON TABLE artbez_warengruppe FROM PUBLIC;
 
 
 --
--- Data for TOC entry 4 (OID 7855542)
+-- Data for TOC entry 4 (OID 7693500)
+-- Name: artbez_warengruppe; Type: TABLE DATA; Schema: public; Owner: jacek
 --
 
-COPY artbez_warengruppe (id, text, mit_ean, bez_as_view, lagerartikel) FROM stdin;
-10	Etiketten	\N	\N	\N
-11	Garn per km	\N	\N	\N
-4	Garn per kg	\N	\N	\N
-7	Sonstiges	\N	\N	\N
-8	Lohn	\N	\N	\N
-5	Spulen	\N	\N	\N
-6	Kartonagen	\N	\N	\N
-3	aufgemachtes Band	\N	\N	\N
-2	bedrucktes Band	\N	\N	\N
-1	gefärbtes Band	\N	\N	\N
-0	gewebtes Band	\N	\N	\N
-9	Farben & Pigmente	\N	\N	\N
-12	Musterkarten	\N	\N	\N
+COPY artbez_warengruppe (id, text, lagerartikel, mit_ean, null_preis_check, mit_bezeichnung, bez_as_view, color_same_price, provision) FROM stdin;
+3	aufgemachtes Band	t	t	t	t	f	\N	t
+7	Sonstiges	f	f	f	f	f	\N	t
+0	gewebtes Band	f	f	f	t	t	\N	t
+10	Etiketten	f	f	f	f	f	\N	f
+11	Garn per km	f	f	f	f	f	\N	f
+4	Garn per kg	f	f	f	f	f	\N	f
+8	Lohn	f	f	f	f	f	\N	f
+5	Spulen	f	f	f	f	f	\N	f
+6	Kartonagen	f	f	f	f	f	\N	f
+2	bedrucktes Band	f	f	f	f	f	\N	f
+1	gefärbtes Band	f	f	f	f	f	\N	f
+9	Farben & Pigmente	f	f	f	f	f	\N	f
+12	Musterkarten	f	f	f	f	f	\N	f
 \.
 
 

@@ -38,12 +38,12 @@ static bool Auftrag_Kunde()
  vergleichen(Check::Menge,"auftrag_anlegen","Kundenauftrag anlegen","AM");
 
  Auftrag best=Auftrag(Auftrag::Anlegen(ppsInstanzID::Einkauf),LIEFERANT); 
- AufEintragBase BE=auftrag.push_back(16,DATUM,ARTIKEL_TRIO,OPEN,true);
+ AufEintragBase BE=best.push_back(16,DATUM,ARTIKEL_TRIO,OPEN,true);
  vergleichen(Check::Menge,"bestellung_anlegen","Bestellung anlegen","BE");
 
  Lieferschein we(ppsInstanzID::Einkauf,cH_Kunde(LIEFERANT));
  AufEintrag BEAE(BE);
- LieferscheinEntryBase lsb(we,we.push_back(BE,ARTIKEL_TRIO,20,0,0));
+ LieferscheinEntryBase lsb(we,we.push_back(BEAE,ARTIKEL_TRIO,20,0,0));
  LieferscheinEntry lsbe(lsb);
  lsbe.lagerid=FertigWarenLager::default_lagerid;
  lsbe.changeStatus(OPEN,true);
@@ -51,7 +51,7 @@ static bool Auftrag_Kunde()
 
  Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
  AufEintrag AE(AEB);
- LieferscheinEntryBase LS(liefs,liefs.push_back(AEB,ARTIKEL_TRIO,16,0,0));
+ LieferscheinEntryBase LS(liefs,liefs.push_back(AE,ARTIKEL_TRIO,16,0,0));
  LieferscheinEntry LE(LS);
  LE.lagerid=FertigWarenLager::default_lagerid;
  LE.changeStatus(OPEN,true);
