@@ -884,3 +884,8 @@ void auftrag_bearbeiten::on_checkbutton_ean_drucken_clicked()
    }
 }
 
+
+void auftrag_bearbeiten::on_auftrag_kopieren_activate()
+{  
+}
+
