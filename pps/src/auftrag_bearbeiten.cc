@@ -424,7 +424,7 @@ void auftrag_bearbeiten::loadAuftrag(const AuftragBase& auftragbase)
  aktaufeintrag = 0;
  stkmtr_spinbutton->set_value(0);
 // rabattentry_spinbutton->set_value(0);
- Rabatt_setzen(kunde);
+ Rabatt_setzen(kunde,auftrag);
  WPreis->reset();
  liefdatum_datewin->set_value(ManuProC::Datum::today());
  WAufEntryStat->set_history((AufStatVal)OPEN);
@@ -463,7 +463,7 @@ void auftrag_bearbeiten::fillMask()
    }	            
 }
 
-void auftrag_bearbeiten::Rabatt_setzen(const cH_Kunde &kunde)
+void auftrag_bearbeiten::Rabatt_setzen(const cH_Kunde &kunde,AuftragFull *a)
 {
  cH_Kunde rngk(kunde->isRechnungsadresse() ? kunde->Id() : kunde->Rngan());
 
@@ -477,7 +477,10 @@ void auftrag_bearbeiten::Rabatt_setzen(const cH_Kunde &kunde)
     else
      {
       aufrabatt_spinbutton->set_sensitive(true);
-      aufrabatt_spinbutton->set_value(rngk->rabatt().as_float());
+      if(auftrag)
+        aufrabatt_spinbutton->set_value(auftrag->getAuftragsRabatt().as_float());
+      else
+        aufrabatt_spinbutton->set_value(rngk->rabatt().as_float());
       rabattentry_spinbutton->set_value(0);
      }          
 }
