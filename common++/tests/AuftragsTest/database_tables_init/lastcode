@@ -20,5 +20,5 @@ CREATE TABLE "lastcode" (
 
 
 COPY "lastcode" FROM stdin;
-204291
+100
 \.

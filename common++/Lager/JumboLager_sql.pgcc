@@ -121,7 +121,9 @@ void JumboLager::Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,
       where code= :CODE;  
   SQLerror::test("JumboRolle::buchen entnahme");
 
+#ifndef MABELLA_EXTENSIONS 
   jumbo.setLagerPosition_nodb(LagerPlatz(ppsInstanzID::Bandlager,LAGERPLATZ));
+#endif
   jumbo.setVerarbDatum_nodb(*zeit);
   if (jumbo.getStatus()==JumboRolle::Verarbeitet) typ=SchonDraussen;
   jumbo.setStatus_nodb(JumboRolle::Jumbo_Status(STATUS));

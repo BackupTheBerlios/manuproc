@@ -78,7 +78,8 @@ class AuftragBase
    // gibt Zeilennummer zurück
    int tryUpdateEntry(mengen_t bestellt, 
                const Petig::Datum lieferdatum, const ArtikelBase& artikel,
-               AufStatVal status,int uid,const AufEintragBase& altAEB,bool force_new=false) 
+               AufStatVal status,int uid,const AufEintragBase& altAEB,
+               bool force_new=false,bool dispoplanung=false) 
                const throw(SQLerror);
 
 	// wandelt enum in std::string um

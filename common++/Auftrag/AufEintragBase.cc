@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.20 2002/06/20 06:54:51 christof Exp $
+// $Id: AufEintragBase.cc,v 1.21 2002/06/21 13:15:41 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -134,10 +134,11 @@ void AufEintragBase::Planen(int uid,std::vector<std::AufEintrag> LAE,mengen_t me
 void AufEintragBase::PlanenDispo(int uid,const ArtikelBase& artikel,mengen_t menge,const Petig::Datum &datum)
 {
    AuftragBase dispoAB(Instanz(),dispo_auftrag_id);
-   int znr=dispoAB.insertNewEntry(menge,datum,artikel,OPEN,uid,false);
+//   int znr=dispoAB.insertNewEntry(menge,datum,artikel,OPEN,uid,false);
+   int znr=dispoAB.tryUpdateEntry(menge,datum,artikel,OPEN,uid,*this,false,true);
    AufEintragBase dispoAEB(dispoAB,znr);
 
-   AufEintragZu(dispoAEB).Neu(*this,menge);
+//   AufEintragZu(dispoAEB).Neu(*this,menge);
    updateStkDiffBase__(uid,menge);
   
    AufEintrag AE(dispoAEB);

@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.cc,v 1.4 2002/06/20 13:27:55 christof Exp $
+// $Id: steuerprogramm.cc,v 1.5 2002/06/21 13:15:41 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -19,7 +19,6 @@
 
 #include <ManuProCConfig.h>
 
-#ifdef PETIG_EXTENSIONS
 #include "DataBase_init.hh"
 #include "AuftragsVerwaltung.hh"
 #include "Check.hh"
@@ -28,6 +27,9 @@
 #include <Aux/exception.h>
 #include <Lager/Lager.h>
 #include <Auftrag/Auftrag.h>
+// Jumbo
+#include <Ketten/KettplanKette.h>
+#include <Lager/JumboLager.h>
 
 enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
       ZweiterAuftrag_frueheresDatum,JumboLager};
@@ -36,14 +38,16 @@ void auftragstests(e_mode mode)
 {
    AuftragsVerwaltung  auftrag; 
    AufEintragBase AEB=auftrag.anlegen();
+   AufEintrag AE=AEB;
+   Check C;
    cout << "Anlegen eines Auftrags ["<<AEB<<"] beendet\n\n";
 
    // ANLEGEN eines Auftrags mit Bandlager und Rohwarenlager
-   AufEintrag AE(AEB);
-   AE.setStatus(OPEN,UID);
-   Check C;
-   C.teste(Check::Open);
-   cout << "Öffnen des Auftrags beendet\n";
+   if (mode!=JumboLager)
+   {  AE.setStatus(OPEN,UID);
+      C.teste(Check::Open);
+      cout << "Öffnen des Auftrags beendet\n";
+   }
 
    switch(mode) {
     case Mengentest :
@@ -140,6 +144,15 @@ void auftragstests(e_mode mode)
      }
     case ZweiAuftraege:
      {
+       {
+       Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Faerberei),Kunde::default_id);
+       int faerberei_znr=1;
+       AufEintrag AEP(AufEintragBase(ppsInstanzID::Faerberei,AuftragBase::ungeplante_id,faerberei_znr));
+       AEP.Planen(UID,12000,PA,PLANDATUM2);
+       C.teste(Check::Planen_Faerberei_ueber);
+       cout << "Über-Planen der Färberei beendet\n\n";
+       }
+
        AufEintragBase AEB=auftrag.anlegen2();
        C.teste(Check::ZweiAuftraege_anlegen);
        cout << "Anlegen eines zweiten (offenen) Auftrags ["<<AEB<<"] beendet\n\n";
@@ -153,7 +166,27 @@ void auftragstests(e_mode mode)
       break;
      }    
     case JumboLager:
-     {
+     { LagerPlatz LP(ppsInstanzID::Bandlager,JUMBO_LAGERPLATZ);
+       KettplanKette KK=KettplanKette(Kette(MASCHIENE,SCHAERDATUM));
+       vector<JumboRolle> JR=JumboRolle::create(KK);
+       assert(JR.size()==1);
+       class JumboLager JL;
+       Zeitpunkt_new zp0("2002-3-1 11:00"),
+       		zp1("2002-3-1 11:11");
+       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,"TEST",&zp0);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp1);
+       C.teste(Check::Jumbo_richtig);
+       JR=JumboRolle::create(KK);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp1);
+       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,"TEST",&zp0);
+       C.teste(Check::Jumbo_falsch);
+       JR=JumboRolle::create(KK);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp0);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp1);
+       JR=JumboRolle::create(KK);
+       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,"TEST",&zp0);
+       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,"TEST",&zp1);
+       C.teste(Check::Jumbo_doppelt);
        break;
      }
     case None: assert(!"Never get here\n");
@@ -197,4 +230,3 @@ int main(int argc,char *argv[])
   return 0;
 }
 
-#endif

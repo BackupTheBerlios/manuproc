@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.14 2002/06/20 13:27:55 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.15 2002/06/21 13:15:41 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -227,7 +227,6 @@ void AufEintrag::setInstanzen(AufStatVal newstatus,int uid,Petig::Datum lieferda
     {
       H_Lager L(instanz);
       L->rein_ins_lager(ArtId(),Mauftrag,uid);
-//      Lager_Vormerkungen::freigegeben_menge_neu_verplanen(instanz,ArtId(),Mauftrag,uid);
     }
    AE.setInstanzen(newstatus,uid,lieferdate,Mauftrag,znr,newznr);
   }
@@ -244,7 +243,7 @@ AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool in
    Transaction tr;
    exec sql lock auftragentry in exclusive mode;
    SQLerror::test("updateStkDiff: lock table auftragentry");
-//cout << "Try Menge= "<<menge<<'\t'<<getStueck()<<'\t';
+//cout << *this<<"\tTry Menge= "<<menge<<'\t'<<getStueck()<<'\n';
 //ECPGdebug(true,stdout);
    mengen_t mt=updateStkDiffBase__(uid,menge);
 //ECPGdebug(false,0);
@@ -260,7 +259,10 @@ AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool in
         else if(callback)
           (*callback)(argument,st_problems(Geplant,*this,menge,mt));
         else 
+         {
           cerr<< "WARNUNG: kein Lager und KEINE callback Funktion definiert\n\n";
+//          cerr<<"In "<<*this<<" konnten "<<mt-menge<<" nicht reduziert werden.\n";
+         }
       }
    if(instanzen)
       updateStkDiffInstanz__(uid,mt,callback,argument);
@@ -285,6 +287,7 @@ void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,void (*callbac
 
      if(mt!=mengen_t(menge)) // es konnte nicht alles bei ungeplanten reduziert werden
       {
+cout << *this<<'\t'<<i->AEB<<'\t'<<menge-mt<<'\t';
        mengen_t verplante_menge=menge-mt;        
        std::list<AufEintragZu::st_reflist> KindListeG = AufEintragZu(i->AEB).get_Referenz_list_geplant();
        for(std::list<AufEintragZu::st_reflist>::const_iterator j=KindListeG.begin();j!=KindListeG.end();++j)

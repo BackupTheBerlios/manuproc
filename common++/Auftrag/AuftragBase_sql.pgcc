@@ -232,7 +232,8 @@ bool AuftragBase::existEntry(const ArtikelBase& artikel,
 #include <Artikel/ArtikelBezeichnung.h> //debug
 int AuftragBase::tryUpdateEntry(mengen_t bestellt, 
   const Petig::Datum lieferdatum,const ArtikelBase& artikel,
-  AufStatVal status,int uid,const AufEintragBase& altAEB,bool force_new) 
+  AufStatVal status,int uid,const AufEintragBase& altAEB,
+  bool force_new,bool dispoplanung) 
       const throw(SQLerror)
 {
  create_if_not_exists(status);
@@ -247,23 +248,28 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
  if(force_new || !existEntry(artikel,lieferdatum,znr,neuznr,menge,status))
   {
     znr=insertNewEntry(bestellt,lieferdatum,artikel,status,uid,false)  ;
-    Lager_Vormerkungen(class AufEintrag(Instanz()->Id(),Id(),znr,bestellt,artikel,lieferdatum,status)).vormerken_oder_bestellen(uid);
-//std::cout <<"Zuordnung anlegen: "<< altAEB<<"\t==>\t"<<AufEintragBase(*this,znr)<<"\t"<<bestellt<<'\n';;
-    AufEintragZu(altAEB).Neu(AufEintragBase(*this,znr),bestellt);
+    if(!dispoplanung)
+     {    
+       Lager_Vormerkungen(class AufEintrag(Instanz()->Id(),Id(),znr,bestellt,artikel,lieferdatum,status)).vormerken_oder_bestellen(uid);
+       AufEintragZu(altAEB).Neu(AufEintragBase(*this,znr),bestellt);
+     }
+    else AufEintragZu(class AufEintragBase(*this,znr)).Neu(altAEB,bestellt);
   }
  else
   {
-//cout << "Alt\n";
-    try{ mengen_t mt=AufEintragZu(altAEB).setMengeDiff__(AufEintragBase(*this,znr),bestellt);
-         assert(mt==bestellt); } catch(SQLerror &e)
-      { AufEintragZu(altAEB).Neu(AufEintragBase(*this,znr),bestellt);}
-//std::cout << "\t"<<AufEintragBase(*this,znr)<<' '
-//<<cH_ArtikelBezeichnung(artikel)->Bezeichnung()<<' '<<menge<<'+'<<bestellt<<' '<<status<<'\n';
-//std::cout << "Alt\t"<<AufEintragBase(instanz,auftragid,znr)<<'\n';
-//cout << Instanz()->Name()<<"  Lager ? : "<<Instanz()->LagerInstanz()<<'\n';
-    mengen_t mt=AufEintragBase(instanz,auftragid,znr).updateStkDiffBase__(uid,bestellt);
-    assert(mt==bestellt);
-    Lager_Vormerkungen(class AufEintrag(Instanz()->Id(),Id(),znr,bestellt,artikel,lieferdatum,status)).vormerken_oder_bestellen(uid);
+    if(!dispoplanung) 
+     {
+       AufEintragZu(altAEB).Neu(AufEintragBase(*this,znr),bestellt);
+       mengen_t mt=AufEintragBase(instanz,auftragid,znr).updateStkDiffBase__(uid,bestellt);
+       assert(mt==bestellt);
+       Lager_Vormerkungen(class AufEintrag(Instanz()->Id(),Id(),znr,bestellt,artikel,lieferdatum,status)).vormerken_oder_bestellen(uid);
+     }
+    else
+     {
+       AufEintragZu(class AufEintragBase(*this,znr)).Neu(altAEB,bestellt);
+       mengen_t mt=AufEintragBase(instanz,auftragid,znr).updateStkDiffBase__(uid,bestellt);
+       assert(mt==bestellt);
+     }
   }
   tr.commit();
   return znr;

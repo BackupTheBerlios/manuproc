@@ -1,4 +1,4 @@
-// $Id: DataBase_init.cc,v 1.2 2002/06/20 13:27:55 christof Exp $
+// $Id: DataBase_init.cc,v 1.3 2002/06/21 13:15:41 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -113,8 +113,9 @@ void DataBase_init::JumboLager_initalisieren()
   KettplanKette KK=KettplanKette::create(K,artgang,KETTLAENGE,STUECKLAENGE);
   vector<JumboRolle> JR=JumboRolle::create(KK);
   assert(JR.size()==1);
-  JumboLager JL;
-  JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,"testuser");
+  class JumboLager JL;
+  Zeitpunkt_new zp("2002-1-1 12:00");
+  JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,"testuser",&zp);
   SQLerror::test(__FILELINE__);
 #endif
 

@@ -61,6 +61,21 @@ JumboRolle::JumboRolle(ID c) throw(SQLerror,CodeError)
  lagerposition=LagerPlatz(ppsInstanzID::Bandlager,LAGERPLATZ);
 }
 
+JumboRolle::JumboRolle(ID _code,int _maschine,const Petig::Datum &datum,int _webmaschine,
+                 int soll_meter,int _status,int _lauf,int _gang,
+                 ArtikelBase::ID artikelid) throw()
+   : code(_code), artikel(artikelid), maschine(_maschine), plandatum(datum),
+   	webmaschine(_webmaschine), sollmeter(soll_meter), 
+   	status(Jumbo_Status(_status)), lauf(_lauf), gang(_gang),
+   	barcoist(0), rest(false), lagerposition(ppsInstanzID::Bandlager,0)
+{}
+
+JumboRolle::JumboRolle()
+   : code(0), maschine(0), webmaschine(0), sollmeter(0), 
+   	status(Gedruckt), lauf(0), gang(0),
+   	barcoist(0), rest(false), lagerposition(ppsInstanzID::Bandlager,0)
+{}
+
 #include <Ketten/KettplanKette.h>
 
 //---- don't ask me ... -------------------

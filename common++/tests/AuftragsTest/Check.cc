@@ -18,12 +18,15 @@
 
 
 #include <ManuProCConfig.h>
-#ifdef PETIG_EXTENSIONS
 #include "Check.hh"
 #include <Aux/FetchIStream.h>
 #include <Auftrag/AufEintragZu.h>
 #include <Auftrag/AufEintrag.h>
 #include <Artikel/ArtikelBezeichnung.h>
+#include <unistd.h>
+
+static std::string tempdir="/tmp/";
+static std::string referenzdir="database_tables_test/";
 
 void Check::teste(e_check check)
 {
@@ -33,12 +36,20 @@ void Check::teste(e_check check)
 
 
 void Check::vergleich(e_check check)
-{
-  bool errora=false,errorz=false;
-  std::string fz1 = "/tmp/auftragsentryzuordnung";
-  std::string fa1 = "/tmp/auftragentry_sed";
-  std::string fz2="database_tables_test/auftragsentryzuordnung";
-  std::string fa2="database_tables_test/auftragentry";
+{ std::vector<std::string> files;
+  bool error=false;
+
+  switch (check)
+  {  case Jumbo_richtig: case Jumbo_falsch: case Jumbo_doppelt:
+  	files.push_back("rohjumbo");
+  	files.push_back("lager_bewegung");
+  	break;
+     default: 
+        files.push_back("auftragsentryzuordnung");
+        files.push_back("auftragentry");
+        break;
+  }
+
   std::string zusatz;
   switch(check)
    {
@@ -59,54 +70,62 @@ void Check::vergleich(e_check check)
      case Split : zusatz="_split"; break;
      case Split_Rohwarenlager_einlagern : zusatz="_split_rohwarenlager_rein"; break;
      case Split_Rohwarenlager_auslagern : zusatz="_split_rohwarenlager_raus"; break;
+     case Planen_Faerberei_ueber : zusatz="_planen_fuer_zweiten_auftrag"; break;
      case ZweiAuftraege_anlegen : zusatz="_zwei_auftraege_anlegen"; break;
      case ZweiterAuftrag_frueheresDatum : zusatz="_zwei_auftraege_datum"; break;
-// Zwei Zeilen für Christof :-)
-     case Jumbo_raus : zusatz="_jumbo_raus"; break;
-     case Jumbo_rein : zusatz="_jumbo_rein"; break;
+     case Jumbo_richtig : zusatz="_richtig"; break;
+     case Jumbo_falsch : zusatz="_falsch"; break;
+     case Jumbo_doppelt : zusatz="_doppelt"; break;
    }
-  fz2+=zusatz;
-  fa2+=zusatz;  
+   
+  for (std::vector<std::string>::const_iterator i=files.begin();i!=files.end();++i)
+  {  std::string fz1=tempdir+*i;
+     std::string fz2=referenzdir+*i+zusatz;
+      
   std::string s="diff --ignore-matching-lines=OID -q "+fz1+" "+fz2;
   int reg=system(s.c_str());
-  if(reg==-1) {cout<< "Fehler im diff-Komando (auftragsentryzuordnung)\n"; exit(reg);}
-  else if(reg==0) {cout << "auftragsentryzuordnung OK\n";}
-  else {errorz=true; }
-
-  s="diff --ignore-matching-lines=OID --ignore-matching-lines=RI_ConstraintTrigger_ -q "+fa1+" "+fa2;
-  reg=system(s.c_str());
-  if(reg==-1) {cout<< "Fehler im diff-Komando (auftragentry)\n"; exit(reg);}
-  else if(reg==0) {cout << "auftragentry OK\n";}
-  else { errora=true; }
-
-  if(errora || errorz) 
-   {
-     if(errora) cout << "\nProbleme, Empfehlung: \n'"<< "mgdiff "+fa1+" "+fa2<<"'\n";
-     if(errorz) cout << "Probleme, Empfehlung: \n'"<< "mgdiff "+fz1+" "+fz2<<"'\n";
-     exit(1);
+  if(reg==-1) 
+  {cout<< "Fehler im diff-Komando ("+*i+")\n"; exit(reg);}
+   else if(reg==0) {cout << *i << " OK\n";}
+   else 
+   { cout << "Probleme, Empfehlung: \n'"<< "mgdiff "+fz1+" "+fz2<<"'\n"; 
+     error=true;
    }
+  }
+
+  if (error) exit(1);
 }
 
 
 void Check::dump(e_check check)
 {
-  system("rm /tmp/auftragsentryzuordnung");
-  system("rm /tmp/auftragentry");
-  system("rm /tmp/auftragentry_sed");
+  static const std::string psql_cmd="psql testdb -q -X -c";
 
-//if(check == Jumbo_raus || check ==Jumbo_rein) => Christof
+  if(check == Jumbo_richtig || check ==Jumbo_falsch || check==Jumbo_doppelt)
+  {  unlink((tempdir+"rohjumbo").c_str());
+     unlink((tempdir+"lager_bewegung").c_str());
+
+     system((psql_cmd+" \""+
+  	"select code,maschine,lauf,gang,status,wiederinslager,verarb_datum,"
+  	  "artikelid,rest,lagerplatz from rohjumbo order by 1;"
+  	    +"\" >"+tempdir+"rohjumbo").c_str());
+     system((psql_cmd+" \""+
+  	"select code,action,name,lagerplatz from lager_bewegung order by code,zeit;"
+  	    +"\" >"+tempdir+"lager_bewegung").c_str());
+     return;
+  }
   
-  std::string s="pg_dump -i -c -O -x -T -t auftragsentryzuordnung testdb > /tmp/auftragsentryzuordnung";
+  unlink((tempdir+"auftragsentryzuordnung").c_str());
+  unlink((tempdir+"auftragentry").c_str());
+
+  std::string s="pg_dump -i -c -O -x -T -t auftragsentryzuordnung testdb > "+tempdir+"auftragsentryzuordnung";
   system(s.c_str());
 
-  s="pg_dump -i -c -O -x -T -d -t auftragentry testdb > /tmp/auftragentry";
-  system(s.c_str());
-
-  // Dieser Befehl eliminiert das lasteditdate aus dem sql-dump.
-  s="cat /tmp/auftragentry |  sed s/,/@/4 | sed s/,/@/4 | sed s/,/Ü/17 | sed s/,/Ü/17 |"
+  s="pg_dump -i -c -O -x -T -d -t auftragentry testdb | "
+// Dieser Befehl eliminiert das lasteditdate aus dem sql-dump.
+      "  sed s/,/@/4 | sed s/,/@/4 | sed s/,/Ü/17 | sed s/,/Ü/17 |"
       "  sed 's/\\(.*\\)\\@\\(.*\\)\\@\\(.*\\)/\\1\\,\\3/' | "
-      "  sed 's/\\(.*\\)\\Ü\\(.*\\)\\Ü\\(.*\\)/\\1\\,\\3/' > /tmp/auftragentry_sed ";
+      "  sed 's/\\(.*\\)\\Ü\\(.*\\)\\Ü\\(.*\\)/\\1\\,\\3/' > "+tempdir+"auftragentry ";
   system(s.c_str());
 }
 
-#endif

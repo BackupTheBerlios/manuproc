@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.9 2002/06/20 06:29:53 christof Exp $
+// $Id: FetchIStream.h,v 1.10 2002/06/21 13:15:41 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -37,7 +37,7 @@ public:
 	
 	int getIndicator() const;
 	bool good() const
-	{  return !result; }
+	{  return result; }
 	
 	FetchIStream &operator>>(std::string &str);
 	FetchIStream &operator>>(int &i);

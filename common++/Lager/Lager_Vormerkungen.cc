@@ -33,7 +33,7 @@ void Lager_Vormerkungen::vormerken_oder_bestellen(int uid)
 
       // Vorgemerkte Menge mit späterem Lieferdatum
       AuftragBase::mengen_t menge_vorgemerkt=artikel_auf_lager(dispo_auftrag,false);
-cout << instanz->Name() <<"\tMENGE VORGEMERKT = "<<menge_vorgemerkt<<'\n';      
+//cout << instanz->Name() <<"\tMENGE VORGEMERKT = "<<menge_vorgemerkt<<'\n';      
       if(menge_vorgemerkt<0) menge_vorgemerkt=0;
       if(getRestStk() <= menge_vorgemerkt)
        {

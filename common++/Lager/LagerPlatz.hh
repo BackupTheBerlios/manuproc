@@ -36,7 +36,8 @@ class LagerPlatz
      bool eInt_valid();
 
   public:
-     LagerPlatz() : i_position(0){}
+     LagerPlatz() 
+     	: instanz(ppsInstanzID::None), darstellung(eString), i_position(0) {}
      LagerPlatz(ppsInstanz::ID i, std::string p)
          : instanz(i), s_position(p) ,i_position(INOPOS) 
             {DarstellungSetzen();}

@@ -6,37 +6,38 @@ createdb testdb
 P="database_tables_init"
 
 for i in \
-   $P/artikelstamm \
-   $P/artikelzusammensetzung \
-   $P/artbez_0_1 \
-   $P/artbez_3_1 \
-   $P/artbez_3_1000 \
-   $P/auftrag \
-   $P/auftragentry \
-   $P/auftrag_prozess \
-   $P/auftragsentryzuordnung \
-   $P/einheiten \
-   $P/extbezschema \
-   $P/ketten \
-   $P/ketten_kettid_seq \
-   $P/kunden \
-   $P/lager_bewegung \
-   $P/lastcode \
-   $P/problems \
-   $P/prod_changejournal \
-   $P/prod_changejournal_chid_seq \
-   $P/prod_instanz \
-   $P/prozesse \
-   $P/schaertabelle \
-   $P/schaertabelle_entryid_seq \
-   $P/rl_inhalt \
-   $P/rl_log \
-   $P/rohjumbo \
-   $P/waehrung \
-   $P/webangaben
+   artikelbezeichnung \
+   artikelstamm \
+   artikelzusammensetzung \
+   artbez_0_1 \
+   artbez_3_1 \
+   artbez_3_1000 \
+   auftrag \
+   auftragentry \
+   auftrag_prozess \
+   auftragsentryzuordnung \
+   einheiten \
+   extbezschema \
+   ketten \
+   ketten_kettid_seq \
+   kunden \
+   lager_bewegung \
+   lastcode \
+   problems \
+   prod_changejournal \
+   prod_changejournal_chid_seq \
+   prod_instanz \
+   prozesse \
+   schaertabelle \
+   schaertabelle_entryid_seq \
+   rl_inhalt \
+   rl_log \
+   rohjumbo \
+   waehrung \
+   webangaben
 do
 
-psql testdb -q < $i
+psql testdb -q < $P/$i
 
 done
 
