@@ -159,8 +159,8 @@ try{
 
 void auftrag_lieferschein::on_liefnr_activate()
 {
- try{
- try{
+// try{
+// try{
    lieferschein = new Lieferschein(instanz,liefernr->Content());
 
    if(lieferschein->KdNr()!=liefer_kunde->get_value())
@@ -170,11 +170,12 @@ void auftrag_lieferschein::on_liefnr_activate()
 
    display(liefernr->Content());
 
- }catch(SearchComboContent<int>::ContentError &e)
- { display(atoi(liefernr->get_text().c_str()));
-   spinbutton_paeckchen->grab_focus();
- }
- }catch(std::exception &e) {std::cerr<<e.what();}
+// }catch(SearchComboContent<int>::ContentError &e)
+// { display(atoi(liefernr->get_text().c_str()));
+//   spinbutton_paeckchen->grab_focus();
+//}
+// }catch(std::exception &e) {std::cerr<<e.what();}
+
  lager_buchen->set_sensitive(true); 
 }
 
