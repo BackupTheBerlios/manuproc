@@ -129,7 +129,7 @@ void LR_Abstraktion::drucken_header(std::ostream &os)
 			"{\\rule{0pt}{7pt}\\rule{\\paperwidth}{0pt}}}}}\n";
 #endif
 
- if(Configuration.toTeX)
+ if(Configuration.toTeX || Configuration.batch)
   os << "\\def\\kopie{3}\n";
 
  Gtk2TeX::Header(os,hf);
