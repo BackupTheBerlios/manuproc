@@ -202,6 +202,7 @@ private:
   void on_lager_node_selected(const TreeRow &node);
   void on_lager_unselect_row(gint row, gint column, GdkEvent *event);
 
+  void schema_select(const cH_ExtBezSchema &ebz);
 };
 
 #endif

@@ -529,6 +529,9 @@ void auftrag_main::on_node_selected(const TreeRow &node)
   Verfuegbarkeit::map_t map_allart;
   getAufEintrag_fromNode(node.begin(),node.end(),map_allart);
   instanz_menge(map_allart);
+  // Überschriften setzen 
+  schema_select(cH_ArtikelBezeichnung(node.LeafData().cast_dynamic<const Data_auftrag>()->get_Artikel())
+  	->getExtBezSchema());
   erfassen_button->set_sensitive(false);
 }
 
@@ -574,6 +577,8 @@ void auftrag_main::on_leaf_selected(cH_RowDataBase d)
  if(dt->get_AufEintrag().editierbar())
       erfassen_button->set_sensitive(true);
  else erfassen_button->set_sensitive(false);
+  // Überschriften setzen 
+  schema_select(cH_ArtikelBezeichnung(dt->get_Artikel())->getExtBezSchema());
  show_something_for(*selected_AufEintrag);
  instanz_auftrag_anlegen(*selected_AufEintrag); 
  }catch(std::exception &e) {std::cerr<<e.what();}
@@ -1175,28 +1180,31 @@ std::string auftrag_main::FirstRow(gpointer user_data, int deep,
  return ret;
 }
 
+void auftrag_main::schema_select(const cH_ExtBezSchema &ebz)
+{
+ const int signif=1;
+ int bezidx=A1;
+
+ ExtBezSchema::const_sigiterator bezend=ebz->sigend(signif);
+ for(ExtBezSchema::const_sigiterator bezit=ebz->sigbegin(signif); 
+	bezit!=bezend; ++bezit,bezidx++) 
+    maintree_s->setTitleAt(bezidx,bezit->bezkomptext);
+ for(; bezidx<=A4; bezidx++) // auffüllen bis 4
+	maintree_s->setTitleAt(bezidx,"");
+}
+
 void auftrag_main::on_offwarengrp_activate()
 {
  Global_Settings::create(int(getuid()),"pps","warengruppe maintree",
 	itos(offen_warengruppe->get_value()));
 
- const int signif=1;
- int i=0;
- int bezidx=A1;
  try{
- cH_ExtBezSchema ebz(ExtBezSchema::default_id,offen_warengruppe->get_value());
-
-// std::vector<std::string> ct;
-// ct.push_back("Kunde");
-
- ExtBezSchema::const_sigiterator bezend=ebz->sigend(signif);
- for(ExtBezSchema::const_sigiterator bezit=ebz->sigbegin(signif); 
-	bezit!=bezend; ++bezit,i++,bezidx++) 
-	maintree_s->setTitleAt(bezidx,bezit->bezkomptext);
+    schema_select(cH_ExtBezSchema(ExtBezSchema::default_id,
+    			offen_warengruppe->get_value()));
  }
- catch (SQLerror &e) {}
- for(int j=i; j<4; j++, bezidx++) // auffüllen bis 4
-	maintree_s->setTitleAt(bezidx,"");
+ catch (SQLerror &e) {
+     for(int bezidx=A1; bezidx<=A4; bezidx++) maintree_s->setTitleAt(bezidx,"");
+ }
 }
 
 
