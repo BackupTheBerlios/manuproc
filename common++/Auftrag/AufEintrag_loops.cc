@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.cc,v 1.14 2004/02/16 15:29:05 christof Exp $ */
+/* $Id: AufEintrag_loops.cc,v 1.15 2004/02/17 10:39:11 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -40,18 +40,31 @@ bool distribute_parents_cb::operator()(AufEintragZu::st_reflist const &a, AufEin
 {  return AufEintragZu_sort::priority(a,b);
 }
 
+
 static std::string Nametrans(std::string n)
-{  if (n[0]=='N')
+{  static const UniqueValue::value_t trace_channel=ManuProC::Tracer::channels.get();
+   static ManuProC::Tracer::Environment trace_channel_e("DEBUG_NAMETRANS",trace_channel);
+
+   ManuProC::Trace _t(trace_channel,__FUNCTION__,n);
+   if (n[0]=='N') // g++ 3.0+
    {  const char *x=n.c_str()+1,*end=0;
       long num=strtol(x,const_cast<char**>(&end),10);
       if (end) num+=end-x;
       n=n.substr(num+1);
+   }
+   if (n[0]=='Q') // g++ 2.95
+   {  assert(n[1]=='2');
+      const char *x=n.c_str()+2,*end=0;
+      long num=strtol(x,const_cast<char**>(&end),10);
+      if (end) num+=end-x;
+      n=n.substr(num+2);
    }
    if ('0' <= n[0] && n[0] <= '9')
    {  const char *x=n.c_str(),*end=0;
       long num=strtol(x,const_cast<char**>(&end),10);
       if (end) n=n.substr(end-x,num);
    }
+   ManuProC::Trace(trace_channel,"=",n);
    return n;
 }
 
