@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.39 2004/09/15 10:17:27 jacek Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.40 2004/10/19 10:54:29 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -40,6 +40,7 @@ class LieferscheinEntry : public LieferscheinEntryBase
  int palette;
  AufStatVal status;
  mutable Kunde::ID kid;
+ std::string text;
  
 public:
  struct st_AufEintragMenge{AufEintragBase aeb; AuftragBase::mengen_t menge;
@@ -84,6 +85,7 @@ public:
  const ArtikelBase::ID ArtikelID() const { return artikel.Id(); }
  const ArtikelBase Artikel() const { return artikel; }
  const AufStatVal Status() const { return status; }
+ const std::string &Text() const { return text; }
  
  const zusaetze_t &getZusatzInfos() const {return VZusatz;}
  // nach Aufträgen summiert (nicht nach Zeilen getrennt)

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.73 2004/09/15 10:17:27 jacek Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.74 2004/10/19 10:54:29 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -302,7 +302,8 @@ FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry& z)
  	>> FetchIStream::MapNull(z.palette)
      >> FetchIStream::MapNull(zusatzinfo) >> refauftrag 
      >> FetchIStream::MapNull(z.lagerid,FertigWarenLager::none_lagerid)
-     >> FetchIStream::MapNull(status,(AufStatVal)NOSTAT);
+     >> FetchIStream::MapNull(status,(AufStatVal)NOSTAT)
+     >> FetchIStream::MapNull(text);
  z.status=(AufStatVal)status;
 #ifdef PETIG_EXTENSIONS 
   // gibt es einen Grund, das nicht anzunehmen, immerhin war es früher so
@@ -326,10 +327,10 @@ LieferscheinEntry::LieferscheinEntry(const LieferscheinEntryBase &lsbase)
  throw(SQLerror) : LieferscheinEntryBase(lsbase), kid(Kunde::none_id) 
 {
   (Query("select lfrsid, zeile,artikelid, stueck, "
-	  " menge, palette, zusatzinfo, instanz, refauftragid, refzeilennr,"
-	  " lagerid, status "
-	  " from lieferscheinentry ly "
-	  " where (instanz,lfrsid,zeile) = (?,?,?)")
+	  "menge, palette, zusatzinfo, instanz, refauftragid, refzeilennr,"
+	  "lagerid, status, text "
+	  "from lieferscheinentry ly "
+	  "where (instanz,lfrsid,zeile) = (?,?,?)")
  	<< *this
  	).FetchOne(*this);
 }
