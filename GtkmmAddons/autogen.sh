@@ -41,10 +41,7 @@ echo
 
 libtoolize --force --copy
 autoheader$AC_POSTFIX
-if test -f /usr/share/aclocal/petig.m4
-then aclocal$AM_POSTFIX
-else aclocal$AM_POSTFIX -I macros
-fi
+aclocal$AM_POSTFIX
 automake$AM_POSTFIX --add-missing --copy --gnu
 autoconf$AC_POSTFIX
 ./configure $* && $MAKE
