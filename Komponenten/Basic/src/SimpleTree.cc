@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.42 2004/01/05 12:42:16 jacek Exp $
+// $Id: SimpleTree.cc,v 1.43 2004/01/06 09:07:09 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,6 +22,7 @@
 #include <gtkmm/menu.h>
 #include <bvector_item_CheckMenuItem.hh>
 #include <bool_CheckMenuItem.hh>
+#include <CellRendererSimpleTree.h>
 
 #include <iostream>
 
@@ -72,19 +73,21 @@ SimpleTree_Basic::~SimpleTree_Basic()
 void SimpleTree_Basic::on_spaltenzahl_geaendert()
 {  remove_all_columns();
    for (unsigned int i=0;i<Cols();++i)
-   {  Gtk::CellRendererText *crt = Gtk::manage(new Gtk::CellRendererText());
-      append_column(getColTitle(i), *crt);
-      Gtk::TreeViewColumn* pColumn = get_column(i);
-      if (pColumn)
-      {  pColumn->signal_clicked().connect(SigC::bind(SigC::slot(*this,&SimpleTree_Basic::on_title_clicked),i));
-         pColumn->add_attribute(crt->property_text(),sts->m_columns.cols[i]);
-         if (getStore()->OptionColor().Value())
-            pColumn->add_attribute(crt->property_background_gdk(),sts->m_columns.background);
-         if (!alignment.empty())
-         {  pColumn->set_alignment(alignment[IndexFromColumn(i)]);
-            crt->property_xalign()=alignment[IndexFromColumn(i)];
-         }
+   {  CellRendererSimpleTree *crst = Gtk::manage(new CellRendererSimpleTree(i));
+      Gtk::CellRendererText *crt = Gtk::manage(new Gtk::CellRendererText());
+      Gtk::TreeView::Column* pColumn = Gtk::manage(new Gtk::TreeView::Column(getColTitle(i)));
+      pColumn->pack_start(*crst, false);
+      pColumn->pack_start(*crt, true);
+      pColumn->signal_clicked().connect(SigC::bind(SigC::slot(*this,&SimpleTree_Basic::on_title_clicked),i));
+      pColumn->add_attribute(crt->property_text(),sts->m_columns.cols[i]);
+      if (getStore()->OptionColor().Value())
+         pColumn->add_attribute(crt->property_background_gdk(),sts->m_columns.background);
+      pColumn->add_attribute(crst->property_childrens_deep(),sts->m_columns.childrens_deep);
+      if (!alignment.empty())
+      {  pColumn->set_alignment(alignment[IndexFromColumn(i)]);
+         crt->property_xalign()=alignment[IndexFromColumn(i)];
       }
+      append_column(*pColumn);
    }
    on_redisplay();
    set_headers_clickable();
@@ -292,6 +295,5 @@ void SimpleTree::ScrollToSelection()
 void SimpleTree_Basic::setAlignment(const std::vector<gfloat> &A)
 {  assert(A.size()==sts->MaxCol());
    alignment=A;
-   for (unsigned i=0;i<Cols();++i)
-      get_column(i)->set_alignment(alignment[IndexFromColumn(i)]);
+   on_spaltenzahl_geaendert();
 }

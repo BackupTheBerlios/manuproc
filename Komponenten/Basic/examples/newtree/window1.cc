@@ -144,6 +144,15 @@ window1::window1() : st(SP_ANZ)
 //   v[SP_SUM1]="summe 2";
 //   v[SP_SUM2]="summe 3";
    st.setTitles(v);
+   std::vector <gfloat> v2(st.Cols());
+   v2[SP_ATT0]=1;
+   v2[SP_ATT1]=0;
+   v2[SP_ATT2]=0.5;
+   v2[SP_ATT3]=0.5;
+   v2[SP_ATT4]=0;
+   v2[SP_SUM0]=1;
+   st.setAlignment(v2);
+   
    std::vector <cH_RowDataBase> datavec;
 #if 1
    datavec.push_back(new MyRowData(1,"X",2,3,"A"));

@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.29 2003/12/30 08:32:58 christof Exp $
+# $Id: Makefile.am,v 1.30 2004/01/06 09:07:09 christof Exp $
 AM_CXXFLAGS= @COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
@@ -27,7 +27,7 @@ libManuProC_Widgets_a_SOURCES=EingabeBox.cc \
 		MyWindow.cc MyScale.cc logwin.cc TreeViewUtility.cc \
 		bool_properties.cc bool_ImageButton.cc string_Label.cc \
 		Association.cc Event.cc TooltipView.cc \
-		SimpleTreeStore_test.cc
+		SimpleTreeStore_test.cc CellRendererSimpleTree.cc
 
 dummy_SOURCES=datewin.cc datewin_glade.cc
 

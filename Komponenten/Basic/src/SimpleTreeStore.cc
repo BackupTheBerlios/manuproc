@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.46 2003/12/27 01:16:15 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.47 2004/01/06 09:07:09 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -634,17 +634,17 @@ void SimpleTreeStore::get_value_vfunc(const TreeModel::iterator& iter, int colum
                   return;
                }
                const Glib::ustring s=nd.row->Value(idx,ValueData())->getStrVal();
-               if (colno==int(nd.childrens_deep))
-                  g_value_set_string(value,("..."+s).c_str());
-               else 
+//               if (colno==int(nd.childrens_deep))
+//                  g_value_set_string(value,("..."+s).c_str());
+//               else 
                   g_value_set_string(value,s.c_str());
             }
             else if (nd.childrens_deep) // node
             {  if (unsigned(colno)>nd.childrens_deep || unsigned(colno)<nd.deep) 
                   return;
-               if (colno==int(nd.childrens_deep))
-                  g_value_set_string(value,"...");
-               else		
+               if (colno!=int(nd.childrens_deep))
+//                  g_value_set_string(value,"...");
+//               else		
                   g_value_set_string(value,nd.leafdata->Value(idx,ValueData())->getStrVal().c_str());
             }
             else // leaf
