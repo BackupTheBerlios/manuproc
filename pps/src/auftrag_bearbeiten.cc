@@ -592,8 +592,7 @@ void auftrag_bearbeiten::on_youraufnrscombo_activate()
 
 auftrag_bearbeiten::~auftrag_bearbeiten()
 {
- if(auftrag) delete(auftrag);
- auftrag=NULL;
+ if(auftrag) { delete(auftrag); auftrag=0; }
 }
 
 void auftrag_bearbeiten::setAufEntries()
