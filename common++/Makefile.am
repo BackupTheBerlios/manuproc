@@ -18,7 +18,10 @@ libcommon___a_DEPENDENCIES= Artikel/libArtikel.a Auftrag/libAuftrag.a \
 libcommon___a_LIBADD= \
 		`cat $(libcommon___a_DEPENDENCIES)`
 
-BUILT_SOURCES=Misc
+BUILT_SOURCES=Misc BaseObjects.link
+
+BaseObjects.link:
+	cd BaseObjects ; make Model.h ; touch BaseObjects.link
 
 Misc:
 	ln -sf Aux Misc
