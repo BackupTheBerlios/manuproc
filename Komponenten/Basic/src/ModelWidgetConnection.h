@@ -1,4 +1,4 @@
-// $Id: ModelWidgetConnection.h,v 1.2 2003/04/07 12:33:17 christof Exp $
+// $Id: ModelWidgetConnection.h,v 1.3 2003/04/07 12:39:04 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -65,10 +65,8 @@ public:
 	virtual void set_widget(widget_t *w)
 	{  disconnect();
 	   widget=w;
-	   if (widget && model.valid())
-	   {  model2view();
-	      cm_con=connect();
-	   }
+	   if (widget && model.valid()) model2view();
+	   cm_con=connect();
 	}
 	void set_model(const Model_ref<T> &m)
 	{  mv_con.disconnect();
