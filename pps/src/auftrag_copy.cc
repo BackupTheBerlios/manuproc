@@ -12,7 +12,7 @@
 #include "auftrag_bearbeiten.hh"
 #include "MyMessage.h"  
 #include <Aux/Transaction.h>
-#include <memory.h>
+#include <memory>
 
 extern auftrag_bearbeiten *auftragbearbeiten;
 extern MyMessage *meldung;
