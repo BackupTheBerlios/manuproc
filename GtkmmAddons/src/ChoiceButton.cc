@@ -113,7 +113,7 @@ void ManuProC::ChoiceButton::set_index(unsigned idx)
 //   signal_changed()(); ?
 }
 
-void ManuProC::ChoiceButton::set_style(bool _image, bool _text)
+void ManuProC::ChoiceButton::set_style(bool _image, bool _text, bool horizontal)
 {  if (_image) image->show(); else image->hide();
    if (_text) 
    {  label->show();
@@ -122,6 +122,20 @@ void ManuProC::ChoiceButton::set_style(bool _image, bool _text)
    else 
    {  label->hide();
       if (tips) tips->set_tip(*this, texts[actual_index]);
+   }
+   if (horizontal && !dynamic_cast<Gtk::HBox*>(get_child())) 
+   // you cannot turn this off - if you want to do it, implement it
+   { remove();
+     Gtk::HBox *hbox=manage(new Gtk::HBox());
+     DoubleButton::add(*hbox);
+     image=manage(new Gtk::Image());
+     hbox->add(*image);
+     label=manage(new Gtk::Label());
+     hbox->add(*label);
+     
+     image->show();
+     label->show();
+     hbox->show();
    }
 }
 

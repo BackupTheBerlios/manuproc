@@ -57,7 +57,7 @@ public:
 	void add(const Glib::RefPtr<Gdk::Pixbuf> &image, const Glib::ustring &text, const SigC::Slot0<void> &callback);
 	unsigned get_index() const { return actual_index; }
 	void set_index(unsigned idx);
-	void set_style(bool image=true, bool text=false);
+	void set_style(bool image=true, bool text=false, bool horizontal=false);
 	void set_tearoff_title(const Glib::ustring &title);
 	void set_tooltips(Gtk::Tooltips *_tips);
 	void set_activate_on_change(bool x) { activate_on_change=x; }
