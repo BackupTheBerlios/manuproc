@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.106 2004/02/24 12:44:52 christof Exp $
+// $Id: AufEintrag.cc,v 1.107 2004/05/05 15:55:00 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -381,7 +381,7 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld,bool planen) throw(SQL
  if(getCombinedStatus()==OPEN) Verzeigern(-getStueck(),planen);
 
  Query("update auftragentry "
- 	"set lieferdate=? "
+ 	"set lieferdate=?, lasteditdate=now() "
  	"where (instanz,auftragid,zeilennr)=(?,?,?)").lvalue()
  	<< ld
  	<< static_cast<const AufEintragBase&>(*this);
