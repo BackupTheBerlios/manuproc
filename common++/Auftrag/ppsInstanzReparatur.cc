@@ -227,7 +227,7 @@ std::vector<LagerInhalt> ppsInstanzReparatur::getLagerInhalt() const
   else 
 #elif defined(MABELLA_EXTENSIONS) && defined(MANUPROC_DYNAMICENUMS_CREATED)
   if(Instanz() == ppsInstanzID::Fertigwarenlager)  
-	LI=FertigWarenLager().LagerInhalt();
+	LI=FertigWarenLager(FertigWarenLager::default_lagerid).LagerInhalt();
   else 
 #endif 
    { std::cout << Instanz()<<' '<<"\tKeine LagerKlasse implementiert\n";

@@ -1,4 +1,4 @@
-// $Id: FertigWaren.h,v 1.13 2004/01/12 17:06:11 jacek Exp $
+// $Id: FertigWaren.h,v 1.14 2004/01/13 22:11:36 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -27,6 +27,8 @@
 #include <BaseObjects/ManuProcEntity.h>
 #include <Misc/FetchIStream.h>
 #include <unistd.h>
+#include <pwd.h>
+#include <sys/types.h>
 
 class FertigWaren
 {
@@ -42,8 +44,9 @@ private:
   int bestand;  	// Wenn es sich um eine Inventurbuchung handelt
   ManuProcEntity<>::ID lieferschein;
   int uid;
-  std::string uname;
+//  std::string uname;
 
+  static std::map<int,std::string> usermap;
 
 public:
  enum e_buchen{Rein,Raus,WiederRein,AsIs};
@@ -70,9 +73,17 @@ public:
  void setZeit(const Zeitpunkt_new z) { zeit=z;}
  enum_Aktion Aktion() const {return aktion;}
  const ArtikelBase &Artikel() const { return artikel; }
- const std::string User() const { return uname;}
+ const std::string User() const 
+ 	{ if(usermap.find(uid)!=usermap.end())
+ 		return usermap[uid];
+ 	  struct passwd *pwd;
+ 	  pwd=getpwuid(uid);
+ 	  if(pwd==NULL) usermap[uid]="-";
+ 	  else usermap[uid]=pwd->pw_gecos; 
+	  return usermap[uid];
+ 	}
 private:
- void setUser(const std::string user) { uname=user;}
+// void setUser(const std::string user) { uname=user;}
 public:
  int getUserID() const { return uid; }
   

@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.46 2003/12/04 08:01:37 christof Exp $
+// $Id: Lager.cc,v 1.47 2004/01/13 22:11:36 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -63,7 +63,7 @@ void Lager::rein_ins_lager(const ArtikelBase &artikel,
  else a=(FertigWaren::enum_Aktion)'M';
 
  FertigWaren fw(artikel,a,menge.as_int(),ctx.leb.Id());
- FertigWarenLager fwl(fw);
+ FertigWarenLager fwl(fw,FertigWarenLager::default_lagerid);
  fwl.Einlagern(ctx);
 #else
  LagerBase::rein_ins_lager(artikel,menge,produziert,ctx); 
@@ -98,7 +98,7 @@ void Lager::raus_aus_lager(const ArtikelBase &artikel,
  else a=(FertigWaren::enum_Aktion)'M';
 
  FertigWaren fw(artikel,a,menge.as_int(),ctx.leb.Id());
- FertigWarenLager fwl(fw);
+ FertigWarenLager fwl(fw,FertigWarenLager::default_lagerid);
  fwl.Auslagern(ctx);
 #else
  LagerBase::raus_aus_lager(artikel,menge,fuer_auftrag,ctx); 

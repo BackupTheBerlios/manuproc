@@ -1,4 +1,4 @@
-// $Id: FertigWarenLager.h,v 1.14 2004/01/12 17:06:11 jacek Exp $
+// $Id: FertigWarenLager.h,v 1.15 2004/01/13 22:11:36 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -52,14 +52,14 @@ public:
 #if defined MABELLA_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
     static const unsigned int default_lagerid=1;
    
-      FertigWarenLager(const FertigWaren _fw, int lagid=default_lagerid) :
+      FertigWarenLager(const FertigWaren _fw, int lagid) :
       		LagerBase(ppsInstanzID::Fertigwarenlager),
       		fw(_fw),lagerid(lagid)  
       {
 	initLager();
       }
       
-      FertigWarenLager(int lagid=default_lagerid) : 
+      FertigWarenLager(int lagid) : 
       		LagerBase(ppsInstanzID::Fertigwarenlager),
       		fw(FertigWaren()), lagerid(lagid)
       {
