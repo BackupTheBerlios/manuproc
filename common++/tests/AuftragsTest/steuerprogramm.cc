@@ -1092,7 +1092,7 @@ int main(int argc,char *argv[])
    system((std::string(MANU_DATAPATH)+"/initdb.script "+MANU_DATAPATH+kill_output).c_str());
    putenv("PGDATABASE=mabella_test_db");
 #elif defined PETIG_TEST
-   system("database_tables_init/initdb.script"+kill_output);
+   system(("database_tables_init/initdb.script"+kill_output).c_str());
    putenv("PGDATABASE=testdb");
 #endif
    cout << "...beendet\n";
