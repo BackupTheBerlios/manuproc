@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.74 2004/10/19 10:54:29 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.75 2004/10/19 11:15:00 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -303,7 +303,7 @@ FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry& z)
      >> FetchIStream::MapNull(zusatzinfo) >> refauftrag 
      >> FetchIStream::MapNull(z.lagerid,FertigWarenLager::none_lagerid)
      >> FetchIStream::MapNull(status,(AufStatVal)NOSTAT)
-     >> FetchIStream::MapNull(text);
+     >> FetchIStream::MapNull(z.text);
  z.status=(AufStatVal)status;
 #ifdef PETIG_EXTENSIONS 
   // gibt es einen Grund, das nicht anzunehmen, immerhin war es früher so

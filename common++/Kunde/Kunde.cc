@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.48 2004/10/12 17:20:22 jacek Exp $
+// $Id: Kunde.cc,v 1.49 2004/10/19 11:15:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -369,7 +369,7 @@ fixedpoint<2> Kunde::getProvSatz_Artikel(const ArtikelBase art) const throw(SQLe
         itos(ExtBezSchema::default_id);
 
  fixedpoint<2> to_set=0;
-#ifdef MABELLA_EXTENSIONS
+#if defined(MABELLA_EXTENSIONS) && defined(MANUPROC_DYNAMICENUMS_CREATED)
  int signatur=1;
  int bezkomptype=1;
 
