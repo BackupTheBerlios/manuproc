@@ -1,6 +1,6 @@
 SUBDIRS=newtree tree_simplest dwhouse MVC
 
-EXTRA_PROGRAMS = Event TreeViewUtil TreeSelection
+EXTRA_PROGRAMS = Event TreeViewUtil TreeSelection test_sts
 
 AM_CXXFLAGS=@KOMPONENTEN_INCLUDES@
 
@@ -10,5 +10,7 @@ TreeViewUtil_SOURCES=TreeViewUtil.cc
 TreeViewUtil_LDADD=@KOMPONENTEN_LIBS@
 TreeSelection_SOURCES=TreeSelection.cc
 TreeSelection_LDADD=@KOMPONENTEN_LIBS@
+test_sts_SOURCES=test_sts.cc
+test_sts_LDADD=@KOMPONENTEN_LIBS@
 
 AM_LDFLAGS=@KOMPONENTEN_LDFLAGS@
