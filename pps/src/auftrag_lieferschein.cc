@@ -355,6 +355,8 @@ auftrag_lieferschein::auftrag_lieferschein(cH_ppsInstanz _instanz)
 #ifdef MABELLA_EXTENSIONS
  button_zeile_uebernehmen->set_sensitive(false);
  button_kompletter_auftrag->set_sensitive(false);
+#else
+ lagerwahl->hide();
 #endif
 
  set_tree_titles();
