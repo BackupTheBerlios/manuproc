@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.53 2004/02/11 12:11:21 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.54 2004/02/12 09:02:30 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -72,7 +72,7 @@ void LieferscheinEntry::showZusatzInfos() const
    std::cerr << '\n';
 }
 
-
+#warning Diese Funktion ist IMHO unsinnig
 void LieferscheinEntry::changeStatus(AufStatVal new_status, 
 		const Lieferschein &ls, bool ein_auftrag) throw(SQLerror)
 { 
@@ -193,6 +193,7 @@ void LieferscheinEntry::changeMenge(int _stueck, mengen_t _menge) throw(SQLerror
 {ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
 	NV("stueck",_stueck),NV("menge",_menge));
 #warning ganz schlechte Idee ... entweder wir brauchen das gleiche Lieferscheinobjekt oder gar keins ...
+ std::cerr << __FUNCTION__ << ": I believe this function to be buggy, CP\n";
  changeMenge(_stueck,_menge,*cH_Lieferschein(Instanz(),Id()),false);
 }
 
@@ -208,7 +209,7 @@ void LieferscheinEntry::changeMenge(int _stueck, mengen_t _menge,
   Transaction tr;
   Query::Execute("lock table lieferscheinentry in exclusive mode");
 
-  if(status==OPEN) changeStatus((AufStatVal)OPEN,ls,ein_auftrag);
+  if(status==OPEN) changeStatus((AufStatVal)OPEN,ls,ein_auftrag,_stueck,_menge);
 
   updateLieferscheinMenge(_stueck,_menge);
 
@@ -362,7 +363,8 @@ LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
 
 void LieferscheinEntry::deleteEntry(LieferscheinEntry &lse) throw(SQLerror)
 {
- lse.changeMenge(0,0);
+#warning ganz schlechte Idee ... entweder wir brauchen das gleiche Lieferscheinobjekt oder gar keins ...
+ lse.changeMenge(0,0,*cH_Lieferschein(Instanz(),Id()),false);
  deleteMe(lse);
 }
 
