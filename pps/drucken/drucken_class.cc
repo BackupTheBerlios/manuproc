@@ -1260,11 +1260,12 @@ void LR_Abstraktion::page_header(std::ostream &os)
 	if(!kunde_an->isInGrp(KundengruppeID::Lieferadresse) && 
 		(Typ()==Auftrag || Typ()==Rechnung))
 		{
+		cH_Kunde kunde_lfr(kunde_an->Lfran());
 		os << "\\bf "<<mld->MLT(MultiL_Dict::TXT_LIEFADRESSE)<<":\\rm\\\\\n"
-		   << string2TeX(kunde_an->firma())+"\\\\\n"
-		   << string2TeX(kunde_an->strasse())+" "
-		   << string2TeX(kunde_an->hausnr())+"\\\\\n"		   
-		   << string2TeX(kunde_an->plz()+" "+kunde_an->ort())+"\\\\\n\n";
+		   << string2TeX(kunde_lfr->firma())+"\\\\\n"
+		   << string2TeX(kunde_lfr->strasse())+" "
+		   << string2TeX(kunde_lfr->hausnr())+"\\\\\n"		   
+		   << string2TeX(kunde_lfr->plz()+" "+kunde_lfr->ort())+"\\\\\n\n";
 		os << "\\smallskip\n";   
 		}
 		
