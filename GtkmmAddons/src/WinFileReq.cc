@@ -98,7 +98,7 @@ WinFileReq::WinFileReq(const SigC::Slot1<void,const std::string &> &sl,
    if (res) 
    {  const_cast<SigC::Slot1<void,const std::string &>&>(sl)(buf);
    }
-   else if (call_on_cancel)
+   else if (pass_cancel)
       const_cast<SigC::Slot1<void,const std::string &>&>(sl)(std::string());
 #endif
 }
