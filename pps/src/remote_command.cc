@@ -172,7 +172,8 @@ int RC_OffenMenge(cH_ArtikelBezeichnung b, ManuProC::Datum &d)
  if(menge==-1) return menge;
 
  char *datum=strstr(buf,"|");
- d.from_postgres(datum+1);
+ if(datum)
+   d.from_postgres(datum+1);
  
  return menge;
  
