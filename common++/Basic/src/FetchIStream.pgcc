@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.41 2003/06/04 09:48:33 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.42 2003/06/24 07:21:48 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -356,3 +356,5 @@ void Query::ThrowOnBad(const char *where) const
    }
 }
 
+int Query::Code() {  return sqlca.sqlcode; }
+unsigned Query::Lines() { return sqlca.sqlerrd[2]; }

@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.33 2003/05/15 15:55:43 christof Exp $
+// $Id: FetchIStream.h,v 1.34 2003/06/24 07:21:48 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -197,6 +197,8 @@ public:
 	void ThrowOnBad(const char *where) const;
 
 	static void Execute(const std::string &command);
+	static int Code(); // SQLCA.sqlcode
+	static unsigned Lines(); // SQLCA.sqlerrd[2]
 
 	//-------------------- parameters ------------------
 	// must be already quoted for plain SQL inclusion

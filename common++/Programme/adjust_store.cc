@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.39 2003/06/18 11:14:30 christof Exp $
+// $Id: adjust_store.cc,v 1.40 2003/06/24 07:21:48 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -26,7 +26,7 @@
 #include <Auftrag/selFullAufEntry.h>
 #include <Misc/Trace.h>
 
-enum action_bits { b_physical, b_exclude, b_tree, b_raise };
+enum action_bits { b_physical, b_exclude, b_tree, b_raise, b_links };
 
 enum action_flags { f_none=0 };
 bool operator&(action_flags a,action_bits b) { return int(a)&(1<<int(b)); }
@@ -50,6 +50,7 @@ static void usage(const std::string &s)
            "\t   (pro Instanz,Artikel,Lieferdatum) existieren.\n"
            "\tX: Reparaturen von Zuordnungen+lokalen Einschränkungen\n"
            "\tR: Erhöhen von Produziert-Selbst-Instanzen auf noch benötigte Menge\n"
+           "\tL: Löschen von ungültigen Zuordnungen (ohne Quelle oder Ziel)\n"
            "\t*: Alle Analysen/Reparaturen auf einmal (meist mit -I)\n";
            
  std::cerr << "USAGE:  ";
@@ -123,6 +124,7 @@ int main(int argc,char *argv[])
           if (strchr(optarg,'C')||strchr(optarg,'*')) actions|=b_exclude;
           if (strchr(optarg,'R')||strchr(optarg,'*')) actions|=b_raise;
           if (strchr(optarg,'X')||strchr(optarg,'*')||strchr(optarg,'R')) actions|=b_tree;
+          if (strchr(optarg,'L')||strchr(optarg,'*')) actions|=b_links;
           break;
        case 'd' : database=optarg;break;
        case 'h' : dbhost=optarg;break;  
@@ -146,6 +148,13 @@ int main(int argc,char *argv[])
 
 restart:
     alles_ok=true;
+    if (actions&b_links) 
+    {  Query("delete from auftragsentryzuordnung where not exists "
+    	"(select true from auftragentry where (instanz,auftragid,zeilennr)="
+    		"(altinstanz,altauftragid,altzeilennr)) or not exists "
+    	"(select true from auftragentry where (instanz,auftragid,zeilennr)="
+    		"(neuinstanz,neuauftragid,neuzeilennr))");
+    }
     if(instanz!=ppsInstanzID::None) 
       alles_ok&=check_for(argv[0],cH_ppsInstanz(instanz),analyse_only);
     else
