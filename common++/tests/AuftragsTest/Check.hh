@@ -1,4 +1,4 @@
-// $Id: Check.hh,v 1.17 2002/11/27 12:35:52 thoma Exp $
+
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -35,7 +35,13 @@
 
 class Check
 {
+   enum was_checken_p { b_Jumbo, b_Lieferschein, b_Menge };
  public:
+   enum was_checken { Nix,
+   		Jumbo=1<<b_Jumbo,
+   		Lieferschein=1<<b_Lieferschein,
+   		Menge=1<<b_Menge };
+   		
    enum e_check {Open,Menge_Plus,Menge_Minus,Menge_MinusMinus,StatusClosed,
                  Datumsaenderung,Rohwarenlager_einlagern,Bandlager_einlagern,
                  Rohwarenlager_auslagern,
@@ -57,9 +63,19 @@ class Check
                  ZweiKunden_Ueber1,ZweiKundenMengeFuer
                      };
  private:
-   void dump(e_check);
-   bool vergleich(e_check);
+   static was_checken WasChecken(e_check);
+   static std::string Zusatz(e_check);
+
+   void dump(was_checken);
+   bool vergleich(was_checken,const std::string &name);
  public:
    Check(){}; 
-   bool teste(e_check check,bool mit_reparatur_programm,bool vor_dem_test_reparieren=false); // Erfolgreich: true; sonst false
+   // old variant
+   bool teste(e_check check,bool mit_reparatur_programm,bool vor_dem_test_reparieren=false); 
+   // new variant (needs no enum) CP
+   // Erfolgreich: true; sonst false
+   bool teste(was_checken was, const std::string &name,bool mit_reparatur_programm,bool vor_dem_test_reparieren=false);
 };
+
+Check::was_checken operator|(Check::was_checken a, Check::was_checken b);
+bool operator&(Check::was_checken a, Check::was_checken b);

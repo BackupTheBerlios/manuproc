@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.18 2002/11/27 12:35:52 thoma Exp $
+// $Id: Check.cc,v 1.19 2002/11/27 14:59:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -37,11 +37,15 @@ static std::string referenzdir="database_tables_test/";
 #endif
 
 bool Check::teste(e_check check,bool mit_reparatur_programm,bool vor_dem_test_reparieren)
+{  return teste(WasChecken(check),Zusatz(check),mit_reparatur_programm,vor_dem_test_reparieren);
+}
+
+bool Check::teste(was_checken check,const std::string &zusatz, bool mit_reparatur_programm,bool vor_dem_test_reparieren)
 {
   dump(check);  
   if(!vor_dem_test_reparieren)
    {
-     bool b=vergleich(check);
+     bool b=vergleich(check,zusatz);
      if(!mit_reparatur_programm || !b) return b;
    }
   std::vector<cH_ppsInstanz> VI=cH_ppsInstanz::get_all_instanz();
@@ -59,20 +63,15 @@ bool Check::teste(e_check check,bool mit_reparatur_programm,bool vor_dem_test_re
      system(com2.c_str());
    }  
   dump(check);  
-  return vergleich(check);
+  return vergleich(check,zusatz);
 }
 
-
-bool Check::vergleich(e_check check)
-{ std::vector<std::string> files;
-  bool error=false;
-
+Check::was_checken Check::WasChecken(e_check check)
+{
   switch (check)
   {  
    case Jumbo_richtig: case Jumbo_falsch: case Jumbo_doppelt:
-  	   files.push_back("rohjumbo");
-     	files.push_back("lager_bewegung");
-  	   break;
+	return Jumbo; // |Menge; ??
    case LieferscheinTeil: case LieferscheinZeileLoeschen: case LieferscheinZeileLoeschen_n:
    case LieferscheinVoll: case LieferscheinMengenaenderungPlus:
    case LieferscheinMengenaenderungMinus: case LieferscheinZusatz:
@@ -80,16 +79,14 @@ bool Check::vergleich(e_check check)
    case LieferscheinZusatzMinusKunde: case LieferscheinZweiAufTeil:
    case LieferscheinZweiAufVoll: case LieferscheinJacek0:
    case LieferscheinEinkaufTeillieferung:
-        files.push_back("lieferschein");
-        files.push_back("lieferscheinentry");
-        files.push_back("lieferscheinentryzusatz");
+        return Lieferschein|Menge;
    default: 
-        files.push_back("auftragsentryzuordnung");
-        files.push_back("auftragentry");
-        break;
+        return Menge;
   }
+}
 
-  std::string zusatz;
+std::string Check::Zusatz(e_check check)
+{  std::string zusatz;
   switch(check)
    {
      case Open : zusatz="_mit_lager_open"; break;
@@ -151,8 +148,30 @@ bool Check::vergleich(e_check check)
      case Jumbo_richtig : zusatz="_richtig"; break;
      case Jumbo_falsch : zusatz="_falsch"; break;
      case Jumbo_doppelt : zusatz="_doppelt"; break;
+     
+     default: zusatz="_unbekannt"; break;
    }
-   
+   return zusatz;
+}
+
+bool Check::vergleich(was_checken was,const std::string &zusatz)
+{ std::vector<std::string> files;
+  bool error=false;
+
+  if (was & Jumbo) 
+  {  files.push_back("rohjumbo");
+     files.push_back("lager_bewegung");
+  }
+  if (was & Lieferschein)
+  {  files.push_back("lieferschein");
+     files.push_back("lieferscheinentry");
+     files.push_back("lieferscheinentryzusatz");
+  }
+  if (was & Menge)
+  {  files.push_back("auftragsentryzuordnung");
+     files.push_back("auftragentry");
+  }
+
   for (std::vector<std::string>::const_iterator i=files.begin();i!=files.end();++i)
   {  std::string fz1=tempdir+*i;
      std::string fz2=referenzdir+*i+zusatz;
@@ -175,16 +194,15 @@ bool Check::vergleich(e_check check)
       }
 #endif
   }
-  if (error) return false;//exit(1);
-  else return true;
+  return !error;
 }
 
 
-void Check::dump(e_check check)
+void Check::dump(was_checken check)
 {
   static const std::string psql_cmd="psql "+std::string(getenv("PGDATABASE"))+" -q -X -c";
 
-  if(check == Jumbo_richtig || check ==Jumbo_falsch || check==Jumbo_doppelt)
+  if(check & Jumbo)
   {  unlink((tempdir+"rohjumbo").c_str());
      unlink((tempdir+"lager_bewegung").c_str());
 
@@ -195,18 +213,8 @@ void Check::dump(e_check check)
      system((psql_cmd+" \""+
   	"select code,action,name,lagerplatz from lager_bewegung order by code,zeit;"
   	    +"\" >"+tempdir+"lager_bewegung").c_str());
-     return;
   }
-  else if(check == LieferscheinTeil || check == LieferscheinZeileLoeschen
-          || check == LieferscheinZeileLoeschen_n
-          || check == LieferscheinVoll || check==LieferscheinMengenaenderungPlus
-          || check == LieferscheinMengenaenderungMinus 
-          || check == LieferscheinZusatz || check == LieferscheinZusatzPlus
-          || check == LieferscheinZusatzMinus 
-          || check == LieferscheinZusatzMinusKunde
-          || check == LieferscheinZweiAufTeil
-          || check == LieferscheinZweiAufVoll
-          || check == LieferscheinEinkaufTeillieferung)
+  if(check & Lieferschein)
   {  
      unlink((tempdir+"lieferschein").c_str());
      unlink((tempdir+"lieferscheinentry").c_str());
@@ -226,6 +234,8 @@ void Check::dump(e_check check)
   	    +"\" >"+tempdir+"lieferscheinentryzusatz").c_str());
   }
   
+ if (check & Menge)
+ {
   unlink((tempdir+"auftragsentryzuordnung").c_str());
   unlink((tempdir+"auftragentry").c_str());
 
@@ -245,6 +255,10 @@ void Check::dump(e_check check)
       "\\\"NEU:instanz-id-znr\\\",menge from auftragsentryzuordnung "
       "order by 1,2;\" > "+tempdir+"auftragsentryzuordnung"; 
   system(s2.c_str());
-
+ }
 }
 
+Check::was_checken operator|(Check::was_checken a, Check::was_checken b)
+{  return Check::was_checken(int(a)|int(b)); }
+bool operator&(Check::was_checken a, Check::was_checken b)
+{  return int(a)&int(b); }
