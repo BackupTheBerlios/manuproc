@@ -1,4 +1,4 @@
-// $Id: Datum.cc,v 1.27 2004/03/08 16:12:41 christof Exp $
+// $Id: Datum.cc,v 1.28 2004/03/08 17:18:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.27 2004/03/08 16:12:41 christof Exp $ */
+/* $Id: Datum.cc,v 1.28 2004/03/08 17:18:15 christof Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
@@ -57,7 +57,7 @@ ManuProC::Datum ManuProC::Datum::today() throw()
 }
 
 ManuProC::Datum::Datum(time_t t) throw() :
-woche(0),woche_jahrdiff(0),quart(0)
+woche(),woche_jahrdiff(),quart()
 {  struct tm *tm=localtime(&t);
    
    tag=tm->tm_mday;
@@ -258,7 +258,7 @@ const static int seconds_per_day=60*60*24;
 const static int seconds_per_week=7*seconds_per_day;
 
 ManuProC::Datum::Datum(const Kalenderwoche &kw) throw(Datumsfehler)
-: woche(0),woche_jahrdiff(0),quart(0) 
+: woche(),woche_jahrdiff(),quart() 
 {  struct tm tm;
    memset(&tm,0,sizeof tm);
    tm.tm_mday=1;
@@ -349,7 +349,7 @@ int ManuProC::Datum::Wochentag(void) const throw(Datumsfehler)
 
 
 ManuProC::Datum::Datum(int t, int m, int j,bool expandyear) throw(Datumsfehler)
-  : woche(0),woche_jahrdiff(0),quart(0),tag(t),monat(m),jahr(j) 
+  : woche(),woche_jahrdiff(),quart(),tag(t),monat(m),jahr(j) 
 {  if (expandyear && jahr<100) 
    {  if (jahr<70) jahr+=100;
       jahr+=1900;
