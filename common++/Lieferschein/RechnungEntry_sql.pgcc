@@ -113,8 +113,8 @@ void RechnungEntryBase::setRgPayOff(int _rngid) throw(SQLerror)
  char RNGART[1];
  exec sql end declare section;
 
- exec sql select datum,coalesce(bezahlt,false),kundennr into 
-	:DATUM,:BEZAHLT,:KUNDENNR 
+ exec sql select datum,coalesce(bezahlt,false),kundennr,rngart into 
+	:DATUM,:BEZAHLT,:KUNDENNR,:RNGART 
 	from rechnung where rngid=:RNGID;
  SQLerror::test(__FILELINE__);
 
