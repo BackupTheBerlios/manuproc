@@ -25,7 +25,8 @@
 #include <Kunde/TelefonArt.h>
 #include <pwd.h>
 #include <unistd.h>
-#include <Aux/multi_lang.h>
+#include <Misc/multi_lang.h>
+#include <Misc/relops.h>
 
 #define TABW	"18"
 
@@ -842,7 +843,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 		 min_KWStr=kws;
 		}
 	    else
-	      if(min_liefdatum>lieferdatum) 
+	      if(min_liefdatum>lieferdatum)
 		{min_liefdatum=lieferdatum;
 		 min_KWStr=kws;	
 		}
