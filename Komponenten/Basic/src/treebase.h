@@ -42,7 +42,6 @@ class TreeBase : public TCList
  bool titles_bool:1; 
  bool auffuellen_bool:1; 
  bool expandieren_bool:1; 
- bool stutzen_bool:1;
  
  
  void Titles(Gtk::CheckMenuItem *titles);
@@ -61,8 +60,6 @@ class TreeBase : public TCList
  bool col_schon_ausgewaehlt(int col);
  void insertIntoTCL(TCListRow_API *tclapi,const TreeBase &tb,
 		 	const cH_RowDataBase &d, std::deque<guint> q,guint deep);
- static bool stutzen(TCListRow_API *parent, TCListRow_API *child,
- 				TCList &tclist);
  bool redisplay_recurse(TCListRow_API *a, const RowDataBase *r, guint col);
  
 protected: 
@@ -98,10 +95,10 @@ public:
  { datavec=d; 
    refillTCL(clear_me);
  };
+ void append_line(cH_RowDataBase row);
  void set_value_data(gpointer _p) {gp = _p;}
  void redisplay(cH_RowDataBase row,guint index);
  gpointer ValueData() const { return gp; }
- void Stutzen ( bool s) {stutzen_bool=s;}
  
  static void Expand_recursively(TCListRow_API &api);
  void Expand_recursively();

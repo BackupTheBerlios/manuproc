@@ -16,13 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: rowdata.h,v 1.6 2001/10/08 09:10:18 christof Exp $
+// $Id: rowdata.h,v 1.7 2002/06/24 07:45:24 christof Exp $
 
 #ifndef KOMPONENTEN_ROWDATA_H
 #define KOMPONENTEN_ROWDATA_H
 
-#include <Aux/Handles.h>
-#include <Aux/EntryValueBase.h>
+#include <Misc/Handles.h>
+#include <Misc/EntryValueBase.h>
 #include <glib.h>
 #include <cassert>
 

@@ -1,4 +1,4 @@
-// $Id: datewin.h,v 1.6 2002/06/20 09:27:55 christof Exp $
+// $Id: datewin.h,v 1.7 2002/06/24 07:45:24 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,7 +20,7 @@
 #ifndef _DATEWIN_HH
 #  include "datewin_glade.hh"
 #  define _DATEWIN_HH
-#include <Aux/Datum.h>
+#include <Misc/Datum.h>
 
 class datewin : public datewin_glade
 {  	friend class datewin_glade;

@@ -21,7 +21,7 @@
 #ifndef KOMPONENTENEXAMP_MYVALUE
 #define KOMPONENTENEXAMP_MYVALUE
 
-#include<Aux/EntryValueIntString.h>
+#include<Misc/EntryValueIntString.h>
 
 class MyValue : public EntryValueIntString
 {

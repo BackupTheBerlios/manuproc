@@ -23,7 +23,7 @@
 // feel free to enlarge it if you need
 // it's not designed for efficiency!
 
-#include <Aux/EntryValueIntString.h>
+#include <Misc/EntryValueIntString.h>
 #include <tclistrowdata.h>
 
 class RowDataStrings : public RowDataBase

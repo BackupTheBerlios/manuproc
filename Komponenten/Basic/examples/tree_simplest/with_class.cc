@@ -15,13 +15,13 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// $Id: with_class.cc,v 1.13 2002/03/20 07:55:01 christof Exp $
+// $Id: with_class.cc,v 1.14 2002/06/24 07:45:24 christof Exp $
 
 #include "config.h"
 #include "with_class.hh"
 #include <gtk--/main.h>
-#include <Aux/EntryValueIntString.h>
-#include <Aux/EntryValueEmptyInt.h>
+#include <Misc/EntryValueIntString.h>
+#include <Misc/EntryValueEmptyInt.h>
 #include <tclistnode.h>
 
 void with_class::on_Beenden_activate()

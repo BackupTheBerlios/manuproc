@@ -1,4 +1,4 @@
-// $Id: datewin.cc,v 1.5 2002/06/20 09:27:55 christof Exp $
+// $Id: datewin.cc,v 1.6 2002/06/24 07:45:24 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,8 +18,8 @@
  */
 
 #include "datewin.h"
-#include <Aux/itos.h>
-#include <Aux/Global_Settings.h>
+#include <Misc/itos.h>
+#include <Misc/Global_Settings.h>
 #include <unistd.h>
 
 datewin::datewin(const std::string &inst) : block(false), instance(inst)

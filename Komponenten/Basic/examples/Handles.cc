@@ -1,4 +1,4 @@
-// $Id: Handles.cc,v 1.2 2001/12/23 21:43:55 christof Exp $
+// $Id: Handles.cc,v 1.3 2002/06/24 07:45:24 christof Exp $
 /*  ManuProcWidgets: ManuProC's GUI element library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,7 +18,7 @@
  */
 
 
-#include <Aux/Handles.h>
+#include <Misc/Handles.h>
 #include <iostream>
 #include <gtk--/window.h>
 #include <gtk--/main.h>
