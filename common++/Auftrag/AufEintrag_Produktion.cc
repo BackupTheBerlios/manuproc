@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.7 2003/08/11 15:58:53 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.8 2003/08/12 08:38:13 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -237,14 +237,14 @@ public:
 
 	// Überproduktion
 	void operator()(const ArtikelBase &art,AuftragBase::mengen_t M) const
-	{  if (M<0) 
+	{  if (M<0) // Ein Teil der Lieferung konnte nicht rückgängig gemacht werden
 	   {  // similar code in AufEintrag::ArtikelInternNachbestellen
 	      ArtikelStamm as(art);
-	      ppsInstanz::ID inst= alterAEB.Instanz()->naechsteInstanz(as);
-	      ManuProC::Datum termin=alterAEB.getLieferdatum();
+	      ppsInstanz::ID inst= alterAEB.Instanz()->NaechsteInstanz(as);
+	      ManuProC::Datum termin=AufEintrag(alterAEB).getLieferdatum();
 	      if (inst==ppsInstanzID::None)
-	      {  inst=ppsInstanz::getBestellInstanz(as);
-	         termin-=alterAEB.Instanz()->ProduktionsDauer();
+	      {  inst=ppsInstanz::getBestellInstanz(as)->Id();
+	         termin=termin-alterAEB.Instanz()->ProduktionsDauer();
 	      }
 	      AufEintrag::ArtikelInternNachbestellen(inst,-M,
 	   	termin,art,uid,alterAEB);
