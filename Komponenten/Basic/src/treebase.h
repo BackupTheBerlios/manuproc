@@ -146,7 +146,7 @@ public:
  
  cH_RowDataBase getSelectedRowDataBase() const 
  	throw(noRowSelected,multipleRowsSelected,notLeafSelected);
- std::vector<cH_RowDataBase> &getSelectedRowDataBase_vec() const 
+ std::vector<cH_RowDataBase> getSelectedRowDataBase_vec() const 
  	throw(notLeafSelected);
 
  template <class T,class CT> T getSelectedRowDataBase_as() const
@@ -159,7 +159,6 @@ public:
  }
 
 
-// TCListNode &getSelectedNode() const 
  TreeRow &getSelectedNode() const 
  	throw(noNodeSelected,multipleNodesSelected,notNodeSelected);
  template <class T> T &getSelectedNode_as() const
