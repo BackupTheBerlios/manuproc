@@ -1,4 +1,4 @@
-// $Id: create_parse.cc,v 1.1 2004/02/06 11:07:00 christof Exp $
+// $Id: create_parse.cc,v 1.2 2004/02/06 11:31:49 christof Exp $
 /*  ManuProC_Base: Main ManuProC Library
  *  Copyright (C) 2004  Christof Petig
  *
@@ -18,16 +18,18 @@
  */
 
 #include <Misc/create_parse.h>
+#include <iostream>
+#include <locale.h>
 
 template <>
-int Tag::parse_value<int>(const std::string &value) throw(std::out_of_range)
+int ManuProC::parse_value<int>(const std::string &value) throw(std::out_of_range)
 {  if (value.empty()) throw std::out_of_range(value);
    // 2do: check
    return atoi(value.c_str());
 }
 
 template <>
-bool Tag::parse_value<bool>(const std::string &value) throw(std::out_of_range)
+bool ManuProC::parse_value<bool>(const std::string &value) throw(std::out_of_range)
 {  if (value.empty()) throw std::out_of_range(value);
    if (!strcasecmp(value.c_str(),"true")) return true;
    if (!strcasecmp(value.c_str(),"false")) return false;
@@ -38,13 +40,13 @@ bool Tag::parse_value<bool>(const std::string &value) throw(std::out_of_range)
 }
 
 template <>
-long Tag::parse_value<long>(const std::string &value) throw(std::out_of_range)
+long ManuProC::parse_value<long>(const std::string &value) throw(std::out_of_range)
 {  if (value.empty()) throw std::out_of_range(value);
    return atol(value.c_str());
 } 
 
 template <>
-double Tag::parse_value<double>(const std::string &value) throw(std::out_of_range)
+double ManuProC::parse_value<double>(const std::string &value) throw(std::out_of_range)
 {  if (value.empty()) throw std::out_of_range(value);
    /* Make sure we do NOT honor the locale for numeric input */
    /* since the database gives the standard decimal point */
@@ -56,12 +58,12 @@ double Tag::parse_value<double>(const std::string &value) throw(std::out_of_rang
 }
 
 template <>
-float Tag::parse_value<float>(const std::string &value) throw(std::out_of_range)
+float ManuProC::parse_value<float>(const std::string &value) throw(std::out_of_range)
 {  return parse_value<double>(value);
 }
 
 template <>
-std::string Tag::parse_value<std::string>(const std::string &value) throw(std::out_of_range)
+std::string ManuProC::parse_value<std::string>(const std::string &value) throw(std::out_of_range)
 {  return value;
 }
 
@@ -72,14 +74,14 @@ std::string Tag::parse_value<std::string>(const std::string &value) throw(std::o
 #ifndef MANUPROC_BASE // within glade--
 #include <cstdio>
 template<>
- std::string Tag::create_value<int>(const int &val)
+ std::string ManuProC::create_value<int>(const int &val)
 {  char buf[30];
    snprintf(buf,sizeof buf,"%d",val);
    return buf; // itos?
 }
 
 template<>
- std::string Tag::create_value<double>(const double &val)
+ std::string ManuProC::create_value<double>(const double &val)
 {  char buf[30];
    /* Make sure we do NOT honor the locale for numeric input */
    /* since the database gives the standard decimal point */
@@ -91,24 +93,24 @@ template<>
 }
 
 template<>
- std::string Tag::create_value<bool>(const bool &val)
+ std::string ManuProC::create_value<bool>(const bool &val)
 {  return val?"true":"false"; 
 }
 #else
 #include <Misc/itos.h>
 
 template<>
- std::string Tag::create_value<int>(const int &val)
+ std::string ManuProC::create_value<int>(const int &val)
 {  return itos(val);
 }
 
 template<>
- std::string Tag::create_value<double>(const double &val)
+ std::string ManuProC::create_value<double>(const double &val)
 {  return dtos(val);
 }
 
 template<>
- std::string Tag::create_value<bool>(const bool &val)
+ std::string ManuProC::create_value<bool>(const bool &val)
 {  return btos(val);
 }
 #endif

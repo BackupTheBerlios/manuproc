@@ -1,4 +1,4 @@
-// $Id: create_parse.h,v 1.1 2004/02/06 11:07:00 christof Exp $
+// $Id: create_parse.h,v 1.2 2004/02/06 11:31:49 christof Exp $
 /*  ManuProC_Base: Main ManuProC Library
  *  Copyright (C) 2004  Christof Petig
  *
@@ -19,6 +19,9 @@
 
 #ifndef D086626E_F86A_453E_8C15_0B36F04A5CAD
 #define D086626E_F86A_453E_8C15_0B36F04A5CAD
+
+#include <string>
+#include <stdexcept>
 
 namespace ManuProC
 {       template <class T>
