@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.16 2003/03/19 08:27:03 christof Exp $ */
+/* $Id: Datum.h,v 1.17 2003/04/03 08:06:17 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -71,12 +71,8 @@ public:
 		virtual const char* what() const throw() { return "ManuProC::Datum::Formatfehler"; }
 	};
 	
-	/// aus Tag, Monat, Jahr erzeugen
-	Datum(int t, int m, int j) throw(Datumsfehler) : 
-	woche(0),woche_jahrdiff(0),quart(0),tag(t),monat(m),jahr(j) 
-	{
-		teste();
-	}
+	/// aus Tag, Monat, Jahr erzeugen (expandyear lässt 2stelliges Jahr zu)
+	Datum(int t, int m, int j,bool expandyear=true) throw(Datumsfehler);
 	
 	Datum() throw() : woche(0),woche_jahrdiff(0),quart(0),
 	tag(0),monat(0),jahr(0)
