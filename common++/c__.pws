@@ -7,6 +7,27 @@ filter.file.unmatch=*.so *.o *.a *.la
 filter.file.ignore.hidden=0
 filter.dir.ignore.hidden=0
 
+[filelist]
+0=/home/christof/berlios~1/c++/Basic/src/SQLerror_postgres.h
+1=/home/christof/berlios~1/c++/Basic/src/SQLerror.h
+2=/home/christof/berlios~1/c++/Auftrag/AufEintragBase.cc
+3=/home/christof/berlios~1/c++/Auftrag/AuftragBase.h
+4=/home/christof/berlios~1/c++/Auftrag/AufEintrag_Menge.cc
+
+[filenumbers]
+0=42
+1=24
+2=191
+3=67
+4=131
+
+[filemarkers]
+0=
+1=
+2=
+3=
+4=
+
 [Project Tree]
 0=0
 

@@ -1,4 +1,4 @@
-// $Id: ModelPlex.h,v 1.2 2003/09/03 08:03:27 christof Exp $
+// $Id: ModelPlex.h,v 1.3 2003/09/04 07:43:34 christof Exp $
 /*  libcommon++: ManuProC's OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -42,9 +42,10 @@
 #ifndef SIGC1_2
 #error this class needs SigC 1.2+
 #endif
+#include <sigc++/object_slot.h>
 
 template <class T>
- class ModelPlex : public SigC::Object, public Model<T>
+ class ModelPlex : public SigC::Object, public Model_copyable<T>
 {	typedef ModelPlex<T> this_t;
 	
 	SigC::Connection mv_con, cm_con;
@@ -66,6 +67,7 @@ template <class T>
 	{  if (actmodel.matches(x)) actmodel2us();
 	}
 
+	void operator=(const this_t &b);
 public:
 	ModelPlex(const Model_ref<T> &m=Model_ref<T>())
 	{ cm_con=signal_changed().connect(

@@ -1,4 +1,4 @@
-// $Id: mvc.cc,v 1.12 2003/09/03 12:32:39 christof Exp $
+// $Id: mvc.cc,v 1.13 2003/09/04 07:43:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,8 +23,8 @@
 #include <sigc++/signal_system.h>
 #define SLOT_ARG(x) (x)
 #else
-#include <sigc++/object.h>
-#include <sigc++/sigc++.h> // hmm where do you get SigC::slot
+//#include <sigc++/object.h>
+#include <sigc++/object_slot.h> // sigc++.h> // hmm where do you get SigC::slot
 #define SLOT_ARG(x) (*(x))
 #endif
 #include <utility>
