@@ -21,8 +21,6 @@
 - testen: überliefern, löschen bei !prod_selbst Lager :
 	dadrin, dadrüber, 2 drüber
 
-- reason entfernen
-
 - ausliefern mit ProdSelbst:
 	ProdNG: geschlossenen 1er Rückgängig machen wenn 0er ausgeliefert
 	wird. (dann neuen 1er anlegen)
@@ -40,9 +38,6 @@
 - Problem: Einen Auftrag 2mal planen zu unterschiedlichen Zeiten, welcher
 	wird zuerst produziert (Momentan zuletzt geplanter?)
 
-- graph: Zuordnungen die später wegfallen sind nicht ersichtlich 
-	(/- wäre gut)
-	
 - graph: /////// hinter Datum könnte weg
 
 - distribute_children_artbaum könnte auch zum Bestellen verwendet werden?
