@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.36 2003/07/18 11:05:41 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.37 2003/07/25 12:53:17 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -31,7 +31,7 @@
 #include <Misc/relops.h>
 
 #ifdef MABELLA_EXTENSIONS
-#include <Lager/FertigWaren.h>
+//#include <Lager/FertigWaren.h>
 #include <Artikel/ArtikelBase.h>
 #endif
 

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.46 2003/07/07 10:51:03 christof Exp $
+// $Id: AufEintragBase.cc,v 1.47 2003/07/25 12:53:17 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,7 +26,7 @@
 #include <Auftrag/VerfuegbareMenge.h>
 #include <Auftrag/AufEintrag.h>
 #ifdef MABELLA_EXTENSIONS
-#include <Lager/FertigWaren.h>
+//#include <Lager/FertigWaren.h>
 #include <Artikel/ArtikelBase.h>
 #endif
 #include <Misc/TraceNV.h>
