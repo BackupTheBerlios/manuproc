@@ -50,7 +50,7 @@ enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
       Rep_Petig_0er_2er_gleichzeitig,Rep_KundenProgramm,Rep_Zuordnungen,
       Rep_Kunden_Zuordnungen};
 
-static ostream *testlog;
+static std::ostream *testlog;
 // for more output ...
 static bool verbose=false;
 static bool do_not_stop=false;
@@ -81,13 +81,13 @@ static int auftragstests(e_mode mode, bool mit_reparatur_programm)
 {
 //  ManuProC::Tracer::Enable(AuftragBase::trace_channel);
 
-   if (mit_reparatur_programm) cout << "Mit ReparaturProgrammTest\n";
+   if (mit_reparatur_programm) std::cout << "Mit ReparaturProgrammTest\n";
 
    AuftragsVerwaltung  auftrag;
    AufEintragBase AEB=auftrag.anlegen();
    AufEintrag AE=AEB;
    Check C;
-   cout << "Anlegen eines Auftrags ["<<AEB<<"] beendet\n\n";
+   std::cout << "Anlegen eines Auftrags ["<<AEB<<"] beendet\n\n";
 
    // ANLEGEN eines Auftrags mit Bandlager und Rohwarenlager
    if (mode!=JumboLager)
@@ -798,7 +798,7 @@ ManuProC::Tracer::Enable(AuftragBase::trace_channel);
        LagerPlatz LP(ppsInstanzID::Bandlager,JUMBO_LAGERPLATZ);
        LagerPlatz LP2(ppsInstanzID::Bandlager,JUMBO_LAGERPLATZ+1);
        KettplanKette KK=KettplanKette(Kette(MASCHIENE,SCHAERDATUM));
-       vector<JumboRolle> JR=JumboRolle::create(KK);
+       std::vector<JumboRolle> JR=JumboRolle::create(KK);
        assert(JR.size()==1);
        class JumboLager JL;
        Zeitpunkt_new zp0("2002-3-1 11:00"),
@@ -841,7 +841,7 @@ ManuProC::Tracer::Enable(AuftragBase::trace_channel);
 
 static void usage(const std::string &argv0,const std::string &argv1)
 {
-  cerr << argv0 <<" [--verbose] [--repair] {(M)engentest|(P)lantest|(L)agertest|\n"
+  std::cerr << argv0 <<" [--verbose] [--repair] {(M)engentest|(P)lantest|(L)agertest|\n"
                   "\t(S)plittest|(Z)weiAuftraege|"
                   "\tZweiterAuftrag_frueheres(D)atum|\n"
                   "\t(L)iefer(s)cheine|(L)ieferscheine(m)engen|\n"
@@ -922,13 +922,13 @@ int main(int argc,char *argv[])
    system(("database_tables_init/initdb.script"+kill_output).c_str());
    putenv("PGDATABASE=testdb");
 #endif
-   cout << "...beendet\n";
+   std::cout << "...beendet\n";
 
    Petig::PrintUncaughtExceptions();
    try{
    mkdir("files.log",0777);
    mkdir("results",0777);
-   ofstream logstream(("files.log/"+mode_str).c_str());
+   std::ofstream logstream(("files.log/"+mode_str).c_str());
    testlog=&logstream;
    Petig::dbconnect();
 

@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.40 2003/01/08 09:46:58 christof Exp $
+// $Id: Check.cc,v 1.41 2003/01/08 09:53:49 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -86,7 +86,7 @@ bool Check::teste(was_checken check,const std::string &zusatz, bool mit_reparatu
      std::string comT=Com+" -i "+itos((*i)->Id())+" -a T  ";
      int t=system(comT.c_str());
      if(d||e||f||g||h||s||t) 
-         {cout <<*i<<'\t'<< d<<e<<f<<g<<h<<s<<t<<'\n'; return false; }
+         {std::cout <<*i<<'\t'<< d<<e<<f<<g<<h<<s<<t<<'\n'; return false; }
    }  
   dump(check,zusatz);  
   return vergleich(check,zusatz);
@@ -123,15 +123,15 @@ bool Check::vergleich(was_checken was,const std::string &zusatz)
 #warning WARNUNG: COMPILATION MIT CREATE_TEST_DATABASE
 #warning WARNUNG: 
     system(("mv "+fz1+" "+fz2).c_str());
-    cout << fz2<<" wurde neu erzeugt\n"; 
+    std::cout << fz2<<" wurde neu erzeugt\n"; 
 #else
      std::string s="diff -q "+fz1+" "+fz2;
 //cout<<" DIFF: " << s<<'\n';
      int reg=system(s.c_str());
-     if(reg==-1) { cout<< "Fehler im diff-Komando ("+*i+")\n"; exit(reg);}
-     else if(reg==0) ;//zuviel Output :-( {cout << *i << " OK\n";}
+     if(reg==-1) { std::cout<< "Fehler im diff-Komando ("+*i+")\n"; exit(reg);}
+     else if(reg==0) ;//zuviel Output :-( {std::cout << *i << " OK\n";}
      else 
-      { cout << "Probleme, Empfehlung: \n "<< "mgdiff "+fz1+" "+fz2<<" &\n"; 
+      { std::cout << "Probleme, Empfehlung: \n "<< "mgdiff "+fz1+" "+fz2<<" &\n"; 
         error=true;
       }
 #endif
