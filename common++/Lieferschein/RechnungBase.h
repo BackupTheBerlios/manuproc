@@ -1,4 +1,4 @@
-/* $Id: RechnungBase.h,v 1.10 2003/05/30 11:57:59 jacek Exp $ */
+/* $Id: RechnungBase.h,v 1.11 2003/06/19 12:48:11 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,6 +26,7 @@
 #include <Lieferschein/LieferscheinBase.h>
 #include <BaseObjects/ManuProcEntity.h>
 #include <Misc/Ausgabe_neu.h>
+#include <Kunde/Kunde.h>
 
 // ableiten von ManuProcEntity wg. HandleCOntent nicht möglich :-( MAT
 class RechnungBase // : ManuProcEntity
@@ -33,6 +34,7 @@ class RechnungBase // : ManuProcEntity
  protected:
   	int rngid;	
 //	static const int _illegal=none_id;
+	mutable Kunde::ID verknr;
  public:
  	typedef enum {RART_RNG='R',RART_GUT='G',RART_STORNO='S',RART_NONE=0} RngArt; 
  
@@ -42,8 +44,8 @@ class RechnungBase // : ManuProcEntity
 	typedef Preis::geldbetrag_t geldbetrag_t;
 	typedef LieferscheinBase::mengen_t mengen_t;
 	
-	RechnungBase() : rngid(none_id) {}
-	RechnungBase(ID rid) : rngid(rid) {}
+	RechnungBase() : rngid(none_id),verknr(Kunde::none_id) {}
+	RechnungBase(ID rid) : rngid(rid),verknr(Kunde::none_id) {}
 
 	ID Id() const {return rngid;}
 	std::string getRngidToStr() const
@@ -53,6 +55,8 @@ class RechnungBase // : ManuProcEntity
    bool Valid() const {return ManuProcEntity<>::Valid(rngid);}
 	
 	void setEingezogen(int refnr) throw(SQLerror);
+	Kunde::ID getVerknr() const throw(SQLerror);
+	void setVerknr(const Kunde::ID vid) const throw(SQLerror);	
 };
 
 #endif

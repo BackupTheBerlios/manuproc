@@ -403,3 +403,11 @@ void Rechnung::Notiz(const std::string n) throw(SQLerror)
 }
 
 
+int Rechnung::size() const throw(SQLerror)
+{
+ int ret;
+ Query("select count(*) from rechnungentry where rngid=?")
+	<< Id() >> ret;
+ return ret;
+}
+

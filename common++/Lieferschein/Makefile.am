@@ -8,7 +8,7 @@ includedir=@includedir@/Lieferschein
 
 libLieferschein_a_SOURCES=Lieferschein.cc LieferscheinEntry.cc \
 		LieferscheinList.cc LieferscheinVoll.cc $(BUILT_SOURCES) \
-      Rechnung.cc 
+      Rechnung.cc RechnungBase.cc
 
 libLieferschein.a: $(libLieferschein_a_OBJECTS) $(libLieferschein_a_DEPENDENCIES) Makefile
 	(for i in $(libLieferschein_a_OBJECTS) ; do echo Lieferschein/$$i ; done ) >$@
