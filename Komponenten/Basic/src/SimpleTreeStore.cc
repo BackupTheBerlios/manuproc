@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.67 2004/05/06 09:24:51 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.68 2004/05/06 09:35:19 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -608,27 +608,27 @@ int SimpleTreeStore::IterStamp() const
 
 SimpleTreeStore::iterator &SimpleTreeStore::iterconv(vfunc_iter_t iter)
 {  //if (!iter->stamp && !iter->user_data) return root.children.begin();
-   assert(iter STS_GTKMM_22_24(->,.)stamp==stamp);
-   return reinterpret_cast<SimpleTreeStore::iterator&>(iter STS_GTKMM_22_24(->,.)user_data);
+   assert(iter STS_GTKMM_22_24(->stamp,.get_stamp())==stamp);
+   return reinterpret_cast<SimpleTreeStore::iterator&>(iter STS_GTKMM_22_24(->,.gobj()->)user_data);
 }
 
 const SimpleTreeStore::iterator &SimpleTreeStore::iterconv(vfunc_constiter_t iter) const
-{  if (iter STS_GTKMM_22_24(->,.)stamp!=stamp)
-   {  std::cerr << "iterconv: iterator mismatch " << iter STS_GTKMM_22_24(->,.)stamp << "!=" << IterStamp()
-   	<< " user_data=" << iter STS_GTKMM_22_24(->,.)user_data << '\n';
+{  if (iter STS_GTKMM_22_24(->stamp,.get_stamp())!=stamp)
+   {  std::cerr << "iterconv: iterator mismatch " << iter STS_GTKMM_22_24(->stamp,.get_stamp()) << "!=" << IterStamp()
+   	<< " user_data=" << iter STS_GTKMM_22_24(->,.gobj()->)user_data << '\n';
       abort();
    }
-   return reinterpret_cast<const SimpleTreeStore::iterator&>(iter STS_GTKMM_22_24(->,.)user_data);
+   return reinterpret_cast<const SimpleTreeStore::iterator&>(iter STS_GTKMM_22_24(->,.gobj()->)user_data);
 }
 
 void SimpleTreeStore::iterinit(vfunc_iter_t iter,const const_iterator &schema) const
-{  assert(3*sizeof(iter STS_GTKMM_22_24(->,.)user_data)>=sizeof(SimpleTreeStore::const_iterator));
-   iter STS_GTKMM_22_24(->,.)stamp=stamp;
-   reinterpret_cast<SimpleTreeStore::const_iterator&>(iter STS_GTKMM_22_24(->,.)user_data)=schema;
-   ManuProC::Trace(trace_channel,__FUNCTION__,iter STS_GTKMM_22_24(->,.)stamp,
-   		iter STS_GTKMM_22_24(->,.)user_data,
-   		iter STS_GTKMM_22_24(->,.)user_data2,
-   		iter STS_GTKMM_22_24(->,.)user_data3);
+{  assert(3*sizeof(iter STS_GTKMM_22_24(->,.gobj()->)user_data)>=sizeof(SimpleTreeStore::const_iterator));
+   STS_GTKMM_22_24(iter->stamp=stamp, iter.set_stamp(stamp));
+   reinterpret_cast<SimpleTreeStore::const_iterator&>(iter STS_GTKMM_22_24(->,.gobj()->)user_data)=schema;
+   ManuProC::Trace(trace_channel,__FUNCTION__,iter STS_GTKMM_22_24(->stamp,.get_stamp()),
+   		iter STS_GTKMM_22_24(->,.gobj()->)user_data,
+   		iter STS_GTKMM_22_24(->,.gobj()->)user_data2,
+   		iter STS_GTKMM_22_24(->,.gobj()->)user_data3);
 }
 
 void SimpleTreeStore::iterclear(vfunc_iter_t iter) const
