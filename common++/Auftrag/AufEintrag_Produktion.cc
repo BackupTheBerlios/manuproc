@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.23 2003/12/03 09:36:45 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.24 2003/12/03 09:49:41 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -56,9 +56,8 @@ AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
 			   NV("artikel",artikel),NV("menge",menge),NV("rekursiv",rekursiv),
 			   NV("elter",elter),NV("ctx",ctx),NV("termin",termin));
    assert(instanz!=ppsInstanzID::Kundenauftraege && instanz!=ppsInstanzID::None);
-   if (instanz->LagerInstanz()) // && rekursiv)
-   {  assert(rekursiv);
-      Lager L(instanz);
+   if (instanz->LagerInstanz() && rekursiv) // petig:S: Auslagern ruft uMP auf
+   {  Lager L(instanz);
       L.raus_aus_lager(artikel,menge,true,ProductionContext(elter,ctx));
       // bräuchten wir den AEB?
       return AufEintragBase();
@@ -74,19 +73,6 @@ AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
    ae.abschreiben(menge);
    if (elter.valid()) AufEintragZu(elter).Neu(ae,0);
    if (rekursiv)
-   {  // NaechsteInstanz geht nicht wegen static (nächste wovon)
-//      if (instanz->LagerInstanz())
-//      {  mengen_t noch_prod=menge;
-         assert(!instanz->LagerInstanz());
-         // erst nach 2ern suchen
-         // unten als produziert markieren
-//         if (!!noch_prod)
-//         {  cH_ppsInstanz pi=ppsInstanz::getProduktionsInstanz(artikel);
-//            if (pi!=ppsInstanzID::None && !pi->ProduziertSelbst())
-//               unbestellteMengeProduzieren(pi,artikel,menge,true,neuerAEB);
-//         }
-//      }
-//      else
       {  ArtikelBaum AB(artikel);
          for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
          {  cH_ppsInstanz bi=ppsInstanz::getBestellInstanz(i->rohartikel);
@@ -95,7 +81,6 @@ AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
                		true,neuerAEB);
          }
       }
-   }
    cH_ppsInstanz EI=instanz->EinlagernIn();
    if(EI->AutomatischEinlagern())
    {  assert(instanz->ProduziertSelbst()); // sonst Endlosrekursion
