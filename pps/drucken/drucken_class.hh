@@ -190,7 +190,7 @@ class LR_Abstraktion: public LR_Base
 
  static const unsigned int signifikanz=1;
 #ifdef MABELLA_EXTENSIONS
- static const unsigned int ZEILEN_SEITE_1=31;
+ static const unsigned int ZEILEN_SEITE_1=30;
 #else
  static const unsigned int ZEILEN_SEITE_1=33;
 #endif
