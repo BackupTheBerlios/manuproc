@@ -434,7 +434,10 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
 // merken welche Werte in der 1. Zeile stehen
     if (Typ()==Rechnung && (*i).Lfrs().Id()!=lfrsid_mem)
     {  lfrsid_drucken=true;
-       zwischensumme_drucken=(lfrsid_mem!=LieferscheinBase::none_id); 
+       cH_Kunde kunde_an(KdNr());
+       zwischensumme_drucken=
+		(lfrsid_mem!=LieferscheinBase::none_id && 
+		kunde_an->isInGrp(KundengruppeID::Zwischensumme)); 
        lfrsid_mem=(*i).Lfrs().Id();
     }
     
