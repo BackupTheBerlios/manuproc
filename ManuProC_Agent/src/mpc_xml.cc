@@ -4,9 +4,18 @@
 #include <MyMessage.h>
 #include <Misc/itos.h>
 #include <Misc/FetchIStream.h>
+#include "mpc_export.hh"
 
 void mpc_agent::on_senden_clicked()
 {
+ mpc_export mpx;
+ mpx.set_transient_for(*this);
+ int ret;
+ ret=mpx.run();
+
+}
+
+/*
  std::string file="/dev/stdout";
  if(orderid->sensitive()) return; //nix selectiert
  std::string ord_id=itos(orderid->get_value());
@@ -49,4 +58,4 @@ void mpc_agent::on_senden_clicked()
 
 }
 
-
+*/
