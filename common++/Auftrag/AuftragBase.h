@@ -30,6 +30,9 @@ class AufEintragBase;
 
 class AuftragBase
 {
+ public:
+        typedef fixedpoint<0> mengen_t;
+
  protected:
         cH_ppsInstanz instanz; 	
  	int auftragid;	
@@ -46,15 +49,23 @@ class AuftragBase
 	bool valid() const { return auftragid!=0; }
         void setStatusAuftragBase(AufStatVal st) const throw(SQLerror);
 
-
-        int insertNewEntry(const unsigned long int bestellt, 
+/*
+        int insertNewKundenEntry(const mengen_t bestellt, 
                 const Petig::Datum lieferdatum, const ArtikelBase& artikel,
                 const AufStatVal status,const bool setInstanzAuftraege,
                 const Preis& preis=Preis(),const fixedpoint<2> rabatt=0
                 ) const throw(SQLerror);
+   private:
+*/
+        int insertNewEntry(const mengen_t bestellt, 
+                const Petig::Datum lieferdatum, const ArtikelBase& artikel,
+                const AufStatVal status,const bool setInstanzAuftraege,
+                const Preis& preis=Preis(),const fixedpoint<2> rabatt=0
+                ) const throw(SQLerror);
+//   public:
         void InstanzAuftraegeAnlegen(const ArtikelBase& art,const int altZnr,
                 const Petig::Datum& lieferdatum, const AufStatVal status, 
-                const long menge) const; 
+                const mengen_t menge) const; 
 /*
         void InstanzAuftraegeAnlegenR(const ArtikelBase& art,const double menge,
                 const AuftragBase& altAuftrag,const int altZnr,
@@ -63,9 +74,9 @@ class AuftragBase
 */
         bool existEntry(const ArtikelBase& artid,
                         const Petig::Datum& lieferdatum,
-                        int& znr,int &newznr, long int& menge, const AufStatVal status
+                        int& znr,int &newznr, mengen_t& menge, const AufStatVal status
                         ) const throw(SQLerror);
-        int tryUpdateEntry(long int bestellt, 
+        int tryUpdateEntry(mengen_t bestellt, 
                 const Petig::Datum lieferdatum, const ArtikelBase& artikel,
                 AufStatVal status,
                 const AuftragBase& altAuftrag,int altZnr,

@@ -4,14 +4,15 @@
 #include <Auftrag/AufEintragBase2.h>
 #include <vector>
 
+
 class AuftragsBaum 
 {
  public:
         struct st_AuftragsBlatt
                 { AufEintragBase2 AEB2; 
                   ArtikelBase AB;
-                  long menge;
-                  st_AuftragsBlatt(AufEintragBase2 a,ArtikelBase ab,long m)
+                  AufEintragBase2::mengen_t menge;
+                  st_AuftragsBlatt(AufEintragBase2 a,ArtikelBase ab,AufEintragBase2::mengen_t m)
                     : AEB2(a),AB(ab),menge(m) {} 
                 };
 

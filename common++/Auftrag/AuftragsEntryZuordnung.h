@@ -1,4 +1,4 @@
-// $Id: AuftragsEntryZuordnung.h,v 1.3 2001/12/23 21:42:15 christof Exp $
+// $Id: AuftragsEntryZuordnung.h,v 1.4 2002/01/07 16:23:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -34,8 +34,8 @@ public:
  AufEintragZu(AufEintragBase2 aeb) 
      : AEB(aeb) {}
 
- struct st_reflist {AufEintragBase2 AEB2;ArtikelBase AB;long Menge;
-         st_reflist(AufEintragBase2 aeb2,ArtikelBase ab,long menge) 
+ struct st_reflist {AufEintragBase2 AEB2;ArtikelBase AB;mengen_t Menge;
+         st_reflist(AufEintragBase2 aeb2,ArtikelBase ab,mengen_t menge) 
               :AEB2(aeb2),AB(ab),Menge(menge){}};
 private:
    std::list<cH_Kunde> get_Referenz_Kunden_long() const throw(SQLerror);
@@ -50,21 +50,21 @@ public:
 
     std::list<cH_Kunde> get_Referenz_Kunden() const throw(SQLerror);
     AufEintragBase2 get_AufEintrag_from_Artikel_by_Lfdate   
-                   (const ArtikelBase& artikel,const cH_ppsInstanz& instanz);
+                   (const ArtikelBase& artikel);
 
     static std::list<AufEintragBase2> get_AufEintragList_from_Artikel
-               (const ArtikelBase& artikel,const cH_ppsInstanz& instanz,AufStatVal status);
+               (const ArtikelBase& artikel,AufStatVal status);
 
 
     // Neuen Eintrag anlegen:
-    void AuftragsEntryZuordnung(const long menge,
+    void AuftragsEntryZuordnung(const mengen_t menge,
                                 const AuftragBase& neuAuftrag,const int neuZnr,
                                 const int oldZnr=0);
     // Menge eines alten Eintrags ändern:
 private:
-    void setMenge(const long menge,const AuftragBase& neuAuftrag,const int neuZnr);
+    void setMenge(const mengen_t menge,const AuftragBase& neuAuftrag,const int neuZnr);
 public:
-    bool setMengeDiff(const long menge,const AuftragBase& neuAuftrag,const int neuZnr);
+    bool setMengeDiff(const mengen_t menge,const AuftragBase& neuAuftrag,const int neuZnr);
     // Zuordnung ändern:
     bool setKindZnr(const AuftragBase& neuAuftrag,const int neuZnr);
     //Zeilennummer für Kind erhalten

@@ -1,4 +1,4 @@
-/* $Id: ArtikelBaum.h,v 1.6 2001/12/19 11:02:08 christof Exp $ */
+/* $Id: ArtikelBaum.h,v 1.7 2002/01/07 16:23:09 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -102,7 +102,7 @@ public:
  static void delete_Artikel(ArtikelBase fuer_artikel,ArtikelBase von_artikel);
 private:
  static void delete_from_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel); 
- static void reduceChildren(const AufEintragBase& AEB,const AufEintragBase& oldAEB,long menge);
+ static void reduceChildren(const AufEintragBase& AEB,const AufEintragBase& oldAEB,AufEintragBase2::mengen_t menge);
  static void create_in_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel,fixedpoint<5> RohMenge); 
 
 public:

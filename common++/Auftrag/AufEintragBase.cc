@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.12 2001/12/05 07:55:59 christof Exp $
+// $Id: AufEintragBase.cc,v 1.13 2002/01/07 16:23:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,9 +23,9 @@
 #include <Auftrag/AuftragsBaum.h> 
 #include <Artikel/ArtikelBaumFull.h>
 
-AufEintragBase::AufEintragBase(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, int _bestellt,
+AufEintragBase::AufEintragBase(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, mengen_t _bestellt,
 	int _artikel, const Petig::Datum _lieferdatum,
-	int _geliefert,
+	mengen_t _geliefert,
 	int _dispoentrynr, int _disponr, int _jahrgang,
 	AufStatVal _aufstatus,
 	int _kdnr, const std::string _youraufnr,
@@ -96,7 +96,7 @@ void AufEintragBase::setVerarbeitung(const cH_Prozess p)
  prozdate=Petig::Datum().today();
 }
 
-void AufEintragBase::abschreiben(int menge) throw(SQLerror)
+void AufEintragBase::abschreiben(mengen_t menge) throw(SQLerror)
 {
  geliefert=AufEintragBase2::abschreiben(menge);
 // rest = bestellt-geliefert;
@@ -150,7 +150,7 @@ std::string AufEintragBase::getProzess2_c_str() const
  std::string s;
  for(std::vector<pair<cH_Prozess,long> >::const_iterator i=L.begin();i!=L.end();++i)
   {
-   int menge = i->second;
+   mengen_t menge = i->second;
    s+=i->first->getTyp()+" "+i->first->getText()+"("+itos(menge)+")";
    if(i+1!=L.end()) s+= ", ";
   }

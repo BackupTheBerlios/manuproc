@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema.h,v 1.6 2001/08/31 10:03:07 christof Exp $
+// $Id: ExtBezSchema.h,v 1.7 2002/01/07 16:23:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -113,6 +113,7 @@ private: // I don't like these API - Christof
  const std::string BezSeparator(unsigned int bkt) const 
  { return bkt<bezkomps.size()?bezkomps[bkt].separator:std::string(); }
 
+
  const static unsigned int first_index=1; // this is now invalid
 
 public:
@@ -124,6 +125,7 @@ public:
  std::string JumboBez() const {return jumbobez;}
  std::string JumboTitel() const {return jumbotitel;}
  std::string JumboSpalte() const {return jumbospalte;}
+ static bool exist_schema_for_typ(ID eid,const ArtikelTyp &t);
 
  const ArtikelTyp &Typ() const { return typ; }
  

@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.pgcc,v 1.12 2002/01/02 15:31:17 christof Exp $
+// $Id: ArtikelBaum.pgcc,v 1.13 2002/01/07 16:23:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -45,7 +45,7 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
     int ARTIKELID;
     int ALTARTIKELID[30];
     int PROZESSID[30];
-    float MENGE[30];
+    double MENGE[30];
     int IMENGE[30];
     exec sql end declare section;
     
@@ -146,7 +146,7 @@ void ArtikelBaum::new_Artikel(ArtikelBase fuer_artikel,const RohArtikel& RA)
     int ARTIKELID;
     int ALTARTIKELID;
     int PROZESS;
-    float MENGE;
+    double MENGE;
  exec sql end declare section;
  ARTIKELID=fuer_artikel.Id();
  ALTARTIKELID=RA.rohartikel.Id();
@@ -161,16 +161,18 @@ void ArtikelBaum::new_Artikel(ArtikelBase fuer_artikel,const RohArtikel& RA)
  tr.commit();
 }
 
-void ArtikelBaum::create_in_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel,fixedpoint<5> RohMenge)
+void ArtikelBaum::create_in_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel,menge_t RohMenge)
 {
-  std::list<AufEintragBase2> elternliste = AufEintragZu::get_AufEintragList_from_Artikel(alt_artikel,ArtikelStamm(alt_artikel).BestellenBei(),NOSTAT);
+  std::list<AufEintragBase2> elternliste = AufEintragZu::get_AufEintragList_from_Artikel(alt_artikel,NOSTAT);
+//cout << "Create :"<<elternliste.size()<<"\n\n\n\n";
   for(std::list<AufEintragBase2>::const_iterator e=elternliste.begin();e!=elternliste.end();++e)
    {
      AufEintragBase AEB(*e);
-     long menge=AEB.getStueck()*RohMenge;
+     AufEintragBase2::mengen_t menge=AEB.getStueck()*RohMenge;
      AuftragBase AB(ArtikelStamm(kind_artikel).BestellenBei(),0); 
-     int znr = AB.insertNewEntry(menge,AEB.getLieferdatum(),
-         kind_artikel,AEB.getEntryStatus(),true);
+cout << ArtikelStamm(kind_artikel).BestellenBei()->Name()<<'\n';
+     int znr = AB.tryUpdateEntry(menge,AEB.getLieferdatum(),
+         kind_artikel,AEB.getEntryStatus(),*e,e->ZNr(),true);
      AufEintragZu(*e).AuftragsEntryZuordnung(menge,AB,znr);
    }  
 }
@@ -191,9 +193,9 @@ void ArtikelBaum::delete_Artikel(ArtikelBase fuer_artikel,ArtikelBase von_artike
  tr.commit();
 }
 
-     struct st_aam{AufEintragBase AEB;AufEintragBase oldAEB;long menge;
-         st_aam(const AufEintragBase &_AEB,const AufEintragBase &_oldAEB,long _menge)
-            :AEB(_AEB),oldAEB(_oldAEB),menge(_menge) {} };
+  struct st_aam{AufEintragBase AEB;AufEintragBase oldAEB;AufEintragBase2::mengen_t menge;
+         st_aam(const AufEintragBase &_AEB,const AufEintragBase &_oldAEB,AufEintragBase2::mengen_t _menge)
+          :AEB(_AEB),oldAEB(_oldAEB),menge(_menge) {} };
 
 
 void ArtikelBaum::delete_from_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel)
@@ -203,8 +205,9 @@ void ArtikelBaum::delete_from_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind
       int KINDARTID=kind_artikel.Id();
       int AUFID,INSTANZ,ZNR;
       int AAUFID,AINSTANZ,AZNR;
-      long MENGE;
+      double MENGE;
      exec sql end declare section;
+
      // Mengen holen und
      // AufEntrys um die Menge reduzieren
      exec sql declare mein cursor for select 
@@ -256,7 +259,7 @@ void ArtikelBaum::delete_from_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind
 
 void ArtikelBaum::reduceChildren(const AufEintragBase& AEB,
                                  const AufEintragBase& oldAEB,
-                                 long menge) 
+                                 AufEintragBase2::mengen_t menge) 
 {
 //cout << AEB.Instanz()<<' '<<AEB.ZNr()<<'\t'
 //<<oldAEB.Instanz()<<' '<<oldAEB.ZNr()<<'\t'<<menge<<'\n';

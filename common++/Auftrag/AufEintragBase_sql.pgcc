@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.17 2002/01/02 15:31:17 christof Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.18 2002/01/07 16:23:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -103,14 +103,14 @@ void AufEintragBase::setInstanzen(AufStatVal status,Petig::Datum lieferdate,meng
   {
     ArtikelBaum::menge_t f=ArtikelBaum(artikel).Faktor(i->AB);
     mengen_t M=Menge*f;    
-cout << "setStatusInstanz: Ich bin  : "<<Instanz()<<' '<<Id()<<' '<<ZNr()<<'\t';
-cout << " Kinde ist: "<<i->AEB2.Instanz()<<' '<<i->AEB2.Id()<<' '<<i->AEB2.ZNr()<<'\n';
+//cout << "setStatusInstanz: Ich bin  : "<<Instanz()<<' '<<Id()<<' '<<ZNr()<<'\t';
+//cout << " Kinde ist: "<<i->AEB2.Instanz()<<' '<<i->AEB2.Id()<<' '<<i->AEB2.ZNr()<<'\n';
    AufEintragBase AEB(i->AEB2);
    // AufEintrag splitten und Anlegen in der Zuordnungsliste
-   int znr=0,newznr=0; long menge=0;
+   int znr=0,newznr=0; mengen_t menge=0;
    if(!i->AEB2.existEntry(i->AB,lieferdate,znr,newznr,menge,status))
      {
-cout << "DEBUG 2\n";
+//cout << "DEBUG 2\n";
       znr=AEB.insertNewEntry(M,lieferdate,i->AB,status,false);
       if(Instanz()==ppsInstanz::INST_KNDAUF) 
             AufEintragZu(*this).setKindZnr(AEB,znr);
@@ -120,12 +120,17 @@ cout << "DEBUG 2\n";
 //            AufEintragZu(*this).setMenge(i->Menge-M,AEB,AEB.ZNr());
             AufEintragZu(*this).setMengeDiff(-M,AEB,AEB.ZNr());
          }
-cout << "DEBUG 3\n";
+//cout << "DEBUG 3\n";
      }
    else
      {
-//cout << "existEntry :"<<myznr<<' '<<yourznr<<' '<<znr<<' '<<newznr<<'\n';
-      AufEintragBase(class AufEintragBase2(AEB,znr)).updateStk(menge+M,false);
+cout << "existEntry :"<<Instanz()<<' '<<Id()<<' '<<AEB.Instanz()<<' '
+      <<AEB.Id()<<" Myznr:"<<myznr<<" Yourznr: "<<yourznr<<" Znr: "<<znr
+<<" NEWZnr: "<<newznr<<'\t';
+cout << menge<<'+'<<M<<'='<<menge+M<<'\n';
+
+//      AufEintragBase(class AufEintragBase2(AEB,znr)).updateStkDiff(menge+M);
+      AufEintragBase2(AEB,znr).updateStkDiff(M);
       if(Instanz()==ppsInstanz::INST_KNDAUF) 
             AufEintragZu(*this).setKindZnr(AEB,znr);
       else 
@@ -143,7 +148,7 @@ cout << "DEBUG 3\n";
 }
 
 
-void AufEintragBase::updateStk(long stk,bool instanz) throw(SQLerror)
+void AufEintragBase::updateStk(mengen_t stk,bool instanz) throw(SQLerror)
 {
  if(status==OPEN || status==UNCOMMITED)
   {
@@ -152,14 +157,15 @@ void AufEintragBase::updateStk(long stk,bool instanz) throw(SQLerror)
    SQLerror::test("updateStk: lock table auftragentry");
 
 //   AufEintragBase2::updateStk(stk,stk-bestellt,artikel,status);
+//cout << "AufEintragBase::updateStk: "<<stk<<' '<<bestellt<<'\n';
    AufEintragBase2::updateStkDiff(stk-bestellt);
    if(instanz) updateStkInstanz(stk,bestellt);
    bestellt=stk;
-   tr.close();
+   tr.commit();
   }
 }
 
-void AufEintragBase::updateStkInstanz(long neu_stk,long alt_stk) throw(SQLerror)
+void AufEintragBase::updateStkInstanz(mengen_t neu_stk,mengen_t alt_stk) throw(SQLerror)
 {
   std::list<AufEintragZu::st_reflist> KindListe = AufEintragZu(*this).get_Referenz_list(*this,true);
   for(std::list<AufEintragZu::st_reflist>::const_iterator i=KindListe.begin();i!=KindListe.end();++i)
@@ -168,10 +174,10 @@ void AufEintragBase::updateStkInstanz(long neu_stk,long alt_stk) throw(SQLerror)
      ArtikelBaum::menge_t faktor = ArtikelBaum(ArtId()).Faktor(i->AB);
 //cout << i->AEB2.Instanz()<<' '<<i->AEB2.ZNr()<<'\t';
 //cout << i->Menge<<' '<<AEB.getStueck()<<' '<<getStueck()*faktor<<' '<<alt_stk*faktor<<' '<<neu_stk*faktor<<' '<<'\n';
-     long neue_menge=long(neu_stk*faktor+0.5);
-     long alte_menge=long(alt_stk*faktor+0.5);
+     mengen_t neue_menge=neu_stk*faktor;
+     mengen_t alte_menge=alt_stk*faktor;
      AEB.updateStk(AEB.getStueck()+neue_menge-alte_menge,true);
-     AufEintragZu(*this).setMengeDiff(-long(i->Menge-neu_stk*faktor+.5),i->AEB2,i->AEB2.ZNr());
+     AufEintragZu(*this).setMengeDiff(mengen_t(neu_stk*faktor) - i->Menge,i->AEB2,i->AEB2.ZNr());
    }
 }
 
@@ -253,15 +259,15 @@ void AufEintragBase::updateLieferdatum(const Petig::Datum &ld) throw(SQLerror)
  tr.commit(); 
 }
 
-void AufEintragBase::split(int newmenge, const Petig::Datum &newld) throw(SQLerror)
+void AufEintragBase::split(mengen_t newmenge, const Petig::Datum &newld) throw(SQLerror)
 {
  exec sql begin declare section;
  int AUFTRAGID=auftragid;
  int INSTANZ=instanz->Id();
  int ZEILENNR_OLD=zeilennr;
  long ARTIKELID=artikel.Id();
- long BESTELLT=newmenge;
- long BESTELLT_OLD=bestellt-newmenge;
+ double BESTELLT=newmenge;
+ double BESTELLT_OLD=bestellt-newmenge;
  int STATUS=status;
  float PREIS = preis.Wert();
  int RABATT = rabatt;
@@ -269,8 +275,8 @@ void AufEintragBase::split(int newmenge, const Petig::Datum &newld) throw(SQLerr
  int WAEHRUNG=preis.getWaehrung()->Id();
 
  int ZEILENNR;
- long GELIEFERT;
- long GELIEFERT_OLD;
+ double GELIEFERT;
+ double GELIEFERT_OLD;
  char LIEFERDATUM[21];
  exec sql end declare section;
  
@@ -279,11 +285,11 @@ void AufEintragBase::split(int newmenge, const Petig::Datum &newld) throw(SQLerr
  newld.write_postgres(LIEFERDATUM,sizeof LIEFERDATUM);
  
  if(lieferdatum>newld)
-   {GELIEFERT=geliefert>BESTELLT ? (BESTELLT) : geliefert;
-    GELIEFERT_OLD=geliefert>BESTELLT ? geliefert-BESTELLT : 0;}
+   {GELIEFERT=geliefert>BESTELLT ? mengen_t(BESTELLT) : geliefert;
+    GELIEFERT_OLD=geliefert>BESTELLT ? geliefert-mengen_t(BESTELLT) : mengen_t(0);}
  else
-   {GELIEFERT_OLD=geliefert>BESTELLT_OLD ? (BESTELLT_OLD) : geliefert;
-    GELIEFERT=geliefert>BESTELLT_OLD ? geliefert-BESTELLT_OLD : 0;}
+   {GELIEFERT_OLD=geliefert>BESTELLT_OLD ? mengen_t(BESTELLT_OLD) : geliefert;
+    GELIEFERT=geliefert>BESTELLT_OLD ? geliefert-mengen_t(BESTELLT_OLD) : mengen_t(0);}
     
  Transaction tr;
 // exec sql lock auftragentry in share mode;

@@ -1,4 +1,4 @@
-// $Id: CacheStatic.h,v 1.3 2002/01/05 07:48:31 christof Exp $
+// $Id: CacheStatic.h,v 1.4 2002/01/07 16:23:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -58,6 +58,6 @@ public:
 	const_iterator begin() const
 	{  return _mp.begin(); }
 	const_iterator end() const
-	{  return _mp.begin(); }
+	{  return _mp.end(); }
 };
 #endif

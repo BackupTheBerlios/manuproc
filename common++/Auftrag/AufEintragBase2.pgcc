@@ -1,4 +1,4 @@
-// $Id: AufEintragBase2.pgcc,v 1.27 2002/01/02 10:24:17 cvs_malte Exp $
+// $Id: AufEintragBase2.pgcc,v 1.28 2002/01/03 09:06:52 cvs_malte Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -183,14 +183,14 @@ void AufEintragBase2::setMaxPlanInstanz(int maxplaninstanz) const throw(SQLerror
 
 
 /*
-void AufEintragBase2::updateStk(long newstk,long diff,
+void AufEintragBase2::updateStk(mengen_t newstk,mengen_t diff,
    const ArtikelBase& artikel,AufStatVal status) const throw(SQLerror)
 {
  exec sql begin declare section;
  int AUFTRAGID = auftragid;
  int INSTANZ=instanz->Id();
  int ZEILENNR = zeilennr;  
- long BESTELLT = newstk;
+ double BESTELLT = newstk;
  int STATUS=status;
  exec sql end declare section;
 
@@ -215,37 +215,32 @@ void AufEintragBase2::updateStk(long newstk,long diff,
 }
 */
 
-void AufEintragBase2::updateStkDiff(long menge) const throw(SQLerror)
+void AufEintragBase2::updateStkDiff(mengen_t menge) const throw(SQLerror)
 {
  exec sql begin declare section;
  int AUFTRAGID = Id();
  int INSTANZ=instanz->Id();
  int ZEILENNR = ZNr();  
- long MENGE = menge;
+ double MENGE = menge;
  exec sql end declare section;
 
-// Transaction tr;
+ Transaction tr;
 
+// ECPGdebug(1,stderr);
  exec sql update auftragentry set bestellt= bestellt+:MENGE
-   where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR;
+   where (instanz,auftragid,zeilennr) = (:INSTANZ,:AUFTRAGID,:ZEILENNR);
  SQLerror::test("updateStkDiff: update stk in auftragentry");
-#warning
-#warning updateStk im Moment OHNE Einträge in ProdChageJournal!!! 
-#warning
-/*
+// ECPGdebug(0,stderr);
+
+#warning updateStk im Moment FALSCHE Einträge in ProdChageJournal!!! 
 // if(status==OPEN)
   {
-   try
-    { 
      pps_ChJournalEntry::newChange(
          instanz, *this,
-         artikel,(double)newstk,(double)menge,pps_ChJournalEntry::CH_MENGE);
-    }
-   catch(SQLerror &e)
-     {tr.rollback(); throw; }
+//         artikel,(double)newstk,(double)menge,pps_ChJournalEntry::CH_MENGE);
+         0,0,MENGE,pps_ChJournalEntry::CH_MENGE);
   }
-*/
-// tr.commit(); 
+ tr.commit(); 
 }
 
 
@@ -259,7 +254,6 @@ void AufEintragBase2::setStatus_raw(AufStatVal status)  const throw(SQLerror)
  exec sql end declare section;
 
  exec sql update auftragentry set status=STATUS
-   where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR
-   and instanz =:INSTANZ;
+   where (instanz,auftragid,zeilennr) = (:INSTANZ,:AUFTRAGID,:ZEILENNR);
  SQLerror::test("updateStatus_raw: update status in auftragentry");
 }

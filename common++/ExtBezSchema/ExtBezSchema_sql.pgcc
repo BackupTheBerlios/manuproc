@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema_sql.pgcc,v 1.8 2001/11/05 08:58:29 christof Exp $
+// $Id: ExtBezSchema_sql.pgcc,v 1.9 2002/01/07 16:23:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,6 +19,7 @@
 
 #include <ExtBezSchema/ExtBezSchemaHandle.h>
 #include <Aux/Transaction.h>
+#include <Aux/itos.h>
 
 exec sql include sqlca;
 
@@ -33,24 +34,63 @@ cH_ExtBezSchema::cH_ExtBezSchema(ExtBezSchema::ID eid,const ArtikelTyp &t) throw
    }
 }
 
+bool ExtBezSchema::exist_schema_for_typ(ID eid,const ArtikelTyp &t)
+{
+cout << "SCHEMETEST\t";
+ exec sql begin declare section;
+  int EXTARTBEZID=eid;
+  int TYP=t;
+  bool DUMMY=FALSE;
+ exec sql end declare section;
+ exec sql declare SCHEMETEST cursor for SELECT distinct true
+      from extbezschema where extartbezid=:EXTARTBEZID and artikeltyp=:TYP;
+ Transaction tr;
+ exec sql open SCHEMETEST;
+ exec sql fetch SCHEMETEST into :DUMMY;
+ SQLerror::test(__FILELINE__,100);
+cout <<DUMMY<<'\n';
+ if (sqlca.sqlcode) return false;
+ return true;
+}
+
 ExtBezSchema::ExtBezSchema(ID eid,const ArtikelTyp &t) throw(SQLerror)
 	: typ(t)
 {
+cout << "ExtBezSchema: " <<eid<<' '<<t<<'\n';
+//  int EXTARTBEZID=eid;
+//  int TYP=t;
  exec sql begin declare section;
- int EXTARTBEZID=eid;
- int TYP=t;
+  char query[1024];
  exec sql end declare section;
  bool IDseen=false; // hack?
  int maxBKT=0;
 
+ std::string squery;
+ if(exist_schema_for_typ(eid,t)) squery = "select bezkomptype, bezkomptext, coalesce(separator,''), 
+ 		coalesce(spaltenname,bezkomptext), coalesce(signifikanz,0),
+		coalesce(textabformat,'c'),coalesce(jumbo_bez,'')
+ 	from extbezschema
+	where extartbezid= "+itos(eid)+" and artikeltyp="+itos(t)
+	+" order by bezkomptype" ;
+ else squery = "select bezkomptype, bezkomptext, coalesce(separator,''), 
+ 		coalesce(spaltenname,bezkomptext), coalesce(signifikanz,0),
+		coalesce(textabformat,'c'),coalesce(jumbo_bez,'')
+ 	from extbezschema
+	where extartbezid= "+itos(default_ID)+" and artikeltyp="+itos(t)+"
+	order by bezkomptype" ;
+ strncpy(query,squery.c_str(),sizeof(query));
+
  Transaction tr;
- exec sql declare BEZKOMP cursor for 
+ exec sql prepare BEZKOMP_ from :query;
+ exec sql declare BEZKOMP cursor for BEZKOMP_; 
+/*
  	select bezkomptype, bezkomptext, coalesce(separator,''), 
  		coalesce(spaltenname,bezkomptext), coalesce(signifikanz,0),
 		coalesce(textabformat,'c'),coalesce(jumbo_bez,'')
  	from extbezschema
 	where extartbezid= :EXTARTBEZID and artikeltyp= :TYP
 	order by bezkomptype;
+*/
  exec sql open BEZKOMP;
  SQLerror::test(__FILELINE__"ExtBezSchema::ExtBezSchema",100);
 

@@ -1,4 +1,4 @@
-/* $Id: AufEintragBase.h,v 1.19 2001/12/23 21:42:15 christof Exp $ */
+/* $Id: AufEintragBase.h,v 1.20 2002/01/07 16:23:09 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -42,9 +42,6 @@
 class AufEintragBase : public AufEintragBase2
 {
 // int Id() const; //Use ArtId()
-public:
-
- typedef long mengen_t;
  
 protected: 
  ArtikelBase artikel;
@@ -57,8 +54,8 @@ protected:
  
  int kdnr;
  std::string youraufnr;
- long bestellt;    /* Stück */
- long geliefert;   /* Stück */
+ mengen_t bestellt;    /* Stück */
+ mengen_t geliefert;   /* Stück */
 // double rest;        /* Meter */
 // double menge;        /* Meter */
 // long geplante_menge;
@@ -84,9 +81,9 @@ public:
  {}
 
  AufEintragBase(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, 
-        int _bestellt,
+        mengen_t _bestellt,
 	int _artikel, const Petig::Datum _lieferdatum,
-	int _geliefert,
+	mengen_t _geliefert,
 	int _dispoentrynr, int _disponr, int _jahrgang,
 	AufStatVal _aufstatus,
 	int _kdnr, const std::string _youraufnr,
@@ -97,8 +94,8 @@ public:
  AufEintragBase(const AufEintragBase2 &aebb) throw (SQLerror);
 	
  void updateDispoENr(int dinr) throw(SQLerror);
- void updateStk(long stk,bool instanz) throw(SQLerror);
- void updateStkInstanz(long neu_stk,long alt_stk) throw(SQLerror);
+ void updateStk(mengen_t stk,bool instanz) throw(SQLerror);
+ void updateStkInstanz(mengen_t neu_stk,mengen_t alt_stk) throw(SQLerror);
  void updateLieferdatum(const Petig::Datum &ld) throw(SQLerror);	
  void updateLieferdatum(const Kalenderwoche &K) {updateLieferdatum(Petig::Datum(K));}	
  void updateLieferdatumInstanz(const Petig::Datum &ld) throw(SQLerror);	
@@ -106,16 +103,16 @@ public:
  void updateRabatt(int rb) throw(SQLerror);
  void setStatus(AufStatVal st) throw(SQLerror);		
  void setInstanzen(AufStatVal status,Petig::Datum lieferdate,mengen_t part,int myznr=-1,int yourznr=-1);
- void split(int newmenge, const Petig::Datum &newld) throw(SQLerror);
-// void setPlanMeter(long gm) { geplante_menge=gm; }
+ void split(mengen_t newmenge, const Petig::Datum &newld) throw(SQLerror);
+// void setPlanMeter(mengen_t gm) { geplante_menge=gm; }
  
 // long getMeter() const { return (long)menge; } 
 // long getPlanMeter() const { return geplante_menge; }
-// long getRest() const { if(entrystatus==CLOSED)return 0; return (long)rest; }	
- long getStueck() const { return bestellt;}
- long getRestStk() const {if(entrystatus==CLOSED)return 0; return bestellt-geliefert;}
- long getGeliefert() const { return geliefert;}
-//A long getGeliefertM() const { return long(
+// mengen_t getRest() const { if(entrystatus==CLOSED)return 0; return (mengen_t)rest; }	
+ mengen_t getStueck() const { return bestellt;}
+ mengen_t getRestStk() const {if(entrystatus==CLOSED)return 0; return bestellt-geliefert;}
+ mengen_t getGeliefert() const { return geliefert;}
+//A mengen_t getGeliefertM() const { return mengen_t(
 //A 		(geliefert*(artikel->Stueckgroesse()*10.0))/10);}
 // const char *getLastDate() const { return lasteditdate.c_str();}
 // const char *getLastEdit() const { return lastedit.c_str(); }
@@ -142,7 +139,7 @@ public:
  const Preis EPreis() const { return preis;} // Einzelpreis
  int Rabatt() const { return rabatt;}
  float PreisMenge() const { return preis.PreisMenge(); }
- void abschreiben(int menge) throw(SQLerror);
+ void abschreiben(mengen_t menge) throw(SQLerror);
  bool allesOK() const;
  std::string Planung() const;
 

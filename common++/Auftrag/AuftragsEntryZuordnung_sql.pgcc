@@ -1,4 +1,4 @@
-// $Id: AuftragsEntryZuordnung_sql.pgcc,v 1.2 2001/12/19 11:02:08 christof Exp $
+// $Id: AuftragsEntryZuordnung_sql.pgcc,v 1.3 2002/01/07 16:23:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -23,6 +23,7 @@
 #include <Auftrag/auftrag_status.h>
 #include <Auftrag/AuftragsBaum.h> 
 #include <Aux/Changejournal.h>
+#include <Artikel/ArtikelStamm.h>
 
 exec sql include sqlca;
 
@@ -30,7 +31,7 @@ list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list(const AufEintragB
 {
  exec sql begin declare section;
   int INSTANZ[30],AUFTRAGID[30],ZEILENNR[30];
-  long MENGE[30];
+  double MENGE[30];
   int ARTIKEL[30];
   char query[1024];
  exec sql end declare section;
@@ -125,7 +126,7 @@ list<cH_Kunde> AufEintragZu::get_Referenz_Kunden() const throw(SQLerror)
 }
 
 std::list<AufEintragBase2> AufEintragZu::get_AufEintragList_from_Artikel
-               (const ArtikelBase& artikel,const cH_ppsInstanz& instanz,AufStatVal status)
+               (const ArtikelBase& artikel,AufStatVal status)
 {
   std::list<AufEintragBase2> L;
   exec sql begin declare section;
@@ -133,8 +134,9 @@ std::list<AufEintragBase2> AufEintragZu::get_AufEintragList_from_Artikel
    int db_auftragid,db_zeilennr;
   exec sql end declare section;
   std::string squery = "select auftragid,zeilennr from auftragentry
-      where artikelid="+itos(artikel.Id())+" 
-      and instanz="+itos(instanz->Id());
+      where artikelid="+itos(artikel.Id()) +
+      " and instanz!="+itos(ppsInstanz::INST_KNDAUF) //Nur interne Aufträge sind interessant
+      +" and auftragid=0"; // Nur die UNGEPLANTEN Aufträge bekommen neue Kinder
   if(status!=NOSTAT) squery += "and status="+itos(status);
   strncpy(query,squery.c_str(),sizeof(query));
   Transaction tr;
@@ -143,20 +145,22 @@ std::list<AufEintragBase2> AufEintragZu::get_AufEintragList_from_Artikel
 
   exec sql open AELfAein;
   SQLerror::test(__FILELINE__);
+  cH_ppsInstanz I(ArtikelStamm(artikel).BestellenBei());
   while(true)
    {
      exec sql fetch AELfAein into :db_auftragid,:db_zeilennr;
      SQLerror::test(__FILELINE__,100);
      if (sqlca.sqlcode) break;
-     L.push_back(AufEintragBase2(instanz,db_auftragid,db_zeilennr));
+     L.push_back(AufEintragBase2(I,db_auftragid,db_zeilennr));
+//cout << "Liste: "<<I->Name()<<' '<<db_auftragid<<' '<<db_zeilennr<<'\n';
    }  
   return L;
 }
 
 AufEintragBase2 AufEintragZu::get_AufEintrag_from_Artikel_by_Lfdate   
-               (const ArtikelBase& artikel,const cH_ppsInstanz& instanz)
+               (const ArtikelBase& artikel)
 {
-  std::list<AufEintragBase2> LI=get_AufEintragList_from_Artikel(artikel,instanz,OPEN);
+  std::list<AufEintragBase2> LI=get_AufEintragList_from_Artikel(artikel,OPEN);
   std::list<st_reflist> LR;
   for(std::list<AufEintragBase2>::const_iterator i=LI.begin();i!=LI.end();++i)
    {
@@ -181,7 +185,7 @@ AufEintragBase2 AufEintragZu::get_AufEintrag_from_Artikel_by_Lfdate
   }
 }
 
-void AufEintragZu::AuftragsEntryZuordnung(const long menge,
+void AufEintragZu::AuftragsEntryZuordnung(const mengen_t menge,
                               const AuftragBase& neuAuftrag,const int neuZnr,
                               const int oldZnr=0)
 {
@@ -189,7 +193,7 @@ void AufEintragZu::AuftragsEntryZuordnung(const long menge,
   int db_aaid=AEB.Id();
   int db_ains=AEB.Instanz();
   int db_aznr=AEB.ZNr();
-  long db_menge=menge;
+  double db_menge=menge;
   int db_naid=neuAuftrag.Id();
   int db_nins=neuAuftrag.Instanz();
   int db_nznr=neuZnr;
@@ -203,13 +207,13 @@ void AufEintragZu::AuftragsEntryZuordnung(const long menge,
 
 #include <Aux/itos.h>
 
-void AufEintragZu::setMenge(const long menge,const AuftragBase& neuAuftrag,const int neuZnr)
+void AufEintragZu::setMenge(const mengen_t menge,const AuftragBase& neuAuftrag,const int neuZnr)
 {
  exec sql begin declare section;
   int db_aaid=AEB.Id();
   int db_ains=AEB.Instanz();
   int db_aznr=AEB.ZNr();
-  long db_menge=menge;
+  double db_menge=menge;
   int db_naid=neuAuftrag.Id();
   int db_nins=neuAuftrag.Instanz();
   int db_nznr=neuZnr;
@@ -231,13 +235,13 @@ void AufEintragZu::setMenge(const long menge,const AuftragBase& neuAuftrag,const
  
 }
 
-bool AufEintragZu::setMengeDiff(const long menge,const AuftragBase& neuAuftrag,const int neuZnr)
+bool AufEintragZu::setMengeDiff(const mengen_t menge,const AuftragBase& neuAuftrag,const int neuZnr)
 {
  exec sql begin declare section;
   int db_aaid=AEB.Id();
   int db_ains=AEB.Instanz();
   int db_aznr=AEB.ZNr();
-  long db_menge=menge;
+  double db_menge=menge;
   int db_naid=neuAuftrag.Id();
   int db_nins=neuAuftrag.Instanz();
   int db_nznr=neuZnr;

@@ -59,7 +59,7 @@ void AuftragBase::setStatusAuftragBase(AufStatVal st) const throw(SQLerror)
 
 
 
-int AuftragBase::insertNewEntry(const unsigned long int bestellt, 
+int AuftragBase::insertNewEntry(const mengen_t bestellt, 
   const Petig::Datum lieferdatum,const ArtikelBase& artikel,
   const AufStatVal status,const bool setInstanzAuftraege,
   const Preis& preis,const fixedpoint<2> rabatt) const throw(SQLerror)
@@ -111,7 +111,14 @@ int AuftragBase::insertNewEntry(const unsigned long int bestellt,
       {tr.rollback(); throw; }
   }
 //cout <<"INSTANZ\n";
- if(setInstanzAuftraege)
+ // Kundenaufträge legen automatisch einen Auftrag bei der entsprechenden Instanz 
+ // für denselben Artikel an.
+ if(Instanz()==ppsInstanz::INST_KNDAUF)
+  {
+    AuftragBase AB(ArtikelStamm(artikel).BestellenBei());   
+    AB.tryUpdateEntry(bestellt,lieferdatum,artikel,status,*this,ZEILENNR,setInstanzAuftraege);
+  }
+ else if(setInstanzAuftraege)
     InstanzAuftraegeAnlegen(artikel,ZEILENNR,lieferdatum,status,bestellt);
 
  tr.commit();
@@ -120,7 +127,7 @@ int AuftragBase::insertNewEntry(const unsigned long int bestellt,
 
 void AuftragBase::InstanzAuftraegeAnlegen(const ArtikelBase& artikel,
       const int altZnr,const Petig::Datum& lieferdatum,
-      const AufStatVal status, const long menge) const
+      const AufStatVal status, const mengen_t menge) const
 {
    ArtikelBaum AB(artikel);
 //cout <<"Instanzen: " <<AB.size()<<'\n';
@@ -134,7 +141,7 @@ void AuftragBase::InstanzAuftraegeAnlegen(const ArtikelBase& artikel,
 
 bool AuftragBase::existEntry(const ArtikelBase& artikel,
                              const Petig::Datum& lieferdatum,
-                             int& znr,int &newznr,long int& menge,
+                             int& znr,int &newznr,mengen_t& menge,
                              AufStatVal status) const throw(SQLerror)
 {
  exec sql begin declare section;
@@ -142,7 +149,7 @@ bool AuftragBase::existEntry(const ArtikelBase& artikel,
    long ARTIKELID=artikel.Id();
    int INSTANZ =Instanz();
    int ZEILENNR,NEUZNR=-99;
-   long MENGE;
+   double MENGE;
    char LIEFERDATUM[21];
    int STATUS=status;
  exec sql end declare section;
@@ -185,20 +192,20 @@ cout << "select zeilennr,bestellt from auftragentry  join auftragsentryzuordnung
 
 
 #include <Artikel/ArtikelBezeichnung.h> //debug
-int AuftragBase::tryUpdateEntry(long int bestellt, 
+int AuftragBase::tryUpdateEntry(mengen_t bestellt, 
   const Petig::Datum lieferdatum,const ArtikelBase& artikel,
   AufStatVal status,const AuftragBase& altAuftrag, const int altZnr,
   bool reloop) const throw(SQLerror)
 {
  AufEintragBase2 XAEB(altAuftrag,altZnr);
  int znr=-99,neuznr=-99;
- long menge=0;
+ mengen_t menge=0;
  Transaction tr;
  exec sql lock table auftragentry in exclusive mode;
  SQLerror::test(__FILELINE__);  
  if(!existEntry(artikel,lieferdatum,znr,neuznr,menge,status))
   {
-cout << "Neu\t";
+cout << "Neu\n";
    znr=insertNewEntry(bestellt,lieferdatum,artikel,status,true)  ;
 //cout << "Zeile: "<<znr<<'\n';
    AufEintragZu(XAEB).AuftragsEntryZuordnung(bestellt,*this,znr);
@@ -206,18 +213,15 @@ cout << "Neu\t";
  else
   {
 cout << "Alt\t"<<znr<<' '<<altZnr<<' '<<neuznr<<' '
-<<AufEintragBase2(instanz,auftragid,znr).ZNr()<<"  MENGE:"<<menge<<'\n';
-    try{
-//      AufEintragZu(XAEB).setMenge(menge+bestellt,*this,znr);
-     AufEintragZu(XAEB).setMengeDiff(menge,*this,znr);
-       } catch(SQLerror)
-          { AufEintragZu(XAEB).AuftragsEntryZuordnung(bestellt,*this,znr);
-          }
+<<AufEintragBase2(instanz,auftragid,znr).ZNr()<<"  MENGE:"<<bestellt<<'\n';
+    if(!AufEintragZu(XAEB).setMengeDiff(bestellt,*this,znr))
+        AufEintragZu(XAEB).AuftragsEntryZuordnung(bestellt,*this,znr);
+
 //   AufEintragBase2(instanz,auftragid,znr).updateStk(menge+bestellt,bestellt,artikel,status);
    AufEintragBase2(instanz,auftragid,znr).updateStkDiff(bestellt);
-cout << "\t"<<instanz->Name()<<' '<<auftragid<<' '<<znr<<' '
-<<cH_ArtikelBezeichnung(artikel)->Bezeichnung()<<' '<<menge<<'+'<<bestellt<<' '<<status<<'\n';
-cout << "Alt\t"<<znr<<' '<<altZnr<<' '<<AufEintragBase2(instanz,auftragid,znr).ZNr()<<'\n';
+//cout << "\t"<<instanz->Name()<<' '<<auftragid<<' '<<znr<<' '
+//<<cH_ArtikelBezeichnung(artikel)->Bezeichnung()<<' '<<menge<<'+'<<bestellt<<' '<<status<<'\n';
+//cout << "Alt\t"<<znr<<' '<<altZnr<<' '<<AufEintragBase2(instanz,auftragid,znr).ZNr()<<'\n';
     InstanzAuftraegeAnlegen(artikel,znr,lieferdatum,status, bestellt) ;
   }
   tr.commit();
