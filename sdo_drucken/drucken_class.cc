@@ -1266,7 +1266,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
      cH_Kunde kunde_von(Kunde::default_id);
 
 #ifdef MABELLA_EXTENSIONS
-	os << "\\raisebox{-1.5cm}[0pt][5cm]{\\begin{minipage}[t]{0.6\\linewidth}\n"
+	os << "\\raisebox{-2.5cm}[0pt][5cm]{\\begin{minipage}[t]{0.6\\linewidth}\n"
 	   << "\\begin{flushleft}\n";
 #endif
      os << kunde_von->LaTeX_von()<<"\n\n"  ;
@@ -1293,7 +1293,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
 
 #ifdef MABELLA_EXTENSIONS
 	os << "\\end{flushleft}\\end{minipage}}\\hfill"
-		"\\raisebox{0pt}[0pt][0pt]{\\begin{minipage}[t]{0.38\\linewidth}\n"
+		"\\raisebox{0pt}[0pt][0pt]{\\begin{minipage}[t]{0.25\\linewidth}\n"
 	      "\\footnotesize\n"
 	      "\\sloppy\n"
 	      "\\begin{flushleft}\n";
