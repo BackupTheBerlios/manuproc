@@ -1,5 +1,5 @@
 /*  Midgard Character Generator
- *  Copyright (C) 2001-2002 Malte Thoma
+ *  Copyright (C) 2001-2003 Malte Thoma, Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,30 +21,29 @@
 
 #include <gtkmm/image.h>
 #include <gtkmm/main.h> 
-
+#include <Misc/compiler_ports.h>
 
 class FlashingPixmap : public Gtk::Image
 {
-      gchar * const *defaultPix;
-      gchar * const *flashPix;
+      Glib::RefPtr<Gdk::Pixbuf> defaultPix;
+      Glib::RefPtr<Gdk::Pixbuf> flashPix;
       SigC::Connection des;
-      bool stop;
+      bool stop,def;
 
       void switchPix();
       bool timeout();
 
-      void setDefault(gchar * const *p) {defaultPix=p;}
-      void setFlash(gchar * const *p) {flashPix=p;}
+      void setDefault(Glib::RefPtr<Gdk::Pixbuf> p) {defaultPix=p;}
+      void setFlash(Glib::RefPtr<Gdk::Pixbuf> p) {flashPix=p;}
    public:
-      FlashingPixmap():stop(true){}
-      FlashingPixmap(gchar * const *d,
-                     gchar * const *f,
-                     unsigned int msec);
-      void set(gchar * const *d,gchar * const *f,unsigned int msec)
-         {setDefault(d);setFlash(f);setTime(msec);}
+      FlashingPixmap() : stop(true),def(true) {}
+      /*__deprecated*/ FlashingPixmap(const gchar * const *d,const gchar * const *f,unsigned int msec);
+      FlashingPixmap(Glib::RefPtr<Gdk::Pixbuf> d,Glib::RefPtr<Gdk::Pixbuf> f,unsigned int msec);
+
+      __deprecated void set(const gchar * const *d,const gchar * const *f,unsigned int msec);
+      void set(Glib::RefPtr<Gdk::Pixbuf> d,Glib::RefPtr<Gdk::Pixbuf> f,unsigned int msec)
+      {setDefault(d);setFlash(f);setTime(msec);}
       void setTime(unsigned int sec) ;
 };
 
 #endif
-
-

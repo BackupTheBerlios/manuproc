@@ -1,4 +1,4 @@
-// $Id: RefPtr_Pixmap.hh,v 1.1 2003/04/24 12:54:43 christof Exp $
+// $Id: RefPtr_Pixmap.hh,v 1.2 2003/04/24 14:01:50 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig, Malte Thoma
@@ -27,7 +27,7 @@
 // an Image which's content might be changed via the xpm data model
 
 class RefPtr_Pixmap : public Gtk::Image
-{	typedef RefPtr<Gdk::Pixmap> T;
+{	typedef Glib::RefPtr<Gdk::Pixbuf> T;
 public:
 	class Connection : public ModelWidgetConnection<T,Gtk::Image>
 	{	void model2widget();
