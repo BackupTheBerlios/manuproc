@@ -1,4 +1,4 @@
-// $Id: Event.cc,v 1.6 2004/03/11 09:55:06 christof Exp $
+// $Id: Event.cc,v 1.7 2004/03/11 15:28:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,9 +18,11 @@
  */
 
 #include <Misc/Event.h>
-#include <Misc/FetchIStream.h>
-#include <libpq-fe.h>
-#include <Misc/Transaction.h>
+
+ManuProC::Event::fullsignal_t ManuProC::Event::event_sig;
+bool ManuProC::Event::connected;
+ManuProC::TimeStamp ManuProC::Event::last_processed;
+void *ManuProC::Event::PGconnection;
 
 #ifndef SIGC1_2
 // if you care about memory leaks use gtk2.0!!!
@@ -29,10 +31,27 @@ safemap<std::string, ManuProC::Event::filteredsignal_t*> ManuProC::Event::channe
 safemap<std::string, ManuProC::Event::filteredsignal_t> ManuProC::Event::channels;
 #endif
 
-ManuProC::Event::fullsignal_t ManuProC::Event::event_sig;
-bool ManuProC::Event::connected;
-ManuProC::TimeStamp ManuProC::Event::last_processed;
-void *ManuProC::Event::PGconnection;
+SigC::Connection ManuProC::Event::connect(const std::string &channel,
+   		const SigC::Slot2<void,const std::string &,const std::string &> &slot)
+#ifdef SIGC1_2 // es kann so einfach sein ...
+{  return signal_event(channel).connect(slot); }
+#else
+{  if (!channels[channel]) channels[channel]=new filteredsignal_t();
+   return (*channels[channel]).connect(slot);
+}
+#endif
+
+#ifdef MPC_SQLITE
+bool ManuProC::Event::look_for_notifications() { return false; }
+void ManuProC::Event::read_notifications() {}
+ManuProC::Event::Event(const std::string &channel,const std::string &key,const std::string &data) {}
+void ManuProC::Event::connect(bool ignore_old) {}
+int ManuProC::Event::filedesc() { return -1; }
+
+#else
+#include <Misc/FetchIStream.h>
+#include <libpq-fe.h>
+#include <Misc/Transaction.h>
 
 bool ManuProC::Event::look_for_notifications()
 {  bool consumed=false;
@@ -111,12 +130,4 @@ int ManuProC::Event::filedesc()
    return PQsocket((PGconn *)PGconnection);
 }
 
-SigC::Connection ManuProC::Event::connect(const std::string &channel,
-   		const SigC::Slot2<void,const std::string &,const std::string &> &slot)
-#ifdef SIGC1_2 // es kann so einfach sein ...
-{  return signal_event(channel).connect(slot); }
-#else
-{  if (!channels[channel]) channels[channel]=new filteredsignal_t();
-   return (*channels[channel]).connect(slot);
-}
 #endif

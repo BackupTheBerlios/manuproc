@@ -137,9 +137,9 @@ Artikelpreis::Artikelpreis(const PreisListe::ID liste,const ArtikelBase &a,
       Query q("select preis, mindestmenge, preismenge, waehrung"
 	      	" from artikelpreise where (artikelid,kundennr)=(?,?)");
       q << a.Id() << liste;
-      payload_t pyl(!Query::Code(), false);
+      payload_t pyl(!q.Result(), false);
       FetchIStream is;
-      if (!Query::Code())
+      if (!q.Result())
       {  while ((q>>is).good())
          { geldbetrag_t PREIS;
       	   preismenge_t PREISMENGE;
