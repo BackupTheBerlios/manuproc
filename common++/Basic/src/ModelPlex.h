@@ -1,4 +1,4 @@
-// $Id: ModelPlex.h,v 1.4 2004/03/06 23:13:48 christof Exp $
+// $Id: ModelPlex.h,v 1.5 2004/04/29 13:17:23 christof Exp $
 /*  libcommon++: ManuProC's OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -39,7 +39,7 @@
 
 #include <BaseObjects/Model.h>
 
-#ifndef SIGC1_2
+#if MPC_SIGC_VERSION<0x120
 #error this class needs SigC 1.2+
 #endif
 #include <sigc++/object_slot.h>

@@ -1,4 +1,4 @@
-// $Id: recodestream.h,v 1.2 2002/12/26 21:24:53 christof Exp $
+// $Id: recodestream.h,v 1.3 2004/04/29 13:17:23 christof Exp $
 /*  Midgard Character Generator
  *  Copyright (C) 2001 Christof Petig
  *
@@ -19,7 +19,7 @@
 
 #ifndef RECODESTREAM_H
 #define RECODESTREAM_H
-#if defined(__MINGW32__) || defined(SIGC1_2)
+#if defined(__MINGW32__) || MPC_SIGC_VERSION>=0x120
 
 #include <iostream>
 

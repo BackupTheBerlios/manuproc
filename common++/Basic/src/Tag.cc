@@ -1,4 +1,4 @@
-// $Id: Tag.cc,v 1.6 2003/04/07 06:41:44 christof Exp $
+// $Id: Tag.cc,v 1.7 2004/04/29 13:17:23 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2002  Christof Petig
  *
@@ -170,7 +170,7 @@ void Tag::setAttr(const std::string &name, const std::string &value)
    else attributes.push_back(std::pair<std::string,std::string>(name,value));
 }
 
-#ifdef SIGC1_2
+#ifdef MPC_SIGC_VERSION
 #  define MANUPROC_BASE
 #endif
 

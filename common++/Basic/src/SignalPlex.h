@@ -1,4 +1,4 @@
-// $Id: SignalPlex.h,v 1.2 2003/11/29 12:15:44 christof Exp $
+// $Id: SignalPlex.h,v 1.3 2004/04/29 13:17:23 christof Exp $
 /*  libcommon++: ManuProC's OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -25,7 +25,7 @@
 
 #include <ManuProCConfig.h>
 
-#ifndef SIGC1_2
+#if MPC_SIGC_VERSION<0x120
 #error this class needs SigC 1.2+
 #endif
 #include <sigc++/signal.h>

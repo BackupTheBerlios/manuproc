@@ -1,4 +1,4 @@
-/* $Id: RadioModel.h,v 1.1 2003/09/12 07:29:44 christof Exp $ */
+/* $Id: RadioModel.h,v 1.2 2004/04/29 13:17:23 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Christof Petig
  *
@@ -21,7 +21,7 @@
 #define MANUPROC_RADIOMODEL_H
 
 #include <BaseObjects/Model.h>
-#ifndef SIGC1_2
+#if MPC_SIGC_VERSION<0x120
 #error SigC 1.2 needed
 #endif
 #include <sigc++/object_slot.h>

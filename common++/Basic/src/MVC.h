@@ -1,4 +1,4 @@
-/* $Id: MVC.h,v 1.7 2002/12/02 12:17:58 christof Exp $ */
+/* $Id: MVC.h,v 1.8 2004/04/29 13:17:23 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -23,7 +23,7 @@
 
 #warning Using MVC.h is deprecated, please use Model.h
 
-#ifndef SIGC1_2
+#if MPC_SIGC_VERSION<0x120
 #include <sigc++/basic_signal.h>
 #else
 #include <sigc++/signal.h>

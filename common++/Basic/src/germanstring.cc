@@ -1,4 +1,4 @@
-// $Id: germanstring.cc,v 1.4 2002/12/16 09:48:51 christof Exp $            
+// $Id: germanstring.cc,v 1.5 2004/04/29 13:17:23 christof Exp $            
 /*  Indexerstellung
  *  Copyright (C) 2002 Christof Petig
  *
@@ -62,7 +62,7 @@ const twostr myiterator::replacements[] =
 	  { "oe", "oe0" },
 	  { "ss", "ss0" },
 	  { "ue", "ue0" },
-#if defined(__MINGW32__) || defined(SIGC1_2) // UTF-8
+#if defined(__MINGW32__) || MPC_SIGC_VERSION>=0x120 // UTF-8
 	  { "Ä", "ae1" }, 
 	  { "Ö", "oe1" }, 
 	  { "Ü", "ue1" }, 

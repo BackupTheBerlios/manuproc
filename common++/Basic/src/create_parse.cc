@@ -1,4 +1,4 @@
-// $Id: create_parse.cc,v 1.3 2004/02/09 08:05:31 christof Exp $
+// $Id: create_parse.cc,v 1.4 2004/04/29 13:17:23 christof Exp $
 /*  ManuProC_Base: Main ManuProC Library
  *  Copyright (C) 2004  Christof Petig
  *
@@ -67,7 +67,7 @@ std::string ManuProC::parse<std::string>(const std::string &value) throw(std::ou
 {  return value;
 }
 
-#ifdef SIGC1_2
+#ifdef MPC_SIGC_VERSION
 #  define MANUPROC_BASE
 #endif
 

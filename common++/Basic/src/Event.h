@@ -1,4 +1,4 @@
-// $Id: Event.h,v 1.5 2003/05/12 08:09:31 christof Exp $
+// $Id: Event.h,v 1.6 2004/04/29 13:17:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,6 +22,10 @@
 #define MISC_EVENT_H
 
 #include <BaseObjects/Model.h> // for SigC headers
+#if MPC_SIGC_VERSION>=0x200
+# include <sigc++/connection.h>
+# include <sigc++/slot.h>
+#endif
 #include <string>
 #include <Misc/safemap.h>
 #include <Misc/TimeStamp.h>
@@ -30,7 +34,7 @@ namespace ManuProC {
 class Event
 {	typedef SigC::Signal3<void,const std::string &,const std::string &,const std::string &> fullsignal_t;
 	typedef SigC::Signal2<void,const std::string &,const std::string &> filteredsignal_t;
-#ifndef SIGC1_2
+#if MPC_SIGC_VERSION<0x120
 	static safemap<std::string, filteredsignal_t *> channels;
 #else
 	static safemap<std::string, filteredsignal_t> channels;
@@ -46,7 +50,7 @@ public:
 	Event(const std::string &channel,const std::string &key="",const std::string &data="");
    	static fullsignal_t &signal_event()
    	{  return event_sig; }
-#ifdef SIGC1_2   	
+#ifdef MPC_SIGC_VERSION>=0x120   	
    	static filteredsignal_t &signal_event(const std::string &channel)
    	{  return channels[channel]; }
 #endif   	

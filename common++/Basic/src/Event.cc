@@ -1,4 +1,4 @@
-// $Id: Event.cc,v 1.7 2004/03/11 15:28:23 christof Exp $
+// $Id: Event.cc,v 1.8 2004/04/29 13:17:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,7 +24,7 @@ bool ManuProC::Event::connected;
 ManuProC::TimeStamp ManuProC::Event::last_processed;
 void *ManuProC::Event::PGconnection;
 
-#ifndef SIGC1_2
+#if MPC_SIGC_VERSION<0x120
 // if you care about memory leaks use gtk2.0!!!
 safemap<std::string, ManuProC::Event::filteredsignal_t*> ManuProC::Event::channels;
 #else
@@ -33,7 +33,7 @@ safemap<std::string, ManuProC::Event::filteredsignal_t> ManuProC::Event::channel
 
 SigC::Connection ManuProC::Event::connect(const std::string &channel,
    		const SigC::Slot2<void,const std::string &,const std::string &> &slot)
-#ifdef SIGC1_2 // es kann so einfach sein ...
+#if MPC_SIGC_VERSION>=0x120 // es kann so einfach sein ...
 {  return signal_event(channel).connect(slot); }
 #else
 {  if (!channels[channel]) channels[channel]=new filteredsignal_t();
@@ -86,7 +86,7 @@ void ManuProC::Event::read_notifications()
       	 >> FetchIStream::MapNull(key)
       	 >> FetchIStream::MapNull(data);
       event_sig(channel,key,data);
-#ifndef SIGC1_2
+#if MPC_SIGC_VERSION<0x120
       if (!channels[channel]) channels[channel]=new filteredsignal_t();
       (*channels[channel])(key,data);
 #else      
