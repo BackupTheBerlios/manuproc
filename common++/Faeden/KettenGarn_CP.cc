@@ -1,4 +1,4 @@
-/* $Id: KettenGarn_CP.cc,v 1.14 2004/06/23 09:03:13 christof Exp $ */
+/* $Id: KettenGarn_CP.cc,v 1.15 2004/06/23 09:17:36 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -40,7 +40,7 @@ struct intermediate_data : KettenGarn_CP
    unsigned min_max_fd;
 };
 
-#if 0
+#if 1
 std::vector<KettenGarn_CP> KettenGarn_CP::Load(ArtikelGang const &ag, unsigned laenge)
 {  Fadenliste fdl;
    typedef std::vector<intermediate_data> vec_t;
@@ -58,13 +58,15 @@ std::vector<KettenGarn_CP> KettenGarn_CP::Load(ArtikelGang const &ag, unsigned l
 //   unsigned new_scheibe=20;
    for (Fadenliste::const_iterator i=fdl.begin(); i!=fdl.end(); ++i)
    {  intermediate_data x;
-      unsigned max_fadenzahl=i->max_fadenzahl;
-      if (ag.gaenge==i->ausn_gaenge && i->ausn_maxfd) 
-         max_fadenzahl=i->ausn_maxfd;
-      else if (ag.gaenge==i->ausn_gaenge2 && i->ausn_maxfd2) 
-         max_fadenzahl=i->ausn_maxfd2;
-      
       if (i->kettscheibe<1) continue;
+      
+      const Fd_Kettscheibe &ks=fdl.Kettscheibe(i->kettscheibe);
+      unsigned max_fadenzahl=ks.max_fadenzahl;
+      if (ag.gaenge==ks.ausn_gaenge && ks.ausn_maxfd) 
+         max_fadenzahl=ks.ausn_maxfd;
+      else if (ag.gaenge==ks.ausn_gaenge2 && ks.ausn_maxfd2) 
+         max_fadenzahl=ks.ausn_maxfd2;
+      
       x.index=i->kettscheibe*2;
       x.zeile=i->zeilennummer;
       x.kettenzahl=ag.gaenge;
@@ -73,7 +75,7 @@ std::vector<KettenGarn_CP> KettenGarn_CP::Load(ArtikelGang const &ag, unsigned l
       	 x.faeden=i->ausn_faeden;
       x.art=i->material;
       x.laenge=laenge;
-      if (i->verlaengern) 
+      if (ks.verlaengern) 
       {  if (x.laenge<10000) x.laenge+=100; // 3040/35/420 v. 15.1.04
          else if (x.laenge<=12000 || cH_ArtikelBezeichnung(i->material)->Komponente(0).substr(0,10)=="Poly verst")
             x.laenge+=200; // 3040/35/420 v. 15.1.04

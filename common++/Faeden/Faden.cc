@@ -1,4 +1,4 @@
-// $Id: Faden.cc,v 1.21 2004/06/23 09:03:13 christof Exp $
+// $Id: Faden.cc,v 1.22 2004/06/23 09:19:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -458,4 +458,10 @@ void Fadenliste::Load(const Webangaben &wa)
          if (ks.nr>=kettscheiben.size()) kettscheiben.resize(ks.nr+1);
          kettscheiben[ks.nr]=ks;
       }
+}
+
+const Fd_Kettscheibe &Fadenliste::Kettscheibe(unsigned nr) const
+{  if (nr>=kettscheiben.size()) 
+      const_cast<Fadenliste*>(this)->kettscheiben.resize(nr+1);
+   return kettscheiben[nr];
 }
