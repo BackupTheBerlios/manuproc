@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.31 2003/03/19 08:31:49 christof Exp $
+// $Id: AuftragBase.cc,v 1.32 2003/03/26 15:13:17 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -102,22 +102,21 @@ int AuftragBase::PassendeZeile(const ManuProC::Datum lieferdatum,const ArtikelBa
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Artikel",artikel),
          NV("LieferDatum",lieferdatum),NV("Status",status));
- // spezieller Fall für unbestellte Lieferungen
- if (status==CLOSED && Id()==plan_auftrag_id)
-    create_if_not_exists(OPEN);
- else
- {  assert(status==OPEN || Instanz()->Id()==ppsInstanzID::Kundenauftraege);
-    // Auftrag anlegen, wenn noch nicht da
-    create_if_not_exists(status);
- }
- 
  mengen_t dummy=0;
  int znr=existEntry(artikel,lieferdatum,status,dummy);
  if(znr==none_id)
-  { Auftrag A(*this);
+  { // spezieller Fall für unbestellte Lieferungen
+    if (status==CLOSED && Id()==plan_auftrag_id)
+       create_if_not_exists(OPEN);
+    else
+    {  assert(status==OPEN || Instanz()->Id()==ppsInstanzID::Kundenauftraege);
+       // Auftrag anlegen, wenn noch nicht da
+       create_if_not_exists(status);
+    }
+    Auftrag A(*this);
     AufEintragBase newaeb=A.push_back(0,lieferdatum,artikel,status,uid,false);
     znr=newaeb.ZNr();
-   }
+  }
  return znr;
 }
 

@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.41 2003/03/21 07:21:51 christof Exp $
+// $Id: AufEintrag.cc,v 1.42 2003/03/26 15:13:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -412,6 +412,8 @@ void AufEintrag::abschreiben(mengen_t menge) throw(SQLerror)
 
 #if 0
   // Lieferung rückgängig machen, dann 1er löschen wenn es alle Menge war
+  // funktioniert nicht gut, da Zeiger verloren gehen,
+  // außerdem werden diese Einträge bald wieder erzeugt
   if(menge<0 &&
      Instanz()!=ppsInstanzID::Kundenauftraege && 
      !Instanz()->ProduziertSelbst() && 
@@ -481,7 +483,7 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
  SQLerror::test("setStatus: lock table auftragentry");
 
  // InternAbbestellen
- if(newstatus == CLOSED || newstatus == STORNO)
+ if ((newstatus == CLOSED || newstatus == STORNO) && getRestStk()!=0)
      ArtikelInternAbbestellen(uid,getRestStk(),ManuProC::Auftrag::r_Closed);
 
  std::string sqlcommand = "update auftragentry set status=?";
@@ -499,10 +501,10 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
     auftragstatus=newstatus;
  }
 
- if(newstatus == OPEN  &&  oldentrystatus==UNCOMMITED)
+ if(newstatus == OPEN  &&  oldentrystatus==UNCOMMITED && getRestStk()!=0)
     ArtikelInternNachbestellen(uid,getRestStk(),ManuProC::Auftrag::r_Anlegen);
 
- if(newstatus==OPEN)
+ if(newstatus==OPEN && bestellt!=0)
    {
     pps_ChJournalEntry::newChange(
 			instanz, *this, artikel,
@@ -510,7 +512,8 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
 			bestellt.as_float(),
 			pps_ChJournalEntry::CH_MENGE);
   }
- else if(newstatus==CLOSED && oldentrystatus!=UNCOMMITED) 
+ else if(newstatus==CLOSED && oldentrystatus!=UNCOMMITED
+ 	&& geliefert-bestellt!=0) 
  // UNCOMMITED->CLOSED => kein Eintrag
    {
     pps_ChJournalEntry::newChange(
@@ -868,6 +871,28 @@ public:
 };
 }
 
+namespace {
+class ProduziertRueckgaengig2
+{  unsigned uid;
+   AufEintragBase alterAEB;
+public:
+	ProduziertRueckgaengig2(unsigned _uid, const AufEintragBase &aAEB)
+		: uid(_uid), alterAEB(aAEB) {}
+	AuftragBase::mengen_t operator()(const ArtikelBase &art,
+		const AufEintragBase &aeb,AuftragBase::mengen_t M) const
+	{  if (aeb.Instanz()->ProduziertSelbst())
+              AufEintragZu(alterAEB).setMengeDiff__(aeb,-M);
+           return M;
+	}
+	
+	// Überproduktion
+	void operator()(const ArtikelBase &art,AuftragBase::mengen_t M) const
+	{  //assert(!"needed");
+	   std::cout << "ProduziertRueckgaengig2: Überproduktion " << M << '\n';
+	}
+};
+}
+
 // similar to move_to	
 void AufEintrag::ProduziertNG(unsigned uid, AuftragBase::mengen_t M,
 		const AufEintragBase &elter_alt,
@@ -903,6 +928,7 @@ void AufEintrag::ProduziertNG(unsigned uid, AuftragBase::mengen_t M,
       if (M<0 && !Instanz()->LagerInstanz()) abschreiben(M);
       MengeAendern(uid,M<0 ? M : -M,false,M>0 ? elter_alt : AufEintragBase(),
       				ManuProC::Auftrag::r_Produziert);
+      if (M<0 && !getRestStk()) setStatus(AufStatVal(CLOSED),uid,true);
       AuftragBase zielauftrag(Instanz(),M>=0?plan_auftrag_id:ungeplante_id);
       AufStatVal st=(Instanz()->LagerInstanz() || M<0) ? OPEN : CLOSED;
       neuerAEB=AufEintragBase(zielauftrag,
@@ -918,6 +944,9 @@ void AufEintrag::ProduziertNG(unsigned uid, AuftragBase::mengen_t M,
    }
    // Kinder bearbeiten
    distribute_children(*this,M,Artikel(),ProduziertNG_cb2(uid,*this,neuerAEB));
+   // bei ProduziertSelbst hilft obiges nicht allein (keine Pfeile nach unten)
+   if (M<0)
+      distribute_children(neuerAEB,M,Artikel(),ProduziertRueckgaengig2(uid,neuerAEB));
 
    cH_ppsInstanz EI=Instanz()->EinlagernIn();
    if(EI->AutomatischEinlagern())
@@ -969,4 +998,15 @@ void AufEintrag::DispoBeschraenken(int uid)
          } 
       }  
   }
+}
+
+// gibt negative Zahl zurück und erwartet solche
+AuftragBase::mengen_t AufEintrag::ProdRueckgaengigMenge(mengen_t max_neg) const
+{  AufEintragZu::list_t Eltern =
+	AufEintragZu::get_Referenz_list(*this,AufEintragZu::list_eltern,
+	                                AufEintragZu::list_ohneArtikel);
+   mengen_t res=getStueck();
+   for (AufEintragZu::list_t::iterator i=Eltern.begin();i!=Eltern.end();++i)
+      res-=i->Menge;
+   return -AuftragBase::min(res,-max_neg);
 }

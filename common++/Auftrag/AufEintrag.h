@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.38 2003/03/19 08:31:49 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.39 2003/03/26 15:13:17 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -249,7 +249,8 @@ public:
 // intern aber public
    static void MengeVormerken(cH_ppsInstanz instanz,const ArtikelBase &artikel,
 		mengen_t menge, bool abbestellen=false);
-         
+   // für ProduziertSelbst Instanzen
+   mengen_t ProdRueckgaengigMenge(mengen_t) const;
 };
 
 #endif

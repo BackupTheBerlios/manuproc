@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_macros.h,v 1.9 2003/03/25 17:07:40 christof Exp $ */
+/* $Id: AufEintrag_macros.h,v 1.10 2003/03/26 15:13:17 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -45,8 +45,13 @@ template <class T>
       for(AufEintragZu::list_t::const_iterator zuloop_var=artloop_var->second.begin();
 	   		zuloop_var!=artloop_var->second.end();++zuloop_var)
       {  AuftragBase::mengen_t mengen_var;
-         if (menge>=0) mengen_var=AuftragBase::min(zuloop_var->Menge,AE_menge2);
-         else mengen_var=-AuftragBase::min(-AE_menge2,AufEintrag(zuloop_var->AEB).getGeliefert());
+         if (menge>=0) 
+            mengen_var=AuftragBase::min(zuloop_var->Menge,AE_menge2);
+         // für Rückgängig machen von Lieferscheinen
+         else if (zuloop_var->AEB.Instanz()->ProduziertSelbst()) 
+            mengen_var=AufEintrag(zuloop_var->AEB).ProdRueckgaengigMenge(AE_menge2);
+         else 
+            mengen_var=-AuftragBase::min(-AE_menge2,AufEintrag(zuloop_var->AEB).getGeliefert());
          if (!mengen_var) continue;
 
          mengen_var=callee(artloop_var->first,zuloop_var->AEB,mengen_var);
