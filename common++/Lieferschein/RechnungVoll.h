@@ -42,7 +42,7 @@ public:
         typedef std::vector<RechnungEntry>::iterator iterator;
 
  	RechnungVoll() : Rechnung() {};
- 	RechnungVoll(int lid) throw(SQLerror) ;
+ 	RechnungVoll(int lid, bool order_by_artikel=false) throw(SQLerror) ;
  	void deleteRow(const RechnungEntry &le);
 
  const std::vector<RechnungEntry> &REntries() { return rentry; }

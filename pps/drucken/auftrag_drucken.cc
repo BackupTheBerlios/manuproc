@@ -42,7 +42,7 @@ const static struct option options[]=
 void usage(std::string n,bool toTeX,bool plot,bool firmenpapier,bool kopie,
    ppsInstanz::ID instanz,std::string database,std::string dbhost)
 {
-   std::cout << "$Id: auftrag_drucken.cc,v 1.15 2002/11/22 16:47:38 christof Exp $\n\n"
+   std::cout << "$Id: auftrag_drucken.cc,v 1.16 2002/12/19 13:24:23 jacek Exp $\n\n"
               "USAGE:" << n << " -n <Nr> [-a <Auftrag|Rechnung|Lieferschein|Intern|Extern>] [-kft] [-i <Instanz>] [-d <Datenbank>]\n"
 		"\n\t-t\t nur TeX file erzeugen ("<< (toTeX?"an":"aus")<< ")\n"
 		"\t-p\t drucken ("<< (plot?"an":"aus")<< ")\n"
@@ -54,10 +54,13 @@ void usage(std::string n,bool toTeX,bool plot,bool firmenpapier,bool kopie,
 		"\t-d\t Datenbank ("<< database<< ")\n"
 		"\t-h\t DbHost ("<< dbhost<< ")\n"
 		"\t-R\t Rückstand zum Auftrag\n"
-		"\t--EAN\t Mit EAN-Code\n";
+		"\t--EAN\t Mit EAN-Code\n"
+		"\t-Z\t Rechnung sortieren nach Zeilennr\n";
             exit(1);
 
 }
+
+bool sort_by_rownr=false;
 
 int main (int argc, char *argv[])
 {
@@ -72,12 +75,12 @@ int main (int argc, char *argv[])
  ppsInstanz::ID instanz = ppsInstanzID::Kundenauftraege;
  std::string database="";
  std::string dbhost="";
- 
+
  int opt;
 
  if(argc==1) usage(argv[0],toTeX,plot,firmenpapier,kopie,instanz,database,dbhost);
 
- while ((opt=getopt_long(argc,argv,"ftka:n:pi:d:R",options,NULL))!=EOF)
+ while ((opt=getopt_long(argc,argv,"ftka:n:pi:d:RZ",options,NULL))!=EOF)
   { switch (opt)
     {  case 'f' : firmenpapier=true; break;
        case 'k' : kopie=true; break;
@@ -96,6 +99,7 @@ int main (int argc, char *argv[])
 	case 't' : toTeX=true;break; 
 	case 'R' : rueckstand=true; break;
 	case EAN : ean_code=true; break;
+	case 'Z' : sort_by_rownr=true; break;
 	case '?': usage(argv[0],toTeX,plot,firmenpapier,kopie,instanz,database,dbhost); break;
     }
   }                 

@@ -22,6 +22,8 @@
 #include "drucken_class.hh"
 #include <Instanzen/ppsInstanz.h>
 
+extern bool sort_by_rownr;
+
 LR_drucken::LR_drucken(const LR_Base::typ RL_, unsigned int _auftragsnr, bool print,
    bool b_firmenpapier,bool b_kopie, cH_ppsInstanz _instanz, bool _toTeX, 
    bool rueckst,bool ean_code)
@@ -60,7 +62,13 @@ void LR_drucken::drucken(bool print,bool b_firmenpapier,bool b_kopie,bool ean_co
 
 
    if      (RL==LR_Base::Rechnung)      
-    { RechnungVoll r(auftragsnr);
+    { 
+#ifdef MABELLA_EXTENSIONS
+      RechnungVoll r(auftragsnr,!sort_by_rownr);
+#else
+      RechnungVoll r(auftragsnr);
+#endif
+
       LR_Abstraktion LRA(&r,b_firmenpapier);
       LRA.setEAN(ean_code);
       LRA.drucken(os,b_kopie,instanz);

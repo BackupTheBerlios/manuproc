@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.h,v 1.16 2002/10/31 08:29:36 christof Exp $ */
+/* $Id: Ausgabe_neu.h,v 1.17 2002/12/19 13:24:40 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -29,12 +29,27 @@ const std::string Formatiere(unsigned long Zahl,
                 unsigned int Ziellaenge=0,
                 const char *TausenderTrennzeichen=".",
                 const char *Komma=",",char fuehrendesZeichen=' ');
+                
+/*const std::string Formatiere(unsigned long long Zahl,
+                unsigned int Nachkommastellen=0,
+                unsigned int Ziellaenge=0,
+                const char *TausenderTrennzeichen=".",
+                const char *Komma=",",char fuehrendesZeichen=' ');                
+*/
+                
 // #warning TODO: für double sollte es einen Fehler geben ?
 extern inline const std::string FormatiereTeX(unsigned long Zahl,
                 unsigned int Nachkommastellen=0,
                 unsigned int Ziellaenge=0,char fuehrendesZeichen=' ')
 {  return Formatiere(Zahl,Nachkommastellen,Ziellaenge,"\\,", ",", fuehrendesZeichen);
 }
+
+/*extern inline const std::string FormatiereTeX(unsigned long long Zahl,
+                unsigned int Nachkommastellen=0,
+                unsigned int Ziellaenge=0,char fuehrendesZeichen=' ')
+{  return Formatiere(Zahl,Nachkommastellen,Ziellaenge,"\\,", ",", fuehrendesZeichen);
+}
+*/
 
 static const int NEEDCHAR=1;
 static const int BARISNEWLINE=2;

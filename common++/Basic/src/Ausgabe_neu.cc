@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.cc,v 1.12 2002/10/31 08:29:36 christof Exp $ */
+/* $Id: Ausgabe_neu.cc,v 1.13 2002/12/19 13:24:40 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -67,6 +67,56 @@ std::ostream &Formatiere(std::ostream &os,unsigned long Zahl,
    }
    return os;
 }
+
+/*std::ostream &Formatiere(std::ostream &os,unsigned long long Zahl, 
+		unsigned int Nachkommastellen,
+		unsigned int Ziellaenge,
+		const char *TausenderTrennzeichen,
+		const char *Komma, char fuehrendesZeichen)
+{  if (!TausenderTrennzeichen) TausenderTrennzeichen="";
+   if (!Komma) Komma="";
+   
+   unsigned int stellen;
+   char Zahlbuf[20];
+   for (stellen=0;stellen<sizeof(Zahlbuf) && Zahl;Zahl/=10) 
+   	Zahlbuf[stellen++]=Zahl%10+'0';
+   for (unsigned int i=stellen;i<sizeof(Zahlbuf);i++) Zahlbuf[i]='0';
+   if (stellen<Nachkommastellen+1) stellen=Nachkommastellen+1;
+   
+   unsigned int vorkommastellen=stellen-Nachkommastellen;
+   unsigned int separatoren=(vorkommastellen-1)/3;
+   if (Nachkommastellen) separatoren+=(Nachkommastellen-1)/3;
+   unsigned int naechsterSeparator=vorkommastellen%3;
+   if (!naechsterSeparator) naechsterSeparator=3;
+   unsigned int laenge=stellen+(Nachkommastellen?strlen(Komma):0)
+   	+separatoren*strlen(TausenderTrennzeichen);
+   if (laenge>Ziellaenge) Ziellaenge=0;
+   
+   for (int i=0;i<(int)Ziellaenge-(int)laenge;i++) 
+   	os<<fuehrendesZeichen;
+   for (unsigned int i=0;i<vorkommastellen;i++) 
+   {  if (i==naechsterSeparator) 
+      {  os<<TausenderTrennzeichen;
+         naechsterSeparator+=3;
+      }
+      os<<Zahlbuf[stellen-1-i];
+   }
+   if (Nachkommastellen)
+   {  os<<Komma;
+      naechsterSeparator=3;
+      for (unsigned int i=0;i<Nachkommastellen;i++)
+      {  if (i==naechsterSeparator)
+         {  os<<TausenderTrennzeichen;
+            naechsterSeparator+=3;
+         }
+         os<<Zahlbuf[Nachkommastellen-1-i];
+      }
+   }
+   return os;
+}
+
+*/
+
 
 std::string string2TeX(const std::string s, int flags) throw()
 {  unsigned int i;

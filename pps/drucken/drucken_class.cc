@@ -807,7 +807,8 @@ void LR_Abstraktion::drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,
      { neue_spalte( erste_spalte, os);
 	    os <<"\\scriptsize " <<bez->Bezeichnung(2);
 	  }
-	if(s->Id()==ExtBezSchema::default_id)
+	if(s->Id()==ExtBezSchema::default_id
+		&& s->Typ()==ArtikelTypID::aufgemachtes_Band)
      { neue_spalte( erste_spalte, os);
 	    os << bez->Bezeichnung(3);
 	  }

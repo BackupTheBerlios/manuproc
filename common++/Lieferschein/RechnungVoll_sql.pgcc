@@ -1,4 +1,4 @@
-/* $Id: RechnungVoll_sql.pgcc,v 1.13 2002/10/24 14:06:50 thoma Exp $ */
+/* $Id: RechnungVoll_sql.pgcc,v 1.14 2002/12/19 13:24:40 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,7 +22,7 @@
 #include<Aux/Transaction.h>
 exec sql include sqlca;
 
-RechnungVoll::RechnungVoll(int rid) throw(SQLerror)
+RechnungVoll::RechnungVoll(int rid, bool order_by_artikel) throw(SQLerror)
 : Rechnung(rid)
 {
  if(rid==none_id) return;
@@ -49,16 +49,15 @@ RechnungVoll::RechnungVoll(int rid) throw(SQLerror)
    	"left join lieferscheinentry e on (l.instanz,l.lfrsid,ry.lfrszeile)"
 	"=(e.instanz,e.lfrsid,e.zeile) ";
 
-#ifdef MABELLA_EXTENSIONS
-	qu=qu+" join artbez_3_1 b on b.id=e.artikelid";
-#endif
-	qu=qu+" where ry.rngid ="+itos(rid);
+ if(order_by_artikel)
+   qu=qu+" join artbez_3_1 b on b.id=e.artikelid";
 
-#ifdef MABELLA_EXTENSIONS
- qu=qu+" order by l.lfrsid,e.refauftragid,b.artikel,b.breite,b.farbe ";
-#else
- qu=qu+" order by zeilennr";
-#endif
+ qu=qu+" where ry.rngid ="+itos(rid);
+
+ if(order_by_artikel)
+   qu=qu+" order by l.lfrsid,e.refauftragid,b.artikel,b.breite,b.farbe ";
+ else
+   qu=qu+" order by zeilennr";
 
  QU=(char*)qu.c_str();
 
