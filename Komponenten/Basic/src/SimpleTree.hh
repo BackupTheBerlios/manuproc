@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.27 2003/12/11 11:03:32 jacek Exp $
+// $Id: SimpleTree.hh,v 1.28 2003/12/11 16:37:57 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -198,10 +198,10 @@ public:
  template <class T> T getSelectedRowDataBase_as() const
  {  return getSelectedRowDataBase_as2<T,typename T::ContentType>(); 
  }
- Gtk::TreeRow &getSelectedNode() const 
+ Handle<const TreeRow> getSelectedNode() const 
  	throw(noNodeSelected,multipleNodesSelected,notNodeSelected);
- template <class T> T &getSelectedNode_as() const
- {  return dynamic_cast<T&>(getSelectedNode());
+ template <class T> Handle<const T> getSelectedNode_as() const
+ {  return getSelectedNode().cast_dynamic<typename T::ContentType>();
  }
  
  template <class T> void selectMatchingLines(const T &t)

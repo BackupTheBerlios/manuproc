@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.39 2003/12/10 07:30:35 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.40 2003/12/11 16:37:57 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -461,6 +461,7 @@ void SimpleTreeStore::on_line_removed(cH_RowDataBase r)
       // we might be able to eliminate the nodes if they no longer
       //   have children
    }
+   else std::cerr << "line to remove not found\n";
 }
 
 // optimize indicates we could binary search by value (possible optimization)

@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.35 2003/12/11 11:03:32 jacek Exp $
+// $Id: SimpleTree.cc,v 1.36 2003/12/11 16:37:57 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -157,14 +157,17 @@ cH_RowDataBase SimpleTree::getSelectedRowDataBase() const
 }
 
 
-Gtk::TreeRow &SimpleTree::getSelectedNode() const 
+Handle<const TreeRow> SimpleTree::getSelectedNode() const 
  	throw(noNodeSelected,multipleNodesSelected,notNodeSelected)
 {
   Gtk::TreeModel::iterator sel=const_cast<SimpleTree*>(this)
 		->get_selection()->get_selected();
    if (sel)
-   { //const Gtk::TreeRow &row=*sel;  
-     return const_cast<Gtk::TreeRow&>(*sel);
+   { const Gtk::TreeRow &row=*sel;  
+     if (row[getStore()->m_columns.childrens_deep])
+       return row[getStore()->m_columns.row];
+     else
+       throw notNodeSelected();
    }
    else throw noRowSelected(); // oder multipleRowsSelected()
 }
