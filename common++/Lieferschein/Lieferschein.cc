@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.3 2002/04/08 14:00:05 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.4 2002/04/11 12:01:08 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -39,7 +39,7 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
 
    AuftragBase::mengen_t menge(anzahl);
    Einheit e(artikel);
-   if (!e.hatMenge() || e.MengeIstWaehrung()) mengeneinheit=0;
+   if (!e.hatMenge()) mengeneinheit=0;
    else menge *= mengeneinheit;
 
    if (auftraglist.aufidliste.begin()==auftraglist.aufidliste.end())

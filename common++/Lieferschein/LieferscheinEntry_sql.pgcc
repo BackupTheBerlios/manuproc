@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry_sql.pgcc,v 1.9 2002/02/05 17:15:52 christof Exp $ */
+/* $Id: LieferscheinEntry_sql.pgcc,v 1.10 2002/04/11 12:01:08 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,8 +25,8 @@
 
 exec sql include sqlca;
 
-LieferscheinEntry::LieferscheinEntry(const LieferscheinBase &lsbase, int zeile)
- throw(SQLerror) : LieferscheinBase(lsbase), zeilennr(zeile) 
+LieferscheinEntry::LieferscheinEntry(const LieferscheinEntryBase &lsbase)
+ throw(SQLerror) : LieferscheinEntryBase(lsbase) 
 {
  exec sql begin declare section;
  int INSTANZ=Instanz();
@@ -61,7 +61,7 @@ LieferscheinEntry::LieferscheinEntry(const LieferscheinBase &lsbase, int zeile)
 LieferscheinEntry::LieferscheinEntry(const LieferscheinBase &lsb,
 	const AufEintragBase &auf, const ArtikelBase &art, int anzahl,
 	mengen_t _menge,int _palette, bool _zusatzinfo)
-throw(SQLerror) : LieferscheinBase(lsb),artikel(art),
+throw(SQLerror) : LieferscheinEntryBase(lsb),artikel(art),
 			refauftrag(auf),stueck(anzahl),menge(_menge),
 			palette(_palette), zusatzinfo(_zusatzinfo)
 {
@@ -114,11 +114,6 @@ void LieferscheinEntry::deleteEntry(const LieferscheinEntry &lse) throw(SQLerror
  int INSTANZ=lse.Instanz();
  int LFRSID=lse.Id();
  int ZEILE=lse.Zeile();
-// int AUFID=lse.AufId();  
-// int AUFZNR=lse.AufZeile();
-// int STATUS;   
-// int BESTELLT; 
-// int GELIEFERT;
  exec sql end declare section;
 
  Transaction tr;
@@ -131,22 +126,10 @@ void LieferscheinEntry::deleteEntry(const LieferscheinEntry &lse) throw(SQLerror
  SQLerror::test(__FILELINE__":deleteEntry: delete from lieferscheinentry");
  
  if (lse.AufId() || lse.AufZeile())
- {
-//  exec sql select bestellt, geliefert, status
-//        into :BESTELLT, :GELIEFERT, :STATUS
-//        from auftragentry where
-//        auftragid = :AUFID and zeilennr = :AUFZNR;
-//    SQLerror::test(__FILELINE__);
- 
-    AuftragBase::mengen_t geliefert=0;
-    if (!lse.Menge()) geliefert = lse.Anzahl();
-    else              geliefert = lse.Anzahl()*lse.Menge();
-//    if(GELIEFERT<BESTELLT) STATUS=(AufStatVal)OPEN;  
+ {  AuftragBase::mengen_t geliefert=lse.Anzahl();
+    if (lse.Menge()) geliefert *= lse.Menge();
+    
     AufEintragBase(lse.Instanz(),lse.AufId(),lse.AufZeile()).abschreiben(-geliefert);
-     
-//    exec sql update auftragentry set geliefert= :GELIEFERT, status= :STATUS
-//        where auftragid= :AUFID and zeilennr= :AUFZNR;
-//    SQLerror::test(__FILELINE__);
  }
 
  tr.commit();

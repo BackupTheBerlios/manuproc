@@ -57,6 +57,7 @@ void Auftrag::setWaehrung(cP_Waehrung w) throw(SQLerror)
  SQLerror::test(__FILELINE__"Waehrung setzen");
 }
 
+
 void Auftrag::setStatusAuftrag_(AufStatVal st) throw(SQLerror)
 {
  setStatusAuftragBase(st);
@@ -98,7 +99,7 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
  char DATUM[11];
  int STATUS;
  char YOURAUFNR[21];
- char BEMERKUNG[21];
+ char *BEMERKUNG=0;
  int WAEHRUNG;
  exec sql end declare section;
 
@@ -117,6 +118,7 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
  youraufnr = YOURAUFNR;
  bemerkung = BEMERKUNG;
  waehrung = cP_Waehrung(Waehrung::ID(WAEHRUNG));
+ ECPGfree_auto_mem();
 }
 
 
@@ -214,7 +216,6 @@ void Auftrag::setBemerkung(const std::string &bem) throw(SQLerror)
 	where auftragid= :AUFTRAGID and instanz=:INSTANZ;
  SQLerror::test("setBemerkung: update bemerkung");
 }
-
 
 void Auftrag::setYourAufNr(const std::string &yanr) throw(SQLerror)
 {

@@ -9,4 +9,7 @@ Makefile.in
 *_p.cc
 Person_sql.cc
 Kunde_sql.cc
-Telefon.cc
+Telefon_sql.cc
+Anrede_sql.cc
+PreisListe_sql.cc
+Adresse_sql.cc

@@ -1,4 +1,4 @@
-// $Id: Person_sql.pgcc,v 1.7 2002/03/20 07:43:31 christof Exp $
+// $Id: Person_sql.pgcc,v 1.8 2002/04/11 12:01:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -49,7 +49,7 @@ Person::Person(ID _id) throw(SQLerror)
 
    name=NAME;
    vorname=VORNAME;
-   gebdatum=IGEBDATE ? Petig::Datum() : Petig::Datum(GEBDATE);
+   gebdatum=IGEBDATE ? Petig::Datum().today() : Petig::Datum(GEBDATE);
    anrede=cH_Anrede(ANREDE);
    notiz=NOTIZ;	
 }

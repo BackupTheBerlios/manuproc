@@ -1,4 +1,4 @@
-// $Id: Einheiten.pgcc,v 1.11 2002/04/08 14:00:05 christof Exp $
+// $Id: Einheiten.pgcc,v 1.12 2002/04/11 12:01:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,14 +33,20 @@ Einheit::Einheit(const ArtikelBase &ab) throw(SQLerror)
 Einheit::operator std::string() const
 {  std::string a=StueckEinheit(),
 	b=MengenEinheit();
-   if (!a.empty() && !b.empty()) return a+"*"+b;
+   if (!a.empty() && !b.empty()) 
+   {  if (a=="St.") return b;
+      return a+"*"+b;
+   }
    return a+b;
 }
 
 std::string Einheit::TeX() const
 {  std::string a=StueckEinheit_TeX(),
 	b=MengenEinheit_TeX();
-   if (!a.empty() && !b.empty()) return a+"$\\times$"+b;
+   if (!a.empty() && !b.empty()) 
+   {  if (a=="St.") return b;
+      return a+"$\\times$"+b;
+   }
    return a+b;
 }
 
@@ -49,16 +55,15 @@ Einheit::Einheit(ID id) : einh(id)
    if (cached) *this=*cached;
    else
    {  exec sql begin declare section;
-      int eid=id,waehrg;
+      int eid=id;
       char bez_anz[60],tex_anz[60],bez_men[60],tex_men[60];
       exec sql end declare section;
       *bez_anz=*tex_anz=*bez_men=*tex_men=0;
       
       exec sql select 
       		coalesce(bez_anzahl,''),coalesce(tex_anzahl,bez_anzahl,''),
-	      	coalesce(bez_menge,''),coalesce(tex_menge,bez_menge,''),
-	      	coalesce(waehrung,0)
-	into :bez_anz, :tex_anz, :bez_men, :tex_men, :waehrg
+	      	coalesce(bez_menge,''),coalesce(tex_menge,bez_menge,'')
+	into :bez_anz, :tex_anz, :bez_men, :tex_men
       	from einheiten
       	where id=:eid;
       SQLerror::test(__FILELINE__, 100);
@@ -67,13 +72,6 @@ Einheit::Einheit(ID id) : einh(id)
          tex_anzahl=tex_anz;
          bez_menge=bez_men;
          tex_menge=tex_men;
-         waehrung=Waehrung::ID(waehrg);
-         
-         if (waehrung)
-         {  cH_Waehrung w(waehrung);
-            bez_menge=w->Kurzbezeichnung();
-            tex_menge=w->TeXsymbol();
-         }
       }
       cache.Register(id,*this);
    }

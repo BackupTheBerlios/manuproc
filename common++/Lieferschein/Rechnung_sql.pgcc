@@ -17,8 +17,9 @@
  */
 
 
-#include"Rechnung.h"
-#include<Aux/Transaction.h>
+#include "Rechnung.h"
+#include <Aux/Transaction.h>
+#include <Aux/FetchIStream.h>
 exec sql include sqlca;
 
 Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
@@ -122,18 +123,18 @@ void Rechnung::setze_Zahlungsart(cH_Zahlungsart z) throw(SQLerror)
 }
 
 
-void Rechnung::deleteLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror)
+void Rechnung::deleteLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
 {
  exec sql begin declare section;
- int RNGID;
- int LFRSID;
+ int RNGID=Id();
+ int LFRSID=lfrs.Id();
+/* int INSTANZ=lfrs.Instanz(); */
  exec sql end declare section;
  
  Transaction tr;
  
- RNGID=Id();
- LFRSID=lfrsid;
- exec sql delete from rechnungentry where lfrsid=:LFRSID and rngid=:RNGID; 
+ exec sql delete from rechnungentry 
+ 	where lfrsid=:LFRSID and rngid=:RNGID; 
 
  exec sql update lieferschein set rngid=null where lfrsid= :LFRSID;
  SQLerror::test(__FILELINE__);
@@ -145,38 +146,19 @@ void Rechnung::deleteLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror)
 #include <sys/types.h>
 #include <unistd.h>
 
-void Rechnung::addLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror)
+void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
 {
  exec sql begin declare section; 
- int LFRSID;
- int RNGID;
- char *COMMAND;
- char *SEQNAME;
- int MAXZNR;
+ int INSTANZ=lfrs.Instanz();
+ int LFRSID=lfrs.Id();
+ int RNGID=Id();
+ int MAXZNR,MINZNR;
  exec sql end declare section;
 
- RNGID=Id();
- 
- int mypid=getpid();
- std::string seqname("tmp_rngrowseq_"+itos(mypid));
- (const char*)SEQNAME=seqname.c_str();
- 
- std::string cmd="create sequence "+seqname+" START 1";
- (const char*)COMMAND=cmd.c_str();
- exec sql execute immediate :COMMAND;
- if (sqlca.sqlcode==-400)
- {  cmd="drop sequence "+seqname;
-    (const char*)COMMAND=cmd.c_str();
-    exec sql execute immediate :COMMAND;
-    SQLerror::test(__FILELINE__);
-    
-    cmd="create sequence "+seqname+" START 1";
-    (const char*)COMMAND=cmd.c_str();
-    exec sql execute immediate :COMMAND;
- }
- SQLerror::test(__FILELINE__);
-
  Transaction tr;
+
+ exec sql select coalesce(min(zeilennr),0) into :MINZNR
+ 	from lieferscheinentry where (instanz,lfrsid)=(:INSTANZ,:LFRSID);
 
  exec sql lock table rechnungentry in exclusive mode; 
  SQLerror::test(__FILELINE__);
@@ -184,30 +166,31 @@ void Rechnung::addLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror)
  exec sql select coalesce(max(zeilennr),0) into :MAXZNR 
 	from rechnungentry where rngid= :RNGID;
  SQLerror::test(__FILELINE__);
+ MAXZNR++;
  
- LFRSID=lfrsid;
-
  exec sql insert into rechnungentry 
- 	(rngid,zeilennr,artikelid,lfrsid,lfrszeile,menge,preis,
- 		rabatt,preismenge,stueck)
- 	(select :RNGID,:MAXZNR+nextval(:SEQNAME),
- 		l.artikelid, l.lfrsid, l.zeile,l.menge,0,0,0,l.stueck
- 	 from lieferscheinentry l 
- 	 where l.lfrsid= :LFRSID and not coalesce(zusatzinfo,'f')
+ 	(rngid,zeilennr, artikelid, lfrsid,lfrszeile, stueck,menge,
+ 		preis,rabatt,preismenge)
+ 	(select :RNGID,l.zeile - :MINZNR + :MAXZNR,
+ 		l.artikelid, l.lfrsid,l.zeile, l.stueck,l.menge,
+ 		coalesce(ae.preis,0),coalesce(ae.rabatt,0),
+ 		coalesce(ae.preismenge,1)
+ 	 from lieferscheinentry l
+ 	 	left join auftragentry ae 
+ 	 	on (l.instanz,l.refauftragid,l.refzeilennr)
+ 	 		= (ae.instanz,ae.auftragid,ae.zeilennr)
+ 	 where (l.instanz,l.lfrsid)=(:INSTANZ,:LFRSID)
+ 	 and not coalesce(zusatzinfo,'f')
  	 order by l.zeile);
  SQLerror::test(__FILELINE__); 
 
- exec sql update lieferschein set rngid=:RNGID where lfrsid=:LFRSID;
+ exec sql update lieferschein set rngid=:RNGID 
+ 	where (instanz,lfrsid)=(:INSTANZ,:LFRSID);
  SQLerror::test(__FILELINE__);
  
  tr.commit();
-  
- cmd="drop sequence "+seqname;
- (const char*)COMMAND=cmd.c_str();
- exec sql execute immediate :COMMAND;
- SQLerror::test(__FILELINE__);
-
 }
+
 
 void Rechnung::setzeWaehrung(const cP_Waehrung &w) throw(SQLerror)
 {  waehrung=w;

@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.40 2002/03/07 09:29:32 cvs_malte Exp $
+// $Id: ppsInstanz.h,v 1.41 2002/04/09 10:00:21 cvs_christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -84,7 +84,8 @@ public:
  std::string LagerName() const {return lagername;}
  ppsInstId BestellungFuer() const { return bestellung_fuer; }
  cH_Prozess get_Prozess() const;
- bool Lieferant() const {return lieferschein;} // Gegenteil von 'Lieferant' ist 'Kunde'
+  // Gegenteil von 'Lieferant' ist 'Kunde'
+ bool Lieferant() const { return instid!=Kundenauftraege; }
 
 
  operator ppsInstId () const {return instid;}
@@ -122,6 +123,5 @@ class cH_ppsInstanz : public Handle<const ppsInstanz>
      bool operator==(const cH_ppsInstanz &b) const
      {  return *(*this)==*b; }
 };
-
 
 #endif

@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.2 2002/02/28 15:19:29 christof Exp $
+# $Id: Makefile.am,v 1.3 2002/04/11 12:01:08 christof Exp $
 
 CXXFLAGS=@CXXFLAGS@ -s @COMMONXX_INCLUDES@ 
 LDADD=@COMMONXX_LIBS@ @LIBS@
@@ -10,8 +10,8 @@ noinst_PROGRAMS= Instanzen
 EXTRA_PROGRAMS = checkGeliefert
 
 Instanzen_SOURCES = Instanzen.cc
-checkGeliefert_SOURCES= checkGeliefert.cc
+checkGeliefert_SOURCES= checkGeliefert_sql.cc
 
 CLEANFILES= *~ 
 
-BUILT_SOURCES=checkGeliefert.cc
+BUILT_SOURCES=checkGeliefert_sql.cc

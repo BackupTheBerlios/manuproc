@@ -1,4 +1,4 @@
-// $Id: window1.cc,v 1.8 2002/01/22 09:21:56 christof Exp $
+// $Id: window1.cc,v 1.9 2002/04/11 11:57:59 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -52,13 +52,13 @@ void window1::on_show_clicked()
    std::cout << "Prozess " << prozess->get_value()->Id() << '\n';
    if (artikelbox->get_value().Id())
     {
-      ArtikelBezeichnung AB(artikelbox->get_value().Id());
-      std::cout << "Artikel "<<artikelbox->get_value().Id() <<'\t'<<AB.Bezeichnung() <<'\n';
+      cH_ArtikelBezeichnung AB(artikelbox->get_value().Id());
+      std::cout << "Artikel "<<artikelbox->get_value().Id() <<'\t'<<AB->Bezeichnung() <<'\n';
     }   
    if (artikelbox2->get_value().Id())
     {
-      ArtikelBezeichnung AB(artikelbox2->get_value().Id());
-      std::cout << "Artikel2 "<<artikelbox2->get_value().Id() <<'\t'<<AB.Bezeichnung() <<'\n';
+      cH_ArtikelBezeichnung AB(artikelbox2->get_value().Id());
+      std::cout << "Artikel2 "<<artikelbox2->get_value().Id() <<'\t'<<AB->Bezeichnung() <<'\n';
     }   
    std::cout << "Kunde " << kundenbox->get_value() << '\n';
 //   std::cout << "Waehrung "<< WWaehrung->Langbezeichnung()<<"\t"<<WWaehrung->Kurzbezeichnung()<<"\n";

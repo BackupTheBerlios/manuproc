@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Einheiten.h,v 1.8 2002/04/08 14:00:05 christof Exp $
+// $Id: Einheiten.h,v 1.9 2002/04/11 12:01:07 christof Exp $
 
 #ifndef ARTIKEL_EINHEITEN_H
 #define ARTIKEL_EINHEITEN_H
@@ -26,19 +26,17 @@
 #include <Aux/CacheStatic.h>
 //#include <Aux/Handles.h>
 #include <vector>
-#include <Aux/Waehrung.h>
 
 class Einheit //: public HandleContent
 {
 public:
-	enum Einheiten { Stueck, Meter, kg, Fdkm, DM, Euro };
+	enum Einheiten { Stueck, Meter, kg, Fdkm };
 	typedef enum Einheiten ID;
 	static const ID default_id=Stueck;
 
 private:
 	enum Einheiten einh;
 	std::string bez_anzahl,tex_anzahl, bez_menge,tex_menge;
-	Waehrung::ID waehrung;
 	
 	typedef CacheStatic<Einheiten,Einheit> cache_t;
 	static cache_t cache;
@@ -46,7 +44,7 @@ private:
 	// nicht auskommentieren !!! wichtige Fehlerabfrage
 	Einheit(int x); // not defined, use ID!
 	
-	Einheit() : einh(default_id), waehrung(Waehrung::ID(0)) {}
+	Einheit() : einh(default_id) {}
 	friend class map<Einheiten,Einheit>;
 
 public:
@@ -80,11 +78,6 @@ public:
 	{  return !bez_menge.empty();
 	}
 	
-	bool MengeIstWaehrung() const
-	{  return waehrung!=0; }
-	Waehrung::ID getWaehrung() const
-	{  return waehrung; }
-
         static vector<Einheit> alleEinheiten();
 };
 /*

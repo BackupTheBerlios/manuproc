@@ -13,3 +13,5 @@ Einheiten.cc
 ArtikelStamm.cc
 ArtikelBaumFull.cc
 Artikelpreis_sql.cc
+ArtikelDispo_sql.cc
+DEADJOE

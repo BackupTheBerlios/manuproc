@@ -6,3 +6,11 @@ Makefile
 ProdLager_sql.cc
 Lager_sql.cc
 *~
+FertigWarenLager_sql.cc
+DEADJOE
+FertigWaren_sql.cc
+JumboLager_sql.cc
+JumboRolle_sql.cc
+Lager_Dispo_sql.cc
+Lager_Vormerkungen_sql.cc
+RohwarenLager_sql.cc

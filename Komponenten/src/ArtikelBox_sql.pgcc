@@ -188,17 +188,25 @@ void ArtikelBox::fuelleMenu()
    optionen->set_submenu(*optionen_menu);
    Gtk::MenuItem *neu = manage(new class Gtk::MenuItem("Neuen Eintrag anlegen"));
    neu->activate.connect(SigC::slot(this,&ArtikelBox::Neuer_Eintrag));
+   Gtk::CheckMenuItem *autoneu = manage(new class Gtk::CheckMenuItem("Neue Einträge automatisch anlegen"));
+   autoneu->set_active(automatisch_anlegen_bool);
+   autoneu->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::Neuer_Eintrag_automatisch),autoneu));
+
+   Gtk::CheckMenuItem *allesanzeigen=manage(new class Gtk::CheckMenuItem("Alle Artikel anzeigen"));
+   allesanzeigen->set_active(alle_artikel_anzeigen_bool);
+   allesanzeigen->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::AlleArtikelAnzeigen),allesanzeigen));
+   Gtk::CheckMenuItem *allesanzeigenid=manage(new class Gtk::CheckMenuItem("ID anzeigen"));
+   allesanzeigenid->set_active(alle_artikel_anzeigen_mit_id_bool);
+   allesanzeigenid->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::AlleArtikelAnzeigenId),allesanzeigenid));
 
    menu->append(*typ);   
-   typ->show();
    menu->append(*schema_mi);   
-   schema_mi->show();
    menu->append(*anzeige);   
-   anzeige->show();
    menu->append(*optionen);   
-   optionen->show();
    menu->append(*neu);
-   if (neuanlegen()) neu->show();
+   menu->append(*autoneu);
+   menu->append(*allesanzeigen);
+   menu->append(*allesanzeigenid);
 
    // Einträge für den Menüeintrag 'Typ'
    exec sql select DISTINCT e.artikeltyp, w.text into :id, :bez
@@ -212,7 +220,7 @@ void ArtikelBox::fuelleMenu()
          entr += bez[i];
          Gtk::MenuItem *mi=manage(new Gtk::MenuItem(entr)); 
          typ_menu->append(*mi);
-         mi->show();
+//         mi->show();
          mi->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::setzeSchemaId),id[i]));
 
    	 if (!typ_ok)
@@ -237,7 +245,7 @@ void ArtikelBox::fuelleMenu()
          entr += ")";
          Gtk::MenuItem *mi=manage(new Gtk::MenuItem(entr)); 
          typ_menu->append(*mi);
-         mi->show();
+//         mi->show();
          mi->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::setzeSchemaId),id[i]));
        }
    }
@@ -266,7 +274,7 @@ void ArtikelBox::fuelleMenu()
          entr += bez[i];
          Gtk::MenuItem *mi=manage(new Gtk::MenuItem(entr)); 
          schema_menu->append(*mi);
-         mi->show();
+//         mi->show();
          mi->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::setzeSchemaTyp),id[i]));
        }
    }
@@ -292,12 +300,12 @@ void ArtikelBox::fuelleMenu()
        anzeige_menu->append(*mi);
        if (find(signifikanz.begin(),signifikanz.end(),db_sigV[i])!= signifikanz.end()) mi->set_active(true);
        mi->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::setzeSignifikanz),db_sigV[i]));
-       mi->show();
+//       mi->show();
       }
    }
 
    // Einträge für den Menüeintrag 'Optionen'
-   {  Gtk::CheckMenuItem *autocomplete = manage(new class Gtk::CheckMenuItem("Automatisches Ergänzen"));      
+      Gtk::CheckMenuItem *autocomplete = manage(new class Gtk::CheckMenuItem("Automatisches Ergänzen"));      
       Gtk::CheckMenuItem *kombiniert = manage(new class Gtk::CheckMenuItem("Kombiniert"));      
       Gtk::CheckMenuItem *vertikal = manage(new class Gtk::CheckMenuItem("Vertikal anordnen"));      
       label = manage(new class Gtk::CheckMenuItem("Label anzeigen"));      
@@ -307,11 +315,11 @@ void ArtikelBox::fuelleMenu()
       optionen_menu->append(*vertikal);
       optionen_menu->append(*label);
       optionen_menu->append(*einschr_mi);
-      autocomplete->show();
-      kombiniert->show();
-      vertikal->show();
-      label->show();
-      if (einschraenkung.size()) einschr_mi->show();
+//      autocomplete->show();
+//      kombiniert->show();
+//      vertikal->show();
+//      label->show();
+//      if (einschraenkung.size()) einschr_mi->show();
 
       if(autocompletebool) autocomplete->set_active(true);
       autocomplete->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::Autocomplete),autocomplete));
@@ -323,14 +331,28 @@ void ArtikelBox::fuelleMenu()
       label->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::set_Label),label));
       if (eingeschraenkt) einschr_mi->set_active(true);
       einschr_mi->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::einschraenken_cb), einschr_mi));
-   }
+   
 
    for (user_menus_t::const_iterator i=user_menus.begin();i!=user_menus.end();++i)
    {  Gtk::MenuItem *mi=manage(new Gtk::MenuItem(i->first));
       menu->append(*mi);
-      mi->show();
+//      mi->show();
       mi->activate.connect(SigC::bind(MenueAusgewaehlt.slot(),i->second));
    }
+ if(!alle_artikel_anzeigen_bool)
+  {
+    menu->show_all();
+    allesanzeigenid->hide();
+  }
+ else 
+   {
+     allesanzeigen->show();
+     allesanzeigenid->show();      
+   }
+ if (!neuanlegen()) neu->hide();
+ if (!einschraenkung.size()) einschr_mi->hide();
+// Wenn die Searchfunktionen fertig sind die folgende Zeile auskommentieren:
+allesanzeigen->hide();
 }
 
 bool ArtikelBox::neuanlegen()
@@ -452,6 +474,12 @@ void ArtikelBox::Neuer_Eintrag()
         return;
       }
    }
+  /* testen, ob Artikel schon existiert */
+  if(artikel_exist(false)!=ArtikelBase::none_id) 
+    {
+      std::cerr<<"FEHLER: Artikel existiert schon\n";
+      return; 
+    }
   exec sql begin declare section;
    int db_id,db_id_jumbo;
   exec sql end declare section;
@@ -478,7 +506,7 @@ void ArtikelBox::Neuer_Eintrag()
 
  if (schema->JumboBez()!=aufmachung) // Wenn ich selber keine Jumborolle bin
   {
-    int jumbo_id=jumbo_exist();
+    int jumbo_id=artikel_exist(true);
     if(jumbo_id==0)  // Wenn es keine entsprechende Jumborolle vorhanden sofort eine anlegen 
       {
         exec sql select nextval ('artikelbezeichnun_artikelid_seq') into :db_id_jumbo;
@@ -559,7 +587,7 @@ void ArtikelBox::where_what(std::string& where, std::string& what, bool jumbo)
 }
 
 #ifdef PETIG_EXTENSIONS
-int ArtikelBox::jumbo_exist() 
+int ArtikelBox::artikel_exist(bool jumbo) 
 {
   unsigned int l=0; 
   std::string table = "artbez_"+itos(schema->Typ())+"_"+itos(schema->Id());
@@ -573,14 +601,23 @@ int ArtikelBox::jumbo_exist()
       {
         std::vector<cH_EntryValue> v;
         if (kombiniertbool) v = expand_kombi(l,ARTIKEL);
-        if (j->spaltenname!="id") squery += j->spaltenname+"="  ;
-        if (j->spaltenname!="id" && j->spaltenname!=schema->JumboSpalte()) 
-         { if (!kombiniertbool) squery += "'"+combos[l][spalte]->get_text()+"'" ; 
-           else                 squery += "'"+v[spalte]->getStrVal()+"'";
-         }
-        if(j->spaltenname==schema->JumboSpalte() && j->spaltenname!="id") 
-            squery += "'"+schema->JumboBez()+"'" ; 
-         
+        if (j->spaltenname!="id") 
+         {
+           squery += j->spaltenname+"="  ;
+           if(jumbo)
+            {
+              if (j->spaltenname!=schema->JumboSpalte()) 
+               { if (!kombiniertbool) squery += "'"+combos[l][spalte]->get_text()+"'" ; 
+                 else                 squery += "'"+v[spalte]->getStrVal()+"'";
+               }
+              if(j->spaltenname==schema->JumboSpalte()) 
+                  squery += "'"+schema->JumboBez()+"'" ; 
+            }
+           else
+            { if (!kombiniertbool) squery += "'"+combos[l][spalte]->get_text()+"'" ; 
+              else                 squery += "'"+v[spalte]->getStrVal()+"'";
+            }
+         }     
          ++spalte; ++j;
         if (j!=schema->sigend(signifikanz[l]) 
             || i+1!=signifikanz.end() && labels[l+1][0]->get_text() !="ID")  
@@ -600,7 +637,7 @@ int ArtikelBox::jumbo_exist()
  SQLerror::test(__FILELINE__);
  exec sql fetch jein into  :db_jumbo_id;
  SQLerror::test(__FILELINE__,100);
- if (sqlca.sqlcode) db_jumbo_id=0;
+ if (sqlca.sqlcode) db_jumbo_id=ArtikelBase::none_id;
  exec sql close jein;
  tr.close();
  return db_jumbo_id;

@@ -66,8 +66,8 @@ public:
  void setzeWaehrung(const cP_Waehrung &w) throw(SQLerror);
  ExtBezSchema::ID getSchema() { return kunde->getSchemaId(); }
  bool Bezahlt() const { return bezahlt; }
- void addLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror);
- void deleteLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror);
+ void addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror);
+ void deleteLieferschein(const LieferscheinBase &lfrs) throw(SQLerror);
  void setze_Rabatt(rabatt_t r) throw(SQLerror);
  const Petig::Datum getDatum() const { return rgdatum; }
  const Petig::Datum getZahlziel() const { return zahlziel; }

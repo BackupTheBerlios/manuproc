@@ -6,7 +6,7 @@ noinst_PROGRAMS=libLieferschein.o
 
 includedir=@includedir@/Lieferschein
 
-libLieferschein_o_SOURCES=Lieferschein.cc \
+libLieferschein_o_SOURCES=Lieferschein.cc LieferscheinEntry.cc \
 		LieferscheinList.cc LieferscheinVoll.cc $(BUILT_SOURCES)
 
 libLieferschein.o: $(libLieferschein_o_OBJECTS) $(libLieferschein_o_DEPENDENCIES)

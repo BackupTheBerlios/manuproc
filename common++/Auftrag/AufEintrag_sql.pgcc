@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.4 2002/04/08 14:00:05 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.5 2002/04/11 12:01:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -62,34 +62,22 @@ void AufEintrag::setStatus(AufStatVal newstatus,bool force) throw(SQLerror)
  setInstanzen(newstatus,getLieferdatum(),getStueck());
 
  if(newstatus==OPEN)
-  {try 
    {
     pps_ChJournalEntry::newChange(
-			instanz,
-			AufEintragBase(instanz,AUFTRAGID,ZEILENNR),
-			artikel,
+			instanz, *this, artikel,
 			(double)bestellt,
 			(double)bestellt,
 			pps_ChJournalEntry::CH_MENGE);
-   }
-   catch(SQLerror &e)
-     {tr.rollback(); throw; }
   }
  else if(newstatus==CLOSED && entrystatus!=UNCOMMITED) 
  // UNCOMMITED->CLOSED => kein Eintrag
-  {try 
    {
     pps_ChJournalEntry::newChange(
-			instanz,
-			AufEintragBase(instanz,AUFTRAGID,ZEILENNR),
-			artikel,
+			instanz, *this, artikel,
 			(double)geliefert,
 			(double)geliefert-bestellt,
 			pps_ChJournalEntry::CH_MENGE);
    }
-   catch(SQLerror &e)
-     {tr.rollback(); throw; }
-  } 
 
  entrystatus=newstatus;
  tr.commit(); 
@@ -270,10 +258,8 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld) throw(SQLerror)
    try 
     {
      pps_ChJournalEntry::newChange(
-  			instanz,
-  			AufEintragBase(instanz,AUFTRAGID,ZEILENNR),
-  			artikel,
-  			ld,
+  			instanz, *this,
+  			artikel, ld,
   			(double)(ld-getLieferdatum()),
   			pps_ChJournalEntry::CH_LIEFDAT);
     }
@@ -289,26 +275,15 @@ void AufEintrag::split(mengen_t newmenge, const Petig::Datum &newld) throw(SQLer
 {
  if(entrystatus==CLOSED) return;
 
- exec sql begin declare section;
- int AUFTRAGID=auftragid;
- int ZEILENNR_OLD=zeilennr;
- long ARTIKELID=artikel.Id();
- double BESTELLT=newmenge;
- double BESTELLT_OLD=bestellt-newmenge;
+ mengen_t BESTELLT_OLD=bestellt-newmenge;
  int STATUS=entrystatus;
 
- int ZEILENNR;
  double GELIEFERT;
  double GELIEFERT_OLD;
- char LIEFERDATUM[21];
- exec sql end declare section;
- 
 
- newld.write_postgres(LIEFERDATUM,sizeof LIEFERDATUM);
- 
  if(lieferdatum>newld)
-   {GELIEFERT=geliefert>BESTELLT ? mengen_t(BESTELLT) : geliefert;
-    GELIEFERT_OLD=geliefert>BESTELLT ? geliefert-mengen_t(BESTELLT) : mengen_t(0);}
+   {GELIEFERT=geliefert>newmenge ? mengen_t(newmenge) : geliefert;
+    GELIEFERT_OLD=geliefert>newmenge ? geliefert-mengen_t(newmenge) : mengen_t(0);}
  else
    {GELIEFERT_OLD=geliefert>BESTELLT_OLD ? mengen_t(BESTELLT_OLD) : geliefert;
     GELIEFERT=geliefert>BESTELLT_OLD ? geliefert-mengen_t(BESTELLT_OLD) : mengen_t(0);}
@@ -320,32 +295,18 @@ void AufEintrag::split(mengen_t newmenge, const Petig::Datum &newld) throw(SQLer
  exec sql lock auftragentry in exclusive mode;
  SQLerror::test("split: lock table auftragentry");
 
- insertNewEntry(newmenge,newld,artikel,entrystatus,true,preis,rabatt);
+ int ZEILENNR=insertNewEntry(newmenge,newld,artikel,entrystatus,true,preis,rabatt);
  updateStk(bestellt-newmenge,true);
-#warning WAS IST MIT DER GELIEFERTEN MENGE ? (immer noch unklar CP Mrz 02)
  
  if(STATUS==OPEN)
-   {
-    try 
-      {
-       pps_ChJournalEntry::newChange(
-    			instanz,
-    			AufEintragBase(instanz,AUFTRAGID,ZEILENNR_OLD),
-    			ArtikelBase(ARTIKELID),
-    			(double)BESTELLT_OLD,
-    			(double)(BESTELLT_OLD-bestellt),
+   {   pps_ChJournalEntry::newChange(
+    			instanz, *this,
+    			artikel, BESTELLT_OLD, +(BESTELLT_OLD-bestellt),
     			pps_ChJournalEntry::CH_MENGE);
-
        pps_ChJournalEntry::newChange(
-    			instanz,
-    			AufEintragBase(instanz,AUFTRAGID,ZEILENNR),
-    			ArtikelBase(ARTIKELID),
-    			(double)BESTELLT,
-    			(double)BESTELLT,
+    			instanz, *this,
+    			artikel, newmenge, +newmenge,
     			pps_ChJournalEntry::CH_MENGE);
-      }
-     catch(SQLerror &e)
-       {tr.rollback(); throw; }
    }
 
  tr.commit();

@@ -1,4 +1,4 @@
-/* $Id: RechnungVoll_sql.pgcc,v 1.3 2002/02/05 17:15:52 christof Exp $ */
+/* $Id: RechnungVoll_sql.pgcc,v 1.4 2002/04/11 12:01:08 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,8 +30,9 @@ RechnungVoll::RechnungVoll(int rid) throw(SQLerror)
   int LFRSID,LIEFERZEILE;
   float MENGE,RABATT,PREISMENGE,PREIS;
   char LIEFERDATUM[11];
-  int ILIEFERDATUM;
+  int ILIEFERDATUM,INSTANZ;
  exec sql end declare section;
+ INSTANZ=ppsInstanz::Kundenauftraege;
 
  Transaction tr;
  exec sql declare lein cursor for
@@ -39,7 +40,7 @@ RechnungVoll::RechnungVoll(int rid) throw(SQLerror)
    	coalesce(ry.rabatt,0.0), ry.lfrsid, ry.lfrszeile, 
       coalesce(ry.preismenge,1), l.geliefertam, ry.preis
    from rechnungentry ry 
-   left join lieferschein l on ry.lfrsid = l.lfrsid
+   left join lieferschein l on (:INSTANZ,ry.lfrsid) = (l.instanz,l.lfrsid)
    where ry.rngid = :RNGID order by zeilennr;
  exec sql open lein;
  SQLerror::test(__FILELINE__);
@@ -52,12 +53,10 @@ RechnungVoll::RechnungVoll(int rid) throw(SQLerror)
 
     Preis p(PREIS,Rechnung(rid).getWaehrung(),PREISMENGE);
     Petig::Datum ldatum;
-    if(ILIEFERDATUM) ldatum=Petig::Datum();
-    else ldatum.from_postgres(LIEFERDATUM);
+    if(!ILIEFERDATUM) ldatum.from_postgres(LIEFERDATUM);
     rentry.push_back(RechnungEntry(rngid,ZEILE,
          ARTIKELID,STUECK,MENGE,p,RABATT,ldatum,
-         LFRSID,LIEFERZEILE));
-//    AufEintragBase(ppsInstanz::INST_KNDAUF,REFAUFTRAG[i],REFAUFZEILE[i])));
+         LieferscheinEntryBase(ppsInstanz::ID(INSTANZ),LFRSID,LIEFERZEILE)));
    }
  exec sql close lein;
  tr.close();

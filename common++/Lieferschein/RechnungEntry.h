@@ -26,17 +26,29 @@
 #include<Auftrag/AufEintragBase.h>
 #include<Artikel/Preis.h>
 #include"RechnungBase.h"
-#include"LieferscheinBase.h"
+#include"LieferscheinEntry.h"
 
-class RechnungEntry : protected RechnungBase
+class RechnungEntryBase : public RechnungBase
 {
 public:
   typedef RechnungBase::rabatt_t rabatt_t;
   typedef RechnungBase::geldbetrag_t geldbetrag_t;
   typedef RechnungBase::mengen_t mengen_t;
-
-private:
+protected:
  int zeilennr;
+ 
+public:
+	RechnungEntryBase() : zeilennr(0) {}
+	RechnungEntryBase(const RechnungBase &rb, int z)
+	: RechnungBase(rb), zeilennr(z) {}
+
+	int Zeile() const { return zeilennr; }
+
+ static void deleteEntry(const RechnungEntryBase &re) throw(SQLerror); 
+};
+
+class RechnungEntry : public RechnungEntryBase
+{
  ArtikelBase artikel;
  AufEintragBase refauftrag;
  int stueck;
@@ -44,37 +56,45 @@ private:
  Preis preis;
  rabatt_t rabatt;
  Petig::Datum lieferdatum;
- LieferscheinBase::ID lfrsid;
- int lieferzeile;
+ LieferscheinEntryBase lfrs;
+// LieferscheinBase::ID lfrsid;
+// int lieferzeile;
  
 public:
 
- RechnungEntry(const RechnungBase& rechnung);  
- RechnungEntry(int l, int z,int a, int s,mengen_t m,const Preis &p, rabatt_t r,
-                        Petig::Datum ld, int lid,int lifz)
-  		: RechnungBase(l),zeilennr(z),artikel(a),stueck(s),menge(m),preis(p),
-                        rabatt(r),lieferdatum(ld),lfrsid(lid),
-                        lieferzeile(lifz)
+ RechnungEntry(const RechnungEntryBase &reb);
+ RechnungEntry(const RechnungBase &l, int z,int a, int s,mengen_t m,const Preis &p, rabatt_t r,
+                        Petig::Datum ld, const LieferscheinEntryBase ls)
+  		: RechnungEntryBase(l,z),artikel(a),stueck(s),menge(m),preis(p),
+                        rabatt(r),lieferdatum(ld),lfrs(ls)
                 {};
 
  mengen_t Menge() const { return menge; }
  int Stueck() const { return stueck; }
- LieferscheinBase::ID Lfrs_Id() const { return lfrsid; }
- int Lfrs_ZNr() const { return lieferzeile; }
+
+// teuer !!!
+ LieferscheinEntry LfrsEntry() const 
+   { return LieferscheinEntry(lfrs); }
+
+ LieferscheinEntryBase Lfrs() const { return lfrs; }
+
+ Preis getAuftragsPreis();
+
  const Preis getPreis(bool brutto=true) const 
  { 
    if(brutto) return preis;
    else return preis.Gesamtpreis(1,0,rabatt); 
  }
+ 
  // Waehrung muss zu der in Rechnung passen (kein Vergleich)
  void setzePreis(const Preis &p) throw (SQLerror);
+
  rabatt_t Rabatt() const { return rabatt;}
- Preis::preismenge_t PreisMenge() const {return preis.PreisMenge();}
+
  const ArtikelBase::ID ArtikelID() const { return artikel.Id(); }
+ const ArtikelBase Artikel() const { return artikel; }
  Petig::Datum LieferDatum() const {return lieferdatum; }
- int Zeile() const { return zeilennr; }
  const Preis GPreis() const { return preis.Gesamtpreis(stueck,menge,rabatt); }
- static void deleteEntry(const RechnungEntry &re) throw(SQLerror); 
 };
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: Artikelpreis.h,v 1.5 2001/10/23 08:45:18 christof Exp $
+// $Id: Artikelpreis.h,v 1.6 2002/04/11 12:01:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -38,6 +38,6 @@ public:
 	Artikelpreis(const Kunde::ID liste,const ArtikelBase &a);
 	bool istErrechnet() const { return errechnet; }
 	
-	static void UnCache(const ArtikelBase &a);
+	static void UnCache(const Kunde::ID liste,const ArtikelBase &a);
 };
 #endif

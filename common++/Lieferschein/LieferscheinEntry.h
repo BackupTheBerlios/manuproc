@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.7 2002/02/05 17:15:52 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.8 2002/04/11 12:01:08 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,9 +27,25 @@
 #include"LieferscheinBase.h"
 #include <Aux/fixedpoint.h>
 
-class LieferscheinEntry : public LieferscheinBase
+class LieferscheinEntryBase : public LieferscheinBase
+{protected:
+	int zeilennr;
+
+	LieferscheinEntryBase(const LieferscheinBase &lsb)
+	: LieferscheinBase(lsb), zeilennr(0) {}
+public:
+	LieferscheinEntryBase() : zeilennr(0) {}
+	LieferscheinEntryBase(const LieferscheinBase &lsb, int znr)
+	: LieferscheinBase(lsb), zeilennr(znr) {}
+	// unschön, da Ints ...
+	LieferscheinEntryBase(ppsInstanz::ID inst, int ls, int znr)
+	: LieferscheinBase(inst,ls), zeilennr(znr) {}
+
+ int Zeile() const { return zeilennr; }
+};
+
+class LieferscheinEntry : public LieferscheinEntryBase
 {
- int zeilennr;
  ArtikelBase artikel;
  AufEintragBase refauftrag;
  int stueck;
@@ -39,13 +55,10 @@ class LieferscheinEntry : public LieferscheinBase
  bool zusatzinfo;
 
 public:
-//???MAT        LieferscheinEntry(int lfrsid) throw(SQLerror);
-//        std::vector<st_lfrsentry> get_Entrys() const {return lfrsentry; }
-  
 
- 	LieferscheinEntry() :zeilennr(0),stueck(0),palette(0) {};
+ 	LieferscheinEntry() : stueck(0),palette(0) {};
  // laedt aus Datenbank
- 	LieferscheinEntry(const LieferscheinBase &lsbase, int zeile) throw(SQLerror);
+ 	LieferscheinEntry(const LieferscheinEntryBase &lsbase) throw(SQLerror);
 // erzeugen entsprechende Zeilen in der Datenbank 	
  	LieferscheinEntry(const LieferscheinBase &lsb,	
  			const AufEintragBase &auf,
@@ -57,21 +70,26 @@ public:
 // Konstruktor mit Datenbankdaten 			
         LieferscheinEntry(const cH_ppsInstanz& _instanz,int l,int z,int a, int s,mengen_t m,int p,
         		const std::string &y,bool zi,const AufEintragBase &aeb)
-                : LieferscheinBase(_instanz,l),zeilennr(z),artikel(a),refauftrag(aeb),
+                : LieferscheinEntryBase(LieferscheinBase(_instanz,l),z),
+                	artikel(a),refauftrag(aeb),
                 	stueck(s),menge(m),palette(p),yourauftrag(y),
                 	zusatzinfo(zi) 
                 {};
+ bool Valid() const;
  mengen_t Menge() const { return menge; }
  int Anzahl() const { return stueck; }
  int Stueck() const { return stueck; }
  int Palette() const { return palette; }
  const std::string YourAuftrag() const {return yourauftrag; }
  const ArtikelBase::ID ArtikelID() const { return artikel.Id(); }
+ const ArtikelBase Artikel() const { return artikel; }
+ const AuftragBase RefAuftrag() const { return refauftrag; }
  int AufId() const { return refauftrag.Id();} 
  int AufZeile() const { return refauftrag.ZNr();} 
- int Zeile() const { return zeilennr; }
+ AufEintragBase getAufEintragBase() const {return AufEintragBase(Instanz(),AufId(),AufZeile());}
  bool ZusatzInfo() const { return zusatzinfo; }
- static void LieferscheinEntry::deleteEntry(const LieferscheinEntry &lse) throw(SQLerror);
+
+ static void deleteEntry(const LieferscheinEntry &lse) throw(SQLerror);
 };
 
 #endif

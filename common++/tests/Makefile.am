@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.16 2002/02/28 15:19:29 christof Exp $
+# $Id: Makefile.am,v 1.17 2002/04/11 12:01:08 christof Exp $
 
 CXXFLAGS=@CXXFLAGS@ @COMMONXX_INCLUDES@
 LDFLAGS=@LDFLAGS@ -s @COMMONXX_LDFLAGS@
@@ -37,7 +37,7 @@ ArtikelSumme_SOURCES=ArtikelSumme.cc
 long_SOURCES=long.cc
 trans_SOURCES=trans.cc
 
-CLEANFILES= *~ $(LINKS)
+CLEANFILES= *~ $(LINKS) $(EXTRA_PROGRAMS)
 
 LINKS=testHandles.cc testKW.cc test_pgsql_conv.cc FetchIStream.pgcc \
 	fixedpoint.cc Zeitpunkt.cc long.cc

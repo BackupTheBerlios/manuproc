@@ -21,7 +21,7 @@ libcommon___a_LIBADD= \
 		Artikel/Preis.o \
 		Artikel/Prozess_sql.o \
 		Artikel/Prozesspreis.o \
-		Auftrag/AufEintragBase.o \
+		Auftrag/AufEintragBase_sql.o \
 		Auftrag/AufEintrag.o \
 		Auftrag/AufEintrag_sql.o\
 		Auftrag/selAufEntry_sql.o \
@@ -77,7 +77,7 @@ libcommon___a_LIBADD= \
 		Kunde/Person.o \
 		Kunde/Person_sql.o \
       Kunde/PreisListe_sql.o \
-		Kunde/Telefon.o \
+		Kunde/Telefon_sql.o \
 		Lager/FertigWaren_sql.o \
 		Lager/FertigWarenLager_sql.o \
 		Lager/JumboLager.o \
@@ -92,6 +92,7 @@ libcommon___a_LIBADD= \
 		Lager/maschinen_geschwindigkeit_sql.o \
       Lager/RohwarenLager_sql.o \
 		Lieferschein/Lieferschein.o \
+		Lieferschein/LieferscheinEntry.o \
 		Lieferschein/LieferscheinEntry_sql.o \
 		Lieferschein/LieferscheinList.o \
 		Lieferschein/LieferscheinList_sql.o \

@@ -19,91 +19,74 @@
 #include"RechnungEntry.h"
 #include"Rechnung.h"
 #include<Aux/Transaction.h>
-
+#include <Auftrag/AufEintrag.h>
 exec sql include sqlca;
 
 
-RechnungEntry::RechnungEntry(const RechnungBase& rechnung)
+RechnungEntry::RechnungEntry(const RechnungEntryBase& rechnung)
+	: RechnungEntryBase(rechnung)
 {
  exec sql begin declare section;
-   int ARTIKELID, ZEILENNR, STUECK, LFRSID;
+   int ARTIKELID, STUECK, LFRSID, LFRSZN;
    float PREISMENGE;
    float MENGE;
    float PREIS;
   char LIEFERDATUM[21];
-   int RNGID;
+   int INSTANZ, RNGID=rechnung.Id(), ZEILENNR=rechnung.Zeile();
    float RABATT;
  exec sql end declare section;
- RNGID=rechnung.Id();
- Transaction tr;
- exec sql declare rein cursor for
-   select ry.artikelid,
-      ry.zeilennr, coalesce(ry.menge,0), coalesce(ry.preis,0),
-      coalesce(ry.stueck,1), coalesce(ry.preismenge,1), coalesce(ry.rabatt,0),
-      coalesce(l.geliefertam,l.datum,date('today')), ry.lfrsid
-   from rechnungentry ry 
-   left join lieferschein l on ry.lfrsid=l.lfrsid
-   where ry.rngid = :RNGID 
-   order by ry.zeilennr;
- exec sql open rein;
- SQLerror::test(__FILELINE__);
- while (true)
-   {
-    exec sql fetch rein into
-         :ARTIKELID, :ZEILENNR, :MENGE, :PREIS, :STUECK, 
-         :PREISMENGE, :RABATT, :LIEFERDATUM, :LFRSID ;
-    SQLerror::test(__FILELINE__,100);
-    if (sqlca.sqlcode) break;
+ INSTANZ=ppsInstanz::Kundenauftraege;
 
-    zeilennr = ZEILENNR;
+ exec sql select ry.artikelid, coalesce(ry.menge,0), coalesce(ry.preis,0),
+      coalesce(ry.stueck,1), coalesce(ry.preismenge,1), coalesce(ry.rabatt,0),
+      coalesce(l.geliefertam,l.datum,date('today')), 
+      coalesce(ry.lfrsid,0), coalesce(ry.lfrszeile,0)
+   into :ARTIKELID, :MENGE, :PREIS, :STUECK, 
+         :PREISMENGE, :RABATT, :LIEFERDATUM, :LFRSID, :LFRSZN
+   from rechnungentry ry 
+   left join lieferschein l on (:INSTANZ,ry.lfrsid)=(l.instanz,l.lfrsid)
+   where (ry.rngid,ry.zeilennr) = (:RNGID,:ZEILENNR);
+ SQLerror::test(__FILELINE__);
+
     artikel=ARTIKELID;
     stueck=STUECK;
     menge=MENGE;
     preis=Preis(PREIS,Rechnung(rechnung.Id()).getWaehrung(),PREISMENGE);
     rabatt=RABATT;
     lieferdatum.from_postgres(LIEFERDATUM);
-    lfrsid=LFRSID;
-   }
- exec sql close rein;
- tr.close();
+    lfrs=LieferscheinEntryBase(ppsInstanz::ID(INSTANZ),LFRSID,LFRSZN);
 }
 
 
-void RechnungEntry::deleteEntry(const RechnungEntry &re) throw(SQLerror)
+Preis RechnungEntry::getAuftragsPreis()
+{
+ return AufEintrag(LfrsEntry().getAufEintragBase()).EPreis();
+}
+
+
+
+void RechnungEntryBase::deleteEntry(const RechnungEntryBase &re) throw(SQLerror)
 {
  exec sql begin declare section;
- int RNGID;
- int ZNR;
+ int RNGID=re.Id();
+ int ZNR=re.Zeile();
  exec sql end declare section;
 
- Transaction tr;
-
- RNGID=re.Id();
- ZNR=re.Zeile();
-
- 
  exec sql delete from rechnungentry where rngid= :RNGID and 
 		zeilennr= :ZNR;
  SQLerror::test(__FILELINE__);
-
- tr.commit();
-
 }
 
 void RechnungEntry::setzePreis(const Preis &p) throw (SQLerror)
 {  preis=p;
    exec sql begin declare section;
-   int RNGID,ZNR,PREISMENGE;
-   float PREIS;
+   int RNGID=Id(),ZNR=Zeile();
+   float PREISMENGE=p.BezugsMenge();
+   float PREIS=p.Wert();
    exec sql end declare section;
    
-   RNGID=Id();
-   ZNR=Zeile();
-   PREISMENGE=p.BezugsMenge();
-   PREIS=p.Wert();
-   
-   exec sql update rechnungentry
+    exec sql update rechnungentry
    	set preismenge=:PREISMENGE, preis=:PREIS
-   	where rngid= :RNGID and zeilennr= :ZNR;
+   	where (rngid,zeilennr)= (:RNGID,:ZNR);
    SQLerror::test(__FILELINE__);
 }

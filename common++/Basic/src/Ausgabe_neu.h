@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.h,v 1.7 2002/04/08 14:00:05 christof Exp $ */
+/* $Id: Ausgabe_neu.h,v 1.8 2002/04/11 12:01:07 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -78,6 +78,9 @@ template <int decimals,class Ftype,class Itype>
 // um transparent zwischen fixedpoints und ints umschalten zu können
 static inline const std::string Formatiere_short(unsigned int i)
 {  return Formatiere(i);
+}
+static inline const std::string FormatiereEmpty_short(unsigned int i)
+{  return FormatiereEmptyInt(i);
 }
 
 template <int decimals,class Ftype,class Itype>

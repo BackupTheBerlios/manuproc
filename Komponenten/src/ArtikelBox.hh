@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.13 2002/02/08 21:45:04 christof Exp $
+// $Id: ArtikelBox.hh,v 1.14 2002/04/11 11:57:59 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -57,7 +57,10 @@ class ArtikelBox : public Gtk::EventBox
  bool autocompletebool:1;
  bool kombiniertbool:1;
  bool labelbool:1;
+ bool automatisch_anlegen_bool;
  bool eingeschraenkt:1;
+ bool alle_artikel_anzeigen_bool;
+ bool alle_artikel_anzeigen_mit_id_bool;
 
  std::string sprogram,sposition;
  cH_ExtBezSchema schema;
@@ -91,6 +94,8 @@ class ArtikelBox : public Gtk::EventBox
  // ---- internal methods ----
  void searchFunc(int *cont, GtkSCContext newsearch, guint sp, guint l) throw(SQLerror);
  void selectFunc(guint sp, guint l) throw(SQLerror);
+ void searchFunc_alle_artikel(int *cont, GtkSCContext newsearch, guint sp) throw(SQLerror) {};
+ void selectFunc_alle_artikel(guint sp) throw(SQLerror){};
  gint MouseButton(GdkEventButton *);
  void TypSelected(int typ);
  void fuelleMenu();
@@ -107,10 +112,13 @@ class ArtikelBox : public Gtk::EventBox
  void Benutzerprofil_laden();
  void Neuer_Eintrag();
  void Neuer_Eintrag_sql(int db_id, std::string where, std::string what,int bestellen_bei);
+ void Neuer_Eintrag_automatisch(Gtk::CheckMenuItem *cmi);
+ void AlleArtikelAnzeigen(Gtk::CheckMenuItem *cmi);
+ void AlleArtikelAnzeigenId(Gtk::CheckMenuItem *cmi);
  unsigned int intern_id(int typ);
  void where_what(std::string& where, std::string& what,bool jumbo);
  bool neuanlegen();
- int jumbo_exist();
+ int artikel_exist(bool jumbo);
  void insert_into_artikelzusammensetzung(int id, int id_jumbo, int prozess,double menge);
  double get_menge_from_artikelbox();
 
@@ -120,6 +128,7 @@ class ArtikelBox : public Gtk::EventBox
  void artbox_start();
  void init();
  Gtk::Container *init_table(int l);
+ Gtk::Container *init_table_alle_artikel(int l);
  void setzeSchemaId(int t);
  void setzeSchemaTyp(int t2);
  void setzeSignifikanz(int t);

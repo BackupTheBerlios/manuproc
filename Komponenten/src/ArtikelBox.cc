@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.14 2002/03/20 07:55:01 christof Exp $
+// $Id: ArtikelBox.cc,v 1.15 2002/04/11 11:57:59 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -28,27 +28,36 @@
 
 void ArtikelBox::selectFunc(unsigned int sp,unsigned int l) throw(SQLerror)
 {
- // Signifikanz testen
- if(sp == (schema->sigsize(signifikanz[l])-1) || kombiniertbool)
-   {try
-     {
-      loadArtikel(l);
-      activate();
-     }
-   catch(SQLerror &e)
-     {std::cerr << e.Code() << e.Message() << e.Context() << "\n";
-      pixmap_setzen(false);
-      artikel=ArtikelBase();
-     }
-   return;
- }
- pixmap_setzen(false);
- artikel=ArtikelBase();
+ if(automatisch_anlegen_bool)
+  {
+    if(sp+1==combos[l].size()) Neuer_Eintrag() ;
+    else combos[l][sp+1]->grab_focus();
+  }
+ else
+  {
+    // Signifikanz testen
+    if(sp == (schema->sigsize(signifikanz[l])-1) || kombiniertbool)
+      {try
+        {
+         loadArtikel(l);
+         activate();
+        }
+      catch(SQLerror &e)
+        {
+         std::cerr << e.Code() << e.Message() << e.Context() << "\n";
+         pixmap_setzen(false);
+         artikel=ArtikelBase();
+        }
+      return;
+    }
+    pixmap_setzen(false);
+    artikel=ArtikelBase();
 
 //std::cout << l<<"\t"<<sp<<combos[l][sp+1]->get_text(); 
- combos[l][sp+1]->reset();
+    combos[l][sp+1]->reset();
 //std::cout << l<<"\t"<<sp<< combos[l][sp+1]->get_text(); 
- combos[l][sp+1]->grab_focus();
+    combos[l][sp+1]->grab_focus();
+   }
 }
 
 
@@ -187,45 +196,56 @@ void ArtikelBox::init()
    assert(!labels.size());
 #endif   
 
- ArtikelBox::Benutzerprofil_laden();   // setzt signifikanz !!! 
+ Benutzerprofil_laden();   // setzt signifikanz !!! 
 
-reloop:
- for (std::vector<int>::iterator i=signifikanz.begin();i!=signifikanz.end();++i)
-   if (schema->sigsize(*i) == 0) {signifikanz.erase(i);goto reloop;}
- if (signifikanz.size()==0)  signifikanz.push_back(1); 
-
- combos.resize(signifikanz.size());
- labels.resize(signifikanz.size());
-
- int l=signifikanz.size()-1 ; // Anzahl der Signifikanzen
- oberstes = init_table(l);
-
- for (std::vector<int>::reverse_iterator i=++(signifikanz.rbegin());i!=signifikanz.rend();++i)
+ if(!alle_artikel_anzeigen_bool)
   {
-    --l;
-    Gtk::Container* table = init_table(l);
-    if (vertikalbool) 
-      {Gtk::VPaned* hp=manage(new Gtk::VPaned);
-       hp->set_handle_size(10);
-       hp->set_gutter_size(10);
-//       hp->set_position(50*schema->sigsize(*i));
-       hp->pack1(*table, true, true);
-       hp->pack2(*oberstes, true, true);
-       hp->show();
-       oberstes = hp;
+   reloop:
+    for (std::vector<int>::iterator i=signifikanz.begin();i!=signifikanz.end();++i)
+      if (schema->sigsize(*i) == 0) {signifikanz.erase(i);goto reloop;}
+    if (signifikanz.size()==0)  signifikanz.push_back(1); 
+
+    combos.resize(signifikanz.size());
+    labels.resize(signifikanz.size());
+
+    int l=signifikanz.size()-1 ; // Anzahl der Signifikanzen
+    oberstes = init_table(l);
+    for (std::vector<int>::reverse_iterator i=++(signifikanz.rbegin());i!=signifikanz.rend();++i)
+     {
+       --l;
+       Gtk::Container* table = init_table(l);
+       if (vertikalbool) 
+         {Gtk::VPaned* hp=manage(new Gtk::VPaned);
+          hp->set_handle_size(10);
+          hp->set_gutter_size(10);
+   //       hp->set_position(50*schema->sigsize(*i));
+          hp->pack1(*table, true, true);
+          hp->pack2(*oberstes, true, true);
+          hp->show();
+          oberstes = hp;
+         }
+       else 
+         {Gtk::HPaned* hp=manage(new Gtk::HPaned);
+          hp->set_handle_size(10);
+          hp->set_gutter_size(10);
+   //       hp->set_position(50*schema->sigsize(*i));
+          hp->pack1(*table, true, true);
+          hp->pack2(*oberstes, true, true);
+          hp->show();
+          oberstes = hp;
+         }
       }
-    else 
-      {Gtk::HPaned* hp=manage(new Gtk::HPaned);
-       hp->set_handle_size(10);
-       hp->set_gutter_size(10);
-//       hp->set_position(50*schema->sigsize(*i));
-       hp->pack1(*table, true, true);
-       hp->pack2(*oberstes, true, true);
-       hp->show();
-       oberstes = hp;
-      }
-  }
- add(*oberstes);
+    add(*oberstes);
+   }
+ else
+   {
+     int s=1;
+     if (alle_artikel_anzeigen_mit_id_bool) s=2;
+     combos.resize(s);
+     labels.resize(s);
+     oberstes = init_table_alle_artikel(s);
+     add(*oberstes);
+   }
  fuelleMenu();
 }
 
@@ -274,7 +294,7 @@ Gtk::Container* ArtikelBox::init_table(int l)
    }
  ev->button_press_event.connect(SigC::slot(this,&ArtikelBox::MouseButton));
  std::string labtext = ArtikelTyp::get_string(schema->Typ())
-   +": "+ cH_Kunde(schema->Id())->firma();
+      +": "+ cH_Kunde(schema->Id())->firma();
  label_typ = manage(new class Gtk::Label(labtext));
  table->attach(*label_typ,0,cls,2,3);
  table->show();
@@ -283,9 +303,59 @@ Gtk::Container* ArtikelBox::init_table(int l)
 }
 
 
+Gtk::Container* ArtikelBox::init_table_alle_artikel(int s)
+{
+ Gtk::Table* table = manage(new Gtk::Table(2,s));
+ Gtk::EventBox *ev = manage(new Gtk::EventBox());
+ ev->add(*table);
+
+ assert(!combos[s-1].size());
+ assert(!labels[s-1].size());
+ for(int i=0;i<s;++i)
+   {
+    Gtk::SearchCombo *sc;
+    combos[s].push_back(sc=manage (new Gtk::SearchCombo(true)));
+    sc->set_usize(50,0);
+    sc->set_autoexpand(false);
+    sc->set_enable_tab(true);
+    sc->search.connect(SigC::bind(SigC::slot(this,&ArtikelBox::searchFunc_alle_artikel),i));
+    sc->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::selectFunc_alle_artikel),i));
+
+    Gtk::Label *lb;
+    std::string text;
+    if     (i==0) text="Artikel";
+    else if(i==1) text="ID";
+    labels[i].push_back(lb=manage(new Gtk::Label(text)));
+
+    if (i==0) 
+     {
+       Gtk::HBox *hb= manage(new Gtk::HBox());
+       pixmap= manage(new class Gtk::Pixmap()); // stock_button_cancel_xpm));
+       pixmap_setzen(false);
+       hb->pack_start(*pixmap,false,false);   pixmap->show();
+       hb->pack_start(*lb);                   hb->show();
+       table->attach(*hb,i,i+1,0,1);
+     }
+    else  table->attach(*lb,i,i+1,0,1);
+    table->attach(*sc,i,i+1,1,2);
+    sc->show();
+    lb->show();
+   }
+ ev->button_press_event.connect(SigC::slot(this,&ArtikelBox::MouseButton));
+ std::string labtext = "Artikelsuche in allen Schemata und für alle Kunden";
+ label_typ = manage(new class Gtk::Label(labtext));
+ table->attach(*label_typ,0,1,2,3);
+ table->show();
+ ev->show();
+ return ev;
+}
+
+
 ArtikelBox::ArtikelBox(const cH_ExtBezSchema &_schema)  throw(SQLerror)
 : vertikalbool(false), autocompletebool(false), 
-   kombiniertbool(false),labelbool(false), eingeschraenkt(false),
+   kombiniertbool(false),labelbool(true), 
+   automatisch_anlegen_bool(false),eingeschraenkt(false),
+   alle_artikel_anzeigen_bool(false),alle_artikel_anzeigen_mit_id_bool(false),
   schema(_schema), tr("",false), tr2("",false),
   oberstes(0), menu(0),  pixmap(0), label_typ(0), label(0)
 { 
@@ -294,7 +364,9 @@ ArtikelBox::ArtikelBox(const cH_ExtBezSchema &_schema)  throw(SQLerror)
 
 ArtikelBox::ArtikelBox(const std::string& _program,const std::string& _position)  throw(SQLerror)
 : vertikalbool(false), autocompletebool(false), 
-   kombiniertbool(false),labelbool(false), eingeschraenkt(false),
+   kombiniertbool(false),labelbool(true), 
+   automatisch_anlegen_bool(false),eingeschraenkt(false),
+   alle_artikel_anzeigen_bool(false),alle_artikel_anzeigen_mit_id_bool(false),
    sprogram(_program),sposition(_position),
    schema(cH_ExtBezSchema(ExtBezSchema::default_ID)),
    tr("",false), tr2("",false),
@@ -335,7 +407,6 @@ void ArtikelBox::artbox_start()
 void ArtikelBox::setExtBezSchema(const cH_ExtBezSchema &_schema)
 {
    schema=_schema;
-
    init();
 }
 
@@ -483,3 +554,31 @@ void ArtikelBox::pixmap_setzen(bool valid)
    else pixmap->set(stock_button_cancel_xpm);
 }
 
+void ArtikelBox::Neuer_Eintrag_automatisch(Gtk::CheckMenuItem *cmi)
+{
+  automatisch_anlegen_bool=cmi->get_active();
+  for (unsigned int j=0;j<combos.size();++j)
+   for (unsigned int i=0; i<combos[j].size(); ++i)
+    {
+     if(automatisch_anlegen_bool)
+         combos[j][i]->set_value_in_list(false,true);
+     else
+         combos[j][i]->set_value_in_list(true,true);
+    }  
+}
+
+void ArtikelBox::AlleArtikelAnzeigen(Gtk::CheckMenuItem *cmi)
+{
+  alle_artikel_anzeigen_bool=cmi->get_active();  
+  if(alle_artikel_anzeigen_bool)
+   {
+    kombiniertbool=true;    
+   }
+  init();
+}
+
+void ArtikelBox::AlleArtikelAnzeigenId(Gtk::CheckMenuItem *cmi)
+{
+  alle_artikel_anzeigen_mit_id_bool=cmi->get_active();
+  init();
+}
