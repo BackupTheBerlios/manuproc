@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.17 2003/08/01 07:05:46 christof Exp $
+// $Id: AufEintragZu.cc,v 1.18 2003/08/02 14:54:24 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -297,6 +297,10 @@ AuftragBase::mengen_t AufEintragZu::setMengeDiff__(const AufEintragBase &neuAEB,
      AuftragBase::mengen_t noch_verteilen=menge;
      for (std::vector<pri_menge>::const_iterator i=V.begin();i!=V.end();++i)
      {  AuftragBase::mengen_t M=-AuftragBase::min(i->menge,-noch_verteilen);
+        ManuProC::Trace _t(AuftragBase::trace_channel, __FILELINE__,
+        	NV("noch_verteilen",noch_verteilen),NV("pri",i->pri),
+        	NV("menge",i->menge), NV("M",M));
+        if (!M) continue;
         Query("update auftragsentryzuordnung set menge=menge+? "
      	"where (altinstanz,altauftragid,altzeilennr, "
      	       "neuinstanz,neuauftragid,neuzeilennr, "

@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.45 2003/02/15 22:53:21 christof Exp $
+// $Id: get_data.cc,v 1.46 2003/08/02 14:54:24 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -79,7 +79,7 @@ void graph_data_node::get_values_from_files()
            else if(j==5) try{  datum.from_postgres(zeile.substr(0,s1).c_str());         
                }catch(ManuProC::Datum::Formatfehler &e) {}
            else if(j==6) status=AufStatVal(atoi(zeile.substr(0,s1).c_str()));         
-           zeile=zeile.substr(s1+1,std::string::npos);
+           zeile=zeile.substr(s1+1);
           }
         if(instanz==ppsInstanzID::None) continue;
         AufEintragBase aeb(instanz,id,znr);

@@ -41,3 +41,7 @@
 
 - Problem: Einen Auftrag 2mal planen zu unterschiedlichen Zeiten, welcher
 	wird zuerst produziert (Momentan zuletzt geplanter?)
+
+- Zuordnungen =0 zu einem 0er/2er können weg.
+  Zuordnungen =0 zu einem 1er ohne ausgelieferte Menge können auch weg
+  

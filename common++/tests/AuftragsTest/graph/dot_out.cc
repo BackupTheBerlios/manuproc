@@ -1,4 +1,4 @@
-// $Id: dot_out.cc,v 1.21 2003/01/08 14:25:25 christof Exp $
+// $Id: dot_out.cc,v 1.22 2003/08/02 14:54:24 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -95,14 +95,7 @@ void dot_out::write_node(std::ofstream &fout)
               erank rank=None;
               AufEintragBase a1=i->node.Auftrag();
               AufEintragBase a2=k->node.Auftrag();
-              if(a1.Instanz()==a2.Instanz())
-               {
-#if 0               
-                 if(a2.Id()>=CUSTOM_ORDERNO ) rank=sink;
-                 else 
-#endif                 
-                    rank=same;
-               }
+              if(a1.Instanz()==a2.Instanz()) rank=same;
               Edge(fout,i->node,k->node,j->second,rank);
             }
          }

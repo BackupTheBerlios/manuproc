@@ -56,6 +56,7 @@ void vergleichen(Check::was_checken w, const std::string &zusatz,
     else if (verbose)
     { std::cout << name << "("<<zusatz<<") ok\n";
     }
+    testlog->flush();
 }
 
 static void graphheader(const std::string &name)
