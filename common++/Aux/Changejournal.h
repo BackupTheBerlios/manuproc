@@ -1,4 +1,4 @@
-// $Id: Changejournal.h,v 1.9 2002/06/27 07:42:50 christof Exp $
+// $Id: Changejournal.h,v 1.10 2002/09/23 09:28:01 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -39,14 +39,15 @@ public:
  CID CId() { return chid; } 
  ppsInstanz::ID IId() { return instanz->Id(); }
 
- pps_ChJournalEntryBase() : instanz(ppsInstanz::default_id), chid(0) {}
+ pps_ChJournalEntryBase() : instanz(ppsInstanzID::None), chid(0) {}
+
 };
 
 class pps_ChJournalEntry : public pps_ChJournalEntryBase
 {
 public:
- typedef enum {REQUEST=0,CONFIRM=1,CONFLIKT=2} ChJStatVal;
- typedef enum {CH_MENGE='M',CH_LIEFDAT='L'} ChJType;
+ typedef enum {NONE=-1,REQUEST=0,CONFIRM=1,CONFLIKT=2} ChJStatVal;
+ typedef enum {CH_NONE=0,CH_MENGE='M',CH_LIEFDAT='L'} ChJType;
 
 private:
  ManuProC::Datum datum;
@@ -70,5 +71,8 @@ public:
  		CID change=0) throw(SQLerror); 	
  		
  pps_ChJournalEntry(cH_ppsInstanz instid, CID change) throw(SQLerror);
+ pps_ChJournalEntry() : 
+   pps_ChJournalEntryBase(ppsInstanzID::None,ManuProcEntity::none_id),
+   status(NONE),newval(0),delta(0),type(CH_NONE) {}
 
 };

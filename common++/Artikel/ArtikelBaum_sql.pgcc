@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum_sql.pgcc,v 1.7 2002/09/18 08:58:34 christof Exp $
+// $Id: ArtikelBaum_sql.pgcc,v 1.8 2002/09/23 09:28:01 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -82,7 +82,7 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
           if (bindungsliste.empty()) bindungsliste.Load();
           fadenliste.Load(ARTIKELID,bindungsliste);
          }
-       catch(SQLerror &e) {/*std::cerr << e << '\n';*/}
+       catch(SQLerror &e) {std::cerr << e << '\n';}
        for (Fadenliste::const_iterator i=fadenliste.sumbegin();i!=fadenliste.sumend();++i)
         { const double km_m= 1/1000.0;
           double gewicht_kg_m = i->get_Gewicht_kg_pro_km_Faden() * km_m;
