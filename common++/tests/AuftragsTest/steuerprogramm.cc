@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.cc,v 1.14 2002/09/27 09:14:41 thoma Exp $
+// $Id: steuerprogramm.cc,v 1.15 2002/10/04 08:23:21 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -26,10 +26,11 @@
 #include <Aux/exception.h>
 #include <Lager/Lager.h>
 #include <Auftrag/Auftrag.h>
+#include <Instanzen/Produziert.h>
+#include <unistd.h>
 // Jumbo
 #include <Ketten/KettplanKette.h>
 #include <Lager/JumboLager.h>
-
 // Lieferschein
 #include <Lieferschein/Lieferschein.h>
 
@@ -37,7 +38,7 @@
 
 enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
       ZweiterAuftrag_frueheresDatum,Lieferscheintest,LieferscheintestMenge,
-      LieferscheintestZusatz,
+      LieferscheintestZusatz,Lieferscheintest_ZweiterAuftrag_frueheresDatum,
       JumboLager};
 
 int fehler()
@@ -85,10 +86,12 @@ int auftragstests(e_mode mode)
       if(!erfolgreich) { cout << "Reduzieren der Auftragmenge unter Rohwarenlagerbestand \n\n";
                return fehler();}
 
+
       AE.updateLieferdatum(NEWDATUM,UID);
       erfolgreich=C.teste(Check::Datumsaenderung);
       if(!erfolgreich) { cout << "Datumsänderung \n\n";
                return fehler();}
+
 
       // Menge des Auftrags weiter erniedrigen (Bandlager Menge reicht jetzt aus)
       auftrag.kunden_bestellmenge_aendern(AEB,10);
@@ -182,12 +185,18 @@ int auftragstests(e_mode mode)
       if(!erfolgreich) { cout << "Bandlager einlagern\n";
                return fehler();}
 
-      AufEintrag(AEB).abschreiben(300);
+//      AufEintrag(AEB).abschreiben(300);
+      {AufEintrag AE(AEB);
+       Produziert(AEB.Instanz()->Id(),AE.Artikel(),300,getuid()).NichtSelbst();
+      }
       erfolgreich=C.teste(Check::Kunden_Teillieferung);
       if(!erfolgreich) { cout << "Kunde Teillieferung\n";
                return fehler();}
 
-      AufEintrag(AEB).abschreiben(120);
+      {AufEintrag AE(AEB);
+       Produziert(AEB.Instanz()->Id(),AE.Artikel(),120,getuid()).NichtSelbst();
+      }
+//      AufEintrag(AEB).abschreiben(120);
       erfolgreich=C.teste(Check::Kunden_Ueberlieferung);
       if(!erfolgreich) { cout << "Kunde Überlieferung\n";
                return fehler();}      break;
@@ -214,11 +223,16 @@ int auftragstests(e_mode mode)
     case ZweiterAuftrag_frueheresDatum:
      {
        AufEintragBase AEB=auftrag.anlegen3();
+
        erfolgreich=C.teste(Check::ZweiterAuftrag_frueheresDatum);
        if(!erfolgreich) { cout << "Anlegen eines zweiten (offenen) Auftrags ["<<AEB<<"] mit früherem Liefertermin \n\n";
                return fehler();}
 
-       AufEintrag(AEB).abschreiben(200);
+       {
+//          AufEintrag(AEB).abschreiben(200);
+          AufEintrag AE(AEB);
+       Produziert(AEB.Instanz()->Id(),AE.Artikel(),200,getuid()).NichtSelbst();
+       }
        erfolgreich=C.teste(Check::ZweiterAuftrag_frueheresDatum_abschreiben);
        if(!erfolgreich) { cout << "Teil-Abschreiben des zweiten Auftrags ["<<AEB<<"] \n\n";
                return fehler();}
@@ -286,6 +300,25 @@ int auftragstests(e_mode mode)
 
        break;
      }
+    case Lieferscheintest_ZweiterAuftrag_frueheresDatum:
+     {
+       AufEintragBase AEB=auftrag.anlegen3();
+       erfolgreich=C.teste(Check::ZweiterAuftrag_frueheresDatum);
+       if(!erfolgreich) { cout << "Anlegen eines zweiten (offenen) Auftrags ["<<AEB<<"] mit früherem Liefertermin \n\n";
+                          return fehler();}
+
+       Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
+       liefs.push_back(ARTIKEL_ROLLEREI,50,0,0);
+       erfolgreich=C.teste(Check::LieferscheinZweiAufTeil);
+       if(!erfolgreich) { cout << "Lieferschein mit Teillieferung und 2 Aufträgen anlegen\n\n"; return fehler();}
+
+       liefs.push_back(ARTIKEL_ROLLEREI,600,0,0);
+       erfolgreich=C.teste(Check::LieferscheinZweiAufVoll);
+       if(!erfolgreich) { cout << "Lieferschein mit Volllieferung und 2 Aufträgen anlegen\n\n"; return fehler();}
+
+
+       break;
+     }
     case LieferscheintestZusatz:
      {
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
@@ -329,7 +362,7 @@ int auftragstests(e_mode mode)
      }
     case JumboLager:
      { 
-#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
+#if defined (PETIG_EXTENSIONS) && defined (MANUPROC_DYNAMICENUMS_CREATED)
        LagerPlatz LP(ppsInstanzID::Bandlager,JUMBO_LAGERPLATZ);
        LagerPlatz LP2(ppsInstanzID::Bandlager,JUMBO_LAGERPLATZ+1);
        KettplanKette KK=KettplanKette(Kette(MASCHIENE,SCHAERDATUM));
@@ -375,7 +408,11 @@ int auftragstests(e_mode mode)
 
 void usage(const std::string &argv0,const std::string &argv1)
 {
-  cerr << argv0 <<" muß mit [(M)engentest|(P)lantest|(L)agertest|(S)plittest,(Z)weiAuftraege,ZweiterAuftrag_frueheres(D)atum,(L)iefer(s)cheine,(L)ieferscheine(M)engen,(L)ieferschein(Z)usatzeintrag,(J)umboLager] aufgerufen werden\n"
+  cerr << argv0 <<" muß mit [(M)engentest|(P)lantest|(L)agertest|\n"
+                  "\t(S)plittest|(Z)weiAuftraege|ZweiterAuftrag_frueheres(D)atum|\n"
+                  "\t(L)iefer(s)cheine|(L)ieferscheine(m)engen|\n"
+                  "\t(L)ieferschein(Z)usatzeintrag|(L)ieferscheinZweiter(A)uftrag_frueheresDatum|\n"
+                  "\t(J)umboLager] aufgerufen werden\n"
        << " nicht mit '"<<argv1<<"'\n";
   exit(1);
 }
@@ -392,8 +429,9 @@ int main(int argc,char *argv[])
    else if(std::string(argv[1])=="Z" || std::string(argv[1])=="ZweiAuftraege")  mode=ZweiAuftraege;
    else if(std::string(argv[1])=="D" || std::string(argv[1])=="ZweiterAuftrag_frueheresDatum")  mode=ZweiterAuftrag_frueheresDatum;
    else if(std::string(argv[1])=="Ls" || std::string(argv[1])=="Lieferscheintest")  mode=Lieferscheintest;
-   else if(std::string(argv[1])=="Lm" || std::string(argv[1])=="Lieferscheintest")  mode=LieferscheintestMenge;
-   else if(std::string(argv[1])=="LZ" || std::string(argv[1])=="Lieferscheintest")  mode=LieferscheintestZusatz;
+   else if(std::string(argv[1])=="Lm" || std::string(argv[1])=="LieferscheintestMenge")  mode=LieferscheintestMenge;
+   else if(std::string(argv[1])=="LZ" || std::string(argv[1])=="LieferscheintestZusatz")  mode=LieferscheintestZusatz;
+   else if(std::string(argv[1])=="LA" || std::string(argv[1])=="Lieferscheintest_ZweiterAuftrag_frueheresDatum")  mode=Lieferscheintest_ZweiterAuftrag_frueheresDatum;
    else if(std::string(argv[1])=="J" || std::string(argv[1])=="JumboLager")  mode=JumboLager;
 
    if(mode==None) { usage(argv[0],argv[1]); return 1; }

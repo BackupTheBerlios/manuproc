@@ -1,4 +1,4 @@
-/* $Id: MVC.h,v 1.2 2002/07/08 08:10:29 christof Exp $ */
+/* $Id: MVC.h,v 1.3 2002/10/04 08:23:21 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -20,7 +20,11 @@
 
 #ifndef MANUPROC_MVC_H
 #define MANUPROC_MVC_H
+#ifndef SIGC1_2
 #include <sigc++/basic_signal.h>
+#else
+#include <sigc++/signal.h>
+#endif
 
 // The pointer is needed to distinguish between elements in a shared
 // signal environment. But the syntax is so complex it's hardly worth 

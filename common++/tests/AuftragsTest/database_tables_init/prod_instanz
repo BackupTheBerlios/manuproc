@@ -29,7 +29,7 @@ CREATE TABLE "prod_instanz" (
 
 COPY "prod_instanz" FROM stdin;
 6	(Garn-)Einkauf	\N	10	t	\N	\N
-1	Kundenaufträge	\N	1	t	\N	t
+1	Kundenaufträge	\N	1	t	\N	f
 4	Weberei	\N	6	\N	\N	\N	28
 10	Rollerei	\N	2	\N	\N	\N	2
 3	Druckerei	\N	3	\N	\N	\N	3

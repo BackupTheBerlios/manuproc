@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.13 2002/09/02 13:04:03 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.14 2002/10/04 08:23:20 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -169,8 +169,11 @@ public:
  cH_PreisListe getPreisliste() const {return preisliste;}
  rabatt_t Rabatt() const { return rabatt;}
  Preis::preismenge_t PreisMenge() const { return preis.PreisMenge(); }
+private: // use Produziert::NichtSelbst()
+ friend class Produziert;
  void abschreiben(mengen_t menge,
     ManuProcEntity::ID lfrsid=ManuProcEntity::none_id) throw(SQLerror);
+public:
  bool allesOK() const;
  std::string Planung() const;
  ppsInstanz::ID LetztePlanInstanz() const { return letztePlanInstanz; }

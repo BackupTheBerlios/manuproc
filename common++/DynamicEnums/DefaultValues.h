@@ -1,4 +1,4 @@
-/* $Id: DefaultValues.h,v 1.4 2002/09/27 13:01:39 thoma Exp $ */
+/* $Id: DefaultValues.h,v 1.5 2002/10/04 08:23:21 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -24,8 +24,17 @@
 
 #include <DynamicEnums/DynamicEnums.h>
 
+
+/////////////////////////////////////////////////////////////////////////
+
 namespace ManuProC {
  namespace DefaultValues {
+
+// nach dem ersten Durchlauf muß in diesem Verzeichnis 'make recreate' 
+// ausgeführt werden. Erst dann werden die Firmenspezifischen Defaultvalues 
+// verwendet.
+#ifdef MANUPROC_DYNAMICENUMS_CREATED 
+
   const static int EigeneKundenId=1;
   const static int DefaultKundenId=1;
   const static ManuProC::DynamicEnums::Instanzen::enum_t Instanz= ManuProC::DynamicEnums::Instanzen::Kundenauftraege;
@@ -33,7 +42,8 @@ namespace ManuProC {
 
 
 #ifdef MABELLA_EXTENSIONS
-  const static ManuProC::DynamicEnums::ArtikelTyp::enum_t  ArtikelTyp=ManuProC::DynamicEnums::aufgemachtes_Band;
+  const static ManuProC::DynamicEnums::ArtikelTyp::enum_t  ArtikelTyp=ManuProC::DynamicEnums::ArtikelTyp::aufgemachtes_Band;
+//  const static ManuProC::DynamicEnums::ArtikelTyp::enum_t  ArtikelTyp=ManuProC::DynamicEnums::aufgemachtes_Band;
   const static ManuProC::DynamicEnums::Prozesse::enum_t  Prozess=ManuProC::DynamicEnums::Prozesse::Verarbeitung;
 #elif defined PETIG_EXTENSIONS
   const static ManuProC::DynamicEnums::ArtikelTyp::enum_t  ArtikelTyp=ManuProC::DynamicEnums::ArtikelTyp::Band;
@@ -42,10 +52,30 @@ namespace ManuProC {
   const static ManuProC::DynamicEnums::ArtikelTyp::enum_t  ArtikelTyp = ManuProC::DynamicEnums::ArtikelTyp::Schraubenzieher;
   const static ManuProC::DynamicEnums::Prozesse::enum_t  Prozess=ManuProC::DynamicEnums::Prozesse::Verarbeitung_Irgendetwas;
 #endif
-  
+#else
+  const static int EigeneKundenId=1;
+  const static int DefaultKundenId=1;
+  const static ManuProC::DynamicEnums::Instanzen::enum_t Instanz= ManuProC::DynamicEnums::Instanzen::enum_t(1);
+  const static ManuProC::DynamicEnums::Instanzen::enum_t KundenInstanz= ManuProC::DynamicEnums::Instanzen::enum_t(1);
+
+  const static ManuProC::DynamicEnums::ArtikelTyp::enum_t  ArtikelTyp=ManuProC::DynamicEnums::ArtikelTyp::enum_t(1);
+  const static ManuProC::DynamicEnums::Prozesse::enum_t  Prozess=ManuProC::DynamicEnums::Prozesse::enum_t(1);
+#endif
 
  }
 }
+
+
+////////////////////////////////////////////////////////////////////////////
+
+#ifndef PETIG_EXTENSIONS
+   #define DPD_LIEFERSCHEINE
+   #define EAN_AUSDRUCKEN_IN_PPS
+#endif
+
+#ifndef MABELLA_EXTENSIONS
+   #define INSTANZEN_VERWALTUNG
+#endif
 
 
 #endif

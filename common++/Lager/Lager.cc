@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.12 2002/09/02 13:04:04 christof Exp $
+// $Id: Lager.cc,v 1.13 2002/10/04 08:23:21 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -24,6 +24,7 @@
 #endif
 #include "Lager_Vormerkungen.h"
 #include <Auftrag/AufEintrag.h>
+#include <Auftrag/Auftrag.h>
 #include <Auftrag/AufEintragZu.h>
 #include <Auftrag/selFullAufEntry.h>
 #include <Instanzen/ppsInstanz.h>
@@ -33,6 +34,7 @@
 #include <unistd.h>
 #include <Aux/AdminProblems.h>
 #include <Instanzen/Produziert.h>
+
 
 H_Lager::H_Lager(const ArtikelBase& artikel) 
 {
@@ -91,7 +93,8 @@ bool Lager::dispo_auftrag_aendern(ArtikelBase artikel,AuftragBase::mengen_t meng
      }
    else
      {
-      da.insertNewEntry(menge,Lager::Lagerdatum(),artikel,OPEN,getuid(),false);
+      Auftrag A(da);
+      A.push_back(menge,Lager::Lagerdatum(),artikel,OPEN,getuid(),false);
      }
   return alt;
 }

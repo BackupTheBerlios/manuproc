@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.17 2002/09/26 14:50:47 thoma Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.18 2002/10/04 08:23:21 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -36,7 +36,7 @@ try{
   int INVALID_ENTITY;
  exec sql end declare section;
  INVALID_ENTITY=ManuProcEntity::none_id;
-#ifdef MABELLA_EXTENSIONS
+#ifdef DPD_LIEFERSCHEINE
  exec sql begin declare section;
   int DPDLIEFNR;
   int PAECKCHEN, PAKETE;
@@ -44,7 +44,7 @@ try{
  exec sql end declare section;
 #endif
 
-#ifdef MABELLA_EXTENSIONS
+#ifdef DPD_LIEFERSCHEINE
  exec sql select kundennr, date(datum), coalesce(rngid,:INVALID_ENTITY),
 		coalesce(paeckchen,0),
 		coalesce(pakete,0),date(coalesce(geliefertam,datum)),
@@ -54,9 +54,8 @@ try{
 		:GELIEFERTAM:IGELIEFERTAM, :DPDLIEFNR,
       :BRUTTO_KG, :NETTO_KG
  	from lieferschein where (instanz,lfrsid) = (:INSTANZ,:LFRSID);
-#endif
-#ifdef PETIG_EXTENSIONS
- exec sql select kundennr, date(datum), coalesce(rngid,0),
+#else
+ exec sql select kundennr, date(datum), coalesce(rngid,:INVALID_ENTITY),
 		date(coalesce(geliefertam,datum))
 		into :KDNR, :DATUM, :RNGID, :GELIEFERTAM:IGELIEFERTAM
  	from lieferschein where (instanz,lfrsid) = (:INSTANZ,:LFRSID);
@@ -69,7 +68,7 @@ try{
  lsdatum.from_postgres(DATUM);	
  if(IGELIEFERTAM) geliefertam.from_postgres(DATUM) ;  //ManuProC::Datum();		 
  else geliefertam.from_postgres(GELIEFERTAM);		 
-#ifdef MABELLA_EXTENSIONS
+#ifdef DPD_LIEFERSCHEINE
  dpdliefnr=DPDLIEFNR;
  paeckchen=PAECKCHEN;
  pakete=PAKETE;
@@ -95,7 +94,7 @@ void Lieferschein::setDPDDatum() const throw(SQLerror)
 Lieferschein::Lieferschein(const cH_ppsInstanz& _instanz,cH_Kunde k,int jahr) throw(SQLerror)
 	: LieferscheinBase(_instanz,none_id), lsdatum(ManuProC::Datum::today()),
       kunde(k),rngid(0)
-#ifdef MABELLA_EXTENSIONS
+#ifdef DPD_LIEFERSCHEINE
  	,paeckchen(0),pakete(0),dpdliefnr(-1) 
 #endif
 {
@@ -184,7 +183,7 @@ const Preis::rabatt_t Lieferschein::AufRabatt() const throw(SQLerror)
 
 }
 
-#ifdef MABELLA_EXTENSIONS
+#ifdef DPD_LIEFERSCHEINE
 const ManuProC::Datum Lieferschein::getMaxZahlziel() const throw(SQLerror)
 {
  exec sql begin declare section;

@@ -1,4 +1,4 @@
-/* $Id: Auftrag.h,v 1.16 2002/07/05 12:35:01 christof Exp $ */
+/* $Id: Auftrag.h,v 1.17 2002/10/04 08:23:20 thoma Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,6 +26,7 @@
 #include <Aux/Waehrung.h>
 #include <Aux/SQLerror.h>
 #include <Kunde/Kunde.h> // vielleicht auch Basisklasse erzeugen
+#include <Auftrag/AufEintragBase.h>
 
 // ein Teil dieser Funktionen sollte nach AuftragBase (vor allem der SQL Teil)
 
@@ -87,6 +88,13 @@ public:
 	Kunde::ID getKundennr() const { return kundennr; }
 	cP_Waehrung getWaehrung() const { return waehrung; }
    rabatt_t getAuftragsRabatt() const {return auftragsrabatt;}
+
+   AufEintragBase push_back(const mengen_t bestellt, 
+                const ManuProC::Datum lieferdatum, const ArtikelBase& artikel,
+                const AufStatVal status,int uid,const bool setInstanzAuftraege,
+                const Preis& preis=Preis(),const rabatt_t aufeintragsrabatt=0,
+                const cH_PreisListe &preisliste=PreisListe::none_id) const throw(SQLerror);
+
 };        
 
 #endif

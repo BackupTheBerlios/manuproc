@@ -5,6 +5,7 @@
 #include <Auftrag/AufEintragZu.h>
 #include <unistd.h>
 #include "MyMessage.h"
+#include <Instanzen/Produziert.h>
 
 
 extern MyMessage *meldung;
@@ -237,7 +238,9 @@ void auftrag_main::on_button_Kunden_erledigt_clicked()
        {
          AuftragBase::mengen_t menge = i->getRestStk();
 //std::cout << j->Menge <<'\t'<<menge<<'\n';
-         try{ i->abschreiben(menge,ManuProcEntity::none_id);
+         try{ 
+Produziert(*i,menge,getuid(),ManuProcEntity::none_id).NichtSelbst();
+//            i->abschreiben(menge,ManuProcEntity::none_id);
               change=true;
             } catch(SQLerror &e){std::cerr <<e<<'\n';}
        }

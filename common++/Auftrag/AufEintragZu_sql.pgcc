@@ -1,4 +1,4 @@
-// $Id: AufEintragZu_sql.pgcc,v 1.7 2002/09/02 13:04:03 christof Exp $
+// $Id: AufEintragZu_sql.pgcc,v 1.8 2002/10/04 08:23:20 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -302,7 +302,7 @@ bool AufEintragZu::setKindZnr(const AufEintragBase& neuAEB)
    set neuzeilennr=:db_nznr where
    (altinstanz,altauftragid,altzeilennr, neuinstanz,neuauftragid)
     = (:db_ains,:db_aaid,:db_aznr, :db_nins,:db_naid);
- SQLerror::test(__FILELINE__);
+ SQLerror::test(__FILELINE__,100);
  if (sqlca.sqlcode) return false;
  else return true;
 }

@@ -26,12 +26,11 @@
 #include<vector>
 #include <Aux/SQLerror.h>
 
-
 class RechnungVoll : public Rechnung
 {
  std::vector<RechnungEntry> rentry;
 
-#ifdef MABELLA_EXTENSIONS
+#ifdef DPD_LIEFERSCHEINE
  mutable fixedpoint<1> netto_gewicht;
  mutable fixedpoint<1> brutto_gewicht;  
  mutable int pakete;
@@ -56,7 +55,7 @@ public:
 
  void convert_to_gutschrift();
 
-#ifdef MABELLA_EXTENSIONS
+#ifdef DPD_LIEFERSCHEINE
  void setGewicht() const throw(SQLerror);
  fixedpoint<1> const NettoGew() const {return netto_gewicht;}
  fixedpoint<1> const BruttoGew() const {return brutto_gewicht;} 

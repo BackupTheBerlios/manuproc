@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList.h,v 1.11 2002/09/26 14:50:47 thoma Exp $ */
+/* $Id: LieferscheinList.h,v 1.12 2002/10/04 08:23:21 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -70,7 +70,7 @@ public:
  void setForArtikeltyp(const ArtikelTyp::ID atid) { arttyp=atid;}
  void reset(); 
 
-#ifdef MABELLA_EXTENSIONS
+#ifdef DPD_LIEFERSCHEINE
  struct sel_GeliefStat 
  { bool geliefert;
    sel_GeliefStat(bool g):geliefert(g){}

@@ -101,85 +101,7 @@ void AuftragBase::setRabatt(const rabatt_t auftragsrabatt) const throw(SQLerror)
 }
 
 
-int AuftragBase::insertNewEntry(const mengen_t bestellt, 
-  const ManuProC::Datum lieferdatum,const ArtikelBase& artikel,
-  const AufStatVal status,int uid,const bool setInstanzAuftraege,
-  const Preis& preis,const fixedpoint<2> rabatt,
-  const cH_PreisListe &preisliste) const throw(SQLerror)
-{
- exec sql begin declare section;
- int AUFTRAGID =Id();
- long ARTIKELID=artikel.Id();
- int INSTANZ =InstanzID();
- int ZEILENNR;
- int BESTELLT=bestellt;
- char LIEFERDATUM[21];
- double PREIS=preis.Wert();
- int RABATT=rabatt;
- float PREISMENGE=preis.PreisMenge();
- int STATUS=status;
- int PREISLISTE=preisliste->Id();
- int PREISLISTENULL;
- int UID=uid;
- exec sql end declare section;
- PREISLISTENULL=PreisListe::none_id;
- 
-// bei Mabella auf keinen Fall UNCOMMITED
-#ifdef MABELLA_EXTENSIONS
- if(status==UNCOMMITED)
-   STATUS=OPEN;   
-#endif
 
- lieferdatum.write_postgres(LIEFERDATUM,sizeof LIEFERDATUM);
-
- Transaction tr;
- exec sql lock table auftragentry in exclusive mode;
- SQLerror::test("AufEintrag: lock auftragentry");	
-
-//ECPGdebug(true,stdout);
- exec sql select coalesce(max(zeilennr)+1,1) into :ZEILENNR from auftragentry
-	where (instanz,auftragid)= (:INSTANZ,:AUFTRAGID);
- SQLerror::test("generate next zeilennr");
-
- exec sql insert into auftragentry (instanz,auftragid, zeilennr,
-	bestellt,geliefert,lieferdate,artikelid,status,
-	preis,rabatt,preismenge,preisliste,lastedit_uid)
-	values (:INSTANZ, :AUFTRAGID, :ZEILENNR, :BESTELLT, 0, :LIEFERDATUM,
-		:ARTIKELID, :STATUS, :PREIS, :RABATT,
-		:PREISMENGE, nullif(:PREISLISTE,:PREISLISTENULL),:UID) ;
- SQLerror::test(__FILELINE__" insert into auftragentry");	
-//ECPGdebug(false,0);
-	
- if(Instanz()==ppsInstanzID::Kundenauftraege)
-  { try{
-     pps_ChJournalEntry::newChange(
-                        instanz,
-			AufEintragBase(instanz,AUFTRAGID,ZEILENNR),
-                        artikel,
-                        (double)BESTELLT,
-                        (double)BESTELLT,
-                        pps_ChJournalEntry::CH_MENGE);
-        }
-    catch(SQLerror &e)
-      {tr.rollback(); throw; }
-  }
- // Kundenaufträge legen automatisch einen Auftrag bei der entsprechenden Instanz 
- // für denselben Artikel an.
- if(status!=UNCOMMITED) // Nur offene Aufträge kümmern sich um andere Instanzen
-   {
-     if(Instanz()==ppsInstanzID::Kundenauftraege)
-      { cH_ppsInstanz i=ArtikelStamm(artikel).BestellenBei();
-        if (i!=ppsInstanzID::None && i!=ppsInstanzID::Kundenauftraege)
-        {  AuftragBase AB(ArtikelStamm(artikel).BestellenBei(),AuftragBase::ungeplante_id);
-           AB.tryUpdateEntry(bestellt,lieferdatum,artikel,status,uid,AufEintragBase(*this,ZEILENNR));
-        }
-      }
-     else if(setInstanzAuftraege)
-        InstanzAuftraegeAnlegen(artikel,ZEILENNR,lieferdatum,status,uid,bestellt);
-    }
- tr.commit();
- return ZEILENNR;
-}
 
 bool AuftragBase::existEntry(const ArtikelBase& artikel,
                              const ManuProC::Datum& lieferdatum,
@@ -247,7 +169,9 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
 
  if(force_new || !existEntry(artikel,lieferdatum,znr,neuznr,altemenge,status))
   {
-    znr=insertNewEntry(auftragbestellmenge,lieferdatum,artikel,status,uid,false)  ;
+    Auftrag A(*this);
+    AufEintragBase newaeb=A.push_back(auftragbestellmenge,lieferdatum,artikel,status,uid,false)  ;
+    znr=newaeb.ZNr();
    }
  else
    {

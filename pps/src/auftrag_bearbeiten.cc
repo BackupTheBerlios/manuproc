@@ -321,7 +321,7 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
    
 #endif
 
-     auftrag->AuftragFull::insertNewEntry(
+     auftrag->AuftragFull::push_back(
                stkmtr_spinbutton->get_value_as_int(),
                liefdatum_datewin->get_value(),
                artikelbox->get_value().Id(),

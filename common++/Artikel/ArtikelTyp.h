@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.h,v 1.12 2002/09/27 09:14:41 thoma Exp $
+// $Id: ArtikelTyp.h,v 1.13 2002/10/04 08:23:20 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

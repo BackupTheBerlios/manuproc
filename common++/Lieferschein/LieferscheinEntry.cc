@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.10 2002/09/19 15:04:45 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.11 2002/10/04 08:23:21 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,6 +21,8 @@
 #include<Aux/FetchIStream.h>
 #include<Aux/Transaction.h>
 #include<Auftrag/AufEintrag.h>
+#include <unistd.h>
+#include <Instanzen/Produziert.h>
 
 bool LieferscheinEntry::Valid() const
 {
@@ -54,7 +56,9 @@ bool LieferscheinEntry::changeMenge(int stueck,mengen_t menge) throw(SQLerror)
        mengen_t rest=AE.getRestStk();
        if(abmenge > rest ) return false;
        updateLieferscheinMenge(stueck,menge);
-       AE.abschreiben(abmenge,Id());
+//       Produziert(instanz->Id(),artikel,abmenge,getuid(),Id()).NichtSelbst();    
+       Produziert(AE,abmenge,getuid(),Id()).NichtSelbst();    
+//       AE.abschreiben(abmenge,Id());
      }catch(AufEintrag::NoAEB_Error &e){cerr << AEB<<" existiert nicht\n"; return false;}
    }
   else // Zusatzinfos ODER kein Referenzauftrag
@@ -128,7 +132,9 @@ void LieferscheinEntry::menge_bei_zusatzinfos_abschreiben(std::vector<Liefersche
          mengen_t M=AuftragS;
          if(AE.getStueck()<M) M=-AE.getStueck();
 //cout << "Be HERE\t"<<i->Stueck()<<' '<<i->Menge()<<'\t'<<M<<'\n';
-         AE.abschreiben(M,Id());
+//         Produziert(instanz->Id(),artikel,M,getuid(),Id()).NichtSelbst();    
+         Produziert(AE,M,getuid(),Id()).NichtSelbst();    
+//         AE.abschreiben(M,Id());
          // Lieferscheinentry:
          if(i->Stueck()==1)
              i->updateLieferscheinMenge(1,i->Menge()+M);

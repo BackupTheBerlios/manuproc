@@ -1,4 +1,4 @@
-/* $Id: selFullAufEntry.h,v 1.16 2002/05/09 12:45:59 christof Exp $ */
+/* $Id: selFullAufEntry.h,v 1.17 2002/10/04 08:23:21 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -37,6 +37,7 @@ public:
  typedef TYP::const_iterator const_iterator;
  typedef TYP::const_reverse_iterator const_reverse_iterator;
  typedef TYP::iterator iterator;
+ typedef TYP::reverse_iterator reverse_iterator;
  TYP aufidliste;
  template <class T> void remove(const T &t) { aufidliste.remove(t); }
 
@@ -48,6 +49,8 @@ public:
  const_reverse_iterator rend() const { return aufidliste.rend(); }
  iterator begin() { return aufidliste.begin(); }
  iterator end()  { return aufidliste.end(); }
+ reverse_iterator rbegin(){ return aufidliste.rbegin(); }
+ reverse_iterator rend()  { return aufidliste.rend(); }
  // please use size()!
  int getLen() const { return aufidliste.size();}
  size_t size() const { return aufidliste.size();}

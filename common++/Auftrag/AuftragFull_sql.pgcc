@@ -21,18 +21,18 @@
 #include <Auftrag/selFullAufEntry.h>
 
 
-int AuftragFull::insertNewEntry(unsigned long int bestellt,
+AufEintragBase AuftragFull::push_back(unsigned long int bestellt,
                ManuProC::Datum lieferdatum, ArtikelBase::ID artid,
                AufStatVal status,int uid,
                Preis preis, fixedpoint<2> rabatt,const cH_PreisListe &preisliste) throw (SQLerror)
 {
-  int znr=AuftragBase::insertNewEntry(bestellt,lieferdatum,artid,status,uid,true,preis,rabatt,preisliste);
+  AufEintragBase newAEB=Auftrag::push_back(bestellt,lieferdatum,artid,status,uid,true,preis,rabatt,preisliste);
   eintragliste.push_back(AufEintrag(
-      Instanz(),Id(),znr,bestellt,artid,lieferdatum,
+      Instanz(),Id(),newAEB.ZNr(),bestellt,artid,lieferdatum,
       0,0,0,getStatus(),getKundennr(),getYourAufNr(),
       ManuProC::Datum(),Prozess::default_id,ppsInstanzID::None,0,
       preis,rabatt,status,uid,ManuProC::Datum::today(),"",preisliste));
-  return znr;
+  return newAEB;
 }
 
 

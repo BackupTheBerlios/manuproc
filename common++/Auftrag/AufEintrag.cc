@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.9 2002/09/02 13:04:03 christof Exp $
+// $Id: AufEintrag.cc,v 1.10 2002/10/04 08:23:20 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,7 +21,7 @@
 #include <Aux/string0.h>
 #include <Aux/Transaction.h>
 #include <Auftrag/AufEintragZu.h>
-
+#include <Auftrag/Auftrag.h>
 
 AufEintrag::AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, mengen_t _bestellt,
 	ArtikelBase _artikel, const ManuProC::Datum _lieferdatum,
@@ -240,9 +240,9 @@ void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,int uid,e
       std::list<AufEintragZu::st_reflist> E=AufEintragZu(i->AEB).get_Referenz_list_dispo(false);
       if(E.empty())
        {
-         AuftragBase ab(Instanz(),dispo_auftrag_id);
-         int znr = ab.insertNewEntry(0,getLieferdatum(),Artikel(),getEntryStatus(),uid,false); 
-         E.push_back(AufEintragZu::st_reflist(AufEintragBase(ab,znr),Artikel(),0));
+         Auftrag ab((AuftragBase(Instanz(),dispo_auftrag_id)));
+         AufEintragBase newaeb = ab.push_back(0,getLieferdatum(),Artikel(),getEntryStatus(),uid,false); 
+         E.push_back(AufEintragZu::st_reflist(newaeb,Artikel(),0));
        }
       AufEintragBase aep_dispo;
       for (std::list<AufEintragZu::st_reflist>::const_iterator j=E.begin();j!=E.end();++j)
@@ -254,7 +254,7 @@ void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,int uid,e
       std::list<AufEintragZu::st_reflist> R=AufEintragZu(*this).get_Referenz_list(*this,true);
       for(std::list<AufEintragZu::st_reflist>::const_iterator j=R.begin();j!=R.end();++j)
        {
-cout << aep_dispo<<'\t'<<j->AEB<<'\t'<<reason<<'\n';
+//cout << aep_dispo<<'\t'<<j->AEB<<'\t'<<reason<<'\n';
          if(reason==r_Closed && j->AEB.Id()==ungeplante_id)
             AufEintragZu(aep_dispo).Neu(j->AEB,j->Menge);
        }

@@ -1,4 +1,4 @@
-// $Id: AuftragsVerwaltung.cc,v 1.4 2002/09/02 13:04:04 christof Exp $
+// $Id: AuftragsVerwaltung.cc,v 1.5 2002/10/04 08:23:21 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -66,8 +66,7 @@ assert(!"never get here\n");
 AufEintragBase AuftragsVerwaltung::anlegen()
 {
    Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
-   int znr=auftrag.insertNewEntry(400,DATUM,ARTIKEL_ROLLEREI,UNCOMMITED,UID,true);
-   return AufEintragBase(auftrag,znr);
+   return auftrag.push_back(400,DATUM,ARTIKEL_ROLLEREI,UNCOMMITED,UID,true);
 }
 
 void AuftragsVerwaltung::kunden_bestellmenge_aendern(AufEintragBase aeb,AuftragBase::mengen_t menge)
@@ -80,15 +79,13 @@ void AuftragsVerwaltung::kunden_bestellmenge_aendern(AufEintragBase aeb,AuftragB
 AufEintragBase AuftragsVerwaltung::anlegen2()
 {
    Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
-   int znr=auftrag.insertNewEntry(300,DATUM,ARTIKEL_ROLLEREI,OPEN,UID,true);
-   return AufEintragBase(auftrag,znr);
+   return auftrag.push_back(300,DATUM,ARTIKEL_ROLLEREI,OPEN,UID,true);
 }
 
 AufEintragBase AuftragsVerwaltung::anlegen3()
 {
    Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
-   int znr=auftrag.insertNewEntry(300,DATUM9,ARTIKEL_ROLLEREI,OPEN,UID,true);
-   return AufEintragBase(auftrag,znr);
+   return auftrag.push_back(300,DATUM9,ARTIKEL_ROLLEREI,OPEN,UID,true);
 }
 
 //#endif

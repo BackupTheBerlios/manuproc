@@ -1,4 +1,4 @@
-// $Id: Check.hh,v 1.11 2002/09/19 15:04:45 christof Exp $
+// $Id: Check.hh,v 1.12 2002/10/04 08:23:21 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -49,7 +49,8 @@ class Check
                  LieferscheinTeil,LieferscheinZeileLoeschen,LieferscheinVoll,
                  LieferscheinMengenaenderungPlus,LieferscheinMengenaenderungMinus,
                  LieferscheinZusatz,LieferscheinZusatzPlus,LieferscheinZusatzMinus,
-                 LieferscheinZusatzMinusKunde};
+                 LieferscheinZusatzMinusKunde,LieferscheinZweiAufTeil,
+                 LieferscheinZweiAufVoll};
  private:
    void dump(e_check);
    bool vergleich(e_check);

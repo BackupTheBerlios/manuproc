@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.12 2002/09/26 14:50:47 thoma Exp $ */
+/* $Id: Lieferschein.cc,v 1.13 2002/10/04 08:23:21 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,13 +22,17 @@
 #include <Auftrag/selFullAufEntry.h>
 #include <Artikel/Einheiten.h>
 #include <Aux/FetchIStream.h>
+#include <Instanzen/Produziert.h>
+#include <unistd.h> 
+
 
 Lieferschein::Lieferschein(const LieferscheinBase &lsbase, const ManuProC::Datum &_lsdatum,
 int _kdnr,int _rngid, int _paeckchen, int _pakete, const ManuProC::Datum &_geliefertam,
 int _dpdlnr)
 : LieferscheinBase(lsbase), lsdatum(_lsdatum), kunde(_kdnr), rngid(_rngid)
-#ifdef MABELLA_EXTENSIONS
-,dpdliefnr(_dpdlnr),paeckchen(_paeckchen),pakete(_pakete), geliefertam(_geliefertam)
+, geliefertam(_geliefertam)
+#ifdef DPD_LIEFERSCHEINE
+,dpdliefnr(_dpdlnr),paeckchen(_paeckchen),pakete(_pakete)
 #endif
 {}
 
@@ -53,7 +57,10 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
      // kann in einem Stueck abschreiben
    {  SelectedFullAufList::iterator i=auftraglist.aufidliste.begin();
       LieferscheinEntry(*this, *i,artikel, anzahl,mengeneinheit,palette,false);
-      i->abschreiben(menge,Id());
+
+//      Produziert(instanz->Id(),artikel,menge,getuid(),Id()).NichtSelbst();      
+      Produziert(*i,menge,getuid(),Id()).NichtSelbst();      
+//      i->abschreiben(menge,Id());
    }
    else
    // stueckeln (1*Lieferung, dann Zuordnung)
@@ -69,8 +76,10 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
            if (!e.hatMenge()) lstueck=int(float(abmenge)+.5);
            else lmenge=abmenge;
            LieferscheinEntry(*this,*i,artikel,lstueck,lmenge,0,true);
-           
-           i->abschreiben(abmenge,Id());
+
+//	   Produziert(instanz->Id(),artikel,abmenge,getuid(),Id()).NichtSelbst();           
+	   Produziert(*i,abmenge,getuid(),Id()).NichtSelbst();           
+//           i->abschreiben(abmenge,Id());
 
            menge-=abmenge;
     	   }
@@ -89,11 +98,16 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
 void Lieferschein::push_back(AufEintrag &aufeintrag,
 		const ArtikelBase &artikel, int anzahl, 
 		mengen_t menge, int palette)
-{  LieferscheinEntry(*this, aufeintrag ,artikel, anzahl,menge,palette);
-   if (!menge)
-      aufeintrag.abschreiben(anzahl,Id());
-   else
-      aufeintrag.abschreiben(anzahl*menge,Id());
+{
+ LieferscheinEntry(*this, aufeintrag ,artikel, anzahl,menge,palette);
+
+ mengen_t mng;
+ if(!menge) mng = anzahl;
+ else mng= anzahl*menge;
+ 
+// Produziert(instanz->Id(),artikel,mng,getuid(),Id()).NichtSelbst();
+ Produziert(aufeintrag,mng,getuid(),Id()).NichtSelbst();
+//       aufeintrag.abschreiben(anzahl,Id());
 }
 
 void Lieferschein::aufraumen() throw(SQLerror)
@@ -115,7 +129,7 @@ void Lieferschein::closeLfrs()
 }
 
 
-#ifdef MABELLA_EXTENSIONS
+#ifdef DPD_LIEFERSCHEINE
 
 void Lieferschein::setDPDlnr(int d) const throw(SQLerror)
 {

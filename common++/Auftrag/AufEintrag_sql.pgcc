@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.23 2002/09/19 15:04:45 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.24 2002/10/04 08:23:20 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -52,7 +52,9 @@ void AufEintrag::abschreiben(mengen_t menge,
   int STATUS=getEntryStatus();
   int GELIEFERT=(int)(menge+getGeliefert());
   int BESTELLT=(int)(getStueck());
+  char LASTDATE[21];
  exec sql end declare section;
+ Petig::Datum::today().write_postgres(LASTDATE,sizeof LASTDATE);
 //if(Id()==2) ECPGdebug(1,stdout);
 
  if(menge>=0 && getEntryStatus()!=(AufStatVal)OPEN) 
@@ -72,7 +74,7 @@ void AufEintrag::abschreiben(mengen_t menge,
  Transaction tr;
  exec sql lock table auftragentry in exclusive mode;
  bool delete_entry=false;
-#ifdef PETIG_EXTENSIONS
+//#ifdef PETIG_EXTENSIONS
   if(menge<0 &&
      Instanz()!=ppsInstanzID::Kundenauftraege && 
      !Instanz()->ProduziertSelbst() && 
@@ -83,25 +85,19 @@ void AufEintrag::abschreiben(mengen_t menge,
      if(BESTELLT==GELIEFERT) STATUS=CLOSED;
      if(BESTELLT==0 && GELIEFERT==0 &&  STATUS==CLOSED) delete_entry=true;
    }   
-#endif
+//#endif
  if(delete_entry)
    exec sql delete from auftragentry       
      where (instanz,auftragid,zeilennr) = (:INSTANZ,:AUFID,:AUFZNR);
  else
    exec sql update auftragentry set geliefert= :GELIEFERT, status= :STATUS,
-     bestellt = :BESTELLT      
+     bestellt = :BESTELLT, letzte_lieferung=:LASTDATE
      where (instanz,auftragid,zeilennr) = (:INSTANZ,:AUFID,:AUFZNR);
  SQLerror::test(__FILELINE__);
 
-// TODO: Jacek, das muss später rein!
-#ifdef PETIG_EXTENSIONS
-  if(Instanz()==ppsInstanzID::Kundenauftraege )
-   { static bool tested=false; // nur einmal testen
-     assert(tested || cH_ppsInstanz(ppsInstanzID::Kundenauftraege)->ProduziertSelbst());
-     if (!tested) tested=true;
-     Produziert(class ArtikelStamm(artikel).BestellenBei(),artikel,menge,getuid()).NichtSelbst();
-   }
-#endif
+//  if(cH_ppsInstanz(ppsInstanzID::Kundenauftraege)->ProduziertSelbst())
+//     Produziert(class ArtikelStamm(artikel).BestellenBei(),artikel,menge,
+//getuid()).NichtSelbst();
 
 #ifdef MABELLA_EXTENSIONS // Lager updaten
  FertigWaren fw(Artikel(),(FertigWaren::enum_Aktion)'L',(int)menge,lfrsid);
@@ -109,7 +105,6 @@ void AufEintrag::abschreiben(mengen_t menge,
  else if(menge > 0) fw.Auslagern(1);
 #endif
 
- setLetzteLieferung(Petig::Datum::today());
 
 
  geliefert=GELIEFERT;
@@ -205,8 +200,9 @@ void AufEintrag::setInstanzen(AufStatVal newstatus,int uid,Petig::Datum lieferda
    int znr=0,newznr=0; mengen_t menge=0;
    if(!i->AEB.existEntry(i->Art,lieferdate,znr,newznr,menge,newstatus))
      {
-      znr=AE.insertNewEntry(Mauftrag,lieferdate,i->Art,newstatus,uid,false); //false=KEINE Instanzen
-      AufEintragBase neuAEB(AE,znr);
+      Auftrag A(i->AEB);
+      AufEintragBase neuAEB=A.push_back(Mauftrag,lieferdate,i->Art,newstatus,uid,false); //false=KEINE Instanzen
+      znr=neuAEB.ZNr();
       if(Instanz()==ppsInstanzID::Kundenauftraege) 
             AufEintragZu(*this).setKindZnr(neuAEB);
       else 
@@ -397,6 +393,7 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld,int uid) throw(SQLerro
  int ZEILENNR = zeilennr;
  char LIEFERDATUM[21];
  exec sql end declare section;
+//ECPGdebug(true,stdout);
 
  Transaction tr;
  exec sql lock auftragentry in exclusive mode;
@@ -456,7 +453,10 @@ int AufEintrag::split(int uid,mengen_t newmenge, const Petig::Datum &newld,bool 
 
  int ZEILENNR;
  if(Instanz()==ppsInstanzID::Kundenauftraege)
-   ZEILENNR=insertNewEntry(newmenge,newld,artikel,entrystatus,uid,true,preis,rabatt);
+   {Auftrag A(*this);
+    AufEintragBase newaeb=A.push_back(newmenge,newld,artikel,entrystatus,uid,true,preis,rabatt);
+    ZEILENNR=newaeb.ZNr();
+   }
  else
    ZEILENNR=split_zuordnungen_to(newmenge,newld,artikel,entrystatus,uid,dispoplanung);
 
@@ -502,7 +502,8 @@ int AufEintrag::Planen(int uid,mengen_t menge,bool reduce_old,const AuftragBase 
    assert(Instanz()->LagerInstanz() || auftragstatus==OPEN);
    if(entrystatus==UNCOMMITED) entrystatus=OPEN; // Kein Datenbankzugriff nötig, 
                                                 // das macht insertNewEntry
-   Auftrag(zielauftrag).setStatusAuftrag_(OPEN);
+   Auftrag ZA(zielauftrag);
+   ZA.setStatusAuftrag_(OPEN);
 
    // wenn Lieferdatum rekursiv korrigieren (VOR dem Planen)
    if(datum!=getLieferdatum())
@@ -519,8 +520,10 @@ int AufEintrag::Planen(int uid,mengen_t menge,bool reduce_old,const AuftragBase 
    mengen_t mdummy;
 
    if (!zielauftrag.existEntry(Artikel(),datum,znr,dummy,mdummy,entrystatus))
-      znr = zielauftrag.insertNewEntry(0,datum,Artikel(),entrystatus,uid,false);
-
+    {
+      AufEintragBase neuAEB=ZA.push_back(0,datum,Artikel(),entrystatus,uid,false);
+      znr=neuAEB.ZNr();
+    }
    if(menge==AuftragBase::mengen_t(0)) return znr;
    assert(menge>0);
    if(menge-getRestStk() > 0  )
@@ -588,8 +591,10 @@ void AufEintrag::moveInstanz(int uid,const AuftragBase &newAuftrag) throw(SQLerr
  if(lagermenge>=bestellt) bestellmenge = 0;
  else                     bestellmenge = bestellt-lagermenge;
 
- zeilennr = newAuftrag.insertNewEntry(bestellmenge,getLieferdatum(),Artikel(),
+ Auftrag A(newAuftrag);
+ AufEintragBase newaeb= A.push_back(bestellmenge,getLieferdatum(),Artikel(),
                             getEntryStatus(),uid,false,EPreis(),Rabatt());
+ zeilennr = newaeb.ZNr();
  Lager_Vormerkungen(class AufEintrag(newAuftrag.Instanz()->Id(),newAuftrag.Id()
          ,zeilennr,menge,Artikel(),getLieferdatum(),getEntryStatus())).vormerken_oder_bestellen(uid,bestellt-bestellmenge,bestellt);
 

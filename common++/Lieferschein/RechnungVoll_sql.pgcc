@@ -1,4 +1,4 @@
-/* $Id: RechnungVoll_sql.pgcc,v 1.11 2002/09/02 13:04:04 christof Exp $ */
+/* $Id: RechnungVoll_sql.pgcc,v 1.12 2002/10/04 08:23:21 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -88,7 +88,7 @@ RechnungVoll::RechnungVoll(int rid) throw(SQLerror)
 }
 
 
-#ifdef MABELLA_EXTENSIONS
+#ifdef DPD_LIEFERSCHEINE
 void RechnungVoll::setGewicht() const throw(SQLerror)
 {
  exec sql begin declare section;

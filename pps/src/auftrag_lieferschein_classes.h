@@ -14,6 +14,9 @@
 #include<Artikel/ArtikelBezeichnung.h>
 #include<Artikel/Einheiten.h>
 #include<Auftrag/AufEintrag.h>
+#include <Instanzen/Produziert.h>
+#include <unistd.h>
+
 
 #include "auftrag_main.hh"
 
@@ -126,7 +129,9 @@ class Data_Lieferoffen : public RowDataBase
     }
    const AufEintrag &getAufEintrag() const { return AE; }
    void abschreiben(AuftragBase::mengen_t menge) 
-        {AE.abschreiben(menge,ManuProcEntity::none_id); }
+      { Produziert(AE,menge,getuid(),ManuProcEntity::none_id).NichtSelbst();
+      }
+//        {AE.abschreiben(menge,ManuProcEntity::none_id); }
 };
 
 class cH_Data_Lieferoffen : public Handle<const Data_Lieferoffen>

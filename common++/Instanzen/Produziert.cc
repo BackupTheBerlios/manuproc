@@ -1,4 +1,4 @@
-// $Id: Produziert.cc,v 1.3 2002/09/27 06:43:29 thoma Exp $
+// $Id: Produziert.cc,v 1.4 2002/10/04 08:23:21 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -58,7 +58,15 @@ cerr << "Restmenge nach Abschreiben bei geplantem Auftrag war "
     }
    else //if(menge<0)
     {
-      abschreiben_oder_reduzieren(AuftragBase::plan_auftrag_id,menge);
+      AuftragBase::mengen_t restmenge=abschreiben_oder_reduzieren(AuftragBase::plan_auftrag_id,menge);
+      if(restmenge<0) 
+       {
+         // da bin ich mal gespannt wann das hier fehlschlägt MAT 2.10.02
+         assert(restmenge==menge);
+         assert(instanz==ppsInstanzID::Kundenauftraege) ;
+         assert(AE.valid());         
+         AE.abschreiben(restmenge);
+       }
     }
   rekursion();
   }catch(SQLerror &e) { cerr << e<<'\n';}
@@ -81,7 +89,20 @@ void Produziert::Lager_abschreiben()
 
 void Produziert::rekursion()
 {
+  if(instanz!=ArtikelStamm(artikel).BestellenBei())
+   {
+     cH_ppsInstanz I=ArtikelStamm(artikel).BestellenBei();
+     Produziert(I,artikel,menge,uid).NichtSelbst();
+     return;
+   }   
    ArtikelBaum AB(artikel);
+//cout << "Rekursion für "<<instanz->Name()<<'\n';
+   for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
+     {
+       ArtikelStamm AS(i->rohartikel);
+//cout << "\t"<<AS.BestellenBei()->Name()<<'\n';
+     }
+//cout <<'\n';
    for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
      {
        ArtikelStamm AS(i->rohartikel);
@@ -110,7 +131,8 @@ AuftragBase::mengen_t Produziert::abschreiben_oder_reduzieren(int id,AuftragBase
      if(i->getRestStk() >= abmenge) abschreibmenge = abmenge;
      else                           abschreibmenge = i->getRestStk();
 
-//cout << "M = "<<abmenge<<' '<<i->getRestStk()<<'\t'<<abschreibmenge<<'\n';
+//cout << instanz->Name()<<' '<<*i<<' '<<"M = "
+//<<abmenge<<' '<<i->getRestStk()<<'\t'<<abschreibmenge<<'\n';
 
      if(abschreibmenge==AuftragBase::mengen_t(0)) continue;     
 
@@ -119,7 +141,7 @@ AuftragBase::mengen_t Produziert::abschreiben_oder_reduzieren(int id,AuftragBase
          AuftragBase zab(i->Instanz(),AuftragBase::plan_auftrag_id);
          int znr=i->Planen(uid,abschreibmenge,true,zab,i->getLieferdatum());
          AufEintragBase zaeb(zab,znr);
-         AufEintrag(zaeb).abschreiben(abschreibmenge);
+         AufEintrag(zaeb).abschreiben(abschreibmenge,lfrsid);
 //cout << "Produziert:: Planen "<<zaeb<<" und Abschreiben bei "<<*i<<" Menge:"<<abschreibmenge<<'\n';
        }
      else if(i->Id()==AuftragBase::dispo_auftrag_id)
@@ -131,7 +153,7 @@ AuftragBase::mengen_t Produziert::abschreiben_oder_reduzieren(int id,AuftragBase
         }   
      else // plan_auftrag_id || handplan_auftrag_id
        {
-        i->abschreiben(abschreibmenge,ManuProcEntity::none_id);
+        i->abschreiben(abschreibmenge,lfrsid);
 //cout << "Produziert:: Abschreiben bei "<<*i<<" Menge:"<<abschreibmenge<<'\n';
         if(abschreibmenge<0) // Zuordnung reduzieren beim abbestellen
             Reduce_Zuordnung_Add_Parent(*i,abschreibmenge);

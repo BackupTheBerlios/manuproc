@@ -1,4 +1,4 @@
-// $Id: Produziert.h,v 1.3 2002/09/27 06:43:29 thoma Exp $
+// $Id: Produziert.h,v 1.4 2002/10/04 08:23:21 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,7 +23,7 @@
 #include <Auftrag/AuftragBase.h>
 #include <Artikel/ArtikelBase.h>
 #include <Auftrag/selFullAufEntry.h>
-
+#include <Lieferschein/LieferscheinBase.h>
 
 class Produziert 
 {
@@ -34,23 +34,36 @@ class Produziert
   private: 
      cH_ppsInstanz instanz;
      ArtikelBase artikel;
+     AufEintrag AE;
      AuftragBase::mengen_t menge;
      int uid;
+     LieferscheinBase::ID lfrsid;
 
      void check_dispo_auftraege(); // reduziert die 2er wenn menge nicht komplett bei 1er abgeschrieben werden kann
      AuftragBase::mengen_t get_Menge_for(int id_);
      void rekursion();
      AuftragBase::mengen_t abschreiben_oder_reduzieren(int id,AuftragBase::mengen_t abmenge);
-//     AuftragBase::mengen_t abschreiben_oder_reduzierenL(SelectedFullAufList L,AuftragBase::mengen_t abmenge);
      void fehler(enum Probleme,int id,AuftragBase::mengen_t m1,
                                       AuftragBase::mengen_t m2);
      void Reduce_Zuordnung_Add_Parent(const AufEintragBase &aeb,AuftragBase::mengen_t menge);
 
 
   public:
-     Produziert(cH_ppsInstanz i,ArtikelBase a,AuftragBase::mengen_t m,int _uid)
-      : instanz(i),artikel(a),menge(m),uid(_uid) 
+
+     Produziert(cH_ppsInstanz i,ArtikelBase a,AuftragBase::mengen_t m,
+     				int _uid,LieferscheinBase::ID _lfrsid=LieferscheinBase::none_id)
+      : instanz(i),artikel(a),menge(m),uid(_uid),lfrsid(_lfrsid) 
       { assert(instanz!=ppsInstanzID::None) ; }
+
+
+     Produziert(AufEintrag ae,AuftragBase::mengen_t m,int _uid,
+         LieferscheinBase::ID _lfrsid=LieferscheinBase::none_id)
+        : instanz(ae.Instanz()) // das braucht man, weil Instanz keinen ctor hat
+      { *this=Produziert(ae.Instanz(),ae.Artikel(),m,_uid,_lfrsid);
+        AE=ae; }
+
+//    Produziert(AufEintrag AE,int _uid)
+//      : Produziert
 
      void NichtSelbst();
      void Lager_abschreiben();

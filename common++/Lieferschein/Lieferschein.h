@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.18 2002/09/26 14:50:47 thoma Exp $ */
+/* $Id: Lieferschein.h,v 1.19 2002/10/04 08:23:21 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,6 +30,7 @@
 #include <Aux/CacheStatic.h>
 #include <Artikel/Preis.h>
 #include <Auftrag/AufEintrag.h>
+#include <DynamicEnums/DefaultValues.h>
 
 class Lieferschein : public LieferscheinBase, public HandleContent
 {
@@ -37,7 +38,7 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  cH_Kunde kunde;
  int rngid;
  ManuProC::Datum geliefertam;
-#ifdef MABELLA_EXTENSIONS
+#ifdef DPD_LIEFERSCHEINE
  int dpdliefnr;
  int paeckchen, pakete;
  fixedpoint<1> brutto_kg,netto_kg;
@@ -51,7 +52,7 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  			lsdatum(ManuProC::Datum::today()),
  			kunde(Kunde::none_id),rngid(ManuProcEntity::none_id),
  			geliefertam(ManuProC::Datum::today())
-#ifdef MABELLA_EXTENSIONS
+#ifdef DPD_LIEFERSCHEINE
  			,dpdliefnr(0) ,
  			paeckchen(0),pakete(0)
 #endif
@@ -66,7 +67,7 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  Lieferschein(const cH_ppsInstanz& instanz,cH_Kunde k,int jahr=0) throw(SQLerror);
  void setDPDDatum() const throw(SQLerror);
 			
-#ifdef MABELLA_EXTENSIONS
+#ifdef DPD_LIEFERSCHEINE
  const static int Fertig=0;
  const static int Offen=-1;
  int getDPDlnr() const {return dpdliefnr;}

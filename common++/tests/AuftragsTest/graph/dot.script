@@ -8,140 +8,232 @@ digraph G {
 		center=true;
 
 	node [shape=record];
-		filenames [label="{mit_lager_open | LSZ | LSZP}|{ |  | }"];
+		filenames [label="{mit_lager_open | zwei_auftraege_datum | LSZA}|{ | D | T}"];
 
 
 	subgraph p_1 {
 		node [shape=record];
-		my_1 [label="{Kundenaufträge/20000/1 | (31.12.2010,1)/(31.12.2010,2)/ | 400/400(400)/}"];
+		my_1 [label="{Kundenaufträge/20000/1 | (31.12.2010,1)/D:/T: | 400/D:/T:}"];
 		fontsize=8;}
 
 	subgraph p_2 {
-		node [shape=Mrecord];
-		my_2 [label="{Rollerei/0/1 | (31.12.2010,1)// | 400/0/}"];
+		node [shape=record];
+		my_2 [label="{Kundenaufträge/20001/1 | D:(31.12.2009,1)/T: | D:300/T:300(50)}"];
 		fontsize=8;}
 
 	subgraph p_3 {
-		node [shape=record];
-		my_3 [label="{Rollerei/1/1 | (31.12.2010,2)/ | 400(400)/}"];
+		node [shape=Mrecord];
+		my_3 [label="{Rollerei/0/1 | (31.12.2010,1)/D:/T: | 400/D:/T:}"];
 		fontsize=8;}
 
 	subgraph p_4 {
 		node [shape=Mrecord];
-		my_4 [label="{Färberei/0/1 | (29.12.2010,1)// | 10000/0/}"];
+		my_4 [label="{Rollerei/0/2 | D:(31.12.2009,1)/T: | D:300/T:250}"];
 		fontsize=8;}
 
 	subgraph p_5 {
 		node [shape=record];
-		my_5 [label="{Färberei/1/1 | (29.12.2010,2)/ | 10000(10000)/}"];
+		my_5 [label="{Rollerei/1/1 | T:(31.12.2009,2) | T:50(50)}"];
 		fontsize=8;}
 
 	subgraph p_6 {
 		node [shape=Mrecord];
-		my_6 [label="{Bandlager/0/1 | (27.12.2010,1)// | 8000//}"];
+		my_6 [label="{Färberei/0/1 | (29.12.2010,1)/D:/T: | 10000/D:/T:}"];
 		fontsize=8;}
 
 	subgraph p_7 {
-		node [shape=record];
-		my_7 [label="{Bandlager/1/1 | (27.12.2010,1)// | 2000//}"];
+		node [shape=Mrecord];
+		my_7 [label="{Färberei/0/2 | D:(29.12.2009,1)/T: | D:7500/T:6250}"];
 		fontsize=8;}
 
 	subgraph p_8 {
-		node [shape=Mrecord];
-		my_8 [label="{Bandlager/2/1 | (1.1.1970,1)// | 0//}"];
+		node [shape=record];
+		my_8 [label="{Färberei/1/1 | T:(29.12.2009,2) | T:1250(1250)}"];
 		fontsize=8;}
 
 	subgraph p_9 {
 		node [shape=Mrecord];
-		my_9 [label="{Weberei/0/1 | (27.12.2010,1)// | 8000//}"];
+		my_9 [label="{Bandlager/0/1 | (27.12.2010,1)/D:/T: | 8000/D:10000/T:}"];
 		fontsize=8;}
 
 	subgraph p_10 {
 		node [shape=Mrecord];
-		my_10 [label="{Rohwarenlager/0/1 | (29.11.2010,1)// | 58//}"];
+		my_10 [label="{Bandlager/0/2 | D:(27.12.2009,1)/T: | D:5500/T:}"];
 		fontsize=8;}
 
 	subgraph p_11 {
-		node [shape=Mrecord];
-		my_11 [label="{Rohwarenlager/0/2 | (29.11.2010,1)// | 24//}"];
+		node [shape=record];
+		my_11 [label="{Bandlager/1/1 | (27.12.2010,1)/D:/T: | 2000/D:0/T:}"];
 		fontsize=8;}
 
 	subgraph p_12 {
 		node [shape=record];
-		my_12 [label="{Rohwarenlager/1/1 | (29.11.2010,1)// | 22//}"];
+		my_12 [label="{Bandlager/1/2 | D:(27.12.2009,1)/T: | D:2000/T:}"];
 		fontsize=8;}
 
 	subgraph p_13 {
-		node [shape=record];
-		my_13 [label="{Rohwarenlager/1/2 | (29.11.2010,1)// | 24//}"];
+		node [shape=Mrecord];
+		my_13 [label="{Bandlager/2/1 | (1.1.1970,1)/D:/T: | 0/D:/T:}"];
 		fontsize=8;}
 
 	subgraph p_14 {
 		node [shape=Mrecord];
-		my_14 [label="{Rohwarenlager/2/1 | (1.1.1970,1)// | 0//}"];
+		my_14 [label="{Weberei/0/1 | (27.12.2010,1)/D:/T: | 8000/D:10000/T:}"];
 		fontsize=8;}
 
 	subgraph p_15 {
 		node [shape=Mrecord];
-		my_15 [label="{Rohwarenlager/2/2 | (1.1.1970,1)// | 0//}"];
+		my_15 [label="{Weberei/0/2 | D:(27.12.2009,1)/T: | D:5500/T:}"];
 		fontsize=8;}
 
 	subgraph p_16 {
 		node [shape=Mrecord];
-		my_16 [label="{(Garn-)Einkauf/0/1 | (29.11.2010,1)// | 58//}"];
+		my_16 [label="{Rohwarenlager/0/1 | (29.11.2010,1)/D:/T: | 58/D:100/T:}"];
 		fontsize=8;}
 
 	subgraph p_17 {
 		node [shape=Mrecord];
-		my_17 [label="{(Garn-)Einkauf/0/2 | (29.11.2010,1)// | 24//}"];
+		my_17 [label="{Rohwarenlager/0/2 | (29.11.2010,1)/D:/T: | 24/D:60/T:}"];
 		fontsize=8;}
 
 	subgraph p_18 {
 		node [shape=Mrecord];
-		my_18 [label="{Spritzgießerei/0/1 | (29.12.2010,1)// | 800/0/}"];
+		my_18 [label="{Rohwarenlager/0/3 | D:(29.11.2009,1)/T: | D:33/T:}"];
 		fontsize=8;}
 
 	subgraph p_19 {
-		node [shape=record];
-		my_19 [label="{Spritzgießerei/1/1 | (29.12.2010,2)/ | 800(800)/}"];
+		node [shape=Mrecord];
+		my_19 [label="{Rohwarenlager/0/4 | D:(29.11.2009,1)/T: | D:9/T:}"];
 		fontsize=8;}
 
-	my_1 -> my_2 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="400//"];
+	subgraph p_20 {
+		node [shape=record];
+		my_20 [label="{Rohwarenlager/1/1 | (29.11.2010,1)/D:/T: | 22/D:0/T:}"];
+		fontsize=8;}
 
-	my_2 -> my_3 [fontsize=10,labeldistance=3.5,labelangle=90, labelfontsize=12,labelfontcolor=black,headlabel="400/", weight=-1];
-	{rank=same;my_2 my_3}
+	subgraph p_21 {
+		node [shape=record];
+		my_21 [label="{Rohwarenlager/1/2 | (29.11.2010,1)/D:/T: | 24/D:0/T:}"];
+		fontsize=8;}
 
-	my_2 -> my_4 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="10000//"];
+	subgraph p_22 {
+		node [shape=record];
+		my_22 [label="{Rohwarenlager/1/3 | D:(29.11.2009,1)/T: | D:22/T:}"];
+		fontsize=8;}
 
-	my_2 -> my_18 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="800//"];
+	subgraph p_23 {
+		node [shape=record];
+		my_23 [label="{Rohwarenlager/1/4 | D:(29.11.2009,1)/T: | D:24/T:}"];
+		fontsize=8;}
 
-	my_4 -> my_5 [fontsize=10,labeldistance=3.5,labelangle=90, labelfontsize=12,labelfontcolor=black,headlabel="10000/", weight=-1];
+	subgraph p_24 {
+		node [shape=Mrecord];
+		my_24 [label="{Rohwarenlager/2/1 | (1.1.1970,1)/D:/T: | 0/D:/T:}"];
+		fontsize=8;}
+
+	subgraph p_25 {
+		node [shape=Mrecord];
+		my_25 [label="{Rohwarenlager/2/2 | (1.1.1970,1)/D:/T: | 0/D:/T:}"];
+		fontsize=8;}
+
+	subgraph p_26 {
+		node [shape=Mrecord];
+		my_26 [label="{(Garn-)Einkauf/0/1 | (29.11.2010,1)/D:/T: | 58/D:100/T:}"];
+		fontsize=8;}
+
+	subgraph p_27 {
+		node [shape=Mrecord];
+		my_27 [label="{(Garn-)Einkauf/0/2 | (29.11.2010,1)/D:/T: | 24/D:60/T:}"];
+		fontsize=8;}
+
+	subgraph p_28 {
+		node [shape=Mrecord];
+		my_28 [label="{(Garn-)Einkauf/0/3 | D:(29.11.2009,1)/T: | D:33/T:}"];
+		fontsize=8;}
+
+	subgraph p_29 {
+		node [shape=Mrecord];
+		my_29 [label="{(Garn-)Einkauf/0/4 | D:(29.11.2009,1)/T: | D:9/T:}"];
+		fontsize=8;}
+
+	subgraph p_30 {
+		node [shape=Mrecord];
+		my_30 [label="{Spritzgießerei/0/1 | (29.12.2010,1)/D:/T: | 800/D:/T:}"];
+		fontsize=8;}
+
+	subgraph p_31 {
+		node [shape=Mrecord];
+		my_31 [label="{Spritzgießerei/0/2 | D:(29.12.2009,1)/T: | D:600/T:500}"];
+		fontsize=8;}
+
+	subgraph p_32 {
+		node [shape=record];
+		my_32 [label="{Spritzgießerei/1/1 | T:(29.12.2009,2) | T:100(100)}"];
+		fontsize=8;}
+
+	my_1 -> my_3 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="400//"];
+
+	my_2 -> my_4 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="300/"];
+
+	my_3 -> my_6 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="10000//"];
+
+	my_3 -> my_30 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="800//"];
+
+	my_4 -> my_5 [fontsize=10,labeldistance=3.5,labelangle=90, labelfontsize=12,labelfontcolor=black,headlabel="50", weight=-1];
 	{rank=same;my_4 my_5}
 
-	my_4 -> my_6 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="10000//"];
+	my_4 -> my_7 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="7500/"];
 
-	my_6 -> my_7 [fontsize=10,labeldistance=3.5,labelangle=90, labelfontsize=12,labelfontcolor=black,headlabel="2000//", weight=-1];
-	{rank=same;my_6 my_7}
+	my_4 -> my_31 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="600/"];
 
-	my_6 -> my_9 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="8000//"];
+	my_6 -> my_9 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="10000//"];
 
-	my_9 -> my_10 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="80//"];
+	my_7 -> my_8 [fontsize=10,labeldistance=3.5,labelangle=90, labelfontsize=12,labelfontcolor=black,headlabel="1250", weight=-1];
+	{rank=same;my_7 my_8}
 
-	my_9 -> my_11 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="48//"];
+	my_7 -> my_10 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="7500/"];
 
-	my_10 -> my_12 [fontsize=10,labeldistance=3.5,labelangle=90, labelfontsize=12,labelfontcolor=black,headlabel="22//", weight=-1];
+	my_9 -> my_11 [fontsize=10,labeldistance=3.5,labelangle=90, labelfontsize=12,labelfontcolor=black,headlabel="2000/0/", weight=-1];
+	{rank=same;my_9 my_11}
+
+	my_9 -> my_14 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="8000/10000/"];
+
+	my_10 -> my_12 [fontsize=10,labeldistance=3.5,labelangle=90, labelfontsize=12,labelfontcolor=black,headlabel="2000/", weight=-1];
 	{rank=same;my_10 my_12}
 
-	my_10 -> my_16 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="58//"];
+	my_10 -> my_15 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="5500/"];
 
-	my_11 -> my_13 [fontsize=10,labeldistance=3.5,labelangle=90, labelfontsize=12,labelfontcolor=black,headlabel="24//", weight=-1];
-	{rank=same;my_11 my_13}
+	my_14 -> my_16 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="80/100/"];
 
-	my_11 -> my_17 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="24//"];
+	my_14 -> my_17 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="48/60/"];
 
-	my_18 -> my_19 [fontsize=10,labeldistance=3.5,labelangle=90, labelfontsize=12,labelfontcolor=black,headlabel="800/", weight=-1];
-	{rank=same;my_18 my_19}
-		label="Lieferschein Zusatz Test"
+	my_15 -> my_18 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="55/"];
+
+	my_15 -> my_19 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="33/"];
+
+	my_16 -> my_20 [fontsize=10,labeldistance=3.5,labelangle=90, labelfontsize=12,labelfontcolor=black,headlabel="22/0/", weight=-1];
+	{rank=same;my_16 my_20}
+
+	my_16 -> my_26 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="58/100/"];
+
+	my_17 -> my_21 [fontsize=10,labeldistance=3.5,labelangle=90, labelfontsize=12,labelfontcolor=black,headlabel="24/0/", weight=-1];
+	{rank=same;my_17 my_21}
+
+	my_17 -> my_27 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="24/60/"];
+
+	my_18 -> my_22 [fontsize=10,labeldistance=3.5,labelangle=90, labelfontsize=12,labelfontcolor=black,headlabel="22/", weight=-1];
+	{rank=same;my_18 my_22}
+
+	my_18 -> my_28 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="33/"];
+
+	my_19 -> my_23 [fontsize=10,labeldistance=3.5,labelangle=90, labelfontsize=12,labelfontcolor=black,headlabel="24/", weight=-1];
+	{rank=same;my_19 my_23}
+
+	my_19 -> my_29 [fontsize=10,labeldistance=2,labelangle=0, labelfontsize=12,labelfontcolor=black,headlabel="9/"];
+
+	my_31 -> my_32 [fontsize=10,labeldistance=3.5,labelangle=90, labelfontsize=12,labelfontcolor=black,headlabel="100", weight=-1];
+	{rank=same;my_31 my_32}
+		label="Lieferschein Zwei Aufträge"
 		labelloc=top
 }
 END

@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.3 2002/09/27 06:43:29 thoma Exp $
+// $Id: get_data.cc,v 1.4 2002/10/04 08:23:21 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -233,6 +233,7 @@ void graph_data_node::get_files(emode mode)
       case Lieferschein : filenames=Lsfiles(); break;
       case LieferscheinMenge : filenames=Lmfiles(); break;
       case LieferscheinZusatz : filenames=LZfiles(); break;
+      case LieferscheinZweiAuftraege : filenames=LAfiles(); break;
       case Legende: break;
       default: assert(!"never get here");
     }
@@ -336,6 +337,16 @@ std::vector<graph_data_node::st_files> graph_data_node::LZfiles()
   vec_files.push_back(st_files("LSZP","Plus"));  
   vec_files.push_back(st_files("LSZM","Minus"));  
   vec_files.push_back(st_files("LSZMK","Minus Kunde"));  
+  return vec_files;
+}
+
+std::vector<graph_data_node::st_files> graph_data_node::LAfiles()
+{
+  std::vector<st_files>  vec_files;
+  vec_files.push_back(st_files("mit_lager_open"));  
+  vec_files.push_back(st_files("zwei_auftraege_datum","D"));  
+  vec_files.push_back(st_files("LSZA","T"));  
+  vec_files.push_back(st_files("LSZAV","V"));  
   return vec_files;
 }
 

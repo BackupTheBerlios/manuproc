@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.22 2002/09/02 13:04:03 christof Exp $
+# $Id: configure.in,v 1.23 2002/10/04 08:23:20 thoma Exp $
 
 AC_INIT(Artikel/ArtikelBase.h)
 
@@ -103,7 +103,6 @@ AC_OUTPUT(Makefile Artikel/Makefile Auftrag/Makefile \
 	Aux/Makefile Bank/Makefile ExtBezSchema/Makefile Ketten/Makefile \
 	Kunde/Makefile Lieferschein/Makefile ostream/Makefile \
 	tests/Makefile tests/auftragstest/Makefile tests/AuftragsTest/Makefile \
-   tests/AuftragsTest/graph/Makefile \
    Material/Makefile Lager/Makefile Faeden/Makefile \
    Programme/Makefile DynamicEnums/Makefile Instanzen/Makefile \
    BaseObjects/Makefile  tests/AuftragsTest/graph/Makefile)

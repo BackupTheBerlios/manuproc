@@ -25,6 +25,9 @@ exec sql include sqlca;
 #include <Auftrag/selFullAufEntry.h>
 #include <Aux/string0.h>
 #include <Kunde/Zahlungsart.h>
+#include<Aux/Changejournal.h>
+#include <Artikel/ArtikelStamm.h>
+
 
 void Auftrag::deleteAuftrag() throw(SQLerror)
 {exec sql begin declare section;
@@ -145,6 +148,8 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
 
  NONE_ID=Zahlungsart::none_id;
 
+if(Instanz()==ppsInstanzID::Kundenauftraege)
+ECPGdebug(true,stdout);
  exec sql select coalesce(kundennr,:INVALID_ENTITY), date(coalesce(datum,now())), 
  		stat, coalesce(youraufnr,''), coalesce(bemerkung,''),
 		 coalesce(waehrung,2),coalesce(rabatt,0),
@@ -181,7 +186,7 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr) throw(SQLerror)
  char DATUM[11];
  int YEAR;
  int KUNDENNR=kdnr;
- int STATUS=OPEN;
+ int STATUS=UNCOMMITED;
  int INSTANZ=Instanz();
  int WAEHRUNG;
  exec sql end declare section;
@@ -205,7 +210,7 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr) throw(SQLerror)
 
  exec sql insert into auftrag (auftragid, kundennr, 
 				stat, waehrung, instanz)
- 	values (:AUFTRAGID, :KUNDENNR, 0, :WAEHRUNG,:INSTANZ);
+ 	values (:AUFTRAGID, :KUNDENNR, :STATUS, :WAEHRUNG,:INSTANZ);
  SQLerror::test(__FILELINE__" insert into auftrag");
   
  exec sql select date(datum) into :DATUM from auftrag 
@@ -338,4 +343,88 @@ void Auftrag::Notiz(const std::string n) throw(SQLerror)
  notiz=n;
 }
 
+
+
+AufEintragBase Auftrag::push_back(const mengen_t bestellt, 
+  const ManuProC::Datum lieferdatum,const ArtikelBase& artikel,
+  const AufStatVal status,int uid,const bool setInstanzAuftraege,
+  const Preis& preis,const fixedpoint<2> rabatt,
+  const cH_PreisListe &preisliste) const throw(SQLerror)
+{
+ exec sql begin declare section;
+ int AUFTRAGID =Id();
+ long ARTIKELID=artikel.Id();
+ int INSTANZ =InstanzID();
+ int ZEILENNR;
+ int BESTELLT=bestellt;
+ char LIEFERDATUM[21];
+ double PREIS=preis.Wert();
+ int RABATT=rabatt;
+ float PREISMENGE=preis.PreisMenge();
+ int STATUS=status;
+ int PREISLISTE=preisliste->Id();
+ int PREISLISTENULL;
+ int UID=uid;
+ exec sql end declare section;
+ PREISLISTENULL=PreisListe::none_id;
+ 
+// bei Mabella auf keinen Fall UNCOMMITED
+#ifdef MABELLA_EXTENSIONS
+ if(status==UNCOMMITED)
+   STATUS=OPEN;   
+#endif
+
+ if(STATUS!=getStatus()) setStatusAuftragBase(AufStatVal(STATUS));
+
+
+ lieferdatum.write_postgres(LIEFERDATUM,sizeof LIEFERDATUM);
+
+ Transaction tr;
+ exec sql lock table auftragentry in exclusive mode;
+ SQLerror::test("AufEintrag: lock auftragentry");	
+
+//ECPGdebug(true,stdout);
+ exec sql select coalesce(max(zeilennr)+1,1) into :ZEILENNR from auftragentry
+	where (instanz,auftragid)= (:INSTANZ,:AUFTRAGID);
+ SQLerror::test("generate next zeilennr");
+
+ exec sql insert into auftragentry (instanz,auftragid, zeilennr,
+	bestellt,geliefert,lieferdate,artikelid,status,
+	preis,rabatt,preismenge,preisliste,lastedit_uid)
+	values (:INSTANZ, :AUFTRAGID, :ZEILENNR, :BESTELLT, 0, :LIEFERDATUM,
+		:ARTIKELID, :STATUS, :PREIS, :RABATT,
+		:PREISMENGE, nullif(:PREISLISTE,:PREISLISTENULL),:UID) ;
+ SQLerror::test(__FILELINE__" insert into auftragentry");	
+//ECPGdebug(false,0);
+	
+ if(Instanz()==ppsInstanzID::Kundenauftraege)
+  { try{
+     pps_ChJournalEntry::newChange(
+                        instanz,
+			AufEintragBase(instanz,AUFTRAGID,ZEILENNR),
+                        artikel,
+                        (double)BESTELLT,
+                        (double)BESTELLT,
+                        pps_ChJournalEntry::CH_MENGE);
+        }
+    catch(SQLerror &e)
+      {tr.rollback(); throw; }
+  }
+ // Kundenaufträge legen automatisch einen Auftrag bei der entsprechenden Instanz 
+ // für denselben Artikel an.
+ if(status!=UNCOMMITED) // Nur offene Aufträge kümmern sich um andere Instanzen
+   {
+     if(Instanz()==ppsInstanzID::Kundenauftraege)
+      { cH_ppsInstanz i=ArtikelStamm(artikel).BestellenBei();
+        if (i!=ppsInstanzID::None && i!=ppsInstanzID::Kundenauftraege)
+        {  AuftragBase AB(ArtikelStamm(artikel).BestellenBei(),AuftragBase::ungeplante_id);
+           AB.tryUpdateEntry(bestellt,lieferdatum,artikel,status,uid,AufEintragBase(*this,ZEILENNR));
+        }
+      }
+     else if(setInstanzAuftraege)
+        InstanzAuftraegeAnlegen(artikel,ZEILENNR,lieferdatum,status,uid,bestellt);
+    }
+ tr.commit();
+ return AufEintragBase(*this,ZEILENNR);
+}
 

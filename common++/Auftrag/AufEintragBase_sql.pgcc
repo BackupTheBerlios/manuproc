@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.27 2002/07/05 12:35:01 christof Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.28 2002/10/04 08:23:20 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -145,7 +145,7 @@ void AufEintragBase::setMaxPlanInstanz(int anzahl_maxplaninstanzen) const throw(
 
 void AufEintragBase::setLetzteLieferung(const ManuProC::Datum &datum) const throw(SQLerror)
 {
-exec sql begin declare section;
+ exec sql begin declare section;
  int AUFTRAGID = auftragid;
  int ZEILENNR = zeilennr;  
  int INSTANZ=instanz->Id();

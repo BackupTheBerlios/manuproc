@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.30 2002/09/02 13:04:03 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.31 2002/10/04 08:23:20 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -67,11 +67,6 @@ class AuftragBase
    void setRabatt(const rabatt_t auftragsrabatt) const throw(SQLerror);
 
    void create_if_not_exists(AufStatVal status,Kunde::ID kunde=Kunde::default_id) const;
-   int insertNewEntry(const mengen_t bestellt, 
-                const ManuProC::Datum lieferdatum, const ArtikelBase& artikel,
-                const AufStatVal status,int uid,const bool setInstanzAuftraege,
-                const Preis& preis=Preis(),const rabatt_t aufeintragsrabatt=0,
-                const cH_PreisListe &preisliste=PreisListe::none_id) const throw(SQLerror);
    void InstanzAuftraegeAnlegen(const ArtikelBase& art,const int altZnr,
                const ManuProC::Datum& lieferdatum, const AufStatVal status, int uid,
                 const mengen_t menge) const; 

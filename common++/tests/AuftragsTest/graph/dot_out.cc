@@ -1,4 +1,4 @@
-// $Id: dot_out.cc,v 1.3 2002/09/27 06:43:29 thoma Exp $
+// $Id: dot_out.cc,v 1.4 2002/10/04 08:23:21 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -37,6 +37,7 @@ void dot_out::write()
      case Lieferschein : label="Lieferschein Test"; break;
      case LieferscheinMenge : label="LieferscheinMengen Test"; break;
      case LieferscheinZusatz : label="Lieferschein Zusatz Test"; break;
+     case LieferscheinZweiAuftraege : label="Lieferschein Zwei Aufträge"; break;
      case Legende : label="Legende"; break;
      default: cerr << "Fehler\n"; exit(1);
    }

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList_sql.pgcc,v 1.13 2002/09/26 14:50:47 thoma Exp $ */
+/* $Id: LieferscheinList_sql.pgcc,v 1.14 2002/10/04 08:23:21 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -93,7 +93,7 @@ std::string LieferscheinList::SQuery()
 {
  std::string squery = "select lfrsid,kundennr,datum,coalesce(rngid,-1),
       coalesce(pakete,0),coalesce(paeckchen,0),
-      coalesce(cast(geliefertam as text),''),
+      coalesce(cast(geliefertam as text),cast(datum as text),''),
       coalesce(dpdliefnr,0) from lieferschein";
  return squery;
 }
@@ -139,7 +139,7 @@ void LieferscheinList::fuelle(const std::string &squery) throw(SQLerror)
 }
 
 
-#ifdef MABELLA_EXTENSIONS
+#ifdef DPD_LIEFERSCHEINE
 
 LieferscheinList::LieferscheinList(const cH_ppsInstanz _instanz,const sel_DPDLNr &sp) throw(SQLerror)
 : instanz(_instanz)
