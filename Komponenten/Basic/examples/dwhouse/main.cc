@@ -1,4 +1,4 @@
-// $Id: main.cc,v 1.2 2001/06/21 09:30:54 christof Exp $
+// $Id: main.cc,v 1.1 2001/06/21 09:27:52 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
