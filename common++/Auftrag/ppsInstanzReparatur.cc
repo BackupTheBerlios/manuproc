@@ -94,10 +94,23 @@ bool ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al, const b
 ///////////////////////////////////////////////////////////////////////////////
 
 bool ppsInstanzReparatur::ReparaturLager(const int uid,const bool analyse_only) const throw(SQLerror)
-{
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Instanz());
+{ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Instanz());
   assert(Instanz()->LagerInstanz());
   std::vector<LagerInhalt> LI=getLagerInhalt(); 
+
+  Query q("select distinct artikelid from auftragentry where instanz=? "
+  	"and status=?");
+  q << Instanz()->Id() << OPEN;
+  std::vector<ArtikelBase> arts;
+  q.FetchArray(arts);
+  
+  for (std::vector<ArtikelBase>::const_iterator i=arts.begin();i!=arts.end();++i)
+  {  std::vector<LagerInhalt>::const_iterator j=LI.begin();
+     for (;j!=LI.end();++j)
+     {  if (*i==j->Artikel()) break;
+     }
+     if (j==LI.end()) LI.push_back(LagerInhalt(*i));
+  }
   return vormerkungen_subtrahieren(uid,LI,analyse_only);
 }
 

@@ -47,7 +47,7 @@ enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
       ZweiKundenTest,ZweiKundenMengeFreigebenTest,ManuProCTest,
       JumboLager,Rep_Mabella,Rep_Petig_PhysikalischesLager,
       Rep_Petig_0er_2er_gleichzeitig,Rep_KundenProgramm,Rep_Zuordnungen,
-      Rep_Kunden_Zuordnungen, Zusatzinfo};
+      Rep_Kunden_Zuordnungen, Zusatzinfo, Zusatzinfo2 };
 
 static std::ostream *testlog;
 // for more output ...
@@ -93,7 +93,7 @@ static int auftragstests(e_mode mode)
    std::cout << "Anlegen eines Auftrags ["<<AEB<<"] beendet\n\n";
 
    // ANLEGEN eines Auftrags mit Bandlager und Rohwarenlager
-   if (!in(mode,JumboLager,Zusatzinfo))
+   if (!in(mode,JumboLager,Zusatzinfo,Zusatzinfo2))
    {
 //ManuProC::Tracer::Enable(AuftragBase::trace_channel);
       AE.setStatus(OPEN,UID);
@@ -104,6 +104,7 @@ static int auftragstests(e_mode mode)
     case Zusatzinfo:
      {  
 #ifdef PETIG_TEST
+       graphheader("Lieferscheinveränderungen");
        AE.setStatus(CLOSED,UID);
         AufEintragBase AEB2=Auftrag(AEB).push_back(4000,DATUM,ARTIKEL_FAERBEREI,OPEN,UID,true);
         AufEintragBase AEB3=Auftrag(AEB).push_back(4000,DATUM+10,ARTIKEL_FAERBEREI,OPEN,UID,true);
@@ -125,6 +126,40 @@ static int auftragstests(e_mode mode)
        vergleichen(C,Check::Lieferschein|Check::Menge,"ZI_Storno","Storno","0");
 #endif
      }
+     break;
+    case Zusatzinfo2:
+     {  
+#ifdef PETIG_TEST
+       graphheader("komplexe Lieferscheinveränderung mit Prod-Selbst-Lager");
+       AE.setStatus(CLOSED,UID);
+       
+       LagerPlatz LP(ppsInstanzID::Bandlager,JUMBO_LAGERPLATZ);
+       KettplanKette KK=KettplanKette(Kette(MASCHINE,SCHAERDATUM));
+       std::vector<JumboRolle> JR=JumboRolle::create(KK); // 100
+       Zeitpunkt_new zp0("2002-3-1 11:00"),zp1("2002-3-1 11:11");
+       class JumboLager JL;
+       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0,true);
+       std::vector<JumboRolle> JR2=JumboRolle::create(KK); // 101
+       JL.Jumbo_Einlagern(LP,JR2.front(),JumboLager::Einlagern,UID,"TEST",&zp0,true);
+
+       AufEintragBase AEB3=Auftrag(AEB).push_back(170,DATUM,ARTIKEL_BANDLAGER,OPEN,UID,true);
+       
+       AufEintragBase AEB2=Auftrag(AEB).push_back(17500,DATUM,ARTIKEL_BANDLAGER,OPEN,UID,true);
+       Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
+       AufEintrag ae(AEB2);
+       int lznr=liefs.push_back(ae,ARTIKEL_BANDLAGER,9,1000);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp1,true);
+       JL.Jumbo_Entnahme(JR2.front(),JumboLager::Auslagern,UID,"TEST",&zp1,true);
+       JumboRolle jr(JumboRolle::Pruefziffer_anhaengen(100));
+       JL.Jumbo_Entnahme(jr,JumboLager::Auslagern,UID,"TEST",&zp1,true);
+       vergleichen(C,Check::Lieferschein|Check::Menge,"ZI2_Ausgangspunkt","init","");
+       
+       LieferscheinEntryBase lsb(liefs,lznr);
+       LieferscheinEntry(lsb).changeMenge(4,1000,liefs,false);
+       vergleichen(C,Check::Lieferschein|Check::Menge,"ZI2_Problem","Mengenänderung","-");
+#endif
+     }
+     break;
     case ManuProCTest :
      {
       #ifdef MANU_PROC_TEST
@@ -821,7 +856,7 @@ std::cout << "D13: "<<dummystring<<'\n';
 #if defined (PETIG_EXTENSIONS) && defined (MANUPROC_DYNAMICENUMS_CREATED)
        LagerPlatz LP(ppsInstanzID::Bandlager,JUMBO_LAGERPLATZ);
        LagerPlatz LP2(ppsInstanzID::Bandlager,JUMBO_LAGERPLATZ+1);
-       KettplanKette KK=KettplanKette(Kette(MASCHIENE,SCHAERDATUM));
+       KettplanKette KK=KettplanKette(Kette(MASCHINE,SCHAERDATUM));
        std::vector<JumboRolle> JR=JumboRolle::create(KK); // 101
        assert(JR.size()==1);
        class JumboLager JL;
@@ -880,7 +915,7 @@ static void usage(const std::string &argv0,const std::string &argv1)
                   "\t(Z)wei(K)unden)\n"
                   "\t(Z)wei(K)unden(M)engeFreigeben\n"
                   "\t(M)anu(P)roCTest\n"
-                  "\t(J)umboLager, (Z)usatz(I)nfo\n"
+                  "\t(J)umboLager, (Z)usatz(I)nfo, ZI2, \n"
                   "\t(R)eparatur(P)hysikalischesLager\n"
                   "\t(R)eparatur_0er_2er_(g)leichzeitig\n"
                   "\t(R)eparatur_(K)undenprogramm\n"
@@ -949,6 +984,7 @@ int main(int argc,char *argv[])
    else if(mode_str=="LJ" || mode_str=="Lieferscheintest_ZweiterAuftrag_frueheresDatum")  mode=LieferscheinJacek;
    else if(mode_str=="ZK" || mode_str=="ZweiKunden")  mode=ZweiKundenTest;
    else if(mode_str=="ZI")  mode=Zusatzinfo;
+   else if(mode_str=="ZI2")  mode=Zusatzinfo2;
    else if(mode_str=="ZKM"|| mode_str=="ZweiKundenMengeFreigebenTest")  mode=ZweiKundenMengeFreigebenTest;
    else if(mode_str=="MP" || mode_str=="ManuProCTest")  mode=ManuProCTest;
    else if(mode_str=="J" || mode_str=="JumboLager")  mode=JumboLager;

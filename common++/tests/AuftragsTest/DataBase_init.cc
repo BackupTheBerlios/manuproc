@@ -1,4 +1,4 @@
-// $Id: DataBase_init.cc,v 1.13 2003/07/04 14:33:59 christof Exp $
+// $Id: DataBase_init.cc,v 1.14 2003/07/04 18:14:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -110,7 +110,7 @@ void DataBase_init::RohwarenLager_initalisieren_execute(const ArtikelBase &artik
 void DataBase_init::createJumbo(const int diffmaschine,const int menge)
 {
 #ifdef MIT_BANDLAGER
-  Kette K(MASCHIENE+diffmaschine,SCHAERDATUM);
+  Kette K(MASCHINE+diffmaschine,SCHAERDATUM);
   std::vector <ArtikelGang> artgang;
   artgang.push_back(ArtikelGang(GAENGE,ARTIKEL_BANDLAGER));
   KettplanKette KK=KettplanKette::create(K,artgang,menge,menge);
@@ -130,7 +130,7 @@ void DataBase_init::JumboLager_initalisieren()
   Query::Execute(s1);
   SQLerror::test(__FILELINE__,100);
   std::string s2="delete from ketten where (maschine,schaerdatum)=("
-                  +itos(MASCHIENE)+",'"+SCHAERDATUM.to_iso()+"')";
+                  +itos(MASCHINE)+",'"+SCHAERDATUM.to_iso()+"')";
   Query::Execute(s2);
   SQLerror::test(__FILELINE__,100);
   createJumbo(0,2000);
