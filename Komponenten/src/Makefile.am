@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.21 2003/03/17 16:34:48 christof Exp $
+# $Id: Makefile.am,v 1.22 2003/03/17 17:15:01 christof Exp $
 CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@  
 
@@ -16,7 +16,10 @@ LINKS= EingabeBox.cc EingabeBox.hh datewin.cc datewin.h \
 	bool_CheckMenuItem.cc char_Pixmap.cc \
 	FlashingPixmap.cc LabelSpin.cc \
 	MyWindow.cc MyScale.cc logwin.cc TreeViewUtility.cc \
-	bool_properties.cc bool_ImageButton.cc 
+	bool_properties.cc bool_ImageButton.cc \
+	bool_CheckMenuItem.hh char_Pixmap.hh \
+	FlashingPixmap.hh LabelSpin.hh MyWindow.hh MyScale.hh \
+	bool_properties.hh bool_ImageButton.hh bool_CheckButton.hh
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
