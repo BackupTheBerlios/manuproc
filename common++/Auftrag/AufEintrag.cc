@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.102 2004/02/17 12:22:12 christof Exp $
+// $Id: AufEintrag.cc,v 1.103 2004/02/18 14:53:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -208,6 +208,28 @@ struct AufEintrag::Planen_cb : public auf_positionen_verteilen_cb
    }
 };
 
+struct AufEintrag::Planen_undo_cb : public distribute_parents_cb
+{  AufEintrag &quelle;
+
+   Planen_undo_cb(AufEintrag &ae) : quelle(ae) {}
+   mengen_t operator()(const AufEintragBase &ae, mengen_t m) const
+   {  if (ae.Id()==dispo_id) 
+         return -quelle.MengeAendern(-m,true,ae,false);
+      else
+      {  assert(delayed_reclaim::Active());
+         mengen_t m2=quelle.MengeAendern(-m,true,ae,false);
+         assert(m==m2);
+         AufEintrag ae2(ae);
+         ae2.Verzeigern(m2,false);
+         return m2;
+      }
+   }
+   // _umgekehrte_ Priorität
+   virtual bool operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const
+   {  return AufEintragZu_sort::priority(b,a);
+   }
+};
+
 void AufEintrag::Verzeigern(mengen_t M, bool nach_oben)
 { ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),NV("M",M));
   if (!M) return;
@@ -216,9 +238,8 @@ void AufEintrag::Verzeigern(mengen_t M, bool nach_oben)
   {  if (M>=0) ArtikelInternNachbestellen(M);
      else ArtikelInternAbbestellen(-M);
   }
-    else // planen (Pfeile von oben ebenfalls anlegen)
-    {  assert(M>0);
-       assert(getCombinedStatus()==OPEN);
+    else if (M>0) // planen (Pfeile von oben ebenfalls anlegen)
+    {  assert(getCombinedStatus()==OPEN);
        SQLFullAuftragSelector sel(make_value(SQLFullAuftragSelector::sel_Artikel_Planung_id
     		(Instanz()->Id(),Kunde::eigene_id,Artikel(),ungeplante_id,
     			OPEN)));
@@ -229,6 +250,15 @@ void AufEintrag::Verzeigern(mengen_t M, bool nach_oben)
        m=auf_positionen_verteilen(sel,m,Planen_cb(*this));
        // 2er anlegen
        if (!!m) Ueberplanen(Artikel(),m,getLieferdatum());
+       tr.commit();
+    }
+    else // planen rückgängig (Pfeile von oben ebenfalls anlegen)
+    {  Transaction tr;
+       mengen_t m=M;
+       {  delayed_reclaim dlr;
+          m=distribute_parents(*this,m,Planen_undo_cb(*this));
+       }
+       assert(!m);
        tr.commit();
     }
 }

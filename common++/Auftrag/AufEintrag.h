@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.86 2004/02/17 12:22:12 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.87 2004/02/18 14:53:27 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -73,6 +73,7 @@ class AufEintrag : public AufEintragBase
      class EinlagernRueckgaengig;
      class ArtikelInternAbbestellen_cb;
      struct Planen_cb;
+     struct Planen_undo_cb;
 
      #if ( __GNUC__ < 3 )
      friend class Abbestellen_cb;
@@ -90,6 +91,7 @@ class AufEintrag : public AufEintragBase
      friend class ProduziertRueckgaengig2;
      friend class WiederEinlagern_cb;
      friend class Planen_cb;
+     friend class Planen_undo_cb;
      #endif
 
 

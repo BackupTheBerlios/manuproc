@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.31 2004/02/12 11:53:11 christof Exp $
+// $Id: AufEintragZu.cc,v 1.32 2004/02/18 14:53:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -366,7 +366,11 @@ bool AufEintragZu_sort::auftr_1230(const AufEintragZu::st_reflist &a,const AufEi
 }
 
 bool AufEintragZu_sort::priority(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b)
-{  return a.Pri<b.Pri || (a.Pri==b.Pri && a.AEB<b.AEB);
+{  int order=0;
+   if (a.AEB.Id()==AuftragBase::dispo_id) order+=1;
+   if (b.AEB.Id()==AuftragBase::dispo_id) order-=1;
+   if (order) return order<0;
+   return a.Pri<b.Pri || (a.Pri==b.Pri && a.AEB<b.AEB);
 }
 
 bool AufEintragZu_sort::auftr_0123(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b)

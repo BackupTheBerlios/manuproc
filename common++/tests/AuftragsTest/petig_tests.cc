@@ -48,13 +48,13 @@ static bool Zusatzinfo()
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
        int lznr=liefs.push_back(ARTIKEL_FAERBEREI,9,1000);
        LieferscheinEntryBase lsb(liefs,lznr);
-       LieferscheinEntry(lsb).changeStatus(OPEN,liefs,false);
+       LieferscheinEntry(lsb).changeStatus(OPEN,false);
        vergleichen(Check::Lieferschein|Check::Menge,"ZI_Auslieferung","Auslieferung","L");
        
-       LieferscheinEntry(lsb).changeMenge(1,1000,liefs,false);
+       LieferscheinEntry(lsb).changeMenge(1,1000,false);
        vergleichen(Check::Lieferschein|Check::Menge,"ZI_Aenderung","weniger","-");
 
-       LieferscheinEntry(lsb).changeMenge(10,1000,liefs,false);
+       LieferscheinEntry(lsb).changeMenge(10,1000,false);
        vergleichen(Check::Lieferschein|Check::Menge,"ZI_Aenderung2","mehr","+");
 
        LieferscheinEntry le(lsb);
@@ -84,7 +84,7 @@ static bool Zusatzinfo2()
        AufEintrag ae(AEB2);
        int lznr=liefs.push_back(ae,ARTIKEL_BANDLAGER,9,1000);
        LieferscheinEntryBase lsb(liefs,lznr);
-       LieferscheinEntry(lsb).changeStatus(OPEN,liefs,false);
+       LieferscheinEntry(lsb).changeStatus(OPEN,false);
 //vergleichen(Check::Lieferschein|Check::Menge,"ZI2_pre","pre","");
 
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp1,true);
@@ -93,7 +93,7 @@ static bool Zusatzinfo2()
        JL.Jumbo_Entnahme(jr,JumboLager::Auslagern,"TEST",&zp1,true);
        vergleichen(Check::Lieferschein|Check::Menge,"ZI2_Ausgangspunkt","init","");
        
-       LieferscheinEntry(lsb).changeMenge(4,1000,liefs,false);
+       LieferscheinEntry(lsb).changeMenge(4,1000,false);
        vergleichen(Check::Lieferschein|Check::Menge,"ZI2_Problem","Mengenänderung","-");
        return true;
 }
@@ -158,7 +158,7 @@ static bool Plantest(AufEintrag &AE)
 
        Lieferschein liefs(ppsInstanzID::_Garn__Einkauf,cH_Kunde(Kunde::eigene_id));
        LieferscheinEntryBase lseb(liefs,liefs.push_back(ARTIKEL_ACETAT,1,66));
-       LieferscheinEntry(lseb).changeStatus(OPEN,liefs,false);
+       LieferscheinEntry(lseb).changeStatus(OPEN,false);
        vergleichen(Check::Menge,"planen_einkauf_lieferschein","Lieferschein mit Teillieferung für Einkauf anlegen","L");
        return true;
 }
@@ -358,7 +358,7 @@ static bool Rep_Kunden_Zuordnungen(AufEintrag &AE)
        {
         Lieferschein liefs(KUNDENINSTANZ,cH_Kunde(KUNDE));
         LieferscheinEntryBase lseb(liefs,liefs.push_back(ARTIKEL_ROLLEREI,390,1));
-        LieferscheinEntry(lseb).changeStatus(OPEN,liefs,false);
+        LieferscheinEntry(lseb).changeStatus(OPEN,false);
         vergleichen(Check::Menge,"rep_lieferschein","Reparatur-Lieferschein anlegen","L");
        }
        return true;
@@ -507,7 +507,7 @@ static bool Lieferscheintest(AufEintrag &AE)
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
        LieferscheinEntryBase lseb(liefs,liefs.push_back(ARTIKEL_ROLLEREI,150));
        vergleichen(Check::Menge|Check::Lieferschein,"Ls_unbestaetigt","Lieferung noch unbestätigt","u");
-       LieferscheinEntry(lseb).changeStatus(OPEN,liefs,false);
+       LieferscheinEntry(lseb).changeStatus(OPEN,false);
        vergleichen(Check::Menge|Check::Lieferschein,"LS_teillieferung","Lieferschein mit Teillieferung anlegen","");
 
        LieferscheinEntry le(lseb);
@@ -515,7 +515,7 @@ static bool Lieferscheintest(AufEintrag &AE)
        vergleichen(Check::Menge|Check::Lieferschein,"LS_zeileloeschen","Lieferscheinzeile löschen","");
 
        lseb=LieferscheinEntryBase(liefs,liefs.push_back(ARTIKEL_ROLLEREI,450));
-       LieferscheinEntry(lseb).changeStatus(OPEN,liefs,false);
+       LieferscheinEntry(lseb).changeStatus(OPEN,false);
        vergleichen(Check::Menge|Check::Lieferschein,"LS_volllieferung","Lieferschein mit Volllieferung","V");
 
        LieferscheinEntry le2(lseb);
@@ -530,16 +530,16 @@ static bool LieferscheintestMenge(AufEintrag &AE)
 {
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
        LieferscheinEntryBase lseb(liefs,liefs.push_back(ARTIKEL_ROLLEREI,150));
-       LieferscheinEntry(lseb).changeStatus(OPEN,liefs,false);
+       LieferscheinEntry(lseb).changeStatus(OPEN,false);
        vergleichen(Check::Menge|Check::Lieferschein,"LS_teillieferung","Lieferschein mit Teillieferung anlegen","");
 
        int stueck=140;
        AuftragBase::mengen_t menge=0;
-       LieferscheinEntry(lseb).changeMenge(stueck,menge,liefs,false);
+       LieferscheinEntry(lseb).changeMenge(stueck,menge,false);
        vergleichen(Check::Menge|Check::Lieferschein,"LS_mengenaenderung_minus","Lieferschein Mengenaenderung Minus","");
 
        stueck=400;
-       LieferscheinEntry(lseb).changeMenge(stueck,menge,liefs,false);
+       LieferscheinEntry(lseb).changeMenge(stueck,menge,false);
        vergleichen(Check::Menge|Check::Lieferschein,"LS_mengenaenderung_plus","Lieferschein Mengenaenderung Plus","");
        return true;
 }
@@ -553,11 +553,11 @@ static bool Lieferscheintest_ZweiterAuftrag_frueheresDatum(AufEintrag &AE)
 
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
        LieferscheinEntryBase lseb(liefs,liefs.push_back(ARTIKEL_ROLLEREI,50));
-       LieferscheinEntry(lseb).changeStatus(OPEN,liefs,false);
+       LieferscheinEntry(lseb).changeStatus(OPEN,false);
        vergleichen(Check::Lieferschein|Check::Menge,"LSZA","Lieferschein mit Teillieferung und 2 Aufträgen anlegen","T");
 
        lseb=LieferscheinEntryBase(liefs,liefs.push_back(ARTIKEL_ROLLEREI,600));
-       LieferscheinEntry(lseb).changeStatus(OPEN,liefs,false);
+       LieferscheinEntry(lseb).changeStatus(OPEN,false);
        vergleichen(Check::Lieferschein|Check::Menge,"LSZAV","Lieferschein mit Volllieferung und 2 Aufträgen anlegen","V");
        return true;
 }
@@ -569,21 +569,21 @@ static bool LieferscheintestZusatz(AufEintrag &AE)
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
        int lznr=liefs.push_back(ARTIKEL_ROLLEREI,550);
        LieferscheinEntryBase lseb(liefs,lznr);
-       LieferscheinEntry(lseb).changeStatus(OPEN,liefs,false);
+       LieferscheinEntry(lseb).changeStatus(OPEN,false);
        vergleichen(Check::Lieferschein|Check::Menge,"LSZ","Lieferschein mit Zusatzeintrag anlegen","");
 
        int stueck=633;
        AuftragBase::mengen_t menge=0;
 
-       LieferscheinEntry(lseb).changeMenge(stueck,menge,liefs,false);
+       LieferscheinEntry(lseb).changeMenge(stueck,menge,false);
        vergleichen(Check::Lieferschein|Check::Menge,"LSZP","Lieferscheinentry mit Zusatzeintrag Plus","+");
 
        stueck=450;
-       LieferscheinEntry(lseb).changeMenge(stueck,menge,liefs,false);
+       LieferscheinEntry(lseb).changeMenge(stueck,menge,false);
        vergleichen(Check::Lieferschein|Check::Menge,"LSZM","Lieferscheinentry mit Zusatzeintrag Minus","-");
 
        stueck=350;
-       LieferscheinEntry(lseb).changeMenge(stueck,menge,liefs,false);
+       LieferscheinEntry(lseb).changeMenge(stueck,menge,false);
        vergleichen(Check::Lieferschein|Check::Menge,"LSZMK","Lieferscheinentry mit Zusatzeintrag Minus Kunde","-K");
        return true;
 }
