@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.17 2003/09/15 14:39:07 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.18 2003/09/15 14:58:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -299,7 +299,8 @@ void AufEintrag::DispoBeschraenken()
       {  if(i->AEB.Id()==dispo_auftrag_id)
          { mengen_t M=min(i->Menge,noch_weg);
            M=AufEintrag(i->AEB).MengeAendern(-M,false,*this);
-           noch_weg-=M;
+           ManuProC::Trace(trace_channel, __FILELINE__,NV("MengeAendern",M));
+           noch_weg+=M;
          }
       }
   }
