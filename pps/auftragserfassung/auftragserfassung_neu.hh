@@ -17,14 +17,14 @@ struct st_artmeng{int aid;fixedpoint<2> menge;AufEintragBase aeb;
 //            {return (aid==b.aid && menge==b.menge);}
       };
 
-struct st_art{ArtikelBase::ID artikelid; Petig::Datum datum;
+struct st_art{ArtikelBase::ID artikelid; ManuProC::Datum datum;
    bool operator == (const st_art& b) const 
             {return (artikelid==b.artikelid && datum==b.datum );}
    bool operator <  (const st_art& b) const 
             {return  artikelid < b.artikelid ||
                (artikelid == b.artikelid && datum < b.datum)
                ;}
-   st_art(ArtikelBase::ID a, Petig::Datum d)
+   st_art(ArtikelBase::ID a, ManuProC::Datum d)
       :artikelid(a),datum(d){}
    st_art(){}
       };

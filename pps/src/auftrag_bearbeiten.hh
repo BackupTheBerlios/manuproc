@@ -37,6 +37,8 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
  gint aufentrystat_chid;
  gint aufstat_chid;
  int selectedentry;
+ cH_PreisListe artikel_preisliste;
+ bool artikel_preisliste_geaendert;
 
  bool newauftrag;
 
@@ -50,17 +52,20 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
         void on_youraufnrscombo_search(int *_continue, GtkSCContext newsearch)
 							throw(SQLerror);
         void on_button_preview_clicked();
-        void on_button_drucken_clicked();
-        void on_zahlzieldatewin_activate();
+        gint on_button_drucken_clicked(GdkEventButton *ev);
+        void on_rueckstand_clicked();
+        void preisliste_reset();
+        void on_zahlziel_activate();
         void on_zahlziel_showkal_button_clicked();
         void on_aufdat_showkal_button_clicked();
         void on_jahrgang_spinbutton_activate();
         void on_stkmtr_spinbutton_activate();
-        void on_kw_spinbutton_activate();
-        void on_jahr_spinbutton_activate();
         void on_lieferdatum_activate();
         void on_showkal_button_clicked();
         void on_rabattentry_spinbutton_activate();
+        gint on_aufrabatt_spinbutton_focus_out_event(GdkEventFocus *ev);
+        void Rabatt_setzen(const cH_Kunde &kunde);
+        void Rabatt_setzen(const cH_PreisListe &liste);
         void on_aufentrystat_optionmenu_clicked();
      	  void waehrung_geaendert();
         void on_preisart_optionmenu_clicked();
@@ -76,8 +81,10 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
         void on_auftrag_ok_clicked();
         void on_aufbemerkung_activate();
         void on_kunden_activate();
+	void on_zahlart_activate();
 
    void on_activate_wpreis();
+   void on_preis_changed();
 
  void loadAuftrag(const AuftragBase& auftrag);
  void fillMask();
@@ -93,6 +100,10 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
  int get_active_index(Gtk::Menu *om); 
  void setAufEntries();
  
+//#ifdef MABELLA_EXTENSIONS Das geht so nicht, wiel das Signal in glade
+// an diese Methode konnektiert wird.
+ void on_auftrag_preislisten_activate();
+//#endif;
 
 public:
  

@@ -51,6 +51,7 @@ bool auftragflag;/* zeigt an ab wann auftragid in den Zeilen */
 void auftrag_main::on_beenden_activate()
 {   
  maintree_s->detach_from_clist();
+ tree_lager->detach_from_clist();
  Gtk::Main::instance()->quit();
 }
 
@@ -125,6 +126,7 @@ void auftrag_main::on_main_drucken_activate()
    pclose(f);
 }
 
+
 void auftrag_main::on_lieferscheine_activate()
 {   
  manage (new auftrag_lieferschein(instanz));
@@ -149,60 +151,65 @@ bool auftrag_main::str2bool(std::string s,bool def)
 }
 
 
+void auftrag_main::on_preload_orders_activate()
+{
+ if(block_callback) return;
+ Global_Settings::create(int(getuid()),"pps","PreloadOrders",bool2str(preload_orders->get_active())); 
+}
 void auftrag_main::on_main_bezeichnung_activate()
 {
- interne_namen_bool = main_intbez->get_active();
  if(block_callback) return;
+ interne_namen_bool = main_intbez->get_active();
  fill_simple_tree();
- Global_Settings(int(getuid()),"pps","InterneBezeichnung",bool2str(interne_namen_bool)); 
+ Global_Settings::create(int(getuid()),"pps","InterneBezeichnung",bool2str(interne_namen_bool)); 
 }
 void auftrag_main::on_kunden_anr_activate()
 {
-  kunden_anr_bool=kundenauftragsnummer->get_active();
   if(block_callback) return;
+  kunden_anr_bool=kundenauftragsnummer->get_active();
   fill_simple_tree();
-  Global_Settings(int(getuid()),"pps","Kundenauftragsnummer",bool2str(kunden_anr_bool)); 
+  Global_Settings::create(int(getuid()),"pps","Kundenauftragsnummer",bool2str(kunden_anr_bool)); 
 }
 void auftrag_main::on_zeitdarstellung_activate()
 {
-  zeit_kw_bool=kalenderwoche->get_active();
   if(block_callback) return;
+  zeit_kw_bool=kalenderwoche->get_active();
   fill_simple_tree();
-  Global_Settings(int(getuid()),"pps","KalenderWoche",bool2str(zeit_kw_bool)); 
+  Global_Settings::create(int(getuid()),"pps","KalenderWoche",bool2str(zeit_kw_bool)); 
 }
 void auftrag_main::on_kundendarstellung_activate()
 {
-  kunden_nr_bool=kunden_nr->get_active();
   if(block_callback) return;
+  kunden_nr_bool=kunden_nr->get_active();
   fill_simple_tree();
-  Global_Settings(int(getuid()),"pps","KundenNr",bool2str(kunden_nr_bool)); 
+  Global_Settings::create(int(getuid()),"pps","KundenNr",bool2str(kunden_nr_bool)); 
 }
 void auftrag_main::on_materialbedarf_sortiert()
 {
   if(block_callback) return;
   bool b=materialbedarf_sortiert_nach_artikel->get_active();
-  Global_Settings(int(getuid()),"pps","Materialbedarf_Artikelsortiert",bool2str(b)); 
+  Global_Settings::create(int(getuid()),"pps","Materialbedarf_Artikelsortiert",bool2str(b)); 
 }
 void auftrag_main::on_offene_auftraege_activate()
 {
 #warning diese Funktion wird durch jeden Mausklick
 #warning 2x aufgerufen!!!! MAT
+  if(block_callback) return;
   if (offene_auftraege->get_active())             selected_status=OPEN;
   else if (unbestaetigte_auftraege->get_active()) selected_status=UNCOMMITED;
   else if (stornierte_auftraege->get_active())    selected_status=STORNO;
   else if (geschlossene_auftraege->get_active())  selected_status=CLOSED;
   else assert(!"Falscher Status");
 
-  if(block_callback) return;
   on_neuladen_activate();
-  Global_Settings(int(getuid()),"pps","Status_shown",itos(selected_status)); 
+  Global_Settings::create(int(getuid()),"pps","Status_shown",itos(selected_status)); 
 }
 
 void auftrag_main::on_auftraege_kunde_activate()
 {
-  auftraege_mit_kunden_bool=auftraege_mit_kunde->get_active();
   if(block_callback) return;
-  Global_Settings(int(getuid()),"pps","Auftraege_mit_Kunde",bool2str(auftraege_mit_kunden_bool)); 
+  auftraege_mit_kunden_bool=auftraege_mit_kunde->get_active();
+  Global_Settings::create(int(getuid()),"pps","Auftraege_mit_Kunde",bool2str(auftraege_mit_kunden_bool)); 
 }
 
 
@@ -210,6 +217,9 @@ void auftrag_main::loadEinstellungen()
 {
   block_callback=true;
   std::string bs;
+
+  bs=Global_Settings(int(getuid()),"pps","PreloadOrders").get_Wert(); 
+  preload_orders->set_active(str2bool(bs,true));
 
   bs=Global_Settings(int(getuid()),"pps","InterneBezeichnung").get_Wert(); 
   interne_namen_bool=str2bool(bs,true);
@@ -256,19 +266,26 @@ void auftrag_main::on_mainprint_button_clicked()
 
 
 auftrag_main::auftrag_main()
-  : allaufids(0), instanz(ppsInstanz::INST_KNDAUF), selected_AufEintrag(0),
+  : allaufids(0), instanz(ppsInstanzID::Kundenauftraege), selected_AufEintrag(0),
     block_callback(false),instanz_auftrag(0)
 {
  menu_instanz();
  loadEinstellungen();
 
  info_label_instanzen->hide();
- button_Kunden_erledigt->hide();
+
+
+#ifdef MABELLA_EXTENSIONS    
+    button_Kunden_erledigt->hide();
+    button_auftrag_erledigt->hide();
+    button_faerben->hide();
+#endif     
  kunden_lieferant->setLabel("Lieferantennr","Lieferantenname");
  set_column_titles_of_simple_tree();
  show_frame_instanzen_material();
 
- fill_simple_tree();
+ if(preload_orders->get_active()) fill_simple_tree();
+ maintree_s->set_remember("pps","maintree-"+itos(instanz->Id()));
 }
 
 void auftrag_main::set_column_titles_of_simple_tree()
@@ -283,6 +300,7 @@ void auftrag_main::set_column_titles_of_simple_tree()
  ct.push_back("Auftrag");
  ct.push_back("L.P.");
  ct.push_back("Ver.");
+ ct.push_back("Letze Lieferung");
  ct.push_back("offene Meter");
  ct.push_back("offene Stück");
  maintree_s->setTitles(ct);
@@ -290,23 +308,29 @@ void auftrag_main::set_column_titles_of_simple_tree()
  int cols=maintree_s->columns().size();
  maintree_s->set_column_justification(cols-1, GTK_JUSTIFY_RIGHT);
  maintree_s->set_column_justification(cols-2, GTK_JUSTIFY_RIGHT);
+
 }
 
 void auftrag_main::fill_simple_tree()
 {
- selected_AufEintrag=0;
- if(!allaufids) 
-   { 
-     SQLFullAuftragSelector psel= SQLFullAuftragSelector::sel_Status(instanz->Id(),selected_status);
-     allaufids = new SelectedFullAufList(psel);
+  if(instanz->LagerInstanz())
+      lager_zeigen();   
+  else
+   {
+    selected_AufEintrag=0;
+    if(!allaufids) 
+      { 
+        SQLFullAuftragSelector psel= SQLFullAuftragSelector::sel_Status(instanz->Id(),selected_status);
+        allaufids = new SelectedFullAufList(psel);
+      }
+    std::vector<cH_RowDataBase> datavec;
+    for(SelectedFullAufList::const_iterator i = allaufids->aufidliste.begin();i!=allaufids->aufidliste.end(); ++i)
+     {
+      if(instanz->Id()!=ppsInstanzID::Kundenauftraege && i->Id()!=0) continue;
+      datavec.push_back(new Data_auftrag(*i,this));
+     }
+    maintree_s->setDataVec(datavec);
    }
- std::vector<cH_RowDataBase> datavec;
- for(std::vector<AufEintrag>::iterator i = allaufids->aufidliste.begin();i!=allaufids->aufidliste.end(); ++i)
-  {
-   if(instanz->Id()!=ppsInstanz::Kundenauftraege && i->Id()!=0) continue;
-   datavec.push_back(new Data_auftrag(*i,this));
-  }
- maintree_s->setDataVec(datavec);
 }
 
 
@@ -326,8 +350,7 @@ void auftrag_main::getAufEintrag_fromNode(TCListRow_API::const_iterator b,
       {
         const Data_auftrag *dt=dynamic_cast<const Data_auftrag*>(&*(tlr->LeafData()));
         if(togglebutton_material->get_active()) 
-          get_ArtikelZusammensetzung(ArtikelBase(dt->get_Artikel_ID()),
-                                        dt->get_AufEintrag(),M);
+          get_ArtikelZusammensetzung(dt->get_AufEintrag(),M);
 /*
         else if(togglebutton_auftraege->get_active())
           get_ArtikelHerkunft(ArtikelBase(dt->get_Artikel_ID()),
@@ -339,89 +362,103 @@ void auftrag_main::getAufEintrag_fromNode(TCListRow_API::const_iterator b,
 }
 
 
+
+void auftrag_main::on_button_faerben_clicked()
+{
+#ifdef PETIG_EXTENSIONS
+  try{
+      cH_Data_auftrag dt=maintree_s->getSelectedRowDataBase_as<cH_Data_auftrag>();
+      cH_ppsInstanz I(ppsInstanzID::Faerberei);
+      dt->get_AufEintrag().setLetztePlanungFuer(I);
+      const_cast<Data_auftrag&>(*dt).redisplayLetzePlanInstanz(maintree_s,dt->get_AufEintrag());
+  } catch (TreeBase::SelectionError &e) {cerr << e.what()<<'\n';}
+#endif  
+}
+
+
+
 void auftrag_main::on_leaf_selected(cH_RowDataBase d)
 {
  try{
  const Data_auftrag *dt=dynamic_cast<const Data_auftrag*>(&*d);
  selected_AufEintrag = &dt->get_AufEintrag();
-
 //cout << "SE="<< selected_AufEintrag<<'\t'<<selected_AufEintrag->Instanz()->Name()<<' '<<selected_AufEintrag->Id()<<' '<<selected_AufEintrag->ZNr()<<'\n';;
+ show_something_for(*selected_AufEintrag);
+ }catch(std::exception &e) {std::cerr<<e.what();}
+}
 
- if(instanz->Id() != 1 && !togglebutton_material->get_active()
-                       && !togglebutton_auftraege->get_active()) 
-      instanz_leaf_auftrag(*selected_AufEintrag);
+
+void auftrag_main::show_something_for(AufEintrag& selAufEintrag)
+{
+ if(instanz->Id() != ppsInstanzID::Kundenauftraege 
+      && !instanz->LagerInstanz()
+      && !togglebutton_material->get_active()
+      && !togglebutton_auftraege->get_active()) 
+;//YYY     instanz_leaf_auftrag(selAufEintrag);
  else
   {
  // Zum Anzeigen des benötigten Materials
     std::map<st_index,st_mengen> map_allart;
     if(togglebutton_material->get_active()) 
-      get_ArtikelZusammensetzung(ArtikelBase(dt->get_Artikel_ID()),
-                                        dt->get_AufEintrag(),
-                                        map_allart);
+      get_ArtikelZusammensetzung(selAufEintrag,map_allart);
     else if(togglebutton_auftraege->get_active())
-       get_ArtikelHerkunft(ArtikelBase(dt->get_Artikel_ID()),
-                                        dt->get_AufEintrag(),
-                                        map_allart);
+      get_ArtikelHerkunft(selAufEintrag,map_allart);
     instanz_menge(map_allart); 
   }
- }catch(std::exception &e) {std::cerr<<e.what();}
 }
 
 
-void auftrag_main::get_ArtikelZusammensetzung(const ArtikelBase& art,
-                                              const AufEintrag& AE_Kunde,
-                                              std::map<st_index,st_mengen>& map_allart)
+void auftrag_main::get_ArtikelZusammensetzung(const AufEintrag& AE_Kunde,
+                                   std::map<st_index,st_mengen>& map_allart)
 {
   std::list<AufEintragZu::st_reflist> artikelreflist=AufEintragZu(AE_Kunde).get_Referenz_listFull(true,false);
   for(std::list<AufEintragZu::st_reflist>::const_iterator i=artikelreflist.begin();i!=artikelreflist.end();++i)
    {
-     AufEintrag AE(i->AEB2);
-//cout <<i->AEB2.Instanz()->Name()<<' '<<i->AEB2.Id()<<' '<<i->AEB2.ZNr()<<' '<<cH_ArtikelBezeichnung(i->AB)->Bezeichnung()
-//<<' '<<AE.getRestStk()*faktor<<' '<<AE.getStueck()*faktor<<'\n';
+     AufEintrag AE(i->AEB);
      AuftragBase::mengen_t planMenge=0,geliefertMenge=0;
      AuftragBase::mengen_t bestellMenge=AE.getStueck();
-     ArtikelBaum::menge_t faktor = ArtikelBaum(art).Faktor(i->AB);
+     ArtikelBaum::menge_t faktor = ArtikelBaum(AE_Kunde.ArtId()).Faktor(i->Art);
      AuftragBase::mengen_t sollMenge=AE_Kunde.getStueck()*faktor;
 //     AuftragBase::mengen_t sollMenge=AE.getStueck();
-     if(i->AEB2.Id()!=0) // nur Mengen der geplante Aufträge berücksichtigen
+     if(i->AEB.Id()!=0) // nur Mengen der geplante Aufträge berücksichtigen
       {
         planMenge=AE.getStueck();
         geliefertMenge=AE.getGeliefert();
       }
-     map_allart[st_index(i->AEB2.Instanz(),i->AB)] += 
+     map_allart[st_index(i->AEB.Instanz(),i->Art)] += 
          st_mengen(sollMenge,planMenge,bestellMenge,geliefertMenge);
 
 /*
-cout << i->AEB2.Instanz()->Name()<<' '
-<<i->AEB2.Id()<<' '
+cout << i->AEB.Instanz()->Name()<<' '<<i->AEB.Id()<<' '
 <<cH_ArtikelBezeichnung(i->AB)->Bezeichnung()<<'\t';
-cout << map_allart[st_index(i->AEB2.Instanz(),i->AB)].sollMenge
-<<' '<< map_allart[st_index(i->AEB2.Instanz(),i->AB)].planMenge
-<<' '<< map_allart[st_index(i->AEB2.Instanz(),i->AB)].bestellMenge
-<<' '<< map_allart[st_index(i->AEB2.Instanz(),i->AB)].gelieferteMenge
+cout << map_allart[st_index(i->AEB.Instanz(),i->AB)].sollMenge
+<<' '<< map_allart[st_index(i->AEB.Instanz(),i->AB)].planMenge
+<<' '<< map_allart[st_index(i->AEB.Instanz(),i->AB)].bestellMenge
+<<' '<< map_allart[st_index(i->AEB.Instanz(),i->AB)].gelieferteMenge
 <<'\n';
 */
    }
 }
 
-void auftrag_main::get_ArtikelHerkunft(const ArtikelBase& art,
-                                       const AufEintrag& AEB,
+void auftrag_main::get_ArtikelHerkunft(const AufEintrag& AEB,
                                        std::map<st_index,st_mengen>& map_allart)
 {
   std::list<AufEintragZu::st_reflist> artikelreflist=AufEintragZu(AEB).get_Referenz_listFull(false,false);
+//cout << AEB.Instanz()->Id()<<' '<<AEB.Instanz()->Name()<<' '<<AEB.Id()<<' '<<AEB.ZNr()<<'\n';
+//cout <<"SIZE="<<artikelreflist.size()<<'\n';
   for(std::list<AufEintragZu::st_reflist>::const_iterator i=artikelreflist.begin();i!=artikelreflist.end();++i)
    {
      std::list<cH_Kunde> KL;
      if(auftraege_mit_kunden_bool) 
               KL=AufEintragZu(AEB).get_Referenz_Kunden() ;
      else KL.push_back(cH_Kunde(Kunde::none_id)) ;
-      AufEintrag AE(i->AEB2);
-//cout << i->AEB2.Instanz()->Name()<<' '<<cH_ArtikelBezeichnung(i->AB)->Bezeichnung()
+      AufEintrag AE(i->AEB);
+//cout << i->AEB2.Instanz()->Name()<<' '<<cH_ArtikelBezeichnung(i->Art)->Bezeichnung()
 //<<" Menge= "<<' '<<i->Menge<<'\n';
 //cout << AEB.getRestStk()<<'\t'<<AEB.getStueck()<<'\n';
 //cout << AE.getRestStk()<<'\t'<<AE.getStueck()<<'\n';
      for(std::list<cH_Kunde>::const_iterator j=KL.begin();j!=KL.end();++j)
-        map_allart[st_index(i->AEB2.Instanz(),*j,i->AB)] 
+        map_allart[st_index(i->AEB.Instanz(),*j,i->Art)] 
                    += st_mengen(i->Menge,0,AE.getRestStk(),0);     
 //                   += st_mengen(i->Menge,0,i->Menge,0);     
     }
@@ -435,16 +472,30 @@ void auftrag_main::on_unselect_row(gint row, gint column, GdkEvent *event)
 
 
 
-void auftrag_main::show_selected_line()
+void auftrag_main::show_selected_line(bool lager)
 {
- try{
-    cH_RowDataBase dt(maintree_s->getSelectedRowDataBase());
-    on_leaf_selected(dt);
-   } catch(std::exception &e) {}
- try{
-    TreeRow dt(maintree_s->getSelectedNode());
-    on_node_selected(dt);
-   } catch(std::exception &e) {}
+  if(lager)
+   {
+    try{
+       cH_RowDataBase dt(tree_lager->getSelectedRowDataBase());
+       on_lager_leaf_selected(dt);
+      } catch(std::exception &e) {}
+    try{
+       TreeRow dt(tree_lager->getSelectedNode());
+       on_lager_node_selected(dt);
+      } catch(std::exception &e) {}
+   }
+  else
+   {
+    try{
+       cH_RowDataBase dt(maintree_s->getSelectedRowDataBase());
+       on_leaf_selected(dt);
+      } catch(std::exception &e) {}
+    try{
+       TreeRow dt(maintree_s->getSelectedNode());
+       on_node_selected(dt);
+      } catch(std::exception &e) {}
+   }
  show_frame_instanzen_material();   
 }
 
@@ -563,7 +614,7 @@ void auftrag_main::on_button_auftrag_erledigt_clicked()
   try{
   try{
      cH_RowDataBase dt(maintree_s->getSelectedRowDataBase());
-     dynamic_cast<const Data_auftrag*>(&*dt)->get_AufEintrag().setStatus(CLOSED);
+     dynamic_cast<const Data_auftrag*>(&*dt)->get_AufEintrag().setStatus(CLOSED,int(getuid()));
      dynamic_cast<Data_auftrag&>(const_cast<RowDataBase&>(*dt)).redisplayMenge(maintree_s);
   }catch(SQLerror &e) {meldung->Show(e);}
   }catch(TreeBase::notLeafSelected &x) {std::cerr << x.what()<<'\n';}
@@ -574,7 +625,6 @@ void auftrag_main::on_button_auftrag_erledigt_clicked()
 
 void auftrag_main::on_button_artikeleingabe_clicked()
 {
-//std::cout << selected_Artikel.Id()<<'\n';
  if (selected_AufEintrag )//sonst geht das nur bei Kundenaufträgen->  && selected_AufEintrag->ArtId())
   {
     std::string s = "artikeleingabe "+itos(selected_AufEintrag->ArtId())+" &";
@@ -645,10 +695,16 @@ void auftrag_main::instanz_selected(const cH_ppsInstanz _instanz)
 
   on_neuladen_activate();
 
-  if(AEK.Instanz()!=ppsInstanz::None)
+  if(AEK.Instanz()!=ppsInstanzID::None)
    {
      maintree_s->Expand_recursively();
      maintree_s->selectFirstMatchingLine(show_maching_compare(AEK));
+     if(maintree_s->selection().begin()!=maintree_s->selection().end())
+{
+//cout << "Row: "<<maintree_s->selection().begin()->get_row_num()<<'\n';
+#warning Das move to funktioniert leider nicht MAT
+        maintree_s->moveto(maintree_s->selection().begin()->get_row_num(),0,0.5,0);
+}
    }
   show_frame_instanzen_material();   
 }
@@ -658,7 +714,7 @@ void auftrag_main::show_frame_instanzen_material()
  // noch nicht implementiert ?
  button_Kunden_erledigt->hide();
 
- if (instanz->Id() == ppsInstanz::Kundenauftraege)
+ if (instanz->Id() == ppsInstanzID::Kundenauftraege)
    {
     maintree_s->set_column_visibility(KUNDE,true);
     maintree_s->set_column_visibility(AUFTRAG,true);
@@ -666,7 +722,9 @@ void auftrag_main::show_frame_instanzen_material()
 
     mainprint_button->show();
     rechnung_button->show();
-    button_auftrag_erledigt->show();
+#ifdef MABELLA_EXTENSIONS    
+    button_auftrag_erledigt->hide();
+#endif    
     togglebutton_auftraege->hide();
    }
   else 
@@ -691,8 +749,6 @@ void auftrag_main::show_frame_instanzen_material()
     button_Kunden_erledigt->show();
    }
 
-  // frame_instanzen
-
   erfassen_button->show(); 
   // Grund: auch in der Färberei könnte es nett sein, sich Aufträge anzusehen
   // oder welche einzugeben.
@@ -701,48 +757,45 @@ void auftrag_main::show_frame_instanzen_material()
   if(instanz->Lieferschein())
    { lieferschein_button->show();
      togglebutton_bestellen->hide(); 
-     // Hmmm, bin ich noch nicht von überzeugt (CP)
+     kunden_lieferant->show();
    }
   else
    {
     lieferschein_button->hide();
     togglebutton_bestellen->show();
+    kunden_lieferant->hide();
    }
 
-  if(togglebutton_bestellen->get_active()) frame_instanzen->show() ;
-  else frame_instanzen->hide() ;
-
-
-
-#warning braucht das noch jemand, wenn ja, wofür?
-#warning interessant sollte höchstens nch der 'kunden_lieferant' sein ...
-#warning ich fahr jetzt nach Potsdam ... MAT
-/*
-  if(instanz->LagerFuer()!=ppsInstanz::None ||
-     instanz->Id() == ppsInstanz::Kundenauftraege ) 
-      {
-//        frame_instanzen->hide() ;
-        togglebutton_bestellen->hide() ;
-      }
+  if(togglebutton_bestellen->get_active()) 
+    { frame_instanzen->show() ;
+      maintree_s->set_selection_mode(GTK_SELECTION_MULTIPLE);
+    }
   else 
+    { frame_instanzen->hide() ;
+      maintree_s->set_selection_mode(GTK_SELECTION_SINGLE);
+    }
+
+
+  if(instanz->LagerInstanz())
    { 
-     if(togglebutton_material->get_active() ||
-        togglebutton_auftraege->get_active()) 
-        {
-           togglebutton_bestellen->hide() ;
-           frame_instanzen->hide() ;
-        }
-     else 
-       { frame_instanzen->show() ;
-         if(instanz->Lieferant()) kunden_lieferant->show();
-         else                     kunden_lieferant->hide();
-       }
+     maintree_s->hide();
+     tree_lager->show();
+//     togglebutton_auftraege->hide();
+//     togglebutton_material->hide();
+     button_Kunden_erledigt->hide();
+     togglebutton_bestellen->hide();
    }
-*/
+  else
+   { maintree_s->show();
+     tree_lager->hide();
+     togglebutton_auftraege->show();
+     togglebutton_material->show();
+   }
 
   // frame_materialbedarf
   guint psize=GTK_WIDGET(vpaned_an_mat->gtkobj())->allocation.height;
-  if( maintree_s->selection().size()==0 ||     // keine Zeile gewählt
+  if( ( maintree_s->selection().size()==0 &&     // keine Zeile gewählt
+        tree_lager->selection().size()==0) ||
      (!togglebutton_material->get_active() &&  // oder
       !togglebutton_auftraege->get_active()))  // kein Button aktiv
    {
@@ -752,8 +805,11 @@ void auftrag_main::show_frame_instanzen_material()
    }
   else 
    {
-     vpaned_an_mat->set_position(psize/3.);
-     maintree_s->moveto(maintree_s->selection().begin()->get_row_num(),0);
+     vpaned_an_mat->set_position(2*psize/3.);
+     if(maintree_s->selection().size()!=0)
+        maintree_s->moveto(maintree_s->selection().begin()->get_row_num(),0);
+     else if(tree_lager->selection().size()!=0)
+        tree_lager->moveto(tree_lager->selection().begin()->get_row_num(),0);
    }
 }
 
@@ -806,7 +862,8 @@ void auftrag_main::handle_togglebutton(char c)
    }
   if(!togglebutton_material->get_active() && !togglebutton_auftraege->get_active())
       maintree_s->unselect_all();
-  show_selected_line();
+  if(instanz->LagerInstanz())  show_selected_line(true);
+  else  show_selected_line();
   block_callback=false;
 }
 

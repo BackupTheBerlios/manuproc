@@ -83,13 +83,26 @@ void auftrag_rechnung::set_rtree_offen_content()
   int INSTANZ=instanz->Id();
   int LFRSID;
   int KDNR;
+  char *QU;
  exec sql end declare section;
  KDNR=rechnung.KdNr();
+ std::string qu;
 
- exec sql declare offliefcur cursor for
-   select lfrsid from 
-   lieferschein l join kunden k using (kundennr)
-   where k.rechnung_an= :KDNR and l.rngid is null and l.instanz=:INSTANZ;
+#ifdef MABELLA_EXTENSIONS
+ qu = string("select lfrsid from lieferschein l ")+
+   	"where l.kundennr= "+itos(KDNR)+" and l.rngid is null and l.instanz="+
+	itos(INSTANZ);
+#else
+  qu = string("select lfrsid from ")+
+   "lieferschein l join kunden k using (kundennr)"+
+   "where k.rechnung_an="+itos(KDNR)+" and l.rngid is null and l.instanz="+
+	itos(INSTANZ);
+#endif
+ QU = (char*)qu.c_str();
+
+ exec sql prepare OFFLCUR from :QU;
+ exec sql declare offliefcur cursor for OFFLCUR;
+
  Transaction tr;
  exec sql open offliefcur;
  SQLerror::test(__FILELINE__":set_tree_offen_content()");

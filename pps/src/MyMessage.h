@@ -33,6 +33,7 @@ public:
   _msg+="Context: "+e.Context()+"\n";
   Message::Show((char *)_msg.c_str());
  }
+ void Show(const std::string &s) {Message::Show(s);}
 };
 
 #endif

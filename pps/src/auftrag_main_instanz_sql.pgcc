@@ -31,7 +31,7 @@ throw(SQLerror)
  int KUNDE;
  int INSTANZ=instanz->Id();
  exec sql end declare section;
- if(instanz->Lieferant()) KUNDE=kunden_lieferant->get_value() ;
+ if(instanz->Lieferschein()) KUNDE=kunden_lieferant->get_value() ;
  else KUNDE=Kunde::default_id;
  static bool transaction = false;
   

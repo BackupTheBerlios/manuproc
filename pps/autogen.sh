@@ -11,7 +11,12 @@ then
   GLADE_MACROS=`which glade | sed -e 's-bin/glade-share/glade-'`
   if [ -r $GLADE_MACROS/gnome/gnome.m4 ]
   then
-    cp -r $GLADE_MACROS/gnome macros
+    if cp --dereference /dev/null /dev/zero
+    then
+      cp -r --dereference $GLADE_MACROS/gnome macros
+    else
+      cp -r $GLADE_MACROS/gnome macros
+    fi
   else
     echo "I can't find glade's gnome m4 macros. Please copy them to ./macros and retry."
     exit 2

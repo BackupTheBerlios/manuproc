@@ -27,7 +27,8 @@
 #include "MyMessage.h"
 #include <Aux/dbconnect.h>
 extern MyMessage *meldung;
-//extern Petig::Connection *Conn;
+//extern ManuProC::Connection *Conn;
+#include <Auftrag/AufEintrag.h>
 
 #include <Lieferschein/RechnungVoll.h>
 
@@ -43,6 +44,7 @@ void auftrag_rechnung::on_rng_neu()
    {
     newRechnung(lieferkunde->get_value());
     rngnr->setContent(Formatiere(rechnung.Id(),0,6,"","",'0'),rechnung.Id());
+    rngdatum->set_value(ManuProC::Datum::today());
     on_rngnr_activate();
    }
  else
@@ -81,20 +83,39 @@ gint auftrag_rechnung::on_rng_print(GdkEventButton *ev)
 
    if (ev->button==1)
     {
+#ifdef MABELLA_EXTENSIONS // bad hard coded, but Fr. Will want not wait. ghrrrr
+     std::string command = "auftrag_drucken -k -a Rechnung -n "+rngnr->get_text()
+         +" -p -i "+itos(instanz->Id()) ;
+     system(command.c_str());     
+     system(command.c_str());          
+//     system(command.c_str());
+     command = "auftrag_drucken -f -a Rechnung -n "+rngnr->get_text()
+         +" -p -i "+itos(instanz->Id()) ;
+     system(command.c_str());          
+#else
      std::string command = "auftrag_drucken "+firma+kopie+"-a Rechnung -n "+rngnr->get_text()
          +" -p -i "+itos(instanz->Id()) ;
      system(command.c_str());
+#endif     
     }
    if (ev->button==2)
     {
+#ifdef MABELLA_EXTENSIONS
+     std::string command = "auftrag_drucken --kopie -a Rechnung -n "+rngnr->get_text()+" -p -i "+itos(instanz->Id()) ;
+     system(command.c_str());
+#else
      std::string command = "auftrag_drucken --firma -a Rechnung -n "+rngnr->get_text()+" -p -i "+itos(instanz->Id()) ;
      system(command.c_str());
-     command = "auftrag_drucken --kopie -a Rechnung -n "+rngnr->get_text()
+     command = "auftrag_drucken -k -a Rechnung -n "+rngnr->get_text()
          +" -p -i "+itos(instanz->Id());
      system(command.c_str());
+#endif
     }
    if (ev->button==3)
     {
+#ifdef MABELLA_EXTENSIONS
+	return false;
+#endif
      std::string command = "auftrag_drucken --kopie -a Rechnung -n "+rngnr->get_text()+" -p -i "+itos(instanz->Id());
      system(command.c_str());
      command = "auftrag_drucken --kopie --firma -a Rechnung -n "+rngnr->get_text()
@@ -110,32 +131,24 @@ gint auftrag_rechnung::on_rng_print(GdkEventButton *ev)
 void auftrag_rechnung::rngzeile_delete()
 {
  try{   
-// if(selectedrow_rng)
-//   {//const Rechnung &rg=rechnung_liste->getRechnung();
    if(!(rechnung.Bezahlt()))
 	{
-//	 cH_Data_Rechnung entry((dynamic_cast<TreeRow*>(selectedrow_rng))->LeafData());
-//	 const_cast<Rechnung&>(rg).deleteLieferschein(entry->LiefId());
     try{
      cH_Data_Rechnung dt(rtree_daten->getSelectedRowDataBase_as<cH_Data_Rechnung>());
      RechnungEntry RE = dt->get_RechnungEntry();
-     rechnung.deleteLieferschein(RE.Lfrs_Id());
+     rechnung.deleteLieferschein(RE.Lfrs());
      } catch(...){}
-	 on_rngnr_activate();
-//	}
+	 on_rngnr_activate(); // neu anzeigen
    }
  }
  catch(SQLerror &e)
   {meldung->Show(e); return;}
 
-// selectedrow_rng=NULL;
  rngentry_del->set_sensitive(false); 
 }
 
 void auftrag_rechnung::on_rngdate_activate()
 {   
-// Rechnung &rg = rechnung_liste->getRechnung();
-// rg.setze_Datum(rngdatum->get_value());
  rechnung.setze_Datum(rngdatum->get_value());
  label_rechnung_ctl->set_text("Rechungsdatum geändert");
  timeout_connection = Gtk::Main::timeout.connect(slot(this,&auftrag_rechnung::timeout),1000);
@@ -150,44 +163,56 @@ gint auftrag_rechnung::timeout()
 
 void auftrag_rechnung::redisplay()
 {try{ 
-// rechnung_liste->clear();
-// rechnung_liste->showRechnung(rngnr->Content());
   set_rtree_daten_content(rngnr->Content());
  }
  catch(SQLerror &e) {meldung->Show(e);}
+ if(rechnung.rngArt()==Rechnung::RART_GUT)
+   {
+     frame_rechnung->set_label("Gutschrift");
+     frame_rechnungsdaten->set_label("Gutschriftsdaten");
+     set_title("Gutschrift");
+     table_gutschrift->hide();
+   }
+ else if(rechnung.rngArt()==Rechnung::RART_RNG)
+   {
+     frame_rechnung->set_label("Rechnung");
+     frame_rechnungsdaten->set_label("Rechnungsdaten");
+     set_title("Rechnungen");
+     table_gutschrift->show();
+   }
+ else 
+   {
+     assert(!"Never get here\n");
+   }
 }
 
 void auftrag_rechnung::on_rngnr_activate()
 {try{
  redisplay();
  lieferkunde->set_value(rechnung.KdNr());   
-// offene_lieferscheine->setKunde(cH_Kunde(lieferkunde->get_value()));
-// offene_lieferscheine->clear();
-// offene_lieferscheine->showOffLief();
  set_rtree_offen_content();
- rng_WWaehrung->set_History(rechnung.getWaehrung()->get_enum());
+ rng_WWaehrung->set_value(rechnung.getWaehrung());
 
- fixedpoint<2> rabatt=rechnung.Rabatt();
+ Rechnung::rabatt_t rabatt=rechnung.Rabatt();
  if (rabatt<0.0) { rabatt=-rabatt; rabatt_typ->set_history(rabatt_typ::Zuschlag); }
  else rabatt_typ->set_history(rabatt_typ::Rabatt);
  rabatt_wert->set_value(rabatt);
- rngdatum->set_Datum(rechnung.getDatum());
+ rngdatum->set_value(rechnung.getDatum());
  optionmenu_zahlart->set_history(rechnung.getZahlungsart()->Id());
 
-// rechnung_liste->show();
  rtree_daten->show();
  vbox_n_b_lieferscheine->show();
-
  }
  catch(SQLerror &e) {meldung->Show(e);}
 }
 
 void auftrag_rechnung::on_lieferkunde_activate()
 {
-// offene_lieferscheine->setKunde(cH_Kunde(lieferkunde->get_value()));
-// offene_lieferscheine->showOffLief();   
+#ifndef MABELLA_EXTENSIONS
  if(lieferkunde->get_value() != cH_Kunde(lieferkunde->get_value())->Rngan())
    lieferkunde->set_value(cH_Kunde(lieferkunde->get_value())->Rngan());
+#endif
+ rng_WWaehrung->set_value(cH_Kunde(lieferkunde->get_value())->getWaehrung());
  set_rtree_offen_content();
 }
 
@@ -204,7 +229,21 @@ void auftrag_rechnung::lieferschein_uebernehmen()
 	{
     try {
        cH_Data_RLieferoffen dt(rtree_offen->getSelectedRowDataBase_as<cH_Data_RLieferoffen>());
-       rechnung.addLieferschein(dt->get_Lieferschein()->Id());
+
+	cH_Lieferschein chl(dt->get_Lieferschein()); 
+       if(rechnung.Rabatt() != (chl->AufRabatt()) && 
+	  rechnung.Rabatt() != (Rechnung::rabatt_t)0)
+           {meldung->Show("Aufträge mir unterschiedlichenn Rabatten\n"
+           	"(Rechnung "
+           	+Formatiere_short(rechnung.Rabatt())+"% Lieferschein/Auftrag "
+           	+Formatiere_short(chl->AufRabatt())+"%)\n"
+           	"dürfen nicht auf eine Rechnung");
+            return;
+           }
+       else
+         rechnung.setze_Rabatt(chl->AufRabatt());       
+             
+       rechnung.addLieferschein(*chl);
    	 on_rngnr_activate();
       }
     catch(std::exception &e) {std::cerr << e.what();}
@@ -218,14 +257,33 @@ void auftrag_rechnung::lieferschein_uebernehmen()
 
 void auftrag_rechnung::on_rdaten_leaf_selected(cH_RowDataBase d)
 {
-//  const Data_Rechnung *dt=dynamic_cast<const Data_Rechnung*>(&*d);
-
+try{
+  const Data_Rechnung *dt=dynamic_cast<const Data_Rechnung*>(&*d);
   rngentry_del->set_sensitive(true);
+
+  // Preise
+  RechnungEntry RE=dt->get_RechnungEntry();
+  Artikelpreis::UnCache(cH_Kunde(lieferkunde->get_value())->preisliste(),RE.Artikel());
+  label_artikelpreis->set_text(Formatiere(Artikelpreis(cH_Kunde(lieferkunde->get_value())->preisliste(),RE.Artikel()).Wert()));
+  spinbutton_preiseingabe->set_value(RE.getPreis().Wert());
+  table_preisvergleich->show_all();
+  try{
+    label_auftragspreis->set_text(Formatiere(RE.getAuftragsPreis().Wert()));
+   }catch(AufEintrag::NoAEB_Error &e) 
+      // Wenn kein Auftrag zu dieser Rechnungszeile existiert
+    {  radiobutton_auftragspreis->hide();
+       label_auftragspreis->hide();
+       radiobutton_artikelpreis->set_active(true);
+    }
+  button_pr->set_sensitive(true);
+}catch(std::exception &e) {std::cerr<<e.what();}
 }
+
 void auftrag_rechnung::on_unselectrow_rtree(int row, int col, GdkEvent* b)
 {
-// selectedrow_rng=NULL;
  rngentry_del->set_sensitive(false); 
+ button_pr->set_sensitive(false);
+ table_preisvergleich->hide();
 }
 
 
@@ -273,22 +331,31 @@ void auftrag_rechnung::on_selectrow_offlief(int row, int col, GdkEvent* b)
 void auftrag_rechnung::on_unselectrow_rtree_offen(int row, int col, GdkEvent* b)
 {
  lieferscheinnr->set_text("");
- lieferscheindatum->set_value(Petig::Datum::today());  
+ lieferscheindatum->set_value(ManuProC::Datum::today());  
  lief_uebernehmen->set_sensitive(false); 
 }        
 
 void auftrag_rechnung::Preis_setzen()
 {  
-// ist das noch aktuell? 14.11.2001 MAT
-#warning TODO: nur aktiven Preis setzen, wenn selection
-   RechnungVoll rg(rechnung.Id());
-   for (RechnungVoll::iterator i=rg.begin();i!=rg.end();++i)
-   {  Artikelpreis p(cH_Kunde(lieferkunde->get_value())->preisliste(),i->ArtikelID());
-      if (!!p)
-      {  i->setzePreis(p.In(rg.getWaehrung()));
-      }
+ try{
+  const Data_Rechnung *dt=dynamic_cast<const Data_Rechnung*>(&*(rtree_daten->getSelectedRowDataBase()));
+  RechnungEntry RE=dt->get_RechnungEntry();
+  if(radiobutton_artikelpreis->get_active())
+   {
+     RE.setzePreis(Artikelpreis(cH_Kunde(lieferkunde->get_value())->preisliste(),RE.Artikel()));
    }
-   redisplay();
+  else if(radiobutton_auftragspreis->get_active())
+   {
+     RE.setzePreis(RE.getAuftragsPreis());
+   }  
+  else if(radiobutton_preiseingabe->get_active())
+   {
+     spinbutton_preiseingabe->update();
+     fixedpoint<2> p=fixedpoint<2>(spinbutton_preiseingabe->get_value_as_float());
+     RE.setzePreis(Preis(p,rechnung.getWaehrung(),RE.getPreis().PreisMenge()));
+   }  
+  redisplay();
+ }catch(std::exception &e) {cerr << e.what()<<'\n';}
 }
 
 void auftrag_rechnung::Preis_ergaenzen()
@@ -324,6 +391,15 @@ void auftrag_rechnung::rabatt_geaendert()
 auftrag_rechnung::auftrag_rechnung(cH_ppsInstanz _instanz)
 : instanz(_instanz)
 {
+#ifdef MABELLA_EXTENSIONS
+ preis_ergaenzen->hide();
+ _tooltips.set_tip(*button27,"Linke Maustaste: 1 Orig. 3 Kopien.
+Mittlere Maustaste: 1 Kopie","");
+  std::string nurliefer(" and lieferadresse=true  and coalesce(aktiv,true)=true");
+  lieferkunde->Einschraenkung(nurliefer);
+  lieferkunde->Einschraenken(true);      
+ 
+#endif
    set_tree_titles();
    fill_optionmenu_zahlungsart();
    optionmenu_zahlart->get_menu()->deactivate.connect(SigC::slot(static_cast<class auftrag_rechnung*>(this), &auftrag_rechnung::optionmenu_zahlart_deactivate));
@@ -339,6 +415,7 @@ void auftrag_rechnung::set_tree_titles()
  t1.push_back("Zeile");
  t1.push_back("Lieferschein");
  t1.push_back("Artikel");   
+ t1.push_back("Stueck");
  t1.push_back("Liefermenge");
  t1.push_back("E-Preis");
  t1.push_back("G-Preis");
@@ -380,3 +457,25 @@ void auftrag_rechnung::optionmenu_zahlart_deactivate()
      rechnung.setze_Zahlungsart(cH_Zahlungsart(z));
 }
 
+
+void auftrag_rechnung::on_button_gutschrift_clicked()
+{
+  label_rechnung_ctl->set_text("Sicher? Diese Entscheidung kann nicht rückgängig gemacht werden.");
+  table_gutschrift_sicherheit->show();
+}
+
+void auftrag_rechnung::on_button_gutschrift_nein_clicked()
+{
+  label_rechnung_ctl->set_text("");
+  table_gutschrift_sicherheit->hide();
+}
+
+void auftrag_rechnung::on_button_gutschrift_ja_clicked()
+{
+  rechnung.setRngArt(Rechnung::RART_GUT);
+  on_button_gutschrift_nein_clicked();
+  redisplay();
+}
+
+      
+      

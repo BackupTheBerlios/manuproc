@@ -2,7 +2,13 @@
 #include "class_instanz_trees.hh"
 #include <Artikel/ArtikelStamm.h>
 #include "class_auftrag_tree.hh"
-#include <Auftrag/AuftragsEntryZuordnung.h>
+#include <Auftrag/AufEintragZu.h>
+#include <unistd.h>
+#include "MyMessage.h"
+
+
+extern MyMessage *meldung;
+
 
 void auftrag_main::on_kunden_lieferant_activate()
 {
@@ -14,11 +20,11 @@ void auftrag_main::on_button_neue_anr_clicked()
 {
  try { 
     Kunde::ID kid=Kunde::none_id; 
-    if(instanz->Lieferant()) kid = kunden_lieferant->get_value() ;
-    else                     kid = Kunde::default_id ;
+    if(instanz->Lieferschein()) kid = kunden_lieferant->get_value() ;
+    else                        kid = Kunde::default_id ;
     if(kid==Kunde::none_id) return;
     instanz_auftrag = new AuftragFull(Auftrag::Anlegen(instanz->Id()),kid);
-    instanz_auftrag->setStatusAuftragFull(OPEN);
+    instanz_auftrag->setStatusAuftragFull(OPEN,int(getuid()));
     AuftragBase ab(*instanz_auftrag);
     loadAuftragInstanz(ab);
     searchcombo_auftragid->setContent(instanz_auftrag->getAuftragidToStr(),'0');
@@ -49,17 +55,19 @@ void auftrag_main::on_searchcombo_auftragid_activate()
  loadAuftragInstanz(AuftragBase(instanz->Id(),searchcombo_auftragid->Content()));
 }
 
+
 void auftrag_main::tree_neuer_auftrag_leaf_selected(cH_RowDataBase d)
 {
-  tree_neuer_auftrag->clear();
+//  tree_neuer_auftrag->clear();
   const Data_neuer_auftrag *dt=dynamic_cast<const Data_neuer_auftrag*>(&*d);
   Data_neuer_auftrag *Dna = const_cast<Data_neuer_auftrag*>(dt); 
   AufEintrag IA=Dna->get_AufEintrag();
 
   // Referenzaufträge müssen gehohlt werden BEVOR der Auftrag gelöscht wird!!!
-  std::list<AufEintragZu::st_reflist> ReferenzAufEintragK = AufEintragZu(IA).get_Referenz_listFull(false); // Entsprechenden Kundenauftrag hohlen
+  std::list<AufEintragZu::st_reflist> ReferenzAufEintragK = AufEintragZu(IA).get_Referenz_listFull(false); // Entsprechenden Kundenauftrag (die 2er sind auch mit dabei) hohlen
   std::list<AufEintragZu::st_reflist> ReferenzAufEintragR = AufEintragZu(IA).get_Referenz_list(IA,false); // direkte Referenen hohlen
-
+  try{
+  Transaction tr;
   if(!IA.deleteAuftragEntry())  // Auftrag hat noch Kinder?
    {
      info_label_instanzen->set_text("Auftrag kann nicht gelöscht werden, es gibt noch Kindaufträge"); 
@@ -68,29 +76,85 @@ void auftrag_main::tree_neuer_auftrag_leaf_selected(cH_RowDataBase d)
    }
   for (std::list<AufEintragZu::st_reflist>::iterator i=ReferenzAufEintragK.begin();i!=ReferenzAufEintragK.end();++i)
    {
-     i->AEB2.setLetztePlanungFuer(instanz->Id());
-     i->AEB2.calculateProzessInstanz();
+     if(i->AEB.Instanz()!=ppsInstanzID::Kundenauftraege) continue;
+     i->AEB.setLetztePlanungFuer(instanz->Id());
+     i->AEB.calculateProzessInstanz();
    }
-  AuftragBase::mengen_t tmp_menge = IA.getStueck();
   for (std::list<AufEintragZu::st_reflist>::iterator i=ReferenzAufEintragR.begin();i!=ReferenzAufEintragR.end();++i)
    {
-    if(tmp_menge<=0) break;
-    AuftragBase::mengen_t rest = AufEintrag(i->AEB2).getRestStk();
+    AuftragBase::mengen_t rest = AufEintrag(i->AEB).getRestStk();
     try{ 
-       AuftragBase::mengen_t m = tmp_menge>rest ? -tmp_menge : -rest;       
-       i->AEB2.updateStkDiff(-m);
+       if(i->AEB.Id()==AuftragBase::ungeplante_id)
+         {
+          AuftragBase::mengen_t mt=i->AEB.updateStkDiffBase__(getuid(),i->Menge);
+          assert(mt==i->Menge);
+         }
+       else if(i->AEB.Id()==AuftragBase::dispo_auftrag_id)
+         {
+          AuftragBase::mengen_t mt=i->AEB.updateStkDiffBase__(getuid(),-i->Menge);
+          assert(mt==-i->Menge);
+         }
+       else assert(!"never get here\n");
       }catch(SQLerror &e)
-      {std::cerr << e<<'\n';}
-    tmp_menge -= i->Menge;
+      {meldung->Show(e); std::cerr << e<<'\n';}
    }
 
+  tr.commit();
   on_neuladen_activate();
   loadAuftragInstanz(Dna->get_AufEintrag());
+ }catch(SQLerror &e) {meldung->Show(e);}
 }
 
-void auftrag_main::instanz_leaf_auftrag(AufEintrag& selected_AufEintrag)
+void auftrag_main::on_button_instanz_get_selection_clicked()
+{
+  if(!instanz_auftrag) { meldung->Show("Keine Auftragsnummer vergeben");
+                         return; }
+  if(!Datum_instanz->get_value().valid()) 
+      { meldung->Show("Datum ist ungültig");
+                         return; }
+  std::vector<cH_RowDataBase> V=maintree_s->getSelectedRowDataBase_vec();
+  ArtikelBase artikel;
+  AuftragBase::mengen_t menge=0;
+  vector<AufEintrag> VAE;
+  for(std::vector<cH_RowDataBase>::const_iterator i=V.begin();i!=V.end();++i)
+   {
+     const Data_auftrag *dt=dynamic_cast<const Data_auftrag*>(&*(*i));
+     AufEintrag AE=dt->get_AufEintrag();
+     // Alle Ausgewählten Zeilen müssen den selben Artikel beinhalten
+     if(artikel==ArtikelBase::none_id) artikel=AE.Artikel();
+     else { if(artikel!=AE.Artikel()) 
+       {meldung->Show("Die Artikel der ausgewählten Zeilen sind nicht einheitlich");
+        return; }}
+     menge += AE.getRestStk();
+     VAE.push_back(AE);
+   }
+  if (togglebutton_geplante_menge->get_active())
+   {
+     spinbutton_geplante_menge->update();
+     AuftragBase::mengen_t m=spinbutton_geplante_menge->get_value_as_int();
+     if(VAE.size()>1 && m < menge)
+       {meldung->Show("Teilmengen für mehrer Zeilen sind nicht möglich");
+        return; }
+     menge=m;
+   }   
+   // Planen
+  try{
+  AufEintragBase::Planen(getuid(),VAE,menge,*instanz_auftrag,Datum_instanz->get_value());
+  for(std::vector<cH_RowDataBase>::const_iterator i=V.begin();i!=V.end();++i)
+   {
+#warning Das geht so nicht :-( Vermutung: Das push_back legt eine Kopie an?
+#warning wie geht es dann?
+     dynamic_cast<Data_auftrag&>(const_cast<RowDataBase&>(**i)).redisplayMenge(maintree_s);
+   }
+  loadAuftragInstanz(*instanz_auftrag);
+  }catch(SQLerror &e) {meldung->Show(e);}
+}
+
+
+void auftrag_main::instanz_auftrag_anlegen(AufEintrag& AE)
 // entspricht 'on_leaf_selected' im Hauptbaum
 {
+/*
   if(!instanz_auftrag) return;
   AuftragBase::mengen_t menge=0;
   if (togglebutton_geplante_menge->get_active())
@@ -101,11 +165,12 @@ void auftrag_main::instanz_leaf_auftrag(AufEintrag& selected_AufEintrag)
    }   
   else  menge = selected_AufEintrag.getRestStk();
   
-  selected_AufEintrag.Planen(menge, *instanz_auftrag);
+  selected_AufEintrag.Planen(getuid(),menge, *instanz_auftrag,Datum_instanz->get_value());
 
   cH_RowDataBase dt(maintree_s->getSelectedRowDataBase());
   dynamic_cast<Data_auftrag&>(const_cast<RowDataBase&>(*dt)).redisplayMenge(maintree_s);
   loadAuftragInstanz(*instanz_auftrag);
+*/
 }
 
 void auftrag_main::show_neuer_auftrag()
@@ -149,6 +214,7 @@ void auftrag_main::on_togglebutton_geplante_menge_toggled()
   {
    spinbutton_geplante_menge->show();
    spinbutton_geplante_menge->grab_focus();
+   spinbutton_geplante_menge->select_region(0,-1);
   }
  else
    spinbutton_geplante_menge->hide();  
@@ -161,17 +227,17 @@ void auftrag_main::on_button_Kunden_erledigt_clicked()
      allaufids = new SelectedFullAufList(psel);
    }
  bool change=false;
- for(std::vector<AufEintrag>::iterator i = allaufids->aufidliste.begin();i!=allaufids->aufidliste.end(); ++i)
+ for(SelectedFullAufList::iterator i = allaufids->aufidliste.begin();i!=allaufids->aufidliste.end(); ++i)
   {
    std::list<AufEintragZu::st_reflist> RL=AufEintragZu(*i).get_Referenz_listFull(false);
    for(std::list<AufEintragZu::st_reflist>::const_iterator j=RL.begin();j!=RL.end();++j)
     {
-      AufEintrag AEB(j->AEB2);
+      AufEintrag AEB(j->AEB);
       if(AEB.getEntryStatus()==CLOSED)
        {
          AuftragBase::mengen_t menge = i->getRestStk();
 //std::cout << j->Menge <<'\t'<<menge<<'\n';
-         try{ i->abschreiben(menge);
+         try{ i->abschreiben(menge,ManuProcEntity::none_id);
               change=true;
             } catch(SQLerror &e){std::cerr <<e<<'\n';}
        }

@@ -41,10 +41,10 @@ public:
 	void setStatusEntry(int idx, AufStatVal st) {eintragliste[idx].setStatus(st);}
 	void updateStk(int idx, long stk) { eintragliste[idx].updateStk(stk);}	
 	void updatePreis(int idx, const Preis &pr) { eintragliste[idx].updatePreis(pr); }	
-	void updateLieferdatum(int idx, const Petig::Datum &ld) 
+	void updateLieferdatum(int idx, const ManuProC::Datum &ld) 
 			{ eintragliste[idx].updateLieferdatum(ld);}			
 	void updateRabatt(int idx, int r) { eintragliste[idx].updateRabatt(r); }
-	void split(int idx, const Petig::Datum &liefdatum, int menge)
+	void split(int idx, const ManuProC::Datum &liefdatum, int menge)
 		{ eintragliste[idx].split(menge, liefdatum);}
 	// komische Funktion ... Schema ueberdenken ???
 	int insertNewEntry(const aktAufEintrag &aufentry,const cH_ExtBezSchema &ebsh) throw (SQLerror);

@@ -22,15 +22,19 @@
 #include<Aux/Ausgabe_neu.h>
 #include<Lieferschein/LieferscheinEntry.h>
 #include <Auftrag/selFullAufEntry.h>
-#include <Artikel/Einheiten.h>
 #include<typeinfo>
 #include <tclistleaf.h>
 #include "lieferscheinliste.hh"
 #include "auftrag_lieferschein_classes.h" // erforderlich?
-#include <Lager/Lager.hh>
+#include <Lager/RohwarenLager.h>
 #include <SearchComboContent.h>
+#include <Auftrag/AuftragFull.h>
+//#include "auftrag_main.hh"
+#include <unistd.h>
+
 
 extern MyMessage *meldung;
+extern auftrag_main *auftragmain;
 
 void auftrag_lieferschein::on_liefer_close()
 {   
@@ -44,11 +48,13 @@ void auftrag_lieferschein::on_liefer_neu()
     return;
  }
  lieferschein = new Lieferschein(instanz,cH_Kunde(liefer_kunde->get_value()));
+ liefdate->set_value(ManuProC::Datum::today());
 
  tree_daten->clear();
  liefernr->setContent(Formatiere(lieferschein->Id(),0,6,"","",'0'),lieferschein->Id());
  vbox_eingabe->show();
  tree_daten->show();
+
 }
 
 void auftrag_lieferschein::on_lief_save()
@@ -80,6 +86,13 @@ void auftrag_lieferschein::display(int lfrsid)
  vbox_eingabe->show();
  tree_daten->show();
  liefdate->set_value(lieferschein->getDatum());
+#ifdef MABELLA_EXTENSIONS
+ entry_dpdnr->set_text(itos0(lieferschein->getDPDlnr()));
+ spinbutton_pakete->set_value(lieferschein->Pakete());
+ spinbutton_paeckchen->set_value(lieferschein->Paeckchen());
+ spinbutton_brutto->set_value(lieferschein->GewichtBrutto());
+ spinbutton_netto->set_value(lieferschein->GewichtNetto());
+#endif
 }
 
 void auftrag_lieferschein::display2(int kdnr)
@@ -87,11 +100,17 @@ void auftrag_lieferschein::display2(int kdnr)
 try{
  liefer_kunde->set_value(kdnr);
  set_tree_offen_content();
-   cH_Kunde k(kdnr);
-   if(instanz->BestellungFuer()!=ppsInstanz::None)
-    { artikelbox->setExtBezSchema(cH_Kunde(Kunde::default_id)->getSchema(ArtikelTyp::Garn)); }
+ cH_Kunde k(kdnr);
+
+#ifdef PETIG_EXTENSIONS 
+   if(instanz->BestellungFuer()!=ppsInstanzID::None)
+    { artikelbox->setExtBezSchema(cH_Kunde(Kunde::default_id)->getSchema(ArtikelTypID::Garn)); }
    else if (artikelbox->getBezSchema()->Id() != k->getSchemaId())
-    { artikelbox->setExtBezSchema(k->getSchema(ArtikelTyp::AufgemachtesBand)); }
+    { artikelbox->setExtBezSchema(k->getSchema(ArtikelTypID::Band)); }
+#else
+   artikelbox->setExtBezSchema(k->getSchema(ArtikelTypID::aufgemachtes_Band));
+#endif
+   artikelbox->setExtBezSchemaID(k->getSchemaId());
  }
  catch(SQLerror &e) {meldung->Show(e);}
 }
@@ -99,11 +118,14 @@ try{
 void auftrag_lieferschein::on_liefnr_activate()
 {
  try{
+ try{
    lieferschein = new Lieferschein(instanz,liefernr->Content());
    display(liefernr->Content());
  }catch(SearchComboContent<int>::ContentError &e)
  { display(atoi(liefernr->get_text().c_str()));
+   spinbutton_paeckchen->grab_focus();
  }
+ }catch(std::exception &e) {std::cerr<<e.what();}
 }
 
 void auftrag_lieferschein::on_lieferkunde_activate()
@@ -120,6 +142,79 @@ try{
   } catch(SQLerror &e) {meldung->Show(e);}
 }
 
+
+#ifdef MABELLA_EXTENSIONS
+
+void auftrag_lieferschein::on_button_erledigt_clicked()
+{
+  try{
+    if(lieferschein->getDPDlnr() != 0)
+   {
+      lieferschein->setDPDlnr(Lieferschein::Fertig);
+      entry_dpdnr->set_text("");
+   }
+   } catch(SQLerror &e) {meldung->Show(e);}
+}
+
+
+void auftrag_lieferschein::on_spinbutton_paeckchen_activate()
+{
+  spinbutton_pakete->grab_focus();
+}
+
+void auftrag_lieferschein::on_spinbutton_pakete_activate()
+{
+  spinbutton_brutto->grab_focus();
+}
+
+void auftrag_lieferschein::on_spinbutton_brutto_activate()
+{
+  spinbutton_netto->grab_focus();
+}
+
+void auftrag_lieferschein::on_spinbutton_netto_activate()
+{
+  liefdate->grab_focus();
+}
+
+gint auftrag_lieferschein::on_spinbutton_paeckchen_focus_out_event(GdkEventFocus *ev)
+{
+ try{  
+    spinbutton_paeckchen->update();
+    lieferschein->setPaeckchen(spinbutton_paeckchen->get_value_as_int());
+  } catch(SQLerror &e) {meldung->Show(e);}
+ return false;
+}
+
+gint auftrag_lieferschein::on_spinbutton_pakete_focus_out_event(GdkEventFocus *ev)
+{
+ try{  
+    spinbutton_pakete->update();
+    lieferschein->setPakete(spinbutton_pakete->get_value_as_int());
+  } catch(SQLerror &e) {meldung->Show(e);}
+ return false;
+}
+
+gint auftrag_lieferschein::on_spinbutton_brutto_focus_out_event(GdkEventFocus *ev)
+{
+ try{  
+    spinbutton_brutto->update();
+    lieferschein->setGewichtBrutto(spinbutton_brutto->get_value_as_float());
+  } catch(SQLerror &e) {meldung->Show(e);}
+ return false;
+}
+
+gint auftrag_lieferschein::on_spinbutton_netto_focus_out_event(GdkEventFocus *ev)
+{
+ try{  
+    spinbutton_netto->update();
+    lieferschein->setGewichtNetto(spinbutton_netto->get_value_as_float());
+  } catch(SQLerror &e) {meldung->Show(e);}
+ return false;
+}
+
+#endif
+
 // ist eigentlich anzahl oder?
 void auftrag_lieferschein::on_liefermenge_activate()
 {
@@ -128,46 +223,78 @@ if (!tree_offen->selection().size())
 
 }
 
-void auftrag_lieferschein::on_newlieferentry_ok()
-{  on_Palette_activate();
-}
-
-void auftrag_lieferschein::on_newlieferentryall_ok()
-{   
-}
-
 void auftrag_lieferschein::on_offen_leaf_selected(cH_RowDataBase d)
 {
+ tree_daten->unselect_all();
  const Data_Lieferoffen *dt=dynamic_cast<const Data_Lieferoffen*>(&*d);
  if(dt->getAufEintrag().getRestStk()<=0) return;
+ fill_input(dt->getAufEintrag());
+ button_zeile_uebernehmen->set_sensitive(true);
+ button_kompletter_auftrag->set_sensitive(true);
+}
 
- Einheit e(dt->getAufEintrag().Artikel());
- menge_einheit->set_text(e);
- if (e==Einheit::Stueck) 
- {  anzahl->set_value(dt->getAufEintrag().getRestStk());
-    liefermenge->set_value(0.0);
-    label_menge->hide();
-    liefermenge->hide();
- }
- else 
- {  liefermenge->set_value(dt->getAufEintrag().getRestStk());
-    anzahl->set_value(1);
-    label_menge->show();
-    liefermenge->show();
- }
- artikelbox->set_value(dt->getAufEintrag().Artikel());
- auftragnr->set_text(Formatiere(dt->getAufEintrag().Id()));
+
+
+void auftrag_lieferschein::fill_input(const AufEintrag& AE)
+{
+  fill_with(AE,Einheit(AE.Artikel()),AE.getRestStk(),1);
+}
+void auftrag_lieferschein::fill_input(const AufEintrag& AE,const LieferscheinEntry& LE)
+{
+  // Zusatzinfos dürfen nicht geändert werden:
+  if(LE.Valid() && LE.ZusatzInfo()) 
+   { button_zeile_modifizieren->set_sensitive(false) ; 
+     return; }
+  fill_with(AE,Einheit(LE.Artikel()),LE.Stueck(),LE.Menge());
+  Palette->set_value(LE.Palette());
+}
+
+
+void auftrag_lieferschein::fill_with(const AufEintrag& AE,const Einheit& E,
+         int stueck,double menge)
+{
+  artikelbox->set_value(AE.Artikel());
+  auftragnr->set_text(Formatiere(AE.Id()));
+  menge_einheit->set_text(E);
+  if (E.hatMenge())
+   {
+     label_menge->show();
+     liefermenge->show();
+     liefermenge->set_value(menge);
+     anzahl->set_value(stueck);
+   }
+  else
+   {
+     label_menge->hide();
+     liefermenge->hide();
+     liefermenge->set_value(0.0);
+     anzahl->set_value(stueck);
+   } 
+  artikelbox->set_sensitive(false);
+  auftragnr->set_sensitive(false);
 }
 
 
 void auftrag_lieferschein::on_unselectrow_offauf(int row, int col, GdkEvent* b)
 {
  clear_input();   
+ button_zeile_uebernehmen->set_sensitive(false);
+ button_kompletter_auftrag->set_sensitive(false);
 }
 
 auftrag_lieferschein::auftrag_lieferschein(cH_ppsInstanz _instanz)
 :instanz(_instanz) 
 {
+#ifdef PETIG_EXTENSIONS
+ table_mabella->hide();
+#endif
+
+#ifdef MABELLA_EXTENSIONS
+  std::string nurliefer(" and lieferadresse=true  and coalesce(aktiv,true)=true");
+  liefer_kunde->Einschraenkung(nurliefer);
+  liefer_kunde->Einschraenken(true);     
+#endif 
+
  set_tree_titles();
  liefernr->set_value_in_list(false,false);
  liefernr->set_always_fill(false);
@@ -182,6 +309,7 @@ void auftrag_lieferschein::set_tree_titles()
  t1.push_back("Lief.Zeile");
  t1.push_back("Artikel");
  t1.push_back("Auftrag");
+ t1.push_back("Palette");
  t1.push_back("Liefermenge");
  tree_daten->setTitles(t1); 
 
@@ -218,6 +346,9 @@ void auftrag_lieferschein::set_tree_daten_content(LieferscheinBase::ID lfrsid)
       for(std::vector<LieferscheinEntry>::const_iterator i=LV->LsEntries().begin();i!=LV->LsEntries().end();++i)
          datavec.push_back(new Data_Lieferdaten(*i));
       tree_daten->setDataVec(datavec);
+#warning warum geht das moveto nicht? MAT
+      tree_daten->cell(datavec.size()-1,0).moveto();
+//      tree_daten->moveto(datavec.size(),0,0.5,0);
      }
     catch(SQLerror &e)
      { meldung->Show(e); return; }
@@ -229,41 +360,49 @@ void auftrag_lieferschein::clear_input()
 {
  liefermenge->set_value(0);
  anzahl->set_value(0);
+// Palette->set_value(1);
  artikelbox->reset();
  auftragnr->set_text("");
+ artikelbox->set_sensitive(true);
+ auftragnr->set_sensitive(true);
 }
 
+
 void auftrag_lieferschein::on_Palette_activate()
-{ gtk_spin_button_update(anzahl->gtkobj());
-  gtk_spin_button_update(liefermenge->gtkobj());
-  gtk_spin_button_update(Palette->gtkobj());
+{ 
+  anzahl->update();
+  liefermenge->update();
+  Palette->update();
   
   ArtikelBase artikel = artikelbox->get_value();
   if(artikel.Id() == 0) return;
 
  try 
  {Transaction tr;
-  if(instanz->Id()==ppsInstanz::INST_GARNEINKAUF)
+#ifdef PETIG_EXTENSIONS 
+  if(instanz->Id()==ppsInstanzID::_Garn__Einkauf)
    {
      int anzahl_kartons = anzahl->get_value_as_int();
      Lieferschein::mengen_t kg_pro_karton = liefermenge->get_value_as_float();
-     Lager L(instanz->BestellungFuer());      
-     L.rein_ins_lager(artikel,anzahl_kartons*kg_pro_karton);
+     RohwarenLager L;  
+     AuftragBase::mengen_t menge;
+     if(Einheit(artikel).hatMenge()) menge=anzahl_kartons*kg_pro_karton;
+     else menge=anzahl_kartons;
+     L.rein_ins_lager(artikel,menge,getuid());
    }
+#endif
   if (!tree_offen->selection().size())
   {  // Menge verteilen
      lieferschein->push_back(artikel,anzahl->get_value_as_int(),
                   liefermenge->get_value_as_float(),Palette->get_value_as_int());
-		
   }
   else
   {
     cH_Data_Lieferoffen dt=tree_offen->getSelectedRowDataBase_as<cH_Data_Lieferoffen>();
-    AufEintragBase auftragentry=dt->getAufEintrag();
+    AufEintrag auftragentry(dt->getAufEintrag());
     Einheit e(artikel);
-    
     lieferschein->push_back(auftragentry, artikel, anzahl->get_value_as_int(),
-     		e!=Einheit::Stueck?liefermenge->get_value_as_float():0.0,
+     		e.hatMenge()?liefermenge->get_value_as_float():0.0,
      		Palette->get_value_as_int());
   } 
   tr.commit();
@@ -288,6 +427,40 @@ void auftrag_lieferschein::on_Palette_activate()
  { meldung->Show(SQLerror(e.what()));
  }
 }
+
+
+
+void auftrag_lieferschein::on_newlieferentryall_ok()
+{   
+  if (!tree_offen->selection().size()) 
+   { 
+     meldung->Show("Keine Zeile selektiert");
+     return;
+   }
+ cH_Data_Lieferoffen dt=tree_offen->getSelectedRowDataBase_as<cH_Data_Lieferoffen>();
+ AufEintragBase auftragentry=dt->getAufEintrag();
+ AuftragFull AF(auftragentry);
+ for(AuftragFull::const_iterator i=AF.begin();i!=AF.end();++i)
+   {
+     if(i->getEntryStatus()!=AufStatVal(OPEN)) continue;
+     if(i->getGeliefert()>=i->getStueck()) continue;
+     auftragzeile_zeile_uebernehmen(*i);   
+   }
+  set_tree_daten_content(lieferschein->Id());
+  set_tree_offen_content();
+}
+
+
+void auftrag_lieferschein::auftragzeile_zeile_uebernehmen(const AufEintrag &AE)
+{
+   Einheit e(AE.Artikel());
+   AufEintrag ae(AE);
+   lieferschein->push_back(ae,AE.Artikel(), AE.getRestStk(),
+     		e.hatMenge()?liefermenge->get_value_as_float():0.0,
+     		Palette->get_value_as_int());
+}
+
+
 
 void auftrag_lieferschein::liefzeile_delete()
 {
@@ -321,24 +494,39 @@ bool auftrag_lieferschein::deleteLiefEntry()
 
 void auftrag_lieferschein::on_daten_leaf_selected(cH_RowDataBase d)
 {
+ tree_offen->unselect_all();
+ try{
  const Data_Lieferdaten *dt=dynamic_cast<const Data_Lieferdaten*>(&*d);
  if(rngnr->get_text()=="" && 
     dt->get_Lieferschein_Id()!=LieferscheinBase::none_id)
-   lieferzeile_delete->set_sensitive(true);
+   {
+    lieferzeile_delete->set_sensitive(true);
+   }
  else    
-   lieferzeile_delete->set_sensitive(false);
-// lieferscheinentry = dt->get_LieferscheinEntry();
-
+    lieferzeile_delete->set_sensitive(false);
+ AufEintrag AE;
+ try{ AE=dt->getAufEintragBase();}
+ catch(AufEintrag::NoAEB_Error &e){}
+ button_zeile_modifizieren->set_sensitive(true);
+ fill_input(AE,dt->get_LieferscheinEntry());
+ }catch(std::exception &e) {cerr << e.what()<<'\n';}
 }
+
+void auftrag_lieferschein::on_daten_unselect_row(int row, int col, GdkEvent* b)
+{
+  clear_input();
+  button_zeile_modifizieren->set_sensitive(false);
+}
+
 
 void auftrag_lieferschein::on_artikelbox_activate()
 {
  Einheit e(artikelbox->get_value());
  menge_einheit->set_text(e);
- if (e!=Einheit(Einheit::Stueck)) 
+ if (e.hatMenge()) 
  { liefermenge->grab_focus();
    liefermenge->select_region(0,liefermenge->get_text_length());
-   label_menge->hide();
+   label_menge->show();
    liefermenge->show();
  }
  else 
@@ -360,18 +548,44 @@ void auftrag_lieferschein::set_tree_offen_content()
 
  try {
    SQLFullAuftragSelector sel;
-   if(instanz->Lieferant())
+#if 0 // 
+   if(instanz->Lieferschein())
      sel=SQLFullAuftragSelector(SQLFullAuftragSelector::sel_Status(
                    instanz->Id(), (AufStatVal)OPEN,false));
    else
+#endif   
      sel=SQLFullAuftragSelector(SQLFullAuftragSelector::sel_Kunde_Status(
                    instanz->Id(), liefer_kunde->get_value(), (AufStatVal)OPEN));
 
    std::vector<cH_RowDataBase> datavec;
    SelectedFullAufList *offene_auftraege=new SelectedFullAufList(sel);
    for (SelectedFullAufList::const_iterator i=offene_auftraege->begin();i!=offene_auftraege->end();++i)
-      datavec.push_back(new Data_Lieferoffen(*i));
+      datavec.push_back(new Data_Lieferoffen(*i,auftragmain));
    tree_offen->setDataVec(datavec);
   }catch (SQLerror &e) {std::cerr <<e<<'\n';}
+}
+
+void auftrag_lieferschein::on_button_zeile_modifizieren_clicked()
+{
+ try{
+   cH_Data_Lieferdaten dt(tree_daten->getSelectedRowDataBase_as<cH_Data_Lieferdaten>());
+   LieferscheinEntry LE = dt->get_LieferscheinEntry();
+   int zeile=LE.Zeile();
+   
+   Palette->update();
+   liefermenge->update();
+   anzahl->update();
+
+   if(Palette->get_value_as_int() != LE.Palette())
+      LE.setPalette(Palette->get_value_as_int());
+   if(LieferscheinBase::mengen_t(liefermenge->get_value_as_float()) != LE.Menge() ||
+            anzahl->get_value_as_int() != LE.Stueck())
+    {
+       bool ok=LE.changeMenge(anzahl->get_value_as_int(),liefermenge->get_value_as_float());
+       if(ok) set_tree_offen_content();
+       else {meldung->Show("Es hat nicht funktioniert.") ;}
+    }
+   set_tree_daten_content(lieferschein->Id());
+  } catch(std::exception &e) {std::cerr << e.what();}
 }
 

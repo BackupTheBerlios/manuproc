@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <Aux/exception.h>
+#include <unistd.h>
 
 
 std::map<st_art,st_menge> map_artikel;
@@ -17,16 +18,16 @@ int main()
 {
 cout << "Bevor dieses Programm gestertet wird muß 'clean_db' und 'cxx/Programme/Instanzen' laufen.\n";
 
-  Petig::PrintUncaughtExceptions();
+  ManuProC::PrintUncaughtExceptions();
  try {
-  Petig::dbconnect(Petig::Connection("","petigdb"));
+  ManuProC::dbconnect(ManuProC::Connection("","petigdb"));
 
-  cH_ppsInstanz instanz_from(ppsInstanz::INST_KNDAUF) ;
+  cH_ppsInstanz instanz_from(ppsInstanzID::Kundenauftraege) ;
   get_all_orders(instanz_from);
 
   create_new_auftrag();
 
-  Petig::dbdisconnect("petigdb");
+  ManuProC::dbdisconnect("petigdb");
    } catch (SQLerror &e)
   {  std::cerr << e << '\n';
   }
@@ -36,17 +37,17 @@ void create_new_auftrag()
 {
   // Neue Auftrag für alle Instanzen anlegen
   std::vector<cH_ppsInstanz>  VI=cH_ppsInstanz::get_all_instanz();
-  for(vector<AufEintrag>::iterator i = allaufids->aufidliste.begin();i!=allaufids->aufidliste.end(); ++i)
+  for(list<AufEintrag>::iterator i = allaufids->aufidliste.begin();i!=allaufids->aufidliste.end(); ++i)
    {
      ArtikelBase artikelid       = (*i).ArtId();
-     Petig::Datum datum  = (*i).getLieferdatum();
+     ManuProC::Datum datum  = (*i).getLieferdatum();
      AuftragBase::mengen_t offene_stueck  = (*i).getRestStk();
 //cout <<"Artikel: " <<cH_ArtikelBezeichnung(artikelid)->Bezeichnung()<<'\n';
 //     i->InstanzAuftraegeAnlegen(artikelid,(*i).ZNr(),datum,OPEN,offene_stueck);
 
-     AuftragBase AB(ArtikelStamm(artikelid).BestellenBei());
+     AuftragBase AB(ArtikelStamm(artikelid).BestellenBei(),AuftragBase::ungeplante_id);
 cout << cH_ArtikelBezeichnung(artikelid)->Bezeichnung()<<'\n';
-     AB.tryUpdateEntry(offene_stueck,datum,artikelid,OPEN,*i,i->ZNr());
+     AB.tryUpdateEntry(offene_stueck,datum,artikelid,OPEN,getuid(),*i,i->ZNr());
              
    }
 

@@ -17,20 +17,22 @@ class Data_Rechnung : public RowDataBase
    Data_Rechnung(RechnungEntry _rentry)
       :rentry(_rentry) {}
 
-   enum {LIEFZEILE_SEQ,LIEFNR_SEQ,ARTIKEL_SEQ,LIEFMNG_SEQ,PREIS_SEQ,GPREIS_SEQ};
+   enum {LIEFZEILE_SEQ,LIEFNR_SEQ,ARTIKEL_SEQ,STUECK_SEQ,LIEFMNG_SEQ,PREIS_SEQ,GPREIS_SEQ};
 
    virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
     {
          switch(seqnr)
            {
            case LIEFNR_SEQ :
-              return cH_EntryValueIntString(Formatiere(rentry.Lfrs_Id(),0,6,"","",'0'));
+              return cH_EntryValueIntString(Formatiere(rentry.Lfrs().Id(),0,6,"","",'0'));
            case ARTIKEL_SEQ :
               {cH_ArtikelBezeichnung AB(rentry.ArtikelID());
                return cH_EntryValueIntString(AB->Bezeichnung());
               }
+           case STUECK_SEQ :
+              return cH_EntryValueIntString(FormatiereEmpty_short(rentry.Stueck()));
            case LIEFMNG_SEQ :
-              return cH_EntryValueIntString(Formatiere_short(rentry.Menge()));
+              return cH_EntryValueIntString(FormatiereEmpty_short(rentry.Menge()));
            case LIEFZEILE_SEQ :
               return cH_EntryValueIntString(rentry.Zeile());
            case PREIS_SEQ :
@@ -41,7 +43,7 @@ class Data_Rechnung : public RowDataBase
            }
 
     }
-  int get_Lieferschein_Id() const {return rentry.Lfrs_Id();}
+  int get_Lieferschein_Id() const {return rentry.Lfrs().Id();}
   RechnungEntry get_RechnungEntry() const {return rentry;}
 };
 

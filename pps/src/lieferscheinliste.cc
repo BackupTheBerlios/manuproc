@@ -46,7 +46,7 @@ void lieferscheinliste::on_radiobutton_zeit_toggled()
   }
  if (radiobutton_nur_zeit_von->get_active())
   {
-    Petig::Datum d(1,1,1970);
+    ManuProC::Datum d(1,1,1970);
     Wdatum_von->show();
     Wdatum_von->set_value(d);
   }
@@ -59,7 +59,7 @@ void lieferscheinliste::on_radiobutton_zeit_2_toggled()
   }
  if (radiobutton_nur_zeit_bis->get_active())
   {
-    Petig::Datum d(Petig::Datum::today());
+    ManuProC::Datum d(ManuProC::Datum::today());
     Wdatum_bis->show();
     Wdatum_bis->set_value(d);
   }
@@ -95,6 +95,7 @@ void lieferscheinliste::on_radiobutton_kunde_toggled()
 lieferscheinliste::lieferscheinliste(const cH_ppsInstanz& _instanz)
 : instanz(_instanz)
 {
+
   label_anzahl->hide();
   Wdatum_von->setLabel("");
   Wdatum_bis->setLabel("");
@@ -103,6 +104,7 @@ lieferscheinliste::lieferscheinliste(const cH_ppsInstanz& _instanz)
   artikelbox->hide();
   kundenbox->hide();
   set_titles();
+  tree->set_remember("pps","lieferscheinliste");
 }
 
 void lieferscheinliste::on_button_show_clicked()
@@ -130,8 +132,8 @@ void lieferscheinliste::fill_tree()
   double size=LL->Size();
   double count=0;
 
-  Petig::Datum datum_von = Wdatum_von->get_value();
-  Petig::Datum datum_bis = Wdatum_bis->get_value();
+  ManuProC::Datum datum_von = Wdatum_von->get_value();
+  ManuProC::Datum datum_bis = Wdatum_bis->get_value();
   for (LieferscheinList::const_iterator i=LL->begin();i!=LL->end();++i)
    {
      LieferscheinVoll LV(instanz,(*i)->Id());
@@ -141,8 +143,8 @@ void lieferscheinliste::fill_tree()
      for (LieferscheinVoll::const_iterator j=LV.begin();j!=LV.end();++j)
       {
         if (  (artbase.Id()==0 || artbase.Id()==j->ArtikelID())
-            &&(radiobutton_alle_zeit_von->get_active() || datum_von < L->LsDatum())
-            &&(radiobutton_alle_zeit_bis->get_active() || datum_bis > L->LsDatum())
+            &&(radiobutton_alle_zeit_von->get_active() || datum_von < L->getDatum())
+            &&(radiobutton_alle_zeit_bis->get_active() || datum_bis > L->getDatum())
             &&(kundenid==0 || kundenid==(*i)->KdNr() ) 
             && !j->ZusatzInfo())  // besser: auswählbar machen oder noch besser: smart
          {
@@ -167,6 +169,7 @@ void lieferscheinliste::set_titles()
 {
   std::vector<std::string> t;
   t.push_back("Kunde");
+  t.push_back("Auftrag(ZNr)");
   t.push_back("Artikel");
   t.push_back("Breite");
   t.push_back("Farbe");
@@ -175,7 +178,7 @@ void lieferscheinliste::set_titles()
 //  t.push_back("Menge");
   t.push_back("Lieferschein");
   t.push_back("Lieferdatum");
-  t.push_back("geliefert am");
+//  t.push_back("geliefert am");
   t.push_back("Rechnung");
   t.push_back("Rng.Datum");
   t.push_back("Menge");
@@ -192,9 +195,16 @@ void lieferscheinliste::on_button_close_clicked()
 //#define TEXCMD "tex2prn -2 -q -Phl1260 -t landscape"
 #define TEXCMD "tex2prn -2 -G -Phl1260 -t landscape" // Preview
 
+
+gint lieferscheinliste::on_button_drucken_button_release_event(GdkEventButton *event)
+{
+ if (event->button==3)  tree->Expand_recursively(*tree); 
+ on_button_drucken_clicked();
+}
+
+
 void lieferscheinliste::on_button_drucken_clicked()
 {
-   tree->Expand_recursively(*tree);
    FILE *f=popen(TEXCMD,"w");
    std::ofstream os(fileno(f));   
 

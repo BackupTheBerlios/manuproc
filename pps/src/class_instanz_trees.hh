@@ -5,7 +5,7 @@
 #include <Aux/EntryValueIntString.h>
 #include <Aux/itos.h>
 #include <Aux/Datum.h>
-#include <Auftrag/AuftragsEntryZuordnung.h>
+#include <Auftrag/AufEintragZu.h>
 //#include <Auftrag/AufEintrag.h>
 
 //////////////////////////////////////////////////////////////////////

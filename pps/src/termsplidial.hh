@@ -42,10 +42,10 @@ class termsplidial : public termsplidial_glade
 
 public:
 
-        Petig::Datum getLiefDatum() 
+        ManuProC::Datum getLiefDatum() 
 		{ guint tag,monat,jahr;
 		  termin_neu->get_date(&jahr,&monat,&tag);
-  		  return Petig::Datum(tag,monat+1,jahr);
+  		  return ManuProC::Datum(tag,monat+1,jahr);
 		}
 
         int getMenge() { return menge_neu->get_value_as_int();}

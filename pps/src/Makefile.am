@@ -10,6 +10,7 @@ bin_PROGRAMS = pps
 pps_SOURCES = pps.cc\
 	$(BUILT_SOURCES) \
 	auftrag_main.cc \
+   auftrag_main_lager.cc \
 	auftrag_main_glade.cc \
    auftrag_main_instanz.cc \
 	auftrag_bearbeiten.cc \

@@ -3,7 +3,7 @@
 #include <Aux/EntryValueDatum.h>
 #include <Aux/EntryValueFixed.h>
 #include <Aux/EntryValueIntString.h>
-#include <Auftrag/AuftragsEntryZuordnung.h>
+#include <Auftrag/AufEintragZu.h>
 
 class Data_auftrag : public RowDataBase
 {
@@ -19,10 +19,10 @@ public:
  { 
     switch (seqnr) {
       case auftrag_main::KUNDE : {
-       if(AM->get_Instanz()->Id()==ppsInstanz::INST_KNDAUF)
+       if(AM->get_Instanz()->Id()==ppsInstanzID::Kundenauftraege)
         {
          if (AM->Kunden_nr_bool()) return cH_EntryValueIntString(AB.getKdNr()); 
-         else  return cH_EntryValueIntString(cH_Kunde(AB.getKdNr())->firma()); 
+         else  return cH_EntryValueIntString(cH_Kunde(AB.getKdNr())->sortname()); 
         }
        else { 
 #if 0       
@@ -53,11 +53,13 @@ public:
          return artbez->Komponente_als_EntryValue(seqnr-int(auftrag_main::A1));
          }
       case auftrag_main::LIEFERDATUM : {
-         std::string lw;
          if (AM->Zeit_kw_bool())
             return cH_EntryValueKalenderwoche(AB.getLieferdatum().KW());
          else   
             return cH_EntryValueDatum(AB.getLieferdatum());
+       }
+      case auftrag_main::LETZTELIEFERUNG : {
+          return cH_EntryValueDatum(AB.LetzteLieferung());
        }
 /*
       case auftrag_main::LIEFERUNGAM : {
@@ -88,17 +90,17 @@ public:
 	 }
 #ifdef PETIG_EXTENSIONS	 
       case auftrag_main::METER : 
-         if (AM->Instanz()==ppsInstanz::Rohlager ||
-         	AM->Instanz()==ppsInstanz::Einkauf)
+         if (AM->Instanz()==ppsInstanzID::Rohwarenlager ||
+         	AM->Instanz()==ppsInstanzID::_Garn__Einkauf)
             return cH_EntryValueIntString(menge.abgeleiteteMenge());
          else
-         {ArtikelMenge::mengen_t m=menge.getMenge(Einheit::Meter);
+         {ArtikelMenge::mengen_t m=menge.getMenge(EinheitID::m);
           if (!m) return cH_EntryValue();
           else return cH_EntryValueFixed<ArtikelMenge::nachkommastellen>(m);
          }
       case auftrag_main::STUECK : 
-         if (AM->Instanz()==ppsInstanz::Rohlager ||
-         	AM->Instanz()==ppsInstanz::Einkauf)
+         if (AM->Instanz()==ppsInstanzID::Rohwarenlager ||
+         	AM->Instanz()==ppsInstanzID::_Garn__Einkauf)
             return cH_EntryValueIntString(menge.Menge());
          else
          {ArtikelMenge::mengen_t m=menge.getMenge(Einheit::Stueck);
@@ -119,7 +121,7 @@ public:
    int get_aid() const {return AB.getAuftragid();} 
    int get_zeilennr() const {return AB.getZnr();} 
    int get_Artikel_ID() const {return AB.ArtId();}
-   Petig::Datum get_Lieferdatum() const {return AB.getLieferdatum();}
+   ManuProC::Datum get_Lieferdatum() const {return AB.getLieferdatum();}
    std::string ProzessText() const {return AB.getProzess()->getTyp()+" "+AB.getProzess()->getText() ;}
    AufEintrag& get_AufEintrag() const {return const_cast<AufEintrag&>(AB);}
    const ArtikelMenge getArtikelMenge() const { return menge; }
@@ -128,6 +130,11 @@ public:
       maintree_s->redisplay(this,auftrag_main::METER);
       maintree_s->redisplay(this,auftrag_main::STUECK);
    }
+   void redisplayLetzePlanInstanz(TreeBase *maintree_s,const AufEintrag &ae)
+    {
+      const_cast<AufEintrag&>(AB)=ae;
+      maintree_s->redisplay(this,auftrag_main::LETZEPLANINSTANZ);
+    }
 };
 
 struct cH_Data_auftrag : public Handle<const Data_auftrag>
@@ -152,7 +159,7 @@ public:
       { 
 #ifdef PETIG_EXTENSIONS	 
       case auftrag_main::METER : 
-         {ArtikelMengeSumme::mengen_t m=sum.Summe(Einheit::Meter);
+         {ArtikelMengeSumme::mengen_t m=sum.Summe(EinheitID::m);
           if (!m) return cH_EntryValue();
           else return cH_EntryValueFixed<ArtikelMenge::nachkommastellen,double,long long>(m);
          }

@@ -9,9 +9,9 @@
 
 int main()
 {
-  Petig::PrintUncaughtExceptions();
+  ManuProC::PrintUncaughtExceptions();
  try {
-  Petig::dbconnect();
+  ManuProC::dbconnect();
   
   Query::Execute("update auftrag_prozess set letzteplaninstanz = "
       "(select tmp_conv_instanz from prozesse"
@@ -56,7 +56,7 @@ cout <<'\n';
      }
   }
  
-  Petig::dbdisconnect();
+  ManuProC::dbdisconnect();
    } catch (SQLerror &e)
   {  std::cerr << e << '\n';
   }

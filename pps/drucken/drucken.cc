@@ -20,11 +20,12 @@
 #include <Gtk2TeX.h>
 #include <cstdio>
 #include "drucken_class.hh"
-#include <Aux/ppsInstanz.h>
+#include <Instanzen/ppsInstanz.h>
 
 LR_drucken::LR_drucken(const LR_Base::typ RL_, unsigned int _auftragsnr, bool print,
-   bool b_firmenpapier,bool b_kopie, cH_ppsInstanz _instanz, bool _toTeX=false)
-: auftragsnr(_auftragsnr),RL(RL_),instanz(_instanz),toTeX(_toTeX)
+   bool b_firmenpapier,bool b_kopie, cH_ppsInstanz _instanz, bool _toTeX, bool rueckst)
+:
+auftragsnr(_auftragsnr),RL(RL_),instanz(_instanz),toTeX(_toTeX),rueckstand(rueckst)
 {
  LR_drucken::drucken(print,b_firmenpapier,b_kopie);
 }
@@ -38,7 +39,12 @@ void LR_drucken::drucken(bool print,bool b_firmenpapier,bool b_kopie)
    FILE *f;
    if(toTeX) f=popen("cat > ./rdr$$.tex","w");
    else if (!print) f=popen("tex2prn -2 -G ","w");
+#ifdef MABELLA_EXTENSIONS
+   else f=popen(("tex2prn "+texplotter).c_str(),"w");
+#else
    else f=popen(("tex2prn -q -2 "+texplotter).c_str(),"w");
+#endif
+
    std::ofstream os(fileno(f));
 
    if      (RL==LR_Base::Rechnung)      
@@ -56,8 +62,10 @@ void LR_drucken::drucken(bool print,bool b_firmenpapier,bool b_kopie)
     }
    else if (RL==LR_Base::Auftrag || RL==LR_Base::Intern || RL==LR_Base::Extern)  
     { 
-     AuftragFull a=AuftragFull(AuftragBase(cH_ppsInstanz(instanz),(int)auftragsnr));
-     LR_Abstraktion(RL,&a,b_firmenpapier).drucken(os,b_kopie,instanz);
+     AuftragFull a=AuftragFull(AuftragBase(cH_ppsInstanz(instanz),(int)auftragsnr),false);
+     LR_Abstraktion lrab(RL,&a,b_firmenpapier);
+     lrab.setRueckstand(rueckstand);
+     lrab.drucken(os,b_kopie,instanz);
     }
    else abort();
 }

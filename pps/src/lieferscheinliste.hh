@@ -35,6 +35,7 @@ class lieferscheinliste : public lieferscheinliste_glade
         void on_button_show_clicked();
         void fill_tree();
         void on_button_drucken_clicked();
+        gint on_button_drucken_button_release_event(GdkEventButton *event);
         static std::string scale(const Gtk::CList::Row &r,int col,
             const std::string &text,gpointer user_data);
         static void praeambel(std::ostream &os,gpointer user_data);

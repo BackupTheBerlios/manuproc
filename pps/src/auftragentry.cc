@@ -68,13 +68,13 @@ Gtk::OStream &operator<<(Gtk::OStream &o,const AufEintrag &a)
  else o << "" << "\t";
  o	<< Formatiere(a.GPreis().Wert(),2,0,".") << "\t";
  try {    
-        Petig::Datum d(a.getSeqValue(KW_SEQ).Datum());
+        ManuProC::Datum d(a.getSeqValue(KW_SEQ).Datum());
 	o << d.KW().Woche()<<"'"<<d.Jahr();
- } catch (Petig::Datumsfehler &e)
+ } catch (ManuProC::Datumsfehler &e)
  {  o << "Fehler"; }
  o << '\t' << a.getEntryStatusStr() << '\t';
  try { o << a.LastEditDate().c_str();
- } catch (Petig::Datumsfehler &e)
+ } catch (ManuProC::Datumsfehler &e)
  {  o << "Fehler"; }
  o << '\n';
  return o;

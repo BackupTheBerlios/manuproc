@@ -27,8 +27,8 @@ class Data_LListe : public RowDataBase
       :  liefer(l),entry(e),rechnung(r),
          menge(entry.ArtikelID(),entry.Stueck(),entry.Menge()) {}
 
-   enum {KUNDE,ARTIKEL,BREITE,FARBE,AUFMACHUNG,LIEFERNR,
-         LIEFERDATUM,GELIEFERTAM,RECHNUNG,RECHNUNGSDATUM,SUM_MENGE,SUM_AMENGE};
+   enum {KUNDE,AUFTRAG,ARTIKEL,BREITE,FARBE,AUFMACHUNG,LIEFERNR,
+         LIEFERDATUM/*,GELIEFERTAM*/,RECHNUNG,RECHNUNGSDATUM,SUM_MENGE,SUM_AMENGE};
 
     virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
       {
@@ -39,9 +39,10 @@ class Data_LListe : public RowDataBase
             return AB->Komponente_als_EntryValue(seqnr-ARTIKEL);
           }
          case KUNDE : return cH_EntryValueIntString(cH_Kunde(liefer->KdNr())->firma());
+         case AUFTRAG : return cH_EntryValueIntString(itos(entry.AufId())+" ("+itos(entry.AufZeile())+")");
          case LIEFERNR :return cH_EntryValueIntString( entry.Id());
-         case LIEFERDATUM : return cH_EntryValueDatum( liefer->LsDatum());
-         case GELIEFERTAM : return cH_EntryValueDatum( liefer->getDatum());
+         case LIEFERDATUM : return cH_EntryValueDatum( liefer->getDatum());
+//         case GELIEFERTAM : return cH_EntryValueDatum( liefer->getDatum());
          case RECHNUNG : return cH_EntryValueIntString( liefer->RngNr());
          case RECHNUNGSDATUM : return cH_EntryValueDatum(rechnung.getDatum());
          case SUM_MENGE: 

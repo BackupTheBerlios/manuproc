@@ -76,7 +76,7 @@ AufEintrag::AufEintrag(const aktAufEintrag &aufentry,int aufid, int wrkst,
  bestellt = BESTELLT;
  menge = bestellt*artikel->Stueckgroesse();
  rest = menge;
- lieferdatum = Petig::Datum(LIEFERDATUM);
+ lieferdatum = ManuProC::Datum(LIEFERDATUM);
  geliefert = 0;
  status=(AufStatVal)STATUS;
  preis=Preis(PREIS,cP_Waehrung(Waehrung::DM));

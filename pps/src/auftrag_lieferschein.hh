@@ -23,6 +23,7 @@
 #include<Lieferschein/LieferscheinVoll.h>
 #include<tclistrowdata.h>
 #include<Auftrag/AufEintragBase.h>
+#include<Artikel/Einheiten.h>
 
 class auftrag_lieferschein : public auftrag_lieferschein_glade
 {   
@@ -34,9 +35,32 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
         void set_tree_daten_content(LieferscheinBase::ID lfrsid);
         void set_tree_offen_content();
         void on_daten_leaf_selected(cH_RowDataBase d);
+        void on_daten_unselect_row(int row, int col, GdkEvent* b);
         void on_offen_leaf_selected(cH_RowDataBase d);
         void on_unselectrow_offauf(int row, int col, GdkEvent* b);
         bool deleteLiefEntry();
+#ifdef MABELLA_EXTENSIONS
+        void on_button_erledigt_clicked();
+        void on_spinbutton_paeckchen_activate();
+        gint on_spinbutton_paeckchen_focus_out_event(GdkEventFocus *ev);
+        void on_spinbutton_pakete_activate();
+        gint on_spinbutton_pakete_focus_out_event(GdkEventFocus *ev);
+        void on_spinbutton_brutto_activate();
+        gint on_spinbutton_brutto_focus_out_event(GdkEventFocus *ev);
+        void on_spinbutton_netto_activate();
+        gint on_spinbutton_netto_focus_out_event(GdkEventFocus *ev);
+#endif
+#ifdef PETIG_EXTENSIONS
+        void on_button_erledigt_clicked(){}
+        void on_spinbutton_paeckchen_activate(){}
+        gint on_spinbutton_paeckchen_focus_out_event(GdkEventFocus *ev){return false;}
+        void on_spinbutton_pakete_activate(){}
+        gint on_spinbutton_pakete_focus_out_event(GdkEventFocus *ev){return false;}
+        void on_spinbutton_brutto_activate(){}
+        gint on_spinbutton_brutto_focus_out_event(GdkEventFocus *ev){return false;}
+        void on_spinbutton_netto_activate(){}
+        gint on_spinbutton_netto_focus_out_event(GdkEventFocus *ev){return false;}
+#endif
         void on_liefer_close();
         void on_liefer_neu();
         void on_lief_save();
@@ -47,15 +71,20 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
         void on_lieferkunde_activate();
         void on_liefdate_activate();
         void on_liefermenge_activate();
-        void on_newlieferentry_ok();
+        void on_newlieferentry_ok() {on_Palette_activate();};
         void on_newlieferentryall_ok();
         void on_Palette_activate();
+        void auftragzeile_zeile_uebernehmen(const AufEintrag &AE);
         void on_artikelbox_activate();
+        void on_button_zeile_modifizieren_clicked();
 
         void liefzeile_delete();
         void on_button_liste_clicked();
 
 	void clear_input();
+   void fill_input(const AufEintrag& AE);
+   void fill_input(const AufEintrag& AE,const LieferscheinEntry& LE);
+   void fill_with(const AufEintrag& AE,const Einheit& E,int stueck,double menge);
 	void display(int lfrsid);
 	void display2(int kdnr);
 	

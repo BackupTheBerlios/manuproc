@@ -28,11 +28,11 @@
 MyMessage *meldung;
 auftrag_main *auftragmain;
 auftrag_bearbeiten *auftragbearbeiten;
-Petig::Connection *Conn;
+ManuProC::Connection *Conn;
 
 int main(int argc, char **argv)
 {  
- Conn = new Petig::Connection();
+ Conn = new ManuProC::Connection();
  int i;
 
  while ((i = getopt(argc, argv, "h:d:")) != EOF)
@@ -51,17 +51,17 @@ int main(int argc, char **argv)
    textdomain (PACKAGE);
 #endif ///* ENABLE_NLS*/
    Gnome::Main m("auftrag", "0.0", 1, argv);
- Petig::PrintUncaughtExceptions();
+ ManuProC::PrintUncaughtExceptions();
 
  meldung = new MyMessage();
  try{ 
- Petig::dbconnect(*Conn); }
+ ManuProC::dbconnect(*Conn); }
  catch(SQLerror &e)
   { meldung->Show(e);
     return 1;
   }
- cH_ppsInstanz instanz(ppsInstanz::INST_KNDAUF);
- if (argc-optind>1) instanz=cH_ppsInstanz(ppsInstanz::ID(atoi(argv[optind])));
+// cH_ppsInstanz instanz(ppsInstanzID::Kundenauftraege);
+// if (argc-optind>1) instanz=cH_ppsInstanz(ppsInstanz::ID(atoi(argv[optind])));
 
   auftragmain = new auftrag_main();
 
@@ -72,8 +72,11 @@ weiter:
  try{ m.run();}
    catch(SQLerror &e) {meldung->Show(e); goto weiter;}
 
+ catch(ManuProC::Datumsfehler &df)
+   {cout << df;}
+  
  delete auftragmain;
- Petig::dbdisconnect_nt(Conn->Dbase());
+ ManuProC::dbdisconnect_nt(Conn->Dbase());
  delete meldung;
  delete Conn;
  return 0;

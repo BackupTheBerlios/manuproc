@@ -35,7 +35,7 @@ class Auftrag : public AuftragBase
 {
 protected:
 	int kundennr;
-	Petig::Datum datum;
+	ManuProC::Datum datum;
 	AufStatVal status;
 	std::string youraufnr;
 	std::string bemerkung;
@@ -57,7 +57,7 @@ public:
 	void setStatusAuftrag(AufStatVal st) throw(SQLerror);
 	void setJahrgang(int jahr) throw(SQLerror);
 	
-        const Petig::Datum &getDatum() const { return datum; } 
+        const ManuProC::Datum &getDatum() const { return datum; } 
 	AufStatVal getStatus() const { return status; }
 	int getAuftragid() const { return auftragid; }
 	std::string getAuftragidToStr() const

@@ -22,11 +22,13 @@
 
 #include <Artikel/Prozess.h>
 #include <vector>
-#include <Aux/ppsInstanz.h>
+#include <Instanzen/ppsInstanz.h>
 #include <Auftrag/AufEintrag.h>
 #include <Auftrag/AuftragFull.h>
+#include <Auftrag/AufEintragZu.h>
 #include<Auftrag/selFullAufEntry.h>
 #include <Aux/Long.h>
+
 
 class auftrag_main : public auftrag_main_glade
 {   
@@ -81,6 +83,7 @@ private:
         std::string bool2str(bool b);
         bool str2bool(std::string s,bool def);
         void on_zeitdarstellung_activate();
+        void on_preload_orders_activate();
         void on_kundendarstellung_activate();
         void on_materialbedarf_sortiert();
         void on_kunden_anr_activate();
@@ -89,16 +92,17 @@ private:
         void on_mainprint_button_clicked();
         void on_leaf_selected(cH_RowDataBase d);
         void on_node_selected(const TreeRow &node);
+        void show_something_for(AufEintrag& selAufEintrag);
         void on_unselect_row(gint row, gint column, GdkEvent *event);
         void on_togglebutton_bestellen_toggled();
         void on_togglebutton_material_toggled();
         void on_togglebutton_auftraege_toggled();
         void handle_togglebutton(char c);
-        void show_selected_line();
+        void show_selected_line(bool lager=false);
         void on_button_auftrag_erledigt_clicked();
         void instanz_menge(const std::map<st_index,st_mengen>& map_allart);
-        void get_ArtikelZusammensetzung(const ArtikelBase& art,const AufEintrag& AEB,std::map<st_index,st_mengen>& map_allart);
-        void get_ArtikelHerkunft(const ArtikelBase& art,const AufEintrag& AEB,std::map<st_index,st_mengen>& map_allart);
+        void get_ArtikelZusammensetzung(const AufEintrag& AEB,std::map<st_index,st_mengen>& map_allart);
+        void get_ArtikelHerkunft(const AufEintrag& AEB,std::map<st_index,st_mengen>& map_allart);
         void getAufEintrag_fromNode(TCListRow_API::const_iterator b,
             TCListRow_API::const_iterator e, std::map<st_index,st_mengen>& M);
         void fillStamm(int *cont, GtkSCContext newsearch);
@@ -111,12 +115,13 @@ private:
 
         std::vector<cH_ppsInstanz> get_all_instanz();
         void instanz_selected(const cH_ppsInstanz instanz);
-
+         
+        void on_button_faerben_clicked(); 
 
 public:
   // Spaltenbezeichnungen
    enum {KUNDE,A1,A2,A3,A4,LIEFERDATUM,AUFTRAG,LETZEPLANINSTANZ,
-         VERARBEITUNG,METER,STUECK};
+         VERARBEITUNG,LETZTELIEFERUNG,METER,STUECK};
 
  cH_ppsInstanz Instanz() const {return instanz;}
  bool interneNamen_bool() const { return interne_namen_bool; }
@@ -139,13 +144,29 @@ private:
    gint on_button_instanz_print_clicked(GdkEventButton *ev);
    void instanz_tree_titel_setzen();
    void neuer_auftrag_tree_titel_setzen();
-   void instanz_leaf_auftrag(AufEintrag& selected_AufEintrag);
+   void instanz_auftrag_anlegen(AufEintrag& AE);
    void show_neuer_auftrag();
    void tree_neuer_auftrag_leaf_selected(cH_RowDataBase d);
    void loadAuftragInstanz(const AuftragBase& auftragbase);
    int get_next_entry_znr(AuftragBase& auftrag);
    void on_togglebutton_geplante_menge_toggled();
    void on_button_Kunden_erledigt_clicked();
+   void on_button_instanz_get_selection_clicked();
+
+  // Ab hier fürs Lager
+  void lager_zeigen();
+  void lager_ueberschrift();
+  SelectedFullAufList lager_auftraege();
+  struct st_tree_lager {AufEintrag AE;AuftragBase::mengen_t verplant;
+                        AuftragBase::mengen_t bestellt;
+       st_tree_lager(AufEintrag ae, AuftragBase::mengen_t v,AuftragBase::mengen_t b)
+       :AE(ae),verplant(v),bestellt(b) {}};
+
+  std::list<st_tree_lager> auftrags_lager_mengen(ArtikelBase artikel,SelectedFullAufList& AuftragsListe);
+  void on_lager_leaf_selected(cH_RowDataBase d);
+  void on_lager_node_selected(const TreeRow &node);
+  void on_lager_unselect_row(gint row, gint column, GdkEvent *event);
+
 };
 
 class MatListSort

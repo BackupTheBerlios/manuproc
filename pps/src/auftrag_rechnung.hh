@@ -20,7 +20,7 @@
 #  include "auftrag_rechnung_glade.hh"
 #  define _AUFTRAG_RECHNUNG_HH
 
-#include<Aux/ppsInstanz.h>
+#include<Instanzen/ppsInstanz.h>
 #include<Lieferschein/Rechnung.h>
 
 class auftrag_rechnung : public auftrag_rechnung_glade
@@ -60,6 +60,10 @@ class auftrag_rechnung : public auftrag_rechnung_glade
         void waehrung_geaendert();
 	void rabatt_geaendert();
 	void redisplay();
+   void on_button_gutschrift_clicked();
+   void on_button_gutschrift_nein_clicked();
+   void on_button_gutschrift_ja_clicked();
+
 
 // TreeRow *selectedrow_lief;
 // TreeRow *selectedrow_rng;

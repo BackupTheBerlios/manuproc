@@ -28,8 +28,6 @@ const static struct option options[]=
  { "kopie",  no_argument, NULL, 'k' },  
  { "art",     required_argument,      NULL, 'a' }, 
  { "nr",     required_argument,      NULL, 'n' }, 
-  // ich mag den Namen nicht, schlieﬂlich ist das kein Plotter CP; genau JJ:-)
- { "plot",     no_argument,      NULL, 'p' },
  { "print",     no_argument,      NULL, 'p' }, 
  { "instanz", required_argument,      NULL, 'i' }, 
  { "database", required_argument,      NULL, 'd' }, 
@@ -44,8 +42,9 @@ int main (int argc, char *argv[])
  LR_Base::typ was=LR_Base::Auftrag;
  bool plot=false;
  bool toTeX=false;
+ bool rueckstand=false;
  unsigned int auftragsnr = 0; 
- ppsInstanz::ppsInstId instanz = ppsInstanz::INST_KNDAUF;
+ ppsInstanz::ID instanz = ppsInstanzID::Kundenauftraege;
  std::string database="";
  std::string dbhost="";
  
@@ -53,7 +52,7 @@ int main (int argc, char *argv[])
 
  if(argc==1) exit(1);
 
- while ((opt=getopt_long(argc,argv,"ftka:n:pi:d:",options,NULL))!=EOF)
+ while ((opt=getopt_long(argc,argv,"ftka:n:pi:d:R",options,NULL))!=EOF)
   { switch (opt)
     {  case 'f' : firmenpapier=true; break;
        case 'k' : kopie=true; break;
@@ -65,14 +64,15 @@ int main (int argc, char *argv[])
 		  else was=LR_Base::NICHTS;
 		break;
        case 'n' : auftragsnr=atoi(optarg);break;
-       case 'i' : instanz=(ppsInstanz::ppsInstId)atoi(optarg);break;
+       case 'i' : instanz=(ppsInstanz::ID)atoi(optarg);break;
        case 'p' : plot=true;break;
 	case 'd' : database=optarg;break; 
 	case 'h' : dbhost=optarg;break; 
 	case 't' : toTeX=true;break; 
+	case 'R' : rueckstand=true; break;
 	case '?':
-            std::cout << "$Id: auftrag_drucken.cc,v 1.11 2002/03/20 08:03:36 christof Exp $\n\n"
-                   "USAGE:" << argv[0] << " -n <Nr> [-a <Auftrag|Rechung|Lieferschein|Intern|Extern>] [-kft] [-i <Instanz>] [-d <Datenbank>]\n"
+            std::cout << "$Id: auftrag_drucken.cc,v 1.12 2002/06/27 07:57:25 christof Exp $\n\n"
+                   "USAGE:" << argv[0] << " -n <Nr> [-a <Auftrag|Rechnung|Lieferschein|Intern|Extern>] [-kft] [-i <Instanz>] [-d <Datenbank>]\n"
 		"\n\t-t\t nur TeX file erzeugen ("<< (toTeX?"an":"aus")<< ")\n"
 		"\t-p\t drucken ("<< (plot?"an":"aus")<< ")\n"
 		"\t-a\t Aufrag(*), Rechnung, Lieferschein, Intern, Extern\n"
@@ -81,20 +81,21 @@ int main (int argc, char *argv[])
 		"\t-f\t Kopien ("<< (kopie?"an":"aus")<< ")\n"
 		"\t-i\t Instanz ausw‰hlen ("<< instanz<< ")\n"
 		"\t-d\t Datenbank ("<< database<< ")\n"
-		"\t-d\t DbHost ("<< dbhost<< ")\n";
+		"\t-h\t DbHost ("<< dbhost<< ")\n"
+		"\t-R\t R¸ckstand zum Auftrag\n";
             exit(1);
     }
   }                 
   try {
-      Petig::Connection conn;
+      ManuProC::Connection conn;
       conn.setDbase(database);
       conn.setHost(dbhost);
-      Petig::dbconnect(conn);  
+      ManuProC::dbconnect(conn);  
 
       LR_drucken l(was,auftragsnr,plot,firmenpapier,
-			kopie,cH_ppsInstanz(instanz),toTeX);      
+			kopie,cH_ppsInstanz(instanz),toTeX,rueckstand);      
          
-      Petig::dbdisconnect();
+      ManuProC::dbdisconnect();
    } catch (SQLerror &e)
    {  std::cerr << e << '\n';
       return 1;
