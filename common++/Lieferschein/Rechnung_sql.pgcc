@@ -227,6 +227,24 @@ void Rechnung::deleteLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
 #include <sys/types.h>
 #include <unistd.h>
 
+void Rechnung::push_back(unsigned &lineno,ArtikelBase art,
+		unsigned lfrsid,unsigned lfrsznr, unsigned stk,
+		mengen_t menge,const Preis &p, AufEintragBase::rabatt_t rabatt,
+		fixedpoint<2> provsatz, const Preis &ek_preis)
+{ Query("insert into rechnungentry "
+ 	"(rngid,zeilennr, artikelid, lfrsid,lfrszeile, stueck,menge,"
+ 		"preis,rabatt,preismenge, provsatz,ek_preis) "
+ 	"VALUES (?,?, ?, ?,?, ?,?,"
+ 		"?,?,?, ?,?)")
+ 		<< Id() << lineno << art << lfrsid << lfrsznr 
+	 	<< stk << Query::NullIf(menge)
+ 		<< p.Wert(getWaehrung(),p.BezugsMenge()) 
+	 	<< rabatt << p.BezugsMenge() << provsatz 
+	 	<< Query::NullIf(ek_preis.Wert(Waehrung::default_id,
+						p.BezugsMenge()));
+  lineno++;
+}
+
 void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
 {
  int MAXZNR,MINZNR;
@@ -251,40 +269,22 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
     AufEintragBase::rabatt_t rabatt;
     fixedpoint<2> provsatz=0;
 
-    if (!i->getZusatzInfos().empty())
-    {  if (i->getZusatzInfos()[0].aeb.valid())
-       {  AufEintrag ae(i->getZusatzInfos()[0].aeb);
-          rabatt=ae.Rabatt();
-	  if(rabatt==0)
-            p=ae.EPreis(false);
-	  else
-	    p=ae.EPreis(true);
-          provsatz=ae.ProvSatz();
-       }
+    if (!i->getZusatzInfos().empty() && i->getZusatzInfos()[0].aeb.valid())
+    { AufEintrag ae(i->getZusatzInfos()[0].aeb);
+      rabatt=ae.Rabatt();
+      p=ae.EPreis(ae.Rabatt()!=0);
+      provsatz=ae.ProvSatz();
     }
 
     // ohne Auftrag, nur Lieferschein: z.B. Gutschrift
     if(i->getZusatzInfos().empty() || !(i->getZusatzInfos()[0].aeb.valid()))
        provsatz=lv.getKunde()->getProvSatz_Artikel(
 				ArtikelBase(i->Artikel()));
-
+    push_back(lineno,i->Artikel(),lfrs.Id(),i->ZNr(),i->Stueck(),i->Menge(),
+		p,rabatt,provsatz,ek_preis);
 
     ek_preis=Artikelpreis(PreisListe::ID(99999),i->Artikel(),
     		AuftragBase::Gesamtmenge(i->Stueck(),i->Menge()).as_int());
-    Query("insert into rechnungentry "
- 	"(rngid,zeilennr, artikelid, lfrsid,lfrszeile, stueck,menge,"
- 		"preis,rabatt,preismenge, provsatz,ek_preis) "
- 	"VALUES (?,?, ?, ?,?, ?,?,"
- 		"?,?,?, ?,?)")
- 	<< Id() << lineno << i->Artikel() << lfrs.Id() << i->ZNr() 
- 				<< i->Stueck() 
-				<< Query::NullIf(i->Menge(),0)
- 	<< p.Wert(getWaehrung(),p.BezugsMenge()) 
-	 	<< rabatt << p.BezugsMenge()
-	 	<< provsatz 
-	 	<< Query::NullIf(ek_preis.Wert(Waehrung::default_id,
-						p.BezugsMenge()));
-    lineno++;
  }
 
 

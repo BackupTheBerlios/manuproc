@@ -1,6 +1,7 @@
-/* $Id: Rechnung.h,v 1.32 2004/01/26 15:27:09 jacek Exp $ */
+/* $Id: Rechnung.h,v 1.33 2004/10/28 17:02:00 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 2000-2004 Adolf Petig GmbH & Co. KG
+ *  written by Jacek Jakubowski
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,9 +30,12 @@
 #include "LieferscheinBase.h"
 #include <Kunde/Zahlungsart.h>
 #include <Misc/Handles.h>
+#include <Auftrag/AufEintragBase.h>
 
 #define ENTSSATZ	0.002
 #define MWSTPROZ	16
+
+class Preis;
 
 class Rechnung : public RechnungBase
 {
@@ -50,6 +54,10 @@ private:
  fixedpoint<5> kurs;  
  int einzug_refnr;
   
+ void push_back(unsigned &lineno,ArtikelBase art,
+		unsigned lfrsid,unsigned lfrsznr, unsigned stk,
+		mengen_t menge,const Preis &p, AufEintragBase::rabatt_t rabatt,
+		fixedpoint<2> provsatz, const Preis &ek_preis);
 public:
         
  Rechnung(ID rid) throw(SQLerror);
@@ -81,8 +89,10 @@ public:
  ExtBezSchema::ID getSchema() { return kunde->getSchemaId(); }
  bool Bezahlt() const { return bezahlt; }
  void setBezahlt(bool _bezahlt) throw(SQLerror);
+
  void addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror);
  void deleteLieferschein(const LieferscheinBase &lfrs) throw(SQLerror);
+
  void setze_Rabatt(rabatt_t r) throw(SQLerror);
  const ManuProC::Datum getDatum() const { return rgdatum; }
  const ManuProC::Datum getZahlziel() const { return zahlziel; }
