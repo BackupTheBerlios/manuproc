@@ -29,7 +29,6 @@ exec sql include sqlca;
 #include <Artikel/ArtikelStamm.h>
 #include <Misc/TraceNV.h>
 #include <Misc/FetchIStream.h>
-#include <unistd.h>
 #include <sys/types.h>
 
 void Auftrag::deleteAuftrag() throw(SQLerror)

@@ -1,4 +1,4 @@
-// $Id: Auftrag.cc,v 1.13 2004/11/04 17:10:07 christof Exp $
+// $Id: Auftrag.cc,v 1.14 2004/11/04 17:16:33 christof Exp $
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,7 +19,10 @@
 
 #include"AuftragFull.h"
 #include<Misc/Ausgabe_neu.h>
-
+#include <Misc/TraceNV.h>
+#include <unistd.h>
+#include<Misc/Changejournal.h>
+#include <Misc/Transaction.h>
 
 std::string Auftrag::getAuftragidToStr() const
 { return ID2string(auftragid); }
@@ -91,35 +94,30 @@ void Auftrag::insert(unsigned zeilennr, const mengen_t bestellt,
 		<< getuid();
 
  if(Instanz()==ppsInstanzID::Kundenauftraege)
-  { try
-    { pps_ChJournalEntry::newChange(
+  { pps_ChJournalEntry::newChange(
                         instanz,
 			AufEintragBase(*this,zeilennr),
                         artikel,
-                        bestellt,
-                        bestellt,
+                        bestellt.as_float(),
+                        bestellt.as_float(),
                         pps_ChJournalEntry::CH_MENGE);
-    }
-    catch(SQLerror &e)
-    { tr.rollback(); throw; }
+  }
 
 #ifdef MABELLA_EXTENSIONS
     cH_Kunde kd(kundennr);
     fixedpoint<2> provsatz;
-    try{ provsatz = kd->getProvSatz_Artikel(artikel);}
-    catch(SQLerror &e) { tr.rollback(); throw; }
+    provsatz = kd->getProvSatz_Artikel(artikel);
     Query("update auftragentry set provsatz=?"
       	" where (instanz,auftragid,zeilennr)=(?,?,?)")
 	<< provsatz
       	<< *this << zeilennr;
       	SQLerror::test(__FILELINE__);
 #endif
-  }
  // Kundenaufträge legen automatisch einen Auftrag bei der entsprechenden Instanz 
  // für denselben Artikel an.
  if(status==OPEN && setInstanzAuftraege)
   // Nur offene Aufträge werden nach unten bestellt
-   {  AufEintrag AE(AEB);
+   {  AufEintrag AE(make_value(AufEintragBase(*this,zeilennr)));
       AE.Verzeigern(AE.getRestStk());
    }
 }
@@ -149,8 +147,7 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
  insert(ZEILENNR,bestellt,lieferdatum,artikel,status,setInstanzAuftraege,
   	preis,rabatt,preisliste);
  tr.commit();
- AufEintragBase AEB(*this,ZEILENNR);
- return AEB;
+ return AufEintragBase(*this,ZEILENNR);
 }
 
 
@@ -177,7 +174,7 @@ void Auftrag::Label(unsigned int lid) throw(SQLerror)
 void Auftrag::Notiz(const std::string &n) throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
- Query("update auftrag set notiz=? where (instanz,auftragid)=(?,?)";
+ Query("update auftrag set notiz=? where (instanz,auftragid)=(?,?)")
    << n
    << *this;
  notiz=n;
