@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.49 2004/03/11 14:47:25 christof Exp $
+// $Id: FetchIStream.h,v 1.50 2004/03/11 15:21:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,11 +33,10 @@
 // enum ECPG...
 #else
 #include <ecpgerrno.h>
-#endif
-
 extern "C" {
 #include <libpq-fe.h>
 }
+#endif
 
 class FetchIStream
 {public:
