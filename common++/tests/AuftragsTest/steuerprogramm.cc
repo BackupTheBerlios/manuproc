@@ -31,6 +31,9 @@
 // Lieferschein
 #include <Lieferschein/Lieferschein.h>
 
+#include <fstream>
+#include <sys/stat.h>
+
 #ifdef PETIG_EXTENSIONS
 #include <Lager/RohwarenLager.h>
 #include <Lager/JumboLager.h>
@@ -50,10 +53,10 @@ static ostream *testlog;
 
 static void vergleichen(Check &C, Check::was_checken w, const std::string &zusatz, 
         const std::string &name, bool mit_reparatur_programm)
-{   testlog << int(w) << ' ' << zusatz << ' ' << name << '\n';
+{   (*testlog) << int(w) << ' ' << zusatz << ' ' << name << '\n';
     bool erfolgreich=C.teste(w,zusatz,mit_reparatur_programm);
     if(!erfolgreich) 
-    { cout << name << " fehlgeschlagen\n"; exit(fehler()); }
+    { cout << name << " fehlgeschlagen\n"; exit(1); }
 }
 
 static int fehler()
@@ -91,7 +94,7 @@ int auftragstests(e_mode mode)
    {  
 //ManuProC::Tracer::Enable(AuftragBase::trace_channel);
       AE.setStatus(OPEN,UID);
-      vergleichen(Check::Menge,"_mit_lager_open","Öffnen des Auftrags",mit_reparatur_programm);
+      vergleichen(C,Check::Menge,"_mit_lager_open","Öffnen des Auftrags",mit_reparatur_programm);
    }
 
    switch(mode) {
