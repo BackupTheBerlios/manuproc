@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.hh,v 1.24 2004/02/02 18:01:20 christof Exp $
+// $Id: ArtikelBox.hh,v 1.25 2004/11/15 10:10:56 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.24 2004/02/02 18:01:20 christof Exp $
+// $Id: ArtikelBox.hh,v 1.25 2004/11/15 10:10:56 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -212,7 +212,9 @@ class ArtikelBox : public Gtk::EventBox
 
 // Kombiniert/nicht kombiniert: Zugriff auf Combos
  std::vector<cH_EntryValue> get_content(unsigned int l=0,unsigned int spmax=G_MAXINT) const;
+public:  // public for Artikeleingabe
  void set_content(const std::vector<cH_EntryValue> &v,unsigned int l=0);
+protected: 
  std::vector<cH_EntryValue> expand_kombi_Artikel(unsigned int l,std::string text) const;
  static std::string Kombinieren(cH_ExtBezSchema schema, unsigned int signif,const std::vector<std::string> &v);
  static std::string Kombinieren(cH_ExtBezSchema schema, unsigned int signif,const std::vector<cH_EntryValue> &v);
