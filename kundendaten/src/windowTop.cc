@@ -11,6 +11,7 @@
 #include <gtk--/main.h>
 #include <gtk--/notebook.h>
 #include <Kunde/Kundengruppe.h>
+#include "kundendaten_aux.hh"
 
 void windowTop::on_notebook1_switch_page(Gtk::Notebook_Helpers::Page* page,guint pagenr)
 {
@@ -34,6 +35,10 @@ void windowTop::on_notebook1_switch_page(Gtk::Notebook_Helpers::Page* page,guint
      	try { load_notizen(); }
         catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e);}
      	break;
+     case PAGE_GRUPPEN: 
+     	try { showGruppen(); }
+        catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e);}
+     	break;     	
    }
 }
 
@@ -52,16 +57,12 @@ windowTop::windowTop()
  button_del_preisliste->set_sensitive(false);
  button_spreis_add->set_sensitive(false);
  
-#ifdef MABELLA_EXTENSIONS
- button_kunde_loeschen->hide();
-#endif 
-
 
 #warning Der default Wert soll aus der Db geholt werden
  gruppenwahl->set_value(KundengruppeID::Kunden);
  kundenauswahl->reset();
  kundenauswahl->EinschraenkenKdGr(gruppenwahl->get_value());
-
+ geburtstag->setLabel("Geburtstag");
  connectFkt();
 }
 
@@ -105,7 +106,7 @@ void windowTop::clear_entrys()
    frame_kundenkontakt->set_sensitive(false);
    fire_enabled=false;
    
-   spinbuttonGruppenNr->set_value(0);
+//   spinbuttonGruppenNr->set_value(0);
    entrySortiername->set_text("");
    entryPostanwVor->set_text("");
    entryPostanwNach->set_text("");
@@ -181,10 +182,18 @@ void windowTop::clear_entrys()
 void windowTop::setTitles()
 {
  std::vector<std::string> preis;
- preis.push_back("Suchreinfolge");
+ preis.push_back("Suchreihenfolge");
  preis.push_back("Bezeichnung");
  preis.push_back("Nr");
  SonderPreislisteTree->setTitles(preis);
+ 
+ std::vector<std::string> grp_titel(alle_gruppen->Cols());
+ grp_titel[Data_Gruppe::GRP_ID]="Nr.";
+ grp_titel[Data_Gruppe::GRP_OBID]="Obergruppe";
+ grp_titel[Data_Gruppe::GRP_BEZ]="Gruppe";
+ grp_titel[Data_Gruppe::GRP_KOMM]="Kommentar"; 
+ alle_gruppen->setTitles(grp_titel); 
+ gewaehlte_gruppen->setTitles(grp_titel);  
 }
 
 void windowTop::on_kunden_status_toggled()
@@ -414,5 +423,24 @@ void windowTop::load_notizen()
 }
 
 
+void windowTop::on_selectrow_allegruppen(cH_RowDataBase leaf)
+{  
+}
+
+void windowTop::on_unselectrow_allegruppen(gint row, gint column, GdkEvent *event)
+{  
+}
+
+void windowTop::on_selectrow_gewaehltegruppen(cH_RowDataBase leaf)
+{  
+}
+
+void windowTop::on_unselectrow_gewaehltegruppen(gint row, gint column, GdkEvent *event)
+{  
+}
 
 
+
+void windowTop::on_lfran_activate()
+{  
+}

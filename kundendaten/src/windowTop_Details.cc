@@ -16,9 +16,7 @@ void windowTop::show_details()
    else
      betreuer->reset();
 
-   labelDetailKdNrEintrag->set_text(itos(kundendaten->Id()));
    labelDetailStandEintrag->set_text(kundendaten->stand());
-   labelDetailFirmaEintrag->set_text(kundendaten->firma());
 
 	spinbutton_Flaeche->set_value(kundendaten->flaeche());
 	spinbutton_Mitarbeiter->set_value(kundendaten->mitarbeiter());

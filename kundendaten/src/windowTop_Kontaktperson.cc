@@ -47,8 +47,6 @@ void windowTop::show_kontaktpersonen()
   try{
    table_kontaktperson->set_sensitive(true);
    // Personen
-   labelPersonenKdNrEintrag->set_text(itos(kundendaten->Id()));
-   labelPersonenFirmaEintrag->set_text(kundendaten->firma());
 
    clistPersonenListe->clear();
    textPersonenNotiz->delete_text(0,textPersonenNotiz->get_length());

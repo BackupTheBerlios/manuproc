@@ -12,7 +12,7 @@
 
 void window_Dialog_Bestaetigen::on_button_ok_clicked()
 {   
-  hauptfenster->kunde_loeschen();
+//  hauptfenster->kunde_loeschen();
   destroy();
 }
 

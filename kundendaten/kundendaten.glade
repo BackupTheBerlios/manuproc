@@ -126,7 +126,7 @@
 	  <bottom_attach>1</bottom_attach>
 	  <xpad>0</xpad>
 	  <ypad>0</ypad>
-	  <xexpand>True</xexpand>
+	  <xexpand>False</xexpand>
 	  <yexpand>False</yexpand>
 	  <xshrink>False</xshrink>
 	  <yshrink>False</yshrink>
@@ -771,11 +771,18 @@
 		</widget>
 
 		<widget>
-		  <class>GtkFrame</class>
-		  <name>frame72</name>
-		  <label>Anrede</label>
-		  <label_xalign>0</label_xalign>
-		  <shadow_type>GTK_SHADOW_NONE</shadow_type>
+		  <class>Custom</class>
+		  <name>scc_anrede</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <signal>
+		    <name>search</name>
+		    <handler>scc_anrede_search</handler>
+		    <last_modification_time>Wed, 27 Feb 2002 13:32:44 GMT</last_modification_time>
+		  </signal>
+		  <creation_function>SearchComboContent&lt;int&gt;</creation_function>
+		  <int1>0</int1>
+		  <int2>0</int2>
+		  <last_modification_time>Wed, 27 Feb 2002 14:55:34 GMT</last_modification_time>
 		  <child>
 		    <left_attach>0</left_attach>
 		    <right_attach>1</right_attach>
@@ -790,21 +797,6 @@
 		    <xfill>True</xfill>
 		    <yfill>True</yfill>
 		  </child>
-
-		  <widget>
-		    <class>Custom</class>
-		    <name>custom1</name>
-		    <cxx_visibility>protected</cxx_visibility>
-		    <signal>
-		      <name>search</name>
-		      <handler>scc_anrede_search</handler>
-		      <last_modification_time>Wed, 27 Feb 2002 13:32:44 GMT</last_modification_time>
-		    </signal>
-		    <creation_function>SearchComboContent&lt;int&gt;</creation_function>
-		    <int1>0</int1>
-		    <int2>0</int2>
-		    <last_modification_time>Wed, 27 Feb 2002 14:55:34 GMT</last_modification_time>
-		  </widget>
 		</widget>
 	      </widget>
 	    </widget>
@@ -924,6 +916,42 @@
 		<fill>False</fill>
 	      </child>
 	    </widget>
+
+	    <widget>
+	      <class>GtkLabel</class>
+	      <name>labelStand</name>
+	      <label>  Stand:</label>
+	      <justify>GTK_JUSTIFY_RIGHT</justify>
+	      <wrap>False</wrap>
+	      <xalign>0.99</xalign>
+	      <yalign>0.5</yalign>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <child>
+		<padding>0</padding>
+		<expand>True</expand>
+		<fill>True</fill>
+	      </child>
+	    </widget>
+
+	    <widget>
+	      <class>GtkLabel</class>
+	      <name>labelDetailStandEintrag</name>
+	      <width>75</width>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <label></label>
+	      <justify>GTK_JUSTIFY_CENTER</justify>
+	      <wrap>False</wrap>
+	      <xalign>0</xalign>
+	      <yalign>0.5</yalign>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>False</fill>
+	      </child>
+	    </widget>
 	  </widget>
 	</widget>
       </widget>
@@ -945,137 +973,11 @@
 	<class>GtkTable</class>
 	<name>table_details</name>
 	<cxx_visibility>protected</cxx_visibility>
-	<rows>3</rows>
+	<rows>2</rows>
 	<columns>1</columns>
 	<homogeneous>False</homogeneous>
 	<row_spacing>0</row_spacing>
 	<column_spacing>0</column_spacing>
-
-	<widget>
-	  <class>GtkHBox</class>
-	  <name>hboxDetailKdNr</name>
-	  <homogeneous>False</homogeneous>
-	  <spacing>0</spacing>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>1</right_attach>
-	    <top_attach>0</top_attach>
-	    <bottom_attach>1</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>True</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>True</yfill>
-	  </child>
-
-	  <widget>
-	    <class>GtkLabel</class>
-	    <name>labelDetailKdNr</name>
-	    <label>KdNr.</label>
-	    <justify>GTK_JUSTIFY_CENTER</justify>
-	    <wrap>False</wrap>
-	    <xalign>0.5</xalign>
-	    <yalign>0.5</yalign>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <child>
-	      <padding>2</padding>
-	      <expand>False</expand>
-	      <fill>False</fill>
-	    </child>
-	  </widget>
-
-	  <widget>
-	    <class>GtkLabel</class>
-	    <name>labelDetailKdNrEintrag</name>
-	    <cxx_visibility>protected</cxx_visibility>
-	    <label></label>
-	    <justify>GTK_JUSTIFY_CENTER</justify>
-	    <wrap>False</wrap>
-	    <xalign>0.5</xalign>
-	    <yalign>0.5</yalign>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <child>
-	      <padding>2</padding>
-	      <expand>False</expand>
-	      <fill>False</fill>
-	    </child>
-	  </widget>
-
-	  <widget>
-	    <class>GtkLabel</class>
-	    <name>labelStand</name>
-	    <label>  Stand:</label>
-	    <justify>GTK_JUSTIFY_CENTER</justify>
-	    <wrap>False</wrap>
-	    <xalign>0.5</xalign>
-	    <yalign>0.5</yalign>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <child>
-	      <padding>2</padding>
-	      <expand>False</expand>
-	      <fill>False</fill>
-	    </child>
-	  </widget>
-
-	  <widget>
-	    <class>GtkLabel</class>
-	    <name>labelDetailStandEintrag</name>
-	    <cxx_visibility>protected</cxx_visibility>
-	    <label></label>
-	    <justify>GTK_JUSTIFY_CENTER</justify>
-	    <wrap>False</wrap>
-	    <xalign>0.5</xalign>
-	    <yalign>0.5</yalign>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <child>
-	      <padding>2</padding>
-	      <expand>False</expand>
-	      <fill>False</fill>
-	    </child>
-	  </widget>
-
-	  <widget>
-	    <class>GtkLabel</class>
-	    <name>labelDetailFirma</name>
-	    <label>  Firma:</label>
-	    <justify>GTK_JUSTIFY_CENTER</justify>
-	    <wrap>False</wrap>
-	    <xalign>0.5</xalign>
-	    <yalign>0.5</yalign>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <child>
-	      <padding>2</padding>
-	      <expand>False</expand>
-	      <fill>False</fill>
-	    </child>
-	  </widget>
-
-	  <widget>
-	    <class>GtkLabel</class>
-	    <name>labelDetailFirmaEintrag</name>
-	    <cxx_visibility>protected</cxx_visibility>
-	    <label></label>
-	    <justify>GTK_JUSTIFY_CENTER</justify>
-	    <wrap>False</wrap>
-	    <xalign>7.45058e-09</xalign>
-	    <yalign>0.5</yalign>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <child>
-	      <padding>2</padding>
-	      <expand>False</expand>
-	      <fill>True</fill>
-	    </child>
-	  </widget>
-	</widget>
 
 	<widget>
 	  <class>GtkTable</class>
@@ -1088,8 +990,8 @@
 	  <child>
 	    <left_attach>0</left_attach>
 	    <right_attach>1</right_attach>
-	    <top_attach>2</top_attach>
-	    <bottom_attach>3</bottom_attach>
+	    <top_attach>1</top_attach>
+	    <bottom_attach>2</bottom_attach>
 	    <xpad>0</xpad>
 	    <ypad>0</ypad>
 	    <xexpand>True</xexpand>
@@ -3932,8 +3834,8 @@ löschen</label>
 	  <child>
 	    <left_attach>0</left_attach>
 	    <right_attach>1</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>2</bottom_attach>
+	    <top_attach>0</top_attach>
+	    <bottom_attach>1</bottom_attach>
 	    <xpad>0</xpad>
 	    <ypad>0</ypad>
 	    <xexpand>False</xexpand>
@@ -3963,109 +3865,11 @@ löschen</label>
 	<class>GtkTable</class>
 	<name>table_kontaktperson</name>
 	<cxx_visibility>protected</cxx_visibility>
-	<rows>5</rows>
+	<rows>4</rows>
 	<columns>2</columns>
 	<homogeneous>False</homogeneous>
 	<row_spacing>0</row_spacing>
 	<column_spacing>0</column_spacing>
-
-	<widget>
-	  <class>GtkFrame</class>
-	  <name>framePersonenKdNr</name>
-	  <label_xalign>0</label_xalign>
-	  <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>2</right_attach>
-	    <top_attach>0</top_attach>
-	    <bottom_attach>1</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-
-	  <widget>
-	    <class>GtkHBox</class>
-	    <name>hboxPersonenKdNr</name>
-	    <homogeneous>False</homogeneous>
-	    <spacing>0</spacing>
-
-	    <widget>
-	      <class>GtkLabel</class>
-	      <name>labelPersonenKdNr</name>
-	      <label>KdNr.</label>
-	      <justify>GTK_JUSTIFY_CENTER</justify>
-	      <wrap>False</wrap>
-	      <xalign>0.5</xalign>
-	      <yalign>0.5</yalign>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <child>
-		<padding>2</padding>
-		<expand>False</expand>
-		<fill>False</fill>
-	      </child>
-	    </widget>
-
-	    <widget>
-	      <class>GtkLabel</class>
-	      <name>labelPersonenKdNrEintrag</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <label></label>
-	      <justify>GTK_JUSTIFY_CENTER</justify>
-	      <wrap>False</wrap>
-	      <xalign>0.5</xalign>
-	      <yalign>0.5</yalign>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <child>
-		<padding>0</padding>
-		<expand>False</expand>
-		<fill>False</fill>
-	      </child>
-	    </widget>
-
-	    <widget>
-	      <class>GtkLabel</class>
-	      <name>labelPersonenFirma</name>
-	      <label>  Firma:</label>
-	      <justify>GTK_JUSTIFY_CENTER</justify>
-	      <wrap>False</wrap>
-	      <xalign>0.5</xalign>
-	      <yalign>0.5</yalign>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <child>
-		<padding>2</padding>
-		<expand>False</expand>
-		<fill>False</fill>
-	      </child>
-	    </widget>
-
-	    <widget>
-	      <class>GtkLabel</class>
-	      <name>labelPersonenFirmaEintrag</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <label></label>
-	      <justify>GTK_JUSTIFY_CENTER</justify>
-	      <wrap>False</wrap>
-	      <xalign>7.45058e-09</xalign>
-	      <yalign>0.5</yalign>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <child>
-		<padding>0</padding>
-		<expand>False</expand>
-		<fill>True</fill>
-	      </child>
-	    </widget>
-	  </widget>
-	</widget>
 
 	<widget>
 	  <class>GtkScrolledWindow</class>
@@ -4078,8 +3882,8 @@ löschen</label>
 	  <child>
 	    <left_attach>0</left_attach>
 	    <right_attach>2</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>2</bottom_attach>
+	    <top_attach>0</top_attach>
+	    <bottom_attach>1</bottom_attach>
 	    <xpad>0</xpad>
 	    <ypad>0</ypad>
 	    <xexpand>True</xexpand>
@@ -4169,8 +3973,8 @@ löschen</label>
 	  <child>
 	    <left_attach>0</left_attach>
 	    <right_attach>2</right_attach>
-	    <top_attach>4</top_attach>
-	    <bottom_attach>5</bottom_attach>
+	    <top_attach>3</top_attach>
+	    <bottom_attach>4</bottom_attach>
 	    <xpad>0</xpad>
 	    <ypad>0</ypad>
 	    <xexpand>False</xexpand>
@@ -4290,8 +4094,8 @@ löschen</label>
 	  <child>
 	    <left_attach>0</left_attach>
 	    <right_attach>2</right_attach>
-	    <top_attach>3</top_attach>
-	    <bottom_attach>4</bottom_attach>
+	    <top_attach>2</top_attach>
+	    <bottom_attach>3</bottom_attach>
 	    <xpad>0</xpad>
 	    <ypad>0</ypad>
 	    <xexpand>False</xexpand>
@@ -4314,8 +4118,8 @@ löschen</label>
 	  <child>
 	    <left_attach>0</left_attach>
 	    <right_attach>2</right_attach>
-	    <top_attach>2</top_attach>
-	    <bottom_attach>3</bottom_attach>
+	    <top_attach>1</top_attach>
+	    <bottom_attach>2</bottom_attach>
 	    <xpad>0</xpad>
 	    <ypad>0</ypad>
 	    <xexpand>False</xexpand>
@@ -4674,35 +4478,6 @@ löschen</label>
 		  <right_attach>2</right_attach>
 		  <top_attach>2</top_attach>
 		  <bottom_attach>3</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>False</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>True</xfill>
-		  <yfill>True</yfill>
-		</child>
-	      </widget>
-
-	      <widget>
-		<class>Custom</class>
-		<name>scc_anrede</name>
-		<cxx_visibility>protected</cxx_visibility>
-		<signal>
-		  <name>search</name>
-		  <handler>scc_anrede_search</handler>
-		  <last_modification_time>Wed, 27 Feb 2002 13:32:44 GMT</last_modification_time>
-		</signal>
-		<creation_function>SearchComboContent&lt;int&gt;</creation_function>
-		<int1>0</int1>
-		<int2>0</int2>
-		<last_modification_time>Wed, 27 Feb 2002 14:55:34 GMT</last_modification_time>
-		<child>
-		  <left_attach>1</left_attach>
-		  <right_attach>2</right_attach>
-		  <top_attach>3</top_attach>
-		  <bottom_attach>4</bottom_attach>
 		  <xpad>0</xpad>
 		  <ypad>0</ypad>
 		  <xexpand>False</xexpand>
@@ -5312,16 +5087,16 @@ anlegen</label>
 
 	      <widget>
 		<class>Custom</class>
-		<name>gewaehlt_gruppen</name>
+		<name>gewaehlte_gruppen</name>
 		<cxx_visibility>protected</cxx_visibility>
 		<signal>
 		  <name>leaf_selected</name>
-		  <handler>on_selectrow_gewaehltgruppen</handler>
+		  <handler>on_selectrow_gewaehltegruppen</handler>
 		  <last_modification_time>Tue, 08 Apr 2003 13:46:45 GMT</last_modification_time>
 		</signal>
 		<signal>
 		  <name>unselect_row</name>
-		  <handler>on_unselectrow_gewaehltgruppen</handler>
+		  <handler>on_unselectrow_gewaehltegruppen</handler>
 		  <last_modification_time>Tue, 08 Apr 2003 13:47:13 GMT</last_modification_time>
 		</signal>
 		<creation_function>SimpleTree(4,0)</creation_function>
@@ -5370,23 +5145,35 @@ anlegen</label>
       </child>
 
       <widget>
-	<class>Custom</class>
-	<name>kundenauswahl</name>
-	<cxx_visibility>protected</cxx_visibility>
-	<signal>
-	  <name>activate</name>
-	  <handler>kunden_activate</handler>
-	  <last_modification_time>Wed, 28 Mar 2001 12:42:10 GMT</last_modification_time>
-	</signal>
-	<signal>
-	  <name>reset_signal</name>
-	  <handler>on_kunden_reset</handler>
-	  <last_modification_time>Thu, 16 May 2002 13:32:41 GMT</last_modification_time>
-	</signal>
-	<creation_function>KundenBox2</creation_function>
-	<int1>0</int1>
-	<int2>0</int2>
-	<last_modification_time>Wed, 17 Apr 2002 14:23:03 GMT</last_modification_time>
+	<class>GtkHBox</class>
+	<name>hbox18</name>
+	<homogeneous>False</homogeneous>
+	<spacing>0</spacing>
+
+	<widget>
+	  <class>Custom</class>
+	  <name>kundenauswahl</name>
+	  <cxx_visibility>protected</cxx_visibility>
+	  <signal>
+	    <name>activate</name>
+	    <handler>kunden_activate</handler>
+	    <last_modification_time>Wed, 28 Mar 2001 12:42:10 GMT</last_modification_time>
+	  </signal>
+	  <signal>
+	    <name>reset_signal</name>
+	    <handler>on_kunden_reset</handler>
+	    <last_modification_time>Thu, 16 May 2002 13:32:41 GMT</last_modification_time>
+	  </signal>
+	  <creation_function>KundenBox2</creation_function>
+	  <int1>0</int1>
+	  <int2>0</int2>
+	  <last_modification_time>Wed, 17 Apr 2002 14:23:03 GMT</last_modification_time>
+	  <child>
+	    <padding>0</padding>
+	    <expand>True</expand>
+	    <fill>True</fill>
+	  </child>
+	</widget>
       </widget>
     </widget>
 

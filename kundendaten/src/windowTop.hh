@@ -20,7 +20,7 @@ class windowTop : public windowTop_glade
         Transaction transaction; // Für die SearchCombos
         friend class windowTop_glade;
         enum enum_notebook{PAGE_KUNDE,PAGE_DETAILS,PAGE_KONTAKTPERSON,
-			PAGE_PERSON, PAGE_NOTIZEN};
+			PAGE_PERSON, PAGE_NOTIZEN, PAGE_GRUPPEN};
         enum enum_zahl_verfahren{PAGE_DTAUS,PAGE_RIBA,PAGE_LCR};
         void on_notebook1_switch_page(Gtk::Notebook_Helpers::Page* page,guint pagenr);
         void on_gruppenwahl_activate();
@@ -161,6 +161,11 @@ class windowTop : public windowTop_glade
 
 	void load_notizen();
 
+        void on_lfran_activate();
+        void on_selectrow_allegruppen(cH_RowDataBase leaf);
+        void on_unselectrow_allegruppen(gint row, gint column, GdkEvent *event);
+        void on_selectrow_gewaehltegruppen(cH_RowDataBase leaf);
+        void on_unselectrow_gewaehltegruppen(gint row, gint column, GdkEvent *event);
 public:
 
         windowTop();
@@ -170,6 +175,7 @@ public:
 //	void delete_telefon(const cH_Telefon tel);
 
         void kunde_loeschen();
+	void showGruppen();
 
         // Details
         void neue_bank_uebernehmen(unsigned long int bank_index);      

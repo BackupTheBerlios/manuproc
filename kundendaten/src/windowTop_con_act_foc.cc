@@ -24,8 +24,9 @@ void windowTop::changedFktA(Kunde::UpdateBitsAdresse e)
   if(!fire_enabled) return;
   UpdateAdresse = Kunde::UpdateBitsAdresse(UpdateAdresse|e);
 
-     if      (e==Kunde::FGruppennr  ) kundendaten->set_gruppen_nr(atoi(spinbuttonGruppenNr->get_text().c_str()));
-     else if (e==Kunde::FSortname   ) kundendaten->set_sortname(entrySortiername->get_text());
+//     if      (e==Kunde::FGruppennr  ) kundendaten->set_gruppen_nr(atoi(spinbuttonGruppenNr->get_text().c_str()));
+//     else 
+     if (e==Kunde::FSortname   ) kundendaten->set_sortname(entrySortiername->get_text());
      else if (e==Kunde::FIdnr       ) kundendaten->set_idnr(entryIdNr->get_text());
      else if (e==Kunde::FFirma      ) kundendaten->set_firma(entryFirma->get_text());
      else if (e==Kunde::FPostanwvor ) kundendaten->set_postanwvor(entryPostanwVor->get_text());
@@ -200,9 +201,9 @@ void windowTop::connectFkt()
   CF_SPINBUTTON(spinbuttonGruppenNr,FktA,FGruppennr);
 #endif
 
-  spinbuttonGruppenNr->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FGruppennr));
-  spinbuttonGruppenNr->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktA),Kunde::FGruppennr));
-  spinbuttonGruppenNr->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktA),Kunde::FGruppennr));
+//  spinbuttonGruppenNr->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FGruppennr));
+//  spinbuttonGruppenNr->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktA),Kunde::FGruppennr));
+//  spinbuttonGruppenNr->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktA),Kunde::FGruppennr));
 
   entrySortiername->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FSortname));
   entrySortiername->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktA),Kunde::FSortname));

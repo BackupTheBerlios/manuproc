@@ -26,7 +26,8 @@ kundendaten_SOURCES = \
    windowTop_Details.cc \
    windowTop_Kontaktperson.cc \
    windowTop_Person.cc \
-   windowTop_kunde.cc
+   windowTop_kunde.cc \
+   windowTop_Gruppen.cc
 
 
 noinst_HEADERS = \

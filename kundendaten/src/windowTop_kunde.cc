@@ -21,7 +21,7 @@ void windowTop::show_kundendaten()
 {
    fire_enabled=false;
    
-   spinbuttonGruppenNr->set_value(kundendaten->GruppenId());
+//   spinbuttonGruppenNr->set_value(kundendaten->GruppenId());
    entrySortiername->set_text(kundendaten->sortname());
    entryPostanwVor->set_text(kundendaten->postanwvor());
    entryPostanwNach->set_text(kundendaten->postanwnach());
@@ -78,15 +78,6 @@ void windowTop::on_button_kunde_loeschen_clicked()
    +"der Kundennummer '"+itos(kundendaten->getNummer())+"' wirklich gelöscht werden?";
   manage(new window_Dialog_Bestaetigen(this,st));
 }
-
-void windowTop::kunde_loeschen()
-{
-  Kunde::ID kid = kundendaten->getNummer();
-  Kunde K;
-  K.delete_Kunde(kid);
-  clear_entrys();
-}
-
 
 
 void windowTop::neue_kundennmmer(unsigned int kid)
