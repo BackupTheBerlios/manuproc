@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.18 2003/03/24 10:41:19 christof Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.19 2003/05/19 08:59:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -63,7 +63,7 @@ void ArtikelBezeichnung::setzeExtBezSchema(const cH_ExtBezSchema &_schema) throw
 
     value.clear();
     
-    unsigned int neededsize=0;
+    unsigned neededsize=0;
     if (Id())
     {mystream sq; 
      std::vector<int> gewaehlte_indizes;
@@ -72,11 +72,11 @@ void ArtikelBezeichnung::setzeExtBezSchema(const cH_ExtBezSchema &_schema) throw
       {
          sq << i->spaltenname;
          gewaehlte_indizes.push_back(i->bezkomptype);
-         if (i->bezkomptype+1>neededsize) neededsize=i->bezkomptype+1;
+         if (unsigned(i->bezkomptype+1)>neededsize) neededsize=i->bezkomptype+1;
          ++i;
          if (i!=schema->end()) sq <<", " ;
       }
-     sq << " FROM artbez_" << schema->Typ()<<"_"<<schema->Id()<<" WHERE id = "
+     sq << " FROM artbez_" << int(schema->Typ()) <<"_"<<schema->Id()<<" WHERE id = "
          << Id();
      Query q(sq.str());
      SQLerror::test(__FILELINE__);
@@ -140,7 +140,7 @@ ArtikelBezeichnung::ArtikelBezeichnung(int signifikanz, const std::vector<cH_Ent
  char *QUERY;
  exec sql end declare section;
  mystream squery;
- squery << "SELECT id FROM artbez_"<<schema->Typ()<<"_"<<schema->Id()
+ squery << "SELECT id FROM artbez_"<<int(schema->Typ())<<"_"<<schema->Id()
       << " WHERE ";
  int f=0;
  for (ExtBezSchema::const_iterator i=schema->begin();i!=schema->end();)

@@ -1,4 +1,4 @@
-// $Id: Trace.cc,v 1.2 2002/12/10 09:44:15 christof Exp $
+// $Id: Trace.cc,v 1.3 2003/05/19 08:59:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,6 +18,7 @@
  */
 
 #include <Misc/Trace.h>
+#include <cassert>
 
 static int enabled_parts;
 static int depth;

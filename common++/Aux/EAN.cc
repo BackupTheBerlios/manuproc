@@ -1,4 +1,4 @@
-// $Id: EAN.cc,v 1.12 2003/01/08 09:46:56 christof Exp $
+// $Id: EAN.cc,v 1.13 2003/05/19 08:59:52 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -20,6 +20,7 @@
     
 #include "EAN.h"
 #include <Misc/itos.h>
+#include <cassert>
 
 std::string EAN::add_Pruefsumme(std::string ean,unsigned int length)
 {

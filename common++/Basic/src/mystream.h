@@ -1,4 +1,4 @@
-// $Id: mystream.h,v 1.5 2002/05/09 12:46:00 christof Exp $
+// $Id: mystream.h,v 1.6 2003/05/19 08:59:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,6 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#if defined(__GNUC__) && __GNUC__<3
 #include<strstream.h>
 #include <string>
 
@@ -31,3 +32,17 @@ public:
      return res;
   } 
 };
+#else
+#include <sstream>
+
+class mystream : public std::ostringstream
+{
+public:
+  const std::string str(bool erase=false) 
+  {  std::string res=std::ostringstream::str();
+     if(erase) seekp(0); 
+     return res;
+  } 
+};
+
+#endif
