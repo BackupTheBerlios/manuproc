@@ -106,12 +106,13 @@ void bestell_plan::load_data(const ArtikelBase a) throw(SQLerror)
     << ppsInstanzID::Einkauf << OPEN << a.Id() 
     << AuftragBase::handplan_auftrag_id >> bestellt;     
 
- int abverkauf=0;
+/* int abverkauf=0;
 
  Query q1("select coalesce(menge,0) from abverkauf_12m where artikelid=?");
    q1 << a.Id();
  FetchIStream fi=q1.Fetch();
  if(fi.good()) fi >> abverkauf; 
+*/
      
 // set entreis
  if(bestand.size()>0)
@@ -128,7 +129,7 @@ void bestell_plan::load_data(const ArtikelBase a) throw(SQLerror)
 
  bp_offauftraege->set_text(itos(offauf));
  bp_bestellt->set_text(itos(bestellt));
- bp_abv12m->set_text(itos(abverkauf)); 
+// bp_abv12m->set_text(itos(abverkauf)); 
  
 }
 
@@ -196,10 +197,14 @@ void bestell_plan::clear_all()
   bp_verfuegbar->set_text("");
   bp_bestellt->set_text("");
   bp_mindbestand->set_text("");
-  bp_abv12m->set_text("");
+/*  bp_abv12m->set_text("");
   bp_abv12m1->set_text("");
   bp_abv12m2->set_text("");
   bp_abv12m3->set_text("");
+*/  
 }
 
 
+void bestell_plan::on_abverkauf_kumul_clicked()
+{  
+}

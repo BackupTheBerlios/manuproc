@@ -27,6 +27,8 @@ class bestell_plan : public bestell_plan_glade
         void on_prev_artikel_clicked();
         void on_next_artikel_clicked();
         void on_plan_artikel_activate();
+        void on_abverkauf_kumul_clicked();        
+        
  void clear_all();
  void load_artikel_list();
  void load_data(const ArtikelBase a) throw(SQLerror);

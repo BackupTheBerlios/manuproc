@@ -63,7 +63,8 @@ noinst_HEADERS = \
 	info_dialog.hh \
 	petig_we.hh petig_we_glade.hh \
 	bestell_plan.hh \
-	bestell_plan_glade.hh
+	bestell_plan_glade.hh \
+	datum_kumul.h
 
 BUILT_SOURCES= \
 	auftrag_bearbeiten_sql.cc \

@@ -16,12 +16,11 @@
 #include <typeinfo>
 #include <Misc/Ausgabe_neu.h>
 #include <Artikel/ArtikelMengeSumme.h>
+#include "datum_kumul.h"
+
 
 class Data_LListe : public RowDataBase
 {
-public:
- typedef enum {KUM_DATUM,KUM_WOCHE,KUM_MONAT,KUM_QUARTAL,KUM_JAHR} KumVal;
-
 private:
 
     cH_Lieferschein liefer;

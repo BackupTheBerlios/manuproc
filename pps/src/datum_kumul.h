@@ -1,0 +1,7 @@
+
+
+
+typedef enum {KUM_DATUM,KUM_WOCHE,KUM_MONAT,KUM_QUARTAL,KUM_JAHR} KumVal;
+
+
+ 
