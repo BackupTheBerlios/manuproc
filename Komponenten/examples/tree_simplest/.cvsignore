@@ -8,3 +8,8 @@ with_class_glade.hh
 simplest_glade.cc
 tree.glade
 with_class_glade.cc
+.libs
+.deps
+tree
+Makefile.in
+Makefile
