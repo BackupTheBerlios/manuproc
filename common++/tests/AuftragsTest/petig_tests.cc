@@ -477,6 +477,7 @@ static bool Lieferscheintest(AufEintrag &AE)
 {
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
        LieferscheinEntryBase lseb(liefs,liefs.push_back(ARTIKEL_ROLLEREI,150));
+       vergleichen(Check::Menge|Check::Lieferschein,"Ls_unbestaetigt","Lieferung noch unbestätigt","u");
        LieferscheinEntry(lseb).changeStatus(OPEN,liefs,false);
        vergleichen(Check::Menge|Check::Lieferschein,"LS_teillieferung","Lieferschein mit Teillieferung anlegen","");
 
