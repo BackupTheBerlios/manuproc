@@ -6,7 +6,7 @@
 #include <DynamicEnums/DynamicEnums.h>
 #include <DynamicEnums/DefaultValues.h>
 #include <Misc/FetchIStream.h>
-
+#include <Misc/CacheStatic.h>
 
 namespace KundengruppeID=ManuProC::DynamicEnums::Kundengruppen;
 
@@ -28,6 +28,7 @@ public:
   
  Kundengruppe(ID kgid, const std::string _obg,const std::string _grpnm,
  	const std::string komm="");
+ Kundengruppe(ID kgid) throw(SQLerror);
  ID Id() const {return ID(entityid); }
  std::string GrpName() const { return grpname;}
  std::string Obergruppe() const { return obergruppe; }
@@ -40,10 +41,13 @@ public:
 
 class cH_Kundengruppe : public Handle<const Kundengruppe>
 {	
+        typedef CacheStatic<Kundengruppe::ID,cH_Kundengruppe> cache_t;
+        static cache_t cache;
         cH_Kundengruppe(const Kundengruppe *p) : Handle<const Kundengruppe>(p) {}	
 
 public:
 	typedef Kundengruppe::ID ID;
+	cH_Kundengruppe(ID id);
 	cH_Kundengruppe(ID nr, const std::string _obg,
 		const std::string grpname, const std::string komm);
         bool operator==(const cH_Kundengruppe& b) const

@@ -1,7 +1,20 @@
-
-
 #include "Kundengruppe.h"
 #include <BaseObjects/ManuProcEntity_FetchIStream.h>
+
+
+cH_Kundengruppe::cache_t cH_Kundengruppe::cache;
+
+cH_Kundengruppe::cH_Kundengruppe(ID id)
+{  cH_Kundengruppe *cached(cache.lookup(id));
+   if (cached) *this=*cached;
+   else
+   { 
+    *this=cH_Kundengruppe(new Kundengruppe(id));
+      cache.Register(id,*this);
+   }
+}
+
+
 
 const Kundengruppe::ID Kundengruppe::default_ID=ManuProC::DefaultValues::Kunden;
 
@@ -11,9 +24,22 @@ Kundengruppe::Kundengruppe(ID kgid, const std::string _obg,
 	kommentar(_komm) 
 {}
 
+Kundengruppe::Kundengruppe(ID kgid) throw(SQLerror)
+: ManuProcHandle<ID>(kgid) 
+{
+ if(kgid==Kundengruppe::none_id) return;
+
+ Query("select coalesce(obergruppe,''),name,"
+	"coalesce(kommentar,'') from"
+	" ku_gruppe where grpnr=?") << kgid
+	>> obergruppe
+	>> grpname
+	>> kommentar;
+}
+
 
 FetchIStream &operator>>(FetchIStream &is,Kundengruppe &kg)
- {  return is >> kg 
+ {  return is >> kg.entityid 
  	>> FetchIStream::MapNull(kg.obergruppe,std::string()) 
  	>> kg.grpname 
  	>> FetchIStream::MapNull(kg.kommentar,std::string());
@@ -52,7 +78,7 @@ FetchIStream &operator>>(FetchIStream &is,cH_Kundengruppe &kg)
  } 
  
  
- 
+
  
  
  
