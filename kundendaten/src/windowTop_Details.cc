@@ -140,6 +140,7 @@ void windowTop::scc_verkaeufer_activate()
  // initial setting for new customers in prov_config table
  if(kundendaten->VerkNr()==Kunde::none_id)
    {
+    Query("delete from prov_config where kundennr=?") << kundendaten->Id();
     Query("insert into prov_config (artikel,provsatznr,kundennr) "
 		" (select distinct artikel,provsatznr,? from prov_config "
 		" where provsatznr=0)") << kundendaten->Id();
