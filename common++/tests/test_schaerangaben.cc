@@ -1,4 +1,4 @@
-// $Id: test_schaerangaben.cc,v 1.2 2004/06/16 09:55:15 christof Exp $
+// $Id: test_schaerangaben.cc,v 1.3 2004/06/17 06:58:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -29,13 +29,15 @@ void dump(const ArtikelBase &ab, unsigned gaenge, unsigned laenge)
        << ' ' << laenge << "m\n";
    for (std::vector<KettenGarn>::const_iterator i=x.begin();i!=x.end();++i)
    {  if (i->index!=oldindex)
-      {  std::cout << "   " << i->kettenzahl << " Ketten Ã  " 
-            << i->laenge << "m:\n";
+      {  std::cout << "   " << i->kettenzahl << " Ketten à " 
+            << i->laenge << "m:";
+         if ((i+1)!=x.end() && (i+1)->index==i->index) std::cout << "\n";
          oldindex=i->index;
       }
       std::cout << "\t" << i->faeden << " Fd. " 
-          << cH_ArtikelBezeichnung(i->art)->Bezeichnung()
-          << " x" << i->wiederholungen << '\n';
+          << cH_ArtikelBezeichnung(i->art)->Bezeichnung();
+      if (i->wiederholungen>1) std::cout << " x" << i->wiederholungen;
+      std::cout << '\n';
   }
   std::cout << "\n";
 }
@@ -50,6 +52,10 @@ int main()
 {  ManuProC::dbconnect();
    // sort -t/ -k2
    dump(ArtikelBase(219567),4,20000); // 1810/40/
+   dump(ArtikelBase(219591),ArtikelBase(219602),1,11000); // 2030/40/260+355
+   dump(ArtikelBase(224996),2,16500); // 23103/40/9000
+   dump(ArtikelBase(225532),4,12750); // 2391/40/
+   dump(ArtikelBase(127798),8,4000); // 2501/25/260
    dump(ArtikelBase(209499),ArtikelBase(212353),1,12000); // 2508/25+40/325+215
    dump(ArtikelBase(220465),ArtikelBase(225167),1,6000); // 2727/25/265+420
    dump(ArtikelBase(220445),ArtikelBase(225166),1,6000); // 2727/40/265+420
