@@ -11,6 +11,22 @@
 
 auftrag_provision::auftrag_provision(AuftragFull *auftrag)
 {
+ prov_aufnr->set_text(itos(auftrag->Id()));
+ prov_aufdatum->set_value(auftrag->getDatum());
+ prov_aufdatum->setLabel("");
+ prov_aufkunde->set_value(auftrag->getKundennr());
+
+ if(auftrag->getVerknr()==Kunde::none_id)
+   {
+    verkprov_frame->set_sensitive(false);
+   }
+ else
+   {
+    prov_verkaeufer->set_value(auftrag->getVerknr());
+    verkprov_frame->set_sensitive(true);   
+    prov_allpos->set_active(true);
+ //   fillProvEntryList();
+   }
 
 }
 

@@ -7490,6 +7490,8 @@ Jahr
   <type>GTK_WINDOW_DIALOG</type>
   <position>GTK_WIN_POS_CENTER</position>
   <modal>True</modal>
+  <default_width>600</default_width>
+  <default_height>500</default_height>
   <allow_shrink>True</allow_shrink>
   <allow_grow>True</allow_grow>
   <auto_shrink>True</auto_shrink>
@@ -7724,7 +7726,8 @@ Jahr
 
       <widget>
 	<class>GtkFrame</class>
-	<name>frame50</name>
+	<name>verkprov_frame</name>
+	<cxx_visibility>protected</cxx_visibility>
 	<label>Verkäufer &amp; Provision</label>
 	<label_xalign>0</label_xalign>
 	<shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
@@ -7919,6 +7922,7 @@ Jahr
 		    <widget>
 		      <class>GtkCList</class>
 		      <name>prov_aufentries</name>
+		      <cxx_visibility>protected</cxx_visibility>
 		      <can_focus>True</can_focus>
 		      <columns>6</columns>
 		      <column_widths>80,80,80,80,80,80</column_widths>
