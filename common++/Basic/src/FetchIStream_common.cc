@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.1 2004/03/11 14:35:53 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.2 2004/03/11 14:44:42 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -119,7 +119,7 @@ FetchIStream &FetchIStream::operator>>(bool &b)
 // ============================ Query =======================
 
 // copied from ecpg/lib/execute.c
-static const char *next_insert(const char *text)
+const char *ArgumentList::next_insert(const char *text)
 {   const char       *ptr = text;
     bool        string = false;
 
@@ -141,7 +141,7 @@ void Query::Execute_if_complete()
       ArgumentList::const_iterator piter=params.begin();
       
       do
-      {  p=next_insert(p);
+      {  p=ArgumentList::next_insert(p);
          if (!p) expanded+=last;
          else
          {  expanded+=std::string(last,p-last);

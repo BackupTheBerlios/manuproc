@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.47 2004/03/11 14:37:31 christof Exp $
+// $Id: FetchIStream.h,v 1.48 2004/03/11 14:44:42 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,6 +30,9 @@
 #ifdef MPC_SQLITE
 #include <algorithm>
 #include <sqlite.h>
+// enum ECPG...
+#else
+#include <ecpgerrno.h>
 #endif
 
 extern "C" {
@@ -192,6 +195,7 @@ public:
 	{  if (n.null) return operator<<(Query_types::null());
 	   return (*this)<<(n.data);
 	}
+	static const char *next_insert(const char *text);
 };
 
 class Query : public Query_types

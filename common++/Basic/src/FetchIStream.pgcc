@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.51 2004/03/11 14:38:11 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.52 2004/03/11 14:44:42 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,10 +23,9 @@
 #ifndef MPC_SQLITE
 #include <Misc/FetchIStream.h>
 #include <Misc/SQLerror.h>
+#include <Misc/itos.h>
 
 exec sql include sqlca;
-
-//#include <cassert>
 
 #ifdef OLD_ECPG
 #define ECPGdo300
@@ -116,7 +115,7 @@ Query::Query(const std::string &command)
 	eof(true), line(), result(), query(command), num_params(), 
 	error(ECPG_TOO_FEW_ARGUMENTS), lines()
 {  const char *p=query.c_str();
-   while ((p=next_insert(p))) { ++num_params; ++p; }
+   while ((p=ArgumentList::next_insert(p))) { ++num_params; ++p; }
    params.setNeededParams(num_params);
    Execute_if_complete();
 }
@@ -155,7 +154,7 @@ void Query::Fetch(FetchIStream &is)
  is=FetchIStream();
 }
 
-void Query::Execute(const std::string &command,const std::string database) throw(SQLerror)
+void Query::Execute(const std::string &command) throw(SQLerror)
 {  exec sql begin declare section;
    char *COMMAND=const_cast<char*>(command.c_str());
    exec sql end declare section;
