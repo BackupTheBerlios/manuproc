@@ -28,8 +28,8 @@ extern bool sort_by_rownr;
 LR_drucken::LR_drucken(const LR_Base::typ RL_, unsigned int _auftragsnr, bool print,
    bool b_firmenpapier,bool b_kopie, cH_ppsInstanz _instanz, bool _toTeX, 
    bool rueckst,bool ean_code)
-:
-auftragsnr(_auftragsnr),RL(RL_),instanz(_instanz),toTeX(_toTeX),rueckstand(rueckst)
+: auftragsnr(_auftragsnr),RL(RL_),instanz(_instanz),toTeX(_toTeX),
+	rueckstand(rueckst)
 {
  LR_drucken::drucken(print,b_firmenpapier,b_kopie,ean_code);
 }

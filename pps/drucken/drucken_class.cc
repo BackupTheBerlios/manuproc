@@ -27,6 +27,7 @@
 #include <unistd.h>
 #include <Misc/multi_lang.h>
 #include <Misc/relops.h>
+#include "Configuration.h"
 
 #define TABW	"18"
 
@@ -413,7 +414,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
         cH_ArtikelBezeichnung bez(artikelbase,cH_Kunde(kunden_id)->getSchemaId());
         cH_ExtBezSchema schema = bez->getExtBezSchema();
 #ifndef MABELLA_EXTENSIONS        
-        if (schema!=schema_mem) break; // Schema hat gewechselt
+        if (schema!=schema_mem && !Configuration.combine) break; // Schema hat gewechselt
 #endif        
         
         if (Einheit(artikelbase) != einheit_mem ) break;  // Einheit wechselt
@@ -701,9 +702,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
    const AufEintragBase AEB)
 {
 #ifdef MABELLA_EXTENSIONS // gelieferte Zeilen nicht anzeigen beim Rückstand     
-       if(Rueckstand())
-         if(rest==0)
-	   return;
+       if(Rueckstand() && rest==0) return;
 #endif
 
 //---------------------- Seitenumbruch innerhalb einer Tabelle ----------      
@@ -899,9 +898,13 @@ void LR_Abstraktion::drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,
       { neue_spalte( erste_spalte, os);
         if (!zusatzinfo)
 	        os <<"{"<<linecolor<< Gtk2TeX::string2TeX(bez->Bezeichnung()) ;
-           if(menge!=0) os << " }&{"<<linecolor<<"("<<menge<<")";
+        if(menge!=0) os << " }&{"<<linecolor<<"("<<menge<<")";
 	        os <<"}";
       }
+   else if (Configuration.combine)
+   {  neue_spalte( erste_spalte, os);
+      os <<'{'<<linecolor<< Gtk2TeX::string2TeX(bez->Bezeichnung()) << '}';
+   }
    else
 	 for(ExtBezSchema::const_sigiterator l=s->sigbegin(signifikanz);l!=s->sigend(signifikanz);++l)
 	   { neue_spalte( erste_spalte, os);
@@ -910,13 +913,11 @@ void LR_Abstraktion::drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,
 #ifdef MABELLA_EXTENSIONS
 		// Wenn im fremnden Schema die Bezeichnung nicht existiert,
 		// dann nichts ausgeben, damit es gleich auffällt.
-		if(s->Id()==bez->getExtBezSchema()->Id())	     
+		if(s->Id()!=bez->getExtBezSchema()->Id())	     
+	          os << " ";
+	        else
 #endif
 	          os <<"{"<<linecolor<< Gtk2TeX::string2TeX((*bez)[l->bezkomptype]->getStrVal()) <<"}";
-#ifdef MABELLA_EXTENSIONS
-		else
-	          os <<"{"<<linecolor<< " " <<"}";
-#endif
 		}
 
 #ifdef PETIG_EXTENSIONS // lieber zuwenige Zeilen als Umbruch riskieren
@@ -985,7 +986,7 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
        ueberschriften+= "&\\mbox{"+ug+"Rohware}";
        ueberschriften+= "&\\mbox{"+ug+"geplant für}";
      }
-  else if (Typ()==Extern)
+  else if (Configuration.combine || Typ()==Extern)
      { tabcolumn += "X"; spaltenzahl++; 
        ueberschriften+= "&\\mbox{"+ug+"Artikel}";
      }

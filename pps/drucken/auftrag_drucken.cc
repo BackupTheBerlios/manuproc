@@ -20,10 +20,11 @@
 #include "drucken.hh"
 #include "getopt.h"
 #include <Aux/itos.h>
+#include "Configuration.h"
 
-//struct Configuration Configuration;
+struct Configuration Configuration;
 
-enum {EAN=256};
+enum {EAN=256, COMBINE};
 
 const static struct option options[]=
 {{ "firma",  no_argument, NULL, 'f' },
@@ -35,6 +36,7 @@ const static struct option options[]=
  { "instanz", required_argument,      NULL, 'i' }, 
  { "database", required_argument,      NULL, 'd' }, 
  { "dbhost", required_argument,      NULL, 'h' }, 
+ { "combine-names", no_argument, NULL, COMBINE },
  { NULL,      0,       NULL, 0 }
 };       
 
@@ -42,7 +44,7 @@ const static struct option options[]=
 void usage(std::string n,bool toTeX,bool plot,bool firmenpapier,bool kopie,
    ppsInstanz::ID instanz,std::string database,std::string dbhost)
 {
-   std::cout << "$Id: auftrag_drucken.cc,v 1.16 2002/12/19 13:24:23 jacek Exp $\n\n"
+   std::cout << "$Id: auftrag_drucken.cc,v 1.17 2003/04/11 09:13:43 christof Exp $\n\n"
               "USAGE:" << n << " -n <Nr> [-a <Auftrag|Rechnung|Lieferschein|Intern|Extern>] [-kft] [-i <Instanz>] [-d <Datenbank>]\n"
 		"\n\t-t\t nur TeX file erzeugen ("<< (toTeX?"an":"aus")<< ")\n"
 		"\t-p\t drucken ("<< (plot?"an":"aus")<< ")\n"
@@ -75,6 +77,7 @@ int main (int argc, char *argv[])
  ppsInstanz::ID instanz = ppsInstanzID::Kundenauftraege;
  std::string database="";
  std::string dbhost="";
+ bool combine=false;
 
  int opt;
 
@@ -99,6 +102,7 @@ int main (int argc, char *argv[])
 	case 't' : toTeX=true;break; 
 	case 'R' : rueckstand=true; break;
 	case EAN : ean_code=true; break;
+	case COMBINE: Configuration.combine=true; break;
 	case 'Z' : sort_by_rownr=true; break;
 	case '?': usage(argv[0],toTeX,plot,firmenpapier,kopie,instanz,database,dbhost); break;
     }
@@ -110,7 +114,8 @@ int main (int argc, char *argv[])
       ManuProC::dbconnect(conn);  
 
       LR_drucken l(was,auftragsnr,plot,firmenpapier,
-			kopie,cH_ppsInstanz(instanz),toTeX,rueckstand,ean_code);
+			kopie,cH_ppsInstanz(instanz),
+			toTeX,rueckstand,ean_code);
          
       ManuProC::dbdisconnect();
    } catch (SQLerror &e)
