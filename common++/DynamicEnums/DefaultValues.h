@@ -1,4 +1,4 @@
-/* $Id: DefaultValues.h,v 1.17 2004/05/18 11:02:30 christof Exp $ */
+/* $Id: DefaultValues.h,v 1.18 2004/05/18 11:26:55 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -89,7 +89,7 @@ namespace DefaultValues {
 #ifdef PETIG_EXTENSIONS
    #define KEIN_PREIS_IM_EXTERNEN_AUFTRAG
    #define ANZEIGE_VON_STUECK_UND_METER_IN_PPS
-   #define LIEFERSCHEINE_IMMER_BESTAETIGT
+//   #define LIEFERSCHEINE_IMMER_BESTAETIGT
 #endif
 
 
