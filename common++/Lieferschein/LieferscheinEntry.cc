@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.30 2003/07/04 08:52:00 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.31 2003/07/04 10:57:28 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -419,6 +419,11 @@ std::vector<LieferscheinEntry::st_AuftragMenge> LieferscheinEntry::getAuftragsMe
       map[i->aeb]+=i->menge;
    std::vector<LieferscheinEntry::st_AuftragMenge> result;
    for (map_t::const_iterator i=map.begin();i!=map.end();++i)
+   {  if (i->first!=AuftragBase())
+         result.push_back(st_AuftragMenge(i->first,i->second));
+   }
+   map_t::const_iterator i=map.find(AuftragBase());
+   if (i!=map.end()) 
       result.push_back(st_AuftragMenge(i->first,i->second));
    return result;
 }

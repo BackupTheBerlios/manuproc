@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList_sql.pgcc,v 1.20 2003/05/23 11:19:33 christof Exp $ */
+/* $Id: LieferscheinList_sql.pgcc,v 1.21 2003/07/04 10:57:28 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -54,7 +54,6 @@ void LieferscheinList::build_list()
 
  if(hole_entries)
    {
-    // squery+=" and le.zusatzinfo="+(zusatzinfo?std::string("true "):std::string("false "));
 
  if(artikelid!=ArtikelBase::none_id && !first_komponent)
      squery+=" and le.artikelid="+itos(artikelid);
@@ -92,7 +91,6 @@ void LieferscheinList::build_list()
 
    squery+=" where e.instanz=lieferschein.instanz and "
 	" e.lfrsid=lieferschein.lfrsid)";
-//	and e.zusatzinfo="+ (zusatzinfo?std::string("true"):std::string("false"))+")";
   }
  
  fuelle(squery);

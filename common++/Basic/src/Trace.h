@@ -1,4 +1,4 @@
-// $Id: Trace.h,v 1.6 2003/03/10 10:21:53 christof Exp $
+// $Id: Trace.h,v 1.7 2003/07/04 10:57:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -32,11 +32,14 @@ namespace ManuProC {
 
 namespace Tracer {
 
-//	enum Channel { Auftrag,Artikel };
 	extern UniqueValue channels;
 	typedef UniqueValue::value_t Channel;
 
 	void Enable(Channel c, bool an=true);
+	
+	struct Environment
+	{	Environment(const std::string &name, Channel c);
+	};
 	
 // internal implementation
 	std::ostream &FunctionStart(const std::string &s);
