@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.h,v 1.7 2004/01/30 10:09:25 christof Exp $
+// $Id: TreeViewUtility.h,v 1.8 2004/01/30 11:55:45 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,6 +30,7 @@ class CListEmulator : public Gtk::TreeModelColumnRecord
 {	std::vector<Gtk::TreeModelColumn<Glib::ustring> > cols;
 	std::vector<Glib::ustring> titles;
 	Glib::RefPtr<Gtk::ListStore> m_refStore;
+	Gtk::TreeView *view;
 public:	
 	CListEmulator() {}
 	// CList like
@@ -46,6 +47,8 @@ public:
 	void set_titles(const std::vector<Glib::ustring> &titles);
 	// one column only
 	void set_title(const Glib::ustring &title);
+	
+	int get_selected_row_num() const;
 };
 
 class CList : public Gtk::TreeView

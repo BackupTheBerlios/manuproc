@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.cc,v 1.7 2004/01/30 10:09:25 christof Exp $
+// $Id: TreeViewUtility.cc,v 1.8 2004/01/30 11:55:45 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -40,6 +40,7 @@ void TreeViewUtility::CListEmulator::attach_to(Gtk::TreeView &tv)
 {  tv.set_model(m_refStore);
    for (unsigned i=0;i<cols.size();++i)
       tv.append_column(titles.at(i),cols.at(i));
+   view=&tv;
 }
 
 TreeViewUtility::CList::CList(const std::vector<Glib::ustring> &titles)
@@ -76,4 +77,12 @@ void TreeViewUtility::CListEmulator::set_title(const Glib::ustring &_title)
 {  std::vector<Glib::ustring> titles;
    titles.push_back(_title);
    set_titles(titles);
+}
+
+int TreeViewUtility::CListEmulator::get_selected_row_num() const
+{  Gtk::TreeModel::iterator it=view->get_selection()->get_selected();
+   assert(!!it);
+   Gtk::TreeModel::Path p=view->get_model()->get_path(it);
+   assert(p.size()==1);
+   return *(p.begin());
 }
