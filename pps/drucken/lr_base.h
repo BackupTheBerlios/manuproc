@@ -6,6 +6,7 @@
 #include<Aux/Datum.h>
 #include<string>
 #include <Aux/multi_lang.h>
+#include <stdio.h>
 
 extern MultiL_Dict *mld;
 
@@ -26,7 +27,9 @@ public:
 			case Auftrag : 
 			     if(rueckstand)
 			       {ManuProC::Datum heute=ManuProC::Datum().today();
-			        return std::string("~\\\\Rückstand am ")+heute.c_str()+" zum Auftrag ";	
+			        char buf[200];
+			        snprintf(buf,sizeof buf,mld->MLT(MultiL_Dict::PRINTF_RUECKSTAND).c_str(),heute.c_str());
+			        return std::string("~\\\\")+buf;	
 				}
 			     else
 			     	return mld->MLT(MultiL_Dict::TXT_AUFTRAG);

@@ -263,13 +263,15 @@ catch(SQLerror &e) { cout << e; return; }
    if(u.l->Pakete() || u.l->Paeckchen())
    {os << "\\vspace{.5cm}";
     char buf[500];
-    snprintf(buf,sizeof buf,mld->MLT(MulitL_Dict::PRINF_LIEFBESTEHT1),
+    snprintf(buf,sizeof buf,
+		mld->MLT(MultiL_Dict::PRINTF_LIEFBESTEHT1).c_str(),
     			u.l->Paeckchen());
     os << buf;
     if(u.l->Pakete())
       {
-       snprintf(buf,sizeof buf,mld->MLT(MulitL_Dict::PRINF_LIEFBESTEHT2),
-    			u.l->Pakete(),(ul->Pakete()==1 ? ".\n":"n.\n"));
+       snprintf(buf,sizeof buf,
+		mld->MLT(MultiL_Dict::PRINTF_LIEFBESTEHT2).c_str(),
+    			u.l->Pakete(),(u.l->Pakete()==1 ? ".\n":"n.\n"));
       }
     else os << ".\n";	
 	
@@ -1073,7 +1075,9 @@ void LR_Abstraktion::page_header(std::ostream &os)
   {
    cH_Kunde kunde_an(KdNr());
    cH_Kunde kunde_rng(kunde_an->Rngan());
-   
+   kunde_an->setMLD(mld); 
+   kunde_rng->setMLD(mld);  
+
    os <<"\\begin{flushleft}\n";
    if (page_counter==1) // 1. Seite
     {
@@ -1107,7 +1111,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
         
 	if(!kunde_an->isRechnungsadresse() && Typ()!=Rechnung)
 		{
-		os << "\\bf Rechnung an:\\rm\\\\\n"
+		os << "\\bf "<<mld->MLT(MultiL_Dict::TXT_RNGADRESSE)<<":\\rm\\\\\n"
 		   << string2TeX(kunde_rng->firma())+"\\\\\n";
 		   if(kunde_rng->Rng_an_postfach())
 			{os << "Postfach "<<kunde_rng->postfach()+"\\\\\n"
@@ -1125,7 +1129,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
 
 	if(!kunde_an->isRechnungsadresse() && Typ()==Rechnung)
 		{
-		os << "\\bf Lieferung an:\\rm\\\\\n"
+		os << "\\bf "<<mld->MLT(MultiL_Dict::TXT_LIEFADRESSE)<<":\\rm\\\\\n"
 		   << string2TeX(kunde_an->firma())+"\\\\\n"
 		   << string2TeX(kunde_an->strasse())+" "
 		   << string2TeX(kunde_an->hausnr())+"\\\\\n"		   
@@ -1176,9 +1180,9 @@ void LR_Abstraktion::page_header(std::ostream &os)
 #endif     
 
      if(!kunde_an->isRechnungsadresse() && Typ()==Rechnung)
-       os <<"\nFirma "<< string2TeX(kunde_rng->getName())<<"\\\\\\bigskip";
+       os <<"\n "<<mld->MLT(MultiL_Dict::TXT_FIRMA)<<" "<< string2TeX(kunde_rng->getName())<<"\\\\\\bigskip";
      else
-       os <<"\nFirma "<< string2TeX(kunde_an->getName())<<"\\\\\\bigskip";
+       os <<"\n "<<mld->MLT(MultiL_Dict::TXT_FIRMA)<<" "<< string2TeX(kunde_an->getName())<<"\\\\\\bigskip";
        
      zeilen_passen_noch=ZEILEN_SEITE_N;
     }
@@ -1191,7 +1195,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
 		<<" " <<getDatum()<<". ";
 
 
-   if(Typ()==Auftrag  && page_counter==1)
+   if(Typ()==Auftrag  && page_counter==1 && !Rueckstand())
      os <<mld->MLT(MultiL_Dict::TXT_DANKE_AUFTR)<<" \\\\\n";
    else os << "~\\\\\n";
 
