@@ -1,4 +1,4 @@
-// $Id: FILEstream.h,v 1.4 2004/04/30 14:59:08 christof Exp $
+// $Id: FILEstream.h,v 1.5 2004/05/03 14:29:57 christof Exp $
 /*  Midgard Character Generator
  *  Copyright (C) 2001-2004 Christof Petig
  *
@@ -27,11 +27,17 @@ class FILEbuf : public std::streambuf
 {public:
    typedef char char_type;
    typedef int int_type;
+   static const int_type eof=
+#if !defined(__GNUC__) || __GNUC__>=3
+       traits_type::eof();
+#else       
+       -1;
+#endif
         
-   FILEbuf(FILE *_o) : o(_o),cached(traits_type::eof()) {}
+   FILEbuf(FILE *_o) : o(_o),cached(eof) {}
 protected:
    int_type overflow(int_type c) 
-      {  if (c!=traits_type::eof())
+      {  if (c!=eof)
          {  fputc(c,o);
          }
          return c;
@@ -40,14 +46,14 @@ protected:
    {  return fwrite(__s,sizeof(char_type),__n,o);
    }
    int_type underflow() 
-      {  if (cached==traits_type::eof()) cached=fgetc(o);
+      {  if (cached==eof) cached=fgetc(o);
          return cached;
       }
    int_type uflow() 
       {  
-         if (cached==traits_type::eof()) cached=fgetc(o);
+         if (cached==eof) cached=fgetc(o);
          int_type c=cached;
-         cached=traits_type::eof();
+         cached=eof;
          return c;
       }
    std::streamsize xsgetn(char_type* __s, std::streamsize __n)
