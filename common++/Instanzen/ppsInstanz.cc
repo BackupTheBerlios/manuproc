@@ -144,7 +144,7 @@ ppsInstanz::ID ppsInstanz::NaechsteInstanz(const ArtikelStamm &art) const
    else if (LagerInstanz()) next=getProduktionsInstanz(art)->Id();
    if (next==ppsInstanzID::Kundenauftraege) next=ppsInstanzID::None;
    // externe Bestellungen bestellen nicht weiter !
-   if (next!=ppsInstanzID::None && cH_ppsInstanz(next)->ExterneBestellung())
+   if (next!=ppsInstanzID::None && ExterneBestellung())
       next=ppsInstanzID::None;
    return next;
 }
