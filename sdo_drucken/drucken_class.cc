@@ -1475,8 +1475,8 @@ void LR_Abstraktion::page_header(std::ostream &os)
       os << kunde_an->Id();
      } 
    else
-     os << "~\\\\\n"<<mld->MLT(MultiL_Dict::TXT_IHREKDNR)<<": ";
      {
+     os << "~\\\\\n"<<mld->MLT(MultiL_Dict::TXT_IHREKDNR)<<": ";
       os.width(5);os.fill('0');
       if(kunde_rng->Id()!=kunde_an->Id())
         {if(Typ()==Rechnung || Typ()==Auftrag)
