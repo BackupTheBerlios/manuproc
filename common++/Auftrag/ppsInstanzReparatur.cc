@@ -603,11 +603,11 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
    if (ae.Id()==AuftragBase::dispo_auftrag_id)
    {  // 2er: Kinder gleiche instanz
       AuftragBase::mengen_t menge2;
+      ArtikelStamm astamm(ae.Artikel());
       
       for (AufEintragZu::map_t::iterator i=kinder.begin();i!=kinder.end();++i)
       {  for (AufEintragZu::list_t::iterator j=i->second.begin();j!=i->second.end();)
-         {  ArtikelStamm astamm(ae.Artikel());
-            if (ae.Instanz()->LagerInstanz())
+         {  if (ae.Instanz()->LagerInstanz())
            {if (!astamm.getMindBest())
             {  analyse("Ein Lager 2er ohne MindestMenge darf keine Kinder haben",ae,j->AEB,j->Menge);
              weg:
@@ -645,7 +645,18 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
            ++j;
          }
       }
-      if (!ae.Instanz()->LagerInstanz() && menge2!=ae.getStueck())
+      // 1. naiver Versuch einer Reparatur
+      if (ae.Instanz()->LagerInstanz() && menge2>astamm.getMindBest())
+      { for (AufEintragZu::map_t::iterator i=kinder.begin();i!=kinder.end();++i)
+        {  for (AufEintragZu::list_t::iterator j=i->second.begin();j!=i->second.end();)
+           { analyse("Die Nachbestellungen übertreffen die Mindesmenge",ae,j->AEB,menge2);
+             if (!analyse_only) AufEintragZu::remove(ae,j->AEB);
+             j=i->second.erase(j);
+             alles_ok=false;
+           }
+        }
+      }
+      else if (!ae.Instanz()->LagerInstanz() && menge2!=ae.getStueck())
       {  analyse("2er: Zuordnungen!=eigene Menge",ae,menge2,ae.getStueck());
          if (!analyse_only) 
             ae.MengeAendern(menge2-ae.getStueck(),false,
