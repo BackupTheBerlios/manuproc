@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.4 2003/07/24 11:16:24 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.5 2003/07/24 12:49:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -270,11 +270,13 @@ void AufEintrag::WiederEinlagern(const int uid,cH_ppsInstanz instanz,const Artik
   // eigentlich sind nur die 1er interessant, dann aber OPEN wie CLOSED ...
   SQLFullAuftragSelector sel(make_value(SQLFullAuftragSelector::
       			sel_Artikel(instanz->Id(),artikel)));
-  menge=auf_positionen_verteilen_rev(sel,-menge,WiederEinlagern_cb());
+  // Vorzeichen ändern
+  menge=-menge;
+  menge=auf_positionen_verteilen_rev(sel,menge,WiederEinlagern_cb());
   if (!!menge)
   {  // eigentlich soll das nicht passieren, da es ja vorher produziert wurde ...
      ManuProC::Trace(trace_channel, __FUNCTION__,NV("es ist ein Rest geblieben",menge));
-     Einlagern(uid,instanz,artikel,menge,false,ProductionContext());
+     Einlagern(uid,instanz,artikel,-menge,false,ProductionContext());
   }
 }
 
