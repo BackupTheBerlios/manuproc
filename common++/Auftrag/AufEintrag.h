@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.67 2003/08/11 15:45:06 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.68 2003/08/14 08:35:01 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -55,6 +55,7 @@ class AufEintrag : public AufEintragBase
 {
      friend class AuftragBase;
      friend class ppsInstanzReparatur;
+     friend class VerfuegbareMenge; // besser hier hin ...
      friend FetchIStream &operator>>(FetchIStream &is, AufEintrag &ae);
 
      class MichEinlagern;
@@ -263,6 +264,7 @@ public:
  AufEintragBase Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
       const ManuProC::Datum &datum, ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Planen,
          AufEintragBase *verplanter_aeb=0,bool rekursiv=false) throw(std::exception);
+private:         
  __deprecated void ProduktionsPlanung(int uid,mengen_t menge,const AuftragBase &zielauftrag,
       const ManuProC::Datum &datum,cH_ppsInstanz instanz) throw(std::exception);
       
@@ -274,6 +276,7 @@ public:
 // *this => Der reservierte 1er; ae => Der ungeplante 0er
 //?? void menge_fuer_aeb_freigeben(const mengen_t &menge,AufEintrag &ae,const int uid);
 
+public:
  // brauche ich noch ein statisches ProduziertNG (das nur eine Instanz erhält?)
  // z.B. (getRestStk())
  void ProduziertNG(mengen_t M,const ProductionContext2 &ctx);
@@ -282,11 +285,13 @@ public:
 		const AufEintragBase &elter_alt,
 		const AufEintragBase &elter_neu,
 		const ProductionContext2 &ctx);
+private:		
  void Einlagern2(unsigned uid, mengen_t M,
 		const AufEintragBase &elter_alt,
 		const AufEintragBase &elter_neu,
 		const ProductionContext2 &ctx);
  // neuen (geschlossenen) 1er erzeugen (völlig unverzeigert ?)
+public:
  static AufEintragBase unbestellteMengeProduzieren(cH_ppsInstanz instanz,
  		const ArtikelBase &artikel,
  		mengen_t menge, unsigned uid,bool rekursiv=false,
@@ -311,6 +316,7 @@ public:
          const ProductionContext &ctx,
          const ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Produziert) throw(SQLerror);
    // Menge wurde als Produziert markiert, kam aber ins Lager zurück
+private:
 // intern aber public wegen der klassen
    static AufEintragBase ArtikelInternNachbestellen(const cH_ppsInstanz &wo,
  	mengen_t menge,const ManuProC::Datum &lieferdatum,const ArtikelBase& artikel,

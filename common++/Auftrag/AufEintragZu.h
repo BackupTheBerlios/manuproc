@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.22 2003/07/31 14:48:53 christof Exp $
+// $Id: AufEintragZu.h,v 1.23 2003/08/14 08:35:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -97,24 +97,19 @@ public:
     static std::list<AufEintragBase> get_AufEintragList_from_Artikel
                (const ArtikelBase& artikel,ppsInstanz::ID instanz,AufStatVal status);
 
+    static mengen_t Summe(const list_t &l,ID wovon=none_id);
 
     // Neue Einträg anlegen:
     void Neu(const AufEintragBase& neuAEB,const mengen_t menge);
+#if 0    
     __deprecated void Neu(const AufEintragBase& neuAEB,const mengen_t menge,
              const int oldZnr);
+#endif             
     // gibt die Menge zurück, die verändert wurde. Falls reduziert werden sollte
     // müssen die input/output menge nicht übereinstimmen, da keine negativen Mengen
     // bestellt werden können
     // äquivalent zu Neu?
     mengen_t setMengeDiff__(const AufEintragBase& neuAEB,mengen_t menge);
-
-    // Menge eines alten Eintrags ändern:
-    bool setMenge(const AufEintragBase& neuAEB,const mengen_t menge);
-    AuftragBase::mengen_t verteileMenge(list_t L, AuftragBase::mengen_t menge, bool add);
-    
-
-    // Zuordnung ändern: schudder CP
-    __deprecated bool setKindZnr(const AufEintragBase& neuAEB);
 
     static bool remove(const AufEintragBase& alt_AEB,const AufEintragBase& neu_AEB);
     static void moveInstanz(const VonNachDel vdl,const AufEintragBase &oldAEB, const AufEintragBase &newAEB) throw(SQLerror);

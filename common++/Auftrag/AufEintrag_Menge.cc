@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.5 2003/08/07 08:12:59 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.6 2003/08/14 08:35:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -248,11 +248,7 @@ void AufEintrag::DispoBeschraenken(int uid)
   ManuProC::Trace _t(trace_channel, __FUNCTION__,*this);
   AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(*this,AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
 
-  mengen_t S=0;
-  for(AufEintragZu::list_t::const_iterator i=L.begin();i!=L.end();++i)
-   {
-     if(i->AEB.Id()==dispo_auftrag_id) S+=i->Menge;
-   }
+  mengen_t S=AufEintragZu::Summe(L,dispo_auftrag_id);
   if (getRestStk()<S)
   {   ManuProC::Trace(trace_channel, __FILELINE__,
   		"Dispo muss um ",S-getRestStk()," erniedrigt werden");

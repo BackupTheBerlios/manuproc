@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.23 2003/08/11 14:22:57 christof Exp $
+// $Id: AufEintragZu.cc,v 1.24 2003/08/14 08:35:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -91,44 +91,6 @@ reloop:
    }
  return vaeb;
 }
-
-#if 0
-AufEintragZu::list_t AufEintragZu::get_Referenz_list_for_geplant(bool kinder) const throw(SQLerror)
-{
- ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,NV("Kinder",kinder));
-  // Ungeplante Referenz Aufträge
-  list_t URA=get_Referenz_list(*this,false,list_ohneArtikel);
- //NEU
-  list_t L;
-  for(list_t::const_iterator i=URA.begin();i!=URA.end();++i)
-   {
-     list_t l=AufEintragZu(i->AEB).get_Referenz_list(i->AEB,kinder,list_ohneArtikel);
-     if(kinder) // sich selber aus der Liste entfernen
-        for (list_t::iterator j=l.begin();j!=l.end();++j)
-           if(j->AEB==*this) {L.erase(j); break;}
-     L.merge(l);
-   }
-  return L; 
-}
-#endif
-
-#if 0
-AuftragBase::mengen_t AufEintragZu::verteileMenge(list_t L, mengen_t menge,bool add)
-{
- ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,NV("Menge",menge),NV("Add",add));
-  for(list_t::const_iterator i=L.begin();i!=L.end();++i)
-   {
-     if(!menge) return menge;
-     mengen_t M=AuftragBase::min(menge,i->Menge);
-     if(add)  setMengeDiff__(i->AEB,M)  ;
-     else     setMengeDiff__(i->AEB,-M) ;
-     menge-=M;
-   }
-  if(!!menge) 
-      std::cerr << "WARNING: 'AufEintragZu::verteileMenge' Restmenge = "<<menge<<'\n';
-  return menge;
-}
-#endif
 
 std::vector<AufEintragBase> AufEintragZu::getKundenAuftragV() const
 {
@@ -271,21 +233,6 @@ void AufEintragZu::Neu(const AufEintragBase& neuAEB,
   else Neu(neuAEB,menge);
 }
 
-#if 0
-bool AufEintragZu::setMenge(const AufEintragBase& neuAEB,const mengen_t menge)
-{
- ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,neuAEB,NV("Menge",menge));
-
- Query("update auftragsentryzuordnung set menge=? "
- 	"where (altinstanz,altauftragid,altzeilennr, "
- 		"neuinstanz,neuauftragid,neuzeilennr)= (?,?,?, ?,?,?)").lvalue()
-	<< menge 		
- 	<< static_cast<const AufEintragBase&>(*this) << neuAEB;
- SQLerror::test(__FILELINE__,100);
- return !SQLerror::SQLCode();
-}
-#endif
-
 namespace { struct pri_menge
 {  ManuProC::TimeStamp pri;
    AuftragBase::mengen_t menge;
@@ -352,24 +299,6 @@ AuftragBase::mengen_t AufEintragZu::setMengeDiff__(const AufEintragBase &neuAEB,
   }
 }
 
-#if 0
-// wer braucht denn so etwas krankes? CP
-bool AufEintragZu::setKindZnr(const AufEintragBase& neuAEB)
-{
- ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,neuAEB);
- std::cerr << "mit "<< __PRETTY_FUNCTION__ << " bin ich nicht einverstanden CP\n";
-
- Query("update auftragsentryzuordnung set neuzeilennr=? "
- 	"where (altinstanz,altauftragid,altzeilennr, "
- 		"neuinstanz,neuauftragid)= (?,?,?, ?,?)").lvalue()
-	<< neuAEB.ZNr()
- 	<< static_cast<const AufEintragBase&>(*this) 
- 	<< neuAEB.InstanzID() << neuAEB.Id();
- SQLerror::test(__FILELINE__,100);
- return !SQLerror::SQLCode();
-}
-#endif
-
 void AufEintragZu::moveInstanz(const VonNachDel vdl,const AufEintragBase &oldAEB, const AufEintragBase &newAEB) throw(SQLerror)
 {
 
@@ -420,3 +349,10 @@ bool AufEintragZu::remove(const AufEintragBase& alt,const AufEintragBase& neu)
  return !SQLerror::SQLCode();
 }
 
+AufEintragZu::mengen_t AufEintragZu::Summe(const list_t &l,ID wovon)
+{  mengen_t result;
+   for (list_t::const_iterator i=l.begin(); i!=l.end(); ++i)
+      if (wovon==none_id || i->aeb->Id()==wovon)
+         result+=i->menge;
+   return result;
+}

@@ -592,10 +592,12 @@ static bool JumboLager()
        		zp0b("2002-3-1 11:02");
        JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0,true);
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp1,true);
+vergleichen(Check::Jumbo|Check::Menge,"richtig1","Jumbo richtig","");
        //   101 |      3 | 2002-03-01 11:00:00+01 | 2002-03-01 11:11:00+01
        JR=JumboRolle::create(KK); // 102
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0,true);
        JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp1,true);
+vergleichen(Check::Jumbo|Check::Menge,"richtig","Jumbo richtig","");
        vergleichen(Check::Jumbo,"richtig","Jumbo richtig","");
        //  102 |      2 | 2002-03-01 11:11:00+01 | 2002-03-01 11:00:00+01
        JR=JumboRolle::create(KK); // 103

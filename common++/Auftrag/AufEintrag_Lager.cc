@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.12 2003/08/11 15:58:53 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.13 2003/08/14 08:35:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -262,7 +262,20 @@ public:
 	AuftragBase::mengen_t operator()(AufEintrag &i, AuftragBase::mengen_t M) const
 	{  unsigned uid=getuid();
 	   assert(i.Id()==AuftragBase::plan_auftrag_id);
+	   assert(M<0);
            i.abschreiben(M);
+           // eventuell muss das in den 2er?
+           {  AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(i,AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
+              mengen_t sum=AufEintragZu::Summe(eltern);
+              if (sum<i->getRestStk())
+              {  i->MengeAendern(uid,sum-i->getRestStk(),true,AufEintragBase(),ManuProC::Auftrag::r_Reparatur);
+              }
+           }
+
+           if (i.Instanz()->ProduziertSelbst()) return M;
+           
+           // was ist mit EinlagernIn? dann darf das hier auch nicht getan werden
+
            // Eltern des 0ers sind Eltern des 1ers, allerdings waren dessen 
            // Zuordnungen 0
            // Menge nachbestellen
