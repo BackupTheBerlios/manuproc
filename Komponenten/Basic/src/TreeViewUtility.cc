@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.cc,v 1.18 2004/02/06 09:46:38 christof Exp $
+// $Id: TreeViewUtility.cc,v 1.19 2004/05/03 12:00:05 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,6 +20,10 @@
 #include "TreeViewUtility.h"
 #include <stdarg.h>
 #include <cassert>
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#  include <sigc++/compatibility.h>
+#  include <sigc++/bind.h>
+#endif
 
 TreeViewUtility::CListEmulator::CListEmulator(const std::vector<Glib::ustring> &t)
 	: cols(t.size()), titles(t), view()

@@ -1,4 +1,4 @@
-// $Id: bool_CheckMenuItem.cc,v 1.6 2003/10/22 12:04:50 christof Exp $
+// $Id: bool_CheckMenuItem.cc,v 1.7 2004/05/03 11:47:18 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,6 +21,9 @@
 #include "bool_CheckMenuItem.hh"
 #include "bool_properties.hh"
 #include <bvector_item_CheckMenuItem.hh>
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#  include <sigc++/compatibility.h>
+#endif
 
 void bool_CheckMenuItem::Connection::model2widget()
 {  widget->set_active(model.get_value());

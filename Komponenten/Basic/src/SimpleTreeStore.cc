@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.57 2004/05/03 08:03:18 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.58 2004/05/03 11:47:18 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -35,7 +35,9 @@
 #include <gtkmm/treepath.h>
 #include <Misc/EntryValueSort.h>
 //#include <Misc/EntryValueInvert.h>
-#include <SigC2SlotEmu.h>
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#  include <sigc++/compatibility.h>
+#endif
 
 #ifdef __MINGW32__
 #define getuid() 0

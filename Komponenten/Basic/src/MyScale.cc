@@ -21,7 +21,9 @@
 #include <gtkmm/label.h>
 #include <gtkmm/arrow.h>
 #include <Misc/itos.h>
-
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#  include <sigc++/compatibility.h>
+#endif
 
 void MyScale::init()
 {

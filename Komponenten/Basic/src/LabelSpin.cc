@@ -20,6 +20,9 @@
 #include "LabelSpin.hh"
 #include <Misc/itos.h>
 #include <gtkmm/adjustment.h>
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#  include <sigc++/compatibility.h>
+#endif
 
 LabelSpin::LabelSpin(int v,int lower,int upper)
 : value(v)

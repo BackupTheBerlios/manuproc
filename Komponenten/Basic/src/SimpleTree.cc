@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.46 2004/05/03 08:01:53 christof Exp $
+// $Id: SimpleTree.cc,v 1.47 2004/05/03 11:47:18 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,8 +23,10 @@
 #include <bvector_item_CheckMenuItem.hh>
 #include <bool_CheckMenuItem.hh>
 #include <CellRendererSimpleTree.h>
-#include <SigC2SlotEmu.h>
-
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#  include <sigc++/compatibility.h>
+#  include <sigc++/bind.h>
+#endif
 #include <iostream>
 
 void SimpleTree_Basic::detach()
@@ -164,8 +166,13 @@ void SimpleTree_Basic::on_selection_changed()
    else
    {  std::vector<cH_RowDataBase> leaves;
       std::vector<Handle<TreeRow> > nodes;
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+      get_selection()->selected_foreach_iter(sigc::bind(sigc::mem_fun(*this,
+      		&SimpleTree_Basic::sel_change_cb),&leaves,&nodes));
+#else
       get_selection()->selected_foreach(SigC::bind(SigC::slot(*this,
       		&SimpleTree_Basic::sel_change_cb),&leaves,&nodes));
+#endif
       for (std::vector<cH_RowDataBase>::const_iterator i=leaves.begin();
       		i!=leaves.end();++i)
       	 _leaf_selected(*i);
@@ -227,9 +234,15 @@ std::vector<cH_RowDataBase> SimpleTree::getSelectedRowDataBase_vec() const
 	throw (SimpleTree::notLeafSelected)
 {  std::vector<cH_RowDataBase> result;
    SimpleTree *non_const_this=const_cast<SimpleTree*>(this);
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+   get_selection()->selected_foreach_iter(sigc::bind(
+   		sigc::mem_fun(*non_const_this,
+      		&SimpleTree::getSelectedRowDataBase_vec_cb),&result));
+#else
    non_const_this->get_selection()->selected_foreach(SigC::bind(
    		SigC::slot(*non_const_this,
       		&SimpleTree::getSelectedRowDataBase_vec_cb),&result));
+#endif      		
    return result;
 }
 
