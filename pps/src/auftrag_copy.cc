@@ -88,7 +88,7 @@ void auftrag_copy::on_copy_ok_clicked()
 		"rabatt,lieferdate,preismenge,instanz,preisliste) "
 		"(select ?,zeilennr,?,0,?,artikelid,0,preis,rabatt,?,"
 		"preismenge,instanz,preisliste from auftragentry"
-		" where (auftragid,instanz)=(?,?))")
+		" where (auftragid,instanz)=(?,?) and status!=?)")
 		<< neu_aufid
 		).add_argument(
 			stueck==0 ? "bestellt" : itos(stueck))
@@ -97,7 +97,8 @@ void auftrag_copy::on_copy_ok_clicked()
 			ld.valid() ? 
 			ld.postgres_null_if_invalid() : "lieferdate") 
 		<< alt_auftrag->Id()
-		<< alt_auftrag->Instanz();
+		<< alt_auftrag->Instanz()
+		<< (AufStatVal)STORNO;
 	SQLerror::test(__FILELINE__);
 
       std::auto_ptr<AuftragFull> full(new AuftragFull(

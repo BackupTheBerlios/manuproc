@@ -1049,10 +1049,10 @@ void auftrag_bearbeiten::on_preisautomatik_clicked()
 
 void auftrag_bearbeiten::on_checkbutton_ean_drucken_clicked()
 {
-// if(kunde->Id() != Kunde::none_id)
-//   {  
-//    (const_cast<Kunde*>(&*kunde))->showEAN(checkbutton_ean_drucken->get_active());
-//   }
+ if(kunde->Id() != Kunde::none_id)
+   {  
+    (const_cast<Kunde*>(&*kunde))->showEAN(checkbutton_ean_drucken->get_active());
+   }
 }
 
 
