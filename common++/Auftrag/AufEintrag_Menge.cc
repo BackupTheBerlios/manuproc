@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.15 2003/09/15 10:32:53 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.16 2003/09/15 12:19:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -172,8 +172,8 @@ AuftragBase::mengen_t AufEintrag::ArtikelInternAbbestellen_cb::operator()
        if (!!noch_frei)
        {  AuftragBase(j.Instanz(),dispo_auftrag_id)
        	     .BestellmengeAendern(noch_frei,AE.getLieferdatum(),AE.Artikel(),OPEN,j);
-          AufEintragZu(mythis).setMengeDiff__(j,-M);
        }
+       AufEintragZu(mythis).setMengeDiff__(j,-M);
      }
    return M;
 }
