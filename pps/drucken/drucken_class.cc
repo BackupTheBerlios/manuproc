@@ -1202,6 +1202,12 @@ void LR_Abstraktion::page_header(std::ostream &os)
        os << kunde_rng->LaTeX_an(Typ()==Lieferschein,telart,"1\\textwidth")<<"\n\n";
      else  
        os << kunde_an->LaTeX_an(Typ()==Lieferschein,telart,"1\\textwidth")<<"\n\n";
+
+     if(Typ()==Auftrag && kunde_an->AB_an_rngadresse())
+       os << kunde_rng->LaTeX_an(Typ()==Lieferschein,telart,"1\\textwidth")<<"\n\n";
+     else  
+       os << kunde_an->LaTeX_an(Typ()==Lieferschein,telart,"1\\textwidth")<<"\n\n";       
+       
 #endif     
 
 #ifdef MABELLA_EXTENSIONS
@@ -1212,7 +1218,8 @@ void LR_Abstraktion::page_header(std::ostream &os)
 	      "\\begin{flushleft}\n";
 
         
-	if(!kunde_an->isInGrp(KundengruppeID::Rechnungsadresse) && Typ()!=Rechnung)
+	if(!kunde_an->isInGrp(KundengruppeID::Rechnungsadresse) && Typ()!=Rechnung
+		&& !kunde_an->AB_an_rngadresse())
 		{
 		os << "\\bf "<<mld->MLT(MultiL_Dict::TXT_RNGADRESSE)<<":\\rm\\\\\n"
 		   << string2TeX(kunde_rng->firma())+"\\\\\n";
@@ -1238,8 +1245,19 @@ void LR_Abstraktion::page_header(std::ostream &os)
 		   << string2TeX(kunde_an->hausnr())+"\\\\\n"		   
 		   << string2TeX(kunde_an->plz()+" "+kunde_an->ort())+"\\\\\n\n";
 		os << "\\smallskip\n";   
-		}		
-	
+		}
+	else	
+	if(!kunde_an->isInGrp(KundengruppeID::Rechnungsadresse) && Typ()==Auftrag
+		&& kunde_an->AB_an_rngadresse())
+		{
+		os << "\\bf "<<mld->MLT(MultiL_Dict::TXT_LIEFADRESSE)<<":\\rm\\\\\n"
+		   << string2TeX(kunde_an->firma())+"\\\\\n"
+		   << string2TeX(kunde_an->strasse())+" "
+		   << string2TeX(kunde_an->hausnr())+"\\\\\n"		   
+		   << string2TeX(kunde_an->plz()+" "+kunde_an->ort())+"\\\\\n\n";
+		os << "\\smallskip\n";   
+		}
+		
 	if(kunde_rng->getBetreuer()!=Person::none_id)
 	  {cH_Person betr(kunde_rng->getBetreuer());
            os << "\\bf "<<mld->MLT(MultiL_Dict::TXT_BETREUUNG)<<":\\rm \\\\\n"
