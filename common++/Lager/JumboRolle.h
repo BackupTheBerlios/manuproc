@@ -1,4 +1,4 @@
-/* $Id: JumboRolle.h,v 1.10 2002/10/24 14:06:50 thoma Exp $ */
+/* $Id: JumboRolle.h,v 1.11 2003/01/08 09:46:57 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: JumboRolle.h,v 1.10 2002/10/24 14:06:50 thoma Exp $
+// $Id: JumboRolle.h,v 1.11 2003/01/08 09:46:57 christof Exp $
 
 #ifndef _JUMBOROLLE_HH
 #  define _JUMBOROLLE_HH
@@ -27,13 +27,13 @@
 //#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
 
 
-#include<Aux/SQLerror.h>
-#include<Aux/Datum.h>
+#include<Misc/SQLerror.h>
+#include<Misc/Datum.h>
 #include<Artikel/ArtikelBezeichnung.h>
 #include"CodeError.h"
 #include <iostream>
 #include <vector>
-#include <Aux/Zeitpunkt_new.h>
+#include <Misc/Zeitpunkt_new.h>
 #include <Lager/LagerPlatz.hh>
 
 #define CODELENGTH	8

@@ -1,4 +1,4 @@
-// $Id: DataBase_init.cc,v 1.11 2002/12/12 10:42:01 thoma Exp $
+// $Id: DataBase_init.cc,v 1.12 2003/01/08 09:46:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -19,9 +19,9 @@
 
 #include "DataBase_init.hh"
 
-#include <Aux/FetchIStream.h>
-#include <Aux/itos.h>
-#include <Aux/Datum.h>
+#include <Misc/FetchIStream.h>
+#include <Misc/itos.h>
+#include <Misc/Datum.h>
 #include <Lager/RohwarenLager.h>
 #include <Lager/JumboLager.h>
 #include <Ketten/KettplanKette.h>

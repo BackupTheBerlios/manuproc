@@ -1,4 +1,4 @@
-// $Id: AuftragsEntryZuordnung.h,v 1.10 2002/04/03 06:38:09 christof Exp $
+// $Id: AuftragsEntryZuordnung.h,v 1.11 2003/01/08 09:46:56 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -19,8 +19,8 @@
 
 #ifndef AUFTRAGSENTRYZUORDNUNG_H
 #define AUFTRAGSENTRYZUORDNUNG_H
-#include<Aux/SQLerror.h>
-#include<Aux/ppsInstanz.h>
+#include<Misc/SQLerror.h>
+#include<Misc/ppsInstanz.h>
 #include <Auftrag/AufEintragBase.h>
 #include <Auftrag/auftrag_status.h>
 #include <list>

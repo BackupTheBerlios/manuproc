@@ -19,12 +19,12 @@
 #include "FertigWarenLager.h"
 #include <Artikel/ArtikelBase.h>
 #include <Artikel/ArtikelBezeichnung.h>
-#include <Aux/Datum.h>
-#include <Aux/string0.h>
+#include <Misc/Datum.h>
+#include <Misc/string0.h>
 exec sql include sqlca;
-#include <Aux/SQLerror.h>
-#include <Aux/Transaction.h>
-#include <Aux/itos.h>
+#include <Misc/SQLerror.h>
+#include <Misc/Transaction.h>
+#include <Misc/itos.h>
 
 
 std::pair<Zeitpunkt_new,int> FertigWarenLager::letzteInventur()

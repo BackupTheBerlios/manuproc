@@ -1,4 +1,4 @@
-/* $Id: Lager_Dispo.h,v 1.3 2002/07/05 12:35:01 christof Exp $ */
+/* $Id: Lager_Dispo.h,v 1.4 2003/01/08 09:46:57 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -19,7 +19,7 @@
 
 #include <Instanzen/ppsInstanz.h>
 #include <Artikel/ArtikelBase.h>
-#include <Aux/fixedpoint.h>
+#include <Misc/fixedpoint.h>
 
 class Lager_Dispo 
 {

@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.23 2002/12/20 15:35:40 thoma Exp $ */
+/* $Id: AufEintrag.h,v 1.24 2003/01/08 09:46:56 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,18 +26,18 @@
 #include <Artikel/Preis.h>
 #include <Auftrag/AufEintragBase.h>
 #include <Auftrag/auftrag_status.h>
-#include <Aux/CacheStatic.h>
-#include <Aux/Datum.h>
-#include <Aux/Handles.h>
-#include <Aux/Kalenderwoche.h>
-#include <Aux/SQLerror.h>
-#include <Aux/Waehrung.h>
+#include <Misc/CacheStatic.h>
+#include <Misc/Datum.h>
+#include <Misc/Handles.h>
+#include <Misc/Kalenderwoche.h>
+#include <Misc/SQLerror.h>
+#include <Misc/Waehrung.h>
 #include <Kunde/Kunde.h>
 #include <map>
 #include <string>
 #include <vector>
 #include <list>
-#include <Aux/itos.h>
+#include <Misc/itos.h>
 class cH_Lieferschein;
 #include <Auftrag/AufEintragZu.h>
 #include <Auftrag/auftrag_enums.h>

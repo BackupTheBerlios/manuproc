@@ -19,8 +19,8 @@
 
 
 #include <Kunde/PreisListeFull.h>
-#include <Aux/itos.h>
-#include <Aux/Transaction.h>
+#include <Misc/itos.h>
+#include <Misc/Transaction.h>
 
 
 PreisListeFull::PreisListeFull(ID id, bool art_in_list) throw(SQLerror) : PreisListe(id)

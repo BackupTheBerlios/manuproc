@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.21 2002/12/19 16:22:23 thoma Exp $
+// $Id: Lager.cc,v 1.22 2003/01/08 09:46:57 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -18,7 +18,7 @@
  */
 
 #include "Lager.h"
-#include <Aux/Transaction.h>
+#include <Misc/Transaction.h>
 #include <algorithm>
 #include <Instanzen/ppsInstanzProduziert.h>
 #include <Misc/relops.h>

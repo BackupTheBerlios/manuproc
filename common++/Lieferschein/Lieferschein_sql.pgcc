@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.27 2002/12/11 15:28:46 jacek Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.28 2003/01/08 09:46:57 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -18,9 +18,9 @@
  */
 
 #include"Lieferschein.h"
-#include<Aux/Transaction.h>
+#include<Misc/Transaction.h>
 exec sql include sqlca;
-#include <Aux/Trace.h>
+#include <Misc/Trace.h>
 
 Lieferschein::Lieferschein(const cH_ppsInstanz& _instanz,int lid) throw(SQLerror)
 : LieferscheinBase(_instanz,lid), kunde(Kunde::default_id)

@@ -1,4 +1,4 @@
-/* $Id: ArtikelBaum.h,v 1.17 2002/12/20 15:35:39 thoma Exp $ */
+/* $Id: ArtikelBaum.h,v 1.18 2003/01/08 09:46:56 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,9 +24,9 @@
 #include <Auftrag/AufEintragBase.h>
 #include <string>
 #include <vector>
-#include <Aux/SQLerror.h>
+#include <Misc/SQLerror.h>
 #include <Artikel/ArtikelBase.h>
-#include <Aux/fixedpoint.h>
+#include <Misc/fixedpoint.h>
 #include <Instanzen/ppsInstanz.h>
 
 // besserer Name: ArtikelZusammensetzung

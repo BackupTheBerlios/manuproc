@@ -17,14 +17,14 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: checkGeliefert_sql.pgcc,v 1.5 2002/07/05 12:35:01 christof Exp $
+// $Id: checkGeliefert_sql.pgcc,v 1.6 2003/01/08 09:46:57 christof Exp $
 
 //#include <Lieferschein/Lieferschein.h>
 #include <Auftrag/AuftragFull.h>
 exec sql include sqlca;
-#include <Aux/Transaction.h>
-#include <Aux/FetchIStream.h>
-#include <Aux/dbconnect.h>
+#include <Misc/Transaction.h>
+#include <Misc/FetchIStream.h>
+#include <Misc/dbconnect.h>
 
 int main()
 {  ManuProC::dbconnect();

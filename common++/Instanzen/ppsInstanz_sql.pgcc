@@ -18,7 +18,7 @@
  */
 
 #include "ppsInstanz.h"
-#include <Aux/Transaction.h>
+#include <Misc/Transaction.h>
 exec sql include sqlca;
 
 

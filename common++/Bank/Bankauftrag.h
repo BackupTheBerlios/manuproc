@@ -1,4 +1,4 @@
-/* $Id: Bankauftrag.h,v 1.6 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: Bankauftrag.h,v 1.7 2003/01/08 09:46:56 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,10 +20,10 @@
 #include <vector>
 #include <string>
 #include <stdio.h>
-#include "Aux/IOerror.h"
+#include "Misc/IOerror.h"
 #include "Bank/Zahlvorgang.h"
-#include "Aux/Ausgabe_neu.h"
-#include "Aux/SQLerror.h"
+#include "Misc/Ausgabe_neu.h"
+#include <Misc/SQLerror.h>
 
 #ifndef BANKAUFTRAGH
 #define BANKAUFTRAGH

@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung.h,v 1.3 2002/12/11 14:55:47 jacek Exp $ */
+/* $Id: ProvAbrechnung.h,v 1.4 2003/01/08 09:46:58 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,14 +20,14 @@
 
 #ifndef PROVABRECHNUNG
 #define PROVABRECHNUNG
-#include <Aux/fixedpoint.h>
+#include <Misc/fixedpoint.h>
 #include <string>
 #include <BaseObjects/ManuProcEntity.h>
-#include <Aux/Datum.h>
-#include <Aux/SQLerror.h>
+#include <Misc/Datum.h>
+#include <Misc/SQLerror.h>
 #include <Vertrieb/ProvAbrechnungEntry.h>
 #include <DynamicEnums/DefaultValues.h>
-#include <Aux/FetchIStream.h>
+#include <Misc/FetchIStream.h>
 
 class ProvAbrechnung : public ManuProcEntity<>
 {

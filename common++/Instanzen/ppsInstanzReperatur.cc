@@ -25,7 +25,7 @@
 #include <Misc/Trace.h>
 #include <sqlca.h>
 #include <Auftrag/AufEintragZuMengenAenderung.h>
-#include <Aux/Transaction.h>
+#include <Misc/Transaction.h>
 #include <Misc/relops.h>
 
 
@@ -678,7 +678,7 @@ void ppsInstanzReparatur::vormerkungen_subrahieren(int uid,const  std::vector<La
 }   
 
 
-#include <Aux/Trace.h>
+#include <Misc/Trace.h>
 void ppsInstanzReparatur::DispoAuftraege_anlegen(const int uid,const ArtikelBase &artikel,const AuftragBase::mengen_t &menge) const
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Name(),Id());

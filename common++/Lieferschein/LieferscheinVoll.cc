@@ -1,4 +1,4 @@
-/* $Id: LieferscheinVoll.cc,v 1.11 2002/11/07 07:48:59 christof Exp $ */
+/* $Id: LieferscheinVoll.cc,v 1.12 2003/01/08 09:46:57 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,9 +19,9 @@
 
 
 #include"LieferscheinVoll.h"
-#include<Aux/SQLerror.h>
-#include<Aux/Transaction.h>
-#include<Aux/FetchIStream.h>
+#include<Misc/SQLerror.h>
+#include<Misc/Transaction.h>
+#include<Misc/FetchIStream.h>
 #include <BaseObjects/ManuProcEintrag.h>
 
 void LieferscheinVoll::deleteRow(LieferscheinEntry &le)

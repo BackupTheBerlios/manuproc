@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema_sql.pgcc,v 1.15 2002/10/24 14:06:50 thoma Exp $
+// $Id: ExtBezSchema_sql.pgcc,v 1.16 2003/01/08 09:46:56 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -18,8 +18,8 @@
  */
 
 #include <ExtBezSchema/ExtBezSchemaHandle.h>
-#include <Aux/Transaction.h>
-#include <Aux/itos.h>
+#include <Misc/Transaction.h>
+#include <Misc/itos.h>
 
 exec sql include sqlca;
 

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList_sql.pgcc,v 1.16 2002/10/24 14:06:50 thoma Exp $ */
+/* $Id: LieferscheinList_sql.pgcc,v 1.17 2003/01/08 09:46:57 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,7 +19,7 @@
 
 
 #include <Lieferschein/LieferscheinList.h>
-#include <Aux/Transaction.h>
+#include <Misc/Transaction.h>
 
 exec sql include sqlca;
 

@@ -24,7 +24,7 @@
 #include"Rechnung.h"
 #include"RechnungEntry.h"
 #include<vector>
-#include <Aux/SQLerror.h>
+#include <Misc/SQLerror.h>
 
 class RechnungVoll : public Rechnung
 {

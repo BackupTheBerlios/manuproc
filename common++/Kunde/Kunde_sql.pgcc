@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.30 2003/01/07 14:19:05 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.31 2003/01/08 09:46:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,9 +20,9 @@
 
 #include "Kunde/Kunde.h"
 #include <Kunde/Person.h>
-#include <Aux/Transaction.h>
+#include <Misc/Transaction.h>
 #include <Kunde/Telefon.h>
-#include <Aux/FetchIStream.h>
+#include <Misc/FetchIStream.h>
 exec sql include sqlca;
 
 Kunde::Kunde(ID _id) throw(SQLerror) 

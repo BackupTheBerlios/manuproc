@@ -17,7 +17,7 @@
  */
 
 #include <Artikel/ArtikelDispo.h>
-#include <Aux/SQLerror.h>    
+#include <Misc/SQLerror.h>    
 exec sql include sqlca;
 
 

@@ -1,4 +1,4 @@
-// $Id: AufEintragZuMengenAenderung.h,v 1.4 2002/12/24 08:25:22 thoma Exp $
+// $Id: AufEintragZuMengenAenderung.h,v 1.5 2003/01/08 09:46:56 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -18,7 +18,7 @@
  */
 
 //#include <Auftrag/AufEintragZu.h>  
-//#include <Aux/Transaction.h>
+//#include <Misc/Transaction.h>
 #include <Auftrag/AufEintragBase.h>
 
 

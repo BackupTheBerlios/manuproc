@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.25 2002/12/19 13:57:22 thoma Exp $
+// $Id: adjust_store.cc,v 1.26 2003/01/08 09:46:57 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -17,8 +17,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <Aux/dbconnect.h>
-#include <Aux/exception.h>
+#include <Misc/dbconnect.h>
+#include <Misc/exception.h>
 #include <getopt.h>
 #include <unistd.h>
 #include <Instanzen/ppsInstanzReperatur.h>

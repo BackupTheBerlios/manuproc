@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.16 2002/11/29 11:20:34 thoma Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.17 2003/01/08 09:46:57 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -18,8 +18,8 @@
  */
 
 #include"LieferscheinEntry.h"
-#include<Aux/FetchIStream.h>
-#include<Aux/Transaction.h>
+#include<Misc/FetchIStream.h>
+#include<Misc/Transaction.h>
 #include<Auftrag/AufEintrag.h>
 #include <unistd.h>
 #include <Lieferschein/Lieferschein.h>

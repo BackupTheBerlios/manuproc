@@ -21,8 +21,8 @@
 #include "AuftragsVerwaltung.hh"
 #include "Check.hh"
 #include "steuerprogramm.hh"
-#include <Aux/dbconnect.h>
-#include <Aux/exception.h>
+#include <Misc/dbconnect.h>
+#include <Misc/exception.h>
 #include <Lager/Lager.h>
 #include <Auftrag/Auftrag.h>
 #include <Instanzen/ppsInstanzProduziert.h>

@@ -1,4 +1,4 @@
-// $Id: auftrag_ohne_instanzen.cc,v 1.6 2002/06/27 07:42:50 christof Exp $
+// $Id: auftrag_ohne_instanzen.cc,v 1.7 2003/01/08 09:46:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -20,8 +20,8 @@
 #include <iostream>
 #include <Auftrag/AuftragFull.h>
 #include <Kunde/Kunde.h>
-#include <Aux/exception.h>
-#include <Aux/dbconnect.h>
+#include <Misc/exception.h>
+#include <Misc/dbconnect.h>
 #include <Auftrag/AuftragsBaum.h>
 //#include <Instanzen/ppsInstanz.h>
 #include <unistd.h>

@@ -1,9 +1,9 @@
 
 
-#include <Aux/SQLerror.h>
+#include <Misc/SQLerror.h>
 #include <multimap.h>
 #include <pair.h>
-#include <Aux/FetchIStream.h>
+#include <Misc/FetchIStream.h>
 
 class DBCapability
 {

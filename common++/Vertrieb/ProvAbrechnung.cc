@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung.cc,v 1.2 2002/12/03 08:46:02 christof Exp $ */
+/* $Id: ProvAbrechnung.cc,v 1.3 2003/01/08 09:46:58 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -18,7 +18,7 @@
  */
 
 #include <Vertrieb/ProvAbrechnung.h>
-#include <Aux/FetchIStream.h>
+#include <Misc/FetchIStream.h>
 
 const ProvAbrechnung::ID ProvAbrechnung::getNextAbrNr(const Kunde::ID verkid) throw(SQLerror)
 {

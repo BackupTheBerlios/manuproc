@@ -1,4 +1,4 @@
-/* $Id: Bankauftrag.cc,v 1.7 2002/06/27 07:42:50 christof Exp $ */
+/* $Id: Bankauftrag.cc,v 1.8 2003/01/08 09:46:56 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,10 +18,10 @@
  */
 
 #include "Bankauftrag.h"
-#include "Aux/Datum.h"
+#include "Misc/Datum.h"
 #include <fcntl.h>
 #include <unistd.h>
-#include <Aux/string0.h>
+#include <Misc/string0.h>
 
 void Bankauftrag::string2Bank(char *buf,const char *s) throw (Datenfehler)
 {  int i;

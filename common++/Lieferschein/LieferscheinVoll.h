@@ -24,7 +24,7 @@
 #include"Lieferschein.h"
 #include"LieferscheinEntry.h"
 #include<vector>
-#include <Aux/SQLerror.h>
+#include <Misc/SQLerror.h>
 
 
 class LieferscheinVoll : public Lieferschein

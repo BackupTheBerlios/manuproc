@@ -17,7 +17,7 @@
  */
 
 #include "Lager_Dispo.h"
-#include <Aux/SQLerror.h>
+#include <Misc/SQLerror.h>
 exec sql include sqlca;
 
 

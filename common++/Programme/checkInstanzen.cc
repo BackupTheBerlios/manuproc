@@ -1,4 +1,4 @@
-// $Id: checkInstanzen.cc,v 1.1 2002/11/22 15:39:40 christof Exp $
+// $Id: checkInstanzen.cc,v 1.2 2003/01/08 09:46:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -17,10 +17,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <Aux/exception.h>
-#include <Aux/dbconnect.h>
+#include <Misc/exception.h>
+#include <Misc/dbconnect.h>
 #include <Instanzen/ppsInstanz.h>
-#include <Aux/exception.h>
+#include <Misc/exception.h>
 #include <Auftrag/AuftragBase.h>
 #include <Kunde/Kunde.h>
 

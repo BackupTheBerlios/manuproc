@@ -1,4 +1,4 @@
-// $Id: Kette.cc,v 1.8 2002/06/27 07:42:50 christof Exp $
+// $Id: Kette.cc,v 1.9 2003/01/08 09:46:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,7 +19,7 @@
 
 
 #include <Ketten/Kette.h>
-#include <Aux/string0.h>
+#include <Misc/string0.h>
 #include <strstream.h>
 #include <iomanip.h>
 #include <stdio.h> // snprintf0

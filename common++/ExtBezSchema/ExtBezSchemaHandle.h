@@ -1,4 +1,4 @@
-// $Id: ExtBezSchemaHandle.h,v 1.6 2002/05/09 12:46:00 christof Exp $
+// $Id: ExtBezSchemaHandle.h,v 1.7 2003/01/08 09:46:56 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,8 +20,8 @@
 #ifndef EXTBEZSCHEMAHANDLE_H
 #define EXTBEZSCHEMAHANDLE_H
 #include <ExtBezSchema/ExtBezSchema.h>
-#include <Aux/Handles.h>
-#include <Aux/CacheStatic.h>
+#include <Misc/Handles.h>
+#include <Misc/CacheStatic.h>
 
 // Handle class to make passing ExtBezSchemas faster and easier
 // (java like reference counting)

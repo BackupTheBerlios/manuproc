@@ -1,4 +1,4 @@
-/* $Id: ArtikelEAN.h,v 1.10 2002/11/22 15:31:04 christof Exp $ */
+/* $Id: ArtikelEAN.h,v 1.11 2003/01/08 09:46:56 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,7 +21,7 @@
 #define ARTIKELEAN
 
 #include<string>
-#include"Aux/SQLerror.h"
+#include<Misc/SQLerror.h>
 #include"Artikel/ArtikelBase.h"
 
 class ArtikelEAN : public ArtikelBase

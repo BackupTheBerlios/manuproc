@@ -1,4 +1,4 @@
-/* $Id: selFullAufEntry.h,v 1.18 2002/12/03 13:54:17 thoma Exp $ */
+/* $Id: selFullAufEntry.h,v 1.19 2003/01/08 09:46:56 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,7 +21,7 @@
 #define SELECTEDFULLAUFLIST
 
 #include"Auftrag/sqlAuftragSelector.h"
-#include"Aux/SQLerror.h"
+#include<Misc/SQLerror.h>
 //#include<vector>
 #include <list>
 #include"Auftrag/AufEintrag.h"

@@ -1,4 +1,4 @@
-/* $Id: Einheiten.h,v 1.15 2002/11/07 07:48:23 christof Exp $ */
+/* $Id: Einheiten.h,v 1.16 2003/01/08 09:46:56 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,15 +17,15 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Einheiten.h,v 1.15 2002/11/07 07:48:23 christof Exp $
+// $Id: Einheiten.h,v 1.16 2003/01/08 09:46:56 christof Exp $
 
 #ifndef ARTIKEL_EINHEITEN_H
 #define ARTIKEL_EINHEITEN_H
 
 #include <Artikel/ArtikelBase.h>
-#include <Aux/SQLerror.h>
-#include <Aux/CacheStatic.h>
-//#include <Aux/Handles.h>
+#include <Misc/SQLerror.h>
+#include <Misc/CacheStatic.h>
+//#include <Misc/Handles.h>
 #include <vector>
 #include <DynamicEnums/DynamicEnums.h>
 

@@ -1,4 +1,4 @@
-/* $Id: Kette.h,v 1.9 2002/10/24 14:06:50 thoma Exp $ */
+/* $Id: Kette.h,v 1.10 2003/01/08 09:46:57 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,7 +20,7 @@
 
 #ifndef KETTE_HH
 #define KETTE_HH
-#include <Aux/Datum.h>
+#include <Misc/Datum.h>
 #include <iostream>
 #include <string>
 #include <vector>

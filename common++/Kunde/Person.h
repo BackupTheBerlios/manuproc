@@ -1,4 +1,4 @@
-// $Id: Person.h,v 1.14 2002/10/24 14:06:50 thoma Exp $
+// $Id: Person.h,v 1.15 2003/01/08 09:46:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,10 +21,10 @@
 #ifndef KUNDE_PERSON_HH
 #define KUNDE_PERSON_HH
 
-#include<Aux/Datum.h>
-#include<Aux/SQLerror.h>
-#include <Aux/Handles.h>
-#include <Aux/CacheStatic.h>
+#include<Misc/Datum.h>
+#include<Misc/SQLerror.h>
+#include <Misc/Handles.h>
+#include <Misc/CacheStatic.h>
 #include <Kunde/TelefonArt.h>
 #include <BaseObjects/ManuProcEntity.h>
 #include <Kunde/KontaktListe.h>

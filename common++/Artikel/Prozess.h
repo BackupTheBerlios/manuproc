@@ -1,4 +1,4 @@
-/* $Id: Prozess.h,v 1.14 2002/10/24 14:06:49 thoma Exp $ */
+/* $Id: Prozess.h,v 1.15 2003/01/08 09:46:56 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,10 +20,10 @@
 #ifndef PROZESS_H
 #define PROZESS_H
 
-#include"Aux/SQLerror.h"
+#include<Misc/SQLerror.h>
 #include<string>
-#include <Aux/CacheStatic.h>
-#include <Aux/Handles.h>
+#include <Misc/CacheStatic.h>
+#include <Misc/Handles.h>
 #include <DynamicEnums/DynamicEnums.h>
 #include <DynamicEnums/DefaultValues.h>
 

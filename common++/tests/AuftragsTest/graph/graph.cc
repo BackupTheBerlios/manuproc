@@ -1,4 +1,4 @@
-// $Id: graph.cc,v 1.19 2003/01/07 13:59:49 christof Exp $
+// $Id: graph.cc,v 1.20 2003/01/08 09:46:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -23,8 +23,8 @@
 #include <string>
 #include "dot_out.h"
 #include "get_data.h"
-#include <Aux/dbconnect.h>
-#include <Aux/exception.h>
+#include <Misc/dbconnect.h>
+#include <Misc/exception.h>
 #include "getopt.h"
 #include "../steuerprogramm.hh"
 

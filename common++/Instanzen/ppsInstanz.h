@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.23 2002/12/13 09:27:21 thoma Exp $
+// $Id: ppsInstanz.h,v 1.24 2003/01/08 09:46:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,15 +21,15 @@
 #define AUX_PPSINSTANZ_H
 #include <ManuProCConfig.h>
 #include <string>
-#include <Aux/Handles.h>
-#include <Aux/CacheStatic.h>
-#include <Aux/SQLerror.h>
+#include <Misc/Handles.h>
+#include <Misc/CacheStatic.h>
+#include <Misc/SQLerror.h>
 #include <Artikel/Prozess.h>
 #include <Auftrag/auftrag_enums.h>
 #include <vector>
 #include <DynamicEnums/DynamicEnums.h>
 #include <DynamicEnums/DefaultValues.h>
-#include <Aux/fixedpoint.h>
+#include <Misc/fixedpoint.h>
 #include <BaseObjects/ManuProcEntity.h>
 
 namespace ppsInstanzID=ManuProC::DynamicEnums::Instanzen;

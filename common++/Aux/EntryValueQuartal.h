@@ -1,4 +1,4 @@
-/* $Id: EntryValueQuartal.h,v 1.1 2002/11/22 15:53:52 christof Exp $ */
+/* $Id: EntryValueQuartal.h,v 1.2 2003/01/08 09:46:56 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,7 +22,7 @@
 
 #include <Misc/EntryValueBase.h>
 #include <Misc/Datum.h>
-#include <Aux/itos.h>
+#include <Misc/itos.h>
 
 class EntryValueQuartal : public EntryValueBase
 {

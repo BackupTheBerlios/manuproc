@@ -21,7 +21,7 @@
 #warning Datei kannn wohl weg MAT 15.5.02
 /*
 #include "Zahlungsart.hh"
-#include <Aux/SQLerror.h>
+#include <Misc/SQLerror.h>
 exec sql include sqlca;
 
 cH_Zahlungsart::cache_t cH_Zahlungsart::cache;

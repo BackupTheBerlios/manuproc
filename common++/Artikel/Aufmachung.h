@@ -1,4 +1,4 @@
-/* $Id: Aufmachung.h,v 1.4 2002/05/09 12:45:59 christof Exp $ */
+/* $Id: Aufmachung.h,v 1.5 2003/01/08 09:46:56 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include"Aux/SQLerror.h"
+#include<Misc/SQLerror.h>
 #include<string>
 #include<vector>
 //#include<gtk--/list.h>

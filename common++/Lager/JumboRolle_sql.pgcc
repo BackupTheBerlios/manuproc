@@ -20,8 +20,8 @@
 
 #include"JumboRolle.h"
 #include"Kunde/Kunde.h"
-#include <Aux/Transaction.h>
-#include <Aux/string0.h>
+#include <Misc/Transaction.h>
+#include <Misc/string0.h>
 
 exec sql include sqlca;
 

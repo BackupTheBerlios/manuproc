@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.h,v 1.17 2003/01/06 00:16:01 jacek Exp $
+// $Id: Zahlungsart.h,v 1.18 2003/01/08 09:46:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,13 +22,13 @@
 #define KUNDE_ZAHLUNGSART_HH
 #include <string>
 #include <ExtBezSchema/ExtBezSchemaHandle.h>
-#include <Aux/fixedpoint.h>
+#include <Misc/fixedpoint.h>
 #include <BaseObjects/ManuProcEntity.h>
-#include <Aux/SQLerror.h>
-#include <Aux/Waehrung.h>
-#include <Aux/fixedpoint.h>
-#include <Aux/Datum.h>
-#include <Aux/multi_lang.h>
+#include <Misc/SQLerror.h>
+#include <Misc/Waehrung.h>
+#include <Misc/fixedpoint.h>
+#include <Misc/Datum.h>
+#include <Misc/multi_lang.h>
 
 class cH_Kunde;
 

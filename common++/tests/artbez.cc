@@ -1,4 +1,4 @@
-// $Id: artbez.cc,v 1.5 2002/06/27 07:42:50 christof Exp $
+// $Id: artbez.cc,v 1.6 2003/01/08 09:46:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,11 +19,11 @@
 
 #include <iostream>
 #include <Artikel/ArtikelBezeichnung.h>
-#include <Aux/exception.h>
-#include <Aux/dbconnect.h>
+#include <Misc/exception.h>
+#include <Misc/dbconnect.h>
 #include <Artikel/ArtikelBaum.h>
 #include <Artikel/Einheiten.h>
-#include <Aux/Ausgabe_neu.h>
+#include <Misc/Ausgabe_neu.h>
 
 int main()
 {  ManuProC::PrintUncaughtExceptions();

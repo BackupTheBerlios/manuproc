@@ -1,4 +1,4 @@
-/* $Id: Lager.h,v 1.10 2002/12/10 09:55:10 thoma Exp $ */
+/* $Id: Lager.h,v 1.11 2003/01/08 09:46:57 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -24,7 +24,7 @@
 #include "LagerPlatz.hh"
 #include <Auftrag/AuftragBase.h>
 #include <vector>
-#include <Aux/Handles.h>
+#include <Misc/Handles.h>
 #include <Auftrag/selFullAufEntry.h>
 #include <Auftrag/auftrag_enums.h>
 

@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnungEntry.h,v 1.3 2002/12/05 16:15:09 jacek Exp $ */
+/* $Id: ProvAbrechnungEntry.h,v 1.4 2003/01/08 09:46:58 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,8 +21,8 @@
 #ifndef PROVABRECHNUNGENTRY
 #define PROVABRECHNUNGENTRY
 
-#include <Aux/fixedpoint.h>
-#include <Aux/SQLerror.h>
+#include <Misc/fixedpoint.h>
+#include <Misc/SQLerror.h>
 #include <BaseObjects/ManuProcEntity.h>
 #include <Lieferschein/RechnungEntry.h>
 #include <Lieferschein/Rechnung.h>

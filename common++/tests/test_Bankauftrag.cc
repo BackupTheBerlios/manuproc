@@ -1,4 +1,4 @@
-// $Id: test_Bankauftrag.cc,v 1.5 2002/06/27 07:42:51 christof Exp $
+// $Id: test_Bankauftrag.cc,v 1.6 2003/01/08 09:46:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,10 +17,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "Aux/Ausgabe_neu.h"
+#include "Misc/Ausgabe_neu.h"
 #include "Bank/Bankauftrag.h"
 #include <iostream.h>
-#include <Aux/dbconnect.h>
+#include <Misc/dbconnect.h>
 
 void Ausgabetest()
 {  std::cout << Formatiere(12345) << "\n";

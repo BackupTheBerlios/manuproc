@@ -1,4 +1,4 @@
-// $Id: ArtikelMengeSumme.cc,v 1.4 2002/11/07 07:48:23 christof Exp $
+// $Id: ArtikelMengeSumme.cc,v 1.5 2003/01/08 09:46:56 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -18,7 +18,7 @@
  */
 
 #include <Artikel/ArtikelMengeSumme.h>
-#include <Aux/Ausgabe_neu.h>
+#include <Misc/Ausgabe_neu.h>
 
 void ArtikelMenge::summiere(const ArtikelBaum &baum, mengen_t menge, const Einheit &e, bool add)
 {  bool same=false;

@@ -1,4 +1,4 @@
-/* $Id: Adresse.h,v 1.6 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: Adresse.h,v 1.7 2003/01/08 09:46:57 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "Aux/SQLerror.h"
+#include <Misc/SQLerror.h>
 #define MYKUNDENNR 1
 
 #ifdef __cplusplus

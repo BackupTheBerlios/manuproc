@@ -1,4 +1,4 @@
-/* $Id: ManuProcEntity.h,v 1.5 2002/10/24 14:06:49 thoma Exp $ */
+/* $Id: ManuProcEntity.h,v 1.6 2003/01/08 09:46:56 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -23,7 +23,7 @@
 #ifndef MANU_PROC_ENTITY
 #define MANU_PROC_ENTITY
 
-#include<Aux/Handles.h>
+#include<Misc/Handles.h>
 
 
 template <class T=long int> class ManuProcEntity : public HandleContent

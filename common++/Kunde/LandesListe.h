@@ -1,4 +1,4 @@
-// $Id: LandesListe.h,v 1.6 2002/10/24 14:06:50 thoma Exp $
+// $Id: LandesListe.h,v 1.7 2003/01/08 09:46:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -21,9 +21,9 @@
 #ifndef KUNDE_LANDESLISTE_HH
 #define KUNDE_LANDESLISTE_HH
 
-#include <Aux/SQLerror.h>
-#include <Aux/Handles.h>
-#include <Aux/CacheStatic.h>
+#include <Misc/SQLerror.h>
+#include <Misc/Handles.h>
+#include <Misc/CacheStatic.h>
 #include <BaseObjects/ManuProcEntity.h>
 
 

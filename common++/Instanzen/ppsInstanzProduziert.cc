@@ -1,4 +1,4 @@
-// $Id: ppsInstanzProduziert.cc,v 1.16 2002/12/19 13:57:22 thoma Exp $
+// $Id: ppsInstanzProduziert.cc,v 1.17 2003/01/08 09:46:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,10 +24,10 @@
 #include <Artikel/ArtikelStamm.h>
 #include <Auftrag/sqlAuftragSelector.h>
 //#include <Auftrag/selFullAufEntry.h>
-#include <Aux/AdminProblems.h>    
+#include <Misc/AdminProblems.h>    
 #include <Lager/Lager.h>
-#include <Aux/Trace.h>
-#include <Aux/Transaction.h>
+#include <Misc/Trace.h>
+#include <Misc/Transaction.h>
 #include <Misc/relops.h>
 #include <Auftrag/AufEintragZuMengenAenderung.h>
 

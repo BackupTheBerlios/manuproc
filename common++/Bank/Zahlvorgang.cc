@@ -1,4 +1,4 @@
-/* $Id: Zahlvorgang.cc,v 1.5 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: Zahlvorgang.cc,v 1.6 2003/01/08 09:46:56 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,7 +19,7 @@
 
 #include "Zahlvorgang.h"
 #include "Bankauftrag.h"
-#include <Aux/string0.h>
+#include <Misc/string0.h>
 
 Zahlvorgang::Zahlvorgang(long zahlblz, long long zahlkonto,
                 long betrag /* in Pf/Cent */, bool euro,

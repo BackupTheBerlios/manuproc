@@ -1,4 +1,4 @@
-// $Id: preis.cc,v 1.8 2002/11/07 07:49:16 christof Exp $
+// $Id: preis.cc,v 1.9 2003/01/08 09:46:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,8 +19,8 @@
 
 #include <iostream>
 #include <Artikel/Preis.h>
-#include <Aux/exception.h>
-#include <Aux/dbconnect.h>
+#include <Misc/exception.h>
+#include <Misc/dbconnect.h>
 
 int main()
 {  ManuProC::PrintUncaughtExceptions();

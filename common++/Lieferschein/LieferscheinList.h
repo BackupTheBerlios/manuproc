@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList.h,v 1.13 2002/10/24 14:06:50 thoma Exp $ */
+/* $Id: LieferscheinList.h,v 1.14 2003/01/08 09:46:57 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,7 +19,7 @@
 
 
 #include"Lieferschein.h"
-#include<Aux/SQLerror.h>
+#include<Misc/SQLerror.h>
 #include<vector>
 #include<map>
 

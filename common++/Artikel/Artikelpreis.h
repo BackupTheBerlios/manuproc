@@ -1,4 +1,4 @@
-// $Id: Artikelpreis.h,v 1.13 2002/11/07 07:48:23 christof Exp $
+// $Id: Artikelpreis.h,v 1.14 2003/01/08 09:46:56 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,7 +23,7 @@
 #include <Artikel/Preis.h>
 #include <Kunde/Kunde.h>
 #include <Artikel/ArtikelBase.h>
-#include <Aux/FetchIStream.h>
+#include <Misc/FetchIStream.h>
 
 //namespace ArtikelMisc { class ProzessListe; };
 

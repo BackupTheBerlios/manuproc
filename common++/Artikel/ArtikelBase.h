@@ -1,4 +1,4 @@
-/* $Id: ArtikelBase.h,v 1.9 2002/11/07 07:48:23 christof Exp $ */
+/* $Id: ArtikelBase.h,v 1.10 2003/01/08 09:46:56 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,8 +21,8 @@
 #define ARTIKELBASE
 
 #include<string>
-#include"Aux/SQLerror.h"
-#include <Aux/FetchIStream.h>
+#include<Misc/SQLerror.h>
+#include <Misc/FetchIStream.h>
 
 
 class ArtikelBase

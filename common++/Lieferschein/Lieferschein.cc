@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.21 2002/12/10 12:28:51 thoma Exp $ */
+/* $Id: Lieferschein.cc,v 1.22 2003/01/08 09:46:57 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -18,14 +18,14 @@
  */
 
 #include"Lieferschein.h"
-#include <Aux/Transaction.h>
+#include <Misc/Transaction.h>
 #include <Auftrag/selFullAufEntry.h>
 #include <Artikel/Einheiten.h>
-#include <Aux/FetchIStream.h>
+#include <Misc/FetchIStream.h>
 //#include <Instanzen/Produziert.h>
 #include <Instanzen/ppsInstanzProduziert.h>
 #include <unistd.h> 
-#include <Aux/Trace.h>
+#include <Misc/Trace.h>
 
 Lieferschein::Lieferschein(const LieferscheinBase &lsbase, const ManuProC::Datum &_lsdatum,
 int _kdnr,int _rngid, int _paeckchen, int _pakete, const ManuProC::Datum &_geliefertam,

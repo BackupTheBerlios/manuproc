@@ -18,7 +18,7 @@
  */
 
 #include "Global_Settings.h"
-#include <Aux/SQLerror.h>
+#include <Misc/SQLerror.h>
 exec sql include sqlca;
 
 Global_Settings::Global_Settings(int u,const std::string& p,const std::string& n)

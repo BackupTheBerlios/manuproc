@@ -1,4 +1,4 @@
-// $Id: AuftragsVerwaltung.cc,v 1.11 2002/12/20 15:35:40 thoma Exp $
+// $Id: AuftragsVerwaltung.cc,v 1.12 2003/01/08 09:46:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -22,8 +22,8 @@
 
 #include "steuerprogramm.hh"
 #include "AuftragsVerwaltung.hh"
-//#include <Aux/FetchIStream.h>
-//#include <Aux/itos.h>
+//#include <Misc/FetchIStream.h>
+//#include <Misc/itos.h>
 #include <Auftrag/Auftrag.h>
 #include <Auftrag/AufEintrag.h>
 

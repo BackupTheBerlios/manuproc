@@ -1,4 +1,4 @@
-/* $Id: RechnungBase.h,v 1.8 2002/11/22 15:31:05 christof Exp $ */
+/* $Id: RechnungBase.h,v 1.9 2003/01/08 09:46:57 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,11 +21,11 @@
 #ifndef RECHNUNGBASE
 #define RECHNUNGBASE
 
-#include <Aux/SQLerror.h>
+#include <Misc/SQLerror.h>
 #include <Artikel/Preis.h>
 #include <Lieferschein/LieferscheinBase.h>
 #include <BaseObjects/ManuProcEntity.h>
-#include <Aux/Ausgabe_neu.h>
+#include <Misc/Ausgabe_neu.h>
 
 // ableiten von ManuProcEntity wg. HandleCOntent nicht möglich :-( MAT
 class RechnungBase // : ManuProcEntity

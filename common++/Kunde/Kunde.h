@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.35 2003/01/02 17:36:37 jacek Exp $
+// $Id: Kunde.h,v 1.36 2003/01/08 09:46:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,10 +22,10 @@
 #define KUNDE_KUNDE_HH
 #include <string>
 #include <ExtBezSchema/ExtBezSchemaHandle.h>
-#include<Aux/fixedpoint.h>
-#include<Aux/Datum.h>
-#include<Aux/itos.h>
-#include<Aux/Waehrung.h>
+#include<Misc/fixedpoint.h>
+#include<Misc/Datum.h>
+#include<Misc/itos.h>
+#include<Misc/Waehrung.h>
 #include <Kunde/PreisListe.h>
 #include <list>
 #include <Kunde/TelefonArt.h>

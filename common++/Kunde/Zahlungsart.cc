@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.cc,v 1.19 2003/01/06 01:07:09 jacek Exp $
+// $Id: Zahlungsart.cc,v 1.20 2003/01/08 09:46:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,7 +19,7 @@
 
 #include <Kunde/Zahlungsart.h>
 #include <Kunde/Kunde.h>
-#include <Aux/Ausgabe_neu.h>
+#include <Misc/Ausgabe_neu.h>
 
 cH_Zahlungsart::cache_t cH_Zahlungsart::cache;
 

@@ -1,4 +1,4 @@
-/* $Id: EntryValueQuartal.cc,v 1.1 2002/11/22 15:53:52 christof Exp $ */
+/* $Id: EntryValueQuartal.cc,v 1.2 2003/01/08 09:46:56 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <Aux/EntryValueQuartal.h>
+#include <Misc/EntryValueQuartal.h>
 #include <typeinfo> // for bad_cast
 
 bool EntryValueQuartal::operator==(const EntryValueBase &v) const

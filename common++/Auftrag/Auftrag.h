@@ -1,4 +1,4 @@
-/* $Id: Auftrag.h,v 1.18 2002/10/04 13:57:48 thoma Exp $ */
+/* $Id: Auftrag.h,v 1.19 2003/01/08 09:46:56 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,10 +21,10 @@
 #define AUFTRAG_H
 #include <Auftrag/auftrag_status.h> // fuer AufStatVal & Co
 #include <Auftrag/AuftragBase.h>
-#include <Aux/Datum.h>
+#include <Misc/Datum.h>
 #include <string>
-#include <Aux/Waehrung.h>
-#include <Aux/SQLerror.h>
+#include <Misc/Waehrung.h>
+#include <Misc/SQLerror.h>
 #include <Kunde/Kunde.h> // vielleicht auch Basisklasse erzeugen
 #include <Auftrag/AufEintragBase.h>
 

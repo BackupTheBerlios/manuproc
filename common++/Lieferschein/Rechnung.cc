@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.10 2002/11/22 15:31:05 christof Exp $
+// $Id: Rechnung.cc,v 1.11 2003/01/08 09:46:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -19,9 +19,9 @@
 
 
 #include "Rechnung.h"
-#include <Aux/FetchIStream.h>
-#include <Aux/itos.h>
-#include <Aux/Transaction.h>
+#include <Misc/FetchIStream.h>
+#include <Misc/itos.h>
+#include <Misc/Transaction.h>
 
 void Rechnung::setRngArt(const RngArt &art) throw(SQLerror)
 {

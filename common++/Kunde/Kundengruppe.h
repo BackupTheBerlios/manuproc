@@ -6,7 +6,7 @@
 #include <DynamicEnums/DynamicEnums.h>
 #include <DynamicEnums/DefaultValues.h>
 
-#include <Aux/FetchIStream.h>
+#include <Misc/FetchIStream.h>
 
 
 namespace KundengruppeID=ManuProC::DynamicEnums::Kundengruppen;

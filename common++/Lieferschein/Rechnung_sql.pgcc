@@ -18,8 +18,8 @@
 
 
 #include "Rechnung.h"
-#include <Aux/Transaction.h>
-#include <Aux/FetchIStream.h>
+#include <Misc/Transaction.h>
+#include <Misc/FetchIStream.h>
 exec sql include sqlca;
 
 Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)

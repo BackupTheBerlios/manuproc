@@ -1,4 +1,4 @@
-// $Id: Faden.cc,v 1.6 2002/10/24 14:06:50 thoma Exp $
+// $Id: Faden.cc,v 1.7 2003/01/08 09:46:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -346,8 +346,8 @@ fixedpoint<5> Faden::get_Gewicht_kg_mal_anzschfaeden_pro_km_und_breite_mm_und_sc
 }
 
 
-#include <Aux/FetchIStream.h>
-#include <Aux/itos.h>
+#include <Misc/FetchIStream.h>
+#include <Misc/itos.h>
 void Faden::create(const ArtikelBase &artikel,const int znr,const int anzahl,const ArtikelBase &material,Bindung bindung) throw(SQLerror)
 {
   std::string S="insert into webang_faeden (artikel,zeilennummer,"

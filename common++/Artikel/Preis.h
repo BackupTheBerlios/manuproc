@@ -1,4 +1,4 @@
-// $Id: Preis.h,v 1.15 2002/11/07 07:48:23 christof Exp $
+// $Id: Preis.h,v 1.16 2003/01/08 09:46:56 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,10 +19,10 @@
 
 #ifndef PREIS_HH
 #define PREIS_HH
-#include <Aux/fixedpoint.h>
+#include <Misc/fixedpoint.h>
 #include <iostream>
 #include <string>
-#include <Aux/Waehrung.h>
+#include <Misc/Waehrung.h>
 #include <DynamicEnums/DefaultValues.h>
 
 class Preis

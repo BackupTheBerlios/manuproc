@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.23 2002/11/29 11:30:16 thoma Exp $ */
+/* $Id: Lieferschein.h,v 1.24 2003/01/08 09:46:57 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,12 +22,12 @@
 
 #include"LieferscheinBase.h"
 #include"LieferscheinEntry.h"
-#include<Aux/SQLerror.h>
-#include<Aux/Datum.h>
+#include<Misc/SQLerror.h>
+#include<Misc/Datum.h>
 #include<Kunde/Kunde.h>
 #include <vector>
-#include <Aux/Handles.h>
-#include <Aux/CacheStatic.h>
+#include <Misc/Handles.h>
+#include <Misc/CacheStatic.h>
 #include <Artikel/Preis.h>
 #include <Auftrag/AufEintrag.h>
 #include <DynamicEnums/DefaultValues.h>

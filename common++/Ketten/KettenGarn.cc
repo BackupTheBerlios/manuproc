@@ -1,4 +1,4 @@
-/* $Id: KettenGarn.cc,v 1.10 2002/11/22 15:31:05 christof Exp $ */
+/* $Id: KettenGarn.cc,v 1.11 2003/01/08 09:46:57 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <Aux/FetchIStream.h>  
+#include <Misc/FetchIStream.h>  
 #include <Ketten/KettenGarn.h>
 #include <Ketten/ArtikelGang.h>
 #include <sqlca.h>

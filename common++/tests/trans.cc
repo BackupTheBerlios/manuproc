@@ -1,4 +1,4 @@
-// $Id: trans.cc,v 1.3 2002/07/05 12:35:02 christof Exp $
+// $Id: trans.cc,v 1.4 2003/01/08 09:46:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,9 +18,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <Aux/Transaction.h>
-#include <Aux/dbconnect.h>
-#include <Aux/SQLerror.h>
+#include <Misc/Transaction.h>
+#include <Misc/dbconnect.h>
+#include <Misc/SQLerror.h>
 
 int main()
 {  ManuProC::dbconnect();

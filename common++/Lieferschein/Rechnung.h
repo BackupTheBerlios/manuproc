@@ -1,4 +1,4 @@
-/* $Id: Rechnung.h,v 1.24 2002/12/11 14:55:47 jacek Exp $ */
+/* $Id: Rechnung.h,v 1.25 2003/01/08 09:46:57 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,14 +21,14 @@
 #define RECHNUNG__
 
 #include"RechnungBase.h"
-#include<Aux/Waehrung.h>
-#include<Aux/SQLerror.h>
-#include<Aux/Datum.h>
+#include<Misc/Waehrung.h>
+#include<Misc/SQLerror.h>
+#include<Misc/Datum.h>
 #include<Kunde/Kunde.h>
 #include <vector>
 #include "LieferscheinBase.h"
 #include <Kunde/Zahlungsart.h>
-#include <Aux/Handles.h>
+#include <Misc/Handles.h>
 
 class Rechnung : public RechnungBase
 {

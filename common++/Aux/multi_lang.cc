@@ -1,8 +1,8 @@
 
 
 #include "multi_lang.h"
-#include <Aux/FetchIStream.h>
-#include <Aux/itos.h>
+#include <Misc/FetchIStream.h>
+#include <Misc/itos.h>
 
 MultiL_Dict::MultiL_Dict(int sprache, int default_spr) : sprid(sprache)
 {

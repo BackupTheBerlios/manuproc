@@ -1,4 +1,4 @@
-// $Id: Telefon.cc,v 1.12 2002/11/22 15:31:05 christof Exp $
+// $Id: Telefon.cc,v 1.13 2003/01/08 09:46:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,8 +18,8 @@
  */
 
 #include"Telefon.h"
-#include<Aux/Transaction.h>
-#include<Aux/itos.h>
+#include<Misc/Transaction.h>
+#include<Misc/itos.h>
 
 cH_Telefon::cH_Telefon(const Telefon::ID _tnr)
 {

@@ -1,4 +1,4 @@
-// $Id: KettplanKette.h,v 1.12 2002/11/29 15:49:56 thoma Exp $
+// $Id: KettplanKette.h,v 1.13 2003/01/08 09:46:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,7 +24,7 @@
 #include "Kette.h"
 #include "ArtikelGang.h"
 #include "KettenGarn.h"
-#include <Aux/SQLerror.h>
+#include <Misc/SQLerror.h>
 
 class KettplanKette : public Kette {
 public:

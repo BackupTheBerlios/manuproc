@@ -1,4 +1,4 @@
-/* $Id: RechnungEntry.h,v 1.17 2002/12/16 23:36:11 jacek Exp $ */
+/* $Id: RechnungEntry.h,v 1.18 2003/01/08 09:46:57 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,8 +21,8 @@
 #ifndef RECHNUNGENTRY__
 #define RECHNUNGENTRY__
 
-#include<Aux/SQLerror.h>
-#include<Aux/Datum.h>
+#include<Misc/SQLerror.h>
+#include<Misc/Datum.h>
 #include<Artikel/ArtikelBase.h>
 #include<Auftrag/AufEintragBase.h>
 #include<Artikel/Preis.h>

@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema.h,v 1.14 2002/11/07 07:48:43 christof Exp $
+// $Id: ExtBezSchema.h,v 1.15 2003/01/08 09:46:56 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,10 +19,10 @@
 
 #ifndef EXTBEZSCHEMA
 #define EXTBEZSCHEMA
-#include<Aux/SQLerror.h>
+#include<Misc/SQLerror.h>
 #include<vector>
 #include<string>
-#include <Aux/Handles.h>
+#include <Misc/Handles.h>
 #include <Artikel/ArtikelTyp.h>
 
 class cH_ExtBezSchema;

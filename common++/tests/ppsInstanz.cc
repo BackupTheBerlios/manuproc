@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.cc,v 1.4 2002/07/05 12:35:02 christof Exp $
+// $Id: ppsInstanz.cc,v 1.5 2003/01/08 09:46:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -20,7 +20,7 @@
 
 #include <Instanzen/ppsInstanz.h>
 #include <vector>
-#include <Aux/dbconnect.h>
+#include <Misc/dbconnect.h>
 #include <map>
 
 int main()

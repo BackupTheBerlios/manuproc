@@ -1,4 +1,4 @@
-// $Id: dot_out.cc,v 1.19 2003/01/07 13:59:49 christof Exp $
+// $Id: dot_out.cc,v 1.20 2003/01/08 09:46:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -165,7 +165,7 @@ void dot_out::write_footer(ofstream &fout,std::string label)
           "gv G.ps &\n\n";
 }
 
-#include <Aux/mystring.h>
+#include <Misc/mystring.h>
 void dot_out::write_filenames(ofstream &fout,const std::vector<graph_data_node::st_files> &filenames)
 {
   std::string F="{";

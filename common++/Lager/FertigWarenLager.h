@@ -1,4 +1,4 @@
-// $Id: FertigWarenLager.h,v 1.5 2002/10/24 14:06:50 thoma Exp $
+// $Id: FertigWarenLager.h,v 1.6 2003/01/08 09:46:57 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -21,12 +21,12 @@
 #  define _FERTIGWARENLAGER_HH
 
 
-//#include<Aux/SQLerror.h>
-//#include<Aux/Datum.h>
+//#include<Misc/SQLerror.h>
+//#include<Misc/Datum.h>
 //#include<Artikel/ArtikelBezeichnung.h>
 //#include <iostream>
 //#include <vector>
-//#include <Aux/Zeitpunkt_new.h>
+//#include <Misc/Zeitpunkt_new.h>
 //#include <Lager/LagerPlatz.hh>
 #include "FertigWaren.h"
 

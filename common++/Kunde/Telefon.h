@@ -1,4 +1,4 @@
-// $Id: Telefon.h,v 1.14 2002/10/24 14:06:50 thoma Exp $
+// $Id: Telefon.h,v 1.15 2003/01/08 09:46:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,7 +23,7 @@
 
 #include<vector>
 #include<string>
-#include<Aux/SQLerror.h>
+#include<Misc/SQLerror.h>
 #include<Kunde/TelefonArt.h>
 #include<BaseObjects/ManuProcEntity.h>
 

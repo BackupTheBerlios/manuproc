@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.15 2002/11/22 15:31:04 christof Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.16 2003/01/08 09:46:56 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,12 +19,12 @@
 
 #include <Artikel/ArtikelBezeichnung.h>
 #include <Artikel/ArtikelStamm.h>
-#include "Aux/string0.h"
-#include <Aux/Transaction.h>
-#include <Aux/mystream.h>
+#include "Misc/string0.h"
+#include <Misc/Transaction.h>
+#include <Misc/mystream.h>
 exec sql include sqlca;
-#include <Aux/FetchIStream.h>
-//#include <Aux/dbconnect.h>
+#include <Misc/FetchIStream.h>
+//#include <Misc/dbconnect.h>
 
 ArtikelBezeichnung::ArtikelBezeichnung(const ArtikelBase &artikel, const cH_ExtBezSchema &_schema) throw()
  : ArtikelBase(artikel), schema(_schema)
