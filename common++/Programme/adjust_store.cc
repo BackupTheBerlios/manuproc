@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.12 2002/12/03 10:34:03 thoma Exp $
+// $Id: adjust_store.cc,v 1.13 2002/12/03 11:38:39 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -54,7 +54,7 @@ void check_for(const std::string &pname,cH_ppsInstanz I,const std::string &aktio
     if     (aktion=="A")
      {
       if(I->EigeneLagerKlasseImplementiert()) I->ReparaturLager(getuid(),analyse_only);
-      else cout << "Für "<<I << " ist keine eigene Lagerklasse implementiert: Test 'A' nicht möglich\n";
+      else cout << "\t"<< I << "'A' nicht sinnvoll\n";
      }
     else if(aktion=="B" &&!I->KundenInstanz()) I->Reparatur_Konsistenz(analyse_only);
     else if(aktion=="C" &&!I->KundenInstanz()) I->Reparatur_0er_und_2er(getuid(),analyse_only);

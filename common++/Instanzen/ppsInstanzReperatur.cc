@@ -35,26 +35,30 @@ void ppsInstanz::Reparatur_0er_und_2er(const int uid,const bool analyse_only) co
    for(SelectedFullAufList::iterator i=AL.begin();i!=AL.end();++i)
     {
       SQLFullAuftragSelector sel2er;
+      if(PlanungsInstanz()) assert(!"U N G E T E S T E D\n");
       if(LagerInstanz())
          sel2er=SQLFullAuftragSelector::sel_Artikel_Planung_id(Id(),Kunde::eigene_id,i->Artikel(),AuftragBase::dispo_auftrag_id,OPEN,LagerBase::Lagerdatum());
       else 
-         sel2er=SQLFullAuftragSelector::sel_Artikel_Planung_id(Id(),Kunde::eigene_id,i->Artikel(),AuftragBase::dispo_auftrag_id,OPEN,i->getLieferdatum());
+         sel2er=SQLFullAuftragSelector::sel_Artikel_Planung_id(Id(),Kunde::eigene_id,i->Artikel(),AuftragBase::dispo_auftrag_id,OPEN);
       SelectedFullAufList L2er(sel2er);
 //std::cout << i->Instanz()<<'\t'<<i->Artikel()<<'\t'<<L2er.size()<<'\n';
-      assert(L2er.empty() || L2er.size()==1);
-      if(!L2er.empty() && L2er.begin()->getStueck()!=0) // Reparatur
+      AuftragBase::mengen_t menge0er=i->getStueck();
+      for(SelectedFullAufList::iterator j=L2er.begin();j!=L2er.end();++j)
        {
-         AufEintrag A2er=*(L2er.begin());
-         AuftragBase::mengen_t M=AuftragBase::min(i->getStueck(),A2er.getStueck());
+         if(j->getLieferdatum()>i->getLieferdatum()) continue;
+         AuftragBase::mengen_t M=AuftragBase::min(menge0er,j->getStueck());
          AuftragBase zielauftrag(Id(),AuftragBase::plan_auftrag_id);
 //cout << "RepLan: "<<*i<<'\t'<<zielauftrag<<"Menge: "<<M<<'\n';
          if(analyse_only)
            cout << "Analyse: Planen von "<<*i<<"  nach  "<<zielauftrag<<"\tMenge: "<<M<<'\n';
          else
           {
-            i->Planen(uid,M,zielauftrag,i->getLieferdatum(),ManuProC::Auftrag::r_Reparatur);
-            L2er.begin()->updateStkDiffBase__(uid,-M);
+            int znr=i->Planen(uid,M,zielauftrag,i->getLieferdatum(),ManuProC::Auftrag::r_Reparatur);
+            j->updateStkDiffBase__(uid,-M);
+            if(!LagerInstanz()) AufEintragZu(*j).Neu(AufEintragBase(zielauftrag,znr),0);
           }
+         menge0er-=M;
+         if(menge0er<=0) break;
        }
     }
 }

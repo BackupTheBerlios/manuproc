@@ -443,25 +443,26 @@ std::cout << "D13: "<<dummystring<<'\n';
                      " (auftragid,zeilennr,instanz) = (2,1,8)";                            
       Query::Execute(q1);
       SQLerror::test(__FILELINE__);
+      std::string qJ2="update rohjumbo set soll_meter=5000 where artikelid=123755";
+      Query::Execute(qJ2);
+      SQLerror::test(__FILELINE__);
+                                                
+
       erfolgreich=C.teste(Check::Menge,"_Rep0er2ergleichzeitig",mit_reparatur_programm,true);
       if(!erfolgreich) { cout << "Reparatur 0er und 2er gleichzeitig (Lager)\n";
                          return fehler();} 
+      erfolgreich=C.teste(Check::Menge,"_Rep0er2ergleichzeitig",mit_reparatur_programm,true);
+      if(!erfolgreich) { cout << "Reparatur 0er und 2er gleichzeitig (Lager, 2ter Durchlauf)\n";
+                         return fehler();} 
 
-cout << "XXXXXXXXXXXX\n\n";
-//      erfolgreich=C.teste(Check::Menge,"_Rep0er2ergleichzeitig",mit_reparatur_programm,true);
-//      if(!erfolgreich) { cout << "Reparatur 0er und 2er gleichzeitig (Lager)\n";
-//                         return fehler();} 
-
-/*
       std::string q2="insert into auftragentry (auftragid,zeilennr,bestellt,"
          " geliefert,lieferdate,artikelid,status,instanz)"
-         " values (2,5,3000,0,'2011-01-01',123755,1,4)";
+         " values (2,5,3000,0,'2009-01-01',123755,1,4)";
       Query::Execute(q2);
-cout << "\n\n\nL O S \n\n";
-      erfolgreich=C.teste(Check::Menge,"_Rep0er2ergleichzeitig",mit_reparatur_programm,true);
+      erfolgreich=C.teste(Check::Menge,"_Rep0er2ergleichzeitigP",mit_reparatur_programm,true);
       if(!erfolgreich) { cout << "Reparatur 0er und 2er gleichzeitig (Produktionsinstanz)\n";
                          return fehler();} 
-*/
+
       cout << "Reparatur 2er und 0er gleichzeitig erfolgreich\n";
                               
       break;

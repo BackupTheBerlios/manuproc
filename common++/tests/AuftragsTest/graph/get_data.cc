@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.16 2002/12/02 14:01:54 thoma Exp $
+// $Id: get_data.cc,v 1.17 2002/12/03 11:38:39 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -439,6 +439,7 @@ std::vector<graph_data_node::st_files> graph_data_node::Rep02gleichzeitigfiles()
   std::vector<st_files>  vec_files;
   vec_files.push_back(st_files("mit_lager_open"));  
   vec_files.push_back(st_files("Rep0er2ergleichzeitig","L"));  
+  vec_files.push_back(st_files("Rep0er2ergleichzeitigP","P"));  
 
   return vec_files;
 }
