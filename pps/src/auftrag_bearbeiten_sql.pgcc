@@ -1,4 +1,4 @@
-// $Id: auftrag_bearbeiten_sql.pgcc,v 1.11 2003/09/23 07:57:32 jacek Exp $
+// $Id: auftrag_bearbeiten_sql.pgcc,v 1.12 2003/10/17 11:41:59 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -151,5 +151,28 @@ throw(SQLerror)
   }
    
 }
+
+
+void ArtBestandData(const ArtikelBase::ID aid, int &off,
+			int &bestand, int &verfuegbar)
+{
+ Query("SELECT sum(coalesce(bestellt-geliefert,0)) as offen, " 
+	"l.bestand as bestand, "
+	"l.bestand - sum(coalesce(bestellt-geliefert,0)) as verfuegbar "
+	" from (auftrag a join "
+	" auftragentry e on (a.instanz=e.instanz and a.instanz=1 and "
+	" a.auftragid=e.auftragid and a.stat=e.status and e.status=1 and "
+	" e.bestellt>e.geliefert)) auf "
+	" right outer join artikel_bestand l on "
+	" (l.artikelid=auf.artikelid) "
+	" where l.artikelid=? "
+	" group by l.artikelid,bestand") 
+ << aid
+ >> off
+ >> bestand
+ >> verfuegbar;
+}
+
+
 
 

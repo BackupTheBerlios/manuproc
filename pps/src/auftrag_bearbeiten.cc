@@ -99,6 +99,17 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
  auftragbearbeiten=this;  
 }
 
+
+void auftrag_bearbeiten::showBestandData()
+{
+    int offen,bestand,verfuegbar;
+    ArtBestandData(artikelbox->get_value().Id(),offen,bestand,verfuegbar);
+    bestellt_label->set_text(itos(offen));
+    lagerbest_label->set_text(itos(bestand));
+    verfuegbar_label->set_text(itos(verfuegbar));
+}
+
+
 void auftrag_bearbeiten::onSelArtikel()
 {
  assert(auftrag);
@@ -130,6 +141,9 @@ void auftrag_bearbeiten::onSelArtikel()
     Artikelpreis ap(artikel_preisliste->Id(),artikelbox->get_value(),
 			stkmtr_spinbutton->get_value_as_int());		
     Rabatt_setzen(artikel_preisliste);
+
+    showBestandData();
+
 #else
     // hmmm die Menge beeinflusst den Preis, also vielleicht später nochmal 
     // nachsehen
@@ -166,6 +180,10 @@ void auftrag_bearbeiten::on_auftrag_clist_select_row
  selectedentry=row;
  artikelbox->set_editable(false);
 
+#ifdef MABELLA_EXTENSIONS
+ showBestandData();
+#endif
+
  WAufStat->set_History(aktaufeintrag->getAufStatus());
  aufentry_ok->set_sensitive(false);
  aufentry_abbruch->set_sensitive(false);
@@ -192,6 +210,9 @@ void auftrag_bearbeiten::clearEntry()
  WAufEntryStat->set_history((AufStatVal)OPEN);
  aufentry_ok->set_sensitive(true);
  aufentry_abbruch->set_sensitive(true);
+ bestellt_label->set_text("0");
+ lagerbest_label->set_text("0");
+ verfuegbar_label->set_text("0");
 }
 
 gint auftrag_bearbeiten::on_aufrabatt_spinbutton_focus_out_event(GdkEventFocus *ev)

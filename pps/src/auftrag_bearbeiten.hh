@@ -1,4 +1,4 @@
-// $Id: auftrag_bearbeiten.hh,v 1.22 2003/08/01 13:55:11 jacek Exp $
+// $Id: auftrag_bearbeiten.hh,v 1.23 2003/10/17 11:41:59 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,6 +27,9 @@
 #include <Misc/SQLerror.h>
 #include <Artikel/Prozess.h>
 #include <vector>
+
+void ArtBestandData(const ArtikelBase::ID aid, int &off,
+			int &bestand, int &verfuegbar);
 
 class auftrag_bearbeiten : public auftrag_bearbeiten_glade
 {   
@@ -113,6 +116,8 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
 // an diese Methode konnektiert wird.
  void on_auftrag_preislisten_activate();
 //#endif;
+
+ void showBestandData();
 
 public:
  AuftragBase::ID new_aufid_from_copy;
