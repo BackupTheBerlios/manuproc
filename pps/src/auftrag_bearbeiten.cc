@@ -286,6 +286,8 @@ void auftrag_bearbeiten::on_aufentry_abbruch_clicked()
 {   
  clearEntry();
  artikelbox->grab_focus();
+// preislisten->set_value(kunde->preisliste());
+// artikel_preisliste_geaendert=false;
 }
 
 void auftrag_bearbeiten::on_aufentry_ok_clicked()

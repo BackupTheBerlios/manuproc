@@ -1150,7 +1150,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
    				ppsInstanzID::Kundenauftraege,u.a->Id())),true);
    		      }
    		      
-   if(Typ()==Auftrag) os << "\\\\\n";
+   if(Typ()==Auftrag) os << "~\\\\\n";
    
    os << "Ihre Kundennummer: ";
    os.width(5);os.fill('0');
