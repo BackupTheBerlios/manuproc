@@ -1,4 +1,4 @@
-// $Id: Check.hh,v 1.16 2002/11/26 14:50:51 thoma Exp $
+// $Id: Check.hh,v 1.17 2002/11/27 12:35:52 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -40,6 +40,7 @@ class Check
                  Datumsaenderung,Rohwarenlager_einlagern,Bandlager_einlagern,
                  Rohwarenlager_auslagern,
                  Planen_Kupfer,Planen_WebereiL,Planen_WebereiP,Planen_Faerberei_teil,
+                 LieferscheinEinkaufTeillieferung,
                  Split,Split_Rohwarenlager_einlagern,Split_Rohwarenlager_auslagern,
                  Planen_Faerberei_ueber,ZweiAuftraege_anlegen,
                  ZweiterAuftrag_frueheresDatum,ZweiterAuftrag_frueheresDatum_abschreiben,

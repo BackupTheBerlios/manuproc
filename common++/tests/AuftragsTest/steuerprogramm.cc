@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.cc,v 1.21 2002/11/26 14:50:51 thoma Exp $
+// $Id: steuerprogramm.cc,v 1.22 2002/11/27 12:35:52 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -226,12 +226,10 @@ int auftragstests(e_mode mode)
     case Plantest:
      {
        {
-
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::_Garn__Einkauf),Kunde::default_id);
        int kupfer_znr=2;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::_Garn__Einkauf,AuftragBase::ungeplante_id,kupfer_znr));
 //ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
-
        AEP.Planen(UID,100,PA,PLANDATUM5);
        erfolgreich=C.teste(Check::Planen_Kupfer,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Planen des Kupfereinkaufs \n\n";
@@ -250,13 +248,18 @@ int auftragstests(e_mode mode)
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Weberei),Kunde::default_id);
        int weberei_znr=1;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Weberei,AuftragBase::ungeplante_id,weberei_znr));
-
-
        AEP.Planen(UID,5000,PA,PLANDATUM6);
        erfolgreich=C.teste(Check::Planen_WebereiP,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Planen der Weberei \n\n";
                return fehler();}
        }
+#ifdef PETIG_TEST
+       Lieferschein liefs(ppsInstanzID::_Garn__Einkauf,cH_Kunde(Kunde::eigene_id));
+       liefs.push_back(ARTIKEL_ACETAT,1,66,0);
+       erfolgreich=C.teste(Check::LieferscheinEinkaufTeillieferung,mit_reparatur_programm);
+       if(!erfolgreich) { cout << "Lieferschein mit Teillieferung für Einkauf anlegen\n\n"; return fehler();}
+#endif
+
       cout << "Plan-Test erfolgreich\n";
 
       break;
@@ -553,7 +556,6 @@ cout << dummystring<<'\n';
        le1.changeMenge(stueck,0);
        erfolgreich=C.teste(Check::LieferscheinMengenaenderungMinus,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferscheinentry: Minus \n\n"; return fehler();}
-
 
        {// Produktionsplaner
         int znr=1;

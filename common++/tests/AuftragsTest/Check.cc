@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.17 2002/11/26 14:50:51 thoma Exp $
+// $Id: Check.cc,v 1.18 2002/11/27 12:35:52 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -79,6 +79,7 @@ bool Check::vergleich(e_check check)
    case LieferscheinZusatzPlus: case LieferscheinZusatzMinus:
    case LieferscheinZusatzMinusKunde: case LieferscheinZweiAufTeil:
    case LieferscheinZweiAufVoll: case LieferscheinJacek0:
+   case LieferscheinEinkaufTeillieferung:
         files.push_back("lieferschein");
         files.push_back("lieferscheinentry");
         files.push_back("lieferscheinentryzusatz");
@@ -103,6 +104,7 @@ bool Check::vergleich(e_check check)
      case Planen_Kupfer : zusatz="_planen_kupfer"; break;
      case Planen_Faerberei_teil : zusatz="_planen_faerberei_teil"; break;
      case Planen_WebereiP : zusatz="_planen_webereiP"; break;
+     case LieferscheinEinkaufTeillieferung : zusatz="_planen_einkauf_lieferschein"; break;
      // Splittest
      case Split : zusatz="_split"; break;
      case Split_Rohwarenlager_einlagern : zusatz="_split_rohwarenlager_rein"; break;
@@ -203,7 +205,8 @@ void Check::dump(e_check check)
           || check == LieferscheinZusatzMinus 
           || check == LieferscheinZusatzMinusKunde
           || check == LieferscheinZweiAufTeil
-          || check == LieferscheinZweiAufVoll)
+          || check == LieferscheinZweiAufVoll
+          || check == LieferscheinEinkaufTeillieferung)
   {  
      unlink((tempdir+"lieferschein").c_str());
      unlink((tempdir+"lieferscheinentry").c_str());

@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.20 2002/10/24 14:06:50 thoma Exp $
+// $Id: Kunde.cc,v 1.21 2002/11/27 12:35:52 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,6 +21,10 @@
 #include <Aux/Ausgabe_neu.h>
 #include <Aux/Transaction.h>
 #include <Kunde/Telefon.h>
+
+std::ostream &operator<<(std::ostream &o,const cH_Kunde &k)
+{return o<<k->firma()<<"("<<k->Id()<<")";}
+
 
 cH_Kunde::cache_t cH_Kunde::cache;
 H_Kunde::cache_t H_Kunde::cache;

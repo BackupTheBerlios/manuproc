@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.30 2002/11/07 07:48:53 christof Exp $
+// $Id: Kunde.h,v 1.31 2002/11/27 12:35:52 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -406,5 +406,6 @@ public:
 	H_Kunde(ID nr);
 };
 
+std::ostream &operator<<(std::ostream &o,const cH_Kunde &k);
 
 #endif
