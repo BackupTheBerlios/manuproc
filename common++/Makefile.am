@@ -28,7 +28,7 @@ libcommon___a_LIBADD= \
 		Auftrag/selAufEntry_sql.o \
 		Auftrag/sqlAuftragSelector.o \
 		Auftrag/AuftragBase_sql.o \
-      Auftrag/AuftragsBaum.o \
+		Auftrag/AuftragsBaum.o \
 		Auftrag/Auftrag.o \
 		Auftrag/Auftrag_sql.o \
 		Auftrag/AuftragFull_sql.o \
@@ -40,7 +40,8 @@ libcommon___a_LIBADD= \
 		Aux/EntryValueDatum.o \
 		Aux/EntryValueIntString.o \
 		Aux/FetchIStream.o \
-      Aux/Global_Settings.o \
+		Aux/Global_Settings.o \
+		Aux/Handles.o \
 		Aux/IOerror.o \
 		Aux/SQLerror_postgres.o \
 		Aux/Transaction.o \
@@ -53,19 +54,19 @@ libcommon___a_LIBADD= \
 		Aux/exception.o \
 		Aux/itos.o \
 		Aux/postgres_conversion.o \
-      Aux/ppsInstanz_sql.o \
+		Aux/ppsInstanz_sql.o \
 		Aux/string0.o \
 		Bank/Bankauftrag.o \
 		Bank/Bankauftrag2.o \
 		Bank/Datenfehler.o \
 		Bank/Zahlvorgang.o \
 		ExtBezSchema/ExtBezSchema_sql.o \
-      Faeden/Bindung_sql.o \
-      Faeden/Bindung.o \
-      Faeden/Faden_sql.o \
-      Faeden/Faden.o \
-      Faeden/Materialeigenschaft_sql.o \
-      Faeden/Schussfaeden.o \
+		Faeden/Bindung_sql.o \
+		Faeden/Bindung.o \
+		Faeden/Faden_sql.o \
+		Faeden/Faden.o \
+		Faeden/Materialeigenschaft_sql.o \
+		Faeden/Schussfaeden.o \
 		Ketten/Kette.o \
 		Ketten/KettplanKette.o \
 		Ketten/KettplanKette2.o \
@@ -85,9 +86,9 @@ libcommon___a_LIBADD= \
 		Lieferschein/Lieferschein_sql.o \
 		Lieferschein/Rechnung_sql.o \
 		Lieferschein/RechnungEntry_sql.o \
-      Lieferschein/RechnungVoll_sql.o \
-      Lieferschein/Zahlungsart_sql.o \
-      ProdInstanz/ProdInstanz_sql.o \
-      ProdInstanz/maschinen_geschwindigkeit_sql.o \
+		Lieferschein/RechnungVoll_sql.o \
+		Lieferschein/Zahlungsart_sql.o \
+		ProdInstanz/ProdInstanz_sql.o \
+		ProdInstanz/maschinen_geschwindigkeit_sql.o \
 		ostream/time_t_ostr.o
 

@@ -88,6 +88,7 @@ void KundenBox::Name_search(gboolean *_continue, GtkSCContext newsearch)
      switch(newsearch)
       {  case GTK_SEARCH_OPEN:
             tr2.open();
+
              if(einschraenkung_b)
                squery = "select DISTINCT k.firma, e.extartbezid from 
                   extbezschema e join kunden k on (e.extartbezid=k.kundennr)
@@ -98,6 +99,7 @@ void KundenBox::Name_search(gboolean *_continue, GtkSCContext newsearch)
              strncpy(query,squery.c_str(),sizeof(query));
              exec sql prepare kubo_name_ from :query;
       	    exec sql declare kubo_name cursor for kubo_name_;
+
       	    exec sql open kubo_name;
       	    SQLerror::test(__FILELINE__);
       	    // fall through

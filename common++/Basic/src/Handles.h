@@ -1,6 +1,6 @@
-// $Id: Handles.h,v 1.6 2001/11/05 08:58:29 christof Exp $
+// $Id: Handles.h,v 1.7 2001/12/19 11:02:08 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,16 +17,16 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef HANDLES_H
-#define HANDLES_H
-#define DEBUG_HANDLES
-
-// Handle class to make passing ExtBezSchemas faster and easier
+// Handle class to make passing Objects faster and easier
 // (java like reference counting)
 
-// WARNING: I don't know whether this is std::exception safe !!!!!!!
+// WARNING: I don't know whether this is exception safe !!!!!!!
 
-// it is always a good idea to derive other objects from this
+#ifndef HANDLES_H
+#define HANDLES_H
+
+#include <ManuProCConfig.h>
+#define DEBUG_HANDLES
 
 #ifdef DEBUG_HANDLES
 #include <cassert>
@@ -44,15 +44,54 @@ class HandleContent
 {	template<class T> friend class Handle;
 private:
 	mutable unsigned int _references;
+#ifdef DEBUG_HANDLE_CONTENT
+	mutable bool _watch_me;
+#endif	
 protected:	
-	HandleContent() : _references(0) {}
+	HandleContent() : _references(0) 
+#ifdef DEBUG_HANDLE_CONTENT
+					, _watch_me(false)
+#endif
+	{}
 	// a virtual destructor is vital for heterogenous Handles
+#ifndef DEBUG_HANDLE_CONTENT	
 	virtual ~HandleContent()
 	{
 #ifdef DEBUG_HANDLES
 	   assert(!_references);
 #endif
 	}
+#else
+	virtual ~HandleContent();
+
+	// emit message on destruction
+public:
+	void WatchMe() const
+	{  _watch_me=true; }
+#endif	
+public:
+	void *ref()
+	{  _references++;
+	   return this;
+	}
+
+	void *ref() const
+	{  _references++;
+	   return static_cast<void*>(const_cast<HandleContent*>(this));
+	}
+
+	void unref() const
+	{  _references--;
+           if (!_references) delete this;
+	}
+
+	// this would have been impossible with Stroustrup's handles	
+	static void unref(void *ptr)
+	{  HandleContent *d=static_cast<HandleContent*>(ptr);
+	   d->_references--;
+	   if (!d->_references) delete d;
+	}
+
 private:
 	// das darf gar nicht vorkommen, schließlich sollen diese Objekte
 	// nicht dupliziert werden
@@ -133,37 +172,16 @@ public:
 	   _data->_references++;
 	}
 
-	void *ref() const
-	{  _data->_references++;
-	   return _data;
-	}
-	
-	void unref() const
-	{  _data->_references--;
-	   // we should at least have one referrer left - us
-	   assert(_data->_references);
-	}
-
-	// this would have been impossible with Stroustrup's handles	
-	static void unref(void *ptr)
-	{  ContentType *d=static_cast<ContentType*>(ptr);
-	   d->_references--;
-	   if (!d->_references) delete d;
-	}
-
 //	ContentType &operator ContentType() { return *_data; } ???
+
+
+private: // deprecated, use cH->Foo() !
+	void *ref() const;
+	void *ref_from_const() const;
+	void unref() const;
+	static void unref(void *ptr);
 };
 
 #undef NOISE
-
-#if 0
-template <class T>
- class const_Handle : public Handle<const T>
-{public:
-	const_Handle(const _this_t &b) : Handle<const T>(b) {}
-	const_Handle() {}
-	const_Handle(ContentType *b) : Handle<const T>(b) {}
-};
-#endif
 
 #endif

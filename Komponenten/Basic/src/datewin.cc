@@ -1,4 +1,4 @@
-// $Id: datewin.cc,v 1.1 2001/06/21 09:05:27 christof Exp $
+// $Id: datewin.cc,v 1.2 2001/12/19 10:59:11 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,7 +30,8 @@ datewin::datewin()
 }
 
 Petig::Datum datewin::get_value() const throw()
-{  gtk_spin_button_update(tag->gtkobj());
+{
+   gtk_spin_button_update(tag->gtkobj());
    gtk_spin_button_update(monat->gtkobj());
    gtk_spin_button_update(jahr->gtkobj());
    return Petig::Datum(tag->get_value_as_int(),monat->get_value_as_int()
@@ -47,6 +48,23 @@ void datewin::set_value (const Petig::Datum &d) throw()
 gint datewin::try_grab_focus(GtkWidget *w,gpointer gp) throw()
 {  assert(Gtk::HBox::isA((Gtk::Object *)gp)); // very weak check
    ((datewin*)gp)->tag->grab_focus();
-   ((datewin*)gp)->tag->select_region(0,((datewin*)gp)->tag->get_text().size());
+   ((datewin*)gp)->tag->select_region(0,((datewin*)gp)->tag->get_text_length());
    return true;
 }
+
+void datewin::on_activate(int i)
+{
+  FELD feld=FELD(i);
+  switch(feld) {
+    case TAG:  
+         { this->monat->grab_focus();
+           this->monat->select_region(0,this->monat->get_text_length());
+           break;
+         }
+    case MONAT:  
+         { this->jahr->grab_focus();
+           this->jahr->select_region(0,this->jahr->get_text_length());
+         }
+   }
+}
+

@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.3 2001/12/04 08:42:10 christof Exp $
+// $Id: FetchIStream.h,v 1.4 2001/12/19 11:02:08 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -78,6 +78,9 @@ public:
 class Query
 {	std::string cursor;
 	bool eof;
+	
+	// not possible yet
+	const Query &operator=(const Query &b);
 public:
 	Query(const std::string &command);
 	FetchIStream Fetch();

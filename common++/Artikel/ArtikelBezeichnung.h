@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.h,v 1.13 2001/12/05 07:55:59 christof Exp $
+// $Id: ArtikelBezeichnung.h,v 1.14 2001/12/19 11:02:08 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -150,7 +150,7 @@ public:
  const cH_EntryValue operator[](int feld) const throw(SQLerror)
  {  return feld<(int)value.size()?value[feld]:cH_EntryValueIntString("?"); }
 
-#ifdef PETIG_EXTENSIONS
+#if (defined PETIG_EXTENSIONS)  || (defined MABELLA_EXTENSIONS)
  int Breite() const { return Komponente_als_EntryValue(1,1)->getIntVal(); }
  bool Jumbo() const { return (*this)[schema->JumboIndex()]->getStrVal()==schema->JumboBez(); }
 #endif

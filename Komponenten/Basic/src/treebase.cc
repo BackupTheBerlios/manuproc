@@ -523,6 +523,15 @@ void TreeBase::welche_Spalten(guint i,const Gtk::CheckMenuItem *sp)
   show_or_hide_Spalten();
 }
 
+void TreeBase::set_tree_column_visibility(int column,bool visible)
+{
+  if(column<Cols())
+   {
+     vec_hide_cols[column] = visible;
+     show_or_hide_Spalten();
+   }   
+  else cerr << "Fehler in 'TreeBase::set_column_visibility': "<<column<<" größer als die Anzahl der Spalten ("<<Cols()<<'\n';
+}
 
 void TreeBase::show_or_hide_Spalten()
 {

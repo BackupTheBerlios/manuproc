@@ -108,6 +108,7 @@ public:
  
  const std::deque<guint> &get_seq() const {return currseq;}
  void show_titles(bool show);
+ void set_tree_column_visibility(int column,bool visible);
  
  void clear();
  SigC::Signal1<void,cH_RowDataBase> leaf_selected;

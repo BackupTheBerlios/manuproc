@@ -67,7 +67,7 @@ public:
 	int getIdFromYourAufId(const char *youraufid) throw(SQLerror);
 	void setBemerkung(const std::string &bem) throw(SQLerror);
 	void setYourAufNr(const std::string &yanr) throw(SQLerror);
-	void setStatusAuftrag(AufStatVal st) throw(SQLerror);
+	void setStatusAuftrag_(AufStatVal st) throw(SQLerror);
 	void setJahrgang(int jahr) throw(SQLerror);
 	void setWaehrung(cP_Waehrung w) throw(SQLerror);
 	

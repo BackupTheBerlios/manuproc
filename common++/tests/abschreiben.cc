@@ -1,4 +1,4 @@
-// $Id: abschreiben.cc,v 1.3 2001/12/05 07:55:59 christof Exp $
+// $Id: abschreiben.cc,v 1.4 2001/12/19 11:02:08 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -68,6 +68,6 @@ int main()
          	<< " " << int(i->getEntryStatus()) << '\n';
       }
    }
-   Auftrag(id).setStatusAuftrag(CLOSED);
+   Auftrag(id).setStatusAuftrag_(CLOSED);
    return 0;
 }

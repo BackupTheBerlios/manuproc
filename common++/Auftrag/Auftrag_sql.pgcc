@@ -69,18 +69,9 @@ void Auftrag::setWaehrung(cP_Waehrung w) throw(SQLerror)
  SQLerror::test(__FILELINE__"Waehrung setzen");
 }
 
-// Braucht man das warning noch? 14.11.01 MAT
-#warning !!! FIXME: eigentlich alle Einträge entsprechend setzen oder geschieht das woanders ???
-void Auftrag::setStatusAuftrag(AufStatVal st) throw(SQLerror)
-{exec sql begin declare section;
- int AUFTRAGID=Id();
- int INSTANZ=int(Instanz());
- int STATUS=st;
- exec sql end declare section;
-
- exec sql update auftrag set stat= :STATUS
-		 where auftragid= :AUFTRAGID and instanz=:INSTANZ;    
- SQLerror::test(__FILELINE__"Status setzen");
+void Auftrag::setStatusAuftrag_(AufStatVal st) throw(SQLerror)
+{
+ setStatusAuftragBase(st);
  status=st;
 }
 

@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.20 2001/11/27 09:03:38 cvs_malte Exp $
+// $Id: ppsInstanz.h,v 1.21 2001/12/14 17:47:32 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,7 +30,7 @@ class ppsInstanz : public HandleContent
 public:
  enum ppsInstId {INST_NONE,INST_KNDAUF=1,
  	None=INST_NONE, Kundenauftraege=INST_KNDAUF, 
-#ifdef PETIG_EXTENSIONS 	
+#if (defined PETIG_EXTENSIONS) || (defined MABELLA_EXTENSIONS)
  	INST_FAERB=2,INST_DRUCK=3,INST_WEB=4,
         INST_SCHAER=5,INST_SPRITZ=7,INST_GARNEINKAUF=6,INST_BANDLAGER=8,
         INST_ROHLAGER=9,
@@ -38,7 +38,7 @@ public:
         Faerberei=INST_FAERB,
         Druckerei=INST_DRUCK, Bandlager=INST_BANDLAGER,
         Rollerei=10
-#endif        
+#endif
         };
  
 private: 

@@ -1,4 +1,4 @@
-/* $Id: AufEintragBase.h,v 1.17 2001/12/05 07:55:59 christof Exp $ */
+/* $Id: AufEintragBase.h,v 1.18 2001/12/19 11:02:08 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -100,7 +100,7 @@ public:
  void updatePreis(const Preis &pr) throw(SQLerror);
  void updateRabatt(int rb) throw(SQLerror);
  void setStatus(AufStatVal st) throw(SQLerror);		
- void setStatusInstanz(AufStatVal status);
+ void setStatusInstanz(AufStatVal status,double part,int myznr=-1,int yourznr=-1);
  void split(int newmenge, const Petig::Datum &newld) throw(SQLerror);
 // void setPlanMeter(long gm) { geplante_menge=gm; }
  

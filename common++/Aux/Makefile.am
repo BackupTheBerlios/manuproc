@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.12 2001/12/04 08:42:10 christof Exp $
+# $Id: Makefile.am,v 1.13 2001/12/19 11:02:08 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -14,7 +14,7 @@ libAux_o_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
 		Zeitpunkt_new_write.cc string0.c \
 		EntryValueBase.cc EntryValueIntString.cc \
 		auto_conversion.cc $(PGCC_SOURCES) \
-		exception.cc itos.cc EntryValueDatum.cc 
+		exception.cc itos.cc EntryValueDatum.cc Handles.cc
 
 libAux.o: $(libAux_o_OBJECTS) $(libAux_o_DEPENDENCIES)
 	touch $@

@@ -74,5 +74,7 @@ public:
                Petig::Datum lieferdatum, ArtikelBase::ID artid,
                AufStatVal status,
                Preis preis=Preis(), fixedpoint<2> rabatt=fixedpoint<2>(0)) throw (SQLerror);
+
+        void setStatusAuftragFull(AufStatVal status) throw(SQLerror);
 };
 #endif

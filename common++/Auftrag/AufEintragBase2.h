@@ -1,4 +1,4 @@
-// $Id: AufEintragBase2.h,v 1.33 2001/11/30 17:00:17 cvs_malte Exp $
+// $Id: AufEintragBase2.h,v 1.35 2001/12/10 10:16:29 cvs_malte Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -45,12 +45,15 @@ public:
  	: AuftragBase(inst), zeilennr(0) {}
  AufEintragBase2(cH_ppsInstanz inst,int auftragid,int z) 
  	:  AuftragBase(inst,auftragid), zeilennr(z) {}
+ AufEintragBase2(const AuftragBase& a,int z) 
+ 	:  AuftragBase(a), zeilennr(z) {}
  
  void setVerarbeitung(const cH_Prozess p) const throw(SQLerror);
  // gibt gelieferte Menge zurück
  int abschreiben(int menge) const throw(SQLerror);
  bool deleteAuftragEntry() const throw(SQLerror);
  void updateStk(long newstk,long diff,const ArtikelBase& artikel,AufStatVal status) const throw(SQLerror);
+ void setStatus_raw(AufStatVal status) const throw(SQLerror);
                                                           
     void setLetztePlanungFuer(int planinstanz) const throw(SQLerror);
     void calculateProzessInstanz();

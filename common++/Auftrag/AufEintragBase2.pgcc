@@ -1,4 +1,4 @@
-// $Id: AufEintragBase2.pgcc,v 1.25 2001/11/30 17:00:18 cvs_malte Exp $
+// $Id: AufEintragBase2.pgcc,v 1.26 2001/12/10 10:16:30 cvs_malte Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -211,4 +211,20 @@ void AufEintragBase2::updateStk(long newstk,long diff,
      {tr.rollback(); throw; }
   }
  tr.commit(); 
+}
+
+
+void AufEintragBase2::setStatus_raw(AufStatVal status)  const throw(SQLerror)
+{
+ exec sql begin declare section;
+ int AUFTRAGID = Id();
+ int INSTANZ=Instanz();
+ int ZEILENNR = ZNr();  
+ int STATUS=status;
+ exec sql end declare section;
+
+ exec sql update auftragentry set status=STATUS
+   where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR
+   and instanz =:INSTANZ;
+ SQLerror::test("updateStatus_raw: update status in auftragentry");
 }

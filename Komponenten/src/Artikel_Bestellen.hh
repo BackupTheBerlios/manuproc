@@ -26,7 +26,7 @@ class Artikel_Bestellen :  public Gtk::Table
    cH_Prozess get_Prozess();
    void set_Prozess(const cH_Prozess& p) {PB_prozess->set_value(p);}
    ArtikelBase get_Artikel();
-   int get_Menge();
+   double get_Menge();
    void grab_focus_Artikel()
    {  AB_artikel->grab_focus();
    }

@@ -24,10 +24,10 @@ ArtikelBase Artikel_Bestellen::get_Artikel()
   return AB_artikel->get_value();
 }
 
-int Artikel_Bestellen::get_Menge()
+double Artikel_Bestellen::get_Menge()
 {
   gtk_spin_button_update(SP_menge->gtkobj());
-  return SP_menge->get_value_as_int();
+  return SP_menge->get_value_as_float();
 }
 
 void Artikel_Bestellen::prozess()
@@ -46,7 +46,7 @@ void Artikel_Bestellen::menge()
    attach(*label,1,2,0,1);
    
    Gtk::Adjustment *SP_adj=manage(new class Gtk::Adjustment(1, 0, 10000, 1, 10, 10));
-   SP_menge = manage(new class Gtk::SpinButton(*SP_adj, 1, 2));
+   SP_menge = manage(new class Gtk::SpinButton(*SP_adj, 1, 5));
    SP_menge->show();
 //   SP_menge->activate.connect(activate.slot());
    attach(*SP_menge,2,3,0,1);

@@ -1,4 +1,4 @@
-// $Id: AuftragsEntryZuordnung.h,v 1.1 2001/12/05 07:57:44 christof Exp $
+// $Id: AuftragsEntryZuordnung.h,v 1.2 2001/12/19 11:02:08 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -42,7 +42,7 @@ private:
 public:
     // Eine Benachbarte Liste von Kind- bzw. Elternaufträgen:
     std::list<st_reflist> get_Referenz_list(const AufEintragBase2& aeb,bool kinder=false) const throw(SQLerror);
-    // Für einen KOMPLETTEN Auftragsbaum bitte die Klasse AuftragsBaum verwenden  
+    // Für einen KOMPLETTEN Auftragsbaum die Klasse AuftragsBaum verwenden  
     // die folgende Funktion liefert nur die Endaufträge OHNE Knoten
     std::list<st_reflist> get_Referenz_listFull(bool kinder) const throw(SQLerror);
                  //kinder=false:   Elternaufträge 
@@ -55,11 +55,18 @@ public:
     static std::list<AufEintragBase2> get_AufEintragList_from_Artikel
                (const ArtikelBase& artikel,const cH_ppsInstanz& instanz,AufStatVal status);
 
-    // Neuen Eintrag anlegen:
-    static void AuftragsEntryZuordnung(const AuftragBase& altAuftrag,const int altZnr,
-                                       const long menge,
-                                       const AuftragBase& neuAuftrag,const int neuZnr);
 
+    // Neuen Eintrag anlegen:
+    void AuftragsEntryZuordnung(const long menge,
+                                const AuftragBase& neuAuftrag,const int neuZnr,
+                                const int oldZnr=0);
+    // Menge eines alten Eintrags ändern:
+    void setMenge(const long menge,const AuftragBase& neuAuftrag,const int neuZnr);
+    bool setMengeDiff(const long menge,const AuftragBase& neuAuftrag,const int neuZnr);
+    // Zuordnung ändern:
+    bool setKindZnr(const AuftragBase& neuAuftrag,const int neuZnr);
+    //Zeilennummer für Kind erhalten
+//    int getKindZnr(const AuftragBase& neuAuftrag) const;
 };
 
 

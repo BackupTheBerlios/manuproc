@@ -1,4 +1,4 @@
-/* $Id: ArtikelBaum.h,v 1.5 2001/12/05 07:55:59 christof Exp $ */
+/* $Id: ArtikelBaum.h,v 1.6 2001/12/19 11:02:08 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,6 +21,7 @@
 #define ARTIKELBAUM_H
 
 #include <Artikel/Prozess.h>
+#include <Auftrag/AufEintragBase2.h>
 #include <string>
 #include <vector>
 #include <Aux/SQLerror.h>
@@ -95,12 +96,14 @@ public:
  static void UnCache(const ArtikelBase &stamp);
 
 // Hrmpf, warum sind das keine Members?
+// Weil sie dann mehr Datanbankzugriffe machen würden als nötig, MAT
 // Für einen neuen Artikel:
  static void new_Artikel(ArtikelBase fuer_artikel,const RohArtikel& RA);
  static void delete_Artikel(ArtikelBase fuer_artikel,ArtikelBase von_artikel);
 private:
- static void delete_from_zuordnung(ArtikelBase fuer_artikel,ArtikelBase von_artikel); 
- static void create_in_zuordnung(ArtikelBase fuer_artikel,ArtikelBase von_artikel,fixedpoint<5> RohMenge); 
+ static void delete_from_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel); 
+ static void reduceChildren(const AufEintragBase& AEB,const AufEintragBase& oldAEB,long menge);
+ static void create_in_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel,fixedpoint<5> RohMenge); 
 
 public:
  menge_t Faktor(const ArtikelBase &kind) throw(SQLerror);

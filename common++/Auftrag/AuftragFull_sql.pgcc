@@ -56,3 +56,11 @@ int AuftragFull::get_index_by_znr(int znr)
   assert(!"AuftragFull::get_index_by_znr: nichts gefunden");
   abort();
 };
+
+void AuftragFull::setStatusAuftragFull(AufStatVal status) throw(SQLerror)
+{
+  Auftrag::setStatusAuftrag_(status);
+  for (AufEintragBaseList::iterator i=eintragliste.begin();i!=eintragliste.end();++i)
+    i->setStatus(status);
+}
+

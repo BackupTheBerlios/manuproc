@@ -24,3 +24,6 @@ tclistleaf.h tclistnode.cc tclistnode.h tclistrowdata.cc tclistrowdata.h
 treebase.cc treebase.h treebase_data.h
 WPreis_sql.cc
 WWaehrung_sql.cc
+Optionmenu_Instanz_sql.cc
+Optionmenu_Warengruppe_sql.cc
+WAuftragStatus_sql.cc

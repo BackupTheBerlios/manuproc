@@ -44,11 +44,14 @@ class AuftragBase
         void set_Id(int i) {auftragid = i;}
         ppsInstanz::ID Instanz() const {return instanz->Id(); }
 	bool valid() const { return auftragid!=0; }
+        void setStatusAuftragBase(AufStatVal st) const throw(SQLerror);
+
 
         int insertNewEntry(const unsigned long int bestellt, 
                 const Petig::Datum lieferdatum, const ArtikelBase& artikel,
                 const AufStatVal status,
-                const Preis& preis=Preis(),const fixedpoint<2> rabatt=0) const throw(SQLerror);
+                const Preis& preis=Preis(),const fixedpoint<2> rabatt=0,
+                const bool setInstanzAuftraege=true) const throw(SQLerror);
         void InstanzAuftraegeAnlegen(const ArtikelBase& art,const int altZnr,
                 const Petig::Datum& lieferdatum, const AufStatVal status, 
                 const long menge) const; 
@@ -60,13 +63,13 @@ class AuftragBase
 */
         bool existEntry(const ArtikelBase& artid,
                         const Petig::Datum& lieferdatum,
-                        int& znr, long int& menge, const AufStatVal status
+                        int& znr,int &newznr, long int& menge, const AufStatVal status
                         ) const throw(SQLerror);
         int tryUpdateEntry(long int bestellt, 
                 const Petig::Datum lieferdatum, const ArtikelBase& artikel,
-                AufStatVal status) const throw(SQLerror);
-        
-//        int insertNewEntry(const AufEintragBase& a) const;
+                AufStatVal status,
+                const AuftragBase& altAuftrag,int altZnr,
+                bool reloop=true) const throw(SQLerror);
 };
 
 #endif

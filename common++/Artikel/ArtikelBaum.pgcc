@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.pgcc,v 1.9 2001/12/05 07:55:59 christof Exp $
+// $Id: ArtikelBaum.pgcc,v 1.10 2001/12/19 11:02:08 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,9 +24,13 @@
 #include <Faeden/Materialeigenschaft.hh>
 #include <Artikel/ArtikelStamm.h>
 #include <Auftrag/AufEintragBase.h>
+#include <Auftrag/AuftragsBaum.h>
 #include <Auftrag/AuftragsEntryZuordnung.h>
 #include <list>
 exec sql include sqlca;
+#include <Aux/Transaction.h>
+
+
 
 ArtikelBaum::cache_t ArtikelBaum::cache;
 
@@ -137,6 +141,7 @@ void ArtikelBaum::gleiche_Faeden_summieren()
 void ArtikelBaum::new_Artikel(ArtikelBase fuer_artikel,const RohArtikel& RA)
 {
  if (RA.rohartikel.Id()==0 || RA.menge==menge_t(0) ) abort();
+ Transaction tr;
  exec sql begin declare section;
     int ARTIKELID;
     int ALTARTIKELID;
@@ -153,29 +158,26 @@ void ArtikelBaum::new_Artikel(ArtikelBase fuer_artikel,const RohArtikel& RA)
  SQLerror::test(__FILELINE__);
 
  create_in_zuordnung(fuer_artikel,RA.rohartikel,RA.menge);
+ tr.commit();
 }
 
-void ArtikelBaum::create_in_zuordnung(ArtikelBase fuer_artikel,ArtikelBase von_artikel,fixedpoint<5> RohMenge)
+void ArtikelBaum::create_in_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel,fixedpoint<5> RohMenge)
 {
-  cH_ppsInstanz instanz = ArtikelStamm(von_artikel).BestellenBei();
-  std::list<AufEintragBase2> elternliste = AufEintragZu::get_AufEintragList_from_Artikel(von_artikel,instanz,NOSTAT);
-
+  std::list<AufEintragBase2> elternliste = AufEintragZu::get_AufEintragList_from_Artikel(alt_artikel,ArtikelStamm(alt_artikel).BestellenBei(),NOSTAT);
   for(std::list<AufEintragBase2>::const_iterator e=elternliste.begin();e!=elternliste.end();++e)
    {
-//    int neuInstanz=ArtikelStamm(fuer_artikel).BestellenBei()->Id();
-    AuftragBase neuAuftrag(ArtikelStamm(fuer_artikel).BestellenBei()->Id(),0); // bestellen mit Auftrags ID 0
-    AufEintragBase AEB(*e);
-    double menge = AEB.getStueck() * RohMenge;
-    int neuZnr = neuAuftrag.tryUpdateEntry(menge,AEB.getLieferdatum(),
-                                    fuer_artikel,AEB.getEntryStatus());
-    AufEintragZu::AuftragsEntryZuordnung(*e,e->ZNr(),menge,neuAuftrag,neuZnr);
+     AufEintragBase AEB(*e);
+     long menge=AEB.getStueck()*RohMenge;
+     AuftragBase AB(ArtikelStamm(kind_artikel).BestellenBei(),0); 
+     int znr = AB.insertNewEntry(menge,AEB.getLieferdatum(),
+         kind_artikel,AEB.getEntryStatus());
+     AufEintragZu(*e).AuftragsEntryZuordnung(menge,AB,znr);
    }  
 }
 
-
-
 void ArtikelBaum::delete_Artikel(ArtikelBase fuer_artikel,ArtikelBase von_artikel)
 {
+ Transaction tr;
  exec sql begin declare section;
     int ARTIKELID   = fuer_artikel.Id();
     int ALTARTIKELID= von_artikel.Id();
@@ -186,34 +188,89 @@ void ArtikelBaum::delete_Artikel(ArtikelBase fuer_artikel,ArtikelBase von_artike
  SQLerror::test(__FILELINE__,100);
 
  delete_from_zuordnung(fuer_artikel,von_artikel);
+ tr.commit();
 }
 
-void ArtikelBaum::delete_from_zuordnung(ArtikelBase fuer_artikel,ArtikelBase von_artikel)
+     struct st_aam{AufEintragBase AEB;AufEintragBase oldAEB;long menge;
+         st_aam(const AufEintragBase &_AEB,const AufEintragBase &_oldAEB,long _menge)
+            :AEB(_AEB),oldAEB(_oldAEB),menge(_menge) {} };
+
+
+void ArtikelBaum::delete_from_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel)
 {
-  cH_ppsInstanz instanz = ArtikelStamm(von_artikel).BestellenBei();
-  std::list<AufEintragBase2> elternliste = AufEintragZu::get_AufEintragList_from_Artikel(von_artikel,instanz,NOSTAT);
-  instanz = ArtikelStamm(fuer_artikel).BestellenBei();
-  std::list<AufEintragBase2> kindliste = AufEintragZu::get_AufEintragList_from_Artikel(fuer_artikel,instanz,NOSTAT);
+     exec sql begin declare section;
+      int ALTARTID=alt_artikel.Id();
+      int KINDARTID=kind_artikel.Id();
+      int AUFID,INSTANZ,ZNR;
+      int AAUFID,AINSTANZ,AZNR;
+      long MENGE;
+     exec sql end declare section;
+     // Mengen holen und
+     // AufEntrys um die Menge reduzieren
+     exec sql declare mein cursor for select 
+         altauftragid,altinstanz,altzeilennr ,
+         neuauftragid,neuinstanz,neuzeilennr,menge 
+         from auftragsentryzuordnung where
+         (altauftragid,altinstanz,altzeilennr) in
+            (select auftragid,instanz,zeilennr from auftragentry
+               where artikelid=:ALTARTID) and    
+         (neuauftragid,neuinstanz,neuzeilennr) in
+            (select auftragid,instanz,zeilennr from auftragentry
+               where artikelid=:KINDARTID);
+     exec sql open mein;
+     // Der eingelesene Kram muﬂ zwischengespeichert werden, da die
+     // entsprechende Tabelle anschlieﬂend ver‰ndert wird.
+     std::vector<st_aam> V;
+     while(true)
+      {
+        exec sql fetch mein into :AAUFID,:AINSTANZ,:AZNR,:AUFID,:INSTANZ,:ZNR,:MENGE;
+        SQLerror::test(__FILELINE__,100);
+        if (sqlca.sqlcode) break;
+        AufEintragBase AEB=AufEintragBase(class AufEintragBase2(
+               cH_ppsInstanz((ppsInstanz::ppsInstId)INSTANZ),AUFID,ZNR));
+        AufEintragBase oldAEB=AufEintragBase(class AufEintragBase2(
+               cH_ppsInstanz((ppsInstanz::ppsInstId)AINSTANZ),AAUFID,AZNR));
+        V.push_back(st_aam(AEB,oldAEB,MENGE));
+      }
+     exec sql close mein;
+     
+     for(vector<st_aam>::const_iterator i=V.begin();i!=V.end();++i)
+      {
+        reduceChildren(i->AEB,i->oldAEB,i->menge);
+      }
 
-  exec sql begin declare section;
-   int ALTINSTANZ,NEUINSTANZ,ALTID,NEUID,ALTZNR,NEUZNR;
-  exec sql end declare section;
-  for(std::list<AufEintragBase2>::const_iterator e=elternliste.begin();e!=elternliste.end();++e)
-   {
-    ALTINSTANZ=e->Instanz();
-    ALTID=e->Id();
-    ALTZNR=e->ZNr();
-    for(std::list<AufEintragBase2>::const_iterator k=kindliste.begin();k!=kindliste.end();++k)
-     {
-       NEUINSTANZ=k->Instanz();
-       NEUID=k->Id();
-       NEUZNR=k->ZNr();
-       exec sql delete from auftragsentryzuordnung 
-         where altauftragid=:ALTID and altinstanz=:ALTINSTANZ and altzeilennr=:ALTZNR
-         and   neuauftragid=:NEUID and neuinstanz=:NEUINSTANZ and neuzeilennr=:NEUZNR;
-     }  
-   }
+     // Menge in Zuordnungstabelle auf NULL setzen
+/*
+     exec sql update auftragsentryzuordnung 
+         set menge=0 where 
+         (altauftragid,altinstanz,altzeilennr) in
+            (select auftragid,instanz,zeilennr from auftragentry
+               where artikelid=:ALTARTID) and 
+         (neuauftragid,neuinstanz,neuzeilennr) in
+            (select auftragid,instanz,zeilennr from auftragentry
+               where artikelid=:KINDARTID);
+*/
+//     SQLerror::test(__FILELINE__,100);
 }
+
+
+void ArtikelBaum::reduceChildren(const AufEintragBase& AEB,
+                                 const AufEintragBase& oldAEB,
+                                 long menge) 
+{
+//cout << AEB.Instanz()<<' '<<AEB.ZNr()<<'\t'
+//<<oldAEB.Instanz()<<' '<<oldAEB.ZNr()<<'\t'<<menge<<'\n';
+
+  const_cast<AufEintragBase&>(AEB).updateStk(AEB.getStueck()-menge);
+  AufEintragZu(oldAEB).setMengeDiff(-menge,AEB,AEB.ZNr());
+  std::list<AufEintragZu::st_reflist> L=AufEintragZu(AEB).get_Referenz_list(AEB,true);
+//cout << '\t'<<L.size()<<'\n';
+  for(std::list<AufEintragZu::st_reflist>::iterator i=L.begin();i!=L.end();++i)
+   {
+//cout << '\t'<<i->AEB2.Instanz()<<' '<<i->AEB2.ZNr()<<'\t'<<i->Menge<<'\n';
+     reduceChildren(AufEintragBase(i->AEB2),AEB,i->Menge);
+   }
+}        
 
 
 void ArtikelBaum::UnCache(const ArtikelBase &stamp)

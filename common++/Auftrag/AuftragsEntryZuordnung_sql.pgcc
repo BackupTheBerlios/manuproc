@@ -1,4 +1,4 @@
-// $Id: AuftragsEntryZuordnung_sql.pgcc,v 1.1 2001/12/05 07:57:44 christof Exp $
+// $Id: AuftragsEntryZuordnung_sql.pgcc,v 1.2 2001/12/19 11:02:08 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -55,7 +55,6 @@ list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list(const AufEintragB
 //cout << query<<"\n\n\n";
  exec sql declare ONAUF cursor for ONAUF_;
  exec sql open ONAUF;
-          
  list<st_reflist> vaeb;
  while(true)
   {
@@ -71,6 +70,8 @@ list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list(const AufEintragB
      }
     if(j<30) break;
   }
+ exec sql close ONAUF;
+ tr.close();
  return vaeb;
 }
 
@@ -180,21 +181,115 @@ AufEintragBase2 AufEintragZu::get_AufEintrag_from_Artikel_by_Lfdate
   }
 }
 
-void AufEintragZu::AuftragsEntryZuordnung(const AuftragBase& altAuftrag,const int altZnr,
-                                        const long menge,
-                                        const AuftragBase& neuAuftrag,const int neuZnr)
+void AufEintragZu::AuftragsEntryZuordnung(const long menge,
+                              const AuftragBase& neuAuftrag,const int neuZnr,
+                              const int oldZnr=0)
 {
  exec sql begin declare section;
-  int db_aaid=altAuftrag.Id();
-  int db_ains=altAuftrag.Instanz();
-  int db_aznr=altZnr;
+  int db_aaid=AEB.Id();
+  int db_ains=AEB.Instanz();
+  int db_aznr=AEB.ZNr();
   long db_menge=menge;
   int db_naid=neuAuftrag.Id();
   int db_nins=neuAuftrag.Instanz();
   int db_nznr=neuZnr;
  exec sql end declare section;
+ if(oldZnr!=0) db_aznr=oldZnr;
  exec sql insert into auftragsentryzuordnung
    (altauftragid,altinstanz,altzeilennr,menge,neuauftragid,neuinstanz,neuzeilennr) values
    (:db_aaid,:db_ains,:db_aznr,:db_menge,:db_naid,:db_nins,:db_nznr);
  SQLerror::test(__FILELINE__);
 }
+
+#include <Aux/itos.h>
+
+void AufEintragZu::setMenge(const long menge,const AuftragBase& neuAuftrag,const int neuZnr)
+{
+ exec sql begin declare section;
+  int db_aaid=AEB.Id();
+  int db_ains=AEB.Instanz();
+  int db_aznr=AEB.ZNr();
+  long db_menge=menge;
+  int db_naid=neuAuftrag.Id();
+  int db_nins=neuAuftrag.Instanz();
+  int db_nznr=neuZnr;
+ exec sql end declare section;
+ exec sql update auftragsentryzuordnung
+   set menge=:db_menge where
+   (altauftragid,altinstanz,altzeilennr,neuauftragid,neuinstanz,neuzeilennr)
+    = (:db_aaid,:db_ains,:db_aznr,:db_naid,:db_nins,:db_nznr);
+//cout << "update auftragsentryzuordnung set menge="+itos(menge)+
+//" where (altauftragid,altinstanz,altzeilennr,neuauftragid,neuinstanz,neuzeilennr) = ("
+//+itos(db_aaid)+","+itos(db_ains)+","+itos(db_aznr)+","+itos(db_naid)+","
+//+itos(db_nins)+","+itos(db_nznr)+")\n";
+ SQLerror::test(__FILELINE__);
+/*
+ SQLerror::test(__FILELINE__,100);
+ if (sqlca.sqlcode) return false;
+ else return true;
+*/
+ 
+}
+
+bool AufEintragZu::setMengeDiff(const long menge,const AuftragBase& neuAuftrag,const int neuZnr)
+{
+ exec sql begin declare section;
+  int db_aaid=AEB.Id();
+  int db_ains=AEB.Instanz();
+  int db_aznr=AEB.ZNr();
+  long db_menge=menge;
+  int db_naid=neuAuftrag.Id();
+  int db_nins=neuAuftrag.Instanz();
+  int db_nznr=neuZnr;
+ exec sql end declare section;
+ exec sql update auftragsentryzuordnung
+   set menge=menge+:db_menge where
+   (altauftragid,altinstanz,altzeilennr,neuauftragid,neuinstanz,neuzeilennr)
+    = (:db_aaid,:db_ains,:db_aznr,:db_naid,:db_nins,:db_nznr);
+//cout << "update auftragsentryzuordnung set menge="+itos(menge)+
+//" where (altauftragid,altinstanz,altzeilennr,neuauftragid,neuinstanz,neuzeilennr) = ("
+//+itos(db_aaid)+","+itos(db_ains)+","+itos(db_aznr)+","+itos(db_naid)+","
+//+itos(db_nins)+","+itos(db_nznr)+")\n";
+ SQLerror::test(__FILELINE__,100);
+ if (sqlca.sqlcode) return false;
+ else return true;
+}
+
+
+bool AufEintragZu::setKindZnr(const AuftragBase& neuAuftrag,const int neuZnr)
+{
+ exec sql begin declare section;
+  int db_aaid=AEB.Id();
+  int db_ains=AEB.Instanz();
+  int db_aznr=AEB.ZNr();
+  int db_naid=neuAuftrag.Id();
+  int db_nins=neuAuftrag.Instanz();
+  int db_nznr=neuZnr;
+ exec sql end declare section;
+ exec sql update auftragsentryzuordnung
+   set neuzeilennr=:db_nznr where
+   (altauftragid,altinstanz,altzeilennr,neuauftragid,neuinstanz)
+    = (:db_aaid,:db_ains,:db_aznr,:db_naid,:db_nins);
+ SQLerror::test(__FILELINE__);
+ if (sqlca.sqlcode) return false;
+ else return true;
+}
+
+/*
+int AufEintragZu::getKindZnr(const AuftragBase& neuAuftrag) const
+{
+ exec sql begin declare section;
+  int db_aaid=AEB.Id();
+  int db_ains=AEB.Instanz();
+  int db_aznr=AEB.ZNr();
+  int db_naid=neuAuftrag.Id();
+  int db_nins=neuAuftrag.Instanz();
+  int db_nznr=-1;
+ exec sql end declare section;
+ exec sql select neuzeilennr into :db_nznr from auftragsentryzuordnung
+   where  (altauftragid,altinstanz,altzeilennr,neuauftragid,neuinstanz)
+    = (:db_aaid,:db_ains,:db_aznr,:db_naid,:db_nins);
+ SQLerror::test(__FILELINE__,100);
+ return db_nznr;
+}
+*/
