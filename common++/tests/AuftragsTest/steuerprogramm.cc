@@ -80,7 +80,7 @@ int auftragstests(e_mode mode)
    if (mode!=JumboLager)
    {  
 //ManuProC::Tracer::Enable(AuftragBase::trace_channel);
-      AE.setStatus(OPEN,UID,true);
+      AE.setStatus(OPEN,UID);
       erfolgreich=C.teste(Check::Menge,"_mit_lager_open",mit_reparatur_programm);
       if(!erfolgreich) 
          { cout << "Öffnen des Auftrags fehlgeschlagen\n"; return fehler();}

@@ -1,4 +1,4 @@
-// $Id: AuftragsVerwaltung.cc,v 1.9 2002/11/22 15:19:37 thoma Exp $
+// $Id: AuftragsVerwaltung.cc,v 1.10 2002/12/12 16:00:17 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -36,7 +36,7 @@ AufEintragBase AuftragsVerwaltung::anlegen()
 #elif defined PETIG_TEST 
    return auftrag.push_back(400,DATUM,ARTIKEL_ROLLEREI,UNCOMMITED,UID,true);
 #elif defined MABELLA_TEST 
-   return auftrag.push_back(10,DATUM,ARTIKEL_TRIO,UNCOMMITED,UID,true);
+   return auftrag.push_back(10,DATUM,ARTIKEL_TRIO,OPEN,UID,true);
 #endif
 }
 
