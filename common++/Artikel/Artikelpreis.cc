@@ -336,6 +336,9 @@ void Artikelpreis::changePreis(const Preis &p, int newmindmenge) throw(SQLerror)
  for(ExtBezSchema::const_psigiterator bezit=ebz->psigbegin(true);
 	bezit!=ebz->psigend(true); ++bezit)
     join_komponenten+="a."+bezit->spaltenname+"=b."+bezit->spaltenname+" and ";
+#ifndef MABELLA_EXTENSIONS // kann man das wollen?
+ assert(!join_komponenten.empty());
+#endif 
 
  join_komponenten+=" b.id=?";
  query+=join_komponenten+")))";
