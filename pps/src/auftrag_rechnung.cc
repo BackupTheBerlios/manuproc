@@ -772,7 +772,7 @@ void auftrag_rechnung::on_radiobutton_preiseingabe_toggled()
 
 void auftrag_rechnung::on_gutschrift_activate()
 {
- ja_nein_frage d("Wollen Sie wirklich ein Gutschrift erstellen ?");
+ ja_nein_frage d("Wollen Sie wirklich eine Gutschrift erstellen ?");
  
  d.set_transient_for(*this);
  
@@ -783,7 +783,7 @@ void auftrag_rechnung::on_gutschrift_activate()
     try{
     rechnung.setRngArt(Rechnung::RART_GUT);
 
-    ja_nein_frage lag("Soll die Ware dem Lager zugebucht gemacht werden ?");
+    ja_nein_frage lag("Soll die Ware dem Lager zugebucht werden ?");
     lag.set_transient_for(*this);
     ret=lag.run();
 
