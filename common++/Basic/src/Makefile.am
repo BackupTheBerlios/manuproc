@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.38 2003/11/05 09:48:45 christof Exp $
+# $Id: Makefile.am,v 1.39 2003/12/30 08:34:18 christof Exp $
 
 if WINDOWS
 WIN_LDFLAGS=-no-undefined -export-symbols libManuProC_Base.def
@@ -39,7 +39,7 @@ libManuProC_Base_la_SOURCES=Ausgabe_neu.cc Datum.cc IOerror.cc \
 		EntryValueIntString.cc EntryValueIntGermanString.cc \
 		EntryValueDatum.cc $(DB_SRCES) Trace.cc \
 		germanstring.cc TagStream.cc Tag.cc EntryValueTimeStamp.cc \
-		Global_Settings.cc
+		Global_Settings.cc EntryValueSort.cc
 
 EXTRA_DIST=dbconnect.pgcc SQLerror_postgres.pgcc Transaction.pgcc \
 	FetchIStream.pgcc
