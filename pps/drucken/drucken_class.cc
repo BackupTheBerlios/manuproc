@@ -766,7 +766,8 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
          if (stueck_bool && menge_bool)
            { neue_spalte(erste_spalte,os);
              // diese Hartcodierung von 3 sieht nicht gut aus CP
-             os <<linecolor<< FormatiereTeX_short(fixedpoint<3>(stueck * menge))<<einheitsize <<Einheit(artikelbase).TeX();
+//             os <<linecolor<< FormatiereTeX_short(fixedpoint<3>(stueck * menge))<<einheitsize <<Einheit(artikelbase).TeX();
+             os <<linecolor<< FormatiereTeX_short(stueck * menge)<<einheitsize <<Einheit(artikelbase).TeX();
            }
 
 // NEW COLUMNS; ab hier irgendwo einfügen um Tabellenspalten auszugeben
