@@ -467,7 +467,8 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
       	 }
       	 if (count>1)
       	 {  analyse("Es existiert mehr als eine Zuordnung, diese kann weg",ae,i->AEB,i->Menge);
-      	    goto nur_der_weg;
+      	    if (!analyse_only || !AuftragBase::tolerate_inconsistency) 
+      	      goto nur_der_weg;
       	 }
       }
       

@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.37 2004/10/28 15:38:43 jacek Exp $
+// $Id: AufEintrag_Lager.cc,v 1.38 2004/11/03 09:07:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -195,9 +195,12 @@ AuftragBase::mengen_t AufEintrag::Auslagern
          if (menge>0) AufEintragZu(ctx.aeb).Neu(*this,0);
          
 #if 0	// sonst geht Storno_LS nicht         
+        // die Frage ist eher ob die untere Instanz automatisch produziert
          if (!Instanz()->ProduziertSelbst() && Instanz()->AutomatischEinlagern()
          	&& Instanz()->LagerInstanz() && menge<0)
-         {  // war das nur ein unbestellteMengeProduzieren?
+         {  Abbestellen() ?
+         
+            // war das nur ein unbestellteMengeProduzieren?
             // dann ganz wegnehmen
             AufEintragZu::list_t kinder=AufEintragZu::get_Referenz_list
             		(*this,AufEintragZu::list_kinder,AufEintragZu::list_ohneArtikel);
@@ -212,8 +215,7 @@ AuftragBase::mengen_t AufEintrag::Auslagern
                MengeAendern(menge,true,AufEintragBase());
             }
          }
-#endif         
-
+#endif
       }
       else
       {  MengeNeubestellen(menge);

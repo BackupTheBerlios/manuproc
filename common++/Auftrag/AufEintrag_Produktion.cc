@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.42 2004/09/01 12:25:48 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.43 2004/11/03 09:07:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -232,11 +232,15 @@ public:
 	      {  // Zuordnung anpassen
 	         if (M>0) AufEintragZu(alterAEB).setMengeDiff__(aeb,-M);
 		 Lager L(aeb.Instanz());
+		 // geht das überhaupt alles? (Rückmeldung M=L. ... ?)
 		 L.raus_aus_lager(art,M,true,ProductionContext(neuerAEB,ctx,aeb));
+		 if (M<0) AufEintragZu(neuerAEB).setMengeDiff__(aeb,-M);
+#if 0 // CP: verstehe ich nicht, ich finde raus_aus_lager kann das übernehmen
 		 // der Verweis muss unten angelegt werden (aeb kann falsch sein)
 		 // muss noch nachbestellt werden (vielleicht ist das wie NeuBestellen)
 		 if (M<0) 
 		    AufEintrag(neuerAEB).ArtikelInternNachbestellen(-M);
+#endif		    
 	      }
 	      else
 	         AufEintrag(aeb).ProduziertNG(M,alterAEB,neuerAEB,ctx);
