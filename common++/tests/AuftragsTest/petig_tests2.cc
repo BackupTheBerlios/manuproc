@@ -108,7 +108,7 @@ static std::vector<AufEintragBase> Verfuegbarkeit2_init()
 #endif    
     {  class JumboLager JL;
        JumboRolle jr(JumboRolle::Pruefziffer_anhaengen(100));
-       JL.Jumbo_Entnahme(jr,JumboLager::Auslagern,"test",0,false);
+       JL.Jumbo_Entnahme(jr,JumboLager::Auslagern,"TEST",0,false);
     }
 
     // Einkauf planen
@@ -188,24 +188,27 @@ static bool Verfuegbarkeit3()
     }
     vergleichen(Check::Menge,"V3_Einlagern","Einlagern","R");
     Verfuegbarkeit2_check("V3_Einlagern",aebs);
-    
+
+    JumboRolle::ID jrid=0;    
     // gefertigt
     {LagerPlatz LP(ppsInstanzID::Bandlager,JUMBO_LAGERPLATZ+1);
      KettplanKette KK=KettplanKette(Kette(MASCHINE,SCHAERDATUM));
      std::vector<JumboRolle> JR=JumboRolle::create(KK);
+     jrid=JR.front().Id();
      Query("update rohjumbo set barcoist=?,barcofert_datum=now() where code=?")
     	<< 140
-    	<< JR.front().Id()/10;
-     class JumboLager JL;
-     // aus DB neuladen
-     JumboRolle J2(JR.front().Id());
-     JL.Jumbo_Einlagern(LP,J2,JumboLager::Einlagern,"TEST",0,true);
+    	<< jrid/10;
+     // jr aus DB neuladen
+     JumboRolle J2(jrid);
+     JumboLager().Jumbo_Einlagern(LP,J2,JumboLager::Einlagern,"TEST",0,true);
     }
     vergleichen(Check::Menge,"V3_gewebt","gewebt","W");
     Verfuegbarkeit2_check("V3_gewebt",aebs);
 
     // ausliefern (etwas zuviel)
-    {Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE2));
+    {JumboRolle J2(jrid);
+     JumboLager().Jumbo_Entnahme(J2,JumboLager::Auslagern,"TEST",0,true);
+     Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE2));
      LieferscheinEntryBase lsb(liefs,liefs.push_back(ARTIKEL_BANDLAGER,1,170));
      LieferscheinEntry(lsb).changeStatus(OPEN,false);
     }
