@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.48 2003/06/23 12:23:57 christof Exp $
+// $Id: Check.cc,v 1.49 2003/06/23 12:43:08 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -88,7 +88,7 @@ bool Check::vergleich(was_checken was,const std::string &zusatz)
      std::string fz2=referenzdir+*i+"_"+zusatz;
 
      if (overwrite)      
-     {  system(("mv "+fz1+" "+fz2).c_str());
+     {  system(("cp "+fz1+" "+fz2).c_str());
         std::cout << fz2<<" wurde neu erzeugt\n"; 
      }
      else
