@@ -43,4 +43,5 @@ COMMONGTK_ONLY=`for i in $COMMONGTK_LIBS ; do \
 AC_SUBST(COMMONGTK_ONLY)
 
 AC_OUTPUT(Makefile src/Makefile  macros/Makefile \
-   drucken/Makefile sdo_drucken/Makefile )
+   drucken/Makefile )
+# sdo_drucken/Makefile  soll das wirklich hier rein?
