@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: EingabeBox.hh,v 1.2 2001/07/05 12:58:06 christof Exp $
+// $Id: EingabeBox.hh,v 1.3 2001/11/15 15:16:16 christof Exp $
 
 #ifndef _EINGABEBOX_HH
 #define _EINGABEBOX_HH
@@ -52,7 +52,7 @@ public:
 	const std::string get_label(int col) const;
 	void set_label(int col,const std::string &s);
 	const std::string get_value(int col) const;
-        void set_value(int col,const std::string &s);
+   void set_value(int col,const std::string &s);
 	void set_width(int col,int width);
 	void set_size(int cols);
 	int size() const

@@ -48,6 +48,8 @@ class window1 : public window1_glade
 
    void on_activate_wwaehrung();
    void on_activate_wpreis();
+   void OW_activate(){cerr << "Activate W\n";}
+   void OI_activate(){cerr << "Activate I\n";}
 public:
 	window1();
 };

@@ -91,6 +91,7 @@ protected:
 public:
  TreeBase(guint cols, guint attr=0);
  ~TreeBase();
+ void set_showdeep(int i) {showdeep=i;}
  guint Attrs() const { return attrcount; }
  guint Cols() const { return columns().size();}
  void setDataVec(const std::vector<cH_RowDataBase> &d) 
@@ -161,6 +162,25 @@ public:
  	throw(noNodeSelected,multipleNodesSelected,notNodeSelected);
  template <class T> T &getSelectedNode_as() const
  {  return dynamic_cast<T&>(getSelectedNode());
+ }
+
+private:
+ template <class T> void selectMatchingLines(TCListRow_API::const_iterator b, 
+ 			TCListRow_API::const_iterator e, const T &t)
+ {  for (TCListRow_API::const_iterator i=b;i!=e;++i)
+    {  const TCListRowData *tlr=reinterpret_cast<const TCListRowData *>((*i).get_user_data());
+       if (tlr->LeafData()==t)
+       {  int rowno=static_cast<const TCListRow&>(*i).get_lineno();
+          if (rowno!=-1) row(rowno).select();
+       }
+       if ((*i).begin()!=(*i).end()) selectMatchingLines((*i).begin(),(*i).end(),t);
+    }
+ }
+ 
+public:
+ template <class T> void selectMatchingLines(const T &t)
+ {  selection().clear();
+    selectMatchingLines(begin(),end(),t);
  }
 };
 

@@ -15,7 +15,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// $Id: with_class.cc,v 1.11 2001/11/07 07:43:41 christof Exp $
+// $Id: with_class.cc,v 1.12 2001/11/15 15:16:16 christof Exp $
 
 #include "config.h"
 #include "with_class.hh"
@@ -141,6 +141,16 @@ try{
 }catch(std::exception &e){cerr << e.what();}
 }
 
+bool operator==(const cH_RowDataBase &b, int i)
+{  try
+   {  cH_MyRowData m(b);
+//      cout << m->Data(0) << ',' << i << '\n';
+      return m->Data(0)==i;
+   }
+   catch (...)
+   {  return false; }
+}
+
 with_class::with_class()
 {  std::vector <std::string> v(treebase->Cols());
    v[SP_ATT0]="Integer";
@@ -153,12 +163,12 @@ with_class::with_class()
 //   v[SP_SUM2]="summe 3";
    treebase->setTitles(v);
    std::vector <cH_RowDataBase> datavec;
-#if 0
+#if 1
    datavec.push_back(new MyRowData(1,"X",2,3,"A"));
    datavec.push_back(new MyRowData(2,"Y",2,3,"A"));
    datavec.push_back(new MyRowData(10,"Z",2,3,"A"));
 #endif
-#if 1
+#if 0
    for (int i=0;i<1000;++i)
       datavec.push_back(new MyRowData(i%4+1,/*"same" */
       string(1,char('A'+(i%3))),(i%5),(i%7),itos(i)));
@@ -173,4 +183,5 @@ with_class::with_class()
    treebase->setDataVec(datavec);
    
    treebase->leaf_selected.connect(SigC::slot(this,&with_class::on_leaf_selected));
+   treebase->selectMatchingLines(2);
 }

@@ -182,7 +182,7 @@ bool TreeBase::redisplay_recurse(TCListRow_API *a, const RowDataBase *r, guint c
       }
       const TCListRowData *tlr=reinterpret_cast<const TCListRowData *>((*i).get_user_data());
       if (tlr->Leaf())
-      {  if (&*(reinterpret_cast<const TCListRowData *>(tlr)->LeafData()) == r)
+      {  if (&*(tlr->LeafData()) == r)
          {  dynamic_cast<TCListRow&>(*i).relabel(col,r->Value(col,ValueData())->getStrVal());
             return true;
          }

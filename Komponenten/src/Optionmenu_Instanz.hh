@@ -12,7 +12,6 @@ class Optionmenu_Instanz :  public Gtk::OptionMenu
    void fuelle_menu();
    vector<std::string> vec_instanz;
 
-void TEST();
  public:
    Optionmenu_Instanz() ;
    SigC::Signal0<void> activate;
