@@ -1,4 +1,4 @@
-dnl $Id: petig.m4,v 1.48 2001/06/06 13:39:31 cvs_christof Exp $
+dnl $Id: petig.m4,v 1.49 2001/06/21 14:52:53 cvs_christof Exp $
 
 dnl Configure paths for some libraries
 dnl derived from kde's acinclude.m4
@@ -197,7 +197,7 @@ AC_DEFUN(PETIG_CHECK_POSTGRES,
 [ PETIG_CHECK_ECPG
 ])
 
-dnl PETIG_CHECK_LIB(lib name,readable name,define name,alt.lib name,dep1,dep2)
+dnl PETIG_CHECK_LIB(lib name,dir name,define name,alt.lib+dir name,dep1,dep2)
 
 AC_DEFUN(PETIG_CHECK_LIB,
 [
@@ -298,7 +298,7 @@ PETIG_CHECK_LIB(common++,c++,COMMONXX,ManuProC_Base,ECPG)
 
 AC_DEFUN(PETIG_CHECK_KOMPONENTEN,
 [
-PETIG_CHECK_LIB(Komponenten,Komponenten,KOMPONENTEN,,COMMONXX,COMMONGTK)
+PETIG_CHECK_LIB(Komponenten,Komponenten,KOMPONENTEN,ManuProC_Widgets,COMMONXX,COMMONGTK)
 ])
 
 AC_DEFUN(PETIG_CHECK_COMMONGTK,
