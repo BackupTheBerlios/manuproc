@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.cc,v 1.38 2004/03/11 15:36:27 christof Exp $
+// $Id: Zahlungsart.cc,v 1.39 2004/10/21 13:43:42 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -219,7 +219,11 @@ void Zahlungsart::TeX_out(std::ostream &os,
              os << strbuf;
 	     }
          else
-             os << "Zahlung sofort netto\\\\\n";
+	   {if(textid==0)
+              os << "Zahlung sofort netto\\\\\n";
+	    else
+	      os << mld.MLT((TID::LangTXT)textid) << "\\\\\n";
+	   }
      }
   }
 }
@@ -347,7 +351,11 @@ void Zahlungsart::TeX_out(std::ostream &os,
              os << strbuf;
 	     }        
          else
-            os << "Zahlung sofort netto\\\\\n";
+	   {if(textid==0)
+              os << "Zahlung sofort netto\\\\\n";
+	    else
+	      os << mld.MLT((TID::LangTXT)textid) << "\\\\\n";
+	   }
      }
   }
 }

@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.h,v 1.22 2003/05/05 14:25:13 jacek Exp $
+// $Id: Zahlungsart.h,v 1.23 2004/10/21 13:43:42 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -56,6 +56,7 @@ private:
     bool monatsende;
     int frist_monate;
     Verfahren verfahren;
+    int textid;
 
     void setVerfahren(const std::string v);
     friend FetchIStream &NOTGCC295(::)operator>>(FetchIStream &is, Zahlungsart &za);
