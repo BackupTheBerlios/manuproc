@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.39 2004/01/09 15:44:28 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.40 2004/01/12 14:20:06 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -268,6 +268,7 @@ public:
 	
 	unsigned visible_size() { return currseq.size(); }
 	void setSortierspalte(unsigned idx=invisible_column, bool invert=false);
+	bool getInvert() const { return invert_sortierspalte; }	
 };
 
 #endif

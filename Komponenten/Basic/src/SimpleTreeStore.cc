@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.52 2004/01/09 15:46:58 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.53 2004/01/12 14:20:06 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -887,7 +887,7 @@ unsigned SimpleTreeStore::Node2nth_child(const Node &nd) const
 }
 
 void SimpleTreeStore::setSortierspalte(unsigned s,bool i)
-{  if (sortierspalte!=s && i!=invert_sortierspalte)
+{  if (sortierspalte!=s || i!=invert_sortierspalte)
    {  sortierspalte=s;
       invert_sortierspalte=i;
       redisplay();
