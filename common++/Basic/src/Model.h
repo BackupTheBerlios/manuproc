@@ -1,4 +1,4 @@
-/* $Id: Model.h,v 1.8 2003/09/03 11:35:35 christof Exp $ */
+/* $Id: Model.h,v 1.9 2003/09/15 08:25:13 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -115,6 +115,8 @@ template <class T>
 	SigC::Signal1<void,void*> *changed;
 public:
 	Model_ref(Model<T> &model)
+	: value(model.Valueptr()), changed(&model.changed) {}
+	Model_ref(Model_copyable<T> &model)
 	: value(model.Valueptr()), changed(&model.changed) {}
 	Model_ref(T &v, SigC::Signal1<void,void*> &sig)
 	: value(&v), changed(&sig) {}
