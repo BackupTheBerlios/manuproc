@@ -1,11 +1,13 @@
 
-CXXFLAGS=-I../.. -I/usr/include/postgresql/
-LDFLAGS=-L../..
+CXXFLAGS=-I../..
+LDFLAGS=-L../.. 
 
 sqlitetest: sqlitetest.o -lsqlite
 
 query_test: query_test.o 
 	$(CXX) $(CXXFLAGS) -o query_test query_test.cc $(LDFLAGS) \
-	-lcommon++ -lecpg -lpq -lsqlite
+	-lcommon++ -lsqlite
 
-
+FetchIStream: FetchIStream.o
+	$(CXX) $(CXXFLAGS) -o FetchIStream FetchIStream.cc \
+	-lcommon++ -lsqlite $(LDFLAGS)

@@ -4,6 +4,9 @@
 
 int main(void)
 {ManuProC::dbconnect();
- Query::Execute("select * from tb");
+ int a;
+ std::string s;
+ Query("select * from tb") >> a >> s;
+ std::cout << a << s;
  ManuProC::dbdisconnect();
 }
