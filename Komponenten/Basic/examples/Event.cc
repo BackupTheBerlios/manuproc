@@ -1,4 +1,4 @@
-// $Id: Event.cc,v 1.2 2003/05/12 06:37:03 christof Exp $
+// $Id: Event.cc,v 1.3 2004/05/04 07:53:14 christof Exp $
 /*  ManuProcWidgets: ManuProC's GUI element library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,6 +25,9 @@
 #include <Misc/dbconnect.h>
 #include <Misc/Event.h>
 #include <Misc/FetchIStream.h>
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#  include <sigc++/compatibility.h>
+#endif
 
 class MeinFenster : public Gtk::Window
 {  Gtk::Label label;

@@ -5,6 +5,9 @@
 #include <gtkmm/window.h>
 #include <SimpleTree.hh>
 #include <treebase_data.h>
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#  include <sigc++/compatibility.h>
+#endif
 
 class window1 : public Gtk::Window
 {  
