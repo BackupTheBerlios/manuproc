@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.15 2002/12/03 15:20:44 thoma Exp $
+// $Id: adjust_store.cc,v 1.16 2002/12/04 11:32:20 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -41,10 +41,9 @@ void usage(const std::string &s)
            "\t   Menge null ist.\n"
            "\tC: Es wird sichergestellt, daß nur entweder 0er- oder 2er-Aufträge\n"
            "\t   (pro Instanz,Artikel,Lieferdatum) existieren.\n"
-           "\tD: Es wird überprüft, ob die Summe der Zuordnungen VON 0er-Aufträgen\n"
-           "\t   AN 1|20000er genauso groß ist wie die Menge im 1|20000er.\n"
-           "\tE: Es wird überprüft, ob die Summe der Zuordnungen VON 2er-Aufträgen\n"
-           "\t   AN 1|20000er genauso groß ist wie die Menge im 2er.\n";
+           "\tD: Summe der Zuordnungen VON 0er-Aufträgen AN 1|20000 == 1|20000.getStueck().\n"
+           "\tE: Summe der Zuordnungen VON 2er-Aufträgen AN 1|20000 == 2.getStueck().\n"
+           "\tF: Summe der Zuordnungen VON 2er-Aufträgen AN 1|20000 <= 1|20000.getRestStueck().\n";
  std::cerr << "USAGE:  ";
  std::cerr << s <<" [-i<instanz>|-I]  -a<aktion> [-d<database> -h<dbhost> -y] \n"
            "\twobei die aktion=[A|B|C] ist.\n"
@@ -53,8 +52,9 @@ void usage(const std::string &s)
  exit(1);
 }
 
-void check_for(const std::string &pname,cH_ppsInstanz I,const std::string &aktion,const bool analyse_only)
+bool check_for(const std::string &pname,cH_ppsInstanz I,const std::string &aktion,const bool analyse_only)
 {   
+   bool alles_ok=false;
     if     (aktion=="A")
      {
       if(I->EigeneLagerKlasseImplementiert()) I->ReparaturLager(getuid(),analyse_only);
@@ -62,9 +62,11 @@ void check_for(const std::string &pname,cH_ppsInstanz I,const std::string &aktio
      }
     else if(aktion=="B" &&!I->KundenInstanz()) I->Reparatur_Konsistenz(analyse_only);
     else if(aktion=="C" &&!I->KundenInstanz()) I->Reparatur_0er_und_2er(getuid(),analyse_only);
-    else if(aktion=="D" &&!I->KundenInstanz()) I->Reparatur_0_ZuSumme_1(getuid(),analyse_only);
-    else if(aktion=="E" &&!I->KundenInstanz()) I->Reparatur_2_ZuSumme_1(getuid(),analyse_only);
+    else if(aktion=="D" &&!I->KundenInstanz()) alles_ok=I->Reparatur_0_ZuSumme_1(getuid(),analyse_only);
+    else if(aktion=="E" &&!I->KundenInstanz()) alles_ok=I->Reparatur_2_ZuSumme_1(getuid(),analyse_only);
+    else if(aktion=="F" &&!I->KundenInstanz()) alles_ok=I->Reparatur_2_ZuSumme_1Rest(getuid(),analyse_only);
     else usage(pname);
+   return alles_ok;
 }
 
 
@@ -78,6 +80,13 @@ const static struct option options[]=
  { "alle_Instanzen", no_argument,      NULL, 'I' },  
  { NULL,      0,       NULL, 0 }
 };
+
+int ende(bool b)
+{
+  if(b) return 0;
+  else  return 1;
+}
+
 
 int main(int argc,char *argv[])
 {
@@ -109,26 +118,29 @@ int main(int argc,char *argv[])
 
 
   ManuProC::PrintUncaughtExceptions();
+  bool alles_ok=false;
   try{
-    ManuProC::Connection conn;
+    ManuProC::Connection conn();
     conn.setHost(dbhost);
     conn.setDbase(database);
     ManuProC::dbconnect(conn);
 
+cout << conn.Dbase()<<'\n';
     if(instanz!=ppsInstanzID::None) 
-      check_for(argv[0],cH_ppsInstanz(instanz),aktion,analyse_only);
+      alles_ok=check_for(argv[0],cH_ppsInstanz(instanz),aktion,analyse_only);
     else
      { std::vector<cH_ppsInstanz> VI=cH_ppsInstanz::get_all_instanz();
        for(std::vector<cH_ppsInstanz>::const_iterator i=VI.begin();i!=VI.end();++i)
         {
          if((*i)->KundenInstanz()) continue;
-         check_for(argv[0],*i,aktion,analyse_only);
+         bool x=check_for(argv[0],*i,aktion,analyse_only);
+         if(!x) alles_ok=x;
         }
      }    
 
     ManuProC::dbdisconnect();
-  }catch(SQLerror &e){std::cout << e<<'\n'; return 1;}
-  return 0;
+  }catch(SQLerror &e){std::cout << e<<'\n'; return ende(false);}
+  return ende(alles_ok);
 }
 
 

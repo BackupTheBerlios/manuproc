@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.22 2002/11/29 11:20:34 thoma Exp $
+// $Id: Check.cc,v 1.23 2002/12/04 11:32:20 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -48,6 +48,7 @@ bool Check::teste(was_checken check,const std::string &zusatz, bool mit_reparatu
      bool b=vergleich(check,zusatz);
      if(!mit_reparatur_programm || !b) return b;
    }
+  
   std::vector<cH_ppsInstanz> VI=cH_ppsInstanz::get_all_instanz();
   for(std::vector<cH_ppsInstanz>::const_iterator i=VI.begin();i!=VI.end();++i)
    {
@@ -61,6 +62,14 @@ bool Check::teste(was_checken check,const std::string &zusatz, bool mit_reparatu
      system(com.c_str());
      std::string com2="../../Programme/adjust_store -i "+itos((*i)->Id())+" -a C";
      system(com2.c_str());
+
+     std::string comD="../../Programme/adjust_store -i "+itos((*i)->Id())+" -a D -y";
+     int d=system(comD.c_str());
+     std::string comE="../../Programme/adjust_store -i "+itos((*i)->Id())+" -a E -y";
+     int e=system(comE.c_str());
+     std::string comF="../../Programme/adjust_store -i "+itos((*i)->Id())+" -a F -y";
+     int f=system(comF.c_str());
+     if(d || e || f) return false; 
    }  
   dump(check);  
   return vergleich(check,zusatz);
