@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.40 2003/05/16 06:43:40 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.41 2003/05/22 12:50:48 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -50,6 +50,7 @@ class AufEintrag : public AufEintragBase
 {
 //     friend class LagerBase;
      friend class AuftragBase;
+     friend class ppsInstanzReparatur;
      friend FetchIStream &operator>>(FetchIStream &is, AufEintrag &ae);
 
 private: 
@@ -71,7 +72,7 @@ private:
  rabatt_t rabatt;
 
 private: // weg von hier!
- int kdnr;
+ Kunde::ID kdnr;
  std::string youraufnr;
  int disponr;
  AufStatVal auftragstatus; /* Status des zugehörigen Auftrages */
@@ -158,7 +159,7 @@ public:
  std::string getYourAufNr() const { return youraufnr;}
  int getDispoENr() const { return dispoentrynr;}
  const ManuProC::Datum getLieferdatum() const { return lieferdatum;}
- int getKdNr() const { return kdnr;}
+ Kunde::ID getKdNr() const { return kdnr;}
  const ManuProC::Datum getProzDat() const { return prozdate;} 
  cH_Prozess getProzess() const { return prozess;}
  const cP_Waehrung getWaehrung() const { return preis.getWaehrung(); }

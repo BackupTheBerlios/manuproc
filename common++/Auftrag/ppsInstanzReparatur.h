@@ -1,4 +1,4 @@
-// $Id: ppsInstanzReparatur.h,v 1.6 2003/05/22 08:32:23 christof Exp $
+// $Id: ppsInstanzReparatur.h,v 1.7 2003/05/22 12:50:48 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,55 +25,23 @@
 //class AufEintragBase;
 class LagerInhalt;
 //class AuftragBase;
+class SelectedFullAufList;
 
-class ppsInstanzReparatur : public ppsInstanz
+class ppsInstanzReparatur : public cH_ppsInstanz
 {
  public:
-   ppsInstanzReparatur(ID iid=ppsInstanzID::None)
-      : ppsInstanz(iid) {}
+   ppsInstanzReparatur(ppsInstanz::ID iid=ppsInstanzID::None)
+      : cH_ppsInstanz(iid) {}
+   const cH_ppsInstanz &Instanz() const { return *this; }
 
  /////////////////////////////////////////////////////////////////////////
  // Reparatur
  private:
       typedef fixedpoint<ManuProC::Precision::AuftragsMenge> ABmt;
-#if 0 
-      struct st_table{std::string table; std::string column;
-              st_table(const std::string &t,const std::string &c) 
-               : table(t),column(c) {}};
-#endif
 
       std::vector<LagerInhalt> getLagerInhalt() const;
       void vormerkungen_subrahieren(int uid,const  std::vector<LagerInhalt> &LI,const bool analyse_only) const;
       void DispoAuftraege_anlegen(const int uid,const ArtikelBase &artikel,const fixedpoint<ManuProC::Precision::AuftragsMenge> &menge) const;
-#if 0      
-      // 0er und 2er müssen immer offen sein
-      void force_open_0er_und_2er(const bool analyse_only) const throw(SQLerror);
-      // Alle Aufträge außer Kundenaufträgen und externen Bestellungen 
-      // müssen die eigene KundenID haben
-      void force_eigene_KundenId(const bool analyse_only) const throw(SQLerror);
-      void force_2er_0er_geliefert_ist_null(const bool analyse_only) const throw(SQLerror);
-      void force_execute(const std::vector<st_table> &Vtable,
-          const std::vector<ManuProcEntity<>::ID> &Vauftragid,
-          const int Wert,const std::string &was,const bool analyse_only) const throw(SQLerror);
-
-      enum e_zumode{Dungeplant,Egeplant,Fdispo};
-      bool Reparatur_Zuordnungen(const int uid,const bool analyse_only,
-         const  ManuProcEntity<>::ID auftragid,const bool kinder,const e_zumode zumode) const throw(SQLerror);
-
-//      bool check_D_ungeplant(const int uid,const bool analyse_only,const AufEintrag &AE,const ABmt &M0sum,const ABmt &Msum) const;
-      bool check_D_ungeplant(const int uid,const bool analyse_only,const AufEintrag &AE,const AufEintragZu::list_t &L) const;
-      bool check_E_geplant(const int uid,const bool analyse_only,const AufEintrag &AE,const ABmt &Msum) const;
-      bool check_F_dispo(const int uid,const bool analyse_only,const AufEintrag &AE,const ABmt &Msum) const;
-
-//      void check_D_ungeplantReparatur(const int uid,const AufEintrag &AE,const AuftragBase::mengen_t &menge) const; 
-      void check_F_dispoReparatur(const int uid,const AufEintrag &AE,const AuftragBase::mengen_t &menge) const; 
-
-      void Reparatur_Kundenauftrag_AE(const int uid,const AufEintrag &KundeAE,AufEintrag &KindAE,const ABmt &menge) const;
-      void Reparatur_Kundenauftrag_AEB(const int uid,const AufEintrag &KundeAE,const AufEintragBase &KindAE,const ABmt &menge) const;
-      void MengenReparatur(const int uid,const AufEintrag &AE, AufEintrag &AEB,const ABmt& zumenge) const;
-
-      bool KK_teste_summen_fuer(const AufEintragBase aeb,const ArtikelBase KundenArtikel,const int uid,const bool analyse_only) const;
-#endif
 
       void analyse(const std::string &s,const AufEintrag &AE,const std::string &x=std::string(),const std::string &y=std::string()) const;
       // Wrapper:
@@ -85,25 +53,8 @@ class ppsInstanzReparatur : public ppsInstanz
       // Einlesen des Lagerinhalts und Anpassen der 2er unter Berücksichtigung der 1er
       void ReparaturLager(const int uid,const bool analyse_only) const throw(SQLerror);
       // Entweder existieren 0er oder es existieren 2er
-      void Reparatur_0er_und_2er(const int uid,const bool analyse_only) const throw(SQLerror);
-#if 0      
-      void Reparatur_Konsistenz(const bool analyse_only) const throw(SQLerror);
-      // Summe aller 0er-Zuordnungen zu einem 1|20000 = Menge des 1|20000
-      bool ReparaturD_0_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror);
-      // Summe aller 2er-Zuordnungen zu einem 1|20000 = Menge des 1|20000
-      bool ReparaturE_2_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror);
-      // Summe aller 2er-Zuordnungen zu einem 1|20000 <= REST-Menge des 1|20000
-      bool ReparaturF_2_ZuSumme_1Rest(const int uid,const bool analyse_only) const throw(SQLerror);
-      // Zuordnung von Kunden an Bestell-Instanz' entspricht Kundenbestellmenge
-      bool ReparaturK_Kundenzuordnung(const int uid,const bool analyse_only) const;
-      bool ReparaturKK_KundenKinder(const int uid,const bool analyse_only) const;
-      // keine Eltern für Kunden und 2er
-      bool ReparaturG_keine_Eltern(const int uid,const bool analyse_only) const;
-      // ZuordnungsReparatur
-      bool ReparaturST_AuftragsZuordnung(const int uid,const bool analyse_only,const bool kinder) const;
-      // Lager-Zuordnungen
-      bool ReparaturH_LagerZuordnungen(const int uid,const bool analyse_only) const;
-#endif
+      // void Reparatur_0er_und_2er(const int uid,const bool analyse_only) const throw(SQLerror);
+      void Reparatur_0er_und_2er(SelectedFullAufList &L,const bool analyse_only) const throw(SQLerror);
 
       // neues Interface!
       bool Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, bool analyse_only) const;

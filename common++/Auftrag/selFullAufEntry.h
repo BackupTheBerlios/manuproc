@@ -1,4 +1,4 @@
-/* $Id: selFullAufEntry.h,v 1.19 2003/01/08 09:46:56 christof Exp $ */
+/* $Id: selFullAufEntry.h,v 1.20 2003/05/22 12:50:48 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,8 +27,9 @@
 #include"Auftrag/AufEintrag.h"
 #include"Auftrag/AuftragBase.h"
 #include<ExtBezSchema/ExtBezSchema.h>
+#include <Misc/compiler_ports.h>
 
-
+// Warum nicht ableiten?
 class SelectedFullAufList
 {
  typedef std::list<AufEintrag> TYP ;
@@ -52,7 +53,7 @@ public:
  reverse_iterator rbegin(){ return aufidliste.rbegin(); }
  reverse_iterator rend()  { return aufidliste.rend(); }
  // please use size()!
- int getLen() const { return aufidliste.size();}
+ __deprecated int getLen() const { return aufidliste.size();}
  size_t size() const { return aufidliste.size();}
  bool empty() const {return aufidliste.empty();}
  void splice(iterator __position, SelectedFullAufList& __x) {aufidliste.splice(__position,__x.aufidliste);}

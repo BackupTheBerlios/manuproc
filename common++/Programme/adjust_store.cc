@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.31 2003/05/21 10:24:38 christof Exp $
+// $Id: adjust_store.cc,v 1.32 2003/05/22 12:50:48 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -24,6 +24,7 @@
 #include <Auftrag/ppsInstanzReparatur.h>
 #include <Auftrag/sqlAuftragSelector.h>
 #include <Auftrag/selFullAufEntry.h>
+#include <Misc/Trace.h>
 
 void usage(const std::string &s)
 {
@@ -55,11 +56,13 @@ bool check_for(const std::string &pname,cH_ppsInstanz I,const std::string &aktio
       if(I->EigeneLagerKlasseImplementiert()) RI.ReparaturLager(getuid(),analyse_only);
       else std::cout << "\t"<< I << "'A' nicht sinnvoll\n";
      }
-      else if(aktion=="C" &&!I->KundenInstanz()) RI.Reparatur_0er_und_2er(getuid(),analyse_only);
-    else if (aktion=="*" || aktion=="X")
+    else if (aktion=="*" || aktion=="X" || aktion=="C")
     {  SQLFullAuftragSelector psel=SQLFullAuftragSelector::sel_InstanzAlle(I->Id());
        SelectedFullAufList K(psel);
        bool alles_ok=true;
+      if (aktion=="*" || aktion=="C")
+       RI.Reparatur_0er_und_2er(K,analyse_only);
+      if (aktion=="*" || aktion=="X")
        for(SelectedFullAufList::iterator i = K.begin();i!=K.end(); ++i)
        {  AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(*i,
        			AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
@@ -95,7 +98,7 @@ int main(int argc,char *argv[])
   bool all_instanz=false;
 
   if(argc==1) usage(argv[0]);
-  while ((opt=getopt_long(argc,argv,"h:d:i:a:yI",options,NULL))!=EOF)
+  while ((opt=getopt_long(argc,argv,"h:d:i:a:yIt",options,NULL))!=EOF)
    {
     switch(opt)
      {
@@ -105,6 +108,7 @@ int main(int argc,char *argv[])
        case 'd' : database=optarg;break;
        case 'h' : dbhost=optarg;break;  
        case 'y' : analyse_only=true;break;  
+       case 't' : ManuProC::Tracer::Enable(AuftragBase::trace_channel); break;
        case '?' : usage(argv[0]);        
      }
    }

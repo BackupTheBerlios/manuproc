@@ -1,4 +1,4 @@
-/* $Id: Lager.h,v 1.17 2003/03/12 09:06:29 christof Exp $ */
+/* $Id: Lager.h,v 1.18 2003/05/22 12:50:48 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -20,7 +20,7 @@
 #ifndef _LAGER_HH_
 #define _LAGER_HH_
 #include <Artikel/ArtikelBase.h>
-#include <Auftrag/ppsInstanzReparatur.h>
+class ppsInstanzReparatur;
 #include "LagerPlatz.hh"
 #include <Auftrag/AuftragBase.h>
 #include <vector>
@@ -78,7 +78,7 @@ class LagerBase : public cH_ppsInstanz
 
      // die folgenden Methoden müssen einlagern können
 //     friend void ppsInstanz::rekursion(ManuProC::st_produziert &P) const;
-     friend void ppsInstanzReparatur::DispoAuftraege_anlegen(const int uid,const ArtikelBase &artikel,const AuftragBase::mengen_t &menge) const;
+     friend class ppsInstanzReparatur;
 //     friend void AufEintrag::WurdeProduziert(fixedpoint<0>, const AufEintragBase&);
      friend void AufEintrag::ProduziertNG(unsigned, fixedpoint<0>, const AufEintragBase&, const AufEintragBase&);
 

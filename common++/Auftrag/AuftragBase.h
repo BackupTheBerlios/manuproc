@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.44 2003/03/19 08:31:49 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.45 2003/05/22 12:50:48 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -120,7 +120,8 @@ public:
 };
 
 std::ostream &operator<<(std::ostream &o,const AuftragBase &a);
-
+class ArgumentList;
+ArgumentList &operator<<(ArgumentList &q, const AuftragBase &ab);
 //FetchIStream& operator>>(FetchIStream& is,AuftragBase::mengen_t &menge);
 
 
