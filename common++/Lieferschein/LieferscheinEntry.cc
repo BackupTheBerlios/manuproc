@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.47 2004/02/03 13:57:49 jacek Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.48 2004/02/03 14:48:06 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -313,7 +313,7 @@ LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
  Query("insert into lieferscheinentry"
  		"(instanz,lfrsid,zeile, artikelid, refauftragid,refzeilennr, stueck,"
 		"menge,palette,zusatzinfo,lagerid,status)"
- 	"values (?,?,?, ?, ?,?, ?,?,?,?,?)").lvalue()
+ 	"values (?,?,?, ?, ?,?, ?,?,?,?,?,?)").lvalue()
  	<< LE << art.Id() 
  	<< Query::NullIf(auf.Id(),AufEintragBase::none_id)
  	<< Query::NullIf(auf.ZNr(),AufEintragBase::none_znr)
