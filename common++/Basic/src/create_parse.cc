@@ -1,4 +1,4 @@
-// $Id: create_parse.cc,v 1.4 2004/04/29 13:17:23 christof Exp $
+// $Id: create_parse.cc,v 1.5 2004/06/24 16:03:23 christof Exp $
 /*  ManuProC_Base: Main ManuProC Library
  *  Copyright (C) 2004  Christof Petig
  *
@@ -21,6 +21,8 @@
 #include <iostream>
 #include <locale.h>
 
+#define DE
+
 template <>
 int ManuProC::parse<int>(const std::string &value) throw(std::out_of_range)
 {  if (value.empty()) throw std::out_of_range(value);
@@ -35,6 +37,10 @@ bool ManuProC::parse<bool>(const std::string &value) throw(std::out_of_range)
    if (!strcasecmp(value.c_str(),"false")) return false;
    if (!strcasecmp(value.c_str(),"yes")) return true;
    if (!strcasecmp(value.c_str(),"no")) return false;
+#ifdef DE   
+   if (!strcasecmp(value.c_str(),"ja")) return true;
+   if (!strcasecmp(value.c_str(),"nein")) return false;
+#endif   
    std::cerr << "strange bool value: \"" << value << "\"\n";
    return parse<int>(value);
 }
