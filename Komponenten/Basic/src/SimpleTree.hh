@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.12 2002/12/11 11:25:57 christof Exp $
+// $Id: SimpleTree.hh,v 1.13 2002/12/13 18:35:23 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -53,6 +53,7 @@ public:
 	{  return sts.ColumnFromIndex(i); }
 	unsigned IndexFromColumn(unsigned c) const
 	{  return sts.IndexFromColumn(c); }
+	const SimpleTreeStore::sequence_t &get_seq() const {return sts.get_seq();}
 };
 
 // I took the more esoteric features out to SimpleTree, 
