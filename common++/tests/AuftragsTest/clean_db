@@ -2,25 +2,22 @@
 
 psql $1 <<EOF
 delete from artikelzusammensetzung;
-delete from auftrag;
-delete from auftragentry;
+delete from prod_changejournal;
 delete from auftrag_prozess;
 delete from auftragsentryzuordnung;
+delete from auftragentry;
+delete from auftrag;
 delete from ketten;
 delete from lager_bewegung;
 delete from lastcode;
 insert into lastcode (code) values (100);
-delete from prod_changejournal;
 delete from schaertabelle;
 delete from rl_inhalt;
 delete from rl_log;
 delete from rohjumbo;
-delete from lieferschein;
-delete from lieferscheinentry;
 delete from lieferscheinentryzusatz;
-SELECT pg_catalog.setval ('ketten_kettid_seq', 5675, true);
-SELECT pg_catalog.setval ('prod_changejournal_chid_seq', 44371, true);
-SELECT pg_catalog.setval ('schaertabelle_entryid_seq', 211774, true);
+delete from lieferscheinentry;
+delete from lieferschein;
 vacuum analyze;
 EOF
 ../../Programme/Instanzen $1

@@ -1021,7 +1021,11 @@ int main(int argc,char *argv[])
    if (verbose) kill_output="";
 
    if (clean_only)
-      system((std::string("./clean_db ")+getenv("PGDATABASE")+kill_output).c_str());
+   {  system((std::string("./clean_db ")+getenv("PGDATABASE")+kill_output).c_str());
+      std::string cmd=std::string(MANU_DATAPATH)+"/clean_db2";
+      if (!access(cmd.c_str(),X_OK))
+         system((cmd+" "+getenv("PGDATABASE")+kill_output).c_str());
+   }
    else
       system((std::string(MANU_DATAPATH)+"/initdb.script "+MANU_DATAPATH+kill_output).c_str());
    std::cout << "...beendet\n";
