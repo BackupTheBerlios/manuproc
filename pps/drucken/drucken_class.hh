@@ -126,12 +126,12 @@ public:
       if (Typ()==Rechnung) return u.r->AuftragId();
 	abort(); 
       }
-   const std::string &getRefOrder() const { 
+   std::string getRefOrder() const { 
       if (Typ()==Lieferschein || Typ()==Wareneingang) 
          return u.l->getRefOrder();
       return std::string(); 
       }
-   const std::string &Text() const { 
+   std::string Text() const { 
       if (Typ()==Lieferschein || Typ()==Wareneingang) 
          return u.l->Text();
       return std::string(); 

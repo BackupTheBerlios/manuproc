@@ -109,7 +109,6 @@ void LR_Abstraktion::drucken_header(std::ostream &os)
 // mygrayvalue=0.75;
 //#endif
  hf.preamble="\\newrgbcolor{mygray}{"+dtos(mygrayvalue)+" "+dtos(mygrayvalue)+" "+dtos(mygrayvalue)+"}\n"
-//	"\\newlength{\\breite}\n"
 	"\\setlength{\\topsep}{0pt}\n"
 	"\\setlength{\\partopsep}{0pt}\n"
 	"\\setlength{\\textheight}{26.0cm}\n";  // na, ob das sinnvoll ist?
@@ -508,7 +507,8 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
         if ((Typ()==Lieferschein || Typ()==Wareneingang) && notice_column_possible)
         { if (!(*j).Text().empty())
           { if ((*j).Text().size()>10) 
-              notice_column_bool=notice_column_possible=false; 
+            { notice_column_bool=notice_column_possible=false; 
+            }
             else notice_column_bool=true;
           }
         }
@@ -607,6 +607,12 @@ std::cout << "table ends\n";
             (*k).Rabatt(),(*k).getLieferdatum(),(*k).Palette(),YourAuftrag,
 	    (*k).getPreisliste(),
             AEB,(*k).Text());
+        if (!(*k).Text().empty() && !notice_column_bool)
+        { os << "\\multicolumn{" << spaltenzahl << "}{l}"
+             "{\\hspace*{1cm}\\begin{minipage}{16.5cm}" << string2TeX((*k).Text()) 
+             << "\\end{minipage}}\\\\\n";
+          zeilen_passen_noch-=(*k).Text().size()/60+1;
+        }
         if(auftragmenge.size()>1) 
          { 
            for(std::vector<LieferscheinEntry::st_AuftragMenge>::const_iterator 
