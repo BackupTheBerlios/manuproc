@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.73 2003/09/11 15:25:55 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.74 2003/09/15 11:58:40 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -71,6 +71,22 @@ class AufEintrag : public AufEintragBase
      class ProduziertNG_cb2;
      class ArtikelAbbestellen_bevorzugt;
      class EinlagernRueckgaengig;
+
+     #if ( __GNUC__ < 3 )
+     friend class MichEinlagern;
+     friend class AbbestellenUndVormerken;
+     friend class Abbestellen_cb;
+     friend class NeuBestellen;
+     friend class Einlagern_cb;
+     friend class delayed_reclaim;
+     friend class WiederEinlagern_cb;
+     friend class MichProduzieren;
+     friend class ProduziertRueckgaengig2;
+     friend class ProduziertNG_cb2;
+     friend class ArtikelAbbestellen_bevorzugt;
+     friend class EinlagernRueckgaengig;     
+     #endif
+
 
 private: 
  mengen_t bestellt;

@@ -1,4 +1,4 @@
-/* $Id: Adresse_sql.pgcc,v 1.7 2003/03/25 10:38:12 jacek Exp $ */
+/* $Id: Adresse_sql.pgcc,v 1.8 2003/09/15 11:58:40 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -32,6 +32,7 @@ Adresse::Adresse(int kdnr) throw(SQLerror)
    int KUNDENNR=kdnr;
    char IDNR[21];
    char FIRMA[61];
+   char *NAME2=0;
    char *POSTANWVOR=0;
    char STRASSE[36];
    char *POSTANWNACH=0;
@@ -47,15 +48,15 @@ Adresse::Adresse(int kdnr) throw(SQLerror)
 //   char ISOCODE[4];
 
    int IIDNR, ISTRASSE, IHSNR, IPLZ,
-      IPOSTFACH, IPOSTFPLZ, IORT, IRNG_AN_POSTFACH;
+      IPOSTFACH, IPOSTFPLZ, IORT, IRNG_AN_POSTFACH, INAME2;
 
    exec sql end declare section;
 
-   exec sql SELECT firma, coalesce(postanwvor,''), strasse, hsnr, 
+   exec sql SELECT firma, name2, coalesce(postanwvor,''), strasse, hsnr, 
 		coalesce(postanwnach,''),
          	plz, ort, postfach, postfplz, rng_an_postfach, idnr,
 		coalesce(l.name,''),coalesce(l.lkz,'')
-	into :FIRMA, :POSTANWVOR, :STRASSE:ISTRASSE,
+	into :FIRMA, :NAME2:INAME2, :POSTANWVOR, :STRASSE:ISTRASSE,
    		:HSNR:IHSNR, :POSTANWNACH, :_PLZ:IPLZ,
    		:ORT:IORT, :POSTFACH:IPOSTFACH, 
    		:POSTFPLZ:IPOSTFPLZ, :RNG_AN_POSTFACH:IRNG_AN_POSTFACH,
@@ -77,6 +78,7 @@ Adresse::Adresse(int kdnr) throw(SQLerror)
    kundennr=KUNDENNR;
    strcpyx(IDnr,IDNR);
    firma=FIRMA;
+   name2 = INAME2 ? "" : NAME2;
    postanwvor=POSTANWVOR;
    strasse=STRASSE;
    postanwnach=POSTANWNACH;

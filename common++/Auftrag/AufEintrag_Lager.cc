@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.26 2003/09/15 09:37:25 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.27 2003/09/15 11:58:40 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -36,6 +36,10 @@
 #include <Misc/relops.h>
 #include <Auftrag/sqlAuftragSelector.h>
 #include <Auftrag/selFullAufEntry.h>
+
+#include <unistd.h>
+#include <sys/types.h>
+
 
 #ifdef MABELLA_EXTENSIONS
 //#include <Lager/FertigWarenLager.h>

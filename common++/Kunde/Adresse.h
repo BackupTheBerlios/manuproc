@@ -1,4 +1,4 @@
-/* $Id: Adresse.h,v 1.10 2003/06/25 13:09:00 jacek Exp $ */
+/* $Id: Adresse.h,v 1.11 2003/09/15 11:58:40 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,6 +25,7 @@ class Adresse
 {  int kundennr;
    char IDnr[21];
    std::string firma;
+   std::string name2;
    std::string postanwvor;
    std::string strasse;
    std::string postanwnach;
@@ -42,6 +43,7 @@ class Adresse
  public:
    const std::string Strasse() const { return strasse;}
    const std::string Firma() const { return firma;}
+   const std::string Name2() const { return  name2; }
    const std::string Hsnr() const { return hsnr;}
    const std::string Ort() const { return ort;}
    const std::string Plz() const { return PLZ;}

@@ -1,4 +1,4 @@
-// $Id: AufEintrag_ro.cc,v 1.3 2003/09/02 12:10:52 christof Exp $
+// $Id: AufEintrag_ro.cc,v 1.4 2003/09/15 11:58:40 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -21,6 +21,9 @@
 #include <Auftrag/AufEintrag.h>
 #include <Auftrag/selFullAufEntry.h>
 #include <Misc/TraceNV.h>
+#include <unistd.h>
+#include <sys/types.h>
+
 
 AufEintrag::AufEintrag(const AufEintragBase &aeb, mengen_t _bestellt,
 	ArtikelBase _artikel, const ManuProC::Datum _lieferdatum,

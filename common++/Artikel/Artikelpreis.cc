@@ -312,7 +312,10 @@ void Artikelpreis::changePreis(const Preis &p, int newmindmenge) throw(SQLerror)
 }
 
 
-
+//
+// from_all_lists : löscht in allen Listen. Allerdings nur in Verkaufs- bzw.
+// Einkaufslisten
+//
 void Artikelpreis::remove(const cH_PreisListe liste,const ArtikelBase &a,
 	std::vector<std::string> del_all_komp,
 	int mindmenge, bool from_all_lists) throw(SQLerror)
@@ -342,7 +345,8 @@ void Artikelpreis::remove(const cH_PreisListe liste,const ArtikelBase &a,
     if(MINDESTMENGE)
 	query+=" and p.mindestmenge="+itos(MINDESTMENGE);
 
-    query+=") where ";
+    query+=") join ku_preisliste pl using (pl.prlsnr=p.kundennr"
+		" and pl.art=?) where ";
     for(std::vector<std::string>::const_iterator s=del_all_komp.begin();
 	s!=del_all_komp.end(); ++s)
 	{
@@ -352,7 +356,9 @@ void Artikelpreis::remove(const cH_PreisListe liste,const ArtikelBase &a,
 	}
     query+=" true "; // damit am Ende kein einsames "and" stehen bleibt
 
-    Query(query).FetchArray(to_delete);
+    Query q(query);
+    q << liste->Art();
+    q.FetchArray(to_delete);
     SQLerror::test(__FILELINE__);
    }
  else
