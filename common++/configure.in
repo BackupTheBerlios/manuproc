@@ -1,5 +1,6 @@
-# $Id: configure.in,v 1.27 2002/12/11 12:10:13 jacek Exp $
+# $Id: configure.in,v 1.28 2003/06/04 10:39:53 christof Exp $
 
+AC_PREREQ(2.50)
 AC_INIT(Artikel/ArtikelBase.h)
 
 AM_INIT_AUTOMAKE(libcommon++, 0.0, nomacros)
