@@ -1,4 +1,4 @@
-// $Id: compiler_ports.h,v 1.4 2003/05/22 12:50:48 christof Exp $
+// $Id: compiler_ports.h,v 1.5 2003/06/18 07:58:40 christof Exp $
 
 // this macros cater for the various incompatible compilers
 
@@ -28,7 +28,7 @@
    //    a_t(make_value(b_t(0))
    // and please ignore the "left-hand operand of comma expression has 
    //     no effect" warning
-#define make_value(x) (0,x)
+#define make_value(x) ((void)0,x)
 #else
 #define make_value(x) x
 #endif
