@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.15 2002/11/07 07:48:59 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.16 2002/11/29 11:20:34 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -50,6 +50,7 @@ bool LieferscheinEntry::changeMenge(int stueck,mengen_t menge) throw(SQLerror)
 
   AuftragBase::mengen_t abmenge=Abschreibmenge(stueck,menge);
 
+//cout << "Abschreibmenge="<<abmenge<<'\n';
   if(RefAuftrag().valid()) // => Keine Zusatzinfos
    {
      AufEintragBase AEB(RefAuftrag(),AufZeile());
@@ -122,6 +123,14 @@ void LieferscheinEntry::deleteMe(const LieferscheinEntry &LE)  throw(SQLerror)
 
 LieferscheinBase::mengen_t LieferscheinEntry::Abschreibmenge(int stueck,mengen_t menge) const
 {
+   mengen_t alte_menge=Stueck();
+   if(Menge()!=0) alte_menge=alte_menge*Menge();
+   
+   mengen_t neue_menge=stueck;
+   if(menge!=0 || Menge()!=0) neue_menge=neue_menge*menge;
+   
+   return neue_menge-alte_menge;
+/*
    int stueckdiff =   stueck - Stueck();
    mengen_t mengediff = menge - Menge();
 //cout << stueck<<'-'<<Stueck()<<'='<<stueckdiff<<'\n';
@@ -135,6 +144,7 @@ LieferscheinBase::mengen_t LieferscheinEntry::Abschreibmenge(int stueck,mengen_t
        else  abmenge = menge*mengen_t(stueck) - Menge()*mengen_t(Stueck());
      }
   return abmenge;
+*/
 }
 
 void LieferscheinEntry::updateZusatzEntry(const st_zusatz &Z,const AuftragBase::mengen_t &menge) throw(SQLerror)

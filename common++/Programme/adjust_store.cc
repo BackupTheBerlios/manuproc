@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.10 2002/11/22 15:31:06 christof Exp $
+// $Id: adjust_store.cc,v 1.11 2002/11/29 11:20:34 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -42,8 +42,9 @@ void usage(const std::string &s)
            "\tC: Es wird sichergestellt, daﬂ nur entweder 0er- oder 2er-Auftr‰ge\n"
            "\t   (pro Instanz,Artikel,Lieferdatum) existieren.\n";
  std::cerr << "USAGE:  ";
- std::cerr << s <<" -i<instanz> -a<aktion> [-d<database> -h<dbhost>]\n"
-           "wobei die aktion=[A|B|C] ist.\n\n";
+ std::cerr << s <<" -i<instanz> -a<aktion> [-d<database> -h<dbhost> -y] \n"
+           "wobei die aktion=[A|B|C] ist.\n"
+           "-y schaltet einen reinen Analysemodus ein, der keine Reparaturen vornimmt\n\n";
 
  exit(1);
 }
@@ -54,6 +55,7 @@ const static struct option options[]=
  { "aktion", required_argument, NULL, 'a' },
  { "database", required_argument,      NULL, 'd' },
  { "dbhost", required_argument,      NULL, 'h' },  
+ { "analyse_only", no_argument,      NULL, 'y' },  
  { NULL,      0,       NULL, 0 }
 };
 
@@ -64,6 +66,7 @@ int main(int argc,char *argv[])
   std::string database="";
   std::string dbhost="";  
   std::string aktion;
+  bool analyse_only=false;
 
   if(argc==1) usage(argv[0]);
   while ((opt=getopt_long(argc,argv,"h:d:i:a:",options,NULL))!=EOF)
@@ -74,6 +77,7 @@ int main(int argc,char *argv[])
        case 'a' : aktion = optarg; break;
        case 'd' : database=optarg;break;
        case 'h' : dbhost=optarg;break;  
+       case 'y' : analyse_only=true;break;  
        case '?' : usage(argv[0]);        
      }
    }

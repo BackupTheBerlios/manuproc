@@ -43,7 +43,8 @@ enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
       LieferscheintestZusatz,Lieferscheintest_ZweiterAuftrag_frueheresDatum,
       LieferscheinJacek,
       ZweiKundenTest,ZweiKundenMengeFreigebenTest,ManuProCTest,
-      JumboLager,Rep_Mabella,Rep_Petig_PhysikalischesLager};
+      JumboLager,Rep_Mabella,Rep_Petig_PhysikalischesLager,
+      Rep_Petig_0er_2er_gleichzeitig};
 
 static int fehler()
 {
@@ -355,9 +356,6 @@ std::cout << dummystring<<'\n';
       RohwarenLager::st_rohlager stRL(LagerPlatzKupfer2,100,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
       std::string dummystring;
       RL.RL_Einlagern(LagerPlatzKupfer2,stRL,UID,dummystring);
-std::cout << "D0: "<<dummystring<<'\n';
-//      Lager RL((cH_ppsInstanz(ppsInstanzID::Rohwarenlager)));
-//      RL.rein_ins_lager(ARTIKEL_KUPFER,100,UID);
       erfolgreich=C.teste(Check::Rohwarenlager_einlagern,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Rohwarenlager einlagern\n";
                return fehler();}
@@ -404,6 +402,7 @@ std::cout << dummystring<<'\n';
       if(!erfolgreich) { cout << "Kunde Überlieferung\n";
                return fehler();} 
 
+
       // test von force, leer, etc
 #if 0
       dummystring="";
@@ -433,6 +432,29 @@ std::cout << "D13: "<<dummystring<<'\n';
 #endif
       break;
      }
+    case Rep_Petig_0er_2er_gleichzeitig:
+     {
+      #ifndef REPARATUR_PROGRAMM_TESTEN
+        assert(!"FEHLER: MIT REPARATURPROGRAMM KOMPILIEREN\n");
+      #endif
+                          
+
+      std::string q1="update auftragentry set bestellt=3000 where "
+                     " (auftragid,zeilennr,instanz) = (2,1,8)";                            
+/*
+      std::string q1="insert into auftragentry (auftragid,zeilennr,bestellt,"
+         " geliefert,lieferdate,artikelid,status,instanz)"
+         " values (2,5,3000,0,'1970-01-01',123755,1,4)";
+*/      Query::Execute(q1);
+      SQLerror::test(__FILELINE__);
+      erfolgreich=C.teste(Check::Menge,"_Rep0er2ergleichzeitig",mit_reparatur_programm,true);
+      if(!erfolgreich) { cout << "Reparatur 0er und 2er gleichzeitig\n";
+      return fehler();} 
+
+      cout << "Reparatur 2er und 0er gleichzeitig erfolgreich\n";
+                              
+      break;
+     } 
     case ZweiAuftraege:
      {
        {
@@ -843,6 +865,7 @@ void usage(const std::string &argv0,const std::string &argv1)
                   "\t(M)anu(P)roCTest\n"
                   "\t(J)umboLager\n"
                   "\t(R)eparatur(P)hysikalischesLager\n"
+                  "\t(R)eparatur_0er_2er_(g)leichzeitig\n"
                   "\t(R)eparartur(M)Mabella] aufgerufen werden\n"
        << " nicht mit '"<<argv1<<"'\n";
   exit(1);
@@ -870,7 +893,8 @@ int main(int argc,char *argv[])
    else if(std::string(argv[1])=="MP" || std::string(argv[1])=="ManuProCTest")  mode=ManuProCTest;
    else if(std::string(argv[1])=="J" || std::string(argv[1])=="JumboLager")  mode=JumboLager;
    else if(std::string(argv[1])=="RM" || std::string(argv[1])=="ReparaturMabella")  mode=Rep_Mabella;
-   else if(std::string(argv[1])=="RP" || std::string(argv[1])=="Rep_Petig_PhysikalischesLager")  mode=Rep_Petig_PhysikalischesLager;
+   else if(std::string(argv[1])=="RP")  mode=Rep_Petig_PhysikalischesLager;
+   else if(std::string(argv[1])=="Rg")  mode=Rep_Petig_0er_2er_gleichzeitig;
 
    if(mode==None) { usage(argv[0],argv[1]); return 1; }
    

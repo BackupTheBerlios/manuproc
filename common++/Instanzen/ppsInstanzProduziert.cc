@@ -1,4 +1,4 @@
-// $Id: ppsInstanzProduziert.cc,v 1.8 2002/11/27 12:35:52 thoma Exp $
+// $Id: ppsInstanzProduziert.cc,v 1.9 2002/11/29 11:20:34 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -67,7 +67,7 @@ void ppsInstanz::Produziert(ManuProC::st_produziert &P,ManuProC::Auftrag::Action
  assert(Id()!=ppsInstanzID::None) ; 
  Transaction tr;
  if(P.AE.valid()) // direktes Abschreiben ohne Suche von offenen Aufträgen
-     { assert(P.AE.valid());
+     { 
        P.AE.abschreiben(P.menge,P.lfrsid);
        P.Reduce_DispoEltern(P.AE,P.menge);      
        rekursion(P);
@@ -284,7 +284,7 @@ void ManuProC::st_produziert::Reduce_DispoEltern(const AufEintragBase &aeb,Auftr
         AufEintrag AE(i->AEB);
         assert(i->Menge==AE.getStueck());
         AuftragBase::mengen_t M=AuftragBase::min(i->Menge,menge);
-cout << "Reduce_DispoEltern: "<<i->Menge<<' '<<menge<<'='<<M<<'\n';
+//cout << "Reduce_DispoEltern: "<<i->Menge<<' '<<menge<<'='<<M<<'\n';
         AufEintrag(i->AEB).updateStkDiffBase__(uid,-M);
         menge-=M;
       } 

@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.21 2002/11/28 15:59:28 thoma Exp $
+// $Id: Check.cc,v 1.22 2002/11/29 11:20:34 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -193,7 +193,7 @@ bool Check::vergleich(was_checken was,const std::string &zusatz)
      if(reg==-1) { cout<< "Fehler im diff-Komando ("+*i+")\n"; exit(reg);}
      else if(reg==0) ;//zuviel Output :-( {cout << *i << " OK\n";}
      else 
-      { cout << "Probleme, Empfehlung: \n "<< "mgdiff "+fz1+" "+fz2<<"\n"; 
+      { cout << "Probleme, Empfehlung: \n "<< "mgdiff "+fz1+" "+fz2<<" &\n"; 
         error=true;
       }
 #endif

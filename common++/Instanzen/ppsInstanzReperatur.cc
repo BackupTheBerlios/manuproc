@@ -30,18 +30,23 @@ void ppsInstanz::Reparatur_0er_und_2er(int uid) const throw(SQLerror)
    assert(Id() != ppsInstanzID::Kundenauftraege);
    SQLFullAuftragSelector sel0er= SQLFullAuftragSelector::sel_Status(Id(),OPEN,AuftragBase::ungeplante_id);
    SelectedFullAufList AL(sel0er);
+//cout << "AL.size()\t"<<AL.size()<<'\n';
    for(SelectedFullAufList::iterator i=AL.begin();i!=AL.end();++i)
     {
-      SQLFullAuftragSelector sel2er=SQLFullAuftragSelector::sel_Artikel_Planung_id(Id(),Kunde::eigene_id,i->Artikel(),AuftragBase::dispo_auftrag_id,OPEN,i->getLieferdatum());
+      SQLFullAuftragSelector sel2er;
+      if(LagerInstanz())
+         sel2er=SQLFullAuftragSelector::sel_Artikel_Planung_id(Id(),Kunde::eigene_id,i->Artikel(),AuftragBase::dispo_auftrag_id,OPEN,LagerBase::Lagerdatum());
+      else 
+         sel2er=SQLFullAuftragSelector::sel_Artikel_Planung_id(Id(),Kunde::eigene_id,i->Artikel(),AuftragBase::dispo_auftrag_id,OPEN,i->getLieferdatum());
       SelectedFullAufList L2er(sel2er);
-      assert(L2er.empty() || L2er.size()==1);
 //std::cout << i->Instanz()<<'\t'<<i->Artikel()<<'\t'<<L2er.size()<<'\n';
+      assert(L2er.empty() || L2er.size()==1);
       if(!L2er.empty() && L2er.begin()->getStueck()!=0) // Reparatur
        {
-assert(!"ReparaturProgramm\n");
          AufEintrag A2er=*(L2er.begin());
          AuftragBase::mengen_t M=AuftragBase::min(i->getStueck(),A2er.getStueck());
          AuftragBase zielauftrag(Id(),AuftragBase::plan_auftrag_id);
+//         i->Planen(uid,M,zielauftrag,i->getLieferdatum(),ManuProC::Auftrag::r_Reparatur);
          i->Planen(uid,M,zielauftrag,i->getLieferdatum(),ManuProC::Auftrag::r_Reparatur);
        }
     }
@@ -148,13 +153,13 @@ void ppsInstanz::ReparaturLager(const int uid) const throw(SQLerror)
 
 void ppsInstanz::vormerkungen_subrahieren(int uid,const  std::vector<LagerInhalt> &LI) const
 {
-std::cout << "Anzahl der Artikel im Lager = "<<LI.size()<<'\n';
+//std::cout << "Anzahl der Artikel im Lager = "<<LI.size()<<'\n';
   for(std::vector<LagerInhalt>::const_iterator i=LI.begin();i!=LI.end();++i)
    {
      bool set_dispo_to_zero=false;
      AuftragBase::mengen_t menge=i->GesamtMenge();
-std::cout <<i->Artikel().Id()<<' '<<cH_ArtikelBezeichnung(i->Artikel())->Bezeichnung()
-  <<'\t'<<menge<<'\n';
+//std::cout <<i->Artikel().Id()<<' '<<cH_ArtikelBezeichnung(i->Artikel())->Bezeichnung()
+//  <<'\t'<<menge<<'\n';
 
      // Vorgemerkte Menge (1er Aufträge) wieder abziehen
      // Schon eingetragene Menge wieder abziehen
@@ -199,18 +204,9 @@ std::cout << "\t\tReparaturMenge: "<<-menge<<'\n';
 void ppsInstanz::DispoAuftraege_anlegen(const int uid,const ArtikelBase &artikel,const AuftragBase::mengen_t &menge) const
 {
    assert(EigeneLagerKlasseImplementiert());
-std::cout << "Mengenänderung: "<<menge<<'\n';
+std::cout << "Mengenänderung im Lager "<<Name()<<'\t'<<menge<<'\n';
    if(menge>=0)
       LagerBase(this).rein_ins_lager(artikel,menge,uid);
-/*
-   bool alt=AuftragBase::dispo_auftrag_aendern(uid,this,artikel,menge);  
-   const std::string ab=cH_ArtikelBezeichnung(artikel)->Bezeichnung();
-   if(alt) std::cout << "Update von "<<ab<<"\tum "<<menge<<'\n';
-   else    std::cout << "Neuanlegen von "<<ab<<"\tmit "<<menge<<'\n';
-
-   if(menge!>0)
-      AuftragBase::menge_neu_verplanen(uid,this,artikel,menge,ManuProC::Auftrag::r_Produziert);
-*/   
 }
 
 
