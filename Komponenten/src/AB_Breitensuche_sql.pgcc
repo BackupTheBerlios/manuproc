@@ -58,7 +58,7 @@ bool ArtikelBox::BreitenSuche(GtkSCContext newsearch,unsigned sp,unsigned l, int
     {  std::vector<int> res;
        (Query("select distinct artikeltyp from extbezschema"
     	" where artikeltyp<>? and extartbezid=?"
-#ifdef PETIG_EXTENSIONS
+#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
         " and artikeltyp<>"+itos(ArtikelTypID::Veraltet_Fehler)
         +" order by artikeltyp desc"
 #endif    	
@@ -69,7 +69,7 @@ bool ArtikelBox::BreitenSuche(GtkSCContext newsearch,unsigned sp,unsigned l, int
     {  std::vector<intint> res;
        (Query("select distinct extartbezid,artikeltyp from extbezschema"
     	" where artikeltyp<>? and extartbezid<>?"
-#ifdef PETIG_EXTENSIONS
+#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
         " and artikeltyp<>"+itos(ArtikelTypID::Veraltet_Fehler)
         +" order by artikeltyp desc"
 #endif    	

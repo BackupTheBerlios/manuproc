@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.27 2004/02/02 18:01:20 christof Exp $
+// $Id: ArtikelBox.cc,v 1.28 2004/05/05 12:01:01 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -36,7 +36,7 @@
 
 ArtikelBox::st_default::st_default()
 :
-#if (defined PETIG_EXTENSIONS)
+#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
    bestelle_bei(ppsInstanzID::Rollerei), 
 #else
    bestelle_bei(ppsInstanzID::None),
@@ -428,7 +428,7 @@ void ArtikelBox::setExtBezSchemaID(ExtBezSchema::ID id)
 
    // replace this by a decent database driven last selected solution
    // the API is already there
-#ifdef PETIG_EXTENSIONS
+#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
    ArtikelBox::setExtBezSchema(cH_ExtBezSchema(id,ArtikelTypID::Band));
 #else
    ArtikelBox::setExtBezSchema(cH_ExtBezSchema(id));

@@ -418,7 +418,7 @@ void ArtikelBox::Neuer_Eintrag()
   what[what.size()-1]=' ';
   ArtikelBezeichnung::Anlegen(schema,ArtikelBase(db_id),where,what);
 
-#ifdef PETIG_EXTENSIONS  // Jumborollen anlegen ?
+#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED // Jumborollen anlegen ?
  if (Default_IEP.bestelle_bei==ppsInstanzID::Rollerei)
  {  ArtikelBase::ID jumbo_id=artikel_exist(true);
     if(!jumbo_id)

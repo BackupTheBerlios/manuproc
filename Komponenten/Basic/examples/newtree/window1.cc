@@ -5,6 +5,7 @@
 #include <Misc/itos.h>
 #include <Misc/Trace.h>
 #include <iostream>
+#include <TreeModelDebug.h>
 
 enum Spalten
 {  SP_ATT0, SP_ATT1, SP_ATT2, SP_ATT3, SP_ATT4, 
@@ -188,6 +189,7 @@ window1::window1() : st(SP_ANZ)
    }
 #endif
    st.set_remember("(example)","newtree");
+   TreeModelDebug(st.getTreeModel());
    
 //   ManuProC::Tracer::Enable(SimpleTreeStore::trace_channel);
 }
