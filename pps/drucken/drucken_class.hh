@@ -19,7 +19,7 @@
 #ifndef DRUCKEN_CLASS
 #define DRUCKEN_CLASS
 #include <Lieferschein/LieferscheinVoll.h>
-#include <Lieferschein/Rechnung.h>
+#include <Lieferschein/RechnungVoll.h>
 #include <Auftrag/AuftragFull.h>
 #include <fstream>
 //#include <cstdio>
@@ -93,10 +93,10 @@ public:
 class LR_Iterator: public LR_Base
 {
    typedef LR_Iterator self;  
-   union u_t { LieferscheinVoll::const_iterator l; Rechnung::const_iterator r;
+   union u_t { LieferscheinVoll::const_iterator l; RechnungVoll::const_iterator r;
                AuftragFull::const_iterator a;
             u_t(const LieferscheinVoll::const_iterator &_l) : l(_l) {}
-            u_t(const Rechnung::const_iterator         &_r) : r(_r) {}
+            u_t(const RechnungVoll::const_iterator         &_r) : r(_r) {}
             u_t(const AuftragFull::const_iterator      &_a) : a(_a) {}
          } u;
       
@@ -131,7 +131,7 @@ public:
         }
    LR_Iterator(const LieferscheinVoll::const_iterator &l)
    : LR_Base(Lieferschein), u(l) {}
-   LR_Iterator(const Rechnung::const_iterator &r)
+   LR_Iterator(const RechnungVoll::const_iterator &r)
    : LR_Base(Rechnung), u(r) {}
    LR_Iterator(const AuftragFull::const_iterator &a)
    : LR_Base(Auftrag), u(a) {}
@@ -141,13 +141,13 @@ class LR_Abstraktion: public LR_Base
 {
 public:
   typedef LR_Iterator const_iterator;
-  union {const LieferscheinVoll *l; const class Rechnung *r; 
+  union {const LieferscheinVoll *l; const class RechnungVoll *r; 
    const class AuftragFull *a;} u;
 public:
   LR_Abstraktion():LR_Base(NICHTS) {}
   LR_Abstraktion(const LieferscheinVoll *l) : LR_Base(Lieferschein) 
   { u.l=l; }
-  LR_Abstraktion(const class Rechnung *r) : LR_Base(Rechnung) 
+  LR_Abstraktion(const class RechnungVoll *r) : LR_Base(Rechnung) 
   { u.r=r; }
   LR_Abstraktion(const class AuftragFull *a) : LR_Base(Auftrag) 
   { u.a=a; }

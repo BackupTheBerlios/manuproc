@@ -23,6 +23,7 @@
 
 #include<treebase.h>
 #include<Lieferschein/Rechnung.h>
+#include<Lieferschein/RechnungVoll.h>
 #include<Lieferschein/RechnungEntry.h>
 #include<Aux/EntryValueIntString.h>
 #include<Aux/Datum.h>
@@ -36,6 +37,7 @@ class Rg_TCList : public TreeBase
 {
 
  Rechnung rechnung;
+ RechnungVoll rechnungvoll;
  
 public:
 
@@ -54,14 +56,7 @@ public:
  			
  bool deleteRngEntry();
 
-// TCListNode *NewNode(guint _seqnr, gpointer gp,const cH_RowDataBase &v, guint deep);
-// TCListLeaf *NewLeaf(guint _seqnr, gpointer gp,const cH_RowDataBase &v, guint deep);
-
 };
-
-// Rg_TCList end
-
-// Rg_RowData begin 
 
 #include<Lieferschein/LieferscheinBase.h>
 
@@ -113,10 +108,6 @@ public:
 };
 
 
-// Rg_RowData end
-
-// Rg_Node begin
-
 #include<tclistnode.h>
 
 class Rg_Node : public TCListNode
@@ -132,10 +123,6 @@ public:
  fixedpoint<2> SumPreis() const { return sumpreis; }
 
 };
-
-// Rg_Node end
-
-// Rg_Value begin
 
 class Rg_Value: public EntryValueIntString
 {
@@ -159,7 +146,5 @@ public:
  cH_Rg_Value(fixedpoint<2> f) : cH_EntryValue(new Rg_Value(f)) {}
     
 };
-
-// Rg_Value end
 
 #endif

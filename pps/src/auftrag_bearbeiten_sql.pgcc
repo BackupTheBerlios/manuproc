@@ -1,4 +1,4 @@
-// $Id: auftrag_bearbeiten_sql.pgcc,v 1.4 2001/08/31 10:06:58 christof Exp $
+// $Id: auftrag_bearbeiten_sql.pgcc,v 1.5 2001/09/19 14:42:48 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -81,7 +81,6 @@ throw(SQLerror)
        }
 
   }
-
 }
 
 

@@ -17,10 +17,13 @@ pps_SOURCES = $(BUILT_SOURCES) \
 	aktAufEintrag.cc \
 	auftrag_main.cc \
 	auftrag_main_glade.cc \
+   auftrag_main_instanz.cc \
 	auftrag_bearbeiten.cc \
 	auftrag_bearbeiten_glade.cc \
 	auftrag_lieferschein.cc \
 	auftrag_lieferschein_glade.cc \
+   lieferscheinliste.cc \
+   lieferscheinliste_glade.cc \
 	auftrag_rechnung.cc \
 	auftrag_rechnung_glade.cc \
 	auftragliste.cc \
@@ -37,6 +40,8 @@ noinst_HEADERS = \
 	Rg_Tree.h \
 	auftrag_main.hh \
 	auftrag_main_glade.hh \
+   lieferscheinliste.hh \
+   lieferscheinliste_glade.hh \
 	auftrag_rechnung.hh \
 	auftrag_rechnung_glade.hh \
 	auftragliste.hh \
@@ -52,7 +57,8 @@ BUILT_SOURCES= \
 	auftrag_bearbeiten_sql.cc \
 	auftrag_liefer_sql.cc \
 	auftrag_rechnung_sql.cc \
-   auftrag_main_sql.cc
+   auftrag_main_sql.cc \
+   auftrag_main_instanz_sql.cc
 
 CXXFLAGS = @CXXFLAGS@ @KOMPONENTEN_INCLUDES@ @GNOMEMM_CFLAGS@ 
 

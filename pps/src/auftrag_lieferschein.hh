@@ -35,7 +35,7 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
         void on_lief_preview();
         void on_lief_print();
         void on_liefnr_activate();
-	void on_liefnr_search(int *_continue, GtkSCContext newsearch);
+        void on_liefnr_search(int *_continue, GtkSCContext newsearch);
         void on_lieferkunde_activate();
         void on_liefdate_activate();
         void on_liefermenge_activate();
@@ -46,9 +46,10 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
         void on_Palette_activate();
         void on_artikelbox_activate();
 
-	void on_selectrow_lieferschein(int row, int col, GdkEvent* b);
-	void on_unselectrow_lieferschein(int row, int col, GdkEvent* b);
+ 	     void on_selectrow_lieferschein(int row, int col, GdkEvent* b);
+	     void on_unselectrow_lieferschein(int row, int col, GdkEvent* b);
         void liefzeile_delete();
+        void on_button_liste_clicked();
 
 	AufEintragBase2 auftragentry;
 	ArtikelBase artikel;

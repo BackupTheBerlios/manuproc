@@ -80,7 +80,7 @@ int main(int argc, char **argv)
 
 weiter:
 
- try{ m.run(); }
+ try{ m.run();}
    catch(SQLerror &e) {meldung->Show(e); goto weiter;}
 
  delete auftragmain;

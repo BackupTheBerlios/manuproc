@@ -117,15 +117,8 @@ void auftrag_rechnung::on_rngnr_activate()
  offene_lieferscheine->setKunde(cH_Kunde(lieferkunde->get_value()));
  offene_lieferscheine->clear();
  offene_lieferscheine->showOffLief();
- // neues WWaehrung-Widget
  rng_WWaehrung->set_History(rechnung_liste->getRechnung().getWaehrung()->get_enum());
 
-/* ALTes Waehrungs-Optionmenu
- if (*(rechnung_liste->getRechnung().getWaehrung())==Waehrung::EUR)
-   rng_waehrung->set_history(rng_waehrung::Euro);
- else if (*(rechnung_liste->getRechnung().getWaehrung())==Waehrung::DM)
-   rng_waehrung->set_history(rng_waehrung::DM);
-*/
  fixedpoint<2> rabatt=rechnung_liste->getRechnung().Rabatt();
  if (rabatt<0.0) { rabatt=-rabatt; rabatt_typ->set_history(rabatt_typ::Zuschlag); }
  else rabatt_typ->set_history(rabatt_typ::Rabatt);
@@ -213,8 +206,8 @@ void auftrag_rechnung::on_unselectrow_offlief(int row, int col, GdkEvent* b)
 void auftrag_rechnung::Preis_setzen()
 {  
 #warning TODO: nur aktiven Preis setzen, wenn selection
-   Rechnung &rg=rechnung_liste->getRechnung();
-   for (Rechnung::iterator i=rg.begin();i!=rg.end();++i)
+   RechnungVoll rg=rechnung_liste->getRechnung().Id();
+   for (RechnungVoll::iterator i=rg.begin();i!=rg.end();++i)
    {  Artikelpreis p(cH_Kunde(lieferkunde->get_value())->Preisliste(),i->ArtikelID());
       if (!!p)
       {  i->setzePreis(p.In(rg.getWaehrung()));
@@ -224,8 +217,8 @@ void auftrag_rechnung::Preis_setzen()
 }
 
 void auftrag_rechnung::Preis_ergaenzen()
-{  Rechnung &rg=rechnung_liste->getRechnung();
-   for (Rechnung::iterator i=rg.begin();i!=rg.end();++i)
+{  RechnungVoll rg=rechnung_liste->getRechnung().Id();
+   for (RechnungVoll::iterator i=rg.begin();i!=rg.end();++i)
    {  if (!!i->getPreis())
       {  Artikelpreis p(cH_Kunde(lieferkunde->get_value())->Preisliste(),i->ArtikelID());
          if (!!p)
@@ -238,15 +231,8 @@ void auftrag_rechnung::Preis_ergaenzen()
 
 void auftrag_rechnung::waehrung_geaendert()
 {
- rechnung_liste->getRechnung().setzeWaehrung(rng_WWaehrung->get_enum()); // NEU
-/* ALT[B
-  switch (rng_waehrung::enum_t(int(rng_waehrung->get_menu()->get_active()->get_user_data())))
-   {  case rng_waehrung::DM: rechnung_liste->getRechnung().setzeWaehrung(Waehrung::DM);
-   	 break;
-      case rng_waehrung::Euro: rechnung_liste->getRechnung().setzeWaehrung(Waehrung::EUR);
-   	 break;
-   }
-*/
+ rechnung_liste->getRechnung().setzeWaehrung(rng_WWaehrung->get_enum());
+
    // eigentlich alle Preise umrechnen .... Katastrophe
 #warning dadurch wird der Knopf 'Preis setzen' doch eigentlich überflüssig, oder?
 #warning ich würde ihn wegnehmen MAT

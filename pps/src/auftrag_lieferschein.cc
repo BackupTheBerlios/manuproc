@@ -34,6 +34,7 @@
 #include <Artikel/Einheiten.h>
 #include<typeinfo>
 #include <tclistleaf.h>
+#include "lieferscheinliste.hh"
 
 extern MyMessage *meldung;
 
@@ -367,4 +368,8 @@ void auftrag_lieferschein::on_artikelbox_activate()
  { auftragnr->grab_focus();
  }
 }
- 
+
+void auftrag_lieferschein::on_button_liste_clicked()
+{
+  manage(new lieferscheinliste());
+}

@@ -35,16 +35,15 @@
 #include <fstream.h>
 #include <gtk--/radiomenuitem.h>
 
+
 #include "auftragliste.hh"
 #include "AufEintrag.h"
 
-AUFENTRYMAP aufentrymap;
 
 extern MyMessage *meldung;
 
 SelectedFullAufList *allaufids;
 extern auftrag_main *auftragmain;
-// extern auftrag_bearbeiten *auftragbearbeiten;
 
 
 
@@ -63,12 +62,14 @@ void auftrag_main::on_erfassen_activate()
 {   
  hide();
  try
- { manage(new auftrag_bearbeiten(selected_Auftrag));
+ { if (selected_AufEintrag) manage(new auftrag_bearbeiten(*selected_AufEintrag));
+   else  manage(new auftrag_bearbeiten(AufEintragBase2(instanz)));
  } catch (SQLerror &e)
  {  cerr << e << '\n';
     show();
  } 
- selected_Auftrag=AufEintragBase2(instanz);
+//XXX selected_Auftrag=AufEintragBase2(instanz);
+ selected_AufEintrag=0;
 }
 
 void auftrag_main::on_neuladen_activate()
@@ -82,12 +83,6 @@ void auftrag_main::on_neuladen_activate()
 
 #define TEXCMD "tex2prn -2 -q -Phl1260"
 //#define TEXCMD "tex2prn -2 -G -Phl1260" // Preview
-
-static void expand_recursively(TCListRow_API &api)
-{  api.expand();
-   for (TCListRow_API::iterator i=api.begin();i!=api.end();++i)
-      if ((*i).size()) expand_recursively(*i);
-}
 
 // not the best of all possible solutions ...
 static string kopfzeile(int col,const string &typ,const string &title,gpointer user_data)
@@ -108,7 +103,7 @@ static string shorten_some(int col,const string &title,gpointer user_data)
 
 void auftrag_main::on_main_drucken_activate()
 {  
-   expand_recursively(*maintree_s);
+   maintree_s->Expand_recursively(*maintree_s);
    FILE *f=popen(TEXCMD,"w");
    ofstream os(fileno(f));
    Gtk2TeX::HeaderFlags fl;
@@ -144,9 +139,17 @@ void auftrag_main::on_main_bezeichnung_activate()
  for(vector<AufEintragBase>::iterator j = allaufids->aufidliste.begin();
         j!=allaufids->aufidliste.end(); ++j)
      {
-      AufEintrag &af = aufentrymap[(*j).mapKey()];
-      if(interne_namen) cs = cH_ExtBezSchema(af.getKdNr(),ExtBezSchema::default_Typ);
-      af.setArtikelBezeichnung(cs);
+//      AufEintrag &af = aufentrymap[(*j).mapKey()];
+//      if(interne_namen) cs = cH_ExtBezSchema(af.getKdNr(),ExtBezSchema::default_Typ);
+//      af.setArtikelBezeichnung(cs);
+
+      if (selected_AufEintrag)
+       {
+         if(interne_namen) cs = cH_ExtBezSchema((*selected_AufEintrag).getKdNr(),ExtBezSchema::default_Typ);
+         (*selected_AufEintrag).setArtikelBezeichnung(cs);
+       }
+     else         
+       if(interne_namen) cs = cH_ExtBezSchema(1,ExtBezSchema::default_Typ);
      }
  fill_simple_tree();
 }
@@ -172,9 +175,11 @@ void auftrag_main::on_mainprint_button_clicked()
 
 
 auftrag_main::auftrag_main()
-  : instanz(ppsInstanz::INST_KNDAUF), selected_Auftrag(instanz)
+  : instanz(ppsInstanz::INST_KNDAUF), selected_AufEintrag(0)
 {
+ table_instanzen->hide();
  menu_instanz();
+ instanz_menu();
  auftragmain=this;
  allaufids=0;
  interne_namen=true;
@@ -201,7 +206,7 @@ void auftrag_main::set_column_titles_of_simple_tree()
  ct.push_back("offene Meter");
  ct.push_back("offene Stück");
  maintree_s->setTitles(ct);
- maintree_s->set_NewNode(&create_MyNode); ///?MAT
+ maintree_s->set_NewNode(&Data_Node::create);
 }
 
 void auftrag_main::fill_simple_tree()
@@ -223,17 +228,21 @@ void auftrag_main::fill_simple_tree()
    datavec.push_back(new Data_auftrag(*i,this));
   }
  maintree_s->setDataVec(datavec);
- maintree_s->leaf_selected.connect(SigC::slot(this,&auftrag_main::on_leaf_selected));
+// ist in glade drin: maintree_s->leaf_selected.connect(SigC::slot(this,&auftrag_main::on_leaf_selected));
 }
 
 
 void auftrag_main::on_leaf_selected(cH_RowDataBase d)
 {
  const Data_auftrag *dt=dynamic_cast<const Data_auftrag*>(&*d);
- selected_Auftrag=AufEintragBase2(instanz,dt->get_aid(),dt->get_zeilennr());
+ selected_AufEintrag = &dt->get_AufEintragBase();
+
  selected_Artikel=dt->get_Artikel_ID();
  prozlist_scombo->reset();
  prozlist_scombo->set_text(dt->ProzessText());
+
+ if(instanz.Id() != 1) instanz_tree_inhalt_setzen(dt->get_Artikel_ID(),
+      dt->offene_Meter(),dt->get_Lieferdatum());
 }
 
 void auftrag_main::on_prozlistscombo_search(int *cont, GtkSCContext newsearch)
@@ -262,16 +271,16 @@ void auftrag_main::on_prozlistscombo_search(int *cont, GtkSCContext newsearch)
 
 void auftrag_main::on_prozlistscombo_activate()
 {
+ if (selected_AufEintrag)
      {
       int pid=atoi(prozlist_scombo->get_text().c_str());
-      AufEintrag &af=aufentrymap[selected_Auftrag.mapKey()];
-      try{af.setVerarbeitung(cH_Prozess(pid));}
+      try{selected_AufEintrag->setVerarbeitung(cH_Prozess(pid));}
       catch(SQLerror &e)
         {meldung->Show(e); return;}
 //      foot_statusbar->push(0,selectedmyrow->Description(
 //                                cH_ExtBezSchema(ExtBezSchema::default_ID)));
 
-      cH_EntryValue ev=af.getSeqValue(PROZ_SEQ);
+      cH_EntryValue ev=AufEintrag(*selected_AufEintrag).getSeqValue(PROZ_SEQ);
       deque<guint> buf = maintree_s->get_seq();
       size_t i;
       for(i=0; (i<buf.size()) && (buf[i]!=PROZ_SEQ); i++);
@@ -314,6 +323,32 @@ void auftrag_main::menu_instanz()
 void auftrag_main::instanz_selected(int _instanz_)
 {
   instanz=(ppsInstanz::ppsInstId) _instanz_;
-  selected_Auftrag=instanz;
   on_neuladen_activate();
+
+  if (_instanz_ != 1)
+   {
+    label_instanz->set_text(instanz.get_Name());
+    erfassen_button->hide();
+    mainprint_button->hide();
+    rechnung_button->hide();
+    lieferschein_button->hide();
+    table_prod_prozess->hide();
+    table_instanzen->show();
+    instanz_tree_titel_setzen(); // Kann auch in den Konstruktor MAT
+    neuer_auftrag_tree_titel_setzen(); // Kann auch in den Konstruktor MAT
+    instanz_tree_herkunft->clear();
+    datavec_instanz_auftrag.clear();
+    tree_neuer_auftrag->clear();
+    selected_instanz_znr=-1; // Kann auch in den Konstruktor MAT
+    instanz_eintrag_status->hide(); // Kann auch in den Konstruktor MAT
+   }
+  else 
+   { 
+    erfassen_button->show();
+    mainprint_button->show();
+    rechnung_button->show();
+    lieferschein_button->show();
+    table_prod_prozess->show();
+    table_instanzen->hide();
+   }
 }

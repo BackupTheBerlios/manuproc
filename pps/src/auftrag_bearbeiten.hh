@@ -45,7 +45,7 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
         friend class auftrag_bearbeiten_glade;
         void on_backtomain_button_clicked();
         void on_newauftrag_button_clicked();
-	void auftragstatus_geaendert();
+        void auftragstatus_geaendert();
         void on_youraufnrscombo_activate();
         void on_youraufnrscombo_search(int *_continue, GtkSCContext newsearch)
 							throw(SQLerror);
@@ -57,21 +57,19 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
         void on_jahrgang_spinbutton_activate();
         void on_stkmtr_spinbutton_activate();
         void on_kw_spinbutton_activate();
-	void on_jahr_spinbutton_activate();
+        void on_jahr_spinbutton_activate();
         void on_lieferdatum_activate();
         void on_showkal_button_clicked();
         void on_rabattentry_spinbutton_activate();
         void on_aufentrystat_optionmenu_clicked();
-	void waehrung_geaendert();
+     	  void waehrung_geaendert();
         void on_preisart_optionmenu_clicked();
-//ALT void on_preis_spinbutton_activate();
-//ALT	void on_preismenge_activate(); 
         void on_auftrag_clist_select_row(gint row, gint column, GdkEvent *event);
         void on_auftrag_clist_unselect_row(gint row, gint column, GdkEvent *event);
-	void on_splitten();
+        void on_splitten();
         void on_clear_all();
-	void on_aufentry_abbruch_clicked();
-	void on_aufentry_ok_clicked();
+        void on_aufentry_abbruch_clicked();
+        void on_aufentry_ok_clicked();
         void on_auftrag_abbruch_clicked();
         void on_auftrag_ok_clicked();
         void on_aufbemerkung_activate();

@@ -35,12 +35,23 @@ void AuftragFull::fillCList(Gtk::CList &list)
  Preis psum;
 
  for(const_iterator i = begin(); i!=end(); ++i)
-    {os << AufEintrag(*i);	
+    {
+      ArtikelBezeichnung AB(ArtikelBase(i->ArtikelID()));
+      os << i->getStueck()<<"\t"<<AB.Bezeichnung()<<"\t"<<i->getMeter()<<"\t"
+        << i->getRest()<<"\t"<<i->GPreis().Wert()<<"\t"
+        <<i->getLieferdatum()
+        << "\t"<<i->getEntryStatusStr()<<"\t"<<i->LastEditDate()<<"\n";
+//    os << AufEintrag(*i);	
      psum+=(*i).GPreis();
     }
 
+/*
  os << "\t\t\t\t\t\t\t-----------\n";
  os << "\t\t\t\t\t\tAuftragswert\t";
+ os << Formatiere(psum.Wert()) << "\n";
+*/
+ os << "\t\t\t\t-----------\n";
+ os << "\t\t\tAuftragswert\t";
  os << Formatiere(psum.Wert()) << "\n";
 
  for(guint i=0; i<list.columns().size();++i)

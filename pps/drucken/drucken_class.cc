@@ -91,7 +91,7 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie)
 
  int lfrsid_mem=-1;
  for (LR_Abstraktion::const_iterator i=begin();i!=end();)
-  { LR_Abstraktion::const_iterator j=i ;//,k(Rechnung);
+  { LR_Abstraktion::const_iterator j=i ;
     ArtikelBase artikel_id  = (*i).ArtikelID();
     cH_ArtikelBezeichnung bez(artikel_id,cH_Kunde(kunden_id)->getSchema()->Id());
     cH_ExtBezSchema schema_mem = bez->getExtBezSchema();
@@ -125,7 +125,8 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie)
         if (Was()=="Rechnung")       
          {
            if (schema!=schema_mem  || lfrsid_mem != (*j).Lfrs_Id() ||
-               (*j).getPreis().PreisMenge() != preismenge_mem) break;
+               (*j).getPreis().PreisMenge() != preismenge_mem ||
+               Einheit(artikel_id) != einheit_mem ) break;
            if ((*j).Stueck()!=1) stueck_bool=true;
            if ((*j).Menge()!=0) menge_bool=true;
            if ((*j).Rabatt()!=0) rabatt_bool=true;
@@ -133,7 +134,8 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie)
         else if (Was()=="Auftrag")       
          {
            if (schema!=schema_mem  || 
-               (*j).getPreis().PreisMenge() != preismenge_mem) break;
+               (*j).getPreis().PreisMenge() != preismenge_mem ||
+               Einheit(artikel_id) != einheit_mem ) break;
            if ((*j).Stueck()!=1) stueck_bool=true;
            if ((*j).Menge()!=0) menge_bool=true;
            if ((*j).Rabatt()!=0) rabatt_bool=true;
@@ -148,15 +150,15 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie)
       }
 
     spaltenzahl = drucken_table_header(os,schema_mem,
-	signifikanz,stueck_bool,menge_bool,rabatt_bool,preismenge_mem,waehrung,Einheit(artikel_id).TeX());
+	 signifikanz,stueck_bool,menge_bool,rabatt_bool,preismenge_mem,waehrung,Einheit(artikel_id).TeX());
     zeilen_count+=1;
     string einheitsize = "\\scriptsize \\,";
     for (LR_Abstraktion::const_iterator k=i;k!=j;++k) // Zeilen ausgeben
       {
          ArtikelBase artikel_id  = (*k).ArtikelID();
-	 string linecolor = "";
+     	   string linecolor = "";
          if ((*k).ZusatzInfo()) 
-	    linecolor = "\\mygray";
+	      linecolor = "\\mygray";
          cH_ArtikelBezeichnung bez(artikel_id,cH_Kunde(kunden_id)->getSchema()->Id());
 //         string einheit = Einheit(artikel_id);
          ++zeilen_count;
@@ -208,7 +210,7 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie)
             os<<"\\\\\n";
           }
         else abort();
-         if (zeilen_count>=ZEILEN_SEITE_1 && page_count==1
+        if (zeilen_count>=ZEILEN_SEITE_1 && page_count==1
            ||zeilen_count>=ZEILEN_SEITE_N && page_count!=1 )
           {
             fixedpoint<2> vortrag;

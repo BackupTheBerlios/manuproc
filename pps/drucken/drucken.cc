@@ -45,7 +45,7 @@ void LR_drucken::drucken(string view_plot)
    ofstream os(fileno(f));
 
    if      (RL=="Rechnung")      
-    { Rechnung r(auftragsnr);
+    { RechnungVoll r(auftragsnr);
       LR_Abstraktion(&r).drucken_table(os,kopie);
     }
    else if (RL=="Lieferschein")  

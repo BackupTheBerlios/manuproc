@@ -47,7 +47,7 @@ public:
  friend std::ostream &operator<<(std::ostream &o,const AufEintrag &a);
 };
 
-typedef map<int,AufEintrag> AUFENTRYMAP;
+//typedef map<int,AufEintrag> AUFENTRYMAP;
 typedef std::vector<AufEintrag> AufEintragList;
 
 #endif

@@ -48,44 +48,26 @@ const string Rg_TCList::getColTitle(guint col) const
   }
 }
 
-/*
-TCListNode *Rg_TCList::NewNode(guint _seqnr,gpointer gp,const cH_RowDataBase &v, guint deep)
-{
- return new Rg_Node(_seqnr,gp,v,deep);
-}
-TCListLeaf *Rg_TCList::NewLeaf(guint _seqnr,gpointer gp,const cH_RowDataBase &v, guint deep)
-{
- return new Rg_Leaf(_seqnr,gp,v,deep);
-}
-*/
-/*
-TCListNode *Rg_TCList::NewNode(guint deep,const cH_EntryValue &v, bool expand)
-{
- return new Rg_Node(deep,v,expand);
-}
-TCListLeaf *Rg_TCList::NewLeaf(guint deep,const cH_EntryValue &v, const cH_RowDataBase &d)
-{
- return new Rg_Leaf(deep,v,d);
-}
-*/
-
 void Rg_TCList::showRechnung(RechnungBase::ID rngid)
 {
  if(rngid!=RechnungBase::none_id)
-   {try{ rechnung=Rechnung(rngid); }
+   {try{ rechnungvoll=RechnungVoll(rngid); 
+         rechnung=Rechnung(rngid); }
     catch(SQLerror &e)
 	{ meldung->Show(e); return; }
    }
- else rechnung=Rechnung(RechnungBase::none_id);
+ else { rechnungvoll=RechnungVoll(RechnungBase::none_id);
+        rechnung=Rechnung(RechnungBase::none_id);
+      }
 
  detach_from_clist();
  
  datavec.erase(datavec.begin(),datavec.end());
 
- ExtBezSchema::ID ebzid=rechnung.getSchema();
+ ExtBezSchema::ID ebzid=rechnungvoll.getSchema();
 
- Rechnung::const_iterator i=rechnung.begin();
- Rechnung::const_iterator j=rechnung.end();
+ RechnungVoll::const_iterator i=rechnungvoll.begin();
+ RechnungVoll::const_iterator j=rechnungvoll.end();
 
  for(;i!=j;++i)
    datavec.push_back(cH_Rg_RowData(*i,ebzid));

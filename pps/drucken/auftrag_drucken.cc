@@ -40,7 +40,7 @@ int main (int argc, char *argv[])
       Petig::dbconnect(conn);  
 
 //      LR_drucken l("Lieferschein",10025,"Preview");
-//      LR_drucken l("Rechnung",10008,"Preview");
+//      LR_drucken l("Rechnung",10023,"Preview",instanz);
 //      LR_drucken l("Auftrag",10040,"Preview");
 
       LR_drucken l(s,auftragsnr,p,instanz);      

@@ -29,12 +29,15 @@
 
 #include <Aux/ppsInstanz.h>
 #include <Auftrag/AufEintragBase.h>
+#include <Faeden/Schussfaeden.hh>
+#include <Auftrag/AuftragFull.h>
 
 class auftrag_main : public auftrag_main_glade
 {   
  ppsInstanz instanz;
  bool interne_namen, zeit_kw_bool, kunden_nr_bool,kunden_anr_bool;
-AufEintragBase2 selected_Auftrag;
+// AufEintragBase2 selected_Auftrag;
+ AufEintragBase *selected_AufEintrag;
 // Braucht man das folgende, oder kann man aus dem 'selected_Auftrag' den 
 //   'selected_Artikel' wieder herausholen? MAT
  ArtikelBase selected_Artikel;
@@ -69,6 +72,7 @@ AufEintragBase2 selected_Auftrag;
         void menu_instanz();
         map<int,std::string> get_all_instanz();
         void instanz_selected(int _instanz_);
+
 public:
 
  bool interneNamen() const { return interne_namen; }
@@ -78,6 +82,32 @@ public:
  
  auftrag_main();
 
+private:
+   // Ab hier für die Produktionsplanung
+   Gtk::Menu *menu_an_instanz;
+   vector<cH_RowDataBase> datavec_instanz_auftrag;
+   ppsInstanz an_instanz;
+   Auftrag *instanz_auftrag;
+   AuftragFull *instanz_aufeintrag;
+   int selected_instanz_znr;
+
+   void on_searchcombo_auftragid_activate();
+   void on_searchcombo_auftragid_search(int *cont, GtkSCContext newsearch) throw(SQLerror);
+   void on_button_neue_anr_clicked();
+   gint on_eventbox_instanz_button_press_event(GdkEventButton *event);
+   void instanz_menu();
+   void an_instanz_selected(ppsInstanz::ppsInstId insnr);
+   void on_instanz_auftrag_status_activate();
+   void on_instanz_eintrag_status_activate();
+   void instanz_tree_titel_setzen();
+   void neuer_auftrag_tree_titel_setzen();
+   void instanz_tree_inhalt_setzen(int artid,int laenge_m,Petig::Datum datum);
+   void get_faeden(int artid,Schussfaeden& schussfaeden, 
+            Fadenliste& fadenliste);
+   void instanz_tree_herkunft_leaf_selected(cH_RowDataBase d);
+   void tree_neuer_auftrag_leaf_selected(cH_RowDataBase d);
+   void loadAuftrag(const AuftragBase& auftragbase);
+   int get_next_entry_znr(AuftragBase& auftrag);
 };
 
 class Data_auftrag : public RowDataBase
@@ -106,9 +136,11 @@ public:
          int artikelid          = AB.ArtikelID();
          cH_ExtBezSchema schema = 1;
          ArtikelBase artbase=ArtikelBase(artikelid);
-         cH_ArtikelBezeichnung artbez(artbase,schema);
+         cH_ArtikelBezeichnung artbez(artbase.Id(),schema);
+         return cH_EntryValueIntString(artbez->Komponente(seqnr-1));
 #warning horrible hack
-         return (*artbez)[seqnr];
+//         cH_ArtikelBezeichnung artbez(artbase,schema);
+//         return (*artbez)[seqnr];
          }
       case 5 : {
          std::string lw;
@@ -150,8 +182,9 @@ public:
    int get_aid() const {return AB.getAuftragid();} 
    int get_zeilennr() const {return AB.getZnr();} 
    int get_Artikel_ID() const {return AB.ArtikelID();}
+   Petig::Datum get_Lieferdatum() const {return AB.getLieferdatum();}
    std::string ProzessText() const {return AB.getProzess()->getTyp()+" "+AB.getProzess()->getText() ;}
-
+   AufEintragBase& get_AufEintragBase() const {return const_cast<AufEintragBase&>(AB);}
 };
 
 class cH_Data_auftrag : public const_Handle<Data_auftrag>
@@ -165,8 +198,7 @@ public:
 
 class Data_Node : public TCListNode
 {
- mutable int sum_meter;
- mutable int sum_stueck;
+ int sum_meter, sum_stueck;
 
 public:
  virtual void cumulate(const cH_RowDataBase &rd)
@@ -187,10 +219,15 @@ public:
 
  int Sum_Stueck() const { return sum_stueck; }
  int Sum_Meter() const { return sum_meter; }
+ static TCListNode *create(guint col, const cH_EntryValue &v, bool expand)
+  {  return new Data_Node(col,v,expand);
+   }
+
+
 
 };
 
-
+/*
 class Data_Sum : public SimpleTree
 {
  public:
@@ -200,15 +237,9 @@ class Data_Sum : public SimpleTree
      init();
    }
 
-/*
- TCListNode *NewNode(guint _seqnr, gpointer gp, const cH_RowDataBase &v, guint deep)
-   { return new  Data_Node(_seqnr,gp, v,deep); }
-*/
 };
+*/
 
-static TCListNode *create_MyNode(guint col, const cH_EntryValue &v, bool expand)
-{  return new Data_Node(col,v,expand);
-}
 
 
 #endif
