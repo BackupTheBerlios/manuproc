@@ -99,6 +99,7 @@ public:
 		BESTELL_TEXT=85,
 		EINKAUF_ABTLG=86,
 		TXT_IHRE_LIEFERNR=87,
+		TXT_ZWISCHENSUMME=88
 	     } LangTXT;
 
  MultiL_Dict(int sprache, int default_spr=1);

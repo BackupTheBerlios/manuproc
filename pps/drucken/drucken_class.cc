@@ -402,6 +402,7 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
 
  LieferscheinBase::ID lfrsid_mem=LieferscheinBase::none_id;
  bool lfrsid_drucken=false;
+ bool zwischensumme_drucken=false;
 #ifdef MABELLA_EXTENSIONS 
  int aufid_mem=AuftragBase::none_id;
  bool aufid_drucken=false;
@@ -433,6 +434,7 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
 // merken welche Werte in der 1. Zeile stehen
     if (Typ()==Rechnung && (*i).Lfrs().Id()!=lfrsid_mem)
     {  lfrsid_drucken=true;
+       zwischensumme_drucken=(lfrsid_mem!=LieferscheinBase::none_id); 
        lfrsid_mem=(*i).Lfrs().Id();
     }
     
@@ -474,7 +476,7 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
         else  stueck_bool=true  ;
         
         if (Typ()==Rechnung && lfrsid_mem != (*j).Lfrs().Id())
-           break; // Lieferschein wechselt
+            break; // Lieferschein wechselt;
 
 #ifdef MABELLA_EXTENSIONS           
         if ((Typ()==Lieferschein || Typ()==Wareneingang || Typ()==Rechnung) && aufid_mem != (*j).AufId())
@@ -526,8 +528,15 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
          neue_seite=true;
      }
      else if (preise_addieren && i!=begin()) // da ist noch was offen ...
-     		// bug (?) in tabularx (zu groﬂer Abstand) beheben
-        os << "\\end{tabularx}~\\\\[-1ex]\n";
+        {		// bug (?) in tabularx (zu groﬂer Abstand) beheben
+         if(zwischensumme_drucken)
+          {drucken_betrag(os,mld->MLT(MultiL_Dict::TXT_ZWISCHENSUMME),betrag); 
+                      // Zwischensumme zum Lieferschein
+           zwischensumme_drucken=false;
+          }
+         os << "\\end{tabularx}~\\\\[-1ex]\n";
+        }
+        
 
 std::cout << "table ends\n";
 
@@ -536,6 +545,7 @@ std::cout << "table ends\n";
     {   cH_Lieferschein l(instanz,lfrsid_mem);
         cH_Kunde k(l->KdNr()); 
         std::string sKunde;
+
 
 #ifdef MABELLA_EXTENSIONS
 	if(!gutschrift())
