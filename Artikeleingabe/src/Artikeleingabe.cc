@@ -15,7 +15,7 @@
 #include <Auftrag/selFullAufEntry.h>
 #include <unistd.h>
 #include "MyMessage.h"
-#include <Aux/FILEstream.h>
+#include <Misc/FILEstream.h>
 
 #define D(x) 
 //cerr << x << '\n'
@@ -24,7 +24,7 @@
 extern MyMessage *mess;
 
 Artikeleingabe::Artikeleingabe(int argc, char **argv)
-  : leer(cH_ArtikelBezeichnung::Default())
+  : leer(cH_ArtikelBezeichnung::Default()), bestellen_bei_changed(false) 
 {D("leer->Id() " << leer->Id());
  artikelbox->show_label(true);
  progressbar->hide();
@@ -79,18 +79,20 @@ void Artikeleingabe::artikelbox_activate()
  vec_artbase.clear();
  try {
     ArtikelBase AB(artikelbox->get_value());
-    if (AB.Id()!=ArtikelBase::none_id)
+    if (!!AB)
     {  vec_artbase.push_back(AB);
        ArtikelStamm as(AB);
+
+       bestellen_bei_changed=false;
 
        show_in_prlist->set_active(as.getAktive()); 
        cH_ppsInstanz pi(as.BestellenBei());
        change_no_instanz->set_active(pi->Id()==ppsInstanzID::None);
        no_instanz->set_active(change_no_instanz->get_active());       
 
-       optionmenu_instanz->set_value(pi->Id());
+//       optionmenu_instanz->set_value(pi->Id());
        Artikel_Bestellen_bei->set_value(pi->Id());
-       optionmenu_instanz->set_sensitive(change_no_instanz->get_active());
+//       optionmenu_instanz->set_sensitive(change_no_instanz->get_active());
        Artikel_Bestellen_bei->set_sensitive(!change_no_instanz->get_active());
        
        mindbest_check->set_active(as.getCheckBest());
@@ -101,7 +103,7 @@ void Artikeleingabe::artikelbox_activate()
  set_Data_from_artikelliste();
 
 // frame_artikel->set_sensitive(true);
- fuer_artikel = artikelbox->get_value();
+// fuer_artikel = artikelbox->get_value();
  Eingabe_fuer(artikelbox->get_value());
  fill_eingabebox(1);
  alias_warengruppe->set_extartbezid(artikelbox->getBezSchema()->Id());
@@ -119,13 +121,14 @@ void Artikeleingabe::on_alias_warengruppe_activate()
 
 void Artikeleingabe::on_button_artikel_wechsel_clicked()
 {
- artikelbox->set_value(von_artikel);
+ cH_Data_tree dt=tree->getSelectedRowDataBase_as<cH_Data_tree>();
+ artikelbox->set_value(dt->Artikel());
  artikelbox_activate();
 }
 
 void Artikeleingabe::on_neuladen_clicked()
 {
-  ArtikelBaum::UnCache(fuer_artikel);
+  ArtikelBaum::UnCache(artikelbox->get_value());
   set_Data_from_artikelliste();
   toolbar_loeschen->hide();
 }
@@ -190,10 +193,10 @@ void Artikeleingabe::push_Artikel(vec_zeile_t &vec_zeile, const zeile_t &z)
    {  cH_ppsInstanz inst(ArtikelStamm(*(z.first)).BestellenBei());
       unsigned int i=vec_zeile.size();
       D("?" << inst->get_Name() << " @ " << i << '?' << z.first->Bezeichnung());
-      for (;i<instanz_spalte.size() && instanz_spalte[i]!=(*inst);++i)
+      for (;i<instanz_spalte.size() && instanz_spalte[i]!=inst->Id();++i)
       	D("!" << instanz_spalte[i]->get_Name());
       if (i>=instanz_spalte.size())
-      {  instanz_spalte.push_back(inst);
+      {  instanz_spalte.push_back(inst->Id());
          assert(i<instanz_spalte.size());
          D("C" << instanz_spalte[i]->get_Name() << " @ " << i);
       }
@@ -216,7 +219,7 @@ try{
    ArtikelBaum ABaum(AB);
    push_Artikel(vec_zeile,zeile_t(ABez,0));
    
-   if(ABaum.size()==0)   
+   if(ABaum.empty())   
        datavec.push_back(new Data_tree(vec_zeile));
    for (ArtikelBaum::const_iterator i=ABaum.begin();i!=ABaum.end();++i)
       ArtikelBaum_Pfad(ArtikelBase(i->rohartikel),i->menge,datavec,vec_zeile);
@@ -248,23 +251,23 @@ void Artikeleingabe::on_leaf_selected(cH_RowDataBase d)
 {
 //cout << "Leaf\n";
  const Data_tree *dt=dynamic_cast<const Data_tree*>(&*d);
- fuer_artikel = dt->Artikel();
+// fuer_artikel = dt->Artikel();
  artikelbox->set_value(dt->Artikel());
 // artikelbox_activate(); sollte eigentlich ...
  // hmm. What is this for? CP
  Eingabe_fuer(dt->Artikel());
- von_artikel = dt->Artikel2();
- Loeschen_von(von_artikel);
+// von_artikel = dt->Artikel2();
+ Loeschen_von(dt->Artikel2());
 }
 
 void Artikeleingabe::on_node_selected(const TCListNode &node)
 {
 //cout << "Node\n";
   const Data_Node &dn=dynamic_cast<const Data_Node&>(node);
-  fuer_artikel=dn.Artikel();
-  von_artikel = dn.Artikel2();
+//  fuer_artikel=dn.Artikel();
+//  von_artikel = dn.Artikel2();
   Eingabe_fuer(dn.Artikel());
-  Loeschen_von(von_artikel);
+  Loeschen_von(dn.Artikel2());
 }
 
 void Artikeleingabe::Eingabe_fuer(const ArtikelBase& art)
@@ -285,7 +288,7 @@ void Artikeleingabe::Eingabe_fuer(const ArtikelBase& art)
 void Artikeleingabe::set_Prozess()
 {
  try {
- cH_ppsInstanz instanz=ArtikelStamm(fuer_artikel).BestellenBei();
+ cH_ppsInstanz instanz=ArtikelStamm(artikelbox->get_value()).BestellenBei();
  Prozess::ID prozess;
  switch (instanz->Id()){
 #ifdef PETIG_EXTENSIONS
@@ -335,7 +338,8 @@ void Artikeleingabe::on_unselect_row(gint row, gint column, GdkEvent *event)
 
 void Artikeleingabe::on_button_artikel_delete_clicked()
 {
-  ArtikelBaum::delete_Artikel(fuer_artikel,von_artikel);
+  cH_Data_tree dt=tree->getSelectedRowDataBase_as<cH_Data_tree>();
+  ArtikelBaum::delete_Artikel(dt->Artikel(),dt->Artikel2());
   on_neuladen_clicked();
 }
 
@@ -343,7 +347,8 @@ void Artikeleingabe::on_Artikel_Bestellen_activate()
 {
 //cout << artikelboxb->get_Artikel().Id()<<'\t'<<artikelboxb->get_Menge()
 //   <<'\t'<<artikelboxb->get_Instanz_Id()<<'\n';
-  if(artikelboxb->get_Artikel().Id()==0 || artikelboxb->get_Menge()==0 )
+  if(artikelboxb->get_Artikel().Id()==ArtikelBase::none_id ||
+     artikelboxb->get_Menge()==0 )
    {
     label_warnung->set_text("WARNUNG: Eingabe unvollständig");
     return;
@@ -353,40 +358,29 @@ void Artikeleingabe::on_Artikel_Bestellen_activate()
   ra.rohartikel = artikelboxb->get_Artikel().Id();
   ra.menge = artikelboxb->get_Menge();
   ra.erzeugung=artikelboxb->get_Prozess(); 
-  ArtikelBaum::new_Artikel(fuer_artikel,ra);
+  ArtikelBaum::new_Artikel(artikelbox->get_value(),ra);
   
-  artikelbox->set_value(von_artikel);
+  cH_Data_tree dt=tree->getSelectedRowDataBase_as<cH_Data_tree>();
+  artikelbox->set_value(dt->Artikel2());
   on_neuladen_clicked();
 
-  von_artikel = artikelboxb->get_Artikel();
-  Loeschen_von(von_artikel);
+//  von_artikel = artikelboxb->get_Artikel();
+  Loeschen_von(artikelboxb->get_Artikel());
 }
 
 void Artikeleingabe::optionmenu_bestellen_bei_activate()
 {
-  Transaction tr;
-  if (!fuer_artikel) return;
-  ppsInstanz::ID oldInstanz=ArtikelStamm(fuer_artikel).BestellenBei()->Id();
-  ppsInstanz::ID newInstanz = Artikel_Bestellen_bei->get_value()->Id(); 
-  if(oldInstanz==newInstanz) return;
-  ArtikelStamm::set_BestellenBei(fuer_artikel,newInstanz);
-  
-  for (vec_artbase_t::iterator i=vec_artbase.begin();i!=vec_artbase.end();++i)
-    if((*i)==fuer_artikel) { vec_artbase.erase(i); break;}
-  set_Prozess();
+ if (!!(artikelbox->get_value())) return;
+ ppsInstanz::ID oldInstanz=ArtikelStamm(artikelbox->get_value()).BestellenBei()->Id();
+ ppsInstanz::ID newInstanz = Artikel_Bestellen_bei->get_value()->Id(); 
+ if(oldInstanz==newInstanz) return;
+ ArtikelStamm::set_BestellenBei(artikelbox->get_value(),newInstanz);
+ 
+ for (vec_artbase_t::iterator i=vec_artbase.begin();i!=vec_artbase.end();++i)
+   if((*i)==artikelbox->get_value()) { vec_artbase.erase(i); break;}
+ set_Prozess();
 
-  SQLFullAuftragSelector psel= SQLFullAuftragSelector::sel_Artikel(oldInstanz,fuer_artikel);
-  SelectedFullAufList allaufids=SelectedFullAufList(psel);
-  try{
-  for(SelectedFullAufList::iterator i=allaufids.begin();i!=allaufids.end();++i)
-   {
-     if(i->Instanz()->Id()==ppsInstanzID::Kundenauftraege) continue;
-     AuftragBase A(newInstanz,0);
-#warning compiliert nicht
-//     i->moveInstanz(getuid(),A);
-   }
- }catch(SQLerror &e) {warnung("Fehlgeschlagen") ;}
- tr.commit();
+ bestellen_bei_changed=true;
 }
 
 // missbrauch von label_warnung ...
@@ -440,12 +434,13 @@ void Artikeleingabe::on_togglebutton_edit_toggled()
 
 void Artikeleingabe::eingabe_activate()
 {
-  ArtikelBase artikel=fuer_artikel;
+//  ArtikelBase artikel=fuer_artikel;
   
  try{
   save_edited_artikel();
-  cH_ArtikelBezeichnung::Deregister(artikelbox->getBezSchema()->Id(),artikel.Id());
-  artikelbox->set_value(artikel);
+  cH_ArtikelBezeichnung::Deregister(artikelbox->getBezSchema()->Id(),
+				    artikelbox->get_value().Id());
+  artikelbox->set_value(artikelbox->get_value());
   pixmap_edit->set(stock_button_apply_xpm);
   while(Gtk::Main::events_pending()) Gtk::Main::iteration() ;
   des = Gtk::Main::timeout.connect(slot(this,&Artikeleingabe::timeout_save_edited_artikel),4000);
@@ -485,14 +480,21 @@ void Artikeleingabe::on_alias_eingabe_activate()
   try{
   if(!update_edited_artikel2())
     save_edited_artikel2();
-  cH_ArtikelBezeichnung::Deregister(alias_schema->get_value(),fuer_artikel.Id());  
+  cH_ArtikelBezeichnung::Deregister(alias_schema->get_value(),
+				    artikelbox->get_value().Id());  
   alias_pixmap->set(stock_button_apply_xpm);
   while(Gtk::Main::events_pending()) Gtk::Main::iteration() ;
   des2 = Gtk::Main::timeout.connect(slot(this,&Artikeleingabe::timeout_save_edited_artikel2),4000);
   }
   catch(SQLerror &e)
     {std::cerr<<e<<'\n';
-     mess->Show(e);
+     if(e.Code()==-400)
+       {std::string msg("Die Bezeichnung ");
+        msg=msg+alias_eingabe->get_value(0)+"... existiert schon";
+        mess->Show(msg);
+        }
+     else
+        mess->Show(e); 
     }
 }
 
@@ -581,6 +583,8 @@ void Artikeleingabe::on_notebook1_switch_page(GtkNotebookPage *p0, guint p1)
 
 void Artikeleingabe::on_no_instanz_toggled()
 {
+ if(!bestellen_bei_changed) return;
+
  if(no_instanz->get_active())
    {standard_instanz->set_sensitive(false);
    aktuelle_gruppe.bestellen_bei=ppsInstanzID::None;
@@ -589,12 +593,13 @@ void Artikeleingabe::on_no_instanz_toggled()
    {standard_instanz->set_sensitive(true);   
     aktuelle_gruppe.bestellen_bei=standard_instanz->get_value()->Id();
    }
+ bestellen_bei_changed=false;
 }
 
 
 void Artikeleingabe::on_show_in_prlist_toggled()
 {
- if(artikelbox->get_value().Id() == ArtikelBase::none_id) return;
+ if(!artikelbox->get_value()) return;
  
  try{
  bool alle_farben=true;
@@ -609,7 +614,7 @@ void Artikeleingabe::on_show_in_prlist_toggled()
 
 void Artikeleingabe::on_change_no_instanz_toggled()
 { 
- if(artikelbox->get_value().Id() == ArtikelBase::none_id) return;
+ if(!artikelbox->get_value()) return;
  
  try{
  if(change_no_instanz->get_active())
@@ -637,7 +642,7 @@ void Artikeleingabe::on_mindbest_check_toggled()
  else
    {
     ArtikelStamm as(artikelbox->get_value());
-    as.setMindBest(-1);    
+    as.setMindBest(-1);  // deactivate midbest check at all
     mindbestand->set_value(0);      
    }
 }

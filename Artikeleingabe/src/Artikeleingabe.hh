@@ -33,7 +33,10 @@ class Artikeleingabe : public Artikeleingabe_glade
         
         vec_artbase_t vec_artbase;
         instanz_spalte_t instanz_spalte;
-        ArtikelBase fuer_artikel,von_artikel;
+
+// ich denke ist unnötig, JJ 21.04.04
+//        ArtikelBase fuer_artikel,von_artikel;
+
         // keine Bezeichnung, leere Spalte
         cH_ArtikelBezeichnung leer;
 
@@ -90,6 +93,7 @@ class Artikeleingabe : public Artikeleingabe_glade
         void on_button_verschmelzen_clicked();
 
 //****** edit ******
+	bool bestellen_bei_changed;
 
 //****** alias *****
         void on_alias_eingabe_activate();

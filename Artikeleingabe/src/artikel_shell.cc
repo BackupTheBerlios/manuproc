@@ -16,12 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <Aux/exception.h>
-#include <Aux/dbconnect.h>
+#include <Misc/exception.h>
+#include <Misc/dbconnect.h>
 #include <Artikel/ArtikelBaum.h>
 #include <Artikel/ArtikelStamm.h>
 #include <Artikel/ArtikelBezeichnung.h>
-#include <Aux/Transaction.h>
+#include <Misc/Transaction.h>
 #include "getopt.h"
 #include <Auftrag/AufEintrag.h>
 #include <unistd.h>
@@ -45,9 +45,9 @@ enum eaction {None, Delete,Create,BestellenBei};
 int main(int argc,char *argv[])
 {
 // bool nur_auftrag=false;
- Petig::PrintUncaughtExceptions();
+ ManuProC::PrintUncaughtExceptions();
  try{
-   Petig::dbconnect();
+   ManuProC::dbconnect();
 
  eaction action=None;
  ArtikelBase AB1,AB2; 

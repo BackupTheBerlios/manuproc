@@ -1,8 +1,7 @@
 #include "Artikeleingabe.hh"
-//#include <Aux/Transaction.h>
 #include <Aux/EntryValueIntString.h>
-#include "Auftrag/auftrag_status.h"
 #include <Auftrag/AuftragBase.h>
+#include "Auftrag/auftrag_status.h"
 #include <Artikel/ArtikelBezeichnung.h>
 exec sql include sqlca;
 
@@ -104,7 +103,7 @@ void Artikeleingabe::fill_eingabebox(int nr)
         if(nr==AuftragBase::plan_auftrag_id)eingabebox->set_value(i,AB->Komponente(x,db_sigV[i]));
 	if(nr==AuftragBase::dispo_auftrag_id)
 	  {alias_eingabe->set_value(i,"");
-	   if(((ExtBezSchema::ID)db_aid)==AB->getExtBezSchema()->Id()) // defaultschema will ich nicht sehen
+	   if(((ExtBezSchema::ID)db_aid)==AB->getExtBezSchema()->Id()) 
 	     alias_eingabe->set_value(i,AB->Komponente(x,db_sigV[i]));
 	  }
 	
@@ -148,7 +147,7 @@ void Artikeleingabe::save_edited_artikel()
      else
         squery += vec_eingabe[i].spalte +"='"+eingabebox->get_value(i)+"', ";
    }
-  squery += " stand=now() where id='"+itos(fuer_artikel.Id())+"'";
+  squery += " stand=now() where id='"+itos(artikelbox->get_value().Id())+"'";
   Query::Execute(squery);
   SQLerror::test(__FILELINE__);
 }
@@ -183,7 +182,7 @@ bool Artikeleingabe::update_edited_artikel2()
      else
         squery += vec_alias_eingabe[i].spalte +"='"+alias_eingabe->get_value(i)+"', ";
    }
-  squery += " stand=now() where id='"+itos(fuer_artikel.Id())+"'";
+  squery += " stand=now() where id='"+itos(artikelbox->get_value().Id())+"'";
   Query::Execute(squery);
   if(sqlca.sqlcode) return false;
   return true;
@@ -213,7 +212,7 @@ void Artikeleingabe::save_edited_artikel2()
    {
      squery += vec_alias_eingabe[i].spalte +",";
    }
-  squery += "stand) values ("+itos(fuer_artikel.Id())+",";
+  squery += "stand) values ("+itos(artikelbox->get_value().Id())+",";
 //cout << von_artikel.Id()<<'\n';
   int count=0;
   int memsig=vec_alias_eingabe[0].signifikanz;
@@ -239,8 +238,9 @@ void Artikeleingabe::on_button_verschmelzen_clicked()
 {
   ArtikelBase neu_art = artikelbox->get_value();
   ArtikelBase alt_art = artbox_verschmelzen->get_value();
-  if(neu_art.Id()==ArtikelBase::none_id || 
-	alt_art.Id()==ArtikelBase::none_id) return;
+
+  if(neu_art==ArtikelBase() || alt_art ==ArtikelBase()) return;
+
   exec sql begin declare section;
 
   exec sql end declare section;
