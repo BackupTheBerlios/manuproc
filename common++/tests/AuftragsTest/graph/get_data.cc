@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.51 2003/09/12 11:29:30 christof Exp $
+// $Id: get_data.cc,v 1.52 2003/11/17 12:27:36 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -23,6 +23,7 @@
 #include <Misc/relops.h>
 #include <Artikel/ArtikelBezeichnung.h>
 #include <Misc/TraceNV.h>
+#include <algorithm>
 
 static const UniqueValue::value_t trace_channel=ManuProC::Tracer::channels.get();
 static ManuProC::Tracer::Environment trace_channele("DEBUG",trace_channel);
@@ -51,6 +52,10 @@ graph_data_node::graph_data_node(const std::string &mode)
 bool operator==(const graph_data_node::st_auftrag &a, const AufEintragBase &b)
 {  return a.auftrag==b;
 }
+
+#if __GNUC__ < 3
+template <class A,class B> bool operator!=(const A &a,const B &b) { return !(a==b); }
+#endif
 
 void graph_data_node::get_values_from_files()
 {
