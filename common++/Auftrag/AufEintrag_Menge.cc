@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.11 2003/09/02 15:48:58 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.12 2003/09/11 14:41:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -115,7 +115,7 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(mengen_t menge,bool instanzen,
  ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,
    NV("Eltern",ElternAEB),
    NV("menge",menge),NV("instanzen",instanzen),NV("reason",reason));
- assert(reason!=ManuProC::Auftrag::r_None);
+// assert(reason!=ManuProC::Auftrag::r_None);
  if (!menge)  return menge;
 
  Transaction tr; // Beschleunigung
