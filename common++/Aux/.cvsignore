@@ -7,8 +7,6 @@ Changejournal_sql.cc
 ctime_assert.h
 Datum.cc
 Datum.h
-dbcapability.cc
-dbcapability.h
 dbconnect.cc
 dbconnect.h
 dbconnect.pgcc
@@ -68,3 +66,5 @@ Zeitpunkt_new.cc
 Zeitpunkt_new.h
 Zeitpunkt_new_ostr.cc
 Zeitpunkt_new_write.cc
+Global_Settings_sql.cc
+EAN_sql.cc

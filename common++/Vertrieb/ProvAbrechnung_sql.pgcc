@@ -1,0 +1,75 @@
+/* $Id: ProvAbrechnung_sql.pgcc,v 1.1 2002/11/22 16:01:55 christof Exp $ */
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include <Vertrieb/ProvAbrechnung.h>
+
+ProvAbrechnung::ProvAbrechnung(const Kunde::ID verkid, 	const ID abrnr) 
+throw(SQLerror)
+: ManuProcEntity<>(abrnr), verkaeufer(Kunde::none_id)
+{
+ exec sql begin declare section;
+ int PROVNR=abrnr;
+ int VERKNR=verkid;
+ char *DATUM=0;
+ char *BIS=0;
+ char *NOTIZ=0;
+ exec sql end declare section;
+
+
+ exec sql select datum,bis,notiz into
+ 	:DATUM,:BIS,:NOTIZ from prov_abrechnung
+ 	where (verknr,provnr) = (:VERKNR,:PROVNR);
+ SQLerror::test(__FILELINE__);
+ 
+ verkaeufer=VERKNR;
+ datum=ManuProC::Datum(DATUM);
+ bis=ManuProC::Datum(BIS);
+ notiz=NOTIZ;
+
+ ECPGfree_auto_mem();
+
+}
+
+
+ProvAbrechnung* ProvAbrechnung::newProvAbrechnung(const Kunde::ID verkid,
+ 		ProvAbrechnung::ID abrnr, ManuProC::Datum _bis,
+ 		const std::string _notiz) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int PROVNR=abrnr;
+ int VERKNR=verkid;
+ char *BIS;
+ char *NOTIZ;
+ exec sql end declare section;
+
+ if(!_bis.valid()) _bis=ManuProC::Datum::today();
+
+ BIS=(char*)_bis.to_iso().c_str();
+ NOTIZ=(char*)_notiz.c_str();
+
+ exec sql insert into prov_abrechnung
+	(provnr,verknr,datum,bis,notiz) values 
+	(:PROVNR,:VERKNR,date(now()),:BIS,:NOTIZ);
+ SQLerror::test(__FILELINE__);
+ 
+ return new ProvAbrechnung(verkid,abrnr);
+}
+
+
+

@@ -15,3 +15,5 @@ ArtikelBaumFull.cc
 Artikelpreis_sql.cc
 ArtikelDispo_sql.cc
 DEADJOE
+ArtikelEAN_sql.cc
+ArtikelBaum_sql.cc

@@ -1,7 +1,6 @@
-// $Id: AdminProblems.h,v 1.11 2002/11/22 15:53:52 christof Exp $
-/*  libc++: 
- *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
- *                             written by Malte Thoma
+/* $Id: ArtikelBase.cc,v 1.1 2002/11/22 15:58:20 christof Exp $ */
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -12,18 +11,25 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */ 
+ */
 
-#include <string>
+#include<Artikel/ArtikelBase.h>
+#include<Artikel/ArtikelBezeichnung.h>
 
-class AdminProblems
+FetchIStream& operator>>(FetchIStream& is,ArtikelBase &AB)
 {
-   public:
-      AdminProblems(){}
+  int a;
+  is >> a;
+  AB=ArtikelBase(a);
+  return is;
+}
 
-      static void create(const std::string &programm,const std::string &text);
-};
+std::ostream &operator<<(std::ostream &o,const ArtikelBase &a)
+{
+  o << cH_ArtikelBezeichnung(a)->Bezeichnung();
+  return o;
+}

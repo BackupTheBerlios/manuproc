@@ -1,7 +1,6 @@
-// $Id: AdminProblems.h,v 1.11 2002/11/22 15:53:52 christof Exp $
-/*  libc++: 
- *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
- *                             written by Malte Thoma
+/* $Id: ProvAbrechnung.cc,v 1.1 2002/11/22 16:02:27 christof Exp $ */
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -12,18 +11,26 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */ 
+ */
 
-#include <string>
+#include <Vertrieb/ProvAbrechnung.h>
+#include <Aux/FetchIStream.h>
 
-class AdminProblems
+const ProvAbrechnung::ID ProvAbrechnung::getNextAbrNr(const Kunde::ID verkid) throw(SQLerror)
 {
-   public:
-      AdminProblems(){}
+ ProvAbrechnung::ID abrid;
+ 
+ std::string qu="select coalesce(max(provnr),0)+1 from prov_abrechnung"
+ 	" where verknr="+itos(verkid);
+ 	
+ Query(qu).FetchOne(abrid);	 
 
-      static void create(const std::string &programm,const std::string &text);
-};
+ return abrid;
+}
+
+
+ 		

@@ -1,6 +1,6 @@
-// $Id: AdminProblems.cc,v 1.11 2002/11/22 15:53:52 christof Exp $
+/* $Id: EntryValueBool.h,v 1.1 2002/11/22 15:53:52 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,15 +17,31 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "AdminProblems.h"
-#include "FetchIStream.h"
+#ifndef ENTRYVALUEBOOL_H
+#define ENTRYVALUEBOOL_H
 
-void AdminProblems::create(const std::string &programm,const std::string &text)
+#include <Misc/EntryValueBase.h>
+#include <Misc/itos.h>
+
+class EntryValueBool : public EntryValueBase
 {
-  std::string s="insert into problems (wann,programm,text) values "
-      "(now(),'"+programm+"','"+text+"')";
-  Query::Execute(s);
-  
-}
+ bool val;
+ 
+public:
 
+ EntryValueBool() : val(false) {}
+ EntryValueBool(bool v):val(v) {}
+   
+ virtual int getIntVal() const { return int_NaN;}
+ virtual const std::string getStrVal() const 
+   { if(val) return "Ja"; else return "Nein";}
+};
+
+class cH_EntryValueBool : public cH_EntryValue
+{
+public:
+ cH_EntryValueBool(bool v) : cH_EntryValue(new EntryValueBool(v)) {}
+};
+  
+#endif // ENTRYVALH
 

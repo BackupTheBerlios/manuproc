@@ -23,3 +23,7 @@ stamp-h.in
 install-sh
 gCVS
 ManuProCConfig.h
+autom4te.cache
+ManuProCConfig.h.in
+depcomp
+stamp-h1

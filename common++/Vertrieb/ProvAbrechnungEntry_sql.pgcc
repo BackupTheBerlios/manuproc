@@ -1,0 +1,100 @@
+/* $Id: ProvAbrechnungEntry_sql.pgcc,v 1.1 2002/11/22 16:01:55 christof Exp $ */
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include <Vertrieb/ProvAbrechnungEntry.h>
+#include <Aux/Transaction.h>
+#include <Aux/FetchIStream.h>
+
+ProvAbrechnungEntry::ProvAbrechnungEntry(const ManuProcEntity<>::ID _abrnr, 
+ 	const Kunde::ID _verknr, const RechnungEntry::ID _rngid,
+	int zeilennr) throw(SQLerror)
+: ManuProcEntity<>(_abrnr), rngentry(RechnungEntryBase(_rngid,zeilennr)), verknr(_verknr)
+{
+ exec sql begin declare section;
+ int PROVNR=_abrnr;
+ int VERKNR=_verknr;
+ int RNGID=_rngid;
+ int ZEILENNR=zeilennr;
+ float PROVSATZ;
+ exec sql end declare section;
+
+ exec sql select provsatz into
+ 	:PROVSATZ from prov_entry
+ 	where (provnr,verknr,rngid,zeilennr) = 
+		(:PROVNR,:VERKNR,:RNGID,:ZEILENNR);
+ SQLerror::test(__FILELINE__);
+ 
+ umsatz=rngentry.GPreis();
+ provsatz=PROVSATZ;
+ provision=umsatz.Wert() * (PROVSATZ/100.0);
+}
+
+
+/*********************************************
+* Erzugt AbrEntries für eine ganze rechnung *
+*********************************************/
+void ProvAbrechnungEntry::newAbrechnungEntries(
+ 	const ManuProcEntity<>::ID _abrnr, 
+ 	const Kunde::ID _verknr, const Rechnung &rng) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int ABRNR=_abrnr;
+ int VERKNR=_verknr;
+ int RNGID=rng.Id();
+ int ZEILENNR;
+ float PROVSATZ;
+ int KUNDENNR;
+ exec sql end declare section;
+ vector<int> rng_zeilen;
+
+ Transaction tr;
+
+ KUNDENNR=rng.KdNr();
+
+ std::string qu="select zeilennr from rechnung where rngid="+itos(RNGID);
+ Query Q(qu);
+ SQLerror::test(__FILELINE__);
+
+ Q.FetchArray(rng_zeilen);
+ if(!Q.good()) throw SQLerror(__FILELINE__);
+
+ exec sql select provsatz1 into :PROVSATZ from prov_verkaeufer
+	where verknr=:VERKNR and kundennr=:KUNDENNR;
+ SQLerror::test(__FILELINE__);
+
+
+ for(vector<int>::const_iterator i=rng_zeilen.begin();
+			i!=rng_zeilen.end();++i)
+   {
+    ZEILENNR=(*i);
+    exec sql insert into prov_entry (provnr,verknr,rngid,zeilennr,provsatz)
+	values (:ABRNR,:VERKNR,:RNGID,:ZEILENNR,:PROVSATZ);
+    SQLerror::test(__FILELINE__);
+   }
+
+ tr.commit();
+
+}
+
+
+
+
+
+
+

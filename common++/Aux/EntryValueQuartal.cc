@@ -1,6 +1,6 @@
-// $Id: AdminProblems.cc,v 1.11 2002/11/22 15:53:52 christof Exp $
+/* $Id: EntryValueQuartal.cc,v 1.1 2002/11/22 15:53:52 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
+ *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,15 +17,29 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "AdminProblems.h"
-#include "FetchIStream.h"
+#include <Aux/EntryValueQuartal.h>
+#include <typeinfo> // for bad_cast
 
-void AdminProblems::create(const std::string &programm,const std::string &text)
-{
-  std::string s="insert into problems (wann,programm,text) values "
-      "(now(),'"+programm+"','"+text+"')";
-  Query::Execute(s);
-  
+bool EntryValueQuartal::operator==(const EntryValueBase &v) const
+{ 
+ try{
+    const EntryValueQuartal &b=dynamic_cast<const EntryValueQuartal &>(v);
+    return (jahr==b.jahr && quartal==b.quartal);
+    } 
+    catch (std::bad_cast &e)
+    {  return false;
+    }
 }
+
+bool EntryValueQuartal::operator<(const EntryValueBase &v) const
+{  try
+   {  const EntryValueQuartal &b=dynamic_cast<const EntryValueQuartal &>(v);
+     if(jahr*10000+quartal < (b.jahr*10000+b.quartal)) return true;
+     return false;
+   } catch (std::bad_cast &e)
+   {  return false;
+   }
+}
+
 
 

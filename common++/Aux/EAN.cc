@@ -1,4 +1,4 @@
-// $Id: EAN.cc,v 1.10 2002/11/22 15:30:46 christof Exp $
+// $Id: EAN.cc,v 1.11 2002/11/22 15:53:52 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
