@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.62 2004/05/14 10:47:40 christof Exp $
+// $Id: Check.cc,v 1.63 2004/05/14 14:49:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -44,6 +44,7 @@ bool Check::resort=false;
 bool Check::verbose=false;
 bool Check::continue_=false;
 bool Check::delete_repair=false;
+bool Check::check_links=true;
 
 vergleichstream Check::vergleich_open(const std::string &name) const
 {  vergleichstream result(name);
@@ -96,6 +97,7 @@ bool Check::teste(was_checken check,const std::string &zusatz, bool vor_dem_test
   if (analyse) cmd+=" -y";
   else cmd+=" -l";
   if (delete_repair) cmd+=" -aD";
+  if (check_links) cmd+=" -aL";
   int c=system(cmd.c_str());
   if(verbose || c) 
   { std::cerr << cmd << " returned " << c<<'\n'; 

@@ -1,4 +1,4 @@
-// $Id: Check.hh,v 1.32 2004/02/27 11:10:14 christof Exp $
+// $Id: Check.hh,v 1.33 2004/05/14 14:49:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, 
  *  written by Malte Thoma + Christof Petig
@@ -53,6 +53,7 @@ class Check
    bool teste(was_checken was, const std::string &name,bool vor_dem_test_reparieren=false);
    static bool analyse,reparieren,overwrite,resort,verbose,continue_,
    	delete_repair;
+   static bool check_links;
 
    vergleichstream vergleich_open(const std::string &name) const;
    // true=error

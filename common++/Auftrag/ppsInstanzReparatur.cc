@@ -332,11 +332,12 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
       {  if (!silence_warnings)
            analyse("(Roh-Artikel wird auf gleicher Instanz bestellt)",ae,i->AEB,i->Menge);
       }
-      if (ae.Instanz()==i->AEB.Instanz() 
-// Vorerst deaktiviert   
-   		&& i->AEB.Id()==AuftragBase::dispo_auftrag_id)
+      if (ae.Instanz()==i->AEB.Instanz())
       {  if (i->AEB.Id()!=AuftragBase::dispo_auftrag_id)
-         {  analyse("Eltern auf gleicher Instanz müssen 2er sein",ae,i->AEB,i->Menge);
+         {  if (!silence_warnings)
+// Vorerst deaktiviert   
+               analyse("Eltern auf gleicher Instanz müssen 2er sein",ae,i->AEB,i->Menge);
+            goto inst_compare_end;
            weg:
             if (!analyse_only) AufEintragZu::remove(i->AEB,ae);
             i=eltern.erase(i);
@@ -363,6 +364,7 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
             alles_ok=false;
          }
       }
+     inst_compare_end: ;
       
       if (!i->Menge)
       {  if (i->AEB.Id()==AuftragBase::dispo_auftrag_id 
@@ -577,6 +579,13 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
                }
                else if (j->AEB.Instanz()!=bestellinstanz && !bestellinstanz->PlanungsInstanz())
                {  analyse("Kindartikel bei falscher Instanz",ae,j->AEB,j->Menge);
+                  goto weg1;
+               }
+            }
+            else // Instanz ist schon mal richtig ...
+            {  if (ae.Artikel()!=i->first)
+               {  analyse("Nächste Instanz mit anderem Artikel "+itos(ab.Id())+" "+itos(i->first.Id()),ae,j->AEB,j->Menge);
+                  artikel_passt_nicht=true;
                   goto weg1;
                }
             }

@@ -1,4 +1,4 @@
-// $Id: auftrag_repair.cc,v 1.10 2004/05/14 10:47:40 christof Exp $
+// $Id: auftrag_repair.cc,v 1.11 2004/05/14 14:49:44 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -182,13 +182,29 @@ restart:
     ++loops;
     alles_ok=true;
     if (actions&b_links && !analyse_only)
-    {  Query("delete from auftragsentryzuordnung where not exists "
+    {  FetchIStream is;
+       Query q("select instanz,auftragid,zeilennr from auftragentry "
+       		"where not exists (select true from auftrag "
+       		"where (auftragentry.instanz,auftragentry.auftragid)="
+       		"(auftrag.instanz,auftrag.auftragid))");
+       while ((q>>is).good())
+       {  AufEintragBase aeb;
+          is >> aeb >> Query::check_eol();
+          std::cout << "Verwaister AufEintrag (ohne Auftrag) " << aeb << "\n";
+          if (!analyse_only && 
+          	(ppsInstanzReparatur::really_delete || aeb.Id()<AufEintrag::handplan_id))
+             Query("delete from auftragentry where (instanz,auftragid,zeilennr)="
+             	"(?,?,?)") << aeb;
+       }
+       if (!analyse_only)
+       {Query("delete from auftragsentryzuordnung where not exists "
     	"(select true from auftragentry where (instanz,auftragid,zeilennr)="
     		"(altinstanz,altauftragid,altzeilennr)) or not exists "
     	"(select true from auftragentry where (instanz,auftragid,zeilennr)="
     		"(neuinstanz,neuauftragid,neuzeilennr))");
-       if (Query::Lines())
-       {  std::cout << Query::Lines() << " ungültige Zuordnungen gelöscht\n";
+        if (Query::Lines())
+        {  std::cout << Query::Lines() << " ungültige Zuordnungen gelöscht\n";
+        }
        }
     }
     if(instanz!=ppsInstanzID::None)

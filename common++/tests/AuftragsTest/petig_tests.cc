@@ -290,9 +290,9 @@ static bool Rep_KundenProgramm(AufEintrag &AE)
 {
           assert(Check::reparieren);
       {
-       std::string q1="update auftragentry set artikelid="+itos(ARTIKEL_ROLLEREIK.Id())+" where "
-                         " (auftragid,zeilennr,instanz) = (0,1,10)";
-       Query::Execute(q1);
+       Query("update auftragentry set artikelid=? where "
+                         " (instanz,auftragid,zeilennr) = (10,0,1)")
+                         << ARTIKEL_ROLLEREIK;
        SQLerror::test(__FILELINE__);
 
        vergleichen(Check::Menge,"reparatur_kunde","Reparatur Kundenaufträge (Artikel)","",true);
