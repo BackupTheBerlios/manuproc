@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.47 2003/06/18 10:17:57 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.48 2003/06/20 10:51:15 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -472,6 +472,7 @@ void Kunde::update_e(UpdateBitsSonst e)
 std::cout << i<<'\t'<<e<<'\t'<<(e&(1<<i))<<'\n';
      if(!(e&(1<<i))) continue;
      if      (i==B_Rechnungan ) query += "rechnung_an  = "+itos(Rngan())+",";
+     else if (i==B_Lieferscheinan ) query += "lieferung_an  = "+itos(Lfran())+",";
      else if (i==B_Extartbezid) query += "extartbezid = "+itos(getSchemaId())+",";
      else if (i==B_Notiz      ) query += "notiz  = '"+notiz()+"',";
      else if (i==B_GebDatum      ) query += "gebdatum  = '"+getGebDatum().postgres_null_if_invalid()+"',";
