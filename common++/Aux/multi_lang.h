@@ -86,6 +86,7 @@ public:
 		KOLLEKTION=71,
 		EAN_CODE=72,
 		PRINTF_ZAHLUNG9=73,
+		PRINTF_ZAHLUNG10=74,
 	     } LangTXT;
 
  MultiL_Dict(int sprache, int default_spr=1);
