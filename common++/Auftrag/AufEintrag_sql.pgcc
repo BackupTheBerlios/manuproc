@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.40 2002/12/24 08:25:22 thoma Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.41 2003/01/08 09:03:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,11 +20,11 @@
 #include <Auftrag/AufEintrag.h>
 #include <Auftrag/AuftragsBaum.h>
 #include <stdio.h>
-#include <Aux/string0.h>
-#include <Aux/Transaction.h>
-#include <Aux/FetchIStream.h>
+#include <Misc/string0.h>
+#include <Misc/Transaction.h>
+#include <Misc/FetchIStream.h>
 #include "auftrag_status.h"
-#include <Aux/Changejournal.h>
+#include <Misc/Changejournal.h>
 #include "selFullAufEntry.h"
 #include <Auftrag/AufEintragZu.h>
 #include <Lager/Lager.h>
@@ -38,7 +38,7 @@
 #include <algorithm>
 #include <unistd.h>
 //#include <Instanzen/ppsInstanzProduziert.h>
-#include <Aux/Trace.h>
+#include <Misc/Trace.h>
 #include <Artikel/ArtikelImLager.h>
 
 exec sql include sqlca;
@@ -271,7 +271,7 @@ AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool in
 //   mengen_t M_dispo=0,M_plan=0;
       if(AIL.getMengeDispo()>0 || AIL.getMengePlan()>0) 
        {
-cout << "LagerMenge vorhanden: "<<*this<<'\t'<<AIL.getMengeDispo()<<'\t'<<AIL.getMengePlan()<<'\n';
+std::cout << "LagerMenge vorhanden: "<<*this<<'\t'<<AIL.getMengeDispo()<<'\t'<<AIL.getMengePlan()<<'\n';
 //         mengen_t M_dispo,M_plan;
          if(AIL.getMengeDispo()>menge) 
                { M_dispo=menge; menge=0; }

@@ -19,7 +19,7 @@
 
 #include "AuftragFull.h"
 #include <Auftrag/selFullAufEntry.h>
-#include <Aux/Trace.h>
+#include <Misc/Trace.h>
 
 
 void AuftragFull::push_back(AufEintrag aeb)

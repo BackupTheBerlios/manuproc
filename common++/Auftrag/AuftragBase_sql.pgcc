@@ -18,13 +18,13 @@
 
 #include <Auftrag/Auftrag.h>
 #include<stdio.h>
-#include <Aux/Transaction.h>
-#include<Aux/Changejournal.h>
+#include <Misc/Transaction.h>
+#include<Misc/Changejournal.h>
 #include <Auftrag/auftrag_status.h>
 #include "AufEintrag.h"
 #include <Artikel/ArtikelStamm.h>
 #include <Auftrag/AufEintragZu.h>
-#include <Aux/Trace.h>
+#include <Misc/Trace.h>
 #include <Artikel/ArtikelImLager.h>
 
 exec sql include sqlca;

@@ -19,15 +19,15 @@
 #include <Auftrag/AuftragFull.h>
 #include <string.h>
 #include <strstream>
-#include <Aux/SQLerror.h>
-#include <Aux/Transaction.h>
+#include <Misc/SQLerror.h>
+#include <Misc/Transaction.h>
 exec sql include sqlca;
 #include <Auftrag/selFullAufEntry.h>
-#include <Aux/string0.h>
+#include <Misc/string0.h>
 #include <Kunde/Zahlungsart.h>
-#include<Aux/Changejournal.h>
+#include<Misc/Changejournal.h>
 #include <Artikel/ArtikelStamm.h>
-#include <Aux/Trace.h>
+#include <Misc/Trace.h>
 
 void Auftrag::deleteAuftrag() throw(SQLerror)
 {

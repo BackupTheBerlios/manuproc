@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.34 2002/12/20 13:00:11 thoma Exp $
+// $Id: AufEintragBase.cc,v 1.35 2003/01/08 09:03:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,7 +19,7 @@
 
 #include <Auftrag/AufEintragBase.h>
 #include "AufEintragBase.h"
-#include <Aux/Transaction.h>
+#include <Misc/Transaction.h>
 #include <Auftrag/AuftragsBaum.h> 
 #include <Auftrag/AufEintragZu.h>
 #include <Artikel/ArtikelBaum.h>
@@ -30,8 +30,8 @@
 #include<Lager/FertigWaren.h>
 #include<Artikel/ArtikelBase.h>
 #endif
-#include <Aux/Trace.h>
-#include<Aux/FetchIStream.h>
+#include <Misc/Trace.h>
+#include<Misc/FetchIStream.h>
 #include <Auftrag/AufEintragZuMengenAenderung.h>
 
 FetchIStream& operator>>(FetchIStream& is,AufEintragBase &aeb)

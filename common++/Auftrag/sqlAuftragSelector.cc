@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.23 2002/12/13 09:27:21 thoma Exp $
+// $Id: sqlAuftragSelector.cc,v 1.24 2003/01/08 09:03:41 christof Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -18,8 +18,8 @@
  */
 
 #include<Auftrag/sqlAuftragSelector.h>
-#include<Aux/string0.h>
-#include <Aux/itos.h>
+#include<Misc/string0.h>
+#include <Misc/itos.h>
 #include<auftrag_status.h>
 #include<BaseObjects/ManuProcEntity.h>
 

@@ -1,4 +1,4 @@
-// $Id: AufEintragZu_sql.pgcc,v 1.15 2002/12/19 13:57:21 thoma Exp $
+// $Id: AufEintragZu_sql.pgcc,v 1.16 2003/01/08 09:03:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -18,14 +18,14 @@
  */
 
 #include <Auftrag/AufEintragZu.h>
-#include <Aux/Transaction.h>
+#include <Misc/Transaction.h>
 #include <Auftrag/auftrag_status.h>
 //#include <Auftrag/AuftragsBaum.h> 
-#include <Aux/Changejournal.h>
+#include <Misc/Changejournal.h>
 #include <Artikel/ArtikelStamm.h>
 #include <Artikel/ArtikelBezeichnung.h>
-#include <Aux/FetchIStream.h>
-#include <Aux/Trace.h>
+#include <Misc/FetchIStream.h>
+#include <Misc/Trace.h>
 
 exec sql include sqlca;
 
@@ -214,7 +214,7 @@ void AufEintragZu::Neu(const AufEintragBase& neuAEB,
 //ECPGdebug(false,0);
 }
 
-#include <Aux/itos.h>
+#include <Misc/itos.h>
 
 bool AufEintragZu::setMenge(const AufEintragBase& neuAEB,const mengen_t menge)
 {

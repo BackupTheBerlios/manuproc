@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.20 2002/12/20 15:35:40 thoma Exp $
+// $Id: AuftragBase.cc,v 1.21 2003/01/08 09:03:41 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,14 +20,14 @@
 #include <Auftrag/AuftragBase.h>
 #include <Auftrag/Auftrag.h>
 #include<stdio.h>
-#include <Aux/Transaction.h>
-#include<Aux/Changejournal.h>
+#include <Misc/Transaction.h>
+#include<Misc/Changejournal.h>
 #include <Auftrag/auftrag_status.h>
 #include "AufEintrag.h"
 #include <Artikel/ArtikelStamm.h>
 #include <Artikel/ArtikelImLager.h>
 #include <Auftrag/AufEintragZu.h>
-#include <Aux/Trace.h>
+#include <Misc/Trace.h>
 #include <Lager/Lager.h>
 
 std::string AuftragBase::str() const
