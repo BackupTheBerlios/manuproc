@@ -19,3 +19,4 @@ missing
 mkinstalldirs 
 stamp-h
 stamp-h.in
+depcomp stamp-h1 autom4te.cache

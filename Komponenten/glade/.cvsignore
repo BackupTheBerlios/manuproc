@@ -1,0 +1,12 @@
+src
+Makefile
+autogen.sh
+configure.in
+Makefile.am
+README
+AUTHORS
+ChangeLog
+NEWS
+TODO
+acconfig.h
+macros

@@ -21,3 +21,4 @@ stamp-h
 stamp-h.in
 install-sh
 gCVS
+depcomp stamp-h1 autom4te.cache
