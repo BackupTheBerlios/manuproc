@@ -7,6 +7,9 @@
 -- Name: rechnung_zahlungsart Type: TABLE Owner: thoma
 --
 
+drop table rechnung_zahlungsart;
+drop INDEX rechnung_zahlungsziel_pkey;
+
 CREATE TABLE "rechnung_zahlungsart" (
 	"id" integer NOT NULL,
 	"kurzbezeichnung" text NOT NULL,

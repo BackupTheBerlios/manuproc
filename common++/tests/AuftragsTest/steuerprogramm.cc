@@ -263,6 +263,7 @@ int auftragstests(e_mode mode)
 
 #ifdef PETIG_TEST
        Lieferschein liefs(ppsInstanzID::_Garn__Einkauf,cH_Kunde(Kunde::eigene_id));
+//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
        liefs.push_back(ARTIKEL_ACETAT,1,66,0);
        erfolgreich=C.teste(Check::LieferscheinEinkaufTeillieferung,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferschein mit Teillieferung für Einkauf anlegen\n\n"; return fehler();}

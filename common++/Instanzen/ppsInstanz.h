@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.16 2002/12/04 11:32:20 thoma Exp $
+// $Id: ppsInstanz.h,v 1.17 2002/12/04 16:06:45 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -160,6 +160,10 @@ public:
       bool Reparatur_Zuordnungen(const int uid,const bool analyse_only,
          const  ManuProcEntity<>::ID auftragid,const bool kinder,const e_zumode zumode) const throw(SQLerror);
 
+      typedef fixedpoint<ManuProC::Precision::AuftragsMenge> ABmt;
+      bool check_D_ungeplant(const bool analyse_only,const AufEintrag &AE,const ABmt &M0sum,const ABmt &Msum) const;
+      bool check_E_geplant(const bool analyse_only,const AufEintrag &AE,const ABmt &Msum) const;
+      bool check_F_dispo(const bool analyse_only,const AufEintrag &AE,const ABmt &Msum) const;
  public:
       // Einlesen des Lagerinhalts und Anpassen der 2er unter Berücksichtigung der 1er
       void ReparaturLager(const int uid,const bool analyse_only) const throw(SQLerror);

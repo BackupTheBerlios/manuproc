@@ -1,4 +1,4 @@
-// $Id: ppsInstanzProduziert.cc,v 1.9 2002/11/29 11:20:34 thoma Exp $
+// $Id: ppsInstanzProduziert.cc,v 1.10 2002/12/04 16:06:45 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -286,6 +286,7 @@ void ManuProC::st_produziert::Reduce_DispoEltern(const AufEintragBase &aeb,Auftr
         AuftragBase::mengen_t M=AuftragBase::min(i->Menge,menge);
 //cout << "Reduce_DispoEltern: "<<i->Menge<<' '<<menge<<'='<<M<<'\n';
         AufEintrag(i->AEB).updateStkDiffBase__(uid,-M);
+        AufEintragZu(i->AEB).setMengeDiff__(aeb,-M);
         menge-=M;
       } 
    }  

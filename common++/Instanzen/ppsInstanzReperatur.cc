@@ -61,44 +61,68 @@ bool ppsInstanz::Reparatur_Zuordnungen(const int uid,const bool analyse_only,
    SelectedFullAufList AL1(sel1er);
    for(SelectedFullAufList::iterator i=AL1.begin();i!=AL1.end();++i)
     {
-      AuftragBase::mengen_t Msum=0;
+      AuftragBase::mengen_t Msum=0, M0sum=0;
       std::list<AufEintragZu::st_reflist> L;
       switch (zumode) {
-         case ez_ungeplant: L=AufEintragZu(*i).get_Referenz_list_ungeplant(kinder); break;
+         case ez_ungeplant: { L=AufEintragZu(*i).get_Referenz_list_ungeplant(kinder);
+                              std::list<AufEintragZu::st_reflist> L2=AufEintragZu(*i).get_Referenz_list_dispo(kinder);
+                              L.splice(L.end(),L2);
+                              break;}
          case ez_geplant:   L=AufEintragZu(*i).get_Referenz_list_geplant(kinder); break;
          case ez_dispo:     L=AufEintragZu(*i).get_Referenz_list_dispo(kinder); break;
         }
       for(std::list<AufEintragZu::st_reflist>::const_iterator j=L.begin();j!=L.end();++j)
         {
-          Msum+=j->Menge;
+          if(j->AEB.Id()==AuftragBase::ungeplante_id) M0sum+=j->Menge;
+          else Msum+=j->Menge;
 //cout << *i<<'\t'<<j->AEB<<'\t'<<j->Menge<<'\t'<<Msum<<'\n';
         }
       switch (zumode) {
-         case ez_ungeplant:
-         case ez_geplant:
-          {
-           if(Msum!=i->getStueck())
-            { 
-             alles_ok=false;
-             if(analyse_only) std::cout << "Analyse: Zuord.-Summen ("<<Msum<<") stimmen nicht ("<<i->getStueck()<<") für "<<*i<<'\n';
-             else assert(!"nicht implementiert\n");
-             break;         
-            }
-          }
-        case ez_dispo:
-          {
-           if(Msum>i->getRestStk())
-            { 
-             alles_ok=false;
-             if(analyse_only) std::cout << "Analyse: Zuord.-Summen ("<<Msum<<") sind größer als ("<<i->getRestStk()<<") für "<<*i<<'\n';
-             else assert(!"nicht implementiert\n");
-             break;         
-            }
-          }
+         case ez_ungeplant: alles_ok=check_D_ungeplant(analyse_only,*i,M0sum,Msum+M0sum); break;
+         case ez_geplant:   alles_ok=check_E_geplant(analyse_only,*i,Msum+M0sum); break;   
+         case ez_dispo:     alles_ok=check_F_dispo(analyse_only,*i,Msum+M0sum);break;
        }
     }
  return alles_ok;
 } 
+
+bool ppsInstanz::check_D_ungeplant(const bool analyse_only,const AufEintrag &AE,const ABmt &M0sum,const ABmt &Msum) const
+{
+  if(AE.getGeliefert() <= M0sum) return check_E_geplant(analyse_only,AE,Msum);
+  else if(Msum>AE.getStueck())
+   { 
+cout << Msum<<'\t'<<AE.getStueck()<<'\t'<<AE.getRestStk()<<'\n';
+     if(analyse_only) std::cout << "Analyse: Zuord.-Summen ("<<Msum<<") ist größer als ("<<AE.getStueck()<<") für "<<AE<<'\n';
+     else assert(!"nicht implementiert\n");
+     return false;
+   }
+  return true;
+}
+
+bool ppsInstanz::check_E_geplant(const bool analyse_only,const AufEintrag &AE,const ABmt &Msum) const
+{
+  if(Msum!=AE.getStueck())
+   { 
+cout << Msum<<'\t'<<AE.getStueck()<<'\t'<<AE.getRestStk()<<'\n';
+     if(analyse_only) std::cout << "Analyse: Zuord.-Summen ("<<Msum<<") stimmen nicht ("<<AE.getStueck()<<") für "<<AE<<'\n';
+     else assert(!"nicht implementiert\n");
+     return false;
+   }
+ return true;
+}
+
+bool ppsInstanz::check_F_dispo(const bool analyse_only,const AufEintrag &AE,const ABmt &Msum) const
+{
+  if(Msum>AE.getRestStk())
+   { 
+     if(analyse_only) std::cout << "Analyse: Zuord.-Summen ("<<Msum<<") sind größer als ("<<AE.getRestStk()<<") für "<<AE<<'\n';
+     else assert(!"nicht implementiert\n");
+     return false;
+   }
+  return true;
+}
+
+
 
 ////////////////////////////////////////////////////////////////////////////
 
