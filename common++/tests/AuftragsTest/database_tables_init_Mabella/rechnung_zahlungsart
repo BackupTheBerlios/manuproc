@@ -27,7 +27,8 @@ CREATE TABLE rechnung_zahlungsart (
     skontofrist_3 numeric(3,0),
     monatsende boolean,
     verfahren text,
-    frist_monate numeric(2,0)
+    frist_monate numeric(2,0),
+    textid integer
 );
 
 

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+if [ $1empty = "empty" ]; then exit 1; fi
+
 psql $1 <<EOF
 delete from prod_changejournal;
 delete from auftrag_prozess;
