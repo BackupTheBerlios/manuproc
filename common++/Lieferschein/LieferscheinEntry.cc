@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.28 2003/07/04 06:37:37 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.29 2003/07/04 07:04:19 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -179,8 +179,10 @@ LieferscheinBase::mengen_t LieferscheinEntry::Abschreibmenge(int stueck,mengen_t
 }
 
 FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry::st_AufEintragMenge& z)
-{
-  return is >> z.aeb >> z.menge;
+{ is >> z.aeb >> z.menge;
+  // eliminate the valid Instanz
+  if (!z.aeb) z.aeb=AufEintragBase();
+  return is;
 }
 
 ArgumentList &operator<<(ArgumentList &q, const LieferscheinEntryBase &leb)
@@ -206,6 +208,8 @@ FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry& z)
  	>> FetchIStream::MapNull(z.palette)
      >> FetchIStream::MapNull(zusatzinfo) >> refauftrag ;
  z.instanz=refauftrag.Instanz();
+ // eliminate the valid Instanz
+ if (!refauftrag) refauftrag=AufEintragBase();
  
  if(!zusatzinfo) 
  { LieferscheinEntry::mengen_t m=z.menge;
