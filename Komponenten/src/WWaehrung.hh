@@ -1,4 +1,4 @@
-// $Id: WWaehrung.hh,v 1.9 2002/09/18 07:56:01 christof Exp $
+// $Id: WWaehrung.hh,v 1.10 2002/09/18 08:48:31 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
