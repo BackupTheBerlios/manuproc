@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.37 2003/05/15 15:37:23 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.38 2003/05/15 15:47:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -310,12 +310,18 @@ void Query::Fetch(FetchIStream &is)
 
 Query::~Query()
 {  if (!params.complete())
-      std::cerr << "The query " << query << " still needed " << params.HowManyNeededParams() << " parameters on destruction and got never executed!\n";
-   struct sqlca copy=sqlca;
-   //   exec sql deallocate descriptor X;
-   ECPGdeallocate_desc(__LINE__, descriptor.c_str());
-   // do not change sqlca ... believe me, you don't want to
-   sqlca=copy;
+   {  std::cerr << "The query " << query << " still needed " 
+   	<< params.HowManyNeededParams() 
+   	<< " parameters on destruction and got never executed!\n";
+      sqlca.sqlcode=ECPG_TOO_FEW_ARGUMENTS;
+   }
+   else
+   {  struct sqlca copy=sqlca;
+      //   exec sql deallocate descriptor X;
+      ECPGdeallocate_desc(__LINE__, descriptor.c_str());
+      // do not change sqlca ... believe me, you don't want to
+      sqlca=copy;
+   }
 }
 
 void Query::Execute(const std::string &command)
