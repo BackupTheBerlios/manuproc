@@ -31,16 +31,36 @@
 #include "TestReihe.h"
 #include <Auftrag/AufEintragBase.h>
 
-static bool Auftrag_Kunde(AufEintrag &AE)
+static bool Auftrag_Kunde()
 {
  Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE); 
-
+ AufEintragBase AEB=auftrag.push_back(16,DATUM,ARTIKEL_TRIO,OPEN,true);
  vergleichen(Check::Menge,"auftrag_anlegen","Kundenauftrag anlegen","AM");
+
+ Auftrag best=Auftrag(Auftrag::Anlegen(ppsInstanzID::Einkauf),LIEFERANT); 
+ AufEintragBase BE=auftrag.push_back(16,DATUM,ARTIKEL_TRIO,OPEN,true);
+ vergleichen(Check::Menge,"bestellung_anlegen","Bestellung anlegen","BE");
+
+ Lieferschein we(ppsInstanzID::Einkauf,cH_Kunde(LIEFERANT));
+ AufEintrag BEAE(BE);
+ LieferscheinEntryBase lsb(we,we.push_back(BE,ARTIKEL_TRIO,20,0,0));
+ LieferscheinEntry lsbe(lsb);
+ lsbe.lagerid=FertigWarenLager::default_lagerid;
+ lsbe.changeStatus(OPEN,true);
+ vergleichen(Check::Lieferschein|Check::Menge,"wareneingang_anglegen","Wareneingang","WE");
+
+ Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
+ AufEintrag AE(AEB);
+ LieferscheinEntryBase LS(liefs,liefs.push_back(AEB,ARTIKEL_TRIO,16,0,0));
+ LieferscheinEntry LE(LS);
+ LE.lagerid=FertigWarenLager::default_lagerid;
+ LE.changeStatus(OPEN,true);
+ vergleichen(Check::Lieferschein|Check::Menge,"minmen_Auslief","Auslieferung","L");
 	
  return true;
 }
 
-static TestReihe Lieferschein_Kunde_(&Auftrag_Kunde,"Kundenauftrag (Mabella)","AM");
+static TestReihe Auftrag_Kunde_(&Auftrag_Kunde,"Kundenauftrag (Mabella)","AM");
 
 
 static bool Rollereiplanung()
@@ -64,8 +84,10 @@ static TestReihe Rollereiplanung_(&Rollereiplanung,"Rollereiplanung","roll");
 #include <Artikel/ArtikelStamm.h>
 
 static bool MindestMenge()
-{  Lager L(FERTIGWLAGER);
-   L.rein_ins_lager(ARTIKEL_TRIO,5,false);
+{  FertigWaren fw(ARTIKEL_TRIO,FertigWaren::eManuell,5);
+   FertigWarenLager fwl(fw,FertigWarenLager::default_lagerid);
+   fwl.Einlagern(ProductionContext());
+   
    ArtikelStamm(make_value(ArtikelBase(ARTIKEL_TRIO))).setMindBest(5);
    vergleichen(Check::Menge,"minmen_Ausgangspunkt","Ausgangspunkt","a");
    
@@ -80,8 +102,11 @@ static bool MindestMenge()
    vergleichen(Check::Menge,"minmen_storno","Storno","s");   
    
    Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
-   LieferscheinEntryBase lsb(liefs,liefs.push_back(ARTIKEL_TRIO,5));
-   LieferscheinEntry(lsb).changeStatus(OPEN,false);
+   AufEintrag AE(AEB3);
+   LieferscheinEntryBase lsb(liefs,liefs.push_back(AE,ARTIKEL_TRIO,4,0,0));
+   LieferscheinEntry LE(lsb);
+   LE.lagerid=fwl.Id();
+   LE.changeStatus(OPEN,true);
    vergleichen(Check::Lieferschein|Check::Menge,"minmen_Auslief","Lieferung","l");
 
    return true;
