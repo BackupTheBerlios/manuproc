@@ -24,12 +24,13 @@
 
 exec sql include sqlca;
 
-AufEintrag::AufEintrag(const aktAufEintrag &aufentry,int aufid, int wrkst,
+AufEintrag::AufEintrag(const aktAufEintrag &aufentry,const AuftragBase& auftrag, int wrkst,
 			const cH_ExtBezSchema &schema) throw(SQLerror)
 {
  exec sql begin declare section;
  int AUFTRAGID;
  long ARTIKELID;
+ int INSTANZ;
  int ZEILENNR;
  int BESTELLT;
  char LIEFERDATUM[21];
@@ -39,7 +40,8 @@ AufEintrag::AufEintrag(const aktAufEintrag &aufentry,int aufid, int wrkst,
  int STATUS=OPEN;
  exec sql end declare section;
  
- AUFTRAGID = aufid;
+ AUFTRAGID = auftrag.Id();
+ INSTANZ = (int)auftrag.Instanz();
  BESTELLT = aufentry.getStk();
  aufentry.getLieferdatum().write_postgres(LIEFERDATUM,sizeof LIEFERDATUM);
  PREIS = aufentry.getPreis().Wert();
@@ -57,15 +59,16 @@ AufEintrag::AufEintrag(const aktAufEintrag &aufentry,int aufid, int wrkst,
 	where auftragid= :AUFTRAGID;
  SQLerror::test("generate next zeilennr");
 
- exec sql insert into auftragentry (auftragid, zeilennr,
+ exec sql insert into auftragentry (instanz,auftragid, zeilennr,
 	bestellt,geliefert,lieferdate,artikelid,status,
 	preis,rabatt,preismenge)
-	values (:AUFTRAGID, :ZEILENNR, :BESTELLT, 0, :LIEFERDATUM,
+	values (:INSTANZ, :AUFTRAGID, :ZEILENNR, :BESTELLT, 0, :LIEFERDATUM,
 		:ARTIKELID, :STATUS, :PREIS/100.0, :RABATT/100.0,
 		:PREISMENGE);
  SQLerror::test(__FILELINE__" insert into auftragentry");	
 	
  auftragid = AUFTRAGID;
+ instanz = (ppsInstanz::ppsInstId)INSTANZ;
  zeilennr = ZEILENNR;
  bestellt = BESTELLT;
  menge = bestellt*artikel->Stueckgroesse();
@@ -79,8 +82,8 @@ AufEintrag::AufEintrag(const aktAufEintrag &aufentry,int aufid, int wrkst,
 
  try{
      pps_ChJournalEntry::newChange(
-                        instanz.Id(),
-			AufEintragBase2(AUFTRAGID,ZEILENNR,instanz.Id()),
+                        instanz,
+			AufEintragBase2(instanz,AUFTRAGID,ZEILENNR),
                         ArtikelBase(ARTIKELID),
                         (double)BESTELLT,
                         (double)BESTELLT,

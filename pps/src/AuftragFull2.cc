@@ -24,7 +24,7 @@
 
 int AuftragFull::insertNewEntry(const aktAufEintrag &aufentry, const cH_ExtBezSchema &ebsh) throw (SQLerror)
 {
- AufEintrag tmp(aufentry, auftragid, wrkstatus, ebsh);
+ AufEintrag tmp(aufentry, AuftragBase((ppsInstanz::ppsInstId)instanz,auftragid), wrkstatus, ebsh);
  eintragliste.push_back(tmp);
  return tmp.getZnr();
 }

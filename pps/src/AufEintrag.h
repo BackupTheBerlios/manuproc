@@ -22,6 +22,7 @@
 #define AUFTRAG_AUFTRAGENTRY_H
 #include "aktAufEintrag.h" // Datenabstraktion
 #include <Auftrag/AufEintragBase.h>
+#include <Auftrag/AuftragBase.h>
 #include <Aux/EntryValue.h> // veraltet
 #include <Artikel/ArtikelBase.h> 
 #include <Aux/SQLerror.h>
@@ -33,7 +34,7 @@ public:
  AufEintrag(const SelectedAufentry &aufentry, const cH_ExtBezSchema &schema)
 	 :AufEintragBase(aufentry,schema)
  {}
- AufEintrag(const aktAufEintrag &aufentry,int aufid, int wrkst,
+ AufEintrag(const aktAufEintrag &aufentry,const AuftragBase& auftrag, int wrkst,
  				const cH_ExtBezSchema &schema) throw(SQLerror);
  AufEintrag() {} ;
  AufEintrag(const AufEintragBase &ab) : AufEintragBase(ab) {} ;

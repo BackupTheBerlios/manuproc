@@ -99,7 +99,7 @@ const string &MyRow::getStkSumText() const
 }
 
 
-void MyRow::insertAufEintrag(const AufEintrag& entry, queue<int> &seq, int deep=0)
+void MyRow::insertAufEintrag(const AufEintrag& entry, deque<int> &seq, int deep=0)
 {
 	int tmp = seq.front();
 	EntryValue val = entry.getSeqValue(tmp);
@@ -114,7 +114,7 @@ void MyRow::insertAufEintrag(const AufEintrag& entry, queue<int> &seq, int deep=
 	if(i!=tclistrow->end())
 	  {
 	   if(val == ((MyRow*)(*i).get_user_data())->getValue())
-	     {seq.pop();
+	     {seq.pop_front();
 	      deep = deep ? deep-1 : 0;
 	      ((MyRow*)(*i).get_user_data())->summeter+=entry.getRest(); 
 	      if(stuecksumme)
@@ -159,7 +159,7 @@ insertnew2:
 	   r->tclistrow = tclr;
 	   if(!r->leaf)
 	     {
-	      seq.pop();
+	      seq.pop_front();
 	      if(!seq.empty())
 	      r->insertAufEintrag(entry, seq, deep);
 	     }

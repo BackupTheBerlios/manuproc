@@ -1,3 +1,4 @@
+
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -87,7 +88,7 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
         void on_aufbemerkung_activate();
         void on_kunden_activate();
 
- void loadAuftrag(int aid);
+ void loadAuftrag(const AuftragBase& auftrag);
  void fillMask();
  void andererKunde();
  void clearEntry();
@@ -104,7 +105,7 @@ public:
  
  bool splitEntry();
 
-auftrag_bearbeiten(int aufid, int zeilennr);
+auftrag_bearbeiten(AuftragBase& selectedauftragbase, int zeilennr);
 ~auftrag_bearbeiten();
 
 };

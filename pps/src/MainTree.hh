@@ -20,7 +20,7 @@
 #include"myRow.h"
 #include<stdio.h>
 #include<TCList.h>
-#include<queue>
+#include<deque>
 #include"auftragbase.h"
 
 #ifndef MAINTREEH
@@ -30,7 +30,7 @@ class MainTree : public TCList
  int showdeep;
  vector<int> currseq;
  vector<int> tmpvec;
- queue<int> tmpq;
+ deque<int> tmpq;
 
 public :
 

@@ -27,7 +27,8 @@ class auftrag_main : public auftrag_main_glade
 {   
  bool interne_namen;
  int selectedaufzeile;
- int selectedaufid; 
+// int selectedaufid; 
+ AuftragBase *selectedauftragbase;
  int showdeep;
  MyRow *selectedmyrow; 
  vector<cH_Prozess> prozlist;
@@ -58,4 +59,18 @@ public:
  auftrag_main();
 
 };
+
+class Data_auftrag : public RowDataBase
+{
+    virtual const cH_EntryValue Value(int seqnr,gpointer gp) const
+ { 
+//   if (reinterpret_cast<int>(gp)=='A')
+    switch (seqnr) {
+      case 0 : return cH_EntryValueIntString("X");
+      case 1 : return cH_EntryValueIntString("Y");
+      case 2 : return cH_EntryValueIntString(3);   
+     }
+   return cH_EntryValueIntString("?");
+};
+
 #endif

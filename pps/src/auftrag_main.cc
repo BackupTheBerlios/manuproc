@@ -27,6 +27,7 @@
 #include "auftrag_bearbeiten.hh"
 #include"auftragbase.h"
 #include<Auftrag/selFullAufEntry.h>
+//#include<Auftrag/AuftragFull.h>
 #include<Auftrag/AufEintragBase2.h>
 #include<Auftrag/auftrag_status.h>
 #include"auftrag_lieferschein.hh"
@@ -58,12 +59,15 @@ void auftrag_main::on_erfassen_activate()
 {   
  hide();
  try
- {  auftragbearbeiten = new auftrag_bearbeiten(selectedaufid,selectedaufzeile);
+// {  auftragbearbeiten = new auftrag_bearbeiten(selectedaufid,selectedaufzeile);
+ {  auftragbearbeiten = new auftrag_bearbeiten(*selectedauftragbase,selectedaufzeile);
  } catch (SQLerror &e)
  {  cerr << e << '\n';
     show();
  } 
- selectedaufid=selectedaufzeile=0;
+// selectedaufid=selectedaufzeile=0;
+ selectedaufzeile=0;
+ selectedauftragbase=NULL;
 }
 
 void auftrag_main::on_neuladen_activate()
@@ -178,8 +182,8 @@ void auftrag_main::on_main_defaultattrbutton_clicked()
 auftrag_main::auftrag_main()
 {
  auftragmain=this;
-
- selectedaufid=0;
+ selectedauftragbase=NULL;
+// selectedaufid=0;
  selectedaufzeile=0;
  selectedmyrow=0;
  allaufids=0;
@@ -191,6 +195,23 @@ auftrag_main::auftrag_main()
  maintree->select_row.connect(SigC::slot(this,&auftrag_main::onRowSelect));
  maintree->unselect_row.connect(SigC::slot(this,&auftrag_main::onRowUnselect));
 
+ set_column_titles_of_simple_tree();
+}
+
+auftrag_main::set_column_titles_of_simple_tree()
+{
+ vector<string> ct;
+ ct.push_back("Kunde");
+ ct.push_back("Artikel");
+ ct.push_back("Breite");
+ ct.push_back("Farbe");
+ ct.push_back("Aufmachung");
+ ct.push_back("Lieferwoche");
+ ct.push_back("Auftrag");
+ ct.push_back("Verarbeitung");
+ ct.push_back("offene Meter");
+ ct.push_back("offene Stück");
+ maintree_s->setTitles(ct);
 }
 
 
@@ -221,7 +242,9 @@ void auftrag_main::onRowUnselect(int row, int col, GdkEvent* b)
  if(selectedmyrow)
    if(selectedmyrow->Leaf())
       prozlist_scombo->reset();
- selectedaufid=selectedaufzeile=0;
+// selectedaufid=selectedaufzeile=0;
+ selectedaufzeile=0;
+ selectedauftragbase=NULL;
  selectedmyrow=0;
 }
 
@@ -229,7 +252,8 @@ void auftrag_main::onRowSelect(int row, int col, GdkEvent* b)
 {
  TCListRow *tclr=(TCListRow*)(maintree->get_row_data(row));
  selectedmyrow = (MyRow*)(*tclr).get_user_data();
- selectedaufid = selectedmyrow->getAuftragid();
+// selectedaufid = selectedmyrow->getAuftragid();
+ selectedauftragbase->set_Id( selectedmyrow->getAuftragid());
  selectedaufzeile = selectedmyrow->getZeilennr();
  prozlist_scombo->reset();
  if(selectedmyrow->Leaf())   
@@ -269,7 +293,7 @@ void auftrag_main::on_prozlistscombo_activate()
      {
       int aufid=selectedmyrow->getAuftragid();
       int znr = selectedmyrow->getZeilennr();
-      AufEintragBase2 aufbase(aufid,znr);
+      AufEintragBase2 aufbase(selectedauftragbase->Instanz(),aufid,znr);
       int pid=atoi(prozlist_scombo->get_text().c_str());
       AufEintrag &af=aufentrymap[aufbase.mapKey()];
       try{af.setVerarbeitung(cH_Prozess(pid));}

@@ -867,6 +867,21 @@
 	</widget>
 
 	<widget>
+	  <class>Custom</class>
+	  <name>maintree_s</name>
+	  <cxx_visibility>protected</cxx_visibility>
+	  <creation_function>SimpleTree</creation_function>
+	  <int1>10</int1>
+	  <int2>0</int2>
+	  <last_modification_time>Mon, 25 Jun 2001 08:37:46 GMT</last_modification_time>
+	  <child>
+	    <padding>0</padding>
+	    <expand>True</expand>
+	    <fill>True</fill>
+	  </child>
+	</widget>
+
+	<widget>
 	  <class>GtkScrolledWindow</class>
 	  <name>scrolledwindow2</name>
 	  <hscrollbar_policy>GTK_POLICY_ALWAYS</hscrollbar_policy>
@@ -880,14 +895,20 @@
 	  </child>
 
 	  <widget>
-	    <class>Custom</class>
-	    <name>maintree</name>
-	    <cxx_visibility>protected</cxx_visibility>
-	    <creation_function>MainTree</creation_function>
-	    <string1></string1>
-	    <int1>10</int1>
-	    <int2>0</int2>
-	    <last_modification_time>Thu, 16 Nov 2000 12:14:05 GMT</last_modification_time>
+	    <class>GtkViewport</class>
+	    <name>viewport3</name>
+	    <shadow_type>GTK_SHADOW_NONE</shadow_type>
+
+	    <widget>
+	      <class>Custom</class>
+	      <name>maintree</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <creation_function>MainTree</creation_function>
+	      <string1></string1>
+	      <int1>10</int1>
+	      <int2>0</int2>
+	      <last_modification_time>Thu, 16 Nov 2000 12:14:05 GMT</last_modification_time>
+	    </widget>
 	  </widget>
 	</widget>
       </widget>
@@ -3442,23 +3463,29 @@ löschen</label>
 	  </child>
 
 	  <widget>
-	    <class>Custom</class>
-	    <name>offene_auftraege</name>
-	    <cxx_visibility>protected</cxx_visibility>
-	    <signal>
-	      <name>select_row</name>
-	      <handler>on_selectrow_offauf</handler>
-	      <last_modification_time>Fri, 26 Jan 2001 09:02:02 GMT</last_modification_time>
-	    </signal>
-	    <signal>
-	      <name>unselect_row</name>
-	      <handler>on_unselectrow_offauf</handler>
-	      <last_modification_time>Fri, 26 Jan 2001 09:02:16 GMT</last_modification_time>
-	    </signal>
-	    <creation_function>OffAuf_TCList</creation_function>
-	    <int1>5</int1>
-	    <int2>3</int2>
-	    <last_modification_time>Tue, 30 Jan 2001 10:10:14 GMT</last_modification_time>
+	    <class>GtkViewport</class>
+	    <name>viewport4</name>
+	    <shadow_type>GTK_SHADOW_NONE</shadow_type>
+
+	    <widget>
+	      <class>Custom</class>
+	      <name>offene_auftraege</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <signal>
+		<name>select_row</name>
+		<handler>on_selectrow_offauf</handler>
+		<last_modification_time>Fri, 26 Jan 2001 09:02:02 GMT</last_modification_time>
+	      </signal>
+	      <signal>
+		<name>unselect_row</name>
+		<handler>on_unselectrow_offauf</handler>
+		<last_modification_time>Fri, 26 Jan 2001 09:02:16 GMT</last_modification_time>
+	      </signal>
+	      <creation_function>OffAuf_TCList</creation_function>
+	      <int1>5</int1>
+	      <int2>3</int2>
+	      <last_modification_time>Tue, 30 Jan 2001 10:10:14 GMT</last_modification_time>
+	    </widget>
 	  </widget>
 	</widget>
       </widget>
@@ -4242,23 +4269,29 @@ Euro
 	  </child>
 
 	  <widget>
-	    <class>Custom</class>
-	    <name>offene_lieferscheine</name>
-	    <cxx_visibility>protected</cxx_visibility>
-	    <signal>
-	      <name>select_row</name>
-	      <handler>on_selectrow_offlief</handler>
-	      <last_modification_time>Wed, 28 Mar 2001 10:54:57 GMT</last_modification_time>
-	    </signal>
-	    <signal>
-	      <name>unselect_row</name>
-	      <handler>on_unselectrow_offlief</handler>
-	      <last_modification_time>Wed, 28 Mar 2001 10:55:04 GMT</last_modification_time>
-	    </signal>
-	    <creation_function>OffLief_TCList</creation_function>
-	    <int1>3</int1>
-	    <int2>3</int2>
-	    <last_modification_time>Wed, 28 Mar 2001 10:54:34 GMT</last_modification_time>
+	    <class>GtkViewport</class>
+	    <name>viewport5</name>
+	    <shadow_type>GTK_SHADOW_NONE</shadow_type>
+
+	    <widget>
+	      <class>Custom</class>
+	      <name>offene_lieferscheine</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <signal>
+		<name>select_row</name>
+		<handler>on_selectrow_offlief</handler>
+		<last_modification_time>Wed, 28 Mar 2001 10:54:57 GMT</last_modification_time>
+	      </signal>
+	      <signal>
+		<name>unselect_row</name>
+		<handler>on_unselectrow_offlief</handler>
+		<last_modification_time>Wed, 28 Mar 2001 10:55:04 GMT</last_modification_time>
+	      </signal>
+	      <creation_function>OffLief_TCList</creation_function>
+	      <int1>3</int1>
+	      <int2>3</int2>
+	      <last_modification_time>Wed, 28 Mar 2001 10:54:34 GMT</last_modification_time>
+	    </widget>
 	  </widget>
 	</widget>
       </widget>

@@ -33,6 +33,7 @@ void OffAuf_TCList::loadOffAuf() throw(SQLerror)
  exec sql begin declare section;
  int KUNDENNR;
  int AUFID[20];
+ int INSTANZ[20];
  int ZNR[20];
  int ARTNR[20];
  int BESTELLT[20];
@@ -48,9 +49,10 @@ void OffAuf_TCList::loadOffAuf() throw(SQLerror)
  KUNDENNR=kundennr;
  
  exec sql declare LOADOFFAUF cursor for
- 	select e.auftragid, e.zeilennr, e.artikelid, e.bestellt,
+ 	select e.instanz, e.auftragid, e.zeilennr, e.artikelid, e.bestellt,
  		e.geliefert, e.lieferdate
  	from auftragentry e, auftrag a where
+      e.instanz = a.instanz and
  		e.auftragid=a.auftragid and
  		a.kundennr= :KUNDENNR and
  		e.status = a.stat and
@@ -65,14 +67,14 @@ void OffAuf_TCList::loadOffAuf() throw(SQLerror)
  while(weiter)
    {
    exec sql fetch 20 in LOADOFFAUF into
-	:AUFID,:ZNR,:ARTNR,:BESTELLT,:GELIEFERT,:LIEFDATUM:ILIEFDATUM;
+	:INSTANZ, :AUFID,:ZNR,:ARTNR,:BESTELLT,:GELIEFERT,:LIEFDATUM:ILIEFDATUM;
    SQLerror::test(__FILELINE__":loadOffAuf:fetch fromauftragentry","LOADOFFAUF",100);
 
    weiter=(sqlca.sqlcode==0);
 
    int j=sqlca.sqlerrd[2];
    for(int i=0;i<j;++i)
-     datavec.push_back(cH_OffAuf_RowData(AufEintragBase2(AUFID[i],ZNR[i]),
+     datavec.push_back(cH_OffAuf_RowData(AufEintragBase2((ppsInstanz::ppsInstId)INSTANZ[i],AUFID[i],ZNR[i]),
 			cH_ArtikelBezeichnung(ArtikelBase(ARTNR[i]), 
 				cH_ExtBezSchema(ExtBezSchema::default_id)),
 			BESTELLT[i]-GELIEFERT[i],

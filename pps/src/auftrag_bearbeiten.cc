@@ -37,7 +37,7 @@ typedef ctime_assert<(AufStatVal(auftrag_bearbeiten::aufentrystat::unbest_tigt)=
 typedef ctime_assert<(AufStatVal(auftrag_bearbeiten::aufentrystat::offen)==OPEN)>::_true failed5;
 typedef ctime_assert<(AufStatVal(auftrag_bearbeiten::aufentrystat::fertig)==CLOSED)>::_true failed6;
 
-auftrag_bearbeiten::auftrag_bearbeiten(int aufid, int znr)
+auftrag_bearbeiten::auftrag_bearbeiten(AuftragBase& auftragbase, int znr)
 : kunde(Kunde::default_id)
 {
  splitdialog=0;
@@ -53,9 +53,9 @@ auftrag_bearbeiten::auftrag_bearbeiten(int aufid, int znr)
  aktaufeintrag = new aktAufEintrag();
  selectedentry=0;
  auftrag=NULL;
- if(aufid)
+ if(auftragbase.Id())
    {
-    loadAuftrag(aufid);
+    loadAuftrag(auftragbase);
     if(znr)
       {
        auftrag_clist->moveto(znr-1,0,.5,0);
@@ -158,7 +158,7 @@ void auftrag_bearbeiten::on_newauftrag_button_clicked()
 void auftrag_bearbeiten::auftragstatus_geaendert()
 { if (auftrag)
   {  auftrag->setStatusAuftrag((AufStatVal)get_active_index(aufstat->get_menu()));
-     loadAuftrag(auftrag->Id());
+     loadAuftrag(AuftragBase(auftrag->Instanz(),auftrag->Id()));
   }
 }
 
@@ -186,7 +186,7 @@ void auftrag_bearbeiten::on_stkmtr_spinbutton_activate()
  if(aktaufeintrag->getZln()>0)
       {auftrag->updateStk(selectedentry,stkmtr_spinbutton->get_value_as_int());
        auftrag_clist->freeze();
-       loadAuftrag(auftrag->getAuftragid());
+       loadAuftrag(AuftragBase(auftrag->Instanz(),auftrag->getAuftragid()));
        auftrag_clist->thaw();
        artikelbox->reset();
 //       aufentrystat->set_sensitive(false);
@@ -206,7 +206,7 @@ void auftrag_bearbeiten::on_lieferdatum_activate()
       {auftrag->updateLieferdatum(selectedentry,
 			liefdatum_datewin->get_value());
        auftrag_clist->freeze();
-       loadAuftrag(auftrag->getAuftragid());
+       loadAuftrag(AuftragBase(auftrag->Instanz(),auftrag->getAuftragid()));
        auftrag_clist->thaw();
        artikelbox->reset();
 //       aufentrystat->set_sensitive(false);
@@ -228,7 +228,7 @@ void auftrag_bearbeiten::on_kw_spinbutton_activate()
 		Petig::Datum(Kalenderwoche(kw_spinbutton->get_value_as_int(),
 			      jahr_spinbutton->get_value_as_int())) );
        auftrag_clist->freeze();
-       loadAuftrag(auftrag->getAuftragid());
+       loadAuftrag(AuftragBase(auftrag->Instanz(),auftrag->getAuftragid()));
        auftrag_clist->thaw();
        artikelbox->reset();
 //       aufentrystat->set_sensitive(false);
@@ -264,7 +264,8 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
    if(auftrag)
      {
       int znr=auftrag->insertNewEntry(*aktaufeintrag,artikelbox->getBezSchema());
-      allaufids->insert(auftrag->getAuftragid(),znr);
+//      allaufids->insert(auftrag->getAuftragInstanz(), auftrag->getAuftragid(),znr);
+      allaufids->insert(*auftrag,znr);
       // perhaps the user want's to preserve lieferdatum ?
       aktaufeintrag->clear(); 
       fillMask();
@@ -288,7 +289,7 @@ void auftrag_bearbeiten::on_rabattentry_spinbutton_activate()
       {auftrag->updateRabatt(selectedentry,
 		(int)((rabattentry_spinbutton->get_value_as_float()+.0005)*100));
        auftrag_clist-> freeze();
-       loadAuftrag(auftrag->getAuftragid());
+       loadAuftrag(AuftragBase(auftrag->Instanz(),auftrag->getAuftragid()));
        auftrag_clist->thaw();
        artikelbox->reset();
 //       aufentrystat->set_sensitive(false);
@@ -311,7 +312,7 @@ void auftrag_bearbeiten::on_aufentrystat_optionmenu_clicked()
       {auftrag->setStatusEntry(selectedentry,
 			(AufStatVal)get_active_index(aufentrystat->get_menu()));
        auftrag_clist->freeze();
-       loadAuftrag(auftrag->getAuftragid());
+       loadAuftrag(AuftragBase(auftrag->Instanz(),auftrag->getAuftragid()));
        auftrag_clist->thaw();
        artikelbox->reset();
 //       aufentrystat->set_sensitive(false);
@@ -332,7 +333,7 @@ void auftrag_bearbeiten::on_preismenge_activate()
 //       auftrag->updatePreismenge(selectedentry,preismenge->get_value_as_int());
 // was ist denn das alles? CP			
        auftrag_clist->freeze();
-       loadAuftrag(auftrag->getAuftragid());
+       loadAuftrag(AuftragBase(auftrag->Instanz(),auftrag->getAuftragid()));
        auftrag_clist->thaw();
        artikelbox->reset();
 //       aufentrystat->set_sensitive(false);
@@ -350,7 +351,7 @@ void auftrag_bearbeiten::on_preis_spinbutton_activate()
       {
        auftrag->updatePreis(selectedentry,pr);
        auftrag_clist-> freeze();
-       loadAuftrag(auftrag->getAuftragid());
+       loadAuftrag(AuftragBase(auftrag->Instanz(),auftrag->getAuftragid()));
        auftrag_clist->thaw();
        artikelbox->reset();
 //       aufentrystat->set_sensitive(false);
@@ -366,12 +367,12 @@ void auftrag_bearbeiten::on_preis_spinbutton_activate()
   }
 }
 
-void auftrag_bearbeiten::loadAuftrag(int aid)
+void auftrag_bearbeiten::loadAuftrag(const AuftragBase& auftragbase)
 {
 // int aufid = aid ? aid : atoi(aufnrentry.get_text().c_str());
 
  
- try { if(auftrag) delete(auftrag); auftrag = new AuftragFull(aid);}
+ try { if(auftrag) delete auftrag; auftrag = new AuftragFull(auftragbase);}
  catch(SQLerror &e)
   {
    meldung->Show(e); auftrag=NULL; return;}
@@ -425,7 +426,7 @@ void auftrag_bearbeiten::andererKunde()
 
 void auftrag_bearbeiten::on_aufnrscombo_activate()
 {
- loadAuftrag(aufnr_scombo->Content());
+ loadAuftrag(AuftragBase(auftrag->Instanz(),aufnr_scombo->Content()));
 }
 
 int auftrag_bearbeiten::get_active_index(Gtk::Menu *om)
@@ -439,7 +440,7 @@ void auftrag_bearbeiten::on_youraufnrscombo_activate()
  if(newauftrag)
    jahrgang_spinbutton->grab_focus();
  else
-   loadAuftrag(youraufnr_scombo->Content());
+   loadAuftrag(AuftragBase(auftrag->Instanz(),youraufnr_scombo->Content()));
 }
 
 void auftrag_bearbeiten::on_zahlzieldatewin_activate()
@@ -486,7 +487,7 @@ bool auftrag_bearbeiten::splitEntry()
  try{auftrag->split(selectedentry, newlief, newmenge);}
  catch(SQLerror &e)
   {meldung->Show(e); return false;}    
- loadAuftrag(auftrag->getAuftragid());
+ loadAuftrag(AuftragBase(auftrag->Instanz(),auftrag->getAuftragid()));
  return true;
 }
 
@@ -525,7 +526,7 @@ void auftrag_bearbeiten::on_auftrag_abbruch_clicked()
 void auftrag_bearbeiten::on_auftrag_ok_clicked()
 {   
  try {
-      auftrag = new AuftragFull(kundenbox->get_value(),
+      auftrag = new AuftragFull(auftrag->Instanz(),kundenbox->get_value(),
 			jahrgang_spinbutton->get_value_as_int());
      }
 
@@ -537,8 +538,10 @@ void auftrag_bearbeiten::on_auftrag_ok_clicked()
  }
 
  int aid;
+ ppsInstanz::ppsInstId instanz;
  try {
 	aid=auftrag->getAuftragid();
+	instanz=auftrag->Instanz();
  	auftrag->setBemerkung(aufbemerkung_entry->get_text());
  	auftrag->setYourAufNr(youraufnr_scombo->get_text());
       }
@@ -549,7 +552,7 @@ void auftrag_bearbeiten::on_auftrag_ok_clicked()
    }
 
  on_clear_all();
- loadAuftrag(aid);
+ loadAuftrag(AuftragBase(instanz,aid));
 
  auftrag_ok->set_sensitive(false);
  auftrag_abbruch->set_sensitive(false);

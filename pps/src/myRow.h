@@ -19,7 +19,7 @@
 #include"AufEintrag.h"
 #include<stdio.h>
 #include<TCList.h>
-#include<queue>
+#include<deque>
 #include<deque>
 #include<Aux/EntryValue.h>
 #include<Artikel/ArtikelBase.h>
@@ -46,7 +46,7 @@ class MyRow
 
 public: 
 
-void insertAufEintrag(const AufEintrag &entry, queue<int> &seq, int deep=0);
+void insertAufEintrag(const AufEintrag &entry, deque<int> &seq, int deep=0);
 vector<string> &getColEntries(int seqdeep);
 const string getColText() const;
 const string &getStkSumText() const;

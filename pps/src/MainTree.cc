@@ -57,10 +57,10 @@ void MainTree::fill(SelectedFullAufList &allids, int deep=0)
  vector<AufEintragBase>::iterator i = allids.aufidliste.begin();
 
  if((!tmpq.empty()) && (tmpq.size()<ATTRCOUNT))
-   for(size_t j=1;j<tmpvec.size();j++) {if(tmpvec[j]<0) tmpq.push(-1*tmpvec[j]);}
+   for(size_t j=1;j<tmpvec.size();j++) {if(tmpvec[j]<0) tmpq.push_back(-1*tmpvec[j]);}
  while(!tmpvec.empty()) tmpvec.pop_back();
 
- queue<int> seqtitle = tmpq;
+ deque<int> seqtitle = tmpq;
 
  currseq.erase(currseq.begin(),currseq.end());
 
@@ -69,7 +69,8 @@ void MainTree::fill(SelectedFullAufList &allids, int deep=0)
     set_column_title(ATTRCOUNT-seqtitle.size(),
 			getColTitle(seqtitle.front(),0));
     currseq.push_back(seqtitle.front());
-    seqtitle.pop();
+//cout << "currseq = "<< seqtitle.front()<<"\n";
+    seqtitle.pop_front();
     }
 
  set_column_title(ATTRCOUNT,"offen Meter");
@@ -86,7 +87,7 @@ void MainTree::fill(SelectedFullAufList &allids, int deep=0)
    {	int d=deep;
 	stuecksumme=auftragflag=false;
 	
-	queue<int> selseq  = tmpq;
+	deque<int> selseq  = tmpq;
 
 	TCListRow::iterator l = begin();
 	
@@ -109,7 +110,7 @@ void MainTree::fill(SelectedFullAufList &allids, int deep=0)
 	  if(l!=end())
 	    {
 	    if(val == ((MyRow*)(*l).get_user_data())->getValue())
-	      {selseq.pop();
+	      {selseq.pop_front();
        	       d = d ? d-1 : 0;
       	       ((MyRow*)(*l).get_user_data())->summeter+=tmpentry.getRest();
       	       if(stuecksumme)
@@ -150,7 +151,7 @@ insertnew:
            			(ATTRCOUNT-selseq.size())+1,r->toshow);
 	     tclr->set_user_data(r);
 	     r->tclistrow = tclr;           			
-	     selseq.pop();
+	     selseq.pop_front();
 	     r->insertAufEintrag(tmpentry, selseq, d);           			
 	     }
    	}
@@ -186,7 +187,7 @@ void MainTree::on_click_column(int col)
      tmpvec.push_back(-1 * tmpvec.size());
     sequence=1;
     while(!tmpq.empty())
-      tmpq.pop();
+      tmpq.pop_front();
    }
 
  if(sequence>ATTRCOUNT) return;
@@ -195,7 +196,7 @@ void MainTree::on_click_column(int col)
 
  if(tmpvec[seq]<0)
    {tmpvec[seq]=sequence;
-    tmpq.push(seq);
+    tmpq.push_back(seq);
     set_column_title(col,getColTitle(seq,sequence));
     sequence++;
    }
@@ -209,14 +210,14 @@ void MainTree::setDefaultSeq()
  for(size_t i=0;i<currseq.size();i++)
     set_column_title(i,	getColTitle(currseq[i],0));
 
- tmpq.push(KNDNR_SEQ);
- tmpq.push(ART_SEQ);
- tmpq.push(BR_SEQ);
- tmpq.push(FB_SEQ);
- tmpq.push(AUFM_SEQ);
- tmpq.push(KW_SEQ);
- tmpq.push(AUFID_SEQ);
- tmpq.push(PROZ_SEQ);
+ tmpq.push_back(KNDNR_SEQ);
+ tmpq.push_back(ART_SEQ);
+ tmpq.push_back(BR_SEQ);
+ tmpq.push_back(FB_SEQ);
+ tmpq.push_back(AUFM_SEQ);
+ tmpq.push_back(KW_SEQ);
+ tmpq.push_back(AUFID_SEQ);
+ tmpq.push_back(PROZ_SEQ);
  
  while(!tmpvec.empty()) tmpvec.pop_back();
 
@@ -229,13 +230,13 @@ MainTree::MainTree(int cols) : TCList(cols)
  delete_user.connect(SigC::slot(this,&MainTree::onrowdelete));
  click_column.connect(SigC::slot(this,&MainTree::on_click_column));
 
- tmpq.push(KNDNR_SEQ);
- tmpq.push(ART_SEQ);
- tmpq.push(BR_SEQ);
- tmpq.push(FB_SEQ);
- tmpq.push(AUFM_SEQ);
- tmpq.push(KW_SEQ);
- tmpq.push(AUFID_SEQ);
- tmpq.push(PROZ_SEQ);
+ tmpq.push_back(KNDNR_SEQ);
+ tmpq.push_back(ART_SEQ);
+ tmpq.push_back(BR_SEQ);
+ tmpq.push_back(FB_SEQ);
+ tmpq.push_back(AUFM_SEQ);
+ tmpq.push_back(KW_SEQ);
+ tmpq.push_back(AUFID_SEQ);
+ tmpq.push_back(PROZ_SEQ);
 
 }
