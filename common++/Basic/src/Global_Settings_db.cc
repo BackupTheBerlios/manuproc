@@ -38,10 +38,10 @@ void Global_Settings::database_save(int userid,const std::string& program,
                              const std::string& name,const std::string& wert)
 {  // saves one query in comparison to Global_Settings().set_Wert
    //  ... the select ...
-   Query("update global_settings set wert=? "
-	"where (userid,program,name)=(?,?,?)")
-	<< wert << userid << program << name;
-  if (sqlca.sqlcode==100)
+   Query q("update global_settings set wert=? "
+	"where (userid,program,name)=(?,?,?)");
+  q << wert << userid << program << name;
+  if (q.Result()==100)
   {  Query("insert into global_settings "
 	"(userid,program,name,wert) values (?,?,?,?)")
 	<< userid << program << name << wert;

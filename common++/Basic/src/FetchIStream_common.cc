@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.7 2004/03/11 16:21:57 jacek Exp $
+// $Id: FetchIStream_common.cc,v 1.8 2004/03/11 17:11:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -178,7 +178,10 @@ ArgumentList &ArgumentList::add_argument(const std::string &x)
 ArgumentList &ArgumentList::operator<<(const std::string &str)
 {  std::string p="'";
    for (std::string::const_iterator i=str.begin();i!=str.end();++i)
-   {  if (*i=='\'' || *i=='\\') p+=*i;
+   {  if (*i=='\'') p+=*i;
+#ifndef MPC_SQLITE   
+      else if (*i=='\\') p+=*i;
+#endif
       p+=*i;
    }
    p+='\'';
@@ -285,12 +288,16 @@ int FetchIStream::getIndicator() const
 
 // note cursor is the name for both the cursor and the descriptor
 void Query::Execute() throw(SQLerror)
-{  char **result=0;
+{  char **local_result=0;
    char *msgbuf=0;
    int rows,cols;
+   if (Query::debugging.on) std::cerr << "QUERY: " << query << '\n';
    error=sqlite_get_table(ManuProC::db_connection, query.c_str(), 
-   		&result, &rows, &cols, &msgbuf);
+   		&local_result, &rows, &cols, &msgbuf);
    SQLerror::last_code=error;
+   if (Query::debugging.on) 
+      std::cerr << "RESULT: " << error << ':' << (msgbuf?msgbuf:"")
+      		<< ", " << rows << 'x' << cols << '\n';
    if(error!=SQLITE_OK)
    {  std::string err=msgbuf;
       sqlite_freemem(msgbuf);
@@ -299,6 +306,10 @@ void Query::Execute() throw(SQLerror)
    lines=rows;
    nfields=cols;
    if (msgbuf) sqlite_freemem(msgbuf);
+   if (!lines) lines=sqlite_changes(ManuProC::db_connection);
+   if (!lines) SQLerror::last_code=error=100;
+   result=local_result;
+   eof=!lines;
 }
 
 void Query::Fetch(FetchIStream &is)
@@ -307,7 +318,7 @@ void Query::Fetch(FetchIStream &is)
 
    if (!eof)
    {  if (line<lines) 
-      {  is=FetchIStream(result+((line+1)*nfields),line,nfields);
+      {  is=FetchIStream(result+((line+1)*nfields),nfields,line);
          ++line;
          return;
       }

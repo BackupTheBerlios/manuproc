@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.57 2004/03/11 16:18:07 christof Exp $
+# $Id: Makefile.am,v 1.58 2004/03/11 17:11:16 christof Exp $
 
 AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@ @SIGC_CFLAGS@ 
 
@@ -10,7 +10,7 @@ includedir=@includedir@/Misc
 
 PGCC_Sources=dbconnect.cc SQLerror_postgres.cc Transaction.cc \
 		Waehrung_sql.cc Changejournal_sql.cc FetchIStream.cc \
-      Global_Settings_sql.cc EAN_sql.cc 
+      EAN_sql.cc 
 
 libMisc_a_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
 		postgres_conversion.cc Zeitpunkt_new.cc \
@@ -24,7 +24,8 @@ libMisc_a_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
 		multi_lang.cc EntryValueTimeStamp.cc \
 		Event.cc germanstring.cc EntryValueIntGermanString.cc \
 		EntryValueSort.cc create_parse.cc dbconnect_shared.cc \
-		FetchIStream_common.cc SQLerror_sqlite.cc
+		FetchIStream_common.cc SQLerror_sqlite.cc \
+		Global_Settings_db.cc 
 
 libMisc.a: $(libMisc_a_OBJECTS) $(libMisc_a_DEPENDENCIES) Makefile
 	(for i in $(libMisc_a_OBJECTS) ; do echo Misc/$$i ; done ) >$@
@@ -49,7 +50,7 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
    EntryValueIntGermanString.cc EntryValueIntGermanString.h \
    recodestream.h bitmask.h TemporaryValue.h vectormap.h intmap.h \
    libManuProC_Base_dll.h Global_Settings.h Global_Settings.cc \
-   Global_Settings_sql.pgcc EntryValueSort.h EntryValueSort.cc \
+   Global_Settings_db.cc EntryValueSort.h EntryValueSort.cc \
    EntryValueInvert.h create_parse.cc create_parse.h \
    dbconnect_shared.cc SQLerror_sqlite.h FetchIStream_common.cc \
    SQLerror_sqlite.cc
