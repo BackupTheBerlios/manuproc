@@ -24,6 +24,7 @@
 #include<tclistrowdata.h>
 #include<Auftrag/AufEintragBase.h>
 #include<Artikel/Einheiten.h>
+#include "auftrag_lieferschein_classes.h" 
 
 class auftrag_lieferschein : public auftrag_lieferschein_glade
 {   
@@ -99,10 +100,11 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
    void fill_input(const AufEintrag& AE);
    void fill_input(const AufEintrag& AE,const LieferscheinEntry& LE);
    void fill_with(const AufEintrag& AE,const Einheit& E,int stueck,
-				double menge, bool check_bestand=true);
+				double menge, bool check_bestand=false);
 	void display(int lfrsid);
 	void display2(int kdnr);
-	
+
+	void adjustOffAufEntry(cH_Data_Lieferdaten dt, int deltaMenge);
 public:
 	auftrag_lieferschein(cH_ppsInstanz _instanz);
 	Kunde::ID getKdNr() { return liefer_kunde->get_value();}

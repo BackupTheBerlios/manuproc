@@ -25,7 +25,6 @@
 #include<typeinfo>
 #include <tclistleaf.h>
 #include "lieferscheinliste.hh"
-#include "auftrag_lieferschein_classes.h" // erforderlich?
 #include <Lager/RohwarenLager.h>
 #include <SearchComboContent.h>
 #include <Auftrag/AuftragFull.h>
@@ -317,10 +316,11 @@ void auftrag_lieferschein::fill_input(const AufEintrag& AE)
 {
   fill_with(AE,Einheit(AE.Artikel()),AE.getRestStk().as_int(),
 #ifndef MABELLA_EXTENSIONS
-  Lieferschein::StandardLaenge(AE.Artikel()).as_int()
+  Lieferschein::StandardLaenge(AE.Artikel()).as_int(),
 #else
-  0
+  0,
 #endif
+  false
   );
 }
 void auftrag_lieferschein::fill_input(const AufEintrag& AE,const LieferscheinEntry& LE)
@@ -544,7 +544,7 @@ void auftrag_lieferschein::on_Palette_activate()
     lieferschein->push_back(auftragentry, artikel, anzahl->get_value_as_int(),
      		e.hatMenge()?liefermenge->get_value_as_float():0.0,
      		Palette->get_value_as_int());
-    dt->getAufEintrag().tmp_geliefert=anzahl->get_value_as_int();
+    dt->getAufEintrag().tmp_geliefert+=anzahl->get_value_as_int();
   } 
 
 
@@ -638,19 +638,24 @@ void auftrag_lieferschein::auftragzeile_zeile_uebernehmen(const AufEintrag &AE)
 //		int(lagerwahl->get_menu()->get_active()->get_user_data());
       
    int stueck=AE.getRestStk().as_int();
-   int bestand=AE.getAmLager().as_int();
+//   int bestand=AE.getAmLager().as_int();
 
-   int stk=stueck < bestand ? stueck : (bestand > 0 ? bestand:0);
-   if(stk>0 
-#ifdef MABELLA_EXTENSIONS   
-   	|| ArtikelTyp(AE.Artikel())==ArtikelTypID::Musterkarten
-#endif   	
-   	)
-     {lieferschein->push_back(ae,AE.Artikel(), AE.getRestStk().as_int(),
+//   int stk=stueck < bestand ? stueck : (bestand > 0 ? bestand:0);
+
+// Zu erst den Lieferschein komplett übernehmen. 
+// Wenn gebucht wird, dann gegen das Lager checken; passier in buchen.
+
+//   if(stk>0 
+//#ifdef MABELLA_EXTENSIONS   
+//   	|| ArtikelTyp(AE.Artikel())==ArtikelTypID::Musterkarten
+//#endif   	
+//   	)
+//     {
+      lieferschein->push_back(ae,AE.Artikel(), stueck,
      		e.hatMenge()?liefermenge->get_value_as_float():0.0,
      		Palette->get_value_as_int());
-      AE.tmp_geliefert=stk;
-     }
+      AE.tmp_geliefert+=stueck;
+//     }
 }
 
 
@@ -671,6 +676,27 @@ void auftrag_lieferschein::liefzeile_delete()
   }
 }
 
+
+void auftrag_lieferschein::adjustOffAufEntry(cH_Data_Lieferdaten dt,
+					     int deltaMenge)
+{
+ DVI j = find_if(datavec_liefoff.begin(),datavec_liefoff.end(),
+	Auftrag_ref_Lief(dt->getAufEintragBase()));
+
+ if(j!=datavec_liefoff.end())
+       {
+        Handle<const Data_Lieferoffen> h_lo=
+		(*j).cast_dynamic<const Data_Lieferoffen>();
+        h_lo->getAufEintrag().tmp_geliefert+=deltaMenge;
+
+        h_lo->getAufEintrag().tmp_geliefert=
+			h_lo->getAufEintrag().tmp_geliefert<0?0
+			:h_lo->getAufEintrag().tmp_geliefert;
+       }
+}
+
+
+
 bool auftrag_lieferschein::deleteLiefEntry()
 {
  try{
@@ -679,8 +705,13 @@ bool auftrag_lieferschein::deleteLiefEntry()
    if (LE.Zeile()!=0)
     {
      LieferscheinVoll lv(instanz,LE.Id());
+
      if(LE.Status()==(AufStatVal)UNCOMMITED)
-       lv.deleteRow(LE);
+       {
+        int deltaMenge(-LE.Stueck());
+        lv.deleteRow(LE);
+        adjustOffAufEntry(dt,deltaMenge);
+       }
      else
        if(LE.Status()==(AufStatVal)OPEN)
 	 {
@@ -695,20 +726,6 @@ bool auftrag_lieferschein::deleteLiefEntry()
 	}
      else
  	return false;
-
-     DVI j = find_if(datavec_liefoff.begin(),datavec_liefoff.end(),
-		Auftrag_ref_Lief(dt->getAufEintragBase()));
-
-     if(j!=datavec_liefoff.end())
-        {
-	 Handle<const Data_Lieferoffen> h_lo=
-			(*j).cast_dynamic<const Data_Lieferoffen>();
-	 h_lo->getAufEintrag().tmp_geliefert-=dt->getLiefMenge();
-	 h_lo->getAufEintrag().tmp_geliefert=
-		h_lo->getAufEintrag().tmp_geliefert<0?0
-			:h_lo->getAufEintrag().tmp_geliefert;
-	}
-	
 
 #ifdef MABELLA_EXTENSIONS     
      if(lv.size()==0) // Verkäufer auf NONE setzten
@@ -847,6 +864,7 @@ void auftrag_lieferschein::on_button_zeile_modifizieren_clicked()
    liefermenge->update();
    anzahl->update();
 
+
    if(Palette->get_value_as_int() != LE.Palette())
       LE.setPalette(Palette->get_value_as_int());
    if(LieferscheinBase::mengen_t(liefermenge->get_value_as_float()) != LE.Menge() ||
@@ -854,14 +872,23 @@ void auftrag_lieferschein::on_button_zeile_modifizieren_clicked()
     {
      if(LE.Status()==(AufStatVal)UNCOMMITED ||
 	LE.Status()==(AufStatVal)OPEN)
-       LE.changeMenge(anzahl->get_value_as_int(),liefermenge->get_value_as_float(),
+       {
+        int deltaMenge(anzahl->get_value_as_int() - LE.Stueck());
+
+        LE.changeMenge(anzahl->get_value_as_int(),liefermenge->get_value_as_float(),
 #ifdef MABELLA_EXTENSIONS
 				true
 #else
 				false
 #endif
 	);
+	if(LE.Status()==(AufStatVal)UNCOMMITED)
+	  adjustOffAufEntry(dt,deltaMenge);
+	else
+	  datavec_liefoff.clear();
+       }
     }
+
    set_tree_daten_content(lieferschein->Id());
    set_tree_offen_content();
   } 
@@ -946,9 +973,7 @@ void auftrag_lieferschein::on_lager_buchen_clicked()
 
    if(ret==0)
      {
-      Transaction tr;
 
-      try {
 
       if(datavec_liefdata.empty()) return;
       std::vector<cH_RowDataBase>::iterator i=datavec_liefdata.begin();
@@ -961,15 +986,24 @@ void auftrag_lieferschein::on_lager_buchen_clicked()
 	   {
 	    LE.lagerid=int(lagerwahl->get_menu()->
 				get_active()->get_user_data());
+            Transaction tr;
+	    try {
 	    LE.changeStatus((AufStatVal)OPEN,true);
 	    LE.setLagerid(int(lagerwahl->get_menu()->
 			      get_active()->get_user_data()) );
+            tr.commit();
+	    }
+            catch(SQLerror &e) {meldung->Show(e); tr.rollback(); return;}
+	    catch(LagerError &l) 
+		{meldung->Show(l); 
+ 		 tr.rollback(); 
+		 continue;
+		}
+
 	   }
 	}
-      }
-      catch(SQLerror &e) {meldung->Show(e); tr.rollback(); return;}
 
-      tr.commit();
+
       datavec_liefoff.clear();
       on_liefnr_activate();     
 //      lager_buchen->set_sensitive(false);
