@@ -102,11 +102,21 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
 
 void auftrag_bearbeiten::showBestandData()
 {
-    int offen,bestand,verfuegbar;
+    int offen=0,bestand=0,verfuegbar=0;
+    try{
     ArtBestandData(artikelbox->get_value().Id(),offen,bestand,verfuegbar);
-    bestellt_label->set_text(itos(offen));
-    lagerbest_label->set_text(itos(bestand));
-    verfuegbar_label->set_text(itos(verfuegbar));
+    }
+    catch(SQLerror &e)
+      {meldung->Show(e);
+       bestellt_label->set_text("--");
+       lagerbest_label->set_text("--");
+       verfuegbar_label->set_text("--");
+       return;
+      }
+
+ bestellt_label->set_text(itos(offen));
+ lagerbest_label->set_text(itos(bestand));
+ verfuegbar_label->set_text(itos(verfuegbar));
 }
 
 
