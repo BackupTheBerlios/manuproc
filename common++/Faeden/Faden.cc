@@ -1,4 +1,4 @@
-// $Id: Faden.cc,v 1.13 2003/10/23 14:46:59 christof Exp $
+// $Id: Faden.cc,v 1.14 2003/10/28 08:37:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -420,7 +420,7 @@ void Fadenliste::Load(const ArtikelBase &ab,const Bindungsliste &bindungsliste)
       {  Faden f;
          is >> f >> Query::check_eol();
          if (!ersetzen.empty())
-         {  map<ArtikelBase,ArtikelBase>::const_iterator found=ersetzen.find(f.material);
+         {  std::map<ArtikelBase,ArtikelBase>::const_iterator found=ersetzen.find(f.material);
             if (found!=ersetzen.end()) f.material=found->second;
          }
          add(f,-1);
