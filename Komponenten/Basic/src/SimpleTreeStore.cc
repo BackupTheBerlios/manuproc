@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.45 2003/12/23 09:14:29 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.46 2003/12/27 01:16:15 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -165,7 +165,22 @@ void SimpleTreeStore::on_visibly_changed(bvector_iterator it)
       }
    }
    else // Spalte hinzugekommen
-   {  fillSequence();
+   {
+#if 0 // old behaviour
+      fillSequence();
+#else
+    for(guint i=0; i<MaxCol(); ++i) 
+      if (ColumnVisible(i) && std::find(currseq.begin(),currseq.end(),i)==currseq.end())
+      {  for (sequence_t::iterator j=currseq.begin();j!=currseq.end();++j)
+         {  if (*j>i)
+            {  currseq.insert(j,i);
+               break;
+            }
+         }
+         if (std::find(currseq.begin(),currseq.end(),i)==currseq.end()) //immer noch nicht da
+            currseq.push_back(i);
+      }
+#endif
    }
   }
    setSequence(currseq);
@@ -624,6 +639,14 @@ void SimpleTreeStore::get_value_vfunc(const TreeModel::iterator& iter, int colum
                else 
                   g_value_set_string(value,s.c_str());
             }
+            else if (nd.childrens_deep) // node
+            {  if (unsigned(colno)>nd.childrens_deep || unsigned(colno)<nd.deep) 
+                  return;
+               if (colno==int(nd.childrens_deep))
+                  g_value_set_string(value,"...");
+               else		
+                  g_value_set_string(value,nd.leafdata->Value(idx,ValueData())->getStrVal().c_str());
+            }
             else // leaf
             {  if (unsigned(colno)<nd.deep) return;
                g_value_set_string(value,nd.leafdata->Value(idx,ValueData())->getStrVal().c_str());
@@ -773,8 +796,10 @@ SimpleTreeStore::iterator SimpleTreeStore::iterbyNode(Node &nd) const
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,&nd);
    cH_EntryValue val=nd.leafdata->Value(currseq[nd.deep],ValueData());
 //   ManuProC::Trace(trace_channel,"val",val->getStrVal());
-   assert(sortierspalte==invisible_column);
-   std::pair<iterator,iterator> p=nd.parent->children.equal_range(val);
+//   assert(sortierspalte==invisible_column);
+   std::pair<iterator,iterator> p;
+   if (sortierspalte==invisible_column) p=nd.parent->children.equal_range(val);
+   else p=make_pair(nd.parent->children.begin(),nd.parent->children.end());
 //   ManuProC::Trace(trace_channel,"eq_r",p.first,p.second,nd.parent->children.end());
    for (iterator i=p.first;i!=p.second;++i) 
    {  ManuProC::Trace(trace_channel,"i",&i->second);

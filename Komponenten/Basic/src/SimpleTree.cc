@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.40 2003/12/23 00:09:48 christof Exp $
+// $Id: SimpleTree.cc,v 1.41 2003/12/27 01:16:15 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -34,7 +34,7 @@ static void aufklappen(SimpleTree_Basic *tv,Gtk::TreeModel::Path path,
 {  path.down();
    for (Gtk::TreeModel::iterator i=ch.begin();i!=ch.end();++i,path.next())
    {  if (!i->children().empty() && (*i)[tv->getStore()->m_columns.childrens_deep]<=depth)
-      {  if (!tv->expand_row(path,false)) 
+      {  if (!tv->expand_row(path,false) && !tv->row_expanded(path))
             std::cerr << "aufklappen von " << path.to_string() << " schlug fehl\n";
          if ((*i)[tv->getStore()->m_columns.childrens_deep]<depth) aufklappen(tv,path,i->children(),depth);
       }
@@ -81,7 +81,9 @@ void SimpleTree_Basic::on_spaltenzahl_geaendert()
          if (getStore()->OptionColor().Value())
             pColumn->add_attribute(crt->property_background_gdk(),sts->m_columns.background);
          if (!alignment.empty())
-            pColumn->set_alignment(alignment[IndexFromColumn(i)]);
+         {  pColumn->set_alignment(alignment[IndexFromColumn(i)]);
+            crt->property_xalign()=alignment[IndexFromColumn(i)];
+         }
       }
    }
    on_redisplay();
