@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.68 2005/02/08 22:18:25 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.69 2005/03/10 15:38:38 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -1027,7 +1027,6 @@ void Kunde::set_schema(ID s) throw(SQLerror)
 
 bool Kunde::isInGrp(const std::string groupname) const throw(SQLerror)
 {
- bool ret;
  Query q("select true from ku_gruppen_map m join ku_gruppe g "
 	" on (m.grpnr=g.grpnr and g.name=? and m.kundennr=?)");
 

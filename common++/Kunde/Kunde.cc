@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.50 2005/02/01 23:07:44 jacek Exp $
+// $Id: Kunde.cc,v 1.51 2005/03/10 15:38:38 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -358,6 +358,7 @@ void Kunde::set_idnr(const std::string& s)
 
 fixedpoint<2> Kunde::getProvSatz_Artikel(const ArtikelBase art) const throw(SQLerror)
 {
+ cH_Kunde verk(VerkNr());
  int t; // ArtikelTyp;
  // Jacek: Warum hast du nicht den Cache von ArtikelStamm genommen?
  Query("select warengruppe from artikelstamm where id=?")   
@@ -379,7 +380,7 @@ fixedpoint<2> Kunde::getProvSatz_Artikel(const ArtikelBase art) const throw(SQLe
        fixedpoint<2> ps1=0.0,ps2=0.0;
        Query q("select provsatz1, provsatz2 from prov_verkaeufer where"
 	  " verknr=? and kundennr=?");
-       q << VerkNr() << Id();
+       q << verk->Rngan() << Id(); // provsatz vom mainvertreter
        SQLerror::test(__FILELINE__,100);
 
        if(q.Result()!=100)

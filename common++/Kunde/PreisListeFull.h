@@ -1,4 +1,4 @@
-// $Id: PreisListeFull.h,v 1.16 2004/08/24 11:46:09 jacek Exp $
+// $Id: PreisListeFull.h,v 1.17 2005/03/10 15:38:38 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -39,6 +39,7 @@ public:
 
  struct PayOff {
        Preis p;
+       ID pl_parent;
        std::vector<cH_EntryValueIntString> b;
      };
      

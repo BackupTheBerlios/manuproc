@@ -43,19 +43,47 @@ void PreisListeFull::load_preisliste(bool with_artbez,
  std::string qu;
  payoff.erase(payoff.begin(),payoff.end());
 
+  
+ std::string plid;
+ std::string preis_sel;
+ if(isDepending())
+   {preis_sel=std::string("round(preis*")+fkt_parent.String()+
+                       ",2)+"+add_parent.String();
+    plid=itos(ParentID());
+   }
+ else
+   {preis_sel="preis";
+    plid=itos(id);  
+   }
  
- std::string plid=itos(id);
-
  if(art_in_list)
    {qu=std::string("select ");
 	if(with_artbez)
           qu+=bezkomps;
-	qu+=" artikelid,preis,preismenge,coalesce(mindestmenge,1) from artikelpreise p"
+	qu+=" artikelid,"+preis_sel+",preismenge,coalesce(mindestmenge,1),"
+	" coalesce(k.pl_parent,-1) as parent"
+        " from artikelpreise p join ku_preisliste k on "
+        " (k.prlsnr=p.kundennr and p.kundennr="+plid+")"
  	" join artikelstamm s on (p.artikelid=s.id and "
 	" s.warengruppe="+itos(at.Id())+") ";
     if(with_artbez)
       qu+=" join "+beztable+" b using (id) ";
-    qu+=" where  kundennr = "+plid;
+    if(isDepending())
+      {  
+       qu+=" UNION ";
+       qu+=" (select ";
+       if(with_artbez)
+          qu+=bezkomps;
+       qu+="  artikelid,preis,preismenge,coalesce(mindestmenge,1),"
+        "  coalesce(k.pl_parent,-1) as parent"
+        "  from artikelpreise p join ku_preisliste k on "
+        "  (k.prlsnr=p.kundennr and p.kundennr="+itos(id)+")"
+        "  join artikelstamm s on (p.artikelid=s.id and "
+	" s.warengruppe="+itos(at.Id())+") ";
+        if(with_artbez)
+          qu+=" join "+beztable+" b using (id) ";
+      qu+=") order by artikelid,parent"; // UNION end 
+      }
    }
  else
    {
@@ -63,16 +91,16 @@ void PreisListeFull::load_preisliste(bool with_artbez,
     if(with_artbez)
       qu+=bezkomps;
     qu+=" id,coalesce(preis_alt,0),0,"
-	" coalesce(c.mindestmenge,1) from artikelstamm s "
+	" coalesce(c.mindestmenge,1),-1 from artikelstamm s "
 	" left join preis_change_journal c on "
-	" (c.artikelid=s.id and c.prlsnr="+plid;
+	" (c.artikelid=s.id and c.prlsnr="+itos(id);
     qu+=" and preis_alt is not null and cast(preis_neu as float) = 0.0) ";
     if(with_artbez)
       qu+=" join "+beztable+" b using (id) ";
     qu+=" where not exists"
  	" (select p.artikelid from artikelpreise p"
 	"  where p.artikelid=s.id and kundennr = ";
-    qu+=plid+") and s.warengruppe="+itos(at.Id())+" order by zeitpunkt";
+    qu+=itos(id)+") and s.warengruppe="+itos(at.Id())+" order by zeitpunkt";
    }
  
  Query q(qu);
@@ -85,6 +113,7 @@ void PreisListeFull::load_preisliste(bool with_artbez,
     float PREIS;
     int PREISMENGE;
     int MINDMENGE;
+    int PARENT;
     std::string beztext;
     struct PayOff po;
     
@@ -95,9 +124,10 @@ void PreisListeFull::load_preisliste(bool with_artbez,
           po.b.push_back(cH_EntryValueIntString(beztext));
          }
       }
-    is >> ARTIKELID >> PREIS >> PREISMENGE >> MINDMENGE;  
+    is >> ARTIKELID >> PREIS >> PREISMENGE >> MINDMENGE >> PARENT;  
 
     po.p=Preis(PREIS,getWaehrung(),PREISMENGE);
+    po.pl_parent=PARENT;
     payoff[UniqPreis(ARTIKELID,MINDMENGE)]=po;
 
     is=q.Fetch();

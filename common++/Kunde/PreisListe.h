@@ -1,4 +1,4 @@
-// $Id: PreisListe.h,v 1.13 2003/12/09 15:24:14 jacek Exp $
+// $Id: PreisListe.h,v 1.14 2005/03/10 15:38:38 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -44,20 +44,26 @@ private:
  mutable rabatt_t rabatt;
  PlArt art;
  std::string view_tabelle;
+ ID pl_parent;
+protected:
+ fixedpoint<3> fkt_parent;
+ fixedpoint<3> add_parent;
 
 public:
   PreisListe(ID id) throw(SQLerror);
   PreisListe() : rabatt_gesetzt(false),rabatt(0),art(PL_UNKNOWN),
-  		view_tabelle(DEF_VIEW_TABLE)  {}
+  		view_tabelle(DEF_VIEW_TABLE),pl_parent(none_id)  {}
   ID Id() const { return entityid; } 
+  ID ParentID() const { return pl_parent; }
   const std::string Name() const { return name; }
-  static ID createPreisliste(const std::string &name) throw(SQLerror);
+//  static ID createPreisliste(const std::string &name) throw(SQLerror);
   bool festerRabatt() const { return rabatt_gesetzt; }
   const rabatt_t getRabatt() const { return rabatt;}
   const cP_Waehrung getWaehrung() const { return waehrung; }
   void setRabatt(bool fest, rabatt_t rab) throw(SQLerror);
   PlArt Art() const { return art; }
   const std::string ViewTabelle() const { return view_tabelle; }
+  bool isDepending() const { return (pl_parent!=none_id); }
 };
 
 
