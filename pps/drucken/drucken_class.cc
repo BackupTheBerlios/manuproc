@@ -1204,9 +1204,14 @@ void LR_Abstraktion::page_header(std::ostream &os)
          (Typ()==Auftrag && kunde_an->AB_an_rngadresse())
 	)
        os << kunde_rng->LaTeX_an(Typ()==Lieferschein,telart,"1\\textwidth")<<"\n\n";
-     else  
-       os << kunde_an->LaTeX_an(Typ()==Lieferschein,telart,"1\\textwidth")<<"\n\n";
-       
+     else if(Typ()==Lieferschein)
+       {
+	cH_Kunde kunde_lief(kunde_an->Lfran());        
+	os << kunde_lief->LaTeX_an(Typ()==Lieferschein,telart,"1\\textwidth")<<"\n\n";
+       }
+     else
+	os << kunde_an->LaTeX_an(Typ()==Lieferschein,telart,"1\\textwidth")<<"\n\n";       
+
 #endif     
 
 #ifdef MABELLA_EXTENSIONS
