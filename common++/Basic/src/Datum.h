@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.18 2003/04/13 20:42:17 christof Exp $ */
+/* $Id: Datum.h,v 1.19 2003/05/12 07:26:50 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -63,7 +63,7 @@ class ManuProC::Datum
 	unsigned int jahr:11;     /* jjjj */
 
 
- static char* monate[];
+ static const char* const monate[];
  	
 public:
 	class Formatfehler : public std::exception 

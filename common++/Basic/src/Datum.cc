@@ -1,4 +1,4 @@
-// $Id: Datum.cc,v 1.20 2003/04/28 06:38:43 christof Exp $
+// $Id: Datum.cc,v 1.21 2003/05/12 07:26:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.20 2003/04/28 06:38:43 christof Exp $ */
+/* $Id: Datum.cc,v 1.21 2003/05/12 07:26:50 christof Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
@@ -25,9 +25,9 @@
 #include <iomanip.h>
 #include <stdlib.h>
 #include <Misc/itos.h>
+#include <Misc/FetchIStream.h>
 
-
-char* ManuProC::Datum::monate[]={"Januar",
+const char* const ManuProC::Datum::monate[]={"Januar",
  		    "Februar",
  		    "März",
  		    "April",
@@ -343,3 +343,18 @@ ManuProC::Datum::Datum(int t, int m, int j,bool expandyear) throw(Datumsfehler)
    }
    teste();
 }
+
+FetchIStream &operator>>(FetchIStream &is, ManuProC::Datum &v)
+{  std::string s;
+   int ind;
+   is >> FetchIStream::WithIndicator(s,ind);
+   if (ind==-1) v=ManuProC::Datum();
+   else v.from_postgres(s.c_str());
+   return is;
+}
+
+ArgumentList &operator<<(ArgumentList &q, const ManuProC::Datum &v)
+{  q.add_argument(v.postgres_null_if_invalid());
+   return q;
+}
+

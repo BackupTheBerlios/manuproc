@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.cc,v 1.7 2002/06/27 07:42:50 christof Exp $
+// $Id: Zeitpunkt_new.cc,v 1.8 2003/05/12 07:26:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,6 +21,7 @@
 
 #include <Misc/Zeitpunkt_new.h>
 #include <cassert>
+#include <Misc/FetchIStream.h>
 
 int Zeitpunkt_new::operator-(const Zeitpunkt_new &b) const throw()
 {  int prec2=prec<b.prec?prec:b.prec;
@@ -148,3 +149,21 @@ Zeitpunkt_new::Zeitpunkt_new(time_t t) throw()
    minutes_from_gmt=tm->tm_gmtoff/60;
 #endif
 }
+
+FetchIStream &operator>>(FetchIStream &is, Zeitpunkt_new &v)
+{  std::string s;
+   int ind;
+   is >> FetchIStream::WithIndicator(s,ind);
+   if (ind==-1) v=Zeitpunkt_new();
+   else v=Zeitpunkt_new(s.c_str());
+   return is;
+}
+
+ArgumentList &operator<<(ArgumentList &q, const Zeitpunkt_new &v)
+{  if (!v.valid()) return q << Query::null();
+   char buf[64];
+   v.write(PostgresTimestamp(buf,sizeof buf));
+   q.add_argument('\''+std::string(buf)+'\'');
+   return q;
+}
+
