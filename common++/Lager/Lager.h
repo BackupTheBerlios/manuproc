@@ -1,4 +1,4 @@
-/* $Id: Lager.h,v 1.24 2003/07/17 15:57:18 christof Exp $ */
+/* $Id: Lager.h,v 1.25 2003/07/18 09:11:21 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -114,7 +114,7 @@ class LagerBase : public cH_ppsInstanz
      // entspricht raus_aus_lager mit negativer Menge
      __deprecated void wiedereinlagern(const ArtikelBase &artikel,
      	const AuftragBase::mengen_t &menge,const int uid) const
-     {  raus_aus_lager(artikel,menge,uid,false); }
+     {  raus_aus_lager(artikel,-menge,uid,false); }
      
      // fuer_auftrag bedeutet, dass der Artikel für einen Auftrag verwendet wurde
      // und nicht verschwunden ist (Entnahme außer der Reihe/Inventur)

@@ -360,11 +360,11 @@ std::cout << "D2:" <<dummystring<<'\n';
 std::cout << dummystring<<'\n';
       vergleichen(Check::Menge,"bandlager_rein","Bandlager einlagern\n","b");
 
-        AE.Produziert(300,Lieferschein::none_id);
+        AE.ProduziertNG(300,LieferscheinEntryBase());
       vergleichen(Check::Menge,"kunde_teillieferung","Kunde Teillieferung\n","T");
 
 //std::cout << "\n\n120 ABSCHREIBEN\n\n\n";
-        AE.Produziert(120,Lieferschein::none_id);
+        AE.ProduziertNG(120,LieferscheinEntryBase());
       vergleichen(Check::Menge,"kunde_ueberlieferung","Kunde Überlieferung\n","Ü");
 
 
@@ -445,7 +445,7 @@ static bool ZweiterAuftrag_frueheresDatum(AufEintrag &AE)
 
        {
           AufEintrag AE(AEB);
-        AE.Produziert(200,Lieferschein::none_id);
+        AE.ProduziertNG(200,LieferscheinEntryBase());
        }
        vergleichen(Check::Menge,"zwei_auftraege_datum_abschreiben","Teil-Abschreiben des zweiten Auftrags ["+AEB.str()+"]","A");
 
