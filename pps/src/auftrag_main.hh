@@ -107,9 +107,6 @@ private:
         void on_unbest_auftraege_activate();
         void statusaenderung();
         // AuftragsID
-        void on_plan_menge_menu_activate(); //0er Aufträge
-        void on_ungeplante_menge_menu_activate(); // 1er und 20000er
-        void on_dispo_menge_menu_activate(); //2er Aufträge
         void auftrags_id_aenderung();
 
         void on_auftraege_kunde_activate();
@@ -123,7 +120,7 @@ private:
         void on_togglebutton_material_toggled();
         void on_togglebutton_auftraege_toggled();
         void handle_togglebutton(char c);
-        void show_selected_line(bool lager=false);
+        void show_selected_line();
         void on_button_auftrag_erledigt_clicked();
         void instanz_menge(const Verfuegbarkeit::map_t& map_allart);
         void get_ArtikelZusammensetzung(const AufEintrag& AEB,Verfuegbarkeit::map_t& map_allart);
@@ -186,7 +183,7 @@ private:
    void on_togglebutton_geplante_menge_toggled();
    void on_button_Kunden_erledigt_clicked();
    void on_button_instanz_get_selection_clicked();
-   void on_OptMenu_Instanz_Bestellen_activate(){};
+   void on_OptMenu_Instanz_Bestellen_activate();
 
   // Ab hier fürs Lager
   void lager_zeigen();

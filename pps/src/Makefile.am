@@ -11,7 +11,6 @@ pps_SOURCES = pps.cc \
 	remote_command.cc \
 	$(BUILT_SOURCES) \
 	auftrag_main.cc \
-	auftrag_main_lager.cc \
 	auftrag_main_glade.cc \
 	auftrag_main_instanz.cc \
 	auftrag_bearbeiten.cc \
@@ -31,6 +30,8 @@ pps_SOURCES = pps.cc \
 	auftrag_copy_glade.cc \
 	auftrag_provision.cc \
 	auftrag_provision_glade.cc
+
+#	auftrag_main_lager.cc \
 
 
 noinst_HEADERS = \

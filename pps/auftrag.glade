@@ -595,13 +595,14 @@
 
 	  <widget>
 	    <class>GtkRadioMenuItem</class>
-	    <name>offene_auftraege</name>
+	    <name>unbestaetigte_auftraege</name>
+	    <cxx_visibility>protected</cxx_visibility>
 	    <signal>
 	      <name>activate</name>
-	      <handler>on_offene_auftraege_activate</handler>
-	      <last_modification_time>Thu, 29 Nov 2001 15:21:19 GMT</last_modification_time>
+	      <handler>on_unbest_auftraege_activate</handler>
+	      <last_modification_time>Tue, 05 Nov 2002 07:51:48 GMT</last_modification_time>
 	    </signal>
-	    <label>offene Aufträge</label>
+	    <label>unbestätigte Aufträge / Mengen</label>
 	    <active>False</active>
 	    <always_show_toggle>True</always_show_toggle>
 	    <group>auftrag</group>
@@ -609,13 +610,29 @@
 
 	  <widget>
 	    <class>GtkRadioMenuItem</class>
-	    <name>unbestaetigte_auftraege</name>
+	    <name>offene_auftraege</name>
+	    <cxx_visibility>protected</cxx_visibility>
 	    <signal>
 	      <name>activate</name>
-	      <handler>on_unbest_auftraege_activate</handler>
+	      <handler>on_offene_auftraege_activate</handler>
+	      <last_modification_time>Thu, 29 Nov 2001 15:21:19 GMT</last_modification_time>
+	    </signal>
+	    <label>offene Aufträge / Mengen</label>
+	    <active>True</active>
+	    <always_show_toggle>True</always_show_toggle>
+	    <group>auftrag</group>
+	  </widget>
+
+	  <widget>
+	    <class>GtkRadioMenuItem</class>
+	    <name>stornierte_auftraege</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <signal>
+	      <name>activate</name>
+	      <handler>on_storno_auftraege_activate</handler>
 	      <last_modification_time>Tue, 05 Nov 2002 07:51:48 GMT</last_modification_time>
 	    </signal>
-	    <label>Unbestätigte Aufträge</label>
+	    <label>stornierte Aufträge / Mengen</label>
 	    <active>False</active>
 	    <always_show_toggle>True</always_show_toggle>
 	    <group>auftrag</group>
@@ -624,27 +641,14 @@
 	  <widget>
 	    <class>GtkRadioMenuItem</class>
 	    <name>geschlossene_auftraege</name>
+	    <cxx_visibility>protected</cxx_visibility>
 	    <signal>
 	      <name>activate</name>
 	      <handler>on_closed_auftraege_activate</handler>
 	      <last_modification_time>Tue, 05 Nov 2002 07:51:48 GMT</last_modification_time>
 	    </signal>
-	    <label>Geschlossene Aufträge</label>
+	    <label>geschlossene Aufträge / Mengen</label>
 	    <active>False</active>
-	    <always_show_toggle>True</always_show_toggle>
-	    <group>auftrag</group>
-	  </widget>
-
-	  <widget>
-	    <class>GtkRadioMenuItem</class>
-	    <name>stornierte_auftraege</name>
-	    <signal>
-	      <name>activate</name>
-	      <handler>on_storno_auftraege_activate</handler>
-	      <last_modification_time>Tue, 05 Nov 2002 07:51:48 GMT</last_modification_time>
-	    </signal>
-	    <label>Stornierte Aufträge</label>
-	    <active>True</active>
 	    <always_show_toggle>True</always_show_toggle>
 	    <group>auftrag</group>
 	  </widget>
@@ -658,12 +662,13 @@
 	  <widget>
 	    <class>GtkRadioMenuItem</class>
 	    <name>ungeplante_menge_menu</name>
+	    <cxx_visibility>protected</cxx_visibility>
 	    <signal>
 	      <name>activate</name>
-	      <handler>on_ungeplante_menge_menu_activate</handler>
-	      <last_modification_time>Wed, 20 Nov 2002 09:21:47 GMT</last_modification_time>
+	      <handler>auftrags_id_aenderung</handler>
+	      <last_modification_time>Sat, 31 Jan 2004 13:39:34 GMT</last_modification_time>
 	    </signal>
-	    <label>ungeplante Menge</label>
+	    <label>ungeplante / fehlende Menge</label>
 	    <active>False</active>
 	    <always_show_toggle>True</always_show_toggle>
 	    <group>auftrag_0_1_2_20000</group>
@@ -672,13 +677,14 @@
 	  <widget>
 	    <class>GtkRadioMenuItem</class>
 	    <name>plan_menge_menu</name>
+	    <cxx_visibility>protected</cxx_visibility>
 	    <signal>
 	      <name>activate</name>
-	      <handler>on_plan_menge_menu_activate</handler>
-	      <last_modification_time>Wed, 20 Nov 2002 09:24:43 GMT</last_modification_time>
+	      <handler>auftrags_id_aenderung</handler>
+	      <last_modification_time>Sat, 31 Jan 2004 13:39:54 GMT</last_modification_time>
 	    </signal>
-	    <label>bestellte Menge</label>
-	    <active>False</active>
+	    <label>geplante / bestellte / reservierte Menge</label>
+	    <active>True</active>
 	    <always_show_toggle>True</always_show_toggle>
 	    <group>auftrag_0_1_2_20000</group>
 	  </widget>
@@ -686,13 +692,29 @@
 	  <widget>
 	    <class>GtkRadioMenuItem</class>
 	    <name>dispo_menge_menu</name>
+	    <cxx_visibility>protected</cxx_visibility>
 	    <signal>
 	      <name>activate</name>
-	      <handler>on_dispo_menge_menu_activate</handler>
-	      <last_modification_time>Wed, 20 Nov 2002 09:24:43 GMT</last_modification_time>
+	      <handler>auftrags_id_aenderung</handler>
+	      <last_modification_time>Sat, 31 Jan 2004 13:40:15 GMT</last_modification_time>
 	    </signal>
-	    <label>freie verfügbare Menge </label>
-	    <active>True</active>
+	    <label>verfügbare Menge </label>
+	    <active>False</active>
+	    <always_show_toggle>True</always_show_toggle>
+	    <group>auftrag_0_1_2_20000</group>
+	  </widget>
+
+	  <widget>
+	    <class>GtkRadioMenuItem</class>
+	    <name>alle_lagermengen</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <signal>
+	      <name>activate</name>
+	      <handler>auftrags_id_aenderung</handler>
+	      <last_modification_time>Sat, 31 Jan 2004 13:40:29 GMT</last_modification_time>
+	    </signal>
+	    <label>alle Lagermengen</label>
+	    <active>False</active>
 	    <always_show_toggle>True</always_show_toggle>
 	    <group>auftrag_0_1_2_20000</group>
 	  </widget>
@@ -960,6 +982,39 @@
 
 	    <widget>
 	      <class>GtkLabel</class>
+	      <name>label118</name>
+	      <label>aktuelle Instanz</label>
+	      <justify>GTK_JUSTIFY_CENTER</justify>
+	      <wrap>False</wrap>
+	      <xalign>0.5</xalign>
+	      <yalign>0.5</yalign>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>False</fill>
+	      </child>
+	    </widget>
+
+	    <widget>
+	      <class>Custom</class>
+	      <name>akt_instanz</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <sensitive>False</sensitive>
+	      <creation_function>Optionmenu_Instanz</creation_function>
+	      <int1>0</int1>
+	      <int2>0</int2>
+	      <last_modification_time>Sat, 31 Jan 2004 12:51:05 GMT</last_modification_time>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>True</fill>
+	      </child>
+	    </widget>
+
+	    <widget>
+	      <class>GtkLabel</class>
 	      <name>label110</name>
 	      <label>für Warengruppe</label>
 	      <justify>GTK_JUSTIFY_CENTER</justify>
@@ -1081,153 +1136,6 @@
     </widget>
 
     <widget>
-      <class>GtkHPaned</class>
-      <name>hpaned_tree_lager</name>
-      <cxx_visibility>protected</cxx_visibility>
-      <handle_size>6</handle_size>
-      <gutter_size>6</gutter_size>
-      <child>
-	<padding>0</padding>
-	<expand>True</expand>
-	<fill>True</fill>
-      </child>
-
-      <widget>
-	<class>GtkVBox</class>
-	<name>vbox9</name>
-	<homogeneous>False</homogeneous>
-	<spacing>0</spacing>
-	<child>
-	  <shrink>True</shrink>
-	  <resize>True</resize>
-	</child>
-
-	<widget>
-	  <class>GtkLabel</class>
-	  <name>label95</name>
-	  <label>Freie Menge</label>
-	  <justify>GTK_JUSTIFY_CENTER</justify>
-	  <wrap>False</wrap>
-	  <xalign>0.5</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <child>
-	    <padding>0</padding>
-	    <expand>False</expand>
-	    <fill>False</fill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>GtkScrolledWindow</class>
-	  <name>scrolledwindow14</name>
-	  <hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
-	  <vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
-	  <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
-	  <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
-	  <child>
-	    <padding>0</padding>
-	    <expand>True</expand>
-	    <fill>True</fill>
-	  </child>
-
-	  <widget>
-	    <class>Custom</class>
-	    <name>tree_lager_frei</name>
-	    <cxx_visibility>protected</cxx_visibility>
-	    <signal>
-	      <name>leaf_selected</name>
-	      <handler>on_lager_leaf_selected</handler>
-	      <last_modification_time>Thu, 04 Apr 2002 10:33:01 GMT</last_modification_time>
-	    </signal>
-	    <signal>
-	      <name>unselect_row</name>
-	      <handler>on_lager_unselect_row</handler>
-	      <last_modification_time>Thu, 04 Apr 2002 10:33:07 GMT</last_modification_time>
-	    </signal>
-	    <signal>
-	      <name>node_selected</name>
-	      <handler>on_lager_node_selected</handler>
-	      <last_modification_time>Thu, 04 Apr 2002 10:33:14 GMT</last_modification_time>
-	    </signal>
-	    <creation_function>SimpleTree</creation_function>
-	    <int1>2</int1>
-	    <int2>2</int2>
-	    <last_modification_time>Mon, 25 Jun 2001 08:37:46 GMT</last_modification_time>
-	  </widget>
-	</widget>
-      </widget>
-
-      <widget>
-	<class>GtkVBox</class>
-	<name>vbox10</name>
-	<homogeneous>False</homogeneous>
-	<spacing>0</spacing>
-	<child>
-	  <shrink>True</shrink>
-	  <resize>True</resize>
-	</child>
-
-	<widget>
-	  <class>GtkLabel</class>
-	  <name>label96</name>
-	  <label>Verplante Menge</label>
-	  <justify>GTK_JUSTIFY_CENTER</justify>
-	  <wrap>False</wrap>
-	  <xalign>0.5</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <child>
-	    <padding>0</padding>
-	    <expand>False</expand>
-	    <fill>False</fill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>GtkScrolledWindow</class>
-	  <name>scrolledwindow15</name>
-	  <hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
-	  <vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
-	  <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
-	  <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
-	  <child>
-	    <padding>0</padding>
-	    <expand>True</expand>
-	    <fill>True</fill>
-	  </child>
-
-	  <widget>
-	    <class>Custom</class>
-	    <name>tree_lager_verplant</name>
-	    <cxx_visibility>protected</cxx_visibility>
-	    <signal>
-	      <name>leaf_selected</name>
-	      <handler>on_lager_leaf_selected</handler>
-	      <last_modification_time>Thu, 04 Apr 2002 10:33:01 GMT</last_modification_time>
-	    </signal>
-	    <signal>
-	      <name>unselect_row</name>
-	      <handler>on_lager_unselect_row</handler>
-	      <last_modification_time>Thu, 04 Apr 2002 10:33:07 GMT</last_modification_time>
-	    </signal>
-	    <signal>
-	      <name>node_selected</name>
-	      <handler>on_lager_node_selected</handler>
-	      <last_modification_time>Thu, 04 Apr 2002 10:33:14 GMT</last_modification_time>
-	    </signal>
-	    <creation_function>SimpleTree</creation_function>
-	    <int1>3</int1>
-	    <int2>3</int2>
-	    <last_modification_time>Mon, 25 Jun 2001 08:37:46 GMT</last_modification_time>
-	  </widget>
-	</widget>
-      </widget>
-    </widget>
-
-    <widget>
       <class>GtkFrame</class>
       <name>frame_instanzen</name>
       <border_width>5</border_width>
@@ -1266,7 +1174,7 @@
 	    <class>GtkTable</class>
 	    <name>table18</name>
 	    <rows>1</rows>
-	    <columns>2</columns>
+	    <columns>1</columns>
 	    <homogeneous>False</homogeneous>
 	    <row_spacing>0</row_spacing>
 	    <column_spacing>0</column_spacing>
@@ -1309,7 +1217,7 @@
 		<class>GtkTable</class>
 		<name>table24</name>
 		<rows>2</rows>
-		<columns>7</columns>
+		<columns>6</columns>
 		<homogeneous>False</homogeneous>
 		<row_spacing>0</row_spacing>
 		<column_spacing>0</column_spacing>
@@ -1321,8 +1229,8 @@
 		  <label_xalign>0</label_xalign>
 		  <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
 		  <child>
-		    <left_attach>4</left_attach>
-		    <right_attach>5</right_attach>
+		    <left_attach>3</left_attach>
+		    <right_attach>4</right_attach>
 		    <top_attach>1</top_attach>
 		    <bottom_attach>2</bottom_attach>
 		    <xpad>0</xpad>
@@ -1359,8 +1267,8 @@
 		  </signal>
 		  <relief>GTK_RELIEF_NORMAL</relief>
 		  <child>
-		    <left_attach>5</left_attach>
-		    <right_attach>6</right_attach>
+		    <left_attach>4</left_attach>
+		    <right_attach>5</right_attach>
 		    <top_attach>1</top_attach>
 		    <bottom_attach>2</bottom_attach>
 		    <xpad>0</xpad>
@@ -1427,8 +1335,8 @@ Auftr. planen</label>
 		  </signal>
 		  <relief>GTK_RELIEF_NORMAL</relief>
 		  <child>
-		    <left_attach>6</left_attach>
-		    <right_attach>7</right_attach>
+		    <left_attach>5</left_attach>
+		    <right_attach>6</right_attach>
 		    <top_attach>1</top_attach>
 		    <bottom_attach>2</bottom_attach>
 		    <xpad>0</xpad>
@@ -1495,8 +1403,8 @@ Auftr. planen</label>
 		  </signal>
 		  <relief>GTK_RELIEF_NORMAL</relief>
 		  <child>
-		    <left_attach>1</left_attach>
-		    <right_attach>2</right_attach>
+		    <left_attach>0</left_attach>
+		    <right_attach>1</right_attach>
 		    <top_attach>1</top_attach>
 		    <bottom_attach>2</bottom_attach>
 		    <xpad>0</xpad>
@@ -1558,8 +1466,8 @@ Auftrag</label>
 		  <label_xalign>0</label_xalign>
 		  <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
 		  <child>
-		    <left_attach>2</left_attach>
-		    <right_attach>3</right_attach>
+		    <left_attach>1</left_attach>
+		    <right_attach>2</right_attach>
 		    <top_attach>1</top_attach>
 		    <bottom_attach>2</bottom_attach>
 		    <xpad>0</xpad>
@@ -1602,8 +1510,8 @@ Auftrag</label>
 		  <label_xalign>0</label_xalign>
 		  <shadow_type>GTK_SHADOW_NONE</shadow_type>
 		  <child>
-		    <left_attach>3</left_attach>
-		    <right_attach>4</right_attach>
+		    <left_attach>2</left_attach>
+		    <right_attach>3</right_attach>
 		    <top_attach>1</top_attach>
 		    <bottom_attach>2</bottom_attach>
 		    <xpad>0</xpad>
@@ -1643,8 +1551,8 @@ Auftrag</label>
 		  <homogeneous>False</homogeneous>
 		  <spacing>0</spacing>
 		  <child>
-		    <left_attach>1</left_attach>
-		    <right_attach>7</right_attach>
+		    <left_attach>0</left_attach>
+		    <right_attach>6</right_attach>
 		    <top_attach>0</top_attach>
 		    <bottom_attach>1</bottom_attach>
 		    <xpad>0</xpad>

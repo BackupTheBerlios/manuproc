@@ -86,8 +86,8 @@ void auftrag_main::on_beenden_activate()
 {   
  save_WindowSize();
  maintree_s->detach_from_clist();
- tree_lager_frei->detach_from_clist();
- tree_lager_verplant->detach_from_clist();
+// tree_lager_frei->detach_from_clist();
+// tree_lager_verplant->detach_from_clist();
  Gtk::Main::instance()->quit();
 }
 
@@ -312,44 +312,40 @@ void auftrag_main::on_storno_auftraege_activate()
 { if (stornierte_auftraege->get_active())    
    {selected_status=STORNO; statusaenderung();}}
 
+
+
 void auftrag_main::auftrags_id_aenderung()
 {
   AuftragBase::ID id=auftrag_main::SelectedAuftragsId();
+
   if(id==AuftragBase::ungeplante_id) 
-    { frame_offene_mengen->set_label("Ungeplante Menge");
+    { frame_offene_mengen->set_label("ungeplante / fehlende Menge");
     }
   else if(id==AuftragBase::plan_auftrag_id) 
-    { frame_offene_mengen->set_label("Bestellte (offene) Mengen");
+    { frame_offene_mengen->set_label("geplante / bestellte / reservierte Menge");
     }
   else if(id==AuftragBase::dispo_auftrag_id)
-    { frame_offene_mengen->set_label("Frei verfügbare Menge");
+    { frame_offene_mengen->set_label("verfügbare Menge ");
     }
+  else if(id==AuftragBase::none_id)
+    { frame_offene_mengen->set_label("alle Lagermengen");
+    }
+
   frame_instanzen->hide() ;
   show_frame_instanzen_material();
 
   if(block_callback) return;
   on_neuladen_activate();
-// Sinnlos das zu speichern, da der defaultwert von den Instanzen abhängt
-//  Global_Settings::create(int(getuid()),"pps","Auftrag_ID_shown",itos(SelectedAuftragsId())); 
 }
 
-void auftrag_main::on_plan_menge_menu_activate()
-{ if(plan_menge_menu->get_active()) auftrags_id_aenderung();
-}
-void auftrag_main::on_ungeplante_menge_menu_activate()
-{ if(ungeplante_menge_menu->get_active()) auftrags_id_aenderung();
-}
-void auftrag_main::on_dispo_menge_menu_activate()
-{ if(dispo_menge_menu->get_active()) auftrags_id_aenderung();
-}
 
 AuftragBase::ID auftrag_main::SelectedAuftragsId() const
 {
   if     (ungeplante_menge_menu->get_active()) return AuftragBase::ungeplante_id;
   else if(plan_menge_menu->get_active()) return AuftragBase::plan_auftrag_id;
   else if(dispo_menge_menu->get_active()) return AuftragBase::dispo_auftrag_id;
+  else if(alle_lagermengen->get_active()) return AuftragBase::none_id;
   else assert(!"never get here");
-  abort();
 }
 
 
@@ -458,8 +454,7 @@ gint auftrag_main::on_mainprint_button_clicked(GdkEventButton *ev)
 
 auftrag_main::auftrag_main()
   : allaufids(0), instanz(ppsInstanzID::Kundenauftraege), selected_AufEintrag(0),
-    block_callback(false),instanz_auftrag(0),
-    atyp(ArtikelTyp::none_id)
+    block_callback(false),atyp(ArtikelTyp::none_id),instanz_auftrag(0)
 {
  menu_instanz();
  loadEinstellungen();
@@ -477,6 +472,7 @@ auftrag_main::auftrag_main()
  neuer_auftrag_tree_titel_setzen();
 
  instanz_selected(instanz); 
+ radio_instanz_selected(NULL,instanz);
  load_list=true;		// nur beim Start ggf. nicht laden
  maintree_s->set_remember("pps","maintree-"+itos(instanz->Id()));
 }
@@ -523,9 +519,9 @@ void auftrag_main::set_column_titles_of_simple_tree()
 void auftrag_main::fill_simple_tree()
 {
   if(allaufids) { delete(allaufids); allaufids=0; }
-  if(instanz->LagerInstanz())
-      lager_zeigen();   
-  else
+//  if(instanz->LagerInstanz())
+//      lager_zeigen();   
+//  else
    {
     selected_AufEintrag=0;
     if(!allaufids) 
@@ -661,9 +657,9 @@ void auftrag_main::on_unselect_row(gint row, gint column, GdkEvent *event)
 
 
 
-void auftrag_main::show_selected_line(bool lager)
+void auftrag_main::show_selected_line()
 {
-  if(lager)
+/*  if(lager)
    {
     try{
        cH_RowDataBase dt(tree_lager_verplant->getSelectedRowDataBase());
@@ -675,6 +671,7 @@ void auftrag_main::show_selected_line(bool lager)
       } catch(std::exception &e) {}
    }
   else
+*/
    {
     try{
        cH_RowDataBase dt(maintree_s->getSelectedRowDataBase());
@@ -910,7 +907,7 @@ void auftrag_main::on_button_artikeleingabe_clicked()
 {
  if (selected_AufEintrag )//sonst geht das nur bei Kundenaufträgen->  && selected_AufEintrag->ArtId())
   {
-    std::string s = "artikeleingabe "+itos(selected_AufEintrag->ArtId())+" &";
+    std::string s = "artikeleingabe "+itos(selected_AufEintrag->Id())+" &";
     system(s.c_str());
     ArtikelBaum::UnCache(selected_AufEintrag->Artikel());
   }
@@ -958,7 +955,39 @@ bool operator==(cH_RowDataBase rdb, const show_maching_compare &comp)
 
 void auftrag_main::radio_instanz_selected(const Gtk::RadioMenuItem *rm,const cH_ppsInstanz _instanz)
 {
+  unbestaetigte_auftraege->set_sensitive(
+    (_instanz->Id()==ppsInstanzID::Kundenauftraege) ||
+    (_instanz->Id()==ppsInstanzID::Einkauf));
+
+  offene_auftraege->set_sensitive(
+    (_instanz->Id()==ppsInstanzID::Kundenauftraege) ||
+    (_instanz->Id()==ppsInstanzID::Einkauf));
+
+  stornierte_auftraege->set_sensitive(
+    (_instanz->Id()==ppsInstanzID::Kundenauftraege) ||
+    (_instanz->Id()==ppsInstanzID::Einkauf));
+
+  geschlossene_auftraege->set_sensitive(
+    (_instanz->Id()==ppsInstanzID::Kundenauftraege) ||
+    (_instanz->Id()==ppsInstanzID::Einkauf));
+
+  plan_menge_menu->set_sensitive(
+    (_instanz->Id()==ppsInstanzID::Fertigwarenlager) ||
+    (_instanz->Id()==ppsInstanzID::Einkauf));
+  ungeplante_menge_menu->set_sensitive(
+    (_instanz->Id()==ppsInstanzID::Fertigwarenlager) ||
+    (_instanz->Id()==ppsInstanzID::Einkauf));
+  dispo_menge_menu->set_sensitive(
+    (_instanz->Id()==ppsInstanzID::Fertigwarenlager));
+  alle_lagermengen->set_sensitive(
+    (_instanz->Id()==ppsInstanzID::Fertigwarenlager));
+
+
+  // do select action
+  if(rm==NULL) return;
+
   if(rm->get_active()) instanz_selected(_instanz);
+  akt_instanz->set_value(_instanz);
 }
 
 void auftrag_main::instanz_selected(const cH_ppsInstanz _instanz)
@@ -1010,7 +1039,7 @@ void auftrag_main::show_frame_instanzen_material()
  Datum_instanz->setLabel("");
  searchcombo_auftragid->reset();
 
-  if(instanz->LagerInstanz())
+/*  if(instanz->LagerInstanz())
    { 
      hpaned_tree_lager->show();
      vpaned_an_mat->hide();
@@ -1019,9 +1048,10 @@ void auftrag_main::show_frame_instanzen_material()
      togglebutton_bestellen->hide();
    }
   else
+*/
    { 
      vpaned_an_mat->show();
-     hpaned_tree_lager->hide();
+//     hpaned_tree_lager->hide();
      togglebutton_auftraege->show();
      togglebutton_material->show();
      if(SelectedAuftragsId()==AuftragBase::ungeplante_id) 
@@ -1077,8 +1107,9 @@ void auftrag_main::show_frame_instanzen_material()
 
   // frame_materialbedarf
   guint psize=GTK_WIDGET(vpaned_an_mat->gtkobj())->allocation.height;
-  if( ( maintree_s->selection().size()==0 &&     // keine Zeile gewählt
-        tree_lager_verplant->selection().size()==0) ||
+  if(  maintree_s->selection().size()==0 ||
+//&&     // keine Zeile gewählt
+//        tree_lager_verplant->selection().size()==0) 
      (!togglebutton_material->get_active() &&  // oder
       !togglebutton_auftraege->get_active()))  // kein Button aktiv
    {
@@ -1091,8 +1122,8 @@ void auftrag_main::show_frame_instanzen_material()
      vpaned_an_mat->set_position((int)(2*psize/3.));
      if(maintree_s->selection().size()!=0)
         maintree_s->moveto(maintree_s->selection().begin()->get_row_num(),0);
-     else if(tree_lager_verplant->selection().size()!=0)
-        tree_lager_verplant->moveto(tree_lager_verplant->selection().begin()->get_row_num(),0);
+//     else if(tree_lager_verplant->selection().size()!=0)
+//        tree_lager_verplant->moveto(tree_lager_verplant->selection().begin()->get_row_num(),0);
    }
 }
 
@@ -1176,8 +1207,9 @@ void auftrag_main::handle_togglebutton(char c)
    }
   if(!togglebutton_material->get_active() && !togglebutton_auftraege->get_active())
       maintree_s->unselect_all();
-  if(instanz->LagerInstanz())  show_selected_line(true);
-  else  show_selected_line();
+//  if(instanz->LagerInstanz())  show_selected_line(true);
+//  else  
+  show_selected_line();
   block_callback=false;
 }
 
@@ -1230,5 +1262,8 @@ void auftrag_main::on_offwarengrp_activate()
      for(int bezidx=A1; bezidx<=A4; bezidx++) maintree_s->setTitleAt(bezidx,"");
  }
 }
+
+
+
 
 

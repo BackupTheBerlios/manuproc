@@ -11,6 +11,13 @@
 extern MyMessage *meldung;
 
 
+void auftrag_main::on_OptMenu_Instanz_Bestellen_activate()
+{
+std::cout << OptMen_Instanz_Bestellen->get_value()->Id() << "\n";
+ akt_instanz->set_value(OptMen_Instanz_Bestellen->get_value());
+}
+
+
 void auftrag_main::on_kunden_lieferant_activate()
 {
   button_neue_anr->grab_focus();
