@@ -4001,7 +4001,6 @@ löschen</label>
 	<child_name>Toolbar:button</child_name>
 	<name>lager_buchen</name>
 	<cxx_visibility>protected</cxx_visibility>
-	<sensitive>False</sensitive>
 	<signal>
 	  <name>clicked</name>
 	  <handler>on_lager_buchen_clicked</handler>
@@ -9106,7 +9105,6 @@ Jahr
       <widget>
 	<class>GtkButton</class>
 	<name>button34</name>
-	<sensitive>False</sensitive>
 	<can_default>True</can_default>
 	<can_focus>True</can_focus>
 	<stock_button>GNOME_STOCK_BUTTON_YES</stock_button>

@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.41 2004/02/04 19:43:30 jacek Exp $ */
+/* $Id: Lieferschein.cc,v 1.42 2004/02/09 15:14:29 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -96,8 +96,10 @@ void Lieferschein::closeLfrs()
  Query("update lieferschein set rngid=0 where rngid is null "
  		"and (instanz,lfrsid) = (?,?)") 
    	<< Instanz()->Id() << Id();
- Query("update lieferscheinentry set status=? where (instanz,lfrsid)=(?,?)")
- 	<< (AufStatVal)CLOSED << Instanz()->Id() << Id();
+ Query("update lieferscheinentry set status=? where (instanz,lfrsid)=(?,?)"
+	" and status!=? ")
+ 	<< (AufStatVal)CLOSED << Instanz()->Id() << Id() <<
+	   (AufStatVal)STORNO;
  SQLerror::test(__FILELINE__);
 }
 

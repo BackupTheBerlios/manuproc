@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.32 2004/02/09 11:48:40 jacek Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.33 2004/02/09 15:14:29 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -38,10 +38,6 @@
 #include <Auftrag/selFullAufEntry.h>
 
 #ifdef MABELLA_EXTENSIONS
-
-#ifdef MABELLA_LAGERHACK
-#include <Lager/FertigWarenLager.h>
-#endif
 
 #include <Artikel/ArtikelBase.h>
 #endif
@@ -197,17 +193,16 @@ void AufEintrag::ProduziertNG(mengen_t M,const ProductionContext2 &ctx)
    }
 
 
-#if 0     // not needed any more
- ArtikelStamm as(Artikel());
+#ifdef MABELLA_EXTENSIONS
 
- if(as.BestellenBei()==ppsInstanzID::None)
-   if(as.Warengruppe()==ArtikelTypID::aufgemachtes_Band ||
-      as.Warengruppe()==ArtikelTypID::gewebtes_Band)
+ if(Instanz()->getBestellInstanz(Artikel())==ppsInstanzID::None)
      {
       if(Instanz() == ppsInstanzID::Kundenauftraege)
         {  FertigWaren fw(artikel,(FertigWaren::enum_Aktion)'L',
                             M.abs().as_int(),ctx.Id());
+
            FertigWarenLager fwl(fw,ctx.lagerid);
+
            if(M < 0) fwl.Einlagern(ctx);
            else if(M > 0) fwl.Auslagern(ctx);
         }

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.50 2004/02/09 11:48:40 jacek Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.51 2004/02/09 15:14:29 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -76,7 +76,10 @@ void LieferscheinEntry::showZusatzInfos() const
 void LieferscheinEntry::changeStatus(AufStatVal new_status, 
 		const Lieferschein &ls, bool ein_auftrag) throw(SQLerror)
 { 
- changeStatus(new_status,ls,ein_auftrag,stueck,menge);
+ if(status==OPEN && new_status==STORNO)
+   changeStatus(new_status,ls,ein_auftrag,0,0);
+ else
+   changeStatus(new_status,ls,ein_auftrag,stueck,menge);
 }
 
 

@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.h,v 1.21 2004/02/09 11:48:40 jacek Exp $
+// $Id: ArtikelStamm.h,v 1.22 2004/02/09 15:14:29 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -67,8 +67,6 @@ private:
 friend class ppsInstanz;
 friend class Artikeleingabe;
 friend class AufArtKonsistenz;
-
-public:
 	cH_ppsInstanz BestellenBei() const
 	{  return payload.bestellen_bei; }
 

@@ -168,8 +168,6 @@ void auftrag_lieferschein::on_liefnr_activate()
 
    display(liefernr->Content());
 
-   lager_buchen->set_sensitive(datavec_liefdata.size()==0);
-
  }catch(SearchComboContent<int>::ContentError &e)
  { display(atoi(liefernr->get_text().c_str()));
    spinbutton_paeckchen->grab_focus();
@@ -666,7 +664,19 @@ bool auftrag_lieferschein::deleteLiefEntry()
    if (LE.Zeile()!=0)
     {
      LieferscheinVoll lv(instanz,LE.Id());
-     lv.deleteRow(LE);
+     if(LE.Status()==(AufStatVal)UNCOMMITED)
+       lv.deleteRow(LE);
+     else
+       if(LE.Status()==(AufStatVal)OPEN)
+         LE.changeStatus((AufStatVal)STORNO,*lieferschein,
+#ifdef MABELLA_EXTENSIONS
+				true
+#else
+				false
+#endif
+	);
+     else
+ 	return false;
 
      DVI j = find_if(datavec_liefoff.begin(),datavec_liefoff.end(),
 		Auftrag_ref_Lief(dt->getAufEintragBase()));
@@ -821,6 +831,8 @@ void auftrag_lieferschein::on_button_zeile_modifizieren_clicked()
    if(LieferscheinBase::mengen_t(liefermenge->get_value_as_float()) != LE.Menge() ||
             anzahl->get_value_as_int() != LE.Stueck())
     {
+     if(LE.Status()==(AufStatVal)UNCOMMITED ||
+	LE.Status()==(AufStatVal)OPEN)
        LE.changeMenge(anzahl->get_value_as_int(),liefermenge->get_value_as_float(),
        		*lieferschein,
 #ifdef MABELLA_EXTENSIONS
@@ -924,14 +936,15 @@ void auftrag_lieferschein::on_lager_buchen_clicked()
 	 Handle<const Data_Lieferdaten> ld=
 			(*i).cast_dynamic<const Data_Lieferdaten>();
          LieferscheinEntry LE = ld->get_LieferscheinEntry();
-	 LE.changeStatus((AufStatVal)OPEN,*lieferschein,true);
+	 if(ld->get_LieferscheinEntry().Status()==(AufStatVal)UNCOMMITED)
+	   LE.changeStatus((AufStatVal)OPEN,*lieferschein,true);
 	}
-
-       on_liefnr_activate();     
       }
-      catch(SQLerror &e) {meldung->Show(e); return;}
+      catch(SQLerror &e) {meldung->Show(e); tr.rollback(); return;}
 
       lager_buchen->set_sensitive(false);
+      tr.commit();
+      on_liefnr_activate();     
      }
    else
    if(ret==1)
