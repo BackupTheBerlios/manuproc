@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.62 2004/05/06 08:03:13 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.63 2004/05/06 08:19:09 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -32,8 +32,11 @@
 #  include <sigc++/compatibility.h>
 #endif
 
-// we use the old Glib::Object code
-//#define OLD_MODEL 
+// we need use the old Glib::Object code
+#if GTKMM_MAJOR_VERSION==2 && (GTKMM_MINOR_VERSION<2 \
+	|| (GTKMM_MINOR_VERSION==2 && GTKMM_MICRO_VERSION<10))
+#  define OLD_MODEL 
+#endif
 
 #ifdef __MINGW32__
 #define getuid() 0
