@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.32 2003/12/23 00:09:48 christof Exp $
+// $Id: SimpleTree.hh,v 1.33 2004/03/24 10:26:11 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -90,6 +90,9 @@ class SimpleTree_Basic : public Gtk::TreeView, public SimpleTreeStore_Proxy
 	void on_abbrechen_clicked();
 	void on_spaltenzahl_geaendert();
 	bool MouseButton(GdkEventButton *event);
+	void sel_change_cb(const Gtk::TreeModel::iterator&it,
+			std::vector<cH_RowDataBase> *l,
+			std::vector<Handle<TreeRow> > *n);
 	
 public:
 	SimpleTree_Basic(unsigned max_col);
@@ -157,6 +160,8 @@ private:
           selectMatchingLines2(i->second.children.begin(),i->second.children.end(),t,only_one_line);
     }
  }
+ void getSelectedRowDataBase_vec_cb(const Gtk::TreeModel::iterator&it, 
+		std::vector<cH_RowDataBase> *res);
 
 public:
  struct SelectionError : public std::exception

@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.44 2004/01/19 09:57:10 jacek Exp $
+// $Id: SimpleTree.cc,v 1.45 2004/03/24 10:26:11 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -145,18 +145,32 @@ void SimpleTree_Basic::on_title_changed(guint nr)
 {  get_column(nr)->set_title(getColTitle(nr));
 }
 
+void SimpleTree_Basic::sel_change_cb(const Gtk::TreeModel::iterator&it,
+		std::vector<cH_RowDataBase> *l,std::vector<Handle<TreeRow> > *n)
+{  Gtk::TreeRow row=*it;
+   if (!row[getStore()->m_columns.childrens_deep])
+      l->push_back(row[getStore()->m_columns.leafdata]);
+   else
+   {  Handle<TreeRow> htr=row[getStore()->m_columns.row];
+      if (htr) n->push_back(htr);
+   }
+}
+
 void SimpleTree_Basic::on_selection_changed()
-{  Gtk::TreeModel::iterator sel=get_selection()->get_selected();
-   if (!sel) // unselect
+{
+   if (get_selection()->get_selected_rows().empty()) // !sel) // unselect
      _leaf_unselected();
    else
-   {  Gtk::TreeRow row=*sel;
-      if (!row[getStore()->m_columns.childrens_deep])
-         _leaf_selected(row[getStore()->m_columns.leafdata]);
-      else
-      {  Handle<TreeRow> htr=row[getStore()->m_columns.row];
-         if (htr) _node_selected(*htr);
-      }
+   {  std::vector<cH_RowDataBase> leaves;
+      std::vector<Handle<TreeRow> > nodes;
+      get_selection()->selected_foreach(SigC::bind(SigC::slot(*this,
+      		&SimpleTree_Basic::sel_change_cb),&leaves,&nodes));
+      for (std::vector<cH_RowDataBase>::const_iterator i=leaves.begin();
+      		i!=leaves.end();++i)
+      	 _leaf_selected(*i);
+      for (std::vector<Handle<TreeRow> >::const_iterator i=nodes.begin();
+      		i!=nodes.end();++i)
+      	 _node_selected(**i);
    }
 }
 
@@ -201,14 +215,20 @@ void SimpleTree_Basic::Collapse()
 
 // expand_row(path,false)/collapse_row(path)
 
+void SimpleTree::getSelectedRowDataBase_vec_cb(const Gtk::TreeModel::iterator&it, 
+		std::vector<cH_RowDataBase> *res)
+{  Gtk::TreeRow row=*it;
+   if (!row[getStore()->m_columns.childrens_deep])
+      res->push_back(row[getStore()->m_columns.leafdata]);
+}
+
 std::vector<cH_RowDataBase> SimpleTree::getSelectedRowDataBase_vec() const
 	throw (SimpleTree::notLeafSelected)
 {  std::vector<cH_RowDataBase> result;
-   try {
-#warning 2do multiple rows
-      result.push_back(getSelectedRowDataBase());
-   } catch (notLeafSelected &e) { throw; }
-     catch (...) {}
+   SimpleTree *non_const_this=const_cast<SimpleTree*>(this);
+   non_const_this->get_selection()->selected_foreach(SigC::bind(
+   		SigC::slot(*non_const_this,
+      		&SimpleTree::getSelectedRowDataBase_vec_cb),&result));
    return result;
 }
 

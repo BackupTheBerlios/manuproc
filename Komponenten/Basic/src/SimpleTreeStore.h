@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.40 2004/01/12 14:20:06 jacek Exp $
+// $Id: SimpleTreeStore.h,v 1.41 2004/03/24 10:26:11 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -129,6 +129,8 @@ private:
 	static const unsigned num_colors=8;
 	unsigned sortierspalte;
 	bool invert_sortierspalte;
+
+	unsigned stamp;
 
 	void save_remembered() const;
 	void load_remembered();
