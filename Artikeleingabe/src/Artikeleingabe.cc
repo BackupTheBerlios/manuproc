@@ -15,6 +15,7 @@
 #include <Auftrag/selFullAufEntry.h>
 #include <unistd.h>
 #include "MyMessage.h"
+#include <Aux/FILEstream.h>
 
 #define D(x) 
 //cerr << x << '\n'
@@ -90,6 +91,10 @@ void Artikeleingabe::artikelbox_activate()
        optionmenu_instanz->set_sensitive(change_no_instanz->get_active());
        Artikel_Bestellen_bei->set_value(pi->Id());
        Artikel_Bestellen_bei->set_sensitive(!change_no_instanz->get_active());
+       
+       mindbest_check->set_active(as.getCheckBest());
+       mindbestand->set_sensitive(as.getCheckBest());
+       mindbestand->set_value(0);
     }
    } catch (SQLerror &e)   {mess->Show(e);} 
  set_Data_from_artikelliste();
@@ -184,7 +189,7 @@ void Artikeleingabe::push_Artikel(vec_zeile_t &vec_zeile, const zeile_t &z)
    {  cH_ppsInstanz inst(ArtikelStamm(*(z.first)).BestellenBei());
       unsigned int i=vec_zeile.size();
       D("?" << inst->get_Name() << " @ " << i << '?' << z.first->Bezeichnung());
-      for (;i<instanz_spalte.size() && instanz_spalte[i]!=inst;++i)
+      for (;i<instanz_spalte.size() && instanz_spalte[i]!=(*inst);++i)
       	D("!" << instanz_spalte[i]->get_Name());
       if (i>=instanz_spalte.size())
       {  instanz_spalte.push_back(inst);
@@ -196,7 +201,7 @@ void Artikeleingabe::push_Artikel(vec_zeile_t &vec_zeile, const zeile_t &z)
       vec_zeile.push_back(z);
    }
    } catch (SQLerror &e)
-   { cout << e << ':' << (z.first)->Id() << '\n';
+   { std::cout << e << ':' << (z.first)->Id() << '\n';
    }
 #endif
 }
@@ -215,7 +220,7 @@ try{
    for (ArtikelBaum::const_iterator i=ABaum.begin();i!=ABaum.end();++i)
       ArtikelBaum_Pfad(ArtikelBase(i->rohartikel),i->menge,datavec,vec_zeile);
 
-}catch(std::exception &e) {cerr<<e.what();}
+}catch(std::exception &e) {std::cerr<<e.what();}
 }
 
 // Ja der Vektor wird kopiert und dann verändert (Rekursion)
@@ -272,7 +277,7 @@ void Artikeleingabe::Eingabe_fuer(const ArtikelBase& art)
 // frame_artikel->set_sensitive(true);
  OM_Einheit->set_value(Einheit(artikelbox->get_value()));
  } catch (SQLerror &e)
- {  cout << "Artikeleingabe::Eingabe_fuer " << e << '\n';
+ {  std::cout << "Artikeleingabe::Eingabe_fuer " << e << '\n';
  }
 }
 
@@ -292,7 +297,7 @@ void Artikeleingabe::set_Prozess()
  // assume the user want's to supply something if it's not there
 // if (!ArtikelBaum(fuer_artikel).size()) artikelboxb->grab_focus_Artikel();
  } catch (SQLerror &e)
- {  cout << "Artikeleingabe::Eingabe_fuer " << e << '\n';
+ {  std::cout << "Artikeleingabe::Eingabe_fuer " << e << '\n';
  }
 
 }
@@ -407,7 +412,7 @@ void Artikeleingabe::on_button_close_clicked()
 
 void Artikeleingabe::set_tree_titels()
 {
- vector<std::string> t;
+ std::vector<std::string> t;
  for (instanz_spalte_t::const_iterator i=instanz_spalte.begin();
  		i!=instanz_spalte.end();++i)
     t.push_back((*i)->get_Name());
@@ -470,7 +475,7 @@ void Artikeleingabe::on_kunde_activate()
     alias_warengruppe->show();
   else 
     alias_warengruppe->hide();
-  }catch(SQLerror &e) {cerr << e<<'\n';}
+  }catch(SQLerror &e) {std::cerr << e<<'\n';}
  fill_eingabebox(2);
 }
 
@@ -485,9 +490,9 @@ void Artikeleingabe::on_alias_eingabe_activate()
   des2 = Gtk::Main::timeout.connect(slot(this,&Artikeleingabe::timeout_save_edited_artikel2),4000);
   }
   catch(SQLerror &e)
-    {cerr<<e<<'\n';
+    {std::cerr<<e<<'\n';
       if(e.Code()==-400)
-     	{string msg("Die Bezeichnung ");
+     	{std::string msg("Die Bezeichnung ");
      	 msg=msg+alias_eingabe->get_value(0)+"... existiert schon";
      	 mess->Show(msg);
      	}
@@ -508,7 +513,7 @@ void Artikeleingabe::on_button_drucken_clicked()
 {
    tree->Expand_recursively();
    FILE *f=popen(TEXCMD,"w");
-   ofstream os(fileno(f));   
+   oFILEstream os(f);   
 
    Gtk2TeX::HeaderFlags hf;
    hf.landscape=true;
@@ -534,7 +539,7 @@ try{
       else if (!vec_zeile[seqnr].second)
          return cH_EntryValueIntString(vec_zeile[seqnr].first->Bezeichnung());
       else
-      {  string menge;
+      {  std::string menge;
          Einheit e(*(vec_zeile[seqnr].first)),e0(Einheit::Stueck);
          
          for (int i=seqnr-1;i>=0;--i)
@@ -553,7 +558,7 @@ try{
          return cH_EntryValueIntString(menge+vec_zeile[seqnr].first->Bezeichnung());
       }
    }
-} catch (SQLerror &e) { cout << "Data_tree::Value " << e << '\n'; }
+} catch (SQLerror &e) { std::cout << "Data_tree::Value " << e << '\n'; }
    return cH_EntryValueIntString("");
 }
 
@@ -621,4 +626,31 @@ void Artikeleingabe::on_change_no_instanz_toggled()
   {mess->Show(e); 
   } 
 }
+
+
+
+void Artikeleingabe::on_mindbest_check_toggled()
+{
+ mindbestand->set_sensitive(mindbest_check->get_active());
+
+ if(mindbest_check->get_active())
+   {mindbestand->set_value(0);  
+    on_mindbestand_activate();
+   }
+ else
+   {
+    mindbestand->set_value(-1);      
+    on_mindbestand_activate();    
+    mindbestand->set_value(0);      
+   }
+}
+
+void Artikeleingabe::on_mindbestand_activate()
+{  
+ ArtikelStamm as(artikelbox->get_value());
+ mindbestand->update();
+ as.setMindBest(mindbestand->get_value_as_int());
+ artikelbox->grab_focus(); 
+}
+
 

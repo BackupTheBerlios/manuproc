@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.27 2003/01/08 09:46:56 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.28 2003/03/19 14:12:22 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -44,14 +44,16 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
     int best_bei,defschem;
     int best_bei_default=itmp;
     int einheit, ieinheit;
+    int mindbestand, imindbestand;
    exec sql end declare section;
    id=ab.Id();
 
 //std::cout << "ArtikelStamm "<<itos(id)<<'\n';      
    exec sql select warengruppe,coalesce(internwarengruppe,warengruppe)
       ,coalesce(bestellen_bei,:best_bei_default),coalesce(defaultschema,1),
-      einheit
-   	into :typ, :inttyp, :best_bei, :defschem, :einheit :ieinheit
+      einheit, mindbestand
+   	into :typ, :inttyp, :best_bei, :defschem, :einheit :ieinheit,
+	:mindbestand:imindbestand
    	from artikelstamm where id= :id;
    SQLerror::test(__FILELINE__);
    
@@ -59,6 +61,7 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
    payload.interntyp=(ArtikelTyp::ID)inttyp;
    payload.bestellen_bei=cH_ppsInstanz(ppsInstanz::ID(best_bei));
    payload.defaultschema=defschem;
+   payload.mindbest=imindbestand==0 ? mindbestand : NO_CHECK;
    if (!ieinheit) payload.einh=Einheit::ID(einheit);
    else
    {  payload.einh=EinheitID::St_;
@@ -153,6 +156,25 @@ bool ArtikelStamm::getAktive() const throw(SQLerror)
  SQLerror::test(__FILELINE__);
  return AKTIV;
 }
+
+
+void ArtikelStamm::setMindBest(int mb) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int ARTID=art.Id();
+ int MINDBEST=mb;
+ int IMINDBEST=0;
+ exec sql end declare section;
+
+ if(mb==NO_CHECK) IMINDBEST=-1;
+ 
+ exec sql update artikelstamm set mindbestand=:MINDBEST:IMINDBEST
+	where id=:ARTID;
+ SQLerror::test(__FILELINE__);
+
+ cache.deregister(art.Id());
+}
+
 
 const UniqueValue::value_t ArtikelStamm::trace_channel
       = ManuProC::Tracer::channels.get();

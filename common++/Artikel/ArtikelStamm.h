@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.h,v 1.17 2003/01/08 09:46:56 christof Exp $
+// $Id: ArtikelStamm.h,v 1.18 2003/03/19 14:12:22 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -31,18 +31,20 @@ class ArtikelStamm
 {	// we can't include ExtBezSchema.h, so we duplicate what we need
 	typedef int ExtBezSchema_ID;
 	static const ExtBezSchema_ID ExtBezSchema_default_ID=1;
+	static const int NO_CHECK=-1; // Wert für mindbest;	 
 	
 	struct payload_t
 	{  ArtikelTyp::ID typ,interntyp;
 	   cH_ppsInstanz bestellen_bei;
 	   ExtBezSchema_ID defaultschema;
 	   Einheit einh;
+           int mindbest;	   
 	   
 	   payload_t() 
 	   : typ((ArtikelTyp::ID)0), interntyp((ArtikelTyp::ID)0),
 	                 bestellen_bei(cH_ppsInstanz(ppsInstanzID::None)), 
 	                 defaultschema(ExtBezSchema_default_ID),
-	                 einh(Einheit::default_id) {}
+	                 einh(Einheit::default_id),mindbest(NO_CHECK) {}
 	};
 	
 	ArtikelBase art;
@@ -51,6 +53,7 @@ class ArtikelStamm
 	typedef CacheStatic<ArtikelBase::ID,payload_t> cache_t;
 	static cache_t cache;
 public:
+	
 	static const UniqueValue::value_t trace_channel;
 
 	ArtikelStamm(const ArtikelBase &ab) throw (SQLerror);
@@ -78,6 +81,9 @@ public:
         static void set_BestellenBei(const ArtikelBase &artikel,const ppsInstanz::ID instanz);
 	static void setAktive(const ArtikelBase &artikel, bool ak) throw(SQLerror);
 	bool getAktive() const throw(SQLerror);        
+	bool getCheckBest() const { return payload.mindbest!=NO_CHECK; }
+	int getMindBest() const { return payload.mindbest; }
+	void setMindBest(int mb) throw(SQLerror);
 	
 	
 };

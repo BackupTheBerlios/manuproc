@@ -70,7 +70,7 @@ class Artikeleingabe : public Artikeleingabe_glade
             st_eingabe(std::string sp, int si) 
                : spalte(sp),signifikanz(si) {} 
             };
-        vector<st_eingabe> vec_eingabe;
+        std::vector<st_eingabe> vec_eingabe;
         std::list<int> list_sig;
         void on_togglebutton_edit_toggled();
         void fill_eingabebox(int nr);
@@ -94,7 +94,7 @@ class Artikeleingabe : public Artikeleingabe_glade
 //****** alias *****
         void on_alias_eingabe_activate();
         void on_alias_warengruppe_activate();
-        vector<st_eingabe> vec_alias_eingabe;
+        std::vector<st_eingabe> vec_alias_eingabe;
         std::list<int> list_sig2;
 
 //****** neu *******
@@ -107,6 +107,9 @@ class Artikeleingabe : public Artikeleingabe_glade
         void on_show_in_prlist_toggled();
         void on_change_no_instanz_toggled();
         void artikelbox_neu_activate();
+
+        void on_mindbest_check_toggled();
+        void on_mindbestand_activate();
 
    public: 
        Artikeleingabe(int argc, char **argv);

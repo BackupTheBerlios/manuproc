@@ -1,4 +1,4 @@
-// $Id: Changejournal_sql.pgcc,v 1.14 2003/01/08 10:18:51 christof Exp $
+// $Id: Changejournal_sql.pgcc,v 1.15 2003/03/19 14:12:22 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -148,7 +148,7 @@ throw(SQLerror)
  int STATUS;
  char DATUM[20];
  char NEWDATUM[20];
- int INEWVAL, IDELTA;
+// int INEWVAL, IDELTA;
  int INEWDATUM;
  exec sql end declare section;
 

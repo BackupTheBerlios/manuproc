@@ -122,7 +122,7 @@ void Artikeleingabe::save_edited_artikel()
   std::string squery = "update artbez_"+itos(schema->Typ())+"_"+
          itos(schema->Id())+" set ";
 
-  vector<bool> vec_all_empty;
+  std::vector<bool> vec_all_empty;
   for(std::list<int>::const_iterator i=list_sig.begin();i!=list_sig.end();++i)
    {
      bool all_empty=true;
@@ -157,7 +157,7 @@ bool Artikeleingabe::update_edited_artikel2()
   std::string squery = "update artbez_"+itos(alias_warengruppe->get_value())+"_"+
          itos(alias_schema->get_value())+" set ";
 
-  vector<bool> vec_all_empty;
+  std::vector<bool> vec_all_empty;
   for(std::list<int>::const_iterator i=list_sig2.begin();i!=list_sig2.end();++i)
    {
      bool all_empty=true;
@@ -196,7 +196,7 @@ void Artikeleingabe::save_edited_artikel2()
   std::string squery = "insert into artbez_"+itos(alias_warengruppe->get_value())+"_"+
          itos(alias_schema->get_value())+" (id,";
 
-  vector<bool> vec_all_empty;
+  std::vector<bool> vec_all_empty;
   for(std::list<int>::const_iterator i=list_sig2.begin();i!=list_sig2.end();++i)
    {
      bool all_empty=true;
@@ -240,13 +240,13 @@ void Artikeleingabe::on_button_verschmelzen_clicked()
   ArtikelBase alt_art = artbox_verschmelzen->get_value();
   if(neu_art==0 || alt_art ==0) return;
   exec sql begin declare section;
-   char query[1024];
+
   exec sql end declare section;
-  vector<std::string> tabellen1; // Spaltenname = id
-  vector<std::string> tabellen2; // Spaltenname = artikelid
-  vector<std::string> tabellen3; // Spaltenname = material
-  vector<std::string> tabellen4; // Spaltenname = artikel
-  vector<std::string> tabellen5; // Spaltenname = art_id
+  std::vector<std::string> tabellen1; // Spaltenname = id
+  std::vector<std::string> tabellen2; // Spaltenname = artikelid
+  std::vector<std::string> tabellen3; // Spaltenname = material
+  std::vector<std::string> tabellen4; // Spaltenname = artikel
+  std::vector<std::string> tabellen5; // Spaltenname = art_id
   tabellen1.push_back("artikelstamm");
   tabellen1.push_back("artikelzusammensetzung");
   tabellen1.push_back("artbez_0_1");
@@ -281,7 +281,7 @@ void Artikeleingabe::on_button_verschmelzen_clicked()
   tabellen5.push_back("maschinen_geschwindigkeit");
   
   Transaction tr;
-  for (vector<std::string>::const_iterator i=tabellen1.begin();i!=tabellen1.end();++i)
+  for (std::vector<std::string>::const_iterator i=tabellen1.begin();i!=tabellen1.end();++i)
    {
       Query::Execute("update "+*i+" set id="+itos(neu_art.Id())
          +" where id="+itos(alt_art.Id()));
@@ -291,17 +291,17 @@ void Artikeleingabe::on_button_verschmelzen_clicked()
          +itos(neu_art.Id())
          +" where altartikelid="+itos(alt_art.Id()));
    }
-  for (vector<std::string>::const_iterator i=tabellen2.begin();i!=tabellen2.end();++i)
+  for (std::vector<std::string>::const_iterator i=tabellen2.begin();i!=tabellen2.end();++i)
    {
       Query::Execute("update "+*i+" set artikelid="+itos(neu_art.Id())
          +" where artikelid="+itos(alt_art.Id()));
    }
-  for (vector<std::string>::const_iterator i=tabellen3.begin();i!=tabellen3.end();++i)
+  for (std::vector<std::string>::const_iterator i=tabellen3.begin();i!=tabellen3.end();++i)
    {
       Query::Execute("update "+*i+" set material="+itos(neu_art.Id())
          +" where material="+itos(alt_art.Id()));
    }
-  for (vector<std::string>::const_iterator i=tabellen4.begin();i!=tabellen4.end();++i)
+  for (std::vector<std::string>::const_iterator i=tabellen4.begin();i!=tabellen4.end();++i)
    {
       Query::Execute("update "+*i+" set artikel="+itos(neu_art.Id())
          +" where artikel="+itos(alt_art.Id()));
@@ -311,7 +311,7 @@ void Artikeleingabe::on_button_verschmelzen_clicked()
          +itos(neu_art.Id())
          +" where garn="+itos(alt_art.Id()));
    }
-  for (vector<std::string>::const_iterator i=tabellen5.begin();i!=tabellen5.end();++i)
+  for (std::vector<std::string>::const_iterator i=tabellen5.begin();i!=tabellen5.end();++i)
    {
       Query::Execute("update "+*i+" set art_id="+itos(neu_art.Id())
          +" where art_id="+itos(alt_art.Id()));

@@ -56,16 +56,16 @@ int main(int argc,char *argv[])
  Prozess::ID proz=Prozess::default_id;
  int opt;
  
- if (string(argv[0]).find("delete")!=string::npos) action=Delete;
- else if (string(argv[0]).find("create")!=string::npos) action=Create;
- else if (string(argv[0]).find("bestellenbei")!=string::npos) action=BestellenBei;
+ if (std::string(argv[0]).find("delete")!=std::string::npos) action=Delete;
+ else if (std::string(argv[0]).find("create")!=std::string::npos) action=Create;
+ else if (std::string(argv[0]).find("bestellenbei")!=std::string::npos) action=BestellenBei;
  while ((opt=getopt_long(argc,argv,"a:l:r:m:i:p:?",options,NULL))!=EOF)
   { switch (opt)
     {  case 'a' : 
          { if(std::string("delete")==optarg) action=Delete;
            else if(std::string("create")==optarg) action=Create;
            else if(std::string("bestellenbei")==optarg) action=BestellenBei;
-           else {cerr << "Option '-a' mit 'delete', 'create' oder 'bestellenbei' belegen.\n";}
+           else {std::cerr << "Option '-a' mit 'delete', 'create' oder 'bestellenbei' belegen.\n";}
            break;
          }
        case 'l' : AB1=ArtikelBase(atoi(optarg)); break;
@@ -91,30 +91,30 @@ int main(int argc,char *argv[])
  Transaction tr;
  switch(action) {
    case Delete : {
-                   if(AB1.Id()==0 || AB2.Id()==0 ) {cerr << "AB1.Id()==0 || AB2.Id()==0\n"; exit(1);}
+                   if(AB1.Id()==0 || AB2.Id()==0 ) {std::cerr << "AB1.Id()==0 || AB2.Id()==0\n"; exit(1);}
                    ArtikelBaum::delete_Artikel(getuid(),AB1,AB2);
-                   cout << "Artikel "<<cH_ArtikelBezeichnung(AB1)->Bezeichnung()
+                   std::cout << "Artikel "<<cH_ArtikelBezeichnung(AB1)->Bezeichnung()
                      << " stammt NICHT mehr von Artikel "
                      <<cH_ArtikelBezeichnung(AB2)->Bezeichnung()<<'\n';
                    break;
                  }
    case Create : { 
-                   if(AB1.Id()==0 || AB2.Id()==0) {cerr << "AB1.Id()==0 || AB2.Id()==0\n"; exit(1);}
+                   if(AB1.Id()==0 || AB2.Id()==0) {std::cerr << "AB1.Id()==0 || AB2.Id()==0\n"; exit(1);}
                    ArtikelBaum::RohArtikel ra(AB2,menge,proz);
                    try { ArtikelBaum::new_Artikel(getuid(),AB1,ra); }
                    catch (AufEintrag::NoAEB_Error &e)
-                   {  cout << e.what() << '\n';
+                   {  std::cout << e.what() << '\n';
                    }
-                   cout << "Artikel "<<cH_ArtikelBezeichnung(AB1)->Bezeichnung()
+                   std::cout << "Artikel "<<cH_ArtikelBezeichnung(AB1)->Bezeichnung()
                      << " stammt von Artikel "
                      <<cH_ArtikelBezeichnung(AB2)->Bezeichnung()
                      << ". Menge: "<<menge<<'\n';
                    break;
                  }
    case BestellenBei : {
-                   if(AB1.Id()==0 || newInstanz==ppsInstanzID::None ) {cerr << "AB1.Id()==0 || newInstanz==ppsInstanzID::None\n"; exit(1);}
+                   if(AB1.Id()==0 || newInstanz==ppsInstanzID::None ) {std::cerr << "AB1.Id()==0 || newInstanz==ppsInstanzID::None\n"; exit(1);}
                    ArtikelStamm::set_BestellenBei(AB1,newInstanz); 
-                   cout << "Artikel "<<cH_ArtikelBezeichnung(AB1)->Bezeichnung()
+                   std::cout << "Artikel "<<cH_ArtikelBezeichnung(AB1)->Bezeichnung()
                         <<" wird in der Instanz "<<cH_ppsInstanz(newInstanz)->Name()<<" bestellt\n";
                    break;
                    }
