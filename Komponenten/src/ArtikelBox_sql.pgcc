@@ -86,7 +86,7 @@ case GTK_SEARCH_FETCH:
 
  exec sql fetch in extbezfeld into :TEXT;
  SQLerror::test("ArtikelBox::searchFunc: fetch resulttable",100);
- if(sqlca.sqlcode==100) return;
+ if(sqlca.sqlcode==100){  combos[l][sp]->add_item(""); return;}
 
  combos[l][sp]->add_item(TEXT);
 
@@ -138,8 +138,9 @@ void ArtikelBox::fuelleMenu()
    menu->append(*optionen);   
    optionen->set_submenu(*optionen_menu);
    menu->append(*neu);
-   neu->activate.connect(SigC::slot(this,&ArtikelBox::Neuer_Eintrag));
 
+   if (12 == schema->Typ()) neu->set_submenu(*neu_menu);
+   else neu->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::Neuer_Eintrag),"???"));
 
    // Einträge für den Menüeintrag 'Typ'
    exec sql select DISTINCT e.artikeltyp, w.text into :id, :bez
@@ -251,6 +252,21 @@ void ArtikelBox::fuelleMenu()
    kombiniert->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::kombiniert),kombiniert));
    if (vertikalbool) vertikal->set_active(true);
    vertikal->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::set_Vertikal),vertikal));
+
+
+   // Einträge für den Menüeintrag 'Neu'
+   Gtk::MenuItem *gewebt   = manage(new class Gtk::MenuItem("als gewebtes Band"));      
+   Gtk::MenuItem *gefaerbt = manage(new class Gtk::MenuItem("als gefärbtes Band"));      
+   Gtk::MenuItem *bedruckt = manage(new class Gtk::MenuItem("als bedrucktes Band"));      
+   neu_menu->append(*gewebt);
+   neu_menu->append(*gefaerbt);
+   neu_menu->append(*bedruckt);
+   gewebt->show();
+   gefaerbt->show();
+   bedruckt->show();
+   gewebt->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::Neuer_Eintrag),"gewebt"));
+   gefaerbt->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::Neuer_Eintrag),"gefaerbt"));
+   bedruckt->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::Neuer_Eintrag),"bedruckt"));
    
    // Menu anzeigen
    typ_menu->show();
@@ -261,8 +277,11 @@ void ArtikelBox::fuelleMenu()
    anzeige->show();
    optionen_menu->show();
    optionen->show();
-   neu_menu->show();
-   neu->show();
+   if (3!=schema->Typ()) // Kein neues 'aufgemachtes Band' mehr anlegen MAT
+    {
+      neu_menu->show();
+      neu->show();
+    }
 }
 
 std::string ArtikelBox::kombinierteAnzeige(int sig, int atyp, int id)
@@ -357,7 +376,7 @@ void ArtikelBox::Benutzerprofil_speichern()
   SQLerror::test(__FILELINE__);
 }
 
-void ArtikelBox::Neuer_Eintrag()
+void ArtikelBox::Neuer_Eintrag(std::string wo)
 {
  try {
  /* testen ob ID eingetragen => FEHLER */
@@ -369,11 +388,19 @@ void ArtikelBox::Neuer_Eintrag()
         return;
       }
    }
+  // In welches Schema eintragen?
+  std::string strtyp;
+  if (wo =="???")      strtyp = itos(schema->Typ());
+  if (wo =="gewebt")   strtyp = "0";
+  if (wo =="gefaerbt") strtyp = "1";
+  if (wo =="bedruckt") strtyp = "2";
+
   exec sql begin declare section;
    int db_id, db_warengruppe,db_schema;   
    char db_query[1024];
   exec sql end declare section;
-  std::string table = "artbez_"+itos(schema->Typ())+"_"+itos(schema->Id());
+
+  std::string table = "artbez_"+strtyp+"_"+itos(schema->Id());
   exec sql select nextval ('artikelbezeichnun_artikelid_seq') into :db_id;
   std::string where, what;
   where = "(id,stand," ;
@@ -385,7 +412,7 @@ void ArtikelBox::Neuer_Eintrag()
   SQLerror::test(__FILELINE__);
 
   // Eintrag in Artikelbezeichnung
-  db_warengruppe=schema->Typ();
+  db_warengruppe= atoi(strtyp.c_str());
   db_schema = schema->Id();
   exec sql insert into artikelstamm (id,stand,warengruppe,defaultschema)
      values (:db_id,now(),:db_warengruppe,:db_schema);

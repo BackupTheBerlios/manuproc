@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistnode.h,v 1.7 2001/08/05 20:37:15 thoma Exp $
+// $Id: tclistnode.h,v 1.8 2001/08/20 08:34:01 christof Exp $
 
 #ifndef KOMPONENTEN_TCLISTNODE
 #define KOMPONENTEN_TCLISTNODE
@@ -40,11 +40,13 @@ class TCListNode : public TCListRowData
  // ruft Value auf
  void refreshSum(const TreeBase &tb);
  
+/* Ich glabe, daß kann jetzt weg 7.8.2001
  void set_Show(bool b) 
 {}//MAT { if (listrow) listrow->expand(b); }
  bool get_Show() const
 {}//MAT { return listrow && listrow->is_expanded();}
- 
+*/
+
  virtual const std::vector<std::string> getColEntries(const TreeBase &tb) const;
 };
 #endif

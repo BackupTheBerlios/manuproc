@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.6 2001/07/16 14:22:15 christof Exp $
+// $Id: ArtikelBox.cc,v 1.7 2001/08/20 08:32:20 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -82,7 +82,12 @@ gint ArtikelBox::try_grab_focus(GtkWidget *w,gpointer gp)
 void ArtikelBox::set_value(const ArtikelBase &art)
 throw(SQLerror,ArtikelBoxErr)
 {cH_ArtikelBezeichnung artbez(art,schema->Id());
+//<<<<<<< ArtikelBox.cc
+// if (schema->Typ()!=artbez->getExtBezSchema()->Typ() ||  
+//    schema->Id() !=artbez->getExtBezSchema()->Id() )
+//=======
  if (schema!=artbez->getExtBezSchema()) 
+//>>>>>>> 1.72
     setExtBezSchema(artbez->getExtBezSchema());
 
  artikel=art;

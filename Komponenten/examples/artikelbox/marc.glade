@@ -75,6 +75,29 @@
     </widget>
 
     <widget>
+      <class>Custom</class>
+      <name>WPreis</name>
+      <width>50</width>
+      <height>27</height>
+      <cxx_visibility>protected</cxx_visibility>
+      <signal>
+	<name>activate</name>
+	<handler>on_activate_wpreis</handler>
+	<last_modification_time>Tue, 07 Aug 2001 07:53:58 GMT</last_modification_time>
+      </signal>
+      <creation_function>WPreis</creation_function>
+      <int1>0</int1>
+      <int2>0</int2>
+      <last_modification_time>Tue, 07 Aug 2001 07:53:18 GMT</last_modification_time>
+      <child>
+	<padding>0</padding>
+	<expand>True</expand>
+	<fill>True</fill>
+	<pack>GTK_PACK_END</pack>
+      </child>
+    </widget>
+
+    <widget>
       <class>GtkButton</class>
       <name>button1</name>
       <can_focus>True</can_focus>
@@ -89,6 +112,45 @@
 	<padding>0</padding>
 	<expand>False</expand>
 	<fill>False</fill>
+	<pack>GTK_PACK_END</pack>
+      </child>
+    </widget>
+
+    <widget>
+      <class>Custom</class>
+      <name>WAufStat</name>
+      <height>25</height>
+      <cxx_visibility>protected</cxx_visibility>
+      <creation_function>WAuftragStatus()</creation_function>
+      <int1>0</int1>
+      <int2>0</int2>
+      <last_modification_time>Tue, 14 Aug 2001 12:06:19 GMT</last_modification_time>
+      <child>
+	<padding>0</padding>
+	<expand>True</expand>
+	<fill>True</fill>
+	<pack>GTK_PACK_END</pack>
+      </child>
+    </widget>
+
+    <widget>
+      <class>Custom</class>
+      <name>WWaehrung</name>
+      <height>29</height>
+      <cxx_visibility>protected</cxx_visibility>
+      <signal>
+	<name>activate</name>
+	<handler>on_activate_wwaehrung</handler>
+	<last_modification_time>Tue, 07 Aug 2001 07:03:14 GMT</last_modification_time>
+      </signal>
+      <creation_function>WWaehrung(WWaehrung::LANG)</creation_function>
+      <int1>0</int1>
+      <int2>0</int2>
+      <last_modification_time>Fri, 03 Aug 2001 11:37:03 GMT</last_modification_time>
+      <child>
+	<padding>0</padding>
+	<expand>True</expand>
+	<fill>True</fill>
 	<pack>GTK_PACK_END</pack>
       </child>
     </widget>

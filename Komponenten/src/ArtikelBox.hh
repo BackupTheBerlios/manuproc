@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.7 2001/07/16 14:22:15 christof Exp $
+// $Id: ArtikelBox.hh,v 1.8 2001/08/20 08:32:20 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -88,7 +88,7 @@ class ArtikelBox : public Gtk::EventBox
  void set_Vertikal(Gtk::CheckMenuItem *verti);
  void Benutzerprofil_speichern();
  void Benutzerprofil_laden();
- void Neuer_Eintrag();
+ void Neuer_Eintrag(std::string wo);
  unsigned int intern_id(int typ);
  void where_what(std::string& where, std::string& what);
 

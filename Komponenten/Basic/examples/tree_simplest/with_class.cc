@@ -15,7 +15,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// $Id: with_class.cc,v 1.6 2001/08/05 20:41:32 thoma Exp $
+// $Id: with_class.cc,v 1.7 2001/08/20 08:34:01 christof Exp $
 
 #include "config.h"
 #include "with_class.hh"
@@ -29,25 +29,30 @@ void with_class::on_Beenden_activate()
 }
 
 enum Spalten
-{  SP_ATT0, SP_ATT1, SP_ATT2, SP_SUM0, SP_SUM1, SP_SUM2 };
+//{  SP_ATT0, SP_ATT1, SP_ATT2, SP_SUM0, SP_SUM1, SP_SUM2 };
+{  SP_ATT0, SP_ATT1, SP_ATT2, SP_ATT3, SP_ATT4, SP_SUM0 };
 
 class MyRowData : public RowDataBase
 {
 // your data 
- int intval;
- std::string stringval;
+ int intval,i2,i3;
+ std::string stringval,s1;
  
 public:
 
- MyRowData(int i,const std::string &s)
-	: intval(i),stringval(s) {}
+ MyRowData(int i,const std::string &s,int _i2,int _i3,const std::string _s1)
+	: intval(i),stringval(s),i2(_i2),i3(_i3),s1(_s1) {}
 	
  virtual const cH_EntryValue Value(guint _seqnr,gpointer gp) const
-	{switch((Spalten)_seqnr)
+	{	
+	 switch((Spalten)_seqnr)
 		{case SP_ATT0 : return cH_EntryValueIntString(intval);
 		 case SP_ATT1 : return cH_EntryValueIntString(stringval);
-		 case SP_ATT2 : return cH_EntryValueIntString("<none>");
- 		 case SP_SUM0 ... SP_SUM2 : return cH_EntryValueIntString(Data(_seqnr-SP_SUM0));
+		 case SP_ATT2 : return cH_EntryValueIntString(i2);
+		 case SP_ATT3 : return cH_EntryValueIntString(i3);
+		 case SP_ATT4 : return cH_EntryValueIntString(s1);
+// 		 case SP_SUM0 ... SP_SUM2 : return cH_EntryValueIntString(Data(_seqnr-SP_SUM0));
+ 		 case SP_SUM0 : return cH_EntryValueIntString(Data(_seqnr));
  		 default : return cH_EntryValueIntString("?");
 		}
 	}
@@ -63,31 +68,33 @@ public:
    }
 };
 
-
 class SumNode : public TCListNode
-{  int sum0,sum1,sum2;
+{  int sum0;//,sum1,sum2;
 public:
 	// const for historical reasons
  virtual void cumulate(const cH_RowDataBase &rd)
    {
     sum0 += (dynamic_cast<const MyRowData &>(*rd)).Data(0);
-    sum1 += (dynamic_cast<const MyRowData &>(*rd)).Data(1);
-    sum2 += (dynamic_cast<const MyRowData &>(*rd)).Data(2);
+//    sum1 += (dynamic_cast<const MyRowData &>(*rd)).Data(1);
+//    sum2 += (dynamic_cast<const MyRowData &>(*rd)).Data(2);
    }
 
    virtual const cH_EntryValue Value(guint col,gpointer gp) const
    {
     switch(col) 
       { case SP_SUM0 : return cH_EntryValueEmptyInt(sum0);
-        case SP_SUM1 : return cH_EntryValueEmptyInt(sum1);
-        case SP_SUM2 : return cH_EntryValueEmptyInt(sum2);
+//        case SP_SUM1 : return cH_EntryValueEmptyInt(sum1);
+//        case SP_SUM2 : return cH_EntryValueEmptyInt(sum2);
         default : return cH_EntryValueIntString("?");
       }
    }
 
  SumNode(guint col, const cH_EntryValue &v, bool expand)
-   : TCListNode(col, v, expand), sum0(0),sum1(0),sum2(0) {}
+//   : TCListNode(col, v, expand), sum0(0),sum1(0),sum2(0) {}
+   : TCListNode(col, v, expand), sum0(0) {}
 };
+
+
 
 #if 0
 // this creates a nice Handle class for convenience
@@ -114,7 +121,9 @@ void with_class::on_leaf_selected(cH_RowDataBase d)
 }
 
 static TCListNode *create_MyNode(guint col, const cH_EntryValue &v, bool expand)
-{  return new SumNode(col,v,expand);
+{  
+//cout << col << "\n";
+ return new SumNode(col,v,expand);
 }
 
 with_class::with_class()
@@ -122,16 +131,18 @@ with_class::with_class()
    v[SP_ATT0]="Integer";
    v[SP_ATT1]="String";
    v[SP_ATT2]="something else";
+   v[SP_ATT3]="something";
+   v[SP_ATT4]="else";
    v[SP_SUM0]="summe 1";
-   v[SP_SUM1]="summe 2";
-   v[SP_SUM2]="summe 3";
+//   v[SP_SUM1]="summe 2";
+//   v[SP_SUM2]="summe 3";
    treebase->setTitles(v);
-   treebase->set_NewNode(&create_MyNode);
    std::vector <cH_RowDataBase> datavec;
-   datavec.push_back(new MyRowData(1,"X"));
-   datavec.push_back(new MyRowData(2,"Y"));
-   datavec.push_back(new MyRowData(10,"Z"));
+   datavec.push_back(new MyRowData(1,"X",2,3,"A"));
+   datavec.push_back(new MyRowData(2,"Y",2,3,"A"));
+   datavec.push_back(new MyRowData(10,"Z",2,3,"A"));
    treebase->setDataVec(datavec);
    
    treebase->leaf_selected.connect(SigC::slot(this,&with_class::on_leaf_selected));
+   treebase->set_NewNode(&create_MyNode);
 }

@@ -22,3 +22,5 @@ EingabeBox.cc EingabeBox.hh SimpleTree.hh datewin.cc datewin.h datewin.hh
 datewin_glade.cc datewin_glade.hh logwin.cc logwin.h rowdata.h tclistleaf.cc
 tclistleaf.h tclistnode.cc tclistnode.h tclistrowdata.cc tclistrowdata.h
 treebase.cc treebase.h treebase_data.h
+WPreis_sql.cc
+WWaehrung_sql.cc

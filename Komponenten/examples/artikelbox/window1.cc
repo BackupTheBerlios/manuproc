@@ -1,4 +1,4 @@
-// $Id: window1.cc,v 1.4 2001/07/05 12:58:06 christof Exp $
+// $Id: window1.cc,v 1.5 2001/08/20 08:32:20 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -48,6 +48,9 @@ void window1::on_show_clicked()
    std::cout << "Prozess " << prozess->get_value()->Id() << '\n';
    std::cout << "Artikel "<<artikelbox->get_value().Id() << '\n';
    std::cout << "Kunde " << kundenbox->get_value() << '\n';
+//   std::cout << "Waehrung "<< WWaehrung->Langbezeichnung()<<"\t"<<WWaehrung->Kurzbezeichnung()<<"\n";
+   std::cout << "Preis " << WPreis->get_Betrag()<<"\n";
+//WWaehrung->set_History(Waehrung::EUR);
 }
 
 void window1::on_show_complete()
@@ -55,3 +58,14 @@ void window1::on_show_complete()
 }
 
 	
+void window1::on_activate_wwaehrung()
+{
+   std::cout << "Waehrung "<< WWaehrung->Langbezeichnung()<<"\t"<<WWaehrung->Kurzbezeichnung()<<"\n";
+   std::cout << "Enum "<<WWaehrung->get_enum()<<"\n";
+}
+
+void window1::on_activate_wpreis()
+{
+  WPreis->update();
+   std::cout << "Preis "<< WPreis->get_Betrag()<<"\n";//<<WWaehrung->Kurzbezeichnung()<<"\n";
+}
