@@ -1,16 +1,16 @@
 #!/bin/bash
 
+export PGHOST=localhost
 export PGDATABASE=anleitungdb
-
-dropdb anleitungdb
-createdb anleitungdb
-
 P="."
 
-if [ $1 ]; then P=$1; fi
+dropdb $PGDATABASE
+createdb $PGDATABASE
 
-for i in \
-   artbez_warengruppe \
+if [ ! -z "$1" ]; then P="$1"; fi
+
+(for i in \
+   artbez_0_1000 \
    artbez_1_1 \
    artbez_2_1 \
    artbez_3_1 \
@@ -18,32 +18,32 @@ for i in \
    artbez_4_1 \
    artbez_5_1 \
    artbez_6_1 \
-   artbez_0_1000 \
    artbez_6_1000 \
    artbez_insert \
+   artbez_warengruppe \
    artikelbezeichnun_artikelid_seq \
    artikelstamm \
    artikelzusammensetzung \
    auftrag \
-   auftrag_prozess \
    auftragentry \
+   auftrag_prozess \
    auftragsentryzuordnung \
    banken \
    banken_bankindex_seq \
    einheiten \
    extbezschema \
    global_settings \
-   kunden \
    ku_ansprech \
    ku_briefanr \
    ku_gruppe \
    ku_land \
+   kunden \
+   kunden_personen_persnr_seq \
+   kunden_telefon_telid_seq \
    ku_person \
    ku_preisliste \
    ku_telefon \
    ku_verkaeufer \
-   kunden_personen_persnr_seq \
-   kunden_telefon_telid_seq \
    ku_warenkorb \
    lieferschein \
    lieferscheinentry \
@@ -57,15 +57,10 @@ for i in \
    rechnung_zahlungsart \
    waehrung
 do
+  cat $P/$i
+done) | psql $PGDATABASE -q 
 
-psql anleitungdb -q < $P/$i
+../../Programme/db_upgrade
+../../Programme/Instanzen $PGDATABASE
 
-done
-
-#../../Test/c++/Programme/Instanzen anleitungdb
-../../Programme/Instanzen anleitungdb
-
-#psql anleitungdb -c "vacuum analyze"
-
-exit
-
+psql $PGDATABASE -c "vacuum analyze"

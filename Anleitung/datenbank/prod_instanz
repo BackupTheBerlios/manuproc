@@ -29,12 +29,12 @@ CREATE TABLE "prod_instanz" (
 
 
 COPY "prod_instanz" FROM stdin;
-1	Kundenauftr‰ge	\N	1	t	\N	t	\N	\N	\N	P
-11	Packerei	\N	5	\N	\N	\N	1	\N	\N	P
-35	Einkauf	\N	60	t	\N	t	30	30	\N	P
-5	Schraubenzieherlager	10	50	t	\N	t	\N	\N	t	l
-20	Gieﬂerei	\N	6	t	\N	t	5	\N	\N	P
-30	Rohwarenlager	35	52	\N	\N	\N	\N	\N	t	l
-10	Werkstatt	\N	4	\N	\N	t	1	5	\N	P
-21	Schmelze	\N	7	\N	\N	\N	10	\N	\N	P
+1	Kundenauftr‰ge	\N	1	t	\N	t	\N	\N	\N	P	\N	\N
+11	Packerei	\N	5	\N	\N	\N	1	\N	\N	P	\N	\N
+35	Einkauf	\N	60	t	\N	t	30	30	\N	P	\N	\N
+5	Schraubenzieherlager	10	50	t	\N	t	\N	\N	t	l	\N	\N
+20	Gieﬂerei	\N	6	t	\N	t	5	\N	\N	P	\N	\N
+30	Rohwarenlager	35	52	\N	\N	\N	\N	\N	t	l	\N	\N
+10	Werkstatt	\N	4	\N	\N	t	1	5	\N	P	\N	\N
+21	Schmelze	\N	7	\N	\N	\N	10	\N	\N	P	\N	\N
 \.
