@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.69 2004/05/18 11:02:30 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.70 2004/05/19 12:00:21 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -114,6 +114,7 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
   if(new_status==OPEN || ((status==OPEN || status==CLOSED) && new_status==STORNO))
    {
     AuftragBase::mengen_t abmenge=Abschreibmenge(_stueck,_menge);
+    ManuProC::Trace(trace_channel,"",NV("abmenge",abmenge));
 
     if (ein_auftrag)
     {  assert(NurEinKind(VZusatz));
@@ -250,7 +251,8 @@ void LieferscheinEntry::deleteMe(const LieferscheinEntry &LE)  throw(SQLerror)
 
 LieferscheinBase::mengen_t LieferscheinEntry::Abschreibmenge(int _stueck,
 							mengen_t _menge) const
-{
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
+		NV("status",status), NV("stueck",_stueck), NV("menge",_menge));
    if(status==(AufStatVal)UNCOMMITED)
      return AuftragBase::Gesamtmenge(_stueck,_menge);
 
@@ -258,8 +260,9 @@ LieferscheinBase::mengen_t LieferscheinEntry::Abschreibmenge(int _stueck,
    if(Menge()!=0) alte_menge=alte_menge*Menge();
    
    mengen_t neue_menge=_stueck;
-   if(menge!=0 || Menge()!=0) neue_menge=neue_menge*_menge;
-   
+   if(_menge!=0 || Menge()!=0) neue_menge=neue_menge*_menge;
+   ManuProC::Trace (trace_channel, "",NV("alte_menge",alte_menge),
+		   	NV("neue_menge",neue_menge));
    return neue_menge-alte_menge;
 }
 
