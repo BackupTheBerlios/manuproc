@@ -1,5 +1,5 @@
 /* src/ManuProCConfig.h.in.  Generated from configure.in by autoheader.  */
-/* $Id: ManuProCConfig.h.in,v 1.13 2003/09/17 07:04:49 christof Exp $ */
+/* $Id: ManuProCConfig.h.in,v 1.14 2003/09/18 07:34:44 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *

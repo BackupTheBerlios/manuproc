@@ -1,7 +1,7 @@
-# $Id: configure.in,v 1.22 2003/09/17 07:04:49 christof Exp $
+# $Id: configure.in,v 1.23 2003/09/18 07:34:44 christof Exp $
 
 AC_PREREQ(2.50)
-AC_INIT(libcommon++, 0.0, [manuproc-developer-de@berlios.de])
+AC_INIT(libcommon++, 0.6.0, [manuproc-developer-de@berlios.de])
 AC_CONFIG_AUX_DIR(.)
 
 AM_INIT_AUTOMAKE
@@ -63,5 +63,11 @@ int main() {  ECPGdo(20, "test", "select true",ECPGt_EOIT, ECPGt_EORT); }
 fi
 
 AM_CONDITIONAL(DATABASE, test \! -z "$ECPG_INCLUDES" )
+
+if echo __MINGW32__ | $CPP - - | fgrep -q __MINGW32__
+then mingw=false
+else mingw=true 
+fi
+AM_CONDITIONAL(WINDOWS, test x$mingw = xtrue)
 
 AC_OUTPUT(Makefile src/Makefile examples/Makefile)

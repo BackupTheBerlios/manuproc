@@ -1,14 +1,26 @@
-# $Id: Makefile.am,v 1.35 2003/09/17 07:04:49 christof Exp $
+# $Id: Makefile.am,v 1.36 2003/09/18 07:34:44 christof Exp $
 
-AM_CXXFLAGS=@ECPG_INCLUDES@ @SIGC_CFLAGS@
+if WINDOWS
+WIN_LDFLAGS=-no-undefined -export-symbols libManuProC_Base.def
+DLL_LDADD=@SIGC_LIBS@ libManuProC_Base_res.lo
+else
+WIN_LDFLAGS=
+DLL_LDADD=
+endif
+
+libManuProC_Base_res.lo: libManuProC_Base.rc
+	WINDRES=i586-mingw32msvc-windres $(top_srcdir)/build/win32/lt-compile-resource $< $@
+
+AM_CXXFLAGS=@ECPG_INCLUDES@ @SIGC_CFLAGS@ -DlibManuProC_Base_COMPILATION
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
 
-lib_LIBRARIES=libManuProC_Base.a
+lib_LTLIBRARIES=libManuProC_Base.la
+libManuProC_Base_la_LIBADD=$(DLL_LDADD)
 
 includedir=@includedir@/ManuProC_Base
 
-AM_LDFLAGS=@LDFLAGS@ @ECPG_LDFLAGS@
+AM_LDFLAGS=@LDFLAGS@ @ECPG_LDFLAGS@ $(WIN_LDFLAGS)
 
 if DATABASE
 DB_SRCES=dbconnect.cc SQLerror_postgres.cc Transaction.cc FetchIStream.cc \
@@ -17,7 +29,7 @@ else
 DB_SRCES=
 endif
 
-libManuProC_Base_a_SOURCES=Ausgabe_neu.cc Datum.cc IOerror.cc \
+libManuProC_Base_la_SOURCES=Ausgabe_neu.cc Datum.cc IOerror.cc \
 		postgres_conversion.cc Zeitpunkt_new.cc \
 		Zeitpunkt_new_ostr.cc \
 		Zeitpunkt_new_write.cc string0.c mystring.cc \
@@ -26,7 +38,7 @@ libManuProC_Base_a_SOURCES=Ausgabe_neu.cc Datum.cc IOerror.cc \
 		time_t_ostr.cc EntryValueBase.cc Handles.cc \
 		EntryValueIntString.cc EntryValueIntGermanString.cc \
 		EntryValueDatum.cc $(DB_SRCES) Trace.cc \
-		germanstring.cc TagStream.cc Tag.cc EntryValueTimeStamp.cc		
+		germanstring.cc TagStream.cc Tag.cc EntryValueTimeStamp.cc 
 
 EXTRA_DIST=dbconnect.pgcc SQLerror_postgres.pgcc Transaction.pgcc \
 	FetchIStream.pgcc

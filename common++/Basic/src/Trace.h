@@ -1,6 +1,6 @@
-// $Id: Trace.h,v 1.7 2003/07/04 10:57:28 christof Exp $
+// $Id: Trace.h,v 1.8 2003/09/18 07:34:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 #include <iostream>
 #include <Misc/UniqueValue.h>
 #include <Misc/compiler_ports.h>
+#include "libManuProC_Base_dll.h"
 
 #define ENABLE_TRACES
 
@@ -32,7 +33,7 @@ namespace ManuProC {
 
 namespace Tracer {
 
-	extern UniqueValue channels;
+	extern LIBMPC_BASE_API UniqueValue channels;
 	typedef UniqueValue::value_t Channel;
 
 	void Enable(Channel c, bool an=true);

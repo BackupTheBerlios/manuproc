@@ -1,0 +1,282 @@
+EXPORTS
+	_Z10FormatiereRSomjjPKcS1_c 
+	_Z10FormatieremjjPKcS0_c 
+	_Z10string2TeXSsi 
+	_Z13FormatiereTeXILi2EdlEKSsRK10fixedpointIXT_ET0_T1_E 
+	_Z18FormatiereEmptyIntl 
+	_Z19FormatiereTeX_PreisILi2EdlEKSsRK10fixedpointIXT_ET0_T1_E 
+	_Z19FormatiereTeX_PreisILi3EdlEKSsRK10fixedpointIXT_ET0_T1_E 
+	_Z4btosb 
+	_Z4dtosd 
+	_Z4itosi 
+	_Z6itos0piib 
+	_Z6ulltosy 
+	_Z8iso2utf8RKSs 
+	_Z8utf82isoRKSs 
+	_ZN13HandleContentD0Ev 
+	_ZN13HandleContentD1Ev 
+	_ZN13HandleContentD2Ev 
+	_ZN13Kalenderwoche5errorD0Ev 
+	_ZN13Kalenderwoche5errorD1Ev 
+	_ZN13Zeitpunkt_newC1EPKc 
+	_ZN13Zeitpunkt_newC1El 
+	_ZN13Zeitpunkt_newC2EPKc 
+	_ZN13Zeitpunkt_newC2El 
+	_ZN13Zeitpunkt_newcvlEv 
+	_ZN14EntryValueBaseD0Ev 
+	_ZN14EntryValueBaseD1Ev 
+	_ZN14EntryValueBaseD2Ev 
+	_ZN15EntryValueDatumD0Ev 
+	_ZN15EntryValueDatumD1Ev 
+	_ZN15EntryValueMonatD0Ev 
+	_ZN15EntryValueMonatD1Ev 
+	_ZN19EntryValueIntStringC1ERKSs 
+	_ZN19EntryValueIntStringC1Ei 
+	_ZN19EntryValueIntStringC2ERKSs 
+	_ZN19EntryValueIntStringC2Ei 
+	_ZN19EntryValueIntStringD0Ev 
+	_ZN19EntryValueIntStringD1Ev 
+	_ZN19EntryValueTimeStampD0Ev 
+	_ZN19EntryValueTimeStampD1Ev 
+	_ZN23EntryValueKalenderwocheD0Ev 
+	_ZN23EntryValueKalenderwocheD1Ev 
+	_ZN25EntryValueIntGermanStringD0Ev 
+	_ZN25EntryValueIntGermanStringD1Ev 
+	"_ZN32_GLOBAL__N_germanstring.cc0yFNib10myiterator12replacementsE" DATA
+	"_ZN32_GLOBAL__N_germanstring.cc0yFNib10myiterator12set_replacedEv" 
+	"_ZN32_GLOBAL__N_germanstring.cc0yFNib10myiteratorppEv" 
+	_ZN3Tag11parse_valueISsEET_RKSs 
+	_ZN3Tag11parse_valueIbEET_RKSs 
+	_ZN3Tag11parse_valueIdEET_RKSs 
+	_ZN3Tag11parse_valueIfEET_RKSs 
+	_ZN3Tag11parse_valueIiEET_RKSs 
+	_ZN3Tag11parse_valueIlEET_RKSs 
+	_ZN3Tag12create_valueIbEESsRKT_ 
+	_ZN3Tag12create_valueIdEESsRKT_ 
+	_ZN3Tag12create_valueIiEESsRKT_ 
+	_ZN3Tag19repair_back_pointerEv 
+	_ZN3Tag4findERKSs 
+	_ZN3Tag7attfindERKSs 
+	_ZN3Tag7setAttrERKSsS1_ 
+	_ZN3Tag8setValueERKSsS1_ 
+	_ZN3Tag9push_backES_ 
+	_ZN3TagC1ERKS_ 
+	_ZN3TagD1Ev 
+	_ZN7IOerrorC1ERKSs 
+	_ZN7IOerrorC1ERKSsi 
+	_ZN7IOerrorC1Ev 
+	_ZN7IOerrorC2ERKSs 
+	_ZN7IOerrorC2ERKSsi 
+	_ZN7IOerrorC2Ev 
+	_ZN7IOerrorD0Ev 
+	_ZN7IOerrorD1Ev 
+	_ZN8ManuProC12DatumsfehlerD0Ev 
+	_ZN8ManuProC12DatumsfehlerD1Ev 
+	_ZN8ManuProC16remove_last_fromERSsRKSs 
+	_ZN8ManuProC23PrintUncaughtExceptionsEv 
+	_ZN8ManuProC5Datum12FormatfehlerD0Ev 
+	_ZN8ManuProC5Datum12FormatfehlerD1Ev 
+	_ZN8ManuProC5Datum5todayEv 
+	_ZN8ManuProC5Datum6getnumEPKhi 
+	_ZN8ManuProC5Datum6monateE DATA
+	_ZN8ManuProC5Datum9from_autoEPKcPS2_ 
+	_ZN8ManuProC5DatumC1ERK13Kalenderwoche 
+	_ZN8ManuProC5DatumC1Eiiib 
+	_ZN8ManuProC5DatumC1El 
+	_ZN8ManuProC5DatumC2ERK13Kalenderwoche 
+	_ZN8ManuProC5DatumC2Eiiib 
+	_ZN8ManuProC5DatumC2El 
+	_ZN8ManuProC5DatummmEi 
+	_ZN8ManuProC5DatummmEv 
+	_ZN8ManuProC5DatumppEi 
+	_ZN8ManuProC5DatumppEv 
+	_ZN8ManuProC6Tracer11EnvironmentC1ERKSsj 
+	_ZN8ManuProC6Tracer11EnvironmentC2ERKSsj 
+	_ZN8ManuProC6Tracer11FunctionEndEv 
+	_ZN8ManuProC6Tracer13FunctionStartERKSs 
+	_ZN8ManuProC6Tracer6EnableEjb 
+	_ZN8ManuProC6Tracer7enabledEj 
+	_ZN8ManuProC6Tracer8channelsE DATA
+	_ZN9TagStream10getContentEv 
+	_ZN9TagStream12find_tagend2EPc 
+	_ZN9TagStream12find_wordendEPc 
+	_ZN9TagStream13find_wordend2EPc 
+	_ZN9TagStream13host_encodingE DATA
+	_ZN9TagStream16next_tag_pointerEP3Tag 
+	_ZN9TagStream17load_project_fileEP3Tag 
+	_ZN9TagStream4goodEv 
+	_ZN9TagStream5writeERKSsS1_ 
+	_ZN9TagStream6de_xmlERKSs 
+	_ZN9TagStream8next_tagEP3Tag 
+	_ZN9TagStreamC1EPKc 
+	_ZN9TagStreamC1ERKSs 
+	_ZN9TagStreamC1ERSi 
+	_ZN9TagStreamC1Ev 
+	_ZN9TagStreamC2EPKc 
+	_ZN9TagStreamC2ERKSs 
+	_ZN9TagStreamC2ERSi 
+	_ZN9TagStreamC2Ev 
+	_ZN9TagStreamD1Ev 
+	_ZN9TagStreamD2Ev 
+	_ZNK12germanstringltERKS_ 
+	_ZNK13Kalenderwoche5error4whatEv 
+	_ZNK13Zeitpunkt_new12calculate_TZEi 
+	_ZNK13Zeitpunkt_new12normalize_TZEv 
+	_ZNK13Zeitpunkt_new5DatumEv 
+	_ZNK13Zeitpunkt_new5writeE17PostgresTimestamp 
+	_ZNK13Zeitpunkt_neweqERKS_ 
+	_ZNK13Zeitpunkt_newltERKS_ 
+	_ZNK13Zeitpunkt_newmiERKS_ 
+	_ZNK13Zeitpunkt_newplERKNS_4DaysE 
+	_ZNK13Zeitpunkt_newplERKNS_7MinutesE 
+	_ZNK14EntryValueBase10getBoolValEv 
+	_ZNK14EntryValueBase12getDoubleValEv 
+	_ZNK14EntryValueBase9getIntValEv 
+	_ZNK14EntryValueBase9getStrValEv 
+	_ZNK14EntryValueBasecvKSsEv 
+	_ZNK14EntryValueBasecvbEv 
+	_ZNK14EntryValueBasecvdEv 
+	_ZNK14EntryValueBasecviEv 
+	_ZNK14EntryValueBaseeqERKS_ 
+	_ZNK14EntryValueBaseltERKS_ 
+	_ZNK15EntryValueDatum9getIntValEv 
+	_ZNK15EntryValueDatum9getStrValEv 
+	_ZNK15EntryValueDatumeqERK14EntryValueBase 
+	_ZNK15EntryValueDatumltERK14EntryValueBase 
+	_ZNK15EntryValueMonat9getIntValEv 
+	_ZNK15EntryValueMonat9getStrValEv 
+	_ZNK15EntryValueMonateqERK14EntryValueBase 
+	_ZNK15EntryValueMonatltERK14EntryValueBase 
+	_ZNK19EntryValueIntString10getBoolValEv 
+	_ZNK19EntryValueIntString9getIntValEv 
+	_ZNK19EntryValueIntString9getStrValEv 
+	_ZNK19EntryValueTimeStamp9getIntValEv 
+	_ZNK19EntryValueTimeStamp9getStrValEv 
+	_ZNK19EntryValueTimeStampeqERK14EntryValueBase 
+	_ZNK19EntryValueTimeStampltERK14EntryValueBase 
+	_ZNK23EntryValueKalenderwoche9getIntValEv 
+	_ZNK23EntryValueKalenderwoche9getStrValEv 
+	_ZNK23EntryValueKalenderwocheeqERK14EntryValueBase 
+	_ZNK23EntryValueKalenderwocheltERK14EntryValueBase 
+	_ZNK25EntryValueIntGermanStringltERK14EntryValueBase 
+	_ZNK3Tag4findERKSs 
+	_ZNK3Tag5debugEii 
+	_ZNK3Tag6hasTagERKSs 
+	_ZNK3Tag7attfindERKSs 
+	_ZNK3Tag7getAttrISsEET_RKSs 
+	_ZNK3Tag7hasAttrERKSs 
+	_ZNK7IOerror4whatEv 
+	_ZNK7IOerror8toStringEv 
+	_ZNK8ManuProC12Datumsfehler4whatEv 
+	_ZNK8ManuProC5Datum10write_euroEPcj 
+	_ZNK8ManuProC5Datum12Formatfehler4whatEv 
+	_ZNK8ManuProC5Datum12c_str_filledEv 
+	_ZNK8ManuProC5Datum14write_postgresEPcj 
+	_ZNK8ManuProC5Datum24postgres_null_if_invalidEv 
+	_ZNK8ManuProC5Datum2KWEv 
+	_ZNK8ManuProC5Datum5ShortEv 
+	_ZNK8ManuProC5Datum5c_strEv 
+	_ZNK8ManuProC5Datum5testeEv 
+	_ZNK8ManuProC5Datum5validEv 
+	_ZNK8ManuProC5Datum6JulianEv 
+	_ZNK8ManuProC5Datum6to_isoEv 
+	_ZNK8ManuProC5Datum8InternalEv 
+	_ZNK8ManuProC5Datum9WochentagEv 
+	_ZNK8ManuProC5DatumltERKS0_ 
+	_ZNK8ManuProC5DatummiERKS0_ 
+	_ZNK8ManuProC5DatummiEj 
+	_ZNK8ManuProC5DatumplEj 
+	_ZNK9TagStream10getContentEv 
+	_ZNK9TagStream11recode_loadERKSs 
+	_ZNK9TagStream11recode_saveERKSs 
+	_ZNK9TagStream5writeERSo 
+	_ZNK9TagStream5writeERSoRK3Tagib 
+	_ZNSs12_S_constructIN9__gnu_cxx17__normal_iteratorIPKcSsEEEEPcT_S6_RKSaIcESt20forward_iterator_tag 
+	_ZNSs12_S_constructIPcEES0_T_S1_RKSaIcESt20forward_iterator_tag 
+	_ZNSsC1IN9__gnu_cxx17__normal_iteratorIPKcSsEEEET_S5_RKSaIcE 
+	_ZNSsC1IPcEET_S1_RKSaIcE 
+	_ZNSt12_Vector_baseI3TagSaIS0_EEC2EjRKS1_ 
+	_ZNSt12_Vector_baseISt4pairISsSsESaIS1_EEC2EjRKS2_ 
+	_ZNSt12out_of_rangeD0Ev 
+	_ZNSt12out_of_rangeD1Ev 
+	_ZNSt14__simple_allocI3TagSt24__default_alloc_templateILb1ELi0EEE10deallocateEPS0_j 
+	_ZNSt14__simple_allocI3TagSt24__default_alloc_templateILb1ELi0EEE8allocateEj 
+	_ZNSt14__simple_allocISt4pairISsSsESt24__default_alloc_templateILb1ELi0EEE10deallocateEPS1_j 
+	_ZNSt14__simple_allocISt4pairISsSsESt24__default_alloc_templateILb1ELi0EEE8allocateEj 
+	_ZNSt15basic_stringbufIcSt11char_traitsIcESaIcEED1Ev 
+	_ZNSt6vectorI3TagSaIS0_EE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPS0_S2_EERKS0_ 
+	_ZNSt6vectorI3TagSaIS0_EED1Ev 
+	_ZNSt6vectorI3TagSaIS0_EEaSERKS2_ 
+	_ZNSt6vectorISt4pairISsSsESaIS1_EE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPS1_S3_EERKS1_ 
+	_ZNSt6vectorISt4pairISsSsESaIS1_EED1Ev 
+	_ZNSt6vectorISt4pairISsSsESaIS1_EEaSERKS3_ 
+	_ZSt24__uninitialized_copy_auxIN9__gnu_cxx17__normal_iteratorIP3TagSt6vectorIS2_SaIS2_EEEES7_ET0_T_S9_S8_12__false_type 
+	_ZSt24__uninitialized_copy_auxIN9__gnu_cxx17__normal_iteratorIPK3TagSt6vectorIS2_SaIS2_EEEEPS2_ET0_T_SB_SA_12__false_type 
+	_ZSt24__uninitialized_copy_auxIN9__gnu_cxx17__normal_iteratorIPKSt4pairISsSsESt6vectorIS3_SaIS3_EEEEPS3_ET0_T_SC_SB_12__false_type 
+	_ZSt24__uninitialized_copy_auxIN9__gnu_cxx17__normal_iteratorIPSt4pairISsSsESt6vectorIS3_SaIS3_EEEES8_ET0_T_SA_S9_12__false_type 
+	_ZSt3minIjERKT_S2_S2_ 
+	_ZSt4findIN9__gnu_cxx17__normal_iteratorIP3TagSt6vectorIS2_SaIS2_EEEESsET_S8_S8_RKT0_St26random_access_iterator_tag 
+	_ZSt4findIN9__gnu_cxx17__normal_iteratorIPK3TagSt6vectorIS2_SaIS2_EEEESsET_S9_S9_RKT0_St26random_access_iterator_tag 
+	_ZSt4findIN9__gnu_cxx17__normal_iteratorIPKSt4pairISsSsESt6vectorIS3_SaIS3_EEEESsET_SA_SA_RKT0_St26random_access_iterator_tag 
+	_ZSt4findIN9__gnu_cxx17__normal_iteratorIPKcSsEEcET_S5_S5_RKT0_St26random_access_iterator_tag 
+	_ZSt4findIN9__gnu_cxx17__normal_iteratorIPSt4pairISsSsESt6vectorIS3_SaIS3_EEEESsET_S9_S9_RKT0_St26random_access_iterator_tag 
+	_ZSt6__copyIPK3TagPS0_ET0_T_S5_S4_St26random_access_iterator_tag 
+	_ZSt6__copyIPKSt4pairISsSsEPS1_ET0_T_S6_S5_St26random_access_iterator_tag 
+	_ZSteqRKSt4pairISsSsERKSs 
+	_ZStplIcSt11char_traitsIcESaIcEESbIT_T0_T1_EPKS3_RKS6_ 
+	_ZStplIcSt11char_traitsIcESaIcEESbIT_T0_T1_ERKS6_S8_ 
+	_ZTI13HandleContent DATA
+	_ZTI14EntryValueBase DATA
+	_ZTI15EntryValueDatum DATA
+	_ZTI15EntryValueMonat DATA
+	_ZTI19EntryValueIntString DATA
+	_ZTI19EntryValueTimeStamp DATA
+	_ZTI23EntryValueKalenderwoche DATA
+	_ZTI25EntryValueIntGermanString DATA
+	_ZTI7IOerror DATA
+	_ZTIN13Kalenderwoche5errorE DATA
+	_ZTIN8ManuProC12DatumsfehlerE DATA
+	_ZTIN8ManuProC5Datum12FormatfehlerE DATA
+	_ZTISt11logic_error DATA
+	_ZTISt12out_of_range DATA
+	_ZTISt8bad_cast DATA
+	_ZTISt9exception DATA
+	_ZTS13HandleContent DATA
+	_ZTS14EntryValueBase DATA
+	_ZTS15EntryValueDatum DATA
+	_ZTS15EntryValueMonat DATA
+	_ZTS19EntryValueIntString DATA
+	_ZTS19EntryValueTimeStamp DATA
+	_ZTS23EntryValueKalenderwoche DATA
+	_ZTS25EntryValueIntGermanString DATA
+	_ZTS7IOerror DATA
+	_ZTSN13Kalenderwoche5errorE DATA
+	_ZTSN8ManuProC12DatumsfehlerE DATA
+	_ZTSN8ManuProC5Datum12FormatfehlerE DATA
+	_ZTSSt11logic_error DATA
+	_ZTSSt12out_of_range DATA
+	_ZTSSt8bad_cast DATA
+	_ZTSSt9exception DATA
+	_ZTV13HandleContent DATA
+	_ZTV14EntryValueBase DATA
+	_ZTV15EntryValueDatum DATA
+	_ZTV15EntryValueMonat DATA
+	_ZTV19EntryValueIntString DATA
+	_ZTV19EntryValueTimeStamp DATA
+	_ZTV23EntryValueKalenderwoche DATA
+	_ZTV25EntryValueIntGermanString DATA
+	_ZTV7IOerror DATA
+	_ZTVN13Kalenderwoche5errorE DATA
+	_ZTVN8ManuProC12DatumsfehlerE DATA
+	_ZTVN8ManuProC5Datum12FormatfehlerE DATA
+	_ZTVSt11logic_error DATA
+	_ZTVSt12out_of_range DATA
+	_ZTVSt9exception DATA
+	_ZlsRSoRK13Zeitpunkt_new 
+	_ZlsRSoRK14time_t_wrapper 
+	_ZlsRSoRK2tm 
+	_ZlsRSoRKN8ManuProC12DatumsfehlerE 
+	_ZlsRSoRKN8ManuProC5DatumE 
+	snprintf0 
+	strncpy0 
+	
