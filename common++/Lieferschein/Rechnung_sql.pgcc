@@ -259,8 +259,8 @@ void Rechnung::push_back(unsigned &lineno,ArtikelBase art,
     int faeden=atoi(ab->Komponente(2).c_str());
     int dtex=atoi(ab->Komponente(1).c_str());
     if (!!lohn) 
-      push_back(lineno,lohn,lfrsid,lfrsznr,max(50,faeden),
-	  int(stk)*max(menge,mengen_t(10000))/1000.0,Preis(),rabatt,
+      push_back(lineno,lohn,lfrsid,lfrsznr,std::max(50,faeden),
+	  int(stk)*std::max(menge,mengen_t(10000))/1000.0,Preis(),rabatt,
 	  provsatz,Preis());
     if (!!material) 
       push_back(lineno,material,lfrsid,lfrsznr,stk,
