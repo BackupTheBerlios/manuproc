@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.31 2003/02/13 13:08:26 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.32 2003/03/08 08:51:54 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -41,7 +41,7 @@
 class cH_Lieferschein;
 #include <Auftrag/AufEintragZu.h>
 #include <Auftrag/auftrag_enums.h>
-
+#include <Misc/compiler_ports.h>
 
 class Lager;
 class VerfuegbareMenge;
@@ -127,7 +127,8 @@ private:
  void ArtikelInternAbbestellen(int uid,mengen_t menge,
  	ManuProC::Auftrag::Action reason) const;
  void move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,const ArtikelBase artikel,int uid,ManuProC::Auftrag::Action reason);
- void WurdeProduziert(mengen_t menge,const AufEintragBase &ElternAEB);
+ // wurde von ProduziertNG abgelöst
+ __deprecated void WurdeProduziert(mengen_t menge,const AufEintragBase &ElternAEB);
 
 public:
  void updateLieferdatum(const ManuProC::Datum &ld,int uid) throw(SQLerror);	
@@ -191,7 +192,9 @@ public:
  // wird von Artikeleingabe verwendet; gibt Zeilennummer zurück;
 //Alter Code: void moveInstanz(int uid,const AuftragBase& auftrag) throw(SQLerror);
 
- cH_Lieferschein getLieferschein() const ;
+ // der Rückgabewert von cH_Lieferschein gefällt mir nicht, LieferscheinBase
+ // ist IMHO besser, CP
+ __deprecated cH_Lieferschein getLieferschein() const ;
 private:
  std::vector<AufEintragBase> getKundenAuftragV() const;
 
@@ -222,6 +225,13 @@ public:
 // Eine bereits vorgemerkte Menge einem anderen AufEintag zuordnen
 // *this => Der reservierte 1er; ae => Der ungeplante 0er
 //?? void menge_fuer_aeb_freigeben(const mengen_t &menge,AufEintrag &ae,const int uid);
+
+ // z.B. (getRestStk())
+ void ProduziertNG(AuftragBase::mengen_t M);
+//internal ?
+ void ProduziertNG(unsigned uid, AuftragBase::mengen_t M,
+		const AufEintragBase &elter_alt,
+		const AufEintragBase &elter_neu);
 
 };
 

@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.31 2003/02/15 22:53:21 christof Exp $
+// $Id: AufEintrag.cc,v 1.32 2003/03/08 08:51:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -187,8 +187,8 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
    assert(entrystatus==OPEN);
    assert(auftragstatus==OPEN);
    assert(menge>0);
-   assert(reason==ManuProC::Auftrag::r_Planen
-   	 || reason==ManuProC::Auftrag::r_Produziert);
+   assert(reason==ManuProC::Auftrag::r_Planen);
+//   	 || reason==ManuProC::Auftrag::r_Produziert);
    assert(!Instanz()->LagerInstanz());
    assert(!rekursiv);
 
@@ -205,7 +205,7 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
 
    // Zeile erzeugen/finden
    AufEintragBase neueZeile=AufEintragBase(zielauftrag,
-   	zielauftrag.BestellmengeAendern(0,datum,Artikel(),entrystatus,uid,AufEintragBase()));
+   	zielauftrag.PassendeZeile(datum,Artikel(),entrystatus,uid));
 // nix zu planen -> erledigt   
    if(menge==0) {tr.commit();   return neueZeile.ZNr();}
    
@@ -275,6 +275,7 @@ void AufEintrag::Ueberplanen(int uid,const ArtikelBase& artikel,mengen_t menge,c
    assert(Id()!=plan_auftrag_id);
 
    AuftragBase dispoAB(Instanz(),dispo_auftrag_id);
+   // warum dispoplanung? was tut das letzte true?
    st_BestellmengeAendern st(false,false,true);
    //int znr=
    dispoAB.BestellmengeAendern(menge,datum,artikel,OPEN,uid,*this,st);

@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_macros.h,v 1.3 2003/03/07 10:34:47 christof Exp $ */
+/* $Id: AufEintrag_macros.h,v 1.4 2003/03/08 08:51:54 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -50,6 +50,7 @@
 /* callee needs:
  *   AuftragBase::mengen_t operator()(const ArtikelBase &,
  *		const AufEintragBase &,AuftragBase::mengen_t) const;
+ * return the amount of the third argument you processed
  */
 
 template <class T>
@@ -71,6 +72,27 @@ template <class T>
          AE_menge2-=mengen_var;
          if(!AE_menge2) break;
       }
+   }
+}
+
+/* callee needs:
+ *   void operator()(const AufEintragBase &,AuftragBase::mengen_t) const;
+ */
+
+template <class T>
+ void distribute_parents(const AufEintragBase &startAEB, AuftragBase::mengen_t menge,
+ 			const T &callee)
+{  AufEintragZu::list_t Eltern =
+        AufEintragZu::get_Referenz_list(startAEB,AufEintragZu::list_eltern,
+                                         AufEintragZu::list_ohneArtikel);
+   for (AufEintragZu::list_t::iterator i=Eltern.begin();i!=Eltern.end();++i)
+   {  AuftragBase::mengen_t m=AuftragBase::min(i->Menge,menge);
+      if (!m) continue;
+      
+      callee(i->AEB,m);
+      
+      menge-=m;
+      if (!menge) break;
    }
 }
 

@@ -155,6 +155,25 @@ bool AuftragBase::existEntry(const ArtikelBase& artikel,
     return true;  }
 }
 
+int AuftragBase::PassendeZeile(const ManuProC::Datum lieferdatum,const ArtikelBase& artikel,
+  AufStatVal status,unsigned uid) const throw(SQLerror)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"Artikel=",artikel,
+         "LieferDatum=",lieferdatum,"Status=",status);
+ assert(status==OPEN || Id()==ppsInstanzID::Kundenauftraege);
+ // Auftrag anlegen, wenn noch nicht da
+ create_if_not_exists(status);
+ 
+ int znr=ManuProcEntity<>::none_id,neuznr=ManuProcEntity<>::none_id;
+ mengen_t dummy=0;
+ if(!existEntry(artikel,lieferdatum,znr,neuznr,dummy,status))
+  { Auftrag A(*this);
+    AufEintragBase newaeb=A.push_back(0,lieferdatum,artikel,status,uid,false);
+    znr=newaeb.ZNr();
+   }
+ return znr;
+}
+
 // wird von ArtikelInternNachbestellen, dispo_auftrag_aendern verwendet
 int AuftragBase::BestellmengeAendern(mengen_t deltamenge, 
   const ManuProC::Datum lieferdatum,const ArtikelBase& artikel,
@@ -165,33 +184,14 @@ int AuftragBase::BestellmengeAendern(mengen_t deltamenge,
          "Menge=",deltamenge,"AltAEB=",altAEB,
          "LieferDatum=",lieferdatum,
          "Status=",status);
- assert(status==OPEN || Id()==ppsInstanzID::Kundenauftraege);
- create_if_not_exists(status);
- int znr=ManuProcEntity<>::none_id,neuznr=ManuProcEntity<>::none_id;
-
  Transaction tr;
  exec sql lock table auftragentry in exclusive mode;
  SQLerror::test(__FILELINE__);  
- 
- // neuer Code bis #if0
-
- mengen_t dummy=0;
- if(!existEntry(artikel,lieferdatum,znr,neuznr,dummy,status))
-  {
-    Auftrag A(*this);
-    // warum nicht direkt mit Menge?
-    AufEintragBase newaeb=A.push_back(0,lieferdatum,artikel,status,uid,false)  ;
-    znr=newaeb.ZNr();
-   }
 
  bool kein_dispo= Id()!=dispo_auftrag_id;
- AufEintragBase NeuAEB(*this,znr);
+ AufEintragBase NeuAEB(*this,PassendeZeile(lieferdatum,artikel,status,uid));
 
  // ist die Reihenfolge hier wichtig?
-     // ändert Neu den Eintrag? 
-// if (kein_dispo && altAEB.valid())
-//      AufEintragZu(altAEB).Neu(NeuAEB,deltamenge);
-
  // rekursion nur falls kein DispoAuftrag
  AufEintrag(NeuAEB).MengeAendern(uid,deltamenge,kein_dispo,
  	kein_dispo?altAEB:AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
@@ -201,7 +201,7 @@ int AuftragBase::BestellmengeAendern(mengen_t deltamenge,
       AufEintragZu(NeuAEB).Neu(altAEB,deltamenge);
 
   tr.commit();
-  return znr;
+  return NeuAEB.ZNr();
 }
 
 

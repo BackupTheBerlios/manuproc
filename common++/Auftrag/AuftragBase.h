@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.41 2003/01/15 15:10:16 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.42 2003/03/08 08:51:54 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -82,6 +82,9 @@ class AuftragBase
           explicit st_BestellmengeAendern(bool a,bool b,bool c) 
             : automatisch_geplant(a),force_new(b),dispoplanung(c){}
          };
+   // gibt Zeilennummer zurück
+   int PassendeZeile(const ManuProC::Datum lieferdatum, const ArtikelBase& artikel,
+               AufStatVal status, unsigned uid) const throw(SQLerror);
    // gibt Zeilennummer zurück
    int BestellmengeAendern(mengen_t bestellt, 
                const ManuProC::Datum lieferdatum, const ArtikelBase& artikel,

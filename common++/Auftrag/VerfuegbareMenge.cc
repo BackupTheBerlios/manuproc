@@ -1,4 +1,4 @@
-/* $Id: VerfuegbareMenge.cc,v 1.4 2003/02/15 22:53:21 christof Exp $ */
+/* $Id: VerfuegbareMenge.cc,v 1.5 2003/03/08 08:51:54 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -93,7 +93,7 @@ AuftragBase::mengen_t VerfuegbareMenge::reduce_in_dispo_or_plan(const bool dispo
    if (wieviel_geschafft!=0 && instanz->LagerInstanz())
    {  AuftragBase vormerkungen(instanz,AuftragBase::plan_auftrag_id);
       vormerkungen.BestellmengeAendern(wieviel_geschafft,datum,ArtikelBase(*this),OPEN,uid,
-			ElternAEB,AuftragBase::st_BestellmengeAendern());
+			ElternAEB);
    }
    return wieviel_geschafft;
 }
