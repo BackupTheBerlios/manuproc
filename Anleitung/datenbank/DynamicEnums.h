@@ -13,6 +13,11 @@ namespace ManuProC {
    };
   }
 
+  namespace ArtikelTyp_Attributes {
+   enum enum_t {
+   };
+  }  
+
   namespace Einheiten {
    enum enum_t {
     None=-1, St_=0,Gew__kg=1,

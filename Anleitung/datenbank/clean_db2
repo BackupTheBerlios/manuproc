@@ -2,6 +2,8 @@
 
 psql $1 <artikelzusammensetzung
 psql $1 <artbez_6_1
+psql $1 <artikelbezeichnun_artikelid_seq
+psql $1 <artikelstamm
 psql $1 <<EOF
 delete from lieferscheinentryzusatz;
 EOF
