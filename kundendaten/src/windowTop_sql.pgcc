@@ -5,34 +5,41 @@ exec sql include sqlca;
 //#include <gtk--/menu.h>
 //#include <gtk--/menuitem.h>
 #include "windowTop.hh"
+#include <Kunde/Kundengruppe.h>
 
 void windowTop::scc_verkaeufer_search(int *_continue, GtkSCContext newsearch)
 {
  exec sql begin declare section;
    int VERKNR;
-   char NAME[31],KURZ[6];
+   char *NAME=0;
    char *PAT;
+   int VERKGRP;
  exec sql end declare section;
- 
+
  switch(newsearch)
    {
     case GTK_SEARCH_OPEN :
       {
+	VERKGRP=KundengruppeID::Verkaeufer;
+
         std::string pat = scc_verkaeufer->get_text() + "%";
         PAT = (char*)pat.c_str();
         exec sql declare VERKAEUFER_CURSOR cursor for
-           select verknr,name,kurz from ku_verkaeufer 
-           where name like :PAT order by name;
+           select kundennr,firma||' '||coalesce(name2,'') as name
+		from kunden k join ku_gruppen_map m using (kundennr)
+		where m.grpnr=:VERKGRP and
+             	coalesce(name2,'')||firma like :PAT order by name;
         transaction.open();
         exec sql open VERKAEUFER_CURSOR;
         SQLerror::test(__FILELINE__);
       }
     case GTK_SEARCH_FETCH:
-        exec sql fetch VERKAEUFER_CURSOR into :VERKNR,:NAME,:KURZ;
+        exec sql fetch VERKAEUFER_CURSOR into :VERKNR,:NAME;
         SQLerror::test(__FILELINE__,100);
         if (sqlca.sqlcode) return;
         scc_verkaeufer->add_item(NAME,VERKNR);
         *_continue=true;
+	ECPGfree_auto_mem();
         break;
      case GTK_SEARCH_CLOSE:
         exec sql close VERKAEUFER_CURSOR;
