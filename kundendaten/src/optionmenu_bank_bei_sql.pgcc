@@ -16,7 +16,8 @@ int windowTop::fill_bank_bei(unsigned long int blz)
   long int BLZ=blz;
   char BANKNAME[10][50]; 
  exec sql end declare section;
- exec sql select bankindex,name into :BANKINDEX, :BANKNAME
+ exec sql select bankindex,
+	case when name='' then 'UNBEKANNT' else name end into :BANKINDEX, :BANKNAME
    from banken where blz = :BLZ;
  SQLerror::test(__FILELINE__,100);
  if (sqlca.sqlcode) { /*manage(new dialogError() );*/ return false;}
