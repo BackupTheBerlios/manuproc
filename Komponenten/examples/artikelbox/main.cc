@@ -1,4 +1,4 @@
-// $Id: main.cc,v 1.8 2004/11/16 14:17:12 christof Exp $
+// $Id: main.cc,v 1.9 2004/11/16 14:26:20 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -31,6 +31,7 @@ int main(int argc, char **argv)
 {   
 try {
    ManuProC::dbconnect();
+   Query ("set names 'utf-8'");
    Gtk::Main m(argc, argv);
    window1 *w=new class window1();
    m.run(*w);
