@@ -240,6 +240,10 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string yaufnr) throw(SQ
  exec sql update auftrag set verknr=:VERKNR:IVERKNR where
 	(auftragid,instanz)=(:AUFTRAGID,:INSTANZ);
  SQLerror::test(__FILELINE__":Auftrag: update auftrag");	
+
+ exec sql update auftrag set notiz=(select auf_notiz from kunden
+	where kundennr=:KUNDENNR) where auftragid=:AUFTRAGID;
+ SQLerror::test(__FILELINE__":Auftrag: update youraufnr");	
 #endif
 
 
@@ -294,6 +298,10 @@ Auftrag::Auftrag(Anlegen2 AB, long kdnr, const std::string yaufnr) throw(SQLerro
  exec sql update auftrag set verknr=:VERKNR:IVERKNR where
 	(auftragid,instanz)=(:AUFTRAGID,:INSTANZ);
  SQLerror::test(__FILELINE__":Auftrag: update auftrag");	
+
+ exec sql update auftrag set notiz=(select auf_notiz from kunden
+	where kundennr=:KUNDENNR) where auftragid=:AUFTRAGID;
+ SQLerror::test(__FILELINE__":Auftrag: update youraufnr");	
 #endif
 
  exec sql select date(datum) into :DATUM from auftrag 
