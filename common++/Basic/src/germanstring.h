@@ -1,4 +1,4 @@
-// $Id: germanstring.h,v 1.1 2002/12/05 08:23:10 christof Exp $            
+// $Id: germanstring.h,v 1.2 2002/12/05 08:29:18 christof Exp $            
 /*  Indexerstellung
  *  Copyright (C) 2002 Christof Petig
  *
@@ -23,6 +23,5 @@ class germanstring : public std::string
 {public:
 	bool operator<(const germanstring &b) const;
 //	bool operator==(const germanstring &b) const;
-//	operator std::string() { return *this; }
 	germanstring(const std::string &x) : std::string(x) {}
 };
