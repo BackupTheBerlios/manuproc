@@ -308,21 +308,18 @@ void auftrag_lieferschein::fill_with(const AufEintrag& AE,const Einheit& E,
 {
   artikelbox->set_value(AE.Artikel());
   auftragnr->set_text(Formatiere((unsigned long)AE.Id()));
-  menge_einheit->set_text(E);
+  anzahl->set_value(stueck);
+  menge_einheit->set_text(E.StueckEinheit());
   if (E.hatMenge())
    {
-     label_menge->show();
-//     liefermenge->set_value(Lieferschein::StandardLaenge(AE.Artikel()).as_int());
-     liefermenge->show();
+     table_menge->show();
      liefermenge->set_value(menge);
-     anzahl->set_value(stueck);
+     menge_einheit->set_text(E.MengenEinheit());
    }
   else
    {
-     label_menge->hide();
-     liefermenge->hide();
-     liefermenge->set_value(0.0);
-     anzahl->set_value(stueck);
+     table_menge->hide();
+//     liefermenge->set_value(0.0);
    } 
   artikelbox->set_sensitive(false);
   auftragnr->set_sensitive(false);
@@ -646,17 +643,17 @@ void auftrag_lieferschein::on_daten_unselect_row(int row, int col, GdkEvent* b)
 void auftrag_lieferschein::on_artikelbox_activate()
 {
  Einheit e(artikelbox->get_value());
- menge_einheit->set_text(e);
+ menge_einheit->set_text(e.StueckEinheit());
  if (e.hatMenge()) 
- { liefermenge->grab_focus();
+ { table_menge->show();
+   menge_einheit->set_text(e.MengenEinheit());
+//     liefermenge->set_value(Lieferschein::StandardLaenge(AE.Artikel()).as_int());
+   liefermenge->grab_focus();
    liefermenge->select_region(0,liefermenge->get_text_length());
-   label_menge->show();
-   liefermenge->show();
  }
  else 
  { auftragnr->grab_focus();
-   label_menge->hide();
-   liefermenge->hide();
+   table_menge->hide();
  }
 }
 
