@@ -62,7 +62,7 @@ void LR_drucken::drucken()
       LRA.setEAN(ean_code);
       LRA.drucken(os,instanz);
     }
-   else if (RL==LR_Base::Lieferschein || RL==LR_Base::Wareneingang)  
+   else if (RL==LR_Base::Lieferschein)  
     { 
 #ifdef MABELLA_EXTENSIONS    
       cH_LieferscheinVoll l(instanz,auftragsnr,true);
@@ -73,6 +73,13 @@ void LR_drucken::drucken()
       LRA.setEAN(ean_code);
       LRA.drucken(os,instanz);
     }
+   else if (RL==LR_Base::Wareneingang)  
+    { 
+      cH_LieferscheinVoll l(instanz,auftragsnr);
+      LR_Abstraktion LRA(&*l,RL);
+      LRA.setEAN(ean_code);
+      LRA.drucken(os,instanz);
+    }    
    else if (RL==LR_Base::Auftrag || RL==LR_Base::Intern || RL==LR_Base::Extern)  
     { 
      AuftragFull a=AuftragFull(AuftragBase(cH_ppsInstanz(instanz),(int)auftragsnr),false);
