@@ -34,6 +34,9 @@
 #define MWSTSATZ	0.16
 #define ENTSSATZ	0.002
 
+#define BEZEICHNUNG_SIGNIFIKANZ		3
+#define EAN_SIGNIFIKANZ			2
+
 bool ents_flag=false;
 
 MultiL_Dict *mld;
@@ -137,7 +140,8 @@ void LR_Abstraktion::drucken_header(std::ostream &os)
 
   cH_Kunde kunde_an(KdNr());
 
-#ifdef MABELLA_EXTENSIONS 
+#if defined MABELLA_EXTENSIONS && defined PRINT_LOGO
+
 if(!firmenpapier)
    os << "\\raisebox{0cm}[0pt][0pt]{\\makebox[0pt][l]{\\kern+140pt\\psfig{file=/usr/share/mabella/logo.eps}}}\n";
 
@@ -986,18 +990,19 @@ void LR_Abstraktion::drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,
 #ifdef MABELLA_EXTENSIONS
 	if(s->Id()==ExtBezSchema::default_id && ean_code)
      	  { neue_spalte( erste_spalte, os);
-	    if(rabatt_bool)
-	      os <<"{\\small" << bez->Bezeichnung(2) <<"}";
-	    else
-	      os <<bez->Bezeichnung(2);
+	    if(ArtikelTyp::hasAttribute(s->Typ(),ArtikelTypAttr::mit_ean))
+	      {if(rabatt_bool)
+	        os <<"{\\small" << bez->Bezeichnung(EAN_SIGNIFIKANZ) <<"}";
+	      else
+	        os <<bez->Bezeichnung(EAN_SIGNIFIKANZ);
+	      }
      	  }
-	if(s->Id()==ExtBezSchema::default_id
-		&& 
-		(s->Typ()==ArtikelTypID::aufgemachtes_Band
-		|| s->Typ()==ArtikelTypID::gewebtes_Band))
-     	  { neue_spalte( erste_spalte, os);
-	    os << bez->Bezeichnung(3);
-	  }
+	if(s->Id()==ExtBezSchema::default_id)
+     	   { neue_spalte( erste_spalte, os);
+	    if(ArtikelTyp::hasAttribute(s->Typ(),
+				ArtikelTypAttr::mit_bezeichnung))
+	      os << bez->Bezeichnung(BEZEICHNUNG_SIGNIFIKANZ);
+	   }
 #endif 
 	   
 }
@@ -1078,20 +1083,20 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
 #ifdef MABELLA_EXTENSIONS
   if(ean_code)
    {
-    for(ExtBezSchema::const_sigiterator j=schema_mem->sigbegin(2);
-  			j!=schema_mem->sigend(2);++j)
+    for(ExtBezSchema::const_sigiterator j=schema_mem->sigbegin(EAN_SIGNIFIKANZ);
+  			j!=schema_mem->sigend(EAN_SIGNIFIKANZ);++j)
       { tabcolumn += j->TeXtabformat ; ++spaltenzahl ; 
         ueberschriften += "&\\mbox{"+ug + j->bezkomptext+"}";
       }
    }
-  for(ExtBezSchema::const_sigiterator j=schema_mem->sigbegin(3);
-  			j!=schema_mem->sigend(3);++j)
+  for(ExtBezSchema::const_sigiterator j=schema_mem->sigbegin(BEZEICHNUNG_SIGNIFIKANZ);
+  			j!=schema_mem->sigend(BEZEICHNUNG_SIGNIFIKANZ);++j)
       { tabcolumn += j->TeXtabformat ; ++spaltenzahl ; 
 //        ueberschriften += "&\\mbox{"+ug + j->bezkomptext+"}";
         ueberschriften += "&\\mbox{"+ug +mld->MLT(MultiL_Dict::TXT_BEZEICHNUNG)+"}";
       }
 
-	// Wenn eigene Bezeichnung aber kein EAN dann in noch in einer Zeile
+	// Wenn eigene Bezeichnung aber kein EAN dann in noch einer Zeile
 	// auch beim Lieferschein nur eine Zeile
   if(schema_mem->Id() != schema_own->Id())
     {
@@ -1173,7 +1178,7 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
      for (unsigned int i=0;i<preisspalte-2;++i)  zur_preisspalte+='&';
     }
 
-// ggf. Zweite Kopfzeile erzeigen
+// ggf. Zweite Kopfzeile erzeugen
   if(schema_mem->Id() != schema_own->Id() && ean_code && Typ()!=Lieferschein)
     {
      os << "\\\\[-1ex]&\\multicolumn{3}{l}{\\scriptsize{}}";
