@@ -16,8 +16,10 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: SigC2SlotEmu.h,v 1.1 2004/04/29 16:44:50 christof Exp $
+// $Id: SigC2SlotEmu.h,v 1.2 2004/04/29 16:45:41 christof Exp $
 
+#ifndef F8A1CFD6_43A4_4DBC_9F30_826BBC4F0650
+#define F8A1CFD6_43A4_4DBC_9F30_826BBC4F0650
 #include <gtkmmconfig.h>
 
 #if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
@@ -30,4 +32,6 @@ namespace SigC
     Slot1<void,A> slot(T &t, void (T::*p)(A a)) 
     	{ return sigc::mem_fun(t,p); }
 }
+#endif
+
 #endif
