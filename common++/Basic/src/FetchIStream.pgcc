@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.38 2003/05/15 15:47:07 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.39 2003/05/15 15:55:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -233,10 +233,10 @@ void Query::Execute_if_complete()
    }
 }
 
-ArgumentList &Query::add_argument(const std::string &s)
+Query &Query::add_argument(const std::string &s)
 {  params.add_argument(s);
    Execute_if_complete();
-   return params;
+   return *this;
 }
 
 ArgumentList &ArgumentList::add_argument(const std::string &x)
