@@ -8,7 +8,6 @@
 #include <errno.h>
 #include <Artikel/ArtikelBezeichnung.h>
 
-#define SSH_HOST	"jacek@felix_ssh"
 
 int fdes_c2s[]={-1,-1};
 int fdes_s2c[]={-1,-1};
@@ -58,7 +57,7 @@ int RC_OffenMenge(cH_ArtikelBezeichnung b)
     {
      close(fdes_c2s[0]);
      close(fdes_s2c[1]);
-     sleep(3);
+     sleep(4);
 
     }
   else		// server (child)
@@ -66,17 +65,17 @@ int RC_OffenMenge(cH_ArtikelBezeichnung b)
      close(fdes_c2s[1]);
      close(fdes_s2c[0]);
     
-     char *args[]={"ssh",
-		"-2",
-		"-C",
-		SSH_HOST,
-		" ./bin/offen_fuer_artikel",
+     char *args[]={"sh",
+		"-c",
+		" /usr/bin/ssh -2 -C -i ~/.ssh/query_rsa "
+		" mabella@petig-baender.dyndns.org "
+		" ./bin/offen_fuer_artikel ",
 		NULL};
 
      dup2(fdes_c2s[0],0);
      dup2(fdes_s2c[1],1);
 
-    execve("/usr/bin/ssh",args,env);
+    execve("/bin/sh",args,env);
 
 	int err=errno;
    	std::cerr << "execve failed (errno:" << err << "):\n"
