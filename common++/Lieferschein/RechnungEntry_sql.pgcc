@@ -43,7 +43,7 @@ throw(SQLerror)	:RechnungEntryBase(rechnung)
  INVALID_REFAUFTRAGID=AuftragBase::invalid_id;
 
  exec sql select ry.artikelid, coalesce(ry.menge,0), coalesce(ry.preis,0),
-      coalesce(ry.stueck,1), coalesce(ry.preismenge,1), coalesce(ry.rabatt,0),
+      coalesce(ry.stueck,0), coalesce(ry.preismenge,1), coalesce(ry.rabatt,0),
       coalesce(li.geliefertam,li.datum,date('today')), 
       coalesce(ry.lfrsid,0), coalesce(ry.lfrszeile,0),
 	coalesce(l.refauftragid,:INVALID_REFAUFTRAGID)
