@@ -3,37 +3,26 @@
 #include <Aux/SQLerror.h>
 #include <Gtk_OStream.h>
 exec sql include sqlca;
-
+#include <SelectMatching.h>
 
 Optionmenu_Instanz::Optionmenu_Instanz()
-{
-  fuelle_menu();
+{ fuelle_menu();
   get_menu()->deactivate.connect(activate.slot());
-
-  show();
+//  show(); // sollte übergeordnetes Widget machen !!!
 }
 
-
-ppsInstanz::ppsInstId  Optionmenu_Instanz::get_Instanz_Id() const
-{
- int iw = int(get_menu()->get_active()->get_user_data());
- return (ppsInstanz::ppsInstId)iw;
-}
-std::string Optionmenu_Instanz::get_Instanz_Name() const
-{
- int iw = int(get_menu()->get_active()->get_user_data());
- std::string s = vec_instanz[iw-1];
- return s;
+cH_ppsInstanz Optionmenu_Instanz::get_value() const
+{  return static_cast<ppsInstanz*>(get_menu()->get_active()->get_user_data());
 }
 
 void Optionmenu_Instanz::fuelle_menu()
 {
   exec sql begin declare section;
-   char db_name[30];
    int db_id;   
   exec sql end declare section;
+
   exec sql declare in_ein cursor for 
-   select insid, name from prod_instanz order by insid;
+   select insid from prod_instanz order by insid;
   Transaction tr;
   exec sql open in_ein;
   SQLerror::test(__FILELINE__);
@@ -41,16 +30,21 @@ void Optionmenu_Instanz::fuelle_menu()
   Gtk::OStream os(this);
   while(true)
    {
-    exec sql fetch in_ein into :db_id,:db_name;
+    exec sql fetch in_ein into :db_id;
     SQLerror::test(__FILELINE__,100);
     if (sqlca.sqlcode) break; 
-    vec_instanz.push_back(db_name);
-    os << db_name;
-    os.flush((gpointer)db_id);      
+    cH_ppsInstanz i=cH_ppsInstanz(ppsInstanz::ID(db_id));
+    os << i->Name();
+    os.flush(i->ref(), &HandleContent::unref);      
    }
  exec sql close in_ein;
  tr.close();
 }
 
-void Optionmenu_Instanz::set_History(ppsInstanz::ppsInstId i)
-{set_history(i-1);}
+static bool operator==(gpointer data,const cH_ppsInstanz &i)
+{  return *(static_cast<ppsInstanz*>(data))==*i;
+}
+
+void Optionmenu_Instanz::set_value(const cH_ppsInstanz &i)
+{  Gtk::Menu_Helpers::SelectMatching(*this,i);
+}

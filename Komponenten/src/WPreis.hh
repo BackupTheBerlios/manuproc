@@ -2,45 +2,62 @@
 #  define _WPREIS_HH
 
 #include <gtk--/table.h>
-//#include <gtk--/eventbox.h>
 #include <Aux/Waehrung.h>
 #include <gtk--/spinbutton.h>
 #include <gtk--/label.h>
 #include "WWaehrung.hh"
 #include <Artikel/Preis.h>
+#include <Artikel/Einheiten.h>
 
 class WPreis : public Gtk::Table 
 {
-//      class Gtk::Table *TA;
       Gtk::SpinButton *SP,*SP2;
       Gtk::Label *LA,*LA2;
       WWaehrung *WW;
+
+      bool wwaehrung_bool;
+      cP_Waehrung chwaehrung;
+
+      void update();
+      // erzeugt die entsprechenden Unterwidgets
       void betrag();
       void waehrung();
       void preismenge();
       void einheit();
-      bool wwaehrung_bool;
-      cP_Waehrung chwaehrung;
+      // wozu sollte man das brauchen ? CP
+//      int get_text_length(){return SP->get_text().size();}
    public:
-//      WPreis() { WPreis(0); }
-      WPreis(bool wwaehrung);
+      WPreis(bool wwaehrung=true);
       ~WPreis(){}
 
       SigC::Signal0<void> activate;
-      void update();
+      
+      void set_value(const Preis &p);
+      const Preis get_value() const;
+      void reset();
+      
+      void set_Einheit(const Einheit &e)
+      {  LA2->set_text(std::string(e)); }
 
-      void set_Betrag(double d){SP->set_value(d);}
+// bitte nur mit gutem Grund verwenden
       void set_Waehrung(const cP_Waehrung &w);
+      cP_Waehrung getWaehrung() const;
+
+// veraltet
+      void set_all(double d1, double d2) // und Waehrung?
+      {  set_value(Preis(d1,getWaehrung(),d2));
+      }
+      void set_Betrag(double d){SP->set_value(d);}
       void set_Preismenge(double d){SP2->set_value(d);}
       void set_Einheit(const std::string s){LA2->set_text(s);}
 
-      double get_Betrag() const {gtk_spin_button_update(SP->gtkobj());return SP->get_value_as_float();}
-      double get_Preismenge() const {gtk_spin_button_update(SP2->gtkobj());return SP2->get_value_as_float();}
-      Waehrung::enum_t get_Waehrung_enum() const {return WW->get_enum();}
-      Preis get_Preis() const ;
-
-      void reset();
-      void set_all(double d1, double d2);
-      int get_text_length(){return SP->get_text().size();}
+      Preis::pfennig_cent_t get_Betrag() const 
+      {  return get_value().Wert(); }
+      double get_Preismenge() const 
+      {  return get_value().BezugsMenge(); }
+      Waehrung::enum_t get_Waehrung_enum() const 
+      {  return getWaehrung()->Id();}
+      const Preis get_Preis() const 
+      {  return get_value(); }
 };
 #endif

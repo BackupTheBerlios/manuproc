@@ -24,7 +24,7 @@ exec sql include sqlca;
 
 static const std::string Prozessname(Prozess::ID id,const std::string &typ,
 		const std::string &text)
-{  ostrstream os;
+{  std::ostrstream os;
    os << typ << " \"" << text << "\" [" << id << ']' << char(0);
    std::string result(os.str());
    os.freeze(0);
@@ -123,7 +123,7 @@ void ProzessBox::search_prozess(gboolean *cont, GtkSCContext newsearch)
    if (sqlca.sqlcode) return;
    if (itext) text[0]=0;
    if (imeterprostk) meterprostk=0;
-   scombo.add_item(Prozessname(id,label,text));
+   scombo.add_item(Prozessname(Prozess::ID(id),label,text));
    *cont=true;
    break;
    case GTK_SEARCH_CLOSE:
@@ -139,7 +139,7 @@ ProzessBox::ProzessBox() : prozessid(cH_Prozess::default_pid), allow_empty(false
 	tr("",false)
 {  add(scombo);
    scombo.show();
-   show();
+//   show();
    scombo.activate.connect(SigC::slot(this,&ProzessBox::combo_activated));
    scombo.search.connect(SigC::slot(this,&ProzessBox::search_prozess));
 }

@@ -147,7 +147,7 @@ void KundenBox::set_value(const cH_Kunde &k)
 void KundenBox::reset()
 {  kundennr->reset();
    kundenname->reset();
-   id=Kunde::default_id;
+   id=Kunde::none_id;
 }
 
 void KundenBox::Einschraenken_b(bool an)

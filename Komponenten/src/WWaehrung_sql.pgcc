@@ -3,43 +3,33 @@
 #include <Aux/SQLerror.h>   
 #include <Gtk_OStream.h>
 exec sql include sqlca; 
+#include <SelectMatching.h>
 
 WWaehrung::WWaehrung(darstellung kl)
 {
   fuelleMenu(kl);
-  show();
+//   show(); // sollte das Objekt darüber tun !
 }
 
-Waehrung::enum_t WWaehrung::get_enum()
-{
-   int iw = int(get_menu()->get_active()->get_user_data());
-   Waehrung::enum_t e = (Waehrung::enum_t) iw;
-   return  e;
-}
-std::string WWaehrung::Kurzbezeichnung()
-{
-   int iw = int(get_menu()->get_active()->get_user_data());
-   std::string s = vec_bez[iw-1].kurz;
-//   std::string s = map_bez[iw].kurz;
-   return  s;
-}
-std::string WWaehrung::Langbezeichnung()
-{
-   int iw = int(get_menu()->get_active()->get_user_data());
-   std::string s = vec_bez[iw-1].lang;
-//   std::string s = map_bez[iw].lang; 
-   return  s;
+cP_Waehrung WWaehrung::get_value() const
+{  return static_cast<Waehrung*>(get_menu()->get_active()->get_user_data());
 }
 
+static bool operator==(gpointer data,const cP_Waehrung &i)
+{  return *(static_cast<Waehrung*>(data))==*i;
+}
+
+void WWaehrung::set_value(cP_Waehrung val)
+{  Gtk::Menu_Helpers::SelectMatching(*this,val);
+}
 
 void WWaehrung::fuelleMenu(darstellung kl)
 {
    exec sql begin declare section;
-      char db_kurz[5], db_lang[30];
       int db_wid;
    exec sql end declare section;
    exec sql declare wae_ein cursor for
-      select wid,kurz,lang from waehrung order by wid; 
+      select wid from waehrung order by wid; 
    Transaction tr;
    exec sql open wae_ein;
    SQLerror::test(__FILELINE__);
@@ -48,21 +38,18 @@ void WWaehrung::fuelleMenu(darstellung kl)
    Gtk::OStream os(this);
    while(true)
      {
-      exec sql fetch wae_ein into :db_wid,:db_kurz,:db_lang;
+      exec sql fetch wae_ein into :db_wid;
       SQLerror::test(__FILELINE__,100);
-      if (sqlca.sqlcode) break; 
-      if (kl==KURZ) os << db_kurz;
-      else if (kl==LANG) os << db_lang;
-      else abort();
-      os.flush((gpointer)db_wid);
-      vec_bez.push_back(st_bez(db_lang,db_kurz));
-#warning warum geht das so nicht ? MAT
-//      map_bez[db_wid] = st_bez(db_lang,db_kurz);
+      if (sqlca.sqlcode) break;
+      cP_Waehrung cp=cP_Waehrung(Waehrung::ID(db_wid));
+      if (kl==KURZ) os << cp->Kurzbezeichnung();
+      else os << cp->Langbezeichnung();
+      os.flush(cp.ref()); // no unref possible
      }
    exec sql close wae_ein;
    tr.close();   
   }
-#warning erst NACH dem zerstören von 'os' existiert das Menu 
+// erst NACH dem zerstören von 'os' existiert das Menu 
   get_menu()->deactivate.connect(activate.slot());
 }
 

@@ -7,8 +7,8 @@
 
 class PPixmap //: public HandleContent
 {
-   static vector<Picture2> vpix;
-   static vector<Picture2> vpix_;
+   static std::vector<Picture2> vpix;
+   static std::vector<Picture2> vpix_;
 
  public: 
    PPixmap();

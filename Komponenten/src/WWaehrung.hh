@@ -3,32 +3,32 @@
 
 #include <gtk--/optionmenu.h>
 #include <Aux/Waehrung.h>
-//#include <map>
 #include <vector>
 
 class WWaehrung : public Gtk::OptionMenu //, Waehrung 
 {
-   private:
-      struct st_bez {std::string lang; std::string kurz;
-         st_bez(std::string l, std::string k):lang(l), kurz(k){} };
-#warning map wäre schöner geht aber leider nicht :-( MAT
-//      map<int,st_bez> map_bez;
-      vector<st_bez> vec_bez;
    public:
       enum darstellung {KURZ,LANG};
 
-      WWaehrung(darstellung kl);
+      WWaehrung(darstellung kl=KURZ);
       ~WWaehrung(){}
 
-      std::string Kurzbezeichnung();
-      std::string Langbezeichnung();
-      
-      void set_History(Waehrung::enum_t et) {set_history(et-1);} //enum_t fängt bei 1 an
-      Waehrung::enum_t get_enum();
+      void set_value(cP_Waehrung et);
+      cP_Waehrung get_value() const;
 
       SigC::Signal0<void> activate;
+
    private:
       void fuelleMenu(darstellung kl);
       
+   public: // veraltet
+      std::string Kurzbezeichnung() const
+      {  return get_value()->Kurzbezeichnung(); }
+      std::string Langbezeichnung() const
+      {  return get_value()->Langbezeichnung(); }
+      void set_History(Waehrung::enum_t et) 
+      {  set_value(et);}
+      Waehrung::enum_t get_enum() const
+      {  return get_value()->get_enum(); }
 };
 #endif

@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.11 2001/10/23 08:56:40 christof Exp $
+// $Id: ArtikelBox.hh,v 1.12 2002/01/22 09:21:56 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -97,9 +97,9 @@ class ArtikelBox : public Gtk::EventBox
  void Autocomplete(Gtk::CheckMenuItem *autocomplete);
  void kombiniert(Gtk::CheckMenuItem *kombi);
  void set_Label(Gtk::CheckMenuItem *label);
- vector<cH_EntryValue> expand_kombi_Artikel(unsigned int l,std::string text);
+ std::vector<cH_EntryValue> expand_kombi_Artikel(unsigned int l,std::string text);
  enum enum_art_label {ARTIKEL,LABEL};
- vector<cH_EntryValue> expand_kombi(unsigned int l,enum_art_label eal);
+ std::vector<cH_EntryValue> expand_kombi(unsigned int l,enum_art_label eal);
  void set_Vertikal(Gtk::CheckMenuItem *verti);
  void einschraenken_cb(Gtk::CheckMenuItem *einschr_mi);
  void Benutzerprofil_speichern();

@@ -1,4 +1,4 @@
-// $Id: window1.cc,v 1.7 2001/10/23 08:56:40 christof Exp $
+// $Id: window1.cc,v 1.8 2002/01/22 09:21:56 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -16,12 +16,6 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// generated 1999/2/1 11:32:33 MET by christof@petig.petig.de
-// using glademm V0.2.6
-//
-// newer (non customized) versions of this file go to window1.cc_glade
-
-// This file is for your program, I won't touch it again!
 
 #include "window1.hh"
 #include <gtk--/main.h>
@@ -61,6 +55,11 @@ void window1::on_show_clicked()
       ArtikelBezeichnung AB(artikelbox->get_value().Id());
       std::cout << "Artikel "<<artikelbox->get_value().Id() <<'\t'<<AB.Bezeichnung() <<'\n';
     }   
+   if (artikelbox2->get_value().Id())
+    {
+      ArtikelBezeichnung AB(artikelbox2->get_value().Id());
+      std::cout << "Artikel2 "<<artikelbox2->get_value().Id() <<'\t'<<AB.Bezeichnung() <<'\n';
+    }   
    std::cout << "Kunde " << kundenbox->get_value() << '\n';
 //   std::cout << "Waehrung "<< WWaehrung->Langbezeichnung()<<"\t"<<WWaehrung->Kurzbezeichnung()<<"\n";
    std::cout << "Preis " << WPreis->get_Betrag()<<"\n";
@@ -81,6 +80,5 @@ void window1::on_activate_wwaehrung()
 
 void window1::on_activate_wpreis()
 {
-  WPreis->update();
-   std::cout << "Preis "<< WPreis->get_Betrag()<<"\n";//<<WWaehrung->Kurzbezeichnung()<<"\n";
+   std::cout << "Preis "<< WPreis->get_value()<<"\n";
 }

@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.12 2001/11/12 09:51:01 christof Exp $
+// $Id: ArtikelBox.cc,v 1.13 2002/01/22 09:21:56 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -45,9 +45,9 @@ void ArtikelBox::selectFunc(unsigned int sp,unsigned int l) throw(SQLerror)
  pixmap_setzen(false);
  artikel=ArtikelBase();
 
-//cout << l<<"\t"<<sp<<combos[l][sp+1]->get_text(); 
+//std::cout << l<<"\t"<<sp<<combos[l][sp+1]->get_text(); 
  combos[l][sp+1]->reset();
-//cout << l<<"\t"<<sp<< combos[l][sp+1]->get_text(); 
+//std::cout << l<<"\t"<<sp<< combos[l][sp+1]->get_text(); 
  combos[l][sp+1]->grab_focus();
 }
 
@@ -117,7 +117,7 @@ throw(SQLerror,ArtikelBoxErr)
 vector<cH_EntryValue> ArtikelBox::expand_kombi(unsigned int l,enum_art_label eal)
 {
  std::string text;
- vector<cH_EntryValue> v;
+ std::vector<cH_EntryValue> v;
  if (eal==ARTIKEL) 
    { text = combos[l][0]->get_text(); 
      v=expand_kombi_Artikel(l,text);
@@ -142,7 +142,7 @@ vector<cH_EntryValue> ArtikelBox::expand_kombi_Artikel(unsigned int l,std::strin
       else s2 = text.find(sep,s1);
       std::string sx(text,s1,s2-s1);
       s1=s2 + sep.size();
-//cout << s1 <<'\t'<<s2<<"\t->"<<sx<<"<-\n";
+//std::cout << s1 <<'\t'<<s2<<"\t->"<<sx<<"<-\n";
       v.push_back(cH_EntryValueIntString(sx));
       if (s2==std::string::npos) break;
      }
@@ -301,17 +301,17 @@ ArtikelBox::ArtikelBox(const std::string& _program,const std::string& _position)
 { 
   artbox_start();
   std::string gs = Global_Settings(0,sprogram,sposition).get_Wert();
-//cout << "GS="<<gs<<'\n';
+//std::cout << "GS="<<gs<<'\n';
   if (gs!="")
    {
      std::string sep=":";
      std::string::size_type  p=gs.find(sep);
      std::string s(gs,0,p);
      std::string t(gs,p+sep.size(),std::string::npos);
-//cout << s <<'-'<<t<<'\n';
+//std::cout << s <<'-'<<t<<'\n';
      ExtBezSchema::ID eid = atoi(s.c_str());
      ArtikelTyp atyp      = atoi(t.c_str());
-//cout << eid<<'-'<<atyp<<'\n';
+//std::cout << eid<<'-'<<atyp<<'\n';
      setExtBezSchema(cH_ExtBezSchema(eid,atyp)); 
    }
 }
@@ -333,6 +333,7 @@ void ArtikelBox::setExtBezSchema(const cH_ExtBezSchema &_schema)
    combos.clear();
    labels.clear();
 #endif
+//std::cout << "ArtikelBox::setExtBezSchema " <<schema->Id()<<' ' <<_schema->Id()<<'\n';
    schema=_schema;
 
    init();
@@ -361,8 +362,15 @@ gint ArtikelBox::MouseButton(GdkEventButton *event)
 void ArtikelBox::setzeSchemaId(int t)
 {  
    Benutzerprofil_speichern();
-   setExtBezSchema(cH_ExtBezSchema(schema->Id(),t));
-//cout << "Id"<<sprogram<<'\n';
+cout << "ArtikelBox::setzeSchemaId: "<<' '<<t<<'\n';
+//   if(ExtBezSchema::exist_schema_for_typ(schema->Id(),t))
+   try {
+      setExtBezSchema(cH_ExtBezSchema(schema->Id(),t));
+   } catch (SQLerror &e)
+   {
+   /*else*/ setExtBezSchema(cH_ExtBezSchema(ExtBezSchema::default_ID,t));
+   }
+//std::cout << "Id"<<sprogram<<'\n';
    if (sprogram!="")
     Global_Settings(0,sprogram,sposition,itos(schema->Id())+":"+itos(t));
 }
@@ -370,7 +378,7 @@ void ArtikelBox::setzeSchemaTyp(int t2)
 {  
    Benutzerprofil_speichern();
    setExtBezSchema(cH_ExtBezSchema(t2,schema->Typ()));
-//cout << "Typ"<<sprogram<<'\n';
+//std::cout << "Typ"<<sprogram<<'\n';
    if (sprogram!="")
       Global_Settings(0,sprogram,sposition,itos(t2)+":"+itos(schema->Typ()));
 }

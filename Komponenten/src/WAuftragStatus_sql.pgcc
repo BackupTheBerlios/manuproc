@@ -1,39 +1,38 @@
 #include "WAuftragStatus.hh"
-//#include <Aux/Transaction.h>
-//#include <Aux/SQLerror.h>   
 #include <Gtk_OStream.h>
-exec sql include sqlca; 
+#include <SelectMatching.h>
 
 WAuftragStatus::WAuftragStatus()
 {
   fuelleMenu();
-  show();
+//  show();  // sollte das Widget dadrüber tun!
 }
 
+void WAuftragStatus::set_value(AufStatVal a)
+{  Gtk::Menu_Helpers::SelectMatching(*this,gpointer(int(a)));
+}
 
-AufStatVal WAuftragStatus::get_Status()
+AufStatVal WAuftragStatus::get_value() const
 {
   return (AufStatVal) int(get_menu()->get_active()->get_user_data());
-#warning warum MUß man zuerst nach 'int' casten? MAT
 }
 
+static void add(Gtk::OStream &os, AufStatVal v)
+{  os << AuftragBase::getStatusStr(v);
+   os.flush(gpointer(v));
+}
 
 void WAuftragStatus::fuelleMenu()
 {
   {
    // Reinfolge wie in <Auftrag/auftrag_status.h> !
    Gtk::OStream os(this);
-   os << "unbestätigt";
-   os.flush((gpointer)UNCOMMITED);
-   os << "offen";
-   os.flush((gpointer)OPEN);
-   os << "fertig";
-   os.flush((gpointer)CLOSED);
-//   os << "storniert";
-//   os.flush((gpointer)STORNO);
+   ::add(os,UNCOMMITED);
+   ::add(os,OPEN);
+   ::add(os,CLOSED);
+//   ::add(os,STORNO);
   }
 
-#warning erst NACH dem zerstören von 'os' existiert das Menu 
+// erst NACH dem zerstören von 'os' existiert das Menu 
   get_menu()->deactivate.connect(activate.slot());
 }
-

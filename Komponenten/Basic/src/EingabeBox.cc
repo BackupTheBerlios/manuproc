@@ -1,4 +1,4 @@
-// $Id: EingabeBox.cc,v 1.2 2001/07/05 12:58:06 christof Exp $
+// $Id: EingabeBox.cc,v 1.3 2002/01/22 09:21:56 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -75,7 +75,7 @@ void EingabeBox::grow(int cols)
 EingabeBox::EingabeBox(int cols=0)
 	: Gtk::Table(cols), visible_size(0)
 {  grow(cols);
-   show();
+//   show();
    gtk_signal_connect(GTK_OBJECT(gtkobj()), "grab_focus",
     		GTK_SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
 //   assert(Gtk::Table::isGtkTable((Gtk::Object *)(gpointer)this));

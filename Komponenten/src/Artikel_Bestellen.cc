@@ -10,7 +10,7 @@ Artikel_Bestellen::Artikel_Bestellen()
   PB_prozess->activate.connect(SP_menge->grab_focus.slot());
   SP_menge->activate.connect(AB_artikel->grab_focus.slot());
 
-  show();
+//  show();
 }
 
 

@@ -87,8 +87,8 @@ void ArtikelBox::searchFunc(int *cont, GtkSCContext newsearch, unsigned int sp,u
  	squery += " WHERE " + einschraenkung;
  
 //if (eingeschraenkt) 
-//{  cout << einschraenkung.size() << ", " << einschraenkung << '\n';
-//   cout << squery<<"\n";
+//{  std::cout << einschraenkung.size() << ", " << einschraenkung << '\n';
+//   std::cout << squery<<"\n";
 //}
     (const char*)QUERY=squery.c_str();
     tr.open();
@@ -108,13 +108,13 @@ case GTK_SEARCH_FETCH:
 //   exec sql close extbezfeld;
 //   SQLerror::test(__FILELINE__);
    FetchIStream is("spalten");
-   vector<std::string> sv;
+   std::vector<std::string> sv;
    std::string t;
    if (kombiniertbool)
-     for (vector<std::cH_EntryValue>::const_iterator i=vl.begin();i!=vl.end();++i)
+     for (std::vector<std::cH_EntryValue>::const_iterator i=vl.begin();i!=vl.end();++i)
       {
          is >> FetchIStream::MapNull<string>(t,"");
-//cout <<"-"<< t<<"-\n";
+//std::cout <<"-"<< t<<"-\n";
          sv.push_back(t);
       }
    else { is >> FetchIStream::MapNull<string>(t,"");
@@ -134,7 +134,7 @@ case GTK_SEARCH_FETCH:
      if (kombiniertbool) text +=sv[c++];
      if (sep==" ") text += "_";
      else text +=sep;
-//cout << "\t"<<c<<"\t-"<<sv[c-1]<<"-\t-"<<sep<<"-\t"<<text<<"\n";
+//std::cout << "\t"<<c<<"\t-"<<sv[c-1]<<"-\t-"<<sep<<"-\t"<<text<<"\n";
     }
  else  text = sv[0];
  combos[l][sp]->add_item(text);
@@ -218,6 +218,33 @@ void ArtikelBox::fuelleMenu()
 	     { if (schema->Typ()==ArtikelTyp::typ(id[i])) typ_ok=true;
 	       else if (!i) neuerTyp=id[i];
      	  }
+       }
+   }
+   // Auch die Warengruppen anzeigen, die für diesen Typ eigentlich 
+   // nicht vorgesehen sind sondern nur intern vorhanden sind (eingeklammert)
+   exec sql select DISTINCT e.artikeltyp, w.text into :id, :bez
+        from extbezschema e, artbez_warengruppe w where w.id 
+         = e.artikeltyp AND extartbezid=1 and e.artikeltyp not in
+         (select DISTINCT ee.artikeltyp from extbezschema ee where
+            extartbezid=:eab_id ) limit 20;
+   if (!sqlca.sqlcode)
+   {  for (int i=0;i<sqlca.sqlerrd[2];++i)
+      {  std::string entr;
+         if (id[i]==schema->Typ()) entr += "*(";
+         else entr += " (";
+         entr += bez[i] ;
+         entr += ")";
+         Gtk::MenuItem *mi=manage(new Gtk::MenuItem(entr)); 
+         typ_menu->append(*mi);
+         mi->show();
+         mi->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::setzeSchemaId),id[i]));
+
+/*
+   	 if (!typ_ok)
+	     { if (schema->Typ()==ArtikelTyp::typ(id[i])) typ_ok=true;
+	       else if (!i) neuerTyp=id[i];
+     	  }
+*/
        }
    }
    if (!typ_ok)
@@ -436,8 +463,8 @@ void ArtikelBox::Neuer_Eintrag()
 
   exec sql select nextval ('artikelbezeichnun_artikelid_seq') into :db_id;
   std::string where, what;
-  where = "(id,stand," ;
-  what  = "("+itos(db_id)+",now(),";
+  where = "(id," ;
+  what  = "("+itos(db_id)+",";
   where_what(where,what,false);
 
   Neuer_Eintrag_sql(db_id,where,what,
@@ -462,8 +489,8 @@ void ArtikelBox::Neuer_Eintrag()
       {
         exec sql select nextval ('artikelbezeichnun_artikelid_seq') into :db_id_jumbo;
         jumbo_id=db_id_jumbo;      
-        where = "(id,stand," ;
-        what  = "("+itos(db_id_jumbo)+",now(),";
+        where = "(id," ;
+        what  = "("+itos(db_id_jumbo)+",";
         where_what(where,what,true);
    
         Neuer_Eintrag_sql(db_id_jumbo,where,what,ppsInstanz::Bandlager);
@@ -497,8 +524,8 @@ void ArtikelBox::Neuer_Eintrag_sql(int id, std::string where, std::string what,i
   // Eintrag in Artikelbezeichnung
   db_warengruppe= atoi(strtyp.c_str());
   db_schema = schema->Id();
-  exec sql insert into artikelstamm (id,stand,warengruppe,defaultschema,bestellen_bei)
-     values (:db_id,now(),:db_warengruppe,:db_schema,:db_bestellen_bei);
+  exec sql insert into artikelstamm (id,warengruppe,defaultschema,bestellen_bei)
+     values (:db_id,:db_warengruppe,:db_schema,:db_bestellen_bei);
   SQLerror::test(__FILELINE__);
      
 
@@ -590,8 +617,8 @@ void ArtikelBox::insert_into_artikelzusammensetzung(int id, int id_jumbo, int pr
    int db_id=id,db_id_jumbo=id_jumbo,db_prozess=prozess;
    double db_menge=menge;
  exec sql end declare section;
- exec sql insert into artikelzusammensetzung (id,prozessid,altartikelid,menge,stand)
-    values (:db_id,:db_prozess,:db_id_jumbo,:db_menge,now());
+ exec sql insert into artikelzusammensetzung (id,prozessid,altartikelid,menge)
+    values (:db_id,:db_prozess,:db_id_jumbo,:db_menge);
  SQLerror::test(__FILELINE__);
 }
 

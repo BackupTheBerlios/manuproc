@@ -10,20 +10,22 @@
 class Optionmenu_Instanz :  public Gtk::OptionMenu
 {
    void fuelle_menu();
-   vector<std::string> vec_instanz;
 
  public:
    Optionmenu_Instanz() ;
    SigC::Signal0<void> activate;
 
-   
-// please use these standard names, CP
-   void set_value(ppsInstanz::ppsInstId i) { set_History(i); }
-   ppsInstanz::ppsInstId get_value() const { return get_Instanz_Id(); }
+   void set_value(const cH_ppsInstanz &i);
+   cH_ppsInstanz get_value() const;
 
-// ----
-   ppsInstanz::ppsInstId get_Instanz_Id() const;
-   std::string get_Instanz_Name() const;
-   void set_History(ppsInstanz::ppsInstId i);
+// ---- veraltet !!!!
+   ppsInstanz::ppsInstId get_Instanz_Id() const
+   {  return get_value()->Id();
+   }
+   std::string get_Instanz_Name() const
+   {  return get_value()->Name();
+   }
+   void set_History(ppsInstanz::ppsInstId i)
+   {  set_value(i); }
 };
 #endif

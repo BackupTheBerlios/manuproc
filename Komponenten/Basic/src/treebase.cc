@@ -280,9 +280,9 @@ recurse:
 #ifdef DEBUG_NEW 
 cout << "inserting @"<< deep << " " << ev->getStrVal() << " <= ";
 if (current_iter!=apiend) 
- cout << reinterpret_cast<TreeRow*>((*current_iter).get_user_data())->Value()->getStrVal();
+ std::cout << reinterpret_cast<TreeRow*>((*current_iter).get_user_data())->Value()->getStrVal();
 if (!MehrAlsEinKind(selseq) && upper_b!=apiend) 
- cout << " <= " << reinterpret_cast<TreeRow*>((*upper_b).get_user_data())->Value()->getStrVal();
+ std::cout << " <= " << reinterpret_cast<TreeRow*>((*upper_b).get_user_data())->Value()->getStrVal();
 cout << '\n';
 #endif
 
@@ -322,7 +322,7 @@ cout << '\n';
 	 
 	 if (current_tclr->Leaf()) newnode->cumulate(v2);
 	 current_tclr->getTCL_API()->reparent(*parent,*newnode->getTCL_API());
-//cout << child_s_deep << ':' << selseq.front() << '\n';
+//std::cout << child_s_deep << ':' << selseq.front() << '\n';
 	 current_tclr->ValueDeep(v2->Value(selseq.front(),ValueData()),child_s_deep);
 
 	 // das neue Blatt einsortieren
@@ -533,7 +533,7 @@ void TreeBase::set_tree_column_visibility(int column,bool visible)
      vec_hide_cols[column] = visible;
      show_or_hide_Spalten();
    }   
-  else cerr << "Fehler in 'TreeBase::set_column_visibility': "<<column<<" größer als die Anzahl der Spalten ("<<Cols()<<'\n';
+  else std::cerr << "Fehler in 'TreeBase::set_column_visibility': "<<column<<" größer als die Anzahl der Spalten ("<<Cols()<<'\n';
 }
 
 void TreeBase::show_or_hide_Spalten()

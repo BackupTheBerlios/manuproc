@@ -4,36 +4,7 @@
 exec sql include sqlca;
 #include <gtk--/adjustment.h>
 
-WPreis::WPreis(bool wwaehrung)
-: wwaehrung_bool(wwaehrung)
-{
-  betrag();
-  waehrung();
-  preismenge();
-  einheit(); 
-#warning warum kann ich damit der Tabelle keine feste Breite geben, damit 
-#warning damit sie unabhängig von der Anwendug immer gleichbreit bleibt?
-#warning oder anders ausgedrückt: wie macht man das sonst?
-  set_usize(50, -1);
-  show();
-}
-
-void WPreis::update()
-{
-  gtk_spin_button_update(SP->gtkobj());
-  gtk_spin_button_update(SP2->gtkobj());
-}
-void WPreis::reset()
-{
-  set_Betrag(0);
-  set_Preismenge(1.0);
-}
-
-void WPreis::set_all(double d1, double d2)
-{
-  set_Betrag(d1);
-  set_Preismenge(d2);
-}
+// strictly these are part of the ctor
 
 void WPreis::betrag()
 {
@@ -53,7 +24,7 @@ void WPreis::waehrung()
    }
   else
    {
-     LA=manage(new Gtk::Label("XXX"));
+     LA=manage(new Gtk::Label("?"));
      LA->set_alignment(0, 0.5);
      LA->show();
      attach(*LA,2,3,0,1);
@@ -79,17 +50,50 @@ void WPreis::einheit()
   attach(*LA2,2,3,1,2);
 }
 
+WPreis::WPreis(bool wwaehrung)
+: SP(0), SP2(0), LA(0), LA2(0), WW(0), wwaehrung_bool(wwaehrung)
+{
+  betrag();
+  waehrung();
+  preismenge();
+  einheit(); 
+// warum kann ich damit der Tabelle keine feste Breite geben, damit 
+// damit sie unabhängig von der Anwendug immer gleichbreit bleibt?
+// oder anders ausgedrückt: wie macht man das sonst?
+// Antwort: Ein Problem des aufrufenden Widgets und der Child Parameter
+  set_usize(50, -1);
+  
+  set_Waehrung(Waehrung::default_id);
+//  show();
+}
+
+void WPreis::update()
+{
+  gtk_spin_button_update(SP->gtkobj());
+  gtk_spin_button_update(SP2->gtkobj());
+}
+
+void WPreis::reset()
+{ set_value(Preis());
+}
+
+void WPreis::set_value(const Preis &p)
+{ SP->set_value(p.Wert());
+  SP2->set_value(p.BezugsMenge());
+  set_Waehrung(p.getWaehrung());
+}
+
 void WPreis::set_Waehrung(const cP_Waehrung &w) 
-{ 
-  chwaehrung=w;
-  if (wwaehrung_bool)  WW->set_History(w->get_enum());
+{ chwaehrung=w;
+  if (wwaehrung_bool)  WW->set_value(w);
   else LA->set_text(w->Kurzbezeichnung());
 }
 
-Preis WPreis::get_Preis() const
-{
-  if(wwaehrung_bool) 
-   return Preis(get_Betrag(),cP_Waehrung(get_Waehrung_enum()),get_Preismenge());
-  else 
-   return Preis(get_Betrag(),chwaehrung,get_Preismenge());
+cP_Waehrung WPreis::getWaehrung() const
+{ return wwaehrung_bool?WW->get_value():chwaehrung;
+}
+
+const Preis WPreis::get_value() const
+{ const_cast<WPreis*>(this)->update();
+  return Preis(SP->get_value_as_float(),getWaehrung(),SP2->get_value_as_float());
 }
