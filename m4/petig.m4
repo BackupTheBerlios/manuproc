@@ -1,4 +1,4 @@
-dnl $Id: petig.m4,v 1.42 2001/04/20 15:27:02 cvs_christof Exp $
+dnl $Id: petig.m4,v 1.43 2001/05/07 07:19:50 cvs_christof Exp $
 
 dnl Configure paths for some libraries
 dnl derived from kde's acinclude.m4
@@ -164,6 +164,11 @@ then
   elif test -r $petig_postgresdir/include/postgresql/ecpgerrno.h ; then
     dnl debian looks really strange AFA ecpg is concerned
     ECPG_INCLUDES=-I$petig_postgresdir/include/postgresql
+    ECPG="$petig_postgresdir/bin/ecpg $ECPG_INCLUDES"
+    AC_MSG_RESULT($ECPG_INCLUDES)
+  elif test -r $petig_postgresdir/include/pgsql/ecpgerrno.h ; then
+    dnl SuSE is no better ...
+    ECPG_INCLUDES=-I$petig_postgresdir/include/pgsql
     ECPG="$petig_postgresdir/bin/ecpg $ECPG_INCLUDES"
     AC_MSG_RESULT($ECPG_INCLUDES)
   else
