@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.23 2003/03/24 10:36:01 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.24 2003/05/15 15:51:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -73,6 +73,13 @@ int main()
    // should never select any lines
    Query ("update pg_class set relname=relname where relname='' and oid=0");
    SQLerror::print("should be 100");
+   
+   std::cout << (Query("select ? from pg_class limit 1")
+   	.add_argument("relname").FetchOne<std::string>()) << '\n';
+   std::cout << "this should give a warning:\n";
+   Query("select ?");
+   SQLerror::print("should be -202");
+   
    ManuProC::dbdisconnect();
    return 0;
 }
