@@ -199,11 +199,13 @@ class LR_Abstraktion: public LR_Base
 
  static const unsigned int signifikanz=1;
 #ifdef MABELLA_EXTENSIONS
- static const unsigned int ZEILEN_SEITE_1=30;
+ static const unsigned int ZEILEN_SEITE_1=27;
+ static const unsigned int ZEILEN_SEITE_N=40;
 #else
  static const unsigned int ZEILEN_SEITE_1=33;
-#endif
  static const unsigned int ZEILEN_SEITE_N=43;
+#endif
+
 
  fixedpoint<2> betrag;		//
  fixedpoint<2> tabellenbetrag;	// 

@@ -104,7 +104,7 @@ void LR_Abstraktion::drucken_header(std::ostream &os)
 // mygrayvalue=0.75;
 //#endif
  hf.preamble="\\newrgbcolor{mygray}{"+dtos(mygrayvalue)+" "+dtos(mygrayvalue)+" "+dtos(mygrayvalue)+"}\n"
-	"\\newlength{\\breite}\n"
+//	"\\newlength{\\breite}\n"
 	"\\setlength{\\topsep}{0pt}\n"
 	"\\setlength{\\partopsep}{0pt}\n"
 	"\\setlength{\\textheight}{26.0cm}\n";  // na, ob das sinnvoll ist?
@@ -822,7 +822,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 	if(schema_own->Id() != schema_mem->Id())
 	  {
 	   cH_ArtikelBezeichnung own_bez(artikelbase,schema_own->Id());
-	   if(!ean_code || Typ()==Lieferschein)
+	   if((!ean_code && !rabatt_bool) || Typ()==Lieferschein)
 	     drucken_artikel(os,own_bez,false,linecolor,erste_spalte,schema_own);
 	   else // nur Auffüllen; die Daten kommen in die zweite Spalte
 	     {for(int signc=0;signc<schema_own->size(1);signc++)
@@ -863,7 +863,8 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
             }
            
          if (preise_addieren)       
-          { neue_spalte(erste_spalte,os);
+          { 
+           neue_spalte(erste_spalte,os);
 #ifdef MABELLA_EXTENSIONS // Anzeigen, dass der Preis manuell eingegeben wurde
 	    if(Typ()==Auftrag && !print)
 	      if(pl->Id() == PreisListe::none_id)
@@ -877,7 +878,9 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 			FormatiereTeX_Preis((NettoPreis.Wert())); 
 	      }
 	    else
+	     {
 	      os <<linecolor<<FormatiereTeX_Preis(NettoPreis.Wert());
+	     }
 
 	    Preis::geldbetrag_out preis;
 	    if(Rueckstand())
@@ -934,12 +937,11 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
         --zeilen_passen_noch;
 
 #ifdef MABELLA_EXTENSIONS
-	if(schema_own->Id() != schema_mem->Id() && ean_code && Typ()!=Lieferschein)
+	if(schema_own->Id() != schema_mem->Id() && 
+	    (ean_code || rabatt_bool) && Typ()!=Lieferschein)
 	  {
 	   cH_ArtikelBezeichnung own_bez(artikelbase,schema_own->Id());
 	   os << "&&&&";
-//           if(schema_own->Id()!=own_bez->getExtBezSchema()->Id())
-//	     drucken_artikel(os,own_bez,false,linecolor,erste_spalte,schema_own);
            if(schema_own->Id()==own_bez->getExtBezSchema()->Id())	     
 	     os << "\\multicolumn{4}{l}{" <<own_bez->Bezeichnung()<<"}";
            else
@@ -948,6 +950,8 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
            --zeilen_passen_noch;
 	  }
 #endif         
+
+std::cout << "noch passende Zeilen" << zeilen_passen_noch <<"\n";
 }
 
 
@@ -976,7 +980,7 @@ void LR_Abstraktion::drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,
 	     if (!zusatzinfo)
 		{
 #ifdef MABELLA_EXTENSIONS
-		// Wenn im fremnden Schema die Bezeichnung nicht existiert,
+		// Wenn im fremden Schema die Bezeichnung nicht existiert,
 		// dann nichts ausgeben, damit es gleich auffällt.
 		if(s->Id()!=bez->getExtBezSchema()->Id())	     
 	          os << " ";
@@ -994,18 +998,14 @@ void LR_Abstraktion::drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,
 	if(s->Id()==ExtBezSchema::default_id && ean_code)
      	  { neue_spalte( erste_spalte, os);
 	    if(ArtikelTyp::hasAttribute(s->Typ(),ArtikelTypAttr::mit_ean))
-	      {if(rabatt_bool)
-	        os <<"{\\small" << bez->Bezeichnung(EAN_SIGNIFIKANZ) <<"}";
-	      else
 	        os <<bez->Bezeichnung(EAN_SIGNIFIKANZ);
-	      }
      	  }
 	if(s->Id()==ExtBezSchema::default_id)
      	   {
 	    if(ArtikelTyp::hasAttribute(s->Typ(),
 				ArtikelTypAttr::mit_bezeichnung))
 	      { neue_spalte( erste_spalte, os);
-	        os << bez->Bezeichnung(BEZEICHNUNG_SIGNIFIKANZ);
+		  os << bez->Bezeichnung(BEZEICHNUNG_SIGNIFIKANZ);
 	      }
 	   }
 #endif 
@@ -1065,16 +1065,10 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
      }
   else
 #ifdef MABELLA_EXTENSIONS
-#warning Provisorium !!
      {
-//     MultiL_Dict::LangTXT mld_idx=MultiL_Dict::TXT_ARTIKEL;
      for(ExtBezSchema::const_sigiterator j=schema->sigbegin(signifikanz);j!=schema->sigend(signifikanz);++j)
          { tabcolumn += j->TeXtabformat ; ++spaltenzahl ; 
-//           ueberschriften += "&\\mbox{"+ug + j->bezkomptext+"}";
            ueberschriften += "&\\mbox{"+ug +mld->MLT(j->textid)+"}";
-//	  int t=(int)mld_idx; 
-//	  t++; 
-//	  mld_idx=(MultiL_Dict::LangTXT)t;
          }
      }
 #else
@@ -1097,30 +1091,25 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
   for(ExtBezSchema::const_sigiterator j=schema_mem->sigbegin(BEZEICHNUNG_SIGNIFIKANZ);
   			j!=schema_mem->sigend(BEZEICHNUNG_SIGNIFIKANZ);++j)
       { tabcolumn += j->TeXtabformat ; ++spaltenzahl ; 
-//        ueberschriften += "&\\mbox{"+ug + j->bezkomptext+"}";
         ueberschriften += "&\\mbox{"+ug +mld->MLT(MultiL_Dict::TXT_BEZEICHNUNG)+"}";
       }
 
-	// Wenn eigene Bezeichnung aber kein EAN dann in noch einer Zeile
+	// Wenn eigene Bezeichnung aber kein EAN und kein Rabatt dann nur in einer Zeile
 	// auch beim Lieferschein nur eine Zeile
   if(schema_mem->Id() != schema_own->Id())
     {
      for(ExtBezSchema::const_sigiterator j=schema_own->sigbegin(1);
      				j!=schema_own->sigend(1);++j)
       { tabcolumn += j->TeXtabformat ; ++spaltenzahl ; 
-        if(!ean_code || Typ()==Lieferschein)
-          ueberschriften += "&\\mbox{"+ug + j->bezkomptext+"}";
+        if((!ean_code && !rabatt_bool) || Typ()==Lieferschein)
+//          ueberschriften += "&\\mbox{"+ug + j->bezkomptext+"}";
+          ueberschriften += "&\\mbox{"+ug+mld->MLT(MultiL_Dict::IHR_ARTIKEL)+"}";
 	else
           ueberschriften += "&";
       }    
 
    }
       
-//  if(Typ()==Rechnung)
-//    { tabcolumn += "X"; spaltenzahl++;
-//      ueberschriften += "&\\mbox{\\scriptsize{}"+ug+"Auftrag}";
-//    }
-
 #else
   if (Typ()==Lieferschein)
   { tabcolumn+="rr"; spaltenzahl+=2; 
@@ -1168,7 +1157,7 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
 			+mld->MLT(MultiL_Dict::TXT_LIEFERKW)+"}"; }
 
   
-  os << "\\settowidth{\\breite}{"<<ug<<" "<<mld->MLT(MultiL_Dict::TXT_BEZEICHNUNG)<<"}%\n";
+//  os << "\\settowidth{\\breite}{"<<ug<<" "<<mld->MLT(MultiL_Dict::TXT_BEZEICHNUNG)<<"}%\n";
 #ifdef MABELLA_EXTENSIONS
   os << "\\setlength{\\tabcolsep}{1.5mm}";
 #endif
@@ -1184,13 +1173,15 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
     }
 
 // ggf. Zweite Kopfzeile erzeugen
-  if(schema_mem->Id() != schema_own->Id() && ean_code && Typ()!=Lieferschein)
+  if(schema_mem->Id() != schema_own->Id() && 
+	(ean_code || rabatt_bool) && Typ()!=Lieferschein)
     {
      os << "\\\\[-1ex]&\\multicolumn{3}{l}{\\scriptsize{}}";
      os << "&\\multicolumn{4}{l}{\\scriptsize{";
      for(ExtBezSchema::const_sigiterator j=schema_own->sigbegin(1);
      				j!=schema_own->sigend(1);++j)
-       os << " " << j->bezkomptext << " " << j->separator;
+//       os << " " << j->bezkomptext << " " << j->separator;
+       os << " " << mld->MLT(MultiL_Dict::IHR_ARTIKEL) << " " << j->separator;
      os << "}}\\\\\n";
      --zeilen_passen_noch;
     }

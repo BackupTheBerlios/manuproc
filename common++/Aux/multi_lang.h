@@ -95,6 +95,7 @@ public:
 		TXT_STORNO=80,
 		PRINTF_ZAHLUNG11=81,
 		TXT_ANSPRECHPARTNER=82,
+		IHR_ARTIKEL=83,
 	     } LangTXT;
 
  MultiL_Dict(int sprache, int default_spr=1);
