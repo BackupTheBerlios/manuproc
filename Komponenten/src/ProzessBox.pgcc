@@ -22,11 +22,11 @@
 
 exec sql include sqlca;
 
-static const string Prozessname(Prozess::ID id,const string &typ,
-		const string &text)
+static const std::string Prozessname(Prozess::ID id,const std::string &typ,
+		const std::string &text)
 {  ostrstream os;
    os << typ << " \"" << text << "\" [" << id << ']' << char(0);
-   string result(os.str());
+   std::string result(os.str());
    os.freeze(0);
    return result;
 } 
@@ -131,7 +131,7 @@ void ProzessBox::search_prozess(gboolean *cont, GtkSCContext newsearch)
      tr.commit();
      break;}
   } catch (SQLerror &e)
-  {  cerr << e << '\n';
+  {  std::cerr << e << '\n';
   }
 }
 
@@ -149,7 +149,7 @@ void ProzessBox::reset()
    prozessid=cH_Prozess::default_pid;
 }
 
-static const Prozess::ID parseEndProzess(const string &s)
+static const Prozess::ID parseEndProzess(const std::string &s)
 {  const char *zahl=strrchr(s.c_str(),'[');
    if (!zahl) return Prozess::ID(cH_Prozess::default_pid);
    return Prozess::ID(strtol(zahl+1,0,10));

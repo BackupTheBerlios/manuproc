@@ -97,10 +97,10 @@ private:
 	ID value() const throw();
 	ID get_value() const throw()
 	{  return value(); }
-	static const string LongByID(ID st);
-	const string value_as_string() const
+	static const std::string LongByID(ID st);
+	const std::string value_as_string() const
 	{  return LongByID(value()); }
-	const string get_value_as_string() const
+	const std::string get_value_as_string() const
 	{  return value_as_string(); }
 	
 	SigC::Signal0<void> activate;

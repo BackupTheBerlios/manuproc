@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: EingabeBox.hh,v 1.1 2001/06/21 09:05:27 christof Exp $
+// $Id: EingabeBox.hh,v 1.2 2001/07/05 12:58:06 christof Exp $
 
 #ifndef _EINGABEBOX_HH
 #define _EINGABEBOX_HH
@@ -27,9 +27,9 @@
 #include <vector>
 
 class EingabeBox : public Gtk::Table
-{	typedef vector<Gtk::Label *> t_labels;
-	typedef vector<Gtk::Entry *> t_entries;
-	typedef vector<SigC::Connection> t_cons;
+{	typedef std::vector<Gtk::Label *> t_labels;
+	typedef std::vector<Gtk::Entry *> t_entries;
+	typedef std::vector<SigC::Connection> t_cons;
 
         t_labels labels;
         t_entries entries;
@@ -49,10 +49,10 @@ class EingabeBox : public Gtk::Table
 public:
         EingabeBox(int cols=0);
         ~EingabeBox();
-	const string get_label(int col) const;
-	void set_label(int col,const string &s);
-	const string get_value(int col) const;
-        void set_value(int col,const string &s);
+	const std::string get_label(int col) const;
+	void set_label(int col,const std::string &s);
+	const std::string get_value(int col) const;
+        void set_value(int col,const std::string &s);
 	void set_width(int col,int width);
 	void set_size(int cols);
 	int size() const

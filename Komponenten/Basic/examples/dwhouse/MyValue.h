@@ -28,7 +28,7 @@ class MyValue : public EntryValueIntString
 
 public:
  MyValue(int v) : EntryValueIntString(v) {}
- MyValue(const string &s) : EntryValueIntString(s) {}
+ MyValue(const std::string &s) : EntryValueIntString(s) {}
 
 
 };
@@ -40,7 +40,7 @@ public:
  cH_MyValue() : cH_EntryValue() {}
  cH_MyValue(const EntryValueBase *r) : cH_EntryValue(r) {}
  cH_MyValue(int v) : cH_EntryValue(new MyValue(v)) {}
- cH_MyValue(const string &s) : cH_EntryValue(new MyValue(s)) {}
+ cH_MyValue(const std::string &s) : cH_EntryValue(new MyValue(s)) {}
 
 };
 

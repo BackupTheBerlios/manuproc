@@ -1,4 +1,4 @@
-// $Id: EingabeBox.cc,v 1.1 2001/06/21 09:05:27 christof Exp $
+// $Id: EingabeBox.cc,v 1.2 2001/07/05 12:58:06 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -88,20 +88,20 @@ EingabeBox::~EingabeBox()
 	delete *i;
 }
 
-const string EingabeBox::get_label(int col) const
+const std::string EingabeBox::get_label(int col) const
 {  if (col<0 || col>=labels.size()) return "";
    return labels[col]->get_text(); 
 }
 
-void EingabeBox::set_label(int col,const string &s)
+void EingabeBox::set_label(int col,const std::string &s)
 {  grow(col+1); labels[col]->set_text(s); }
 
-const string EingabeBox::get_value(int col) const
+const std::string EingabeBox::get_value(int col) const
 {  if (col<0 || col>=entries.size()) return "";
    return entries[col]->get_text(); 
 }
 
-void EingabeBox::set_value(int col,const string &s)
+void EingabeBox::set_value(int col,const std::string &s)
 {  grow(col+1); entries[col]->set_text(s); }
 
 void EingabeBox::set_width(int col,int width)

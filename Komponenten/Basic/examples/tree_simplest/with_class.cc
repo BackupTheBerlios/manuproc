@@ -15,7 +15,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// $Id: with_class.cc,v 1.4 2001/06/29 11:30:18 christof Exp $
+// $Id: with_class.cc,v 1.5 2001/07/05 12:58:06 christof Exp $
 
 #include "config.h"
 #include "with_class.hh"
@@ -35,11 +35,11 @@ class MyRowData : public RowDataBase
 {
 // your data 
  int intval;
- string stringval;
+ std::string stringval;
  
 public:
 
- MyRowData(int i,const string &s)
+ MyRowData(int i,const std::string &s)
 	: intval(i),stringval(s) {}
 	
  virtual const cH_EntryValue Value(guint _seqnr,gpointer gp) const
@@ -91,7 +91,7 @@ class cH_MyRowData : public cH_RowDataBase
  cH_MyRowData(const MyRowData *r) : cH_RowDataBase(r) {}
 public:
 //  cH_MyRowData() {}  // not recommended
- cH_MyRowData(int i,const string &s)
+ cH_MyRowData(int i,const std::string &s)
 	: cH_RowDataBase(new MyRowData(i,s)) {}
  cH_MyRowData(const cH_RowDataBase &d)
 // better check here ...
@@ -104,7 +104,7 @@ public:
 void with_class::on_leaf_selected(cH_RowDataBase d)
 {  const MyRowData *dt=dynamic_cast<const MyRowData*>(&*d);
 // cH_MyRowData dt(d); // looks better, eh?
-   cout << "Data " << dt->Data(0) << ',' << dt->Data(1) << ',' << dt->Data(2) << '\n';
+   std::cout << "Data " << dt->Data(0) << ',' << dt->Data(1) << ',' << dt->Data(2) << '\n';
 }
 
 static TCListNode *create_MyNode(guint col, const cH_EntryValue &v, bool expand)
@@ -112,7 +112,7 @@ static TCListNode *create_MyNode(guint col, const cH_EntryValue &v, bool expand)
 }
 
 with_class::with_class()
-{  vector <string> v(treebase->Cols());
+{  std::vector <string> v(treebase->Cols());
    v[SP_ATT0]="Integer";
    v[SP_ATT1]="String";
    v[SP_ATT2]="something else";
@@ -121,7 +121,7 @@ with_class::with_class()
    v[SP_SUM2]="summe 3";
    treebase->setTitles(v);
    treebase->set_NewNode(&create_MyNode);
-   vector <cH_RowDataBase> datavec;
+   std::vector <cH_RowDataBase> datavec;
    datavec.push_back(new MyRowData(1,"X"));
    datavec.push_back(new MyRowData(2,"Y"));
    datavec.push_back(new MyRowData(10,"Z"));

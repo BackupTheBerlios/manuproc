@@ -29,11 +29,11 @@
 class RowDataStrings : public RowDataBase
 {static const guint max_arguments=6;
  
- string data[max_arguments];
+ std::string data[max_arguments];
 public:
 
- RowDataStrings(const string &a, const string &b="", const string &c="", 
- 	   const string &d="", const string &e="", const string &f="")
+ RowDataStrings(const std::string &a, const std::string &b="", const std::string &c="", 
+ 	   const std::string &d="", const std::string &e="", const std::string &f="")
  { data[0]=a;
    data[1]=b;
    data[2]=c;
@@ -53,8 +53,8 @@ class cH_RowDataStrings : public cH_RowDataBase
 {
  cH_RowDataStrings(const RowDataStrings *r) : cH_RowDataBase(r) {}
 public:
- cH_RowDataStrings(const string &a, const string &b="", const string &c="", 
- 	   const string &d="", const string &e="", const string &f="")
+ cH_RowDataStrings(const std::string &a, const std::string &b="", const std::string &c="", 
+ 	   const std::string &d="", const std::string &e="", const std::string &f="")
 	: cH_RowDataBase(new RowDataStrings(a,b,c,d,e,f)) {}
 };
 

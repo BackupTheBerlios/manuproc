@@ -1,4 +1,4 @@
-// $Id: datewin.h,v 1.1 2001/06/21 09:05:27 christof Exp $
+// $Id: datewin.h,v 1.2 2001/07/05 12:58:06 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -35,7 +35,7 @@ class datewin : public datewin_glade
 #endif	
 	Petig::Datum get_value() const throw(); 
 	void set_value(const Petig::Datum &d) throw();
-	void setLabel(const string &s) {label1->set_text(s);}
+	void setLabel(const std::string &s) {label1->set_text(s);}
 	
 	SigC::Signal0<void> activate;
 };

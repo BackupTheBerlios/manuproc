@@ -18,9 +18,9 @@
 
 #include"tclistleaf.h"
 
-const vector<string> TCListLeaf::getColEntries(const TreeBase &tb) const
+const std::vector<std::string> TCListLeaf::getColEntries(const TreeBase &tb) const
 {
- vector<string> v(tb.Cols());
+ std::vector<std::string> v(tb.Cols());
 
  for(guint i=0; i<(guint)deep; ++i)  v[i]="";
 

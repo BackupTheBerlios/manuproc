@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistnode.h,v 1.5 2001/06/29 11:30:18 christof Exp $
+// $Id: tclistnode.h,v 1.6 2001/07/05 12:58:06 christof Exp $
 
 #ifndef KOMPONENTEN_TCLISTNODE
 #define KOMPONENTEN_TCLISTNODE
@@ -44,6 +44,6 @@ class TCListNode : public TCListRowData
  bool get_Show() const
  { return listrow && listrow->is_expanded();}
  
- virtual const vector<string> getColEntries(const TreeBase &tb) const;
+ virtual const std::vector<std::string> getColEntries(const TreeBase &tb) const;
 };
 #endif

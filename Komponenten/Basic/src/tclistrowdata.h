@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistrowdata.h,v 1.4 2001/06/29 11:30:18 christof Exp $
+// $Id: tclistrowdata.h,v 1.5 2001/07/05 12:58:06 christof Exp $
 
 #ifndef TCLISTROWDATA
 #define TCLISTROWDATA
@@ -54,7 +54,7 @@ public:
  {}
  virtual ~TCListRowData() {}
 
- virtual const vector<string> getColEntries(const TreeBase &tb) const=0;
+ virtual const std::vector<std::string> getColEntries(const TreeBase &tb) const=0;
 // nur fuer nodes
 // virtual void cumulate(const cH_RowDataBase &rd, int seqnr,gpointer gp)=0;
 // nur fuer nodes
@@ -66,7 +66,7 @@ public:
  {  return (*value) < *(v.Value()); }
 
  const cH_EntryValue Value() const { return value; }
- virtual const string getColText() const { return value->getStrVal(); }
+ virtual const std::string getColText() const { return value->getStrVal(); }
 
  bool Leaf() { return leaf; }
 };

@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.4 2001/06/21 09:56:40 christof Exp $
+// $Id: ArtikelBox.hh,v 1.5 2001/07/05 12:58:06 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -46,7 +46,7 @@ public:
  ArtikelBoxErr(const ErrCode c,int i)
  	: param(i), code(c)
  	{}
- const string ErrMsg() const;
+ const std::string ErrMsg() const;
 };
 
 class ArtikelBox : public Gtk::EventBox
@@ -55,13 +55,13 @@ class ArtikelBox : public Gtk::EventBox
  friend class SigC::ObjectSlot1_<void,unsigned int,ArtikelBox>;
  friend class SigC::ObjectSlot1_<int,_GdkEventButton *,ArtikelBox>;
 
- typedef vector<Gtk::SearchCombo *> t_combos;
- typedef vector<t_combos> t_combos2;
- typedef vector<Gtk::Label *> t_labels;
- typedef vector<t_labels> t_labels2;
+ typedef std::vector<Gtk::SearchCombo *> t_combos;
+ typedef std::vector<t_combos> t_combos2;
+ typedef std::vector<Gtk::Label *> t_labels;
+ typedef std::vector<t_labels> t_labels2;
 
  Gtk::Container *oberstes;
- vector<int> signifikanz;
+ std::vector<int> signifikanz;
  bool vertikalbool;
  bool autocompletebool;
  bool kombiniertbool;
@@ -81,16 +81,16 @@ class ArtikelBox : public Gtk::EventBox
  gint MouseButton(GdkEventButton *);
  void TypSelected(int typ);
  void fuelleMenu();
- string kombinierteAnzeige(int sig, int atyp, int id);
+ std::string kombinierteAnzeige(int sig, int atyp, int id);
  void Autocomplete(Gtk::CheckMenuItem *autocomplete);
  void kombiniert(Gtk::CheckMenuItem *kombi);
- vector<EntryValue> expand_kombi_Artikel(unsigned int l);
+ std::vector<EntryValue> expand_kombi_Artikel(unsigned int l);
  void set_Vertikal(Gtk::CheckMenuItem *verti);
  void Benutzerprofil_speichern();
  void Benutzerprofil_laden();
  void Neuer_Eintrag();
  unsigned int intern_id(int typ);
- void where_what(string& where, string& what);
+ void where_what(std::string& where, std::string& what);
 
  void loadArtikel(unsigned int l) throw(SQLerror);
  static gint try_grab_focus(GtkWidget *w,gpointer gp);
@@ -98,13 +98,14 @@ class ArtikelBox : public Gtk::EventBox
  void init();
  Gtk::Container *init_table(int l);
  void setzeTyp(int t);
+ void setzeTyp2(int t2);
  void setzeSignifikanz(int t);
 
 public:
 	ArtikelBox(const cH_ExtBezSchema &_schema) throw(SQLerror);
 	~ArtikelBox();
 
-	const string operator[](guint i) const { return combos[i][0]->get_text(); }
+	const std::string operator[](guint i) const { return combos[i][0]->get_text(); }
 	const cH_ExtBezSchema getBezSchema() const { return schema; }
 //	int getSignif() const { return schema->size(signifikanz[0]); }
 	

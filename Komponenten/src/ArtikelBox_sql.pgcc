@@ -38,11 +38,11 @@ void ArtikelBox::searchFunc(int *cont, GtkSCContext newsearch, unsigned int sp,u
  exec sql begin declare section;
    char *QUERY;
  exec sql end declare section;
- string table="artbez_"+itos(schema->Typ())+"_"+itos(schema->Id());
- string what;
- string combocontent=combos[l][sp]->get_text();
- string constraint;
- string squery; 
+ std::string table="artbez_"+itos(schema->Typ())+"_"+itos(schema->Id());
+ std::string what;
+ std::string combocontent=combos[l][sp]->get_text();
+ std::string constraint;
+ std::string squery; 
 
  unsigned int spalte=0;
  
@@ -61,7 +61,7 @@ void ArtikelBox::searchFunc(int *cont, GtkSCContext newsearch, unsigned int sp,u
   }
  else
   {
-    string text = "artikelbezeichnung(id," +itos(schema->Typ())+ "," 
+    std::string text = "artikelbezeichnung(id," +itos(schema->Typ())+ "," 
                +itos(schema->Id())+ "," +itos(signifikanz[l])+")";
     what = text ;
     constraint = text+" like '"+combos[l][0]->get_text()+"%'";
@@ -73,7 +73,7 @@ void ArtikelBox::searchFunc(int *cont, GtkSCContext newsearch, unsigned int sp,u
     exec sql prepare QUERY from :QUERY;
     exec sql declare extbezfeld cursor for QUERY;
     exec sql open extbezfeld;
-//cout << QUERY<<"\n"     ;
+//std::cout << QUERY<<"\n"     ;
     SQLerror::test("ArtikelBox::searchFunc: select text",100);
     if(sqlca.sqlcode==100) return;
     }
@@ -100,7 +100,7 @@ case GTK_SEARCH_CLOSE:
  break;
   }
  } catch (SQLerror &e)
-  {  cerr << e << '\n';
+  {  std::cerr << e << '\n';
   }
 
 }
@@ -109,16 +109,20 @@ case GTK_SEARCH_CLOSE:
 void ArtikelBox::fuelleMenu()
 {  
    exec sql begin declare section;
-   int eab_id;
-   int id[20];
+     int eab_id,db_artikeltyp;
+     int id[20];
    char bez[20][41];
    exec sql end declare section;
    eab_id=schema->Id();
    bool typ_ok=false;
+//   bool typ2_ok=false;
    int neuerTyp=0;
+//   int neuerTyp2=0;
    // Hauptmenü
    Gtk::Menu *typ_menu = manage(new class Gtk::Menu());
-   Gtk::MenuItem *typ = manage(new class Gtk::MenuItem("Typ"));
+   Gtk::MenuItem *typ = manage(new class Gtk::MenuItem("Typ (Warengruppe)"));
+   Gtk::Menu *typ2_menu = manage(new class Gtk::Menu());
+   Gtk::MenuItem *typ2 = manage(new class Gtk::MenuItem("Schema (Kundengruppe)"));
    Gtk::Menu *anzeige_menu = manage(new class Gtk::Menu());
    Gtk::MenuItem *anzeige = manage(new class Gtk::MenuItem("Anzeige"));
    Gtk::Menu *optionen_menu = manage(new class Gtk::Menu());
@@ -127,6 +131,8 @@ void ArtikelBox::fuelleMenu()
    Gtk::MenuItem *neu = manage(new class Gtk::MenuItem("Neuen Eintrag anlegen"));
    menu->append(*typ);   
    typ->set_submenu(*typ_menu);
+   menu->append(*typ2);   
+   typ2->set_submenu(*typ2_menu);
    menu->append(*anzeige);   
    anzeige->set_submenu(*anzeige_menu);
    menu->append(*optionen);   
@@ -141,7 +147,7 @@ void ArtikelBox::fuelleMenu()
          = e.artikeltyp AND extartbezid= :eab_id limit 20;
    if (!sqlca.sqlcode)
    {  for (int i=0;i<sqlca.sqlerrd[2];++i)
-      {  string entr;
+      {  std::string entr;
          if (id[i]==schema->Typ()) entr += "*";
          else entr += " ";
          entr += bez[i];
@@ -151,7 +157,7 @@ void ArtikelBox::fuelleMenu()
          mi->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::setzeTyp),id[i]));
 
    	 if (!typ_ok)
-	     { if (schema->Typ()==id[i]) typ_ok=true;
+	     { if (schema->Typ()==ArtikelTyp::typ(id[i])) typ_ok=true;
 	       else if (!i) neuerTyp=id[i];
      	  }
        }
@@ -167,6 +173,45 @@ void ArtikelBox::fuelleMenu()
       return;
    }
 
+   // Einträge für den Menüeintrag 'Typ (Kundengruppe)'
+   db_artikeltyp=schema->Typ();
+   exec sql select DISTINCT e.extartbezid, k.firma into :id, :bez
+        from extbezschema e join kunden k on (e.extartbezid=k.kundennr) 
+        where e.artikeltyp = :db_artikeltyp
+         limit 20;
+   if (!sqlca.sqlcode)
+   {  for (int i=0;i<sqlca.sqlerrd[2];++i)
+      {  std::string entr;
+         if (id[i]==schema->Id()) entr += "*";
+         else entr += " ";
+         entr += bez[i];
+         Gtk::MenuItem *mi=manage(new Gtk::MenuItem(entr)); 
+         typ2_menu->append(*mi);
+         mi->show();
+         mi->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::setzeTyp2),id[i]));
+/*
+   	 if (!typ2_ok)
+	     { if (schema->Id()==ArtikelTyp::typ(id[i])) typ2_ok=true;
+	       else if (!i) neuerTyp2=id[i];
+     	  }
+*/
+       }
+   }
+   // Für neue Kundengruppe immer erste Warengruppe setzen:
+//   setExtBezSchema(cH_ExtBezSchema(schema->Id(),neuerTyp));
+/*
+   if (!typ2_ok)
+   // Diese Typ ist für diesen Kunden nicht vorhanden,
+   // nehmen wir den ersten anderen.
+   {  static bool block=false;
+      if (block) return;
+      block=true; // never recurse here
+      setExtBezSchema(cH_ExtBezSchema(schema->Id(),neuerTyp));
+      block=false;
+      return;
+   }
+*/
+
    // Einträge für den Menüeintrag 'Anzeige'
    exec sql begin declare section;
       int db_atyp, db_sigV[20];
@@ -181,7 +226,7 @@ void ArtikelBox::fuelleMenu()
      int sanz = sqlca.sqlerrd[2];
      for (int i=0;i<sanz;++i)
       {
-       string text = kombinierteAnzeige(db_sigV[i],db_atyp,eab_id);
+       std::string text = kombinierteAnzeige(db_sigV[i],db_atyp,eab_id);
        Gtk::CheckMenuItem *mi=manage(new Gtk::CheckMenuItem(text));
        anzeige_menu->append(*mi);
        if (find(signifikanz.begin(),signifikanz.end(),db_sigV[i])!= signifikanz.end()) mi->set_active(true);
@@ -210,6 +255,8 @@ void ArtikelBox::fuelleMenu()
    // Menu anzeigen
    typ_menu->show();
    typ->show();
+   typ2_menu->show();
+   typ2->show();
    anzeige_menu->show();
    anzeige->show();
    optionen_menu->show();
@@ -218,7 +265,7 @@ void ArtikelBox::fuelleMenu()
    neu->show();
 }
 
-string ArtikelBox::kombinierteAnzeige(int sig, int atyp, int id)
+std::string ArtikelBox::kombinierteAnzeige(int sig, int atyp, int id)
 {
   exec sql begin declare section;
    char db_text[20][20],db_sep[20][5];
@@ -233,11 +280,11 @@ string ArtikelBox::kombinierteAnzeige(int sig, int atyp, int id)
     from extbezschema where artikeltyp = :db_atyp and signifikanz = :db_sig
     and extartbezid = :eab_id order by bezkomptype limit 20;
   SQLerror::test(__FILELINE__);
-  string text;
+  std::string text;
   if (!sqlca.sqlcode)
   for (int i=0;i<sqlca.sqlerrd[2];++i)
-     { string t= db_text[i];
-       string s=db_sep[i];
+     { std::string t= db_text[i];
+       std::string s=db_sep[i];
        text += t+s;
      }
   return text;
@@ -285,7 +332,7 @@ void ArtikelBox::Benutzerprofil_speichern()
   db_schema=schema->Id();
   db_anzeige_pos=0;
   db_anzeige_neg=0;
-  for(vector<int>::const_iterator i=signifikanz.begin();i!=signifikanz.end();++i)
+  for(std::vector<int>::const_iterator i=signifikanz.begin();i!=signifikanz.end();++i)
    {
      if ((*i)>0) db_anzeige_pos += 1<<( (*i)-1);
      if ((*i)<0) db_anzeige_neg += 1<<(-(*i)-1);
@@ -308,38 +355,39 @@ void ArtikelBox::Neuer_Eintrag()
   for (unsigned int i=0; i<combos[j].size(); ++i)
    { 
      if (labels[j][i]->get_text()=="ID" && combos[j][i]->get_text() !="")
-      { cerr<<"FEHLER: ID darf nicht vorgegeben werden: Feld freilassen\n";
+      { std::cerr<<"FEHLER: ID darf nicht vorgegeben werden: Feld freilassen\n";
         return;
       }
    }
   exec sql begin declare section;
-   int db_id, db_warengruppe;      
+   int db_id, db_warengruppe,db_schema;   
    char db_query[1024];
   exec sql end declare section;
-  string table = "artbez_"+itos(schema->Typ())+"_"+itos(schema->Id());
+  std::string table = "artbez_"+itos(schema->Typ())+"_"+itos(schema->Id());
   if (schema->Id()==1 || !intern_id(schema->Typ()))
      exec sql select nextval ('artikelbezeichnun_artikelid_seq') into :db_id;
   else db_id=intern_id(schema->Typ()) ;
-  string where, what;
+  std::string where, what;
   where = "(id,stand," ;
   what  = "("+itos(db_id)+",now(),";
   where_what(where,what);
-  string sq = "insert into "+table +" "+ where+" values "+what;
+  std::string sq = "insert into "+table +" "+ where+" values "+what;
   strncpy(db_query,sq.c_str(),sizeof(db_query));
   exec sql execute immediate :db_query;
   SQLerror::test(__FILELINE__);
 
   // Eintrag in Artikelbezeichnung
   db_warengruppe=schema->Typ();
-  exec sql insert into artikelstamm (id,stand,warengruppe)
-     values (:db_id,now(),:db_warengruppe);
+  db_schema = schema->Id();
+  exec sql insert into artikelstamm (id,stand,warengruppe,defaultschema)
+     values (:db_id,now(),:db_warengruppe,:db_schema);
   SQLerror::test(__FILELINE__);
      
   artikel=db_id;
   pixmap->set(stock_button_apply_xpm);
 
   activate();
-  }catch (SQLerror &e)   {  cerr << e << '\n';}
+  }catch (SQLerror &e)   {  std::cerr << e << '\n';}
 }
 
 
@@ -349,12 +397,12 @@ unsigned int ArtikelBox::intern_id(int typ)
    char db_query[1024];
    int db_id;
   exec sql end declare section;
-  string where, what;
+  std::string where, what;
   where = "(" ;
   what  = "(";
   where_what(where,what);
 
-  string sq = "select id from artbez_"+itos(typ)+"_1 where "+where+"="+what;
+  std::string sq = "select id from artbez_"+itos(typ)+"_1 where "+where+"="+what;
   strncpy(db_query,sq.c_str(),sizeof(db_query));
   Transaction tr;
   exec sql prepare e_ from :db_query;
@@ -367,21 +415,21 @@ unsigned int ArtikelBox::intern_id(int typ)
 
 }
 
-void ArtikelBox::where_what(string& where, string& what)
+void ArtikelBox::where_what(std::string& where, std::string& what)
 {
   unsigned int l=0; 
-  for (vector<int>::const_iterator i=signifikanz.begin();i!=signifikanz.end();++i)
+  for (std::vector<int>::const_iterator i=signifikanz.begin();i!=signifikanz.end();++i)
    {
      unsigned int spalte=0;   
      if (labels[l][0]->get_text() =="ID") continue;
      for(ExtBezSchema::const_sigiterator j=schema->sigbegin(signifikanz[l]);j!=schema->sigend(signifikanz[l]);)
       {
-        vector<EntryValue> v;
+        std::vector<EntryValue> v;
         if (kombiniertbool) v = expand_kombi_Artikel(l);
         if (j->spaltenname!="id") where += j->spaltenname  ;
         if (j->spaltenname!="id") 
          { if (!kombiniertbool) what += "'"+combos[l][spalte]->get_text()+"'" ; 
-           else what += "'"+string(v[spalte])+"'";
+           else what += "'"+std::string(v[spalte])+"'";
          }
          ++spalte; ++j;
         if (j!=schema->sigend(signifikanz[l]) 

@@ -31,7 +31,7 @@ void TreeBase::clear()
   TCList::clear();
 }
 
-const string TreeBase::getColTitle(guint seq) const
+const std::string TreeBase::getColTitle(guint seq) const
 {
  return "-";
 }
@@ -43,7 +43,7 @@ void TreeBase::setSequence()
 
 void TreeBase::on_click_column(int col)
 {
-//cout << col<<"\t"<<currseq[col]<<"\t"<<Attrs()<<"\t"<<col_count<<"\n";
+//std::cout << col<<"\t"<<currseq[col]<<"\t"<<Attrs()<<"\t"<<col_count<<"\n";
  if (col<(int)Attrs()) 
    {
     if (col_schon_ausgewaehlt(col)) on_neuordnen_clicked();
@@ -66,10 +66,10 @@ void TreeBase::on_click_column(int col)
 
 bool TreeBase::col_schon_ausgewaehlt(int col)
 {
- deque<guint>::const_iterator i =clicked_seq.begin();
+ std::deque<guint>::const_iterator i =clicked_seq.begin();
  while (i!=clicked_seq.end() && *i!=currseq[col]) ++i;
  if (i==clicked_seq.end()) return false;
-// else { cout << "gewählt\n"; return true;}
+// else { std::cout << "gewählt\n"; return true;}
  else  return true;
 }
 
@@ -91,7 +91,7 @@ TreeBase::TreeBase(guint cols, guint attr) :
   select_row.connect(SigC::slot(this, &TreeBase::on_row_select));
   setSequence();
   vec_hide_cols.resize(Cols());
-  for (vector<bool>::iterator i=vec_hide_cols.begin();i!=vec_hide_cols.end();++i)
+  for (std::vector<bool>::iterator i=vec_hide_cols.begin();i!=vec_hide_cols.end();++i)
     (*i) = true;
 }
 
@@ -109,7 +109,7 @@ void TreeBase::init()
 
 void TreeBase::setColTitles()
 {
- deque<guint> seqtitle = currseq;
+ std::deque<guint> seqtitle = currseq;
  int seqlen=seqtitle.size();
 
  while(!seqtitle.empty()) // Attribute
@@ -136,7 +136,7 @@ bool TreeBase::stutzen(TCListRow_API *parent, TCListRow_API *we,
        we->reparent_children(*parent);
        // copy non-empty attribute cells
        for (unsigned int i=0;i<=d;++i)
-       {  const string t(we_as_a_row->get_text(i));
+       {  const std::string t(we_as_a_row->get_text(i));
           if (t.size())
              child_and_brother_to_be->set_text(i,t);
        }
@@ -174,8 +174,8 @@ void TreeBase::refillTCL()
  collapse();
  TCList::clear();
 
- vector<cH_RowDataBase>::const_iterator i=datavec.begin();
- vector<cH_RowDataBase>::const_iterator j=datavec.end();
+ std::vector<cH_RowDataBase>::const_iterator i=datavec.begin();
+ std::vector<cH_RowDataBase>::const_iterator j=datavec.end();
 
 // neu einordnen, Summen berechnen
  for(; i!=j; ++i)
@@ -206,7 +206,7 @@ void TreeBase::refillTCL()
 
 // einordnen, Summen berechnen
 void TreeBase::insertIntoTCL(TCListRow_API *tclapi,const TreeBase &tb,
-				const cH_RowDataBase &v,deque<guint> selseq,guint deep)
+				const cH_RowDataBase &v,std::deque<guint> selseq,guint deep)
 {
  TCListRow_API::iterator lfind = tclapi->begin();
  TCListRow_API::iterator lend = tclapi->end();
@@ -292,7 +292,7 @@ void TreeBase::fillMenu()
    menu->append(*spalten);
    spalten->set_submenu(*spalten_menu);
 
-//   for (deque<guint>::const_iterator i=currseq.begin();i!=currseq.end();++i)
+//   for (std::deque<guint>::const_iterator i=currseq.begin();i!=currseq.end();++i)
    for (guint i=0;i<Cols();++i)
     {
       Gtk::CheckMenuItem *sp = manage(new class Gtk::CheckMenuItem(getColTitle(i)));
@@ -342,7 +342,7 @@ void TreeBase::welche_Spalten(guint i,const Gtk::CheckMenuItem *sp)
 
 void TreeBase::show_or_hide_Spalten()
 {
-  for (deque<guint>::const_iterator i=currseq.begin();i!=currseq.end();++i)
+  for (std::deque<guint>::const_iterator i=currseq.begin();i!=currseq.end();++i)
    { if (vec_hide_cols[currseq[*i]]) set_column_visibility(*i,true);
      else set_column_visibility(*i,false);
    }
@@ -372,9 +372,9 @@ void TreeBase::on_neuordnen_clicked()
   if(clicked_seq.size()<Attrs())
    {if (auffuellen_bool) setSequence(); // Standardreihenfolge
    
-    for (deque<guint>::const_iterator i=currseq.begin();
+    for (std::deque<guint>::const_iterator i=currseq.begin();
     		i!=currseq.end();++i)
-     { deque<guint>::const_iterator j=clicked_seq.begin();
+     { std::deque<guint>::const_iterator j=clicked_seq.begin();
 //       for (;j!=clicked_seq.end() && *j!=*i;++j);
          while(j!=clicked_seq.end() && *j!=*i) ++j;
        if (j==clicked_seq.end()) // nicht gefunden

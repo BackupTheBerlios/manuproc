@@ -45,7 +45,7 @@ void window1::onRowSelect(int row, int col, GdkEvent *b)
  TCListRow_API *tclapi=(TCListRow_API*)(treebase->get_row_data(row));
  TCListRowData *selectedrow=(TCListRowData*)(*tclapi).get_user_data();
 
- cerr << typeid(*selectedrow).name() << '\n';
- cerr << selectedrow->Leaf() << '\n';
+ std::cerr << typeid(*selectedrow).name() << '\n';
+ std::cerr << selectedrow->Leaf() << '\n';
 }
 

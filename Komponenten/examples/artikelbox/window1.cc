@@ -1,4 +1,4 @@
-// $Id: window1.cc,v 1.3 2001/06/21 09:56:40 christof Exp $
+// $Id: window1.cc,v 1.4 2001/07/05 12:58:06 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -44,14 +44,14 @@ void window1::on_reset()
 }
 
 void window1::on_show_clicked()
-{  cout << "Datum "<<datum->get_value() << '\n';
-   cout << "Prozess " << prozess->get_value()->Id() << '\n';
-   cout << "Artikel "<<artikelbox->get_value().Id() << '\n';
-   cout << "Kunde " << kundenbox->get_value() << '\n';
+{  std::cout << "Datum "<<datum->get_value() << '\n';
+   std::cout << "Prozess " << prozess->get_value()->Id() << '\n';
+   std::cout << "Artikel "<<artikelbox->get_value().Id() << '\n';
+   std::cout << "Kunde " << kundenbox->get_value() << '\n';
 }
 
 void window1::on_show_complete()
-{ cout << artikelbox->get_value().Id() << '\n';
+{ std::cout << artikelbox->get_value().Id() << '\n';
 }
 
 	

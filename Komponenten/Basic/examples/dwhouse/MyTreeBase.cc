@@ -34,7 +34,7 @@ void MyTreeBase::fillDataVec()
 }
 
 
-const string MyTreeBase::getColTitle(guint col) const
+const std::string MyTreeBase::getColTitle(guint col) const
 {   
  switch(col)
   {

@@ -63,7 +63,7 @@ void KundenBox::Kundennr_search(gboolean *_continue, GtkSCContext newsearch)
       }
    }
    catch (SQLerror &e)
-   {  cerr << e << '\n';
+   {  std::cerr << e << '\n';
    }
 }
 
@@ -107,7 +107,7 @@ void KundenBox::Name_search(gboolean *_continue, GtkSCContext newsearch)
       }
    }
    catch (SQLerror &e)
-   {  cerr << e << '\n';
+   {  std::cerr << e << '\n';
    }
 }
 

@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.4 2001/06/21 09:56:40 christof Exp $
+// $Id: ArtikelBox.cc,v 1.5 2001/07/05 12:58:06 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -36,7 +36,7 @@ void ArtikelBox::selectFunc(unsigned int sp,unsigned int l) throw(SQLerror)
       activate();
      }
    catch(SQLerror &e)
-     {cerr << e.Code() << e.Message() << e.Context() << "\n";
+     {std::cerr << e.Code() << e.Message() << e.Context() << "\n";
       pixmap->set(stock_button_cancel_xpm);
       artikel=ArtikelBase();
      }
@@ -50,20 +50,20 @@ void ArtikelBox::selectFunc(unsigned int sp,unsigned int l) throw(SQLerror)
 }
 
 
-const string ArtikelBoxErr::ErrMsg() const
+const std::string ArtikelBoxErr::ErrMsg() const
 {
  switch(code)
    {
     case KOMP_ANZ: 
     {  char ptxt[10];
        snprintf(ptxt,sizeof ptxt,"%d",param);
-       return string("Es fehlen ")+ptxt+" Bez. komponenten für den Artikel";
+       return std::string("Es fehlen ")+ptxt+" Bez. komponenten für den Artikel";
     }
     break;
     case NO_ART:
-       return string("kein Artikel zu der Bezeichnung gefunden");
+       return std::string("kein Artikel zu der Bezeichnung gefunden");
     break;
-    default : return string("Fehler in den Bez. Komponenten");
+    default : return std::string("Fehler in den Bez. Komponenten");
    }
 }
 
@@ -109,15 +109,15 @@ throw(SQLerror,ArtikelBoxErr)
 
 vector<EntryValue> ArtikelBox::expand_kombi_Artikel(unsigned int l)
 {
-     vector<EntryValue> v;
-     const string text=combos[l][0]->get_text();
-     string::const_iterator i1=text.begin();
+     std::vector<EntryValue> v;
+     const std::string text=combos[l][0]->get_text();
+     std::string::const_iterator i1=text.begin();
      for (ExtBezSchema::const_sigiterator i=schema->sigbegin(signifikanz[l]);i!=schema->sigend(signifikanz[l]);++i)
      { 
-      string::const_iterator i2;
+      std::string::const_iterator i2;
       if (i->separator.size()==0) i2 = text.end();
       else i2 = search(i1,text.end(),i->separator.begin(),i->separator.end());
-      string sx(i1,i2);
+      std::string sx(i1,i2);
       i1=i2+i->separator.size();
       v.push_back(sx);
      }
@@ -125,7 +125,7 @@ vector<EntryValue> ArtikelBox::expand_kombi_Artikel(unsigned int l)
 }
 
 void ArtikelBox::loadArtikel(unsigned int l) throw(SQLerror)
-{vector<EntryValue> v;
+{std::vector<EntryValue> v;
  if(!kombiniertbool)
   { for (unsigned int i=0;i<combos[l].size();++i)
      v.push_back(combos[l][i]->get_text());
@@ -146,8 +146,10 @@ void ArtikelBox::loadArtikel(unsigned int l) throw(SQLerror)
       ++i;
      }
    }
- } catch (...)
- {  cerr << "ArtikelBox::loadArtikel: setArtikel threw exception\n";
+ } catch (SQLerror &e)
+ {  std::cerr << "ArtikelBox::loadArtikel: setArtikel threw "<< e<< "\n";
+ } catch (std::exception &e)
+ {  std::cerr << "ArtikelBox::loadArtikel: setArtikel threw "<< e.what()<< "\n";
  }
 }
 
@@ -163,11 +165,11 @@ void ArtikelBox::init()
  ArtikelBox::Benutzerprofil_laden();
 
 reloop:
- for (vector<int>::iterator i=signifikanz.begin();i!=signifikanz.end();++i)
+ for (std::vector<int>::iterator i=signifikanz.begin();i!=signifikanz.end();++i)
    if (schema->size(*i) == 0) {signifikanz.erase(i);goto reloop;}
 /*
 cout << signifikanz.size()<<"\t";
-for (int i=0;i<signifikanz.size();++i)cout << signifikanz[i]<<"\t";
+for (int i=0;i<signifikanz.size();++i)std::cout << signifikanz[i]<<"\t";
 cout << "\n";
 */
  if (signifikanz.size()==0)  signifikanz.push_back(1); 
@@ -177,7 +179,7 @@ cout << "\n";
  int l=signifikanz.size()-1 ; // Anzahl der Signifikanzen
  oberstes = init_table(l);
 
- for (vector<int>::reverse_iterator i=++(signifikanz.rbegin());i!=signifikanz.rend();++i)
+ for (std::vector<int>::reverse_iterator i=++(signifikanz.rbegin());i!=signifikanz.rend();++i)
   {
     --l;
     Gtk::Container* table = init_table(l);
@@ -226,7 +228,7 @@ Gtk::Container* ArtikelBox::init_table(int l)
 
     Gtk::Label *lb;
 
-    string text;
+    std::string text;
     if(kombiniertbool) text = kombinierteAnzeige(signifikanz[l],schema->Typ(),schema->Id());
     else text = j->bezkomptext;
     labels[l].push_back(lb=manage(new Gtk::Label(text)));
@@ -286,7 +288,7 @@ void ArtikelBox::setExtBezSchema(const cH_ExtBezSchema &_schema)
    fuelleMenu();
 /*
 cout << signifikanz.size()<<"\t";
-for (int i=0;i<signifikanz.size();++i)cout << signifikanz[i]<<"\t";
+for (int i=0;i<signifikanz.size();++i)std::cout << signifikanz[i]<<"\t";
 cout << "\n";
 */
 }
@@ -303,7 +305,7 @@ void ArtikelBox::TypSelected(int typ)
 }
 
 gint ArtikelBox::MouseButton(GdkEventButton *event)
-{  // cout << "MB\n";
+{  // std::cout << "MB\n";
    if ((event->type == GDK_BUTTON_PRESS) && menu)
    {  menu->popup(event->button,event->time);
       return true;
@@ -316,12 +318,17 @@ void ArtikelBox::setzeTyp(int t)
    ArtikelBox::Benutzerprofil_speichern();
    setExtBezSchema(cH_ExtBezSchema(schema->Id(),t));
 }
+void ArtikelBox::setzeTyp2(int t2)
+{  
+   ArtikelBox::Benutzerprofil_speichern();
+   setExtBezSchema(cH_ExtBezSchema(t2,schema->Typ()));
+}
 
 
 void ArtikelBox::setzeSignifikanz(int t)
 {  
  bool add = true;
- for (vector<int>::iterator i=signifikanz.begin();i!=signifikanz.end();++i)
+ for (std::vector<int>::iterator i=signifikanz.begin();i!=signifikanz.end();++i)
    if ( (*i)==t ) { signifikanz.erase(i); add=false; break;}
  if (add) signifikanz.push_back(t);
    {  ArtikelBox::Benutzerprofil_speichern();

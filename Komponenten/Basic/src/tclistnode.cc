@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistnode.cc,v 1.4 2001/06/29 11:30:18 christof Exp $
+// $Id: tclistnode.cc,v 1.5 2001/07/05 12:58:06 christof Exp $
 
 #include <tclistnode.h>
 #include <Aux/EntryValueIntString.h>
@@ -37,8 +37,8 @@ void TCListNode::refreshSum(const TreeBase &tb)
  }
 }
 
-const vector<string> TCListNode::getColEntries(const TreeBase &tb) const
-{vector<string> v(tb.Cols());
+const std::vector<std::string> TCListNode::getColEntries(const TreeBase &tb) const
+{std::vector<std::string> v(tb.Cols());
  for(guint i=0; i<tb.Cols(); ++i)
     v[i]= (i==(guint)deep ? value->getStrVal() : "");
  return v;

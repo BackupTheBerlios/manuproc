@@ -33,5 +33,5 @@ public:
 
  TCListNode *NewNode(guint deep, const cH_EntryValue &v, bool expand);
 
- const string getColTitle(guint seq) const;
+ const std::string getColTitle(guint seq) const;
 };

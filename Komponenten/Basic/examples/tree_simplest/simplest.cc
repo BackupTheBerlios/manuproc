@@ -15,19 +15,19 @@ void simplest::on_Beenden_activate()
 }
 
 void simplest::on_leaf_selected(cH_RowDataBase d)
-{  cout << d->Value(0,0)->getStrVal() << ',' << d->Value(1,0)->getStrVal() 
+{  std::cout << d->Value(0,0)->getStrVal() << ',' << d->Value(1,0)->getStrVal() 
 	<< ',' << d->Value(2,0)->getStrVal() <<'\n';
 }
 
 simplest::simplest()
-{  vector <string> v;
+{  std::vector <string> v;
    v.push_back("Integer");
    v.push_back("String");
    v.push_back("something else");
    v.push_back("summe 1");
    v.push_back("summe 2");
    treebase->setTitles(v);
-   vector <cH_RowDataBase> datavec;
+   std::vector <cH_RowDataBase> datavec;
    datavec.push_back(cH_RowDataStrings("1","C","<none>","8"));
    datavec.push_back(cH_RowDataStrings("2","A","<none>","2"));
    datavec.push_back(cH_RowDataStrings("10","B","<none>","3"));

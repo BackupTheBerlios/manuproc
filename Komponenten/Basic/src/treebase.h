@@ -33,9 +33,9 @@ class TreeBase : public TCList
 {
  guint showdeep;
  guint attrcount;
- deque<guint> currseq; 
- deque<guint> clicked_seq;
- vector<bool> vec_hide_cols;
+ std::deque<guint> currseq; 
+ std::deque<guint> clicked_seq;
+ std::vector<bool> vec_hide_cols;
  gpointer gp;
  
  Gtk::Menu *menu;  
@@ -57,19 +57,19 @@ class TreeBase : public TCList
  void on_click_column(int col);
  bool col_schon_ausgewaehlt(int col);
  void insertIntoTCL(TCListRow_API *tclapi,const TreeBase &tb,
-		 	const cH_RowDataBase &d, deque<guint> q,guint deep);
+		 	const cH_RowDataBase &d, std::deque<guint> q,guint deep);
  static bool stutzen(TCListRow_API *parent, TCListRow_API *child,
  				TCList &tclist,guint deep);
 
 protected: 
- vector<cH_RowDataBase> datavec;
+ std::vector<cH_RowDataBase> datavec;
 
  // set column names, fill data and display
  // also see discussion in treebase.cc
  void init();
  // StandardReihenfolge setzen
  virtual void setSequence();
- virtual const string getColTitle(guint seq) const;
+ virtual const std::string getColTitle(guint seq) const;
  // einen neuen Ast erzeugen, deep ist die Spalte, v der Wert dieser Spalte
  virtual TCListNode *NewNode
  		(guint deep, const cH_EntryValue &v, bool expand);
@@ -88,7 +88,7 @@ public:
  ~TreeBase();
  guint Attrs() const { return attrcount; }
  guint Cols() const { return columns().size();}
- void setDataVec(const vector<cH_RowDataBase> &d) 
+ void setDataVec(const std::vector<cH_RowDataBase> &d) 
  { datavec=d; 
    refillTCL();
  };
@@ -106,7 +106,7 @@ class SimpleTree : public TreeBase
  typedef TCListNode *(*NewNode_fp)
  		(guint deep, const cH_EntryValue &v, bool expand);
 
- vector<string> titles;
+ std::vector<std::string> titles;
  NewNode_fp node_creation;
  
 // @ ins cc file ?
@@ -116,14 +116,14 @@ class SimpleTree : public TreeBase
  		(guint deep, const cH_EntryValue &v, bool expand)
  {  return (*node_creation)(deep,v,expand); }
 public:
- SimpleTree(guint cols, guint attr, const vector<string>& T
-                                ,const vector<cH_RowDataBase>& D)
+ SimpleTree(guint cols, guint attr, const std::vector<std::string>& T
+                                ,const std::vector<cH_RowDataBase>& D)
    : TreeBase(cols,attr), titles(T), node_creation(&defaultNewNode)
    {  datavec=D;
       // make sure this is not called if you derive this from class !
       init(); 
    }
- SimpleTree(guint cols, guint attr, const vector<string>& T)
+ SimpleTree(guint cols, guint attr, const std::vector<std::string>& T)
    : TreeBase(cols,attr), titles(T), node_creation(&defaultNewNode)
    {  // make sure this is not called if you derive this from class !
       init(); 
@@ -132,12 +132,12 @@ public:
    : TreeBase(cols,attr), node_creation(&defaultNewNode)
    {  }
  
- void setTitles(const vector<string>& T)
+ void setTitles(const std::vector<std::string>& T)
    {  titles=T;
       setColTitles();
    }
 
- const string getColTitle(guint seq) const
+ const std::string getColTitle(guint seq) const
    {  if (seq>=0 && seq<titles.size()) return titles[seq];
       return ""; 
    }

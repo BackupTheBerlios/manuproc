@@ -1,4 +1,4 @@
-// $Id: main.cc,v 1.3 2001/06/21 09:56:40 christof Exp $
+// $Id: main.cc,v 1.4 2001/07/05 12:58:06 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -37,10 +37,10 @@ try {
    manage(new class window1());
    m.run();
  } catch (SQLerror &e)
- {  cerr << e << '\n';
+ {  std::cerr << e << '\n';
  }
  catch(...)
- {  cerr << "exception\n";
+ {  std::cerr << "std::exception\n";
  }
    return 0;
 }
