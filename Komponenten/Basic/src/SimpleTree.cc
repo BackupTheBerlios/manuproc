@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.33 2003/11/20 13:27:33 christof Exp $
+// $Id: SimpleTree.cc,v 1.34 2003/11/20 14:09:31 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,13 +27,13 @@ void SimpleTree_Basic::detach()
 {  set_model(Glib::RefPtr<Gtk::TreeModel>());
 }
 
-static void aufklappen(Gtk::TreeView *tv,Gtk::TreeModel::Path path,
+static void aufklappen(SimpleTree_Basic *tv,Gtk::TreeModel::Path path,
 			const Gtk::TreeModel::Children &ch, int depth)
 {  path.down();
    for (Gtk::TreeModel::iterator i=ch.begin();i!=ch.end();++i,path.next())
-   {  if (!i->children().empty())
+   {  if (!i->children().empty() && (*i)[tv->getStore()->m_columns.childrens_deep]<=depth)
       {  assert(tv->expand_row(path,false));
-         if (depth>1) aufklappen(tv,path,i->children(),depth-1);
+         if ((*i)[tv->getStore()->m_columns.childrens_deep]<depth) aufklappen(tv,path,i->children(),depth);
       }
    }
 }
