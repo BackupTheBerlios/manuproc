@@ -45,7 +45,7 @@ static bool ManuProCTest(AufEintrag &AE)
       Lieferschein liefs(EINKAUF,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
       liefs.push_back(PAE, ARTIKEL_GRANULAT_GRUEN,1,200);
 //unspezifisch   liefs.push_back(ARTIKEL_GRANULAT_GRUEN,1,200);
-      vergleichen(Check::Menge|Check::Lieferschein,"LS_teillieferung","Lieferschein (mit AEB, Granulat) anlegen","L");
+      vergleichen(Check::Menge|Check::Lieferschein,"liefern_granulat","Lieferung (bestimmt) Granulat","L");
       }
 
       {// Planen des Einkaufs (Metall)
@@ -54,13 +54,13 @@ static bool ManuProCTest(AufEintrag &AE)
       AufEintrag AEP((AufEintragBase(EINKAUF,AuftragBase::ungeplante_id,znr)));
       assert(AEP.Artikel()==ARTIKEL_METALL);
       AufEintrag PAE(AEP.Planen(10,PA,PLANDATUM5));
-      vergleichen(Check::Menge,"planen_weberei_fuer_lager","Planen des Einkaufs(Metall)","P2");
+      vergleichen(Check::Menge,"planen_metall","Planen des Einkaufs(Metall)","P2");
 
 
       // Unspezifischen Lieferschein schreiben
       Lieferschein liefs(EINKAUF,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
       liefs.push_back(ARTIKEL_METALL,1,5);
-      vergleichen(Check::Lieferschein|Check::Menge,"LS_volllieferung","Lieferschein (unbestimmt, Metall) anlegen","L2");
+      vergleichen(Check::Lieferschein|Check::Menge,"liefern_metall","Lieferung (unbestimmt) Metall","L2");
       }
 
       {// Planen der Gießerei (ARTIKEL_GRIFF_ROT)
@@ -69,37 +69,37 @@ static bool ManuProCTest(AufEintrag &AE)
       AufEintrag AEP((AufEintragBase(GIESSEREI,AuftragBase::ungeplante_id,znr)));
       assert(AEP.Artikel()==ARTIKEL_GRIFF_ROT);
       AufEintrag PAE(AEP.Planen(500,PA,PLANDATUM5));
-      vergleichen(Check::Menge,"planen_faerberei_teil","Planen der Giesserei (Griff rot)","PG");
+      vergleichen(Check::Menge,"planen_griff","Planen der Giesserei (Griff rot)","PG");
 
 
       // Unspezifischen Lieferschein schreiben
       Lieferschein liefs(GIESSEREI,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
       liefs.push_back(ARTIKEL_GRIFF_ROT,500);
-      vergleichen(Check::Lieferschein|Check::Menge,"LSZ","Lieferschein (Gießerei) anlegen","LG");
+      vergleichen(Check::Lieferschein|Check::Menge,"liefern_griff","Lieferschein (Gießerei) anlegen","LG");
       }
 
       {// Produktion in der Werkstatt ohne daß vorher etwas geplant wurde
       Lieferschein liefs(WERKSTATT,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
       liefs.push_back(ARTIKEL_SCHRAUBENZIEHER_GELB,600);
-      vergleichen(Check::Lieferschein|Check::Menge,"LSZP","Produktion in der Werkstatt anlegen","LW");
+      vergleichen(Check::Lieferschein|Check::Menge,"liefern_schraubendr","Produktion in der Werkstatt anlegen","LW");
       }
 
       {// Lieferscheinschreiben für das Schraubenzieherlager => auslagern
       Lieferschein liefs(SCHRAUBENZIEHERLAGER,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
       liefs.push_back(ARTIKEL_SCHRAUBENZIEHER_ROT,450);
-      vergleichen(Check::Lieferschein|Check::Menge,"LSZM","Lieferschein für das Rohwarenlager (auslagern)","LR");
+      vergleichen(Check::Lieferschein|Check::Menge,"auslagern","Lieferschein für das Rohwarenlager (auslagern)","LR");
       }
 
       {// Lieferscheinschreiben für den Kunden
       Lieferschein liefs(KUNDENINSTANZ,cH_Kunde(KUNDE));
       liefs.push_back(ARTIKEL_SORTIMENT_BUNT,450);
-      vergleichen(Check::Lieferschein|Check::Menge,"LSZMK","Lieferschein für den Kunden","LK");
+      vergleichen(Check::Lieferschein|Check::Menge,"ausliefern","Lieferschein für den Kunden","LK");
       }
 
       {// Lieferscheinschreiben für den Kunden  (Überlieferung)
       Lieferschein liefs(KUNDENINSTANZ,cH_Kunde(KUNDE));
       liefs.push_back(ARTIKEL_SORTIMENT_BUNT,60);
-      vergleichen(Check::Lieferschein|Check::Menge,"LSZA","Lieferschein für den Kunden (Überlieferung)","LKÜ");
+      vergleichen(Check::Lieferschein|Check::Menge,"ueberliefern","Lieferschein für den Kunden (Überlieferung)","LKÜ");
       }
    return true;
 }
