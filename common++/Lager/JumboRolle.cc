@@ -1,4 +1,4 @@
-// $Id: JumboRolle.cc,v 1.4 2003/10/17 12:32:39 christof Exp $
+// $Id: JumboRolle.cc,v 1.5 2004/03/11 15:53:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -19,6 +19,7 @@
  */
 
 #include"JumboRolle.h"
+#include <cstdio>
 
 bool JumboRolle::isRollNrOK(ID eancode)
 {
@@ -90,17 +91,17 @@ int JumboRolle::Meter() const
 
 void JumboRolle::ausArchivHolen()
 {  if (!im_archiv) return;
-   Query("insert into rohjumbo "
+   Query q("insert into rohjumbo "
             "(code,maschine,webmaschine,soll_meter,plan_datum,verarb_datum,"
             "status,lauf,gang,barcoist,barcofert_datum,wiederinslager,"
             "artikelid) "
       "select code,maschine,webmaschine,soll_meter,plan_datum,verarb_datum,"
             "status,lauf,gang,barcoist,barcofert_datum,wiederinslager,"
             "artikelid "
-            "from rohjumbo_archiv where code=?") << code;
-   if (Query::Code()==100)
+            "from rohjumbo_archiv where code=?");
+   q << code;
+   if (q.Result()==100)
          throw SQLerror("JumboRolle::ausArchivHolen",100,"Rolle nicht im Archiv");
-   SQLerror::test("JumboRolle::ausArchivHolen");
    Query("delete from rohjumbo_archiv where code=?") << code;
    SQLerror::test("JumboRolle::buchen archiv-löschen");
    im_archiv=false;

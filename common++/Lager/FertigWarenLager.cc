@@ -33,8 +33,7 @@ std::pair<Zeitpunkt_new,int> FertigWarenLager::letzteInventur()
 
  q << char(FertigWaren::eInventur) << fw.Artikel().Id();
 
- SQLerror::test(__FILELINE__,100);
- if(q.Code()==100)  
+ if(q.Result()==100)  
    {
       Zeitpunkt_new oldDate(ManuProC::Datum(1,1,1970));
       return std::pair<Zeitpunkt_new,int>(oldDate,0);
