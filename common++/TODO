@@ -11,3 +11,11 @@
 	anderer 1er wird erniedrigt (Menge wird reserviert)
 	Menge des 1. wird nicht nachbestellt
 	???
+
+- AufEintrag -> _lager + _produziert + _bestellen
+
+- pps:
+	0	zum 0er	erledigt
+	>0	~	ungeplant (evtl. teilgeplant)
+	0	zum 1/3er	geliefert
+	>0	~		vorgemerkt, geplant (evtl. teilgeliefert)

@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.79 2003/07/18 14:27:50 jacek Exp $
+// $Id: AufEintrag.cc,v 1.80 2003/07/18 14:48:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -249,14 +249,15 @@ public:
 namespace { class MichEinlagern
 {	AufEintrag &mythis;
 	unsigned uid;
-	ProductionContext2 ctx;
+	ProductionContext ctx;
 public:
 	AuftragBase::mengen_t operator()(const AufEintragBase &elter,AuftragBase::mengen_t m) const
 	{  if (elter.Id()==AuftragBase::dispo_auftrag_id) return 0;
-	   mythis.Einlagern2(uid,m,elter,elter,ctx);
+	   if (ctx.aeb.valid() && ctx.aeb!=elter) return 0;
+	   mythis.Einlagern2(uid,m,elter,elter,ctx.leb);
 	   return m;
 	}
-	MichEinlagern(AufEintrag &_mythis,const ProductionContext2 &_ctx) 
+	MichEinlagern(AufEintrag &_mythis,const ProductionContext &_ctx) 
 		: mythis(_mythis), uid(getuid()), ctx(_ctx) {}
 };}
 
@@ -353,11 +354,15 @@ namespace { class Einlagern_cb
 {	bool abbestellen;
         ProductionContext ctx;
 public:
-	Einlagern_cb(bool abbest=false) : abbestellen(abbest) {}
+	Einlagern_cb(const ProductionContext &_ctx) 
+		: abbestellen(false), ctx(_ctx) {}
+	Einlagern_cb(bool abbest,const ProductionContext &_ctx) 
+		: abbestellen(abbest), ctx(_ctx) 
+	{  assert(!abbest || !ctx.aeb.valid()); }
 	AuftragBase::mengen_t operator()(AufEintrag &ae, AuftragBase::mengen_t m) const
 	{  AuftragBase::mengen_t rest;
 	   if (!abbestellen)
-	      rest=distribute_parents(ae,m,MichEinlagern(ae,ctx.leb));
+	      rest=distribute_parents(ae,m,MichEinlagern(ae,ctx));
 	   else
 	      rest=distribute_parents(ae,m,AbbestellenUndVormerken(ae));
            return m-rest;
@@ -368,7 +373,7 @@ public:
 // 	gemerkt werden, es werden keine 1er erzeugt sondern die Menge
 //	auf unteren Instanzen abgezogen
 void AufEintrag::MengeVormerken(cH_ppsInstanz instanz,const ArtikelBase &artikel,
-		mengen_t menge, bool abbestellen)
+		mengen_t menge, bool abbestellen, const ProductionContext &ctx)
 {
    ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("instanz",instanz),
       NV("artikel",artikel),NV("menge",menge),(abbestellen?"abbestellen":"produzieren"));
@@ -381,7 +386,7 @@ void AufEintrag::MengeVormerken(cH_ppsInstanz instanz,const ArtikelBase &artikel
       			sel_Artikel_Planung_id(instanz->Id(),
       				Kunde::eigene_id,artikel,
       				ungeplante_id)),
-      			menge,Einlagern_cb(abbestellen));
+      			menge,Einlagern_cb(abbestellen,ctx));
    if (m!=0)
       AuftragBase(instanz,dispo_auftrag_id).
    		BestellmengeAendern(m,LagerBase::Lagerdatum(),artikel,
@@ -403,7 +408,7 @@ void AufEintrag::Einlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase
    NV("Artikel",artikel),NV("Menge",menge),NV("Reason",reason));
 
   assert(reason==ManuProC::Auftrag::r_Produziert);
-  MengeVormerken(instanz,artikel,menge,!produziert);
+  MengeVormerken(instanz,artikel,menge,!produziert,ctx);
 }
 
 // eigentlich auslagern mit negativer Menge ???
@@ -514,7 +519,7 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
     return;
  }
  if(newstatus == STORNO) force=true;
- if(newstatus == STORNO && getGeliefert()!=mengen_t(0))
+ if(newstatus == STORNO && getGeliefert()!=0)
  {  std::cerr << "Kann nicht storniert werden da bereits geliefert\n";
     return;
  }
@@ -718,7 +723,7 @@ void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftr
 
  // Menge im Lager freigeben == Einlagern ohne Produktion?
  if (Instanz()->LagerInstanz() && Id()==plan_auftrag_id)
- {  AufEintrag::MengeVormerken(Instanz(),Artikel(),menge,true);
+ {  AufEintrag::MengeVormerken(Instanz(),Artikel(),menge,true,ProductionContext());
  }
  else try{
       distribute_children(*this,menge,Artikel(),

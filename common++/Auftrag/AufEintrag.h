@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.55 2003/07/17 15:57:31 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.56 2003/07/18 14:48:17 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -293,12 +293,12 @@ public:
          const ProductionContext &ctx,
          const ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Produziert) throw(SQLerror);
    // Menge wurde als Produziert markiert, kam aber ins Lager zurück
-// intern aber public
+// intern aber public wegen der klassen
    static AufEintragBase ArtikelInternNachbestellen(const cH_ppsInstanz &wo,
  	mengen_t menge,const ManuProC::Datum &lieferdatum,const ArtikelBase& artikel,
  	int uid,const AufEintragBase& ElternAEB);
    static void MengeVormerken(cH_ppsInstanz instanz,const ArtikelBase &artikel,
-		mengen_t menge, bool abbestellen=false);
+		mengen_t menge, bool abbestellen, const ProductionContext &ctx);
    // für ProduziertSelbst Instanzen
    mengen_t ProdRueckgaengigMenge(mengen_t) const;
 };
