@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.hh,v 1.22 2004/01/29 16:56:14 christof Exp $
+// $Id: ArtikelBox.hh,v 1.23 2004/02/02 15:52:17 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.22 2004/01/29 16:56:14 christof Exp $
+// $Id: ArtikelBox.hh,v 1.23 2004/02/02 15:52:17 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -106,6 +106,13 @@ class ArtikelBox : public Gtk::EventBox
      st_default() ; 
  };
  st_default Default_IEP;
+ 
+ struct BreitenSuche_switch_arg
+ {  cH_ExtBezSchema s;
+    unsigned i,sp,l;
+    BreitenSuche_switch_arg(cH_ExtBezSchema s2,int i2,unsigned sp2,unsigned l2)
+    	: s(s2), i(i2), sp(sp2), l(l2) {}
+ };
 
  bool vertikalbool:1;
  bool autocompletebool:1;
@@ -118,6 +125,7 @@ class ArtikelBox : public Gtk::EventBox
 // bool alle_artikel_anzeigen_mit_id_bool:1;
  bool artikel_automatisch_finden:1;
  bool reset_on_focus:1;
+ bool block_selection:1;
 
  std::string sprogram,sposition;
  cH_ExtBezSchema schema;
@@ -197,7 +205,9 @@ class ArtikelBox : public Gtk::EventBox
  void setzeSchemaTyp(int t2);
  void setzeSignifikanz(int t);
  void pixmap_setzen(bool);
- bool BreitenSuche(GtkSCContext newsearch,unsigned int sp=0,unsigned int l=0,int *cont=0);
+ bool BreitenSuche(GtkSCContext newsearch,unsigned sp=0,unsigned l=0,int *cont=0);
+ // this is for an idle triggered callback
+ bool BreitenSuche_switch(BreitenSuche_switch_arg a);
 
 // Kombiniert/nicht kombiniert: Zugriff auf Combos
  std::vector<cH_EntryValue> get_content(unsigned int l=0,unsigned int spmax=G_MAXINT) const;

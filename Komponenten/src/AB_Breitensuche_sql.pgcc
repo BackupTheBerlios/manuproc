@@ -37,7 +37,7 @@ FetchIStream &operator>>(FetchIStream &is, intint &i)
 }
 
 // true: BreitenSuche aktiv
-bool ArtikelBox::BreitenSuche(GtkSCContext newsearch,unsigned int sp,unsigned int l, int *cont)
+bool ArtikelBox::BreitenSuche(GtkSCContext newsearch,unsigned sp,unsigned l, int *cont)
 {static std::list<cH_ExtBezSchema> breitensuche;
  
 //std::cout << "BreitenSuche("<<(newsearch==GTK_SEARCH_OPEN?"OPEN"
@@ -122,17 +122,9 @@ std::cout<<'\n';
 
           if (result)
           {  breitensuche.clear();
-             setExtBezSchema(s);
-             for (unsigned int k=0;k<signifikanz.size();++k)
-                if (signifikanz[k]==i)
-                {  set_content(v,k);
-                   combos[k][v.size()-1]->get_entry()->set_position(-1);
-                   combos[k][v.size()-1]->trigger_search();
-                   bool rof=reset_on_focus;
-                   if (rof) reset_on_focus=false;
-                   combos[k][v.size()-1]->grab_focus();
-                   if (rof) reset_on_focus=rof;
-                }
+	     Glib::signal_idle().connect(SigC::bind(SigC::slot
+			(*this,&ArtikelBox::BreitenSuche_switch),
+			BreitenSuche_switch_arg(s,int(i),sp,l)));
              return true;
           }
          } catch (SQLerror &e) 
@@ -145,3 +137,17 @@ std::cout<<'\n';
  }
 }
 
+bool ArtikelBox::BreitenSuche_switch(BreitenSuche_switch_arg a)
+{  std::vector<cH_EntryValue> v=get_content(a.l,a.sp);
+   setExtBezSchema(a.s);
+   for (unsigned int k=0;k<signifikanz.size();++k)
+      if (signifikanz[k]==a.i)
+      {  set_content(v,k);
+         combos[k][v.size()-1]->get_entry()->set_position(-1);
+         combos[k][v.size()-1]->trigger_search();
+         block_selection=true;
+         combos[k][v.size()-1]->grab_focus();
+         block_selection=false;
+      }
+   return false;
+}

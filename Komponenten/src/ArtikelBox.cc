@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.25 2004/01/29 15:34:07 christof Exp $
+// $Id: ArtikelBox.cc,v 1.26 2004/02/02 15:52:17 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -346,6 +346,7 @@ Gtk::Container* ArtikelBox::init_table(int l)
    kombiniertbool(),labelbool(), \
    automatisch_anlegen_bool(),eingeschraenkt(),\
    artikel_automatisch_finden(), reset_on_focus(RESET_ON_FOCUS_DEF), \
+   block_selection(), \
   schema(sch), gewaehltesSchema(sch->Id()), tr("",false), tr2("",false),\
   oberstes(), menu(),  pixmap(), label_typ(), label(),  \
   active_sc()
@@ -715,7 +716,8 @@ static bool select_all_text(Gtk::Editable *e)
 }
 
 bool ArtikelBox::FocusInFunc(GdkEventFocus *ev, guint sp, guint l)
-{  if (reset_on_focus) combos[l][sp]->reset();
+{  if (block_selection) return true;
+   if (reset_on_focus) combos[l][sp]->reset();
    else 
    {  // HACK: show available options (even nonmatching and enable overwrite)
       combos[l][sp]->get_entry()->select_region(0,-1);
@@ -723,9 +725,6 @@ bool ArtikelBox::FocusInFunc(GdkEventFocus *ev, guint sp, guint l)
       combos[l][sp]->trigger_search();
       // wenn es durch Mausclick passiert ist
       Glib::signal_idle().connect(SigC::bind(SigC::slot(&select_all_text),combos[l][sp]->get_entry()));
-//      Gtk::Main::signal_idle().connect(SigC::bind(SigC::slot(*combos[l][sp]->get_entry(),
-//      		&Gtk::Editable::select_region),0,-1));
    }
-// else if (!validate(sp,l)) combos[l][sp]->trigger_search();
    return true;
 }
