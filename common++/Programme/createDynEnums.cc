@@ -1,4 +1,4 @@
-// $Id: createDynEnums.cc,v 1.12 2003/04/14 13:33:47 jacek Exp $
+// $Id: createDynEnums.cc,v 1.13 2003/11/26 15:59:55 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: createDynEnums.cc,v 1.12 2003/04/14 13:33:47 jacek Exp $
+// $Id: createDynEnums.cc,v 1.13 2003/11/26 15:59:55 jacek Exp $
 
 #include <Misc/dbconnect.h>
 #include <Misc/FetchIStream.h>
@@ -66,7 +66,7 @@ int main()
       //---
       std::cout << "  namespace ArtikelTyp {\n"
 		"   enum enum_t {\n"
-		"    ";
+		"    None=-1, ";
       {  Query q("select text,id from artbez_warengruppe order by id");
          while ((q >> is).good())
          {  int id; std::string name;
