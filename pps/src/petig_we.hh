@@ -12,15 +12,21 @@
 #ifndef _PETIG_WE_HH
 #  include "petig_we_glade.hh"
 #  define _PETIG_WE_HH
+#include <Artikel/ArtikelBase.h>
+#include <vector>
+#include <string>
+
 class petig_we : public petig_we_glade
 {
  struct we_entry {
    ArtikelBase	artikel;
    std::vector<std::string> artbez;
    int stueck;
-   AuftragBase::ID auftrag;
+   std::string auftrag_referenz;
    we_entry(const std::vector<std::string> a, int s, 
-            const AuftragBase::ID auf) : artbez(a),stueck(s),auftrag(auf) {}
+            const std::string auf) : artbez(a),stueck(s),
+              auftrag_referenz(auf) {}
+   we_entry() : stueck(0) {}
    };
  std::vector<struct we_entry> we_ls;
   

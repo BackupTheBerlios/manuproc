@@ -1090,9 +1090,7 @@ void auftrag_lieferschein::on_petig_we_activate()
  petig_we pwe;  
  pwe.set_transient_for(*this);
 
- int ret=pwe.run();
-
- 
+ pwe.run();
 
 }
 

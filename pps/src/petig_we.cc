@@ -8,8 +8,10 @@
 #include "config.h"
 #include "petig_we.hh"
 #include <Misc/dbconnect.h>
+#include <Kunde/Kunde.h>
 #include "MyMessage.h"
 #include "auftrag_lieferschein.hh"
+#include <Misc/FetchIStream.h>
 
 extern MyMessage *meldung;
 extern auftrag_lieferschein *auftraglieferschein;
@@ -25,6 +27,14 @@ void petig_we::on_petig_we_ok_clicked()
  c_to_p.Name("remote_petig");
  c_to_p.User("mabella");
 
+ int weid=atoi(we_lfrsid->get_text().c_str());
+ 
+ if(weid<40000)
+   {
+    meldung->Show("Die Liefrschein Nr. ist nicht korrekt");
+    return;
+   } 
+
  try{ 
  ManuProC::dbconnect(c_to_p); 
  }
@@ -38,11 +48,36 @@ void petig_we::on_petig_we_ok_clicked()
   }
 
  ManuProC::dbdefault(c_to_p.Name());
- ManuProC::dbdisconnect(c_to_p.Name());
 
-
-
-
+ Query q("select a.youraufnr,"
+       "artikelkomponente(artikelid,?,1,1), " 
+       "artikelkomponente(artikelid,?,1,2), "
+       "artikelkomponente(artikelid,?,1,3), "
+       "artikelkomponente(artikelid,?,1,4), "
+       "stueck from mabella_lieferscheinentry l left "
+       " join auftrag a on (a.auftragid=l.refauftragid and "
+       " a.instanz=l.instanz) where lfrsid=?");
+     
+ Kunde::ID lid=auftraglieferschein->getKdNr();  
+ q << lid << lid << lid << lid << weid;
+ 
+ FetchIStream is=q.Fetch();
+ while(is.good())
+   {
+    struct we_entry ws;
+    std::string bk;
+    is >> FetchIStream::MapNull(ws.auftrag_referenz,"");
+    for(int i=0; i<4; i++)
+      {is >> bk;
+       ws.artbez.push_back(bk);
+      }
+    is >> ws.stueck;
+    we_ls.push_back(ws);
+    is=q.Fetch();
+   }
+   
+ ManuProC::dbdisconnect(c_to_p.Name());   
+   
 /*
  lieferschein->push_back(artikel,anzahl->get_value_as_int(),
                   e.hatMenge()?liefermenge->get_value_as_float():0.0,
