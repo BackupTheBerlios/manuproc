@@ -2,8 +2,8 @@
 
 export PGHOST=localhost
 
-dropdb mabelladb
-createdb mabelladb
+dropdb mabella_test_db
+createdb initmabella_test_db
 
 P="database_tables_init_Mabella"
 
@@ -35,11 +35,11 @@ for i in \
    waehrung
 do
 
-psql mabelladb -q < $P/$i
+psql mabella_test_db -q < $P/$i
 
 done
 
-../../Programme/Instanzen mabelladb
+../../Programme/Instanzen mabella_test_db
 
 #psql testdb -c "vacuum analyze"
 
