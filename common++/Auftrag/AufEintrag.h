@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.54 2003/07/17 15:57:18 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.55 2003/07/17 15:57:31 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -38,7 +38,6 @@
 #include <vector>
 #include <list>
 #include <Misc/itos.h>
-class cH_Lieferschein;
 #include <Auftrag/AufEintragZu.h>
 #include <Auftrag/auftrag_enums.h>
 #include <Misc/compiler_ports.h>
@@ -47,6 +46,7 @@ class Lager;
 class VerfuegbareMenge;
 class ProductionContext;
 class LieferscheinEntryBase;
+class cH_Lieferschein;
 typedef LieferscheinEntryBase ProductionContext2;
 
 class AufEintrag : public AufEintragBase
@@ -258,12 +258,12 @@ public:
 
  // brauche ich noch ein statisches ProduziertNG (das nur eine Instanz erhält?)
  // z.B. (getRestStk())
- void ProduziertNG(mengen_t M,const LieferscheinEntryBase &ctx);
+ void ProduziertNG(mengen_t M,const ProductionContext2 &ctx);
 //internal ?
  void ProduziertNG(unsigned uid, mengen_t M,
 		const AufEintragBase &elter_alt,
 		const AufEintragBase &elter_neu,
-		const LieferscheinEntryBase &ctx);
+		const ProductionContext2 &ctx);
  void Einlagern2(unsigned uid, mengen_t M,
 		const AufEintragBase &elter_alt,
 		const AufEintragBase &elter_neu,
@@ -279,7 +279,7 @@ public:
  static mengen_t Auslagern
 	(const AuftragBase &ab,const ArtikelBase &artikel,mengen_t menge, 
 		unsigned uid,bool fuer_auftraege,
-		const LieferscheinEntryBase &ctx);
+		const ProductionContext2 &ctx);
  static mengen_t Auslagern
 	(cH_ppsInstanz instanz,const ArtikelBase &artikel,mengen_t menge,
 		unsigned uid,bool fuer_auftraege,
