@@ -1,4 +1,4 @@
-// $Id: exception.cc,v 1.11 2003/07/10 14:57:15 christof Exp $
+// $Id: exception.cc,v 1.12 2003/07/30 09:17:20 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: exception.cc,v 1.11 2003/07/10 14:57:15 christof Exp $
+// $Id: exception.cc,v 1.12 2003/07/30 09:17:20 christof Exp $
 // long explantion at the end
 
 #include <iostream>
@@ -88,7 +88,7 @@ static void print_exception_t()
 
 void ManuProC::PrintUncaughtExceptions() throw()
 {
-#if __GNUC__ == 2
+#if __GNUC__ == 2 || ( __GNUC__ == 3 && __GNUC_MINOR__ < 2 )
    std::set_unexpected(print_exception_u);
    std::set_terminate(print_exception_t);
 #else
