@@ -49,8 +49,11 @@ void LR_Abstraktion::calc_all(cH_Kunde k,bool mwst)
 // if(!k->zeilenrabatt())
 //     {
      fixedpoint<2> kunden_rabatt = Rabatt();
-     fixedpoint<2> endrabatt = nettobetrag*kunden_rabatt/100;
-     rabattiert = nettobetrag - endrabatt;
+//     fixedpoint<2> endrabatt = nettobetrag*kunden_rabatt/100;
+     float rabsatz= 1 - .01 * kunden_rabatt.as_float();
+     float endrabatt = nettobetrag.as_float() * (.01 * kunden_rabatt.as_float());
+//     rabattiert = nettobetrag - endrabatt;
+     rabattiert = nettobetrag.as_float() * rabsatz;
 //     }
 
 #ifdef MABELLA_EXTENSIONS 
@@ -427,13 +430,16 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
     for (;j!=end() ;++j) 
       {
         ArtikelBase artikelbase  = (*j).Artikel();
-        cH_ArtikelBezeichnung bez(artikelbase,cH_Kunde(kunden_id)->getSchemaId());
+        ExtBezSchema::ID schema_id=cH_Kunde(kunden_id)->getSchemaId();
+        cH_ArtikelBezeichnung bez(artikelbase,schema_id);
         cH_ExtBezSchema schema = bez->getExtBezSchema();
 
 #ifndef MABELLA_EXTENSIONS        
         if (schema!=schema_mem && !Configuration.combine) break; // Schema hat gewechselt
-else
-        if (schema!=schema_own && !Configuration.combine) break; // Schema hat gewechselt
+#else
+        // Schema hat gewechselt; nicht jedoch wenn im neuen Schema nicht gefunden
+        // unde deswegen auf default Schema umgesprungen
+        if (schema!=schema_own && schema_id==schema->Id() && !Configuration.combine) break; // Schema hat gewechselt
 #endif        
         
         if (Einheit(artikelbase) != einheit_mem ) break;  // Einheit wechselt
