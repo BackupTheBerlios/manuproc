@@ -77,7 +77,7 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
    kundenbox->setExpandStr2(true);
    checkbutton_ean_drucken->show();
    youraufnr_scombo->set_value_in_list(false,false);
-   aufbemerkung_entry->set_sensitive(false);
+   jahrgang_spinbutton->set_sensitive(false);
 #endif 
 
  zahlart->hide_int(true);
