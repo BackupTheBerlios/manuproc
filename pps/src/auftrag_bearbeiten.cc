@@ -173,7 +173,7 @@ void auftrag_bearbeiten::onSelArtikel()
     else
       artikel_preisliste=cH_PreisListe(preislisten->get_value());
 
-    Artikelpreis ap(artikel_preisliste->Id(),artikelbox->get_value(),
+    Artikelpreis ap(artikel_preisliste,artikelbox->get_value(),
 			stkmtr_spinbutton->get_value_as_int());		
     Rabatt_setzen(artikel_preisliste);
 
@@ -363,7 +363,7 @@ void auftrag_bearbeiten::on_stkmtr_spinbutton_activate()
              preislisten->set_value(AP.GefundenIn());
 	 }
 
-       Artikelpreis ap(preislisten->get_value(),artikelbox->get_value(),
+       Artikelpreis ap(cH_PreisListe(preislisten->get_value()),artikelbox->get_value(),
 			stkmtr_spinbutton->get_value_as_int());	
 
        Rabatt_setzen(cH_PreisListe(preislisten->get_value()));
