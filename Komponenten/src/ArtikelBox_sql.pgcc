@@ -31,9 +31,6 @@
 #include <Aux/EAN.h>
 #endif
 #include <Aux/Global_Settings.h>
-#include <Artikel/ArtikelStamm.h>
-#include <Artikel/ArtikelBezeichnung.h>
-#include <Artikel/ArtikelBaum.h>
 #if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
 #include <sigc++/bind.h>
 #include <sigc++/compatibility.h>
@@ -41,7 +38,7 @@
 
 exec sql include sqlca;
 
-void ArtikelBox::searchFunc(int *cont, GtkSCContext newsearch, unsigned int sp,unsigned int l) throw(SQLerror)
+void ArtikelBox::searchFunc(int *cont, GtkSCContext newsearch, unsigned sp,unsigned l) throw(SQLerror)
 {std::vector<cH_EntryValue> v=get_content(l,sp);
  active_sc=combos[l][sp];
 
@@ -157,7 +154,7 @@ void ArtikelBox::fuelleMenu()
 {  
    exec sql begin declare section;
      int eab_id,db_artikeltyp;
-   unsigned int id[100];
+   unsigned id[100];
    char bez[100][41];
    exec sql end declare section;
    eab_id=schema->Id();
@@ -351,172 +348,3 @@ void ArtikelBox::fuelleMenu()
  if (!einschraenkung.size()) einschr_mi->hide();
 }
 
-bool ArtikelBox::neuanlegen() const 
-{  return Query("select exists(select true from artbez_insert where tabelle='"+
-		Tabellenname(schema)+"')").FetchOne<bool>();
-}
-
-void ArtikelBox::Benutzerprofil_laden()
-{ ArtikelBoxAnzeige anz=ArtikelBoxAnzeige::Laden(schema);
-  signifikanz.clear();
-  for (int i=-int(sizeof(int))*8;i<=int(sizeof(int))*8;++i)
-     if (anz.Sichtbar(i)) signifikanz.push_back(i);
-  autocompletebool=anz.AutoComplete();
-  set_autoexpand(autocompletebool);
-  kombiniertbool=anz.Kombiniert();
-  reset_on_focus=anz.reset_on_focus;
-}
-
-void ArtikelBox::Benutzerprofil_speichern()
-{ 
-  ArtikelBoxAnzeige anz(schema);
-  for(std::vector<int>::const_iterator i=signifikanz.begin();i!=signifikanz.end();++i)
-     anz.Sichtbar(*i,true);
-  anz.AutoComplete(autocompletebool);
-  anz.Kombiniert(kombiniertbool);
-  anz.reset_on_focus=reset_on_focus;
-  anz.Speichern();
-}
-
-void ArtikelBox::Neuer_Eintrag()
-{
-  /* testen, ob Artikel schon existiert */
-  if(artikel_exist(false)!=ArtikelBase::none_id) 
-    {
-      std::cerr<<"FEHLER: Artikel existiert schon\n";
-      return; 
-    }
-
- try {
-// hier (und weiter unten) sollte man irgendwann mal 'ID' und 'EAN-Code' in die 
-// Tabellenspalten der jeweiligen Schemata umwandeln.
-// Dazu brauchte man dann wohl ein get_[id|ean]_spaltenname()
-// in ExtBezSchema, oder?
- /* testen ob ID oder EAN eingetragen => FEHLER */
- // sollte wohl eher angezeigt werden CP
- for (unsigned int j=0;j<combos.size();++j)
-  for (unsigned int i=0; i<combos[j].size(); ++i)
-   { 
-     if (labels[j][i]->get_text()=="ID" && combos[j][i]->get_text() !="")
-      { std::cerr<<"FEHLER: ID darf nicht vorgegeben werden: Feld freilassen\n";
-        return;
-      }
-#ifdef MABELLA_EXTENSIONS      
-     if (labels[j][i]->get_text()=="EAN-Code" && combos[j][i]->get_text() !="")
-      { std::cerr<<"FEHLER: EAN darf nicht vorgegeben werden: Feld freilassen\n";
-        return;
-      }
-#endif
-   }
-  int db_id,db_id_jumbo;
-  Transaction tr;
-
-  db_id=ArtikelStamm::Anlegen(schema->Typ().Id(),schema->Id(),
-  	Default_IEP.bestelle_bei,Default_IEP.einheit).Id();
-
-  std::string where, what;
-  where_what(where,what,false);
-  assert(where[where.size()-1]==')' && what[what.size()-1]==')');
-  where[where.size()-1]=' ';
-  what[what.size()-1]=' ';
-  ArtikelBezeichnung::Anlegen(schema,ArtikelBase(db_id),where,what);
-
-#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED // Jumborollen anlegen ?
- if (Default_IEP.bestelle_bei==ppsInstanzID::Rollerei)
- {  ArtikelBase::ID jumbo_id=artikel_exist(true);
-    if(!jumbo_id)
-      {
-        db_id_jumbo=ArtikelStamm::Anlegen(schema->Typ().Id(),schema->Id(),
-	  	ppsInstanzID::Bandlager,EinheitID::m).Id();
-	where=what="";
-        where_what(where,what,true);
-        assert(where[where.size()-1]==')' && what[what.size()-1]==')');
-        where[where.size()-1]=' ';
-        what[what.size()-1]=' ';
-        ArtikelBezeichnung::Anlegen(schema,ArtikelBase(db_id_jumbo),where,what);
-      }
-    if (jumbo_id && db_id!=jumbo_id)
-       ArtikelBaum::Anlegen(ArtikelBase(db_id),ArtikelBase(jumbo_id),ProzessID::Rollen,get_menge_from_artikelbox());
-  }
-#endif
-
-  artikel=ArtikelBase(db_id);
-  pixmap_setzen(true);
-  new_article_inserted(db_id);
-  activate();
-  tr.commit();
-  }catch (SQLerror &e)   {  /*std::cerr << e << '\n';*/}
-}
-
-
-void ArtikelBox::where_what(std::string& where, std::string& what, bool jumbo)
-{ unsigned int l=0; 
-  for (std::vector<int>::const_iterator i=signifikanz.begin();
-  		i!=signifikanz.end(); ++i,++l)
-   { std::vector<cH_EntryValue> v=get_content(l);
-     unsigned int spalte=0;   
-     for(ExtBezSchema::const_sigiterator j=schema->sigbegin(signifikanz[l]);
-     	   j!=schema->sigend(signifikanz[l]); ++spalte,++j)
-      {  if (j->spaltenname!="id")
-         {  where += j->spaltenname+",";
-#ifdef PETIG_EXTENSIONS
-            if (jumbo && j->spaltenname==schema->JumboSpalte())
-               what += "'"+schema->JumboBez()+"'," ;
-            else 
-#endif
-               what += "'"+v[spalte]->getStrVal()+"',";
-         }
-      }
-   }
-   if (!where.empty() && where[where.size()-1]==',') where[where.size()-1]=')';
-   if (!what.empty() && what[what.size()-1]==',') what[what.size()-1]=')';
-}
-
-ArtikelBase::ID ArtikelBox::artikel_exist(bool jumbo) 
-{ std::string squery = "select id from "+Tabellenname(schema)+" where ";
-  std::string where = "(";
-  std::string what = "(";
-  where_what(where,what,jumbo);
-  squery += where + '=' + what;
- 
-  try{
-     return Query(squery).FetchOne<int>();
-  }catch(SQLerror &e) {return ArtikelBase::none_id; }
-}
-
-ArtikelBoxAnzeige ArtikelBoxAnzeige::Laden(cH_ExtBezSchema schema)
-{  ArtikelBoxAnzeige res=ArtikelBoxAnzeige(schema);
-
-   std::string qual=itos(schema->Typ().Id())+"_"+itos(schema->Id());
-   std::string val=Global_Settings(getuid(),"ArtikelBox",qual).get_Wert();
-   if (!val.empty())
-   {  res.autocomplete=val.find('a')!=std::string::npos;
-         res.kombiniert=val.find('k')!=std::string::npos;
-#ifdef MABELLA_EXTENSIONS         
-         res.reset_on_focus=val.find('R')==std::string::npos;
-#else
-	 res.reset_on_focus=false;         
-#endif         
-         std::string::size_type komma1=val.find(','),komma2=std::string::npos;
-         if (komma1!=std::string::npos) komma2=val.find(',',komma1+1);
-         if (komma2!=std::string::npos)
-         {  res.anzeige_pos=strtol(val.substr(0,komma1).c_str(),0,10);
-            res.anzeige_neg=strtol(val.substr(komma1+1,komma2-(komma1+1)).c_str(),0,10);
-         }
-   }
-   else
-   {  res.anzeige_pos=1;
-   }
-   return res;
-}
-
-void ArtikelBoxAnzeige::Speichern() const
-{  std::string qual=itos(schema->Typ().Id())+"_"+itos(schema->Id());
-   std::string val=itos(anzeige_pos)+','+itos(anzeige_neg)+','
-   	+(autocomplete?"a":"")+(kombiniert?"k":"")+(!reset_on_focus?"R":"");
-   Global_Settings::create(getuid(),"ArtikelBox",qual,val);
-}
-
-std::string ArtikelBox::Tabellenname(cH_ExtBezSchema s)
-{  return "artbez_"+itos(s->Typ().Id())+"_"+itos(s->Id());
-}

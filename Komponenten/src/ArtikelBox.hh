@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.hh,v 1.25 2004/11/15 10:10:56 christof Exp $
+// $Id: ArtikelBox.hh,v 1.26 2004/11/29 16:25:38 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.25 2004/11/15 10:10:56 christof Exp $
+// $Id: ArtikelBox.hh,v 1.26 2004/11/29 16:25:38 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -187,18 +187,19 @@ class ArtikelBox : public Gtk::EventBox
  void Neuer_Eintrag_automatisch(Gtk::CheckMenuItem *cmi);
  void AlleArtikelAnzeigen(Gtk::CheckMenuItem *cmi);
  void AlleArtikelAnzeigenId(Gtk::CheckMenuItem *cmi);
- unsigned int intern_id(int typ);
+ unsigned intern_id(int typ);
  void where_what(std::string& where, std::string& what,bool jumbo);
  bool neuanlegen() const;
  ArtikelBase::ID artikel_exist(bool jumbo);
  double get_menge_from_artikelbox();
 
- bool loadArtikel(unsigned int l) throw(SQLerror);
+ bool loadArtikel(unsigned l) throw(SQLerror);
  static gint try_grab_focus(GtkWidget *w,gpointer gp);
 
  
  void artbox_start();
  void init();
+ void init2();
  Gtk::Container *init_table(int l);
  Gtk::Container *init_table_alle_artikel(int l);
  void setzeSchemaId(int t);
@@ -211,15 +212,14 @@ class ArtikelBox : public Gtk::EventBox
  bool set_value_idle(Handle<const ArtikelBezeichnung> ab);
 
 // Kombiniert/nicht kombiniert: Zugriff auf Combos
- std::vector<cH_EntryValue> get_content(unsigned int l=0,unsigned int spmax=G_MAXINT) const;
+ std::vector<cH_EntryValue> get_content(unsigned l=0,unsigned spmax=G_MAXINT) const;
 public:  // public for Artikeleingabe
- void set_content(const std::vector<cH_EntryValue> &v,unsigned int l=0);
 protected: 
- std::vector<cH_EntryValue> expand_kombi_Artikel(unsigned int l,std::string text) const;
- static std::string Kombinieren(cH_ExtBezSchema schema, unsigned int signif,const std::vector<std::string> &v);
- static std::string Kombinieren(cH_ExtBezSchema schema, unsigned int signif,const std::vector<cH_EntryValue> &v);
+ std::vector<cH_EntryValue> expand_kombi_Artikel(unsigned l,std::string text) const;
+ static std::string Kombinieren(cH_ExtBezSchema schema, unsigned signif,const std::vector<std::string> &v);
+ static std::string Kombinieren(cH_ExtBezSchema schema, unsigned signif,const std::vector<cH_EntryValue> &v);
  enum enum_art_label {ARTIKEL,LABEL};
- std::vector<cH_EntryValue> expand_kombi(unsigned int l,enum_art_label eal) const;
+ std::vector<cH_EntryValue> expand_kombi(unsigned l,enum_art_label eal) const;
  
  // false=failed
  bool determineFocus(guint &sigidx_out, guint &entryidx_out) const;
@@ -235,8 +235,13 @@ public:
 
 	const cH_ExtBezSchema getBezSchema() const { return schema; }
 	void setExtBezSchema(const cH_ExtBezSchema &_schema);
-	
+
 	void setExtBezSchemaID(ExtBezSchema::ID id); // ein Schema vorgeben, aber keinen ArtikelTyp
+	
+	// Schema und Sichtbarkeit setzen (für Artikeleingabe)
+	void setzeAnzeige(const ArtikelBoxAnzeige &anz);
+	unsigned getSignifikanzPos(int sig);
+        void set_content(const std::vector<cH_EntryValue> &v,unsigned l=0);
 
    void reset();
    void set_editable(bool edit);
