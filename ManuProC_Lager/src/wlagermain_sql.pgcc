@@ -1,0 +1,99 @@
+#include"wlagermain.hh"
+#include<stdio.h>
+#include <Aux/SQLerror.h>
+#include <Aux/Transaction.h>
+#include<Gtk_OStream.h>
+exec sql include sqlca;
+
+/*
+void wlagermain::set_user(const std::string &kurzel) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int USERID;
+ char *KURZEL;
+ exec sql end declare section;
+ 
+ KURZEL=(char*)kurzel.c_str(); 
+
+ exec sql select pid into :USERID from personal where kurz= :KURZEL;
+ SQLerror::test("Wlagermain::set_user");
+ 
+ userid=USERID;
+}
+
+void wlagermain::fill_CList(const ArtikelBase &a) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int MENGE[100];
+ char TIME[100][32];
+ int LFRSID[100];
+ char USER[100][6];
+ char AKTION[100][1]; 
+ char *QU;
+ 
+ exec sql end declare section;
+ 
+ buchung_clist->freeze();
+ buchung_clist->clear();
+
+ 
+ std::string qu=std::string("select menge,datum,aktion,kurz,f.pid"
+	"coalesce(lfrsid,0), artikelid from ")+
+ 	"fw_lager_buchung f, personal p where p.pid=f.pid and artikelid="
+ 	+itos(a.Id())+" order by datum desc";
+ 	
+ QU=(char*)qu.c_str();	
+ 	
+ exec sql prepare FW_LAGER_BUCHUNG_ from :QU;
+ exec sql declare FW_LAGER_BUCHUNG cursor for FW_LAGER_BUCHUNG_;
+ 
+ Transaction tr;
+  
+ exec sql open FW_LAGER_BUCHUNG;
+ SQLerror::test(__FILELINE__);
+ 
+ Gtk::OStream os(buchung_clist);
+ 
+ while(true)
+   {
+   exec sql fetch 100 from FW_LAGER_BUCHUNG into :MENGE,:TIME,:AKTION,
+   	:USER,:LFRSID;
+   SQLerror::test(__FILELINE__,100);
+
+   int j=sqlca.sqlerrd[2];
+   for(int i=0; i<j; ++i)
+     {
+   std::string aktion;
+   switch(AKTION[i][0])
+ 	{case FertigWaren::eLieferschein : aktion = "Lieferschein"; break;
+ 	 case FertigWaren::eManuell : aktion = "Manuell"; break;
+ 	 case FertigWaren::eInventur : aktion = "Inventur"; break;
+ 	 default : aktion = "?"; 
+ 	}
+ 	
+   char zeit[10];
+   Zeitpunkt_new zp(TIME[i]);
+   snprintf(zeit,sizeof zeit,"%02d:%02d:%02d",zp.Stunde(),
+ 		zp.Minute(),zp.Sekunde());
+
+   char lfrsid[10];
+   snprintf(lfrsid,sizeof lfrsid,"%06d",LFRSID[i]);	
+ 	
+   os 	<< USER[i] <<  "\t" 
+ 	<< aktion << "\t"
+ 	<< zp.Datum()<<" - "<<zeit << "\t"
+ 	<< MENGE[i] << "\t"
+ 	<< (LFRSID[i]==0 ? "" : lfrsid) << "\n";
+     }
+     
+   if(j<100) break;     
+   
+   }
+
+ buchung_clist->set_column_auto_resize(2,true);
+ buchung_clist->thaw();
+}
+
+
+*/
+

@@ -1,0 +1,42 @@
+# generated 2002/2/20 15:38:53 CET by thoma@Tiger.
+# using glademm V0.6.2c_cvs
+
+AC_INIT(src/fertigwlager.cc)
+AM_INIT_AUTOMAKE(fertigwlager, 0.0)
+AM_CONFIG_HEADER(config.h)
+
+dnl Pick up the Gnome macros.
+AM_ACLOCAL_INCLUDE(macros)
+AM_MAINTAINER_MODE
+
+AC_ISC_POSIX
+AC_PROG_CC
+AM_PROG_CC_STDC
+AC_HEADER_STDC
+AC_PROG_CPP
+AC_PROG_CXX
+AC_PROG_CXXCPP
+AM_PROG_LIBTOOL
+
+# GNOME--:
+# (These macros are in the 'macros' directory)
+# GNOME_INIT sets the GNOME_CONFIG variable, among other things:
+GNOME_INIT
+GNOME_COMMON_INIT
+GNOME_COMPILE_WARNINGS
+AC_LANG_CPLUSPLUS
+
+# GNOME-CONFIG script knows about gnomemm:
+# ('gnome-config' is installed by GNOME)
+GNOMEMM_CFLAGS="`$GNOME_CONFIG --cflags gnomemm gnomeui`" 
+GNOMEMM_LIBS="`$GNOME_CONFIG --libs gnomemm gnomeui`"
+AC_SUBST(GNOMEMM_CFLAGS)
+AC_SUBST(GNOMEMM_LIBS)
+
+#AM_PATH_GTKMM(1.2.5,,
+#        AC_MSG_ERROR(Cannot find GTK--: Please install Version 1.2.5+))
+        
+PETIG_CHECK_KOMPONENTEN
+
+
+AC_OUTPUT(Makefile src/Makefile  macros/Makefile)
