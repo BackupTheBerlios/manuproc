@@ -2285,7 +2285,7 @@ Auftrag</label>
 	<widget>
 	  <class>GtkLabel</class>
 	  <name>label34</name>
-	  <label>Valuta</label>
+	  <label>Zahlungsart</label>
 	  <justify>GTK_JUSTIFY_LEFT</justify>
 	  <wrap>False</wrap>
 	  <xalign>0</xalign>
@@ -2599,35 +2599,6 @@ Auftrag</label>
 
 	<widget>
 	  <class>Custom</class>
-	  <name>zahlziel_datewin</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <signal>
-	    <name>activate</name>
-	    <handler>on_zahlziel_activate</handler>
-	    <last_modification_time>Sun, 19 May 2002 19:08:01 GMT</last_modification_time>
-	  </signal>
-	  <creation_function>Datewin</creation_function>
-	  <int1>0</int1>
-	  <int2>0</int2>
-	  <last_modification_time>Wed, 21 Feb 2001 11:49:05 GMT</last_modification_time>
-	  <child>
-	    <left_attach>4</left_attach>
-	    <right_attach>6</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>2</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>True</yfill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>Custom</class>
 	  <name>zahlart</name>
 	  <cxx_visibility>protected</cxx_visibility>
 	  <signal>
@@ -2652,6 +2623,61 @@ Auftrag</label>
 	    <yshrink>False</yshrink>
 	    <xfill>True</xfill>
 	    <yfill>True</yfill>
+	  </child>
+	</widget>
+
+	<widget>
+	  <class>Custom</class>
+	  <name>zahlziel_datewin</name>
+	  <cxx_visibility>protected</cxx_visibility>
+	  <signal>
+	    <name>activate</name>
+	    <handler>on_zahlziel_activate</handler>
+	    <last_modification_time>Sun, 19 May 2002 19:08:01 GMT</last_modification_time>
+	  </signal>
+	  <creation_function>Datewin</creation_function>
+	  <int1>0</int1>
+	  <int2>0</int2>
+	  <last_modification_time>Wed, 21 Feb 2001 11:49:05 GMT</last_modification_time>
+	  <child>
+	    <left_attach>5</left_attach>
+	    <right_attach>6</right_attach>
+	    <top_attach>1</top_attach>
+	    <bottom_attach>2</bottom_attach>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <xexpand>False</xexpand>
+	    <yexpand>False</yexpand>
+	    <xshrink>False</xshrink>
+	    <yshrink>False</yshrink>
+	    <xfill>True</xfill>
+	    <yfill>True</yfill>
+	  </child>
+	</widget>
+
+	<widget>
+	  <class>GtkLabel</class>
+	  <name>label99</name>
+	  <label>Valuta</label>
+	  <justify>GTK_JUSTIFY_CENTER</justify>
+	  <wrap>False</wrap>
+	  <xalign>0</xalign>
+	  <yalign>0.5</yalign>
+	  <xpad>0</xpad>
+	  <ypad>0</ypad>
+	  <child>
+	    <left_attach>4</left_attach>
+	    <right_attach>5</right_attach>
+	    <top_attach>1</top_attach>
+	    <bottom_attach>2</bottom_attach>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <xexpand>False</xexpand>
+	    <yexpand>False</yexpand>
+	    <xshrink>False</xshrink>
+	    <yshrink>False</yshrink>
+	    <xfill>True</xfill>
+	    <yfill>False</yfill>
 	  </child>
 	</widget>
       </widget>
@@ -5379,35 +5405,6 @@ löschen</label>
 	  </widget>
 
 	  <widget>
-	    <class>Custom</class>
-	    <name>rng_WWaehrung</name>
-	    <cxx_visibility>protected</cxx_visibility>
-	    <signal>
-	      <name>activate</name>
-	      <handler>waehrung_geaendert</handler>
-	      <last_modification_time>Fri, 17 Aug 2001 12:36:02 GMT</last_modification_time>
-	    </signal>
-	    <creation_function>WWaehrung(WWaehrung::KURZ)</creation_function>
-	    <int1>0</int1>
-	    <int2>0</int2>
-	    <last_modification_time>Mon, 13 Aug 2001 09:50:40 GMT</last_modification_time>
-	    <child>
-	      <left_attach>3</left_attach>
-	      <right_attach>4</right_attach>
-	      <top_attach>1</top_attach>
-	      <bottom_attach>2</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>False</xfill>
-	      <yfill>False</yfill>
-	    </child>
-	  </widget>
-
-	  <widget>
 	    <class>GtkLabel</class>
 	    <name>label87</name>
 	    <label>Zahlung</label>
@@ -5729,6 +5726,32 @@ Zuschlag
 	    </widget>
 
 	    <widget>
+	      <class>GtkLabel</class>
+	      <name>label98</name>
+	      <label>Valuta</label>
+	      <justify>GTK_JUSTIFY_CENTER</justify>
+	      <wrap>False</wrap>
+	      <xalign>0</xalign>
+	      <yalign>0.5</yalign>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <child>
+		<left_attach>0</left_attach>
+		<right_attach>1</right_attach>
+		<top_attach>0</top_attach>
+		<bottom_attach>1</bottom_attach>
+		<xpad>0</xpad>
+		<ypad>0</ypad>
+		<xexpand>False</xexpand>
+		<yexpand>False</yexpand>
+		<xshrink>False</xshrink>
+		<yshrink>False</yshrink>
+		<xfill>True</xfill>
+		<yfill>False</yfill>
+	      </child>
+	    </widget>
+
+	    <widget>
 	      <class>Custom</class>
 	      <name>zahlziel</name>
 	      <cxx_visibility>protected</cxx_visibility>
@@ -5752,34 +5775,8 @@ Zuschlag
 		<yexpand>False</yexpand>
 		<xshrink>True</xshrink>
 		<yshrink>True</yshrink>
-		<xfill>False</xfill>
-		<yfill>False</yfill>
-	      </child>
-	    </widget>
-
-	    <widget>
-	      <class>GtkLabel</class>
-	      <name>label98</name>
-	      <label>Valuta</label>
-	      <justify>GTK_JUSTIFY_CENTER</justify>
-	      <wrap>False</wrap>
-	      <xalign>0</xalign>
-	      <yalign>0.5</yalign>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <child>
-		<left_attach>0</left_attach>
-		<right_attach>1</right_attach>
-		<top_attach>0</top_attach>
-		<bottom_attach>1</bottom_attach>
-		<xpad>0</xpad>
-		<ypad>0</ypad>
-		<xexpand>False</xexpand>
-		<yexpand>False</yexpand>
-		<xshrink>False</xshrink>
-		<yshrink>False</yshrink>
 		<xfill>True</xfill>
-		<yfill>False</yfill>
+		<yfill>True</yfill>
 	      </child>
 	    </widget>
 	  </widget>
@@ -5829,6 +5826,35 @@ Zuschlag
 	      <right_attach>2</right_attach>
 	      <top_attach>0</top_attach>
 	      <bottom_attach>1</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>True</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>Custom</class>
+	    <name>rng_WWaehrung</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <signal>
+	      <name>activate</name>
+	      <handler>waehrung_geaendert</handler>
+	      <last_modification_time>Fri, 17 Aug 2001 12:36:02 GMT</last_modification_time>
+	    </signal>
+	    <creation_function>WWaehrung(WWaehrung::KURZ)</creation_function>
+	    <int1>0</int1>
+	    <int2>0</int2>
+	    <last_modification_time>Mon, 13 Aug 2001 09:50:40 GMT</last_modification_time>
+	    <child>
+	      <left_attach>3</left_attach>
+	      <right_attach>4</right_attach>
+	      <top_attach>1</top_attach>
+	      <bottom_attach>2</bottom_attach>
 	      <xpad>0</xpad>
 	      <ypad>0</ypad>
 	      <xexpand>False</xexpand>

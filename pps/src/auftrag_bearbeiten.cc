@@ -70,6 +70,7 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
 #endif 
 
  zahlart->hide_int(true);
+ zahlart->setLabel("","");
  
  zahlziel_datewin->setLabel(std::string("Zahlungsziel"));
  zahlziel_datewin->set_value(ManuProC::Datum());
