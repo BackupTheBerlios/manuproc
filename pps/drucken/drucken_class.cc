@@ -476,7 +476,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
      }
      else if (preise_addieren && i!=begin()) // da ist noch was offen ...
      		// bug (?) in tabularx (zu groﬂer Abstand) beheben
-        os << "\\end{tabularx}~\\\\[-1ex]\n";
+      22  os << "\\end{tabularx}~\\\\[-1ex]\n";
 
 //------------------------- Kopf -------------------------
     if (lfrsid_drucken)

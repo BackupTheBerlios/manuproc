@@ -27,7 +27,7 @@
 #include <Aux/dbconnect.h>
 #include <unistd.h>
 //#include <Auftrag/ppsInstanzProduziert.h>
-
+#include "auftrag_copy.hh"
 
 #ifndef OLD
 #include<Auftrag/selFullAufEntry.h>
@@ -891,5 +891,14 @@ void auftrag_bearbeiten::on_checkbutton_ean_drucken_clicked()
 
 void auftrag_bearbeiten::on_auftrag_kopieren_activate()
 {  
+ if(!auftrag) return;
+ 
+ auftrag_copy(*auftrag);
+ 
+ auftrag_copy->set_transient_for(*this);
+ 
+ gint ret;
+ ret=auftrag_copy.run();
+ 
 }
 

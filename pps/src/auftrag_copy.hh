@@ -14,5 +14,9 @@
 #  define _AUFTAG_COPY_HH
 class auftag_copy : public auftag_copy_glade
 {  
+
+public:
+ auftrag_copy(const AuftragFull &auftrag);
+
 };
 #endif
