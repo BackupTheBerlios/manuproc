@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.59 2003/07/22 08:13:27 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.60 2003/07/22 08:32:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -210,6 +210,8 @@ private:
          mengen_t menge,const ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Produziert) throw(SQLerror);
  // bitte ProduziertNG aufrufen!         
  void Produziert(mengen_t menge,ManuProcEntity<>::ID lfrsid);
+ void KinderProduzieren(mengen_t M, const AufEintragBase &neuerAEB,
+			const ProductionContext2 &ctx);
 
 public:
  // wird z.B. von push_back verwendet
