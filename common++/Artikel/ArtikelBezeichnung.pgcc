@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.23 2004/05/03 12:05:03 jacek Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.24 2004/05/03 15:22:28 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -226,7 +226,8 @@ void ArtikelBezeichnung::Anlegen(const cH_ExtBezSchema &schema,const ArtikelBase
 
 #ifdef MABELLA_EXTENSIONS
    int prozess=40; // Rollen allgemein   
-   if(schema->Typ()==ArtikelTypID::gewebtes_Band)
+   if(ArtikelTyp::hasAttribute(schema->Typ(),
+	  ManuProC::DynamicEnums::ArtikelTyp_Attributes::bez_as_view))
      {col+="prozess,uid,";
       val+=itos(prozess)+","+itos(getuid())+","; 
      }

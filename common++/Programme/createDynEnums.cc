@@ -1,4 +1,4 @@
-// $Id: createDynEnums.cc,v 1.20 2004/04/29 10:48:27 christof Exp $
+// $Id: createDynEnums.cc,v 1.21 2004/05/03 15:22:28 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: createDynEnums.cc,v 1.20 2004/04/29 10:48:27 christof Exp $
+// $Id: createDynEnums.cc,v 1.21 2004/05/03 15:22:28 jacek Exp $
 
 
 #include <Misc/dbconnect.h>
@@ -88,7 +88,15 @@ int main()
       std::cout << "\n"
       		"   };\n\n";
 
-      std::cout << "const static enum enum_t defaultArtikelTyp="<<DEFAULT_ARTTYP<<";\n\n";
+      std::string default_arttyp;
+      {
+       Query q2("select max(bezeichnung) from artikelgruppen where "
+       		"coalesce(defaultgrp,false)=true");
+       if((q2 >> is).good()) is >> default_arttyp;
+       else default_arttyp=DEFAULT_ARTTYP;
+      }
+
+      std::cout << "const static enum enum_t defaultArtikelTyp="<<default_arttyp<<";\n\n";
       std::cout << "  }\n\n";
       tr.close();
       tr.open();
