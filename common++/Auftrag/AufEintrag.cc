@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.29 2003/02/10 14:33:59 christof Exp $
+// $Id: AufEintrag.cc,v 1.30 2003/02/13 13:08:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -129,18 +129,33 @@ std::string AufEintrag::Planung() const
   return itos(maxPlanInstanz)+"/"+itos(tiefe);  
 }
 
-
+// reason ist wichtig, da r_Produziert einen bereits geschlossenen Auftrag erzeugt
 void AufEintrag::move_to(int uid,AufEintrag ziel,AuftragBase::mengen_t menge,ManuProC::Auftrag::Action reason) throw(std::exception)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"To=",ziel,"Menge=",menge,"Reason=",reason);
   Transaction tr;
     // da Eltern beliebig ... könnte doch schöner sein - oder?
-    AufEintragZuMengenAenderung::move_zuordnung_zu_geplantem(uid,*this,
-                                                           ziel,menge,reason);
+  AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(*this,
+		AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
+  for(AufEintragZu::list_t::reverse_iterator i=L.rbegin();i!=L.rend();++i)
+  { AuftragBase::mengen_t M=AuftragBase::min(i->Menge,menge);
+    MengeAendern(uid,-M,true,i->AEB,reason);
+    if (reason!=ManuProC::Auftrag::r_Produziert)
+       ziel.MengeAendern(uid,M,true,i->AEB,reason);
+    else
+    {  ziel.MengeAendern(uid,M,false,i->AEB,reason);
+       ziel.abschreiben(M);
+    }
+    menge-=M;
+    if(!menge) break;
+  }
+
+//    AufEintragZuMengenAenderung::move_zuordnung_zu_geplantem(uid,*this,
+//                                                           ziel,menge,reason);
     // z.B. die Zuordnung könnte das hier miterledigen ...                                                           
     // ähnlich wie abbestellen/neubestellen ???
-    MengeAendern(uid,-menge,true,AufEintragBase(),reason);
-    ziel.MengeAendern(uid,menge,true,AufEintragBase(),reason);
+//    MengeAendern(uid,-menge,true,AufEintragBase(),reason);
+//    ziel.MengeAendern(uid,menge,true,AufEintragBase(),reason);
 
   tr.commit();
 }      
@@ -166,20 +181,25 @@ void AufEintrag::Produziert(mengen_t menge,
 #warning überdenken!!!
 // warum nicht AufEintragBase zurückgeben?
 // zielauftrag sollte Auftrag sein und nicht AuftragBase!
+
+// reason: r_Produziert bewirkt ein sofortiges Schließen des neuen Auftrages
+// (und kein internes Nachbestellen mehr)
 int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
    const Petig::Datum &datum,ManuProC::Auftrag::Action reason,
    AufEintragBase *verplanter_aeb,bool rekursiv) throw(std::exception)
 {
-// ist das überhaupt noch erforderlich?
-   if(verplanter_aeb) *verplanter_aeb=*this;
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Menge=",menge,"Reason=",reason,"Zielauftrag=",zielauftrag,"rekursiv=",rekursiv);
    assert(Id()==AuftragBase::ungeplante_id);
    assert(entrystatus==OPEN);
    assert(auftragstatus==OPEN);
    assert(menge>0);
-   assert(reason==ManuProC::Auftrag::r_Planen);
+   assert(reason==ManuProC::Auftrag::r_Planen
+   	 || reason==ManuProC::Auftrag::r_Produziert);
    assert(!Instanz()->LagerInstanz());
    assert(!rekursiv);
+
+// ist das überhaupt noch erforderlich?
+   if(verplanter_aeb) *verplanter_aeb=*this;
 
    Transaction tr;
    Auftrag ZA(zielauftrag);
@@ -197,7 +217,7 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
    
   AufEintrag AE1er(neueZeile);
    // dispo (2er) Auftrag anlegen bei Überplanung
-   if (menge-getRestStk() > 0)
+   if (reason==ManuProC::Auftrag::r_Planen && menge-getRestStk() > 0)
     { assert(!Instanz()->LagerInstanz()); // CP
       mengen_t dispomenge = menge-getRestStk();
       // nur soviel unten verwenden (tatsächlich zu uns ziehen, 
@@ -219,16 +239,15 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
 
 //---- ProzessInstanz setzen ------    
   // nur wenn aktiv durch Benutzer geplant 
-  if (zielauftrag.Id() != AuftragBase::plan_auftrag_id)
+  if (ManuProC::Auftrag::r_Planen 
+  	&& zielauftrag.Id() != AuftragBase::plan_auftrag_id)
   { assert(zielauftrag.Id()>=handplan_auftrag_id);
     // Kundenauftrag suchen
-   AufEintragZu::list_t ReferenzAufEintrag =
+    AufEintragZu::list_t ReferenzAufEintrag =
 			         AufEintragZu(*this).get_Referenz_listFull(false);
-   for (AufEintragZu::list_t::iterator i=ReferenzAufEintrag.begin();i!=ReferenzAufEintrag.end();++i)
+    for (AufEintragZu::list_t::iterator i=ReferenzAufEintrag.begin();i!=ReferenzAufEintrag.end();++i)
     {
-     if(i->AEB.Instanz()->Id()!=ppsInstanzID::Kundenauftraege) continue;
-     // aha ? CP
-     if(zielauftrag.Id()==AuftragBase::plan_auftrag_id) continue;
+     if(i->AEB.Instanz()!=ppsInstanzID::Kundenauftraege) continue;
      i->AEB.setLetztePlanungFuer(instanz);
      i->AEB.calculateProzessInstanz();
     }
@@ -238,10 +257,12 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
  return neueZeile.ZNr();
 }
 
+// was soll diese Funktion? sieht mir fehlerhaft aus CP
 void AufEintrag::ProduktionsPlanung(int uid,mengen_t menge,const AuftragBase &zielauftrag, 
       const ManuProC::Datum &datum,cH_ppsInstanz instanz) throw(std::exception)
 {
 //   Transaction tr;
+   assert(!"AufEintrag::ProduktionsPlanung called");
    assert(Id()==AuftragBase::ungeplante_id);
    AufEintragBase newAEB;
    Planen(uid,menge,zielauftrag,datum,ManuProC::Auftrag::r_Planen,&newAEB);

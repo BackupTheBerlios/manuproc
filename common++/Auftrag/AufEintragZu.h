@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.15 2003/02/12 13:54:32 christof Exp $
+// $Id: AufEintragZu.h,v 1.16 2003/02/13 13:08:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -56,9 +56,11 @@ public:
 public:
     AuftragBase::mengen_t getMenge(const AufEintragBase& aeb) const;
     // Eine Benachbarte Liste von Kind- bzw. Elternaufträgen:
-    static list_t get_Referenz_list(const AufEintragBase& aeb,bool kinder=false) throw(SQLerror);
+    static list_t get_Referenz_list(const AufEintragBase& aeb,bool kinder=false,bool artikel=true) throw(SQLerror);
     static const bool list_kinder=true;
     static const bool list_eltern=false;
+    static const bool list_Artikel=true;
+    static const bool list_ohneArtikel=false;
 
     // Eine Benachbarte Liste von (Kind-)aufträgen aber nur ungeplante(0er) Aufträge:
     list_t get_Referenz_list_ungeplant(bool kinder=true) const throw(SQLerror)

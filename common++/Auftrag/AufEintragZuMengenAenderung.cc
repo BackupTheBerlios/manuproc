@@ -1,4 +1,4 @@
-// $Id: AufEintragZuMengenAenderung.cc,v 1.13 2003/02/10 15:19:08 christof Exp $
+// $Id: AufEintragZuMengenAenderung.cc,v 1.14 2003/02/13 13:08:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -90,14 +90,14 @@ void AufEintragZuMengenAenderung::Change_Zuordnung_to_Children(const bool child,
    }
 }
 
-
 void AufEintragZuMengenAenderung::move_zuordnung_zu_geplantem(const int uid,
          AufEintrag &AE0er, AufEintrag &AE1er,
          AuftragBase::mengen_t menge,
          ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AE0er=",AE0er,"AE1er=",AE1er,"Menge=",menge);
-  AufEintragZu::list_t L=AufEintragZu(AE0er).get_Referenz_list(AE0er);
+  assert(!"AufEintragZuMengenAenderung::move_zuordnung_zu_geplantem  called");
+  AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(AE0er);
   for(AufEintragZu::list_t::reverse_iterator i=L.rbegin();i!=L.rend();++i)
    {
     AuftragBase::mengen_t M=AuftragBase::min(i->Menge,menge);

@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.26 2003/02/10 15:07:49 christof Exp $
+// $Id: AuftragBase.cc,v 1.27 2003/02/13 13:08:26 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -118,7 +118,7 @@ void AuftragBase::menge_neu_verplanen(const int uid,cH_ppsInstanz instanz,const 
 //     i->abschreiben(
      // ich brauche hier keinen Artikel, ist das dann richtig?
      AufEintragZu::list_t eltern 
-     	= AufEintragZu::get_Referenz_list(*i,AufEintragZu::list_eltern);
+     	= AufEintragZu::get_Referenz_list(*i,AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
      // woher bekomme ich die passenden Eltern?
      // unser Datum gibt dann auch den 1er an.
      for (AufEintragZu::list_t::const_iterator j=eltern.begin();

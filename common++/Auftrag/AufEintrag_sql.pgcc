@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.53 2003/02/13 08:53:26 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.54 2003/02/13 13:08:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -309,7 +309,8 @@ void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftr
 
  assert(menge>0);
  AufEintragZu::list_t KindListeU 
- 	= AufEintragZu::get_Referenz_list(*this,AufEintragZu::list_kinder);
+ 	= AufEintragZu::get_Referenz_list(*this,
+ 			AufEintragZu::list_kinder,AufEintragZu::list_Artikel);
  try{
    typedef  std::map<ArtikelBase,AufEintragZu::list_t > MapArt_t;
    MapArt_t MapArt;
@@ -516,7 +517,7 @@ cH_Lieferschein AufEintrag::getLieferschein() const
 void AufEintrag::WurdeProduziert(AuftragBase::mengen_t M,const AufEintragBase &ElternAEB)
 {  int uid=getuid();
    // Gilt für Lager && 
-   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,M,"Eltern",ElternAEB);
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,M,"Eltern=",ElternAEB);
    assert(M>=0);
    if (Instanz()->LagerInstanz()) // && Id()==ungeplante_id)
    {  assert(Id()==ungeplante_id);
@@ -524,7 +525,8 @@ void AufEintrag::WurdeProduziert(AuftragBase::mengen_t M,const AufEintragBase &E
       
       mengen_t M_rest=M;
       AufEintragZu::list_t KindListeU
- 	= AufEintragZu::get_Referenz_list(*this,AufEintragZu::list_kinder);
+ 	= AufEintragZu::get_Referenz_list(*this,AufEintragZu::list_kinder,
+ 						AufEintragZu::list_ohneArtikel);
       for(AufEintragZu::list_t::iterator i=KindListeU.begin();i!=KindListeU.end();++i)
       {  mengen_t m=AuftragBase::min(i->Menge,M_rest);
          if (!i->AEB.Instanz()->ProduziertSelbst())
@@ -534,8 +536,17 @@ void AufEintrag::WurdeProduziert(AuftragBase::mengen_t M,const AufEintragBase &E
       }
    }
    else
-   {  if (ElternAEB.valid()) AufEintragZu(ElternAEB).setMengeDiff__(*this,M);
-      abschreiben(M,LieferscheinBase::none_id); // LieferscheinId?
+   {  if (Id()==ungeplante_id)
+      {  // reduzieren!
+         // 1er anlegen
+         assert(ElternAEB.valid());
+         Planen(uid,M,AuftragBase(Instanz(),plan_auftrag_id),getLieferdatum(),
+         	ManuProC::Auftrag::r_Produziert);
+      }
+      else
+      {  if (ElternAEB.valid()) AufEintragZu(ElternAEB).setMengeDiff__(*this,-M);
+         abschreiben(M); // LieferscheinId?
+      }
       cH_ppsInstanz EI=Instanz()->EinlagernIn();
       if(EI->AutomatischEinlagern())
       {  assert(Instanz()->ProduziertSelbst()); // sonst Endlosrekursion
@@ -590,7 +601,7 @@ void AufEintrag::ProduktionRueckgaengig(AuftragBase::mengen_t M)
 void AufEintrag::DispoBeschraenken(int uid)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
-  AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(*this,AufEintragZu::list_eltern);
+  AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(*this,AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
 
   AuftragBase::mengen_t S=0;
   for(AufEintragZu::list_t::const_iterator i=L.begin();i!=L.end();++i)

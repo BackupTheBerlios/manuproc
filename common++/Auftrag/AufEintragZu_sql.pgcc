@@ -1,4 +1,4 @@
-// $Id: AufEintragZu_sql.pgcc,v 1.19 2003/02/12 13:54:32 christof Exp $
+// $Id: AufEintragZu_sql.pgcc,v 1.20 2003/02/13 13:08:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -28,45 +28,41 @@ FetchIStream &operator>>(FetchIStream &i, AufEintragZu::st_reflist &rl)
 {  return i >> rl.AEB >> rl.Menge >> rl.Art;
 }
 
-AufEintragZu::list_t AufEintragZu::get_Referenz_list(const AufEintragBase& aeb,bool kinder) throw(SQLerror) 
+AufEintragZu::list_t AufEintragZu::get_Referenz_list(const AufEintragBase& aeb,bool kinder,bool artikel) throw(SQLerror) 
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,aeb,kinder?"Kinder":"Eltern");
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,aeb,kinder?"Kinder":"Eltern",artikel?"mit Artikel":"ohne Artikel");
 
- std::string squery;
- if(kinder)
-    squery = "select neuinstanz,neuauftragid,neuzeilennr,menge,artikelid "
+ assert(kinder || !artikel); // Eltern mit Artikel macht keinen Sinn
+
+ std::string squery, selected,specified, artsel,join;
+ 
+ if (kinder) { selected="neu"; specified="alt"; }
+ else { selected="alt"; specified="neu"; }
+ 
+ if (artikel) 
+ {  artsel="artikelid"; 
+    join="join auftragentry on "
+      "("+selected+"instanz,"+selected+"auftragid,"+selected+"zeilennr)"
+      			   "= (instanz,auftragid,zeilennr)";
+ }
+ else { artsel="NULL"; }
+ 
+ squery = "select "+selected+"instanz,"+selected+"auftragid,"
+ 		+selected+"zeilennr,menge,"+artsel+" "
       "from auftragsentryzuordnung "
-      "join auftragentry on (neuinstanz,neuauftragid,neuzeilennr)"
-         "= (instanz,auftragid,zeilennr)"
-      "where (altinstanz,altauftragid,altzeilennr) = (?,?,?)"
-      " order by neuinstanz,neuauftragid,neuzeilennr ";
- else
-    squery = "select altinstanz,altauftragid,altzeilennr,menge,artikelid "
-      "from auftragsentryzuordnung "
-      "join auftragentry on (altinstanz,altauftragid,altzeilennr)"
-         "= (instanz,auftragid,zeilennr)"
-      "where (neuinstanz,neuauftragid,neuzeilennr) = (?,?,?)"
-       " order by altinstanz,altauftragid,altzeilennr" ;
+      +join+
+      "where ("+specified+"instanz,"+specified+"auftragid,"
+      			+specified+"zeilennr) = (?,?,?) "
+      "order by "+selected+"instanz,"+selected+"auftragid,"
+      			+selected+"zeilennr ";
  std::list<st_reflist> vaeb;
  (Query(squery).lvalue() << aeb).FetchArray(vaeb);
  return vaeb;
 }
 
 AufEintragZu::list_t AufEintragZu::get_Referenz_list_without_child() const throw(SQLerror)
-{
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
-
- std::list<st_reflist> vaeb;
- (Query("select neuinstanz,neuauftragid,neuzeilennr,menge,NULL "
-      "from auftragsentryzuordnung "
-      "where (altinstanz,altauftragid,altzeilennr) = "
-      "(?,?,?)"
-      " order by neuinstanz,neuauftragid,neuzeilennr").lvalue() 
-      <<  static_cast<const AufEintragBase&>(*this))
-  .FetchArray(vaeb);
- return vaeb;
+{return get_Referenz_list(*this,list_kinder,list_ohneArtikel);
 }
-
 
 std::list<cH_Kunde> AufEintragZu::get_Referenz_Kunden() const throw(SQLerror)
 {
@@ -87,6 +83,7 @@ std::list<cH_Kunde> AufEintragZu::get_Referenz_Kunden() const throw(SQLerror)
  return LK;
 }
 
+// wieso ist das in AufEintragZu ?
 std::list<AufEintragBase> AufEintragZu::get_AufEintragList_from_Artikel
                (const ArtikelBase& artikel,ppsInstanz::ID instanz,AufStatVal status)
 {
@@ -172,6 +169,7 @@ AuftragBase::mengen_t AufEintragZu::setMengeDiff__(const AufEintragBase &neuAEB,
 bool AufEintragZu::setKindZnr(const AufEintragBase& neuAEB)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,neuAEB);
+ std::cerr << "mit "<< __PRETTY_FUNCTION__ << " bin ich nicht einverstanden CP\n";
 
  Query("update auftragsentryzuordnung set neuzeilennr=? "
  	"where (altinstanz,altauftragid,altzeilennr, "
