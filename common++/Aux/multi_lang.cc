@@ -19,7 +19,7 @@ MultiL_Dict::MultiL_Dict(int sprache, int default_spr) : sprid(sprache)
 }
 
 
-std::string MultiL_Dict::MLT(LangTXT textid)
+std::string MultiL_Dict::MLT(const LangTXT textid)
 {
  std::string ret(textmap[textid]);
  

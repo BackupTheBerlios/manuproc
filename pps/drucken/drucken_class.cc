@@ -1086,10 +1086,10 @@ void LR_Abstraktion::page_header(std::ostream &os)
 	
 	if(kunde_rng->getBetreuer()!=Person::none_id)
 	  {cH_Person betr(kunde_rng->getBetreuer());
-           os << "\\bf Es betreut Sie im Haus:\\rm \\\\\n"
-           	<< betr->Anrede()->getAnrede() <<" "
+           os << "\\bf "<<mld->MLT(MultiL_Dict::TXT_BETREUUNG)<<":\\rm \\\\\n"
+           	<< betr->Anrede()->getAnrede(*mld) <<" "
            	<< betr->Vorname()<<" "<<betr->Name()<<"\\\\\n"
-        	<< "Telefon: "<<betr->Kontakt(TEL_TEL,kunde_von->Id())<<"\\\\\n"
+        	<< mld->MLT(MultiL_Dict::TXT_TELEFON)<<": "<<betr->Kontakt(TEL_TEL,kunde_von->Id())<<"\\\\\n"
         	<< "Telefax: "<<betr->Kontakt(TEL_FAX,kunde_von->Id())<<"\\\\\n"
         	<< "E-Mail: "<<betr->Kontakt(TEL_E_MAIL,kunde_von->Id())<<"\\\\\n";
           }

@@ -1,4 +1,4 @@
-// $Id: Anrede.h,v 1.6 2003/01/08 09:46:57 christof Exp $
+// $Id: Anrede.h,v 1.7 2003/01/14 17:46:03 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,6 +25,7 @@
 #include <Misc/Handles.h>
 #include <Misc/CacheStatic.h>
 #include <BaseObjects/ManuProcEntity.h>
+#include <Aux/multi_lang.h>
 
 class Anrede : public ManuProcEntity<long int>
 {
@@ -37,7 +38,17 @@ public:
  Anrede() : ManuProcEntity<Anrede::ID>(none_id) {}
  ID Id() const { return entityid; } 
 // const std::string Name() const { return name; }
- const std::string getAnrede() const { return anrede; }
+ const std::string getAnrede(const MultiL_Dict &mld=MultiL_Dict()) const 
+ 	{ if(mld.valid())
+ 	    switch(entityid)
+ 	    	{ case 1 : return const_cast<MultiL_Dict&>(mld).MLT(MultiL_Dict::TXT_HERR); break;
+ 	    	  case 2 : return const_cast<MultiL_Dict&>(mld).MLT(MultiL_Dict::TXT_FRAU); break;
+ 	    	  case 3 : return const_cast<MultiL_Dict&>(mld).MLT(MultiL_Dict::TXT_FIRMA); break;
+ 	    	  default : return anrede;
+ 	    	}
+ 	    	
+ 	  return anrede; 
+ 	}
  const std::string getBrAnrede() const { return branrede; }
 };
 
