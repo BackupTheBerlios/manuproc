@@ -1,4 +1,4 @@
-// $Id: dot_out.cc,v 1.23 2003/08/06 09:17:53 christof Exp $
+// $Id: dot_out.cc,v 1.24 2003/11/17 13:30:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -52,7 +52,7 @@ void dot_out::write_legend(std::ofstream &fout)
 
 
 struct st_edge{Node node;std::string bez;std::vector<std::pair<std::string,std::string> > child;
-       st_edge(Node n,std::string b,std::vector<std::pair<std::string,std::string> > c)
+       st_edge(const Node &n,const std::string &b,const std::vector<std::pair<std::string,std::string> > &c)
          :node(n),bez(b),child(c) {}};
 
 std::string aeb_to_string(AufEintragBase aeb)
@@ -74,13 +74,15 @@ void dot_out::write_node(std::ofstream &fout)
      graph_data_node::st_node_strings M=N.get_mengen_for_node(*i);
      Node node("my_"+itos(++cc),cc,M.auftrag);
      node.write(fout,M.auftrag,M.mengen,M.zusatz,M.artikel);
+#if 0     
      std::vector<std::pair<std::string,std::string> >  E=N.get_edges_for(*i);
      std::vector<std::pair<std::string,std::string> > Vchild;
      for(std::vector<std::pair<std::string,std::string> >::const_iterator j=E.begin();j!=E.end();++j)
       {
-        Vchild.push_back(std::pair<std::string,std::string>(j->first,j->second));        
+        Vchild.push_back(std::pair<std::string,std::string>(j->first,j->second));
       }
-     vec_edge.push_back(st_edge(node,aeb_to_string(M.auftrag),Vchild));
+#endif      
+     vec_edge.push_back(st_edge(node,aeb_to_string(M.auftrag),N.get_edges_for(*i)));
    }
 
 

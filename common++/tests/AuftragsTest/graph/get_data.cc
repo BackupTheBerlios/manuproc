@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.52 2003/11/17 12:27:36 christof Exp $
+// $Id: get_data.cc,v 1.53 2003/11/17 13:30:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -247,6 +247,7 @@ std::vector<std::pair<std::string,std::string> > graph_data_node::get_edges_for(
         { ++index; 
           if (S.size()<index+1) S.resize(index+1);
           if (Mmem.size()<index+1) Mmem.resize(index+1);
+          if (FImem.size()<index+1) { FImem.resize(index+1); FImem[index]=-3; }
         }
         else
         { index=0; fileindex_mem=i->fileindex; }
