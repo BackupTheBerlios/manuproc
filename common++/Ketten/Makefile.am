@@ -13,7 +13,7 @@ libKetten.a: $(libKetten_a_OBJECTS) $(libKetten_a_DEPENDENCIES) Makefile
 	(for i in $(libKetten_a_OBJECTS) ; do echo Ketten/$$i ; done ) >$@
 
 BUILT_SOURCES=KettplanKette2.cc KpK_get_artikel.cc \
-   ArtikelGang_sql.cc Kettscheibe_sql.cc
+   ArtikelGang_sql.cc 
 
 include_HEADERS=ArtikelGang.h Kette.h KettplanKette.h Maschtyp.h \
    Kettscheibe.h
