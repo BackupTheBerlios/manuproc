@@ -1,4 +1,4 @@
-// $Id: test_schaerangaben.cc,v 1.1 2004/06/14 15:44:11 christof Exp $
+// $Id: test_schaerangaben.cc,v 1.2 2004/06/16 09:55:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -40,8 +40,22 @@ void dump(const ArtikelBase &ab, unsigned gaenge, unsigned laenge)
   std::cout << "\n";
 }
 
+// müssten eigentlich kombiniert werden ...
+void dump(const ArtikelBase &ab, const ArtikelBase &ab2, unsigned gaenge, unsigned laenge)
+{  dump(ab,gaenge,laenge);
+   dump(ab2,gaenge,laenge);
+}
+
 int main()
 {  ManuProC::dbconnect();
-   dump(ArtikelBase(219567),4,20000);
+   // sort -t/ -k2
+   dump(ArtikelBase(219567),4,20000); // 1810/40/
+   dump(ArtikelBase(209499),ArtikelBase(212353),1,12000); // 2508/25+40/325+215
+   dump(ArtikelBase(220465),ArtikelBase(225167),1,6000); // 2727/25/265+420
+   dump(ArtikelBase(220445),ArtikelBase(225166),1,6000); // 2727/40/265+420
+   dump(ArtikelBase(220096),ArtikelBase(220100),1,6000); // 2730/40/310+360
+   dump(ArtikelBase(225186),ArtikelBase(225187),1,10000); // 3038/25/430+435
+   dump(ArtikelBase(225193),ArtikelBase(225194),1,10000); // 3038/40/430+435
+   dump(ArtikelBase(225168),ArtikelBase(225169),1,10000); // 3042/40/300+310
    return 0;
 }
