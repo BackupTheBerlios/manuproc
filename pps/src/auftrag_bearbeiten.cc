@@ -101,6 +101,8 @@ void auftrag_bearbeiten::onSelArtikel()
  Einheit e(artikelbox->get_value());
  mengeeinheit->set_text((std::string)e);
  WPreis->set_Einheit((std::string)e);
+ cH_PreisListe artikel_preisliste;
+
  try {
     WPreis->reset();
 #ifdef MABELLA_EXTENSIONS
@@ -271,11 +273,11 @@ void auftrag_bearbeiten::on_stkmtr_spinbutton_activate()
  gtk_spin_button_update(stkmtr_spinbutton->gtkobj());
 
 // hier zuerst den Preis noch mal setzten, da abhängig von der bestellten Menge
-    if(artikel_preisliste->Id() != PreisListe::none_id)
+    if(preislisten->get_value() != PreisListe::none_id)
       {
        WPreis->reset();
 #ifdef MABELLA_EXTENSIONS
-       Artikelpreis ap(artikel_preisliste->Id(),artikelbox->get_value(),
+       Artikelpreis ap(preislisten->get_value(),artikelbox->get_value(),
 			stkmtr_spinbutton->get_value_as_int());	
 #else
        Artikelpreis ap(kunde->preisliste(),artikelbox->get_value(),
@@ -340,7 +342,7 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
  if (!aktaufeintrag)
    {
      stkmtr_spinbutton->update();
-     cH_PreisListe artpreis=artikel_preisliste;
+     cH_PreisListe artpreis(preislisten->get_value());
      if(artikel_preisliste_geaendert) 
       { artpreis=cH_PreisListe(PreisListe::none_id);
         artikel_preisliste_geaendert=false;
@@ -587,11 +589,9 @@ void auftrag_bearbeiten::andererKunde()
 
 void auftrag_bearbeiten::preisliste_reset()
 {
- artikel_preisliste=PreisListe::none_id;
  artikelbox->reset();
  artikelbox->Einschraenken_b(false);
  artikelbox->grab_focus();
- 
 }
 
 
@@ -861,7 +861,6 @@ void auftrag_bearbeiten::on_auftrag_preislisten_activate()
      artikelbox->EinWarenkorb(p->Id());   
  artikelbox->Einschraenken_b(true);
  artikelbox->grab_focus();
- artikel_preisliste=p;
  Rabatt_setzen(p);
 #endif
 }
