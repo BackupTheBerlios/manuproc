@@ -51,7 +51,7 @@ public:
 			     	return mld->MLT(MultiL_Dict::TXT_AUFTRAG);
 			     break;     
 			case Intern : return std::string("Intern"); break;
-			case Extern : return std::string("Bestellung \\small Nr."); break;
+//			case Extern : return std::string("Bestellung \\small Nr."); break;
 			case NICHTS : default : return std::string("-");
 			}
 		}

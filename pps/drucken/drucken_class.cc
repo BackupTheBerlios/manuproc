@@ -1210,7 +1210,8 @@ void LR_Abstraktion::page_header(std::ostream &os)
    os <<"\\end{flushleft}\n";
    zeilen_passen_noch=ZEILEN_SEITE_N;
   }
- else if(Typ()==LR_Base::Extern)
+// else if(Typ()==LR_Base::Extern)
+ else if(false)
   {
    cH_Kunde kunde_an(KdNr());
    cH_Kunde kunde_von(Kunde::default_id);
