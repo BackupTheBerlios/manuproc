@@ -18,6 +18,7 @@
  */
 
 #include <Auftrag/ppsInstanzReparatur.h>
+#include <Auftrag/Auftrag.h>
 #include <Lager/Lager.h>
 #include <Lager/JumboLager.h>
 #include <Lager/RohwarenLager.h>
@@ -28,6 +29,7 @@
 //#include <Misc/Transaction.h>
 #include <Misc/relops.h>
 #include <unistd.h>
+#include <Misc/inbetween.h>
 
 #if 0
 bool ppsInstanzReparatur::ReparaturKK_KundenKinder(const int uid,const bool analyse_only) const
@@ -851,8 +853,82 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
 }
 
 bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
-{  if (ae.Id()==AuftragBase::dispo_auftrag_id || 
-	ae.Id()==AuftragBase::dispo_auftrag_id)
-   {
+{  bool alles_ok=true;
+   if (in(ae.Id(),AuftragBase::dispo_auftrag_id,AuftragBase::ungeplante_id))
+   {  if (!!ae.getGeliefert())
+      {  alles_ok=false;
+         analyse("Bei 0/2ern darf nichts geliefert worden sein.\n",ae);
+         if (!analyse_only) 
+            Query("update auftragentry set geliefert=0 "
+         	"where (instanz,auftragid,zeilennr) = (?,?,?)")
+         	<< ae;
+//         ae.geliefert=0;
+      }
+      if (ae.getAufStatus()!=OPEN)
+      {  alles_ok=false;
+         analyse("0/2er Aufträge müssen offen sein\n",ae);
+         if (!analyse_only) Auftrag(ae).setStatusAuftrag_(OPEN);
+      }
+      if (ae.getEntryStatus()!=OPEN)
+      {  alles_ok=false;
+         analyse("0/2er Einträge müssen offen sein\n",ae);
+         if (!analyse_only) ae.setStatus(OPEN,getuid(),true);
+      }
    }
+   else if (ae.Instanz()!=ppsInstanzID::Kundenauftraege 
+   	&& ae.getGeliefert()>ae.getStueck())
+   {  alles_ok=false;
+      analyse("Geliefert muss kleiner gleich bestellt sein.",ae,ae.getGeliefert(),ae.getStueck());
+      if (!analyse_only) 
+         Query("update auftragentry set geliefert=? "
+		"where (instanz,auftragid,zeilennr) = (?,?,?)")
+		<< ae.getStueck() << ae;
+//      ae.geliefert=ae.getStueck();
+   }
+   
+   if (ae.Id()==AuftragBase::plan_auftrag_id)
+   {  if (ae.Instanz()==ppsInstanzID::Kundenauftraege)
+      {  alles_ok=false;   
+         analyse("Es darf keine 1er bei den Kundenaufträgen geben\n",ae);
+         // Bitte von Hand reparieren!
+      }
+      else if (!!ae.getRestStk() && !ae.Instanz()->LagerInstanz())
+      {  alles_ok=false;
+         analyse("1er Aufträge sollten CLOSED sein\n",ae);
+         if (!analyse_only) ae.abschreiben(ae.getRestStk());
+      }
+      if (ae.getEntryStatus()!=CLOSED && !ae.Instanz()->LagerInstanz())
+      {  alles_ok=false;
+         analyse("1er Aufträge sollten CLOSED sein\n",ae);
+         if (!analyse_only) ae.setStatus(CLOSED,getuid(),true);
+      }
+   }
+   if (ae.Instanz()!=ppsInstanzID::Kundenauftraege
+   	&& !in(ae.getEntryStatus(),OPEN,CLOSED))
+   {  alles_ok=false;
+      analyse("Interne Aufträge müssen OPEN/CLOSED sein\n",ae);
+      if (!analyse_only) ae.setStatus(CLOSED,getuid(),true);
+   }
+   if (ae.getGeliefert()>=ae.getStueck()
+   	&& ae.getEntryStatus()!=CLOSED)
+   {  alles_ok=false;
+      analyse("Erfüllte Aufträge müssen CLOSED sein\n",ae);
+      if (!analyse_only) ae.setStatus(CLOSED,getuid(),true);
+   }
+   else if (ae.Instanz()!=ppsInstanzID::Kundenauftraege 
+   	&& ae.getGeliefert()!=ae.getStueck()
+   	&& ae.getEntryStatus()!=OPEN)
+   {  alles_ok=false;
+      analyse("Offene interne Aufträge müssen OPEN sein\n",ae);
+      if (!analyse_only) ae.setStatus(OPEN,getuid(),true);
+   }
+   
+   if (ae.Instanz()->LagerInstanz() 
+   	&& ae.Id()==AuftragBase::dispo_auftrag_id
+   	&& ae.getLieferdatum()!=LagerBase::Lagerdatum())
+   {  alles_ok=false;
+      analyse("Das Datum von 2ern im Lager sollte 'epoch' sein",ae);
+      // Bitte von Hand reparieren!
+   }
+   return alles_ok;
 }

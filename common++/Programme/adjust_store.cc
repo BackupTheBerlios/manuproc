@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.28 2003/04/28 09:29:46 christof Exp $
+// $Id: adjust_store.cc,v 1.29 2003/05/16 14:41:59 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -32,6 +32,7 @@ void usage(const std::string &s)
            "\t   (in form von 1er(plan-)Aufträgen berücksichtigt. Sollte mehr\n"
            "\t   vorgemerkt sein, als im Lager drin ist, so sird die Vormerkung\n"
            "\t   reduziert.\n"
+#if 0           
            "\tB1:Es wird sichergestellt, daß ALLE Aufträge, die nicht zu den\n"
            "\t   Kundenaufträgen oder exterenen Bestellungen gehören die eigene\n"
            "\t   KundenID haben.\n"
@@ -52,6 +53,7 @@ void usage(const std::string &s)
            "\tS: Zuordnungen AN einen Auftrag (von den Eltern) testen\n"
            "\tT: Zuordnungen VON einen Auftrag (an die Kinder) testen\n"
            "\tKK:Kinder der Kundenaufträge an die noch benötigte Menge anpassen\n"
+#endif           
            "\t*: Alle Analysen/Reparaturen auf einmal (meist mit -I) (außer A,KK)\n";
            
  std::cerr << "USAGE:  ";
@@ -71,18 +73,18 @@ bool check_for(const std::string &pname,cH_ppsInstanz I,const std::string &aktio
       if(I->EigeneLagerKlasseImplementiert()) RI.ReparaturLager(getuid(),analyse_only);
       else std::cout << "\t"<< I << "'A' nicht sinnvoll\n";
      }
-    else if(aktion=="KK"&& I->KundenInstanz()) alles_ok=RI.ReparaturKK_KundenKinder(getuid(),analyse_only);
+//    else if(aktion=="KK"&& I->KundenInstanz()) alles_ok=RI.ReparaturKK_KundenKinder(getuid(),analyse_only);
     // ab hier alles einlesen, dann die tests durchführen
-    else if(aktion=="B" &&!I->KundenInstanz()) RI.Reparatur_Konsistenz(analyse_only);
-    else if(aktion=="C" &&!I->KundenInstanz()) RI.Reparatur_0er_und_2er(getuid(),analyse_only);
-    else if(aktion=="D" &&!I->KundenInstanz()) alles_ok=RI.ReparaturD_0_ZuSumme_1(getuid(),analyse_only);
-    else if(aktion=="E" &&!I->KundenInstanz()) alles_ok=RI.ReparaturE_2_ZuSumme_1(getuid(),analyse_only);
-    else if(aktion=="F" &&!I->KundenInstanz()) alles_ok=RI.ReparaturF_2_ZuSumme_1Rest(getuid(),analyse_only);
-    else if(aktion=="G")                       alles_ok=RI.ReparaturG_keine_Eltern(getuid(),analyse_only);
-    else if(aktion=="H" && I->LagerInstanz())  alles_ok=RI.ReparaturH_LagerZuordnungen(getuid(),analyse_only);
-    else if(aktion=="K" && I->KundenInstanz()) alles_ok=RI.ReparaturK_Kundenzuordnung(getuid(),analyse_only);
-    else if(aktion=="S")                       alles_ok=RI.ReparaturST_AuftragsZuordnung(getuid(),analyse_only,false);
-    else if(aktion=="T")                       alles_ok=RI.ReparaturST_AuftragsZuordnung(getuid(),analyse_only,true);
+//    else if(aktion=="B" &&!I->KundenInstanz()) RI.Reparatur_Konsistenz(analyse_only);
+//    else if(aktion=="C" &&!I->KundenInstanz()) RI.Reparatur_0er_und_2er(getuid(),analyse_only);
+//    else if(aktion=="D" &&!I->KundenInstanz()) alles_ok=RI.ReparaturD_0_ZuSumme_1(getuid(),analyse_only);
+//    else if(aktion=="E" &&!I->KundenInstanz()) alles_ok=RI.ReparaturE_2_ZuSumme_1(getuid(),analyse_only);
+//    else if(aktion=="F" &&!I->KundenInstanz()) alles_ok=RI.ReparaturF_2_ZuSumme_1Rest(getuid(),analyse_only);
+//    else if(aktion=="G")                       alles_ok=RI.ReparaturG_keine_Eltern(getuid(),analyse_only);
+//    else if(aktion=="H" && I->LagerInstanz())  alles_ok=RI.ReparaturH_LagerZuordnungen(getuid(),analyse_only);
+//    else if(aktion=="K" && I->KundenInstanz()) alles_ok=RI.ReparaturK_Kundenzuordnung(getuid(),analyse_only);
+//    else if(aktion=="S")                       alles_ok=RI.ReparaturST_AuftragsZuordnung(getuid(),analyse_only,false);
+//    else if(aktion=="T")                       alles_ok=RI.ReparaturST_AuftragsZuordnung(getuid(),analyse_only,true);
     else usage(pname);
    return alles_ok;
 }
@@ -148,7 +150,7 @@ int main(int argc,char *argv[])
      { std::vector<cH_ppsInstanz> VI=cH_ppsInstanz::get_all_instanz();
        for(std::vector<cH_ppsInstanz>::const_iterator i=VI.begin();i!=VI.end();++i)
         {
-         if((*i)->KundenInstanz()) continue;
+         //if((*i)->KundenInstanz()) continue;
          bool x=check_for(argv[0],*i,aktion,analyse_only);
          if(!x) alles_ok=x;
         }
