@@ -1,4 +1,4 @@
-/* $Id: EmptyInt_4TeX.h,v 1.5 2002/11/22 15:27:03 christof Exp $ */
+/* $Id: EmptyInt_4TeX.h,v 1.6 2003/07/23 06:59:51 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
