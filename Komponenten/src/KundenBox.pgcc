@@ -100,9 +100,9 @@ void KundenBox::Name_search(gboolean *_continue, GtkSCContext newsearch)
              if(einschraenkung_b)
                squery = "select DISTINCT k.firma, e.extartbezid from 
                   extbezschema e join kunden k on (e.extartbezid=k.kundennr)
-                  where k.firma like '"+kundenname->get_text()+"%'";
+                  where k.firma ilike '"+kundenname->get_text()+"%'";
              else
-               squery = "select firma,kundennr from kunden where firma like '"+
+               squery = "select firma,kundennr from kunden where firma ilike '"+
                   kundenname->get_text() +"%' order by firma";             
              strncpy(query,squery.c_str(),sizeof(query));
              exec sql prepare kubo_name_ from :query;
@@ -137,7 +137,8 @@ gint KundenBox::try_grab_focus(GtkWidget *w,gpointer gp)
    return true;
 }
 
-KundenBox::KundenBox() : id(Kunde::none_id), tr("",false), tr2("",false)
+KundenBox::KundenBox() : id(Kunde::none_id), tr("",false), tr2("",false),
+   einschraenkung_b(false)
 {
  // redirect our grab_focus
  gtk_signal_connect(GTK_OBJECT(gtkobj()), "grab_focus",

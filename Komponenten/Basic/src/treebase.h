@@ -105,6 +105,7 @@ public:
  
  static void Expand_recursively(TCListRow_API &api);
  void Expand_recursively();
+ void Collapse(){collapse();}
  
  const std::deque<guint> &get_seq() const {return currseq;}
  void show_titles(bool show);
@@ -164,25 +165,49 @@ public:
  template <class T> T &getSelectedNode_as() const
  {  return dynamic_cast<T&>(getSelectedNode());
  }
+ 
 
 private:
- template <class T> void selectMatchingLines(TCListRow_API::const_iterator b, 
- 			TCListRow_API::const_iterator e, const T &t)
+ template <class T> 
+  static void ForEachLeaf2(TCListRow_API::const_iterator b,
+                         TCListRow_API::const_iterator e, T &t)
+ {  for (TCListRow_API::const_iterator i=b;i!=e;++i)
+    {  const TreeRow *tlr=reinterpret_cast<const TreeRow *>((*i).get_user_data());
+       if (!tlr->Leaf())
+       {  ForEachLeaf2(tlr->begin(),tlr->end(),t);
+       }
+       else t(tlr->LeafData());
+    }
+ }
+ 
+ template <class T> void selectMatchingLines2(TCListRow_API::const_iterator b, 
+ 			TCListRow_API::const_iterator e, const T &t,
+ 			bool only_one_line)
  {  for (TCListRow_API::const_iterator i=b;i!=e;++i)
     {  const TreeRow *tlr=reinterpret_cast<const TreeRow *>((*i).get_user_data());
        if (tlr->LeafData()==t)
        {  int rowno=static_cast<const TCListRow&>(*i).get_lineno();
-          if (rowno!=-1) row(rowno).select();
+          if (rowno!=-1) 
+             { row(rowno).select();
+               if (only_one_line) return;
+             }
        }
-       if ((*i).begin()!=(*i).end()) selectMatchingLines((*i).begin(),(*i).end(),t);
+       if ((*i).begin()!=(*i).end()) selectMatchingLines2((*i).begin(),
+                                        (*i).end(),t,only_one_line);
     }
  }
- 
+
 public:
  template <class T> void selectMatchingLines(const T &t)
  {  selection().clear();
-    selectMatchingLines(begin(),end(),t);
+    selectMatchingLines2(begin(),end(),t,false);
  }
+ template <class T> void selectFirstMatchingLine(const T &t)
+ {  selection().clear();
+    selectMatchingLines2(begin(),end(),t,true);
+ }
+ template <class T> void ForEachLeaf(T &t) const
+ {  ForEachLeaf2(begin(),end(),t); }
 };
 
 ///////////////////////////////////////////////////////////////////

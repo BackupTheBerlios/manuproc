@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.13 2002/01/22 09:21:56 christof Exp $
+// $Id: ArtikelBox.cc,v 1.14 2002/03/20 07:55:01 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -186,7 +186,8 @@ void ArtikelBox::init()
    assert(!combos.size());
    assert(!labels.size());
 #endif   
- ArtikelBox::Benutzerprofil_laden();
+
+ ArtikelBox::Benutzerprofil_laden();   // setzt signifikanz !!! 
 
 reloop:
  for (std::vector<int>::iterator i=signifikanz.begin();i!=signifikanz.end();++i)
@@ -312,7 +313,12 @@ ArtikelBox::ArtikelBox(const std::string& _program,const std::string& _position)
      ExtBezSchema::ID eid = atoi(s.c_str());
      ArtikelTyp atyp      = atoi(t.c_str());
 //std::cout << eid<<'-'<<atyp<<'\n';
-     setExtBezSchema(cH_ExtBezSchema(eid,atyp)); 
+     try
+     {  setExtBezSchema(cH_ExtBezSchema(eid,atyp)); 
+     }
+     catch (SQLerror &e)
+     {  std::cout << e << '\n';
+     }
    }
 }
 
@@ -328,12 +334,6 @@ void ArtikelBox::artbox_start()
 
 void ArtikelBox::setExtBezSchema(const cH_ExtBezSchema &_schema)
 {
-#if 0
-   remove();
-   combos.clear();
-   labels.clear();
-#endif
-//std::cout << "ArtikelBox::setExtBezSchema " <<schema->Id()<<' ' <<_schema->Id()<<'\n';
    schema=_schema;
 
    init();
@@ -362,23 +362,20 @@ gint ArtikelBox::MouseButton(GdkEventButton *event)
 void ArtikelBox::setzeSchemaId(int t)
 {  
    Benutzerprofil_speichern();
-cout << "ArtikelBox::setzeSchemaId: "<<' '<<t<<'\n';
-//   if(ExtBezSchema::exist_schema_for_typ(schema->Id(),t))
+//cout << "ArtikelBox::setzeSchemaId: "<<' '<<t<<'\n';
    try {
       setExtBezSchema(cH_ExtBezSchema(schema->Id(),t));
    } catch (SQLerror &e)
-   {
-   /*else*/ setExtBezSchema(cH_ExtBezSchema(ExtBezSchema::default_ID,t));
+   {  setExtBezSchema(cH_ExtBezSchema(ExtBezSchema::default_ID,t));
    }
-//std::cout << "Id"<<sprogram<<'\n';
    if (sprogram!="")
-    Global_Settings(0,sprogram,sposition,itos(schema->Id())+":"+itos(t));
+      Global_Settings(0,sprogram,sposition,itos(schema->Id())+":"+itos(t));
 }
+
 void ArtikelBox::setzeSchemaTyp(int t2)
 {  
    Benutzerprofil_speichern();
    setExtBezSchema(cH_ExtBezSchema(t2,schema->Typ()));
-//std::cout << "Typ"<<sprogram<<'\n';
    if (sprogram!="")
       Global_Settings(0,sprogram,sposition,itos(t2)+":"+itos(schema->Typ()));
 }
@@ -399,9 +396,7 @@ void ArtikelBox::setzeSignifikanz(int t)
 void ArtikelBox::Autocomplete(Gtk::CheckMenuItem *autocomplete)
 { 
   autocompletebool=autocomplete->get_active();
-   for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
-      for (t_combos::iterator i=j->begin();i!=j->end();++i)
-        (*i)->set_autoexpand(autocompletebool); 
+  set_autoexpand(autocompletebool);
   Benutzerprofil_speichern();
 }  
 

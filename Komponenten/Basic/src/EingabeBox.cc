@@ -1,4 +1,4 @@
-// $Id: EingabeBox.cc,v 1.3 2002/01/22 09:21:56 christof Exp $
+// $Id: EingabeBox.cc,v 1.4 2002/03/20 07:55:01 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -115,7 +115,7 @@ void EingabeBox::set_size(int cols)
       if (visible_size<cols_to_show)
       {  cons[visible_size].disconnect();
          if (visible_size)
-	    cons[visible_size]=entries[visible_size-1]->activate.connect(entries[visible_size]->grab_focus.slot());
+	      cons[visible_size]=entries[visible_size-1]->activate.connect(entries[visible_size]->grab_focus.slot());
          else // visible_size==0
             cons[0]=grab_focus_tried.connect(entries[0]->grab_focus.slot());
          // short cut ?
@@ -144,6 +144,17 @@ void EingabeBox::set_size(int cols)
    }
    check();
 }
+
+#warning ich fände es besser, wenn man bei einem activate die folgede Funktion aufrufen würde,
+#warning anstatt das grab Fokus in einem Vektor zu speichern. Aber VOR dem 
+#warning umbauen möchte ich Deine Mainung hören MAT
+/*
+void EingabeBox::activate_entry(int nr)
+{
+   entries[visible_size]->grab_focus();
+   entries[visible_size]->select_region(0,-1);
+}
+*/
 
 void EingabeBox::reset()
 {  for (t_entries::iterator i=entries.begin();i!=entries.end();++i)

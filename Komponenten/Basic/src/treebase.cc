@@ -476,7 +476,7 @@ void TreeBase::fillMenu()
       Gtk::CheckMenuItem *sp = manage(new class Gtk::CheckMenuItem(getColTitle(i)));
       spalten_menu->append(*sp);
       sp->set_active(true);
-      sp->show();
+//      sp->show();
       sp->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::welche_Spalten),i,sp));
     }
    menu->append(*optionen);
@@ -484,14 +484,17 @@ void TreeBase::fillMenu()
    Gtk::CheckMenuItem *titles = manage(new class Gtk::CheckMenuItem("Spaltenüberschriften anzeigen"));
    Gtk::CheckMenuItem *auffuellen = manage(new class Gtk::CheckMenuItem("Auffüllen mit aktueller Reinfolge\n(statt Anfangsreinfolge)"));
    Gtk::CheckMenuItem *expandieren = manage(new class Gtk::CheckMenuItem("Gewählte Knoten expandieren"));
+   Gtk::MenuItem *exp_all = manage(new class Gtk::MenuItem("Alle Knoten expandieren"));
+   Gtk::MenuItem *col_all = manage(new class Gtk::MenuItem("Alle Knoten kollabieren"));
    optionen_menu->append(*titles);
    optionen_menu->append(*auffuellen);
    optionen_menu->append(*expandieren);
-   titles->show();
-   auffuellen->show();
-   expandieren->show();
+   optionen_menu->append(*exp_all);
+   optionen_menu->append(*col_all);
+//   titles->show();
+//   auffuellen->show();
+//   expandieren->show();
    
-
    neuordnen->activate.connect(SigC::slot(this,&TreeBase::on_neuordnen_clicked));
    zuruecksetzen->activate.connect(SigC::slot(this,&TreeBase::on_zuruecksetzen_clicked));
    abbrechen->activate.connect(SigC::slot(this,&TreeBase::on_abbrechen_clicked));
@@ -511,12 +514,16 @@ void TreeBase::fillMenu()
    else                 expandieren->set_active(false);
    expandieren->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::Expandieren),expandieren));
 
+   exp_all->activate.connect(SigC::slot(this,&TreeBase::Expand_recursively));
+   col_all->activate.connect(SigC::slot(this,&TreeBase::Collapse));
+
    // Menu anzeigen
-   neuordnen->show();
-   zuruecksetzen->show();
-   abbrechen->show();
-   spalten->show();
-   optionen->show();
+//   neuordnen->show();
+//   zuruecksetzen->show();
+//   abbrechen->show();
+//   spalten->show();
+//   optionen->show();
+   menu->show_all();
 }
 
 void TreeBase::welche_Spalten(guint i,const Gtk::CheckMenuItem *sp)

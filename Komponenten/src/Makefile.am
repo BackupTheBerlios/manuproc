@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.10 2002/02/13 12:40:04 christof Exp $
+# $Id: Makefile.am,v 1.11 2002/03/20 07:55:01 christof Exp $
 CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK_INCLUDES@ @COMMONXX_INCLUDES@  
 
@@ -23,7 +23,8 @@ include_HEADERS = datewin.h logwin.h\
    WWaehrung.hh WPreis.hh WAuftragStatus.hh \
    Optionmenu_Instanz.hh Artikel_Bestellen.hh \
    Optionmenu_Warengruppe.hh PPixmap.hh \
-   Optionmenu_Einheit.hh
+   Optionmenu_Einheit.hh PreisBox.hh WTelefon.hh \
+   IntStringBox.hh IntStringBox_glade.hh PersonenBox.hh
 
 lib_LIBRARIES= libKomponenten.a
 
@@ -37,11 +38,15 @@ libKomponenten_a_SOURCES=datewin.cc \
       Artikel_Bestellen.cc \
       PPixmap.cc \
       Optionmenu_Einheit.cc \
-      Optionmenu_Instanz.cc 
+      Optionmenu_Instanz.cc \
+      WTelefon.cc \
+      IntStringBox_glade.cc \
+      PersonenBox.cc \
+      PreisBox.cc
 
 BUILT_SOURCES_L= ArtikelBox_sql.cc ProzessBox.cc KundenBox.cc $(LINKS) \
    WWaehrung_sql.cc WPreis_sql.cc WAuftragStatus_sql.cc \
-   Optionmenu_Warengruppe_sql.cc
+   Optionmenu_Warengruppe_sql.cc IntStringBox.cc
 
 BUILT_SOURCES=datewin.hh SimpleTree.hh logwin.hh $(BUILT_SOURCES_L) 
 

@@ -52,8 +52,7 @@ public:
 
 	Kunde::ID get_value() const 
 	{  return id; }
-	void set_value(Kunde::ID i)
-	{  set_value(cH_Kunde(i)); }
+	void set_value(Kunde::ID i) {  set_value(cH_Kunde(i)); }
 	void set_value(const cH_Kunde &k);
 	void reset();
 

@@ -331,4 +331,154 @@
   </widget>
 </widget>
 
+<widget>
+  <class>GtkWindow</class>
+  <name>window_preisliste</name>
+  <title>window1</title>
+  <type>GTK_WINDOW_TOPLEVEL</type>
+  <position>GTK_WIN_POS_NONE</position>
+  <modal>False</modal>
+  <allow_shrink>False</allow_shrink>
+  <allow_grow>True</allow_grow>
+  <auto_shrink>False</auto_shrink>
+
+  <widget>
+    <class>GtkTable</class>
+    <name>PreisBox</name>
+    <cxx_separate_file>True</cxx_separate_file>
+    <cxx_separate_class>True</cxx_separate_class>
+    <rows>2</rows>
+    <columns>2</columns>
+    <homogeneous>False</homogeneous>
+    <row_spacing>0</row_spacing>
+    <column_spacing>0</column_spacing>
+
+    <widget>
+      <class>GtkLabel</class>
+      <name>label_prnr</name>
+      <cxx_visibility>protected</cxx_visibility>
+      <label>Preisliste Nr.</label>
+      <justify>GTK_JUSTIFY_CENTER</justify>
+      <wrap>False</wrap>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
+      <child>
+	<left_attach>0</left_attach>
+	<right_attach>1</right_attach>
+	<top_attach>0</top_attach>
+	<bottom_attach>1</bottom_attach>
+	<xpad>0</xpad>
+	<ypad>0</ypad>
+	<xexpand>False</xexpand>
+	<yexpand>False</yexpand>
+	<xshrink>False</xshrink>
+	<yshrink>False</yshrink>
+	<xfill>False</xfill>
+	<yfill>False</yfill>
+      </child>
+    </widget>
+
+    <widget>
+      <class>GtkLabel</class>
+      <name>label_nam</name>
+      <cxx_visibility>protected</cxx_visibility>
+      <label>Name</label>
+      <justify>GTK_JUSTIFY_CENTER</justify>
+      <wrap>False</wrap>
+      <xalign>0.5</xalign>
+      <yalign>0.5</yalign>
+      <xpad>0</xpad>
+      <ypad>0</ypad>
+      <child>
+	<left_attach>1</left_attach>
+	<right_attach>2</right_attach>
+	<top_attach>0</top_attach>
+	<bottom_attach>1</bottom_attach>
+	<xpad>0</xpad>
+	<ypad>0</ypad>
+	<xexpand>False</xexpand>
+	<yexpand>False</yexpand>
+	<xshrink>False</xshrink>
+	<yshrink>False</yshrink>
+	<xfill>False</xfill>
+	<yfill>False</yfill>
+      </child>
+    </widget>
+
+    <widget>
+      <class>Custom</class>
+      <name>preisnr</name>
+      <width>80</width>
+      <height>16</height>
+      <cxx_visibility>protected</cxx_visibility>
+      <signal>
+	<name>activate</name>
+	<handler>Preisnr_activate</handler>
+	<last_modification_time>Fri, 01 Mar 2002 11:57:58 GMT</last_modification_time>
+      </signal>
+      <signal>
+	<name>search</name>
+	<handler>Preisnr_search</handler>
+	<last_modification_time>Fri, 01 Mar 2002 11:58:07 GMT</last_modification_time>
+      </signal>
+      <creation_function>SearchCombo</creation_function>
+      <int1>0</int1>
+      <int2>0</int2>
+      <last_modification_time>Mon, 12 Feb 2001 15:46:47 GMT</last_modification_time>
+      <child>
+	<left_attach>0</left_attach>
+	<right_attach>1</right_attach>
+	<top_attach>1</top_attach>
+	<bottom_attach>2</bottom_attach>
+	<xpad>0</xpad>
+	<ypad>0</ypad>
+	<xexpand>False</xexpand>
+	<yexpand>False</yexpand>
+	<xshrink>False</xshrink>
+	<yshrink>False</yshrink>
+	<xfill>True</xfill>
+	<yfill>False</yfill>
+      </child>
+    </widget>
+
+    <widget>
+      <class>Custom</class>
+      <name>preislistenname</name>
+      <width>150</width>
+      <height>16</height>
+      <cxx_visibility>protected</cxx_visibility>
+      <signal>
+	<name>activate</name>
+	<handler>Name_activate</handler>
+	<last_modification_time>Mon, 28 Aug 2000 13:34:58 GMT</last_modification_time>
+      </signal>
+      <signal>
+	<name>search</name>
+	<handler>Name_search</handler>
+	<last_modification_time>Wed, 30 Aug 2000 06:11:58 GMT</last_modification_time>
+      </signal>
+      <creation_function>SearchComboContent&lt;int&gt;</creation_function>
+      <int1>0</int1>
+      <int2>0</int2>
+      <last_modification_time>Fri, 01 Mar 2002 11:58:42 GMT</last_modification_time>
+      <child>
+	<left_attach>1</left_attach>
+	<right_attach>2</right_attach>
+	<top_attach>1</top_attach>
+	<bottom_attach>2</bottom_attach>
+	<xpad>0</xpad>
+	<ypad>0</ypad>
+	<xexpand>True</xexpand>
+	<yexpand>False</yexpand>
+	<xshrink>True</xshrink>
+	<yshrink>False</yshrink>
+	<xfill>True</xfill>
+	<yfill>False</yfill>
+      </child>
+    </widget>
+  </widget>
+</widget>
+
 </GTK-Interface>

@@ -239,13 +239,6 @@ void ArtikelBox::fuelleMenu()
          typ_menu->append(*mi);
          mi->show();
          mi->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::setzeSchemaId),id[i]));
-
-/*
-   	 if (!typ_ok)
-	     { if (schema->Typ()==ArtikelTyp::typ(id[i])) typ_ok=true;
-	       else if (!i) neuerTyp=id[i];
-     	  }
-*/
        }
    }
    if (!typ_ok)
@@ -392,17 +385,17 @@ void ArtikelBox::Benutzerprofil_laden()
   db_schema=schema->Id();
   exec sql select anzeige_pos, anzeige_neg, auswahl, autocomplete, kombiniert
    into :db_anzeige_pos, :db_anzeige_neg, :db_auswahl, :db_autocomplete, :db_kombiniert
-   from artbez_anzeige where uid=:db_uid and artikeltyp=:db_artikeltyp
-   and schema=:db_schema;
+   from artbez_anzeige 
+   where uid=:db_uid and artikeltyp=:db_artikeltyp and schema=:db_schema;
   SQLerror::test(__FILELINE__,100);
+
+  signifikanz.clear();
   if (sqlca.sqlcode) 
-  {  signifikanz.clear();
-     autocompletebool=false;
+  {  autocompletebool=false;
      kombiniertbool=false;
      return;
   }
   
-  signifikanz.clear();
   for (unsigned int i=0;i<sizeof(db_anzeige_pos)*8;++i)
    {
      unsigned int sig = (db_anzeige_pos &(1<<i));
@@ -414,6 +407,7 @@ void ArtikelBox::Benutzerprofil_laden()
      if (sig!=0) signifikanz.push_back(-(i+1));
    }
   autocompletebool=db_autocomplete;
+  set_autoexpand(autocompletebool);
   kombiniertbool=db_kombiniert;
 }
 
@@ -564,6 +558,7 @@ void ArtikelBox::where_what(std::string& where, std::string& what, bool jumbo)
   where += ")"; what+=")";
 }
 
+#ifdef PETIG_EXTENSIONS
 int ArtikelBox::jumbo_exist() 
 {
   unsigned int l=0; 
@@ -610,6 +605,7 @@ int ArtikelBox::jumbo_exist()
  tr.close();
  return db_jumbo_id;
 }
+#endif
 
 void ArtikelBox::insert_into_artikelzusammensetzung(int id, int id_jumbo, int prozess,double menge)
 {

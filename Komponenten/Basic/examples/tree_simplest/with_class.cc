@@ -15,7 +15,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// $Id: with_class.cc,v 1.12 2001/11/15 15:16:16 christof Exp $
+// $Id: with_class.cc,v 1.13 2002/03/20 07:55:01 christof Exp $
 
 #include "config.h"
 #include "with_class.hh"
@@ -151,6 +151,19 @@ bool operator==(const cH_RowDataBase &b, int i)
    {  return false; }
 }
 
+class OutputFunctor
+{	ostream &os;
+	int sum;
+public:
+	OutputFunctor(ostream &o) : os(o), sum(0) {}
+	void operator()(const cH_RowDataBase &b)
+	{  cH_MyRowData m(b);
+	   os << m->Data(0) << ',';
+	   sum+=m->Data(0);
+	}
+	int Sum() const { return sum; }
+};
+
 with_class::with_class()
 {  std::vector <std::string> v(treebase->Cols());
    v[SP_ATT0]="Integer";
@@ -184,4 +197,9 @@ with_class::with_class()
    
    treebase->leaf_selected.connect(SigC::slot(this,&with_class::on_leaf_selected));
    treebase->selectMatchingLines(2);
+   
+   {  OutputFunctor of(std::cout);
+      treebase->ForEachLeaf(of);
+      std::cout << "=" << of.Sum() << '\n';
+   }
 }

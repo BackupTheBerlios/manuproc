@@ -175,6 +175,22 @@
 
     <widget>
       <class>Custom</class>
+      <name>custom2</name>
+      <cxx_visibility>protected</cxx_visibility>
+      <creation_function>PreisBox</creation_function>
+      <int1>0</int1>
+      <int2>0</int2>
+      <last_modification_time>Fri, 01 Mar 2002 15:07:18 GMT</last_modification_time>
+      <child>
+	<padding>0</padding>
+	<expand>True</expand>
+	<fill>True</fill>
+	<pack>GTK_PACK_END</pack>
+      </child>
+    </widget>
+
+    <widget>
+      <class>Custom</class>
       <name>WAufStat</name>
       <height>25</height>
       <cxx_visibility>protected</cxx_visibility>

@@ -14,8 +14,10 @@
 //#include <../pixmap/Geplant_small.xpm>
 #include <../pixmap/P_gruen.xpm>
 #include <../pixmap/V_gruen.xpm>
+#include <../pixmap/X_Fehler.xpm>
 #include <../pixmap/Geliefert_small.xpm>
 #include <../pixmap/fragezeichen_small.xpm>
+
 #include <Aux/itos.h>
 
 std::vector<Picture2> PPixmap::vpix;
@@ -42,13 +44,16 @@ PPixmap::PPixmap()
      mappix['G']=Picture2(Geliefert_small_xpm);
 //     mappix['P']=Picture2(P_gruen_xpm);
      mappix['V']=Picture2(V_gruen_xpm);
+     mappix['X']=Picture2(X_Fehler_xpm);
    }
 }
 
 Gtk::Pixmap *PPixmap::getPixProz(double x)
 {
-  if (x<0)   {assert(!"PPixmap: Wert unter 0");} 
-  if (x>1) {assert(!"PPixmap: Wert unter 1");} 
+  if (x<0)   return getPixMap('X');
+            //{assert(!"PPixmap: Wert unter 0");} 
+  if (x>1)   return getPixMap('X');
+            //{assert(!"PPixmap: Wert unter 1");} 
 
   if(x<.10)   return manage(new Gtk::Pixmap(vpix[0].pmap(),vpix[0].mask()));
   if(x<.20)   return manage(new Gtk::Pixmap(vpix[1].pmap(),vpix[1].mask()));
