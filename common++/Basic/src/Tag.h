@@ -1,4 +1,4 @@
-// $Id: Tag.h,v 1.1 2002/12/12 10:35:24 christof Exp $
+// $Id: Tag.h,v 1.2 2003/01/23 18:02:36 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2002  Christof Petig
  *
@@ -33,6 +33,9 @@ class Tag {
 
 public: // nice to have for custom parsing
     	typedef std::vector<Tag>::difference_type difference_type;
+    	template <class T>
+    	 static T parse_value(const std::string &val, const T &def);
+    	 
 	static bool parse_bool_value(const std::string &val, bool def=false);
 	static int parse_int_value(const std::string &val, int def=0);
 	static long parse_long_value(const std::string &val, long def=0);
