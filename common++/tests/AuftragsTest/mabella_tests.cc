@@ -37,11 +37,11 @@ static bool Auftrag_Kunde()
  AufEintragBase AEB=auftrag.push_back(16,DATUM,ARTIKEL_TRIO,OPEN,true);
  vergleichen(Check::Menge,"auftrag_anlegen","Kundenauftrag anlegen","AM");
 
- Auftrag best=Auftrag(Auftrag::Anlegen(ppsInstanzID::Einkauf),LIEFERANT); 
+ Auftrag best=Auftrag(Auftrag::Anlegen(EINKAUF),LIEFERANT); 
  AufEintragBase BE=best.push_back(16,DATUM,ARTIKEL_TRIO,OPEN,true);
  vergleichen(Check::Menge,"bestellung_anlegen","Bestellung anlegen","BE");
 
- Lieferschein we(ppsInstanzID::Einkauf,cH_Kunde(LIEFERANT));
+ Lieferschein we(EINKAUF,cH_Kunde(LIEFERANT));
  AufEintrag BEAE(BE);
  LieferscheinEntryBase lsb(we,we.push_back(BEAE,ARTIKEL_TRIO,20,0,0));
  LieferscheinEntry lsbe(lsb);
@@ -63,13 +63,34 @@ static bool Auftrag_Kunde()
 static TestReihe Auftrag_Kunde_(&Auftrag_Kunde,"Kundenauftrag (Mabella)","AM");
 
 
+static bool Komplex_Artikel()
+{
+ Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE); 
+ AufEintragBase AEB=auftrag.push_back(1,DATUM,ARTIKEL_MUSTER,OPEN,true);
+ vergleichen(Check::Menge,"muster_auftrag_anlegen","Kundenmusterauftrag anlegen","MA");
+
+/* Lieferschein liefs(KUNDENINSTANZ,cH_Kunde(KUNDE));
+ AufEintrag AE(AEB);
+ LieferscheinEntryBase LS(liefs,liefs.push_back(AE,ARTIKEL_MUSTER,1,0,0));
+ LieferscheinEntry LE(LS);
+ LE.lagerid=FertigWarenLager::default_lagerid;
+ LE.changeStatus(OPEN,true);
+*/
+ vergleichen(Check::Lieferschein|Check::Menge,"muster_auftrag_liefern","Auslieferung","L");
+	
+ return true;
+}
+
+static TestReihe Komplex_Artikel_(&Komplex_Artikel,"Zusammengesetzte Artikel","ZuA");
+
+
 static bool Rollereiplanung()
 {  
        Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
        AufEintragBase AEB2=auftrag.push_back(40,DATUM,ARTIKEL_TRIO,OPEN,true);
        vergleichen(Check::Menge,"roll_Ausgangspunkt","Ausgangspunkt","a");
        
-       AufEintragBase sourceb(ppsInstanzID::Einkauf,AuftragBase::ungeplante_id,1);
+       AufEintragBase sourceb(EINKAUF,AuftragBase::ungeplante_id,1);
        AufEintrag source(sourceb);
        assert(source.Artikel()==ARTIKEL_TRIO);
        AuftragBase dest(ppsInstanzID::Rollerei,AuftragBase::ungeplante_id);
@@ -113,4 +134,35 @@ static bool MindestMenge()
 }
 
 static TestReihe MindestMenge_(&MindestMenge,"Mindestmenge","minMen");
+
+
+static bool MindestMenge_Lief()
+{  FertigWaren fw(ARTIKEL_TRIO,FertigWaren::eManuell,5);
+   FertigWarenLager fwl(fw,FertigWarenLager::default_lagerid);
+   fwl.Einlagern(ProductionContext());
+   
+   ArtikelStamm(make_value(ArtikelBase(ARTIKEL_TRIO))).setMindBest(5);
+   vergleichen(Check::Menge,"minmen_Ausgangspunkt","Ausgangspunkt","a");
+   
+   Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
+   AufEintragBase AEB2=auftrag.push_back(4,DATUM,ARTIKEL_TRIO,OPEN,true);
+   vergleichen(Check::Menge,"minmen_Bestellung","Bestellung","b");   
+   
+   Lieferschein liefs(KUNDENINSTANZ,cH_Kunde(KUNDE));
+   AufEintrag AE(AEB2);
+   LieferscheinEntryBase lsb(liefs,liefs.push_back(AE,ARTIKEL_TRIO,4,0,0));
+   LieferscheinEntry LE(lsb);
+   LE.lagerid=fwl.Id();
+   LE.changeStatus(OPEN,true);
+   vergleichen(Check::Lieferschein|Check::Menge,"minmen_Auslief","Lieferung","l");
+   LE.changeStatus(STORNO,true);
+   vergleichen(Check::Lieferschein|Check::Menge,"minmen_Storno","Storno Lief","sl");
+
+   return true;
+}
+
+static TestReihe MindestMenge_Lief_(&MindestMenge_Lief,"Mindestmenge LiefStorno","minMen_LS");
+
+
+
 #endif
