@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.14 2002/04/11 12:01:07 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.15 2002/04/19 06:23:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,11 +24,12 @@
 #include <Kunde/Telefon.h>
 #include <Aux/FetchIStream.h>
 
+
 Kunde::Kunde(ID _id) throw(SQLerror) 
 : Kundennr(_id), KundenGruppennr(0),schema(ExtBezSchema::default_id),rngan(0),
   rng_an_postfach(false),lieferadresse(false),rechnungsadresse(false),
   entsorg(false),
-  waehrung(Waehrung::EUR)
+  waehrung(WaehrungID::EUR)
 { 
    // return ersetzen
    if(_id == Kunde::none_id) return;
@@ -37,7 +38,8 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    char SORTNAME[31], IDNR[21];
    char NAME[61], STRASSE[36], HSNR[8], POSTFACH[21],ORT[31],BANKNAME[51],
          PLZ[11],POSTFACHPLZ[11],KTONR[11],BLZ[11],POSTANWVOR[41],POSTANWNACH[41];
-   char LKZ[4];
+   int LANDESID;
+   int ILLEGALLANDID;
    int FLAECHE,MITARBEITER;
    double KUNDENUMSATZ,PLANUMSATZ,UMSATZ, RABATT,EINZUGRABATT,SKONTOSATZ;
    bool ZEILENRABATT;
@@ -51,11 +53,12 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    int LIEFERANTENKONTO,GEGENKONTO;
    char UNSERE_KUNDENNR[128];
    exec sql end declare section;
+   ILLEGALLANDID=LandesListe::none_id;
 //Sonderpreislisten werden getrennt geholt
   
    Transaction tr;
  
-   WAEHRUNGID = Waehrung::EUR;
+   WAEHRUNGID = WaehrungID::EUR;
 
 ///XXX STAND 'now' stimmt noch nicht MAT
    exec sql select coalesce(gruppennr,0), firma,coalesce(sortname,''),
@@ -76,7 +79,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
          coalesce(planumsatz,0.0),coalesce(umsatz,0.0),
          coalesce(rabatt,0.0),coalesce(zeilenrabatt,false),coalesce(einzugrabatt,0.0),coalesce(skontofrist,0),
          coalesce(verein,''),coalesce(bankeinzug,false), coalesce(notiz,''), 
-         coalesce(stand,now()),	coalesce(lkz,''),
+         coalesce(stand,now()),	coalesce(landid,:ILLEGALLANDID),
 	 coalesce(waehrungid,:WAEHRUNGID),
 	 coalesce(entsorgung,false), coalesce(skontosatz,0),
     coalesce(verknr,0),coalesce(lieferantenkonto,0),
@@ -88,7 +91,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
             :LIEFERADRESSE,:RECHUNGSADRESSE,:RNGANLFRA,
            :FLAECHE,:MITARBEITER,:KUNDENUMSATZ,:PLANUMSATZ,:UMSATZ,
 	   :RABATT,:ZEILENRABATT,:EINZUGRABATT,:SKONTOFRIST, :VEREIN, :BANKEINZUG,
-	   :NOTIZ,:STAND, :LKZ, :WAEHRUNGID, :ENTSORGUNG, :SKONTOSATZ,:VERKNR,
+	   :NOTIZ,:STAND, :LANDESID, :WAEHRUNGID, :ENTSORGUNG, :SKONTOSATZ,:VERKNR,
       :LIEFERANTENKONTO,:GEGENKONTO,:UNSERE_KUNDENNR
    	from kunden k left join banken b using(bankindex)
    	where kundennr= :ID;
@@ -107,7 +110,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    adresse.postfach=POSTFACH;
    adresse.postfachplz=POSTFACHPLZ;
    adresse.ort=ORT;
-   adresse.lkz = LKZ;
+   adresse.land = cH_LandesListe(LANDESID);
    adresse.unsere_kundennr = UNSERE_KUNDENNR;
    IDnr=IDNR;
    lieferadresse=LIEFERADRESSE;
@@ -332,6 +335,7 @@ void Kunde::update_e(UpdateBitsAdresse e)
      else if (i==B_Postfach   ) query += "postfach  = '"+postfach()+"',";
      else if (i==B_Postfachplz) query += "postfplz  = '"+postfachplz()+"',";
      else if (i==B_Ort        ) query += "ort  = '"+ort()+"',";
+     else if (i==B_Lkz           ) query += "landid  = '"+itos(land()->Id())+"',";
      else if (i==B_Lieferadresse  ) query += "lieferadresse  = "+btos(isLieferadresse())+",";
      else if (i==B_Rechnungadresse) query += "rechnungsadresse  = "+btos(isRechnungsadresse())+",";
      else if (i==B_Rng_an_postfach) query += "rng_an_postfach  = "+btos(Rng_an_postfach())+",";
@@ -352,7 +356,6 @@ void Kunde::update_e(UpdateBitsFirma e)
      else if (i==B_Mitarbeiter   ) query += "mitarbeiter  = "+itos(mitarbeiter())+",";
      else if (i==B_Kundenumsatz  ) query += "kundenumsatz  = "+dtos(kundenumsatz())+",";
      else if (i==B_Flaeche       ) query += "flaeche  = "+itos(flaeche())+",";
-     else if (i==B_Lkz           ) query += "lkz  = '"+lkz()+"',";
      else if (i==B_UnsereKundenNr) query += "unsere_kundennr  = '"+UnsereKundenNr()+"',";
      else if (i==B_Verein     ) query += "verein = '"+verein()+"',";
    }
@@ -368,7 +371,7 @@ void Kunde::update_e(UpdateBitsBank e)
    {
      if(!(e&(1<<i))) continue;
      if      (i==B_Ktonr       ) query += "ktonr  = '"+ulltos(getKtnr())+"',";
-     else if (i==B_Blz         ) query += "blz  = '"+itos(getblz())+"',";
+     else if (i==B_Blz         ) query += "bankindex  = "+itos(getindex())+",";
      else if (i==B_Bankindex   ) query += "bankindex  = "+itos(getindex())+",";
      else if (i==B_Bankeinzug  ) query += "bankeinzug  = "+btos(bankeinzug())+",";
      else if (i==B_Rabatt      ) query += "rabatt      = "+dtos(rabatt())+",";

@@ -1,4 +1,4 @@
-/* $Id: ArtikelBaum.h,v 1.10 2002/03/20 07:43:31 christof Exp $ */
+/* $Id: ArtikelBaum.h,v 1.11 2002/04/19 06:23:22 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -70,6 +70,7 @@ private:
 	typedef std::vector<RohArtikel> zusammensetzung_t;
 public:
 	typedef zusammensetzung_t::const_iterator const_iterator;
+	typedef zusammensetzung_t::iterator iterator;
 
 private:
 	zusammensetzung_t zusammensetzung;
@@ -96,6 +97,10 @@ public:
  const_iterator begin() const
  {  return zusammensetzung.begin(); }
  const_iterator end() const
+ {  return zusammensetzung.end(); }
+ iterator begin() 
+ {  return zusammensetzung.begin(); }
+ iterator end() 
  {  return zusammensetzung.end(); }
 
  static void UnCache(const ArtikelBase &stamp);

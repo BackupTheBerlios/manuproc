@@ -1,4 +1,4 @@
-// $Id: ExtBezSchemaHandle.h,v 1.3 2001/10/08 09:08:12 christof Exp $
+// $Id: ExtBezSchemaHandle.h,v 1.4 2002/04/19 06:23:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -31,9 +31,9 @@ class cH_ExtBezSchema : public Handle<const ExtBezSchema>
 	// cache
 	struct CacheIndex
 	{	ExtBezSchema::ID id;
-		ArtikelTyp typ;
+		class ArtikelTyp typ;
 		
-		CacheIndex(const ExtBezSchema::ID &i,const ArtikelTyp &t)
+		CacheIndex(const ExtBezSchema::ID &i,const class ArtikelTyp &t)
 		: id(i), typ(t) {}
 		bool operator<(const CacheIndex &b) const
 		{  return typ<b.typ || (typ==b.typ && id<b.id); }
@@ -47,7 +47,7 @@ class cH_ExtBezSchema : public Handle<const ExtBezSchema>
 	cH_ExtBezSchema() {} // for the map
 public:
 	cH_ExtBezSchema(ExtBezSchema::ID eid
-		,const ArtikelTyp &t=ExtBezSchema::default_Typ) throw(SQLerror);
+		,const class ArtikelTyp &t=ExtBezSchema::default_Typ) throw(SQLerror);
 };
 
 #endif

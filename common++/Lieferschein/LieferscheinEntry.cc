@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.3 2002/04/12 06:37:59 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.4 2002/04/19 06:23:22 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,6 +19,8 @@
 
 #include"LieferscheinEntry.h"
 #include<Aux/FetchIStream.h>
+#include<Aux/Transaction.h>
+#include<Auftrag/AufEintrag.h>
 
 bool LieferscheinEntry::Valid() const
 {
@@ -35,3 +37,115 @@ void LieferscheinEntry::setPalette(int p) throw(SQLerror)
   SQLerror::test(__FILELINE__);
 }
 
+
+bool LieferscheinEntry::changeMenge(int stueck,mengen_t menge) throw(SQLerror)
+{
+  assert(!ZusatzInfo());
+  Transaction tr;
+
+  mengen_t abmenge=Abschreibmenge(stueck,menge);
+  if(abmenge==mengen_t(0)) return true ;//nichts geändert
+  if(RefAuftrag().valid()) // Keine Zusatzinfos
+   {
+     AufEintragBase AEB(RefAuftrag(),AufZeile());
+     mengen_t rest=AufEintrag(AEB).getRestStk();
+     if(abmenge > rest ) return false;
+     updateLieferscheinMenge(stueck,menge);
+     AEB.abschreiben(abmenge);
+   }
+  else // Zusatzinfos ODER kein Referenzauftrag
+   {
+     LieferscheinEntry LE=*this;
+     std::vector<LieferscheinEntry> VLE;
+     do
+      {
+        try{
+        LE=LieferscheinEntry(LieferscheinEntryBase(Instanz(),Id(),1+LE.Zeile()));
+        if(LE.ZusatzInfo())
+         {
+           VLE.push_back(LE);
+         }
+        }catch(SQLerror &e) {cerr<< e<<'\n'; break;}
+      } while (LE.ZusatzInfo()) ;
+     bool ok=menge_bei_zusatzinfos_abschreiben(VLE,abmenge);
+     if(!ok) return false;
+     updateLieferscheinMenge(stueck,menge);
+   }
+  tr.commit();
+  return true;
+}
+
+
+void LieferscheinEntry::updateLieferscheinMenge(int stueck,mengen_t menge)  throw(SQLerror)
+{
+   std::string Q1="update lieferscheinentry set stueck="+itos(stueck)
+         +", menge="+itos(menge)+" where (instanz,lfrsid,zeile)=("
+         +itos(Instanz())+","+itos(Id())+","+itos(Zeile())+")";
+   Query::Execute(Q1);
+   SQLerror::test(__FILELINE__);
+}
+
+bool LieferscheinEntry::menge_bei_zusatzinfos_abschreiben(std::vector<LieferscheinEntry>& VLE,mengen_t abmenge)
+{
+ if(VLE.empty()) return true; // Zeile ohne Referenzauftrag
+ // Reduziern
+ if(abmenge<mengen_t(0))
+  {
+  for(std::vector<LieferscheinEntry>::reverse_iterator i=VLE.rbegin();i!=VLE.rend();++i)
+   {
+    if(i->Stueck()!=1 && i->Menge()!=mengen_t(0)) return false; //das gibt es nicht
+    mengen_t aufmenge=i->Stueck();
+    if(i->Menge()!=mengen_t(0)) aufmenge*=i->Menge();
+    mengen_t M;
+    if(aufmenge<=abs(abmenge)) M=-aufmenge;
+    else                       M=abmenge;
+    if(i->RefAuftrag().valid()) 
+     { AufEintragBase AEB(i->RefAuftrag(),i->AufZeile());
+       AEB.abschreiben(M);
+     }
+    bool del_line=false;
+    if(i->Stueck()==1)
+     {
+       i->updateLieferscheinMenge(1,i->Menge()+M);
+       if(i->Menge()+M==mengen_t(0)) del_line=true; // Zeile löschen
+     }
+    else if(i->Menge()==mengen_t(0))
+     { 
+       i->updateLieferscheinMenge(i->Stueck()+int(M),mengen_t(0));
+       if(i->Stueck()+int(M)==0) del_line=true; // Zeile löschen
+     }
+    else assert(!"");
+    if(del_line)
+     {
+      std::string Q1 = "delete from lieferscheinentry where "
+        "(instanz,lfrsid,zeile) = ("
+        +itos(i->Instanz())+","+itos(i->Id())+","+itos(i->Zeile())+")";
+      Query::Execute(Q1);
+      SQLerror::test(__FILELINE__);
+     }
+    abmenge -=M;
+    if(abs(abmenge)<=mengen_t(0)) break;
+   }
+  } 
+ else
+   {
+return false;
+   }
+return true;
+}
+
+LieferscheinBase::mengen_t LieferscheinEntry::Abschreibmenge(int stueck,mengen_t menge) const
+{
+   int stueckdiff =   stueck - Stueck();
+   mengen_t mengediff = menge - Menge();
+   if(!stueckdiff && !mengediff) return mengen_t(0); // nichts geändert
+   mengen_t abmenge;
+   if(!menge && stueckdiff)  abmenge=stueckdiff;
+   else 
+     {  
+       if      (menge==Menge())   abmenge = stueckdiff*menge;
+       else if (stueck==Stueck()) abmenge = stueck*mengediff;
+       else  abmenge = menge*mengen_t(stueck) - Menge()*mengen_t(Stueck());
+     }
+  return abmenge;
+}

@@ -23,7 +23,7 @@
 #include <Auftrag/auftrag_status.h>
 #include "AufEintrag.h"
 #include <Artikel/ArtikelStamm.h>
-#include <Auftrag/AuftragsEntryZuordnung.h>
+#include <Auftrag/AufEintragZu.h>
 #include <Lager/Lager_Vormerkungen.h>
 
 exec sql include sqlca;
@@ -148,7 +148,7 @@ int AuftragBase::insertNewEntry(const mengen_t bestellt,
  if(Instanz()==ppsInstanz::INST_KNDAUF)
   {
     AuftragBase AB(ArtikelStamm(artikel).BestellenBei());   
-    AB.tryUpdateEntry(bestellt,lieferdatum,artikel,status,*this,ZEILENNR);
+    AB.tryUpdateEntry(bestellt,lieferdatum,artikel,status,AufEintragBase(*this,ZEILENNR));
   }
  else if(setInstanzAuftraege)
     InstanzAuftraegeAnlegen(artikel,ZEILENNR,lieferdatum,status,bestellt);
@@ -167,7 +167,7 @@ void AuftragBase::InstanzAuftraegeAnlegen(const ArtikelBase& artikel,
 //cout << '\t'<<cH_ArtikelBezeichnung(i->rohartikel)->Bezeichnung()<<'\n';
       AuftragBase neuAuftrag(ArtikelStamm(i->rohartikel).BestellenBei(),0);
       neuAuftrag.tryUpdateEntry(double(i->menge)*menge,lieferdatum,
-                                i->rohartikel,status,*this,altZnr);
+                 i->rohartikel,status,AufEintragBase(*this,altZnr));
     }
 }
 
@@ -218,12 +218,12 @@ bool AuftragBase::existEntry(const ArtikelBase& artikel,
 #include <Artikel/ArtikelBezeichnung.h> //debug
 void AuftragBase::tryUpdateEntry(mengen_t bestellt, 
   const Petig::Datum lieferdatum,const ArtikelBase& artikel,
-  AufStatVal status,const AuftragBase& altAuftrag, const int altZnr) 
+  AufStatVal status,const AufEintragBase& altAEB) 
       const throw(SQLerror)
 {
  create_if_not_exists(status);
 //std::cout << "Try: "<<altAuftrag.Instanz()->Name()<<' '<<altAuftrag.Id()<<' '<<altZnr<<'\n';
- AufEintragBase XAEB(altAuftrag,altZnr);
+// AufEintragBase AEB(altAuftrag,altZnr);
 //std::cout << "\tErfolg\n";
  int znr=-99,neuznr=-99;
  mengen_t menge=0;
@@ -244,14 +244,15 @@ void AuftragBase::tryUpdateEntry(mengen_t bestellt,
     else 
        znr=insertNewEntry(bestellt,lieferdatum,artikel,status,true)  ;
 //std::cout << "Zeile: "<<znr<<'\n';
-   AufEintragZu(XAEB).AuftragsEntryZuordnung(bestellt,*this,znr);
+//   AufEintragZu(XAEB).AuftragsEntryZuordnung(bestellt,*this,znr);
+   AufEintragZu(altAEB).Neu(AufEintragBase(*this,znr),bestellt);
   }
  else
   {
 //cout << "Alt\t"<<znr<<' '<<altZnr<<' '<<neuznr<<' '
 //<<AufEintragBase(instanz,auftragid,znr).ZNr()<<"  MENGE:"<<bestellt<<'\n';
-    if(!AufEintragZu(XAEB).setMengeDiff(bestellt,*this,znr))
-        AufEintragZu(XAEB).AuftragsEntryZuordnung(bestellt,*this,znr);
+    if(!AufEintragZu(altAEB).setMengeDiff(AufEintragBase(*this,znr),bestellt))
+        AufEintragZu(altAEB).Neu(AufEintragBase(*this,znr),bestellt);
 
 //std::cout << "\t"<<instanz->Name()<<' '<<auftragid<<' '<<znr<<' '
 //<<cH_ArtikelBezeichnung(artikel)->Bezeichnung()<<' '<<menge<<'+'<<bestellt<<' '<<status<<'\n';

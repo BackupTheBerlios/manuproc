@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.4 2002/04/11 12:01:08 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.5 2002/04/19 06:23:22 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -93,3 +93,4 @@ void Lieferschein::push_back(const AufEintragBase &aufeintrag,
    else
       aufeintrag.abschreiben(anzahl*menge);
 }
+

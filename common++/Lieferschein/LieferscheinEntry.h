@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.9 2002/04/12 06:37:59 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.10 2002/04/19 06:23:22 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -54,6 +54,10 @@ class LieferscheinEntry : public LieferscheinEntryBase
  std::string yourauftrag;
  bool zusatzinfo;
 
+   void updateLieferscheinMenge(int stueck,mengen_t menge)  throw(SQLerror);
+   bool menge_bei_zusatzinfos_abschreiben(std::vector<LieferscheinEntry>& VLE,mengen_t menge);
+   mengen_t Abschreibmenge(int stueck,mengen_t menge) const;
+
 public:
 
  	LieferscheinEntry() : stueck(0),palette(0) {};
@@ -90,7 +94,7 @@ public:
  bool ZusatzInfo() const { return zusatzinfo; }
 
  void setPalette(int p) throw(SQLerror);
- void changeMenge(int stueck,mengen_t menge) throw(SQLerror);
+ bool changeMenge(int stueck,mengen_t menge) throw(SQLerror);
  static void deleteEntry(const LieferscheinEntry &lse) throw(SQLerror);
 };
 

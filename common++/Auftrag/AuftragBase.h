@@ -27,6 +27,7 @@
 class AufEintrag;
 #include <Kunde/Kunde.h>
 // hier sollten noch viel mehr Funktionen aus Auftrag rein !!!
+class AufEintragBase;
 
 class AuftragBase
 {
@@ -48,30 +49,28 @@ class AuftragBase
 	AuftragBase(cH_ppsInstanz _instanz, int aufid,int kid) throw(SQLerror) ;
         
 	int Id() const {return auftragid;}
-        void set_Id(int i) {auftragid = i;}
-        ppsInstanz::ID InstanzID() const {return instanz->Id(); }
-        cH_ppsInstanz Instanz() const {return instanz; }
+   void set_Id(int i) {auftragid = i;}
+   ppsInstanz::ID InstanzID() const {return instanz->Id(); }
+   cH_ppsInstanz Instanz() const {return instanz; }
 	bool valid() const { return auftragid!=0; }
-        void setStatusAuftragBase(AufStatVal st) const throw(SQLerror);
+   void setStatusAuftragBase(AufStatVal st) const throw(SQLerror);
 
-        void create_if_not_exists(AufStatVal status,Kunde::ID kunde=Kunde::default_id) const;
-        int insertNewEntry(const mengen_t bestellt, 
+   void create_if_not_exists(AufStatVal status,Kunde::ID kunde=Kunde::default_id) const;
+   int insertNewEntry(const mengen_t bestellt, 
                 const Petig::Datum lieferdatum, const ArtikelBase& artikel,
                 const AufStatVal status,const bool setInstanzAuftraege,
                 const Preis& preis=Preis(),const fixedpoint<2> rabatt=0
                 ) const throw(SQLerror);
-        void InstanzAuftraegeAnlegen(const ArtikelBase& art,const int altZnr,
-                const Petig::Datum& lieferdatum, const AufStatVal status, 
+   void InstanzAuftraegeAnlegen(const ArtikelBase& art,const int altZnr,
+               const Petig::Datum& lieferdatum, const AufStatVal status, 
                 const mengen_t menge) const; 
-        bool existEntry(const ArtikelBase& artid,
+   bool existEntry(const ArtikelBase& artid,
                         const Petig::Datum& lieferdatum,
                         int& znr,int &newznr, mengen_t& menge, const AufStatVal status
                         ) const throw(SQLerror);
-        void tryUpdateEntry(mengen_t bestellt, 
-                const Petig::Datum lieferdatum, const ArtikelBase& artikel,
-                AufStatVal status,
-                const AuftragBase& altAuftrag,int altZnr
-                ) const throw(SQLerror);
+   void tryUpdateEntry(mengen_t bestellt, 
+               const Petig::Datum lieferdatum, const ArtikelBase& artikel,
+                AufStatVal status,const AufEintragBase& altAEB) const throw(SQLerror);
 
 	// wandelt enum in std::string um
 	static const std::string getStatusStr(AufStatVal a);

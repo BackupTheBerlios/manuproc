@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.5 2002/04/11 12:01:07 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.6 2002/04/19 06:23:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,7 +25,7 @@
 #include "auftrag_status.h"
 #include <Aux/Changejournal.h>
 #include "selFullAufEntry.h"
-#include <Auftrag/AuftragsEntryZuordnung.h>
+#include <Auftrag/AufEintragZu.h>
 #include <Lager/Lager_Vormerkungen.h>
 
 exec sql include sqlca;
@@ -88,47 +88,49 @@ void AufEintrag::setInstanzen(AufStatVal newstatus,Petig::Datum lieferdate,menge
  std::list<AufEintragZu::st_reflist> KindListe = AufEintragZu(*this).get_Referenz_list(*this,true);
  for(std::list<AufEintragZu::st_reflist>::const_iterator i=KindListe.begin();i!=KindListe.end();++i)
   {
-    ArtikelBaum::menge_t f=ArtikelBaum(artikel).Faktor(i->AB);
+    ArtikelBaum::menge_t f=ArtikelBaum(artikel).Faktor(i->Art);
     mengen_t M=Menge*f;    
 //std::cout << "\n\nsetStatusInstanz: Ich bin  : "<<Instanz()<<' '<<Id()<<' '<<ZNr()<<'\t';
-//std::cout << " Kinde ist: "<<i->AEB2.Instanz()<<' '<<i->AEB2.Id()<<' '<<i->AEB2.ZNr()<<'\n';
-   AufEintrag AEB(i->AEB2);
+//std::cout << " Kinde ist: "<<i->AEB.Instanz()<<' '<<i->AEB.Id()<<' '<<i->AEB.ZNr()<<'\n';
+   AufEintrag AE(i->AEB);
    // AufEintrag splitten und Anlegen in der Zuordnungsliste
    int znr=0,newznr=0; mengen_t menge=0;
-   if(!i->AEB2.existEntry(i->AB,lieferdate,znr,newznr,menge,newstatus))
+   if(!i->AEB.existEntry(i->Art,lieferdate,znr,newznr,menge,newstatus))
      {
-      znr=AEB.insertNewEntry(M,lieferdate,i->AB,newstatus,false);
+      znr=AE.insertNewEntry(M,lieferdate,i->Art,newstatus,false);
+      AufEintragBase neuAEB(AE,znr);
       if(Instanz()==ppsInstanz::INST_KNDAUF) 
-            AufEintragZu(*this).setKindZnr(AEB,znr);
+            AufEintragZu(*this).setKindZnr(neuAEB);
       else 
          {
 //cout << Instanz()->Id()<<' '<<Id()<<' '<<ZNr()<<'\t'<<-M<<'\n';
-            AufEintragZu(*this).AuftragsEntryZuordnung(M,AEB,znr,myznr);
-            AufEintragZu(*this).setMengeDiff(-M,AEB,AEB.ZNr());
+            AufEintragZu(*this).Neu(neuAEB,M,myznr);
+            AufEintragZu(*this).setMengeDiff(AE,-M);
          }
      }
    else
      {
-//std::cout << "existEntry :"<<Instanz()<<' '<<Id()<<' '<<AEB.Instanz()<<' '
-//      <<AEB.Id()<<" Myznr:"<<myznr<<" Yourznr: "<<yourznr<<" Znr: "<<znr
+//std::cout << "existEntry :"<<Instanz()<<' '<<Id()<<' '<<AE.Instanz()<<' '
+//      <<AE.Id()<<" Myznr:"<<myznr<<" Yourznr: "<<yourznr<<" Znr: "<<znr
 //<<" NEWZnr: "<<newznr<<'\t';
 //std::cout << menge<<'+'<<M<<'='<<menge+M<<'\n';
-      AufEintragBase(AEB,znr).updateStkDiff(M);
+      AufEintragBase AEBZ(AE,znr); 
+      AEBZ.updateStkDiff(M);
       if(Instanz()==ppsInstanz::INST_KNDAUF) 
-            AufEintragZu(*this).setKindZnr(AEB,znr);
+            AufEintragZu(*this).setKindZnr(AEBZ);
       else 
          {
-//std::cout<<"Reduce:   "<<Id()<<' '<<ZNr()<<'\t'<<AEB.Id()<<' '<<AEB.ZNr()<<'\t'<<i->Menge<<'\n';
-            AufEintragZu(*this).setMengeDiff(-M,AEB,AEB.ZNr());
-//std::cout<<"Increase: "<<Id()<<' '<<myznr<<'\t'<<AEB.Id()<<' '<<znr<<'\n';
-            if(!AufEintragZu(class AufEintragBase(*this,myznr)).setMengeDiff(M,AEB,znr))
-                AufEintragZu(class AufEintragBase(*this,myznr)).AuftragsEntryZuordnung(M,AEB,znr);
+//std::cout<<"Reduce:   "<<Id()<<' '<<ZNr()<<'\t'<<AE.Id()<<' '<<AE.ZNr()<<'\t'<<i->Menge<<'\n';
+            AufEintragZu(*this).setMengeDiff(AE,-M);
+//std::cout<<"Increase: "<<Id()<<' '<<myznr<<'\t'<<AE.Id()<<' '<<znr<<'\n';
+            if(!AufEintragZu(class AufEintragBase(*this,myznr)).setMengeDiff(AEBZ,M))
+                AufEintragZu(class AufEintragBase(*this,myznr)).Neu(AEBZ,M);
          }
      }
-//cout << AEB.Instanz()->Id()<<' '<<AEB.Id()<<' '<<AEB.ZNr()<<'\t';
-   AEB.updateStk(AEB.getStueck()-M,false); // macht auch das Lager
+//cout << AE.Instanz()->Id()<<' '<<AE.Id()<<' '<<AE.ZNr()<<'\t';
+   AE.updateStk(AE.getStueck()-M,false); // macht auch das Lager
    if(auftragstatus==UNCOMMITED && newstatus==OPEN ) 
-      AEB.setStatusAuftragBase(newstatus);
+      AE.setStatusAuftragBase(newstatus);
 
    if(instanz->LagerInstanz() && Id()==Lager_Vormerkungen::LagerAuftragsId && 
        (newstatus==STORNO || M < 0 ))
@@ -138,7 +140,8 @@ void AufEintrag::setInstanzen(AufStatVal newstatus,Petig::Datum lieferdate,menge
 //      Lager_Vormerkungen::freigegeben_menge_neu_verplanen(instanz,ArtId(),M);
     }
 
-   AufEintrag(i->AEB2).setInstanzen(newstatus,lieferdate,M,znr,newznr);
+//   AufEintrag(i->AEB).setInstanzen(newstatus,lieferdate,M,znr,newznr);
+   AE.setInstanzen(newstatus,lieferdate,M,znr,newznr);
   }
 }
 
@@ -174,15 +177,15 @@ void AufEintrag::updateStkInstanz(mengen_t neu_stk,mengen_t alt_stk) throw(SQLer
  try{
   for(std::list<AufEintragZu::st_reflist>::const_iterator i=KindListe.begin();i!=KindListe.end();++i)
    {
-//std::cout << i->AEB2.Instanz()->Id()<<' '<<i->AEB2.Id()<<' '<<i->AEB2.ZNr()<<'\n';
-     AufEintrag AEB(i->AEB2);
-     ArtikelBaum::menge_t faktor = ArtikelBaum(ArtId()).Faktor(i->AB);
+//std::cout << i->AEB.Instanz()->Id()<<' '<<i->AEB2.Id()<<' '<<i->AEB2.ZNr()<<'\n';
+     AufEintrag AEB(i->AEB);
+     ArtikelBaum::menge_t faktor = ArtikelBaum(ArtId()).Faktor(i->Art);
 //std::cout << i->AEB2.Instanz()->Id()<<' '<<i->AEB2.ZNr()<<'\t';
 //std::cout << i->Menge<<' '<<AEB.getStueck()<<' '<<getStueck()*faktor<<' '<<alt_stk*faktor<<' '<<neu_stk*faktor<<' '<<'\n';
      mengen_t neue_menge=neu_stk*faktor;
      mengen_t alte_menge=alt_stk*faktor;
      AEB.updateStk(AEB.getStueck()+neue_menge-alte_menge,true);
-     AufEintragZu(*this).setMengeDiff(mengen_t(neu_stk*faktor) - i->Menge,i->AEB2,i->AEB2.ZNr());
+     AufEintragZu(*this).setMengeDiff(i->AEB,mengen_t(neu_stk*faktor) - i->Menge);
    }
   }catch(NoAEB_Error &e) 
   {cerr <<"Falsche Anzahl von AufEinträgen: "<<e.what()<<'\n'; 
@@ -347,9 +350,9 @@ int AufEintrag::Planen(mengen_t menge, const AuftragBase &zielauftrag)
 
    for (std::list<AufEintragZu::st_reflist>::iterator i=ReferenzAufEintrag.begin();i!=ReferenzAufEintrag.end();++i)
    {
-     if(i->AEB2.Instanz()->Id()!=ppsInstanz::Kundenauftraege) continue;
-     i->AEB2.setLetztePlanungFuer(instanz);
-     i->AEB2.calculateProzessInstanz();
+     if(i->AEB.Instanz()->Id()!=ppsInstanz::Kundenauftraege) continue;
+     i->AEB.setLetztePlanungFuer(instanz);
+     i->AEB.calculateProzessInstanz();
    }
  return znr;
 }

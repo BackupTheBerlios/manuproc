@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.h,v 1.6 2002/01/22 09:15:55 christof Exp $
+// $Id: ArtikelTyp.h,v 1.7 2002/04/19 06:23:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,31 +20,17 @@
 #ifndef ARTIKELTYP_H
 #define ARTIKELTYP_H
 
-#include <Artikel/ArtikelBase.h>
 #include <ManuProCConfig.h>
+#include <Artikel/ArtikelBase.h>
+#include <DynamicEnums/DynamicEnums.h>
 
-#ifndef PETIG_EXTENSIONS
-#warning Diese Klasse ist so nicht portabel
-#endif
-
-//#include <ExtBezSchema/ExtBezSchema.h>
-
-/* quick hack to support Types really fast,
-   this should be replaced by a decent generic class/scheme */
+namespace ArtikelTypID = ManuProC::DynamicEnums::ArtikelTyp;
 
 class ArtikelTyp
 {
 public:
-	enum typ 
-	 { JumboRollen=0, Band=3, Garn=4, Spulen=5, Kartonagen=6,Sonstiges=7,
-	        Lohn=8, Farben=9, Etiketten=10,
-	   
-	 
-	   GewebtesBand=JumboRollen, GefaerbtesBand=JumboRollen, 
-	   BedrucktesBand=JumboRollen, 
-	   AufgemachtesBand=Band,
-	   Seitenscheiben=Spulen };
-        typedef typ ID;
+	typedef ManuProC::DynamicEnums::ArtikelTyp::enum_t ID;
+	static const ID default_ID=ID(0);
 
 private:
 	ID t;

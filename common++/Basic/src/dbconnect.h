@@ -1,4 +1,4 @@
-// $Id: dbconnect.h,v 1.3 2001/06/27 08:04:09 christof Exp $
+// $Id: dbconnect.h,v 1.4 2002/04/19 06:23:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -54,4 +54,8 @@ namespace Petig
    void dbdisconnect(const std::string &name="") throw(SQLerror);
    void setDTstyle(char *style="ISO") throw(SQLerror);
    void dbdefault(const std::string &name="") throw(SQLerror);
+};
+
+namespace ManuProC
+{  using namespace Petig;
 };

@@ -19,7 +19,7 @@
 #include "Lager.h"
 #include "Lager_Vormerkungen.h"
 #include <Auftrag/AufEintrag.h>
-#include <Auftrag/AuftragsEntryZuordnung.h>
+#include <Auftrag/AufEintragZu.h>
 #include <Auftrag/selFullAufEntry.h>
 
 

@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.pgcc,v 1.19 2002/03/20 07:43:31 christof Exp $
+// $Id: ArtikelBaum.pgcc,v 1.20 2002/04/19 06:23:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,7 +25,7 @@
 #include <Artikel/ArtikelStamm.h>
 #include <Auftrag/AufEintrag.h>
 #include <Auftrag/AuftragsBaum.h>
-#include <Auftrag/AuftragsEntryZuordnung.h>
+#include <Auftrag/AufEintragZu.h>
 #include <list>
 exec sql include sqlca;
 #include <Aux/Transaction.h>
@@ -183,7 +183,6 @@ void ArtikelBaum::new_Artikel(ArtikelBase fuer_artikel,const RohArtikel& RA)
 
 void ArtikelBaum::create_in_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel,faktor_t RohMenge)
 {
-#warning erstezen durch FullAuftragSelector? MAT
   std::list<AufEintragBase> elternliste = AufEintragZu::get_AufEintragList_from_Artikel(alt_artikel,ArtikelStamm(alt_artikel).BestellenBei()->Id(),NOSTAT);
 //std::cout << "Create :"<<elternliste.size()<<"\n\n\n\n";
   for(std::list<AufEintragBase>::const_iterator e=elternliste.begin();e!=elternliste.end();++e)
@@ -196,7 +195,7 @@ void ArtikelBaum::create_in_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_a
 //         kind_artikel,AEB.getEntryStatus(),*e,e->ZNr(),true);
 //     AufEintragZu(*e).AuftragsEntryZuordnung(menge,AB,znr);
      AB.tryUpdateEntry(menge,AEB.getLieferdatum(),
-         kind_artikel,AEB.getEntryStatus(),*e,e->ZNr());
+         kind_artikel,AEB.getEntryStatus(),*e);
    }  
 }
 
@@ -285,13 +284,13 @@ void ArtikelBaum::reduceChildren(const AufEintrag& AEB,
 //<<oldAEB.Instanz()<<' '<<oldAEB.ZNr()<<'\t'<<menge<<'\n';
 
   const_cast<AufEintrag&>(AEB).updateStk(AEB.getStueck()-menge,false);
-  AufEintragZu(oldAEB).setMengeDiff(-menge,AEB,AEB.ZNr());
+  AufEintragZu(oldAEB).setMengeDiff(AEB,-menge);
   std::list<AufEintragZu::st_reflist> L=AufEintragZu(AEB).get_Referenz_list(AEB,true);
 //std::cout << '\t'<<L.size()<<'\n';
   for(std::list<AufEintragZu::st_reflist>::iterator i=L.begin();i!=L.end();++i)
    {
 //std::cout << '\t'<<i->AEB2.Instanz()<<' '<<i->AEB2.ZNr()<<'\t'<<i->Menge<<'\n';
-     reduceChildren(AufEintrag(i->AEB2),AEB,i->Menge);
+     reduceChildren(AufEintrag(i->AEB),AEB,i->Menge);
    }
 }        
 

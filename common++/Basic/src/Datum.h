@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.5 2002/03/20 07:43:31 christof Exp $ */
+/* $Id: Datum.h,v 1.6 2002/04/19 06:23:22 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -66,9 +66,6 @@ public:
 		monat = m;
 		jahr = j;
 		teste();
-	}
-	Datum(const Datum &d) throw()
-	{	*this=d;
 	}
 	Datum() throw() /* initialize as invalid */
 	{       tag=monat=jahr=0;

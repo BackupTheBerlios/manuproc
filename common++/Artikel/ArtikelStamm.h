@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.h,v 1.7 2002/02/08 21:47:14 christof Exp $
+// $Id: ArtikelStamm.h,v 1.8 2002/04/19 06:23:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -32,13 +32,13 @@ class ArtikelStamm
 	static const ExtBezSchema_ID ExtBezSchema_default_ID=1;
 	
 	struct payload_t
-	{  ArtikelTyp::typ typ,interntyp;
+	{  ArtikelTyp::ID typ,interntyp;
 	   cH_ppsInstanz bestellen_bei;
 	   ExtBezSchema_ID defaultschema;
 	   Einheit einh;
 	   
 	   payload_t() 
-	   : typ((ArtikelTyp::typ)0), interntyp((ArtikelTyp::typ)0),
+	   : typ((ArtikelTyp::ID)0), interntyp((ArtikelTyp::ID)0),
 	                 bestellen_bei(cH_ppsInstanz(ppsInstanz::INST_NONE)), 
 	                 defaultschema(ExtBezSchema_default_ID),
 	                 einh(Einheit::Stueck) {}
@@ -51,11 +51,11 @@ class ArtikelStamm
 	static cache_t cache;
 public:
 	ArtikelStamm(const ArtikelBase &ab) throw (SQLerror);
-	ArtikelTyp::typ Warengruppe() const
+	ArtikelTyp::ID Warengruppe() const
 	{  return payload.typ; }
-	ArtikelTyp::typ InternWarengruppe() const
+	ArtikelTyp::ID InternWarengruppe() const
 	{  return payload.interntyp; }
-	ArtikelTyp::typ Warengruppe(ExtBezSchema_ID id) const
+	ArtikelTyp::ID Warengruppe(ExtBezSchema_ID id) const
 	{  return id==ExtBezSchema_default_ID?payload.interntyp:payload.typ; }
 	cH_ppsInstanz BestellenBei() const
 	{  return payload.bestellen_bei; }

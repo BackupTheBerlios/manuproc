@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry_sql.pgcc,v 1.11 2002/04/12 06:37:59 christof Exp $ */
+/* $Id: LieferscheinEntry_sql.pgcc,v 1.12 2002/04/19 06:23:22 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -136,8 +136,4 @@ void LieferscheinEntry::deleteEntry(const LieferscheinEntry &lse) throw(SQLerror
 }
 
 
-void LieferscheinEntry::changeMenge(int stueck,mengen_t menge) throw(SQLerror)
-{
-  assert(!ZusatzInfo());
-}
 

@@ -12,4 +12,5 @@ Kunde_sql.cc
 Telefon_sql.cc
 Anrede_sql.cc
 PreisListe_sql.cc
+LandesListe_sql.cc
 Adresse_sql.cc

@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.8 2002/02/28 15:19:29 christof Exp $ */
+/* $Id: Lieferschein.h,v 1.9 2002/04/19 06:23:22 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -37,6 +37,7 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  int paeckchen, pakete;
  Petig::Datum geliefertam;
  int dpdliefnr;
+
 
  public:
         

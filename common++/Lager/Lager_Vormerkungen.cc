@@ -2,7 +2,7 @@
 #include <Artikel/ArtikelStamm.h>
 #include <Artikel/ArtikelBaum.h>
 #include <Auftrag/Auftrag.h>
-#include <Auftrag/AuftragsEntryZuordnung.h>
+#include <Auftrag/AufEintragZu.h>
 //#include "maschinen_geschwindigkeit.hh"
 #include <Auftrag/sqlAuftragSelector.h>
 #include <Auftrag/selFullAufEntry.h>
@@ -40,7 +40,7 @@ void Lager_Vormerkungen::vormerken_oder_bestellen()
       AuftragBase AB(Instanz()->LagerFuer());
       //AB.tryUpdateEntry(fehlende_menge,getLieferdatum(),
       AB.tryUpdateEntry(getRestStk(),getLieferdatum(),
-            ArtId(),getEntryStatus(),*this,ZNr());
+            ArtId(),getEntryStatus(),*this);
     }
 }
 

@@ -1,4 +1,4 @@
-// $Id: PreisListe_sql.pgcc,v 1.1 2002/03/20 07:46:26 christof Exp $
+// $Id: PreisListe_sql.pgcc,v 1.2 2002/04/19 06:23:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -77,7 +77,7 @@ PreisListe::PreisListe(ID _id) throw(SQLerror)
 void PreisListe::createPreisliste(unsigned int nr,const std::string &name) throw(SQLerror)
 {
  std::string query="insert into ku_preisliste (prlsnr,notiz,waehrungid) "
-      " values ("+itos(nr)+",'"+name+"',"+itos(Waehrung::EUR)+")";
+      " values ("+itos(nr)+",'"+name+"',"+itos(WaehrungID::EUR)+")";
  Query::Execute(query);
  SQLerror::test(__FILELINE__);
 }

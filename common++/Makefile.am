@@ -1,6 +1,5 @@
-
-SUBDIRS= Aux ostream Artikel Auftrag Bank ExtBezSchema Ketten Kunde \
-		Lieferschein Material Lager Faeden . Programme tests
+SUBDIRS= DynamicEnums Aux ostream Artikel Auftrag Bank ExtBezSchema Ketten \
+		Kunde Lieferschein Material Lager Faeden . Programme tests
 	
 lib_LIBRARIES=libcommon++.a
 
@@ -8,6 +7,7 @@ libcommon___a_SOURCES=
 
 libcommon___a_LIBADD= \
 		Artikel/ArtikelBaum.o \
+		Artikel/ArtikelBaum_sql.o \
 		Artikel/ArtikelBezeichnung.o \
       Artikel/ArtikelDispo_sql.o \
 		Artikel/ArtikelMengeSumme.o \
@@ -31,7 +31,7 @@ libcommon___a_LIBADD= \
 		Auftrag/Auftrag.o \
 		Auftrag/Auftrag_sql.o \
 		Auftrag/AuftragFull_sql.o \
-		Auftrag/AuftragsEntryZuordnung_sql.o \
+		Auftrag/AufEintragZu_sql.o \
 		Aux/Ausgabe_neu.o \
 		Aux/Changejournal_sql.o \
 		Aux/Datum.o \
@@ -74,6 +74,7 @@ libcommon___a_LIBADD= \
 		Kunde/Anrede_sql.o \
 		Kunde/Kunde.o \
 		Kunde/Kunde_sql.o \
+		Kunde/LandesListe_sql.o \
 		Kunde/Person.o \
 		Kunde/Person_sql.o \
       Kunde/PreisListe_sql.o \

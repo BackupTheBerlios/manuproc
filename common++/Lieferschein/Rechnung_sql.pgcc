@@ -157,7 +157,7 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
 
  Transaction tr;
 
- exec sql select coalesce(min(zeilennr),0) into :MINZNR
+ exec sql select coalesce(min(zeile),0) into :MINZNR
  	from lieferscheinentry where (instanz,lfrsid)=(:INSTANZ,:LFRSID);
 
  exec sql lock table rechnungentry in exclusive mode; 
@@ -222,19 +222,20 @@ Rechnung::geldbetrag_t Rechnung::Betrag(bool brutto) const throw(SQLerror)
 {
  exec sql begin declare section;
  float BETRAG;
+ int IBETRAG;
  int RNGID= Id();
  exec sql end declare section;
 
  if(brutto)
    exec sql select  sum(round(preis*stueck,2)) 
-	into :BETRAG from rechnungentry
+	into :BETRAG:IBETRAG from rechnungentry
 	where rngid = :RNGID;   
  else
    exec sql select  sum(round((round(preis*((100-rabatt)/100),2))*stueck,2)) 
-	into :BETRAG from rechnungentry
+	into :BETRAG:IBETRAG from rechnungentry
 	where rngid = :RNGID; 
 
- return BETRAG;
+ return (IBETRAG ? 0 : BETRAG);
 }
 
 void RechnungBase::setEingezogen(int refnr) throw(SQLerror)

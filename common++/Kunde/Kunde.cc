@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.13 2002/04/08 14:00:05 christof Exp $
+// $Id: Kunde.cc,v 1.14 2002/04/19 06:23:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -50,7 +50,7 @@ const std::string Kunde::LaTeX_von() const
   std::string s="\\underline{\\scriptsize ";
   s+= string2TeX(getName()+", ");
   
-  std::string lkz=adresse.lkz;
+  std::string lkz=adresse.land->LKZ();
   if (!lkz.empty()) lkz+='-';
 
   if(!adresse.postfach.empty())
@@ -64,9 +64,9 @@ const std::string Kunde::LaTeX_von() const
   return  s;
 }
 
-const std::string Kunde::LaTeX_von_gross(const ID kid) const
+const std::string Kunde::LaTeX_von_gross(const ID kid, const string width) const
 {
-  std::string s="\\parbox[t]{7cm}{\\footnotesize\\raggedleft ";
+  std::string s=string("\\parbox[t]{")+width+"}{\\footnotesize\\raggedleft ";
   s+= string2TeX(getName())+"\\\\\n";
   s+= string2TeX(strasse()+" "+hausnr())+"\\\\\n";
   s+= string2TeX(plz()+" "+ort())+"\\\\\n";
@@ -90,10 +90,13 @@ std::string Kunde::get_first_telefon(const TelArt& art) const
 
 
 
-const std::string Kunde::LaTeX_an(bool liefer,TelArt telart) const
+const std::string Kunde::LaTeX_an(bool liefer,TelArt telart,
+				const string width,
+				const string telwidth) const
 {
   std::string strasse_postfach;
-  std::string lkz_plz_ort = !adresse.lkz.empty() ? (adresse.lkz+"-") : "";
+  std::string lkz_plz_ort = !adresse.land->LKZ().empty() 
+         ? (adresse.land->LKZ()+" ") : "";
 
   if ((!liefer && !adresse.postfach.empty() && rng_an_postfach) || adresse.strasse.empty())
      {
@@ -106,7 +109,7 @@ const std::string Kunde::LaTeX_an(bool liefer,TelArt telart) const
       lkz_plz_ort += adresse.plz+" "+adresse.ort;
      }
 
-  std::string s="\\parbox[t]{8cm}{\n";
+  std::string s=string("\\parbox[t]{")+width+"}{\n";
 #ifndef MABELLA_EXTENSIONS
   s+="{\\large ";
 #endif
@@ -126,13 +129,12 @@ const std::string Kunde::LaTeX_an(bool liefer,TelArt telart) const
 
   std::string s2;
   std::list<cH_Telefon> T=getTelefon();
-  s2+="\\parbox[t]{5cm}{\\scriptsize~\\\\\\vfill\n";
+  s2+="\\parbox[t]{"+telwidth+"}{\\scriptsize~\\\\\\vfill\n";
   for(std::list<cH_Telefon>::const_iterator i=T.begin();i!=T.end();++i)
      {s2+= (*i)->ArtString() +" "+(*i)->NummerStr()+"\\\\\n"; }
   s2 +="}";
 
-  std::string p="\\parbox[t]{5cm}{"+s+s2+"}\n";
-  return  p;
+  return  string("\\parbox[t]{")+telwidth+"}{"+s+s2+"}\n";
 }
 
 

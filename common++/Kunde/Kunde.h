@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.15 2002/04/08 14:00:05 christof Exp $
+// $Id: Kunde.h,v 1.16 2002/04/19 06:23:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -29,6 +29,7 @@
 #include <Kunde/PreisListe.h>
 #include <list>
 #include <Kunde/TelefonArt.h>
+#include <Kunde/LandesListe.h>
 
 class cH_Kunde;
 class H_Kunde;
@@ -53,8 +54,7 @@ public:
    std::string postfach;
    std::string postfachplz;
    std::string ort;
-   std::string landname;
-   std::string lkz;
+   cH_LandesListe land;
    std::string unsere_kundennr;
   };
  typedef struct st_adresse Adresse;  
@@ -136,8 +136,11 @@ public:
 	Kunde(ID nr=default_id) throw(SQLerror);
 	static const cH_Kunde newKunde(const Kunde::ID kid, const std::string &firma) throw(SQLerror);
         const std::string LaTeX_von() const;
-        const std::string LaTeX_von_gross(const ID kid) const;
-        const std::string LaTeX_an(bool liefer,TelArt telart=TEL_NONE) const;
+        const std::string LaTeX_von_gross(const ID kid,
+        			const string width="7cm") const;
+        const std::string LaTeX_an(bool liefer,TelArt telart=TEL_NONE,
+        			const string width="8cm",
+        			const string telwidth="5cm") const;
         
         const std::string getBank() const { return bankverb.getBankverb(); }
         const unsigned long long int getKtnr() const { return bankverb.konto; }
@@ -158,7 +161,8 @@ public:
         const std::string postfach() const { return adresse.postfach; }
         const std::string postfachplz() const { return adresse.postfachplz; }
 //        const std::string land() const { return adresse.land; }
-        const std::string lkz() const { return adresse.lkz; }
+//        const cH_LandesListe lkz() const { return adresse.lkz; }
+        const cH_LandesListe land() const { return adresse.land; }
         const std::string UnsereKundenNr() const {return adresse.unsere_kundennr;}
 
         const long int flaeche() const { return kundendaten.flaeche; }
@@ -185,7 +189,7 @@ public:
         ID GruppenId() const {  return KundenGruppennr; }
         const std::string idnr() const { return IDnr; } 
         ID getNummer() const {  return Kundennr; }
-        cH_ExtBezSchema getSchema(ArtikelTyp t=ArtikelTyp::Band) const
+        cH_ExtBezSchema getSchema(class ArtikelTyp t) const
         	{  return cH_ExtBezSchema(schema,t); }
         ExtBezSchema::ID getSchemaId() const {  return schema; }
         bool isLieferadresse() const { return lieferadresse; }
@@ -211,10 +215,10 @@ public:
   private:
         enum B_UPDATE_BITS_ADRESSE{B_Gruppennr,B_Sortname,B_Idnr,B_Firma,
            B_Postanwvor,B_Strasse,B_Postanwnach,B_Hsnr,B_Plz,B_Postfach,
-           B_Postfachplz,B_Ort,B_Lieferadresse,B_Rechnungadresse,
+           B_Postfachplz,B_Ort,B_Lkz,B_Lieferadresse,B_Rechnungadresse,
            B_Rng_an_postfach,B_MaxAnzA};
         enum B_UPDATE_BITS_FIRMA{B_Planumsatz,B_Umsatz,B_Mitarbeiter,
-           B_Kundenumsatz,B_Flaeche,B_Lkz,B_UnsereKundenNr,B_Verein,B_MaxAnzF};
+           B_Kundenumsatz,B_Flaeche,B_UnsereKundenNr,B_Verein,B_MaxAnzF};
         enum B_UPDATE_BITS_BANK{B_Ktonr,B_Blz,B_Bankindex,B_Bankeinzug,
            B_Rabatt,B_Zeilenrabatt,B_Waehrungid,B_Einzugrabatt,
            B_Skontosatz,B_Skontofrist,B_Lieferantenkonto,
@@ -228,12 +232,12 @@ public:
            FPostanwvor=1<<B_Postanwvor,FStrasse=1<<B_Strasse,
            FPostanwnach=1<<B_Postanwnach,FHsnr=1<<B_Hsnr,FPlz=1<<B_Plz,
            FPostfach=1<<B_Postfach,FPostfachplz=1<<B_Postfachplz,
-           FOrt=1<<B_Ort,FLieferadresse=1<<B_Lieferadresse,
+           FOrt=1<<B_Ort,FLkz=1<<B_Lkz,FLieferadresse=1<<B_Lieferadresse,
            FRechnungadresse=1<<B_Rechnungadresse,
            FRng_an_postfach=1<<B_Rng_an_postfach};
          enum UpdateBitsFirma{FPlanumsatz=1<<B_Planumsatz,FUmsatz=1<<B_Umsatz,
            FMitarbeiter=1<<B_Mitarbeiter,FKundenumsatz=1<<B_Kundenumsatz,
-           FFlaeche=1<<B_Flaeche,FLkz=1<<B_Lkz,FUnsereKundenNr=1<<B_UnsereKundenNr,
+           FFlaeche=1<<B_Flaeche,FUnsereKundenNr=1<<B_UnsereKundenNr,
            FVerein=1<<B_Verein};
          enum UpdateBitsBank{FKtonr=1<<B_Ktonr,FBlz=1<<B_Blz,
            FBankindex=1<<B_Bankindex,FBankeinzug=1<<B_Bankeinzug,
@@ -286,7 +290,7 @@ public:
         void set_postfach(const std::string& s){adresse.postfach = s; } 
         void set_postfachplz(const std::string& s){adresse.postfachplz = s; } 
         void set_idnr(const std::string& s){IDnr = s; } 
-        void set_lkz(const std::string& s){adresse.lkz = s; } 
+        void set_land(cH_LandesListe i){adresse.land = i; } 
         void set_UnsereKundenNr(const std::string& s){adresse.unsere_kundennr = s; } 
         void set_schema(ID s){schema = s; } 
 

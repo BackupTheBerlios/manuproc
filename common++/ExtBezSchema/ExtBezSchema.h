@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema.h,v 1.8 2002/01/11 07:59:28 christof Exp $
+// $Id: ExtBezSchema.h,v 1.9 2002/04/19 06:23:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -33,7 +33,7 @@ public:
 	typedef unsigned int ID;
 	static const ID default_ID=1;
 	static const ID default_id=default_ID;
-	static const ArtikelTyp::typ default_Typ=ArtikelTyp::AufgemachtesBand;
+	static const ArtikelTyp::ID default_Typ=ArtikelTyp::default_ID;
 	struct BezKomp
 	{	int bezkomptype; // =Index
 		std::string bezkomptext; // Überschrift
@@ -90,7 +90,7 @@ public:
   
 private:
 	ID extartbezid;
-	ArtikelTyp typ;
+	class ArtikelTyp typ;
         std::string jumbotitel,jumbobez,jumbospalte;
         int jumboindex;
    
@@ -117,7 +117,7 @@ private: // I don't like these API - Christof
  const static unsigned int first_index=1; // this is now invalid
 
 public:
-  ExtBezSchema(ID eid=default_ID,const ArtikelTyp &t=default_Typ) throw(SQLerror);
+  ExtBezSchema(ID eid=default_ID,const class ArtikelTyp &t=default_Typ) throw(SQLerror);
 
 // int AnzBezKomp() const { return bezkomps.size();}
  ID Id() const { return extartbezid; }
@@ -126,9 +126,9 @@ public:
  std::string JumboTitel() const {return jumbotitel;}
  std::string JumboSpalte() const {return jumbospalte;}
 private:
- static bool exist_schema_for_typ(ID eid,const ArtikelTyp &t);
+ static bool exist_schema_for_typ(ID eid,const class ArtikelTyp &t);
 public:
- const ArtikelTyp &Typ() const { return typ; }
+ const class ArtikelTyp &Typ() const { return typ; }
  
  size_t size(int signifikanz) const
  {  return sigsize(signifikanz); }

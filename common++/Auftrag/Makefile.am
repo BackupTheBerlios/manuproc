@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.9 2002/04/11 12:01:07 christof Exp $
+# $Id: Makefile.am,v 1.10 2002/04/19 06:23:22 christof Exp $
 
 ENDUSER=-DPETIG
 
@@ -19,13 +19,13 @@ libAuftrag.o: $(libAuftrag_o_OBJECTS) $(libAuftrag_o_DEPENDENCIES)
 
 BUILT_SOURCES_P= AuftragBase_sql.cc AufEintrag_sql.cc selAufEntry_sql.cc\
 		AufEintragBase_sql.cc Auftrag_sql.cc AuftragFull_sql.cc \
-      AuftragsEntryZuordnung_sql.cc
+      AufEintragZu_sql.cc
 		
 BUILT_SOURCES=$(BUILT_SOURCES_P)
 
 include_HEADERS=AufEintrag.h AuftragBase.h \
 	sqlAuftragSelector.h AufEintragBase.h selFullAufEntry.h \
-	auftrag_status.h AuftragsBaum.h AuftragsEntryZuordnung.h
+	auftrag_status.h AuftragsBaum.h AufEintragZu.h
 
 CLEANFILES= *~ *.pct *.prot $(BUILT_SOURCES_P) *_p.cc *_pg.cc
 
