@@ -95,10 +95,11 @@ void petig_we::on_petig_we_ok_clicked()
    {  
     if((*wee).zi==true)
       {
-       Query subq("select a.youraufnr,menge "
+       Query subq("select a.youraufnr,sum(menge) "
           " from lieferscheinentryzusatz z left join auftrag a on "
           " (a.auftragid=z.auftragid and  a.instanz=z.instanz)"
-          " where (z.instanz,z.lfrsid,z.lfsznr)=(?,?,?)");
+          " where (z.instanz,z.lfrsid,z.lfsznr)=(?,?,?) group by"
+          " a.youraufnr");
         subq  << (*wee).lseb.Instanz()->Id()
           << (*wee).lseb.Id()
           << (*wee).lseb.Zeile();
