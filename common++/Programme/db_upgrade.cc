@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.28 2004/02/03 12:25:38 jacek Exp $
+// $Id: db_upgrade.cc,v 1.29 2004/05/03 15:32:23 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -192,6 +192,12 @@ int main(int argc,char *argv[])
   //
   check_column("rechnung_zahlungsart","frist_monate","integer");
   
+  // genau eine Warengruppe ist default
+  if(check_column("artikelgruppen","defaultgrp","bool"))
+    {
+     Query("create unique index artikelgruppen_defgrp on artikelgruppen (defaultgrp)");
+    }
+
   ManuProC::dbdisconnect();
   return 0;
 }

@@ -1,4 +1,4 @@
-// $Id: createDynEnums.cc,v 1.21 2004/05/03 15:22:28 jacek Exp $
+// $Id: createDynEnums.cc,v 1.22 2004/05/03 15:32:23 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: createDynEnums.cc,v 1.21 2004/05/03 15:22:28 jacek Exp $
+// $Id: createDynEnums.cc,v 1.22 2004/05/03 15:32:23 jacek Exp $
 
 
 #include <Misc/dbconnect.h>
@@ -92,7 +92,7 @@ int main()
       {
        Query q2("select max(bezeichnung) from artikelgruppen where "
        		"coalesce(defaultgrp,false)=true");
-       if((q2 >> is).good()) is >> default_arttyp;
+       if(q2.good()) q2 >> default_arttyp;
        else default_arttyp=DEFAULT_ARTTYP;
       }
 
