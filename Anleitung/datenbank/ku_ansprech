@@ -31,5 +31,3 @@ CREATE UNIQUE INDEX ku_ansprech_kundennr_key ON ku_ansprech USING btree (kundenn
 --
 --
 
-CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "ku_ansprech"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'ku_ansprech', 'ku_person', 'UNSPECIFIED', 'persnr', 'persnr');
-

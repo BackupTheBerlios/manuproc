@@ -27,11 +27,3 @@ COPY "ku_briefanr" FROM stdin;
 --
 --
 
-CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "ku_briefanr"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_person', 'ku_briefanr', 'UNSPECIFIED', 'branr', 'branr');
-
---
---
---
-
-CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "ku_briefanr"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_del" ('<unnamed>', 'ku_person', 'ku_briefanr', 'UNSPECIFIED', 'branr', 'branr');
-

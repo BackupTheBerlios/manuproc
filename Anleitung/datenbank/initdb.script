@@ -55,7 +55,9 @@ if [ ! -z "$1" ]; then P="$1"; fi
    rechnung \
    rechnungentry \
    rechnung_zahlungsart \
-   waehrung
+   waehrung \
+   \
+   triggers
 do
   cat $P/$i
 done) | psql $PGDATABASE -q 

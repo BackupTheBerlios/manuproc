@@ -30,11 +30,3 @@ COPY "lieferschein" FROM stdin;
 --
 --
 
-CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "lieferschein"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'lieferscheinentry', 'lieferschein', 'UNSPECIFIED', 'lfrsid', 'lfrsid');
-
---
---
---
-
-CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "lieferschein"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'lieferscheinentry', 'lieferschein', 'UNSPECIFIED', 'lfrsid', 'lfrsid');
-

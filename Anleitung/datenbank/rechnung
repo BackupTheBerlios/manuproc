@@ -31,17 +31,3 @@ COPY "rechnung" FROM stdin;
 --
 --
 
-CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "rechnung"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'rechnung', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
-
---
---
---
-
-CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "rechnung"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_setnull_del" ('<unnamed>', 'lieferschein', 'rechnung', 'UNSPECIFIED', 'rngid', 'rngid');
-
---
---
---
-
-CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "rechnung"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'lieferschein', 'rechnung', 'UNSPECIFIED', 'rngid', 'rngid');
-

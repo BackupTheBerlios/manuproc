@@ -38,5 +38,3 @@ CREATE INDEX lieferscheinentry_check_fast ON lieferscheinentry USING btree (refz
 --
 --
 
-CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "lieferscheinentry"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'lieferscheinentry', 'auftrag', 'UNSPECIFIED', 'refauftragid', 'auftragid');
-
