@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.78 2004/10/21 13:06:43 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.79 2004/10/21 13:08:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -101,17 +101,17 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
 
 
   if(status==CLOSED || status==STORNO) 
-  {  ManuProC::Trace("","status not changeable any more",status);
+  {  ManuProC::Trace(trace_channel,"=","status not changeable any more",status);
      return;
   }
 
   if(status>new_status) return;
-  {  ManuProC::Trace("","will not change status down",status,new_status);
+  {  ManuProC::Trace(trace_channel,"=","will not change status down",status,new_status);
      return;
   }
 
   if(status!=OPEN && status==new_status)
-  {  ManuProC::Trace("","status unchanged",status,new_status);
+  {  ManuProC::Trace(trace_channel,"=","status unchanged",status,new_status);
      return;
   }
   // if OPEN == OPEN
