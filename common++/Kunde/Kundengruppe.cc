@@ -4,8 +4,8 @@
 #include <BaseObjects/ManuProcEntity_FetchIStream.h>
 
 
-Kundengruppe::Kundengruppe(ID kgid, const std::string _grpnm,
-	const std::string _obg, const std::string _komm) 
+Kundengruppe::Kundengruppe(ID kgid, const std::string _obg, 
+	const std::string _grpnm, const std::string _komm) 
 : ManuProcEntity<ID>(kgid), grpname(_grpnm), obergruppe(_obg),
 	kommentar(_komm) 
 {}
@@ -45,6 +45,7 @@ FetchIStream &operator>>(FetchIStream &is,cH_Kundengruppe &kg)
    kg=ch_kg;
    return is;
  } 
+ 
  
  
  
