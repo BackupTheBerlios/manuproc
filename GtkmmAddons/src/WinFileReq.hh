@@ -1,15 +1,15 @@
-// $Id: WinFileReq.hh,v 1.7 2004/04/29 14:24:40 christof Exp $
+// $Id: WinFileReq.hh,v 1.8 2004/04/29 14:45:31 christof Exp $
 
 #ifndef _FILESELECTION1_HH
 #  define _FILESELECTION1_HH
 
 #ifndef __MINGW32__
 #  include "WinFileReq_glade.hh"
-# if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
-#  include <sigc++/slot.h>
-# endif
 #else
 #  include <gtkmm/window.h>
+#endif
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#  include <sigc++/slot.h>
 #endif
 
 #ifdef __MINGW32__

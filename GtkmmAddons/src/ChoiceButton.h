@@ -27,6 +27,9 @@
 #include <gtkmm/label.h>
 #include <gtkmm/menu.h>
 #include <gtkmm/tooltips.h>
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#  include <sigc++/slot.h>
+#endif
 
 namespace ManuProC {
 
