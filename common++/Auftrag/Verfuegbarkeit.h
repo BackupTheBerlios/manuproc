@@ -1,4 +1,4 @@
-/* $Id: Verfuegbarkeit.h,v 1.7 2004/03/02 11:44:11 christof Exp $ */
+/* $Id: Verfuegbarkeit.h,v 1.8 2004/09/06 13:02:46 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -54,5 +54,10 @@ typedef std::map<mapindex,Mengen> map_t;
 void verfuegbar(const AufEintrag &ae, map_t &result, mengen_t menge=0, mengen_t offset=0);
 // Gegenrichtung
 void wozu_benoetigt(const AufEintrag &ae, map_t &result, mengen_t menge=0, mengen_t offset=0);
+
+// details
+typedef std::map<AufEintragBase,AuftragBase::mengen_t> map_det_t;
+void benoetigt(const AufEintrag &ae, map_det_t &result, mengen_t menge=0, mengen_t offset=0);
+void wozu_benoetigt(const AufEintrag &ae, map_det_t &result, mengen_t menge=0, mengen_t offset=0);
 }
 #endif

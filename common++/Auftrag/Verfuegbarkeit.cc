@@ -1,4 +1,4 @@
-/* $Id: Verfuegbarkeit.cc,v 1.15 2004/03/02 11:45:33 christof Exp $ */
+/* $Id: Verfuegbarkeit.cc,v 1.16 2004/09/06 13:02:46 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -264,4 +264,102 @@ void Verfuegbarkeit::wozu_benoetigt(const AufEintrag &ae, map_t &result,
       if (!!rest) result[idx].error+=rest;
    }
    verf_Trace(result[idx]);
+}
+
+void Verfuegbarkeit::benoetigt(const AufEintrag &ae, map_det_t &result, mengen_t menge, mengen_t offset)
+{
+}
+
+namespace
+{
+struct benoe_recurse2 : distribute_parents_cb
+{	// offset wird von oben gerechnet (0=letzte benötigte Menge)
+	mutable Verfuegbarkeit::mengen_t offset;
+	mutable Verfuegbarkeit::map_det_t &result;
+	const AufEintrag &kind;
+
+	AuftragBase::mengen_t operator()(const AufEintragZu::st_reflist &aeb,AuftragBase::mengen_t m) const;
+	bool operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const
+	{  return AufEintragZu_sort::priority(b,a);
+	}
+
+	virtual ~benoe_recurse2() {}
+	benoe_recurse2(const Verfuegbarkeit::mengen_t &o, Verfuegbarkeit::map_det_t &r,
+			const AufEintrag &e) 
+		: offset(o), result(r), kind(e) 
+	{}
+};
+}
+
+AuftragBase::mengen_t benoe_recurse2::operator()(const AufEintragZu::st_reflist &rl,AuftragBase::mengen_t m) const
+{  // offset ist in Kindereinheit und bezüglich Pfeil
+   if (offset>rl.Menge) { offset-=rl.Menge; return 0; }
+   if (offset+m>rl.Menge) { m=rl.Menge-offset; }
+
+   AufEintrag ae(rl.AEB);
+   AufEintragZu::list_t Kinder= 
+   	AufEintragZu::get_Referenz_list(ae,AufEintragZu::list_kinder,
+					AufEintragZu::list_Artikel,
+					AufEintragZu::list_unsorted);
+   Kinder.sort(ben_recurse_sort());
+   // in Kindeinheit
+   AuftragBase::mengen_t local_offset=0;
+   for (AufEintragZu::list_t::iterator i=Kinder.begin();i!=Kinder.end();++i)
+   {  if (i->Art!=kind.Artikel()) continue; // ignore
+      if (i->AEB==kind && i->Pri==rl.Pri) break;
+      local_offset+=i->Menge;
+   }
+   
+   ArtikelBaum ab(ae.Artikel());
+   double faktor=ab.Faktor(kind.Artikel()).as_float();
+   AuftragBase::mengen_t offset_elter=(offset+local_offset)/faktor;
+   AuftragBase::mengen_t m_elter=m/faktor;
+   ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,
+   		NV("local_offset",local_offset),NV("offset",offset),
+   		NV("offset_elter",offset_elter),NV("m_elter",m_elter));
+   Verfuegbarkeit::wozu_benoetigt(ae,result,m_elter,offset_elter);
+   offset=0; // wenn es für uns schon reichte, dann wird der nächste auch dran sein
+   return m; 
+}
+
+void Verfuegbarkeit::wozu_benoetigt(const AufEintrag &ae, map_det_t &result, mengen_t menge, mengen_t offset)
+{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("ae",ae),
+		NV("menge",menge),NV("offset",offset));
+   if (!menge && !offset) 
+   {  menge=ae.getRestStk();
+   }
+   // shouldn't we error in verf too ?
+   if (offset>=ae.getRestStk()) return;
+   if (offset+menge>ae.getRestStk()) 
+   { menge=ae.getRestStk()-offset;
+   }
+   if (!menge) return;
+
+   ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,
+   		NV("menge",menge),NV("offset",offset));
+
+   if (ae.Instanz()->LagerInstanz() && ae.Id()==AuftragBase::auffuellen_id)
+   {  result[ae]+=menge;
+      menge=0; // keine Rekursion
+   }
+   else if (ae.Id()==AuftragBase::dispo_id)
+   {  assert(!ae.Instanz()->LagerInstanz());
+      result[ae]+=menge; // vorraetig statt geplant
+      menge=0;
+   }
+   else if (ae.Id()==AuftragBase::plan_auftrag_id || ae.Id()>=AuftragBase::handplan_auftrag_id)
+   {  assert(!ae.Instanz()->LagerInstanz());
+      result[ae]+=menge;
+      if (ae.Instanz()==ppsInstanzID::Kundenauftraege) menge=0;
+   }
+   else
+   {  assert(ae.Id()==AuftragBase::ungeplante_id);
+      result[ae]+=menge;
+   }
+   
+   if (!!menge)
+   {  // Rekursion (Priority)
+      mengen_t rest=
+         distribute_parents(ae,menge,benoe_recurse2(offset,result,ae));
+   }
 }
