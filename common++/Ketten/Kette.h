@@ -1,4 +1,4 @@
-/* $Id: Kette.h,v 1.10 2003/01/08 09:46:57 christof Exp $ */
+/* $Id: Kette.h,v 1.11 2004/02/26 16:05:48 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,7 +26,7 @@
 #include <vector>
 #include <exception>
 
-class Kette {
+struct Kette {
 	int maschine;
 	ManuProC::Datum schaerdatum;
 public:
