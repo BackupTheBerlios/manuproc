@@ -1,4 +1,4 @@
-// $Id: TagStream.h,v 1.5 2004/06/03 07:09:32 christof Exp $
+// $Id: TagStream.h,v 1.6 2004/06/03 09:49:40 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2004  Christof Petig
  *
@@ -50,7 +50,7 @@ class TagStream : public Tag
 	char *find(char what)
 	{  return (char*)memchr(buffer+pointer,what,end_pointer-pointer); }
 
-	static void de_xml(std::string &cont);
+	void de_xml(std::string &cont);
 	void load_project_file(Tag *top);
 
 	// ------ normal operation --------

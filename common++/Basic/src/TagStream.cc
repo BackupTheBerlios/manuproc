@@ -1,4 +1,4 @@
-// $Id: TagStream.cc,v 1.8 2004/06/03 07:09:32 christof Exp $
+// $Id: TagStream.cc,v 1.9 2004/06/03 09:49:40 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2004  Christof Petig
  *
@@ -91,9 +91,9 @@ void TagStream::de_xml(std::string &cont)
          else if (tag=="&gt;") { cont.replace(verbatim,endtag,1,'>'); ++i; }
          else if (tag=="&quot;") { cont.replace(verbatim,endtag,1,'"'); ++i; }
          else if (tag=="&auml;") 
-         {  std::string new="ä"; // assumes host_encoding=="UTF-8"
-            if (recode_load_vfunc) (*recode_load_vfunc)(new);
-            cont.replace(verbatim,endtag,new); i+=new.size(); 
+         {  std::string nw="ä"; // assumes host_encoding=="UTF-8"
+            if (recode_load_vfunc) (*recode_load_vfunc)(nw);
+            cont.replace(verbatim,endtag,nw); i+=nw.size(); 
          }
          	// and so on ... but glade simply passes them
          else
