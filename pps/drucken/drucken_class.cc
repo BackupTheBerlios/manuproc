@@ -467,7 +467,10 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
         ArtikelBase artikelbase  = (*j).Artikel();
         cH_ArtikelBezeichnung bez(artikelbase,cH_Kunde(kunden_id)->getSchemaId());
         cH_ExtBezSchema schema = bez->getExtBezSchema();
-#ifndef MABELLA_EXTENSIONS        
+
+#ifdef MABELLA_EXTENSIONS        
+        if (schema!=schema_own && !Configuration.combine) break; // Schema hat gewechselt
+#else
         if (schema!=schema_mem && !Configuration.combine) break; // Schema hat gewechselt
 #endif        
         
