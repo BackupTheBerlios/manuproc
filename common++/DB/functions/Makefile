@@ -1,17 +1,15 @@
 CFLAGS=-Wall -fPIC  \
-	-I$(HOME)/build/pgsql/src/include \
-	-I$(HOME)/cvs/BarcoNG/include \
-	-I$(HOME)/pgsql-cvs/pgsql-stable/src/include \
 	-I/usr/include/postgresql/server \
 	-I/usr/include/postgresql \
-	-I/usr/local/pgsql/include \
-	-I/usr/local/postgresql/include 
+	-I/usr/lib/postgresql/include 
 
 ALL=auftrag_status.so artikelbezeichnung.so kw2date.so \
-	atoi.so artikelid.so 
+	atoi.so artikelid.so
 
 all: $(ALL)
 
+links:
+	ln -s ../../Auftrag/auftrag_status.h
 
 %.so: %.o
 	ld -shared -o $*.so $^
@@ -20,6 +18,5 @@ clean:
 	rm -f *~ *.o $(ALL)
 
 install:
-	cp auftrag_status.h /home/share/include
-	cp $(ALL) /usr/local/pgsql/lib
+	cp $(ALL) /usr/lib/postgresql/lib
 
