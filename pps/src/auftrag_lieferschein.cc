@@ -494,6 +494,7 @@ void auftrag_lieferschein::on_Palette_activate()
 }
 
 
+#ifdef MABELLA_EXTENSIONS
 bool auftrag_lieferschein::checkVerkConsist(const AufEintragBase &ae)
 {
  if(lieferschein->getVerknr()!=Kunde::none_id)
@@ -508,7 +509,7 @@ bool auftrag_lieferschein::checkVerkConsist(const AufEintragBase &ae)
 
  return true;
 }
-
+#endif
 
 void auftrag_lieferschein::on_newlieferentryall_ok()
 {   
@@ -575,8 +576,10 @@ bool auftrag_lieferschein::deleteLiefEntry()
     {
      LieferscheinVoll lv(instanz,LE.Id());
      lv.deleteRow(LE);
+#ifdef MABELLA_EXTENSIONS     
      if(lv.size()==0) // Verkäufer auf NONE setzten
        lieferschein->setVerknr(Kunde::none_id);
+#endif       
      return true;
     }
   } catch(...){}
