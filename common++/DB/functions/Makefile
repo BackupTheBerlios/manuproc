@@ -7,13 +7,10 @@ CFLAGS=-Wall -fPIC  \
 	-I/usr/local/pgsql/include \
 	-I/usr/local/postgresql/include 
 
-ALL=nextval_tnf.so auftrag_status.so artikelbezeichnung.so kw2date.so \
+ALL=auftrag_status.so artikelbezeichnung.so kw2date.so \
 	atoi.so artikelid.so
 
 all: $(ALL)
-
-hex.so: hex.o msw.o
-	ld -shared -o hex.so $^
 
 %.so: %.o
 	ld -shared -o $*.so $^
