@@ -16,6 +16,9 @@
 #include <vector>
 #include <string>
 #include <Artikel/ArtikelMengeSumme.h>
+#include <Lieferschein/LieferscheinEntry.h>
+#include <Auftrag/AuftragBase.h>
+#include "auftrag_lieferschein_classes.h"
 
 class petig_we : public petig_we_glade
 {
@@ -24,16 +27,21 @@ class petig_we : public petig_we_glade
    std::vector<std::string> artbez;
    int stueck;
    bool zi;
-   LieferscheinEntry::zusaetze_t zinfo;
+//   LieferscheinEntry::zusaetze_t zinfo;
+   LieferscheinEntryBase lseb;	// Lieferschein des Lieferanten
    ArtikelMenge::mengen_t menge;
-   std::string auftrag_referenz;
-   we_entry() : stueck(0),zinfo(false),menge(0) {}
+   std::map<std::string,int> auftrag_referenz; // youraufnr zu menge
+                                               // kommt vom Zusatzinfo
+   std::string first_auf_ref;		// from lieferschentry, not zusatzinfo                                               
+   we_entry() : stueck(0),zi(false),menge(0) {}
    };
  std::vector<struct we_entry> we_ls;
  
         void on_petig_we_ok_clicked();
         void on_petig_we_cancel_clicked();  
  void identify_article() throw(SQLerror); 
-        
+
+ cH_Data_Lieferoffen getHandleForAufEntry(AuftragBase::ID abid, 
+                         ArtikelBase::ID artid);
 };
 #endif

@@ -147,10 +147,13 @@ class Data_Lieferoffen : public RowDataBase
 {
       AufEintrag AE;
       const auftrag_main *AM ;
-
+      bool valid;
 public:
    Data_Lieferoffen(const AufEintrag& ae,const auftrag_main* am) 
-      : AE(ae),AM(am) {}
+      : AE(ae),AM(am),valid(true) {}
+   Data_Lieferoffen() 
+      : AM(NULL),valid(false) {}
+      
    enum SeqNr {AUFNR_SEQ=0,ARTIKEL_SEQ,LIEFDAT_SEQ,OFFMNG_SEQ,
    		GELIEF_SEQ,IMLAGER_SEQ};
    virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
@@ -184,6 +187,8 @@ public:
         }
     }
    const AufEintrag &getAufEintrag() const { return AE; }
+   const ArtikelBase getArtikel() const { return AE.Artikel(); }   
+   bool Valid() const { return valid; }
    void abschreiben(AuftragBase::mengen_t menge) 
 //#ifdef MABELLA_EXTENSIONS
 //        {AE.abschreiben(menge,ManuProcEntity::none_id); }   

@@ -15,7 +15,7 @@
 #include <ExtBezSchema/ExtBezSchema.h>
 #include <Lieferschein/Lieferschein.h>
 #include <Auftrag/AufEintrag.h>
-
+#include <Instanzen/ppsInstanz.h>
 
 extern MyMessage *meldung;
 extern auftrag_lieferschein *auftraglieferschein;
@@ -47,7 +47,7 @@ void petig_we::on_petig_we_ok_clicked()
  catch(SQLerror &e)
   { meldung->Show(e);
     return;
-  }
+   }
  catch(ManuProC::AuthError &a)
   { meldung->Show(a.Msg()+": Anmeldung nicht möglich");
     return;
@@ -55,7 +55,7 @@ void petig_we::on_petig_we_ok_clicked()
 
  ManuProC::dbdefault(c_to_p.Name());
 
- Query q("select a.youraufnr,"
+ Query q("select (case when zusatzinfo=false then a.youraufnr else '' end),"
        "artikelkomponente(artikelid,?,1,1), " 
        "artikelkomponente(artikelid,?,1,2), "
        "artikelkomponente(artikelid,?,1,3), "
@@ -75,19 +75,44 @@ void petig_we::on_petig_we_ok_clicked()
     std::string bk;
     int lsid,znr,insid;
     
-    is >> FetchIStream::MapNull(ws.auftrag_referenz,"");
+    is >> FetchIStream::MapNull(ws.first_auf_ref,"");
     for(int i=0; i<4; i++)
       {is >> FetchIStream::MapNull(bk,"");
        ws.artbez.push_back(bk);
       }
     is >> ws.stueck >> FetchIStream::MapNull(ws.menge,0)
-      >> FetchIStream::MapNull(ws.zinfo,false)
+      >> FetchIStream::MapNull(ws.zi,false)
       >> lsid >> znr >> insid;
+    ws.lseb=LieferscheinEntryBase(LieferscheinBase(
+           cH_ppsInstanz((ppsInstanz::ID)insid),lsid),znr);
+    
     we_ls.push_back(ws);
     is=q.Fetch();
    }
    
-   
+ std::vector<struct we_entry>::iterator wee;
+ for(wee=we_ls.begin(); wee!=we_ls.end(); ++wee)
+   {  
+    if((*wee).zi==true)
+      {
+       Query subq("select a.youraufnr,menge "
+          " from lieferscheinentryzusatz z left join auftrag a on "
+          " (a.auftragid=z.auftragid and  a.instanz=z.instanz)"
+          " where (z.instanz,z.lfrsid,z.lfsznr)=(?,?,?)");
+        subq  << (*wee).lseb.Instanz()->Id()
+          << (*wee).lseb.Id()
+          << (*wee).lseb.Zeile();
+          
+        is=subq.Fetch();
+        while(is.good())
+          {std::string refauf;
+           int menge;
+           is >> FetchIStream::MapNull(refauf,"") >> menge;
+           (*wee).auftrag_referenz[refauf]=menge;
+           is=subq.Fetch();
+          }
+      }
+    }
    
  ManuProC::dbdisconnect(c_to_p.Name());   
  ManuProC::dbdefault(); // set to default
@@ -99,52 +124,91 @@ void petig_we::on_petig_we_ok_clicked()
     return;
   }
 
- std::vector<struct we_entry>::iterator wee;
-  
  H_Lieferschein l=auftraglieferschein->getLieferschein();
  
  for(wee=we_ls.begin(); wee!=we_ls.end(); ++wee)
    {
     if((*wee).artikel.Id() == ArtikelBase::none_id) continue;
+
     Einheit e((*wee).artikel);
 
-    const AufEintrag AE;
-    
-    typedef std::vector<cH_RowDataBase>::iterator DVI;
-    std::vector<cH_RowDataBase> lo=auftraglieferschein->getLiefOff();
-    DVI ai;
-    
-    for(ai=lo.begin(); ai!=lo.end(); ++ai)
-       {
-        Handle<const Data_Lieferoffen> h_lo=
-                            (*ai).cast_dynamic<const Data_Lieferoffen>();
-        int aufid=atoi((*wee).auftrag_referenz.c_str());
-         if(h_lo->getAufEintrag().Id()!=aufid)
-           if(atoi(h_lo->getAufEintrag().getYourAufNr().c_str())!=aufid)
-	     continue;
-	 if(AE.getRestStk().as_int()<=0) continue;
+    if((*wee).zi==true)
+      {
+      std::map<std::string,int>::const_iterator refif=
+                                  (*wee).auftrag_referenz.begin();
 
-         AufEintrag ae(h_lo->getAufEintrag());	 
-         l->push_back(ae,
+      for(;refif!=(*wee).auftrag_referenz.end(); ++refif)
+       {
+        cH_Data_Lieferoffen h_lo=getHandleForAufEntry(
+                    (AuftragBase::ID)atoi((*refif).first.c_str()),
+                     (*wee).artikel.Id());
+        if(h_lo->Valid())
+          {             
+           AufEintrag ae(h_lo->getAufEintrag());	 
+           l->push_back(ae,
+                 (*wee).artikel,
+                 (*refif).second,
+                  e.hatMenge()?(*wee).menge:0.0,0);
+           h_lo->getAufEintrag().tmp_geliefert+=(*wee).stueck;
+          }
+        else
+           l->push_back((*wee).artikel,
+                  (*refif).second,
+                  e.hatMenge()?(*wee).menge:0.0,0);
+       }
+     }  
+   else  
+     {
+      if((*wee).first_auf_ref.empty())
+        l->push_back((*wee).artikel,
+                 (*wee).stueck,
+                  e.hatMenge()?(*wee).menge:0.0,0);
+      else             
+       {cH_Data_Lieferoffen h_lo=getHandleForAufEntry(
+                    (AuftragBase::ID)atoi((*wee).first_auf_ref.c_str()),
+                     (*wee).artikel.Id());
+        if(h_lo->Valid())
+          {             
+           AufEintrag ae(h_lo->getAufEintrag());	 
+           l->push_back(ae,
                  (*wee).artikel,
                  (*wee).stueck,
                   e.hatMenge()?(*wee).menge:0.0,0);
-         h_lo->getAufEintrag().tmp_geliefert+=(*wee).stueck;
-	 break;
-       }
-       
-    if(ai==lo.end()) // without order reference
-      l->push_back((*wee).artikel,
+           h_lo->getAufEintrag().tmp_geliefert+=(*wee).stueck;
+          }
+        else
+           l->push_back((*wee).artikel,
                  (*wee).stueck,
-                  e.hatMenge()?(*wee).menge:0.0,0);
+                  e.hatMenge()?(*wee).menge:0.0,0);        
+       }
+     }
+     
    }
 
-
  
-
  auftraglieferschein->set_tree_daten_content(l->Id());
  auftraglieferschein->set_tree_offen_content();  
 }
+
+
+cH_Data_Lieferoffen petig_we::getHandleForAufEntry(
+      AuftragBase::ID abid, ArtikelBase::ID artid)
+{
+ typedef std::vector<cH_RowDataBase>::iterator DVI;
+ std::vector<cH_RowDataBase> lo=auftraglieferschein->getLiefOff();
+ DVI ai;
+
+ for(ai=lo.begin(); ai!=lo.end(); ++ai)
+   {
+    Handle<const Data_Lieferoffen> h_lo=
+                        (*ai).cast_dynamic<const Data_Lieferoffen>();
+    if(h_lo->getAufEintrag().Id()==abid)
+      if(h_lo->getArtikel().Id() == artid)
+        return cH_Data_Lieferoffen(&*h_lo);    
+   }
+ return cH_Data_Lieferoffen(new Data_Lieferoffen());
+}          
+
 
 /*
 void petig_we::print_protokol()
