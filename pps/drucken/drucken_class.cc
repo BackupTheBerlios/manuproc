@@ -1387,15 +1387,15 @@ void LR_Abstraktion::page_header(std::ostream &os)
 		os << "\\smallskip\n";   		
 		}	
 		
-	if(kunde_rng->getBetreuer()!=Person::none_id)
-	  {cH_Person betr(kunde_rng->getBetreuer());
+	if(kunde_rng->getBetreuer()!=Kunde::none_id)
+	  {cH_Kunde betr(kunde_rng->getBetreuer());
 	   if(Typ()==Extern)
              os << "\\bf "<<mld->MLT(MultiL_Dict::TXT_ANSPRECHPARTNER)<<":\\rm \\\\\n";
 	   else
              os << "\\bf "<<mld->MLT(MultiL_Dict::TXT_BETREUUNG)<<":\\rm \\\\\n";
 
            os << betr->Anrede()->getAnrede(*mld) <<" "
-           	<< betr->Vorname()<<" "<<betr->Name()<<"\\\\\n"
+           	<< betr->getName()<<" "<<betr->getName2()<<"\\\\\n"
         	<< mld->MLT(MultiL_Dict::TXT_TELEFON)<<": "<<betr->Kontakt(TEL_TEL,kunde_von->Id())<<"\\\\\n"
         	<< mld->MLT(MultiL_Dict::TXT_TELEFAX)<<": "<<betr->Kontakt(TEL_FAX,kunde_von->Id())<<"\\\\\n"
         	<< "E-Mail: "<<betr->Kontakt(TEL_E_MAIL,kunde_von->Id())<<"\\\\\n";
