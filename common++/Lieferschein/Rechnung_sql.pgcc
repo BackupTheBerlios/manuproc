@@ -350,6 +350,8 @@ void Rechnung::setBezahlt(bool _bezahlt) throw(SQLerror)
  SQLerror::test(__FILELINE__);
 
  tr.commit();
+
+ bezahlt=_bezahlt;
 }
 
 
