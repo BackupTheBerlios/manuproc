@@ -175,6 +175,18 @@ std::cout <<rechnung.rngArt()<<'\n';
    }
 }
 
+
+void auftrag_rechnung::clear_rng()
+{
+ rngnr->reset();
+ rechnung=Rechnung();
+  set_rtree_offen_content(Rechnung::none_id);
+  rabatt_wert->set_value(0);
+ rngdatum->set_value(ManuProC::Datum::today());
+// zahlziel->set_value(Manu);
+ optionmenu_zahlart->set_history(0);
+}
+
 void auftrag_rechnung::on_rngnr_activate()
 {try{
  redisplay();
@@ -207,6 +219,7 @@ void auftrag_rechnung::on_rngnr_activate()
 
 void auftrag_rechnung::on_lieferkunde_activate()
 {
+ clear_rng();
  cH_Kunde k(lieferkunde->get_value());
  
 #ifndef MABELLA_EXTENSIONS
@@ -455,10 +468,10 @@ Mittlere Maustaste: 1 Kopie","");
    fill_optionmenu_zahlungsart();
    optionmenu_zahlart->get_menu()->deactivate.connect(SigC::slot(static_cast<class auftrag_rechnung*>(this), &auftrag_rechnung::optionmenu_zahlart_deactivate));
    rngdatum->setLabel("");
-   zahlziel->setLabel("");
+   zahlziel->setLabel("Zahlungsziel");
    lieferscheindatum->setLabel("");
    rtree_daten->hide();
-   on_button_allopen_clicked();   
+   on_button_allopen_clicked();
    
 // set GUI for DBCapabilities
  DBCapability::WhiteColumn wc("rechnung","bezahlt");

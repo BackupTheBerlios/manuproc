@@ -64,6 +64,7 @@ class auftrag_rechnung : public auftrag_rechnung_glade
         gint on_bezahlt_toggled(GdkEventButton *ev);
         void on_zahlziel_activate();
 	void redisplay();
+	void clear_rng();
    void on_button_gutschrift_clicked();
    void on_button_gutschrift_nein_clicked();
    void on_button_gutschrift_ja_clicked();
