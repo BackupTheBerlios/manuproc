@@ -1,4 +1,4 @@
-// $Id: selAufEntry_sql.pgcc,v 1.29 2003/06/18 10:17:57 jacek Exp $
+// $Id: selAufEntry_sql.pgcc,v 1.30 2003/08/11 06:29:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,7 +20,6 @@
 #include <Auftrag/selFullAufEntry.h>
 #include <Misc/Transaction.h>
 #include <Misc/Datum.h>
-#include <Misc/FetchIStream_ops.h>
 
 FetchIStream &operator>>(FetchIStream &is, AufStatVal &v)
 {  int i;
