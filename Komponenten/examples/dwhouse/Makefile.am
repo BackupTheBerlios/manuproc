@@ -15,7 +15,6 @@ $(LINKS):
 
 main_SOURCES = \
 	MyNode.cc \
-	MyLeaf.cc \
 	main.cc\
 	MyTreeBase.cc \
 	window1_glade.cc \

@@ -11,6 +11,8 @@ Es gibt einen Tag TREEBASE_0_0 fuer uralte Programme
 Porting from 0.0 to 0.5:
 	Im Zweifelsfall anhand von examples/tree_simplest/with_class.cc 
 		neuschreiben! (60-90% des Codes faellt weg)
+	Es gelten ansonten die gleichen Anweisungen wie unten
+	(geaenderte Argumente)
 
 Es gibt einen Tag TREEBASE_0_2 fuer alte Programme
 
