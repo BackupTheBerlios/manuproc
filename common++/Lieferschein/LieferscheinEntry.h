@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.23 2003/07/03 10:06:39 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.24 2003/07/03 13:32:29 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -69,9 +69,10 @@ public:
          : ab(a),menge(m) {}
         };
  typedef st_AufEintragMenge st_zusatz;
+ typedef std::vector<st_AufEintragMenge> zusaetze_t;
 
 private:
- std::vector<st_AufEintragMenge> VZusatz;
+ zusaetze_t VZusatz;
 
    void updateLieferscheinMenge(int stueck,mengen_t menge)  throw(SQLerror);
    mengen_t Abschreibmenge(int stueck,mengen_t menge) const;
@@ -99,10 +100,13 @@ public:
  const ArtikelBase::ID ArtikelID() const { return artikel.Id(); }
  const ArtikelBase Artikel() const { return artikel; }
 
- std::vector<st_AufEintragMenge> getZusatzInfos() const {return VZusatz;}
- void setZusatzInfos(const std::vector<st_AufEintragMenge> &zis);
+ const zusaetze_t &getZusatzInfos() const {return VZusatz;}
+ // nach Aufträgen summiert (nicht nach Zeilen getrennt)
+ std::vector<st_AuftragMenge> getAuftragsMenge() const;
+ void setZusatzInfos(const zusaetze_t &zis);
 
- __deprecated void setZusatzInfo(const AufEintragBase &AEB,const mengen_t &menge) throw(SQLerror);
+ __deprecated void setZusatzInfo(const AufEintragBase &AEB,const mengen_t &menge) throw(SQLerror)
+ {  addZusatzEntry(AEB,menge); }
 
  void setPalette(int p) throw(SQLerror);
  void changeMenge(int stueck,mengen_t menge) throw(SQLerror);
@@ -116,7 +120,9 @@ public:
 private:
  static void deleteMe(const LieferscheinEntry &lse) throw(SQLerror);
  void deleteZusatzEntry(const st_AufEintragMenge &Z) throw(SQLerror);
+ void addZusatzEntry(const AufEintragBase &AEB,const mengen_t &menge) throw(SQLerror);
  void updateZusatzEntry(const st_AufEintragMenge &Z,const AuftragBase::mengen_t &menge) throw(SQLerror);
+ void ZusaetzeLaden();
  friend FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry &aeb);
 };
 
