@@ -5912,7 +5912,7 @@ Zuschlag
 	      <wrap>False</wrap>
 	      <value>0</value>
 	      <lower>0</lower>
-	      <upper>99</upper>
+	      <upper>100</upper>
 	      <step>1</step>
 	      <page>10</page>
 	      <page_size>10</page_size>

@@ -24,6 +24,10 @@
 #include <Misc/SQLerror.h>
 #include <Misc/itos.h>
 
+#ifdef MABELLA_EXTENSIONS
+#include <Lager/FertigWarenLager.h>
+#endif
+
 class MyMessage : public Message
 {
 public:
@@ -34,6 +38,13 @@ public:
   Message::Show((char *)_msg.c_str());
  }
  void Show(const std::string &s) {Message::Show(s);}
+#ifdef MABELLA_EXTENSIONS 
+ void Show(const LagerError &e)
+ {
+ Message::Show(e.Text()+" ArtID:"+itos(e.ArtID()));
+ }
+#endif
+ 
 };
 
 #endif

@@ -733,7 +733,7 @@ void auftrag_rechnung::on_notiz_changed()
 void auftrag_rechnung::on_notiz_save_clicked()
 {   
   if(rechnung.Id()!=Rechnung::none_id) 
-    rechnung.Notiz(rng_notiz->get_chars(0,rng_notiz->get_length()));
+     rechnung.Notiz(rng_notiz->get_chars(0,rng_notiz->get_length()));
   rng_notiz_save->set_sensitive(false);
 }
 

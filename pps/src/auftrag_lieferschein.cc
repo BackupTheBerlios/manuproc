@@ -677,7 +677,7 @@ void auftrag_lieferschein::liefzeile_delete()
            set_tree_offen_content();
 	  }
   }
- catch (SQLerror &e)
+  catch (SQLerror &e)
   {  meldung->Show(e); 
      return;
   }
@@ -740,7 +740,12 @@ bool auftrag_lieferschein::deleteLiefEntry()
 #endif       
      return true;
     }
+#ifdef MABELLA_EXTENSIONS     
+  } catch(LagerError &e){meldung->Show(e); return false;}
+#else
   } catch(...){}
+#endif
+
  return false;
 }
 
