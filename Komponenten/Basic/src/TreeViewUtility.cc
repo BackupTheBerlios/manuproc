@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.cc,v 1.14 2004/02/02 07:29:49 christof Exp $
+// $Id: TreeViewUtility.cc,v 1.15 2004/02/02 13:13:55 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,7 +22,7 @@
 #include <cassert>
 
 TreeViewUtility::CListEmulator::CListEmulator(const std::vector<Glib::ustring> &t)
-	: cols(t.size()), titles(t)
+	: cols(t.size()), titles(t), view()
 {  for (std::vector<Gtk::TreeModelColumn<Glib::ustring> >::iterator i=cols.begin();
 		i!=cols.end();++i)
       add(*i);
@@ -30,8 +30,8 @@ TreeViewUtility::CListEmulator::CListEmulator(const std::vector<Glib::ustring> &
 }
 
 TreeViewUtility::CListEmulator::CListEmulator(const Glib::ustring &title)
-{  cols.push_back(Gtk::TreeModelColumn<Glib::ustring>());
-   add(cols.back());
+	: cols(1), view()
+{  add(*cols.begin());
    titles.push_back(title);
    m_refStore=Gtk::ListStore::create(*this);
 }
