@@ -1,4 +1,4 @@
-// $Id: KettplanKette.h,v 1.11 2002/09/18 08:58:34 christof Exp $
+// $Id: KettplanKette.h,v 1.12 2002/11/29 15:49:56 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -112,7 +112,9 @@ public:
 
    void delete_Artikel(const ArtikelGang& artikel) const;
    int get_aktual_Index(const ArtikelGang& artikel) const;
-        
+
+   void setStuecklaenge(const int)  const throw(SQLerror);
+   void setKettlaenge(const int)  const throw(SQLerror) ;       
 
 public:
 	void UnCache(int what) const

@@ -284,11 +284,6 @@ void auftrag_lieferschein::fill_input(const AufEintrag& AE)
 void auftrag_lieferschein::fill_input(const AufEintrag& AE,const LieferscheinEntry& LE)
 {
   // Zusatzinfos dürfen nicht geändert werden:
-//  if(LE.Valid() && LE.ZusatzInfo()) 
-//   {
-//  if( 
-//     button_zeile_modifizieren->set_sensitive(false) ; 
-//     return; }
   fill_with(AE,Einheit(LE.Artikel()),LE.Stueck(),LE.Menge().as_float());
   Palette->set_value(LE.Palette());
 }
@@ -303,6 +298,7 @@ void auftrag_lieferschein::fill_with(const AufEintrag& AE,const Einheit& E,
   if (E.hatMenge())
    {
      label_menge->show();
+     liefermenge->set_value(Lieferschein::StandardLaenge(AE.Artikel()).as_int());
      liefermenge->show();
      liefermenge->set_value(menge);
      anzahl->set_value(stueck);

@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.23 2002/11/29 11:30:16 thoma Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.24 2002/11/29 15:49:56 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -187,6 +187,13 @@ const Preis::rabatt_t Lieferschein::AufRabatt() const throw(SQLerror)
 
 }
 
+LieferscheinBase::mengen_t Lieferschein::StandardLaenge(const ArtikelBase artikel) throw (SQLerror)
+{
+  return 1;
+}
+
+
+
 #ifdef DPD_LIEFERSCHEINE
 const ManuProC::Datum Lieferschein::getMaxZahlziel() const throw(SQLerror)
 {
@@ -214,10 +221,6 @@ const ManuProC::Datum Lieferschein::getMaxZahlziel() const throw(SQLerror)
 
 
 
-LieferscheinBase::mengen_t LieferscheinBase::StandardLaenge(const ArtikelBase artikel) throw (SQLerror)
-{
-  return 1;
-}
 
 
 #endif

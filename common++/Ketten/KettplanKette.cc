@@ -1,4 +1,4 @@
-// $Id: KettplanKette.cc,v 1.3 2002/05/09 12:46:00 christof Exp $
+// $Id: KettplanKette.cc,v 1.4 2002/11/29 15:49:56 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -34,3 +34,22 @@ int KettplanKette::planMaschine() const throw()
 {  return (valid&VA_PLAN)?planmasch:holePlanMaschine();
 }
 
+void KettplanKette::setStuecklaenge(const int wert)  const throw(SQLerror)
+{
+  std::string q="update ketten set stucklaenge="+itos(wert)+" where "
+   " (maschine,schaerdatum) = ("+itos(Maschine())+","
+      +Schaerdatum().postgres_null_if_invalid()+")";
+  Query::Execute(q);
+  SQLerror::test(__FILELINE__);
+  stuecklaenge=wert;
+}
+ 
+void KettplanKette::setKettlaenge(const int wert)  const throw(SQLerror)
+{
+  std::string q="update ketten set laenge="+itos(wert)+" where "
+   " (maschine,schaerdatum) = ("+itos(Maschine())+","
+      +Schaerdatum().postgres_null_if_invalid()+")";
+  Query::Execute(q);
+  SQLerror::test(__FILELINE__);
+  kettlaenge=wert;
+}
