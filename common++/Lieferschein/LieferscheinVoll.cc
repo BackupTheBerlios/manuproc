@@ -1,4 +1,4 @@
-/* $Id: LieferscheinVoll.cc,v 1.19 2004/02/17 17:55:27 jacek Exp $ */
+/* $Id: LieferscheinVoll.cc,v 1.20 2004/03/29 15:03:06 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -40,15 +40,30 @@ LieferscheinVoll::LieferscheinVoll(const cH_ppsInstanz& _instanz,int lid,bool au
 {
  AufStatVal st=(AufStatVal)STORNO;
 
-  (Query(std::string("select lfrsid, zeile, artikelid, stueck, menge, palette, "
-	  "zusatzinfo, instanz, refauftragid, refzeilennr, lagerid, status"
-	  " from lieferscheinentry ly left join artbez_3_1 b "
-	  " on (b.id=ly.artikelid) "
-	  " where (instanz,lfrsid) = (?,?) "
-	  " and status not in (?) order by ")+
-		  (auforder ? "refauftragid,artikel,breite,farbe":"zeile")) 
-  	<< Instanz()->Id() << Id() << st)
-  	.FetchArray(lsentry);
+ std::string tabelle="artbez_"+
+        itos(ExtBezSchema::default_Typ)+"_"+
+        itos(ExtBezSchema::default_id);
+
+ cH_ExtBezSchema exbz(ExtBezSchema::default_id,ExtBezSchema::default_Typ);
+ std::string sortstr=auforder ? "refauftragid":"zeile";
+ int signifikanz=1;
+ for(ExtBezSchema::const_sigiterator l=exbz->sigbegin(signifikanz);
+				l!=exbz->sigend(signifikanz); ++l)
+   sortstr+=std::string(",")+l->spaltenname;
+ 
+
+ std::string query("select lfrsid, zeile, artikelid, stueck, menge, palette,");
+ query+=std::string("zusatzinfo, instanz, refauftragid, ")+
+	  " refzeilennr, lagerid, status"+
+	  " from lieferscheinentry ly left join "+tabelle+" b "+
+	  " on (b.id=ly.artikelid) "+
+	  " where (instanz,lfrsid) = (?,?) "+
+	  " and status not in (?) order by "+sortstr;
+
+ Query q(query);
+ q << Instanz()->Id() << Id() << st;
+ q.FetchArray(lsentry);
+ 
 }
 
 

@@ -1,4 +1,4 @@
-/* $Id: RechnungVoll_sql.pgcc,v 1.17 2003/12/09 08:00:40 christof Exp $ */
+/* $Id: RechnungVoll_sql.pgcc,v 1.18 2004/03/29 15:03:06 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -37,6 +37,21 @@ RechnungVoll::RechnungVoll(int rid, bool order_by_artikel) throw(SQLerror)
  exec sql end declare section;
  INSTANZ=ppsInstanzID::Kundenauftraege;
 
+
+ std::string tabelle="artbez_"+
+        itos(ExtBezSchema::default_Typ)+"_"+
+        itos(ExtBezSchema::default_id);
+
+
+ cH_ExtBezSchema exbz(ExtBezSchema::default_id,ExtBezSchema::default_Typ);
+ std::string sortstr=order_by_artikel ? " l.lfrsid,e.refauftragid ":"zeilennr";
+ int signifikanz=1;
+ for(ExtBezSchema::const_sigiterator l=exbz->sigbegin(signifikanz);
+				l!=exbz->sigend(signifikanz); ++l)
+   sortstr+=std::string(",")+l->spaltenname;
+
+
+
  std::string qu("select ry.artikelid, ry.zeilennr");
 
  qu=qu+", coalesce(ry.stueck,0), coalesce(ry.menge,0), "
@@ -50,14 +65,11 @@ RechnungVoll::RechnungVoll(int rid, bool order_by_artikel) throw(SQLerror)
 	"=(e.instanz,e.lfrsid,e.zeile) ";
 
  if(order_by_artikel)
-   qu=qu+" left join artbez_3_1 b on b.id=e.artikelid";
+   qu=qu+" left join "+tabelle+" b on b.id=e.artikelid";
 
  qu=qu+" where ry.rngid ="+itos(rid);
 
- if(order_by_artikel)
-   qu=qu+" order by l.lfrsid,e.refauftragid,b.artikel,b.breite,b.farbe ";
- else
-   qu=qu+" order by zeilennr";
+ qu+=sortstr;
 
  QU=(char*)qu.c_str();
 
