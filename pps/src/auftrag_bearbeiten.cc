@@ -31,7 +31,7 @@
 #include "auftrag_copy.hh"
 #include "auftrag_provision.hh"
 #include "ja_nein_frage.hh"
-
+#include "Configuration.h"
 
 #ifndef OLD
 #include<Auftrag/selFullAufEntry.h>
@@ -60,12 +60,14 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
  liefdatum_datewin->set_tab_pos(GTK_POS_TOP);
 // aufeintrag_box->hide(); // beinhaltet beide oben
  
-#ifdef PETIG_EXTENSIONS
+#ifdef HIDE_PREISAUSWAHL
  table_preislisten->hide();
- liefdatum_datewin->set_page(1); // KW
+#endif
+#ifdef LIFERDATUM_STANDARD
+ liefdatum_datewin->set_page(LIFERDATUM_STANDARD);
 #endif
 
-#ifdef MABELLA_EXTENSIONS
+#ifdef MASSENEINGABE_AUS
  masseneingabe1->set_active(false);
 #endif
 
@@ -150,7 +152,7 @@ void auftrag_bearbeiten::onSelArtikel()
 
  try {
     WPreis->reset();
-#ifdef MABELLA_EXTENSIONS
+#ifndef HIDE_PREISAUSWAHL
     cH_Kunde kndrng(kunde->Rngan());
  
     if(preisautomatik->get_active())
@@ -343,7 +345,7 @@ void auftrag_bearbeiten::on_stkmtr_spinbutton_activate()
     if(preislisten->get_value() != PreisListe::none_id)
       {
        WPreis->reset();
-#ifdef MABELLA_EXTENSIONS
+#ifndef HIDE_PREISAUSWAHL
        if(preisautomatik->get_active())
          {
           cH_Kunde kndrng(kunde->Rngan());
@@ -718,7 +720,7 @@ void auftrag_bearbeiten::andererKunde()
 
     preisautomatik->set_active(rngkd->Preisautomatik());
     
-#ifdef MABELLA_EXTENSIONS
+#ifndef HIDE_PREISAUSWAHL
    if(preisautomatik->get_active())
      artikelbox->AlleWarenkorb(rngkd->Id());
    else
@@ -1029,7 +1031,7 @@ void auftrag_bearbeiten::fillCList()
 
 void auftrag_bearbeiten::on_auftrag_preislisten_activate()
 {
-#ifdef MABELLA_EXTENSIONS
+#ifndef HIDE_PREISAUSWAHL
  cH_PreisListe p(preislisten->get_value());
  artikelbox->reset();
  if(preisautomatik->get_active())
@@ -1072,7 +1074,7 @@ void auftrag_bearbeiten::on_notiz_save_clicked()
 
 void auftrag_bearbeiten::on_preisautomatik_clicked()
 {
-#ifdef MABELLA_EXTENSIONS
+#ifndef HIDE_PREISAUSWAHL
  if(preisautomatik->get_active())
      {artikelbox->AlleWarenkorb(kunde->Rngan());
       preislisten->set_sensitive(false);
