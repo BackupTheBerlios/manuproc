@@ -1,4 +1,4 @@
-// $Id: datewin.cc,v 1.16 2003/10/07 06:30:23 christof Exp $
+// $Id: datewin.cc,v 1.17 2004/01/27 12:08:32 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -96,11 +96,8 @@ void datewin::set_value (const ManuProC::Datum &d) throw()
 }
 
 gint datewin::try_grab_focus(GtkWidget *w,gpointer gp) throw()
-{datewin *this2((datewin*)gp);
- Gtk::Notebook *n=dynamic_cast<Gtk::Notebook*>(this2);
- assert(n!=NULL); // very weak check
-
-   datewin *_this=static_cast<datewin*>(gp);
+{  datewin *_this=dynamic_cast<datewin*>(gp);
+   assert(_this);
    switch(_this->get_current_page())
    {  case p_Datum:
    	  _this->jahr->select_region(0,_this->jahr->get_text_length());
@@ -168,13 +165,19 @@ void datewin::datum_setzen()
    else set_current_page(load_settings());
 }
 
+// cache
+datewin::PAGE datewin::defaultpage=datewin::p_leer;
+
 void datewin::save_settings() const
 {  int u=getuid();
    Global_Settings(u,instance,"datewin:page").set_Wert(itos(get_current_page()));
+   defaultpage=PAGE(get_current_page());
 }
 
 int datewin::load_settings() const
-{  return atoi(Global_Settings(getuid(),instance,"datewin:page").get_Wert().c_str());
+{  if (defaultpage==p_leer)
+      defaultpage=PAGE(atoi(Global_Settings(getuid(),instance,"datewin:page").get_Wert().c_str()));
+   return int(defaultpage);
 }
 
 //void datewin::on_datewin_switch_page(Gtk::Notebook_Helpers::Page *p0, guint p1)

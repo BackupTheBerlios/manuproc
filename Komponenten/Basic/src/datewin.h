@@ -1,4 +1,4 @@
-// $Id: datewin.h,v 1.13 2003/10/07 06:30:23 christof Exp $
+// $Id: datewin.h,v 1.14 2004/01/27 12:08:32 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,6 +30,8 @@ class datewin : public datewin_glade
         bool block;
         bool expandyear;
         std::string instance;
+
+        static PAGE defaultpage;
 
 	void on_activate(int i);
         void datum_activate();
@@ -64,5 +66,5 @@ public:
 };
 
 // compatibility
-class Datewin : public datewin {};
+//class Datewin : public datewin {};
 #endif
