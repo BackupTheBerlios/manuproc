@@ -311,9 +311,9 @@ try{
        label_auftragspreis->hide();
        radiobutton_artikelpreis->set_active(true);
     }
-#ifndef MABELLA_EXTENSIONS 
+//#ifndef MABELLA_EXTENSIONS 
   button_pr->set_sensitive(true);
-#endif
+//#endif
 
 }catch(std::exception &e) {std::cerr<<e.what();}
 }
@@ -442,7 +442,7 @@ auftrag_rechnung::auftrag_rechnung(cH_ppsInstanz _instanz)
 : instanz(_instanz)
 {
 #ifdef MABELLA_EXTENSIONS
- preis_ergaenzen->hide();
+// preis_ergaenzen->hide();
  _tooltips.set_tip(*button27,"Linke Maustaste: 1 Orig. 2 Kopien.
 Mittlere Maustaste: 1 Kopie","");
   std::string nurliefer(" and lieferadresse=true  and coalesce(aktiv,true)=true");
