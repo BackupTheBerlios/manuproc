@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.34 2004/01/06 09:10:19 christof Exp $
+# $Id: Makefile.am,v 1.35 2004/01/27 11:49:13 christof Exp $
 AM_CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
@@ -60,7 +60,7 @@ libKomponenten_a_SOURCES= \
 	bool_properties.cc bool_ImageButton.cc \
 	IntStringBox_glade.cc IntStringPopup_glade.cc \
 	string_Label.cc Event.cc Association.cc \
-        KundenBox2.cc CellRendererSimpleTree.cc
+        CellRendererSimpleTree.cc
 
 lateron= \
 		$(BUILT_SOURCES_L) \
@@ -77,7 +77,7 @@ lateron= \
       WPreis.cc \
       LandesBox.cc \
       ZahlungsArtBox.cc \
-      end
+      KundenBox2.cc
 
 BUILT_SOURCES_L= KundenBox_sql.cc $(LINKS) \
 	IntStringBox_sql.cc 
