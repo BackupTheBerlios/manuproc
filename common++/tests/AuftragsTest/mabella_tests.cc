@@ -29,13 +29,19 @@
 // Lieferschein
 #include <Lieferschein/Lieferschein.h>
 #include "TestReihe.h"
+#include <Auftrag/AufEintragBase.h>
 
 static bool Lieferschein_Kunde(AufEintrag &AE)
 {
 
 	{// Einkauf liefert Vollmenge
         Auftrag auftrag=Auftrag(Auftrag::Anlegen(EINKAUF),KUNDE2);
-        AufEintragBase AEB2=auftrag.push_back(10,DATUM,ARTIKEL_TRIO,OPEN,false);
+
+	AufEintragBase AEB(EINKAUF,0,1);
+	AufEintrag AE(AEB);
+        AE.Planen(10,auftrag,DATUM);
+        AufEintragBase AEB2(EINKAUF,auftrag.Id(),1);
+
        Lieferschein liefs(EINKAUF,cH_Kunde(KUNDE2));
 	AufEintrag ae(AEB2);
        liefs.push_back(ae,ARTIKEL_TRIO,15);
