@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.pgcc,v 1.13 2002/01/07 16:23:09 christof Exp $
+// $Id: ArtikelBaum.pgcc,v 1.14 2002/01/11 07:59:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -163,7 +163,7 @@ void ArtikelBaum::new_Artikel(ArtikelBase fuer_artikel,const RohArtikel& RA)
 
 void ArtikelBaum::create_in_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel,menge_t RohMenge)
 {
-  std::list<AufEintragBase2> elternliste = AufEintragZu::get_AufEintragList_from_Artikel(alt_artikel,NOSTAT);
+  std::list<AufEintragBase2> elternliste = AufEintragZu::get_AufEintragList_from_Artikel(alt_artikel,ArtikelStamm(alt_artikel).BestellenBei()->Id(),NOSTAT);
 //cout << "Create :"<<elternliste.size()<<"\n\n\n\n";
   for(std::list<AufEintragBase2>::const_iterator e=elternliste.begin();e!=elternliste.end();++e)
    {
@@ -171,9 +171,11 @@ void ArtikelBaum::create_in_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_a
      AufEintragBase2::mengen_t menge=AEB.getStueck()*RohMenge;
      AuftragBase AB(ArtikelStamm(kind_artikel).BestellenBei(),0); 
 cout << ArtikelStamm(kind_artikel).BestellenBei()->Name()<<'\n';
-     int znr = AB.tryUpdateEntry(menge,AEB.getLieferdatum(),
-         kind_artikel,AEB.getEntryStatus(),*e,e->ZNr(),true);
-     AufEintragZu(*e).AuftragsEntryZuordnung(menge,AB,znr);
+//     int znr = AB.tryUpdateEntry(menge,AEB.getLieferdatum(),
+//         kind_artikel,AEB.getEntryStatus(),*e,e->ZNr(),true);
+//     AufEintragZu(*e).AuftragsEntryZuordnung(menge,AB,znr);
+     AB.tryUpdateEntry(menge,AEB.getLieferdatum(),
+         kind_artikel,AEB.getEntryStatus(),*e,e->ZNr());
    }  
 }
 

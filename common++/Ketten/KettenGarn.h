@@ -1,4 +1,4 @@
-/* $Id: KettenGarn.h,v 1.2 2001/11/19 12:49:24 christof Exp $ */
+/* $Id: KettenGarn.h,v 1.3 2002/01/11 07:59:28 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,19 +27,21 @@ class KettenGarn {
         int kettenzahl;
 	int faeden;
 	ArtikelBase art;
+        int laenge;
 
 public:
 	typedef ArtikelBase::ID ID;
 
 	KettenGarn() 
-	        : index(0),zeile(0),kettenzahl(0),faeden(0), art(0) {}
-	KettenGarn(int i,int z,int k,int f,ArtikelBase id) 
-	        : index(i), zeile(z),kettenzahl(k),faeden(f), art(id) {}
+	        : index(0),zeile(0),kettenzahl(0),faeden(0), art(0),laenge(0) {}
+	KettenGarn(int i,int z,int k,int f,ArtikelBase id,int l) 
+	        : index(i), zeile(z),kettenzahl(k),faeden(f), art(id),laenge(l) {}
 	bool operator==(const KettenGarn &b) const throw()
 	{  return Index()==b.Index() && 
 	          Artikel()==b.Artikel() &&
 	          Faeden()==b.Faeden() &&
-	          Kettenzahl()==b.Kettenzahl(); }
+	          Kettenzahl()==b.Kettenzahl() &&
+	          Laenge()==b.Laenge() ;}
 
 // this is for convenience only	
 	const cH_ArtikelBezeichnung Bezeichnung(const cH_ExtBezSchema &h) const throw()
@@ -54,6 +56,7 @@ public:
 	int Zeile() const throw() {  return zeile; }
 	int Faeden() const throw() {  return faeden; }
         int Kettenzahl() const throw() { return kettenzahl;}
+        int Laenge() const throw() { return laenge;}
 };
 
 //extern std::ostream& operator<<(std::ostream &o,const ArtikelGang &ag);

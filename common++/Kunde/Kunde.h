@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.9 2001/12/04 08:42:11 christof Exp $
+// $Id: Kunde.h,v 1.10 2002/01/11 07:59:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,6 +25,7 @@
 #include<Aux/fixedpoint.h>
 #include<Aux/Datum.h>
 #include<Aux/itos.h>
+#include<Aux/Waehrung.h>
 
 class cH_Kunde;
 class H_Kunde;
@@ -102,6 +103,7 @@ private:
 	friend class Handle<Kunde>;
 	static const ID _wir=1;
 	static const ID _illegal=-1;
+	cP_Waehrung waehrung;
    // ...
 
 public:
@@ -200,6 +202,7 @@ public:
         
         unsigned long int neue_bank_anlegen(const std::string& name, unsigned long int blz);        
         void get_blz_from_bankindex(unsigned int bankindex);
+        cP_Waehrung getWaehrung() const { return waehrung; }
 
         bool operator==(const Kunde& b) const
                 {return Id()==b.Id();} 

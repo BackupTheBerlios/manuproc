@@ -1,4 +1,4 @@
-// $Id: AuftragsEntryZuordnung_sql.pgcc,v 1.3 2002/01/07 16:23:09 christof Exp $
+// $Id: AuftragsEntryZuordnung_sql.pgcc,v 1.4 2002/01/11 07:59:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -126,7 +126,7 @@ list<cH_Kunde> AufEintragZu::get_Referenz_Kunden() const throw(SQLerror)
 }
 
 std::list<AufEintragBase2> AufEintragZu::get_AufEintragList_from_Artikel
-               (const ArtikelBase& artikel,AufStatVal status)
+               (const ArtikelBase& artikel,ppsInstanz::ppsInstId instanz,AufStatVal status)
 {
   std::list<AufEintragBase2> L;
   exec sql begin declare section;
@@ -145,22 +145,21 @@ std::list<AufEintragBase2> AufEintragZu::get_AufEintragList_from_Artikel
 
   exec sql open AELfAein;
   SQLerror::test(__FILELINE__);
-  cH_ppsInstanz I(ArtikelStamm(artikel).BestellenBei());
   while(true)
    {
      exec sql fetch AELfAein into :db_auftragid,:db_zeilennr;
      SQLerror::test(__FILELINE__,100);
      if (sqlca.sqlcode) break;
-     L.push_back(AufEintragBase2(I,db_auftragid,db_zeilennr));
+     L.push_back(AufEintragBase2(instanz,db_auftragid,db_zeilennr));
 //cout << "Liste: "<<I->Name()<<' '<<db_auftragid<<' '<<db_zeilennr<<'\n';
    }  
   return L;
 }
 
 AufEintragBase2 AufEintragZu::get_AufEintrag_from_Artikel_by_Lfdate   
-               (const ArtikelBase& artikel)
+               (const ArtikelBase& artikel,ppsInstanz::ppsInstId instanz)
 {
-  std::list<AufEintragBase2> LI=get_AufEintragList_from_Artikel(artikel,OPEN);
+  std::list<AufEintragBase2> LI=get_AufEintragList_from_Artikel(artikel,instanz,OPEN);
   std::list<st_reflist> LR;
   for(std::list<AufEintragBase2>::const_iterator i=LI.begin();i!=LI.end();++i)
    {
@@ -169,20 +168,22 @@ AufEintragBase2 AufEintragZu::get_AufEintrag_from_Artikel_by_Lfdate
    }
   Petig::Datum lieferdatum;
   AufEintragBase2 AEB;
-  // lieferdatum initialisieren
   if(LR.begin()!=LR.end()) 
-  { lieferdatum=AufEintragBase(LR.begin()->AEB2).getLieferdatum();
+  { 
+    // lieferdatum initialisieren
+    lieferdatum=AufEintragBase(LR.begin()->AEB2).getLieferdatum();
     AEB=LR.begin()->AEB2;
-   for(std::list<st_reflist>::const_iterator i=LR.begin();i!=LR.end();++i)
-   {
-    Petig::Datum ld=AufEintragBase(i->AEB2).getLieferdatum();
-    if(ld<lieferdatum) 
-      {
-        AEB=i->AEB2;
-        lieferdatum=ld;
-      }
-   }
-  }
+    for(std::list<st_reflist>::const_iterator i=LR.begin();i!=LR.end();++i)
+     {
+       Petig::Datum ld=AufEintragBase(i->AEB2).getLieferdatum();
+       if(ld<lieferdatum) 
+        {
+          AEB=i->AEB2;
+          lieferdatum=ld;
+        }
+     }
+    }
+  return AEB;
 }
 
 void AufEintragZu::AuftragsEntryZuordnung(const mengen_t menge,

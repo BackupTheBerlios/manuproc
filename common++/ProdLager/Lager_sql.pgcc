@@ -1,0 +1,345 @@
+/*  pps: ManuProC's production planning system
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include "Lager.hh"
+#include <Artikel/ArtikelBase.h>
+#include <Artikel/ArtikelBezeichnung.h>
+#include <Aux/Datum.h>
+#include <Aux/string0.h>
+exec sql include sqlca;
+#include <Aux/SQLerror.h>
+#include <Aux/itos.h>
+#include <Auftrag/AufEintragBase.h>
+#include <Auftrag/AuftragsEntryZuordnung.h>
+
+
+
+bool Lager::Jumbo_Einlagern(st_bandlager bandlager,Jumbo_LogTyp typ)
+{
+/*
+  exec sql begin declare section;
+    int CODE=bandlager.code/10;
+    int STATUS=bandlager.status;
+    char DSTAMP[32];
+    short IDSTAMP; 
+    char ACTION[2];
+    char NAME[5]; 
+    int LAGERPLATZ=bandlager.position.IPosition();
+    bool REST=bandlager.rest;
+    bool DUMMY;   
+    char ZEIT[32];
+  exec sql end declare section;
+
+  if (bandlager.zp) bandlager.zp->write(PostgresTimestamp(ZEIT,sizeof ZEIT));
+  else strncpy0(ZEIT,"now",sizeof ZEIT);
+  strncpy0(NAME,bandlager.username.c_str(),sizeof(NAME));
+
+  exec sql select true into :DUMMY from rohjumbo where code= :CODE;
+  SQLerror::test(__FILELINE__,100)
+  if (sqlca.sqlcode==100)
+   {
+     exec sql insert into rohjumbo 
+            (code,maschine,webmaschine,soll_meter,plan_datum,verarb_datum,
+             status,lauf,gang,barcoist,barcofert_datum,wiederinslager,
+             artikelid)
+      select code,maschine,webmaschine,soll_meter,plan_datum,verarb_datum,
+             status,lauf,gang,barcoist,barcofert_datum,wiederinslager,
+             artikelid
+            from rohjumbo_archiv where code=:CODE;
+     SQLerror::test("JumboRolle::buchen archiv-kopie",100);
+     if (sqlca.sqlcode==100)
+             throw SQLerror("JumboRolle::buchen",100,"Rolle nicht im Archiv");
+     exec sql delete from rohjumbo_archiv where code=:CODE;
+     SQLerror::test("JumboRolle::buchen archiv-löschen",100);
+   }
+  exec sql update rohjumbo
+       set wiederinslager=:ZEIT,rest= :REST,status=:STATUS ,
+             lagerplatz=nullif(:LAGERPLATZ,0)
+           where (wiederinslager is null or verarb_datum > wiederinslager)
+           and code= :CODE; // where status!=2
+*/ 
+}
+
+bool Lager::Jumbo_Entnahme(st_bandlager bandlager,Jumbo_LogTyp typ)
+{
+}
+
+ 
+
+///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+
+bool Lager::RL_Entnahme(st_rohlager& rohlager,std::string &os,bool force,bool ist_leer)
+{
+  if(instanz!=ppsInstanz::INST_ROHLAGER)
+     assert(!"Lager::RL_Entnahme: Kein gültiges Lager\n");
+
+  exec sql begin declare section;
+   int KARTONS;
+   int RESTE;
+   int RESTE_KG;
+   char POSITION[5];
+   char DATUM[11];
+   bool DUMMY;
+  exec sql end declare section;
+  strncpy0(POSITION,rohlager.position.SPosition().c_str(),sizeof(POSITION));
+  rohlager.datum.write_postgres(DATUM,sizeof DATUM);
+
+  exec sql select true into :DUMMY from rl_inhalt where position_= :POSITION;
+  SQLerror::test(__FILELINE__,100);
+  if (sqlca.sqlcode==100) // nichts drin
+   {
+     os+="           an Position " +rohlager.position.SPosition()+" steht nichts";
+     return false;
+   }
+  st_rohlager was_ist_drin = RL_Inhalt(rohlager.position);
+  if(!force)
+   {
+     if(was_ist_drin.artikel!=rohlager.artikel)
+      {
+        os+="  an Position "+rohlager.position.SPosition()+" befindet sich"
+           +cH_ArtikelBezeichnung(was_ist_drin.artikel)->Bezeichnung() 
+           +" vom "+was_ist_drin.datum.c_str()+" ("+itos(was_ist_drin.kartons)+"K.à "
+            + itos(was_ist_drin.kg_pro_karton)+ "kg " +itos(was_ist_drin.reste) +"R.="
+            + itos(was_ist_drin.reste_kg) + "kg)\n";
+        return false;
+      }
+     if(ist_leer && (was_ist_drin.kartons!=rohlager.kartons ||
+                     was_ist_drin.reste!=rohlager.reste ||
+                      was_ist_drin.reste_kg!=rohlager.reste_kg))
+       {
+         os+="Warnung: Laut Daten müßten sich dort ("+rohlager.position.SPosition()
+            +") noch "+itos(was_ist_drin.kartons)+"Kartons, " 
+            +itos(was_ist_drin.reste)+" Reste("+itos(was_ist_drin.reste_kg) + "kg)\n";
+       }
+     else if(!ist_leer && (was_ist_drin.kartons<rohlager.kartons ||
+                     was_ist_drin.reste<rohlager.reste ||
+                      was_ist_drin.reste_kg<rohlager.reste_kg))
+       {
+         os+="Warnung: Laut Daten befinden sich dort ("+rohlager.position.SPosition()
+            +") nur "+itos(was_ist_drin.kartons)+"Kartons, " 
+            +itos(was_ist_drin.reste)+" Reste("+itos(was_ist_drin.reste_kg) + "kg)\n";
+       }
+    }
+  std::string misc;
+  if(ist_leer || force)
+    {
+      exec sql delete from rl_inhalt where position_= :POSITION;
+      SQLerror::test(__FILELINE__);                  
+      if(force) misc="lösc";
+      else misc="leer";
+    }  
+  else 
+    {
+      KARTONS=was_ist_drin.kartons-rohlager.kartons;
+      if (KARTONS<0) KARTONS=0;
+      RESTE=was_ist_drin.reste-rohlager.reste;
+      if (RESTE<0) RESTE=0;
+      RESTE_KG=was_ist_drin.reste_kg-rohlager.reste_kg; ;   
+      if (RESTE_KG<0) RESTE_KG=0;
+
+       exec sql update rl_inhalt set kartons= :KARTONS, reste= :RESTE,
+          rest_kg=:RESTE_KG, letzte_entnahme= :DATUM 
+          where position_= :POSITION;
+       SQLerror::test(__FILELINE__);                  
+    }
+   rohlager.kg_pro_karton=was_ist_drin.kg_pro_karton;
+   if (force) RL_Log(was_ist_drin,Entnehmen,misc);
+   else       RL_Log(rohlager,Entnehmen,misc);
+   return true;
+}
+
+
+bool Lager::RL_Einlagern(st_rohlager& rohlager,std::string &os,bool force)
+{
+  if(instanz!=ppsInstanz::INST_ROHLAGER)
+     assert(!"Lager::RL_Einlagern: Kein gültiges Lager\n");
+
+  exec sql begin declare section;
+   int KARTONS=rohlager.kartons;
+   int KG_PER_KARTON=rohlager.kg_pro_karton;
+   int RESTE=rohlager.reste;
+   int RESTE_KG=rohlager.reste_kg;
+   int MATERIAL=rohlager.artikel.Id();
+   char POSITION[5];
+   char DATUM[11];
+   bool DUMMY;
+  exec sql end declare section;
+  strncpy0(POSITION,rohlager.position.SPosition().c_str(),sizeof(POSITION));
+  rohlager.datum.write_postgres(DATUM,sizeof DATUM);
+
+  exec sql select true into :DUMMY from rl_inhalt where position_= :POSITION;
+  SQLerror::test(__FILELINE__,100);
+  if (sqlca.sqlcode==100) // nichts drin also rein damit
+   {
+      exec sql insert into rl_inhalt
+        (position_, kartons, MATERIAL, KG_PER_KARTON,
+              reste, rest_kg, eingelagert)
+        values (:POSITION, :KARTONS, :MATERIAL, :KG_PER_KARTON,
+              nullif(:RESTE,0), nullif(:RESTE_KG,0), :DATUM);
+      SQLerror::test(__FILELINE__);
+      RL_Log(rohlager,Einlagern);
+      return true;
+   }
+  else  // ups, auf dieser Position liegt schon etwas
+   {
+     st_rohlager was_ist_drin = RL_Inhalt(rohlager.position);
+     if(force) // überschreiben, ohne Rücksicht auf Material
+      {
+        exec sql update rl_inhalt set 
+           kartons=:KARTONS, material=:MATERIAL, 
+           kg_per_karton=:KG_PER_KARTON, reste=nullif(:RESTE,0), 
+           rest_kg=nullif(:RESTE_KG,0), eingelagert=:DATUM where position_=:POSITION;
+        SQLerror::test(__FILELINE__);
+        RL_Log(was_ist_drin,Entnehmen,"lösc");
+        RL_Log(rohlager,Einlagern);
+        return true;
+      }
+     else // mal schauen ...
+      {
+        if(was_ist_drin.artikel==rohlager.artikel)
+         {
+           if (!was_ist_drin.kg_pro_karton) was_ist_drin.kg_pro_karton=rohlager.kg_pro_karton;
+           if (!rohlager.kg_pro_karton) rohlager.kg_pro_karton=was_ist_drin.kg_pro_karton;
+             // gleicher Artikel, gleiche Paketgröße also
+             // neue Menge zu alter Menge hinzuaddieren und rein damit
+           if (rohlager.kg_pro_karton==was_ist_drin.kg_pro_karton)
+            {
+              KARTONS = rohlager.kartons + was_ist_drin.kartons;
+              KG_PER_KARTON=rohlager.kg_pro_karton;
+              RESTE=rohlager.reste + was_ist_drin.reste;
+              RESTE_KG=rohlager.reste_kg + was_ist_drin.reste_kg;    
+              exec sql update rl_inhalt set 
+                 kartons=:KARTONS, material=:MATERIAL,
+                  kg_per_karton=:KG_PER_KARTON, 
+                       reste=nullif(:RESTE,0), rest_kg=nullif(:RESTE_KG,0),
+                        eingelagert=:DATUM where position_=:POSITION;
+              SQLerror::test(__FILELINE__);
+              RL_Log(rohlager,Einlagern);
+              return true;
+            }
+           else 
+            {
+              os = "  an Position " + rohlager.position.SPosition() + " sollen "
+                + itos(was_ist_drin.kg_pro_karton) + "kg "
+                +  cH_ArtikelBezeichnung(was_ist_drin.artikel)->Bezeichnung()
+                +  " im Karton sein.\n";
+              return false;
+            }
+         }
+        else // Die Materiaien stimmen nicht überein
+         {
+           os ="  an Position " +rohlager.position.SPosition()+" befindet sich "
+            + cH_ArtikelBezeichnung(was_ist_drin.artikel)->Bezeichnung() + " vom "
+            + was_ist_drin.datum.c_str() + " ("+itos(was_ist_drin.kartons)+"K.à "
+            + itos(was_ist_drin.kg_pro_karton)+ "kg " +itos(was_ist_drin.reste)+ "R.="
+            + itos(was_ist_drin.reste_kg) + "kg)\n";
+           return false;
+         }
+      }  
+   }
+ assert(!" Lager::RL_Einlagern: Fehler");
+}
+
+void Lager::RL_Log(const st_rohlager& rohlager,RL_LogTyp typ,const std::string& misc)
+{
+  exec sql begin declare section;
+   int KARTONS=rohlager.kartons;
+   int KG_PER_KARTON=rohlager.kg_pro_karton;
+   int RESTE=rohlager.reste;
+   int RESTE_KG=rohlager.reste_kg;
+   int MATERIAL=rohlager.artikel.Id();
+   char MISC[5];
+   char POSITION[5];
+   char DATUM[11];
+   char TYP=typ;
+  exec sql end declare section;
+  strncpy0(POSITION,rohlager.position.SPosition().c_str(),sizeof(POSITION));
+  strncpy0(MISC,misc.c_str(),sizeof(MISC));
+
+  rohlager.datum.write_postgres(DATUM,sizeof DATUM);
+  if(typ==Einlagern)
+   {
+    exec sql insert into rl_log 
+       (zeit,position_, kartons, MATERIAL, KG_PER_KARTON, typ, valuta, reste, rest_kg,misc)
+       values (now(),:POSITION,:KARTONS,:MATERIAL,:KG_PER_KARTON,:TYP,:DATUM,
+            :RESTE,:RESTE_KG,nullif(:MISC,''));
+   }
+  else if(typ==Entnehmen)
+   {
+    exec sql insert into rl_log 
+       (zeit,position_, kartons, MATERIAL, KG_PER_KARTON, typ, valuta, reste, rest_kg,misc)
+       values (now()-timespan('1 sec'),:POSITION,:KARTONS,:MATERIAL,
+            :KG_PER_KARTON,:TYP,:DATUM,:RESTE,:RESTE_KG,nullif(:MISC,''));
+   }
+  else assert(!"Lager::RL_Log: Falscher Typ\n");
+  SQLerror::test(__FILELINE__);
+  ///////////////////////////////////////////////////////////////
+  // Jetzt die Lagerbewegung mit den offenen Aufträgen verrechen
+  AuftragBase::mengen_t menge = rohlager.kartons*rohlager.kg_pro_karton 
+                                 + rohlager.reste_kg;
+  abschreiben(typ,rohlager.artikel,menge);
+}
+
+void Lager::abschreiben(RL_LogTyp typ,ArtikelBase artikel,AuftragBase::mengen_t menge)
+{
+  while(true)
+   {
+     AufEintragBase2 AEB2;
+     if(typ==Entnehmen)
+        AEB2= AufEintragZu::get_AufEintrag_from_Artikel_by_Lfdate
+                              (artikel,instanz);
+     else if(typ==Einlagern)
+        AEB2 =AufEintragZu::get_AufEintrag_from_Artikel_by_Lfdate
+                              (artikel,cH_ppsInstanz(instanz)->LagerFuer());
+     AufEintragBase AEB(AEB2);
+     if(AEB.getRestStk() >= menge)
+       { AEB2.abschreiben(menge);
+         break;
+       }
+     else AEB2.abschreiben(AEB.getRestStk());
+   }
+}
+
+
+Lager::st_rohlager Lager::RL_Inhalt(const LagerPlatz position)
+{
+  exec sql begin declare section;
+   int KARTONS, KG_PER_KARTON, RESTE, RESTE_KG, MATERIAL;
+   char POSITION[5];
+   char DATUM[11];
+  exec sql end declare section;
+  strncpy(POSITION,position.SPosition().c_str(),5);
+  exec sql select coalesce(kartons,0), coalesce(reste,0),
+      int4(coalesce(kg_per_karton,0)), int4(coalesce(rest_kg,0)),
+      material, eingelagert into :KARTONS, :RESTE, 
+            :KG_PER_KARTON, :RESTE_KG, :MATERIAL, :DATUM
+      from rl_inhalt where position_= :POSITION;
+  SQLerror::test(__FILELINE__,100);
+  Petig::Datum date; 
+  if(sqlca.sqlcode==100)
+   {
+     return st_rohlager(position,0,0,0,0, ArtikelBase(0),date);
+   }
+  else 
+   {
+     date.from_postgres(DATUM);
+     return st_rohlager(position,KARTONS,KG_PER_KARTON,RESTE,RESTE_KG,
+                  ArtikelBase(MATERIAL),date);
+   }
+}  

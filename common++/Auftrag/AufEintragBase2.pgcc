@@ -1,4 +1,4 @@
-// $Id: AufEintragBase2.pgcc,v 1.28 2002/01/03 09:06:52 cvs_malte Exp $
+// $Id: AufEintragBase2.pgcc,v 1.29 2002/01/09 14:55:30 cvs_malte Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -83,7 +83,7 @@ bool AufEintragBase2::deleteAuftragEntry() const throw(SQLerror)
 }
 
 // gibt geliefert zurück
-int AufEintragBase2::abschreiben(int menge) const throw(SQLerror)
+AuftragBase::mengen_t AufEintragBase2::abschreiben(mengen_t menge) const throw(SQLerror)
 {
  exec sql begin declare section;
  int AUFID=Id();

@@ -1,4 +1,4 @@
-// $Id: KettplanKette2.pgcc,v 1.6 2001/11/05 08:58:29 christof Exp $
+// $Id: KettplanKette2.pgcc,v 1.7 2002/01/11 07:59:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -441,12 +441,14 @@ void KettplanKette::save_Artikel(const ArtikelGang& artikel) const
    int GAENGE=artikel.Gaenge();
    int ARTIKEL=artikel.Id();
    char DATUM[30];
+   int JAHR=Schaerdatum().Jahr();
  exec sql end declare section;
  Schaerdatum().write_postgres(DATUM,sizeof DATUM);
  exec sql insert into schaertabelle 
     (maschine,schaerdatum,gaenge,menge,status,jahrgang,artikelid)
-     values (:MASCHINE,:DATUM,:GAENGE,0,1,0,:ARTIKEL);
+     values (:MASCHINE,:DATUM,:GAENGE,0,1,:JAHR,:ARTIKEL);
  SQLerror::test("Kette::save(): Artikel schon eingetragen");
+
 }
 
 void KettplanKette::delete_Artikel(const ArtikelGang& artikel) const
@@ -491,7 +493,8 @@ void KettplanKette::delete_Garn(const ArtikelGang& artikel, const KettenGarn& ga
  exec sql end declare section;
  exec sql delete from ketten_garn where 
     artikel=:ARTIKEL and gaenge=:GAENGE and ketten=:KETTEN and
-    zeile=:ZEILE and faeden=:FAEDEN and garn=:GARN and ketten_index=:KETTENINDEX;
+    zeile=:ZEILE and faeden=:FAEDEN and garn=:GARN and 
+    ketten_index=:KETTENINDEX ;
  SQLerror::test("Kette::delete(): Garn schon weg");
 }
 
@@ -505,10 +508,11 @@ void KettplanKette::save_Garn(const ArtikelGang& artikel, const KettenGarn& garn
   int ZEILE=garn.Zeile();
   int KETTEN=garn.Kettenzahl();
   int KETTENINDEX=garn.Index();
+  int LAENGE=garn.Laenge();
  exec sql end declare section;
  exec sql insert into ketten_garn
-      (artikel,gaenge,ketten,zeile,faeden,garn,ketten_index) values
-      (:ARTIKEL,:GAENGE,:KETTEN,:ZEILE,:FAEDEN,:GARN,:KETTENINDEX);   
+      (artikel,gaenge,ketten,zeile,faeden,garn,ketten_index,laenge) values
+      (:ARTIKEL,:GAENGE,:KETTEN,:ZEILE,:FAEDEN,:GARN,:KETTENINDEX,nullif(:LAENGE,0));   
  SQLerror::test(__FILELINE__);
 }
 
@@ -517,19 +521,21 @@ vector<KettenGarn> KettplanKette::load_Garn(const ArtikelGang& artikel) const
  exec sql begin declare section;
   int ARTIKEL=artikel.Id();
   int GAENGE=artikel.Gaenge();
-  int FAEDEN, GARN,ZEILE,KETTEN,INDEX;
+  int FAEDEN, GARN,ZEILE,KETTEN,INDEX,LAENGE;
+  int DEFAUTLAENGE=Kettlaenge();
  exec sql end declare section;
  Transaction tr;
- exec sql declare garnein cursor for select  faeden,garn,ketten,zeile,ketten_index
+ exec sql declare garnein cursor for select  faeden,garn,ketten,zeile,
+   ketten_index,coalesce(laenge,:DEFAUTLAENGE)
    from ketten_garn where artikel=:ARTIKEL and gaenge=:GAENGE;
  exec sql open garnein;
  vector<KettenGarn> v;
  while (true)
   {
-    exec sql fetch garnein into :FAEDEN,:GARN,:KETTEN,:ZEILE,:INDEX;
+    exec sql fetch garnein into :FAEDEN,:GARN,:KETTEN,:ZEILE,:INDEX,:LAENGE;
     SQLerror::test(__FILELINE__,100);
     if (sqlca.sqlcode) break;
-    v.push_back(KettenGarn(INDEX,ZEILE,KETTEN,FAEDEN,GARN));
+    v.push_back(KettenGarn(INDEX,ZEILE,KETTEN,FAEDEN,GARN,LAENGE));
   }
  return v;
 }

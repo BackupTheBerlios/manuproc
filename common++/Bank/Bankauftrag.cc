@@ -1,4 +1,4 @@
-/* $Id: Bankauftrag.cc,v 1.2 2001/07/05 09:23:02 christof Exp $ */
+/* $Id: Bankauftrag.cc,v 1.3 2002/01/11 07:59:28 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -45,7 +45,7 @@ void Bankauftrag::string2Bank(char *buf,const char *s) throw (Datenfehler)
 }
 
 Bankauftrag::Bankauftrag(char _kennz, long myblz, std::string myname,long long mykonto,
-			const char *TeX_cmd) throw(IOerror,Datenfehler)
+			const string TeX_cmd) throw(IOerror,Datenfehler)
 	: druckerpipe(0), dtausfile(-1), Kontosumme(0), BLZsumme(0),
 	  anzahlDatensaetze(0), Betragssumme(0), Kennziffer(_kennz),
 	  eigeneBLZ(0), eigenesKonto(0), eigenerName(myname), Auftragsart(0), 
@@ -72,15 +72,16 @@ Bankauftrag::Bankauftrag(char _kennz, long myblz, std::string myname,long long m
    snprintf0(buf+60,sizeof(buf)-60,"%010llu",mykonto); /* A9 */
    snprintf0(buf+70,sizeof(buf)-70,"%010lu",Kennziffer);  /* A10 */
    memset(buf+80,' ',48); /* A11 */
+   memset(buf+127,'1',1); /* A12 EURO */
    if (write(dtausfile,buf,128)!=128)
    {  ::close(dtausfile); dtausfile=-1;
       throw IOerror("dtausfile,write,A");
    }
 
    // TeX für Ausgabe öffnen
-   if (!(druckerpipe=popen(TeX_cmd,"w"))) 
+   if (!(druckerpipe=popen(TeX_cmd.c_str(),"w"))) 
    {  ::close(dtausfile); dtausfile=-1;
-      throw IOerror(TeX_cmd);
+      throw IOerror(TeX_cmd.c_str());
    }
    
 //   eigenerName=a1.c_str();

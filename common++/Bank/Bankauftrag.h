@@ -1,4 +1,4 @@
-/* $Id: Bankauftrag.h,v 1.2 2001/07/05 09:23:02 christof Exp $ */
+/* $Id: Bankauftrag.h,v 1.3 2002/01/11 07:59:28 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -50,8 +50,9 @@ class Bankauftrag
 	int erzeugeDiskette() throw(IOerror);
 public :
 	Bankauftrag(char _kennz, long myblz, std::string myname,long long mykonto,
-						const char *TeX_cmd=NULL)
-		throw(IOerror,Datenfehler);
+						const string TeX_cmd)
+						throw(IOerror,Datenfehler);
+			
 	Bankauftrag &operator<<(const Zahlvorgang &z) throw(IOerror);
 	void printEinzugListe() throw(IOerror);
 	void close() throw(IOerror);

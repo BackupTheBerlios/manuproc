@@ -49,38 +49,23 @@ class AuftragBase
 	bool valid() const { return auftragid!=0; }
         void setStatusAuftragBase(AufStatVal st) const throw(SQLerror);
 
-/*
-        int insertNewKundenEntry(const mengen_t bestellt, 
-                const Petig::Datum lieferdatum, const ArtikelBase& artikel,
-                const AufStatVal status,const bool setInstanzAuftraege,
-                const Preis& preis=Preis(),const fixedpoint<2> rabatt=0
-                ) const throw(SQLerror);
-   private:
-*/
         int insertNewEntry(const mengen_t bestellt, 
                 const Petig::Datum lieferdatum, const ArtikelBase& artikel,
                 const AufStatVal status,const bool setInstanzAuftraege,
                 const Preis& preis=Preis(),const fixedpoint<2> rabatt=0
                 ) const throw(SQLerror);
-//   public:
         void InstanzAuftraegeAnlegen(const ArtikelBase& art,const int altZnr,
                 const Petig::Datum& lieferdatum, const AufStatVal status, 
                 const mengen_t menge) const; 
-/*
-        void InstanzAuftraegeAnlegenR(const ArtikelBase& art,const double menge,
-                const AuftragBase& altAuftrag,const int altZnr,
-                         const Petig::Datum& lieferdatum, 
-                         const AufStatVal status) const;
-*/
         bool existEntry(const ArtikelBase& artid,
                         const Petig::Datum& lieferdatum,
                         int& znr,int &newznr, mengen_t& menge, const AufStatVal status
                         ) const throw(SQLerror);
-        int tryUpdateEntry(mengen_t bestellt, 
+        void tryUpdateEntry(mengen_t bestellt, 
                 const Petig::Datum lieferdatum, const ArtikelBase& artikel,
                 AufStatVal status,
-                const AuftragBase& altAuftrag,int altZnr,
-                bool reloop=true) const throw(SQLerror);
+                const AuftragBase& altAuftrag,int altZnr
+                ) const throw(SQLerror);
 };
 
 #endif

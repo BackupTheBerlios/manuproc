@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema_sql.pgcc,v 1.9 2002/01/07 16:23:09 christof Exp $
+// $Id: ExtBezSchema_sql.pgcc,v 1.10 2002/01/11 07:59:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -36,7 +36,6 @@ cH_ExtBezSchema::cH_ExtBezSchema(ExtBezSchema::ID eid,const ArtikelTyp &t) throw
 
 bool ExtBezSchema::exist_schema_for_typ(ID eid,const ArtikelTyp &t)
 {
-cout << "SCHEMETEST\t";
  exec sql begin declare section;
   int EXTARTBEZID=eid;
   int TYP=t;
@@ -48,7 +47,7 @@ cout << "SCHEMETEST\t";
  exec sql open SCHEMETEST;
  exec sql fetch SCHEMETEST into :DUMMY;
  SQLerror::test(__FILELINE__,100);
-cout <<DUMMY<<'\n';
+ exec sql close SCHEMETEST;
  if (sqlca.sqlcode) return false;
  return true;
 }
@@ -56,7 +55,7 @@ cout <<DUMMY<<'\n';
 ExtBezSchema::ExtBezSchema(ID eid,const ArtikelTyp &t) throw(SQLerror)
 	: typ(t)
 {
-cout << "ExtBezSchema: " <<eid<<' '<<t<<'\n';
+//cout << "ExtBezSchema: " <<eid<<' '<<t<<'\n';
 //  int EXTARTBEZID=eid;
 //  int TYP=t;
  exec sql begin declare section;
@@ -66,18 +65,22 @@ cout << "ExtBezSchema: " <<eid<<' '<<t<<'\n';
  int maxBKT=0;
 
  std::string squery;
- if(exist_schema_for_typ(eid,t)) squery = "select bezkomptype, bezkomptext, coalesce(separator,''), 
+// if(exist_schema_for_typ(eid,t)) 
+   squery = "select bezkomptype, bezkomptext, coalesce(separator,''), 
  		coalesce(spaltenname,bezkomptext), coalesce(signifikanz,0),
 		coalesce(textabformat,'c'),coalesce(jumbo_bez,'')
  	from extbezschema
 	where extartbezid= "+itos(eid)+" and artikeltyp="+itos(t)
 	+" order by bezkomptype" ;
- else squery = "select bezkomptype, bezkomptext, coalesce(separator,''), 
+/*
+ else 
+ squery = "select bezkomptype, bezkomptext, coalesce(separator,''), 
  		coalesce(spaltenname,bezkomptext), coalesce(signifikanz,0),
 		coalesce(textabformat,'c'),coalesce(jumbo_bez,'')
  	from extbezschema
 	where extartbezid= "+itos(default_ID)+" and artikeltyp="+itos(t)+"
 	order by bezkomptype" ;
+*/
  strncpy(query,squery.c_str(),sizeof(query));
 
  Transaction tr;

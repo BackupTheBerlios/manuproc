@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.8 2001/12/04 08:42:11 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.9 2002/01/11 07:59:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -37,11 +37,14 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    bool BANKEINZUG,LIEFERADRESSE,RECHUNGSADRESSE;
    char NOTIZ[2048];
    char STAND[50];
+   int WAEHRUNGID;
    exec sql end declare section;
 
    if(_id == Kunde::none_id) return;   
   
    Transaction tr;
+ 
+   WAEHRUNGID = Waehrung::EUR;
 
 ///XXX STAND 'now' stimmt noch nicht MAT
    exec sql select firma,coalesce(sortname,''),coalesce(extartbezid,1),
@@ -57,7 +60,8 @@ Kunde::Kunde(ID _id) throw(SQLerror)
          coalesce(planumsatz,0),coalesce(umsatz,0),
          coalesce(rabatt,0),coalesce(einzugrabatt,0),coalesce(skontofrist,0),
          coalesce(verein,''),coalesce(bankeinzug,false), coalesce(notiz,''), 
-         coalesce(stand,'now'),	coalesce(lkz,'')
+         coalesce(stand,'now'),	coalesce(lkz,''),
+	 coalesce(waehrungid,:WAEHRUNGID)
    	into :NAME, :SORTNAME, :BEZSCHEMA, :STRASSE, :POSTANWVOR, :POSTANWNACH,
            :HSNR, :PLZ, :POSTFACH,
            :POSTFACHPLZ, :ORT, :KTONR, :BLZ, :BANKNAME, :BANKINDEX, :RNG_AN,
@@ -65,7 +69,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
             :LIEFERADRESSE,:RECHUNGSADRESSE,
            :FLAECHE,:MITARBEITER,:KUNDENUMSATZ,:PLANUMSATZ,:UMSATZ,
 	   :RABATT,:EINZUGRABATT,:SKONTOFRIST,:VEREIN,:BANKEINZUG,
-	   :NOTIZ,:STAND, :LKZ
+	   :NOTIZ,:STAND, :LKZ, :WAEHRUNGID
    	from kunden k left join banken b using(bankindex)
    	where kundennr= :ID;
 
@@ -105,6 +109,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    kundendaten.bankeinzug=BANKEINZUG;
    kundendaten.stand=STAND;
    kundendaten.notiz=NOTIZ;
+   waehrung = cP_Waehrung(WAEHRUNGID);
 }
 
 

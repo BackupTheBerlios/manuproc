@@ -56,7 +56,7 @@ Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
  rabatt=RABATT;
  rgdatum=Petig::Datum(DATUM);
  bezahlt=BEZAHLT;
-
+ zahlziel= IZAHLZIEL ? Petig::Datum() : Petig::Datum(ZAHLZIEL);
 
 }
 
@@ -233,3 +233,17 @@ void Rechnung::setze_Rabatt(fixedpoint<2> r) throw(SQLerror)
  exec sql update rechnung set rabatt=:RABATT where rngid=:RNGID;
  SQLerror::test(__FILELINE__);
 }
+
+fixedpoint<2> Rechnung::Betrag() const throw(SQLerror)
+{
+ exec sql begin declare section;
+ float BETRAG;
+ int RNGID= Id();
+ exec sql end declare section;
+
+ exec sql select sum(preis) into :BETRAG from rechnungentry
+	where rngid = :RNGID; 
+
+ return BETRAG;
+}
+

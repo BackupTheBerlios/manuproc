@@ -24,6 +24,7 @@
 #include "AufEintragBase.h"
 #include <Artikel/ArtikelStamm.h>
 #include <Auftrag/AuftragsEntryZuordnung.h>
+#include <ProdLager/ProdLager.hh>
 
 exec sql include sqlca;
 
@@ -116,7 +117,7 @@ int AuftragBase::insertNewEntry(const mengen_t bestellt,
  if(Instanz()==ppsInstanz::INST_KNDAUF)
   {
     AuftragBase AB(ArtikelStamm(artikel).BestellenBei());   
-    AB.tryUpdateEntry(bestellt,lieferdatum,artikel,status,*this,ZEILENNR,setInstanzAuftraege);
+    AB.tryUpdateEntry(bestellt,lieferdatum,artikel,status,*this,ZEILENNR);
   }
  else if(setInstanzAuftraege)
     InstanzAuftraegeAnlegen(artikel,ZEILENNR,lieferdatum,status,bestellt);
@@ -130,11 +131,10 @@ void AuftragBase::InstanzAuftraegeAnlegen(const ArtikelBase& artikel,
       const AufStatVal status, const mengen_t menge) const
 {
    ArtikelBaum AB(artikel);
-//cout <<"Instanzen: " <<AB.size()<<'\n';
    for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
     {
       AuftragBase neuAuftrag(ArtikelStamm(i->rohartikel).BestellenBei(),0);
-      int neuZnr = neuAuftrag.tryUpdateEntry(double(i->menge)*menge,lieferdatum,
+      neuAuftrag.tryUpdateEntry(double(i->menge)*menge,lieferdatum,
          i->rohartikel,status,*this,altZnr);
     }
 }
@@ -192,12 +192,20 @@ cout << "select zeilennr,bestellt from auftragentry  join auftragsentryzuordnung
 
 
 #include <Artikel/ArtikelBezeichnung.h> //debug
-int AuftragBase::tryUpdateEntry(mengen_t bestellt, 
+void AuftragBase::tryUpdateEntry(mengen_t bestellt, 
   const Petig::Datum lieferdatum,const ArtikelBase& artikel,
-  AufStatVal status,const AuftragBase& altAuftrag, const int altZnr,
-  bool reloop) const throw(SQLerror)
+  AufStatVal status,const AuftragBase& altAuftrag, const int altZnr) 
+      const throw(SQLerror)
 {
  AufEintragBase2 XAEB(altAuftrag,altZnr);
+/*
+ if(ppsInstanz::LagerInstanz(Instanz()))
+   {
+cout << "Lagerbestellung: "<<Instanz()<<' '<<Id()<<' '<<altZnr<<'\n';
+     ProdLager(class AufEintragBase(XAEB));
+     return;
+   }
+*/
  int znr=-99,neuznr=-99;
  mengen_t menge=0;
  Transaction tr;
@@ -206,7 +214,13 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
  if(!existEntry(artikel,lieferdatum,znr,neuznr,menge,status))
   {
 cout << "Neu\n";
-   znr=insertNewEntry(bestellt,lieferdatum,artikel,status,true)  ;
+    if(ppsInstanz::LagerInstanz(Instanz()))
+     {
+       znr=insertNewEntry(bestellt,lieferdatum,artikel,status,false)  ;
+       ProdLager(class AufEintragBase(class AufEintragBase2(*this,znr)));
+     }
+    else 
+       znr=insertNewEntry(bestellt,lieferdatum,artikel,status,true)  ;
 //cout << "Zeile: "<<znr<<'\n';
    AufEintragZu(XAEB).AuftragsEntryZuordnung(bestellt,*this,znr);
   }
@@ -217,13 +231,16 @@ cout << "Alt\t"<<znr<<' '<<altZnr<<' '<<neuznr<<' '
     if(!AufEintragZu(XAEB).setMengeDiff(bestellt,*this,znr))
         AufEintragZu(XAEB).AuftragsEntryZuordnung(bestellt,*this,znr);
 
-//   AufEintragBase2(instanz,auftragid,znr).updateStk(menge+bestellt,bestellt,artikel,status);
    AufEintragBase2(instanz,auftragid,znr).updateStkDiff(bestellt);
 //cout << "\t"<<instanz->Name()<<' '<<auftragid<<' '<<znr<<' '
 //<<cH_ArtikelBezeichnung(artikel)->Bezeichnung()<<' '<<menge<<'+'<<bestellt<<' '<<status<<'\n';
 //cout << "Alt\t"<<znr<<' '<<altZnr<<' '<<AufEintragBase2(instanz,auftragid,znr).ZNr()<<'\n';
-    InstanzAuftraegeAnlegen(artikel,znr,lieferdatum,status, bestellt) ;
+    if(ppsInstanz::LagerInstanz(Instanz()))
+       ProdLager(class AufEintragBase(class AufEintragBase2(*this,znr)));
+    else 
+      InstanzAuftraegeAnlegen(artikel,znr,lieferdatum,status, bestellt) ;
   }
+
   tr.commit();
-  return znr;
+//  return znr;
 }

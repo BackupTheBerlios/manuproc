@@ -43,3 +43,10 @@ cH_Prozess ppsInstanz::get_Prozess() const
         default : return cH_Prozess(Prozess::Verarbeitung); break;
 	}
 }
+
+bool ppsInstanz::LagerInstanz(ppsInstId instanz)
+{
+  if       (instanz == ppsInstanz::INST_BANDLAGER) return true;
+  else if  (instanz == ppsInstanz::INST_ROHLAGER ) return true;
+  return false;
+}

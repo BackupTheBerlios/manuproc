@@ -1,0 +1,52 @@
+#include "maschinen_geschwindigkeit.hh"
+exec sql include sqlca;
+
+Maschinen_Geschwindigkeit::Maschinen_Geschwindigkeit(ArtikelBase artikel, const string& maschtyp)
+{
+   exec sql begin declare section;
+      char db_masch_typ[17];
+      int  db_art_id;
+      double db_speed;
+   exec sql end declare section;
+   db_art_id=artikel.Id();
+   strncpy(db_masch_typ,maschtyp.c_str(),sizeof(db_masch_typ));
+//cout << "\n"<<db_art_id<<"\t"<<db_masch_typ<<"\n\n";
+   // 1. Fall: Artikel+Maschine bekannt ///////////////////////////////////
+   bekannt = 1;
+   exec sql select produzierte_menge/date_part('epoch',gebrauchte_zeit)*3600*24 
+      into :db_speed from maschinen_geschwindigkeit
+      where masch_typ = :db_masch_typ and art_id = :db_art_id;
+   SQLerror::test(__FILELINE__,100);
+   // 2. Fall: Artikel auf anderer Maschine ////////////////////////////////
+   if (sqlca.sqlcode) 
+     {
+      bekannt = 2;
+      exec sql select min(case when gebrauchte_zeit!='0sec'::interval then
+      produzierte_menge/date_part('epoch',gebrauchte_zeit)*3600*24
+      else null end) into :db_speed
+      from maschinen_geschwindigkeit where art_id=:db_art_id ;
+     }
+   SQLerror::test(__FILELINE__,ECPG_MISSING_INDICATOR);
+   // 3. Fall: Artikel noch nie gewebt //////////////////////////////////
+   if (sqlca.sqlcode) 
+     {
+      bekannt = 3;
+      exec sql select min(case when gebrauchte_zeit!='0sec'::interval then
+      produzierte_menge/date_part('epoch',gebrauchte_zeit)*3600*24
+      else null end) into :db_speed
+      from maschinen_geschwindigkeit where masch_typ = :db_masch_typ ;
+     }
+   SQLerror::test(__FILELINE__,ECPG_MISSING_INDICATOR);
+   // 4. Fall: Artikel noch nie gewebt UND neu Maschine  ///////////////////
+   if (sqlca.sqlcode) 
+     {
+      bekannt = 4;
+      exec sql select min(case when gebrauchte_zeit!='0sec'::interval then
+      produzierte_menge/date_part('epoch',gebrauchte_zeit)*3600*24
+      else null end) into :db_speed
+      from maschinen_geschwindigkeit ;
+      if (db_speed<100)db_speed=100;
+     }
+   SQLerror::test(__FILELINE__);
+   speed_d=db_speed;
+}

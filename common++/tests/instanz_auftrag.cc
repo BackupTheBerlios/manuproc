@@ -1,4 +1,4 @@
-// $Id: instanz_auftrag.cc,v 1.2 2002/01/07 16:23:09 christof Exp $
+// $Id: instanz_auftrag.cc,v 1.3 2002/01/11 07:59:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -61,13 +61,13 @@ int main()
       id=a;
       std::cout << "Auftrag " << a.Id() << '\n';
    
-      Petig::Datum date(6,3,2010);
+      Petig::Datum date(15,1,2011);
       int znr;
-      znr=a.insertNewEntry(3000, date, 218843,UNCOMMITED,true);
-      znr=a.insertNewEntry(2000, date, 218849,UNCOMMITED,true);
+      znr=a.insertNewEntry(10000, date, 218843,UNCOMMITED,true);
+//      znr=a.insertNewEntry(2000, date, 218849,UNCOMMITED,true);
    }
    vector<AufEintragBase> VAEB=showTest(id);
-
+/*
    static const int TESTZEILE = 1;
    int znr=0;
 //   Petig::Datum newdate(3,3,2100);
@@ -86,5 +86,6 @@ int main()
    cout << "\n Nach dem Test:\n\n";
    showTest(id);
    Auftrag(id).setStatusAuftrag_(CLOSED);
+*/
    return 0;
 }

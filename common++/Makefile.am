@@ -1,6 +1,6 @@
 
 SUBDIRS= Aux ostream Artikel Auftrag Bank ExtBezSchema Ketten Kunde \
-		Lieferschein Material ProdInstanz Faeden . tests 
+		Lieferschein Material ProdLager Faeden . tests 
 	
 lib_LIBRARIES=libcommon++.a
 
@@ -88,7 +88,11 @@ libcommon___a_LIBADD= \
 		Lieferschein/RechnungEntry_sql.o \
 		Lieferschein/RechnungVoll_sql.o \
 		Lieferschein/Zahlungsart_sql.o \
-		ProdInstanz/ProdInstanz_sql.o \
-		ProdInstanz/maschinen_geschwindigkeit_sql.o \
+		ProdLager/ProdLager.o \
+		ProdLager/ProdLager_sql.o \
+      ProdLager/Lager.o \
+      ProdLager/Lager_sql.o \
+      ProdLager/RL_Lagerplatz.o \
+		ProdLager/maschinen_geschwindigkeit_sql.o \
 		ostream/time_t_ostr.o
 

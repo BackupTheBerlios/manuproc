@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema.h,v 1.7 2002/01/07 16:23:09 christof Exp $
+// $Id: ExtBezSchema.h,v 1.8 2002/01/11 07:59:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -125,8 +125,9 @@ public:
  std::string JumboBez() const {return jumbobez;}
  std::string JumboTitel() const {return jumbotitel;}
  std::string JumboSpalte() const {return jumbospalte;}
+private:
  static bool exist_schema_for_typ(ID eid,const ArtikelTyp &t);
-
+public:
  const ArtikelTyp &Typ() const { return typ; }
  
  size_t size(int signifikanz) const

@@ -1,4 +1,4 @@
-// $Id: AuftragsEntryZuordnung.h,v 1.4 2002/01/07 16:23:09 christof Exp $
+// $Id: AuftragsEntryZuordnung.h,v 1.5 2002/01/11 07:59:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -49,11 +49,10 @@ public:
                  //kinder=true:    Kinderaufträge 
 
     std::list<cH_Kunde> get_Referenz_Kunden() const throw(SQLerror);
-    AufEintragBase2 get_AufEintrag_from_Artikel_by_Lfdate   
-                   (const ArtikelBase& artikel);
-
+    static AufEintragBase2 get_AufEintrag_from_Artikel_by_Lfdate   
+                   (const ArtikelBase& artikel,ppsInstanz::ppsInstId instanz);
     static std::list<AufEintragBase2> get_AufEintragList_from_Artikel
-               (const ArtikelBase& artikel,AufStatVal status);
+               (const ArtikelBase& artikel,ppsInstanz::ppsInstId instanz,AufStatVal status);
 
 
     // Neuen Eintrag anlegen:

@@ -28,6 +28,7 @@
 #include <vector>
 #include "LieferscheinBase.h"
 #include "Zahlungsart.hh"
+#include <Aux/Handles.h>
 
 class Rechnung : public RechnungBase
 {
@@ -60,6 +61,7 @@ public:
 // std::string RngArt() const {return rngart; } 
  const RngArt rngArt() const {return rngart; } 
  fixedpoint<2> Rabatt() const { return rabatt; }
+ fixedpoint<2> Betrag() const throw(SQLerror);
  
  cP_Waehrung getWaehrung() const { return waehrung; }
  void setzeWaehrung(const cP_Waehrung &w) throw(SQLerror);
@@ -69,9 +71,22 @@ public:
  void deleteLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror);
  void setze_Rabatt(fixedpoint<2> r) throw(SQLerror);
  const Petig::Datum getDatum() const { return rgdatum; }
+ const Petig::Datum getZahlziel() const { return zahlziel; }
  void setze_Datum(Petig::Datum rgdatum) throw(SQLerror);
  cH_Zahlungsart getZahlungsart() const {return zahlungsart;}
  void setze_Zahlungsart(cH_Zahlungsart z)   throw(SQLerror);
 };
+
+/*
+class H_Rechnung : public Handle<Rechnung>
+{
+ friend class std::map<int,H_Rechnung> ;
+protected:
+public:
+ H_Rechnung(): Handle<Rechnung> (new Rechnung()) {}
+ H_Rechnung(Rechnung *r) : Handle<Rechnung>(r){}
+ H_Rechnung(Rechnung::ID i) : Handle<Rechnung>(new Rechnung(i)){}
+};
+*/
 
 #endif
