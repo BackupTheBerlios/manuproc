@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.8 2002/06/20 06:29:53 christof Exp $
+# $Id: Makefile.am,v 1.9 2002/09/27 09:14:41 thoma Exp $
 
 includedir=@includedir@/DynamicEnums
 
@@ -11,7 +11,7 @@ DynamicEnums.h: DynEnums_default.h
 	fi
 	
 recreate:
-	rm DynamicEnums.h
+	-rm DynamicEnums.h
 	make DynamicEnums.h
 
 CLEANFILES= *~ DynamicEnums.h

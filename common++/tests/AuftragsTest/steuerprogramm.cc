@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.cc,v 1.13 2002/09/19 15:04:45 christof Exp $
+// $Id: steuerprogramm.cc,v 1.14 2002/09/27 09:14:41 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -33,6 +33,7 @@
 // Lieferschein
 #include <Lieferschein/Lieferschein.h>
 
+#ifdef PETIG_EXTENSIONS
 
 enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
       ZweiterAuftrag_frueheresDatum,Lieferscheintest,LieferscheintestMenge,
@@ -381,6 +382,7 @@ void usage(const std::string &argv0,const std::string &argv1)
 
 int main(int argc,char *argv[])
 {
+
    if(argc==1) usage(argv[0],"");
    e_mode mode=None;
    if(std::string(argv[1])=="M" || std::string(argv[1])=="Mengentest") mode=Mengentest;
@@ -411,4 +413,8 @@ int main(int argc,char *argv[])
    }catch(SQLerror &e){std::cout << e<<'\n';}
   return 0;
 }
-
+#else
+int main()
+{
+}
+#endif

@@ -1,4 +1,4 @@
-/* $Id: Prozess.h,v 1.11 2002/05/09 12:45:59 christof Exp $ */
+/* $Id: Prozess.h,v 1.12 2002/09/27 09:14:41 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,6 +25,7 @@
 #include <Aux/CacheStatic.h>
 #include <Aux/Handles.h>
 #include <DynamicEnums/DynamicEnums.h>
+#include <DynamicEnums/DefaultValues.h>
 
 class cH_Prozess;
 
@@ -38,7 +39,7 @@ public:
 	typedef ManuProC::DynamicEnums::Prozesse::enum_t ID;
 
 	static const ID default_id=ProzessID::None;
-        static const ID standard_id=ProzessID::Verarbeitung;
+   static const ID standard_id=ManuProC::DefaultValues::Prozess;
 
 private:
  ID prozessid;

@@ -85,7 +85,7 @@ cH_Prozess ppsInstanz::get_Prozess() const
 	case ppsInstanzID::Schaererei: return cH_Prozess(ProzessID::Schaeren);break;
 	case ppsInstanzID::Spritzgiesserei: return cH_Prozess(ProzessID::Giessen);break;
 #endif	
-        default : return cH_Prozess(ProzessID::Verarbeitung); break;
+   default : return cH_Prozess(ManuProC::DefaultValues::Prozess); break;
 	}
 }
 

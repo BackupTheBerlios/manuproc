@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.25 2002/09/26 14:50:47 thoma Exp $
+// $Id: Kunde.h,v 1.26 2002/09/27 09:14:41 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -128,7 +128,7 @@ private:
 	
 	friend class Handle<const Kunde>;
 	friend class Handle<Kunde>;
-	static const ID _wir=EIGENE_KUNDENID;
+	static const ID _wir=ManuProC::DefaultValues::EigeneKundenId;
 	cP_Waehrung waehrung;
    // ...
 
@@ -137,7 +137,7 @@ private:
 
    bool lieferung_frei_haus;
 public:
-	static const ID default_id=_wir;
+	static const ID default_id=ManuProC::DefaultValues::DefaultKundenId;
 	Kunde(ID nr=default_id) throw(SQLerror);
 	static const cH_Kunde newKunde(const Kunde::ID kid, const std::string &firma) throw(SQLerror);
         const std::string LaTeX_von() const;
