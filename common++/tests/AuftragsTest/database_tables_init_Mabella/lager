@@ -1,0 +1,32 @@
+--
+-- Selected TOC Entries:
+--
+
+--
+-- TOC Entry ID 2 (OID 6321041)
+--
+-- Name: lager Type: TABLE Owner: jacek
+--
+
+drop table lager;
+CREATE TABLE "lager" (
+	"lagerid" integer NOT NULL,
+	"bezeichnung" text,
+	"tabelle" text NOT NULL,
+	"bestand_view" text,
+	Constraint "lager_pkey" Primary Key ("lagerid")
+);
+
+COPY "lager" FROM stdin;
+1	Hauptlager	fw_lager_buchung	artikel_bestand
+2	Musterlager	muster_lager_buchung	artikel_bestand_muster
+\.
+
+--
+-- TOC Entry ID 4 (OID 6321049)
+--
+-- Name: "lager_bezeichnung_key" Type: INDEX Owner: jacek
+--
+
+CREATE UNIQUE INDEX lager_bezeichnung_key ON lager USING btree (bezeichnung);
+

@@ -175,9 +175,9 @@ static bool Rollereiplanung()
        AufEintragBase AEB2=auftrag.push_back(40,DATUM,ArtikelBase(1),OPEN,true);
        vergleichen(Check::Menge,"roll_Ausgangspunkt","Ausgangspunkt","");
        
-       AufEintragBase source(ppsInstanz::ID(3),AuftragBase::ungeplante_id,1);
+       AufEintragBase sourceb(ppsInstanz::ID(3),AuftragBase::ungeplante_id,1);
        AufEintrag source(sourceb);
-       assert(source.Artikel().Id()==ArtikelBase(1));
+       assert(source.Artikel()==ArtikelBase(1));
        AuftragBase dest(ppsInstanz::ID(4),AuftragBase::ungeplante_id);
        source.Planen(20,dest,source.getLieferdatum());
        vergleichen(Check::Menge,"roll_Plan","Hälfte selbst weben","h");

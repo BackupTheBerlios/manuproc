@@ -48,7 +48,8 @@ createdb -E SQL_ASCII $PGDATABASE
    artbez_insert \
    artikel_bestand \
    artikelgruppen \
-   ku_gruppe
+   ku_gruppe \
+   lager
 do
   cat $P/$i
 done ) | psql $PGDATABSE -q

@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.110 2004/05/13 14:44:42 christof Exp $
+// $Id: AufEintrag.cc,v 1.111 2004/05/13 15:17:36 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -172,7 +172,7 @@ AufEintragBase AufEintrag::Planen(mengen_t menge,const AuftragBase &zielauftrag,
   Planen(menge,AE1er);
    
   // nur wenn aktiv durch Benutzer geplant
-  if (zielauftrag.Id() != plan_auftrag_id)
+  if (zielauftrag.Id() >= handplan_id)
   { AE1er.AlsGeplantMarkieren();
   }
 
