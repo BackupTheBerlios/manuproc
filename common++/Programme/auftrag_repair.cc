@@ -1,4 +1,4 @@
-// $Id: auftrag_repair.cc,v 1.7 2004/05/03 12:23:38 christof Exp $
+// $Id: auftrag_repair.cc,v 1.8 2004/05/03 13:25:18 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -137,7 +137,7 @@ int main(int argc,char *argv[])
   int loops=0;
 
   if(argc==1) usage(argv[0]);
-  while ((opt=getopt_long(argc,argv,"h:d:i:a:yItl",options,NULL))!=EOF)
+  while ((opt=getopt_long(argc,argv,"h:d:i:a:yItls",options,NULL))!=EOF)
    {
     switch(opt)
      {
