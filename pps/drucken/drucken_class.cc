@@ -537,7 +537,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
               Zeile_Ausgeben(os,preismenge_mem,einheit_mem,einheitsize,
                0,(*k).Artikel(),true,einheit_mem.hatMenge()?1:l->menge.as_int(),
                einheit_mem.hatMenge()?l->menge:0,Preis(),Preis(),
-               fixedpoint<2>(0),ManuProC::Datum(),0,l->yourauftrag,
+               fixedpoint<2>(0),ManuProC::Datum(),0,Auftrag::getYourAufNr(l->aeb),
                l->aeb);
             }           
          }

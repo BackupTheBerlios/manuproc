@@ -84,7 +84,7 @@ public:
       return std::vector<LieferscheinEntry::st_zusatz>();
       }
    std::string YourAuftrag() const { 
-      if (Typ()==Lieferschein) return u.l->YourAuftrag(); 
+      if (Typ()==Lieferschein) return Auftrag::getYourAufNr(u.l->RefAuftrag()); 
       return "";
       abort();}
    int AufId() const { 
