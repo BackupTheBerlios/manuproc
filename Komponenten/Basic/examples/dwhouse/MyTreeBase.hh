@@ -31,7 +31,7 @@ public:
 	  init(); 
 	}
 
- TCListNode *NewNode(guint deep, const cH_EntryValue &v, bool expand);
+ TCListNode *NewNode(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data,bool expand);
 
  const std::string getColTitle(guint seq) const;
 };

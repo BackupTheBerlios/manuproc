@@ -9,8 +9,18 @@ Optionmenu_Instanz::Optionmenu_Instanz()
 {
   fuelle_menu();
   get_menu()->deactivate.connect(activate.slot());
+get_menu()->deactivate.connect(
+SigC::slot(static_cast<class Optionmenu_Instanz*>(this), 
+   &Optionmenu_Instanz::TEST));          
+
   show();
 }
+
+void Optionmenu_Instanz::TEST()
+{
+cout << "XXXXXXXXXXX\n";
+}
+
 
 ppsInstanz::ppsInstId  Optionmenu_Instanz::get_Instanz_Id() const
 {

@@ -48,8 +48,8 @@ const std::string MyTreeBase::getColTitle(guint col) const
 }
 
  
-TCListNode *MyTreeBase::NewNode(guint deep, const cH_EntryValue &v, bool expand)
+TCListNode *MyTreeBase::NewNode(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data,bool expand)
 {
- return new  MyNode(deep, v, expand);
+ return new  MyNode(deep, v, child_s_deep,child_s_data,expand);
 }
 

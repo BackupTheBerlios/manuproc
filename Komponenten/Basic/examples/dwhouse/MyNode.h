@@ -27,8 +27,8 @@ class MyNode : public TCListNode
 
 public:
 
- MyNode(guint deep, const cH_EntryValue &v, bool expand)
- 	: TCListNode(deep,v,expand), sum1(0), sum2(0) 
+ MyNode(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand)
+ 	: TCListNode(deep,v,child_s_deep,child_s_data,expand), sum1(0), sum2(0) 
  {}
  virtual void cumulate(const cH_RowDataBase &rd);
  virtual const cH_EntryValue Value(guint col, gpointer) const;
