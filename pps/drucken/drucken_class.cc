@@ -278,6 +278,8 @@ catch(SQLerror &e) { cout << e; return; }
       {std::string endE,endM;
        if(mld->getSprId() == 4)
 	 {endE="o";endM="i";}
+       if(mld->getSprId() == 2)
+	 {endE="";endM="s";}
 	else
 	 {endE="";endM="en";}
  
@@ -286,7 +288,7 @@ catch(SQLerror &e) { cout << e; return; }
     			u.l->Pakete(),(u.l->Pakete()==1 ? 
 				(endE+string(".\n")).c_str():
 				(endM+string(".\n")).c_str() ));
-       os << " " << buf;
+       os << (mld->getSprId()==2 ? "" : " ") << buf;
       }
     else os << ".\n";	
 	

@@ -20,7 +20,8 @@ public:
    typedef enum typ {Lieferschein, Rechnung, Auftrag, Intern, Extern, NICHTS}; 
   
     std::string typString(bool gut=false) const { switch(t)
-			{case Lieferschein : return std::string("Lieferschein"); break;
+			{case Lieferschein : 
+				return mld->MLT(MultiL_Dict::TXT_LIEFERSCHEIN) ;break;
 			case Rechnung : 
 				if(gut) return std::string("Gutschrift");
 				else return mld->MLT(MultiL_Dict::TXT_RECHNUNG); break;
