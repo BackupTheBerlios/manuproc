@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.31 2004/02/03 13:06:06 jacek Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.32 2004/02/03 13:57:49 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -92,7 +92,8 @@ public:
  {  addZusatzEntry(AEB,menge); }
 
  void setPalette(int p) throw(SQLerror);
- void changeMenge(int stueck,mengen_t menge) throw(SQLerror);
+ void changeMenge(int stueck,mengen_t menge,const Lieferschein &ls, bool ein_auftrag) throw(SQLerror);
+ void changeMenge(int stueck,mengen_t menge) throw(SQLerror); 
  void changeStatus(AufStatVal new_status,const Lieferschein &ls, bool ein_auftrag) throw(SQLerror);
  static void deleteEntry(LieferscheinEntry &lse) throw(SQLerror);
 

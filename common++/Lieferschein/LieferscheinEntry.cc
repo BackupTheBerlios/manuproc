@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.46 2004/02/03 13:06:06 jacek Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.47 2004/02/03 13:57:49 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -79,15 +79,21 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
 	NV("new_status",new_status),
 	NV("status",status),NV("ein_auftrag",ein_auftrag));
 
-  AuftragBase::mengen_t abmenge=Abschreibmenge(stueck,menge);
-
   if(status==CLOSED || status==STORNO) return; // not changable any more
 
-  if(status>=new_status) return; // nothing changed or down changed
+  if(status>new_status) return;  // down changed
 
+  if(status!=OPEN && status==new_status) return; //nothing changed 
+						// if OPEN == OPEN
+					// means really changed amount
+					// so go forward
+
+  Transaction tr;
 
   if(new_status==OPEN || new_status==STORNO)
    {
+    AuftragBase::mengen_t abmenge=Abschreibmenge(stueck,menge);
+
     if (ein_auftrag)
     {  assert(NurEinKind(VZusatz));
        if(VZusatz[0].aeb.valid()) // => Keine Zusatzinfos
@@ -153,19 +159,36 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
        }
      }
 
+
   } // END OF if(new_status==OPEN || new_status==STORNO)
 
+ Query("update lieferscheinentry set status=? where "
+	"(lfrsid,instanz,zeilennr)=(?,?,?)")
+	<< Query::NullIf(new_status,(AufStatVal)NOSTAT)
+	<< Id() << Instanz()->Id() << Zeile();
 
+ tr.commit();  
 }
 
 
 void LieferscheinEntry::changeMenge(int stueck, mengen_t menge) throw(SQLerror)
+{
+ changeMenge(stueck,menge,*cH_Lieferschein(Instanz(),Id()),false);
+}
+
+
+void LieferscheinEntry::changeMenge(int stueck, mengen_t menge,
+		const Lieferschein &ls, bool ein_auftrag) throw(SQLerror)
 { ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
 	NV("stueck",stueck),NV("menge",menge));
   if(stueck==Stueck() && menge==Menge()) return ; //nichts geändert
 
+  if(status>OPEN) return;
+
   Transaction tr;
   Query::Execute("lock table lieferscheinentry in exclusive mode");
+
+  if(status==OPEN) changeStatus((AufStatVal)OPEN,ls,ein_auftrag);
 
   updateLieferscheinMenge(stueck,menge);
 
