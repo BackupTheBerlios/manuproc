@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.hh,v 1.38 2003/07/15 13:18:25 jacek Exp $
+// $Id: steuerprogramm.hh,v 1.39 2003/07/16 07:41:35 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -100,6 +100,9 @@
 #define FERTIGWLAGER (ppsInstanz::ID(2))
 #define EINKAUF (ppsInstanz::ID(3))
 
+#define KUNDE 11302
+#define KUNDE2 20104
+
 #endif
 
 
@@ -113,8 +116,10 @@
 #define DATUM9 ManuProC::Datum(31,12,2009)
 #define NEWDATUM ManuProC::Datum(31,12,2020)
 
-#define KUNDE 11302
-#define KUNDE2 20104
+#ifndef KUNDE
+#define KUNDE 1000
+#define KUNDE2 1111
+#endif
 
 #define UID 1001
 

@@ -171,7 +171,7 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string &yaufnr) throw(S
 	  zahlart(Zahlungsart::none_id)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
- 	NV("this",*this),NV("Anlegen",_instanz.instanz),NV("kdnr",kdnr),
+ 	NV("Anlegen.instanz",_instanz.instanz),NV("kdnr",kdnr),
  	NV("yaufnr",yaufnr));
  exec sql begin declare section;
  int AUFTRAGID;

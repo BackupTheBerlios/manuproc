@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.30 2003/07/15 15:01:15 jacek Exp $
+// $Id: Lager.cc,v 1.31 2003/07/16 07:41:35 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -81,7 +81,7 @@ void LagerBase::raus_aus_lager(const ArtikelBase &artikel,AuftragBase::mengen_t 
      				NV("artikel",artikel),NV("menge",menge));
   assert(menge>=0);
 
-    assert((*this)->ProduziertSelbst());
+//  assert((*this)->ProduziertSelbst());
 //  assert(LagerInstanz());
   Transaction tr;
 
