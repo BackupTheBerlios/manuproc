@@ -442,7 +442,7 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
       for (AufEintragZu::list_t::iterator i=eltern.begin();i!=eltern.end();++i)
       {  AufEintrag el(i->AEB);
          geliefert_eltern+=ArtikelBaum(el.Artikel()).Faktor(ae.Artikel())
-         	* ae.getGeliefert();
+         	* el.getGeliefert();
       }
       if (geliefert_eltern<ae.getGeliefert())
       {  analyse("Mehr geliefert als von den Eltern ausgeliefert wurde\n",
