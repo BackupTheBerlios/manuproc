@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.87 2004/02/18 14:53:27 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.88 2004/02/20 10:44:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -371,6 +371,10 @@ private:
    mengen_t ProdRueckgaengigMenge(mengen_t) const;
    // ehemals increase_parents__reduce_assingments
    void MengeNeubestellen(mengen_t menge) throw(SQLerror);
+   // Freigewordene Menge eines 3er Auftrags nutzen (0er oder als 2er)
+   static mengen_t MengeNutzen(AufEintrag &ae, mengen_t m);
+   // Variante um die Menge eines 2ers zu nutzen
+   static void MengeNutzen_2er(AufEintrag &ae);
 };
 
 #endif

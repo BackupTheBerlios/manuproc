@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_delayedreclaim.h,v 1.4 2004/02/16 15:29:05 christof Exp $ */
+/* $Id: AufEintrag_delayedreclaim.h,v 1.5 2004/02/20 10:44:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,7 +23,7 @@
 #include <Auftrag/AufEintrag.h>
 
 class AufEintrag::delayed_reclaim
-{  static bool active;
+{  static bool active,reclaiming;
    static std::list<std::pair<cH_ppsInstanz,ArtikelBase> > delayed;
    
    bool nested;
@@ -35,9 +35,6 @@ public:
    
    static void delay(cH_ppsInstanz inst,const ArtikelBase &ab);
    static bool Active() { return active; }
-   
-   // less related ... should move elsewhere?
-   static mengen_t MengeNutzen(AufEintrag &ae, mengen_t m);
 };
 
 #endif
