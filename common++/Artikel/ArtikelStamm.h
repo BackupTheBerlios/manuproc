@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.h,v 1.14 2002/11/22 15:31:04 christof Exp $
+// $Id: ArtikelStamm.h,v 1.15 2002/12/10 10:04:46 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,6 +25,7 @@
 #include <Aux/CacheStatic.h>
 #include <Instanzen/ppsInstanz.h>
 #include <Artikel/Einheiten.h>
+#include <Misc/Trace.h>
 
 class ArtikelStamm
 {	// we can't include ExtBezSchema.h, so we duplicate what we need
@@ -50,6 +51,8 @@ class ArtikelStamm
 	typedef CacheStatic<ArtikelBase::ID,payload_t> cache_t;
 	static cache_t cache;
 public:
+	static const UniqueValue::value_t trace_channel;
+
 	ArtikelStamm(const ArtikelBase &ab) throw (SQLerror);
 	ArtikelTyp::ID Warengruppe() const
 	{  return payload.typ; }

@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.38 2002/12/10 10:04:46 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.39 2002/12/10 10:06:33 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,9 +20,9 @@
 #ifndef AUFTRAGBASE_H
 #define AUFTRAGBASE_H
 #include<Instanzen/ppsInstanz.h>
-#include <Aux/Datum.h>
+#include <Misc/Datum.h>
 #include <Artikel/ArtikelBase.h>
-#include <Aux/Preis.h>
+#include <Misc/Preis.h>
 #include <Auftrag/auftrag_status.h>
 class AufEintrag;
 #include <Kunde/Kunde.h>
@@ -30,7 +30,7 @@ class AufEintrag;
 class AufEintragBase;
 #include <BaseObjects/ManuProcEntity.h>
 class FetchIStream;
-
+#include <Misc/UniqueValue.h>
 
 class AuftragBase
 {

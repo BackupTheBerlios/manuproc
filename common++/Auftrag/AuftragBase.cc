@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.14 2002/11/28 15:59:27 thoma Exp $
+// $Id: AuftragBase.cc,v 1.15 2002/12/10 10:04:46 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -195,3 +195,6 @@ const AuftragBase::ID AuftragBase::handplan_auftrag_id,
 	AuftragBase::none_id,
 	AuftragBase::ungeplante_id;
 #endif
+
+const UniqueValue::value_t AuftragBase::trace_channel=ManuProC::Tracer::channels.get(); 
+

@@ -1,4 +1,4 @@
-// $Id: trace.cc,v 1.1 2002/10/31 08:29:36 christof Exp $
+// $Id: trace.cc,v 1.2 2002/12/10 10:04:46 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,23 +19,24 @@
 
 #include <Misc/Trace.h>
 
+static const UniqueValue::value_t trace_channel=ManuProC::Tracer::channels.get();
 
 void C()
-{  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,1,2,3,4,5,6,7,8,9,10 );
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__,1,2,3,4,5,6,7,8,9,10 );
 }
 
 void B(int i,const std::string &t)
-{  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__, i,t);
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__, i,t);
    C();
 }
 
 void A()
-{  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__);
    B(1,"text");
 }
 
 int main()
-{  ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+{  ManuProC::Tracer::Enable(trace_channel);
    A();
    return 0;
 }
