@@ -1,4 +1,4 @@
-// $Id: bool_ImageButton.cc,v 1.6 2004/07/15 08:28:38 christof Exp $
+// $Id: bool_ImageButton.cc,v 1.7 2004/07/15 09:25:57 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -19,6 +19,7 @@
  */
 
 #include "bool_ImageButton.hh"
+#include <gtkmm/tooltips.h>
 
 bool bool_ImageButton::Connection::toggle(GdkEventButton *ev)
 {  model=!model.Value();
@@ -27,7 +28,7 @@ bool bool_ImageButton::Connection::toggle(GdkEventButton *ev)
 
 void bool_ImageButton::Connection::model2widget()
 {  widget->set(model.Value()?on:off);
-   if (tips) tips->set_tip(*this, model.Value()?tip_on:tip_off);
+   if (tips) tips->set_tip(*eventbox, model.Value()?tip_on:tip_off);
 }
 
 SigC::Connection bool_ImageButton::Connection::connect()

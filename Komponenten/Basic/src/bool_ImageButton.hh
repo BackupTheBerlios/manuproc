@@ -1,4 +1,4 @@
-// $Id: bool_ImageButton.hh,v 1.6 2004/07/15 08:28:38 christof Exp $
+// $Id: bool_ImageButton.hh,v 1.7 2004/07/15 09:25:57 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -24,6 +24,7 @@
 #include <gtkmm/eventbox.h>
 #include <ModelWidgetConnection.h>
 #include <gtkmm/image.h>
+namespace Gtk { class Tooltips; }
 
 class bool_ImageButton : public Gtk::EventBox
 {	typedef bool T;
