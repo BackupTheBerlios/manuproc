@@ -22,6 +22,8 @@ class auftrag_copy : public auftrag_copy_glade
 
         void on_copy_ok_clicked();
         void on_copy_cancel_clicked();
+        void on_liefdate_uebernehmen_toggled();
+        void on_stueck_uebernehmen_toggled();
 
 public:
                      auftrag_copy(AuftragFull *auftrag);

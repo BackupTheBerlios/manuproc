@@ -12,6 +12,7 @@
 #include "auftrag_bearbeiten.hh"
 #include "MyMessage.h"  
 #include <Aux/Transaction.h>
+#include <memory.h>
 
 extern auftrag_bearbeiten *auftragbearbeiten;
 extern MyMessage *meldung;
@@ -26,7 +27,10 @@ auftrag_copy::auftrag_copy(AuftragFull *auftrag)
  neu_aufkunde->set_value(alt_auftrag->getKundennr());
  neu_lieferdatum->setLabel("");
  neu_lieferdatum->set_value(ManuProC::Datum());
-  
+
+ std::string nuraktiv(" and coalesce(aktiv,true)=true");
+ neu_aufkunde->Einschraenkung(nuraktiv,true);
+ neu_aufkunde->EinschraenkenKdGr(KundengruppeID::Auftragsadresse);  
 }
 
 
@@ -36,9 +40,9 @@ void auftrag_copy::on_copy_ok_clicked()
  Transaction tr;
 
  try {
-   AuftragFull *auftrag = new AuftragFull(Auftrag::Anlegen(
+   std::auto_ptr<AuftragFull> auftrag(new AuftragFull(Auftrag::Anlegen(
    		alt_auftrag->Instanz()),
-   	neu_aufkunde->get_value());
+   	neu_aufkunde->get_value()));
      auftrag->setYourAufNr(neu_youraufnr->get_text());
 
      if(auftrag->getKundennr() == alt_auftrag->getKundennr())
@@ -76,7 +80,6 @@ void auftrag_copy::on_copy_ok_clicked()
 			
 			
 	AuftragBase::ID neu_aufid=auftrag->Id();
-	ppsInstanz::ID iid=auftrag->Instanz();
 
 
 	((Query("insert into auftragentry (auftragid,zeilennr,bestellt,"
@@ -91,12 +94,15 @@ void auftrag_copy::on_copy_ok_clicked()
 		<< getuid()
 		).add_argument(
 			ld.valid() ? 
-			std::string("'")+ld.postgres_null_if_invalid()+"'" : "lieferdate") 
+			ld.postgres_null_if_invalid() : "lieferdate") 
 		<< alt_auftrag->Id()
 		<< alt_auftrag->Instanz();
 	SQLerror::test(__FILELINE__);
 
-      auftrag->setStatusAuftragFull((AufStatVal)OPEN,getuid()); 
+      std::auto_ptr<AuftragFull> full(new AuftragFull(
+      	AuftragBase(auftrag->Instanz(),auftrag->Id())));
+
+      full->setStatusAuftragFull((AufStatVal)OPEN,getuid()); 
       auftragbearbeiten->new_aufid_from_copy=auftrag->Id();
       }
       
@@ -113,3 +119,12 @@ void auftrag_copy::on_copy_cancel_clicked()
 {  
 }
 
+void auftrag_copy::on_liefdate_uebernehmen_toggled()
+{  
+ neu_lieferdatum->set_sensitive(liefdate_uebernehmen->get_active());
+}
+
+void auftrag_copy::on_stueck_uebernehmen_toggled()
+{  
+ neu_stueck->set_sensitive(stueck_uebernehmen->get_active());
+}
