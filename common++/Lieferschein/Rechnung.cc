@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.17 2003/12/08 13:47:58 christof Exp $
+// $Id: Rechnung.cc,v 1.18 2004/01/13 10:43:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -26,7 +26,7 @@
 void Rechnung::setRngArt(const RngArt &art) throw(SQLerror)
 {
   Query("update rechnung set rngart=? where rngid=?")
-  	<< art << Id();
+  	<< char(art) << Id();
    SQLerror::test(__FILELINE__);
 // must be called separately due to bool argument not known here;
 //  if(art==RART_GUT) convert_to_gutschrift();
