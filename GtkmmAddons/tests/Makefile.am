@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.10 2004/05/17 17:43:45 christof Exp $
+# $Id: Makefile.am,v 1.11 2004/08/30 07:35:07 christof Exp $
 
 SUBDIRS=close_window
 
@@ -17,7 +17,7 @@ nsc_test_SOURCES = nsc_test.cc
 nsc_test_LDADD = $(top_srcdir)/src/libGtkmmAddons.a @GTKMM_LIBS@
 
 wfr_test_SOURCES = wfr_test.cc
-wfr_test_LDADD = $(top_srcdir)/src/libGtkmmAddons.a
+wfr_test_LDADD = $(top_srcdir)/src/libGtkmmAddons.a @GTKMM_LIBS@
 
 db_test_SOURCES = db_test.cc db_embed.cc
 db_test_LDADD = $(top_srcdir)/src/libGtkmmAddons.a @GTKMM_LIBS@

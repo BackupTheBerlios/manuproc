@@ -1,4 +1,4 @@
-/* $Id: wfr_test.cc,v 1.1 2004/05/17 17:42:50 christof Exp $ */
+/* $Id: wfr_test.cc,v 1.2 2004/08/30 07:35:07 christof Exp $ */
 /*  Gtk--addons: a collection of gtk-- addons
     Copyright (C) 2004  Adolf Petig GmbH. & Co. KG
     Developed by Christof Petig <christof.petig@wtal.de>
@@ -37,12 +37,8 @@ class testwindow : public Gtk::Window
 
     public:
 	void popup_req()
-	{  WinFileReq *fr=
-		new WinFileReq(SigC::slot(entry,&Gtk::Entry::set_text),
+	{  WinFileReq::create(SigC::slot(entry,&Gtk::Entry::set_text),
 			entry.get_text(),"","txt","select file",true,this);
-#ifdef __MINGW32__
-	   delete fr;
-#endif		
 	}
 	
         testwindow() 

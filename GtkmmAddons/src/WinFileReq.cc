@@ -23,7 +23,8 @@ void WinFileReq::on_ok_button1_clicked()
 }
 
 void WinFileReq::on_cancel()
-{  delete this;
+{  if (call_on_cancel) slot(std::string());
+   delete this;
 }
 
 #if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
@@ -47,11 +48,12 @@ namespace SigC
 #include "WinFileReq_glade.cc"
 #endif
 
-WinFileReq::WinFileReq(const SigC::Slot1<void,const std::string &> &sl,const std::string &file,
-		std::string filter, std::string extension, std::string title, bool load,
-		Gtk::Window *parent)
+WinFileReq::WinFileReq(const SigC::Slot1<void,const std::string &> &sl,
+                const std::string &file, std::string filter, 
+                std::string extension, std::string title, bool load,
+		Gtk::Window *parent, bool pass_cancel)
 #ifndef __MINGW32__
-	: slot(sl)
+	: slot(sl), call_on_cancel(pass_cancel)
 #endif
 {
 #ifndef __MINGW32__
@@ -73,6 +75,10 @@ WinFileReq::WinFileReq(const SigC::Slot1<void,const std::string &> &sl,const std
    if (parent) ofn.hwndOwner = (HWND)GDK_WINDOW_HWND(parent->get_window()->gobj()); 
    ofn.lpstrFile = buf;
    ofn.nMaxFile = sizeof buf;
+   if (filter.empty() && !extension.empty() && !title.empty())
+   {  filter=title+" (*."+extension+")\0*."+extension+"\0"
+           "Alle Dateien (*.*)\0*.*\0";
+   }
    if (filter.empty()) ofn.lpstrFilter = "Alle Dateien (*.*)\0*.*\0";
    else ofn.lpstrFilter=filter.c_str();
    ofn.nFilterIndex = 1;
@@ -92,5 +98,17 @@ WinFileReq::WinFileReq(const SigC::Slot1<void,const std::string &> &sl,const std
    if (res) 
    {  const_cast<SigC::Slot1<void,const std::string &>&>(sl)(buf);
    }
+   else if (call_on_cancel)
+      const_cast<SigC::Slot1<void,const std::string &>&>(sl)(std::string());
 #endif
+}
+
+void WinFileReq::create(const SigC::Slot1<void,const std::string &> &sl,const std::string &file,
+		std::string filter, std::string extension, std::string title, bool load,
+		Gtk::Window *parent, bool pass_cancel)
+{  (void)
+#ifndef __MINGW32__
+     new
+#endif
+       WinFileReq(sl,file,filter,extension,title,load,parent,pass_cancel);
 }
