@@ -126,6 +126,8 @@ int main(int argc, char *argv[])
 
  es.TeX_out(os);
 
+ pclose(f);
+ 
  ManuProC::dbdisconnect();
 
  return 0;
