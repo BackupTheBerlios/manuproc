@@ -1,6 +1,6 @@
-# $Id: Makefile.am,v 1.29 2002/12/17 10:03:30 christof Exp $
+# $Id: Makefile.am,v 1.30 2003/01/14 12:16:28 thoma Exp $
 
-CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
+AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
 
@@ -8,7 +8,7 @@ lib_LIBRARIES=libManuProC_Base.a
 
 includedir=@includedir@/ManuProC_Base
 
-LDFLAGS=@LDFLAGS@ @ECPG_LDFLAGS@
+AM_LDFLAGS=@LDFLAGS@ @ECPG_LDFLAGS@
 
 if DATABASE
 DB_SRCES=dbconnect.cc SQLerror_postgres.cc Transaction.cc FetchIStream.cc
