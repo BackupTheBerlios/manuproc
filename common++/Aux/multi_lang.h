@@ -87,6 +87,7 @@ public:
 		EAN_CODE=72,
 		PRINTF_ZAHLUNG9=73,
 		PRINTF_ZAHLUNG10=74,
+		MWST=75,
 	     } LangTXT;
 
  MultiL_Dict(int sprache, int default_spr=1);

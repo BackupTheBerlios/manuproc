@@ -32,7 +32,7 @@
 #define TABW	"18"
 
 #define MWSTSATZ	0.16
-#define MWST		16
+#define MWSTPROZ	16
 #define ENTSSATZ	0.002
 
 bool ents_flag=false;
@@ -61,7 +61,7 @@ void LR_Abstraktion::calc_all(cH_Kunde k)
  
  
  
- if(!k->land()->Auslaender()) 
+ if(k->MwSt()) 
    mwstbetrag = entsbetrag * MWSTSATZ;
  else mwstbetrag=0;
  
@@ -660,8 +660,9 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
    
  if (preise_addieren)
  { cH_Kunde kunde_an(KdNr());
-   if(!kunde_an->land()->Auslaender())   
-   { os << zur_preisspalte.substr(0,zur_preisspalte.size()-1) << "\\multicolumn{2}{r}{+ "<<MWST<<"\\% MwSt}& "<< FormatiereTeX(mwstbetrag) <<"\\\\"
+   if(kunde_rng->MwSt())   
+   { os << zur_preisspalte.substr(0,zur_preisspalte.size()-1) << "\\multicolumn{2}{r}{+ "<<MWSTPROZ<<"\\% "
+		<< mld->MLT(MultiL_Dict::MWST) <<"}& "<< FormatiereTeX(mwstbetrag) <<"\\\\"
      	"\\cline{"<<preisspalte<<"-"<<preisspalte<<"}\n";  
      --zeilen_passen_noch;
      os << zur_preisspalte
