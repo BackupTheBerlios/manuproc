@@ -309,10 +309,11 @@ catch(SQLerror &e) { cout << e; return; }
  if(Typ()==Rechnung)
  if(kunde_an->land()->Auslaender())
    if(!kunde_an->land()->EU())
-     os << "~\\\\Der Ausführer dieser Waren, auf die sich dieses Handelspapier"
-	" bezieht, erklärt, daß diese Waren, soweit nicht anders angegeben,"
-	" präferenzbegünstigte BRD Ursprungswaren sind.\\\\\n"
-	"~\\\\\nWuppertal, den ";
+     os << "~\\\\";
+	os << mld->MLT(MultiL_Dict::TXT_EU_PREFERENZ);
+	os << "\\\\\n"
+	"~\\\\\nWuppertal, ";
+	if(mld->getSprId()==1) os << "den ";
   Gtk2TeX::Footer(os);
 }
 
