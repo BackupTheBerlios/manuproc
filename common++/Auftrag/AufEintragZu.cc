@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.1 2002/11/22 15:57:02 christof Exp $
+// $Id: AufEintragZu.cc,v 1.2 2002/12/03 15:20:44 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -48,13 +48,22 @@ std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_geplant(bool
 
  std::list<st_reflist> L=get_Referenz_list(*this,kinder);
  std::list<st_reflist> N;
- for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+ if(!Instanz()->PlanungsInstanz())
+  for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
    {
      if(i->AEB.Id()!=AuftragBase::dispo_auftrag_id &&
-        i->AEB.Id()!=AuftragBase::plan_auftrag_id &&
         i->AEB.Id()!=AuftragBase::ungeplante_id &&
         i->AEB.Id()!=AuftragBase::invalid_id ) 
        N.push_back(*i);
+   }
+ else 
+   { assert(kinder);
+     assert(L.empty() || L.size()==1);
+     for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+      {
+        std::list<st_reflist> N_=AufEintragZu(i->AEB).get_Referenz_list_geplant(kinder);
+        N.splice(N.end(),N_);
+      }
    }
  return N;
 }

@@ -40,6 +40,9 @@ void ppsInstanz::Reparatur_2_ZuSumme_1(const int uid,const bool analyse_only) co
   if(LagerInstanz()) {cout << "Sinnlos für LagerInstanz\n"; return;}
   else
      Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::dispo_auftrag_id,true,geplant);
+// TODO: Holt der auch die 1er? Ja
+// Was ist mit PlanungsInstanzen => Kinder weiterreichen
+
 }
 
 void ppsInstanz::Reparatur_Zuordnungen(const int uid,const bool analyse_only,
@@ -83,7 +86,7 @@ void ppsInstanz::Reparatur_0er_und_2er(const int uid,const bool analyse_only) co
    for(SelectedFullAufList::iterator i=AL.begin();i!=AL.end();++i)
     {
       SQLFullAuftragSelector sel2er;
-      if(PlanungsInstanz()) assert(!"U N G E T E S T E D\n");
+      if(PlanungsInstanz()) {cerr<<"U N G E T E S T E T für PlanungsInstenz\n"; continue;}
       if(LagerInstanz())
          sel2er=SQLFullAuftragSelector::sel_Artikel_Planung_id(Id(),Kunde::eigene_id,i->Artikel(),AuftragBase::dispo_auftrag_id,OPEN,LagerBase::Lagerdatum());
       else 

@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.14 2002/12/03 13:54:17 thoma Exp $
+// $Id: adjust_store.cc,v 1.15 2002/12/03 15:20:44 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -42,9 +42,9 @@ void usage(const std::string &s)
            "\tC: Es wird sichergestellt, daß nur entweder 0er- oder 2er-Aufträge\n"
            "\t   (pro Instanz,Artikel,Lieferdatum) existieren.\n"
            "\tD: Es wird überprüft, ob die Summe der Zuordnungen VON 0er-Aufträgen\n"
-           "     AN 1|20000er genauso groß ist wie die Menge im 1|20000er.\n";
+           "\t   AN 1|20000er genauso groß ist wie die Menge im 1|20000er.\n"
            "\tE: Es wird überprüft, ob die Summe der Zuordnungen VON 2er-Aufträgen\n"
-           "     AN 1|20000er genauso groß ist wie die Menge im 2er.\n";
+           "\t   AN 1|20000er genauso groß ist wie die Menge im 2er.\n";
  std::cerr << "USAGE:  ";
  std::cerr << s <<" [-i<instanz>|-I]  -a<aktion> [-d<database> -h<dbhost> -y] \n"
            "\twobei die aktion=[A|B|C] ist.\n"
