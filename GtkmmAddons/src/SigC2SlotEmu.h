@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: SigC2SlotEmu.h,v 1.5 2004/05/03 07:51:25 christof Exp $
+// $Id: SigC2SlotEmu.h,v 1.6 2004/05/03 09:47:17 christof Exp $
 
 // compatibility header for sigc 2.0 <-> sigc 1.2
 
@@ -28,6 +28,12 @@
 // don't ask me why this does not work ...
 //#  include <sigc++/compatibility.h>
 
+#warning Using this header is discouraged, replace with (see following line)
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#  include <sigc++/compatibility.h>
+#endif
+
+#if 0
 #include <sigc++/slot.h>
 #include <sigc++/bind.h>
 
@@ -46,6 +52,7 @@ namespace SigC
     Slot3<R,A,B,C> slot(T &t, R (U::*p)(A,B,C)) 
     	{ return sigc::mem_fun(t,p); }
 }
+#endif
 #else // sigc 2.0 compatibility layer for SigC 1.2
 #include <sigc++/slot.h>
 

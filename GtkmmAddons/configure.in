@@ -1,4 +1,4 @@
-## $Id: configure.in,v 1.10 2004/05/03 09:28:26 christof Exp $
+## $Id: configure.in,v 1.11 2004/05/03 09:47:22 christof Exp $
 #
 # process this file with GNU autoconf to produce a configure script.
 #
@@ -26,7 +26,7 @@ AC_SUBST(CXXFLAGS)
 AC_HEADER_STDC
 
 PKG_CHECK_MODULES(GTKMM,[gtkmm-2.4 >= 2.4.0],
-	[PKG_CHECK_MODULES(GTKMM,[sigc++-2.0 >= 2.0.1])],
+	[PKG_CHECK_MODULES(SIGC,[sigc++-2.0 >= 2.0.1])],
 	[PKG_CHECK_MODULES(GTKMM,[gtkmm-2.0 >= 1.3.20])])
 
 #AC_CONFIG_SUBDIRS( searchcombo )

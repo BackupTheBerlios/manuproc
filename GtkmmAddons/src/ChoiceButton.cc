@@ -22,8 +22,8 @@
 #include <gtk/gtkmenu.h>
 
 #if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#  include <sigc++/compatibility.h>
 #  include <sigc++/bind.h>
-#  include <SigC2SlotEmu.h>
 #endif
 
 ManuProC::ChoiceButton::ChoiceButton(bool tearoff)
