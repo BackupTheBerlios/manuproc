@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.cc,v 1.22 2004/07/14 14:58:38 christof Exp $ */
+/* $Id: AufEintrag_loops.cc,v 1.23 2004/09/01 08:57:45 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -252,7 +252,7 @@ bool distribute_children_twice(const AufEintragBase &startAEB,
       		=MinPfeil_or_MinGeliefert(*zuloop_var,AE_menge2);
          if (!mengen_var) continue;
 
-         {ManuProC::Trace _t(AuftragBase::trace_channel,callee_t,artloop_var->first,zuloop_var->AEB,mengen_var,true);
+         {ManuProC::Trace _t(AuftragBase::trace_channel,callee_t,artloop_var->first,zuloop_var->AEB,mengen_var,false);
           mengen_var=callee(artloop_var->first,zuloop_var->AEB,mengen_var,false);
          }
 
