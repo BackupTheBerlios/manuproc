@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: Gtk2TeX.cc,v 1.5 2003/11/11 12:07:36 christof Exp $
+// $Id: Gtk2TeX.cc,v 1.6 2003/11/11 12:53:55 christof Exp $
 
 #include "Gtk2TeX.h"
 #include "gtkhacks.h"
@@ -63,10 +63,8 @@ static void TreeView2Table_sub(std::ostream &os,const Gtk::TreeView *cl,
    {  x2=0;
       guint next2=x2;
       for (Glib::ListHandle<Gtk::TreeViewColumn*>::const_iterator x=cols.begin(),xend=cols.end(),next=x;x!=xend;x=next,x2=next2)
-//      for (Gtk::CList::Row::iterator x=y.begin(),xend=y.end(),next=x;x!=xend;x=next,x2=next2)
       {  guint multicol=1;
          
-      // x->get_alignment() 0.0-1.0
          for (++next,++next2;next!=xend;++next,++next2)
          {  if (fl.multicolumn && get_text(y,*next).empty()
             	&& (*next)->get_alignment()<0.9)
@@ -91,26 +89,24 @@ static void TreeView2Table_sub(std::ostream &os,const Gtk::TreeView *cl,
       os << "\\\\\n";
 }
 
-#if 0
-
-std::ostream &Gtk2TeX::CList2Table(std::ostream &os,const Gtk::CList *cl,const TableFlags &fl)
-{  int columns(cl->gtkobj()->columns);
+std::ostream &Gtk2TeX::TreeView2Table(std::ostream &os,const Gtk::TreeView *cl,const TableFlags &fl)
+{  // gtkmm2 seems to have problems with const pointers so we trick
+   Glib::ListHandle<Gtk::TreeViewColumn*> cols=const_cast<Gtk::TreeView*>(cl)->get_columns();
+   int columns(cols.size());
 
    if (fl.environment)
    {  os << "\\begin{" << (fl.longtable?"longtable":"tabular") << "}"
    	"{";
-      for (int i=0;i<columns;++i)
-      {  if (!cl->gtkobj()->column[i].visible) continue;
-         std::string typ("l");
-         switch(cl->gtkobj()->column[i].justification)
-         {  case GTK_JUSTIFY_LEFT: typ="l"; break;
-            case GTK_JUSTIFY_RIGHT: typ="r"; break;
-            case GTK_JUSTIFY_CENTER: typ="c"; break;
-            case GTK_JUSTIFY_FILL: typ="l"; break; // p{}
-         }
+      unsigned idx=0;
+      for (Glib::ListHandle<Gtk::TreeViewColumn*>::const_iterator i=cols.begin();i!=cols.end();++i,++idx)
+      {  std::string typ("l");
+         if ((*i)->get_alignment()>0.66) typ="r";
+         else if ((*i)->get_alignment()>0.33) typ="c";
+         // p{} ??? GTK_JUSTIFY_FILL ???
+
          if (fl.columntype_cb) 
-         {  const std::string title(cl->gtkobj()->column[i].title?cl->gtkobj()->column[i].title:"");
-            typ=(*fl.columntype_cb)(i,typ,title,fl.user_data);
+         {  const std::string title((*i)->get_title());
+            typ=(*fl.columntype_cb)(idx,typ,title,fl.user_data);
          }
          os << typ;
       }
@@ -118,21 +114,19 @@ std::ostream &Gtk2TeX::CList2Table(std::ostream &os,const Gtk::CList *cl,const T
    }
    if (fl.prehead_cb) (*fl.prehead_cb)(os,fl.user_data);
    if (fl.headline)
-   { for (int i=0;i<columns;++i)
-      {  if (!cl->gtkobj()->column[i].visible) continue;
-
-	 if(cl->gtkobj()->column[i].title)
-	 {  if (!fl.columntitle_cb)
-	        os << string2TeX(cl->gtkobj()->column[i].title);
-	    else
-		os << (*fl.columntitle_cb)(i,cl->gtkobj()->column[i].title,fl.user_data);
-         }
-         if (i+1<columns) os << '&';
+   {  unsigned idx=0;
+      for (Glib::ListHandle<Gtk::TreeViewColumn*>::const_iterator i=cols.begin();i!=cols.end();++i,++idx)
+      {  if (!fl.columntitle_cb)
+	    os << string2TeX((*i)->get_title());
+	 else
+	    os << (*fl.columntitle_cb)(idx,(*i)->get_title(),fl.user_data);
+         if (idx+1<columns) os << '&';
       }
       if (fl.posthead_cb) (*fl.posthead_cb)(os,fl.user_data);
       os << "\\endhead\n";
    }
-   
+
+#if 0   
    if (fl.selection && fl.selection->begin()!=fl.selection->end())
    {  Gtk::CList::SelectionList::iterator yend(fl.selection->end()),last(yend);
       --last;
@@ -154,10 +148,9 @@ std::ostream &Gtk2TeX::CList2Table(std::ostream &os,const Gtk::CList *cl,const T
       for (Gtk::CList::RowList::iterator y=cl->rows().begin();y!=yend;++y)
          CList2Table_sub(os,cl,fl,*y,y==last);
    }
+#endif   
    if (fl.postlist_cb) (*fl.postlist_cb)(os,fl.user_data);
    if (fl.environment)
       os << "\\end{" << (fl.longtable?"longtable":"tabular") << "}";
    return os;
 }
-
-#endif
