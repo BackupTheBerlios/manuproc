@@ -13,7 +13,8 @@
 # include <commdlg.h>
 #include <gdk/gdkwin32.h>
 
-extern std::string utf82iso(const std::string &s);
+class TagStream { public: static void utf82iso(std::string &s); };
+//extern std::string utf82iso(const std::string &s);
 #endif
 
 #ifndef __MINGW32__
@@ -61,9 +62,9 @@ WinFileReq::WinFileReq(const SigC::Slot1<void,const std::string &> &sl,
    set_title(title);
    if (parent) set_transient_for(*parent);
 #else
-   filter=utf82iso(filter);
-   extension=utf82iso(extension);
-   title=utf82iso(title);
+   TagStream::utf82iso(filter);
+   TagStream::utf82iso(extension);
+   TagStream::utf82iso(title);
    // file is assumed to have windows encoding
    OPENFILENAME ofn;
    char buf[10240];
