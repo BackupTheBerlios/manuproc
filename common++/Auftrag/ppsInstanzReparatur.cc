@@ -116,13 +116,20 @@ bool ppsInstanzReparatur::ReparaturLager(const int uid,const bool analyse_only) 
   return vormerkungen_subtrahieren(uid,LI,analyse_only);
 }
 
+
 bool ppsInstanzReparatur::vormerkungen_subtrahieren(int uid,const  std::vector<LagerInhalt> &LI,const bool analyse_only) const
 { bool looped=false;
   bool alles_ok=true;
 try_again:
 //std::cout << "Anzahl der Artikel im Lager = "<<LI.size()<<'\n';
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Instanz());
-  for(std::vector<LagerInhalt>::const_iterator i=LI.begin();i!=LI.end();++i)
+  for(std::vector<LagerInhalt>::const_iterator i=LI.begin();
+#if __GNUC__ == 3 && __GNUC_MINOR__ == 0
+		std::operator!=(i,LI.end()); // sorry, gtk2 backport on woody
+#else
+  		i!=LI.end();
+#endif
+  				++i)
    {
      bool set_dispo_to_zero=false;
      AuftragBase::mengen_t menge=i->GesamtMenge();
