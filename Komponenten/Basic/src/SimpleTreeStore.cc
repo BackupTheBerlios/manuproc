@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.24 2002/12/11 15:40:43 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.25 2002/12/16 08:29:33 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -50,9 +50,33 @@ SimpleTreeModel_Proxy::~SimpleTreeModel_Proxy()
 
 // =========================================================
 
-void SimpleTreeStore::save_remembered() const
-{  if (mem_prog.empty()) return;
+SimpleTreeStore::load_t SimpleTreeStore::load_vfunc=&SimpleTreeStore::default_load;
+SimpleTreeStore::save_t SimpleTreeStore::save_vfunc=&SimpleTreeStore::default_save;
+
+std::pair<std::string,std::string> SimpleTreeStore::default_load(const std::string&program, const std::string&instance)
+{  std::pair<std::string,std::string> result;
 #ifdef MANUPROC_WITH_DATABASE
+   if (!program.empty())
+   {  result.second=Global_Settings(getuid(),program,instance+":visible").get_Wert();
+      result.first=Global_Settings(getuid(),program,instance+":order").get_Wert();
+   }
+#endif   
+   return result;
+}
+
+void SimpleTreeStore::default_save(const std::string&program, const std::string&instance, const std::pair<std::string,std::string>&value)
+{
+#ifdef MANUPROC_WITH_DATABASE
+   if (!program.empty())
+   {  Global_Settings::create(getuid(),program,instance+":visible",value.second);
+      Global_Settings::create(getuid(),program,instance+":order",value.first);
+   }
+#endif
+}
+
+void SimpleTreeStore::save_remembered() const
+{  std::pair<std::string,std::string> value;
+
    unsigned int sichtbar=0,bit=1;
    for (std::vector<bool>::const_iterator i=vec_hide_cols.begin();
    		bit && i!=vec_hide_cols.end();++i,bit<<=1)
@@ -62,58 +86,56 @@ void SimpleTreeStore::save_remembered() const
    if (auffuellen_bool) flags+='a';
    if (!expandieren_bool) flags+='E';
    if (!color_bool) flags+='C';
-   Global_Settings::create(getuid(),mem_prog,mem_inst+":visible",
-   	itos(sichtbar)+','+itos(showdeep)+','+flags);
-   std::string cseq;
+   value.second=itos(sichtbar)+','+itos(showdeep)+','+flags;
+
    guint last=invisible_column;
    sequence_t::const_reverse_iterator i=currseq.rbegin();
    for (;i!=currseq.rend();++i)
    {  if (*i>last) break;
       last=*i;
    }
-   for (;i!=currseq.rend();++i) cseq=itos(*i)+','+cseq;
-   Global_Settings::create(getuid(),mem_prog,mem_inst+":order",cseq);
-#endif
+   for (;i!=currseq.rend();++i) value.first=itos(*i)+','+value.first;
+   
+   // additional flags from derived widgets?
+
+   (*save_vfunc)(mem_prog, mem_inst, value);
 }
 
 void SimpleTreeStore::load_remembered()
-{  if (mem_prog.empty()) return;
-#ifdef MANUPROC_WITH_DATABASE
-   std::string visible=Global_Settings(getuid(),mem_prog,mem_inst+":visible").get_Wert();
-//   titles_bool=visible.find('T')==std::string::npos;
-   expandieren_bool=visible.find('E')==std::string::npos;
-   color_bool=visible.find('C')==std::string::npos;
+{  std::pair<std::string,std::string> value=(*load_vfunc)(mem_prog, mem_inst);
+
+//   titles_bool=value.second.find('T')==std::string::npos;
+   expandieren_bool=value.second.find('E')==std::string::npos;
+   color_bool=value.second.find('C')==std::string::npos;
    
-   std::string::size_type k0=visible.find(','),k1=std::string::npos;
+   std::string::size_type k0=value.second.find(','),k1=std::string::npos;
    if (k0!=std::string::npos) 
-   {  guint sichtbar=strtoul(visible.substr(0,k0).c_str(),0,10),bit=1;
+   {  guint sichtbar=strtoul(value.second.substr(0,k0).c_str(),0,10),bit=1;
       for (guint j=0;j<MaxCol();++j,bit<<=1)
          vec_hide_cols[j]=!bit ? true : !(sichtbar&bit);
-      k1=visible.find(',',k0+1);
+      k1=value.second.find(',',k0+1);
    }
    if (k1!=std::string::npos)
-   {  showdeep=strtoul(visible.substr(k0+1,k1-(k0+1)).c_str(),0,10);
+   {  showdeep=strtoul(value.second.substr(k0+1,k1-(k0+1)).c_str(),0,10);
    }
 
    sequence_t s;
    auffuellen_bool=false;
-   std::string order=Global_Settings(getuid(),mem_prog,mem_inst+":order").get_Wert();
    for (std::string::size_type b=0;;)
-   {  std::string::size_type e=order.find(',',b);
+   {  std::string::size_type e=value.first.find(',',b);
       if (e==std::string::npos) break;
-      s.push_back(strtoul(order.substr(b,e-b).c_str(),0,10));
+      s.push_back(strtoul(value.first.substr(b,e-b).c_str(),0,10));
       b=e+1;
    }
 #if 0
    clicked_seq=s;
    reihenfolge_anzeigen();
    
-   auffuellen_bool=visible.find('a')!=std::string::npos;
+   auffuellen_bool=value.second.find('a')!=std::string::npos;
    delete menu;
    menu=0;
    fillMenu();
 #endif   
-#endif
 }
 
 void SimpleTreeStore::set_remember(const std::string &program, const std::string &instance)

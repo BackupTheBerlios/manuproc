@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.19 2002/12/12 09:30:43 christof Exp $
+# $Id: Makefile.am,v 1.20 2002/12/16 08:29:33 christof Exp $
 CXXFLAGS=@CXXFLAGS@ @COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
@@ -7,7 +7,8 @@ include_HEADERS = logwin.h EingabeBox.hh \
 	RowDataBase.h TreeRow.h treebase_data.h \
 	SimpleTreeModel.h SimpleTreeStore.h \
 	bool_CheckMenuItem.hh char_Pixmap.hh \
-	FlashingPixmap.hh LabelSpin.hh MyWindow.hh MyScale.hh
+	FlashingPixmap.hh LabelSpin.hh MyWindow.hh MyScale.hh \
+	TreeViewUtility.h
 	
 noinst_HEADERS=SimpleTree.hh
 
@@ -21,7 +22,7 @@ libManuProC_Widgets_a_SOURCES=EingabeBox.cc \
 		GType_cH_EntryValue.cc SimpleTree.cc \
 		bool_CheckMenuItem.cc char_Pixmap.cc \
 		FlashingPixmap.cc LabelSpin.cc \
-		MyWindow.cc MyScale.cc logwin.cc
+		MyWindow.cc MyScale.cc logwin.cc TreeViewUtility.cc
 
 dummy_SOURCES=datewin.cc datewin_glade.cc
 

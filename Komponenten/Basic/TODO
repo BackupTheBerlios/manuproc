@@ -1,0 +1,6 @@
+SimpleTree:
+
+- speichern der Reihenfolge in magus (via vfunc)
+- an/abschalten von Spalten (das ganze Menü)
+- evtl. Summierungsfehler bei verschieben von Nodes (negative Zahl)
+- editieren

@@ -3,7 +3,9 @@ interest to a wider user group.
 
 This library contains:
 
-- treebase and advanced Class derived from  GTK-CTrees/Gtk-CLists
+- SimpleTree: a widget which interactively transforms a linear list 
+	into a tree and displays it
+- more Model/View/Controller like Widgets for gtkmm2
 
 and perhaps more.
 
@@ -11,5 +13,5 @@ I apologize for not documenting them up to now and (of course) these
 classes have a long history so they sometimes start to smell ...
 
 Use them, improve them, share them.
-    Malte & Christof
+    Jacek, Malte & Christof
 

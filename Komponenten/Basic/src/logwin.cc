@@ -1,4 +1,4 @@
-// $Id: logwin.cc,v 1.5 2002/12/12 09:30:43 christof Exp $
+// $Id: logwin.cc,v 1.6 2002/12/16 08:29:33 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,15 +26,10 @@ void logwin::scroll() throw()
 }
 
 logwin::logwin(guint minimum_size)
-{  m_refStore=Gtk::ListStore::create(m_columns);
+{  emu.attach_to(gtklist);
    add(gtklist);
    gtklist.show();
    set_size_request(-1,minimum_size);
    set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
-   gtklist.set_model(m_refStore);
-   gtklist.append_column("", m_columns.col);
 }
 
-logwin::ModelColumns::ModelColumns()
-{  add(col);
-}

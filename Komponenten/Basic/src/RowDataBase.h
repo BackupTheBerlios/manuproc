@@ -1,4 +1,4 @@
-/* $Id: RowDataBase.h,v 1.6 2002/11/22 14:29:19 christof Exp $ */
+/* $Id: RowDataBase.h,v 1.7 2002/12/16 08:29:33 christof Exp $ */
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,27 +17,37 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: RowDataBase.h,v 1.6 2002/11/22 14:29:19 christof Exp $
+// $Id: RowDataBase.h,v 1.7 2002/12/16 08:29:33 christof Exp $
 
 #ifndef KOMPONENTEN_ROWDATA_H
 #define KOMPONENTEN_ROWDATA_H
 
 #include <Misc/Handles.h>
 #include <Misc/EntryValueBase.h>
-#include <glib.h>
-#include <cassert>
+//#include <glib.h>
+//#include <cassert>
+#include <glibmm/ustring.h>
 
 class RowDataBase : public HandleContent
 {
 public:
  virtual const cH_EntryValue Value(guint _seqnr,gpointer _g) const=0;
  virtual ~RowDataBase(){}
+ virtual void changeValue(guint _seqnr,gpointer _g, const Glib::ustring &newvalue) {}
+};
+
+class H_RowDataBase : public Handle<RowDataBase>
+{
+public:
+ H_RowDataBase() {}
+ H_RowDataBase(RowDataBase *r) : Handle<RowDataBase>(r){}
 };
 
 class cH_RowDataBase : public Handle<const RowDataBase>
 {
 public:
  cH_RowDataBase() {}
+ cH_RowDataBase(const H_RowDataBase &h) : Handle<const RowDataBase>(&*h) {}
  cH_RowDataBase(const RowDataBase *r) : Handle<const RowDataBase>(r){}
 };
 

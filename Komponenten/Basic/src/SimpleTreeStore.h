@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.27 2002/12/11 15:40:43 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.28 2002/12/16 08:29:33 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,6 +28,7 @@
 #include <gdkmm/color.h>
 #include <Misc/UniqueValue.h>
 #include <list>
+#include <utility>
 
 // for easily accessing model methods
 class SimpleTreeModel_Proxy
@@ -56,11 +57,18 @@ class SimpleTreeStore : public SigC::Object, public SimpleTreeModel_Proxy
 	typedef Gtk::TreeStore::iterator const_iterator;
 	typedef Gtk::TreeStore::iterator iterator;
 	typedef std::deque<guint> sequence_t;
+	// first value is ":order", second is ":visible"
+	typedef void (*save_t)(const std::string&program, const std::string&instance, const std::pair<std::string,std::string>&value);
+	typedef std::pair<std::string,std::string> (*load_t)(const std::string&program, const std::string&instance);
 
 	static const UniqueValue::value_t trace_channel;
 protected:
-	friend class SimpleTree_Basic;
+        static std::pair<std::string,std::string> default_load(const std::string&program, const std::string&instance);
+        static void default_save(const std::string&program, const std::string&instance, const std::pair<std::string,std::string>&value);
+        static load_t load_vfunc;
+        static save_t save_vfunc;
 
+	friend class SimpleTree_Basic;
 	Glib::RefPtr<Gtk::TreeStore> m_refTreeStore;
 	sequence_t currseq; 
 
