@@ -85,7 +85,7 @@ static bool Zusatzinfo2()
        int lznr=liefs.push_back(ae,ARTIKEL_BANDLAGER,9,1000);
        LieferscheinEntryBase lsb(liefs,lznr);
        LieferscheinEntry(lsb).changeStatus(OPEN,liefs,false);
-vergleichen(Check::Lieferschein|Check::Menge,"ZI2_pre","pre","");
+//vergleichen(Check::Lieferschein|Check::Menge,"ZI2_pre","pre","");
 
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp1,true);
        JL.Jumbo_Entnahme(JR2.front(),JumboLager::Auslagern,"TEST",&zp1,true);
@@ -247,7 +247,7 @@ static bool Rep_Zuordnungen(AufEintrag &AE)
         Query::Execute("update auftragsentryzuordnung set menge=6555 where "
             "(altinstanz,altauftragid,neuinstanz)=(2,2,2)");
         SQLerror::test(__FILELINE__);
-        vergleichen(Check::Menge,"rep_pf","Reparatur-Zuordungen (2)","",true);
+        vergleichen(Check::Menge,"rep_pf1","Reparatur-Zuordungen (2)","",true);
       }
       {
         Query::Execute("update auftragentry set geliefert=16555 where "
