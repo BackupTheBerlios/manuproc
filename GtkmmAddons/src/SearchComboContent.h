@@ -25,6 +25,13 @@
 #include<string>
 #include<cassert>
 
+// g++-3.0 has problems to decide which operator to chose
+#if defined(__GNUC__) && __GNUC__==3 && __GNUC_MINOR__==0
+#define std_neq(x,y) std::operator!=((x),(y))
+#else
+#define std_neq(x,y) (x)!=(y)
+#endif
+
 template<class T>
 class SearchComboContent : public Gtk::SearchCombo
 {
