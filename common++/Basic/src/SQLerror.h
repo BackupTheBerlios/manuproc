@@ -1,4 +1,4 @@
-/* $Id: SQLerror.h,v 1.4 2002/06/24 07:35:40 christof Exp $ */
+/* $Id: SQLerror.h,v 1.5 2004/03/11 12:17:32 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,6 +20,12 @@
 
 #ifndef SQLERROR_H
 #define SQLERROR_H
-#include <Misc/SQLerror_postgres.h>
-typedef SQLerror_postgres SQLerror;
+#include <ManuProCConfig.h>
+#ifndef MPC_SQLITE
+# include <Misc/SQLerror_postgres.h>
+ typedef SQLerror_postgres SQLerror;
+#else
+# include <Misc/SQLerror_sqlite.h>
+ typedef SQLerror_sqlite SQLerror;
+#endif
 #endif

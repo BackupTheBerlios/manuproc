@@ -1,4 +1,4 @@
-// $Id: dbconnect.h,v 1.9 2002/12/04 11:32:20 thoma Exp $
+// $Id: dbconnect.h,v 1.10 2004/03/11 12:17:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -18,9 +18,15 @@
  */
 
 #include <Misc/SQLerror.h>
+#ifdef MPC_SQLITE
+struct sqlite;
+#endif
 
 namespace ManuProC
 {
+#ifdef MPC_SQLITE
+	extern sqlite *db_connection;
+#endif
    class Connection
    {
     std::string host;
