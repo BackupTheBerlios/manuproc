@@ -1,4 +1,4 @@
-// $Id: trace.cc,v 1.2 2002/12/10 10:04:46 christof Exp $
+// $Id: trace.cc,v 1.3 2003/03/10 10:17:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,6 +17,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+// to get ::NV
+#define MANUPROC_NV
 #include <Misc/Trace.h>
 
 static const UniqueValue::value_t trace_channel=ManuProC::Tracer::channels.get();
@@ -26,7 +28,7 @@ void C()
 }
 
 void B(int i,const std::string &t)
-{  ManuProC::Trace _t(trace_channel, __FUNCTION__, i,t);
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("i",i),NV("t",t));
    C();
 }
 

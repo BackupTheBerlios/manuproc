@@ -1,4 +1,4 @@
-// $Id: Trace.h,v 1.4 2002/12/10 12:28:50 thoma Exp $
+// $Id: Trace.h,v 1.5 2003/03/10 10:17:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,6 +24,7 @@
 #include <string>
 #include <iostream>
 #include <Misc/UniqueValue.h>
+#include <Misc/compiler_ports.h>
 
 #define ENABLE_TRACES
 
@@ -42,6 +43,22 @@ namespace Tracer {
 	void FunctionEnd();
 	bool enabled(Channel c);
 }
+
+// never use this class to store information, it's only designed to 
+//  pass it's arguments immediately to an operator<<, not to store them
+template <class T> 
+ struct NameValue_s
+{	const std::string &name;
+	const T &value;
+	
+	NameValue_s(const std::string &n, const T &v) : name(n), value(v) {}
+	// operator<< is at the end of this file
+};
+
+template <class T>
+ struct NameValue_s<T> NameValue(const std::string &n, const T &v)
+ { return NameValue_s<T>(n,v); }
+
 
 class Trace
 {	bool enabled;
@@ -165,6 +182,18 @@ template <class A, class B,class C,class D,class E,class F,class G,class H,class
 
 };
 
+}
+
+// define this to get ::NV as a shortcut
+#ifdef MANUPROC_NV
+template <class T> 
+ struct ManuProC::NameValue_s<T> NV(const std::string &n, const T &v)
+ { return ManuProC::NameValue_s<T>(n,v); }
+#endif
+
+template <class T>
+ std::ostream &operator<<(std::ostream &o,const ManuProC::NameValue_s<T> &nv)
+{  return o << nv.name << '=' << nv.value;
 }
 
 #endif
