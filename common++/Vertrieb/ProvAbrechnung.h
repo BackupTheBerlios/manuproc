@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung.h,v 1.1 2002/11/22 16:01:55 christof Exp $ */
+/* $Id: ProvAbrechnung.h,v 1.2 2002/12/02 14:55:25 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,6 +27,7 @@
 #include <Aux/SQLerror.h>
 #include <Vertrieb/ProvAbrechnungEntry.h>
 #include <DynamicEnums/DefaultValues.h>
+#include <Aux/FetchIStream.h>
 
 class ProvAbrechnung : public ManuProcEntity<>
 {
@@ -34,12 +35,14 @@ class ProvAbrechnung : public ManuProcEntity<>
  ManuProC::Datum datum;
  ManuProC::Datum bis;
  std::string notiz;
- std::vector<ProvAbrechnungEntry> entries;
-  
+ std::vector<ProvAbrechnungEntry*> entries;
+ bool entries_valid;
+   
 public:
 
- ProvAbrechnung() : verkaeufer(Kunde::none_id) {}
+ ProvAbrechnung() : verkaeufer(Kunde::none_id),entries_valid(false) {}
  ProvAbrechnung(const Kunde::ID verk, const ID abrnr) throw(SQLerror);
+ void loadEntries() throw(SQLerror);
  ManuProcEntity<>::ID Id() const { return entityid; }
  Kunde::ID VerkNr() const { return verkaeufer; }
  const ManuProC::Datum getDatum() const { return datum; }
@@ -49,6 +52,15 @@ public:
  		ProvAbrechnung::ID abrnr, ManuProC::Datum bis,
  		const std::string _notiz) throw(SQLerror);
  static const ProvAbrechnung::ID getNextAbrNr(const Kunde::ID verk) throw(SQLerror);
+
+
+private:
+ typedef struct {int rngid;
+	 int zeilennr;
+	 float provsatz;
+	} FetchStruct;
+	
+ friend FetchIStream &operator>>(FetchIStream &is, FetchStruct &st);
 
 };
 

@@ -1,4 +1,4 @@
-/* $Id: RechnungEntry.h,v 1.13 2002/11/07 07:48:59 christof Exp $ */
+/* $Id: RechnungEntry.h,v 1.14 2002/12/02 14:55:25 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -66,7 +66,7 @@ class RechnungEntry : public RechnungEntryBase
  
 public:
 
- RechnungEntry(const RechnungEntryBase &reb);
+ RechnungEntry(const RechnungEntryBase &reb) throw(SQLerror);
  RechnungEntry(const RechnungBase &l, int z,int a, int s,mengen_t m,const Preis &p, rabatt_t r,
                         ManuProC::Datum ld, const LieferscheinEntryBase ls,
                         const AuftragBase &ab)

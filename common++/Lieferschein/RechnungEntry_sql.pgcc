@@ -24,7 +24,7 @@ exec sql include sqlca;
 
 
 RechnungEntry::RechnungEntry(const RechnungEntryBase& rechnung)
-	: RechnungEntryBase(rechnung)
+throw(SQLerror)	: RechnungEntryBase(rechnung) 
 {
  exec sql begin declare section;
    int ARTIKELID, STUECK, LFRSID, LFRSZN;
@@ -42,14 +42,17 @@ RechnungEntry::RechnungEntry(const RechnungEntryBase& rechnung)
 
  exec sql select ry.artikelid, coalesce(ry.menge,0), coalesce(abs(ry.preis),0),
       coalesce(ry.stueck,1), coalesce(ry.preismenge,1), coalesce(ry.rabatt,0),
-      coalesce(l.geliefertam,l.datum,date('today')), 
+      coalesce(li.geliefertam,li.datum,date('today')), 
       coalesce(ry.lfrsid,0), coalesce(ry.lfrszeile,0),
 	coalesce(l.refauftragid,:INVALID_REFAUFTRAGID)
    into :ARTIKELID, :MENGE, :PREIS, :STUECK, 
          :PREISMENGE, :RABATT, :LIEFERDATUM, :LFRSID, :LFRSZN,
 	:AUFTRAGID
    from rechnungentry ry 
-   left join lieferschein l on (:INSTANZ,ry.lfrsid)=(l.instanz,l.lfrsid)
+   left join lieferscheinentry l on 
+	(:INSTANZ,ry.lfrsid,ry.lfrszeile)=
+	(l.instanz,l.lfrsid,l.zeile)
+   join lieferschein li on (li.instanz,li.lfrsid)=(l.instanz,l.lfrsid)
    where (ry.rngid,ry.zeilennr) = (:RNGID,:ZEILENNR);
  SQLerror::test(__FILELINE__);
 

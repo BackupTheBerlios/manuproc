@@ -1,4 +1,4 @@
-/* $Id: Rechnung.h,v 1.21 2002/11/22 15:31:05 christof Exp $ */
+/* $Id: Rechnung.h,v 1.22 2002/12/02 14:55:25 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -33,7 +33,7 @@
 class Rechnung : public RechnungBase
 {
 public:
- typedef enum {RART_RNG='R',RART_GUT='G',RART_NONE=0} RngArt; 
+ typedef enum {RART_RNG='R',RART_GUT='G',RART_STORNO='S',RART_NONE=0} RngArt; 
  
 private:
  cH_Kunde kunde;
@@ -68,7 +68,7 @@ public:
  rabatt_t Rabatt() const { return rabatt; }
 
 // don't know where is using this and i assume a bug in it. 
- geldbetrag_t Betrag(int api_user_melde_dich,bool brutto=false) const throw(SQLerror);
+ geldbetrag_t Betrag(bool brutto=false) const throw(SQLerror);
  
  cP_Waehrung getWaehrung() const { return waehrung; }
  void setzeWaehrung(const cP_Waehrung &w) throw(SQLerror);
