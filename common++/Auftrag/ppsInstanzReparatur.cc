@@ -202,8 +202,11 @@ try_again:
   for(std::vector<LagerInhalt>::const_iterator i=LI.begin();
 				  		std_neq(i,LI.end());++i)
   {  try
-     {  alles_ok&=Lagermenge_setzen(analyse_only,i->Artikel(),
-     						i->GesamtMenge(),retry);
+     {  
+	int lmenge=i->GesamtMenge() < 0 ? 0 : i->GesamtMenge();
+	// lmenge muﬂ auf 0 gesetzt werden bei <0; sonst endlose Reparatur
+        alles_ok&=Lagermenge_setzen(analyse_only,i->Artikel(),
+     						lmenge,retry);
      }
      catch (reload &e)
      {  retry=false;
