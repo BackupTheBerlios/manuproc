@@ -1,4 +1,4 @@
-// $Id: testKW.cc,v 1.6 2002/06/27 07:42:50 christof Exp $
+// $Id: testKW.cc,v 1.7 2003/01/28 12:15:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -71,6 +71,9 @@ int main()
    kw=Kalenderwoche(13,1970);
    d=ManuProC::Datum(kw);
    std::cout << "KW "<<kw << " = "<<d << " = " << d.KW() << '\n';
+
+   d=ManuProC::Datum::today();
+   std::cout << "today = "<<d << " = " << d.KW() << '\n';
 
    return 0;
 }
