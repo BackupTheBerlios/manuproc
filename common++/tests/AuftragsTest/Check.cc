@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.52 2003/07/15 10:57:15 christof Exp $
+// $Id: Check.cc,v 1.53 2003/08/01 06:25:48 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -152,7 +152,7 @@ void Check::dump(was_checken check, const std::string &zusatz)
       "to_char(neuinstanz,'99') ||' - ' "
       "|| to_char(neuauftragid,'99999') || ' - ' || text(neuzeilennr) as "
       "\\\"NEU:instanz-id-znr\\\",menge from auftragsentryzuordnung "
-      "order by 1,2;\" > "+resultdir+"auftragsentryzuordnung_"+zusatz; 
+      "order by altinstanz,altauftragid,altzeilennr,prioritaet,2;\" > "+resultdir+"auftragsentryzuordnung_"+zusatz; 
   system(s2.c_str());
  }
   if(check & RohLager)
