@@ -16,7 +16,9 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: SigC2SlotEmu.h,v 1.3 2004/04/30 13:31:27 christof Exp $
+// $Id: SigC2SlotEmu.h,v 1.4 2004/05/03 06:50:54 christof Exp $
+
+// compatibility header for sigc 2.0 <-> sigc 1.2
 
 #ifndef F8A1CFD6_43A4_4DBC_9F30_826BBC4F0650
 #define F8A1CFD6_43A4_4DBC_9F30_826BBC4F0650
@@ -30,14 +32,38 @@
 #include <sigc++/bind.h>
 
 namespace SigC
-{  template <class T> 
-    Slot0<void> slot(T &t, void (T::*p)()) { return sigc::mem_fun(t,p); }
-   template <class T,class U> 
-    Slot0<void> slot(T &t, void (U::*p)()) { return sigc::mem_fun(t,p); }
-   template <class T,class A> 
-    Slot1<void,A> slot(T &t, void (T::*p)(A a)) 
+{
+   template <class R,class T,class U> 
+    Slot0<R> slot(T &t, R (U::*p)())
+	{ return sigc::mem_fun(t,p); }
+   template <class R,class T,class U,class A> 
+    Slot1<R,A> slot(T &t, R (U::*p)(A)) 
+    	{ return sigc::mem_fun(t,p); }
+   template <class R,class T,class U,class A,class B> 
+    Slot2<R,A,B> slot(T &t, R (U::*p)(A,B)) 
+    	{ return sigc::mem_fun(t,p); }
+   template <class R,class T,class U,class A,class B,class C> 
+    Slot3<R,A,B,C> slot(T &t, R (U::*p)(A,B,C)) 
     	{ return sigc::mem_fun(t,p); }
 }
+#else // sigc 2.0 compatibility layer for SigC 1.2
+#include <sigc++/slot.h>
+
+namespace sigc
+{  template <class T,class U,class R> 
+    Slot0<R> mem_fun(T &t, R (U::*p)())
+	{ return SigC::slot(t,p); }
+   template <class R,class T,class U,class A> 
+    Slot1<R,A> mem_fun(T &t, R (U::*p)(A)) 
+    	{ return SigC::slot(t,p); }
+   template <class R,class T,class U,class A,class B> 
+    Slot2<R,A,B> mem_fun(T &t, R (U::*p)(A,B)) 
+    	{ return SigC::slot(t,p); }
+   template <class R,class T,class U,class A,class B,class C> 
+    Slot3<R,A,B,C> mem_fun(T &t, R (U::*p)(A,B,C)) 
+    	{ return SigC::slot(t,p); }
+}
+
 #endif
 
 #endif
