@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.17 2003/01/15 16:42:04 christof Exp $
+// $Id: FetchIStream.h,v 1.18 2003/01/16 16:04:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -149,6 +149,8 @@ public:
 	
         Query &operator>>(FetchIStream &s);
 	template <class T> FetchIStream operator>>(T &x);
+	template <class T> FetchIStream operator>>(const FetchIStream::MapNull<T> &x);
+	template <class T> FetchIStream operator>>(const FetchIStream::WithIndicator<T> &x);
 	
 	template <class T>
 	 struct NullIf
@@ -171,12 +173,19 @@ template <class T>
    return res;
 }
 
-#if 0
-static inline Query &operator>>(Query &q, FetchIStream &s)
-{  s=q.Fetch();
-   return q;
+template <class T>
+ FetchIStream Query::operator>>(const FetchIStream::MapNull<T> &x)
+{  FetchIStream res=FetchOne();
+   res >> x;
+   return res;
 }
-#endif
+
+template <class T>
+ FetchIStream Query::operator>>(const FetchIStream::WithIndicator<T> &x)
+{  FetchIStream res=FetchOne();
+   res >> x;
+   return res;
+}
 
 template <class T> 
 void Query::FetchArray(std::vector<T> &res)
