@@ -42,10 +42,10 @@ void LR_drucken::drucken(bool print,bool b_firmenpapier,bool b_kopie,bool ean_co
 
    std::string texplotter;
 
-   if(pr_tray1) texplotter=string(" -P")+pr_tray1; 
+   if(pr_tray1) texplotter=std::string(" -P")+pr_tray1; 
    else texplotter= " -Phl1260 ";
    if (b_firmenpapier)
-      {if(pr_tray2) texplotter=string(" -P")+pr_tray2; 
+      {if(pr_tray2) texplotter=std::string(" -P")+pr_tray2; 
 	else texplotter = " -Phl1260lt ";
       }
 
