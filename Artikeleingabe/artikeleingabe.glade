@@ -1259,7 +1259,7 @@ Aufträgen anzeigen</property>
 		  <property name="snap_to_ticks">False</property>
 		  <property name="wrap">False</property>
 		  <property name="adjustment">1 0 10000 1 10 10</property>
-		  <signal name="activate" handler="preismenge_activate"/>
+		  <signal name="activate" handler="preismenge_activate" after="yes"/>
 		</widget>
 		<packing>
 		  <property name="left_attach">0</property>
@@ -1308,7 +1308,7 @@ Aufträgen anzeigen</property>
 		  <property name="snap_to_ticks">False</property>
 		  <property name="wrap">False</property>
 		  <property name="adjustment">0 0 100000 1 10 10</property>
-		  <signal name="activate" handler="activate_preis"/>
+		  <signal name="activate" handler="activate_preis" after="yes"/>
 		</widget>
 		<packing>
 		  <property name="left_attach">0</property>
@@ -1372,7 +1372,7 @@ Aufträgen anzeigen</property>
 	      </child>
 
 	      <child>
-		<widget class="GtkImage" id="image1">
+		<widget class="GtkImage" id="image_preis_ok">
 		  <property agent="glademm" name="cxx_visibility">protected</property>
 		  <property name="visible">True</property>
 		  <property name="stock">gtk-convert</property>
