@@ -1,4 +1,4 @@
-/* $Id: DefaultValues.h,v 1.13 2002/12/13 09:27:21 thoma Exp $ */
+/* $Id: DefaultValues.h,v 1.14 2003/10/31 11:42:07 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -36,7 +36,7 @@ namespace ManuProC {
    const static int AuftragsMenge = 0;
    const static int LieferscheinMenge = 3;
    const static int LieferscheinGewicht = 1;
-   const static int GeldBetrag = 2;
+   const static int GeldBetrag = 3;
    const static int Rabatt = 2;
    const static int ArtikelBaumFaktor = 5;
   }
