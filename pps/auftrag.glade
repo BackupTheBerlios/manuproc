@@ -5841,6 +5841,7 @@ löschen</label>
 	    <signal>
 	      <name>button_release_event</name>
 	      <handler>on_bezahlt_toggled</handler>
+	      <after>True</after>
 	      <last_modification_time>Wed, 20 Nov 2002 17:07:51 GMT</last_modification_time>
 	    </signal>
 	    <label>bezahlt</label>
