@@ -827,12 +827,13 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 	        os << "{\\color{altgray}(M) }";
 #endif
             if (rabatt_bool) 
-              {os <<linecolor<<FormatiereTeX_Preis( BruttoPreis.Wert() );
+              {os <<linecolor<<FormatiereTeX_Preis(fixedpoint<2>(BruttoPreis.Wert()) );
                neue_spalte(erste_spalte,os); os << linecolor<<FormatiereTeX(rabatt); 
-               neue_spalte(erste_spalte,os); os << linecolor<<FormatiereTeX_Preis(NettoPreis.Wert()); 
+               neue_spalte(erste_spalte,os); os << linecolor<<
+			FormatiereTeX_Preis(fixedpoint<2>(NettoPreis.Wert())); 
 	      }
 	    else
-	      os <<linecolor<<FormatiereTeX_Preis( NettoPreis.Wert() );
+	      os <<linecolor<<FormatiereTeX_Preis(fixedpoint<2>(NettoPreis.Wert()));
 
 	    fixedpoint<2> preis;
 	    if(Rueckstand())
