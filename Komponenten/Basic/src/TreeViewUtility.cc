@@ -1,6 +1,6 @@
-// $Id: TreeViewUtility.cc,v 1.21 2004/06/28 15:11:10 christof Exp $
+// $Id: TreeViewUtility.cc,v 1.22 2004/06/30 13:26:22 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
- *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 2002-2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -41,11 +41,15 @@ TreeViewUtility::CListEmulator::CListEmulator(const Glib::ustring &title)
 }
 
 void TreeViewUtility::CListEmulator::attach_to(Gtk::TreeView &tv)
-{  view=&tv;
+{  con.disconnect();
+   view=&tv;
    view->remove_all_columns();
    view->set_model(m_refStore);
    for (unsigned i=0;i<cols.size();++i)
       view->append_column(titles.at(i),cols.at(i));
+   con=view->signal_button_press_event().connect(
+       SigC::slot(*this,&TreeViewUtility::CListEmulator::button_press_handler),
+           false);
 }
 
 TreeViewUtility::CList::CList(const std::vector<Glib::ustring> &titles)
@@ -159,4 +163,25 @@ void TreeViewUtility::MakeColumnEditable(Gtk::TreeView *tv,unsigned _col,const S
    assert(cr);
    cr->property_editable()=true;
    cr->signal_edited().connect(slot);
+}
+
+bool TreeViewUtility::CListEmulator::button_press_handler(GdkEventButton *event)
+{  if (view && event->type == GDK_BUTTON_PRESS && event->button==1 
+          && event->window ==view->get_bin_window()->gobj())
+   {  Gtk::TreeModel::Path path;
+      Gtk::TreeViewColumn *col(0);
+      int cell_x(0),cell_y(0);
+      bool res=view->get_path_at_pos(int(event->x),int(event->y),path,col,cell_x,cell_y);
+      if (!res || !col) return false;
+      if (path.size()!=1) return false;
+      int idx=-1;
+      for (unsigned colno=0;colno<=cols.size();++colno)
+         if (col==view->get_column(colno)) 
+         {  idx=colno;
+            break;
+         }
+      signal_select_row()(*path.begin(),idx);
+      return true;
+   }
+   return false;
 }
