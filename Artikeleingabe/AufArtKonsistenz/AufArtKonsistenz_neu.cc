@@ -13,9 +13,9 @@ int main()
 AufArtKonsistenz::AufArtKonsistenz()
 : count(0),count_ok(0)
 {
-  ofstream ofs("Konflikte.txt");
-  ofstream ofsH("Hinweise.txt");
-  // Alle offenen Kundenaufträge
+  std::ofstream ofs("Konflikte.txt");
+  std::ofstream ofsH("Hinweise.txt");
+  // Alle offenen KundenauftrÃ¤ge
   SQLFullAuftragSelector psel= SQLFullAuftragSelector::sel_Status(ppsInstanzID::Kundenauftraege,OPEN);
   SelectedFullAufList *allaufids = new SelectedFullAufList(psel);
   for(SelectedFullAufList::iterator i = allaufids->aufidliste.begin();i!=allaufids->aufidliste.end(); ++i)
@@ -25,14 +25,14 @@ AufArtKonsistenz::AufArtKonsistenz()
 //     if(ok) ok=iterieren(ofs,ofsH,*i);
      if(ok) ++count_ok;
    }     
-  cerr << "Aufträge Insgesamt: "<<count<<'\n'
+  std::cerr << "AuftrÃ¤ge Insgesamt: "<<count<<'\n'
        << "davon korrekt:      "<<count_ok<<'\t'<<double(count_ok)/count*100.<<"%\n";
-  cerr << "Die Konflikte sind in der Datei 'Konflikte.txt' beschrieben.\n";
-  cerr << "Die Hinweise sind in der Datei 'Hinweise.txt' beschrieben.\n";
+  std::cerr << "Die Konflikte sind in der Datei 'Konflikte.txt' beschrieben.\n";
+  std::cerr << "Die Hinweise sind in der Datei 'Hinweise.txt' beschrieben.\n";
 }
 
 
-bool AufArtKonsistenz::kundenauftrag_testen(ofstream& ofs,ofstream& ofsH,const AufEintrag& AE)
+bool AufArtKonsistenz::kundenauftrag_testen(std::ofstream& ofs,std::ofstream& ofsH,const AufEintrag& AE)
 {
   std::list<AufEintragZu::st_reflist> AZ(AufEintragZu(AE).get_Referenz_list_ungeplant());
 
@@ -58,7 +58,7 @@ bool AufArtKonsistenz::kundenauftrag_testen(ofstream& ofs,ofstream& ofsH,const A
        return fehler(ofs,ofsH,Kunde_Artikel,AE,AZ.begin()->AEB,AZ.begin()->Art.Id());
   {
    // Stimmen die Mengen des Kundenauftrags und der (bestellten)
-   // Kinderaufträge überein?
+   // KinderauftrÃ¤ge Ã¼berein?
    AuftragBase::mengen_t ist_menge =AuftragBase::mengen_t(0);
    std::list<AufEintragZu::st_reflist> L=AufEintragZu(AZ.begin()->AEB).get_Referenz_list_geplant();
    for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
@@ -74,7 +74,7 @@ bool AufArtKonsistenz::kundenauftrag_testen(ofstream& ofs,ofstream& ofsH,const A
        }
       ist_menge+=AE1.getStueck();
      }
-  // Kundenmenge = Menge des Ungeplanten Auftrags + Menge der geplanten Aufträge
+  // Kundenmenge = Menge des Ungeplanten Auftrags + Menge der geplanten AuftrÃ¤ge
   AufEintrag AE2(AZ.begin()->AEB);
   if(AE.getRestStk() < AE2.getStueck() + ist_menge)
      return fehler(ofs,ofsH,H_Kunde_MengeAEB,AE,AZ.begin()->AEB,AE2.getStueck() + ist_menge);
@@ -88,7 +88,7 @@ std::list<AufEintragZu::st_reflist> AufArtKonsistenz::get_zuordnung_for_artikelb
 {
   std::list<AufEintragZu::st_reflist> AZ(AufEintragZu(AE).get_Referenz_list_ungeplant());
   if(ArtikelStamm(AE.Artikel()).BestellenBei()==ppsInstanzID::Kundenauftraege)
-   { // Sinnvolles ist vorher schon getestet worden, daher gleich die nächste Liste holen
+   { // Sinnvolles ist vorher schon getestet worden, daher gleich die nÃ¤chste Liste holen
      get_deeper_list(AZ);
    }   
   if(ArtikelStamm(AE.Artikel()).BestellenBei()->LagerInstanz())
@@ -99,7 +99,7 @@ assert(!"TODO");
  return AZ;
 }
 
-bool AufArtKonsistenz::iterieren(ofstream &ofs,ofstream &ofsH,const AufEintragBase& AEB)
+bool AufArtKonsistenz::iterieren(std::ofstream &ofs,std::ofstream &ofsH,const AufEintragBase& AEB)
 {
   AufEintrag AE(AEB);
   ArtikelBaum artbaum=ArtikelBaum(AE.Artikel());
@@ -129,29 +129,29 @@ bool AufArtKonsistenz::iterieren(ofstream &ofs,ofstream &ofsH,const AufEintragBa
   std::list<AufEintragZu::st_reflist> AuftragsListe(AufEintragZu(AE).get_Referenz_list_ungeplant(AE,true));
   
   bool ok;
-  // Zuerst wird getestet, ob für für alle Kundenaufträge die
-  // Auftragsliste exakt die Länge 1 hat, bei der richtigen Instanz
+  // Zuerst wird getestet, ob fÃ¼r fÃ¼r alle KundenauftrÃ¤ge die
+  // Auftragsliste exakt die LÃ¤nge 1 hat, bei der richtigen Instanz
   // bestellt wird, der Artikel und die Menge stimmt.
   if(AEB.Instanz()==ppsInstanz::Kundenauftraege)
      ok=kundenauftrag_testen(ofs,AE,AuftragsListe);
 
   ueberspringe_instanz(ppsInstanz::Rollerei,AuftragsListe,AE);
 
-  bool Lager=false; // Nach dem Lager kommt nichts mehr wenn 'true' (d.h. geung vorrätig)
+  bool Lager=false; // Nach dem Lager kommt nichts mehr wenn 'true' (d.h. geung vorrÃ¤tig)
   ok=teste_lager(ofs,ppsInstanz::Bandlager,AuftragsListe,Lager);
 
   if(!Lager && ok)
      ok=check_ArtikelAuftrag(ofs,AE,artbaum,AuftragsListe);
 
   if(!ok) 
-  {  cerr <<AE.Instanz()->Name()<<' '<<AE.Id()<<' '
+  {  std::cerr <<AE.Instanz()->Name()<<' '<<AE.Id()<<' '
        <<AE.ZNr()<<'\t'<<cH_ArtikelBezeichnung(AE.Artikel())->Bezeichnung()<<'\t';
-     cerr << " FEHLER\n";
+     std::cerr << " FEHLER\n";
   }
   else 
    {
      ++count_ok;
-//     cerr<<" OK\n";
+//     std::cerr<<" OK\n";
 //#warning Die Iteration macht erst Sinn, wenn weniger Fehler im ArtikelBaum sind
 //     for(std::list<AufEintragZu::st_reflist>::iterator i = AuftragsListe.begin();i!=AuftragsListe.end(); ++i)
 //      {
@@ -163,7 +163,7 @@ bool AufArtKonsistenz::iterieren(ofstream &ofs,ofstream &ofsH,const AufEintragBa
 }
 
 
-void AufArtKonsistenz::fehler(ofstream &ofs,const Fehler& bug,
+void AufArtKonsistenz::fehler(std::ofstream &ofs,const Fehler& bug,
    const AufEintrag& AE,const AufEintragBase &AEB,int int_wert)
 {
 
@@ -176,11 +176,11 @@ void AufArtKonsistenz::fehler(ofstream &ofs,const Fehler& bug,
         ofs << "# "<< AE.Instanz()->Name()<<'\t'<<" ist kein Kundenauftrag"<<'\n';
         break;  
     case Kunde_mehr_als_eins:
-        ofs <<"#   Für diesen Kundenauftrag existiert mehr als ein Kind\n";
+        ofs <<"#   FÃ¼r diesen Kundenauftrag existiert mehr als ein Kind\n";
         ofs <<"# "<< AE.Instanz()->Name()<<'\t'<<" hat mehr als ein Kind"<<'\n';
         break;  
     case Kunde_Ohne:
-        ofs <<"#   Für diesen Kunden ist nichts weiter bestelt worden:\n";
+        ofs <<"#   FÃ¼r diesen Kunden ist nichts weiter bestelt worden:\n";
         ofs <<"./auftrags_shell -x create -R -I"<<AE.Instanz()->Id()<<" -A"<<AE.Id()<<" -Z"<<AE.ZNr()
             << " -r"<<AE.Artikel().Id()<<" -m"<<AE.getStueck()
             <<" -p"<<AE.getStueck()-AE.getRestStk()<<'\n';
@@ -196,7 +196,7 @@ void AufArtKonsistenz::fehler(ofstream &ofs,const Fehler& bug,
             <<" -p"<<AE.getRestStk()<<'\n';
         break;
     case FInstanz:
-        ofs <<"#   Die Instanzen stimmt nicht überein:\n";
+        ofs <<"#   Die Instanzen stimmt nicht Ã¼berein:\n";
         ofs << "# AuftragEntry: "<< AE.Instanz()->Name()
             <<"\tAuftragsZusammensetzung: "<<AEB.Instanz()->Name()<<'\n';
         ofs <<"./auftrags_shell -x delete -I"<<AE.Instanz()->Id()<<" -A"<<AE.Id()<<" -Z"<<AE.ZNr()
@@ -208,7 +208,7 @@ void AufArtKonsistenz::fehler(ofstream &ofs,const Fehler& bug,
             <<"\tRest: "<<AE.getRestStk()<<"\tAuftragsZuordnung: "<<int_wert<<'\n';
         break;
     case Kunde_MengeZ:
-        ofs <<"#   Die Menge des Kundenauftrags und der Zuordnungstabelle stimmt nicht überein:\n";
+        ofs <<"#   Die Menge des Kundenauftrags und der Zuordnungstabelle stimmt nicht Ã¼berein:\n";
         ofs <<"# Kundenauftrag:"<<AE.getStueck()<<"("<<AE.getRestStk()<<")" 
             <<"\tAuftragsZuordnung ("<<AE.Instanz()->Name()<<"): "<<int_wert<<'\n';
         ofs <<"./auftrags_shell -x change -A"<<AE.Id()
@@ -217,9 +217,9 @@ void AufArtKonsistenz::fehler(ofstream &ofs,const Fehler& bug,
             <<" -z"<<AEB.ZNr()<<" -m"<<AE.getRestStk()<<'\n';
         break;
     case Kunde_MengeAEB:
-        ofs <<"#   Die Kunden Menge stimmt nicht mit der Summe der (bestellten) Kinderaufträge überein:\n";
+        ofs <<"#   Die Kunden Menge stimmt nicht mit der Summe der (bestellten) KinderauftrÃ¤ge Ã¼berein:\n";
         ofs <<"# Kundenauftrag:"<<AE.getRestStk() 
-            <<"\tSumme der Kinderaufträge ("<<AEB.Instanz()->Name()
+            <<"\tSumme der KinderauftrÃ¤ge ("<<AEB.Instanz()->Name()
             <<"): "<<int_wert<<'\n';
         break;
     case H_Kunde_MengeAEB:
@@ -229,7 +229,7 @@ void AufArtKonsistenz::fehler(ofstream &ofs,const Fehler& bug,
         break;
     case Kunde_MengeAEBZ:
       {
-        ofs <<"#   Die Menge in der Zuordnung und des bestellten Auftrags stimmt nicht überein:\n";
+        ofs <<"#   Die Menge in der Zuordnung und des bestellten Auftrags stimmt nicht Ã¼berein:\n";
          AufEintrag A(AEB);
         ofs <<"# "<< A.Instanz()->Name()<<' '<<A.Id()<<' '<<A.ZNr()<<' '<<A.getStueck()
                   <<" != "<< int_wert<<'\n'; 
@@ -237,27 +237,27 @@ void AufArtKonsistenz::fehler(ofstream &ofs,const Fehler& bug,
       }
     case H_Lager_MengeAEB:
       {
-        ofs <<"#   Im Lager ist mehr bestellt als der Auftrag benötigt :\n";
+        ofs <<"#   Im Lager ist mehr bestellt als der Auftrag benÃ¶tigt :\n";
         AufEintrag A(AEB);
         ofs <<"# "<< A.Instanz()->Name()<<' '<<A.Id()<<' '<<A.ZNr()<<' '<<A.getStueck()
                   <<" != "<< int_wert<<'\n'; 
         break;
       }
     case Kunde_Artikel:
-        ofs <<"#   Der Kunden Artikel stimmt nicht überein:\n";
+        ofs <<"#   Der Kunden Artikel stimmt nicht Ã¼berein:\n";
         ofs <<"# Kundendauftrag: "<<AE.ArtId()
             <<"\tAuftragsZusammensetzung: "<<int_wert<<'\n';
         break;
     case Anzahl:
-        ofs <<"#   Die Anzahl der Kinder-Artikel stimmt nicht überein:\n";
+        ofs <<"#   Die Anzahl der Kinder-Artikel stimmt nicht Ã¼berein:\n";
         ofs <<"#    ArtikelBaum         AuftragsZusammensetzung \n";
         break;
     case Artikel:
-        ofs <<"#   Die Art der Kinder-Artikel stimmt nicht überein:\n";
+        ofs <<"#   Die Art der Kinder-Artikel stimmt nicht Ã¼berein:\n";
         ofs <<"#    AuftragsZusammensetzung          ArtikelBaum \n";
         break;
     case LagerMenge:
-        ofs <<"#   Die Mengen der bestellten und vorrätigen Artikel stimmt nicht:\n";
+        ofs <<"#   Die Mengen der bestellten und vorrÃ¤tigen Artikel stimmt nicht:\n";
         ofs <<"#    Sollmenge   != vorgemerkte Menge + bestellte Menge\n";
         break;
     case LagerLaenge:
@@ -267,7 +267,7 @@ void AufArtKonsistenz::fehler(ofstream &ofs,const Fehler& bug,
  ofs<<'\n';
 }
 
-bool AufArtKonsistenz::fehler(ofstream &ofsK,ofstream &ofsH,const Fehler& bug,
+bool AufArtKonsistenz::fehler(std::ofstream &ofsK,std::ofstream &ofsH,const Fehler& bug,
    const AufEintrag& AE,const AufEintragBase &AEB,int int_wert)
 {
   if(bug==H_Kunde_MengeZ || bug==H_Kunde_MengeAEB || bug==H_Lager_MengeAEB) 
@@ -286,7 +286,7 @@ bool AufArtKonsistenz::fehler(ofstream &ofsK,ofstream &ofsH,const Fehler& bug,
 
 
 #ifdef NIX
-bool AufArtKonsistenz::teste_lager(ofstream &ofs,const ppsInstanz::ppsInstId instanz,std::list<AufEintragZu::st_reflist>& AuftragsListe,bool& Lager)
+bool AufArtKonsistenz::teste_lager(std::ofstream &ofs,const ppsInstanz::ppsInstId instanz,std::list<AufEintragZu::st_reflist>& AuftragsListe,bool& Lager)
 {
   if(AuftragsListe.empty()) return true;
   if(AuftragsListe.begin()->AEB.Instanz()==ppsInstanz::Bandlager)  Lager=true;
@@ -330,7 +330,7 @@ bool AufArtKonsistenz::teste_lager(ofstream &ofs,const ppsInstanz::ppsInstId ins
     AuftragsListe=get_deeper_list(AuftragsListe);
     assert(AuftragsListe.size()==0 || 
           (AuftragsListe.size()==1 && AuftragsListe.begin()->Menge==fixedpoint<2>(0)));
-//    if(AuftragsListe.size()==0) // nach dem Bandlager ist Schluß, weil alles vorrätig ist
+//    if(AuftragsListe.size()==0) // nach dem Bandlager ist SchluÃŸ, weil alles vorrÃ¤tig ist
 //      {
 //        Lager = true;
 //      }    
@@ -367,7 +367,7 @@ ArtikelBase AufArtKonsistenz::get_artikel_for_instanz(const std::list<AufEintrag
 
 
 
-bool AufArtKonsistenz::check_ArtikelAuftrag(ofstream &ofs,const AufEintrag& AE,ArtikelBaum& artbaum, const std::list<AufEintragZu::st_reflist>& AuftragsListe)
+bool AufArtKonsistenz::check_ArtikelAuftrag(std::ofstream &ofs,const AufEintrag& AE,ArtikelBaum& artbaum, const std::list<AufEintragZu::st_reflist>& AuftragsListe)
 {
   std::list<ArtikelBase> LArt,LAuf;
   std::list<AufEintragZu::st_reflist> AufList;
@@ -375,7 +375,7 @@ bool AufArtKonsistenz::check_ArtikelAuftrag(ofstream &ofs,const AufEintrag& AE,A
      LArt.push_back(i->rohartikel);
   for(std::list<AufEintragZu::st_reflist>::const_iterator i=AuftragsListe.begin();i!=AuftragsListe.end();++i)
    {
-     // geplante Aufträge NICHT berücksichtigen
+     // geplante AuftrÃ¤ge NICHT berÃ¼cksichtigen
      if(i->AEB.Id()==1) continue;
      LAuf.push_back(i->Art);
      AufList.push_back(*i);
@@ -394,9 +394,9 @@ bool AufArtKonsistenz::check_ArtikelAuftrag(ofstream &ofs,const AufEintrag& AE,A
    }
 
   bool e=equal(LArt.begin(),LArt.end(),LAuf.begin());
-  if(!e) // Artikel-Listen stimmen nicht überein
+  if(!e) // Artikel-Listen stimmen nicht Ã¼berein
    {
-     pair<ArtCIterator,ArtCIterator> MisIt = mismatch(LArt.begin(),LArt.end(),LAuf.begin()); 
+     std::pair<ArtCIterator,ArtCIterator> MisIt = mismatch(LArt.begin(),LArt.end(),LAuf.begin()); 
      falscheArtikel(ofs,AE,LArt,LAuf,MisIt);
      delete_auftrag(ofs,AE,artbaum,AufList);
      create_auftrag(ofs,AE,artbaum,AufList);
@@ -407,7 +407,7 @@ bool AufArtKonsistenz::check_ArtikelAuftrag(ofstream &ofs,const AufEintrag& AE,A
 }
 
 
-void AufArtKonsistenz::create_auftrag(ofstream &ofs,const AufEintrag& AE,ArtikelBaum& artbaum, const std::list<AufEintragZu::st_reflist>& AufList)
+void AufArtKonsistenz::create_auftrag(std::ofstream &ofs,const AufEintrag& AE,ArtikelBaum& artbaum, const std::list<AufEintragZu::st_reflist>& AufList)
 {
   std::list<ArtikelBase> CreateList;
   for(ArtikelBaum::iterator j=artbaum.begin();j!=artbaum.end();++j)
@@ -427,7 +427,7 @@ void AufArtKonsistenz::create_auftrag(ofstream &ofs,const AufEintrag& AE,Artikel
    }
 }
 
-void AufArtKonsistenz::delete_auftrag(ofstream &ofs,const AufEintrag& AE,const ArtikelBaum& artbaum,const std::list<AufEintragZu::st_reflist>& AufList)
+void AufArtKonsistenz::delete_auftrag(std::ofstream &ofs,const AufEintrag& AE,const ArtikelBaum& artbaum,const std::list<AufEintragZu::st_reflist>& AufList)
 {
   std::list<AufEintragBase> DelList;
   for(std::list<AufEintragZu::st_reflist>::const_iterator i=AufList.begin();i!=AufList.end();++i)
@@ -449,7 +449,7 @@ void AufArtKonsistenz::delete_auftrag(ofstream &ofs,const AufEintrag& AE,const A
 
 
 
-void AufArtKonsistenz::falscheArtikel(ofstream &ofs,const AufEintrag& AE,const std::list<ArtikelBase>& LArt, const std::list<ArtikelBase>& LAuf,const pair<ArtCIterator,ArtCIterator>& MisIt)
+void AufArtKonsistenz::falscheArtikel(std::ofstream &ofs,const AufEintrag& AE,const std::list<ArtikelBase>& LArt, const std::list<ArtikelBase>& LAuf,const std::pair<ArtCIterator,ArtCIterator>& MisIt)
 {
   fehler(ofs,Artikel,AE);
   ofs << "# "<<MisIt.first->Id()<<" ("<<cH_ArtikelBezeichnung(*(MisIt.first))->Bezeichnung()<<")"
@@ -457,7 +457,7 @@ void AufArtKonsistenz::falscheArtikel(ofstream &ofs,const AufEintrag& AE,const s
 //  korrektur(ofs,AE,MisIt);
 }
 
-void AufArtKonsistenz::korrektur(ofstream &ofs,const AufEintrag& AE,const pair<ArtCIterator,ArtCIterator>& MisIt)
+void AufArtKonsistenz::korrektur(std::ofstream &ofs,const AufEintrag& AE,const std::pair<ArtCIterator,ArtCIterator>& MisIt)
 {
 //  ofs << "auftrags_shell -a delete -l"<<AE.Artikel().Id()<<" -r"<<MisIt.first->Id()<<'\n';  
 //  ofs << "artikel_shell -a delete -l"<<AE.Artikel().Id()<<" -r"<<MisIt.first->Id()<<'\n';  
@@ -466,7 +466,7 @@ void AufArtKonsistenz::korrektur(ofstream &ofs,const AufEintrag& AE,const pair<A
 
 
 
-void AufArtKonsistenz::falscheAnzahl(ofstream &ofs,const AufEintrag& AE,const std::list<ArtikelBase>& LArt, const std::list<ArtikelBase>& LAuf)
+void AufArtKonsistenz::falscheAnzahl(std::ofstream &ofs,const AufEintrag& AE,const std::list<ArtikelBase>& LArt, const std::list<ArtikelBase>& LAuf)
 {
   fehler(ofs,Anzahl,AE);
   ofs << "# Nr.   AuftragsZusammensetzung("<<LAuf.size()<<")  ArtikelBaum("<<LArt.size()<<")        \n";
@@ -487,7 +487,7 @@ void AufArtKonsistenz::falscheAnzahl(ofstream &ofs,const AufEintrag& AE,const st
 
 #endif
 
-bool AufArtKonsistenz::loesche_falsche_artikel_in_zuordnung(ofstream &ofs,const AufEintragBase &AEB,const ArtikelBaum& artbaum,const std::list<AufEintragZu::st_reflist>& AZ)
+bool AufArtKonsistenz::loesche_falsche_artikel_in_zuordnung(std::ofstream &ofs,const AufEintragBase &AEB,const ArtikelBaum& artbaum,const std::list<AufEintragZu::st_reflist>& AZ)
 {
   std::list<AufEintragBase> DelList;
   for(std::list<AufEintragZu::st_reflist>::const_iterator i=AZ.begin();i!=AZ.end();++i)
@@ -519,7 +519,7 @@ void AufArtKonsistenz::get_deeper_list(std::list<AufEintragZu::st_reflist>& Auft
 
 
 /*
-bool AufArtKonsistenz::check_if_Rollerei_Lager(const ppsInstanz::ppsInstId instanz,ofstream &ofs,const ArtikelBaum& artbaum, std::list<AufEintragZu::st_reflist>& AuftragsListe)
+bool AufArtKonsistenz::check_if_Rollerei_Lager(const ppsInstanz::ppsInstId instanz,std::ofstream &ofs,const ArtikelBaum& artbaum, std::list<AufEintragZu::st_reflist>& AuftragsListe)
 {
   if(AuftragsListe.empty()) 
       return true; // Probleme treten nicht hier auf
@@ -539,10 +539,10 @@ bool AufArtKonsistenz::check_if_Rollerei_Lager(const ppsInstanz::ppsInstId insta
    }
 
   if(instanz==ppsInstanz::Bandlager && AuftragsListe.begin()->AEB.Instanz() == ppsInstanz::Bandlager)
-   { // Bandlager bestellt in der Weberei, daher noch eine Ebene überspringen
+   { // Bandlager bestellt in der Weberei, daher noch eine Ebene Ã¼berspringen
      if(AuftragsListe.size()!=1) fehler(ofs,Kritisch,AE) ;
-cout <<"# "  <<AuftragsListe.begin()->AEB.Instanz()->Name()<<'\t'<<flush;
-cout <<"# " AuftragsListe.begin()->AEB.Instanz()->Name()<<'\n';
+std::cout <<"# "  <<AuftragsListe.begin()->AEB.Instanz()->Name()<<'\t'<<flush;
+std::cout <<"# " AuftragsListe.begin()->AEB.Instanz()->Name()<<'\n';
    }
   return true;
 }

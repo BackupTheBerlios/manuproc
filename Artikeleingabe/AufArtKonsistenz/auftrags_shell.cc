@@ -49,30 +49,30 @@ void Problems(void *,AufEintrag::st_problems e)
 {
   switch (e.art) {
      case AufEintrag::Geplant :
-        cout << "WARNUNG: es werden "<<e.menge_input<<" in Auftrag "<<e.AEB
-             << " geändert, aber es sind nur noch "<<e.menge_output
+        std::cout << "WARNUNG: es werden "<<e.menge_input<<" in Auftrag "<<e.AEB
+             << " geÃ¤ndert, aber es sind nur noch "<<e.menge_output
              << " nicht verplant\n\n";
         break;          
      case AufEintrag::Geliefert :
-        cout << "WARNUNG: Auftrag "<<e.AEB<<" ist schon ausgeliefert worden, reduzieren nicht möglich\n";
+        std::cout << "WARNUNG: Auftrag "<<e.AEB<<" ist schon ausgeliefert worden, reduzieren nicht mÃ¶glich\n";
         break;
      case AufEintrag::GeliefertFatal :
-        cout << "ACHTUNG: Zuviel ausgeliefert, vollständige Änderung nicht möglich:\n"
-             << "Auftrag "<<e.AEB<<"\tgewünschte Menge: "<<e.menge_input<<
-             "\tgeänderte Menge: "<<e.menge_output<<'\n';
+        std::cout << "ACHTUNG: Zuviel ausgeliefert, vollstÃ¤ndige Ã„nderung nicht mÃ¶glich:\n"
+             << "Auftrag "<<e.AEB<<"\tgewÃ¼nschte Menge: "<<e.menge_input<<
+             "\tgeÃ¤nderte Menge: "<<e.menge_output<<'\n';
         break;
      case AufEintrag::Lager :
-        cout << "Im Lager ist von Artikel "
+        std::cout << "Im Lager ist von Artikel "
              <<cH_ArtikelBezeichnung(AufEintrag(e.AEB).ArtId())->Bezeichnung()
              << " "<<abs(e.menge_input-e.menge_output)<<" freigeworden\n";
          break;
      case AufEintrag::Geplant_nolager :
        {
          AufEintrag AE(e.AEB);
-         cout << "Artikel "<<cH_ArtikelBezeichnung(AE.ArtId())->Bezeichnung()
+         std::cout << "Artikel "<<cH_ArtikelBezeichnung(AE.ArtId())->Bezeichnung()
              << " ist in Instanz "<<e.AEB.Instanz()->Name()
              << " am "<<AE.LastEditDate().c_str() <<" geplant worden"
-             << " Mengenreduzierung nicht möglich.\n";
+             << " Mengenreduzierung nicht mÃ¶glich.\n";
          break;
        }
    }
@@ -87,9 +87,9 @@ int main(int argc,char *argv[])
 
  bool rekursiv=false;
  eaction action=None;
- if (string(argv[0]).find("delete")!=string::npos) action=Delete;
- else if (string(argv[0]).find("create")!=string::npos) action=Create;
- else if (string(argv[0]).find("change")!=string::npos) action=Change;
+ if (std::string(argv[0]).find("delete")!=std::string::npos) action=Delete;
+ else if (std::string(argv[0]).find("create")!=std::string::npos) action=Create;
+ else if (std::string(argv[0]).find("change")!=std::string::npos) action=Change;
  int Z=-1,z=-1,A=-1,a=-1;
  ppsInstanz::ID I=ppsInstanzID::None,i=ppsInstanzID::None;
  AuftragBase::mengen_t menge=0,planmenge=0;
@@ -101,7 +101,7 @@ int main(int argc,char *argv[])
          { if(std::string("delete")==optarg) action=Delete;
            else if(std::string("create")==optarg) action=Create;
            else if(std::string("change")==optarg) action=Change;
-           else {cerr << "Option '-x' mit 'delete', 'create' oder 'change' belegen.\n";}
+           else {std::cerr << "Option '-x' mit 'delete', 'create' oder 'change' belegen.\n";}
            break;
          }
        case 'A' : A=atoi(optarg); break;
@@ -156,7 +156,7 @@ int main(int argc,char *argv[])
                      }
                     ok=true;
                     break;
-                   }catch(AufEintrag::NoAEB_Error &e){std::cout << e.what()<<"\nUngültiger Elternauftrag\n\nIst das Programm 'c++/Programme/Instanzen' vorher ausgeführt worden?\n\n"; goto USAGE;}
+                   }catch(AufEintrag::NoAEB_Error &e){std::cout << e.what()<<"\nUngÃ¼ltiger Elternauftrag\n\nIst das Programm 'c++/Programme/Instanzen' vorher ausgefÃ¼hrt worden?\n\n"; goto USAGE;}
    case Change : try{ 
                       AufEintrag AE2(AEB2);
                  AufEintrag AE1(AEB1);
@@ -166,10 +166,10 @@ int main(int argc,char *argv[])
 //cout <<"shell: "<< mt<<' '<<AE2.getStueck()<<' '<<menge<<'\t'<<ok<<'\n';
 //                 ok=true;
                  break;
-                   }catch(AufEintrag::NoAEB_Error &e){std::cout << e.what()<<"\nUngültiger Elternauftrag\n"; goto USAGE;}
+                   }catch(AufEintrag::NoAEB_Error &e){std::cout << e.what()<<"\nUngÃ¼ltiger Elternauftrag\n"; goto USAGE;}
    default: goto USAGE;
   }
- if(!ok) cerr << "Fehlgeschlagen\n";
+ if(!ok) std::cerr << "Fehlgeschlagen\n";
  tr.commit();
  }catch(SQLerror &e){std::cout << e<<'\n';}
  return 0;
@@ -183,11 +183,11 @@ void rekursiv(AufEintrag &AE,AuftragBase::mengen_t menge)
  AuftragBase::mengen_t verplante_menge=0;
  if(!LG.empty) 
   {
-   cerr << "WARNUNG: Für "<<AE.Instanz()->Name()<<' '<<AE.Id()<<' '<<AE.ZNr()<<'\n'
-        << " wurde schon etwas geplant (daran wird nichts geändert):"
+   std::cerr << "WARNUNG: FÃ¼r "<<AE.Instanz()->Name()<<' '<<AE.Id()<<' '<<AE.ZNr()<<'\n'
+        << " wurde schon etwas geplant (daran wird nichts geÃ¤ndert):"
    for(std::list<AufEintragZu::st_reflist>::const_iterator i=LG.begin();i!=LG.end();++i)
     {
-      cerr <<" Auftrag: " <<i->AEB.Instanz()->Name()<<'/'<<i->AEB.Id()<<'/'<<i->AEB.ZNr()
+      std::cerr <<" Auftrag: " <<i->AEB.Instanz()->Name()<<'/'<<i->AEB.Id()<<'/'<<i->AEB.ZNr()
            <<" Menge:<<i->menge<<'\n';
       AuftragBase::mengen_t M=AufEintrag(i->AEB).getStueck();
       assert(i->menge==M)
