@@ -26,6 +26,7 @@
 #include "auftrag_rechnung_classes.h"
 #include "MyMessage.h"
 #include <Aux/dbconnect.h>
+#include "ja_nein_frage.hh"
 extern MyMessage *meldung;
 
 #include <Aux/dbcapability.h>
@@ -159,14 +160,14 @@ void auftrag_rechnung::redisplay()
      frame_rechnung->set_label("Gutschrift");
      frame_rechnungsdaten->set_label("Gutschriftsdaten");
      set_title("Gutschrift");
-     table_gutschrift->hide();
+     gutschrift->set_sensitive(false);
    }
  else if(rechnung.rngArt()==Rechnung::RART_RNG)
    {
      frame_rechnung->set_label("Rechnung");
      frame_rechnungsdaten->set_label("Rechnungsdaten");
-     set_title("Rechnungen");
-     table_gutschrift->show();
+     set_title("Rechnung");
+     gutschrift->set_sensitive(true);     
    }
  else 
    {
@@ -180,11 +181,11 @@ void auftrag_rechnung::clear_rng()
 {
  rngnr->reset();
  rechnung=Rechnung();
-  set_rtree_offen_content(Rechnung::none_id);
-  rabatt_wert->set_value(0);
+ rabatt_wert->set_value(0);
  rngdatum->set_value(ManuProC::Datum::today());
-// zahlziel->set_value(Manu);
+ zahlziel->set_value(ManuProC::Datum());
  optionmenu_zahlart->set_history(0);
+ rtree_daten->clear();
 }
 
 void auftrag_rechnung::on_rngnr_activate()
@@ -456,8 +457,8 @@ auftrag_rechnung::auftrag_rechnung(cH_ppsInstanz _instanz)
 {
 #ifdef MABELLA_EXTENSIONS
 // preis_ergaenzen->hide();
- _tooltips.set_tip(*button27,"Linke Maustaste: 1 Orig. 2 Kopien.
-Mittlere Maustaste: 1 Kopie","");
+ _tooltips.set_tip(*button27,"Linke Maustaste: 1 Orig. 2 Kopien. "
+		"Mittlere Maustaste: 1 Kopie","");
   std::string nurliefer(" and lieferadresse=true  and coalesce(aktiv,true)=true");
   lieferkunde->Einschraenkung(nurliefer);
   lieferkunde->Einschraenken(true);      
@@ -469,9 +470,11 @@ Mittlere Maustaste: 1 Kopie","");
    optionmenu_zahlart->get_menu()->deactivate.connect(SigC::slot(static_cast<class auftrag_rechnung*>(this), &auftrag_rechnung::optionmenu_zahlart_deactivate));
    rngdatum->setLabel("");
    zahlziel->setLabel("Zahlungsziel");
+   zahlziel->set_value(ManuProC::Datum());
    lieferscheindatum->setLabel("");
    rtree_daten->hide();
    on_button_allopen_clicked();
+   storno->set_sensitive(false);   
    
 // set GUI for DBCapabilities
  DBCapability::WhiteColumn wc("rechnung","bezahlt");
@@ -517,6 +520,8 @@ void auftrag_rechnung::set_rtree_daten_content(RechnungBase::ID rngid)
   {
    datavec.push_back(new Data_Rechnung(*i));
   }
+ 
+ rtree_daten->clear();
  rtree_daten->setDataVec(datavec);
  
 }
@@ -529,32 +534,22 @@ void auftrag_rechnung::optionmenu_zahlart_deactivate()
 }
 
 
-void auftrag_rechnung::on_button_gutschrift_clicked()
-{
-  label_rechnung_ctl->set_text("Sicher? Diese Entscheidung kann nicht rückgängig gemacht werden.");
-  table_gutschrift_sicherheit->show();
-}
+//void auftrag_rechnung::on_button_gutschrift_clicked()
+//{
+//  label_rechnung_ctl->set_text("Sicher? Diese Entscheidung kann nicht rückgängig gemacht werden.");
+//  table_gutschrift_sicherheit->show();
+//}
 
-void auftrag_rechnung::on_button_gutschrift_nein_clicked()
-{
-  label_rechnung_ctl->set_text("");
-  table_gutschrift_sicherheit->hide();
-}
+//void auftrag_rechnung::on_button_gutschrift_nein_clicked()
+//{
+//  label_rechnung_ctl->set_text("");
+//  table_gutschrift_sicherheit->hide();
+//}
 
-void auftrag_rechnung::on_button_gutschrift_ja_clicked()
-{
-  try{
-  rechnung.setRngArt(Rechnung::RART_GUT);
-  }
-  catch(SQLerror &e) { meldung->Show(e);
-  on_button_gutschrift_nein_clicked();
-  redisplay();
-  return;
-  }
-  
-  on_button_gutschrift_nein_clicked();
-  redisplay();
-}
+//void auftrag_rechnung::on_button_gutschrift_ja_clicked()
+//{
+//
+//}
 
 void auftrag_rechnung::on_zahlziel_activate()
 {
@@ -632,4 +627,29 @@ gint auftrag_rechnung::on_bezahlt_toggled(GdkEventButton *ev)
 
  return false;
 }
+
+void auftrag_rechnung::on_gutschrift_activate()
+{
+ ja_nein_frage d("Wollen Sie wirklich ein Gutschrift erstellen ?");
+ 
+ d.set_transient_for(*this);
+ 
+ gint ret=d.run();
+ 
+ if(ret==0)
+   {
+    try{rechnung.setRngArt(Rechnung::RART_GUT);}
+    catch(SQLerror &e) 
+      {meldung->Show(e);
+       redisplay();
+      }
+    redisplay();
+   }
+}
+
+
+void auftrag_rechnung::on_storno_activate()
+{  
+}
+
 

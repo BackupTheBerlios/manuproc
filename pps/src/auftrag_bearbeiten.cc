@@ -72,6 +72,7 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
  zahlart->hide_int(true);
  
  zahlziel_datewin->setLabel(std::string("Zahlungsziel"));
+ zahlziel_datewin->set_value(ManuProC::Datum());
  aufdatum_datewin->setLabel(std::string("Auftragsdatum"));
 
  if(auftragbase && auftragbase->editierbar())
@@ -639,7 +640,7 @@ void auftrag_bearbeiten::on_clear_all()
  jahrgang_spinbutton->set_value(ManuProC::Datum::today().Jahr());
  aufdatum_datewin->set_value(ManuProC::Datum::today());
  aufrabatt_spinbutton->set_value(0);
- zahlziel_datewin->set_value(ManuProC::Datum::today());
+ zahlziel_datewin->set_value(ManuProC::Datum());
  zahlart->reset();
  bea_WWaehrung->set_History(WaehrungID::EUR);
  preislisten->reset();

@@ -75,6 +75,9 @@ class auftrag_rechnung : public auftrag_rechnung_glade
         void on_notiz_changed();
         void on_notiz_save_clicked();
 
+        void on_gutschrift_activate();
+        void on_storno_activate();
+
 // TreeRow *selectedrow_lief;
 // TreeRow *selectedrow_rng;
 // cH_Kunde kunde;
