@@ -192,12 +192,17 @@ void tex_table::tex_table_out(std::ostream &o) const
  while(it_breite!=it_end)
    {
     if(rows_left<2)
-       {new_page(o); rows_left=ROWS;}
+       {new_page(o); rows_left=ROWS;
+        rows_left--;
+       }
+    else
+      rows_left-=2;
+      
     begin_table(o,it_breite);   
-    rows_left-=2;
+
    
-    for(std::vector<std::string>::const_iterator it_colors=colors.begin();
-    	it_colors!=colors.end(); ++it_colors)
+    std::vector<std::string>::const_iterator it_colors=colors.begin();
+    for(it_colors=colors.begin(); it_colors!=colors.end(); ++it_colors)
       {
        if(rows_left<1)
          {new_page(o); 
@@ -208,9 +213,13 @@ void tex_table::tex_table_out(std::ostream &o) const
        row_out(o,*it_colors,it_breite);
        rows_left--;
       }
+
     for(int c=0; c<columns-1; c++)
       if(it_breite!=it_end) 
         ++it_breite;
+
+    if(it_colors==colors.end() && it_breite!=it_end)          
+      o << "\\end{tabularx}\n";
    }	
     
  o << "\\end{tabularx}\n";
