@@ -1,4 +1,4 @@
-/* $Id: KettenGarn.h,v 1.6 2004/05/26 09:58:23 christof Exp $ */
+/* $Id: KettenGarn.h,v 1.7 2004/05/26 10:44:01 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,21 +25,21 @@ class ArtikelGang;
 
 struct KettenGarn_CP {
 
-        int index;
-        int zeile;
-        int kettenzahl;
-     	  int faeden;
-	     ArtikelBase art;
+        int index; // dies ist nicht relationale Normalform!
         int laenge;
-        int wiederholungen;
-//        std::string wiederholung;
+        int kettenzahl;
+
+        int zeile;
+     	int faeden;
+	ArtikelBase art;
+        int wiederholungen; // vernünftigere Datenstruktur!!!
 public:
 	typedef ArtikelBase::ID ID;
 
 	KettenGarn_CP() 
-	        : index(),zeile(),kettenzahl(),faeden(), art(),laenge(),wiederholungen(1) {}
+	        : index(),laenge(),kettenzahl(),zeile(),faeden(), art(),wiederholungen(1) {}
 	KettenGarn_CP(int i,int z,int k,int f,ArtikelBase id,int l,int w) 
-	        : index(i), zeile(z),kettenzahl(k),faeden(f), art(id),laenge(l),
+	        : index(i),laenge(l),kettenzahl(k), zeile(z),faeden(f), art(id),
 	          wiederholungen(w) {}
 	bool operator==(const KettenGarn_CP &b) const throw();
 	bool operator<(const KettenGarn_CP &b) const throw();
@@ -51,8 +51,7 @@ public:
    void set_Index(int i) {index=i;}
    int Index() const {return index;}
    ArtikelBase Artikel() const {return art;}
-   bool Valid() const {if(Id()&&kettenzahl&&faeden) return true; return false;}
-
+   bool Valid() const {return !!Artikel()&&kettenzahl&&faeden;}
 
 	__deprecated const ID &Id() const {  return art.Id(); }
 	int Zeile() const throw() {  return zeile; }

@@ -1,4 +1,4 @@
-/* $Id: KettenGarn_CP.cc,v 1.6 2004/05/26 09:58:23 christof Exp $ */
+/* $Id: KettenGarn_CP.cc,v 1.7 2004/05/26 10:44:01 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -31,22 +31,29 @@ struct KG_compare
    }
 };
 
+struct intermediate_data : KettenGarn_CP
+{  // Fadenliste::const_iterator source; ?
+   unsigned min_max_fd;
+};
+
+
 std::vector<KettenGarn_CP> KettenGarn_CP::Load(ArtikelGang const &ag, unsigned laenge)
 {  Fadenliste fdl;
-   std::vector<KettenGarn_CP> result;
+   typedef std::vector<intermediate_data> vec_t;
+   vec_t result;
    try {
    Webangaben wa(ag.art);
    wa.Load();
    fdl.Load(wa);
    }
    catch (SQLerror &e)
-   {  return result;
+   {  return std::vector<KettenGarn_CP>();
    }
 
    // ermitteln!
    unsigned new_scheibe=20;
    for (Fadenliste::const_iterator i=fdl.begin(); i!=fdl.end(); ++i)
-   {  KettenGarn_CP x;
+   {  intermediate_data x;
       if (i->kettscheibe<1) continue;
       x.index=i->kettscheibe;
       x.zeile=i->zeilennummer;
@@ -56,6 +63,8 @@ std::vector<KettenGarn_CP> KettenGarn_CP::Load(ArtikelGang const &ag, unsigned l
       x.laenge=laenge;
       // 2do: wiederholungen 
       x.wiederholungen=1;
+      x.min_max_fd=i->max_fadenzahl;
+      // vielleicht in gleich große Portionen teilen wenn möglich?
       while (i->max_fadenzahl && x.faeden>i->max_fadenzahl)
       {  unsigned tmp=x.faeden-i->max_fadenzahl;
          x.faeden=i->max_fadenzahl;
@@ -69,17 +78,49 @@ std::vector<KettenGarn_CP> KettenGarn_CP::Load(ArtikelGang const &ag, unsigned l
    // sortieren?
    std::sort(result.begin(),result.end(),KG_compare());
    // zusammenfassen?
-   for (std::vector<KettenGarn_CP>::iterator i=result.begin();i!=result.end();)
-   {  std::vector<KettenGarn_CP>::iterator b=i+1;
+   for (vec_t::iterator i=result.begin();i!=result.end();)
+   {  vec_t::iterator b=i+1;
       if (b==result.end()) break;
       if (i->index==b->index && i->art==b->art && i->kettenzahl==b->kettenzahl
       		&& i->laenge==b->laenge && i->wiederholungen==b->wiederholungen)
       {  i->faeden+=b->faeden;
+         if (b->min_max_fd<i->min_max_fd) i->min_max_fd=b->min_max_fd;
          i=result.erase(b);
       }
       else ++i;
    }
-   return result;
+   for (vec_t::iterator i=result.begin();i!=result.end();)
+   {  vec_t::iterator ks_end=i;
+      unsigned min_max_fd=i->min_max_fd;
+      unsigned anz_fd=0;
+      while (ks_end!=result.end() && ks_end->index==i->index)
+      {  if (ks_end->min_max_fd<min_max_fd) min_max_fd=ks_end->min_max_fd;
+         anz_fd+=ks_end->faeden;
+         assert(ks_end->kettenzahl==i->kettenzahl);
+         ++ks_end;
+      }
+      unsigned neue_kettenzahl=i->kettenzahl;
+      if (2*anz_fd < min_max_fd)
+      {  neue_kettenzahl=(min_max_fd*i->kettenzahl+min_max_fd-1)/min_max_fd;
+         if (!(ag.gaenge&1) && (neue_kettenzahl&1)) ++neue_kettenzahl;
+      }
+      if (neue_kettenzahl!=i->kettenzahl) // geht es auf?
+      {  for (vec_t::iterator j=i;j!=ks_end;++j)
+            if ((i->kettenzahl*j->faeden) % neue_kettenzahl) 
+               neue_kettenzahl=i->kettenzahl;
+      }
+      if (neue_kettenzahl!=i->kettenzahl) // dann kombinieren?
+      {  for (vec_t::iterator j=i;j!=ks_end;++j)
+         {  j->kettenzahl=neue_kettenzahl;
+            j->faeden=(i->kettenzahl*j->faeden)/ neue_kettenzahl;
+         }
+      }
+   }
+   std::vector<KettenGarn_CP> real_result;
+   real_result.reserve(result.size());
+   for (vec_t::const_iterator i=result.begin();i!=result.end();++i)
+      real_result.push_back(*i);
+   return real_result;
 }
 
 bool KettenGarn::operator==(const KettenGarn_CP &b) const throw()
