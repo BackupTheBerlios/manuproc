@@ -69,7 +69,11 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
  masseneingabe1->set_active(false);
 #endif
 
- WAufStat->set_history((AufStatVal)OPEN);
+ if(instanz->ExterneBestellung())
+   WAufStat->set_history((AufStatVal)UNCOMMITED);
+ else
+   WAufStat->set_history((AufStatVal)OPEN);
+
 #ifdef MABELLA_EXTENSIONS
  table_vorraetige_menge->show();
  _tooltips.set_tip(*button_drucken,"Linke Maustaste: 1 Original"
@@ -238,7 +242,10 @@ void auftrag_bearbeiten::clearEntry()
  WPreis->reset();
  selectedentry=-1;
  artikelbox->set_editable(true);
- WAufEntryStat->set_history((AufStatVal)OPEN);
+ if(instanz->ExterneBestellung())
+   WAufStat->set_history((AufStatVal)UNCOMMITED);
+ else
+   WAufStat->set_history((AufStatVal)OPEN);
  aufentry_ok->set_sensitive(true);
  aufentry_abbruch->set_sensitive(true);
  bestellt_label->set_text("0");
@@ -555,7 +562,10 @@ void auftrag_bearbeiten::loadAuftrag(const AuftragBase& auftragbase)
  Rabatt_setzen(kunde,auftrag);
  WPreis->reset();
  liefdatum_datewin->set_value(ManuProC::Datum::today());
- WAufEntryStat->set_history((AufStatVal)OPEN);
+ if(instanz->ExterneBestellung())
+   WAufEntryStat->set_history((AufStatVal)UNCOMMITED);
+ else
+   WAufEntryStat->set_history((AufStatVal)OPEN);
 // table_auftragseintraege->show();
 // scrolledwindow_auftraege->show();
  aufeintrag_box->show();
@@ -788,7 +798,10 @@ void auftrag_bearbeiten::on_clear_all()
  kundenbox->reset();
  newauftrag_button->set_sensitive(true);
  artikelbox->reset();		// ich denke das sollte hier auch rein
-  WAufStat->set_history((AufStatVal)OPEN);
+ if(instanz->ExterneBestellung())
+   WAufStat->set_history((AufStatVal)UNCOMMITED);
+ else
+   WAufStat->set_history((AufStatVal)OPEN);
  aufnr_scombo->reset();
  youraufnr_scombo->reset();
  aufbemerkung_entry->set_text("");
@@ -831,10 +844,16 @@ void auftrag_bearbeiten::on_auftrag_ok_clicked()
       on_clear_all(); // careful this deletes auftrag
       loadAuftrag(ab);
 
-// auf offen setzen
-      auftrag->setStatusAuftragFull((AufStatVal)OPEN); 
-      WAufEntryStat->set_history((AufStatVal)OPEN); 
-      WAufStat->set_history((AufStatVal)OPEN); 
+// auf default Status setzten
+      if(instanz->ExterneBestellung())
+        {WAufStat->set_history((AufStatVal)UNCOMMITED);
+         WAufEntryStat->set_history((AufStatVal)UNCOMMITED); 
+	}
+      else
+        {WAufStat->set_history((AufStatVal)OPEN);
+         WAufEntryStat->set_history((AufStatVal)OPEN); 
+	}
+      auftrag->setStatusAuftragFull(WAufStat->get_Status()); 
 
  auftrag_ok->set_sensitive(false);
  auftrag_abbruch->set_sensitive(false);

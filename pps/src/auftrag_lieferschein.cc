@@ -173,7 +173,7 @@ void auftrag_lieferschein::on_liefnr_activate()
    spinbutton_paeckchen->grab_focus();
  }
  }catch(std::exception &e) {std::cerr<<e.what();}
- lager_buchen->set_sensitive(true); 
+ lager_buchen->set_sensitive(lieferschein->RngNr() != ManuProcEntity<>::none_id); 
 }
 
 void auftrag_lieferschein::on_lieferkunde_activate()
@@ -203,7 +203,7 @@ void auftrag_lieferschein::on_button_rng_erledigt_clicked()
 {  
  try {
  if(lieferschein->Id() != Lieferschein::none_id)
-   if(lieferschein->RngNr() == Lieferschein::none_id)
+   if(lieferschein->RngNr() == ManuProcEntity<>::none_id)
    {lieferschein->closeLfrs();
     rngnr->set_text("000000");
    }
