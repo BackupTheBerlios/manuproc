@@ -1,4 +1,4 @@
-// $Id: mvc.cc,v 1.9 2003/05/08 09:42:17 christof Exp $
+// $Id: mvc.cc,v 1.10 2003/09/03 07:48:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -29,6 +29,8 @@
 #endif
 #include <utility>
 #include <vector>
+
+#include <BaseObjects/ModelPlex.h>
 
 class View_int : public SigC::Object
 {	Model_ref<int> model;
@@ -94,6 +96,19 @@ int main()
       v.push_back(Model_copyable<int>(20));
       View_int view(v.back());
       v.back()=25;
+   }
+   
+   { std::cout << "Multiplexer test\n";
+     Model<int> model(2),model2(4);
+     ModelPlex<int> plex;
+     View_int view(plex),view2(model);
+     plex.set_model(model);
+     model=6;
+     plex=7;
+     plex.set_model(model2);
+     model2=1;
+     plex.set_model(model);
+     std::cout << "model=" << model.Value() << " model2="<<model2.Value() << '\n';
    }
    return 0;
 }

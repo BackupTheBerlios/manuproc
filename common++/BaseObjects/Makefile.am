@@ -14,9 +14,9 @@ libBaseObjects.a: $(libBaseObjects_a_OBJECTS) $(libBaseObjects_a_DEPENDENCIES) M
 
 CLEANFILES= *~ 
 
-BUILT_SOURCES=MVC.h Model.h
+LINKS=MVC.h Model.h ModelPlex.h
 
-MVC.h: 
-	-ln -sf ../Basic/src/MVC.h .
-Model.h: 
-	-ln -sf ../Basic/src/Model.h .
+BUILT_SOURCES=$(LINKS)
+
+$(LINKS): 
+	-ln -sf ../Basic/src/$@ .

@@ -1,4 +1,4 @@
-/* $Id: Model.h,v 1.6 2003/07/31 08:00:57 christof Exp $ */
+/* $Id: Model.h,v 1.7 2003/09/03 07:48:58 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -46,7 +46,7 @@ template <class T>
 	Model(const Model<T> &x);
 	const Model &operator=(const Model<T> &x);
 public:
-	Model() {}
+	Model() : value() {}
 //	Model(const Model<T> &x) : value(x.value) {}
 	Model(const T &v) : value(v) {}
 	// g++ 2.95 does not use this ...
