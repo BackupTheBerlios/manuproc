@@ -46,8 +46,7 @@ static bool Zusatzinfo()
        vergleichen(Check::Menge,"ZI_Ausgangspunkt","Ausgangspunkt","");
         
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
-       int lznr=liefs.push_back(ARTIKEL_FAERBEREI,9,1000);
-       LieferscheinEntryBase lsb(liefs,lznr);
+       LieferscheinEntryBase lsb(liefs,liefs.push_back(ARTIKEL_FAERBEREI,9,1000));
        LieferscheinEntry(lsb).changeStatus(OPEN,false);
        vergleichen(Check::Lieferschein|Check::Menge,"ZI_Auslieferung","Auslieferung","L");
        

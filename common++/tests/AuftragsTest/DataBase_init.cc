@@ -1,4 +1,4 @@
-// $Id: DataBase_init.cc,v 1.22 2004/02/16 08:46:20 christof Exp $
+// $Id: DataBase_init.cc,v 1.23 2004/02/27 10:34:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -83,21 +83,18 @@ void DataBase_init::RohwarenLager_initalisieren()
 void DataBase_init::RohwarenLager_initalisieren_execute(const ArtikelBase &artikel,
       const LagerPlatz& LP,int kartons,int kg_pro_karton,int reste,int kg_reste)
 {
-  Query("delete from rl_inhalt where material=?") << artikel.Id();
+//  Query("delete from rl_inhalt where material=?") << artikel.Id();
   
   RohwarenLager RL;
   std::string os;
   RohwarenLager::st_rohlager rohlager(LP,kartons,kg_pro_karton,reste,kg_reste,
                                       artikel,ManuProC::Datum().today());
-#ifdef MIT_ROHWARENLAGER
   RL.RL_Einlagern(LP,rohlager,os,true,false);
   SQLerror::test(__FILELINE__);
-#endif
 }
 
 void DataBase_init::createJumbo(const int diffmaschine,const int menge,bool produziert)
 {
-#ifdef MIT_BANDLAGER
   Kette K(MASCHINE+diffmaschine,SCHAERDATUM);
   std::vector <ArtikelGang> artgang;
   artgang.push_back(ArtikelGang(GAENGE,ARTIKEL_BANDLAGER));
@@ -108,7 +105,6 @@ void DataBase_init::createJumbo(const int diffmaschine,const int menge,bool prod
   class JumboLager JL;
   JL.Jumbo_Einlagern(LagerPlatzJumbo,JR.front(),JumboLager::Einlagern,"testuser",&zp,produziert);
   SQLerror::test(__FILELINE__);
-#endif
 }
 
 
