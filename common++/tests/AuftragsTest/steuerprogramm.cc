@@ -861,7 +861,8 @@ static void usage(const std::string &argv0,const std::string &argv1)
 }
 
 int main(int argc,char *argv[])
-{  bool mit_reparatur_programm=false;
+{  putenv("LANG=C"); // omit any locale oddities/changes
+   bool mit_reparatur_programm=false;
    bool clean_only=true;
 
    static struct option long_options[] = {
