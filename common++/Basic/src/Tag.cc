@@ -1,4 +1,4 @@
-// $Id: Tag.cc,v 1.7 2004/04/29 13:17:23 christof Exp $
+// $Id: Tag.cc,v 1.8 2004/06/03 07:09:32 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2002  Christof Petig
  *
@@ -155,19 +155,17 @@ bool operator==(const std::pair<std::string,std::string> &a,const std::string &b
 }
 
 Tag::attvec_t::iterator Tag::attfind(const std::string &name)
-{  return std::find(attributes.begin(),attend(),name); }
+{  return attributes.find(name); }
 
 Tag::attvec_t::const_iterator Tag::attfind(const std::string &name) const
-{  return std::find(attributes.begin(),attend(),name); }
+{  return attributes.find(name); }
 
 bool Tag::hasAttr(const std::string &name) const throw()
 {  return attfind(name)!=attend();
 }
 
 void Tag::setAttr(const std::string &name, const std::string &value)
-{  attvec_t::iterator i=attfind(name);
-   if (i!=attend()) i->second=value;
-   else attributes.push_back(std::pair<std::string,std::string>(name,value));
+{  attributes[name]=value;
 }
 
 #ifdef MPC_SIGC_VERSION

@@ -1,6 +1,6 @@
-// $Id: TagStream.h,v 1.4 2003/10/17 14:31:31 christof Exp $
+// $Id: TagStream.h,v 1.5 2004/06/03 07:09:32 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
- *  Copyright (C) 1998-2002  Christof Petig
+ *  Copyright (C) 1998-2004  Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,8 +22,7 @@
 
 #include <ManuProCConfig.h>
 #include <Misc/Tag.h>
-#include <fstream>
-#include <strstream>
+#include <iostream>
 
 class TagStream : public Tag
 {	// ---- for reading -----
@@ -34,8 +33,8 @@ class TagStream : public Tag
 	int pointer,end_pointer;
 
 	std::istream *is;
-	std::ifstream *ifs;
-	std::istrstream *iss;
+	std::istream *ifs;
+	std::istream *iss;
 
 	char *next_tag(Tag *parent);
 	char *next_tag_pointer(Tag *parent);
@@ -51,17 +50,18 @@ class TagStream : public Tag
 	char *find(char what)
 	{  return (char*)memchr(buffer+pointer,what,end_pointer-pointer); }
 
-	static std::string de_xml(const std::string &cont);
+	static void de_xml(std::string &cont);
 	void load_project_file(Tag *top);
-	// encoding -> host_encoding
-	std::string recode_load(const std::string &in) const;
 
 	// ------ normal operation --------
 	std::string encoding;
 	std::string file_name;
 	
-	// ------ saving ------
-	std::string recode_save(const std::string &in) const;
+	// encoding -> host_encoding
+//	void recode_load(std::string &in) const;
+//	void recode_save(std::string &in) const;
+	void (*recode_load_vfunc)(std::string &in);
+	void (*recode_save_vfunc)(std::string &in);
 	
 	// ------ debugging -------
 	void write(std::ostream &o,const char *ptr)
@@ -97,8 +97,7 @@ public:
 	// writing Tags to a file
 	void setFileName(const std::string &s)
 	{  file_name=s; }
-	void setEncoding(const std::string &s)
-	{  encoding=s; }
+	void setEncoding(const std::string &s);
 	bool write(const std::string &filename="",const std::string &_encoding="");
 	void write(std::ostream &o,bool compact=false) const;
 private:

@@ -1,4 +1,4 @@
-// $Id: Tag.h,v 1.7 2004/02/06 11:07:00 christof Exp $
+// $Id: Tag.h,v 1.8 2004/06/03 07:09:32 christof Exp $
 /*  ManuProC_Base: Main ManuProC Library
  *  Copyright (C) 1998-2003  Christof Petig
  *
@@ -22,15 +22,16 @@
 #include <ManuProCConfig.h>
 #include <string>
 #include <vector>
+#include <map>
 #include <algorithm> // for find
 #include <stdexcept>
 
 class Tag {
     	std::string type;
     	std::string value;
-    	typedef std::vector <std::pair<std::string,std::string> > attvec_t;
+    	typedef std::map<std::string,std::string> attvec_t;
     	attvec_t attributes;
-    	std::vector <Tag> sub_specifications;
+    	std::vector<Tag> sub_specifications;
     	Tag *parent_ptr;
 
 	void repair_back_pointer() throw();
@@ -104,7 +105,7 @@ public:
 	template <class T>
 	 T getAttr(const std::string &name) const throw(std::out_of_range);
 	template <class T>
-	 T getAttr_def(const std::string &name, const T &def) const throw()
+	 T getAttr_def(const std::string &name, const T &def=T()) const throw()
     	{  try { return getAttr<T>(name); } 
     	   catch (std::out_of_range &e) { return def; }
     	}
