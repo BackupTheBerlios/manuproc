@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.73 2003/07/15 07:10:29 christof Exp $
+// $Id: AufEintrag.cc,v 1.74 2003/07/15 11:11:11 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -932,11 +932,18 @@ void AufEintrag::ProduziertNG(unsigned uid, mengen_t M,
 //   assert(M>=0); // notwendig?
    assert(Id()!=dispo_auftrag_id);
 
+   if (Instanz()->LagerInstanz())
+   {  // Pfeile nach oben/von oben ???
+      Lager L(Instanz());
+      if (M<0) L.wiedereinlagern(Artikel(),-M,uid);
+      else L.raus_aus_lager(Artikel(),M,uid,true);
+      return;
+   }
+
    AufEintragBase neuerAEB=*this;
    if ((Id()==plan_auftrag_id && M>0)
 	|| Id()>=handplan_auftrag_id)
-   {  assert(!Instanz()->LagerInstanz());
-      // Überproduktion wird einfach vermerkt (geht nur bei 3ern)
+   {  // Überproduktion wird einfach vermerkt (geht nur bei 3ern)
       if (M<0) assert(-M<=getGeliefert());
      try
      {abschreiben(M); // M<0 ? -M : M);
