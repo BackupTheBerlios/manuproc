@@ -1,6 +1,9 @@
 SimpleTree:
 
-- speichern der Reihenfolge in magus (via vfunc)
-- an/abschalten von Spalten (das ganze Menü)
-- evtl. Summierungsfehler bei verschieben von Nodes (negative Zahl)
 - editieren
+
+- stürzt ab, wenn letzte Spalte versteckt wird
+
+- showdeep
+- Optionen
+- nach laden alles aktuell?

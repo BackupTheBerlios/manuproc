@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.30 2003/10/23 10:36:59 christof Exp $
+// $Id: SimpleTree.cc,v 1.31 2003/11/11 08:11:56 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -38,7 +38,6 @@ void SimpleTree_Basic::on_redisplay()
 SimpleTree_Basic::SimpleTree_Basic(unsigned maxcol)
 	: SimpleTreeStore_Proxy(maxcol), menu()
 {  on_spaltenzahl_geaendert();
-   set_headers_clickable();
    
    getStore()->signal_title_changed().connect(SigC::slot(*this,&SimpleTree_Basic::on_title_changed));
    get_selection()->signal_changed().connect(SigC::slot(*this,&SimpleTree_Basic::on_selection_changed));
@@ -56,7 +55,7 @@ void SimpleTree_Basic::on_spaltenzahl_geaendert()
 {  remove_all_columns();
    for (unsigned int i=0;i<Cols();++i)
    {  Gtk::CellRendererText *crt = Gtk::manage(new Gtk::CellRendererText());
-      append_column("", *crt);
+      append_column(getColTitle(i), *crt);
       Gtk::TreeViewColumn* pColumn = get_column(i);
       if (pColumn)
       {  pColumn->signal_clicked().connect(SigC::bind(SigC::slot(*this,&SimpleTree_Basic::on_title_clicked),i));
@@ -66,6 +65,7 @@ void SimpleTree_Basic::on_spaltenzahl_geaendert()
       }
    }
    on_redisplay();
+   set_headers_clickable();
 }
 
 void SimpleTree_Basic::on_title_clicked(unsigned nr)
