@@ -9,6 +9,9 @@ includedir=@includedir@/Lieferschein
 libLieferschein_o_SOURCES=Lieferschein.cc \
 		LieferscheinList.cc LieferscheinVoll.cc $(BUILT_SOURCES)
 
+libLieferschein.o: $(libLieferschein_o_OBJECTS) $(libLieferschein_o_DEPENDENCIES)
+	touch $@
+        
 BUILT_SOURCES=LieferscheinEntry_sql.cc LieferscheinList_sql.cc \
 	Lieferschein_sql.cc Rechnung_sql.cc RechnungEntry_sql.cc \
    LieferscheinVoll_sql.cc

@@ -1,4 +1,4 @@
-// $Id: fixedpoint.cc,v 1.4 2001/05/10 16:34:03 christof Exp $
+// $Id: fixedpoint.cc,v 1.3 2001/05/10 16:33:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
