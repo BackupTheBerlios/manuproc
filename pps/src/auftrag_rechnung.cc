@@ -508,7 +508,7 @@ void auftrag_rechnung::Preis_ergaenzen()
    {  if (!(i->getPreis()))
       {  Artikelpreis p(rngkd->preisliste(),ArtikelBase(i->ArtikelID()),i->Stueck());
          if (!(!p))
-         {  i->setzePreis(p.In(rg.getWaehrung()));
+         {  i->setzePreis(p.In(rg.getWaehrung(),p.PreisMenge()));
          }
       }
    }
