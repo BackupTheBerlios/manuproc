@@ -73,6 +73,7 @@ public:
 		TXT_GEWNETTO=58,
 		TXT_LIEFERSCHEIN=59,
 		TXT_GUTSCHRIFT=60,
+		TXT_EU_PREFERENZ=61,
 	     } LangTXT;
 
  MultiL_Dict(int sprache, int default_spr=1);
