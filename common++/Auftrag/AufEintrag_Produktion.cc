@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.37 2004/02/19 15:17:04 jacek Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.38 2004/02/23 13:54:15 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -197,15 +197,17 @@ void AufEintrag::ProduziertNG(mengen_t M,const ProductionContext2 &ctx)
 
  if(Instanz()->getBestellInstanz(Artikel())==ppsInstanzID::None)
      {
-      if(Instanz() == ppsInstanzID::Kundenauftraege)
-        {  FertigWaren fw(artikel,(FertigWaren::enum_Aktion)'L',
+      ArtikelStamm as(artikel);
+      if(as.Warengruppe()==ArtikelTypID::aufgemachtes_Band)
+        if(Instanz() == ppsInstanzID::Kundenauftraege)
+          {  FertigWaren fw(artikel,(FertigWaren::enum_Aktion)'L',
                             M.abs().as_int(),ctx.Id());
 
            FertigWarenLager fwl(fw,ctx.lagerid);
 
            if(M < 0) fwl.Einlagern(ctx);
            else if(M > 0) fwl.Auslagern(ctx);
-        }
+          }
      }
 #endif
 

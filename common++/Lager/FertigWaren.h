@@ -1,4 +1,4 @@
-// $Id: FertigWaren.h,v 1.14 2004/01/13 22:11:36 jacek Exp $
+// $Id: FertigWaren.h,v 1.15 2004/02/23 13:54:15 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -34,7 +34,7 @@ class FertigWaren
 {
 public:
   enum enum_Aktion{eLieferschein='L', eManuell='M', eInventur='I',
-  		eUnknown='U'};
+  		eUnknown='U', eWareneingang='W'};
   
 private:
   ArtikelBase artikel;

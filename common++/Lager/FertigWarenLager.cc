@@ -22,6 +22,7 @@
 
 
 const unsigned int FertigWarenLager::default_lagerid=1;
+const unsigned int FertigWarenLager::none_lagerid=-1;
 
 std::pair<Zeitpunkt_new,int> FertigWarenLager::letzteInventur()
 {

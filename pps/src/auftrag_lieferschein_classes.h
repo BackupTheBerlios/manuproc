@@ -65,8 +65,10 @@ class Data_Lieferdaten : public RowDataBase
       case LIEFMNG_SEQ :   return cH_EntryValueIntString(smenge);
       case LIEFZEILE_SEQ : return cH_EntryValueIntString(zeile);
       case VOMLAGER_SEQ : 
-      	if(liefentry.Status()==(AufStatVal)UNCOMMITED)
-      	  return cH_EntryValueIntString(" UNGEBUCHT ");
+      	if((liefentry.Status()==(AufStatVal)UNCOMMITED) ||
+      	   (liefentry.lagerid==FertigWarenLager::none_lagerid))
+      	  return cH_EntryValueIntString(std::string(" UNGEBUCHT :")+
+      	  					itos(liefentry.lagerid));
       	else
       	  return cH_EntryValueIntString(liefentry.lagerid);
       default : return cH_EntryValue();

@@ -1,4 +1,4 @@
-// $Id: FertigWaren.cc,v 1.6 2004/01/13 22:11:36 jacek Exp $
+// $Id: FertigWaren.cc,v 1.7 2004/02/23 13:54:15 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -43,6 +43,7 @@ FetchIStream &operator>>(FetchIStream &is, FertigWaren &fw)
 	case 'L' : fw.aktion=FertigWaren::eLieferschein; break;
 	case 'M' : fw.aktion=FertigWaren::eManuell; break;
 	case 'I' : fw.aktion=FertigWaren::eInventur; break;
+	case 'W' : fw.aktion=FertigWaren::eWareneingang; break;
         default : fw.aktion=FertigWaren::eUnknown;
      }
 	

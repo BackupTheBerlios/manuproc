@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.66 2004/02/19 15:59:32 jacek Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.67 2004/02/23 13:54:15 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -101,13 +101,14 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
 
   if(status==CLOSED || status==STORNO) return; // not changable any more
 
-  if(status>new_status) return;  // down changed
+  if(status>new_status) return;
+				// down changed
+
 
   if(status!=OPEN && status==new_status) return; //nothing changed 
 						// if OPEN == OPEN
 					// means really changed amount
 					// so go forward
-
   Transaction tr;
 
   if(new_status==OPEN || ((status==OPEN || status==CLOSED) && new_status==STORNO))
@@ -200,7 +201,7 @@ if(new_status==STORNO)
    }
  else
   {
-   Query("update lieferscheinentry set status=? where "
+     Query("update lieferscheinentry set status=? where "
 	"(lfrsid,instanz,zeile)=(?,?,?)")
 	<< Query::NullIf(new_status,(AufStatVal)NOSTAT)
 	<< Id() << Instanz()->Id() << Zeile();
@@ -292,7 +293,7 @@ FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry& z)
  	>> FetchIStream::MapNull(z.menge) 
  	>> FetchIStream::MapNull(z.palette)
      >> FetchIStream::MapNull(zusatzinfo) >> refauftrag 
-     >> FetchIStream::MapNull(z.lagerid,FertigWarenLager::default_lagerid)
+     >> FetchIStream::MapNull(z.lagerid,FertigWarenLager::none_lagerid)
      >> FetchIStream::MapNull(status,(AufStatVal)NOSTAT);
  z.status=(AufStatVal)status;
  z.instanz=refauftrag.Instanz();
@@ -533,7 +534,7 @@ void LieferscheinEntry::setLagerid(int _lagid) throw(SQLerror)
 {
  Query("update lieferscheinentry set lagerid=? where "
 	"(instanz,lfrsid,zeile)=(?,?,?) ")
-	<< Query::NullIf(_lagid,-1) << *this;
+	<< Query::NullIf(_lagid,FertigWarenLager::none_lagerid) << *this;
  lagerid=_lagid;
 }
 
