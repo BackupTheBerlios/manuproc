@@ -1,4 +1,4 @@
-// $Id: ppsInstanzReparatur.h,v 1.14 2003/06/23 15:29:17 christof Exp $
+// $Id: ppsInstanzReparatur.h,v 1.15 2003/06/23 15:34:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -33,6 +33,7 @@ class ppsInstanzReparatur : public cH_ppsInstanz
       : cH_ppsInstanz(iid) {}
    const cH_ppsInstanz &Instanz() const { return *this; }
    
+   // not yet used - might indicate that already fetched information changed to adjust_store
    struct reload : public std::exception
    {	virtual const char* what() const throw() 
         { return "ppsInstanzReparatur::reload"; }

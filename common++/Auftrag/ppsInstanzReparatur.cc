@@ -519,11 +519,8 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
                {  AufEintrag::ArtikelInternNachbestellen(bestellinstanz,
                                 richtigeMenge-menge,newdate,i->first,uid,ae);
                }
-               else // Sum zu gross: abbestellen (falls 0er, ...
-               {  //if (ae.Instanz()==ppsInstanzID::Kundenauftraege
-               	  //	|| ae.Id()==AuftragBase::ungeplante_id)
-                  {  KinderErniedrigen(ae,i->second,menge-richtigeMenge,uid);
-                  }
+               else // mehr bestellt als noch offen: Bestellungen weg!
+               {  KinderErniedrigen(ae,i->second,menge-richtigeMenge,uid);
                }
             }
          }
