@@ -1,4 +1,4 @@
-// $Id: test_schaerangaben.cc,v 1.12 2004/07/06 13:23:37 christof Exp $
+// $Id: test_schaerangaben.cc,v 1.13 2004/07/06 14:29:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -57,11 +57,17 @@ void dump(const ArtikelBase &ab, unsigned gaenge, unsigned laenge)
 
 // müssten eigentlich kombiniert werden ...
 void dump(const ArtikelBase &ab, const ArtikelBase &ab2, unsigned gaenge, unsigned laenge)
+#if 0
 {  std::vector<ArtikelGang> vag;
    vag.push_back(ArtikelGang(gaenge,ab));
    vag.push_back(ArtikelGang(gaenge,ab2));
    dump(vag,laenge);
 }
+#else
+{  dump(ab,gaenge,laenge);
+   dump(ab2,gaenge,laenge);
+}
+#endif
 
 int main()
 {  ManuProC::dbconnect();
