@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.7 2003/08/14 09:22:15 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.8 2003/08/14 10:14:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -132,7 +132,8 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(int uid,mengen_t menge,bool insta
    bestellt+=menge2;
    if (menge2>0 && entrystatus==CLOSED)
       setStatus(OPEN,uid,true);
-   else if (!getRestStk() && entrystatus==OPEN)
+   else if (Id()!=ungeplante_id && Id()!=dispo_auftrag_id 
+   		&& !getRestStk() && entrystatus==OPEN)
       setStatus(CLOSED,uid);
  }
 
@@ -185,7 +186,12 @@ void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftr
  // Menge im Lager freigeben == Einlagern ohne Produktion?
  if (Instanz()->LagerInstanz() && Id()==plan_auftrag_id)
  {  if (delayed_reclaim::Active())
-       ; // in 2er 
+    {  // in 2er rein
+       AuftragBase(make_value(Instanz()),dispo_auftrag_id)
+       	.BestellmengeAendern(menge,LagerBase::Lagerdatum(),Artikel(),
+       			OPEN,uid,AufEintragBase());
+       delayed_reclaim::delay(Instanz(),Artikel());
+    }
     else
        AufEintrag::MengeVormerken(Instanz(),Artikel(),menge,true,ProductionContext()); 
 	 // ,*this);
