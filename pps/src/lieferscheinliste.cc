@@ -89,12 +89,18 @@ void lieferscheinliste::on_radiobutton_kunde_toggled()
       kundenbox->show();
    }
  else kundenbox->hide();
+
+
+#warning must be implemented yet
+/*
  if (radiobutton_kundengruppe->get_active())
    {  kundengruppe->reset();
       kundengruppe->grab_focus();
       kundengruppe->show();
    }
  else kundengruppe->hide();
+*/
+
 }
 
 

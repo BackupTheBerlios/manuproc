@@ -67,8 +67,8 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
  _tooltips.set_tip(*button_drucken,"Linke Maustaste: 1 Original"
 "Mittlere Maustaste: 1 Kopie","");
 
-   std::string nuraktiv(" and coalesce(aktiv,true)=true");
-   kundenbox->Einschraenkung(nuraktiv,true);
+//   std::string nuraktiv(" and coalesce(aktiv,true)=true");
+//   kundenbox->Einschraenkung(nuraktiv,true);
    kundenbox->EinschraenkenKdGr(KundengruppeID::Auftragsadresse);
    kundenbox->setExpandStr1(true);
    kundenbox->setExpandStr2(true);
@@ -582,6 +582,12 @@ void auftrag_bearbeiten::andererKunde()
      artikelbox->EinWarenkorb(rngkd->preisliste());   
    artikelbox->Einschraenken_b(true);
    checkbutton_ean_drucken->set_active(kunde->showEAN());
+   newauftrag_button->set_sensitive(kunde->Aktiv());
+   auftrag_ok->set_sensitive(kunde->Aktiv());
+   if(kunde->Aktiv())
+      _tooltips.set_tip(*kundenbox,NULL,"");
+   else
+     _tooltips.set_tip(*kundenbox,"Der Kunde ist gesperrt","");
 #endif
 
    zahlart->set_value(rngkd->zahlungsart()->Id());
@@ -671,6 +677,7 @@ void auftrag_bearbeiten::on_clear_all()
  aufeintrag_box->hide();
  aktaufeintrag=0; 
  kundenbox->reset();
+ newauftrag_button->set_sensitive(true);
  artikelbox->reset();		// ich denke das sollte hier auch rein
   WAufStat->set_history((AufStatVal)OPEN);
  aufnr_scombo->reset();
