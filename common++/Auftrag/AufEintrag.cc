@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.55 2003/06/16 16:35:07 christof Exp $
+// $Id: AufEintrag.cc,v 1.56 2003/06/17 11:47:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -593,8 +593,12 @@ void AufEintrag::ArtikelInternNachbestellen(int uid,mengen_t menge,
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
    NV("menge",menge),NV("Reason",reason));
   assert(menge>0);
-  assert(Id()!=dispo_auftrag_id);
+   // Rekursion von 2ern verbieten
+   assert(Id()!=dispo_auftrag_id);
 
+   // 1er im Lager wird erhöht ... nichts tun
+   if (Instanz()->LagerInstanz() && Id()==plan_auftrag_id)
+      return;
   ppsInstanz::ID next=Instanz()->NaechsteInstanz(ArtikelStamm(Artikel()));
   if (next!=ppsInstanzID::None)
   {  AufEintrag::ArtikelInternNachbestellen(next,menge,getLieferdatum(),
@@ -643,22 +647,12 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(int uid,mengen_t menge,bool insta
     else AufEintragZu(*this).Neu(ElternAEB,menge);
  }
 
- if(auftragstatus==OPEN && instanzen)
+ if(auftragstatus==OPEN && instanzen && !!menge2)
   {
-   // Rekursion von 2ern verbieten
-   assert(Id()!=dispo_auftrag_id); 
-   if (Instanz()->LagerInstanz() && Id()==AuftragBase::plan_auftrag_id)
-   {  if (menge2<0)
-         // Menge im Lager freigeben == Einlagern ohne Produktion?
-         AufEintrag::MengeVormerken(Instanz(),Artikel(),-menge2,true);
-      else ; // 1er wird erhöht ... nichts tun
-   }
-   else if (!!menge2)
    // Rekursion von 0ern im Lager (es gibt keine 3er im Lager)
+   //  Verplanen von freigewordener Menge bei 1er im Lager
    // Rekursion bei 0er, 1er oder 3er in Produktion
-   {  // keine Rekursion bei 1er im Lager (wie soll man auch hierher gelangen?)
       updateStkDiffInstanz__(uid,menge2,*this,reason);
-   }
   }
   tr.commit();
   // wir haben zwar weniger abbestellt, aber nur weil wir geliefert haben
@@ -669,18 +663,17 @@ AuftragBase::mengen_t AufEintrag::ArtikelInternAbbestellen_cb::operator()
 	(const ArtikelBase &i,
  		const AufEintragBase &j,AuftragBase::mengen_t M) const
 {  AufEintrag AE(j);
-   if (j.Id()==AuftragBase::ungeplante_id)
+   if (j.Id()==ungeplante_id)
       M=-AE.MengeAendern(uid,-M,true,mythis,reason);
    else if (j.Instanz()->LagerInstanz())
    {  // vorgemerkte Menge freigeben
-      assert(j.Id()==AuftragBase::plan_auftrag_id);
-      // AuftragBase::mengen_t wahreMenge=AuftragBase::min(M,AE.getRestStk());
+      assert(j.Id()==plan_auftrag_id);
       M=-AE.MengeAendern(uid,-M,true,mythis,reason);
    }
    else 
      { // 1er oder 3er - dispo anlegen, Bestellpfeil erniedrigen
-       assert(j.Id()!=AuftragBase::dispo_auftrag_id);
-       AuftragBase(j.Instanz(),AuftragBase::dispo_auftrag_id)
+       assert(j.Id()!=dispo_auftrag_id);
+       AuftragBase(j.Instanz(),dispo_auftrag_id)
        	.BestellmengeAendern(M,AE.getLieferdatum(),AE.Artikel(),OPEN,uid,j);
        AufEintragZu(mythis).setMengeDiff__(j,-M);
      } 
@@ -692,7 +685,14 @@ void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftr
    NV("menge",menge),NV("Reason",reason));
 
  assert(menge>0);
- try{
+ // Rekursion von 2ern verbieten
+ assert(Id()!=dispo_auftrag_id);
+
+ // Menge im Lager freigeben == Einlagern ohne Produktion? 
+ if (Instanz()->LagerInstanz() && Id()==AuftragBase::plan_auftrag_id)
+ {  AufEintrag::MengeVormerken(Instanz(),Artikel(),menge,true);
+ }
+ else try{
       distribute_children(*this,menge,Artikel(),
    			ArtikelInternAbbestellen_cb(*this,uid,reason));
   }catch(NoAEB_Error &e) 
