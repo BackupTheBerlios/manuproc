@@ -44,15 +44,24 @@ void auftrag_rechnung::on_rng_close()
 
 void auftrag_rechnung::on_rng_neu()
 {   
- if(lieferkunde->get_value()!=-1 && lieferkunde->get_value()!=0)
+ ja_nein_frage jnf("Wollen Sie wirklich jetzt eine neu Rechnung erstellen ?");
+
+ jnf.set_transient_for(*this);
+
+ int ret=jnf.run();
+
+ if(ret==0)
+  {
+   if(lieferkunde->get_value()!=-1 && lieferkunde->get_value()!=0)
    {
     newRechnung(lieferkunde->get_value());
     rngnr->setContent(Formatiere(rechnung.Id(),0,6,"","",'0'),rechnung.Id());
     rngdatum->set_value(ManuProC::Datum::today());
     on_rngnr_activate();
    }
- else
-  lieferkunde->grab_focus();
+  else
+   lieferkunde->grab_focus();
+  }
 }
 
 
