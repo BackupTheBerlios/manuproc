@@ -1,4 +1,4 @@
-/* $Id: Verfuegbarkeit.cc,v 1.11 2004/03/01 17:11:01 christof Exp $ */
+/* $Id: Verfuegbarkeit.cc,v 1.12 2004/03/01 17:31:22 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -202,8 +202,8 @@ AuftragBase::mengen_t benoe_recurse::operator()(const AufEintragZu::st_reflist &
    AuftragBase::mengen_t local_offset=0;
    for (AufEintragZu::list_t::iterator i=Kinder.begin();i!=Kinder.end();++i)
    {  if (i->Art!=kind.Artikel()) continue; // ignore
-      local_offset+=i->Menge;
       if (i->AEB==kind && i->Pri==rl.Pri) break;
+      local_offset+=i->Menge;
    }
    
    ArtikelBaum ab(ae.Artikel());
@@ -257,9 +257,11 @@ void Verfuegbarkeit::wozu_benoetigt(const AufEintrag &ae, map_t &result,
       result[idx].ungeplant+=menge;
    }
    
-   // Rekursion (Priority)
-   mengen_t rest=
-   distribute_parents(ae,menge,benoe_recurse(offset,result,ae));
-   if (!!rest) result[idx].error+=rest;
+   if (ae.Instanz()!=ppsInstanzID::Kundenauftraege)
+   {  // Rekursion (Priority)
+      mengen_t rest=
+         distribute_parents(ae,menge,benoe_recurse(offset,result,ae));
+      if (!!rest) result[idx].error+=rest;
+   }
    verf_Trace(result[idx]);
 }
