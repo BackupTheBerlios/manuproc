@@ -110,6 +110,7 @@ void RechnungEntryBase::setRgPayOff(int _rngid) throw(SQLerror)
  char *DATUM=0;
  bool BEZAHLT;
  int KUNDENNR;
+ char RNGART[1];
  exec sql end declare section;
 
  exec sql select datum,coalesce(bezahlt,false),kundennr into 
@@ -117,7 +118,7 @@ void RechnungEntryBase::setRgPayOff(int _rngid) throw(SQLerror)
 	from rechnung where rngid=:RNGID;
  SQLerror::test(__FILELINE__);
 
- rgdata[RNGID]=rng_payoff(DATUM,BEZAHLT,KUNDENNR);
+ rgdata[RNGID]=rng_payoff(DATUM,BEZAHLT,KUNDENNR,(RngArt)RNGART[0]);
 
  ECPGfree_auto_mem();
 }
@@ -135,6 +136,13 @@ const bool RechnungEntry::Bezahlt() const throw(SQLerror)
  if(rgdata[rngid].valid==true) return rgdata[rngid].bezahlt;
  setRgPayOff(rngid);
  return rgdata[rngid].bezahlt;
+}
+
+const RechnungBase::RngArt RechnungEntry::RgArt() const throw(SQLerror)
+{
+ if(rgdata[rngid].valid==true) return rgdata[rngid].rngart;
+ setRgPayOff(rngid);
+ return rgdata[rngid].rngart;
 }
 
 

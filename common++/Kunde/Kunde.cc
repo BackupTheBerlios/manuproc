@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.34 2003/05/26 13:43:27 christof Exp $
+// $Id: Kunde.cc,v 1.35 2003/05/30 11:57:59 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -126,21 +126,27 @@ const std::string Kunde::LaTeX_an(bool liefer,TelArt telart,
      }
 
   std::string s=std::string("\\parbox[t]{")+width+"}{\n";
-#ifndef MABELLA_EXTENSIONS
+#ifdef MABELLA_EXTENSIONS
+  if(Anrede()->Id()!=ManuProcEntity<>::none_id)
+    s+=Anrede()->getAnrede(MultiL_Dict(Sprache()))+"~\\\\\n";
+#else
   s+="\\large ";
   s+="Firma \\\\";
 #endif
 
-  s+= string2TeX(getName(),NEEDCHAR);
- 
 #ifdef MANUPROC_DYNAMICENUMS_CREATED
-  if(!isInGrp(KundengruppeID::Personen)) 
-    s+="~\\\\";
-  if(!getName2().empty())
-    s+=string2TeX(getName2(),NEEDCHAR)+ "~\\\\";
+  if(isInGrp(KundengruppeID::Personen))
+   { 
+   if(!getName2().empty())
+     s+=string2TeX(getName2(),NEEDCHAR)+" ";
+    s+=string2TeX(getName(),NEEDCHAR)+ "~\\\\";
+   }
   else
-    if(isInGrp(KundengruppeID::Personen)) 
-      s+="~\\\\";
+   {
+    s+=string2TeX(getName(),NEEDCHAR)+"~\\\\\n";
+    if(!getName2().empty())
+      s+=string2TeX(getName2(),NEEDCHAR)+"~\\\\\n";
+   }
 #endif
   
   if (!postanwvor().empty()) s+= string2TeX(postanwvor(),NEEDCHAR) +"~\\\\";

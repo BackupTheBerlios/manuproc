@@ -1,4 +1,4 @@
-/* $Id: Rechnung.h,v 1.26 2003/03/31 15:38:17 jacek Exp $ */
+/* $Id: Rechnung.h,v 1.27 2003/05/30 11:57:59 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -32,9 +32,6 @@
 
 class Rechnung : public RechnungBase
 {
-public:
- typedef enum {RART_RNG='R',RART_GUT='G',RART_STORNO='S',RART_NONE=0} RngArt; 
- 
 private:
  cH_Kunde kunde;
  RngArt rngart;

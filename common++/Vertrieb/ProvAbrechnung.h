@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung.h,v 1.4 2003/01/08 09:46:58 christof Exp $ */
+/* $Id: ProvAbrechnung.h,v 1.5 2003/05/30 11:57:59 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -40,23 +40,30 @@ class ProvAbrechnung : public ManuProcEntity<>
    
 public:
 
+ typedef std::vector<ProvAbrechnungEntry*>::const_iterator const_iterator;
+ 
  ProvAbrechnung() : verkaeufer(Kunde::none_id),entries_valid(false) {}
  ProvAbrechnung(const Kunde::ID verk, const ID abrnr) throw(SQLerror);
- void loadEntries() throw(SQLerror);
+ void loadEntries(std::string sql_order="") throw(SQLerror);
  ManuProcEntity<>::ID Id() const { return entityid; }
  Kunde::ID VerkNr() const { return verkaeufer; }
  const ManuProC::Datum getDatum() const { return datum; }
  const ManuProC::Datum getBis() const { return bis; }
 
- std::vector<ProvAbrechnungEntry*>::const_iterator begin() const
+ const_iterator begin() const
  	{ return entries.begin(); }
- std::vector<ProvAbrechnungEntry*>::const_iterator end() const
+ const_iterator end() const
  	{ return entries.end(); } 	
 
  static ProvAbrechnung* newProvAbrechnung(const Kunde::ID verkid,
  		ProvAbrechnung::ID abrnr, ManuProC::Datum bis,
  		const std::string _notiz) throw(SQLerror);
  static const ProvAbrechnung::ID getNextAbrNr(const Kunde::ID verk) throw(SQLerror);
+
+ std::vector<ProvAbrechnungEntry*>::const_iterator begin()
+ 	{ return entries.begin(); }
+ std::vector<ProvAbrechnungEntry*>::const_iterator end()
+ 	{ return entries.end(); } 	
 
 
 private:

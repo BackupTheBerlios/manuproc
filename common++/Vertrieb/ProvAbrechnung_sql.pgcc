@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung_sql.pgcc,v 1.3 2002/12/03 08:46:02 christof Exp $ */
+/* $Id: ProvAbrechnung_sql.pgcc,v 1.4 2003/05/30 11:57:59 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -79,14 +79,15 @@ FetchIStream &operator>>(FetchIStream &is, ProvAbrechnung::FetchStruct &st)
 }
 
 
-void ProvAbrechnung::loadEntries() throw(SQLerror)
+void ProvAbrechnung::loadEntries(std::string sql_order) throw(SQLerror)
 {
  if(entries_valid) return;
  
  std::vector<FetchStruct> st;
 
  std::string qu="select rngid,zeilennr,provsatz from prov_entry"
-	" where provnr="+itos(Id())+" and verknr="+itos(verkaeufer);
+	" where provnr="+itos(Id())+" and verknr="+itos(verkaeufer)+
+	sql_order;
 
  Query Q(qu);
  SQLerror::test(__FILELINE__,100);
