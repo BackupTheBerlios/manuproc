@@ -1,4 +1,4 @@
-// $Id: trace.cc,v 1.5 2003/07/04 11:08:23 christof Exp $
+// $Id: trace.cc,v 1.6 2003/07/04 11:09:35 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,6 +21,7 @@
 
 static const UniqueValue::value_t trace_channel=ManuProC::Tracer::channels.get();
 static const UniqueValue::value_t trace_channel2=ManuProC::Tracer::channels.get();
+// you can enable this channel by: export TRACE=1
 static ManuProC::Tracer::Environment trace_channel2e("TRACE",trace_channel2);
 
 void C()
