@@ -13,6 +13,7 @@ class lieferscheinliste : public lieferscheinliste_glade
         
         friend class lieferscheinliste_glade;
         void kundenbox_activate();
+        void kundengruppe_activate();
         void artikelbox_activate();
         void datum_von_activate();
         void datum_bis_activate();

@@ -6499,8 +6499,8 @@ Zuschlag
     <widget>
       <class>GtkTable</class>
       <name>table15</name>
-      <rows>2</rows>
-      <columns>6</columns>
+      <rows>1</rows>
+      <columns>3</columns>
       <homogeneous>False</homogeneous>
       <row_spacing>0</row_spacing>
       <column_spacing>0</column_spacing>
@@ -6511,12 +6511,12 @@ Zuschlag
 	<bottom_attach>2</bottom_attach>
 	<xpad>0</xpad>
 	<ypad>0</ypad>
-	<xexpand>False</xexpand>
+	<xexpand>True</xexpand>
 	<yexpand>False</yexpand>
-	<xshrink>False</xshrink>
-	<yshrink>False</yshrink>
-	<xfill>False</xfill>
-	<yfill>False</yfill>
+	<xshrink>True</xshrink>
+	<yshrink>True</yshrink>
+	<xfill>True</xfill>
+	<yfill>True</yfill>
       </child>
 
       <widget>
@@ -6890,7 +6890,7 @@ Jahr
 	      <handler>on_radiobutton_kunde_toggled</handler>
 	      <last_modification_time>Fri, 14 Sep 2001 14:53:12 GMT</last_modification_time>
 	    </signal>
-	    <label>Zeige alle Kunden</label>
+	    <label>alle</label>
 	    <active>True</active>
 	    <draw_indicator>True</draw_indicator>
 	    <group>kunde</group>
@@ -6902,44 +6902,110 @@ Jahr
 	  </widget>
 
 	  <widget>
-	    <class>GtkRadioButton</class>
-	    <name>radiobutton_nur_kunde</name>
-	    <cxx_visibility>protected</cxx_visibility>
-	    <can_focus>True</can_focus>
-	    <signal>
-	      <name>toggled</name>
-	      <handler>on_radiobutton_kunde_toggled</handler>
-	      <last_modification_time>Fri, 14 Sep 2001 14:40:31 GMT</last_modification_time>
-	    </signal>
-	    <label>Zeige nur Kunde</label>
-	    <active>False</active>
-	    <draw_indicator>True</draw_indicator>
-	    <group>kunde</group>
+	    <class>GtkHBox</class>
+	    <name>hbox29</name>
+	    <homogeneous>False</homogeneous>
+	    <spacing>0</spacing>
 	    <child>
 	      <padding>0</padding>
 	      <expand>False</expand>
 	      <fill>True</fill>
 	    </child>
+
+	    <widget>
+	      <class>GtkRadioButton</class>
+	      <name>radiobutton_nur_kunde</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <can_focus>True</can_focus>
+	      <signal>
+		<name>toggled</name>
+		<handler>on_radiobutton_kunde_toggled</handler>
+		<last_modification_time>Fri, 14 Sep 2001 14:40:31 GMT</last_modification_time>
+	      </signal>
+	      <label>einen</label>
+	      <active>False</active>
+	      <draw_indicator>True</draw_indicator>
+	      <group>kunde</group>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>False</fill>
+	      </child>
+	    </widget>
+
+	    <widget>
+	      <class>GtkRadioButton</class>
+	      <name>radiobutton_kundengruppe</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <can_focus>True</can_focus>
+	      <signal>
+		<name>toggled</name>
+		<handler>on_radiobutton_kunde_toggled</handler>
+		<last_modification_time>Fri, 14 Sep 2001 14:40:31 GMT</last_modification_time>
+	      </signal>
+	      <label>Gruppe</label>
+	      <active>False</active>
+	      <draw_indicator>True</draw_indicator>
+	      <group>kunde</group>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>False</fill>
+	      </child>
+	    </widget>
 	  </widget>
 
 	  <widget>
-	    <class>Custom</class>
-	    <name>kundenbox</name>
-	    <cxx_visibility>protected</cxx_visibility>
-	    <signal>
-	      <name>activate</name>
-	      <handler>kundenbox_activate</handler>
-	      <last_modification_time>Fri, 14 Sep 2001 14:42:38 GMT</last_modification_time>
-	    </signal>
-	    <creation_function>KundenBox2</creation_function>
-	    <int1>0</int1>
-	    <int2>0</int2>
-	    <last_modification_time>Wed, 15 May 2002 16:08:35 GMT</last_modification_time>
+	    <class>GtkHBox</class>
+	    <name>hbox30</name>
+	    <homogeneous>False</homogeneous>
+	    <spacing>0</spacing>
 	    <child>
 	      <padding>0</padding>
 	      <expand>True</expand>
 	      <fill>True</fill>
 	    </child>
+
+	    <widget>
+	      <class>Custom</class>
+	      <name>kundenbox</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <signal>
+		<name>activate</name>
+		<handler>kundenbox_activate</handler>
+		<last_modification_time>Fri, 14 Sep 2001 14:42:38 GMT</last_modification_time>
+	      </signal>
+	      <creation_function>KundenBox2</creation_function>
+	      <int1>0</int1>
+	      <int2>0</int2>
+	      <last_modification_time>Wed, 15 May 2002 16:08:35 GMT</last_modification_time>
+	      <child>
+		<padding>0</padding>
+		<expand>True</expand>
+		<fill>True</fill>
+	      </child>
+	    </widget>
+
+	    <widget>
+	      <class>Custom</class>
+	      <name>kundengruppe</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <visible>False</visible>
+	      <signal>
+		<name>activate</name>
+		<handler>kundengruppe_activate</handler>
+		<last_modification_time>Tue, 05 Aug 2003 10:29:24 GMT</last_modification_time>
+	      </signal>
+	      <creation_function>Optionmenu_Kundengruppe</creation_function>
+	      <int1>0</int1>
+	      <int2>0</int2>
+	      <last_modification_time>Tue, 05 Aug 2003 10:31:39 GMT</last_modification_time>
+	      <child>
+		<padding>0</padding>
+		<expand>True</expand>
+		<fill>True</fill>
+	      </child>
+	    </widget>
 	  </widget>
 	</widget>
       </widget>
