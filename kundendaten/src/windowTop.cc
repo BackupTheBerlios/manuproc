@@ -465,7 +465,8 @@ void windowTop::on_gruppe_in_clicked()
 
 void windowTop::on_gruppe_out_clicked()
 {  
- kundendaten->pullFromGrp(allgrp->GrpId());
+ if(kundendaten->Id()==Kunde::none_id) return;
+ kundendaten->pullFromGrp(wahlgrp->GrpId());
  showGruppen(); 
 }
 

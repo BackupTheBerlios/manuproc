@@ -10,6 +10,7 @@
 #include <Kunde/TelefonArt.h>
 #include<vector>
 #include <gtk--/notebook.h>
+#include "kundendaten_aux.hh"
 
 class windowTop : public windowTop_glade
 {   

@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.44 2003/04/11 10:15:14 jacek Exp $
+// $Id: Kunde.h,v 1.45 2003/04/11 12:34:51 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -221,6 +221,9 @@ public:
         bool isLieferadresse() const;
         bool isRechnungsadresse() const { return rechnungsadresse; }
         bool isAuftragsadresse() const { return auftragsadresse; }        
+        bool isInGrp(const Kundengruppe::ID gid) const;
+        void putInGrp(const Kundengruppe::ID gid); 
+        void pullFromGrp(const Kundengruppe::ID gid);
         ID Rngan() const { return rngan; }
         ID Lfran() const { return lfran; }        
         bool entsorgung() const { return entsorg; }
@@ -332,7 +335,7 @@ public:
         // update_Bankeinzug machte Datenbnakzugriff;
 //        void update_Bank_einzug(bool b) {kundendaten.bankeinzug=b;}
         void set_lieferung_frei_haus(bool b) {lieferung_frei_haus=b;}
-        void set_gruppen_nr(const ID i) {KundenGruppennr=i;}
+//        void set_gruppen_nr(const ID i) {KundenGruppennr=i;}
         void set_sortname(const std::string& s) {adresse.sortname = s; } 
         void set_firma(const std::string& s){adresse.firma = s; } 
         void set_name2(const std::string& s){adresse.name2 = s; }

@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.27 2003/04/11 09:28:44 christof Exp $
+// $Id: Kunde.cc,v 1.28 2003/04/11 12:34:51 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -164,6 +164,45 @@ const PreisListe::ID Kunde::preisliste() const
 }
 
 
+bool Kunde::isInGrp(const Kundengruppe::ID gid) const 
+{
+#ifdef MANUPROC_DYNAMICENUMS_CREATED
+ std::vector<cH_Kundengruppe>::const_iterator f;
+ 
+ if(!gruppen.size())
+   return (find(gruppen.begin(),gruppen.end(),gid)!=gruppen.end());
+  
+ load_Gruppen();
+   
+ return (find(gruppen.begin(),gruppen.end(),gid)!=gruppen.end());
+#else
+ return false;
+#endif
+}
+
+void Kunde::putInGrp(const Kundengruppe::ID gid) 
+{
+#ifdef MANUPROC_DYNAMICENUMS_CREATED
+   Query("insert into ku_gruppen_map (kundennr,grpnr)"
+       " values (?,?)") << Id() << gid;
+
+  gruppen.push_back(gid); 
+#endif       
+}
+
+
+void Kunde::pullFromGrp(const Kundengruppe::ID gid) 
+{
+#ifdef MANUPROC_DYNAMICENUMS_CREATED
+   Query("delete from ku_gruppen_map "
+       " where (kundennr,grpnr) = (?,?)") << Id() << gid;
+
+ load_Gruppen();
+#endif       
+}
+
+
+
 bool Kunde::isLieferadresse() const 
 {
 #ifdef MANUPROC_DYNAMICENUMS_CREATED
@@ -188,11 +227,9 @@ void Kunde::isLieferadresse(bool is)
 {
 #ifdef MANUPROC_DYNAMICENUMS_CREATED
  if(is)
-   Query("insert into ku_gruppen_map (kundennr,grpnr)"
-       " values (?,?)") << Id() << KundengruppeID::Lieferadresse;
+   putInGrp(KundengruppeID::Lieferadresse);
  else       
-   Query("delete from ku_gruppen_map "
-       " where (kundennr,grpnr) = (?,?)") << Id() << KundengruppeID::Lieferadresse;
+   pullFromGrp(KundengruppeID::Lieferadresse);
 #endif       
 }
 
@@ -201,7 +238,7 @@ void Kunde::isLieferadresse(bool is)
 void Kunde::load_Gruppen() const throw(SQLerror)
 {
  std::string qu="select grpnr from ku_gruppen_map"
- 	" where kundenr=?";
+ 	" where kundennr=?";
  gruppen.erase(gruppen.begin(),gruppen.end());
  
  (Query(qu) << Id()).FetchArray(gruppen);

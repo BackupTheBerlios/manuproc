@@ -31,7 +31,7 @@ void windowTop::show_kundendaten()
    entryHausNr->set_text(kundendaten->hausnr());
    entryFirma->set_text(kundendaten->firma());
    entryName2->set_text(kundendaten->name2());
-   scc_anrede->set_value(kundendaten->Anrede());
+  scc_anrede->setContent(kundendaten->Anrede()->getBrAnrede(),kundendaten->Anrede()->Id());
    entryPostfach->set_text(kundendaten->postfach());
    entryPostfachPLZ->set_text(kundendaten->postfachplz());
    entryIdNr->set_text(kundendaten->idnr());
