@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.25 2002/12/05 09:47:50 thoma Exp $
+# $Id: Makefile.am,v 1.26 2002/12/05 10:07:03 thoma Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -22,11 +22,10 @@ libManuProC_Base_a_SOURCES=Ausgabe_neu.cc Datum.cc IOerror.cc \
 		Zeitpunkt_new_write.cc string0.c mystring.cc \
 		auto_conversion.cc \
 		exception.cc itos.cc \
-		time_t_ostr.cc \
-      EntryValueBase.cc Handles.cc \
-      EntryValueIntString.cc \
-      EntryValueDatum.cc $(DB_SRCES) Trace.cc \
-      germanstring.cc
+		time_t_ostr.cc EntryValueBase.cc Handles.cc \
+		EntryValueIntString.cc EntryValueIntGermanString.cc \
+		EntryValueDatum.cc $(DB_SRCES) Trace.cc \
+		germanstring.cc
 
 EXTRA_DIST=dbconnect.pgcc SQLerror_postgres.pgcc Transaction.pgcc \
 	FetchIStream.pgcc
@@ -37,12 +36,11 @@ include_HEADERS=Ausgabe_neu.h CacheStatic.h Cache_Pointer.h Datum.h Handles.h \
 	IOerror.h Kalenderwoche.h Pointer.h Postgres.h Rundungsmacros.h \
 	SQLerror.h SQLerror_postgres.h Transaction.h Zeitpunkt_new.h \
 	dbconnect.h exception.h fixedpoint.h itos.h \
-   safemap.h string0.h mystring.h \
+	safemap.h string0.h mystring.h \
 	c++ostream.h mystream.h FetchIStream.h ctime_assert.h \
-   EntryValueBase.h EntryValueIntString.h 
-   EntryValueEmptyInt.h \
-   	EntryValueDatum.h EmptyInt_4TeX.h Long.h Model.h \
-   	germanstring.h
+	EntryValueBase.h EntryValueIntString.h EntryValueEmptyInt.h \
+	EntryValueDatum.h EmptyInt_4TeX.h Long.h Model.h \
+	germanstring.h
 
 CLEANFILES= *~ $(BUILT_SOURCES)
 

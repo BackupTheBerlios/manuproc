@@ -1,4 +1,4 @@
-/* $Id: EntryValueIntString.h,v 1.11 2002/12/05 10:07:03 thoma Exp $ */
+/* $Id: EntryValueIntGermanString.h,v 1.1 2002/12/05 10:07:15 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,35 +17,30 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef ENTRYVALUEINTSTRING_H
-#define ENTRYVALUEINTSTRING_H
+#ifndef ENTRYVALUEINTGERMANSTRING_H
+#define ENTRYVALUEINTGERMANSTRING_H
 
-#include <Misc/EntryValueBase.h>
+#include <Misc/EntryValueIntString.h>
 
-class EntryValueIntString : public EntryValueBase
+class EntryValueIntGermanString : public EntryValueIntString
 {
- friend class EntryValueIntGermanString;
- int intval;
- std::string strval;
 
 public:
 
- EntryValueIntString() : intval(int_NaN), strval("-")
-   {}
- EntryValueIntString(int v);
- EntryValueIntString(const std::string &s);
+ EntryValueIntGermanString() {}
+ EntryValueIntGermanString(int v) : EntryValueIntString(v) {}
+ EntryValueIntGermanString(const std::string &s) : EntryValueIntString(s) {}
+
+ virtual bool operator<(const EntryValueBase &v) const;
    
- virtual int getIntVal() const { return intval;}
- virtual const std::string getStrVal() const { return strval;}
- virtual bool getBoolVal() const { return strval=="t";}
 };
 
-class cH_EntryValueIntString : public cH_EntryValue
+class cH_EntryValueIntGermanString : public cH_EntryValue
 {
 public:
- cH_EntryValueIntString() : cH_EntryValue(new EntryValueIntString()) {}
- cH_EntryValueIntString(int v) : cH_EntryValue(new EntryValueIntString(v)) {}
- cH_EntryValueIntString(const std::string &s) : cH_EntryValue(new EntryValueIntString(s)) {}
+ cH_EntryValueIntGermanString() : cH_EntryValue(new EntryValueIntGermanString()) {}
+ cH_EntryValueIntGermanString(int v) : cH_EntryValue(new EntryValueIntGermanString(v)) {}
+ cH_EntryValueIntGermanString(const std::string &s) : cH_EntryValue(new EntryValueIntGermanString(s)) {}
 };
   
 #endif // ENTRYVALH

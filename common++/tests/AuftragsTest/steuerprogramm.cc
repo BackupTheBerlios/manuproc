@@ -636,7 +636,7 @@ std::cout << "D13: "<<dummystring<<'\n';
      {
        AufEintragBase AEB=auftrag.anlegen3();
 //       erfolgreich=C.teste(Check::ZweiterAuftrag_frueheresDatum,mit_reparatur_programm);
-       erfolgreich=C.teste(Check::Menge|Check::Lieferschein,"_zwei_auftraege_datum",mit_reparatur_programm);
+       erfolgreich=C.teste(Check::Menge,"_zwei_auftraege_datum",mit_reparatur_programm);
        if(!erfolgreich) { cout << "Anlegen eines zweiten (offenen) Auftrags ["<<AEB<<"] mit früherem Liefertermin \n\n";
                           return fehler();}
 
