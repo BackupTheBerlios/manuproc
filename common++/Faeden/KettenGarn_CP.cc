@@ -1,4 +1,4 @@
-/* $Id: KettenGarn_CP.cc,v 1.15 2004/06/23 09:17:36 christof Exp $ */
+/* $Id: KettenGarn_CP.cc,v 1.16 2004/07/05 13:22:33 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -191,36 +191,41 @@ bool KettenGarn::operator<(const KettenGarn_CP &b) const throw()
 	          (Index()==b.Index() && Artikel()<b.Artikel() );}
 
 #if 0
-struct intermediate_data2 : Kettscheibe
-{  // Fadenliste::const_iterator source; ?
-   unsigned min_max_fd;
+
+namespace {
+struct map_index_t
+{	ArtikelGang ag;
+        unsigned scheibe;
 };
+}
 
 std::vector<Kettscheibe> Kettscheibe::Load(const std::vector<ArtikelGang> &ag, unsigned laenge)
-{  
-   Fadenliste fdl;
-   typedef std::vector<intermediate_data> vec_t;
+{  typedef std::vector<Kettscheibe> vec_t;
    vec_t result;
+   typedef std::map<map_index_t,Kettscheibe> map_t;
+   map_t intermed;
+   
+  for (std::vector<ArtikelGang>::const_iterator gang=ag.begin();gang!=ag.end();++ag)
+  {
    try {
-   Webangaben wa(ag.art);
+   Webangaben wa(gang->art);
    wa.Load();
+   Fadenliste fdl;
    fdl.Load(wa);
    }
    catch (SQLerror &e)
-   {  return std::vector<KettenGarn_CP>();
+   {  return std::vector<Kettscheibe>();
    }
 
-   // ermitteln!
-//   unsigned new_scheibe=20;
    for (Fadenliste::const_iterator i=fdl.begin(); i!=fdl.end(); ++i)
-   {  intermediate_data x;
-      unsigned max_fadenzahl=i->max_fadenzahl;
+   {  unsigned max_fadenzahl=i->max_fadenzahl;
       if (ag.gaenge==i->ausn_gaenge && i->ausn_maxfd) 
          max_fadenzahl=i->ausn_maxfd;
       else if (ag.gaenge==i->ausn_gaenge2 && i->ausn_maxfd2) 
          max_fadenzahl=i->ausn_maxfd2;
       
       if (i->kettscheibe<1) continue;
+      if (i->kettscheibe>)
       x.index=i->kettscheibe*2;
       x.zeile=i->zeilennummer;
       x.kettenzahl=ag.gaenge;
