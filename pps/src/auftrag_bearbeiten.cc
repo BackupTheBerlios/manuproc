@@ -786,7 +786,13 @@ void auftrag_bearbeiten::on_youraufnrscombo_activate()
    int ret=jnf.run();
 
    if(ret==0)
-     auftrag->setYourAufNr(youraufnr_scombo->get_text());
+     {
+      try{auftrag->setYourAufNr(youraufnr_scombo->get_text());}
+      catch(SQLerror &e)
+      {meldung->Show(e); 
+       youraufnr_scombo->setContent(auftrag->getYourAufNr(),auftrag->Id());
+       return;}    
+     }
    else
      youraufnr_scombo->setContent(auftrag->getYourAufNr(),auftrag->Id());
 

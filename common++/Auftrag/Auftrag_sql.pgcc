@@ -339,7 +339,7 @@ void Auftrag::setYourAufNr(const std::string &yanr) throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
 
- Query q("update auftrag set youraufnr=? where (auftragid,instanz)=(?,?)");
+ Query q("update auftrag set youraufnr=trim(?) where (auftragid,instanz)=(?,?)");
 
  q << Query::NullIf(yanr,"") << Id() <<  Instanz();
  SQLerror::test(__FILELINE__);
