@@ -39,6 +39,8 @@ void petig_we::on_petig_we_ok_clicked()
     return;
    } 
 
+ int sret=system("mabellas_ssh");
+ 
  try{ 
  ManuProC::dbconnect(c_to_p); 
  }
@@ -131,9 +133,23 @@ void petig_we::on_petig_we_ok_clicked()
    }
 
 
+ 
+
  auftraglieferschein->set_tree_daten_content(l->Id());
  auftraglieferschein->set_tree_offen_content();  
 }
+
+/*
+void petig_we::print_protokol()
+{
+ H_Lieferschein l=auftraglieferschein->getLieferschein();
+ 
+ for(wee=we_ls.begin(); wee!=we_ls.end(); ++wee)
+   {
+    
+   }
+}
+*/
 
 
 void petig_we::identify_article() throw(SQLerror)
