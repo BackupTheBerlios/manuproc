@@ -1,0 +1,262 @@
+#!/bin/sh
+
+GLOBAL_VER=3
+USER="Christof Petig <christof@petig-baender.de>"
+
+calculate_deps() {
+  DEPENDS=
+  SUMMARY="$ARCHIVE_NAME"
+  DESCRIPTION="converted from $ARCHIVE_NAME by gtkwin2deb"
+  case "$1" in
+    gtk+) DEPENDS="mingw32 mingw32-glib-dev mingw32-pango-dev mingw32-atk-dev"
+      ;;
+    pango) DEPENDS="mingw32 mingw32-glib-dev"
+      ;;
+    atk) DEPENDS="mingw32 mingw32-glib-dev"
+      ;;
+    gtkmm) DEPENDS="mingw32 mingw32-gtk+-dev mingw32-glibmm-dev"
+      ;;
+    glibmm) DEPENDS="mingw32 mingw32-glib-dev mingw32-sigc++-dev"
+      ;;
+    *) DEPENDS="mingw32"
+      ;;
+  esac
+}
+
+move() {
+  if [ -e $1 ]
+  then 
+    mkdir -p share/doc/$DEB_NAME
+    mv $1 share/doc/$DEB_NAME
+  fi
+}
+
+movedir() {
+  if [ -d $1 ]
+  then 
+    mkdir -p share/doc
+    mv $1 share/doc/$DEB_NAME
+  fi
+}
+
+if [ $# -lt 2 ] 
+then
+  echo USAGE: $0 '<package name>' '<version>' '[<suffix>]' '[<package suffix after version>]'
+  echo e.g. $0 libpng 1.2.4-1 .zip -bin
+  echo      $0 gettext-runtime 0.12.1 .bin.woe32.zip
+  echo      $0 glib-dev 2.2.3-20040116
+  exit 1
+fi
+
+PKG=$1
+VER=$2
+SUF=$3
+PKGSUF=$4
+OLDWD=$PWD
+PREFIX=usr/i586-mingw32msvc
+PREFIX=usr/local/mingw2/local
+
+if [ -z "$SUF" ] ; then SUF=.zip ; fi
+
+ARCHIVE_NAME=$PKG-$VER$PKGSUF$SUF
+DEB_NAME=mingw32-$PKG$PKGSUF
+
+calculate_deps $PKG$PKGSUF
+
+TEMPDIR=/tmp/gtkwin2deb.$$
+
+#for safety reasons
+if [ -e $TEMPDIR ]
+then
+  echo $TEMPDIR 'already exists, exiting (security)'
+fi
+
+mkdir -p $TEMPDIR
+cd $TEMPDIR
+mkdir -p $PREFIX
+cd $PREFIX
+unzip $OLDWD/$ARCHIVE_NAME
+
+# evtl PFADE anpassen
+if [ -e lib/pkgconfig ]
+then
+  for i in lib/pkgconfig/*.pc 
+  do 
+    cp $i $i~
+    sed <$i~ >$i "s@/target@/$PREFIX@g"
+    diff $i~ $i
+    rm $i~
+  done
+fi
+
+movedir contrib
+move COPYING.LIB-2
+
+cd $TEMPDIR
+
+mkdir debian
+
+cat >debian/diraway <<EOF
+#!/bin/sh
+FILEDIR=$PREFIX/\$1
+if [ -d \$FILEDIR ]
+then
+  DIR=\`dirname \$FILEDIR\`
+  mkdir -p debian/$DEB_NAME-\$2/\$DIR 
+  mv \$FILEDIR debian/$DEB_NAME-\$2/\$FILEDIR
+fi
+EOF
+chmod 755 debian/diraway
+
+cat >debian/exe_away <<EOF
+#!/bin/sh
+
+move_away() {
+  while read FILE
+  do
+    echo exe \$FILE
+    DIR=\`dirname \$FILE\`
+    mkdir -p debian/$DEB_NAME-exe/\$DIR
+    mv \$FILE debian/$DEB_NAME-exe/\$FILE
+  done
+}
+
+find usr -name \*.exe -o -name \*.lib | move_away
+EOF
+chmod 755 debian/exe_away
+
+cat >debian/dll_mo_away <<EOF
+#!/bin/sh
+
+move_away() {
+  while read FILE
+  do
+    echo dll \$FILE
+    DIR=\`dirname \$FILE\`
+    mkdir -p debian/$DEB_NAME-runtime/\$DIR
+    mv \$FILE debian/$DEB_NAME-runtime/\$FILE
+  done
+}
+
+find usr -name \*.dll -o -name \*.mo | move_away
+EOF
+chmod 755 debian/dll_mo_away
+
+echo >debian/changelog "$DEB_NAME ($VER-$GLOBAL_VER) experimental; urgency=low"
+echo >>debian/changelog
+echo >>debian/changelog "  * converted from $ARCHIVE_NAME by gtkwin2deb"
+echo >>debian/changelog
+echo >>debian/changelog " -- $USER " `date -R`
+
+case $DEB_NAME in
+  *-dev) DEV_NAME=$DEB_NAME
+	;;
+  *) DEV_NAME=${DEB_NAME}-dev
+	;;
+esac
+
+echo >debian/control "Source: $DEB_NAME"
+echo >>debian/control "Section: mingw32"
+echo >>debian/control "Priority: extra"
+echo >>debian/control "Maintainer: $USER"
+echo >>debian/control
+echo >>debian/control "Package: $DEV_NAME"
+echo >>debian/control "Architecture: all"
+if [ ! -z "$DEPENDS" ]
+then
+  echo >>debian/control "Depends: $DEPENDS"
+fi
+echo >>debian/control "Description: $SUMMARY"
+echo >>debian/control " $DESCRIPTION"
+echo >>debian/control
+echo >>debian/control "Package: $DEB_NAME-exe"
+echo >>debian/control "Architecture: all"
+echo >>debian/control "Description: $SUMMARY (exe+lib)"
+echo >>debian/control
+echo >>debian/control "Package: $DEB_NAME-runtime"
+echo >>debian/control "Architecture: all"
+echo >>debian/control "Description: $SUMMARY (dll+mo)"
+echo >>debian/control
+echo >>debian/control "Package: $DEB_NAME-doc"
+echo >>debian/control "Architecture: all"
+echo >>debian/control "Description: $SUMMARY (docs)"
+
+echo >>debian/copyright "Probably GPL, see the original package for details."
+
+cat >debian/rules <<EOF
+#!/usr/bin/make -f
+# debian/rules for alien
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# Use v3 compatability mode, so ldconfig gets added to maint scripts.
+export DH_COMPAT=3
+
+EOF
+echo >>debian/rules "PACKAGE=$DEB_NAME"
+echo >>debian/rules "DEV_PACKAGE=$DEV_NAME"
+cat >>debian/rules <<EOF
+
+build:
+	dh_testdir
+
+clean:
+	dh_testdir
+	dh_testroot
+	dh_clean
+
+binary-indep: build
+
+binary-arch: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+	debian/diraway share/doc doc
+
+	dh_installdocs
+	dh_installchangelogs
+
+# Move exe and doc files into separate package
+	debian/diraway lib/locale runtime
+	debian/exe_away
+	debian/dll_mo_away
+	debian/diraway etc runtime
+	debian/diraway share/gtk-2.0/demo doc
+	debian/diraway share/gtk-doc doc
+	
+# Copy the packages's files.
+	find . -maxdepth 1 -mindepth 1 -not -name debian -print0 | \\
+		xargs -0 -r -i cp -a {} debian/\$(DEV_PACKAGE)
+
+#
+# If you need to move files around in debian/\$(PACKAGE) or do some
+# binary patching, do it here
+#
+
+
+# This has been known to break on some wacky binaries.
+#	dh_strip
+	dh_compress
+#	dh_fixperms
+	dh_makeshlibs
+	dh_installdeb
+	-dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb --destdir=.
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary
+EOF
+
+chmod 755 debian/rules
+# Move files to FHS-compliant locations ??
+#'/usr/man'      => '/usr/share/man',
+#'/usr/info'     => '/usr/share/info',
+#'/usr/doc'      => '/usr/share/doc', 
+
+fakeroot debian/rules binary
+mv $TEMPDIR/*.deb $OLDWD
