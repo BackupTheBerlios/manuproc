@@ -368,7 +368,6 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
                liefdatum_datewin->get_value(),
                artikelbox->get_value(),
                WAufEntryStat->get_Status(),
-               getuid(),
                WPreis->get_Preis(),
                rabattentry_spinbutton->get_value_as_float(),
                artpreis);
