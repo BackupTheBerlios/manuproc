@@ -22,6 +22,8 @@
 #include <Misc/FetchIStream.h>
 #include <Misc/Trace.h>
 #include<math.h>
+#include <Lieferschein/LieferscheinVoll.h>
+#include <Artikel/Artikelpreis.h>
 exec sql include sqlca;
 
 
@@ -220,6 +222,7 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
  	>> FetchIStream::MapNull(MAXZNR);
  MAXZNR++;
  
+#if 0 // direkt einfügen
  Query("insert into rechnungentry "
  	"(rngid,zeilennr, artikelid, lfrsid,lfrszeile, stueck,menge,"
  		"preis,rabatt,preismenge,provsatz,ek_preis) "
@@ -239,6 +242,37 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
  	 << Id() << (MAXZNR-MINZNR)
  	 << lfrs.Instanz()->Id() << lfrs.Id();
  SQLerror::test(__FILELINE__); 
+#else // einfügen unter Programmkontrolle
+ LieferscheinVoll lv(lfrs.Instanz(),lfrs.Id());
+ 
+ unsigned lineno=MAXZNR;
+ for (LieferscheinVoll::const_iterator i=lv.begin();i!=lv.end();++i)
+ {  Preis p,ek_preis;
+    AufEintragBase::rabatt_t rabatt;
+    fixedpoint<2> provsatz;
+    if (!i->getZusatzInfos().empty())
+    {  if (i->getZusatzInfos()[0].aeb.valid())
+       {  AufEintrag ae(i->getZusatzInfos()[0].aeb);
+          p=ae.EPreis(false);
+          rabatt=ae.Rabatt();
+          provsatz=ae.ProvSatz();
+       }
+    }
+    ek_preis=Artikelpreis(PreisListe::ID(99999),i->Artikel(),
+    		AuftragBase::Gesamtmenge(i->Stueck(),i->Menge()).as_int());
+    Query("insert into rechnungentry "
+ 	"(rngid,zeilennr, artikelid, lfrsid,lfrszeile, stueck,menge,"
+ 		"preis,rabatt,preismenge, provsatz,ek_preis) "
+ 	"VALUES (?,?, ?, ?,?, ?,?,"
+ 		"?,?,?, ?,?)")
+ 	<< Id() << lineno << i->Artikel() << lfrs.Id() << i->ZNr() 
+ 				<< i->Stueck() << i->Menge()
+ 	<< p.Wert(getWaehrung(),p.BezugsMenge()) 
+	 	<< Query::NullIf(rabatt) << p.BezugsMenge()
+	 	<< Query::NullIf(provsatz) 
+	 	<< Query::NullIf(ek_preis.Wert(getWaehrung(),p.BezugsMenge()));
+ }
+#endif 
 
  Query("exec sql update lieferschein set rngid=? "
  	"where (instanz,lfrsid)=(?,?)")
@@ -258,7 +292,7 @@ void Rechnung::setzeWaehrung(const cP_Waehrung &w) throw(SQLerror)
 
 void Rechnung::setze_Rabatt(rabatt_t r) throw(SQLerror)
 {  Query("update rechnung set rabatt=? where rngid=?")
-	<< Id() << r;
+	<< r << Id();
    SQLerror::test(__FILELINE__);
    rabatt=r;
 }
