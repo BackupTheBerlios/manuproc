@@ -87,7 +87,8 @@ void JumboLager::Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jum
   jumbo.setInsLager_nodb(*zeit);
   if(jumbo.getStatus()==JumboRolle::ImLager) typ=Umraeumen;
   jumbo.setStatus_nodb(JumboRolle::Jumbo_Status(STATUS));
-  auftragsentry_verwaltung(typ,jumbo.Artikel(),jumbo.Meter(),uid);
+  if(typ!=Umraeumen && STATUS=JumboRolle::ImLager)
+     rein_ins_lager(jumbo.Artikel(),jumbo.Meter(),uid);
   Jumbo_Log(jumbo,typ,uid,user,zeit);
   tr.commit();
 }
@@ -124,7 +125,8 @@ void JumboLager::Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,
      		      newzt=*zeit;
         old.Precision(Zeitpunkt_new::seconds);
         newzt.Precision(Zeitpunkt_new::seconds);
-        if (newzt-old<30) throw100=true;
+        // 5 minuten
+        if (newzt-old<300) throw100=true;
      }
   }
   
@@ -139,7 +141,8 @@ void JumboLager::Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,
   jumbo.setVerarbDatum_nodb(*zeit);
   if (jumbo.getStatus()==JumboRolle::Verarbeitet) typ=SchonDraussen;
   jumbo.setStatus_nodb(JumboRolle::Jumbo_Status(STATUS));
-  auftragsentry_verwaltung(typ,jumbo.Artikel(),jumbo.Meter(),uid);
+  if(typ!=SchonDraussen && STATUS==JumboRolle::Verarbeitet)
+     raus_aus_lager(jumbo.Artikel(),jumbo.Meter(),uid);
   Jumbo_Log(jumbo,typ,uid,user,zeit);
   // hupen
   if (throw100) throw SQLerror("Entnahme",100,"Rolle schon erfasst");
@@ -162,18 +165,6 @@ void JumboLager::Jumbo_Log(const JumboRolle& jumbo,Jumbo_LogTyp typ,const int ui
   exec sql  insert into lager_bewegung 
       (code,action,name,lagerplatz,zeit) 
       values (:CODE,:ACTION,:NAME,:POSITION, :ZEIT);  
-  ///////////////////////////////////////////////////////////////
-  // Jetzt die Lagerbewegung mit den offenen Aufträgen verrechen.
-  // Einlagern wird durch BarcoNG geregelt.
-/*
-  if(typ==Auslagern || typ==InventurMinus )
-   {
-     raus_aus_lager(jumbo.Artikel(),jumbo.Meter(),uid);
-   }
-  else if(typ==Einlagern || typ==Zurueck || typ==InventurPlus ||
-          typ==Einlagern_L || typ==Rest_L || typ==Rest)
-     rein_ins_lager(jumbo.Artikel(),jumbo.Meter(),uid);
-*/
 } 
 
 std::vector<class LagerInhalt> JumboLager::LagerInhalt_(const ArtikelBase& artikel) const
