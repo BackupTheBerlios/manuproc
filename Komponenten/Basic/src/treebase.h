@@ -113,6 +113,7 @@ public:
  void clear();
  SigC::Signal1<void,cH_RowDataBase> leaf_selected;
  SigC::Signal1<void,const TreeRow &> node_selected;
+ SigC::Signal0<void> reorder;
  
  struct SelectionError : public std::exception
  {  virtual const char* what() const throw() { return "TreeBase::SelectionError"; }
@@ -145,7 +146,7 @@ public:
  
  cH_RowDataBase getSelectedRowDataBase() const 
  	throw(noRowSelected,multipleRowsSelected,notLeafSelected);
- std::vector<cH_RowDataBase> getSelectedRowDataBase_vec() const 
+ std::vector<cH_RowDataBase> &getSelectedRowDataBase_vec() const 
  	throw(notLeafSelected);
 
  template <class T,class CT> T getSelectedRowDataBase_as() const

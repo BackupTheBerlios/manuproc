@@ -238,6 +238,9 @@ void TreeBase::refillTCL()
 //CList Breite anpassen
  for (unsigned int i=0;i<Cols();++i)
         set_column_auto_resize(i,true);
+
+ // callback breitstellen:
+ reorder();
 }
 
 
@@ -656,7 +659,7 @@ cH_RowDataBase TreeBase::getSelectedRowDataBase() const
    return (dynamic_cast<TreeRow*>(selectedrow))->LeafData();
 }
 
-std::vector<cH_RowDataBase> TreeBase::getSelectedRowDataBase_vec() const throw(notLeafSelected)
+std::vector<cH_RowDataBase>& TreeBase::getSelectedRowDataBase_vec() const throw(notLeafSelected)
 {  SelectionList::iterator e=selection().end();
 
    std::vector<cH_RowDataBase> v;
