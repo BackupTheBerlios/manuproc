@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.h,v 1.15 2002/12/16 23:36:11 jacek Exp $
+// $Id: Zahlungsart.h,v 1.16 2002/12/18 11:29:41 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -41,7 +41,8 @@ public:
             :skontofrist(i),skontosatz(f) {} };
 
     typedef enum {NONE=0, DTAUS=1, RIBA=2, LCR=3} Verfahren;
-             
+
+    static std::string VerfahrenStr(Verfahren v);             
 
 private:
     bool bankeinzug;

@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.cc,v 1.15 2002/12/16 23:48:59 jacek Exp $
+// $Id: Zahlungsart.cc,v 1.16 2002/12/18 11:29:41 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -261,4 +261,16 @@ void Zahlungsart::setVerfahren(const std::string v)
  else verfahren=NONE;   
  
 }
+
+std::string Zahlungsart::VerfahrenStr(Verfahren v)
+{
+ switch(v)
+   { case DTAUS : return "DTAUS"; break;
+     case RIBA : return "RIBA"; break;
+     case LCR : return "LCR"; break;
+     default : return "";
+   }
+ return "";
+}
+
 
