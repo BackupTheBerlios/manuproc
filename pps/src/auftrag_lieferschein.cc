@@ -80,13 +80,13 @@ void auftrag_lieferschein::on_liefer_neu()
  vbox_eingabe->show();
  tree_daten->show();
 
- rngnr->set_text("");
+ rngnr->set_text(std::string());
  lager_buchen->set_sensitive(true);
  spinbutton_paeckchen->set_value(1);
  spinbutton_pakete->set_value(1);
  spinbutton_brutto->set_value(0);
  spinbutton_netto->set_value(0);
- entry_dpdnr->set_text("");
+ entry_dpdnr->set_text(std::string());
   
 }
 
@@ -96,7 +96,7 @@ void auftrag_lieferschein::on_lief_save()
 
 void auftrag_lieferschein::on_lief_preview()
 {  
-   if (liefernr->get_text()=="") return;
+   if (liefernr->get_text().empty()) return;
    std::string optionen;
    if(checkbutton_ean_drucken->get_active()) optionen =" --ean ";
    std::string command = "auftrag_drucken -G -aLieferschein -n"
@@ -106,7 +106,7 @@ void auftrag_lieferschein::on_lief_preview()
 
 void auftrag_lieferschein::on_lief_print()
 {  
-   if (liefernr->get_text()=="") return;
+   if (liefernr->get_text().empty()) return;
    std::string optionen;
    if(checkbutton_ean_drucken->get_active()) optionen =" --ean";
    std::string command = "auftrag_drucken -aLieferschein -n"
@@ -121,7 +121,7 @@ void auftrag_lieferschein::display(int lfrsid)
  int rng = lieferschein->RngNr();
  if (rng!=-1)
     rngnr->set_text(Formatiere((unsigned long)rng,0,6,"","",'0'));
- else rngnr->set_text("");
+ else rngnr->set_text(std::string());
  vbox_eingabe->show();
  tree_daten->show();
  liefdate->set_value(lieferschein->getDatum());
@@ -339,7 +339,8 @@ void auftrag_lieferschein::fill_with(const AufEintrag& AE,const Einheit& E,
          int stueck,double menge,bool check_bestand)
 {
   artikelbox->set_value(AE.Artikel());
-  auftragnr->set_text(itos(AE.Id()));
+  if (AE.valid()) auftragnr->set_text(itos(AE.Id()));
+  else auftragnr->set_text(std::string());
 
   if(check_bestand)
     {int bestand(AE.getAmLager().as_int());
@@ -411,7 +412,7 @@ auftrag_lieferschein::auftrag_lieferschein(cH_ppsInstanz _instanz)
 
 // tree_daten->hide();
 // vbox_eingabe->hide();
- liefdate->setLabel("");
+ liefdate->setLabel(std::string());
 #ifdef LIEFERSCHEINE_IMMER_BESTAETIGT
  lager_buchen->hide();
  tree_daten->set_tree_column_visibility(Data_Lieferdaten::VOMLAGER_SEQ,false);
@@ -502,7 +503,7 @@ void auftrag_lieferschein::clear_input()
     anzahl->set_value(0);
 // Palette->set_value(1);
     artikelbox->reset();
-    auftragnr->set_text("");
+    auftragnr->set_text(std::string());
  }
  artikelbox->set_sensitive(true);
  auftragnr->set_sensitive(true);
@@ -541,9 +542,12 @@ void auftrag_lieferschein::on_Palette_activate()
  {Transaction tr;
   if (!tree_offen->selection().size())
   {  // Menge verteilen
-     lieferschein->push_back(artikel,anzahl->get_value_as_int(),
+    int zeile=lieferschein->push_back(artikel,anzahl->get_value_as_int(),
                   e.hatMenge()?liefermenge->get_value_as_float():0.0,
                   Palette->get_value_as_int());
+    if (!auftragnr->get_text().empty())
+      LieferscheinEntry(make_value(LieferscheinEntryBase(*lieferschein,zeile)))
+        .setRefOrder(auftragnr->get_text());
     if(!checkVerkConsist())
       return;
   }
@@ -677,7 +681,7 @@ void auftrag_lieferschein::auftragzeile_zeile_uebernehmen(const AufEintrag &AE)
 void auftrag_lieferschein::liefzeile_delete()
 {
  try {
- if(rngnr->get_text()=="")
+ if(rngnr->get_text().empty())
    if(lieferschein->Id()!=LieferscheinBase::none_id)
 	if(deleteLiefEntry())
 	  {set_tree_daten_content(lieferschein->Id());
