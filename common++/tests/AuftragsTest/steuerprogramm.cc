@@ -32,6 +32,7 @@
 #include <getopt.h>
 //#include <Misc/inbetween.h>
 #include "TestReihe.h"
+#include <Lieferschein/RechnungBase.h>
 
 static std::ostream *testlog;
 // for more output ...
@@ -143,6 +144,8 @@ int main(int argc,char *argv[])
       case 'S': Check::resort=true; break;
       case 'T': AuftragBase::tolerate_inconsistency=true; break;
       case 't': ManuProC::Tracer::Enable(AuftragBase::trace_channel);
+        ManuProC::Tracer::Enable(LieferscheinBase::trace_channel);
+        ManuProC::Tracer::Enable(RechnungBase::trace_channel);
       	ManuProC::Tracer::Enable(log_trace);
       	break;
       case 'O': Check::overwrite=true; break;
