@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.21 2004/02/17 14:46:08 jacek Exp $
+// $Id: Rechnung.cc,v 1.22 2004/02/17 18:44:41 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -47,9 +47,14 @@ void Rechnung::setRngArt(const RngArt &art) throw(SQLerror)
      for(std::vector<int>::iterator i=lfids.begin();
      		i!=lfids.end(); ++i)
      	{ 
-         Query("update lieferscheinentry set status=? where "
+         Query("update lieferscheinentry set status="
+		"(case when lagerid is not null then ? else ? end) where "
          	" (lfrsid,instanz)=(?,?) and status=?")
-         	<< (AufStatVal)OPEN << (*i) << insid << (AufStatVal)CLOSED;
+         	<< (AufStatVal)OPEN 
+		<< (AufStatVal)UNCOMMITED
+		<< (*i) 
+		<< insid 
+		<< (AufStatVal)CLOSED;
          	
          Query("update lieferschein set rngid=null where (lfrsid,instanz)"
          	" = (?,?) and rngid=?")

@@ -503,7 +503,7 @@ void auftrag_lieferschein::on_Palette_activate()
     return;
    }
 
- lieferschein->lagerid=int(lagerwahl->get_menu()->get_active()->get_user_data());
+// lieferschein->lagerid=int(lagerwahl->get_menu()->get_active()->get_user_data());
 
   anzahl->update();
 
@@ -629,8 +629,8 @@ void auftrag_lieferschein::auftragzeile_zeile_uebernehmen(const AufEintrag &AE)
  
    Einheit e(AE.Artikel());
    AufEintrag ae(AE);
-   lieferschein->lagerid=
-		int(lagerwahl->get_menu()->get_active()->get_user_data());
+//   lieferschein->lagerid=
+//		int(lagerwahl->get_menu()->get_active()->get_user_data());
       
    int stueck=AE.getRestStk().as_int();
    int bestand=AE.getAmLager().as_int();
@@ -679,7 +679,7 @@ bool auftrag_lieferschein::deleteLiefEntry()
      else
        if(LE.Status()==(AufStatVal)OPEN)
 	 {
-         LE.changeStatus((AufStatVal)STORNO,*lieferschein,
+         LE.changeStatus((AufStatVal)STORNO,
 #ifdef MABELLA_EXTENSIONS
 				true
 #else
@@ -850,7 +850,6 @@ void auftrag_lieferschein::on_button_zeile_modifizieren_clicked()
      if(LE.Status()==(AufStatVal)UNCOMMITED ||
 	LE.Status()==(AufStatVal)OPEN)
        LE.changeMenge(anzahl->get_value_as_int(),liefermenge->get_value_as_float(),
-       		*lieferschein,
 #ifdef MABELLA_EXTENSIONS
 				true
 #else
@@ -953,7 +952,10 @@ void auftrag_lieferschein::on_lager_buchen_clicked()
 			(*i).cast_dynamic<const Data_Lieferdaten>();
          LieferscheinEntry LE = ld->get_LieferscheinEntry();
 	 if(ld->get_LieferscheinEntry().Status()==(AufStatVal)UNCOMMITED)
-	   LE.changeStatus((AufStatVal)OPEN,*lieferschein,true);
+	   {LE.changeStatus((AufStatVal)OPEN,true);
+	    LE.setLagerid(int(lagerwahl->get_menu()->
+			      get_active()->get_user_data()) );
+	   }
 	}
       }
       catch(SQLerror &e) {meldung->Show(e); tr.rollback(); return;}

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.34 2004/02/17 17:55:27 jacek Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.35 2004/02/17 18:44:41 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -101,6 +101,7 @@ public:
  void changeStatus(AufStatVal new_status, 
  		bool ein_auftrag) throw(SQLerror); 		
  static void deleteEntry(LieferscheinEntry &lse) throw(SQLerror);
+ void setLagerid(int _lagid) throw(SQLerror);
 
  Kunde::ID KdID() const throw(SQLerror);
 

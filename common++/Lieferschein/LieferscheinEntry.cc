@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.62 2004/02/17 17:55:27 jacek Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.63 2004/02/17 18:44:41 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -328,7 +328,7 @@ LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
  LieferscheinEntry LE;
  LE.instanz=lsb.Instanz();
  LE.lieferid=lsb.Id();
- LE.lagerid=lsb.lagerid;
+ LE.lagerid=-1; //lsb.lagerid;
  LE.artikel=art;
  LE.stueck=anzahl;
  LE.menge=_menge;
@@ -348,15 +348,14 @@ LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
 
  Query("insert into lieferscheinentry"
  		"(instanz,lfrsid,zeile, artikelid, refauftragid,refzeilennr, stueck,"
-		"menge,palette,zusatzinfo,lagerid,status)"
- 	"values (?,?,?, ?, ?,?, ?,?,?,?,?,?)").lvalue()
+		"menge,palette,zusatzinfo,status)"
+ 	"values (?,?,?, ?, ?,?, ?,?,?,?,?)").lvalue()
  	<< LE << art.Id() 
  	<< Query::NullIf(auf.Id(),AufEintragBase::none_id)
  	<< Query::NullIf(auf.ZNr(),AufEintragBase::none_znr)
  	<< LE.Stueck() 
  	<< Query::NullIf(LE.Menge(),0)
  	<< LE.Palette() << _zusatzinfo
-	<< LE.lagerid
 	<< Query::NullIf(LE.status,(AufStatVal)NOSTAT);
  SQLerror::test(__FILELINE__":LieferscheinEntry: insert into lieferscheinentry");
  
@@ -529,4 +528,13 @@ std::vector<LieferscheinEntry::st_AuftragMenge> LieferscheinEntry::getAuftragsMe
       result.push_back(st_AuftragMenge(i->first,i->second));
    return result;
 }
+
+void LieferscheinEntry::setLagerid(int _lagid) throw(SQLerror)
+{
+ Query("update lieferscheinentry set lagerid=? where "
+	"(lfrsid,zeile,instanz)=(?,?,?) ")
+	<< *this << Query::NullIf(_lagid,-1);
+ lagerid=_lagid;
+}
+
 
