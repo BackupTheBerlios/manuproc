@@ -1,4 +1,4 @@
-// $Id: Gtk_OStream.cc,v 1.1 2003/01/06 15:07:33 christof Exp $
+// $Id: Gtk_OStream.cc,v 1.2 2003/11/02 15:10:42 christof Exp $
 /*  Gtk--addons: a collection of gtk-- addons
     Copyright (C) 2002  Adolf Petig GmbH. & Co. KG
     Developed by Christof Petig <christof.petig@wtal.de>
@@ -32,7 +32,7 @@ Gtk::OStreamBase::OStreamBase(line_cbt l,close_cbt c)
 	   flush_impl(0), close_impl(c), data_impl(&OStream::default_data),
 	   line_impl(l), 
 	   user_data(0), notify(0), buf(*this,&OStreamBase::data_cb)
-{
+{  this->init(&buf);
 }
 
 Gtk::OStreamBase::OStreamBase(data_cbt d)
