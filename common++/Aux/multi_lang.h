@@ -119,6 +119,7 @@ public:
 		TXT_RGDATUM=108,
 		TXT_RGNR=109,
 		TXT_IHRESTNR=110,
+		TXT_METER=111,
 	     } LangTXT;
 	     
  // id's >=  CUSTOMER_IDS werden nicht im Konstruktor, sondern on demand geladen

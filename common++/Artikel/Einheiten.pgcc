@@ -1,4 +1,4 @@
-// $Id: Einheiten.pgcc,v 1.17 2003/01/15 23:38:23 jacek Exp $
+// $Id: Einheiten.pgcc,v 1.18 2005/02/01 10:30:06 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,6 +23,7 @@ exec sql include sqlca;
 #include <Artikel/ArtikelStamm.h>
 #include <Misc/SQLerror.h>
 #include <Misc/Transaction.h>
+#include <Misc/ExtraColumns.h>
 
 Einheit::cache_t Einheit::cache;
 
@@ -81,6 +82,14 @@ Einheit::Einheit(ID id) : einh(id)
          bez_menge=bez_men;
          tex_menge=tex_men;
       }
+
+      ExtraColumns at("einheiten","id");
+
+      at << id;
+      if(at.hasColumn("textid"))
+         Query("select textid from einheiten where id=?")
+         	<< id >> FetchIStream::MapNull(textid,0);
+
       cache.Register(id,*this);
    }
 }

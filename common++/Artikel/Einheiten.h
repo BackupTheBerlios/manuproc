@@ -1,4 +1,4 @@
-/* $Id: Einheiten.h,v 1.17 2003/01/15 23:38:23 jacek Exp $ */
+/* $Id: Einheiten.h,v 1.18 2005/02/01 10:30:06 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Einheiten.h,v 1.17 2003/01/15 23:38:23 jacek Exp $
+// $Id: Einheiten.h,v 1.18 2005/02/01 10:30:06 jacek Exp $
 
 #ifndef ARTIKEL_EINHEITEN_H
 #define ARTIKEL_EINHEITEN_H
@@ -42,6 +42,7 @@ public:
 private:
 	ID einh;
 	std::string bez_anzahl,tex_anzahl, bez_menge,tex_menge;
+	int textid;
 	
 	typedef CacheStatic<ID,Einheit> cache_t;
 	static cache_t cache;
@@ -49,7 +50,7 @@ private:
 	// nicht auskommentieren !!! wichtige Fehlerabfrage
 	Einheit(int x); // not defined, use ID!
 	
-	Einheit() : einh(default_id) {}
+	Einheit() : einh(default_id),textid(0) {}
 	friend class std::map<ID,Einheit>;
 
 public:
@@ -82,6 +83,7 @@ public:
 	bool hatMenge() const
 	{  return !bez_menge.empty();
 	}
+	int TextID() const { return textid; }
 
    static std::vector<Einheit> alleEinheiten();
 };
