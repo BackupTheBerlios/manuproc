@@ -7,6 +7,7 @@
 
 #include <config.h>
 #include <gtkmm/main.h>
+#include <dbconnect.h>
 
 #include "mpc_agent.hh"
 
@@ -18,10 +19,57 @@ int main(int argc, char **argv)
    textdomain (GETTEXT_PACKAGE);
 #endif //ENABLE_NLS
    
+   ManuProC::Connection conn;
    Gtk::Main m(&argc, &argv);
 
-mpc_agent *mpc_agent = new class mpc_agent();
-   m.run(*mpc_agent);
-delete mpc_agent;
+   mpc_agent *mpc;
+
+   try {
+
+      conn.setDbase("mpc.data");
+      ManuProC::dbconnect(conn);  
+
+      mpc=new mpc_agent();
+
+      m.run();
+
+      Petig::dbdisconnect();
+   } catch (SQLerror &e)
+   {  std::cerr << e << '\n';
+      free(mpc);
+      return 1;
+   }
+
+   free(mpc);
    return 0;
 }
+
+
+mpc_agent::mpc_agent()
+{
+ kunde->set_label(KDBOX_NR,"Cust.No.");
+ kunde->set_label(KDBOX_NAME,"Name");
+ kunde->set_label(KDBOX_ORT,"Location");
+
+ std::vector<std::string> v(order->Cols());
+
+ v[OD_ROW]="row no.";
+ v[OD_ARTICLE]="article";
+ v[OD_AMOUNT]="amount";
+
+ order->setTitles(v);
+
+}
+
+
+void mpc_agent::on_beenden_activate()
+{
+  Gtk::Main::instance()->quit();
+}
+
+void mpc_agent::on_kunde_activate()
+{
+
+}
+
+

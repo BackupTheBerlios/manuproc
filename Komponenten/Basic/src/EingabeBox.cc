@@ -1,6 +1,6 @@
-// $Id: EingabeBox.cc,v 1.9 2004/01/29 14:45:07 christof Exp $
-/*  libKomponenten: GUI components for ManuProC's libcommon++
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
+// $Id: EingabeBox.cc,v 1.10 2004/04/27 14:50:31 jacek Exp $
+/*  libKomponenten: GUI components for ManuProC's libcommon++ Copyright (C)
+ *  1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -81,7 +81,22 @@ EingabeBox::EingabeBox(int cols)
    gtk_signal_connect_after(GTK_OBJECT(gobj()), "grab_focus",
     		GTK_SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
 //   assert(Gtk::Table::isGtkTable((Gtk::Object *)(gpointer)this));
+
+ int j=0;
+ for(t_entries::iterator i=entries.begin();i!=entries.end();++i)
+   (*i)->signal_activate().connect(SigC::bind(
+		SigC::slot(*this,&EingabeBox::on_entry_activate),
+		j++));
 }
+
+
+#include <iostream>
+
+void EingabeBox::on_entry_activate(int i)
+{
+ std::cout << "activated " << i << " \n";
+}
+
 
 EingabeBox::~EingabeBox()
 {  for (t_labels::iterator i=labels.begin();i!=labels.end();++i)

@@ -12,7 +12,17 @@
 #ifndef _MPC_AGENT_HH
 #  include "mpc_agent_glade.hh"
 #  define _MPC_AGENT_HH
+
+typedef enum {KDBOX_NR=0,KDBOX_NAME,KDBOX_ORT} KdTitle;
+typedef enum {OD_ROW,OD_ARTICLE,OD_AMOUNT} OderEntries;
+
 class mpc_agent : public mpc_agent_glade
 {  
+ void on_beenden_activate();
+ void on_kunde_activate();
+
+public:
+ mpc_agent();
+
 };
 #endif
