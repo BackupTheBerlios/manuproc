@@ -23,9 +23,12 @@
 
 //struct Configuration Configuration;
 
+enum {EAN=256};
+
 const static struct option options[]=
 {{ "firma",  no_argument, NULL, 'f' },
  { "kopie",  no_argument, NULL, 'k' },  
+ { "ean",  no_argument, NULL, EAN },  
  { "art",     required_argument,      NULL, 'a' }, 
  { "nr",     required_argument,      NULL, 'n' }, 
  { "print",     no_argument,      NULL, 'p' }, 
@@ -43,6 +46,7 @@ int main (int argc, char *argv[])
  bool plot=false;
  bool toTeX=false;
  bool rueckstand=false;
+ bool ean_code=false;
  unsigned int auftragsnr = 0; 
  ppsInstanz::ID instanz = ppsInstanzID::Kundenauftraege;
  std::string database="";
@@ -70,8 +74,9 @@ int main (int argc, char *argv[])
 	case 'h' : dbhost=optarg;break; 
 	case 't' : toTeX=true;break; 
 	case 'R' : rueckstand=true; break;
+	case EAN : ean_code=true; break;
 	case '?':
-            std::cout << "$Id: auftrag_drucken.cc,v 1.12 2002/06/27 07:57:25 christof Exp $\n\n"
+            std::cout << "$Id: auftrag_drucken.cc,v 1.13 2002/09/27 12:51:30 thoma Exp $\n\n"
                    "USAGE:" << argv[0] << " -n <Nr> [-a <Auftrag|Rechnung|Lieferschein|Intern|Extern>] [-kft] [-i <Instanz>] [-d <Datenbank>]\n"
 		"\n\t-t\t nur TeX file erzeugen ("<< (toTeX?"an":"aus")<< ")\n"
 		"\t-p\t drucken ("<< (plot?"an":"aus")<< ")\n"
@@ -82,7 +87,8 @@ int main (int argc, char *argv[])
 		"\t-i\t Instanz auswählen ("<< instanz<< ")\n"
 		"\t-d\t Datenbank ("<< database<< ")\n"
 		"\t-h\t DbHost ("<< dbhost<< ")\n"
-		"\t-R\t Rückstand zum Auftrag\n";
+		"\t-R\t Rückstand zum Auftrag\n"
+		"\t--EAN\t Mit EAN-Code\n";
             exit(1);
     }
   }                 
@@ -93,7 +99,7 @@ int main (int argc, char *argv[])
       ManuProC::dbconnect(conn);  
 
       LR_drucken l(was,auftragsnr,plot,firmenpapier,
-			kopie,cH_ppsInstanz(instanz),toTeX,rueckstand);      
+			kopie,cH_ppsInstanz(instanz),toTeX,rueckstand,ean_code);      
          
       ManuProC::dbdisconnect();
    } catch (SQLerror &e)

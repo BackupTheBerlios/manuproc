@@ -39,7 +39,7 @@ class Data_LListe : public RowDataBase
             return AB->Komponente_als_EntryValue(seqnr-ARTIKEL);
           }
          case KUNDE : return cH_EntryValueIntString(cH_Kunde(liefer->KdNr())->firma());
-         case AUFTRAG : return cH_EntryValueIntString(itos(entry.AufId())+" ("+itos(entry.AufZeile())+")");
+         case AUFTRAG : return cH_EntryValueIntString(itos(entry.RefAuftrag().Id())+" ("+itos(entry.AufZeile())+")");
          case LIEFERNR :return cH_EntryValueIntString( entry.Id());
          case LIEFERDATUM : return cH_EntryValueDatum( liefer->getDatum());
 //         case GELIEFERTAM : return cH_EntryValueDatum( liefer->getDatum());
@@ -76,11 +76,16 @@ class Data_ListeNode : public TreeRow
         }
       return cH_EntryValue();
     }
- Data_ListeNode::Data_ListeNode(guint deep,const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data,bool expand)
-   :TreeRow(deep,v,child_s_deep,child_s_data,expand) {}
+ Data_ListeNode::Data_ListeNode(guint deep,const cH_EntryValue &v, guint child_s_deep, 
+ 	cH_RowDataBase child_s_data,bool expand, const TreeRow &suminit)
+   :TreeRow(deep,v,child_s_deep,child_s_data,expand) 
+   {   if (suminit.Leaf()) cumulate(child_s_data);
+       else sum=dynamic_cast<const Data_ListeNode&>(suminit).sum;
+   }
 
-  static TreeRow *create(guint col, const cH_EntryValue &v,guint child_s_deep, cH_RowDataBase child_s_data, bool expand)
-  {  return new Data_ListeNode(col,v,child_s_deep,child_s_data,expand);
+  static TreeRow *create(guint col, const cH_EntryValue &v,guint child_s_deep,
+  	 cH_RowDataBase child_s_data, bool expand, const TreeRow &suminit)
+  {  return new Data_ListeNode(col,v,child_s_deep,child_s_data,expand,suminit);
   }
 };
 

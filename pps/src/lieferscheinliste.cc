@@ -15,7 +15,9 @@
 #include <Gtk2TeX.h>
 #include <cstdio>
 #include <fstream.h>
+#include "MyMessage.h"  
 
+extern MyMessage *meldung;
 
 void lieferscheinliste::kundenbox_activate()
 {   
@@ -68,20 +70,20 @@ void lieferscheinliste::on_radiobutton_artikel_toggled()
 {
  if (radiobutton_alle_artikel->get_active())
    {  artikelbox->hide();
-      artbase.setID(0);
+      artbase=ArtikelBase();
    }
  if (radiobutton_nur_artikel->get_active())
    {  
       artikelbox->reset();
+      artikelbox->show();      
       artikelbox->grab_focus();
-      artikelbox->show();
    }
 }
 void lieferscheinliste::on_radiobutton_kunde_toggled()
 {
  if (radiobutton_alle_kunden->get_active())
    {  kundenbox->hide();
-      kundenid = 0;
+      kundenid = ManuProcEntity::none_id;
    }
  if (radiobutton_nur_kunde->get_active())
    {  
@@ -95,7 +97,9 @@ void lieferscheinliste::on_radiobutton_kunde_toggled()
 lieferscheinliste::lieferscheinliste(const cH_ppsInstanz& _instanz)
 : instanz(_instanz)
 {
-
+  Wdatum_von->set_value(ManuProC::Datum(1,1,1970));
+  Wdatum_bis->set_value(ManuProC::Datum::today());
+      
   label_anzahl->hide();
   Wdatum_von->setLabel("");
   Wdatum_bis->setLabel("");
@@ -105,19 +109,22 @@ lieferscheinliste::lieferscheinliste(const cH_ppsInstanz& _instanz)
   kundenbox->hide();
   set_titles();
   tree->set_remember("pps","lieferscheinliste");
+  kundenid=ManuProcEntity::none_id;
 }
 
 void lieferscheinliste::on_button_show_clicked()
 {
   tree->freeze();
+  LL.reset();
   try {
-     if(artbase.Id() ) 
-       LL = new LieferscheinList(instanz,LieferscheinList::sel_ArtikelId(artbase.Id()));
-     else if (kundenid)
-       LL = new LieferscheinList(instanz,LieferscheinList::sel_KundenId(kundenid));
-     else 
-       LL = new LieferscheinList(instanz);
-   } catch (SQLerror &e) {std::cerr << e<<'\n';} 
+       LL.setForArtikel(artbase.Id());
+       LL.setForKunde(kundenid);
+       LL.setForInstanz(instanz);
+       LL.setFromDate(Wdatum_von->get_value());
+       LL.setToDate(Wdatum_bis->get_value());
+       LL.build_list();
+   } catch (SQLerror &e) 
+   	   {meldung->Show(e); return;}
   fill_tree();
   tree->thaw();
 }
@@ -126,39 +133,35 @@ void lieferscheinliste::fill_tree()
 {
   progressbar->set_show_text(true);
   tree->clear();
-// tree->freeze();
   tree->detach_from_clist();
   std::vector<cH_RowDataBase> datavec;
-  double size=LL->Size();
+  double size=LL.Size();
   double count=0;
 
-  ManuProC::Datum datum_von = Wdatum_von->get_value();
-  ManuProC::Datum datum_bis = Wdatum_bis->get_value();
-  for (LieferscheinList::const_iterator i=LL->begin();i!=LL->end();++i)
+  for (LieferscheinList::const_iterator i=LL.begin();i!=LL.end();++i)
    {
      LieferscheinVoll LV(instanz,(*i)->Id());
      Rechnung R;
-     if((*i)->RngNr()) R = Rechnung((*i)->RngNr());
+     if((*i)->RngNr()!=ManuProcEntity::none_id) R = Rechnung((*i)->RngNr());
      cH_Lieferschein L(new Lieferschein(instanz,(*i)->Id()));
      for (LieferscheinVoll::const_iterator j=LV.begin();j!=LV.end();++j)
-      {
-        if (  (artbase.Id()==0 || artbase.Id()==j->ArtikelID())
-            &&(radiobutton_alle_zeit_von->get_active() || datum_von < L->getDatum())
-            &&(radiobutton_alle_zeit_bis->get_active() || datum_bis > L->getDatum())
-            &&(kundenid==0 || kundenid==(*i)->KdNr() ) 
-            && !j->ZusatzInfo())  // besser: auswählbar machen oder noch besser: smart
-         {
-           datavec.push_back(new Data_LListe(L,*j,R));
-         }
-      }
+	{if(artbase.Id()!=ManuProcEntity::none_id) 
+		// man muß noch LieferscheinVoll um Bedingungen ergänzen um
+		// das hier einzusparen (z.B. auf Artikel beschr.)
+	   {ArtikelBase::ID aid=(*j).ArtikelID();
+	    if( aid == artbase.Id())
+             datavec.push_back(new Data_LListe(L,*j,R));
+	   }
+	 else
+             datavec.push_back(new Data_LListe(L,*j,R));	
+	}
       progressbar->set_percentage(count/size);
       while(Gtk::Main::events_pending()) Gtk::Main::iteration() ;
       ++count;
    }
- label_anzahl->set_text("Insgesamt "+itos(datavec.size())+" Artikel");
+ label_anzahl->set_text("Insgesamt "+itos(datavec.size())+" Einträge");
  label_anzahl->show();
  tree->setDataVec(datavec);
-// tree->thaw();
  tree->attach_to_clist();
  progressbar->set_percentage(1);
  progressbar->set_show_text(false);
@@ -174,11 +177,9 @@ void lieferscheinliste::set_titles()
   t.push_back("Breite");
   t.push_back("Farbe");
   t.push_back("Aufm.");
-//  t.push_back("Stück");
-//  t.push_back("Menge");
   t.push_back("Lieferschein");
   t.push_back("Lieferdatum");
-//  t.push_back("geliefert am");
+  t.push_back("geliefert am");
   t.push_back("Rechnung");
   t.push_back("Rng.Datum");
   t.push_back("Menge");
@@ -200,6 +201,7 @@ gint lieferscheinliste::on_button_drucken_button_release_event(GdkEventButton *e
 {
  if (event->button==3)  tree->Expand_recursively(*tree); 
  on_button_drucken_clicked();
+ return false;
 }
 
 
@@ -217,9 +219,19 @@ void lieferscheinliste::on_button_drucken_clicked()
    Gtk2TeX::Header(os,hf);
    Gtk2TeX::TableFlags tf;
    tf.element_cb=&scale;
+   tf.multicolumn=true;
+   if (tree->selection().begin()!=tree->selection().end())
+   {  // yes, this hackery is not amusing! We need an API change ...
+      // Try to detect size of the selected tree
+      TCListRow *tclapi=(TCListRow*)(tree->selection().begin()->get_data());
+      
+      TCListRow *last=tclapi;
+      while (last->begin()!=last->end()) last=&*(--last->end());
+      tf.first_line=tclapi->get_lineno();
+      tf.last_line=last->get_lineno();
+   }
    Gtk2TeX::CList2Table(os,tree,tf);
    Gtk2TeX::Footer(os);
-
 
    os.close();
    pclose(f); 

@@ -67,63 +67,48 @@ void auftrag_rechnung::on_rng_save()
 void auftrag_rechnung::on_rng_preview()
 {   
    if (rngnr->get_text()=="") return;
+   std::string optionen;
+   if(checkbutton_ean_drucken->get_active()) optionen =" --ean ";
+   
    std::string command = "auftrag_drucken -a Rechnung -n "
-         +rngnr->get_text()
-         +" -i "+itos(instanz->Id()) ;
+         +rngnr->get_text() 
+         +" -i "+itos(instanz->Id()) 
+         +optionen ;
    system(command.c_str());
 }
+
+#ifdef MABELLA_EXTENSIONS
+#define STD_MABELLA(x,y) (y)
+#else
+#define STD_MABELLA(x,y) (x)
+#endif
 
 gint auftrag_rechnung::on_rng_print(GdkEventButton *ev)
 {   
    if (rngnr->get_text()=="") return false;
-   std::string firma="";
-   if(checkbutton_firmenpapier->get_active()) firma=" --firma ";
-   std::string kopie="";
-   if(checkbutton_kopie->get_active()) kopie=" --kopie " ;
+//   std::string com="auftrag_drucken  -a Rechnung -n "+rngnr->get_text()+" -p -i "+itos(instanz->Id()) ;
+   std::string optionen, opt_ean;
+   if(checkbutton_firmenpapier->get_active()) optionen +=" --firma ";
+   if(checkbutton_kopie->get_active())        optionen +=" --kopie " ;
+   if(checkbutton_ean_drucken->get_active())  opt_ean +=" --ean ";
 
-   if (ev->button==1)
-    {
-#ifdef MABELLA_EXTENSIONS // bad hard coded, but Fr. Will want not wait. ghrrrr
-     std::string command = "auftrag_drucken -k -a Rechnung -n "+rngnr->get_text()
-         +" -p -i "+itos(instanz->Id()) ;
-     system(command.c_str());     
-     system(command.c_str());          
-//     system(command.c_str());
-     command = "auftrag_drucken -f -a Rechnung -n "+rngnr->get_text()
-         +" -p -i "+itos(instanz->Id()) ;
-     system(command.c_str());          
-#else
-     std::string command = "auftrag_drucken "+firma+kopie+"-a Rechnung -n "+rngnr->get_text()
-         +" -p -i "+itos(instanz->Id()) ;
-     system(command.c_str());
-#endif     
-    }
+   std::string com="auftrag_drucken  -a Rechnung -n "
+         +rngnr->get_text()+" -p -i "+itos(instanz->Id())+opt_ean ;
+
+   if (ev->button==STD_MABELLA(1,3)) 
+      system((com+optionen).c_str());
    if (ev->button==2)
     {
-#ifdef MABELLA_EXTENSIONS
-     std::string command = "auftrag_drucken --kopie -a Rechnung -n "+rngnr->get_text()+" -p -i "+itos(instanz->Id()) ;
-     system(command.c_str());
-#else
-     std::string command = "auftrag_drucken --firma -a Rechnung -n "+rngnr->get_text()+" -p -i "+itos(instanz->Id()) ;
-     system(command.c_str());
-     command = "auftrag_drucken -k -a Rechnung -n "+rngnr->get_text()
-         +" -p -i "+itos(instanz->Id());
-     system(command.c_str());
+     system((com+" --kopie").c_str());
+#ifndef MABELLA_EXTENSIONS
+     system((com+" --firma").c_str());
 #endif
     }
-   if (ev->button==3)
+   if (ev->button==STD_MABELLA(3,1))
     {
-#ifdef MABELLA_EXTENSIONS
-	return false;
-#endif
-     std::string command = "auftrag_drucken --kopie -a Rechnung -n "+rngnr->get_text()+" -p -i "+itos(instanz->Id());
-     system(command.c_str());
-     command = "auftrag_drucken --kopie --firma -a Rechnung -n "+rngnr->get_text()
-      +" -p -i "+itos(instanz->Id());
-     system(command.c_str());
-     command = "auftrag_drucken --firma -a Rechnung -n "+rngnr->get_text()
-         +" -p -i "+itos(instanz->Id());
-     system(command.c_str());
+     system((com+" --kopie").c_str());
+     system((com+" --kopie").c_str());
+     system((com+" --firma").c_str());
     }
  return false;
 }
@@ -165,7 +150,7 @@ void auftrag_rechnung::redisplay()
 {try{ 
   set_rtree_daten_content(rngnr->Content());
  }
- catch(SQLerror &e) {meldung->Show(e);}
+ catch(SQLerror &e) {meldung->Show(e); return; }
  if(rechnung.rngArt()==Rechnung::RART_GUT)
    {
      frame_rechnung->set_label("Gutschrift");
@@ -182,6 +167,7 @@ void auftrag_rechnung::redisplay()
    }
  else 
    {
+cout <<rechnung.rngArt()<<'\n';
      assert(!"Never get here\n");
    }
 }
@@ -190,7 +176,7 @@ void auftrag_rechnung::on_rngnr_activate()
 {try{
  redisplay();
  lieferkunde->set_value(rechnung.KdNr());   
- set_rtree_offen_content();
+ set_rtree_offen_content(lieferkunde->get_value());
  rng_WWaehrung->set_value(rechnung.getWaehrung());
 
  Rechnung::rabatt_t rabatt=rechnung.Rabatt();
@@ -198,22 +184,32 @@ void auftrag_rechnung::on_rngnr_activate()
  else rabatt_typ->set_history(rabatt_typ::Rabatt);
  rabatt_wert->set_value(rabatt);
  rngdatum->set_value(rechnung.getDatum());
+ zahlziel->set_value(rechnung.getZahlziel());
  optionmenu_zahlart->set_history(rechnung.getZahlungsart()->Id());
 
  rtree_daten->show();
- vbox_n_b_lieferscheine->show();
+// vbox_n_b_lieferscheine->show();
+ frame_rechnungsdaten->show(); 
  }
  catch(SQLerror &e) {meldung->Show(e);}
 }
 
 void auftrag_rechnung::on_lieferkunde_activate()
 {
+ cH_Kunde k(lieferkunde->get_value());
+ 
 #ifndef MABELLA_EXTENSIONS
- if(lieferkunde->get_value() != cH_Kunde(lieferkunde->get_value())->Rngan())
-   lieferkunde->set_value(cH_Kunde(lieferkunde->get_value())->Rngan());
+ if(lieferkunde->get_value() != k->Rngan())
+    lieferkunde->set_value(k->Rngan());
+#else
+   checkbutton_ean_drucken->set_active(k->showEAN());   
 #endif
+
  rng_WWaehrung->set_value(cH_Kunde(lieferkunde->get_value())->getWaehrung());
- set_rtree_offen_content();
+
+ try{
+  set_rtree_offen_content(lieferkunde->get_value()) ;
+ }catch(SQLerror &e) {meldung->Show(e);}
 }
 
 void auftrag_rechnung::preis_activate()
@@ -241,7 +237,31 @@ void auftrag_rechnung::lieferschein_uebernehmen()
             return;
            }
        else
-         rechnung.setze_Rabatt(chl->AufRabatt());       
+         rechnung.setze_Rabatt(chl->AufRabatt());
+
+// Versuch unterschiedliche Zahlungsziele zu handeln
+#ifdef MABELLA_EXTENSIONS         
+   ManuProC::Datum d(chl->getMaxZahlziel());
+       if(d.valid())
+         {
+          if(zahlziel->get_value().valid())
+            {if(zahlziel->get_value()<d)
+              rechnung.setze_Zahlziel(d);
+            }
+          else 
+            {rechnung.setze_Zahlziel(d);            
+             zahlziel->set_value(d);
+            }
+         }
+       else {
+         cH_Zahlungsart za(rechnung.getZahlungsart());
+         if(za->getBankeinzug())
+           if(za->getZahlungsfrist())
+             {rechnung.setze_Zahlziel(rechnung.getDatum()+za->getZahlungsfrist());            
+              zahlziel->set_value(rechnung.getDatum()+za->getZahlungsfrist());
+             }
+         }
+#endif         
              
        rechnung.addLieferschein(*chl);
    	 on_rngnr_activate();
@@ -275,7 +295,10 @@ try{
        label_auftragspreis->hide();
        radiobutton_artikelpreis->set_active(true);
     }
+#ifndef MABELLA_EXTENSIONS 
   button_pr->set_sensitive(true);
+#endif
+
 }catch(std::exception &e) {std::cerr<<e.what();}
 }
 
@@ -306,7 +329,10 @@ void auftrag_rechnung::on_selectrow_rechnung(int row, int col, GdkEvent* b)
 void auftrag_rechnung::on_roffen_leaf_selected(cH_RowDataBase d)
 {
  const Data_RLieferoffen *dt=dynamic_cast<const Data_RLieferoffen*>(&*d);
- 
+
+ if(!rechnung.Valid())
+    lieferkunde->set_value(dt->get_Lieferschein()->getKunde()->Id());
+
  lieferscheinnr->set_text(itos(dt->get_Lieferschein()->Id()));   
  lieferscheindatum->set_value(dt->get_Lieferschein()->LsDatum());
  lief_uebernehmen->set_sensitive(true);
@@ -359,7 +385,9 @@ void auftrag_rechnung::Preis_setzen()
 }
 
 void auftrag_rechnung::Preis_ergaenzen()
-{  RechnungVoll rg=rechnung.Id();
+{  
+   if(!rechnung.Valid()) return;
+   RechnungVoll rg=rechnung.Id();
    for (RechnungVoll::iterator i=rg.begin();i!=rg.end();++i)
    {  if (!(i->getPreis()))
       {  Artikelpreis p(cH_Kunde(lieferkunde->get_value())->preisliste(),i->ArtikelID());
@@ -393,20 +421,20 @@ auftrag_rechnung::auftrag_rechnung(cH_ppsInstanz _instanz)
 {
 #ifdef MABELLA_EXTENSIONS
  preis_ergaenzen->hide();
- _tooltips.set_tip(*button27,"Linke Maustaste: 1 Orig. 3 Kopien.
+ _tooltips.set_tip(*button27,"Linke Maustaste: 1 Orig. 2 Kopien.
 Mittlere Maustaste: 1 Kopie","");
   std::string nurliefer(" and lieferadresse=true  and coalesce(aktiv,true)=true");
   lieferkunde->Einschraenkung(nurliefer);
   lieferkunde->Einschraenken(true);      
- 
+  checkbutton_ean_drucken->show(); 
+  button_lieferscheine_aufraumen->hide();
 #endif
    set_tree_titles();
    fill_optionmenu_zahlungsart();
    optionmenu_zahlart->get_menu()->deactivate.connect(SigC::slot(static_cast<class auftrag_rechnung*>(this), &auftrag_rechnung::optionmenu_zahlart_deactivate));
    rngdatum->setLabel("");
-   rtree_daten->hide();
-   vbox_n_b_lieferscheine->hide();
-   set_rtree_offen_content();
+//   rtree_daten->hide();
+   on_button_allopen_clicked();   
 }
 
 void auftrag_rechnung::set_tree_titles()
@@ -422,6 +450,7 @@ void auftrag_rechnung::set_tree_titles()
  rtree_daten->setTitles(t1);  
 
  std::vector<std::string> t2;
+ t2.push_back("Kunde");
  t2.push_back("Lieferschein");
  t2.push_back("Liefersch.Datum");
  t2.push_back("Lieferung an");
@@ -434,7 +463,8 @@ void auftrag_rechnung::set_rtree_daten_content(RechnungBase::ID rngid)
  RechnungVoll rechnungvoll(RechnungBase::none_id);
  try {
   if(rngid!=RechnungBase::none_id)
-    { rechnungvoll = RechnungVoll(rngid);
+    { 
+      rechnungvoll = RechnungVoll(rngid);
       rechnung=Rechnung(rngid); 
     }
   else  rechnung=Rechnung(RechnungBase::none_id);
@@ -472,10 +502,57 @@ void auftrag_rechnung::on_button_gutschrift_nein_clicked()
 
 void auftrag_rechnung::on_button_gutschrift_ja_clicked()
 {
+  try{
   rechnung.setRngArt(Rechnung::RART_GUT);
+  }
+  catch(SQLerror &e) { meldung->Show(e);
+  on_button_gutschrift_nein_clicked();
+  redisplay();
+  return;
+  }
+  
   on_button_gutschrift_nein_clicked();
   redisplay();
 }
 
-      
-      
+void auftrag_rechnung::on_zahlziel_activate()
+{
+ try {
+  if (rechnung.Id()!=-1 && rechnung.Id()!=0)
+    rechnung.setze_Zahlziel(zahlziel->get_value());
+  }
+  
+ catch(SQLerror &e) { meldung->Show(e); return; }    
+}
+
+
+void auftrag_rechnung::on_checkbutton_ean_drucken_clicked()
+{
+ cH_Kunde k(lieferkunde->get_value());
+ 
+ if(k->Id() != Kunde::none_id)   
+    {
+     (const_cast<Kunde*>(&*k))->
+     	showEAN(checkbutton_ean_drucken->get_active());
+    }
+}
+
+
+
+void auftrag_rechnung::on_button_allopen_clicked()
+{
+  rechnung=Rechnung();
+  lieferkunde->reset();
+  frame_rechnungsdaten->hide();
+  rngnr->reset();
+  set_rtree_offen_content(Rechnung::none_id);
+}
+
+
+void auftrag_rechnung::on_button_lieferscheine_aufraumen_clicked()
+{
+  try{
+     Lieferschein::aufraumen();
+     on_button_allopen_clicked();
+  }catch(SQLerror &e) {meldung->Show(e);}
+}

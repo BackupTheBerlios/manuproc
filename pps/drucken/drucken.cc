@@ -23,18 +23,29 @@
 #include <Instanzen/ppsInstanz.h>
 
 LR_drucken::LR_drucken(const LR_Base::typ RL_, unsigned int _auftragsnr, bool print,
-   bool b_firmenpapier,bool b_kopie, cH_ppsInstanz _instanz, bool _toTeX, bool rueckst)
+   bool b_firmenpapier,bool b_kopie, cH_ppsInstanz _instanz, bool _toTeX, 
+   bool rueckst,bool ean_code)
 :
 auftragsnr(_auftragsnr),RL(RL_),instanz(_instanz),toTeX(_toTeX),rueckstand(rueckst)
 {
- LR_drucken::drucken(print,b_firmenpapier,b_kopie);
+ LR_drucken::drucken(print,b_firmenpapier,b_kopie,ean_code);
 }
 
-void LR_drucken::drucken(bool print,bool b_firmenpapier,bool b_kopie)
+void LR_drucken::drucken(bool print,bool b_firmenpapier,bool b_kopie,bool ean_code)
 {
 //   if (b_kopie) kopie="Kopie ,";
-   std::string texplotter= " -Phl1260 ";
-   if (b_firmenpapier) texplotter = " -Phl1260lt ";
+
+   char *pr_tray1(getenv("MANUPROC_PR_TRAY1"));
+   char *pr_tray2(getenv("MANUPROC_PR_TRAY2"));
+
+   std::string texplotter;
+
+   if(pr_tray1) texplotter=string(" -P")+pr_tray1; 
+   else texplotter= " -Phl1260 ";
+   if (b_firmenpapier)
+      {if(pr_tray2) texplotter=string(" -P")+pr_tray2; 
+	else texplotter = " -Phl1260lt ";
+      }
 
    FILE *f;
    if(toTeX) f=popen("cat > ./rdr$$.tex","w");
@@ -47,9 +58,12 @@ void LR_drucken::drucken(bool print,bool b_firmenpapier,bool b_kopie)
 
    std::ofstream os(fileno(f));
 
+
    if      (RL==LR_Base::Rechnung)      
     { RechnungVoll r(auftragsnr);
-      LR_Abstraktion(&r,b_firmenpapier).drucken(os,b_kopie,instanz);
+      LR_Abstraktion LRA(&r,b_firmenpapier);
+      LRA.setEAN(ean_code);
+      LRA.drucken(os,b_kopie,instanz);
     }
    else if (RL==LR_Base::Lieferschein)  
     { 
@@ -58,14 +72,17 @@ void LR_drucken::drucken(bool print,bool b_firmenpapier,bool b_kopie)
 #else
       cH_LieferscheinVoll l(instanz,auftragsnr);
 #endif
-      LR_Abstraktion(&*l,b_firmenpapier).drucken(os,b_kopie,instanz);
+      LR_Abstraktion LRA(&*l,b_firmenpapier);
+      LRA.setEAN(ean_code);
+      LRA.drucken(os,b_kopie,instanz);
     }
    else if (RL==LR_Base::Auftrag || RL==LR_Base::Intern || RL==LR_Base::Extern)  
     { 
      AuftragFull a=AuftragFull(AuftragBase(cH_ppsInstanz(instanz),(int)auftragsnr),false);
-     LR_Abstraktion lrab(RL,&a,b_firmenpapier);
-     lrab.setRueckstand(rueckstand);
-     lrab.drucken(os,b_kopie,instanz);
+     LR_Abstraktion LRA(RL,&a,b_firmenpapier);
+     LRA.setEAN(ean_code);
+     LRA.setRueckstand(rueckstand);
+     LRA.drucken(os,b_kopie,instanz);
     }
    else abort();
 }

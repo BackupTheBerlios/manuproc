@@ -34,7 +34,7 @@ class auftrag_rechnung : public auftrag_rechnung_glade
         void optionmenu_zahlart_deactivate();
         void set_tree_titles();
         void set_rtree_daten_content(RechnungBase::ID rngid);
-        void set_rtree_offen_content();
+        void set_rtree_offen_content(Kunde::ID kid);
         void on_rdaten_leaf_selected(cH_RowDataBase d);
         void on_roffen_leaf_selected(cH_RowDataBase d);
         void newRechnung(const Kunde::ID kid);
@@ -57,13 +57,18 @@ class auftrag_rechnung : public auftrag_rechnung_glade
         void on_unselectrow_rtree_offen(int row, int col, GdkEvent* b);        
         void Preis_setzen();
         void Preis_ergaenzen();
+        void on_checkbutton_ean_drucken_clicked();
+
         void waehrung_geaendert();
 	void rabatt_geaendert();
+        void on_zahlziel_activate();
 	void redisplay();
    void on_button_gutschrift_clicked();
    void on_button_gutschrift_nein_clicked();
    void on_button_gutschrift_ja_clicked();
 
+   void on_button_allopen_clicked();
+   void on_button_lieferscheine_aufraumen_clicked();
 
 // TreeRow *selectedrow_lief;
 // TreeRow *selectedrow_rng;

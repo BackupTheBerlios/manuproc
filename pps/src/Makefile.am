@@ -10,15 +10,15 @@ bin_PROGRAMS = pps
 pps_SOURCES = pps.cc\
 	$(BUILT_SOURCES) \
 	auftrag_main.cc \
-   auftrag_main_lager.cc \
+	auftrag_main_lager.cc \
 	auftrag_main_glade.cc \
-   auftrag_main_instanz.cc \
+	auftrag_main_instanz.cc \
 	auftrag_bearbeiten.cc \
 	auftrag_bearbeiten_glade.cc \
 	auftrag_lieferschein.cc \
 	auftrag_lieferschein_glade.cc \
-   lieferscheinliste.cc \
-   lieferscheinliste_glade.cc \
+	lieferscheinliste.cc \
+	lieferscheinliste_glade.cc \
 	auftrag_rechnung.cc \
 	auftrag_rechnung_glade.cc \
 	termsplidial.cc \

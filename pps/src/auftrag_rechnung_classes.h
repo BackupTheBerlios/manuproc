@@ -70,12 +70,14 @@ class Data_RLieferoffen : public RowDataBase
    Data_RLieferoffen(cH_Lieferschein _lieferschein)
       : lieferschein(_lieferschein) {}
 
-   enum SeqNr {LIEFNR_SEQ,LIEFDATUM_SEQ,LIEFKUNDE_SEQ};
+   enum SeqNr {KUNDE_SEQ,LIEFNR_SEQ,LIEFDATUM_SEQ,LIEFKUNDE_SEQ};
 
    virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
     {
          switch(seqnr)
            {
+           case KUNDE_SEQ :
+              return cH_EntryValueIntString(lieferschein->getKunde()->getName());
            case LIEFNR_SEQ :
               return cH_EntryValueIntString(Formatiere(lieferschein->Id(),0,6,"","",'0'));
            case LIEFDATUM_SEQ :

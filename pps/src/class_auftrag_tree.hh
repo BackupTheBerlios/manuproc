@@ -5,6 +5,9 @@
 #include <Aux/EntryValueIntString.h>
 #include <Auftrag/AufEintragZu.h>
 
+std::ostream &operator<<(std::ostream &o, const ArtikelMenge &am);
+std::ostream &operator<<(std::ostream &o, const ArtikelMengeSumme &ams);
+
 class Data_auftrag : public RowDataBase
 {
    const AufEintrag &AB ;
@@ -47,8 +50,8 @@ public:
          }
        }
       case auftrag_main::A1 ... auftrag_main::A4 : {
-         cH_ExtBezSchema schema(1,ExtBezSchema::default_Typ);
-         if (!AM->interneNamen_bool()) schema = cH_ExtBezSchema(AB.getKdNr(),ExtBezSchema::default_Typ);
+      	 ExtBezSchema::ID schema=1;
+         if (!AM->interneNamen_bool()) schema = cH_Kunde(AB.getKdNr())->getSchemaId();
          cH_ArtikelBezeichnung artbez(AB.ArtId(),schema);
          return artbez->Komponente_als_EntryValue(seqnr-int(auftrag_main::A1));
          }
@@ -151,7 +154,6 @@ public:
  virtual void cumulate(const cH_RowDataBase &rd)
    {  const ArtikelMenge &am=dynamic_cast<const Data_auftrag &>(*rd).getArtikelMenge();
       sum.cumulate(am);
-//      map_artbase[am.Artikel()] += am.getMenge();
    }
   const cH_EntryValue Value(guint index,gpointer gp) const
    {
@@ -175,10 +177,15 @@ public:
         default : return cH_EntryValue();
       }
    }
- Data_Node::Data_Node(guint deep,const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data,bool expand)
-   :TreeRow(deep,v,child_s_deep,child_s_data,expand) {}
- static TreeRow *create(guint col, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data,bool expand)
-   {  return new Data_Node(col,v,child_s_deep,child_s_data,expand);
+ Data_Node::Data_Node(guint deep,const cH_EntryValue &v, guint child_s_deep, 
+ 	cH_RowDataBase child_s_data,bool expand, const TreeRow &suminit)
+   :TreeRow(deep,v,child_s_deep,child_s_data,expand) 
+   {  if (suminit.Leaf()) cumulate(child_s_data);
+      else sum=dynamic_cast<const Data_Node&>(suminit).sum;
+   }
+ static TreeRow *create(guint col, const cH_EntryValue &v, guint child_s_deep,
+ 	 cH_RowDataBase child_s_data,bool expand, const TreeRow &suminit)
+   {  return new Data_Node(col,v,child_s_deep,child_s_data,expand,suminit);
    }
 
 // std::vector<pair<ArtikelBase,long long int> > get_vec_ArtikelBase_Stueck() const {return vec_artbase;}

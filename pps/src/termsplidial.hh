@@ -33,15 +33,17 @@
 
 #include<Aux/Datum.h>
 
+class auftrag_bearbeiten;
+
 class termsplidial : public termsplidial_glade
-{   
-        
+{	auftrag_bearbeiten *auftragbearbeiten;
         friend class termsplidial_glade;
         void on_okbutton_clicked();
         void on_cancbutton_clicked();
 
 public:
-
+	termsplidial(auftrag_bearbeiten *ab, const ManuProC::Datum &val);
+	~termsplidial();
         ManuProC::Datum getLiefDatum() 
 		{ guint tag,monat,jahr;
 		  termin_neu->get_date(&jahr,&monat,&tag);

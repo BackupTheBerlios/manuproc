@@ -76,16 +76,19 @@ public:
       if (Typ()==Lieferschein) return u.l->YourAuftrag(); 
       abort();}
    int AufId() const { 
-      if (Typ()==Lieferschein) return u.l->AufId();
+      if (Typ()==Lieferschein) return u.l->RefAuftrag().Id();
       if (Typ()==Rechnung) return u.r->AuftragId();
 	abort(); 
       }
    const ManuProC::Datum getLieferdatum() const {
 	if (Typ()==Auftrag) return u.a->getLieferdatum(); abort();}
    std::list<AufEintragZu::st_reflist> get_Referenz_list_for_geplant(bool b) const {
+#ifdef PETIG_EXTENSIONS
       AufEintragBase AEB=*(u.a);
       if (Typ()==Intern) return AufEintragZu(AEB).get_Referenz_list_for_geplant(b); 
-      abort();}
+      abort();
+#endif
+	}
 };
 
 class LR_Iterator: public LR_Base
@@ -152,6 +155,7 @@ class LR_Abstraktion: public LR_Base
  bool menge_bool:1;
  bool rabatt_bool:1;
  bool preise_addieren:1;
+ bool ean_code:1;
 
  cH_ppsInstanz instanz;
  
@@ -166,7 +170,11 @@ class LR_Abstraktion: public LR_Base
  cH_ExtBezSchema schema_own;
 
  static const unsigned int signifikanz=1;
+#ifdef MABELLA_EXTENSIONS
+ static const unsigned int ZEILEN_SEITE_1=32;
+#else
  static const unsigned int ZEILEN_SEITE_1=33;
+#endif
  static const unsigned int ZEILEN_SEITE_N=43;
 
  fixedpoint<2> betrag;		//
@@ -190,11 +198,13 @@ private:
 
 #define UEBLICHE_INITIALISIERUNG(fp,inst) \
 	firmenpapier(fp), kopie(false), stueck_bool(false), menge_bool(false), \
-	rabatt_bool(false), preise_addieren(false), \
+	rabatt_bool(false), preise_addieren(false), ean_code(false), \
 	instanz(ppsInstanz::default_id), \
 	zeilen_passen_noch(0), page_counter(1), \
+	preisspalte(0), \
 	spaltenzahl(0), schema_mem(ExtBezSchema::default_ID), \
 	schema_own(ExtBezSchema::default_ID)
+
 public:
 	
   LR_Abstraktion()
@@ -211,6 +221,7 @@ public:
   { u.a=a; }
 
   bool Firmenpapier() const {return firmenpapier;}
+  void setEAN(bool b) {ean_code=b;}
 
   
   const_iterator begin() const { 
@@ -253,6 +264,9 @@ public:
       if (Typ()==Extern)        return u.a->getBemerkung(); abort(); }
    std::string YourAuftrag() const { 
       if (Typ()==Auftrag) return u.a->getYourAufNr();
+      abort();}
+   std::string Notiz() const { 
+      if (Typ()==Auftrag) return u.a->Notiz();
       abort();}
 private:
    void drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,

@@ -1,4 +1,4 @@
-
+// $Id: auftrag_bearbeiten.hh,v 1.15 2002/09/27 12:51:30 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -53,6 +53,7 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
 							throw(SQLerror);
         void on_button_preview_clicked();
         gint on_button_drucken_clicked(GdkEventButton *ev);
+        void on_checkbutton_ean_drucken_clicked();
         void on_rueckstand_clicked();
         void preisliste_reset();
         void on_zahlziel_activate();
@@ -69,6 +70,7 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
         void on_aufentrystat_optionmenu_clicked();
      	  void waehrung_geaendert();
         void on_preisart_optionmenu_clicked();
+        void on_preisautomatik_clicked();
         void on_auftrag_clist_select_row(gint row, gint column, GdkEvent *event);
         void on_auftrag_clist_unselect_row(gint row, gint column, GdkEvent *event);
         void on_splitten();
@@ -85,6 +87,9 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
 
    void on_activate_wpreis();
    void on_preis_changed();
+
+        void on_notiz_changed();
+        void on_notiz_save_clicked();
 
  void loadAuftrag(const AuftragBase& auftrag);
  void fillMask();
@@ -108,6 +113,7 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
 public:
  
  bool splitEntry();
+ void split_dialog_destroyed() { splitdialog=0; }
 
 auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEintragBase *auftragbase);
 ~auftrag_bearbeiten();

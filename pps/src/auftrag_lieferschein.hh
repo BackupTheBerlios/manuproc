@@ -29,6 +29,7 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
 {   
         cH_ppsInstanz instanz;
         H_Lieferschein lieferschein;
+//        bool show_offen;
         
         friend class auftrag_lieferschein_glade;
         void set_tree_titles();
@@ -40,6 +41,7 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
         void on_unselectrow_offauf(int row, int col, GdkEvent* b);
         bool deleteLiefEntry();
 #ifdef MABELLA_EXTENSIONS
+        void on_button_rng_erledigt_clicked();
         void on_button_erledigt_clicked();
         void on_spinbutton_paeckchen_activate();
         gint on_spinbutton_paeckchen_focus_out_event(GdkEventFocus *ev);
@@ -51,6 +53,7 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
         gint on_spinbutton_netto_focus_out_event(GdkEventFocus *ev);
 #endif
 #ifdef PETIG_EXTENSIONS
+        void on_button_rng_erledigt_clicked(){}
         void on_button_erledigt_clicked(){}
         void on_spinbutton_paeckchen_activate(){}
         gint on_spinbutton_paeckchen_focus_out_event(GdkEventFocus *ev){return false;}
@@ -66,6 +69,7 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
         void on_lief_save();
         void on_lief_preview();
         void on_lief_print();
+        void on_checkbutton_ean_drucken_clicked();
         void on_liefnr_activate();
         void on_liefnr_search(int *_continue, GtkSCContext newsearch);
         void on_lieferkunde_activate();

@@ -77,27 +77,38 @@ void auftrag_rechnung::on_rngnr_search(int *_continue, GtkSCContext newsearch)
   }
 }
 
-void auftrag_rechnung::set_rtree_offen_content()
+void auftrag_rechnung::set_rtree_offen_content(Kunde::ID kunde)
 {
  exec sql begin declare section;
-  int INSTANZ=instanz->Id();
   int LFRSID;
-  int KDNR;
   char *QU;
  exec sql end declare section;
- KDNR=rechnung.KdNr();
+// if(kunde==ManuProcEntity::none_id) return;
  std::string qu;
-
+/*
 #ifdef MABELLA_EXTENSIONS
  qu = string("select lfrsid from lieferschein l ")+
-   	"where l.kundennr= "+itos(KDNR)+" and l.rngid is null and l.instanz="+
-	itos(INSTANZ);
+   	"where l.kundennr= "+itos(kunde)+" and l.rngid is null and l.instanz="+
+	itos(instanz->Id());
 #else
   qu = string("select lfrsid from ")+
    "lieferschein l join kunden k using (kundennr)"+
-   "where k.rechnung_an="+itos(KDNR)+" and l.rngid is null and l.instanz="+
-	itos(INSTANZ);
+   "where k.rechnung_an="+itos(kunde)+" and l.rngid is null and l.instanz="+
+	itos(instanz->Id());
 #endif
+*/
+ qu = "select lfrsid from lieferschein l ";
+ #ifdef MABELLA_EXTENSIONS
+   qu += " where l.kundennr=";
+ #else
+   qu += " join kunden k using (kundennr) where k.rechnung_an=";
+ #endif
+ qu += itos(kunde)+" and l.rngid is null and l.instanz="+itos(instanz->Id());
+
+ if(kunde==Rechnung::none_id)
+   qu="select lfrsid from lieferschein l where l.rngid is null and l.instanz="
+      +itos(instanz->Id());
+
  QU = (char*)qu.c_str();
 
  exec sql prepare OFFLCUR from :QU;
@@ -118,6 +129,14 @@ void auftrag_rechnung::set_rtree_offen_content()
  exec sql close offliefcur;
  tr.close();
  rtree_offen->setDataVec(datavec);
+ if(kunde==Rechnung::none_id)  
+   rtree_offen->set_tree_column_visibility(Data_RLieferoffen::KUNDE_SEQ,true);
+ else 
+  {
+   rtree_offen->set_tree_column_visibility(Data_RLieferoffen::KUNDE_SEQ,false);
+   rtree_offen->Expand_recursively();
+  }
+// vbox_n_b_lieferscheine->show();
 }
 
 

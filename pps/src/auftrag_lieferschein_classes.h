@@ -31,9 +31,9 @@ class Data_Lieferdaten : public RowDataBase
      switch(seqnr)
       {
       case AUFNR_SEQ :
-         {  int aufid=liefentry.AufId();
-            if (aufid)
-          return cH_EntryValueIntString(Formatiere(aufid,0,6,"","",'0'));
+         {  AuftragBase auf=liefentry.RefAuftrag();
+            if (auf.valid())
+          return cH_EntryValueIntString(Formatiere(auf.Id(),0,6,"","",'0'));
             else return cH_EntryValueIntString("");
          }
       case ARTIKEL_SEQ :

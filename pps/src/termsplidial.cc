@@ -40,3 +40,12 @@ void termsplidial::on_cancbutton_clicked()
  destroy();    
 }
 
+termsplidial::termsplidial(auftrag_bearbeiten *ab, const ManuProC::Datum &val)
+	: auftragbearbeiten(ab)
+{  termin_neu->select_month(val.Monat(),val.Jahr());
+   termin_neu->select_day(val.Tag());
+}
+
+termsplidial::~termsplidial()
+{  auftragbearbeiten->split_dialog_destroyed();
+}

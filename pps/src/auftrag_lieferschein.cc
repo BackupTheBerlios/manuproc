@@ -64,14 +64,20 @@ void auftrag_lieferschein::on_lief_save()
 void auftrag_lieferschein::on_lief_preview()
 {  
    if (liefernr->get_text()=="") return;
-   std::string command = "auftrag_drucken -a Lieferschein -n "+liefernr->get_text()+" -i "+ itos(instanz->Id());
+   std::string optionen;
+   if(checkbutton_ean_drucken->get_active()) optionen =" --ean ";
+   std::string command = "auftrag_drucken -a Lieferschein -n "
+      +liefernr->get_text()+" -i "+ itos(instanz->Id())+optionen;
    system(command.c_str());
 }
 
 void auftrag_lieferschein::on_lief_print()
 {  
    if (liefernr->get_text()=="") return;
-   std::string command = "auftrag_drucken -a Lieferschein -n "+liefernr->get_text()+" -p -i "+ itos(instanz->Id());
+   std::string optionen;
+   if(checkbutton_ean_drucken->get_active()) optionen =" --ean ";
+   std::string command = "auftrag_drucken -a Lieferschein -n "
+      +liefernr->get_text()+" -p -i "+ itos(instanz->Id())+optionen;
    system(command.c_str()); 
 }
 
@@ -80,14 +86,14 @@ void auftrag_lieferschein::display(int lfrsid)
  set_tree_daten_content(lfrsid);
  display2(lieferschein->KdNr());
  int rng = lieferschein->RngNr();
- if (rng)
+ if (rng!=-1)
     rngnr->set_text(Formatiere(rng,0,6,"","",'0'));
  else rngnr->set_text("");
  vbox_eingabe->show();
  tree_daten->show();
  liefdate->set_value(lieferschein->getDatum());
 #ifdef MABELLA_EXTENSIONS
- entry_dpdnr->set_text(itos0(lieferschein->getDPDlnr()));
+ entry_dpdnr->set_text(itos0p(lieferschein->getDPDlnr(),Lieferschein::Offen));
  spinbutton_pakete->set_value(lieferschein->Pakete());
  spinbutton_paeckchen->set_value(lieferschein->Paeckchen());
  spinbutton_brutto->set_value(lieferschein->GewichtBrutto());
@@ -133,6 +139,11 @@ void auftrag_lieferschein::on_lieferkunde_activate()
 try{display2(liefer_kunde->get_value());
  liefernr->reset();
  } catch(SQLerror &e) {meldung->Show(e);}
+#ifdef MABELLA_EXTENSIONS
+ cH_Kunde k(liefer_kunde->get_value());
+ checkbutton_ean_drucken->set_active(k->showEAN());   
+#endif 
+ set_tree_offen_content();
 }
 
 void auftrag_lieferschein::on_liefdate_activate()
@@ -145,13 +156,26 @@ try{
 
 #ifdef MABELLA_EXTENSIONS
 
+void auftrag_lieferschein::on_button_rng_erledigt_clicked()
+{  
+ try {
+ if(lieferschein->Id() != Lieferschein::none_id)
+   if(lieferschein->RngNr() == Lieferschein::none_id)
+   {lieferschein->closeLfrs();
+    rngnr->set_text("000000");
+   }
+ }
+ catch(SQLerror &e) {meldung->Show(e);}
+ 
+}
+
 void auftrag_lieferschein::on_button_erledigt_clicked()
 {
   try{
-    if(lieferschein->getDPDlnr() != 0)
+    if(lieferschein->getDPDlnr() == Lieferschein::Offen)
    {
       lieferschein->setDPDlnr(Lieferschein::Fertig);
-      entry_dpdnr->set_text("");
+      entry_dpdnr->set_text("0");
    }
    } catch(SQLerror &e) {meldung->Show(e);}
 }
@@ -229,8 +253,14 @@ void auftrag_lieferschein::on_offen_leaf_selected(cH_RowDataBase d)
  const Data_Lieferoffen *dt=dynamic_cast<const Data_Lieferoffen*>(&*d);
  if(dt->getAufEintrag().getRestStk()<=0) return;
  fill_input(dt->getAufEintrag());
- button_zeile_uebernehmen->set_sensitive(true);
- button_kompletter_auftrag->set_sensitive(true);
+ if(lieferschein->RngNr() == ManuProcEntity::none_id)
+   {button_zeile_uebernehmen->set_sensitive(true);
+    button_kompletter_auftrag->set_sensitive(true);
+   }
+ else
+   {button_zeile_uebernehmen->set_sensitive(false);
+    button_kompletter_auftrag->set_sensitive(false);
+   } 
 }
 
 
@@ -283,16 +313,18 @@ void auftrag_lieferschein::on_unselectrow_offauf(int row, int col, GdkEvent* b)
 }
 
 auftrag_lieferschein::auftrag_lieferschein(cH_ppsInstanz _instanz)
-:instanz(_instanz) 
+:instanz(_instanz) //, show_offen(true)
 {
 #ifdef PETIG_EXTENSIONS
  table_mabella->hide();
+// show_offen=false;
 #endif
 
 #ifdef MABELLA_EXTENSIONS
   std::string nurliefer(" and lieferadresse=true  and coalesce(aktiv,true)=true");
   liefer_kunde->Einschraenkung(nurliefer);
   liefer_kunde->Einschraenken(true);     
+  checkbutton_ean_drucken->show();
 #endif 
 
  set_tree_titles();
@@ -358,11 +390,13 @@ void auftrag_lieferschein::set_tree_daten_content(LieferscheinBase::ID lfrsid)
 
 void auftrag_lieferschein::clear_input()
 {
- liefermenge->set_value(0);
- anzahl->set_value(0);
+ if (!masseneingabe2->get_active())
+ {  liefermenge->set_value(0);
+    anzahl->set_value(0);
 // Palette->set_value(1);
- artikelbox->reset();
- auftragnr->set_text("");
+    artikelbox->reset();
+    auftragnr->set_text("");
+ }
  artikelbox->set_sensitive(true);
  auftragnr->set_sensitive(true);
 }
@@ -545,15 +579,10 @@ void auftrag_lieferschein::set_tree_offen_content()
 {
  clear_input();
  tree_offen->clear();
+// if (!show_offen) return; 
 
  try {
    SQLFullAuftragSelector sel;
-#if 0 // 
-   if(instanz->Lieferschein())
-     sel=SQLFullAuftragSelector(SQLFullAuftragSelector::sel_Status(
-                   instanz->Id(), (AufStatVal)OPEN,false));
-   else
-#endif   
      sel=SQLFullAuftragSelector(SQLFullAuftragSelector::sel_Kunde_Status(
                    instanz->Id(), liefer_kunde->get_value(), (AufStatVal)OPEN));
 
@@ -570,7 +599,6 @@ void auftrag_lieferschein::on_button_zeile_modifizieren_clicked()
  try{
    cH_Data_Lieferdaten dt(tree_daten->getSelectedRowDataBase_as<cH_Data_Lieferdaten>());
    LieferscheinEntry LE = dt->get_LieferscheinEntry();
-   int zeile=LE.Zeile();
    
    Palette->update();
    liefermenge->update();
@@ -589,3 +617,13 @@ void auftrag_lieferschein::on_button_zeile_modifizieren_clicked()
   } catch(std::exception &e) {std::cerr << e.what();}
 }
 
+void auftrag_lieferschein::on_checkbutton_ean_drucken_clicked()
+{
+ cH_Kunde k(liefer_kunde->get_value());
+ 
+ if(k->Id() != Kunde::none_id)   
+    {
+     (const_cast<Kunde*>(&*k))->
+     showEAN(checkbutton_ean_drucken->get_active());
+    }  
+}

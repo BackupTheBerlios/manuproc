@@ -27,7 +27,6 @@
 
 MyMessage *meldung;
 auftrag_main *auftragmain;
-auftrag_bearbeiten *auftragbearbeiten;
 ManuProC::Connection *Conn;
 
 int main(int argc, char **argv)

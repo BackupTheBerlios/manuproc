@@ -16,7 +16,7 @@
 
 class lieferscheinliste : public lieferscheinliste_glade
 {   
-        LieferscheinList *LL;
+        LieferscheinList LL;
         ArtikelBase artbase;
         int kundenid;
         cH_ppsInstanz instanz;

@@ -33,35 +33,40 @@
 #ifndef OLD
 #include<Auftrag/selFullAufEntry.h>
 #include "MyMessage.h"  
-#include "AufEintrag.h" 
 #include "auftragbase.h"
 #endif
 
 extern auftrag_main *auftragmain;
-extern auftrag_bearbeiten *auftragbearbeiten;
 
 extern MyMessage *meldung;
 
+
+
 auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEintragBase *auftragbase)
-: instanz(_instanz), kunde(Kunde::default_id),artikel_preisliste_geaendert(false)
+: instanz(_instanz), auftrag(0), aktaufeintrag(0), kunde(Kunde::default_id),
+	aufentrystat_chid(0), aufstat_chid(0), selectedentry(-1),
+	artikel_preisliste_geaendert(false), newauftrag(false),
+	splitdialog(0)
 {
- splitdialog=0;
  liefdatum_datewin->set_tab_pos(GTK_POS_TOP);
- table_auftragseintraege->hide();
- scrolledwindow_auftraege->hide();
+// table_auftragseintraege->hide();
+// scrolledwindow_auftraege->hide();
+ aufeintrag_box->hide(); // beinhaltet beide oben
  
 #ifdef PETIG_EXTENSIONS
  table_preislisten->hide();
+ liefdatum_datewin->set_page(1); // KW
 #endif
 
-#ifdef MABELLA_EXTENSIONS
  WAufStat->set_history((AufStatVal)OPEN);
+#ifdef MABELLA_EXTENSIONS
  _tooltips.set_tip(*button_drucken,"Linke Maustaste: 1 Original
 Mittlere Maustaste: 1 Kopie","");
 
    std::string nurliefer(" and lieferadresse=true and coalesce(aktiv,true)=true");
    kundenbox->Einschraenkung(nurliefer);
    kundenbox->Einschraenken(true); 
+   checkbutton_ean_drucken->show();
 #endif 
 
  zahlart->hide_int(true);
@@ -69,12 +74,6 @@ Mittlere Maustaste: 1 Kopie","");
  zahlziel_datewin->setLabel(std::string("Zahlungsziel"));
  aufdatum_datewin->setLabel(std::string("Auftragsdatum"));
 
- newauftrag=false;
- 
- aktaufeintrag = 0;
- selectedentry=-1;
- auftrag = 0;
- 
  if(auftragbase)
    {
     loadAuftrag(*auftragbase);
@@ -97,7 +96,7 @@ void auftrag_bearbeiten::onSelArtikel()
     WPreis->reset();
 #ifdef MABELLA_EXTENSIONS
 
-    if(preislisten->get_value() == PreisListe::none_id)
+    if(preisautomatik->get_active())
       {
          Artikelpreis AP(kunde,artikelbox->get_value());
          if (AP.Gefunden())
@@ -164,11 +163,7 @@ void auftrag_bearbeiten::clearEntry()
  WPreis->reset();
  selectedentry=-1;
  artikelbox->set_editable(true);
-#ifdef MABELLA_EXTENSIONS
  WAufEntryStat->set_history((AufStatVal)OPEN);
-#else
- WAufEntryStat->set_history((AufStatVal)UNCOMMITED);
-#endif 
  aufentry_ok->set_sensitive(true);
  aufentry_abbruch->set_sensitive(true);
 }
@@ -184,18 +179,26 @@ gint auftrag_bearbeiten::on_aufrabatt_spinbutton_focus_out_event(GdkEventFocus *
 }
 
 void auftrag_bearbeiten::on_backtomain_button_clicked()
-{splitdialog=0;
+{if (splitdialog) splitdialog->destroy();
  destroy();
  auftragmain->show(); 
- auftragbearbeiten = NULL;
 }
 
 void auftrag_bearbeiten::on_newauftrag_button_clicked()
-{on_clear_all();
+{Kunde::ID k=kundenbox->get_value();
+ on_clear_all();
  auftrag_ok->set_sensitive(true);
  auftrag_abbruch->set_sensitive(true);
  aufnr_scombo->set_sensitive(false);
+
+ if (k!=Kunde::none_id) 
+ {  kundenbox->set_value(k);
+    andererKunde();
+    youraufnr_scombo->grab_focus();
+ }
+ else
  kundenbox->grab_focus();
+ 
 }
 
 void auftrag_bearbeiten::auftragstatus_geaendert()
@@ -252,7 +255,7 @@ void auftrag_bearbeiten::on_stkmtr_spinbutton_activate()
        	AuftragBase::mengen_t(stkmtr_spinbutton->get_value_as_int())-
         aktaufeintrag->getStueck();
        			
-       AuftragBase::mengen_t mt=aktaufeintrag->updateStkDiff__(getuid(),diffmenge,true);
+       AuftragBase::mengen_t mt=aktaufeintrag->updateStkDiff__(getuid(),diffmenge,true,AufEintragBase::r_Standard);
        assert(mt==diffmenge);
        fillCList();
        auftrag_clist->grab_focus();
@@ -286,7 +289,13 @@ void auftrag_bearbeiten::on_aufentry_abbruch_clicked()
 
 void auftrag_bearbeiten::on_aufentry_ok_clicked()
 {
- assert(auftrag);
+ if(!auftrag)
+   {meldung->Show("Bitte zuerst einen Auftrag auswählen oder einen neuen Auftrag erzeugen");
+    return;
+   }
+   
+// assert(auftrag);
+
  if (!aktaufeintrag)
    {
      stkmtr_spinbutton->update();
@@ -296,6 +305,22 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
         artikel_preisliste_geaendert=false;
       }
 //     int znr=
+
+#ifdef MABELLA_EXTENSIONS // auf keinen Fall Preis=0.0 akzeptieren
+ if(!(WPreis->get_Preis()!=Preis(0.0,WPreis->get_Preis().getWaehrung())) )
+   {meldung->Show("Preis 0,00 ist nicht erlaubt");
+    return;
+   }
+   
+  if(  auftrag->existsEntry(artikelbox->get_value().Id(),
+  		       WAufEntryStat->get_Status(),
+	               liefdatum_datewin->get_value()) )
+   {meldung->Show("Der Artikel ist für diesen Lifertermin bereits erfaßt");
+    return;
+   }	           
+   
+#endif
+
      auftrag->AuftragFull::insertNewEntry(
                stkmtr_spinbutton->get_value_as_int(),
                liefdatum_datewin->get_value(),
@@ -306,8 +331,21 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
                rabattentry_spinbutton->get_value_as_float(),
                artpreis);
       fillCList();
-      artikelbox->reset();
-      artikelbox->grab_focus();
+      if (!masseneingabe1->get_active())
+      {  artikelbox->reset();
+         artikelbox->grab_focus();
+      }
+#ifdef MABELLA_EXTENSIONS
+      else
+      {  artikelbox->set_focus(0,2);
+      }
+#else      
+      else
+      {  stkmtr_spinbutton->grab_focus();
+         stkmtr_spinbutton->select_region(0,-1);
+      }
+#endif
+      
     }
 }
 
@@ -360,7 +398,9 @@ void auftrag_bearbeiten::loadAuftrag(const AuftragBase& auftragbase)
     auftrag = new AuftragFull(ab);
   } catch(SQLerror &e)
   {
-   meldung->Show(e); auftrag=NULL; return;}
+   meldung->Show(e); auftrag=NULL; 
+   aufeintrag_box->hide();
+   return;}
  catch (Kalenderwoche::error &e)
  { std::cerr << "KW error\n";
  }
@@ -369,17 +409,16 @@ void auftrag_bearbeiten::loadAuftrag(const AuftragBase& auftragbase)
  fillMask();
  aktaufeintrag = 0;
  stkmtr_spinbutton->set_value(0);
- rabattentry_spinbutton->set_value(0);
+// rabattentry_spinbutton->set_value(0);
+ Rabatt_setzen(kunde);
  WPreis->reset();
  liefdatum_datewin->set_value(ManuProC::Datum::today());
-#ifdef MABELLA_EXTENSIONS
  WAufEntryStat->set_history((AufStatVal)OPEN);
-#else
- WAufEntryStat->set_history((AufStatVal)UNCOMMITED);
-#endif
- table_auftragseintraege->show();
- scrolledwindow_auftraege->show();
+// table_auftragseintraege->show();
+// scrolledwindow_auftraege->show();
+ aufeintrag_box->show();
  zahlart->set_value(auftrag->Zahlart()->Id());
+
 }
 
 void auftrag_bearbeiten::fillMask() 
@@ -394,6 +433,10 @@ void auftrag_bearbeiten::fillMask()
 // jahrgang_spinbutton->set_value(auftrag->getJahrgang());
  aufdatum_datewin->set_value(auftrag->getDatum());
  bea_WWaehrung->set_History( auftrag->getWaehrung()->get_enum() );
+ 
+ gint pos=0; 
+ notiz->insert_text(auftrag->Notiz().c_str(),auftrag->Notiz().size(),&pos);
+ notiz_save->set_sensitive(false);
 
  aufrabatt_spinbutton->set_value(auftrag->getAuftragsRabatt());
  zahlziel_datewin->set_value(auftrag->Zahlziel());
@@ -401,17 +444,20 @@ void auftrag_bearbeiten::fillMask()
 }
 
 void auftrag_bearbeiten::Rabatt_setzen(const cH_Kunde &kunde)
-{   if(kunde->zeilenrabatt())
+{
+ cH_Kunde rngk(kunde->isRechnungsadresse() ? kunde->Id() : kunde->Rngan());
+
+    if(rngk->zeilenrabatt())
      {
       aufrabatt_spinbutton->set_sensitive(false);
       aufrabatt_spinbutton->set_value(0);
       rabattentry_spinbutton->set_sensitive(true);
-      rabattentry_spinbutton->set_value(kunde->rabatt());
+      rabattentry_spinbutton->set_value(rngk->rabatt());
      }          
     else
      {
       aufrabatt_spinbutton->set_sensitive(true);
-      aufrabatt_spinbutton->set_value(kunde->rabatt());
+      aufrabatt_spinbutton->set_value(rngk->rabatt());
       rabattentry_spinbutton->set_value(0);
      }          
 }
@@ -429,10 +475,10 @@ void auftrag_bearbeiten::andererKunde()
    kunde = kundenbox->get_value();
    Rabatt_setzen(kunde);
 #ifdef MABELLA_EXTENSIONS
-   std::string eins(" and exists (select prlsnr from ku_warenkorb"
+   std::string eins_prlist(" and exists (select prlsnr from ku_warenkorb"
    	" where prlsnr=ku_preisliste.prlsnr and kundennr=");
-   eins+=itos(kunde->Id())+")";
-   preislisten->Einschraenkung(eins);
+   eins_prlist+=itos(kunde->Id())+")";
+   preislisten->Einschraenkung(eins_prlist);
    preislisten->set_value(kunde->preisliste());
    Rabatt_setzen(cH_PreisListe(kunde->preisliste()));
 #endif
@@ -441,9 +487,15 @@ void auftrag_bearbeiten::andererKunde()
     bea_WWaehrung->set_History(kunde->getWaehrung()->get_enum());
     WPreis->set_Waehrung(kunde->getWaehrung()->get_enum() );
 
+    preisautomatik->set_active(kunde->Preisautomatik());
+    
 #ifdef MABELLA_EXTENSIONS
-   artikelbox->NurWarenkorb(kunde->preisliste());
+   if(preisautomatik->get_active())
+     artikelbox->AlleWarenkorb(kunde->Id());
+   else
+     artikelbox->EinWarenkorb(kunde->preisliste());   
    artikelbox->Einschraenken_b(true);
+   checkbutton_ean_drucken->set_active(kunde->showEAN());
 #endif
 
    if(!kunde->isRechnungsadresse())
@@ -509,18 +561,20 @@ void auftrag_bearbeiten::setAufEntries()
 void auftrag_bearbeiten::on_splitten()
 {
  if(splitdialog) splitdialog->destroy();
- splitdialog = manage(new termsplidial());
+ if (!auftrag || !aktaufeintrag) return;
+ splitdialog = manage(new termsplidial(this,aktaufeintrag->getLieferdatum()));
 }
 
 bool auftrag_bearbeiten::splitEntry()
 {
- if(!splitdialog || !auftrag) return false;
+ if(!splitdialog || !auftrag || !aktaufeintrag) return false;
 
  ManuProC::Datum newlief = splitdialog->getLiefDatum();
  int newmenge = splitdialog->getMenge();
  if(!newmenge) {meldung->Show(std::string("Menge nicht korrekt")); return false;}
  
- try{auftrag->split(getuid(),selectedentry, newlief, newmenge);}
+ // Malte: welchen Wert muss dispoplanung haben?
+ try{aktaufeintrag->split(getuid(),newmenge, newlief);}
  catch(SQLerror &e)
   {meldung->Show(e); return false;}    
  loadAuftrag(*auftrag);
@@ -536,14 +590,11 @@ void auftrag_bearbeiten::on_clear_all()
  auftrag_clist->thaw();
  if(auftrag) delete(auftrag);
  auftrag=0;
+ aufeintrag_box->hide();
  aktaufeintrag=0; 
  kundenbox->reset();
  artikelbox->reset();		// ich denke das sollte hier auch rein
-#ifdef MABELLA_EXTENSIONS 
   WAufStat->set_history((AufStatVal)OPEN);
-#else
-  WAufStat->set_history((AufStatVal)UNCOMMITED);
-#endif
  aufnr_scombo->reset();
  youraufnr_scombo->reset();
  aufbemerkung_entry->set_text("");
@@ -554,6 +605,8 @@ void auftrag_bearbeiten::on_clear_all()
  zahlart->reset();
  bea_WWaehrung->set_History(WaehrungID::EUR);
  preislisten->reset();
+ notiz->delete_text(0,-1);
+ notiz_save->set_sensitive(false);
 }
 
 
@@ -574,6 +627,7 @@ void auftrag_bearbeiten::on_auftrag_ok_clicked()
  	auftrag->setYourAufNr(youraufnr_scombo->get_text());
 
      auftrag->Zahlart(zahlart->get_value());
+     auftrag->setRabatt(aufrabatt_spinbutton->get_value_as_float());
 
       AuftragBase ab(*auftrag);
 
@@ -594,7 +648,8 @@ void auftrag_bearbeiten::on_auftrag_ok_clicked()
       }
  catch(SQLerror &e)
    {meldung->Show(e);
-    auftrag=NULL;
+    auftrag=0;
+    aufeintrag_box->hide();
     return;
    }
 }
@@ -617,8 +672,12 @@ void auftrag_bearbeiten::on_button_preview_clicked()
 {  if (!auftrag) return;
    std::string art="Auftrag";
    if(instanz!=ppsInstanzID::Kundenauftraege) art="Extern";
+
+   std::string optionen;
+   if(checkbutton_ean_drucken->get_active()) optionen =" --ean ";
+
    std::string command = "auftrag_drucken -a "+art+" -n "+itos(auftrag->Id())+
-   		" -i " + itos(instanz->Id());
+   		" -i " + itos(instanz->Id())+optionen;
    system(command.c_str());
 }  
 
@@ -629,17 +688,20 @@ gint auftrag_bearbeiten::on_button_drucken_clicked(GdkEventButton *ev)
    std::string art="Auftrag";
    if(instanz!=ppsInstanzID::Kundenauftraege) art="Extern";
 
+   std::string optionen;
+   if(checkbutton_ean_drucken->get_active()) optionen =" --ean ";
+
    if(ev->button==1)
    {
    std::string command = "auftrag_drucken -f -a "+art+" -n "+itos(auftrag->Id())+
-   	" -p -i " + itos(instanz->Id());
+   	" -p -i " + itos(instanz->Id())+optionen;
    system(command.c_str());
    }
 
   if(ev->button==2)
    {
    std::string command = "auftrag_drucken  -a "+art+" -n "+itos(auftrag->Id())+
-   	" -p -i " + itos(instanz->Id());
+   	" -p -i " + itos(instanz->Id())+optionen;
    system(command.c_str());
    }
  return false;
@@ -648,10 +710,23 @@ gint auftrag_bearbeiten::on_button_drucken_clicked(GdkEventButton *ev)
 
 void auftrag_bearbeiten::on_activate_wpreis()
 {
-  assert(auftrag);
+ if(!auftrag)
+   {meldung->Show("Bitte zuerst einen Auftrag auswählen oder einen neuen Auftrag erzeugen");
+    return;
+   }
+
+//  assert(auftrag);
+
   if (aktaufeintrag)
    {
      Preis pr(WPreis->get_value());
+
+#ifdef MABELLA_EXTENSIONS // auf keinen Fall Preis=0.0 akzeptieren
+ if(!(WPreis->get_Preis()!=Preis(0.0,WPreis->get_Preis().getWaehrung())))
+   {meldung->Show("Preis 0,00 ist nicht erlaubt");
+    return;
+   }
+#endif
 
      aktaufeintrag->updatePreis(pr);
      fillCList();
@@ -688,12 +763,6 @@ void auftrag_bearbeiten::fillCList()
 //cout << i->GPreis() << ":" << psum << "\n";     
    } 
 
-#ifdef PETIG_EXTENSIONS
-  os << "\t\t\t\t-----------\n";
-  os << "\t\t\tAuftragswert\t";
-  os << Formatiere(psum.Wert()) << "\n";
-#endif  
-
   auftragswert->set_text(Formatiere(psum.Wert()));
 
   for(guint i=0; i<auftrag_clist->columns().size();++i)
@@ -706,7 +775,10 @@ void auftrag_bearbeiten::on_auftrag_preislisten_activate()
 #ifdef MABELLA_EXTENSIONS
  cH_PreisListe p(preislisten->get_value());
  artikelbox->reset();
- artikelbox->NurWarenkorb(p->Id());
+ if(preisautomatik->get_active())
+     artikelbox->AlleWarenkorb(kunde->Id());
+ else
+     artikelbox->EinWarenkorb(p->Id());   
  artikelbox->Einschraenken_b(true);
  artikelbox->grab_focus();
  Rabatt_setzen(p);
@@ -728,5 +800,45 @@ void auftrag_bearbeiten::on_rueckstand_clicked()
  std::string command = "auftrag_drucken -a Auftrag -R -n "+itos(auftrag->Id())+
    	" -p -i " + itos(instanz->Id());
    system(command.c_str());  
+}
+
+void auftrag_bearbeiten::on_notiz_changed()
+{
+  notiz_save->set_sensitive(true);
+}
+
+void auftrag_bearbeiten::on_notiz_save_clicked()
+{   
+  if(auftrag) auftrag->Notiz(notiz->get_chars(0,notiz->get_length()));
+  notiz_save->set_sensitive(false);
+}
+
+void auftrag_bearbeiten::on_preisautomatik_clicked()
+{
+#ifdef MABELLA_EXTENSIONS
+ if(preisautomatik->get_active())
+     {artikelbox->AlleWarenkorb(kunde->Id());
+      preislisten->set_sensitive(false);
+     }
+ else
+     {artikelbox->EinWarenkorb(preislisten->get_value());
+      preislisten->set_sensitive(true);
+     }
+        
+ artikelbox->Einschraenken_b(true);   
+   
+ if(kunde->Id() != Kunde::none_id)
+   {  
+    (const_cast<Kunde*>(&*kunde))->Preisautomatik(preisautomatik->get_active());
+   }
+#endif    
+}
+
+void auftrag_bearbeiten::on_checkbutton_ean_drucken_clicked()
+{
+ if(kunde->Id() != Kunde::none_id)
+   {  
+    (const_cast<Kunde*>(&*kunde))->showEAN(checkbutton_ean_drucken->get_active());
+   }
 }
 

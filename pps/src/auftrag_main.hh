@@ -89,7 +89,7 @@ private:
         void on_kunden_anr_activate();
         void on_offene_auftraege_activate();
         void on_auftraege_kunde_activate();
-        void on_mainprint_button_clicked();
+        gint on_mainprint_button_clicked(GdkEventButton *ev);
         void on_leaf_selected(cH_RowDataBase d);
         void on_node_selected(const TreeRow &node);
         void show_something_for(AufEintrag& selAufEintrag);

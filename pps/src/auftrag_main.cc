@@ -32,7 +32,6 @@
 #include <algorithm>
 #include <Aux/Global_Settings.h>
 #include "MyMessage.h"
-#include "AufEintrag.h"
 #include <PPixmap.hh>
 //#include <Lager/Lager_Vormerkungen.hh>
 #include <unistd.h>
@@ -51,7 +50,8 @@ bool auftragflag;/* zeigt an ab wann auftragid in den Zeilen */
 void auftrag_main::on_beenden_activate()
 {   
  maintree_s->detach_from_clist();
- tree_lager->detach_from_clist();
+ tree_lager_frei->detach_from_clist();
+ tree_lager_verplant->detach_from_clist();
  Gtk::Main::instance()->quit();
 }
 
@@ -75,13 +75,11 @@ void auftrag_main::on_neuladen_activate()
  fill_simple_tree();
 }
 
-#ifdef MABELLA_EXTENSIONS
 #define TEXCMD "tex2prn -2 -q -Phl1260"
-#else
-#define TEXCMD "tex2prn -2 -q -Phl1260"
-#endif
 
-//#define TEXCMD "tex2prn -2 -G -Phl1260" // Preview
+#define TEXCMDVIEW "tex2prn -2 -G -Phl1260" // Preview
+
+static std::string print_cmd;
 
 static std::string kopfzeile(int col,const std::string &typ,const std::string &title,gpointer user_data)
 {  if (!strncmp(title.c_str(),"Verarbeitung",12)) return "p{3.5cm}";
@@ -102,13 +100,8 @@ static std::string shorten_some(int col,const std::string &title,gpointer user_d
 
 void auftrag_main::on_main_drucken_activate()
 {  
-   maintree_s->Expand_recursively(*maintree_s);
    
-#ifdef MABELLA_EXTENSIONS
-   FILE *f=popen("tex2prn -2 -G -Phl1260","w");
-#else
-   FILE *f=popen(TEXCMD,"w");
-#endif   
+   FILE *f=popen(print_cmd.c_str(),"w");
    
    std::ofstream os(fileno(f));
    Gtk2TeX::HeaderFlags fl;
@@ -120,6 +113,32 @@ void auftrag_main::on_main_drucken_activate()
    Gtk2TeX::TableFlags tf;
    tf.columntype_cb=&kopfzeile;
    tf.columntitle_cb=&shorten_some;
+   tf.multicolumn=true;
+   if (maintree_s->selection().begin()!=maintree_s->selection().end())
+   {  // yes, this hackery is not amusing! We need an API change ...
+      // Try to detect size of the selected tree
+      TCListRow *tclapi=(TCListRow*)(maintree_s->selection().begin()->get_data());
+      
+      TCListRow *last=tclapi;
+      int last_visible=-1;
+      while (last->begin()!=last->end())
+        {
+         last=&*(--last->end());
+         if(last->get_lineno()!=-1)
+           last_visible=last->get_lineno();
+        }
+#if PETIG_EXTENSIONS      
+      maintree_s->Expand_recursively(*maintree_s);
+#endif
+      tf.first_line=tclapi->get_lineno();
+      tf.last_line=last_visible;
+   }
+   else
+   {
+#if PETIG_EXTENSIONS      
+      maintree_s->Expand_recursively(*maintree_s);
+#endif
+   }
    Gtk2TeX::CList2Table(os,maintree_s,tf);
    Gtk2TeX::Footer(os);
    os.close();
@@ -260,8 +279,15 @@ void auftrag_main::loadEinstellungen()
 
 
 
-void auftrag_main::on_mainprint_button_clicked()
-{   on_main_drucken_activate();
+gint auftrag_main::on_mainprint_button_clicked(GdkEventButton *ev)
+{
+  if(ev->button==1) print_cmd=TEXCMD;
+  else if(ev->button==3) print_cmd=TEXCMDVIEW;
+  else return false;
+  
+  on_main_drucken_activate();
+  
+  return false;
 }
 
 
@@ -477,11 +503,11 @@ void auftrag_main::show_selected_line(bool lager)
   if(lager)
    {
     try{
-       cH_RowDataBase dt(tree_lager->getSelectedRowDataBase());
+       cH_RowDataBase dt(tree_lager_verplant->getSelectedRowDataBase());
        on_lager_leaf_selected(dt);
       } catch(std::exception &e) {}
     try{
-       TreeRow dt(tree_lager->getSelectedNode());
+       TreeRow dt(tree_lager_verplant->getSelectedNode());
        on_lager_node_selected(dt);
       } catch(std::exception &e) {}
    }
@@ -779,7 +805,7 @@ void auftrag_main::show_frame_instanzen_material()
   if(instanz->LagerInstanz())
    { 
      maintree_s->hide();
-     tree_lager->show();
+     hpaned_tree_lager->show();
 //     togglebutton_auftraege->hide();
 //     togglebutton_material->hide();
      button_Kunden_erledigt->hide();
@@ -787,7 +813,7 @@ void auftrag_main::show_frame_instanzen_material()
    }
   else
    { maintree_s->show();
-     tree_lager->hide();
+     hpaned_tree_lager->hide();
      togglebutton_auftraege->show();
      togglebutton_material->show();
    }
@@ -795,7 +821,7 @@ void auftrag_main::show_frame_instanzen_material()
   // frame_materialbedarf
   guint psize=GTK_WIDGET(vpaned_an_mat->gtkobj())->allocation.height;
   if( ( maintree_s->selection().size()==0 &&     // keine Zeile gewählt
-        tree_lager->selection().size()==0) ||
+        tree_lager_verplant->selection().size()==0) ||
      (!togglebutton_material->get_active() &&  // oder
       !togglebutton_auftraege->get_active()))  // kein Button aktiv
    {
@@ -808,8 +834,8 @@ void auftrag_main::show_frame_instanzen_material()
      vpaned_an_mat->set_position(2*psize/3.);
      if(maintree_s->selection().size()!=0)
         maintree_s->moveto(maintree_s->selection().begin()->get_row_num(),0);
-     else if(tree_lager->selection().size()!=0)
-        tree_lager->moveto(tree_lager->selection().begin()->get_row_num(),0);
+     else if(tree_lager_verplant->selection().size()!=0)
+        tree_lager_verplant->moveto(tree_lager_verplant->selection().begin()->get_row_num(),0);
    }
 }
 
@@ -867,3 +893,11 @@ void auftrag_main::handle_togglebutton(char c)
   block_callback=false;
 }
 
+std::ostream &operator<<(std::ostream &o, const ArtikelMenge &am)
+{  return o << cH_ArtikelBezeichnung(am.Artikel())->Bezeichnung() << ":\t"
+        << am.Menge() << "\t| " << am.abgeleiteteMenge();
+}
+        
+std::ostream &operator<<(std::ostream &o, const ArtikelMengeSumme &ams)
+{  return o << ams.Menge() << "\t| " << ams.abgeleiteteMenge();
+}
