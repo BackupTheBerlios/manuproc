@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.58 2004/05/03 11:47:18 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.59 2004/05/04 11:55:50 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,13 +17,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// property_is_expanded
-// property_is_expander
-// property_xalign
-// 
-// property_text
-// property_background (text)
-// property_background_gdk (text)
 // property_editable
 
 #include <SimpleTreeStore.h>
@@ -420,10 +413,7 @@ SimpleTreeStore::iterator SimpleTreeStore::MoveTree(iterator current_iter,
 {//  ManuProC::Trace(trace_channel,__FUNCTION__,deep,child_s_deep,value_index);
    Node &oldnode=current_iter->second;
    Node newnode(deep,oldnode.parent,oldnode.leafdata,child_s_deep);
-//   newnode.childrens_deep=child_s_deep;
 
-//   InitColumns(newnode,deep,oldnode.parent,oldnode.leafdata);
-//   newnode.setRow();
    if (node_creation) 
    {  Handle<TreeRow> htr= (*node_creation)(&*oldnode.row);
       newnode.row=htr;
@@ -657,17 +647,12 @@ void SimpleTreeStore::get_value_vfunc(const TreeModel::iterator& iter, int colum
                   return;
                }
                const Glib::ustring s=nd.row->Value(idx,ValueData())->getStrVal();
-//               if (colno==int(nd.childrens_deep))
-//                  g_value_set_string(value,("..."+s).c_str());
-//               else 
                   g_value_set_string(value,s.c_str());
             }
             else if (nd.childrens_deep) // node
             {  if (unsigned(colno)>nd.childrens_deep || unsigned(colno)<nd.deep) 
                   return;
                if (colno!=int(nd.childrens_deep))
-//                  g_value_set_string(value,"...");
-//               else		
                   g_value_set_string(value,nd.leafdata->Value(idx,ValueData())->getStrVal().c_str());
             }
             else // leaf
@@ -694,7 +679,6 @@ bool SimpleTreeStore::iter_next_vfunc(GtkTreeIter* iter)
    newit++;
    if (newit==old->second.parent->children.end()) return false;
    iterinit(iter,newit);
-//   iterconv(iter)=newit;
    ManuProC::Trace(trace_channel,"new iter",iter->user_data);
    return true;
 }
@@ -823,19 +807,13 @@ std::ostream &operator<<(std::ostream &o,const SimpleTreeStore::iterator &i)
 SimpleTreeStore::iterator SimpleTreeStore::iterbyNode(Node &nd) const
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,&nd);
    cH_EntryValue val=nd.leafdata->Value(currseq[nd.deep],ValueData());
-//   ManuProC::Trace(trace_channel,"val",val->getStrVal());
-//   assert(sortierspalte==invisible_column);
    std::pair<iterator,iterator> p;
    if (sortierspalte==invisible_column) p=nd.parent->children.equal_range(val);
    else p=make_pair(nd.parent->children.begin(),nd.parent->children.end());
-//   ManuProC::Trace(trace_channel,"eq_r",p.first,p.second,nd.parent->children.end());
    for (iterator i=p.first;i!=p.second;++i) 
    {  ManuProC::Trace(trace_channel,"i",&i->second);
       if (&i->second==&nd) return i;
    }
-//for (iterator i=nd.parent->children.begin();i!=nd.parent->children.end();++i)
-//{  ManuProC::Trace(trace_channel,"i2",i,i->first->getStrVal(),&i->second);
-//}
    return nd.parent->children.end();
 }
 
@@ -843,8 +821,6 @@ void SimpleTreeStoreNode::swap(SimpleTreeStoreNode &b)
 {  std::swap(children,b.children);
    std::swap(row,b.row);
    std::swap(leafdata,b.leafdata);
-//   std::swap(expanded,b.expanded);
-//   std::swap(expanding_column,b.expanding_column);
    std::swap(parent,b.parent);
    std::swap(deep,b.deep);
    std::swap(childrens_deep,b.childrens_deep);
