@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include "MyMessage.h"
 //#include <Instanzen/Produziert.h>
-#include <Instanzen/ppsInstanzProduziert.h>
+#include <Auftrag/ppsInstanzProduziert.h>
 #include <Misc/relops.h>
 
 extern MyMessage *meldung;
