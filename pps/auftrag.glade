@@ -7471,7 +7471,7 @@ Jahr
   <allow_shrink>True</allow_shrink>
   <allow_grow>True</allow_grow>
   <auto_shrink>True</auto_shrink>
-  <auto_close>False</auto_close>
+  <auto_close>True</auto_close>
   <hide_on_close>False</hide_on_close>
 
   <widget>
@@ -7539,7 +7539,7 @@ Jahr
       <spacing>0</spacing>
       <child>
 	<padding>0</padding>
-	<expand>False</expand>
+	<expand>True</expand>
 	<fill>True</fill>
       </child>
 
@@ -7552,7 +7552,7 @@ Jahr
 	<child>
 	  <padding>0</padding>
 	  <expand>False</expand>
-	  <fill>False</fill>
+	  <fill>True</fill>
 	</child>
 
 	<widget>
@@ -7563,39 +7563,6 @@ Jahr
 	  <homogeneous>False</homogeneous>
 	  <row_spacing>0</row_spacing>
 	  <column_spacing>0</column_spacing>
-
-	  <widget>
-	    <class>GtkFrame</class>
-	    <name>frame49</name>
-	    <label>Kunde</label>
-	    <label_xalign>0</label_xalign>
-	    <shadow_type>GTK_SHADOW_NONE</shadow_type>
-	    <child>
-	      <left_attach>0</left_attach>
-	      <right_attach>1</right_attach>
-	      <top_attach>0</top_attach>
-	      <bottom_attach>1</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>True</yfill>
-	    </child>
-
-	    <widget>
-	      <class>Custom</class>
-	      <name>prov_aufkunde</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <sensitive>False</sensitive>
-	      <creation_function>KundenBox2</creation_function>
-	      <int1>0</int1>
-	      <int2>0</int2>
-	      <last_modification_time>Sat, 10 May 2003 15:32:28 GMT</last_modification_time>
-	    </widget>
-	  </widget>
 
 	  <widget>
 	    <class>GtkHBox</class>
@@ -7664,6 +7631,39 @@ Jahr
 		<int2>0</int2>
 		<last_modification_time>Sat, 10 May 2003 15:28:55 GMT</last_modification_time>
 	      </widget>
+	    </widget>
+	  </widget>
+
+	  <widget>
+	    <class>GtkFrame</class>
+	    <name>frame49</name>
+	    <label>Kunde</label>
+	    <label_xalign>0</label_xalign>
+	    <shadow_type>GTK_SHADOW_NONE</shadow_type>
+	    <child>
+	      <left_attach>0</left_attach>
+	      <right_attach>1</right_attach>
+	      <top_attach>0</top_attach>
+	      <bottom_attach>1</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>True</yfill>
+	    </child>
+
+	    <widget>
+	      <class>Custom</class>
+	      <name>prov_aufkunde</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <sensitive>False</sensitive>
+	      <creation_function>KundenBox2</creation_function>
+	      <int1>0</int1>
+	      <int2>0</int2>
+	      <last_modification_time>Sat, 10 May 2003 15:32:28 GMT</last_modification_time>
 	    </widget>
 	  </widget>
 	</widget>
