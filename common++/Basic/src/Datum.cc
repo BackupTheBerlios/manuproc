@@ -1,4 +1,4 @@
-// $Id: Datum.cc,v 1.15 2002/10/24 14:06:49 thoma Exp $
+// $Id: Datum.cc,v 1.16 2003/02/24 20:19:55 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.15 2002/10/24 14:06:49 thoma Exp $ */
+/* $Id: Datum.cc,v 1.16 2003/02/24 20:19:55 jacek Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
@@ -66,6 +66,13 @@ woche(0),woche_jahrdiff(0),quart(0)
 const char *ManuProC::Datum::c_str() const throw(ManuProC::Datumsfehler)
 {	static char ret[11];
 	write_euro(ret,sizeof ret);
+	return ret;
+}
+
+const char *ManuProC::Datum::c_str_filled() const throw(ManuProC::Datumsfehler)
+{	static char ret[11];
+	teste();
+	snprintf0(ret,sizeof ret,"%02d.%02d.%04d",tag,monat,jahr);
 	return ret;
 }
 
