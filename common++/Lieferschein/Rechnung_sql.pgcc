@@ -220,3 +220,16 @@ void Rechnung::setzeWaehrung(const cP_Waehrung &w) throw(SQLerror)
  exec sql update rechnung set waehrung=:WAEHRUNG where rngid=:RNGID;
  SQLerror::test(__FILELINE__);
 }
+
+void Rechnung::setze_Rabatt(fixedpoint<2> r) throw(SQLerror)
+{  rabatt=r;
+ exec sql begin declare section;
+ int RNGID;
+ float RABATT;
+ exec sql end declare section;
+
+ RNGID=Id();
+ RABATT=r;
+ exec sql update rechnung set rabatt=:RABATT where rngid=:RNGID;
+ SQLerror::test(__FILELINE__);
+}

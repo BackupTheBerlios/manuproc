@@ -27,7 +27,7 @@ const cH_EntryValue Lief_RowData::Value(int _seqnr) const
  switch(_seqnr)
    {
 	case Lief_TCList::AUFNR_SEQ :
-		return cH_Lief_Value(Formatiere(liefentry.AufId(),0,6,"",""));
+		return cH_Lief_Value(Formatiere(liefentry.AufId(),0,6,"","",'0'));
 		break;
 	case Lief_TCList::ARTIKEL_SEQ :
 		return cH_Lief_Value(artikelbez->Bezeichnung());
@@ -42,7 +42,3 @@ const cH_EntryValue Lief_RowData::Value(int _seqnr) const
    }
  return cH_Lief_Value("-");
 }
-
-
-
-

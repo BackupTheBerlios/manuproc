@@ -52,7 +52,7 @@ const vector<string> Lief_Node::getColEntries(int cols)
 
  v[Lief_TCList::LIEFMNG_SEQ]=Formatiere(sumgeliefert);
 
- cout << "getColEntries Node\n";
+// cout << "getColEntries Node\n";
  return v;
 
 }

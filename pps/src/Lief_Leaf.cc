@@ -33,12 +33,12 @@ const vector<string> Lief_Leaf::getColEntries(int cols)
  if (stueck!=1) a=Formatiere(stueck);
  if (menge.Scaled()!=0) 
  {  if (stueck!=1) a+="*";
-    a+=Formatiere2(menge)
+    a+=Formatiere(menge)
       +string(Einheit((dynamic_cast<const Lief_RowData &>(*leafdata)).ArtikelID()));
  }
  v[Lief_TCList::LIEFMNG_SEQ]=a;
 
- cout << "getColEntries Leaf\n";
+// cout << "getColEntries Leaf\n";
  return v;
 
 }

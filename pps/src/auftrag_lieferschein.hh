@@ -66,6 +66,11 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
 	TCListRowData *selectedrow;
 	
 	void clear_offauf();
+	// refresh display
+	void display(int lfrsid);
+	void display(); // refresh current lfrs
+	void display2(int kdnr);
+	void display2(); // refresh current free list
 	
 public:
 	auftrag_lieferschein();

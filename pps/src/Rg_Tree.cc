@@ -154,7 +154,7 @@ const vector<string> Rg_Node::getColEntries(int cols)
 
  v[Rg_TCList::LIEFMNG_SEQ]=Formatiere(sumpreis);
 
- cout << "getColEntries Node\n";
+// cout << "getColEntries Node\n";
  return v;
 }
 
@@ -167,9 +167,9 @@ const vector<string> Rg_Leaf::getColEntries(int cols)
  v=TCListRowData::getColEntries(cols);
 
  v[Rg_TCList::PREIS_SEQ]=
-	Formatiere2((dynamic_cast<const Rg_RowData&>(*leafdata)).preis().Wert());
+	Formatiere((dynamic_cast<const Rg_RowData&>(*leafdata)).preis().Wert());
  v[Rg_TCList::GPREIS_SEQ]=
-	Formatiere2((dynamic_cast<const Rg_RowData&>(*leafdata)).gpreis().Wert());
+	Formatiere((dynamic_cast<const Rg_RowData&>(*leafdata)).gpreis().Wert());
  return v;
 
 }
@@ -182,7 +182,7 @@ const cH_EntryValue Rg_RowData::Value(int _seqnr) const
  switch(_seqnr)
    {
 	case Rg_TCList::LIEFNR_SEQ :
-		return cH_Rg_Value(Formatiere(rechnungentry.Lfrs_Id(),0,6,"",""));
+		return cH_Rg_Value(Formatiere(rechnungentry.Lfrs_Id(),0,6,"","",'0'));
 		break;
 	case Rg_TCList::ARTIKEL_SEQ :
 		return cH_Rg_Value(artikelbez->Bezeichnung());

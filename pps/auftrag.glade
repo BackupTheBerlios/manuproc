@@ -221,7 +221,7 @@
   <height>600</height>
   <cxx_separate_file>True</cxx_separate_file>
   <cxx_separate_class>True</cxx_separate_class>
-  <cxx_visibility>public</cxx_visibility>
+  <cxx_visibility>protected</cxx_visibility>
   <title>Auftragsauswahl</title>
   <type>GTK_WINDOW_TOPLEVEL</type>
   <position>GTK_WIN_POS_NONE</position>
@@ -280,7 +280,7 @@
       <widget>
 	<class>Custom</class>
 	<name>aufstatcombo</name>
-	<cxx_visibility>public</cxx_visibility>
+	<cxx_visibility>protected</cxx_visibility>
 	<creation_function>SearchComboContent&lt;int&gt;</creation_function>
 	<int1>0</int1>
 	<int2>0</int2>
@@ -306,7 +306,7 @@
       <class>GtkScrolledWindow</class>
       <name>scrolledwindow1</name>
       <border_width>5</border_width>
-      <cxx_visibility>public</cxx_visibility>
+      <cxx_visibility>protected</cxx_visibility>
       <hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
       <vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
       <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
@@ -320,7 +320,7 @@
       <widget>
 	<class>GtkCList</class>
 	<name>selauftraglist</name>
-	<cxx_visibility>public</cxx_visibility>
+	<cxx_visibility>protected</cxx_visibility>
 	<can_focus>True</can_focus>
 	<signal>
 	  <name>select_row</name>
@@ -444,7 +444,7 @@
   <height>600</height>
   <cxx_separate_file>True</cxx_separate_file>
   <cxx_separate_class>True</cxx_separate_class>
-  <cxx_visibility>public</cxx_visibility>
+  <cxx_visibility>protected</cxx_visibility>
   <title>Auftragsbearbeitung</title>
   <type>GTK_WINDOW_TOPLEVEL</type>
   <position>GTK_WIN_POS_NONE</position>
@@ -462,7 +462,7 @@
     <widget>
       <class>GtkMenuBar</class>
       <name>main_menubar</name>
-      <cxx_visibility>public</cxx_visibility>
+      <cxx_visibility>protected</cxx_visibility>
       <shadow_type>GTK_SHADOW_OUT</shadow_type>
       <child>
 	<padding>0</padding>
@@ -618,7 +618,7 @@
 	<class>GtkButton</class>
 	<child_name>Toolbar:button</child_name>
 	<name>endemain_button</name>
-	<cxx_visibility>public</cxx_visibility>
+	<cxx_visibility>protected</cxx_visibility>
 	<signal>
 	  <name>clicked</name>
 	  <handler>on_beenden_activate</handler>
@@ -632,7 +632,7 @@
 	<class>GtkButton</class>
 	<child_name>Toolbar:button</child_name>
 	<name>erfassen_button</name>
-	<cxx_visibility>public</cxx_visibility>
+	<cxx_visibility>protected</cxx_visibility>
 	<signal>
 	  <name>clicked</name>
 	  <handler>on_erfassen_activate</handler>
@@ -646,7 +646,7 @@
 	<class>GtkButton</class>
 	<child_name>Toolbar:button</child_name>
 	<name>mainprint_button</name>
-	<cxx_visibility>public</cxx_visibility>
+	<cxx_visibility>protected</cxx_visibility>
 	<signal>
 	  <name>clicked</name>
 	  <handler>on_mainprint_button_clicked</handler>
@@ -660,7 +660,7 @@
 	<class>GtkButton</class>
 	<child_name>Toolbar:button</child_name>
 	<name>mainreload_button</name>
-	<cxx_visibility>public</cxx_visibility>
+	<cxx_visibility>protected</cxx_visibility>
 	<signal>
 	  <name>clicked</name>
 	  <handler>on_neuladen_activate</handler>
@@ -746,7 +746,7 @@
 	<class>Custom</class>
 	<name>prozlist_scombo</name>
 	<width>250</width>
-	<cxx_visibility>public</cxx_visibility>
+	<cxx_visibility>protected</cxx_visibility>
 	<signal>
 	  <name>activate</name>
 	  <handler>on_prozlistscombo_activate</handler>
@@ -813,7 +813,7 @@
 	  <widget>
 	    <class>GtkButton</class>
 	    <name>main_showtreebutton</name>
-	    <cxx_visibility>public</cxx_visibility>
+	    <cxx_visibility>protected</cxx_visibility>
 	    <can_focus>True</can_focus>
 	    <signal>
 	      <name>clicked</name>
@@ -882,7 +882,7 @@
 	  <widget>
 	    <class>Custom</class>
 	    <name>maintree</name>
-	    <cxx_visibility>public</cxx_visibility>
+	    <cxx_visibility>protected</cxx_visibility>
 	    <creation_function>MainTree</creation_function>
 	    <string1></string1>
 	    <int1>10</int1>
@@ -896,7 +896,7 @@
     <widget>
       <class>GtkStatusbar</class>
       <name>foot_statusbar</name>
-      <cxx_visibility>public</cxx_visibility>
+      <cxx_visibility>protected</cxx_visibility>
       <child>
 	<padding>0</padding>
 	<expand>False</expand>
@@ -913,7 +913,7 @@
   <height>600</height>
   <cxx_separate_file>True</cxx_separate_file>
   <cxx_separate_class>True</cxx_separate_class>
-  <cxx_visibility>public</cxx_visibility>
+  <cxx_visibility>protected</cxx_visibility>
   <title>Auftragserfassung</title>
   <type>GTK_WINDOW_TOPLEVEL</type>
   <position>GTK_WIN_POS_NONE</position>
@@ -1157,7 +1157,7 @@
 	<widget>
 	  <class>Custom</class>
 	  <name>aufnr_scombo</name>
-	  <cxx_visibility>public</cxx_visibility>
+	  <cxx_visibility>protected</cxx_visibility>
 	  <signal>
 	    <name>activate</name>
 	    <handler>on_aufnrscombo_activate</handler>
@@ -1191,7 +1191,7 @@
 	<widget>
 	  <class>Custom</class>
 	  <name>youraufnr_scombo</name>
-	  <cxx_visibility>public</cxx_visibility>
+	  <cxx_visibility>protected</cxx_visibility>
 	  <signal>
 	    <name>activate</name>
 	    <handler>on_youraufnrscombo_activate</handler>
@@ -1251,7 +1251,7 @@
 	<widget>
 	  <class>GtkOptionMenu</class>
 	  <name>aufstat</name>
-	  <cxx_visibility>public</cxx_visibility>
+	  <cxx_visibility>protected</cxx_visibility>
 	  <can_focus>True</can_focus>
 	  <signal>
 	    <name>clicked</name>
@@ -1333,7 +1333,7 @@ fertig
 	<widget>
 	  <class>GtkEntry</class>
 	  <name>aufbemerkung_entry</name>
-	  <cxx_visibility>public</cxx_visibility>
+	  <cxx_visibility>protected</cxx_visibility>
 	  <can_focus>True</can_focus>
 	  <signal>
 	    <name>activate</name>
@@ -1363,7 +1363,7 @@ fertig
 	<widget>
 	  <class>Custom</class>
 	  <name>aufdatum_datewin</name>
-	  <cxx_visibility>public</cxx_visibility>
+	  <cxx_visibility>protected</cxx_visibility>
 	  <creation_function>Datewin</creation_function>
 	  <int1>0</int1>
 	  <int2>0</int2>
@@ -1413,7 +1413,7 @@ fertig
 	<widget>
 	  <class>GtkSpinButton</class>
 	  <name>jahrgang spinbutton</name>
-	  <cxx_visibility>public</cxx_visibility>
+	  <cxx_visibility>protected</cxx_visibility>
 	  <can_focus>True</can_focus>
 	  <signal>
 	    <name>activate</name>
@@ -1477,7 +1477,7 @@ fertig
 	<widget>
 	  <class>GtkSpinButton</class>
 	  <name>aufrabatt_spinbutton</name>
-	  <cxx_visibility>public</cxx_visibility>
+	  <cxx_visibility>protected</cxx_visibility>
 	  <can_focus>True</can_focus>
 	  <climb_rate>1</climb_rate>
 	  <digits>2</digits>
@@ -1510,7 +1510,7 @@ fertig
 	<widget>
 	  <class>Custom</class>
 	  <name>zahlziel_datewin</name>
-	  <cxx_visibility>public</cxx_visibility>
+	  <cxx_visibility>protected</cxx_visibility>
 	  <signal>
 	    <name>activate</name>
 	    <handler>on_zahlzieldatewin_activate</handler>
@@ -1565,7 +1565,7 @@ fertig
 	<widget>
 	  <class>GtkOptionMenu</class>
 	  <name>zahlart</name>
-	  <cxx_visibility>public</cxx_visibility>
+	  <cxx_visibility>protected</cxx_visibility>
 	  <can_focus>True</can_focus>
 	  <items>Rechnung
 Abbuchung
@@ -1701,7 +1701,7 @@ US-Dollar
 	<widget>
 	  <class>Custom</class>
 	  <name>kundenbox</name>
-	  <cxx_visibility>public</cxx_visibility>
+	  <cxx_visibility>protected</cxx_visibility>
 	  <signal>
 	    <name>activate</name>
 	    <handler>on_kunden_activate</handler>
@@ -1756,7 +1756,7 @@ US-Dollar
 	  <class>GtkSpinButton</class>
 	  <name>stkmtr_spinbutton</name>
 	  <width>80</width>
-	  <cxx_visibility>public</cxx_visibility>
+	  <cxx_visibility>protected</cxx_visibility>
 	  <can_focus>True</can_focus>
 	  <signal>
 	    <name>activate</name>
@@ -1838,7 +1838,7 @@ US-Dollar
 	      <widget>
 		<class>GtkSpinButton</class>
 		<name>kw_spinbutton</name>
-		<cxx_visibility>public</cxx_visibility>
+		<cxx_visibility>protected</cxx_visibility>
 		<can_focus>True</can_focus>
 		<signal>
 		  <name>activate</name>
@@ -1867,7 +1867,7 @@ US-Dollar
 	      <widget>
 		<class>GtkSpinButton</class>
 		<name>jahr_spinbutton</name>
-		<cxx_visibility>public</cxx_visibility>
+		<cxx_visibility>protected</cxx_visibility>
 		<can_focus>True</can_focus>
 		<signal>
 		  <name>activate</name>
@@ -1910,7 +1910,7 @@ US-Dollar
 	    <widget>
 	      <class>Custom</class>
 	      <name>liefdatum_datewin</name>
-	      <cxx_visibility>public</cxx_visibility>
+	      <cxx_visibility>protected</cxx_visibility>
 	      <signal>
 		<name>activate</name>
 		<handler>on_lieferdatum_activate</handler>
@@ -1957,7 +1957,7 @@ US-Dollar
 	      <child_name>Toolbar:button</child_name>
 	      <name>showkal_button</name>
 	      <height>50</height>
-	      <cxx_visibility>public</cxx_visibility>
+	      <cxx_visibility>protected</cxx_visibility>
 	      <signal>
 		<name>clicked</name>
 		<handler>on_showkal_button_clicked</handler>
@@ -1998,7 +1998,7 @@ US-Dollar
 	<widget>
 	  <class>GtkOptionMenu</class>
 	  <name>aufentrystat</name>
-	  <cxx_visibility>public</cxx_visibility>
+	  <cxx_visibility>protected</cxx_visibility>
 	  <can_focus>True</can_focus>
 	  <signal>
 	    <name>deactivate</name>
@@ -2124,7 +2124,7 @@ fertig
 	<widget>
 	  <class>GtkSpinButton</class>
 	  <name>rabattentry_spinbutton</name>
-	  <cxx_visibility>public</cxx_visibility>
+	  <cxx_visibility>protected</cxx_visibility>
 	  <can_focus>True</can_focus>
 	  <signal>
 	    <name>activate</name>
@@ -2272,7 +2272,7 @@ fertig
 	<widget>
 	  <class>Custom</class>
 	  <name>artikelbox</name>
-	  <cxx_visibility>public</cxx_visibility>
+	  <cxx_visibility>protected</cxx_visibility>
 	  <creation_function>ArtikelBox</creation_function>
 	  <string1></string1>
 	  <int1>1</int1>
@@ -2398,7 +2398,7 @@ fertig
       <widget>
 	<class>GtkCList</class>
 	<name>auftrag_clist</name>
-	<cxx_visibility>public</cxx_visibility>
+	<cxx_visibility>protected</cxx_visibility>
 	<can_focus>True</can_focus>
 	<signal>
 	  <name>select_row</name>
@@ -2570,7 +2570,7 @@ fertig
   <height>600</height>
   <cxx_separate_file>True</cxx_separate_file>
   <cxx_separate_class>True</cxx_separate_class>
-  <cxx_visibility>public</cxx_visibility>
+  <cxx_visibility>protected</cxx_visibility>
   <title>Lieferscheine</title>
   <type>GTK_WINDOW_TOPLEVEL</type>
   <position>GTK_WIN_POS_NONE</position>
@@ -3432,7 +3432,7 @@ löschen</label>
   <height>600</height>
   <cxx_separate_file>True</cxx_separate_file>
   <cxx_separate_class>True</cxx_separate_class>
-  <cxx_visibility>public</cxx_visibility>
+  <cxx_visibility>protected</cxx_visibility>
   <title>Rechnungen</title>
   <type>GTK_WINDOW_TOPLEVEL</type>
   <position>GTK_WIN_POS_NONE</position>
@@ -3730,62 +3730,6 @@ setzen</label>
 	</widget>
 
 	<widget>
-	  <class>GtkLabel</class>
-	  <name>label66</name>
-	  <label>Währung</label>
-	  <justify>GTK_JUSTIFY_CENTER</justify>
-	  <wrap>False</wrap>
-	  <xalign>0.99</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <child>
-	    <left_attach>3</left_attach>
-	    <right_attach>4</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>3</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>GtkOptionMenu</class>
-	  <name>rng_waehrung</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <can_focus>True</can_focus>
-	  <signal>
-	    <name>deactivate</name>
-	    <handler>waehrung_geaendert</handler>
-	    <last_modification_time>Thu, 19 Apr 2001 08:27:39 GMT</last_modification_time>
-	  </signal>
-	  <items>DM
-Euro
-</items>
-	  <initial_choice>0</initial_choice>
-	  <child>
-	    <left_attach>4</left_attach>
-	    <right_attach>5</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>3</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-	</widget>
-
-	<widget>
 	  <class>Custom</class>
 	  <name>lieferkunde</name>
 	  <cxx_visibility>protected</cxx_visibility>
@@ -3836,6 +3780,133 @@ Euro
 	    <xshrink>False</xshrink>
 	    <yshrink>False</yshrink>
 	    <xfill>True</xfill>
+	    <yfill>False</yfill>
+	  </child>
+	</widget>
+
+	<widget>
+	  <class>GtkLabel</class>
+	  <name>label66</name>
+	  <label>Währung</label>
+	  <justify>GTK_JUSTIFY_CENTER</justify>
+	  <wrap>False</wrap>
+	  <xalign>0.99</xalign>
+	  <yalign>0.5</yalign>
+	  <xpad>0</xpad>
+	  <ypad>0</ypad>
+	  <child>
+	    <left_attach>3</left_attach>
+	    <right_attach>4</right_attach>
+	    <top_attach>1</top_attach>
+	    <bottom_attach>2</bottom_attach>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <xexpand>False</xexpand>
+	    <yexpand>False</yexpand>
+	    <xshrink>False</xshrink>
+	    <yshrink>False</yshrink>
+	    <xfill>True</xfill>
+	    <yfill>False</yfill>
+	  </child>
+	</widget>
+
+	<widget>
+	  <class>GtkOptionMenu</class>
+	  <name>rabatt_typ</name>
+	  <cxx_visibility>protected</cxx_visibility>
+	  <tooltip>Rabatt/Zuschlag auf alle Rechnungsposten</tooltip>
+	  <can_focus>True</can_focus>
+	  <signal>
+	    <name>deactivate</name>
+	    <handler>rabatt_geaendert</handler>
+	    <last_modification_time>Wed, 25 Apr 2001 14:34:30 GMT</last_modification_time>
+	  </signal>
+	  <items>Rabatt
+Zuschlag
+</items>
+	  <initial_choice>0</initial_choice>
+	  <child>
+	    <left_attach>3</left_attach>
+	    <right_attach>4</right_attach>
+	    <top_attach>2</top_attach>
+	    <bottom_attach>3</bottom_attach>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <xexpand>False</xexpand>
+	    <yexpand>False</yexpand>
+	    <xshrink>False</xshrink>
+	    <yshrink>False</yshrink>
+	    <xfill>False</xfill>
+	    <yfill>False</yfill>
+	  </child>
+	</widget>
+
+	<widget>
+	  <class>GtkOptionMenu</class>
+	  <name>rng_waehrung</name>
+	  <cxx_visibility>protected</cxx_visibility>
+	  <can_focus>True</can_focus>
+	  <signal>
+	    <name>deactivate</name>
+	    <handler>waehrung_geaendert</handler>
+	    <last_modification_time>Thu, 19 Apr 2001 08:27:39 GMT</last_modification_time>
+	  </signal>
+	  <items>DM
+Euro
+</items>
+	  <initial_choice>0</initial_choice>
+	  <child>
+	    <left_attach>4</left_attach>
+	    <right_attach>5</right_attach>
+	    <top_attach>1</top_attach>
+	    <bottom_attach>2</bottom_attach>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <xexpand>False</xexpand>
+	    <yexpand>False</yexpand>
+	    <xshrink>False</xshrink>
+	    <yshrink>False</yshrink>
+	    <xfill>False</xfill>
+	    <yfill>False</yfill>
+	  </child>
+	</widget>
+
+	<widget>
+	  <class>GtkSpinButton</class>
+	  <name>rabatt_wert</name>
+	  <width>60</width>
+	  <cxx_visibility>protected</cxx_visibility>
+	  <tooltip>Rabatt/Zuschlag auf alle Rechnungsposten</tooltip>
+	  <can_focus>True</can_focus>
+	  <signal>
+	    <name>activate</name>
+	    <handler>rabatt_geaendert</handler>
+	    <last_modification_time>Wed, 25 Apr 2001 14:34:09 GMT</last_modification_time>
+	  </signal>
+	  <climb_rate>1</climb_rate>
+	  <digits>2</digits>
+	  <numeric>True</numeric>
+	  <update_policy>GTK_UPDATE_ALWAYS</update_policy>
+	  <snap>False</snap>
+	  <wrap>False</wrap>
+	  <value>0</value>
+	  <lower>0</lower>
+	  <upper>99</upper>
+	  <step>1</step>
+	  <page>10</page>
+	  <page_size>10</page_size>
+	  <child>
+	    <left_attach>4</left_attach>
+	    <right_attach>5</right_attach>
+	    <top_attach>2</top_attach>
+	    <bottom_attach>3</bottom_attach>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <xexpand>False</xexpand>
+	    <yexpand>False</yexpand>
+	    <xshrink>False</xshrink>
+	    <yshrink>False</yshrink>
+	    <xfill>False</xfill>
 	    <yfill>False</yfill>
 	  </child>
 	</widget>

@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema.h,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: ExtBezSchema.h,v 1.2 2001/04/30 15:30:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -41,11 +41,12 @@ public:
 		string separator;
 		string spaltenname;
 		int signifikanz;
-		
+		string TeXtabformat;
+
 		BezKomp(int _bztyp, const string &_bztxt, 
-			const string &_bzsep, const string &sname,int sign)
+			const string &_bzsep, const string &sname,int sign,string texf)
 		: bezkomptype(_bztyp), bezkomptext(_bztxt), separator(_bzsep)
-			, spaltenname(sname), signifikanz(sign)
+			, spaltenname(sname), signifikanz(sign), TeXtabformat(texf)
 		{}
 	};
 	typedef vector<BezKomp>::const_iterator const_iterator;

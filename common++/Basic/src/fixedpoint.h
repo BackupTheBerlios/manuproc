@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: fixedpoint.h,v 1.2 2001/04/30 15:30:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,11 +21,14 @@
 #ifndef AUX_FIXEDPOINT_H
 #define AUX_FIXEDPOINT_H
 
+#include <Aux/ctime_assert.h>
+
 // WOW prepare for black template magic
 // The compiler optimizes this fully away (once -O is used)
 template <int N> 
 static inline double zehnhochminus()
-{  return 0.1*zehnhochminus<N-1>();
+{  typedef typename ctime_assert<(N>0)>::_true failed;
+   return 0.1*zehnhochminus<N-1>();
 }
 
 template <>
@@ -34,7 +37,8 @@ static inline double zehnhochminus<0>()
 
 template <int N> 
 static inline double zehnhochplus()
-{  return 10*zehnhochplus<N-1>();
+{  typedef typename ctime_assert<(N>0)>::_true failed;
+   return 10*zehnhochplus<N-1>();
 }
 
 template <>
@@ -43,7 +47,8 @@ static inline double zehnhochplus<0>()
 
 template <int N> 
 static inline int zehnhochplusI()
-{  return 10*zehnhochplus<N-1>();
+{  typedef typename ctime_assert<(N>0)>::_true failed;
+   return 10*zehnhochplus<N-1>();
 }
 
 template <>
@@ -67,6 +72,7 @@ class fixedpoint
 	typedef Ftype _Ftype;
 	typedef Itype _Itype;
 	const static int _decimals=decimals;
+	typename ctime_assert<(decimals>=0)>::_true failed;
 public:
 	fixedpoint() : scaled(0) {}
 	fixedpoint(const string &val)
@@ -74,7 +80,7 @@ public:
 	}
 	fixedpoint(Ftype d) { *this=d; }
 	self_t operator=(Ftype d)
-	{  scaled=Itype(d*zehnhochplus<decimals>()+.5);
+	{  scaled=Itype(d*zehnhochplus<decimals>()+(d>0?.5:-.5));
    	   return *this;
 	}
 	operator Ftype() const
@@ -98,12 +104,17 @@ public:
 	   res.scaled=scaled-b.scaled;
 	   return res;
 	}
+	self_t operator-() const
+	{  self_t res;
+	   res.scaled=-scaled;
+	   return res;
+	}
 	self_t operator+=(const self_t b)
 	{  scaled+=b.scaled;
 	   return *this;
 	}
 	self_t operator*=(const Ftype f)
-	{  scaled=int(scaled*f+.5);
+	{  scaled=int(scaled*f+(f>0?.5:-.5));
 	   return *this;
 	}
 	self_t operator-=(const self_t b)
@@ -127,6 +138,11 @@ public:
 	}
 	bool operator!() const
 	{  return scaled==0;
+	}
+	// conversion operator
+	template <int decimals2,class Ftype2,class Itype2>
+	 fixedpoint(const fixedpoint<decimals2,Ftype2,Itype2> &f)
+	{  *this=(Ftype)(Ftype2)f;
 	}
 };
 

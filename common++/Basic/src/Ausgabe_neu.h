@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.h,v 1.1 2001/04/23 08:11:59 christof Exp $ */
+/* $Id: Ausgabe_neu.h,v 1.2 2001/04/30 15:30:26 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,41 +22,72 @@
 #include <string>
 #include <iostream>
 #include <Aux/fixedpoint.h>
+#include <cmath>
 
 const string Formatiere(unsigned long Zahl,
                 unsigned int Nachkommastellen=0,
                 unsigned int Ziellaenge=0,
                 const char *TausenderTrennzeichen=".",
-                const char *Komma=",");
+                const char *Komma=",",char fuehrendesZeichen=' ');
+#if 0                
+extern inline const string Formatiere(double Zahl,
+                unsigned int Nachkommastellen,
+                unsigned int Ziellaenge=0,
+                const char *TausenderTrennzeichen=".",
+                const char *Komma=",",char fuehrendesZeichen=' ')
+{  return Formatiere((unsigned long)(Zahl*pow(10,Nachkommastellen)+.5),
+		Nachkommastellen,Ziellaenge,
+		TausenderTrennzeichen,Komma,fuehrendesZeichen);
+}
+#endif
 extern inline const string FormatiereTeX(unsigned long Zahl,
                 unsigned int Nachkommastellen=0,
-                unsigned int Ziellaenge=0)
-{  return Formatiere(Zahl,Nachkommastellen,Ziellaenge,"\\,");
+                unsigned int Ziellaenge=0,char fuehrendesZeichen=' ')
+{  return Formatiere(Zahl,Nachkommastellen,Ziellaenge,"\\,", ",", fuehrendesZeichen);
 }
+#if 0
+extern inline const string FormatiereTeX(double Zahl,
+                unsigned int Nachkommastellen,
+                unsigned int Ziellaenge=0,char fuehrendesZeichen=' ')
+{  return FormatiereTeX((unsigned long)(Zahl*pow(10,Nachkommastellen)+.5),
+		Nachkommastellen,Ziellaenge,fuehrendesZeichen);
+}
+#endif
                 
 ostream &Formatiere(ostream &os,unsigned long Zahl,
                 unsigned int Nachkommastellen=0,
                 unsigned int Ziellaenge=0,
                 const char *TausenderTrennzeichen=".",
-                const char *Komma=",");
+                const char *Komma=",",char fuehrendesZeichen=' ');
 extern inline ostream &FormatiereTeX(ostream &os,unsigned long Zahl,
                 unsigned int Nachkommastellen=0,
                 unsigned int Ziellaenge=0)
-{  return Formatiere(os,Zahl,Nachkommastellen,Ziellaenge,"\\,");
+{  return Formatiere(os,Zahl,Nachkommastellen,Ziellaenge,"\\,", ",", '~');
 }
+
 static const int NEEDCHAR=1;
 static const int BARISNEWLINE=2;
 string string2TeX(const string s, int flags=0) throw();
 
-template <class F>
- const string FormatiereTeX2(const F &Zahl)
+template <int decimals,class Ftype,class Itype>
+ const string FormatiereTeX(const fixedpoint<decimals,Ftype,Itype> &Zahl)
 {  return FormatiereTeX(Zahl.Scaled(),Zahl.Scale());
 }
 
-template <class F>
- const string Formatiere2(const F &Zahl, unsigned int Ziellaenge=0,
+template <int decimals,class Ftype,class Itype>
+ const string Formatiere(const fixedpoint<decimals,Ftype,Itype> &Zahl, unsigned int Ziellaenge=0,
                 const char *TausenderTrennzeichen=".",
-                const char *Komma=",")
-{  return Formatiere(Zahl.Scaled(),Zahl.Scale(),Ziellaenge,TausenderTrennzeichen,Komma);
+                const char *Komma=",",char fuehrendesZeichen=' ')
+{  return Formatiere(Zahl.Scaled(),Zahl.Scale(),Ziellaenge,
+		TausenderTrennzeichen,Komma,fuehrendesZeichen);
+}
+
+// unnoetige Nachkommastellen unterdruecken
+template <int decimals,class Ftype,class Itype>
+ const string FormatiereTeX_short(const fixedpoint<decimals,Ftype,Itype> &Zahl)
+{  Itype val(Zahl.Scaled());
+   unsigned int scale(Zahl.Scale());
+   while (scale>0 && !(val%10)) { val/=10; --scale; }
+   return FormatiereTeX(val,scale);
 }
 #endif

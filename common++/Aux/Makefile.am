@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.1 2001/04/23 08:11:58 christof Exp $
+# $Id: Makefile.am,v 1.2 2001/04/30 15:30:25 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -14,7 +14,7 @@ libAux_o_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
 		Zeitpunkt_new_write.cc string0.c \
 		EntryValueBase.cc EntryValueIntString.cc \
 		auto_conversion.cc $(PGCC_SOURCES) \
-		exception.cc itos.cc fixedpoint.cc
+		exception.cc itos.cc 
 
 PGCC_SOURCES=   dbconnect.cc SQLerror_postgres.cc Transaction.cc \
 		Waehrung_sql.cc Changejournal_sql.cc FetchIStream.cc
@@ -27,7 +27,7 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
 	auto_conversion.cc dbconnect.h dbconnect.pgcc \
 	exception.cc exception.h fixedpoint.cc fixedpoint.h mystream.h \
 	postgres_conversion.cc safemap.h string0.c string0.h itos.cc itos.h \
-	FetchIStream.pgcc FetchIStream.h
+	FetchIStream.pgcc FetchIStream.h ctime_assert.h
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ . 
@@ -43,7 +43,8 @@ include_HEADERS=Ausgabe.h Ausgabe_neu.h Datum.h \
 		EntryValueBase.h safemap.h string0.h \
 		Transaction.h Waehrung.h Pointer.h \
 		Changejournal.h ppsInstanz.h EntryValueIntString.h \
-		exception.h itos.h fixedpoint.h FetchIStream.h
+		exception.h itos.h fixedpoint.h FetchIStream.h \
+		ctime_assert.h
 
 CLEANFILES= *~ $(BUILT_SOURCES)
 

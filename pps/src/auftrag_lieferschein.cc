@@ -64,31 +64,38 @@ void auftrag_lieferschein::on_lief_print()
    system(command.c_str()); 
 }
 
-void auftrag_lieferschein::on_liefnr_activate()
+void auftrag_lieferschein::display(int lfrsid)
 {
  lieferschein_liste->clear();
- lieferschein_liste->showLieferschein(atoi(liefernr->get_text().c_str()));
- liefer_kunde->set_value(lieferschein_liste->getLieferschein().KdNr());   
- offene_auftraege->setKdNr(liefer_kunde->get_value());
- offene_auftraege->clear();
- try{offene_auftraege->showOffAuf();  
-   cH_Kunde k(liefer_kunde->get_value());
-   artikelbox->setExtBezSchema(k->getSchema());
+ lieferschein_liste->showLieferschein(lfrsid);
+ display2(lieferschein_liste->getLieferschein().KdNr());
+ if (lieferschein_liste->getLieferschein().RngNr())
+    rngnr->set_text(Formatiere(lieferschein_liste->getLieferschein().RngNr(),0,6,"","",'0');
+ else rngnr->set_text("");
+}
+
+void auftrag_lieferschein::display2(int kdnr)
+{
+ liefer_kunde->set_value(kdnr);
+ offene_auftraege->setKdNr(kdnr);
+ display2();
+   cH_Kunde k(kdnr);
+   if (artikelbox->getSchema()->Id()!=k->getSchema())
+   { artikelbox->setExtBezSchema(k->getSchema()); }
  }
  catch(SQLerror &e) {meldung->Show(e);}
 }
 
+void auftrag_lieferschein::on_liefnr_activate()
+{display(atoi(liefernr->get_text().c_str()));
+}
+
 void auftrag_lieferschein::on_lieferkunde_activate()
 {
-try{
- offene_auftraege->setKdNr(liefer_kunde->get_value());
- offene_auftraege->clear();
+try{display2(liefer_kunde->get_value());
  lieferschein_liste->setLieferschein(LieferscheinBase::none_id);
  liefernr->reset();
  lieferschein_liste->clear();
- cH_Kunde k(liefer_kunde->get_value());
- artikelbox->setExtBezSchema(k->getSchema());
- offene_auftraege->showOffAuf();  
  } catch(SQLerror &e) {meldung->Show(e);}
 }
 
@@ -218,7 +225,8 @@ void auftrag_lieferschein::on_Palette_activate()
               LieferscheinEntry le(lieferschein_liste->getLieferschein(),
      	                        *i,artikelbox->get_value(),
      	                        e==EINH_STUECK?abmenge:1,
-     	                        e==EINH_STUECK?0.0:abmenge,0,true);
+     	                        e==EINH_STUECK?0.0:abmenge,
+     	                        0,true);
               OffAuf_RowData::abschreiben(i->getAuftragid(),i->getZnr(),abmenge);
               menge-=abmenge;
        	   }
@@ -226,14 +234,15 @@ void auftrag_lieferschein::on_Palette_activate()
            {  LieferscheinEntry le(lieferschein_liste->getLieferschein(),
      	                        artikelbox->get_value(),
      	                        e==EINH_STUECK?menge:1,
-     	                        e==EINH_STUECK?0.0:menge,0,true);
+     	                        e==EINH_STUECK?0.0:menge,
+     	                        0,true);
            }
      	}
      	tr.commit();
 
 	clear_offauf();
-	lieferschein_liste->showLieferschein(lieferschein_liste->getLieferschein().Id());
 	lieferschein_liste->clear();
+	lieferschein_liste->showLieferschein(lieferschein_liste->getLieferschein().Id());
 	liefermenge->grab_focus();
        }
        catch (SQLerror &e)
@@ -292,11 +301,7 @@ void auftrag_lieferschein::liefzeile_delete()
  if(rngnr->get_text()=="")
    if(lieferschein_liste->getLieferschein().Id()!=LieferscheinBase::none_id)
 	if(lieferschein_liste->deleteLiefEntry())
-	  {clear_offauf();
-	   lieferschein_liste->clear();
-           lieferschein_liste->showLieferschein(lieferschein_liste->getLieferschein().Id());
-	   offene_auftraege->clear();
-	   offene_auftraege->showOffAuf();
+	  { display(); display2();
 	  }
  }
  catch (SQLerror &e)
@@ -305,11 +310,20 @@ void auftrag_lieferschein::liefzeile_delete()
   }
 }
 
+void auftrag_lieferschein::display()
+{  lieferschein_liste->clear();
+   lieferschein_liste->showLieferschein(lieferschein_liste->getLieferschein().Id());
+}
+
+void auftrag_lieferschein::display2()
+{  clear_offauf();
+   offene_auftraege->clear();
+   offene_auftraege->showOffAuf();
+}
+
 void auftrag_lieferschein::on_selectrow_lieferschein(int row, int col, GdkEvent* b)
 {
- lieferzeile_delete->set_sensitive(false);
-
- if(rngnr->get_text()=="")
+ lieferzeile_delete->set_sensitive(false); if(rngnr->get_text()=="")
    if(lieferschein_liste->getLieferschein().Id()!=LieferscheinBase::none_id)
      lieferzeile_delete->set_sensitive(true);
 }

@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Einheiten.h,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: Einheiten.h,v 1.2 2001/04/30 15:30:25 christof Exp $
 
 // diese Datei ... sollte vielleicht demnaechst aus einer Datenbanktabelle
 // erzeugt werden? Tabelle: Einheiten
@@ -45,6 +45,9 @@ public:
 	{ return einh!=b; }
 	bool operator==(enum Einheiten b) const
 	{ return einh==b; }
+	string StueckEinheit() const;
+	string MengenEinheit() const;
+	string TeX() const;
 };
 
 #endif

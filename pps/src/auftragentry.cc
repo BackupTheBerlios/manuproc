@@ -69,7 +69,7 @@ Gtk::OStream &operator<<(Gtk::OStream &o,const AufEintrag &a)
     
  Petig::Datum d(a.getSeqValue(KW_SEQ).Datum());
 	    	    	   
- o	<< Formatiere2(a.GPreis().Wert(),2,0,".") << "\t"
+ o	<< Formatiere(a.GPreis().Wert(),2,0,".") << "\t"
  	<< d.KW().Woche()<<"'"<<d.Jahr() << "\t"
 	<< a.getEntryStatusStr() << "\t"
 	<< a.LastEditDate().c_str() << "\n";

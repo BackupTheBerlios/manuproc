@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema_sql.pgcc,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: ExtBezSchema_sql.pgcc,v 1.2 2001/04/30 15:30:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -42,6 +42,7 @@ ExtBezSchema::ExtBezSchema(ID eid,const ArtikelTyp &t) throw(SQLerror)
  char BEZKOMPTEXT[21];
  char SEPARATOR[2];
  char SPALTENNAME[21];
+ char TEXTABFORMAT[10];
  short ISEPARATOR;
  int SIGNIFIKANZ;
  int TYP=t;
@@ -52,7 +53,8 @@ ExtBezSchema::ExtBezSchema(ID eid,const ArtikelTyp &t) throw(SQLerror)
  Transaction tr;
  exec sql declare BEZKOMP cursor for 
  	select bezkomptype, bezkomptext, separator, 
- 		coalesce(spaltenname,bezkomptext), coalesce(signifikanz,0)
+ 		coalesce(spaltenname,bezkomptext), coalesce(signifikanz,0),
+		coalesce(textabformat,'c')
  	from extbezschema
 	where extartbezid= :EXTARTBEZID and artikeltyp= :TYP
 	order by bezkomptype;
@@ -65,16 +67,16 @@ ExtBezSchema::ExtBezSchema(ID eid,const ArtikelTyp &t) throw(SQLerror)
    {
     exec sql fetch from BEZKOMP 
 	into :BEZKOMPTYPE, :BEZKOMPTEXT, :SEPARATOR:ISEPARATOR,
-		:SPALTENNAME, :SIGNIFIKANZ;
+		:SPALTENNAME, :SIGNIFIKANZ, :TEXTABFORMAT;
     SQLerror::test(__FILELINE__"ExtBezSchema::ExtBezSchema","BEZKOMP",100);
     if(sqlca.sqlcode==100) break;
     bezkomps.push_back(BezKomp(BEZKOMPTYPE,BEZKOMPTEXT,
-    		ISEPARATOR ? " " :SEPARATOR,SPALTENNAME,SIGNIFIKANZ));
+    		ISEPARATOR ? " ":SEPARATOR,SPALTENNAME,SIGNIFIKANZ,TEXTABFORMAT));
     if (!IDseen && string(SPALTENNAME)=="id") IDseen=true;
     if (BEZKOMPTYPE>maxBKT) maxBKT=BEZKOMPTYPE;
    }
  exec sql close BEZKOMP;
- if (!IDseen) bezkomps.push_back(BezKomp(maxBKT+1,"ID","","id",99));
+ if (!IDseen) bezkomps.push_back(BezKomp(maxBKT+1,"ID","","id",99,"r"));
 }
 
 size_t ExtBezSchema::size(int signifikanz) const

@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.1 2001/04/23 08:11:58 christof Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.2 2001/04/30 15:30:25 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -70,26 +70,12 @@ public:
     string status;
   };  
 
-#if 0  // deprecated
- struct sel_KdArtBrFbAuf
-  { sel_KdArtBrFbAuf(int kd,int artnr,int artbr, int artfb, int aufm ) :
-  	kdnr(kd),anr(artnr),abr(artbr),afb(artfb),aauf(aufm) {}
-    int kdnr;
-    int anr;
-    int abr;
-    int afb;
-    int aauf;
-  };  
-#endif
-
  struct sel_KdArtikel
   { sel_KdArtikel(int kd, const ArtikelBase &a) :
   	kdnr(kd),artikel(a) {}
     int kdnr;
     ArtikelBase artikel;
   };  
-
-
 
  SQLAuftragSelector(const sel_Aufid& selstr);
  SQLAuftragSelector(const sel_Status& selstr, int aid=0);
@@ -101,9 +87,9 @@ public:
  SQLAuftragSelector();
  	
  void setClausel(const string &cl) { clausel = cl;}
- const char *getClausel() const { return clausel.c_str(); }
- 
-
+ // wir sollten einen string zurueckgeben,
+ // dann kann dass Objekt nicht vor dem Wert zerstoert werden
+ const string getClausel() const { return clausel; }
 };
 
 
@@ -118,4 +104,3 @@ public:
 };
 
 #endif
-

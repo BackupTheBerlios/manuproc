@@ -69,8 +69,7 @@ public:
  bool Bezahlt() const { return bezahlt; }
  void addLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror);
  void deleteLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror);
+ void setze_Rabatt(fixedpoint<2> r) throw(SQLerror);
 };
 
-
 #endif
-

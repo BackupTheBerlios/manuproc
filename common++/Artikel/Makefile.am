@@ -1,6 +1,6 @@
-# $Id: Makefile.am,v 1.1 2001/04/23 08:11:58 christof Exp $
+# $Id: Makefile.am,v 1.2 2001/04/30 15:30:25 christof Exp $
 
-CXXFLAGS=@GTKMM_CFLAGS@ @ECPG_INCLUDES@ @CXXFLAGS@
+CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
 

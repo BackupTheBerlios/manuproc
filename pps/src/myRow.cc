@@ -42,7 +42,7 @@ vector<string> &MyRow::getColEntries(int seqdeep)
  else 
    if(seqnr==AUFID_SEQ)
      {if(auftragmain->interneNamen())
-        v.push_back(Formatiere(value.getIntVal(),0,6,"","")/*+"."+youraufnr*/);
+        v.push_back(Formatiere(value.getIntVal(),0,6,"","",'0')/*+"."+youraufnr*/);
       else
         v.push_back(youraufnr/*+"."+str*/);
      }
@@ -76,7 +76,7 @@ const string MyRow::getColText() const
  else
   if(seqnr==AUFID_SEQ)
      {if(auftragmain->interneNamen())
-	 return Formatiere(value.getIntVal(),0,6,"","")/*+"."+youraufnr*/;
+	 return Formatiere(value.getIntVal(),0,6,"","",'0')/*+"."+youraufnr*/;
       else
         return youraufnr/*+"."+str*/;
      }

@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.cc,v 1.1 2001/04/23 08:11:59 christof Exp $ */
+/* $Id: Ausgabe_neu.cc,v 1.2 2001/04/30 15:30:26 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,12 +23,12 @@ ostream &Formatiere(ostream &os,unsigned long Zahl,
 		unsigned int Nachkommastellen,
 		unsigned int Ziellaenge,
 		const char *TausenderTrennzeichen,
-		const char *Komma)
+		const char *Komma, char fuehrendesZeichen)
 {  if (!TausenderTrennzeichen) TausenderTrennzeichen="";
    if (!Komma) Komma="";
    
    unsigned int stellen;
-   char Zahlbuf[10];
+   char Zahlbuf[12];
    for (stellen=0;stellen<sizeof(Zahlbuf) && Zahl;Zahl/=10) 
    	Zahlbuf[stellen++]=Zahl%10+'0';
    for (unsigned int i=stellen;i<sizeof(Zahlbuf);i++) Zahlbuf[i]='0';
@@ -44,7 +44,7 @@ ostream &Formatiere(ostream &os,unsigned long Zahl,
    if (laenge>Ziellaenge) Ziellaenge=0;
    
    for (int i=0;i<(int)Ziellaenge-(int)laenge;i++) 
-   	os<<' ';
+   	os<<fuehrendesZeichen;
    for (unsigned int i=0;i<vorkommastellen;i++) 
    {  if (i==naechsterSeparator) 
       {  os<<TausenderTrennzeichen;
@@ -98,6 +98,9 @@ string string2TeX(const string s, int flags) throw()
 	 case (unsigned char)'µ': in_line=true;
 	    ret+="$\\mu$";
 	    break;
+	 case '\\': in_line=true;
+	    ret+="$\\backslash$";
+	    break;
 	 case '|':
 	    if (flags&BARISNEWLINE)
 	    {  if ((flags&NEEDCHAR) && !in_line) ret+='~';
@@ -118,12 +121,12 @@ string string2TeX(const string s, int flags) throw()
 #include <strstream>
 
 const string Formatiere(unsigned long Zahl,
-                unsigned int Nachkommastellen=0,
-                unsigned int Ziellaenge=0,
-                const char *TausenderTrennzeichen=".",
-                const char *Komma=",")
+                unsigned int Nachkommastellen,
+                unsigned int Ziellaenge,
+                const char *TausenderTrennzeichen,
+                const char *Komma,char fuehrendesZeichen)
 {  ostrstream os;
-   Formatiere(os,Zahl,Nachkommastellen,Ziellaenge,TausenderTrennzeichen,Komma) 
+   Formatiere(os,Zahl,Nachkommastellen,Ziellaenge,TausenderTrennzeichen,Komma,fuehrendesZeichen) 
    	<< char(0);
    const string res(os.str());
    os.freeze(0);

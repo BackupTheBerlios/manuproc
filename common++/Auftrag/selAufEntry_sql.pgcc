@@ -1,4 +1,4 @@
-// $Id: selAufEntry_sql.pgcc,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: selAufEntry_sql.pgcc,v 1.2 2001/04/30 15:30:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -33,7 +33,7 @@ throw(SQLerror)
 	char *clausel;
 	exec sql end declare section;
 	
-	clausel = (char*)selector.getClausel();
+	clausel = (char*)selector.getClausel().c_str();
 
 	Transaction tr;
 	exec sql prepare MYQ from :clausel;
@@ -65,7 +65,7 @@ void SelectedAufList::addList(const SQLAuftragSelector &selector) throw(SQLerror
  char *clausel;
  exec sql end declare section;
 
- clausel = (char *)selector.getClausel();
+ clausel = (char *)selector.getClausel().c_str();
 
  Transaction tr;
  exec sql prepare MYQ from :clausel;
@@ -118,7 +118,7 @@ throw(SQLerror)
  char *clausel;
  exec sql end declare section;
 	
-	clausel = (char *)selector.getClausel();
+	clausel = (char *)selector.getClausel().c_str();
 
 	Transaction tr;
 	exec sql prepare MYQ from :clausel;
@@ -201,7 +201,7 @@ throw(SQLerror)
  char *clausel;
  exec sql end declare section;
 	
-	clausel = (char *)selector.getClausel();
+	clausel = (char *)selector.getClausel().c_str();
 
 	Transaction tr;
 	exec sql prepare MYQ from :clausel;
@@ -282,9 +282,10 @@ void SelectedFullAufList::insert(int aid, int znr) throw(SQLerror)
  short IPREIS,IRABATT,IWAEHRUNG;
  char *clausel;
  exec sql end declare section;
-	
-	clausel = (char *)SQLFullAuftragSelector(
-			SQLFullAuftragSelector::sel_AufidZnr(aid,znr)).getClausel();
+
+ string cmd=SQLFullAuftragSelector(
+		SQLFullAuftragSelector::sel_AufidZnr(aid,znr)).getClausel();
+	clausel = (char *)cmd.c_str();
 
 	Transaction tr;
 	exec sql prepare MYQ from :clausel;

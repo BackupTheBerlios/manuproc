@@ -20,6 +20,7 @@
 
 int main (int argc, char *argv[])
 {
+
   if (argc!=4) {cerr<< "FEHLER: 3 Argumente nötig für "<< argv[0]<<"\n"; return 1;}
   string s = argv[1];
   if (s!="Rechnung" && s!= "Lieferschein")
@@ -34,7 +35,7 @@ int main (int argc, char *argv[])
       conn.setDbase("petigdb");
       Petig::dbconnect(conn);  
 
-//      LR_drucken l("Lieferschein",10014,"Preview");
+//      LR_drucken l("Lieferschein",10025,"Preview");
 //      LR_drucken l("Rechnung",10008,"Preview");
 
       LR_drucken l(s,auftragsnr,p);      

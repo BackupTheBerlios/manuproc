@@ -69,7 +69,7 @@ public:
 	AufStatVal getStatus() const { return status; }
 	int getAuftragid() const { return auftragid; }
 	string getAuftragidToStr() const
-	{ return Formatiere(auftragid,0,6,"",""); }
+	{ return Formatiere(auftragid,0,6,"","",'0'); }
 	string getYourAufNr() const { return youraufnr;}
 	string getBemerkung() const { return bemerkung;}
 	bool isNew() const { return wrkstatus==INSERTED;}

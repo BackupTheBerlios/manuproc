@@ -100,6 +100,10 @@ void auftrag_rechnung::on_rngnr_activate()
     rng_waehrung->set_history(rng_waehrung::Euro);
  else if (*(rechnung_liste->getRechnung().getWaehrung())==Waehrung::DM)
     rng_waehrung->set_history(rng_waehrung::DM);
+ fixedpoint<2> rabatt=rechnung_liste->getRechnung().Rabatt();
+ if (rabatt<0.0) { rabatt=-rabatt; rabatt_typ->set_history(rabatt_typ::Zuschlag); }
+ else rabatt_typ->set_history(rabatt_typ::Rabatt);
+ rabatt_wert->set_value(rabatt);
  }
  catch(SQLerror &e) {meldung->Show(e);}
 }
@@ -193,4 +197,10 @@ void auftrag_rechnung::waehrung_geaendert()
    	 break;
    }
    // eigentlich alle Preise umrechnen .... Katastrophe
+}
+
+void auftrag_rechnung::rabatt_geaendert()
+{  gtk_spin_button_update(rabatt_wert->gtkobj());
+   int plus_minus=(rabatt_typ::enum_t((int)(rabatt_typ->get_menu()->get_active()->get_user_data())))==rabatt_typ::Rabatt?+1:-1;
+   rechnung_liste->getRechnung().setze_Rabatt(rabatt_wert->get_value_as_float()*plus_minus);
 }

@@ -60,17 +60,20 @@ public:
    const Preis getPreis() const {  
       if (t==Rechnung)     return u.r->getPreis(); abort();}
    LieferscheinBase::ID Lfrs_Id() const {
-      if (t==Rechnung)     return u.r->Lfrs_Id(); abort();}
+      if (t==Rechnung)     return u.r->Lfrs_Id();
+      if (t==Lieferschein) return u.l->Id();  abort();}
    fixedpoint<2> Rabatt() const { 
-      if (t==Rechnung)     return u.r->Rabatt(); abort();}
-   float Menge() const { 
+      if (t==Rechnung)     return u.r->Rabatt(); return 0;}
+   fixedpoint<2> Menge() const { 
       if (t==Rechnung)     return u.r->Menge(); 
-      if (t==Lieferschein) return u.l->Menge(); abort();}
+      if (t==Lieferschein) return (float)(u.l->Menge()); abort();}
    int Stueck() const { 
       if (t==Rechnung)     return u.r->Stueck(); 
       if (t==Lieferschein) return u.l->Stueck(); abort();}
    int Palette() const { 
-      if (t==Lieferschein) return u.l->Palette(); abort();}
+      if (t==Lieferschein) return u.l->Palette(); return 0;}
+   bool ZusatzInfo() const { 
+      if (t==Lieferschein) return u.l->ZusatzInfo(); return false;}
    string YourAuftrag() const { 
       if (t==Lieferschein) return u.l->YourAuftrag(); abort();}
 

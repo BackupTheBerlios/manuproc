@@ -100,7 +100,7 @@ const cH_EntryValue OffLief_RowData::Value(int _seqnr) const
  switch(_seqnr)
    {
 	case OffLief_TCList::LIEFNR_SEQ :
-		return cH_Lief_Value(Formatiere(lieferschein.Id(),0,6,"",""));
+		return cH_Lief_Value(Formatiere(lieferschein.Id(),0,6,"","",'0'));
 	case OffLief_TCList::LIEFDATUM_SEQ :
 		return cH_Lief_Value(lieferschein.LsDatum().c_str());
 	case OffLief_TCList::LIEFKUNDE_SEQ:

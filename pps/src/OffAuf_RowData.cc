@@ -26,7 +26,7 @@ const cH_EntryValue OffAuf_RowData::Value(int _seqnr) const
  switch(_seqnr)
    {
 	case OffAuf_TCList::AUFNR_SEQ :
-		return cH_OffAuf_Value(Formatiere(auftrag.AufId(),0,6,"",""));
+		return cH_OffAuf_Value(Formatiere(auftrag.AufId(),0,6,"","",'0'));
 		break;
 	case OffAuf_TCList::ARTIKEL_SEQ :
 		return cH_OffAuf_Value(artikel->Bezeichnung());

@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.1 2001/04/23 08:11:59 christof Exp $
+# $Id: Makefile.am,v 1.2 2001/04/30 15:30:26 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -8,7 +8,7 @@ LDADD=../libcommon++.a @ECPG_LIBS@ @ECPG_LDFLAGS@
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
 
 noinst_PROGRAMS=preis test_Bankauftrag test_pgsql_conv testHandles \
-	testExtBezHandle testKW FetchIStream
+	testExtBezHandle testKW FetchIStream fixedpoint
 
 preis_SOURCES=preis.cc
 test_Bankauftrag_SOURCES=test_Bankauftrag.cc
@@ -17,10 +17,12 @@ testHandles_SOURCES=testHandles.cc
 testExtBezHandle_SOURCES=testExtBezHandle.cc
 testKW_SOURCES=testKW.cc
 FetchIStream_SOURCES=FetchIStream.cc
+fixedpoint_SOURCES=fixedpoint.cc
 
 CLEANFILES= *~ $(LINKS)
 
-LINKS=testHandles.cc testKW.cc test_pgsql_conv.cc FetchIStream.pgcc 	
+LINKS=testHandles.cc testKW.cc test_pgsql_conv.cc FetchIStream.pgcc \
+	fixedpoint.cc
 
 $(LINKS):
 	ln -sf ../Basic/examples/$@ .

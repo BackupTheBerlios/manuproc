@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.1 2001/04/23 08:11:58 christof Exp $
+# $Id: configure.in,v 1.2 2001/04/30 15:30:25 christof Exp $
 
 AC_INIT(Artikel/ArtikelBase.h)
 
@@ -15,8 +15,6 @@ AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LDFLAGS)
 AC_SUBST(CXXFLAGS)
-
-AM_PATH_GTKMM(1.0.0,,AC_MSG_ERROR("Gtk-- 1.0.0 or newer not found or broken - see config.log for details."))
 
 PETIG_CHECK_POSTGRES
 

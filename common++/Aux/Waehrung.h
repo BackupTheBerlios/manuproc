@@ -1,4 +1,4 @@
-// $Id: Waehrung.h,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: Waehrung.h,v 1.2 2001/04/30 15:30:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -49,7 +49,7 @@ public:
  const string Kurzbezeichnung() const { return kurz; }
  const string Langbezeichnung() const { return lang; }
  // das sollte natuerlich etwas ausgefeilter werden!
- const string TeXsymbol() const { return Kurzbezeichnung(); }
+ const string TeXsymbol() const; //  { return Kurzbezeichnung(); }
  bool operator==(const Waehrung &b) const { return wid==b.wid; }
 }; 
 
