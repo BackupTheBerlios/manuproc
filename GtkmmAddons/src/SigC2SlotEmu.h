@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: SigC2SlotEmu.h,v 1.4 2004/05/03 06:50:54 christof Exp $
+// $Id: SigC2SlotEmu.h,v 1.5 2004/05/03 07:51:25 christof Exp $
 
 // compatibility header for sigc 2.0 <-> sigc 1.2
 
@@ -51,16 +51,16 @@ namespace SigC
 
 namespace sigc
 {  template <class T,class U,class R> 
-    Slot0<R> mem_fun(T &t, R (U::*p)())
+    SigC::Slot0<R> mem_fun(T &t, R (U::*p)())
 	{ return SigC::slot(t,p); }
    template <class R,class T,class U,class A> 
-    Slot1<R,A> mem_fun(T &t, R (U::*p)(A)) 
+    SigC::Slot1<R,A> mem_fun(T &t, R (U::*p)(A)) 
     	{ return SigC::slot(t,p); }
    template <class R,class T,class U,class A,class B> 
-    Slot2<R,A,B> mem_fun(T &t, R (U::*p)(A,B)) 
+    SigC::Slot2<R,A,B> mem_fun(T &t, R (U::*p)(A,B)) 
     	{ return SigC::slot(t,p); }
    template <class R,class T,class U,class A,class B,class C> 
-    Slot3<R,A,B,C> mem_fun(T &t, R (U::*p)(A,B,C)) 
+    SigC::Slot3<R,A,B,C> mem_fun(T &t, R (U::*p)(A,B,C)) 
     	{ return SigC::slot(t,p); }
 }
 
