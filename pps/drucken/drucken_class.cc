@@ -1075,8 +1075,6 @@ void LR_Abstraktion::page_header(std::ostream &os)
   {
    cH_Kunde kunde_an(KdNr());
    cH_Kunde kunde_rng(kunde_an->Rngan());
-   kunde_an->setMLD(mld); 
-   kunde_rng->setMLD(mld);  
 
    os <<"\\begin{flushleft}\n";
    if (page_counter==1) // 1. Seite
@@ -1179,6 +1177,15 @@ void LR_Abstraktion::page_header(std::ostream &os)
      os <<"\\large";
 #endif     
 
+#ifdef MABELLA_EXTENSIONS
+     if(!kunde_an->isRechnungsadresse() && Typ()==Rechnung)
+       os <<"\n "<< string2TeX(kunde_rng->getName())<<"\\\\\\bigskip";
+     else
+       os <<"\n  "<< string2TeX(kunde_an->getName())<<"\\\\\\bigskip";
+       
+     zeilen_passen_noch=ZEILEN_SEITE_N;
+    }
+#else
      if(!kunde_an->isRechnungsadresse() && Typ()==Rechnung)
        os <<"\n "<<mld->MLT(MultiL_Dict::TXT_FIRMA)<<" "<< string2TeX(kunde_rng->getName())<<"\\\\\\bigskip";
      else
@@ -1186,6 +1193,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
        
      zeilen_passen_noch=ZEILEN_SEITE_N;
     }
+#endif
 
 #ifdef MABELLA_EXTENSIONS
    os <<"\\hfill " << mld->MLT(MultiL_Dict::TXT_SEITE) << " \\thepage\\\\\n";
