@@ -1,4 +1,4 @@
-dnl $Id: petig.m4,v 1.54 2002/02/18 13:42:22 cvs_christof Exp $
+dnl $Id: petig.m4,v 1.55 2002/02/18 13:51:04 cvs_christof Exp $
 
 dnl Configure paths for some libraries
 dnl derived from kde's acinclude.m4
@@ -260,6 +260,7 @@ then
       AC_MSG_ERROR([not found])
     fi
   fi
+  $3_NODB_LIBS="$$3_LIBS"
 
   dnl dependancies
   if test "x$5" != "x"
