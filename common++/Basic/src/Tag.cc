@@ -1,4 +1,4 @@
-// $Id: Tag.cc,v 1.1 2002/12/12 10:24:24 christof Exp $
+// $Id: Tag.cc,v 1.2 2002/12/12 10:38:10 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2002  Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "Tag.hh"
+#include <Misc/Tag.h>
 #include <algorithm>
 #include <utility> // pair
 #include <locale.h>

@@ -1,4 +1,4 @@
-// $Id: Tag.hh,v 1.1 2002/12/12 10:24:24 christof Exp $
+// $Id: Tag.h,v 1.1 2002/12/12 10:35:24 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2002  Christof Petig
  *
@@ -19,12 +19,10 @@
 
 #ifndef TAG_HH
 #define TAG_HH
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include <ManuProCConfig.h>
 #include <string>
 #include <vector>
-#include <algo.h> // for find
+#include <algorithm> // for find
 
 class Tag {
     	std::string type;
@@ -81,11 +79,11 @@ public:
 	Tag *find(const std::string &type);
 	// please prefer these finds, they are faster!
 	const_iterator find(const_iterator it,const std::string &type) const
-	{  return ::find(it,end(),type); }
+	{  return std::find(it,end(),type); }
 	const_iterator find(const_iterator it,const std::string &type)
-	{  return ::find(it,const_cast<const Tag*>(this)->end(),type); }
+	{  return std::find(it,const_cast<const Tag*>(this)->end(),type); }
 	iterator find(iterator it,const std::string &type)
-	{  return ::find(it,end(),type); }
+	{  return std::find(it,end(),type); }
 
 	// values of attributes
 	typedef attvec_t::const_iterator const_attiterator;

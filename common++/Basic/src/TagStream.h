@@ -1,4 +1,4 @@
-// $Id: TagStream.h,v 1.1 2002/12/12 10:35:24 christof Exp $
+// $Id: TagStream.h,v 1.2 2002/12/12 10:38:10 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2002  Christof Petig
  *
@@ -21,7 +21,7 @@
 #define _TAGSTREAM_HH
 
 #include <ManuProCConfig.h>
-#include <Misc/Tag.hh>
+#include <Misc/Tag.h>
 #include <fstream>
 #include <strstream>
 

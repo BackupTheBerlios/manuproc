@@ -1,4 +1,4 @@
-// $Id: TagStream.cc,v 1.1 2002/12/12 10:24:24 christof Exp $
+// $Id: TagStream.cc,v 1.2 2002/12/12 10:38:10 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2002  Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "TagStream.hh"
+#include <Misc/TagStream.h>
 #include <cstring>
 #include <unistd.h>
 #include <algo.h>
@@ -104,7 +104,7 @@ std::string TagStream::de_xml(const std::string &cont)
          else if (tag=="&lt;") ret+='<';
          else if (tag=="&gt;") ret+='>';
          else if (tag=="&quot;") ret+='"';
-         else if (tag=="&auml;") ret+='ä'; // and so on ... but glade simply passes them
+         else if (tag=="&auml;") ret+="ä"; // and so on ... but glade simply passes them
          else
          {  ret+=tag;
          }
