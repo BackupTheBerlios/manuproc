@@ -31,6 +31,7 @@ class mpc_agent : public mpc_agent_glade
         void on_kunde_activate();
         void on_activate_entry(int enr);
         void on_customer_clear_activate();
+        void on_customer_search_clicked();
         void on_order_clear_clicked();
         void on_artikel_aktivate();
         void on_artikel_activate_entry(int enr);
@@ -42,8 +43,8 @@ class mpc_agent : public mpc_agent_glade
         void on_orderid_search(gboolean *cont,GtkSCContext context);
 
 	void clear_order();
-	void load_order(int oid){}
-	int create_new_order(int kdnr){return 0;}
+	void load_order(int oid);
+	int create_new_order(int kdnr);
 
 public:
  mpc_agent();

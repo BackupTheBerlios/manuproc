@@ -61,7 +61,8 @@ mpc_agent::mpc_agent()
  v[OD_AMOUNT]="amount";
 
  order->setTitles(v);
-
+ orderid->set_always_fill(true);
+ orderid->set_start_on_idle(true);
 }
 
 
@@ -142,6 +143,7 @@ void mpc_agent::on_customer_clear_activate()
  kunde->grab_focus();
  customer_clear->set_sensitive(false); 
  neu->set_sensitive(false);
+ clear_order();
 }
 
 void mpc_agent::on_order_clear_clicked()
@@ -184,8 +186,18 @@ void mpc_agent::on_neu_clicked()
      return;
     }
  clear_order();
- int oi=create_new_order(atoi(kunde->get_value(KDBOX_NR).c_str()));
+ try {
+ int oi=0;
+ oi=create_new_order(atoi(kunde->get_value(KDBOX_NR).c_str()));
  load_order(oi);   
+ }
+ catch(SQLerror &e)
+ {
+  MyMessage msg(e);
+  msg.set_transient_for(*this);
+  msg.run();
+  return;
+ } 
 
 }
 
@@ -197,8 +209,41 @@ void mpc_agent::on_orderid_entry_editing_done()
 
 void mpc_agent::on_orderid_activate()
 {  
+ load_order(orderid->get_value());
 }
 
+
+void mpc_agent::on_customer_search_clicked()
+{
+ std::string query("select kundennr,name,ort from kunden");
+
+ try {       
+ Query q(query);
+
+ std::string kundennr,name,ort;
+ kunden_selector ks(q,&kundennr,&name,&ort);
+ ks.set_transient_for(*this);
+ int ret;
+ ret=ks.run();
+ if(ret==Gtk::RESPONSE_CANCEL)
+      return;
+
+ kunde->set_value(KDBOX_NR,kundennr);
+ kunde->set_value(KDBOX_NAME,name);
+ kunde->set_value(KDBOX_ORT,ort);
+ }
+ catch(SQLerror &e)
+ {
+  MyMessage msg(e);
+  msg.set_transient_for(*this);
+  msg.run();
+  return;
+ }
+  
+ kunde->set_sensitive(false);
+ customer_clear->set_sensitive(true);
+ neu->set_sensitive(true); 
+}
 
 
 

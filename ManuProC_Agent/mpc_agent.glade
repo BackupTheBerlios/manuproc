@@ -126,6 +126,7 @@
 			  <property name="label" translatable="yes">Search</property>
 			  <property name="use_underline">True</property>
 			  <property name="stock_pixmap">gtk-find</property>
+			  <signal name="clicked" handler="on_customer_search_clicked" last_modification_time="Tue, 11 May 2004 13:45:33 GMT"/>
 			</widget>
 		      </child>
 
@@ -262,7 +263,7 @@
 
 		      <child>
 			<widget class="button" id="order_search">
-			  <property name="visible">True</property>
+			  <property name="sensitive">False</property>
 			  <property name="label" translatable="yes">Search</property>
 			  <property name="use_underline">True</property>
 			  <property name="stock_pixmap">gtk-find</property>
