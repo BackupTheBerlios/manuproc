@@ -1,0 +1,47 @@
+--
+-- PostgreSQL database dump
+--
+
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 2 (OID 4463629)
+-- Name: artbez_insert; Type: TABLE; Schema: public; Owner: jacek
+--
+
+CREATE TABLE artbez_insert (
+    tabelle text NOT NULL
+);
+
+
+--
+-- TOC entry 3 (OID 4463629)
+-- Name: artbez_insert; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE artbez_insert FROM PUBLIC;
+GRANT SELECT ON TABLE artbez_insert TO PUBLIC;
+
+
+--
+-- Data for TOC entry 5 (OID 4463629)
+-- Name: artbez_insert; Type: TABLE DATA; Schema: public; Owner: jacek
+--
+
+COPY artbez_insert (tabelle) FROM stdin;
+artbez_3_1
+artbez_12_1
+\.
+
+
+--
+-- TOC entry 4 (OID 4463634)
+-- Name: artbez_insert_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
+--
+
+ALTER TABLE ONLY artbez_insert
+    ADD CONSTRAINT artbez_insert_pkey PRIMARY KEY (tabelle);
+
+

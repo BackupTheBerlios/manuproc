@@ -1,0 +1,38 @@
+--
+-- PostgreSQL database dump
+--
+
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+ALTER TABLE ONLY public.prov_config DROP CONSTRAINT "$2";
+ALTER TABLE ONLY public.prov_config DROP CONSTRAINT "$1";
+ALTER TABLE ONLY public.prov_config DROP CONSTRAINT prov_config_pkey;
+DROP TABLE public.prov_config;
+--
+-- TOC entry 2 (OID 1861790)
+--
+
+CREATE TABLE prov_config (
+    artikel text NOT NULL,
+    provsatznr integer NOT NULL,
+    kundennr numeric(5,0) NOT NULL
+);
+
+
+--
+-- TOC entry 3 (OID 1861792)
+--
+
+ALTER TABLE ONLY prov_config
+    ADD CONSTRAINT prov_config_pkey PRIMARY KEY (artikel, kundennr);
+
+
+-- TOC entry 5 (OID 1861798)
+--
+
+ALTER TABLE ONLY prov_config
+    ADD CONSTRAINT "$2" FOREIGN KEY (kundennr) REFERENCES kunden(kundennr) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+

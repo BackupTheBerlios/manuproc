@@ -1,0 +1,26 @@
+--
+-- PostgreSQL database dump
+--
+
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+DROP VIEW public.artikel_bestand;
+--
+-- TOC entry 2 (OID 4464274)
+-- Name: artikel_bestand; Type: VIEW; Schema: public; Owner: jacek
+--
+
+CREATE VIEW artikel_bestand AS
+    SELECT r.id AS artikelid, CASE WHEN (sum(l.menge) IS NOT NULL) THEN sum(l.menge) WHEN (0 IS NOT NULL) THEN 0::bigint ELSE NULL::bigint END AS bestand FROM (fw_lager_buchung l RIGHT JOIN artikelstamm r ON ((l.artikelid = r.id))) WHERE (r.mindbestand IS NOT NULL) GROUP BY r.id;
+
+
+--
+-- TOC entry 3 (OID 4464274)
+-- Name: artikel_bestand; Type: ACL; Schema: public; Owner: jacek
+--
+
+REVOKE ALL ON TABLE artikel_bestand FROM PUBLIC;
+
+

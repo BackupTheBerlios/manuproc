@@ -1,0 +1,56 @@
+--
+-- PostgreSQL database dump
+--
+
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+DROP TRIGGER "RI_ConstraintTrigger_1752181" ON public.prov_verkaeufer;
+DROP TRIGGER "RI_ConstraintTrigger_1752180" ON public.prov_verkaeufer;
+ALTER TABLE ONLY public.prov_verkaeufer DROP CONSTRAINT prov_verkaeufer_pkey;
+DROP TABLE public.prov_verkaeufer;
+--
+-- TOC entry 2 (OID 960938)
+--
+
+CREATE TABLE prov_verkaeufer (
+    verknr numeric(5,0) NOT NULL,
+    kundennr numeric(5,0) NOT NULL,
+    provsatz1 numeric(4,2),
+    provsatz2 numeric(4,2)
+);
+
+
+--
+-- TOC entry 3 (OID 960940)
+--
+
+ALTER TABLE ONLY prov_verkaeufer
+    ADD CONSTRAINT prov_verkaeufer_pkey PRIMARY KEY (verknr, kundennr);
+
+
+--
+-- TOC entry 4 (OID 1752180)
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER INSERT OR UPDATE ON prov_verkaeufer
+    FROM kunden
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'prov_verkaeufer', 'kunden', 'UNSPECIFIED', 'verknr', 'kundennr');
+
+
+--
+-- TOC entry 5 (OID 1752181)
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER INSERT OR UPDATE ON prov_verkaeufer
+    FROM kunden
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'prov_verkaeufer', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
+
+
