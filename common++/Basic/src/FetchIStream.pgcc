@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.22 2002/10/24 14:07:07 thoma Exp $
+// $Id: FetchIStream.pgcc,v 1.23 2002/10/31 08:29:36 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -76,6 +76,16 @@ int FetchIStream::getIndicator() const
    return -PQgetisnull(result, zeile, naechstesFeld);
 }
 
+
+
+FetchIStream &FetchIStream::operator>>(char &c)
+{  std::string s;
+   *this >> s;
+   if (s.size()>1) mythrow(SQLerror("FetchIStream>>char&",ECPG_DATA_NOT_ARRAY,"data too long"));
+   c=*s.c_str();
+   return *this;
+}
+
 FetchIStream &FetchIStream::operator>>(int &i)
 {  std::string s;
    *this >> s;
@@ -134,9 +144,9 @@ sqlca.sqlcode=0;
    	ECPGt_EOIT,
    	ECPGt_descriptor, descriptor.c_str(), 0L, 0L, 0L,
    	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EORT);
-   if (sqlca.sqlcode) 
-   { if (sqlca.sqlcode!=100) DEBUG_FIS(SQLerror("open")); 
-     eof=true; 
+   if (sqlca.sqlcode && sqlca.sqlcode!=100)
+   {  DEBUG_FIS(SQLerror("open")); 
+      eof=true;
    }
    result=*(ECPGdescriptor_lvalue(__LINE__,descriptor.c_str()));
 }

@@ -1,4 +1,4 @@
-/* $Id: EntryValueFixed.h,v 1.5 2002/06/24 07:35:40 christof Exp $ */
+/* $Id: EntryValueFixed.h,v 1.6 2002/10/31 08:29:36 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -54,7 +54,7 @@ public:
  }
 
  const fixedpoint<decimals,Ftype,Itype> &Wert() const { return wert; }
- virtual int getIntVal() const { return int(wert);}
+ virtual int getIntVal() const { return wert.as_int();}
  virtual const std::string getStrVal() const 
  { if (shorten) return Formatiere_short(wert);
    else return Formatiere(wert); 

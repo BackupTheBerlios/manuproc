@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.15 2002/10/29 08:33:05 christof Exp $
+// $Id: fixedpoint.h,v 1.16 2002/10/31 08:29:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -56,6 +56,9 @@ template <>
 static inline int zehnhochplusI<0>()
 { return 1; }
 
+const std::string Formatiere(unsigned long,
+                unsigned int,unsigned int,const char *,const char *,char);
+
 template <int decimals=2,class Ftype=double,class Itype=long>
 class fixedpoint
 {
@@ -91,7 +94,7 @@ public:
 	{  return as_int();
 	}
 #endif
-#if 1 // stop this if you want to debug rounding errors
+#if 0 // stop this if you want to debug rounding errors
 	operator Ftype() const
 	{  return as_float();
 	}
@@ -181,9 +184,7 @@ public:
 	std::string String(bool _short=false, unsigned int Ziellaenge=0,
 		const char *TausenderTrennzeichen="",const char *Komma=".",
 		char fuehrendesZeichen=' ') const
-	{  extern const std::string Formatiere(unsigned long,
-                unsigned int,unsigned int,const char *,const char *,char);
-           const char *sign="";
+	{  const char *sign="";
            unsigned long val=Scaled();
            if (Scaled()<0) 
            {  sign="-"; 
@@ -221,6 +222,11 @@ public:
 	{  return as_float()*f.as_float();
 	}
 	
+	self_t abs() const
+	{  if (scaled<0) return -*this;
+	   else return *this;
+	}
+	
 	// to tell the compiler which way to prefer
 	self_t operator+(const Ftype b) const
 	{  return *this+self_t(b); }
@@ -233,12 +239,18 @@ template <int decimals,class Ftype,class Itype>
 {  return o << f.String(true);
 }
 
+// allow reversed notation
 template <int decimals,class Ftype,class Itype>
  inline fixedpoint<decimals,Ftype,Itype> operator*(Itype i,const fixedpoint<decimals,Ftype,Itype> &f)
 {  return f*i;
 }
+template <int decimals,class Ftype,class Itype>
+ inline Ftype operator*(Ftype a,const fixedpoint<decimals,Ftype,Itype> &f)
+{  return f*a;
+}
 
-// allow int arguments explicitely
+#if 1
+// allow int arguments even when Itype==long
 template <int decimals,class Ftype,class Itype>
  inline fixedpoint<decimals,Ftype,Itype> operator*(int i,const fixedpoint<decimals,Ftype,Itype> &f)
 {  return f*Itype(i);
@@ -247,5 +259,15 @@ template <int decimals,class Ftype,class Itype>
  inline fixedpoint<decimals,Ftype,Itype> operator*(const fixedpoint<decimals,Ftype,Itype> &f, int i)
 {  return f.operator*(Itype(i));
 }
+// allow float arguments even when Ftype==double
+template <int decimals,class Ftype,class Itype>
+ inline fixedpoint<decimals,Ftype,Itype> operator*(float a,const fixedpoint<decimals,Ftype,Itype> &f)
+{  return f.operator*(Ftype(a));
+}
+template <int decimals,class Ftype,class Itype>
+ inline fixedpoint<decimals,Ftype,Itype> operator*(const fixedpoint<decimals,Ftype,Itype> &f, float b)
+{  return f.operator*(Ftype(b));
+}
+#endif
 
 #endif

@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.cc,v 1.11 2002/10/29 08:33:05 christof Exp $ */
+/* $Id: Ausgabe_neu.cc,v 1.12 2002/10/31 08:29:36 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -147,13 +147,13 @@ const std::string Formatiere(unsigned long Zahl,
    return res;
 }
 
-
+#if 0 // 3.2 can not use templates with different number of arguments
 template <int decimals,class Ftype,class Itype>
  const std::string FormatiereTeX_Preis
 	(const fixedpoint <decimals,Ftype,Itype> &Zahl)
 {  const Itype divisor=zehnhochplusI<decimals-2>();
    std::string result=
-	FormatiereTeX(fixedpoint<2>(fixedpoint<2>::ScaledValue(Zahl.Scaled()/divisor)));
+	FormatiereTeX(fixedpoint<2,Ftype,Itype>(fixedpoint<2,Ftype,Itype>::ScaledValue(Zahl.Scaled()/divisor)));
    const Itype rest=Zahl.Scaled()%divisor;
    if (rest)
    {  result+=std::string("$^{")
@@ -161,6 +161,7 @@ template <int decimals,class Ftype,class Itype>
    }
    return result;
 }
+#endif
 
 template<> const std::string FormatiereTeX_Preis<3>(const fixedpoint<3> &Zahl)
 {  typedef long Itype;

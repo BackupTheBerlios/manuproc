@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.13 2002/10/24 14:06:49 thoma Exp $
+// $Id: FetchIStream.pgcc,v 1.14 2002/10/31 08:29:36 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -47,7 +47,8 @@ int main()
    std::cout << i << ", " << f << ", " << b << '\n';
   }
   {Query query("select relname from pg_class limit 10");
-   std::vector<std::string> v=query.FetchArray<std::string>();
+   std::vector<std::string> v;
+   query.FetchArray(v);
    std::copy(v.begin(),v.end(),ostream_iterator<std::string>(std::cout,"\n"));
   }
 // test nasty error? (overlapping)

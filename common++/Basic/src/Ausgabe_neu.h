@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.h,v 1.15 2002/10/29 08:33:05 christof Exp $ */
+/* $Id: Ausgabe_neu.h,v 1.16 2002/10/31 08:29:36 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -62,6 +62,11 @@ template <int decimals,class Ftype,class Itype>
  const std::string Formatiere_short(const fixedpoint<decimals,Ftype,Itype> &Zahl)
 {  return Zahl.String(true, 0, ".", ",");
 }
+template <int decimals,class Ftype,class Itype>
+ const std::string FormatiereEmpty_short(const fixedpoint<decimals,Ftype,Itype> &Zahl)
+{  if (!Zahl) return "";
+   return Zahl.String(true, 0, ".", ",");
+}
 
 // um transparent zwischen fixedpoints und ints umschalten zu können
 extern inline const std::string Formatiere_short(unsigned int i)
@@ -73,4 +78,3 @@ extern inline const std::string Formatiere_short(unsigned int i)
 template <int decimals,class Ftype,class Itype>
  const std::string FormatiereTeX_Preis(const fixedpoint<decimals,Ftype,Itype> &Zahl);
 #endif
-	

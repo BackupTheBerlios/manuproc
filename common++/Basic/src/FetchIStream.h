@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.12 2002/10/24 14:07:07 thoma Exp $
+// $Id: FetchIStream.h,v 1.13 2002/10/31 08:29:36 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -50,6 +50,7 @@ public:
 	FetchIStream &operator>>(float &f);
 	FetchIStream &operator>>(double &f);
 	FetchIStream &operator>>(bool &b);
+	FetchIStream &operator>>(char &c);
 	
 	template <class T>
 	 class WithIndicator

@@ -1,4 +1,4 @@
-// $Id: Trace.h,v 1.1 2002/10/24 14:17:17 christof Exp $
+// $Id: Trace.h,v 1.2 2002/10/31 08:29:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,7 +30,7 @@ namespace ManuProC {
 
 namespace Tracer {
 
-	enum Channel { Auftrag };
+	enum Channel { Auftrag,Artikel };
 
 	void Enable(Channel c, bool an=true);
 	
@@ -119,6 +119,46 @@ template <class A, class B,class C,class D,class E,class F,class G,class H,class
    {  if (enabled) 
       { Tracer::FunctionStart(name) << a << ',' << b <<',' << c<<',' << d<<',' << e<<',' << f<<',' << g<<','<<h<<','<<i<<','<<j << ")\n"; }
    }
+
+template <class A, class B,class C,class D,class E,class F,class G,class H,class I,class J,class K> 
+   Trace(Tracer::Channel ca, const std::string &name, const A &a, const B &b, const C &c, const D &d, const E &e, const F &f, const G &g,const H &h,const I &i,const J &j,const K &k)
+   	: enabled(Tracer::enabled(ca))
+   {  if (enabled) 
+      { Tracer::FunctionStart(name) << a << ',' << b <<',' << c<<',' << d<<',' << e<<',' << f<<',' << g<<','<<h<<','<<i<<','<<j<<','<<k<<")\n"; }
+   }
+
+template <class A, class B,class C,class D,class E,class F,class G,class H,class I,class J,class K,class L> 
+   Trace(Tracer::Channel ca, const std::string &name, const A &a, const B &b, const C &c, const D &d, const E &e, const F &f, const G &g,const H &h,const I &i,const J &j,const K &k,const L &l)
+   	: enabled(Tracer::enabled(ca))
+   {  if (enabled) 
+      { Tracer::FunctionStart(name) << a << ',' << b <<',' << c<<',' << d<<',' << e<<',' << f<<',' << g<<','<<h<<','<<i<<','<<j<<','<<k<<','<<l<<")\n"; }
+   }
+
+
+template <class A, class B,class C,class D,class E,class F,class G,class H,class I,class J,class K,class L,class M> 
+   Trace(Tracer::Channel ca, const std::string &name, const A &a, const B &b, const C &c, const D &d, const E &e, const F &f, const G &g,const H &h,const I &i,const J &j,const K &k,const L &l,const M &m)
+   	: enabled(Tracer::enabled(ca))
+   {  if (enabled) 
+      { Tracer::FunctionStart(name) << a << ',' << b <<',' << c<<',' << d<<',' << e<<',' << f<<',' << g<<','<<h<<','<<i<<','<<j<<','<<k<<','<<l<<','<<m<<")\n"; }
+   }
+
+
+template <class A, class B,class C,class D,class E,class F,class G,class H,class I,class J,class K,class L,class M,class N> 
+   Trace(Tracer::Channel ca, const std::string &name, const A &a, const B &b, const C &c, const D &d, const E &e, const F &f, const G &g,const H &h,const I &i,const J &j,const K &k,const L &l,const M &m,const N &n)
+   	: enabled(Tracer::enabled(ca))
+   {  if (enabled) 
+      { Tracer::FunctionStart(name) << a << ',' << b <<',' << c<<',' << d<<',' << e<<',' << f<<',' << g<<','<<h<<','<<i<<','<<j<<','<<k<<','<<l<<','<<m<<','<<n<<")\n"; }
+   }
+
+
+template <class A, class B,class C,class D,class E,class F,class G,class H,class I,class J,class K,class L,class M,class N,class O> 
+   Trace(Tracer::Channel ca, const std::string &name, const A &a, const B &b, const C &c, const D &d, const E &e, const F &f, const G &g,const H &h,const I &i,const J &j,const K &k,const L &l,const M &m,const N &n,const O &o)
+   	: enabled(Tracer::enabled(ca))
+   {  if (enabled) 
+      { Tracer::FunctionStart(name) << a << ',' << b <<',' << c<<',' << d<<',' << e<<',' << f<<',' << g<<','<<h<<','<<i<<','<<j<<','<<k<<','<<l<<','<<m<<','<<n<<','<<o<<")\n"; }
+   }
+
+
 
 };
 
