@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.45 2004/11/08 08:32:18 christof Exp $
+# $Id: Makefile.am,v 1.46 2004/11/08 08:35:02 christof Exp $
 AM_CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
@@ -65,7 +65,8 @@ libKomponenten_a_SOURCES= \
 	IntStringBox_glade.cc IntStringPopup_glade.cc \
 	string_Label.cc Event.cc Association.cc \
         CellRendererSimpleTree.cc ArtikelBox.cc \
-        KundenBox2.cc int_ImageButton.cc StringBox_sql.cc
+        KundenBox2.cc int_ImageButton.cc \
+        Optionmenu_Instanz.cc
 
 lateron= \
 		KundenBox_glade.cc \
