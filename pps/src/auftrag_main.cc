@@ -533,7 +533,11 @@ void auftrag_main::set_column_titles_of_simple_tree()
 }
 
 void auftrag_main::fill_simple_tree()
-{ stop_idle();
+{
+#ifndef MABELLA_EXTENSIONS
+ stop_idle();
+#endif
+
   if(allaufids) { delete(allaufids); allaufids=0; }
 //  if(instanz->LagerInstanz())
 //      lager_zeigen();   
@@ -557,7 +561,9 @@ void auftrag_main::fill_simple_tree()
      }
     maintree_s->setDataVec(datavec);
    }
+#ifndef MABELLA_EXTENSIONS
    start_idle();
+#endif
 }
 
 void auftrag_main::start_idle()
