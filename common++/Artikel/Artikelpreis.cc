@@ -345,7 +345,7 @@ void Artikelpreis::remove(const cH_PreisListe liste,const ArtikelBase &a,
     if(MINDESTMENGE)
 	query+=" and p.mindestmenge="+itos(MINDESTMENGE);
 
-    query+=") join ku_preisliste pl using (pl.prlsnr=p.kundennr"
+    query+=") join ku_preisliste pl on (pl.prlsnr=p.kundennr"
 		" and pl.art=?) where ";
     for(std::vector<std::string>::const_iterator s=del_all_komp.begin();
 	s!=del_all_komp.end(); ++s)
@@ -357,7 +357,8 @@ void Artikelpreis::remove(const cH_PreisListe liste,const ArtikelBase &a,
     query+=" true "; // damit am Ende kein einsames "and" stehen bleibt
 
     Query q(query);
-    q << liste->Art();
+    char art(liste->Art());
+    q << art;
     q.FetchArray(to_delete);
     SQLerror::test(__FILELINE__);
    }
