@@ -1,6 +1,7 @@
 #!/bin/sh
 
 psql $1 <<EOF
+delete from artikelzusammensetzung;
 delete from ketten;
 delete from lager_bewegung;
 delete from lastcode;
