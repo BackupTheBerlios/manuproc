@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_ostream.cc,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: Zeitpunkt_ostream.cc,v 1.2 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,7 +20,7 @@
 #include <Zeitpunkt.h>
 #include <iomanip>
 
-ostream &operator<<(ostream&o,const Zeitpunkt&t)
+std::ostream &operator<<(std::ostream&o,const Zeitpunkt&t)
 {  o << t.datum << " ";
    char oldfill=o.fill('0');
    int oldwidth=o.width(2);

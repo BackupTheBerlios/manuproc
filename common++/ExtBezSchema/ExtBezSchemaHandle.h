@@ -1,4 +1,4 @@
-// $Id: ExtBezSchemaHandle.h,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: ExtBezSchemaHandle.h,v 1.2 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -42,7 +42,8 @@ class cH_ExtBezSchema : public const_Handle<ExtBezSchema>
 	static cache_t cache;
 	cH_ExtBezSchema(const ExtBezSchema *s)
 		: const_Handle<ExtBezSchema>(s) {}
-	friend cache_t::stl_type;
+//	friend cache_t::stl_type;
+	friend class std::map<cH_ExtBezSchema::CacheIndex, cH_ExtBezSchema>;
 	cH_ExtBezSchema() {} // for the map
 public:
 	cH_ExtBezSchema(ExtBezSchema::ID eid

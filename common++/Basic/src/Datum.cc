@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.4 2001/06/27 08:04:09 christof Exp $ */
+/* $Id: Datum.cc,v 1.5 2001/07/05 09:23:02 christof Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
@@ -52,7 +52,7 @@ const char *Petig::Datum::c_str() const throw(Petig::Datumsfehler)
 
 void Petig::Datum::write_euro(char *buf,unsigned int size) const throw(Petig::Datumsfehler)
 {	teste();
-	snprintf0(buf,size,"%02d.%02d.%04d",tag,monat,jahr);
+	snprintf0(buf,size,"%d.%d.%04d",tag,monat,jahr);
 }
 
 void Petig::Datum::teste() const throw (Petig::Datumsfehler)
@@ -158,14 +158,14 @@ Petig::Datum Petig::Datum::operator+(int tage) const throw(Datumsfehler)
    return ret;
 }
 
-ostream &operator<<(ostream&o,const Petig::Datum&d) throw()
+std::ostream &operator<<(std::ostream&o,const Petig::Datum&d) throw()
 {  int w=o.width(); 
    char f=o.fill(); 
    o << d.tag << "." << setfill(f) << setw(w) << d.monat << "." << d.jahr;
    return o;
 }
 
-ostream &operator<<(ostream&o,const Petig::Datumsfehler &df)
+std::ostream &operator<<(std::ostream&o,const Petig::Datumsfehler &df)
 {  if (df.falsch&Petig::Datumsfehler::tagfalsch) o << "d";
    if (df.falsch&Petig::Datumsfehler::monatfalsch) o << "m";
    if (df.falsch&Petig::Datumsfehler::jahrfalsch) o << "y";
@@ -193,7 +193,7 @@ Petig::Datum::Datum(const Kalenderwoche &kw) throw(Datumsfehler)
    *this=Datum(t);
 }
 
-//#define DEBUG(x) cout << x
+//#define DEBUG(x) std::cout << x
 #define DEBUG(x)
 
 Kalenderwoche Petig::Datum::KW() const throw(Datumsfehler)

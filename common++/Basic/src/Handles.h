@@ -1,4 +1,4 @@
-// $Id: Handles.h,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: Handles.h,v 1.2 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,7 +24,7 @@
 // Handle class to make passing ExtBezSchemas faster and easier
 // (java like reference counting)
 
-// WARNING: I don't know whether this is exception safe !!!!!!!
+// WARNING: I don't know whether this is std::exception safe !!!!!!!
 
 // it is always a good idea to derive other objects from this
 
@@ -33,7 +33,7 @@
 #endif
 #ifdef HANDLES_NOISY
 #include <iostream>
-#define NOISE(x) cerr << x
+#define NOISE(x) std::cerr << x
 #else
 #define NOISE(x) 
 #endif
@@ -144,7 +144,7 @@ public:
 	// usually this is only needed for cached values
 	const_Handle() : _data(0) { NOISE("const_Handle()\n"); }
 	
-	// without this test any exception in T::T(...) would kill your program
+	// without this test any std::exception in T::T(...) would kill your program
 	~const_Handle()
 	{  NOISE("~const_Handle" << _data << '.' << (_data?_data->_references:0) << '\n');
 	   if (_data) 

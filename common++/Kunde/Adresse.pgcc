@@ -1,4 +1,4 @@
-/* $Id: Adresse.pgcc,v 1.13 2001/03/16 11:24:09 cvs_christof Exp $ */
+/* $Id: Adresse.pgcc,v 1.14 2001/07/02 16:38:33 cvs_christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -103,7 +103,7 @@ Adresse::Adresse(int kdnr) throw(SQLerror)
    lieferadresse=false;
 }
 
-static const string Dform(unsigned int i,bool TeX=false) throw()
+static const std::string Dform(unsigned int i,bool TeX=false) throw()
 {  return TeX?FormatiereTeX(i,2):Formatiere(i,2);
 }
 
@@ -169,8 +169,8 @@ Adresse *Adresse_by_kdnr(int kdnr) throw()
    {  return new Adresse(kdnr);
    } 
    catch (SQLerror& e)
-   {  cerr << "Datenbankfehler "<< e << '\n';
-      if (e.Code()<0) { cerr << "Programm beendet sich\n"; abort(); }
+   {  std::cerr << "Datenbankfehler "<< e << '\n';
+      if (e.Code()<0) { std::cerr << "Programm beendet sich\n"; abort(); }
       return NULL;
    }
 }

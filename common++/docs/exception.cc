@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: exception.cc,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: exception.cc,v 1.2 2001/07/05 09:23:02 christof Exp $
 // long explantion at the end
 
 #include <exception>
@@ -43,7 +43,7 @@ typedef struct __eh_info
    This must match init_exception_processing().
 
    Note that handlers and caught are not redundant; when rethrown, an
-   exception can have multiple active handlers and still be considered
+   std::exception can have multiple active handlers and still be considered
    uncaught.  */
 
 struct cp_eh_info
@@ -63,19 +63,19 @@ struct cp_eh_info
 extern "C" cp_eh_info **__get_eh_info ();       // actually void **
 
 void print_exception_u()
-{  cerr << "unexpected exception: ";
-   cerr << ((std::type_info*)((*__get_eh_info ())->type))->name();
-   cerr << '\n';
-   cerr.flush();
+{  std::cerr << "unexpected std::exception: ";
+   std::cerr << ((std::type_info*)((*__get_eh_info ())->type))->name();
+   std::cerr << '\n';
+   std::cerr.flush();
    _exit(1);
 }
 
 void print_exception_t()
 {  
-   cerr << "uncaught exception: ";
-   cerr << ((std::type_info*)((*__get_eh_info ())->type))->name();
-   cerr << '\n';
-   cerr.flush();
+   std::cerr << "uncaught std::exception: ";
+   std::cerr << ((std::type_info*)((*__get_eh_info ())->type))->name();
+   std::cerr << '\n';
+   std::cerr.flush();
    _exit(1);
 }
 
@@ -95,7 +95,7 @@ What does a throw do?
 
 it calls 
 	void * __eh_alloc(size_t size)
-uses a copy ctor of the exception and then destructs all
+uses a copy ctor of the std::exception and then destructs all
 instances, then calls 
 	void __cp_push_exception(void *value, void *type, void (*cleanup)(void *, int))
 and (__eh_pc ?)

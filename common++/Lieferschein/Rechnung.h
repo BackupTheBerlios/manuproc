@@ -37,14 +37,14 @@ private:
  RngArt rngart;
  Petig::Datum zahlziel;
  Petig::Datum rgdatum;
- vector<RechnungEntry> REntries;
+ std::vector<RechnungEntry> REntries;
  cP_Waehrung waehrung;
  fixedpoint<2> rabatt;
  bool bezahlt;
 
 public:
- typedef vector<RechnungEntry>::const_iterator const_iterator;
- typedef vector<RechnungEntry>::iterator iterator;
+ typedef std::vector<RechnungEntry>::const_iterator const_iterator;
+ typedef std::vector<RechnungEntry>::iterator iterator;
         
  Rechnung(int rid) throw(SQLerror);
  Rechnung(const cH_Kunde k,int jahr=0) throw(SQLerror);
@@ -52,7 +52,7 @@ public:
  const Kunde::ID KdNr() const {return kunde->Id();}
  const cH_Kunde getKunde() const { return kunde; }
  
-// string RngArt() const {return rngart; } 
+// std::string RngArt() const {return rngart; } 
  const RngArt rngArt() const {return rngart; } 
  fixedpoint<2> Rabatt() const { return rabatt; }
  

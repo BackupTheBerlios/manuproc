@@ -1,4 +1,4 @@
-/* $Id: Bankauftrag.h,v 1.1 2001/04/23 08:11:58 christof Exp $ */
+/* $Id: Bankauftrag.h,v 1.2 2001/07/05 09:23:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -40,7 +40,7 @@ class Bankauftrag
 	long Kennziffer;
 	unsigned long eigeneBLZ;
 	long long eigenesKonto;
-	string eigenerName;
+	std::string eigenerName;
 	char Auftragsart; /* 'G' oder 'L' */
 	
 	int eD_Policy;
@@ -49,14 +49,14 @@ class Bankauftrag
 	/// erzeugeDiskette
 	int erzeugeDiskette() throw(IOerror);
 public :
-	Bankauftrag(char _kennz, long myblz, string myname,long long mykonto,
+	Bankauftrag(char _kennz, long myblz, std::string myname,long long mykonto,
 						const char *TeX_cmd=NULL)
 		throw(IOerror,Datenfehler);
 	Bankauftrag &operator<<(const Zahlvorgang &z) throw(IOerror);
 	void printEinzugListe() throw(IOerror);
 	void close() throw(IOerror);
 	static void string2Bank(char *buf,const char *s) throw (Datenfehler);
-	static void string2Bank(char *buf,string s) throw (Datenfehler)
+	static void string2Bank(char *buf,std::string s) throw (Datenfehler)
 	{  string2Bank(buf,s.c_str()); }
 
 	static const int P_FORMAT=0x4;
@@ -64,8 +64,8 @@ public :
 	static const int P_ERASE=0x1;
 	void setze_eD_Policy(int pol) { eD_Policy=pol; }
 	void setze_logfile(FILE *f) { logfile=f; }
-	static const string BLZFormat(long BLZ) throw(Datenfehler);
-	static const string BLZ2Bankname(long BLZ) throw(SQLerror);
+	static const std::string BLZFormat(long BLZ) throw(Datenfehler);
+	static const std::string BLZ2Bankname(long BLZ) throw(SQLerror);
 };
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: preis.cc,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: preis.cc,v 1.2 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,19 +26,19 @@ int main()
 {  Petig::PrintUncaughtExceptions();
    Petig::dbconnect();
    Preis p(1.00,Waehrung::DM,100);
-   cout << "1DM/100m "<<p<<'\n';
+   std::cout << "1DM/100m "<<p<<'\n';
    Preis b(2.0,Waehrung::DM,100);
-   cout << "2DM/100m "<<b<<'\n';
-   cout << "+ "<<p+b<< ", " << b+p<< '\n';
-   cout << "2DM -> "<< b.Wert_i(Waehrung::EUR) << '\n';
+   std::cout << "2DM/100m "<<b<<'\n';
+   std::cout << "+ "<<p+b<< ", " << b+p<< '\n';
+   std::cout << "2DM -> "<< b.Wert_i(Waehrung::EUR) << '\n';
    Preis c(3.0,Waehrung::EUR,100);
-   cout << "3Euro/100m "<<c<<'\n';
-   cout << "1DM+3Euro "<<p+c<< ", " << c+p<< '\n';
+   std::cout << "3Euro/100m "<<c<<'\n';
+   std::cout << "1DM+3Euro "<<p+c<< ", " << c+p<< '\n';
    Preis d(4.0,Waehrung::EUR,25);
-   cout << d << '\n';
-   cout << "+ " << p+d << ", " << d+p << '\n';
-   cout << "--------------------\n";
+   std::cout << d << '\n';
+   std::cout << "+ " << p+d << ", " << d+p << '\n';
+   std::cout << "--------------------\n";
    Preis e(1.0,Waehrung::DM,7);
    Preis f(.1,Waehrung::EUR,100);
-   cout << e << '+'<< f<<"=" << e+f<<'\n';
+   std::cout << e << '+'<< f<<"=" << e+f<<'\n';
 }

@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.4 2001/06/08 19:32:33 christof Exp $
+// $Id: Kunde.h,v 1.5 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -37,27 +37,27 @@ public:
  typedef Nummer ID;
 	
  struct st_adresse
-  {string firma;
-   string sortname;
-   string postanwvor;
-   string strasse;
-   string postanwnach;
-   string hsnr;
-   string plz;
-   string postfach;
-   string postfachplz;
-   string ort;
-   string landname;
-   string lkz;
+  {std::string firma;
+   std::string sortname;
+   std::string postanwvor;
+   std::string strasse;
+   std::string postanwnach;
+   std::string hsnr;
+   std::string plz;
+   std::string postfach;
+   std::string postfachplz;
+   std::string ort;
+   std::string landname;
+   std::string lkz;
   };
  typedef struct st_adresse Adresse;  
  
  struct st_bankverb
    {int bankindex;
-    string bank;
+    std::string bank;
     unsigned int blz;
     unsigned long long int konto;
-    const string getBankverb() const { return  bank+": BLZ "+itos(blz)+", Kto.Nr. "+ulltos(konto);}
+    const std::string getBankverb() const { return  bank+": BLZ "+itos(blz)+", Kto.Nr. "+ulltos(konto);}
    };
  typedef struct st_bankverb Bankverbindung;
  
@@ -71,9 +71,9 @@ public:
     fixedpoint<2> rabatt;
     int skontofrist; 
     ID preisliste; 
-    string verein; 
+    std::string verein; 
     bool bankeinzug;
-    string notiz; 
+    std::string notiz; 
     Petig::Datum stand;
     fixedpoint<2> einzugrabatt;
     st_kddata()
@@ -87,7 +87,7 @@ public:
 private:
 	ID Kundennr;
 	ExtBezSchema::ID schema;
-	string IDnr;
+	std::string IDnr;
 	
 	ID rngan;
         bool rng_an_postfach;
@@ -108,26 +108,26 @@ public:
 	static const ID default_id=_wir;
 	static const ID none_id=_illegal;
 	Kunde(ID nr=default_id) throw(SQLerror);
-	static const cH_Kunde newKunde(const Kunde::ID kid, const string &firma) throw(SQLerror);
-        const string LaTeX_von() const;
-        const string LaTeX_an(const string& wo) const;
+	static const cH_Kunde newKunde(const Kunde::ID kid, const std::string &firma) throw(SQLerror);
+        const std::string LaTeX_von() const;
+        const std::string LaTeX_an(const std::string& wo) const;
         
-        const string getBank() const { return bankverb.getBankverb(); }
+        const std::string getBank() const { return bankverb.getBankverb(); }
         const unsigned long long int getKtnr() const { return bankverb.konto; }
         const unsigned int getblz() const { return bankverb.blz; }
-        const string getbank() const { return bankverb.bank; }
+        const std::string getbank() const { return bankverb.bank; }
         const int getindex() const { return bankverb.bankindex; }
 
-        const string sortname() const { return adresse.sortname; }
-        const string firma() const { return adresse.firma; }
-        const string postanwvor() const { return adresse.postanwvor; }
-        const string strasse() const { return adresse.strasse; }
-        const string hausnr() const { return adresse.hsnr; }
-        const string postanwnach() const { return adresse.postanwnach; }
-        const string plz() const { return adresse.plz; }
-        const string ort() const { return adresse.ort; }
-        const string postfach() const { return adresse.postfach; }
-        const string postfachplz() const { return adresse.postfachplz; }
+        const std::string sortname() const { return adresse.sortname; }
+        const std::string firma() const { return adresse.firma; }
+        const std::string postanwvor() const { return adresse.postanwvor; }
+        const std::string strasse() const { return adresse.strasse; }
+        const std::string hausnr() const { return adresse.hsnr; }
+        const std::string postanwnach() const { return adresse.postanwnach; }
+        const std::string plz() const { return adresse.plz; }
+        const std::string ort() const { return adresse.ort; }
+        const std::string postfach() const { return adresse.postfach; }
+        const std::string postfachplz() const { return adresse.postfachplz; }
 
         const long int flaeche() const { return kundendaten.flaeche; }
         const long int mitarbeiter() const { return kundendaten.mitarbeiter; }
@@ -138,15 +138,15 @@ public:
         const fixedpoint<2> einzugrabatt() const { return kundendaten.einzugrabatt; }
         const ID Preisliste() const { return kundendaten.preisliste; }
         const int skontofrist() const { return kundendaten.skontofrist; }
-        const string verein() const { return kundendaten.verein; }
+        const std::string verein() const { return kundendaten.verein; }
         const bool bankeinzug() const { return kundendaten.bankeinzug; }
-        const string notiz() const { return kundendaten.notiz; }
-        const string stand() const { return kundendaten.stand.c_str(); }
+        const std::string notiz() const { return kundendaten.notiz; }
+        const std::string stand() const { return kundendaten.stand.c_str(); }
 
-        const string getName() const {  return adresse.firma; }
-        const string getSortName() const {  return adresse.sortname; }
+        const std::string getName() const {  return adresse.firma; }
+        const std::string getSortName() const {  return adresse.sortname; }
         ID Id() const {  return Kundennr; }
-        const string idnr() const { return IDnr; } 
+        const std::string idnr() const { return IDnr; } 
         ID getNummer() const {  return Kundennr; }
         cH_ExtBezSchema getSchema(ArtikelTyp t=ArtikelTyp::GewebtesBand) const
         	{  return cH_ExtBezSchema(schema,t); }
@@ -171,18 +171,18 @@ public:
 
 
         // Datenbank schreiben
-//        void set_Bank(const string& s); 
-        void set_sortname(const string& s) {adresse.sortname = s; update();} 
-        void set_firma(const string& s){adresse.firma = s; update();} 
-        void set_postanwvor(const string& s){adresse.postanwvor = s; update();} 
-        void set_strasse(const string& s){adresse.strasse = s; update();} 
-        void set_hausnr(const string& s){adresse.hsnr = s; update();}  
-        void set_postanwnach(const string& s){adresse.postanwnach = s; update();} 
-        void set_plz(const string& s){adresse.plz = s; update();} 
-        void set_ort(const string& s){adresse.ort = s; update();}  
-        void set_postfach(const string& s){adresse.postfach = s; update();} 
-        void set_postfachplz(const string& s){adresse.postfachplz = s; update();} 
-        void set_idnr(const string& s){IDnr = s; update();} 
+//        void set_Bank(const std::string& s); 
+        void set_sortname(const std::string& s) {adresse.sortname = s; update();} 
+        void set_firma(const std::string& s){adresse.firma = s; update();} 
+        void set_postanwvor(const std::string& s){adresse.postanwvor = s; update();} 
+        void set_strasse(const std::string& s){adresse.strasse = s; update();} 
+        void set_hausnr(const std::string& s){adresse.hsnr = s; update();}  
+        void set_postanwnach(const std::string& s){adresse.postanwnach = s; update();} 
+        void set_plz(const std::string& s){adresse.plz = s; update();} 
+        void set_ort(const std::string& s){adresse.ort = s; update();}  
+        void set_postfach(const std::string& s){adresse.postfach = s; update();} 
+        void set_postfachplz(const std::string& s){adresse.postfachplz = s; update();} 
+        void set_idnr(const std::string& s){IDnr = s; update();} 
         void set_schema(ID s){schema = s; update();} 
 
         void set_planumsatz(const fixedpoint<2> s){kundendaten.planumsatz = s; update();}
@@ -191,15 +191,15 @@ public:
         void set_mitarbeiter(const int s){kundendaten.mitarbeiter = s; update();}
         void set_kundenumsatz(const fixedpoint<2> s){kundendaten.kundenumsatz = s; update();}
         void set_umsatz(const fixedpoint<2> s){kundendaten.umsatz = s; update();}
-        void set_verein(const string& s){kundendaten.verein = s; update();}
+        void set_verein(const std::string& s){kundendaten.verein = s; update();}
         void set_preisliste(const ID s){kundendaten.preisliste = s; update();}
         void set_skontofrist(const int s){kundendaten.skontofrist = s; update();}
         void set_einzugrabatt(const fixedpoint<2> s){kundendaten.einzugrabatt = s; update();}
-        void set_notiz(const string& s){kundendaten.notiz = s; update();} 
+        void set_notiz(const std::string& s){kundendaten.notiz = s; update();} 
         void set_bankindex(const int s){bankverb.bankindex = s; update();} 
         void set_bankkonto(const unsigned long long int s){bankverb.konto = s; update();} 
         
-        unsigned long int neue_bank_anlegen(const string& name, unsigned long int blz);        
+        unsigned long int neue_bank_anlegen(const std::string& name, unsigned long int blz);        
         void get_blz_from_bankindex(unsigned int bankindex);
 };
 
@@ -208,7 +208,8 @@ class cH_Kunde : public const_Handle<Kunde>
         typedef CacheStatic<Kunde::ID,cH_Kunde> cache_t;
         static cache_t cache;
   cH_Kunde(const Kunde *p) : const_Handle<Kunde>(p) {}	
-        friend cache_t::stl_type;
+//        friend cache_t::stl_type;
+	friend class std::map<int, cH_Kunde>;
         cH_Kunde() {}
 public:
 	typedef Kunde::ID ID;

@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.6 2001/06/27 08:04:09 christof Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.7 2001/07/05 09:23:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,7 +28,7 @@
 #if 0
 class SQLAuftragSelector
 {
- string clausel;
+ std::string clausel;
  
 public:
 /*
@@ -52,8 +52,8 @@ public:
   
   
  struct sel_Status_Mab
-  { sel_Status_Mab(const string st) : status(st) {}
-    string status;
+  { sel_Status_Mab(const std::string st) : status(st) {}
+    std::string status;
   };  
 
  struct sel_KdArtikel
@@ -77,7 +77,7 @@ public:
 
 class SQLFullAuftragSelector // : public SQLAuftragSelector
 {
- string clausel;
+ std::string clausel;
 public:
  struct sel_Status
   { sel_Status(ppsInstanz::ppsInstId in, int st) : instanz(in),status(st) {}
@@ -115,8 +115,8 @@ public:
   };
  SQLFullAuftragSelector(const sel_Kunde_Artikel &selstr);
 
- void setClausel(const string &cl) { clausel = cl;}
- const string getClausel() const { return clausel; }
+ void setClausel(const std::string &cl) { clausel = cl;}
+ const std::string getClausel() const { return clausel; }
 };
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.2 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -18,13 +18,13 @@
  */
 
 #include <Artikel/ArtikelBezeichnung.h>
+#include <Artikel/ArtikelStamm.h>
 #include "Aux/string0.h"
 #include <Aux/Transaction.h>
 #include <Aux/mystream.h>
 exec sql include sqlca;
 #include <Aux/FetchIStream.h>
 //#include <Aux/dbconnect.h>
-
 
 ArtikelBezeichnung::ArtikelBezeichnung(const ArtikelBase &artikel, const cH_ExtBezSchema &_schema) throw(SQLerror)
  : ArtikelBase(artikel), schema(_schema)
@@ -35,6 +35,27 @@ ArtikelBezeichnung::ArtikelBezeichnung(const ArtikelBase &artikel, const ExtBezS
  : ArtikelBase(artikel),
    schema(cH_ExtBezSchema(_schema,ArtikelTyp::vonArtikel(artikel)))
 {  setzeExtBezSchema(schema);
+}
+
+ArtikelBezeichnung::ArtikelBezeichnung(const ArtikelBase &artikel, ExtBezSchema::ID _schema, dont_throw dummy) throw()
+ : ArtikelBase(artikel), schema(1)
+{  try
+   {  ArtikelStamm AS( artikel );
+      try { setzeExtBezSchema(cH_ExtBezSchema(_schema,AS.Warengruppe()));
+          }
+      catch (SQLerror &e)
+         {  if (e.Code()!=100) throw; // die
+            try {
+                  setzeExtBezSchema(cH_ExtBezSchema(AS.defaultSchema(),AS.Warengruppe())); 
+                }
+            catch (SQLerror &e) 
+               { if (e.Code()!=100) throw; // die
+               }
+         }
+   }
+  catch (SQLerror &e)
+   {if (e.Code()!=100) throw; // die
+   }
 }
 
 void ArtikelBezeichnung::setzeExtBezSchema(const cH_ExtBezSchema &_schema) throw(SQLerror)
@@ -49,7 +70,7 @@ void ArtikelBezeichnung::setzeExtBezSchema(const cH_ExtBezSchema &_schema) throw
     value.clear();
     if (Id())
     {mystream sq; 
-     vector<int> ibezkom;
+     std::vector<int> ibezkom;
      sq << "SELECT ";
      for (ExtBezSchema::const_iterator i=schema->begin();i!=schema->end();)
       {
@@ -60,7 +81,7 @@ void ArtikelBezeichnung::setzeExtBezSchema(const cH_ExtBezSchema &_schema) throw
       }
      sq << " FROM artbez_" << schema->Typ()<<"_"<<schema->Id()<<" WHERE id = "
          << Id();
-     string this_string_holds_my_query=sq.str();
+     std::string this_string_holds_my_query=sq.str();
      (const char*)QUERY=this_string_holds_my_query.c_str();
      Transaction tr;
      exec sql allocate descriptor mydesc;
@@ -69,17 +90,17 @@ void ArtikelBezeichnung::setzeExtBezSchema(const cH_ExtBezSchema &_schema) throw
      exec sql open ein;
      SQLerror::test(__FILELINE__);
      exec sql fetch from ein into sql descriptor mydesc; 
-     vector<string> sbezkom;
+     std::vector<string> sbezkom;
      sbezkom.resize(ibezkom.size());
      value.resize(ibezkom[ibezkom.size()-1]+1);
      FetchIStream is("mydesc");
      for (size_t i=0;i<ibezkom.size();++i)
       {
-         string s;
+         std::string s;
          is >> s;
          sbezkom[i]=s;
          value[ibezkom[i]]=EntryValue(sbezkom[i]);  
-//cout << ibezkom[i] <<"\t"<<sbezkom[i]<<"  <--\n";
+//std::cout << ibezkom[i] <<"\t"<<sbezkom[i]<<"  <--\n";
       }
      SQLerror::test(__FILELINE__);
      exec sql close ein;
@@ -93,15 +114,15 @@ const EntryValue ArtikelBezeichnung::getExtBezFeld(int feld) const throw(SQLerro
 {  return feld<(int)value.size()?value[feld]:EntryValue();
 }
 
-string ArtikelBezeichnung::Bezeichnung(int signifikanz, char separator,int felder) const throw()
-{   string ret;
+std::string ArtikelBezeichnung::Bezeichnung(int signifikanz, char separator,int felder) const throw()
+{   std::string ret;
     int f=0;
     if (begin()!=end()) 
     for (ExtBezSchema::const_iterator i=schema->begin();i!=schema->end();++i)
     {  
        if (signifikanz == i->signifikanz)
         {
-          ret+=(const string)(value[i->bezkomptype]);
+          ret+=(const std::string)(value[i->bezkomptype]);
           if (separator) // aber nur wenns nicht das letzte ist
           {  if (i+1!=schema->end()) ret+=separator;
           }
@@ -115,7 +136,7 @@ string ArtikelBezeichnung::Bezeichnung(int signifikanz, char separator,int felde
     return ret;
 }
 
-ArtikelBezeichnung::ArtikelBezeichnung(int signifikanz, const vector<EntryValue> &_val, const cH_ExtBezSchema &_schema) throw(SQLerror)
+ArtikelBezeichnung::ArtikelBezeichnung(int signifikanz, const std::vector<EntryValue> &_val, const cH_ExtBezSchema &_schema) throw(SQLerror)
 : schema(_schema)
 {
  exec sql begin declare section;
@@ -129,7 +150,7 @@ ArtikelBezeichnung::ArtikelBezeichnung(int signifikanz, const vector<EntryValue>
  for (ExtBezSchema::const_iterator i=schema->begin();i!=schema->end();)
    {
      if (i->signifikanz != signifikanz) {++i; continue;}
-     squery << i->spaltenname << " = '" << (string)_val[f] <<"'";
+     squery << i->spaltenname << " = '" << (std::string)_val[f] <<"'";
      ++f;
      do 
      ++i;
@@ -137,7 +158,7 @@ ArtikelBezeichnung::ArtikelBezeichnung(int signifikanz, const vector<EntryValue>
      if (i!=schema->end()) squery <<" AND " ;
    }
 
- string query = squery.str(); 
+ std::string query = squery.str(); 
    
  try
  {  (const char*)QUERY=query.c_str();
@@ -152,7 +173,7 @@ ArtikelBezeichnung::ArtikelBezeichnung(int signifikanz, const vector<EntryValue>
     tr.commit();
  }
  catch (SQLerror &e) { throw; }
-//cout << ARTIKELID<<"\n";
+//std::cout << ARTIKELID<<"\n";
  
  *(ArtikelBase*)this=ARTIKELID;
  setzeExtBezSchema(schema);
@@ -169,6 +190,16 @@ cH_ArtikelBezeichnung::cH_ArtikelBezeichnung(const ArtikelBase &artikel,const Ex
    if (cached) *this=*cached;
    else
    {  *this=cH_ArtikelBezeichnung(new ArtikelBezeichnung(artikel,id));
+      cache.Register(cache_key(artikel.Id(),id),*this);
+   }
+}
+
+cH_ArtikelBezeichnung::cH_ArtikelBezeichnung(const ArtikelBase &artikel,
+		const ExtBezSchema::ID &id,dont_throw dummy) throw()
+{  cH_ArtikelBezeichnung *cached(cache.lookup(cache_key(artikel.Id(),id)));
+   if (cached) *this=*cached;
+   else
+   {  *this=cH_ArtikelBezeichnung(new ArtikelBezeichnung(artikel,id,dummy));
       cache.Register(cache_key(artikel.Id(),id),*this);
    }
 }

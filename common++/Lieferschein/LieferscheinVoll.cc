@@ -1,4 +1,4 @@
-/* $Id: LieferscheinVoll.cc,v 1.1 2001/04/23 08:11:59 christof Exp $ */
+/* $Id: LieferscheinVoll.cc,v 1.2 2001/07/05 09:23:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,7 +24,7 @@
 void LieferscheinVoll::deleteRow(const LieferscheinEntry &le)
 {
 
- for(vector<LieferscheinEntry>::iterator i=lsentry.begin();i!=lsentry.end(); ++i)
+ for(std::vector<LieferscheinEntry>::iterator i=lsentry.begin();i!=lsentry.end(); ++i)
 	if((*i).Zeile()==le.Zeile())
 	  {LieferscheinEntry::deleteEntry(le);
 	   lsentry.erase(i);

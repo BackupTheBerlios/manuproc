@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema.h,v 1.2 2001/04/30 15:30:26 christof Exp $
+// $Id: ExtBezSchema.h,v 1.3 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -37,19 +37,19 @@ public:
 	static const ArtikelTyp::typ default_Typ=ArtikelTyp::AufgemachtesBand;
 	struct BezKomp
 	{	int bezkomptype; // =Index
-		string bezkomptext; // Überschrift
-		string separator;
-		string spaltenname;
+		std::string bezkomptext; // Überschrift
+		std::string separator;
+		std::string spaltenname;
 		int signifikanz;
-		string TeXtabformat;
+		std::string TeXtabformat;
 
-		BezKomp(int _bztyp, const string &_bztxt, 
-			const string &_bzsep, const string &sname,int sign,string texf)
+		BezKomp(int _bztyp, const std::string &_bztxt, 
+			const std::string &_bzsep, const std::string &sname,int sign,std::string texf)
 		: bezkomptype(_bztyp), bezkomptext(_bztxt), separator(_bzsep)
 			, spaltenname(sname), signifikanz(sign), TeXtabformat(texf)
 		{}
 	};
-	typedef vector<BezKomp>::const_iterator const_iterator;
+	typedef std::vector<BezKomp>::const_iterator const_iterator;
 	
 	class const_sigiterator
 	{	typedef const_sigiterator self;
@@ -93,24 +93,24 @@ private:
 	ID extartbezid;
 	ArtikelTyp typ;
    
-	vector<BezKomp> bezkomps;
+	std::vector<BezKomp> bezkomps;
  
 	// for the handle class
 //	friend class ExtBezSchemaHandle;
 	friend class cH_ExtBezSchema;
 
 private: // I don't like these API - Christof
- const string BezKompText(unsigned int bkt) const 
- { return bkt<bezkomps.size()?bezkomps[bkt].bezkomptext:string(); }
- const string BezKompText(const_iterator i) const { return (*i).bezkomptext;}
+ const std::string BezKompText(unsigned int bkt) const 
+ { return bkt<bezkomps.size()?bezkomps[bkt].bezkomptext:std::string(); }
+ const std::string BezKompText(const_iterator i) const { return (*i).bezkomptext;}
 
  int BezKompType(unsigned int bkt) const 
  { return bkt<bezkomps.size()?bezkomps[bkt].bezkomptype:-1;}  
  int BezKompType(const_iterator i) const { return (*i).bezkomptype;}  
 
- const string BezSeparator(const_iterator i) const { return (*i).separator; }
- const string BezSeparator(unsigned int bkt) const 
- { return bkt<bezkomps.size()?bezkomps[bkt].separator:string(); }
+ const std::string BezSeparator(const_iterator i) const { return (*i).separator; }
+ const std::string BezSeparator(unsigned int bkt) const 
+ { return bkt<bezkomps.size()?bezkomps[bkt].separator:std::string(); }
 
  const static unsigned int first_index=1; // this is now invalid
 
@@ -134,8 +134,8 @@ public:
  { return bezkomps.begin(); }
  const_iterator end() const
  { return bezkomps.end(); }
- const string operator[](unsigned int i) const
- {  return i<bezkomps.size()?bezkomps[i].bezkomptext:string();}
+ const std::string operator[](unsigned int i) const
+ {  return i<bezkomps.size()?bezkomps[i].bezkomptext:std::string();}
 
  bool operator==(const ExtBezSchema &b) const
  { return Id()==b.Id() && Typ()==b.Typ(); }

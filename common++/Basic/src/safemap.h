@@ -1,4 +1,4 @@
-// $Id: safemap.h,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: safemap.h,v 1.2 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,7 +23,7 @@
 
 // The reason for this class is that the execution order of static
 // class initializers is unpredictable.
-// Since many static ctors used the map before it was constructed I wrapped
+// Since many static ctors used the std::map before it was constructed I wrapped
 // it in this class.
 
 template <class _Key,class _Tp> 
@@ -33,7 +33,7 @@ template <class _Key,class _Tp>
   typedef _Tp data_type;
   typedef _Tp mapped_type;
 private:
-  typedef map<_Key,_Tp> _Rep_type;
+  typedef std::map<_Key,_Tp> _Rep_type;
 public:
   typedef typename _Rep_type::value_type value_type;
   typedef typename _Rep_type::pointer pointer;

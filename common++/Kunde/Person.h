@@ -1,4 +1,4 @@
-// $Id: Person.h,v 1.2 2001/06/06 07:27:39 christof Exp $
+// $Id: Person.h,v 1.3 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -31,21 +31,21 @@ class Person : protected HandleContent
 {
 public:
         typedef long int ID;
-     struct st_person{ID id; string name; string vorname; string position; 
-                Petig::Datum gebdat; string anrede; string notiz;
-       st_person(ID i, string n,string v, string p,Petig::Datum g, string a, string no)
+     struct st_person{ID id; std::string name; std::string vorname; std::string position; 
+                Petig::Datum gebdat; std::string anrede; std::string notiz;
+       st_person(ID i, std::string n,std::string v, std::string p,Petig::Datum g, std::string a, std::string no)
         :id(i),name(n),vorname(v),position(p),gebdat(g),anrede(a),notiz(no){}};
 	
 private:
  Kunde::ID kundennr;
  ID personennr;	
- string name;
- string vorname;
- string position;
+ std::string name;
+ std::string vorname;
+ std::string position;
  Petig::Datum gebdatum;
- string anrede;
- string notiz;
- vector<Person::st_person> vec_person;
+ std::string anrede;
+ std::string notiz;
+ std::vector<Person::st_person> vec_person;
  
  friend class const_Handle<Person>;
  static const ID _illegal=-1; 
@@ -55,30 +55,30 @@ public:
  Kunde::ID KId() const { return kundennr; }
  Person() : kundennr(0), personennr(0) {}
  Person(ID pid) throw(SQLerror);
- static cH_Person newPerson(const Kunde::ID _knr, const string &_name, const string &_vorname,
- 	const string &_pos, const Petig::Datum &gd, const string &_anrede,
- 	const string &_not) throw(SQLerror);
- vector<Person::st_person> get_Person(ID nr) throw(SQLerror);
+ static cH_Person newPerson(const Kunde::ID _knr, const std::string &_name, const std::string &_vorname,
+ 	const std::string &_pos, const Petig::Datum &gd, const std::string &_anrede,
+ 	const std::string &_not) throw(SQLerror);
+ std::vector<Person::st_person> get_Person(ID nr) throw(SQLerror);
  
  void update() throw(SQLerror);	
  static void delPerson(const ID pid) throw(SQLerror);
  
  static const ID none_id=_illegal;
 
- const string Name() const { return name; }
- const string Vorname() const { return vorname; }
+ const std::string Name() const { return name; }
+ const std::string Vorname() const { return vorname; }
  const Petig::Datum GebDatum() const { return gebdatum; }
- const string Anrede() const { return anrede; }
- const string Position() const { return position; }
- const string Notiz() const { return notiz; }
+ const std::string Anrede() const { return anrede; }
+ const std::string Position() const { return position; }
+ const std::string Notiz() const { return notiz; }
  
  void setKundennr(unsigned long int i) { kundennr=i; }
- void setName(const string &s) { name=s; }
- void setVorname(const string &s) { vorname=s; }
+ void setName(const std::string &s) { name=s; }
+ void setVorname(const std::string &s) { vorname=s; }
  void setGebDatum(const Petig::Datum &d) { gebdatum=d; }
- void setAnrede(const string &s) { anrede=s; }
- void setPosition(const string &s) { position=s; }
- void setNotiz(const string &s) { notiz=s; }
+ void setAnrede(const std::string &s) { anrede=s; }
+ void setPosition(const std::string &s) { position=s; }
+ void setNotiz(const std::string &s) { notiz=s; }
 };
 
 

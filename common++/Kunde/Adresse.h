@@ -1,4 +1,4 @@
-/* $Id: Adresse.h,v 1.1 2001/04/23 08:11:59 christof Exp $ */
+/* $Id: Adresse.h,v 1.2 2001/07/05 09:23:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,15 +24,15 @@
 class Adresse
 {  int kundennr;
    char IDnr[21];
-   string firma;
+   std::string firma;
    char postanwvor[41];
-   string strasse;
+   std::string strasse;
    char postanwnach[41];
-   string hsnr;
+   std::string hsnr;
    int PLZ;
    long postfach;
    int postfPLZ;
-   string ort;
+   std::string ort;
    bool rng_an_postfach;
    char landname[41];
    char postfachname[41];

@@ -140,8 +140,8 @@ void Rechnung::deleteLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror)
  RNGID=Id();
  LFRSID=lfrsid;
 
- vector<RechnungEntry>::iterator i;
- vector<RechnungEntry>::iterator j=end();
+ std::vector<RechnungEntry>::iterator i;
+ std::vector<RechnungEntry>::iterator j=end();
  for(i=begin();i!=j;)
 	{if((*i).Lfrs_Id()==lfrsid)
 	  {RechnungEntry::deleteEntry(*i);
@@ -174,10 +174,10 @@ void Rechnung::addLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror)
  RNGID=Id();
  
  int mypid=getpid();
- string seqname("tmp_rngrowseq_"+itos(mypid));
+ std::string seqname("tmp_rngrowseq_"+itos(mypid));
  (const char*)SEQNAME=seqname.c_str();
  
- string cmd="create sequence "+seqname+" START 1";
+ std::string cmd="create sequence "+seqname+" START 1";
  (const char*)COMMAND=cmd.c_str();
  exec sql execute immediate :COMMAND;
  if (sqlca.sqlcode==-400)

@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.4 2001/06/27 08:04:09 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.5 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -46,7 +46,7 @@
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Status& selstr)
 {
- const string status(itos(selstr.status));
+ const std::string status(itos(selstr.status));
  setClausel(FULL_SELECT_FROM_WHERE
 	" where a.stat= "+status+
 	" and e.status= "+status
@@ -70,7 +70,7 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_AufidZnr& selstr)
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Jahr_Artikel &selstr)
 {
- const string jahr(itos(selstr.jahr));
+ const std::string jahr(itos(selstr.jahr));
 
  setClausel(FULL_SELECT_FROM_WHERE
 	     " where (a.jahrgang="+jahr+

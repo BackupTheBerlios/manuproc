@@ -1,4 +1,4 @@
-/* $Id: Aufmachung.h,v 1.1 2001/04/23 08:11:58 christof Exp $ */
+/* $Id: Aufmachung.h,v 1.2 2001/07/05 09:23:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,8 +30,8 @@
 class Aufmachung
 {
  int aufmachid;
- string bezeichnung;
- string abkuerzung;
+ std::string bezeichnung;
+ std::string abkuerzung;
  int meter_pro_stk;
  bool yard;
 
@@ -44,12 +44,12 @@ public:
  Aufmachung(){aufmachid=0;meter_pro_stk=0;yard=false;}
  // können wir nicht die gtk abhängigkeit aus dieser Library nehmen???
  // ist _nur_ wegen dieser Funktion da
-// static void fillListAndVector(Gtk_Combo &entry, vector<Aufmachung> *aufvec=0) throw(SQLerror); 
+// static void fillListAndVector(Gtk_Combo &entry, std::vector<Aufmachung> *aufvec=0) throw(SQLerror); 
 
- const string getBezeichnung() const { return bezeichnung;}
+ const std::string getBezeichnung() const { return bezeichnung;}
  int getAufmId() const { return aufmachid;} 
  int getMtrProStk() const { return meter_pro_stk;}
- const string getAbkurz() const { return abkuerzung;}
+ const std::string getAbkurz() const { return abkuerzung;}
 };
 
 

@@ -1,4 +1,4 @@
-/* $Id: Bankauftrag.cc,v 1.1 2001/04/23 08:11:58 christof Exp $ */
+/* $Id: Bankauftrag.cc,v 1.2 2001/07/05 09:23:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -44,7 +44,7 @@ void Bankauftrag::string2Bank(char *buf,const char *s) throw (Datenfehler)
    for (;i<27;i++) buf[i]=' ';
 }
 
-Bankauftrag::Bankauftrag(char _kennz, long myblz, string myname,long long mykonto,
+Bankauftrag::Bankauftrag(char _kennz, long myblz, std::string myname,long long mykonto,
 			const char *TeX_cmd) throw(IOerror,Datenfehler)
 	: druckerpipe(0), dtausfile(-1), Kontosumme(0), BLZsumme(0),
 	  anzahlDatensaetze(0), Betragssumme(0), Kennziffer(_kennz),
@@ -100,7 +100,7 @@ Bankauftrag::Bankauftrag(char _kennz, long myblz, string myname,long long mykont
    a1.Formatiere(eigenesKonto);
    fprintf(druckerpipe,"		Überweisungen von Konto %s",a1.c_str());
    try{ BLZ2Bankname(a1,(long)eigeneBLZ); }
-   catch(SQLerror &e) { cerr<<e; }
+   catch(SQLerror &e) { std::cerr<<e; }
    fprintf(druckerpipe," bei %s",a1.c_str());
    BLZFormat(a1,eigeneBLZ);
    fprintf(druckerpipe," (BLZ %s)\\end{minipage}}%%\n",a1.c_str());
@@ -267,7 +267,7 @@ int Bankauftrag::erzeugeDiskette() throw(IOerror)
    return r;
 }
 
-const string Bankauftrag::BLZFormat(long BLZ) throw(Datenfehler)
+const std::string Bankauftrag::BLZFormat(long BLZ) throw(Datenfehler)
 {  char buf[20];
    if (BLZ<10000000 || BLZ>=90000000) throw Datenfehler();
    snprintf0(buf,sizeof buf,"%03d %03d %02d",BLZ/100000,(BLZ/100)%1000,BLZ%100);

@@ -1,4 +1,4 @@
-// $Id: Preis.h,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: Preis.h,v 1.2 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -89,7 +89,7 @@ public:
 //	{  return preismenge==1; }
 	cP_Waehrung getWaehrung() const
 	{  return waehrung; }
-	const string Typtext() const;
+	const std::string Typtext() const;
 
 	Preis In(cP_Waehrung tp,float stkgr=0) const
 	{  if (!stkgr) stkgr=preismenge;
@@ -105,12 +105,12 @@ public:
 	void short_format(bool b=true)
 	{  short_shl=b; }
 	
-	friend ostream &operator<<(ostream &,const Preis &p);
+	friend std::ostream &operator<<(std::ostream &,const Preis &p);
 	
 	bool operator!() const
 	{  return !pfennig_cent;
 	}
 };
 
-ostream &operator<<(ostream &,const Preis &p);
+std::ostream &operator<<(std::ostream &,const Preis &p);
 #endif

@@ -1,4 +1,4 @@
-// $Id: Waehrung.h,v 1.3 2001/05/10 16:31:37 christof Exp $
+// $Id: Waehrung.h,v 1.4 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -35,22 +35,22 @@ public:
  
 private:
  WaehID wid;  
- string kurz;
- string lang;
+ std::string kurz;
+ std::string lang;
  double dmfkt;
 
 public:
  Waehrung(WaehID id) throw(SQLerror);
  Waehrung() : wid(0), dmfkt(0) {}
- Waehrung(WaehID id, const string k, const string l, double f)
+ Waehrung(WaehID id, const std::string k, const std::string l, double f)
  	: wid(id), kurz(k), lang(l), dmfkt(f) {}
  WaehID Id() const { return wid; }
  
  static double Umrechnung(const Waehrung &von, const Waehrung &nach);
- const string Kurzbezeichnung() const { return kurz; }
- const string Langbezeichnung() const { return lang; }
+ const std::string Kurzbezeichnung() const { return kurz; }
+ const std::string Langbezeichnung() const { return lang; }
  // das sollte natuerlich etwas ausgefeilter werden!
- const string TeXsymbol() const; //  { return Kurzbezeichnung(); }
+ const std::string TeXsymbol() const; //  { return Kurzbezeichnung(); }
  bool operator==(const Waehrung &b) const { return wid==b.wid; }
 }; 
 

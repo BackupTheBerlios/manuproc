@@ -1,4 +1,4 @@
-/* $Id: Kette.h,v 1.2 2001/06/06 07:27:39 christof Exp $ */
+/* $Id: Kette.h,v 1.3 2001/07/05 09:23:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -46,17 +46,17 @@ public:
 	const Petig::Datum &Schaerdatum() const throw() { return schaerdatum; }
 	int Maschine() const throw() { return maschine; }
 	
-	string barco_format() const throw();
+	std::string barco_format() const throw();
 	void write(int &a, char*, unsigned int) const throw();
 	void write(char *x,unsigned int sz) const throw();
 	bool operator==(const Kette &b) const throw()
 	{  return maschine==b.maschine && schaerdatum==b.schaerdatum; }
 	const Kette &operator=(const char *barconame);
 	
-	friend ostream& operator<<(ostream &o,const Kette &k);
+	friend std::ostream& operator<<(std::ostream &o,const Kette &k);
 };
 
-extern inline ostream& operator<<(ostream &o,const Kette &k)
+extern inline std::ostream& operator<<(std::ostream &o,const Kette &k)
 {  return o<<k.barco_format();
 }
 

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList.h,v 1.1 2001/04/23 08:11:59 christof Exp $ */
+/* $Id: LieferscheinList.h,v 1.2 2001/07/05 09:23:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,10 +28,10 @@
 
 class LieferscheinList
 {
- vector<Lieferschein> sellist;
+ std::vector<Lieferschein> sellist;
 
 public:
- typedef vector<Lieferschein>::const_iterator const_iterator;
+ typedef std::vector<Lieferschein>::const_iterator const_iterator;
  const_iterator begin()
    {return sellist.begin();}
  const_iterator end()
@@ -56,7 +56,7 @@ public:
  bool setDPDData(int dpdlnr) throw(SQLerror);
  unsigned int Size() {return sellist.size();}
  
- friend ostream &operator<<(ostream &o,const LieferscheinList &l);
+ friend std::ostream &operator<<(std::ostream &o,const LieferscheinList &l);
 };
 
 #endif

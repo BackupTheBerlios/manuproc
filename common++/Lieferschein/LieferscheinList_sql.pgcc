@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList_sql.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $ */
+/* $Id: LieferscheinList_sql.pgcc,v 1.2 2001/07/05 09:23:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -32,7 +32,7 @@ bool LieferscheinList::setDPDData(int dpdlnr) throw(SQLerror)
  SQLerror::test(__FILELINE__"lock");
 
 // warum nicht for ???
- vector<Lieferschein>::iterator i = sellist.begin();
+ std::vector<Lieferschein>::iterator i = sellist.begin();
 
  try{
      while(i!=sellist.end())

@@ -1,4 +1,4 @@
-// $Id: KettplanKette.h,v 1.2 2001/06/06 07:27:39 christof Exp $
+// $Id: KettplanKette.h,v 1.3 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -36,7 +36,7 @@ class KettplanKette : public Kette {
         Petig::Datum maschinen_start;
         Kette aktuelle_kette;
         unsigned int abgeschnitten;
-	vector <ArtikelGang> artikel; // sortiert ??
+	std::vector <ArtikelGang> artikel; // sortiert ??
 	mutable int valid;
 	static const int VA_PLAN=1;
 	static const int VA_KETTLEN=2;
@@ -45,7 +45,7 @@ class KettplanKette : public Kette {
 	static const int VA_WEBMASCH=16;
 	static const int VA_ARTIKEL=0x20;
 public:
-	typedef vector <ArtikelGang>::const_iterator const_iterator;
+	typedef std::vector <ArtikelGang>::const_iterator const_iterator;
 	const_iterator begin()
 	{  if (!(valid&VA_ARTIKEL)) get_artikel();
 	   return artikel.begin(); }
@@ -97,9 +97,9 @@ public:
         Kette Folge_Kette() throw(SQLerror);
 //        Petig::Datum Fertig_am() const throw(SQLerror);
 	void set_info(int pm,int kl,int sl,int sd) throw();
-	const vector <ArtikelGang> &get_artikel()
+	const std::vector <ArtikelGang> &get_artikel()
 	{  return get_artikel_sorted(); }
-	const vector <ArtikelGang> &get_artikel_sorted();
+	const std::vector <ArtikelGang> &get_artikel_sorted();
 private:
 	int holePlanMaschine() const throw(SQLerror);
 	void LaengenArtikel(int &art,int &br);

@@ -29,9 +29,9 @@ class aktAufEintrag;
 class AuftragFull : public Auftrag
 {	
 public:
-	typedef vector<AufEintragBase> AufEintragBaseList;
-	typedef vector<AufEintragBase>::iterator iterator;
-	typedef vector<AufEintragBase>::const_iterator const_iterator;
+	typedef std::vector<AufEintragBase> AufEintragBaseList;
+	typedef std::vector<AufEintragBase>::iterator iterator;
+	typedef std::vector<AufEintragBase>::const_iterator const_iterator;
 private:
 	AufEintragBaseList eintragliste;
 public:

@@ -1,4 +1,4 @@
-// $Id: Misc.h,v 1.2 2001/05/10 16:31:37 christof Exp $
+// $Id: Misc.h,v 1.3 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -29,7 +29,7 @@ namespace ArtikelMisc
 
 struct ProzessSchritt
 {  cH_Prozess prozess;
-   string prozessname;
+   std::string prozessname;
    Preis preis; // Vorsicht: eventuell Stückgröße
    float stueckgroesse;
    
@@ -42,9 +42,9 @@ void LeseProzesse(const ArtikelBase &ab,ProzessListe &out);
 
 struct ProzessListe
 {  typedef ArtikelBase::ID ID;
-   typedef vector<ProzessSchritt>::iterator iterator;
-   typedef vector<ProzessSchritt>::const_iterator const_iterator;
-   typedef vector<ProzessSchritt>::const_reverse_iterator preis_iterator;
+   typedef std::vector<ProzessSchritt>::iterator iterator;
+   typedef std::vector<ProzessSchritt>::const_iterator const_iterator;
+   typedef std::vector<ProzessSchritt>::const_reverse_iterator preis_iterator;
    
 public:   // members
    ID rohartikel;
@@ -55,7 +55,7 @@ public:   // members
    ID rohartikel_preis;
    Preis rohpreis;
    /** zeitlich umgekehrte Reihenfolge, d.h. frühe Prozesse zuletzt */
-   vector<ProzessSchritt> schritte; 
+   std::vector<ProzessSchritt> schritte; 
 
 public:   // methods
    ProzessListe() : liste(Kunde::default_id) {}

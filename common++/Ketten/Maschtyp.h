@@ -1,4 +1,4 @@
-/* $Id: Maschtyp.h,v 1.1 2001/04/23 08:11:59 christof Exp $ */
+/* $Id: Maschtyp.h,v 1.2 2001/07/05 09:23:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,12 +25,12 @@
 
 class Maschtyp
 {	int gaenge;
-	string typ;
+	std::string typ;
 public:
-	Maschtyp(int g,const string t)
+	Maschtyp(int g,const std::string t)
 		: gaenge(g), typ(t)
 	{}
-	const string Typ() const throw()
+	const std::string Typ() const throw()
 	{  return typ;
 	}
 	int Gaenge() const throw()

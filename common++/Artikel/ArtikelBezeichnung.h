@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.h,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: ArtikelBezeichnung.h,v 1.2 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -34,11 +34,12 @@ class ArtikelBezeichnung : public virtual ArtikelBase, protected HandleContent
 {	friend class const_Handle<ArtikelBezeichnung>;
 	friend class cH_ArtikelBezeichnung;
 public:
-	typedef vector<EntryValue>::const_iterator const_iterator;
+	typedef std::vector<EntryValue>::const_iterator const_iterator;
+	struct dont_throw { dont_throw() {} };
 
 private:
  	cH_ExtBezSchema schema;
-	vector<EntryValue> value;
+	std::vector<EntryValue> value;
 
 // ich würde operator[] bevorzugen CP
  const EntryValue getExtBezFeld(int feld) const throw(SQLerror);
@@ -50,14 +51,18 @@ public:
 // use this one 
  ArtikelBezeichnung(const ArtikelBase &artikel,
  	const ExtBezSchema::ID schema=ExtBezSchema::default_id) throw(SQLerror);
+ ArtikelBezeichnung(const ArtikelBase &artikel,ExtBezSchema::ID id,dont_throw dummy) throw();
+ ArtikelBezeichnung(const ArtikelBase &artikel,dont_throw dummy) throw()
+        : schema(1)
+ { *this=ArtikelBezeichnung(artikel,ExtBezSchema::default_id,dummy); }
  ArtikelBezeichnung() : schema(ExtBezSchema::default_id) {}
 
 /// Artikel zu der externen Bezeichnung für einen Kunden erzeugen 
 /// (ID nach Bezeichnung ermitteln)
 /// Vorsicht: Der Artikeltyp muss stimmen!
- ArtikelBezeichnung(int signifikanz, const vector<EntryValue> &values, const cH_ExtBezSchema &schema) throw(SQLerror);
+ ArtikelBezeichnung(int signifikanz, const std::vector<EntryValue> &values, const cH_ExtBezSchema &schema) throw(SQLerror);
 
- string Bezeichnung(int signifikanz=1, char separator=0,int felder=-1) const throw();
+ std::string Bezeichnung(int signifikanz=1, char separator=0,int felder=-1) const throw();
  
  void setzeExtBezSchema(const cH_ExtBezSchema &schema) throw(SQLerror);
  const cH_ExtBezSchema getExtBezSchema() const throw()
@@ -87,6 +92,8 @@ public:
 
 class cH_ArtikelBezeichnung : public const_Handle<ArtikelBezeichnung>
 {
+public:
+	typedef ArtikelBezeichnung::dont_throw dont_throw;
 private:
 	// cache
 	struct cache_key
@@ -103,7 +110,8 @@ private:
 	
 	cH_ArtikelBezeichnung(const ArtikelBezeichnung *b)
 		: const_Handle<ArtikelBezeichnung>(b) {}
-	friend cache_t::stl_type;
+//	friend cache_t::stl_type;
+	friend class std::map<cache_key, cH_ArtikelBezeichnung>;
 	cH_ArtikelBezeichnung() {}
 
 public:
@@ -111,10 +119,14 @@ public:
 	cH_ArtikelBezeichnung(const ArtikelBase &artikel,const cH_ExtBezSchema &schema) throw(SQLerror);
 	// recommended variant!
 	cH_ArtikelBezeichnung(const ArtikelBase &artikel,const ExtBezSchema::ID &id) throw(SQLerror);
+	// use this if you do not want to handle errors
+	cH_ArtikelBezeichnung(const ArtikelBase &artikel,const ExtBezSchema::ID &id,dont_throw dummy) throw();
+ 	cH_ArtikelBezeichnung(const ArtikelBase &artikel,dont_throw dummy) throw()
+	{ *this=cH_ArtikelBezeichnung(artikel,ExtBezSchema::default_id,dummy); }
 
 /// Artikel zu der externen Bezeichnung für einen Kunden erzeugen 
 /// (ID nach Bezeichnung ermitteln)
-	cH_ArtikelBezeichnung(int signifikanz, const vector<EntryValue> &values, const cH_ExtBezSchema &schema) throw(SQLerror)
+	cH_ArtikelBezeichnung(int signifikanz, const std::vector<EntryValue> &values, const cH_ExtBezSchema &schema) throw(SQLerror)
 		: const_Handle<ArtikelBezeichnung>(new ArtikelBezeichnung(signifikanz,values,schema))
 	{}
 /// default ctor

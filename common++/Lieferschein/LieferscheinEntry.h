@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.1 2001/04/23 08:11:59 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.2 2001/07/05 09:23:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -36,12 +36,12 @@ class LieferscheinEntry : public LieferscheinBase
  int stueck;
  fixedpoint<3> menge;
  int palette;
- string yourauftrag;
+ std::string yourauftrag;
  bool zusatzinfo;
 
 public:
         LieferscheinEntry(int lfrsid) throw(SQLerror);
-//        vector<st_lfrsentry> get_Entrys() const {return lfrsentry; }
+//        std::vector<st_lfrsentry> get_Entrys() const {return lfrsentry; }
   
 
  	LieferscheinEntry() :zeilennr(0),stueck(0),palette(0) {};
@@ -56,14 +56,14 @@ public:
  			const ArtikelBase &art, int anzahl, fixedpoint<3> menge,
  			int _palette=0,bool zusatzinfo=false) throw(SQLerror);
 // Konstruktor mit Datenbankdaten 			
-        LieferscheinEntry(int l,int z,int a, int s,fixedpoint<3> m,int p,string y,bool zi)
+        LieferscheinEntry(int l,int z,int a, int s,fixedpoint<3> m,int p,std::string y,bool zi)
                 : LieferscheinBase(l),zeilennr(z),artikel(a),stueck(s),menge(m),
                         palette(p),yourauftrag(y),zusatzinfo(zi) {};
  fixedpoint<3> Menge() const { return menge; }
  int Anzahl() const { return stueck; }
  int Stueck() const { return stueck; }
  int Palette() const { return palette; }
- const string YourAuftrag() const {return yourauftrag; }
+ const std::string YourAuftrag() const {return yourauftrag; }
  const ArtikelBase::ID ArtikelID() const { return artikel.Id(); }
  int AufId() const { return refauftrag.Id();} 
  int AufZeile() const { return refauftrag.ZNr();} 

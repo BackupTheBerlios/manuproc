@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.2 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,7 +22,7 @@
 
 // ecpg shortcoming descriptor has to be FetchIStream
 
-FetchIStream &FetchIStream::operator>>(string &str)
+FetchIStream &FetchIStream::operator>>(std::string &str)
 {  exec sql begin declare section;
    int spalte=naechstesFeld++;
    int LENGTH=0;
@@ -32,7 +32,7 @@ FetchIStream &FetchIStream::operator>>(string &str)
    // exec sql get descriptor ? value :spalte :LENGTH = returned_octet_length;
    ECPGget_desc(__LINE__,const_cast<char*>(descriptor.c_str()),spalte,ECPGd_ret_octet,
 		ECPGt_int,&(LENGTH),1L,1L,sizeof(int), ECPGd_EODT);
-   SQLerror::test("FetchIStream::>>(string):returned_octet_length");
+   SQLerror::test("FetchIStream::>>(std::string):returned_octet_length");
    if (LENGTH<1) str="";
    else
    {  ++LENGTH;
@@ -40,7 +40,7 @@ FetchIStream &FetchIStream::operator>>(string &str)
       // exec sql get descriptor ? value :spalte :data = data;
       ECPGget_desc(__LINE__,const_cast<char*>(descriptor.c_str()),spalte,ECPGd_data,
 		ECPGt_char, data, LENGTH, 1L, LENGTH*sizeof(char), ECPGd_EODT);
-      SQLerror::test("FetchIStream::>>(string):data");
+      SQLerror::test("FetchIStream::>>(std::string):data");
       str=data;
    }
    return *this;
@@ -56,7 +56,7 @@ int FetchIStream::getIndicator() const
    // exec sql get descriptor ? value :spalte :indicator = indicator;
    ECPGget_desc(__LINE__,const_cast<char*>(descriptor.c_str()),spalte,ECPGd_indicator,
 	ECPGt_int,&(indicator),1L,1L,sizeof(int), ECPGd_EODT);
-   SQLerror::test("FetchIStream::>>(string):indicator");
+   SQLerror::test("FetchIStream::>>(std::string):indicator");
    return indicator;
 }
 

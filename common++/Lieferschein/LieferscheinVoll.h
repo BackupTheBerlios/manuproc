@@ -29,17 +29,17 @@
 
 class LieferscheinVoll : public Lieferschein
 {
- vector<LieferscheinEntry> lsentry;
+ std::vector<LieferscheinEntry> lsentry;
  
 public:
  
-        typedef vector<LieferscheinEntry>::const_iterator const_iterator;
+        typedef std::vector<LieferscheinEntry>::const_iterator const_iterator;
 
  	LieferscheinVoll() : Lieferschein() {};
  	LieferscheinVoll(int lid) throw(SQLerror) ;
  	void deleteRow(const LieferscheinEntry &le);
 
- const vector<LieferscheinEntry> &LsEntries() { return lsentry; }
+ const std::vector<LieferscheinEntry> &LsEntries() { return lsentry; }
 
  const_iterator begin() const
  { return lsentry.begin();} 

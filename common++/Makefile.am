@@ -9,6 +9,7 @@ libcommon___a_SOURCES=
 libcommon___a_LIBADD= \
 		Artikel/ArtikelBaum.o \
 		Artikel/ArtikelBezeichnung.o \
+		Artikel/ArtikelStamm.o \
 		Artikel/ArtikelTyp.o \
 		Artikel/Artikelpreis.o \
 		Artikel/Aufmachung.o \
@@ -24,6 +25,7 @@ libcommon___a_LIBADD= \
 		Auftrag/selAufEntry.o \
 		Auftrag/selAufEntry_sql.o \
 		Auftrag/sqlAuftragSelector.o \
+		Auftrag/AuftragBase_sql.o \
 		Auftrag/Auftrag.o \
 		Auftrag/Auftrag_sql.o \
 		Aux/Ausgabe_neu.o \

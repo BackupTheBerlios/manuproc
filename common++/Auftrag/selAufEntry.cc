@@ -1,4 +1,4 @@
-// $Id: selAufEntry.cc,v 1.3 2001/06/25 09:40:42 christof Exp $
+// $Id: selAufEntry.cc,v 1.4 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -33,7 +33,7 @@ void SelectedAufList::insert(int instanz, int aid, int znr, int knr)
 
 void SelectedAufList::delEntry(int instanz, int aid, int znr)
 {
- vector<SelectedAufentry>::iterator i =  aufidliste.begin();
+ std::vector<SelectedAufentry>::iterator i =  aufidliste.begin();
 
  while(i!=aufidliste.end())
   {
@@ -49,7 +49,7 @@ void SelectedAufList::delEntry(int instanz, int aid, int znr)
 
 void SelectedAufList::delAuftrag(int instanz,int aid)
 {
- vector<SelectedAufentry>::iterator i;
+ std::vector<SelectedAufentry>::iterator i;
 
  for(i=aufidliste.begin();;)
   {

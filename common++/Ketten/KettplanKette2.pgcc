@@ -1,4 +1,4 @@
-// $Id: KettplanKette2.pgcc,v 1.3 2001/06/27 08:04:09 christof Exp $
+// $Id: KettplanKette2.pgcc,v 1.4 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -107,9 +107,9 @@ float KettplanKette::defaultSchussdichte() throw(SQLerror)
    float schussdichte=0; short isd=-1;
    exec sql end declare section;
    
-   const vector <ArtikelGang> ag=get_artikel();
+   const std::vector <ArtikelGang> ag=get_artikel();
    
-   for (vector<ArtikelGang>::const_iterator i=ag.begin();i!=ag.end();++i)
+   for (std::vector<ArtikelGang>::const_iterator i=ag.begin();i!=ag.end();++i)
    {  artikelid=(*i).Id();
       exec sql select schussdichte into :schussdichte:isd
    	from schussdichte2 where artikelid= :artikelid;
@@ -124,7 +124,7 @@ void KettplanKette::FrageNachSchussdichte() throw (SQLerror)
    long artikelid;
    exec sql end declare section;
    
-   const vector <ArtikelGang> ag=get_artikel();
+   const std::vector <ArtikelGang> ag=get_artikel();
    artikelid=ag[0].Id();
    exec sql insert into schussdichte2 (artikelid,schussdichte,stand)
 			values ( :artikelid,NULL,now());
@@ -315,7 +315,7 @@ Petig::Datum KettplanKette::Abgzuletzt() const throw(SQLerror)
    	where maschine= :masch and schaerdatum= :schaerdatum;
    SQLerror::test(__FILELINE__,100);
    if (sqlca.sqlcode) abort(); // Funktioniert nicht ??? MAT
-//cout << "Datum:"<<azu<<"\n";
+//std::cout << "Datum:"<<azu<<"\n";
    const_cast<KettplanKette*>(this)->abgzuletz=azu;
    return azu;
  }catch(SQLerror &e) {}
@@ -334,7 +334,7 @@ Petig::Datum KettplanKette::Maschinen_start() const throw(SQLerror)
    	where maschine= :masch and schaerdatum= :schaerdatum;
    SQLerror::test(__FILELINE__,100);
    if (sqlca.sqlcode) abort(); // Funktioniert nicht ??? MAT
-//cout << "Datum:"<<azu<<"\n";
+//std::cout << "Datum:"<<azu<<"\n";
    const_cast<KettplanKette*>(this)->maschinen_start=m_start;
    return m_start;
  }catch(SQLerror &e) {}

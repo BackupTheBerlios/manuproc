@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Einheiten.h,v 1.2 2001/04/30 15:30:25 christof Exp $
+// $Id: Einheiten.h,v 1.3 2001/07/05 09:23:02 christof Exp $
 
 // diese Datei ... sollte vielleicht demnaechst aus einer Datenbanktabelle
 // erzeugt werden? Tabelle: Einheiten
@@ -36,7 +36,7 @@ public:
 	typedef enum Einheiten ID;
 	
 	Einheit(ID e) : einh(e) {}
-	operator string() const;
+	operator std::string() const;
 	operator Einheiten() const
 	{ return einh;
 	}
@@ -45,9 +45,9 @@ public:
 	{ return einh!=b; }
 	bool operator==(enum Einheiten b) const
 	{ return einh==b; }
-	string StueckEinheit() const;
-	string MengenEinheit() const;
-	string TeX() const;
+	std::string StueckEinheit() const;
+	std::string MengenEinheit() const;
+	std::string TeX() const;
 };
 
 #endif

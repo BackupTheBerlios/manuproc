@@ -1,4 +1,4 @@
-/* $Id: AdressenIterator.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $ */
+/* $Id: AdressenIterator.pgcc,v 1.2 2001/07/05 09:23:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -81,8 +81,8 @@ AdressenIterator *AdressenIterator_by_pattern(const char *pattern) throw()
    }
    catch (SQLerror& e)
    {  if (e.Code()!=100)
-      {  cerr << "Datenbankfehler "<< e << '\n';
-         if (e.Code()<0) { cerr << "Programm beendet sich\n"; abort(); }
+      {  std::cerr << "Datenbankfehler "<< e << '\n';
+         if (e.Code()<0) { std::cerr << "Programm beendet sich\n"; abort(); }
       }
       return NULL;
    }
@@ -95,8 +95,8 @@ AdressenIterator *AdressenIterator_get_next(AdressenIterator *ai) throw()
    }
    catch (SQLerror& e)
    {  if (e.Code()!=100)
-      {  cerr << "Datenbankfehler "<< e << '\n';
-         if (e.Code()<0) { cerr << "Programm beendet sich\n"; abort(); }
+      {  std::cerr << "Datenbankfehler "<< e << '\n';
+         if (e.Code()<0) { std::cerr << "Programm beendet sich\n"; abort(); }
       }
       return NULL;
    }
@@ -105,8 +105,8 @@ AdressenIterator *AdressenIterator_get_next(AdressenIterator *ai) throw()
 void free_AdressenIterator(AdressenIterator *ai) throw()
 {  try { delete ai; }
    catch (SQLerror& e)
-   {  cerr << "Datenbankfehler "<< e << '\n';
-      if (e.Code()<0) { cerr << "Programm beendet sich\n"; abort(); }
+   {  std::cerr << "Datenbankfehler "<< e << '\n';
+      if (e.Code()<0) { std::cerr << "Programm beendet sich\n"; abort(); }
    }
 }
 

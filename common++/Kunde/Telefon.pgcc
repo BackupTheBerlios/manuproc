@@ -1,4 +1,4 @@
-// $Id: Telefon.pgcc,v 1.7 2001/05/29 12:33:28 cvs_malte Exp $
+// $Id: Telefon.pgcc,v 1.8 2001/07/02 16:38:37 cvs_christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -36,7 +36,7 @@ Telefon::Telefon(ID _tid) throw(SQLerror)
  
  Transaction tr;
 
- string qu = string ("select coalesce(kundennr,0),coalesce(persnr,0),"
+ std::string qu = std::string ("select coalesce(kundennr,0),coalesce(persnr,0),"
 			"nummer,art from kunden_telefon where ");
  qu = qu+" telid="+itos(TELID);
 
@@ -60,7 +60,7 @@ Telefon::Telefon(ID _tid) throw(SQLerror)
 
 }
 
-vector<Telefon::st_tel> Telefon::get_Telefon(int nr,const string& mod) throw(SQLerror)
+vector<Telefon::st_tel> Telefon::get_Telefon(int nr,const std::string& mod) throw(SQLerror)
 {
 /*
  exec sql begin declare section;
@@ -80,9 +80,9 @@ vector<Telefon::st_tel> Telefon::get_Telefon(int nr,const string& mod) throw(SQL
  
  Transaction trk;
 
-// string qu = string ("select coalesce(kundennr,0),coalesce(persnr,0),"
+// std::string qu = std::string ("select coalesce(kundennr,0),coalesce(persnr,0),"
 //			"nummer,art from kunden_telefon where ");
- string qu = string ("select nummer,art,coalesce(kundennr,"+itos(Kunde::none_id)+"), \
+ std::string qu = std::string ("select nummer,art,coalesce(kundennr,"+itos(Kunde::none_id)+"), \
       coalesce(persnr,"+itos(Person::none_id)+") from kunden_telefon where ");
  if (mod=="kundennr")  qu = qu+" kundennr="+itos(nr);
  else if (mod=="persnr")   qu = qu+"   persnr="+itos(nr);
@@ -142,7 +142,7 @@ cH_Telefon::cH_Telefon(const Telefon::ID _tnr)
 }
 
 
-string Telefon::ArtString() const 
+std::string Telefon::ArtString() const 
 {
  switch(telart)
 	{
@@ -156,7 +156,7 @@ string Telefon::ArtString() const
 
 
 const cH_Telefon Telefon::newTelefon(const Kunde::ID kid,const Person::ID pid,
- 		const string &nr, const TelArt art) throw(SQLerror)
+ 		const std::string &nr, const TelArt art) throw(SQLerror)
 {
  exec sql begin declare section;
  int TELID;
@@ -194,7 +194,7 @@ const cH_Telefon Telefon::newTelefon(const Kunde::ID kid,const Person::ID pid,
 }
 
 //void Telefon::delTelefon(const ID tid) throw(SQLerror)
-void Telefon::delTelefon(const string& nr,const string& mod) throw(SQLerror)
+void Telefon::delTelefon(const std::string& nr,const std::string& mod) throw(SQLerror)
 {
 /*
  exec sql begin declare section;

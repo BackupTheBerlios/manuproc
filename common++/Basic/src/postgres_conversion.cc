@@ -1,4 +1,4 @@
-// $Id: postgres_conversion.cc,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: postgres_conversion.cc,v 1.2 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,6 +24,5 @@
 
 void Petig::Datum::write_postgres(char *buf,unsigned int size) const throw(Petig::Datumsfehler)
 {	teste();
-	snprintf0(buf,size,"%04d-%02d-%02d",jahr,monat,tag);
+	snprintf0(buf,size,"%04d-%d-%d",jahr,monat,tag);
 }
-

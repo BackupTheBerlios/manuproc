@@ -19,8 +19,8 @@
 #include"AuftragFull.h"
 #include<Aux/Ausgabe_neu.h>
 
-string Auftrag::getAuftragidToStr() const
+std::string Auftrag::getAuftragidToStr() const
 { return Formatiere(auftragid,0,6,"","",'0'); }
 
-string Auftrag::getJahrgangStr() const 
+std::string Auftrag::getJahrgangStr() const 
 { return Formatiere(jahrgang,0,4,"",""); }

@@ -1,4 +1,4 @@
-/* $Id: EntryValue.h,v 1.2 2001/06/22 07:29:02 christof Exp $ */
+/* $Id: EntryValue.h,v 1.3 2001/07/05 09:23:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -31,7 +31,7 @@
 
 class EntryValue
 {
- string strval;
+ std::string strval;
  int intval;
  bool infinity;
 // this does not belong here !!! put into a child class!!!
@@ -40,8 +40,8 @@ class EntryValue
 
  struct {
   int p_id;
-  string p_label;
-  string p_text;
+  std::string p_label;
+  std::string p_text;
   Petig::Datum p_datum;
   int p_subid;
   } pval;
@@ -52,20 +52,20 @@ public:
  EntryValue()
    {intval=-1;infinity=true;strval="-";prozess=false;}
  EntryValue(int v);
- EntryValue(const string &s);
+ EntryValue(const std::string &s);
  EntryValue(const char x[])
- { *this=EntryValue(string(x)); }
+ { *this=EntryValue(std::string(x)); }
  EntryValue(const cH_Prozess &p, int subid, const Petig::Datum &d);
  EntryValue(const Petig::Datum &d);
    
- operator const string() const { return strval;}
+ operator const std::string() const { return strval;}
  operator int() const { return infinity ? -1 : intval;}
  operator bool() const;
 
 // das Alles sollte glaube ich weg 
  int getIntVal() const { return infinity ? -1:intval;}
- const string getStrVal() const { return strval;}
- const string getStrProzVal() const { return strval; }
+ const std::string getStrVal() const { return strval;}
+ const std::string getStrProzVal() const { return strval; }
 // bis hier
  int getSubIdVal() const { return prozess ? pval.p_subid:-1;}
  int getProzIdVal() const { return prozess ? pval.p_id:-1;} 

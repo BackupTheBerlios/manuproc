@@ -1,4 +1,4 @@
-// $Id: Telefon.h,v 1.2 2001/06/06 07:27:39 christof Exp $
+// $Id: Telefon.h,v 1.3 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -37,8 +37,8 @@ public:
  static const ID none_id=0;
  typedef enum {TEL_NONE=0,TEL_TEL='T',TEL_FAX='F',TEL_MOB='M',
         TEL_E_MAIL='E',TEL_HOMEPAGE='W'} TelArt;
- struct st_tel{string nummer;string art;Kunde::ID kid;Person::ID pid;
-        st_tel(string n,string a,Kunde::ID k,Person::ID p) 
+ struct st_tel{std::string nummer;std::string art;Kunde::ID kid;Person::ID pid;
+        st_tel(std::string n,std::string a,Kunde::ID k,Person::ID p) 
         : nummer(n),art(a),kid(k),pid(p) {}};
  
 private: 
@@ -47,8 +47,8 @@ private:
  TelArt telart;
  Kunde::ID kunde;
  Person::ID person;
- string nummer;
- vector<st_tel> vec_telefon;
+ std::string nummer;
+ std::vector<st_tel> vec_telefon;
  
  friend class const_Handle<Telefon>;
  
@@ -56,18 +56,18 @@ public:
  Telefon() : telid(none_id), telart(TEL_NONE), kunde(Kunde::none_id), 
  		person(Person::none_id) {}
  Telefon(ID _tid) throw(SQLerror);
- vector<Telefon::st_tel> get_Telefon(int nr,const string& mod) throw(SQLerror);
+ std::vector<Telefon::st_tel> get_Telefon(int nr,const std::string& mod) throw(SQLerror);
 
  static const cH_Telefon newTelefon(const Kunde::ID kid, const Person::ID pid,
- 		const string &nr, const TelArt art) throw(SQLerror);
+ 		const std::string &nr, const TelArt art) throw(SQLerror);
 // static void delTelefon(const ID tid) throw(SQLerror);
- static void delTelefon(const string& nr,const string& mod="") throw(SQLerror);
+ static void delTelefon(const std::string& nr,const std::string& mod="") throw(SQLerror);
  
- string Nummer() const { return nummer; }
+ std::string Nummer() const { return nummer; }
  ID Id() const { return telid; } 
 
  TelArt Art() const { return telart; }
- string ArtString() const;
+ std::string ArtString() const;
  Kunde::ID getKunde() const { return kunde; }
  Person::ID getPerson() const { return person; }
  void update() const throw(SQLerror);

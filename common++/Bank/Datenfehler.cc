@@ -1,4 +1,4 @@
-/* $Id: Datenfehler.cc,v 1.1 2001/04/23 08:11:58 christof Exp $ */
+/* $Id: Datenfehler.cc,v 1.2 2001/07/05 09:23:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,8 +22,8 @@
 Datenfehler::Datenfehler() throw() : name("Datenfehler")
 {}
 
-Datenfehler::Datenfehler(const string &x) throw() : name(x)
+Datenfehler::Datenfehler(const std::string &x) throw() : name(x)
 {}
 
-string Datenfehler::toString() const throw()
+std::string Datenfehler::toString() const throw()
 {  return name; }

@@ -1,4 +1,4 @@
-/* $Id: EntryValue.cc,v 1.16 2001/06/20 11:24:29 cvs_malte Exp $ */
+/* $Id: EntryValue.cc,v 1.19 2001/07/02 17:05:01 cvs_christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -18,14 +18,14 @@
  */
 
 #include"Aux/EntryValue.h"
-#include <Aux/string0.h>
+#include <Aux/itos.h>
 
 EntryValue::EntryValue(int v)
-   {intval=v; char s[50]; snprintf0(s,50,"%d",v); strval=s;
+   {intval=v; strval=itos(v); 
     infinity=false;prozess=false;}
 
 
-EntryValue::EntryValue(const string &s)
+EntryValue::EntryValue(const std::string &s)
    {intval=atoi(s.c_str()); 
     strval=s;
     unsigned char *x=(unsigned char*)s.c_str();

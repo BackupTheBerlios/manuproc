@@ -1,4 +1,4 @@
-/* $Id: Prozess.h,v 1.1 2001/04/23 08:11:58 christof Exp $ */
+/* $Id: Prozess.h,v 1.2 2001/07/05 09:23:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -38,8 +38,8 @@ public:
 private:
  ID prozessid;
  float meterprostk;
- string label;
- string text;
+ std::string label;
+ std::string text;
 
 public:
  Prozess(ID pid) throw(SQLerror);
@@ -48,13 +48,13 @@ public:
  // wird diese Routine noch verwendet? CP 2000-08-16
  // wurde in ProzessBox verwendet - jetzt nicht mehr
 private: // wir werden sehen ;-)
- Prozess(ID pid,float _meterprostk,const string typ,const string _text)
+ Prozess(ID pid,float _meterprostk,const std::string typ,const std::string _text)
  	: prozessid(pid), meterprostk(_meterprostk), label(typ), text(_text)
  {}
 public:
  float getMtrProStk() const { return meterprostk;}
- const string getTyp() const { return label; }
- const string getText() const { return text; }
+ const std::string getTyp() const { return label; }
+ const std::string getText() const { return text; }
  ID getProzessID() const { return prozessid; }
  // I prefer this name, CP
  ID Id() const { return prozessid; }
@@ -67,7 +67,8 @@ private:
 	typedef CacheStatic<Prozess::ID,cH_Prozess> cache_t;
 	static cache_t cache;
 	cH_Prozess(const Prozess *p) : const_Handle<Prozess>(p) {}
-	friend cache_t::stl_type;
+//	friend cache_t::stl_type;
+	friend class std::map<int, cH_Prozess>;
 	cH_Prozess() {}
 public:
 	static const Prozess::ID default_pid=Prozess::default_id;

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.3 2001/06/25 08:13:37 christof Exp $
+// $Id: AufEintragBase.cc,v 1.4 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,8 +26,8 @@ AufEintragBase::AufEintragBase(ppsInstanz::ppsInstId _instanz,int _auftragid, in
 	int _geliefert,
 	int _dispoentrynr, int _disponr, int _jahrgang,
 	AufStatVal _aufstatus,
-	int _kdnr, const string _youraufnr,
-	const string _prozdate,
+	int _kdnr, const std::string _youraufnr,
+	const std::string _prozdate,
 	int _prozess,
 	const Preis &_preis, int _rabatt,
 	AufStatVal _entrystatus, const Petig::Datum _lasteditdate,
@@ -67,7 +67,7 @@ AufEintragBase::AufEintragBase(ppsInstanz::ppsInstId _instanz,int _auftragid, in
 
 
 
-ostream &operator<<(ostream &o,const AufEintragBase &aeb)
+std::ostream &operator<<(std::ostream &o,const AufEintragBase &aeb)
 {  o << "{artikel="<< aeb.artikel->Bezeichnung() << "Instanz = "<<aeb.instanz<< " menge="
 	<<aeb.menge << " dispoentrynr="
 	<<aeb.dispoentrynr
@@ -122,7 +122,7 @@ void AufEintragBase::setVerarbeitung(const cH_Prozess p)
 }
 
 
-const string AufEintragBase::getEntryStatusStr() const
+const std::string AufEintragBase::getEntryStatusStr() const
 {
  switch(entrystatus)
    {case (AufStatVal)UNCOMMITED : return "ubestätigt"; 

@@ -1,4 +1,4 @@
-/* $Id: AufEintragBase.h,v 1.7 2001/06/25 09:40:42 christof Exp $ */
+/* $Id: AufEintragBase.h,v 1.8 2001/07/05 09:23:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -46,28 +46,30 @@ class AufArtikel : public ArtikelBaum, protected HandleContent
 
  ArtikelBase rohartikel; // = webartikel = rohrohroh...artikel
  cH_ArtikelBezeichnung bez;
- 
-public:
 
- void setArtikelBezeichnung(const cH_ExtBezSchema &cs) 
- 	{ bez= cH_ArtikelBezeichnung(Id(),cs); }
- static const ID default_id=0;
-
- AufArtikel(const ID &stamp,const cH_ExtBezSchema &schema)
- 	: ArtikelBaum(stamp),ArtikelBase(stamp),bez(stamp,schema)
- 	{}
- AufArtikel(const cH_ExtBezSchema &schema) 
- 	: bez(ID(),schema) {}
- AufArtikel() : bez(cH_ArtikelBezeichnung::Default())
- 	{}
-
- AufArtikel(const vector<EntryValue> &_values, const cH_ExtBezSchema &schema)
+ // Muß das privat?
+ AufArtikel(const std::vector<EntryValue> &_values, const cH_ExtBezSchema &schema)
  	: bez(1,_values,schema)
  	{
  	 ArtikelBaum::setID(bez->Id());
  	}
+ 
+public:
+
+ void setArtikelBezeichnung(const cH_ExtBezSchema &cs) 
+ 	{ bez= cH_ArtikelBezeichnung(Id(),cs->Id(),ArtikelBezeichnung::dont_throw()); }
+ static const ID default_id=0;
+
+ AufArtikel(const ID &stamp,const cH_ExtBezSchema &schema)
+ 	: ArtikelBaum(stamp),ArtikelBase(stamp),bez(stamp,schema->Id(),ArtikelBezeichnung::dont_throw())
+ 	{}
+ AufArtikel(const cH_ExtBezSchema &schema) 
+ 	: bez(ID(),schema->Id(),ArtikelBezeichnung::dont_throw()) {}
+ AufArtikel() : bez(cH_ArtikelBezeichnung::Default())
+ 	{}
+
  AufArtikel(const ArtikelBase &artb, const cH_ExtBezSchema &schema)
- 	: ArtikelBaum(artb.Id()), ArtikelBase(artb),  bez(artb,schema)
+ 	: ArtikelBaum(artb.Id()), ArtikelBase(artb),  bez(artb,schema->Id(),ArtikelBezeichnung::dont_throw())
  	{ }
 
  double Stueckgroesse() const;
@@ -83,7 +85,7 @@ public:
   int size() const { return bez->size(); }
   const EntryValue operator[](int feld) const
   {  return (*bez)[feld]; }
-  string Bezeichnung(char seperator=0,int felder=-1) const throw()
+  std::string Bezeichnung(char seperator=0,int felder=-1) const throw()
   {  return bez->Bezeichnung(seperator,felder); }
   const cH_ExtBezSchema getExtBezSchema() const throw()
   {  return bez->getExtBezSchema(); }
@@ -120,7 +122,7 @@ protected:
  AufStatVal entrystatus; /* Status des zugehörigen Eintrags */
  
  int kdnr;
- string youraufnr;
+ std::string youraufnr;
  long bestellt;    /* Stück */
  long geliefert;   /* Stück */
  double rest;        /* Meter */
@@ -158,8 +160,8 @@ public:
 	int _geliefert,
 	int _dispoentrynr, int _disponr, int _jahrgang,
 	AufStatVal _aufstatus,
-	int _kdnr, const string _youraufnr,
-	const string _prozdate,
+	int _kdnr, const std::string _youraufnr,
+	const std::string _prozdate,
 	int _prozess,
 	const Preis &_preis, int _rabatt,
 	AufStatVal _entrystat, const Petig::Datum _lasteditdate,
@@ -189,9 +191,9 @@ public:
  int getAuftragid() const {return auftragid;}
  ppsInstanz::ppsInstId getAuftragInstanz() const {return instanz;}
  AufStatVal getEntryStatus() const { return entrystatus;}
- const string getEntryStatusStr() const;
+ const std::string getEntryStatusStr() const;
  const Petig::Datum LastEditDate() const { return lasteditdate; }
- string getYourAufNr() const { return youraufnr;}
+ std::string getYourAufNr() const { return youraufnr;}
  int getDispoENr() const { return dispoentrynr;}
  const Petig::Datum getLieferdatum() const { return lieferdatum;}
  int getKdNr() const { return kdnr;}
@@ -209,9 +211,9 @@ public:
  void setArtikelBezeichnung(const cH_ExtBezSchema &cs)
  	{const_cast<AufArtikel&>(*artikel).setArtikelBezeichnung(cs); } 
   
- friend ostream &operator<<(ostream &o,const AufEintragBase &aeb);
+ friend std::ostream &operator<<(std::ostream &o,const AufEintragBase &aeb);
 };
 
-ostream &operator<<(ostream &o,const AufEintragBase &aeb);
+std::ostream &operator<<(std::ostream &o,const AufEintragBase &aeb);
 
 #endif

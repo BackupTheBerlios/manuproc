@@ -19,6 +19,8 @@
 #ifndef AUFTRAGBASE_H
 #define AUFTRAGBASE_H
 #include<Aux/ppsInstanz.h>
+#include <Aux/Datum.h>
+#include <Artikel/ArtikelBase.h>
 
 class AuftragBase
 {
@@ -32,6 +34,10 @@ class AuftragBase
         void set_Id(int i) {auftragid = i;}
         ppsInstanz::ppsInstId Instanz() const {return instanz; }
 
+        void insertNewEntry(unsigned long int bestellt, 
+                Petig::Datum lieferdatum, ArtikelBase::ID artid) throw(SQLerror);
+                
+        
 };
 
 #endif

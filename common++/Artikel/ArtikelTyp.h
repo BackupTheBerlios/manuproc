@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.h,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: ArtikelTyp.h,v 1.2 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,7 +21,6 @@
 #define ARTIKELTYP_H
 
 #include <Artikel/ArtikelBase.h>
-#include <Aux/CacheStatic.h>
 
 /* quick hack to support Types really fast,
    this should be replaced by a decent generic class/scheme */
@@ -35,8 +34,6 @@ public:
 private:
 	typ t;
 	
-	typedef CacheStatic<ArtikelBase::ID,typ> cache_t;
-	static cache_t cache;
 public:
 	ArtikelTyp(typ a) : t(a) {}
 	ArtikelTyp(int a) : t((typ)a) {}
@@ -44,7 +41,12 @@ public:
 	operator int() const { return int(t); }
 	// warum nicht der default operator? CP 2001-3-1
 	const ArtikelTyp &operator=(const ArtikelTyp &b) { t=b.t; return *this; }
+	bool operator==(const ArtikelTyp &b) const { return t==b.t; }
+	bool operator==(ArtikelTyp::typ b) const { return t==b; }
+	bool operator<(const ArtikelTyp &b) const { return t<b.t; }
 	
-	static ArtikelTyp vonArtikel(const ArtikelBase &ab);
+	ArtikelTyp(const ArtikelBase &ab) throw(SQLerror);
+	static ArtikelTyp vonArtikel(const ArtikelBase &ab) throw(SQLerror)
+	{  return ArtikelTyp(ab); }
 };
 #endif

@@ -1,4 +1,4 @@
-// $Id: test_Bankauftrag.cc,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: test_Bankauftrag.cc,v 1.2 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,14 +23,14 @@
 #include <Aux/dbconnect.h>
 
 void Ausgabetest()
-{  cout << Formatiere(12345) << "\n";
-   cout << Formatiere(12345,4) << "\n";
-   cout << Formatiere(12345,2) << "\n";
-   cout << Formatiere(12345678901234ULL,6) << "\n";
+{  std::cout << Formatiere(12345) << "\n";
+   std::cout << Formatiere(12345,4) << "\n";
+   std::cout << Formatiere(12345,2) << "\n";
+   std::cout << Formatiere(12345678901234ULL,6) << "\n";
 }
 
 void Bankauftragtest()
-{  string s0("EINZIEHER"),s1("BELASTETER"),s2("Zweck A"),s3("Zweck B"),
+{  std::string s0("EINZIEHER"),s1("BELASTETER"),s2("Zweck A"),s3("Zweck B"),
 	s4("Auftraggeber");
    Bankauftrag a('G',33450000,s0,240044,"cat >out.tex");
    Zahlvorgang z(10010010,1234567,300000,false,s1,s2,s4);

@@ -1,4 +1,4 @@
-// $Id: Preis.cc,v 1.2 2001/05/10 16:31:37 christof Exp $
+// $Id: Preis.cc,v 1.3 2001/07/05 09:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -59,13 +59,13 @@ Preis::Preis(float dm_euro, const char *_waehrung, const char *einheit,float stu
 	stueckpreis(false), short_shl(false)
 {  if (!strcmp(_waehrung,"DM")) waehrung=DM;
    else if (!strcmp(_waehrung,"EUR")) waehrung=EURO;
-   else cerr << "Preis::Preis: unbekannte Währung '" << waehrung << "'\n";
+   else std::cerr << "Preis::Preis: unbekannte Währung '" << waehrung << "'\n";
    if (!strcmp(einheit,"stk")) stueckpreis=true;
    else if (!strcmp(einheit,"100m")) 
    {  stueckpreis=false; stueckgroesse=100; }
    else if (!strcmp(einheit,"Tstk"))
    {  stueckpreis=true; stueckgroesse=1000; }
-   else cerr << "Preis::Preis: unbekannte Einheit '" << einheit << "'\n";
+   else std::cerr << "Preis::Preis: unbekannte Einheit '" << einheit << "'\n";
 }
 #endif
 
@@ -82,13 +82,13 @@ void Preis::write(float &dm_euro, char *waehr, int size_w, char *einheit, int si
 
 #include <iomanip.h>
 
-ostream &operator<<(ostream &o,const Preis &p)
+std::ostream &operator<<(std::ostream &o,const Preis &p)
 {  o << (p.pfennig_cent);
    if (!p.short_shl) o << p.Typtext();
    return o;
 }
 
-const string Preis::Typtext() const
+const std::string Preis::Typtext() const
 {  return waehrung->Kurzbezeichnung()+'/'+itos(preismenge);
 }
 

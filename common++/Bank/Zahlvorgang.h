@@ -1,4 +1,4 @@
-/* $Id: Zahlvorgang.h,v 1.1 2001/04/23 08:11:58 christof Exp $ */
+/* $Id: Zahlvorgang.h,v 1.2 2001/07/05 09:23:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,12 +30,12 @@ class Zahlvorgang
    long long Konto;
    long Betrag;
    bool Euro;
-   vector<string> Name;
-   vector<string> Verwendungszweck;
-   vector<string> Auftraggeber;
+   std::vector<string> Name;
+   std::vector<string> Verwendungszweck;
+   std::vector<string> Auftraggeber;
    
    void fillBuffer(char *buf,int num,long eigeneBLZ,long long eigenesKonto,
-   		string eigenerName,char typ) const throw();
+   		std::string eigenerName,char typ) const throw();
    int Bloecke() const throw();
    int extraZeilen() const throw();
    void toTeX(FILE *f) const throw (IOerror);
@@ -45,15 +45,15 @@ class Zahlvorgang
 public:
 	Zahlvorgang(long zahlblz, long long zahlkonto, 
 		long betrag /* in Pf/Cent */, bool euro,
-		vector<string> zahlname, vector<string> zweck, 
-		vector<string> myname) throw(Datenfehler);
+		std::vector<string> zahlname, std::vector<string> zweck, 
+		std::vector<string> myname) throw(Datenfehler);
 	Zahlvorgang(long zahlblz, long long zahlkonto, 
 		long betrag /* in Pf */,
-		vector<string> zahlname, vector<string> zweck, 
-		vector<string> myname) throw(Datenfehler)
+		std::vector<string> zahlname, std::vector<string> zweck, 
+		std::vector<string> myname) throw(Datenfehler)
 	{  Zahlvorgang(zahlblz,zahlkonto,betrag,false,zahlname,zweck,myname);
 	}
 	Zahlvorgang(long zahlblz, long long zahlkonto, long betrag, bool euro,
-		string zahlname, string zweck, string myname) throw(Datenfehler); 
+		std::string zahlname, std::string zweck, std::string myname) throw(Datenfehler); 
 };
 #endif

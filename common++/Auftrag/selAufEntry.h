@@ -1,4 +1,4 @@
-/* $Id: selAufEntry.h,v 1.14 2001/06/25 09:13:22 cvs_christof Exp $ */
+/* $Id: selAufEntry.h,v 1.15 2001/07/02 17:04:57 cvs_christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -47,7 +47,7 @@ public:
 class SelectedAufList
 {
 public:
- vector<SelectedAufentry> aufidliste;
+ std::vector<SelectedAufentry> aufidliste;
 
  SelectedAufList(const SQLAuftragSelector &sel) throw(SQLerror);
  int getLen() { return aufidliste.size();}

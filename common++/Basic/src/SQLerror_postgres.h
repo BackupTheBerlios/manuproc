@@ -1,4 +1,4 @@
-/* $Id: SQLerror_postgres.h,v 1.3 2001/06/27 09:13:57 christof Exp $ */
+/* $Id: SQLerror_postgres.h,v 1.4 2001/07/05 09:23:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -74,7 +74,8 @@ public:
    { test(context,"",codeok,rollback); }
    static void test(const std::string &context,const std::string &cursor,
 		int codeok,bool rollback); // throw(SQLerror_postgres);
-   static void rollback_and_throw(const std::string &context) throw(SQLerror_postgres)
+   static void rollback_and_throw(const std::string &context) 
+   //throw(SQLerror_postgres)
    {  SQLerror_postgres err(context);
       rollback(); 
       throw(err); 
