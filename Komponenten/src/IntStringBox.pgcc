@@ -1,0 +1,169 @@
+// $Id: IntStringBox.pgcc,v 1.2 2002/03/07 15:54:48 cvs_malte Exp $
+/*  libKomponenten: GUI components for ManuProC's libcommon++
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+// generated 2000/8/28 14:42:53 CEST by christof@puck.petig.de
+// using glademm V0.5.9a
+//
+// newer (non customized) versions of this file go to IntStringBox.cc_glade
+
+// This file is for your program, I won't touch it again!
+
+#include "IntStringBox.hh"
+exec sql include sqlca;
+
+void IntStringBox::setLabel(std::string nr,std::string name)
+{
+ label_int->set_text(nr);
+ label_string->set_text(name);
+}
+
+void IntStringBox::int_activate()
+{  // search Name and activate
+   set_value(strtol(sc_int->get_text().c_str(),0,10));
+   activate();
+}
+
+void IntStringBox::int_search(gboolean *_continue, GtkSCContext newsearch)
+{  exec sql begin declare section;
+     char nummer[16];
+     char query[1024];
+   exec sql end declare section;
+   
+   try
+   {  
+      std::string squery;
+      switch(newsearch)
+      {  
+         case GTK_SEARCH_OPEN:
+             squery = "select "+_int_+" from "+_tabelle_
+                  +" where text("+_int_+") like '"
+                 +sc_int->get_text()+"%' order by "+_int_;
+             strncpy(query,squery.c_str(),sizeof(query));
+             exec sql prepare int_cursor_ from :query;
+      	    exec sql declare int_cursor cursor for int_cursor_;
+      	    tr.open();
+      	    exec sql open int_cursor;
+      	    SQLerror::test(__FILELINE__);
+      	    // fall through
+      	 case GTK_SEARCH_FETCH:
+      	    exec sql fetch int_cursor into :nummer;
+      	    SQLerror::test(__FILELINE__,100);
+      	    if (sqlca.sqlcode) return;
+      	    sc_int->add_item(nummer);
+      	    *_continue=true;
+      	    break;
+      	 case GTK_SEARCH_CLOSE:
+      	    exec sql close int_cursor;
+      	    SQLerror::test(__FILELINE__);
+      	    tr.commit();
+      	    break;
+      }
+   }
+   catch (SQLerror &e)
+   {  std::cerr << e << '\n';
+   }
+}
+
+void IntStringBox::string_activate()
+{  id = scc_string->Content();
+   sc_int->set_text(itos(id));
+   activate();
+}
+
+void IntStringBox::string_search(gboolean *_continue, GtkSCContext newsearch)
+{  exec sql begin declare section;
+   char name[80];
+   int nummer;
+   char query[1024];
+   exec sql end declare section;
+   
+   try
+   {  
+     std::string squery;
+     switch(newsearch)
+      {  case GTK_SEARCH_OPEN:
+            tr2.open();
+/*
+             if(einschraenkung_b)
+               squery = "select DISTINCT k.firma, e.extartbezid from 
+                  extbezschema e join kunden k on (e.extartbezid=k.kundennr)
+                  where k.firma like '"+kundenname->get_text()+"%'";
+             else
+*/
+             squery = "select "+_string_+","+_int_+" from "+_tabelle_
+                  +" where "+_string_+" ilike '"
+                  +scc_string->get_text() +"%' order by "+_string_;
+             strncpy(query,squery.c_str(),sizeof(query));
+             exec sql prepare string_cursor_ from :query;
+      	    exec sql declare string_cursor cursor for string_cursor_;
+
+      	    exec sql open string_cursor;
+      	    SQLerror::test(__FILELINE__);
+      	    // fall through
+      	 case GTK_SEARCH_FETCH:
+      	    exec sql fetch string_cursor into :name, :nummer;
+      	    SQLerror::test(__FILELINE__,100);
+      	    if (sqlca.sqlcode) return;
+      	    scc_string->add_item(name,nummer);
+      	    *_continue=true;
+      	    break;
+      	 case GTK_SEARCH_CLOSE:
+      	    exec sql close string_cursor;
+      	    SQLerror::test(__FILELINE__);
+      	    tr2.commit();
+      	    break;
+      }
+   }
+   catch (SQLerror &e)
+   {  std::cerr << e << '\n';
+   }
+}
+
+gint IntStringBox::try_grab_focus(GtkWidget *w,gpointer gp)
+{  IntStringBox *this2((IntStringBox*)gp);
+   assert(Gtk::Table::isA(this2)); // very weak check
+   this2->sc_int->grab_focus();
+   return true;
+}
+
+IntStringBox::IntStringBox() : id(0), tr("",false), tr2("",false)
+{
+ // redirect our grab_focus
+ gtk_signal_connect(GTK_OBJECT(gtkobj()), "grab_focus",
+                 GTK_SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
+}
+
+void IntStringBox::set_value(int i,const std::string &s)
+{
+   sc_int->set_text(itos(i));
+   scc_string->setContent(s,i);
+   id=i;
+}
+
+void IntStringBox::reset()
+{  sc_int->reset();
+   scc_string->reset();
+   id=PreisListe::none_id;
+}
+
+/*
+void IntStringBox::Einschraenken_b(bool an)
+{  
+   einschraenkung_b=an;   
+}
+*/
