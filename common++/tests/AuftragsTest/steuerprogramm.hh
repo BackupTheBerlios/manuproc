@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.hh,v 1.44 2003/12/15 18:33:16 jacek Exp $
+// $Id: steuerprogramm.hh,v 1.45 2004/02/16 08:46:20 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -57,9 +57,9 @@
 #define MIT_ROHWARENLAGER
 #define MIT_BANDLAGER
 
-#define KUNDENINSTANZ (ppsInstanz::ID(1))
-#define ROLLEREI (ppsInstanz::ID(10))
-#define SPRITZGIESSEREI (ppsInstanz::ID(7))
+#define KUNDENINSTANZ (ppsInstanzID::Kundenauftraege)
+#define ROLLEREI (ppsInstanzID::Rollerei)
+#define SPRITZGIESSEREI (ppsInstanzID::Spritzgiesserei)
 
 #define LagerPlatzKupfer (LagerPlatz(ppsInstanzID::Rohwarenlager,KUPFER_LAGERPLATZ))
 #define LagerPlatzKupfer2 (LagerPlatz(ppsInstanzID::Rohwarenlager,KUPFER_LAGERPLATZ2))
@@ -80,6 +80,8 @@
 #define ARTIKEL_SORTIMENT_BUNT ArtikelBase(28)
 #define ARTIKEL_METALL ArtikelBase(1)
 #define ARTIKEL_GRANULAT_GRUEN ArtikelBase(4)
+#define ARTIKEL_GRANULAT_KLAR ArtikelBase(2)
+#define ARTIKEL_GRANULAT_GELB ArtikelBase(3)
 #define ARTIKEL_GRIFF_ROT ArtikelBase(7)
 #define ARTIKEL_SCHRAUBENZIEHER_GELB ArtikelBase(23)
 #define ARTIKEL_SCHRAUBENZIEHER_ROT ArtikelBase(20)

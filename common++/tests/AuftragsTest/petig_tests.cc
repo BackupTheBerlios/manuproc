@@ -132,7 +132,7 @@ static bool Plantest(AufEintrag &AE)
        int kupfer_znr=2;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::_Garn__Einkauf,AuftragBase::ungeplante_id,kupfer_znr));
 
-       AEP.Planen(100,PA,PLANDATUM5);
+       AEP.Planen(1000,PA,PLANDATUM5);
        vergleichen(Check::Menge,"planen_acetat","Planen des Acetateinkaufs","A");
        }
        ManuProC::Trace(log_trace,__FILELINE__);
@@ -164,6 +164,33 @@ static bool Plantest(AufEintrag &AE)
 }
 
 static TestReihe Plantest_(&Plantest,"Planungs Test","P");
+
+static bool Plantest2(AufEintrag &AE)
+{
+       ManuProC::Trace(log_trace,__FILELINE__);
+       {
+       Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::_Garn__Einkauf),Kunde::default_id);
+       int kupfer_znr=2;
+       AufEintrag AEP(AufEintragBase(ppsInstanzID::_Garn__Einkauf,AuftragBase::ungeplante_id,kupfer_znr));
+
+       AEP.Planen(100,PA,PLANDATUM5);
+       vergleichen(Check::Menge,"planen2_acetat","Planen des Acetateinkaufs","A");
+       }
+       ManuProC::Trace(log_trace,__FILELINE__);
+
+       {
+       Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Faerberei),Kunde::default_id);
+       int faerberei_znr=1;
+       AufEintrag AEP(AufEintragBase(ppsInstanzID::Faerberei,AuftragBase::ungeplante_id,faerberei_znr));
+
+       ManuProC::Trace(log_trace,__FILELINE__);
+       AEP.Planen(7000,PA,PLANDATUM4);
+       vergleichen(Check::Menge,"planen2_faerberei_teil","Teil-Planen der Färberei","F");
+       }
+       return true;
+}
+
+static TestReihe Plantest2_(&Plantest2,"Planungs Test 2","P2");
 
 static bool Splittest(AufEintrag &AE)
 {

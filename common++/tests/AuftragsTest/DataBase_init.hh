@@ -1,4 +1,4 @@
-// $Id: DataBase_init.hh,v 1.6 2003/07/15 07:10:29 christof Exp $
+// $Id: DataBase_init.hh,v 1.7 2004/02/16 08:46:20 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -32,13 +32,13 @@
 #include <Auftrag/AufEintragZu.h>
 #include <Auftrag/AufEintrag.h>
 
-
+#ifdef PETIG_EXTENSIONS
 #define PROZESS_ROLLEREI_FAERBEREI ProzessID::Rollen_25m
 #define FAKTOR_FAERBEREI ArtikelBaum::faktor_t(25)
 #define FAKTOR_BANDLAGER ArtikelBaum::faktor_t(1)
 #define PROZESS_DEFAULT ProzessID::Verarbeitung
-#define FAKTOR_ACETAT ArtikelBaum::faktor_t(0.006)
-#define FAKTOR_KUPFER ArtikelBaum::faktor_t(0.01)
+#define FAKTOR_ACETAT ArtikelBaum::faktor_t(0.05)
+#define FAKTOR_KUPFER ArtikelBaum::faktor_t(0.1)
 #define FAKTOR_RINGE ArtikelBaum::faktor_t(2)
 
 #define ACETAT_LAGERPLATZ "07D2"
@@ -60,7 +60,7 @@
 #define MASCHINE 211
 #define SCHAERDATUM ManuProC::Datum().today()
 #define JUMBO_LAGERPLATZ 712
-
+#endif
 
 class DataBase_init
 {

@@ -1,4 +1,4 @@
-// $Id: DataBase_init.cc,v 1.21 2003/12/02 14:06:50 jacek Exp $
+// $Id: DataBase_init.cc,v 1.22 2004/02/16 08:46:20 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -37,9 +37,9 @@ DataBase_init::DataBase_init()
    JumboLager_initalisieren();
 #elif defined MANU_PROC_TEST 
    Lager L(ROHWARENLAGER); 
-   L.rein_ins_lager(ArtikelBase(1),200,false); // Metall
-   L.rein_ins_lager(ArtikelBase(2),50,false); // Granulat klar
-   L.rein_ins_lager(ArtikelBase(3),100,false); // Granulat gelb
+   L.rein_ins_lager(ARTIKEL_METALL,200,false);
+   L.rein_ins_lager(ARTIKEL_GRANULAT_KLAR,50,false);
+   L.rein_ins_lager(ARTIKEL_GRANULAT_GELB,100,false);
 #elif defined MABELLA_TEST
    Lager L(FERTIGWLAGER); 
    L.rein_ins_lager(ARTIKEL_TRIO,5,false); 
