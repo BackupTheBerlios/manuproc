@@ -55,9 +55,20 @@ class Data_Lieferdaten : public RowDataBase
       {
       case AUFNR_SEQ :
          { if (AEB.valid())
-           return cH_EntryValueIntString(Formatiere(
-           			(unsigned long)AEB.Id(),0,6,"","",'0'));
-           else return cH_EntryValue();         }
+             return cH_EntryValueIntString(Formatiere(
+                                         (unsigned long)AEB.Id(),0,6,"","",'0'));
+           else return cH_EntryValue();
+/*           
+             {std::string artnr;
+              artnr=Formatiere((unsigned long)AEB.Id(),0,6,"","",'0');
+              if(liefentry.get_Instanz()->Id()==ppsInstanzID::Einkauf &&
+                     !AEB.getYourAufNr().empty())
+                    artnr=AEB.getYourAufNr()+" - "+artnr;
+              return cH_EntryValueIntString(artnr);
+              }
+           else return cH_EntryValue();         
+*/           
+         }
       case ARTIKEL_SEQ :   return cH_EntryValueIntString(zusatzinfo?std::string()
       		:cH_ArtikelBezeichnung(liefentry.Artikel())->Bezeichnung());
       case PALETTE_SEQ :   return zusatzinfo?cH_EntryValue()
