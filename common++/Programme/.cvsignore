@@ -8,3 +8,6 @@ checkInstanzen
 adjust_store
 createDynEnums
 checkGeliefert.cc
+Zuordnung_zeigen
+auftrag_repair
+db_upgrade
