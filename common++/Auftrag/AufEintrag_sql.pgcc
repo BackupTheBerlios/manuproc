@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.46 2003/01/31 07:23:09 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.47 2003/01/31 16:23:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -37,31 +37,24 @@
 #include <Auftrag/Auftrag.h>
 #include <algorithm>
 #include <unistd.h>
-//#include <Instanzen/ppsInstanzProduziert.h>
+//#include <Auftrag/ppsInstanzProduziert.h>
 #include <Misc/Trace.h>
 #include <Auftrag/VerfuegbareMenge.h>
 #include <Misc/FetchIStream_ops.h>
 
-exec sql include sqlca;
+// Menge wurde geliefert. 
+// Um die Pfeile über uns muss sich jemand anderes kümmern
 
-// Menge wurde geliefert. Um die Pfeile über uns muss sich jemand anderes
-// kümmern - sinnvoll?
-void AufEintrag::abschreiben(mengen_t menge,
-    ManuProcEntity<>::ID lfrsid) throw(SQLerror)
+// menge kann negativ sein ...
+// wo wird der 2er reduziert?
+// wo werden die Instanzen darunter behandelt?
+void AufEintrag::abschreiben(mengen_t menge,ManuProcEntity<>::ID lfrsid) throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Menge=",menge,"Lfrsid=",lfrsid);
 
- exec sql begin declare section;
-  int AUFID=Id();
-  int AUFZNR=ZNr();
-  int INSTANZ=InstanzID();
-  int STATUS=getEntryStatus();
-  int GELIEFERT=(menge+getGeliefert()).as_int();
-  int BESTELLT=getStueck().as_int();
-  char LASTDATE[21];
- exec sql end declare section;
- // Ihhh
- Petig::Datum::today().write_postgres(LASTDATE,sizeof LASTDATE);
+  mengen_t GELIEFERT=getGeliefert()+menge;
+  mengen_t BESTELLT=getStueck();
+  AufStatVal STATUS=getEntryStatus();
 
  if(menge>=0 && getEntryStatus()!=(AufStatVal)OPEN) 
     throw(SQLerror(__FILELINE__,-1,"Auftragszeile ist nicht offen sondern "+itos(STATUS)));
@@ -78,10 +71,10 @@ void AufEintrag::abschreiben(mengen_t menge,
  else if(menge<0 && mengen_t(GELIEFERT)<getStueck()) STATUS=(AufStatVal)OPEN;
 
  Transaction tr;
- exec sql lock table auftragentry in exclusive mode;
+ Query("lock table auftragentry in exclusive mode");
  bool delete_entry=false;
 
-#ifdef PETIG_EXTENSIONS
+  // Lieferung rückgängig machen, dann 1er löschen wenn es alle Menge war
   if(menge<0 &&
      Instanz()!=ppsInstanzID::Kundenauftraege && 
      !Instanz()->ProduziertSelbst() && 
@@ -92,15 +85,16 @@ void AufEintrag::abschreiben(mengen_t menge,
      if(BESTELLT==GELIEFERT) STATUS=CLOSED;
      if(BESTELLT==0 && GELIEFERT==0 &&  STATUS==CLOSED) delete_entry=true;
    }   
-#endif
 
  if(delete_entry)
-   exec sql delete from auftragentry       
-     where (instanz,auftragid,zeilennr) = (:INSTANZ,:AUFID,:AUFZNR);
+   Query("delete from auftragentry where (instanz,auftragid,zeilennr) = (?,?,?)")
+     << InstanzID() << Id() << ZNr();
  else
-   exec sql update auftragentry set geliefert= :GELIEFERT, status= :STATUS,
-     bestellt = :BESTELLT, letzte_lieferung=:LASTDATE
-     where (instanz,auftragid,zeilennr) = (:INSTANZ,:AUFID,:AUFZNR);
+   Query("update auftragentry set geliefert=?, status=?, "
+     "bestellt=?, letzte_lieferung=now() "
+     "where (instanz,auftragid,zeilennr) = (?,?,?)")
+     << GELIEFERT << STATUS << BESTELLT 
+     << InstanzID() << Id() << ZNr();
  SQLerror::test(__FILELINE__);
 
 #ifdef MABELLA_EXTENSIONS // Lager updaten
@@ -196,70 +190,6 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
 
  tr.commit(); 
 }
-
-#if 0
-#warning Kontrollieren !!!
-// wird bei Lieferdatumsänderung aufgerufen
-void AufEintrag::setInstanzen(const AufStatVal newstatus,const int uid,const Petig::Datum &lieferdate,const mengen_t &Menge,const int myznr,const int yourznr)
-{
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Status=",newstatus,"lieferdate=",lieferdate,"Menge=",Menge,"MyZNr=",myznr,"YourZNr=",yourznr);
-
- ArtikelInternAbbestellen(uid,Menge,ManuProC::Auftrag::r_Anlegen);
- ArtikelInternNachbestellen(uid,Menge,ManuProC::Auftrag::r_Anlegen);
-#if 0 
- std::list<AufEintragZu::st_reflist> KindListe = AufEintragZu(*this).get_Referenz_list(*this,true);
- for(std::list<AufEintragZu::st_reflist>::const_iterator i=KindListe.begin();i!=KindListe.end();++i)
-  {
-   AufEintrag AE(i->AEB);
-   mengen_t Mauftrag=AE.getRestStk();
-   mengen_t Mzuordnung=i->Menge;
-   // AufEintrag splitten und Anlegen in der Zuordnungsliste
-   int znr=ManuProcEntity<>::none_id,newznr=ManuProcEntity<>::none_id; 
-   mengen_t menge=0;
-   
-   if(!i->AEB.existEntry(i->Art,lieferdate,znr,newznr,menge,newstatus))
-     {
-      Auftrag A(i->AEB);
-      AufEintragBase neuAEB=A.push_back(Mauftrag,lieferdate,i->Art,newstatus,uid,false); //false=KEINE Instanzen
-      znr=neuAEB.ZNr();
-      if(Instanz()==ppsInstanzID::Kundenauftraege) 
-            AufEintragZu(*this).setKindZnr(neuAEB);
-      else 
-         {
-            AufEintragZu(*this).Neu(neuAEB,Mzuordnung,myznr);
-            AufEintragZu(*this).setMengeDiff__(AE,-Mzuordnung);
-         }
-     }
-   else
-     {
-      AufEintragBase AEBZ(AE,znr); 
-      mengen_t mt=AEBZ.updateStkDiffBase__(uid,Mauftrag);
-      assert(mt==Mauftrag);
-      if(Instanz()==ppsInstanzID::Kundenauftraege) 
-            AufEintragZu(*this).setKindZnr(AEBZ);
-      else 
-         {
-            mengen_t mts=AufEintragZu(*this).setMengeDiff__(AE,-Mzuordnung);
-            assert(mts==-Mzuordnung);
-            AufEintragZu(class AufEintragBase(*this,myznr)).Neu(AEBZ,Mzuordnung); // 'Neu' versucht erst ein 'update'
-         }
-     }
-   AE.MengeAendern(uid,-Mauftrag,false,AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
-
-   if(auftragstatus==UNCOMMITED && newstatus==OPEN ) 
-      AE.setStatusAuftragBase(newstatus);
-
-   if(instanz->LagerInstanz() && Id()==plan_auftrag_id && 
-       (newstatus==STORNO || Mauftrag < 0 ))
-    {
-      LagerBase L(instanz);
-      L.rein_ins_lager(ArtId(),Mauftrag,uid);
-    }
-   AE.setInstanzen(newstatus,uid,lieferdate,Mauftrag,znr,newznr);
-  }
-#endif
-}
-#endif
 
 // statische Variante (behandelt z.B. Vormerkungen, freie Menge etc.)
 AufEintragBase AufEintrag::ArtikelInternNachbestellen(const cH_ppsInstanz &wo,
@@ -498,9 +428,8 @@ int AufEintrag::split(int uid,mengen_t newmenge, const Petig::Datum &newld,bool 
     GELIEFERT=(geliefert>BESTELLT_OLD ? geliefert-mengen_t(BESTELLT_OLD) : mengen_t(0)).as_float();}
     
  Transaction tr;
- exec sql lock auftragentry in exclusive mode;
+ Query("lock auftragentry in exclusive mode");
  SQLerror::test("split: lock table auftragentry");
-
 
  mengen_t mt=MengeAendern(uid,-newmenge,true,AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
  assert(mt==-newmenge);
