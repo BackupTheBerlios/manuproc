@@ -816,7 +816,7 @@ void auftrag_bearbeiten::on_auftrag_preislisten_activate()
  cH_PreisListe p(preislisten->get_value());
  artikelbox->reset();
  if(preisautomatik->get_active())
-     artikelbox->AlleWarenkorb(kunde->Id());
+     artikelbox->AlleWarenkorb(kunde->Rngan());
  else
      artikelbox->EinWarenkorb(p->Id());   
  artikelbox->Einschraenken_b(true);
@@ -857,7 +857,7 @@ void auftrag_bearbeiten::on_preisautomatik_clicked()
 {
 #ifdef MABELLA_EXTENSIONS
  if(preisautomatik->get_active())
-     {artikelbox->AlleWarenkorb(kunde->Id());
+     {artikelbox->AlleWarenkorb(kunde->Rngan());
       preislisten->set_sensitive(false);
      }
  else
