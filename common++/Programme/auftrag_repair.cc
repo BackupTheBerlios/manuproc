@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.46 2003/06/25 07:06:58 christof Exp $
+// $Id: auftrag_repair.cc,v 1.1 2003/06/25 07:11:20 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
