@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "ppsInstanz.h"
+#include <Instanzen/ppsInstanzReperatur.h>
 #include <Lager/Lager.h>
 #include <Lager/JumboLager.h>
 #include <Lager/RohwarenLager.h>
@@ -29,7 +29,7 @@
 #include <Misc/relops.h>
 
 
-bool ppsInstanz::ReparaturK_Kundenzuordnung(const int uid,const bool analyse_only) const
+bool ppsInstanzReparatur::ReparaturK_Kundenzuordnung(const int uid,const bool analyse_only) const
 {
    bool alles_ok=true;
    assert(KundenInstanz());
@@ -79,20 +79,20 @@ bool ppsInstanz::ReparaturK_Kundenzuordnung(const int uid,const bool analyse_onl
   return alles_ok;
 }
 
-void ppsInstanz::Reparatur_Kundenauftrag_AE(const int uid,const AufEintrag &KundeAE,AufEintrag &KindAE,const AuftragBase::mengen_t &menge) const
+void ppsInstanzReparatur::Reparatur_Kundenauftrag_AE(const int uid,const AufEintrag &KundeAE,AufEintrag &KindAE,const AuftragBase::mengen_t &menge) const
 {
 std::cout<< "\n\nREP: "<<KindAE<<'\t'<<menge<<'\n';
   KindAE.updateStkDiff__(uid,-menge,true,ManuProC::Auftrag::r_Anlegen);  
   Reparatur_Kundenauftrag_AEB(uid,KundeAE,KindAE,menge);
 }
 
-void ppsInstanz::Reparatur_Kundenauftrag_AEB(const int uid,const AufEintrag &KundeAE,const AufEintragBase &KindAE,const AuftragBase::mengen_t &menge) const
+void ppsInstanzReparatur::Reparatur_Kundenauftrag_AEB(const int uid,const AufEintrag &KundeAE,const AufEintragBase &KindAE,const AuftragBase::mengen_t &menge) const
 {
   AufEintragZu::remove(KundeAE,KindAE);
   KundeAE.BaumAnlegen(KundeAE,uid);
 }
 
-void ppsInstanz::MengenReparatur(const int uid,const AufEintrag &AE,AufEintrag &AEK,const ABmt& zumenge) const 
+void ppsInstanzReparatur::MengenReparatur(const int uid,const AufEintrag &AE,AufEintrag &AEK,const ABmt& zumenge) const 
 {
    assert(AEK.Id()==AuftragBase::ungeplante_id);
    AuftragBase::mengen_t diffmenge=AE.getStueck()-zumenge;
@@ -110,30 +110,30 @@ void ppsInstanz::MengenReparatur(const int uid,const AufEintrag &AE,AufEintrag &
 
 ///////////////////////////////////////////////////////////////////////////
 
-bool ppsInstanz::ReparaturD_0_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror)
+bool ppsInstanzReparatur::ReparaturD_0_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror)
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
   return Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::plan_auftrag_id,false,Dungeplant);
 }
 
-bool ppsInstanz::ReparaturE_2_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror)
+bool ppsInstanzReparatur::ReparaturE_2_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror)
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
-  if(LagerInstanz()) {std::cout << "Sinnlos für LagerInstanz\n"; return true;}
+  if(LagerInstanz()) {/*std::cout << "Sinnlos für LagerInstanz\n"; */return true;}
   else
      return Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::dispo_auftrag_id,true,Egeplant);
 }
 
-bool ppsInstanz::ReparaturF_2_ZuSumme_1Rest(const int uid,const bool analyse_only) const throw(SQLerror)
+bool ppsInstanzReparatur::ReparaturF_2_ZuSumme_1Rest(const int uid,const bool analyse_only) const throw(SQLerror)
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
-  if(LagerInstanz()) {std::cout << "Sinnlos für LagerInstanz\n"; return true;}
+  if(LagerInstanz()) {/*std::cout << "Sinnlos für LagerInstanz\n";*/ return true;}
   else
      return Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::plan_auftrag_id,false,Fdispo);
 }
 
 
-bool ppsInstanz::Reparatur_Zuordnungen(const int uid,const bool analyse_only,
+bool ppsInstanzReparatur::Reparatur_Zuordnungen(const int uid,const bool analyse_only,
    const AuftragBase::ID auftragid,const bool kinder,const e_zumode zumode) const throw(SQLerror)
 {
    bool alles_ok=true;
@@ -156,25 +156,25 @@ bool ppsInstanz::Reparatur_Zuordnungen(const int uid,const bool analyse_only,
                            break;}
          case Fdispo:     L=AufEintragZu(*i).get_Referenz_list_dispo(kinder); break;
         }
-std::cout << *i<<"\tChild-LSize="<<L.size()<<'\n';
+//std::cout << *i<<"\tChild-LSize="<<L.size()<<'\n';
       for(std::list<AufEintragZu::st_reflist>::const_iterator j=L.begin();j!=L.end();++j)
         {
           if(j->AEB.Id()==AuftragBase::ungeplante_id) M0sum+=j->Menge;
           else Msum+=j->Menge;
-//cout << *i<<'\t'<<j->AEB<<'\t'<<j->Menge<<'\t'<<Msum<<'\n';
+//std::cout << *i<<'\t'<<j->AEB<<'\t'<<j->Menge<<'\t'<<Msum<<'\n';
         }
       switch (zumode) {
-         case Dungeplant: alles_ok=check_D_ungeplant(analyse_only,*i,M0sum,Msum+M0sum); break;
-         case Egeplant:   alles_ok=check_E_geplant(analyse_only,*i,Msum+M0sum); break;   
-         case Fdispo:     alles_ok=check_F_dispo(analyse_only,*i,Msum+M0sum);break;
+         case Dungeplant: alles_ok=check_D_ungeplant(uid,analyse_only,*i,M0sum,Msum+M0sum); break;
+         case Egeplant:   alles_ok=check_E_geplant(uid,analyse_only,*i,Msum+M0sum); break;   
+         case Fdispo:     alles_ok=check_F_dispo(uid,analyse_only,*i,Msum+M0sum);break;
        }
     }
  return alles_ok;
 } 
 
-bool ppsInstanz::check_D_ungeplant(const bool analyse_only,const AufEintrag &AE,const ABmt &M0sum,const ABmt &Msum) const
+bool ppsInstanzReparatur::check_D_ungeplant(const int uid,const bool analyse_only,const AufEintrag &AE,const ABmt &M0sum,const ABmt &Msum) const
 {
-  if(AE.getGeliefert() <= M0sum) return check_E_geplant(analyse_only,AE,Msum);
+  if(AE.getGeliefert() <= M0sum) return check_E_geplant(uid,analyse_only,AE,Msum);
   else if(Msum>AE.getStueck())
    { 
 std::cout << Msum<<'\t'<<AE.getStueck()<<'\t'<<AE.getRestStk()<<'\n';
@@ -185,19 +185,19 @@ std::cout << Msum<<'\t'<<AE.getStueck()<<'\t'<<AE.getRestStk()<<'\n';
   return true;
 }
 
-bool ppsInstanz::check_E_geplant(const bool analyse_only,const AufEintrag &AE,const ABmt &Msum) const
+bool ppsInstanzReparatur::check_E_geplant(const int uid,const bool analyse_only,const AufEintrag &AE,const ABmt &Msum) const
 {
   if(Msum!=AE.getStueck())
    { 
-std::cout << Msum<<'\t'<<AE.getStueck()<<'\t'<<AE.getRestStk()<<'\n';
+std::cout << Msum<<'\t'<<AE.getStueck()<<'\t'<<AE.getRestStk()<<'\t'<<Msum-AE.getStueck()<<'\n';
      if(analyse_only) std::cout << "Analyse: Zuord.-Summen ("<<Msum<<") stimmen nicht ("<<AE.getStueck()<<") für "<<AE<<'\n';
-     else assert(!"nicht implementiert\n");
+     else AE.updateStkDiffBase__(uid,Msum-AE.getStueck());
      return false;
    }
  return true;
 }
 
-bool ppsInstanz::check_F_dispo(const bool analyse_only,const AufEintrag &AE,const ABmt &Msum) const
+bool ppsInstanzReparatur::check_F_dispo(const int uid,const bool analyse_only,const AufEintrag &AE,const ABmt &Msum) const
 {
   if(Msum>AE.getRestStk())
    { 
@@ -212,13 +212,13 @@ bool ppsInstanz::check_F_dispo(const bool analyse_only,const AufEintrag &AE,cons
 
 ////////////////////////////////////////////////////////////////////////////
 
-void ppsInstanz::Reparatur_0er_und_2er(const int uid,const bool analyse_only) const throw(SQLerror)
+void ppsInstanzReparatur::Reparatur_0er_und_2er(const int uid,const bool analyse_only) const throw(SQLerror)
 {
    ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
    assert(Id() != ppsInstanzID::Kundenauftraege);
    SQLFullAuftragSelector sel0er= SQLFullAuftragSelector::sel_Status(Id(),OPEN,AuftragBase::ungeplante_id);
    SelectedFullAufList AL(sel0er);
-//cout << "REPARATUR 2er 0er AL.size()\t"<<AL.size()<<'\n';
+//std::cout << "REPARATUR 2er 0er AL.size()\t"<<AL.size()<<'\n';
    for(SelectedFullAufList::iterator i=AL.begin();i!=AL.end();++i)
     {
       SQLFullAuftragSelector sel2er;
@@ -265,7 +265,7 @@ struct st_table{std::string table; std::string column;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void ppsInstanz::Reparatur_Konsistenz(const bool analyse_only) const throw(SQLerror)
+void ppsInstanzReparatur::Reparatur_Konsistenz(const bool analyse_only) const throw(SQLerror)
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
   if(KundenInstanz()) return; // Finger WEG
@@ -274,7 +274,7 @@ void ppsInstanz::Reparatur_Konsistenz(const bool analyse_only) const throw(SQLer
   force_2er_0er_geliefert_ist_null(analyse_only);
 }
 
-void ppsInstanz::force_2er_0er_geliefert_ist_null(const bool analyse_only) const throw(SQLerror)
+void ppsInstanzReparatur::force_2er_0er_geliefert_ist_null(const bool analyse_only) const throw(SQLerror)
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
   std::vector<st_table> Vtable;
@@ -286,7 +286,7 @@ void ppsInstanz::force_2er_0er_geliefert_ist_null(const bool analyse_only) const
 }
 
 
-void ppsInstanz::force_open_0er_und_2er(const bool analyse_only) const throw(SQLerror)
+void ppsInstanzReparatur::force_open_0er_und_2er(const bool analyse_only) const throw(SQLerror)
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
   std::vector<st_table> Vtable;
@@ -298,7 +298,7 @@ void ppsInstanz::force_open_0er_und_2er(const bool analyse_only) const throw(SQL
   force_execute(Vtable,Vauftragid,OPEN,"Stati",analyse_only);
 }
 
-void ppsInstanz::force_execute(const std::vector<st_table> &Vtable,
+void ppsInstanzReparatur::force_execute(const std::vector<st_table> &Vtable,
           const std::vector<AuftragBase::ID> &Vauftragid,
           const int Wert,const std::string &was,
           const bool analyse_only) const throw(SQLerror)
@@ -326,7 +326,7 @@ void ppsInstanz::force_execute(const std::vector<st_table> &Vtable,
 
 
 
-void ppsInstanz::force_eigene_KundenId(const bool analyse_only) const throw(SQLerror)
+void ppsInstanzReparatur::force_eigene_KundenId(const bool analyse_only) const throw(SQLerror)
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
   if(KundenInstanz()) return; // Finger WEG
@@ -359,7 +359,7 @@ void ppsInstanz::force_eigene_KundenId(const bool analyse_only) const throw(SQLe
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-void ppsInstanz::ReparaturLager(const int uid,const bool analyse_only) const throw(SQLerror)
+void ppsInstanzReparatur::ReparaturLager(const int uid,const bool analyse_only) const throw(SQLerror)
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
   assert(LagerInstanz());
@@ -367,7 +367,7 @@ void ppsInstanz::ReparaturLager(const int uid,const bool analyse_only) const thr
   vormerkungen_subrahieren(uid,LI,analyse_only);
 }
 
-void ppsInstanz::vormerkungen_subrahieren(int uid,const  std::vector<LagerInhalt> &LI,const bool analyse_only) const
+void ppsInstanzReparatur::vormerkungen_subrahieren(int uid,const  std::vector<LagerInhalt> &LI,const bool analyse_only) const
 {
 //std::cout << "Anzahl der Artikel im Lager = "<<LI.size()<<'\n';
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
@@ -432,7 +432,7 @@ void ppsInstanz::vormerkungen_subrahieren(int uid,const  std::vector<LagerInhalt
 
 
 #include <Aux/Trace.h>
-void ppsInstanz::DispoAuftraege_anlegen(const int uid,const ArtikelBase &artikel,const AuftragBase::mengen_t &menge) const
+void ppsInstanzReparatur::DispoAuftraege_anlegen(const int uid,const ArtikelBase &artikel,const AuftragBase::mengen_t &menge) const
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
    assert(EigeneLagerKlasseImplementiert());
@@ -443,7 +443,7 @@ std::cout << "Mengenänderung im Lager "<<Name()<<'\t'<<menge<<'\n';
 
 
 
-std::vector<LagerInhalt> ppsInstanz::getLagerInhalt() const
+std::vector<LagerInhalt> ppsInstanzReparatur::getLagerInhalt() const
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
   std::vector<LagerInhalt> LI;
@@ -461,20 +461,20 @@ std::vector<LagerInhalt> ppsInstanz::getLagerInhalt() const
 }
 
 
-void ppsInstanz::analyse(const std::string &s,const AufEintrag &AE,const std::string &x,const std::string &y) const
+void ppsInstanzReparatur::analyse(const std::string &s,const AufEintrag &AE,const std::string &x,const std::string &y) const
 {
   std::cout<<"Fehler Analyse: " << AE <<"  => "<<s<<"\t("<<x<<"), ("<<y<<")\n";
 }
 
-void ppsInstanz::analyse(const std::string &s,const AufEintrag &AE,const ABmt &x,const ABmt &y) const
+void ppsInstanzReparatur::analyse(const std::string &s,const AufEintrag &AE,const ABmt &x,const ABmt &y) const
 {analyse(s,AE,x.String(),y.String());}
 
-void ppsInstanz::analyse(const std::string &s,const AufEintrag &AE,const AufEintragBase &x,const ABmt &y) const
+void ppsInstanzReparatur::analyse(const std::string &s,const AufEintrag &AE,const AufEintragBase &x,const ABmt &y) const
 {analyse(s,AE,x.Instanz()->Name()+"/"+itos(x.Id())+"/"+itos(x.ZNr()),y.String());}
 
-void ppsInstanz::analyse(const std::string &s,const AufEintrag &AE,const ArtikelBase &x,const ArtikelBase &y) const
+void ppsInstanzReparatur::analyse(const std::string &s,const AufEintrag &AE,const ArtikelBase &x,const ArtikelBase &y) const
 {analyse(s,AE,itos(x.Id()),itos(y.Id()));}
 
-void ppsInstanz::analyse(const std::string &s,const AufEintrag &AE,const cH_ppsInstanz &x,const cH_ppsInstanz &y) const
+void ppsInstanzReparatur::analyse(const std::string &s,const AufEintrag &AE,const cH_ppsInstanz &x,const cH_ppsInstanz &y) const
 {analyse(s,AE,x->Name(),y->Name());}
 

@@ -43,7 +43,7 @@ enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
       LieferscheinJacek,
       ZweiKundenTest,ZweiKundenMengeFreigebenTest,ManuProCTest,
       JumboLager,Rep_Mabella,Rep_Petig_PhysikalischesLager,
-      Rep_Petig_0er_2er_gleichzeitig,Rep_KundenProgramm};
+      Rep_Petig_0er_2er_gleichzeitig,Rep_KundenProgramm,Rep_Zuordnungen};
 
 static int fehler()
 {
@@ -335,6 +335,30 @@ std::cout << dummystring<<'\n';
 
 #endif
       break;
+     }
+    case Rep_Zuordnungen:
+     {
+       #ifndef REPARATUR_PROGRAMM_TESTEN
+          assert(!"FEHLER: MIT REPARATURPROGRAMM KOMPILIEREN\n");
+       #endif
+       {
+       Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Faerberei),Kunde::default_id);
+       AufEintrag AEP(AufEintragBase(ppsInstanzID::Faerberei,AuftragBase::ungeplante_id,1));
+       AEP.Planen(UID,17000,PA,DATUMP);
+       erfolgreich=C.teste(Check::Menge,"_rep_pf",mit_reparatur_programm);
+       if(!erfolgreich) { cout << "Reparatur-Planen der Färberei \n\n";
+               return fehler();}
+       }
+      {
+        Query::Execute("update auftragentry set bestellt=5555 where "
+            "(instanz,auftragid)=(2,2)");
+        SQLerror::test(__FILELINE__);
+        erfolgreich=C.teste(Check::Menge,"_rep_pf",mit_reparatur_programm,true);
+        if(!erfolgreich) { cout << "Reparatur-Zuordungen () \n";
+               return fehler();}
+      }
+      cout << "Reparatur-Test (Petig, Zuordnungen) erfolgreich\n";
+      break;      
      }
     case Rep_KundenProgramm:
      {
@@ -922,6 +946,7 @@ void usage(const std::string &argv0,const std::string &argv1)
                   "\t(R)eparatur(P)hysikalischesLager\n"
                   "\t(R)eparatur_0er_2er_(g)leichzeitig\n"
                   "\t(R)eparatur_(K)undenprogramm\n"
+                  "\t(R)eparatur_(Z)uordnungen\n"
                   "\t(R)eparartur(M)Mabella, =0er+2er OPEN, bestellt=0, Kundenid=1]\n"
                   "\taufgerufen werden\n"
        << " nicht mit '"<<argv1<<"'\n";
@@ -953,6 +978,7 @@ int main(int argc,char *argv[])
    else if(std::string(argv[1])=="RP")  mode=Rep_Petig_PhysikalischesLager;
    else if(std::string(argv[1])=="Rg")  mode=Rep_Petig_0er_2er_gleichzeitig;
    else if(std::string(argv[1])=="RK")  mode=Rep_KundenProgramm;
+   else if(std::string(argv[1])=="RZ")  mode=Rep_Zuordnungen;
    if(mode==None) { usage(argv[0],argv[1]); return 1; }
    
    cout << "Initalisierung der Datenbank ...";

@@ -1,4 +1,4 @@
-// $Id: get_data.h,v 1.14 2002/12/09 13:13:23 thoma Exp $
+// $Id: get_data.h,v 1.15 2002/12/10 09:55:11 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -32,7 +32,7 @@ enum emode {None,Legende,Menge,Planung,Split,Lager,ZweiAuftraege,
    LieferscheinZusatz,LieferscheinZweiAuftraege,LieferscheinJacek,
    ZweiKunden,ZweiKundenMengeFreigeben,
    ManuProCTest,Rep_Petig_0er_2er_gleichzeitig,
-   Rep_Petig_Kunde};
+   Rep_Petig_Kunde,Rep_Petig_Zuordung};
 
 class graph_data_node
 {
@@ -88,6 +88,7 @@ class graph_data_node
      std::vector<st_files> ManuProCfiles();
      std::vector<st_files> Rep02gleichzeitigfiles();
      std::vector<st_files> RepKunde_files();
+     std::vector<st_files> RepZu_files();
      std::vector<st_files> filenames;
   public:
      graph_data_node(emode);

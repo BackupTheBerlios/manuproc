@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.21 2002/12/09 11:22:28 thoma Exp $
+// $Id: adjust_store.cc,v 1.22 2002/12/10 09:55:10 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -21,7 +21,7 @@
 #include <Aux/exception.h>
 #include <getopt.h>
 #include <unistd.h>
-#include <Instanzen/ppsInstanz.h>
+#include <Instanzen/ppsInstanzReperatur.h>
 
 void usage(const std::string &s)
 {
@@ -56,18 +56,19 @@ void usage(const std::string &s)
 
 bool check_for(const std::string &pname,cH_ppsInstanz I,const std::string &aktion,const bool analyse_only)
 {   
+   ppsInstanzReparatur RI(I->Id());
    bool alles_ok=true;
     if     (aktion=="A")
      {
-      if(I->EigeneLagerKlasseImplementiert()) I->ReparaturLager(getuid(),analyse_only);
+      if(I->EigeneLagerKlasseImplementiert()) RI.ReparaturLager(getuid(),analyse_only);
       else cout << "\t"<< I << "'A' nicht sinnvoll\n";
      }
-    else if(aktion=="B" &&!I->KundenInstanz()) I->Reparatur_Konsistenz(analyse_only);
-    else if(aktion=="C" &&!I->KundenInstanz()) I->Reparatur_0er_und_2er(getuid(),analyse_only);
-    else if(aktion=="D" &&!I->KundenInstanz()) alles_ok=I->ReparaturD_0_ZuSumme_1(getuid(),analyse_only);
-    else if(aktion=="E" &&!I->KundenInstanz()) alles_ok=I->ReparaturE_2_ZuSumme_1(getuid(),analyse_only);
-    else if(aktion=="F" &&!I->KundenInstanz()) alles_ok=I->ReparaturF_2_ZuSumme_1Rest(getuid(),analyse_only);
-    else if(aktion=="K" && I->KundenInstanz()) alles_ok=I->ReparaturK_Kundenzuordnung(getuid(),analyse_only);
+    else if(aktion=="B" &&!I->KundenInstanz()) RI.Reparatur_Konsistenz(analyse_only);
+    else if(aktion=="C" &&!I->KundenInstanz()) RI.Reparatur_0er_und_2er(getuid(),analyse_only);
+    else if(aktion=="D" &&!I->KundenInstanz()) alles_ok=RI.ReparaturD_0_ZuSumme_1(getuid(),analyse_only);
+    else if(aktion=="E" &&!I->KundenInstanz()) alles_ok=RI.ReparaturE_2_ZuSumme_1(getuid(),analyse_only);
+    else if(aktion=="F" &&!I->KundenInstanz()) alles_ok=RI.ReparaturF_2_ZuSumme_1Rest(getuid(),analyse_only);
+    else if(aktion=="K" && I->KundenInstanz()) alles_ok=RI.ReparaturK_Kundenzuordnung(getuid(),analyse_only);
     else usage(pname);
    return alles_ok;
 }
