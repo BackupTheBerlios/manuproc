@@ -1,4 +1,4 @@
-// $Id: Faden.cc,v 1.5 2002/09/18 08:58:34 christof Exp $
+// $Id: Faden.cc,v 1.6 2002/10/24 14:06:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -20,6 +20,7 @@
 
 #include "Faden.hh"
 #include "Materialeigenschaft.hh"
+#include <Misc/relops.h>
 
 std::ostream& operator<< (std::ostream& os, const Faden& f)
 {

@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.16 2002/10/09 14:48:07 thoma Exp $ */
+/* $Id: AufEintrag.h,v 1.17 2002/10/24 14:06:49 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -91,7 +91,7 @@ public:
  struct NoAEB_Error : public std::exception
    {  int x; 
       virtual const char* what() const throw() 
-        { return string("AufEintrag::NoAEB_Error: "+itos(x)).c_str(); }
+        { return "AufEintrag::NoAEB_Error"; }
        NoAEB_Error(int i):x(i) {}
    };
 
@@ -173,15 +173,13 @@ public:
 private: 
    friend struct ManuProC::st_produziert;
    friend void ppsInstanz::Produziert(ManuProC::st_produziert &P) const;
-#ifdef MABELLA_EXTENSIONS
-public:
-#endif 
+   friend class AufEintragBase;
  void abschreiben(mengen_t menge,
-    ManuProcEntity::ID lfrsid=ManuProcEntity::none_id) throw(SQLerror);
+    ManuProcEntity<>::ID lfrsid=ManuProcEntity<>::none_id) throw(SQLerror);
 
 public:
  void Produziert(mengen_t menge,
-     ManuProcEntity::ID lfrsid=ManuProcEntity::none_id)  throw(SQLerror);
+     ManuProcEntity<>::ID lfrsid=ManuProcEntity<>::none_id)  throw(SQLerror);
 
 
 public:
@@ -212,6 +210,8 @@ public:
       const ManuProC::Datum &datum,bool rekursiv=false) throw(std::exception);
 
 // friend std::ostream &operator<<(std::ostream &o,const AufEintrag &aeb);
+
+
 };
 
 //std::ostream &operator<<(std::ostream &o,const AufEintrag &aeb);

@@ -1,4 +1,4 @@
-// $Id: TelefonArt.h,v 1.3 2002/05/09 12:46:00 christof Exp $
+// $Id: TelefonArt.h,v 1.4 2002/10/24 14:06:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,4 +25,3 @@ typedef enum {TEL_NONE=0,TEL_TEL='T',TEL_FAX='F',TEL_MOB='M',
         TEL_E_MAIL='E',TEL_HOMEPAGE='W'} TelArt;
 
 #endif
-        

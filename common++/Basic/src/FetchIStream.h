@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.11 2002/10/24 14:06:49 thoma Exp $
+// $Id: FetchIStream.h,v 1.12 2002/10/24 14:07:07 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,6 +30,10 @@ class FetchIStream
 {	int naechstesFeld;
 	/* const */ int zeile;
 	const PGresult * /* const */ result;
+
+	friend class Query;
+	// print if debugging on and then throw it	
+	static void mythrow(const SQLerror &e);
 public:
 	FetchIStream(const std::string &descr, int line=0);
 	FetchIStream(const PGresult *res=0, int line=0)
@@ -114,7 +118,7 @@ static inline Query &operator>>(Query &q, FetchIStream &s)
 template <class T> 
 void Query::FetchArray(std::vector<T> &res)
 {  if (!good()) 
-   { SQLerror::test(__FUNCTION__); throw SQLerror(__FUNCTION__,-1,"bad result"); }
+   { SQLerror::test(__FUNCTION__); FetchIStream::mythrow(SQLerror(__FUNCTION__,-1,"bad result")); }
    FetchIStream is;
    while (((*this)>>is).good()) 
    { T x;
@@ -126,10 +130,10 @@ void Query::FetchArray(std::vector<T> &res)
 template <class T>
 void Query::FetchOne(T &res)
 {  if (!good()) 
-   { SQLerror::test(__FUNCTION__); throw SQLerror(__FUNCTION__,-1,"bad result"); }
+   { SQLerror::test(__FUNCTION__); FetchIStream::mythrow(SQLerror(__FUNCTION__,-1,"bad result")); }
    FetchIStream is=Fetch();
    is >> res;
-   if (Fetch().good()) throw SQLerror(__FUNCTION__,-2,"more than one result");
+   if (Fetch().good()) FetchIStream::mythrow(SQLerror(__FUNCTION__,-2,"more than one result"));
 }
 
 template <class T>

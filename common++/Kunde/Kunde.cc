@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.19 2002/06/20 06:29:53 christof Exp $
+// $Id: Kunde.cc,v 1.20 2002/10/24 14:06:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -65,9 +65,9 @@ const std::string Kunde::LaTeX_von() const
   return  s;
 }
 
-const std::string Kunde::LaTeX_von_gross(const ID kid, const string width) const
+const std::string Kunde::LaTeX_von_gross(const ID kid, const std::string width) const
 {
-  std::string s=string("\\parbox[t]{")+width+"}{\\footnotesize\\raggedleft ";
+  std::string s=std::string("\\parbox[t]{")+width+"}{\\footnotesize\\raggedleft ";
   s+= string2TeX(getName())+"\\\\\n";
   s+= string2TeX(strasse()+" "+hausnr())+"\\\\\n";
   s+= string2TeX(plz()+" "+ort())+"\\\\\n";
@@ -97,8 +97,8 @@ std::string Kunde::get_first_telefon(const TelArt& art) const
 
 
 const std::string Kunde::LaTeX_an(bool liefer,TelArt telart,
-				const string width,
-				const string telwidth) const
+				const std::string width,
+				const std::string telwidth) const
 {
   std::string strasse_postfach;
   std::string lkz_plz_ort;
@@ -118,7 +118,7 @@ const std::string Kunde::LaTeX_an(bool liefer,TelArt telart,
       lkz_plz_ort += adresse.plz+" "+adresse.ort;
      }
 
-  std::string s=string("\\parbox[t]{")+width+"}{\n";
+  std::string s=std::string("\\parbox[t]{")+width+"}{\n";
 #ifndef MABELLA_EXTENSIONS
   s+="\\large ";
 #endif
@@ -141,7 +141,7 @@ const std::string Kunde::LaTeX_an(bool liefer,TelArt telart,
      {s2+= (*i)->ArtString() +" "+(*i)->NummerStr()+"\\\\\n"; }
   s2 +="}";
 
-  return  string("\\parbox[t]{")+telwidth+"}{"+s+s2+"}\n";
+  return  std::string("\\parbox[t]{")+telwidth+"}{"+s+s2+"}\n";
 }
 
 

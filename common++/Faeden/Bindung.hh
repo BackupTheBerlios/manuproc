@@ -1,4 +1,4 @@
-// $Id: Bindung.hh,v 1.4 2002/09/18 08:58:34 christof Exp $
+// $Id: Bindung.hh,v 1.5 2002/10/24 14:06:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -36,35 +36,35 @@ public:
    const static ID standard_id=1;
    
 private:
-	string name;
+	std::string name;
 	ID id;
-	typedef map<ExtraFunc, string> Efs;
+	typedef std::map<ExtraFunc, std::string> Efs;
 	Efs ef;
-	friend ostream& operator<< (ostream&, const Bindung&);
+	friend std::ostream& operator<< (std::ostream&, const Bindung&);
 public:
 	Bindung ():id(standard_id) {}
 	Bindung (const ID i) throw(SQLerror);
-	Bindung (const string &s, const ID i) : name(s), id(i) {}
+	Bindung (const std::string &s, const ID i) : name(s), id(i) {}
 	bool operator== (const Bindung&) const;
 	bool operator!= (const Bindung&) const;
 	bool operator== (const ID i) const { return i == id; }
 	bool operator!= (const ID i) const { return i != id; }
 	bool operator== (const char *s) { return s == name; }
 	bool operator!= (const char *s) { return s != name; }
-	bool operator== (const string s) const { return s == name; }
-	bool operator!= (const string s) const { return s != name; }
-	string getName() const { return name; }
+	bool operator== (const std::string s) const { return s == name; }
+	bool operator!= (const std::string s) const { return s != name; }
+	std::string getName() const { return name; }
 	const char* getCName() const { return name.c_str(); }
 	ID getId() const { return id; }
-	const string extraFunctionData(const ExtraFunc efid) const 
+	const std::string extraFunctionData(const ExtraFunc efid) const 
 			{ return const_cast<Efs&>(ef)[efid]; }
 	bool haveExtraFunction(ExtraFunc ex) const;
 };
 
 class Bindungsliste {
-	vector<Bindung> liste;
+	std::vector<Bindung> liste;
 public:
-	typedef vector<Bindung>::const_iterator const_iterator;
+	typedef std::vector<Bindung>::const_iterator const_iterator;
 	typedef Bindung::ID ID;
 	Bindungsliste() : liste() {}
 	void Load();
@@ -73,7 +73,7 @@ public:
 	size_t size() const { return liste.size(); }
 	void add (const Bindung b) { liste.push_back (b); }
 	int getIdByName (const char*) const;
-	Bindung getByName (const string) const;
+	Bindung getByName (const std::string) const;
 	Bindung	getById (const ID) const;
 	void print_out() const;
 	bool empty() const { return liste.empty(); }

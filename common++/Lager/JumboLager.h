@@ -1,4 +1,4 @@
-/* $Id: JumboLager.h,v 1.3 2002/07/05 12:35:01 christof Exp $ */
+/* $Id: JumboLager.h,v 1.4 2002/10/24 14:06:50 thoma Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -58,7 +58,7 @@ class JumboLager : public Lager
             };
 */
 
-      void Jumbo_Log(const JumboRolle& jumbo,Jumbo_LogTyp typ,const string& user,const Zeitpunkt_new *zeit);
+      void Jumbo_Log(const JumboRolle& jumbo,Jumbo_LogTyp typ,const std::string& user,const Zeitpunkt_new *zeit);
 //      std::vector<st_wo_ist_wieviel> getPosition(ArtikelBase artikel);
 //      std::map<LagerPlatz,st_wo_ist_wieviel_rest>  getPositionSorted(ArtikelBase artikel);
 
@@ -80,8 +80,8 @@ class JumboLager : public Lager
 	JumboLager() : Lager(ppsInstanzID::None) {}      
 #endif
 
-      void Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jumbo_LogTyp typ,const string& user,const Zeitpunkt_new *zeit=0);
-      void Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,const string& user,const Zeitpunkt_new *zeit=0);
+      void Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jumbo_LogTyp typ,const std::string& user,const Zeitpunkt_new *zeit=0);
+      void Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,const std::string& user,const Zeitpunkt_new *zeit=0);
       //alle Codes für eine Lagerposition
 //      std::vector<int> Jumbo_Inhalt(const LagerPlatz position) const;
 //      std::list<JumboLager::st_menge_sortiert>  getMengeSorted(ArtikelBase artikel);

@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.21 2002/10/24 14:06:49 thoma Exp $
+// $Id: FetchIStream.pgcc,v 1.22 2002/10/24 14:07:07 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,6 +23,24 @@ exec sql include sqlca;
 #include <Misc/itos.h>
 #include <locale.h>
 
+namespace {
+	struct debug_environment
+	{  bool on;
+	   debug_environment();
+	};
+}
+
+debug_environment::debug_environment() : on(false)
+{  if (getenv("SQLOPT") && getenv("SQLOPT")==std::string("-E")) on=true;
+}
+
+static debug_environment debugging;
+
+void FetchIStream::mythrow(const SQLerror &e)
+{  if (debugging.on) std::cerr << e << '\n';
+   throw e;
+}
+
 #define DEBUG_FIS(x) std::cerr << x << '\n'
 // ,y...) x,##y
 
@@ -40,20 +58,21 @@ FetchIStream::FetchIStream(const std::string &descr, int line)
 
 FetchIStream &FetchIStream::operator>>(std::string &str)
 {  if (!result)
-	throw SQLerror("FetchIStream::operator>>",ECPG_UNKNOWN_DESCRIPTOR,"no result to fetch from (left?)");
+	mythrow(SQLerror("FetchIStream::operator>>",ECPG_UNKNOWN_DESCRIPTOR,"no result to fetch from (left?)"));
    if (naechstesFeld>=PQnfields(result)) 
-	throw SQLerror("FetchIStream::operator>>",ECPG_INVALID_DESCRIPTOR_INDEX,"reading beyond line end");
+	mythrow(SQLerror("FetchIStream::operator>>",ECPG_INVALID_DESCRIPTOR_INDEX,"reading beyond line end"));
    const char *pval = PQgetvalue(result, zeile, naechstesFeld);
    if (pval) str=pval;
    else str="";
-//   DEBUG_FIS("PQgetvalue(,"<<zeile<<','<<naechstesFeld<<")="<<str);
+   if (debugging.on) 
+      std::cerr << "FIS result["<<zeile<<','<<naechstesFeld<<"]="<<str << '\n';
    naechstesFeld++;
    return *this;
 }
 
 int FetchIStream::getIndicator() const
 {  if (naechstesFeld>=PQnfields(result)) 
-	throw SQLerror("FetchIStream::getIndicator",ECPG_INVALID_DESCRIPTOR_INDEX,"reading beyond line end");
+	mythrow(SQLerror("FetchIStream::getIndicator",ECPG_INVALID_DESCRIPTOR_INDEX,"reading beyond line end"));
    return -PQgetisnull(result, zeile, naechstesFeld);
 }
 

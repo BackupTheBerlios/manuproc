@@ -1,4 +1,4 @@
-/* $Id: EntryValueEmptyInt.h,v 1.8 2002/09/02 13:04:03 christof Exp $ */
+/* $Id: EntryValueEmptyInt.h,v 1.9 2002/10/24 14:06:49 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,15 +26,19 @@
 class EntryValueEmptyInt : public EntryValueBase
 {
  int intval;
+ double dval;
  std::string strval;
  
 public:
 
- EntryValueEmptyInt() : intval(int_NaN) {}
- EntryValueEmptyInt(int v):intval(v)
+ EntryValueEmptyInt() : intval(int_NaN), dval(double_NaN) {}
+ EntryValueEmptyInt(int v):intval(v), dval(double_NaN)
      { if (v!=0) strval=itos(v); else strval=""; }
+ EntryValueEmptyInt(double v):intval(int_NaN), dval(v)
+     { if (v!=0) strval=dtos(v); else strval=""; }
    
  virtual int getIntVal() const { return intval;}
+ virtual double getDoubleVal() const { return dval;}
  virtual const std::string getStrVal() const { return strval;}
 };
 

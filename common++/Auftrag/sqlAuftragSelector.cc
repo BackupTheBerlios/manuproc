@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.19 2002/10/04 13:57:48 thoma Exp $
+// $Id: sqlAuftragSelector.cc,v 1.20 2002/10/24 14:06:49 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -36,7 +36,7 @@
 	"coalesce(e.preismenge,1), a.waehrung, " \
 	"e.status,coalesce(e.lastedit_uid,0),e.lasteditdate," \
 	"coalesce(text(e.letzte_lieferung),'')," \
-	"coalesce(e.preisliste,"+itos(ManuProcEntity::none_id)+") "
+	"coalesce(e.preisliste,"+itos(ManuProcEntity<>::none_id)+") "
 
 #define FULL_FROM "(auftrag a join auftragentry e using (instanz,auftragid))" \
 	" left join auftrag_prozess p" \
@@ -171,11 +171,8 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel_Planung_id &sel
    }
   else if(selstr.status==CLOSED)
    {
-//    if(selstr.auftragid!=AuftragBase::handplan_auftrag_id)
-//     {
        clau+=" and a.auftragid="+itos(selstr.auftragid) + 
 	          " order by e.lieferdate desc";
-//     }
   }
 //cout << "CLAUSEL:"<<clau<<"\n\n";
  setClausel(clau);

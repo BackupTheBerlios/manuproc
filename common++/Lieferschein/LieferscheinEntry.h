@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.15 2002/10/09 14:48:07 thoma Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.16 2002/10/24 14:06:50 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,6 +27,7 @@
 #include"LieferscheinBase.h"
 #include <Aux/fixedpoint.h>
 #include <BaseObjects/ManuProcEintrag.h>
+
 
 class LieferscheinEntryBase : public LieferscheinBase
 {
@@ -57,9 +58,15 @@ class LieferscheinEntry : public LieferscheinEntryBase
  int palette;
  std::string yourauftrag;
  bool zusatzinfo;
+public:
+ struct st_zusatz{AufEintragBase aeb;AuftragBase::mengen_t menge;
+        st_zusatz() {};
+        st_zusatz(AufEintragBase a,AuftragBase::mengen_t m) : aeb(a),menge(m){}
+        };
+private:
+ std::vector<st_zusatz> VZusatz;
 
    void updateLieferscheinMenge(int stueck,mengen_t menge)  throw(SQLerror);
-//   bool menge_bei_zusatzinfos_abschreiben(std::vector<LieferscheinEntry>& VLE,mengen_t menge);
    void menge_bei_zusatzinfos_abschreiben(std::vector<LieferscheinEntry>& VLE,int stueck,mengen_t menge);
    mengen_t Abschreibmenge(int stueck,mengen_t menge) const;
 
@@ -69,6 +76,8 @@ public:
  // laedt aus Datenbank
  	LieferscheinEntry(const LieferscheinEntryBase &lsbase) throw(SQLerror);
 // erzeugen entsprechende Zeilen in der Datenbank 	
+private:
+  friend class Lieferschein;
  	LieferscheinEntry(const LieferscheinBase &lsb,	
  			const AufEintragBase &auf,
  			const ArtikelBase &art, int anzahl, mengen_t menge,
@@ -76,7 +85,9 @@ public:
  	LieferscheinEntry(const LieferscheinBase &lsb,	
  			const ArtikelBase &art, int anzahl, mengen_t menge,
  			int _palette=0,bool zusatzinfo=false) throw(SQLerror);
+public:
 // Konstruktor mit Datenbankdaten 			
+/*
         LieferscheinEntry(const cH_ppsInstanz& _instanz,int l,int z,int a, int s,mengen_t m,int p,
         		const std::string &y,bool zi,const AufEintragBase &aeb)
                 : LieferscheinEntryBase(LieferscheinBase(_instanz,l),z),
@@ -84,6 +95,7 @@ public:
                 	stueck(s),menge(m),palette(p),yourauftrag(y),
                 	zusatzinfo(zi) 
                 {};
+*/
  bool Valid() const;
  mengen_t Menge() const { return menge; }
  int Anzahl() const { return stueck; }
@@ -96,10 +108,15 @@ public:
  int AufZeile() const { return refauftrag.ZNr();} 
  AufEintragBase getAufEintragBase() const {return AufEintragBase(RefAuftrag(),AufZeile());}
  bool ZusatzInfo() const { return zusatzinfo; }
+ std::vector<st_zusatz> getZusatzInfos() const {return VZusatz;}
+ 
 
  void setPalette(int p) throw(SQLerror);
  bool changeMenge(int stueck,mengen_t menge) throw(SQLerror);
  static void deleteEntry(const LieferscheinEntry &lse) throw(SQLerror);
+ friend FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry &aeb);
 };
+
+//FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry &aeb);
 
 #endif

@@ -1,4 +1,4 @@
-/* $Id: EntryValueDatum.h,v 1.7 2002/06/27 07:42:50 christof Exp $ */
+/* $Id: EntryValueDatum.h,v 1.8 2002/10/24 14:06:49 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -45,6 +45,33 @@ public:
  cH_EntryValueDatum(const ManuProC::Datum &v) 
  : cH_EntryValue(new EntryValueDatum(v)) {}
 };
+
+
+/////////////////////////////////////////////////////////////////////
+
+class EntryValueMonat : public EntryValueBase
+{
+ ManuProC::Datum datum;
+
+public:
+ EntryValueMonat(const ManuProC::Datum &v) 
+ : datum(v) {}
+   
+ virtual bool operator==(const EntryValueBase &v) const;
+ virtual bool operator<(const EntryValueBase &v) const;
+ const ManuProC::Datum &Datum() const { return datum; }
+ virtual int getIntVal() const { return int_NaN;}
+ virtual const std::string getStrVal() const;
+};
+
+class cH_EntryValueMonat : public cH_EntryValue
+{
+public:
+ cH_EntryValueMonat(const ManuProC::Datum &v) 
+ : cH_EntryValue(new EntryValueMonat(v)) {}
+};
+
+/////////////////////////////////////////////////////////////////////
 
 class EntryValueKalenderwoche : public EntryValueBase
 {

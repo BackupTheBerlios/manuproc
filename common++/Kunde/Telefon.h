@@ -1,4 +1,4 @@
-// $Id: Telefon.h,v 1.13 2002/06/20 06:29:53 christof Exp $
+// $Id: Telefon.h,v 1.14 2002/10/24 14:06:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -29,7 +29,7 @@
 
 class cH_Telefon;
 
-class Telefon : public ManuProcEntity
+class Telefon : public ManuProcEntity<>
 {
 public:
  const static int Landeskennzahl=49;
@@ -106,7 +106,7 @@ public:
  				 person!=none_id); 
  			}
 // std::string PrivatStr() const {if (isPrivat()) return "*";else return "";}
- static vector<pair<std::string,TelArt> > getTelArtVec();
+ static std::vector<std::pair<std::string,TelArt> > getTelArtVec();
 
  bool operator==(const Telefon& b) const {return Id()==b.Id();}
 };
@@ -117,7 +117,7 @@ class cH_Telefon : public Handle<const Telefon>
   cH_Telefon() {}
 public:
     cH_Telefon(const Telefon *p) : Handle<const Telefon>(p) {}	
-    cH_Telefon(const ManuProcEntity::ID _telid);
+    cH_Telefon(const Telefon::ID _telid);
     cH_Telefon(const TelArt &ta,
  		const Telefon::ID kid, const Telefon::ID pid,
  		int _land, int _vorw, int _nummer, int _druchw,

@@ -186,7 +186,7 @@ static int gen_code(unsigned *codep)
 
 // erzeugt einen ganzen Satz von Etiketten
 vector<JumboRolle> JumboRolle::create(const KettplanKette &k,bool rest)
-{  vector<JumboRolle> res;
+{  std::vector<JumboRolle> res;
    exec sql begin declare section;
    char datum[20];
    int maschine=k.Maschine();

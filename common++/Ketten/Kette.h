@@ -1,4 +1,4 @@
-/* $Id: Kette.h,v 1.8 2002/09/02 13:04:03 christof Exp $ */
+/* $Id: Kette.h,v 1.9 2002/10/24 14:06:50 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,7 +30,7 @@ class Kette {
 	int maschine;
 	ManuProC::Datum schaerdatum;
 public:
-	class illegal_format : exception
+	class illegal_format : std::exception
 	{public:
 		virtual const char* what() const throw() { return "Kette::illegal_format"; }
 	};

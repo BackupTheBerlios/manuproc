@@ -1,4 +1,4 @@
-// $Id: Faden.hh,v 1.4 2002/09/18 08:58:34 christof Exp $
+// $Id: Faden.hh,v 1.5 2002/10/24 14:06:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -34,7 +34,7 @@ class Faden {
         unsigned int anzahl;
         ArtikelBase::ID material;
         Bindung bindung;
-	friend ostream& operator<< (ostream&, const Faden&);
+	friend std::ostream& operator<< (std::ostream&, const Faden&);
 public:
 	Faden (unsigned int, ArtikelBase::ID, Bindung=Bindung());
 	bool operator== (const Faden&) const;

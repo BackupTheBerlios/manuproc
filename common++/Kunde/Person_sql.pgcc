@@ -1,4 +1,4 @@
-// $Id: Person_sql.pgcc,v 1.15 2002/09/26 14:50:47 thoma Exp $
+// $Id: Person_sql.pgcc,v 1.16 2002/10/24 14:06:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,7 +26,7 @@
 
 
 Person::Person(ID _id) throw(SQLerror) 
-: ManuProcEntity(_id),anrede(1)
+: ManuProcEntity<>(_id),anrede(1)
 {  
   exec sql begin declare section;
    int ID=_id;
@@ -110,7 +110,8 @@ void Person::update() throw(SQLerror)
 */
 
 enum Person::B_UPDATE_BITS &operator++(enum Person::B_UPDATE_BITS &s)
-{  return (enum Person::B_UPDATE_BITS)(++(int&)s);
+{  ++(int&)s;
+   return s;
 }
 
 void Person::update_e(UpdateBits e) throw(SQLerror)
@@ -151,21 +152,21 @@ void Person::delPerson(const ID pid) throw(SQLerror)
 }
 
 /*
-const vector<cH_Telefon> Person::getTelefon(cH_Kunde k) const
+const std::vector<cH_Telefon> Person::getTelefon(cH_Kunde k) const
 {
  exec sql begin declare section;
    int TELID;
    char *QS;
  exec sql end declare section;
- string QUERY;
+ std::string QUERY;
 
  Transaction tr;
  
  
  if(k->Id() == Kunde::none_id)
-   QUERY = string("SELECT telid FROM ku_telefon WHERE persnr=")+itos(Id());
+   QUERY = std::string("SELECT telid FROM ku_telefon WHERE persnr=")+itos(Id());
  else
-   QUERY = string("SELECT telid FROM ku_telefon WHERE persnr=")+itos(Id())+
+   QUERY = std::string("SELECT telid FROM ku_telefon WHERE persnr=")+itos(Id())+
 	"and kundennr= "+itos(k->Id());
 
  QS=(char*)QUERY.c_str();
@@ -176,7 +177,7 @@ const vector<cH_Telefon> Person::getTelefon(cH_Kunde k) const
  exec sql open telein_pers;
  SQLerror::test(__FILELINE__);
 
- list<cH_Telefon> T;
+ std::list<cH_Telefon> T;
  while(true)
       {
          exec sql fetch telein_pers into :TELID;

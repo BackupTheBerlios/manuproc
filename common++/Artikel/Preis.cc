@@ -1,4 +1,4 @@
-// $Id: Preis.cc,v 1.12 2002/06/20 06:29:52 christof Exp $
+// $Id: Preis.cc,v 1.13 2002/10/24 14:06:49 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,8 +24,9 @@
 #include <Aux/itos.h>
 #include <iomanip.h>
 #include <Aux/Ausgabe_neu.h>
+#include <utility>
 
-Preis::geldbetrag_t Preis::Wert_fr(cP_Waehrung w,preismenge_t stueckgr) const throw()
+Preis::geldbetrag_t Preis::Wert_fr(const cP_Waehrung w,preismenge_t stueckgr) const throw()
 {  if (w==waehrung && (!stueckgr || stueckgr==preismenge)) 
 	return pfennig_cent;
 
@@ -71,7 +72,7 @@ const std::string Preis::Typtext() const
 {  return waehrung->Kurzbezeichnung() + '/'+ Formatiere_short(preismenge);
 }
 
-Preis::geldbetrag_t Preis::Gesamtpreis(cP_Waehrung w,int anzahl,float menge,const rabatt_t &rabatt) const
+Preis::geldbetrag_t Preis::Gesamtpreis(const cP_Waehrung w,int anzahl,float menge,const rabatt_t &rabatt) const
 {  if (!*this) return 0;
    if (!menge) menge=1;
    Preis result=*this;

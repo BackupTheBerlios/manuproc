@@ -1,4 +1,4 @@
-// $Id: Changejournal.h,v 1.10 2002/09/23 09:28:01 thoma Exp $
+// $Id: Changejournal.h,v 1.11 2002/10/24 14:06:49 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -72,7 +72,7 @@ public:
  		
  pps_ChJournalEntry(cH_ppsInstanz instid, CID change) throw(SQLerror);
  pps_ChJournalEntry() : 
-   pps_ChJournalEntryBase(ppsInstanzID::None,ManuProcEntity::none_id),
+   pps_ChJournalEntryBase(ppsInstanzID::None,ManuProcEntity<>::none_id),
    status(NONE),newval(0),delta(0),type(CH_NONE) {}
 
 };

@@ -1,4 +1,4 @@
-/* $Id: EntryValueBase.h,v 1.12 2002/09/02 13:04:03 christof Exp $ */
+/* $Id: EntryValueBase.h,v 1.13 2002/10/24 14:06:49 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,11 +27,14 @@ class EntryValueBase : public HandleContent
 {
 public:
  static const int int_NaN=-1;
+ static const double double_NaN=-1;
  virtual operator const std::string() const { return getStrVal(); }
  virtual operator int() const { return getIntVal(); }
+ virtual operator double() const { return getDoubleVal(); }
  virtual operator bool() const;
  
  virtual int getIntVal() const { return 0; }
+ virtual double getDoubleVal() const { return double_NaN; }
  virtual bool getBoolVal() const { return false; }
  virtual const std::string getStrVal() const { return ""; }
  virtual bool operator==(const EntryValueBase &v) const;

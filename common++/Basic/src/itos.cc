@@ -1,4 +1,4 @@
-// $Id: itos.cc,v 1.11 2002/09/02 13:04:03 christof Exp $
+// $Id: itos.cc,v 1.12 2002/10/24 14:06:49 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -50,7 +50,7 @@ std::string dtos(double i)
 
  char buffer[100];
 // snprintf(buffer,sizeof buffer,"%lf",i);
- ostrstream o(buffer,sizeof buffer);
+ std::ostrstream o(buffer,sizeof buffer);
  o << i << char(0);
  o.flush();
 

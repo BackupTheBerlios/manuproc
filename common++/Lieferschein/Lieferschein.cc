@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.15 2002/10/09 14:48:07 thoma Exp $ */
+/* $Id: Lieferschein.cc,v 1.16 2002/10/24 14:06:50 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,7 +25,7 @@
 //#include <Instanzen/Produziert.h>
 #include <Instanzen/ppsInstanzProduziert.h>
 #include <unistd.h> 
-
+#include <Aux/Trace.h>
 
 Lieferschein::Lieferschein(const LieferscheinBase &lsbase, const ManuProC::Datum &_lsdatum,
 int _kdnr,int _rngid, int _paeckchen, int _pakete, const ManuProC::Datum &_geliefertam,
@@ -39,9 +39,16 @@ int _dpdlnr)
 
 void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl, 
 		mengen_t mengeneinheit, int palette)
-{  Transaction tr;
-   SQLFullAuftragSelector psel(SQLFullAuftragSelector::sel_Kunde_Artikel
-   			(instanz->Id(),getKunde()->Id(),artikel.Id()));
+{  
+   // Eine Instanz, die Lieferscheine schreibt, produziert auch selber (assert in ppsInstanz).
+   // Wenn man einn Lieferschein schriebe, ohne daß diese Instanz 
+   // selber produzierte, würde doppelt produziert werden.
+   assert(Instanz()->Lieferschein());
+   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Artikel="+cH_ArtikelBezeichnung(artikel)->Bezeichnung(),
+           "Anzahl="+itos(anzahl),"Menge="+dtos(mengeneinheit),"Palette="+itos(palette));                     
+   Transaction tr;
+   SQLFullAuftragSelector psel(SQLFullAuftragSelector::sel_Artikel_Planung_id
+   			(instanz->Id(),getKunde()->Id(),artikel.Id(),AuftragBase::handplan_auftrag_id));
    SelectedFullAufList auftraglist(psel);
 
    AuftragBase::mengen_t menge(anzahl);
@@ -53,18 +60,21 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
      // kann nicht abschreiben
    {  LieferscheinEntry(*this, artikel, anzahl,
                            mengeneinheit,palette,false);
+      if(Instanz()!=ppsInstanzID::Kundenauftraege)
+       {
+         ManuProC::st_produziert p(artikel,menge,getuid(),getKunde()->Id(),Id());
+         Instanz()->Produziert(p);
+       }
    }
    else if (menge<=auftraglist.aufidliste.begin()->getRestStk())
      // kann in einem Stueck abschreiben
    {  SelectedFullAufList::iterator i=auftraglist.aufidliste.begin();
       LieferscheinEntry(*this, *i,artikel, anzahl,mengeneinheit,palette,false);
 
-      i->Produziert(menge,Id());
-//      ManuProC::st_produziert sp(kunde->Id(),*i,menge,getuid(),Id());
-//      Instanz()->Produziert(sp);
+//cout <<"Lieferscheinauftrag: "<< *i<< ' '<<i->getRestStk()
+//<<'\t'<<menge<<' '<<anzahl<<' '<<mengeneinheit<<'\n';
 
-//      Produziert(kunde->Id(),*i,menge,getuid(),Id()).NichtSelbst();      
-//      i->abschreiben(menge,Id());
+      i->Produziert(menge,Id());
    }
    else
    // stueckeln (1*Lieferung, dann Zuordnung)
@@ -82,11 +92,6 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
            LieferscheinEntry(*this,*i,artikel,lstueck,lmenge,0,true);
 
            i->Produziert(abmenge,Id());
-
-//           ManuProC::st_produziert sp(kunde->Id(),*i,abmenge,getuid(),Id());
-//           Instanz()->Produziert(sp);
-//	   Produziert(kunde->Id(),*i,abmenge,getuid(),Id()).NichtSelbst();           
-//           i->abschreiben(abmenge,Id());
 
            menge-=abmenge;
     	   }
@@ -106,17 +111,20 @@ void Lieferschein::push_back(AufEintrag &aufeintrag,
 		const ArtikelBase &artikel, int anzahl, 
 		mengen_t menge, int palette)
 {
+   // Eine Instanz, die Lieferscheine schreibt, produziert auch selber (assert in ppsInstanz).
+   // Wenn man einn Lieferschein schriebe, ohne daß diese Instanz 
+   // selber produzierte, würde doppelt produziert werden.
+   assert(Instanz()->Lieferschein());
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"AufEintrag="+aufeintrag.str(),
+           "Artikel="+cH_ArtikelBezeichnung(artikel)->Bezeichnung(),
+           "Anzahl="+itos(anzahl),"Menge="+dtos(menge),"Palette="+itos(palette));                     
  LieferscheinEntry(*this, aufeintrag ,artikel, anzahl,menge,palette);
 
  mengen_t mng;
  if(!menge) mng = anzahl;
  else mng= anzahl*menge;
  
-#ifdef MABELLA_EXTENSIONS
- aufeintrag.abschreiben(mng,Id());
-#else       
-   aufeintrag.Produziert(mng,Id());
-#endif
+ aufeintrag.Produziert(mng,Id());
 }
 
 void Lieferschein::aufraumen() throw(SQLerror)

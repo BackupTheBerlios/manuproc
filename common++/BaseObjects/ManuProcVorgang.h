@@ -1,4 +1,4 @@
-/* $Id: ManuProcVorgang.h,v 1.4 2002/09/02 13:04:03 christof Exp $ */
+/* $Id: ManuProcVorgang.h,v 1.5 2002/10/24 14:06:49 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -24,7 +24,7 @@
 
 #include <BaseObjects/ManuProcEntity.h>
 
-class ManuProcVorgang : public ManuProcEntity
+class ManuProcVorgang : public ManuProcEntity<>
 {
 private:
  ID instanzid;

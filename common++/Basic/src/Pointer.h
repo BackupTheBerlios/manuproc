@@ -1,4 +1,4 @@
-// $Id: Pointer.h,v 1.4 2002/05/09 12:46:00 christof Exp $
+// $Id: Pointer.h,v 1.5 2002/10/24 14:06:49 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -37,6 +37,9 @@ public:
 	// BEWARE: might not act like expected, it compares content not address
 	bool operator==(const _this_t &s) const
 	{  return (*_data)==(*s);
+	}
+	bool operator!=(const _this_t &s) const
+	{  return (*_data)!=(*s);
 	}
 
 	T *operator->() const

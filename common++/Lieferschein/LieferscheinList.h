@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList.h,v 1.12 2002/10/04 08:23:21 thoma Exp $ */
+/* $Id: LieferscheinList.h,v 1.13 2002/10/24 14:06:50 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,6 +21,7 @@
 #include"Lieferschein.h"
 #include<Aux/SQLerror.h>
 #include<vector>
+#include<map>
 
 #ifndef LIEFERLIST
 #define LIEFERLIST
@@ -29,14 +30,18 @@
 class LieferscheinList
 {
  std::vector<cH_Lieferschein> sellist;
+ std::map<LieferscheinBase::ID, std::vector<LieferscheinEntryBase> > liefzeilen;
+ 
  cH_ppsInstanz instanz;
  ManuProC::Datum vom;
  ManuProC::Datum bis;
- ManuProcEntity::ID kundenid;
+ ManuProcEntity<>::ID kundenid;
  ArtikelBase::ID artikelid;
  bool zusatzinfo;
  ArtikelTyp::ID arttyp;
-
+ bool first_komponent;
+ bool hole_entries; 	// ob der join mit lieferscheinentry gewünscht
+ 			// und liefzeilen gefüllt werden sollen
 
 public:
  typedef std::vector<cH_Lieferschein>::const_iterator const_iterator;
@@ -44,7 +49,12 @@ public:
    {return sellist.begin();}
  const_iterator end()
    {return sellist.end();}
-
+   
+ std::vector<LieferscheinEntryBase>::const_iterator begin(const LieferscheinBase::ID lid)
+   {return liefzeilen[lid].begin();}
+   
+ std::vector<LieferscheinEntryBase>::const_iterator end(const LieferscheinBase::ID lid)
+   {return liefzeilen[lid].end();}   
 
  struct sel_KundenId 
  { unsigned long int id;
@@ -61,13 +71,15 @@ public:
 
  LieferscheinList();
  void build_list(); 
- void setForKunde(const ManuProcEntity::ID kid) { kundenid=kid; }
+ void setForKunde(const ManuProcEntity<>::ID kid) { kundenid=kid; }
  void setForArtikel(const ArtikelBase::ID aid) { artikelid=aid; }
+ void setFirstKompOnly(bool fk) { first_komponent=fk; }
  void setFromDate(const ManuProC::Datum _vom) { vom=_vom;}
  void setToDate(const ManuProC::Datum _bis) { bis=_bis;}
  void setForInstanz(cH_ppsInstanz inst) { instanz=inst;}
  void setWithZusatzinfo(bool zi) { zusatzinfo=zi;}
  void setForArtikeltyp(const ArtikelTyp::ID atid) { arttyp=atid;}
+ void setHoleEntries(bool he) { hole_entries=he; }
  void reset(); 
 
 #ifdef DPD_LIEFERSCHEINE

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinVoll.cc,v 1.9 2002/10/09 14:48:07 thoma Exp $ */
+/* $Id: LieferscheinVoll.cc,v 1.10 2002/10/24 14:06:50 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -38,38 +38,18 @@ void LieferscheinVoll::deleteRow(const LieferscheinEntry &le)
 LieferscheinVoll::LieferscheinVoll(const cH_ppsInstanz& _instanz,int lid,bool auforder) throw(SQLerror)
 : Lieferschein(_instanz,lid)
 {
+
  std::string qstr =
   "select ly.artikelid, ly.zeile, coalesce(ly.stueck,0), "
   " coalesce(ly.menge,0), coalesce(ly.palette,0), coalesce(youraufnr,''),"
-  "coalesce(ly.zusatzinfo,'f'), coalesce(ly.refauftragid,"+itos(ManuProcEntity::none_id)+"),"
+  "coalesce(ly.zusatzinfo,'f'), ly.instanz, coalesce(ly.refauftragid,"+itos(ManuProcEntity<>::none_id)+"),"
   " coalesce(ly.refzeilennr,"+itos(ManuProcEintrag::none_znr)+")"
   " from lieferscheinentry ly "
   " left join auftrag a on (ly.refauftragid,ly.instanz) = (a.auftragid,a.instanz)"
   " where (ly.instanz,ly.lfrsid) = ("+itos(Instanz()->Id())+","+itos(Id())+") order by "+
   (auforder ? "ly.refauftragid,ly.zeile":"ly.zeile");
-  
- int artikelid,stueck,palette,zeile;
- int refauftrag,refaufzeile;
- std::string yourauftrag;
- float menge;
- bool zusatzinfo;
-  
- Transaction tr;
- 
- Query query(qstr);
- FetchIStream is;
 
- while((query>>is).good())
-   {is >> artikelid >> zeile >> stueck >> menge >> palette 
-   	>> yourauftrag >> zusatzinfo >> refauftrag >> refaufzeile;
-   
-    lsentry.push_back(LieferscheinEntry(Instanz(),Id(),zeile,artikelid,
-		stueck,menge,palette,yourauftrag,zusatzinfo,
-		AufEintragBase(Instanz(),refauftrag,refaufzeile)));
-   }
- SQLerror::test("LieferscheinVoll::LieferscheinVoll",100);
-
- tr.close();
+  Query(qstr).FetchArray(lsentry);
 }
 
 

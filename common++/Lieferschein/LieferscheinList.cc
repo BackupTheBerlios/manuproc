@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList.cc,v 1.8 2002/09/26 14:50:47 thoma Exp $ */
+/* $Id: LieferscheinList.cc,v 1.9 2002/10/24 14:06:50 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -31,10 +31,11 @@ std::ostream &operator<<(std::ostream &o,const LieferscheinList &l)
 void LieferscheinList::reset()
 {
  sellist.erase(sellist.begin(),sellist.end());
+ liefzeilen.erase(liefzeilen.begin(),liefzeilen.end());
  instanz=ppsInstanz::default_id;
  vom=ManuProC::Datum(1,1,1970);
  bis=ManuProC::Datum::today();
- kundenid=ManuProcEntity::none_id;
+ kundenid=ManuProcEntity<>::none_id;
  artikelid=ArtikelBase::none_id;
  zusatzinfo=false;
 }

@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.13 2002/09/26 14:50:47 thoma Exp $ */
+/* $Id: Datum.h,v 1.14 2002/10/24 14:06:49 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -49,11 +49,19 @@ public:
 
 std::ostream &operator<<(std::ostream&,const ManuProC::Datumsfehler&);
 
+
+
 class ManuProC::Datum
-{	int tag;  	/* tt */ 
-	int monat;	/* mm */
-	int jahr;     /* jjjj */
-	
+{	mutable unsigned int woche:6;	/* KW */
+	mutable int woche_jahrdiff:2;   /* Diff. des Jahres in KW zum Jahr im Datum */
+	mutable unsigned int quart:3;	/* Quartal */
+	unsigned int tag:5;  	/* tt */ 
+	unsigned int monat:4;	/* mm */
+	unsigned int jahr:11;     /* jjjj */
+
+
+ static char* monate[];
+ 	
 public:
 	class Formatfehler : public std::exception 
 	{public:
@@ -61,18 +69,19 @@ public:
 	};
 	
 	/// aus Tag, Monat, Jahr erzeugen
-	Datum(int t, int m, int j) throw(Datumsfehler)
-	{	tag = t;
-		monat = m;
-		jahr = j;
+	Datum(int t, int m, int j) throw(Datumsfehler) : 
+	woche(0),woche_jahrdiff(0),quart(0),tag(t),monat(m),jahr(j) 
+	{
 		teste();
 	}
-	Datum() throw() /* initialize as invalid */
-	{       tag=monat=jahr=0;
-	}
+	
+	Datum() throw() : woche(0),woche_jahrdiff(0),quart(0),
+	tag(0),monat(0),jahr(0)
+	{} /* initialize as invalid */
 	 
 	/** Datum aus const char * erzeugen, Format erraten */
-	Datum(const char *datum) throw(Datumsfehler)
+	Datum(const char *datum) throw(Datumsfehler) :
+	woche(0),woche_jahrdiff(0),quart(0)
 	{  this->from_auto(datum);  }
 	/// Datum aus time_t (time(3)) erzeugen
 	explicit Datum(time_t t) throw();
@@ -130,12 +139,12 @@ public:
 	    bis zu einer bestimmten Länge */
 	static unsigned long getnum(const unsigned char *s,int len) throw();
 
-	int Tage_in_Monat() const throw()
+	unsigned int Tage_in_Monat() const throw()
 	{  return Tage_in_Monat(monat,jahr); }
         /// Wieviel Tage hat der Monat
-	static int Tage_in_Monat(int monat,int jahr) throw()
+	static unsigned int Tage_in_Monat(int monat,int jahr) throw()
 	{  if (monat==2) return Schaltjahr(jahr)?29:28;
-	   return 31-((monat+1+monat/8)&1);
+	   return (unsigned int) 31-((monat+1+monat/8)&1);
 	}
 	/// Ist dies ein Schaltjahr (1900<jahr<2099)
 	static bool Schaltjahr(int jahr) throw()
@@ -160,16 +169,18 @@ public:
 	int Tag() const { return tag; }
 	int Monat() const { return monat; }
 	int Jahr() const { return jahr; }
-	int Quartal() const { if(monat<4) return 1;
-			      if(monat<7) return 2;
-			      if(monat<10) return 3;
-			      return 4;		
+	int Quartal() const { if(quart) return quart;
+				quart=((monat-1)/3)+1;
+			      return quart;
 			 }
+	std::string MonatName() const { return monate[monat-1];}
 	
 	friend std::ostream &operator<<(std::ostream&,const Datum&) throw();
 	
 	bool valid() const throw();
+	
 };
+
 
 std::ostream &operator<<(std::ostream&,const ManuProC::Datum&) throw();
 

@@ -1,4 +1,4 @@
-/* $Id: ArtikelBase.h,v 1.7 2002/09/02 13:04:03 christof Exp $ */
+/* $Id: ArtikelBase.h,v 1.8 2002/10/24 14:06:49 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,6 +22,7 @@
 
 #include<string>
 #include"Aux/SQLerror.h"
+#include <Aux/FetchIStream.h>
 
 class ArtikelBase
 {
@@ -46,5 +47,7 @@ public:
  bool operator==(const ArtikelBase &b) const { return artikelid==b.artikelid; }
  bool operator<(const ArtikelBase &b) const { return artikelid<b.artikelid; }
 };
+
+FetchIStream& operator>>(FetchIStream& is,ArtikelBase &a);
 
 #endif

@@ -1,4 +1,4 @@
-/* $Id: Datenfehler.h,v 1.4 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: Datenfehler.h,v 1.5 2002/10/24 14:06:49 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,11 +20,12 @@
 #include <string>
 #include <exception>
 
-class Datenfehler : public exception
+class Datenfehler : public std::exception
 {	std::string name;
    public:
    	Datenfehler() throw();
    	Datenfehler(const std::string &) throw();
+   	~Datenfehler() throw() {}
    	std::string toString() const throw();
    	virtual const char* what() const throw() { return "Datenfehler"; }
 };

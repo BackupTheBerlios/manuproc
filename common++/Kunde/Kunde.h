@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.28 2002/10/09 14:48:07 thoma Exp $
+// $Id: Kunde.h,v 1.29 2002/10/24 14:06:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,17 +33,18 @@
 #include <Kunde/Person.h>
 #include <BaseObjects/ManuProcEntity.h>
 #include <DynamicEnums/DefaultValues.h>
+#include <utility> // for pair
 
 class cH_Kunde;
 class H_Kunde;
 class cH_Telefon;
 #include <Kunde/Zahlungsart.h>
 
-class Kunde : public ManuProcEntity
+class Kunde : public ManuProcEntity<>
 {
 
 public:
-	
+
  struct st_adresse
   {std::string firma;
    std::string sortname;
@@ -132,7 +133,7 @@ private:
 	cP_Waehrung waehrung;
    // ...
 
-    mutable list<pair<int,PreisListe::ID> >preislisten; 
+    mutable std::list<std::pair<int,PreisListe::ID> >preislisten; 
     mutable bool prlist_valid:1;
 
    bool lieferung_frei_haus;
@@ -142,10 +143,10 @@ public:
 	static const cH_Kunde newKunde(const Kunde::ID kid, const std::string &firma) throw(SQLerror);
         const std::string LaTeX_von() const;
         const std::string LaTeX_von_gross(const ID kid,
-        			const string width="7cm") const;
+        			const std::string width="7cm") const;
         const std::string LaTeX_an(bool liefer,TelArt telart=TEL_NONE,
-        			const string width="8cm",
-        			const string telwidth="5cm") const;
+        			const std::string width="8cm",
+        			const std::string telwidth="5cm") const;
         
         const bool get_lieferung_frei_haus() const {return lieferung_frei_haus;}
         const std::string getBank() const { return bankverb.getBankverb(); }
@@ -181,7 +182,7 @@ public:
         const int anzahl_ausdruck_weissespapier() const {return kundendaten.anzahl_ausdruck_weissespapier;}
         const PreisListe::ID preisliste() const;
         // ja das & ist von mir CP
-        const std::list<pair<int,PreisListe::ID> > &Preislisten() const;
+        const std::list<std::pair<int,PreisListe::ID> > &Preislisten() const;
         void push_backPreisListe(const PreisListe::ID p) throw(SQLerror);
         void deletePreisListe(const PreisListe::ID p) throw(SQLerror);
         const std::string verein() const { return kundendaten.verein; }
@@ -292,7 +293,7 @@ public:
 
         const Verkaeufer &getVerkaeufer() const throw(SQLerror);
         void setVerkNr(int v) {verkaeufer.verknr = v;}
-        ManuProcEntity::ID VerkNr() const { return verkaeufer.verknr; }
+        ID VerkNr() const { return verkaeufer.verknr; }
         const std::string VerkName() const { return verkaeufer.name; }
         
 
@@ -352,6 +353,11 @@ public:
                 {return Id()==b.Id();} 
         bool operator<(const Kunde& b) const
                 {return Id()<b.Id();} 
+
+friend enum Kunde::B_UPDATE_BITS_ADRESSE &operator++(enum Kunde::B_UPDATE_BITS_ADRESSE &s);
+friend enum Kunde::B_UPDATE_BITS_FIRMA &operator++(enum Kunde::B_UPDATE_BITS_FIRMA &s);
+friend enum Kunde::B_UPDATE_BITS_BANK &operator++(enum Kunde::B_UPDATE_BITS_BANK &s);
+friend enum Kunde::B_UPDATE_BITS_SONST &operator++(enum Kunde::B_UPDATE_BITS_SONST &s);
 };
 
 class cH_Kunde : public Handle<const Kunde>
@@ -359,7 +365,11 @@ class cH_Kunde : public Handle<const Kunde>
         typedef CacheStatic<Kunde::ID,cH_Kunde> cache_t;
         static cache_t cache;
         cH_Kunde(const Kunde *p) : Handle<const Kunde>(p) {}	
+#if __GNUC__ > 2
+        friend class cache_t::stl_type;
+#else
         friend cache_t::stl_type;
+#endif        
 //	friend class std::map<int, cH_Kunde>;
         cH_Kunde() {}
 public:
@@ -378,7 +388,11 @@ class H_Kunde : public Handle<Kunde>
         typedef CacheStatic<Kunde::ID,H_Kunde> cache_t;
         static cache_t cache;
 //	friend class CacheStatic<Kunde::ID, H_Kunde>;
-        friend cache_t::stl_type;	
+#if __GNUC__ > 2
+        friend class cache_t::stl_type;
+#else
+        friend cache_t::stl_type;
+#endif
 	H_Kunde(Kunde *p) : Handle<Kunde>(p) {}	
 	H_Kunde() {}
 public:

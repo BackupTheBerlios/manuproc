@@ -1,4 +1,4 @@
-// $Id: Datum.cc,v 1.14 2002/09/26 14:50:47 thoma Exp $
+// $Id: Datum.cc,v 1.15 2002/10/24 14:06:49 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.14 2002/09/26 14:50:47 thoma Exp $ */
+/* $Id: Datum.cc,v 1.15 2002/10/24 14:06:49 thoma Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
@@ -25,6 +25,22 @@
 #include <iomanip.h>
 #include <stdlib.h>
 #include <Misc/itos.h>
+
+
+char* ManuProC::Datum::monate[]={"Januar",
+ 		    "Februar",
+ 		    "März",
+ 		    "April",
+ 		    "Mai",
+ 		    "Juni",
+ 		    "Juli",
+ 		    "August",
+ 		    "September",
+ 		    "Oktober",
+ 		    "November",
+ 		    "Dezember"};
+
+
 
 unsigned long ManuProC::Datum::getnum(const unsigned char *s,int len) throw()
 {  unsigned long num=0;
@@ -37,7 +53,8 @@ ManuProC::Datum ManuProC::Datum::today() throw()
 {  return ManuProC::Datum(time(0));
 }
 
-ManuProC::Datum::Datum(time_t t) throw()  
+ManuProC::Datum::Datum(time_t t) throw() :
+woche(0),woche_jahrdiff(0),quart(0)
 {  struct tm *tm=localtime(&t);
    
    tag=tm->tm_mday;
@@ -174,30 +191,32 @@ ManuProC::Datum ManuProC::Datum::operator++(int)
 ManuProC::Datum ManuProC::Datum::operator+(unsigned int tage) const throw(Datumsfehler)
 {  teste();
    Datum ret(*this);
-   ret.tag+=tage;
-   while (ret.tag>ret.Tage_in_Monat())
-   {  ret.tag-=ret.Tage_in_Monat();
+   unsigned int ret_tag=ret.tag+tage;
+   while (ret_tag>ret.Tage_in_Monat())
+   {  ret_tag-=ret.Tage_in_Monat();
       ret.monat++;
       if (ret.monat>12)
       {  ret.monat=1;
          ret.jahr++;
       }
    }
+   ret.tag=ret_tag;
    return ret;
 }
 
 ManuProC::Datum ManuProC::Datum::operator-(unsigned int tage) const throw(Datumsfehler)
 {  teste();
    Datum ret(*this);
-   ret.tag-=tage;
-   while (ret.tag<1)
+   signed int ret_tag=ret.tag-tage;
+   while (ret_tag<1)
    {  ret.monat--;
       if (ret.monat<1)
       {  ret.monat=12;
          ret.jahr--;
       }
-      ret.tag+=ret.Tage_in_Monat();
+      ret_tag+=ret.Tage_in_Monat();
    }
+   ret.tag=ret_tag;
    return ret;
 }
 
@@ -219,6 +238,7 @@ const static int seconds_per_day=60*60*24;
 const static int seconds_per_week=7*seconds_per_day;
 
 ManuProC::Datum::Datum(const Kalenderwoche &kw) throw(Datumsfehler)
+: woche(0),woche_jahrdiff(0),quart(0) 
 {  struct tm tm;
    memset(&tm,0,sizeof tm);
    tm.tm_mday=1;
@@ -234,13 +254,18 @@ ManuProC::Datum::Datum(const Kalenderwoche &kw) throw(Datumsfehler)
       t=t+(12-tm.tm_wday)*seconds_per_day;
    t=t+(kw.Woche()-1)*seconds_per_week;
    *this=Datum(t);
+   woche=kw.Woche();
+   woche_jahrdiff=jahr-kw.Jahr();
 }
 
 //#define DEBUG(x) std::cout << x
 #define DEBUG(x)
 
 Kalenderwoche ManuProC::Datum::KW() const throw(Datumsfehler)
-{  teste();
+{   teste();
+
+   if(woche) return Kalenderwoche(woche,jahr+woche_jahrdiff);
+   
    struct tm tm;
    bool try_again=true;
    memset(&tm,0,sizeof tm);
@@ -276,13 +301,15 @@ previous_year:
       tm.tm_year--;
       goto previous_year;
    }
-   int woche=(current-monday)/seconds_per_week+1;
-   if (woche>52 && try_again)
+   int _woche=(current-monday)/seconds_per_week+1;
+   if (_woche>52 && try_again)
    {  tm.tm_year++;
       try_again=false;
       goto previous_year;
    }
-   DEBUG(woche<<'\''<<tm.tm_year+1900 << '\n');
+   DEBUG(_woche<<'\''<<tm.tm_year+1900 << '\n');
+   woche=_woche;
+   woche_jahrdiff=jahr-tm.tm_year+1900;
    return Kalenderwoche(woche,tm.tm_year+1900);
 }
 
@@ -295,7 +322,9 @@ int ManuProC::Datum::Wochentag(void) const throw(Datumsfehler)
    tm.tm_year=jahr-1900;
    tm.tm_hour=12;
    tm.tm_isdst=-1;
-   time_t current=mktime(&tm);
+   mktime(&tm);
    if (!tm.tm_wday) tm.tm_wday=7;
    return tm.tm_wday-1;
 }
+
+

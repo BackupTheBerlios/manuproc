@@ -1,4 +1,4 @@
-// $Id: Person.cc,v 1.7 2002/06/20 06:29:53 christof Exp $
+// $Id: Person.cc,v 1.8 2002/10/24 14:06:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -37,7 +37,7 @@ cH_Person::cH_Person(Person::ID id)
 }   
 
 
-std::string Person::Kontakt(const TelArt& art, ManuProcEntity::ID kid,
+std::string Person::Kontakt(const TelArt& art, ManuProcEntity<>::ID kid,
 		bool forcereload) const
 {
  if(kontakt.valid() && !forcereload)
@@ -47,10 +47,10 @@ std::string Person::Kontakt(const TelArt& art, ManuProcEntity::ID kid,
 }
 
 
-const std::list<cH_Telefon> Person::getTelefon(ManuProcEntity::ID kundenid,
+const std::list<cH_Telefon> Person::getTelefon(ManuProcEntity<>::ID kundenid,
 			bool forcereload) const
 {
- vector<cH_Telefon>::iterator i;
+ std::vector<cH_Telefon>::iterator i;
  std::list<cH_Telefon> tl;
  
  if(!kontakt.valid() || forcereload)
@@ -59,7 +59,7 @@ const std::list<cH_Telefon> Person::getTelefon(ManuProcEntity::ID kundenid,
  for(i=kontakt.begin(); i!=kontakt.end(); ++i)
   {
    if((*i)->getKunde() == kundenid ||
-      kundenid==ManuProcEntity::none_id)
+      kundenid==ManuProcEntity<>::none_id)
      tl.push_back(*i);
   }
  

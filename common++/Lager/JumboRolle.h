@@ -1,4 +1,4 @@
-/* $Id: JumboRolle.h,v 1.9 2002/09/02 13:04:04 christof Exp $ */
+/* $Id: JumboRolle.h,v 1.10 2002/10/24 14:06:50 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: JumboRolle.h,v 1.9 2002/09/02 13:04:04 christof Exp $
+// $Id: JumboRolle.h,v 1.10 2002/10/24 14:06:50 thoma Exp $
 
 #ifndef _JUMBOROLLE_HH
 #  define _JUMBOROLLE_HH
@@ -80,7 +80,7 @@ public:
  JumboRolle(ID _code,int _maschine,const ManuProC::Datum &datum,int _webmaschine,
                  int soll_meter,int _status,int _lauf,int _gang,
                  ArtikelBase::ID artikelid) throw();
- static vector<JumboRolle> create(const KettplanKette &k, bool rest=false);
+ static std::vector<JumboRolle> create(const KettplanKette &k, bool rest=false);
  
  const std::vector<int> lagerPositionen() throw(SQLerror) { return lagerPositionen(artikel); }
  static const std::vector<int> lagerPositionen(const ArtikelBase &art) throw(SQLerror);

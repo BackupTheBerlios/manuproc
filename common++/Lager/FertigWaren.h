@@ -1,4 +1,4 @@
-// $Id: FertigWaren.h,v 1.5 2002/06/20 06:29:53 christof Exp $
+// $Id: FertigWaren.h,v 1.6 2002/10/24 14:06:50 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -41,21 +41,21 @@ private:
   Zeitpunkt_new zeit; // wird erst nach einer Aktion gesetzt;
   enum_Aktion aktion;
   int stk;
-  ManuProcEntity::ID lieferschein;
+  ManuProcEntity<>::ID lieferschein;
 //  LagerPlatz lagerposition;
 
   enum e_buchen{Rein,Raus};
   void Buchen(int pid,e_buchen e); 
 public:
  FertigWaren(ArtikelBase a,enum_Aktion a2,int s,
- 		ManuProcEntity::ID lfrsid=ManuProcEntity::none_id)
+ 		ManuProcEntity<>::ID lfrsid=ManuProcEntity<>::none_id)
    : artikel(a)/*,zeit()*/,aktion(a2),stk(s),lieferschein(lfrsid)  {};
 // FertigWaren(ArtikelBase a,Zeitpunkt_new z,enum_Aktion a2,int s)
 //   : artikel(a),zeit(z),aktion(a2),stk(s) {} throw(SQLerror);
  
  std::string artBezeichnung() const { return cH_ArtikelBezeichnung(artikel)->Bezeichnung();}
  int Stk() const {return stk;};
- ManuProcEntity::ID Lfrsid() const { return lieferschein;}
+ ManuProcEntity<>::ID Lfrsid() const { return lieferschein;}
  Zeitpunkt_new Zeit() const { return zeit;}
  enum_Aktion Aktion() const {return aktion;}
  const ArtikelBase &Artikel() const { return artikel; }

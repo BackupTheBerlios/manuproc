@@ -1,4 +1,4 @@
-// $Id: AufEintragZu_sql.pgcc,v 1.8 2002/10/04 08:23:20 thoma Exp $
+// $Id: AufEintragZu_sql.pgcc,v 1.9 2002/10/24 14:06:49 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -23,13 +23,16 @@
 #include <Auftrag/AuftragsBaum.h> 
 #include <Aux/Changejournal.h>
 #include <Artikel/ArtikelStamm.h>
+#include <Artikel/ArtikelBezeichnung.h>
 #include <Aux/FetchIStream.h>
+#include <Aux/Trace.h>
 
 exec sql include sqlca;
 
 
 std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list(const AufEintragBase& aeb,bool kinder) const throw(SQLerror) 
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,aeb,"Kinder="+itos(kinder));
  exec sql begin declare section;
   int INSTANZ[30],AUFTRAGID[30],ZEILENNR[30];
   double MENGE[30];
@@ -39,19 +42,19 @@ std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list(const AufEin
  Transaction tr;
  std::string squery;
  if(kinder)
-    squery = "select neuauftragid,neuinstanz,neuzeilennr,menge,artikelid
-      from auftragsentryzuordnung 
-      join auftragentry on (neuinstanz,neuauftragid,neuzeilennr)
-         = (instanz,auftragid,zeilennr)
-      where (altinstanz,altauftragid,altzeilennr) = 
-       ("+itos(aeb.InstanzID())+","+itos(aeb.Id())+","+itos(aeb.ZNr())+")";
+    squery = "select neuauftragid,neuinstanz,neuzeilennr,menge,artikelid "
+      "from auftragsentryzuordnung "
+      "join auftragentry on (neuinstanz,neuauftragid,neuzeilennr)"
+         "= (instanz,auftragid,zeilennr)"
+      "where (altinstanz,altauftragid,altzeilennr) = "
+      "("+itos(aeb.InstanzID())+","+itos(aeb.Id())+","+itos(aeb.ZNr())+")";
  else
-    squery = "select altauftragid,altinstanz,altzeilennr,menge,artikelid
-      from auftragsentryzuordnung 
-      join auftragentry on (altinstanz,altauftragid,altzeilennr)
-         = (instanz,auftragid,zeilennr)
-      where (neuinstanz,neuauftragid,neuzeilennr) = 
-       ("+itos(aeb.InstanzID())+","+itos(aeb.Id())+","+itos(aeb.ZNr())+")";
+    squery = "select altauftragid,altinstanz,altzeilennr,menge,artikelid "
+      "from auftragsentryzuordnung "
+      "join auftragentry on (altinstanz,altauftragid,altzeilennr)"
+         "= (instanz,auftragid,zeilennr)"
+      "where (neuinstanz,neuauftragid,neuzeilennr) = "
+       "("+itos(aeb.InstanzID())+","+itos(aeb.Id())+","+itos(aeb.ZNr())+")";
  strncpy(query,squery.c_str(),sizeof(query));
  exec sql prepare ONAUF_ from :query;
 //std::cout << query<<"\n\n\n";
@@ -80,6 +83,7 @@ std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list(const AufEin
 
 std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_id(const int id,bool kinder) const throw(SQLerror)
 {
+   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"Id="+itos(id),"Kinder="+itos(kinder));
    std::list<st_reflist> L=get_Referenz_list(AEB,kinder);
    std::list<st_reflist> N;
    for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
@@ -89,8 +93,10 @@ std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_id(const int
    return N;
 }
 
-std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_geplant(bool kinder=true) const throw(SQLerror)
+std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_geplant(bool kinder) const throw(SQLerror)
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"Kinder="+itos(kinder));
+
  if(Instanz()->LagerInstanz())
      return get_Referenz_list_id(AuftragBase::plan_auftrag_id,kinder);
 
@@ -111,6 +117,7 @@ std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_geplant(bool
 
 std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_listFull(bool kinder,bool nur_ende) const throw(SQLerror)
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"Kinder="+itos(kinder),"NurEnde="+itos(nur_ende));
  std::list<st_reflist> tv=get_Referenz_list(AEB,kinder);
  std::list<st_reflist> vaeb;
  std::list<st_reflist> tvxx;
@@ -131,8 +138,9 @@ reloop:
 }
 
 
-std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_for_geplant(bool kinder=false) const throw(SQLerror)
+std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_for_geplant(bool kinder) const throw(SQLerror)
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"Kinder="+itos(kinder));
 //cout << AEB.Instanz()->Name()<<' '<<AEB.Id()<<' '<<AEB.ZNr()<<'\n';
   // Ungeplante Referenz Aufträge
   std::list<st_reflist> URA=get_Referenz_list(AEB,false);
@@ -150,8 +158,9 @@ std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_for_geplant(
 }
 
 
-list<cH_Kunde> AufEintragZu::get_Referenz_Kunden() const throw(SQLerror)
+std::list<cH_Kunde> AufEintragZu::get_Referenz_Kunden() const throw(SQLerror)
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this);
  std::list<cH_Kunde> LK;
  std::list<st_reflist> vaeb = get_Referenz_listFull(false);
  exec sql begin declare section;
@@ -176,13 +185,14 @@ list<cH_Kunde> AufEintragZu::get_Referenz_Kunden() const throw(SQLerror)
 std::list<AufEintragBase> AufEintragZu::get_AufEintragList_from_Artikel
                (const ArtikelBase& artikel,ppsInstanz::ID instanz,AufStatVal status)
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Artikel="+cH_ArtikelBezeichnung(artikel)->Bezeichnung(),"Status="+itos(status),"Instanz="+cH_ppsInstanz(instanz)->Name());
   std::list<AufEintragBase> L;
   exec sql begin declare section;
    char query[1024];
    int db_auftragid,db_zeilennr;
   exec sql end declare section;
-  std::string squery = "select auftragid,zeilennr from auftragentry
-      where artikelid="+itos(artikel.Id()) +
+  std::string squery = "select auftragid,zeilennr from auftragentry "
+      "where artikelid="+itos(artikel.Id()) +
       " and instanz!="+itos(ppsInstanzID::Kundenauftraege) //Nur interne Aufträge sind interessant
       +" and auftragid=0"; // Nur die UNGEPLANTEN Aufträge bekommen neue Kinder
   if(status!=NOSTAT) squery += " and status="+itos(status);
@@ -207,6 +217,8 @@ std::list<AufEintragBase> AufEintragZu::get_AufEintragList_from_Artikel
 void AufEintragZu::Neu(const AufEintragBase& neuAEB,
                        const mengen_t menge,const int oldZnr)
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"Menge="+dtos(menge),"OldZNr="+itos(oldZnr));
+
 //ECPGdebug(true,stdout);
  exec sql begin declare section;
   int db_aaid=AEB.Id();
@@ -235,6 +247,7 @@ void AufEintragZu::Neu(const AufEintragBase& neuAEB,
 
 bool AufEintragZu::setMenge(const AufEintragBase& neuAEB,const mengen_t menge)
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,neuAEB,"Menge="+dtos(menge));
  exec sql begin declare section;
   int db_aaid=AEB.Id();
   int db_ains=AEB.InstanzID();
@@ -256,6 +269,7 @@ bool AufEintragZu::setMenge(const AufEintragBase& neuAEB,const mengen_t menge)
 
 AuftragBase::mengen_t AufEintragZu::setMengeDiff__(const AufEintragBase &neuAEB,const mengen_t menge)
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,neuAEB,"Menge="+dtos(menge));
  exec sql begin declare section;
   int db_aaid=AEB.Id();
   int db_ains=AEB.InstanzID();
@@ -290,6 +304,7 @@ AuftragBase::mengen_t AufEintragZu::setMengeDiff__(const AufEintragBase &neuAEB,
 
 bool AufEintragZu::setKindZnr(const AufEintragBase& neuAEB)
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,neuAEB);
  exec sql begin declare section;
   int db_aaid=AEB.Id();
   int db_ains=AEB.InstanzID();
@@ -309,6 +324,8 @@ bool AufEintragZu::setKindZnr(const AufEintragBase& neuAEB)
 
 void AufEintragZu::moveInstanz(const VonNachDel vdl,const AufEintragBase &oldAEB, const AufEintragBase &newAEB) throw(SQLerror)
 {
+
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,oldAEB,"VonNachDel="+itos(vdl));
  exec sql begin declare section;
   int db_aaid=oldAEB.Id();
   int db_ains=oldAEB.Instanz()->Id();
@@ -342,6 +359,8 @@ void AufEintragZu::moveInstanz(const VonNachDel vdl,const AufEintragBase &oldAEB
 
 bool AufEintragZu::remove(const AufEintragBase& alt,const AufEintragBase& neu)
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,alt,neu);
+
   std::string Q="delete from auftragsentryzuordnung where "
                  "(altinstanz,altauftragid,altzeilennr,"
                  "neuinstanz,neuauftragid,neuzeilennr)=("
@@ -355,6 +374,7 @@ bool AufEintragZu::remove(const AufEintragBase& alt,const AufEintragBase& neu)
 
 AuftragBase::mengen_t AufEintragZu::getMenge(const AufEintragBase& aeb) const
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,aeb);
  exec sql begin declare section;
   int db_aaid=AEB.Id();
   int db_ains=AEB.InstanzID();
@@ -374,6 +394,7 @@ AuftragBase::mengen_t AufEintragZu::getMenge(const AufEintragBase& aeb) const
 
 AuftragBase::mengen_t AufEintragZu::verteileMenge(std::list<st_reflist> L, mengen_t menge,bool add)
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"Menge="+dtos(menge),"Add="+itos(add));
   for(std::list<st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
    {
      if(menge==AuftragBase::mengen_t(0)) return menge;
@@ -385,7 +406,7 @@ AuftragBase::mengen_t AufEintragZu::verteileMenge(std::list<st_reflist> L, menge
      menge-=M;
    }
   if(menge!=AuftragBase::mengen_t(0)) 
-      cerr << "WARNING: 'AufEintragZu::verteileMenge' Restmenge = "<<menge<<'\n';
+      std::cerr << "WARNING: 'AufEintragZu::verteileMenge' Restmenge = "<<menge<<'\n';
   return menge;
 }
 

@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.13 2002/10/09 14:47:22 thoma Exp $
+// $Id: Check.cc,v 1.14 2002/10/24 14:06:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -25,9 +25,14 @@
 #include <Auftrag/AufEintrag.h>
 #include <Artikel/ArtikelBezeichnung.h>
 #include <unistd.h>
+#include "steuerprogramm.hh"
 
 static std::string tempdir="/tmp/";
+#ifdef  MANU_PROC_TEST
+static std::string referenzdir="database_tables_test_ManuProC/";
+#else
 static std::string referenzdir="database_tables_test/";
+#endif
 
 bool Check::teste(e_check check)
 {
@@ -147,7 +152,7 @@ bool Check::vergleich(e_check check)
 
 void Check::dump(e_check check)
 {
-  static const std::string psql_cmd="psql testdb -q -X -c";
+  static const std::string psql_cmd="psql "+std::string(getenv("PGDATABASE"))+" -q -X -c";
 
   if(check == Jumbo_richtig || check ==Jumbo_falsch || check==Jumbo_doppelt)
   {  unlink((tempdir+"rohjumbo").c_str());
@@ -183,7 +188,6 @@ void Check::dump(e_check check)
   	   " from lieferscheinentry order by instanz,lfrsid,zeile;"
   	    +"\" >"+tempdir+"lieferscheinentry").c_str());
   }
-
   
   unlink((tempdir+"auftragsentryzuordnung").c_str());
   unlink((tempdir+"auftragentry").c_str());

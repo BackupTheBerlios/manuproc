@@ -1,4 +1,4 @@
-// $Id: AuftragsVerwaltung.cc,v 1.6 2002/10/09 14:47:22 thoma Exp $
+// $Id: AuftragsVerwaltung.cc,v 1.7 2002/10/24 14:06:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -62,11 +62,14 @@ assert(!"never get here\n");
    }
 }
 
-
 AufEintragBase AuftragsVerwaltung::anlegen()
 {
    Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
+#ifdef MANU_PROC_TEST
+   return auftrag.push_back(500,DATUM,ARTIKEL_SORTIMENT_BUNT,UNCOMMITED,UID,true);
+#else 
    return auftrag.push_back(400,DATUM,ARTIKEL_ROLLEREI,UNCOMMITED,UID,true);
+#endif
 }
 
 void AuftragsVerwaltung::kunden_bestellmenge_aendern(AufEintragBase aeb,AuftragBase::mengen_t menge)
@@ -79,19 +82,31 @@ void AuftragsVerwaltung::kunden_bestellmenge_aendern(AufEintragBase aeb,AuftragB
 AufEintragBase AuftragsVerwaltung::anlegen2()
 {
    Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
+#ifdef MANU_PROC_TEST
+   return auftrag.push_back(300,DATUM,ARTIKEL_SORTIMENT_BUNT,OPEN,UID,true);
+#else 
    return auftrag.push_back(300,DATUM,ARTIKEL_ROLLEREI,OPEN,UID,true);
+#endif
 }
 
 AufEintragBase AuftragsVerwaltung::anlegen3()
 {
    Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
+#ifdef MANU_PROC_TEST
+   return auftrag.push_back(300,DATUM9,ARTIKEL_SORTIMENT_BUNT,OPEN,UID,true);
+#else 
    return auftrag.push_back(300,DATUM9,ARTIKEL_ROLLEREI,OPEN,UID,true);
+#endif
 }
 
 AufEintragBase AuftragsVerwaltung::anlegenK()
 {
    Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE2);
+#ifdef MANU_PROC_TEST
+   return auftrag.push_back(200,NEWDATUM,ARTIKEL_SORTIMENT_BUNT,OPEN,UID,true);
+#else 
    return auftrag.push_back(200,NEWDATUM,ARTIKEL_ROLLEREI,OPEN,UID,true);
+#endif
 }
 
 //#endif

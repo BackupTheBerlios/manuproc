@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.19 2002/10/11 08:37:51 christof Exp $
+# $Id: Makefile.am,v 1.20 2002/10/24 14:06:49 thoma Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -19,7 +19,7 @@ libAux_a_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
 		EntryValueBase.cc EntryValueIntString.cc \
 		auto_conversion.cc $(PGCC_Sources) AdminProblems.cc \
 		exception.cc itos.cc EntryValueDatum.cc Handles.cc EAN.cc \
-		EntryValueQuartal.cc
+		EntryValueQuartal.cc Trace.cc
 
 libAux.a: $(libAux_a_OBJECTS) $(libAux_a_DEPENDENCIES)
 	touch $@
@@ -37,7 +37,7 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
    EntryValueBase.cc EntryValueBase.h EntryValueIntString.cc \
    EntryValueIntString.h EntryValueEmptyInt.h EntryValueDatum.h \
    EntryValueDatum.cc EmptyInt_4TeX.h EntryValueFixed.h Long.h \
-  EntryValueQuartal.h
+   Trace.h Trace.cc
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .

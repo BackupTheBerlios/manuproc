@@ -1,4 +1,4 @@
-// $Id: Kalenderwoche.h,v 1.4 2002/05/09 12:46:00 christof Exp $
+// $Id: Kalenderwoche.h,v 1.5 2002/10/24 14:06:49 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -43,6 +43,10 @@ class Kalenderwoche
  	operator int() const throw() { return yyyyww; }
  	bool valid() const throw()
  	{ return Jahr()<=2100 && Jahr()>=1970 && Woche()>=1 && Woche()<=53; }
- 	void check() const throw(error) { if (!valid()) throw error(); }
+ 	void check() const throw(error) 
+ 		{ 
+ 			if (!valid()) 
+ 				throw error(); 
+ 		}
 };
 #endif

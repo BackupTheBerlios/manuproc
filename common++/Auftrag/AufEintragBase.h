@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.h,v 1.34 2002/09/02 13:04:03 christof Exp $
+// $Id: AufEintragBase.h,v 1.35 2002/10/24 14:06:49 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -97,8 +97,14 @@ public:
         {return Instanz()==b.Instanz() && Id()==b.Id() && ZNr()==b.ZNr();}
 
  friend std::ostream &operator<<(std::ostream &o,const AufEintragBase &ae);
+ std::string str() const;
+
+  // Diese Funktion ist zum Debuggen sehr nützlich:
+  void ExistMenge(const std::string &s="") const;
 };
 
 std::ostream &operator<<(std::ostream &o,const AufEintragBase &ae);
+FetchIStream& operator>>(FetchIStream& is,AufEintragBase &aeb);
+
 
 #endif

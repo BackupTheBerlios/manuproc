@@ -1,4 +1,4 @@
-// $Id: KontaktListe.cc,v 1.3 2002/07/05 12:35:01 christof Exp $
+// $Id: KontaktListe.cc,v 1.4 2002/10/24 14:06:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,14 +21,14 @@
 
 #include<KontaktListe.h>
 
-void KontaktListe::load(ManuProcEntity::ID kundeid,
-			ManuProcEntity::ID personid)
+void KontaktListe::load(ManuProcEntity<>::ID kundeid,
+			ManuProcEntity<>::ID personid)
 {
- std::vector<ManuProcEntity::ID> kontaktids;
+ std::vector<ManuProcEntity<>::ID> kontaktids;
 
  Telefon::getTelIDs(kontaktids,TEL_NONE,kundeid,personid);
 
- for(std::vector<ManuProcEntity::ID>::iterator i=kontaktids.begin();
+ for(std::vector<ManuProcEntity<>::ID>::iterator i=kontaktids.begin();
  		i!=kontaktids.end(); ++i)
    {
     kontakt.push_back(cH_Telefon(*i));
@@ -38,8 +38,8 @@ void KontaktListe::load(ManuProcEntity::ID kundeid,
 
 
 
-void KontaktListe::reload(ManuProcEntity::ID kundeid,
-			ManuProcEntity::ID personid)
+void KontaktListe::reload(ManuProcEntity<>::ID kundeid,
+			ManuProcEntity<>::ID personid)
 {
  kontakt.erase(kontakt.begin(),kontakt.end());
  load(kundeid,personid);
@@ -47,7 +47,7 @@ void KontaktListe::reload(ManuProcEntity::ID kundeid,
 }
 
 KontaktListe::KontaktListe
-(ManuProcEntity::ID kundeid, ManuProcEntity::ID personid) 
+(ManuProcEntity<>::ID kundeid, ManuProcEntity<>::ID personid) 
 : val(true)
 {
  load(kundeid,personid);
@@ -55,7 +55,7 @@ KontaktListe::KontaktListe
 
 
 std::string KontaktListe::get_first_kontakt(const TelArt &ta,
-	ManuProcEntity::ID kundeid, ManuProcEntity::ID personid)
+	ManuProcEntity<>::ID kundeid, ManuProcEntity<>::ID personid)
 {
  for(std::vector<cH_Telefon>::iterator i=kontakt.begin();i!=kontakt.end(); ++i)
    {

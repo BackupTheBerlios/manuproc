@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList_sql.pgcc,v 1.15 2002/10/04 13:57:49 thoma Exp $ */
+/* $Id: LieferscheinList_sql.pgcc,v 1.16 2002/10/24 14:06:50 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,53 +24,88 @@
 exec sql include sqlca;
 
 LieferscheinList::LieferscheinList()
-: instanz(ppsInstanz::default_id),kundenid(ManuProcEntity::none_id),
+: instanz(ppsInstanz::default_id),kundenid(ManuProcEntity<>::none_id),
 artikelid(ArtikelBase::none_id),zusatzinfo(false),
-arttyp(ArtikelTyp::default_ID)
+arttyp(ArtikelTyp::ID(ManuProcEntity<>::none_id)),
+first_komponent(false),hole_entries(false)
 {
+#ifdef MABELLA_EXTENSIONS
+ arttyp=ArtikelTyp::default_ID;
+#endif
  vom=ManuProC::Datum(1,1,1970);
  bis=ManuProC::Datum::today();
 }
 
-
 void LieferscheinList::build_list()
 {
  std::string squery = SQuery();
+ std::string nametable = "artbez_3_1";
 
- squery += " where lieferschein.instanz="+itos(instanz->Id());
+ squery += " where li.instanz="+itos(instanz->Id());
 
- if(kundenid!=ManuProcEntity::none_id)
-   squery+= " and kundennr="+itos(kundenid);
+ if(kundenid!=ManuProcEntity<>::none_id)
+   squery+= " and li.kundennr="+itos(kundenid);
 
  if(vom.valid() && bis.valid())
-   {squery+= " and coalesce(geliefertam,datum) between '"+vom.to_iso()+"'";   
-    squery+= " and cast('"+bis.to_iso()+"' as date)+1";
+   {squery+= " and coalesce(li.geliefertam,datum)"
+   	" between '"+vom.to_iso()+"' and '"+(bis+1).to_iso()+"'";
    }
 
- squery+= " and exists (select true from lieferscheinentry e"
-	" join artikelstamm a on (a.id=e.artikelid and "
-	" a.warengruppe="+itos(arttyp);
- if(artikelid!=ArtikelBase::none_id)
-   squery+=" and a.id="+itos(artikelid);
+ if(hole_entries)
+   {
+    squery+=" and le.zusatzinfo="+(zusatzinfo?std::string("true "):std::string("false "));
 
- squery+=")";
+ if(artikelid!=ArtikelBase::none_id && !first_komponent)
+     squery+=" and le.artikelid="+itos(artikelid);
 
- squery+=" where e.instanz=lieferschein.instanz and "
+ if (arttyp!=ManuProcEntity<>::none_id)
+     squery+= " and exists (select true from "
+	" artikelstamm a where a.id=le.artikelid and "
+	" a.warengruppe="+itos(arttyp) + ")";
+
+// sehr Mabella spezifisch (da ab.artikel) statt ExtArtBez
+ if(artikelid!=ArtikelBase::none_id && first_komponent)
+     {cH_ArtikelBezeichnung ab(artikelid);
+      std::string komp1=ab->Komponente(0);
+      squery+=" and exists (select true from "+nametable+" ab "
+	" where ab.id=le.artikelid and ab.artikel="+komp1+")";
+     }
+
+   }
+ else
+   {
+    squery+= " and exists (select true from lieferscheinentry e"
+	" join artikelstamm a on (a.id=e.artikelid";
+    if (arttyp!=ManuProcEntity<>::none_id)
+	squery+= " and a.warengruppe="+itos(arttyp);
+
+ if(artikelid!=ArtikelBase::none_id && !first_komponent)
+     squery+=" and a.id="+itos(artikelid);
+ squery+=")"; // on endet hier
+
+ if(artikelid!=ArtikelBase::none_id && first_komponent)
+     {cH_ArtikelBezeichnung ab(artikelid);
+      std::string komp1=ab->Komponente(0);
+      squery+=" join "+nametable+" ab on (ab.id=e.artikelid and ab.artikel="+komp1+")";
+     }
+
+   squery+=" where e.instanz=lieferschein.instanz and "
 	" e.lfrsid=lieferschein.lfrsid and e.zusatzinfo="+
-	(zusatzinfo?string("true"):string("false"))+")";
+	(zusatzinfo?std::string("true"):std::string("false"))+")";
+  }
  
  fuelle(squery);
 }
 
 LieferscheinList::LieferscheinList(const cH_ppsInstanz _instanz) throw(SQLerror)
-: instanz(_instanz)
+: instanz(_instanz),first_komponent(false),hole_entries(false)
 {
  std::string squery = SQuery();
  fuelle(squery);
 }
 
 LieferscheinList::LieferscheinList(const cH_ppsInstanz _instanz,const sel_KundenId &selparam) throw(SQLerror)
-: instanz(_instanz)
+: instanz(_instanz),first_komponent(false),hole_entries(false)
 {
  std::string squery = SQuery();
  squery += " where (instanz,kundennr) = ("
@@ -78,7 +113,7 @@ LieferscheinList::LieferscheinList(const cH_ppsInstanz _instanz,const sel_Kunden
  fuelle(squery);
 }
 LieferscheinList::LieferscheinList(const cH_ppsInstanz _instanz,const sel_ArtikelId &selparam) throw(SQLerror)
-: instanz(_instanz)
+: instanz(_instanz),first_komponent(false),hole_entries(false)
 {
  std::string squery = SQuery();
  squery += " where exists (select true from lieferscheinentry ly where 
@@ -91,23 +126,34 @@ LieferscheinList::LieferscheinList(const cH_ppsInstanz _instanz,const sel_Artike
 
 std::string LieferscheinList::SQuery() 
 {
- std::string squery = "select lfrsid,kundennr,datum,coalesce(rngid,-1),
+ std::string squery;
+
+ if(hole_entries)
+   squery = "select lfrsid,zeile,kundennr,datum,coalesce(rngid,-1),
       coalesce(pakete,0),coalesce(paeckchen,0),
       coalesce(cast(geliefertam as text),cast(datum as text),''),
-      coalesce(dpdliefnr,0) from lieferschein";
+      coalesce(dpdliefnr,0) from lieferschein li join lieferscheinentry le"
+	" using (lfrsid,instanz) ";
+ else
+   squery = "select lfrsid,0,kundennr,datum,coalesce(rngid,-1),
+      coalesce(pakete,0),coalesce(paeckchen,0),
+      coalesce(cast(geliefertam as text),cast(datum as text),''),
+      coalesce(dpdliefnr,0) from lieferschein li";
+
  return squery;
 }
 
 void LieferscheinList::fuelle(const std::string &squery) throw(SQLerror)
 {
  exec sql begin declare section;
- int LFRSID;
- int KDNR;
- int RNGID;
- char DATUM[11];
- int PAECKCHEN, PAKETE;
- char GELIEFERTAM[11];
- int DPDLIEFNR;
+ int LFRSID[100];
+ int KDNR[100];
+ int RNGID[100];
+ char DATUM[100][11];
+ int PAECKCHEN[100], PAKETE[100];
+ char GELIEFERTAM[100][11];
+ int DPDLIEFNR[100];
+ int ZEILE[100];
  char *query;
  exec sql end declare section;
 
@@ -117,32 +163,54 @@ void LieferscheinList::fuelle(const std::string &squery) throw(SQLerror)
  exec sql prepare llist_ein_ from :query ;
  exec sql declare llist_ein cursor for llist_ein_ ;
  exec sql open llist_ein;
- SQLerror::test(__FILELINE__);
+ SQLerror::test(__FILELINE__,100);
+ if(sqlca.sqlcode) return;
+
+ // wann ändert sich der Lieferschein beim holen
+ int akt_lfrsid=ManuProcEntity<>::none_id;
+
  while(true)
    {
-    exec sql fetch from llist_ein
-		into :LFRSID, :KDNR, :DATUM, :RNGID,
+    exec sql fetch 100 in llist_ein
+		into :LFRSID, :ZEILE, :KDNR, :DATUM, :RNGID,
 			:PAKETE, :PAECKCHEN,
 			:GELIEFERTAM, :DPDLIEFNR;
     SQLerror::test(__FILELINE__,100);
     if(sqlca.sqlcode) break;
 
-    ManuProC::Datum d,gelam;
-    d.from_postgres(DATUM);
-    std::string geliefertam = GELIEFERTAM;
-    if(geliefertam=="") gelam=ManuProC::Datum();
-    else gelam.from_postgres(GELIEFERTAM);
-    sellist.push_back(new Lieferschein(LieferscheinBase(instanz,LFRSID),d,
-    			KDNR,RNGID,PAECKCHEN,PAKETE,gelam,DPDLIEFNR) );
+    int geholt=sqlca.sqlerrd[2];
+    for(int j=0; j<geholt; j++)
+	{
+	 if(LFRSID[j]!=akt_lfrsid)
+	   {
+        	ManuProC::Datum d,gelam;
+        	d.from_postgres(DATUM[j]);
+        	std::string geliefertam = GELIEFERTAM[j];
+        	if(geliefertam=="") gelam=ManuProC::Datum();
+        	else gelam.from_postgres(GELIEFERTAM[j]);
+        	sellist.push_back(new Lieferschein(
+    			LieferscheinBase(instanz,LFRSID[j]),d,
+        			KDNR[j],RNGID[j],PAECKCHEN[j],PAKETE[j],
+    			gelam,DPDLIEFNR[j]) );
+	    akt_lfrsid=LFRSID[j];
+	   }
+	 liefzeilen[LFRSID[j]].push_back(
+		LieferscheinEntryBase(LieferscheinBase(instanz,LFRSID[j]),ZEILE[j]));
+	}
+    if(geholt < 100) break;
+
    } 
+ exec sql close llist_ein;
+
  tr.close();
+
 }
 
 
 #ifdef DPD_LIEFERSCHEINE
 
 LieferscheinList::LieferscheinList(const cH_ppsInstanz _instanz,const sel_DPDLNr &sp) throw(SQLerror)
-: instanz(_instanz)
+: instanz(_instanz),first_komponent(false),hole_entries(false)
 {
  std::string squery = SQuery();
  squery += " where dpdliefnr = "+itos(sp.dpdlnr)+" and instanz ="+itos(instanz->Id());
@@ -150,7 +218,7 @@ LieferscheinList::LieferscheinList(const cH_ppsInstanz _instanz,const sel_DPDLNr
 }
 
 LieferscheinList::LieferscheinList(const cH_ppsInstanz _instanz,const sel_GeliefStat &sp) throw(SQLerror)
-: instanz(_instanz)
+: instanz(_instanz),first_komponent(false),hole_entries(false)
 {
  std::string squery = SQuery();
  if(sp.geliefert)

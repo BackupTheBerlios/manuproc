@@ -1,4 +1,4 @@
-// $Id: Artikelpreis.h,v 1.11 2002/09/26 14:54:03 thoma Exp $
+// $Id: Artikelpreis.h,v 1.12 2002/10/24 14:06:49 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,6 +23,7 @@
 #include <Artikel/Preis.h>
 #include <Kunde/Kunde.h>
 #include <Artikel/ArtikelBase.h>
+#include <Aux/FetchIStream.h>
 
 //namespace ArtikelMisc { class ProzessListe; };
 
@@ -34,11 +35,16 @@ class Artikelpreis : public Preis
         
 	Preis &getPreis()
 	{  return *(Preis*)this; }
-	void setPreis(const ArtikelBase::ID art, const Preis &p, PreisListe::ID wo=ManuProcEntity::none_id, bool e=false)
+	void setPreis(const ArtikelBase::ID art, const Preis &p, 
+		PreisListe::ID wo=ManuProcEntity<>::none_id, bool e=false)
 	{  artikel=art, getPreis()=p; errechnet=e; gefunden=true; gefunden_in=wo; }
 	Artikelpreis()
-	: errechnet(false), gefunden(false), gefunden_in(ManuProcEntity::none_id) {}
+	: errechnet(false), gefunden(false), gefunden_in(ManuProcEntity<>::none_id) 
+	{}
+
+	friend FetchIStream &operator>>(FetchIStream &is,pair<int, float> &kg);  
 public:
+	 		
 	const Preis &getPreis() const
 	{  return (const Preis &)*this; }
 	Artikelpreis(const cH_Kunde &k,const ArtikelBase &a);
@@ -51,9 +57,19 @@ public:
 	
 	static void UnCache(const PreisListe::ID liste,const ArtikelBase &a);
 	static const Artikelpreis create(const PreisListe::ID liste,
-                  	const Preis &p, const ArtikelBase &a) throw(SQLerror);
+               	const Preis &p, const ArtikelBase &a,
+               	vector<std::string> ins_all_komp=vector<std::string>()) throw(SQLerror);
 // tut nix sinnvolles, oder? MAT	void updatePreis(const Preis &p) throw(SQLerror);
 	void changePreis(const Preis &p) throw(SQLerror);
-   static void remove(const PreisListe::ID liste,const ArtikelBase &a) throw(SQLerror);
+   static void remove(const PreisListe::ID liste,const ArtikelBase &a,
+   		vector<std::string> del_all_komp=vector<std::string>()) throw(SQLerror);
+   		
+
+   
 };
+
+
+
+ 
 #endif
+

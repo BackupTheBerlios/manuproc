@@ -1,4 +1,4 @@
-/* $Id: Lager_Vormerkungen.h,v 1.19 2002/07/18 16:12:23 malte Exp $ */
+/* $Id: Lager_Vormerkungen.h,v 1.21 2002/10/22 15:38:34 malte Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -23,15 +23,16 @@
 #include <Auftrag/AufEintrag.h>
 #include <Instanzen/ppsInstanz.h>
 #include <Lager/Lager.h>
+#include <utility>
 
 class Lager_Vormerkungen : AufEintrag 
 {
    private:
 
-      AuftragBase::mengen_t artikel_auf_lager(std::vector<pair<AufEintragBase,AuftragBase::mengen_t> > &dispo_auftrag,bool freie_menge=true);
+      AuftragBase::mengen_t artikel_auf_lager(std::vector<std::pair<AufEintragBase,AuftragBase::mengen_t> > &dispo_auftrag,bool freie_menge=true);
       static AuftragBase::mengen_t artikel_auf_lager(const ArtikelBase &artikel,
                                                      cH_ppsInstanz instanz,
-                   std::vector<pair<AufEintragBase,AuftragBase::mengen_t> >&dispo_auftrag,
+                   std::vector<std::pair<AufEintragBase,AuftragBase::mengen_t> >&dispo_auftrag,
                    const Petig::Datum &datum,int auftragsid);
 //      int Lieferzeit_in_Tagen(); 
         void reduce_old_plan_auftrag(int uid,AufEintragBase dispo_aeb,mengen_t menge);
@@ -45,12 +46,12 @@ class Lager_Vormerkungen : AufEintrag
 //      void move_menge_from_dispo_to_plan2(int uid,AufEintragBase dispo_aeb,mengen_t menge);
       // verfügbare Menge für einen Artikel bestimmen
       static AuftragBase::mengen_t artikel_auf_lager(const ArtikelBase artikel,cH_ppsInstanz instanz,const Petig::Datum &datum,int auftragsid)
-         { std::vector<pair<AufEintragBase,AuftragBase::mengen_t> > d;
+         { std::vector<std::pair<AufEintragBase,AuftragBase::mengen_t> > d;
            return artikel_auf_lager(artikel,instanz,d,datum,auftragsid);}
 
       // Das macht ein Auftrag:
       // Rückgabewert: Lagermenge
-      void vormerken_oder_bestellen(int uid,AuftragBase::mengen_t vormerkmenge,AuftragBase::mengen_t bestellmenge);
+      void vormerken_oder_bestellen(int uid,AuftragBase::mengen_t vormerkmenge,AuftragBase::mengen_t bestellmenge,AuftragBase::st_tryUpdateEntry st_bool=st_tryUpdateEntry());
 
       // Das macht das einlagern:
       static void freigegeben_menge_neu_verplanen(cH_ppsInstanz instanz,const ArtikelBase& artikel,AuftragBase::mengen_t menge,int uid,AufEintragBase::e_reduce_reason reason);
@@ -59,7 +60,7 @@ class Lager_Vormerkungen : AufEintrag
       // vorgemerkt wird ein 2er Artikel
       // geschnappt wird ein 1er Artikel
       void artikel_vormerken_oder_schnappen(bool schnappen,AuftragBase::mengen_t menge,const ArtikelBase &artikel,int uid,
-         std::vector<pair<AufEintragBase,AuftragBase::mengen_t> > dispo_auftrag,bool reduce_old);
+         std::vector<std::pair<AufEintragBase,AuftragBase::mengen_t> > dispo_auftrag,bool reduce_old);
 
 };
 

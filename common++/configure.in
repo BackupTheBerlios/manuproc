@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.23 2002/10/04 08:23:20 thoma Exp $
+# $Id: configure.in,v 1.24 2002/10/24 14:06:49 thoma Exp $
 
 AC_INIT(Artikel/ArtikelBase.h)
 
@@ -16,7 +16,14 @@ AC_SUBST(CPPFLAGS)
 AC_SUBST(LDFLAGS)
 AC_SUBST(CXXFLAGS)
 
-AM_PATH_SIGC(1.0.0,,AC_MSG_ERROR("SigC++ 1.0.0 or newer not found or broken - see config.log for details."))
+PKG_CHECK_MODULES(SIGC,[sigc++-1.2 >= 1.2.0],[
+		AC_SUBST(SIGC_CFLAGS)
+		AC_SUBST(SIGC_LIBS)
+		CXXFLAGS="$CXXFLAGS -DSIGC1_2"
+		AC_SUBST(CXXFLAGS)
+	],[
+		AM_PATH_SIGC(1.0.0,,AC_MSG_ERROR("SigC++ 1.0.0 or newer not found or broken - see config.log for details."))
+	])
 
 PETIG_CHECK_POSTGRES
 
@@ -105,5 +112,6 @@ AC_OUTPUT(Makefile Artikel/Makefile Auftrag/Makefile \
 	tests/Makefile tests/auftragstest/Makefile tests/AuftragsTest/Makefile \
    Material/Makefile Lager/Makefile Faeden/Makefile \
    Programme/Makefile DynamicEnums/Makefile Instanzen/Makefile \
+   Vertrieb/Makefile \
    BaseObjects/Makefile  tests/AuftragsTest/graph/Makefile)
 

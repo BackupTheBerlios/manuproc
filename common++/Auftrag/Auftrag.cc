@@ -1,4 +1,4 @@
-// $Id: Auftrag.cc,v 1.5 2002/07/05 12:35:01 christof Exp $
+// $Id: Auftrag.cc,v 1.6 2002/10/24 14:06:49 thoma Exp $
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,6 +19,7 @@
 
 #include"AuftragFull.h"
 #include<Aux/Ausgabe_neu.h>
+
 
 std::string Auftrag::getAuftragidToStr() const
 { return Formatiere(auftragid,0,6,"","",'0'); }

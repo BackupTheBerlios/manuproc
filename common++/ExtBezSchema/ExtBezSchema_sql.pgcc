@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema_sql.pgcc,v 1.14 2002/05/09 12:46:00 christof Exp $
+// $Id: ExtBezSchema_sql.pgcc,v 1.15 2002/10/24 14:06:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -49,7 +49,7 @@ ExtBezSchema::ExtBezSchema(ID eid,const ArtikelTyp &t) throw(SQLerror)
 		coalesce(textabformat,'c'),coalesce(jumbo_bez,'')
  	from extbezschema
 	where extartbezid= "+itos(eid)+" and artikeltyp="+itos(t)
-	+" order by bezkomptype" ;
+	+" order by signifikanz,bezkomptype" ;
  strncpy(query,squery.c_str(),sizeof(query));
 
  Transaction tr;
@@ -59,6 +59,8 @@ ExtBezSchema::ExtBezSchema(ID eid,const ArtikelTyp &t) throw(SQLerror)
  SQLerror::test(__FILELINE__"ExtBezSchema::ExtBezSchema");
 
  extartbezid=eid; 
+ int tmp_sig=-1;
+ int folgenr_in_sig;
 
  while(!sqlca.sqlcode)
    {
@@ -78,8 +80,12 @@ ExtBezSchema::ExtBezSchema(ID eid,const ArtikelTyp &t) throw(SQLerror)
     if(sqlca.sqlcode==100) break;
     unsigned int lines=sqlca.sqlerrd[2];
     for (unsigned int i=0;i<lines;++i)
-    {  bezkomps.push_back(BezKomp(BEZKOMPTYPE[i],BEZKOMPTEXT[i],
-    		SEPARATOR[i],SPALTENNAME[i],SIGNIFIKANZ[i],TEXTABFORMAT[i]));
+    {  
+	if(tmp_sig!=SIGNIFIKANZ[i])
+	  {tmp_sig=SIGNIFIKANZ[i]; folgenr_in_sig=0;}
+       bezkomps.push_back(BezKomp(BEZKOMPTYPE[i],BEZKOMPTEXT[i],
+    		SEPARATOR[i],SPALTENNAME[i],SIGNIFIKANZ[i],
+		folgenr_in_sig++,TEXTABFORMAT[i]));
        if (!IDseen && std::string(SPALTENNAME[i])=="id") IDseen=true;
        if (BEZKOMPTYPE[i]>maxBKT) maxBKT=BEZKOMPTYPE[i];
        if ((std::string)JUMBOBEZ[i]!="") 
@@ -94,7 +100,7 @@ ExtBezSchema::ExtBezSchema(ID eid,const ArtikelTyp &t) throw(SQLerror)
  exec sql close BEZKOMP;
  if (bezkomps.empty()) 
     throw SQLerror(__FILELINE__,100,"Schema leer = nicht vorhanden");
- if (!IDseen) bezkomps.push_back(BezKomp(maxBKT+1,"ID","","id",99,"r"));
+ if (!IDseen) bezkomps.push_back(BezKomp(maxBKT+1,"ID","","id",99,-1,"r"));
 }
 
 size_t ExtBezSchema::sigsize(int signifikanz) const

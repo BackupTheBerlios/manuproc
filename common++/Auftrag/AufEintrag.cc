@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.11 2002/10/09 14:48:07 thoma Exp $
+// $Id: AufEintrag.cc,v 1.12 2002/10/24 14:06:49 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,6 +24,8 @@
 #include <Auftrag/Auftrag.h>
 #include <unistd.h>
 #include <Instanzen/ppsInstanzProduziert.h>
+#include <Aux/Trace.h>
+
 
 AufEintrag::AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, mengen_t _bestellt,
 	ArtikelBase _artikel, const ManuProC::Datum _lieferdatum,
@@ -105,7 +107,9 @@ const Preis AufEintrag::GPreis() const
 }
 
 const Preis AufEintrag::EPreis(bool brutto) const
-{if(brutto) return preis;
+{
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
+ if(brutto) return preis;
  else
  return preis.Gesamtpreis(preis.PreisMenge(),0,rabatt);
 }
@@ -113,6 +117,7 @@ const Preis AufEintrag::EPreis(bool brutto) const
 
 void AufEintrag::setLetztePlanungFuer(cH_ppsInstanz planinstanz) throw(SQLerror)
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
   AufEintragBase::setLetztePlanungFuer(planinstanz);
   letztePlanInstanz=planinstanz->Id();
 }
@@ -131,6 +136,7 @@ void AufEintrag::setVerarbeitung(const cH_Prozess p)
 
 void AufEintrag::setLetzteLieferung(const ManuProC::Datum &datum) throw(SQLerror)
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
  AufEintragBase::setLetzteLieferung(datum);
  letzte_lieferung=datum;
 }
@@ -149,6 +155,7 @@ bool AufEintrag::allesOK() const
 
 std::string AufEintrag::Planung() const
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
   int tiefe = ArtikelBaum(ArtId()).Tiefe();
   return itos(maxPlanInstanz)+"/"+itos(tiefe);  
 }
@@ -156,11 +163,14 @@ std::string AufEintrag::Planung() const
 
 void AufEintrag::move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,bool reduce_old) throw(std::exception)
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str(),"To="+AEB.str(),"Menge="+dtos(menge),"ReduceOld="+itos(reduce_old));
   Transaction tr;
   if(reduce_old)
    {
      mengen_t mt1=updateStkDiff__(uid,-menge,false,r_Produziert);
+//cout << "MOVETO: "<<*this<<'\t'<<AEB<<'\t'<<-menge<<' '<<mt1<<'\n';
      assert(-menge==mt1);
+//     if(-menge!=mt1) menge=-mt1;
    }
   mengen_t mt2=AufEintrag(AEB).updateStkDiff__(uid,+menge,false,r_Produziert);
   assert(menge==mt2);
@@ -171,6 +181,7 @@ void AufEintrag::move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,
 
 std::vector<AufEintragBase> AufEintrag::getKundenAuftragV() const
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
  std::vector<AufEintragBase> V;
  std::list<AufEintragZu::st_reflist> L=AufEintragZu(*this).get_Referenz_listFull(false);
  for (std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
@@ -184,6 +195,7 @@ std::vector<AufEintragBase> AufEintrag::getKundenAuftragV() const
 
 AufEintragBase AufEintrag::getFirstKundenAuftrag() const
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
  std::vector<AufEintragBase> V=getKundenAuftragV();
  if(V.empty()) return *this;
  else return *(V.begin());
@@ -216,6 +228,7 @@ assert(!"XXXXX");
 
 void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,int uid,e_reduce_reason reason)
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Menge="+dtos(menge),"Reason="+itos(reason));
  std::list<AufEintragZu::st_reflist> K=AufEintragZu(*this).get_Referenz_list(*this,true);
  for (std::list<AufEintragZu::st_reflist>::const_iterator i=K.begin();i!=K.end();++i)
   {
@@ -268,10 +281,13 @@ void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,int uid,e
 
 
 void AufEintrag::Produziert(mengen_t menge,
-   ManuProcEntity::ID lfrsid=ManuProcEntity::none_id) throw(SQLerror)
+   ManuProcEntity<>::ID lfrsid) throw(SQLerror)
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Menge="+dtos(menge));
   Kunde::ID kunde=Auftrag(*this).getKundennr();
   ManuProC::st_produziert sp(kunde,*this,menge,getuid(),lfrsid);
   Instanz()->Produziert(sp);
 }
+
+
 

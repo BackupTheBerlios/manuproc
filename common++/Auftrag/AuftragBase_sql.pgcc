@@ -25,6 +25,7 @@
 #include <Artikel/ArtikelStamm.h>
 #include <Auftrag/AufEintragZu.h>
 #include <Lager/Lager_Vormerkungen.h>
+#include <Aux/Trace.h>
 
 exec sql include sqlca;
 
@@ -32,6 +33,7 @@ exec sql include sqlca;
 AuftragBase::AuftragBase(cH_ppsInstanz _instanz, int aufid,int kid) throw(SQLerror)
 : instanz(_instanz),auftragid(aufid)
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str());
  exec sql begin declare section;
    int KID=kid;
    int AID=auftragid;
@@ -46,6 +48,7 @@ AuftragBase::AuftragBase(cH_ppsInstanz _instanz, int aufid,int kid) throw(SQLerr
 
 bool AuftragBase::Exists() const throw(SQLerror)
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str());
  exec sql begin declare section;
   int AUFTRAGID=Id();
   int INSTANZ=InstanzID();
@@ -60,6 +63,7 @@ bool AuftragBase::Exists() const throw(SQLerror)
 
 void AuftragBase::create_if_not_exists(AufStatVal status,Kunde::ID kunde) const
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str(),"Status="+itos(status),"Kunde="+itos(kunde));
   if(Exists()) return;
   exec sql begin declare section;
    int AUFTRAGID=Id();
@@ -75,6 +79,7 @@ void AuftragBase::create_if_not_exists(AufStatVal status,Kunde::ID kunde) const
 
 void AuftragBase::setStatusAuftragBase(AufStatVal st) const throw(SQLerror)
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str(),"Status="+itos(st));
  exec sql begin declare section;
   int AUFTRAGID=Id();
   int INSTANZ=InstanzID();
@@ -89,6 +94,7 @@ void AuftragBase::setStatusAuftragBase(AufStatVal st) const throw(SQLerror)
 
 void AuftragBase::setRabatt(const rabatt_t auftragsrabatt) const throw(SQLerror)
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str());
  exec sql begin declare section;
   int AUFTRAGID=Id();
   int INSTANZ=InstanzID();
@@ -108,6 +114,9 @@ bool AuftragBase::existEntry(const ArtikelBase& artikel,
                              int& znr,int &newznr,mengen_t& menge,
                              AufStatVal status) const throw(SQLerror)
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str(),
+         "Artikel="+cH_ArtikelBezeichnung(artikel)->Bezeichnung(),
+         "LieferDatum="+lieferdatum.to_iso(),"ZNr="+itos(znr),"Status="+itos(status));
  exec sql begin declare section;
    int AUFTRAGID =Id();
    long ARTIKELID=artikel.Id();
@@ -151,9 +160,14 @@ bool AuftragBase::existEntry(const ArtikelBase& artikel,
 int AuftragBase::tryUpdateEntry(mengen_t bestellt, 
   const ManuProC::Datum lieferdatum,const ArtikelBase& artikel,
   AufStatVal status,int uid,const AufEintragBase& altAEB,
-  bool force_new,bool dispoplanung) 
-      const throw(SQLerror)
+  st_tryUpdateEntry st_bool) const throw(SQLerror)
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str(),"Artikel="+cH_ArtikelBezeichnung(artikel)->Bezeichnung(),
+         "Menge="+dtos(bestellt),"AltAEB="+altAEB.str(),
+         "LieferDatum="+lieferdatum.to_iso(),
+         "Status="+itos(status),"ForceNew="+itos(st_bool.force_new),
+         "DispoPlanung="+itos(st_bool.dispoplanung));
+
  create_if_not_exists(status);
  int znr=-99,neuznr=-99;
  mengen_t altemenge=0;
@@ -167,7 +181,7 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
  if(lagermenge>=bestellt) {auftragbestellmenge = 0; lagermenge=bestellt;}
  else                      auftragbestellmenge = bestellt-lagermenge;
 
- if(force_new || !existEntry(artikel,lieferdatum,znr,neuznr,altemenge,status))
+ if(st_bool.force_new || !existEntry(artikel,lieferdatum,znr,neuznr,altemenge,status))
   {
     Auftrag A(*this);
     AufEintragBase newaeb=A.push_back(auftragbestellmenge,lieferdatum,artikel,status,uid,false)  ;
@@ -184,9 +198,9 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
 
 //cout << "\nTryUpdate: "<<AufEintragBase(instanz,auftragid,znr)<<'\t'
 //<<"Betsellte="<<bestellt<<" Lagermenge="<<lagermenge<<" auftragbestellmenge="
-//<<auftragbestellmenge<<'\t'<<dispoplanung<<'\n';
+//<<auftragbestellmenge<<'\t'<<st_bool.dispoplanung<<'\n';
 
-  if(!dispoplanung)
+  if(!st_bool.dispoplanung)
    {    
      if(altAEB.valid())
         AufEintragZu(altAEB).Neu(AufEintragBase(*this,znr),bestellt);
@@ -194,7 +208,7 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
 //<<bestellt<<' '<<lagermenge<<'\n';
      Lager_Vormerkungen(class AufEintrag(Instanz()->Id(),Id(),znr,
             altemenge+auftragbestellmenge,artikel,lieferdatum,status)).
-            vormerken_oder_bestellen(uid,lagermenge,bestellt);
+            vormerken_oder_bestellen(uid,lagermenge,bestellt,st_bool);
    }
   else 
    {

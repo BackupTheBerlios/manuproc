@@ -1,4 +1,4 @@
-// $Id: PreisListe.h,v 1.7 2002/09/26 14:54:03 thoma Exp $
+// $Id: PreisListe.h,v 1.8 2002/10/24 14:06:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,7 +28,7 @@
 #include <Aux/Waehrung.h>
 #include <Aux/fixedpoint.h>
 
-class PreisListe : public ManuProcEntity
+class PreisListe : public ManuProcEntity<>
 {
 public:
  typedef fixedpoint<2> rabatt_t;

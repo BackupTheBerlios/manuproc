@@ -26,7 +26,7 @@ exec sql include sqlca;
 #include <Aux/Transaction.h>
 #include <Aux/itos.h>
 #include <unistd.h>
-
+#include <Misc/relops.h>
 
 bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,std::string &os,bool force,bool ist_leer)
 {

@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.h,v 1.12 2002/06/20 06:29:52 christof Exp $
+// $Id: ArtikelStamm.h,v 1.13 2002/10/24 14:06:49 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -57,8 +57,13 @@ public:
 	{  return payload.interntyp; }
 	ArtikelTyp::ID Warengruppe(ExtBezSchema_ID id) const
 	{  return id==ExtBezSchema_default_ID?payload.interntyp:payload.typ; }
+private:
+friend class ppsInstanz;
+friend class Artikeleingabe;
+friend class AufArtKonsistenz;
 	cH_ppsInstanz BestellenBei() const
 	{  return payload.bestellen_bei; }
+public:
 	int defaultSchema() const
 	{  return payload.defaultschema; }
 	Einheit getEinheit() const

@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.hh,v 1.7 2002/10/09 14:47:22 thoma Exp $
+// $Id: steuerprogramm.hh,v 1.8 2002/10/24 14:06:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -21,12 +21,22 @@
 #define STEUERFILE_H
 
 
-#define MIT_ROHWARENLAGER
-#define MIT_BANDLAGER
+#define MANU_PROC_TEST
+/* else PETIG_TEST */
+
+#ifdef MANU_PROC_TEST
+#define MANU_DATAPATH "~/ManuProC/Anleitung/datenbank"
+#endif
+
 
 #include <Artikel/ArtikelBase.h>
 #include <Auftrag/auftrag_status.h>
+#include <Instanzen/ppsInstanz.h>
 
+#ifndef MANU_PROC_TEST
+
+#define MIT_ROHWARENLAGER
+#define MIT_BANDLAGER
 #define ARTIKEL_ROLLEREI ArtikelBase(124555)
 #define ARTIKEL_FAERBEREI ArtikelBase(124551)
 #define ARTIKEL_BANDLAGER ArtikelBase(123755)
@@ -34,6 +44,25 @@
 #define ARTIKEL_ACETAT ArtikelBase(211007)
 #define ARTIKEL_KUPFER ArtikelBase(209813)
 
+#else 
+#define ARTIKEL_SORTIMENT_SCHWARZ ArtikelBase(27)
+#define ARTIKEL_SORTIMENT_BUNT ArtikelBase(28)
+#define ARTIKEL_METALL ArtikelBase(1)
+#define ARTIKEL_GRANULAT_GRUEN ArtikelBase(4)
+#define ARTIKEL_GRIFF_ROT ArtikelBase(7)
+#define ARTIKEL_SCHRAUBENZIEHER_GELB ArtikelBase(23)
+#define ARTIKEL_SCHRAUBENZIEHER_ROT ArtikelBase(20)
+#define ARTIKEL_SCHACHTEL ArtikelBase(26)
+
+
+#define ROHWARENLAGER (ppsInstanz::ID(30))
+#define EINKAUF (ppsInstanz::ID(35))
+#define GIESSEREI (ppsInstanz::ID(20))
+#define WERKSTATT (ppsInstanz::ID(10))
+#define SCHRAUBENZIEHERLAGER (ppsInstanz::ID(5))
+#define KUNDENINSTANZ (ppsInstanz::ID(1))
+
+#endif
 
 #define DATUM ManuProC::Datum(31,12,2010)
 #define SPLITDATUM ManuProC::Datum(31,12,2011)

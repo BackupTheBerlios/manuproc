@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum_sql.pgcc,v 1.9 2002/09/26 14:50:47 thoma Exp $
+// $Id: ArtikelBaum_sql.pgcc,v 1.10 2002/10/24 14:06:49 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -68,9 +68,10 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
        }
     }
 #if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
-    try {  ArtikelStamm AS(*this);
-   if(AS.BestellenBei()==ppsInstanzID::Bandlager || 
-      AS.BestellenBei()==ppsInstanzID::Weberei)
+    try {  //ArtikelStamm AS(*this);
+//   if(AS.BestellenBei()==ppsInstanzID::Bandlager || 
+//      AS.BestellenBei()==ppsInstanzID::Weberei)
+    if(ppsInstanz::getProduktionsInstanz(*this)==ppsInstanzID::Weberei)
      {
        Schussfaeden schussfaeden;
        Webangaben webangaben(ARTIKELID);
@@ -150,12 +151,12 @@ int ArtikelBaum::Tiefe() const
    { int t=ArtikelBaum(i->rohartikel).Tiefe();
      if (t>tiefe) tiefe=t;
    }
-//sich selber nicht mitzählen daher weg  ++tiefe;
-  if (ArtikelStamm(Id()).BestellenBei()->LagerInstanz())
-      ++tiefe;
-//cout << cH_ArtikelBezeichnung(Id())->Bezeichnung()
-//<< cH_ppsInstanz(ArtikelStamm(Id()).BestellenBei())->Name()<<'\t'
-//<< "  Tiefe: "<< tiefe<<'\n';
+//sich selber nicht mitzählen daher weg:  ++tiefe;
+//  if (ArtikelStamm(Id()).BestellenBei()->LagerInstanz())
+//      ++tiefe;
+#warning das muß noch getestet/überarbeitet werden
+  if(ppsInstanz::getBestellInstanz(*this)->LagerInstanz())
+    ++tiefe;
   return tiefe;
 }
 
@@ -183,8 +184,8 @@ void ArtikelBaum::new_Artikel(int uid,ArtikelBase fuer_artikel,const RohArtikel&
 
 void ArtikelBaum::create_in_zuordnung(int uid,ArtikelBase alt_artikel,ArtikelBase kind_artikel,faktor_t RohMenge)
 {
-  std::list<AufEintragBase> elternliste = AufEintragZu::get_AufEintragList_from_Artikel(alt_artikel,ArtikelStamm(alt_artikel).BestellenBei()->Id(),NOSTAT);
-//std::cout << "Create :"<<elternliste.size()<<"\n\n\n\n";
+//  std::list<AufEintragBase> elternliste = AufEintragZu::get_AufEintragList_from_Artikel(alt_artikel,ArtikelStamm(alt_artikel).BestellenBei()->Id(),NOSTAT);
+  std::list<AufEintragBase> elternliste = AufEintragZu::get_AufEintragList_from_Artikel(alt_artikel,ppsInstanz::getBestellInstanz(alt_artikel)->Id(),NOSTAT);
   for(std::list<AufEintragBase>::const_iterator e=elternliste.begin();e!=elternliste.end();++e)
    {
      AufEintragBase AEB(*e);
@@ -196,7 +197,8 @@ void ArtikelBaum::create_in_zuordnung(int uid,ArtikelBase alt_artikel,ArtikelBas
        }
      AufEintrag AE(AEB);
      AufEintragBase::mengen_t menge=AE.getStueck()*RohMenge;
-     AuftragBase AB(ArtikelStamm(kind_artikel).BestellenBei(),0); 
+//     AuftragBase AB(ArtikelStamm(kind_artikel).BestellenBei(),0); 
+     AuftragBase AB(ppsInstanz::getBestellInstanz(kind_artikel),0); 
      AB.tryUpdateEntry(menge,AE.getLieferdatum(),
                         kind_artikel,AE.getEntryStatus(),uid,AEB);
    }  
@@ -288,8 +290,8 @@ void ArtikelBaum::reduceChildren(int uid,const AufEintrag& AEB,
 
   const_cast<AufEintrag&>(AEB).updateStkDiff__(uid,-menge,false,AufEintragBase::r_Standard);
   AuftragBase::mengen_t mt2=AufEintragZu(oldAEB).setMengeDiff__(AEB,-menge);
-//cout << oldAEB<<'\t'<<AEB<<'\t'<<-menge<<'\t'<<mt<<'\t'<<mt2<<'\n';
-  assert(mt2=menge);
+//cout << oldAEB<<'\t'<<AEB<<'\t'<<-menge<<'\t'<<'\t'<<mt2<<'\n';
+  assert(mt2==-menge);
   std::list<AufEintragZu::st_reflist> L=AufEintragZu(AEB).get_Referenz_list(AEB,true);
 //std::cout << '\t'<<L.size()<<'\n';
   for(std::list<AufEintragZu::st_reflist>::iterator i=L.begin();i!=L.end();++i)

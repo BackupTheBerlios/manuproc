@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.27 2002/09/02 13:04:03 christof Exp $
+// $Id: AufEintragBase.cc,v 1.28 2002/10/24 14:06:49 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -31,7 +31,19 @@
 #include<Lager/FertigWaren.h>
 #include<Artikel/ArtikelBase.h>
 #endif
+#include <Aux/Trace.h>
+#include<Aux/FetchIStream.h>
 
+
+FetchIStream& operator>>(FetchIStream& is,AufEintragBase &aeb)
+{
+  int a,b,c;
+  is >> a>>b>>c;
+  cH_ppsInstanz I((ppsInstanz::ID(a)));
+  AuftragBase ab(I,b);
+  aeb=AufEintragBase(ab,c);
+  return is;
+}
 
 
 std::ostream &operator<<(std::ostream &o,const AufEintragBase &ae)
@@ -40,8 +52,16 @@ std::ostream &operator<<(std::ostream &o,const AufEintragBase &ae)
  return o;
 }
 
+std::string AufEintragBase::str() const
+{
+ return Instanz()->Name()+"("+itos(Instanz()->Id())+")|"+itos(Id())+"|"+itos(ZNr());
+}
+
+
+
 void AufEintragBase::calculateProzessInstanz()
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str());
   assert (Instanz()==ppsInstanzID::Kundenauftraege);
   AuftragsBaum AB(*this,true);
   int anz=0;
@@ -56,13 +76,16 @@ void AufEintragBase::calculateProzessInstanz()
 
 
 
-void AufEintragBase::Planen(int uid,std::vector<std::AufEintrag> LAE,mengen_t menge,
+// Ich weiﬂ nicht mehr wer dies braucht .... MAT :-(
+void AufEintragBase::Planen(int uid,std::vector<AufEintrag> LAE,mengen_t menge,
       const AuftragBase &zielauftrag,const ManuProC::Datum &datum)
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
+   "Menge="+dtos(menge),"Zielauftrag="+zielauftrag.str(),"Datum="+datum.to_iso());
  int znr=AufEintragBase::none_znr;
  ArtikelBase artikel=ArtikelBase::none_id;
  Transaction tr;
- for(std::vector<std::AufEintrag>::iterator i=LAE.begin();i!=LAE.end();++i)
+ for(std::vector<AufEintrag>::iterator i=LAE.begin();i!=LAE.end();++i)
   {
     int znrtmp;
     if(i->getRestStk()<=menge)
@@ -90,16 +113,22 @@ void AufEintragBase::Planen(int uid,std::vector<std::AufEintrag> LAE,mengen_t me
 
 void AufEintragBase::PlanenDispo(int uid,const ArtikelBase& artikel,mengen_t menge,const ManuProC::Datum &datum)
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str(),
+   "Artikel="+cH_ArtikelBezeichnung(artikel)->Bezeichnung(),
+   "Menge="+dtos(menge),"Datum="+datum.to_iso());
+
    AuftragBase dispoAB(Instanz(),dispo_auftrag_id);
-//   int znr=dispoAB.insertNewEntry(menge,datum,artikel,OPEN,uid,false);
-   int znr=dispoAB.tryUpdateEntry(menge,datum,artikel,OPEN,uid,*this,false,true);
+   st_tryUpdateEntry st(false,false,true);
+   int znr=dispoAB.tryUpdateEntry(menge,datum,artikel,OPEN,uid,*this,st);
    AufEintragBase dispoAEB(dispoAB,znr);
 
-//   AufEintragZu(dispoAEB).Neu(*this,menge);
    updateStkDiffBase__(uid,menge);
   
    AufEintrag AE(dispoAEB);
-   dispoAEB.InstanzAuftraegeAnlegen(AE.Artikel(),znr,AE.getLieferdatum(),AE.getEntryStatus(),uid,menge);
+   bool automatisch_geplant=false;
+   if(Id()==plan_auftrag_id)  automatisch_geplant=true  ;
+   dispoAEB.InstanzAuftraegeAnlegen(AE,menge,uid,automatisch_geplant);
+   if(automatisch_geplant)  AE.abschreiben(menge) ;
 }
 
 
@@ -107,6 +136,10 @@ int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
                         ArtikelBase artikel,AufStatVal status,int uid,
                         bool dispoplanung)
 {
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str(),
+   "Artikel="+cH_ArtikelBezeichnung(artikel)->Bezeichnung(),
+   "Menge="+dtos(menge),"Status="+itos(status),"DispoPlanung="+itos(dispoplanung));
+
   assert(Id()==AuftragBase::ungeplante_id);
   // ElternListe holen
   std::list<AufEintragZu::st_reflist> L=AufEintragZu(*this).get_Referenz_list(*this,false);
@@ -118,7 +151,8 @@ int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
     if(i->Menge > menge) M=menge;
     else M=i->Menge;
     if(!dispoplanung)
-       znr=tryUpdateEntry(M,datum,artikel,status,uid,i->AEB,false);
+       znr=tryUpdateEntry(M,datum,artikel,status,uid,i->AEB);
+//       znr=tryUpdateEntry(M,datum,artikel,status,uid,i->AEB,false);
     else
       { int dummy;
         assert(existEntry(artikel,datum,znr,dummy,menge,status));
@@ -130,5 +164,13 @@ int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
     if(M==mengen_t(0)) break;
    }
  return znr;
+}
+
+void AufEintragBase::ExistMenge(const std::string &s) const
+{
+ try{AufEintrag AE(*this);
+     std::cout << *this<<" existiert mit " <<AE.getStueck()<<" bestellt und "
+          <<AE.getGeliefert()<<" geliefert ("<<s<<")\n";
+   }catch(...){std::cout << *this<<"\texistiert noch nicht ("<<s<<")\n";}
 }
 

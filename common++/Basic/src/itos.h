@@ -1,4 +1,4 @@
-/* $Id: itos.h,v 1.8 2002/08/31 07:45:40 christof Exp $ */
+/* $Id: itos.h,v 1.9 2002/10/24 14:06:49 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -17,9 +17,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#ifndef AUX_ITOS_H
+#define AUX_ITOS_H
 #include <string>
 std::string itos(int i);
 std::string itos0p(int i, int c=0,bool show_plus=false);
 std::string dtos(double i);
 std::string ulltos(unsigned long long i);
 std::string btos(bool b);
+#endif

@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.19 2002/10/04 08:23:21 thoma Exp $ */
+/* $Id: Lieferschein.h,v 1.20 2002/10/24 14:06:50 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -50,7 +50,7 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  		
  	Lieferschein() : LieferscheinBase(),
  			lsdatum(ManuProC::Datum::today()),
- 			kunde(Kunde::none_id),rngid(ManuProcEntity::none_id),
+ 			kunde(Kunde::none_id),rngid(ManuProcEntity<>::none_id),
  			geliefertam(ManuProC::Datum::today())
 #ifdef DPD_LIEFERSCHEINE
  			,dpdliefnr(0) ,
@@ -96,9 +96,6 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  // DB Zugriff mit abschreiben
  void push_back(AufEintrag &auftragentry, 
  		const ArtikelBase &artikel, int anzahl, mengen_t menge, int palette);
-// void push_back(const AufEintragBase &auftragentry, 
-// 		const ArtikelBase &artikel, int anzahl, mengen_t menge, int palette)
-// 	{push_back(class AufEintrag(auftragentry),artikel,anzahl,menge,palette);}
  // DB: Menge verteilt auf mehrere Aufträge abschreiben
  void push_back(const ArtikelBase &artikel, int anzahl, mengen_t menge, int palette);
 
@@ -138,6 +135,7 @@ class cached_Lieferschein : public cH_Lieferschein
  public:
    cached_Lieferschein(int lid) ;
 };
+
 
 cached_Lieferschein::cache_t cached_Lieferschein::cache;
 

@@ -1,4 +1,4 @@
-/* $Id: EntryValueDatum.cc,v 1.7 2002/06/24 07:35:40 christof Exp $ */
+/* $Id: EntryValueDatum.cc,v 1.8 2002/10/24 14:06:49 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -42,7 +42,42 @@ bool EntryValueDatum::operator<(const EntryValueBase &v) const
    }
 }
 
+
+
 ///////////////////////////////////////////////////////////////////////
+
+
+bool EntryValueMonat::operator==(const EntryValueBase &v) const
+{  try
+   {  const EntryValueMonat &b=dynamic_cast<const EntryValueMonat &>(v);
+      if (!datum.valid()) return !b.datum.valid();
+      return (datum.Jahr()*10000+datum.Monat() == 
+              b.datum.Jahr()*10000+b.datum.Monat());
+   } catch (std::bad_cast &e)
+   {  return false;
+   }
+}
+
+bool EntryValueMonat::operator<(const EntryValueBase &v) const
+{  try
+   {  const EntryValueMonat &b=dynamic_cast<const EntryValueMonat &>(v);
+      if (!datum.valid()) return false;
+      if (b.datum.valid()) 
+        return (datum.Jahr()*10000+datum.Monat() <
+        	b.datum.Jahr()*10000+b.datum.Monat());
+      else return true;
+   } catch (std::bad_cast &e)
+   {  return false;
+   }
+}
+
+const std::string EntryValueMonat::getStrVal() const
+{ 
+ return datum.valid()?datum.MonatName()+"'"+itos(datum.Jahr()).substr(2):"";
+}
+
+///////////////////////////////////////////////////////////////////////
+
 
 bool EntryValueKalenderwoche::operator==(const EntryValueBase &v) const
 {  try
@@ -64,10 +99,9 @@ bool EntryValueKalenderwoche::operator<(const EntryValueBase &v) const
 
 const std::string EntryValueKalenderwoche::getStrVal() const
 {
-  int lieferwoche = datum.Woche();
-  int lieferjahr = datum.Jahr();
-  std::string lj=itos (lieferjahr).substr(2);
-  return itos(lieferwoche)+"'"+lj;
+ if(!datum.valid()) return "";
+ std::string lj=itos (datum.Jahr()).substr(2);
+ return itos(datum.Woche())+"'"+lj;
 }
 
 

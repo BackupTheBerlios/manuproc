@@ -4,7 +4,8 @@ includedir=@includedir@/BaseObjects
 
 noinst_LIBRARIES=libBaseObjects.a
 
-include_HEADERS=ManuProcEintrag.h ManuProcEntity.h ManuProcVorgang.h MVC.h
+include_HEADERS=ManuProcEintrag.h ManuProcEntity.h ManuProcVorgang.h MVC.h \
+	ManuProcEntity_FetchIStream.h
 
 #libBaseObjects_a_SOURCES=ManuProcEntity.cc
 

@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.12 2002/06/27 07:42:50 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.13 2002/10/24 14:06:49 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,7 +28,10 @@ exec sql whenever sqlerror do X();
 int main()
 {  ManuProC::dbconnect(ManuProC::Connection("","template1"));
    exec sql allocate descriptor mydesc;
-   
+
+   std::cout << "simple use " << Query("select 1").FetchOne<int>() << '\n';
+
+// now test it   
   {Query query("select now(),date('yesterday'),null,null,200,20.5,'t'");
    std::string s,s2,s3,s4;
    bool b;

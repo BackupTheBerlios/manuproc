@@ -1,4 +1,4 @@
-/* $Id: CodeError.h,v 1.2 2002/07/05 12:35:01 christof Exp $ */
+/* $Id: CodeError.h,v 1.3 2002/10/24 14:06:50 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -35,6 +35,7 @@ public:
  : code(c), context(ct) {}
  friend std::ostream &operator<<(std::ostream&,const CodeError &);
  virtual const char* what() const throw() { return "CodeError"; }
+ virtual ~CodeError() throw() {}
 };
 
 inline std::ostream &operator<<(std::ostream&o,const CodeError &e)

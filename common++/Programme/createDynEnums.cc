@@ -1,4 +1,4 @@
-// $Id: createDynEnums.cc,v 1.5 2002/07/05 12:35:01 christof Exp $
+// $Id: createDynEnums.cc,v 1.6 2002/10/24 14:06:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: createDynEnums.cc,v 1.5 2002/07/05 12:35:01 christof Exp $
+// $Id: createDynEnums.cc,v 1.6 2002/10/24 14:06:50 thoma Exp $
 
 #include <Aux/dbconnect.h>
 #include <Aux/FetchIStream.h>
@@ -52,7 +52,7 @@ int main()
       Transaction tr;
       FetchIStream is;
       
-      cout << "//  DynamicEnums.h  created " << Zeitpunkt_new(time(0)) 
+      std::cout << "//  DynamicEnums.h  created " << Zeitpunkt_new(time(0)) 
       		<< "\n"
       		"\n"
 		"#ifndef MANUPROC_DYNAMICENUMS_H\n"
@@ -64,41 +64,41 @@ int main()
 		" namespace DynamicEnums {\n";
       
       //---
-      cout << "  namespace ArtikelTyp {\n"
+      std::cout << "  namespace ArtikelTyp {\n"
 		"   enum enum_t {\n"
 		"    ";
       {  Query q("select text,id from artbez_warengruppe order by id");
          while ((q >> is).good())
          {  int id; std::string name;
             is >> name >> id;
-            cout << toIdentifier(name) << '=' << id << ',';
+            std::cout << toIdentifier(name) << '=' << id << ',';
          }
       }
-      cout << "\n"
+      std::cout << "\n"
       		"   };\n"
       		"  }\n\n";
       tr.close();
       tr.open();
       
       //--- einheiten
-      cout << "  namespace Einheiten {\n"
+      std::cout << "  namespace Einheiten {\n"
 		"   enum enum_t {\n"
-		"    ";
+		"    None=-1, ";
       {  Query q("select id from einheiten order by id");
          while ((q >> is).good())
          {  int id;
             is >> id;
-            cout << toIdentifier(Einheit(Einheit::ID(id)).Bezeichnung()) << '=' << id << ',';
+            std::cout << toIdentifier(Einheit(Einheit::ID(id)).Bezeichnung()) << '=' << id << ',';
          }
       }
-      cout << "\n"
+      std::cout << "\n"
       		"   };\n"
       		"  }\n\n";
       tr.close();
       tr.open();
       
       //--- prozesse
-      cout << "  namespace Prozesse {\n"
+      std::cout << "  namespace Prozesse {\n"
 		"   enum enum_t {\n"
 		"    None=0,";
       {  Query q("select prozessid,label,text from prozesse order by prozessid");
@@ -106,50 +106,70 @@ int main()
          {  int id; std::string label,text;
             is >> id >> label >> text;
             if (text.size()) label=label+'_'+text;
-            cout << toIdentifier(label) << '=' << id << ',';
+            std::cout << toIdentifier(label) << '=' << id << ',';
          }
       }
-      cout << "\n"
+      std::cout << "\n"
       		"   };\n"
       		"  }\n\n";
       tr.close();
       tr.open();
       
       //--- waehrung
-      cout << "  namespace Waehrung {\n"
+      std::cout << "  namespace Waehrung {\n"
 		"   enum enum_t {\n"
 		"    ";
       {  Query q("select wid,kurz from waehrung order by wid");
          while ((q >> is).good())
          {  int id; std::string text;
             is >> id >> text;
-            cout << toIdentifier(text) << '=' << id << ',';
+            std::cout << toIdentifier(text) << '=' << id << ',';
          }
       }
-      cout << "\n"
+      std::cout << "\n"
       		"   };\n"
       		"  }\n\n";
       tr.close();
       tr.open();
       
       //--- prod_instanz
-      cout << "  namespace Instanzen {\n"
+      std::cout << "  namespace Instanzen {\n"
 		"   enum enum_t {\n"
 		"    None=0,";
       {  Query q("select insid,name from prod_instanz order by insid");
          while ((q >> is).good())
          {  int id; std::string text;
             is >> id >> text;
-            cout << toIdentifier(text) << '=' << id << ',';
+            std::cout << toIdentifier(text) << '=' << id << ',';
          }
       }
-      cout << "\n"
+      
+      std::cout << "\n"
+      		"   };\n"
+      		"  }\n\n";
+      
+      tr.close();
+      tr.open();      
+      
+      //--- kunden
+      std::cout << "  namespace Kundengruppen {\n"
+		"   enum enum_t {\n"
+		"    None=-1,";
+      {  Query q("select grpnr,name from ku_gruppe order by grpnr");
+         while ((q >> is).good())
+         {  int id; std::string text;
+            is >> id >> text;
+            std::cout << toIdentifier(text) << '=' << id << ',';
+         }
+      }      
+      
+      std::cout << "\n"
       		"   };\n"
       		"  }\n\n";
 
       // ------------------
             
-      cout << " }\n"
+      std::cout << " }\n"
 	      "}\n"
 		"#endif // MANUPROC_DYNAMICENUMS_H\n";
       

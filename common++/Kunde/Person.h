@@ -1,4 +1,4 @@
-// $Id: Person.h,v 1.13 2002/06/27 07:42:50 christof Exp $
+// $Id: Person.h,v 1.14 2002/10/24 14:06:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -31,10 +31,11 @@
 #include <Kunde/Anrede.h>
 #include <list>
 
-class Person : public ManuProcEntity
+class Kunde;
+
+class Person : public ManuProcEntity<>
 {
 public:
-        typedef long int ID;
 private:
  std::string name;
  std::string vorname;
@@ -51,7 +52,7 @@ private:
 public:
  ID Id() const { return entityid; } 
  Person()  {}
- Person(ID pid) throw(SQLerror);
+ Person(const ID pid) throw(SQLerror);
  static int createPerson(std::string s="");
 
  static void delPerson(const ID pid) throw(SQLerror);
@@ -62,9 +63,10 @@ public:
  const cH_Anrede Anrede() const { return anrede; }
  const std::string Notiz() const { return notiz; }
 
- std::string Kontakt(const TelArt& art, ManuProcEntity::ID kundeid,
+ std::string Kontakt(const TelArt& art, ManuProcEntity<>::ID kundeid,
  		bool forcereload=false) const;
- const std::list<cH_Telefon> getTelefon(ManuProcEntity::ID kundenid=ManuProcEntity::none_id,
+ const std::list<cH_Telefon> getTelefon(ManuProcEntity<>::ID kundenid=
+ 				ManuProcEntity<>::none_id,
  				bool forcereload=false) const; 
  
  void setName(const std::string &s) { name=s; }
@@ -87,7 +89,7 @@ public:
        {return Id()<b.Id();}
                                                   
 
-
+friend enum Person::B_UPDATE_BITS &operator++(enum Person::B_UPDATE_BITS &s);
 };
 
 

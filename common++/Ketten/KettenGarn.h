@@ -1,4 +1,4 @@
-/* $Id: KettenGarn.h,v 1.7 2002/09/18 08:58:34 christof Exp $ */
+/* $Id: KettenGarn.h,v 1.8 2002/10/24 14:06:50 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -48,7 +48,7 @@ public:
 	          Laenge()==b.Laenge() ;}
 	bool operator<(const KettenGarn &b) const throw()
 	{  return (Index()<b.Index()) || 
-	          (Index()==b.Index() && Artikel()<=b.Artikel() );}
+	          (Index()==b.Index() && Artikel()<b.Artikel() );}
 	          
 // this is for convenience only	
 	const cH_ArtikelBezeichnung Bezeichnung(const cH_ExtBezSchema &h) const throw()

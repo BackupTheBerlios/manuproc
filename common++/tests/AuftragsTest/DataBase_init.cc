@@ -1,4 +1,4 @@
-// $Id: DataBase_init.cc,v 1.4 2002/06/27 07:42:51 christof Exp $
+// $Id: DataBase_init.cc,v 1.5 2002/10/24 14:06:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -28,17 +28,29 @@
 #include <Lager/RohwarenLager.h>
 #include <Lager/JumboLager.h>
 #include <Ketten/KettplanKette.h>
+#include <unistd.h>
 
-DataBase_init::DataBase_init()
+
+DataBase_init::DataBase_init() 
 {
 #ifdef PETIG_EXTENSIONS
+#ifndef MANU_PROC_TEST
    ArtikelBaum_anlegen();
    RohwarenLager_initalisieren();
    JumboLager_initalisieren();
 #endif   
+#endif   
+#ifdef MANU_PROC_TEST 
+   Lager L(ROHWARENLAGER); 
+   L.rein_ins_lager(1,200,getuid()); // Metall
+   L.rein_ins_lager(2,50,getuid()); // Granulat klar
+   L.rein_ins_lager(3,100,getuid()); // Granulat gelb
+#endif
 }
 
-#ifdef PETIG_EXTENSIONS
+#ifdef  PETIG_EXTENSIONS
+#ifndef MANU_PROC_TEST
+
 void DataBase_init::ArtikelBaum_anlegen()
 {
   ArtikelBaum_anlegen_execute(ARTIKEL_ROLLEREI,cH_Prozess(PROZESS_ROLLEREI_FAERBEREI),ARTIKEL_FAERBEREI);
@@ -124,3 +136,5 @@ void DataBase_init::JumboLager_initalisieren()
 }
 
 #endif
+#endif
+

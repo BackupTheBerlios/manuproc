@@ -1,4 +1,4 @@
-/* $Id: Lager.h,v 1.4 2002/07/05 12:35:01 christof Exp $ */
+/* $Id: Lager.h,v 1.5 2002/10/24 14:06:50 thoma Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -75,9 +75,10 @@ class Lager : public HandleContent
    private:
       ppsInstanz::ID instanz;
 
-      virtual std::vector<class LagerInhalt> LagerInhalt_(const ArtikelBase& artikel)const=0 ;
+      virtual std::vector<class LagerInhalt> LagerInhalt_(const ArtikelBase& artikel)
+        const {assert(!"Nicht implementiert für Lager ohne eigene Tabelle");abort();} 
 
-   protected:
+   public:
       Lager(ppsInstanz::ID _instanz);
 
    public:

@@ -1,4 +1,4 @@
-// $Id: exception.cc,v 1.8 2002/07/05 12:35:01 christof Exp $
+// $Id: exception.cc,v 1.9 2002/10/24 14:06:49 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,13 +17,16 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: exception.cc,v 1.8 2002/07/05 12:35:01 christof Exp $
+// $Id: exception.cc,v 1.9 2002/10/24 14:06:49 thoma Exp $
 // long explantion at the end
 
 #include <iostream>
 #include <Misc/exception.h>
 #include <unistd.h>
+#include <typeinfo>
+//#include <stddef.h>
 
+#if __GCC__ == 2 
 // taken from gcc/eh_common.h
 
 typedef void * (*__eh_matcher) (void *, void *, void *);
@@ -37,8 +40,6 @@ typedef struct __eh_info
 
 // taken from gcc/cp/exception.cc
 
-#include <typeinfo>
-//#include <stddef.h>
 
 /* C++-specific state about the current exception.
    This must match init_exception_processing().
@@ -62,10 +63,13 @@ struct cp_eh_info
 /* Language-specific EH info pointer, defined in libgcc2. */
 
 extern "C" cp_eh_info **__get_eh_info ();       // actually void **
+#endif
 
 static void print_exception_u()
 {  std::cerr << "unexpected std::exception: ";
+#if __GCC__ == 2
    std::cerr << ((std::type_info*)((*__get_eh_info ())->type))->name();
+#endif   
    std::cerr << '\n';
    std::cerr.flush();
    _exit(1);
@@ -74,7 +78,9 @@ static void print_exception_u()
 static void print_exception_t()
 {  
    std::cerr << "uncaught std::exception: ";
+#if __GCC__ == 2   
    std::cerr << ((std::type_info*)((*__get_eh_info ())->type))->name();
+#endif   
    std::cerr << '\n';
    std::cerr.flush();
    _exit(1);

@@ -1,4 +1,4 @@
-// $Id: CacheStatic.h,v 1.7 2002/06/24 07:35:40 christof Exp $
+// $Id: CacheStatic.h,v 1.8 2002/10/24 14:06:49 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -31,10 +31,10 @@ template <class Index,class Payload>
 {	typedef safemap<Index,Payload> map_t;
 	map_t _mp;
 public:
-	typedef map_t::const_iterator const_iterator;
+	typedef typename map_t::const_iterator const_iterator;
 	// if your default constructor is private, friend this class
 	// I'd love if std C++ would allow to friend typedefs
-	typedef map_t::stl_type stl_type;
+	typedef typename map_t::stl_type stl_type;
 	
 	CacheStatic() throw() {}
 	// register is a reserved word ...
@@ -44,14 +44,14 @@ public:
 	   return &pp;
 	}
 	void deregister(const Index &ix) throw()
-	{  map_t::iterator i(_mp.find(ix));
+	{  typename map_t::iterator i(_mp.find(ix));
 	   if (i!=_mp.end()) _mp.erase(i);
 	}
 	void clear() throw()
 	{  _mp.clear();
 	}
 	Payload *lookup(const Index &ix) throw()
-	{  map_t::iterator i(_mp.find(ix));
+	{  typename map_t::iterator i(_mp.find(ix));
 	   if (i!=_mp.end()) return &i->second;
 	   return 0;
 	}

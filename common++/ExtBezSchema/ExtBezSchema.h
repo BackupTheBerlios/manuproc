@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema.h,v 1.12 2002/09/26 14:50:47 thoma Exp $
+// $Id: ExtBezSchema.h,v 1.13 2002/10/24 14:06:49 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -40,12 +40,15 @@ public:
 		std::string separator;
 		std::string spaltenname;
 		int signifikanz;
+		int folgenr_in_sig;
 		std::string TeXtabformat;
 
 		BezKomp(int _bztyp, const std::string &_bztxt, 
-			const std::string &_bzsep, const std::string &sname,int sign,std::string texf)
+			const std::string &_bzsep, const std::string &sname,
+			int sign,int snr,std::string texf)
 		: bezkomptype(_bztyp), bezkomptext(_bztxt), separator(_bzsep)
-			, spaltenname(sname), signifikanz(sign), TeXtabformat(texf)
+			, spaltenname(sname), signifikanz(sign), 
+			folgenr_in_sig(snr),TeXtabformat(texf)
 		{}
 	};
 	typedef std::vector<BezKomp>::const_iterator const_iterator;
@@ -144,8 +147,26 @@ public:
  { return bezkomps.begin(); }
  const_iterator end() const
  { return bezkomps.end(); }
+ 
+private: //wenn alle Clients der API damit kompil. sollte der Op. gelöscht werden
  const std::string operator[](unsigned int i) const
  {  return i<bezkomps.size()?bezkomps[i].bezkomptext:std::string();}
+
+public:
+ const BezKomp operator[](const std::string komp_bez) const throw()
+ { for(const_iterator i=begin(); i!=end(); ++i)
+     if((*i).bezkomptext==komp_bez) return (*i);
+   throw;  
+ }
+ 
+ const BezKomp operator[](pair<int,int> ktyp_sig) const throw()
+ { for(const_sigiterator i=sigbegin(ktyp_sig.second); 
+ 	i!=sigend(ktyp_sig.second); ++i)
+     if((*i).bezkomptype==ktyp_sig.first) return (*i);
+   throw;  
+ } 
+
+
 
  bool operator==(const ExtBezSchema &b) const
  { return Id()==b.Id() && Typ()==b.Typ(); }

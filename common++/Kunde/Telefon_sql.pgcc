@@ -1,4 +1,4 @@
-// $Id: Telefon_sql.pgcc,v 1.4 2002/06/20 06:29:53 christof Exp $
+// $Id: Telefon_sql.pgcc,v 1.5 2002/10/24 14:06:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,8 +22,8 @@
 #include<Aux/itos.h>
 exec sql include sqlca;
 
-Telefon::Telefon(ManuProcEntity::ID _tid) throw(SQLerror)
-: ManuProcEntity(_tid), kunde(none_id), person(none_id)
+Telefon::Telefon(Telefon::ID _tid) throw(SQLerror)
+: ManuProcEntity<>(_tid), kunde(none_id), person(none_id)
 {
  if(entityid==none_id) return;
  exec sql begin declare section;
@@ -144,13 +144,13 @@ void Telefon::update() const throw(SQLerror)
 
 
 const cH_Telefon Telefon::create(const ID kid, const ID pid, 
-                const st_nummer &nr, const std::string t="")
+                const st_nummer &nr, const std::string t)
    { return create(cH_Telefon(nr.art,kid,pid,nr.land,nr.vorwahl,
                                 nr.nummer,nr.durchwahl,t));
    }
 
 const cH_Telefon Telefon::newTelefon(const ID kid, const ID pid,
-                const st_nummer &nr, const std::string t="")
+                const st_nummer &nr, const std::string t)
                 { return create(kid,pid,nr,t);} 
 
 

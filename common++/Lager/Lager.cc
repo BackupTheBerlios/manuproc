@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.14 2002/10/09 14:48:07 thoma Exp $
+// $Id: Lager.cc,v 1.15 2002/10/24 14:06:50 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -35,11 +35,13 @@
 #include <Aux/AdminProblems.h>
 //#include <Instanzen/Produziert.h>
 #include <Instanzen/ppsInstanzProduziert.h>
-
+#include <Misc/relops.h>
+#include <Misc/Trace.h>
 
 H_Lager::H_Lager(const ArtikelBase& artikel) 
 {
- *this=H_Lager(ArtikelStamm(artikel).BestellenBei());
+// *this=H_Lager(ArtikelStamm(artikel).BestellenBei());
+ *this=H_Lager(ppsInstanz::getBestellInstanz(artikel));
 }
 
 H_Lager::H_Lager(const cH_ppsInstanz& instanz) 
@@ -49,7 +51,8 @@ H_Lager::H_Lager(const cH_ppsInstanz& instanz)
    {
       case ppsInstanzID::Bandlager : *this= new JumboLager() ; break;
       case ppsInstanzID::Rohwarenlager  : *this= new RohwarenLager(); break;
-      default : assert (!"Ungültiges Lager");
+      default: *this= new Lager(instanz->Id()); 
+//      default : assert (!"Ungültiges Lager");
    }
 #else
   assert(!"Keine Lagerklasse definiert");
@@ -60,15 +63,23 @@ H_Lager::H_Lager(const cH_ppsInstanz& instanz)
 
 void Lager::rein_ins_lager(ArtikelBase artikel,AuftragBase::mengen_t menge,int uid)
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
+     "Lager="+cH_ppsInstanz(instanz)->Name(),
+     "Artikel="+cH_ArtikelBezeichnung(artikel)->Bezeichnung(),
+     "Menge="+dtos(menge));
   assert(menge>=0);
   try{
      Transaction tr;
      dispo_auftrag_aendern(artikel,menge);
+
      Lager_Vormerkungen::freigegeben_menge_neu_verplanen(instanz,artikel,menge,uid,AufEintragBase::r_Produziert);
-     cH_ppsInstanz I(instanz);
+
+//     cH_ppsInstanz I(instanz);
      ManuProC::st_produziert sp(artikel,menge,uid);
-     cH_ppsInstanz(I->LagerFuer())->Produziert(sp);
-//     Produziert(I->LagerFuer(),artikel,menge,uid).NichtSelbst();
+//cout << "Lager: "<<ppsInstanz::getProduktionsInstanz(artikel)->Name()<<'\n';
+     if(!ppsInstanz::getProduktionsInstanz(artikel)->ProduziertSelbst())
+           ppsInstanz::getProduktionsInstanz(artikel)->Produziert(sp);
+
      tr.commit();
    } catch(SQLerror &e)
      { std::cout << e <<'\n';}
@@ -76,6 +87,9 @@ void Lager::rein_ins_lager(ArtikelBase artikel,AuftragBase::mengen_t menge,int u
 
 void Lager::raus_aus_lager(ArtikelBase artikel,AuftragBase::mengen_t menge,int uid)
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
+     "Artikel="+cH_ArtikelBezeichnung(artikel)->Bezeichnung(),
+     "Menge="+dtos(menge));
   assert(menge>=0);
   try{
     assert(cH_ppsInstanz(instanz)->ProduziertSelbst());
@@ -83,13 +97,15 @@ void Lager::raus_aus_lager(ArtikelBase artikel,AuftragBase::mengen_t menge,int u
      ManuProC::st_produziert sp(artikel,menge,uid);
      cH_ppsInstanz(instanz)->Lager_abschreiben(sp);
 
-//    Produziert(instanz,artikel,menge,uid).Lager_abschreiben();
    } catch(SQLerror &e) { std::cout << e <<'\n';}
 }
 
 
 bool Lager::dispo_auftrag_aendern(ArtikelBase artikel,AuftragBase::mengen_t menge)
 {
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
+     "Artikel="+cH_ArtikelBezeichnung(artikel)->Bezeichnung(),
+     "Menge="+dtos(menge));
    AuftragBase da(instanz,AuftragBase::dispo_auftrag_id);
    int znr=-1,newznr=-1;
    AuftragBase::mengen_t oldmenge;

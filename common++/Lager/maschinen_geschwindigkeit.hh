@@ -1,4 +1,4 @@
-// $Id: maschinen_geschwindigkeit.hh,v 1.2 2002/07/05 12:35:01 christof Exp $
+// $Id: maschinen_geschwindigkeit.hh,v 1.3 2002/10/24 14:06:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -27,7 +27,7 @@ class Maschinen_Geschwindigkeit
       int bekannt;
    public:
       Maschinen_Geschwindigkeit():speed_d(100),bekannt(4){};
-      Maschinen_Geschwindigkeit(ArtikelBase artikel, const string& maschtyp="");
+      Maschinen_Geschwindigkeit(ArtikelBase artikel, const std::string& maschtyp="");
       double Speed_m_Tag() const {return speed_d;}  /* Meter pro Tag */
       int Bekannt() const {return bekannt;}
          // 1 = Artikel+Maschine bekannt

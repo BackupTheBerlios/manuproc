@@ -1,4 +1,4 @@
-// $Id: Schussfaeden.hh,v 1.6 2002/09/18 08:58:34 christof Exp $
+// $Id: Schussfaeden.hh,v 1.7 2002/10/24 14:06:50 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,7 +21,7 @@
 #ifndef SFADEN_HH
 #define SFADEN_HH
 
-// $Id: Schussfaeden.hh,v 1.6 2002/09/18 08:58:34 christof Exp $
+// $Id: Schussfaeden.hh,v 1.7 2002/10/24 14:06:50 thoma Exp $
 
 #include <Faeden/Faden.hh>
 #include <Artikel/ArtikelBase.h>
@@ -36,7 +36,7 @@ private:
 //	schussdichte_t schussdichte;
 //	ArtikelBase::ID fangfaden;
 public:
-	typedef vector<Faden>::const_iterator const_iterator;
+	typedef std::vector<Faden>::const_iterator const_iterator;
 	
 	Schussfaeden() {}
 	void Load(const ArtikelBase &ab);
@@ -58,8 +58,8 @@ public:
 	void Schussdichte(schussdichte_t s) { schussdichte=s; }
 	// ***** do not use these in new code! **************
 #endif
-	vector<Faden> &get_vector() { return schussfaeden; }
-	typedef vector<Faden>::iterator iterator;
+	std::vector<Faden> &get_vector() { return schussfaeden; }
+	typedef std::vector<Faden>::iterator iterator;
 	iterator begin() { return schussfaeden.begin(); }
 #if 0
 	iterator end() { return schussfaeden.end(); }

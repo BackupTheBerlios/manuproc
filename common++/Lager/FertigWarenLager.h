@@ -1,4 +1,4 @@
-// $Id: FertigWarenLager.h,v 1.4 2002/06/27 07:42:50 christof Exp $
+// $Id: FertigWarenLager.h,v 1.5 2002/10/24 14:06:50 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -40,7 +40,7 @@ public:
    FertigWarenLager(const ArtikelBase a) : artikel(a) {}
 
    ArtikelBase Artikel() const {return artikel;}
-   pair<Zeitpunkt_new,int> letzteInventur();
+   std::pair<Zeitpunkt_new,int> letzteInventur();
    int Bestand(ManuProC::Datum date);
    int Bestand() { return Bestand(ManuProC::Datum::today()) ;}
 };

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.13 2002/10/09 14:48:07 thoma Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.14 2002/10/24 14:06:50 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -44,7 +44,7 @@ void LieferscheinEntry::setPalette(int p) throw(SQLerror)
 
 bool LieferscheinEntry::changeMenge(int stueck,mengen_t menge) throw(SQLerror)
 {
-  if(ZusatzInfo()) {cout <<"Warnung: Mengenänderung für Zusatzinfos nicht möglich\n" ;return false;}
+  if(ZusatzInfo()) {std::cout <<"Warnung: Mengenänderung für Zusatzinfos nicht möglich\n" ;return false;}
   if(stueck==Stueck() && menge==Menge()) return true ; //nichts geändert
 
   Transaction tr;
@@ -58,20 +58,10 @@ bool LieferscheinEntry::changeMenge(int stueck,mengen_t menge) throw(SQLerror)
        mengen_t rest=AE.getRestStk();
        if(abmenge > rest ) return false;
        updateLieferscheinMenge(stueck,menge);
-#ifdef MABELLA_EXTENSIONS
-       AE.abschreiben(abmenge,Id());       
-#else
-//       Kunde::ID kunde=Lieferschein(*this).getKunde()->Id();
-//       ManuProC::st_produziert sp(kunde,AE,abmenge,getuid(),Id());
-//       Instanz()->Produziert(sp);
-         AE.Produziert(abmenge,Id());
-             
-//       Produziert(kunde,AE,abmenge,getuid(),Id()).NichtSelbst();    
-#endif       
-
-     }catch(AufEintrag::NoAEB_Error &e){cerr << AEB<<" existiert nicht\n"; return false;}
+       AE.Produziert(abmenge,Id());
+     }catch(AufEintrag::NoAEB_Error &e){std::cerr << AEB<<" existiert nicht\n"; return false;}
    }
-  else // Zusatzinfos ODER kein Referenzauftrag
+  else // kein Referenzauftrag => eventuell existieren Zusatzinfos
    {
      LieferscheinEntry LE=*this;
      std::vector<LieferscheinEntry> VLE;
@@ -80,11 +70,9 @@ bool LieferscheinEntry::changeMenge(int stueck,mengen_t menge) throw(SQLerror)
         try{
         LE=LieferscheinEntry(LieferscheinEntryBase(Instanz(),Id(),1+LE.Zeile()));
         if(LE.ZusatzInfo())  VLE.push_back(LE);
-        }catch(SQLerror &e) {cerr<< e<<'\n'; break;}
+        }catch(SQLerror &e) {std::cerr<< e<<'\n'; break;}
       } while (LE.ZusatzInfo()) ;
-//     bool ok=menge_bei_zusatzinfos_abschreiben(VLE,abmenge);
-      menge_bei_zusatzinfos_abschreiben(VLE,stueck,menge);
-//     if(!ok) return false;
+     menge_bei_zusatzinfos_abschreiben(VLE,stueck,menge);
      updateLieferscheinMenge(stueck,menge);
    }
   tr.commit();
@@ -101,7 +89,6 @@ void LieferscheinEntry::updateLieferscheinMenge(int stueck,mengen_t menge)  thro
    SQLerror::test(__FILELINE__);
 }
 
-//bool LieferscheinEntry::menge_bei_zusatzinfos_abschreiben(std::vector<LieferscheinEntry>& VLE,mengen_t abmenge)
 void LieferscheinEntry::menge_bei_zusatzinfos_abschreiben(std::vector<LieferscheinEntry>& VLE,int stueck,mengen_t menge)
 {
   if(VLE.empty()) return;
@@ -128,11 +115,9 @@ void LieferscheinEntry::menge_bei_zusatzinfos_abschreiben(std::vector<Liefersche
     } 
 
   // Jetzt die Kundenaufträge behandeln
-//  bool del_line=false;
   if(AuftragS)
    {
     assert(AuftragS<0);
-//cout <<"AAAAAA\n";
     mengen_t abmenge=Abschreibmenge(stueck,menge);
     for(std::vector<LieferscheinEntry>::reverse_iterator i=VLE.rbegin();i!=VLE.rend();++i)
      {
@@ -141,17 +126,8 @@ void LieferscheinEntry::menge_bei_zusatzinfos_abschreiben(std::vector<Liefersche
          AufEintrag AE(i->getAufEintragBase());
          mengen_t M=AuftragS;
          if(AE.getStueck()<M) M=-AE.getStueck();
-//cout << "Be HERE\t"<<i->Stueck()<<' '<<i->Menge()<<'\t'<<M<<'\n';
-#ifndef MABELLA_EXTENSIONS
-//         Kunde::ID kunde=Lieferschein(*this).getKunde()->Id();
-//         ManuProC::st_produziert sp(kunde,AE,M,getuid(),Id());
-//         Instanz()->Produziert(sp);
-//         Produziert(kunde,AE,M,getuid(),Id()).NichtSelbst();    
          AE.Produziert(M,Id());
 
-#else         
-         AE.abschreiben(M,Id());
-#endif
          // Lieferscheinentry:
          if(i->Stueck()==1)
              i->updateLieferscheinMenge(1,i->Menge()+M);

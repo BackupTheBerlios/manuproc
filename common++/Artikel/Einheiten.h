@@ -1,4 +1,4 @@
-/* $Id: Einheiten.h,v 1.13 2002/07/05 12:35:01 christof Exp $ */
+/* $Id: Einheiten.h,v 1.14 2002/10/24 14:06:49 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Einheiten.h,v 1.13 2002/07/05 12:35:01 christof Exp $
+// $Id: Einheiten.h,v 1.14 2002/10/24 14:06:49 thoma Exp $
 
 #ifndef ARTIKEL_EINHEITEN_H
 #define ARTIKEL_EINHEITEN_H
@@ -49,7 +49,7 @@ private:
 	Einheit(int x); // not defined, use ID!
 	
 	Einheit() : einh(default_id) {}
-	friend class map<ID,Einheit>;
+	friend class std::map<ID,Einheit>;
 
 public:
 	Einheit(const ArtikelBase &ab) throw(SQLerror);
@@ -82,7 +82,7 @@ public:
 	{  return !bez_menge.empty();
 	}
 	
-        static vector<Einheit> alleEinheiten();
+        static std::vector<Einheit> alleEinheiten();
 };
 /*
 class cH_Einheit : public Handle<const Einheit>   

@@ -1,4 +1,4 @@
-// $Id: Prozess_sql.pgcc,v 1.6 2002/09/26 14:50:47 thoma Exp $
+// $Id: Prozess_sql.pgcc,v 1.7 2002/10/24 14:06:49 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -57,7 +57,8 @@ cH_Prozess::cH_Prozess(Prozess::ID pid)
 {  cH_Prozess *cached(cache.lookup(pid));
    if (cached) *this=*cached;
    else
-   {  if (pid==default_pid) *this=cH_Prozess(new Prozess());
+   {  
+      if (pid==default_pid) *this=cH_Prozess(new Prozess());
       else *this=cH_Prozess(new Prozess(pid));
       cache.Register(pid,*this);
    }
