@@ -1,4 +1,4 @@
-dnl $Id: petig.m4,v 1.56 2002/02/18 13:58:19 cvs_christof Exp $
+dnl $Id: petig.m4,v 1.58 2002/04/29 09:55:44 cvs_christof Exp $
 
 dnl Configure paths for some libraries
 dnl derived from kde's acinclude.m4
@@ -158,6 +158,7 @@ then
      ECPG_LIBS=""
      ECPG_INCLUDES=""
      ECPG_LDFLAGS=""
+     ECPG=/bin/touch
   else     
     AC_MSG_RESULT($ECPG)
     
@@ -189,7 +190,7 @@ then
   
   AC_SUBST(ECPG)
   AC_SUBST(ECPG_INCLUDES)
-  ECPG_CFLAGS=$ECPG_INCLUDES
+  ECPG_CFLAGS="$ECPG_INCLUDES"
   AC_SUBST(ECPG_CFLAGS)
   AC_SUBST(ECPG_LDFLAGS)
   AC_SUBST(ECPG_LIBS)
