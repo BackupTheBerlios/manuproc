@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.3 2004/03/11 14:49:06 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.4 2004/03/11 14:49:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -36,7 +36,7 @@ Query::debug_environment::debug_environment() : on(false)
 {  if (getenv("SQLOPT") && getenv("SQLOPT")==std::string("-E")) on=true;
 }
 
-static Query::debug_environment Query::debugging;
+Query::debug_environment Query::debugging;
 
 void FetchIStream::mythrow(const SQLerror &e)
 {  if (Query::debugging.on) std::cerr << e << '\n';
