@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.19 2003/12/03 12:27:14 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.20 2004/02/11 08:37:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -201,6 +201,8 @@ public:
  	}
  	void operator()(const ArtikelBase &art,AuftragBase::mengen_t m) const 
  	{  backend(art,m); }
+ 	bool operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const
+ 	{  return distribute_children_cb::operator()(b,a); }
 };
 
 void AufEintrag::ArtikelInternAbbestellen(mengen_t menge) const
@@ -227,7 +229,7 @@ void AufEintrag::ArtikelInternAbbestellen(mengen_t menge) const
  else 
  try{
     if (lager_bevorzugt_freigeben)
-      distribute_children_twice_rev(*this,menge,Artikel(),
+      distribute_children_twice(*this,menge,Artikel(),
       			ArtikelAbbestellen_bevorzugt(*this));
     else
       distribute_children(*this,menge,Artikel(),
