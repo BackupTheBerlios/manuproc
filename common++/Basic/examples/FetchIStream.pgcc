@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.16 2003/01/15 11:35:23 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.17 2003/01/15 16:42:04 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -59,12 +59,15 @@ int main()
    Query query3("select 2;");
    std::cout << query3.FetchOne<int>() << '\n';
 }   
-  {int a,b; std::string x,y,z;
+  {int a,b,c,d; std::string x,y,z;
    std::string in="\"'\\";
-   Query ("select ?,?,?,'?',?")
-   	<< 1 << Query::null() << "test" << in
-   	>> a >> FetchIStream::MapNull<int>(b,-1) >> x >> y >> z;
-   std::cout << a << ' ' << b << ' ' << x << ' ' << y << ' ' << z << '\n';
+   Query ("select ?,?,?,'?',?, ?,?")
+   	<< 1 << Query::null() << "test" << in 
+   		<< Query::NullIf<int>(1,2) << Query::NullIf<int>(2,2)
+   	>> a >> FetchIStream::MapNull<int>(b,-1) >> x >> y >> z 
+   		>> c >> FetchIStream::MapNull<int>(d,-1);
+   std::cout << a << ' ' << b << ' ' << x << ' ' << y << ' ' << z 
+   		<< ' ' << c << ' ' << d << '\n';
   }
    ManuProC::dbdisconnect();
    return 0;
