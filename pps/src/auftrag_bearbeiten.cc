@@ -111,7 +111,9 @@ void auftrag_bearbeiten::onSelArtikel()
 
     Artikelpreis ap(artikel_preisliste->Id(),artikelbox->get_value());
 #else
-    Artikelpreis ap(kunde->preisliste(),artikelbox->get_value());
+    // hmmm die Menge beeinflusst den Preis, also vielleicht später nochmal 
+    // nachsehen
+    Artikelpreis ap(kunde->preisliste(),artikelbox->get_value(),0);
 #endif
 
     Preis p(ap.In(auftrag->getWaehrung()));
