@@ -143,11 +143,13 @@ void auftrag_bearbeiten::on_auftrag_clist_select_row
 {   
  assert(auftrag);
  aktaufeintrag = &auftrag->getAufEntry(row);
- try{artikelbox->set_value(aktaufeintrag->Artikel());
- Einheit e(artikelbox->get_value());
- mengeeinheit->set_text((std::string)e);
- WPreis->set_Einheit((std::string)e);
- WPreis->set_Waehrung(auftrag->getWaehrung());
+ try {
+  artikelbox->set_value(aktaufeintrag->Artikel());
+  Einheit e(artikelbox->get_value());
+  mengeeinheit->set_text((std::string)e);
+  WPreis->set_Einheit((std::string)e);
+  WPreis->set_Waehrung(auftrag->getWaehrung());
+  preislisten->set_value(aktaufeintrag->getPreisliste()->Id());  
  }
  catch(SQLerror &e)
    {meldung->Show(e); return;}
@@ -167,6 +169,8 @@ void auftrag_bearbeiten::on_auftrag_clist_unselect_row
 {   
  aufentry_ok->set_sensitive(true);
  clearEntry();
+ cH_Kunde rngkd(kunde->Rngan());
+ preislisten->set_value(rngkd->preisliste());
 }
 
 void auftrag_bearbeiten::clearEntry()
@@ -263,9 +267,29 @@ void auftrag_bearbeiten::on_jahrgang_spinbutton_activate()
 void auftrag_bearbeiten::on_stkmtr_spinbutton_activate()
 {   
  assert(auftrag);
+
+ gtk_spin_button_update(stkmtr_spinbutton->gtkobj());
+
+// hier zuerst den Preis noch mal setzten, da abhängig von der bestellten Menge
+    if(artikel_preisliste->Id() != PreisListe::none_id)
+      {
+       WPreis->reset();
+#ifdef MABELLA_EXTENSIONS
+       Artikelpreis ap(artikel_preisliste->Id(),artikelbox->get_value(),
+			stkmtr_spinbutton->get_value_as_int());	
+#else
+       Artikelpreis ap(kunde->preisliste(),artikelbox->get_value(),
+			stkmtr_spinbutton->get_value_as_int());	
+#endif
+
+       Preis p(ap.In(auftrag->getWaehrung()));
+       WPreis->set_value(p,ap.MindMenge());
+       artikel_preisliste_geaendert=false;
+       on_activate_wpreis();
+      }
+
  if(aktaufeintrag && ppsInstanzID::Kundenauftraege)
       {
-       gtk_spin_button_update(stkmtr_spinbutton->gtkobj());
        AuftragBase::mengen_t diffmenge=
        	AuftragBase::mengen_t(stkmtr_spinbutton->get_value_as_int())-
         aktaufeintrag->getStueck();
@@ -276,43 +300,13 @@ void auftrag_bearbeiten::on_stkmtr_spinbutton_activate()
        fillCList();
        auftrag_clist->grab_focus();
        auftrag_clist->moveto(selectedentry,0,.5,0);
-
-// ab hier den Preis noch mal setzten, da abhängig von der besellten Menge
-    WPreis->reset();
-#ifdef MABELLA_EXTENSIONS
-    cH_Kunde kndrng(kunde->Rngan());
- 
-    if(preisautomatik->get_active())
-      {
-         Artikelpreis AP(kndrng,artikelbox->get_value(),
-			stkmtr_spinbutton->get_value_as_int());
-         if (AP.Gefunden())
-            {artikel_preisliste=cH_PreisListe(AP.GefundenIn());
-             preislisten->set_value(artikel_preisliste->Id());
-            }
-         else
-            artikel_preisliste=PreisListe::none_id;
-      }
-    else
-      artikel_preisliste=cH_PreisListe(preislisten->get_value());
-
-    Artikelpreis ap(artikel_preisliste->Id(),artikelbox->get_value(),
-			stkmtr_spinbutton->get_value_as_int());	
-    Rabatt_setzen(artikel_preisliste);
-#else
-    Artikelpreis ap(kunde->preisliste(),artikelbox->get_value(),
-			stkmtr_spinbutton->get_value_as_int());	
-#endif
-
-    Preis p(ap.In(auftrag->getWaehrung()));
-    WPreis->set_value(p);
-    on_activate_wpreis();
- 
      }
  else
   if(stkmtr_spinbutton->get_value_as_int() > 0)
    { liefdatum_datewin->grab_focus();
    }
+
+
 }
 
 void auftrag_bearbeiten::on_lieferdatum_activate()
@@ -867,6 +861,7 @@ void auftrag_bearbeiten::on_auftrag_preislisten_activate()
      artikelbox->EinWarenkorb(p->Id());   
  artikelbox->Einschraenken_b(true);
  artikelbox->grab_focus();
+ artikel_preisliste=p;
  Rabatt_setzen(p);
 #endif
 }
