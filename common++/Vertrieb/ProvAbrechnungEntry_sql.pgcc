@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnungEntry_sql.pgcc,v 1.11 2003/12/16 15:36:47 jacek Exp $ */
+/* $Id: ProvAbrechnungEntry_sql.pgcc,v 1.12 2005/01/12 14:52:09 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -53,9 +53,9 @@ ProvAbrechnungEntry::ProvAbrechnungEntry(const ManuProcEntity<>::ID _abrnr,
 : ManuProcEntity<>(_abrnr), rngentry(RechnungEntryBase(_rngid,zeilennr)), 
   verknr(_verknr), rng_rabatt(rng_rabattsatz)
 {
- umsatz=rngentry.GPreis();
+ umsatz=rngentry.Gesamtpreis();
  provsatz=_psatz;
- provision=umsatz.Wert() * (_psatz.as_float()/100.0);
+ provision=umsatz * (_psatz.as_float()/100.0);
 }
 
 

@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnungEntry.h,v 1.9 2004/01/28 16:31:24 jacek Exp $ */
+/* $Id: ProvAbrechnungEntry.h,v 1.10 2005/01/12 14:52:09 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -32,17 +32,17 @@
 class ProvAbrechnungEntry : public ManuProcEntity<>
 {
  RechnungEntry rngentry;
- Preis umsatz;
+ Preis::geldbetrag_t umsatz;
  fixedpoint<2> provsatz;
- fixedpoint<2> provision;
+ Preis::geldbetrag_t provision;
  const Kunde::ID verknr;
  float rng_rabatt; 	// Gesamtrabattsatz auf der Rechnung
 
 public:
 
  const fixedpoint<2> ProvSatz() const { return provsatz; }
- const fixedpoint<2> Provision() const { return provision; } 
- const Preis Umsatz() const { return umsatz; } 
+ const Preis::geldbetrag_t Provision() const { return provision; } 
+ const Preis::geldbetrag_t Umsatz() const { return umsatz; } 
 
  ProvAbrechnungEntry() : rngentry(RechnungEntryBase()),
  	provsatz(0.0), provision(0.0),verknr(Kunde::none_id),

@@ -1,4 +1,4 @@
-/* $Id: RechnungEntry.h,v 1.26 2004/01/28 15:35:44 jacek Exp $ */
+/* $Id: RechnungEntry.h,v 1.27 2005/01/12 14:52:09 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -132,6 +132,9 @@ public:
  	return Preis(preis.Gesamtpreis(preis.getWaehrung(),
  				stueck,menge.as_float(),rabatt),
  			preis.getWaehrung(),preis.PreisMenge()); }
+ const Preis::geldbetrag_t Gesamtpreis() const { 
+	 	return preis.Gesamtpreis(preis.getWaehrung(),
+ 			stueck,menge.as_float(),rabatt); }	
  
 };
 
