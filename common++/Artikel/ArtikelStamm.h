@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.h,v 1.6 2002/02/05 17:15:52 christof Exp $
+// $Id: ArtikelStamm.h,v 1.7 2002/02/08 21:47:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -64,6 +64,8 @@ public:
 	Einheit getEinheit() const
 	{  return payload.einh; }
 
+
+        static void setEinheit(const ArtikelBase &artikel,const Einheit e);
         static void set_BestellenBei(const ArtikelBase &artikel,const ppsInstanz::ID instanz);
 };
 #endif

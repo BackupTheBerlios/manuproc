@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.h,v 1.22 2002/02/05 17:15:52 christof Exp $
+// $Id: AufEintragBase.h,v 1.23 2002/02/08 21:47:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -56,8 +56,8 @@ public:
  mengen_t abschreiben(mengen_t menge) const throw(SQLerror);
  bool deleteAuftragEntry() const throw(SQLerror);
  void updateStkDiff(mengen_t menge) const throw(SQLerror);
- void setStatus_raw(AufStatVal status) const throw(SQLerror);
-                                                          
+//??? void setStatus_raw(AufStatVal status) const throw(SQLerror);
+
     void setLetztePlanungFuer(ppsInstanz::ID planinstanz) const throw(SQLerror);
     void calculateProzessInstanz(); // private?
     void setMaxPlanInstanz(int planinstanz) const throw(SQLerror); // private?

@@ -1,4 +1,4 @@
-// $Id: AuftragsEntryZuordnung.h,v 1.7 2002/02/05 17:15:52 christof Exp $
+// $Id: AuftragsEntryZuordnung.h,v 1.8 2002/02/08 21:47:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -38,6 +38,8 @@ public:
  struct st_reflist {AufEintragBase AEB2;ArtikelBase AB;mengen_t Menge;
          st_reflist(AufEintragBase aeb2,ArtikelBase ab,mengen_t menge) 
               :AEB2(aeb2),AB(ab),Menge(menge){}};
+
+ enum VonNachDel {Von,Nach,Delete} ;
 private:
    std::list<cH_Kunde> get_Referenz_Kunden_long() const throw(SQLerror);
 public:
@@ -54,10 +56,7 @@ public:
 
 
     std::list<cH_Kunde> get_Referenz_Kunden() const throw(SQLerror);
-/*
-    static AufEintragBase get_AufEintrag_from_Artikel_by_Lfdate   
-                   (const ArtikelBase& artikel,ppsInstanz::ppsInstId instanz);
-*/
+
     static std::list<AufEintragBase> get_AufEintragList_from_Artikel
                (const ArtikelBase& artikel,ppsInstanz::ppsInstId instanz,AufStatVal status);
 
@@ -73,8 +72,8 @@ public:
     bool setMengeDiff(const mengen_t menge,const AuftragBase& neuAuftrag,const int neuZnr);
     // Zuordnung ändern:
     bool setKindZnr(const AuftragBase& neuAuftrag,const int neuZnr);
-    //Zeilennummer für Kind erhalten
-//    int getKindZnr(const AuftragBase& neuAuftrag) const;
+
+    static void moveInstanz(const VonNachDel vdl,const AufEintragBase &oldAEB, const AufEintragBase &newAEB) throw(SQLerror);
 };
 
 

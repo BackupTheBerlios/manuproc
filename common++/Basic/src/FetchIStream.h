@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.5 2002/01/23 13:43:53 christof Exp $
+// $Id: FetchIStream.h,v 1.6 2002/02/08 21:47:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -88,6 +88,7 @@ public:
 	bool good() const 
 	{ return !eof; }
 	~Query();
+	static void Execute(const std::string &command);
 };
 
 static inline Query &operator>>(Query &q, FetchIStream &s)

@@ -204,11 +204,11 @@ void TreeBase::redisplay(cH_RowDataBase row, guint index)
 }
 
 
-void TreeBase::refillTCL()
+void TreeBase::refillTCL(bool clear_me)
 {
 // liste loeschen
  collapse();
- TCList::clear();
+ if(clear_me) TCList::clear();
 
  std::vector<cH_RowDataBase>::const_iterator i=datavec.begin();
  std::vector<cH_RowDataBase>::const_iterator j=datavec.end();

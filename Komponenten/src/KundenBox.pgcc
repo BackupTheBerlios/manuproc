@@ -26,6 +26,14 @@
 #include "KundenBox.hh"
 exec sql include sqlca;
 
+
+void KundenBox::setLabel(std::string nr,std::string name)
+{
+ label_kdnr->set_text(nr);
+ label_nam->set_text(name);
+}
+
+
 void KundenBox::Kundennr_activate()
 {  // search Name and activate
    set_value(strtol(kundennr->get_text().c_str(),0,10));
@@ -137,10 +145,9 @@ KundenBox::KundenBox() : id(Kunde::none_id), tr("",false), tr2("",false)
 }
 
 void KundenBox::set_value(const cH_Kunde &k)
-{  char buf[30];
-   snprintf(buf,sizeof buf,"%d",k->Id());
-   kundennr->set_text(buf);
-   kundenname->set_text(k->getName());
+{
+   kundennr->set_text(itos(k->Id()));
+   kundenname->setContent(k->getName(),k->Id());
    id=k->Id();
 }
 

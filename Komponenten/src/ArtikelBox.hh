@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.12 2002/01/22 09:21:56 christof Exp $
+// $Id: ArtikelBox.hh,v 1.13 2002/02/08 21:45:04 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -62,6 +62,7 @@ class ArtikelBox : public Gtk::EventBox
  std::string sprogram,sposition;
  cH_ExtBezSchema schema;
  std::string einschraenkung;
+ std::string joinstring;
 
  ArtikelBase artikel;
 
@@ -141,7 +142,11 @@ public:
    void reset()
    { for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
       for (t_combos::iterator i=j->begin();i!=j->end();++i)
-        (*i)->reset(); }  
+        (*i)->reset(); 
+     eingeschraenkt=false;
+     einschraenkung="";
+     joinstring="";
+   }  
 
 	void set_editable(bool edit)
    { for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
@@ -170,6 +175,13 @@ public:
 	
 	void AddUserMenu(const std::string &text, gpointer data);
 	void ClearUserMenus();
+
+#ifdef MABELLA_EXTENSIONS
+	void NurWarenkorb(Kunde::ID kid)
+	  {joinstring = " join artikelpreise on (id=artikelid) ";
+	   einschraenkung=" kundennr="+itos(kid);
+	  }
+#endif
 
 	// ----- Signale -----
 	SigC::Signal0<void> activate;

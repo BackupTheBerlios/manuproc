@@ -48,6 +48,8 @@ class KundenBox : public KundenBox_glade
 
 public:
 	KundenBox();
+   void setLabel(std::string nr,std::string name);
+
 	Kunde::ID get_value() const 
 	{  return id; }
 	void set_value(Kunde::ID i)

@@ -16,6 +16,7 @@ class Artikel_Bestellen :  public Gtk::Table
    Gtk::SpinButton *SP_menge;
    ArtikelBox *AB_artikel;
    ProzessBox *PB_prozess;
+   Gtk::OptionMenu *OM_einheit;
 
    void menge();
    void artikel();
@@ -23,10 +24,10 @@ class Artikel_Bestellen :  public Gtk::Table
  public: 
    Artikel_Bestellen();
 
-   cH_Prozess get_Prozess();
+   cH_Prozess get_Prozess()const ;
    void set_Prozess(const cH_Prozess& p) {PB_prozess->set_value(p);}
-   ArtikelBase get_Artikel();
-   double get_Menge();
+   ArtikelBase get_Artikel() const;
+   double get_Menge() const ;
    void grab_focus_Artikel()
    {  AB_artikel->grab_focus();
    }

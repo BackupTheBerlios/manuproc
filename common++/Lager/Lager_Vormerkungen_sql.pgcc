@@ -1,0 +1,73 @@
+#include "Lager_Vormerkungen.hh"
+#include <Aux/Transaction.h>
+exec sql include sqlca;
+#include <Aux/SQLerror.h>
+#include <Aux/itos.h>
+#include <Lager/JumboRolle.h>
+#include <Auftrag/sqlAuftragSelector.h>
+#include <Auftrag/selFullAufEntry.h>
+#include <Artikel/ArtikelStamm.h>
+
+static const float reste_faktor = 0.25;
+
+AuftragBase::mengen_t  Lager_Vormerkungen::artikel_auf_lager(const ArtikelBase& artikel)
+{
+  std::string lagername = ArtikelStamm(artikel).BestellenBei()->LagerName();
+
+  exec sql begin declare section;
+   char query[1024]; 
+   double db_menge,db_restmenge;
+   bool db_rest;
+  exec sql end declare section;
+  std::string squery;
+  if (lagername=="rl_inhalt")
+   squery = "SELECT coalesce(kartons*kg_per_karton,0),
+                    coalesce(rest_kg,0) 
+               from rl_inhalt where material="+itos(artikel.Id());
+  else if (lagername=="rohjumbo")
+   squery += " SELECT coalesce(barcoist,soll_meter,0), coalesce(rest,'false')
+         from rohjumbo 
+         where artikelid = "+itos(artikel.Id()) +" and  status="+
+         itos(JumboRolle::ImLager) ;
+  else abort();
+
+  strncpy(query,squery.c_str(),sizeof(query));
+  exec sql prepare menge_ein_ from :query;
+  exec sql declare menge_ein cursor for menge_ein_;
+  Transaction tr;
+  exec sql open menge_ein;
+  SQLerror::test(__FILELINE__);
+  AuftragBase::mengen_t summe=0;
+  while (true)
+   {
+     if (lagername=="rohjumbo")
+        exec sql fetch menge_ein into :db_menge,:db_rest;
+     else if (lagername=="rl_inhalt")
+        exec sql fetch menge_ein into :db_menge,:db_restmenge;
+     SQLerror::test(__FILELINE__,100);
+     if (sqlca.sqlcode) break;
+     if (lagername=="rohjumbo")
+      { if (!db_rest) summe += db_menge;
+        else          summe += db_menge*reste_faktor; }
+     else if (lagername=="rl_inhalt")
+        summe += db_menge + db_restmenge * reste_faktor;
+   }
+  exec sql close menge_ein;
+//cout << "Im Lager: "<<summe<<" von "<<cH_ArtikelBezeichnung(artikel)->Bezeichnung()<<'\n'; 
+  ///////////////////////////////////////////////////////
+  // und nun die vorgemerkte Menge wieder abziehen
+//cout << Instanz()->Id();
+//cout <<"S="<< summe<<'\n';
+  SelectedFullAufList auftraglist=SelectedFullAufList(SQLFullAuftragSelector::sel_Artikel_Planung(Instanz()->Id(),artikel,true));
+  for (SelectedFullAufList::const_iterator i=auftraglist.begin();i!=auftraglist.end();++i)
+   {
+//cout << "Id = "<<i->Id()<<'\n';
+     if(i->Id()!=0)
+        summe -= i->getRestStk() ;
+   }
+//cout <<"S="<< summe<<'\n';
+  if(summe<0) 
+      cerr << "WARNUNG: Weniger im Lager als vorgemerkt\n";
+  return summe;
+  
+}

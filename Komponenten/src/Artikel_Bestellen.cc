@@ -1,5 +1,6 @@
 #include "Artikel_Bestellen.hh"
 #include <gtk--/adjustment.h>
+#include <Gtk_OStream.h>
 
 Artikel_Bestellen::Artikel_Bestellen()
 {
@@ -14,17 +15,17 @@ Artikel_Bestellen::Artikel_Bestellen()
 }
 
 
-cH_Prozess Artikel_Bestellen::get_Prozess()
+cH_Prozess Artikel_Bestellen::get_Prozess() const
 {
   return PB_prozess->get_value();
 }
 
-ArtikelBase Artikel_Bestellen::get_Artikel()
+ArtikelBase Artikel_Bestellen::get_Artikel() const
 {
   return AB_artikel->get_value();
 }
 
-double Artikel_Bestellen::get_Menge()
+double Artikel_Bestellen::get_Menge() const
 {
   gtk_spin_button_update(SP_menge->gtkobj());
   return SP_menge->get_value_as_float();
@@ -58,6 +59,6 @@ void Artikel_Bestellen::artikel()
  AB_artikel->show_label(true);
  AB_artikel->show();
  AB_artikel->activate.connect(activate.slot());
- attach(*AB_artikel,0,3,1,2);
+ attach(*AB_artikel,0,4,1,2);
 }
 

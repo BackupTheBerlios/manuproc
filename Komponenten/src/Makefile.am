@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.8 2001/12/19 10:59:11 christof Exp $
+# $Id: Makefile.am,v 1.9 2002/02/08 21:45:04 christof Exp $
 CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK_INCLUDES@ @COMMONXX_INCLUDES@  
 
@@ -22,7 +22,8 @@ include_HEADERS = datewin.h logwin.h\
 	tclistnode.h tclistleaf.h treebase.h \
    WWaehrung.hh WPreis.hh WAuftragStatus.hh \
    Optionmenu_Instanz.hh Artikel_Bestellen.hh \
-   Optionmenu_Warengruppe.hh PPixmap.hh
+   Optionmenu_Warengruppe.hh PPixmap.hh \
+   Optionmenu_Einheit.hh
 
 lib_LIBRARIES= libKomponenten.a
 
@@ -34,19 +35,21 @@ libKomponenten_a_SOURCES=datewin.cc \
 		tclistrowdata.cc \
 		tclistnode.cc tclistleaf.cc treebase.cc \
       Artikel_Bestellen.cc \
-      PPixmap.cc
+      PPixmap.cc \
+      Optionmenu_Einheit.cc
 
 
 BUILT_SOURCES_L= ArtikelBox_sql.cc ProzessBox.cc KundenBox.cc $(LINKS) \
    WWaehrung_sql.cc WPreis_sql.cc WAuftragStatus_sql.cc \
    Optionmenu_Instanz_sql.cc Optionmenu_Warengruppe_sql.cc
 
-BUILT_SOURCES=datewin.hh SimpleTree.hh $(BUILT_SOURCES_L) 
+BUILT_SOURCES=datewin.hh SimpleTree.hh logwin.hh $(BUILT_SOURCES_L) 
 
-# for datewin_glade.cc
+# alias links
 datewin.hh: datewin.h
 	ln -sf datewin.h datewin.hh
-	
+logwin.hh: logwin.h
+	ln -sf logwin.h logwin.hh
 SimpleTree.hh: treebase.h
 	ln -sf treebase.h SimpleTree.hh
 

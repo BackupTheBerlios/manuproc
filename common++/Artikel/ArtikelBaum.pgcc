@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.pgcc,v 1.16 2002/02/05 17:15:52 christof Exp $
+// $Id: ArtikelBaum.pgcc,v 1.17 2002/02/08 21:47:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -160,7 +160,7 @@ int ArtikelBaum::Tiefe() const
 
 void ArtikelBaum::new_Artikel(ArtikelBase fuer_artikel,const RohArtikel& RA)
 {
- if (RA.rohartikel.Id()==0 || RA.menge==faktor_t(0) ) abort();
+ if (RA.rohartikel.Id()==0 || RA.menge==faktor_t(0) ) assert(!"Fehler");
  Transaction tr;
  exec sql begin declare section;
     int ARTIKELID;
@@ -265,18 +265,15 @@ void ArtikelBaum::delete_from_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind
         reduceChildren(i->AEB,i->oldAEB,i->menge);
       }
 
-     // Menge in Zuordnungstabelle auf NULL setzen
-/*
-     exec sql update auftragsentryzuordnung 
-         set menge=0 where 
+     exec sql delete from auftragsentryzuordnung 
+         where 
          (altauftragid,altinstanz,altzeilennr) in
             (select auftragid,instanz,zeilennr from auftragentry
                where artikelid=:ALTARTID) and 
          (neuauftragid,neuinstanz,neuzeilennr) in
             (select auftragid,instanz,zeilennr from auftragentry
-               where artikelid=:KINDARTID);
-*/
-//     SQLerror::test(__FILELINE__,100);
+               where artikelid=:KINDARTID) and menge=0 ;
+     SQLerror::test(__FILELINE__,100);
 }
 
 

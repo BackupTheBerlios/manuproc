@@ -1,4 +1,4 @@
-// $Id: RL_lager.cc,v 1.2 2002/02/05 17:15:52 christof Exp $
+// $Id: RL_lager.cc,v 1.3 2002/02/08 21:47:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -38,7 +38,7 @@ int main()
    Petig::dbconnect();
 
    Petig::Datum datum(15,1,2011);
-   ArtikelBase artikel(44502);
+   ArtikelBase artikel(38223);
 //   ArtikelBase artikel2(218267);
    
    std::string nachricht;
@@ -54,7 +54,7 @@ int main()
 
 
    // Etwas rein
-   Lager::st_rohlager rohlager2(LP,1,100,0,0,artikel,datum);
+   Lager::st_rohlager rohlager2(LP,100,100,0,0,artikel,datum);
    L.RL_Einlagern(LP,rohlager2,nachricht);
    std::cout << nachricht<<'\n';
    showLager(L,LP);

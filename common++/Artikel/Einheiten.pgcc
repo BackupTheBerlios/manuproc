@@ -1,4 +1,4 @@
-// $Id: Einheiten.pgcc,v 1.8 2002/02/05 17:15:52 christof Exp $
+// $Id: Einheiten.pgcc,v 1.9 2002/02/08 21:47:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,6 +22,7 @@ exec sql include sqlca;
 #include <Artikel/Einheiten.h>
 #include <Artikel/ArtikelStamm.h>
 #include <Aux/SQLerror.h>
+#include <Aux/Transaction.h>
 
 Einheit::cache_t Einheit::cache;
 
@@ -69,3 +70,25 @@ Einheit::Einheit(ID id) : einh(id)
       cache.Register(id,*this);
    }
 }
+
+
+std::vector<Einheit> Einheit::alleEinheiten()
+{
+ std::vector<Einheit> V;
+ exec sql begin declare section;
+   int db_id;
+ exec sql end declare section;
+ exec sql declare einheitc cursor for 
+   select id from einheiten;
+ Transaction tr;
+ exec sql open einheitc;
+ while(true)
+  {
+   exec sql fetch einheitc into :db_id;
+   SQLerror::test(__FILELINE__, 100);
+   if (sqlca.sqlcode) break;
+   V.push_back(Einheit(Einheit::ID(db_id)));
+  }
+ return V;
+}
+

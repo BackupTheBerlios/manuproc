@@ -8,7 +8,6 @@ exec sql include sqlca;
 Optionmenu_Instanz::Optionmenu_Instanz()
 { fuelle_menu();
   get_menu()->deactivate.connect(activate.slot());
-//  show(); // sollte übergeordnetes Widget machen !!!
 }
 
 cH_ppsInstanz Optionmenu_Instanz::get_value() const

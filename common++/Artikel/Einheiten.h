@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Einheiten.h,v 1.6 2002/02/05 17:15:52 christof Exp $
+// $Id: Einheiten.h,v 1.7 2002/02/08 21:47:14 christof Exp $
 
 #ifndef ARTIKEL_EINHEITEN_H
 #define ARTIKEL_EINHEITEN_H
@@ -25,7 +25,7 @@
 #include <Aux/SQLerror.h>
 #include <Aux/CacheStatic.h>
 //#include <Aux/Handles.h>
-
+#include <vector>
 
 class Einheit //: public HandleContent
 {
@@ -71,6 +71,9 @@ public:
 	std::string MengenEinheit_TeX() const
 	{  return tex_menge; }
 	std::string TeX() const;
+
+
+        static vector<Einheit> alleEinheiten();
 };
 /*
 class cH_Einheit : public Handle<const Einheit>   

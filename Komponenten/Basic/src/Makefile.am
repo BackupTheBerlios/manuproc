@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.3 2001/12/27 09:45:58 christof Exp $
+# $Id: Makefile.am,v 1.4 2002/02/08 21:45:03 christof Exp $
 CXXFLAGS=@CXXFLAGS@ @COMMONGTK_INCLUDES@ @COMMONXX_INCLUDES@  
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
@@ -17,14 +17,15 @@ libManuProC_Widgets_a_SOURCES=datewin.cc \
 		datewin_glade.cc tclistrowdata.cc \
 		tclistnode.cc tclistleaf.cc treebase.cc
 
-BUILT_SOURCES=datewin.hh SimpleTree.hh
+BUILT_SOURCES=datewin.hh SimpleTree.hh logwin.hh
 
-# for datewin_glade.cc
+# alias links
 datewin.hh: datewin.h
 	ln -sf datewin.h datewin.hh
-	
 SimpleTree.hh: treebase.h
 	ln -sf treebase.h SimpleTree.hh
+logwin.hh: logwin.h
+	ln -sf logwin.h logwin.hh
 
 install-data-hook:
 	cd $(includedir) ; ln -sf treebase.h SimpleTree.hh

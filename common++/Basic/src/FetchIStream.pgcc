@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.12 2002/01/23 13:43:53 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.13 2002/02/08 21:47:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -171,3 +171,13 @@ Query::~Query()
 //   exec sql deallocate descriptor X;
    ECPGdeallocate_desc(__LINE__, cursor.c_str());
 }
+
+// note cursor is the name for both the cursor and the descriptor
+void Query::Execute(const std::string &command)
+{  exec sql begin declare section;
+   char *COMMAND=const_cast<char*>(command.c_str(GARNIX));
+   exec sql end declare section;
+
+   exec sql execute immediate :COMMAND;
+}
+

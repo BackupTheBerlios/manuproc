@@ -86,7 +86,7 @@ protected:
  virtual void setColTitles();
  virtual void fillDataVec() {};
  void fillTCL();
- void refillTCL();
+ void refillTCL(bool clear_me=true);
 
 public:
  TreeBase(guint cols, guint attr=0);
@@ -94,9 +94,9 @@ public:
  void set_showdeep(int i) {showdeep=i;}
  guint Attrs() const { return attrcount; }
  guint Cols() const { return columns().size();}
- void setDataVec(const std::vector<cH_RowDataBase> &d) 
+ void setDataVec(const std::vector<cH_RowDataBase> &d,bool clear_me=true) 
  { datavec=d; 
-   refillTCL();
+   refillTCL(clear_me);
  };
  void set_value_data(gpointer _p) {gp = _p;}
  void redisplay(cH_RowDataBase row,guint index);

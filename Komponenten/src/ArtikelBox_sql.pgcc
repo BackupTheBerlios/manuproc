@@ -79,12 +79,14 @@ void ArtikelBox::searchFunc(int *cont, GtkSCContext newsearch, unsigned int sp,u
       }    
   }
  squery = "SELECT DISTINCT "+what+" FROM "+table ;
- if (constraint.size()) 
- { squery += " WHERE "+constraint;
-   if (einschraenkung.size() && eingeschraenkt) squery += " AND " + einschraenkung;
- }
- else if (einschraenkung.size() && eingeschraenkt)
- 	squery += " WHERE " + einschraenkung;
+ 
+ if(eingeschraenkt)
+   squery += joinstring;
+
+ if (constraint.size()) squery += " WHERE "+constraint;
+
+ if (einschraenkung.size() && eingeschraenkt)
+ 	squery += (constraint.size()?" AND ":" WHERE ") + einschraenkung;
  
 //if (eingeschraenkt) 
 //{  std::cout << einschraenkung.size() << ", " << einschraenkung << '\n';

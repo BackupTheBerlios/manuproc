@@ -1,0 +1,224 @@
+// $Id: AufEintragBase.pgcc,v 1.11 2002/02/07 17:10:54 cvs_malte Exp $
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include <Auftrag/AufEintragBase.h>
+#include "AufEintrag.h"
+#include <Aux/Transaction.h>
+#include <Auftrag/auftrag_status.h>
+#include <Auftrag/AuftragsBaum.h> 
+#include <Aux/Changejournal.h>
+
+exec sql include sqlca;
+
+void AufEintragBase::setVerarbeitung(const cH_Prozess p) const throw(SQLerror)
+{
+ assert (Instanz()==ppsInstanz::Kundenauftraege);
+ exec sql begin declare section;
+  int AUFTRAGID=Id();
+  int INSTANZ=InstanzID();
+  int ZEILENNR=ZNr();
+  int PROZESSID;
+ exec sql end declare section;
+ PROZESSID=p->getProzessID();
+ 
+ Transaction tr;
+ 
+ exec sql update auftrag_prozess set prozessid= :PROZESSID,
+ 	datum= now() where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR ;
+ SQLerror::test("Prozessaktualisierung",100);
+ 
+ if((sqlca.sqlcode==100) || sqlca.sqlerrd[2]==0)
+   {
+    exec sql insert into auftrag_prozess 
+      (auftragid,instanz,zeilennr,prozessid,datum)
+      values
+    	(:AUFTRAGID, :INSTANZ, :ZEILENNR, :PROZESSID, now());
+    SQLerror::test("Prozessaktualisierung");
+   }
+ tr.commit();
+}
+
+
+bool AufEintragBase::deleteAuftragEntry() const throw(SQLerror)
+{
+ // Kundenaufträge DÜRFEN NICHT gelöscht werden !!!
+ assert (InstanzID()!=ppsInstanz::INST_KNDAUF) ;
+
+ // Testen, ob dieser Auftrag Kinder hat, wenn ja, dann darf dieser 
+ // Auftrag NICHT gelöscht werden
+ AuftragsBaum AB(*this,true);
+ if(!AB.empty()) return false;
+
+ exec sql begin declare section;
+ int AUFTRAGID=auftragid;
+ int ZEILENNR=zeilennr;
+ int INSTANZ=InstanzID();
+ exec sql end declare section;
+ // Löschen aus Auftragszuordnung
+ exec sql delete from auftragsentryzuordnung where neuauftragid=:AUFTRAGID
+      and neuinstanz=:INSTANZ and neuzeilennr=:ZEILENNR;
+ SQLerror::test(__FILELINE__+(std::string)" DELETE AUFTRAG 1");
+
+ // Löschen aus Auftragentry
+ exec sql delete from auftragentry where auftragid=:AUFTRAGID
+      and zeilennr =:ZEILENNR and instanz=:INSTANZ;
+ SQLerror::test(__FILELINE__+(std::string)" DELETE AUFTRAG 2");
+ return true;
+}
+
+// gibt geliefert zurück
+AuftragBase::mengen_t AufEintragBase::abschreiben(mengen_t menge) const throw(SQLerror)
+{
+ exec sql begin declare section;
+ int AUFID=Id();
+ int AUFZNR=ZNr();
+ int INSTANZ=InstanzID();
+ int STATUS; 
+ int BESTELLT;
+ int GELIEFERT;
+ exec sql end declare section;
+ 
+ Transaction tr;
+ exec sql lock table auftragentry in exclusive mode;
+ exec sql select bestellt, geliefert, status
+   into :BESTELLT, :GELIEFERT, :STATUS
+   from auftragentry where
+   auftragid = :AUFID and zeilennr = :AUFZNR and instanz=:INSTANZ;
+ SQLerror::test(__FILELINE__);
+ AufStatVal oldstatus=AufStatVal(STATUS);
+
+ if(menge>=0 && STATUS!=(AufStatVal)OPEN) 
+    throw(SQLerror(__FILELINE__,-1,"Auftragszeile ist bereits geschlossen"));
+ if(menge<0 && STATUS==(AufStatVal)UNCOMMITED) 
+    throw(SQLerror(__FILELINE__,-1,"Auftragszeile ist nicht bestätigt"));
+ GELIEFERT+=menge;
+ if(GELIEFERT>=BESTELLT) STATUS=(AufStatVal)CLOSED;
+ else if(menge<0 && GELIEFERT<BESTELLT) STATUS=(AufStatVal)OPEN;
+
+ if(STATUS!=oldstatus)
+   AufEintrag(*this).setStatus(AufStatVal(STATUS),true);
+
+ exec sql update auftragentry set geliefert= :GELIEFERT, status= :STATUS
+   where auftragid= :AUFID and zeilennr= :AUFZNR and instanz=:INSTANZ;  
+ SQLerror::test(__FILELINE__);
+ tr.commit();
+
+//cout << STATUS<<' '<<oldstatus<<'\n';
+
+ return GELIEFERT;
+}
+
+
+
+void AufEintragBase::setLetztePlanungFuer(ppsInstanz::ID planinstanz) const throw(SQLerror)
+{
+//cout << "Instanz: "<<planinstanz<<'\n';
+ assert (Instanz()==ppsInstanz::Kundenauftraege);
+ exec sql begin declare section;
+  int AUFTRAGID=Id();
+  int ZEILENNR=ZNr();
+  int INSTANZ=InstanzID();
+  int PLANUNG=planinstanz;
+ exec sql end declare section;
+ Transaction tr;
+ 
+ exec sql update auftrag_prozess set letztePlanInstanz= :PLANUNG,
+   maxPlanInstanz=null, datum= now() where 
+   (instanz,auftragid,zeilennr) = (:INSTANZ,:AUFTRAGID,:ZEILENNR) ;
+ SQLerror::test("Prozessaktualisierung",100);
+ 
+ if((sqlca.sqlcode==100) || sqlca.sqlerrd[2]==0)
+   {
+    exec sql insert into auftrag_prozess 
+        (instanz,auftragid,zeilennr,letztePlanInstanz)
+      values
+    	(:INSTANZ,:AUFTRAGID,:ZEILENNR,:PLANUNG);
+    SQLerror::test("Prozessaktualisierung");
+   }
+ tr.commit();
+}
+
+void AufEintragBase::calculateProzessInstanz()
+{
+//cout << "BAUM\n";
+  assert (Instanz()==ppsInstanz::Kundenauftraege);
+  AuftragsBaum AB(*this,true);
+  int anz=0;
+  for(AuftragsBaum::const_iterator i=AB.begin();i!=AB.end();++i)
+   {
+//cout << "Baum\t"<<i->AEB2.Instanz()->Name()<<' '<<i->AEB2.Instanz()->Id()
+//<<' ' <<i->AEB2.Id()
+//<<' '<<i->AEB2.ZNr()<<'\n';
+     if(i->AEB2.Id()==0) continue; // 0 = ungeplante Aufträge
+     if(AufEintrag(i->AEB2).getStueck() == i->menge)
+       ++anz;
+   }
+  setMaxPlanInstanz(anz);
+}   
+
+
+void AufEintragBase::setMaxPlanInstanz(int maxplaninstanz) const throw(SQLerror)
+{
+ exec sql begin declare section;
+  int AUFTRAGID=Id();
+  int ZEILENNR=ZNr();
+  int INSTANZ=InstanzID();
+  int PLANUNG=maxplaninstanz;
+ exec sql end declare section;
+
+ Transaction tr;
+ 
+ exec sql update auftrag_prozess set maxPlanInstanz= :PLANUNG,
+   datum= now() where 
+   auftragid= :AUFTRAGID and instanz=:INSTANZ and zeilennr= :ZEILENNR ;
+ SQLerror::test("Prozessaktualisierung");
+ 
+ tr.commit();
+}
+
+
+void AufEintragBase::updateStkDiff(mengen_t menge) const throw(SQLerror)
+{
+ exec sql begin declare section;
+ int AUFTRAGID = Id();
+ int INSTANZ=instanz->Id();
+ int ZEILENNR = ZNr();  
+ double MENGE = menge;
+ exec sql end declare section;
+
+ Transaction tr;
+
+// ECPGdebug(1,stderr);
+ exec sql update auftragentry set bestellt= bestellt+:MENGE
+   where (instanz,auftragid,zeilennr) = (:INSTANZ,:AUFTRAGID,:ZEILENNR);
+ SQLerror::test("updateStkDiff: update stk in auftragentry");
+// ECPGdebug(0,stderr);
+
+#warning updateStk im Moment FALSCHE Einträge in ProdChageJournal!!! 
+// if(status==OPEN)
+  {
+     pps_ChJournalEntry::newChange(
+         instanz, *this,
+//         artikel,(double)newstk,(double)menge,pps_ChJournalEntry::CH_MENGE);
+         0,0,MENGE,pps_ChJournalEntry::CH_MENGE);
+  }
+ tr.commit(); 
+}
+
+

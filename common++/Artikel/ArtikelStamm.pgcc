@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.12 2002/02/05 17:15:52 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.13 2002/02/08 21:47:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -95,12 +95,25 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
 void ArtikelStamm::set_BestellenBei(const ArtikelBase &artikel,const ppsInstanz::ID instanz)
 {
   exec sql begin declare section;
-   int ID;
+   int ID=artikel.Id();
    int BESTELLEN_BEI=instanz;
   exec sql end declare section;
-   ID=artikel.Id();
   exec sql update artikelstamm set stand=now(),bestellen_bei=:BESTELLEN_BEI
       where id =:ID and bestellen_bei!=:BESTELLEN_BEI;
+  SQLerror::test(__FILELINE__,100);
+
+  // Und nun noch raus aus dem Cache
+  cache.deregister(artikel.Id());
+}
+
+void ArtikelStamm::setEinheit(const ArtikelBase &artikel,const Einheit e)
+{
+  exec sql begin declare section;
+   int ID=artikel.Id();
+   int EINHEIT=e.Id();
+  exec sql end declare section;
+  exec sql update artikelstamm set stand=now(),einheit=:EINHEIT
+      where id =:ID and einheit!=:EINHEIT;
   SQLerror::test(__FILELINE__,100);
 
   // Und nun noch raus aus dem Cache

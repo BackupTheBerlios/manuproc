@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.11 2002/02/05 17:15:52 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.12 2002/02/08 21:47:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -129,12 +129,19 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Kunde_Artikel &selstr)
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel_Planung &selstr)
 {
- setClausel(FULL_SELECT_FROM_WHERE
-	     " and "+StatusQualifier(OPEN)+
+ setClausel(FULL_SELECT_FROM_WHERE 
+        " and "+StatusQualifier(OPEN)+
 	     " and a.instanz="+itos(selstr.instanz) +
 	     " and artikelid="+itos(selstr.artikel.Id()) +
 	     " and a.auftragid" + (selstr.geplant ? "<>" : "=") + "0"
 	     " order by e.lieferdate");
+}
+
+SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel &selstr)
+{
+ setClausel(FULL_SELECT_FROM_WHERE 
+	     " and a.instanz="+itos(selstr.instanz) +
+	     " and artikelid="+itos(selstr.artikel.Id()));
 }
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Kunde_Status &selstr)
