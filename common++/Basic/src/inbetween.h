@@ -1,4 +1,4 @@
-// $Id: inbetween.h,v 1.1 2003/05/16 13:34:11 christof Exp $
+// $Id: inbetween.h,v 1.2 2003/10/06 10:08:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,10 +20,10 @@
 #ifndef MPB_INBETWEEN_H
 #define MPB_INBETWEEN_H
 
-// SQL semantic: [a;b[
+// SQL semantic: [a;b]
 template <class T>
  bool between(const T &v,const T &a, const T&b)
-{  return a <= v && v < b;
+{  return a <= v && v <= b;
 }
 
 template <class T>

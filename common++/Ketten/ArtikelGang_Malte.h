@@ -1,4 +1,4 @@
-/* $Id: ArtikelGang_Malte.h,v 1.1 2003/10/02 07:40:30 christof Exp $ */
+/* $Id: ArtikelGang_Malte.h,v 1.2 2003/10/06 10:08:10 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,6 +33,9 @@ class ArtikelGang_Malte : public ArtikelGang
 public:
 	ArtikelGang_Malte(int g,ArtikelBase id,bool load_garn=false,int kettlaenge=0) : ArtikelGang(g,id)
 	      { if(load_garn) load_Garn(kettlaenge);  }
+	ArtikelGang_Malte(const ArtikelGang &ag,bool load_garn=false,int kettlaenge=0) : ArtikelGang(ag)
+	      { if(load_garn) load_Garn(kettlaenge);  }
+	ArtikelGang_Malte() {}
    void setKombinierteKette(int index,Kettscheibe::st_kombi b) const ;
    std::list<Kettscheibe>& getKettscheiben() {return kettscheiben;}
    std::string KombiniertMit_c_str(const KettenGarn& garn) const;
