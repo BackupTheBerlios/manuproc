@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.75 2004/05/06 10:13:22 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.76 2004/05/06 10:22:47 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -628,6 +628,9 @@ void SimpleTreeStore::iterinit(vfunc_iter_t iter,const const_iterator &schema) c
 {  assert(3*sizeof(iter STS_GTKMM_22_24(->,.gobj()->)user_data)>=sizeof(SimpleTreeStore::const_iterator));
    STS_GTKMM_22_24(iter->stamp=stamp, iter.set_stamp(stamp));
    reinterpret_cast<SimpleTreeStore::const_iterator&>(iter STS_GTKMM_22_24(->,.gobj()->)user_data)=schema;
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2   
+   iter.set_model_gobject(const_cast<GtkTreeModel*>(gobj()));
+#endif   
    ManuProC::Trace(trace_channel,__FUNCTION__,iter STS_GTKMM_22_24(->stamp,.get_stamp()),
    		iter STS_GTKMM_22_24(->,.gobj()->)user_data,
    		iter STS_GTKMM_22_24(->,.gobj()->)user_data2,
@@ -916,15 +919,29 @@ void SimpleTreeStoreNode::fix_pointer()
 }
 
 Gtk::TreeModel::iterator SimpleTreeStore::getIter(iterator it) const
-{  STS_GTKMM_22_24(GtkTreeIter,TreeModel::iterator) res;
+{
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+   TreeModel::iterator res;
+   iterinit(res,it);
+   return res;
+#else
+   GtkTreeIter res;
    iterinit(&res,it);
    return Gtk::TreeModel::iterator(const_cast<GtkTreeModel*>(gobj()),&res);
+#endif
 }
 
 Gtk::TreeModel::const_iterator SimpleTreeStore::getIter(const_iterator it) const
-{  STS_GTKMM_22_24(GtkTreeIter,TreeModel::iterator) res;
+{  
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+   TreeModel::iterator res;
+   iterinit(res,it);
+   return res;
+#else
+   GtkTreeIter res;
    iterinit(&res,it);
    return Gtk::TreeModel::iterator(const_cast<GtkTreeModel*>(gobj()),&res);
+#endif
 }
 
 Gtk::TreeModel::Path SimpleTreeStore::getPath(iterator it) const
