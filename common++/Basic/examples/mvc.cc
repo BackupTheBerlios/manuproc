@@ -1,4 +1,4 @@
-// $Id: mvc.cc,v 1.8 2003/03/07 08:10:13 christof Exp $
+// $Id: mvc.cc,v 1.9 2003/05/08 09:42:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,6 +28,7 @@
 #define SLOT_ARG(x) (*(x))
 #endif
 #include <utility>
+#include <vector>
 
 class View_int : public SigC::Object
 {	Model_ref<int> model;
@@ -63,12 +64,22 @@ int main()
      view=model;
    }
    
-   // now we test a structure with a shared signal
+   // now we test a structure with a shared signal (and use a Model_ref)
+   { Model<std::pair<int,int> > model(std::pair<int,int>(1,2));
+     Model_ref<int> a(model.Value().first, model.signal_changed()),
+     		b(model.Value().second, model.signal_changed());
+     View_int view(a);
+     View_int view2(b);
+     a=12;
+     b=13;
+   }
+
+   // now we test a structure with a shared signal (complicated way)
    { Model<std::pair<int,int> > model(std::pair<int,int>(1,2));
      View_int view(Model_ref<int>(model.Value().first, model.signal_changed()));
      View_int view2(Model_ref<int>(model.Value().second, model.signal_changed()));
-     model.Assign(model.Value().first, 5);
-     model.Assign(model.Value().second, 6);
+     model.Assign(model.Value().first, 10);
+     model.Assign(model.Value().second, 11);
    }
 
    // perhaps the ease recommends the extra bytes for a signal per element
@@ -77,6 +88,12 @@ int main()
      View_int view2(model.second);
      model.first=5;
      model.second=6;
+   }
+   
+   {  std::vector<Model_copyable<int> > v;
+      v.push_back(Model_copyable<int>(20));
+      View_int view(v.back());
+      v.back()=25;
    }
    return 0;
 }

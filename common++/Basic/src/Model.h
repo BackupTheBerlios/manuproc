@@ -1,4 +1,4 @@
-/* $Id: Model.h,v 1.4 2003/04/07 06:37:20 christof Exp $ */
+/* $Id: Model.h,v 1.5 2003/05/08 09:42:17 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -59,13 +59,18 @@ public:
 	// only use this to create a Model_ref !!!
 	T &Value() 
 	{  return value; }
+
+	const void *Id() const
+	{  return static_cast<const void *>(&value); }
+	void *Id()
+	{  return static_cast<void *>(&value); }
 	bool matches(const void *gp) const
-	{  return gp==static_cast<const void *>(&value);
+	{  return !gp || gp==Id();
 	}
 	
 	const T &operator=(const T &v)
 	{  value=v;
-	   changed(&value);
+	   changed(Id());
 	   return value;
 	}
 	// perhaps implement += -= ++ --
@@ -75,6 +80,25 @@ public:
 	 void Assign(X &r, const X &v)
 	{  r=v;
 	   changed(&r);
+	}
+};
+
+// this class explicitely allows duplication of the model
+// - useful for container insertion only
+// make sure to connect your controller/view to the right model if use this !!!
+template <class T>
+ class Model_copyable : public Model<T>
+{	
+public:
+	Model_copyable() {} 
+        Model_copyable(const T &v) : Model<T>(v) {}
+        Model_copyable(const Model_copyable<T> &v) : Model<T>(v.Value()) {}
+	const T &operator=(const T &v)
+	{  return Model<T>::operator=(v);
+	}
+	const Model_copyable &operator=(const Model_copyable<T> &x)
+	{  Model<T>::operator=(x.Value());
+	   return *this;
 	}
 };
 
@@ -107,13 +131,19 @@ public:
 	{  return *value; }
 	const T &Value() const
 	{  return *value; }
+	
+	
+	const void *Id() const
+	{  return static_cast<const void *>(value); }
+	void *Id()
+	{  return static_cast<void *>(value); }
 	bool matches(const void *gp) const
-	{  return gp==static_cast<const void *>(value);
+	{  return !gp || gp==Id();
 	}
 	
 	const T &operator=(const T &v)
 	{  *value=v;
-	   signal_changed()(value);
+	   signal_changed()(Id());
 	   return *value;
 	}
 	const Model_ref<T> &operator=(const Model_ref<T> &m)
