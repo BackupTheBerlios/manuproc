@@ -32,7 +32,7 @@
 #define TABW	"18"
 
 #define MWSTSATZ	0.16
-#define MWSTPROZ	16
+//#define MWSTPROZ	16
 #define ENTSSATZ	0.002
 
 bool ents_flag=false;
@@ -748,7 +748,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 		         if(Rueckstand())
               		os << FormatiereTeX(rest);
          		else
-              		os << FormatiereTeX(stueck);
+              		os << FormatiereTeX((unsigned long)stueck);
 
                std::string einheit;
 //               if(Typ()==Rechnung || Typ()==Lieferschein) einheit=Einheit(artikelbase).StueckEinheit_TeX();
@@ -838,9 +838,11 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 
 	    Preis::geldbetrag_out preis;
 	    if(Rueckstand())
-            	preis = BruttoPreis.Gesamtpreis(getWaehrung(),rest.as_int(),menge,rabatt);
+//            	preis = BruttoPreis.Gesamtpreis(getWaehrung(),rest.as_int(),menge,rabatt);
+            	preis = NettoPreis.Gesamtpreis(getWaehrung(),rest.as_int(),menge);
 	    else
-            	preis = BruttoPreis.Gesamtpreis(getWaehrung(),stueck,menge,rabatt);
+//            	preis = BruttoPreis.Gesamtpreis(getWaehrung(),stueck,menge,rabatt);
+            	preis = NettoPreis.Gesamtpreis(getWaehrung(),stueck,menge);
 
             betrag+=preis;
             tabellenbetrag+=preis;
