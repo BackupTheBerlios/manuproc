@@ -23,15 +23,7 @@
 
 #if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
 #  include <sigc++/bind.h>
-// don't ask me why this does not work ...
-//#  include <sigc++/compatibility.h>
-namespace SigC
-{  template <class T> 
-    Slot0<void> slot(T &t, void (T::*p)()) { return sigc::mem_fun(t,p); }
-   template <class T,class A> 
-    Slot1<void,A> slot(T &t, void (T::*p)(A a)) 
-    	{ return sigc::mem_fun(t,p); }
-}
+#  include <SigC2SlotEmu.h>
 #endif
 
 ManuProC::ChoiceButton::ChoiceButton(bool tearoff)
