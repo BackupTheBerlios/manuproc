@@ -1,4 +1,4 @@
-dnl $Id: petig.m4,v 1.58 2002/04/29 09:55:44 cvs_christof Exp $
+dnl $Id: petig.m4,v 1.59 2002/04/29 09:59:45 cvs_christof Exp $
 
 dnl Configure paths for some libraries
 dnl derived from kde's acinclude.m4
@@ -298,9 +298,9 @@ if test "x$GTKMM_CFLAGS" == "x"
 then
   AM_PATH_GTKMM(1.2.0,,AC_MSG_ERROR(Cannot find Gtk-- Version 1.2.x))
 fi
-GTKMM_INCLUDES=$GTKMM_CFLAGS
+GTKMM_INCLUDES="$GTKMM_CFLAGS"
 AC_SUBST(GTKMM_INCLUDES)
-GTKMM_NODB_LIBS=$GTKMM_LIBS
+GTKMM_NODB_LIBS="$GTKMM_LIBS"
 AC_SUBST(GTKMM_NODB_LIBS)
 ])
 
