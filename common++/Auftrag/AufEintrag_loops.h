@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.h,v 1.8 2004/02/11 09:16:16 christof Exp $ */
+/* $Id: AufEintrag_loops.h,v 1.9 2004/02/13 17:38:07 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -100,10 +100,12 @@ AuftragBase::mengen_t distribute_parents(const AufEintragBase &startAEB,
 	AuftragBase::mengen_t menge,const distribute_parents_cb &callee);
 
 struct auf_positionen_verteilen_cb
+		// gibt verwendete Menge zurück
 {	virtual AuftragBase::mengen_t operator()(AufEintrag &ae, 
 			AuftragBase::mengen_t abschreibmenge) const=0;
 };
 
+// gibt die unverwendete Menge zurück
 // erste Lieferung zuerst
 AuftragBase::mengen_t auf_positionen_verteilen(
 		const SQLFullAuftragSelector &selector,

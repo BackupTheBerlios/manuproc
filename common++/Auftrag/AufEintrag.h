@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.83 2004/02/04 19:43:30 jacek Exp $ */
+/* $Id: AufEintrag.h,v 1.84 2004/02/13 17:38:07 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -72,6 +72,7 @@ class AufEintrag : public AufEintragBase
      class ArtikelAbbestellen_bevorzugt;
      class EinlagernRueckgaengig;
      class ArtikelInternAbbestellen_cb;
+     struct Planen_cb;
 
      #if ( __GNUC__ < 3 )
      friend class Abbestellen_cb;
@@ -88,6 +89,7 @@ class AufEintrag : public AufEintragBase
      friend class ProduziertNG_cb2;
      friend class ProduziertRueckgaengig2;
      friend class WiederEinlagern_cb;
+     friend class Planen_cb;
      #endif
 
 
@@ -284,6 +286,7 @@ public:
  static AufEintragBase default_opfer(cH_ppsInstanz i,mengen_t menge,const ArtikelBase &aeb);
  static AufEintragBase (*opfer_auswaehlen)(cH_ppsInstanz,mengen_t,const ArtikelBase &);
 
+
 // einen Teil des Auftrages=0 verplanen (in anderen Auftrag<>0 setzen)
 // gibt neue Zeile zurück; rekursiv = alle Instanzen darunter auch planen,
 // rekursiv wird asuschließlich vom Erfassungs/Reperaturprogramm verwendet
@@ -295,8 +298,11 @@ public:
       ManuProC::Auftrag::Action reason,
       AufEintragBase *verplanter_aeb=0,bool rekursiv=false) throw(std::exception);
 private:         
+ // einen AuftragEintrag gezielt verplanen
+ void Planen(mengen_t menge,AufEintrag &ziel) throw(std::exception);
  __deprecated void ProduktionsPlanung(mengen_t menge,const AuftragBase &zielauftrag,
       const ManuProC::Datum &datum,cH_ppsInstanz instanz) throw(std::exception);
+ void AlsGeplantMarkieren() const;
       
  // 2er anlegen, Material bestellen
  // *this ist der ZielAufEintrag
@@ -315,6 +321,8 @@ public:
 		const AufEintragBase &elter_alt,
 		const AufEintragBase &elter_neu,
 		const ProductionContext2 &ctx);
+ // Pfeile nach oben wie unten anlegen
+ void Verzeigern();
 private:		
  void Einlagern2(mengen_t M,
 		const AufEintragBase &elter_alt,
@@ -351,7 +359,6 @@ public:
          const ProductionContext &ctx) throw(SQLerror);
    // Menge wurde als Produziert markiert, kam aber ins Lager zurück
 private:
-// intern aber public wegen der klassen
    static AufEintragBase ArtikelInternNachbestellen(const cH_ppsInstanz &wo,
  	mengen_t menge,const ManuProC::Datum &lieferdatum,const ArtikelBase& artikel,
  	const AufEintragBase& ElternAEB);

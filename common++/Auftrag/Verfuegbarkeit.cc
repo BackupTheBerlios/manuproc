@@ -1,4 +1,4 @@
-/* $Id: Verfuegbarkeit.cc,v 1.6 2004/02/05 11:06:30 christof Exp $ */
+/* $Id: Verfuegbarkeit.cc,v 1.7 2004/02/13 17:38:07 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -43,6 +43,9 @@ struct verf_recurse : distribute_children_cb
 	AuftragBase::mengen_t operator()(const ArtikelBase &, 
 	                const AufEintragBase &,AuftragBase::mengen_t) const;
 	void operator()(const ArtikelBase &,AuftragBase::mengen_t) const;
+	bool operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const
+	{  return AufEintragZu_sort::auftr_1230(a,b);
+	}
 
 	virtual ~verf_recurse() {}
 	verf_recurse(const Verfuegbarkeit::mengen_t &o, Verfuegbarkeit::map_t &r,
@@ -120,8 +123,8 @@ void Verfuegbarkeit::verfuegbar(const AufEintrag &ae, map_t &result,
       result[idx].ungeplant+=AuftragBase::min(ae.getRestStk(),menge);
    }
    
-   // Rekursion
-   distribute_children_rev_artbaum(ae,menge,ae.Artikel(),
+   // Rekursion (order 1230)
+   distribute_children_artbaum(ae,menge,ae.Artikel(),
    		verf_recurse(offset,result,ae.Artikel(),ae));
    ManuProC::Trace(AuftragBase::trace_channel,"result",
    		NV("vorr",result[idx].vorraetig),NV("gepl",result[idx].geplant),

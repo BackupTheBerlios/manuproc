@@ -43,7 +43,7 @@ static bool Zusatzinfo()
    Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
         AufEintragBase AEB2=auftrag.push_back(4000,DATUM,ARTIKEL_FAERBEREI,OPEN,true);
         AufEintragBase AEB3=auftrag.push_back(4000,DATUM+10,ARTIKEL_FAERBEREI,OPEN,true);
-       vergleichen(Check::Lieferschein|Check::Menge,"ZI_Ausgangspunkt","Ausgangspunkt","");
+       vergleichen(Check::Menge,"ZI_Ausgangspunkt","Ausgangspunkt","");
         
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
        int lznr=liefs.push_back(ARTIKEL_FAERBEREI,9,1000);
@@ -670,4 +670,22 @@ static bool AuftragLager(AufEintrag &AE)
 }
 
 static TestReihe AuftragLager_(&AuftragLager,"Auftrag Lager Interaktion","AL");
+
+static bool Verfuegbarkeit()
+{   Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
+    AufEintragBase AEB2=auftrag.push_back(400,DATUM-20,ARTIKEL_FAERBEREI,OPEN,true);
+    AufEintragBase AEB3=auftrag.push_back(400,DATUM-10,ARTIKEL_FAERBEREI,OPEN,true);
+    AufEintragBase AEB4=auftrag.push_back(400,DATUM,ARTIKEL_FAERBEREI,OPEN,true);
+    vergleichen(Check::Menge,"V_Ausgangspunkt","Ausgangspunkt","");
+    
+    Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Weberei),Kunde::default_id);
+//  ehemals AufEintragBase AEBP=PA.Planen(1200,ARTIKEL_FAERBEREI,DATUM-40);
+    AufEintragBase AEBP=PA.push_back(1200,DATUM-40,ARTIKEL_FAERBEREI,OPEN,true);
+    vergleichen(Check::Menge,"V_Planung","Planung Weberei","");
+    
+    return true;
+}
+
+static TestReihe Verfuegbarkeit_(&Verfuegbarkeit,"Verfügbarkeit","V");
+
 #endif

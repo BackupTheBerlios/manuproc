@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.96 2004/02/04 19:43:30 jacek Exp $
+// $Id: AufEintrag.cc,v 1.97 2004/02/13 17:38:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -94,29 +94,67 @@ AufEintragBase AufEintrag::getFirstKundenAuftrag() const
  ManuProC::Trace _t(trace_channel, __FUNCTION__);
  std::vector<AufEintragBase> V=AufEintragZu(*this).getKundenAuftragV();
  if(V.empty()) return *this;
- else return *(V.begin());
+ return *(V.begin());
+}
+
+void AufEintrag::Planen(mengen_t menge, AufEintrag &ziel) throw(std::exception)
+{
+   // dispo (2er) Auftrag anlegen bei Überplanung
+   assert(Artikel()==ziel.Artikel());
+   assert(getLieferdatum()>=ziel.getLieferdatum());
+   assert(Instanz()==ziel.Instanz()); // muss nicht ...
+   mengen_t dispomenge;
+   
+   if (menge>getRestStk())
+    { assert(!Instanz()->LagerInstanz()); // CP
+      // Produktionsplaner (ungetestet)
+      assert(ziel.Instanz()->GeplantVon()==ppsInstanzID::None);
+	    // hier wurde ehemals ein 2er im Planer angelegt
+	    // Code siehe CVS
+
+      // nur soviel unten verwenden (tatsächlich zu uns ziehen,
+      // 	Rest wird von uns in Ueberplanen bestellt)
+      dispomenge = menge-getRestStk();
+      menge-=dispomenge;
+    }
+
+  {TemporaryValue<bool> tmp(lager_bevorzugt_freigeben,ziel.getLieferdatum()<=getLieferdatum());
+ManuProC::Trace(trace_channel,__FILELINE__,NV("lager_bevorzugt_freigeben",lager_bevorzugt_freigeben),
+	NV("zieldatum",ziel.getLieferdatum()),NV("Lieferdatum",getLieferdatum()));
+  
+   move_to(ziel,menge);
+  }
+
+   if (!!dispomenge)
+      ziel.Ueberplanen(Artikel(),dispomenge,ziel.getLieferdatum());
+}
+
+void AufEintrag::AlsGeplantMarkieren() const
+{  assert(Id()>=handplan_auftrag_id);
+//---- ProzessInstanz setzen ------
+    // Kundenauftrag suchen
+#warning eigentlich sollte das über Verfügbarkeit.cc gehen
+    AufEintragZu::list_t ReferenzAufEintrag =
+			         AufEintragZu(*this).get_Referenz_listFull(false);
+    for (AufEintragZu::list_t::iterator i=ReferenzAufEintrag.begin();i!=ReferenzAufEintrag.end();++i)
+    {
+     if(i->AEB.Instanz()!=ppsInstanzID::Kundenauftraege) continue;
+     i->AEB.setLetztePlanungFuer(Instanz());
+     i->AEB.calculateProzessInstanz();
+    }
 }
 
 AufEintragBase AufEintrag::Planen(mengen_t menge,const AuftragBase &zielauftrag,
    const Petig::Datum &datum) throw(std::exception)
-//   ,ManuProC::Auftrag::Action reason,
-//   AufEintragBase *verplanter_aeb,bool rekursiv) throw(std::exception)
 {
    ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("Menge",menge)); 
-   // ,NV("Zielauftrag",zielauftrag),NV("rekursiv",rekursiv));
    assert(Id()==ungeplante_id);
    assert(entrystatus==OPEN);
    assert(auftragstatus==OPEN);
    assert(menge>0);
    assert(!Instanz()->LagerInstanz());
-//   assert(!rekursiv);
-
-// ist das überhaupt noch erforderlich?
-//   if(verplanter_aeb) *verplanter_aeb=*this;
 
    Transaction tr;
-//   Auftrag ZA(zielauftrag);
-//   ZA.setStatusAuftrag_(OPEN);
 
 // wenn schon eine Zeile mit diesem Datum/Artikel/Status in diesem Auftrag
 // existiert, Menge erhöhen. So kann man von Aufträge aus verschiedenen
@@ -129,45 +167,11 @@ AufEintragBase AufEintrag::Planen(mengen_t menge,const AuftragBase &zielauftrag,
    if(menge==0) {tr.commit();   return neueZeile;}
 
   AufEintrag AE1er(neueZeile);
-   // dispo (2er) Auftrag anlegen bei Überplanung
-   mengen_t dispomenge;
+  Planen(menge,AE1er);
    
-   if (menge>getRestStk())
-    { assert(!Instanz()->LagerInstanz()); // CP
-      // Produktionsplaner (ungetestet)
-      assert(zielauftrag.Instanz()->GeplantVon()==ppsInstanzID::None);
-	    // hier wurde ehemals ein 2er im Planer angelegt
-	    // Code siehe CVS
-
-      // nur soviel unten verwenden (tatsächlich zu uns ziehen,
-      // 	Rest wird von uns in Ueberplanen bestellt)
-      dispomenge = menge-getRestStk();
-      menge-=dispomenge;
-    }
-
-  {TemporaryValue<bool> tmp(lager_bevorzugt_freigeben,datum<=getLieferdatum());
-ManuProC::Trace(trace_channel,__FILELINE__,NV("lager_bevorzugt_freigeben",lager_bevorzugt_freigeben),
-	NV("datum",datum),NV("Lieferdatum",getLieferdatum()));
-  
-   move_to(AE1er,menge);
-  }
-
-   if (!!dispomenge)
-      AE1er.Ueberplanen(Artikel(),dispomenge,datum);
-   
-//---- ProzessInstanz setzen ------
   // nur wenn aktiv durch Benutzer geplant
   if (zielauftrag.Id() != plan_auftrag_id)
-  { assert(zielauftrag.Id()>=handplan_auftrag_id);
-    // Kundenauftrag suchen
-    AufEintragZu::list_t ReferenzAufEintrag =
-			         AufEintragZu(*this).get_Referenz_listFull(false);
-    for (AufEintragZu::list_t::iterator i=ReferenzAufEintrag.begin();i!=ReferenzAufEintrag.end();++i)
-    {
-     if(i->AEB.Instanz()!=ppsInstanzID::Kundenauftraege) continue;
-     i->AEB.setLetztePlanungFuer(instanz);
-     i->AEB.calculateProzessInstanz();
-    }
+  { AE1er.AlsGeplantMarkieren();
   }
 
  tr.commit();
@@ -188,6 +192,29 @@ void AufEintrag::Ueberplanen(const ArtikelBase& artikel,mengen_t menge,const Man
 
    // zusätzliche Menge vermerken und Material bestellen
    MengeAendern(menge,true,AufEintragBase());
+}
+
+struct AufEintrag::Planen_cb : public auf_positionen_verteilen_cb
+{  AufEintrag &ziel;
+
+   Planen_cb(AufEintrag &ae) : ziel(ae) {}
+   mengen_t operator()(AufEintrag &ae, mengen_t planmenge) const
+   {  ae.Planen(planmenge,ziel);
+      return planmenge;
+   }
+};
+
+void AufEintrag::Verzeigern()
+{  if (Instanz()->KundenInstanz())
+       ArtikelInternNachbestellen(getRestStk());
+    else // planen (Pfeile von oben ebenfalls anlegen)
+    {  SQLFullAuftragSelector sel(make_value(SQLFullAuftragSelector::sel_Artikel_Planung_id
+    		(Instanz()->Id(),Kunde::eigene_id,Artikel(),ungeplante_id,
+    			OPEN)));
+       mengen_t m=auf_positionen_verteilen(sel,getRestStk(),Planen_cb(*this));
+       // 2er anlegen
+       if (!!m) Ueberplanen(Artikel(),m,getLieferdatum());
+    }
 }
 
 void AufEintrag::setStatus(AufStatVal newstatus,bool force) throw(SQLerror)
@@ -221,7 +248,10 @@ void AufEintrag::setStatus(AufStatVal newstatus,bool force) throw(SQLerror)
 
  // InternAbbestellen
  if ((newstatus == CLOSED || newstatus == STORNO) && getRestStk()!=0)
+ {   
+#warning // Planung Rückgängig machen ...
      ArtikelInternAbbestellen(getRestStk());
+ }
 
  std::string sqlcommand = "update auftragentry set status=?"
  ", lasteditdate = now(), lastedit_uid=?"
@@ -239,9 +269,10 @@ void AufEintrag::setStatus(AufStatVal newstatus,bool force) throw(SQLerror)
  }
 
  if(newstatus == OPEN  &&  oldentrystatus==UNCOMMITED && getRestStk()!=0)
-    ArtikelInternNachbestellen(getRestStk());
+ {  Verzeigern();
+ }
 
- if(newstatus==OPEN && bestellt!=0)
+ if(newstatus==OPEN && bestellt!=0 && Id()>=handplan_auftrag_id)
    {
     pps_ChJournalEntry::newChange(
 			instanz, *this, artikel,
@@ -250,7 +281,7 @@ void AufEintrag::setStatus(AufStatVal newstatus,bool force) throw(SQLerror)
 			pps_ChJournalEntry::CH_MENGE);
   }
  else if(newstatus==CLOSED && oldentrystatus!=UNCOMMITED
- 	&& geliefert-bestellt!=0)
+ 	&& geliefert-bestellt!=0 && Id()>=handplan_auftrag_id)
  // UNCOMMITED->CLOSED => kein Eintrag
    {
     pps_ChJournalEntry::newChange(

@@ -556,12 +556,9 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
  // für denselben Artikel an.
  AufEintragBase AEB(*this,ZEILENNR);
  if(status==OPEN && setInstanzAuftraege) // Nur offene Aufträge werden nach unten bestellt
-   {  // alles andere wäre komisch ... oder?
-      assert(Instanz()==ppsInstanzID::Kundenauftraege);
-
-      AufEintrag AE(AEB);
-      AE.ArtikelInternNachbestellen(bestellt);
-    }
+   {  AufEintrag AE(AEB);
+      AE.Verzeigern();
+   }
  tr.commit();
  return AEB;
 }
