@@ -66,7 +66,8 @@ scan_list::scan_list(const std::string _q)
 
 void scan_list::init_tables()
 {
- std::string artikel,breite,farbe,aufm,ean;
+ std::string artikel,farbe,aufm,ean;
+ int breite;
 
  Query q("select artikel,breite,farbe,aufmachung,ean from"
 	" artbez_3_1 where id in ("+query+")");
@@ -76,7 +77,7 @@ void scan_list::init_tables()
  while(fi.good())
   {
    fi >> FetchIStream::MapNull(artikel) 
-   	>> FetchIStream::MapNull(breite) 
+   	>> FetchIStream::MapNull(breite,0) 
    	>> FetchIStream::MapNull(farbe) 
    	>> FetchIStream::MapNull(aufm) 
    	>> FetchIStream::MapNull(ean);
@@ -93,11 +94,11 @@ void scan_list::init_tables()
 }
 
 void tex_table::cell_out(std::ostream &o, const std::string c, 
-		const std::string w) const
+		const int w) const
 {
  std::cout << artnr << w << c <<"\n";
 
- std::map<std::string, c_to_ean>::const_iterator i=tablecols.find(w);
+ std::map<int, c_to_ean>::const_iterator i=tablecols.find(w);
  c_to_ean::const_iterator s=(*i).second.find(c);
 
  if(s!=(*i).second.end())
@@ -108,9 +109,9 @@ void tex_table::cell_out(std::ostream &o, const std::string c,
 }
 
 void tex_table::row_out(std::ostream &o, const std::string c, 
-	const std::map<std::string, tex_table::c_to_ean>::const_iterator from) const
+	const std::map<int, tex_table::c_to_ean>::const_iterator from) const
 {
- std::map<std::string, tex_table::c_to_ean>::const_iterator it=from;
+ std::map<int, tex_table::c_to_ean>::const_iterator it=from;
 
  o << "\\rule[0mm]{0mm}{12mm} \\Large " << c;
 
@@ -132,7 +133,7 @@ void tex_table::row_out(std::ostream &o, const std::string c,
 
 
 
-void tex_table::add_cell(const std::string w, 
+void tex_table::add_cell(const int w, 
 	const std::string c, const std::string ean)
 {
  std::cout << artnr << w << c << ean <<"\n";
@@ -157,19 +158,19 @@ tex_table::tex_table(const std::string a, int _cols, const std::string query) : 
 
 
 void tex_table::begin_table(std::ostream &o,
-	const std::map<std::string, c_to_ean>::const_iterator br) const
+	const std::map<int, c_to_ean>::const_iterator br) const
 {
  o << "\\begin{tabularx}{\\linewidth}{lccccc}\\\\\n"
    << "\\multicolumn{"+itos(columns)+"}{c}{\\LARGE Artikel "+artnr+"}\\\\[2ex]\n";
 
  o << "Breite $\\rightarrow$";
  
- std::map<std::string, c_to_ean>::const_iterator i=br;
+ std::map<int, c_to_ean>::const_iterator i=br;
  
  for(int c=0; c<columns-1; c++)
    {if(i!=tablecols.end())
       {o << " & \\Large "<<(*i).first<<"mm ";
-       c_to_ean::const_iterator aufit=br_aufmachung.find((*i).first);
+       br_to_aufm::const_iterator aufit=br_aufmachung.find((*i).first);
 	o << "\\small (" << (*aufit).second << " m)";
        ++i;
       }
@@ -191,8 +192,8 @@ void tex_table::new_page(std::ostream &o) const
 
 void tex_table::tex_table_out(std::ostream &o) const
 {
- std::map<std::string, c_to_ean>::const_iterator it_breite=tablecols.begin();  
- std::map<std::string, c_to_ean>::const_iterator it_end=tablecols.end();   
+ std::map<int, c_to_ean>::const_iterator it_breite=tablecols.begin();  
+ std::map<int, c_to_ean>::const_iterator it_end=tablecols.end();   
  
  while(it_breite!=it_end)
    {

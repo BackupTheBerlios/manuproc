@@ -14,30 +14,31 @@ class tex_table
  static int rows_left;
 
  typedef std::map<std::string, std::string> c_to_ean;
+ typedef std::map<int, std::string> br_to_aufm;
 
 	// maps width to map of colors which in turn holds the ean
- std::map<std::string, c_to_ean > tablecols;
+ std::map<int, c_to_ean > tablecols;
 
 
  
- void cell_out(std::ostream &o, const std::string c, const std::string w) const;
+ void cell_out(std::ostream &o, const std::string c, const int w) const;
  void row_out(std::ostream &o, const std::string c,
-	const std::map<std::string, tex_table::c_to_ean>::const_iterator from) const;
+	const std::map<int, tex_table::c_to_ean>::const_iterator from) const;
  
 
  void begin_table(std::ostream &o,
-	const std::map<std::string, c_to_ean>::const_iterator br) const;
+	const std::map<int, c_to_ean>::const_iterator br) const;
 
  void new_page(std::ostream &o) const;
 
 public:
- c_to_ean br_aufmachung; //maps aufmachung to breite
+ br_to_aufm br_aufmachung; //maps aufmachung to breite
  static void set_rows_on_page(int r) {rows_left=r;}
  void tex_table_out(std::ostream &o) const;
 
  tex_table():columns(0){}
  tex_table(const std::string a, int _cols, const std::string query);
- void add_cell(const std::string w, const std::string c, const std::string ean);
+ void add_cell(const int w, const std::string c, const std::string ean);
 
 };
 
