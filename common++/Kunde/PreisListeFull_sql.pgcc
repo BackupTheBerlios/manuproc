@@ -40,16 +40,6 @@ void PreisListeFull::load_preisliste(bool with_artbez,
     beztable = " artbez_"+itos(at)+"_"+itos(ebz->Id());
    }
 
-/* exec sql begin declare section;
- int ARTIKELID[100];
- int PRLSNR=id;
- float PREIS[100];
- int PREISMENGE[100];
- int MINDMENGE[100];
- char *QU;
- exec sql end declare section;
-*/
-
  std::string qu;
  payoff.erase(payoff.begin(),payoff.end());
 
@@ -58,7 +48,9 @@ void PreisListeFull::load_preisliste(bool with_artbez,
 
  if(art_in_list)
    {qu=std::string("select ");
-    qu+=bezkomps+"artikelid,preis,preismenge,coalesce(mindestmenge,1) from artikelpreise p"
+	if(with_artbez)
+          qu+=bezkomps;
+	qu+=" artikelid,preis,preismenge,coalesce(mindestmenge,1) from artikelpreise p"
  	" join artikelstamm s on (p.artikelid=s.id and "
 	" s.warengruppe="+itos(at.Id())+") ";
     if(with_artbez)
@@ -67,24 +59,22 @@ void PreisListeFull::load_preisliste(bool with_artbez,
    }
  else
    {
-    qu=std::string("select id,coalesce(preis_alt,0),0,"
+    qu=std::string("select ");
+    if(with_artbez)
+      qu+=bezkomps;
+    qu+=" id,coalesce(preis_alt,0),0,"
 	" coalesce(c.mindestmenge,1) from artikelstamm s "
 	" left join preis_change_journal c on "
-	" (c.artikelid=s.id and c.prlsnr=")+plid;
-    qu+=std::string(" and preis_alt is not null and cast(preis_neu as float) = 0.0)"
-	" where not exists"
+	" (c.artikelid=s.id and c.prlsnr="+plid;
+    qu+=" and preis_alt is not null and cast(preis_neu as float) = 0.0) ";
+    if(with_artbez)
+      qu+=" join "+beztable+" b using (id) ";
+    qu+=" where not exists"
  	" (select p.artikelid from artikelpreise p"
-	"  where p.artikelid=s.id and kundennr = ")+plid+
-	") and s.warengruppe="+itos(at.Id())+" order by zeitpunkt";
+	"  where p.artikelid=s.id and kundennr = ";
+    qu+=plid+") and s.warengruppe="+itos(at.Id())+" order by zeitpunkt";
    }
-// QU = (char*)qu.c_str();
  
- Transaction tr;
-
-// exec sql prepare PRLSQU from :QU;
-// exec sql declare PRLS cursor for PRLSQU; 
-// exec sql open PRLS;
-
  Query q(qu);
 
  FetchIStream is=q.Fetch();
@@ -101,7 +91,7 @@ void PreisListeFull::load_preisliste(bool with_artbez,
     if(with_artbez)
       {
        for(unsigned int i=0; i<ebz->size(signifikanz); i++)
-         {is >> beztext;
+         {is >> FetchIStream::MapNull(beztext);
           po.b.push_back(cH_EntryValueIntString(beztext));
          }
       }
@@ -112,7 +102,6 @@ void PreisListeFull::load_preisliste(bool with_artbez,
 
     is=q.Fetch();
    }
-// exec sql close PRLS;  
 
 }
 
