@@ -228,7 +228,6 @@ EXPORTS
 	_ZNK9TagStream10getContentEv 
 	_ZNK9TagStream5writeERSoRK3Tagibb 
 	_ZNK9TagStream5writeERSob 
-	_ZNSaI3TagED1Ev 
 	_ZNSt12out_of_rangeD0Ev 
 	_ZNSt12out_of_rangeD1Ev 
 	_ZSteqRKSt4pairISsSsERKSs 
