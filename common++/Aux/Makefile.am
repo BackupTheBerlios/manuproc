@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.47 2003/11/05 09:48:45 christof Exp $
+# $Id: Makefile.am,v 1.48 2003/12/23 00:10:09 christof Exp $
 
 AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@ @SIGC_CFLAGS@
 
@@ -22,7 +22,8 @@ libMisc_a_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
 		Trace.cc FetchIStream_ops.cc \
 		dbcapability.cc Tag.cc TagStream.cc \
 		multi_lang.cc EntryValueTimeStamp.cc \
-		Event.cc germanstring.cc EntryValueIntGermanString.cc
+		Event.cc germanstring.cc EntryValueIntGermanString.cc \
+		EntryValueSort.cc
 
 libMisc.a: $(libMisc_a_OBJECTS) $(libMisc_a_DEPENDENCIES) Makefile
 	(for i in $(libMisc_a_OBJECTS) ; do echo Misc/$$i ; done ) >$@
@@ -47,7 +48,7 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
    EntryValueIntGermanString.cc EntryValueIntGermanString.h \
    recodestream.h bitmask.h TemporaryValue.h vectormap.h intmap.h \
    libManuProC_Base_dll.h Global_Settings.h Global_Settings.cc \
-   Global_Settings_sql.pgcc
+   Global_Settings_sql.pgcc EntryValueSort.h EntryValueSort.cc
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
