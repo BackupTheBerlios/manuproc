@@ -150,7 +150,12 @@ then
   AC_ARG_WITH(postgresdir,
     [  --with-postgresdir=postgresdir  where PostgreSQL is installed ],
     petig_postgresdir=$withval,
-    petig_postgresdir=`which ecpg | sed s+/bin/ecpg++`
+    [petig_postgresdir=`which ecpg | sed s+/bin/ecpg++`
+     if test ! -x "$ECPG" -a -x /usr/lib/postgresql/bin/ecpg
+     then 
+        ECPG=/usr/lib/postgresql/bin/ecpg
+     fi
+    ]
   )
   ECPG="$petig_postgresdir/bin/ecpg"
   if test ! -x "$ECPG" ; then
