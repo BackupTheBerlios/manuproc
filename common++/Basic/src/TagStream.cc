@@ -1,4 +1,4 @@
-// $Id: TagStream.cc,v 1.5 2003/12/08 07:38:28 christof Exp $
+// $Id: TagStream.cc,v 1.6 2004/06/02 07:31:23 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2002  Christof Petig
  *
@@ -90,7 +90,7 @@ std::string TagStream::de_xml(const std::string &cont)
          }
          else if (tag[1]=='#' && '0'<=tag[2] && tag[2]<='9')
          {  int c=0;  // decimal coded
-            for (std::string::const_iterator j=tag.begin()+3; 
+            for (std::string::const_iterator j=tag.begin()+2; 
                *j!=';' && j!=tag.end();++j)
                c=c*10+(*j-'0');
             ret+=char(c);
