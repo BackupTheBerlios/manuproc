@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.22 2002/12/10 09:55:10 thoma Exp $
+// $Id: adjust_store.cc,v 1.23 2002/12/10 10:41:33 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -61,7 +61,7 @@ bool check_for(const std::string &pname,cH_ppsInstanz I,const std::string &aktio
     if     (aktion=="A")
      {
       if(I->EigeneLagerKlasseImplementiert()) RI.ReparaturLager(getuid(),analyse_only);
-      else cout << "\t"<< I << "'A' nicht sinnvoll\n";
+      else std::cout << "\t"<< I << "'A' nicht sinnvoll\n";
      }
     else if(aktion=="B" &&!I->KundenInstanz()) RI.Reparatur_Konsistenz(analyse_only);
     else if(aktion=="C" &&!I->KundenInstanz()) RI.Reparatur_0er_und_2er(getuid(),analyse_only);
