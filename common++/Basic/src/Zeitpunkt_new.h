@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.h,v 1.12 2003/04/13 20:42:17 christof Exp $
+// $Id: Zeitpunkt_new.h,v 1.13 2003/07/17 10:50:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -102,8 +102,14 @@ public:
    Zeitpunkt_new operator+(const Days &dist) const throw();
    Zeitpunkt_new operator+(const Minutes &dist) const throw();
    Zeitpunkt_new operator+(const Seconds &dist) const throw();
-   void Precision(precision p)
-   {  prec=p; }
+   Zeitpunkt_new &Precision(precision p)
+   {  prec=p; return *this; }
+   // return a copy since we should not alter it
+   Zeitpunkt_new Precision(precision p) const
+   {  return withPrecision(p); }
+   // make a copy
+   Zeitpunkt_new withPrecision(precision p) const
+   {  Zeitpunkt_new res=*this; res.Precision(p); return res; }
    precision Precision() const
    {  return prec; }
    
