@@ -1,4 +1,4 @@
-// $Id: Faden.hh,v 1.8 2004/01/26 12:39:47 christof Exp $
+// $Id: Faden.hh,v 1.9 2004/02/06 16:06:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -81,6 +81,7 @@ class Fadenliste {
 	std::map<ArtikelBase,ArtikelBase> ersetzen; // variante
 public:
 	typedef std::vector<Faden>::const_iterator const_iterator;
+	typedef std::vector<Faden>::iterator iterator;
 	typedef std::vector<Faden>::const_iterator const_sumiterator;
 	typedef std::vector<Wiederholung>::const_iterator const_repiterator;
 	
@@ -89,7 +90,9 @@ public:
 	bool istVariante() const { return !!variante_von; }
 	
 	const_iterator begin() const { return liste.begin(); }
+	iterator begin() { return liste.begin(); }
 	const_iterator end() const { return liste.end(); }
+	iterator end() { return liste.end(); }
 	const_sumiterator sumbegin() const { return sumliste.begin(); }
 	const_sumiterator sumend() const { return sumliste.end(); }
 	const_repiterator repbegin() const { return repliste.begin(); }
