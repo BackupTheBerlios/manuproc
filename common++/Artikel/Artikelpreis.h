@@ -1,4 +1,4 @@
-// $Id: Artikelpreis.h,v 1.19 2003/07/30 18:32:18 jacek Exp $
+// $Id: Artikelpreis.h,v 1.20 2003/07/30 19:38:21 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -64,8 +64,9 @@ public:
 	static void UnCache(const PreisListe::ID liste,const ArtikelBase &a);
 	static const Artikelpreis create(const PreisListe::ID liste,
                	const Preis &p, const ArtikelBase &a,
-		int mindmenge,               	
-               	std::vector<std::string> ins_all_komp=std::vector<std::string>()) throw(SQLerror);
+		int mindmenge,      	
+               	std::vector<std::string> ins_all_komp=std::vector<std::string>(),
+               	bool new_staffel=false) throw(SQLerror);
 
 
 	void changePreis(const Preis &p, int newmindmenge=0) throw(SQLerror);

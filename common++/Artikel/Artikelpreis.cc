@@ -179,7 +179,8 @@ Artikelpreis::Artikelpreis(const cH_Kunde &k,const ArtikelBase &a,
 const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
 		const Preis &p, const ArtikelBase &a,
 		int mindmenge,
-		std::vector<std::string> ins_all_komp) throw(SQLerror)
+		std::vector<std::string> ins_all_komp,
+		bool newstaffel) throw(SQLerror)
 {
  int UID;
  int MINDESTMENGE=mindmenge;
@@ -203,11 +204,21 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
 	   ab->Komponente(bk.folgenr_in_sig,bk.signifikanz)+"' and ";
 	}
 
+
     query+=" not exists (select true from artikelpreise p "
 	"where "+artbez_tabelle+".id=p.artikelid and p.kundennr=?"
 	" and p.mindestmenge=?)";
 
-    (Query(query) << liste << mindmenge).FetchArray(to_insert);
+    if(newstaffel) // no new articles; only new preisstaffel for existsing
+      query+=" and exists (select true from artikelpreise p "
+	"where "+artbez_tabelle+".id=p.artikelid and p.kundennr=?)";
+
+    Query qu(query); 
+    qu << liste << mindmenge;
+
+    if(newstaffel) qu << liste;
+
+    qu.FetchArray(to_insert);
     
    }
  else
