@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum_sql.pgcc,v 1.8 2002/09/23 09:28:01 thoma Exp $
+// $Id: ArtikelBaum_sql.pgcc,v 1.9 2002/09/26 14:50:47 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -78,9 +78,9 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
        static Bindungsliste bindungsliste;
        try {                  
           schussfaeden.Load(ARTIKELID);
-          webangaben.Load();
+          bool w=webangaben.Load();
           if (bindungsliste.empty()) bindungsliste.Load();
-          fadenliste.Load(ARTIKELID,bindungsliste);
+          if (w) fadenliste.Load(ARTIKELID,bindungsliste);
          }
        catch(SQLerror &e) {std::cerr << e << '\n';}
        for (Fadenliste::const_iterator i=fadenliste.sumbegin();i!=fadenliste.sumend();++i)

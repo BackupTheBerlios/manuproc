@@ -1,4 +1,4 @@
-// $Id: Datum.cc,v 1.13 2002/07/05 12:35:01 christof Exp $
+// $Id: Datum.cc,v 1.14 2002/09/26 14:50:47 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.13 2002/07/05 12:35:01 christof Exp $ */
+/* $Id: Datum.cc,v 1.14 2002/09/26 14:50:47 thoma Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
@@ -69,6 +69,17 @@ std::string ManuProC::Datum::to_iso() const throw(Datumsfehler)
  teste();
  return itos(Jahr())+"-"+itos(Monat())+"-"+itos(Tag());
 } 
+
+std::string ManuProC::Datum::postgres_null_if_invalid() const
+{
+  try{ 
+   teste();
+   return " '"+itos(Jahr())+"-"+itos(Monat())+"-"+itos(Tag())+"' ";
+   } catch(Datumsfehler)
+   {
+    return " null ";
+   }
+}
 
 
 

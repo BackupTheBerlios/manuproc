@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export PGHOST=localhost
+
 dropdb testdb
 createdb testdb
 

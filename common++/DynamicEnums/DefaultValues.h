@@ -1,6 +1,7 @@
-// $Id: Produktionsdauer.cc,v 1.2 2002/09/26 14:55:53 thoma Exp $
+/* $Id: DefaultValues.h,v 1.1 2002/09/26 14:55:53 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
+ *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
+ *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,22 +18,17 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <Instanzen/Produktionsdauer.h>
+#include <DynamicEnums/DynamicEnums.h>
 
 
-int Produktionsdauer::Tage(cH_ppsInstanz instanz,const ArtikelBase &artikel)
-{
-#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
-  switch(instanz->Id())
-   {
-     case ppsInstanzID::Faerberei  : // zum Erweitern
-     case ppsInstanzID::Druckerei  : 
-     case ppsInstanzID::Weberei    : 
-     case ppsInstanzID::Schaererei : 
-     case ppsInstanzID::Rollerei   : 
-     case ppsInstanzID::Spritzgiesserei : 
-     case ppsInstanzID::_Garn__Einkauf : 
-     default : instanz->ProduktionsDauer();
-   }
+#define EIGENE_KUNDENID 1
+//#define DEFAULT_INSTANZ 1 /* entspricht ppsInstanzID::Kundenauftraege; */
+
+#ifdef MABELLA_EXTENSIONS
+   #define DEFAULT_ARTIKELTYP   3
+#elif defined PETIG_EXTENSIONS
+   #define DEFAULT_ARTIKELTYP   0
+#else
+   #define DEFAULT_ARTIKELTYP   1
 #endif
-}
+

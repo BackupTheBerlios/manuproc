@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.h,v 1.10 2002/06/20 06:29:52 christof Exp $
+// $Id: ArtikelTyp.h,v 1.11 2002/09/26 14:50:47 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,6 +23,7 @@
 #include <ManuProCConfig.h>
 #include <Artikel/ArtikelBase.h>
 #include <DynamicEnums/DynamicEnums.h>
+#include <DynamicEnums/DefaultValues.h>
 
 namespace ArtikelTypID = ManuProC::DynamicEnums::ArtikelTyp;
 
@@ -30,11 +31,16 @@ class ArtikelTyp
 {
 public:
 	typedef ManuProC::DynamicEnums::ArtikelTyp::enum_t ID;
+/*
 #ifdef MABELLA_EXTENSIONS	
 	static const ID default_ID=ID(3);
-#else	
+#elif defined PETIG_EXTENSIONS	
 	static const ID default_ID=ID(0);
+#else	
+	static const ID default_ID=ID(1);
 #endif	
+*/
+static const ID default_ID=ID(DEFAULT_ARTIKELTYP);
 
 private:
 	ID t;

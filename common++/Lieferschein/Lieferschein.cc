@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.11 2002/09/02 13:04:04 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.12 2002/09/26 14:50:47 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -102,8 +102,18 @@ void Lieferschein::aufraumen() throw(SQLerror)
       " and lfrsid not in (select e.lfrsid from lieferscheinentry e "
       " where e.lfrsid=lieferschein.lfrsid)";
  Query::Execute(query);
+ SQLerror::test(__FILELINE__,100);
+}
+
+
+void Lieferschein::closeLfrs()
+{
+ std::string query="update lieferschein set rngid=0 where rngid is null "
+ 	" and lfrsid = "+itos(Id());
+ Query::Execute(query);
  SQLerror::test(__FILELINE__);
 }
+
 
 #ifdef MABELLA_EXTENSIONS
 

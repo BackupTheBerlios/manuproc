@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList_sql.pgcc,v 1.12 2002/07/05 12:35:01 christof Exp $ */
+/* $Id: LieferscheinList_sql.pgcc,v 1.13 2002/09/26 14:50:47 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,7 +23,44 @@
 
 exec sql include sqlca;
 
+LieferscheinList::LieferscheinList()
+: instanz(ppsInstanz::default_id),kundenid(ManuProcEntity::none_id),
+artikelid(ArtikelBase::none_id),zusatzinfo(false),
+arttyp(ArtikelTyp::default_ID)
+{
+ vom=ManuProC::Datum(1,1,1970);
+ bis=ManuProC::Datum::today();
+}
 
+
+void LieferscheinList::build_list()
+{
+ std::string squery = SQuery();
+
+ squery += " where lieferschein.instanz="+itos(instanz->Id());
+
+ if(kundenid!=ManuProcEntity::none_id)
+   squery+= " and kundennr="+itos(kundenid);
+
+ if(vom.valid() && bis.valid())
+   {squery+= " and geliefertam between '"+vom.to_iso()+"'";   
+    squery+= " and date('"+bis.to_iso()+"')+1";
+   }
+
+ squery+= " and exists (select true from lieferscheinentry e"
+	" join artikelstamm a on (a.id=e.artikelid and "
+	" a.warengruppe="+itos(arttyp);
+ if(artikelid!=ArtikelBase::none_id)
+   squery+=" and a.id="+itos(artikelid);
+
+ squery+=")";
+
+ squery+=" where e.instanz=lieferschein.instanz and "
+	" e.lfrsid=lieferschein.lfrsid and e.zusatzinfo="+
+	(zusatzinfo?string("true"):string("false"))+")";
+ 
+ fuelle(squery);
+}
 
 LieferscheinList::LieferscheinList(const cH_ppsInstanz _instanz) throw(SQLerror)
 : instanz(_instanz)
@@ -54,7 +91,7 @@ LieferscheinList::LieferscheinList(const cH_ppsInstanz _instanz,const sel_Artike
 
 std::string LieferscheinList::SQuery() 
 {
- std::string squery = "select lfrsid,kundennr,datum,coalesce(rngid,0),
+ std::string squery = "select lfrsid,kundennr,datum,coalesce(rngid,-1),
       coalesce(pakete,0),coalesce(paeckchen,0),
       coalesce(cast(geliefertam as text),''),
       coalesce(dpdliefnr,0) from lieferschein";

@@ -1,4 +1,4 @@
-// $Id: Person_sql.pgcc,v 1.14 2002/09/02 13:04:03 christof Exp $
+// $Id: Person_sql.pgcc,v 1.15 2002/09/26 14:50:47 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -121,7 +121,7 @@ void Person::update_e(UpdateBits e) throw(SQLerror)
      if(!(e&(1<<i))) continue;
      if      (i==B_Name)     query += "name = '"+Name()+"',";
      else if (i==B_Vorname)  query += "vname= '"+Vorname()+"',";
-     else if (i==B_GebDatum) query += "gebdat= '"+GebDatum().to_iso()+"',";
+     else if (i==B_GebDatum) query += "gebdat= "+GebDatum().postgres_null_if_invalid()+",";
      else if (i==B_Anrede)   query += "branr= "+itos(Anrede()->Id())+",";
      else if (i==B_Notiz)    query += "notiz= '"+Notiz()+"',";
    }

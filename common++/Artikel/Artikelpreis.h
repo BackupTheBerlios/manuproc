@@ -1,4 +1,4 @@
-// $Id: Artikelpreis.h,v 1.10 2002/09/26 14:50:47 thoma Exp $
+// $Id: Artikelpreis.h,v 1.11 2002/09/26 14:54:03 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.24 2002/09/18 08:58:34 christof Exp $
+// $Id: Kunde.h,v 1.25 2002/09/26 14:50:47 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -32,7 +32,7 @@
 #include <Kunde/LandesListe.h>
 #include <Kunde/Person.h>
 #include <BaseObjects/ManuProcEntity.h>
-
+#include <DynamicEnums/DefaultValues.h>
 
 class cH_Kunde;
 class H_Kunde;
@@ -91,14 +91,9 @@ public:
     fixedpoint<2> rabatt;
     bool zeilenrabatt:1;
 
-//    int skontofrist; 
-
     std::string verein; 
-//    bool bankeinzug:1;
     std::string notiz; 
     ManuProC::Datum stand;
-//    fixedpoint<2> einzugrabatt;
-//    fixedpoint<2> skontosatz;    
 
     int anzahl_ausdruck_firmenpapier;
     int anzahl_ausdruck_weissespapier;
@@ -133,7 +128,7 @@ private:
 	
 	friend class Handle<const Kunde>;
 	friend class Handle<Kunde>;
-	static const ID _wir=1;
+	static const ID _wir=EIGENE_KUNDENID;
 	cP_Waehrung waehrung;
    // ...
 

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList.h,v 1.10 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: LieferscheinList.h,v 1.11 2002/09/26 14:50:47 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,6 +30,13 @@ class LieferscheinList
 {
  std::vector<cH_Lieferschein> sellist;
  cH_ppsInstanz instanz;
+ ManuProC::Datum vom;
+ ManuProC::Datum bis;
+ ManuProcEntity::ID kundenid;
+ ArtikelBase::ID artikelid;
+ bool zusatzinfo;
+ ArtikelTyp::ID arttyp;
+
 
 public:
  typedef std::vector<cH_Lieferschein>::const_iterator const_iterator;
@@ -51,6 +58,17 @@ public:
  LieferscheinList(const cH_ppsInstanz instanz) throw(SQLerror);
  LieferscheinList(const cH_ppsInstanz instanz,const sel_KundenId &selparam) throw(SQLerror);
  LieferscheinList(const cH_ppsInstanz instanz,const sel_ArtikelId &selparam) throw(SQLerror);
+
+ LieferscheinList();
+ void build_list(); 
+ void setForKunde(const ManuProcEntity::ID kid) { kundenid=kid; }
+ void setForArtikel(const ArtikelBase::ID aid) { artikelid=aid; }
+ void setFromDate(const ManuProC::Datum _vom) { vom=_vom;}
+ void setToDate(const ManuProC::Datum _bis) { bis=_bis;}
+ void setForInstanz(cH_ppsInstanz inst) { instanz=inst;}
+ void setWithZusatzinfo(bool zi) { zusatzinfo=zi;}
+ void setForArtikeltyp(const ArtikelTyp::ID atid) { arttyp=atid;}
+ void reset(); 
 
 #ifdef MABELLA_EXTENSIONS
  struct sel_GeliefStat 

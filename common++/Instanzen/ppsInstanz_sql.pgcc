@@ -1,0 +1,128 @@
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
+ *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include "ppsInstanz.h"
+#include <Aux/SQLerror.h>
+#include <Aux/Transaction.h>
+exec sql include sqlca;
+
+cH_ppsInstanz::cache_t cH_ppsInstanz::cache;
+
+cH_ppsInstanz::cH_ppsInstanz(ppsInstanz::ID iid) 
+{ 
+ cH_ppsInstanz *cached(cache.lookup(iid));
+ if (cached) *this=*cached;
+ else 
+  { *this=cH_ppsInstanz(new ppsInstanz(iid));
+    cache.Register(iid,*this);
+  }
+}
+
+
+void ppsInstanz::get_name()
+{
+ if(instid == ppsInstanzID::None) return;
+ try{
+
+ exec sql begin declare section;
+   char db_name[50];
+   int db_nr=instid,db_lager_fuer, db_best_fuer,db_sortierung,db_produktionsdauer_tage;
+   int IN;
+   bool db_liefer,db_produziert_selbst;
+   char db_lagername[50];
+ exec sql end declare section;
+ IN=ppsInstanzID::None;
+ exec sql select name,coalesce(lager_fuer,:IN),sortierung ,
+      coalesce(lieferschein,'f'),coalesce(produziert_selbst,'f'),
+      coalesce(lagername,''),coalesce(prod_dauer_tage,0)
+      into :db_name,:db_lager_fuer,:db_sortierung ,:db_liefer,
+      :db_produziert_selbst,:db_lagername,:db_produktionsdauer_tage
+      from prod_instanz where insid= :db_nr;
+ SQLerror::test(__FILELINE__);
+// if(sqlca.sqlcode) *db_name=0;
+
+//cout << instid<< ' ' <<db_name<<' '<<db_lager_fuer<<' '
+//<<db_sortierung<<' '<<db_liefer<<' '<<db_lagername<<'\n';
+ name=db_name;
+ lager_fuer=ID(db_lager_fuer);
+ sortierung=db_sortierung;
+ lieferschein=db_liefer;
+ produziert_selbst=db_produziert_selbst;
+ lagername=db_lagername;
+ produktionsdauer_tage=db_produktionsdauer_tage;
+ 
+  exec sql select insid into :db_best_fuer from prod_instanz 
+         where lager_fuer=:db_nr;
+  SQLerror::test(__FILELINE__,100);
+  if(sqlca.sqlcode) bestellung_fuer=ppsInstanzID::None;
+  else              bestellung_fuer=ID(db_best_fuer);
+ }catch(SQLerror &e) {cerr<<e<<'\n'; exit(1);}
+}
+
+cH_Prozess ppsInstanz::get_Prozess() const
+{
+  switch(instid) {
+#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
+	case ppsInstanzID::Faerberei: return cH_Prozess(ProzessID::Faerben);break;
+	case ppsInstanzID::Druckerei: return cH_Prozess(ProzessID::Drucken);break;
+	case ppsInstanzID::Weberei: return cH_Prozess(ProzessID::Weben);break;
+	case ppsInstanzID::Schaererei: return cH_Prozess(ProzessID::Schaeren);break;
+	case ppsInstanzID::Spritzgiesserei: return cH_Prozess(ProzessID::Giessen);break;
+#endif	
+        default : return cH_Prozess(ProzessID::Verarbeitung); break;
+	}
+}
+
+bool ppsInstanz::LagerInstanz() const
+{
+  if (LagerFuer()!=ppsInstanzID::None) return true;
+  return false;
+}
+
+std::string ppsInstanz::shortName() const
+{
+  std::string s=Name();
+  s=s.substr(0,2);
+  return s;
+}
+
+
+std::vector<cH_ppsInstanz> cH_ppsInstanz::get_all_instanz()
+{
+ vector<cH_ppsInstanz> v;
+ try{
+  exec sql begin declare section;
+    int db_i;
+  exec sql end declare section;
+  exec sql declare ins_ein cursor for select insid from 
+      prod_instanz order by sortierung;
+  Transaction tr;
+  exec sql open ins_ein;
+  SQLerror::test(__FILELINE__);
+  while (true)
+   {
+     exec sql fetch ins_ein into :db_i;
+     SQLerror::test(__FILELINE__,100);
+     if (sqlca.sqlcode) break;
+     v.push_back(cH_ppsInstanz(ppsInstanz::ID(db_i)));
+   }
+ }catch(SQLerror &e){cerr << e<<'\n';}
+ return v;
+}
+
