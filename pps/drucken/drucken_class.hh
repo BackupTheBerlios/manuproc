@@ -322,7 +322,7 @@ public:
       if (Typ()==Auftrag) return u.a->getYourAufNr();
       abort();}
    std::string Notiz() const { 
-      if (Typ()==Auftrag) return u.a->Notiz();
+      if (Typ()==Auftrag || Typ()==Extern) return u.a->Notiz();
       if (Typ()==Rechnung) return u.r->Notiz();
       if (Typ()==Lieferschein) return u.l->Notiz();
       abort();}

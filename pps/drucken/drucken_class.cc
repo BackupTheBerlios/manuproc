@@ -335,7 +335,8 @@ catch(SQLerror &e) { std::cout << e; return; }
 #endif	
   }
    
-    if(Typ()==Auftrag || Typ()==Rechnung || Typ()==Lieferschein)
+    if(Typ()==Auftrag || Typ()==Rechnung || Typ()==Lieferschein ||
+	Typ()==Extern)
       if(!Notiz().empty())
         {
 	 Gtk2TeX::StringFlags sf;
@@ -1148,7 +1149,11 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
 #endif
   }
 
+#ifndef MABELLA_EXTENSIONS
   if((Typ()==Auftrag) || (Typ()==Extern))
+#else
+  if((Typ()==Extern))
+#endif
   { tabcolumn+="r"; spaltenzahl+=1; ueberschriften +=  "&{"+sg
 			+mld->MLT(MultiL_Dict::TXT_LIEFERKW)+"}"; }
 
