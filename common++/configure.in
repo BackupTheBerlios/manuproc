@@ -1,11 +1,11 @@
-# $Id: configure.in,v 1.33 2003/11/03 08:12:19 christof Exp $
+# $Id: configure.in,v 1.34 2004/03/08 15:47:54 christof Exp $
 
 AC_PREREQ(2.50)
 AC_INIT(libcommon++, 0.0, [manuproc-developer-de@berlios.de])
 AM_INIT_AUTOMAKE
 
 #(libcommon++, 0.0, nomacros)
-AC_CONFIG_HEADERS(ManuProCConfig.h)
+AC_CONFIG_HEADERS(config.h ManuProCConfig.h)
 
 AC_PREFIX_DEFAULT(/usr/local)
 

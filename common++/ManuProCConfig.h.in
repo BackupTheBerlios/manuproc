@@ -1,6 +1,6 @@
-/* $Id: acconfig.h,v 1.4 2002/07/05 12:35:01 christof Exp $ */
-/*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+/* $Id: ManuProCConfig.h.in,v 1.1 2004/03/08 15:47:54 christof Exp $ */
+/*  ManuProCBase: ManuProC's main OO library
+ *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,16 +17,24 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#undef DEFAULT_DB
-#undef DEFAULT_DBHOST
-
 /* whether to enable Petig extensions */
 #undef PETIG_EXTENSIONS
 
 /* whether to enable Mabella extensions */
 #undef MABELLA_EXTENSIONS
 
-#ifdef COMPILING_CXX
-#undef PACKAGE
-#undef VERSION
-#endif
+/*
+   Database and host to use
+   */
+
+#undef DEFAULT_DB
+#undef DEFAULT_DBHOST
+
+/* 
+   Define to 1 if you use ecpg 2.9.
+   */
+#undef OLD_ECPG
+
+/* 
+   we use SigC++ 1.2.x (not 1.0.x) */
+#undef SIGC1_2
