@@ -5,3 +5,4 @@ DEADJOE
 .deps
 .libs
 Makefile.in
+dot.script
