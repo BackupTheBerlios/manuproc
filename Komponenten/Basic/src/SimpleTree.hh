@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.6 2002/12/04 09:22:14 christof Exp $
+// $Id: SimpleTree.hh,v 1.7 2002/12/04 11:20:15 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -77,12 +77,12 @@ public:
 private:
  // strictly this belongs into SimpleTreeStore
  template <class T> 
-  static void ForEachLeaf2(const_iterator b,const_iterator e, T &t)
+  void ForEachLeaf2(const_iterator b,const_iterator e, T &t) const
  {  for (const_iterator i=b;i!=e;++i)
     {  if (!(*i)[getStore().m_columns.childrens_deep])
           t((*i)[getStore().m_columns.leafdata]);
-       else if (i->children.begin()!=i->children.end())
-          ForEachLeaf2(i->children.begin(),i->children.end(),t);
+       else if (i->children().begin()!=i->children().end())
+          ForEachLeaf2(i->children().begin(),i->children().end(),t);
     }
  }
  
@@ -96,8 +96,8 @@ private:
        {  get_selection()->select(*i);
           if (only_one_line) return;
        }
-       else if (i->children.begin()!=i->children.end())
-          selectMatchingLines2(i->children.begin(),i->children.end(),t,only_one_line);
+       else if (i->children().begin()!=i->children().end())
+          selectMatchingLines2(i->children().begin(),i->children().end(),t,only_one_line);
     }
  }
 
@@ -151,11 +151,11 @@ public:
  }
  
  template <class T> void selectMatchingLines(const T &t)
- {  selection().clear();
+ {  get_selection()->unselect_all();
     selectMatchingLines2(begin(),end(),t,false);
  }
  template <class T> void selectFirstMatchingLine(const T &t)
- {  selection().clear();
+ {  get_selection()->unselect_all();
     selectMatchingLines2(begin(),end(),t,true);
  }
  template <class T> void ForEachLeaf(T &t) const
