@@ -440,16 +440,11 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
             {  analyse("Kind darf kein 2er sein",ae,j->AEB,j->Menge);
                goto weg1;
             }
-            if (ae.getEntryStatus()==CLOSED)
+            if (ae.getEntryStatus()!=OPEN)
             {  if (!!j->Menge)
-               {  analyse("Geschlossene Aufträge dürfen nichts mehr bestellen",ae,j->AEB,j->Menge);
+               {  analyse("Nichtoffene Aufträge dürfen nichts (mehr) bestellen",ae,j->AEB,j->Menge);
                   goto weg1;
                }
-            }
-            else if (ae.getEntryStatus()!=OPEN)
-            {  analyse("Nichtoffene Aufträge dürfen keine Kinder haben",ae,j->AEB,j->Menge);
-               artikel_passt_nicht=true;
-               goto weg1;
             }
 
             AufEintrag ae2(j->AEB);
