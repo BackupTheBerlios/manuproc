@@ -818,7 +818,8 @@ std::cout << "D13: "<<dummystring<<'\n';
       int znr=1;
       AufEintrag AEP((AufEintragBase(EINKAUF,AuftragBase::ungeplante_id,znr)));
 //ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
-      int nznr=AEP.Planen(UID,27,PA,PLANDATUM5);
+//      int nznr=
+      AEP.Planen(UID,27,PA,PLANDATUM5);
       erfolgreich=C.teste(Check::Menge,"_planen_kupfer",mit_reparatur_programm);
       if(!erfolgreich) { cout << "Über-Planen des Einkaufs (Mabella) \n\n"; return fehler();}       
       }
