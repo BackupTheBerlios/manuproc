@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.76 2004/05/06 10:22:47 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.77 2004/05/06 10:32:10 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -760,6 +760,12 @@ int SimpleTreeStore::iter_n_children_vfunc(vfunc_constiter_t iter) STS_VFUNC_CON
 }
 
 #if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+int SimpleTreeStore::iter_n_root_children_vfunc() const
+{  return root.children.size();
+}
+#endif
+
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
 bool SimpleTreeStore::iter_nth_child_vfunc(vfunc_constiter_t parent, int n, vfunc_iter_t iter) const
 #else
 bool SimpleTreeStore::iter_nth_child_vfunc(vfunc_iter_t iter, vfunc_constiter_t parent, int n)
@@ -788,6 +794,23 @@ bool SimpleTreeStore::iter_nth_child_vfunc(vfunc_iter_t iter, vfunc_constiter_t 
    iterinit(iter,res); 
    return true;
 }
+
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+bool SimpleTreeStore::iter_nth_root_child_vfunc(int n, vfunc_iter_t iter) const
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__,n);
+   iterclear(iter);
+   
+   const_iterator res=root.children.begin(),
+		   end=root.children.end();
+   if (res==end) return false;
+   for (;n>0;--n)
+   {  ++res;
+      if (res==end) return false;
+   }
+   iterinit(iter,res); 
+   return true;
+}
+#endif
 
 #if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
 bool SimpleTreeStore::iter_parent_vfunc(vfunc_constiter_t child, vfunc_iter_t iter) const
