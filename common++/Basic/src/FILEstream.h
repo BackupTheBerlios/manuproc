@@ -1,6 +1,6 @@
-// $Id: FILEstream.h,v 1.2 2003/01/30 17:14:15 christof Exp $
+// $Id: FILEstream.h,v 1.4 2004/04/30 14:59:08 christof Exp $
 /*  Midgard Character Generator
- *  Copyright (C) 2001 Christof Petig
+ *  Copyright (C) 2001-2004 Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,10 +28,10 @@ class FILEbuf : public std::streambuf
    typedef char char_type;
    typedef int int_type;
         
-   FILEbuf(FILE *_o) : o(_o) {}
+   FILEbuf(FILE *_o) : o(_o),cached(traits_type::eof()) {}
 protected:
    int_type overflow(int_type c) 
-      {  if (c!=-1)
+      {  if (c!=traits_type::eof())
          {  fputc(c,o);
          }
          return c;
@@ -39,8 +39,23 @@ protected:
    std::streamsize xsputn(const char_type* __s, std::streamsize __n)
    {  return fwrite(__s,sizeof(char_type),__n,o);
    }
+   int_type underflow() 
+      {  if (cached==traits_type::eof()) cached=fgetc(o);
+         return cached;
+      }
+   int_type uflow() 
+      {  
+         if (cached==traits_type::eof()) cached=fgetc(o);
+         int_type c=cached;
+         cached=traits_type::eof();
+         return c;
+      }
+   std::streamsize xsgetn(char_type* __s, std::streamsize __n)
+   {  return fread(__s,sizeof(char_type),__n,o);
+   }
 private:
    FILE *o;
+   int_type cached;
 };
 
 class oFILEstream : public std::ostream 
@@ -51,5 +66,13 @@ public:
 	}
 	void close() {}
 };
-#endif
+
+class iFILEstream : public std::istream
+{       FILEbuf b;
+public:
+        iFILEstream(FILE *i) : std::istream(0), b(i)
+        {  this->init(&b);
+        }
+        void close() {}
+};  
 #endif
