@@ -257,7 +257,7 @@ void auftrag_bearbeiten::on_stkmtr_spinbutton_activate()
        	AuftragBase::mengen_t(stkmtr_spinbutton->get_value_as_int())-
         aktaufeintrag->getStueck();
        			
-       AuftragBase::mengen_t mt=aktaufeintrag->updateStkDiff__
+       AuftragBase::mengen_t mt=aktaufeintrag->MengeAendern
 	(getuid(),diffmenge,true,AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
        assert(mt==diffmenge);
        fillCList();
