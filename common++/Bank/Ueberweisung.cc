@@ -1,4 +1,4 @@
-/* $Id: Ueberweisung.cc,v 1.7 2003/05/10 16:07:40 jacek Exp $ */
+/* $Id: Ueberweisung.cc,v 1.8 2003/05/13 13:20:27 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -158,6 +158,19 @@ void Ueberweisung::Storno() throw(SQLerror)
 }
 
 
+void Ueberweisung::setErfolgt(int diskettennr) throw(SQLerror)
+{
+ Transaction tr;
+ 
+ Query("update ueberweisungen set erfolgt_am=now(), disk_refnr=? "
+ 	" erfolgtdurch=? where id=?") << diskettennr << getuid() << Id();
+ SQLerror::test(__FILELINE__);
+ 	
+ tr.commit();
+}
+
+
+
 void Ueberweisung::Update(const InsertStr &is) throw(SQLerror)
 {
  Transaction tr;
@@ -200,3 +213,4 @@ void Ueberweisung::Update(const InsertStr &is) throw(SQLerror)
   
  tr.commit();
 }
+

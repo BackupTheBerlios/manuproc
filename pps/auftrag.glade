@@ -3289,11 +3289,24 @@ Auftrag</label>
 	      <handler>on_auftrag_clist_unselect_row</handler>
 	      <last_modification_time>Fri, 01 Dec 2000 11:40:18 GMT</last_modification_time>
 	    </signal>
-	    <columns>10</columns>
-	    <column_widths>80,80,80,80,80,80,80,80,80,80</column_widths>
+	    <columns>11</columns>
+	    <column_widths>80,80,80,80,80,80,80,80,80,80,80</column_widths>
 	    <selection_mode>GTK_SELECTION_SINGLE</selection_mode>
 	    <show_titles>True</show_titles>
 	    <shadow_type>GTK_SHADOW_IN</shadow_type>
+
+	    <widget>
+	      <class>GtkLabel</class>
+	      <child_name>CList:title</child_name>
+	      <name>label_laufnr</name>
+	      <label>Zeilennr.</label>
+	      <justify>GTK_JUSTIFY_RIGHT</justify>
+	      <wrap>False</wrap>
+	      <xalign>0.5</xalign>
+	      <yalign>0.5</yalign>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	    </widget>
 
 	    <widget>
 	      <class>GtkLabel</class>
@@ -7020,7 +7033,7 @@ Jahr
 
 <widget>
   <class>GnomeDialog</class>
-  <name>auftag_copy</name>
+  <name>auftrag_copy</name>
   <cxx_separate_file>True</cxx_separate_file>
   <cxx_visibility>protected</cxx_visibility>
   <title>Auftrag kopieren</title>

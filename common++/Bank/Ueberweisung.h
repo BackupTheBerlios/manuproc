@@ -1,4 +1,4 @@
-/* $Id: Ueberweisung.h,v 1.5 2003/05/05 14:25:13 jacek Exp $ */
+/* $Id: Ueberweisung.h,v 1.6 2003/05/13 13:20:27 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -94,6 +94,7 @@ public:
   std::string ErfolgtDurchName() const { return erfolgtdurch_name; }  
 
   void Storno() throw(SQLerror);
+  void setErfolgt(int diskettennr) throw(SQLerror);
   void Update(const InsertStr &is) throw(SQLerror);      
 };
 #endif

@@ -793,9 +793,11 @@ void auftrag_bearbeiten::fillCList()
   auftrag_clist->clear();
   Gtk::OStream os(auftrag_clist);
   Preis psum;
+  int znr=1;
   for(AuftragFull::const_iterator i = auftrag->begin();i!=auftrag->end();++i)
    {
-     os << i->getStueck()<<'\t'
+     os << znr++
+     	<< i->getStueck()<<'\t'
         << cH_ArtikelBezeichnung(ArtikelBase(i->ArtId()))->Bezeichnung()<<'\t'
         << '\t'
         << i->getRestStk()<<'\t'
@@ -893,12 +895,12 @@ void auftrag_bearbeiten::on_auftrag_kopieren_activate()
 {  
  if(!auftrag) return;
  
- auftrag_copy(*auftrag);
+ auftrag_copy ac(*auftrag);
  
- auftrag_copy->set_transient_for(*this);
+ ac.set_transient_for(*this);
  
  gint ret;
- ret=auftrag_copy.run();
+ ret=ac.run();
  
 }
 
