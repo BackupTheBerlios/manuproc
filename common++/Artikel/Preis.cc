@@ -1,4 +1,4 @@
-// $Id: Preis.cc,v 1.15 2003/01/08 09:46:56 christof Exp $
+// $Id: Preis.cc,v 1.16 2003/11/06 10:05:43 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -76,12 +76,23 @@ Preis::geldbetrag_t Preis::Gesamtpreis(const cP_Waehrung w,int anzahl,preismenge
 {  if (!*this) return 0;
    if (!menge) menge=1;
    Preis result=*this;
+
+#ifdef MABELLA_EXTENSIONS
+   bool rescale(result.Wert().Scale()>2 && (result.Wert().Scaled()%10));
+#endif
+
    // Währung umrechnen?
    if (w!=waehrung) result=result.In(w,result.preismenge);
    // Rabattieren?
    if (!!rabatt) result.pfennig_cent=result.pfennig_cent*(1-0.01*rabatt.as_float());
    // mit Menge multiplizieren
-   return result.In(result.waehrung,menge*anzahl).Wert();
+
+#ifdef MABELLA_EXTENSIONS
+   if(rescale)
+     return fixedpoint<2>(result.In(result.waehrung,menge*anzahl).Wert());
+   else
+#endif
+     return result.In(result.waehrung,menge*anzahl).Wert();
 }
 
 // braucht man diese Routine wirklich? ich würde den anderen Gesamtpreis empfehlen CP
