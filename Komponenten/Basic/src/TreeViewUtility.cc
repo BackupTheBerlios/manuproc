@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.cc,v 1.6 2003/05/19 13:11:13 christof Exp $
+// $Id: TreeViewUtility.cc,v 1.7 2004/01/30 10:09:25 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -70,4 +70,10 @@ void TreeViewUtility::CListEmulator::set_titles(const std::vector<Glib::ustring>
    for (unsigned i=old_size;i<new_size;++i)
       add(cols[i]);
    m_refStore=Gtk::ListStore::create(*this);
+}
+
+void TreeViewUtility::CListEmulator::set_title(const Glib::ustring &_title)
+{  std::vector<Glib::ustring> titles;
+   titles.push_back(_title);
+   set_titles(titles);
 }
