@@ -4,7 +4,7 @@
 TABLES=`./where_are_the_tables`
 case $TABLES in
    */Anleitung/datenbank)
-   	ALLTESTS="MP AL ZK"
+   	ALLTESTS="MP AP ZK"
    	;;
    database_tables_init)
    	ALLTESTS="M P S L Z D Ls Lm LZ LA ZK ZKM J ZI ZI2 AL RP Rg RK RZ RKZ"
