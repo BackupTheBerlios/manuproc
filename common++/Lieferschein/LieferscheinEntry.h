@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.22 2003/07/03 09:15:16 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.23 2003/07/03 10:06:39 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -53,22 +53,20 @@ public:
 class LieferscheinEntry : public LieferscheinEntryBase
 {
  ArtikelBase artikel;
- AufEintragBase refauftrag;
  int stueck;
  mengen_t menge;
  int palette;
- std::string yourauftrag;
- bool zusatzinfo;
+ 
 public:
  struct st_AufEintragMenge{AufEintragBase aeb; AuftragBase::mengen_t menge;
         st_AufEintragMenge()  {};
         st_AufEintragMenge(AufEintragBase a, AuftragBase::mengen_t m) 
          : aeb(a),menge(m) {}
         };
- struct st_AuftragMenge{AuftragBase aeb; AuftragBase::mengen_t menge;
+ struct st_AuftragMenge{AuftragBase ab; AuftragBase::mengen_t menge;
         st_AuftragMenge()  {};
         st_AuftragMenge(AuftragBase a, AuftragBase::mengen_t m) 
-         : aeb(a),menge(m) {}
+         : ab(a),menge(m) {}
         };
  typedef st_AufEintragMenge st_zusatz;
 
@@ -98,21 +96,22 @@ public:
  int Anzahl() const { return stueck; }
  int Stueck() const { return stueck; }
  int Palette() const { return palette; }
- const std::string YourAuftrag() const {return yourauftrag; }
  const ArtikelBase::ID ArtikelID() const { return artikel.Id(); }
  const ArtikelBase Artikel() const { return artikel; }
 
  std::vector<st_AufEintragMenge> getZusatzInfos() const {return VZusatz;}
- void setZusatzInfo(const AufEintragBase &AEB,/*const int stueck,*/const mengen_t &menge) throw(SQLerror);
+ void setZusatzInfos(const std::vector<st_AufEintragMenge> &zis);
+
+ __deprecated void setZusatzInfo(const AufEintragBase &AEB,const mengen_t &menge) throw(SQLerror);
 
  void setPalette(int p) throw(SQLerror);
  void changeMenge(int stueck,mengen_t menge) throw(SQLerror);
  static void deleteEntry(LieferscheinEntry &lse) throw(SQLerror);
 
  // bitte getZusatzInfos() nehmen, es könnten mehrere sein
- __deprecated const AuftragBase RefAuftrag() const { return refauftrag; }
- __deprecated int AufZeile() const { return refauftrag.ZNr();} 
- __deprecated AufEintragBase getAufEintragBase() const {return AufEintragBase(RefAuftrag(),AufZeile());}
+ __deprecated const AuftragBase RefAuftrag() const { return getAufEintragBase(); }
+ __deprecated int AufZeile() const { return getAufEintragBase().ZNr();} 
+ __deprecated AufEintragBase getAufEintragBase() const {return VZusatz.at(0).aeb; }
  __deprecated bool ZusatzInfo() const { return true; }
 private:
  static void deleteMe(const LieferscheinEntry &lse) throw(SQLerror);

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinVoll.cc,v 1.12 2003/01/08 09:46:57 christof Exp $ */
+/* $Id: LieferscheinVoll.cc,v 1.13 2003/07/03 10:06:39 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,11 +26,11 @@
 
 void LieferscheinVoll::deleteRow(LieferscheinEntry &le)
 {
-
+ LieferscheinEntry::deleteEntry(le);
+ 
  for(std::vector<LieferscheinEntry>::iterator i=lsentry.begin();i!=lsentry.end(); ++i)
 	if((*i).Zeile()==le.Zeile())
-	  {LieferscheinEntry::deleteEntry(le);
-	   lsentry.erase(i);
+	  {lsentry.erase(i);
 	   break;
 	  }
 }
@@ -38,19 +38,11 @@ void LieferscheinVoll::deleteRow(LieferscheinEntry &le)
 LieferscheinVoll::LieferscheinVoll(const cH_ppsInstanz& _instanz,int lid,bool auforder) throw(SQLerror)
 : Lieferschein(_instanz,lid)
 {
-
- std::string qstr =
-  "select ly.lfrsid, ly.zeile, ly.artikelid, coalesce(ly.stueck,0), "
-  " coalesce(ly.menge,0), coalesce(ly.palette,0), coalesce(youraufnr,''),"
-  "coalesce(ly.zusatzinfo,'f'), ly.instanz, coalesce(ly.refauftragid,"+itos(ManuProcEntity<>::none_id)+"),"
-  " coalesce(ly.refzeilennr,"+itos(ManuProcEintrag::none_znr)+")"
-  " from lieferscheinentry ly "
-  " left join auftrag a on (ly.refauftragid,ly.instanz) = (a.auftragid,a.instanz)"
-  " where (ly.instanz,ly.lfrsid) = ("+itos(Instanz()->Id())+","+itos(Id())+") order by "+
-  (auforder ? "ly.refauftragid,ly.zeile":"ly.zeile");
-
-  Query(qstr).FetchArray(lsentry);
+  (Query(std::string("select lfrsid, zeile, artikelid, stueck, menge, palette, "
+	  "zusatzinfo, instanz, refauftragid, refzeilennr"
+	  " from lieferscheinentry ly "
+	  " where (instanz,lfrsid) = (?,?) order by ")+
+		  (auforder ? "refauftragid,zeile":"zeile")) 
+  	<< Instanz()->Id() << Id())
+  	.FetchArray(lsentry);
 }
-
-
-

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.23 2003/07/03 09:15:16 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.24 2003/07/03 10:06:39 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -40,9 +40,9 @@ void LieferscheinEntry::setPalette(int p) throw(SQLerror)
 }
 
 // It seems that this routine works <50% of the time - needs a rewrite
-bool LieferscheinEntry::changeMenge(int stueck,mengen_t menge) throw(SQLerror)
+void LieferscheinEntry::changeMenge(int stueck,mengen_t menge) throw(SQLerror)
 {
-  if(stueck==Stueck() && menge==Menge()) return true ; //nichts geändert
+  if(stueck==Stueck() && menge==Menge()) return ; //nichts geändert
 
   Transaction tr;
   Query::Execute("lock table lieferscheinentry in exclusive mode");
@@ -58,9 +58,9 @@ bool LieferscheinEntry::changeMenge(int stueck,mengen_t menge) throw(SQLerror)
 //       if (abmenge>0 && abmenge>AE.getRestStk() 
 //       		&& Instanz()!=ppsInstanzID::Kundenauftraege) 
 //       	  return false;
-       if(abmenge<0 && -abmenge>AE.getGeliefert())  return false;
+       assert (!(abmenge<0 && -abmenge>AE.getGeliefert()));
        AE.Produziert(abmenge,Id());
-     }catch(AufEintrag::NoAEB_Error &e){std::cerr << AEB<<" existiert nicht\n"; return false;}
+     }catch(AufEintrag::NoAEB_Error &e){std::cerr << AEB<<" existiert nicht\n"; return;}
    }
   else if(!ZusatzInfo()) ;// s.u. updateLieferscheinMenge(stueck,menge) ;
   else // Zusatzinfos existieren
@@ -101,7 +101,6 @@ bool LieferscheinEntry::changeMenge(int stueck,mengen_t menge) throw(SQLerror)
   else updateLieferscheinMenge(stueck,menge);
 
   tr.commit();
-  return true;
 }
 
 void LieferscheinEntry::updateLieferscheinMenge(int stueck,mengen_t menge)  throw(SQLerror)
@@ -148,6 +147,7 @@ void LieferscheinEntry::updateZusatzEntry(const st_AufEintragMenge &Z,const Auft
 
   Query::Execute(Q);
   SQLerror::test(__FILELINE__);
+#warning Zusätze neu laden!
 }
 
 void LieferscheinEntry::deleteZusatzEntry(const st_AufEintragMenge &Z) throw(SQLerror)
@@ -165,12 +165,12 @@ void LieferscheinEntry::deleteZusatzEntry(const st_AufEintragMenge &Z) throw(SQL
 
   Query::Execute(Q);
   SQLerror::test(__FILELINE__);
+#warning Zusätze neu laden!
 }
 
 FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry::st_AufEintragMenge& z)
 {
-  return is >> z.aeb /*>> z.stueck*/ >> z.menge 
-  	>> FetchIStream::MapNull(z.yourauftrag,std::string());
+  return is >> z.aeb >> z.menge;
 }
 
 ArgumentList &operator<<(ArgumentList &q, const LieferscheinEntryBase &leb)
@@ -178,38 +178,37 @@ ArgumentList &operator<<(ArgumentList &q, const LieferscheinEntryBase &leb)
 }
 
 FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry& z)
-{
- is >> z.lieferid >> z.zeilennr >> z.artikel >>  z.stueck>> z.menge >> z.palette >> z.yourauftrag 
-     >> z.zusatzinfo >> z.refauftrag ;
- z.instanz=z.refauftrag.Instanz();
+{bool zusatzinfo;
+ AufEintragBase refauftrag;
+ is >> z.lieferid >> z.zeilennr >> z.artikel 
+ 	>> FetchIStream::MapNull(z.stueck)
+ 	>> FetchIStream::MapNull(z.menge) 
+ 	>> FetchIStream::MapNull(z.palette)
+     >> FetchIStream::MapNull(zusatzinfo) >> refauftrag ;
+ z.instanz=refauftrag.Instanz();
  
- if(!z.zusatzinfo) return is;
- // ohne youraufnr könnte ich auf den join verzichten ...
- (Query("select lyz.instanz,coalesce(lyz.auftragid,?),coalesce(lyz.auftragznr,?),"
-   "lyz.menge,youraufnr "
-   "from lieferscheinentryzusatz lyz "
-   "left join auftrag a on (lyz.instanz,lyz.auftragid) =(a.instanz,a.auftragid) " 
-   "where (lyz.instanz,lyz.lfrsid,lyz.lfsznr) = (?,?,?) "
-   "order by lyz.auftragid,lyz.auftragznr").lvalue()
-	<< AuftragBase::none_id << AufEintragBase::none_znr
+ if(!zusatzinfo) 
+ { z.VZusatz.push_back(LieferscheinEntry::st_AufEintragMenge(refauftrag,z.menge)); }
+ else
+ {(Query("select instanz,auftragid,auftragznr,menge "
+   "from lieferscheinentryzusatz "
+   "where (instanz,lfrsid,lfsznr) = (?,?,?) "
+   "order by auftragid,auftragznr")
  	<< z)
  	.FetchArray(z.VZusatz);
+ }
  return is;  
 }
 
 LieferscheinEntry::LieferscheinEntry(const LieferscheinEntryBase &lsbase)
  throw(SQLerror) : LieferscheinEntryBase(lsbase) 
 {
- std::string qstr =
-  "select ly.lfrsid, ly.zeile,ly.artikelid,  coalesce(ly.stueck,0), "
-  " coalesce(ly.menge,0), coalesce(ly.palette,0), coalesce(youraufnr,''),"
-  " coalesce(ly.zusatzinfo,'f'), ly.instanz, "
-  " coalesce(ly.refauftragid,"+itos(ManuProcEntity<>::none_id)+"),"
-  " coalesce(ly.refzeilennr,"+itos(ManuProcEintrag::none_znr)+")"
-  " from lieferscheinentry ly "
-  " left join auftrag a on (ly.refauftragid,ly.instanz) = (a.auftragid,a.instanz)"
-  " where (ly.instanz,ly.lfrsid,ly.zeile) = (?,?,?)";
- (Query(qstr).lvalue() << *this).FetchOne(*this);
+  (Query("select lfrsid, zeile,artikelid, stueck, "
+	  " menge, palette, zusatzinfo, instanz, refauftragid, refzeilennr"
+	  " from lieferscheinentry ly "
+	  " where (instanz,lfrsid,zeile) = (?,?,?)")
+ 	<< *this
+ 	).FetchOne(*this);
 }
 
 LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
@@ -220,11 +219,10 @@ LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
  LE.instanz=lsb.Instanz();
  LE.lieferid=lsb.Id();
  LE.artikel=art;
- LE.refauftrag=auf;
  LE.stueck=anzahl;
  LE.menge=_menge;
  LE.palette=_palette;
- LE.zusatzinfo=_zusatzinfo;
+ if (!_zusatzinfo) LE.VZusatz.push_back(st_AufEintragMenge(auf,LE.menge));
 
  Transaction tr;
  Query("lock table lieferscheinentry in exclusive mode");
@@ -240,11 +238,12 @@ LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
  		"(instanz,lfrsid,zeile, artikelid, refauftragid,refzeilennr, stueck,"
 		"menge,palette,zusatzinfo)"
  	"values (?,?,?, ?, ?,?, ?,?,?,?)").lvalue()
- 	<< LE << art.Id() << Query::NullIf(LE.RefAuftrag().Id(),0)
- 	<< Query::NullIf(LE.AufZeile(),0)
+ 	<< LE << art.Id() 
+ 	<< Query::NullIf(auf.Id(),AufEintragBase::none_id)
+ 	<< Query::NullIf(auf.ZNr(),AufEintragBase::none_znr)
  	<< LE.Stueck() 
  	<< Query::NullIf(LE.Menge(),0)
- 	<< LE.Palette() << LE.ZusatzInfo();
+ 	<< LE.Palette() << _zusatzinfo;
  SQLerror::test(__FILELINE__":LieferscheinEntry: insert into lieferscheinentry");
  
  tr.commit();
@@ -269,8 +268,8 @@ void LieferscheinEntry::setZusatzInfo(const AufEintragBase &AEB,const mengen_t &
   Query("insert into lieferscheinentryzusatz (instanz,lfrsid,lfsznr,"
       "auftragid,auftragznr,menge) values (?,?,?, ?,?, ?)").lvalue() 
 	<< *this 
-  	<< Query::NullIf(AEB.Id(),ManuProcEntity<>::none_id)
-  	<< Query::NullIf(AEB.ZNr(),ManuProcEintrag::none_znr)
+  	<< Query::NullIf(AEB.Id(),AufEintragBase::none_id)
+  	<< Query::NullIf(AEB.ZNr(),AufEintragBase::none_znr)
   	<< menge;
   SQLerror::test(__FILELINE__);
 }
