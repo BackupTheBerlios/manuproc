@@ -36,6 +36,8 @@ extern DBCapability *dbcapability;
 
 #include <Lieferschein/RechnungVoll.h>
 
+#define MAX_DRUCK_ANZAHL	5
+
 void auftrag_rechnung::on_rng_close()
 {   
    timeout_connection.disconnect();
@@ -119,9 +121,13 @@ gint auftrag_rechnung::on_rng_print(GdkEventButton *ev)
     }
    if (ev->button==STD_MABELLA(3,1))
     {
-     system((com+" --kopie").c_str());
-     system((com+" --kopie").c_str());
-     system((com+" --firma").c_str());
+     cH_Kunde k(rechnung.KdNr());
+     for(int i=0; i<k->anzahl_ausdruck_weissespapier() 
+		&& i<MAX_DRUCK_ANZAHL; i++)
+       system((com+" --kopie").c_str());
+     for(int i=0; i<k->anzahl_ausdruck_firmenpapier()
+		&& i<MAX_DRUCK_ANZAHL; i++)
+       system((com+" --firma").c_str());
     }
  return false;
 }
