@@ -1,0 +1,167 @@
+// $Id: ProzessBox.pgcc,v 1.18 2001/01/10 11:35:16 cvs_christof Exp $
+/*  libKomponenten: GUI components for ManuProC's libcommon++
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include "ProzessBox.hh"
+#include <strstream>
+
+exec sql include sqlca;
+
+static const string Prozessname(Prozess::ID id,const string &typ,
+		const string &text)
+{  ostrstream os;
+   os << typ << " \"" << text << "\" [" << id << ']' << char(0);
+   string result(os.str());
+   os.freeze(0);
+   return result;
+} 
+
+static void selectMatchingProzesses(const char *x) throw(SQLerror)
+{  exec sql begin declare section;
+   char typ[41];
+   char text[41];
+   char *QUERY;
+   exec sql end declare section;
+   
+  {char *firstquote=strchr(x,'"'); // "
+   
+   if (!firstquote || !firstquote[1])
+   {  strncpy(typ,x,sizeof typ);
+      typ[sizeof(typ)-1]=0;
+      if (typ[0])
+      {  int len=strlen(typ);
+         if (typ[len-1]==' ') typ[len-1]=0;
+      }
+      if (strlen(typ)<(sizeof(typ)-1))
+         strcat(typ,"%");
+      
+      QUERY="select Prozessid, Label, Meterprostk, Text"
+      	" from PROZESSE"
+      	" where upper(Label) like upper( ? ) and ? is not null"
+      	" order by label,prozessid";
+      goto execute;
+   }
+   assert(uint(firstquote-x)<sizeof(typ));
+   strncpy(typ,x,firstquote-x);
+   typ[firstquote-x-1]=0;
+   
+  {char *secondquote=strchr(firstquote+1,'"'); // "
+   if (!secondquote)
+   {  strncpy(text,firstquote+1,sizeof(text));
+      text[sizeof(text)-1]=0;
+      if (strlen(text)<(sizeof(text)-1))
+         strcat(text,"%");
+
+      QUERY="select Prozessid, Label, Meterprostk, Text "
+      	"from PROZESSE "
+      	"where upper(Label)=upper( ? ) "
+      	"and upper(text) like upper( ? ) "
+      	"order by label,prozessid ";
+      	goto execute;
+   }
+   
+   assert(uint(secondquote-firstquote)<sizeof(text));
+   strncpy(text,firstquote+1,secondquote-(firstquote+1));
+   text[secondquote-(firstquote+1)]=0;
+  }
+  }
+   
+   if (!*text)
+   { QUERY="select Prozessid, Label, Meterprostk, Text "
+     "from PROZESSE "
+     "where upper(Label)=upper( ? ) "
+     "	and text is null or text='' and ? is not null "
+     "order by label,prozessid ";
+   }
+   else 
+   { QUERY="select Prozessid, Label, Meterprostk, Text "
+   	"from PROZESSE "
+        "where upper(Label)=upper( ? ) "
+        "	and upper(text)=upper( ? ) "
+        "order by label,prozessid";
+   }
+ execute: ;
+    exec sql prepare QUERY from :QUERY;
+    exec sql declare match_proz cursor for QUERY;
+    exec sql open match_proz using :typ, :text;
+   SQLerror::test(__FILELINE__);
+}
+
+void ProzessBox::search_prozess(gboolean *cont, GtkSCContext newsearch)
+{  exec sql begin declare section;
+   char label[16],text[20];
+   int id;
+   float meterprostk;
+   short imeterprostk,itext;
+   exec sql end declare section;
+
+  try
+  {switch (newsearch)
+   {case GTK_SEARCH_OPEN: 
+        tr.open();
+   	selectMatchingProzesses(scombo.get_text().c_str());
+   	// fall through
+   case GTK_SEARCH_FETCH:     
+   exec sql fetch from match_proz 
+   	into :id, :label, :meterprostk :imeterprostk, :text :itext;
+   SQLerror::test(__FILELINE__,100);
+   if (sqlca.sqlcode) return;
+   if (itext) text[0]=0;
+   if (imeterprostk) meterprostk=0;
+   scombo.add_item(Prozessname(id,label,text));
+   *cont=true;
+   break;
+   case GTK_SEARCH_CLOSE:
+     exec sql close match_proz; 
+     tr.commit();
+     break;}
+  } catch (SQLerror &e)
+  {  cerr << e << '\n';
+  }
+}
+
+ProzessBox::ProzessBox() : prozessid(cH_Prozess::default_pid), allow_empty(false),
+	tr("",false)
+{  add(scombo);
+   scombo.show();
+   show();
+   scombo.activate.connect(SigC::slot(this,&ProzessBox::combo_activated));
+   scombo.search.connect(SigC::slot(this,&ProzessBox::search_prozess));
+}
+
+void ProzessBox::reset()
+{  scombo.reset();
+   prozessid=cH_Prozess::default_pid;
+}
+
+static const Prozess::ID parseEndProzess(const string &s)
+{  const char *zahl=strrchr(s.c_str(),'[');
+   if (!zahl) return Prozess::ID(cH_Prozess::default_pid);
+   return Prozess::ID(strtol(zahl+1,0,10));
+}
+
+void ProzessBox::combo_activated()
+{  prozessid=parseEndProzess(scombo.get_text());
+   if (allow_empty || prozessid!=cH_Prozess::default_pid)
+      activate();
+}
+
+void ProzessBox::set_value(const cH_Prozess &p)
+{  prozessid=p->Id();
+   scombo.set_text(Prozessname(p->Id(),p->getTyp(),p->getText()));
+}

@@ -1,0 +1,34 @@
+# $Id: configure.in,v 1.1 2001/04/23 08:36:49 christof Exp $
+
+AC_INIT(src/ArtikelBox.hh)
+
+AM_INIT_AUTOMAKE(Komponenten, 0.4.0)
+AM_CONFIG_HEADER(config.h)
+
+AC_PREFIX_DEFAULT(/usr/local)
+
+AC_PROG_CXX
+AM_PROG_LIBTOOL
+AC_LANG_CPLUSPLUS
+
+AC_SUBST(CFLAGS)
+AC_SUBST(CPPFLAGS)
+AC_SUBST(LDFLAGS)
+AC_SUBST(CXXFLAGS)
+
+AM_PATH_GTKMM(1.2.0,,AC_MSG_ERROR("Gtk-- 1.2.0 or newer not found or broken - see config.log for details."))
+
+GNOME_CONFIG=`which gnome-config`
+
+GNOMEMM_CFLAGS="`$GNOME_CONFIG --cflags gnomemm`"
+GNOMEMM_LIBS="`$GNOME_CONFIG --libs gnomemm`"
+AC_SUBST(GNOMEMM_CFLAGS)
+AC_SUBST(GNOMEMM_LIBS)
+
+PETIG_CHECK_COMMONXX
+PETIG_CHECK_COMMONGTK
+
+AC_OUTPUT(Makefile src/Makefile examples/Makefile \
+	examples/artikelbox/Makefile examples/eingabe/Makefile 
+	examples/dwhouse/Makefile )
+

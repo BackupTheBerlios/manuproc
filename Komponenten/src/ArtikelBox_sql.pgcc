@@ -1,0 +1,356 @@
+/*  libKomponenten: GUI components for ManuProC's libcommon++
+ *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
+ *			 written by Christof Petig and Malte Thoma
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include "ArtikelBox.hh"
+#include <Aux/itos.h>
+#include <algorithm>
+#include <unistd.h>
+
+exec sql include sqlca;
+
+void ArtikelBox::searchFunc(int *cont, GtkSCContext newsearch, unsigned int sp,unsigned int l) throw(SQLerror)
+{
+ try
+ {switch(newsearch)
+  { case GTK_SEARCH_OPEN:
+    { 
+ exec sql begin declare section;
+   char *QUERY;
+ exec sql end declare section;
+ string table="artbez_"+itos(schema->Typ())+"_"+itos(schema->Id());
+ string what;
+ string combocontent=combos[l][sp]->get_text();
+ string constraint;
+ string squery; 
+
+ unsigned int spalte=0;
+ 
+ if(!kombiniertbool)
+ for (ExtBezSchema::const_iterator i=schema->begin();i!=schema->end();++i)
+  { if (i->signifikanz!=signifikanz[l]) continue;
+    if (spalte==sp) 
+    {  what = i->spaltenname;
+       constraint += "text("+i->spaltenname +") like '"+combos[l][spalte]->get_text()+"\%'";
+       break;
+    }
+    else 
+    {  constraint += "text("+i->spaltenname +")='"+combos[l][spalte]->get_text()+"' AND ";
+       ++spalte;
+    }
+  }
+ else
+  {
+    string text = "artikelbezeichnung(id," +itos(schema->Typ())+ "," 
+               +itos(schema->Id())+ "," +itos(signifikanz[l])+")";
+    what = text ;
+    constraint = text+" like '"+combos[l][0]->get_text()+"%'";
+  }
+ squery = "SELECT DISTINCT "+what+" FROM "+table+" WHERE "+constraint;
+
+    (const char*)QUERY=squery.c_str();
+    tr.open();
+    exec sql prepare QUERY from :QUERY;
+    exec sql declare extbezfeld cursor for QUERY;
+    exec sql open extbezfeld;
+//cout << QUERY<<"\n"     ;
+    SQLerror::test("ArtikelBox::searchFunc: select text",100);
+    if(sqlca.sqlcode==100) return;
+    }
+    // fall through
+    
+case GTK_SEARCH_FETCH:   
+ { exec sql begin declare section;
+ char TEXT[51];
+ exec sql end declare section;
+
+ exec sql fetch in extbezfeld into :TEXT;
+ SQLerror::test("ArtikelBox::searchFunc: fetch resulttable",100);
+ if(sqlca.sqlcode==100) return;
+
+ combos[l][sp]->add_item(TEXT);
+
+ *cont=true;
+ }
+ break;
+ 
+case GTK_SEARCH_CLOSE:
+ exec sql close extbezfeld;
+ tr.commit();
+ break;
+  }
+ } catch (SQLerror &e)
+  {  cerr << e << '\n';
+  }
+
+}
+
+
+void ArtikelBox::fuelleMenu()
+{  
+   exec sql begin declare section;
+   int eab_id;
+   int id[20];
+   char bez[20][41];
+   exec sql end declare section;
+   eab_id=schema->Id();
+   bool typ_ok=false;
+   int neuerTyp=0;
+   // Hauptmenü
+   Gtk::Menu *typ_menu = manage(new class Gtk::Menu());
+   Gtk::MenuItem *typ = manage(new class Gtk::MenuItem("Typ"));
+   Gtk::Menu *anzeige_menu = manage(new class Gtk::Menu());
+   Gtk::MenuItem *anzeige = manage(new class Gtk::MenuItem("Anzeige"));
+   Gtk::Menu *optionen_menu = manage(new class Gtk::Menu());
+   Gtk::MenuItem *optionen = manage(new class Gtk::MenuItem("Optionen"));
+   Gtk::Menu *neu_menu = manage(new class Gtk::Menu());
+   Gtk::MenuItem *neu = manage(new class Gtk::MenuItem("Neuen Eintrag anlegen"));
+   menu->append(*typ);   
+   typ->set_submenu(*typ_menu);
+   menu->append(*anzeige);   
+   anzeige->set_submenu(*anzeige_menu);
+   menu->append(*optionen);   
+   optionen->set_submenu(*optionen_menu);
+   menu->append(*neu);
+   neu->activate.connect(SigC::slot(this,&ArtikelBox::Neuer_Eintrag));
+
+
+   // Einträge für den Menüeintrag 'Typ'
+   exec sql select DISTINCT e.artikeltyp, w.text into :id, :bez
+        from extbezschema e, artbez_warengruppe w where w.id 
+         = e.artikeltyp AND extartbezid= :eab_id limit 20;
+   if (!sqlca.sqlcode)
+   {  for (int i=0;i<sqlca.sqlerrd[2];++i)
+      {  string entr;
+         if (id[i]==schema->Typ()) entr += "*";
+         else entr += " ";
+         entr += bez[i];
+         Gtk::MenuItem *mi=manage(new Gtk::MenuItem(entr)); 
+         typ_menu->append(*mi);
+         mi->show();
+         mi->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::setzeTyp),id[i]));
+
+   	 if (!typ_ok)
+	     { if (schema->Typ()==id[i]) typ_ok=true;
+	       else if (!i) neuerTyp=id[i];
+     	  }
+       }
+   }
+   if (!typ_ok)
+   // Dieser Typ ist für diesen Kunden nicht vorhanden,
+   // nehmen wir den ersten anderen.
+   {  static bool block=false;
+      if (block) return;
+      block=true; // never recurse here
+      setExtBezSchema(cH_ExtBezSchema(schema->Id(),neuerTyp));
+      block=false;
+      return;
+   }
+
+   // Einträge für den Menüeintrag 'Anzeige'
+   exec sql begin declare section;
+      int db_atyp, db_sigV[20];
+   exec sql end declare section;
+   db_atyp=schema->Typ();
+   exec sql select distinct signifikanz into :db_sigV 
+      from extbezschema where artikeltyp = :db_atyp 
+      and extartbezid = :eab_id limit 20;
+   SQLerror::test(__FILELINE__);
+   if (!sqlca.sqlcode)
+   {  
+     int sanz = sqlca.sqlerrd[2];
+     for (int i=0;i<sanz;++i)
+      {
+       string text = kombinierteAnzeige(db_sigV[i],db_atyp,eab_id);
+       Gtk::CheckMenuItem *mi=manage(new Gtk::CheckMenuItem(text));
+       anzeige_menu->append(*mi);
+       if (find(signifikanz.begin(),signifikanz.end(),db_sigV[i])!= signifikanz.end()) mi->set_active(true);
+       mi->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::setzeSignifikanz),db_sigV[i]));
+       mi->show();
+      }
+   }
+
+   // Einträge für den Menüeintrag 'Optionen'
+   Gtk::CheckMenuItem *autocomplete = manage(new class Gtk::CheckMenuItem("Automatisches Ergänzen"));      
+   Gtk::CheckMenuItem *kombiniert = manage(new class Gtk::CheckMenuItem("Kombiniert"));      
+   Gtk::CheckMenuItem *vertikal = manage(new class Gtk::CheckMenuItem("Vertikal anordnen"));      
+   optionen_menu->append(*autocomplete);
+   optionen_menu->append(*kombiniert);
+   optionen_menu->append(*vertikal);
+   autocomplete->show();
+   kombiniert->show();
+   vertikal->show();
+   if(autocompletebool) autocomplete->set_active(true);
+   autocomplete->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::Autocomplete),autocomplete));
+   if (kombiniertbool) kombiniert->set_active(true);
+   kombiniert->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::kombiniert),kombiniert));
+   if (vertikalbool) vertikal->set_active(true);
+   vertikal->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::set_Vertikal),vertikal));
+   
+   // Menu anzeigen
+   typ_menu->show();
+   typ->show();
+   anzeige_menu->show();
+   anzeige->show();
+   optionen_menu->show();
+   optionen->show();
+   neu_menu->show();
+   neu->show();
+}
+
+string ArtikelBox::kombinierteAnzeige(int sig, int atyp, int id)
+{
+  exec sql begin declare section;
+   char db_text[20][20],db_sep[20][5];
+   int eab_id,db_atyp,db_sig;
+   int db_bezkomptype[20];
+  exec sql end declare section;
+  eab_id=id;
+  db_atyp=atyp;
+  db_sig=sig;
+  exec sql select distinct bezkomptype, bezkomptext, coalesce(separator,'') 
+    into :db_bezkomptype, :db_text, :db_sep
+    from extbezschema where artikeltyp = :db_atyp and signifikanz = :db_sig
+    and extartbezid = :eab_id order by bezkomptype limit 20;
+  string text;
+  SQLerror::test(__FILELINE__);
+  if (!sqlca.sqlcode)
+  for (int i=0;i<sqlca.sqlerrd[2];++i)
+     { string t= db_text[i];
+       string s=db_sep[i];
+       text += t+s;
+     }
+  return text;
+}
+
+
+void ArtikelBox::Benutzerprofil_laden()
+{
+  exec sql begin declare section;
+   int db_uid, db_artikeltyp, db_schema, 
+       db_anzeige_pos, db_anzeige_neg, db_auswahl;
+   bool db_autocomplete, db_kombiniert;
+  exec sql end declare section;
+  db_uid=getuid();
+  db_artikeltyp=schema->Typ();
+  db_schema=schema->Id();
+  exec sql select anzeige_pos, anzeige_neg, auswahl, autocomplete, kombiniert
+   into :db_anzeige_pos, :db_anzeige_neg, :db_auswahl, :db_autocomplete, :db_kombiniert
+   from artbez_anzeige where uid=:db_uid and artikeltyp=:db_artikeltyp
+   and schema=:db_schema;
+  SQLerror::test(__FILELINE__,100);
+  if (sqlca.sqlcode) return ;
+  
+  signifikanz.clear();
+  for (unsigned int i=0;i<sizeof(int)*8;++i)
+   {
+     unsigned int sig = (db_anzeige_pos &(1<<i));
+     if (sig!=0) signifikanz.push_back(i+1);
+   }
+  autocompletebool=db_autocomplete;
+  kombiniertbool=db_kombiniert;
+}
+
+void ArtikelBox::Benutzerprofil_speichern()
+{
+  exec sql begin declare section;
+   int db_uid, db_artikeltyp, db_schema, 
+       db_anzeige_pos, db_anzeige_neg, db_auswahl;
+   bool db_autocomplete, db_kombiniert;
+  exec sql end declare section;
+  db_autocomplete=autocompletebool; 
+  db_kombiniert=kombiniertbool; 
+  db_uid=getuid();
+  db_artikeltyp=schema->Typ();
+  db_schema=schema->Id();
+  db_anzeige_pos=0;
+  db_anzeige_neg=0;
+  for(vector<int>::const_iterator i=signifikanz.begin();i!=signifikanz.end();++i)
+   {
+     if ((*i)>0) db_anzeige_pos += 1<<( (*i)-1);
+     if ((*i)<0) db_anzeige_neg += 1<<(-(*i)-1);
+   }
+  db_auswahl=0;
+  exec sql delete from artbez_anzeige where 
+      uid=:db_uid and artikeltyp=:db_artikeltyp and schema=:db_schema;
+  exec sql insert into artbez_anzeige 
+      (uid,artikeltyp,schema,anzeige_pos,anzeige_neg,auswahl,autocomplete,kombiniert)
+   values
+      (:db_uid,:db_artikeltyp,:db_schema,:db_anzeige_pos,:db_anzeige_neg,:db_auswahl,:db_autocomplete,:db_kombiniert);
+  SQLerror::test(__FILELINE__);
+}
+
+void ArtikelBox::Neuer_Eintrag()
+{
+ try {
+ /* testen ob ID eingetragen => FEHLER */
+ for (unsigned int j=0;j<combos.size();++j)
+  for (unsigned int i=0; i<combos[j].size(); ++i)
+   { 
+     if (labels[j][i]->get_text()=="ID" && combos[j][i]->get_text() !="")
+      { cerr<<"FEHLER: ID darf nicht vorgegeben werden: Feld freilassen\n";
+        return;
+      }
+   }
+  exec sql begin declare section;
+   int db_id, db_warengruppe;      
+   char db_query[1024];
+  exec sql end declare section;
+  string table = "artbez_"+itos(schema->Typ())+"_"+itos(schema->Id());
+  exec sql select nextval ('artikelbezeichnun_artikelid_seq') into :db_id;
+  string where, what;
+  where = "(id,stand," ;
+  what  = "("+itos(db_id)+",now(),";
+  unsigned int l=0; 
+  for (vector<int>::const_iterator i=signifikanz.begin();i!=signifikanz.end();++i)
+   {
+     unsigned int spalte=0;   
+     if (labels[l][0]->get_text() =="ID") continue;
+     for(ExtBezSchema::const_sigiterator j=schema->sigbegin(signifikanz[l]);j!=schema->sigend(signifikanz[l]);)
+      {
+        vector<EntryValue> v;
+        if (kombiniertbool) v = expand_kombi_Artikel(l);
+        if (j->spaltenname!="id") where += j->spaltenname  ;
+        if (j->spaltenname!="id") 
+         { if (!kombiniertbool) what += "'"+combos[l][spalte]->get_text()+"'" ; 
+           else what += "'"+string(v[spalte])+"'";
+         }
+         ++spalte; ++j;
+        if (j!=schema->sigend(signifikanz[l]) 
+            || i+1!=signifikanz.end() && labels[l+1][0]->get_text() !="ID")  
+               { where += ","; what+=",";}
+      }
+     ++l;
+   }
+  where += ")"; what+=")";
+  string sq = "insert into "+table +" "+ where+" values "+what;
+  strncpy(db_query,sq.c_str(),sizeof(db_query));
+cout << db_query<<"\n"<<flush;
+  exec sql execute immediate :db_query;
+  SQLerror::test(__FILELINE__);
+
+  // Eintrag in Artikelbezeichnung
+  db_warengruppe=schema->Typ();
+  exec sql insert into artikelbezeichnung (artikelid,stand,warengruppe)
+     values (:db_id,now(),:db_warengruppe);
+     
+  artikel=db_id;
+  activate();
+  }catch (SQLerror &e)   {  cerr << e << '\n';}
+}
+

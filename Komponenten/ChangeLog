@@ -1,0 +1,5 @@
+Don,  8 Jun 2000 12:22:29 +0200
+	CP: Material reagiert nun auf Gtk_Widget::grab_focus sendet activate
+
+Mit Jun  7 12:49:25 CEST 2000
+	CP: auf neue SearchCombo umgestellt

@@ -1,0 +1,1 @@
+SUBDIRS=artikelbox eingabe dwhouse

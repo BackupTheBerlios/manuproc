@@ -1,0 +1,48 @@
+Generell gilt:
+
+alle Widgets sollten sich wie ein GtkEntry verhalten, d.h.
+  - GtkWidget::grab_focus() sollte den Fokus korrekt verteilen
+  - ein Signal activate() sollte einer erfolgreichen Eingabe entsprechen
+[ - set_text/get_text kann vorhanden sein ]
+[ - set_editable(bool) kann vorhanden sein ]
+  - reset() sollte das Widget löschen
+
+darüber hinaus sollte sich das Widget wie ein SpinButton/ProgressBar
+						/Adjustment verhalten:
+  - set_value/get_value mit entsprechendem Typ
+
+
+ArtikelBox:
+  - ArtikelBox(const ExtBezSchemaHandle _schema) throw(SQLerror)
+  - const ArtikelBase &get_value() const
+  - void set_value(const ArtikelBase &art) throw(SQLerror,ArtikelBoxErr)
+  - activate()
+  - void reset()
+  - void set_editable(bool edit)
+  - const ExtBezSchemaHandle getBezSchema() const 
+  - void setExtBezSchema(const ExtBezSchemaHandle _schema)
+  - void setShowType(ShowType st)
+  - ShowType getShowType() const
+  - void set_compact_view(bool on=true)
+  - void set_rohartikel(bool on=true)
+  	noch ohne Funktion
+  - const ArtikelBase &get_Artikel() const
+  	-> get_value
+  - void setArtikel(const ArtikelBase &art) throw(SQLerror,ArtikelBoxErr)
+  	-> set_value
+
+EingabeBox:
+	eine variable Anzahl von Entries nebeneinander
+  - EingabeBox(int cols=0)
+  - const string get_value(int col) const
+  - void set_value(int col,const string &s)
+  - void reset()
+  - activate()
+  - const string get_label(int col) const
+  - void set_label(int col,const string &s)
+  - void set_width(int col,int width)
+  	Breite eines Entrys
+  - void set_size(int cols)
+  	Anzahl Entries
+  - int size() const
+  
