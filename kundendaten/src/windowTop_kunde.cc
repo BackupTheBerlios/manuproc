@@ -9,7 +9,7 @@
 void windowTop::on_buttonNeu_clicked()
 {   
    clear_entrys();
-   manage(new window_neue_Kundennummer(this));   
+   manage(new window_neue_Kundennummer(this,gruppenwahl->get_value()));   
 }
 
 void windowTop::on_kunden_reset()

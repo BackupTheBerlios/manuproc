@@ -13,6 +13,7 @@
 #  include "window_neue_Kundennummer_glade.hh"
 #  define _WINDOW_NEUE_KUNDENNUMMER_HH
 #include "windowTop.hh"
+#include <Kunde/Kundengruppe.h>
 
 class windowTop;
 
