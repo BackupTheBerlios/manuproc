@@ -21,6 +21,7 @@ class bestell_plan : public bestell_plan_glade
 {  
  std::vector<ArtikelBase> artikel;
  ArtikelBase akt_artikel;
+ int akt_index;
  
         void on_bp_quit_clicked();
         void on_prev_artikel_clicked();
@@ -28,7 +29,9 @@ class bestell_plan : public bestell_plan_glade
         void on_plan_artikel_activate();
  void clear_all();
  void load_artikel_list();
-
+ void load_data(const ArtikelBase a) throw(SQLerror);
+ void set_akt_index();
+ 
 public:
  bestell_plan(const ArtikelBase ab=ArtikelBase());
         

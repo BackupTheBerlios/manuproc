@@ -9,9 +9,10 @@
 #include "bestell_plan.hh"
 #include <Artikel/ArtikelStamm.h>
 #include <Artikel/ArtikelBezeichnung.h>
-
+#include "auftrag_bearbeiten.hh"
 
 extern bestell_plan *BP;
+extern auftrag_bearbeiten *auftragbearbeiten;
 
 void bestell_plan::on_bp_quit_clicked()
 {  
@@ -21,18 +22,114 @@ void bestell_plan::on_bp_quit_clicked()
  destroy(); 
 }
 
-void bestell_plan::on_prev_artikel_clicked()
-{  
+void bestell_plan::set_akt_index()
+{
+ akt_index=0;
+ int idx=0;
+ for(std::vector<ArtikelBase>::const_iterator i=artikel.begin();
+     i!=artikel.end(); ++i,idx++)
+     {if(akt_artikel.Id()==(*i).Id())
+        {akt_index=idx;
+         break;
+        }
+     }  
 }
 
 void bestell_plan::on_next_artikel_clicked()
-{  
+{if(akt_index < (artikel.size()-1)) 
+   akt_index++;  
+ else
+   akt_index=0;
+
+ akt_artikel=artikel[akt_index];
+ plan_artikel->set_value(akt_artikel);
+ load_data(akt_artikel);
+}
+
+void bestell_plan::on_prev_artikel_clicked()
+{if(akt_index>0) 
+   akt_index--;  
+ else
+   akt_index=artikel.size()-1;
+
+ akt_artikel=artikel[akt_index];
+ plan_artikel->set_value(akt_artikel);  
+ load_data(akt_artikel);
 }
 
 void bestell_plan::on_plan_artikel_activate()
 {  
  akt_artikel=plan_artikel->get_value();
  load_artikel_list();
+ load_data(akt_artikel);
+ set_akt_index();
+}
+
+#include <Auftrag/auftrag_status.h>
+#include <Auftrag/AuftragBase.h>
+#include <Lager/FertigWarenLager.h>
+void bestell_plan::load_data(const ArtikelBase a) throw(SQLerror)
+{
+ std::vector<std::pair<int,int> > bestand;
+ int offauf,bestellt;
+ 
+ std::vector<int> lagerids;
+ std::vector<std::string> lagernames;
+ 
+ Query q("select lagerid from lager order by lagerid");
+ 
+ q.FetchArray(lagerids);
+ for(std::vector<int>::const_iterator i=lagerids.begin();
+     i!=lagerids.end(); ++i)
+     {
+      FertigWarenLager fl(*i);
+      
+      int b,m;
+      std::string query("select coalesce(bestand,0), coalesce(mindbest,0)");
+      query += " from "+fl.ViewTabelle()+" where artikelid=?";
+      Query(query) << a.Id() >> b >> m;
+      bestand.push_back(std::pair<int,int>(b,m));
+      lagernames.push_back(fl.Bezeichnung());
+     }
+ 
+ Query("SELECT coalesce(sum(bestellt-geliefert),0) from auftrag a join auftragentry e"
+    " on (a.instanz=e.instanz and a.auftragid=e.auftragid and "
+    "a.instanz=? and a.stat=e.status and a.stat=? and "
+    " bestellt>geliefert and e.artikelid=? and a.auftragid>=?)")
+    << ppsInstanzID::Kundenauftraege << OPEN << a.Id() 
+    << AuftragBase::handplan_auftrag_id >> offauf;
+
+ Query("SELECT coalesce(sum(bestellt-geliefert),0) from auftrag a join auftragentry e"
+    " on (a.instanz=e.instanz and a.auftragid=e.auftragid and "
+    "a.instanz=? and a.stat=e.status and a.stat=? and "
+    " bestellt>geliefert and e.artikelid=? and a.auftragid>=?)")
+    << ppsInstanzID::Einkauf << OPEN << a.Id() 
+    << AuftragBase::handplan_auftrag_id >> bestellt;     
+
+ int abverkauf=0;
+
+ Query q1("select coalesce(menge,0) from abverkauf_12m where artikelid=?");
+   q1 << a.Id();
+ FetchIStream fi=q1.Fetch();
+ if(fi.good()) fi >> abverkauf; 
+     
+// set entreis
+ if(bestand.size()>0)
+   {bp_lagerbestand->set_text(itos(bestand[0].first));
+    bp_mindbestand->set_text(itos(bestand[0].second));
+    bp_verfuegbar->set_text(itos(bestand[0].first - offauf));
+    lager_name1->set_text(lagernames[0]);
+    
+    if(bestand.size()>1)
+      {bp_lagerbestand2->set_text(itos(bestand[1].first));  
+       lager_name2->set_text(lagernames[1]);
+       }
+   }
+
+ bp_offauftraege->set_text(itos(offauf));
+ bp_bestellt->set_text(itos(bestellt));
+ bp_abv12m->set_text(itos(abverkauf)); 
+ 
 }
 
 
@@ -69,14 +166,26 @@ void bestell_plan::load_artikel_list()
        ++pit; 
       }
    }
-
- query+=" true "; 
+ query+=" true ";
+ 
+ std::string order_col;
+ ExtBezSchema::const_sigiterator sit=ebz->sigbegin(1);
+ for(;sit!=ebz->sigend(1);)
+   {
+    order_col+=" "+(*sit).spaltenname;
+    ++sit;
+    if(sit!=ebz->sigend(1)) order_col+=",";
+   } 
+   
+ if(!order_col.empty())  
+   query+=" order by "+order_col; 
 
  Query q(query);
 
+ artikel.clear();
  q.FetchArray(artikel); 
  
- next_artikel->grab_focus();
+ bp_lagerbestand->grab_focus();
 }
 
 
