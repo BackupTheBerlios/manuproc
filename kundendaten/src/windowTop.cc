@@ -153,6 +153,14 @@ void windowTop::clear_entrys()
    fire_enabled=true;
    kunden_status->set_active(true);
    preisautomatik->set_active(false);
+
+   iban_entry->set_text("");
+   cab_entry->set_text("");
+   abi_entry->set_text("");
+   iban_save->set_sensitive(false);
+   iban_abbruch->set_sensitive(false);      
+   riba_save->set_sensitive(false);
+   riba_abbruch->set_sensitive(false);      
 }
 
 
