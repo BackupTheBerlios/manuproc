@@ -29,9 +29,9 @@ COPY "prod_instanz" FROM stdin;
 5	Schraubenzieherlager	10	50	\N	\N	\N	\N	\N
 1	Kundenaufträge	\N	1	t	\N	\N	\N	\N
 2	Versand	\N	2	\N	\N	\N	1	\N
-30	Rohwarenlager	35	52	\N	nulll	\N	\N	\N
+30	Rohwarenlager	35	52	\N	\N	\N	\N	\N
 10	Werkstatt	\N	4	\N	\N	\N	1	\N
 11	Packerei	\N	5	\N	\N	\N	1	\N
 21	Schmelze	\N	7	\N	\N	t	10	\N
-35	Einkauf	\N	60	t	\N	\N	30	30
+35	Einkauf	\N	60	t	\N	t	30	30
 \.
