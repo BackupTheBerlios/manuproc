@@ -97,7 +97,7 @@ void RechnungEntry::setzePreis(const Preis &p) throw (SQLerror)
    float PREIS=p.Wert().as_float();
    exec sql end declare section;
    
-   if(RgArt() == RART_GUT) PREIS=PREIS*-1.0;
+   if(RgArt() == RART_GUT) PREIS*=-1.0;
 
     exec sql update rechnungentry
    	set preismenge=:PREISMENGE, preis=:PREIS
