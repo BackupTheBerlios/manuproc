@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.54 2004/09/24 15:20:11 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.55 2004/09/24 22:52:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -77,6 +77,14 @@ int FetchIStream::getIndicator() const
    return -PQgetisnull(result, zeile, naechstesFeld);
 }
 
+bool FetchIStream::good() const
+{  return result && naechstesFeld<PQnfields(result); }
+
+std::string FetchIStream::getFieldName() const
+{  if (naechstesFeld>=PQnfields(result)) 
+	mythrow(SQLerror("FetchIStream::getFieldName",ECPG_INVALID_DESCRIPTOR_INDEX,"reading beyond line end"));
+   return PQfname(result,naechstesFeld);
+}
 
 /// QUERY
 
@@ -201,6 +209,15 @@ FetchIStream::Fake::Fake(const std::string &val) : value(val)
    const_cast<PGresult*>(result)->tuples[0][0].len=value.size();
    const_cast<PGresult*>(result)->tuples[0][0].value=
 		const_cast<char*>(value.c_str());
+}
+
+FetchIStream::Fake::Fake(const Fake &a) : value(a.value)
+{  init();
+   if (a.result->tuples[0][0].value)
+   { const_cast<PGresult*>(result)->tuples[0][0].len=value.size();
+     const_cast<PGresult*>(result)->tuples[0][0].value=
+		const_cast<char*>(value.c_str());
+   }
 }
 
 FetchIStream::Fake::~Fake()

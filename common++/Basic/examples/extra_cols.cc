@@ -1,5 +1,5 @@
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,11 +16,31 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <Misc/FetchIStream.h>
 #include <iostream>
+#include <Misc/FetchIStream.h>
+#include <Misc/dbconnect.h>
+#include <Misc/ExtraColumns.h>
+#include <cassert>
 
 int main()
 { FetchIStream::Fake fk("200"),fk2;
   std::cout << fk.FetchMap<int>() << '\t' << fk2.FetchMap<int>() << '\n';
+  
+  ManuProC::dbconnect();
+ {ExtraColumns ec("kunden","kundennr");
+  ec << 1;
+  assert(ec.good());
+  std::cout << ec.get<int>("planumsatz") 
+        << ',' << ec.get<std::string>("strasse") << '\n';
+ }
+  
+ {ExtraColumns ec("kunden","kundennr");
+  ec << 1;
+  std::cout << ec.get<std::string>("firma") << '\n';
+ }
+ {ExtraColumns ec("kunden","kundennr");
+  ec << 1;
+ }
+  ManuProC::dbdisconnect();
   return 0;
 }

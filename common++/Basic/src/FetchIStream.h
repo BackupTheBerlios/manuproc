@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.58 2004/09/24 15:27:34 christof Exp $
+// $Id: FetchIStream.h,v 1.59 2004/09/24 22:52:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,6 +27,9 @@
 #include <Misc/SQLerror.h>
 #include <Misc/compiler_ports.h>
 
+#ifndef MPC_SQLITE
+#  define MPC_POSTGRESQL
+#endif
 
 #ifdef MPC_SQLITE
 #include <algorithm>
@@ -93,8 +96,10 @@ public:
 #endif
 	
 	int getIndicator() const;
-	bool good() const
-	{  return result; }
+#ifdef MPC_POSTGRESQL
+        std::string getFieldName() const;
+#endif
+	bool good() const; // noch Spalten verfügbar
 	
 	FetchIStream &operator>>(std::string &str);
 	FetchIStream &operator>>(int &i);
@@ -152,12 +157,12 @@ public:
 class FetchIStream::Fake : public FetchIStream
 { 	  std::string value;
           void operator=(const Fake &);
-          Fake(const Fake &);
           
           void init();
 public:
           Fake() { init(); } // NULL
           Fake(const std::string &value);
+          Fake(const Fake &);
           ~Fake();
 };
 

@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.12 2004/05/25 12:28:21 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.13 2004/09/24 22:52:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -363,4 +363,7 @@ Query::~Query()
 int Query::Code() 
 {  return SQLerror::last_code; 
 }
+
+bool FetchIStream::good() const
+{  return result && naechstesFeld<nfields; }
 #endif
