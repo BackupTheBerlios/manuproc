@@ -18,6 +18,8 @@ CREATE TABLE "prod_instanz" (
 	"einlagern_in" numeric(2,0),
 	"automatisch_einlagern" boolean,
 	"typ" character(1),
+   "externe_bestellung" boolean,
+   "geplant_von" integer
 	Constraint "prod_instanz_pkey" Primary Key ("insid")
 );
 

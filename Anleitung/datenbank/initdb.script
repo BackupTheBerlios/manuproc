@@ -46,6 +46,7 @@ for i in \
    ku_warenkorb \
    lieferschein \
    lieferscheinentry \
+   lieferscheinentryzusatz \
    prod_changejournal \
    prod_changejournal_chid_seq \
    prod_instanz \
