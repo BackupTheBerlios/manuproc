@@ -1,4 +1,4 @@
-dnl $Id: petig.m4,v 1.69 2003/10/28 12:02:59 christof Exp $
+dnl $Id: petig.m4,v 1.70 2004/04/22 15:56:37 christof Exp $
 
 dnl Configure paths for some libraries
 dnl derived from kde's acinclude.m4
@@ -370,7 +370,7 @@ CXXFLAGS="$old_cxxflags"
 
 if test "x$MPC_SQLITE" = x
 then
-	AC_MSG_RESULT("Use PostgreSQL instead of SQlite") 
+	AC_MSG_RESULT("Using PostgreSQL instead of SQlite") 
 	PETIG_CHECK_ECPG
 else
 	COMMONXX_LDFLAGS="$COMMONXX_LDFLAGS -lqlite"
