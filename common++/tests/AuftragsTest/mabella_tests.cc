@@ -168,4 +168,16 @@ static bool Rep_Mabella(AufEintrag &AE)
 static TestReihe Rep_Mabella_(&Rep_Mabella,"Reparatur-Test für Mabella","RM");
 */
 
+
+static bool Rollereiplanung()
+{  
+       Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
+       AufEintragBase AEB2=auftrag.push_back(40,DATUM,ArtikelBase(1),OPEN,true);
+       vergleichen(Check::Menge,"roll_Ausgangspunkt","Ausgangspunkt","");
+       
+       return true;
+}
+
+static TestReihe Rollereiplanung_(&Rollereiplanung,"Rollereiplanung","roll");
+
 #endif
