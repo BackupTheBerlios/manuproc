@@ -38,7 +38,7 @@
 #include <gtk/gtkframe.h>
 #include <gtk/gtkwidget.h>
 
-#if 0
+#if 1
 #define DEBUG(x) x
 #else
 #define DEBUG(x)
@@ -384,8 +384,9 @@ gtk_searchcombo_activate_by_enter (GtkWidget        *widget,
       {  // if we already closed, prevent idle function call
          // otherwise this is done during activate
          g_assert(idle_id!=-1);
-         gtk_idle_remove(idle_id);
+//         gtk_idle_remove(idle_id);
       }
+      if (idle_id!=-1) gtk_idle_remove(idle_id);
    }
    // do not autocomplete if we accept any value
    if (searchcombo->value_in_list && searchcombo->autoexpand_on_activate)
@@ -577,8 +578,8 @@ static gint gtk_searchcombo_fill_idle (GtkSearchCombo * searchcombo)
       
       g_return_val_if_fail (searchcombo != NULL, FALSE);
       g_return_val_if_fail (GTK_IS_SEARCHCOMBO (searchcombo), FALSE);
-      g_assert(searchcombo->search_in_progress && !searchcombo->search_finished);
       GDK_THREADS_ENTER ();
+      g_assert(searchcombo->search_in_progress && !searchcombo->search_finished);
       
       DEBUG(printf("fill idle: already_started=%d\n",searchcombo->already_started));
       gtk_signal_emit (GTK_OBJECT (searchcombo), searchcombo_signals[SEARCH],
@@ -587,7 +588,8 @@ static gint gtk_searchcombo_fill_idle (GtkSearchCombo * searchcombo)
    		(searchcombo->reopen?GTK_SEARCH_REOPEN:GTK_SEARCH_OPEN));
       searchcombo->already_started=TRUE;
       if (!continue_)
-      {  DEBUG(puts("fill idle: stopped"));
+      {  searchcombo->idle_handler_id=-1;
+         DEBUG(puts("fill idle: stopped"));
          gtksearchcombo_close_search(searchcombo,0);
       }
       GDK_THREADS_LEAVE ();
@@ -601,6 +603,8 @@ static gboolean gtksearchcombo_close_search(GtkSearchCombo * searchcombo, gint *
    g_return_val_if_fail (GTK_IS_SEARCHCOMBO (searchcombo), FALSE);
       searchcombo->search_in_progress=FALSE;
       searchcombo->search_finished=TRUE;
+      if (searchcombo->idle_handler_id!=-1) 
+         gtk_idle_remove(searchcombo->idle_handler_id);
       searchcombo->idle_handler_id=-1;
       gtk_signal_emit (GTK_OBJECT (searchcombo), searchcombo_signals[SEARCH],
    		NULL, GTK_SEARCH_CLOSE);
@@ -650,7 +654,8 @@ DEBUG(printf("SCB: fl, value_selected=%d\n",searchcombo->value_selected));
    }
    else continue_=TRUE;
    if (continue_)
-   {  searchcombo->idle_handler_id=gtk_idle_add ((GtkFunction) gtk_searchcombo_fill_idle, searchcombo);
+   {  g_assert(searchcombo->idle_handler_id==-1);
+      searchcombo->idle_handler_id=gtk_idle_add ((GtkFunction) gtk_searchcombo_fill_idle, searchcombo);
    }  
    else
    {  if (gtksearchcombo_close_search(searchcombo,&children_present)) return;
@@ -865,10 +870,11 @@ gtk_searchcombo_stop_if_running	(GtkSearchCombo *searchcombo)
 {  
    g_return_if_fail (searchcombo != NULL);
    g_return_if_fail (GTK_IS_SEARCHCOMBO (searchcombo));
-   if (!searchcombo->search_in_progress) return;
-   g_assert(searchcombo->idle_handler_id!=-1);
-   if (searchcombo->idle_handler_id!=-1)
-   {  gtk_idle_remove(searchcombo->idle_handler_id);
+   if (searchcombo->idle_handler_id!=-1 || searchcombo->search_in_progress)
+   {  g_assert(searchcombo->idle_handler_id!=-1);
+      g_assert(searchcombo->search_in_progress);
+      gtk_idle_remove(searchcombo->idle_handler_id);
+      searchcombo->idle_handler_id=-1;
       searchcombo->search_in_progress=FALSE;
       gtk_signal_emit (GTK_OBJECT (searchcombo), searchcombo_signals[SEARCH],
    		NULL, GTK_SEARCH_CLOSE);
