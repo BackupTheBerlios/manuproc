@@ -377,7 +377,7 @@ void mpc_agent::on_makeup_entry_search(gboolean *cont,GtkSCContext context)
   
 }
 
-
+#include <fstream>
 
 void mpc_agent::export_xml(const std::string file)
 {

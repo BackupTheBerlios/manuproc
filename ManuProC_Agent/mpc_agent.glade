@@ -132,17 +132,14 @@
 		  <property name="spacing">0</property>
 
 		  <child>
-		    <widget class="GtkEntry" id="kunde">
+		    <widget class="Custom" id="kunde">
 		      <property agent="glademm" name="cxx_visibility">protected</property>
 		      <property name="visible">True</property>
-		      <property name="can_focus">True</property>
-		      <property name="editable">True</property>
-		      <property name="visibility">True</property>
-		      <property name="max_length">0</property>
-		      <property name="text" translatable="yes"></property>
-		      <property name="has_frame">True</property>
-		      <property name="invisible_char">*</property>
-		      <property name="activates_default">False</property>
+		      <property name="creation_function">EingabeBox</property>
+		      <property name="int1">3</property>
+		      <property name="int2">0</property>
+		      <property name="last_modification_time">Fri, 22 Oct 2004 17:10:08 GMT</property>
+		      <signal name="activate" handler="on_kunde_activate" last_modification_time="Fri, 22 Oct 2004 17:11:12 GMT"/>
 		    </widget>
 		    <packing>
 		      <property name="padding">0</property>
@@ -314,24 +311,22 @@
 		  </child>
 
 		  <child>
-		    <widget class="GtkEntry" id="orderid">
+		    <widget class="Custom" id="orderid">
 		      <property agent="glademm" name="cxx_visibility">protected</property>
 		      <property name="visible">True</property>
-		      <property name="can_focus">True</property>
-		      <property name="editable">True</property>
-		      <property name="visibility">True</property>
-		      <property name="max_length">0</property>
-		      <property name="text" translatable="yes"></property>
-		      <property name="has_frame">True</property>
-		      <property name="invisible_char">*</property>
-		      <property name="activates_default">False</property>
+		      <property name="creation_function">SearchComboContent&lt;int&gt;</property>
+		      <property name="int1">0</property>
+		      <property name="int2">0</property>
+		      <property name="last_modification_time">Fri, 22 Oct 2004 16:54:11 GMT</property>
+		      <signal name="activate" handler="on_orderid_activate" last_modification_time="Fri, 22 Oct 2004 16:48:02 GMT"/>
+		      <signal name="search" handler="on_orderid_search" last_modification_time="Fri, 22 Oct 2004 16:48:16 GMT"/>
 		    </widget>
 		    <packing>
 		      <property name="left_attach">2</property>
 		      <property name="right_attach">3</property>
 		      <property name="top_attach">0</property>
 		      <property name="bottom_attach">1</property>
-		      <property name="y_options"></property>
+		      <property name="y_options">fill</property>
 		    </packing>
 		  </child>
 		</widget>
@@ -420,21 +415,19 @@
 				  <property name="spacing">0</property>
 
 				  <child>
-				    <widget class="GtkEntry" id="article_entry">
+				    <widget class="Custom" id="article_entry">
 				      <property agent="glademm" name="cxx_visibility">protected</property>
 				      <property name="visible">True</property>
-				      <property name="can_focus">True</property>
-				      <property name="editable">True</property>
-				      <property name="visibility">True</property>
-				      <property name="max_length">0</property>
-				      <property name="text" translatable="yes"></property>
-				      <property name="has_frame">True</property>
-				      <property name="invisible_char">*</property>
-				      <property name="activates_default">False</property>
+				      <property name="creation_function">SearchComboContent&lt;std::string&gt;</property>
+				      <property name="int1">0</property>
+				      <property name="int2">0</property>
+				      <property name="last_modification_time">Fri, 22 Oct 2004 17:15:33 GMT</property>
+				      <signal name="activate" handler="on_article_entry_activate" last_modification_time="Fri, 22 Oct 2004 16:55:54 GMT"/>
+				      <signal name="search" handler="on_article_entry_search" last_modification_time="Fri, 22 Oct 2004 16:56:09 GMT"/>
 				    </widget>
 				    <packing>
 				      <property name="padding">0</property>
-				      <property name="expand">False</property>
+				      <property name="expand">True</property>
 				      <property name="fill">True</property>
 				    </packing>
 				  </child>
@@ -481,21 +474,19 @@
 				  <property name="spacing">0</property>
 
 				  <child>
-				    <widget class="GtkEntry" id="width_entry">
+				    <widget class="Custom" id="width_entry">
 				      <property agent="glademm" name="cxx_visibility">protected</property>
 				      <property name="visible">True</property>
-				      <property name="can_focus">True</property>
-				      <property name="editable">True</property>
-				      <property name="visibility">True</property>
-				      <property name="max_length">0</property>
-				      <property name="text" translatable="yes"></property>
-				      <property name="has_frame">True</property>
-				      <property name="invisible_char">*</property>
-				      <property name="activates_default">False</property>
+				      <property name="creation_function">SearchComboContent&lt;std::string&gt;</property>
+				      <property name="int1">0</property>
+				      <property name="int2">0</property>
+				      <property name="last_modification_time">Fri, 22 Oct 2004 17:15:40 GMT</property>
+				      <signal name="activate" handler="on_width_entry_activate" last_modification_time="Fri, 22 Oct 2004 16:56:45 GMT"/>
+				      <signal name="search" handler="on_width_entry_search" last_modification_time="Fri, 22 Oct 2004 16:56:54 GMT"/>
 				    </widget>
 				    <packing>
 				      <property name="padding">0</property>
-				      <property name="expand">False</property>
+				      <property name="expand">True</property>
 				      <property name="fill">True</property>
 				    </packing>
 				  </child>
@@ -536,17 +527,15 @@
 			      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
 			      <child>
-				<widget class="GtkEntry" id="clor_entry">
+				<widget class="Custom" id="color_entry">
 				  <property agent="glademm" name="cxx_visibility">protected</property>
 				  <property name="visible">True</property>
-				  <property name="can_focus">True</property>
-				  <property name="editable">True</property>
-				  <property name="visibility">True</property>
-				  <property name="max_length">0</property>
-				  <property name="text" translatable="yes"></property>
-				  <property name="has_frame">True</property>
-				  <property name="invisible_char">*</property>
-				  <property name="activates_default">False</property>
+				  <property name="creation_function">SearchComboContent&lt;std::string&gt;</property>
+				  <property name="int1">0</property>
+				  <property name="int2">0</property>
+				  <property name="last_modification_time">Fri, 22 Oct 2004 17:15:46 GMT</property>
+				  <signal name="activate" handler="on_color_entry_activate" last_modification_time="Fri, 22 Oct 2004 16:57:45 GMT"/>
+				  <signal name="search" handler="on_color_entry_search" last_modification_time="Fri, 22 Oct 2004 16:57:53 GMT"/>
 				</widget>
 			      </child>
 
@@ -590,21 +579,19 @@
 				  <property name="spacing">0</property>
 
 				  <child>
-				    <widget class="GtkEntry" id="makeup_entry">
+				    <widget class="Custom" id="makeup_entry">
 				      <property agent="glademm" name="cxx_visibility">protected</property>
 				      <property name="visible">True</property>
-				      <property name="can_focus">True</property>
-				      <property name="editable">True</property>
-				      <property name="visibility">True</property>
-				      <property name="max_length">0</property>
-				      <property name="text" translatable="yes"></property>
-				      <property name="has_frame">True</property>
-				      <property name="invisible_char">*</property>
-				      <property name="activates_default">False</property>
+				      <property name="creation_function">SearchComboContent&lt;std::string&gt;</property>
+				      <property name="int1">0</property>
+				      <property name="int2">0</property>
+				      <property name="last_modification_time">Fri, 22 Oct 2004 17:15:51 GMT</property>
+				      <signal name="activate" handler="on_makeup_entry_activate" last_modification_time="Fri, 22 Oct 2004 16:59:10 GMT"/>
+				      <signal name="search" handler="on_makeup_entry_search" last_modification_time="Fri, 22 Oct 2004 16:59:22 GMT"/>
 				    </widget>
 				    <packing>
 				      <property name="padding">0</property>
-				      <property name="expand">False</property>
+				      <property name="expand">True</property>
 				      <property name="fill">True</property>
 				    </packing>
 				  </child>
@@ -677,21 +664,19 @@
 			      <property name="spacing">0</property>
 
 			      <child>
-				<widget class="GtkEntry" id="ean_entry">
+				<widget class="Custom" id="ean_entry">
 				  <property agent="glademm" name="cxx_visibility">protected</property>
 				  <property name="visible">True</property>
-				  <property name="can_focus">True</property>
-				  <property name="editable">True</property>
-				  <property name="visibility">True</property>
-				  <property name="max_length">0</property>
-				  <property name="text" translatable="yes"></property>
-				  <property name="has_frame">True</property>
-				  <property name="invisible_char">*</property>
-				  <property name="activates_default">False</property>
+				  <property name="creation_function">SearchComboContent&lt;std::string&gt;</property>
+				  <property name="int1">0</property>
+				  <property name="int2">0</property>
+				  <property name="last_modification_time">Fri, 22 Oct 2004 17:13:55 GMT</property>
+				  <signal name="activate" handler="on_ean_entry_activate" last_modification_time="Fri, 22 Oct 2004 17:13:26 GMT"/>
+				  <signal name="search" handler="on_ean_entry_search" last_modification_time="Fri, 22 Oct 2004 17:13:35 GMT"/>
 				</widget>
 				<packing>
 				  <property name="padding">0</property>
-				  <property name="expand">False</property>
+				  <property name="expand">True</property>
 				  <property name="fill">True</property>
 				</packing>
 			      </child>
@@ -956,14 +941,22 @@
 		  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 		  <child>
-		    <widget class="GtkTreeView" id="order">
-		      <property agent="glademm" name="cxx_visibility">protected</property>
+		    <widget class="GtkViewport" id="viewport1">
 		      <property name="visible">True</property>
-		      <property name="can_focus">True</property>
-		      <property name="headers_visible">True</property>
-		      <property name="rules_hint">False</property>
-		      <property name="reorderable">False</property>
-		      <property name="enable_search">True</property>
+		      <property name="shadow_type">GTK_SHADOW_IN</property>
+
+		      <child>
+			<widget class="Custom" id="order">
+			  <property agent="glademm" name="cxx_visibility">protected</property>
+			  <property name="visible">True</property>
+			  <property name="creation_function">SimpleTree</property>
+			  <property name="int1">3</property>
+			  <property name="int2">0</property>
+			  <property name="last_modification_time">Fri, 22 Oct 2004 17:00:16 GMT</property>
+			  <signal name="leaf_selected" handler="on_order_leaf_selected" last_modification_time="Fri, 22 Oct 2004 17:00:50 GMT"/>
+			  <signal name="leaf_unselected" handler="on_order_leaf_unselected" last_modification_time="Fri, 22 Oct 2004 17:01:05 GMT"/>
+			</widget>
+		      </child>
 		    </widget>
 		  </child>
 		</widget>
@@ -1872,4 +1865,3 @@
 </widget>
 
 </glade-interface>
-

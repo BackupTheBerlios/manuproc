@@ -38,17 +38,17 @@ class mpc_agent : public mpc_agent_glade
         void on_artikel_ok_clicked();
         void on_artikel_cancel_clicked();
         void on_orderid_activate();
-//        void on_orderid_search(gboolean *cont,GtkSCContext context);
+        void on_orderid_search(gboolean *cont,GtkSCContext context);
 
-//        void on_article_entry_search(gboolean *cont,GtkSCContext context);
-//        void on_ean_entry_search(gboolean *cont,GtkSCContext context);
+        void on_article_entry_search(gboolean *cont,GtkSCContext context);
+        void on_ean_entry_search(gboolean *cont,GtkSCContext context);
         void on_article_entry_activate();
         void on_ean_entry_activate();
-//        void on_width_entry_search(gboolean *cont,GtkSCContext context);
+        void on_width_entry_search(gboolean *cont,GtkSCContext context);
         void on_width_entry_activate();
-//        void on_color_entry_search(gboolean *cont,GtkSCContext context);
+        void on_color_entry_search(gboolean *cont,GtkSCContext context);
         void on_color_entry_activate();
-//        void on_makeup_entry_search(gboolean *cont,GtkSCContext context);
+        void on_makeup_entry_search(gboolean *cont,GtkSCContext context);
         void on_makeup_entry_activate();
         void on_artikel_del_clicked();
         void on_order_leaf_selected(cH_RowDataBase leaf);
