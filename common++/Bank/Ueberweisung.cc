@@ -1,4 +1,4 @@
-/* $Id: Ueberweisung.cc,v 1.4 2003/04/30 08:26:28 jacek Exp $ */
+/* $Id: Ueberweisung.cc,v 1.5 2003/05/05 14:25:13 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -34,7 +34,12 @@ Ueberweisung::Ueberweisung(ManuProcEntity<>::ID uid) throw(SQLerror)
  	" belegdatum, belegnr, buchungsjournal, buchungskonto "
  	" from ueberweisungen where id=?";
  	
- Query(query) << uid >> ownkonto >> ownblz >> konto >> blz 
+ Query q(query);
+
+ q << uid;
+ SQLerror::test(__FILELINE__);
+ 
+ q >> ownkonto >> ownblz >> konto >> blz 
  	>> FetchIStream::MapNull(faelligam,ManuProC::Datum())
  	>> betrag 
  	>> FetchIStream::MapNull(belegbetrag,0) 
@@ -95,17 +100,17 @@ Ueberweisung *Ueberweisung::newUeberweisung(const InsertStr &is) throw(SQLerror)
  	"  verwendungszweck1,"
  	"  verwendungszweck2,"
  	"  verwendungszweck3,"
- 	"  eingegeben_am,eingegebndurch) values "
+ 	"  eingegeben_am,eingegebendurch,faelligam) values "
  	" (?,?,?,?,?,"
  	"  ?,?,?,?,?,?,?,"
- 	"  now(),?)") << ui << 
+ 	"  now(),?,?)") << ui << 
  	(long long unsigned int)(is.ownkonto) << 
  	is.ownblz << 
  	(long long unsigned int)(is.konto) << 
  	is.blz <<
  	is.betrag << is.auftraggeber << is.empfaenger <<
  	is.vzweck[0] << is.vzweck[1] << is.vzweck[2] << is.vzweck[2] <<
- 	is.erfasstdurch;
+ 	is.erfasstdurch << is.faelligam;
  SQLerror::test(__FILELINE__);
  
  Ueberweisung *u = new Ueberweisung(ui);
@@ -128,4 +133,65 @@ std::string Ueberweisung::Vzweck(int feldnr)
 
 
 
+#include <unistd.h>
+#include <sys/types.h>
 
+
+void Ueberweisung::Storno() throw(SQLerror)
+{
+ if(erfolgtam.valid()) return;
+ 
+ ManuProC::Datum invalid(1,1,1970,false);
+ 
+ Transaction tr;
+ 
+ Query("update ueberweisungen set erfolgt_am=?, "
+ 	" erfolgtdurch=? where id=?") << invalid << getuid() << Id();
+ SQLerror::test(__FILELINE__);
+ 	
+ tr.commit();
+}
+
+
+void Ueberweisung::Update(const InsertStr &is) throw(SQLerror)
+{
+ Transaction tr;
+ ManuProC::Datum jetzt(ManuProC::Datum::today());
+ ManuProC::Datum faellig(is.faelligam);
+
+ if(!faellig.valid())
+   faellig=ManuProC::Datum(1,1,1970,false);
+  
+ Query("update ueberweisungen set"
+ 	" dest_konto=?, dest_blz=?,"
+ 	"  betrag=?,"
+ 	"  empfaenger=?,"
+ 	"  verwendungszweck0=?,"
+ 	"  verwendungszweck1=?,"
+ 	"  verwendungszweck2=?,"
+ 	"  verwendungszweck3=?,"
+ 	"  eingegeben_am=?,"
+ 	"  eingegebendurch=?,"
+ 	"  faellig=?"
+ 	" where id=?") 
+ 	<<  (long long unsigned int) is.konto 
+ 	<< is.blz 
+ 	<< is.betrag
+ 	<< is.empfaenger
+ 	<< is.vzweck[0]<<is.vzweck[1]<<is.vzweck[2]<<is.vzweck[3]
+ 	<< jetzt << erfasstdurch
+ 	<<  Query::NullIf(is.faelligam,ManuProC::Datum(1,1,1970,false))
+ 	<< Id();
+ SQLerror::test(__FILELINE__);
+
+ konto=is.konto;
+ blz=is.blz;
+ betrag=is.betrag;
+ vzweck=is.vzweck;
+ erfasstdurch=is.erfasstdurch;
+ erfasstam=jetzt;
+ empfaenger=is.empfaenger;
+ faelligam=is.faelligam;
+  
+ tr.commit();
+}

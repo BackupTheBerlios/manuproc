@@ -1801,6 +1801,20 @@ Auftrag</label>
 	    <active>False</active>
 	    <always_show_toggle>True</always_show_toggle>
 	  </widget>
+
+	  <widget>
+	    <class>GtkPixmapMenuItem</class>
+	    <name>kopieren1</name>
+	    <tooltip>Erstellt neuen Auftrag und übernimt die Einträge des aktuellen Auftrages</tooltip>
+	    <signal>
+	      <name>activate</name>
+	      <handler>on_auftrag_kopieren_activate</handler>
+	      <last_modification_time>Mon, 05 May 2003 13:54:55 GMT</last_modification_time>
+	    </signal>
+	    <label>Kopieren</label>
+	    <right_justify>False</right_justify>
+	    <stock_icon>GNOME_STOCK_MENU_COPY</stock_icon>
+	  </widget>
 	</widget>
       </widget>
 

@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.h,v 1.21 2003/04/24 13:44:37 jacek Exp $
+// $Id: Zahlungsart.h,v 1.22 2003/05/05 14:25:13 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -45,6 +45,7 @@ public:
     typedef enum {NONE=0, DTAUS=1, RIBA=2, LCR=3} Verfahren;
 
     static std::string VerfahrenStr(Verfahren v);             
+    static const ID default_Zahlart=1;
 
 private:
     bool bankeinzug;

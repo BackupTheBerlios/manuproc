@@ -493,3 +493,8 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
  return AEB;
 }
 
+
+
+
+
+

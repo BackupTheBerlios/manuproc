@@ -1,4 +1,4 @@
-/* $Id: Auftrag.h,v 1.20 2003/03/14 13:14:37 jacek Exp $ */
+/* $Id: Auftrag.h,v 1.21 2003/05/05 14:25:13 jacek Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -59,10 +59,23 @@ public:
            explicit Anlegen2(const AuftragBase& _AB) : AB(_AB) {}
            operator AuftragBase() const { return AB; }
         };
+        
+        struct AuftragCopy
+        { Kunde::ID kundennr;
+          int bestellt;
+          std::string youraufnr;
+          AuftragCopy(const Kunde::ID kid, int b, const std::string yanr):
+          	kundennr(kid), bestellt(b), youraufnr(yanr) {}
+          ManuProC::Datum liefdate;
+        };
+        
 	Auftrag(const AuftragBase& auftrag) throw(SQLerror);
 	// neuen Auftrag anlegen
         Auftrag(Anlegen2 Auftragsnr, long kundennr, const std::string yaufnr="") throw(SQLerror);
         Auftrag(Anlegen instanz, long kundennr, const std::string yaufnr="") throw(SQLerror);
+   
+        Auftrag::ID Copy(AuftragCopy &ac) throw(SQLerror);
+        
         void deleteAuftrag() throw(SQLerror);
 	void deleteEintrag(int zeilennr) throw(SQLerror);
 	int getIdFromYourAufId(const char *youraufid) throw(SQLerror);

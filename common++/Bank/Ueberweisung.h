@@ -1,4 +1,4 @@
-/* $Id: Ueberweisung.h,v 1.4 2003/04/30 08:26:28 jacek Exp $ */
+/* $Id: Ueberweisung.h,v 1.5 2003/05/05 14:25:13 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -62,6 +62,7 @@ public:
       long long ownkonto;   
       fixedpoint<2> betrag;
       ManuProC::Datum erfasstam;
+      ManuProC::Datum faelligam;
       int erfasstdurch;
       std::string auftraggeber;
       std::string empfaenger;
@@ -91,7 +92,9 @@ public:
   Kunde::ID Kundennr() const { return kundennr; }
   std::string ErfasstDurchName() const { return erfasstdurch_name; }
   std::string ErfolgtDurchName() const { return erfolgtdurch_name; }  
-      
+
+  void Storno() throw(SQLerror);
+  void Update(const InsertStr &is) throw(SQLerror);      
 };
 #endif
 
