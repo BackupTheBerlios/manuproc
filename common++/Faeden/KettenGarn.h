@@ -1,4 +1,4 @@
-/* $Id: KettenGarn.h,v 1.5 2004/02/25 12:02:30 christof Exp $ */
+/* $Id: KettenGarn.h,v 1.6 2004/05/26 09:58:23 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -41,18 +41,11 @@ public:
 	KettenGarn_CP(int i,int z,int k,int f,ArtikelBase id,int l,int w) 
 	        : index(i), zeile(z),kettenzahl(k),faeden(f), art(id),laenge(l),
 	          wiederholungen(w) {}
-	bool operator==(const KettenGarn_CP &b) const throw()
-	{  return Index()==b.Index() && 
-	          Artikel()==b.Artikel() &&
-	          Faeden()==b.Faeden() &&
-	          Kettenzahl()==b.Kettenzahl() &&
-	          Laenge()==b.Laenge() ;}
-	bool operator<(const KettenGarn_CP &b) const throw()
-	{  return (Index()<b.Index()) || 
-	          (Index()==b.Index() && Artikel()<b.Artikel() );}
+	bool operator==(const KettenGarn_CP &b) const throw();
+	bool operator<(const KettenGarn_CP &b) const throw();
 	          
 // this is for convenience only	
-	const cH_ArtikelBezeichnung Bezeichnung(const cH_ExtBezSchema &h) const throw()
+	__deprecated const cH_ArtikelBezeichnung Bezeichnung(const cH_ExtBezSchema &h) const throw()
 	{  return cH_ArtikelBezeichnung(art,h); }
 
    void set_Index(int i) {index=i;}
@@ -61,13 +54,13 @@ public:
    bool Valid() const {if(Id()&&kettenzahl&&faeden) return true; return false;}
 
 
-	const ID &Id() const {  return art.Id(); }
+	__deprecated const ID &Id() const {  return art.Id(); }
 	int Zeile() const throw() {  return zeile; }
 	int Faeden() const throw() {  return faeden; }
    int Kettenzahl() const throw() { return kettenzahl;}
    int Laenge() const throw() { return laenge;}
    void setFaeden(int l) {faeden=l;}
-   std::string Wiederholung() const {return ""; } // wiederholung;}
+   __deprecated std::string Wiederholung() const {return ""; } // wiederholung;}
    unsigned int Wiederholung_anzahl() const { return wiederholungen; }
    
    static std::vector<KettenGarn_CP> Load(const ArtikelGang &ag,unsigned laenge);

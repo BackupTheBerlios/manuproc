@@ -1,4 +1,4 @@
-/* $Id: KettenGarn_CP.cc,v 1.5 2004/02/26 17:37:51 christof Exp $ */
+/* $Id: KettenGarn_CP.cc,v 1.6 2004/05/26 09:58:23 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -81,3 +81,13 @@ std::vector<KettenGarn_CP> KettenGarn_CP::Load(ArtikelGang const &ag, unsigned l
    }
    return result;
 }
+
+bool KettenGarn::operator==(const KettenGarn_CP &b) const throw()
+	{  return Index()==b.Index() && 
+	          Artikel()==b.Artikel() &&
+	          Faeden()==b.Faeden() &&
+	          Kettenzahl()==b.Kettenzahl() &&
+	          Laenge()==b.Laenge() ;}
+bool KettenGarn::operator<(const KettenGarn_CP &b) const throw()
+	{  return (Index()<b.Index()) || 
+	          (Index()==b.Index() && Artikel()<b.Artikel() );}
