@@ -334,7 +334,7 @@ void Artikeleingabe::on_unselect_row(gint row, gint column, GdkEvent *event)
 
 void Artikeleingabe::on_button_artikel_delete_clicked()
 {
-  ArtikelBaum::delete_Artikel(getuid(),fuer_artikel,von_artikel);
+  ArtikelBaum::delete_Artikel(fuer_artikel,von_artikel);
   on_neuladen_clicked();
 }
 
@@ -352,7 +352,7 @@ void Artikeleingabe::on_Artikel_Bestellen_activate()
   ra.rohartikel = artikelboxb->get_Artikel().Id();
   ra.menge = artikelboxb->get_Menge();
   ra.erzeugung=artikelboxb->get_Prozess(); 
-  ArtikelBaum::new_Artikel(getuid(),fuer_artikel,ra);
+  ArtikelBaum::new_Artikel(fuer_artikel,ra);
   
   artikelbox->set_value(von_artikel);
   on_neuladen_clicked();
@@ -596,7 +596,9 @@ void Artikeleingabe::on_show_in_prlist_toggled()
  if(artikelbox->get_value().Id() == ArtikelBase::none_id) return;
  
  try{
- ArtikelStamm::setAktive(artikelbox->get_value(),show_in_prlist->get_active()); 
+ bool alle_farben=true;
+ ArtikelStamm::setAktive(artikelbox->get_value(),
+		show_in_prlist->get_active(),alle_farben); 
  }
  catch(SQLerror &e)
   {mess->Show(e); 

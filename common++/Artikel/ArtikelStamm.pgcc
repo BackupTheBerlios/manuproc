@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.32 2003/03/24 10:41:19 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.33 2003/10/22 12:59:35 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -123,9 +123,19 @@ void ArtikelStamm::setEinheit(const ArtikelBase &artikel,const Einheit e)
 }
 
 
-void ArtikelStamm::setAktive(const ArtikelBase &artikel, bool ak) throw(SQLerror)
-{ Query("update artikelstamm set stand=now(),aktiv=? where id=?").lvalue()
+void ArtikelStamm::setAktive(const ArtikelBase &artikel, bool ak
+		, bool all_color) throw(SQLerror)
+{ 
+ if(all_color)
+   Query("update artikelstamm set stand=now(),aktiv=? where id in "
+	" (SELECT b1.id from artbez_3_1 b1 join artbez_3_1 b2 "
+	"  on (b1.artikel=b2.artikel and b1.breite=b2.breite "
+	"      and b1.aufmachung=b2.aufmachung and b2.id=?)) ")
   	<< ak << artikel.Id();
+ else
+   Query("update artikelstamm set stand=now(),aktiv=? where id=?")
+  	<< ak << artikel.Id();
+
   SQLerror::test(__FILELINE__,100);
 
   cache.deregister(artikel.Id());

@@ -92,7 +92,7 @@ int main(int argc,char *argv[])
  switch(action) {
    case Delete : {
                    if(AB1.Id()==0 || AB2.Id()==0 ) {std::cerr << "AB1.Id()==0 || AB2.Id()==0\n"; exit(1);}
-                   ArtikelBaum::delete_Artikel(getuid(),AB1,AB2);
+                   ArtikelBaum::delete_Artikel(AB1,AB2);
                    std::cout << "Artikel "<<cH_ArtikelBezeichnung(AB1)->Bezeichnung()
                      << " stammt NICHT mehr von Artikel "
                      <<cH_ArtikelBezeichnung(AB2)->Bezeichnung()<<'\n';
@@ -101,7 +101,7 @@ int main(int argc,char *argv[])
    case Create : { 
                    if(AB1.Id()==0 || AB2.Id()==0) {std::cerr << "AB1.Id()==0 || AB2.Id()==0\n"; exit(1);}
                    ArtikelBaum::RohArtikel ra(AB2,menge,proz);
-                   try { ArtikelBaum::new_Artikel(getuid(),AB1,ra); }
+                   try { ArtikelBaum::new_Artikel(AB1,ra); }
                    catch (AufEintrag::NoAEB_Error &e)
                    {  std::cout << e.what() << '\n';
                    }
