@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.43 2004/03/11 08:31:54 christof Exp $
+// $Id: FetchIStream.h,v 1.44 2004/03/11 10:05:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,7 +27,7 @@
 #include <ManuProCConfig.h>
 
 #ifdef MPC_SQLITE
-#include <pair.h>
+#include <algorithm>
 #include <sqlite.h>
 #endif
 
@@ -44,7 +44,7 @@ private:
 	/* const */ int zeile;
 	
 #ifdef MPC_SQLITE
-	typedef std::map<int,std::pair<std::string column,std::string data> > SQLiteResult;
+	typedef std::map<int,std::pair<std::string,std::string> > SQLiteResult;
 	SQLiteResult result;
 #else	
 	const PGresult * /* const */ result;
@@ -76,14 +76,18 @@ private:
 	 	  : var(v), ind(i) {}
 	};
 public:
+#ifndef MPC_SQLITE
 	FetchIStream(const std::string &descr, int line=0);
 	FetchIStream(const PGresult *res=0, int line=0)
 	  : naechstesFeld(0), zeile(line), result(res)
 	{}
+#endif
 	
 	int getIndicator() const;
+#ifndef MPC_SQLITE	
 	bool good() const
 	{  return result; }
+#endif	
 	
 	FetchIStream &operator>>(std::string &str);
 	FetchIStream &operator>>(int &i);
