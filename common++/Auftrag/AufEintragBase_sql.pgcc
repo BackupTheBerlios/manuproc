@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.16 2001/12/23 21:42:15 christof Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.17 2002/01/02 15:31:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -111,7 +111,7 @@ cout << " Kinde ist: "<<i->AEB2.Instanz()<<' '<<i->AEB2.Id()<<' '<<i->AEB2.ZNr()
    if(!i->AEB2.existEntry(i->AB,lieferdate,znr,newznr,menge,status))
      {
 cout << "DEBUG 2\n";
-      znr=AEB.insertNewEntry(M,lieferdate,i->AB,status,Preis(),0,false);
+      znr=AEB.insertNewEntry(M,lieferdate,i->AB,status,false);
       if(Instanz()==ppsInstanz::INST_KNDAUF) 
             AufEintragZu(*this).setKindZnr(AEB,znr);
       else 
@@ -151,7 +151,8 @@ void AufEintragBase::updateStk(long stk,bool instanz) throw(SQLerror)
    exec sql lock auftragentry in exclusive mode;
    SQLerror::test("updateStk: lock table auftragentry");
 
-   AufEintragBase2::updateStk(stk,stk-bestellt,artikel,status);
+//   AufEintragBase2::updateStk(stk,stk-bestellt,artikel,status);
+   AufEintragBase2::updateStkDiff(stk-bestellt);
    if(instanz) updateStkInstanz(stk,bestellt);
    bestellt=stk;
    tr.close();
@@ -291,7 +292,7 @@ void AufEintragBase::split(int newmenge, const Petig::Datum &newld) throw(SQLerr
  exec sql lock auftragentry in exclusive mode;
  SQLerror::test("split: lock table auftragentry");
 
- insertNewEntry(newmenge,newld,artikel,status,preis,rabatt,true);
+ insertNewEntry(newmenge,newld,artikel,status,true,preis,rabatt);
  updateStk(bestellt-newmenge,true);
 #warning WAS IST MIT DER GELIEFERTEN MENGE
  

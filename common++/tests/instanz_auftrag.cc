@@ -1,4 +1,4 @@
-// $Id: abschreiben.cc,v 1.5 2002/01/02 15:31:17 christof Exp $
+// $Id: instanz_auftrag.cc,v 1.1 2002/01/02 15:31:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -32,21 +32,23 @@ int main()
       id=a;
       std::cout << "Auftrag " << a.Id() << '\n';
    
-      a.insertNewEntry(20000, Petig::Datum::today(), 211234,OPEN,true);
-      a.insertNewEntry(30000, Petig::Datum::today(), 211234,OPEN,true);
+      Petig::Datum date(8,1,2010);
+      a.insertNewEntry(3000, date, 218843,UNCOMMITED,true);
+//      a.insertNewEntry(2000, date, 218849,UNCOMMITED,true);
    }
    
    AufEintragBase2 zeile;
    {  AuftragFull af(id);
       for (AuftragFull::const_iterator i=af.begin(); i!=af.end(); ++i)
       {  zeile=*i;
-         std::cout << i->getStueck() << "m " << i->getRestStk() << "mR ("
+         std::cout << cH_ppsInstanz(i->Instanz())->Name()<<' '<<i->getStueck() << "m " 
+            << i->getRestStk() << "mR ("
          	<< i->getRestStk() << "R) " << i->getLieferdatum() << " "
          	<< cH_ArtikelBezeichnung(i->Id())->Bezeichnung()
          	<< " " << int(i->getEntryStatus()) << '\n';
       }
    }
-   
+/*   
    cout << "1x abschreiben " << zeile.abschreiben(15000) << '\n';
 
    {  AuftragFull af(id);
@@ -68,6 +70,7 @@ int main()
          	<< " " << int(i->getEntryStatus()) << '\n';
       }
    }
+*/
    Auftrag(id).setStatusAuftrag_(CLOSED);
    return 0;
 }

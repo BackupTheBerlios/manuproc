@@ -49,9 +49,9 @@ class AuftragBase
 
         int insertNewEntry(const unsigned long int bestellt, 
                 const Petig::Datum lieferdatum, const ArtikelBase& artikel,
-                const AufStatVal status,
-                const Preis& preis=Preis(),const fixedpoint<2> rabatt=0,
-                const bool setInstanzAuftraege=true) const throw(SQLerror);
+                const AufStatVal status,const bool setInstanzAuftraege,
+                const Preis& preis=Preis(),const fixedpoint<2> rabatt=0
+                ) const throw(SQLerror);
         void InstanzAuftraegeAnlegen(const ArtikelBase& art,const int altZnr,
                 const Petig::Datum& lieferdatum, const AufStatVal status, 
                 const long menge) const; 

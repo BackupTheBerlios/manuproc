@@ -1,0 +1,7 @@
+/* src/ManuProCConfig.h.in.  Generated automatically from configure.in by autoheader 2.13.  */
+
+#undef DEFAULT_DB
+#undef DEFAULT_DBHOST
+
+/* Define if you have the <dlfcn.h> header file.  */
+#undef HAVE_DLFCN_H

@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.pgcc,v 1.11 2001/12/23 21:42:15 christof Exp $
+// $Id: ArtikelBaum.pgcc,v 1.12 2002/01/02 15:31:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -170,7 +170,7 @@ void ArtikelBaum::create_in_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_a
      long menge=AEB.getStueck()*RohMenge;
      AuftragBase AB(ArtikelStamm(kind_artikel).BestellenBei(),0); 
      int znr = AB.insertNewEntry(menge,AEB.getLieferdatum(),
-         kind_artikel,AEB.getEntryStatus());
+         kind_artikel,AEB.getEntryStatus(),true);
      AufEintragZu(*e).AuftragsEntryZuordnung(menge,AB,znr);
    }  
 }

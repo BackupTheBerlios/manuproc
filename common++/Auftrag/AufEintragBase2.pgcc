@@ -1,4 +1,4 @@
-// $Id: AufEintragBase2.pgcc,v 1.26 2001/12/10 10:16:30 cvs_malte Exp $
+// $Id: AufEintragBase2.pgcc,v 1.27 2002/01/02 10:24:17 cvs_malte Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -182,6 +182,7 @@ void AufEintragBase2::setMaxPlanInstanz(int maxplaninstanz) const throw(SQLerror
 }
 
 
+/*
 void AufEintragBase2::updateStk(long newstk,long diff,
    const ArtikelBase& artikel,AufStatVal status) const throw(SQLerror)
 {
@@ -211,6 +212,40 @@ void AufEintragBase2::updateStk(long newstk,long diff,
      {tr.rollback(); throw; }
   }
  tr.commit(); 
+}
+*/
+
+void AufEintragBase2::updateStkDiff(long menge) const throw(SQLerror)
+{
+ exec sql begin declare section;
+ int AUFTRAGID = Id();
+ int INSTANZ=instanz->Id();
+ int ZEILENNR = ZNr();  
+ long MENGE = menge;
+ exec sql end declare section;
+
+// Transaction tr;
+
+ exec sql update auftragentry set bestellt= bestellt+:MENGE
+   where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR;
+ SQLerror::test("updateStkDiff: update stk in auftragentry");
+#warning
+#warning updateStk im Moment OHNE Einträge in ProdChageJournal!!! 
+#warning
+/*
+// if(status==OPEN)
+  {
+   try
+    { 
+     pps_ChJournalEntry::newChange(
+         instanz, *this,
+         artikel,(double)newstk,(double)menge,pps_ChJournalEntry::CH_MENGE);
+    }
+   catch(SQLerror &e)
+     {tr.rollback(); throw; }
+  }
+*/
+// tr.commit(); 
 }
 
 

@@ -19,12 +19,16 @@ void ppsInstanz::get_name()
 {
  exec sql begin declare section;
    char db_name[50];
-   int db_nr=instid;
+   int db_nr=instid,db_lager_fuer;
+   int IN=INST_NONE;
  exec sql end declare section;
- exec sql select name into :db_name from prod_instanz where insid= :db_nr;
+ exec sql select name,coalesce(lager_fuer,:IN) 
+      into :db_name,:db_lager_fuer 
+      from prod_instanz where insid= :db_nr;
  SQLerror::test(__FILELINE__,100);
  if(sqlca.sqlcode) *db_name=0;
  name=db_name;
+ lager_fuer=ppsInstId(db_lager_fuer);
 }
 
 cH_Prozess ppsInstanz::get_Prozess() const

@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.21 2001/12/14 17:47:32 jacek Exp $
+// $Id: ppsInstanz.h,v 1.22 2002/01/02 10:24:20 cvs_malte Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -42,7 +42,7 @@ public:
         };
  
 private: 
- ppsInstId instid; 
+ ppsInstId instid,lager_fuer; 
  std::string name;
  
  void get_name();
@@ -58,6 +58,7 @@ public:
  ppsInstId Id() const { return instid; }
  std::string get_Name() const {return name;}
  std::string Name() const {return name;}
+ ppsInstId LagerFuer() const { return lager_fuer; }
  cH_Prozess get_Prozess() const;
  
  operator ppsInstId () const {return instid;}

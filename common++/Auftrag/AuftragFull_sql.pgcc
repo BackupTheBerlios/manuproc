@@ -7,7 +7,7 @@ int AuftragFull::insertNewEntry(unsigned long int bestellt,
                AufStatVal status,
                Preis preis, fixedpoint<2> rabatt) throw (SQLerror)
 {
-  int znr=AuftragBase::insertNewEntry(bestellt,lieferdatum,artid,status,preis,rabatt);
+  int znr=AuftragBase::insertNewEntry(bestellt,lieferdatum,artid,status,true,preis,rabatt);
   eintragliste.push_back(AufEintragBase(
       Instanz(),Id(),znr,bestellt,artid,lieferdatum,
       0,0,0,getJahrgang(),getStatus(),getKundennr(),getYourAufNr(),
