@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.12 2002/11/29 09:34:48 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.13 2002/11/30 08:38:01 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -314,7 +314,7 @@ recurse:
 // former initTCL, initDepth
 void SimpleTreeStore::InitColumns(Gtk::TreeRow &node, guint deep,
 	const cH_EntryValue &ev, const cH_RowDataBase &v)
-{  node[m_columns.row]= Handle<TreeRow>();
+{  // node[m_columns.row]= Handle<TreeRow>();
    node[m_columns.value]= ev;
    node[m_columns.leafdata]= v;
    node[m_columns.deep]=deep;
@@ -352,27 +352,28 @@ Gtk::TreeRow SimpleTreeStore::CopyTree(Gtk::TreeRow src, Gtk::TreeModel::Childre
 Gtk::TreeStore::iterator SimpleTreeStore::MoveTree(
 	Gtk::TreeStore::iterator current_iter,
 	guint deep,guint child_s_deep,guint value_index)
-{  return current_iter;
-
-   Gtk::TreeStore::iterator new_iter= m_refTreeStore->insert(current_iter);
+{  Gtk::TreeStore::iterator new_iter= m_refTreeStore->insert(current_iter);
    Gtk::TreeRow newnode = *new_iter;
    Gtk::TreeRow oldnode = *current_iter;
    Gtk::TreeRow oldnode2 = CopyTree(oldnode, newnode.children());
-   
+
    // initialize the sum
    //    this const_casting is for consistency only, 
    //    a Handle<const TreeRow> argument is more logical
-   newnode[m_columns.row]= (*node_creation)(const_cast<const TreeRow*>(&*static_cast<Handle<TreeRow> >(oldnode[m_columns.row])));
+   if (node_creation) 
+      newnode[m_columns.row]= (*node_creation)(const_cast<const TreeRow*>(&*static_cast<Handle<TreeRow> >(oldnode[m_columns.row])));
    newnode[m_columns.leafdata]= static_cast<cH_RowDataBase>(oldnode[m_columns.leafdata]);
    newnode[m_columns.childrens_deep]= child_s_deep;
    newnode[m_columns.deep]= deep;
    newnode[m_columns.value]= static_cast<cH_EntryValue>(oldnode[m_columns.value]);
    for (guint i=deep;i<child_s_deep;++i)
       newnode[m_columns.cols[i]]= static_cast<Glib::ustring>(oldnode[m_columns.cols[i]]);
+   newnode[m_columns.cols[child_s_deep]]= "...";
    // aufklappen wenn child_s_deep < showdeep
 
-   for (guint i=child_s_deep;i<Cols();++i) oldnode2[m_columns.cols[i]]="";
-   oldnode2[m_columns.deep]=child_s_deep;
+   for (guint i=deep;i<child_s_deep;++i) 
+      oldnode2[m_columns.cols[i]]= "";
+   oldnode2[m_columns.deep]= child_s_deep;
    oldnode2[m_columns.value]= 
    	static_cast<cH_RowDataBase>(oldnode2[m_columns.leafdata])
    		->Value(value_index,ValueData());
