@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.11 2002/12/05 09:04:46 christof Exp $
+// $Id: SimpleTree.cc,v 1.12 2002/12/05 11:19:03 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,6 +18,7 @@
  */
 
 #include <SimpleTree.hh>
+#include <Misc/itos.h>
 
 SimpleTree_Basic::SimpleTree_Basic(unsigned int cols,int attrs)
 	: SimpleTreeStore_Proxy(cols,attrs)
@@ -39,14 +40,21 @@ void SimpleTree_Basic::on_title_clicked(unsigned nr)
    if (i==clicked_seq.end())
    {  clicked_seq.push_back(idx);
       // if alles voll -> umsortieren
+      if (clicked_seq.size()==Cols()) goto resort;
+      get_column(nr)->set_title(itos(clicked_seq.size()));
    }
    else if (i==--clicked_seq.end())
    {  // umsortieren
+     resort:
+      getStore().setSequence(clicked_seq);
+      clicked_seq.clear();
    }
    else
    {  // abbrechen
       clicked_seq.clear();
       // Titel wiederherstellen
+      for (unsigned i=0;i<Cols();++i) 
+         get_column(i)->set_title(getColTitle(i));
    }
 }
 

@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.19 2002/12/05 09:04:46 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.20 2002/12/05 11:19:03 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -145,6 +145,8 @@ public:
 	}
 
 	void set_tree_column_visibility(unsigned int column,bool visible);
+	
+	void setSequence(const std::deque<unsigned> &seq);
 };
 
 #endif

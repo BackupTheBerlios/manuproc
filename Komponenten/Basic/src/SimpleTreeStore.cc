@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.16 2002/12/05 08:39:19 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.17 2002/12/05 11:19:03 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -396,4 +396,10 @@ Gtk::TreeStore::iterator SimpleTreeStore::MoveTree(
 
    m_refTreeStore->erase(current_iter);
    return new_iter;
+}
+
+void SimpleTreeStore::setSequence(const std::deque<unsigned> &neu)
+{  currseq=neu; // Spaltenzahl anpassen?
+   for (unsigned i=0;i<Cols();++i) title_changed(i);
+   redisplay();
 }
