@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.41 2004/03/24 10:26:11 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.42 2004/05/05 12:27:28 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -190,6 +190,8 @@ private:
 	{  s_row, s_deep, s_childrens_deep, s_leafdata, s_background,
 	   s_text_start
         };
+
+	SimpleTreeStore(int max_col); // use create instead of this ctor
 public:
 	struct ModelColumns : public Gtk::TreeModelColumnRecord
 	{  // since we would also need to 
@@ -212,7 +214,7 @@ public:
 	
 	ModelColumns m_columns;
 
-	SimpleTreeStore(int max_col);
+	static Glib::RefPtr<SimpleTreeStore> create(int max_colidx);
 	
 	void set_showdeep(int i) {showdeep=i;}
 	guint Cols() const  { return columns;}

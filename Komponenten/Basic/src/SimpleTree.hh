@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.33 2004/03/24 10:26:11 christof Exp $
+// $Id: SimpleTree.hh,v 1.34 2004/05/05 12:27:28 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -31,9 +31,8 @@ public:
 	typedef SimpleTreeStore::const_iterator const_iterator;
 
 	SimpleTreeStore_Proxy(unsigned int max_cols) : 
-		sts(new SimpleTreeStore(max_cols)) 
-	{ sts->reference(); // the ptr ctor seems to not take a reference
-	}
+		sts(SimpleTreeStore::create(max_cols)) 
+	{}
 
 	void set_remember(const std::string &program, const std::string &instance) {  sts->set_remember(program,instance); }
 	guint Cols() const  { return sts->Cols();}

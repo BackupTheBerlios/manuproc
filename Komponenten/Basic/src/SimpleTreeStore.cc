@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.59 2004/05/04 11:55:50 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.60 2004/05/05 12:27:28 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -141,6 +141,7 @@ void SimpleTreeStore::set_remember(const std::string &program, const std::string
 
 static const unsigned col1=0xffff,col0=0xcfff;
 
+#ifdef OLD_MODEL
 namespace {
 class MyTreeModel_Class : public Glib::Class
 {public:
@@ -150,6 +151,7 @@ class MyTreeModel_Class : public Glib::Class
 }
 
 static MyTreeModel_Class myclass;
+#endif
 
 void SimpleTreeStore::on_visibly_changed(bvector_iterator it)
 { if (it!=bvector_iterator())
@@ -184,8 +186,14 @@ void SimpleTreeStore::on_visibly_changed(bvector_iterator it)
 }
 
 SimpleTreeStore::SimpleTreeStore(int max_col)
-	: Glib::ObjectBase("SimpleTree_MyTreeModel"),
+	: 
+#ifdef OLD_MODEL	
+	  Glib::ObjectBase("SimpleTree_MyTreeModel"),
 	  Glib::Object(Glib::ConstructParams(myclass.init(), (char*) 0)),
+#else
+	  Glib::ObjectBase( typeid(SimpleTreeStore) ), //register a custom GType.
+	  Glib::Object(), //The custom GType is actually registered here.
+#endif	  
 	  node_creation(), columns(max_col), max_column(max_col),
 	  showdeep(), gp(), 
 	  auffuellen_bool(), expandieren_bool(), block_save(),
@@ -193,7 +201,11 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
 	  sortierspalte(invisible_column), invert_sortierspalte(), 
 	  m_columns(max_col), stamp(reinterpret_cast<unsigned>(this))
 {  
-//m_refTreeStore=Gtk::TreeStore::create(m_columns);
+#ifndef OLD_MODEL
+  //We need to specify a particular get_type() from one of the virtual base classes, but they should
+  //both return the same piece of data.
+  Gtk::TreeModel::add_interface( Glib::Object::get_type() );
+#endif
   vec_hide_cols.resize(Cols());
   for (std::vector<bool>::iterator i=vec_hide_cols.begin();i!=vec_hide_cols.end();++i)
     (*i) = true;
@@ -762,6 +774,7 @@ bool SimpleTreeStore::get_iter_vfunc(GtkTreeIter* iter, const Gtk::TreeModel::Pa
    return false;
 }
 
+#ifdef OLD_MODEL
 void MyTreeModel_Class::class_init_function(void* g_class, void* class_data)
 {
 }
@@ -794,6 +807,7 @@ const Glib::Class& MyTreeModel_Class::init()
 
     return *this;
 }
+#endif
 
 SimpleTreeStore::iterator SimpleTreeStore::iterbyValue(Node &parent,const cH_EntryValue &val) const
 {  return parent.children.find(val);
@@ -883,4 +897,9 @@ void SimpleTreeStore::setSortierspalte(unsigned s,bool i)
       invert_sortierspalte=i;
       redisplay();
    }
+}
+
+Glib::RefPtr<SimpleTreeStore> SimpleTreeStore::create(int cols)
+{
+  return Glib::RefPtr<SimpleTreeStore>( new SimpleTreeStore(cols));
 }
