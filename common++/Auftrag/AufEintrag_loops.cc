@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.cc,v 1.17 2004/02/20 09:43:56 christof Exp $ */
+/* $Id: AufEintrag_loops.cc,v 1.18 2004/02/20 10:09:13 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -281,6 +281,7 @@ AuftragBase::mengen_t distribute_parents(const AufEintragBase &startAEB,
       menge-=m;
       if (!menge) break;
    }
+   if (!!menge) ManuProC::Trace(AuftragBase::trace_channel,"=",menge);
    return menge;
 }
 
@@ -305,6 +306,7 @@ AuftragBase::mengen_t auf_positionen_verteilen(const SQLFullAuftragSelector &sel
      m-=M;
      if(!m) break;
    }
+   if (!!m) ManuProC::Trace(AuftragBase::trace_channel,"=",m);
    return m;
 }
 
@@ -329,6 +331,7 @@ AuftragBase::mengen_t auf_positionen_verteilen_rev(const SQLFullAuftragSelector 
      m-=M;
      if(!m) break;
    }
+   if (!!m) ManuProC::Trace(AuftragBase::trace_channel,"=",m);
    return m;
 }
 

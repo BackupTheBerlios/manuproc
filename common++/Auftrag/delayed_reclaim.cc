@@ -1,4 +1,4 @@
-// $Id: delayed_reclaim.cc,v 1.8 2004/02/16 16:16:36 christof Exp $
+// $Id: delayed_reclaim.cc,v 1.9 2004/02/20 10:09:13 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -44,8 +44,7 @@ public:
 
 AuftragBase::mengen_t dr_Planen_dp_cb::operator()(const AufEintragBase &ae,
                                 AuftragBase::mengen_t M) const
-{  ManuProC::Trace _t(AuftragBase::trace_channel, std::string("dr_Planen_dp_cb::")+__FUNCTION__,ae,M);
-   quelle.MengeAendern(-M,true,ae);
+{  quelle.MengeAendern(-M,true,ae);
    AufEintragZu(ae).Neu(ziel,M);
    if (A2er.valid()) A2er.MengeAendern(-M,false,ziel);
    return M;
@@ -96,7 +95,7 @@ struct FreieMengeNutzen2_cb : auf_positionen_verteilen_cb
 	AuftragBase::mengen_t operator()(AufEintrag &ae, AuftragBase::mengen_t M) const
 	{  if (ae.getLieferdatum()>=A3er.getLieferdatum())
 	   {  AufEintrag A2er;
-	      return distribute_parents(ae,M,dr_Planen_dp_cb(ae,A3er,A2er));
+	      return M-distribute_parents(ae,M,dr_Planen_dp_cb(ae,A3er,A2er));
 	   }
 	   return 0;
 	}
