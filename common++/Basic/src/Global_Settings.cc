@@ -20,20 +20,22 @@
 #include "Global_Settings.h"
 #include <iostream>
 
-std::string Global_Settings::get_Wert(const std::string &seperator,int field) const
-{ if (!field) return "";
-  --field;
-  // base 1 is nonsense ... but I keep it for compatibility CP
-  std::string gs = get_Wert();
+std::string Global_Settings::get_Wert0(const std::string &separator,int field) const
+{ std::string gs = get_Wert();
   std::string::size_type start=0;
   while (field>0)
-  {  start=gs.find(seperator,start);
+  {  start=gs.find(separator,start);
      if (start==std::string::npos) return "";
-     start+=seperator.size();
+     start+=separator.size();
      --field;
   }
-  std::string::size_type end=gs.find(seperator,start);
+  std::string::size_type end=gs.find(separator,start);
   return std::string(gs,start,end==std::string::npos?end:(end-start));
+}
+
+std::string Global_Settings::get_Wert(const std::string &separator,int field) const
+{ if (!field) return "";
+  return get_Wert0(separator,field-1);
 }
 
 void Global_Settings::set_Wert(const std::string& _wert)

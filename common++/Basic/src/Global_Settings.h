@@ -1,4 +1,4 @@
-/* $Id: Global_Settings.h,v 1.1 2003/10/24 06:03:40 christof Exp $ */
+/* $Id: Global_Settings.h,v 1.2 2003/11/04 09:07:13 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -47,7 +47,10 @@ public:
                 const std::string& name);
 
     std::string get_Wert() const {return wert;}
+    // VORSICHT: Diese Funktion beginnt mit Index 1
     std::string get_Wert(const std::string &seperator,int field) const;
+    // sinnvolle Variante mit 1.Element=[0]
+    std::string get_Wert0(const std::string &seperator,int field) const;
 
     void set_Wert(const std::string& wert);
     // saves one query in comparison to Global_Settings().set_Wert
