@@ -48,6 +48,7 @@ void ppsInstanz::Reparatur_0er_und_2er(int uid) const throw(SQLerror)
          AuftragBase zielauftrag(Id(),AuftragBase::plan_auftrag_id);
 //cout << "RepLan: "<<*i<<'\t'<<zielauftrag<<"Menge: "<<M<<'\n';
          i->Planen(uid,M,zielauftrag,i->getLieferdatum(),ManuProC::Auftrag::r_Reparatur);
+         L2er.begin()->updateStkDiffBase__(uid,-M);
        }
     }
 }

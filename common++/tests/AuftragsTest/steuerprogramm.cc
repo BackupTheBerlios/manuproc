@@ -436,18 +436,21 @@ std::cout << "D13: "<<dummystring<<'\n';
         assert(!"FEHLER: MIT REPARATURPROGRAMM KOMPILIEREN\n");
       #endif
                           
-
       std::string q1="update auftragentry set bestellt=3000 where "
                      " (auftragid,zeilennr,instanz) = (2,1,8)";                            
-/*
-      std::string q1="insert into auftragentry (auftragid,zeilennr,bestellt,"
-         " geliefert,lieferdate,artikelid,status,instanz)"
-         " values (2,5,3000,0,'1970-01-01',123755,1,4)";
-*/      Query::Execute(q1);
+      Query::Execute(q1);
       SQLerror::test(__FILELINE__);
       erfolgreich=C.teste(Check::Menge,"_Rep0er2ergleichzeitig",mit_reparatur_programm,true);
       if(!erfolgreich) { cout << "Reparatur 0er und 2er gleichzeitig\n";
       return fehler();} 
+
+#if 0
+      std::string q1="insert into auftragentry (auftragid,zeilennr,bestellt,"
+         " geliefert,lieferdate,artikelid,status,instanz)"
+         " values (2,5,3000,0,'1970-01-01',123755,1,4)";
+      Query::Execute(q1);
+#endif
+
 
       cout << "Reparatur 2er und 0er gleichzeitig erfolgreich\n";
                               

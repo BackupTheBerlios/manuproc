@@ -1,4 +1,4 @@
-// $Id: dot_out.cc,v 1.12 2002/11/22 15:47:37 thoma Exp $
+// $Id: dot_out.cc,v 1.13 2002/12/02 14:01:54 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -43,6 +43,7 @@ void dot_out::write()
      case ZweiKunden : label="ZweiKunden"; break;
      case ZweiKundenMengeFreigeben : label="ZweiKundenMengeFreigeben"; break;
      case ManuProCTest : label="ManuProC"; break;
+     case Rep_Petig_0er_2er_gleichzeitig :label="Rep_Petig_0er_2er_gleichzeitig";break;
      case Legende : label="Legende"; break;
      default: label= "Fehler, kein Label gestze \n"; 
    }

@@ -1,4 +1,4 @@
-// $Id: graph.cc,v 1.12 2002/11/22 15:47:37 thoma Exp $
+// $Id: graph.cc,v 1.13 2002/12/02 14:01:54 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -51,6 +51,7 @@ void usage(std::string s)
        << "\t\t[ZK] Zwei Kunden Zwei Aufträgen\n"
        << "\t\t[ZKM] Zwei Kunden Zwei Aufträgen, Menge freigeben\n"
        << "\t\t[MP] ManuProC\n"
+       << "\t\t[Rg] Rep_Petig_0er_2er_gleichzeitig\n"
        << "\t\t[X]  LEGENDE \n";
   cout << "\t b => black [default] "
        << "\t c => colour \n\n";
@@ -85,6 +86,7 @@ int main(int argc, char *argv[])
   else if(string(argv[optind])=="ZK")mode=ZweiKunden;
   else if(string(argv[optind])=="ZKM")mode=ZweiKundenMengeFreigeben;
   else if(string(argv[optind])=="MP")mode=ManuProCTest;
+  else if(string(argv[optind])=="Rg")mode=Rep_Petig_0er_2er_gleichzeitig;
   else if(string(argv[optind])=="X") mode=Legende;
   Petig::PrintUncaughtExceptions();
   try{try{

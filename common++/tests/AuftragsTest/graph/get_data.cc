@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.15 2002/12/02 13:14:03 thoma Exp $
+// $Id: get_data.cc,v 1.16 2002/12/02 14:01:54 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -256,6 +256,7 @@ void graph_data_node::get_files(emode mode)
       case ZweiKunden : filenames=ZKfiles(); break;
       case ZweiKundenMengeFreigeben : filenames=ZKMfiles(); break;
       case ManuProCTest : filenames=ManuProCfiles(); break;
+      case Rep_Petig_0er_2er_gleichzeitig: filenames=Rep02gleichzeitigfiles(); break;
       case Legende: break;
       default: assert(!"never get here");
     }
@@ -431,4 +432,15 @@ std::vector<graph_data_node::st_files> graph_data_node::ManuProCfiles()
 
   return vec_files;
 }
+
+
+std::vector<graph_data_node::st_files> graph_data_node::Rep02gleichzeitigfiles()
+{
+  std::vector<st_files>  vec_files;
+  vec_files.push_back(st_files("mit_lager_open"));  
+  vec_files.push_back(st_files("Rep0er2ergleichzeitig","L"));  
+
+  return vec_files;
+}
+
 
