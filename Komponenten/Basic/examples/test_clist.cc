@@ -1,4 +1,4 @@
-// $Id: test_clist.cc,v 1.1 2004/07/02 14:25:51 christof Exp $
+// $Id: test_clist.cc,v 1.2 2004/07/02 14:36:04 christof Exp $
 /*  ManuProcWidgets: ManuProC's GUI element library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,9 +26,9 @@ struct testwin : Gtk::Window
 {  Gtk::TreeView gtklist;
    TreeViewUtility::CListEmulator emu;
 
-  testwin()
+  testwin() : emu("column")
   {  add(gtklist);
-     emu.attach(gtklist);
+     emu.attach_to(gtklist);
      gtklist.show();
      std::vector<Glib::ustring> vec;
      vec.push_back("test");
