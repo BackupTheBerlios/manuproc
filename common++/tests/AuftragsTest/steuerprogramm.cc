@@ -25,7 +25,6 @@
 #include <Misc/exception.h>
 #include <Lager/Lager.h>
 #include <Auftrag/Auftrag.h>
-#include <Auftrag/ppsInstanzProduziert.h>
 #include <Misc/Trace.h>
 #include <unistd.h>
 // Lieferschein
