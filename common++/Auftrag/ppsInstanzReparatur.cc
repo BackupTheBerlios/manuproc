@@ -37,24 +37,28 @@ void ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al, const b
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,analyse_only);
    assert(Instanz() != ppsInstanzID::Kundenauftraege);
    
-// eventuell könnte man dies noch mit einer 2.Liste nur der 2er realisieren,
-// so dass es nicht mehr voll O(N^2) ist
+   // Vorsicht, dass al hiernach nicht verändert wird (remove/push)
+   std::vector<SelectedFullAufList::iterator> zweier;
+   for(SelectedFullAufList::iterator i=al.begin();i!=al.end();++i)
+   {  if (i->Id()==AuftragBase::dispo_auftrag_id)
+         zweier.push_back(i);
+   }
    
    for(SelectedFullAufList::iterator i=al.begin();i!=al.end();++i)
     {  if (i->Id()!=AuftragBase::ungeplante_id) continue;
        AuftragBase::mengen_t menge0er=i->getRestStk();
        if (!menge0er) continue;
        
-      for(SelectedFullAufList::iterator j=al.begin();j!=al.end();++j)
-       {  if (j->Id()!=AuftragBase::dispo_auftrag_id) continue;
-          if (j->Artikel()!=i->Artikel()) continue;
-         if(j->getLieferdatum()>i->getLieferdatum()) continue;
+      for(std::vector<SelectedFullAufList::iterator>::const_iterator j=zweier.begin();j!=zweier.end();++j)
+       {  assert ((*j)->Id()==AuftragBase::dispo_auftrag_id);
+          if ((*j)->Artikel()!=i->Artikel()) continue;
+         if((*j)->getLieferdatum()>i->getLieferdatum()) continue;
          
-         if (!j->getRestStk()) continue;
+         if (!(*j)->getRestStk()) continue;
 
-         AuftragBase::mengen_t M=AuftragBase::min(menge0er,j->getRestStk());
+         AuftragBase::mengen_t M=AuftragBase::min(menge0er,(*j)->getRestStk());
          
-         analyse("Es existieren passende 0er und 2er",*i,*j,M);
+         analyse("Es existieren passende 0er und 2er",*i,**j,M);
          
          if(!analyse_only)
           {  AuftragBase::mengen_t M_rest=M;
@@ -71,6 +75,7 @@ void ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al, const b
                 M_rest-=M2;
                 if(!M_rest) break;
              }
+             if (!!M_rest) analyse("Programmfehler: Es ist ein Rest geblieben",*i,M_rest);
              assert(!M_rest);
           }
          menge0er-=M;
@@ -340,14 +345,16 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
 {  bool alles_ok=true;
    unsigned uid=getuid();
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,ae,/*kinder.size(),*/analyse_only);
-   if (ae.Id()==AuftragBase::dispo_auftrag_id)
+   
+   if (ae.Id()==AuftragBase::dispo_auftrag_id 
+   	|| (ae.Id()==AuftragBase::plan_auftrag_id && ae.Instanz()->LagerInstanz()))
    {  // 2er: Kinder gleiche instanz
       AuftragBase::mengen_t menge2;
       
       for (AufEintragZu::map_t::iterator i=kinder.begin();i!=kinder.end();++i)
       {  for (AufEintragZu::list_t::iterator j=i->second.begin();j!=i->second.end();)
          {  if (ae.Instanz()->LagerInstanz())
-            {  analyse("Ein Lager 2er darf keine Kinder haben",ae,j->AEB,j->Menge);
+            {  analyse("Ein Lager 2er/1er darf keine Kinder haben",ae,j->AEB,j->Menge);
              weg:
                if (!analyse_only) AufEintragZu::remove(ae,j->AEB);
                j=i->second.erase(j);
