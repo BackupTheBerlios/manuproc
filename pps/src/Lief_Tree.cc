@@ -1,4 +1,4 @@
-// $Id: Lief_Tree.cc,v 1.1 2001/05/10 09:04:12 christof Exp $
+// $Id: Lief_Tree.cc,v 1.3 2001/05/10 14:49:06 cvs_christof Exp $
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
