@@ -1,4 +1,4 @@
-/* $Id: Rechnung.h,v 1.30 2003/10/08 16:22:58 jacek Exp $ */
+/* $Id: Rechnung.h,v 1.31 2003/11/13 10:32:46 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -31,7 +31,7 @@
 #include <Misc/Handles.h>
 
 #define ENTSSATZ	0.002
-#define MWSTSATZ	16
+#define MWSTPROZ	16
 
 class Rechnung : public RechnungBase
 {

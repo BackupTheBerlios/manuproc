@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.13 2003/10/08 16:22:58 jacek Exp $
+// $Id: Rechnung.cc,v 1.14 2003/11/13 10:32:46 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -74,7 +74,7 @@ const throw(SQLerror)
    betrag = betrag.as_float() * (1.0 + ENTSSATZ);
 
  if(kunde->MwSt())
-    stsatz=MWSTSATZ;
+    stsatz=MWSTPROZ;
 
  if(with_update_on_db)
   {
