@@ -1,4 +1,4 @@
-// $Id: Handles.cc,v 1.1 2001/12/19 11:01:12 christof Exp $
+// $Id: Handles.cc,v 1.2 2001/12/23 21:43:55 christof Exp $
 /*  ManuProcWidgets: ManuProC's GUI element library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -47,8 +47,6 @@ public:
 std::ostream &operator<<(std::ostream &o,const A &a)
 {  return o << a.val;
 }
-
-typedef Handle<A> Ah2;
 
 class Ah : public Handle<A>
 {public:
@@ -114,7 +112,10 @@ MeinFenster::MeinFenster()
     os << "A\t1"; os.flush(Ah(1)->ref(),&A::unref);
     os << "B\t2"; os.flush(Ah(2)->ref(),&A::unref);
    }
-   {Gtk::OStream os(optionmenu1,ios::out|ios::app);
+   {Gtk::OStream os(optionmenu1);
+    os << "-1"; os.flush(Ah(-1)->ref(),&A::unref);
+   }
+   {Gtk::OStream os(optionmenu1);
     os << "3"; os.flush(Ah(3)->ref(),&A::unref);
     os << "4"; os.flush(Ah(4)->ref(),&A::unref);
    }
