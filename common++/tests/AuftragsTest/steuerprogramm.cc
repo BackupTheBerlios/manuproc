@@ -83,7 +83,7 @@ static int auftragstests(e_mode mode)
 //  ManuProC::Tracer::Enable(AuftragBase::trace_channel);
 
    if (Check::analyse) std::cout << "Mit Analyse\n";
-   else if (Check::repararieren) std::cout << "Mit Reparatur\n";
+   else if (Check::reparieren) std::cout << "Mit Reparatur\n";
 
    AuftragsVerwaltung  auftrag;
    AufEintragBase AEB=auftrag.anlegen();
