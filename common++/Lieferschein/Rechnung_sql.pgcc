@@ -261,7 +261,7 @@ void Rechnung::push_back(unsigned &lineno,ArtikelBase art,
 	  int(stk)*min(menge,mengen_t(10000))/1000.0,Preis(),rabatt,
 	  provsatz,Preis());
     if (!!material) 
-      push_back(lineno,lohn,lfrsid,lfrsznr,stk,
+      push_back(lineno,material,lfrsid,lfrsznr,stk,
 	  1.05*atoi(ab->Komponente(1).c_str())*menge/10000.0,Preis(),rabatt,
 	  provsatz,Preis());
   }
