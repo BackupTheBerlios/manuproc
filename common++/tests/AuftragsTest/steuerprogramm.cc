@@ -1082,8 +1082,10 @@ int main(int argc,char *argv[])
    else if(mode_str=="RKZ") mode=Rep_Kunden_Zuordnungen;
    if(mode==None) { usage(argv[0],argv[1]); return 1; }
    
-   cout << "Initalisierung der Datenbank ...";
-   std::string kill_output=" >/dev/null";
+   std::cout << "Initalisierung der Datenbank ...";
+   std::cout.flush();
+
+   std::string kill_output=" 2>/dev/null >/dev/null";
    if (verbose) kill_output="";
 #ifdef MANU_PROC_TEST
    system((std::string(MANU_DATAPATH)+"/initdb.script "+MANU_DATAPATH+kill_output).c_str());
