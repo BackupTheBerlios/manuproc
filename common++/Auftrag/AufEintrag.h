@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.48 2003/06/23 07:08:53 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.49 2003/06/23 11:45:07 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -123,9 +123,6 @@ private:
   // nimmt alle Zuordnungen mit (oben & unten)
   void move_to(int uid,AufEintrag ziel,AuftragBase::mengen_t menge,ManuProC::Auftrag::Action reason) throw(std::exception);
  void updateStkDiffInstanz__(int uid,mengen_t menge,const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason) throw(SQLerror);
- static AufEintragBase ArtikelInternNachbestellen(const cH_ppsInstanz &wo,
- 	mengen_t menge,const ManuProC::Datum &lieferdatum,const ArtikelBase& artikel,
- 	int uid,const AufEintragBase& ElternAEB);
  void ArtikelInternAbbestellen(int uid,mengen_t menge,
  	ManuProC::Auftrag::Action reason) const;
  void move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,const ArtikelBase artikel,int uid,ManuProC::Auftrag::Action reason);
@@ -275,6 +272,9 @@ public:
    static void WiederEinlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
          mengen_t menge,const ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Produziert) throw(SQLerror);
 // intern aber public
+   static AufEintragBase ArtikelInternNachbestellen(const cH_ppsInstanz &wo,
+ 	mengen_t menge,const ManuProC::Datum &lieferdatum,const ArtikelBase& artikel,
+ 	int uid,const AufEintragBase& ElternAEB);
    static void MengeVormerken(cH_ppsInstanz instanz,const ArtikelBase &artikel,
 		mengen_t menge, bool abbestellen=false);
    // für ProduziertSelbst Instanzen

@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.60 2003/06/19 15:50:25 jacek Exp $
+// $Id: AufEintrag.cc,v 1.61 2003/06/23 11:45:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -33,6 +33,7 @@
 #include <Auftrag/AufEintrag_macros.h>
 #include <Misc/inbetween.h>
 #include <Artikel/ArtikelStamm.h>
+#include <Misc/relops.h>
 
 #ifdef MABELLA_EXTENSIONS
 #include <Lager/FertigWaren.h>
@@ -775,8 +776,6 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld,int uid) throw(SQLerro
  tr.commit(); 
 }
 
-#include <Misc/relops.h>
-  
 int AufEintrag::split(int uid,mengen_t newmenge, const Petig::Datum &newld,bool dispoplanung) throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("NewMenge",newmenge),NV("NewDatum",newld),NV("dispoplanung(bool)",dispoplanung));
@@ -864,7 +863,8 @@ public:
 		: uid(_uid), alterAEB(aAEB), neuerAEB(nAEB) {}
 	AuftragBase::mengen_t operator()(const ArtikelBase &art,
 		const AufEintragBase &aeb,AuftragBase::mengen_t M) const
-	{  if (!aeb.Instanz()->ProduziertSelbst())
+	{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("aeb",aeb),NV("M",M));
+	   if (!aeb.Instanz()->ProduziertSelbst())
               AufEintrag(aeb).ProduziertNG(uid,M,alterAEB,neuerAEB);
            else 
            {  AufEintragZu(alterAEB).setMengeDiff__(aeb,-M);
@@ -887,13 +887,14 @@ public:
 namespace {
 class ProduziertRueckgaengig2
 {  unsigned uid;
-   AufEintragBase alterAEB;
+   AufEintrag alterAEB;
 public:
-	ProduziertRueckgaengig2(unsigned _uid, const AufEintragBase &aAEB)
+	ProduziertRueckgaengig2(unsigned _uid, const AufEintrag &aAEB)
 		: uid(_uid), alterAEB(aAEB) {}
 	AuftragBase::mengen_t operator()(const ArtikelBase &art,
 		const AufEintragBase &aeb,AuftragBase::mengen_t M) const
-	{  if (aeb.Instanz()->ProduziertSelbst())
+	{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("aeb",aeb),NV("M",M));
+	   if (aeb.Instanz()->ProduziertSelbst())
            {  AufEintragZu(alterAEB).setMengeDiff__(aeb,-M);
               AufEintrag(aeb).AnElternMengeAnpassen();
            }
@@ -903,14 +904,24 @@ public:
 	// Überproduktion
 	void operator()(const ArtikelBase &art,AuftragBase::mengen_t M) const
 	{  //assert(!"needed");
-	   std::cout << "ProduziertRueckgaengig2: Überproduktion " << M << '\n';
+	   ArtikelStamm as(art);
+	   cH_ppsInstanz next=alterAEB.Instanz()->NaechsteInstanz(as);
+	   if (next==ppsInstanzID::None)
+	      next=ppsInstanz::getBestellInstanz(as);
+	   if (alterAEB.Id()==AuftragBase::ungeplante_id && next->ProduziertSelbst())
+	   {  AufEintrag::ArtikelInternNachbestellen(next,M,
+	   		alterAEB.getLieferdatum()
+	   		  -alterAEB.Instanz()->ProduktionsDauer(),
+	   		art,uid,alterAEB);
+	   }
+	   else std::cout << "ProduziertRueckgaengig2: Überproduktion " << M 
+	   	<< " von "<< art.Id() <<  '\n';
 	}
 };
 }
 
 // similar to move_to
-// das Problem ist, dass es diffus ist, was Produktion im Lager bedeutet:
-//		Einlagern oder Auslagern?
+// Produktion im Lager bedeutet:
 // Einlagern==MengeVormerken   Auslagern==Produktion
 void AufEintrag::ProduziertNG(unsigned uid, AuftragBase::mengen_t M,
 		const AufEintragBase &elter_alt,
@@ -967,7 +978,9 @@ void AufEintrag::ProduziertNG(unsigned uid, AuftragBase::mengen_t M,
    distribute_children(*this,M,Artikel(),ProduziertNG_cb2(uid,*this,neuerAEB));
    // bei ProduziertSelbst hilft obiges nicht allein (keine Pfeile nach unten)
    if (M<0)
-      distribute_children(neuerAEB,M,Artikel(),ProduziertRueckgaengig2(uid,neuerAEB));
+   {  AufEintrag neuerAE=neuerAEB;
+      distribute_children(neuerAE,M,Artikel(),ProduziertRueckgaengig2(uid,neuerAE));
+   }
 
    cH_ppsInstanz EI=Instanz()->EinlagernIn();
    if(EI->AutomatischEinlagern())
@@ -1021,6 +1034,7 @@ void AufEintrag::DispoBeschraenken(int uid)
   }
 }
 
+#if 0 // wahrscheinlich nicht mehr erforderlich
 // gibt negative Zahl zurück und erwartet solche
 AuftragBase::mengen_t AufEintrag::ProdRueckgaengigMenge(mengen_t max_neg) const
 {  AufEintragZu::list_t Eltern =
@@ -1031,6 +1045,7 @@ AuftragBase::mengen_t AufEintrag::ProdRueckgaengigMenge(mengen_t max_neg) const
       res-=i->Menge;
    return -AuftragBase::min(res,-max_neg);
 }
+#endif
 
 AuftragBase::mengen_t AufEintrag::getRestStk() const
 {  if (in(entrystatus,CLOSED,STORNO)) return 0;
