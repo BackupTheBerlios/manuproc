@@ -1,6 +1,7 @@
 #include "config.h"
 #include "lieferscheinliste.hh"
 #include "lieferscheinliste_classes.hh"
+#include "datum_kumul.h"
 #include <Lieferschein/LieferscheinVoll.h>
 #include <Lieferschein/Rechnung.h>
 //#include <Artikel/ArtikelBezeichnung.h>
@@ -165,7 +166,7 @@ void lieferscheinliste::fill_tree()
      for (std::vector<LieferscheinEntryBase>::const_iterator j=LL.begin((*i)->Id());
      		j!=LL.end((*i)->Id()); ++j)
         datavec.push_back(new Data_LListe(*i,LieferscheinEntry(*j),R,
-             	Data_LListe::KumVal(reinterpret_cast<int>(date_cumulate->get_menu()->get_active()->get_user_data()))
+             	KumVal(reinterpret_cast<int>(date_cumulate->get_menu()->get_active()->get_user_data()))
              	));
       progressbar->set_percentage(count/size);
       while(Gtk::Main::events_pending()) Gtk::Main::iteration() ;

@@ -428,7 +428,7 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
     catch(SQLerror &e)
       {if(e.Code()!=100) {std::cout << e; exit(1);}
        schema_own = schema_mem;
-	std::cout << "\nNo owner scheme; set to default scheme\n";
+//	std::cout << "\nNo owner scheme; set to default scheme\n";
     }
 #endif    
     Preis::preismenge_t preismenge_mem;

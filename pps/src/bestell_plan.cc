@@ -10,6 +10,7 @@
 #include <Artikel/ArtikelStamm.h>
 #include <Artikel/ArtikelBezeichnung.h>
 #include "auftrag_bearbeiten.hh"
+#include <Misc/FetchIStream.h>
 
 extern bestell_plan *BP;
 extern auftrag_bearbeiten *auftragbearbeiten;
@@ -131,11 +132,49 @@ void bestell_plan::load_data(const ArtikelBase a) throw(SQLerror)
  bp_bestellt->set_text(itos(bestellt));
 // bp_abv12m->set_text(itos(abverkauf)); 
  
+ KumVal kv=KumVal(reinterpret_cast<int>(abverkauf_kumul->
+                   get_menu()->get_active()->get_user_data()));
+ load_abverkauf(a,kv);
+ 
+}
+
+
+void bestell_plan::load_abverkauf(const ArtikelBase a,KumVal kv)
+{
+ abverkauf_tree->detach_from_clist();
+ abverkauf_tree->clear();
+ std::vector<cH_RowDataBase> datavec;
+ 
+ Query q("SELECT coalesce(geliefertam,l.datum),stueck*coalesce(menge,1)"
+      " from lieferscheinentry e join lieferschein l on "
+      "((l.instanz,l.lfrsid)=(e.instanz,e.lfrsid) and l.instanz=?"
+      " and e.artikelid=?) left join rechnung r on (r.rngid=l.rngid"
+      " and r.rngart='R')");
+      
+ q << ppsInstanzID::Kundenauftraege << a.Id();
+
+ FetchIStream fi=q.Fetch();
+ ManuProC::Datum ld;
+ int m;
+ while(fi.good())
+   {
+    fi >> ld >> m;
+    datavec.push_back(new Data_Abverkauf(ld,m,kv));
+    fi=q.Fetch();
+   }
+  
+ abverkauf_tree->setDataVec(datavec);  
 }
 
 
 bestell_plan::bestell_plan(const ArtikelBase ab)
 {
+ std::vector<std::string> ct;
+ ct.push_back("Lieferzeit");
+ ct.push_back("Menge");
+ abverkauf_tree->setTitles(ct);
+ abverkauf_tree->set_NewNode(&Data_AbverkaufNode::create);
+
  if(ab.valid())
    load_artikel_list();
 }
@@ -197,6 +236,8 @@ void bestell_plan::clear_all()
   bp_verfuegbar->set_text("");
   bp_bestellt->set_text("");
   bp_mindbestand->set_text("");
+  lager_name1->set_text("Lager 1");
+  lager_name2->set_text("Lager 2");  
 /*  bp_abv12m->set_text("");
   bp_abv12m1->set_text("");
   bp_abv12m2->set_text("");
@@ -208,3 +249,32 @@ void bestell_plan::clear_all()
 void bestell_plan::on_abverkauf_kumul_clicked()
 {  
 }
+
+
+const cH_EntryValue Data_Abverkauf::Value(guint seqnr,gpointer gp) const
+{
+
+ switch(seqnr) 
+   {
+    case LIEF_ZEIT : 
+        {switch(timecumulate) {
+         case KUM_DATUM :
+           return cH_EntryValueDatum( datum );
+         case KUM_WOCHE :
+           return cH_EntryValueKalenderwoche(
+                datum.valid() ? datum.KW() : Kalenderwoche());
+         case KUM_MONAT :
+           return cH_EntryValueMonat(datum);
+         case KUM_QUARTAL :
+           return cH_EntryValueQuartal(datum);
+         case KUM_JAHR :
+           return cH_EntryValueIntString(
+                datum.valid() ? datum.Jahr() : 0);
+         default : return cH_EntryValueDatum(datum);
+         }
+        }
+    case MENGE :  return cH_EntryValueIntString(menge);    
+  } 
+ return cH_EntryValue();
+}
+
