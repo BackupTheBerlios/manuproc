@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.20 2002/12/05 11:19:03 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.21 2002/12/05 14:11:03 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -58,14 +58,16 @@ protected:
 	friend class SimpleTree_Basic;
 
 	Glib::RefPtr<Gtk::TreeStore> m_refTreeStore;
-	std::deque<guint> currseq; 
+	typedef std::deque<guint> sequence_t;
+	sequence_t currseq; 
 
 private:
 	NewNode_fp node_creation;
 
 	guint columns;
+	guint max_column;
 	guint showdeep;
-	std::vector<bool> vec_hide_cols;
+	std::vector<bool> vec_hide_cols; // index is index
 	gpointer gp;
 
 	bool auffuellen_bool:1; 
@@ -81,6 +83,7 @@ private:
 	void load_remembered();
 
 	SigC::Signal1<void,guint> title_changed;
+	SigC::Signal0<void> spaltenzahl_geaendert;
 	void on_title_changed(guint idx);
 	
 	void redisplay();
@@ -89,7 +92,7 @@ private:
 	void InitColumns(Gtk::TreeRow &node, guint deep, const cH_EntryValue &ev, 
 			const cH_RowDataBase &v);
 	void insertLine(Gtk::TreeModel::Children parent,const cH_RowDataBase &d, 
-			std::deque<guint>::const_iterator q,guint deep,
+			sequence_t::const_iterator q,guint deep,
 			bool summe_aktualisieren);
 	Gtk::TreeRow CopyTree(Gtk::TreeRow src, Gtk::TreeModel::Children dest);
 	Gtk::TreeStore::iterator MoveTree(
@@ -118,20 +121,24 @@ public:
 	
 	ModelColumns m_columns;
 
-	SimpleTreeStore(int cols,int attrs=-1);
+	SimpleTreeStore(int max_col);
 	
 	void set_showdeep(int i) {showdeep=i;}
 	guint Cols() const  { return columns;}
+	guint MaxCol() const  { return max_column;}
 
 	void set_value_data(gpointer _p) {gp = _p;}
 	gpointer ValueData() const { return gp; }
 
-	const std::deque<guint> &get_seq() const {return currseq;}
+	const sequence_t &get_seq() const {return currseq;}
 	void defaultSequence();
+	void fillSequence(sequence_t &seq) const;
 
 	void set_remember(const std::string &program, const std::string &instance);
 	SigC::Signal1<void,guint> &signal_title_changed()
 	{  return title_changed; }
+	SigC::Signal0<void> &signal_spaltenzahl_geaendert()
+	{  return spaltenzahl_geaendert; }
 	const std::string getColTitle(guint idx) const;
 	
 	void set_NewNode(NewNode_fp n)
@@ -146,7 +153,16 @@ public:
 
 	void set_tree_column_visibility(unsigned int column,bool visible);
 	
-	void setSequence(const std::deque<unsigned> &seq);
+	void setSequence(const sequence_t &seq);
+	
+	unsigned ColumnFromIndex(unsigned) const;
+	unsigned IndexFromColumn(unsigned c) const
+	{  return currseq[c]; }
+	
+	bool ColumnVisible(unsigned idx) const
+	{  return vec_hide_cols.at(idx); }
+
+	static const unsigned invisible_column=unsigned(-1);
 };
 
 #endif

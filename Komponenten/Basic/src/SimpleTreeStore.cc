@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.17 2002/12/05 11:19:03 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.18 2002/12/05 14:11:03 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -55,8 +55,8 @@ void SimpleTreeStore::save_remembered() const
    Global_Settings::create(getuid(),mem_prog,mem_inst+":visible",
    	itos(sichtbar)+','+itos(showdeep)+','+flags);
    std::string cseq;
-   guint last=999999; // big enough
-   std::deque<guint>::const_reverse_iterator i=currseq.rbegin();
+   guint last=invisible_column;
+   sequence_t::const_reverse_iterator i=currseq.rbegin();
    for (;i!=currseq.rend();++i)
    {  if (*i>last) break;
       last=*i;
@@ -77,7 +77,7 @@ void SimpleTreeStore::load_remembered()
    std::string::size_type k0=visible.find(','),k1=std::string::npos;
    if (k0!=std::string::npos) 
    {  guint sichtbar=strtoul(visible.substr(0,k0).c_str(),0,10),bit=1;
-      for (guint j=0;j<Cols();++j,bit<<=1)
+      for (guint j=0;j<MaxCol();++j,bit<<=1)
          vec_hide_cols[j]=!bit ? true : !(sichtbar&bit);
       k1=visible.find(',',k0+1);
    }
@@ -85,7 +85,7 @@ void SimpleTreeStore::load_remembered()
    {  showdeep=strtoul(visible.substr(k0+1,k1-(k0+1)).c_str(),0,10);
    }
 
-   std::deque<guint> s;
+   sequence_t s;
    auffuellen_bool=false;
    std::string order=Global_Settings(getuid(),mem_prog,mem_inst+":order").get_Wert();
    for (std::string::size_type b=0;;)
@@ -146,15 +146,9 @@ SimpleTreeStore::ModelColumns::ModelColumns(int _cols)
    add(leafdata);
 }
 
-// CellItem ^= TreeRow
-
 void SimpleTreeStore::on_title_changed(guint idx)
-{  for (guint i=0; i<Cols(); ++i)
-   {  if (currseq[i]==idx)
-      {  title_changed(i);
-         return; // this assumes that there are no duplicates
-      }
-   }
+{  unsigned col=ColumnFromIndex(idx);
+   if (col!=invisible_column) title_changed(col);
 }
 
 const std::string SimpleTreeStore::getColTitle(guint idx) const
@@ -163,7 +157,15 @@ const std::string SimpleTreeStore::getColTitle(guint idx) const
 
 void SimpleTreeStore::defaultSequence()
 {  currseq.clear();
-   for(guint i=0; i<Cols(); ++i) currseq.push_back(i);
+   for(guint i=0; i<MaxCol(); ++i) 
+      if (ColumnVisible(i))
+         currseq.push_back(i);
+}
+
+void SimpleTreeStore::fillSequence(sequence_t &seq) const
+{  for(guint i=0; i<MaxCol(); ++i) 
+      if (ColumnVisible(i) && std::find(seq.begin(),seq.end(),i)==seq.end())
+         seq.push_back(i);
 }
 
 void SimpleTreeStore::SummenAnzeigen(Gtk::TreeModel::Children parent)
@@ -236,14 +238,14 @@ void SimpleTreeStore::SummenAnzeigen(const Gtk::TreeRow &row,const Handle<TreeRo
 }
 
 void SimpleTreeStore::insertLine(Gtk::TreeModel::Children parent,
-            const cH_RowDataBase &v,  std::deque<guint>::const_iterator seqit,
+            const cH_RowDataBase &v,  sequence_t::const_iterator seqit,
             guint deep, bool summe_aktualisieren)
 {if (seqit==currseq.end()) return;
 recurse:
  Gtk::TreeStore::iterator current_iter=parent.begin();
  Gtk::TreeStore::iterator apiend = parent.end();
  Gtk::TreeStore::iterator upper_b=apiend;
- std::deque<guint>::const_iterator seqlast=--currseq.end();
+ sequence_t::const_iterator seqlast=--currseq.end();
  guint seqnr=*seqit;
  cH_EntryValue ev=v->Value(seqnr,ValueData());
 
@@ -398,8 +400,17 @@ Gtk::TreeStore::iterator SimpleTreeStore::MoveTree(
    return new_iter;
 }
 
-void SimpleTreeStore::setSequence(const std::deque<unsigned> &neu)
+void SimpleTreeStore::setSequence(const sequence_t &neu)
 {  currseq=neu; // Spaltenzahl anpassen?
+#warning Spaltenzahl geändert?
    for (unsigned i=0;i<Cols();++i) title_changed(i);
    redisplay();
+}
+
+unsigned SimpleTreeStore::ColumnFromIndex(unsigned idx) const
+{  unsigned currsize=currseq.size();
+   for (guint i=0; i<currsize; ++i)
+   {  if (currseq[i]==idx) return i;
+   }
+   return invisible_column;
 }

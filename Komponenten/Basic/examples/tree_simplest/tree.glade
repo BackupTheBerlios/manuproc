@@ -77,7 +77,6 @@
       <cxx_visibility>protected</cxx_visibility>
       <creation_function>SimpleTree</creation_function>
       <int1>5</int1>
-      <int2>3</int2>
       <last_modification_time>Fri, 02 Mar 2001 14:58:20 GMT</last_modification_time>
       <child>
 	<padding>0</padding>
@@ -163,7 +162,6 @@
 	<cxx_visibility>protected</cxx_visibility>
 	<creation_function>SimpleTree</creation_function>
 	<int1>6</int1>
-	<int2>5</int2>
 	<last_modification_time>Fri, 02 Mar 2001 14:58:20 GMT</last_modification_time>
       </widget>
     </widget>

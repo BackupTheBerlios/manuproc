@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.9 2002/12/05 08:39:19 christof Exp $
+// $Id: SimpleTree.hh,v 1.10 2002/12/05 14:11:03 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,7 +27,8 @@ class SimpleTreeStore_Proxy
 {protected:
 	SimpleTreeStore sts;
 public:
-	SimpleTreeStore_Proxy(unsigned int cols,int attrs) : sts(cols,attrs) {}
+	typedef SimpleTreeStore::sequence_t sequence_t;
+	SimpleTreeStore_Proxy(unsigned int max_cols) : sts(cols) {}
 
 	void set_remember(const std::string &program, const std::string &instance) {  sts.set_remember(program,instance); }
 	guint Cols() const  { return sts.Cols();}
@@ -46,13 +47,17 @@ public:
 	void set_tree_column_visibility(unsigned index,bool visible)
 	{  sts.set_tree_column_visibility(index,visible); }
 	void clear() { sts.clear(); }
+	unsigned ColumnFromIndex(unsigned i) const 
+	{  return sts.ColumnFromIndex(i); }
+	unsigned IndexFromColumn(unsigned c) const
+	{  return sts.IndexFromColumn(c); }
 };
 
 // I took the more esoteric features out to SimpleTree, 
 // so they do not confuse the beginner
 class SimpleTree_Basic : public Gtk::TreeView, public SimpleTreeStore_Proxy
 {private:
-	std::deque<guint> clicked_seq;
+	sequence_t clicked_seq;
 
 	void on_title_changed(guint nr);
 	void on_selection_changed();
@@ -63,7 +68,7 @@ class SimpleTree_Basic : public Gtk::TreeView, public SimpleTreeStore_Proxy
 	void on_title_clicked(unsigned no);
 	
 public:
-	SimpleTree_Basic(unsigned int cols,int attrs=-1);
+	SimpleTree_Basic(unsigned max_col);
 	SigC::Signal1<void,cH_RowDataBase> &signal_leaf_selected()
 	{ return _leaf_selected; }
 	// perhaps Handle<const TreeRow> is more sensible now?
@@ -79,17 +84,16 @@ class SimpleTree : public SimpleTree_Basic
 {
 public:
 	// attr is not needed any longer
-	SimpleTree(guint columns=0,guint attr=-1) : 
-		SimpleTree_Basic(columns,attr)
+	SimpleTree(guint maxcol) : SimpleTree_Basic(maxcol)
 	{}
-	SimpleTree(guint cols, guint attr, const std::vector<std::string>& T
+	SimpleTree(guint maxcol, const std::vector<std::string>& T
                                 ,const std::vector<cH_RowDataBase>& D)
-	: SimpleTree_Basic(cols,attr)
+	: SimpleTree_Basic(maxcol)
 	{  setTitles(T);
 	   setDataVec(D);
 	}
-	SimpleTree(guint cols, guint attr, const std::vector<std::string>& T)
-	: SimpleTree_Basic(cols,attr)
+	SimpleTree(guint maxcol, const std::vector<std::string>& T)
+	: SimpleTree_Basic(maxcol)
 	{  setTitles(T);
 	}	
 private:
@@ -207,7 +211,7 @@ class SimpleTree : public Gtk::TreeView
  void on_click_column(int col);
  bool col_schon_ausgewaehlt(int col);
  void insertIntoTCL(TCListRow_API *tclapi,const TreeBase &tb,
-		 	const cH_RowDataBase &d, std::deque<guint> q,guint deep);
+		 	const cH_RowDataBase &d, sequence_t q,guint deep);
  bool redisplay_recurse(TCListRow_API *a, const RowDataBase *r, guint col);
  void reihenfolge_anzeigen();
  void initDepth(TreeRow *tr, guint depth) const;
