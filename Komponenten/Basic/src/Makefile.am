@@ -1,5 +1,5 @@
-# $Id: Makefile.am,v 1.22 2003/03/07 08:10:25 christof Exp $
-CXXFLAGS=@CXXFLAGS@ @COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
+# $Id: Makefile.am,v 1.23 2003/04/07 06:38:04 christof Exp $
+AM_CXXFLAGS= @COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
 
@@ -8,7 +8,8 @@ include_HEADERS = logwin.h EingabeBox.hh \
 	SimpleTreeModel.h SimpleTreeStore.h \
 	bool_CheckMenuItem.hh char_Pixmap.hh \
 	FlashingPixmap.hh LabelSpin.hh MyWindow.hh MyScale.hh \
-	TreeViewUtility.h bool_properties.hh bool_ImageButton.hh
+	TreeViewUtility.h bool_properties.hh bool_ImageButton.hh \
+	ModelWidgetConnection.h
 	
 noinst_HEADERS=SimpleTree.hh
 

@@ -1,4 +1,4 @@
-// $Id: int_SpinButton.cc,v 1.4 2003/03/07 08:10:25 christof Exp $
+// $Id: int_SpinButton.cc,v 1.5 2003/04/07 06:38:04 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,53 +21,59 @@
 #include "int_SpinButton.hh"
 #include "gtkmm/adjustment.h"
 
-void int_SpinButton::refresh(gpointer x)
-{  if (model.matches(x))
-   {  my_ch_con.block();
-      Gtk::SpinButton::set_value(model.get_value());
-      any_change=false;
-      my_ch_con.unblock();
-   }
+void int_SpinButton::Connection::keypress()
+{  any_change=true;
 }
 
-bool int_SpinButton::on_focus_out(GdkEventFocus *ev)
-{  if (any_change)
-   {  ch_con.block();
-      update();
-      model=Gtk::SpinButton::get_value_as_int();
-      ch_con.unblock();
-      any_change=false;
-   }
+void int_SpinButton::Connection::on_activate()
+{  on_focus_out(0);
+}
+
+bool int_SpinButton::Connection::on_focus_out(GdkEventFocus *ev)
+{  if (any_change) controller2model();
 //   select_region(0,0); // needed ?
    return false;
 }
 
-bool int_SpinButton::on_focus_in(GdkEventFocus *ev)
-{  select_region(0,-1);
+bool int_SpinButton::Connection::on_focus_in(GdkEventFocus *ev)
+{  widget->select_region(0,-1);
    return false;
 }
 
+
+void int_SpinButton::Connection::model2widget()
+{  widget->set_value(model.get_value());
+   any_change=false;
+}
+
+void int_SpinButton::Connection::widget2model()
+{  widget->update();
+   model=widget->get_value_as_int();
+   any_change=false;
+}
+
+SigC::Connection int_SpinButton::Connection::connect()
+{  cm_con2[0]=widget->signal_focus_out_event().connect(SigC::slot(*this,&int_SpinButton::Connection::on_focus_out),true);
+   cm_con2[1]=widget->signal_focus_in_event().connect(SigC::slot(*this,&int_SpinButton::Connection::on_focus_in),true);
+   // I'm not quite sure whether this is needed at all
+   cm_con2[2]=widget->signal_activate().connect(SigC::slot(*this,&int_SpinButton::Connection::on_activate),true);
+   return widget->signal_changed().connect(SigC::slot(*this,&int_SpinButton::Connection::keypress));
+}
+
+void int_SpinButton::Connection::disconnect()
+{  cm_con2[0].disconnect();
+   cm_con2[1].disconnect();
+   cm_con2[2].disconnect();
+   this_t::disconnect();
+}
+
 int_SpinButton::int_SpinButton(const Model_ref<T> &m,T min,T max)
-	: Gtk::SpinButton(), any_change(false), model(m)
+	: conn(m)
 {  set_update_policy(Gtk::UPDATE_ALWAYS);
    set_numeric(true);
    get_adjustment()->set_lower(min);
    get_adjustment()->set_upper(max);
    get_adjustment()->set_step_increment(1);
-   Gtk::SpinButton::set_value(model.get_value());
-   signal_focus_out_event().connect(SigC::slot(*this,&int_SpinButton::on_focus_out),true);
-   signal_focus_in_event().connect(SigC::slot(*this,&int_SpinButton::on_focus_in),true);
-   // I'm not quite sure whether this is needed at all
-   signal_activate().connect(SigC::slot(*this,&int_SpinButton::on_activate),true);
-   ch_con=model.signal_changed().connect(SigC::slot(*this,&int_SpinButton::refresh));
-   my_ch_con=signal_changed().connect(SigC::slot(*this,&int_SpinButton::keypress));
+   conn.set_widget(this);
 };
-
-void int_SpinButton::keypress()
-{  any_change=true;
-}
-
-void int_SpinButton::on_activate()
-{  on_focus_out(0);
-}
 

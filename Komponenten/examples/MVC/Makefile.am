@@ -11,22 +11,24 @@ LINKS= 	mvc.cc\
 	window1.cc \
 	window1_glade.hh \
 	window1.hh  \
-	baseclasses.hh
+	mvc_base.hh \
+	pixmaps.cc
 
 mvc_SOURCES = \
 	mvc.cc\
 	window1_glade.cc \
-	window1.cc 
+	window1.cc \
+	pixmaps.cc
 
 noinst_HEADERS = \
 	window1_glade.hh \
-	window1.hh baseclasses.hh
+	window1.hh mvc_base.hh
 
-CXXFLAGS = @CXXFLAGS@ @KOMPONENTEN_INCLUDES@
+AM_CXXFLAGS = @KOMPONENTEN_INCLUDES@
 
 mvc_LDADD = @LIBS@ @KOMPONENTEN_LIBS@
 
-LDFLAGS= @LDFLAGS@ @KOMPONENTEN_LDFLAGS@
+AM_LDFLAGS= @KOMPONENTEN_LDFLAGS@
 
 $(LINKS):
 	ln -sf ../../Basic/examples/MVC/$@ .

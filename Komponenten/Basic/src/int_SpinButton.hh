@@ -1,4 +1,4 @@
-// $Id: int_SpinButton.hh,v 1.4 2003/03/24 07:58:05 christof Exp $
+// $Id: int_SpinButton.hh,v 1.5 2003/04/07 06:38:04 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -22,23 +22,33 @@
 #define MANUPROC_WIDGETS_MVC_INT_H
 
 #include <gtkmm/spinbutton.h>
-#include <BaseObjects/Model.h>
-
-class int_SpinButtonConnection
-{
-};
+#include <ModelWidgetConnection.h>
 
 class int_SpinButton : public Gtk::SpinButton
 {	typedef int T;
-	bool any_change;
-	SigC::Connection ch_con, my_ch_con;
-	Model_ref<T> model;
+public:
+	class Connection : public ModelWidgetConnection<T,Gtk::SpinButton>
+	{	bool any_change;
+		SigC::Connection cm_con2[3];
+
+		bool on_focus_out(GdkEventFocus *ev);
+		bool on_focus_in(GdkEventFocus *ev);
+		void keypress();
+		void on_activate();
+		
+		void model2widget();
+		void widget2model();
+		SigC::Connection connect();
+		void disconnect();
+	public:
+		Connection(widget_t *w=0) : any_change(false) 
+		{ set_widget(w); }
+		Connection(const Model_ref<T> &m, widget_t *w=0) 
+		: this_t(m), any_change(false) { set_widget(w); }
+	};
+private:
+	Connection conn;
 	
-	bool on_focus_out(GdkEventFocus *ev);
-	bool on_focus_in(GdkEventFocus *ev);
-	void refresh(gpointer);
-	void keypress();
-	void on_activate();
 	// explicitely forbid to use these (make them private)
 	gfloat get_value_as_float() const;
 	gint get_value_as_int() const;
