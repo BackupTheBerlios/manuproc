@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.11 2002/04/19 15:16:36 christof Exp $
+# $Id: configure.in,v 1.12 2002/04/29 10:09:57 christof Exp $
 
 AC_INIT(src/SQLerror.h)
 AC_CONFIG_AUX_DIR(.)
@@ -30,7 +30,7 @@ then
   AC_DEFINE_UNQUOTED(DEFAULT_DBHOST, "$DEFAULT_DBHOST" )
   AC_MSG_RESULT($DEFAULT_DB@$DEFAULT_DBHOST)
 
-  LIBS=$LIBS @ECPG_LIBS@
+  LIBS="$LIBS @ECPG_LIBS@"
  fi
 fi
 

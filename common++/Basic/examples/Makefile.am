@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.4 2002/04/19 15:16:36 christof Exp $
+# $Id: Makefile.am,v 1.5 2002/04/29 10:08:38 christof Exp $
 	
 LDADD=$(top_srcdir)/src/libManuProC_Base.a @ECPG_LIBS@
 
@@ -18,8 +18,8 @@ endif
 
 EXTRA_PROGRAMS=FetchIStream
 
-noinst_PROGRAMS=test_pgsql_conv testHandles testKW $(DB_PRGS) fixedpoint \
-	Zeitpunkt
+noinst_PROGRAMS=test_pgsql_conv testHandles testKW fixedpoint \
+	Zeitpunkt 
 
 test_pgsql_conv_SOURCES=test_pgsql_conv.cc
 testHandles_SOURCES=testHandles.cc
