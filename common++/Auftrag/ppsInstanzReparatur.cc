@@ -154,7 +154,7 @@ try_again:
                    goto try_again;
                 }
                 analyse("Es ist immer noch ein Rest geblieben, ignoriere Zuordnungen",*j,M_rest);
-                j->MengeAendern(uid,-M_rest,false,k->AEB,ManuProC::Auftrag::r_Reparatur);
+                j->MengeAendern(uid,-M_rest,false,AufEintragBase(),ManuProC::Auftrag::r_Reparatur);
              }
             }
             menge=0;
