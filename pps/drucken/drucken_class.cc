@@ -309,11 +309,12 @@ catch(SQLerror &e) { cout << e; return; }
  if(Typ()==Rechnung)
  if(kunde_an->land()->Auslaender())
    if(!kunde_an->land()->EU())
-     os << "~\\\\";
+        {os << "~\\\\";
 	os << mld->MLT(MultiL_Dict::TXT_EU_PREFERENZ);
 	os << "\\\\\n"
 	"~\\\\\nWuppertal, ";
 	if(mld->getSprId()==1) os << "den ";
+	}
   Gtk2TeX::Footer(os);
 }
 
