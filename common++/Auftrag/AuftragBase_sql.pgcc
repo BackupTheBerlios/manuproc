@@ -164,11 +164,12 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"Artikel=",artikel,
          "Menge=",bestellt,"AltAEB=",altAEB,
          "LieferDatum=",lieferdatum,
-         "Status=",status,"ForceNew=",st_bool.force_new,
-         "DispoPlanung=",st_bool.dispoplanung);
+         "Status=",status);
+// weggefallen         
+// ,"ForceNew=",st_bool.force_new, "DispoPlanung=",st_bool.dispoplanung);
 
  create_if_not_exists(status);
- int znr=-99,neuznr=-99;
+ int znr=ManuProcEntity<>::none_id,neuznr=ManuProcEntity<>::none_id;
  mengen_t altemenge=0;
  Transaction tr;
  exec sql lock table auftragentry in exclusive mode;
@@ -182,11 +183,16 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
     AufEintragBase newaeb=A.push_back(0,lieferdatum,artikel,status,uid,false)  ;
     znr=newaeb.ZNr();
    }
+
+ bool kein_dispo= Id()!=dispo_auftrag_id;
  AufEintragBase NeuAEB(*this,znr);
- if(NeuAEB.Id()!=AuftragBase::dispo_auftrag_id) 
+ 
+ // dispo=> andere Richtung des Pfeils muss geändert werden 
+ if (kein_dispo) // NeuAEB.Id()!=AuftragBase::dispo_auftrag_id) 
       AufEintragZu(altAEB).Neu(NeuAEB,bestellt);
- AufEintrag(NeuAEB).updateStkDiff__(uid,bestellt,true,altAEB,ManuProC::Auftrag::r_Anlegen);
- if(NeuAEB.Id()==AuftragBase::dispo_auftrag_id)
+ // rekursion nur falls kein DispoAuftrag 
+ AufEintrag(NeuAEB).updateStkDiff__(uid,bestellt,kein_dispo,altAEB,ManuProC::Auftrag::r_Anlegen);
+ if (!kein_dispo) // NeuAEB.Id()==AuftragBase::dispo_auftrag_id)
       AufEintragZu(NeuAEB).Neu(altAEB,bestellt);
 
 

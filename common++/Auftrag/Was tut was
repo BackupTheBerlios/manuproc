@@ -1,0 +1,28 @@
+<reason> = [ManuProC::Auftrag::] r_Anlegen
+
+??? kann automatisch_anlegen weg?
+
+- Auf _Ein_ tragsmenge ändern:
+	AE.updateStkDiff__(getuid(),<deltamenge>,true,AufEintragBase(),<reason>);
+	// true wegen rekursiv
+	// wozu wird Eltern AEB benötigt? für Rekursion?
+
+- Neuen Auftrag anlegen:
+	A.push_back(...); ?
+
+[intern:]
+- Dispo anlegen:
+	PlanenDispo(<uid>,<Artikel>,<menge>,<datum>);
+
+- Artikelmenge in bestimmtem Auftrag ändern
+	AB.tryUpdateEntry(<deltamenge>,<datum>,<artikel>,OPEN,<uid>,
+		<hinzuzeigender Eintrag>,
+		<st_tryUpdateEntry(<automatisch?>,false,true)>);
+		
+  tryUpdateEntry(<deltamenge>,<datum>,<artikel>,<status>,<uid>,
+		altAEB?, wahnsinnige_unbenutzte_parameter)
+	2er: keine Rekursion, Pfeil _zu_ altAEB wird erhöht
+	sonst: Rekursion, Pfeil _von_ altAEB wird erhöht
+
+- interne Aufträge anlegen (wohl eher updateStkDiff__ aufrufen?)
+#	AEB.InstanzAuftraegeAnlegen(AE=?AEB, <menge>,<UID>[,<automatisch?>]);

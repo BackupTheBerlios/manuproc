@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.24 2003/01/08 09:46:56 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.25 2003/01/08 17:40:43 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -168,11 +168,8 @@ private:
     ManuProcEntity<>::ID lfrsid) throw(SQLerror);
 
 public:
- void Produziert(mengen_t menge,
-     ManuProcEntity<>::ID lfrsid)  throw(SQLerror);
+ void Produziert(mengen_t menge,ManuProcEntity<>::ID lfrsid) throw(SQLerror);
 
-
-public:
  bool allesOK() const;
  std::string Planung() const;
  ppsInstanz::ID LetztePlanInstanz() const { return letztePlanInstanz; }
@@ -205,6 +202,9 @@ public:
          AufEintragBase *verplanter_aeb=0,bool rekursiv=false) throw(std::exception);
  void ProduktionsPlanung(int uid,mengen_t menge,const AuftragBase &zielauftrag,
       const ManuProC::Datum &datum,cH_ppsInstanz instanz) throw(std::exception);
+ // 2er anlegen, Material bestellen
+ // *this ist der ZielAufEintrag
+ void Ueberplanen(int uid,const ArtikelBase& artikel,mengen_t menge,const ManuProC::Datum &datum);
 
 // Eine bereits vorgemerkte Menge einem anderen AufEintag zuordnen
 // *this => Der reservierte 1er; ae => Der ungeplante 0er

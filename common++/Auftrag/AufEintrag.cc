@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.25 2003/01/08 10:51:35 christof Exp $
+// $Id: AufEintrag.cc,v 1.26 2003/01/08 17:40:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -162,7 +162,6 @@ AufEintragBase AufEintrag::getFirstKundenAuftrag() const
 
 
 
-#warning diese Methode kann zu AufEintragBase werden
 #if 0
 void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,const ArtikelBase artikel,int uid,ManuProC::Auftrag::Action reason)
 {
@@ -290,16 +289,20 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
    if (menge-getRestStk() > 0) //  && !Instanz()->LagerInstanz() )
     { assert(!Instanz()->LagerInstanz()); // CP
       mengen_t dispomenge = menge-getRestStk();
-      menge=getRestStk();      
-      AufEintragBase(zielauftrag,znr).PlanenDispo(uid,Artikel(),dispomenge,datum);
+      // nur soviel unten verwenden (tatsächlich zu uns ziehen, 
+      // 	Rest wird von uns in Ueberplanen bestellt)
+      menge=getRestStk();
+      
+      AufEintragBase AEB(zielauftrag,znr);
+      AufEintrag(AEB).Ueberplanen(uid,Artikel(),dispomenge,datum);
 
       // Produktionsplaner (ungetestet)
       if(zielauftrag.Instanz()->GeplantVon()!=ppsInstanzID::None)
        {
 	    assert(!"yet implemented");
+#if 0	    
          if(reason==ManuProC::Auftrag::r_Planen) 
            {
-#if 0	    
             AuftragBase DAB(zielauftrag.Instanz()->GeplantVon(),dispo_auftrag_id);
             int znr=DAB.tryUpdateEntry(dispomenge,datum,Artikel(),OPEN,uid,AufEintragBase());
             AuftragBase ab(Instanz(),ungeplante_id);
@@ -310,21 +313,27 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
                                                                      dispomenge);       
 */
             AufEintragZu((class AufEintragBase(DAB,znr))).Neu(AufEintragBase(ab,nzr),dispomenge);
-#endif            
            }
          else
            {
 //cout << "ELSEn";
            }
+#endif            
        }
     }
   AufEintrag AE1er(AufEintragBase(zielauftrag,znr));
   AufEintragZuMengenAenderung::move_zuordnung_zu_geplantem(uid,*this,
-                                                           AE1er,menge,reason);       
+                                                           AE1er,menge,reason);
 
+// welche reasons sollte es sonst geben? CP
+  if (reason!=ManuProC::Auftrag::r_Planen)
+     std::cerr << "??? Aha, Planen und doch nicht planen? CP\n";
+  
   if(reason==ManuProC::Auftrag::r_Planen) 
    {
-     updateStkDiff__(uid,-menge,true,AufEintragBase(),reason);     
+     updateStkDiff__(uid,-menge,true,AufEintragBase(),reason);
+     
+     // warum !=plan_auftrag_id ??? CP
      if(!Instanz()->LagerInstanz() && Id()!=AuftragBase::plan_auftrag_id)
         InstanzAuftraegeAnlegen(AE1er,menge,uid);
    }
@@ -334,6 +343,9 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
 
 //   move_to(uid,AufEintragBase(zielauftrag,znr),menge,reason);
 
+  // nur wenn aktiv durch Benutzer geplant 
+  if (zielauftrag.Id() != AuftragBase::plan_auftrag_id)
+  { assert(zielauftrag.Id()>2);
    std::list<AufEintragZu::st_reflist> ReferenzAufEintrag =
 			         AufEintragZu(*this).get_Referenz_listFull(false);
    for (std::list<AufEintragZu::st_reflist>::iterator i=ReferenzAufEintrag.begin();i!=ReferenzAufEintrag.end();++i)
@@ -343,27 +355,9 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
      i->AEB.setLetztePlanungFuer(instanz);
      i->AEB.calculateProzessInstanz();
     }
+  }
 
-
-
-   if(rekursiv) // Braucht nur das ALTE Erfassungs/Reperaturprogramm
-      assert(!"never get here");
-/*
-    {
-     // bei dem gerade geplaneten Auftrag abschreiben:
-     AufEintrag(class AufEintragBase(zielauftrag,znr)).
-		abschreiben(menge,ManuProcEntity<>::none_id);
-     std::list<AufEintragZu::st_reflist> L=AufEintragZu(*this).get_Referenz_list_ungeplant();
-     for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
-      {
-        // Lager nicht rekursiv Planen
-        if(i->AEB.Instanz()->LagerInstanz()) continue;
-        AuftragBase ab(i->AEB.Instanz(),plan_auftrag_id);
-        AuftragBase::mengen_t M=menge*ArtikelBaum(ArtId()).Faktor(i->Art);
-        AufEintrag(i->AEB).Planen(uid,M,ab,datum,reason,0,rekursiv);
-      }
-    }
-*/
+  assert(!rekursiv);
  tr.commit();
  return znr;
 }
@@ -407,3 +401,21 @@ void AufEintrag::menge_fuer_aeb_freigeben(const mengen_t &menge,AufEintrag &ae,c
 }
 #endif
 
+// einen Dispo Auftrag für einen Auftrag anlegen (wegen freier Menge)
+void AufEintrag::Ueberplanen(int uid,const ArtikelBase& artikel,mengen_t menge,const ManuProC::Datum &datum)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,str(),
+   "Artikel=",artikel,"Menge=",menge,"Datum=",datum);
+   // automatisch geplant ??
+   assert(Id()!=plan_auftrag_id);
+
+   AuftragBase dispoAB(Instanz(),dispo_auftrag_id);
+   st_tryUpdateEntry st(false,false,true);
+   //int znr=
+   dispoAB.tryUpdateEntry(menge,datum,artikel,OPEN,uid,*this,st);
+
+   // zusätzliche Menge vermerken und Material bestellen
+   updateStkDiff__(uid,menge,true,AufEintragBase(),ManuProC::Auftrag::r_Anlegen); // oder Planen?
+//   updateStkDiffBase__(uid,menge);
+//   InstanzAuftraegeAnlegen(*this,menge,uid); // ,(Id()==plan_auftrag_id));
+}

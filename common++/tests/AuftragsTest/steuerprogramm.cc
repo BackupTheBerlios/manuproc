@@ -64,7 +64,7 @@ static void vergleichen(Check &C, Check::was_checken w, const std::string &zusat
     bool erfolgreich=C.teste(w,zusatz,mit_reparatur_programm,vor_dem_test_reparieren);
     if(!erfolgreich)
     { std::cout << name << " fehlgeschlagen\n\n"; 
-      if (!do_not_stop) exit(1); 
+      if (!do_not_stop) { testlog->flush(); exit(1); }
     }
 }
 

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.h,v 1.40 2003/01/08 09:46:56 christof Exp $
+// $Id: AufEintragBase.h,v 1.41 2003/01/08 17:40:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -72,9 +72,6 @@ public:
  int ZNr() const { return zeilennr; }
  bool valid() const { return AuftragBase::valid(); }
 
- // Planen
- // *this ist der ZielAufEintragBase
- void PlanenDispo(int uid,const ArtikelBase& artikel,mengen_t menge,const ManuProC::Datum &datum);
 /*
  void vormerken_oder_bestellen(int uid,const AuftragBase::mengen_t &vormerkmenge,
             AuftragBase::mengen_t bestellmenge,

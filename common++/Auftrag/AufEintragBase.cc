@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.35 2003/01/08 09:03:39 christof Exp $
+// $Id: AufEintragBase.cc,v 1.36 2003/01/08 17:40:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -72,30 +72,6 @@ void AufEintragBase::calculateProzessInstanz()
    }
   setMaxPlanInstanz(anz);
 }   
-
-void AufEintragBase::PlanenDispo(int uid,const ArtikelBase& artikel,mengen_t menge,const ManuProC::Datum &datum)
-{
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,str(),
-   "Artikel=",artikel,"Menge=",menge,"Datum=",datum);
-
-   AuftragBase dispoAB(Instanz(),dispo_auftrag_id);
-   st_tryUpdateEntry st(false,false,true);
-   int znr=dispoAB.tryUpdateEntry(menge,datum,artikel,OPEN,uid,*this,st);
-   AufEintragBase dispoAEB(dispoAB,znr);
-
-   updateStkDiffBase__(uid,menge);
-  
-   AufEintrag AE(dispoAEB);
-   bool automatisch_geplant=false;
-   if(Id()==plan_auftrag_id)  automatisch_geplant=true  ;
-   dispoAEB.InstanzAuftraegeAnlegen(AE,menge,uid,automatisch_geplant);
-   if(automatisch_geplant)  
-    {
-      AE.updateStkDiffBase__(uid,-menge);
-      AufEintragZu(AE).setMengeDiff__(*this,-menge);
-    }
-}
-
 
 int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
                         ArtikelBase artikel,AufStatVal status,int uid,
@@ -227,4 +203,3 @@ void AufEintragBase::artikel_vormerken_oder_schnappen(bool schnappen,AuftragBase
 }
 
 #endif
-            
