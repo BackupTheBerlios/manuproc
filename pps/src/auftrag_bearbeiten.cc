@@ -429,7 +429,7 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
  if(!(WPreis->get_Preis()!=Preis(0.0,WPreis->get_Preis().getWaehrung())) )
   {
    ArtikelTyp at(artikelbox->get_value());
-   if(ArtikelTyp::hasAttribute(at.Id(),ArtikelTypAttr::NullPreisCheck)
+   if(ArtikelTyp::hasAttribute(at.Id(),ArtikelTypAttr::null_preis_check)
 	&& instanz->Id()==ppsInstanzID::Kundenauftraege)
    {meldung->Show("Preis 0,00 ist nicht erlaubt");
     return;
