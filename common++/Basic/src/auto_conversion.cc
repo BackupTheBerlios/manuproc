@@ -1,4 +1,4 @@
-// $Id: auto_conversion.cc,v 1.12 2003/10/13 17:49:00 jacek Exp $
+// $Id: auto_conversion.cc,v 1.13 2004/05/07 12:37:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -36,7 +36,13 @@ void ManuProC::Datum::from_auto(const char *datum,const char **endptr) throw(Dat
     int numlen(0);
     const char *ptr=0;
     for (const char *s=datum;isdigit(*s);s++,numlen++) ;
-    if (numlen==6) // compacted presentation
+    if (numlen>=8) // numerical presentation 20040101...
+    {  tag = getnum((const unsigned char*)datum+6, 2);
+	monat = getnum((const unsigned char*)datum+4, 2);
+	jahr = getnum((const unsigned char*)datum, 4);
+	if (endptr) *endptr=datum+8;
+    }
+    else if (numlen==6) // compacted presentation
     {  tag = getnum((const unsigned char*)datum, 2);
 	monat = getnum((const unsigned char*)datum+2, 2);
 	jahr = getnum((const unsigned char*)datum+4, 2);
