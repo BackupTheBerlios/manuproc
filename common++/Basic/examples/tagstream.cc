@@ -1,4 +1,4 @@
-// $Id: tagstream.cc,v 1.1 2004/06/01 10:54:49 christof Exp $
+// $Id: tagstream.cc,v 1.2 2004/06/01 12:20:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,6 +21,29 @@
 #include <iostream>
 
 int main()
-{  
+{  std::cout << "===== reading simple file =====\n";
+   {  const char * const Testcase1="<?xml version=\"1.0\"?><test><test A=\"a\"/></test>";
+      TagStream ts(Testcase1);
+      ts.debug(10);
+      ts.write(std::cout,true);
+   }
+   std::cout << "===== iso 8859-1 =====\n";
+   {  const char * const Testcase1="<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"
+   		"<test>"
+   		  "<süb ÄÖÜäöüß=\"ÄÖÜäöüß°ué\">èï<ä/>¥</süb>"
+   		"</test>";
+      TagStream ts(Testcase1);
+      ts.debug(10);
+      ts.write(std::cout,true);
+   }
+   std::cout << "===== special chars =====\n";
+   {  const char * const Testcase1="<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"
+   		"<test>"
+   		  "<s&#xfc;b &auml;=\"&amp;&lt;&gt;&quot;\">&#65;</süb>"
+   		"</test>";
+      TagStream ts(Testcase1);
+      ts.debug(10);
+      ts.write(std::cout,true);
+   }
    return 0;
 }
