@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.cc,v 1.24 2002/11/27 13:32:02 christof Exp $
+
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -45,18 +45,24 @@ enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
       ZweiKundenTest,ZweiKundenMengeFreigebenTest,ManuProCTest,
       JumboLager,Rep_Mabella};
 
-int fehler()
+static int fehler()
 {
   cerr << "ABBRUCH \n";
   return 1;
 }
 
 
-int kein_fehler()
+static int kein_fehler()
 {
   return 0;
 }
 
+static void vergleichen(Check &C, Check::was_checken w, const std::string &zusatz, 
+	const std::string &name, bool mit_reparatur_programm)
+{   bool erfolgreich=C.teste(w,zusatz,mit_reparatur_programm);
+    if(!erfolgreich) 
+    { cout << name << " fehlgeschlagen\n"; exit(fehler()); }
+}
 
 int auftragstests(e_mode mode)
 {
@@ -146,7 +152,7 @@ int auftragstests(e_mode mode)
       {// Produktion in der Werkstatt ohne daß vorher etwas geplant wurde
 //      Lieferschein liefs(WERKSTATT,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
 //ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
-//cout << "\n\n\nHier gehts los\n";
+//std::cout << "\n\n\nHier gehts los\n";
 //      liefs.push_back(ARTIKEL_SCHRAUBENZIEHER_GELB,600,0,0);
       ManuProC::st_produziert p(ARTIKEL_SCHRAUBENZIEHER_GELB,600,UID,ManuProC::DefaultValues::EigeneKundenId);
       cH_ppsInstanz I(WERKSTATT); 
@@ -158,7 +164,7 @@ int auftragstests(e_mode mode)
       {// Lieferscheinschreiben für das Schraubenzieherlager => auslagern 
       Lieferschein liefs(SCHRAUBENZIEHERLAGER,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
 //ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
-//cout << "\n\n\nHier gehts los\n";
+//std::cout << "\n\n\nHier gehts los\n";
       liefs.push_back(ARTIKEL_SCHRAUBENZIEHER_ROT,450,0,0);
       erfolgreich=C.teste(Check::LieferscheinZusatzMinus,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Lieferschein für das Rohwarenlager (auslagern)\n\n"; return  fehler();}
@@ -167,7 +173,7 @@ int auftragstests(e_mode mode)
       {// Lieferscheinschreiben für den Kunden 
       Lieferschein liefs(KUNDENINSTANZ,cH_Kunde(KUNDE));
 //ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
-//cout << "\n\n\nHier gehts los\n";
+//std::cout << "\n\n\nHier gehts los\n";
       liefs.push_back(ARTIKEL_SORTIMENT_BUNT,450,0,0);
       erfolgreich=C.teste(Check::LieferscheinZusatzMinusKunde,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Lieferschein für den Kunden \n\n"; return  fehler();}
@@ -273,7 +279,7 @@ int auftragstests(e_mode mode)
       RohwarenLager::st_rohlager stRL(LagerPlatzKupfer2,100,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
       std::string dummystring;
       RL.RL_Einlagern(LagerPlatzKupfer2,stRL,UID,dummystring);
-cout << dummystring<<'\n';
+std::cout << dummystring<<'\n';
 //      RL.rein_ins_lager(ARTIKEL_KUPFER,100,UID);
       erfolgreich=C.teste(Check::Split_Rohwarenlager_einlagern,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Rohwarenlager einlagern\n";
@@ -282,7 +288,7 @@ cout << dummystring<<'\n';
 //      RL.raus_aus_lager(ARTIKEL_KUPFER,100,UID);
       RohwarenLager::st_rohlager stRL2(LagerPlatzKupfer2,100,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
       RL.RL_Entnahme(stRL2,UID,dummystring);
-cout << dummystring<<'\n';
+std::cout << dummystring<<'\n';
       erfolgreich=C.teste(Check::Split_Rohwarenlager_auslagern,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Rohwarenlager auslagern\n";
                return fehler();}
@@ -297,7 +303,7 @@ cout << dummystring<<'\n';
       RohwarenLager::st_rohlager stRL(LagerPlatzKupfer2,100,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
       std::string dummystring;
       RL.RL_Einlagern(LagerPlatzKupfer2,stRL,UID,dummystring);
-cout << "D0: "<<dummystring<<'\n';
+std::cout << "D0: "<<dummystring<<'\n';
 //      Lager RL((cH_ppsInstanz(ppsInstanzID::Rohwarenlager)));
 //      RL.rein_ins_lager(ARTIKEL_KUPFER,100,UID);
       erfolgreich=C.teste(Check::Rohwarenlager_einlagern,mit_reparatur_programm);
@@ -307,10 +313,10 @@ cout << "D0: "<<dummystring<<'\n';
 //      RL.raus_aus_lager(ARTIKEL_KUPFER,120,UID);
       RohwarenLager::st_rohlager stRL2(LagerPlatzKupfer2,100,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
       RL.RL_Entnahme(stRL2,UID,dummystring);
-cout << "D1: "<<dummystring<<'\n';
+std::cout << "D1: "<<dummystring<<'\n';
       RohwarenLager::st_rohlager stRL3(LagerPlatzKupfer,2,10,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
       RL.RL_Entnahme(stRL3,UID,dummystring);
-cout << "D2:" <<dummystring<<'\n';
+std::cout << "D2:" <<dummystring<<'\n';
       erfolgreich=C.teste(Check::Rohwarenlager_auslagern,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Rohwarenlager auslagern\n";
                return fehler();}
@@ -340,7 +346,7 @@ cout << "D2:" <<dummystring<<'\n';
 //ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
 
       JL.Jumbo_Einlagern(LagerPlatzJumbo,JR.front(),JumboLager::Einlagern,UID,"testuser",&zp);
-cout << dummystring<<'\n';
+std::cout << dummystring<<'\n';
       erfolgreich=C.teste(Check::Bandlager_einlagern,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Bandlager einlagern\n";
                return fehler();}
@@ -352,7 +358,7 @@ cout << dummystring<<'\n';
       if(!erfolgreich) { cout << "Kunde Teillieferung\n";
                return fehler();}
 
-//cout << "\n\n120 ABSCHREIBEN\n\n\n";
+//std::cout << "\n\n120 ABSCHREIBEN\n\n\n";
       {AufEintrag AE(AEB);
         AE.Produziert(120,Lieferschein::none_id);
       }
@@ -360,6 +366,31 @@ cout << dummystring<<'\n';
       if(!erfolgreich) { cout << "Kunde Überlieferung\n";
                return fehler();} 
 
+      // test von force, leer, etc
+#if 0      
+      dummystring="";
+      RohwarenLager::st_rohlager stRL10(LagerPlatzKupfer2,6,35,1,7,ARTIKEL_ACETAT,ManuProC::Datum().today());
+      RL.RL_Einlagern(LagerPlatzKupfer2,stRL10,UID,dummystring,true);
+std::cout << "D10: "<<dummystring<<'\n';
+
+      dummystring="";
+      RohwarenLager::st_rohlager stRL11(LagerPlatzKupfer,0,0,2,1,ARTIKEL_ACETAT,ManuProC::Datum().today());
+      RL.RL_Entnahme(LagerPlatzKupfer,stRL10,UID,dummystring);
+std::cout << "D11: "<<dummystring<<'\n';
+      vergleichen(C,Check::Menge,"_force_art","force, falscher Artikel",mit_reparatur_programm);
+
+      dummystring="";
+      RohwarenLager::st_rohlager stRL12(LagerPlatzKupfer2,10,35,0,0,ARTIKEL_ACETAT,ManuProC::Datum().today());
+      RL.RL_Entnahme(LagerPlatzKupfer2,stRL10,UID,dummystring);
+std::cout << "D12: "<<dummystring<<'\n';
+
+      dummystring="";
+      RohwarenLager::st_rohlager stRL13(LagerPlatzAcetat,2,7,0,0,ARTIKEL_ACETAT,ManuProC::Datum().today());
+      RL.RL_Entnahme(LagerPlatzKupfer,stRL10,UID,dummystring,false,true);
+std::cout << "D13: "<<dummystring<<'\n';
+      vergleichen(C,Check::Menge,"_zuviel","zuviel Entnommen",mit_reparatur_programm);
+#endif
+               
       cout << "Lager-Test erfolgreich\n";
 #endif
       break;
@@ -613,7 +644,7 @@ cout << dummystring<<'\n';
         Auftrag PA=Auftrag(Auftrag::Anlegen(EINKAUF),KUNDE2);
         ManuProC::st_produziert sp(ARTIKEL_ZWEI,2222,getuid(),Kunde::eigene_id,LieferscheinBase::none_id,PA,SPLITDATUM);
         cH_ppsInstanz I(EINKAUF);
-//cout << "L O S \n";
+//std::cout << "L O S \n";
 //ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
         I->Planen(sp);
         erfolgreich=C.teste(Check::ZweiAuftraege_anlegen,mit_reparatur_programm);
@@ -680,7 +711,7 @@ cout << dummystring<<'\n';
 
       {AufEintrag AE(AEB);
 
-//cout << "\n\nnun\n\n";
+//std::cout << "\n\nnun\n\n";
 //      ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
         AE.Produziert(200,Lieferschein::none_id);
       }
