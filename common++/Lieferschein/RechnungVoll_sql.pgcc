@@ -1,4 +1,4 @@
-/* $Id: RechnungVoll_sql.pgcc,v 1.18 2004/03/29 15:03:06 jacek Exp $ */
+/* $Id: RechnungVoll_sql.pgcc,v 1.19 2004/03/31 08:15:31 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -44,13 +44,18 @@ RechnungVoll::RechnungVoll(int rid, bool order_by_artikel) throw(SQLerror)
 
 
  cH_ExtBezSchema exbz(ExtBezSchema::default_id,ExtBezSchema::default_Typ);
- std::string sortstr=order_by_artikel ? " l.lfrsid,e.refauftragid ":"zeilennr";
+ std::string sortstr;
  int signifikanz=1;
- for(ExtBezSchema::const_sigiterator l=exbz->sigbegin(signifikanz);
+
+ if(order_by_artikel)
+   {
+    sortstr=" l.lfrsid,e.refauftragid ";
+    for(ExtBezSchema::const_sigiterator l=exbz->sigbegin(signifikanz);
 				l!=exbz->sigend(signifikanz); ++l)
-   sortstr+=std::string(",")+l->spaltenname;
-
-
+    sortstr+=std::string(",")+l->spaltenname;
+   }
+ else
+    sortstr=" zeilennr ";
 
  std::string qu("select ry.artikelid, ry.zeilennr");
 
@@ -69,7 +74,7 @@ RechnungVoll::RechnungVoll(int rid, bool order_by_artikel) throw(SQLerror)
 
  qu=qu+" where ry.rngid ="+itos(rid);
 
- qu+=sortstr;
+ qu+=std::string(" order by ") + sortstr;
 
  QU=(char*)qu.c_str();
 
