@@ -1,4 +1,4 @@
-// $Id: Handles.h,v 1.19 2003/12/17 11:34:00 jacek Exp $
+// $Id: Handles.h,v 1.20 2003/12/19 09:36:48 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -196,8 +196,6 @@ public:
 	template <typename X>
 	 operator Handle<X>() const { return _data; }
 	 
-#if !defined(__GNUC__) || __GNUC__>2
-	 
 	// Variant:  base.cast_static<Derived>();
 	template <typename X>
 	 Handle<X> cast_static() const { return static_cast<X*>(_data); }
@@ -205,7 +203,7 @@ public:
 	 Handle<X> cast_dynamic() const { return dynamic_cast<X*>(_data); }
 	template <typename X>
 	 Handle<X> cast_const() const { return const_cast<X*>(_data); }
-#endif
+
 	 
 	// Variant: Handle<Derived>::cast_static(base);
 #if ! defined(__GNUC__) || __GNUC__>2
