@@ -155,8 +155,8 @@ bool ean_set::cell_out(std::ostream &o,cH_ArtikelBezeichnung  ab,bool last_col)
  else o << "}";     
 // else o << "\\rule[0mm]{39.1mm}{0cm} }";
      
- if(last_col) {o << "\\\\";
-      o << "\n\\hline\n";
+ if(last_col) {o << "\\\\\n";
+//      o << "\n\\hline\n";
       }
  
  else o << " & ";
@@ -169,15 +169,15 @@ bool ean_set::cell_out(std::ostream &o,cH_ArtikelBezeichnung  ab,bool last_col)
 void ean_set::begin_table(std::ostream &o) const
 {
  std::string tabformat;
- tabformat="|";
+// tabformat="|";
  for(int i=0; i<cols; i++)
   { tabformat+="X";
-   tabformat+="|";
+//   tabformat+="|";
   }
   
  o << "\\begin{tabularx}{19.1cm}{"+tabformat+"}\\\\\n";
  
- o << "\\hline\n";
+// o << "\\hline\n";
 }
 
 
@@ -223,7 +223,8 @@ void ean_set::TeX_out(std::ostream &o)
  if(c>0 && c<cols)
    {for(int i=c; i<(cols-1); i++)
       o << "&";  
-    o << "\\\\\\hline\n";  
+//    o << "\\\\\\hline\n";  
+    o << "\\\\\n";  
    }
 
  o << "\\end{tabularx}\n\n";
