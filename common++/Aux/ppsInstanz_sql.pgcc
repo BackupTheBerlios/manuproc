@@ -1,0 +1,28 @@
+#include "ppsInstanz.h"
+#include <Aux/SQLerror.h>
+exec sql include sqlca;
+
+cH_ppsInstanz::cache_t cH_ppsInstanz::cache;
+
+cH_ppsInstanz::cH_ppsInstanz(ppsInstanz::ppsInstId iid) 
+{ 
+ cH_ppsInstanz *cached(cache.lookup(iid));
+ if (cached) *this=*cached;
+ else 
+  { *this=cH_ppsInstanz(new ppsInstanz(iid));
+    cache.Register(iid,*this);
+  }
+}
+
+
+void ppsInstanz::get_name()
+{
+ exec sql begin declare section;
+   char db_name[50];
+   int db_nr=instid;
+ exec sql end declare section;
+ exec sql select name into :db_name from prod_instanz where insid=:db_nr;
+ SQLerror::test(__FILELINE__,100);
+ if(sqlca.sqlcode) *db_name=0;
+ name=db_name;
+}

@@ -1,0 +1,64 @@
+// $Id: Bindung_sql.pgcc,v 1.1 2001/10/01 13:03:01 christof Exp $
+
+#include "Bindung.hh"
+#include <Aux/Transaction.h>
+exec sql include sqlca;
+
+Bindung::Bindung(const ID i) throw(SQLerror) : id(i)
+{
+ exec sql begin declare section;
+ int BID=i;
+ char NAME[20];
+ int FID;
+ char DATA[30];
+ short INAME, IDATA;
+ exec sql end declare section;
+ 
+ exec sql select name into :NAME:INAME from webang_bindung 
+ 	where id= :BID;
+ SQLerror::test(__FILELINE__":Bindung: select from webang_bindung");
+ 
+ name = INAME ? "" : NAME;
+ 
+ exec sql declare BINDEFUNC cursor for
+ 	select fid, data from webang_bindfunc where bid= :BID;
+ Transaction tr;
+ exec sql open BINDEFUNC;
+ SQLerror::test(__FILELINE__":Bindung: open BINDEFUNC");
+ 
+ while(1)
+   {exec sql fetch in BINDEFUNC into :FID, :DATA:IDATA;
+    SQLerror::test(__FILELINE__":Bindung: fetch BINDEFUNC","BINDEFUNC",100);
+    
+    if(sqlca.sqlcode==100) break;
+
+    ef[(ExtraFunc)FID]= IDATA ? "" : DATA;
+   }
+
+ exec sql close BINDEFUNC;
+ tr.commit();
+}
+
+void Bindungsliste::Load()
+{  exec sql begin declare section;
+   int ID;
+   char NAME [17];
+   short IID, INAME;
+   exec sql end declare section;
+
+   exec sql declare bindungen cursor for
+   	select id,name from webang_bindung order by name;
+   Transaction tr;
+   exec sql open bindungen;
+   SQLerror::test(__FILELINE__ "select from webang_bindung",100);
+   while (! sqlca.sqlcode)
+   {  exec sql fetch bindungen into :ID :IID,:NAME :INAME;
+      SQLerror::test(__FILELINE__ "fetch from webang_bindung",100);
+      if (sqlca.sqlcode) break;
+      if (IID || INAME) continue;
+      Bindung bindung(NAME, ID);
+      add (bindung);
+   }
+   exec sql close bindungen;
+   tr.commit();
+}

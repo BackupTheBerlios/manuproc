@@ -9,3 +9,4 @@ Transaction.cc
 Waehrung_sql.cc
 Changejournal_sql.cc
 FetchIStream.cc
+ppsInstanz_sql.cc

@@ -8,3 +8,4 @@ Makefile.in
 selAufEntry_sql.cc
 selAufEntry_sql.pcl
 AufEintragBase2.cc
+AuftragBase_sql.cc

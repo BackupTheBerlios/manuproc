@@ -1,0 +1,50 @@
+// $Id: Faden_sql.pgcc,v 1.1 2001/10/01 13:03:01 christof Exp $
+
+#include <Faden.hh>
+#include <Aux/Transaction.h>
+exec sql include sqlca;
+
+void Fadenliste::Load(const ArtikelBase &ab,const Bindungsliste &bindungsliste)
+{  exec sql begin declare section;
+   int ZEILENNUMMER, ANZAHL, BINDUNG, ANFANGSZEILE, ENDZEILE, WIEDERHOLUNGEN;
+   int ARTIKEL, MATERIAL;
+   exec sql end declare section;
+
+   erase();
+   ARTIKEL=ab.Id();
+
+   exec sql declare zn cursor for 
+   	select zeilennummer, anzahl, material, bindung 
+   	from webang_faeden
+        where artikel= :ARTIKEL 
+        order by zeilennummer;
+   Transaction tr;
+   exec sql open zn;
+   SQLerror::test(__FILELINE__ "select from webang_faeden",100);
+   while (! sqlca.sqlcode)
+   {  exec sql fetch zn into :ZEILENNUMMER, :ANZAHL, :MATERIAL, :BINDUNG;
+      SQLerror::test(__FILELINE__ "fetch from webang_faeden",100);
+      if (sqlca.sqlcode) break;
+
+      Bindung bindung(bindungsliste.getById (BINDUNG));
+      add (Faden (ANZAHL, MATERIAL, bindung), -1);
+   }
+   exec sql close zn;
+
+   // request small ones first so we print it right
+   exec sql declare wdh cursor for 
+   	select anfangszeile, endzeile, wiederholungen 
+   	from webang_wiederhol
+        where artikel= :ARTIKEL
+        order by endzeile-anfangszeile;
+   exec sql open wdh;
+   SQLerror::test(__FILELINE__ "select from webang_wiederhol",100);
+   while (! sqlca.sqlcode)
+   {  exec sql fetch wdh into :ANFANGSZEILE , :ENDZEILE, :WIEDERHOLUNGEN;
+      SQLerror::test(__FILELINE__ "fetch from webang_wiederhol",100);
+      if (sqlca.sqlcode) break;
+      rep_add (ANFANGSZEILE, ENDZEILE, WIEDERHOLUNGEN);
+   }
+   exec sql close wdh;
+   tr.commit();
+}

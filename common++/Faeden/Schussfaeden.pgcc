@@ -1,0 +1,44 @@
+// $Id: Schussfaeden.pgcc,v 1.1 2001/09/04 12:53:47 cvs_malte Exp $
+
+#include "Schussfaeden.hh"
+#include <Aux/Transaction.h>
+exec sql include sqlca;
+
+void Schussfaeden::Load(const ArtikelBase &ab)
+{  exec sql begin declare section;
+   float SCHUSSDICHTE;
+   int ANZAHL;
+   short ISCHUSSDICHTE, IFANGFADEN;
+   int ARTIKEL, SCHUSSMATERIAL, FANGFADEN;
+   exec sql end declare section;
+
+   clear();
+   ARTIKEL=ab.Id();
+
+   exec sql select
+         schussdichte, fangfaden
+      into :SCHUSSDICHTE :ISCHUSSDICHTE, :FANGFADEN :IFANGFADEN
+      from webangaben where artikel= :ARTIKEL;
+   SQLerror::test(__FILELINE__ "select from webangaben");
+
+   schussdichte=ISCHUSSDICHTE?0.0:SCHUSSDICHTE;
+   fangfaden=IFANGFADEN?0:FANGFADEN;
+
+   // schussfaeden einlesen!
+   exec sql declare sf cursor for
+   	select anzahl,material 
+   	from webang_schuss 
+   	where artikel= :ARTIKEL
+   	order by index;
+   Transaction tr;
+   exec sql open sf;
+   SQLerror::test(__FILELINE__,100);
+   while (!sqlca.sqlcode)
+   {  exec sql fetch sf into :ANZAHL, :SCHUSSMATERIAL;
+      SQLerror::test(__FILELINE__,100);
+      if (sqlca.sqlcode) break;
+      schussfaeden.push_back(Faden(ANZAHL,SCHUSSMATERIAL));
+   }
+   exec sql close sf;
+   tr.commit();
+}

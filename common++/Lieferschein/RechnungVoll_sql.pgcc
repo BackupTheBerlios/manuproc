@@ -1,0 +1,64 @@
+/* $Id: RechnungVoll_sql.pgcc,v 1.1 2001/10/01 13:01:08 christof Exp $ */
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+
+#include"RechnungVoll.h"
+#include<Aux/Transaction.h>
+exec sql include sqlca;
+
+RechnungVoll::RechnungVoll(int rid) throw(SQLerror)
+: Rechnung(rid)
+{
+ exec sql begin declare section;
+  int ARTIKELID, STUECK, ZEILE, RNGID=rid;
+  int LFRSID,LIEFERZEILE;
+  float MENGE,RABATT,PREISMENGE,PREIS;
+  char LIEFERDATUM[11];
+  short ILIEFERDATUM;
+ exec sql end declare section;
+
+ Transaction tr;
+ exec sql declare lein cursor for
+   select ry.artikelid, ry.zeilennr, coalesce(ry.stueck,0), coalesce(ry.menge,0), 
+   	coalesce(ry.rabatt,0.0), ry.lfrsid, ry.lfrszeile, 
+      coalesce(ry.preismenge,1), l.geliefertam, ry.preis
+   from rechnungentry ry 
+   left join lieferschein l on ry.lfrsid = l.lfrsid
+   where ry.rngid = :RNGID order by zeilennr;
+ exec sql open lein;
+ SQLerror::test(__FILELINE__);
+ while (true)
+   {
+    exec sql fetch lein into
+         :ARTIKELID, :ZEILE, :STUECK, :MENGE, :RABATT, :LFRSID, :LIEFERZEILE,
+         :PREISMENGE, :LIEFERDATUM:ILIEFERDATUM, :PREIS;
+    if (sqlca.sqlcode) break;
+
+    Preis p(PREIS,Rechnung(rid).getWaehrung(),PREISMENGE);
+    Petig::Datum ldatum;
+    if(ILIEFERDATUM) ldatum=Petig::Datum();
+    else ldatum.from_postgres(LIEFERDATUM);
+    rentry.push_back(RechnungEntry(rngid,ZEILE,
+         ARTIKELID,STUECK,MENGE,p,RABATT,ldatum,
+         LFRSID,LIEFERZEILE));
+//    AufEintragBase2(ppsInstanz::INST_KNDAUF,REFAUFTRAG[i],REFAUFZEILE[i])));
+   }
+ exec sql close lein;
+ tr.close();
+}
