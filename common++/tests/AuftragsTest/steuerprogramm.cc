@@ -53,13 +53,16 @@ enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
 static ostream *testlog;
 // for more output ...
 bool verbose=false;
+bool do_not_stop=false;
 
 static void vergleichen(Check &C, Check::was_checken w, const std::string &zusatz,
         const std::string &name, const std::string &graphname, bool mit_reparatur_programm, bool vor_dem_test_reparieren=false)
 {   (*testlog) << int(w) << ' ' << zusatz << ' ' << graphname << ' ' << name << '\n';
     bool erfolgreich=C.teste(w,zusatz,mit_reparatur_programm,vor_dem_test_reparieren);
     if(!erfolgreich)
-    { cout << name << " fehlgeschlagen\n\n"; exit(1); }
+    { cout << name << " fehlgeschlagen\n\n"; 
+      if (!do_not_stop) exit(1); 
+    }
 }
 
 static void graphheader(const std::string &name)
@@ -901,14 +904,16 @@ int main(int argc,char *argv[])
    static struct option long_options[] = {
      { "verbose", no_argument, 0, 'v' },
      { "repair", no_argument, 0, 'r' },
+     { "continue", no_argument, 0, 'c' },
      { 0,0,0,0 },
    };
    
    int opt;
-   while ((opt=getopt_long(argc,argv,"vr",long_options,0))!=-1)
+   while ((opt=getopt_long(argc,argv,"vrc",long_options,0))!=-1)
     switch(opt)
    {  case 'v': verbose=true; break;
       case 'r': mit_reparatur_programm=true; break;
+      case 'c': do_not_stop=true; break;
       default: usage(argv[0],""); return 1;
    }
 
@@ -960,6 +965,7 @@ int main(int argc,char *argv[])
    Petig::PrintUncaughtExceptions();
    try{
    mkdir("files.log",0777);
+   mkdir("results",0777);
    ofstream logstream(("files.log/"+mode_str).c_str());
    testlog=&logstream;
    Petig::dbconnect();

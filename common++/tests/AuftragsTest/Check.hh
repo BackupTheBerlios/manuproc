@@ -45,7 +45,7 @@ class Check
    		
    enum e_check {Jumbo_richtig,Jumbo_falsch,Jumbo_doppelt};
  private:
-   void dump(was_checken);
+   void dump(was_checken,const std::string &name);
    bool vergleich(was_checken,const std::string &name);
  public:
    Check(){}; 

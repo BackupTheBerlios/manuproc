@@ -24,6 +24,7 @@ CREATE TABLE "rechnung_zahlungsart" (
 	"skontosatz_3" numeric(3,1),
 	"skontofrist_3" integer,
    "monatsende" bool,
+   verfahren text,
 	Constraint "rechnung_zahlungsziel_pkey" Primary Key ("id")
 );
 
