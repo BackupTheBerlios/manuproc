@@ -10,3 +10,6 @@ NEWS
 TODO
 acconfig.h
 macros
+*.hh
+*.cc
+*_new

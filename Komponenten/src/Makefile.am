@@ -1,5 +1,5 @@
-# $Id: Makefile.am,v 1.24 2003/03/17 17:17:40 christof Exp $
-CXXFLAGS=@CXXFLAGS@  \
+# $Id: Makefile.am,v 1.25 2003/03/17 17:19:41 christof Exp $
+AM_CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@  
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
@@ -20,7 +20,7 @@ LINKS= EingabeBox.cc EingabeBox.hh datewin.cc datewin.h \
 	bool_CheckMenuItem.hh char_Pixmap.hh \
 	FlashingPixmap.hh LabelSpin.hh MyWindow.hh MyScale.hh \
 	bool_properties.hh bool_ImageButton.hh bool_CheckButton.hh \
-	int_SpinButton.hh string_Entry.hh
+	int_SpinButton.hh string_Entry.hh GType_cH_EntryValue.h
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
