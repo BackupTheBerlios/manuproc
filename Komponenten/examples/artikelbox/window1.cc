@@ -1,4 +1,4 @@
-// $Id: window1.cc,v 1.12 2004/11/16 14:11:30 christof Exp $
+// $Id: window1.cc,v 1.13 2004/11/16 14:17:12 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,6 +21,8 @@
 #include <gtkmm/main.h>
 #include <Artikel/ArtikelBezeichnung.h>
 #include <iostream>
+#include <sigc++/compatibility.h>
+#include <datewin.h>
 
 void window1::andererKunde()
 {  artikelbox->setExtBezSchema(cH_Kunde(kundenbox->get_value())->getSchema(0));
@@ -35,8 +37,7 @@ void window1::menu_cb(gpointer data)
 }
 
 window1::window1()
-{  signal_destroy().connect(Gtk::Main::quit.slot());
-   artikelbox->AddUserMenu("My User Menu 0",(gpointer)0);
+{  artikelbox->AddUserMenu("My User Menu 0",(gpointer)0);
    artikelbox->AddUserMenu("My User Menu 1",(gpointer)1);
    artikelbox->signal_MenueAusgewaehlt().connect(SigC::slot(*this,&window1::menu_cb));
    artikelbox->Einschraenken("exists (select true from webangaben where "
@@ -49,16 +50,16 @@ void window1::on_reset()
 }
 
 void window1::on_show_clicked()
-{  std::cout << "Datum "<<datum->get_value() << '\n';
+{  std::cout << "Datum " << this->datum->get_value() << '\n';
    std::cout << "Prozess " << prozess->get_value()->Id() << '\n';
    if (artikelbox->get_value().Id())
     {
-      cH_ArtikelBezeichnung AB(artikelbox->get_value().Id());
+      cH_ArtikelBezeichnung AB(artikelbox->get_value());
       std::cout << "Artikel "<<artikelbox->get_value().Id() <<'\t'<<AB->Bezeichnung() <<'\n';
     }   
    if (artikelbox2->get_value().Id())
     {
-      cH_ArtikelBezeichnung AB(artikelbox2->get_value().Id());
+      cH_ArtikelBezeichnung AB(artikelbox2->get_value());
       std::cout << "Artikel2 "<<artikelbox2->get_value().Id() <<'\t'<<AB->Bezeichnung() <<'\n';
     }   
    std::cout << "Kunde " << kundenbox->get_value() << '\n';

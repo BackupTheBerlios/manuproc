@@ -4,8 +4,8 @@
 <glade-project>
   <name>marc</name>
   <program_name>marc</program_name>
-  <pixmaps_directory>.</pixmaps_directory>
   <source_directory>.</source_directory>
+  <pixmaps_directory>.</pixmaps_directory>
   <language>C++</language>
   <gnome_support>FALSE</gnome_support>
   <gettext_support>FALSE</gettext_support>

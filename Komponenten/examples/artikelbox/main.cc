@@ -1,4 +1,4 @@
-// $Id: main.cc,v 1.7 2004/11/16 11:40:06 christof Exp $
+// $Id: main.cc,v 1.8 2004/11/16 14:17:12 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -32,8 +32,9 @@ int main(int argc, char **argv)
 try {
    ManuProC::dbconnect();
    Gtk::Main m(argc, argv);
-   manage(new class window1());
-   m.run();
+   window1 *w=new class window1();
+   m.run(*w);
+   delete w;
    ManuProC::dbdisconnect();
  } catch (SQLerror &e)
  {  std::cerr << e << '\n';

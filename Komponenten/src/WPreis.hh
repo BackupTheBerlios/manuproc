@@ -1,4 +1,4 @@
-// $Id: WPreis.hh,v 1.19 2004/11/16 11:47:51 christof Exp $
+// $Id: WPreis.hh,v 1.20 2004/11/16 14:22:40 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -53,13 +53,15 @@ class WPreis : public Gtk::Table
 
 	static gint try_grab_focus(GtkWidget *w,gpointer gp);
 
+      SigC::Signal0<void> activate;
+      SigC::Signal0<void> preis_changed;
    public:
       void update();
       WPreis(bool wwaehrung=true);
       ~WPreis(){}
 
-      SigC::Signal0<void> activate;
-      SigC::Signal0<void> preis_changed;
+      SigC::Signal0<void> &signal_activate() {return activate; }
+      SigC::Signal0<void> &signal_preis_changed() {return preis_changed; }
       
       void set_value(const Preis &p,int _mindm=1);
       void set_value(const Artikelpreis &ap);
