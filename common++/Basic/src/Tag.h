@@ -1,4 +1,4 @@
-// $Id: Tag.h,v 1.9 2004/06/03 14:33:20 christof Exp $
+// $Id: Tag.h,v 1.10 2004/06/03 16:08:56 christof Exp $
 /*  ManuProC_Base: Main ManuProC Library
  *  Copyright (C) 1998-2003  Christof Petig
  *
@@ -174,13 +174,13 @@ public:
 	for (Tag::const_iterator variable= \
 			(parent).find((parent).begin(),(type)); \
 		(variable)!=(parent).end(); \
-		variable=(parent).find((variable)+1,(type)))
+		variable=(parent).find(++(variable),(type)))
 
 #define FOR_EACH_CONST_TAG_OF_5(variable,parent,begin,end,type) \
 	for (Tag::const_iterator variable= \
 			(parent).find((begin),(type)); \
 		(variable)!=(end); \
-		variable=(parent).find((variable)+1,(type)))
+		variable=(parent).find(++(variable),(type)))
 
 #define FOR_EACH_TAG(variable,parent) \
 	for (Tag::iterator variable=(parent).begin(); \
@@ -190,13 +190,13 @@ public:
 	for (Tag::iterator variable= \
 			(parent).find((parent).begin(),(type)); \
 		(variable)!=(parent).end(); \
-		variable=(parent).find((variable)+1,(type)))
+		variable=(parent).find(++(variable),(type)))
 
 #define FOR_EACH_TAG_OF_5(variable,parent,begin,end,type) \
 	for (Tag::iterator variable= \
 			(parent).find((begin),(type)); \
 		(variable)!=(end); \
-		variable=(parent).find((variable)+1,(type)))
+		variable=(parent).find(++(variable),(type)))
 
 // you can skip these declarations while reading this file
 template <> std::string Tag::create_value<int>(const int &val);
