@@ -159,7 +159,7 @@ then
   AC_MSG_RESULT($ECPG)
   
   AC_MSG_CHECKING(for ECPG include files)
-  ECPG_PATH=`$ECPG -v 2>&1 | fgrep -v 'ecpg - ' | fgrep 'ecpg, the' | fgrep -v 'search starts here:' | fgrep -v 'nd of search list'`
+  ECPG_PATH=`$ECPG -v 2>&1 | fgrep -v 'ecpg - ' | fgrep -v 'ecpg, the' | fgrep -v 'search starts here:' | fgrep -v 'nd of search list'`
   ECPG_PATH_OK=0
   for i in $ECPG_PATH
   do
