@@ -1,4 +1,4 @@
-// $Id: CacheStatic.h,v 1.6 2002/05/09 12:46:00 christof Exp $
+// $Id: CacheStatic.h,v 1.7 2002/06/24 07:35:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,7 +21,7 @@
 #ifndef AUX_CACHESTATIC_H
 #define AUX_CACHESTATIC_H
 
-#include <Aux/safemap.h>
+#include <Misc/safemap.h>
 
 // Implementation of a _copying_ cache
 // For an example see Prozess

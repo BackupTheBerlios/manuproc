@@ -16,14 +16,14 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.10 2002/06/20 06:29:53 christof Exp $ */
+/* $Id: Datum.cc,v 1.11 2002/06/24 07:35:40 christof Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
-#include <Aux/string0.h>
+#include <Misc/string0.h>
 #include <iomanip.h>
 #include <stdlib.h>
-#include <Aux/itos.h>
+#include <Misc/itos.h>
 
 unsigned long Petig::Datum::getnum(const unsigned char *s,int len) throw()
 {  unsigned long num=0;

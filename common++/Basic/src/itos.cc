@@ -17,7 +17,7 @@
  */
 
 #include <cstdio>
-#include <Aux/itos.h>
+#include <Misc/itos.h>
 #include <strstream>
 
 #ifdef __MINGW32__

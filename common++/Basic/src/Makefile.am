@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.12 2002/05/09 12:46:00 christof Exp $
+# $Id: Makefile.am,v 1.13 2002/06/24 07:35:40 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -29,7 +29,7 @@ libManuProC_Base_a_SOURCES=Ausgabe_neu.cc Datum.cc IOerror.cc \
 EXTRA_DIST=dbconnect.pgcc SQLerror_postgres.pgcc Transaction.pgcc \
 	FetchIStream.pgcc
 
-BUILT_SOURCES=Aux ostream $(DB_SRCES)
+BUILT_SOURCES=Misc ostream $(DB_SRCES)
 
 include_HEADERS=Ausgabe_neu.h CacheStatic.h Cache_Pointer.h Datum.h Handles.h \
 	IOerror.h Kalenderwoche.h Pointer.h Postgres.h Rundungsmacros.h \
@@ -43,12 +43,12 @@ CLEANFILES= *~ $(BUILT_SOURCES)
 
 # create compatibility links
 
-Aux ostream:
+Misc ostream:
 	-ln -sf . $@
 
 install-data-hook:
-	-cd $(includedir) ; ln -sf . Aux
+	-cd $(includedir) ; ln -sf . Misc
 	-cd $(includedir) ; ln -sf . ostream
 
 # the links cannot be distributed ... and they are not rebuild automatically
-Ausgabe_neu.cc: Aux ostream
+Ausgabe_neu.cc: Misc ostream

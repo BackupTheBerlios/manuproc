@@ -1,4 +1,4 @@
-// $Id: testKW.cc,v 1.4 2002/05/09 12:46:00 christof Exp $
+// $Id: testKW.cc,v 1.5 2002/06/24 07:35:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,7 +18,7 @@
  */
 
 
-#include <Aux/Datum.h>
+#include <Misc/Datum.h>
 #include <iostream>
 
 std::ostream &operator<<(std::ostream &o,const Kalenderwoche &kw)

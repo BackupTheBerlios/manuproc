@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.h,v 1.12 2002/06/20 06:29:53 christof Exp $ */
+/* $Id: Ausgabe_neu.h,v 1.13 2002/06/24 07:35:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,7 +21,7 @@
 #define AUSGABE_NEW_H
 #include <string>
 #include <iostream>
-#include <Aux/fixedpoint.h>
+#include <Misc/fixedpoint.h>
 #include <cmath>
 
 const std::string FormatiereEmptyInt(long Zahl);

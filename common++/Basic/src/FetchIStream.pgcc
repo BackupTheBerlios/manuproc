@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.17 2002/06/20 13:27:55 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.18 2002/06/24 07:35:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,10 +17,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <Aux/FetchIStream.h>
-#include <Aux/SQLerror.h>
+#include <Misc/FetchIStream.h>
+#include <Misc/SQLerror.h>
 exec sql include sqlca;
-#include <Aux/itos.h>
+#include <Misc/itos.h>
 #include <locale.h>
 
 #define DEBUG_FIS(x) std::cerr << x << '\n'

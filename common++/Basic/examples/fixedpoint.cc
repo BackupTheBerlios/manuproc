@@ -1,4 +1,4 @@
-// $Id: fixedpoint.cc,v 1.10 2002/06/20 06:29:53 christof Exp $
+// $Id: fixedpoint.cc,v 1.11 2002/06/24 07:35:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,9 +18,9 @@
  */
 
 #include <iostream>
-#include <Aux/fixedpoint.h>
-#include <Aux/Ausgabe_neu.h>
-#include <Aux/exception.h>
+#include <Misc/fixedpoint.h>
+#include <Misc/Ausgabe_neu.h>
+#include <Misc/exception.h>
 
 int main()
 {  

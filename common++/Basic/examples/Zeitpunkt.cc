@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt.cc,v 1.5 2002/05/09 12:46:00 christof Exp $
+// $Id: Zeitpunkt.cc,v 1.6 2002/06/24 07:35:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,7 +18,7 @@
  */
 
 
-#include <Aux/Zeitpunkt_new.h>
+#include <Misc/Zeitpunkt_new.h>
 #include <iostream>
 
 #define TEST(x) std::cout << (x) << " = " << Zeitpunkt_new(x) << '\n'

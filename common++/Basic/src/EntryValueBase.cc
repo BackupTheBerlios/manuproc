@@ -1,4 +1,4 @@
-/* $Id: EntryValueBase.cc,v 1.4 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: EntryValueBase.cc,v 1.5 2002/06/24 07:35:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <Aux/EntryValueBase.h>
+#include <Misc/EntryValueBase.h>
 
 EntryValueBase::operator bool() const
 {  return getIntVal()!=int_NaN || getStrVal()!="";

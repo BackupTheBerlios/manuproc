@@ -16,11 +16,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: exception.cc,v 1.5 2002/05/09 12:46:00 christof Exp $
+// $Id: exception.cc,v 1.6 2002/06/24 07:35:40 christof Exp $
 // long explantion at the end
 
 #include <iostream>
-#include <Aux/exception.h>
+#include <Misc/exception.h>
 #include <unistd.h>
 
 // taken from gcc/eh_common.h

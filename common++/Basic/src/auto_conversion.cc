@@ -1,4 +1,4 @@
-// $Id: auto_conversion.cc,v 1.6 2002/06/20 06:29:53 christof Exp $
+// $Id: auto_conversion.cc,v 1.7 2002/06/24 07:35:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,7 +18,7 @@
  */
 
 
-#include <Aux/Datum.h>
+#include <Misc/Datum.h>
 #include <stdio.h>
 #include <cctype>
 #include <cassert>
@@ -78,7 +78,7 @@ void Petig::Datum::from_auto(const char *datum,const char **endptr) throw(Datums
     teste();
 }
 
-#include <Aux/Zeitpunkt_new.h>
+#include <Misc/Zeitpunkt_new.h>
 
 Zeitpunkt_new::Zeitpunkt_new(const char *stamp)
 	: hour(0), minute(0), second(0), millisecond(0), 

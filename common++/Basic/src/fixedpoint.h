@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.12 2002/05/09 12:46:00 christof Exp $
+// $Id: fixedpoint.h,v 1.13 2002/06/24 07:35:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,7 +21,7 @@
 #ifndef AUX_FIXEDPOINT_H
 #define AUX_FIXEDPOINT_H
 
-#include <Aux/ctime_assert.h>
+#include <Misc/ctime_assert.h>
 
 // WOW prepare for black template magic
 // The compiler optimizes this fully away (once -O is used)

@@ -1,4 +1,4 @@
-// $Id: Handles.cc,v 1.3 2002/05/09 12:46:00 christof Exp $
+// $Id: Handles.cc,v 1.4 2002/06/24 07:35:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <Aux/Handles.h>
+#include <Misc/Handles.h>
 #if defined DEBUG_HANDLE_CONTENT || defined DEBUG_HANDLES
 #include <iostream>
 #include <typeinfo>

@@ -1,5 +1,5 @@
 #include <string>
-#include <Aux/itos.h>
+#include <Misc/itos.h>
 
 std::string EmptyInt_4TeX(int i)
     {if (i==0) return ""; 

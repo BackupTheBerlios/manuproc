@@ -1,4 +1,4 @@
-/* $Id: EntryValueDatum.cc,v 1.6 2002/06/20 06:29:53 christof Exp $ */
+/* $Id: EntryValueDatum.cc,v 1.7 2002/06/24 07:35:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,9 +17,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <Aux/EntryValueDatum.h>
+#include <Misc/EntryValueDatum.h>
 #include <typeinfo> // for bad_cast
-#include <Aux/itos.h>
+#include <Misc/itos.h>
 
 bool EntryValueDatum::operator==(const EntryValueBase &v) const
 {  try

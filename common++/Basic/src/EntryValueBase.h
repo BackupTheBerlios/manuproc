@@ -1,4 +1,4 @@
-/* $Id: EntryValueBase.h,v 1.9 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: EntryValueBase.h,v 1.10 2002/06/24 07:35:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,7 +19,7 @@
 
 #ifndef ENTRY_VALUEBASE_H
 #define ENTRY_VALUEBASE_H
-#include <Aux/Handles.h>
+#include <Misc/Handles.h>
 #include <string>
 
 class EntryValueBase : public HandleContent

@@ -1,4 +1,4 @@
-/* $Id: EntryValueEmptyInt.h,v 1.5 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: EntryValueEmptyInt.h,v 1.6 2002/06/24 07:35:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,8 +20,8 @@
 #ifndef ENTRYVALUEEMPTYINT_H
 #define ENTRYVALUEEMPTYINT_H
 
-#include <Aux/EntryValueBase.h>
-#include <Aux/itos.h>
+#include <Misc/EntryValueBase.h>
+#include <Misc/itos.h>
 
 class EntryValueEmptyInt : public EntryValueBase
 {

@@ -1,4 +1,4 @@
-/* $Id: EntryValueFixed.h,v 1.4 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: EntryValueFixed.h,v 1.5 2002/06/24 07:35:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,9 +20,9 @@
 #ifndef ENTRYVALUE_FIXED_H
 #define ENTRYVALUE_FIXED_H
 
-#include <Aux/EntryValueBase.h>
-#include <Aux/fixedpoint.h>
-#include <Aux/Ausgabe_neu.h>
+#include <Misc/EntryValueBase.h>
+#include <Misc/fixedpoint.h>
+#include <Misc/Ausgabe_neu.h>
 #include <typeinfo> // for bad_cast
 
 template <int decimals=2,class Ftype=double,class Itype=long,bool shorten=true> 

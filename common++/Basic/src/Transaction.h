@@ -1,4 +1,4 @@
-// $Id: Transaction.h,v 1.7 2002/05/09 12:46:00 christof Exp $
+// $Id: Transaction.h,v 1.8 2002/06/24 07:35:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,7 +20,7 @@
 
 #ifndef CXX_AUX_TRANSACTION_H
 #define CXX_AUX_TRANSACTION_H
-#include <Aux/SQLerror.h>
+#include <Misc/SQLerror.h>
 #include <list>
 
 // default is to roll back on close

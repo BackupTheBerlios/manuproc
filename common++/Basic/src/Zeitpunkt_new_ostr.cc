@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new_ostr.cc,v 1.5 2002/05/09 12:46:00 christof Exp $
+// $Id: Zeitpunkt_new_ostr.cc,v 1.6 2002/06/24 07:35:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <Aux/Zeitpunkt_new.h>
+#include <Misc/Zeitpunkt_new.h>
 #include <iomanip>
 
 std::ostream &operator<<(std::ostream &o,const Zeitpunkt_new &t)

@@ -1,4 +1,4 @@
-// $Id: dbconnect.pgcc,v 1.9 2002/05/09 12:46:00 christof Exp $
+// $Id: dbconnect.pgcc,v 1.10 2002/06/24 07:35:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,12 +17,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <Aux/dbconnect.h>
+#include <Misc/dbconnect.h>
 #include <ManuProCConfig.h>
 #include <cstdlib>
 #include <cstdio>
 #include <unistd.h>
-#include "Aux/string0.h"
+#include "Misc/string0.h"
 
 #ifdef __MINGW32__
 extern "C" { int snprintf(char *str, size_t size, const  char  *format, ...); }

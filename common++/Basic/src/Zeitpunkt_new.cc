@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.cc,v 1.5 2002/05/09 12:46:00 christof Exp $
+// $Id: Zeitpunkt_new.cc,v 1.6 2002/06/24 07:35:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,7 +19,7 @@
 
 #define CENTRAL_EUROPE
 
-#include <Aux/Zeitpunkt_new.h>
+#include <Misc/Zeitpunkt_new.h>
 #include <cassert>
 
 int Zeitpunkt_new::operator-(const Zeitpunkt_new &b) const throw()

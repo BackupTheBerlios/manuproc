@@ -1,4 +1,4 @@
-// $Id: Cache_Pointer.h,v 1.3 2002/05/09 12:46:00 christof Exp $
+// $Id: Cache_Pointer.h,v 1.4 2002/06/24 07:35:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,7 +21,7 @@
 #ifndef AUX_CACHEPOINTER_H
 #define AUX_CACHEPOINTER_H
 
-#include <Aux/safemap.h>
+#include <Misc/safemap.h>
 
 // Implementation of a _non_ copying cache
 // WARNING:

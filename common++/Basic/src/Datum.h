@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.10 2002/06/20 06:29:53 christof Exp $ */
+/* $Id: Datum.h,v 1.11 2002/06/24 07:35:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,7 +22,7 @@
 #include <time.h>
 #include <iostream>
 #include <exception>
-#include <Aux/Kalenderwoche.h>
+#include <Misc/Kalenderwoche.h>
 #include <string>
 
 namespace Petig

@@ -115,3 +115,7 @@ libcommon___a_LIBADD= \
 		Lieferschein/Zahlungsart_sql.o \
 		ostream/time_t_ostr.o
 
+BUILT_SOURCES=Misc
+
+Misc: Aux
+	ln -sf Aux Misc

@@ -1,4 +1,4 @@
-/* $Id: EntryValueDatum.h,v 1.5 2002/06/20 06:29:53 christof Exp $ */
+/* $Id: EntryValueDatum.h,v 1.6 2002/06/24 07:35:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,9 +20,9 @@
 #ifndef ENTRYVALUE_DATUM_H
 #define ENTRYVALUE_DATUM_H
 
-#include <Aux/EntryValueBase.h>
-#include <Aux/Datum.h>
-#include <Aux/Kalenderwoche.h>
+#include <Misc/EntryValueBase.h>
+#include <Misc/Datum.h>
+#include <Misc/Kalenderwoche.h>
 
 class EntryValueDatum : public EntryValueBase
 {
