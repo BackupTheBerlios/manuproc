@@ -1,4 +1,4 @@
-// $Id: Auftrag.cc,v 1.12 2004/10/21 11:02:19 christof Exp $
+// $Id: Auftrag.cc,v 1.13 2004/11/04 17:10:07 christof Exp $
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -60,4 +60,181 @@ std::string Auftrag::getYourAufNr(const AuftragBase &ab)
    {  // erzeugt implizit einen Leerstring
       return youraufnr_cache[ab];
    }
+}
+
+void Auftrag::insert(unsigned zeilennr, const mengen_t bestellt, 
+  const ManuProC::Datum lieferdatum,const ArtikelBase& artikel,
+  const AufStatVal status,const bool setInstanzAuftraege,
+  const Preis& preis,const fixedpoint<2> rabatt,
+  const cH_PreisListe &preisliste) const throw(SQLerror)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
+   NV("Menge",bestellt),NV("Datum",lieferdatum),
+   NV("Artikel",artikel),
+   NV("Status",status),NV("InstanzAufträgeSetzen",setInstanzAuftraege));
+ assert(Instanz()!=ppsInstanzID::Kundenauftraege || setInstanzAuftraege==true);
+  // wieso auch nicht ... CP
+
+ if(status!=getStatus() && status==OPEN) 
+    setStatusAuftragBase(AufStatVal(status));
+
+ Query("insert into auftragentry (instanz,auftragid, zeilennr,"
+	"bestellt,geliefert,lieferdate,artikelid,status,"
+	"preis,rabatt,preismenge,preisliste,lastedit_uid)"
+	"values (?,?,?, "
+	"?,?,?,?,?,"
+	"?,?,?,?,?)")
+	<< *this << zeilennr
+	<< bestellt << 0 << lieferdatum << artikel << status
+	<< preis.Wert() << rabatt << preis.PreisMenge() 
+		<< Query::NullIf(preisliste->Id(),PreisListe::none_id)
+		<< getuid();
+
+ if(Instanz()==ppsInstanzID::Kundenauftraege)
+  { try
+    { pps_ChJournalEntry::newChange(
+                        instanz,
+			AufEintragBase(*this,zeilennr),
+                        artikel,
+                        bestellt,
+                        bestellt,
+                        pps_ChJournalEntry::CH_MENGE);
+    }
+    catch(SQLerror &e)
+    { tr.rollback(); throw; }
+
+#ifdef MABELLA_EXTENSIONS
+    cH_Kunde kd(kundennr);
+    fixedpoint<2> provsatz;
+    try{ provsatz = kd->getProvSatz_Artikel(artikel);}
+    catch(SQLerror &e) { tr.rollback(); throw; }
+    Query("update auftragentry set provsatz=?"
+      	" where (instanz,auftragid,zeilennr)=(?,?,?)")
+	<< provsatz
+      	<< *this << zeilennr;
+      	SQLerror::test(__FILELINE__);
+#endif
+  }
+ // Kundenaufträge legen automatisch einen Auftrag bei der entsprechenden Instanz 
+ // für denselben Artikel an.
+ if(status==OPEN && setInstanzAuftraege)
+  // Nur offene Aufträge werden nach unten bestellt
+   {  AufEintrag AE(AEB);
+      AE.Verzeigern(AE.getRestStk());
+   }
+}
+
+AufEintragBase Auftrag::push_back(const mengen_t bestellt, 
+  const ManuProC::Datum lieferdatum,const ArtikelBase& artikel,
+  const AufStatVal status,const bool setInstanzAuftraege,
+  const Preis& preis,const fixedpoint<2> rabatt,
+  const cH_PreisListe &preisliste) const throw(SQLerror)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
+   NV("Menge",bestellt),NV("Datum",lieferdatum),
+   NV("Artikel",artikel),
+   NV("Status",status),NV("InstanzAufträgeSetzen",setInstanzAuftraege));
+ assert(Instanz()!=ppsInstanzID::Kundenauftraege || setInstanzAuftraege==true);
+  // wieso auch nicht ... CP
+ int ZEILENNR;
+
+ Transaction tr;
+ Query("lock table auftragentry in exclusive mode");
+
+//ECPGdebug(true,stdout);
+ Query("select max(zeilennr)+1 from auftragentry "
+	"where (instanz,auftragid)= (?,?)")
+	<< *this
+	>> Query::Row::MapNull(ZEILENNR,1);
+ insert(ZEILENNR,bestellt,lieferdatum,artikel,status,setInstanzAuftraege,
+  	preis,rabatt,preisliste);
+ tr.commit();
+ AufEintragBase AEB(*this,ZEILENNR);
+ return AEB;
+}
+
+
+void Auftrag::Label(unsigned int lid) throw(SQLerror)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
+
+ ExtraColumns ec("auftrag","instanz","auftragid");
+ ec << *this;
+ 
+ if(!ec.hasColumn("label")) return;
+ 
+ Transaction tr;
+ 
+ Query("update auftrag set label=? where (instanz,auftragid)=(?,?)")
+   << lid << *this;
+ SQLerror::test(__FILELINE__);
+
+ tr.commit();
+
+ labelid=lid;
+}
+
+void Auftrag::Notiz(const std::string &n) throw(SQLerror)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
+ Query("update auftrag set notiz=? where (instanz,auftragid)=(?,?)";
+   << n
+   << *this;
+ notiz=n;
+}
+
+const std::string Auftrag::Notiz() const throw(SQLerror)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
+ if(notiz_valid) return notiz;
+
+ Query("select notiz from auftrag where (instanz,auftragid)=(?,?)")
+	<< *this
+	>> notiz;
+ notiz_valid=true;
+ return notiz;
+}
+
+void Auftrag::setYourAufNr(const std::string &yanr) throw(SQLerror)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
+
+ Query q("update auftrag set youraufnr=trim(?) where (instanz,auftragid)=(?,?)");
+
+ q << Query::NullIf(yanr,"") << *this;
+ SQLerror::test(__FILELINE__);
+
+ std::string new_yaid;
+ Query("select youraufnr from auftrag where (instanz,auftragid)=(?,?)")
+	<< *this >> Query::Row::MapNull(new_yaid);
+
+ youraufnr_cache[*this]=new_yaid;
+
+/*
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
+ exec sql begin declare section;
+ int AUFTRAGID=Id();
+ int INSTANZ=int(Instanz());
+ char YOURAUFNR[21];
+ exec sql end declare section;
+
+ youraufnr=yanr;
+ youraufnr_cache[*this]=youraufnr;
+
+ strncpy0(YOURAUFNR,youraufnr.c_str(),20);
+
+ exec sql update auftrag set youraufnr= nullif(:YOURAUFNR,'')
+	where auftragid= :AUFTRAGID and instanz = :INSTANZ;
+ SQLerror::test("setYourAufNr: update youraufnr");
+*/
+}
+
+int Auftrag::getIdFromYourAufId(const char *youraufid) throw(SQLerror)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
+ int AUFTRAGID;
+ Query("select auftragid from auftrag where (instanz,youraufnr)=(?,?)")
+	<< Instanz() << youraufid
+	>> AUFTRAGID;
+ return AUFTRAGID;
 }
