@@ -1,4 +1,4 @@
-// $Id: create_parse.h,v 1.3 2004/02/09 08:05:31 christof Exp $
+// $Id: create_parse.h,v 1.4 2004/04/01 08:58:53 christof Exp $
 /*  ManuProC_Base: Main ManuProC Library
  *  Copyright (C) 2004  Christof Petig
  *
@@ -27,7 +27,7 @@ namespace ManuProC
 {       template <class T>
     	 static T parse(const std::string &val) throw(std::out_of_range);
     	template <class T>
-    	 static T parse_def(const std::string &val, const T &def);
+    	 static T parse_def(const std::string &val, const T &def=T());
     	template <class T>
     	 static std::string create(const T &val);
 }
