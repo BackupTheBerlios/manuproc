@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.17 2002/07/15 15:37:53 christof Exp $
+# $Id: Makefile.am,v 1.18 2002/07/17 08:39:26 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -19,7 +19,7 @@ endif
 libManuProC_Base_a_SOURCES=Ausgabe_neu.cc Datum.cc IOerror.cc \
 		postgres_conversion.cc Zeitpunkt_new.cc \
 		Zeitpunkt_new_ostr.cc \
-		Zeitpunkt_new_write.cc string0.c mystring.c \
+		Zeitpunkt_new_write.cc string0.c mystring.cc \
 		auto_conversion.cc \
 		exception.cc itos.cc \
 		time_t_ostr.cc \
