@@ -1,4 +1,4 @@
-// $Id: with_class.cc,v 1.22 2003/10/08 11:48:41 christof Exp $
+// $Id: with_class.cc,v 1.23 2003/10/16 10:48:04 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -16,7 +16,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// $Id: with_class.cc,v 1.22 2003/10/08 11:48:41 christof Exp $
+// $Id: with_class.cc,v 1.23 2003/10/16 10:48:04 christof Exp $
 
 #include "config.h"
 #include "with_class.hh"
@@ -196,7 +196,7 @@ with_class::with_class()
    datavec.push_back(new MyRowData(1,"Y",2,3,"A"));
 #endif
 #if 1
-   for (int i=0;i<10000;++i)
+   for (int i=0;i<100000;++i)
       datavec.push_back(new MyRowData(i%4+1,/*"same" */
       std::string(1,char('A'+(i%3))),(i%5),(i%7),itos(i)));
 #endif
