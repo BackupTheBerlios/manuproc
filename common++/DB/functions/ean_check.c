@@ -5,7 +5,7 @@ PG_FUNCTION_INFO_V1(ean_check);
 Datum ean_check(PG_FUNCTION_ARGS)
 {  text *t=0;
    char buf[30];
-   int len,sum,i;
+   int len,sum=0,i;
 
    if (PG_ARGISNULL(0)) PG_RETURN_NULL();
    t=PG_GETARG_TEXT_P(0);
