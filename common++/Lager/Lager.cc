@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.49 2004/02/02 18:34:52 jacek Exp $
+// $Id: Lager.cc,v 1.50 2004/02/23 19:36:58 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -59,7 +59,13 @@ void Lager::rein_ins_lager(const ArtikelBase &artikel,
 
 #ifdef MABELLA_EXTENSIONS
  FertigWaren::enum_Aktion a;
- if(ctx.leb.valid()) a=(FertigWaren::enum_Aktion)'L';
+ if(ctx.leb.valid())
+   {
+    if(ctx.leb.Instanz()->ExterneBestellung())
+      a=(FertigWaren::enum_Aktion)'W';
+    else
+      a=(FertigWaren::enum_Aktion)'L';
+   }
  else a=(FertigWaren::enum_Aktion)'M';
 
  FertigWaren fw(artikel,a,menge.as_int(),ctx.leb.Id());
@@ -95,7 +101,13 @@ void Lager::raus_aus_lager(const ArtikelBase &artikel,
 
 #ifdef MABELLA_EXTENSIONS
  FertigWaren::enum_Aktion a;
- if(ctx.leb.valid()) a=(FertigWaren::enum_Aktion)'L';
+ if(ctx.leb.valid())
+   {
+    if(ctx.leb.Instanz()->ExterneBestellung())
+      a=(FertigWaren::enum_Aktion)'W';
+    else
+      a=(FertigWaren::enum_Aktion)'L'; 
+   }
  else a=(FertigWaren::enum_Aktion)'M';
 
  FertigWaren fw(artikel,a,menge.as_int(),ctx.leb.Id());

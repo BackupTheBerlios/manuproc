@@ -200,13 +200,15 @@ void Rechnung::deleteLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
 
  // gebuchte wieder auf OPEN
  Query("update lieferscheinentry set status=? where "
-	" (lfrsid,instanz)=(?,?) and status=2 and lagerid is not null")
- 	<< (AufStatVal)OPEN << lfrs.Id() << lfrs.Instanz()->Id();
+	" (lfrsid,instanz)=(?,?) and status=? and lagerid is not null")
+ 	<< (AufStatVal)OPEN << lfrs.Id() << lfrs.Instanz()->Id()
+	<< (AufStatVal)CLOSED;
 
  // ungebuchte wieder auf UNCOMMITED
  Query("update lieferscheinentry set status=? where "
-	" (lfrsid,instanz)=(?,?) and status=2 and lagerid is null")
- 	<< (AufStatVal)UNCOMMITED << lfrs.Id() << lfrs.Instanz()->Id();
+	" (lfrsid,instanz)=(?,?) and status=? and lagerid is null")
+ 	<< (AufStatVal)UNCOMMITED << lfrs.Id() << lfrs.Instanz()->Id()
+	<< (AufStatVal)CLOSED;;
 
 
  SQLerror::test(__FILELINE__);
@@ -315,9 +317,10 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
  	<< Id()
  	<< lfrs.Instanz()->Id() << lfrs.Id();
  Query("update lieferscheinentry set status=? where "
-	" (lfrsid,instanz)=(?,?) and status=1 "
+	" (lfrsid,instanz)=(?,?) and status=? "
 	" and lagerid is not null")
- 	<< (AufStatVal)CLOSED << lfrs.Id() << lfrs.Instanz()->Id();
+ 	<< (AufStatVal)CLOSED << lfrs.Id() << lfrs.Instanz()->Id()
+	<< (AufStatVal)OPEN;
 
  SQLerror::test(__FILELINE__);
  tr.commit();
