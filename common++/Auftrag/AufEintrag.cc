@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.77 2003/07/17 15:57:17 christof Exp $
+// $Id: AufEintrag.cc,v 1.78 2003/07/18 11:05:41 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -295,7 +295,10 @@ public:
 namespace { struct Auslagern_cb
 {	unsigned uid;
 	bool fuer_auftraege;
-	Auslagern_cb(unsigned u, bool fa) : uid(u), fuer_auftraege(fa) {}
+	ProductionContext2 ctx;
+	
+	Auslagern_cb(unsigned u, bool fa, const ProductionContext2 &_ctx) 
+		: uid(u), fuer_auftraege(fa), ctx(_ctx) {}
 	AuftragBase::mengen_t operator()(AufEintrag &ae, AuftragBase::mengen_t abschreibmenge) const
 	{  if (ae.Id()==AuftragBase::plan_auftrag_id)
 	   {  if (!fuer_auftraege)
@@ -330,7 +333,7 @@ AuftragBase::mengen_t AufEintrag::Auslagern
 	  		SQLFullAuftragSelector::sel_Artikel_Planung_id
   			(ab.Instanz()->Id(),Kunde::eigene_id,artikel,ab.Id(),
   			 menge<0?CLOSED:OPEN)),
-  		menge,Auslagern_cb(uid,fuer_auftraege));
+  		menge,Auslagern_cb(uid,fuer_auftraege,ctx));
      //if(abmenge<0)
      //   abschreibmenge=-min(-abmenge,i->getGeliefert());
 }
@@ -339,8 +342,10 @@ AuftragBase::mengen_t AufEintrag::Auslagern
 	(cH_ppsInstanz inst,const ArtikelBase &artikel,mengen_t menge, 
 	 unsigned uid, bool fuer_auftraege,
 	 const ProductionContext &ctx)
-{  
-#warning hier fehlts ...
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__,
+		NV("inst",inst),NV("artikel",artikel),NV("menge",menge),
+		NV("fuer_auftraege",fuer_auftraege),NV("ctx",ctx));
+   assert(!"hier fehlts");
    return 0;
 }
 
@@ -847,7 +852,8 @@ int AufEintrag::split(int uid,mengen_t newmenge, const Petig::Datum &newld,bool 
 }
 
 void AufEintrag::ProduziertNG(mengen_t M,const ProductionContext2 &ctx)
-{  ManuProC::Trace _t(trace_channel, __FUNCTION__, NV("this",*this), NV("M",M));
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__, NV("this",*this), 
+		NV("M",M), NV("ctx",ctx));
    if (Id()>=handplan_auftrag_id || Id()==plan_auftrag_id)
    {  ProduziertNG(getuid(),M,AufEintragBase(),AufEintragBase(),ctx);
    }
@@ -943,7 +949,8 @@ void AufEintrag::ProduziertNG(unsigned uid, mengen_t M,
 		const AufEintragBase &elter_neu,
 		const ProductionContext2 &ctx)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,
-			NV("this",*this),M,NV("alt",elter_alt),NV("neu",elter_neu));
+			NV("this",*this),M,NV("alt",elter_alt),
+			NV("neu",elter_neu), NV("ctx",ctx));
    assert(Id()!=dispo_auftrag_id);
 
    if (Instanz()->LagerInstanz())
@@ -1055,6 +1062,7 @@ void AufEintrag::Einlagern2(unsigned uid, mengen_t M,
    }
 }
 
+#if 0
 // wird bislang von menge_neu_verplanen für 0er aufgerufen
 // vermutlich ehemals abschreiben_oder_reduzieren
 // & ehemals ppsInstanz::Produziert
@@ -1066,6 +1074,7 @@ void AufEintrag::WurdeProduziert(mengen_t M,const AufEintragBase &ElternAEB)
    assert(!"never get here");
    ProduziertNG(uid,M,ElternAEB,ElternAEB,ProductionContext2());
 }
+#endif
 
 // auf noch offene Menge beschränken
 // auf f.o. umstellen geht nicht sinnvoll, da die Funktion ein Unikat ist

@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.32 2003/07/17 15:57:18 christof Exp $
+// $Id: Lager.cc,v 1.33 2003/07/18 11:05:28 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -24,6 +24,10 @@
 #include <Misc/TraceNV.h>
 #include <Misc/FetchIStream.h>
 #include <Auftrag/AufEintrag.h>
+
+std::ostream &operator<<(std::ostream &o,const ProductionContext &pc)
+{  return o << pc.aeb << '|' << pc.leb;
+}
 
 Lager::Lager(cH_ppsInstanz instanz)
 : LagerBase(instanz)
@@ -60,13 +64,13 @@ void Lager::raus_aus_lager(const ArtikelBase &artikel,
 
 
 
-
 void LagerBase::rein_ins_lager(const ArtikelBase &artikel,
 	const AuftragBase::mengen_t &menge,unsigned uid,bool produziert,
 	        const ProductionContext &ctx) const
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
-     NV("Lager",*this),NV("Artikel",artikel),NV("Menge",menge));
+	NV("this",*this),NV("Artikel",artikel),NV("Menge",menge),
+     	NV("produziert",produziert),NV("ctx",ctx));
   assert(menge>=0);
   // vielleicht doch besser nach AufEintrag?
   AufEintrag::Einlagern(uid,*this,artikel,menge,produziert,ctx);
@@ -77,7 +81,8 @@ void LagerBase::raus_aus_lager(const ArtikelBase &artikel,
 	        const ProductionContext &ctx) const 
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
-     				NV("artikel",artikel),NV("menge",menge));
+     		NV("artikel",artikel),NV("menge",menge),
+     		NV("fuer_auftrag",fuer_auftrag),NV("ctx",ctx));
   Transaction tr;
 
   if (!!ctx.aeb)

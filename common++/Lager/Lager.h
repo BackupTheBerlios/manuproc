@@ -1,4 +1,4 @@
-/* $Id: Lager.h,v 1.25 2003/07/18 09:11:21 christof Exp $ */
+/* $Id: Lager.h,v 1.26 2003/07/18 11:05:28 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -79,6 +79,7 @@ struct ProductionContext
    ProductionContext(const AufEintragBase &a,const LieferscheinEntryBase &l)
    	: aeb(a), leb(l) {}
 };
+std::ostream &operator<<(std::ostream &o,const ProductionContext &pc);
 
 class LagerBase : public cH_ppsInstanz
 {

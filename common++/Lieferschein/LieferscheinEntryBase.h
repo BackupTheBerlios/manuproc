@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntryBase.h,v 1.1 2003/07/17 14:04:00 christof Exp $ */
+/* $Id: LieferscheinEntryBase.h,v 1.2 2003/07/18 11:05:41 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,6 +23,7 @@
 
 #include <Lieferschein/LieferscheinBase.h>
 #include <BaseObjects/ManuProcEintrag.h>
+#include <iosfwd>
 
 class Lieferschein;
 
@@ -49,5 +50,6 @@ public:
 
 class ArgumentList;
 ArgumentList& operator<<(ArgumentList &,const LieferscheinEntryBase &aeb);
+std::ostream &operator<<(std::ostream&,const LieferscheinEntryBase &aeb);
 
 #endif
