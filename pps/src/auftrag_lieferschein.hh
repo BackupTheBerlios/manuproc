@@ -81,6 +81,9 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
         void on_artikelbox_activate();
         void on_button_zeile_modifizieren_clicked();
 
+        void on_liefnotiz_changed();
+        void on_liefnotiz_save_clicked();
+
         void liefzeile_delete();
         void on_button_liste_clicked();
 

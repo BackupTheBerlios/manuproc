@@ -685,3 +685,12 @@ std::string Data_Lieferdaten::FormatiereMenge(ArtikelBase artikel, int stueck, L
  return s;
 }
 
+void auftrag_lieferschein::on_liefnotiz_changed()
+{  
+}
+
+void auftrag_lieferschein::on_liefnotiz_save_clicked()
+{  
+}
+
+
