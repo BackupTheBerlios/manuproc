@@ -76,7 +76,7 @@ void auftrag_lieferschein::on_liefer_neu()
  liefdate->set_value(ManuProC::Datum::today());
 
  tree_daten->clear();
- liefernr->setContent(Formatiere((unsigned long)lieferschein->Id(),0,6,"","",'0'),lieferschein->Id());
+ liefernr->setContent(AuftragBase::ID2string(lieferschein->Id()),lieferschein->Id());
  vbox_eingabe->show();
  tree_daten->show();
 
@@ -120,7 +120,7 @@ void auftrag_lieferschein::display(int lfrsid)
  display2(lieferschein->KdNr());
  int rng = lieferschein->RngNr();
  if (rng!=-1)
-    rngnr->set_text(Formatiere((unsigned long)rng,0,6,"","",'0'));
+    rngnr->set_text(AuftragBase::ID2string(rng));
  else rngnr->set_text(std::string());
  vbox_eingabe->show();
  tree_daten->show();
@@ -331,15 +331,18 @@ void auftrag_lieferschein::fill_input(const AufEintrag& AE,const LieferscheinEnt
 {
   // Zusatzinfos dürfen nicht geändert werden:
   fill_with(AE,Einheit(LE.Artikel()),LE.Stueck(),LE.Menge().as_float(),false);
+  if (!LE.getRefOrder().empty())
+  { auftragnr->set_text(LE.getRefOrder());
+    auftragnr->set_sensitive(true);
+  }
   Palette->set_value(LE.Palette());
 }
-
 
 void auftrag_lieferschein::fill_with(const AufEintrag& AE,const Einheit& E,
          int stueck,double menge,bool check_bestand)
 {
   artikelbox->set_value(AE.Artikel());
-  if (AE.valid()) auftragnr->set_text(itos(AE.Id()));
+  if (AE.valid()) auftragnr->set_text(AuftragBase::ID2string(AE.Id()));
   else auftragnr->set_text(std::string());
 
   if(check_bestand)
@@ -363,7 +366,7 @@ void auftrag_lieferschein::fill_with(const AufEintrag& AE,const Einheit& E,
 //     liefermenge->set_value(0.0);
    } 
   artikelbox->set_sensitive(false);
-  auftragnr->set_sensitive(false);
+  auftragnr->set_sensitive(!AE.valid());
 }
 
 
@@ -431,6 +434,7 @@ void auftrag_lieferschein::set_tree_titles()
  t1.push_back("Liefermenge");
  t1.push_back("% bestellt");
  t1.push_back("vom Lager");
+ t1.push_back("Bemerkung");
  tree_daten->setTitles(t1); 
 
  tree_daten->set_column_justification(
@@ -893,6 +897,11 @@ void auftrag_lieferschein::on_button_zeile_modifizieren_clicked()
 
    if(Palette->get_value_as_int() != LE.Palette())
       LE.setPalette(Palette->get_value_as_int());
+   if (auftragnr->get_text()!=LE.getRefOrder() 
+       && (!dt->getAufEintragBase().valid() ||
+           auftragnr->get_text()!=AuftragBase::ID2string(dt->getAufEintragBase().Id())))
+   { LE.setRefOrder(auftragnr->get_text());
+   }
    if(LieferscheinBase::mengen_t(liefermenge->get_value_as_float()) != LE.Menge() ||
             anzahl->get_value_as_int() != LE.Stueck())
     {

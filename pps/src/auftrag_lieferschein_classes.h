@@ -28,8 +28,6 @@ class Data_Lieferdaten : public RowDataBase
       AufEintragBase AEB;
       std::string smenge;
       std::string lagerbez;
-//      int palette;
-//      std::string artikel;
       std::string FormatiereMenge(ArtikelBase artikel, int stueck, LieferscheinBase::mengen_t menge);
       std::string FormatiereMenge(ArtikelBase artikel, int stueck, AuftragBase::mengen_t menge);
   public:
@@ -47,27 +45,18 @@ class Data_Lieferdaten : public RowDataBase
        }
 
    enum SeqNr {LIEFZEILE_SEQ,ARTIKEL_SEQ,AUFNR_SEQ,PALETTE_SEQ,
-   		LIEFMNG_SEQ,PROZ_BEST,VOMLAGER_SEQ};
+   		LIEFMNG_SEQ,PROZ_BEST,VOMLAGER_SEQ,TEXT};
 
    virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
     {
      switch(seqnr)
       {
       case AUFNR_SEQ :
-         { if (AEB.valid())
-             return cH_EntryValueIntString(Formatiere(
-                                         (unsigned long)AEB.Id(),0,6,"","",'0'));
-           else return cH_EntryValue();
-/*           
-             {std::string artnr;
-              artnr=Formatiere((unsigned long)AEB.Id(),0,6,"","",'0');
-              if(liefentry.get_Instanz()->Id()==ppsInstanzID::Einkauf &&
-                     !AEB.getYourAufNr().empty())
-                    artnr=AEB.getYourAufNr()+" - "+artnr;
-              return cH_EntryValueIntString(artnr);
-              }
-           else return cH_EntryValue();         
-*/           
+         { std::string auftr=liefentry.getRefOrder();
+           if (!auftr.empty()) auftr+="/";
+           if (AEB.valid())
+             return cH_EntryValueIntString(auftr+AuftragBase::ID2string(AEB.Id()));
+           else return cH_EntryValueIntString(auftr);
          }
       case ARTIKEL_SEQ :   return cH_EntryValueIntString(zusatzinfo?std::string()
       		:cH_ArtikelBezeichnung(liefentry.Artikel())->Bezeichnung());
@@ -87,6 +76,7 @@ class Data_Lieferdaten : public RowDataBase
            if (genutzt<1) return cH_EntryValueIntString(genutzt.String()+"%");
            return cH_EntryValue();
         }
+      case TEXT: return cH_EntryValueIntString(liefentry.Text());
       default : return cH_EntryValue();
      }
    }
@@ -173,7 +163,7 @@ public:
         {
          case AUFNR_SEQ :
              {std::string artnr;
-              artnr=Formatiere((unsigned long)AE.Id(),0,6,"","",'0');
+              artnr=AuftragBase::ID2string(AE.Id());
 #ifdef MABELLA_EXTENSIONS              
               if(AM->get_Instanz()->Id()==ppsInstanzID::Einkauf &&
                      !AE.getYourAufNr().empty())

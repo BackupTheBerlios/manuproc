@@ -4627,7 +4627,7 @@ Fertig</label>
 		<last_modification_time>Wed, 10 Apr 2002 12:38:31 GMT</last_modification_time>
 	      </signal>
 	      <creation_function>SimpleTree</creation_function>
-	      <int1>7</int1>
+	      <int1>8</int1>
 	      <int2>4</int2>
 	      <last_modification_time>Thu, 04 Oct 2001 12:19:17 GMT</last_modification_time>
 	    </widget>
@@ -4828,7 +4828,7 @@ Fertig</label>
 		<object>Palette</object>
 		<last_modification_time>Mon, 19 Mar 2001 07:32:20 GMT</last_modification_time>
 	      </signal>
-	      <editable>False</editable>
+	      <editable>True</editable>
 	      <text_visible>True</text_visible>
 	      <text_max_length>0</text_max_length>
 	      <text></text>
