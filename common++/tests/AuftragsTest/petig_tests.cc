@@ -742,4 +742,21 @@ static bool Planung_torture()
 
 static TestReihe Planung_torture_(&Planung_torture,"Planung (torture)","Pt");
 
+static bool Repair_uncommitted(AufEintrag &AE)
+{  Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Weberei),Kunde::default_id);
+   AufEintragBase AEBP=PA.push_back(1200,DATUM-40,ARTIKEL_BANDLAGER,UNCOMMITED,true);
+   vergleichen(Check::Menge,"Ru_planung","Planung","");
+   AufEintrag(AEBP).setStatus(OPEN);
+   vergleichen(Check::Menge,"Ru_offen","Bestätigt","");
+   if (Check::reparieren)
+   {  Query("update auftragentry set status=? "
+           "where (instanz,auftragid,zeilennr)=(?,?,?)") 
+           << UNCOMMITED << AEBP;
+      vergleichen(Check::Menge,"Ru_planung","Reparatur","R",true);
+   }
+   return true;
+}
+
+static TestReihe Ru_(&Repair_uncommitted,"Repair (uncommitted)","Ru");
+
 #endif
