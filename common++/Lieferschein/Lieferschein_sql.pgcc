@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.26 2002/12/10 12:28:51 thoma Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.27 2002/12/11 15:28:46 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -193,7 +193,7 @@ LieferscheinBase::mengen_t Lieferschein::StandardLaenge(const ArtikelBase artike
   int A = artikel.Id();
   float M;
  exec sql end declare section;
- exec sql select menge into :M from lieferscheinentry e, lieferschein l 
+ exec sql select coalesce(menge,0) into :M from lieferscheinentry e, lieferschein l 
    where artikelid=:A and l.lfrsid=e.lfrsid order by datum desc limit 1;
  SQLerror::test(__FILELINE__,100);
  if (sqlca.sqlcode) return 1;
