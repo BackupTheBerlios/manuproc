@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.14 2003/06/25 07:11:20 christof Exp $
+# $Id: Makefile.am,v 1.15 2003/07/07 07:56:42 christof Exp $
 
 AM_CXXFLAGS=@CXXFLAGS@ @COMMONXX_INCLUDES@ 
 LDADD=@LIBS@ @COMMONXX_LIBS@
@@ -6,9 +6,9 @@ LDFLAGS=@LDFLAGS@ @COMMONXX_LDFLAGS@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
 
-noinst_PROGRAMS= checkInstanzen Instanzen createDynEnums adjust_store \
+noinst_PROGRAMS= checkInstanzen Instanzen createDynEnums \
 	db_upgrade auftrag_repair
-EXTRA_PROGRAMS = checkGeliefert Zuordnung_zeigen
+EXTRA_PROGRAMS = checkGeliefert Zuordnung_zeigen adjust_store
 
 checkInstanzen_SOURCES = checkInstanzen.cc
 Instanzen_SOURCES = Instanzen.cc
