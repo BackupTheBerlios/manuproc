@@ -576,7 +576,7 @@ bool auftrag_lieferschein::deleteLiefEntry()
      LieferscheinVoll lv(instanz,LE.Id());
      lv.deleteRow(LE);
      if(lv.size()==0) // Verkäufer auf NONE setzten
-       lv.setVerknr(Kunde::none_id);
+       lieferschein->setVerknr(Kunde::none_id);
      return true;
     }
   } catch(...){}

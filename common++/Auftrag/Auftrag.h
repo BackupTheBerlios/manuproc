@@ -1,4 +1,4 @@
-/* $Id: Auftrag.h,v 1.23 2003/06/18 15:18:29 jacek Exp $ */
+/* $Id: Auftrag.h,v 1.24 2003/06/19 12:03:58 jacek Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -100,7 +100,7 @@ public:
 	std::string getYourAufNr() const { return youraufnr;}
 	std::string getBemerkung() const { return bemerkung;}
 	Kunde::ID getKundennr() const { return kundennr; }
-	Kunde::ID getVerknr() const { return verknr; }	
+
 	void setVerknr(const Kunde::ID) throw(SQLerror);
 	cP_Waehrung getWaehrung() const { return waehrung; }
    rabatt_t getAuftragsRabatt() const {return auftragsrabatt;}

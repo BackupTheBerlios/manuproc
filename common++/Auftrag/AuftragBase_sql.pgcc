@@ -78,3 +78,13 @@ bool AuftragBase::existEntry(const ArtikelBase& artikel,
 
 
 
+Kunde::ID AuftragBase::getVerknr() const throw(SQLerror)
+{
+ if(verknr!=Kunde::none_id) return verknr;
+
+ Query("select verknr from auftrag where (instanz,auftragid)=(?,?)") 
+	<< InstanzID() << Id() >> 
+	FetchIStream::MapNull(verknr,Kunde::none_id);
+ return verknr;
+}
+

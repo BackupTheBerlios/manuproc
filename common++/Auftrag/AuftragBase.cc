@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.36 2003/06/05 11:00:01 christof Exp $
+// $Id: AuftragBase.cc,v 1.37 2003/06/19 12:03:58 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -155,10 +155,10 @@ AuftragBase::AuftragBase(cH_ppsInstanz _instanz, ID aufid,Kunde::ID kid) throw(S
 : instanz(_instanz),auftragid(none_id)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
- Query("select auftragid from auftrag "
+ Query("select auftragid,verknr from auftrag "
  	"where instanz=? and kundennr=? and youraufnr=?")
  	<< instanz->Id() << kid << aufid
- 	>> auftragid;
+ 	>> auftragid >> verknr;
 }
 
 ArgumentList &operator<<(ArgumentList &q, const AuftragBase &ab)

@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.47 2003/06/18 15:18:29 jacek Exp $ */
+/* $Id: AuftragBase.h,v 1.48 2003/06/19 12:03:58 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -53,13 +53,14 @@ class AuftragBase
  protected:
    cH_ppsInstanz instanz; 	
    ID auftragid;	
-   Kunde::ID verknr;	
+   mutable Kunde::ID verknr;	
    
  public:
 	AuftragBase() 
-	        : instanz(ppsInstanzID::None), auftragid(invalid_id) {}
+	        : instanz(ppsInstanzID::None), auftragid(invalid_id),
+	        verknr(Kunde::none_id) {}
 	AuftragBase(cH_ppsInstanz _instanz, ID aufid) throw() 
-	        :instanz(_instanz), auftragid(aufid) 
+	        :instanz(_instanz), auftragid(aufid),verknr(Kunde::none_id) 
 	        {}
 	AuftragBase(cH_ppsInstanz _instanz, ID aufid,Kunde::ID kid) throw(SQLerror) ;
 
@@ -102,6 +103,8 @@ class AuftragBase
    static bool tolerate_inconsistency;
 
 public:
+   Kunde::ID getVerknr() const throw(SQLerror);	
+
 // wird in Instanzen.cc verwendet
    void create_if_not_exists(AufStatVal status,Kunde::ID kunde=Kunde::default_id) const;
 // wird in AufEintrag_sql.pgcc verwendet
