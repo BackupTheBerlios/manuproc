@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.38 2004/02/23 13:54:15 jacek Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.39 2004/03/11 20:43:18 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -193,7 +193,7 @@ void AufEintrag::ProduziertNG(mengen_t M,const ProductionContext2 &ctx)
    }
 
 
-#ifdef MABELLA_EXTENSIONS
+#if defined MABELLA_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
 
  if(Instanz()->getBestellInstanz(Artikel())==ppsInstanzID::None)
      {

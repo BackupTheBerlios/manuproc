@@ -1,4 +1,4 @@
-// $Id: FertigWarenLager.h,v 1.21 2004/02/23 13:54:15 jacek Exp $
+// $Id: FertigWarenLager.h,v 1.22 2004/03/11 20:43:18 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -70,6 +70,10 @@ public:
     static const unsigned int default_lagerid;
     static const unsigned int none_lagerid;    
     int Id() const { return lagerid; }
+
+    const std::string Bezeichnung() const { return bezeichnung; }
+    const std::string Tabelle() const { return tabelle; } 
+    const std::string ViewTabelle() const { return view_tabelle; }   
     
 #if defined MABELLA_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
 
@@ -88,9 +92,6 @@ public:
        initLager();
       }
 
-  const std::string Bezeichnung() const { return bezeichnung; }
-  const std::string Tabelle() const { return tabelle; } 
-  const std::string ViewTabelle() const { return view_tabelle; }   
      
 #else
       FertigWarenLager(const FertigWaren _fw) :

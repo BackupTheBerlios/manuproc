@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.50 2004/02/23 19:36:58 jacek Exp $
+// $Id: Lager.cc,v 1.51 2004/03/11 20:43:18 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -57,7 +57,7 @@ void Lager::rein_ins_lager(const ArtikelBase &artikel,
      	NV("produziert",produziert),NV("ctx",ctx));
 #ifndef MABELLA_LAGERHACK
 
-#ifdef MABELLA_EXTENSIONS
+#if defined MABELLA_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
  FertigWaren::enum_Aktion a;
  if(ctx.leb.valid())
    {
@@ -99,7 +99,7 @@ void Lager::raus_aus_lager(const ArtikelBase &artikel,
      	NV("fuer_auftrag",fuer_auftrag),NV("ctx",ctx));
 #ifndef MABELLA_LAGERHACK
 
-#ifdef MABELLA_EXTENSIONS
+#if defined MABELLA_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
  FertigWaren::enum_Aktion a;
  if(ctx.leb.valid())
    {
