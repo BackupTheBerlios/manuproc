@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.44 2003/06/16 16:35:07 christof Exp $
+// $Id: AufEintragBase.cc,v 1.45 2003/07/03 09:33:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -31,13 +31,14 @@
 #endif
 #include <Misc/TraceNV.h>
 #include <Misc/FetchIStream.h>
-#include <Auftrag/AufEintragZuMengenAenderung.h>
 #include <Misc/Changejournal.h>
 
 FetchIStream& operator>>(FetchIStream& is,AufEintragBase &aeb)
 {
   int a,b,c;
-  is >> a>>b>>c;
+  is >> FetchIStream::MapNull(a,ppsInstanzID::None)
+  	>>FetchIStream::MapNull(b,AufEintragBase::none_id)
+  	>>FetchIStream::MapNull(c,AufEintragBase::none_znr);
   cH_ppsInstanz I((ppsInstanz::ID(a)));
   AuftragBase ab(I,b);
   aeb=AufEintragBase(ab,c);
@@ -45,21 +46,20 @@ FetchIStream& operator>>(FetchIStream& is,AufEintragBase &aeb)
 }
 
 ArgumentList &operator<<(ArgumentList &o, const AufEintragBase &aeb)
-{  o.add_argument(itos(aeb.Instanz()->Id()));
-   o.add_argument(itos(aeb.Id()));
-   o.add_argument(itos(aeb.ZNr()));
-   return o;
+{  return o << Query::NullIf(aeb.Instanz()->Id(),ppsInstanzID::None)
+	 << Query::NullIf(aeb.Id(),AufEintragBase::none_id) 
+	 << Query::NullIf(aeb.ZNr(),AufEintragBase::none_znr);
 }
 
 std::ostream &operator<<(std::ostream &o,const AufEintragBase &ae)
 {
- o<<ae.Instanz()->Name()<<'('<<ae.Instanz()->Id()<<") "<<ae.Id()<<' '<<ae.ZNr();
+ o<<ae.Instanz()->Name().substr(0,4)<<'='<<ae.Instanz()->Id()<<" "<<ae.Id()<<' '<<ae.ZNr();
  return o;
 }
 
 std::string AufEintragBase::str() const
 {
- return Instanz()->Name()+"("+itos(Instanz()->Id())+")|"+itos(Id())+"|"+itos(ZNr());
+ return Instanz()->Name().substr(0,4)+"="+itos(Instanz()->Id())+"|"+itos(Id())+"|"+itos(ZNr());
 }
 
 
