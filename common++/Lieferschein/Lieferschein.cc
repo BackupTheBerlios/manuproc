@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.37 2003/07/18 16:06:28 jacek Exp $ */
+/* $Id: Lieferschein.cc,v 1.38 2003/12/12 14:59:07 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -50,7 +50,7 @@ int Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
    // Wenn man einn Lieferschein schriebe, ohne daß diese Instanz 
    // selber produzierte, würde doppelt produziert werden.
    assert(Instanz()->Lieferschein());
-   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("artikel",artikel),
+   ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("artikel",artikel),
            NV("anzahl",anzahl),NV("mengeneinheit",mengeneinheit),NV("palette",palette));
 
    Transaction tr;
@@ -73,7 +73,7 @@ int Lieferschein::push_back(AufEintrag &aufeintrag,
 		mengen_t menge, int palette)
 {
    assert(Instanz()->Lieferschein());
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("AufEintrag",aufeintrag),
+ ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("AufEintrag",aufeintrag),
            NV("artikel",artikel),
            NV("Anzahl",anzahl),NV("Menge",menge),NV("Palette",palette));                     
  Transaction tr;          
@@ -189,7 +189,7 @@ const ManuProC::Datum Lieferschein::getMaxZahlziel() const throw(SQLerror)
 
 const std::string Lieferschein::Notiz() const throw(SQLerror)
 {
-// ManuProC::Trace _t(ManuProC::Tracer::Lieferschein, __FUNCTION__,str());
+ ManuProC::Trace _t(trace_channel, __FUNCTION__,Instanz(),Id());
  if(notiz_valid) return notiz;
 
  Query("select notiz from lieferschein where (instanz,lfrsid)=(?,?)")
@@ -201,7 +201,7 @@ const std::string Lieferschein::Notiz() const throw(SQLerror)
 
 void Lieferschein::Notiz(const std::string n) throw(SQLerror)
 {
-// ManuProC::Trace _t(ManuProC::Tracer::Lieferschein, __FUNCTION__,str());
+ ManuProC::Trace _t(trace_channel, __FUNCTION__,Instanz(),Id(),n);
 
  Query("update lieferschein set notiz=? where (instanz,lfrsid)=(?,?)")
  	<< n 
@@ -232,3 +232,6 @@ void Lieferschein::setDatum(const ManuProC::Datum &d) throw(SQLerror)
  	<< d << Instanz()->Id() << Id() ;
  SQLerror::test(__FILELINE__);
 }
+
+const UniqueValue::value_t LieferscheinBase::trace_channel=ManuProC::Tracer::channels.get();
+static ManuProC::Tracer::Environment trace_channel_e("DEBUG_LIEFERSCHEIN",LieferscheinBase::trace_channel);

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinBase.h,v 1.12 2003/07/25 12:46:01 jacek Exp $ */
+/* $Id: LieferscheinBase.h,v 1.13 2003/12/12 14:59:07 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,6 +22,7 @@
 #define LIEFERBASE
 #include<Instanzen/ppsInstanz.h>
 #include <Misc/fixedpoint.h>
+#include <Misc/UniqueValue.h>
 
 class ArtikelBase;
 class LieferscheinBase
@@ -30,7 +31,9 @@ class LieferscheinBase
    cH_ppsInstanz instanz;
   	int lieferid;	
 	static const int _illegal=-1;
- public:
+public:	
+	static const UniqueValue::value_t trace_channel;
+
  	typedef fixedpoint<ManuProC::Precision::LieferscheinMenge> mengen_t;
 	typedef int ID;
 	static const ID none_id=_illegal;

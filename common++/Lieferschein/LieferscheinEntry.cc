@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.42 2003/09/11 08:22:16 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.43 2003/12/12 14:59:07 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -73,7 +73,7 @@ void LieferscheinEntry::showZusatzInfos() const
 }
 
 void LieferscheinEntry::changeMenge(int stueck, mengen_t menge, const Lieferschein &ls, bool ein_auftrag) throw(SQLerror)
-{ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("this",*this),
+{ ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
 	NV("stueck",stueck),NV("menge",menge),NV("ein_auftrag",ein_auftrag));
   if(stueck==Stueck() && menge==Menge()) return ; //nichts geändert
 
@@ -132,7 +132,7 @@ void LieferscheinEntry::changeMenge(int stueck, mengen_t menge, const Liefersche
       {
         AuftragBase::mengen_t actualmenge=abmenge2;
         if(i->menge < actualmenge.abs()) actualmenge = -i->menge;
-        ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,
+        ManuProC::Trace(trace_channel,__FILELINE__,
         	NV("abmenge2",abmenge2),NV("actualmenge",actualmenge),
         	NV("i->menge",i->menge));
         if (!actualmenge) continue;
@@ -153,7 +153,9 @@ void LieferscheinEntry::changeMenge(int stueck, mengen_t menge, const Liefersche
 }
 
 void LieferscheinEntry::updateLieferscheinMenge(int stueck,mengen_t menge)  throw(SQLerror)
-{  this->stueck=stueck;
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
+	NV("stueck",stueck),NV("menge",menge));
+   this->stueck=stueck;
    this->menge=menge;
    Query("update lieferscheinentry set stueck=?,menge=? "
    	"where (instanz,lfrsid,zeile)=(?,?,?)")
@@ -297,7 +299,7 @@ void LieferscheinEntry::setZusatzInfos(const zusaetze_t &zis)
 }
 
 void LieferscheinEntry::setZusatzInfos()
-{ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("this",*this));
+{ ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this));
   Query("delete from lieferscheinentryzusatz "
       "where (instanz,lfrsid,lfsznr) = (?,?,?)") << *this;
   SQLerror::test(__FILELINE__,100);
@@ -321,7 +323,7 @@ void LieferscheinEntry::setZusatzInfos()
 }
 
 void LieferscheinEntry::updateZusatzEntry(const AufEintragBase &Z,const AuftragBase::mengen_t &menge) throw(SQLerror)
-{ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("this",*this),
+{ ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
 	NV("AEB",Z),NV("menge",menge));
   if (NurEinKind(VZusatz))
   {  assert (VZusatz[0].aeb==Z);
@@ -351,7 +353,7 @@ void LieferscheinEntry::updateZusatzEntry(const AufEintragBase &Z,const AuftragB
 }
 
 void LieferscheinEntry::deleteZusatzEntry(const AufEintragBase &Z) throw(SQLerror)
-{ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("this",*this),
+{ ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
 	NV("AEB",Z));
   bool nek0=NurEinKind(VZusatz);
   std::string Q="delete from lieferscheinentryzusatz "
@@ -376,7 +378,7 @@ void LieferscheinEntry::deleteZusatzEntry(const AufEintragBase &Z) throw(SQLerro
 }
 
 void LieferscheinEntry::addZusatzEntry_db(const AufEintragBase &AEB,const mengen_t &menge) throw(SQLerror)
-{ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("this",*this),
+{ ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
 	NV("AEB",AEB),NV("menge",menge));
   Query("insert into lieferscheinentryzusatz (instanz,lfrsid,lfsznr,"
       "auftragid,auftragznr,menge) values (?,?,?, ?,?, ?)").lvalue() 
@@ -388,10 +390,10 @@ void LieferscheinEntry::addZusatzEntry_db(const AufEintragBase &AEB,const mengen
 }
 
 void LieferscheinEntry::addZusatzEntry(const AufEintragBase &AEB,const mengen_t &menge) throw(SQLerror)
-{ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("this",*this),
+{ ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
 	NV("AEB",AEB),NV("menge",menge));
   for (zusaetze_t::const_iterator i=VZusatz.begin();std_neq(i,VZusatz.end());++i)
-  {  ManuProC::Trace(AuftragBase::trace_channel, __FILELINE__, NV("i->aeb",i->aeb),
+  {  ManuProC::Trace(trace_channel, __FILELINE__, NV("i->aeb",i->aeb),
   		NV("AEB",AEB));
      if (i->aeb==AEB)
      {  updateZusatzEntry(AEB,i->menge+menge);
