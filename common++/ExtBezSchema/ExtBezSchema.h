@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema.h,v 1.18 2003/03/28 18:18:25 jacek Exp $
+// $Id: ExtBezSchema.h,v 1.19 2003/10/31 14:43:26 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -42,6 +42,7 @@ public:
 		std::string separator;
 		std::string spaltenname;
 		int signifikanz;
+		bool preissignifikant;
 		int folgenr_in_sig;
 		std::string TeXtabformat;
 		MultiL_Dict::LangTXT textid; // for multilanguage text settings
@@ -49,14 +50,16 @@ public:
 		BezKomp(int _bztyp, const std::string &_bztxt, 
 			const std::string &_bzsep, const std::string &sname,
 			int sign,int snr,std::string texf, 
-			MultiL_Dict::LangTXT _textid)
+			MultiL_Dict::LangTXT _textid, bool psign=false)
 		: bezkomptype(_bztyp), bezkomptext(_bztxt), separator(_bzsep)
 			, spaltenname(sname), signifikanz(sign), 
+			preissignifikant(psign),
 			folgenr_in_sig(snr),TeXtabformat(texf),
 			textid(_textid)
 		{}
 		BezKomp() 
-		: bezkomptype(0), signifikanz(0), folgenr_in_sig(0), 
+		: bezkomptype(0), signifikanz(0), preissignifikant(false),
+			folgenr_in_sig(0), 
 			textid(MultiL_Dict::LangTXT(0))
 		{}
 	};
@@ -99,6 +102,39 @@ public:
 		{  return &*actual;
 		}
 	};
+	
+	class const_psigiterator
+	{	typedef const_psigiterator self;
+		const_iterator actual;
+		const const_iterator end;
+		const bool psignifikant;
+	public:
+		const_psigiterator(const_iterator ci,const_iterator e,bool psig)
+			: actual(ci), end(e), psignifikant(psig) 
+		{  if (actual!=end && actual->preissignifikant!=psignifikant)
+		      ++(*this);
+		}
+		self &operator++()
+		{  while (actual!=end)
+		   {  ++actual;
+		      if (actual==end || actual->preissignifikant==psignifikant) 
+		      	 break;
+		   }
+		   return *this;
+		}
+		bool operator==(const const_psigiterator &b) const
+		{  return actual==b.actual;
+		}
+		bool operator!=(const const_psigiterator &b) const
+		{  return actual!=b.actual;
+		}
+		const BezKomp &operator*() const
+		{  return *actual;
+		}
+		const BezKomp *operator->() const
+		{  return &*actual;
+		}
+	};	
   
 private:
 	ID extartbezid;
@@ -145,6 +181,7 @@ public:
  size_t size(int signifikanz) const
  {  return sigsize(signifikanz); }
  size_t sigsize(int signifikanz) const;
+ size_t psigsize(bool psig) const;
  const_sigiterator sigbegin(int signifikanz) const
  {  return const_sigiterator(begin(),end(),signifikanz); }
  const_sigiterator sigend(int signifikanz) const

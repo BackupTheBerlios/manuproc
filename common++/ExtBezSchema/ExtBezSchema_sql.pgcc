@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema_sql.pgcc,v 1.21 2003/05/19 09:05:13 christof Exp $
+// $Id: ExtBezSchema_sql.pgcc,v 1.22 2003/10/31 14:43:26 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -105,5 +105,13 @@ size_t ExtBezSchema::sigsize(int signifikanz) const
   size_t s=0;
   for (const_iterator i=begin(); i!=end();++i)
      if (i->signifikanz == signifikanz) ++s;
+  return s;
+}
+
+size_t ExtBezSchema::psigsize(bool psig) const
+{
+  size_t s=0;
+  for (const_iterator i=begin(); i!=end();++i)
+     if (i->preissignifikant==psig) ++s;
   return s;
 }
