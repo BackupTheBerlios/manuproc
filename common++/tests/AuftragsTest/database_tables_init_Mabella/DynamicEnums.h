@@ -1,4 +1,4 @@
-//  DynamicEnums.h  created 26.11.2003 16:56:20 +1
+//  DynamicEnums.h  created 13.5.2004 16:01:41 +2
 
 #ifndef MANUPROC_DYNAMICENUMS_H
 #define MANUPROC_DYNAMICENUMS_H
@@ -9,18 +9,19 @@ namespace ManuProC {
  namespace DynamicEnums {
   namespace ArtikelTyp {
    enum enum_t {
-    None=-1,gewebtes_Band=0,gefaerbtes_Band=1,bedrucktes_Band=2,aufgemachtes_Band=3,Garn_per_kg=4,Spulen=5,Kartonagen=6,Sonstiges=7,Lohn=8,Farben___Pigmente=9,Etiketten=10,Garn_per_km=11,Musterkarten=12,
+    None=-1, gewebtes_Band=0,gefaerbtes_Band=1,bedrucktes_Band=2,aufgemachtes_Band=3,Garn_per_kg=4,Spulen=5,Kartonagen=6,Sonstiges=7,Lohn=8,Farben___Pigmente=9,Etiketten=10,Garn_per_km=11,Musterkarten=12,
    };
 
 const static enum enum_t defaultArtikelTyp=aufgemachtes_Band;
+
   }
 
   namespace ArtikelTyp_Attributes {
    enum enum_t {
-
+mit_ean=0,bez_as_view=1,lagerartikel=2,
    };
-  }  
-     
+  }
+
   namespace Einheiten {
    enum enum_t {
     None=-1, St_=0,m=1,kg=2,Fd_km=3,DM=4,Euro=5,Pfund=6,
@@ -41,13 +42,13 @@ const static enum enum_t defaultArtikelTyp=aufgemachtes_Band;
 
   namespace Instanzen {
    enum enum_t {
-    None=-1,Kundenauftraege=1,Fertigwarenlager=2,Einkauf=3,
+    None=-1,Kundenauftraege=1,Fertigwarenlager=2,Einkauf=3,Rollerei=4,Weberei=5,
    };
   }
 
   namespace Kundengruppen {
    enum enum_t {
-    None=-1,Kunden=1,Lieferanten=2,Verkaeufer=3,Personen=4,Retif=5,Sonstige=6,Lieferadresse=7,Rechnungsadresse=8,Auftragsadresse=9,Firma=10,Institution=11,Personal=12,
+    None=-1,Kunden=1,Personen=4,Lieferadresse=7,Rechnungsadresse=8,Auftragsadresse=9,
    };
   }
 
