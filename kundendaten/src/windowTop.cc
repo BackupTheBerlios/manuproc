@@ -10,6 +10,7 @@
 #include "MyMessage.h"
 #include <gtk--/main.h>
 #include <gtk--/notebook.h>
+#include <Kunde/Kundengruppe.h>
 
 void windowTop::on_notebook1_switch_page(Gtk::Notebook_Helpers::Page* page,guint pagenr)
 {
@@ -50,6 +51,12 @@ windowTop::windowTop()
 #ifdef MABELLA_EXTENSIONS
  button_kunde_loeschen->hide();
 #endif 
+
+
+#warning Der default Wert soll aus der Db geholt werden
+ gruppenwahl->set_value(KundengruppeID::Kunden);
+ kundenauswahl->reset();
+ kundenauswahl->EinschraenkenKdGr(gruppenwahl->get_value());
 
  connectFkt();
 }
@@ -137,6 +144,7 @@ void windowTop::clear_entrys()
    checkbuttonBankeinzug->set_active(false);
    checkbuttonRchngAdr->set_active(false);
    checkbuttonLieferAdr->set_active(false);
+   checkbutton_lieferung_frei_haus->set_active(true);
    
    kundendaten=H_Kunde(Kunde::none_id);
 //   telefon.erase(telefon.begin(),telefon.end());
@@ -179,7 +187,16 @@ void windowTop::on_preisautomatik_clicked()
  {
   MyMessage *m=manage(new MyMessage()); m->Show(e);
  }
+
 }
+
+
+void windowTop::on_gruppenwahl_activate()
+{  
+ kundenauswahl->EinschraenkenKdGr(gruppenwahl->get_value());
+ clear_entrys();
+}
+
 
 /////////////////////////////////////////////////////////////////////////
 // Extras

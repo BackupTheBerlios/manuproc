@@ -1,0 +1,7 @@
+.deps
+.libs
+Makefile
+Makefile.in
+optionmenu_bank_bei_sql.cc
+windowTop_sql.cc
+kundendaten

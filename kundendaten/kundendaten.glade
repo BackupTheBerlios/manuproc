@@ -2746,7 +2746,7 @@
 	      <widget>
 		<class>GtkFrame</class>
 		<name>frame56</name>
-		<label>Drucken (Anzahl)</label>
+		<label>Rechnungsdruck (Anzahl)</label>
 		<label_xalign>0</label_xalign>
 		<shadow_type>GTK_SHADOW_IN</shadow_type>
 		<child>
@@ -4471,6 +4471,35 @@ anlegen</label>
 	  <label>Schlieﬂen</label>
 	  <stock_pixmap>GNOME_STOCK_PIXMAP_EXIT</stock_pixmap>
 	</widget>
+      </widget>
+
+      <widget>
+	<class>Custom</class>
+	<name>gruppenwahl</name>
+	<cxx_visibility>protected</cxx_visibility>
+	<signal>
+	  <name>activate</name>
+	  <handler>on_gruppenwahl_activate</handler>
+	  <last_modification_time>Thu, 17 Oct 2002 00:21:03 GMT</last_modification_time>
+	</signal>
+	<creation_function>Optionmenu_Kundengruppe</creation_function>
+	<int1>0</int1>
+	<int2>0</int2>
+	<last_modification_time>Thu, 17 Oct 2002 00:20:15 GMT</last_modification_time>
+	<child>
+	  <left_attach>1</left_attach>
+	  <right_attach>2</right_attach>
+	  <top_attach>0</top_attach>
+	  <bottom_attach>1</bottom_attach>
+	  <xpad>0</xpad>
+	  <ypad>0</ypad>
+	  <xexpand>True</xexpand>
+	  <yexpand>False</yexpand>
+	  <xshrink>False</xshrink>
+	  <yshrink>False</yshrink>
+	  <xfill>True</xfill>
+	  <yfill>True</yfill>
+	</child>
       </widget>
     </widget>
   </widget>

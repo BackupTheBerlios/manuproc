@@ -22,10 +22,10 @@ void windowTop::show_details()
 
 	spinbutton_Flaeche->set_value(kundendaten->flaeche());
 	spinbutton_Mitarbeiter->set_value(kundendaten->mitarbeiter());
-	spinbutton_Planumsatz->set_value(kundendaten->planumsatz());
-	spinbutton_Umsatz->set_value(kundendaten->umsatz());
-	spinbutton_Kundenumsatz->set_value(kundendaten->kundenumsatz());
-	spinbutton_Rabatt->set_value(kundendaten->rabatt());
+	spinbutton_Planumsatz->set_value(kundendaten->planumsatz().as_float());
+	spinbutton_Umsatz->set_value(kundendaten->umsatz().as_float());
+	spinbutton_Kundenumsatz->set_value(kundendaten->kundenumsatz().as_float());
+	spinbutton_Rabatt->set_value(kundendaten->rabatt().as_float());
    spinbutton_firmenpapier->set_value(kundendaten->anzahl_ausdruck_firmenpapier());
    spinbutton_weissespapier->set_value(kundendaten->anzahl_ausdruck_weissespapier());
    entry_eigene_kundennr->set_text(kundendaten->UnsereKundenNr());
@@ -44,6 +44,8 @@ void windowTop::show_details()
    checkbuttonRchngAdr->set_active(kundendaten->isRechnungsadresse());
    checkbutton_rng_an_postfach->set_active(kundendaten->Rng_an_postfach());
    checkbutton_entsorgung->set_active(kundendaten->entsorgung());
+   checkbutton_lieferung_frei_haus->set_active(
+		kundendaten->get_lieferung_frei_haus());
 
    try{
    fill_bank_bei(kundendaten->getblz());
@@ -71,14 +73,14 @@ void windowTop::show_zahlungsziel()
 {
    zahlungsartbox->set_value(kundendaten->zahlungsart()->Id());
    checkbuttonBankeinzug->set_active(kundendaten->zahlungsart()->getBankeinzug());
-	spinbutton_einzugRabatt->set_value(kundendaten->zahlungsart()->getEinzugrabatt());
+	spinbutton_einzugRabatt->set_value(kundendaten->zahlungsart()->getEinzugrabatt().as_float());
 	spinbutton_zahlungsfrist->set_value(kundendaten->zahlungsart()->getZahlungsfrist());
 	spinbutton_skontofrist1->set_value(kundendaten->zahlungsart()->getSkonto(1).skontofrist);
-	spinbutton_skontosatz1->set_value(kundendaten->zahlungsart()->getSkonto(1).skontosatz);
+	spinbutton_skontosatz1->set_value(kundendaten->zahlungsart()->getSkonto(1).skontosatz.as_float());
 	spinbutton_skontofrist2->set_value(kundendaten->zahlungsart()->getSkonto(2).skontofrist);
-	spinbutton_skontosatz2->set_value(kundendaten->zahlungsart()->getSkonto(2).skontosatz);
+	spinbutton_skontosatz2->set_value(kundendaten->zahlungsart()->getSkonto(2).skontosatz.as_float());
 	spinbutton_skontofrist3->set_value(kundendaten->zahlungsart()->getSkonto(3).skontofrist);
-	spinbutton_skontosatz3->set_value(kundendaten->zahlungsart()->getSkonto(3).skontosatz);
+	spinbutton_skontosatz3->set_value(kundendaten->zahlungsart()->getSkonto(3).skontosatz.as_float());
 }
 
 

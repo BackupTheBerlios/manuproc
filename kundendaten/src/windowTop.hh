@@ -21,6 +21,7 @@ class windowTop : public windowTop_glade
         friend class windowTop_glade;
         enum enum_notebook{PAGE_KUNDE,PAGE_DETAILS,PAGE_KONTAKTPERSON,PAGE_PERSON};
         void on_notebook1_switch_page(Gtk::Notebook_Helpers::Page* page,guint pagenr);
+        void on_gruppenwahl_activate();
 
         Kunde::UpdateBitsAdresse UpdateAdresse;
         Kunde::UpdateBitsFirma UpdateFirma;
