@@ -1,4 +1,4 @@
-// $Id: Handles.cc,v 1.4 2002/06/24 07:35:40 christof Exp $
+// $Id: Handles.cc,v 1.5 2003/05/26 14:40:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,7 +25,9 @@
 HandleContent::~HandleContent()
 {  
    if (_references) 
-      std::cerr << "Handled Object @"<<(void*)this<<" ("<<typeid(*this).name() <<") still referenced "<<_references<<" times on destruction\n";
+   {  std::cerr << "Handled Object @"<<(void*)this<<" ("<<typeid(*this).name() <<") still referenced "<<_references<<" times on destruction\n";
+      if (getenv("MANUPROC_PICKY_HANDLES")) abort();
+   }
 #ifdef DEBUG_HANDLE_CONTENT      
    if (_watch_me)
       std::cerr << "Handled Object @"<<(void*)this<<" ("<<typeid(*this).name() <<") destruction\n";
