@@ -1,4 +1,4 @@
-// $Id: IntStringBox_sql.pgcc,v 1.2 2002/04/19 15:26:03 christof Exp $
+// $Id: IntStringBox_sql.pgcc,v 1.3 2002/06/20 09:27:56 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++ Copyright (C)
  *  1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -19,6 +19,34 @@
 
 #include "IntStringBox.hh"
 exec sql include sqlca;
+#include <Aux/itos.h>
+
+bool IntStringBox::try_to_get_id()
+{
+  std::string squery="select "+_int_;
+  if(string_2_info_only) squery +=", "+_string2_ ;
+  squery +=" from "+_tabelle_+" where "+_string1_+
+     "='"+sc1_string->get_text()+"'";
+  if(!_string2_.empty() && !string_2_info_only) 
+      squery   +=" and "+_string2_+"='"+sc2_string->get_text()+"'"; 
+  exec sql begin declare section;
+    char query[1024];
+    int ID;
+    char S2[50];
+  exec sql end declare section;
+  strncpy(query,squery.c_str(),sizeof(query));
+  exec sql prepare id_cursor_ from :query;
+  if(!string_2_info_only)  exec sql execute id_cursor_ into :ID;
+  else  exec sql execute id_cursor_ into :ID,:S2;
+  SQLerror::test(__FILELINE__,100);
+  if (sqlca.sqlcode) return false;
+  id=ID;
+  sc_int->set_text(itos(id));
+  if(string_2_info_only) sc2_string->set_text(S2);
+  activate();
+  return true;
+}
+
 
 void IntStringBox::int_search(gboolean *_continue, GtkSCContext newsearch)
 {  exec sql begin declare section;
@@ -33,7 +61,13 @@ void IntStringBox::int_search(gboolean *_continue, GtkSCContext newsearch)
          case GTK_SEARCH_OPEN:
              squery = "select "+_int_+" from "+_tabelle_
                   +" where text("+_int_+") like '"
-                 +sc_int->get_text()+"%' order by "+_int_;
+                 +sc_int->get_text()+"%'";
+
+	   if(eingeschraenkt)
+	     squery+=einschraenkung;
+
+	    squery+=" order by "+_int_;
+
              strncpy(query,squery.c_str(),sizeof(query));
              exec sql prepare int_cursor_ from :query;
       	    exec sql declare int_cursor cursor for int_cursor_;
@@ -60,9 +94,9 @@ void IntStringBox::int_search(gboolean *_continue, GtkSCContext newsearch)
    }
 }
 
-void IntStringBox::stringz_search(gboolean *_continue, GtkSCContext newsearch)
+void IntStringBox::string2_search(gboolean *_continue, GtkSCContext newsearch)
 {
-   scc_string->reset();
+//   scc_string->reset();
    exec sql begin declare section;
     char name[80];
     char query[1024];
@@ -74,24 +108,30 @@ void IntStringBox::stringz_search(gboolean *_continue, GtkSCContext newsearch)
      switch(newsearch)
       {  case GTK_SEARCH_OPEN:
             tr2.open();
-             squery = "select "+_stringz_+" from "+_tabelle_+" where "
-               +_stringz_+" ilike '"+scz_string->get_text() 
-               +"%' order by "+_stringz_;
+             squery = "select distinct "+_string2_+" from "+_tabelle_+" where "
+               +_string2_+" ilike '"+sc2_string->get_text()+"%'" ;
+             if(!_string1_.empty()) squery += "and "+_string1_+" ilike '"
+                  +sc1_string->get_text()+"%' ";
+
+	   if(eingeschraenkt)
+	     squery+=einschraenkung;
+
+             squery +=(" order by "+_string2_);
              strncpy(query,squery.c_str(),sizeof(query));
-             exec sql prepare stringz_cursor_ from :query;
-      	    exec sql declare stringz_cursor cursor for stringz_cursor_;
-      	    exec sql open stringz_cursor;
+             exec sql prepare string2_cursor_ from :query;
+      	    exec sql declare string2_cursor cursor for string2_cursor_;
+      	    exec sql open string2_cursor;
       	    SQLerror::test(__FILELINE__);
       	    // fall through
       	 case GTK_SEARCH_FETCH:
-       	    exec sql fetch stringz_cursor into :name;
+       	    exec sql fetch string2_cursor into :name;
       	    SQLerror::test(__FILELINE__,100);
       	    if (sqlca.sqlcode) return;
-      	    scz_string->add_item(name);
+      	    sc2_string->add_item(name);
       	    *_continue=true;
       	    break;
       	 case GTK_SEARCH_CLOSE:
-      	    exec sql close stringz_cursor;
+      	    exec sql close string2_cursor;
       	    SQLerror::test(__FILELINE__);
       	    tr2.commit();
       	    break;
@@ -102,12 +142,11 @@ void IntStringBox::stringz_search(gboolean *_continue, GtkSCContext newsearch)
    }
 }
 
-void IntStringBox::string_search(gboolean *_continue, GtkSCContext newsearch)
+void IntStringBox::string1_search(gboolean *_continue, GtkSCContext newsearch)
 {
    exec sql begin declare section;
-   char name[80];
-   int nummer;
-   char query[1024];
+    char name[80];
+    char query[1024];
    exec sql end declare section;
    
    try
@@ -116,27 +155,30 @@ void IntStringBox::string_search(gboolean *_continue, GtkSCContext newsearch)
      switch(newsearch)
       {  case GTK_SEARCH_OPEN:
             tr3.open();
-             squery = "select "+_string_+",";
-             squery +=_int_+" from "+_tabelle_+" where "+_string_+" ilike '"
-                  +scc_string->get_text() +"%' ";
-             if(!_stringz_.empty()) squery += "and "+_stringz_+" ilike '"
-                  +scz_string->get_text()+"%' ";
-             squery +=(" order by "+_string_+","+_stringz_);
+             squery = "select distinct "+_string1_+" from "+_tabelle_+" where "
+                  +_string1_+" ilike '"+sc1_string->get_text() +"%' ";
+             if(!_string2_.empty()) squery += "and "+_string2_+" ilike '"
+                  +sc2_string->get_text()+"%' ";
+
+	   if(eingeschraenkt)
+	     squery+=einschraenkung;
+
+             squery +=(" order by "+_string1_);
              strncpy(query,squery.c_str(),sizeof(query));
-             exec sql prepare string_cursor_ from :query;
-      	    exec sql declare string_cursor cursor for string_cursor_;
-      	    exec sql open string_cursor;
+             exec sql prepare string1_cursor_ from :query;
+      	    exec sql declare string1_cursor cursor for string1_cursor_;
+      	    exec sql open string1_cursor;
       	    SQLerror::test(__FILELINE__);
       	    // fall through
       	 case GTK_SEARCH_FETCH:
-       	    exec sql fetch string_cursor into :name, :nummer;
+       	    exec sql fetch string1_cursor into :name;
       	    SQLerror::test(__FILELINE__,100);
       	    if (sqlca.sqlcode) return;
-      	    scc_string->add_item(name,nummer);
+      	    sc1_string->add_item(name);
       	    *_continue=true;
       	    break;
       	 case GTK_SEARCH_CLOSE:
-      	    exec sql close string_cursor;
+      	    exec sql close string1_cursor;
       	    SQLerror::test(__FILELINE__);
       	    tr3.commit();
       	    break;

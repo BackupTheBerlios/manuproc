@@ -27,71 +27,56 @@
 #include <Aux/ppsInstanz.h>
 #include <Artikel/Prozess.h>
 #endif
+#ifdef MABELLA_EXTENSIONS
+#include <Aux/EAN.h>
+#endif
 
 exec sql include sqlca;
 
 void ArtikelBox::searchFunc(int *cont, GtkSCContext newsearch, unsigned int sp,unsigned int l) throw(SQLerror)
-{
- std::vector<cH_EntryValue> vl,va;
- if (kombiniertbool) { vl = expand_kombi(l,LABEL);
-                       va = expand_kombi(l,ARTIKEL);
-                     }
+{std::vector<cH_EntryValue> v=get_content(l,sp);
+
  try
  {switch(newsearch)
-  { case GTK_SEARCH_OPEN:
+  { case GTK_SEARCH_OPEN: 
     { pixmap_setzen(false);
       artikel=ArtikelBase();
  exec sql begin declare section;
    char *QUERY;
  exec sql end declare section;
- std::string table="artbez_"+itos(schema->Typ())+"_"+itos(schema->Id()) + " as artboxtable";
+ std::string table=Tabellenname(schema) + " as artboxtable";
  std::string what;
- std::string combocontent=combos[l][sp]->get_text();
+// std::string combocontent=combos[l][sp]->get_text();
  std::string constraint;
  std::string squery; 
 
- unsigned int spalte=0;
- if(!kombiniertbool)
- for (ExtBezSchema::const_iterator i=schema->begin();i!=schema->end();++i)
-  { if (i->signifikanz!=signifikanz[l]) continue;
-    if (spalte==sp) 
-    {  what = i->spaltenname;
-       constraint += "text("+i->spaltenname +") like '"+combos[l][spalte]->get_text()+"\%'";
+ {vector<cH_EntryValue>::const_iterator vi=v.begin();
+  for (ExtBezSchema::const_sigiterator i=schema->sigbegin(signifikanz[l]);
+ 		i!=schema->sigend(signifikanz[l]);++i,++vi)
+  { if (vi+1==v.end())
+    {  if (!kombiniertbool) what = i->spaltenname;
+       constraint += "text("+i->spaltenname +") like '"+(*vi)->getStrVal()+"\%'";
        break;
     }
     else 
-    {  
-       constraint += "text("+i->spaltenname +")='"+combos[l][spalte]->get_text()+"' AND ";
-       ++spalte;
-    }
+       constraint += "text("+i->spaltenname +")='"+(*vi)->getStrVal()+"' AND ";
   }
- else // wenn die Anzeige kombiniert ist
-  {
-    for (unsigned int i=0;i<vl.size();++i)
-      {
-        what += vl[i]->getStrVal();
-        if (i+1!=vl.size()) what +=", ";
-      }    
-    for (unsigned int i=0;i<va.size();++i)
-      {
-        constraint += vl[i]->getStrVal() +" like '"+ va[i]->getStrVal() +"%'";
-        if (i+1!=va.size()) constraint += " and "; 
-      }    
+ }
+  if (kombiniertbool)
+  {  ExtBezSchema::const_sigiterator i=schema->sigbegin(signifikanz[l]);
+     assert(i!=schema->sigend(signifikanz[l]));
+     what=i->spaltenname;
+     for (++i;i!=schema->sigend(signifikanz[l]);++i)
+     {  what+=","+i->spaltenname;
+     }
   }
+
  squery = "SELECT DISTINCT "+what+" FROM "+table ;
+ if (eingeschraenkt && !joinstring.empty()) squery += joinstring;
+ if (!constraint.empty()) squery += " WHERE "+constraint;
+ if (eingeschraenkt && !einschraenkung.empty())
+ 	squery += (!constraint.empty()?" AND ":" WHERE ") + einschraenkung;
  
- if(eingeschraenkt)
-   squery += joinstring;
-
- if (constraint.size()) squery += " WHERE "+constraint;
-
- if (einschraenkung.size() && eingeschraenkt)
- 	squery += (constraint.size()?" AND ":" WHERE ") + einschraenkung;
- 
-//if (eingeschraenkt) 
-//{  std::cout << einschraenkung.size() << ", " << einschraenkung << '\n';
-//   std::cout << squery<<"\n";
-//}
     (const char*)QUERY=squery.c_str();
     tr.open();
     exec sql prepare QUERY from :QUERY;
@@ -103,57 +88,52 @@ void ArtikelBox::searchFunc(int *cont, GtkSCContext newsearch, unsigned int sp,u
     // fall through
     
 case GTK_SEARCH_FETCH:   
- {
+ {if (BreitenSuche(GTK_SEARCH_FETCH,sp,l,cont)) return;
+ 
    exec sql allocate descriptor spalten;
    exec sql fetch extbezfeld into sql descriptor spalten;
-   SQLerror::test(__FILELINE__);
-//   exec sql close extbezfeld;
-//   SQLerror::test(__FILELINE__);
-   FetchIStream is("spalten");
-   std::vector<std::string> sv;
-   std::string t;
-   if (kombiniertbool)
-     for (std::vector<std::cH_EntryValue>::const_iterator i=vl.begin();i!=vl.end();++i)
-      {
-         is >> FetchIStream::MapNull<string>(t,"");
-//std::cout <<"-"<< t<<"-\n";
-         sv.push_back(t);
+   SQLerror::test(__FILELINE__,100);
+   if (sqlca.sqlcode==100)
+   {  if (newsearch==GTK_SEARCH_OPEN && artikel_automatisch_finden 
+   		&& !automatisch_anlegen_bool 
+   		&& (l || !combos[l][sp]->get_text().empty()))
+      {  if (BreitenSuche(GTK_SEARCH_OPEN,sp,l,cont)) return;
       }
-   else { is >> FetchIStream::MapNull<string>(t,"");
-        sv.push_back(t);
-      }
- exec sql deallocate descriptor spalten;
- SQLerror::test("ArtikelBox::searchFunc: fetch resulttable",100);
- if(sqlca.sqlcode==100){  combos[l][sp]->add_item(""); return;}
-
- std::string text;
-
- unsigned int c=0;
- if(kombiniertbool)
-   for (ExtBezSchema::const_sigiterator i=schema->sigbegin(signifikanz[l]);i!=schema->sigend(signifikanz[l]);++i)
-    {
-     std::string sep = i->separator;
-     if (kombiniertbool) text +=sv[c++];
-     if (sep==" ") text += "_";
-     else text +=sep;
-//std::cout << "\t"<<c<<"\t-"<<sv[c-1]<<"-\t-"<<sep<<"-\t"<<text<<"\n";
-    }
- else  text = sv[0];
- combos[l][sp]->add_item(text);
-
- *cont=true;
+   }
+   else
+  {FetchIStream is("spalten");
+   if (!kombiniertbool)
+   {  std::string t;
+      is >> FetchIStream::MapNull<string>(t,"");
+      combos[l][sp]->add_item(t);
+   }
+   else
+   {  std::vector<std::string> sv;
+      try
+      {  std::string t;
+         for (;;)
+         {  is >> FetchIStream::MapNull<string>(t,"");
+            sv.push_back(t);
+         }
+      } catch (SQLerror &e) {} // Endemarkierung
+      combos[l][sp]->add_item(Kombinieren(schema,signifikanz[l],sv));
+   }
+   exec sql deallocate descriptor spalten;
+   SQLerror::test("ArtikelBox::searchFunc: fetch resulttable");
+   *cont=true;
+  }
  }
  break;
  
 case GTK_SEARCH_CLOSE:
  exec sql close extbezfeld;
  tr.commit();
+ BreitenSuche(GTK_SEARCH_CLOSE);
  break;
   }
  } catch (SQLerror &e)
   {  //std::cerr << e << '\n';
   }
-
 }
 
 void ArtikelBox::fuelleMenu()
@@ -295,7 +275,7 @@ void ArtikelBox::fuelleMenu()
      int sanz = sqlca.sqlerrd[2];
      for (int i=0;i<sanz;++i)
       {
-       std::string text = kombinierteAnzeige(db_sigV[i],db_atyp,eab_id);
+       std::string text = kombinierterName(schema,db_sigV[i]);
        Gtk::CheckMenuItem *mi=manage(new Gtk::CheckMenuItem(text));
        anzeige_menu->append(*mi);
        if (find(signifikanz.begin(),signifikanz.end(),db_sigV[i])!= signifikanz.end()) mi->set_active(true);
@@ -361,7 +341,7 @@ bool ArtikelBox::neuanlegen()
    bool B;
    char TABELLE[20];
  exec sql end declare section;
- std::string table="artbez_"+itos(schema->Typ())+"_"+itos(schema->Id());
+ std::string table=Tabellenname(schema);
  strncpy(TABELLE,table.c_str(),sizeof(TABELLE));
  exec sql select true into :B from artbez_insert where tabelle =:TABELLE; 
  SQLerror::test(__FILELINE__,100);
@@ -369,108 +349,44 @@ bool ArtikelBox::neuanlegen()
  return B;
 }
 
-std::string ArtikelBox::kombinierteAnzeige(int sig, int atyp, int id)
-{
-  exec sql begin declare section;
-   char db_text[20][20],db_sep[20][5];
-   int eab_id,db_atyp,db_sig;
-   int db_bezkomptype[20];
-  exec sql end declare section;
-  eab_id=id;
-  db_atyp=atyp;
-  db_sig=sig;
-  exec sql select distinct bezkomptype, bezkomptext, coalesce(separator,'') 
-    into :db_bezkomptype, :db_text, :db_sep
-    from extbezschema where artikeltyp = :db_atyp and signifikanz = :db_sig
-    and extartbezid = :eab_id order by bezkomptype limit 20;
-  SQLerror::test(__FILELINE__);
-  std::string text;
-  if (!sqlca.sqlcode)
-  for (int i=0;i<sqlca.sqlerrd[2];++i)
-     { std::string t= db_text[i];
-       std::string s= db_sep[i];
-       text += t+s;
-     }
-  return text;
-}
-
-
 void ArtikelBox::Benutzerprofil_laden()
-{
-  exec sql begin declare section;
-   int db_uid, db_artikeltyp, db_schema, 
-       db_anzeige_pos, db_anzeige_neg, db_auswahl;
-   bool db_autocomplete, db_kombiniert;
-  exec sql end declare section;
-  db_uid=getuid();
-  db_artikeltyp=schema->Typ();
-  db_schema=schema->Id();
-  exec sql select anzeige_pos, anzeige_neg, auswahl, autocomplete, kombiniert
-   into :db_anzeige_pos, :db_anzeige_neg, :db_auswahl, :db_autocomplete, :db_kombiniert
-   from artbez_anzeige 
-   where uid=:db_uid and artikeltyp=:db_artikeltyp and schema=:db_schema;
-  SQLerror::test(__FILELINE__,100);
-
+{ ArtikelBoxAnzeige anz=ArtikelBoxAnzeige::Laden(schema);
   signifikanz.clear();
-  if (sqlca.sqlcode) 
-  {  autocompletebool=false;
-     kombiniertbool=false;
-     return;
-  }
-  
-  for (unsigned int i=0;i<sizeof(db_anzeige_pos)*8;++i)
-   {
-     unsigned int sig = (db_anzeige_pos &(1<<i));
-     if (sig!=0) signifikanz.push_back(i+1);
-   }
-  for (unsigned int i=0;i<sizeof(db_anzeige_neg)*8;++i)
-   {
-     unsigned int sig = (db_anzeige_neg &(1<<i));
-     if (sig!=0) signifikanz.push_back(-(i+1));
-   }
-  autocompletebool=db_autocomplete;
+  for (int i=-int(sizeof(int))*8;i<=int(sizeof(int))*8;++i)
+     if (anz.Sichtbar(i)) signifikanz.push_back(i);
+  autocompletebool=anz.AutoComplete();
   set_autoexpand(autocompletebool);
-  kombiniertbool=db_kombiniert;
+  kombiniertbool=anz.Kombiniert();
 }
 
 void ArtikelBox::Benutzerprofil_speichern()
-{
-  exec sql begin declare section;
-   int db_uid, db_artikeltyp, db_schema, 
-       db_anzeige_pos, db_anzeige_neg, db_auswahl;
-   bool db_autocomplete, db_kombiniert;
-  exec sql end declare section;
-  db_autocomplete=autocompletebool; 
-  db_kombiniert=kombiniertbool; 
-  db_uid=getuid();
-  db_artikeltyp=schema->Typ();
-  db_schema=schema->Id();
-  db_anzeige_pos=0;
-  db_anzeige_neg=0;
+{ 
+  ArtikelBoxAnzeige anz(schema);
   for(std::vector<int>::const_iterator i=signifikanz.begin();i!=signifikanz.end();++i)
-   {
-     if ((*i)>0) db_anzeige_pos |= 1<<( (*i)-1);
-     else if ((*i)<0) db_anzeige_neg |= 1<<(-(*i)-1);
-   }
-  db_auswahl=0;
-  exec sql delete from artbez_anzeige where 
-      uid=:db_uid and artikeltyp=:db_artikeltyp and schema=:db_schema;
-  exec sql insert into artbez_anzeige 
-      (uid,artikeltyp,schema,anzeige_pos,anzeige_neg,auswahl,autocomplete,kombiniert)
-   values
-      (:db_uid,:db_artikeltyp,:db_schema,:db_anzeige_pos,:db_anzeige_neg,:db_auswahl,:db_autocomplete,:db_kombiniert);
-  SQLerror::test(__FILELINE__);
+     anz.Sichtbar(*i,true);
+  anz.AutoComplete(autocompletebool);
+  anz.Kombiniert(kombiniertbool);
+  anz.Speichern();
 }
 
 void ArtikelBox::Neuer_Eintrag()
 {
  try {
- /* testen ob ID eingetragen => FEHLER */
+// hier (und weiter unten) sollte man irgendwann mal 'ID' und 'EAN-Code' in die 
+// Tabellenspalten der jeweiligen Schemata umwandeln.
+// Dazu brauchte man dann wohl ein get_[id|ean]_spaltenname()
+// in ExtBezSchema, oder?
+ /* testen ob ID oder EAN eingetragen => FEHLER */
+ // sollte wohl eher angezeigt werden CP
  for (unsigned int j=0;j<combos.size();++j)
   for (unsigned int i=0; i<combos[j].size(); ++i)
    { 
      if (labels[j][i]->get_text()=="ID" && combos[j][i]->get_text() !="")
       { std::cerr<<"FEHLER: ID darf nicht vorgegeben werden: Feld freilassen\n";
+        return;
+      }
+     if (labels[j][i]->get_text()=="EAN-Code" && combos[j][i]->get_text() !="")
+      { std::cerr<<"FEHLER: EAN darf nicht vorgegeben werden: Feld freilassen\n";
         return;
       }
    }
@@ -488,6 +404,13 @@ void ArtikelBox::Neuer_Eintrag()
   std::string where, what;
   where = "(id," ;
   what  = "("+itos(db_id)+",";
+#ifdef MABELLA_EXTENSIONS  
+  if(schema->Id()==ExtBezSchema::default_id)
+   {
+     where +="ean,";
+     what  += EAN::next_value()+",";
+   }  
+#endif
   where_what(where,what,false);
   Neuer_Eintrag_sql(db_id,where,what,
 #if (defined PETIG_EXTENSIONS) 
@@ -496,20 +419,13 @@ void ArtikelBox::Neuer_Eintrag()
 		ppsInstanzID::None
 #endif
   						);
-#ifdef PETIG_EXTENSIONS  // Jumborollen anlegen ?
- std::string aufmachung;
-#warning Fuer Malte: schneller wäre den Index zu vergleichen (BezKompType)
-  for (unsigned int j=0;j<combos.size();++j)
-   for (unsigned int i=0; i<combos[j].size(); ++i)
-    if (labels[j][i]->get_text()==schema->JumboTitel())
-       aufmachung=combos[j][i]->get_text();
 
- if (schema->JumboBez()!=aufmachung) // Wenn ich selber keine Jumborolle bin
-  {
-    int jumbo_id=artikel_exist(true);
-    if(jumbo_id==0)  // Wenn es keine entsprechende Jumborolle vorhanden sofort eine anlegen 
+#ifdef PETIG_EXTENSIONS  // Jumborollen anlegen ?
+ {  ArtikelBase::ID jumbo_id=artikel_exist(true);
+    if(!jumbo_id)
       {
         exec sql select nextval ('artikelbezeichnun_artikelid_seq') into :db_id_jumbo;
+        SQLerror::test(__FILELINE__);
         jumbo_id=db_id_jumbo;      
         where = "(id," ;
         what  = "("+itos(db_id_jumbo)+",";
@@ -517,7 +433,8 @@ void ArtikelBox::Neuer_Eintrag()
    
         Neuer_Eintrag_sql(db_id_jumbo,where,what,ppsInstanzID::Bandlager);
       }
-    insert_into_artikelzusammensetzung(db_id,jumbo_id,ProzessID::Rollen,get_menge_from_artikelbox());
+    if (jumbo_id && db_id!=jumbo_id)
+       insert_into_artikelzusammensetzung(db_id,jumbo_id,ProzessID::Rollen,get_menge_from_artikelbox());
   }
 #endif
 
@@ -533,20 +450,16 @@ void ArtikelBox::Neuer_Eintrag_sql(int id, std::string where, std::string what,i
 {
   exec sql begin declare section;
    int db_id=id, db_warengruppe,db_schema,db_bestellen_bei=bestellen_bei;   
-   char db_query[1024];
    int db_uid;
   exec sql end declare section;
 
   db_uid=getuid();
-  std::string strtyp = itos(schema->Typ());
-  std::string table = "artbez_"+strtyp+"_"+itos(schema->Id());
-  std::string sq = "insert into "+table +" "+ where+" values "+what;
-  strncpy(db_query,sq.c_str(),sizeof(db_query));
-  exec sql execute immediate :db_query;
+  std::string table = Tabellenname(schema);
+  Query::Execute("insert into "+table +" "+ where+" values "+what);
   SQLerror::test(__FILELINE__);
 
   // Eintrag in Artikelbezeichnung
-  db_warengruppe= atoi(strtyp.c_str());
+  db_warengruppe= schema->Typ().Id();
   db_schema = schema->Id();
   exec sql insert into artikelstamm (id,warengruppe,defaultschema,bestellen_bei,uid)
      values (:db_id,:db_warengruppe,:db_schema,:db_bestellen_bei,:db_uid);
@@ -554,94 +467,47 @@ void ArtikelBox::Neuer_Eintrag_sql(int id, std::string where, std::string what,i
 }
 
 void ArtikelBox::where_what(std::string& where, std::string& what, bool jumbo)
-{
-  unsigned int l=0; 
-  bool Jumbo=false;
-
-  for (std::vector<int>::const_iterator i=signifikanz.begin();i!=signifikanz.end();++i)
-   {
+{ unsigned int l=0; 
+  for (std::vector<int>::const_iterator i=signifikanz.begin();
+  		i!=signifikanz.end(); ++i,++l)
+   { vector<cH_EntryValue> v=get_content(l);
      unsigned int spalte=0;   
-     if (labels[l][0]->get_text() =="ID") continue;
-     for(ExtBezSchema::const_sigiterator j=schema->sigbegin(signifikanz[l]);j!=schema->sigend(signifikanz[l]);)
-      {
-        if(jumbo && j->spaltenname==schema->JumboSpalte()) Jumbo=true;
-
-        std::vector<cH_EntryValue> v;
-        if (kombiniertbool) v = expand_kombi(l,ARTIKEL);
-        if (j->spaltenname!="id") where += j->spaltenname  ;
-        if (j->spaltenname!="id" && !Jumbo) 
-         { if (!kombiniertbool) what += "'"+combos[l][spalte]->get_text()+"'" ; 
-           else                 what += "'"+v[spalte]->getStrVal()+"'";
+     for(ExtBezSchema::const_sigiterator j=schema->sigbegin(signifikanz[l]);
+     	   j!=schema->sigend(signifikanz[l]); ++spalte,++j)
+      {  if (j->spaltenname!="id")
+         {  where += j->spaltenname+",";
+#ifdef PETIG_EXTENSIONS
+            if (jumbo && j->spaltenname==schema->JumboSpalte())
+               what += "'"+schema->JumboBez()+"'," ;
+            else 
+#endif
+               what += "'"+v[spalte]->getStrVal()+"',";
          }
-        if (j->spaltenname!="id" && Jumbo) 
-            what += "'"+schema->JumboBez()+"'" ; 
-         
-         ++spalte; ++j;
-        if (j!=schema->sigend(signifikanz[l]) 
-            || i+1!=signifikanz.end() && labels[l+1][0]->get_text() !="ID")  
-               { where += ","; what+=",";}
       }
-     ++l;
    }
-  where += ")"; what+=")";
+   if (!where.empty() && where[where.size()-1]==',') where[where.size()-1]=')';
+   if (!what.empty() && what[what.size()-1]==',') what[what.size()-1]=')';
 }
 
-int ArtikelBox::artikel_exist(bool jumbo) 
-{
-  unsigned int l=0; 
-  std::string table = "artbez_"+itos(schema->Typ())+"_"+itos(schema->Id());
+ArtikelBase::ID ArtikelBox::artikel_exist(bool jumbo) 
+{ std::string table = Tabellenname(schema);
   std::string squery = "select id from "+table+" where ";
-
-  for (std::vector<int>::const_iterator i=signifikanz.begin();i!=signifikanz.end();++i)
-   {
-     unsigned int spalte=0;   
-     if (labels[l][0]->get_text() =="ID") continue;
-     for(ExtBezSchema::const_sigiterator j=schema->sigbegin(signifikanz[l]);j!=schema->sigend(signifikanz[l]);)
-      {
-        std::vector<cH_EntryValue> v;
-        if (kombiniertbool) v = expand_kombi(l,ARTIKEL);
-        if (j->spaltenname!="id") 
-         {
-           squery += j->spaltenname+"="  ;
-#ifdef PETIG_EXTENSIONS
-           if(jumbo)
-            {
-              if (j->spaltenname!=schema->JumboSpalte()) 
-               { if (!kombiniertbool) squery += "'"+combos[l][spalte]->get_text()+"'" ; 
-                 else                 squery += "'"+v[spalte]->getStrVal()+"'";
-               }
-              if(j->spaltenname==schema->JumboSpalte()) 
-                  squery += "'"+schema->JumboBez()+"'" ; 
-            }
-           else
-#endif           
-            { if (!kombiniertbool) squery += "'"+combos[l][spalte]->get_text()+"'" ; 
-              else                 squery += "'"+v[spalte]->getStrVal()+"'";
-            }
-         }     
-         ++spalte; ++j;
-        if (j!=schema->sigend(signifikanz[l]) 
-            || i+1!=signifikanz.end() && labels[l+1][0]->get_text() !="ID")  
-               { squery += " and ";}
-      }
-     ++l;
-   }
+  std::string where = "(";
+  std::string what = "(";
+  where_what(where,what,jumbo);
+  squery += where + '=' + what;
+ 
  exec sql begin declare section;
-   char query[1024];
-   int db_jumbo_id;
+ char *query;
+ int ID;
  exec sql end declare section;
- strncpy(query,squery.c_str(),sizeof(query));
- Transaction tr;
- exec sql prepare jein_ from :query ;
- exec sql declare jein cursor for jein_ ;
- exec sql open jein;
- SQLerror::test(__FILELINE__);
- exec sql fetch jein into  :db_jumbo_id;
+ 
+ const_cast<const char *>(query)=squery.c_str();
+ exec sql prepare jein from :query;
+ exec sql execute jein into :ID;
  SQLerror::test(__FILELINE__,100);
- if (sqlca.sqlcode) db_jumbo_id=ArtikelBase::none_id;
- exec sql close jein;
- tr.close();
- return db_jumbo_id;
+ if (sqlca.sqlcode) return ArtikelBase::none_id;
+ return ID;
 }
 
 void ArtikelBox::insert_into_artikelzusammensetzung(int id, int id_jumbo, int prozess,double menge)
@@ -649,10 +515,66 @@ void ArtikelBox::insert_into_artikelzusammensetzung(int id, int id_jumbo, int pr
  exec sql begin declare section;
    int db_id=id,db_id_jumbo=id_jumbo,db_prozess=prozess;
    double db_menge=menge;
+   int db_uid=getuid();
  exec sql end declare section;
- exec sql insert into artikelzusammensetzung (id,prozessid,altartikelid,menge)
-    values (:db_id,:db_prozess,:db_id_jumbo,:db_menge);
+ exec sql insert into artikelzusammensetzung (id,prozessid,altartikelid,menge,uid)
+    values (:db_id,:db_prozess,:db_id_jumbo,:db_menge,:db_uid);
  SQLerror::test(__FILELINE__);
 }
 
+ArtikelBoxAnzeige ArtikelBoxAnzeige::Laden(cH_ExtBezSchema schema)
+{  ArtikelBoxAnzeige res=ArtikelBoxAnzeige(schema);
 
+  exec sql begin declare section;
+   int db_uid, db_artikeltyp, db_schema, 
+       db_anzeige_pos, db_anzeige_neg, db_auswahl;
+   bool db_autocomplete, db_kombiniert;
+  exec sql end declare section;
+  db_uid=getuid();
+  db_artikeltyp=schema->Typ().Id();
+  db_schema=schema->Id();
+  exec sql select anzeige_pos, anzeige_neg, auswahl, autocomplete, kombiniert
+   into :db_anzeige_pos, :db_anzeige_neg, :db_auswahl, :db_autocomplete, :db_kombiniert
+   from artbez_anzeige 
+   where uid=:db_uid and artikeltyp=:db_artikeltyp and schema=:db_schema;
+  SQLerror::test(__FILELINE__,100);
+
+  if (!sqlca.sqlcode) 
+  {  res.anzeige_neg=db_anzeige_neg;
+     res.anzeige_pos=db_anzeige_pos;
+     res.auswahl=db_auswahl;
+     res.autocomplete=db_autocomplete;
+     res.kombiniert=db_kombiniert;
+  }
+  return res;  
+}
+
+void ArtikelBoxAnzeige::Speichern() const
+{
+  exec sql begin declare section;
+   int db_uid, db_artikeltyp, db_schema, 
+       db_anzeige_pos, db_anzeige_neg, db_auswahl;
+   bool db_autocomplete, db_kombiniert;
+  exec sql end declare section;
+  
+  db_autocomplete=autocomplete; 
+  db_kombiniert=kombiniert; 
+  db_uid=getuid();
+  db_artikeltyp=schema->Typ();
+  db_schema=schema->Id();
+  db_anzeige_pos=anzeige_pos;
+  db_anzeige_neg=anzeige_neg;
+  db_auswahl=0;
+  
+  exec sql delete from artbez_anzeige where 
+      (uid,artikeltyp,schema)=(:db_uid,:db_artikeltyp,:db_schema);
+  exec sql insert into artbez_anzeige 
+      (uid,artikeltyp,schema,anzeige_pos,anzeige_neg,auswahl,autocomplete,kombiniert)
+   values
+      (:db_uid,:db_artikeltyp,:db_schema,:db_anzeige_pos,:db_anzeige_neg,:db_auswahl,:db_autocomplete,:db_kombiniert);
+  SQLerror::test(__FILELINE__);
+}
+
+std::string ArtikelBox::Tabellenname(cH_ExtBezSchema s)
+{  return "artbez_"+itos(s->Typ().Id())+"_"+itos(s->Id());
+}
