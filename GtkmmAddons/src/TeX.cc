@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: TeX.cc,v 1.3 2003/11/10 08:23:45 christof Exp $
+// $Id: TeX.cc,v 1.4 2004/01/28 10:47:44 christof Exp $
 
 #include <TeX.h>
 
@@ -34,7 +34,7 @@ std::ostream &TeX::Header(std::ostream &os, HeaderFlags fl)
    }
 
    // now output it
-   os << "% created using $Id: TeX.cc,v 1.3 2003/11/10 08:23:45 christof Exp $\n";
+   os << "% created using $Id: TeX.cc,v 1.4 2004/01/28 10:47:44 christof Exp $\n";
    os << "\\documentclass["<< fl.ptsize << "pt";
    if (fl.a4) os << ",a4paper";
    if (fl.twocolumn) os << ",twocolumn";
@@ -124,7 +124,7 @@ std::string TeX::string2TeX(const std::string &s, const StringFlags &fl) throw()
 	       ret+="\\\\\n";
 	       in_line=false;
 	    }
-	    else { ret+= s[i]; in_line=true; }
+	    else { ret+= std::string("$")+s[i]+"$"; in_line=true; }
 	    break;
 	 case ' ':
 	    if (fl.convert_space_to_tilde)
