@@ -1,4 +1,4 @@
-/* $Id: EntryValueFixed.h,v 1.6 2002/10/31 08:29:36 christof Exp $ */
+/* $Id: EntryValueFixed.h,v 1.7 2002/11/22 15:27:03 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -36,7 +36,7 @@ public:
    
  virtual bool operator==(const EntryValueBase &v) const
  {  try
-   {  const EntryValueFixed<decimals,Ftype,Itype> &b
+   {  const EntryValueFixed<decimals,Ftype,Itype,shorten> &b
    		=dynamic_cast<const EntryValueFixed<decimals,Ftype,Itype,shorten> &>(v);
       return wert==b.wert;
    } catch (std::bad_cast &e)
@@ -45,7 +45,7 @@ public:
  }
  virtual bool operator<(const EntryValueBase &v) const
  { try
-   {  const EntryValueFixed<decimals,Ftype,Itype> &b
+   {  const EntryValueFixed<decimals,Ftype,Itype,shorten> &b
    		=dynamic_cast<const EntryValueFixed<decimals,Ftype,Itype,shorten> &>(v);
       return wert<b.wert;
    } catch (std::bad_cast &e)

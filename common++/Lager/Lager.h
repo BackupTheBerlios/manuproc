@@ -1,4 +1,4 @@
-/* $Id: Lager.h,v 1.6 2002/11/07 07:49:52 christof Exp $ */
+/* $Id: Lager.h,v 1.7 2002/11/22 15:31:05 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -26,6 +26,7 @@
 #include <vector>
 #include <Aux/Handles.h>
 #include <Auftrag/selFullAufEntry.h>
+#include <Auftrag/auftrag_enums.h>
 
 class LagerInhalt
 {
@@ -66,16 +67,18 @@ class LagerInhalt
 };
 
 
-class Lager : public HandleContent 
+class Lager : public cH_ppsInstanz
 {
    private:
-      ppsInstanz::ID instanz;
 
       virtual std::vector<class LagerInhalt> LagerInhalt_(const ArtikelBase& artikel)
         const {assert(!"Nicht implementiert für Lager ohne eigene Tabelle");abort();} 
 
    public:
-      Lager(ppsInstanz::ID _instanz);
+      Lager(ppsInstanz::ID instanz) : cH_ppsInstanz(instanz) {}
+      Lager(cH_ppsInstanz  instanz) : cH_ppsInstanz(instanz) {}
+
+      virtual ~Lager(){}
 
    public:
       std::vector<class LagerInhalt> LagerInhalt() const ;
@@ -84,27 +87,18 @@ class Lager : public HandleContent
       class LagerInhalt LagerInhalt(const ArtikelBase& artikel) const ;
       bool dispo_auftrag_aendern(ArtikelBase artikel,AuftragBase::mengen_t menge);
 
+//   protected:
       void rein_ins_lager(ArtikelBase artikel,AuftragBase::mengen_t menge,int uid);
       void raus_aus_lager(ArtikelBase artikel,AuftragBase::mengen_t menge,int uid);
-
+   public:
       /// Datum für freie Lagermengen (Aufträge)
       static ManuProC::Datum Lagerdatum() {return ManuProC::Datum(ManuProC::Datum(1,1,1970));}
 
       void menge_neu_verplanen(int uid,
                   const ArtikelBase& artikel,AuftragBase::mengen_t menge,
-                  const AufEintragBase::e_reduce_reason reason) throw(SQLerror);
+                  const ManuProC::Auftrag::Action reason) throw(SQLerror);
 
 };
-
-class H_Lager : public Handle<Lager>
-{
-  private:
-     H_Lager(Lager *l) : Handle<Lager>(l){} 
-  public:
-     H_Lager(const ArtikelBase& artikel) ;
-     H_Lager(const cH_ppsInstanz& instanz) ;
-};
-
 
 #endif
 

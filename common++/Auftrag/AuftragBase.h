@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.34 2002/11/07 07:48:30 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.35 2002/11/22 15:31:05 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -34,37 +34,39 @@ class FetchIStream;
 
 class AuftragBase
 {
-        bool Exists() const throw(SQLerror) ;
+   bool Exists() const throw(SQLerror) ;
  public:
    typedef fixedpoint<ManuProC::Precision::AuftragsMenge> mengen_t;
    typedef Preis::rabatt_t rabatt_t;
-   static const int handplan_auftrag_id =  20000; // gemeint sind alle Aufträge, die NICHT 0,1,2 sind
-   static const int dispo_auftrag_id =  2;
-   static const int plan_auftrag_id  =  1;
-   static const int invalid_id       = ManuProcEntity<>::none_id ;
+   typedef ManuProcEntity<>::ID ID;
+   static const ID handplan_auftrag_id =  20000; // gemeint sind alle Aufträge, die NICHT 0,1,2 sind
+   static const ID dispo_auftrag_id =  2;
+   static const ID plan_auftrag_id  =  1;
+   static const ID invalid_id       = ManuProcEntity<>::none_id ;
    // warum umbenennen?
-   static const int none_id       = ManuProcEntity<>::none_id ;
-   static const int ungeplante_id    =  0;
+   static const ID none_id       = ManuProcEntity<>::none_id ;
+   static const ID ungeplante_id    =  0;
 
-   static const int PlanId_for(const cH_ppsInstanz &instanz);
+   static const ID PlanId_for(const cH_ppsInstanz &instanz);
 
  protected:
    cH_ppsInstanz instanz; 	
- 	int auftragid;	
+ 	ID auftragid;	
  public:
 	AuftragBase() 
 	        : instanz(ppsInstanzID::None), auftragid(invalid_id) {}
-	AuftragBase(cH_ppsInstanz _instanz, int aufid) throw() 
+	AuftragBase(cH_ppsInstanz _instanz, ID aufid) throw() 
 	        :instanz(_instanz), auftragid(aufid) 
 	        {}
-	AuftragBase(cH_ppsInstanz _instanz, int aufid,int kid) throw(SQLerror) ;
+	AuftragBase(cH_ppsInstanz _instanz, ID aufid,Kunde::ID kid) throw(SQLerror) ;
 
    std::string str() const;        
-	int Id() const {return auftragid;}
-   void set_Id(int i) {auftragid = i;}
+	ID Id() const {return auftragid;}
+   void set_Id(ID i) {auftragid = i;}
    ppsInstanz::ID InstanzID() const {return instanz->Id(); }
    cH_ppsInstanz Instanz() const {return instanz; }
 	bool valid() const { return auftragid!=invalid_id; }
+   bool editierbar() const;
    void setStatusAuftragBase(AufStatVal st) const throw(SQLerror);
    void setRabatt(const rabatt_t auftragsrabatt) const throw(SQLerror);
 
@@ -75,13 +77,13 @@ class AuftragBase
                         const ManuProC::Datum& lieferdatum,
                         int& znr,int &newznr, mengen_t& menge, const AufStatVal status
                         ) const throw(SQLerror);
-   // gibt Zeilennummer zurück
    struct st_tryUpdateEntry{bool automatisch_geplant;bool force_new;bool dispoplanung;
           explicit st_tryUpdateEntry() : automatisch_geplant(false),force_new(false),dispoplanung(false){}
           explicit st_tryUpdateEntry(bool a) : automatisch_geplant(a),force_new(false),dispoplanung(false){}
           explicit st_tryUpdateEntry(bool a,bool b,bool c) 
             : automatisch_geplant(a),force_new(b),dispoplanung(c){}
          };
+   // gibt Zeilennummer zurück
    int tryUpdateEntry(mengen_t bestellt, 
                const ManuProC::Datum lieferdatum, const ArtikelBase& artikel,
                AufStatVal status,int uid,const AufEintragBase& altAEB,
@@ -93,6 +95,9 @@ class AuftragBase
 
    bool operator==(const AuftragBase &b) const 
       {return instanz==b.instanz && auftragid==b.auftragid;}
+
+   static mengen_t min(const mengen_t &x,const mengen_t &y);
+   static mengen_t max(const mengen_t &x,const mengen_t &y);
 
 };
 

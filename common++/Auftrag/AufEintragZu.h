@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.9 2002/11/07 07:48:30 christof Exp $
+// $Id: AufEintragZu.h,v 1.10 2002/11/22 15:31:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -28,11 +28,12 @@
 
 class AufEintragZu : public AufEintragBase
 {
- AufEintragBase AEB;
+// AufEintragBase AEB;
 
 public:
  AufEintragZu(AufEintragBase aeb) 
-     : AEB(aeb) {}
+  : AufEintragBase(aeb) {}
+//     : AEB(aeb) {}
 
  struct st_reflist {AufEintragBase AEB;ArtikelBase Art;mengen_t Menge;
          st_reflist(AufEintragBase aeb,ArtikelBase ab,mengen_t menge) 
@@ -75,6 +76,7 @@ public:
 
     // Doppelte Einträge in der Kundenliste werden gelöscht:
     std::list<cH_Kunde> get_Referenz_Kunden() const throw(SQLerror);
+    std::vector<AufEintragBase> getKundenAuftragV() const;
 
     static std::list<AufEintragBase> get_AufEintragList_from_Artikel
                (const ArtikelBase& artikel,ppsInstanz::ID instanz,AufStatVal status);

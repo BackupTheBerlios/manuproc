@@ -1,4 +1,4 @@
-// $Id: ctime_assert.h,v 1.6 2002/05/09 12:46:00 christof Exp $
+// $Id: ctime_assert.h,v 1.7 2002/11/22 15:27:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,10 +19,12 @@
 
 #ifndef AUX_CTIME_ASSERTION_H
 #define AUX_CTIME_ASSERTION_H
-template <bool> struct ctime_assert { typedef int _true; };
-template <> struct ctime_assert<false> {};
+
+struct do_not_instantiate_use_typedef {  virtual void dummy()=0; };
+template <bool> struct ctime_assert { typedef do_not_instantiate_use_typedef _true; };
+template <> struct ctime_assert<false> {  };
 
 // use it like 
-//	typedef typename ctime_assert<(x>0)>::_true failed;
+//	typedef ctime_assert<(x>0)>::_true failed;
               
 #endif

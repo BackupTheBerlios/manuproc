@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.19 2002/10/04 13:57:48 thoma Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.20 2002/11/22 15:31:05 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -31,19 +31,22 @@ class SQLFullAuftragSelector // : public SQLAuftragSelector
 {
  std::string clausel;
 
- static std::string SQLFullAuftragSelector::StatusQualifier(AufStatVal v);
+ static std::string StatusQualifier(AufStatVal v);
+ static std::string IDQualifier(AuftragBase::ID id);
 
 public:
  SQLFullAuftragSelector() {}
 
+ // id=AuftragBase::none_id => Alle Aufträge
+ // id=AuftragBase::plan_auftrag_id => Alle außer 0er und 2er
+ // id=ungeplante_id|dispo_auftrag_id => as is
  struct sel_Status
-  { sel_Status(ppsInstanz::ID in, AufStatVal st,bool _geplant=true) 
-    : instanz(in),status(st),geplant(_geplant) {}
+  { sel_Status(ppsInstanz::ID in, AufStatVal st,AuftragBase::ID _id) 
+    : instanz(in),status(st),id(_id) {}
     ppsInstanz::ID instanz;
     AufStatVal status;
-    bool geplant; 
+    AuftragBase::ID id; 
   };  
-
 
  SQLFullAuftragSelector(const sel_Status& selstr);
 
@@ -93,11 +96,12 @@ public:
     ArtikelBase artikel;
     int auftragid;
     AufStatVal status;
+    Petig::Datum lieferdatum;
     
     sel_Artikel_Planung_id(ppsInstanz::ID i, Kunde::ID k,
                            ArtikelBase a, int _id,
-                           AufStatVal s=OPEN) 
-    : instanz(i), kunde(k),artikel(a), auftragid(_id), status(s)
+                           AufStatVal s=OPEN,Petig::Datum d=Petig::Datum()) 
+    : instanz(i), kunde(k),artikel(a), auftragid(_id), status(s),lieferdatum(d)
     {}
   };
  SQLFullAuftragSelector(const sel_Artikel_Planung_id &selstr);

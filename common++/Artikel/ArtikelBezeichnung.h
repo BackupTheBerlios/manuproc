@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.h,v 1.17 2002/05/09 12:45:59 christof Exp $
+// $Id: ArtikelBezeichnung.h,v 1.18 2002/11/22 15:31:04 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -155,6 +155,8 @@ public:
  bool Jumbo() const { return (*this)[schema->JumboIndex()]->getStrVal()==schema->JumboBez(); }
 #endif
 
+
+ 
 // deprecated
 private:
  ArtikelBezeichnung(const ArtikelBase &artikel,const cH_ExtBezSchema &schema) throw();

@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.h,v 1.13 2002/10/24 14:06:49 thoma Exp $
+// $Id: ArtikelStamm.h,v 1.14 2002/11/22 15:31:04 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -64,6 +64,7 @@ friend class AufArtKonsistenz;
 	cH_ppsInstanz BestellenBei() const
 	{  return payload.bestellen_bei; }
 public:
+//	ArtikelBase::ID Id() const { return art.Id();}
 	int defaultSchema() const
 	{  return payload.defaultschema; }
 	Einheit getEinheit() const
@@ -72,5 +73,9 @@ public:
 
         static void setEinheit(const ArtikelBase &artikel,const Einheit e);
         static void set_BestellenBei(const ArtikelBase &artikel,const ppsInstanz::ID instanz);
+	static void setAktive(const ArtikelBase &artikel, bool ak) throw(SQLerror);
+	bool getAktive() const throw(SQLerror);        
+	
+	
 };
 #endif

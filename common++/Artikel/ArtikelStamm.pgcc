@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.22 2002/11/07 07:48:23 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.23 2002/11/22 15:31:04 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -98,8 +98,14 @@ void ArtikelStamm::set_BestellenBei(const ArtikelBase &artikel,const ppsInstanz:
   exec sql begin declare section;
    int ID=artikel.Id();
    int BESTELLEN_BEI=instanz;
+   int IBESTELLEN_BEI=0;
   exec sql end declare section;
-  exec sql update artikelstamm set stand=now(),bestellen_bei=:BESTELLEN_BEI
+
+  if(instanz==ppsInstanzID::None)
+    IBESTELLEN_BEI=-1;
+
+  exec sql update artikelstamm set stand=now(),
+	bestellen_bei=:BESTELLEN_BEI:IBESTELLEN_BEI
       where id =:ID 
       and (bestellen_bei!=:BESTELLEN_BEI or bestellen_bei is null);
   SQLerror::test(__FILELINE__,100);
@@ -121,3 +127,30 @@ void ArtikelStamm::setEinheit(const ArtikelBase &artikel,const Einheit e)
   // Und nun noch raus aus dem Cache
   cache.deregister(artikel.Id());
 }
+
+
+void ArtikelStamm::setAktive(const ArtikelBase &artikel, bool ak) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int ARTID=artikel.Id();
+ bool AKTIV=ak;
+ exec sql end declare section;
+
+ exec sql update artikelstamm set aktiv=:AKTIV where id=:ARTID;
+ SQLerror::test(__FILELINE__);
+
+  cache.deregister(artikel.Id());
+}
+
+bool ArtikelStamm::getAktive() const throw(SQLerror)
+{
+ exec sql begin declare section;
+ int ARTID=art.Id();
+ bool AKTIV;
+ exec sql end declare section;
+
+ exec sql select aktiv into :AKTIV from  artikelstamm where id=:ARTID;
+ SQLerror::test(__FILELINE__);
+ return AKTIV;
+}
+

@@ -24,14 +24,13 @@
 #include "AufEintrag.h"
 #include <Artikel/ArtikelStamm.h>
 #include <Auftrag/AufEintragZu.h>
-#include <Lager/Lager_Vormerkungen.h>
 #include <Aux/Trace.h>
 #include <Artikel/ArtikelImLager.h>
 
 exec sql include sqlca;
 
 
-AuftragBase::AuftragBase(cH_ppsInstanz _instanz, int aufid,int kid) throw(SQLerror)
+AuftragBase::AuftragBase(cH_ppsInstanz _instanz, ID aufid,Kunde::ID kid) throw(SQLerror)
 : instanz(_instanz),auftragid(aufid)
 {
  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this);
@@ -196,25 +195,18 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
        assert(mt==auftragbestellmenge);
       }
    }
-
   if(!st_bool.dispoplanung)
    {    
      if(altAEB.valid())
         AufEintragZu(altAEB).Neu(AufEintragBase(*this,znr),bestellt);
       AufEintragBase(*this,znr).vormerken_oder_bestellen(uid,lagermenge,
-         bestellt,artikel,lieferdatum,st_bool);
-/*
-     Lager_Vormerkungen(class AufEintrag(Instanz()->Id(),Id(),znr,
-            altemenge+auftragbestellmenge,artikel,lieferdatum,status)).
-            vormerken_oder_bestellen(uid,lagermenge,bestellt,st_bool);
-*/
+         bestellt,artikel,lieferdatum,AIL.getDispoAuftraege(),st_bool);
    }
   else 
    {
      if(altAEB.valid())
         AufEintragZu(class AufEintragBase(*this,znr)).Neu(altAEB,bestellt);
    }
-
   tr.commit();
   return znr;
 }

@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.16 2002/11/07 07:49:51 christof Exp $
+// $Id: Lager.cc,v 1.17 2002/11/22 15:31:05 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -22,7 +22,6 @@
 #include "JumboLager.h"
 #include "RohwarenLager.h"
 #endif
-#include "Lager_Vormerkungen.h"
 #include <Auftrag/AufEintrag.h>
 #include <Auftrag/Auftrag.h>
 #include <Auftrag/AufEintragZu.h>
@@ -30,6 +29,7 @@
 #include <Instanzen/ppsInstanz.h>
 #include <Aux/Transaction.h>
 #include <Artikel/ArtikelStamm.h>
+#include <Artikel/ArtikelImLager.h>
 #include <algorithm>
 #include <unistd.h>
 #include <Aux/AdminProblems.h>
@@ -38,46 +38,23 @@
 #include <Misc/relops.h>
 #include <Misc/Trace.h>
 
-H_Lager::H_Lager(const ArtikelBase& artikel) 
-{
-// *this=H_Lager(ArtikelStamm(artikel).BestellenBei());
- *this=H_Lager(ppsInstanz::getBestellInstanz(artikel));
-}
-
-H_Lager::H_Lager(const cH_ppsInstanz& instanz) 
-{
-#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
- switch (instanz->Id())
-   {
-      case ppsInstanzID::Bandlager : *this= new JumboLager() ; break;
-      case ppsInstanzID::Rohwarenlager  : *this= new RohwarenLager(); break;
-      default: *this= new Lager(instanz->Id()); 
-//      default : assert (!"Ungültiges Lager");
-   }
-#else
-  assert(!"Keine Lagerklasse definiert");
-#endif
-
-}
-
-
 void Lager::rein_ins_lager(ArtikelBase artikel,AuftragBase::mengen_t menge,int uid)
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
-     "Lager=",instanz,"Artikel=",artikel,"Menge=",menge);
+     "Lager=",*this,"Artikel=",artikel,"Menge=",menge);
   assert(menge>=0);
   try{
      Transaction tr;
      dispo_auftrag_aendern(artikel,menge);
-     menge_neu_verplanen(uid,artikel,menge,AufEintragBase::r_Produziert);     
-
-//     Lager_Vormerkungen::freigegeben_menge_neu_verplanen(instanz,artikel,menge,uid,AufEintragBase::r_Produziert);
+     menge_neu_verplanen(uid,artikel,menge,ManuProC::Auftrag::r_Produziert);     
 
      ManuProC::st_produziert sp(artikel,menge,uid);
-
-//cout << "Lager: "<<ppsInstanz::getProduktionsInstanz(artikel)->Name()<<'\n';
-     if(!ppsInstanz::getProduktionsInstanz(artikel)->ProduziertSelbst())
+     
+     if(ppsInstanz::getProduktionsInstanz(artikel)->PlanungsInstanz())
+        (*this)->Produziert(sp,ManuProC::Auftrag::r_Produziert);
+     else if(!ppsInstanz::getProduktionsInstanz(artikel)->ProduziertSelbst())
            ppsInstanz::getProduktionsInstanz(artikel)->Produziert(sp);
+
 
      tr.commit();
    } catch(SQLerror &e)
@@ -90,10 +67,10 @@ void Lager::raus_aus_lager(ArtikelBase artikel,AuftragBase::mengen_t menge,int u
      "Artikel=",artikel,"Menge=",menge);
   assert(menge>=0);
   try{
-    assert(cH_ppsInstanz(instanz)->ProduziertSelbst());
+    assert((*this)->ProduziertSelbst());
 
      ManuProC::st_produziert sp(artikel,menge,uid);
-     cH_ppsInstanz(instanz)->Lager_abschreiben(sp);
+     (*this)->Lager_abschreiben(sp);
 
    } catch(SQLerror &e) { std::cout << e <<'\n';}
 }
@@ -103,7 +80,7 @@ bool Lager::dispo_auftrag_aendern(ArtikelBase artikel,AuftragBase::mengen_t meng
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
      "Artikel=",artikel,"Menge=",menge);
-   AuftragBase da(instanz,AuftragBase::dispo_auftrag_id);
+   AuftragBase da(*this,AuftragBase::dispo_auftrag_id);
    int znr=-1,newznr=-1;
    AuftragBase::mengen_t oldmenge;
    bool alt=da.existEntry(artikel,Lager::Lagerdatum(),znr,newznr,oldmenge,OPEN);
@@ -123,9 +100,9 @@ bool Lager::dispo_auftrag_aendern(ArtikelBase artikel,AuftragBase::mengen_t meng
 
 void Lager::menge_neu_verplanen(int uid,
               const ArtikelBase& artikel,AuftragBase::mengen_t menge,
-              const AufEintragBase::e_reduce_reason reason) throw(SQLerror)
+              const ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Instanz=",instanz,
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Instanz=",*this,
    "Artikel=",artikel,"Menge=",menge,
      "Reason=",reason);
 
@@ -133,30 +110,24 @@ void Lager::menge_neu_verplanen(int uid,
   if(menge==AuftragBase::mengen_t(0)) return;
 
   SQLFullAuftragSelector sel(SQLFullAuftragSelector::
-      sel_Artikel_Planung_id(instanz,
+      sel_Artikel_Planung_id((*this)->Id(),
       Kunde::eigene_id,artikel,AuftragBase::ungeplante_id));
   SelectedFullAufList auftraglist=SelectedFullAufList(sel);
+  
   for (SelectedFullAufList::iterator i=auftraglist.begin();i!=auftraglist.end();++i)
    {
      if(i->getRestStk()==AuftragBase::mengen_t(0)) continue;
      AuftragBase::mengen_t M=i->getRestStk();
      if(M>=menge) M=menge;
 
-     Lager_Vormerkungen(*i).artikel_vormerken_oder_schnappen(false,M,i->Artikel(),uid,true);
-     if(reason==AufEintragBase::r_Standard ||
-        reason==AufEintragBase::r_Closed)    
+     ArtikelImLager AIL(*this,i->Artikel(),i->getLieferdatum());
+     i->artikel_vormerken_oder_schnappen(false,M,i->Artikel(),uid,reason,AIL.getDispoAuftraege());
+     if(reason==ManuProC::Auftrag::r_Anlegen || reason==ManuProC::Auftrag::r_Planen||
+        reason==ManuProC::Auftrag::r_Closed)    
             i->updateStkDiffInstanz__(uid,-M,reason);
      menge-=M;
      if(menge==AuftragBase::mengen_t(0)) return;
    }
-}
-
-
-Lager::Lager(ppsInstanz::ID _instanz)
-: instanz(_instanz)
-{
-  if(cH_ppsInstanz(instanz)->LagerInstanz()==ppsInstanzID::None)
-     assert(!"Lager::check_lager_is_valid: Kein gültiges Lager\n");
 }
 
 

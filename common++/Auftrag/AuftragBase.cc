@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.9 2002/11/07 07:48:30 christof Exp $
+// $Id: AuftragBase.cc,v 1.10 2002/11/22 15:31:05 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,7 +25,6 @@
 #include "AufEintrag.h"
 #include <Artikel/ArtikelStamm.h>
 #include <Auftrag/AufEintragZu.h>
-#include <Lager/Lager_Vormerkungen.h>
 #include <Aux/Trace.h>
 
 std::string AuftragBase::str() const
@@ -111,11 +110,25 @@ const std::string AuftragBase::getStatusStr(AufStatVal a)
  return "-";
 }
 
-const int AuftragBase::PlanId_for(const cH_ppsInstanz &instanz)
+const AuftragBase::ID AuftragBase::PlanId_for(const cH_ppsInstanz &instanz)
 {
   if(instanz->LagerInstanz()) return AuftragBase::plan_auftrag_id;
   return AuftragBase::handplan_auftrag_id;
 }
 
 
+AuftragBase::mengen_t AuftragBase::min(const mengen_t &x,const mengen_t &y)
+{ if(x<=y) return x; return y; }
+AuftragBase::mengen_t AuftragBase::max(const mengen_t &x,const mengen_t &y)
+{ if(x>=y) return x; return y; }
+
             
+            
+bool AuftragBase::editierbar() const
+{
+  if     (Id() == dispo_auftrag_id) return false;
+  else if(ID() == plan_auftrag_id)  return false;
+  else if(ID() == ungeplante_id)    return false;
+  else if(Id() == none_id)          return false;
+  return true;
+}

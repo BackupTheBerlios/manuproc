@@ -1,4 +1,4 @@
-/* $Id: DefaultValues.h,v 1.11 2002/11/07 07:50:10 christof Exp $ */
+/* $Id: DefaultValues.h,v 1.12 2002/11/22 15:31:05 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -17,6 +17,9 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+// nach dem ersten Durchlauf muß in diesem Verzeichnis 'make recreate' 
+// ausgeführt werden. Erst dann werden die Firmenspezifischen Defaultvalues 
+// verwendet.
 
 
 #ifndef _DEFAULT_VALUES_H
@@ -29,18 +32,18 @@
 
 namespace ManuProC {
  namespace Precision {
+   const static int ArtikelMenge = 2;
    const static int AuftragsMenge = 0;
    const static int LieferscheinMenge = 3;
    const static int LieferscheinGewicht = 1;
    const static int GeldBetrag = 2;
    const static int Rabatt = 2;
   }
-   
- namespace DefaultValues {
 
-// nach dem ersten Durchlauf muß in diesem Verzeichnis 'make recreate' 
-// ausgeführt werden. Erst dann werden die Firmenspezifischen Defaultvalues 
-// verwendet.
+/////////////////////////////////////////////////////////////////////////
+   
+namespace DefaultValues {
+
 #ifdef MANUPROC_DYNAMICENUMS_CREATED 
 
   const static int EigeneKundenId=1;
@@ -52,7 +55,6 @@ namespace ManuProC {
 
 #ifdef MABELLA_EXTENSIONS
   const static ManuProC::DynamicEnums::ArtikelTyp::enum_t  ArtikelTyp=ManuProC::DynamicEnums::ArtikelTyp::aufgemachtes_Band;
-//  const static ManuProC::DynamicEnums::ArtikelTyp::enum_t  ArtikelTyp=ManuProC::DynamicEnums::aufgemachtes_Band;
   const static ManuProC::DynamicEnums::Prozesse::enum_t  Prozess=ManuProC::DynamicEnums::Prozesse::Verarbeitung;
 #elif defined PETIG_EXTENSIONS
   const static ManuProC::DynamicEnums::ArtikelTyp::enum_t  ArtikelTyp=ManuProC::DynamicEnums::ArtikelTyp::Band;
@@ -84,6 +86,7 @@ namespace ManuProC {
 #endif
 #ifdef PETIG_EXTENSIONS
    #define KEIN_PREIS_IM_EXTERNEN_AUFTRAG
+   #define ANZEIGE_VON_STUECK_UND_METER_IN_PPS
 #endif
 
 

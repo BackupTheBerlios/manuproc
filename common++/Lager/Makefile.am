@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.8 2002/11/07 07:49:52 christof Exp $
+# $Id: Makefile.am,v 1.9 2002/11/22 15:31:05 christof Exp $
 
 ENDUSER=-DPETIG
 
@@ -8,9 +8,9 @@ CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
 noinst_LIBRARIES=libProdLager.a
 
-includedir=@includedir@/Lager_Vormerkungen
+includedir=@includedir@/Lager
 
-libProdLager_a_SOURCES= $(PGCC_Sources) Lager_Vormerkungen.cc Lager.cc \
+libProdLager_a_SOURCES= $(PGCC_Sources) Lager.cc \
    LagerPlatz.cc JumboRolle.cc JumboLager.cc FertigWaren.cc
 
 libProdLager.a: $(libProdLager_a_OBJECTS) $(libProdLager_a_DEPENDENCIES)
@@ -23,7 +23,7 @@ PGCC_Sources= Lager_Dispo_sql.cc \
 
 BUILT_SOURCES= $(PGCC_Sources)
 
-include_HEADERS = Lager_Vormerkungen.h LagerPlatz.hh Lager_Dispo.h \
+include_HEADERS = LagerPlatz.hh Lager_Dispo.h \
    maschinen_geschwindigkeit.hh Lager.h JumboRolle.h CodeError.h \
    FertigWaren.h FertigWarenLager.h JumboLager.h RohwarenLager.h
 

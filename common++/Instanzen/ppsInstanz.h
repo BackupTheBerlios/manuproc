@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.10 2002/11/07 07:50:18 christof Exp $
+// $Id: ppsInstanz.h,v 1.11 2002/11/22 15:31:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,13 +25,17 @@
 #include <Aux/CacheStatic.h>
 #include <Aux/SQLerror.h>
 #include <Artikel/Prozess.h>
+#include <Auftrag/auftrag_enums.h>
 #include <vector>
 #include <DynamicEnums/DynamicEnums.h>
 #include <DynamicEnums/DefaultValues.h>
+#include <Aux/fixedpoint.h>
+#include <BaseObjects/ManuProcEntity.h>
 
 class AufEintrag;
 class ArtikelBase;
 class cH_ppsInstanz;
+class LagerInhalt;
 
 namespace ppsInstanzID=ManuProC::DynamicEnums::Instanzen;
 namespace ManuProC{ struct st_produziert; }
@@ -60,16 +64,19 @@ private:
 public:
  static const ID default_id=ManuProC::DefaultValues::Instanz;
  
- ppsInstanz(ID iid) : instid(iid),
-                             lager_fuer(ppsInstanzID::None),
-                             sortierung(0),
-                             lieferschein(false),produziert_selbst(false),
-                             typ('0')
-                             {get_name(); check(); }
- ppsInstanz() : instid(ppsInstanzID::None),
-                             sortierung(0),lieferschein(false),produziert_selbst(false) {}
+ ppsInstanz(ID iid=ppsInstanzID::None) : instid(iid),
+                      lager_fuer(ppsInstanzID::None),
+                      einlagern_in(ppsInstanzID::None),
+                      sortierung(0),
+                      lieferschein(false),produziert_selbst(false),
+                      automatisch_einlagern(false),
+                      produktionsdauer_tage(0),      
+                      typ('0'),geplant_von(ppsInstanzID::None),
+                      externe_bestellung(false)
+                      {get_name(); check(); }
 
  ID Id() const { return instid; }
+ bool valid() const {return Id()!=ppsInstanzID::None;}
  int Sortierung() const {return sortierung; }
  bool Lieferschein() const {return lieferschein;}
  bool ProduziertSelbst() const {return produziert_selbst;}
@@ -89,8 +96,11 @@ public:
  
 
  cH_Prozess get_Prozess() const;
+private:
   // Gegenteil von 'Lieferant' ist 'Kunde'
  bool Lieferant() const { return instid!=ppsInstanzID::Kundenauftraege; }
+public:
+ bool KundenInstanz() const {return instid==ppsInstanzID::Kundenauftraege; }
  int ProduktionsDauer() const {return produktionsdauer_tage;}
 
 
@@ -116,7 +126,7 @@ public:
  //////////////////////////////////////////////////////////////////////////
  // Für die Produktion
  public:
-      void Produziert(ManuProC::st_produziert &P) const throw(SQLerror);
+      void Produziert(ManuProC::st_produziert &P,ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_None) const throw(SQLerror);
       void Lager_abschreiben(ManuProC::st_produziert &P) const ;
       // Geplant wird von pps wenn im Einkauf ware bestellt wird ohne
       // einen spezielen '0er' auszuwählen.
@@ -124,6 +134,33 @@ public:
  private:
       void rekursion(ManuProC::st_produziert &P) const ;
 
+ /////////////////////////////////////////////////////////////////////////
+ // Reperatur
+ private:
+      struct st_table{std::string table; std::string column;
+              st_table(const std::string &t,const std::string &c) 
+               : table(t),column(c) {}};
+
+      std::vector<LagerInhalt> getLagerInhalt() const;
+      void vormerkungen_subrahieren(int uid,const  std::vector<LagerInhalt> &LI) const;
+      void DispoAuftraege_anlegen(const ArtikelBase &artikel,const fixedpoint<ManuProC::Precision::AuftragsMenge> &menge) const;
+      // 0er und 2er müssen immer offen sein
+      void force_open_0er_und_2er() const throw(SQLerror);
+      // Alle Aufträge außer Kundenaufträgen und externen Bestellungen 
+      // müssen die eigene KundenID haben
+      void force_eigene_KundenId() const throw(SQLerror);
+      void force_2er_0er_geliefert_ist_null() const throw(SQLerror);
+      void force_execute(const std::vector<st_table> &Vtable,
+          const std::vector<ManuProcEntity<>::ID> &Vauftragid,
+          const int Wert,const std::string &was) const throw(SQLerror);
+
+
+ public:
+      // Einlesen des Lagerinhalts und Anpassen der 2er unter Berücksichtigung der 1er
+      void ReparaturLager(const int uid) const throw(SQLerror);
+      // Entweder existieren 0er oder es existieren 2er
+      void Reparatur_0er_und_2er(const int uid) const throw(SQLerror);
+      void Reparatur_Konsistenz() const throw(SQLerror);
 };
 
 
@@ -148,7 +185,5 @@ class cH_ppsInstanz : public Handle<const ppsInstanz>
 };
 
 std::ostream &operator<<(std::ostream &o,const cH_ppsInstanz &i);
-
-
 
 #endif

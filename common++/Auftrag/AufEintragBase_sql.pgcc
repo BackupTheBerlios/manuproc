@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.30 2002/11/07 07:48:30 christof Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.31 2002/11/22 15:31:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -167,7 +167,7 @@ void AufEintragBase::setLetzteLieferung(const ManuProC::Datum &datum) const thro
 }
 
 
-AuftragBase::mengen_t AufEintragBase::updateStkDiffBase__(int uid,mengen_t menge) const throw(SQLerror)
+AuftragBase::mengen_t AufEintragBase::updateStkDiffBase__(int uid,const mengen_t &menge) const throw(SQLerror)
 {
  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"AEB=",*this,"Menge=",menge);
 

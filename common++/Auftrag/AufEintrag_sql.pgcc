@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.28 2002/11/07 07:48:30 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.29 2002/11/22 15:31:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,7 +27,6 @@
 #include <Aux/Changejournal.h>
 #include "selFullAufEntry.h"
 #include <Auftrag/AufEintragZu.h>
-#include <Lager/Lager_Vormerkungen.h>
 #include <Lager/Lager.h>
 #include <Lieferschein/Lieferschein.h>
 #ifdef MABELLA_EXTENSIONS
@@ -138,7 +137,7 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
  SQLerror::test("setStatus: lock table auftragentry");
 
  if(newstatus == CLOSED || newstatus == STORNO)
-     updateStkDiffInstanz__(uid,-getRestStk(),r_Closed);    
+     updateStkDiffInstanz__(uid,-getRestStk(),ManuProC::Auftrag::r_Closed);    
 
  std::string sqlcommand = "update auftragentry set status="+itos(newstatus);
  if(uid) sqlcommand+=", lasteditdate = now(), lastedit_uid="+itos(uid);
@@ -187,7 +186,6 @@ void AufEintrag::setInstanzen(AufStatVal newstatus,int uid,Petig::Datum lieferda
  std::list<AufEintragZu::st_reflist> KindListe = AufEintragZu(*this).get_Referenz_list(*this,true);
  for(std::list<AufEintragZu::st_reflist>::const_iterator i=KindListe.begin();i!=KindListe.end();++i)
   {
-//   ArtikelBaum::menge_t f=ArtikelBaum(artikel).Faktor(i->Art);
    mengen_t Mauftrag=AufEintrag(i->AEB).getRestStk();
    mengen_t Mzuordnung=i->Menge;
    AufEintrag AE(i->AEB);
@@ -220,24 +218,25 @@ void AufEintrag::setInstanzen(AufStatVal newstatus,int uid,Petig::Datum lieferda
             AufEintragZu(class AufEintragBase(*this,myznr)).Neu(AEBZ,Mzuordnung); // 'Neu' versucht erst ein 'update'
          }
      }
-   AE.updateStkDiff__(uid,-Mauftrag,false,r_Standard); // macht auch das Lager
+   AE.updateStkDiff__(uid,-Mauftrag,false,ManuProC::Auftrag::r_Anlegen); // macht auch das Lager
    if(auftragstatus==UNCOMMITED && newstatus==OPEN ) 
       AE.setStatusAuftragBase(newstatus);
 
    if(instanz->LagerInstanz() && Id()==plan_auftrag_id && 
        (newstatus==STORNO || Mauftrag < 0 ))
     {
-      H_Lager L(instanz);
-      L->rein_ins_lager(ArtId(),Mauftrag,uid);
+      Lager L(instanz);
+      L.rein_ins_lager(ArtId(),Mauftrag,uid);
     }
    AE.setInstanzen(newstatus,uid,lieferdate,Mauftrag,znr,newznr);
   }
 }
 
 
-AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool instanzen,e_reduce_reason reason) throw(SQLerror)
+AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool instanzen,ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Menge=",menge,"Instanzen(bool)=",instanzen,"Reason=",reason);
+ if(reason==ManuProC::Auftrag::r_None) assert(!instanzen);
  if(menge==mengen_t(0))  return menge;
  if(auftragstatus==OPEN || auftragstatus==UNCOMMITED)
   {
@@ -251,7 +250,6 @@ AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool in
 
    if(instanzen)
       updateStkDiffInstanz__(uid,mt,reason);
-
    bestellt+=menge;
 
    tr.commit();
@@ -261,16 +259,16 @@ AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool in
 }
 
 
-void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,e_reduce_reason reason) throw(SQLerror)
+void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"OldMenge=",oldmenge,
    "Reason=",reason);
  std::list<AufEintragZu::st_reflist> KindListeU = AufEintragZu(*this).get_Referenz_list_ungeplant();
-// std::list<AufEintragZu::st_reflist> KindListeG = AufEintragZu(*this).get_Referenz_list(*this,true);
  try{
   std::vector<ArtikelBase> VA;
   std::list<AufEintragZu::st_reflist> ZU;
-  if(reason==r_Standard || reason==r_Closed) ZU=KindListeU;
+  if(reason==ManuProC::Auftrag::r_Anlegen || reason==ManuProC::Auftrag::r_Closed) 
+         ZU=KindListeU;
   else
    for(std::list<AufEintragZu::st_reflist>::iterator i=KindListeU.begin();i!=KindListeU.end();++i)
     {
@@ -293,7 +291,7 @@ void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,e_reduce_reaso
      ArtikelBaum::faktor_t faktor = ArtikelBaum(ArtId()).Faktor(i->Art);
      AuftragBase::mengen_t menge=faktor*oldmenge;
      AufEintrag AE(i->AEB);
-     mengen_t mt=AE.updateStkDiff__(uid,menge,true,reason/*,callback,argument*/);
+     mengen_t mt=AE.updateStkDiff__(uid,menge,true,reason);
      AufEintragZu(*this).setMengeDiff__(i->AEB,menge);
 
      if(mt!=mengen_t(menge)) // es konnte nicht alles bei ungeplanten reduziert werden
@@ -425,7 +423,7 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld,int uid) throw(SQLerro
 
 #include <Misc/relops.h>
   
-int AufEintrag::split(int uid,mengen_t newmenge, const Petig::Datum &newld,bool dispoplanung,void (*callback)(void *,st_problems),void* argument) throw(SQLerror)
+int AufEintrag::split(int uid,mengen_t newmenge, const Petig::Datum &newld,bool dispoplanung) throw(SQLerror)
 {
  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"NewMenge=",newmenge,"NewDatum=",newld,"dispoplanung(bool)=",dispoplanung);
  if(entrystatus==CLOSED) return none_znr;
@@ -448,7 +446,7 @@ int AufEintrag::split(int uid,mengen_t newmenge, const Petig::Datum &newld,bool 
  SQLerror::test("split: lock table auftragentry");
 
 
- mengen_t mt=updateStkDiff__(uid,-newmenge,true,r_Standard);
+ mengen_t mt=updateStkDiff__(uid,-newmenge,true,ManuProC::Auftrag::r_Anlegen);
  assert(mt==-newmenge);
 
  int ZEILENNR;
@@ -459,9 +457,6 @@ int AufEintrag::split(int uid,mengen_t newmenge, const Petig::Datum &newld,bool 
    }
  else
    ZEILENNR=split_zuordnungen_to(newmenge,newld,artikel,entrystatus,uid,dispoplanung);
-
-// mengen_t mt=updateStkDiff__(uid,-newmenge,true,callback,argument);
-// assert(mt==-newmenge);
 
  if(STATUS==OPEN)
    {   pps_ChJournalEntry::newChange(
@@ -495,84 +490,6 @@ AufEintrag::AufEintrag(const AufEintragBase &aebb) throw (SQLerror,NoAEB_Error)
 }
 
 
-int AufEintrag::Planen(int uid,mengen_t menge,bool reduce_old,const AuftragBase &zielauftrag,
-   const Petig::Datum &datum,bool rekursiv) throw(std::exception)
-{
-   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Menge=",menge,"reduce_old=",reduce_old,"Zielauftrag=",zielauftrag);
-   assert(!Id());
-   assert(Instanz()->LagerInstanz() || entrystatus==OPEN);
-   assert(Instanz()->LagerInstanz() || auftragstatus==OPEN);
-   if(entrystatus==UNCOMMITED) entrystatus=OPEN; // Kein Datenbankzugriff nötig, 
-                                                // das macht insertNewEntry
-   Auftrag ZA(zielauftrag);
-   ZA.setStatusAuftrag_(OPEN);
-
-   // wenn Lieferdatum rekursiv korrigieren (VOR dem Planen)
-   if(datum!=getLieferdatum())
-    {
-      AuftragBase::mengen_t M;
-      if(menge>=getStueck()) M=getStueck();
-      else M=menge; 
-      int znr=split(uid,M,datum);
-      AufEintrag ae=AufEintrag(AufEintragBase(*this,znr));
-      return ae.Planen(uid,menge,true,zielauftrag,datum,rekursiv);
-    }
-
-   int znr=-1,dummy;
-   mengen_t mdummy;
-
-   if (!zielauftrag.existEntry(Artikel(),datum,znr,dummy,mdummy,entrystatus))
-    {
-      AufEintragBase neuAEB=ZA.push_back(0,datum,Artikel(),entrystatus,uid,false);
-      znr=neuAEB.ZNr();
-    }
-   if(menge==AuftragBase::mengen_t(0)) return znr;
-   assert(menge>0);
-   if(menge-getRestStk() > 0  )
-    {
-      if(!Instanz()->LagerInstanz()) // Lager werden nicht überplant
-       {
-         mengen_t dispomenge = menge-getRestStk();
-         menge=getRestStk();      
-         AufEintragBase(zielauftrag,znr).PlanenDispo(uid,Artikel(),dispomenge,datum);
-       }
-      else
-       {
-       }
-    }
-
-   move_to(uid,AufEintragBase(zielauftrag,znr),menge,reduce_old);
-
-   std::list<AufEintragZu::st_reflist> ReferenzAufEintrag =
-			         AufEintragZu(*this).get_Referenz_listFull(false);
-
-   for (std::list<AufEintragZu::st_reflist>::iterator i=ReferenzAufEintrag.begin();i!=ReferenzAufEintrag.end();++i)
-    {
-     if(i->AEB.Instanz()->Id()!=ppsInstanzID::Kundenauftraege) continue;
-     if(zielauftrag.Id()==AuftragBase::plan_auftrag_id) continue;
-     i->AEB.setLetztePlanungFuer(instanz);
-     i->AEB.calculateProzessInstanz();
-    }
-
-
-   if(rekursiv) // Braucht nur das Erfassungs/Reperaturprogramm
-    {
-     // bei dem gerade geplaneten Auftrag abschreiben:
-     AufEintrag(class AufEintragBase(zielauftrag,znr)).
-		abschreiben(menge,ManuProcEntity<>::none_id);
-     std::list<AufEintragZu::st_reflist> L=AufEintragZu(*this).get_Referenz_list_ungeplant();
-     for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
-      {
-        // Lager nicht rekursiv Planen
-        if(i->AEB.Instanz()->LagerInstanz()) continue;
-        AuftragBase ab(i->AEB.Instanz(),plan_auftrag_id);
-        AuftragBase::mengen_t M=menge*ArtikelBaum(ArtId()).Faktor(i->Art);
-        AufEintrag(i->AEB).Planen(uid,M,true,ab,datum,rekursiv);
-      }
-    }
- return znr;
-}
-
 void AufEintrag::moveInstanz(int uid,const AuftragBase &newAuftrag) throw(SQLerror)
 {
  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"NewAuftrag=",newAuftrag);
@@ -603,8 +520,8 @@ void AufEintrag::moveInstanz(int uid,const AuftragBase &newAuftrag) throw(SQLerr
  AufEintragBase newaeb= A.push_back(bestellmenge,getLieferdatum(),Artikel(),
                             getEntryStatus(),uid,false,EPreis(),Rabatt());
  zeilennr = newaeb.ZNr();
- AufEintragBase(newAuftrag,zeilennr).vormerken_oder_bestellen(
-     uid,bestellt-bestellmenge,bestellt,Artikel(),getLieferdatum());
+ AufEintragBase(newAuftrag,zeilennr).vormerken_oder_bestellen(uid,
+     bestellt-bestellmenge,bestellt,Artikel(),getLieferdatum(),AIL.getDispoAuftraege());
 
 // exec sql delete from prod_changejournal where 
 //      (insid,auftragid,auftragzeile)=(:OLDINSTANZ,:OLDAUFTRAGID,:OLDZEILENNR);

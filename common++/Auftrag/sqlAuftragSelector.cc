@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.21 2002/11/07 07:48:30 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.22 2002/11/22 15:31:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,18 +28,18 @@
 
 
 #define FULL_SELECTIONS "a.instanz, a.auftragid, e.zeilennr, bestellt, " \
-	"e.artikelid, e.rohartikelid, " \
+	"e.artikelid, " \
 	"e.lieferdate, geliefert, " \
 	"a.stat, " \
 	"a.kundennr, youraufnr, " \
 	"coalesce(p.prozessid,"+itos(ProzessID::None)+"), " \
 	"coalesce(p.letzteplaninstanz,"+itos(ppsInstanzID::None)+"), " \
    	"coalesce(p.maxplaninstanz,"+itos(ppsInstanzID::None)+"), " \
-	"date(coalesce(p.datum,now())), " \
-	"e.preis, coalesce(e.rabatt,0.0), " \
-	"coalesce(e.preismenge,1), a.waehrung, " \
+	"coalesce(p.datum,cast(now() as date)), " \
+	"e.preis, coalesce(e.preismenge,1), a.waehrung, " \
+	"coalesce(e.rabatt,0.0), " \
 	"e.status,coalesce(e.lastedit_uid,0),e.lasteditdate," \
-	"coalesce(text(e.letzte_lieferung),'')," \
+	"e.letzte_lieferung," \
 	"coalesce(e.preisliste,"+itos(ManuProcEntity<>::none_id)+") "
 
 #define FULL_FROM "(auftrag a join auftragentry e using (instanz,auftragid))" \
@@ -60,7 +60,7 @@
 #define FULL_SELECT_FROM_WHERE "select " FULL_SELECTIONS \
 	" from " FULL_FROM " where true "
 
-#define FULL_SELECT_NO_0 " and bestellt!=0 "
+//#define FULL_SELECT_NO_0 " and bestellt!=0 "
 #define FULL_SELECT_NO_STORNO " and e.status!="+itos(STORNO)+" "
 
 // Vorsicht: enthält keine führenden/abschließenden Leerzeichen
@@ -74,7 +74,7 @@ std::string SQLFullAuftragSelector::StatusQualifier(AufStatVal stat)
 // if(nonstatus) op="!=";
 // if(nonstatus && UNCOMMITED) assert(!"Nicht implementert");
  switch (stat) {
-   case OPEN       : return "a.stat=e.status and a.stat"+op+status;
+   case OPEN       : return "a.stat=e.status and e.status"+op+status;
    case UNCOMMITED : return "(a.stat= "+status+" and e.status "+nicht_erledigt+
                         " or (a.stat "+nicht_erledigt+" and e.status="+status+"))";
    case STORNO     : return "(a.stat"+op+status+" or e.status"+op+status+")";
@@ -85,13 +85,28 @@ std::string SQLFullAuftragSelector::StatusQualifier(AufStatVal stat)
  return "false";
 }
 
+std::string SQLFullAuftragSelector::IDQualifier(AuftragBase::ID id)
+{
+  std::string s;
+  if(id==AuftragBase::none_id) return s;
+  else if (id==AuftragBase::ungeplante_id || id==AuftragBase::dispo_auftrag_id)
+      s+="auftragid="+itos(id);
+  else if(id==AuftragBase::plan_auftrag_id) 
+      s+="(auftragid!="+itos(AuftragBase::ungeplante_id)+" and"
+         " auftragid!="+itos(AuftragBase::dispo_auftrag_id)+")";
+  else assert(!"SQLFullAuftragSelector::IDQualifier komische ID");
+  return " and "+s+" ";
+}
+
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Status& selstr)
 {
- std::string cl=FULL_SELECT_FROM_WHERE FULL_SELECT_NO_0 " and "
+ std::string cl=FULL_SELECT_FROM_WHERE 
+   " and bestellt!=0 "
+    + IDQualifier(selstr.id) +" and "
     + StatusQualifier(selstr.status)+
-       " and a.instanz="+itos(selstr.instanz);
+   " and a.instanz="+itos(selstr.instanz);
 
- if(!selstr.geplant) cl +=" and a.auftragid!=0 ";
+// if(!selstr.geplant) cl +=" and a.auftragid!=0 ";
  setClausel(cl);
 }
 
@@ -157,6 +172,9 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel_Planung_id &sel
 	        " and a.instanz="+itos(selstr.instanz) +
            " and kundennr="+itos(selstr.kunde) +
    	     " and artikelid="+itos(selstr.artikel.Id());
+  if(selstr.lieferdatum.valid())
+      clau+= " and lieferdate="+selstr.lieferdatum.postgres_null_if_invalid();
+
 
   if(selstr.status==OPEN)
    {
@@ -191,7 +209,8 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel &selstr)
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Kunde_Status &selstr)
 {
- setClausel(FULL_SELECT_FROM_WHERE FULL_SELECT_NO_0
+ setClausel(FULL_SELECT_FROM_WHERE 
+        " and bestellt!=0 "
 	     " and "+StatusQualifier(selstr.stat)+
 	     " and a.instanz="+itos(selstr.instanz) +
 	     " and a.kundennr=" + itos(selstr.kundennr) +

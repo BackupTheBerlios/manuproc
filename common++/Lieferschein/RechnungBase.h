@@ -1,4 +1,4 @@
-/* $Id: RechnungBase.h,v 1.7 2002/10/24 14:06:50 thoma Exp $ */
+/* $Id: RechnungBase.h,v 1.8 2002/11/22 15:31:05 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,6 +25,7 @@
 #include <Artikel/Preis.h>
 #include <Lieferschein/LieferscheinBase.h>
 #include <BaseObjects/ManuProcEntity.h>
+#include <Aux/Ausgabe_neu.h>
 
 // ableiten von ManuProcEntity wg. HandleCOntent nicht möglich :-( MAT
 class RechnungBase // : ManuProcEntity
@@ -43,6 +44,8 @@ class RechnungBase // : ManuProcEntity
 	RechnungBase(ID rid) : rngid(rid) {}
 
 	ID Id() const {return rngid;}
+	std::string getRngidToStr() const
+	{ return Formatiere(rngid,0,6,"","",'0'); }
 
    // sobald von ManuProcEntity abgeleitet die folgende Zeile löschen MAT
    bool Valid() const {return ManuProcEntity<>::Valid(rngid);}

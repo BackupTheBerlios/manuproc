@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.h,v 1.36 2002/11/07 07:48:30 christof Exp $
+// $Id: AufEintragBase.h,v 1.37 2002/11/22 15:31:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,14 +24,17 @@
 #include <Auftrag/AuftragBase.h>
 #include <Auftrag/auftrag_status.h>
 #include<BaseObjects/ManuProcEintrag.h>
+#include<Auftrag/auftrag_enums.h>
 class cH_Kunde;
+
+
+
 
 class AufEintragBase : public AuftragBase
 {
 public: 
   typedef AuftragBase::mengen_t mengen_t;
   static const int none_znr=ManuProcEintrag::none_znr;
-  enum e_reduce_reason{r_Standard,r_Produziert,r_Closed};
 
 protected:
  int zeilennr;
@@ -60,7 +63,7 @@ public:
  // gibt die Menge zurück, die verändert wurde. Falls reduziert werden sollte
  // müssen die input/output menge nicht übereinstimmen, da keine negativen Mengen
  // bestellt werden können
- mengen_t updateStkDiffBase__(int uid,mengen_t menge) const throw(SQLerror);
+ mengen_t updateStkDiffBase__(int uid,const mengen_t &menge) const throw(SQLerror);
 
  void setLetztePlanungFuer(cH_ppsInstanz planinstanz) const throw(SQLerror);
  void calculateProzessInstanz(); // private?
@@ -72,17 +75,23 @@ public:
  // Planen
  // *this ist der ZielAufEintragBase
  void PlanenDispo(int uid,const ArtikelBase& artikel,mengen_t menge,const ManuProC::Datum &datum);
-
  void vormerken_oder_bestellen(int uid,const AuftragBase::mengen_t &vormerkmenge,
             AuftragBase::mengen_t bestellmenge,
             const ArtikelBase &artikel,const Petig::Datum &lieferdatum,
-            AuftragBase::st_tryUpdateEntry st_bool=st_tryUpdateEntry()) throw(SQLerror);
+            std::vector<AufEintrag> dispo_auftrag,
+            AuftragBase::st_tryUpdateEntry st_bool=st_tryUpdateEntry()) const throw(SQLerror);
+private:
+ friend class Lager;
+ void AufEintragBase::artikel_vormerken_oder_schnappen(bool schnappen,AuftragBase::mengen_t menge,
+      const ArtikelBase &artikel,int uid,ManuProC::Auftrag::Action reason,
+      std::vector<AufEintrag> dispo_auftrag) const ;
+
+
 public:
 
  int split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum, 
                          ArtikelBase artikel,AufStatVal status,
                          int uid,bool dispoplanung);
-
 
  bool operator<(const AufEintragBase& b) const 
        {return Instanz()<b.Instanz() 
@@ -94,9 +103,6 @@ public:
 
  friend std::ostream &operator<<(std::ostream &o,const AufEintragBase &ae);
  std::string str() const;
-
-
-
 
   // Diese Funktion ist zum Debuggen sehr nützlich:
   void ExistMenge(const std::string &s="") const;

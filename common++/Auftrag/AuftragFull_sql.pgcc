@@ -36,15 +36,9 @@ AufEintragBase AuftragFull::push_back(AuftragBase::mengen_t bestellt,
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
   AufEintragBase newAEB=Auftrag::push_back(bestellt,lieferdatum,artid,status,uid,true,preis,rabatt,preisliste);
-  eintragliste.push_back(AufEintrag(
-      Instanz(),Id(),newAEB.ZNr(),bestellt,artid,lieferdatum,
-      	0,	// geliefert
-	0,	// dispoentrynr
-	0,	// disponr
-	getStatus(),getKundennr(),getYourAufNr(),
-      ManuProC::Datum(),Prozess::default_id,ppsInstanzID::None,
-	0,	// maxPlanInstanz
-      preis,rabatt,status,uid,ManuProC::Datum::today(),"",preisliste));
+  eintragliste.push_back(AufEintrag(newAEB,
+      bestellt,artid,lieferdatum,getStatus(),getKundennr(),getYourAufNr(),
+      preis,rabatt,status,uid,preisliste));
   return newAEB;
 }
 

@@ -200,9 +200,12 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr) throw(SQLerror)
  int STATUS=UNCOMMITED;
  int INSTANZ=Instanz();
  int WAEHRUNG;
+ int VERKNR;
+ int IVERKNR=0;
  exec sql end declare section;
 
- exec sql select waehrungid into :WAEHRUNG from kunden where kundennr= :KUNDENNR;
+ exec sql select waehrungid,coalesce(verknr,-1) 
+	into :WAEHRUNG,:VERKNR from kunden where kundennr= :KUNDENNR;
  SQLerror::test(__FILELINE__"select waehrung from kunden");
 
  Transaction tr;
@@ -224,6 +227,14 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr) throw(SQLerror)
  	values (:AUFTRAGID, :KUNDENNR, :STATUS, :WAEHRUNG,:INSTANZ);
  SQLerror::test(__FILELINE__" insert into auftrag");
   
+#ifdef MABELLA_EXTENSIONS
+ if(VERKNR==-1) IVERKNR=-1;
+ exec sql update auftrag set verknr=:VERKNR:IVERKNR where
+	(auftragid,instanz)=(:AUFTRAGID,:INSTANZ);
+ SQLerror::test(__FILELINE__":Auftrag: update auftrag");	
+#endif
+
+
  exec sql select date(datum) into :DATUM from auftrag 
    where auftragid= :AUFTRAGID and instanz = :INSTANZ;
  SQLerror::test("Aufrtag: select datum");
@@ -248,9 +259,12 @@ Auftrag::Auftrag(Anlegen2 AB, long kdnr) throw(SQLerror)
  int STATUS = OPEN;
  int INSTANZ =Instanz();
  int WAEHRUNG;
+ int VERKNR;
+ int IVERKNR=0;
  exec sql end declare section;
 
- exec sql select waehrungid into :WAEHRUNG from kunden where kundennr= :KUNDENNR;
+ exec sql select waehrungid,coalesce(verknr,-1) 
+	into :WAEHRUNG,:VERKNR from kunden where kundennr= :KUNDENNR;
  SQLerror::test(__FILELINE__"select waehrung from kunden");
 
  Transaction tr;
@@ -259,6 +273,13 @@ Auftrag::Auftrag(Anlegen2 AB, long kdnr) throw(SQLerror)
  	values (:AUFTRAGID, :KUNDENNR, :STATUS, :WAEHRUNG,:INSTANZ);
  SQLerror::test(__FILELINE__" insert auftrag with auftragid 0");
   
+#ifdef MABELLA_EXTENSIONS
+ if(VERKNR==-1) IVERKNR=-1;
+ exec sql update auftrag set verknr=:VERKNR:IVERKNR where
+	(auftragid,instanz)=(:AUFTRAGID,:INSTANZ);
+ SQLerror::test(__FILELINE__":Auftrag: update auftrag");	
+#endif
+
  exec sql select date(datum) into :DATUM from auftrag 
    where auftragid= :AUFTRAGID and instanz = :INSTANZ;
  SQLerror::test("Aufrtag: select datum");

@@ -1,4 +1,4 @@
-// $Id: ppsInstanzProduziert.cc,v 1.5 2002/11/07 07:50:18 christof Exp $
+// $Id: ppsInstanzProduziert.cc,v 1.6 2002/11/22 15:31:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,6 +27,7 @@
 #include <Aux/AdminProblems.h>    
 #include <Lager/Lager.h>
 #include <Aux/Trace.h>
+#include <Aux/Transaction.h>
 #include <Misc/relops.h>
 
 void ppsInstanz::Planen(ManuProC::st_produziert &P) const throw(SQLerror)
@@ -36,30 +37,41 @@ void ppsInstanz::Planen(ManuProC::st_produziert &P) const throw(SQLerror)
    "Menge=",P.menge,"LfrsId="+itos(P.lfrsid));
  assert(Id()!=ppsInstanzID::None) ; 
  assert(!P.AE.valid()) ; 
+ Transaction tr;
  if(P.menge>=0)
    {
       P.abschreiben_oder_reduzieren(Id(),
                AuftragBase::ungeplante_id,P.menge,false);
+      if(P.ZNr==ManuProcEintrag::none_znr) //kein Auftrag zum Planen gefunden
+       {
+         // 0er erzeugen
+         AuftragBase AB(this,AuftragBase::ungeplante_id);
+         AB.tryUpdateEntry(0,P.lieferdatum,P.artikel,OPEN,P.uid,AufEintragBase());
+         P.abschreiben_oder_reduzieren(Id(),
+                  AuftragBase::ungeplante_id,P.menge,false);
+       }
    }
  else //if(menge<0)
     {
       assert(!"nicht implementiert");     
     }  
+  tr.commit();
 }
 
 
-void ppsInstanz::Produziert(ManuProC::st_produziert &P) const throw(SQLerror)
+void ppsInstanz::Produziert(ManuProC::st_produziert &P,ManuProC::Auftrag::Action reason) const throw(SQLerror)
 {
  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
    "Instanz=",*this,"Artikel=",P.artikel,
    "Menge=",P.menge,"LfrsId="+itos(P.lfrsid));
  assert(Id()!=ppsInstanzID::None) ; 
-
+ Transaction tr;
  if(P.AE.valid()) // direktes Abschreiben ohne Suche von offenen Aufträgen
      { assert(P.AE.valid());
        P.AE.abschreiben(P.menge,P.lfrsid);
        P.Reduce_DispoEltern(P.AE,P.menge);      
        rekursion(P);
+       tr.commit();
        return;
      }     
 
@@ -73,21 +85,20 @@ void ppsInstanz::Produziert(ManuProC::st_produziert &P) const throw(SQLerror)
 //cout << Name()<<'\t'<<P.menge<<' '<<restmenge<<'\n';
       if(restmenge>0)
        {
-//          AuftragBase::mengen_t restmenge2=
-          P.abschreiben_oder_reduzieren(Id(),
-                  AuftragBase::ungeplante_id,restmenge);
-
-//(AufEintragBase(ppsInstanz::ID(30),2,3)).ExistMenge("C");
+          AuftragBase::mengen_t restmenge2=
+             P.abschreiben_oder_reduzieren(Id(),
+                     AuftragBase::ungeplante_id,restmenge);
 
 //cout << '\t'<<Name()<<' '<<Id()<<'\t'<<P.menge<<' '<<restmenge<<' '<<restmenge2<<'\n';
-#if 0
-          if(restmenge2>0) 
-           {
-cerr << "Restmenge nach Abschreiben bei geplantem Auftrag war "
-<<restmenge<<"\nRestmenge nach Reduzieren des ungeplanten Auftrags ist "
-<<restmenge2<<"\n   und Was machen wir nun?\n"
-           }
-#endif
+            if(restmenge2>0 && reason==ManuProC::Auftrag::r_Produziert)
+             {
+              cH_ppsInstanz I(ppsInstanz::getProduktionsInstanz(P.artikel));
+              if(I->PlanungsInstanz())
+               {
+                 ManuProC::st_produziert P2(P.artikel,restmenge2,P.uid);
+                 I->Lager_abschreiben(P2);
+               }
+             }
         }       
      P.check_dispo_auftraege(Id());
     }
@@ -100,12 +111,14 @@ cerr << "Restmenge nach Abschreiben bei geplantem Auftrag war "
          // da bin ich mal gespannt wann das hier fehlschlägt MAT 2.10.02
          assert(restmenge==P.menge);
          // war früher ein assert; war aber zu streng
-         if(Id()!=ppsInstanzID::Kundenauftraege) return;
+         if(Id()!=ppsInstanzID::Kundenauftraege){ tr.commit(); return; }
          assert(P.AE.valid());         
          P.AE.abschreiben(restmenge,P.lfrsid);
        }
     }
+  if(reason==ManuProC::Auftrag::r_Produziert) {tr.commit(); return;}
   rekursion(P);
+  tr.commit();
 }
 
 void ppsInstanz::Lager_abschreiben(ManuProC::st_produziert &P) const 
@@ -114,16 +127,19 @@ void ppsInstanz::Lager_abschreiben(ManuProC::st_produziert &P) const
    "Instanz=",*this,"Artikel=",P.artikel,
    "Menge=",P.menge,"LfrsId="+itos(P.lfrsid));
 
-  assert(LagerInstanz());
+  assert(LagerInstanz()||PlanungsInstanz());
+  Transaction tr;
   AuftragBase::mengen_t restmenge=P.abschreiben_oder_reduzieren(Id(),
                                        AuftragBase::plan_auftrag_id,P.menge);
   if(restmenge>0)
    {
      AuftragBase::mengen_t restmenge2=P.abschreiben_oder_reduzieren(Id(),
                   AuftragBase::dispo_auftrag_id,restmenge);
-     if(restmenge2!=AuftragBase::mengen_t(0)) P.fehler(*this,P.Mehr_produziert_als_moeglich,
+     if(restmenge2!=AuftragBase::mengen_t(0) && !PlanungsInstanz()) 
+         P.fehler(*this,P.Mehr_produziert_als_moeglich,
                AuftragBase::dispo_auftrag_id,P.menge,restmenge2) ;
    }
+  tr.commit();
 }
 
 
@@ -136,10 +152,17 @@ void ppsInstanz::rekursion(ManuProC::st_produziert &P) const
  
  if(as.BestellenBei()==ppsInstanzID::None) return;
 
+//cout << *this<<'\t'<<EinlagernIn()<<'\t'
+//<<cH_ppsInstanz(EinlagernIn())->AutomatischEinlagern()<<'\n';
+//cout << *this<<'\t'<<GeplantVon()<<'\n';
  if(Id()!=ppsInstanz::getBestellInstanz(P.artikel)->Id())
    {
+//cout << Name()<<'\t'<<EinlagernIn()<<' '
+//<<cH_ppsInstanz(EinlagernIn())->AutomatischEinlagern()<<' '
+//<<PlanungsInstanz()<<'\n';
     if(EinlagernIn()!=ppsInstanzID::None && 
-       cH_ppsInstanz(EinlagernIn())->AutomatischEinlagern())
+       cH_ppsInstanz(EinlagernIn())->AutomatischEinlagern() &&
+       !PlanungsInstanz())
      {
        Lager L(EinlagernIn()); 
        L.rein_ins_lager(P.artikel,P.menge,P.uid);
@@ -150,11 +173,19 @@ void ppsInstanz::rekursion(ManuProC::st_produziert &P) const
         P.kunde=ManuProC::DefaultValues::EigeneKundenId;
         P.AE=AufEintrag();
         P.lfrsid=LieferscheinBase::none_id;
+//cout << "C2\t"<<I<<'\t'<<I->ProduziertSelbst()<<'\n';
         if(I->ProduziertSelbst())  return;
         I->Produziert(P);
         return;
      }
    }   
+  if(GeplantVon()!=ppsInstanzID::None)
+   {
+      cH_ppsInstanz I(GeplantVon());
+      ManuProC::st_produziert P2(P.artikel,P.menge,P.uid);
+      I->Produziert(P2,ManuProC::Auftrag::r_Produziert);             
+   }
+
 
    ArtikelBaum AB(P.artikel);
    for(ArtikelBaum::iterator i=AB.begin();i!=AB.end();++i)
@@ -183,26 +214,18 @@ AuftragBase::mengen_t ManuProC::st_produziert::abschreiben_oder_reduzieren(ppsIn
 
   SelectedFullAufList L(sel);
 
-//cerr <<cH_ppsInstanz(instanz)->Name()<<"\tSIZE of "<<id<<": "<< L.size()<<'\n';
   for(SelectedFullAufList::iterator i=L.begin();i!=L.end();++i)
    {
      AuftragBase::mengen_t abschreibmenge;
-     if(abmenge>=0)
-      {
-       if(i->getRestStk() >= abmenge) abschreibmenge = abmenge;
-       else                           abschreibmenge = i->getRestStk();
-      }     
-     else
-      {
-       if(i->getGeliefert() >= -abmenge) abschreibmenge = abmenge;
-       else                              abschreibmenge = -i->getGeliefert();
-      }     
+     if(abmenge>=0) abschreibmenge=AuftragBase::min(abmenge,i->getRestStk());
+     else abschreibmenge=-AuftragBase::min(-abmenge,i->getGeliefert());
 
 //cerr << cH_ppsInstanz(instanz)->Name()<<' '<<i->Id()<<' '<<i->ZNr()<<"  Art."
 //<<i->Artikel().Id()<<' '<<"M = "
 //<<abmenge<<' '<<i->getRestStk()<<' '<<i->getGeliefert()<<'\t'<<abschreibmenge<<'\n';
 
-     if(abschreibmenge==AuftragBase::mengen_t(0)) continue;     
+     if(abschreibmenge==0 && 
+       (i!=--L.end() || planen_und_abschreiben_von_ungeplaneten)) continue;
 
      if(i->Id()==AuftragBase::ungeplante_id)
        {
@@ -211,7 +234,7 @@ AuftragBase::mengen_t ManuProC::st_produziert::abschreiben_oder_reduzieren(ppsIn
          if(auftragbase.valid()) zab=auftragbase;
          if(planen_und_abschreiben_von_ungeplaneten)
           {
-            int znr=i->Planen(uid,abschreibmenge,true,zab,i->getLieferdatum());
+            int znr=i->Planen(uid,abschreibmenge,zab,i->getLieferdatum(),ManuProC::Auftrag::r_Produziert);
             AufEintragBase zaeb(zab,znr);
             AufEintrag(zaeb).abschreiben(abschreibmenge,lfrsid);
 //cerr << "Produziert:: Planen "<<zaeb<<" und Abschreiben bei "<<*i
@@ -221,7 +244,7 @@ AuftragBase::mengen_t ManuProC::st_produziert::abschreiben_oder_reduzieren(ppsIn
           { 
             assert(lieferdatum.valid());
             if(lieferdatum > i->getLieferdatum()) continue;
-            ZNr=i->Planen(uid,abschreibmenge,true,zab,lieferdatum);
+            ZNr=i->Planen(uid,abschreibmenge,zab,lieferdatum,ManuProC::Auftrag::r_Planen);
           }
        }
      else if(i->Id()==AuftragBase::dispo_auftrag_id)

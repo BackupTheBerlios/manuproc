@@ -1,4 +1,4 @@
-/* $Id: Kettscheibe.h,v 1.9 2002/11/07 07:48:48 christof Exp $ */
+/* $Id: Kettscheibe.h,v 1.10 2002/11/22 15:31:05 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *

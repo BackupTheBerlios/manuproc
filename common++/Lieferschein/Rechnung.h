@@ -1,4 +1,4 @@
-/* $Id: Rechnung.h,v 1.20 2002/11/07 07:48:59 christof Exp $ */
+/* $Id: Rechnung.h,v 1.21 2002/11/22 15:31:05 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -66,12 +66,15 @@ public:
  void setRngArt(const RngArt &art) throw(SQLerror);
  void convert_to_gutschrift() throw(SQLerror);
  rabatt_t Rabatt() const { return rabatt; }
- geldbetrag_t Betrag(bool brutto=false) const throw(SQLerror);
+
+// don't know where is using this and i assume a bug in it. 
+ geldbetrag_t Betrag(int api_user_melde_dich,bool brutto=false) const throw(SQLerror);
  
  cP_Waehrung getWaehrung() const { return waehrung; }
  void setzeWaehrung(const cP_Waehrung &w) throw(SQLerror);
  ExtBezSchema::ID getSchema() { return kunde->getSchemaId(); }
  bool Bezahlt() const { return bezahlt; }
+ void setBezahlt(bool _bezahlt) throw(SQLerror);
  void addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror);
  void deleteLieferschein(const LieferscheinBase &lfrs) throw(SQLerror);
  void setze_Rabatt(rabatt_t r) throw(SQLerror);

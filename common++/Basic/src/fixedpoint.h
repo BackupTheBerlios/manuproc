@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.16 2002/10/31 08:29:37 christof Exp $
+// $Id: fixedpoint.h,v 1.17 2002/11/22 15:27:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -73,7 +73,7 @@ private:
 	typedef Ftype _Ftype;
 	typedef Itype _Itype;
 	const static int _decimals=decimals;
-	typename ctime_assert<(decimals>=0)>::_true failed;
+	typedef typename ctime_assert<(decimals>=0)>::_true failed;
 public:
 	fixedpoint() : scaled(0) {}
 	fixedpoint(const std::string &val)

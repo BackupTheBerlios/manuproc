@@ -39,9 +39,9 @@ JumboRolle::JumboRolle(ID c) throw(SQLerror,CodeError)
  int STATUS,LAUF,GANG,BARCOIST;
  char PLANDATUM[11];
  int LAGERPLATZ;
- char VERARB_DATUM[30];
- char BARCOFERT_DATUM[30];
- char WIEDERINSLAGER[30];
+ char VERARB_DATUM[32];
+ char BARCOFERT_DATUM[32];
+ char WIEDERINSLAGER[32];
 /* bool REST; */
  exec sql end declare section;
 
@@ -72,13 +72,13 @@ JumboRolle::JumboRolle(ID c) throw(SQLerror,CodeError)
  webmaschine=WEBMASCHINE;
  sollmeter=SOLL_METER;
  plandatum=ManuProC::Datum(PLANDATUM);
- verarbdatum= !*VERARB_DATUM ? ManuProC::Datum() : ManuProC::Datum(VERARB_DATUM); 
+ verarbdatum= !*VERARB_DATUM ? Zeitpunkt_new() : Zeitpunkt_new(VERARB_DATUM); 
  status=Jumbo_Status(STATUS);
  lauf=LAUF;
  gang=GANG;
  barcoist= BARCOIST;
- barcofertdatum= !*BARCOFERT_DATUM ? ManuProC::Datum(): ManuProC::Datum(BARCOFERT_DATUM);
- wiederinslager= !*WIEDERINSLAGER ? ManuProC::Datum():ManuProC::Datum(WIEDERINSLAGER);
+ barcofertdatum= !*BARCOFERT_DATUM ? Zeitpunkt_new() : Zeitpunkt_new(BARCOFERT_DATUM);
+ wiederinslager= !*WIEDERINSLAGER ? Zeitpunkt_new() : Zeitpunkt_new(WIEDERINSLAGER);
  lagerposition=LagerPlatz(ppsInstanzID::Bandlager,LAGERPLATZ);
 }
 

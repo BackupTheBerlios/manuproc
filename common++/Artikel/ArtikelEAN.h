@@ -1,4 +1,4 @@
-/* $Id: ArtikelEAN.h,v 1.9 2002/11/07 07:48:23 christof Exp $ */
+/* $Id: ArtikelEAN.h,v 1.10 2002/11/22 15:31:04 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *

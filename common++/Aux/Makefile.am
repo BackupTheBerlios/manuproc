@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.21 2002/11/07 07:48:35 christof Exp $
+# $Id: Makefile.am,v 1.22 2002/11/22 15:30:46 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -19,7 +19,9 @@ libAux_a_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
 		EntryValueBase.cc EntryValueIntString.cc \
 		auto_conversion.cc $(PGCC_Sources) AdminProblems.cc \
 		exception.cc itos.cc EntryValueDatum.cc Handles.cc EAN.cc \
-		EntryValueQuartal.cc Trace.cc
+		EntryValueQuartal.cc Trace.cc FetchIStream_ops.cc \
+		dbcapability.cc
+		
 
 libAux.a: $(libAux_a_OBJECTS) $(libAux_a_DEPENDENCIES)
 	touch $@
@@ -37,7 +39,8 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
    EntryValueBase.cc EntryValueBase.h EntryValueIntString.cc \
    EntryValueIntString.h EntryValueEmptyInt.h EntryValueDatum.h \
    EntryValueDatum.cc EmptyInt_4TeX.h EntryValueFixed.h Long.h \
-   Trace.h Trace.cc relops.h
+   Trace.h Trace.cc relops.h EntryValueFixedEinheit.h \
+	dbcapability.h 	dbcapability.cc
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
@@ -56,7 +59,8 @@ include_HEADERS=Ausgabe.h Ausgabe_neu.h Datum.h \
 		exception.h itos.h fixedpoint.h FetchIStream.h \
 		ctime_assert.h EntryValueEmptyInt.h EntryValueDatum.h \
 		EntryValueFixed.h Global_Settings.h EAN.h AdminProblems.h \
-		EntryValueQuartal.h
+		EntryValueQuartal.h EntryValueFixedEinheit.h \
+		dbcapability.h
 
 CLEANFILES= *~ $(BUILT_SOURCES)
 

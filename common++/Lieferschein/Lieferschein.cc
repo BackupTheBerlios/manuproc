@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.17 2002/11/07 07:48:59 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.18 2002/11/22 15:31:05 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -89,6 +89,11 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
         {  
            LE.setZusatzInfo(AufEintragBase(),menge);
         }
+    if(menge>0) 
+     {
+       ManuProC::st_produziert p(artikel,menge,getuid(),getKunde()->Id(),Id());
+       Instanz()->Produziert(p);
+     }
    }
    tr.commit();
 }

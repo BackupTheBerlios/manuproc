@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.18 2002/11/07 07:48:30 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.19 2002/11/22 15:31:05 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -40,21 +40,16 @@
 #include <Aux/itos.h>
 class cH_Lieferschein;
 #include <Auftrag/AufEintragZu.h>
+#include <Auftrag/auftrag_enums.h>
+
 
 class Lager;
 
 class AufEintrag : public AufEintragBase
 {
-//   friend void Lager::menge_neu_verplanen(int uid,
-//                 const ArtikelBase& artikel,AuftragBase::mengen_t menge,
-//                               const AufEintragBase::e_reduce_reason reason) throw(SQLerror);
      friend class Lager;
- public:
-  enum e_problems{Geplant,Geplant_nolager,Lager,Geliefert,GeliefertFatal};
-  struct st_problems{e_problems art; AufEintragBase AEB; mengen_t menge_input;
-                     mengen_t menge_output;
-         st_problems(e_problems a, AufEintragBase aeb, mengen_t mi,mengen_t mo)
-               :art(a),AEB(aeb),menge_input(mi),menge_output(mo) {}};
+     friend FetchIStream &operator>>(FetchIStream &is, AufEintrag &ae);
+
 private: 
  mengen_t bestellt;
  mengen_t geliefert;
@@ -104,20 +99,12 @@ public:
    	dispoentrynr(0),prozess(Prozess::default_id)
  {}
  
- AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, 
-        mengen_t _bestellt,
+ // Dieser ctor ist für AuftragFull::push_back
+ AufEintrag(const AufEintragBase &aeb, mengen_t _bestellt,
 	ArtikelBase _artikel, const ManuProC::Datum _lieferdatum,
-	mengen_t _geliefert,
-	int _dispoentrynr, int _disponr, 
-	AufStatVal _aufstatus,
-	int _kdnr, const std::string _youraufnr,
-	const ManuProC::Datum& _prozdate,
-	int _prozess,ppsInstanz::ID _letztePlanInstanz, int _maxPlanInstanz,
-	const Preis &_preis, rabatt_t _rabatt,
-	AufStatVal _entrystat, int lasteditdate_uid,
-	const ManuProC::Datum _lasteditdate,
-	const ManuProC::Datum _letzte_lieferung,
-	const cH_PreisListe &preisliste) throw();
+	AufStatVal _aufstatus, int _kdnr, const std::string _youraufnr,
+	const Preis &_preis, rabatt_t _rabatt, AufStatVal _entrystat, 
+	int uid, const cH_PreisListe &preisliste) throw();
  // Dieser Konstuktor ist nur für ProdLager gedacht und macht KEINEN Datenbankzugriff
  AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, 
         mengen_t _bestellt,
@@ -127,13 +114,12 @@ public:
 
 	
  void updateDispoENr(int dinr) throw(SQLerror);
- mengen_t updateStkDiff__(int uid,mengen_t menge,bool instanzen,e_reduce_reason reason
-          /* void (*callback)(void *,st_problems)=0,void* argument=0*/) throw(SQLerror);
+ mengen_t updateStkDiff__(int uid,mengen_t menge,bool instanzen,ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_None) throw(SQLerror);
 private:
- void move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,bool reduce_old) throw(std::exception);
- void updateStkDiffInstanz__(int uid,mengen_t menge,e_reduce_reason reason/*void (*callback)(void *,st_problems),void* argument*/) throw(SQLerror);
-// void verplante_menge_freigeben_nach_abbestellung(const std::list<AufEintragZu::st_reflist> &K,mengen_t menge,int uid);
- void move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,int uid,e_reduce_reason reason);
+// void move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,bool reduce_old) throw(std::exception);
+ void move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,ManuProC::Auftrag::Action reason) throw(std::exception);
+ void updateStkDiffInstanz__(int uid,mengen_t menge,ManuProC::Auftrag::Action reason) throw(SQLerror);
+ void move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,int uid,ManuProC::Auftrag::Action reason);
 
 public:
  void updateLieferdatum(const ManuProC::Datum &ld,int uid) throw(SQLerror);	
@@ -145,7 +131,7 @@ public:
  // Ist (uid!=0) wird lasteditdate verändert.
  void setStatus(AufStatVal newstatus,int uid,bool force=false) throw(SQLerror);		
  void setInstanzen(AufStatVal newstatus,int uid,ManuProC::Datum lieferdate,mengen_t part,int myznr=-1,int yourznr=-1);
- int split(int uid,mengen_t newmenge, const ManuProC::Datum &newld,bool dispoplanung=false,void (*callback)(void *,st_problems)=0,void* argument=0) throw(SQLerror);
+ int split(int uid,mengen_t newmenge, const ManuProC::Datum &newld,bool dispoplanung=false) throw(SQLerror);
  mengen_t getStueck() const { return bestellt;}
  mengen_t getRestStk() const {if(entrystatus==CLOSED)return 0; return bestellt-geliefert;}
  mengen_t getGeliefert() const { return geliefert;}
@@ -174,7 +160,7 @@ public:
 
 private: 
    friend struct ManuProC::st_produziert;
-   friend void ppsInstanz::Produziert(ManuProC::st_produziert &P) const;
+   friend void ppsInstanz::Produziert(ManuProC::st_produziert &P,ManuProC::Auftrag::Action reason) const;
    friend class AufEintragBase;
  void abschreiben(mengen_t menge,
     ManuProcEntity<>::ID lfrsid) throw(SQLerror);
@@ -207,10 +193,15 @@ public:
 // gibt Zeilennummer zurück; rekursiv = alle Instanzen darunter auch planen,
 // rekursiv wird asuschließlich vom Erfassungs/Reperaturprogramm verwendet
 // Wenn 'reduce_old=true' wird von *this die Menge reduziert
- int Planen(int uid,mengen_t menge, bool reduce_old,const AuftragBase &zielauftrag,
-      const ManuProC::Datum &datum,bool rekursiv=false) throw(std::exception);
+ int Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
+      const ManuProC::Datum &datum, ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Planen,
+         AufEintragBase *verplanter_aeb=0,bool rekursiv=false) throw(std::exception);
+ void ProduktionsPlanung(int uid,mengen_t menge,const AuftragBase &zielauftrag,
+      const ManuProC::Datum &datum,cH_ppsInstanz instanz) throw(std::exception);
 
- 
+// Eine bereits vorgemerkte Menge einem anderen AufEintag zuordnen
+// *this => Der reservierte 1er; ae => Der ungeplante 0er
+ void menge_fuer_aeb_freigeben(const mengen_t &menge,AufEintrag &ae,const int uid);
 
 };
 

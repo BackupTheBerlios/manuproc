@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.13 2002/11/07 07:48:30 christof Exp $
+// $Id: AufEintrag.cc,v 1.14 2002/11/22 15:31:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,46 +25,33 @@
 #include <unistd.h>
 #include <Instanzen/ppsInstanzProduziert.h>
 #include <Aux/Trace.h>
+#include <Lager/Lager.h>
 
-
-AufEintrag::AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, mengen_t _bestellt,
+AufEintrag::AufEintrag(const AufEintragBase &aeb, mengen_t _bestellt,
 	ArtikelBase _artikel, const ManuProC::Datum _lieferdatum,
-	mengen_t _geliefert,
-	int _dispoentrynr, int _disponr,
-	AufStatVal _aufstatus,
-	int _kdnr, const std::string _youraufnr,
-	const ManuProC::Datum& _prozdate,
-	int _prozess,ppsInstanz::ID _letztePlanInstanz, int _maxPlanInstanz,
-	const Preis &_preis, rabatt_t _rabatt,
-	AufStatVal _entrystatus, int _lasteditdate_uid,
-	const ManuProC::Datum _lasteditdate,
-	const ManuProC::Datum _letzte_lieferung,
-   const cH_PreisListe &_preisliste) throw()
-: AufEintragBase(_instanz,_auftragid,_zeilennr),
-
+	AufStatVal _aufstatus, int _kdnr, const std::string _youraufnr,
+	const Preis &_preis, rabatt_t _rabatt, AufStatVal _entrystat, 
+	int uid, const cH_PreisListe &_preisliste) throw()
+: AufEintragBase(aeb),
  bestellt(_bestellt),
- geliefert(_geliefert),
+ geliefert(0),
  artikel(_artikel),
- entrystatus(_entrystatus),
+ entrystatus(_entrystat),
  lieferdatum(_lieferdatum),
- lasteditdate_uid(_lasteditdate_uid),
- lasteditdate(_lasteditdate),
- letzte_lieferung(_letzte_lieferung),
- letztePlanInstanz(_letztePlanInstanz),
- maxPlanInstanz(_maxPlanInstanz),
+ lasteditdate_uid(uid),
+ lasteditdate(ManuProC::Datum::today()),
+ letztePlanInstanz(ppsInstanzID::None),
+ maxPlanInstanz(0),
  preis(_preis),
  rabatt(_rabatt),
  kdnr(_kdnr),
  youraufnr(_youraufnr),
- disponr(_disponr),
+ disponr(0),
  auftragstatus(_aufstatus), 
- dispoentrynr(_dispoentrynr),
+ dispoentrynr(0),
  prozess(Prozess::default_id),
  preisliste(_preisliste)
 {
- prozess=cH_Prozess(Prozess::ID(_prozess ? _prozess : cH_Prozess::default_pid));
- if(! _prozess) prozdate=ManuProC::Datum();
- else prozdate.from_postgres(_prozdate.c_str());
 }
 	
 AufEintrag::AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr,
@@ -82,25 +69,6 @@ AufEintrag::AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr,
  prozess(Prozess::default_id)
 {}
 	
-/*
-std::ostream &operator<<(std::ostream &o,const AufEintrag &aeb)
-{  o << "{artikel="<< cH_ArtikelBezeichnung(aeb.artikel)->Bezeichnung() << "Instanz = "<<aeb.instanz->Id()
-	<<" dispoentrynr="
-	<<aeb.dispoentrynr
-	<< " auftragid="<<aeb.auftragid
-	<<" zeilennr="<<aeb.zeilennr << " bestellt="<<aeb.bestellt
-	<<" geliefert="<<aeb.geliefert 
-	<<" lieferdatum="<< aeb.lieferdatum.c_str() << " meterprostk="<<
-	 "Auftrag-Prozess="<<aeb.prozess->Id()<<
-	 "Prozess-Datum="<<aeb.prozdate<<
-	 "Preis"<<aeb.preis<<
-	 "Rabatt"<<aeb.rabatt<<
-	 "EntryStat"<<aeb.entrystatus<<
-	 "LasteEditDate"<<aeb.lasteditdate<<
-	 "}";
-   return o;
-}
-*/
 
 const Preis AufEintrag::GPreis() const
 { return preis.Gesamtpreis(1,bestellt.as_float(),rabatt);
@@ -161,72 +129,35 @@ std::string AufEintrag::Planung() const
 }
 
 
-void AufEintrag::move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,bool reduce_old) throw(std::exception)
+void AufEintrag::move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,ManuProC::Auftrag::Action reason) throw(std::exception)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"To=",AEB,"Menge=",menge,"ReduceOld=",reduce_old);
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"To=",AEB,"Menge=",menge,"Reason=",reason);
   Transaction tr;
-  if(reduce_old)
+  if(reason==ManuProC::Auftrag::r_Produziert || 
+     reason==ManuProC::Auftrag::r_Planen || 
+     reason==ManuProC::Auftrag::r_Closed)
    {
-     mengen_t mt1=updateStkDiff__(uid,-menge,false,r_Produziert);
-//cout << "MOVETO: "<<*this<<'\t'<<AEB<<'\t'<<-menge<<' '<<mt1<<'\n';
+     mengen_t mt1=updateStkDiff__(uid,-menge,false);
      assert(-menge==mt1);
-//     if(-menge!=mt1) menge=-mt1;
    }
-  mengen_t mt2=AufEintrag(AEB).updateStkDiff__(uid,menge,false,r_Produziert);
+  mengen_t mt2=AufEintrag(AEB).updateStkDiff__(uid,menge,false);
   assert(menge==mt2);
   AufEintragZu(*this).Neu(AEB,menge); 
   tr.commit();
 }      
 
 
-std::vector<AufEintragBase> AufEintrag::getKundenAuftragV() const
-{
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
- std::vector<AufEintragBase> V;
- std::list<AufEintragZu::st_reflist> L=AufEintragZu(*this).get_Referenz_listFull(false);
- for (std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
-  {
-    V.push_back(i->AEB);
-//cout << i->AEB2.Instanz()->Name()<<' '<<i->AEB2.Id()<<' '<<i->AEB2.ZNr()<<' '
-//<<cH_ArtikelBezeichnung(AufEintrag(i->AEB2).ArtId())->Bezeichnung()<<'\n';
-  }
- return V; 
-}
-
 AufEintragBase AufEintrag::getFirstKundenAuftrag() const
 {
  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
- std::vector<AufEintragBase> V=getKundenAuftragV();
+ std::vector<AufEintragBase> V=AufEintragZu(*this).getKundenAuftragV();
  if(V.empty()) return *this;
  else return *(V.begin());
 }
 
-/*
-void AufEintrag::verplante_menge_freigeben_nach_abbestellung(const std::list<AufEintragZu::st_reflist> &K,mengen_t menge,int uid)
-{
-assert(!"XXXXX");
- int znr=-1,dummy;
- mengen_t mdummy;
- AuftragBase ab(Instanz(),dispo_auftrag_id);
- if (!ab.existEntry(Artikel(),getLieferdatum(),znr,dummy,mdummy,getEntryStatus()))  
-   znr = ab.insertNewEntry(0,getLieferdatum(),Artikel(),getEntryStatus(),uid,false); 
- 
- AufEintragBase newAEB(ab,znr);
- newAEB.updateStkDiffBase__(uid,menge);
 
- for (std::list<AufEintragZu::st_reflist>::const_iterator i=K.begin();i!=K.end();++i)
-  {
-//cout << "\n\n\nLLL:\t"<<'\t'<<newAEB<<'\t'<<i->AEB<<'\t'<<i->Menge<<'\n';
-    AufEintragZu(newAEB).Neu(i->AEB,i->Menge);
 
-  }
-}
-*/
-
-#include <Lager/Lager.h>
-//#include <Lager/Lager_Vormerkungen.h>
-
-void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,int uid,e_reduce_reason reason)
+void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,int uid,ManuProC::Auftrag::Action reason)
 {
  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Menge=",menge,"Reason=",reason);
  std::list<AufEintragZu::st_reflist> K=AufEintragZu(*this).get_Referenz_list(*this,true);
@@ -244,11 +175,9 @@ void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,int uid,e
      {
       mengen_t mt=i->AEB.updateStkDiffBase__(uid,-M);
 
-      H_Lager L(Instanz());
-      L->dispo_auftrag_aendern(Artikel(),M);
-      L->menge_neu_verplanen(uid,Artikel(),M,reason);
-//      ArtikelVormerken::im_lager_menge_neu_verplanen(uid,Instanz(),Artikel(),M,reason);
-//      Lager_Vormerkungen::freigegeben_menge_neu_verplanen(Instanz(),Artikel(),M,uid,reason);
+      ::Lager L(Instanz()->Id());
+      L.dispo_auftrag_aendern(Artikel(),M);
+      L.menge_neu_verplanen(uid,Artikel(),M,reason);
 
       assert(mt==mengen_t(-M));
      }
@@ -271,8 +200,7 @@ void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,int uid,e
       std::list<AufEintragZu::st_reflist> R=AufEintragZu(*this).get_Referenz_list(*this,true);
       for(std::list<AufEintragZu::st_reflist>::const_iterator j=R.begin();j!=R.end();++j)
        {
-//cout << aep_dispo<<'\t'<<j->AEB<<'\t'<<reason<<'\n';
-         if(reason==r_Closed && j->AEB.Id()==ungeplante_id)
+         if(reason==ManuProC::Auftrag::r_Closed && j->AEB.Id()==ungeplante_id)
             AufEintragZu(aep_dispo).Neu(j->AEB,j->Menge);
        }
      }
@@ -288,8 +216,134 @@ void AufEintrag::Produziert(mengen_t menge,
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Menge=",menge);
   Kunde::ID kunde=Auftrag(*this).getKundennr();
   ManuProC::st_produziert sp(kunde,*this,menge,getuid(),lfrsid);
-  Instanz()->Produziert(sp);
+  Instanz()->Produziert(sp,ManuProC::Auftrag::r_Produziert);
 }
 
 
+int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
+   const Petig::Datum &datum,ManuProC::Auftrag::Action reason,
+   AufEintragBase *verplanter_aeb,bool rekursiv) throw(std::exception)
+{
+   Transaction tr;
+   if(verplanter_aeb) *verplanter_aeb=*this;
+   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Menge=",menge,"Reason=",reason,"Zielauftrag=",zielauftrag);
+   assert(Id()==AuftragBase::ungeplante_id);
+   assert(Instanz()->LagerInstanz() || entrystatus==OPEN);
+   assert(Instanz()->LagerInstanz() || auftragstatus==OPEN);
+   if(entrystatus==UNCOMMITED) entrystatus=OPEN; // Kein Datenbankzugriff nötig, 
+                                                // das macht insertNewEntry
+   Auftrag ZA(zielauftrag);
+   ZA.setStatusAuftrag_(OPEN);
+
+   // wenn Lieferdatum rekursiv korrigieren (VOR dem Planen)
+   if(datum!=getLieferdatum())
+    {
+      AuftragBase::mengen_t M=AuftragBase::min(menge,getStueck());
+      int znr=split(uid,M,datum);
+      AufEintrag ae=AufEintrag(AufEintragBase(*this,znr));
+      tr.commit();
+      return ae.Planen(uid,menge,zielauftrag,datum,reason,verplanter_aeb,rekursiv);
+    }
+
+   int znr=-1,dummy;
+   mengen_t mdummy;
+
+   if (!zielauftrag.existEntry(Artikel(),datum,znr,dummy,mdummy,entrystatus))
+    {
+      AufEintragBase neuAEB=ZA.push_back(0,datum,Artikel(),entrystatus,uid,false);
+      znr=neuAEB.ZNr();
+    }
+   tr.commit();
+   if(menge==AuftragBase::mengen_t(0)) return znr;
+   assert(menge>0);
+   if(menge-getRestStk() > 0  && !Instanz()->LagerInstanz() )
+    {
+      mengen_t dispomenge = menge-getRestStk();
+      menge=getRestStk();      
+      AufEintragBase(zielauftrag,znr).PlanenDispo(uid,Artikel(),dispomenge,datum);
+      if(zielauftrag.Instanz()->GeplantVon()!=ppsInstanzID::None)
+       {
+         if(reason==ManuProC::Auftrag::r_Planen) 
+           {
+            AuftragBase DAB(zielauftrag.Instanz()->GeplantVon(),dispo_auftrag_id);
+            int znr=DAB.tryUpdateEntry(dispomenge,datum,Artikel(),OPEN,uid,AufEintragBase());
+            AuftragBase ab(Instanz(),ungeplante_id);
+            int nzr=ab.tryUpdateEntry(dispomenge,datum,Artikel(),OPEN,uid,AufEintragBase());
+            AufEintragZu((class AufEintragBase(DAB,znr))).Neu(AufEintragBase(ab,nzr),dispomenge);
+           }
+         else
+           {
+           }
+       }
+    }
+
+   move_to(uid,AufEintragBase(zielauftrag,znr),menge,reason);
+
+   std::list<AufEintragZu::st_reflist> ReferenzAufEintrag =
+			         AufEintragZu(*this).get_Referenz_listFull(false);
+
+   for (std::list<AufEintragZu::st_reflist>::iterator i=ReferenzAufEintrag.begin();i!=ReferenzAufEintrag.end();++i)
+    {
+     if(i->AEB.Instanz()->Id()!=ppsInstanzID::Kundenauftraege) continue;
+     if(zielauftrag.Id()==AuftragBase::plan_auftrag_id) continue;
+     i->AEB.setLetztePlanungFuer(instanz);
+     i->AEB.calculateProzessInstanz();
+    }
+
+
+   if(rekursiv) // Braucht nur das Erfassungs/Reperaturprogramm
+    {
+     // bei dem gerade geplaneten Auftrag abschreiben:
+     AufEintrag(class AufEintragBase(zielauftrag,znr)).
+		abschreiben(menge,ManuProcEntity<>::none_id);
+     std::list<AufEintragZu::st_reflist> L=AufEintragZu(*this).get_Referenz_list_ungeplant();
+     for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+      {
+        // Lager nicht rekursiv Planen
+        if(i->AEB.Instanz()->LagerInstanz()) continue;
+        AuftragBase ab(i->AEB.Instanz(),plan_auftrag_id);
+        AuftragBase::mengen_t M=menge*ArtikelBaum(ArtId()).Faktor(i->Art);
+        AufEintrag(i->AEB).Planen(uid,M,ab,datum,reason,0,rekursiv);
+      }
+    }
+ tr.commit();
+ return znr;
+}
+
+void AufEintrag::ProduktionsPlanung(int uid,mengen_t menge,const AuftragBase &zielauftrag, 
+      const ManuProC::Datum &datum,cH_ppsInstanz instanz) throw(std::exception)
+{
+//   Transaction tr;
+   assert(Id()==AuftragBase::ungeplante_id);
+   AufEintragBase newAEB;
+   Planen(uid,menge,zielauftrag,datum,ManuProC::Auftrag::r_Planen,&newAEB);
+   AuftragBase zielauftrag_instanz(instanz,AuftragBase::ungeplante_id);
+   int znr=zielauftrag_instanz.tryUpdateEntry(menge,datum,Artikel(),OPEN,uid,newAEB);
+//   tr.commit();
+}
+
+
+void AufEintrag::menge_fuer_aeb_freigeben(const mengen_t &menge,AufEintrag &ae,const int uid)
+{
+  Transaction tr;  
+  AuftragBase::mengen_t M=AuftragBase::min(getRestStk(),menge);
+  if(!M) return;
+
+  // Alte Reservierung aufheben
+  std::list<AufEintragZu::st_reflist> L=AufEintragZu(*this).get_Referenz_list_ungeplant(false);
+  for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+   {
+    AufEintrag(i->AEB).updateStkDiff__(uid,M,true,ManuProC::Auftrag::r_Anlegen);
+    AufEintragZu(i->AEB).setMengeDiff__(*this,-M);
+   }
+  updateStkDiffBase__(uid,-M);
+  //neue Reservierung anlegen
+  ae.updateStkDiff__(uid,-M,true,ManuProC::Auftrag::r_Anlegen);
+  AuftragBase AB(Instanz(),plan_auftrag_id);
+  AuftragBase::st_tryUpdateEntry st(false,false,true);
+  int znr=AB.tryUpdateEntry(M,ae.getLieferdatum(),ae.Artikel(),OPEN,uid,AufEintragBase(),st);  
+  AufEintragZu(ae).Neu(AufEintragBase(AB,znr),M);
+
+ tr.commit();
+}
 

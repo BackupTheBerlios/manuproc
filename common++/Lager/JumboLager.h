@@ -1,4 +1,4 @@
-/* $Id: JumboLager.h,v 1.4 2002/10/24 14:06:50 thoma Exp $ */
+/* $Id: JumboLager.h,v 1.5 2002/11/22 15:31:05 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -27,7 +27,9 @@
 class JumboLager : public Lager
 {
   public:
-      enum Jumbo_LogTyp {None, Umraeumen='1',SchonDraussen='2',Inventur='i', Inventur_Ohne_Bestand='j',
+      enum Jumbo_LogTyp {None, Umraeumen='1',SchonDraussen='2',
+      	    KarteNichtGescannt='3',
+      	    Inventur='i', Inventur_Ohne_Bestand='j',
             Einlagern='A', Auslagern='B', Zurueck='C', InventurEnde='E',
             InventurPlus='I', InventurMinus='J',
             Einlagern_L='L', Rest_L='Q', Rest='R'  };

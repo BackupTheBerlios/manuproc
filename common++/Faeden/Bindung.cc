@@ -1,4 +1,4 @@
-// $Id: Bindung.cc,v 1.9 2002/11/07 07:49:57 christof Exp $
+// $Id: Bindung.cc,v 1.10 2002/11/22 15:31:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma

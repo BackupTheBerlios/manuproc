@@ -123,9 +123,13 @@ Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
 #ifdef MABELLA_EXTENSIONS
  exec sql begin declare section;
  bool ENTSORGUNG=krng->entsorgung();
+ int VERKNR=k->VerkNr();
+ int IVERKNR=0;
  exec sql end declare section;
 
- exec sql update rechnung set entsorgung=:ENTSORGUNG where
+ if(VERKNR==-1) IVERKNR=-1;
+ exec sql update rechnung set entsorgung=:ENTSORGUNG,
+	verknr=:VERKNR:IVERKNR where
 	rngid=:RNGID;
  SQLerror::test(__FILELINE__":Rechnung: update rechnung");	
 #endif
@@ -273,7 +277,7 @@ void Rechnung::setze_Rabatt(rabatt_t r) throw(SQLerror)
  SQLerror::test(__FILELINE__);
 }
 
-Rechnung::geldbetrag_t Rechnung::Betrag(bool brutto) const throw(SQLerror)
+Rechnung::geldbetrag_t Rechnung::Betrag(int api_user_melde_dich,bool brutto) const throw(SQLerror)
 {
  exec sql begin declare section;
  float BETRAG;
@@ -282,13 +286,20 @@ Rechnung::geldbetrag_t Rechnung::Betrag(bool brutto) const throw(SQLerror)
  exec sql end declare section;
 
  if(brutto)
-   exec sql select  sum(round(preis*stueck,2)) 
+   {exec sql select  sum(round(preis*stueck,2)) 
 	into :BETRAG:IBETRAG from rechnungentry
 	where rngid = :RNGID;   
+    SQLerror::test(__FILELINE__);
+   }
  else
-   exec sql select  sum(round((round(preis*((100-rabatt)/100),2))*stueck,2)) 
+   {exec sql select  sum(round((round(preis*((100-rabatt)/100),2))*stueck,2)) 
 	into :BETRAG:IBETRAG from rechnungentry
 	where rngid = :RNGID; 
+    SQLerror::test(__FILELINE__);
+    fixedpoint<2> rab = rabatt / 100;
+    fixedpoint<2> betr = BETRAG * (!!rab ? rab : 1); 
+    BETRAG = betr.as_float();
+   }
 
  return (IBETRAG ? 0 : BETRAG);
 }
@@ -307,9 +318,27 @@ void RechnungBase::setEingezogen(int refnr) throw(SQLerror)
 
  exec sql update rechnung set bezahlt=true, einzug_refnr= :REFNR
 	where rngid= :RNGID;
+ SQLerror::test(__FILELINE__);
 
  tr.commit();
 }
+
+
+void Rechnung::setBezahlt(bool _bezahlt) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int RNGID=rngid;
+ bool BEZAHLT=_bezahlt;
+ exec sql end declare section;
+
+ Transaction tr;
+
+ exec sql update rechnung set bezahlt=:BEZAHLT where rngid= :RNGID;
+ SQLerror::test(__FILELINE__);
+
+ tr.commit();
+}
+
 
 
 const std::string Rechnung::Notiz() const throw(SQLerror)

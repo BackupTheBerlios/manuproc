@@ -1,4 +1,4 @@
-/* $Id: ArtikelMengeSumme.h,v 1.4 2002/07/05 12:35:01 christof Exp $ */
+/* $Id: ArtikelMengeSumme.h,v 1.5 2002/11/22 15:31:04 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,13 +28,13 @@
 #include <Artikel/Einheiten.h>
 
 class ArtikelMenge
-{public:
-	static const unsigned int nachkommastellen=2;
-	typedef fixedpoint<nachkommastellen> mengen_t;
+{
+public:
+	typedef fixedpoint<ManuProC::Precision::ArtikelMenge> mengen_t;
 	typedef std::pair<Einheit,mengen_t> pair_t;
 	typedef std::vector<pair_t> vector_t;
 
-	typedef fixedpoint<nachkommastellen,double,long long> mengen_l_t;
+	typedef fixedpoint<ManuProC::Precision::ArtikelMenge,double,long long> mengen_l_t;
 	typedef std::pair<Einheit,mengen_l_t> pair_l_t;
 	typedef std::vector<pair_l_t> vector_l_t;
 private:

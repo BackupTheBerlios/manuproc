@@ -1,4 +1,4 @@
-// $Id: Instanzen.cc,v 1.9 2002/11/07 07:50:05 christof Exp $
+// $Id: Instanzen.cc,v 1.10 2002/11/22 15:31:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -23,7 +23,6 @@
 #include <Aux/exception.h>
 #include <Auftrag/AuftragBase.h>
 #include <Kunde/Kunde.h>
-#include <Lager/Lager_Vormerkungen.h>
 
 int main(int argc, char *argv[])
 {

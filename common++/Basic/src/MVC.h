@@ -1,4 +1,4 @@
-/* $Id: MVC.h,v 1.5 2002/11/13 08:19:41 christof Exp $ */
+/* $Id: MVC.h,v 1.6 2002/11/22 15:27:03 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma

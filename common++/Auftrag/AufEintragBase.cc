@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.29 2002/11/07 07:48:30 christof Exp $
+// $Id: AufEintragBase.cc,v 1.30 2002/11/22 15:31:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -32,7 +32,7 @@
 #endif
 #include <Aux/Trace.h>
 #include<Aux/FetchIStream.h>
-
+#include <Auftrag/AufEintragZuMengenAenderung.h>
 
 FetchIStream& operator>>(FetchIStream& is,AufEintragBase &aeb)
 {
@@ -73,44 +73,6 @@ void AufEintragBase::calculateProzessInstanz()
   setMaxPlanInstanz(anz);
 }   
 
-
-
-// Ich weiß nicht mehr wer dies braucht .... MAT :-(
-/*
-void AufEintragBase::Planen(int uid,std::vector<AufEintrag> LAE,mengen_t menge,
-      const AuftragBase &zielauftrag,const ManuProC::Datum &datum)
-{
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
-   "Menge=",menge,"Zielauftrag=",zielauftrag,"Datum=",datum);
- int znr=AufEintragBase::none_znr;
- ArtikelBase artikel=ArtikelBase::none_id;
- Transaction tr;
- for(std::vector<AufEintrag>::iterator i=LAE.begin();i!=LAE.end();++i)
-  {
-    int znrtmp;
-    if(i->getRestStk()<=menge)
-     {
-       menge-=i->getRestStk();
-       znrtmp=i->Planen(uid,i->getRestStk(),true,zielauftrag,datum);
-     }
-    else
-     {
-      if(menge>0)
-        znrtmp=i->Planen(uid,menge,true,zielauftrag,datum);
-     }
-    if(znr==AufEintragBase::none_znr) znr=znrtmp;
-    else assert(znr==znrtmp);
-    if(artikel==ArtikelBase::none_id) artikel=i->Artikel();
-    else assert(artikel==i->Artikel());
-  }
- if(menge>0) // Überplanung
-  {
-    AufEintragBase(zielauftrag,znr).PlanenDispo(uid,artikel,menge,datum);
-  }
- tr.commit();
-}
-*/
-
 void AufEintragBase::PlanenDispo(int uid,const ArtikelBase& artikel,mengen_t menge,const ManuProC::Datum &datum)
 {
  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str(),
@@ -146,12 +108,9 @@ int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
   assert(!L.empty());
   for(std::list<AufEintragZu::st_reflist>::iterator i=L.begin();i!=L.end();++i)
    {
-    mengen_t M;
-    if(i->Menge > menge) M=menge;
-    else M=i->Menge;
+    mengen_t M=min(i->Menge,menge);
     if(!dispoplanung)
        znr=tryUpdateEntry(M,datum,artikel,status,uid,i->AEB);
-//       znr=tryUpdateEntry(M,datum,artikel,status,uid,i->AEB,false);
     else
       { int dummy;
         assert(existEntry(artikel,datum,znr,dummy,menge,status));
@@ -174,22 +133,22 @@ void AufEintragBase::ExistMenge(const std::string &s) const
 }
 
 
-#include <Lager/Lager_Vormerkungen.h>
 void AufEintragBase::vormerken_oder_bestellen(int uid,const AuftragBase::mengen_t &vormerkmenge,
             AuftragBase::mengen_t bestellmenge,
             const ArtikelBase &artikel,const Petig::Datum &lieferdatum,
-            AuftragBase::st_tryUpdateEntry st_bool) throw(SQLerror)
+            std::vector<AufEintrag> dispo_auftrag,
+            AuftragBase::st_tryUpdateEntry st_bool)  const throw(SQLerror)
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Vormerkmenge=",vormerkmenge,
       "Bestellmenge=",bestellmenge);
   assert(vormerkmenge<=bestellmenge);
 
 
-Lager_Vormerkungen LV(*this);
-
   // 1. Fall: Reicht die Menge, die wir bekommen haben aus?
   if(vormerkmenge>mengen_t(0))
-     LV.artikel_vormerken_oder_schnappen(false,vormerkmenge,artikel,uid,false);
+   {
+     artikel_vormerken_oder_schnappen(false,vormerkmenge,artikel,uid,ManuProC::Auftrag::r_Anlegen,dispo_auftrag);
+   }
   bestellmenge-=vormerkmenge;
   if(bestellmenge==AuftragBase::mengen_t(0)) return;
 
@@ -201,9 +160,8 @@ Lager_Vormerkungen LV(*this);
      AuftragBase::mengen_t menge_vorgemerkt = AIL.getMengePlan();
      if(menge_vorgemerkt>mengen_t(0))
       {     
-        AuftragBase::mengen_t Mv=menge_vorgemerkt;
-        if(bestellmenge<Mv)   Mv=bestellmenge;
-        LV.artikel_vormerken_oder_schnappen(true,Mv,artikel,uid,true,AIL.getPlanAuftraege());
+        AuftragBase::mengen_t Mv=min(bestellmenge,menge_vorgemerkt);
+        artikel_vormerken_oder_schnappen(true,Mv,artikel,uid,ManuProC::Auftrag::r_Planen,AIL.getPlanAuftraege());
         bestellmenge-=Mv;
         if(bestellmenge==AuftragBase::mengen_t(0)) return;
       }     
@@ -221,3 +179,47 @@ Lager_Vormerkungen LV(*this);
     }
 }
 
+void AufEintragBase::artikel_vormerken_oder_schnappen(bool schnappen,AuftragBase::mengen_t menge,
+      const ArtikelBase &artikel,int uid,ManuProC::Auftrag::Action reason,
+      std::vector<AufEintrag> dispo_auftrag) const
+{
+   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Schnappen=",schnappen,"Menge=",menge,
+      "Artikel=",artikel,
+      "Reason=",reason,"SizeOfDispoAufträgen=",dispo_auftrag.size());
+
+  if(menge==AuftragBase::mengen_t(0)) return ;
+
+  // Bei den 2er (dispo_auftrag_id) die verfügbare Menge reduzieren
+  // Bei den 1er (plan_auftrag_id) die  verfügbare Menge wegnehmen 
+  AuftragBase::mengen_t abmenge=menge;
+  for(std::vector<AufEintrag>::reverse_iterator i=dispo_auftrag.rbegin();i!=dispo_auftrag.rend();++i)
+   {
+     if(schnappen) assert(i->Id()==AuftragBase::plan_auftrag_id);
+     else          assert(i->Id()==AuftragBase::dispo_auftrag_id);
+     AuftragBase::mengen_t use_menge = min(i->getRestStk(),abmenge);
+     AuftragBase::mengen_t mt=i->updateStkDiffBase__(uid,-use_menge);
+     assert(mt==-use_menge);
+
+     if(schnappen)
+      {
+         AufEintragZuMengenAenderung::increase_parents__reduce_assingments(uid,*i,use_menge);
+      }
+     else
+      {  if(!Instanz()->LagerInstanz() && !Instanz()->PlanungsInstanz())
+            AufEintragZuMengenAenderung::change_parent(uid,*i,*this,use_menge);
+      }
+     abmenge-=use_menge;
+     if(abmenge==AuftragBase::mengen_t(0)) break;
+     assert(abmenge>AuftragBase::mengen_t(0));   
+   }
+  if(Instanz()->LagerInstanz()) // neuen 1er anlegen
+   {
+     if(schnappen) assert(reason==ManuProC::Auftrag::r_Planen);
+     AufEintrag AE(*this);
+     AE.Planen(uid,menge,AuftragBase(Instanz()->Id(),AuftragBase::plan_auftrag_id),
+            AE.getLieferdatum(),reason); 
+   }
+
+}
+
+            
