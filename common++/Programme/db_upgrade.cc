@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.12 2003/07/28 10:03:24 christof Exp $
+// $Id: db_upgrade.cc,v 1.13 2003/07/28 10:07:45 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -96,7 +96,7 @@ int main(int argc,char *argv[])
   // neue definitive Priorität bei den Zuordnungen
   // allerdings muss der Index auftragsentryzuordnung_altauftr noch
   // geaendert werden (muss prioritaet beinhalten)
-  check_column("auftragsentryzuordnung","prioritaet","timestamp");
+  check_column("auftragsentryzuordnung","prioritaet","timestamp with time zone");
   
   ManuProC::dbdisconnect();
   return 0;
