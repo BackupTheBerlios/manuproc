@@ -1,4 +1,4 @@
-/* $Id: ArtikelImLager.cc,v 1.5 2002/12/24 08:25:22 thoma Exp $ */
+/* $Id: ArtikelImLager.cc,v 1.6 2003/01/08 08:41:00 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -42,7 +42,7 @@ ArtikelImLager::ArtikelImLager(const cH_ppsInstanz &instanz,const ArtikelBase &a
 //cout << *i<<'\t'<<i->getLieferdatum() <<' '<< datum<<'\n';
         if(i->getLieferdatum() > datum) continue;
 //cout << "\tdispo OK\n";
-cout << "LD A: "<<i->Artikel()<<'\t'<<i->getRestStk()<<' '<<*i<<'\n';
+std::cout << "LD A: "<<i->Artikel()<<'\t'<<i->getRestStk()<<' '<<*i<<'\n';
         menge_dispo_auftraege+=i->getRestStk();
         V_dispo_auftraege.push_back(*i);
       }
@@ -53,7 +53,7 @@ cout << "LD A: "<<i->Artikel()<<'\t'<<i->getRestStk()<<' '<<*i<<'\n';
 //   i->Artikel().Id()!=211007) continue;
         if(i->getLieferdatum() <= datum) continue; 
         if(!i->Instanz()->LagerInstanz()) continue;
-cout << "LD B: "<<i->Artikel()<<'\t'<<i->getRestStk()<<' '<<*i<<'\n';
+std::cout << "LD B: "<<i->Artikel()<<'\t'<<i->getRestStk()<<' '<<*i<<'\n';
         menge_plan_auftraege+=i->getRestStk();
         V_plan_auftraege.push_back(*i);
       }
