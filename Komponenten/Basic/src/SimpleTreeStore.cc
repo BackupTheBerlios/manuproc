@@ -1,7 +1,6 @@
-// $Id: tclistnode.cc,v 1.8 2002/07/05 12:36:56 christof Exp $
-/*  libKomponenten: ManuProC's Widget library
- *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
- *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
+// $Id: SimpleTreeStore.cc,v 1.1 2002/10/18 10:39:42 christof Exp $
+/*  libKomponenten: GUI components for ManuProC's libcommon++
+ *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,4 +17,16 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistnode.cc,v 1.8 2002/07/05 12:36:56 christof Exp $
+#include <SimpleTreeStore.h>
+
+void SimpleTreeStore::save_remembered() const
+{
+}
+
+void SimpleTreeStore::load_remembered()
+{
+}
+
+void SimpleTreeStore::set_remember(const std::string &program, const std::string &instance)
+{
+}

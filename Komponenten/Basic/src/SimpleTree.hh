@@ -1,4 +1,4 @@
-/* $Id: treebase.h,v 1.27 2002/07/05 12:36:56 christof Exp $ */
+// $Id: SimpleTree.hh,v 1.1 2002/10/18 10:39:42 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,32 +20,22 @@
 #ifndef KOMPONENTEN_TREEBASE
 #define KOMPONENTEN_TREEBASE
 
-#include<TCList.h>
-#include<deque>
-#include <gtk--/menu.h>
-#include<vector>
-#include"tclistrowdata.h"
+#include <SimpleTreeStore.h>
+#include <gtkmm/treeview.h>
+#include <deque>
+#include <gtkmm/menu.h>
+#include <gtkmm/checkmenuitem.h>
 
-class TreeRow;
-class cH_RowDataBase;
-
-class TreeBase : public TCList
+class SimpleTree : public Gtk::TreeView
 {
- guint showdeep;
- guint attrcount;
- std::deque<guint> currseq; 
- std::deque<guint> clicked_seq;
- std::vector<bool> vec_hide_cols;
- gpointer gp;
+	std::deque<guint> clicked_seq;
  
  Gtk::Menu *menu;  
  Gtk::CheckMenuItem *titles_menu;
  bool titles_bool:1; 
  bool auffuellen_bool:1; 
  bool expandieren_bool:1; 
- bool color_bool:1;
  
- std::string mem_prog,mem_inst;
 
  std::vector<Gdk_Color> colors;
  static const unsigned int num_colors=8;
@@ -72,7 +62,6 @@ class TreeBase : public TCList
  void on_Color(const Gtk::CheckMenuItem *sp);
  
 protected: 
- std::vector<cH_RowDataBase> datavec;
 
  // set column names, fill data and display
  // also see discussion in treebase.cc
@@ -80,43 +69,25 @@ protected:
  // StandardReihenfolge setzen
  virtual void setSequence();
  virtual const std::string getColTitle(guint seq) const;
- // einen neuen Ast erzeugen, deep ist die Spalte, v der Wert dieser Spalte
- virtual TreeRow *NewNode
- 		(guint deep, const cH_EntryValue &v, guint child_s_deep, 
- 		 cH_RowDataBase child_s_data, bool expand,
- 		 const TreeRow &suminit);
- // ein neues Blatt erzeugen, deep ist die Spalte, seqnr der Werteindex
- // deep == Attrs() !
- // eigentlich Unsinn, das hier zu überladen ...
- virtual TreeRow *NewLeaf
- 		(guint deep, const cH_EntryValue &v, const cH_RowDataBase &d);
 
- virtual void setColTitles();
- virtual void fillDataVec() {};
+// virtual void setColTitles();
+// virtual void fillDataVec() {};
  void fillTCL();
  void refillTCL(bool clear_me=true);
 
 public:
  TreeBase(guint cols, guint attr=0);
  ~TreeBase();
- void set_showdeep(int i) {showdeep=i;}
- guint Attrs() const { return attrcount; }
- guint Cols() const { return columns().size();}
  void setDataVec(const std::vector<cH_RowDataBase> &d,bool clear_me=true) 
  { datavec=d; 
    refillTCL(clear_me);
  };
- void append_line(cH_RowDataBase row);
- void set_value_data(gpointer _p) {gp = _p;}
  void redisplay(cH_RowDataBase row,guint index);
- gpointer ValueData() const { return gp; }
  
  static void Expand_recursively(TCListRow_API &api);
  void Expand_recursively();
- static void Collapse_recursively(TCListRow_API &api);
- void Collapse_recursively();
+ void Collapse(){collapse();}
  
- const std::deque<guint> &get_seq() const {return currseq;}
  void show_titles(bool show);
  void set_tree_column_visibility(unsigned int column,bool visible);
  
@@ -206,8 +177,6 @@ private:
     }
  }
 
- void save_remembered() const;
- void load_remembered();
 public:
  template <class T> void selectMatchingLines(const T &t)
  {  selection().clear();
@@ -220,21 +189,8 @@ public:
  template <class T> void ForEachLeaf(T &t) const
  {  ForEachLeaf2(begin(),end(),t); }
  
- void set_remember(const std::string &program, const std::string &instance);
-};
+protected:
 
-///////////////////////////////////////////////////////////////////
-// newer, more simplyfied API:
-class SimpleTree : public TreeBase
-{protected:
- typedef TreeRow *(*NewNode_fp)
- 		(guint deep, const cH_EntryValue &v, guint child_s_deep, 
- 		 cH_RowDataBase child_s_data, bool expand, 
- 		 const TreeRow &suminit);
-
- std::vector<std::string> titles;
- NewNode_fp node_creation;
- 
 // @ ins cc file ?
  static TreeRow *defaultNewNode
  		(guint deep, const cH_EntryValue &v, guint child_s_deep, 

@@ -1,6 +1,6 @@
-/* $Id: rowdata.h,v 1.8 2002/07/05 12:36:56 christof Exp $ */
+// $Id: SimpleTreeModel.cc,v 1.1 2002/10/18 10:39:42 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
- *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,29 +17,29 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: rowdata.h,v 1.8 2002/07/05 12:36:56 christof Exp $
+#include <SimpleTreeModel.h>
 
-#ifndef KOMPONENTEN_ROWDATA_H
-#define KOMPONENTEN_ROWDATA_H
+void SimpleTreeModel::append_line(const cH_RowDataBase &row)
+{  datavec.push_back(row);
+   line_appended(row);
+}
 
-#include <Misc/Handles.h>
-#include <Misc/EntryValueBase.h>
-#include <glib.h>
-#include <cassert>
+void SimpleTreeModel::clear()
+{  datavec.clear();
+   redraw_needed();
+}
+	
+void SimpleTreeModel::setDataVec(const std::vector<cH_RowDataBase> &d)
+{  datavec=d;
+   redraw_needed();
+}
 
-class RowDataBase : public HandleContent
-{
-public:
- virtual const cH_EntryValue Value(guint _seqnr,gpointer _g) const=0;
- virtual ~RowDataBase(){}
-};
+void SimpleTreeModel::setTitles(const std::vector<std::string>& T)
+{  titles=T;
+   for (guint i=0;i<T.size();++i) title_changed(i);
+}
 
-class cH_RowDataBase : public Handle<const RowDataBase>
-{
-protected:
- cH_RowDataBase() {}
-public:
- cH_RowDataBase(const RowDataBase *r) : Handle<const RowDataBase>(r){}
-};
-
-#endif
+const std::string SimpleTreeModel::getColTitle(guint idx) const
+{  if (idx<titles.size()) return titles[idx];
+   return ""; 
+}
