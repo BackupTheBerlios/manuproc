@@ -483,9 +483,9 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
       }
       else for (ArtikelBaum::const_iterator i=ab.begin();i!=ab.end();++i)
       {  AufEintragZu::map_t::const_iterator f=kinder.find(i->rohartikel);
-         if (f==kinder.end() && !!ae.getRestStk()) // Artikel nie bestellt
-         {  AuftragBase::mengen_t M=ae.getRestStk()*i->menge;
-            alles_ok=false;
+         AuftragBase::mengen_t M=ae.getRestStk()*i->menge;
+         if (f==kinder.end() && !!M) // Artikel nie bestellt
+         {  alles_ok=false;
             analyse("Rohartikel fehlt völlig",ae,itos(i->rohartikel.Id()),M.String(true));
             if (!analyse_only)
             {  AufEintrag::ArtikelInternNachbestellen(
