@@ -43,6 +43,7 @@ void windowTop::show_kundendaten()
 
 void windowTop::kunden_activate()
 {
+  clear_entrys();
   try{
 
 // saveAll?   
