@@ -1,4 +1,4 @@
-/* $Id: Model.h,v 1.2 2003/02/26 13:31:08 christof Exp $ */
+/* $Id: Model.h,v 1.3 2003/03/11 08:23:56 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -59,6 +59,9 @@ public:
 	// only use this to create a Model_ref !!!
 	T &Value() 
 	{  return value; }
+	bool matches(const void *gp) const
+	{  return gp==static_cast<const void *>(&value);
+	}
 	
 	const T &operator=(const T &v)
 	{  value=v;
