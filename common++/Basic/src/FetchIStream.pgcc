@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.31 2003/01/29 13:56:00 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.32 2003/03/24 15:46:45 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -268,9 +268,11 @@ Query &Query::operator<<(bool i)
 }
 
 Query &Query::operator<<(char i)
-{  char x[2];
-   x[0]=i;
-   x[1]=0;
+{  char x[4];
+   x[0]='\'';
+   x[1]=i;
+   x[2]='\'';
+   x[3]=0;
    add_argument(x);
    return *this;
 }
