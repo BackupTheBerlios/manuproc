@@ -1,4 +1,4 @@
-// $Id: ExtraColumns.cc,v 1.4 2004/09/24 22:52:15 christof Exp $
+// $Id: ExtraColumns.cc,v 1.5 2004/09/27 13:20:24 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -150,4 +150,8 @@ Query::Row::Fake ExtraColumns::fake_istream(const std::string &column)
   if (!ind) 
   { v2.null=false; return Query::Row::Fake(v2.value); }
   return Query::Row::Fake();
+}
+
+bool hasColumn(const std::string &column) const
+{ return (which->available_columns.find(column)!=which->available_columns.end());
 }

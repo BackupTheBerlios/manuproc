@@ -31,7 +31,9 @@ int main()
   ec << 1;
   assert(ec.good());
   std::cout << ec.get<int>("planumsatz") 
-        << ',' << ec.get<std::string>("strasse") << '\n';
+        << ',' << ec.get<std::string>("strasse") 
+        << ',' << ec.get<std::string>("not_there","missing") 
+        << '\n';
  }
   
  {ExtraColumns ec("kunden","kundennr");
