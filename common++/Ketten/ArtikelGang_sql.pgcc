@@ -1,4 +1,4 @@
-/* $Id: ArtikelGang_sql.pgcc,v 1.13 2003/10/02 07:40:30 christof Exp $ */
+/* $Id: ArtikelGang_sql.pgcc,v 1.14 2004/05/26 09:01:24 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -17,6 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#if 0
 #include <Ketten/ArtikelGang_Malte.h>
 #include <Misc/Transaction.h>
 
@@ -46,7 +47,8 @@ std::vector<KettenGarn> ArtikelGang_Malte::load_Garn(int kettlaenge) const
       :LAENGE,:WIEDERHOLUNG ;
     SQLerror::test(__FILELINE__,100);
     if (sqlca.sqlcode) break;
-    v.push_back(KettenGarn(INDEX,ZEILE,KETTEN,FAEDEN,ArtikelBase(GARN),LAENGE,WIEDERHOLUNG));
+    v.push_back(KettenGarn(INDEX,ZEILE,KETTEN,FAEDEN,ArtikelBase(GARN),LAENGE,0)); 
+    	//WIEDERHOLUNG));
     kettscheiben.push_back(Kettscheibe(INDEX));
   }
  kettscheiben.sort();
@@ -54,3 +56,4 @@ std::vector<KettenGarn> ArtikelGang_Malte::load_Garn(int kettlaenge) const
  return v;
 }
 
+#endif

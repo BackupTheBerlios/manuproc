@@ -1,6 +1,6 @@
-// $Id: KettplanKette.h,v 1.17 2004/02/25 11:35:49 christof Exp $
+// $Id: KettplanKette.h,v 1.18 2004/05/26 09:01:24 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 1998-2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@
 
 #include "Kette.h"
 #include "ArtikelGang.h"
-//#include "KettenGarn.h"
 #include <Misc/SQLerror.h>
 
 class KettplanKette : public Kette {
@@ -48,9 +47,6 @@ private:
 	mutable std::vector <ArtikelGang> artikel; // sortiert nach Namen (?)
 	mutable int valid;
 
-#define USUAL_INIT planmasch(), kettlaenge(), stuecklaenge(), \
-		schussdichte(), webmasch(), abgeschnitten(), valid()
-
 public:
 	typedef std::vector <ArtikelGang>::const_iterator const_iterator;
 	const_iterator begin()
@@ -60,14 +56,8 @@ public:
 	{ if (!(valid&VA_ARTIKEL)) get_artikel();
 	   return artikel.end(); }
 
-	KettplanKette()
-		: Kette(), USUAL_INIT
-	{}
-
-	KettplanKette(const Kette &k)
-		: Kette(k), USUAL_INIT
-	{}
-
+	KettplanKette();
+	KettplanKette(const Kette &k);
 
 	static KettplanKette create(const Kette &k,const std::vector <ArtikelGang> &artikel, 
 		int kettlaenge, int stuecklaenge, int planmaschine=0);
@@ -129,7 +119,5 @@ private:
 	{  Schussdichte(sd); }
 	/// deprecate[Ad, use BarcoMasch(int m)
 	void setzeBarcoMasch(int m) throw(SQLerror);
-	
-#undef USUAL_INIT
 };
 #endif

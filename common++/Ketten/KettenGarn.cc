@@ -1,6 +1,6 @@
-/* $Id: KettenGarn.cc,v 1.12 2004/03/11 15:31:17 christof Exp $ */
+/* $Id: KettenGarn.cc,v 1.13 2004/05/26 09:01:24 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
+ *  Copyright (C) 1998-2004 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #include <Ketten/KettenGarn.h>
 #include <Ketten/ArtikelGang.h>
 
+#if 0
 void KettenGarn::setWiederholung(const ArtikelGang &AG,std::string s)  throw(SQLerror)
 {
   std::string S="update ketten_garn set wiederholung=nullif('"+s+
@@ -98,10 +99,20 @@ void KettenGarn::modify(const ArtikelGang & AG,int kettenzahl_neu,int faeden_neu
   laenge=faden_laenge;
 }
 
-
 unsigned int KettenGarn::Wiederholung_anzahl() const
 {
   if(Wiederholung().empty()) return 1;
   std::string w(Wiederholung(),1,Wiederholung().size());
   return (unsigned int)atoi(w.c_str());
 }
+#endif
+
+bool KettenGarn::operator==(const KettenGarn_MT &b) const throw()
+	{  return Index()==b.Index() && 
+	          Artikel()==b.Artikel() &&
+	          Faeden()==b.Faeden() &&
+	          Kettenzahl()==b.Kettenzahl() &&
+	          Laenge()==b.Laenge() ;}
+bool KettenGarn::operator<(const KettenGarn_MT &b) const throw()
+	{  return (Index()<b.Index()) || 
+	          (Index()==b.Index() && Artikel()<b.Artikel() );}

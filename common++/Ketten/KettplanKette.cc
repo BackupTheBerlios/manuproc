@@ -1,6 +1,6 @@
-// $Id: KettplanKette.cc,v 1.5 2004/02/25 11:35:49 christof Exp $
+// $Id: KettplanKette.cc,v 1.6 2004/05/26 09:01:24 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 1998-2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,20 +37,26 @@ int KettplanKette::planMaschine() const throw()
 
 void KettplanKette::setStuecklaenge(const int wert)  const throw(SQLerror)
 {
-  std::string q="update ketten set stucklaenge="+itos(wert)+" where "
-   " (maschine,schaerdatum) = ("+itos(Maschine())+","
-      +Schaerdatum().postgres_null_if_invalid()+")";
-  Query::Execute(q);
-  SQLerror::test(__FILELINE__);
+  Query("update ketten set stucklaenge=? where (maschine,schaerdatum) = (?,?)")
+      << wert << Maschine() << Schaerdatum() >> Query::check100();
   stuecklaenge=wert;
 }
  
 void KettplanKette::setKettlaenge(const int wert)  const throw(SQLerror)
 {
-  std::string q="update ketten set laenge="+itos(wert)+" where "
-   " (maschine,schaerdatum) = ("+itos(Maschine())+","
-      +Schaerdatum().postgres_null_if_invalid()+")";
-  Query::Execute(q);
-  SQLerror::test(__FILELINE__);
+  Query("update ketten set laenge=? where (maschine,schaerdatum) = (?,?)")
+      << wert << Maschine() << Schaerdatum() >> Query::check100();
   kettlaenge=wert;
 }
+
+#define USUAL_INIT planmasch(), kettlaenge(), stuecklaenge(), \
+		schussdichte(), webmasch(), abgeschnitten(), valid()
+
+KettplanKette::KettplanKette()
+		: Kette(), USUAL_INIT
+	{}
+
+KettplanKette::KettplanKette(const Kette &k)
+		: Kette(k), USUAL_INIT
+	{}
+#undef USUAL_INIT

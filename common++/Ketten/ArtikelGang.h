@@ -1,6 +1,6 @@
-/* $Id: ArtikelGang.h,v 1.10 2004/02/25 11:35:49 christof Exp $ */
+/* $Id: ArtikelGang.h,v 1.11 2004/05/26 09:01:24 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 1998-2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,18 +31,17 @@ struct ArtikelGang {
 	  : gaenge(g), art(id) {}
 	ArtikelGang() : gaenge(), art() {}
 	bool operator==(const ArtikelGang &b) const throw()
-	{  return Id()==b.Id() && Gaenge()==b.Gaenge() ;}
-	bool operator<(const ArtikelGang &b) const throw()
-	{  return Id()<b.Id() || (Id()==b.Id() && Gaenge()<b.Gaenge()); }
+	{  return Artikel()==b.Artikel() && Gaenge()==b.Gaenge() ;}
+	bool operator<(const ArtikelGang &b) const throw();
 
-// this is for convenience only	
-	const cH_ArtikelBezeichnung Bezeichnung() const throw()
+// this is for convenience only	(and pulls in a big header!)
+	__deprecated const cH_ArtikelBezeichnung Bezeichnung() const throw()
 	{  return cH_ArtikelBezeichnung(art); }
 
-   ArtikelBase Artikel() const {return art;}
-   bool Valid() const {if(Id()&&gaenge) return true; return false;}
+	ArtikelBase Artikel() const {return art;}
+	bool Valid() const { return !!Artikel()&&gaenge; }
 
-	const ID &Id() const {  return art.Id(); }
+	__deprecated const ID &Id() const {  return art.Id(); }
 	int Gaenge() const throw() {  return gaenge; }
 };
 

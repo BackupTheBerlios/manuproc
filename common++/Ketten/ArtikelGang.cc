@@ -1,6 +1,6 @@
-/* $Id: ArtikelGang.cc,v 1.12 2003/10/02 07:40:30 christof Exp $ */
+/* $Id: ArtikelGang.cc,v 1.13 2004/05/26 09:01:24 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
+ *  Copyright (C) 1998-2004 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #include <Misc/FetchIStream.h>
 #include <Misc/mystring.h>
 
+#if 0
 void ArtikelGang_Malte::delete_Garn(const KettenGarn& garn) const  throw(SQLerror)
 {
  std::string S="delete from ketten_garn where (artikel,gaenge,ketten,zeile,"
@@ -50,7 +51,7 @@ void ArtikelGang_Malte::save_Garn(const KettenGarn& garn/*,std::list<ArtikelGang
    itos(garn.Index())+","+
    "nullif("+itos(garn.Laenge())+",0),'"
 //   "nullif("+itos(garn.Kombiniert())+",false),'"
-   +garn.Wiederholung()   
+   +garn.Wiederholung_anz()   
    +"')";
  Query::Execute(S); 
  SQLerror::test(__FILELINE__);
@@ -141,4 +142,7 @@ std::vector<Kettscheibe::st_kombi> ArtikelGang_Malte::KombiniertMit(const Ketten
   assert(!"never get here\n");
   abort();
 }
+#endif
 
+bool ArtikelGang::operator<(const ArtikelGang &b) const throw()
+{  return Id()<b.Id() || (Id()==b.Id() && Gaenge()<b.Gaenge()); }
