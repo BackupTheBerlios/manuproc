@@ -1,4 +1,4 @@
-// $Id: createDynEnums.cc,v 1.16 2004/03/31 10:47:17 jacek Exp $
+// $Id: createDynEnums.cc,v 1.17 2004/03/31 14:43:08 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: createDynEnums.cc,v 1.16 2004/03/31 10:47:17 jacek Exp $
+// $Id: createDynEnums.cc,v 1.17 2004/03/31 14:43:08 jacek Exp $
 
 #include <Misc/dbconnect.h>
 #include <Misc/FetchIStream.h>
@@ -84,11 +84,22 @@ int main()
       std::cout << "  namespace ArtikelTyp_Attributes {\n"
 		"   enum enum_t {\n";
       {  
-       int attr_column=0;
+       int oid;
+       Query("select oid from pg_class where relname='artbez_warengruppe'")
+	  >> oid;
 
-       std::cout << "LagerArtikel" << '=' << attr_column++ << ',';
-       std::cout << "MitEAN" << '=' << attr_column++ << ',';
-       std::cout << "NullPreisCheck" << '=' << attr_column++ << ',';
+       const int ab_spalte=3; // ab der Spalte stehen Attribute (bools)
+
+       Query q("select attname,attnum-? from pg_attribute where attrelid=?"
+	 " and attnum>=? order by attnum");
+       q  << ab_spalte << oid << ab_spalte;
+
+       while ((q >> is).good())
+         {  std::string colname;
+            int attnum;
+            is  >> colname >> attnum;
+            std::cout <<colname << '=' << attnum << ',';
+         }     
 
       }
       std::cout << "\n"
