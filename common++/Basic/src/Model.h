@@ -1,4 +1,4 @@
-/* $Id: Model.h,v 1.3 2003/03/11 08:23:56 christof Exp $ */
+/* $Id: Model.h,v 1.4 2003/04/07 06:37:20 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -96,6 +96,7 @@ public:
 	Model_ref() : value(0), changed(0) {}
 
 	bool valid() const { return value && changed; }
+	bool operator!() const { return !valid(); }
 	SigC::Signal1<void,void*> &signal_changed() const
 	{  return *changed; }
 	// g++ 2.95 does not use this ...
