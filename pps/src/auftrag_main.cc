@@ -634,7 +634,7 @@ void auftrag_main::on_node_selected(const TreeRow &node)
   // Überschriften setzen 
   schema_select(cH_ArtikelBezeichnung(node.LeafData().cast_dynamic<const Data_auftrag>()->get_Artikel())
   	->getExtBezSchema());
-  erfassen_button->set_sensitive(false);
+//  erfassen_button->set_sensitive(false);
 }
 
 void auftrag_main::getAufEintrag_fromNode(TCListRow_API::const_iterator b,
