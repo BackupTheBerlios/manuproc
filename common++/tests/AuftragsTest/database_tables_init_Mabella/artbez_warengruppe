@@ -2,43 +2,47 @@
 -- PostgreSQL database dump
 --
 
-
-
 SET search_path = public, pg_catalog;
 
 DROP TABLE public.artbez_warengruppe;
 --
--- TOC entry 2 (OID 960201)
+-- TOC entry 2 (OID 7855542)
 --
 
 CREATE TABLE artbez_warengruppe (
     id smallint,
-    text character varying(40)
+    text character varying(40),
+    mit_ean boolean,
+    bez_as_view boolean,
+    lagerartikel boolean
 );
 
 
 --
--- TOC entry 3 (OID 960201)
+-- TOC entry 3 (OID 7855542)
 --
 
 REVOKE ALL ON TABLE artbez_warengruppe FROM PUBLIC;
 
 
+--
+-- Data for TOC entry 4 (OID 7855542)
+--
 
-COPY artbez_warengruppe (id, text) FROM stdin;
-10	Etiketten
-11	Garn per km
-4	Garn per kg
-7	Sonstiges
-8	Lohn
-5	Spulen
-6	Kartonagen
-3	aufgemachtes Band
-2	bedrucktes Band
-1	gefärbtes Band
-0	gewebtes Band
-9	Farben & Pigmente
-12	Musterkarten
+COPY artbez_warengruppe (id, text, mit_ean, bez_as_view, lagerartikel) FROM stdin;
+10	Etiketten	\N	\N	\N
+11	Garn per km	\N	\N	\N
+4	Garn per kg	\N	\N	\N
+7	Sonstiges	\N	\N	\N
+8	Lohn	\N	\N	\N
+5	Spulen	\N	\N	\N
+6	Kartonagen	\N	\N	\N
+3	aufgemachtes Band	\N	\N	\N
+2	bedrucktes Band	\N	\N	\N
+1	gefärbtes Band	\N	\N	\N
+0	gewebtes Band	\N	\N	\N
+9	Farben & Pigmente	\N	\N	\N
+12	Musterkarten	\N	\N	\N
 \.
 
 

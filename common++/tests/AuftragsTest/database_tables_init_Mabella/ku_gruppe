@@ -27,6 +27,11 @@ REVOKE ALL ON TABLE ku_gruppe FROM PUBLIC;
 GRANT INSERT,SELECT,UPDATE,DELETE ON TABLE ku_gruppe TO GROUP buro;
 
 
+COPY ku_gruppe (grpnr, name, obergruppe, kommentar) FROM stdin;
+1	Kunden	\N	\N
+3	Personen	\N	\N
+\.
+
 --
 -- TOC entry 4 (OID 6684773)
 --
