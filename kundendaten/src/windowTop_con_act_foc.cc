@@ -136,9 +136,11 @@ void windowTop::activateFktB(Kunde::UpdateBitsBank e)
 
 void windowTop::activateFktA(Kunde::UpdateBitsAdresse e)
 {
-     if      (e==Kunde::FGruppennr  ) entrySortiername->grab_focus();
-     else if (e==Kunde::FSortname   ) entryIdNr->grab_focus();
-     else if (e==Kunde::FIdnr       ) entryFirma->grab_focus();
+//     if      (e==Kunde::FGruppennr  ) entrySortiername->grab_focus();
+//     else 
+	if (e==Kunde::FSortname   ) entryIdNr->grab_focus();
+     else if (e==Kunde::FIdnr       ) entryName2->grab_focus();
+     else if (e==Kunde::FName2      ) entryFirma->grab_focus();	     
      else if (e==Kunde::FFirma      ) entryPostanwVor->grab_focus();
      else if (e==Kunde::FPostanwvor ) entryStrasse->grab_focus();
      else if (e==Kunde::FStrasse    ) entryHausNr->grab_focus();
