@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.105 2004/02/20 09:43:55 christof Exp $
+// $Id: AufEintrag.cc,v 1.106 2004/02/24 12:44:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -203,7 +203,8 @@ struct AufEintrag::Planen_cb : public auf_positionen_verteilen_cb
 
    Planen_cb(AufEintrag &ae) : ziel(ae) {}
    mengen_t operator()(AufEintrag &ae, mengen_t planmenge) const
-   {  ae.Planen(planmenge,ziel);
+   {  if (ae.getLieferdatum()<ziel.getLieferdatum()) return 0;
+      ae.Planen(planmenge,ziel);
       return planmenge;
    }
 };
