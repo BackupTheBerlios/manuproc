@@ -1,9 +1,4 @@
-ArtikelBox:
-
-- beim Anlegen feuert activate nicht mehr
-- bei Breitensuche wird die Liste nicht gefüllt
-
 SimpleTree:
 
-- Spaltenausrichtung setzen
-- Spalten entsprechend aufklappen
+- Spaltenausrichtung setzen (API)
+- Farben gehen nicht mehr
