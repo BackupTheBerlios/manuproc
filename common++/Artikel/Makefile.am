@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.18 2003/01/15 15:10:15 christof Exp $
+# $Id: Makefile.am,v 1.19 2003/01/29 12:26:58 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -9,7 +9,7 @@ noinst_LIBRARIES=libArtikel.a
 includedir=@includedir@/Artikel
 
 libArtikel_a_SOURCES=Aufmachung.cc Preis.cc ArtikelBase.cc \
-	ArtikelMengeSumme.cc \
+	ArtikelMengeSumme.cc ArtikelBaum_new_del.cc \
 	$(BUILT_SOURCES_P)
 
 libArtikel.a: $(libArtikel_a_OBJECTS) $(libArtikel_a_DEPENDENCIES)

@@ -1,4 +1,4 @@
-/* $Id: ArtikelBaum.h,v 1.18 2003/01/08 09:46:56 christof Exp $ */
+/* $Id: ArtikelBaum.h,v 1.19 2003/01/29 12:26:58 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -57,13 +57,6 @@ public:
       bool operator==(const RohArtikel &b) const {return (*this).rohartikel==b.rohartikel;}
       bool operator<(const RohArtikel &b) const {return (*this).rohartikel<b.rohartikel;}
 
-private:
-	   // obsolete, compatibility only!
-	   RohArtikel(const ArtikelBase &_altartikel,cH_Prozess proz)
-	   	: rohartikel(_altartikel), 
-	   	  menge(proz->getMtrProStk()), 
-	   	  erzeugung(proz)
-	   {}
 	};
 private:
 	typedef std::vector<RohArtikel> zusammensetzung_t;

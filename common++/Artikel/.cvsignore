@@ -1,7 +1,6 @@
 Makefile
 Makefile.in
 .deps
-ArtikelBaum.cc
 ArtikelBezeichnung.cc
 Artikel_sql.cc
 Aufmachung_sql.cc
