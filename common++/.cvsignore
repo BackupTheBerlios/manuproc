@@ -27,3 +27,4 @@ ManuProCConfig.h.in
 depcomp
 stamp-h1
 BaseObjects.link
+.tm_project.cache
