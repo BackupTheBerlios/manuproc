@@ -753,9 +753,14 @@ void auftrag_lieferschein::on_daten_leaf_selected(cH_RowDataBase d)
  const Data_Lieferdaten *dt=dynamic_cast<const Data_Lieferdaten*>(&*d);
 
  bool permit_change((dt->get_LieferscheinEntry().Status()==UNCOMMITED ||
-       		     dt->get_LieferscheinEntry().Status()==OPEN) &&
-		     lieferschein->RngNr() == ManuProcEntity<>::none_id && 
-		     dt->get_Lieferschein_Id()!=LieferscheinBase::none_id);
+       		     dt->get_LieferscheinEntry().Status()==OPEN
+#ifdef LIEFERSCHEINE_IMMER_BESTAETIGT // warum auch immer das so ist
+                     || dt->get_LieferscheinEntry().Status()==NOSTAT
+#endif		     
+       		     )
+		     && lieferschein->RngNr() == ManuProcEntity<>::none_id 
+		     && dt->get_Lieferschein_Id()!=LieferscheinBase::none_id
+		     );
 
  lieferzeile_delete->set_sensitive(permit_change);
 
