@@ -61,11 +61,13 @@
 	  </child>
 
 	  <child>
-	    <widget class="button" id="button1">
+	    <widget class="button" id="clear">
+	      <property agent="glademm" name="cxx_visibility">protected</property>
 	      <property name="visible">True</property>
 	      <property name="label" translatable="yes">Clear</property>
 	      <property name="use_underline">True</property>
 	      <property name="stock_pixmap">gtk-clear</property>
+	      <signal name="clicked" handler="on_clear_activate" last_modification_time="Wed, 12 May 2004 14:22:55 GMT"/>
 	    </widget>
 	  </child>
 	</widget>
@@ -129,17 +131,6 @@
 			  <signal name="clicked" handler="on_customer_search_clicked" last_modification_time="Tue, 11 May 2004 13:45:33 GMT"/>
 			</widget>
 		      </child>
-
-		      <child>
-			<widget class="button" id="customer_clear">
-			  <property agent="glademm" name="cxx_visibility">protected</property>
-			  <property name="visible">True</property>
-			  <property name="label" translatable="yes">Clear</property>
-			  <property name="use_underline">True</property>
-			  <property name="stock_pixmap">gtk-clear</property>
-			  <signal name="clicked" handler="on_customer_clear_activate" last_modification_time="Fri, 07 May 2004 11:15:45 GMT"/>
-			</widget>
-		      </child>
 		    </widget>
 		    <packing>
 		      <property name="padding">0</property>
@@ -200,7 +191,7 @@
 		<widget class="GtkTable" id="table1">
 		  <property name="visible">True</property>
 		  <property name="n_rows">1</property>
-		  <property name="n_columns">4</property>
+		  <property name="n_columns">3</property>
 		  <property name="homogeneous">False</property>
 		  <property name="row_spacing">0</property>
 		  <property name="column_spacing">0</property>
@@ -247,44 +238,6 @@
 		    <packing>
 		      <property name="left_attach">0</property>
 		      <property name="right_attach">1</property>
-		      <property name="top_attach">0</property>
-		      <property name="bottom_attach">1</property>
-		      <property name="x_options">fill</property>
-		      <property name="y_options"></property>
-		    </packing>
-		  </child>
-
-		  <child>
-		    <widget class="GtkToolbar" id="toolbar4">
-		      <property name="visible">True</property>
-		      <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
-		      <property name="toolbar_style">GTK_TOOLBAR_BOTH</property>
-		      <property name="tooltips">True</property>
-
-		      <child>
-			<widget class="button" id="order_search">
-			  <property name="sensitive">False</property>
-			  <property name="label" translatable="yes">Search</property>
-			  <property name="use_underline">True</property>
-			  <property name="stock_pixmap">gtk-find</property>
-			</widget>
-		      </child>
-
-		      <child>
-			<widget class="button" id="order_clear">
-			  <property agent="glademm" name="cxx_visibility">protected</property>
-			  <property name="visible">True</property>
-			  <property name="sensitive">False</property>
-			  <property name="label" translatable="yes">Clear</property>
-			  <property name="use_underline">True</property>
-			  <property name="stock_pixmap">gtk-clear</property>
-			  <signal name="clicked" handler="on_order_clear_clicked" last_modification_time="Fri, 07 May 2004 11:16:07 GMT"/>
-			</widget>
-		      </child>
-		    </widget>
-		    <packing>
-		      <property name="left_attach">3</property>
-		      <property name="right_attach">4</property>
 		      <property name="top_attach">0</property>
 		      <property name="bottom_attach">1</property>
 		      <property name="x_options">fill</property>

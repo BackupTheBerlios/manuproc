@@ -63,6 +63,7 @@ mpc_agent::mpc_agent()
  order->setTitles(v);
  orderid->set_always_fill(true);
  orderid->set_start_on_idle(true);
+ orderid->set_autoexpand(true);
 }
 
 
@@ -73,6 +74,7 @@ void mpc_agent::on_beenden_activate()
 
 void mpc_agent::on_kunde_activate()
 {
+
 }
 
 
@@ -131,24 +133,20 @@ void mpc_agent::on_activate_entry(int enr)
  kunde->set_value(KDBOX_ORT,ort);
    
  kunde->set_sensitive(false);
- customer_clear->set_sensitive(true);
  neu->set_sensitive(true);
+ orderid->grab_focus();
 }
 
 
-void mpc_agent::on_customer_clear_activate()
+void mpc_agent::on_clear_activate()
 {  
  kunde->reset();
  kunde->set_sensitive(true);
  kunde->grab_focus();
- customer_clear->set_sensitive(false); 
  neu->set_sensitive(false);
  clear_order();
 }
 
-void mpc_agent::on_order_clear_clicked()
-{  
-}
 
 void mpc_agent::on_artikel_aktivate()
 {  
@@ -241,8 +239,8 @@ void mpc_agent::on_customer_search_clicked()
  }
   
  kunde->set_sensitive(false);
- customer_clear->set_sensitive(true);
  neu->set_sensitive(true); 
+ clear_order();
 }
 
 

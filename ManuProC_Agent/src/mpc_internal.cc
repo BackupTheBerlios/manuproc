@@ -59,7 +59,8 @@ void mpc_agent::on_orderid_search(gboolean *cont,GtkSCContext context)
 void mpc_agent::clear_order()
 {
  orderid->reset();
- label_orderdate->set_text("dated");
+ orderid->set_sensitive(true);
+ label_orderdate->set_text("");
  artikel->reset();
  menge->set_value(0);
  order->clear();
@@ -77,8 +78,12 @@ void mpc_agent::load_order(int oid)
   
  label_orderdate->set_text(std::string("dated ")+datum.c_str());
 
-
- if(kunde->get_value(KDBOX_NR)!=
+ if(kunde->get_value(KDBOX_NR)!=kdnr)
+   {kunde->set_value(KDBOX_NR,kdnr);
+    on_activate_entry(KDBOX_NR);  
+   }
+ orderid->set_value(itos(VERKNR)+"_"+itos(oid),oid);
+ orderid->set_sensitive(false);
 }
 
 
