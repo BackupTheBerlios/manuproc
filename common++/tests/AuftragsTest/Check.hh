@@ -1,4 +1,4 @@
-// $Id: Check.hh,v 1.26 2003/06/17 08:57:14 christof Exp $
+// $Id: Check.hh,v 1.27 2003/06/23 12:23:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -18,15 +18,6 @@
  */
 
 
-// Die folgende Zeile bzw. überschreibt die Sollzustände der Datenbank 
-// durch den Istzustand. Bitte nur verwenden, wenn sie genau wissen, 
-// was sie tun
-//#define CREATE_TEST_DATABASE  true
-
-
-///////////////////////////////////////////////////////////////////////////
-// Do not change anything below this line /////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
 #include <Artikel/ArtikelBaum.h>
 #include <Artikel/Prozess.h>
 #include <Lager/LagerPlatz.hh>
@@ -51,7 +42,7 @@ class Check
    Check(){}; 
    // Erfolgreich: true; sonst false
    bool teste(was_checken was, const std::string &name,bool vor_dem_test_reparieren=false);
-   static bool analyse,reparieren;
+   static bool analyse,reparieren,overwrite;
 };
 
 Check::was_checken operator|(Check::was_checken a, Check::was_checken b);

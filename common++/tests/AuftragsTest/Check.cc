@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.47 2003/06/17 08:57:14 christof Exp $
+// $Id: Check.cc,v 1.48 2003/06/23 12:23:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -38,6 +38,7 @@ static std::string referenzdir="database_tables_test/";
 
 bool Check::analyse=false;
 bool Check::reparieren=false;
+bool Check::overwrite=false;
 
 bool Check::teste(was_checken check,const std::string &zusatz, bool vor_dem_test_reparieren)
 {
@@ -85,24 +86,21 @@ bool Check::vergleich(was_checken was,const std::string &zusatz)
   for (std::vector<std::string>::const_iterator i=files.begin();i!=files.end();++i)
   {  std::string fz1=resultdir+*i+"_"+zusatz;
      std::string fz2=referenzdir+*i+"_"+zusatz;
-      
-#ifdef CREATE_TEST_DATABASE
-#warning WARNUNG: 
-#warning WARNUNG: COMPILATION MIT CREATE_TEST_DATABASE
-#warning WARNUNG: 
-    system(("mv "+fz1+" "+fz2).c_str());
-    std::cout << fz2<<" wurde neu erzeugt\n"; 
-#else
-     std::string s="diff -q "+fz1+" "+fz2;
-//cout<<" DIFF: " << s<<'\n';
-     int reg=system(s.c_str());
-     if(reg==-1) { std::cout<< "Fehler im diff-Komando ("+*i+")\n"; exit(reg);}
-     else if(reg==0) ;//zuviel Output :-( {std::cout << *i << " OK\n";}
-     else 
-      { std::cout << "Probleme, Empfehlung: \n "<< "mgdiff "+fz1+" "+fz2<<" &\n"; 
-        error=true;
-      }
-#endif
+
+     if (overwrite)      
+     {  system(("mv "+fz1+" "+fz2).c_str());
+        std::cout << fz2<<" wurde neu erzeugt\n"; 
+     }
+     else
+     {  std::string s="diff -q "+fz1+" "+fz2;
+        int reg=system(s.c_str());
+        if(reg==-1) { std::cout<< "Fehler im diff-Komando ("+*i+")\n"; exit(reg);}
+        else if(reg==0) ;//zuviel Output :-( {std::cout << *i << " OK\n";}
+        else 
+        { std::cout << "Probleme, Empfehlung: \n "<< "mgdiff "+fz1+" "+fz2<<" &\n"; 
+          error=true;
+        }
+     }
   }
   return !error;
 }

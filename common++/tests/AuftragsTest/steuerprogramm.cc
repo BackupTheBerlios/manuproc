@@ -880,11 +880,12 @@ int main(int argc,char *argv[])
      { "clean-only", no_argument, 0, 'C' },
      { "reinit", no_argument, 0, 'R' },
      { "analyse", no_argument, 0, 'y' },
+     { "overwrite", no_argument, 0, 'O' },
      { 0,0,0,0 },
    };
    
    int opt;
-   while ((opt=getopt_long(argc,argv,"vrctCRy",long_options,0))!=-1)
+   while ((opt=getopt_long(argc,argv,"vrctCRyO",long_options,0))!=-1)
     switch(opt)
    {  case 'v': verbose=true; break;
       case 'r': Check::reparieren=true; break;
@@ -895,6 +896,7 @@ int main(int argc,char *argv[])
       case 't': ManuProC::Tracer::Enable(AuftragBase::trace_channel);
       	ManuProC::Tracer::Enable(log_trace);
       	break;
+      case 'O': Check::overwrite=true; break;
       default: usage(argv[0],""); return 1;
    }
 
