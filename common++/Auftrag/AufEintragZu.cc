@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.21 2003/08/08 11:55:47 christof Exp $
+// $Id: AufEintragZu.cc,v 1.22 2003/08/11 07:45:47 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -27,9 +27,9 @@
 #include <Misc/TraceNV.h>
 
 // was tut das eigentlich ? CP
-AufEintragZu::list_t AufEintragZu::get_Referenz_list_id(const AuftragBase::ID id,bool kinder,bool artikel) const throw(SQLerror)
+AufEintragZu::list_t AufEintragZu::get_Referenz_list_id(const ID id,bool kinder,bool artikel) const throw(SQLerror)
 {
-   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Id",id),NV("Kinder",kinder));
+   ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,NV("Id",id),NV("Kinder",kinder));
    list_t L=get_Referenz_list(*this,kinder,artikel); // kinder/* oder false? */);
    list_t N=select_Id(id,L);
    if(N.empty() && kinder) // Für die Reparatur; ein Pfeil könnte ins nichts zeigen ...
@@ -40,7 +40,7 @@ AufEintragZu::list_t AufEintragZu::get_Referenz_list_id(const AuftragBase::ID id
    return N;
 }
 
-AufEintragZu::list_t AufEintragZu::select_Id(const AuftragBase::ID id,const list_t &L) const
+AufEintragZu::list_t AufEintragZu::select_Id(const ID id,const list_t &L) const
 {
    list_t N;
    for(AufEintragZu::list_t::const_iterator i=L.begin();i!=L.end();++i)
@@ -51,18 +51,18 @@ AufEintragZu::list_t AufEintragZu::select_Id(const AuftragBase::ID id,const list
 
 AufEintragZu::list_t AufEintragZu::get_Referenz_list_geplant(bool kinder) const throw(SQLerror)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Kinder",kinder));
+ ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,NV("Kinder",kinder));
 
  if(Instanz()->LagerInstanz())
-     return get_Referenz_list_id(AuftragBase::plan_auftrag_id,kinder);
+     return get_Referenz_list_id(plan_auftrag_id,kinder);
 
  list_t L=get_Referenz_list(*this,kinder,list_ohneArtikel);
  list_t N;
  for(AufEintragZu::list_t::const_iterator i=L.begin();i!=L.end();++i)
   {
-     if(i->AEB.Id()!=AuftragBase::dispo_auftrag_id &&
-        i->AEB.Id()!=AuftragBase::ungeplante_id &&
-        i->AEB.Id()!=AuftragBase::invalid_id ) 
+     if(i->AEB.Id()!=dispo_auftrag_id &&
+        i->AEB.Id()!=ungeplante_id &&
+        i->AEB.Id()!=invalid_id ) 
        N.push_back(*i);
   }
  return N;
@@ -72,7 +72,7 @@ AufEintragZu::list_t AufEintragZu::get_Referenz_list_geplant(bool kinder) const 
 
 AufEintragZu::list_t AufEintragZu::get_Referenz_listFull(bool kinder,bool nur_ende) const throw(SQLerror)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Kinder",kinder),NV("NurEnde",nur_ende));
+ ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,NV("Kinder",kinder),NV("NurEnde",nur_ende));
  list_t tv=get_Referenz_list(*this,kinder,list_ohneArtikel);
  list_t vaeb;
  list_t tvxx;
@@ -95,7 +95,7 @@ reloop:
 #if 0
 AufEintragZu::list_t AufEintragZu::get_Referenz_list_for_geplant(bool kinder) const throw(SQLerror)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Kinder",kinder));
+ ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,NV("Kinder",kinder));
   // Ungeplante Referenz Aufträge
   list_t URA=get_Referenz_list(*this,false,list_ohneArtikel);
  //NEU
@@ -115,16 +115,16 @@ AufEintragZu::list_t AufEintragZu::get_Referenz_list_for_geplant(bool kinder) co
 #if 0
 AuftragBase::mengen_t AufEintragZu::verteileMenge(list_t L, mengen_t menge,bool add)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Menge",menge),NV("Add",add));
+ ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,NV("Menge",menge),NV("Add",add));
   for(list_t::const_iterator i=L.begin();i!=L.end();++i)
    {
      if(!menge) return menge;
-     AuftragBase::mengen_t M=AuftragBase::min(menge,i->Menge);
+     mengen_t M=AuftragBase::min(menge,i->Menge);
      if(add)  setMengeDiff__(i->AEB,M)  ;
      else     setMengeDiff__(i->AEB,-M) ;
      menge-=M;
    }
-  if(menge!=AuftragBase::mengen_t(0)) 
+  if(!!menge) 
       std::cerr << "WARNING: 'AufEintragZu::verteileMenge' Restmenge = "<<menge<<'\n';
   return menge;
 }
@@ -132,7 +132,7 @@ AuftragBase::mengen_t AufEintragZu::verteileMenge(list_t L, mengen_t menge,bool 
 
 std::vector<AufEintragBase> AufEintragZu::getKundenAuftragV() const
 {
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
+  ManuProC::Trace _t(trace_channel, __FUNCTION__);
   std::vector<AufEintragBase> V;
   list_t L=AufEintragZu(*this).get_Referenz_listFull(false);
   for (AufEintragZu::list_t::const_iterator i=L.begin();i!=L.end();++i)
@@ -160,7 +160,7 @@ FetchIStream &operator>>(FetchIStream &i, AufEintragZu::st_reflist &rl)
 
 AufEintragZu::list_t AufEintragZu::get_Referenz_list(const AufEintragBase& aeb,bool kinder,bool artikel) throw(SQLerror) 
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,aeb,kinder?"Kinder":"Eltern",artikel?"mit Artikel":"ohne Artikel");
+ ManuProC::Trace _t(trace_channel, __FUNCTION__,aeb,kinder?"Kinder":"Eltern",artikel?"mit Artikel":"ohne Artikel");
 
  assert(kinder || !artikel); // Eltern mit Artikel macht keinen Sinn
 
@@ -199,7 +199,7 @@ AufEintragZu::list_t AufEintragZu::get_Referenz_list_without_child() const throw
 
 std::list<cH_Kunde> AufEintragZu::get_Referenz_Kunden() const throw(SQLerror)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
+ ManuProC::Trace _t(trace_channel, __FUNCTION__,*this);
  std::list<cH_Kunde> LK;
  std::list<st_reflist> vaeb = get_Referenz_listFull(false);
 
@@ -220,7 +220,7 @@ std::list<cH_Kunde> AufEintragZu::get_Referenz_Kunden() const throw(SQLerror)
 std::list<AufEintragBase> AufEintragZu::get_AufEintragList_from_Artikel
                (const ArtikelBase& artikel,ppsInstanz::ID instanz,AufStatVal status)
 {
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("artikel",artikel),NV("status",status),NV("instanz",instanz));
+  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("artikel",artikel),NV("status",status),NV("instanz",instanz));
   std::list<AufEintragBase> L;
   
   (Query("select instanz,auftragid,zeilennr from auftragentry "
@@ -235,7 +235,7 @@ std::list<AufEintragBase> AufEintragZu::get_AufEintragList_from_Artikel
 }
 
 void AufEintragZu::Neu(const AufEintragBase& neuAEB,const mengen_t menge)
-{ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
+{ ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,
       "--",menge,"-->",neuAEB);
 
  // erst erhöhen versuchen 
@@ -274,7 +274,7 @@ void AufEintragZu::Neu(const AufEintragBase& neuAEB,
 #if 0
 bool AufEintragZu::setMenge(const AufEintragBase& neuAEB,const mengen_t menge)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,neuAEB,NV("Menge",menge));
+ ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,neuAEB,NV("Menge",menge));
 
  Query("update auftragsentryzuordnung set menge=? "
  	"where (altinstanz,altauftragid,altzeilennr, "
@@ -297,9 +297,9 @@ FetchIStream &operator>>(FetchIStream &is,pri_menge &a)
 
 AuftragBase::mengen_t AufEintragZu::setMengeDiff__(const AufEintragBase &neuAEB,mengen_t menge)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,neuAEB,NV("Menge",menge));
+ ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,neuAEB,NV("Menge",menge));
  if (menge>=0) { Neu(neuAEB,menge); return menge; }
- if(menge<0)
+// if(menge<0)
   {  std::vector<pri_menge> V;
 #warning Locking ?
      // select for update?
@@ -309,13 +309,14 @@ AuftragBase::mengen_t AufEintragZu::setMengeDiff__(const AufEintragBase &neuAEB,
      	       "order by prioritaet desc")
 	<< static_cast<const AufEintragBase&>(*this) << neuAEB)
 	.FetchArray(V);
-     AuftragBase::mengen_t noch_verteilen=menge;
-     for (std::vector<pri_menge>::const_iterator i=V.begin();i!=V.end();++i)
-     {  AuftragBase::mengen_t M=-AuftragBase::min(i->menge,-noch_verteilen);
-        ManuProC::Trace _t(AuftragBase::trace_channel, __FILELINE__,
+     mengen_t noch_verteilen=menge;
+     for (std::vector<pri_menge>::iterator i=V.begin();i!=V.end();)
+     {  mengen_t M=-AuftragBase::min(i->menge,-noch_verteilen);
+        ManuProC::Trace _t(trace_channel, __FILELINE__,
         	NV("noch_verteilen",noch_verteilen),NV("pri",i->pri),
         	NV("menge",i->menge), NV("M",M));
-        if (!M) continue;
+        if (!M) goto delete_if_possible;
+
         Query("update auftragsentryzuordnung set menge=menge+? "
      	"where (altinstanz,altauftragid,altzeilennr, "
      	       "neuinstanz,neuauftragid,neuzeilennr, "
@@ -325,7 +326,26 @@ AuftragBase::mengen_t AufEintragZu::setMengeDiff__(const AufEintragBase &neuAEB,
      	   << i->pri;
      	SQLerror::test("AufEintragZu::setMengeDiff__");
      	noch_verteilen-=M;
-     	if (!noch_verteilen) break;
+     	i->menge+=M;
+      delete_if_possible: 
+        if (!i->menge)
+        {  if (Id()==dispo_auftrag_id || neuAEB.Id()==ungeplante_id
+           	|| V.size()>1)
+           {  Query("delete from auftragsentryzuordnung "
+     		"where (altinstanz,altauftragid,altzeilennr, "
+     	        "neuinstanz,neuauftragid,neuzeilennr, "
+     	        "prioritaet)= (?,?,?, ?,?,?, ?) and menge=0")
+   	    	   << static_cast<const AufEintragBase&>(*this) << neuAEB
+     		   << i->pri;
+              i=V.erase(i);
+              goto loop_test;
+           }
+        }
+     	// if (!noch_verteilen) break; 
+     	// Optimierung lohnt nicht, da eventuell noch etwas gelöscht werden könnte
+        ++i;
+      loop_test:
+        ;
      }
      return menge-noch_verteilen;
   }
@@ -335,7 +355,7 @@ AuftragBase::mengen_t AufEintragZu::setMengeDiff__(const AufEintragBase &neuAEB,
 // wer braucht denn so etwas krankes? CP
 bool AufEintragZu::setKindZnr(const AufEintragBase& neuAEB)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,neuAEB);
+ ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,neuAEB);
  std::cerr << "mit "<< __PRETTY_FUNCTION__ << " bin ich nicht einverstanden CP\n";
 
  Query("update auftragsentryzuordnung set neuzeilennr=? "
@@ -352,7 +372,7 @@ bool AufEintragZu::setKindZnr(const AufEintragBase& neuAEB)
 void AufEintragZu::moveInstanz(const VonNachDel vdl,const AufEintragBase &oldAEB, const AufEintragBase &newAEB) throw(SQLerror)
 {
 
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,oldAEB,NV("VonNachDel",vdl));
+ ManuProC::Trace _t(trace_channel, __FUNCTION__,oldAEB,NV("VonNachDel",vdl));
 
  switch(vdl)
   {
@@ -379,7 +399,7 @@ void AufEintragZu::moveInstanz(const VonNachDel vdl,const AufEintragBase &oldAEB
 
 AuftragBase::mengen_t AufEintragZu::getMenge(const AufEintragBase& aeb) const
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,aeb);
+ ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,aeb);
  return (Query("select menge from auftragsentryzuordnung "
     "where (altinstanz,altauftragid,altzeilennr, "
     	"neuinstanz,neuauftragid,neuzeilennr) = (?,?,?, ?,?,?)").lvalue()
@@ -388,7 +408,7 @@ AuftragBase::mengen_t AufEintragZu::getMenge(const AufEintragBase& aeb) const
 
 bool AufEintragZu::remove(const AufEintragBase& alt,const AufEintragBase& neu)
 {
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,alt,neu);
+  ManuProC::Trace _t(trace_channel, __FUNCTION__,alt,neu);
 
   Query("delete from auftragsentryzuordnung where "
                  "(altinstanz,altauftragid,altzeilennr,"
