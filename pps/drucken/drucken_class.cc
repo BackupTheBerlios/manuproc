@@ -797,7 +797,8 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
                os << "\\begin{tabular}{ll}  ";
                for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();)
                 {
-                  cH_ArtikelBezeichnung bez2(AufEintrag(i->AEB).ArtId());
+                   ArtikelBase artbase(AufEintrag(i->AEB).ArtId());
+                  cH_ArtikelBezeichnung bez2(artbase);
                   bool btmp=true; // in dieser Tabelle ist es IMMER die 'erste_spalte'
                   AuftragBase::mengen_t menge=0;
                   if(run==1 && L.size()>1) menge=i->Menge;

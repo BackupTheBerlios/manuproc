@@ -37,7 +37,7 @@ private:
    Data_LListe(const cH_Lieferschein& l,const LieferscheinEntry& e,
          const Rechnung& r, KumVal kv=KUM_DATUM)
       :  liefer(l),entry(e),rechnung(r),
-         menge(entry.ArtikelID(),entry.Stueck(),entry.Menge()),
+         menge(ArtikelBase(entry.ArtikelID()),entry.Stueck(),entry.Menge()),
 	 option_timecumulate(kv) {}
 
    typedef enum {KUNDE,AUFTRAG,ARTIKEL,BREITE,FARBE,AUFMACHUNG,LIEFERNR,
