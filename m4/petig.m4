@@ -1,4 +1,4 @@
-dnl $Id: petig.m4,v 1.50 2001/08/29 07:08:56 cvs_christof Exp $
+dnl $Id: petig.m4,v 1.51 2001/09/25 07:10:37 cvs_christof Exp $
 
 dnl Configure paths for some libraries
 dnl derived from kde's acinclude.m4
@@ -159,7 +159,7 @@ then
   AC_MSG_RESULT($ECPG)
   
   AC_MSG_CHECKING(for ECPG include files)
-  ECPG_PATH=`$ECPG -v 2>&1 | fgrep -v 'ecpg - ' | fgrep -v 'search starts here:' | fgrep -v 'End of search list.'`
+  ECPG_PATH=`$ECPG -v 2>&1 | fgrep -v 'ecpg - ' | fgrep 'ecpg, the' | fgrep -v 'search starts here:' | fgrep -v 'nd of search list'`
   ECPG_PATH_OK=0
   for i in $ECPG_PATH
   do
