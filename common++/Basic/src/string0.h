@@ -1,4 +1,4 @@
-// $Id: string0.h,v 1.5 2002/05/09 12:46:00 christof Exp $
+// $Id: string0.h,v 1.6 2003/01/27 10:59:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -51,6 +51,9 @@ static inline char *strncpy0(char *dest,const char *src, unsigned long n)
    dest[n-1]=0;
    return dest;
 }
+
+#define strcpyx(dest,src) strncpy0((dest),(src),sizeof(dest))
+#define sprintfx(dest,src,val...) snprintf0((dest),sizeof(dest),src,##val)
 
 #ifdef __cplusplus
 }
