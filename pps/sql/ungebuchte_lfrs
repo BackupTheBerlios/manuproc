@@ -1,74 +1,66 @@
 #! /bin/bash
 
-OUTFILE=ung_lfrs
-
 AKTION=$1
+DB=$PGDATABASE
+PSFILE=lager_ungebucht
 
+
+OUTFILE_L=ung_lfrs
 
 # für Lieferscheine
 INSTANZ=1
 
-psql mabelladb  -o $OUTFILE -c " \
+psql $DB  -o $OUTFILE_L -c " \
 SELECT \
 l.lfrsid as LS_NR, \
 e.zeile as zeile, \
+e.stueck as menge, \
 l.datum as datum, \
-artikel||'/'||breite||'/'||farbe||'/'||aufmachung as artikel \
+artikelbezeichnung(e.artikelid) as artikel \
 from lieferschein l join lieferscheinentry e on \
-((l.lfrsid,l.instanz)=(e.lfrsid,e.instanz) and l.instanz=$INSTANZ and e.status=0\
+((l.lfrsid,l.instanz)=(e.lfrsid,e.instanz) and l.instanz=$INSTANZ and e.status=0 \
  and coalesce(e.lagerid,1)!=0) left join \
-rechnung r on (r.rngid=l.rngid) join artbez_3_1 b on (b.id=e.artikelid) \
+rechnung r on (r.rngid=l.rngid) \
 where coalesce(r.rngart,'R')='R' order by l.lfrsid,e.zeile"
-
-
-
-a2ps -R -l60 --center-title="ungebuchte Lieferscheine" \
---columns 1 $OUTFILE -o $OUTFILE.ps
-
-
-if [ "$AKTION" == "P" ]; then
-	if [ ! "$MANUPROC_PR_TRAY1" ]; then
-		lpr $OUTFILE.ps
-	else
-		lpr -P $MANUPROC_PR_TRAY1 $OUTFILE.ps
-	fi
-elif [ "$AKTION" == "V" ]; then
-	gv $OUTFILE.ps
-fi
 
 
 # für Wareneingang
 INSTANZ=3
+OUTFILE_W=ung_wrei
 
-psql mabelladb  -o $OUTFILE -c " \
+psql $DB  -o $OUTFILE_W -c " \
 SELECT \
 l.lfrsid as LS_NR, \
 e.zeile as zeile, \
+e.stueck as menge, \
 l.datum as datum, \
-artikel||'/'||breite||'/'||farbe||'/'||aufmachung as artikel \
+artikelbezeichnung(e.artikelid) as artikel \
 from lieferschein l join lieferscheinentry e on \
-((l.lfrsid,l.instanz)=(e.lfrsid,e.instanz) and l.instanz=$INSTANZ and e.status=0\
+((l.lfrsid,l.instanz)=(e.lfrsid,e.instanz) and l.instanz=$INSTANZ and e.status=0 \
  and coalesce(e.lagerid,1)!=0) left join \
-rechnung r on (r.rngid=l.rngid) join artbez_3_1 b on (b.id=e.artikelid) \
+rechnung r on (r.rngid=l.rngid) \
 where coalesce(r.rngart,'R')='R' order by l.lfrsid,e.zeile"
 
 
+echo "   Lieferscheine   " > $PSFILE
+cat $OUTFILE_L >> $PSFILE
+echo "" >> $PSFILE
+echo "   Wareneingang   " >> $PSFILE
+cat $OUTFILE_W >> $PSFILE
 
-a2ps -R -l60 --center-title="ungebuchter Wareneingang" \
---columns 1 $OUTFILE -o $OUTFILE.ps
 
+
+a2ps -R --center-title="ungebuchte Lieferscheine / Wareneingang" \
+--columns 1 $PSFILE -o $PSFILE.ps
 
 if [ "$AKTION" == "P" ]; then
 	if [ ! "$MANUPROC_PR_TRAY1" ]; then
-		lpr $OUTFILE.ps
+		lpr $PSFILE.ps
 	else
-		lpr -P $MANUPROC_PR_TRAY1 $OUTFILE.ps
+		lpr -P $MANUPROC_PR_TRAY1 $PSFILE.ps
 	fi
 elif [ "$AKTION" == "V" ]; then
-	gv $OUTFILE.ps
+	gs -dBATCH $PSFILE.ps
 fi
-
-
-
 
 
