@@ -1,4 +1,4 @@
-// $Id: auto_conversion.cc,v 1.9 2002/07/15 15:37:53 christof Exp $
+// $Id: auto_conversion.cc,v 1.10 2003/03/13 08:50:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -150,7 +150,7 @@ Zeitpunkt_new::Zeitpunkt_new(const char *stamp)
 
    if (len>=8)
    {  millisecond=ManuProC::Datum::getnum((const unsigned char*)payload+6,6);
-      for (int i=len;i<14;i++) millisecond*=10;
+      for (int i=len;i<12;i++) millisecond*=10;
       prec=milliseconds;
    }
    if (millisecond>999999 || millisecond<0) millisecond=0;
