@@ -1,4 +1,4 @@
-/* $Id: KettenGarn_CP.cc,v 1.19 2004/07/06 13:10:05 christof Exp $ */
+/* $Id: KettenGarn_CP.cc,v 1.20 2004/07/06 13:23:37 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -284,22 +284,24 @@ std::vector<Kettscheibe> Kettscheibe::Load(const std::vector<ArtikelGang> &ag, u
       }
    }
 #endif   
+  }
+  
+   // gleiche aufeinanderfolgende Fäden zusammenfassen
+   for (map_t::iterator i=intermed.begin();i!=intermed.end();++i)
+   {  Kettscheibe &x=i->second;
+      for (std::vector<KS_Garn>::iterator j=x.faeden.begin();j!=x.faeden.end();)
+      {  std::vector<KS_Garn>::iterator b=j+1;
+         if (b==x.faeden.end()) break;
+         if (j->material==b->material && j->wiederholungen==b->wiederholungen)
+         {  j->faeden+=b->faeden;
+            j=x.faeden.erase(b);
+         }
+         else ++j;
+      }
    }
 #if 0
    // sortieren?
    std::sort(result.begin(),result.end(),KG_compare());
-   // zusammenfassen?
-   for (vec_t::iterator i=result.begin();i!=result.end();)
-   {  vec_t::iterator b=i+1;
-      if (b==result.end()) break;
-      if (i->index==b->index && i->art==b->art && i->kettenzahl==b->kettenzahl
-      		&& i->laenge==b->laenge && i->wiederholungen==b->wiederholungen)
-      {  i->faeden+=b->faeden;
-         if (b->min_max_fd<i->min_max_fd) i->min_max_fd=b->min_max_fd;
-         i=result.erase(b);
-      }
-      else ++i;
-   }
    for (vec_t::iterator i=result.begin();i!=result.end();)
    {  vec_t::iterator ks_end=i;
       unsigned min_max_fd=i->min_max_fd;

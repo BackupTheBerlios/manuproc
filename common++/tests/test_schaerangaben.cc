@@ -1,4 +1,4 @@
-// $Id: test_schaerangaben.cc,v 1.11 2004/07/06 08:41:17 christof Exp $
+// $Id: test_schaerangaben.cc,v 1.12 2004/07/06 13:23:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,7 +28,8 @@ void dump(const std::vector<ArtikelGang> &vag, unsigned laenge)
    std::vector<ArtikelGang> oldartikel;
    for (std::vector<Kettscheibe>::const_iterator i=x.begin();i!=x.end();++i)
    {  if (i->artikel!=oldartikel)
-      {  for (std::vector<ArtikelGang>::const_iterator j=i->artikel.begin();j!=i->artikel.end();++j)
+      {  if (!oldartikel.empty()) std::cout << "\n";
+         for (std::vector<ArtikelGang>::const_iterator j=i->artikel.begin();j!=i->artikel.end();++j)
             std::cout << j->gaenge << "x Artikel " 
                << cH_ArtikelBezeichnung(j->art)->Bezeichnung()
                << ' ';
