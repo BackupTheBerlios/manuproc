@@ -467,7 +467,7 @@ void auftrag_rechnung::Preis_ergaenzen()
    RechnungVoll rg=rechnung.Id();
    for (RechnungVoll::iterator i=rg.begin();i!=rg.end();++i)
    {  if (!(i->getPreis()))
-      {  Artikelpreis p(rngkd->preisliste(),i->ArtikelID(),i->Stueck());
+      {  Artikelpreis p(rngkd->preisliste(),ArtikelBase(i->ArtikelID()),i->Stueck());
          if (!(!p))
          {  i->setzePreis(p.In(rg.getWaehrung()));
          }

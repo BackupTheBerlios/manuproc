@@ -28,6 +28,7 @@
 #include <unistd.h>
 //#include <Auftrag/ppsInstanzProduziert.h>
 #include "auftrag_copy.hh"
+#include "auftrag_provision.hh"
 
 #ifndef OLD
 #include<Auftrag/selFullAufEntry.h>
@@ -912,4 +913,17 @@ void auftrag_bearbeiten::on_auftrag_kopieren_activate()
      loadAuftrag(AuftragBase(instanz->Id(),new_aufid_from_copy));     
  
 }
+
+void auftrag_bearbeiten::on_provisionierung_activate()
+{
+ if(!auftrag) return;
+ 
+ auftrag_provision ap(auftrag);
+ 
+ ap.set_transient_for(*this);
+ 
+ gint ret;
+ ret=ap.run();
+}
+
 

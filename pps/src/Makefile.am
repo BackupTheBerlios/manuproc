@@ -27,7 +27,9 @@ pps_SOURCES = pps.cc\
 	ja_nein_frage.cc \
 	ja_nein_frage_glade.cc \
 	auftrag_copy.cc \
-	auftrag_copy_glade.cc
+	auftrag_copy_glade.cc \
+	auftrag_provision.cc \
+	auftrag_provision_glade.cc
 
 
 noinst_HEADERS = \
@@ -43,7 +45,9 @@ noinst_HEADERS = \
 	ja_nein_frage_glade.hh \
 	ja_nein_frage.hh \
 	auftrag_copy.hh \
-	auftrag_copy_glade.hh
+	auftrag_copy_glade.hh \
+	auftrag_provision.hh \
+	auftrag_provision_glade.hh
 
 BUILT_SOURCES= \
 	auftrag_bearbeiten_sql.cc \

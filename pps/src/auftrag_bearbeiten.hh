@@ -1,4 +1,4 @@
-// $Id: auftrag_bearbeiten.hh,v 1.18 2003/05/14 21:08:04 jacek Exp $
+// $Id: auftrag_bearbeiten.hh,v 1.19 2003/06/03 12:05:00 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -77,6 +77,7 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
         void on_splitten();
         void on_clear_all();
         void on_auftrag_kopieren_activate();
+        void on_provisionierung_activate();
         void on_aufentry_abbruch_clicked();
         void on_aufentry_ok_clicked();
 //        void InstanzAuftraegeAnlegen(const Auftrag& altAuftrag,const int altZnr);
