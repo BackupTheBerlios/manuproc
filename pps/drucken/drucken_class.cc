@@ -909,16 +909,20 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 
 	if((Typ() == Auftrag) || (Typ()==Extern))
 	  {
-	    if(Typ()==Extern) 
-	      neue_spalte(erste_spalte,os);
-
 	    Kalenderwoche kw(lieferdatum.KW());
 	    char jahr[3];
 	    snprintf(jahr,3,"%02d",kw.Jahr()%100);
 	    std::string kws = kw.valid() ? itos(kw.Woche())+"'"+jahr : "-";
 
-	    if(Typ()==Extern)
+	    if(Typ()==Extern
+#ifdef PETIG_EXTENSIONS
+                                || Typ() == Auftrag
+#endif	    
+                  	                                          )
+            {
+	      neue_spalte(erste_spalte,os);
 	      os << linecolor << kws;
+            }
 
 	    if(!min_liefdatum.valid()) 
 		{min_liefdatum=lieferdatum;
@@ -1490,6 +1494,9 @@ void LR_Abstraktion::page_header(std::ostream &os)
    {  os << "\\\\für Ihren Auftrag " << YourAuftrag();
    }
    os << "\\\\\n\n";
+   if (!kunde_an->idnr().empty())
+      os << "\\hfill "<< mld->MLT(MultiL_Dict::TXT_USTID) << ": " 
+            << kunde_an->idnr() << "\\\\\n";
 #endif
 
 
