@@ -1,4 +1,4 @@
-// $Id: TagStream.cc,v 1.4 2003/10/17 14:31:31 christof Exp $
+// $Id: TagStream.cc,v 1.5 2003/12/08 07:38:28 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2002  Christof Petig
  *
@@ -248,8 +248,8 @@ char *TagStream::next_tag(Tag *parent)
                if (newtag->Type()=="?xml") 
                {  encoding=newtag->getAttr("encoding");
                   if (encoding.empty()) encoding=host_encoding;
-                  if (encoding!=host_encoding)
-                     std::cout << "Recoding " << encoding << "->" << host_encoding << '\n';
+//                  if (encoding!=host_encoding)
+//                     std::cout << "Recoding " << encoding << "->" << host_encoding << '\n';
                }
                goto continue_outer;
             }
