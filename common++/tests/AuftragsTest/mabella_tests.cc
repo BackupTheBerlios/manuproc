@@ -41,7 +41,15 @@ static bool Lieferschein_Kunde(AufEintrag &AE)
 	}
 
 	{// Einkauf liefert Vollmenge
+
+//        Auftrag auftrag=Auftrag(Auftrag::Anlegen(EINKAUF),KUNDE2);
+
+//        AufEintragBase AEB2=auftrag.push_back(10,DATUM,ARTIKEL_TRIO,OPEN,false);
         Auftrag auftrag=Auftrag(Auftrag::Anlegen(EINKAUF),LIEFERANT);
+
+	AufEintrag AE(AufEintragBase AE(EINKAUF,0,1));
+	AE.Planen(10,auftrag,DATUM);
+
 
 	AufEintragBase AEB(EINKAUF,0,1);
 	AufEintrag AE(AEB);
@@ -52,7 +60,13 @@ static bool Lieferschein_Kunde(AufEintrag &AE)
        vergleichen(Check::Menge|Check::Lieferschein,"PL_Einkauf","Einkauf Planen","PL");
         AufEintragBase AEB3(EINKAUF,auftrag.Id(),1);
 
+
+//       Lieferschein liefs(EINKAUF,cH_Kunde(KUNDE2));
        Lieferschein liefs(EINKAUF,cH_Kunde(LIEFERANT));
+
+//	AufEintrag ae(AEB2);
+//       liefs.push_back(ae,ARTIKEL_TRIO,10);
+
 	AufEintrag ae(AEB3);
        liefs.push_back(ae,ARTIKEL_TRIO,8);
         AufEintragBase AEB4(EINKAUF,auftrag.Id(),2);
