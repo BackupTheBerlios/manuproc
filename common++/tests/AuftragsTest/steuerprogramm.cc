@@ -43,7 +43,8 @@ enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
       LieferscheinJacek,
       ZweiKundenTest,ZweiKundenMengeFreigebenTest,ManuProCTest,
       JumboLager,Rep_Mabella,Rep_Petig_PhysikalischesLager,
-      Rep_Petig_0er_2er_gleichzeitig,Rep_KundenProgramm,Rep_Zuordnungen};
+      Rep_Petig_0er_2er_gleichzeitig,Rep_KundenProgramm,Rep_Zuordnungen,
+      Rep_Kunden_Zuordnungen};
 
 static int fehler()
 {
@@ -381,6 +382,7 @@ std::cout << dummystring<<'\n';
      }
     case Rep_KundenProgramm:
      {
+       #ifdef PETIG_TEST
        #ifndef REPARATUR_PROGRAMM_TESTEN
           assert(!"FEHLER: MIT REPARATURPROGRAMM KOMPILIEREN\n");
        #endif
@@ -437,7 +439,43 @@ std::cout << dummystring<<'\n';
        cout << "Reparatur Kundeaufträge (Artikel, Instanz) erfolgreich\n";
                                
        break;
+      #endif
      } 
+    case Rep_Kunden_Zuordnungen:
+     {
+      #ifdef PETIG_TEST
+       #ifndef REPARATUR_PROGRAMM_TESTEN
+          assert(!"FEHLER: MIT REPARATURPROGRAMM KOMPILIEREN\n");
+       #endif
+       AufEintragBase AEB=auftrag.anlegen2();
+       erfolgreich=C.teste(Check::Menge,"_rep_zwei_auftraege_anlegen",mit_reparatur_programm);
+       if(!erfolgreich) { cout << "Anlegen eines zweiten (offenen) Auftrags ["<<AEB<<"] \n\n";return fehler();}
+      {
+       Auftrag PA=Auftrag(Auftrag::Anlegen(SPRITZGIESSEREI),ManuProC::DefaultValues::EigeneKundenId);
+       AufEintrag AEP((AufEintragBase(SPRITZGIESSEREI,AuftragBase::ungeplante_id,1)));
+       int nznr=AEP.Planen(UID,200,PA,PLANDATUM5);
+       erfolgreich=C.teste(Check::Menge,"_rep_planen_spritz",mit_reparatur_programm);
+       if(!erfolgreich) { cout << "Planen der Spritzgießerei (Reparatur) \n\n"; return fehler();}       
+       }
+       {
+       Auftrag PA=Auftrag(Auftrag::Anlegen(SPRITZGIESSEREI),ManuProC::DefaultValues::EigeneKundenId);
+       AufEintrag AEP((AufEintragBase(SPRITZGIESSEREI,AuftragBase::ungeplante_id,1)));
+       int nznr=AEP.Planen(UID,5000,PA,PLANDATUM5);
+       erfolgreich=C.teste(Check::Menge,"_rep_planen_spritz2",mit_reparatur_programm);
+       if(!erfolgreich) { cout << "Planen der Spritzgießerei (Reparatur) \n\n"; return fehler();}       
+       }
+       {
+        Lieferschein liefs(KUNDENINSTANZ,cH_Kunde(KUNDE));
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
+        liefs.push_back(ARTIKEL_ROLLEREI,390,1,0);
+        erfolgreich=C.teste(Check::Menge,"_rep_lieferschein",mit_reparatur_programm);
+        if(!erfolgreich) { cout << "Reparatur-Lieferschein anlegen\n\n"; return  fehler();}
+       }                  
+       
+       cout << "Reparatur Kunden Zuordnungen erfolgreich\n";
+       break;
+      #endif
+     }
     case Lagertest :
      {    
 #ifdef PETIG_TEST
@@ -966,6 +1004,7 @@ void usage(const std::string &argv0,const std::string &argv1)
                   "\t(R)eparatur_0er_2er_(g)leichzeitig\n"
                   "\t(R)eparatur_(K)undenprogramm\n"
                   "\t(R)eparatur_(Z)uordnungen\n"
+                  "\t(R)eparatur_(K)unden_(Z)uordnungen\n"
                   "\t(R)eparartur(M)Mabella, =0er+2er OPEN, bestellt=0, Kundenid=1]\n"
                   "\taufgerufen werden\n"
        << " nicht mit '"<<argv1<<"'\n";
@@ -998,6 +1037,7 @@ int main(int argc,char *argv[])
    else if(std::string(argv[1])=="Rg")  mode=Rep_Petig_0er_2er_gleichzeitig;
    else if(std::string(argv[1])=="RK")  mode=Rep_KundenProgramm;
    else if(std::string(argv[1])=="RZ")  mode=Rep_Zuordnungen;
+   else if(std::string(argv[1])=="RKZ") mode=Rep_Kunden_Zuordnungen;
    if(mode==None) { usage(argv[0],argv[1]); return 1; }
    
    cout << "Initalisierung der Datenbank ...";
