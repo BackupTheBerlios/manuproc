@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.3 2002/04/30 09:49:06 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.4 2002/05/03 10:22:54 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -42,6 +42,12 @@
 
 class AufEintrag : public AufEintragBase
 {
+ public:
+  enum e_problems{Geplant,Geplant_nolager,Lager,Geliefert,GeliefertFatal};
+  struct st_problems{e_problems art; AufEintragBase AEB; mengen_t menge_input;
+                     mengen_t menge_output;
+         st_problems(e_problems a, AufEintragBase aeb, mengen_t mi,mengen_t mo)
+               :art(a),AEB(aeb),menge_input(mi),menge_output(mo) {}};
 private: 
  mengen_t bestellt;
  mengen_t geliefert;
@@ -83,7 +89,7 @@ public:
 
  AufEintrag() 
    : bestellt(0), geliefert(0), artikel(0ul), entrystatus((AufStatVal)UNCOMMITED),
-   	letztePlanInstanz(ppsInstanz::None),maxPlanInstanz(0), rabatt(0),
+   	letztePlanInstanz(ppsInstanzID::None),maxPlanInstanz(0), rabatt(0),
    	kdnr(0), disponr(0), auftragstatus((AufStatVal)UNCOMMITED), 
    	dispoentrynr(0),prozess(Prozess::default_id)
  {}
@@ -108,10 +114,14 @@ public:
 
 	
  void updateDispoENr(int dinr) throw(SQLerror);
- void updateStkDiff(mengen_t menge) throw(SQLerror) {bestellt+=menge; AufEintragBase::updateStkDiff(menge);}
+ mengen_t updateStkDiff__(mengen_t menge,bool instanzen=true,
+           void (*callback)(void *,st_problems)=0,void* argument=0) throw(SQLerror);
  void move_to(AufEintragBase AEB,AuftragBase::mengen_t menge) throw(SQLerror);
- void updateStk(mengen_t stk,bool instanz) throw(SQLerror);
- void updateStkInstanz(mengen_t neu_stk,mengen_t alt_stk) throw(SQLerror);
+// void updateStk(mengen_t stk,bool instanz) throw(SQLerror);
+private:
+// void updateStkInstanz(mengen_t neu_stk,mengen_t alt_stk) throw(SQLerror);
+ void updateStkDiffInstanz__(mengen_t menge,void (*callback)(void *,st_problems),void* argument) throw(SQLerror);
+public:
  void updateLieferdatum(const Petig::Datum &ld) throw(SQLerror);	
  void updateLieferdatum(const Kalenderwoche &K) {updateLieferdatum(Petig::Datum(K));}	
  void updateLieferdatumInstanz(const Petig::Datum &ld) throw(SQLerror);	
@@ -119,7 +129,7 @@ public:
  void updateRabatt(int rb) throw(SQLerror);
  void setStatus(AufStatVal newstatus,bool force=false) throw(SQLerror);		
  void setInstanzen(AufStatVal newstatus,Petig::Datum lieferdate,mengen_t part,int myznr=-1,int yourznr=-1);
- void split(mengen_t newmenge, const Petig::Datum &newld) throw(SQLerror);
+ void split(mengen_t newmenge, const Petig::Datum &newld,void (*callback)(void *,st_problems)=0,void* argument=0) throw(SQLerror);
  mengen_t getStueck() const { return bestellt;}
  mengen_t getRestStk() const {if(entrystatus==CLOSED)return 0; return bestellt-geliefert;}
  mengen_t getGeliefert() const { return geliefert;}

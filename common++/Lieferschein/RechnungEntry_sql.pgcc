@@ -35,7 +35,7 @@ RechnungEntry::RechnungEntry(const RechnungEntryBase& rechnung)
    int INSTANZ, RNGID=rechnung.Id(), ZEILENNR=rechnung.Zeile();
    float RABATT;
  exec sql end declare section;
- INSTANZ=ppsInstanz::Kundenauftraege;
+ INSTANZ=ppsInstanzID::Kundenauftraege;
 
  exec sql select ry.artikelid, coalesce(ry.menge,0), coalesce(ry.preis,0),
       coalesce(ry.stueck,1), coalesce(ry.preismenge,1), coalesce(ry.rabatt,0),

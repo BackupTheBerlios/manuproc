@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.16 2002/04/30 09:49:07 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.17 2002/05/03 10:22:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,7 +26,7 @@
 
 
 Kunde::Kunde(ID _id) throw(SQLerror) 
-: Kundennr(_id), KundenGruppennr(0),schema(ExtBezSchema::default_id),rngan(0),
+: ManuProcEntity(_id), KundenGruppennr(0),schema(ExtBezSchema::default_id),rngan(0),
   rng_an_postfach(false),lieferadresse(false),rechnungsadresse(false),
   entsorg(false),
   waehrung(WaehrungID::EUR)
@@ -220,7 +220,7 @@ unsigned long int Kunde::neue_bank_anlegen(const std::string& name, unsigned lon
 void Kunde::reread_Stand() throw(SQLerror)
 {
  exec sql begin declare section;
- unsigned int KUNDENNR = Kundennr;
+ unsigned int KUNDENNR = entityid;
  char STAND[20];
  exec sql end declare section;
 

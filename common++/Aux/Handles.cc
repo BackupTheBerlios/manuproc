@@ -1,4 +1,4 @@
-// $Id: Handles.cc,v 1.2 2002/01/21 17:04:03 cvs_christof Exp $
+// $Id: Handles.cc,v 1.3 2002/05/03 08:56:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,14 +18,18 @@
  */
 
 #include <Aux/Handles.h>
-#ifdef DEBUG_HANDLE_CONTENT
+#if defined DEBUG_HANDLE_CONTENT || defined DEBUG_HANDLES
 #include <iostream>
 #include <typeinfo>
 
 HandleContent::~HandleContent()
-{  if (_references) 
-      std::cerr << "Handled Object @"<<(void*)this<<" ("<<typeid(*this).name() <<") still referenced on destruction\n";
+{  
+   if (_references) 
+      std::cerr << "Handled Object @"<<(void*)this<<" ("<<typeid(*this).name() <<") still referenced "<<_references<<" times on destruction\n";
+#ifdef DEBUG_HANDLE_CONTENT      
    if (_watch_me)
       std::cerr << "Handled Object @"<<(void*)this<<" ("<<typeid(*this).name() <<") destruction\n";
+#endif      
 }
+
 #endif

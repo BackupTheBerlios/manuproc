@@ -1,4 +1,4 @@
-// $Id: Person.cc,v 1.3 2002/04/30 09:49:07 christof Exp $
+// $Id: Person.cc,v 1.4 2002/05/03 10:22:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -36,11 +36,10 @@ cH_Person::cH_Person(Person::ID id)
 }   
 
 
-/*std::string Person::get_kontakt(const TelArt& art, cH_Kunde k) const
+std::string Person::Kontakt(const TelArt& art, ManuProcEntity::ID kid) const
 {
  if(kontakt.valid())
-   return kontakt.get_first_kontakt(art,k,personennr);
- kontakt.reload(art,k,personennr);
- return kontakt.get_first_kontakt(art,k,personennr);   
+   return kontakt.get_first_kontakt(art,kid,entityid);
+ kontakt.reload(art,kid,entityid);
+ return kontakt.get_first_kontakt(art,kid,entityid);   
 }
-*/

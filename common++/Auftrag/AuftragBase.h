@@ -45,7 +45,7 @@ class AuftragBase
  	int auftragid;	
  public:
 	AuftragBase() 
-	        : instanz(ppsInstanz::INST_NONE), auftragid(invalid_id) {}
+	        : instanz(ppsInstanzID::None), auftragid(invalid_id) {}
 	AuftragBase(cH_ppsInstanz _instanz, int aufid) throw() 
 	        :instanz(_instanz), auftragid(aufid) 
 	        {}

@@ -1,4 +1,4 @@
-// $Id: Anrede.h,v 1.1 2002/03/20 07:46:26 christof Exp $
+// $Id: Anrede.h,v 1.2 2002/05/03 10:22:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,24 +24,17 @@
 #include<Aux/SQLerror.h>
 #include <Aux/Handles.h>
 #include <Aux/CacheStatic.h>
+#include <BaseObjects/ManuProcEntity.h>
 
-//class cH_Anrede;
-
-class Anrede : public HandleContent
+class Anrede : public ManuProcEntity
 {
-public:
-     typedef long int ID;
-	
 private:
- ID id;	
  std::string name;
- static const ID _illegal=-1; 
 
 public:
-     static const ID none_id=_illegal;
  Anrede(ID id) throw(SQLerror);
- Anrede() : id(_illegal) {}
- ID Id() const { return id; } 
+ Anrede() : ManuProcEntity(none_id) {}
+ ID Id() const { return entityid; } 
  const std::string Name() const { return name; }
 };
 

@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.17 2002/04/30 09:49:06 christof Exp $
+// $Id: Kunde.h,v 1.18 2002/05/03 10:22:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -31,17 +31,18 @@
 #include <Kunde/TelefonArt.h>
 #include <Kunde/LandesListe.h>
 #include <Kunde/Person.h>
+#include <BaseObjects/ManuProcEntity.h>
 
 class cH_Kunde;
 class H_Kunde;
 class cH_Telefon;
 
-class Kunde : protected HandleContent
+class Kunde : public ManuProcEntity
 {
 
 public:
- typedef int Nummer;
- typedef Nummer ID;
+// typedef int Nummer;
+// typedef Nummer ID;
 	
  struct st_adresse
   {std::string firma;
@@ -106,7 +107,7 @@ public:
 
 
 private:
-	ID Kundennr;
+//	ID Kundennr;
 	ID KundenGruppennr;
 	ExtBezSchema::ID schema;
 	std::string IDnr;
@@ -127,13 +128,13 @@ private:
 	friend class Handle<const Kunde>;
 	friend class Handle<Kunde>;
 	static const ID _wir=1;
-	static const ID _illegal=-1;
+//	static const ID _illegal=-1;
 	cP_Waehrung waehrung;
    // ...
 
 public:
 	static const ID default_id=_wir;
-	static const ID none_id=_illegal;
+//	static const ID none_id=_illegal;
 	Kunde(ID nr=default_id) throw(SQLerror);
 	static const cH_Kunde newKunde(const Kunde::ID kid, const std::string &firma) throw(SQLerror);
         const std::string LaTeX_von() const;
@@ -186,10 +187,10 @@ public:
 
         const std::string getName() const {  return adresse.firma; }
         const std::string getSortName() const {  return adresse.sortname; }
-        ID Id() const {  return Kundennr; }
+        ID Id() const {  return entityid; }
         ID GruppenId() const {  return KundenGruppennr; }
         const std::string idnr() const { return IDnr; } 
-        ID getNummer() const {  return Kundennr; }
+        ID getNummer() const {  return entityid; }
         cH_ExtBezSchema getSchema(class ArtikelTyp t) const
         	{  return cH_ExtBezSchema(schema,t); }
         ExtBezSchema::ID getSchemaId() const {  return schema; }
@@ -333,8 +334,8 @@ class cH_Kunde : public Handle<const Kunde>
         typedef CacheStatic<Kunde::ID,cH_Kunde> cache_t;
         static cache_t cache;
         cH_Kunde(const Kunde *p) : Handle<const Kunde>(p) {}	
-//        friend cache_t::stl_type;
-	friend class std::map<int, cH_Kunde>;
+        friend cache_t::stl_type;
+//	friend class std::map<int, cH_Kunde>;
         cH_Kunde() {}
 public:
 	typedef Kunde::ID ID;
@@ -351,7 +352,8 @@ class H_Kunde : public Handle<Kunde>
 {
         typedef CacheStatic<Kunde::ID,H_Kunde> cache_t;
         static cache_t cache;
-	friend class std::map<int, H_Kunde>;
+//	friend class CacheStatic<Kunde::ID, H_Kunde>;
+        friend cache_t::stl_type;	
 	H_Kunde(Kunde *p) : Handle<Kunde>(p) {}	
 	H_Kunde() {}
 public:

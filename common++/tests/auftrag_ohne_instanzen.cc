@@ -1,4 +1,4 @@
-// $Id: auftrag_ohne_instanzen.cc,v 1.1 2002/02/08 21:51:26 christof Exp $
+// $Id: auftrag_ohne_instanzen.cc,v 1.2 2002/05/03 10:22:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -65,7 +65,7 @@ int main(int argc,char* argv[] )
      switch (x) {
       case 'c' :
        {
-         Auftrag a=Auftrag(Auftrag::Anlegen(ppsInstanz::Kundenauftraege), 10000);
+         Auftrag a=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege), 10000);
          a.setStatusAuftragBase(OPEN);
          id=a;
          std::cout << "Auftrag " << a.Id() << '\n';

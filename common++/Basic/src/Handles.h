@@ -1,4 +1,4 @@
-// $Id: Handles.h,v 1.9 2002/03/20 07:43:31 christof Exp $
+// $Id: Handles.h,v 1.10 2002/05/03 10:22:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -55,36 +55,30 @@ protected:
 #endif
 	{}
 	// a virtual destructor is vital for heterogenous Handles
-#ifndef DEBUG_HANDLE_CONTENT	
-	virtual ~HandleContent()
-	{
-#ifdef DEBUG_HANDLES
-	   assert(!_references);
-#endif
-	}
-#else
+#if defined DEBUG_HANDLE_CONTENT || defined DEBUG_HANDLES
 	virtual ~HandleContent();
+#endif
 
 public:
+#ifdef DEBUG_HANDLE_CONTENT
 	// emit message on destruction
 	void WatchMe() const
 	{  _watch_me=true; }
 #endif	
-public:
 	void *ref()
-	{  if (!is_static()) _references++;
+	{  /* if (!is_static()) */ _references++;
 	   return this;
 	}
 
+	// HACK to return void* from const element
 	void *ref() const
-	{  if (!is_static()) _references++;
-	   return static_cast<void*>(const_cast<HandleContent*>(this));
+	{  return const_cast<HandleContent*>(this)->ref();
 	}
 
 	void unref() const
-	{  if (!is_static()) 
+	{  /* if (!is_static()) */
 	   {  _references--;
-              if (!_references) delete this;
+              if (!is_static() && !_references) delete this;
            }
 	}
 
@@ -106,9 +100,17 @@ public:
 
 private:
 	// das darf gar nicht vorkommen, schlieﬂlich sollen diese Objekte
-	// nicht dupliziert werden
+	// eigentlich nicht dupliziert werden
 	const HandleContent &operator=(const HandleContent &b);
 	HandleContent(const HandleContent &b);
+};
+
+class HandleContentCopyable : public HandleContent
+{  public:
+	HandleContentCopyable() {}
+	HandleContentCopyable(const HandleContentCopyable &b) {}
+	const HandleContentCopyable &operator=(const HandleContentCopyable &b)
+	{  return *this; }
 };
 
 template <class T> class Handle
@@ -121,11 +123,8 @@ public:
 	_this_t &operator=(const _this_t &b)
 	{  NOISE("Handle @" << _data << '.' << (_data?_data->_references:0) << "= @" << b._data << '.' << (b._data?b._data->_references:0) << '\n');
 	   // yes, I do not test b -- I consider b->nil as a bug
-	   if (!b->is_static()) b->_references++;
-	   if (_data && !_data->is_static())
-	   {  _data->_references--;
-              if (!_data->_references) delete _data;
-           }
+	   b->ref();
+	   if (_data) _data->unref();
  	   _data=b._data;
  	   return *this;
 	}
@@ -133,7 +132,7 @@ public:
 	// this STL functions do strange things, under investigation
 	Handle(const _this_t &b) : _data(b._data)
 	{  NOISE("Handle(@" << b._data << '.' << (b._data?b._data->_references:0) << ")\n");
-	   if (_data && !_data->is_static()) _data->_references++; 
+	   if (_data) _data->ref();
 	}
 	
 	// replace this default value FAST via *this=Something !!!
@@ -143,10 +142,7 @@ public:
 	// without this test any std::exception in T::T(...) would kill your program
 	~Handle()
 	{  NOISE("~Handle" << _data << '.' << (_data?_data->_references:0) << '\n');
-	   if (_data && !_data->is_static()) 
-	   {  _data->_references--;
-	      if (!_data->_references) delete _data;
-	   }
+	   if (_data) _data->unref();
 	}
 	
 	bool operator==(const _this_t &s) const
@@ -182,11 +178,10 @@ public:
 	
 	Handle(ContentType *b) : _data(b)
 	{  NOISE("Handle(from " << b << '.' << (b?b->_references:0) << ")\n");
-	   _data->_references++;
+	   _data->ref();
 	}
 
 //	ContentType &operator ContentType() { return *_data; } ???
-
 
 private: // deprecated, use cH->Foo() !
 	void *ref() const;

@@ -5,6 +5,7 @@
 
 exec sql include sqlca;
 
+#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
 JumboRolle::JumboRolle(int c) throw(SQLerror,CodeError)
  : code(c)
 {
@@ -57,6 +58,7 @@ JumboRolle::JumboRolle(int c) throw(SQLerror,CodeError)
  barcoist= BARCOIST;
  barcofertdatum= !*BARCOFERT_DATUM ? Petig::Datum(): Petig::Datum(BARCOFERT_DATUM);
  wiederinslager= !*WIEDERINSLAGER ? Petig::Datum():Petig::Datum(WIEDERINSLAGER);
- lagerposition=LagerPlatz(ppsInstanz::Bandlager,LAGERPLATZ);
+ lagerposition=LagerPlatz(ppsInstanzID::Bandlager,LAGERPLATZ);
 }
 
+#endif

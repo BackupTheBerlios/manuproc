@@ -1,4 +1,4 @@
-// $Id: abschreiben.cc,v 1.7 2002/02/05 17:15:52 christof Exp $
+// $Id: abschreiben.cc,v 1.8 2002/05/03 10:22:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,7 +28,7 @@ int main()
    Petig::dbconnect();
    
    AuftragBase id;
-   {  Auftrag a=Auftrag(Auftrag::Anlegen(ppsInstanz::Kundenauftraege), Kunde::default_id);
+   {  Auftrag a=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege), Kunde::default_id);
       id=a;
       std::cout << "Auftrag " << a.Id() << '\n';
    

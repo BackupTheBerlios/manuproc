@@ -18,16 +18,17 @@ cH_ppsInstanz::cH_ppsInstanz(ppsInstanz::ID iid)
 
 void ppsInstanz::get_name()
 {
- if(instid == INST_NONE) return;
+ if(instid == ppsInstanzID::None) return;
  try{
 
  exec sql begin declare section;
    char db_name[50];
    int db_nr=instid,db_lager_fuer, db_best_fuer,db_sortierung;
-   int IN=INST_NONE;
+   int IN;
    bool db_liefer;
    char db_lagername[50];
  exec sql end declare section;
+ IN=ppsInstanzID::None;
  exec sql select name,coalesce(lager_fuer,:IN),sortierung ,
       coalesce(lieferschein,'f'),coalesce(lagername,'')
       into :db_name,:db_lager_fuer,:db_sortierung ,:db_liefer,:db_lagername
@@ -38,7 +39,7 @@ void ppsInstanz::get_name()
 //cout << instid<< ' ' <<db_name<<' '<<db_lager_fuer<<' '
 //<<db_sortierung<<' '<<db_liefer<<' '<<db_lagername<<'\n';
  name=db_name;
- lager_fuer=ppsInstId(db_lager_fuer);
+ lager_fuer=ID(db_lager_fuer);
  sortierung=db_sortierung;
  lieferschein=db_liefer;
  lagername=db_lagername;
@@ -46,27 +47,28 @@ void ppsInstanz::get_name()
   exec sql select insid into :db_best_fuer from prod_instanz 
          where lager_fuer=:db_nr;
   SQLerror::test(__FILELINE__,100);
-  if(sqlca.sqlcode) bestellung_fuer=None;
-  else              bestellung_fuer=ppsInstId(db_best_fuer);
+  if(sqlca.sqlcode) bestellung_fuer=ppsInstanzID::None;
+  else              bestellung_fuer=ID(db_best_fuer);
  }catch(SQLerror &e) {cerr<<e<<'\n'; exit(1);}
 }
 
 cH_Prozess ppsInstanz::get_Prozess() const
 {
-  int pid;
   switch(instid) {
-	case  INST_FAERB : return cH_Prozess(Prozess::Faerben);break;
-	case  INST_DRUCK : return cH_Prozess(Prozess::Drucken);break;
-	case  INST_WEB : return cH_Prozess(Prozess::Weben);break;
-	case  INST_SCHAER : return cH_Prozess(Prozess::Schaeren);break;
-	case  INST_SPRITZ : return cH_Prozess(Prozess::Giessen);break;
-        default : return cH_Prozess(Prozess::Verarbeitung); break;
+#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
+	case ppsInstanzID::Faerberei: return cH_Prozess(ProzessID::Faerben);break;
+	case ppsInstanzID::Druckerei: return cH_Prozess(ProzessID::Drucken);break;
+	case ppsInstanzID::Weberei: return cH_Prozess(ProzessID::Weben);break;
+	case ppsInstanzID::Schaererei: return cH_Prozess(ProzessID::Schaeren);break;
+	case ppsInstanzID::Spritzgiesserei: return cH_Prozess(ProzessID::Giessen);break;
+#endif	
+        default : return cH_Prozess(ProzessID::Verarbeitung); break;
 	}
 }
 
 bool ppsInstanz::LagerInstanz() const
 {
-  if (LagerFuer()!=None) return true;
+  if (LagerFuer()!=ppsInstanzID::None) return true;
   return false;
 }
 
@@ -95,7 +97,7 @@ std::vector<cH_ppsInstanz> cH_ppsInstanz::get_all_instanz()
      exec sql fetch ins_ein into :db_i;
      SQLerror::test(__FILELINE__,100);
      if (sqlca.sqlcode) break;
-     v.push_back(cH_ppsInstanz(ppsInstanz::ppsInstId(db_i)));
+     v.push_back(cH_ppsInstanz(ppsInstanz::ID(db_i)));
    }
  }catch(SQLerror &e){cerr << e<<'\n';}
  return v;

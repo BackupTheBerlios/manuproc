@@ -17,8 +17,10 @@
  */
 
 #include "Lager.h"
+#ifdef PETIG_EXTENSIONS
 #include "JumboLager.h"
 #include "RohwarenLager.h"
+#endif
 #include "Lager_Vormerkungen.h"
 #include <Auftrag/AufEintrag.h>
 #include <Auftrag/AufEintragZu.h>
@@ -34,11 +36,11 @@ H_Lager::H_Lager(const ArtikelBase& artikel)
 
 H_Lager::H_Lager(const cH_ppsInstanz& instanz) 
 {
-#ifdef PETIG_EXTENSIONS
+#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
  switch (instanz->Id())
    {
-      case ppsInstanz::Bandlager : *this= new JumboLager() ; break;
-      case ppsInstanz::Rohlager  : *this= new RohwarenLager(); break;
+      case ppsInstanzID::Bandlager : *this= new JumboLager() ; break;
+      case ppsInstanzID::Rohwarenlager  : *this= new RohwarenLager(); break;
       default : assert (!"Ungültiges Lager");
    }
 #else
@@ -63,7 +65,7 @@ void Lager::bewegung(bool raus,ArtikelBase artikel,AuftragBase::mengen_t menge)
 {
   assert(menge>=0);
   try{
-    ppsInstanz::ppsInstId abschreib_instanz=instanz;
+    ppsInstanz::ID abschreib_instanz=instanz;
     SQLFullAuftragSelector AEBSEL(SQLFullAuftragSelector::sel_Artikel_Planung
                                  (abschreib_instanz,artikel,true));
     if(!raus) 
@@ -95,10 +97,10 @@ void Lager::bewegung(bool raus,ArtikelBase artikel,AuftragBase::mengen_t menge)
 
 
 
-Lager::Lager(ppsInstanz::ppsInstId _instanz)
+Lager::Lager(ppsInstanz::ID _instanz)
 : instanz(_instanz)
 {
-  if(cH_ppsInstanz(instanz)->LagerInstanz()==ppsInstanz::INST_NONE)
+  if(cH_ppsInstanz(instanz)->LagerInstanz()==ppsInstanzID::None)
      assert(!"Lager::check_lager_is_valid: Kein gültiges Lager\n");
 }
 

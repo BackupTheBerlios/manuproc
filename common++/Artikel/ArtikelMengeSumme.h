@@ -50,7 +50,7 @@ public:
 	const vector_t &abgeleiteteMenge_V() const
 	{ return emenge; }
 	Einheit getEinheit() const 
-	{ return emenge.begin()==emenge.end()?Einheit(Einheit::Stueck):emenge[0].first; }
+	{ return emenge.begin()==emenge.end()?Einheit(Einheit::default_id):emenge[0].first; }
 	mengen_t getMenge() const 
 	{ return emenge.begin()==emenge.end()?mengen_t(0):emenge[0].second; }
 	// Menge in einer Einheit

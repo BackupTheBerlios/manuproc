@@ -26,7 +26,7 @@ class LagerPlatz
      const static int INOPOS=-1;
      enum e_darstellung{eString,eInt};
      
-     ppsInstanz::ppsInstId instanz;
+     ppsInstanz::ID instanz;
      e_darstellung darstellung;
      std::string s_position;
      int i_position;
@@ -37,10 +37,10 @@ class LagerPlatz
 
   public:
      LagerPlatz() : i_position(0){}
-     LagerPlatz(ppsInstanz::ppsInstId i, std::string p)
+     LagerPlatz(ppsInstanz::ID i, std::string p)
          : instanz(i), s_position(p) ,i_position(INOPOS) 
             {DarstellungSetzen();}
-     LagerPlatz(ppsInstanz::ppsInstId i, int p)
+     LagerPlatz(ppsInstanz::ID i, int p)
          : instanz(i), s_position(""), i_position(p)
             {DarstellungSetzen();}
 

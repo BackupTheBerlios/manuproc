@@ -1,4 +1,4 @@
-// $Id: Person_sql.pgcc,v 1.9 2002/04/30 09:49:07 christof Exp $
+// $Id: Person_sql.pgcc,v 1.10 2002/05/03 10:22:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,12 +22,11 @@
 #include <Kunde/Kunde.h>
 #include <Aux/Transaction.h>
 #include <Aux/FetchIStream.h>
-exec sql include sqlca;
 
 
 
 Person::Person(ID _id) throw(SQLerror) 
-: personennr(_id),anrede(1)
+: ManuProcEntity(_id),anrede(1)
 {  
   exec sql begin declare section;
    int ID=_id;
@@ -149,7 +148,8 @@ void Person::delPerson(const ID pid) throw(SQLerror)
 
 }
 
-const list<cH_Telefon> Person::getTelefon(cH_Kunde k) const
+/*
+const vector<cH_Telefon> Person::getTelefon(cH_Kunde k) const
 {
  exec sql begin declare section;
    int TELID;
@@ -188,4 +188,5 @@ const list<cH_Telefon> Person::getTelefon(cH_Kunde k) const
  return T;  
 }
 
+*/
 

@@ -1,4 +1,4 @@
-// $Id: PreisListe.h,v 1.1 2002/03/20 07:46:26 christof Exp $
+// $Id: PreisListe.h,v 1.2 2002/05/03 10:22:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,26 +24,20 @@
 #include<Aux/SQLerror.h>
 #include <Aux/Handles.h>
 #include <Aux/CacheStatic.h>
+#include <BaseObjects/ManuProcEntity.h>
 
 
-class PreisListe : public HandleContent
+class PreisListe : public ManuProcEntity
 {
-public:
-     typedef long int ID;
-	
 private:
- ID id;	
  std::string name;
- static const ID _illegal=-1; 
 
 public:
-  static const ID none_id=_illegal;
   PreisListe(ID id) throw(SQLerror);
-  PreisListe() : id(_illegal) {}
-  ID Id() const { return id; } 
+  PreisListe()  {}
+  ID Id() const { return entityid; } 
   const std::string Name() const { return name; }
-  static void createPreisliste(unsigned int nr,const std::string &name) throw(SQLerror);
-  static unsigned int nextval() throw(SQLerror);
+  static ID createPreisliste(const std::string &name) throw(SQLerror);
 };
 
 

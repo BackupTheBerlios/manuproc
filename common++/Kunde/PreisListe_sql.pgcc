@@ -1,4 +1,4 @@
-// $Id: PreisListe_sql.pgcc,v 1.2 2002/04/19 06:23:22 christof Exp $
+// $Id: PreisListe_sql.pgcc,v 1.3 2002/05/03 10:22:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,17 +19,14 @@
 
 #include <Kunde/PreisListe.h>
 #include <Aux/Transaction.h>
-#include <Aux/FetchIStream.h>
-#include <Aux/itos.h>
 #include <Aux/Waehrung.h>
 
-exec sql include sqlca;
 
-cH_PreisListe::cache_t cH_PreisListe::cache;
 
 
 PreisListe cH_PreisListe::default_object; 
 bool cH_PreisListe::default_object_ref=cH_PreisListe::default_object.is_static(true);
+cH_PreisListe::cache_t cH_PreisListe::cache;
 
 cH_PreisListe::cH_PreisListe(PreisListe::ID id)
 {
@@ -42,24 +39,14 @@ cH_PreisListe::cH_PreisListe(PreisListe::ID id)
   }
 }
 
-unsigned int PreisListe::nextval() throw(SQLerror)
-{
- exec sql begin declare section;
-   unsigned int NR;
- exec sql end declare section;
- exec sql select nextval('kunden_personen_persnr_seq') into :NR;
- SQLerror::test(__FILELINE__);
- return NR;
-}
-
 
 
 PreisListe::PreisListe(ID _id) throw(SQLerror) 
-: id(_id)
+: ManuProcEntity(_id)
 {  
    if(_id == none_id) return;   
    exec sql begin declare section;
-     int  ID=id;
+     int  ID=_id;
      char NAME[41];
    exec sql end declare section;
 
@@ -74,11 +61,24 @@ PreisListe::PreisListe(ID _id) throw(SQLerror)
    name=NAME;
 }
 
-void PreisListe::createPreisliste(unsigned int nr,const std::string &name) throw(SQLerror)
+PreisListe::ID PreisListe::createPreisliste(const std::string &name) throw(SQLerror)
 {
- std::string query="insert into ku_preisliste (prlsnr,notiz,waehrungid) "
-      " values ("+itos(nr)+",'"+name+"',"+itos(WaehrungID::EUR)+")";
- Query::Execute(query);
+ exec sql begin declare section;
+ int NR;
+ char *NOTIZ;
+ int WAEHID;
+ exec sql end declare section;
+
+ exec sql select nextval('kunden_personen_persnr_seq') into :NR;
  SQLerror::test(__FILELINE__);
+
+ NOTIZ = (char*) name.c_str();
+ WAEHID = WaehrungID::EUR;
+
+ exec sql insert into ku_preisliste (prlsnr,notiz,waehrungid) values
+	(:NR,:NOTIZ,:WAEHID);
+ SQLerror::test(__FILELINE__);
+
+ return NR;
 }
 

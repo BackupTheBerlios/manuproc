@@ -1,4 +1,4 @@
-// $Id: Person.h,v 1.8 2002/04/30 09:49:07 christof Exp $
+// $Id: Person.h,v 1.9 2002/05/03 10:22:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,54 +26,43 @@
 #include <Aux/Handles.h>
 #include <Aux/CacheStatic.h>
 #include <Kunde/TelefonArt.h>
-//#include <Kunde/KontaktListe.h>
-
-class cH_Telefon;
-class cH_Kunde;
-
+#include <BaseObjects/ManuProcEntity.h>
+#include <Kunde/KontaktListe.h>
 #include <Kunde/Anrede.h>
 
-#include <list>
 
-
-class Person : public HandleContent
+class Person : public ManuProcEntity
 {
 public:
         typedef long int ID;
 private:
- ID personennr;	
  std::string name;
  std::string vorname;
  Petig::Datum gebdatum;
  cH_Anrede anrede;
  std::string notiz;
-// KontaktListe kontakt;
+ mutable KontaktListe kontakt;
  
  friend class Handle<const Person>;
  friend class Handle<Person>;
- static const ID _illegal=-1; 
 
  static int nextval();
 
 public:
- ID Id() const { return personennr; } 
- Person() : personennr(none_id) {}
+ ID Id() const { return entityid; } 
+ Person()  {}
  Person(ID pid) throw(SQLerror);
  static int createPerson(std::string s="");
 
  static void delPerson(const ID pid) throw(SQLerror);
  
- static const ID none_id=_illegal;
-
  const std::string Name() const { return name; }
  const std::string Vorname() const { return vorname; }
  const Petig::Datum GebDatum() const { return gebdatum; }
  const cH_Anrede Anrede() const { return anrede; }
  const std::string Notiz() const { return notiz; }
 
- const std::list<cH_Telefon> getTelefon(cH_Kunde k) const;
-
-// std::string get_kontakt(const TelArt& art,cH_Kunde k) const;
+ std::string Kontakt(const TelArt& art, ManuProcEntity::ID kundeid) const;
  
  void setName(const std::string &s) { name=s; }
  void setVorname(const std::string &s) { vorname=s; }

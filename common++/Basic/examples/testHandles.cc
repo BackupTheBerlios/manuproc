@@ -1,4 +1,4 @@
-// $Id: testHandles.cc,v 1.2 2001/06/27 08:04:09 christof Exp $
+// $Id: testHandles.cc,v 1.3 2002/05/03 10:22:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,7 +21,7 @@
 #include <Aux/Handles.h>
 #include <iostream>
 
-class A : protected HandleContent
+class A : public HandleContent
 {  	int val;
 	friend class Handle<A>;
 public:
@@ -74,6 +74,13 @@ void d(Ah v)
 {  std::cerr << "d(" << *v << ") -> ";
 }
 
+// demonstrate static elements
+
+A static_a(42);
+bool dummy=static_a.is_static(true);
+
+Ah static_test(&static_a);
+
 int main()
 {  Ah y(2);
    Ah z(new A(1));
@@ -97,5 +104,13 @@ int main()
    std::cerr << "Self Assignment (no op)\n";
    y=y;
    c(y);
+   std::cerr << "static object Assignment -> ";
+   y=&static_a;
+   std::cerr << "static self Assignment (no op)\n";
+   y=y;
+   std::cerr << "uninitialized Handle\n";
+   { Handle<A> w;
+     w=y;
+   }
    std::cerr << "main() ending -> ";
 }

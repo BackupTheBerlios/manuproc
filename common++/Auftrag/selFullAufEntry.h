@@ -1,4 +1,4 @@
-/* $Id: selFullAufEntry.h,v 1.13 2002/04/08 14:00:05 christof Exp $ */
+/* $Id: selFullAufEntry.h,v 1.14 2002/05/03 10:22:54 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -51,6 +51,7 @@ public:
  // please use size()!
  int getLen() const { return aufidliste.size();}
  size_t size() const { return aufidliste.size();}
+ bool empty() const {return aufidliste.empty();}
  
 };
 

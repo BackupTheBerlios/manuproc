@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.16 2002/04/19 06:23:22 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.17 2002/05/03 10:22:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -35,7 +35,7 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
    {  payload=*cached;
       return;
    }
-   int itmp=ppsInstanz::Rollerei;
+   int itmp=ppsInstanzID::None;
    exec sql begin declare section;
     int id,typ,inttyp;
     int best_bei,defschem;
@@ -58,12 +58,12 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
    payload.defaultschema=defschem;
    if (!ieinheit) payload.einh=Einheit::ID(einheit);
    else
-   {  payload.einh=Einheit::Stueck;
+   {  payload.einh=EinheitID::St_;
 
 #if defined(PETIG_EXTENSIONS) && defined(MANUPROC_DYNAMICENUMS_CREATED)
       switch(payload.interntyp)
       {  case ArtikelTypID::Jumborollen:
-            payload.einh=Einheit::Meter; break;
+            payload.einh=EinheitID::m; break;
          
          case ArtikelTypID::Band:
             {  cache.Register(ab.Id(),payload); 
@@ -71,16 +71,16 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
                // we would loop forever if not registered here
                cH_ArtikelBezeichnung AB(ab);
                // this is because Prozess_sql.pgcc is mad (Jumbo = 1m)
-               if (!AB->Jumbo()) payload.einh=Einheit::Stueck;
-               else payload.einh=Einheit::Meter;
+               if (!AB->Jumbo()) payload.einh=EinheitID::St_;
+               else payload.einh=EinheitID::m;
                break;
             }
 
          case ArtikelTypID::Garn:
-            payload.einh=Einheit::kg; break;
+            payload.einh=EinheitID::kg; break;
          
          case ArtikelTypID::Lohn:
-            payload.einh=Einheit::Fdkm; break;
+            payload.einh=EinheitID::Fd_km; break;
             
          default: ; // Stueck
       }

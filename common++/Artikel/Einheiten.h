@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Einheiten.h,v 1.9 2002/04/11 12:01:07 christof Exp $
+// $Id: Einheiten.h,v 1.10 2002/05/03 10:22:54 christof Exp $
 
 #ifndef ARTIKEL_EINHEITEN_H
 #define ARTIKEL_EINHEITEN_H
@@ -26,26 +26,29 @@
 #include <Aux/CacheStatic.h>
 //#include <Aux/Handles.h>
 #include <vector>
+#include <DynamicEnums/DynamicEnums.h>
+
+namespace EinheitID=ManuProC::DynamicEnums::Einheiten;
 
 class Einheit //: public HandleContent
 {
 public:
-	enum Einheiten { Stueck, Meter, kg, Fdkm };
-	typedef enum Einheiten ID;
-	static const ID default_id=Stueck;
+	typedef EinheitID::enum_t ID;
+	static const ID default_id=EinheitID::St_;
+	static const ID Stueck=EinheitID::St_; // Compatibility
 
 private:
-	enum Einheiten einh;
+	ID einh;
 	std::string bez_anzahl,tex_anzahl, bez_menge,tex_menge;
 	
-	typedef CacheStatic<Einheiten,Einheit> cache_t;
+	typedef CacheStatic<ID,Einheit> cache_t;
 	static cache_t cache;
 
 	// nicht auskommentieren !!! wichtige Fehlerabfrage
 	Einheit(int x); // not defined, use ID!
 	
 	Einheit() : einh(default_id) {}
-	friend class map<Einheiten,Einheit>;
+	friend class map<ID,Einheit>;
 
 public:
 	Einheit(const ArtikelBase &ab) throw(SQLerror);

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.h,v 1.25 2002/04/30 09:49:06 christof Exp $
+// $Id: AufEintragBase.h,v 1.26 2002/05/03 10:22:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -53,7 +53,11 @@ public:
  // gibt danach gesamte gelieferte Menge zurück
  mengen_t abschreiben(mengen_t menge) const throw(SQLerror);
  bool deleteAuftragEntry() const throw(SQLerror);
- void updateStkDiff(mengen_t menge) const throw(SQLerror);
+
+ // gibt die Menge zurück, die verändert wurde. Falls reduziert werden sollte
+ // müssen die input/output menge nicht übereinstimmen, da keine negativen Mengen
+ // bestellt werden können
+ mengen_t updateStkDiff__(mengen_t menge) const throw(SQLerror);
 
  void setLetztePlanungFuer(cH_ppsInstanz planinstanz) const throw(SQLerror);
  void calculateProzessInstanz(); // private?
@@ -69,6 +73,10 @@ public:
         }
  bool operator==(const AufEintragBase& b) const 
         {return Instanz()==b.Instanz() && Id()==b.Id() && ZNr()==b.ZNr();}
+
+ friend std::ostream &operator<<(std::ostream &o,const AufEintragBase &ae);
 };
+
+std::ostream &operator<<(std::ostream &o,const AufEintragBase &ae);
 
 #endif

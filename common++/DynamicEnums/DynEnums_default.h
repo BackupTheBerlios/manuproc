@@ -1,4 +1,4 @@
-// $Id: DynEnums_default.h,v 1.1 2002/04/19 06:23:22 christof Exp $
+// $Id: DynEnums_default.h,v 1.2 2002/05/03 10:22:54 christof Exp $
 
 #ifndef MANUPROC_DYNAMICENUMS_H
 #define MANUPROC_DYNAMICENUMS_H
@@ -18,7 +18,7 @@ namespace ManuProC {
 
   namespace Prozesse {
    enum enum_t {
-    Verarbeitung=1
+    None=0, Verarbeitung=1
    };
   }
 
@@ -30,7 +30,7 @@ namespace ManuProC {
 
   namespace Instanzen {
    enum enum_t {
-    Kundenauftraege=1
+    None=0,Kundenauftraege=1
    };
   }
 

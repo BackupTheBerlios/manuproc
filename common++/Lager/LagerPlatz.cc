@@ -21,14 +21,17 @@
 
 void LagerPlatz::DarstellungSetzen()
 {
-  if(instanz == ppsInstanz::INST_BANDLAGER) darstellung=eInt;
-  else if(instanz == ppsInstanz::INST_ROHLAGER) darstellung=eString;
+#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
+  if(instanz == ppsInstanzID::Bandlager) darstellung=eInt;
+  else if(instanz == ppsInstanzID::Rohwarenlager) darstellung=eString;
+#endif  
   else assert(!"LagerPlatz::DarstellungSetzen: Falsche Instanz");
 }
 
 
 bool LagerPlatz::eString_valid()
 {
+#ifdef PETIG_EXTENSIONS
   int regal; char platz; int ebene;
   std::string s=s_position;
   const char *sp(s.c_str()),*np;
@@ -49,6 +52,7 @@ bool LagerPlatz::eString_valid()
    snprintf(buf,sizeof buf,"%02d%c%d",regal,platz,ebene);
    s_position=buf;
    return true;
+#endif
 }
 
 bool LagerPlatz::eInt_valid()

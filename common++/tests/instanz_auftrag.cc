@@ -1,4 +1,4 @@
-// $Id: instanz_auftrag.cc,v 1.6 2002/02/05 17:15:52 christof Exp $
+// $Id: instanz_auftrag.cc,v 1.7 2002/05/03 10:22:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -57,7 +57,7 @@ int main()
    try{
    Petig::dbconnect();
    AuftragBase id;
-   {  Auftrag a=Auftrag(Auftrag::Anlegen(ppsInstanz::Kundenauftraege), 10000);
+   {  Auftrag a=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege), 10000);
       a.setStatusAuftragBase(OPEN);
       id=a;
       std::cout << "Auftrag " << a.Id() << '\n';

@@ -1,4 +1,4 @@
-// $Id: checkGeliefert.pgcc,v 1.1 2002/03/20 07:46:26 christof Exp $
+// $Id: checkGeliefert.pgcc,v 1.2 2002/05/03 10:22:54 christof Exp $
 
 //#include <Lieferschein/Lieferschein.h>
 #include <Auftrag/AuftragFull.h>
@@ -17,7 +17,7 @@ int main()
    while ((query2>>is).good())
    {  int id;
       is >> id;
-      AuftragFull af=AuftragFull(AuftragBase(ppsInstanz::Kundenauftraege,id));
+      AuftragFull af=AuftragFull(AuftragBase(ppsInstanzID::Kundenauftraege,id));
       for (AuftragFull::const_iterator i=af.begin();i!=af.end();++i)
       {  float menge;
          Query("select sum(coalesce(menge,1)*coalesce(stueck,1)) "

@@ -1,4 +1,4 @@
-/* $Id: Prozess.h,v 1.8 2002/01/22 09:15:55 christof Exp $ */
+/* $Id: Prozess.h,v 1.9 2002/05/03 10:22:54 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,22 +24,21 @@
 #include<string>
 #include <Aux/CacheStatic.h>
 #include <Aux/Handles.h>
+#include <DynamicEnums/DynamicEnums.h>
 
 class cH_Prozess;
+
+namespace ProzessID = ManuProC::DynamicEnums::Prozesse;
 
 class Prozess : protected HandleContent
 {	// friend class ProzessHandle;
 	friend class cH_Prozess;
 	friend class Handle<const Prozess>;
 public:
-	enum ID2
-	{  None=0, Drucken=1, Faerben=30, Verarbeitung=31, Aequivalenz=38,
-		Weben=42, Schaeren=43, Verpacken=44, Giessen=45,
-		Rollen_Jumbo=16, Rollen=46 };
-	typedef ID2 ID;
+	typedef ManuProC::DynamicEnums::Prozesse::enum_t ID;
 
-	static const ID default_id=None;
-        static const ID standard_id=Verarbeitung;
+	static const ID default_id=ProzessID::None;
+        static const ID standard_id=ProzessID::Verarbeitung;
 
 private:
  ID prozessid;

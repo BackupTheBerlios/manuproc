@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.15 2002/04/30 09:49:06 christof Exp $
+// $Id: Kunde.cc,v 1.16 2002/05/03 10:22:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -39,7 +39,8 @@ H_Kunde::H_Kunde(Kunde::ID id)
 {  H_Kunde *cached(cache.lookup(id));
    if (cached) *this=*cached;
    else
-   {  *this=H_Kunde(new Kunde(id));
+   {
+     *this=H_Kunde(new Kunde(id));
       cache.Register(id,*this);
    }
 }

@@ -6,7 +6,6 @@ lib_LIBRARIES=libcommon++.a
 libcommon___a_SOURCES=
 
 libcommon___a_LIBADD= \
-		Artikel/ArtikelBaum.o \
 		Artikel/ArtikelBaum_sql.o \
 		Artikel/ArtikelBezeichnung.o \
       Artikel/ArtikelDispo_sql.o \
@@ -77,7 +76,8 @@ libcommon___a_LIBADD= \
 		Kunde/LandesListe_sql.o \
 		Kunde/Person.o \
 		Kunde/Person_sql.o \
-      Kunde/PreisListe_sql.o \
+		Kunde/PreisListe_sql.o \
+		Kunde/KontaktListe.o \
 		Kunde/Telefon_sql.o \
 		Lager/FertigWaren_sql.o \
 		Lager/FertigWarenLager_sql.o \
