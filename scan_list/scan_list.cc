@@ -218,14 +218,13 @@ void tex_table::tex_table_out(std::ostream &o) const
       if(it_breite!=it_end) 
         ++it_breite;
 
-    if(it_colors==colors.end() && it_breite!=it_end)          
+    if(rows_left>=2 && it_breite!=it_end)          
       o << "\\end{tabularx}\n";
    }	
     
  o << "\\end{tabularx}\n";
 
 }
-
 
 
 
