@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.17 2003/09/04 09:46:30 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.18 2003/09/05 10:42:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -50,9 +50,12 @@ class AufEintrag::MichEinlagern : public distribute_parents_cb
 	ProductionContext ctx;
 public:
 	AuftragBase::mengen_t operator()(const AufEintragBase &elter,AuftragBase::mengen_t m) const
-	{  if (elter.Id()==dispo_auftrag_id) return 0;
-	   if (ctx.aeb.valid() && ctx.aeb!=elter) return 0;
-	   mythis.Einlagern2(m,elter,elter,ctx.leb);
+	{  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("elter",elter),
+		NV("m",m));
+	   if (elter.Id()==dispo_auftrag_id) return 0;
+	   // if (ctx.aeb.valid() && ctx.aeb!=elter) return 0;
+	   assert(ctx.aeb!=elter); // wurde das verwendet? CP
+	   mythis.Einlagern2(m,elter,elter,ctx);
 	   return m;
 	}
 	MichEinlagern(AufEintrag &_mythis,const ProductionContext &_ctx) 
@@ -324,7 +327,7 @@ void AufEintrag::WiederEinlagern(cH_ppsInstanz instanz,const ArtikelBase artikel
 void AufEintrag::Einlagern2(mengen_t M,
 		const AufEintragBase &elter_alt,
 		const AufEintragBase &elter_neu,
-		const ProductionContext2 &ctx)
+		const ProductionContext &ctx)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,
 			NV("this",*this),M,NV("alt",elter_alt),NV("neu",elter_neu));
    if (!M) return;		
@@ -345,6 +348,8 @@ void AufEintrag::Einlagern2(mengen_t M,
          		zielauftrag.PassendeZeile(getLieferdatum(),Artikel(),OPEN));
       AufEintrag ae(neuerAEB);
       ae.MengeAendern(M,false,elter_neu,ManuProC::Auftrag::r_Produziert);
+      if (ctx.aeb.valid()) // nach unten verzeigern
+         AufEintragZu(neuerAEB).Neu(ctx.aeb,0);
    }
 
    KinderProduzieren(M,neuerAEB,ctx);

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.40 2003/09/02 12:10:52 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.41 2003/09/05 10:42:39 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -117,10 +117,10 @@ void LieferscheinEntry::changeMenge(int stueck, mengen_t menge, const Liefersche
          // da ist noch ein Rest geblieben, setzt ZusatzInfo
       {  AufEintragBase neuerAEB;
          if (instanz!=ppsInstanzID::Kundenauftraege) 
-            neuerAEB=AufEintrag::unbestellteMengeProduzieren(Instanz(),artikel,abmenge2);
+            neuerAEB=AufEintrag::unbestellteMengeProduzieren(Instanz(),artikel,
+            		abmenge2,true,AufEintragBase(),*this);
          addZusatzEntry(neuerAEB,abmenge2);
       }
-//      showZusatzInfos();
      }
      else
      {//showZusatzInfos();
@@ -147,16 +147,6 @@ void LieferscheinEntry::changeMenge(int stueck, mengen_t menge, const Liefersche
    }
 
   updateLieferscheinMenge(stueck,menge);
-
-//#ifdef MABELLA_EXTENSIONS // auf keinen Fall nach offenen Aufträgen suchen
-//#warning Uebler Hack, muss weg wenn Mabella Instanzen hat!
-//  if(Instanz() == ppsInstanzID::Kundenauftraege)
-//  {  FertigWaren fw(artikel,(FertigWaren::enum_Aktion)'L',
-//  			abmenge.abs().as_int(),Id());
-//     if(abmenge < 0) fw.Einlagern(1);
-//     else if(abmenge > 0) fw.Auslagern(1);
-//   }
-//#endif
 
   tr.commit();
 }

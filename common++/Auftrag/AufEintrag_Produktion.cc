@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.12 2003/09/04 09:46:30 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.13 2003/09/05 10:42:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -51,6 +51,7 @@ AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
                 const AufEintragBase &elter,const ProductionContext2 &ctx,
                 ManuProC::Datum termin)
 {  // Code wie in ProduziertNG
+   // vielleicht zusammenführen?
    ManuProC::Trace _t(trace_channel, __FUNCTION__,instanz,
 			   NV("artikel",artikel),NV("menge",menge),NV("rekursiv",rekursiv));
    assert(instanz!=ppsInstanzID::Kundenauftraege && instanz!=ppsInstanzID::None);
@@ -80,6 +81,12 @@ AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
                		true,neuerAEB);
          }
       }
+   }
+   cH_ppsInstanz EI=instanz->EinlagernIn();
+   if(EI->AutomatischEinlagern())
+   {  assert(instanz->ProduziertSelbst()); // sonst Endlosrekursion
+      ManuProC::Trace(trace_channel, "AutomatischEinlagern");
+      Lager(EI).rein_ins_lager(artikel,menge,true,ProductionContext(neuerAEB,ctx));
    }
    tr.commit();
    return neuerAEB;
@@ -363,7 +370,7 @@ void AufEintrag::ProduziertNG(mengen_t M,
    if(EI->AutomatischEinlagern())
    {  assert(Instanz()->ProduziertSelbst()); // sonst Endlosrekursion
       ManuProC::Trace(trace_channel, "AutomatischEinlagern");
-      Lager(EI).rein_ins_lager(Artikel(),M,true);
+      Lager(EI).rein_ins_lager(Artikel(),M,true,ProductionContext(neuerAEB,ctx));
    }
 }
 

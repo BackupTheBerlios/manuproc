@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.70 2003/09/02 15:48:58 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.71 2003/09/05 10:42:38 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -292,7 +292,8 @@ private:
  void Einlagern2(mengen_t M,
 		const AufEintragBase &elter_alt,
 		const AufEintragBase &elter_neu,
-		const ProductionContext2 &ctx);
+		// hier drin stecken eventuelle Kinder
+		const ProductionContext &ctx);
  // neuen (geschlossenen) 1er erzeugen (völlig unverzeigert ?)
 public:
  static AufEintragBase unbestellteMengeProduzieren(cH_ppsInstanz instanz,
