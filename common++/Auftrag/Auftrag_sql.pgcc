@@ -186,6 +186,7 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string &yaufnr) throw(S
  int VERKNR;
  int IVERKNR=0;
  char *YOURAUFNR=(char*)yaufnr.c_str();
+ int UID;
  exec sql end declare section;
 
  exec sql select waehrungid,coalesce(verknr,-1) 
@@ -206,9 +207,11 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string &yaufnr) throw(S
  SQLerror::test("Auftrag: select neue auftragid");
  if (AUFTRAGID<handplan_auftrag_id) AUFTRAGID=handplan_auftrag_id;
 
+ UID=getuid();
+
  exec sql insert into auftrag (auftragid, kundennr, 
-				stat, waehrung, instanz)
- 	values (:AUFTRAGID, :KUNDENNR, :STATUS, :WAEHRUNG,:INSTANZ);
+				stat, waehrung, instanz, uid)
+ 	values (:AUFTRAGID, :KUNDENNR, :STATUS, :WAEHRUNG,:INSTANZ,:UID);
  SQLerror::test(__FILELINE__" insert into auftrag");
   
 #ifdef MABELLA_EXTENSIONS
@@ -258,6 +261,7 @@ Auftrag::Auftrag(Anlegen2 AB, long kdnr, const std::string &yaufnr) throw(SQLerr
  int VERKNR;
  int IVERKNR=0;
  char *YOURAUFNR=(char*)yaufnr.c_str();
+ int UID;
  exec sql end declare section;
 
  exec sql select waehrungid,coalesce(verknr,-1) 
@@ -265,9 +269,12 @@ Auftrag::Auftrag(Anlegen2 AB, long kdnr, const std::string &yaufnr) throw(SQLerr
  SQLerror::test(__FILELINE__"select waehrung from kunden");
 
  Transaction tr;
+ 
+ UID=getuid();
+ 
  exec sql insert into auftrag (auftragid, kundennr,  
-				stat, waehrung, instanz)
- 	values (:AUFTRAGID, :KUNDENNR, :STATUS, :WAEHRUNG,:INSTANZ);
+				stat, waehrung, instanz, uid)
+ 	values (:AUFTRAGID, :KUNDENNR, :STATUS, :WAEHRUNG,:INSTANZ, :UID);
  SQLerror::test(__FILELINE__" insert auftrag with auftragid 0");
   
 #ifdef MABELLA_EXTENSIONS
