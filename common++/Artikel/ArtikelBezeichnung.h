@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.h,v 1.5 2001/10/01 12:55:40 christof Exp $
+// $Id: ArtikelBezeichnung.h,v 1.6 2001/10/02 20:24:04 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -123,9 +123,10 @@ public:
  // this might be not the right function for you, use sigbegin()/sigend() !
  const cH_EntryValue operator[](int feld) const throw(SQLerror)
  {  return feld<(int)value.size()?value[feld]:cH_EntryValueIntString("?"); }
- 
- void setID(const ArtikelBase::ID &id) throw(SQLerror)
- {  *this=ArtikelBezeichnung(id,schema->Id()); }
+
+#warning geht so nicht mehr 
+// void setID(const ArtikelBase::ID &id) throw(SQLerror)
+// {  *this=ArtikelBezeichnung(id,schema->Id()); }
 
 // deprecated
  ArtikelBezeichnung(const ArtikelBase &artikel,const cH_ExtBezSchema &schema) throw();
