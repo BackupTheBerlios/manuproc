@@ -12,5 +12,5 @@ CREATE SEQUENCE "prod_changejournal_chid_seq" start 1 increment 1 maxvalue 21474
 --
 --
 
-SELECT setval ('"prod_changejournal_chid_seq"', 31607, true);
+SELECT setval ('"prod_changejournal_chid_seq"', 31629, true);
 

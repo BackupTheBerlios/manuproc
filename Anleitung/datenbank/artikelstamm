@@ -3,9 +3,7 @@
 --
 DROP TABLE "artikelstamm";
 --
--- TOC Entry ID 2 (OID 41860188)
 --
--- Name: artikelstamm Type: TABLE Owner: thoma
 --
 
 CREATE TABLE "artikelstamm" (
@@ -21,9 +19,7 @@ CREATE TABLE "artikelstamm" (
 );
 
 --
--- Data for TOC Entry ID 3 (OID 41860188)
 --
--- Name: artikelstamm Type: TABLE DATA Owner: thoma
 --
 
 
