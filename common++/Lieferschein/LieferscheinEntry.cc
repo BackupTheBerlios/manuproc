@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.29 2003/07/04 07:04:19 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.30 2003/07/04 08:52:00 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -34,8 +34,13 @@
 #include <Artikel/ArtikelBase.h>
 #endif
 
+#if !defined(__GNUC__) || __GNUC__>=3
 #define NurEinKind(x) ((x).begin()!=(x).end() && ++((x).begin()) == (x).end())
 #define MehrAlsEinKind(x) ((x).begin()!=(x).end() && ++((x).begin()) != (x).end())
+#else
+#define NurEinKind(x) ((x).begin()!=(x).end() && ((x).begin()+1) == (x).end())
+#define MehrAlsEinKind(x) ((x).begin()!=(x).end() && ((x).begin()+1) != (x).end())
+#endif
 
 std::ostream &operator<<(std::ostream &o, const LieferscheinEntryBase &b)
 {  return o << b.Instanz()->Id() << '|' << b.Id() << '|' << b.ZNr();

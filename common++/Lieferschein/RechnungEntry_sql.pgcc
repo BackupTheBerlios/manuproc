@@ -69,8 +69,10 @@ throw(SQLerror)	:RechnungEntryBase(rechnung)
 
 
 Preis RechnungEntry::getAuftragsPreis()
-{
- return AufEintrag(LfrsEntry().getAufEintragBase()).EPreis();
+{LieferscheinEntry::zusaetze_t zus=LfrsEntry().getZusatzInfos();
+ if (!zus.empty() && !!zus[0].aeb)
+    return AufEintrag(zus[0].aeb).EPreis();
+ return Preis();
 }
 
 
