@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.15 2003/02/24 20:19:55 jacek Exp $ */
+/* $Id: Datum.h,v 1.16 2003/03/19 08:27:03 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,7 +20,7 @@
 #ifndef DATUM_H
 #define DATUM_H
 #include <time.h>
-#include <iostream>
+//#include <iostream>
 #include <exception>
 #include <Misc/Kalenderwoche.h>
 #include <string>
@@ -30,6 +30,9 @@ namespace ManuProC
 class Datumsfehler;
 class Datum;
 };
+
+#include <iosfwd>
+//namespace std { class ostream; }
 
 /// Ein Datum ist ungültig
 class ManuProC::Datumsfehler : public std::exception
@@ -183,8 +186,11 @@ public:
 	
 };
 
-
 std::ostream &operator<<(std::ostream&,const ManuProC::Datum&) throw();
+class FetchIStream;
+FetchIStream &operator>>(FetchIStream &is, ManuProC::Datum &v);
+class Query;
+Query &operator<<(Query &, const ManuProC::Datum &v);
 
 namespace Petig
 {  using ManuProC::Datumsfehler;

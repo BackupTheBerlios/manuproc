@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.h,v 1.10 2003/01/16 15:11:56 christof Exp $
+// $Id: Zeitpunkt_new.h,v 1.11 2003/03/19 08:27:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,8 +23,8 @@
 
 #include <Misc/Postgres.h>
 #include <Misc/Datum.h>
-#include <Misc/relops.h>
-#include <iostream>
+//#include <Misc/relops.h>
+#include <iosfwd>
 #include <time.h>
 
 //: Zeitpunkt an einem Tag
@@ -127,5 +127,9 @@ public:
 };
 
 std::ostream &operator<<(std::ostream&,const Zeitpunkt_new&);
+class FetchIStream;
+FetchIStream &operator>>(FetchIStream &is, Zeitpunkt_new &v);
+class Query;
+Query &operator<<(Query &, const Zeitpunkt_new &v);
 
 #endif
