@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.21 2003/10/21 07:41:41 christof Exp $
+// $Id: SimpleTree.cc,v 1.22 2003/10/21 09:39:20 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -52,6 +52,10 @@ SimpleTree_Basic::SimpleTree_Basic(unsigned maxcol)
    getStore()->signal_title_changed().connect(SigC::slot(*this,&SimpleTree_Basic::on_title_changed));
    get_selection()->signal_changed().connect(SigC::slot(*this,&SimpleTree_Basic::on_selection_changed));
    getStore()->signal_redisplay().connect(SigC::slot(*this,&SimpleTree_Basic::on_redisplay));
+}
+
+SimpleTree_Basic::~SimpleTree_Basic()
+{  delete menu;
 }
 
 void SimpleTree_Basic::on_title_clicked(unsigned nr)
@@ -130,10 +134,19 @@ std::vector<cH_RowDataBase> SimpleTree::getSelectedRowDataBase_vec() const
 #include <gtkmm/menu.h>
 #include <bool_CheckMenuItem.hh>
 
+static Gtk::MenuItem *add_mitem(Gtk::Menu *m,const std::string text,const SigC::Slot0<void> &callback)
+{  Gtk::MenuItem *it=manage(new class Gtk::MenuItem(text));
+   it->signal_activate().connect(callback);
+   m->append(*it);
+   it->show();
+   return it;
+}
+
 void SimpleTree_Basic::fillMenu()
 {  assert(menu==0); 
   menu=new Gtk::Menu();
-  // Hauptmenü        
+  // Hauptmenü
+//  add_mitem(menu,"Neuordnen",SigC::slot(*this,&SimpleTree_Basic::Neuordnen));
 #if 0
    Gtk::MenuItem *neuordnen = manage(new class Gtk::MenuItem("Neuordnen"));
    Gtk::MenuItem *zuruecksetzen = manage(new class Gtk::MenuItem("Zurücksetzen"));

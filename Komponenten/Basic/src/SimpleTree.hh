@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.20 2003/10/21 07:41:41 christof Exp $
+// $Id: SimpleTree.hh,v 1.21 2003/10/21 09:39:20 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -86,6 +86,8 @@ class SimpleTree_Basic : public Gtk::TreeView, public SimpleTreeStore_Proxy
 	
 public:
 	SimpleTree_Basic(unsigned max_col);
+	~SimpleTree_Basic();
+	
 	SigC::Signal1<void,cH_RowDataBase> &signal_leaf_selected()
 	{ return _leaf_selected; }
 	SigC::Signal0<void> &signal_leaf_unselected()
