@@ -9,6 +9,7 @@
 #include "auftrag_provision.hh"
 #include <Gtk_OStream.h>
 #include "MyMessage.h"  
+#include <Kunde/Kunde.h>
 
 extern MyMessage *meldung;
 
@@ -20,16 +21,24 @@ auf(auftrag)
  prov_aufdatum->setLabel("");
  prov_aufkunde->set_value(auftrag->getKundennr());
 
+ prov_verkaeufer->EinschraenkenKdGr(KundengruppeID::Verkaeufer);
+
  if(auftrag->getVerknr()==Kunde::none_id)
    {
     verkprov_frame->set_sensitive(false);
    }
  else
    {
-    prov_verkaeufer->set_value(auftrag->getVerknr());
     verkprov_frame->set_sensitive(true);   
     prov_allpos->set_active(true);
     fillProvEntryList();
+    try {prov_verkaeufer->set_value(auftrag->getVerknr());
+    }
+    catch(SQLerror &e)
+    { if(e.Code()==100) meldung->Show(
+	std::string("Der Verkäufer mit der Nr.:")+
+	itos(auftrag->getVerknr())+" nicht gefunden");
+    }
    }
 
 }
@@ -69,38 +78,49 @@ void auftrag_provision::on_prov_enable_toggled()
    {
     cH_Kunde kunde(auf->getKundennr());
     try {
-    	auf->set_VerkNr(kunde->getVerkNr());
+    	auf->setVerknr(kunde->VerkNr());
     }
     catch(SQLerror &e)
     {
     	meldung->Show(e); return;
     }
-//    prov_verkaeufer->grab_focus();
-    verkprov_frame->set_sensitive(true));
+    prov_verkaeufer->grab_focus();
+    verkprov_frame->set_sensitive(true);
+
+    try {prov_verkaeufer->set_value(auf->getVerknr());
+    }
+    catch(SQLerror &e)
+    { if(e.Code()==100) meldung->Show(
+	std::string("Der Verkäufer mit der Nr.:")+
+	itos(auf->getVerknr())+" nicht gefunden");
+    }
    }
  else
   {
     try {
-    	auf->set_VerkNr(Kunde::none_id);
+    	auf->setVerknr(Kunde::none_id);
     }
     catch(SQLerror &e)
     {
     	meldung->Show(e); return;
     }
-    verkprov_frame->set_sensitive(false));
+    verkprov_frame->set_sensitive(false);
+    prov_verkaeufer->reset();
   }
+
+
    
 }
 
 void auftrag_provision::on_prov_verk_activate()
 {
- cH_Kunde verkaeufer(prov_verkaufer()->get_value());
+ cH_Kunde verkaeufer(prov_verkaeufer->get_value());
 
  try {
-   auf->setVerkNr(verkaeufer->Id());
+   auf->setVerknr(verkaeufer->Id());
  }
- throw(SQLerror &e)
-   { meldung(e); }
+ catch(SQLerror &e)
+   { meldung->Show(e); }
   
 }
 

@@ -1800,6 +1800,14 @@
 
 2003/6/16 15:45:21 CEST
 	update files from .glade file
+<<<<<<< ChangeLog
+
+2003/6/16 16:54:18 CEST
+	update files from .glade file
+
+2003/6/16 16:58:36 CEST
+	update files from .glade file
+=======
 
 2003/6/16 15:57:39 CEST
 	update files from .glade file
@@ -1811,4 +1819,8 @@
 	update files from .glade file
 
 2003/6/16 16:06:19 CEST
+	update files from .glade file
+>>>>>>> 1.43
+
+2003/6/16 17:48:14 CEST
 	update files from .glade file

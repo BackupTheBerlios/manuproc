@@ -341,9 +341,13 @@ void Auftrag::setVerknr(const Kunde::ID vid) throw(SQLerror)
  int AUFTRAGID=Id();
  int INSTANZ=int(Instanz());
  int VERKNR=vid;
+ int IVERKNR=0;
  exec sql end declare section;
 
- exec sql update auftrag set verknr= nullif(:VERKNR,Kunde::none_id)
+ if(vid==Kunde::none_id)
+   IVERKNR=-1;
+
+ exec sql update auftrag set verknr=:VERKNR:IVERKNR
 	where auftragid= :AUFTRAGID and instanz=:INSTANZ;
  SQLerror::test("setVerknr: update verknr");
 }
