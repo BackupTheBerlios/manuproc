@@ -1,4 +1,4 @@
-// $Id: Tag.h,v 1.3 2003/01/24 08:37:48 christof Exp $
+// $Id: Tag.h,v 1.4 2003/02/04 10:15:13 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2002  Christof Petig
  *
@@ -207,6 +207,12 @@ public:
 template <> std::string Tag::create_value<int>(const int &val);
 template <> std::string Tag::create_value<double>(const double &val);
 template <> std::string Tag::create_value<bool>(const bool &val);
+template <> int Tag::parse_value<int>(const std::string &value) throw(std::out_of_range);
+template <> bool Tag::parse_value<bool>(const std::string &value) throw(std::out_of_range);
+template <> long Tag::parse_value<long>(const std::string &value) throw(std::out_of_range);
+template <> double Tag::parse_value<double>(const std::string &value) throw(std::out_of_range);
+template <> float Tag::parse_value<float>(const std::string &value) throw(std::out_of_range);
+template <> std::string Tag::parse_value<std::string>(const std::string &value) throw(std::out_of_range);
 
 inline void Tag::setIntAttr(const std::string &name, int val)
 {  setAttr(name,create_value<int>(val)); }
