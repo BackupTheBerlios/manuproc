@@ -49,11 +49,21 @@ public:
    const ArtikelBase Artikel() const {
       if (Typ()==Rechnung)     return u.r->Artikel();
       if (Typ()==Auftrag || Typ()==Intern || Typ()==Extern)      return u.a->Artikel();
-      if (Typ()==Lieferschein) return u.l->Artikel(); abort();}
+      if (Typ()==Lieferschein || Typ()==Wareneingang) return u.l->Artikel(); abort();}
    const Preis getPreis(bool brutto=true) const {  
       if (Typ()==Intern||Typ()==Extern) return u.a->EPreis(brutto); 
       if (Typ()==Auftrag)  return u.a->EPreis(brutto);  
       if (Typ()==Rechnung) return u.r->getPreis(brutto); 
+      if (Typ()==Wareneingang) 
+        {
+         if(u.l->getZusatzInfos().empty())
+	   return Preis();
+	 else
+	   {
+	    return Preis();
+	   }
+        }
+        
       return Preis();
       abort();}
 
@@ -64,7 +74,7 @@ public:
 
    LieferscheinEntryBase Lfrs() const {
       if (Typ()==Rechnung)     return u.r->Lfrs();
-      if (Typ()==Lieferschein) return *u.l;  abort();}
+      if (Typ()==Lieferschein || Typ()==Wareneingang) return *u.l;  abort();}
    fixedpoint<2> Rabatt() const { 
       if (Typ()==Auftrag)    return u.a->Rabatt();
       if (Typ()==Intern||Typ()==Extern)      return u.a->Rabatt(); 
@@ -73,23 +83,23 @@ public:
    LieferscheinBase::mengen_t  Menge() const { 
       if (Typ()==Rechnung)     return u.r->Menge(); 
       if (Typ()==Auftrag || Typ()==Intern||Typ()==Extern) return 0;
-      if (Typ()==Lieferschein) return u.l->Menge(); abort();}
+      if (Typ()==Lieferschein || Typ()==Wareneingang) return u.l->Menge(); abort();}
    int Stueck() const { 
       if (Typ()==Rechnung)     return u.r->Stueck(); 
       if (Typ()==Auftrag ||  Typ()==Intern||Typ()==Extern) return u.a->getStueck().as_int(); 
-      if (Typ()==Lieferschein) return u.l->Stueck(); abort();}
+      if (Typ()==Lieferschein || Typ()==Wareneingang) return u.l->Stueck(); abort();}
    AuftragBase::mengen_t Rest() const {
       if (Typ()==Auftrag ||  Typ()==Intern||Typ()==Extern) return u.a->getRestStk(); 
       return 0;
       abort();}
    int Palette() const { 
-      if (Typ()==Lieferschein) return u.l->Palette(); return 0;}
+      if (Typ()==Lieferschein || Typ()==Wareneingang) return u.l->Palette(); return 0;}
    std::vector<LieferscheinEntry::st_AuftragMenge> getAuftragsMenge() const {
-      if (Typ()==Lieferschein) return u.l->getAuftragsMenge();
+      if (Typ()==Lieferschein || Typ()==Wareneingang) return u.l->getAuftragsMenge();
       return std::vector<LieferscheinEntry::st_AuftragMenge>();
       }
    int AufId() const { 
-      if (Typ()==Lieferschein) 
+      if (Typ()==Lieferschein || Typ()==Wareneingang) 
 	{
 	 if(u.l->getAuftragsMenge().empty())
 	   return AuftragBase::none_id;
@@ -137,14 +147,14 @@ public:
         }
         self &operator++()
         {  
-            if (Typ()==Lieferschein) ++u.l; 
+            if (Typ()==Lieferschein || Typ()==Wareneingang) ++u.l; 
             if (Typ()==Rechnung)     ++u.r; 
             if (Typ()==Auftrag || Typ()==Intern||Typ()==Extern)      ++u.a; 
            return *this;
         }
         bool operator==(const self &b) const
         {  assert(Typ()==b.Typ());
-            if (Typ()==Lieferschein) return u.l==b.u.l; 
+            if (Typ()==Lieferschein || Typ()==Wareneingang) return u.l==b.u.l; 
             if (Typ()==Rechnung)     return u.r==b.u.r; 
             if (Typ()==Auftrag || Typ()==Intern||Typ()==Extern)      return u.a==b.u.a; 
            abort();
@@ -153,7 +163,7 @@ public:
         {  return !(*this==b);
         }
         const LR_Entry operator*() const
-        {  if (Typ()==Lieferschein) return &*(u.l);
+        {  if (Typ()==Lieferschein || Typ()==Wareneingang) return &*(u.l);
            if (Typ()==Rechnung)     return &*(u.r);
            if (Typ()==Auftrag || Typ()==Intern||Typ()==Extern) return LR_Entry(Typ(),&*u.a);
            abort();
@@ -167,7 +177,7 @@ public:
    
    std::size_t operator-(const LR_Iterator &b) const
         {  assert(Typ()==b.Typ());
-           if (Typ()==Lieferschein) return u.l-b.u.l;
+           if (Typ()==Lieferschein || Typ()==Wareneingang) return u.l-b.u.l;
            if (Typ()==Rechnung)     return u.r-b.u.r;
            if (Typ()==Auftrag || Typ()==Intern||Typ()==Extern)      return u.a-b.u.a;
            abort();
@@ -242,8 +252,8 @@ public:
   LR_Abstraktion()
   	: LR_Base(NICHTS),UEBLICHE_INITIALISIERUNG(false,ppsInstanz::Kundenauftraege)
   {}
-  LR_Abstraktion(const LieferscheinVoll *l, bool fp=false) 
-	: LR_Base(Lieferschein),UEBLICHE_INITIALISIERUNG(fp,l->Instanz())
+  LR_Abstraktion(const LieferscheinVoll *l, LR_Base::typ t=Lieferschein,bool fp=false) 
+	: LR_Base(t),UEBLICHE_INITIALISIERUNG(fp,l->Instanz())
   { u.l=l; }
   LR_Abstraktion(const RechnungVoll *r, bool fp=false) 
 	: LR_Base(Rechnung,
@@ -261,35 +271,40 @@ public:
   const_iterator begin() const { 
       if (Typ()==Rechnung)     return u.r->begin();
       if (Typ()==Auftrag || Typ()==Intern||Typ()==Extern)      return LR_Iterator(Typ(),u.a->begin());
-      if (Typ()==Lieferschein) return u.l->begin(); abort();}
+      if (Typ()==Lieferschein || Typ()==Wareneingang) return u.l->begin(); abort();}
   const_iterator end() const { 
       if (Typ()==Rechnung)     return u.r->end();
       if (Typ()==Auftrag || Typ()==Intern||Typ()==Extern)      return LR_Iterator(Typ(),u.a->end());
-      if (Typ()==Lieferschein) return u.l->end(); abort();}
+      if (Typ()==Lieferschein || Typ()==Wareneingang) return u.l->end(); abort();}
   size_t size() const { 
       if (Typ()==Rechnung)     return u.r->size();
       if (Typ()==Auftrag || Typ()==Intern||Typ()==Extern)      return u.a->size();
-      if (Typ()==Lieferschein) return u.l->size(); abort();}
+      if (Typ()==Lieferschein || Typ()==Wareneingang) return u.l->size(); abort();}
 
    cP_Waehrung getWaehrung() const { 
       if (Typ()==Auftrag || Typ()==Intern||Typ()==Extern)      return u.a->getWaehrung(); 
-      if (Typ()==Rechnung)     return u.r->getWaehrung(); abort(); }
+      if (Typ()==Rechnung)     return u.r->getWaehrung(); 
+      if (Typ()==Lieferschein || Typ()==Wareneingang)
+        return cP_Waehrung(Waehrung::default_id);
+      abort(); }
    AuftragBase::rabatt_t Rabatt() const { 
       if (Typ()==Auftrag) return  u.a->getAuftragsRabatt();
       if (Typ()==Intern||Typ()==Extern)      return 0; 
-      if (Typ()==Rechnung)     return u.r->Rabatt(); abort();}
+      if (Typ()==Rechnung)     return u.r->Rabatt(); 
+      if (Typ()==Lieferschein || Typ()==Wareneingang) return 0;      
+      abort();}
    const Kunde::ID KdNr() const {
       if (Typ()==Rechnung)     return u.r->KdNr(); 
       if (Typ()==Auftrag || Typ()==Intern||Typ()==Extern)      return u.a->getKundennr(); 
-      if (Typ()==Lieferschein) return u.l->KdNr(); abort(); }
+      if (Typ()==Lieferschein || Typ()==Wareneingang) return u.l->KdNr(); abort(); }
    const ManuProC::Datum getDatum() const {
       if (Typ()==Rechnung)     return u.r->getDatum(); 
       if (Typ()==Auftrag || Typ()==Intern||Typ()==Extern)      return u.a->getDatum(); 
-      if (Typ()==Lieferschein) return u.l->getDatum(); abort(); }
+      if (Typ()==Lieferschein || Typ()==Wareneingang) return u.l->getDatum(); abort(); }
    unsigned int RngNr()   const {
       if (Typ()==Rechnung)     return u.r->Id(); 
       if (Typ()==Auftrag || Typ()==Intern||Typ()==Extern)      return u.a->Id(); 
-      if (Typ()==Lieferschein) return u.l->Id(); abort(); }
+      if (Typ()==Lieferschein || Typ()==Wareneingang) return u.l->Id(); abort(); }
    unsigned int RngArt()   const {
       if (Typ()==Rechnung)     return u.r->rngArt(); 
       std::cerr << "RngArt() not available\n";
@@ -321,7 +336,7 @@ public:
    std::string Notiz() const { 
       if (Typ()==Auftrag || Typ()==Extern) return u.a->Notiz();
       if (Typ()==Rechnung) return u.r->Notiz();
-      if (Typ()==Lieferschein) return u.l->Notiz();
+      if (Typ()==Lieferschein || Typ()==Wareneingang) return u.l->Notiz();
       abort();}
 private:
    void drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,

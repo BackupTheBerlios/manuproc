@@ -14,7 +14,7 @@ extern MultiL_Dict *mld;
 class LR_Base
 {
 public:
-   typedef enum typ {Lieferschein, Rechnung, Auftrag, Intern, Extern, NICHTS}; 
+   typedef enum typ {Lieferschein, Rechnung, Auftrag, Intern, Extern, Wareneingang, NICHTS}; 
 
 private:
  typ t;
@@ -33,6 +33,8 @@ public:
     std::string typString() const { switch(t)
 			{case Lieferschein : 
 				return mld->MLT(MultiL_Dict::TXT_LIEFERSCHEIN) ;break;
+                        case Wareneingang : 
+				return "Wareneingang" ;break;				
 			case Rechnung : 
 				if(gut) return mld->MLT(MultiL_Dict::TXT_GUTSCHRIFT);
 				else

@@ -351,7 +351,7 @@ catch(SQLerror &e) { std::cout << e; return; }
   }
    
     if(Typ()==Auftrag || Typ()==Rechnung || Typ()==Lieferschein ||
-	Typ()==Extern)
+	Typ()==Extern || Typ()==Wareneingang)
       if(!Notiz().empty())
         {
 	 Gtk2TeX::StringFlags sf;
@@ -379,7 +379,8 @@ catch(SQLerror &e) { std::cout << e; return; }
 void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
 {instanz=_instanz;
 
- if (Typ()==Rechnung || Typ()==Auftrag || Typ()==Extern) 
+ if (Typ()==Rechnung || Typ()==Auftrag || Typ()==Extern ||
+     Typ()==Wareneingang) 
  	preise_addieren=true;
  else preise_addieren=false;
 #ifdef KEIN_PREIS_IM_EXTERNEN_AUFTRAG
@@ -438,7 +439,7 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
 #ifdef MABELLA_EXTENSIONS
 // falls Auftrag sich geändert hat, neue Nummer unten ausgeben
 // merken welche Werte in der 1. Zeile stehen
-    if ((Typ()==Lieferschein || Typ()==Rechnung) && (*i).AufId()!=aufid_mem)
+    if ((Typ()==Lieferschein || Typ()==Wareneingang || Typ()==Rechnung) && (*i).AufId()!=aufid_mem)
     {  if(!gutschrift())
 	 aufid_drucken=true;
        aufid_mem=(*i).AufId();
@@ -465,7 +466,7 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
         if (Einheit(artikelbase) != einheit_mem ) break;  // Einheit wechselt
         
 
-        if(Typ()==Rechnung || Typ()==Lieferschein)
+        if(Typ()==Rechnung || Typ()==Lieferschein || Typ()==Wareneingang)
           {
             if ((*j).Stueck()!=1 || !(*j).Menge()) stueck_bool=true;
             if ((*j).Menge()!=0)                   menge_bool=true;
@@ -476,7 +477,7 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
            break; // Lieferschein wechselt
 
 #ifdef MABELLA_EXTENSIONS           
-        if ((Typ()==Lieferschein || Typ()==Rechnung) && aufid_mem != (*j).AufId())
+        if ((Typ()==Lieferschein || Typ()==Wareneingang || Typ()==Rechnung) && aufid_mem != (*j).AufId())
           break; // Auftrag wechselt
 #endif
 
@@ -838,7 +839,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 	if(schema_own->Id() != schema_mem->Id())
 	  {
 	   cH_ArtikelBezeichnung own_bez(artikelbase,schema_own->Id());
-	   if((!ean_code && !rabatt_bool) || Typ()==Lieferschein)
+	   if((!ean_code && !rabatt_bool) || Typ()==Lieferschein || Typ()==Wareneingang)
 	     drucken_artikel(os,own_bez,false,linecolor,erste_spalte,schema_own);
 	   else // nur Auffüllen; die Daten kommen in die zweite Spalte
 	     {for(int signc=0;signc<schema_own->size(1);signc++)
@@ -945,7 +946,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 
 
 #ifdef PETIG_EXTENSIONS
-        if (Typ()==Lieferschein) 
+        if (Typ()==Lieferschein || Typ()==Wareneingang) 
           { neue_spalte(erste_spalte,os);
             if (palette!=0) os << linecolor<<palette;
             neue_spalte(erste_spalte,os);
@@ -958,7 +959,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 
 #ifdef MABELLA_EXTENSIONS
 	if(schema_own->Id() != schema_mem->Id() && 
-	    (ean_code || rabatt_bool) && Typ()!=Lieferschein)
+	    (ean_code || rabatt_bool) && Typ()!=Lieferschein && Typ()!=Wareneingang)
 	  {
 	   cH_ArtikelBezeichnung own_bez(artikelbase,schema_own->Id());
 	   os << "&&&&";
@@ -1117,7 +1118,7 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
      for(ExtBezSchema::const_sigiterator j=schema_own->sigbegin(1);
      				j!=schema_own->sigend(1);++j)
       { tabcolumn += j->TeXtabformat ; ++spaltenzahl ; 
-        if((!ean_code && !rabatt_bool) || Typ()==Lieferschein)
+        if((!ean_code && !rabatt_bool) || Typ()==Lieferschein || Typ()==Wareneingang)
 //          ueberschriften += "&\\mbox{"+ug + j->bezkomptext+"}";
 	 {if(j->textid==72)
            ueberschriften += "&\\mbox{"+ug+"Votre Barcode}";       
@@ -1131,7 +1132,7 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
    }
       
 #else
-  if (Typ()==Lieferschein)
+  if (Typ()==Lieferschein || Typ()==Wareneingang)
   { tabcolumn+="rr"; spaltenzahl+=2; 
     ueberschriften += "&\\multicolumn{1}{c}{"+sg+"Palette}";
     ueberschriften += "&\\multicolumn{1}{c}{"+ug+"Auftrag}";
@@ -1292,7 +1293,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
          (Typ()==Auftrag && kunde_an->AB_an_rngadresse())
 	)
        os << kunde_rng->LaTeX_an(Typ()==Lieferschein,telart,"1\\textwidth")<<"\n\n";
-     else if(Typ()==Lieferschein)
+     else if(Typ()==Lieferschein || Typ()==Wareneingang)
        {
 	cH_Kunde kunde_lief(kunde_an->Lfran());        
 	os << kunde_lief->LaTeX_an(Typ()==Lieferschein,telart,"1\\textwidth")<<"\n\n";

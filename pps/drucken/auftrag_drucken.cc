@@ -47,7 +47,7 @@ const static struct option options[]=
 
 void usage(std::string n,ppsInstanz::ID instanz,std::string database,std::string dbhost)
 {
-   std::cout << "$Id: auftrag_drucken.cc,v 1.21 2004/09/28 08:24:54 jacek Exp $\n\n"
+   std::cout << "$Id: auftrag_drucken.cc,v 1.22 2004/10/06 12:56:15 jacek Exp $\n\n"
               "USAGE:" << n << " -n <Nr> [-a <Typ>] [-kft] [-i <Instanz>] [-d <Datenbank>]\n"
 		"\n\t-t<file>\t nur TeX file erzeugen und uneter <file> speichern("<< (Configuration.toTeX?"an":"aus")<< ")\n"
 		"\n\t-B<printer>\t batch mode on <printer>; kein GUI ("<< (Configuration.batch?"an":"aus")<< ")\n"
@@ -111,12 +111,21 @@ int main (int argc, char *argv[])
 	case '?': usage(argv[0],instanz,database,dbhost); break;
 	case 'G': Configuration.preview_only=true; break;
     }
-  }                 
+  }
+ 
+ 
+
+ 
   try {
       ManuProC::Connection conn;
       conn.setDbase(database);
       conn.setHost(dbhost);
       ManuProC::dbconnect(conn);  
+
+      // Lieferschein ist bei Einkauf eigentlich ein Wareneingang 
+      if(was==LR_Base::Lieferschein)
+         if(cH_ppsInstanz(instanz)->ExterneBestellung())
+           was = LR_Base::Wareneingang;
 
       LR_drucken l(was,auftragsnr,cH_ppsInstanz(instanz),
 			rueckstand,ean_code);

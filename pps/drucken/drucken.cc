@@ -62,14 +62,14 @@ void LR_drucken::drucken()
       LRA.setEAN(ean_code);
       LRA.drucken(os,instanz);
     }
-   else if (RL==LR_Base::Lieferschein)  
+   else if (RL==LR_Base::Lieferschein || RL==LR_Base::Wareneingang)  
     { 
 #ifdef MABELLA_EXTENSIONS    
       cH_LieferscheinVoll l(instanz,auftragsnr,true);
 #else
       cH_LieferscheinVoll l(instanz,auftragsnr);
 #endif
-      LR_Abstraktion LRA(&*l);
+      LR_Abstraktion LRA(&*l,RL);
       LRA.setEAN(ean_code);
       LRA.drucken(os,instanz);
     }
