@@ -55,7 +55,7 @@ class Data_Node : public TreeRow
 #endif       
     }
 
-    static TreeRow *create(const Handle<const TreeRow> &suminit)
+    static Handle<TreeRow> create(const Handle<const TreeRow> &suminit)
        {  return new Data_Node(suminit);
        }
 };

@@ -49,7 +49,7 @@ Artikeleingabe::Artikeleingabe(int argc, char **argv)
 #endif
 
  if (argc==2) 
- {top_notebook->set_page(2);
+ {top_notebook->set_current_page(2);
   artikelbox->set_value(ArtikelBase(atoi(argv[1])));
   artikelbox_activate();}
 }
@@ -146,9 +146,9 @@ void Artikeleingabe::on_neuladen_clicked()
 void Artikeleingabe::set_Data_from_artikelliste()
 {
 //cout << vec_artbase.size()<<'\n';
- progressbar->set_show_text(true);
+// progressbar->set_show_text(true);
  progressbar->show();
- tree->detach_from_clist();
+// tree->detach_from_clist();
  tree->clear();
  datavec_t datavec;
  instanz_spalte.clear();
@@ -174,18 +174,20 @@ void Artikeleingabe::set_Data_from_artikelliste()
  for (vec_artbase_t::const_iterator i=vec_artbase.begin();i!=end;++i)
   {
    fill_datavec(datavec,*i);
-   progressbar->set_percentage(count/double(size));
+   progressbar->set_fraction(count/double(size));
    while(Gtk::Main::events_pending()) Gtk::Main::iteration() ;
    ++count;
   }
- progressbar->set_percentage(1);
+ progressbar->set_fraction(1);
  tree->setDataVec(datavec);
  set_tree_titels();
  tree->Expand_recursively();
- tree->attach_to_clist();
+// tree->attach_to_clist();
  progressbar->hide();
  if (vec_artbase.begin()!=vec_artbase.end())
- {  tree->row(0).select();
+ {  Gtk::TreeModel::Path p;
+    p.push_back(0);
+    tree->get_selection()->select(p);
  }
 }
 
