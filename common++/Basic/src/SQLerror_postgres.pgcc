@@ -1,4 +1,4 @@
-/* $Id: SQLerror_postgres.pgcc,v 1.9 2003/01/27 10:59:57 christof Exp $ */
+/* $Id: SQLerror_postgres.pgcc,v 1.10 2004/04/29 08:38:47 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,6 +17,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <ManuProCConfig.h>
+#ifndef MPC_SQLITE
 #include "SQLerror_postgres.h"
 #include <iostream>
 #include <string>
@@ -91,3 +93,5 @@ void SQLerror_postgres::rollback() throw()
 
 int SQLerror_postgres::SQLCode()
 {  return sqlca.sqlcode; }
+
+#endif
