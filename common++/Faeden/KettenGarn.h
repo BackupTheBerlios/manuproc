@@ -1,4 +1,4 @@
-/* $Id: KettenGarn.h,v 1.10 2004/07/06 08:08:45 christof Exp $ */
+/* $Id: KettenGarn.h,v 1.11 2004/07/06 14:27:33 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -60,7 +60,7 @@ struct Kettscheibe
    static std::vector<Kettscheibe> Load(const ArtikelGang &ag,unsigned laenge);
 };
 
-#if 1
+#if 0
 #include <Artikel/ArtikelBezeichnung.h>
 #include <Faeden/Kettscheibe.h>
 class ArtikelGang;

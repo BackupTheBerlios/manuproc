@@ -1,4 +1,4 @@
-/* $Id: KettenGarn_CP.cc,v 1.21 2004/07/06 13:54:41 christof Exp $ */
+/* $Id: KettenGarn_CP.cc,v 1.22 2004/07/06 14:27:33 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,6 +27,7 @@
 static const UniqueValue::value_t trace_channel=ManuProC::Tracer::channels.get();
 static ManuProC::Tracer::Environment trace_channel_e("DEBUG_KETTEN",trace_channel);
                   
+#if 0
 struct KG_compare
 {  bool operator()(const KettenGarn_CP &a,const KettenGarn_CP &b)
    {  return a.index<b.index || (a.index==b.index
@@ -39,7 +40,6 @@ struct intermediate_data : KettenGarn_CP
    unsigned min_max_fd;
 };
 
-#if 1
 std::vector<KettenGarn_CP> KettenGarn_CP::Load(ArtikelGang const &ag, unsigned laenge)
 {  Fadenliste fdl;
    typedef std::vector<intermediate_data> vec_t;
@@ -177,7 +177,6 @@ std::vector<KettenGarn_CP> KettenGarn_CP::Load(ArtikelGang const &ag, unsigned l
       real_result.push_back(*i);
    return real_result;
 }
-#endif
 
 bool KettenGarn::operator==(const KettenGarn_CP &b) const throw()
 	{  return Index()==b.Index() && 
@@ -188,6 +187,7 @@ bool KettenGarn::operator==(const KettenGarn_CP &b) const throw()
 bool KettenGarn::operator<(const KettenGarn_CP &b) const throw()
 	{  return (Index()<b.Index()) || 
 	          (Index()==b.Index() && Artikel()<b.Artikel() );}
+#endif
 
 #if 1
 
@@ -234,6 +234,7 @@ std::vector<Kettscheibe> Kettscheibe::Load(const std::vector<ArtikelGang> &ag, u
       x.laenge=laenge;
       if (i->verlaengern) 
       {  if (x.laenge<10000) x.laenge+=100; // 3040/35/420 v. 15.1.04
+         else if (x.laenge<=12000) x.laenge+=200;
          else x.laenge+=500;
       }
       x.max_fadenzahl=i->max_fadenzahl;
@@ -270,15 +271,21 @@ std::vector<Kettscheibe> Kettscheibe::Load(const std::vector<ArtikelGang> &ag, u
       y.fadenzahl+=x.faeden;
    }
 
-#if 0
+   // Wiederholungen verteilen und verrechnen
    for (Fadenliste::const_repiterator r=fdl.repbegin();r!=fdl.repend();++r)
-   {  if (r->start==r->end && r->start==i->zeilennummer)
-         ;
-      else if (r->start<=i->zeilennummer && i->zeilennummer<=r->end)
-      {  x.wiederholungen*=r->anzahl;
+   {  if (r->start==r->end) continue;
+      for (map_t::iterator i=intermed.begin();i!=intermed.end();++i)
+      {  Kettscheibe &x=i->second;
+         if (x.artikel.size()!=1 || !(*(x.artikel.begin())==*gang))
+            continue;
+         for (std::vector<KS_Garn>::iterator j=x.faeden.begin();j!=x.faeden.end();++j)
+         {  if (r->start<=j->zeile && j->zeile<=r->end)
+            {  x.fadenzahl+=(r->anzahl-1)*j->wiederholungen*j->faeden;
+               j->wiederholungen*=r->anzahl;
+            }
+         }
       }
    }
-#endif   
   }
   
    // gleiche aufeinanderfolgende Fäden zusammenfassen
@@ -295,10 +302,9 @@ std::vector<Kettscheibe> Kettscheibe::Load(const std::vector<ArtikelGang> &ag, u
       }
    }
    // Polyesterketten etwas weniger verlängern
-   // 3040/35/420 v. 15.1.04
    for (map_t::iterator i=intermed.begin();i!=intermed.end();++i)
    {  Kettscheibe &x=i->second;
-      if (laenge<=12000 && x.laenge==laenge+500 && x.faeden.size()==1
+      if (x.laenge==laenge+500 && x.faeden.size()==1
           && cH_ArtikelBezeichnung(x.faeden.begin()->material)
               ->Komponente(0).substr(0,10)=="Poly verst")
          x.laenge-=300;
@@ -308,8 +314,13 @@ reloop:
    for (map_t::iterator i=intermed.begin();i!=intermed.end();++i)
    {  Kettscheibe &x=i->second;
       // Einschränkung auf x.faeden.size()==1 später aufheben
-      if (x.max_fadenzahl && 2*x.fadenzahl<=x.max_fadenzahl 
-                                          && x.faeden.size()==1)
+      if (x.max_fadenzahl 
+            // es passt mindestens 2x ...
+          && (2*x.fadenzahl<=x.max_fadenzahl 
+            // ... oder es geht glatt auf
+            || (x.fadenzahl<x.max_fadenzahl && !((x.fadenzahl*x.kettenzahl)%x.max_fadenzahl))
+            )
+          && x.faeden.size()==1)
       {  unsigned neue_kettenzahl=(x.fadenzahl*x.kettenzahl+x.max_fadenzahl-1)
                     /x.max_fadenzahl;
          if (!!(x.kettenzahl&1) && (neue_kettenzahl&1)
