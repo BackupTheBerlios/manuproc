@@ -418,6 +418,7 @@ void auftrag_lieferschein::set_tree_titles()
  t1.push_back("Auftrag");
  t1.push_back("Palette");
  t1.push_back("Liefermenge");
+ t1.push_back("% bestellt");
  t1.push_back("vom Lager");
  tree_daten->setTitles(t1); 
 
@@ -438,7 +439,7 @@ void auftrag_lieferschein::set_tree_titles()
 
  set_title("Lieferschein: "+instanz->get_Name());
 
- if(instanz->Id()==1) 
+ if(instanz->Id()==ppsInstanzID::Kundenauftraege) 
    { 
      liefer_kunde->setLabel("Kundennr","Kundenname");
      label_kundenauftrag->set_text("Kundenauftrag");

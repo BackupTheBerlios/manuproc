@@ -47,7 +47,7 @@ class Data_Lieferdaten : public RowDataBase
        }
 
    enum SeqNr {LIEFZEILE_SEQ,ARTIKEL_SEQ,AUFNR_SEQ,PALETTE_SEQ,
-   		LIEFMNG_SEQ,VOMLAGER_SEQ};
+   		LIEFMNG_SEQ,PROZ_BEST,VOMLAGER_SEQ};
 
    virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
     {
@@ -71,6 +71,11 @@ class Data_Lieferdaten : public RowDataBase
       	  					itos(liefentry.lagerid));
       	else
       	  return cH_EntryValueIntString(liefentry.lagerid);
+      case PROZ_BEST:
+        {  fixedpoint<1> genutzt=liefentry.DurchAuftraegeAbgedeckt();
+           if (genutzt>0) return cH_EntryValueIntString(genutzt.String()+"%");
+           return cH_EntryValue();
+        }
       default : return cH_EntryValue();
      }
    }

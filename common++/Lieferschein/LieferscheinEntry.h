@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.36 2004/02/19 15:59:32 jacek Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.37 2004/03/22 18:09:10 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -105,6 +105,8 @@ public:
  void setLagerid(int _lagid) throw(SQLerror);
 
  Kunde::ID KdID() const throw(SQLerror);
+ 
+ fixedpoint<1> DurchAuftraegeAbgedeckt() const; // in % 
 
  // bitte getZusatzInfos() nehmen, es könnten mehrere sein
 #if 0 

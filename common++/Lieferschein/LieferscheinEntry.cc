@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.67 2004/02/23 13:54:15 jacek Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.68 2004/03/22 18:09:10 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -539,3 +539,23 @@ void LieferscheinEntry::setLagerid(int _lagid) throw(SQLerror)
 }
 
 
+fixedpoint<1> LieferscheinEntry::DurchAuftraegeAbgedeckt() const
+{  mengen_t m=0;
+
+   if (Status()!=(AufStatVal)UNCOMMITED)
+   {  for (zusaetze_t::const_iterator i=VZusatz.begin();std_neq(i,VZusatz.end());++i)
+         if (i->aeb!=AufEintragBase())
+            m+=i->menge;
+   }
+   else
+   {  SQLFullAuftragSelector psel(SQLFullAuftragSelector::sel_Artikel_Planung_id
+           	(instanz->Id(),KdID(),artikel,AuftragBase::handplan_auftrag_id));
+      SelectedFullAufList auftraglist(psel);
+
+      for (SelectedFullAufList::iterator i=auftraglist.aufidliste.begin();
+          	        i!=auftraglist.aufidliste.end(); ++i)
+         m+=i->getRestStk();
+      m=AuftragBase::min(m,AuftragBase::Gesamtmenge(Stueck(),Menge()));
+   }
+   return 100.0*m/AuftragBase::Gesamtmenge(Stueck(),Menge()).as_float();
+}
