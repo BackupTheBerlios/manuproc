@@ -1,4 +1,4 @@
-// $Id: WPreis.cc,v 1.5 2004/11/16 11:47:51 christof Exp $
+// $Id: WPreis.cc,v 1.6 2004/11/16 14:04:39 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -22,6 +22,7 @@
 //#include <Aux/Transaction.h>
 //#include <Aux/SQLerror.h>
 #include <gtkmm/adjustment.h>
+#include <gtk/gtksignal.h>
 
 // strictly these are part of the ctor
 
@@ -39,7 +40,7 @@ void WPreis::betrag()
   Gtk::Adjustment *SP_adj = manage(new class Gtk::Adjustment(0, 0, 10000, 1, 10, 10));
   SP=manage(new class Gtk::SpinButton(*SP_adj, 1, 
 		ManuProC::Precision::GeldBetrag));
-  SP->set_usize(80,-1);
+//  SP->set_usize(80,-1);
   SP->show();
   SP->signal_activate().connect(activate.slot());
   SP->signal_changed().connect(preis_changed.slot());
@@ -69,7 +70,7 @@ void WPreis::preismenge()
   attach(*LAp,0,1,1,2);
   Gtk::Adjustment *SP_adj = manage(new class Gtk::Adjustment(1, 0, 10000, 1, 10, 10));
   SP2=manage(new class Gtk::SpinButton(*SP_adj, 3, 0));
-  SP2->set_usize(80,-1);
+//  SP2->set_usize(80,-1);
   SP2->show();
   SP2->signal_activate().connect(activate.slot());
   attach(*SP2,1,2,1,2);
@@ -104,13 +105,13 @@ WPreis::WPreis(bool wwaehrung)
   einheit(); 
   mindmenge();
   set_Waehrung(Waehrung::default_id);
-  gtk_signal_connect_after(Gtk::OBJECT(gobj()), "grab_focus",Gtk::SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
+  gtk_signal_connect_after(GTK_OBJECT(gobj()), "grab_focus",GTK_SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
 }
 
 void WPreis::update()
 {
-  gtk_spin_button_update(SP->gobj());
-  gtk_spin_button_update(SP2->gobj());
+  SP->update(); //gtk_spin_button_update(SP->gobj());
+  SP2->update(); // gtk_spin_button_update(SP2->gobj());
 }
 
 void WPreis::reset()
