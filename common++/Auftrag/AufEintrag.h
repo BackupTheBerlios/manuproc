@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.65 2003/08/08 11:55:46 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.66 2003/08/11 14:22:57 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -53,11 +53,17 @@ typedef LieferscheinEntryBase ProductionContext2;
 
 class AufEintrag : public AufEintragBase
 {
-//     friend class LagerBase;
      friend class AuftragBase;
      friend class ppsInstanzReparatur;
      friend FetchIStream &operator>>(FetchIStream &is, AufEintrag &ae);
+
+     class MichEinlagern;
+     class AbbestellenUndVormerken;
+     class NeuBestellen;
+     struct Auslagern_cb;
+     class Einlagern_cb;
      class delayed_reclaim;
+     class WiederEinlagern_cb;
 
 private: 
  mengen_t bestellt;
@@ -310,6 +316,8 @@ public:
 		mengen_t menge, bool abbestellen, const ProductionContext &ctx);
    // für ProduziertSelbst Instanzen
    mengen_t ProdRueckgaengigMenge(mengen_t) const;
+   // ehemals increase_parents__reduce_assingments
+   void MengeNeubestellen(const int uid,mengen_t menge) throw(SQLerror);
 };
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: AufEintragZuMengenAenderung.cc,v 1.17 2003/03/10 14:44:14 christof Exp $
+// $Id: AufEintragZuMengenAenderung.cc,v 1.18 2003/08/11 14:22:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -23,6 +23,7 @@
 #include <Misc/TraceNV.h>
 #include <Misc/relops.h>
 
+#if 0
 void AufEintragZuMengenAenderung::change_parent(const int uid,
                                                 const AufEintragBase &old_parent,
                                                 const AufEintragBase &new_parent,
@@ -37,32 +38,10 @@ void AufEintragZuMengenAenderung::change_parent(const int uid,
      AufEintragZu(old_parent).Neu(i->AEB,-menge); 
    }
 }
+#endif
 
-// und was heißt das auf Deutsch? CP
-void AufEintragZuMengenAenderung::increase_parents__reduce_assingments(const int uid,
-                     const AufEintragBase &child_aeb,AuftragBase::mengen_t menge) throw(SQLerror)
-{
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("AEB",child_aeb),NV("Menge",menge));
-  AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(child_aeb,AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
-  for(AufEintragZu::list_t::iterator j=L.begin();j!=L.end();++j)
-    {
-      AuftragBase::mengen_t m=AuftragBase::min(j->Menge,menge);
-      if (!m) continue;
-      AufEintragZu(j->AEB).setMengeDiff__(child_aeb,-m);
 
-      AufEintragZu::list_t L2=AufEintragZu(j->AEB).get_Referenz_list_ungeplant(AufEintragZu::list_kinder,AufEintragZu::list_Artikel);
-      for(AufEintragZu::list_t::iterator k=L2.begin();k!=L2.end();++k)
-       {
-         if(k->Art!=AufEintrag(child_aeb).Artikel()) continue;
-//         AufEintragZu(j->AEB).setMengeDiff__(k->AEB,m);
-         AufEintrag(k->AEB).MengeAendern(uid,m,true,j->AEB,ManuProC::Auftrag::r_Planen);
-         break;
-       }   
-      menge-=m;
-      if(menge==AuftragBase::mengen_t(0)) break;
-    }         
-}
-
+#if 0
 void AufEintragZuMengenAenderung::Change_Zuordnung_to_Children(const bool child,const AufEintrag &AE,
                         const AuftragBase::mengen_t &menge) throw(SQLerror)
 {
@@ -89,6 +68,7 @@ void AufEintragZuMengenAenderung::Change_Zuordnung_to_Children(const bool child,
 //cout <<"Faktor="<<F<<'\t'<<M<<'\n';
    }
 }
+#endif
 
 #if 0
 void AufEintragZuMengenAenderung::move_zuordnung_zu_geplantem(const int uid,

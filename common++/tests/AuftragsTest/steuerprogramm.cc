@@ -48,15 +48,15 @@ static Check C;
 void vergleichen(Check::was_checken w, const std::string &zusatz,
         const std::string &name, const std::string &graphname, bool vor_dem_test_reparieren)
 {   (*testlog) << int(w) << ' ' << zusatz << ' ' << graphname << ' ' << name << '\n';
+    testlog->flush(); 
     bool erfolgreich=C.teste(w,zusatz,vor_dem_test_reparieren);
     if(!erfolgreich)
     { std::cout << name << "("<<zusatz<<") fehlgeschlagen\n\n"; 
-      if (!do_not_stop) { testlog->flush(); exit(1); }
+      if (!do_not_stop) exit(1);
     }
     else if (verbose)
     { std::cout << name << "("<<zusatz<<") ok\n";
     }
-    testlog->flush();
 }
 
 static void graphheader(const std::string &name)
@@ -98,7 +98,8 @@ static void usage(const std::string &argv0,const std::string &argv1)
   std::cerr << argv0 <<" [<option> ...] <test>\n";
   std::cerr << "options: --verbose|-v --analyse|-y --repair|-r\n"
   	"\t--continue|-c --trace|-t --reinit|-R --overwrite|-O\n"
-  	"\t--tolerate|-T --resort|-S\n";
+  	"\t--tolerate|-T --resort|-S\n"
+  	"\t\t--continue twice gives different results\n";
   std::cerr << "tests:\n";
   for (const TestReihe *i=TestReihe::first; i; i=i->next)
   {  std::cerr << '\t' << i->kuerzel << '\t' << i->bezeichnung << '\n';
@@ -127,9 +128,12 @@ int main(int argc,char *argv[])
    int opt;
    while ((opt=getopt_long(argc,argv,"vrctCRyOTS",long_options,0))!=-1)
     switch(opt)
-   {  case 'v': verbose=true; break;
+   {  case 'v': verbose=true; Check::verbose=true; break;
       case 'r': Check::reparieren=true; break;
-      case 'c': do_not_stop=true; break;
+      case 'c': if (!Check::continue_)
+            Check::continue_=true; 
+         else do_not_stop=true;
+         break;
       case 'C': clean_only=true; break;
       case 'R': clean_only=false; break;
       case 'y': Check::analyse=true; break;

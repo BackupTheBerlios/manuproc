@@ -1,4 +1,4 @@
-/* $Id: VerfuegbareMenge.h,v 1.3 2003/07/18 15:47:23 christof Exp $ */
+/* $Id: VerfuegbareMenge.h,v 1.4 2003/08/11 14:22:57 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -37,7 +37,7 @@ class VerfuegbareMenge : public ArtikelBase
 
       AuftragBase::mengen_t reduce_in_dispo_or_plan(const bool dispo,
       		const int uid,AuftragBase::mengen_t menge,
-      		const AufEintragBase &ElternAEB) const;
+      		const AufEintragBase &ElternAEB);
 
    public:
       VerfuegbareMenge(const cH_ppsInstanz &instanz,const ArtikelBase &artikel,const ManuProC::Datum &datum) throw(SQLerror);
@@ -49,9 +49,9 @@ class VerfuegbareMenge : public ArtikelBase
       std::vector<AufEintrag> getPlanAuftraege() const {return V_plan_auftraege;}
 
 	// wird von AE::ArtikelInternNachbestellen verwendet
-      AuftragBase::mengen_t reduce_in_dispo(const int uid,AuftragBase::mengen_t menge,const AufEintragBase &ElternAEB) const
+      AuftragBase::mengen_t reduce_in_dispo(const int uid,AuftragBase::mengen_t menge,const AufEintragBase &ElternAEB)
          { return reduce_in_dispo_or_plan(true,uid,menge,ElternAEB);}
-      AuftragBase::mengen_t reduce_in_plan(const int uid,AuftragBase::mengen_t menge,const AufEintragBase &ElternAEB) const
+      AuftragBase::mengen_t reduce_in_plan(const int uid,AuftragBase::mengen_t menge,const AufEintragBase &ElternAEB)
          { return reduce_in_dispo_or_plan(false,uid,menge,ElternAEB);}
 };
 

@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.22 2003/08/11 07:45:47 christof Exp $
+// $Id: AufEintragZu.cc,v 1.23 2003/08/11 14:22:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -330,6 +330,7 @@ AuftragBase::mengen_t AufEintragZu::setMengeDiff__(const AufEintragBase &neuAEB,
       delete_if_possible: 
         if (!i->menge)
         {  if (Id()==dispo_auftrag_id || neuAEB.Id()==ungeplante_id
+        	|| Id()==ungeplante_id 
            	|| V.size()>1)
            {  Query("delete from auftragsentryzuordnung "
      		"where (altinstanz,altauftragid,altzeilennr, "

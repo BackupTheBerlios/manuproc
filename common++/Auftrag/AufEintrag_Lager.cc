@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.10 2003/07/31 14:48:53 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.11 2003/08/11 14:22:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -43,7 +43,7 @@
 #endif
 
 // etwas bestelltes wird eingelagert -> produziert markieren & vormerken (?)
-namespace { class MichEinlagern : public distribute_parents_cb
+class AufEintrag::MichEinlagern : public distribute_parents_cb
 {	AufEintrag &mythis;
 	unsigned uid;
 	ProductionContext ctx;
@@ -56,10 +56,10 @@ public:
 	}
 	MichEinlagern(AufEintrag &_mythis,const ProductionContext &_ctx) 
 		: mythis(_mythis), uid(getuid()), ctx(_ctx) {}
-};}
+};
 
 // etwas bestelltes wird abbestellt -> intern abbestellen & vormerken
-namespace { class AbbestellenUndVormerken : public distribute_parents_cb
+class AufEintrag::AbbestellenUndVormerken : public distribute_parents_cb
 {	AufEintrag &mythis;
 	unsigned uid;
 	
@@ -76,23 +76,29 @@ public:
 	}
 	AbbestellenUndVormerken(AufEintrag &_mythis) 
 		: mythis(_mythis), uid(getuid()) {}
-};}
+};
 
 // Lagerinhalt ist verschwunden -> Vormerkung löschen & neu bestellen
-namespace { class NeuBestellen : public distribute_parents_cb
+class AufEintrag::NeuBestellen : public distribute_parents_cb
 {	AufEintrag &mythis;
 	unsigned uid;
 public:
 	AuftragBase::mengen_t operator()(const AufEintragBase &elter,AuftragBase::mengen_t m) const
 	{  mythis.MengeAendern(uid,-m,false,elter,ManuProC::Auftrag::r_Reparatur);
+	   // Optimierung: direkt 0er nehmen?
+#if 0	   
+           // passenden 0er erhöhen
+            AuftragBase(child_ae.Instanz(),AuftragBase::ungeplante_id)
+              .BestellmengeAendern(m,child_ae.getLieferdatum(),child_ae.Artikel(),OPEN,uid,j->AEB);
+#endif
 	   AufEintrag::ArtikelInternNachbestellen(mythis.Instanz(),m,
 	   	mythis.getLieferdatum(),mythis.Artikel(),uid,elter);
 	   return m;
 	}
 	NeuBestellen(AufEintrag &_mythis,unsigned u) : mythis(_mythis), uid(u) {}
-};}
+};
 
-namespace { struct Auslagern_cb : public auf_positionen_verteilen_cb
+struct AufEintrag::Auslagern_cb : public auf_positionen_verteilen_cb
 {	unsigned uid;
 	bool fuer_auftraege;
 	ProductionContext2 ctx;
@@ -115,7 +121,7 @@ namespace { struct Auslagern_cb : public auf_positionen_verteilen_cb
 	   }
 	   return abschreibmenge;
 	}
-};}
+};
 
 AuftragBase::mengen_t AufEintrag::Auslagern
 	(const AuftragBase &ab,const ArtikelBase &artikel,mengen_t menge, 
@@ -187,7 +193,7 @@ AuftragBase::mengen_t AufEintrag::Auslagern
    return 0;
 }
 
-namespace { class Einlagern_cb : public auf_positionen_verteilen_cb
+class AufEintrag::Einlagern_cb : public auf_positionen_verteilen_cb
 {	bool abbestellen;
         ProductionContext ctx;
         
@@ -205,7 +211,7 @@ public:
 	      rest=distribute_parents(ae,m,AbbestellenUndVormerken(ae));
            return m-rest;
 	}
-};}
+};
 
 // abbestellen bedeutet: Menge wurde abbestellt und kann nun anderweitig vor-
 // 	gemerkt werden, es werden keine geschlossenen 1er erzeugt 
@@ -250,7 +256,7 @@ void AufEintrag::Einlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase
   MengeVormerken(instanz,artikel,menge,!produziert,ctx);
 }
 
-namespace { class WiederEinlagern_cb : public auf_positionen_verteilen_cb
+class AufEintrag::WiederEinlagern_cb : public auf_positionen_verteilen_cb
 {
 public:
 	AuftragBase::mengen_t operator()(AufEintrag &i, AuftragBase::mengen_t M) const
@@ -275,7 +281,7 @@ public:
            }
            return M;
 	}
-};}
+};
 
 // eigentlich auslagern mit negativer Menge ???
 // allerdings: Reihenfolge ist umgekehrt
@@ -298,6 +304,30 @@ void AufEintrag::WiederEinlagern(const int uid,cH_ppsInstanz instanz,const Artik
      Einlagern(uid,instanz,artikel,-menge,false,ProductionContext());
   }
 }
+
+#if 0
+// sieht so bekannt aus ...
+// ehemals increase_parents__reduce_assingments, noch verbesserungswürdig
+void AufEintrag::MengeNachbestellen(const int uid,
+                     const AufEintrag &child_ae,AuftragBase::mengen_t menge) throw(SQLerror)
+{
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("AEB",child_ae),NV("Menge",menge));
+  AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(child_ae,AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
+  for(AufEintragZu::list_t::iterator j=L.begin();j!=L.end();++j)
+    {
+      AuftragBase::mengen_t m=AuftragBase::min(j->Menge,menge);
+      if (!m) continue;
+      
+      AufEintragZu(j->AEB).setMengeDiff__(child_ae,-m);
+      // passenden 0er erhöhen
+      AuftragBase(child_ae.Instanz(),AuftragBase::ungeplante_id)
+              .BestellmengeAendern(m,child_ae.getLieferdatum(),child_ae.Artikel(),OPEN,uid,j->AEB);
+
+      menge-=m;
+      if(!menge) break;
+    }         
+}
+#endif
 
 // ehemals von ProduziertNG kopiert ... aber anders?
 void AufEintrag::Einlagern2(unsigned uid, mengen_t M,
@@ -330,3 +360,37 @@ void AufEintrag::Einlagern2(unsigned uid, mengen_t M,
    KinderProduzieren(M,neuerAEB,ctx);
 }
 
+// ehemals increase_parents__reduce_assingments
+void AufEintrag::MengeNeubestellen(const int uid,mengen_t menge) throw(SQLerror)
+{
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("this",*this),NV("Menge",menge));
+  assert(Id()==plan_auftrag_id);  
+//  AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(child_aeb,AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
+  distribute_parents(*this,menge,NeuBestellen(*this,uid));
+}
+
+#if 0
+  for(AufEintragZu::list_t::iterator j=L.begin();j!=L.end();++j)
+    {
+      AuftragBase::mengen_t m=AuftragBase::min(j->Menge,menge);
+      if (!m) continue;
+      AufEintragZu(j->AEB).setMengeDiff__(child_aeb,-m);
+      // passenden 0er erhöhen
+      AuftragBase(child_aeb.Instanz(),AuftragBase::ungeplante_id)
+              .BestellmengeAendern(m,child_aeb.getLieferdatum(),child_aeb.Artikel(),OPEN,uid,j->AEB);
+
+#if 0
+      AufEintragZu::list_t L2=AufEintragZu(j->AEB).get_Referenz_list_ungeplant(AufEintragZu::list_kinder,AufEintragZu::list_Artikel);
+      for(AufEintragZu::list_t::iterator k=L2.begin();k!=L2.end();++k)
+       {
+         if(k->Art!=AufEintrag(child_aeb).Artikel()) continue;
+//         AufEintragZu(j->AEB).setMengeDiff__(k->AEB,m);
+         AufEintrag(k->AEB).MengeAendern(uid,m,true,j->AEB,ManuProC::Auftrag::r_Planen);
+         break;
+       }   
+#endif       
+      menge-=m;
+      if(!menge) break;
+    }         
+}
+#endif

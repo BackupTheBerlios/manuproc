@@ -1,4 +1,4 @@
-/* $Id: VerfuegbareMenge.cc,v 1.6 2003/03/10 14:44:14 christof Exp $ */
+/* $Id: VerfuegbareMenge.cc,v 1.7 2003/08/11 14:22:57 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -21,6 +21,10 @@
 #include <Misc/TraceNV.h>
 #include <Auftrag/selFullAufEntry.h>
 #include <Misc/relops.h>
+
+#ifdef PETIG_EXTENSIONS
+#define MENGE_KLAUEN
+#endif
 
 VerfuegbareMenge::VerfuegbareMenge(const cH_ppsInstanz &_instanz,const ArtikelBase &artikel,
    const Petig::Datum &_datum) throw(SQLerror)
@@ -53,9 +57,11 @@ VerfuegbareMenge::VerfuegbareMenge(const cH_ppsInstanz &_instanz,const ArtikelBa
       {
         if(i->getLieferdatum() <= datum) continue; 
         if(!i->Instanz()->LagerInstanz()) continue;
+#ifdef MENGE_KLAUEN        
 	ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,i->getRestStk(),*i);
         menge_plan_auftraege+=i->getRestStk();
         V_plan_auftraege.push_back(*i);
+#endif        
       }
    }
  assert(menge_dispo_auftraege>=0);
@@ -64,15 +70,15 @@ VerfuegbareMenge::VerfuegbareMenge(const cH_ppsInstanz &_instanz,const ArtikelBa
 
 #include <Auftrag/AufEintragZuMengenAenderung.h>
 
-AuftragBase::mengen_t VerfuegbareMenge::reduce_in_dispo_or_plan(const bool dispo,const int uid,AuftragBase::mengen_t menge,const AufEintragBase &ElternAEB) const
+AuftragBase::mengen_t VerfuegbareMenge::reduce_in_dispo_or_plan(const bool dispo,const int uid,AuftragBase::mengen_t menge,const AufEintragBase &ElternAEB) 
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
      instanz,ArtikelBase(*this),dispo?"dispo":"plan",NV("menge",menge),NV("ElternAEB",ElternAEB));
-  const std::vector<AufEintrag> &V=dispo?V_dispo_auftraege:V_plan_auftraege;
+  std::vector<AufEintrag> &V=dispo?V_dispo_auftraege:V_plan_auftraege;
 
   AuftragBase::mengen_t wieviel_geschafft=0;
-  std::vector<AufEintrag>::const_reverse_iterator e=V.rend();
-  for(std::vector<AufEintrag>::const_reverse_iterator i=V.rbegin();i!=e;++i)
+  std::vector<AufEintrag>::reverse_iterator e=V.rend();
+  for(std::vector<AufEintrag>::reverse_iterator i=V.rbegin();i!=e;++i)
    {
      AuftragBase::mengen_t M=AuftragBase::min(i->getRestStk(),menge);
      ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,*i,M);
@@ -81,7 +87,7 @@ AuftragBase::mengen_t VerfuegbareMenge::reduce_in_dispo_or_plan(const bool dispo
      i->updateStkDiffBase__(uid,-M);
      // diese nichtssagenden Aufrufe gefallen mir nicht CP
      if(!dispo)  
-        AufEintragZuMengenAenderung::increase_parents__reduce_assingments(uid,*i,M);
+        i->MengeNeubestellen(uid,M);
      if(!instanz->LagerInstanz())
      {  AufEintragZuMengenAenderung::freie_dispomenge_verwenden(uid,*i,M,ElternAEB);
      }

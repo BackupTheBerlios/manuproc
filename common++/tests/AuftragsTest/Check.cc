@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.56 2003/08/07 09:50:19 christof Exp $
+// $Id: Check.cc,v 1.57 2003/08/11 14:22:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -40,14 +40,16 @@ bool Check::analyse=false;
 bool Check::reparieren=false;
 bool Check::overwrite=false;
 bool Check::resort=false;
+bool Check::verbose=false;
+bool Check::continue_=false;
 
 bool Check::teste(was_checken check,const std::string &zusatz, bool vor_dem_test_reparieren)
 {
   if(!vor_dem_test_reparieren)
    { dump(check,zusatz);  
      if (!vergleich(check,zusatz)) return false;
+     if (!analyse && !reparieren) return true;
    }
-  if (!analyse && !reparieren) return true;
   
   std::vector<cH_ppsInstanz> VI=cH_ppsInstanz::get_all_instanz();
   Query::Execute("vacuum analyze");
@@ -55,8 +57,10 @@ bool Check::teste(was_checken check,const std::string &zusatz, bool vor_dem_test
   if (analyse) cmd+=" -y";
   else cmd+=" -l";
   int c=system(cmd.c_str());
-  if(c) 
-  { std::cerr << cmd << " returned " << c<<'\n'; return false; }
+  if(verbose || c) 
+  { std::cerr << cmd << " returned " << c<<'\n'; 
+    if (c) return false; 
+  }
   
   dump(check,zusatz);  
   return vergleich(check,zusatz);
@@ -105,7 +109,7 @@ bool Check::vergleich(was_checken was,const std::string &zusatz)
         }
      }
   }
-  return !error;
+  return continue_?true:(!error);
 }
 
 
