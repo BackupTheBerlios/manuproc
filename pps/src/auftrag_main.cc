@@ -1094,11 +1094,13 @@ void auftrag_main::on_offwarengrp_activate()
  int bezidx=A1;
  for(ExtBezSchema::const_sigiterator bezit=ebz->sigbegin(signif); 
 	bezit!=ebz->sigend(signif); ++bezit,i++,bezidx++) 
-   maintree_s->set_column_title(maintree_s->ColumnFromIndex(bezidx)
-				,bezit->bezkomptext);
+	maintree_s->setTitleAt(bezidx,bezit->bezkomptext);
+//   maintree_s->set_column_title(maintree_s->ColumnFromIndex(bezidx)
+//				,bezit->bezkomptext);
  for(int j=i; j<4; j++, bezidx++) // auffüllen bis 4
-   maintree_s->set_column_title(maintree_s->ColumnFromIndex(bezidx)
-				,"");
+	maintree_s->setTitleAt(bezidx,"");
+//   maintree_s->set_column_title(maintree_s->ColumnFromIndex(bezidx)
+//				,"");
 
 }
 

@@ -146,7 +146,7 @@ private:
 
 public:
   // Spaltenbezeichnungen
-   enum {KUNDE,A1,A2,A3,A4,LIEFERDATUM,AUFTRAG,LETZEPLANINSTANZ,
+   enum {KUNDE=0,A1,A2,A3,A4,LIEFERDATUM,AUFTRAG,LETZEPLANINSTANZ,
          VERARBEITUNG,LETZTELIEFERUNG,METER,STUECK};
 
  cH_ppsInstanz Instanz() const {return instanz;}
