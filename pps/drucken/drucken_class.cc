@@ -1403,7 +1403,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
 	  {
 //kunde_an->getVerkaeufer();
            os << "\\vspace*{2mm}\\bf "<<mld->MLT(MultiL_Dict::TXT_BESUCHTSIE)<<":\\rm \\\\\n"
-           	<< kunde_an->VerkName() <<"~\\\\\n";
+           	<< string2TeX(kunde_an->VerkName()) <<"~\\\\\n";
           }
           
         os << "\\end{flushleft}\\fussy\\normalsize\\end{minipage}}\\\\\n";          
