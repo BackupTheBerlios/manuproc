@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.1 2002/10/18 10:39:42 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.2 2002/10/21 06:39:07 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,7 +21,9 @@
 #define SIMPLE_TREE_STORE_H
 
 #include <SimpleTreeModel.h>
-#include <gtkmm/TreeStore.h>
+#include <gtkmm/treestore.h>
+#include <RowDataBase.h>
+#include <TreeRow.h>
 #include<deque>
 
 class SimpleTreeStore : Gtk::TreeStore
@@ -51,10 +53,11 @@ private:
 	void load_remembered();
 protected:
 
-pubic:
+public:
+	SimpleTreeStore();
 	void set_showdeep(int i) {showdeep=i;}
 	guint Attrs() const { return attrcount; }
-	guint Cols() const { return columns().size();}
+	guint Cols() const; //  { return columns().size();}
 
 	void set_value_data(gpointer _p) {gp = _p;}
 	gpointer ValueData() const { return gp; }

@@ -1,4 +1,4 @@
-// $Id: SimpleTreeModel.h,v 1.1 2002/10/18 10:39:42 christof Exp $
+// $Id: SimpleTreeModel.h,v 1.2 2002/10/21 06:39:07 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,10 +22,10 @@
 
 #include <string>
 #include <vector>
-//#include <sigc++/object.h>
+#include <sigc++/object.h>
 #include <sigc++/signal.h>
-
-class cH_RowDataBase;
+#include <glib/gtypes.h>
+#include <RowDataBase.h>
 
 class SimpleTreeModel : SigC::Object
 {private:
@@ -35,10 +35,10 @@ class SimpleTreeModel : SigC::Object
 
 	SigC::Signal1<void,cH_RowDataBase> line_appended;
 	SigC::Signal0<void> redraw_needed;
-	SigC::Signal2<void,cH_RowDataBase,guint idx> value_changed;
-	SigC::Signal1<void,guint idx> title_changed;
-pubic:
-	void append_line(cH_RowDataBase row);
+	SigC::Signal2<void,cH_RowDataBase,guint> value_changed;
+	SigC::Signal1<void,guint> title_changed;
+public:
+	void append_line(const cH_RowDataBase &row);
 	SigC::Signal1<void,cH_RowDataBase> &signal_line_appended()
 	{  return line_appended; }
 	void clear();

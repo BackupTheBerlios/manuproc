@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.9 2002/10/18 10:39:42 christof Exp $
+# $Id: Makefile.am,v 1.10 2002/10/21 06:39:07 christof Exp $
 CXXFLAGS=@CXXFLAGS@ @COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
@@ -25,8 +25,6 @@ BUILT_SOURCES=datewin.hh SimpleTree.hh logwin.hh
 # alias links
 datewin.hh: datewin.h
 	ln -sf datewin.h datewin.hh
-SimpleTree.hh: treebase.h
-	ln -sf treebase.h SimpleTree.hh
 logwin.hh: logwin.h
 	ln -sf logwin.h logwin.hh
 

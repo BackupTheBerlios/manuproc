@@ -1,4 +1,4 @@
-/* $Id: TreeRow.h,v 1.1 2002/10/18 10:39:42 christof Exp $ */
+/* $Id: TreeRow.h,v 1.2 2002/10/21 06:39:07 christof Exp $ */
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,26 +17,24 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: TreeRow.h,v 1.1 2002/10/18 10:39:42 christof Exp $
+// $Id: TreeRow.h,v 1.2 2002/10/21 06:39:07 christof Exp $
 
 // BAD name for this include file actually it's a TreeRow
 
 #ifndef TCLISTROWDATA
 #define TCLISTROWDATA
 
-#include<TCListRow.h>
 #include<string>
 #include<vector>
-#include "rowdata.h"
+#include "RowDataBase.h"
 
-class cH_RowDataBase;
-class TreeBase;
+//class TreeBase;
 
 // better name this class TreeRow - or TreeNode ?
 
 class TreeRow
 {protected:
-	TCListRow_API *listrow;
+//	TCListRow_API *listrow;
 	cH_EntryValue value;
 	bool expand:1;
 	
@@ -51,19 +49,19 @@ class TreeRow
 	cH_RowDataBase leafdata;
 	
 
-	friend class TreeBase;
+//	friend class TreeBase;
  
  	// wegen virtuellen Funktionen nicht Teil des Konstruktors
  	// wird direkt danach aufgerufen
  	// Hängt in die Liste ein
-	void initTCL(TCListRow_API *api, TCListRow_API::iterator davor,
-			const TreeBase &tb);
-	void initTCL(TCListRow_API *api, const TreeBase &tb);
+//	void initTCL(TCListRow_API *api, TCListRow_API::iterator davor,
+//			const TreeBase &tb);
+//	void initTCL(TCListRow_API *api, const TreeBase &tb);
 	
-	TCListRow_API *getTCL_API() { return listrow; }
-	const TCListRow_API *getTCL_API() const { return listrow; }
+//	TCListRow_API *getTCL_API() { return listrow; }
+//	const TCListRow_API *getTCL_API() const { return listrow; }
 
-        virtual const std::vector<std::string> getColEntries(const TreeBase &tb) const;
+//        virtual const std::vector<std::string> getColEntries(const TreeBase &tb) const;
 
 //	void Leaf(bool l) { leaf=l; } // I prefer this one, CP
 //	void setLeaf(bool l) { leaf=l; }
@@ -77,12 +75,13 @@ class TreeRow
  virtual const std::string getColText() const { return value->getStrVal(); }
 
 public:
- typedef TCListRow_API::const_iterator const_iterator;
+// typedef TCListRow_API::const_iterator const_iterator;
+ class const_iterator {};
  
 	// deep2:=0 for a leaf
  TreeRow(guint _deep1, const cH_EntryValue &v, guint _deep2, 
  		cH_RowDataBase data, bool exp=false)
-   : listrow(0), value(v), expand(exp), deep(_deep1), childrens_deep(_deep2),
+   : value(v), expand(exp), deep(_deep1), childrens_deep(_deep2),
    	leafdata(data)
  {}
  virtual ~TreeRow() {}
@@ -105,21 +104,17 @@ public:
  virtual const cH_EntryValue Value(guint _seqnr,gpointer _g) const;
  
 // primär für nodes von Interesse
- void refreshSum(const TreeBase &tb);
+// void refreshSum(const TreeBase &tb);
  virtual void cumulate(const cH_RowDataBase &rd) {} 
  // wenn mir jemand verrät, was das hier ist ... CP 10'01
 // virtual void orderit(const cH_RowDataBase &rd) {}
 
- const_iterator begin() const
- {  return getTCL_API()->begin();
- }
- const_iterator end() const
- {  return getTCL_API()->end();
- }
+ const_iterator begin() const;
+// {  return getTCL_API()->begin();
+// }
+ const_iterator end() const;
+// {  return getTCL_API()->end();
+// }
 };
-
-typedef TreeRow TCListRowData;
-typedef TCListRowData TCListNode;
-typedef TCListRowData TCListLeaf; // no difference any longer
 
 #endif
