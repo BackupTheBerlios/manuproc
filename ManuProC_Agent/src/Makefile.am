@@ -27,7 +27,8 @@ mpc_agent_SOURCES = \
 	mpc_agent.cc \
 	mpc_internal.cc \
 	kunden_selector.cc \
-	kunden_selector_glade.cc
+	kunden_selector_glade.cc \
+	mpc_xml.cc
 
 noinst_HEADERS = \
 	mpc_agent_glade.hh \

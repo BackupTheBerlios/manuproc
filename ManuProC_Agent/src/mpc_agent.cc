@@ -169,9 +169,6 @@ void mpc_agent::on_artikel_cancel_clicked()
 }
 
 
-void mpc_agent::on_senden_clicked()
-{
-}
 
 void mpc_agent::on_neu_clicked()
 {
