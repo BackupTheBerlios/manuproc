@@ -516,13 +516,12 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
               break; // Preismenge wechselt
 	   
 #ifdef MABELLA_EXTENSIONS
-	   {cH_Kunde chk(kunden_id);
+	   {cH_Kunde chk(cH_Kunde(kunden_id)->Rngan());
  	    if(chk->land()->LKZ() == "I" || chk->land()->LKZ()=="IL")
-//		kunden_id==22954)
              if (!!(*j).Rabatt()) rabatt_bool=true;
 
 #warning provisory HACK, must be made soon
-	     if(kunden_id==22954 || kunden_id==23219)
+	     if(chk->Id()==22954 || chk->Id()==23219)
                rabatt_bool=true;
 	   }
 #else
