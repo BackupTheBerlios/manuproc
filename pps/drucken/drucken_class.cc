@@ -524,21 +524,24 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
       {
         AufEintragBase AEB;
         if(Typ()==Intern) AEB=(*k).getAEB();
+        std::string YourAuftrag;
+        std::vector<LieferscheinEntry::st_AuftragMenge> auftragmenge=(*k).getAuftragsMenge();
+        if (auftragmenge.size()==1) 
+           YourAuftrag=Auftrag::getYourAufNr(auftragmenge[0].ab);
         Zeile_Ausgeben(os,preismenge_mem,einheit_mem,einheitsize,
             (*k).Rest(),(*k).Artikel(),false,(*k).Stueck(),
             (*k).Menge(),(*k).getPreis(true),(*k).getPreis(false),
-            (*k).Rabatt(),(*k).getLieferdatum(),(*k).Palette(),(*k).YourAuftrag(),
+            (*k).Rabatt(),(*k).getLieferdatum(),(*k).Palette(),YourAuftrag,
             AEB);
-        if((*k).ZusatzInfo()) 
+        if(auftragmenge.size()>1) 
          { 
-           std::vector<LieferscheinEntry::st_zusatz> VZ=(*k).getZusatzInfos();
-           for(std::vector<LieferscheinEntry::st_zusatz>::const_iterator l=VZ.begin();l!=VZ.end();++l)
+           for(std::vector<LieferscheinEntry::st_AuftragMenge>::const_iterator 
+           	l=auftragmenge.begin();l!=auftragmenge.end();++l)
             {
               Zeile_Ausgeben(os,preismenge_mem,einheit_mem,einheitsize,
                0,(*k).Artikel(),true,einheit_mem.hatMenge()?1:l->menge.as_int(),
                einheit_mem.hatMenge()?l->menge:0,Preis(),Preis(),
-               fixedpoint<2>(0),ManuProC::Datum(),0,Auftrag::getYourAufNr(l->aeb),
-               l->aeb);
+               0,ManuProC::Datum(),0,Auftrag::getYourAufNr(l->ab),AEB);
             }           
          }
       }

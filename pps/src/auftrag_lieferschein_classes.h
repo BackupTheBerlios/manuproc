@@ -26,25 +26,22 @@ class Data_Lieferdaten : public RowDataBase
       std::string zeile;
       AufEintragBase AEB;
       std::string smenge;
-      int palette;
-      std::string artikel;
+//      int palette;
+//      std::string artikel;
       std::string FormatiereMenge(ArtikelBase artikel, int stueck, LieferscheinBase::mengen_t menge);
       std::string FormatiereMenge(ArtikelBase artikel, int stueck, AuftragBase::mengen_t menge);
   public:
    Data_Lieferdaten(LieferscheinEntry _liefentry)
       : liefentry(_liefentry), zusatzinfo(false) 
-      { zeile=itos(liefentry.Zeile());
-        AEB=liefentry.getAufEintragBase();
-        palette=liefentry.Palette();
-        artikel=cH_ArtikelBezeichnung(liefentry.Artikel())->Bezeichnung();
-        smenge=FormatiereMenge(liefentry.Artikel(),liefentry.Stueck(),liefentry.Menge());
+      {  zeile=itos(liefentry.Zeile());
+         smenge=FormatiereMenge(liefentry.Artikel(),liefentry.Stueck(),liefentry.Menge());
+         if (liefentry.getZusatzInfos().size()<2) AEB=liefentry.getZusatzInfos()[0].aeb;
       }
    Data_Lieferdaten(std::string z,LieferscheinEntry _liefentry,
                     AufEintragBase aeb,AuftragBase::mengen_t m)
       : liefentry(_liefentry), zusatzinfo(true),zeile(z),AEB(aeb)
        {  
          smenge="("+FormatiereMenge(liefentry.Artikel(),1,m)+")";
-         palette=0;
        }
 
    enum SeqNr {LIEFZEILE_SEQ,ARTIKEL_SEQ,AUFNR_SEQ,PALETTE_SEQ,LIEFMNG_SEQ};
@@ -56,10 +53,12 @@ class Data_Lieferdaten : public RowDataBase
       case AUFNR_SEQ :
          { if (AEB.valid())
            return cH_EntryValueIntString(Formatiere(AEB.Id(),0,6,"","",'0'));
-           else return cH_EntryValueIntString("");
+           else return cH_EntryValue();
          }
-      case ARTIKEL_SEQ :   return cH_EntryValueIntString(artikel);
-      case PALETTE_SEQ :   return cH_EntryValueEmptyInt(palette);
+      case ARTIKEL_SEQ :   return cH_EntryValueIntString(zusatzinfo?std::string()
+      		:cH_ArtikelBezeichnung(liefentry.Artikel())->Bezeichnung());
+      case PALETTE_SEQ :   return zusatzinfo?cH_EntryValue()
+      		:cH_EntryValueEmptyInt(liefentry.Palette());
       case LIEFMNG_SEQ :   return cH_EntryValueIntString(smenge);
       case LIEFZEILE_SEQ : return cH_EntryValueIntString(zeile);
       default : return cH_EntryValue();
@@ -68,7 +67,7 @@ class Data_Lieferdaten : public RowDataBase
 
   int get_Lieferschein_Id() const {return liefentry.Id();}
   LieferscheinEntry get_LieferscheinEntry() const {return liefentry;}
-  AufEintragBase getAufEintragBase() const {return liefentry.getAufEintragBase();}
+  __deprecated AufEintragBase getAufEintragBase() const {return liefentry.getAufEintragBase();}
   bool istZusatzinfo() const {return zusatzinfo;}
 };
 

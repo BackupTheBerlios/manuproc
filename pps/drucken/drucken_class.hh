@@ -77,18 +77,12 @@ public:
       abort();}
    int Palette() const { 
       if (Typ()==Lieferschein) return u.l->Palette(); return 0;}
-   bool ZusatzInfo() const { 
-      if (Typ()==Lieferschein) return u.l->ZusatzInfo(); return false;}
-   std::vector<LieferscheinEntry::st_zusatz> getZusatzInfos() const {
-      if (Typ()==Lieferschein) return u.l->getZusatzInfos();
-      return std::vector<LieferscheinEntry::st_zusatz>();
+   std::vector<LieferscheinEntry::st_AuftragMenge> getAuftragsMenge() const {
+      if (Typ()==Lieferschein) return u.l->getAuftragsMenge();
+      return std::vector<LieferscheinEntry::st_AuftragMenge>();
       }
-   std::string YourAuftrag() const { 
-      if (Typ()==Lieferschein) return Auftrag::getYourAufNr(u.l->RefAuftrag()); 
-      return "";
-      abort();}
    int AufId() const { 
-      if (Typ()==Lieferschein) return u.l->RefAuftrag().Id();
+//      if (Typ()==Lieferschein) return u.l->RefAuftrag().Id();
       if (Typ()==Rechnung) return u.r->AuftragId();
 	abort(); 
       }

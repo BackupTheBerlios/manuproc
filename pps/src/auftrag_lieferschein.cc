@@ -400,7 +400,7 @@ void auftrag_lieferschein::set_tree_daten_content(LieferscheinBase::ID lfrsid)
       for(std::vector<LieferscheinEntry>::const_iterator i=LV->LsEntries().begin();i!=LV->LsEntries().end();++i)
        {
          datavec.push_back(new Data_Lieferdaten(*i));
-         if(i->ZusatzInfo())
+         if(i->getZusatzInfos().size()>1)
           {
             std::vector<LieferscheinEntry::st_zusatz> VZ=i->getZusatzInfos();
             std::string zeile=itos(i->Zeile());
@@ -670,7 +670,14 @@ void auftrag_lieferschein::on_button_zeile_modifizieren_clicked()
    if(LieferscheinBase::mengen_t(liefermenge->get_value_as_float()) != LE.Menge() ||
             anzahl->get_value_as_int() != LE.Stueck())
     {
-       LE.changeMenge(anzahl->get_value_as_int(),liefermenge->get_value_as_float());
+       LE.changeMenge(anzahl->get_value_as_int(),liefermenge->get_value_as_float(),
+       		*lieferschein,
+#ifdef MABELLA_EXTENSIONS
+				true
+#else
+				false
+#endif
+		       			);
        set_tree_offen_content();
     }
    set_tree_daten_content(lieferschein->Id());
@@ -720,5 +727,3 @@ void auftrag_lieferschein::on_liefnotiz_changed()
 void auftrag_lieferschein::on_liefnotiz_save_clicked()
 {  
 }
-
-
