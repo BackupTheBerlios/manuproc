@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.67 2004/10/12 15:54:28 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.68 2005/02/08 22:18:25 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -572,27 +572,19 @@ const std::list<std::pair<int,PreisListe::ID> > &Kunde::Preislisten() const
  
  preislisten.erase(preislisten.begin(),preislisten.end());
 
-  exec sql begin declare section;
-   int P,S;
-   char *QU;
-  exec sql end declare section;
-  Transaction tr;
+ int P,S;
 
-  std::string squery="select prlsnr,suchfolge from ku_warenkorb"
-         " where kundennr="+itos(Id())+" order by suchfolge";        
-  QU=(char*)squery.c_str();
-  exec sql prepare preiscursor_ from :QU;
-  exec sql declare preiscursor cursor for preiscursor_;
-  exec sql open preiscursor;
-  SQLerror::test(__FILELINE__);
-
-  while(!sqlca.sqlcode)
+ Query q("select prlsnr,suchfolge from ku_warenkorb"
+         " where kundennr=? order by suchfolge");
+ q << Id();
+ FetchIStream fi=q.Fetch();
+ while(fi.good())
    {
-     exec sql fetch preiscursor into :P,:S;
-     SQLerror::test(__FILELINE__,100);
-     if(sqlca.sqlcode) break;
-     preislisten.push_back(std::pair<int,PreisListe::ID>(S,P));
+    fi >> P >> S;
+    preislisten.push_back(std::pair<int,PreisListe::ID>(S,P));
+    fi = q.Fetch();
    }
+   
  prlist_valid=true;
  return preislisten;
 }
