@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.47 2004/01/06 09:07:09 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.48 2004/01/08 15:39:24 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -587,7 +587,12 @@ SimpleTreeStore::iterator &SimpleTreeStore::iterconv(GtkTreeIter* iter)
 }
 
 const SimpleTreeStore::iterator &SimpleTreeStore::iterconv(const GtkTreeIter* iter) const
-{  assert(iter->stamp==IterStamp());
+{  if (iter->stamp!=IterStamp())
+   {  std::cerr << "iterconv: iterator mismatch " << iter->stamp << "!=" << IterStamp()
+   	<< " user_data=" << iter->user_data << '\n';
+      abort();
+   }
+//   assert(iter->stamp==IterStamp());
    return reinterpret_cast<const SimpleTreeStore::iterator&>(iter->user_data);
 }
 
@@ -699,7 +704,11 @@ bool SimpleTreeStore::iter_nth_child_vfunc(GtkTreeIter* iter, const GtkTreeIter*
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,parent?parent->user_data:0,n);
    iterator res,end;
    if (parent)
-   {  iterator p=iterconv(parent);
+   {  if (!parent->user_data) 
+      {  std::cerr << "iter_nth_child_vfunc with empty iter\n";
+         return false;
+      }
+      iterator p=iterconv(parent);
       res=p->second.children.begin();
       end=p->second.children.end();
    }
