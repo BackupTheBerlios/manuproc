@@ -5,7 +5,7 @@
 
 #include <glibmm.h>
 
-/* $Id: DoubleButton.h,v 1.1 2003/04/08 08:56:54 christof Exp $ */
+/* $Id: DoubleButton.h,v 1.2 2003/04/08 09:01:42 christof Exp $ */
 
 /* searchcombo.h
  * 

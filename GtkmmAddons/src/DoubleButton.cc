@@ -3,7 +3,7 @@
 #include <gtkmm/DoubleButton.h>
 #include <gtkmm/private/DoubleButton_p.h>
 
-/* $Id: DoubleButton.cc,v 1.1 2003/04/08 08:56:54 christof Exp $ */
+/* $Id: DoubleButton.cc,v 1.2 2003/04/08 09:01:42 christof Exp $ */
 
 /* searchcombo.h
  * 
@@ -26,12 +26,9 @@
 
 #include <doublebutton.h>
 
-#if 0
-DoubleButton::DoubleButton()
-  	: Glib::ObjectBase(0), //Mark this class as gtkmmproc-generated, rather than a custom class, to allow vfunc optimisations.
+ManuProC::DoubleButton::DoubleButton() : Glib::ObjectBase(0), //Mark this class as gtkmmproc-generated, rather than a custom class, to allow vfunc optimisations.
   Gtk::Button(Glib::ConstructParams(doublebutton_class_.init(), (char*) 0))
 {  }
-#endif
 
 
 namespace
