@@ -32,7 +32,7 @@ void auftrag_rechnung::on_rngnr_search(int *_continue, GtkSCContext newsearch)
  char *PAT;
  int KUNDE;
  exec sql end declare section;
- static bool transaction = false;
+ static Transaction tr("",false);
   
  switch(newsearch)
    {
@@ -42,9 +42,7 @@ void auftrag_rechnung::on_rngnr_search(int *_continue, GtkSCContext newsearch)
        PAT = (char*)pat.c_str();
        KUNDE=lieferkunde->get_value();
        
-       exec sql begin;
-       SQLerror::test(__FILELINE__"begin",ECPG_NOTICE_IN_TRANSACTION);
-       transaction = sqlca.sqlcode!=ECPG_NOTICE_IN_TRANSACTION;
+       tr.open();
                    
        exec sql declare RNGNR_CURSOR cursor for
        		select rngid, ltrim(to_char(rngid,'000000'))
@@ -54,13 +52,13 @@ void auftrag_rechnung::on_rngnr_search(int *_continue, GtkSCContext newsearch)
        		order by rngid;
        	
        exec sql open RNGNR_CURSOR;
-       SQLerror::test(__FILELINE__":on_rngnr_search: open cursor","RNGNR_CURSOR",transaction);
+       SQLerror::test(__FILELINE__":on_rngnr_search: open cursor","RNGNR_CURSOR");
       } 							
   case GTK_SEARCH_FETCH :
        {
         exec sql fetch RNGNR_CURSOR into :RNGID, :RNGIDSTR;
 	SQLerror::test(__FILELINE__":on_rngnr_search: "
-			" fetch cursor RNGNR_CURSOR","RNGNR_CURSOR",100,transaction);
+			" fetch cursor RNGNR_CURSOR","RNGNR_CURSOR",100);
 			
 	if(sqlca.sqlcode==100){*_continue=false; break; }
 	
@@ -71,7 +69,7 @@ void auftrag_rechnung::on_rngnr_search(int *_continue, GtkSCContext newsearch)
   case GTK_SEARCH_CLOSE :
        {
 	exec sql close RNGNR_CURSOR;
-	if(transaction) exec sql commit;
+	tr.close();
 	break;
        }
   }

@@ -33,7 +33,7 @@ throw(SQLerror)
  exec sql end declare section;
  if(instanz->Lieferschein()) KUNDE=kunden_lieferant->get_value() ;
  else KUNDE=Kunde::default_id;
- static bool transaction = false;
+ static Transaction tr("",false);
   
  switch(newsearch)
    {
@@ -42,9 +42,7 @@ throw(SQLerror)
        std::string pat = searchcombo_auftragid->get_text() + "%";
        PAT = (char*)pat.c_str();
        
-       exec sql begin;
-       SQLerror::test(__FILELINE__"begin",ECPG_NOTICE_IN_TRANSACTION);
-       transaction = sqlca.sqlcode!=ECPG_NOTICE_IN_TRANSACTION;
+       tr.open();
                    
        exec sql declare AUFNR_CURSOR cursor for
        		select auftragid, ltrim(to_char(auftragid,'000000'))
@@ -55,15 +53,14 @@ throw(SQLerror)
        		order by auftragid;
        	
        exec sql open AUFNR_CURSOR;
-       SQLerror::test(__FILELINE__":on_aufnrscombo_search: open cursor",
-       						transaction);
+       SQLerror::test(__FILELINE__":on_aufnrscombo_search: open cursor");
       } 							
            
   case GTK_SEARCH_FETCH :
        {
         exec sql fetch AUFNR_CURSOR into :AUFID, :AUFIDCHR;
 	SQLerror::test(__FILELINE__":on_aufnrscombo_search: "
-			" fetch","AUFNR_CURSOR",100,transaction);
+			" fetch","AUFNR_CURSOR",100);
 			
 	if(sqlca.sqlcode==100){*cont=false; break; }
 	
@@ -75,7 +72,7 @@ throw(SQLerror)
   case GTK_SEARCH_CLOSE :
        {
 	exec sql close AUFNR_CURSOR;
-	if(transaction) exec sql commit;
+	tr.close();
 	break;
        }
   }

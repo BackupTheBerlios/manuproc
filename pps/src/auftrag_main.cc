@@ -37,6 +37,7 @@
 #include <unistd.h>
 #include <MyWindow.hh>
 #include <Misc/Trace.h>
+#include <Misc/FILEstream.h>
 
 const UniqueValue::value_t auftrag_main::trace_instanzen
       = ManuProC::Tracer::channels.get();
@@ -124,10 +125,9 @@ static std::string shorten_some(int col,const std::string &title,gpointer user_d
 
 void auftrag_main::on_main_drucken_activate()
 {  
-   
    FILE *f=popen(print_cmd.c_str(),"w");
-   
-   std::ofstream os(fileno(f));
+   oFILEstream os(f);
+
    Gtk2TeX::HeaderFlags fl;
    fl.ptsize=10;
    fl.leftmargin=0.5;

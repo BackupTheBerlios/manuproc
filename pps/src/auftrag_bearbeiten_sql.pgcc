@@ -1,4 +1,4 @@
-// $Id: auftrag_bearbeiten_sql.pgcc,v 1.8 2003/01/30 16:07:30 christof Exp $
+// $Id: auftrag_bearbeiten_sql.pgcc,v 1.9 2003/01/30 16:59:55 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -113,15 +113,14 @@ throw(SQLerror)
        		order by youraufnr;
        	
        exec sql open YOURAUFNR_CURSOR;
-       SQLerror::test(__FILELINE__":on_youraufnrscombo_search: open cursor",
-       						transaction);
+       SQLerror::test(__FILELINE__":on_youraufnrscombo_search: open cursor");
       } 							
            
   case GTK_SEARCH_FETCH :
        {
         exec sql fetch YOURAUFNR_CURSOR into :AUFID, :YOURAUFID;
 	SQLerror::test(__FILELINE__":on_youraufnrscombo_search: "
-			" fetch cursor YOURAUFNR_CURSOR",100,transaction);
+			" fetch cursor YOURAUFNR_CURSOR",100);
 			
 	if(sqlca.sqlcode==100){*_continue=false; break; }
 	
