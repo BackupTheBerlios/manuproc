@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.12 2002/06/20 13:27:55 christof Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.13 2002/06/27 07:42:50 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -64,7 +64,7 @@ try{
  rngid=RNGID;
 
  lsdatum.from_postgres(DATUM);	
- if(IGELIEFERTAM) geliefertam.from_postgres(DATUM) ;  //Petig::Datum();		 
+ if(IGELIEFERTAM) geliefertam.from_postgres(DATUM) ;  //ManuProC::Datum();		 
  else geliefertam.from_postgres(GELIEFERTAM);		 
 #ifdef MABELLA_EXTENSIONS
  dpdliefnr=DPDLIEFNR;
@@ -90,7 +90,7 @@ void Lieferschein::setDPDDatum() const throw(SQLerror)
 }
 
 Lieferschein::Lieferschein(const cH_ppsInstanz& _instanz,cH_Kunde k,int jahr) throw(SQLerror)
-	: LieferscheinBase(_instanz,none_id), lsdatum(Petig::Datum::today()),
+	: LieferscheinBase(_instanz,none_id), lsdatum(ManuProC::Datum::today()),
       kunde(k),rngid(0)
 #ifdef MABELLA_EXTENSIONS
  	,paeckchen(0),pakete(0),dpdliefnr(0) 
@@ -145,7 +145,7 @@ int Lieferschein::maxZnr() throw(SQLerror)
  return ZNR;
 }
 
-void Lieferschein::setDatum(const Petig::Datum &d) throw(SQLerror)
+void Lieferschein::setDatum(const ManuProC::Datum &d) throw(SQLerror)
 {  
  exec sql begin declare section;
  int LFRSID=Id();

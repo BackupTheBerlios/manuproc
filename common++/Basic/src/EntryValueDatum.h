@@ -1,4 +1,4 @@
-/* $Id: EntryValueDatum.h,v 1.6 2002/06/24 07:35:40 christof Exp $ */
+/* $Id: EntryValueDatum.h,v 1.7 2002/06/27 07:42:50 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,15 +26,15 @@
 
 class EntryValueDatum : public EntryValueBase
 {
- Petig::Datum datum;
+ ManuProC::Datum datum;
 
 public:
- EntryValueDatum(const Petig::Datum &v) 
+ EntryValueDatum(const ManuProC::Datum &v) 
  : datum(v) {}
    
  virtual bool operator==(const EntryValueBase &v) const;
  virtual bool operator<(const EntryValueBase &v) const;
- const Petig::Datum &Datum() const { return datum; }
+ const ManuProC::Datum &Datum() const { return datum; }
  virtual int getIntVal() const { return int_NaN;}
  virtual const std::string getStrVal() const { return datum.valid()?datum.c_str():"";}
 };
@@ -42,7 +42,7 @@ public:
 class cH_EntryValueDatum : public cH_EntryValue
 {
 public:
- cH_EntryValueDatum(const Petig::Datum &v) 
+ cH_EntryValueDatum(const ManuProC::Datum &v) 
  : cH_EntryValue(new EntryValueDatum(v)) {}
 };
 

@@ -32,13 +32,13 @@ class Auftrag : public AuftragBase
 {
 protected:
 	int kundennr;
-	Petig::Datum datum;
+	ManuProC::Datum datum;
 	AufStatVal status;
 	std::string youraufnr;
 	std::string bemerkung;
 	cP_Waehrung waehrung;
    rabatt_t auftragsrabatt;
-   Petig::Datum zahlziel;
+   ManuProC::Datum zahlziel;
    cH_Zahlungsart zahlart;
 private:
 	std::string tmpstr;
@@ -67,11 +67,11 @@ public:
 	void setStatusAuftrag_(AufStatVal st) throw(SQLerror);
 	void setWaehrung(cP_Waehrung w) throw(SQLerror);
 	void setRabatt(const rabatt_t auftragsrabatt) throw(SQLerror);
-	void Zahlziel(const Petig::Datum &zziel) throw(SQLerror);
+	void Zahlziel(const ManuProC::Datum &zziel) throw(SQLerror);
 	void Zahlart(cH_Zahlungsart zart) throw(SQLerror);
 	
-   const Petig::Datum &getDatum() const { return datum; } 
-   const Petig::Datum &Zahlziel() const { return zahlziel; }
+   const ManuProC::Datum &getDatum() const { return datum; } 
+   const ManuProC::Datum &Zahlziel() const { return zahlziel; }
    const cH_Zahlungsart Zahlart() const { return zahlart; }   
    
 	AufStatVal getStatus() const { return status; }

@@ -1,4 +1,4 @@
-// $Id: instanz_ArtikelBaum.cc,v 1.3 2002/05/09 12:46:01 christof Exp $
+// $Id: instanz_ArtikelBaum.cc,v 1.4 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -25,8 +25,8 @@
 
 
 int main()
-{  Petig::PrintUncaughtExceptions();
-   Petig::dbconnect();
+{  ManuProC::PrintUncaughtExceptions();
+   ManuProC::dbconnect();
    
    // Neues Garn anlegen:
    ArtikelBaum::new_Artikel(ArtikelBase(218843),

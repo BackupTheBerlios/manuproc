@@ -3,16 +3,16 @@
 #include <Aux/SQLerror.h>
 
 int main()
-{  Petig::dbconnect();
+{  ManuProC::dbconnect();
    { Transaction a;
    }
    { Transaction b;
    }
    
-   Petig::dbconnect(Petig::Connection("","","","second"));
+   ManuProC::dbconnect(ManuProC::Connection("","","","second"));
    
    {
-   Petig::dbdefault();
+   ManuProC::dbdefault();
    Transaction c;
    Transaction d("second");
    
@@ -20,6 +20,6 @@ int main()
    c.commit();
    Transaction f;
    }
-   Petig::dbdisconnect("second");
-   Petig::dbdisconnect();
+   ManuProC::dbdisconnect("second");
+   ManuProC::dbdisconnect();
 }

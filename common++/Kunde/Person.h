@@ -1,4 +1,4 @@
-// $Id: Person.h,v 1.12 2002/06/20 06:29:53 christof Exp $
+// $Id: Person.h,v 1.13 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -38,7 +38,7 @@ public:
 private:
  std::string name;
  std::string vorname;
- Petig::Datum gebdatum;
+ ManuProC::Datum gebdatum;
  cH_Anrede anrede;
  std::string notiz;
  mutable KontaktListe kontakt;
@@ -58,7 +58,7 @@ public:
  
  const std::string Name() const { return name; }
  const std::string Vorname() const { return vorname; }
- const Petig::Datum GebDatum() const { return gebdatum; }
+ const ManuProC::Datum GebDatum() const { return gebdatum; }
  const cH_Anrede Anrede() const { return anrede; }
  const std::string Notiz() const { return notiz; }
 
@@ -69,7 +69,7 @@ public:
  
  void setName(const std::string &s) { name=s; }
  void setVorname(const std::string &s) { vorname=s; }
- void setGebDatum(const Petig::Datum &d) { gebdatum=d; }
+ void setGebDatum(const ManuProC::Datum &d) { gebdatum=d; }
  void setAnrede(const cH_Anrede &s) { anrede=s; }
  void setNotiz(const std::string &s) { notiz=s; }
 

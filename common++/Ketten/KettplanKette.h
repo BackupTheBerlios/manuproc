@@ -1,4 +1,4 @@
-// $Id: KettplanKette.h,v 1.8 2002/05/09 12:46:00 christof Exp $
+// $Id: KettplanKette.h,v 1.9 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -41,8 +41,8 @@ private:
 	mutable int stuecklaenge;
 	mutable float schussdichte;
 	mutable int webmasch; // Maschine auf der sie gewebt wurde
-        Petig::Datum abgzuletz;
-        Petig::Datum maschinen_start;
+        ManuProC::Datum abgzuletz;
+        ManuProC::Datum maschinen_start;
         Kette aktuelle_kette; // na ob das Sinn macht ??? CP
         unsigned int abgeschnitten;
 	mutable std::vector <ArtikelGang> artikel; // sortiert nach Namen (?)
@@ -92,12 +92,12 @@ public:
 	int barcoMaschine() const throw();
 	// für welche Maschine geplant
 	int planMaschine() const throw();
-        Petig::Datum Abgzuletzt() const throw(SQLerror);
-        Petig::Datum Maschinen_start() const throw(SQLerror);
+        ManuProC::Datum Abgzuletzt() const throw(SQLerror);
+        ManuProC::Datum Maschinen_start() const throw(SQLerror);
         unsigned int Abgeschnitten() const throw(SQLerror);
         static Kette Aktuelle_Kette(int webmasch) throw(SQLerror);
         Kette Folge_Kette() const throw(SQLerror);
-//        Petig::Datum Fertig_am() const throw(SQLerror);
+//        ManuProC::Datum Fertig_am() const throw(SQLerror);
 	void set_info(int pm,int kl,int sl,int sd) throw();
 	const std::vector <ArtikelGang> &get_artikel() const
 	{  return get_artikel_sorted(); }
@@ -131,12 +131,12 @@ public: // deprecated!!!
 #if 0
 private:
 	// should kill this
-	KettplanKette(int m,const Petig::Datum _schaerdatum)
+	KettplanKette(int m,const ManuProC::Datum _schaerdatum)
 		: Kette(m,_schaerdatum), USUAL_INIT
 	{}
 
 	// an this strange beast ...
-	KettplanKette(int m,const Petig::Datum _schaerdatum,int l)
+	KettplanKette(int m,const ManuProC::Datum _schaerdatum,int l)
 		: Kette(m,_schaerdatum), USUAL_INIT
 	{ kettlaenge=l; valid|=VA_KETTLEN; }
 	// kill this

@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.13 2002/06/20 13:27:55 christof Exp $ */
+/* $Id: Lieferschein.h,v 1.14 2002/06/27 07:42:50 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -33,10 +33,10 @@
 
 class Lieferschein : public LieferscheinBase, public HandleContent
 {
- Petig::Datum lsdatum;
+ ManuProC::Datum lsdatum;
  cH_Kunde kunde;
  int rngid;
- Petig::Datum geliefertam;
+ ManuProC::Datum geliefertam;
 #ifdef MABELLA_EXTENSIONS
  int dpdliefnr;
  int paeckchen, pakete;
@@ -48,9 +48,9 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  		: LieferscheinBase(source), kunde(Kunde::none_id)  {}
  		
  	Lieferschein() : LieferscheinBase(),
- 			lsdatum(Petig::Datum::today()),
+ 			lsdatum(ManuProC::Datum::today()),
  			kunde(Kunde::none_id),rngid(0),
- 			geliefertam(Petig::Datum::today())
+ 			geliefertam(ManuProC::Datum::today())
 #ifdef MABELLA_EXTENSIONS
  			,dpdliefnr(0) ,
  			paeckchen(0),pakete(0)
@@ -59,9 +59,9 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  			
  	Lieferschein(const cH_ppsInstanz& instanz,int lid) throw(SQLerror);
 	Lieferschein(const LieferscheinBase &lsbase,
-			const Petig::Datum &_lsdatum,
+			const ManuProC::Datum &_lsdatum,
 			int _kdnr, int _rngid, int _paeckchen, int _pakete,
-			const Petig::Datum &_geliefertam,int _dpdlnr); 
+			const ManuProC::Datum &_geliefertam,int _dpdlnr); 
 			
  Lieferschein(const cH_ppsInstanz& instanz,cH_Kunde k,int jahr=0) throw(SQLerror);
 			
@@ -87,9 +87,9 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  int RngNr() const { return rngid; }  
  ExtBezSchema::ID getSchema() const { return kunde->getSchemaId(); }
  int maxZnr() throw(SQLerror);
- const Petig::Datum LsDatum() const { return lsdatum; }
- const Petig::Datum getDatum() const { return geliefertam; }
- void setDatum(const Petig::Datum &d) throw(SQLerror);
+ const ManuProC::Datum LsDatum() const { return lsdatum; }
+ const ManuProC::Datum getDatum() const { return geliefertam; }
+ void setDatum(const ManuProC::Datum &d) throw(SQLerror);
  // DB Zugriff mit abschreiben
  void push_back(AufEintrag &auftragentry, 
  		const ArtikelBase &artikel, int anzahl, mengen_t menge, int palette);

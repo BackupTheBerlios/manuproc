@@ -64,20 +64,20 @@ class AuftragBase
 
    void create_if_not_exists(AufStatVal status,Kunde::ID kunde=Kunde::default_id) const;
    int insertNewEntry(const mengen_t bestellt, 
-                const Petig::Datum lieferdatum, const ArtikelBase& artikel,
+                const ManuProC::Datum lieferdatum, const ArtikelBase& artikel,
                 const AufStatVal status,int uid,const bool setInstanzAuftraege,
                 const Preis& preis=Preis(),const rabatt_t aufeintragsrabatt=0,
                 const cH_PreisListe &preisliste=PreisListe::none_id) const throw(SQLerror);
    void InstanzAuftraegeAnlegen(const ArtikelBase& art,const int altZnr,
-               const Petig::Datum& lieferdatum, const AufStatVal status, int uid,
+               const ManuProC::Datum& lieferdatum, const AufStatVal status, int uid,
                 const mengen_t menge) const; 
    bool existEntry(const ArtikelBase& artid,
-                        const Petig::Datum& lieferdatum,
+                        const ManuProC::Datum& lieferdatum,
                         int& znr,int &newznr, mengen_t& menge, const AufStatVal status
                         ) const throw(SQLerror);
    // gibt Zeilennummer zurück
    int tryUpdateEntry(mengen_t bestellt, 
-               const Petig::Datum lieferdatum, const ArtikelBase& artikel,
+               const ManuProC::Datum lieferdatum, const ArtikelBase& artikel,
                AufStatVal status,int uid,const AufEintragBase& altAEB,
                bool force_new=false,bool dispoplanung=false) 
                const throw(SQLerror);

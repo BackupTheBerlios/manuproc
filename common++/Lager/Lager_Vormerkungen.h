@@ -31,7 +31,7 @@ class Lager_Vormerkungen : AufEintrag
       static AuftragBase::mengen_t artikel_auf_lager(const ArtikelBase &artikel,
                                                      cH_ppsInstanz instanz,
                    std::vector<pair<AufEintragBase,AuftragBase::mengen_t> >&dispo_auftrag,
-                   const Petig::Datum &datum,int auftragsid);
+                   const ManuProC::Datum &datum,int auftragsid);
 //      int Lieferzeit_in_Tagen(); 
         void move_menge_from_dispo_to_plan(int uid,AufEintragBase dispo_aeb,mengen_t menge);
         void reduce_old_plan_auftrag(int uid,AufEintragBase dispo_aeb,mengen_t menge);
@@ -40,7 +40,7 @@ class Lager_Vormerkungen : AufEintrag
       Lager_Vormerkungen(const AufEintrag&);
 
       // verfügbare Menge für einen Artikel bestimmen
-      static AuftragBase::mengen_t artikel_auf_lager(const ArtikelBase artikel,cH_ppsInstanz instanz,const Petig::Datum &datum,int auftragsid)
+      static AuftragBase::mengen_t artikel_auf_lager(const ArtikelBase artikel,cH_ppsInstanz instanz,const ManuProC::Datum &datum,int auftragsid)
          { std::vector<pair<AufEintragBase,AuftragBase::mengen_t> > d;
            return artikel_auf_lager(artikel,instanz,d,datum,auftragsid);}
 

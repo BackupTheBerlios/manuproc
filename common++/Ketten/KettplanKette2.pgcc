@@ -1,4 +1,4 @@
-// $Id: KettplanKette2.pgcc,v 1.11 2002/05/09 12:46:00 christof Exp $
+// $Id: KettplanKette2.pgcc,v 1.12 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -305,7 +305,7 @@ int KettplanKette::holePlanMaschine() const throw(SQLerror)
   return 0;
 }
 
-Petig::Datum KettplanKette::Abgzuletzt() const throw(SQLerror)
+ManuProC::Datum KettplanKette::Abgzuletzt() const throw(SQLerror)
 { try { 
   exec sql begin declare section;
     char azu[30];
@@ -321,10 +321,10 @@ Petig::Datum KettplanKette::Abgzuletzt() const throw(SQLerror)
    const_cast<KettplanKette*>(this)->abgzuletz=azu;
    return azu;
  }catch(SQLerror &e) {}
-return Petig::Datum(1);
+return ManuProC::Datum(1);
 }
 
-Petig::Datum KettplanKette::Maschinen_start() const throw(SQLerror)
+ManuProC::Datum KettplanKette::Maschinen_start() const throw(SQLerror)
 { try { 
   exec sql begin declare section;
     char m_start[30];
@@ -340,7 +340,7 @@ Petig::Datum KettplanKette::Maschinen_start() const throw(SQLerror)
    const_cast<KettplanKette*>(this)->maschinen_start=m_start;
    return m_start;
  }catch(SQLerror &e) {}
-return Petig::Datum(1);
+return ManuProC::Datum(1);
 }
 
 unsigned int KettplanKette::Abgeschnitten() const throw(SQLerror)
@@ -404,12 +404,12 @@ Kette KettplanKette::Folge_Kette() const throw(SQLerror)
       planmaschine=:masch and folgenr> :folgenr and abgewebt is null 
       and geloescht is null ) ;
    SQLerror::test(__FILELINE__,100);
-   if (sqlca.sqlcode) return Kette(0,Petig::Datum().today());
+   if (sqlca.sqlcode) return Kette(0,ManuProC::Datum().today());
   return Kette(fm,fs);
 }
 
 /*
-Petig::Datum KettplanKette::Fertig_am() const throw(SQLerror)
+ManuProC::Datum KettplanKette::Fertig_am() const throw(SQLerror)
 {
 }
 */

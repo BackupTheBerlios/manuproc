@@ -1,4 +1,4 @@
-/* $Id: Bankauftrag.cc,v 1.6 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: Bankauftrag.cc,v 1.7 2002/06/27 07:42:50 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -182,7 +182,7 @@ void Bankauftrag::close() throw(IOerror)
    fprintf(druckerpipe,   "\\pagestyle{empty}\n"
 	   "Disketten-Begleitzettel vom %s, Belegloser Datenträgeraustausch"
 	   "\\hfill ReferenzNr. %s\\\\\n"
-	   "\n",Petig::Datum(Kennziffer).c_str(),Formatiere(Kennziffer).c_str());
+	   "\n",ManuProC::Datum(Kennziffer).c_str(),Formatiere(Kennziffer).c_str());
    
    fprintf(druckerpipe,"\\begin{tabular}{lr}\n");
    fprintf(druckerpipe,"\\multicolumn{2}{l}{Datei \\texttt{DTAUS1.TXT} für %s}\\\\\n",
@@ -199,7 +199,7 @@ void Bankauftrag::close() throw(IOerror)
    fprintf(druckerpipe,"Summe der Kontonummern:&%s\\\\\n",Formatiere((unsigned long long)Kontosumme).c_str());
    fprintf(druckerpipe,"Summe der Bankleitzahlen:&%s\\\\[2cm]\n",Formatiere(BLZsumme).c_str());
    
-   fprintf(druckerpipe,"Wuppertal, %s\\\\[2cm]\n",Petig::Datum(Kennziffer).c_str());
+   fprintf(druckerpipe,"Wuppertal, %s\\\\[2cm]\n",ManuProC::Datum(Kennziffer).c_str());
    fprintf(druckerpipe,"\\multicolumn{2}{l}{\\rule{10cm}{0.5pt}}\\\\\n"
    	"Stempel, Unterschrift\\\\\n");
    fputs("\\end{tabular}\n\\end{document}\n",druckerpipe);

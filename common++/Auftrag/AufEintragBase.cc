@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.23 2002/06/27 07:26:10 christof Exp $
+// $Id: AufEintragBase.cc,v 1.24 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -61,7 +61,7 @@ void AufEintragBase::calculateProzessInstanz()
 
 
 void AufEintragBase::Planen(int uid,std::vector<std::AufEintrag> LAE,mengen_t menge,
-      const AuftragBase &zielauftrag,const Petig::Datum &datum)
+      const AuftragBase &zielauftrag,const ManuProC::Datum &datum)
 {
  int znr=AufEintragBase::none_znr;
  ArtikelBase artikel=ArtikelBase::none_id;
@@ -92,7 +92,7 @@ void AufEintragBase::Planen(int uid,std::vector<std::AufEintrag> LAE,mengen_t me
 }
 
 
-void AufEintragBase::PlanenDispo(int uid,const ArtikelBase& artikel,mengen_t menge,const Petig::Datum &datum)
+void AufEintragBase::PlanenDispo(int uid,const ArtikelBase& artikel,mengen_t menge,const ManuProC::Datum &datum)
 {
    AuftragBase dispoAB(Instanz(),dispo_auftrag_id);
 //   int znr=dispoAB.insertNewEntry(menge,datum,artikel,OPEN,uid,false);
@@ -107,7 +107,7 @@ void AufEintragBase::PlanenDispo(int uid,const ArtikelBase& artikel,mengen_t men
 }
 
 
-int AufEintragBase::split_zuordnungen_to(mengen_t menge,Petig::Datum datum,
+int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
                         ArtikelBase artikel,AufStatVal status,int uid,
                         bool dispoplanung)
 {

@@ -1,4 +1,4 @@
-// $Id: abschreiben.cc,v 1.10 2002/05/09 12:46:01 christof Exp $
+// $Id: abschreiben.cc,v 1.11 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,16 +24,16 @@
 #include <Aux/dbconnect.h>
 
 int main()
-{  Petig::PrintUncaughtExceptions();
-   Petig::dbconnect();
+{  ManuProC::PrintUncaughtExceptions();
+   ManuProC::dbconnect();
    
    AuftragBase id;
    {  Auftrag a=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege), Kunde::default_id);
       id=a;
       std::cout << "Auftrag " << a.Id() << '\n';
    
-      a.insertNewEntry(20000, Petig::Datum::today(), 211234,OPEN,true);
-      a.insertNewEntry(30000, Petig::Datum::today(), 211234,OPEN,true);
+      a.insertNewEntry(20000, ManuProC::Datum::today(), 211234,OPEN,true);
+      a.insertNewEntry(30000, ManuProC::Datum::today(), 211234,OPEN,true);
    }
    
    AufEintragBase zeile;

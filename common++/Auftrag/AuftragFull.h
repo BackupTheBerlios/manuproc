@@ -48,7 +48,7 @@ public:
 	AufEintrag getAufEntry_by_znr(int znr)  
         	{ return eintragliste[get_index_by_znr(znr)];}
         int get_index_by_znr(int znr);
-	void split(int idx, int uid,const Petig::Datum &liefdatum, int menge)
+	void split(int idx, int uid,const ManuProC::Datum &liefdatum, int menge)
 		{ eintragliste[idx].split(uid,menge, liefdatum);}
 	
 	const_iterator begin() const { return eintragliste.begin(); }
@@ -60,7 +60,7 @@ public:
 	size_t size() const { return eintragliste.size(); }
 	
 	int insertNewEntry(unsigned long int bestellt,
-               Petig::Datum lieferdatum, ArtikelBase::ID artid,
+               ManuProC::Datum lieferdatum, ArtikelBase::ID artid,
                AufStatVal status,int uid,
                Preis preis=Preis(), rabatt_t rabatt=rabatt_t(0),
                const cH_PreisListe &preisliste=PreisListe::none_id) throw (SQLerror);

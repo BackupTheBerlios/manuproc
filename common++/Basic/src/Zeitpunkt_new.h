@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.h,v 1.7 2002/06/24 07:35:40 christof Exp $
+// $Id: Zeitpunkt_new.h,v 1.8 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -62,7 +62,7 @@ class Zeitpunkt_new
    class illegal_value {};
 private:
 //   static const int standard_zone=120;
-   Petig::Datum datum;
+   ManuProC::Datum datum;
    int hour,minute,second,millisecond;
    mutable int minutes_from_gmt; // time zone, CE[TD]ST=120
    precision prec;
@@ -71,17 +71,17 @@ private:
    void normalize_TZ() const throw();
 public:
    Zeitpunkt_new() throw() : hour(0), minute(0), second(0), millisecond(0), minutes_from_gmt(0), prec(days) {}
-   Zeitpunkt_new(Petig::Datum d) throw() 
+   Zeitpunkt_new(ManuProC::Datum d) throw() 
    	: datum(d), hour(0), minute(0), second(0), millisecond(0), 
    	  minutes_from_gmt(0), prec(days) 
    {  calculate_TZ(); }
-   Zeitpunkt_new(Petig::Datum d, int h) throw() 
+   Zeitpunkt_new(ManuProC::Datum d, int h) throw() 
    	: datum(d), hour(h), minute(0), second(0), millisecond(0), minutes_from_gmt(0), prec(hours) 
    {  calculate_TZ(); }
-   Zeitpunkt_new(Petig::Datum d, int h, int m) throw() 
+   Zeitpunkt_new(ManuProC::Datum d, int h, int m) throw() 
    	: datum(d), hour(h), minute(m), second(0), millisecond(0), minutes_from_gmt(0), prec(minutes) 
    {  calculate_TZ(); }
-   Zeitpunkt_new(Petig::Datum d, int h, int m, int s) throw() 
+   Zeitpunkt_new(ManuProC::Datum d, int h, int m, int s) throw() 
    	: datum(d), hour(h), minute(m), second(s), millisecond(0), minutes_from_gmt(0), prec(seconds) 
    {  calculate_TZ(); }
    // correct wrapper
@@ -107,9 +107,9 @@ public:
    precision Precision() const
    {  return prec; }
    
-   operator Petig::Datum() const throw()
+   operator ManuProC::Datum() const throw()
    {  return Datum(); }
-   const Petig::Datum &Datum() const throw();
+   const ManuProC::Datum &Datum() const throw();
    operator time_t() throw();
    
    friend std::ostream &operator<<(std::ostream&,const Zeitpunkt_new&);

@@ -104,7 +104,7 @@ void AuftragBase::setRabatt(const rabatt_t auftragsrabatt) const throw(SQLerror)
 
 
 int AuftragBase::insertNewEntry(const mengen_t bestellt, 
-  const Petig::Datum lieferdatum,const ArtikelBase& artikel,
+  const ManuProC::Datum lieferdatum,const ArtikelBase& artikel,
   const AufStatVal status,int uid,const bool setInstanzAuftraege,
   const Preis& preis,const fixedpoint<2> rabatt,
   const cH_PreisListe &preisliste) const throw(SQLerror)
@@ -187,7 +187,7 @@ int AuftragBase::insertNewEntry(const mengen_t bestellt,
 }
 
 bool AuftragBase::existEntry(const ArtikelBase& artikel,
-                             const Petig::Datum& lieferdatum,
+                             const ManuProC::Datum& lieferdatum,
                              int& znr,int &newznr,mengen_t& menge,
                              AufStatVal status) const throw(SQLerror)
 {
@@ -233,7 +233,7 @@ bool AuftragBase::existEntry(const ArtikelBase& artikel,
 
 #include <Artikel/ArtikelBezeichnung.h> //debug
 int AuftragBase::tryUpdateEntry(mengen_t bestellt, 
-  const Petig::Datum lieferdatum,const ArtikelBase& artikel,
+  const ManuProC::Datum lieferdatum,const ArtikelBase& artikel,
   AufStatVal status,int uid,const AufEintragBase& altAEB,
   bool force_new,bool dispoplanung) 
       const throw(SQLerror)

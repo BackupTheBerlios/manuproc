@@ -1,4 +1,4 @@
-// $Id: ArtikelSumme.cc,v 1.4 2002/05/09 12:46:01 christof Exp $
+// $Id: ArtikelSumme.cc,v 1.5 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,7 +33,7 @@ std::ostream &operator<<(std::ostream &o, const ArtikelMengeSumme &ams)
 }
 
 int main()
-{  Petig::dbconnect();
+{  ManuProC::dbconnect();
    ArtikelMengeSumme ams;
    ArtikelMenge am=ArtikelMenge(218290,100);
    std::cout << ams << '\n';

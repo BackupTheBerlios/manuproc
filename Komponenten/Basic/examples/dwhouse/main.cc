@@ -1,4 +1,4 @@
-// $Id: main.cc,v 1.3 2002/06/24 07:45:24 christof Exp $
+// $Id: main.cc,v 1.4 2002/06/27 07:44:32 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,7 +30,7 @@
 int main(int argc, char **argv)
 {
 
- Petig::PrintUncaughtExceptions();
+ ManuProC::PrintUncaughtExceptions();
 
    
    Gtk::Main m(argc, argv);

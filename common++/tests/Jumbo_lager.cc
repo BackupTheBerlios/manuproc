@@ -1,4 +1,4 @@
-// $Id: Jumbo_lager.cc,v 1.5 2002/06/20 06:29:53 christof Exp $
+// $Id: Jumbo_lager.cc,v 1.6 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -33,11 +33,11 @@ void showJumbo(const JumboRolle& J)
 }
 
 int main()
-{  Petig::PrintUncaughtExceptions();
+{  ManuProC::PrintUncaughtExceptions();
    try{
-   Petig::dbconnect();
+   ManuProC::dbconnect();
 
-   Petig::Datum datum(15,1,2011);
+   ManuProC::Datum datum(15,1,2011);
    Zeitpunkt_new zeit(datum);
    
    try{

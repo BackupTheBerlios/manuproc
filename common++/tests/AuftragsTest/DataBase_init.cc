@@ -1,4 +1,4 @@
-// $Id: DataBase_init.cc,v 1.3 2002/06/21 13:15:41 christof Exp $
+// $Id: DataBase_init.cc,v 1.4 2002/06/27 07:42:51 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -87,7 +87,7 @@ void DataBase_init::RohwarenLager_initalisieren_execute(const ArtikelBase &artik
   RohwarenLager RL;
   std::string os;
   RohwarenLager::st_rohlager rohlager(LP,kartons,kg_pro_karton,reste,kg_reste,
-                                      artikel,Petig::Datum().today());
+                                      artikel,ManuProC::Datum().today());
 #ifdef MIT_ROHWARENLAGER
   RL.RL_Einlagern(LP,rohlager,os,true);
   SQLerror::test(__FILELINE__);

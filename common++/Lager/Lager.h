@@ -90,7 +90,7 @@ class Lager : public HandleContent
       void raus_aus_lager(ArtikelBase artikel,AuftragBase::mengen_t menge,int uid);
 
       /// Datum für freie Lagermengen (Aufträge)
-      static Petig::Datum Lagerdatum() {return Petig::Datum(Petig::Datum(1,1,1970));}
+      static ManuProC::Datum Lagerdatum() {return ManuProC::Datum(ManuProC::Datum(1,1,1970));}
 
 };
 

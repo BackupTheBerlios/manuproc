@@ -1,4 +1,4 @@
-// $Id: instanz_auftrag.cc,v 1.10 2002/06/20 06:29:53 christof Exp $
+// $Id: instanz_auftrag.cc,v 1.11 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -53,16 +53,16 @@ vector<AufEintrag> showTest(Auftrag id)
 
 
 int main()
-{  Petig::PrintUncaughtExceptions();
+{  ManuProC::PrintUncaughtExceptions();
    try{
-   Petig::dbconnect();
+   ManuProC::dbconnect();
    AuftragBase id;
    {  Auftrag a=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege), 10000);
       a.setStatusAuftragBase(OPEN);
       id=a;
       std::cout << "Auftrag " << a.Id() << '\n';
    
-      Petig::Datum date(1,6,2012);
+      ManuProC::Datum date(1,6,2012);
       int znr;
       znr=a.insertNewEntry(10000, date, 190449,OPEN,true);
       znr=a.insertNewEntry(10000, date, 190449,OPEN,true);
@@ -72,7 +72,7 @@ int main()
 /*
    static const int TESTZEILE = 1;
    int znr=0;
-//   Petig::Datum newdate(3,3,2100);
+//   ManuProC::Datum newdate(3,3,2100);
    for(std::vector<AufEintrag>::iterator i=VAEB.begin();i!=VAEB.end();++i)
     {
       if(++znr==TESTZEILE)

@@ -58,7 +58,7 @@ void Auftrag::setWaehrung(cP_Waehrung w) throw(SQLerror)
  SQLerror::test(__FILELINE__"Waehrung setzen");
 }
 
-void Auftrag::Zahlziel(const Petig::Datum &zziel) throw(SQLerror)
+void Auftrag::Zahlziel(const ManuProC::Datum &zziel) throw(SQLerror)
 {
  exec sql begin declare section;
  int AUFTRAGID = Id();
@@ -159,7 +159,7 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
  bemerkung = BEMERKUNG;
  waehrung = cP_Waehrung(Waehrung::ID(WAEHRUNG));
  auftragsrabatt = RABATT;
- zahlziel = (IZAHLZIEL==0) ? Petig::Datum(ZAHLZIEL):Petig::Datum();
+ zahlziel = (IZAHLZIEL==0) ? ManuProC::Datum(ZAHLZIEL):ManuProC::Datum();
  zahlart = cH_Zahlungsart(ZAHLART);
  ECPGfree_auto_mem();
 }

@@ -3,7 +3,7 @@
 
 
 int AuftragFull::insertNewEntry(unsigned long int bestellt,
-               Petig::Datum lieferdatum, ArtikelBase::ID artid,
+               ManuProC::Datum lieferdatum, ArtikelBase::ID artid,
                AufStatVal status,int uid,
                Preis preis, fixedpoint<2> rabatt,const cH_PreisListe &preisliste) throw (SQLerror)
 {
@@ -11,8 +11,8 @@ int AuftragFull::insertNewEntry(unsigned long int bestellt,
   eintragliste.push_back(AufEintrag(
       Instanz(),Id(),znr,bestellt,artid,lieferdatum,
       0,0,0,getStatus(),getKundennr(),getYourAufNr(),
-      Petig::Datum(),Prozess::default_id,ppsInstanzID::None,0,
-      preis,rabatt,status,uid,Petig::Datum::today(),"",preisliste));
+      ManuProC::Datum(),Prozess::default_id,ppsInstanzID::None,0,
+      preis,rabatt,status,uid,ManuProC::Datum::today(),"",preisliste));
   return znr;
 }
 

@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.cc,v 1.6 2002/06/24 07:35:40 christof Exp $
+// $Id: Zeitpunkt_new.cc,v 1.7 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -53,7 +53,7 @@ bool Zeitpunkt_new::operator<(const Zeitpunkt_new &b) const throw()
    return millisecond<b.millisecond;
 }
 
-const Petig::Datum &Zeitpunkt_new::Datum() const throw()
+const ManuProC::Datum &Zeitpunkt_new::Datum() const throw()
 {  return datum;
 }
 
@@ -138,7 +138,7 @@ void Zeitpunkt_new::normalize_TZ() const throw()
 Zeitpunkt_new::Zeitpunkt_new(time_t t) throw()
 	: millisecond(0), prec(seconds)
 {  struct tm *tm(localtime(&t));
-   datum=Petig::Datum(tm->tm_mday,tm->tm_mon+1,tm->tm_year+1900);
+   datum=ManuProC::Datum(tm->tm_mday,tm->tm_mon+1,tm->tm_year+1900);
    hour=tm->tm_hour;
    minute=tm->tm_min;
    second=tm->tm_sec;

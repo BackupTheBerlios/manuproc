@@ -1,4 +1,4 @@
-// $Id: grafik_auftragsbaum.cc,v 1.1 2002/05/27 11:51:32 malte Exp $
+// $Id: grafik_auftragsbaum.cc,v 1.2 2002/06/27 07:42:31 cvs_christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -63,9 +63,9 @@ void show_auftrag(const AufEintragBase &AEB,int ident)
 
 int main(int argc,char* argv[])
 {  
-   Petig::PrintUncaughtExceptions();
+   ManuProC::PrintUncaughtExceptions();
    try{
-   Petig::dbconnect();
+   ManuProC::dbconnect();
    if(argc!=2)
     {
       cerr << argv[0] << " muß mit Kundenauftrags ID aufgerufen werden.\n";

@@ -1,4 +1,4 @@
-// $Id: checkGeliefert.pgcc,v 1.4 2002/05/09 12:46:01 christof Exp $
+// $Id: checkGeliefert.pgcc,v 1.5 2002/06/27 07:42:50 christof Exp $
 
 //#include <Lieferschein/Lieferschein.h>
 #include <Auftrag/AuftragFull.h>
@@ -8,7 +8,7 @@ exec sql include sqlca;
 #include <Aux/dbconnect.h>
 
 int main()
-{  Petig::dbconnect();
+{  ManuProC::dbconnect();
   {
    Transaction tr;
    Query query2("select auftragid from auftrag where instanz=1 and"
@@ -40,6 +40,6 @@ int main()
    }
    tr.close();
   }
-   Petig::dbdisconnect();   
+   ManuProC::dbdisconnect();   
    return 0;
 }

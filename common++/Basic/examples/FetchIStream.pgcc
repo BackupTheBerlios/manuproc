@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.11 2002/06/24 07:35:40 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.12 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,7 +26,7 @@ exec sql whenever sqlerror do X();
 #define X() throw SQLerror(__FILELINE__)
 
 int main()
-{  Petig::dbconnect(Petig::Connection("","template1"));
+{  ManuProC::dbconnect(ManuProC::Connection("","template1"));
    exec sql allocate descriptor mydesc;
    
   {Query query("select now(),date('yesterday'),null,null,200,20.5,'t'");
@@ -65,6 +65,6 @@ int main()
       std::cout << s << '\n';
    }
 }   
-   Petig::dbdisconnect();
+   ManuProC::dbdisconnect();
    return 0;
 }

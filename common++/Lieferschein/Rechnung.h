@@ -37,8 +37,8 @@ public:
 private:
  cH_Kunde kunde;
  RngArt rngart;
- Petig::Datum zahlziel;
- Petig::Datum rgdatum;
+ ManuProC::Datum zahlziel;
+ ManuProC::Datum rgdatum;
  cP_Waehrung waehrung;
  rabatt_t rabatt;
  cH_Zahlungsart zahlungsart;
@@ -49,8 +49,8 @@ public:
  Rechnung(int rid) throw(SQLerror);
  Rechnung(const cH_Kunde k,int jahr=0) throw(SQLerror);
  Rechnung() : RechnungBase(none_id), kunde(Kunde::none_id), 
-              rngart(RART_NONE), zahlziel(Petig::Datum::today()),
-              rgdatum(Petig::Datum::today()),waehrung(0),
+              rngart(RART_NONE), zahlziel(ManuProC::Datum::today()),
+              rgdatum(ManuProC::Datum::today()),waehrung(0),
               rabatt(0),zahlungsart(Zahlungsart::none_id),bezahlt(false) {} 
 
  const Kunde::ID KdNr() const {return kunde->Id();}
@@ -69,9 +69,9 @@ public:
  void addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror);
  void deleteLieferschein(const LieferscheinBase &lfrs) throw(SQLerror);
  void setze_Rabatt(rabatt_t r) throw(SQLerror);
- const Petig::Datum getDatum() const { return rgdatum; }
- const Petig::Datum getZahlziel() const { return zahlziel; }
- void setze_Datum(Petig::Datum rgdatum) throw(SQLerror);
+ const ManuProC::Datum getDatum() const { return rgdatum; }
+ const ManuProC::Datum getZahlziel() const { return zahlziel; }
+ void setze_Datum(ManuProC::Datum rgdatum) throw(SQLerror);
  cH_Zahlungsart getZahlungsart() const {return zahlungsart;}
  void setze_Zahlungsart(cH_Zahlungsart z)   throw(SQLerror);
 };

@@ -50,18 +50,18 @@ JumboRolle::JumboRolle(ID c) throw(SQLerror,CodeError)
  maschine=MASCHINE;
  webmaschine=WEBMASCHINE;
  sollmeter=SOLL_METER;
- plandatum=Petig::Datum(PLANDATUM);
- verarbdatum= !*VERARB_DATUM ? Petig::Datum() : Petig::Datum(VERARB_DATUM); 
+ plandatum=ManuProC::Datum(PLANDATUM);
+ verarbdatum= !*VERARB_DATUM ? ManuProC::Datum() : ManuProC::Datum(VERARB_DATUM); 
  status=Jumbo_Status(STATUS);
  lauf=LAUF;
  gang=GANG;
  barcoist= BARCOIST;
- barcofertdatum= !*BARCOFERT_DATUM ? Petig::Datum(): Petig::Datum(BARCOFERT_DATUM);
- wiederinslager= !*WIEDERINSLAGER ? Petig::Datum():Petig::Datum(WIEDERINSLAGER);
+ barcofertdatum= !*BARCOFERT_DATUM ? ManuProC::Datum(): ManuProC::Datum(BARCOFERT_DATUM);
+ wiederinslager= !*WIEDERINSLAGER ? ManuProC::Datum():ManuProC::Datum(WIEDERINSLAGER);
  lagerposition=LagerPlatz(ppsInstanzID::Bandlager,LAGERPLATZ);
 }
 
-JumboRolle::JumboRolle(ID _code,int _maschine,const Petig::Datum &datum,int _webmaschine,
+JumboRolle::JumboRolle(ID _code,int _maschine,const ManuProC::Datum &datum,int _webmaschine,
                  int soll_meter,int _status,int _lauf,int _gang,
                  ArtikelBase::ID artikelid) throw()
    : code(_code), artikel(artikelid), maschine(_maschine), plandatum(datum),

@@ -1,4 +1,4 @@
-// $Id: auftrag_ohne_instanzen.cc,v 1.5 2002/06/20 06:29:53 christof Exp $
+// $Id: auftrag_ohne_instanzen.cc,v 1.6 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -55,9 +55,9 @@ vector<AufEintrag> showTest(Auftrag id)
 
 int main(int argc,char* argv[] )
 {  
-   Petig::PrintUncaughtExceptions();
+   ManuProC::PrintUncaughtExceptions();
    try{
-   Petig::dbconnect();
+   ManuProC::dbconnect();
    AuftragBase id;
    int x;
    while((x=getopt(argc,argv,"c"))!=-1) 
@@ -70,7 +70,7 @@ int main(int argc,char* argv[] )
          id=a;
          std::cout << "Auftrag " << a.Id() << '\n';
       
-         Petig::Datum date(1,6,2012);
+         ManuProC::Datum date(1,6,2012);
          int znr;
 //         znr=a.insertNewEntry(10000, date, 190449,OPEN,false);
          znr=a.insertNewEntry(1000, date, 219233,OPEN,true);

@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.21 2002/06/20 06:29:53 christof Exp $
+// $Id: Kunde.h,v 1.22 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -95,7 +95,7 @@ public:
     std::string verein; 
 //    bool bankeinzug:1;
     std::string notiz; 
-    Petig::Datum stand;
+    ManuProC::Datum stand;
 //    fixedpoint<2> einzugrabatt;
 //    fixedpoint<2> skontosatz;    
 

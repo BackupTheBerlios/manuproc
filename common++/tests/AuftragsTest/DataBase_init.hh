@@ -1,4 +1,4 @@
-// $Id: DataBase_init.hh,v 1.1 2002/06/20 06:43:31 christof Exp $
+// $Id: DataBase_init.hh,v 1.2 2002/06/27 07:42:51 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -57,7 +57,7 @@
 #define KETTLAENGE 2000
 #define STUECKLAENGE 2000
 #define MASCHIENE 211
-#define SCHAERDATUM Petig::Datum().today()
+#define SCHAERDATUM ManuProC::Datum().today()
 #define JUMBO_LAGERPLATZ 712
 
 

@@ -5,7 +5,7 @@
 
 int main()
 {
-  Petig::dbconnect();
+  ManuProC::dbconnect();
   cH_ppsInstanz I(ppsInstanz::INST_WEB);
   std::map<cH_ppsInstanz,int> V;
   V[cH_ppsInstanz(ppsInstanz::INST_SCHAER)]=1;

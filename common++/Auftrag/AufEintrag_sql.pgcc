@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.17 2002/06/27 07:26:10 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.18 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -90,7 +90,7 @@ void AufEintrag::abschreiben(mengen_t menge,
  else if(menge > 0) fw.Auslagern(1);
 #endif
 
- setLetzteLieferung(Petig::Datum::today());
+ setLetzteLieferung(ManuProC::Datum::today());
  tr.commit();
 //if(Id()==2) exit(0);
 
@@ -163,7 +163,7 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
 }
 
 
-void AufEintrag::setInstanzen(AufStatVal newstatus,int uid,Petig::Datum lieferdate,mengen_t Menge,int myznr,int yourznr)
+void AufEintrag::setInstanzen(AufStatVal newstatus,int uid,ManuProC::Datum lieferdate,mengen_t Menge,int myznr,int yourznr)
 {
  std::list<AufEintragZu::st_reflist> KindListe = AufEintragZu(*this).get_Referenz_list(*this,true);
  for(std::list<AufEintragZu::st_reflist>::const_iterator i=KindListe.begin();i!=KindListe.end();++i)
@@ -343,7 +343,7 @@ void AufEintrag::updateRabatt(rabatt_t rb) throw(SQLerror)
 }
 
 
-void AufEintrag::updateLieferdatum(const Petig::Datum &ld,int uid) throw(SQLerror)
+void AufEintrag::updateLieferdatum(const ManuProC::Datum &ld,int uid) throw(SQLerror)
 {exec sql begin declare section;
  int AUFTRAGID = auftragid;
  int INSTANZ=instanz->Id();
@@ -382,7 +382,7 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld,int uid) throw(SQLerro
  tr.commit(); 
 }
 
-int AufEintrag::split(int uid,mengen_t newmenge, const Petig::Datum &newld,bool dispoplanung,void (*callback)(void *,st_problems)=0,void* argument=0) throw(SQLerror)
+int AufEintrag::split(int uid,mengen_t newmenge, const ManuProC::Datum &newld,bool dispoplanung,void (*callback)(void *,st_problems)=0,void* argument=0) throw(SQLerror)
 {
  if(entrystatus==CLOSED) return none_znr;
 
@@ -445,7 +445,7 @@ AufEintrag::AufEintrag(const AufEintragBase &aebb) throw (SQLerror,NoAEB_Error)
 
 
 int AufEintrag::Planen(int uid,mengen_t menge,bool reduce_old,const AuftragBase &zielauftrag,
-   const Petig::Datum &datum,bool rekursiv) throw(std::exception)
+   const ManuProC::Datum &datum,bool rekursiv) throw(std::exception)
 {
 //cout <<"\t\tPLANEN\t"<<*this<<' '<<menge<<'\t'<<getStueck()<<' '<<getRestStk()<<'\n';;
    assert(!Id());

@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.8 2002/06/20 06:29:53 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.9 2002/06/27 07:42:50 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,8 +23,8 @@
 #include <Artikel/Einheiten.h>
 #include <Aux/FetchIStream.h>
 
-Lieferschein::Lieferschein(const LieferscheinBase &lsbase, const Petig::Datum &_lsdatum,
-int _kdnr,int _rngid, int _paeckchen, int _pakete, const Petig::Datum &_geliefertam,
+Lieferschein::Lieferschein(const LieferscheinBase &lsbase, const ManuProC::Datum &_lsdatum,
+int _kdnr,int _rngid, int _paeckchen, int _pakete, const ManuProC::Datum &_geliefertam,
 int _dpdlnr)
 : LieferscheinBase(lsbase), lsdatum(_lsdatum), kunde(_kdnr), rngid(_rngid)
 #ifdef MABELLA_EXTENSIONS

@@ -1,4 +1,4 @@
-// $Id: Lieferschein.cc,v 1.4 2002/06/20 06:29:53 christof Exp $
+// $Id: Lieferschein.cc,v 1.5 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -25,9 +25,9 @@
 //#include <Instanzen/ppsInstanz.h>
 
 int main()
-{  Petig::PrintUncaughtExceptions();
+{  ManuProC::PrintUncaughtExceptions();
    try{
-   Petig::dbconnect();
+   ManuProC::dbconnect();
 
    cH_ppsInstanz I(ppsInstanz::INST_KNDAUF);
    cH_LieferscheinVoll LV=cH_LieferscheinVoll(I,20000);

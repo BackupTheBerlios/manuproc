@@ -1,4 +1,4 @@
-// $Id: auto_conversion.cc,v 1.7 2002/06/24 07:35:40 christof Exp $
+// $Id: auto_conversion.cc,v 1.8 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,7 +24,7 @@
 #include <cassert>
 #include <cstdlib>
 
-void Petig::Datum::from_auto(const char *datum,const char **endptr) throw(Datumsfehler,Formatfehler)
+void ManuProC::Datum::from_auto(const char *datum,const char **endptr) throw(Datumsfehler,Formatfehler)
 {   if (!*datum) 
     {  if (endptr) *endptr=datum;
        *this=Datum();
@@ -147,7 +147,7 @@ Zeitpunkt_new::Zeitpunkt_new(const char *stamp)
    if (second>59 || second<0) second=0;
 
    if (len>=8)
-   {  millisecond=Petig::Datum::getnum((const unsigned char*)payload+6,6);
+   {  millisecond=ManuProC::Datum::getnum((const unsigned char*)payload+6,6);
       for (int i=len;i<14;i++) millisecond*=10;
       prec=milliseconds;
    }

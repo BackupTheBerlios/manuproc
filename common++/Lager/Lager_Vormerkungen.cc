@@ -208,7 +208,7 @@ AuftragBase::mengen_t  Lager_Vormerkungen::artikel_auf_lager(std::vector<pair<Au
 }
 
 
-AuftragBase::mengen_t  Lager_Vormerkungen::artikel_auf_lager(const ArtikelBase &artikel,cH_ppsInstanz instanz,std::vector<pair<AufEintragBase,AuftragBase::mengen_t> > &dispo_auftrag,const Petig::Datum &datum,int auftragsid)
+AuftragBase::mengen_t  Lager_Vormerkungen::artikel_auf_lager(const ArtikelBase &artikel,cH_ppsInstanz instanz,std::vector<pair<AufEintragBase,AuftragBase::mengen_t> > &dispo_auftrag,const ManuProC::Datum &datum,int auftragsid)
 {
   assert(auftragsid==AuftragBase::dispo_auftrag_id||auftragsid==AuftragBase::PlanId_for(instanz));
   // der Selector holt nur die Aufträge mit dem Status OPEN, 

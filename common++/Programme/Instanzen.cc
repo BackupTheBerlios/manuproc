@@ -1,4 +1,4 @@
-// $Id: Instanzen.cc,v 1.6 2002/06/20 06:29:53 christof Exp $
+// $Id: Instanzen.cc,v 1.7 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -35,11 +35,11 @@ int main(int argc, char *argv[])
     exit(1);
   }
  cout <<"Initialisierung der Datenbank "<<argv[1]<<"\n";
- Petig::PrintUncaughtExceptions();
+ ManuProC::PrintUncaughtExceptions();
  try{
-   Petig::Connection conn;
+   ManuProC::Connection conn;
    conn.setDbase(argv[1]);
-   Petig::dbconnect(conn); 
+   ManuProC::dbconnect(conn); 
       
    std::vector<cH_ppsInstanz> VI=cH_ppsInstanz::get_all_instanz();
    for(std::vector<cH_ppsInstanz>::const_iterator i=VI.begin();i!=VI.end();++i)

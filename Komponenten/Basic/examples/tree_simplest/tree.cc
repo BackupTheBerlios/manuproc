@@ -16,7 +16,7 @@
 int main(int argc, char **argv)
 {   
 #ifdef MANUPROC_WITH_DATABASE
-   Petig::dbconnect();
+   ManuProC::dbconnect();
 #endif
    
    Gtk::Main m(&argc, &argv);

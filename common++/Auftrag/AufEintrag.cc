@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.5 2002/06/26 09:04:27 christof Exp $
+// $Id: AufEintrag.cc,v 1.6 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,17 +24,17 @@
 
 
 AufEintrag::AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, mengen_t _bestellt,
-	ArtikelBase _artikel, const Petig::Datum _lieferdatum,
+	ArtikelBase _artikel, const ManuProC::Datum _lieferdatum,
 	mengen_t _geliefert,
 	int _dispoentrynr, int _disponr,
 	AufStatVal _aufstatus,
 	int _kdnr, const std::string _youraufnr,
-	const Petig::Datum& _prozdate,
+	const ManuProC::Datum& _prozdate,
 	int _prozess,ppsInstanz::ID _letztePlanInstanz, int _maxPlanInstanz,
 	const Preis &_preis, rabatt_t _rabatt,
 	AufStatVal _entrystatus, int _lasteditdate_uid,
-	const Petig::Datum _lasteditdate,
-	const Petig::Datum _letzte_lieferung,
+	const ManuProC::Datum _lasteditdate,
+	const ManuProC::Datum _letzte_lieferung,
    const cH_PreisListe &_preisliste) throw()
 : AufEintragBase(_instanz,_auftragid,_zeilennr),
 
@@ -59,13 +59,13 @@ AufEintrag::AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, me
  preisliste(_preisliste)
 {
  prozess=cH_Prozess(Prozess::ID(_prozess ? _prozess : cH_Prozess::default_pid));
- if(! _prozess) prozdate=Petig::Datum();
+ if(! _prozess) prozdate=ManuProC::Datum();
  else prozdate.from_postgres(_prozdate.c_str());
 }
 	
 AufEintrag::AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr,
    mengen_t _bestellt,
-	ArtikelBase _artikel, const Petig::Datum _lieferdatum,
+	ArtikelBase _artikel, const ManuProC::Datum _lieferdatum,
 	AufStatVal _entrystatus) throw()
 : AufEintragBase(_instanz,_auftragid,_zeilennr),
  bestellt(_bestellt),
@@ -122,12 +122,12 @@ void AufEintrag::setVerarbeitung(const cH_Prozess p)
  AufEintragBase::setVerarbeitung(p);
 
  prozess=p;
- prozdate=Petig::Datum().today();
+ prozdate=ManuProC::Datum().today();
 }
 #endif
 
 
-void AufEintrag::setLetzteLieferung(const Petig::Datum &datum) throw(SQLerror)
+void AufEintrag::setLetzteLieferung(const ManuProC::Datum &datum) throw(SQLerror)
 {
  AufEintragBase::setLetzteLieferung(datum);
  letzte_lieferung=datum;

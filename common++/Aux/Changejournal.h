@@ -1,4 +1,4 @@
-// $Id: Changejournal.h,v 1.8 2002/06/20 06:29:53 christof Exp $
+// $Id: Changejournal.h,v 1.9 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -49,12 +49,12 @@ public:
  typedef enum {CH_MENGE='M',CH_LIEFDAT='L'} ChJType;
 
 private:
- Petig::Datum datum;
+ ManuProC::Datum datum;
  ChJStatVal status;
  ArtikelBase artikel;
  AufEintragBase auftragentry;
  double newval;
- Petig::Datum newdate;
+ ManuProC::Datum newdate;
  double delta;
  ChJType type;   
 
@@ -66,7 +66,7 @@ public:
  	
  static const pps_ChJournalEntry newChange(cH_ppsInstanz inst,
  		const AufEintragBase &aufe, const ArtikelBase &art,
- 		const Petig::Datum &_newdat, double _delta, ChJType _type,
+ 		const ManuProC::Datum &_newdat, double _delta, ChJType _type,
  		CID change=0) throw(SQLerror); 	
  		
  pps_ChJournalEntry(cH_ppsInstanz instid, CID change) throw(SQLerror);

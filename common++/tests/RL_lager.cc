@@ -1,4 +1,4 @@
-// $Id: RL_lager.cc,v 1.6 2002/06/20 06:29:53 christof Exp $
+// $Id: RL_lager.cc,v 1.7 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -34,10 +34,10 @@ void showLager(const Lager& L,const LagerPlatz& P)
 }
 
 int main()
-{  Petig::PrintUncaughtExceptions();
-   Petig::dbconnect();
+{  ManuProC::PrintUncaughtExceptions();
+   ManuProC::dbconnect();
 
-   Petig::Datum datum(15,1,2011);
+   ManuProC::Datum datum(15,1,2011);
    ArtikelBase artikel(38223);
 //   ArtikelBase artikel2(218267);
    

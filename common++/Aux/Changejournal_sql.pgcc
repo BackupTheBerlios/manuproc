@@ -1,4 +1,4 @@
-// $Id: Changejournal_sql.pgcc,v 1.10 2002/05/09 12:45:59 christof Exp $
+// $Id: Changejournal_sql.pgcc,v 1.11 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -79,7 +79,7 @@ throw(SQLerror)
 const pps_ChJournalEntry pps_ChJournalEntry::newChange(
 		cH_ppsInstanz instid,
  		const AufEintragBase &aufe, const ArtikelBase &art,
- 		const Petig::Datum &_newdat, double _delta, ChJType _type,
+ 		const ManuProC::Datum &_newdat, double _delta, ChJType _type,
  		CID change)
 throw(SQLerror)
 {
@@ -164,12 +164,12 @@ throw(SQLerror)
  
  instanz = cH_ppsInstanz(instid);
  chid = change;
- datum = Petig::Datum(DATUM);
+ datum = ManuProC::Datum(DATUM);
  status = (ChJStatVal)STATUS;
  artikel = ArtikelBase(ARTIKELID);
  auftragentry = AufEintragBase((ppsInstanz::ID)INSID,AUFID,ZEILENNR);
  newval = NEWVAL;
- newdate = INEWDATUM ? Petig::Datum() : Petig::Datum(NEWDATUM);
+ newdate = INEWDATUM ? ManuProC::Datum() : ManuProC::Datum(NEWDATUM);
  delta = DELTA;
  type = (ChJType)CHTYPE;   
 

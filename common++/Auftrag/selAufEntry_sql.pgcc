@@ -1,4 +1,4 @@
-// $Id: selAufEntry_sql.pgcc,v 1.19 2002/06/20 06:29:53 christof Exp $
+// $Id: selAufEntry_sql.pgcc,v 1.20 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -86,26 +86,26 @@ throw(SQLerror)
            for (int i=0;i<j;++i)
            { 
          try {
-//         Petig::Datum datum(); datum->from_postgres(PROZESSDATUM[i]);
+//         ManuProC::Datum datum(); datum->from_postgres(PROZESSDATUM[i]);
 	      aufidliste.push_back(
 			AufEintrag(ppsInstanz::ID(INSTANZ[i]),
 			AUFID[i], ZNUMMER[i], BESTELLT[i], ARTIKELID[i],
-      	ILIEFERDATUM[i] ? Petig::Datum() : Petig::Datum(LIEFERDATUM[i]),
+      	ILIEFERDATUM[i] ? ManuProC::Datum() : ManuProC::Datum(LIEFERDATUM[i]),
 			GELIEFERT[i],
 			IDISPOENTNR[i] ? 0 : DISPOENTNR[i],
 			IDISPONR[i] ? 0 : DISPONR[i],
 			AufStatVal(STATUS[i]), KDNR[i],
 			IYOURAUFNR[i] ? std::string("") : std::string(YOURAUFNR[i]),
-			Petig::Datum(PROZESSDATUM[i]),
-//Petig::Datum()
+			ManuProC::Datum(PROZESSDATUM[i]),
+//ManuProC::Datum()
          PROZESSID[i], // wird nicht mehr gebraucht -- oder ?
          ppsInstanz::ID(LETZTEPLANINSTANZ[i]),MAXPLANINSTANZ[i],
 			Preis(IPREIS[i] ? 0 : PREIS[i],
 				IWAEHRUNG[i] ? Waehrung::ID(0):Waehrung::ID(WAEHRUNG[i]),
 				PREISMENGE[i]),
 			IRABATT[i] ? 0 : RABATT[i],
-		(AufStatVal)ENTRYSTATUS[i],LASTEDITDATEUID[i],Petig::Datum(LASTEDITDATE[i]),
-		 Petig::Datum(LETZTELIEFERUNG[i]),PREISLISTE[i]));
+		(AufStatVal)ENTRYSTATUS[i],LASTEDITDATEUID[i],ManuProC::Datum(LASTEDITDATE[i]),
+		 ManuProC::Datum(LETZTELIEFERUNG[i]),PREISLISTE[i]));
 	      } catch (SQLerror &e)
 	      {  std::cerr << e << '\n';
 	      }
@@ -179,20 +179,20 @@ void SelectedFullAufList::insert(const AufEintragBase& aeb) throw(SQLerror)
 	      aufidliste.push_back(
 			AufEintrag((ppsInstanz::ID)INSTANZ,
 			AUFID, ZNUMMER, BESTELLT, ARTIKELID,
-      	ILIEFERDATUM ? Petig::Datum() : Petig::Datum(LIEFERDATUM),
+      	ILIEFERDATUM ? ManuProC::Datum() : ManuProC::Datum(LIEFERDATUM),
 			GELIEFERT,
 			IDISPOENTNR ? 0 : DISPOENTNR,
 			IDISPONR ? 0 : DISPONR,
 			(AufStatVal)STATUS, KDNR,
 			IYOURAUFNR ? std::string("") : std::string(YOURAUFNR),
-			Petig::Datum(PROZESSDATUM),PROZESSID,
+			ManuProC::Datum(PROZESSDATUM),PROZESSID,
 			ppsInstanz::ID(LETZTEPLANINSTANZ),MAXPLANINSTANZ,
 			Preis(IPREIS ? 0 : PREIS,
 				IWAEHRUNG ? Waehrung::ID(0):Waehrung::ID(WAEHRUNG),
 				PREISMENGE),
 			IRABATT ? 0 : RABATT,
-			(AufStatVal)ENTRYSTATUS,LASTEDITDATEUID,Petig::Datum(LASTEDITDATE),
-			Petig::Datum(LETZTELIEFERUNG),PREISLISTE
+			(AufStatVal)ENTRYSTATUS,LASTEDITDATEUID,ManuProC::Datum(LASTEDITDATE),
+			ManuProC::Datum(LETZTELIEFERUNG),PREISLISTE
 			));
 
 	exec sql close AUFENTRYINSERT;

@@ -1,4 +1,4 @@
-/* $Id: Kette.h,v 1.6 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: Kette.h,v 1.7 2002/06/27 07:42:50 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,22 +28,22 @@
 
 class Kette {
 	int maschine;
-	Petig::Datum schaerdatum;
+	ManuProC::Datum schaerdatum;
 public:
 	class illegal_format : exception
 	{public:
 		virtual const char* what() const throw() { return "Kette::illegal_format"; }
 	};
 	
-	Kette(int m,const Petig::Datum _schaerdatum) throw() 
+	Kette(int m,const ManuProC::Datum _schaerdatum) throw() 
 		: maschine(m), schaerdatum(_schaerdatum)
 	{}
-	Kette(int m,const char *adabasDatum) throw(Petig::Datumsfehler)
+	Kette(int m,const char *adabasDatum) throw(ManuProC::Datumsfehler)
 		: maschine(m), schaerdatum(adabasDatum)
 	{}
-	Kette(const char *barconame) throw(Petig::Datumsfehler,illegal_format);
+	Kette(const char *barconame) throw(ManuProC::Datumsfehler,illegal_format);
 	Kette() : maschine(0), schaerdatum() {}
-	const Petig::Datum &Schaerdatum() const throw() { return schaerdatum; }
+	const ManuProC::Datum &Schaerdatum() const throw() { return schaerdatum; }
 	int Maschine() const throw() { return maschine; }
 	
 	std::string barco_format() const throw();

@@ -26,9 +26,9 @@ class RohwarenLager : public Lager
    public:
       enum RL_LogTyp { RLNone, RLEntnehmen='E', RLEinlagern='L' };
       struct st_rohlager{LagerPlatz position;int kartons;int kg_pro_karton;
-            int reste;int reste_kg; ArtikelBase artikel; Petig::Datum datum;
+            int reste;int reste_kg; ArtikelBase artikel; ManuProC::Datum datum;
            st_rohlager( LagerPlatz p,int k,int kpk,int r,int rkg, 
-                        ArtikelBase a, Petig::Datum d)
+                        ArtikelBase a, ManuProC::Datum d)
             : position(p),kartons(k),kg_pro_karton(kpk),reste(r),
                reste_kg(rkg),artikel(a),datum(d) {}
              void setPosition(const LagerPlatz p) {position=p;}

@@ -1,4 +1,4 @@
-// $Id: IntStringBox_sql.pgcc,v 1.4 2002/06/20 09:31:46 christof Exp $
+// $Id: IntStringBox_sql.pgcc,v 1.5 2002/06/27 07:44:32 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++ Copyright (C)
  *  1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -28,9 +28,9 @@ bool IntStringBox::try_to_get_id()
   squery +=" from "+_tabelle_+" where lower("+_string1_+
      ")=lower('"+sc1_string->get_text()+"')";
   if(!_string2_.empty() && !string_2_info_only) 
-      squery   +=" and lower("+_string2_+")=lower('"+sc2_string->get_text()+"')"; 
+      squery   +=" and lower("+_string2_+")=lower('"+sc2_string->get_text()+"') "; 
 
-  if(eingeschraenkt)   
+  if(eingeschraenkt)
     squery+=einschraenkung;
 
   exec sql begin declare section;

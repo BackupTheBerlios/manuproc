@@ -1,4 +1,4 @@
-// $Id: preis.cc,v 1.6 2002/05/09 12:46:01 christof Exp $
+// $Id: preis.cc,v 1.7 2002/06/27 07:42:51 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,8 +23,8 @@
 #include <Aux/dbconnect.h>
 
 int main()
-{  Petig::PrintUncaughtExceptions();
-   Petig::dbconnect();
+{  ManuProC::PrintUncaughtExceptions();
+   ManuProC::dbconnect();
    Preis p(1.00,Waehrung::DM,100);
    std::cout << "1DM/100 "<<p<<'\n';
    Preis b(2.0,Waehrung::DM,100);

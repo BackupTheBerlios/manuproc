@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.cc,v 1.7 2002/06/27 07:26:10 christof Exp $
+// $Id: steuerprogramm.cc,v 1.8 2002/06/27 07:42:51 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -241,10 +241,10 @@ int main(int argc,char *argv[])
    system("database_tables_init/initdb.script");
    cout << "...beendet\n";
 
-   Petig::PrintUncaughtExceptions();
+   ManuProC::PrintUncaughtExceptions();
    try{
    putenv("PGDATABASE=testdb");
-   Petig::dbconnect();  
+   ManuProC::dbconnect();  
    
    DataBase_init();
    auftragstests(mode);

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.h,v 1.31 2002/06/26 09:04:27 christof Exp $
+// $Id: AufEintragBase.h,v 1.32 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -60,7 +60,7 @@ private:
 public:
 //??? void abschreiben_fuer_Instanzen(mengen_t menge) const throw(SQLerror);
  bool deleteAuftragEntry() const throw(SQLerror);
- void setLetzteLieferung(const Petig::Datum &datum) const throw(SQLerror);
+ void setLetzteLieferung(const ManuProC::Datum &datum) const throw(SQLerror);
 
  // gibt die Menge zurück, die verändert wurde. Falls reduziert werden sollte
  // müssen die input/output menge nicht übereinstimmen, da keine negativen Mengen
@@ -76,11 +76,11 @@ public:
 
  // Planen
  // *this ist der ZielAufEintragBase
- void PlanenDispo(int uid,const ArtikelBase& artikel,mengen_t menge,const Petig::Datum &datum);
+ void PlanenDispo(int uid,const ArtikelBase& artikel,mengen_t menge,const ManuProC::Datum &datum);
  static void Planen(int uid,std::vector<AufEintrag> LAE,mengen_t menge,
-      const AuftragBase &zielauftrag,const Petig::Datum &datum);
+      const AuftragBase &zielauftrag,const ManuProC::Datum &datum);
 
- int split_zuordnungen_to(mengen_t menge,Petig::Datum datum, 
+ int split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum, 
                          ArtikelBase artikel,AufStatVal status,
                          int uid,bool dispoplanung);
 

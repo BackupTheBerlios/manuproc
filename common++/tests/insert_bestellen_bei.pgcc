@@ -7,7 +7,7 @@ exec sql include sqlca;
 int main()
 {
 try {
-      Petig::dbconnect(Petig::Connection("","petigdb"));
+      ManuProC::dbconnect(ManuProC::Connection("","petigdb"));
       
 
 
@@ -51,7 +51,7 @@ cout << ID<<"\n";
 
 
   tr.commit();
-   Petig::dbdisconnect("petigdb");
+   ManuProC::dbdisconnect("petigdb");
    } catch (SQLerror &e)
    {  std::cerr << e << '\n';
       return 1;

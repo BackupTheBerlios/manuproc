@@ -1,4 +1,4 @@
-// $Id: artbez.cc,v 1.4 2002/05/09 12:46:01 christof Exp $
+// $Id: artbez.cc,v 1.5 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,8 +26,8 @@
 #include <Aux/Ausgabe_neu.h>
 
 int main()
-{  Petig::PrintUncaughtExceptions();
-   Petig::dbconnect();
+{  ManuProC::PrintUncaughtExceptions();
+   ManuProC::dbconnect();
    std::cout << cH_ArtikelBezeichnung(209931,10000)->Bezeichnung() << '\n';
    std::cout << cH_ArtikelBezeichnung(123479)->Bezeichnung() << " Breite "
    	<< cH_ArtikelBezeichnung(123479)->Breite() << "mm\n";
@@ -41,5 +41,5 @@ int main()
    	<< ' ' << cH_ArtikelBezeichnung(i->rohartikel)->Bezeichnung() << '\n';
    }
    std::cout << "     (3.35g Ac, 1.25g Ku)\n";
-   Petig::dbdisconnect();
+   ManuProC::dbdisconnect();
 }

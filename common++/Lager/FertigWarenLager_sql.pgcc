@@ -46,7 +46,7 @@ pair<Zeitpunkt_new,int> FertigWarenLager::letzteInventur()
   SQLerror::test("FertigWaren::letzteInventur",100);
   if(sqlca.sqlcode==100)  
    {
-      Zeitpunkt_new oldDate(Petig::Datum(1,1,1970));// ganz altes Datum
+      Zeitpunkt_new oldDate(ManuProC::Datum(1,1,1970));// ganz altes Datum
       return pair<Zeitpunkt_new,int>(oldDate,0);
    }
   return pair<Zeitpunkt_new,int>(Zeitpunkt_new(ZEIT),BESTAND);
@@ -54,7 +54,7 @@ pair<Zeitpunkt_new,int> FertigWarenLager::letzteInventur()
 
 
 
-int FertigWarenLager::Bestand(Petig::Datum date)
+int FertigWarenLager::Bestand(ManuProC::Datum date)
 {
   exec sql begin declare section;
     char MINZEIT[32],MAXZEIT[32];

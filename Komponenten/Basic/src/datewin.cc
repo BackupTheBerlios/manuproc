@@ -1,4 +1,4 @@
-// $Id: datewin.cc,v 1.6 2002/06/24 07:45:24 christof Exp $
+// $Id: datewin.cc,v 1.7 2002/06/27 07:44:32 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,34 +23,34 @@
 #include <unistd.h>
 
 datewin::datewin(const std::string &inst) : block(false), instance(inst)
-{  set_value(Petig::Datum::today());
+{  set_value(ManuProC::Datum::today());
    jahr->activate.connect(activate.slot());
    gtk_signal_connect(GTK_OBJECT(gtkobj()), "grab_focus",
     		GTK_SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
    set_scrollable(false); // for now ...
 }
 
-Petig::Datum datewin::get_value() const throw()
-{  Petig::Datum d;
+ManuProC::Datum datewin::get_value() const throw()
+{  ManuProC::Datum d;
 
    switch(get_current_page_num())
    {  case p_Datum:
          tag->update();
          monat->update();
          jahr->update();
-         d=Petig::Datum(tag->get_value_as_int(),monat->get_value_as_int()
+         d=ManuProC::Datum(tag->get_value_as_int(),monat->get_value_as_int()
 		,jahr->get_value_as_int());
          break;
       case p_Woche:
          kw_spinbutton->update();
          jahr_spinbutton->update();
-         d=Petig::Datum(Kalenderwoche(kw_spinbutton->get_value_as_int(),
+         d=ManuProC::Datum(Kalenderwoche(kw_spinbutton->get_value_as_int(),
          	jahr_spinbutton->get_value_as_int()));
          break;
       case p_Kalender:
          {  guint y=0,m=0,day=0;
             calendar1->get_date(&y,&m,&day);
-            d=Petig::Datum(day,m,y);
+            d=ManuProC::Datum(day,m,y);
          }
          break;
       case p_leer: break;
@@ -59,7 +59,7 @@ Petig::Datum datewin::get_value() const throw()
    return d;
 }
 
-void datewin::set_value (const Petig::Datum &d) throw()
+void datewin::set_value (const ManuProC::Datum &d) throw()
 {
    if (d.valid())
    {  tag->set_value (d.Tag());
@@ -74,7 +74,7 @@ void datewin::set_value (const Petig::Datum &d) throw()
       int pg=load_settings();
       // Tag ist in Kalenderwochendarstellung nicht exakt darstellbar
       // (Informationsverlust) => Datum nehmen
-      if (pg==p_Woche && d.Tag()!=Petig::Datum(d.KW()).Tag()) pg=p_Datum;
+      if (pg==p_Woche && d.Tag()!=ManuProC::Datum(d.KW()).Tag()) pg=p_Datum;
       set_page(pg);
    }
    else 
@@ -147,7 +147,7 @@ void datewin::on_day_selected()
 }
 void datewin::datum_setzen()
 {  if (!tag->get_value_as_int())
-   {  set_value(Petig::Datum::today());
+   {  set_value(ManuProC::Datum::today());
    }
    else set_page(load_settings());
 }

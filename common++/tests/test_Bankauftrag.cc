@@ -1,4 +1,4 @@
-// $Id: test_Bankauftrag.cc,v 1.4 2002/05/09 12:46:01 christof Exp $
+// $Id: test_Bankauftrag.cc,v 1.5 2002/06/27 07:42:51 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -40,7 +40,7 @@ void Bankauftragtest()
 int main()
 { 
   Ausgabetest();
-  Petig::dbconnect(); 
+  ManuProC::dbconnect(); 
   Bankauftragtest();
    return 0;
 }

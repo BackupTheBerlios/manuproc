@@ -1,4 +1,4 @@
-// $Id: artikelbaum.cc,v 1.1 2002/06/20 06:43:31 christof Exp $
+// $Id: artikelbaum.cc,v 1.2 2002/06/27 07:42:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -49,13 +49,13 @@ void zeige_hier(const ArtikelBase &art, std::string indent="")
 
 int main(int argc, char **argv)
 {  if (argc!=2) { std::cerr << "USAGE: "<<argv[0]<< " <ID>\n"; return 2; }
-   Petig::PrintUncaughtExceptions();
+   ManuProC::PrintUncaughtExceptions();
    try
-   {  Petig::dbconnect();
+   {  ManuProC::dbconnect();
       zeige_hier(atoi(argv[1]));
    }
    catch (SQLerror &e)
    {  std::cerr << e << '\n';
    }
-   Petig::dbdisconnect();
+   ManuProC::dbdisconnect();
 }

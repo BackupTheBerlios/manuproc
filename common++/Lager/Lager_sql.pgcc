@@ -436,7 +436,7 @@ Lager::st_rohlager Lager::RL_Inhalt(const LagerPlatz position) const
             :KG_PER_KARTON, :RESTE_KG, :MATERIAL, :DATUM
       from rl_inhalt where position_= :POSITION;
   SQLerror::test(__FILELINE__,100);
-  Petig::Datum date; 
+  ManuProC::Datum date; 
   if(sqlca.sqlcode==100)
    {
      return st_rohlager(position,0,0,0,0, ArtikelBase(0),date);
