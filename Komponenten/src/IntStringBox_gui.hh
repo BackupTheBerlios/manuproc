@@ -1,4 +1,4 @@
-// $Id: IntStringBox_gui.hh,v 1.5 2003/03/17 16:49:28 christof Exp $
+// $Id: IntStringBox_gui.hh,v 1.6 2003/03/17 16:53:36 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,6 +23,14 @@
 #include <IntStringBox_glade.hh>
 #include "IntStringPopup_glade.hh"
 
+struct IntStringPopup : public IntStringPopup_glade
+{  IntStringPopup();
+   Glib::SignalProxy0<void> signal_zurueck()
+   {  return zurueck->signal_activate();
+   }
+//   ~IntStringPopup() {}
+};
+
 class IntStringBox_gui : public IntStringBox_glade
 {   
         void fuelleMenu();
@@ -30,7 +38,7 @@ class IntStringBox_gui : public IntStringBox_glade
         virtual void reset() = 0;
 protected:
 
-        IntStringPopup_glade *menu;
+        IntStringPopup *menu;
 
         IntStringBox_gui();
         ~IntStringBox_gui();

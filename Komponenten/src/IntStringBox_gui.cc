@@ -1,4 +1,4 @@
-// $Id: IntStringBox_gui.cc,v 1.5 2003/03/17 16:49:28 christof Exp $
+// $Id: IntStringBox_gui.cc,v 1.6 2003/03/17 16:53:36 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,14 +21,8 @@
 
 static GlademmData gd=GlademmData(Glib::RefPtr<Gtk::AccelGroup>());
 
-namespace { struct IntStringPopup : public IntStringPopup_glade
-{  IntStringPopup() : IntStringPopup_glade(&gd)
-   {  }
-   Glib::SignalProxy0<void> signal_zurueck()
-   {  return zurueck->signal_activate();
-   }
-   ~IntStringPopup() {}
-}; }
+IntStringPopup::IntStringPopup() : IntStringPopup_glade(&gd)
+{  }
 
 IntStringBox_gui::IntStringBox_gui() 
 : IntStringBox_glade(&gd), menu(0)
@@ -46,7 +40,7 @@ void IntStringBox_gui::fuelleMenu()
   menu->signal_zurueck().connect(SigC::slot(*this,&IntStringBox_gui::reset));
 }
 
-gint IntStringBox_gui::MouseButton(GdkEventButton *event)
+bool IntStringBox_gui::MouseButton(GdkEventButton *event)
 {
   if ((event->type == GDK_BUTTON_PRESS) && menu)
    {  menu->popup(event->button,event->time);
