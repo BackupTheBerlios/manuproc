@@ -23,15 +23,18 @@ auf(auftrag)
 
  prov_verkaeufer->EinschraenkenKdGr(KundengruppeID::Verkaeufer);
 
+ prov_allpos->set_active(true);
+ fillProvEntryList();
+
  if(auftrag->getVerknr()==Kunde::none_id)
    {
     verkprov_frame->set_sensitive(false);
+    prov_enable->set_active(false);
    }
  else
    {
+    prov_enable->set_active(true);
     verkprov_frame->set_sensitive(true);   
-    prov_allpos->set_active(true);
-    fillProvEntryList();
     try {prov_verkaeufer->set_value(auftrag->getVerknr());
     }
     catch(SQLerror &e)
@@ -122,6 +125,7 @@ void auftrag_provision::on_prov_verk_activate()
  catch(SQLerror &e)
    { meldung->Show(e); }
   
+ fillProvEntryList();
 }
 
 
