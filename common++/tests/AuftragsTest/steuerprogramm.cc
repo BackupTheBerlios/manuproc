@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.cc,v 1.23 2002/11/27 13:26:51 christof Exp $
+// $Id: steuerprogramm.cc,v 1.24 2002/11/27 13:32:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -25,20 +25,18 @@
 #include <Aux/dbconnect.h>
 #include <Aux/exception.h>
 #include <Lager/Lager.h>
-#include <Lager/RohwarenLager.h>
-#include <Lager/JumboLager.h>
 #include <Auftrag/Auftrag.h>
 #include <Instanzen/ppsInstanzProduziert.h>
 #include <Misc/Trace.h>
-
 #include <unistd.h>
-// Jumbo
-#include <Ketten/KettplanKette.h>
-#include <Lager/JumboLager.h>
-#include <Lager/RohwarenLager.h>
 // Lieferschein
 #include <Lieferschein/Lieferschein.h>
 
+#ifdef PETIG_EXTENSIONS
+#include <Lager/RohwarenLager.h>
+#include <Lager/JumboLager.h>
+#include <Ketten/KettplanKette.h>
+#endif
 
 enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
       ZweiterAuftrag_frueheresDatum,Lieferscheintest,LieferscheintestMenge,
