@@ -1,4 +1,4 @@
-// $Id: logwin.h,v 1.7 2002/12/18 16:37:44 christof Exp $
+// $Id: logwin.h,v 1.8 2004/01/30 23:27:46 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -29,6 +29,8 @@
 class logwin : public Gtk::ScrolledWindow
 {  	Gtk::TreeView gtklist;
 	TreeViewUtility::CListEmulator emu;
+	bool color;
+	Gtk::TreeModelColumn<Gdk::Color> colorcol;
    public:
 	logwin(guint minimum_size=200);
 	Glib::RefPtr<Gtk::ListStore> get_store()
@@ -38,5 +40,9 @@ class logwin : public Gtk::ScrolledWindow
 	const Gtk::TreeModelColumn<Glib::ustring> &get_column() const
 	{ return emu.Column(0); }
 	void scroll() throw();
+	
+	// if you want colorized text
+	void set_color();
+	void append(const Glib::ustring &text, const Gdk::Color &col);
 }; 
 #endif

@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.cc,v 1.11 2004/01/30 16:59:27 christof Exp $
+// $Id: TreeViewUtility.cc,v 1.12 2004/01/30 23:27:46 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -93,6 +93,14 @@ bool TreeViewUtility::CListEmulator::selection_empty() const
 {  int num=0;
    view->get_selection()->selected_foreach(SigC::bind(SigC::slot(&increment),&num));
    return !num;
+}
+
+void TreeViewUtility::CListEmulator::set_column_justification(int col, Gtk::AlignmentEnum just)
+{  view->get_column(col)->set_alignment(just);
+   gfloat al=0;
+   if (just==Gtk::ALIGN_RIGHT) al=1;
+   else if (just==Gtk::ALIGN_CENTER) al=.5;
+   view->get_column(col)->get_first_cell_renderer()->property_xalign()=al;
 }
 
 void TreeViewUtility::CListEmulator::set_column_justification(int col, Gtk::Justification just)

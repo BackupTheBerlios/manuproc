@@ -1,4 +1,4 @@
-// $Id: logwin.cc,v 1.6 2002/12/16 08:29:33 christof Exp $
+// $Id: logwin.cc,v 1.7 2004/01/30 23:27:46 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,7 +25,7 @@ void logwin::scroll() throw()
    if (adj) adj->set_value(adj->gobj()->upper);
 }
 
-logwin::logwin(guint minimum_size)
+logwin::logwin(guint minimum_size) : color()
 {  emu.attach_to(gtklist);
    add(gtklist);
    gtklist.show();
@@ -33,3 +33,15 @@ logwin::logwin(guint minimum_size)
    set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
 }
 
+void logwin::set_color()
+{  if (color) return;
+   emu.add(colorcol);
+   Gtk::CellRendererText *crt = dynamic_cast<Gtk::CellRendererText *>(gtklist.get_column(0)->get_first_cell_renderer());
+   gtklist.get_column(0)->add_attribute(crt->property_foreground_gdk(),colorcol);
+}
+
+void logwin::append(const Glib::ustring &text, const Gdk::Color &col)
+{  Gtk::TreeModel::iterator iter =get_store()->append();
+   (*iter)[get_column()]=text;
+   (*iter)[colorcol]=col;
+}
