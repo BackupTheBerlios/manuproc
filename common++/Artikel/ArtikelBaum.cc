@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.cc,v 1.2 2003/01/29 13:56:00 christof Exp $
+// $Id: ArtikelBaum.cc,v 1.3 2003/01/30 13:07:41 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -50,9 +50,8 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
 	<< Id()).FetchArray(zusammensetzung);
 #if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
     try {  //ArtikelStamm AS(*this);
-//   if(AS.BestellenBei()==ppsInstanzID::Bandlager || 
-//      AS.BestellenBei()==ppsInstanzID::Weberei)
-    if(ppsInstanz::getProduktionsInstanz(*this)==ppsInstanzID::Weberei)
+    if(ppsInstanz::getProduktionsInstanz(*this)==ppsInstanzID::Weberei
+     	&& zusammensetzung.empty())
      {
        Schussfaeden schussfaeden;
        Webangaben webangaben(Id());
