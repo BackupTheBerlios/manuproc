@@ -1,4 +1,4 @@
-/* $Id: EntryValueInvert.h,v 1.2 2004/01/09 15:37:13 christof Exp $ */
+/* $Id: EntryValueInvert.h,v 1.3 2004/01/12 13:59:16 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,7 +33,10 @@ public:
  {  return obj->operator==(v); 
  }
  virtual bool operator<(const EntryValueBase &v) const
- {  return !obj->operator<(v); 
+ {  
+ if(obj->operator==(v)) return false;
+
+ return !obj->operator<(v); 
  }
  virtual int getIntVal() const 
  { return obj->getIntVal(); 
