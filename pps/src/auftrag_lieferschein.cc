@@ -631,7 +631,7 @@ void auftrag_lieferschein::auftragzeile_zeile_uebernehmen(const AufEintrag &AE)
    int bestand=AE.getAmLager().as_int();
 
    int stk=stueck < bestand ? stueck : (bestand > 0 ? bestand:0);
-   if(stk>0)
+   if(stk>0 || ArtikelTyp(AE.Artikel())==ArtikelTypID::Musterkarten)
      {lieferschein->push_back(ae,AE.Artikel(), AE.getRestStk().as_int(),
      		e.hatMenge()?liefermenge->get_value_as_float():0.0,
      		Palette->get_value_as_int());

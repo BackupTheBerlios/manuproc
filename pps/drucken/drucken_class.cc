@@ -176,7 +176,7 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
     
   if(((signed int)zeilen_passen_noch)<0) zeilen_passen_noch=0;
 
-  if (Typ()==Rechnung && !gutschrift())
+  if (Typ()==Rechnung && !gutschrift() && !storniert())
    {
 #ifdef MABELLA_EXTENSIONS
     os << "\\vspace{0.5cm}\n";
@@ -333,7 +333,7 @@ catch(SQLerror &e) { std::cout << e; return; }
 	os << "~" << string2TeX(Notiz(),sf)<<"~" << "\\\\\n";
 	}
 
- if(Typ()==Rechnung && !gutschrift())
+ if(Typ()==Rechnung && !gutschrift() && !storniert())
  if(kunde_an->land()->Auslaender())
    if(!kunde_an->land()->EU())
         {os << "~\\\\";
