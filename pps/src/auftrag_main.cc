@@ -844,7 +844,7 @@ void auftrag_main::on_button_artikeleingabe_clicked()
 {
  if (selected_AufEintrag )//sonst geht das nur bei Kundenaufträgen->  && selected_AufEintrag->ArtId())
   {
-    std::string s = "artikeleingabe "+itos(selected_AufEintrag->Id())+" &";
+    std::string s = "artikeleingabe "+itos(selected_AufEintrag->Artikel().Id())+" &";
     system(s.c_str());
     ArtikelBaum::UnCache(selected_AufEintrag->Artikel());
   }
