@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.73 2004/05/06 09:56:59 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.74 2004/05/06 10:02:44 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -602,18 +602,21 @@ GType SimpleTreeStore::get_column_type_vfunc(int index) STS_VFUNC_CONST
    }
 }
 
-int SimpleTreeStore::IterStamp() const
+unsigned SimpleTreeStore::IterStamp() const
 {  return stamp;
 }
 
+bool SimpleTreeStore::iter_valid(vfunc_constiter_t iter) const
+{  return iter STS_GTKMM_22_24(->stamp,.get_stamp())==IterStamp();
+}
+
 SimpleTreeStore::iterator &SimpleTreeStore::iterconv(vfunc_iter_t iter)
-{  //if (!iter->stamp && !iter->user_data) return root.children.begin();
-   assert(iter STS_GTKMM_22_24(->stamp,.get_stamp())==stamp);
+{  assert(iter_valid(iter));
    return reinterpret_cast<SimpleTreeStore::iterator&>(iter STS_GTKMM_22_24(,.gobj())->user_data);
 }
 
 const SimpleTreeStore::iterator &SimpleTreeStore::iterconv(vfunc_constiter_t iter) const
-{  if (iter STS_GTKMM_22_24(->stamp,.get_stamp())!=stamp)
+{  if (!iter_valid(iter))
    {  std::cerr << "iterconv: iterator mismatch " << iter STS_GTKMM_22_24(->stamp,.get_stamp()) << "!=" << IterStamp()
    	<< " user_data=" << iter STS_GTKMM_22_24(->,.gobj()->)user_data << '\n';
       abort();
@@ -666,7 +669,7 @@ void SimpleTreeStore::iterinit(vfunc_iter_t iter,const iterator &schema) const
 
 void SimpleTreeStore::get_value_vfunc(const TreeModel::iterator& iter, 
 		int column, STS_GTKMM_22_24(GValue*,Glib::ValueBase&) value) STS_VFUNC_CONST
-{  g_return_if_fail (iter->gobj()->stamp == stamp);
+{  if (!iter_valid(iter STS_GTKMM_22_24(->gobj(),))) return;
    Node &nd=iterconv(iter STS_GTKMM_22_24(->gobj(),))->second;
    switch(e_spalten(column))
    {  case s_row: VALUE_INIT(row);
@@ -707,10 +710,6 @@ void SimpleTreeStore::get_value_vfunc(const TreeModel::iterator& iter,
          }
          return;
    }
-}
-
-bool SimpleTreeStore::iter_valid(vfunc_constiter_t iter) const
-{  return iter STS_GTKMM_22_24(->stamp,.get_stamp())==IterStamp();
 }
 
 #if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2

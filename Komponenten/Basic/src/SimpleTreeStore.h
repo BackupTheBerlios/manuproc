@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.45 2004/05/06 09:24:51 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.46 2004/05/06 10:02:44 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -166,7 +166,7 @@ private:
    typedef STS_GTKMM_22_24(const GtkTreeIter*,const TreeModel::iterator&) vfunc_constiter_t;
    typedef STS_GTKMM_22_24(GtkTreeIter*,TreeModel::iterator&) vfunc_iter_t;
 
-   int IterStamp() const;
+   unsigned IterStamp() const;
    iterator &iterconv(vfunc_iter_t iter);
    const iterator &iterconv(vfunc_constiter_t iter) const;
    bool iter_valid(vfunc_constiter_t iter) const;
