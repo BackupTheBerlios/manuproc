@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.24 2003/01/08 09:46:57 christof Exp $ */
+/* $Id: Lieferschein.h,v 1.25 2003/03/25 16:29:37 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -44,10 +44,14 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  typedef fixedpoint<ManuProC::Precision::LieferscheinGewicht> gewicht_t;
  gewicht_t brutto_kg,netto_kg;
 #endif
+ mutable std::string notiz;
+ mutable bool notiz_valid;
+
  public:
         
  	Lieferschein(const LieferscheinBase &source)
- 		: LieferscheinBase(source), kunde(Kunde::none_id)  {}
+ 		: LieferscheinBase(source), kunde(Kunde::none_id),
+ 			notiz_valid(false)  {}
  		
  	Lieferschein() : LieferscheinBase(),
  			lsdatum(ManuProC::Datum::today()),
@@ -57,6 +61,7 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  			,dpdliefnr(0) ,
  			paeckchen(0),pakete(0)
 #endif
+			,notiz_valid(false)
  			{}
  			
  	Lieferschein(const cH_ppsInstanz& instanz,int lid) throw(SQLerror);
@@ -105,6 +110,8 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  static void aufraumen() throw(SQLerror);
  static mengen_t StandardLaenge(const ArtikelBase artikel) throw(SQLerror);
 
+ const std::string Notiz() const throw(SQLerror);
+ void Notiz(const std::string _notiz) throw(SQLerror);
 };
 
 class cH_Lieferschein : public Handle<const Lieferschein>

@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.35 2003/03/10 07:35:00 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.36 2003/03/25 16:29:37 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -800,6 +800,27 @@ void Kunde::setIBAN(const std::string _iban) const throw(SQLerror)
  tr.commit(); 
 
 }
+
+
+std::string Kunde::fixeNotiz(const NotizZiel nz) throw(SQLerror)
+{
+ std::string column;
+ std::string notiz;
+
+ switch(nz)
+  {case RNG_NOTIZ : column="rng_notiz"; break;
+   case AUF_NOTIZ : column="auf_notiz"; break;
+   case LIEF_NOTIZ : column="lief_notiz"; break;
+   default : return "";
+  }
+
+ std::string query="select "+column+" from kunden where kundennr=?";
+ Query(query) << entityid >> FetchIStream::MapNull(notiz,"");
+ SQLerror::test(__FILELINE__);
+
+ return notiz;
+}
+
 
 #endif
 
