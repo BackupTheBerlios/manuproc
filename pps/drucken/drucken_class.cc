@@ -25,8 +25,7 @@
 #include <Kunde/TelefonArt.h>
 #include <pwd.h>
 #include <unistd.h>
-#include <Misc/multi_lang.h>
-#include <Misc/relops.h>
+#include <Aux/multi_lang.h>
 
 #define TABW	"18"
 

@@ -334,16 +334,22 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
                rabattentry_spinbutton->get_value_as_float(),
                artpreis);
        }
+       // eigentlich könnte man dies für alle anderen Instanzen annehmen!
+       // statt einfach nur eine Zeile anzulegen, wird diese Menge geplant
       else if(instanz->ExterneBestellung())
        {
-//         AuftragBase AB(*auftrag);
-//         ManuProC::st_produziert sp(artikelbox->get_value(),stkmtr_spinbutton->get_value_as_int(),
-//               getuid(),Kunde::eigene_id,LieferscheinBase::none_id,AB,liefdatum_datewin->get_value());
-//         instanz->Planen(sp);
-//         AufEintrag AE((AufEintragBase(AB,sp.ZNr)));
-//         AE.updatePreis(WPreis->get_Preis());
-//         AE.updateRabatt(rabattentry_spinbutton->get_value_as_float());
-//         auftrag->AuftragFull::push_back(AE);
+#if 0
+         AuftragBase AB(*auftrag);
+         ManuProC::st_produziert sp(artikelbox->get_value(),stkmtr_spinbutton->get_value_as_int(),
+               getuid(),Kunde::eigene_id,LieferscheinBase::none_id,AB,liefdatum_datewin->get_value());
+         // ruft nur abschreiben_oder_reduzieren auf
+         // das Argument ist eine Strafe!
+         instanz->Planen(sp);
+         AufEintrag AE((AufEintragBase(AB,sp.ZNr)));
+         AE.updatePreis(WPreis->get_Preis());
+         AE.updateRabatt(rabattentry_spinbutton->get_value_as_float());
+         auftrag->AuftragFull::push_back(AE);
+#endif         
        }
       else assert(!"never get here");
       fillCList();
