@@ -5,7 +5,7 @@ DROP TABLE "kunden";
 --
 -- TOC Entry ID 2 (OID 11499476)
 --
--- Name: kunden Type: TABLE Owner: thoma
+-- Name: kunden Type: TABLE Owner: christof
 --
 
 CREATE TABLE "kunden" (
@@ -70,7 +70,7 @@ CREATE TABLE "kunden" (
 --
 -- Data for TOC Entry ID 3 (OID 11499476)
 --
--- Name: kunden Type: TABLE DATA Owner: thoma
+-- Name: kunden Type: TABLE DATA Owner: christof
 --
 
 
@@ -82,7 +82,7 @@ COPY "kunden" FROM stdin;
 --
 -- TOC Entry ID 4 (OID 16135401)
 --
--- Name: "RI_ConstraintTrigger_16135400" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135400" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'kunden', 'banken', 'UNSPECIFIED', 'bankindex', 'bankindex');
@@ -90,7 +90,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "kunden"  NOT DE
 --
 -- TOC Entry ID 5 (OID 16135403)
 --
--- Name: "RI_ConstraintTrigger_16135402" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135402" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'rechnung', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -98,7 +98,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 6 (OID 16135405)
 --
--- Name: "RI_ConstraintTrigger_16135404" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135404" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_del" ('<unnamed>', 'rechnung', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -106,7 +106,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 7 (OID 16135407)
 --
--- Name: "RI_ConstraintTrigger_16135406" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135406" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_konkurenz', 'kunden', 'UNSPECIFIED', 'konkurent', 'kundennr');
@@ -114,7 +114,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 8 (OID 16135409)
 --
--- Name: "RI_ConstraintTrigger_16135408" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135408" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_telefon', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -122,7 +122,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 9 (OID 16135411)
 --
--- Name: "RI_ConstraintTrigger_16135410" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135410" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_telefon', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -130,7 +130,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 10 (OID 16135413)
 --
--- Name: "RI_ConstraintTrigger_16135412" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135412" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_umsaetze', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -138,7 +138,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 11 (OID 16135415)
 --
--- Name: "RI_ConstraintTrigger_16135414" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135414" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_umsaetze', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -146,7 +146,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 12 (OID 16135417)
 --
--- Name: "RI_ConstraintTrigger_16135416" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135416" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_ekgruppe', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -154,7 +154,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 13 (OID 16135419)
 --
--- Name: "RI_ConstraintTrigger_16135418" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135418" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_verband', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -162,7 +162,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 14 (OID 16135421)
 --
--- Name: "RI_ConstraintTrigger_16135420" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135420" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_verband', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -170,7 +170,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 15 (OID 16135423)
 --
--- Name: "RI_ConstraintTrigger_16135422" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135422" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_vkformen', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -178,7 +178,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 16 (OID 16135425)
 --
--- Name: "RI_ConstraintTrigger_16135424" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135424" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_vkformen', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -186,7 +186,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 17 (OID 16135427)
 --
--- Name: "RI_ConstraintTrigger_16135426" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135426" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_vkgebiet', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -194,7 +194,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 18 (OID 16135429)
 --
--- Name: "RI_ConstraintTrigger_16135428" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135428" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_vkgebiet', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -202,7 +202,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 19 (OID 16135431)
 --
--- Name: "RI_ConstraintTrigger_16135430" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135430" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_branche', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -210,7 +210,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 20 (OID 16135433)
 --
--- Name: "RI_ConstraintTrigger_16135432" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135432" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_branche', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -218,7 +218,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 21 (OID 16135435)
 --
--- Name: "RI_ConstraintTrigger_16135434" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135434" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_ekgruppe', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -226,7 +226,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 22 (OID 16135437)
 --
--- Name: "RI_ConstraintTrigger_16135436" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135436" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_ansprech', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -234,7 +234,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 23 (OID 16135439)
 --
--- Name: "RI_ConstraintTrigger_16135438" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135438" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_ansprech', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -242,7 +242,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 24 (OID 16135441)
 --
--- Name: "RI_ConstraintTrigger_16135440" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135440" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_bedarf', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -250,7 +250,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 25 (OID 16135443)
 --
--- Name: "RI_ConstraintTrigger_16135442" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135442" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_bedarf', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -258,7 +258,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 26 (OID 16135445)
 --
--- Name: "RI_ConstraintTrigger_16135444" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135444" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_konkurenz', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -266,7 +266,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 27 (OID 16135447)
 --
--- Name: "RI_ConstraintTrigger_16135446" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135446" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_konkurenz', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -274,7 +274,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 28 (OID 16135449)
 --
--- Name: "RI_ConstraintTrigger_16135448" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135448" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_konkurenz', 'kunden', 'UNSPECIFIED', 'konkurent', 'kundennr');
@@ -282,7 +282,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 29 (OID 16135451)
 --
--- Name: "RI_ConstraintTrigger_16135450" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135450" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_del" ('<unnamed>', 'lieferschein', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -290,7 +290,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 30 (OID 16135453)
 --
--- Name: "RI_ConstraintTrigger_16135452" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135452" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'lieferschein', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -298,7 +298,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 31 (OID 16135455)
 --
--- Name: "RI_ConstraintTrigger_16135454" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135454" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'kunden', 'banken', 'UNSPECIFIED', 'bankindex', 'bankindex');
@@ -306,7 +306,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "kunden"  NOT DE
 --
 -- TOC Entry ID 32 (OID 16135457)
 --
--- Name: "RI_ConstraintTrigger_16135456" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135456" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'rechnung', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -314,7 +314,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 33 (OID 16135459)
 --
--- Name: "RI_ConstraintTrigger_16135458" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135458" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_del" ('<unnamed>', 'rechnung', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -322,7 +322,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 34 (OID 16135461)
 --
--- Name: "RI_ConstraintTrigger_16135460" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135460" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_konkurenz', 'kunden', 'UNSPECIFIED', 'konkurent', 'kundennr');
@@ -330,7 +330,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 35 (OID 16135463)
 --
--- Name: "RI_ConstraintTrigger_16135462" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135462" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_telefon', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -338,7 +338,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 36 (OID 16135465)
 --
--- Name: "RI_ConstraintTrigger_16135464" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135464" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_telefon', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -346,7 +346,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 37 (OID 16135467)
 --
--- Name: "RI_ConstraintTrigger_16135466" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135466" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_umsaetze', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -354,7 +354,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 38 (OID 16135469)
 --
--- Name: "RI_ConstraintTrigger_16135468" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135468" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_umsaetze', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -362,7 +362,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 39 (OID 16135471)
 --
--- Name: "RI_ConstraintTrigger_16135470" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135470" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_ekgruppe', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -370,7 +370,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 40 (OID 16135473)
 --
--- Name: "RI_ConstraintTrigger_16135472" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135472" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_verband', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -378,7 +378,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 41 (OID 16135475)
 --
--- Name: "RI_ConstraintTrigger_16135474" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135474" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_verband', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -386,7 +386,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 42 (OID 16135477)
 --
--- Name: "RI_ConstraintTrigger_16135476" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135476" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_vkformen', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -394,7 +394,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 43 (OID 16135479)
 --
--- Name: "RI_ConstraintTrigger_16135478" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135478" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_vkformen', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -402,7 +402,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 44 (OID 16135481)
 --
--- Name: "RI_ConstraintTrigger_16135480" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135480" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_vkgebiet', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -410,7 +410,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 45 (OID 16135483)
 --
--- Name: "RI_ConstraintTrigger_16135482" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135482" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_vkgebiet', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -418,7 +418,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 46 (OID 16135485)
 --
--- Name: "RI_ConstraintTrigger_16135484" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135484" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_branche', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -426,7 +426,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 47 (OID 16135487)
 --
--- Name: "RI_ConstraintTrigger_16135486" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135486" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_branche', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -434,7 +434,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 48 (OID 16135489)
 --
--- Name: "RI_ConstraintTrigger_16135488" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135488" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_ekgruppe', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -442,7 +442,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 49 (OID 16135491)
 --
--- Name: "RI_ConstraintTrigger_16135490" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135490" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_ansprech', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -450,7 +450,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 50 (OID 16135493)
 --
--- Name: "RI_ConstraintTrigger_16135492" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135492" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_ansprech', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -458,7 +458,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 51 (OID 16135495)
 --
--- Name: "RI_ConstraintTrigger_16135494" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135494" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_bedarf', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -466,7 +466,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 52 (OID 16135497)
 --
--- Name: "RI_ConstraintTrigger_16135496" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135496" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_bedarf', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -474,7 +474,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 53 (OID 16135499)
 --
--- Name: "RI_ConstraintTrigger_16135498" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135498" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_konkurenz', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -482,7 +482,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 54 (OID 16135501)
 --
--- Name: "RI_ConstraintTrigger_16135500" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135500" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_konkurenz', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -490,7 +490,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 55 (OID 16135503)
 --
--- Name: "RI_ConstraintTrigger_16135502" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135502" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_konkurenz', 'kunden', 'UNSPECIFIED', 'konkurent', 'kundennr');
@@ -498,7 +498,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 56 (OID 16135505)
 --
--- Name: "RI_ConstraintTrigger_16135504" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135504" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_del" ('<unnamed>', 'lieferschein', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -506,7 +506,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 57 (OID 16135507)
 --
--- Name: "RI_ConstraintTrigger_16135506" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135506" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'lieferschein', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -514,7 +514,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 58 (OID 16135509)
 --
--- Name: "RI_ConstraintTrigger_16135508" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135508" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'kunden', 'banken', 'UNSPECIFIED', 'bankindex', 'bankindex');
@@ -522,7 +522,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "kunden"  NOT DE
 --
 -- TOC Entry ID 59 (OID 16135511)
 --
--- Name: "RI_ConstraintTrigger_16135510" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135510" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'rechnung', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -530,7 +530,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 60 (OID 16135513)
 --
--- Name: "RI_ConstraintTrigger_16135512" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135512" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_del" ('<unnamed>', 'rechnung', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -538,7 +538,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 61 (OID 16135515)
 --
--- Name: "RI_ConstraintTrigger_16135514" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135514" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_konkurenz', 'kunden', 'UNSPECIFIED', 'konkurent', 'kundennr');
@@ -546,7 +546,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 62 (OID 16135517)
 --
--- Name: "RI_ConstraintTrigger_16135516" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135516" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_telefon', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -554,7 +554,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 63 (OID 16135519)
 --
--- Name: "RI_ConstraintTrigger_16135518" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135518" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_telefon', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -562,7 +562,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 64 (OID 16135521)
 --
--- Name: "RI_ConstraintTrigger_16135520" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135520" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_umsaetze', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -570,7 +570,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 65 (OID 16135523)
 --
--- Name: "RI_ConstraintTrigger_16135522" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135522" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_umsaetze', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -578,7 +578,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 66 (OID 16135525)
 --
--- Name: "RI_ConstraintTrigger_16135524" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135524" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_ekgruppe', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -586,7 +586,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 67 (OID 16135527)
 --
--- Name: "RI_ConstraintTrigger_16135526" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135526" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_verband', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -594,7 +594,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 68 (OID 16135529)
 --
--- Name: "RI_ConstraintTrigger_16135528" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135528" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_verband', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -602,7 +602,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 69 (OID 16135531)
 --
--- Name: "RI_ConstraintTrigger_16135530" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135530" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_vkformen', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -610,7 +610,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 70 (OID 16135533)
 --
--- Name: "RI_ConstraintTrigger_16135532" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135532" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_vkformen', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -618,7 +618,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 71 (OID 16135535)
 --
--- Name: "RI_ConstraintTrigger_16135534" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135534" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_vkgebiet', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -626,7 +626,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 72 (OID 16135537)
 --
--- Name: "RI_ConstraintTrigger_16135536" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135536" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_vkgebiet', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -634,7 +634,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 73 (OID 16135539)
 --
--- Name: "RI_ConstraintTrigger_16135538" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135538" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_branche', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -642,7 +642,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 74 (OID 16135541)
 --
--- Name: "RI_ConstraintTrigger_16135540" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135540" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_branche', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -650,7 +650,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 75 (OID 16135543)
 --
--- Name: "RI_ConstraintTrigger_16135542" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135542" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_ekgruppe', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -658,7 +658,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 76 (OID 16135545)
 --
--- Name: "RI_ConstraintTrigger_16135544" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135544" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_ansprech', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -666,7 +666,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 77 (OID 16135547)
 --
--- Name: "RI_ConstraintTrigger_16135546" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135546" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_ansprech', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -674,7 +674,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 78 (OID 16135549)
 --
--- Name: "RI_ConstraintTrigger_16135548" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135548" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_bedarf', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -682,7 +682,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 79 (OID 16135551)
 --
--- Name: "RI_ConstraintTrigger_16135550" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135550" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_bedarf', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -690,7 +690,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 80 (OID 16135553)
 --
--- Name: "RI_ConstraintTrigger_16135552" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135552" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_konkurenz', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -698,7 +698,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 81 (OID 16135555)
 --
--- Name: "RI_ConstraintTrigger_16135554" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135554" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_konkurenz', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -706,7 +706,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 82 (OID 16135557)
 --
--- Name: "RI_ConstraintTrigger_16135556" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135556" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_konkurenz', 'kunden', 'UNSPECIFIED', 'konkurent', 'kundennr');
@@ -714,7 +714,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 83 (OID 16135559)
 --
--- Name: "RI_ConstraintTrigger_16135558" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135558" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_del" ('<unnamed>', 'lieferschein', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -722,7 +722,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 84 (OID 16135561)
 --
--- Name: "RI_ConstraintTrigger_16135560" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135560" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'lieferschein', 'kunden', 'UNSPECIFIED', 'kundennr', 'kundennr');
@@ -730,7 +730,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 --
 -- TOC Entry ID 85 (OID 16135565)
 --
--- Name: "RI_ConstraintTrigger_16135564" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16135564" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "kunden_betreuer_ref" AFTER INSERT OR UPDATE ON "kunden"  FROM "ku_person" NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('kunden_betreuer_ref', 'kunden', 'ku_person', 'UNSPECIFIED', 'betreuer', 'persnr');

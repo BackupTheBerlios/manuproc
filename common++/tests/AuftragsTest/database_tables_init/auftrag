@@ -7,7 +7,7 @@ DROP TABLE "auftrag";
 --
 -- TOC Entry ID 2 (OID 16636854)
 --
--- Name: auftrag Type: TABLE Owner: thoma
+-- Name: auftrag Type: TABLE Owner: christof
 --
 
 CREATE TABLE "auftrag" (
@@ -30,7 +30,7 @@ CREATE TABLE "auftrag" (
 --
 -- Data for TOC Entry ID 5 (OID 16636854)
 --
--- Name: auftrag Type: TABLE DATA Owner: thoma
+-- Name: auftrag Type: TABLE DATA Owner: christof
 --
 
 
@@ -39,7 +39,7 @@ COPY "auftrag" FROM stdin;
 --
 -- TOC Entry ID 3 (OID 16637853)
 --
--- Name: "auftrag_pkey" Type: INDEX Owner: thoma
+-- Name: "auftrag_pkey" Type: INDEX Owner: christof
 --
 
 CREATE UNIQUE INDEX auftrag_pkey ON auftrag USING btree (instanz, auftragid);

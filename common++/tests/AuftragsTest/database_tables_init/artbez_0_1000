@@ -5,7 +5,7 @@ DROP VIEW "artbez_0_1000";
 --
 -- TOC Entry ID 2 (OID 17929142)
 --
--- Name: artbez_0_1000 Type: VIEW Owner: thoma
+-- Name: artbez_0_1000 Type: VIEW Owner: christof
 --
 
 CREATE VIEW "artbez_0_1000" as SELECT artbez_3_1000.id, artbez_3_1000.artikel, artbez_3_1000.breite, artbez_3_1000.farbe, artbez_3_1000.stand FROM artbez_3_1000 WHERE (artbez_3_1000.aufmachung = '9999'::"varchar");
@@ -22,7 +22,7 @@ GRANT SELECT on "artbez_0_1000" to PUBLIC;
 --
 -- TOC Entry ID 4 (OID 22980729)
 --
--- Name: artbez_0_1000_ins Type: RULE Owner: thoma
+-- Name: artbez_0_1000_ins Type: RULE Owner: christof
 --
 
 CREATE RULE artbez_0_1000_ins AS ON INSERT TO artbez_0_1000 DO INSTEAD INSERT INTO artbez_3_1000 (id, artikel, breite, farbe, aufmachung, stand) VALUES (new.id, new.artikel, new.breite, new.farbe, '9999'::"varchar", CASE WHEN (new.stand IS NOT NULL) THEN new.stand WHEN (now() IS NOT NULL) THEN now() ELSE timestamptz(NULL::"timestamp") END);

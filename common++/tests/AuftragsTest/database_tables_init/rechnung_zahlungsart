@@ -4,7 +4,7 @@
 --
 -- TOC Entry ID 2 (OID 26006288)
 --
--- Name: rechnung_zahlungsart Type: TABLE Owner: thoma
+-- Name: rechnung_zahlungsart Type: TABLE Owner: christof
 --
 
 drop table rechnung_zahlungsart;
@@ -31,7 +31,7 @@ CREATE TABLE "rechnung_zahlungsart" (
 --
 -- Data for TOC Entry ID 3 (OID 26006288)
 --
--- Name: rechnung_zahlungsart Type: TABLE DATA Owner: thoma
+-- Name: rechnung_zahlungsart Type: TABLE DATA Owner: christof
 --
 
 

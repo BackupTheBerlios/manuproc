@@ -7,7 +7,7 @@ DROP TABLE "schaertabelle";
 --
 -- TOC Entry ID 2 (OID 11499107)
 --
--- Name: schaertabelle Type: TABLE Owner: thoma
+-- Name: schaertabelle Type: TABLE Owner: christof
 --
 
 CREATE TABLE "schaertabelle" (
@@ -25,7 +25,7 @@ CREATE TABLE "schaertabelle" (
 --
 -- Data for TOC Entry ID 5 (OID 11499107)
 --
--- Name: schaertabelle Type: TABLE DATA Owner: thoma
+-- Name: schaertabelle Type: TABLE DATA Owner: christof
 --
 
 
@@ -34,7 +34,7 @@ COPY "schaertabelle" FROM stdin;
 --
 -- TOC Entry ID 3 (OID 16135255)
 --
--- Name: "schaertabelle_kettnr" Type: INDEX Owner: thoma
+-- Name: "schaertabelle_kettnr" Type: INDEX Owner: christof
 --
 
 CREATE INDEX schaertabelle_kettnr ON schaertabelle USING btree (maschine, schaerdatum);
@@ -42,7 +42,7 @@ CREATE INDEX schaertabelle_kettnr ON schaertabelle USING btree (maschine, schaer
 --
 -- TOC Entry ID 4 (OID 16135256)
 --
--- Name: "schaertabelle_speed" Type: INDEX Owner: thoma
+-- Name: "schaertabelle_speed" Type: INDEX Owner: christof
 --
 
 CREATE INDEX schaertabelle_speed ON schaertabelle USING btree (artikelid, jahrgang);

@@ -7,7 +7,7 @@ DROP INDEX "artbez_4_1_abk_uniq";
 --
 -- TOC Entry ID 2 (OID 17929083)
 --
--- Name: artbez_4_1 Type: TABLE Owner: thoma
+-- Name: artbez_4_1 Type: TABLE Owner: christof
 --
 
 CREATE TABLE "artbez_4_1" (
@@ -41,18 +41,18 @@ GRANT SELECT on "artbez_4_1" to PUBLIC;
 --
 -- Data for TOC Entry ID 6 (OID 17929083)
 --
--- Name: artbez_4_1 Type: TABLE DATA Owner: thoma
+-- Name: artbez_4_1 Type: TABLE DATA Owner: christof
 --
 
 
 COPY "artbez_4_1" FROM stdin;
-211007	Acetat	133dTex	arnica		daVinci	ac133arn	\N	133.000	\N	\N	\N	\N	1	2001-07-05 17:07:47+02
-209813	Kupferdraht	0,10mm			daVinci	\N	\N	\N	\N	\N	\N	\N	0	2001-02-07 15:24:23+01
+211007	Acetat	133dTex	arnica			ac133arn	\N	133.000	\N	\N	\N	\N	1	2001-07-05 17:07:47+02
+209813	Kupferdraht	0,10mm				\N	\N	\N	\N	\N	\N	\N	0	2001-02-07 15:24:23+01
 \.
 --
 -- TOC Entry ID 4 (OID 22980422)
 --
--- Name: "artbez_4_1_abk_uniq" Type: INDEX Owner: thoma
+-- Name: "artbez_4_1_abk_uniq" Type: INDEX Owner: christof
 --
 
 CREATE UNIQUE INDEX artbez_4_1_abk_uniq ON artbez_4_1 USING btree (abkuerzung);
@@ -60,7 +60,7 @@ CREATE UNIQUE INDEX artbez_4_1_abk_uniq ON artbez_4_1 USING btree (abkuerzung);
 --
 -- TOC Entry ID 5 (OID 22980423)
 --
--- Name: "artbez_4_1_unique" Type: INDEX Owner: thoma
+-- Name: "artbez_4_1_unique" Type: INDEX Owner: christof
 --
 
 CREATE UNIQUE INDEX artbez_4_1_unique ON artbez_4_1 USING btree (matname, mass, farbe, zusatz, hersteller);

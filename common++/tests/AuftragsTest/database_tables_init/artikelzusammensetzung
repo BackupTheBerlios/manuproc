@@ -7,7 +7,7 @@ DROP TABLE "artikelzusammensetzung";
 --
 -- TOC Entry ID 2 (OID 11499358)
 --
--- Name: artikelzusammensetzung Type: TABLE Owner: thoma
+-- Name: artikelzusammensetzung Type: TABLE Owner: christof
 --
 
 CREATE TABLE "artikelzusammensetzung" (
@@ -23,7 +23,7 @@ CREATE TABLE "artikelzusammensetzung" (
 --
 -- Data for TOC Entry ID 5 (OID 11499358)
 --
--- Name: artikelzusammensetzung Type: TABLE DATA Owner: thoma
+-- Name: artikelzusammensetzung Type: TABLE DATA Owner: christof
 --
 
 
@@ -32,7 +32,7 @@ COPY "artikelzusammensetzung" FROM stdin;
 --
 -- TOC Entry ID 3 (OID 16135242)
 --
--- Name: "artikelzus_dbank_speed" Type: INDEX Owner: thoma
+-- Name: "artikelzus_dbank_speed" Type: INDEX Owner: christof
 --
 
 CREATE INDEX artikelzus_dbank_speed ON artikelzusammensetzung USING btree (altartikelid);
@@ -40,7 +40,7 @@ CREATE INDEX artikelzus_dbank_speed ON artikelzusammensetzung USING btree (altar
 --
 -- TOC Entry ID 4 (OID 16135243)
 --
--- Name: "artikelzusamm_key" Type: INDEX Owner: thoma
+-- Name: "artikelzusamm_key" Type: INDEX Owner: christof
 --
 
 CREATE INDEX artikelzusamm_key ON artikelzusammensetzung USING btree (id);

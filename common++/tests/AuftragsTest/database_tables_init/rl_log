@@ -5,7 +5,7 @@ DROP TABLE "rl_log";
 --
 -- TOC Entry ID 2 (OID 11499146)
 --
--- Name: rl_log Type: TABLE Owner: thoma
+-- Name: rl_log Type: TABLE Owner: christof
 --
 
 CREATE TABLE "rl_log" (
@@ -26,7 +26,7 @@ CREATE TABLE "rl_log" (
 --
 -- Data for TOC Entry ID 3 (OID 11499146)
 --
--- Name: rl_log Type: TABLE DATA Owner: thoma
+-- Name: rl_log Type: TABLE DATA Owner: christof
 --
 
 

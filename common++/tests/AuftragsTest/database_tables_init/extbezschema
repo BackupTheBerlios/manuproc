@@ -5,7 +5,7 @@ DROP TABLE "extbezschema";
 --
 -- TOC Entry ID 2 (OID 11499330)
 --
--- Name: extbezschema Type: TABLE Owner: thoma
+-- Name: extbezschema Type: TABLE Owner: christof
 --
 
 CREATE TABLE "extbezschema" (
@@ -23,7 +23,7 @@ CREATE TABLE "extbezschema" (
 --
 -- Data for TOC Entry ID 3 (OID 11499330)
 --
--- Name: extbezschema Type: TABLE DATA Owner: thoma
+-- Name: extbezschema Type: TABLE DATA Owner: christof
 --
 
 

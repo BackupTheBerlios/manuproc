@@ -4,7 +4,7 @@
 --
 -- TOC Entry ID 2 (OID 42711013)
 --
--- Name: ku_land Type: TABLE Owner: thoma
+-- Name: ku_land Type: TABLE Owner: christof
 --
 
 CREATE TABLE "ku_land" (
@@ -23,12 +23,12 @@ CREATE TABLE "ku_land" (
 
 REVOKE ALL on "ku_land" from PUBLIC;
 GRANT SELECT on "ku_land" to PUBLIC;
-GRANT INSERT,SELECT,RULE,UPDATE,DELETE,REFERENCES,TRIGGER on "ku_land" to "thoma";
+GRANT INSERT,SELECT,RULE,UPDATE,DELETE,REFERENCES,TRIGGER on "ku_land" to "christof";
 
 --
 -- Data for TOC Entry ID 6 (OID 42711013)
 --
--- Name: ku_land Type: TABLE DATA Owner: thoma
+-- Name: ku_land Type: TABLE DATA Owner: christof
 --
 
 
@@ -59,7 +59,7 @@ COPY "ku_land" FROM stdin;
 --
 -- TOC Entry ID 4 (OID 48493237)
 --
--- Name: "ku_land_name" Type: INDEX Owner: thoma
+-- Name: "ku_land_name" Type: INDEX Owner: christof
 --
 
 CREATE UNIQUE INDEX ku_land_name ON ku_land USING btree (name);
@@ -67,7 +67,7 @@ CREATE UNIQUE INDEX ku_land_name ON ku_land USING btree (name);
 --
 -- TOC Entry ID 5 (OID 48493238)
 --
--- Name: "ku_land_lkz" Type: INDEX Owner: thoma
+-- Name: "ku_land_lkz" Type: INDEX Owner: christof
 --
 
 CREATE UNIQUE INDEX ku_land_lkz ON ku_land USING btree (lkz);

@@ -5,7 +5,7 @@ DROP TABLE "lastcode";
 --
 -- TOC Entry ID 2 (OID 11499144)
 --
--- Name: lastcode Type: TABLE Owner: thoma
+-- Name: lastcode Type: TABLE Owner: christof
 --
 
 CREATE TABLE "lastcode" (
@@ -15,7 +15,7 @@ CREATE TABLE "lastcode" (
 --
 -- Data for TOC Entry ID 3 (OID 11499144)
 --
--- Name: lastcode Type: TABLE DATA Owner: thoma
+-- Name: lastcode Type: TABLE DATA Owner: christof
 --
 
 

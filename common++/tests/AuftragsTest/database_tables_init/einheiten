@@ -5,7 +5,7 @@ DROP TABLE "einheiten";
 --
 -- TOC Entry ID 2 (OID 11499427)
 --
--- Name: einheiten Type: TABLE Owner: thoma
+-- Name: einheiten Type: TABLE Owner: christof
 --
 
 CREATE TABLE "einheiten" (
@@ -21,7 +21,7 @@ CREATE TABLE "einheiten" (
 --
 -- Data for TOC Entry ID 3 (OID 11499427)
 --
--- Name: einheiten Type: TABLE DATA Owner: thoma
+-- Name: einheiten Type: TABLE DATA Owner: christof
 --
 
 

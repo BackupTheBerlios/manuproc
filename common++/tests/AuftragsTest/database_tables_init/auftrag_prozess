@@ -6,7 +6,7 @@ DROP TABLE "auftrag_prozess";
 --
 -- TOC Entry ID 2 (OID 11499381)
 --
--- Name: auftrag_prozess Type: TABLE Owner: thoma
+-- Name: auftrag_prozess Type: TABLE Owner: christof
 --
 
 CREATE TABLE "auftrag_prozess" (
@@ -22,7 +22,7 @@ CREATE TABLE "auftrag_prozess" (
 --
 -- Data for TOC Entry ID 4 (OID 11499381)
 --
--- Name: auftrag_prozess Type: TABLE DATA Owner: thoma
+-- Name: auftrag_prozess Type: TABLE DATA Owner: christof
 --
 
 
@@ -2172,7 +2172,7 @@ COPY "auftrag_prozess" FROM stdin;
 --
 -- TOC Entry ID 3 (OID 16135261)
 --
--- Name: "auftrag_prozess_pkey" Type: INDEX Owner: thoma
+-- Name: "auftrag_prozess_pkey" Type: INDEX Owner: christof
 --
 
 CREATE UNIQUE INDEX auftrag_prozess_pkey ON auftrag_prozess USING btree (auftragid, zeilennr, instanz);

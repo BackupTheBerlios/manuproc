@@ -5,7 +5,7 @@ DROP TABLE "lager_bewegung";
 --
 -- TOC Entry ID 2 (OID 11499142)
 --
--- Name: lager_bewegung Type: TABLE Owner: thoma
+-- Name: lager_bewegung Type: TABLE Owner: christof
 --
 
 CREATE TABLE "lager_bewegung" (
@@ -19,7 +19,7 @@ CREATE TABLE "lager_bewegung" (
 --
 -- Data for TOC Entry ID 3 (OID 11499142)
 --
--- Name: lager_bewegung Type: TABLE DATA Owner: thoma
+-- Name: lager_bewegung Type: TABLE DATA Owner: christof
 --
 
 

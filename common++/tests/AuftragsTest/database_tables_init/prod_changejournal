@@ -5,7 +5,7 @@ DROP TABLE "prod_changejournal";
 --
 -- TOC Entry ID 2 (OID 16613287)
 --
--- Name: prod_changejournal Type: TABLE Owner: thoma
+-- Name: prod_changejournal Type: TABLE Owner: christof
 --
 
 CREATE TABLE "prod_changejournal" (
@@ -26,7 +26,7 @@ CREATE TABLE "prod_changejournal" (
 --
 -- Data for TOC Entry ID 3 (OID 16613287)
 --
--- Name: prod_changejournal Type: TABLE DATA Owner: thoma
+-- Name: prod_changejournal Type: TABLE DATA Owner: christof
 --
 
 
@@ -35,7 +35,7 @@ COPY "prod_changejournal" FROM stdin;
 --
 -- TOC Entry ID 4 (OID 16618775)
 --
--- Name: "RI_ConstraintTrigger_16618774" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16618774" Type: TRIGGER Owner: christof
 --
 
 

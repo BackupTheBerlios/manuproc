@@ -5,7 +5,7 @@ DROP TABLE "waehrung";
 --
 -- TOC Entry ID 2 (OID 11499162)
 --
--- Name: waehrung Type: TABLE Owner: thoma
+-- Name: waehrung Type: TABLE Owner: christof
 --
 
 CREATE TABLE "waehrung" (
@@ -20,7 +20,7 @@ CREATE TABLE "waehrung" (
 --
 -- Data for TOC Entry ID 3 (OID 11499162)
 --
--- Name: waehrung Type: TABLE DATA Owner: thoma
+-- Name: waehrung Type: TABLE DATA Owner: christof
 --
 
 

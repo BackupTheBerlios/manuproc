@@ -5,7 +5,7 @@ DROP TABLE "artbez_warengruppe";
 --
 -- TOC Entry ID 2 (OID 31639211)
 --
--- Name: artbez_warengruppe Type: TABLE Owner: thoma
+-- Name: artbez_warengruppe Type: TABLE Owner: christof
 --
 
 CREATE TABLE "artbez_warengruppe" (
@@ -16,7 +16,7 @@ CREATE TABLE "artbez_warengruppe" (
 --
 -- Data for TOC Entry ID 3 (OID 31639211)
 --
--- Name: artbez_warengruppe Type: TABLE DATA Owner: thoma
+-- Name: artbez_warengruppe Type: TABLE DATA Owner: christof
 --
 
 

@@ -5,7 +5,7 @@ DROP TABLE "prod_instanz";
 --
 -- TOC Entry ID 2 (OID 41730517)
 --
--- Name: prod_instanz Type: TABLE Owner: thoma
+-- Name: prod_instanz Type: TABLE Owner: christof
 --
 
 CREATE TABLE "prod_instanz" (
@@ -28,7 +28,7 @@ CREATE TABLE "prod_instanz" (
 --
 -- Data for TOC Entry ID 3 (OID 41730517)
 --
--- Name: prod_instanz Type: TABLE DATA Owner: thoma
+-- Name: prod_instanz Type: TABLE DATA Owner: christof
 --
 
 
@@ -39,7 +39,7 @@ COPY "prod_instanz" FROM stdin;
 3	Druckerei	\N	3	\N	\N	\N	3	\N	\N	P	\N	\N
 5	Sch‰rerei	\N	8	\N	\N	\N	\N	\N	\N	P	\N	\N
 7	Spritzgieﬂerei	\N	11	\N	\N	\N	\N	\N	\N	P	\N	\N
-6	(Garn-)Einkauf	\N	10	t	\N	t	\N	9	\N	P	t	\N
+6	Einkauf	\N	10	t	\N	t	\N	9	\N	P	t	\N
 8	Bandlager	4	5	\N	rohjumbo	t	\N	\N	\N	L	\N	\N
 9	Rohwarenlager	6	9	\N	rl_inhalt	t	\N	\N	\N	L	\N	\N
 4	Weberei	\N	6	\N	\N	\N	28	4	\N	P	\N	\N
@@ -47,7 +47,7 @@ COPY "prod_instanz" FROM stdin;
 --
 -- TOC Entry ID 4 (OID 41730534)
 --
--- Name: "RI_ConstraintTrigger_41730533" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_41730533" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "prod_instanz"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');
@@ -55,7 +55,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "prod_instanz"  NOT DEFERR
 --
 -- TOC Entry ID 5 (OID 41730536)
 --
--- Name: "RI_ConstraintTrigger_41730535" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_41730535" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "prod_instanz"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_del" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');
@@ -63,7 +63,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "prod_instanz"  NOT DEFERR
 --
 -- TOC Entry ID 6 (OID 41730538)
 --
--- Name: "RI_ConstraintTrigger_41730537" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_41730537" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "prod_instanz"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_del" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');
@@ -71,7 +71,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "prod_instanz"  NOT DEFERR
 --
 -- TOC Entry ID 7 (OID 41730540)
 --
--- Name: "RI_ConstraintTrigger_41730539" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_41730539" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "prod_instanz"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');

@@ -5,7 +5,7 @@ DROP TABLE "webang_bindung";
 --
 -- TOC Entry ID 2 (OID 26006005)
 --
--- Name: webang_bindung Type: TABLE Owner: thoma
+-- Name: webang_bindung Type: TABLE Owner: christof
 --
 
 CREATE TABLE "webang_bindung" (
@@ -17,7 +17,7 @@ CREATE TABLE "webang_bindung" (
 --
 -- Data for TOC Entry ID 3 (OID 26006005)
 --
--- Name: webang_bindung Type: TABLE DATA Owner: thoma
+-- Name: webang_bindung Type: TABLE DATA Owner: christof
 --
 
 
@@ -33,7 +33,7 @@ COPY "webang_bindung" FROM stdin;
 --
 -- TOC Entry ID 9 (OID 31301259)
 --
--- Name: "RI_ConstraintTrigger_31301258" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_31301258" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "webang_bindung"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'webang_bindfunc', 'webang_bindung', 'UNSPECIFIED', 'bid', 'id');
@@ -41,7 +41,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "webang_bindung"  NOT DEFE
 --
 -- TOC Entry ID 8 (OID 31301261)
 --
--- Name: "RI_ConstraintTrigger_31301260" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_31301260" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "webang_bindung"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_del" ('<unnamed>', 'webang_bindfunc', 'webang_bindung', 'UNSPECIFIED', 'bid', 'id');
@@ -49,7 +49,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "webang_bindung"  NOT DEFE
 --
 -- TOC Entry ID 7 (OID 31301263)
 --
--- Name: "RI_ConstraintTrigger_31301262" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_31301262" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "webang_faeden_fk0" AFTER UPDATE ON "webang_bindung"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('webang_faeden_fk0', 'webang_faeden', 'webang_bindung', 'UNSPECIFIED', 'bindung', 'id');
@@ -57,7 +57,7 @@ CREATE CONSTRAINT TRIGGER "webang_faeden_fk0" AFTER UPDATE ON "webang_bindung"  
 --
 -- TOC Entry ID 6 (OID 31301265)
 --
--- Name: "RI_ConstraintTrigger_31301264" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_31301264" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "webang_faeden_fk0" AFTER DELETE ON "webang_bindung"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_restrict_del" ('webang_faeden_fk0', 'webang_faeden', 'webang_bindung', 'UNSPECIFIED', 'bindung', 'id');
@@ -65,7 +65,7 @@ CREATE CONSTRAINT TRIGGER "webang_faeden_fk0" AFTER DELETE ON "webang_bindung"  
 --
 -- TOC Entry ID 5 (OID 31301267)
 --
--- Name: "RI_ConstraintTrigger_31301266" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_31301266" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "webang_bindung"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_restrict_del" ('<unnamed>', 'webang_faeden', 'webang_bindung', 'UNSPECIFIED', 'bindung', 'id');
@@ -73,7 +73,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "webang_bindung"  NOT DEFE
 --
 -- TOC Entry ID 4 (OID 31301269)
 --
--- Name: "RI_ConstraintTrigger_31301268" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_31301268" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "webang_bindung"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'webang_faeden', 'webang_bindung', 'UNSPECIFIED', 'bindung', 'id');

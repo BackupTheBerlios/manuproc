@@ -4,7 +4,7 @@
 --
 -- TOC Entry ID 2 (OID 17928970)
 --
--- Name: global_settings Type: TABLE Owner: thoma
+-- Name: global_settings Type: TABLE Owner: christof
 --
 
 CREATE TABLE "global_settings" (
@@ -23,12 +23,12 @@ CREATE TABLE "global_settings" (
 
 REVOKE ALL on "global_settings" from PUBLIC;
 GRANT SELECT on "global_settings" to PUBLIC;
-GRANT INSERT,SELECT,RULE,UPDATE,DELETE,REFERENCES,TRIGGER on "global_settings" to "thoma";
+GRANT INSERT,SELECT,RULE,UPDATE,DELETE,REFERENCES,TRIGGER on "global_settings" to "christof";
 
 --
 -- Data for TOC Entry ID 4 (OID 17928970)
 --
--- Name: global_settings Type: TABLE DATA Owner: thoma
+-- Name: global_settings Type: TABLE DATA Owner: christof
 --
 
 

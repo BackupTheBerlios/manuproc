@@ -5,7 +5,7 @@ DROP TABLE "webang_schuss";
 --
 -- TOC Entry ID 2 (OID 26006043)
 --
--- Name: webang_schuss Type: TABLE Owner: thoma
+-- Name: webang_schuss Type: TABLE Owner: christof
 --
 
 CREATE TABLE "webang_schuss" (
@@ -19,7 +19,7 @@ CREATE TABLE "webang_schuss" (
 --
 -- Data for TOC Entry ID 3 (OID 26006043)
 --
--- Name: webang_schuss Type: TABLE DATA Owner: thoma
+-- Name: webang_schuss Type: TABLE DATA Owner: christof
 --
 
 

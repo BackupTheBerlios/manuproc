@@ -6,7 +6,7 @@ DROP TABLE "artbez_5_1";
 --
 -- TOC Entry ID 2 (OID 17928921)
 --
--- Name: artbez_5_1 Type: TABLE Owner: thoma
+-- Name: artbez_5_1 Type: TABLE Owner: christof
 --
 
 CREATE TABLE "artbez_5_1" (
@@ -28,10 +28,10 @@ GRANT SELECT on "artbez_5_1" to PUBLIC;
 --
 -- Data for TOC Entry ID 4 (OID 17928921)
 --
--- Name: artbez_5_1 Type: TABLE DATA Owner: thoma
+-- Name: artbez_5_1 Type: TABLE DATA Owner: christof
 --
 
 
 COPY "artbez_5_1" FROM stdin;
-210120	Ringe	12 mm
+210120	Scheiben	120mm
 \.

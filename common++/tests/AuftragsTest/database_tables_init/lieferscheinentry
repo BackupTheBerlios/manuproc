@@ -4,7 +4,7 @@
 --
 -- TOC Entry ID 2 (OID 31350850)
 --
--- Name: lieferscheinentry Type: TABLE Owner: thoma
+-- Name: lieferscheinentry Type: TABLE Owner: christof
 --
 
 DROP TABLE lieferscheinentry;
@@ -26,7 +26,7 @@ CREATE TABLE "lieferscheinentry" (
 --
 -- Data for TOC Entry ID 4 (OID 31350850)
 --
--- Name: lieferscheinentry Type: TABLE DATA Owner: thoma
+-- Name: lieferscheinentry Type: TABLE DATA Owner: christof
 --
 
 
@@ -35,7 +35,7 @@ COPY "lieferscheinentry" FROM stdin;
 --
 -- TOC Entry ID 3 (OID 31377957)
 --
--- Name: "lieferscheinentry_check_fast" Type: INDEX Owner: thoma
+-- Name: "lieferscheinentry_check_fast" Type: INDEX Owner: christof
 --
 
 CREATE INDEX lieferscheinentry_check_fast ON lieferscheinentry USING btree (refzeilennr, refauftragid, instanz);
@@ -43,7 +43,7 @@ CREATE INDEX lieferscheinentry_check_fast ON lieferscheinentry USING btree (refz
 --
 -- TOC Entry ID 5 (OID 31377959)
 --
--- Name: "RI_ConstraintTrigger_31377958" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_31377958" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "lieferscheinentry"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'lieferscheinentry', 'auftrag', 'UNSPECIFIED', 'refauftragid', 'auftragid');

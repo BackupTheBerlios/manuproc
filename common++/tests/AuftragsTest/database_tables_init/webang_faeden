@@ -5,7 +5,7 @@ DROP TABLE "webang_faeden";
 --
 -- TOC Entry ID 2 (OID 26006212)
 --
--- Name: webang_faeden Type: TABLE Owner: thoma
+-- Name: webang_faeden Type: TABLE Owner: christof
 --
 
 CREATE TABLE "webang_faeden" (
@@ -20,7 +20,7 @@ CREATE TABLE "webang_faeden" (
 --
 -- Data for TOC Entry ID 3 (OID 26006212)
 --
--- Name: webang_faeden Type: TABLE DATA Owner: thoma
+-- Name: webang_faeden Type: TABLE DATA Owner: christof
 --
 
 
@@ -29,7 +29,7 @@ COPY "webang_faeden" FROM stdin;
 --
 -- TOC Entry ID 7 (OID 31301343)
 --
--- Name: "RI_ConstraintTrigger_31301342" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_31301342" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "webang_faeden_fk1" AFTER INSERT OR UPDATE ON "webang_faeden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('webang_faeden_fk1', 'webang_faeden', 'artbez_4_1', 'UNSPECIFIED', 'material', 'id');
@@ -37,7 +37,7 @@ CREATE CONSTRAINT TRIGGER "webang_faeden_fk1" AFTER INSERT OR UPDATE ON "webang_
 --
 -- TOC Entry ID 6 (OID 31301345)
 --
--- Name: "RI_ConstraintTrigger_31301344" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_31301344" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "webang_faeden_fk0" AFTER INSERT OR UPDATE ON "webang_faeden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('webang_faeden_fk0', 'webang_faeden', 'webang_bindung', 'UNSPECIFIED', 'bindung', 'id');
@@ -45,7 +45,7 @@ CREATE CONSTRAINT TRIGGER "webang_faeden_fk0" AFTER INSERT OR UPDATE ON "webang_
 --
 -- TOC Entry ID 5 (OID 31301347)
 --
--- Name: "RI_ConstraintTrigger_31301346" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_31301346" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "webang_faeden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'webang_faeden', 'artbez_4_1', 'UNSPECIFIED', 'material', 'id');
@@ -53,7 +53,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "webang_faeden" 
 --
 -- TOC Entry ID 4 (OID 31301349)
 --
--- Name: "RI_ConstraintTrigger_31301348" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_31301348" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "webang_faeden"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'webang_faeden', 'webang_bindung', 'UNSPECIFIED', 'bindung', 'id');

@@ -7,7 +7,7 @@ DROP TABLE "auftragentry";
 --
 -- TOC Entry ID 2 (OID 16619656)
 --
--- Name: auftragentry Type: TABLE Owner: thoma
+-- Name: auftragentry Type: TABLE Owner: christof
 --
 
 CREATE TABLE "auftragentry" (
@@ -37,7 +37,7 @@ CREATE TABLE "auftragentry" (
 --
 -- Data for TOC Entry ID 5 (OID 16619656)
 --
--- Name: auftragentry Type: TABLE DATA Owner: thoma
+-- Name: auftragentry Type: TABLE DATA Owner: christof
 --
 
 
@@ -46,7 +46,7 @@ COPY "auftragentry" FROM stdin;
 --
 -- TOC Entry ID 3 (OID 16636848)
 --
--- Name: "auftragentry_pkey" Type: INDEX Owner: thoma
+-- Name: "auftragentry_pkey" Type: INDEX Owner: christof
 --
 
 CREATE UNIQUE INDEX auftragentry_pkey ON auftragentry USING btree (instanz, auftragid, zeilennr);
@@ -54,7 +54,7 @@ CREATE UNIQUE INDEX auftragentry_pkey ON auftragentry USING btree (instanz, auft
 --
 -- TOC Entry ID 4 (OID 16636849)
 --
--- Name: "auftragentry_artikelid" Type: INDEX Owner: thoma
+-- Name: "auftragentry_artikelid" Type: INDEX Owner: christof
 --
 
 CREATE INDEX auftragentry_artikelid ON auftragentry USING btree (artikelid, instanz);
@@ -62,7 +62,7 @@ CREATE INDEX auftragentry_artikelid ON auftragentry USING btree (artikelid, inst
 --
 -- TOC Entry ID 7 (OID 16636851)
 --
--- Name: "RI_ConstraintTrigger_16636850" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16636850" Type: TRIGGER Owner: christof
 --
 
 --CREATE CONSTRAINT TRIGGER "chjour_constr" AFTER DELETE ON "auftragentry"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_del" ('chjour_constr', 'prod_changejournal', 'auftragentry', 'UNSPECIFIED', 'auftragid', 'auftragid', 'auftragzeile', 'zeilennr', 'insid', 'instanz');
@@ -70,7 +70,7 @@ CREATE INDEX auftragentry_artikelid ON auftragentry USING btree (artikelid, inst
 --
 -- TOC Entry ID 6 (OID 16636853)
 --
--- Name: "RI_ConstraintTrigger_16636852" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_16636852" Type: TRIGGER Owner: christof
 --
 
 --CREATE CONSTRAINT TRIGGER "chjour_constr" AFTER UPDATE ON "auftragentry"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('chjour_constr', 'prod_changejournal', 'auftragentry', 'UNSPECIFIED', 'auftragid', 'auftragid', 'auftragzeile', 'zeilennr', 'insid', 'instanz');

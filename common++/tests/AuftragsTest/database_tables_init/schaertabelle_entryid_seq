@@ -5,7 +5,7 @@ DROP SEQUENCE "schaertabelle_entryid_seq";
 --
 -- TOC Entry ID 2 (OID 11499055)
 --
--- Name: schaertabelle_entryid_seq Type: SEQUENCE Owner: thoma
+-- Name: schaertabelle_entryid_seq Type: SEQUENCE Owner: christof
 --
 
 CREATE SEQUENCE "schaertabelle_entryid_seq" start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;

@@ -6,7 +6,7 @@ DROP TABLE "artbez_3_1";
 --
 -- TOC Entry ID 2 (OID 11499438)
 --
--- Name: artbez_3_1 Type: TABLE Owner: thoma
+-- Name: artbez_3_1 Type: TABLE Owner: christof
 --
 
 CREATE TABLE "artbez_3_1" (
@@ -22,7 +22,7 @@ CREATE TABLE "artbez_3_1" (
 --
 -- Data for TOC Entry ID 4 (OID 11499438)
 --
--- Name: artbez_3_1 Type: TABLE DATA Owner: thoma
+-- Name: artbez_3_1 Type: TABLE DATA Owner: christof
 --
 
 
@@ -33,7 +33,7 @@ COPY "artbez_3_1" FROM stdin;
 --
 -- TOC Entry ID 3 (OID 16135272)
 --
--- Name: "artbez_3_1_uniq" Type: INDEX Owner: thoma
+-- Name: "artbez_3_1_uniq" Type: INDEX Owner: christof
 --
 
 CREATE UNIQUE INDEX artbez_3_1_uniq ON artbez_3_1 USING btree (artikel, breite, farbe, aufmachung);

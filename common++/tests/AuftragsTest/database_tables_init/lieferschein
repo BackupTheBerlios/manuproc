@@ -4,7 +4,7 @@
 --
 -- TOC Entry ID 2 (OID 31348607)
 --
--- Name: lieferschein Type: TABLE Owner: thoma
+-- Name: lieferschein Type: TABLE Owner: christof
 --
 DROP TABLE lieferschein;
 
@@ -24,7 +24,7 @@ CREATE TABLE "lieferschein" (
 --
 -- Data for TOC Entry ID 3 (OID 31348607)
 --
--- Name: lieferschein Type: TABLE DATA Owner: thoma
+-- Name: lieferschein Type: TABLE DATA Owner: christof
 --
 
 
@@ -33,7 +33,7 @@ COPY "lieferschein" FROM stdin;
 --
 -- TOC Entry ID 5 (OID 31350847)
 --
--- Name: "RI_ConstraintTrigger_31350846" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_31350846" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "lieferschein"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'lieferscheinentry', 'lieferschein', 'UNSPECIFIED', 'lfrsid', 'lfrsid');
@@ -41,7 +41,7 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "lieferschein"  NOT DEFERR
 --
 -- TOC Entry ID 4 (OID 31350849)
 --
--- Name: "RI_ConstraintTrigger_31350848" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_31350848" Type: TRIGGER Owner: christof
 --
 
 CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "lieferschein"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'lieferscheinentry', 'lieferschein', 'UNSPECIFIED', 'lfrsid', 'lfrsid');

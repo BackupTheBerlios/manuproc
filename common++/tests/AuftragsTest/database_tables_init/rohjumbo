@@ -9,7 +9,7 @@ DROP TABLE "rohjumbo";
 --
 -- TOC Entry ID 2 (OID 16637855)
 --
--- Name: rohjumbo Type: TABLE Owner: thoma
+-- Name: rohjumbo Type: TABLE Owner: christof
 --
 
 CREATE TABLE "rohjumbo" (
@@ -35,7 +35,7 @@ CREATE TABLE "rohjumbo" (
 --
 -- Data for TOC Entry ID 7 (OID 16637855)
 --
--- Name: rohjumbo Type: TABLE DATA Owner: thoma
+-- Name: rohjumbo Type: TABLE DATA Owner: christof
 --
 
 
@@ -44,7 +44,7 @@ COPY "rohjumbo" FROM stdin;
 --
 -- TOC Entry ID 3 (OID 16692622)
 --
--- Name: "rohjumbo_idx1" Type: INDEX Owner: thoma
+-- Name: "rohjumbo_idx1" Type: INDEX Owner: christof
 --
 
 CREATE UNIQUE INDEX rohjumbo_idx1 ON rohjumbo USING btree (code, lauf, gang);
@@ -52,7 +52,7 @@ CREATE UNIQUE INDEX rohjumbo_idx1 ON rohjumbo USING btree (code, lauf, gang);
 --
 -- TOC Entry ID 4 (OID 16692623)
 --
--- Name: "rohjumbo_kette" Type: INDEX Owner: thoma
+-- Name: "rohjumbo_kette" Type: INDEX Owner: christof
 --
 
 CREATE INDEX rohjumbo_kette ON rohjumbo USING btree (maschine, plan_datum);
@@ -60,7 +60,7 @@ CREATE INDEX rohjumbo_kette ON rohjumbo USING btree (maschine, plan_datum);
 --
 -- TOC Entry ID 5 (OID 16692624)
 --
--- Name: "rohjumbo_speed" Type: INDEX Owner: thoma
+-- Name: "rohjumbo_speed" Type: INDEX Owner: christof
 --
 
 CREATE INDEX rohjumbo_speed ON rohjumbo USING btree (artikelid);
@@ -68,7 +68,7 @@ CREATE INDEX rohjumbo_speed ON rohjumbo USING btree (artikelid);
 --
 -- TOC Entry ID 6 (OID 16692625)
 --
--- Name: "rohjumbo_pkey" Type: INDEX Owner: thoma
+-- Name: "rohjumbo_pkey" Type: INDEX Owner: christof
 --
 
 CREATE UNIQUE INDEX rohjumbo_pkey ON rohjumbo USING btree (code);

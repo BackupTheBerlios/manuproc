@@ -6,7 +6,7 @@ DROP TABLE "prozesse";
 --
 -- TOC Entry ID 2 (OID 11499088)
 --
--- Name: prozesse Type: TABLE Owner: thoma
+-- Name: prozesse Type: TABLE Owner: christof
 --
 
 CREATE TABLE "prozesse" (
@@ -20,7 +20,7 @@ CREATE TABLE "prozesse" (
 --
 -- Data for TOC Entry ID 4 (OID 11499088)
 --
--- Name: prozesse Type: TABLE DATA Owner: thoma
+-- Name: prozesse Type: TABLE DATA Owner: christof
 --
 
 
@@ -75,7 +75,7 @@ COPY "prozesse" FROM stdin;
 --
 -- TOC Entry ID 3 (OID 16135253)
 --
--- Name: "prozesse_prozessid_key" Type: INDEX Owner: thoma
+-- Name: "prozesse_prozessid_key" Type: INDEX Owner: christof
 --
 
 CREATE UNIQUE INDEX prozesse_prozessid_key ON prozesse USING btree (prozessid);
