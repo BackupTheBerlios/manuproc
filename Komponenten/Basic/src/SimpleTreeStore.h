@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.7 2002/11/27 23:38:00 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.8 2002/11/28 08:09:09 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -85,10 +85,10 @@ public:
 	   Gtk::TreeModelColumn<cH_TreeRow> row;
 	   // if we're a node this is not 'our' data
 //	   Gtk::TreeModelColumn<cH_RowDataBase> row; // once leafdata
-	   Gtk::TreeModelColumn<cH_EntryValue> node_val;
+//	   Gtk::TreeModelColumn<cH_EntryValue> node_val;
 	   Gtk::TreeModelColumn<guint> deep;
 	   // childrens_deep=0 -> Leaf
-	   Gtk::TreeModelColumn<guint> childrens_deep;
+//	   Gtk::TreeModelColumn<guint> childrens_deep;
 	   
 	   ModelColumns(int cols);
 	};

@@ -1,4 +1,4 @@
-/* $Id: TreeRow.h,v 1.2 2002/10/21 06:39:07 christof Exp $ */
+/* $Id: TreeRow.h,v 1.3 2002/11/28 08:09:09 christof Exp $ */
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,9 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: TreeRow.h,v 1.2 2002/10/21 06:39:07 christof Exp $
-
-// BAD name for this include file actually it's a TreeRow
+// $Id: TreeRow.h,v 1.3 2002/11/28 08:09:09 christof Exp $
 
 #ifndef TCLISTROWDATA
 #define TCLISTROWDATA
@@ -30,16 +28,11 @@
 
 //class TreeBase;
 
-// better name this class TreeRow - or TreeNode ?
-
 class TreeRow
 {protected:
-//	TCListRow_API *listrow;
 	cH_EntryValue value;
 	bool expand:1;
 	
-	// we need to remember deep for the second stage ctor: initTCL
-	guint deep;
 	// childrens_deep=0 -> Leaf
 	guint childrens_deep;
 	// perhaps we should remember children's depth also
@@ -109,10 +102,10 @@ public:
  // wenn mir jemand verrät, was das hier ist ... CP 10'01
 // virtual void orderit(const cH_RowDataBase &rd) {}
 
- const_iterator begin() const;
+// const_iterator begin() const;
 // {  return getTCL_API()->begin();
 // }
- const_iterator end() const;
+// const_iterator end() const;
 // {  return getTCL_API()->end();
 // }
 };
