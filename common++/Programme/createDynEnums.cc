@@ -1,4 +1,4 @@
-// $Id: createDynEnums.cc,v 1.15 2004/03/26 13:55:42 jacek Exp $
+// $Id: createDynEnums.cc,v 1.16 2004/03/31 10:47:17 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: createDynEnums.cc,v 1.15 2004/03/26 13:55:42 jacek Exp $
+// $Id: createDynEnums.cc,v 1.16 2004/03/31 10:47:17 jacek Exp $
 
 #include <Misc/dbconnect.h>
 #include <Misc/FetchIStream.h>
@@ -88,6 +88,7 @@ int main()
 
        std::cout << "LagerArtikel" << '=' << attr_column++ << ',';
        std::cout << "MitEAN" << '=' << attr_column++ << ',';
+       std::cout << "NullPreisCheck" << '=' << attr_column++ << ',';
 
       }
       std::cout << "\n"

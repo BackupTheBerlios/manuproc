@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.h,v 1.20 2004/03/31 08:17:27 jacek Exp $
+// $Id: ArtikelTyp.h,v 1.21 2004/03/31 10:47:17 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,6 +30,7 @@
 
 
 namespace ArtikelTypID = ManuProC::DynamicEnums::ArtikelTyp;
+namespace ArtikelTypAttr = ManuProC::DynamicEnums::ArtikelTyp_Attributes;
 
 class ArtikelTyp
 {
