@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.48 2003/06/20 10:51:15 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.49 2003/06/23 10:55:49 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -362,7 +362,7 @@ const Kunde::Verkaeufer &Kunde::getVerkaeufer() const throw(SQLerror)
   exec sql end declare section;
 
   exec sql select name,kurz into :NAME,:KURZ
-      from ku_verkaeufer where verknr=:VERKNR;
+      from ku_verkaeufer where vknr=:VERKNR;
   SQLerror::test(__FILELINE__);
   verkaeufer.name=NAME;
   verkaeufer.kurz=KURZ;
