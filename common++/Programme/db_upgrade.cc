@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.11 2003/07/09 13:34:58 christof Exp $
+// $Id: db_upgrade.cc,v 1.12 2003/07/28 10:03:24 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -77,7 +77,7 @@ int main(int argc,char *argv[])
   check_column("rechnung","verknr","numeric(5)");
   check_column("rechnungentry","provsatz","numeric(4,2)");
 
-  // Provisionsaten in Auftrag
+  // Provisionsdaten in Auftrag
   check_column("auftrag","verknr","numeric(5)");
   check_column("auftragentry","provsatz","numeric(4,2)");
 
@@ -92,6 +92,11 @@ int main(int argc,char *argv[])
   check_column("ku_verkaeufer","abschlag","numeric(5)");
 	// Abrechnung alle "mon" Monate
   check_column("ku_verkaeufer","abrzyklus_mon","numeric(2)");  
+  
+  // neue definitive Priorität bei den Zuordnungen
+  // allerdings muss der Index auftragsentryzuordnung_altauftr noch
+  // geaendert werden (muss prioritaet beinhalten)
+  check_column("auftragsentryzuordnung","prioritaet","timestamp");
   
   ManuProC::dbdisconnect();
   return 0;
