@@ -496,3 +496,42 @@ FetchIStream &operator>>(FetchIStream &is,
 const UniqueValue::value_t Artikelpreis::trace_channel=ManuProC::Tracer::channels.get();
 static ManuProC::Tracer::Environment trace_channel_e("DEBUG_PREIS",Artikelpreis::trace_channel);
 
+// einfachster Fall (keine Staffelung etc) !!!
+#ifdef PETIG_EXTENSIONS
+void insert_or_change(PreisListe::ID liste, const ArtikelBase &a, 
+               const Preis &p) throw(SQLerror)
+{  Transaction tr;
+   Query("lock table artikelpreise in exclusive mode");
+   try
+   { Preis::geldbetrag_t alter_Preis;
+     Query("select preis, from artikelpreise where (kundennr,artikelid)=(?,?)")
+	<< liste << a.Id()
+	>> alter_Preis;
+     Query("insert into preis_change_journal (artikelid,prlsnr,zeitpunkt,"
+		"preis_alt,preis_neu,uid,mindestmenge) values "
+		"(?,?,now(),?,?,?,?)")
+	<< a.Id() << liste << alter_Preis << p.Wert()
+	<< getuid() << 1;
+     Query("update artikelpreise set preis=?, preismenge=?, waehrung=? "
+   	"where (kundennr,artikelid)=(?,?)")
+   	<< p.Wert() << p.BezugsMenge()
+   	<< p.getWaehrung()->Id() << liste << a.Id();
+   }
+   catch (SQLerror &e)
+   { if (e.Code()!=100) throw;
+     Query("insert into preis_change_journal (artikelid,prlsnr,zeitpunkt,"
+		"preis_alt,preis_neu,uid,mindestmenge) values "
+		"(?,?,now(),null,?,?,?)")
+	<< a.Id() << liste << p.Wert()
+	<< getuid() << 1;
+     Query("insert into artikelpreise "
+   	"(preis,preismenge,waehrung,kundennr,artikelid) "
+   	"values (?,?,?,?,?)")
+   	<< p.Wert() << p.BezugsMenge()
+   	<< p.getWaehrung()->Id() << liste << a.Id();
+   }
+   Artikelpreis::UnCache(liste,a);
+   ManuProC::Event::Event("artikelpreis",itos(liste)+","+itos(a.Id()));
+   tr.commit();
+}
+#endif
