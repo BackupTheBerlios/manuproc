@@ -1,4 +1,4 @@
-// $Id: WTelefon.cc,v 1.6 2002/07/05 12:36:56 christof Exp $
+// $Id: WTelefon.cc,v 1.7 2002/09/27 09:48:44 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -213,10 +213,13 @@ void WTelefon::durchwahl_activate()
 
 
 void WTelefon::text_activate()
-{ cH_Telefon ct=Telefon::create(get_value());
+{ 
+  try{
+  cH_Telefon ct=Telefon::create(get_value());
   TelList.push_back(ct);
   showTel();
   add(ct);  
+  }catch(SQLerror &e){cerr << e<<'\n';}
 }
 
   

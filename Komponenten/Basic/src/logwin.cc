@@ -1,4 +1,4 @@
-// $Id: logwin.cc,v 1.3 2002/09/18 07:56:01 christof Exp $
+// $Id: logwin.cc,v 1.4 2002/09/27 09:48:44 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,7 +18,7 @@
  */
 
 #include "logwin.h"
-#include <gtk--/adjustment.h>
+#include <gtkmm/adjustment.h>
 
 void logwin::scroll() throw()
 {  Gtk::Adjustment *adj=(Gtk::Adjustment *)get_vadjustment();

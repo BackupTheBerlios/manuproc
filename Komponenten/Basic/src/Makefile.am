@@ -1,5 +1,5 @@
-# $Id: Makefile.am,v 1.7 2002/09/18 07:56:01 christof Exp $
-CXXFLAGS=@CXXFLAGS@ @COMMONGTK_INCLUDES@ @COMMONXX_INCLUDES@  
+# $Id: Makefile.am,v 1.8 2002/09/27 09:48:44 christof Exp $
+CXXFLAGS=@CXXFLAGS@ @COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
 
@@ -14,9 +14,7 @@ noinst_HEADERS=SimpleTree.hh
 lib_LIBRARIES= libManuProC_Widgets.a
 EXTRA_PROGRAMS=dummy
 
-libManuProC_Widgets_a_SOURCES=logwin.cc EingabeBox.cc \
-		tclistrowdata.cc \
-		tclistnode.cc tclistleaf.cc treebase.cc \
+libManuProC_Widgets_a_SOURCES=EingabeBox.cc \
 		MVC_int_Widget.cc MVC_string_Widget.cc MVC_bool_Widget.cc
 
 dummy_SOURCES=datewin.cc datewin_glade.cc

@@ -1,4 +1,4 @@
-// $Id: MVC_int_Widget.hh,v 1.1 2002/07/08 08:25:20 christof Exp $
+// $Id: MVC_int_Widget.hh,v 1.2 2002/09/27 09:48:44 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,7 +21,7 @@
 #ifndef MANUPROC_WIDGETS_MVC_INT_H
 #define MANUPROC_WIDGETS_MVC_INT_H
 
-#include <gtk--/spinbutton.h>
+#include <gtkmm/spinbutton.h>
 #include <BaseObjects/MVC.h>
 
 class MVC_int_Widget : public Gtk::SpinButton
@@ -30,8 +30,8 @@ class MVC_int_Widget : public Gtk::SpinButton
 	SigC::Connection ch_con, my_ch_con;
 	Model_ref<T> model;
 	
-	gint on_focus_out(GdkEventFocus *ev);
-	gint on_focus_in(GdkEventFocus *ev);
+	bool on_focus_out(GdkEventFocus *ev);
+	bool on_focus_in(GdkEventFocus *ev);
 	void refresh(gpointer);
 	void keypress();
 	void on_activate();

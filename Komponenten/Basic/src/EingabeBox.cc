@@ -1,4 +1,4 @@
-// $Id: EingabeBox.cc,v 1.5 2002/06/20 09:27:55 christof Exp $
+// $Id: EingabeBox.cc,v 1.6 2002/09/27 09:48:44 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,9 +18,10 @@
  */
 
 #include "EingabeBox.hh"
+#include <gtk/gtksignal.h>
 
 gint EingabeBox::try_grab_focus(GtkWidget *w,gpointer gp)
-{  assert(Gtk::Table::isA((Gtk::Object *)gp)); // very weak check
+{  // assert(Gtk::Table::isA((Gtk::Object *)gp)); // very weak check
    ((EingabeBox*)gp)->grab_focus_tried();
    return true;
 }
@@ -49,24 +50,24 @@ void EingabeBox::grow(int cols)
       Gtk::Entry *e=new Gtk::Entry();
       l->set_alignment(0.5, 0.5);
       e->set_editable(true);
-      e->set_usize(30,-1); // make width adjustable, strange
+      //e->set_usize(30,-1); // make width adjustable, strange
       l->show();
       e->show();
-      attach(*l,newpos,newpos+1,0,1,GTK_EXPAND|GTK_SHRINK|GTK_FILL,0);
-      attach(*e,newpos,newpos+1,1,2,GTK_EXPAND|GTK_SHRINK|GTK_FILL,0);
+      attach(*l,newpos,newpos+1,0,1,Gtk::EXPAND|Gtk::SHRINK|Gtk::FILL,Gtk::AttachOptions(0));
+      attach(*e,newpos,newpos+1,1,2,Gtk::EXPAND|Gtk::SHRINK|Gtk::FILL,Gtk::AttachOptions(0));
       labels.push_back(l);
       entries.push_back(e);
       // register our grab_focus
       if (newpos)
-	 cons.push_back(entries[newpos-1]->activate.connect(e->grab_focus.slot()));
+	 cons.push_back(entries[newpos-1]->signal_activate().connect(SigC::slot(*e,&Gtk::Widget::grab_focus)));
       else
-         cons.push_back(grab_focus_tried.connect(e->grab_focus.slot()));
+         cons.push_back(grab_focus_tried.connect(SigC::slot(*e,&Gtk::Widget::grab_focus)));
    }
    // register our activate
    if (newpos)
-      last_con=entries[newpos-1]->activate.connect(activate.slot());
+      last_con=entries[newpos-1]->signal_activate().connect(SigC::slot(*this,&EingabeBox::activate));
    else
-      last_con=grab_focus_tried.connect(activate.slot());
+      last_con=grab_focus_tried.connect(SigC::slot(*this,&EingabeBox::activate));
    visible_size=cols;
    assert(labels.size()==cols);
    check();
@@ -76,7 +77,7 @@ EingabeBox::EingabeBox(int cols=0)
 	: Gtk::Table(cols), visible_size(0)
 {  grow(cols);
 //   show();
-   gtk_signal_connect(GTK_OBJECT(gtkobj()), "grab_focus",
+   gtk_signal_connect(GTK_OBJECT(gobj()), "grab_focus",
     		GTK_SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
 //   assert(Gtk::Table::isGtkTable((Gtk::Object *)(gpointer)this));
 }
@@ -108,7 +109,7 @@ void EingabeBox::set_value(int col,const std::string &s)
 }
 
 void EingabeBox::set_width(int col,int width)
-{  grow(col+1); entries[col]->set_usize(width,-1);
+{  grow(col+1); // entries[col]->set_usize(width,-1);
 }
 
 void EingabeBox::set_size(int cols)
@@ -118,13 +119,15 @@ void EingabeBox::set_size(int cols)
       if (visible_size<cols_to_show)
       {  cons[visible_size].disconnect();
          if (visible_size)
-	      cons[visible_size]=entries[visible_size-1]->activate.connect(entries[visible_size]->grab_focus.slot());
+	      cons[visible_size]=entries[visible_size-1]->signal_activate()
+	      	.connect(SigC::slot(*entries[visible_size],&Gtk::Widget::grab_focus));
          else // visible_size==0
-            cons[0]=grab_focus_tried.connect(entries[0]->grab_focus.slot());
+            cons[0]=grab_focus_tried.connect(SigC::slot(*entries[0],&Gtk::Widget::grab_focus));
          // short cut ?
          if (cols_to_show<entries.size())
          {  cons[cols_to_show].disconnect();
-            cons[cols_to_show]=entries[cols_to_show-1]->activate.connect(activate.slot());
+            cons[cols_to_show]=entries[cols_to_show-1]->signal_activate()
+            	.connect(SigC::slot(*this,&EingabeBox::activate));
          }		
          for (int c=visible_size;c<cols_to_show;c++)
          {  labels[c]->show(); entries[c]->show();
@@ -137,9 +140,9 @@ void EingabeBox::set_size(int cols)
    {  // short cut
       cons[cols].disconnect();
       if (cols) 
-         cons[cols]=entries[cols-1]->activate.connect(activate.slot());
+         cons[cols]=entries[cols-1]->signal_activate().connect(SigC::slot(*this,&EingabeBox::activate));
       else
-         cons[cols]=grab_focus_tried.connect(activate.slot());
+         cons[cols]=grab_focus_tried.connect(SigC::slot(*this,&EingabeBox::activate));
       for (int c=cols;c<visible_size;c++)
       {  labels[c]->hide(); entries[c]->hide();
       }

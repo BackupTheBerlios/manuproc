@@ -1,4 +1,4 @@
-// $Id: MVC_bool_Widget.hh,v 1.4 2002/09/21 17:59:48 thoma Exp $
+// $Id: MVC_bool_Widget.hh,v 1.5 2002/09/27 09:48:44 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,7 +21,7 @@
 #ifndef MANUPROC_WIDGETS_MVC_BOOL_H
 #define MANUPROC_WIDGETS_MVC_BOOL_H
 
-#include <gtk--/checkbutton.h>
+#include <gtkmm/checkbutton.h>
 #include <BaseObjects/MVC.h>
 
 class MVC_bool_Widget : public Gtk::CheckButton

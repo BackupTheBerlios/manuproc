@@ -1,4 +1,4 @@
-// $Id: logwin.h,v 1.3 2002/02/13 12:40:04 christof Exp $
+// $Id: logwin.h,v 1.4 2002/09/27 09:48:44 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,9 +22,9 @@
 
 
 
-#include <gtk--/list.h>
-#include <gtk--/scrolledwindow.h>
-#include <gtk--/viewport.h>
+#include <gtkmm/list.h>
+#include <gtkmm/scrolledwindow.h>
+#include <gtkmm/viewport.h>
 
 class logwin : public Gtk::ScrolledWindow
 {  	Gtk::Viewport vp;

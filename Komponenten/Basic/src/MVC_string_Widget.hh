@@ -1,4 +1,4 @@
-// $Id: MVC_string_Widget.hh,v 1.1 2002/07/08 08:25:20 christof Exp $
+// $Id: MVC_string_Widget.hh,v 1.2 2002/09/27 09:48:44 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,7 +21,7 @@
 #ifndef MANUPROC_WIDGETS_MVC_STRING_H
 #define MANUPROC_WIDGETS_MVC_STRING_H
 
-#include <gtk--/entry.h>
+#include <gtkmm/entry.h>
 #include <BaseObjects/MVC.h>
 
 class MVC_string_Widget : public Gtk::Entry
