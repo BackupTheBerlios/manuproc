@@ -484,7 +484,7 @@ std::cout << "D2:" <<dummystring<<'\n';
       AEP.Planen(UID,5000,PA,PLANDATUM5);
       vergleichen(C,Check::Menge,"planen_weberei_fuer_lager","Planen der Weberei zum späteren Test des Bandlagers","W");
 
-      DataBase_init::createJumbo(-10,12000);
+      DataBase_init::createJumbo(-10,12000,true);
 std::cout << dummystring<<'\n';
       vergleichen(C,Check::Menge,"bandlager_rein","Bandlager einlagern\n","b");
 

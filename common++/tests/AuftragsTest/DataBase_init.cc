@@ -1,4 +1,4 @@
-// $Id: DataBase_init.cc,v 1.16 2003/07/08 07:17:57 christof Exp $
+// $Id: DataBase_init.cc,v 1.17 2003/07/15 07:10:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -46,7 +46,7 @@ DataBase_init::DataBase_init()
 #endif
 }
 
-#ifdef  PETIG_TEST
+#ifdef PETIG_EXTENSIONS
 
 void DataBase_init::ArtikelBaum_anlegen()
 {
@@ -95,7 +95,7 @@ void DataBase_init::RohwarenLager_initalisieren_execute(const ArtikelBase &artik
 #endif
 }
 
-void DataBase_init::createJumbo(const int diffmaschine,const int menge)
+void DataBase_init::createJumbo(const int diffmaschine,const int menge,bool produziert)
 {
 #ifdef MIT_BANDLAGER
   Kette K(MASCHINE+diffmaschine,SCHAERDATUM);
@@ -106,7 +106,7 @@ void DataBase_init::createJumbo(const int diffmaschine,const int menge)
   assert(JR.size()==1);
   Zeitpunkt_new zp("2002-1-1 12:00");
   class JumboLager JL;
-  JL.Jumbo_Einlagern(LagerPlatzJumbo,JR.front(),JumboLager::Einlagern,UID,"testuser",&zp,false);
+  JL.Jumbo_Einlagern(LagerPlatzJumbo,JR.front(),JumboLager::Einlagern,UID,"testuser",&zp,produziert);
   SQLerror::test(__FILELINE__);
 #endif
 }

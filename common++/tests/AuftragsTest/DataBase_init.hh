@@ -1,4 +1,4 @@
-// $Id: DataBase_init.hh,v 1.5 2003/07/04 18:14:30 christof Exp $
+// $Id: DataBase_init.hh,v 1.6 2003/07/15 07:10:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -64,19 +64,23 @@
 
 class DataBase_init
 {
+#ifdef PETIG_EXTENSIONS
     void ArtikelBaum_anlegen();
     void ArtikelBaum_anlegen_execute(const ArtikelBase &art,
             const cH_Prozess &prozess,const ArtikelBase &art_von,
-            const ArtikelBaum::faktor_t &faktor=ArtikelBaum::faktor_t(0));
+            const ArtikelBaum::faktor_t &faktor=0);
     void JumboLager_initalisieren();
     void RohwarenLager_initalisieren();
     void RohwarenLager_initalisieren_execute(const ArtikelBase &artikel, 
        const LagerPlatz& LP,int kartons,int kg_pro_karton,int reste,int kg_reste);
+#endif
 
   public:
     DataBase_init();
 
-    static void createJumbo(const int diffmaschine,const int menge);
+#ifdef PETIG_EXTENSIONS
+    static void createJumbo(const int diffmaschine,const int menge,bool produziert=false);
+#endif    
 };
 
 #endif

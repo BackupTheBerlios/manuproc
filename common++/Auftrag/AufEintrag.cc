@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.72 2003/07/09 12:48:13 jacek Exp $
+// $Id: AufEintrag.cc,v 1.73 2003/07/15 07:10:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -405,7 +405,11 @@ void AufEintrag::WiederEinlagern(const int uid,cH_ppsInstanz instanz,const Artik
      menge-=M;
      if(!menge) break;
   }
-  assert(!menge); // eigentlich darf das nicht passieren, da es ja vorher produziert wurde ...
+  if (!!menge)
+  {  // eigentlich soll das nicht passieren, da es ja vorher produziert wurde ...
+     ManuProC::Trace(trace_channel, __FUNCTION__,NV("es ist ein Rest geblieben",menge));
+     Einlagern(uid,instanz,artikel,menge,false);
+  }
 }
 
 // Menge wurde geliefert.
