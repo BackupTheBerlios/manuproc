@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.24 2002/10/04 08:23:20 thoma Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.25 2002/10/04 13:57:48 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -74,7 +74,7 @@ void AufEintrag::abschreiben(mengen_t menge,
  Transaction tr;
  exec sql lock table auftragentry in exclusive mode;
  bool delete_entry=false;
-//#ifdef PETIG_EXTENSIONS
+#ifdef PETIG_EXTENSIONS
   if(menge<0 &&
      Instanz()!=ppsInstanzID::Kundenauftraege && 
      !Instanz()->ProduziertSelbst() && 
@@ -85,7 +85,7 @@ void AufEintrag::abschreiben(mengen_t menge,
      if(BESTELLT==GELIEFERT) STATUS=CLOSED;
      if(BESTELLT==0 && GELIEFERT==0 &&  STATUS==CLOSED) delete_entry=true;
    }   
-//#endif
+#endif
  if(delete_entry)
    exec sql delete from auftragentry       
      where (instanz,auftragid,zeilennr) = (:INSTANZ,:AUFID,:AUFZNR);
@@ -104,8 +104,6 @@ void AufEintrag::abschreiben(mengen_t menge,
  if(menge < 0) fw.Einlagern(1);
  else if(menge > 0) fw.Auslagern(1);
 #endif
-
-
 
  geliefert=GELIEFERT;
  if(geliefert>=bestellt) entrystatus=(AufStatVal)CLOSED;

@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.4 2002/09/27 09:23:01 thoma Exp $
+// $Id: ppsInstanz.h,v 1.5 2002/10/04 13:57:48 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *

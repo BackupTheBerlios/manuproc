@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.3 2002/10/04 08:23:21 thoma Exp $
+// $Id: adjust_store.cc,v 1.4 2002/10/04 13:57:49 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -119,7 +119,7 @@ cout << "Anzahl der Artikel im Lager = "<<LI.size()<<'\n';
      // Vorgemerkte Menge (1er Aufträge) wieder abziehen
      // Schon eingetragene Menge wieder abziehen
      SelectedFullAufList auftraglist1=SelectedFullAufList(SQLFullAuftragSelector::
-       sel_Artikel_Planung_id(instanz->Id(),i->Artikel(),AuftragBase::plan_auftrag_id));
+       sel_Artikel_Planung_id(instanz->Id(),ManuProC::DefaultValues::EigeneKundenId,i->Artikel(),AuftragBase::plan_auftrag_id));
      // der Selector holt nur die Aufträge mit dem Status OPEN
      for (SelectedFullAufList::const_iterator j=auftraglist1.begin();j!=auftraglist1.end();++j)
        {
@@ -129,7 +129,7 @@ cout << "Anzahl der Artikel im Lager = "<<LI.size()<<'\n';
          assert(menge>=0);
        }
      SelectedFullAufList auftraglist2=SelectedFullAufList(SQLFullAuftragSelector::
-          sel_Artikel_Planung_id(instanz->Id(),i->Artikel(),AuftragBase::dispo_auftrag_id));
+          sel_Artikel_Planung_id(instanz->Id(),ManuProC::DefaultValues::EigeneKundenId,i->Artikel(),AuftragBase::dispo_auftrag_id));
      // der Selector holt nur die Aufträge mit dem Status OPEN
      for (SelectedFullAufList::const_iterator j=auftraglist2.begin();j!=auftraglist2.end();++j)
       {

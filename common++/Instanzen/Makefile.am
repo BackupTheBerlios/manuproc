@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.4 2002/10/04 08:23:21 thoma Exp $
+# $Id: Makefile.am,v 1.5 2002/10/04 13:57:48 thoma Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 

@@ -1,4 +1,4 @@
-// $Id: Produziert.cc,v 1.4 2002/10/04 08:23:21 thoma Exp $
+// $Id: Produziert.cc,v 1.5 2002/10/04 13:57:48 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -34,7 +34,6 @@ void Produziert::NichtSelbst()
     {
       AuftragBase::mengen_t restmenge=abschreiben_oder_reduzieren(
                   AuftragBase::PlanId_for(instanz),menge);
-      //cout << "RESTMENEG= "<<restmenge<<'\n';
       if(restmenge>0)
        {
           /*AuftragBase::mengen_t restmenge2=*/abschreiben_oder_reduzieren(
@@ -89,9 +88,13 @@ void Produziert::Lager_abschreiben()
 
 void Produziert::rekursion()
 {
-  if(instanz!=ArtikelStamm(artikel).BestellenBei())
+ ArtikelStamm as(artikel);
+ 
+ if(as.BestellenBei()==ppsInstanzID::None) return;
+
+  if(instanz!=as.BestellenBei()) // LagerFür Instanzen und Kundeninstanzen
    {
-     cH_ppsInstanz I=ArtikelStamm(artikel).BestellenBei();
+     cH_ppsInstanz I=as.BestellenBei();
      Produziert(I,artikel,menge,uid).NichtSelbst();
      return;
    }   
@@ -119,19 +122,21 @@ AuftragBase::mengen_t Produziert::abschreiben_oder_reduzieren(int id,AuftragBase
 
   SQLFullAuftragSelector sel;
   if(abmenge>=0) sel=SQLFullAuftragSelector(SQLFullAuftragSelector::sel_Artikel_Planung_id
-                                                   (instanz->Id(),artikel,id));
+                                                   (instanz->Id(),kunde,artikel,id));
   else sel=SQLFullAuftragSelector(SQLFullAuftragSelector::sel_Artikel_Planung_id
-                                                   (instanz->Id(),artikel,id,CLOSED));
+                                                   (instanz->Id(),kunde,artikel,id,CLOSED));
 
   SelectedFullAufList L(sel);
 
+//cout <<"SIZE: "<< L.size()<<'\n';
   for(SelectedFullAufList::iterator i=L.begin();i!=L.end();++i)
    {
      AuftragBase::mengen_t abschreibmenge;
      if(i->getRestStk() >= abmenge) abschreibmenge = abmenge;
      else                           abschreibmenge = i->getRestStk();
 
-//cout << instanz->Name()<<' '<<*i<<' '<<"M = "
+//cout << instanz->Name()<<' '<<i->Id()<<' '<<i->ZNr()<<"  Art."
+//<<i->Artikel().Id()<<' '<<"M = "
 //<<abmenge<<' '<<i->getRestStk()<<'\t'<<abschreibmenge<<'\n';
 
      if(abschreibmenge==AuftragBase::mengen_t(0)) continue;     
@@ -196,7 +201,7 @@ void Produziert::check_dispo_auftraege()
 AuftragBase::mengen_t Produziert::get_Menge_for(int id_)
 {
   SQLFullAuftragSelector sel=SQLFullAuftragSelector(SQLFullAuftragSelector::sel_Artikel_Planung_id
-          (instanz->Id(),artikel,id_));
+          (instanz->Id(),kunde,artikel,id_));
   SelectedFullAufList L(sel);
   AuftragBase::mengen_t m=0;
   for(SelectedFullAufList::iterator i=L.begin();i!=L.end();++i)

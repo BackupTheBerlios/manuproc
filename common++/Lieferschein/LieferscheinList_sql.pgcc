@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList_sql.pgcc,v 1.14 2002/10/04 08:23:21 thoma Exp $ */
+/* $Id: LieferscheinList_sql.pgcc,v 1.15 2002/10/04 13:57:49 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -43,8 +43,8 @@ void LieferscheinList::build_list()
    squery+= " and kundennr="+itos(kundenid);
 
  if(vom.valid() && bis.valid())
-   {squery+= " and geliefertam between '"+vom.to_iso()+"'";   
-    squery+= " and date('"+bis.to_iso()+"')+1";
+   {squery+= " and coalesce(geliefertam,datum) between '"+vom.to_iso()+"'";   
+    squery+= " and cast('"+bis.to_iso()+"' as date)+1";
    }
 
  squery+= " and exists (select true from lieferscheinentry e"

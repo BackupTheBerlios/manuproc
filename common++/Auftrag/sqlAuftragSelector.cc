@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.18 2002/09/18 08:58:34 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.19 2002/10/04 13:57:48 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -151,6 +151,7 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel_Planung_id &sel
   std::string clau=FULL_SELECT_FROM_WHERE
            " and "+StatusQualifier(selstr.status)+
 	        " and a.instanz="+itos(selstr.instanz) +
+           " and kundennr="+itos(selstr.kunde) +
    	     " and artikelid="+itos(selstr.artikel.Id());
 
   if(selstr.status==OPEN)

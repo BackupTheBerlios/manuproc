@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.3 2002/10/04 08:23:21 thoma Exp $
+// $Id: Rechnung.cc,v 1.4 2002/10/04 13:57:49 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *

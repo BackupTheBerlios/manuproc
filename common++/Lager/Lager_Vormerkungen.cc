@@ -1,4 +1,4 @@
-// $Id: Lager_Vormerkungen.cc,v 1.53 2002/07/18 16:12:22 malte Exp $
+// $Id: Lager_Vormerkungen.cc,v 1.54 2002/10/04 13:29:27 malte Exp $
 /*  libcommonc++: ManuProC's main OO library Copyright (C) 2002 Adolf Petig
  *  GmbH & Co. KG written by Jacek Jakubowski, Christof Petig, Malte Thoma
  *
@@ -182,7 +182,10 @@ void Lager_Vormerkungen::freigegeben_menge_neu_verplanen(cH_ppsInstanz instanz,
   assert(menge>=0);
   if(menge==AuftragBase::mengen_t(0)) return;
 
-  SQLFullAuftragSelector sel(SQLFullAuftragSelector::sel_Artikel_Planung_id(instanz->Id(),artikel,AuftragBase::ungeplante_id));
+  SQLFullAuftragSelector sel(SQLFullAuftragSelector::
+      sel_Artikel_Planung_id(instanz->Id(),
+      ManuProC::DefaultValues::EigeneKundenId,
+      artikel,AuftragBase::ungeplante_id));
   SelectedFullAufList auftraglist=SelectedFullAufList(sel);
   for (SelectedFullAufList::iterator i=auftraglist.begin();i!=auftraglist.end();++i)
    {
@@ -223,7 +226,7 @@ AuftragBase::mengen_t  Lager_Vormerkungen::artikel_auf_lager(const ArtikelBase &
   // der Selector holt nur die Aufträge mit dem Status OPEN, 
   // geordnet nach Lieferdatum
   SelectedFullAufList auftraglist=SelectedFullAufList(SQLFullAuftragSelector::
-      sel_Artikel_Planung_id(instanz->Id(),artikel,auftragsid)); 
+      sel_Artikel_Planung_id(instanz->Id(),ManuProC::DefaultValues::EigeneKundenId,artikel,auftragsid)); 
   AuftragBase::mengen_t menge;
   std::vector<pair<AufEintragBase,AuftragBase::mengen_t> >V_dispo_auftrag;
   for (SelectedFullAufList::const_iterator j=auftraglist.begin();j!=auftraglist.end();++j)

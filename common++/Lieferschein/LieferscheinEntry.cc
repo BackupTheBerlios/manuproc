@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.11 2002/10/04 08:23:21 thoma Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.12 2002/10/04 13:57:49 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,6 +23,7 @@
 #include<Auftrag/AufEintrag.h>
 #include <unistd.h>
 #include <Instanzen/Produziert.h>
+#include <Lieferschein/Lieferschein.h>
 
 bool LieferscheinEntry::Valid() const
 {
@@ -56,9 +57,19 @@ bool LieferscheinEntry::changeMenge(int stueck,mengen_t menge) throw(SQLerror)
        mengen_t rest=AE.getRestStk();
        if(abmenge > rest ) return false;
        updateLieferscheinMenge(stueck,menge);
+#ifdef MABELLA_EXTENSIONS
+       AE.abschreiben(abmenge,Id());       
+#else
+<<<<<<< LieferscheinEntry.cc
+       Kunde::ID kunde=Lieferschein(*this).getKunde()->Id();
+       Produziert(kunde,AE,abmenge,getuid(),Id()).NichtSelbst();    
+=======
 //       Produziert(instanz->Id(),artikel,abmenge,getuid(),Id()).NichtSelbst();    
-       Produziert(AE,abmenge,getuid(),Id()).NichtSelbst();    
-//       AE.abschreiben(abmenge,Id());
+       Kunde::ID kunde=Lieferschein(*this).getKunde()->Id();
+       Produziert(kunde,AE,abmenge,getuid(),Id()).NichtSelbst();    
+>>>>>>> 1.18
+#endif       
+
      }catch(AufEintrag::NoAEB_Error &e){cerr << AEB<<" existiert nicht\n"; return false;}
    }
   else // Zusatzinfos ODER kein Referenzauftrag
@@ -132,9 +143,12 @@ void LieferscheinEntry::menge_bei_zusatzinfos_abschreiben(std::vector<Liefersche
          mengen_t M=AuftragS;
          if(AE.getStueck()<M) M=-AE.getStueck();
 //cout << "Be HERE\t"<<i->Stueck()<<' '<<i->Menge()<<'\t'<<M<<'\n';
-//         Produziert(instanz->Id(),artikel,M,getuid(),Id()).NichtSelbst();    
-         Produziert(AE,M,getuid(),Id()).NichtSelbst();    
-//         AE.abschreiben(M,Id());
+#ifndef MABELLA_EXTENSIONS
+         Kunde::ID kunde=Lieferschein(*this).getKunde()->Id();
+         Produziert(kunde,AE,M,getuid(),Id()).NichtSelbst();    
+#else         
+         AE.abschreiben(M,Id());
+#endif
          // Lieferscheinentry:
          if(i->Stueck()==1)
              i->updateLieferscheinMenge(1,i->Menge()+M);

@@ -1,4 +1,4 @@
-// $Id: Produziert.h,v 1.4 2002/10/04 08:23:21 thoma Exp $
+// $Id: Produziert.h,v 1.5 2002/10/04 13:57:48 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,6 +24,7 @@
 #include <Artikel/ArtikelBase.h>
 #include <Auftrag/selFullAufEntry.h>
 #include <Lieferschein/LieferscheinBase.h>
+#include <Kunde/Kunde.h>
 
 class Produziert 
 {
@@ -34,6 +35,7 @@ class Produziert
   private: 
      cH_ppsInstanz instanz;
      ArtikelBase artikel;
+     Kunde::ID kunde;
      AufEintrag AE;
      AuftragBase::mengen_t menge;
      int uid;
@@ -51,19 +53,19 @@ class Produziert
   public:
 
      Produziert(cH_ppsInstanz i,ArtikelBase a,AuftragBase::mengen_t m,
-     				int _uid,LieferscheinBase::ID _lfrsid=LieferscheinBase::none_id)
-      : instanz(i),artikel(a),menge(m),uid(_uid),lfrsid(_lfrsid) 
+     				int _uid,
+     				Kunde::ID _k=ManuProC::DefaultValues::EigeneKundenId,
+     				LieferscheinBase::ID _lfrsid=LieferscheinBase::none_id)
+      : instanz(i),artikel(a),kunde(_k),menge(m),uid(_uid),lfrsid(_lfrsid) 
       { assert(instanz!=ppsInstanzID::None) ; }
 
 
-     Produziert(AufEintrag ae,AuftragBase::mengen_t m,int _uid,
+     Produziert(const Kunde::ID kunde,AufEintrag ae,AuftragBase::mengen_t m,int _uid,
          LieferscheinBase::ID _lfrsid=LieferscheinBase::none_id)
         : instanz(ae.Instanz()) // das braucht man, weil Instanz keinen ctor hat
-      { *this=Produziert(ae.Instanz(),ae.Artikel(),m,_uid,_lfrsid);
+      { *this=Produziert(ae.Instanz(),ae.Artikel(),m,_uid,
+                         kunde,_lfrsid);
         AE=ae; }
-
-//    Produziert(AufEintrag AE,int _uid)
-//      : Produziert
 
      void NichtSelbst();
      void Lager_abschreiben();

@@ -1,4 +1,4 @@
-/* $Id: Auftrag.h,v 1.17 2002/10/04 08:23:20 thoma Exp $ */
+/* $Id: Auftrag.h,v 1.18 2002/10/04 13:57:48 thoma Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -33,7 +33,7 @@
 class Auftrag : public AuftragBase
 {
 protected:
-	int kundennr;
+	Kunde::ID kundennr;
 	ManuProC::Datum datum;
 	AufStatVal status;
 	std::string youraufnr;

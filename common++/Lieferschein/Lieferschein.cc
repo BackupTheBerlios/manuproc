@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.13 2002/10/04 08:23:21 thoma Exp $ */
+/* $Id: Lieferschein.cc,v 1.14 2002/10/04 13:57:49 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -58,8 +58,7 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
    {  SelectedFullAufList::iterator i=auftraglist.aufidliste.begin();
       LieferscheinEntry(*this, *i,artikel, anzahl,mengeneinheit,palette,false);
 
-//      Produziert(instanz->Id(),artikel,menge,getuid(),Id()).NichtSelbst();      
-      Produziert(*i,menge,getuid(),Id()).NichtSelbst();      
+      Produziert(kunde->Id(),*i,menge,getuid(),Id()).NichtSelbst();      
 //      i->abschreiben(menge,Id());
    }
    else
@@ -77,8 +76,7 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
            else lmenge=abmenge;
            LieferscheinEntry(*this,*i,artikel,lstueck,lmenge,0,true);
 
-//	   Produziert(instanz->Id(),artikel,abmenge,getuid(),Id()).NichtSelbst();           
-	   Produziert(*i,abmenge,getuid(),Id()).NichtSelbst();           
+	   Produziert(kunde->Id(),*i,abmenge,getuid(),Id()).NichtSelbst();           
 //           i->abschreiben(abmenge,Id());
 
            menge-=abmenge;
@@ -105,9 +103,12 @@ void Lieferschein::push_back(AufEintrag &aufeintrag,
  if(!menge) mng = anzahl;
  else mng= anzahl*menge;
  
-// Produziert(instanz->Id(),artikel,mng,getuid(),Id()).NichtSelbst();
- Produziert(aufeintrag,mng,getuid(),Id()).NichtSelbst();
-//       aufeintrag.abschreiben(anzahl,Id());
+#ifdef MABELLA_EXTENSIONS
+// aufeintrag.abschreiben(mng,Id());
+ Produziert(kunde->Id(),aufeintrag,mng,getuid(),Id()).NichtSelbst();
+#else       
+ Produziert(kunde->Id(),aufeintrag,mng,getuid(),Id()).NichtSelbst();
+#endif
 }
 
 void Lieferschein::aufraumen() throw(SQLerror)
