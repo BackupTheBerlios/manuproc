@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.cc,v 1.29 2003/04/01 09:24:29 jacek Exp $
+// $Id: Zahlungsart.cc,v 1.30 2003/04/02 12:43:52 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -97,9 +97,11 @@ void Zahlungsart::TeX_out(std::ostream &os,
     }
   else if(verfahren==RIBA)  
     {
+     std::string zz=zahlziel.valid() ? std::string("; valuta: ")+zahlziel.c_str() : "";
+
 	snprintf(strbuf,BSIZE,mld.MLT(
 		(monatsende ? TID::PRINTF_ZAHLUNG3 : TID::PRINTF_ZAHLUNG4)).c_str(),
-	     	zahlungsfrist);
+	     	zahlungsfrist,zz.c_str());
 	os << strbuf;
     }
   else
@@ -217,9 +219,11 @@ void Zahlungsart::TeX_out(std::ostream &os,
     }
   else if(verfahren==RIBA)  
     {
+     std::string zz=zahlziel.valid() ? std::string("; valuta: ")+zahlziel.c_str() : "";
+
 	snprintf(strbuf,BSIZE,mld.MLT(
 		(monatsende ? TID::PRINTF_ZAHLUNG3 : TID::PRINTF_ZAHLUNG4)).c_str(),
-	     	zahlungsfrist);
+	     	zahlungsfrist,zz.c_str());
 	os << strbuf;  
     }
   else  
