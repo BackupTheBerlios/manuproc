@@ -1,4 +1,4 @@
-// $Id: algorithm.cc,v 1.2 2004/07/06 12:20:26 christof Exp $
+// $Id: algorithm.cc,v 1.3 2004/07/06 12:53:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -43,6 +43,10 @@ int main()
        (std::cout,"\t"));
    std::cout << '\n';
    insert_between(m,2u)=3;
+   std::copy(m.begin(),m.end(),std::ostream_iterator<std::pair<unsigned,unsigned> >
+       (std::cout,"\t"));
+   std::cout << '\n';
+   insert_between(m,2u)=2;
    std::copy(m.begin(),m.end(),std::ostream_iterator<std::pair<unsigned,unsigned> >
        (std::cout,"\t"));
    std::cout << '\n';

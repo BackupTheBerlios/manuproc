@@ -1,4 +1,4 @@
-/* $Id: algorithm.h,v 1.1 2004/07/06 12:03:40 christof Exp $ */
+/* $Id: algorithm.h,v 1.2 2004/07/06 12:53:25 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,13 +23,14 @@
 #define FE065553_90DA_4CA9_930F_BE358AFBDFC4
 
 #include <map>
+#include <Misc/compiler_ports.h>
 
 // insert a new element at where into a map, 
 // moving up all existing (following) elements as needed
 
 template <class K,class P>
  P &insert_between(std::map<K,P> &cont, const K &where, bool init=true)
-{  std::map<K,P>::iterator i=cont.find(where);
+{  NOTGCC295(typename) std::map<K,P>::iterator i=cont.find(where);
    if (i==cont.end()) return cont[where];
    K away=where;
    ++away;
