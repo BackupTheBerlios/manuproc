@@ -97,6 +97,22 @@ public:
 };
 
 
+class LiefHasStatus : public std::unary_function<LieferscheinEntry,bool>
+{
+ AufStatVal status;
+
+public:
+ explicit LiefHasStatus(const AufStatVal st):status(st) {}
+ bool operator() (cH_RowDataBase l) const 
+   {
+    Handle<const Data_Lieferdaten> h_ld=
+    	l.cast_dynamic<const Data_Lieferdaten>();
+    if(status != h_ld->get_LieferscheinEntry().Status()) return true;
+    return false;
+   }
+};
+
+
 
 class cH_Data_Lieferdaten : public Handle<const Data_Lieferdaten>
 {
@@ -105,6 +121,7 @@ class cH_Data_Lieferdaten : public Handle<const Data_Lieferdaten>
  public:
    cH_Data_Lieferdaten(const Data_Lieferdaten *r) : Handle<const Data_Lieferdaten>(r){}
 };
+
 
 /*
 class Data_Lieferdaten_Node : public TreeRow

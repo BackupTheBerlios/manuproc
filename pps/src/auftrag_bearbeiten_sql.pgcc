@@ -1,4 +1,4 @@
-// $Id: auftrag_bearbeiten_sql.pgcc,v 1.13 2003/10/22 10:19:11 jacek Exp $
+// $Id: auftrag_bearbeiten_sql.pgcc,v 1.14 2004/02/13 10:24:31 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -52,6 +52,7 @@ throw(SQLerror)
        		ltrim(to_char(auftragid,'000000')) like :PAT
                 and (:KUNDE<1 or kundennr=:KUNDE)
                 and instanz = :INSTANZ
+		and auftragid not in (0,1,2)
        		order by auftragid;
        	
        exec sql open AUFNR_CURSOR;

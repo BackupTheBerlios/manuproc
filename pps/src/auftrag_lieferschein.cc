@@ -49,7 +49,9 @@ void auftrag_lieferschein::on_liefer_close()
 {   
  if(lieferschein->Id()!=LieferscheinBase::none_id)
    {
-    if(lager_buchen->sensitive())
+    DVI j = find_if(datavec_liefdata.begin(),datavec_liefdata.end(),
+		LiefHasStatus((AufStatVal)UNCOMMITED));
+    if(j!=datavec_liefdata.end())
       on_lager_buchen_clicked();
     else
       destroy();	
@@ -173,7 +175,7 @@ void auftrag_lieferschein::on_liefnr_activate()
    spinbutton_paeckchen->grab_focus();
  }
  }catch(std::exception &e) {std::cerr<<e.what();}
- lager_buchen->set_sensitive(lieferschein->RngNr() != ManuProcEntity<>::none_id); 
+ lager_buchen->set_sensitive(true); 
 }
 
 void auftrag_lieferschein::on_lieferkunde_activate()
