@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.h,v 1.16 2004/06/28 15:11:11 christof Exp $
+// $Id: TreeViewUtility.h,v 1.17 2004/06/29 07:02:17 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,6 +23,9 @@
 #include <vector>
 #include <gtkmm/treeview.h>
 #include <gtkmm/liststore.h>
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#  include <sigc++/compatibility.h>
+#endif
 
 // see webkartei/src/Kette.cc for a nice example on how to use this
 
