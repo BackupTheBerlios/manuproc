@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.29 2003/05/16 14:41:59 christof Exp $
+// $Id: adjust_store.cc,v 1.30 2003/05/20 10:47:25 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -22,6 +22,8 @@
 #include <getopt.h>
 #include <unistd.h>
 #include <Auftrag/ppsInstanzReparatur.h>
+#include <Auftrag/sqlAuftragSelector.h>
+#include <Auftrag/selFullAufEntry.h>
 
 void usage(const std::string &s)
 {
@@ -32,33 +34,13 @@ void usage(const std::string &s)
            "\t   (in form von 1er(plan-)Aufträgen berücksichtigt. Sollte mehr\n"
            "\t   vorgemerkt sein, als im Lager drin ist, so sird die Vormerkung\n"
            "\t   reduziert.\n"
-#if 0           
-           "\tB1:Es wird sichergestellt, daß ALLE Aufträge, die nicht zu den\n"
-           "\t   Kundenaufträgen oder exterenen Bestellungen gehören die eigene\n"
-           "\t   KundenID haben.\n"
-           "\tB2:Es wird sichergestellt, daß 0er- und 2er-Aufträge den Status OPEN\n"
-           "\t   erhalten\n"
-           "\tB3:Es wird sichergestellt, daß für 0er- und 2er-Aufträge die gelieferte\n"
-           "\t   Menge null ist.\n"
            "\tC: Es wird sichergestellt, daß nur entweder 0er- oder 2er-Aufträge\n"
            "\t   (pro Instanz,Artikel,Lieferdatum) existieren.\n"
-           "\tD: Zuordnungen VON 0er-Aufträgen AN 1|3 existieren auf EINER Instanz NICHT.\n"
-           "\t\t(beheben: 0er erniedrigen, Bestellung nach unten auf 1er übertragen)\n"
-           "\tE: Summe der Zuordnungen VON 2er-Aufträgen AN 1|3 == 2.getStueck().\n"
-           "\tF: Summe der Zuordnungen VON 2er-Aufträgen AN 1|3 <= 1|3.getRestStueck().\n"
-           "\tG: Kundenaufträge und 2er haben keine Eltern.\n"
-           "\tH: LagerInstanzen: 1er haben keine Kinder, 2er haben weder Kinder noch Eltern\n"
-           "\tK: Zuordnungen VON Kundenaufträgen: ZuordnungsMENGE,AuftragsINSTANZ,\n"
-           "\t                                    AuftragsARTIKEL.\n"
-           "\tS: Zuordnungen AN einen Auftrag (von den Eltern) testen\n"
-           "\tT: Zuordnungen VON einen Auftrag (an die Kinder) testen\n"
-           "\tKK:Kinder der Kundenaufträge an die noch benötigte Menge anpassen\n"
-#endif           
-           "\t*: Alle Analysen/Reparaturen auf einmal (meist mit -I) (außer A,KK)\n";
+           "\t*/X: Alle Analysen/Reparaturen auf einmal (meist mit -I) (außer A,C)\n";
            
  std::cerr << "USAGE:  ";
- std::cerr << s <<" [-i<instanz>|-I]  -a<aktion> [-d<database> -h<dbhost> -y] \n"
-           "\twobei die aktion=[A|B|C|D|E|F|K] ist.\n"
+ std::cerr << s <<" [-i<instanz>|-I]  -a<aktion> [-d<database>] [-h<dbhost>] [-y] \n"
+           "\twobei die aktion=[A|C|X|*] ist.\n"
            "\t-y Analysemodus (keine Reparaturen)\n"
            "\t-I führt die Tests für alle Instanzen durch\n\n";
  exit(1);
@@ -73,18 +55,20 @@ bool check_for(const std::string &pname,cH_ppsInstanz I,const std::string &aktio
       if(I->EigeneLagerKlasseImplementiert()) RI.ReparaturLager(getuid(),analyse_only);
       else std::cout << "\t"<< I << "'A' nicht sinnvoll\n";
      }
-//    else if(aktion=="KK"&& I->KundenInstanz()) alles_ok=RI.ReparaturKK_KundenKinder(getuid(),analyse_only);
-    // ab hier alles einlesen, dann die tests durchführen
-//    else if(aktion=="B" &&!I->KundenInstanz()) RI.Reparatur_Konsistenz(analyse_only);
-//    else if(aktion=="C" &&!I->KundenInstanz()) RI.Reparatur_0er_und_2er(getuid(),analyse_only);
-//    else if(aktion=="D" &&!I->KundenInstanz()) alles_ok=RI.ReparaturD_0_ZuSumme_1(getuid(),analyse_only);
-//    else if(aktion=="E" &&!I->KundenInstanz()) alles_ok=RI.ReparaturE_2_ZuSumme_1(getuid(),analyse_only);
-//    else if(aktion=="F" &&!I->KundenInstanz()) alles_ok=RI.ReparaturF_2_ZuSumme_1Rest(getuid(),analyse_only);
-//    else if(aktion=="G")                       alles_ok=RI.ReparaturG_keine_Eltern(getuid(),analyse_only);
-//    else if(aktion=="H" && I->LagerInstanz())  alles_ok=RI.ReparaturH_LagerZuordnungen(getuid(),analyse_only);
-//    else if(aktion=="K" && I->KundenInstanz()) alles_ok=RI.ReparaturK_Kundenzuordnung(getuid(),analyse_only);
-//    else if(aktion=="S")                       alles_ok=RI.ReparaturST_AuftragsZuordnung(getuid(),analyse_only,false);
-//    else if(aktion=="T")                       alles_ok=RI.ReparaturST_AuftragsZuordnung(getuid(),analyse_only,true);
+      else if(aktion=="C" &&!I->KundenInstanz()) RI.Reparatur_0er_und_2er(getuid(),analyse_only);
+    else if (aktion=="*" || aktion=="X")
+    {  SQLFullAuftragSelector psel=SQLFullAuftragSelector::sel_InstanzAlle(I->Id());
+       SelectedFullAufList K(psel);
+       bool alles_ok=true;
+       for(SelectedFullAufList::iterator i = K.begin();i!=K.end(); ++i)
+       {  AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(*i,
+       			AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
+       	  AufEintragZu::map_t kinder=AufEintragZu::get_Kinder_nach_Artikel(*i);
+       	  alles_ok&=RI.Eltern(*i,eltern,analyse_only);
+       	  alles_ok&=RI.Lokal(*i,analyse_only);
+       	  alles_ok&=RI.Kinder(*i,kinder,analyse_only);
+       }
+    }
     else usage(pname);
    return alles_ok;
 }
