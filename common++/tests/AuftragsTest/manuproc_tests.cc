@@ -46,7 +46,7 @@ static bool ManuProCTest(AufEintrag &AE)
       Lieferschein liefs(EINKAUF,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
       LieferscheinEntryBase lseb(liefs,liefs.push_back(PAE, ARTIKEL_GRANULAT_GRUEN,1,200));
 //unspezifisch   liefs.push_back(ARTIKEL_GRANULAT_GRUEN,1,200);
-      LieferscheinEntry(lseb).changeStatus(OPEN,liefs,false);
+      LieferscheinEntry(lseb).changeStatus(OPEN,false);
       vergleichen(Check::Menge|Check::Lieferschein,"liefern_granulat","Lieferung (bestimmt) Granulat","L");
       }
 
@@ -62,7 +62,7 @@ static bool ManuProCTest(AufEintrag &AE)
       // Unspezifischen Lieferschein schreiben
       Lieferschein liefs(EINKAUF,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
       LieferscheinEntryBase lseb(liefs,liefs.push_back(ARTIKEL_METALL,1,5));
-      LieferscheinEntry(lseb).changeStatus(OPEN,liefs,false);
+      LieferscheinEntry(lseb).changeStatus(OPEN,false);
       vergleichen(Check::Lieferschein|Check::Menge,"liefern_metall","Lieferung (unbestimmt) Metall","L2");
       }
 
@@ -78,35 +78,35 @@ static bool ManuProCTest(AufEintrag &AE)
       // Unspezifischen Lieferschein schreiben
       Lieferschein liefs(GIESSEREI,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
       LieferscheinEntryBase lseb(liefs,liefs.push_back(ARTIKEL_GRIFF_ROT,500));
-      LieferscheinEntry(lseb).changeStatus(OPEN,liefs,false);
+      LieferscheinEntry(lseb).changeStatus(OPEN,false);
       vergleichen(Check::Lieferschein|Check::Menge,"liefern_griff","Lieferschein (Gießerei) anlegen","LG");
       }
 
       {// Produktion in der Werkstatt ohne daß vorher etwas geplant wurde
       Lieferschein liefs(WERKSTATT,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
       LieferscheinEntryBase lseb(liefs,liefs.push_back(ARTIKEL_SCHRAUBENZIEHER_GELB,600));
-      LieferscheinEntry(lseb).changeStatus(OPEN,liefs,false);
+      LieferscheinEntry(lseb).changeStatus(OPEN,false);
       vergleichen(Check::Lieferschein|Check::Menge,"liefern_schraubendr","Produktion in der Werkstatt anlegen","LW");
       }
 
       {// Lieferscheinschreiben für das Schraubenzieherlager => auslagern
       Lieferschein liefs(SCHRAUBENZIEHERLAGER,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
       LieferscheinEntryBase lseb(liefs,liefs.push_back(ARTIKEL_SCHRAUBENZIEHER_ROT,450));
-      LieferscheinEntry(lseb).changeStatus(OPEN,liefs,false);
+      LieferscheinEntry(lseb).changeStatus(OPEN,false);
       vergleichen(Check::Lieferschein|Check::Menge,"auslagern","Lieferschein für das Rohwarenlager (auslagern)","LR");
       }
 
       {// Lieferscheinschreiben für den Kunden
       Lieferschein liefs(KUNDENINSTANZ,cH_Kunde(KUNDE));
       LieferscheinEntryBase lseb(liefs,liefs.push_back(ARTIKEL_SORTIMENT_BUNT,450));
-      LieferscheinEntry(lseb).changeStatus(OPEN,liefs,false);
+      LieferscheinEntry(lseb).changeStatus(OPEN,false);
       vergleichen(Check::Lieferschein|Check::Menge,"ausliefern","Lieferschein für den Kunden","LK");
       }
 
       {// Lieferscheinschreiben für den Kunden  (Überlieferung)
       Lieferschein liefs(KUNDENINSTANZ,cH_Kunde(KUNDE));
       LieferscheinEntryBase lseb(liefs,liefs.push_back(ARTIKEL_SORTIMENT_BUNT,60));
-      LieferscheinEntry(lseb).changeStatus(OPEN,liefs,false);
+      LieferscheinEntry(lseb).changeStatus(OPEN,false);
       vergleichen(Check::Lieferschein|Check::Menge,"ueberliefern","Lieferschein für den Kunden (Überlieferung)","LKÜ");
       }
    return true;
@@ -123,36 +123,36 @@ static bool AutoProduktion()
       
      {Lieferschein liefs(ppsInstanz::ID(41),cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
       LieferscheinEntryBase lseb(liefs,liefs.push_back(ArtikelBase(41),5));
-      LieferscheinEntry(lseb).changeStatus(OPEN,liefs,false);
+      LieferscheinEntry(lseb).changeStatus(OPEN,false);
       vergleichen(Check::Lieferschein|Check::Menge,"ap_liefern_prod","Lieferung Edukt","LE");
 
-      LieferscheinEntry(lseb).changeMenge(0,0,liefs,false);
+      LieferscheinEntry(lseb).changeMenge(0,0,false);
       vergleichen(Check::Lieferschein|Check::Menge,"ap_liefern_weg","Lieferung Edukt zurücknehmen","-E");
      }
       
      {Lieferschein liefs2(KUNDENINSTANZ,cH_Kunde(KUNDE));
       LieferscheinEntryBase lseb(liefs2,liefs2.push_back(ArtikelBase(40),5));
-      LieferscheinEntry(lseb).changeStatus(OPEN,liefs2,false);
+      LieferscheinEntry(lseb).changeStatus(OPEN,false);
       vergleichen(Check::Lieferschein|Check::Menge,"ap_liefern","Lieferung Produkt","L");
 
-      LieferscheinEntry(lseb).changeMenge(0,0,liefs2,false);
+      LieferscheinEntry(lseb).changeMenge(0,0,false);
       vergleichen(Check::Lieferschein|Check::Menge,"ap_zurueck","Lieferung Produkt zurücknehmen","-");
      }
 
      {Lieferschein liefs(ppsInstanz::ID(41),cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
       LieferscheinEntryBase lseb(liefs,liefs.push_back(ArtikelBase(41),5));
-      LieferscheinEntry(lseb).changeStatus(OPEN,liefs,false);
+      LieferscheinEntry(lseb).changeStatus(OPEN,false);
       vergleichen(Check::Lieferschein|Check::Menge,"ap_liefern_prod2","Lieferung Edukt","LE2");
 
       Lieferschein liefs2(KUNDENINSTANZ,cH_Kunde(KUNDE));
       LieferscheinEntryBase lseb2(liefs2,liefs2.push_back(ArtikelBase(40),5));
-      LieferscheinEntry(lseb2).changeStatus(OPEN,liefs2,false);
+      LieferscheinEntry(lseb2).changeStatus(OPEN,false);
       vergleichen(Check::Lieferschein|Check::Menge,"ap_liefern2","Lieferung Produkt","L2");
 
-      LieferscheinEntry(lseb2).changeMenge(0,0,liefs2,false);
+      LieferscheinEntry(lseb2).changeMenge(0,0,false);
       vergleichen(Check::Lieferschein|Check::Menge,"ap_zurueck2","Lieferung Produkt zurücknehmen","-2");
 
-      LieferscheinEntry(lseb).changeMenge(0,0,liefs,false);
+      LieferscheinEntry(lseb).changeMenge(0,0,false);
       vergleichen(Check::Lieferschein|Check::Menge,"ap_liefern_weg2","Lieferung Edukt zurücknehmen","-E2");
      }
       }
