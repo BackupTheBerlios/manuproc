@@ -31,6 +31,7 @@ auftrag_copy::auftrag_copy(AuftragFull *auftrag)
  std::string nuraktiv(" and coalesce(aktiv,true)=true");
  neu_aufkunde->Einschraenkung(nuraktiv,true);
  neu_aufkunde->EinschraenkenKdGr(KundengruppeID::Auftragsadresse);  
+ neu_aufkunde->setExpandStr2(true);
 }
 
 
