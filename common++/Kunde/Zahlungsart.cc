@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.cc,v 1.36 2004/03/03 15:32:06 jacek Exp $
+// $Id: Zahlungsart.cc,v 1.37 2004/03/03 16:02:15 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -192,10 +192,12 @@ void Zahlungsart::TeX_out(std::ostream &os,
 	      {TID::LangTXT txt;
 	       if(frist_monate)
 		 txt=TID::PRINTF_ZAHLUNG8;
-	       else if(entityid==29)
-		 txt=TID::PRINTF_ZAHLUNG11;
-	       else
-		 txt=TID::PRINTF_ZAHLUNG7;
+	       else 
+		 {if(entityid==29)
+		    txt=TID::PRINTF_ZAHLUNG11;
+	          else
+		    txt=TID::PRINTF_ZAHLUNG7;
+		 }
 
 		snprintf(tmpbuf,sizeof tmpbuf,
 			mld.MLT(txt).c_str(),
@@ -317,10 +319,12 @@ void Zahlungsart::TeX_out(std::ostream &os,
 		TID::LangTXT txt;
 	       if(frist_monate)
 		 txt=TID::PRINTF_ZAHLUNG8;
-	       else if(entityid==29)
-		 txt=TID::PRINTF_ZAHLUNG11;
-	       else
-		 txt=TID::PRINTF_ZAHLUNG7;
+	       else 
+		 {if(entityid==29)
+		    txt=TID::PRINTF_ZAHLUNG11;
+	          else
+		    txt=TID::PRINTF_ZAHLUNG7;
+		  }
 
 		snprintf(tmpbuf,sizeof tmpbuf,
 			mld.MLT(txt).c_str(),
