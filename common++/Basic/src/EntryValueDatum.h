@@ -1,0 +1,48 @@
+/* $Id: EntryValueDatum.h,v 1.1 2001/08/20 08:26:21 christof Exp $ */
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#ifndef ENTRYVALUE_DATUM_H
+#define ENTRYVALUE_DATUM_H
+
+#include <Aux/EntryValueBase.h>
+#include <Aux/Datum.h>
+
+class EntryValueDatum : public EntryValueBase
+{
+ Petig::Datum datum;
+
+public:
+ EntryValueDatum(const Petig::Datum &v) 
+ : datum(v) {}
+   
+ virtual bool operator==(const EntryValueBase &v) const;
+ virtual bool operator<(const EntryValueBase &v) const;
+ const Petig::Datum &Datum() const { return datum; }
+ virtual int getIntVal() const { return int_NaN;}
+ virtual const std::string getStrVal() const { return datum.c_str();}
+};
+
+class cH_EntryValueDatum : public cH_EntryValue
+{
+public:
+ cH_EntryValueDatum(const Petig::Datum &v) 
+ : cH_EntryValue(new EntryValueDatum(v)) {}
+};
+  
+#endif 

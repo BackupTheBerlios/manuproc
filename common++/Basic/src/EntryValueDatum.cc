@@ -1,6 +1,6 @@
-// $Id: Zeitpunkt_new_write.cc,v 1.3 2001/08/20 08:24:31 christof Exp $
+/* $Id: EntryValueDatum.cc,v 1.1 2001/08/20 08:26:21 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,13 +17,23 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <Aux/EntryValueDatum.h>
+#include <typeinfo> // for bad_cast
 
-#include <Aux/Zeitpunkt_new.h>
-#include <Aux/string0.h>
+bool EntryValueDatum::operator==(const EntryValueBase &v) const
+{  try
+   {  const EntryValueDatum &b=dynamic_cast<const EntryValueDatum &>(v);
+      return datum==b.datum;
+   } catch (std::bad_cast &e)
+   {  return false;
+   }
+}
 
-void Zeitpunkt_new::write(PostgresTimestamp a) const
-{  snprintf0((char*)a,a.Size(),"%04d-%d-%d %d:%02d:%02d%+d",
-	datum.Jahr(),datum.Monat(),datum.Tag(),
-	prec>=hours?hour:0,prec>=minutes?minute:0,
-	prec>=seconds?second:0,minutes_from_gmt/60);
+bool EntryValueDatum::operator<(const EntryValueBase &v) const
+{  try
+   {  const EntryValueDatum &b=dynamic_cast<const EntryValueDatum &>(v);
+      return datum<b.datum;
+   } catch (std::bad_cast &e)
+   {  return false;
+   }
 }

@@ -1,4 +1,4 @@
-// $Id: string0.h,v 1.2 2001/06/27 08:04:09 christof Exp $
+// $Id: string0.h,v 1.3 2001/08/20 08:24:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,7 +28,11 @@
 extern "C" {
 #else
 #include <stdio.h>
-#include <std::string.h>
+#include <string.h>
+#endif
+
+#ifdef __MINGW32__
+int vsnprintf(char *str, size_t size, const char  *format, va_list ap);
 #endif
 
 static inline int snprintf0(char *str,unsigned long n,char const *fmt,...)

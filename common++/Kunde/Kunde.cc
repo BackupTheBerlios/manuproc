@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.3 2001/07/05 09:23:02 christof Exp $
+// $Id: Kunde.cc,v 1.4 2001/08/20 08:24:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -43,11 +43,13 @@ const std::string Kunde::LaTeX_von() const
 
 const std::string Kunde::LaTeX_an(const std::string& wo) const
 {
-  std::string adr1,adr2;
+  std::string adr0,adr1,adr2,adr3;
   if ((wo=="Lieferschein" || !rng_an_postfach || !adresse.postfach.size()) && adresse.strasse.size())
    {
-     adr1 = adresse.strasse+ " " +adresse.hsnr;
+     adr0 = postanwvor();
+     adr1 += adresse.strasse+ " " +adresse.hsnr;
      adr2 =  adresse.plz+" "+adresse.ort;
+     adr3 = postanwnach();
    }
   else 
    {
@@ -56,8 +58,11 @@ const std::string Kunde::LaTeX_an(const std::string& wo) const
    }
 
   std::string s="{\\large Firma\\\\ ";
-  s+= string2TeX(getName()) +"\\\\"+ string2TeX(adr1) 
-      + "\\\\[1ex]" + string2TeX(adr2) +"}\\\\\n";
+  s+= string2TeX(getName()) +"\\\\";
+  if (postanwvor()!="") s+= string2TeX(adr0) +"\\\\";
+  s += string2TeX(adr1); 
+  if (postanwnach()!="") s+= "\\\\" + string2TeX(adr3) ;
+  s += "\\\\[1ex]" + string2TeX(adr2) +"}\\\\\n";
   return  s;
 }
 

@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new_write.cc,v 1.3 2001/08/20 08:24:31 christof Exp $
+// $Id: artbez.cc,v 1.1 2001/08/20 08:27:13 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,13 +17,14 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <iostream>
+#include <Artikel/ArtikelBezeichnung.h>
+#include <Aux/exception.h>
+#include <Aux/dbconnect.h>
 
-#include <Aux/Zeitpunkt_new.h>
-#include <Aux/string0.h>
-
-void Zeitpunkt_new::write(PostgresTimestamp a) const
-{  snprintf0((char*)a,a.Size(),"%04d-%d-%d %d:%02d:%02d%+d",
-	datum.Jahr(),datum.Monat(),datum.Tag(),
-	prec>=hours?hour:0,prec>=minutes?minute:0,
-	prec>=seconds?second:0,minutes_from_gmt/60);
+int main()
+{  Petig::PrintUncaughtExceptions();
+   Petig::dbconnect();
+   std::cout << ArtikelBezeichnung(209931,10000).Bezeichnung() << '\n';
+   Petig::dbdisconnect();
 }

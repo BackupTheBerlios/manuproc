@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.cc,v 1.2 2001/06/27 08:04:09 christof Exp $
+// $Id: Zeitpunkt_new.cc,v 1.3 2001/08/20 08:24:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -119,7 +119,11 @@ void Zeitpunkt_new::calculate_TZ(int isdst) const throw()
    tm.tm_year=datum.Jahr()-1900;
    tm.tm_isdst=isdst;
    mktime(&tm);
+#ifdef __MINGW32__
+   minutes_from_gmt=tm.tm_isdst?120:60;
+#else
    minutes_from_gmt=tm.tm_gmtoff/60;
+#endif
 }
 
 void Zeitpunkt_new::normalize_TZ() const throw()
@@ -138,5 +142,9 @@ Zeitpunkt_new::Zeitpunkt_new(time_t t) throw()
    hour=tm->tm_hour;
    minute=tm->tm_min;
    second=tm->tm_sec;
+#ifdef __MINGW32__
+   minutes_from_gmt=tm->tm_isdst?120:60;
+#else
    minutes_from_gmt=tm->tm_gmtoff/60;
+#endif
 }

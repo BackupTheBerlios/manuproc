@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.5 2001/07/05 09:23:02 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.6 2001/08/20 08:24:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -118,6 +118,7 @@ void Kunde::update() throw(SQLerror)
    double KUNDENUMSATZ,PLANUMSATZ,UMSATZ, RABATT,EINZUGRABATT;
    int SKONTOFRIST;
    int BANKINDEX;
+   short IBANKINDEX=0;
    int PREISLISTE;
    char *VEREIN;
    bool BANKEINZUG;
@@ -161,6 +162,7 @@ void Kunde::update() throw(SQLerror)
  NOTIZ=(char *)kundendaten.notiz.c_str();
 
 
+ if (BANKINDEX==0) IBANKINDEX=-1;
  Transaction tr;
 
  exec sql UPDATE kunden SET
@@ -191,7 +193,7 @@ void Kunde::update() throw(SQLerror)
         skontofrist             =       :SKONTOFRIST,
         verein                  =       :VEREIN,
         bankeinzug              =       :BANKEINZUG,
-        bankindex               =       :BANKINDEX,
+        bankindex               =       :BANKINDEX:IBANKINDEX,
         ktonr                   =       :KTONR,
         notiz                   =       :NOTIZ
      WHERE kundennr = :KUNDENNR ;

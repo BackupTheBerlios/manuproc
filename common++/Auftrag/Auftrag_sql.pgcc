@@ -63,7 +63,22 @@ void Auftrag::setJahrgang(int jahr) throw(SQLerror)
  SQLerror::test(__FILELINE__"Jahrgang setzen");
 }
 
+void Auftrag::setWaehrung(cP_Waehrung w) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int WAEHRUNG;
+ int AUFTRAGID;
+ int INSTANZ;
+ exec sql end declare section;
 
+ AUFTRAGID = Id();
+ INSTANZ = (int)Instanz();
+ WAEHRUNG = w->Id();
+ 
+ exec sql update auftrag set waehrung = :WAEHRUNG 
+   where auftragid= :AUFTRAGID and instanz = :INSTANZ;
+ SQLerror::test(__FILELINE__"Waehrung setzen");
+}
 
 void Auftrag::setStatusAuftrag(AufStatVal st) throw(SQLerror)
 {exec sql begin declare section;
@@ -263,8 +278,6 @@ void Auftrag::setYourAufNr(const std::string &yanr) throw(SQLerror)
 	where auftragid= :AUFTRAGID and instanz = :INSTANZ;
  SQLerror::test("setYourAufNr: update youraufnr");
 }
-
-
 
 int Auftrag::getIdFromYourAufId(const char *youraufid) throw(SQLerror)
 {

@@ -53,6 +53,7 @@ public:
 	void setYourAufNr(const std::string &yanr) throw(SQLerror);
 	void setStatusAuftrag(AufStatVal st) throw(SQLerror);
 	void setJahrgang(int jahr) throw(SQLerror);
+	void setWaehrung(cP_Waehrung w) throw(SQLerror);
 	
         const Petig::Datum &getDatum() const { return datum; } 
 	AufStatVal getStatus() const { return status; }

@@ -31,7 +31,6 @@ libcommon___a_LIBADD= \
 		Aux/Ausgabe_neu.o \
 		Aux/Changejournal_sql.o \
 		Aux/Datum.o \
-		Aux/EntryValue.o \
 		Aux/EntryValueBase.o \
 		Aux/EntryValueDatum.o \
 		Aux/EntryValueIntString.o \

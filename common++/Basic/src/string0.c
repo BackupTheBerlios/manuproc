@@ -1,4 +1,4 @@
-// $Id: string0.c,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: string0.c,v 1.2 2001/08/20 08:24:31 christof Exp $
 
 // these are external functions for the static inline versions in string.h
 // just in case you don't want to optimize
@@ -6,6 +6,10 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+
+#ifdef __MINGW32__
+int vsnprintf(char *str, size_t size, const char  *format, va_list ap);
+#endif
 
 int snprintf0(char *str,unsigned long n,char const *fmt,...)
 {  int retval;

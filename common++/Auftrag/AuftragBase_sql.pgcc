@@ -1,0 +1,101 @@
+/*  pps: ManuProC's production planning system
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include <Auftrag/AuftragBase.h>
+#include<stdio.h>
+#include <Aux/Transaction.h>
+#include<Aux/Changejournal.h>
+#include <Auftrag/auftrag_status.h>
+
+exec sql include sqlca;
+
+void AuftragBase::insertNewEntry(unsigned long int bestellt, 
+  Petig::Datum lieferdatum, ArtikelBase::ID artid) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int AUFTRAGID;
+ long ARTIKELID;
+ int INSTANZ;
+ int ZEILENNR;
+ int BESTELLT;
+ char LIEFERDATUM[21];
+ double PREIS=0;
+ int RABATT=0;
+ float PREISMENGE=0;
+ int STATUS;
+ exec sql end declare section;
+ 
+ AUFTRAGID = Id();
+ INSTANZ = Instanz();
+
+ STATUS=(AufStatVal)OPEN;
+
+ BESTELLT = bestellt;
+ lieferdatum.write_postgres(LIEFERDATUM,sizeof LIEFERDATUM);
+// PREIS = aufentry.getPreis().Wert();
+// RABATT = aufentry.Rabatt();
+// PREISMENGE = aufentry.Preismenge();
+
+ Transaction tr;
+ exec sql lock table auftragentry in exclusive mode;
+ SQLerror::test("AufEintrag: lock auftragentry");	
+
+ ARTIKELID=artid;
+// artikel=cH_AufArtikel(ARTIKELID,schema);
+
+ exec sql select coalesce(max(zeilennr)+1,1) into :ZEILENNR from auftragentry
+	where auftragid= :AUFTRAGID;
+ SQLerror::test("generate next zeilennr");
+
+ exec sql insert into auftragentry (instanz,auftragid, zeilennr,
+	bestellt,geliefert,lieferdate,artikelid,status,
+	preis,rabatt,preismenge)
+	values (:INSTANZ, :AUFTRAGID, :ZEILENNR, :BESTELLT, 0, :LIEFERDATUM,
+		:ARTIKELID, :STATUS, :PREIS/100.0, :RABATT/100.0,
+		:PREISMENGE);
+ SQLerror::test(__FILELINE__" insert into auftragentry");	
+
+	
+ auftragid = AUFTRAGID;
+ instanz = (ppsInstanz::ppsInstId)INSTANZ;
+// zeilennr = ZEILENNR;
+ bestellt = BESTELLT;
+// menge = bestellt*artikel->Stueckgroesse();
+// rest = menge;
+ lieferdatum = Petig::Datum(LIEFERDATUM);
+// geliefert = 0;
+// status=(AufStatVal)STATUS;
+// preis=Preis(PREIS,cP_Waehrung(Waehrung::DM));
+// rabatt=RABATT;
+// preismenge=PREISMENGE;
+
+ try{
+     pps_ChJournalEntry::newChange(
+                        instanz,
+			AufEintragBase2(instanz,AUFTRAGID,ZEILENNR),
+                        ArtikelBase(ARTIKELID),
+                        (double)BESTELLT,
+                        (double)BESTELLT,
+                        pps_ChJournalEntry::CH_MENGE);
+        }
+    catch(SQLerror &e)
+      {tr.rollback(); throw; }
+
+ tr.commit();
+}
+

@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.h,v 1.3 2001/07/16 09:54:26 christof Exp $
+// $Id: Zeitpunkt_new.h,v 1.4 2001/08/20 08:24:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -122,6 +122,8 @@ public:
    unsigned int Sekunde() const { return second; }
    // falscher Name
    unsigned int Minuten() const { return minute; }
+   
+    bool valid() const throw() { return datum.valid(); }
 };
 
 std::ostream &operator<<(std::ostream&,const Zeitpunkt_new&);

@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new_write.cc,v 1.3 2001/08/20 08:24:31 christof Exp $
+// $Id: ArtikelStamm.h,v 1.1 2001/08/20 08:27:13 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,13 +17,35 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#ifndef ARTIKELSTAMM_H
+#define ARTIKELSTAMM_H
 
-#include <Aux/Zeitpunkt_new.h>
-#include <Aux/string0.h>
+#include <Artikel/ArtikelBase.h>
+#include <Artikel/ArtikelTyp.h>
+#include <Aux/CacheStatic.h>
 
-void Zeitpunkt_new::write(PostgresTimestamp a) const
-{  snprintf0((char*)a,a.Size(),"%04d-%d-%d %d:%02d:%02d%+d",
-	datum.Jahr(),datum.Monat(),datum.Tag(),
-	prec>=hours?hour:0,prec>=minutes?minute:0,
-	prec>=seconds?second:0,minutes_from_gmt/60);
-}
+class ArtikelStamm
+{	
+	struct payload_t
+	{  ArtikelTyp::typ typ;
+	   int bestellen_bei;
+	   int defaultschema;
+	   
+	   payload_t() : typ((ArtikelTyp::typ)0),  bestellen_bei(1), defaultschema(1) {}
+	};
+	
+	ArtikelBase art;
+	payload_t payload;
+	
+	typedef CacheStatic<ArtikelBase::ID,payload_t> cache_t;
+	static cache_t cache;
+public:
+	ArtikelStamm(const ArtikelBase &ab) throw (SQLerror);
+	ArtikelTyp::typ Warengruppe() const
+	{  return payload.typ; }
+	int BestellenBei() const
+	{  return payload.bestellen_bei; }
+	int defaultSchema() const
+	{  return payload.defaultschema; }
+};
+#endif

@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt.cc,v 1.2 2001/07/16 14:23:12 christof Exp $
+// $Id: Zeitpunkt.cc,v 1.3 2001/08/20 08:24:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,9 +22,11 @@
 #include <iostream>
 
 #define TEST(x) std::cout << (x) << " = " << Zeitpunkt_new(x) << '\n'
+#define TEST2(x) Zeitpunkt_new(x).write(PostgresTimestamp(buf,sizeof buf)); std::cout << (x) << " wrote " << buf << '\n'
 
 int main()
-{  TEST("2001-1-1");
+{  char buf[40];
+   TEST("2001-1-1");
    TEST("31.12.2001");
    TEST("20010819");
    TEST("2001-1-1 1:1:1");
@@ -33,5 +35,9 @@ int main()
    TEST("2001-2-3 4:5:6.7+2");
    TEST("2001-02-13 14:45:56.709213+02");
    TEST("20001231160002170809");
+   TEST2("20001231160002170809");
+   TEST2("31.12.2001");
+   TEST2("2001-2-3 4:5:6.7");
+   TEST2("2001-2-3 4:5:6.7+2");
    return 0;
 }

@@ -128,6 +128,20 @@ Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
 }
 
 
+void Rechnung::setze_Datum(Petig::Datum rgdatum) throw(SQLerror)
+{
+ exec sql begin declare section;
+   int RNGID;
+   char DATE[50]; 
+ exec sql end declare section;
+ RNGID=Id();
+ //strncpy(DATE,rgdatum.c_str(),sizeof(DATE));
+ rgdatum.write_postgres(DATE,sizeof(DATE));
+ exec sql update rechnung set datum=:DATE where rngid=:RNGID;
+ SQLerror::test(__FILELINE__":Rechnung: setze_Datum(Petig::Datum rgdatum)");	
+}
+
+
 void Rechnung::deleteLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror)
 {
  exec sql begin declare section;

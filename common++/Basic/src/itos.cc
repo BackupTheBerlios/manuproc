@@ -19,10 +19,20 @@
 #include <cstdio>
 #include <Aux/itos.h>
 
+#ifdef __MINGW32__
+extern "C" { int snprintf(char *str, size_t size, const  char  *format, ...); }
+#endif
+
 std::string itos(int i)
 {
  char buffer[100];
  snprintf(buffer,sizeof buffer,"%i",i);
+ return(buffer);
+}
+std::string dtos(double i)
+{
+ char buffer[100];
+ snprintf(buffer,sizeof buffer,"%lf",i);
  return(buffer);
 }
 

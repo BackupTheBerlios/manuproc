@@ -1,4 +1,4 @@
-// $Id: Waehrung.h,v 1.4 2001/07/05 09:23:02 christof Exp $
+// $Id: Waehrung.h,v 1.5 2001/08/20 08:24:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -42,10 +42,12 @@ private:
 public:
  Waehrung(WaehID id) throw(SQLerror);
  Waehrung() : wid(0), dmfkt(0) {}
+// Waehrung() {Waehrung(DM);}
  Waehrung(WaehID id, const std::string k, const std::string l, double f)
  	: wid(id), kurz(k), lang(l), dmfkt(f) {}
  WaehID Id() const { return wid; }
  
+ enum_t get_enum() const {return (enum_t)wid;} // finde ich praktischer als Id() MAT
  static double Umrechnung(const Waehrung &von, const Waehrung &nach);
  const std::string Kurzbezeichnung() const { return kurz; }
  const std::string Langbezeichnung() const { return lang; }

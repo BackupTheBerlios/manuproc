@@ -1,4 +1,4 @@
-// $Id: Preis.cc,v 1.3 2001/07/05 09:23:02 christof Exp $
+// $Id: Preis.cc,v 1.4 2001/08/20 08:24:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -89,7 +89,7 @@ std::ostream &operator<<(std::ostream &o,const Preis &p)
 }
 
 const std::string Preis::Typtext() const
-{  return waehrung->Kurzbezeichnung()+'/'+itos(preismenge);
+{  return waehrung->Kurzbezeichnung()+'/'+dtos(preismenge);
 }
 
 Preis::pfennig_cent_t Preis::Gesamtpreis(cP_Waehrung w,int anzahl,float menge,const fixedpoint<2> &rabatt) const

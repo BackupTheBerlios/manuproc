@@ -1,4 +1,4 @@
-// $Id: dbconnect.pgcc,v 1.4 2001/07/05 09:23:02 christof Exp $
+// $Id: dbconnect.pgcc,v 1.5 2001/08/20 08:24:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,6 +24,10 @@
 #include "../config.h"
 #include "Aux/string0.h"
 
+#ifdef __MINGW32__
+extern "C" { int snprintf(char *str, size_t size, const  char  *format, ...); }
+#endif
+
 void Petig::dbconnect(const Connection &c) throw(SQLerror)
 {  exec sql begin declare section;
    char connstr[80];
@@ -46,9 +50,10 @@ void Petig::dbconnect(const Connection &c) throw(SQLerror)
    if(c.Name().size()) strncpy0(NAME,c.Name().c_str(),sizeof NAME);
    else strncpy0(NAME,db.c_str(),sizeof NAME);
 
+#ifndef __MINGW32__
   if (host=="localhost") strncpy0(connstr,db.c_str(),sizeof connstr);
   else 
-#warning snprintf durch itos ersetzen ?
+#endif
 #if 0  
      snprintf0(connstr,sizeof connstr,"tcp:postgresql://%s/%s",host.c_str(),db.c_str());
 #else     

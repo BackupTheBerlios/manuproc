@@ -70,6 +70,7 @@ public:
  void deleteLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror);
  void setze_Rabatt(fixedpoint<2> r) throw(SQLerror);
  const Petig::Datum getDatum() const { return rgdatum; }
+ void setze_Datum(Petig::Datum rgdatum) throw(SQLerror);
 };
 
 #endif

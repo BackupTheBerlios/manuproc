@@ -1,4 +1,4 @@
-// $Id: auto_conversion.cc,v 1.2 2001/07/16 09:54:26 christof Exp $
+// $Id: auto_conversion.cc,v 1.3 2001/08/20 08:24:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -118,6 +118,7 @@ Zeitpunkt_new::Zeitpunkt_new(const char *stamp)
       minutes_from_gmt=strtol(payload,const_cast<char**>(&payload),10)*60;
       if (minutes_from_gmt>12*60 || minutes_from_gmt<-12*60) minutes_from_gmt=0;
    }
+   else calculate_TZ(); // kills milliseconds?
   }
   else // fixed format, obsolete?
   {if (len>=2)

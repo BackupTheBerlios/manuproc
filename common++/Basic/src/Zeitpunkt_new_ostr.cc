@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new_ostr.cc,v 1.2 2001/06/27 08:04:09 christof Exp $
+// $Id: Zeitpunkt_new_ostr.cc,v 1.3 2001/08/20 08:24:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,14 +24,14 @@ std::ostream &operator<<(std::ostream &o,const Zeitpunkt_new &t)
 {  o << t.datum << " ";
    if (t.prec<=Zeitpunkt_new::days) return o;
    char oldfill=o.fill('0');
-   int oldwidth=o.width(2);
    o << t.hour << ":";
+   int oldwidth=o.width(2);
    o.width(2);
    o << (t.prec>=Zeitpunkt_new::minutes ? t.minute : 0);
    if (t.prec>=Zeitpunkt_new::seconds)
    { o << ":";
      o.width(2);
-     o << t.seconds;
+     o << t.second;
      if (t.prec>=Zeitpunkt_new::milliseconds && t.millisecond) 
      {  o << '.';
         o.width(6);
@@ -41,7 +41,6 @@ std::ostream &operator<<(std::ostream &o,const Zeitpunkt_new &t)
    if (t.minutes_from_gmt)
    {  o << ' ';
       if (t.minutes_from_gmt>0) o << '+';
-      o.width(2);
       o << (t.minutes_from_gmt/60.0);
    }
    o.width(oldwidth); o.fill(oldfill);
