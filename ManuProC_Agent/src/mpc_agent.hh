@@ -20,6 +20,7 @@ class mpc_agent : public mpc_agent_glade
 {  
  void on_beenden_activate();
  void on_kunde_activate();
+ void on_activate_entry(int enr);
 
 public:
  mpc_agent();

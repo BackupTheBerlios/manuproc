@@ -69,7 +69,12 @@ void mpc_agent::on_beenden_activate()
 
 void mpc_agent::on_kunde_activate()
 {
-
+ std::cout << "Kunde\n";
 }
 
+
+void mpc_agent::on_activate_entry(int enr)
+{
+ std::cout << "hallo" << enr;
+}
 

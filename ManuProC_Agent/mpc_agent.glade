@@ -100,6 +100,7 @@
 		      <property name="int2">0</property>
 		      <property name="last_modification_time">Fri, 12 Mar 2004 21:07:09 GMT</property>
 		      <signal name="activate" handler="on_kunde_activate" last_modification_time="Tue, 13 Apr 2004 23:15:41 GMT"/>
+		      <signal name="activate_entry" handler="on_activate_entry" last_modification_time="Tue, 04 May 2004 11:55:26 GMT"/>
 		    </widget>
 		    <packing>
 		      <property name="padding">0</property>

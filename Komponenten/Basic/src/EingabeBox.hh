@@ -1,4 +1,4 @@
-// $Id: EingabeBox.hh,v 1.7 2004/04/27 14:50:31 jacek Exp $
+// $Id: EingabeBox.hh,v 1.8 2004/05/06 13:43:07 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: EingabeBox.hh,v 1.7 2004/04/27 14:50:31 jacek Exp $
+// $Id: EingabeBox.hh,v 1.8 2004/05/06 13:43:07 jacek Exp $
 
 #ifndef _EINGABEBOX_HH
 #define _EINGABEBOX_HH
@@ -49,6 +49,7 @@ class EingabeBox : public Gtk::Table
         static gint try_grab_focus(GtkWidget *w,gpointer gp);
 
 	SigC::Signal0<void> _activate;
+	SigC::Signal1<void,int> _activate_entry;
 	
 	void activate() { _activate(); }
 public:
@@ -64,9 +65,10 @@ public:
 	int size() const
 	{  return visible_size; }
 	void reset();
-	void on_entry_activate(int i);
+//	void on_entry_activate(int i);
 
 	SigC::Signal0<void> &signal_activate() { return _activate; }
-	SigC::Signal1<void,int> activate_entry;
+	SigC::Signal1<void,int> &signal_activate_entry() 
+			{ return _activate_entry; }
 };
 #endif
