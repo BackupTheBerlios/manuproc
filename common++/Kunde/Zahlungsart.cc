@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.cc,v 1.28 2003/03/06 17:45:22 jacek Exp $
+// $Id: Zahlungsart.cc,v 1.29 2003/04/01 09:24:29 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -153,8 +153,7 @@ void Zahlungsart::TeX_out(std::ostream &os,
            	<< " = {\\bf "<<w->TeXsymbol()<<" "
 	   	<<FormatiereTeX_Preis(skontobetrag)<<"}\\\\\n";
 	    if(zahlungsfrist)
-	      os << "Bei Zahlung bis zum "<<rgdatum+zahlungsfrist-
-				vec_skonto[0].skontofrist<<" netto.\\\\\n";
+	      os << "Bei Zahlung bis zum "<<rgdatum+zahlungsfrist<<" netto.\\\\\n";
 	   }
 	 else
 	   {
