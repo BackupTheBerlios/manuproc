@@ -505,15 +505,43 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
         itos(ExtBezSchema::default_id);
 
     if(getVerknr()!=Kunde::none_id)
-      {Query("update auftragentry set provsatz="
-      	"(select case when provsatznr=1 then provsatz1 else provsatz2 end"
-      	" from prov_verkaeufer v, prov_config c"
-	" join "+tabelle+" b on (b.artikel=c.artikel) "
-      	" where b.id=auftragentry.artikelid"
-      	" and v.verknr=? and c.kundennr=v.kundennr and v.kundennr=?)"
+      {
+       float ps1=0.0,ps2=0.0,to_set;
+       Query("select provsatz1, provsatz2 from prov_verkaeufer where"
+	  " verknr=? and kundennr=?") << getVerknr() << getKundennr()
+	  >> ps1 >> ps2;
+       SQLerror::test(__FILELINE__,100);
+
+       if(ps1==ps2) to_set=ps1;
+       else
+	{
+        cH_ExtBezSchema ebz(ExtBezSchema::default_id,ExtBezSchema::default_Typ);
+
+        std::string tabelle="artbez_"+itos(ExtBezSchema::default_Typ)+"_"+
+        		itos(ExtBezSchema::default_id);  
+ 	const ExtBezSchema::BezKomp bk=(*ebz)[std::pair<int,int>(1,1)];
+	std::string first_komp_col=bk.spaltenname;
+
+	int psnr=0;
+	Query q("select provsatznr from prov_config p join "+tabelle+
+		" b on (b."+first_komp_col+"=p.artikel and b.id=?) "
+		"where kundennr=?");
+	q << artikel.Id() << getKundennr();
+	SQLerror::test(__FILELINE__,100);	
+	
+	if(q.Code()!=100)
+	  {q >> psnr; 
+	   if(psnr==0) to_set=0.0;		// no Provision at all
+	   else if(psnr==1) to_set=ps2;		// excepted Provision
+	   else to_set=0.0;		// what to do else ?
+	  } // not found means default provision
+	else to_set=ps1;	// default ProvSatz
+
+ 	}
+
+       Query("update auftragentry set provsatz=?"
       	" where (instanz,auftragid,zeilennr)=(?,?,?)")
-      	<< getVerknr()
-      	<< getKundennr()
+	<< to_set
       	<< INSTANZ
       	<< AUFTRAGID
       	<< ZEILENNR;
