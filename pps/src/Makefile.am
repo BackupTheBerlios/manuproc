@@ -41,6 +41,7 @@ noinst_HEADERS = \
 	auftrag_main.hh \
 	auftrag_main_glade.hh \
    lieferscheinliste.hh \
+   lieferscheinliste_classes.hh \
    lieferscheinliste_glade.hh \
 	auftrag_rechnung.hh \
 	auftrag_rechnung_glade.hh \
@@ -62,7 +63,7 @@ BUILT_SOURCES= \
 
 CXXFLAGS = @CXXFLAGS@ @KOMPONENTEN_INCLUDES@ @GNOMEMM_CFLAGS@ 
 
-LDFLAGS= @LDFLAGS@ @KOMPONENTEN_LDFLAGS@ 
+LDFLAGS= @LDFLAGS@ @KOMPONENTEN_LDFLAGS@
 
 pps_LDADD =  @LIBS@ @KOMPONENTEN_LIBS@ @GNOMEMM_LIBS@
 

@@ -34,7 +34,6 @@
 #include <Artikel/Einheiten.h>
 #include<typeinfo>
 #include <tclistleaf.h>
-#include "lieferscheinliste.hh"
 
 extern MyMessage *meldung;
 
@@ -52,7 +51,7 @@ void auftrag_lieferschein::on_liefer_neu()
  lieferschein_liste->newLieferschein(liefer_kunde->get_value());
 //cout << "liefID" << lieferschein_liste->getLieferschein().Id() << "\n";
  liefernr->set_text(
-	Formatiere(lieferschein_liste->getLieferschein().Id(),0,6,"","",'0'));
+	Formatiere(lieferschein_liste->getLieferschein().Id(),0,0,""));
  on_liefnr_activate();
 }
 
@@ -63,14 +62,14 @@ void auftrag_lieferschein::on_lief_save()
 void auftrag_lieferschein::on_lief_preview()
 {  
    if (liefernr->get_text()=="") return;
-   string command = "auftrag_drucken Lieferschein "+liefernr->get_text()+" Preview "+ itos(instanz->Id());
+   string command = "auftrag_drucken Lieferschein "+liefernr->get_text()+" Preview "+ itos(instanz.Id());
    system(command.c_str());
 }
 
 void auftrag_lieferschein::on_lief_print()
 {  
    if (liefernr->get_text()=="") return;
-   string command = "auftrag_drucken Lieferschein "+liefernr->get_text()+" Plot "+ itos(instanz->Id());
+   string command = "auftrag_drucken Lieferschein "+liefernr->get_text()+" Plot "+ itos(instanz.Id());
    system(command.c_str()); 
 }
 
@@ -85,7 +84,7 @@ void auftrag_lieferschein::display(int lfrsid)
  else rngnr->set_text("");
  lieferschein_liste->show();
  vbox_eingabe->show();
- liefdate->set_value(lieferschein_liste->getLieferschein().getDatum());
+ 
 }
 
 void auftrag_lieferschein::display2(int kdnr)
@@ -171,7 +170,7 @@ void auftrag_lieferschein::on_unselectrow_offauf(int row, int col, GdkEvent* b)
  clear_offauf();   
 }
 
-auftrag_lieferschein::auftrag_lieferschein(cH_ppsInstanz _instanz)
+auftrag_lieferschein::auftrag_lieferschein(ppsInstanz _instanz)
 :instanz(_instanz)
 {
  selectedrow=NULL;
@@ -203,7 +202,7 @@ void auftrag_lieferschein::on_Palette_activate()
   
      if (!auftragnr->get_text().size() && artikelbox->get_value().Id())
      {  SQLFullAuftragSelector psel(SQLFullAuftragSelector::sel_Kunde_Artikel
-     		(instanz->Id(),liefer_kunde->get_value(),artikelbox->get_value().Id()));
+     		(instanz.Id(),liefer_kunde->get_value(),artikelbox->get_value().Id()));
      	SelectedFullAufList list(psel,cH_ExtBezSchema(1,ExtBezSchema::default_Typ));
      	Transaction tr;
      	int _anzahl=anzahl->get_value_as_int();
@@ -368,8 +367,4 @@ void auftrag_lieferschein::on_artikelbox_activate()
  { auftragnr->grab_focus();
  }
 }
-
-void auftrag_lieferschein::on_button_liste_clicked()
-{
-  manage(new lieferscheinliste());
-}
+ 

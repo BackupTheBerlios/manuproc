@@ -27,7 +27,7 @@
 
 class auftragliste : public auftragliste_glade
 {   
-        ppsInstanz instanz;
+        cH_ppsInstanz instanz;
         AufEintragBase2 selected_Auftrag;
                
         friend class auftragliste_glade;
@@ -38,7 +38,7 @@ class auftragliste : public auftragliste_glade
         void fill_tree();
         void on_leaf_selected(cH_RowDataBase d);
    public:
-       auftragliste(ppsInstanz _i);
+       auftragliste(cH_ppsInstanz _i);
 };
 
 class Data_aliste : public RowDataBase

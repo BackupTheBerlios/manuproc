@@ -1,6 +1,7 @@
 #include "auftrag_main.hh"
 #include <Aux/Transaction.h>
 #include <Aux/SQLerror.h>
+#include <Aux/Datum.h>
 exec sql include sqlca;
 
 map<int,std::string> auftrag_main::get_all_instanz()
@@ -23,3 +24,33 @@ map<int,std::string> auftrag_main::get_all_instanz()
    }
  return v;
 }
+
+vector<int> auftrag_main::get_new_aufids(cH_ppsInstanz instanz)
+{
+ vector<int> vec_newaufid;
+ exec sql begin declare section;
+  int ID;
+  char query[1024];
+ exec sql end declare section;
+ std::string squery = "SELECT auftragid from auftrag where instanz ='"+
+    itos(instanz->Id())+"' and datum > (select cast(wert as timestamp) 
+      from global_settings where userid=0 and program='pps' 
+      and name='"+instanz->get_Name()+"')";
+ strncpy(query,squery.c_str(),sizeof(query));
+ Transaction tr;
+ exec sql prepare newidein_ from :query;
+ exec sql declare newidein cursor for newidein_;
+ exec sql open newidein;
+ SQLerror::test(__FILELINE__);
+ while (true)
+  {
+   exec sql fetch newidein into :ID;
+   SQLerror::test(__FILELINE__,100);
+   if (sqlca.sqlcode) break; 
+   vec_newaufid.push_back(ID);               
+  }
+ exec sql close newidein;
+ tr.close();
+ return vec_newaufid;
+}
+

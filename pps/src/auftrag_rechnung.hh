@@ -24,7 +24,7 @@
 
 class auftrag_rechnung : public auftrag_rechnung_glade
 {   
-        ppsInstanz instanz;
+        cH_ppsInstanz instanz;
         friend class auftrag_rechnung_glade;
         SigC::Connection timeout_connection;
 
@@ -56,7 +56,7 @@ class auftrag_rechnung : public auftrag_rechnung_glade
  cH_Kunde kunde;
 
 public:
- auftrag_rechnung(ppsInstanz _instanz); 
+ auftrag_rechnung(cH_ppsInstanz _instanz); 
 
 };
 #endif

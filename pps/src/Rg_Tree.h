@@ -132,6 +132,7 @@ public:
  Rg_Value(int v) : EntryValueIntString(v), fval(v) {}
  Rg_Value(const std::string &s) : EntryValueIntString(s), fval(atof(s.c_str())) {}
  Rg_Value(fixedpoint<2> f) : EntryValueIntString(f.String()), fval(f) {}
+ Rg_Value(fixedpoint<3> f) : EntryValueIntString(f.String()), fval(f) {}
 };
 
 class cH_Rg_Value : public cH_EntryValue
@@ -144,7 +145,7 @@ public:
  cH_Rg_Value(int v) : cH_EntryValue(new Rg_Value(v)) {}
  cH_Rg_Value(const std::string &s) : cH_EntryValue(new Rg_Value(s)) {}
  cH_Rg_Value(fixedpoint<2> f) : cH_EntryValue(new Rg_Value(f)) {}
-    
+ cH_Rg_Value(fixedpoint<3> f) : cH_EntryValue(new Rg_Value(f)) {}
 };
 
 #endif

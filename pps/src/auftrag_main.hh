@@ -23,6 +23,7 @@
 #include <Artikel/Prozess.h>
 #include <vector>
 #include <Aux/EntryValueIntString.h>
+#include <Aux/EntryValueDatum.h>
 #include <tclistnode.h>
 #include <Aux/Ausgabe_neu.h>
 #include "aktAufEintrag.h" //wg. Lieferwoche
@@ -34,7 +35,7 @@
 
 class auftrag_main : public auftrag_main_glade
 {   
- ppsInstanz instanz;
+ cH_ppsInstanz instanz;
  bool interne_namen, zeit_kw_bool, kunden_nr_bool,kunden_anr_bool;
 // AufEintragBase2 selected_Auftrag;
  AufEintragBase *selected_AufEintrag;
@@ -64,14 +65,21 @@ class auftrag_main : public auftrag_main_glade
         void on_prozlistscombo_activate();
         void on_button_auftraege_clicked();
         void on_leaf_selected(cH_RowDataBase d);
+        void on_node_selected(const TCListNode &node);
+        void on_unselect_row(gint row, gint column, GdkEvent *event);
+        void on_togglebutton_material_toggled();
+        void instanz_menge(const vector<pair<ArtikelBase,long long int> >& vec_artbase);
+        map<ArtikelBase,fixedpoint<5,double,long long> > get_artikelmap(const vector<pair<ArtikelBase,long long int> >& vec_artbase);
         void fillStamm(int *cont, GtkSCContext newsearch);
 
         void auftrag_main::set_column_titles_of_simple_tree();
         void auftrag_main::fill_simple_tree();
 
+        void on_button_artikeleingabe_clicked();
         void menu_instanz();
         map<int,std::string> get_all_instanz();
         void instanz_selected(int _instanz_);
+
 
 public:
 
@@ -86,11 +94,13 @@ private:
    // Ab hier für die Produktionsplanung
    Gtk::Menu *menu_an_instanz;
    vector<cH_RowDataBase> datavec_instanz_auftrag;
-   ppsInstanz an_instanz;
+   cH_ppsInstanz an_instanz;
    Auftrag *instanz_auftrag;
    AuftragFull *instanz_aufeintrag;
    int selected_instanz_znr;
 
+   void neue_auftraege_beruecksichtigen(cH_ppsInstanz instanz);
+   vector<int> get_new_aufids(cH_ppsInstanz instanz);
    void on_searchcombo_auftragid_activate();
    void on_searchcombo_auftragid_search(int *cont, GtkSCContext newsearch) throw(SQLerror);
    void on_button_neue_anr_clicked();
@@ -138,9 +148,6 @@ public:
          ArtikelBase artbase=ArtikelBase(artikelid);
          cH_ArtikelBezeichnung artbez(artbase.Id(),schema);
          return cH_EntryValueIntString(artbez->Komponente(seqnr-1));
-#warning horrible hack
-//         cH_ArtikelBezeichnung artbez(artbase,schema);
-//         return (*artbez)[seqnr];
          }
       case 5 : {
          std::string lw;
@@ -150,9 +157,10 @@ public:
             int lieferjahr = AB.getLieferdatum().KW().Jahr();
             string lj=itos (lieferjahr).substr(2,2);
             lw = itos(lieferwoche)+"/"+lj;
+            return cH_EntryValueIntString(lw);
            }
-         else  lw =  AB.getLieferdatum().c_str()  ;
-         return cH_EntryValueIntString(lw); }
+         else   return cH_EntryValueDatum(AB.getLieferdatum());
+       }
       case 6 : {
          std::string auftrag;
          if(AM->Kunden_anr_bool()) auftrag =      AB.getYourAufNr() ;
@@ -161,18 +169,17 @@ public:
       case 7 : {
          std::string verarbeitung;
          try {
-          verarbeitung = AB.getProzess()->getTyp()+" "+AB.getProzess()->getText() ;  
-//          verarbeitung = AufEintrag(AB).getProzess()->getText() +" "+  AufEintrag(AB).getProzDat().c_str();  
+          verarbeitung = AB.getProzess()->getTyp()+" "+AB.getProzess()->getText();
          } catch (std::exception &e ) 
          { verarbeitung=e.what(); }
 	 return cH_EntryValueIntString(verarbeitung);
 	 }
       case 8 : {
          int offene_meter    = AB.getRest();     
-         return cH_EntryValueIntString(offene_meter);   }
+         return cH_EntryValueIntString(Formatiere(offene_meter));   }
       case 9 : {
          int offene_stueck   = AB.getRestStk();
-         return cH_EntryValueIntString(offene_stueck); }
+         return cH_EntryValueIntString(Formatiere(offene_stueck)); }
      }
    return cH_EntryValueIntString("?");
  }
@@ -199,12 +206,17 @@ public:
 class Data_Node : public TCListNode
 {
  int sum_meter, sum_stueck;
+ vector<pair<ArtikelBase,long long int> > vec_artbase;
 
 public:
  virtual void cumulate(const cH_RowDataBase &rd)
    {
-    sum_meter += (dynamic_cast<const Data_auftrag &>(*rd)).offene_Meter();
-    sum_stueck+= (dynamic_cast<const Data_auftrag &>(*rd)).offene_Stueck();
+    guint meter = (dynamic_cast<const Data_auftrag &>(*rd)).offene_Meter();
+    guint stueck= (dynamic_cast<const Data_auftrag &>(*rd)).offene_Stueck();
+    sum_meter += meter;
+    sum_stueck+= stueck;
+    ArtikelBase AB((dynamic_cast<const Data_auftrag &>(*rd)).get_Artikel_ID());
+    vec_artbase.push_back(pair<ArtikelBase,long long int>(AB,stueck));
    }
   const cH_EntryValue Value(guint index,gpointer gp) const
    {
@@ -219,27 +231,12 @@ public:
 
  int Sum_Stueck() const { return sum_stueck; }
  int Sum_Meter() const { return sum_meter; }
+
+ vector<pair<ArtikelBase,long long int> > get_vec_ArtikelBase_Stueck() const {return vec_artbase;}
+
  static TCListNode *create(guint col, const cH_EntryValue &v, bool expand)
   {  return new Data_Node(col,v,expand);
    }
-
-
-
 };
-
-/*
-class Data_Sum : public SimpleTree
-{
- public:
-
-  Data_Sum(guint cols, guint attr=8):SimpleTree(cols,attr)
-   { // make sure this is not called if you derive this from class !
-     init();
-   }
-
-};
-*/
-
-
 
 #endif

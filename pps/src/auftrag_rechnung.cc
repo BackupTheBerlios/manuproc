@@ -55,14 +55,14 @@ void auftrag_rechnung::on_rng_save()
 void auftrag_rechnung::on_rng_preview()
 {   
    if (rngnr->get_text()=="") return;
-   string command = "auftrag_drucken Rechnung "+rngnr->get_text()+" Preview "+itos(instanz.Id());
+   string command = "auftrag_drucken Rechnung "+rngnr->get_text()+" Preview "+itos(instanz->Id());
    system(command.c_str());
 }
 
 void auftrag_rechnung::on_rng_print()
 {   
    if (rngnr->get_text()=="") return;
-   string command = "auftrag_drucken Rechnung "+rngnr->get_text()+" Plot "+itos(instanz.Id());
+   string command = "auftrag_drucken Rechnung "+rngnr->get_text()+" Plot "+itos(instanz->Id());
    system(command.c_str());
 }
 
@@ -246,7 +246,7 @@ void auftrag_rechnung::rabatt_geaendert()
 }
 
 
-auftrag_rechnung::auftrag_rechnung(ppsInstanz _instanz)
+auftrag_rechnung::auftrag_rechnung(cH_ppsInstanz _instanz)
 : instanz(_instanz),selectedrow_lief(NULL), selectedrow_rng(NULL),kunde(Kunde::none_id)
 {
    rechnung_liste->hide();

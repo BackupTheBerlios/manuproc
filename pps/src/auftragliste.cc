@@ -32,7 +32,7 @@
 
 extern auftrag_main *auftragmain;
 
-auftragliste::auftragliste(ppsInstanz _i)
+auftragliste::auftragliste(cH_ppsInstanz _i)
 : instanz(_i)
 {
   set_column_titles();
@@ -53,7 +53,7 @@ void auftragliste::fill_tree()
 {
    AufStatVal stat=WAufStat->get_Status();
    SelectedFullAufList *allaufids;
-   SQLFullAuftragSelector psel= SQLFullAuftragSelector::sel_Status(instanz,(AufStatVal)stat);
+   SQLFullAuftragSelector psel= SQLFullAuftragSelector::sel_Status(instanz->Id(),(AufStatVal)stat);
    allaufids = new SelectedFullAufList(psel,cH_ExtBezSchema(1,ExtBezSchema::default_Typ));
 
  vector<cH_RowDataBase> datavec;
@@ -69,9 +69,13 @@ void auftragliste::fill_tree()
 
 void auftragliste::on_leaf_selected(cH_RowDataBase d)
 {
+ try {
  const Data_aliste *dt=dynamic_cast<const Data_aliste*>(&*d);
- selected_Auftrag=AufEintragBase2(instanz,dt->get_aid(),dt->get_zeilennr());
+ selected_Auftrag=AufEintragBase2(instanz->Id(),dt->get_aid(),dt->get_zeilennr());
 // selected_Artikel=dt->get_Artikel_ID();
+ } catch (...)
+ {  assert(!"d is Data_aliste");
+ }
 }
 
 void auftragliste::on_button_erfassen_clicked()
@@ -84,7 +88,7 @@ void auftragliste::on_button_erfassen_clicked()
  {  cerr << e << '\n';
     show();
  } 
- selected_Auftrag=AufEintragBase2(instanz);
+ selected_Auftrag=AufEintragBase2(instanz->Id());
  destroy();
 }
 

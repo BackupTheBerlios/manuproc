@@ -34,7 +34,11 @@
 #include <Gtk2TeX.h>
 #include <fstream.h>
 #include <gtk--/radiomenuitem.h>
-
+#include <Artikel/ArtikelBaumFull.h>
+#include <Artikel/ArtikelStamm.h>
+#include <Artikel/Einheiten.h>
+#include <algorithm>
+#include <Aux/Global_Settings.h>
 
 #include "auftragliste.hh"
 #include "AufEintrag.h"
@@ -63,7 +67,7 @@ void auftrag_main::on_erfassen_activate()
  hide();
  try
  { if (selected_AufEintrag) manage(new auftrag_bearbeiten(*selected_AufEintrag));
-   else  manage(new auftrag_bearbeiten(AufEintragBase2(instanz)));
+   else  manage(new auftrag_bearbeiten(AufEintragBase2(instanz->Id())));
  } catch (SQLerror &e)
  {  cerr << e << '\n';
     show();
@@ -175,9 +179,12 @@ void auftrag_main::on_mainprint_button_clicked()
 
 
 auftrag_main::auftrag_main()
-  : instanz(ppsInstanz::INST_KNDAUF), selected_AufEintrag(0)
+  : instanz(ppsInstanz::INST_KNDAUF), selected_AufEintrag(0),an_instanz(ppsInstanz::INST_KNDAUF)
 {
- table_instanzen->hide();
+// frame_materialbedarf->hide();
+ guint psize=GTK_WIDGET(vpaned_an_mat->gtkobj())->allocation.height;  
+ vpaned_an_mat->set_position(5*psize); // Großer Wert
+ frame_instanzen->hide();
  menu_instanz();
  instanz_menu();
  auftragmain=this;
@@ -207,13 +214,16 @@ void auftrag_main::set_column_titles_of_simple_tree()
  ct.push_back("offene Stück");
  maintree_s->setTitles(ct);
  maintree_s->set_NewNode(&Data_Node::create);
+ int cols=maintree_s->columns().size();
+ maintree_s->set_column_justification(cols-1, GTK_JUSTIFY_RIGHT);
+ maintree_s->set_column_justification(cols-2, GTK_JUSTIFY_RIGHT);
 }
 
 void auftrag_main::fill_simple_tree()
 {
 //cout << "I="<<instanz<<"\t";
  if(!allaufids) 
-   { SQLFullAuftragSelector psel= SQLFullAuftragSelector::sel_Status(instanz,(AufStatVal)OPEN);
+   { SQLFullAuftragSelector psel= SQLFullAuftragSelector::sel_Status(instanz->Id(),(AufStatVal)OPEN);
      if(interne_namen)
        allaufids = new SelectedFullAufList(psel,
 			cH_ExtBezSchema(1,ExtBezSchema::default_Typ));
@@ -228,9 +238,13 @@ void auftrag_main::fill_simple_tree()
    datavec.push_back(new Data_auftrag(*i,this));
   }
  maintree_s->setDataVec(datavec);
-// ist in glade drin: maintree_s->leaf_selected.connect(SigC::slot(this,&auftrag_main::on_leaf_selected));
 }
 
+void auftrag_main::on_node_selected(const TCListNode &node)
+{
+  const Data_Node &dn=dynamic_cast<const Data_Node&>(node);
+  instanz_menge(dn.get_vec_ArtikelBase_Stueck());
+}
 
 void auftrag_main::on_leaf_selected(cH_RowDataBase d)
 {
@@ -241,13 +255,109 @@ void auftrag_main::on_leaf_selected(cH_RowDataBase d)
  prozlist_scombo->reset();
  prozlist_scombo->set_text(dt->ProzessText());
 
- if(instanz.Id() != 1) instanz_tree_inhalt_setzen(dt->get_Artikel_ID(),
+ if(instanz->Id() != 1) instanz_tree_inhalt_setzen(dt->get_Artikel_ID(),
       dt->offene_Meter(),dt->get_Lieferdatum());
+
+ // Zum Anzeigen der benötigten Menge
+     vector<pair<ArtikelBase,long long int> > vec_artbase;
+     vec_artbase.push_back(pair<ArtikelBase,long long int>(ArtikelBase(selected_Artikel),dt->offene_Stueck()));
+     instanz_menge(vec_artbase);
+}
+
+void auftrag_main::on_togglebutton_material_toggled()
+{
+  guint psize=GTK_WIDGET(vpaned_an_mat->gtkobj())->allocation.height;  
+//cout << psize<<'\n';
+  if(!togglebutton_material->get_active() || !selected_Artikel) vpaned_an_mat->set_position(psize);
+/*
+  else  {
+     vector<pair<ArtikelBase,long long int> > vec_artbase;
+     vec_artbase.push_back(pair<ArtikelBase,guint>(ArtikelBase(selected_Artikel)),meter);
+     instanz_menge(vec_artbase);
+   }
+*/
+}
+
+
+map<ArtikelBase,fixedpoint<5,double,long long int> > auftrag_main::get_artikelmap(const vector<pair<ArtikelBase, long long int> >& vec_artbase)
+{
+  map<ArtikelBase,fixedpoint<5,double,long long int> > map_artikel_all;
+  for(vector<pair<ArtikelBase,long long int> >::const_iterator i=vec_artbase.begin();i!=vec_artbase.end();++i)
+   {  
+     ArtikelBaumFull ABF(i->first);
+//     map<ArtikelBase,fixedpoint<5,double,long long int> > map_artikel_one = ABF.get_Artikel_Map();
+     map<ArtikelBase,fixedpoint<5> > map_artikel_one = ABF.get_Artikel_Map();
+//     for(map<ArtikelBase,fixedpoint<5,double,long long int> >::const_iterator m=map_artikel_one.begin();m!=map_artikel_one.end();++m)
+     for(map<ArtikelBase,fixedpoint<5> >::const_iterator m=map_artikel_one.begin();m!=map_artikel_one.end();++m)
+      {
+        map_artikel_all[m->first] += (i->second) * (m->second);
+      }
+   }
+  return map_artikel_all;
+}
+
+void auftrag_main::instanz_menge(const vector<pair<ArtikelBase,long long int> >& vec_artbase)
+{
+ if(!togglebutton_material->get_active()) return;
+  map<ArtikelBase,fixedpoint<5,double,long long> > map_artikel = get_artikelmap(vec_artbase);
+
+  vector<cH_ppsInstanz> vec_instanz;
+  for (map<ArtikelBase,fixedpoint<5,double,long long int> >::const_iterator i=map_artikel.begin();i!=map_artikel.end();++i)
+    {
+     ArtikelStamm AS(i->first);
+     // Wenn die Instanz noch nicht drin ist, dann anfügen
+     if (vec_instanz.end()==find(vec_instanz.begin(),vec_instanz.end(),AS.BestellenBei()))
+       vec_instanz.push_back(AS.BestellenBei());
+    }
+  Gtk::Table *table_materialbedarf = manage(new Gtk::Table(0,0,false));
+  for(vector<cH_ppsInstanz>::const_iterator i=vec_instanz.begin();i!=vec_instanz.end();++i)
+    {
+      Gtk::Label *l=manage (new Gtk::Label(" "+(*i)->get_Name()+" "));
+      int col = (*i)->Id();
+      std::string pat;
+      for (guint u=0;u<(*i)->get_Name().size()+2;++u) pat+="_";
+      l->set_pattern(pat);
+      l->set_alignment(0, 0.5);
+      l->set_padding(0, 0);
+      l->show();
+      table_materialbedarf->attach(*l,col,col+1,0,1,0,0,0,0);
+    }
+   
+  map<int,int> map_col_row;
+  for (map<ArtikelBase,fixedpoint<5,double,long long int> >::const_iterator i=map_artikel.begin();i!=map_artikel.end();++i)
+   {
+     cH_ArtikelBezeichnung AB(i->first);
+     ArtikelStamm AS(i->first);
+     Einheit E(i->first);
+     std::string menge = Formatiere_short(fixedpoint<2>(i->second));
+     std::string einheit = E.MengenEinheit();
+     Gtk::Label *l=manage (new 
+            Gtk::Label(menge+einheit+' '+AB->Bezeichnung()));
+     int col = AS.BestellenBei()->Id();
+     int row = ++map_col_row[col];
+     l->set_justify(GTK_JUSTIFY_LEFT);
+     l->show();
+     table_materialbedarf->attach(*l,col,col+1,row,row+1,GTK_FILL,0,0,0);
+     
+//cout <<AB.Bezeichnung()<<'\t'<<AS.BestellenBei()->get_Name()<<'\t'<<i->second<<'\n';
+   }
+ viewport_materialbedarf->remove();
+ viewport_materialbedarf->add(*table_materialbedarf);
+ table_materialbedarf->show();
+ guint psize=GTK_WIDGET(vpaned_an_mat->gtkobj())->allocation.height;  
+// if (vpaned_an_mat->get_position() != psize/5. && vpaned_an_mat->get_position() != psize)
+   vpaned_an_mat->set_position(psize/3.);
+}
+
+void auftrag_main::on_unselect_row(gint row, gint column, GdkEvent *event)
+{
+  guint psize=GTK_WIDGET(vpaned_an_mat->gtkobj())->allocation.height;  
+  vpaned_an_mat->set_position(psize);
 }
 
 void auftrag_main::on_prozlistscombo_search(int *cont, GtkSCContext newsearch)
 {if (newsearch!=GTK_SEARCH_OPEN) return;
-     {  //ArtikelBaum artb(selectedmyrow->getArtID());
+     {  
         ArtikelBaum artb(selected_Artikel.Id());
         cH_Prozess p(Prozess::default_id);
         ArtikelBase::ID tmpid;   
@@ -277,8 +387,6 @@ void auftrag_main::on_prozlistscombo_activate()
       try{selected_AufEintrag->setVerarbeitung(cH_Prozess(pid));}
       catch(SQLerror &e)
         {meldung->Show(e); return;}
-//      foot_statusbar->push(0,selectedmyrow->Description(
-//                                cH_ExtBezSchema(ExtBezSchema::default_ID)));
 
       cH_EntryValue ev=AufEintrag(*selected_AufEintrag).getSeqValue(PROZ_SEQ);
       deque<guint> buf = maintree_s->get_seq();
@@ -298,6 +406,15 @@ void auftrag_main::on_button_auftraege_clicked()
  manage (new auftragliste(instanz));
 }
 
+void auftrag_main::on_button_artikeleingabe_clicked()
+{
+ if (selected_Artikel.Id())
+  {
+    std::string s = "artikeleingabe "+itos(selected_Artikel.Id());
+    system(s.c_str());
+  }
+}
+
 
 void auftrag_main::menu_instanz()
 {
@@ -311,29 +428,30 @@ void auftrag_main::menu_instanz()
   {
     Gtk::RadioMenuItem *rm = manage(new class Gtk::RadioMenuItem(_RadioMIGroup_,i->second));
     instanz_menu->append(*rm);
-    rm->activate.connect(SigC::bind(SigC::slot(this,&auftrag_main::instanz_selected),i->first));
+//    if (i->first==1) rm->set_active();
     rm->show();    
-    if (i->first==1) rm->set_active();
+    rm->activate.connect(SigC::bind(SigC::slot(this,&auftrag_main::instanz_selected),i->first));
   }
  main_menubar->append(*instanz);
  instanz->show();
-       
 }
 
 void auftrag_main::instanz_selected(int _instanz_)
 {
   instanz=(ppsInstanz::ppsInstId) _instanz_;
+cout << instanz->get_Name()<<'\n';
+//  neue_auftraege_beruecksichtigen(instanz);
   on_neuladen_activate();
 
   if (_instanz_ != 1)
    {
-    label_instanz->set_text(instanz.get_Name());
+    label_instanz->set_text(instanz->get_Name());
     erfassen_button->hide();
     mainprint_button->hide();
     rechnung_button->hide();
     lieferschein_button->hide();
     table_prod_prozess->hide();
-    table_instanzen->show();
+    frame_instanzen->show();
     instanz_tree_titel_setzen(); // Kann auch in den Konstruktor MAT
     neuer_auftrag_tree_titel_setzen(); // Kann auch in den Konstruktor MAT
     instanz_tree_herkunft->clear();
@@ -349,6 +467,32 @@ void auftrag_main::instanz_selected(int _instanz_)
     rechnung_button->show();
     lieferschein_button->show();
     table_prod_prozess->show();
-    table_instanzen->hide();
+    frame_instanzen->hide();
+   }
+}
+
+void auftrag_main::neue_auftraege_beruecksichtigen(cH_ppsInstanz instanz)
+{
+//cout << instanz->get_Name()<<'\n';
+  vector<int> new_aufids =  get_new_aufids(instanz);
+  Global_Settings GS(0,"pps",instanz->get_Name());
+//  GS.update_Date();
+  Auftrag A(AuftragBase(instanz->Id(), 0));
+
+cout << "Neue Aufträge "<<new_aufids.size()<<'\n';
+  for (vector<int>::const_iterator i=new_aufids.begin();i!=new_aufids.end();++i)
+   {
+     AuftragBase AufB(instanz->Id(),*i);
+     AuftragFull AufF(AufB);
+     for(AuftragFull::const_iterator f=AufF.begin();f!=AufF.end();++f)
+      {
+        ArtikelBaumFull ABF(f->ArtikelID());
+        map<ArtikelBase,fixedpoint<5> > artmap = ABF.get_Artikel_Map();
+cout << "Entrys für Artikel"<<f->ArtikelID()<<' '<<artmap.size(); 
+        for (map<ArtikelBase,fixedpoint<5> >::const_iterator m=artmap.begin();m!=artmap.end();++m)
+         {
+            A.insertNewEntry(m->second * f->getStueck(),f->getLieferdatum(),m->first.Id());
+         }
+      }
    }
 }

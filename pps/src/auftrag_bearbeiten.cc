@@ -574,8 +574,11 @@ void auftrag_bearbeiten::on_auftrag_abbruch_clicked()
 void auftrag_bearbeiten::on_auftrag_ok_clicked()
 {   
  try {
-      auftrag = new AuftragFull(instanz,kundenbox->get_value(),
+      auftrag = new AuftragFull(instanz.Id(),kundenbox->get_value(),
 			jahrgang_spinbutton->get_value_as_int());
+//NEU: Auftrag mit Auftrags ID 0 anlegen:
+//      auftrag = new AuftragFull(AuftragBase(instanz,0),kundenbox->get_value(),
+//			jahrgang_spinbutton->get_value_as_int());
  	auftrag->setBemerkung(aufbemerkung_entry->get_text());
  	auftrag->setYourAufNr(youraufnr_scombo->get_text());
       AuftragBase ab(*auftrag);
