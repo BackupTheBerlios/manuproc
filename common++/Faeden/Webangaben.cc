@@ -1,4 +1,4 @@
-// $Id: Webangaben.cc,v 1.11 2003/01/08 09:46:57 christof Exp $
+// $Id: Webangaben.cc,v 1.12 2004/02/26 10:43:28 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -24,11 +24,85 @@
 #include <Misc/itos.h>
 
 void Webangaben::set_Laengen(int kettlaenge,int schnittlaenge)
-{
-  std::string S="update webangaben set kettlaenge="
-      +itos(kettlaenge)+", schnittlaenge="
-      +itos(schnittlaenge)+" where artikel="+itos(artikel.Id());
-  Query::Execute(S);
-  SQLerror::test(__FILELINE__);
+{ Query("update webangaben set kettlaenge=?, schnittlaenge=? where artikel=?")
+      << kettlaenge << schnittlaenge << artikel.Id();
 }
 
+void Webangaben::create_if_not_exists() throw(SQLerror)
+{  if(!exists())
+        Query("insert into webangaben (artikel) values (?)")
+        	<< artikel.Id();
+}
+
+bool Webangaben::exists() throw(SQLerror)
+{  int DUMMY;
+   
+   try
+   {  Query("select artikel from webangaben where artikel=?")
+   	<< artikel.Id()
+   	>> DUMMY;
+   }
+   catch (SQLerror &e)
+   {  return false;
+   }
+   return true;
+}
+
+
+bool Webangaben::Load() throw(SQLerror)
+{  try
+   {  Query("select erstellt, geaendert, riet, bemerkungen,"
+	"fangfaden,schussdichte "
+	"from webangaben where artikel=?")
+	<< artikel.Id()
+	>> erstellt >> geaendert
+	>> FetchIStream::MapNull(riet)
+	>> FetchIStream::MapNull(bemerkung)
+	>> FetchIStream::MapNull(fangfaden)
+	>> FetchIStream::MapNull(schussdichte);
+   }
+   catch (SQLerror &e)
+   { riet="";
+     bemerkung="";
+     fangfaden=ArtikelBase();
+     schussdichte=0;
+     return false;
+   }
+}
+
+void Webangaben::set_datum(const Petig::Datum &datum) throw(SQLerror)
+{  Query("update webangaben set erstellt=?, geaendert=now() "
+   	"where artikel=?")
+   	<< datum
+   	<< Artikel().Id();
+   geaendert=datum;
+}
+
+void Webangaben::set_bemerkung(const std::string &s) throw(SQLerror)
+{  Query("update webangaben set bemerkungen=?, geaendert=now() "
+         "where artikel=?")
+         << s << Artikel().Id();
+   bemerkung=s;
+}
+
+void Webangaben::set_riet(const std::string &s) throw(SQLerror)
+{  Query("update webangaben set riet=?, geaendert=now() where artikel=?")
+   	<< s
+   	<< Artikel().Id();
+   riet=s;  
+}
+
+void Webangaben::set_fangfaden(const ArtikelBase &ab) throw(SQLerror)
+{  Query("update webangaben set fangfaden=?, geaendert=now() where artikel=?")
+   	<< ab.Id()
+   	<< Artikel().Id();
+   fangfaden=ab;
+}
+
+void Webangaben::set_schussdichte(const fixedpoint<1> &f) throw(SQLerror)
+{  Query("update webangaben set schussdichte=?, geaendert=now() "
+		"where artikel=?")
+	<< f
+	<< Artikel().Id();
+   schussdichte=f;
+}
