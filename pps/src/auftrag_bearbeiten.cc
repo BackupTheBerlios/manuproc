@@ -98,7 +98,7 @@ void auftrag_bearbeiten::onSelArtikel()
 
     if(preisautomatik->get_active())
       {
-         Artikelpreis AP(kunde,artikelbox->get_value(),0);
+         Artikelpreis AP(kunde,artikelbox->get_value(),1);
          if (AP.Gefunden())
             {artikel_preisliste=cH_PreisListe(AP.GefundenIn());
              preislisten->set_value(artikel_preisliste->Id());
@@ -109,7 +109,7 @@ void auftrag_bearbeiten::onSelArtikel()
     else
       artikel_preisliste=cH_PreisListe(preislisten->get_value());
 
-    Artikelpreis ap(artikel_preisliste->Id(),artikelbox->get_value(),0);
+    Artikelpreis ap(artikel_preisliste->Id(),artikelbox->get_value(),1);
 #else
     // hmmm die Menge beeinflusst den Preis, also vielleicht später nochmal 
     // nachsehen
