@@ -1,4 +1,4 @@
-/* $Id: Ueberweisung.cc,v 1.2 2003/04/24 15:38:04 jacek Exp $ */
+/* $Id: Ueberweisung.cc,v 1.3 2003/04/26 11:12:44 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,7 +19,9 @@
 
 
 #include "Ueberweisung.h"
-
+#include <pwd.h>
+#include <sys/types.h>
+        
 Ueberweisung::Ueberweisung(ManuProcEntity<>::ID uid) throw(SQLerror)
 : ManuProcEntity<ID>(uid),euro(true),vzweck(std::vector<std::string>(4))
 {
@@ -38,7 +40,7 @@ Ueberweisung::Ueberweisung(ManuProcEntity<>::ID uid) throw(SQLerror)
  	>> auftraggeber >> empfaenger
  	>> erfasstam >> erfasstdurch 
  	>> FetchIStream::MapNull(erfolgtam,ManuProC::Datum()) 
- 	>> FetchIStream::MapNull(erfolgtdurch,0)
+ 	>> FetchIStream::MapNull(erfolgtdurch,-1)
  	>> FetchIStream::MapNull(kundennr,Kunde::none_id) 	
  	>> vzweck[0] 
  	>> FetchIStream::MapNull(vzweck[1],"") 	 	
@@ -48,6 +50,13 @@ Ueberweisung::Ueberweisung(ManuProcEntity<>::ID uid) throw(SQLerror)
  	>> FetchIStream::MapNull(belegnr,ManuProcEntity<>::none_id) 	 	
  	>> FetchIStream::MapNull(buchungsjournal,ManuProcEntity<>::none_id) 	 	 	
  	>> FetchIStream::MapNull(buchungskonto,ManuProcEntity<>::none_id);
+ 	
+ struct passwd *pw;
+ 
+ pw=getpwuid(erfolgtdurch);
+ erfolgtdurch_name=pw ? pw->pw_name : "";
+ pw=getpwuid(erfasstdurch);	 
+ erfasstdurch_name=pw ? pw->pw_name : ""; 	
 
 }
 

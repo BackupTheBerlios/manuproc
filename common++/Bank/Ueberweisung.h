@@ -1,4 +1,4 @@
-/* $Id: Ueberweisung.h,v 1.2 2003/04/24 13:44:36 jacek Exp $ */
+/* $Id: Ueberweisung.h,v 1.3 2003/04/26 11:12:44 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -40,7 +40,9 @@ class Ueberweisung : public ManuProcEntity<>
    ManuProC::Datum erfolgtam;
    Kunde::ID kundennr;
    int erfasstdurch;
+   std::string erfasstdurch_name;
    int erfolgtdurch;
+   std::string erfolgtdurch_name;   
    ManuProcEntity<>::ID belegnr;
    ManuProC::Datum belegdatum;
    
@@ -72,6 +74,8 @@ public:
   long long OwnKonto() const { return ownkonto; }
   std::string Vzweck(int feldnr=-1);
   Kunde::ID Kundennr() const { return kundennr; }
+  std::string ErfasstDurchName() const { return erfasstdurch_name; }
+  std::string ErfolgtDurchName() const { return erfolgtdurch_name; }  
       
 };
 #endif
