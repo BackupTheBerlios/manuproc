@@ -22,7 +22,9 @@ struct Configuration
 {	bool combine;
 	bool preview_only;
 	std::string copies;
+	bool toTeX;
 	
-	Configuration() : combine(), preview_only(), copies("1,1,1") {}
+	Configuration() : combine(), preview_only(), copies("1,1,1"),
+				toTeX(false) {}
 };
 extern struct Configuration Configuration;

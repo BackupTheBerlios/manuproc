@@ -129,7 +129,12 @@ gint auftrag_rechnung::on_rng_print(GdkEventButton *ev)
      cH_Kunde k(rechnung.KdNr());
      std::string opt=" -Y";
      if (k->anzahl_ausdruck_firmenpapier()>0)
-     {  opt+="1,"+itos(k->anzahl_ausdruck_firmenpapier()-1)+",";
+     {
+#ifdef MABELLA_EXTENSIONS
+      opt+=itos(k->anzahl_ausdruck_firmenpapier())+",0,";
+#else
+      opt+="1,"+itos(k->anzahl_ausdruck_firmenpapier()-1)+",";
+#endif
      }
      else opt+="0,0,";
      opt+=itos(k->anzahl_ausdruck_weissespapier());

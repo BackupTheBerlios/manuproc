@@ -29,7 +29,7 @@ enum {EAN=256, COMBINE};
 const static struct option options[]=
 {
 // { "firma",  no_argument, NULL, 'f' },
-// { "kopie",  no_argument, NULL, 'k' },  
+ { "toTeX",  no_argument, NULL, 't' },  
  { "ean",  no_argument, NULL, EAN },  
  { "art",     required_argument,      NULL, 'a' }, 
  { "nr",     required_argument,      NULL, 'n' }, 
@@ -46,9 +46,9 @@ const static struct option options[]=
 
 void usage(std::string n,ppsInstanz::ID instanz,std::string database,std::string dbhost)
 {
-   std::cout << "$Id: auftrag_drucken.cc,v 1.18 2004/09/13 13:51:08 christof Exp $\n\n"
+   std::cout << "$Id: auftrag_drucken.cc,v 1.19 2004/09/16 14:13:38 jacek Exp $\n\n"
               "USAGE:" << n << " -n <Nr> [-a <Typ>] [-kft] [-i <Instanz>] [-d <Datenbank>]\n"
-//		"\n\t-t\t nur TeX file erzeugen ("<< (toTeX?"an":"aus")<< ")\n"
+		"\n\t-t\t nur TeX file erzeugen ("<< (Configuration.toTeX?"an":"aus")<< ")\n"
 //		"\t-p\t drucken ("<< (plot?"an":"aus")<< ")\n"
 		"\t-a\t Aufrag(*), Rechnung, Lieferschein, Intern, Extern\n"
 		"\t-n\t (A./R./L.)-Nummer (wichtig!)\n"
@@ -82,7 +82,7 @@ int main (int argc, char *argv[])
 
  if(argc==1) usage(argv[0],instanz,database,dbhost);
 
- while ((opt=getopt_long(argc,argv,"Ga:n:pi:d:RZY:",options,NULL))!=EOF)
+ while ((opt=getopt_long(argc,argv,"Ga:n:pi:d:RZY:t",options,NULL))!=EOF)
   { switch (opt)
     {  case 'a' : if(std::string("Rechnung")==optarg) was=LR_Base::Rechnung;
 		  else if(std::string("Lieferschein")==optarg) was=LR_Base::Lieferschein;
@@ -96,6 +96,7 @@ int main (int argc, char *argv[])
 	case 'd' : database=optarg;break; 
 	case 'h' : dbhost=optarg;break; 
 	case 'R' : rueckstand=true; break;
+        case 't' : Configuration.toTeX=true; break;
 	case EAN : ean_code=true; break;
 	case COMBINE: Configuration.combine=true; break;
 	case 'Y' : Configuration.copies=optarg; break;

@@ -1083,7 +1083,7 @@ void auftrag_bearbeiten::on_rueckstand_clicked()
  if(instanz->ExterneBestellung()) typ="Extern";
  else typ="Auftrag";
 
- std::string command = std::string("auftrag_drucken -Y1,0,0 -a")+typ+
+ std::string command = std::string("auftrag_drucken -Y0,0,1 -a")+typ+
 	" -R -n"+itos(auftrag->Id())+
    	" -i" + itos(instanz->Id());
    system(command.c_str());  
