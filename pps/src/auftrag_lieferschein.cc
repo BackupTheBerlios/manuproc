@@ -133,6 +133,8 @@ void auftrag_lieferschein::display(int lfrsid)
  spinbutton_netto->set_value(lieferschein->GewichtNetto().as_float());
 #endif
  gint pos=0;
+ frame_notiz->set_label("Notiz zum Lieferschein");
+ lief_notiz->delete_text(0,-1);
  lief_notiz->insert_text(lieferschein->Notiz().c_str(),
 				lieferschein->Notiz().size(),&pos);
  liefnotiz_save->set_sensitive(false);
@@ -336,6 +338,12 @@ void auftrag_lieferschein::fill_input(const AufEintrag& AE,const LieferscheinEnt
     auftragnr->set_sensitive(true);
   }
   Palette->set_value(LE.Palette());
+ gint pos=0;
+ frame_notiz->set_label("Notiz zu Zeile "+itos(LE.Zeile()));
+ lief_notiz->delete_text(0,-1);
+ lief_notiz->insert_text(LE.Text().c_str(),
+				LE.Text().size(),&pos);
+ liefnotiz_save->set_sensitive(false);
 }
 
 void auftrag_lieferschein::fill_with(const AufEintrag& AE,const Einheit& E,
@@ -794,6 +802,12 @@ void auftrag_lieferschein::on_daten_unselect_row(int row, int col, GdkEvent* b)
 {
   clear_input();
   button_zeile_modifizieren->set_sensitive(false);
+ gint pos=0;
+ frame_notiz->set_label("Notiz zum Lieferschein");
+ lief_notiz->delete_text(0,-1);
+ lief_notiz->insert_text(lieferschein->Notiz().c_str(),
+				lieferschein->Notiz().size(),&pos);
+ liefnotiz_save->set_sensitive(false);
 }
 
 
@@ -976,7 +990,16 @@ void auftrag_lieferschein::on_liefnotiz_changed()
 void auftrag_lieferschein::on_liefnotiz_save_clicked()
 {  
  if(lieferschein) 
-   lieferschein->Notiz(lief_notiz->get_chars(0,lief_notiz->get_length()));
+ { if (tree_daten->selection().empty())
+     lieferschein->Notiz(lief_notiz->get_chars(0,lief_notiz->get_length()));
+   else
+   { cH_Data_Lieferdaten dt(tree_daten->getSelectedRowDataBase_as<cH_Data_Lieferdaten>());
+     LieferscheinEntry LE = dt->get_LieferscheinEntry();
+     LE.Text(lief_notiz->get_chars(0,lief_notiz->get_length()));
+     // redisplay
+     set_tree_daten_content(lieferschein->Id());
+   }
+ }
  liefnotiz_save->set_sensitive(false);
 }
 
