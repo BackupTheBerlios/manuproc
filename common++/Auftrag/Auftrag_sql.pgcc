@@ -213,7 +213,7 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr) throw(SQLerror)
  exec sql lock table auftrag in exclusive mode;
  SQLerror::test(__FILELINE__"lock table auftrag");
 
- exec sql select date_part('year',date(now()))%100.0 into :YEAR;
+ exec sql select cast(date_part('year',date(now())) as integer)%100 into :YEAR;
  SQLerror::test(__FILELINE__"select year");
  
  exec sql select coalesce(max(auftragid)+1,:YEAR*10000) 
