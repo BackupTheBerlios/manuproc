@@ -1,4 +1,4 @@
-// $Id: test_schaerangaben.cc,v 1.10 2004/06/22 13:41:04 christof Exp $
+// $Id: test_schaerangaben.cc,v 1.11 2004/07/06 08:41:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,30 +22,44 @@
 #include <Ketten/ArtikelGang.h>
 #include <Misc/dbconnect.h>
 
-void dump(const ArtikelBase &ab, unsigned gaenge, unsigned laenge)
-{  std::vector<KettenGarn> x=KettenGarn::Load(ArtikelGang(gaenge,ab),laenge);
-   unsigned oldindex=unsigned(-1);
-   std::cout << gaenge << "x Artikel " << cH_ArtikelBezeichnung(ab)->Bezeichnung()
-       << ' ' << laenge << "m\n";
-   for (std::vector<KettenGarn>::const_iterator i=x.begin();i!=x.end();++i)
-   {  if (i->index!=oldindex)
-      {  std::cout << "   " << i->kettenzahl << " Ketten à " 
-            << i->laenge << "m:";
-         if ((i+1)!=x.end() && (i+1)->index==i->index) std::cout << "\n";
-         oldindex=i->index;
+void dump(const std::vector<ArtikelGang> &vag, unsigned laenge)
+{  std::vector<Kettscheibe> x=Kettscheibe::Load(vag,laenge);
+//   unsigned oldindex=unsigned(-1);
+   std::vector<ArtikelGang> oldartikel;
+   for (std::vector<Kettscheibe>::const_iterator i=x.begin();i!=x.end();++i)
+   {  if (i->artikel!=oldartikel)
+      {  for (std::vector<ArtikelGang>::const_iterator j=i->artikel.begin();j!=i->artikel.end();++j)
+            std::cout << j->gaenge << "x Artikel " 
+               << cH_ArtikelBezeichnung(j->art)->Bezeichnung()
+               << ' ';
+         std::cout << laenge << "m\n";
+         oldartikel=i->artikel;
       }
-      std::cout << "\t" << i->faeden << " Fd. " 
-          << cH_ArtikelBezeichnung(i->art)->Bezeichnung();
-      if (i->wiederholungen>1) std::cout << " x" << i->wiederholungen;
-      std::cout << '\n';
+      std::cout << "   " << i->kettenzahl << " Ketten à " 
+            << i->laenge << "m:";
+      if (i->faeden.size()!=1) std::cout << "\n";
+      for (std::vector<KS_Garn>::const_iterator j=i->faeden.begin();j!=i->faeden.end();++j)
+      {  std::cout << "\t" << j->faeden << " Fd. " 
+              << cH_ArtikelBezeichnung(j->material)->Bezeichnung();
+         if (j->wiederholungen>1) std::cout << " x" << j->wiederholungen;
+         std::cout << '\n';
+      }
   }
   std::cout << "\n";
 }
 
+void dump(const ArtikelBase &ab, unsigned gaenge, unsigned laenge)
+{  std::vector<ArtikelGang> vag;
+   vag.push_back(ArtikelGang(gaenge,ab));
+   dump(vag,laenge);
+}
+
 // müssten eigentlich kombiniert werden ...
 void dump(const ArtikelBase &ab, const ArtikelBase &ab2, unsigned gaenge, unsigned laenge)
-{  dump(ab,gaenge,laenge);
-   dump(ab2,gaenge,laenge);
+{  std::vector<ArtikelGang> vag;
+   vag.push_back(ArtikelGang(gaenge,ab));
+   vag.push_back(ArtikelGang(gaenge,ab2));
+   dump(vag,laenge);
 }
 
 int main()

@@ -1,4 +1,4 @@
-/* $Id: KettenGarn_CP.cc,v 1.17 2004/07/06 08:08:45 christof Exp $ */
+/* $Id: KettenGarn_CP.cc,v 1.18 2004/07/06 08:41:17 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -247,7 +247,13 @@ std::vector<Kettscheibe> Kettscheibe::Load(const std::vector<ArtikelGang> &ag, u
    for (Fadenliste::const_iterator i=fdl.begin(); i!=fdl.end(); ++i)
    {  if (i->kettscheibe<1) continue;
       Kettscheibe &y=intermed[map_index_t(*gang,i->kettscheibe)];
-      assert(y.index!=i->kettscheibe);
+      if (!y.index)
+      {  y.index=i->kettscheibe;
+         y.laenge=laenge;
+         y.kettenzahl=gang->gaenge;
+         y.artikel.push_back(*gang);
+      }
+      assert(y.index==i->kettscheibe);
       KS_Garn x;
       x.zeile=i->zeilennummer;
       x.faeden=i->anzahl;
