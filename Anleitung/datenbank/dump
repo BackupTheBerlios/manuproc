@@ -1,0 +1,43 @@
+#!/bin/sh
+
+PG_DUMP_FLAGS="-i -c -O -R"
+data=1
+schema=1
+if [ "$1" = "--schema-only" ] ; then data=0; fi
+if [ "$1" = "-s" ] ; then data=0; fi
+
+for i in `psql -t -q -c "select tablename from pg_tables where \
+tablename not like 'pg_%' and tablename not like 'pga_%';" anleitungdb`
+do
+  echo Table $i
+  if [ "$schema" -gt "0" ]
+  then 
+    pg_dump $PG_DUMP_FLAGS -s -t "$i" anleitungdb | ./drop_all_varying >"$i"
+#    	| fgrep -v 'FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_' >"$i"
+  fi
+  if [ "$data" -gt "0" ] ; 
+  then 
+    if [ -e "with_data/$i" ]
+    then
+      echo "$i: DATA"
+      pg_dump $PG_DUMP_FLAGS -T -a -t "$i" anleitungdb | ./drop_all_varying >"with_data/$i"
+    fi
+  fi
+done
+
+for i in `psql -t -q -c "select viewname from pg_views where \
+viewname not like 'pg_%' and viewname not like 'pga_%';" anleitungdb`
+do
+  echo View $i
+  if [ "$schema" -gt "0" ]
+  then pg_dump $PG_DUMP_FLAGS -t "$i" anleitungdb | ./drop_all_varying >"$i" 
+  fi
+done
+
+for i in `psql -t -q -c "select relname from pg_class where relkind='S';" anleitungdb`
+do
+  echo Sequence $i
+  if [ "$schema" -gt "0" ]
+  then pg_dump $PG_DUMP_FLAGS -t "$i" anleitungdb | ./drop_all_varying >"$i"
+  fi
+done

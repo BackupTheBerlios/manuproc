@@ -1,0 +1,74 @@
+#!/bin/bash
+
+export PGDATABASE=anleitungdb
+
+dropdb anleitungdb
+createdb anleitungdb
+
+P="."
+
+for i in \
+   banken \
+   global_settings \
+   kunden \
+   ku_ansprech \
+   ku_briefanr \
+   ku_land \
+   ku_person \
+   ku_telefon \
+   kunden_telefon_telid_seq \
+   ku_warenkorb \
+   rechnung_zahlungsart \
+   waehrung
+do
+
+psql anleitungdb -q < $P/$i
+
+done
+
+#../../Programme/Instanzen testdb
+
+#psql anleitungdb -c "vacuum analyze"
+
+exit
+
+   artikelbezeichnung \
+   artikelstamm \
+   artikelzusammensetzung \
+   artbez_3_1 \
+   artbez_3_1000 \
+   artbez_4_1 \
+   artbez_5_1 \
+   artbez_0_1 \
+   artbez_0_1000 \
+   auftrag \
+   auftragentry \
+   auftrag_prozess \
+   auftragsentryzuordnung \
+   banken \
+   einheiten \
+   extbezschema \
+   global_settings \
+   lieferschein \
+   lieferscheinentry \
+   ketten \
+   ketten_kettid_seq \
+   lager_bewegung \
+   lastcode \
+   problems \
+   prod_changejournal \
+   prod_changejournal_chid_seq \
+   prod_instanz \
+   prozesse \
+   schaertabelle \
+   schaertabelle_entryid_seq \
+   rechnung_zahlungsart \
+   rl_inhalt \
+   rl_log \
+   rohjumbo \
+   waehrung \
+   webangaben \
+   webang_bindung \
+   webang_faeden \
+   webang_schuss \
+   webang_wiederhol
