@@ -6540,7 +6540,7 @@ Zuschlag
       <class>GtkScrolledWindow</class>
       <name>scrolledwindow18</name>
       <hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
-      <vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
+      <vscrollbar_policy>GTK_POLICY_NEVER</vscrollbar_policy>
       <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
       <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
       <child>
@@ -6561,7 +6561,7 @@ Zuschlag
       <widget>
 	<class>GtkViewport</class>
 	<name>viewport5</name>
-	<shadow_type>GTK_SHADOW_IN</shadow_type>
+	<shadow_type>GTK_SHADOW_NONE</shadow_type>
 
 	<widget>
 	  <class>GtkTable</class>
