@@ -1,5 +1,5 @@
-/*  Gtk--addons: a collection of gtk-- addons
- *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
+/*  Gtk--addons: a collection of gtk-- addons Copyright (C) 2003 Adolf Petig
+ *  GmbH & Co. KG, written by Christof Petig
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -34,6 +34,10 @@ ManuProC::ChoiceButton::ChoiceButton(bool tearoff)
    vbox->show();
    
    menu=new Gtk::Menu();
+   Gtk::TearoffMenuItem *tomi=manage(new Gtk::TearoffMenuItem());
+   menu->add(*tomi);
+   tomi->show();
+   
    signal_clicked().connect(SigC::slot(*this,&ChoiceButton::on_button_pressed));
    signal_secondpressed().connect(SigC::slot(*this,&ChoiceButton::on_sbutton_pressed));
 }
@@ -47,7 +51,6 @@ void ManuProC::ChoiceButton::add(const Glib::RefPtr<Gdk::Pixbuf> &_image, const 
    images.push_back(_image);
    texts.push_back(text);
    callbacks.push_back(callback);
-   // menuitem erzeugen
    // scale?
    Gtk::Image *im=manage(new Gtk::Image(_image));
    menu->items().push_back(Gtk::Menu_Helpers::ImageMenuElem(text,*im));
@@ -65,10 +68,25 @@ void ManuProC::ChoiceButton::on_button_pressed()
    callbacks[actual_index]();
 }
 
+static void PosCalc(GtkMenu *menu,gint *x,gint *y,gboolean *push_in,gpointer user_data)
+{  (*y)+=4;
+   (*push_in)=true;
+}
+
+#if 0
+static void PosCalc(int &x, int &y, bool &push_in)
+{  y+=4;
+   push_in=true;
+}
+
+static Gtk::Menu::SlotPositionCalc pc_slot=&PosCalc;
+#endif
+
 void ManuProC::ChoiceButton::on_sbutton_pressed(int mbutton)
-{  // menu zeigen
-   if (mbutton!=1) menu->popup(mbutton,0);
-   else menu->popup(0,0);
+{  if (mbutton!=1) menu->popup(mbutton,0);
+   else 
+   {  gtk_menu_popup(menu->gobj(),0,0,&PosCalc,0,0,0);
+   }
 }
 
 void ManuProC::ChoiceButton::on_menuitem_selected(unsigned idx)
