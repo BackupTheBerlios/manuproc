@@ -1,11 +1,11 @@
 #!/bin/bash
 
 export PGHOST=localhost
-
-dropdb testdb
-createdb testdb
-
+export PGDATABASE=testdb
 P="database_tables_init"
+
+dropdb $PGDATABASE
+createdb $PGDATABASE
 
 (for i in \
    artikelbezeichnung \
@@ -55,9 +55,9 @@ P="database_tables_init"
    webang_wiederhol
 do
   cat $P/$i
-done ) | psql testdb -q
+done ) | psql $PGDATABASE -q
 
-../../Programme/Instanzen testdb
+../../Programme/Instanzen $PGDATABASE
 
-#psql testdb -c "vacuum analyze"
+#psql $PGDATABASE -c "vacuum analyze"
 

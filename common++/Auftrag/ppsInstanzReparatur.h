@@ -1,4 +1,4 @@
-// $Id: ppsInstanzReperatur.h,v 1.5 2002/12/19 13:57:22 thoma Exp $
+// $Id: ppsInstanzReparatur.h,v 1.1 2003/01/31 16:24:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,7 +20,7 @@
 #ifndef AUX_PPSINSTANZ_REP_H
 #define AUX_PPSINSTANZ_REP_H
 
-#include "ppsInstanz.h"
+#include <Instanzen/ppsInstanz.h>
 #include <Auftrag/AufEintrag.h>
 //class AufEintragBase;
 class LagerInhalt;

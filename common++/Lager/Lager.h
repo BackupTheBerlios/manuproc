@@ -1,4 +1,4 @@
-/* $Id: Lager.h,v 1.12 2003/01/29 12:30:33 christof Exp $ */
+/* $Id: Lager.h,v 1.13 2003/01/31 16:23:15 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -20,7 +20,7 @@
 #ifndef _LAGER_HH_
 #define _LAGER_HH_
 #include <Artikel/ArtikelBase.h>
-#include <Instanzen/ppsInstanzReperatur.h>
+#include <Auftrag/ppsInstanzReparatur.h>
 #include "LagerPlatz.hh"
 #include <Auftrag/AuftragBase.h>
 #include <vector>

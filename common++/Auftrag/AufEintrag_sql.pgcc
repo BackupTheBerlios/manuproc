@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.47 2003/01/31 16:23:15 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.48 2003/01/31 16:25:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -92,7 +92,7 @@ void AufEintrag::abschreiben(mengen_t menge,ManuProcEntity<>::ID lfrsid) throw(S
  else
    Query("update auftragentry set geliefert=?, status=?, "
      "bestellt=?, letzte_lieferung=now() "
-     "where (instanz,auftragid,zeilennr) = (?,?,?)")
+     "where (instanz,auftragid,zeilennr) = (?,?,?)").lvalue()
      << GELIEFERT << STATUS << BESTELLT 
      << InstanzID() << Id() << ZNr();
  SQLerror::test(__FILELINE__);

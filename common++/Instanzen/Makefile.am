@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.11 2002/11/22 15:31:05 christof Exp $
+# $Id: Makefile.am,v 1.12 2003/01/31 16:23:15 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -11,7 +11,7 @@ includedir=@includedir@/Instanzen
 PGCC_Sources=ppsInstanz_sql.cc 
 
 libInstanzen_a_SOURCES= $(PGCC_Sources) Produktionsdauer.cc \
-      ppsInstanzProduziert.cc ppsInstanz.cc ppsInstanzReperatur.cc
+      ppsInstanz.cc 
 
 libInstanzen.a: $(libInstanzen_a_OBJECTS) $(libInstanzen_a_DEPENDENCIES)
 	touch $@

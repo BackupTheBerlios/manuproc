@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.22 2003/01/15 15:10:16 christof Exp $
+// $Id: AuftragBase.cc,v 1.23 2003/01/31 16:23:15 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -40,44 +40,6 @@ std::ostream &operator<<(std::ostream &o,const AuftragBase &a)
   return  o<<a.Instanz()->Name()<< "(" << a.Id() <<")";
 }
 
-
-/*
-FetchIStream& operator>>(FetchIStream& is,AuftragBase::mengen_t &menge)
-{
-  is >> menge;
-  return is;
-}
-*/
-
-#if 0
-// könnte vielleicht ersetzt werden ???
-// ist jetzt ArtikelInternNachbestellen
-void AuftragBase::BaumAnlegen(const AufEintrag& AE,int uid,bool setInstanzAuftraege) const
-{
-   ManuProC::Trace _t(AuftragBase::trace_channel, std::string("OLD.")+__FUNCTION__,*this,
-      "Artikel=",AE.Artikel(),
-      "Status=",AE.getEntryStatus(),"LieferDatum=",AE.getLieferdatum(),
-      "Menge=",AE.getStueck(),"setInstanzAuftrag=",setInstanzAuftraege);
-   assert(Instanz()==ppsInstanzID::Kundenauftraege ? setInstanzAuftraege : true);
-  if(setInstanzAuftraege)
-     AE.ArtikelInternNachbestellen(uid,AE.getRestStk(),AE,ManuProC::Auftrag::r_Anlegen);
-}
-#endif
-
-#if 0
-/* 'AE.getStueck()' ist die GESAMTMenge 
-   'menge' ist die AKTUELLE geänderte Menge
-*/
-// Code ist jetzt in ArtikelInternNachbestellen
-void AuftragBase::InstanzAuftraegeAnlegen(const AufEintrag& AE,mengen_t menge,int uid,bool automatisch_geplant) const
-{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
-      "Artikel=",AE.Artikel(),
-      "Status=",AE.getEntryStatus(),"LieferDatum=",AE.getLieferdatum(),
-      "Menge=",menge);
-   AE.ArtikelInternNachbestellen(uid,menge,ManuProC::Auftrag::r_Anlegen);
-}
-#endif
-
 const std::string AuftragBase::getStatusStr(AufStatVal a)
 {
  switch(a)
@@ -102,8 +64,6 @@ AuftragBase::mengen_t AuftragBase::min(const mengen_t &x,const mengen_t &y)
 AuftragBase::mengen_t AuftragBase::max(const mengen_t &x,const mengen_t &y)
 { if(x>=y) return x; return y; }
 
-            
-            
 bool AuftragBase::editierbar() const
 {
   if     (Id() == dispo_auftrag_id) return false;
@@ -153,12 +113,15 @@ void AuftragBase::menge_neu_verplanen(const int uid,cH_ppsInstanz instanz,const 
   for (SelectedFullAufList::iterator i=auftraglist.begin();i!=auftraglist.end();++i)
    {
      AuftragBase::mengen_t M=AuftragBase::min(i->getRestStk(),m);
+//     i->Produziert_0er(M);
+//     i->abschreiben(
+     // i->WurdeProduziert(M);
 #warning this seems fishy CP     
      // 0er abbestellen, aber wo wird der 1er erhöht?
      // 0er nicht abbestellen sondern als Produziert markieren!!!
      // i->updateStkDiffInstanz__(uid,-M,AufEintragBase(),reason);
      // produziert markieren
-//#error hier gehts weiter     
+#warning hier gehts weiter     
      m-=M;
      if(!m) break;
    }

@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.16 2003/01/15 15:10:16 christof Exp $
+# $Id: Makefile.am,v 1.17 2003/01/31 16:23:15 christof Exp $
 
 ENDUSER=-DPETIG
 
@@ -10,10 +10,10 @@ noinst_LIBRARIES=libAuftrag.a
 
 includedir=@includedir@/Auftrag
 
-# this gives us free compilation
 libAuftrag_a_SOURCES=AufEintrag.cc AufEintragBase.cc AuftragBase.cc \
 	sqlAuftragSelector.cc Auftrag.cc $(BUILT_SOURCES_P) AuftragsBaum.cc \
-   AufEintragZuMengenAenderung.cc AufEintragZu.cc VerfuegbareMenge.cc
+   AufEintragZuMengenAenderung.cc AufEintragZu.cc VerfuegbareMenge.cc \
+   ppsInstanzProduziert.cc ppsInstanzReparatur.cc
 
 libAuftrag.a: $(libAuftrag_a_OBJECTS) $(libAuftrag_a_DEPENDENCIES)
 	touch $@

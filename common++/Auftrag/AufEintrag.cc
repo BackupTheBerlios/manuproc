@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.27 2003/01/15 15:10:15 christof Exp $
+// $Id: AufEintrag.cc,v 1.28 2003/01/31 16:23:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,7 +23,7 @@
 #include <Auftrag/AufEintragZu.h>
 #include <Auftrag/Auftrag.h>
 #include <unistd.h>
-#include <Instanzen/ppsInstanzProduziert.h>
+#include <Auftrag/ppsInstanzProduziert.h>
 #include <Misc/Trace.h>
 #include <Lager/Lager.h>
 #include <Auftrag/AufEintragZuMengenAenderung.h>

@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.27 2003/01/29 12:30:33 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.28 2003/01/31 16:23:15 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -170,8 +170,8 @@ private:
    friend struct ManuProC::st_produziert;
    friend void ppsInstanz::Produziert(ManuProC::st_produziert &P,ManuProC::Auftrag::Action reason) const;
    friend class AufEintragBase;
- void abschreiben(mengen_t menge,
-    ManuProcEntity<>::ID lfrsid) throw(SQLerror);
+ void abschreiben(mengen_t menge,ManuProcEntity<>::ID lfrsid) throw(SQLerror);
+ void Produziert_0er(mengen_t menge);
 
 public:
  // wird z.B. von push_back verwendet

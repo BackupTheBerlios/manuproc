@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <Instanzen/ppsInstanzReperatur.h>
+#include <Auftrag/ppsInstanzReparatur.h>
 #include <Lager/Lager.h>
 #include <Lager/JumboLager.h>
 #include <Lager/RohwarenLager.h>

@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.26 2003/01/08 09:46:57 christof Exp $
+// $Id: adjust_store.cc,v 1.27 2003/01/31 16:23:15 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -21,7 +21,7 @@
 #include <Misc/exception.h>
 #include <getopt.h>
 #include <unistd.h>
-#include <Instanzen/ppsInstanzReperatur.h>
+#include <Auftrag/ppsInstanzReparatur.h>
 
 void usage(const std::string &s)
 {

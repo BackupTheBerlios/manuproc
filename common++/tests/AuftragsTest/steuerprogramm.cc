@@ -25,7 +25,7 @@
 #include <Misc/exception.h>
 #include <Lager/Lager.h>
 #include <Auftrag/Auftrag.h>
-#include <Instanzen/ppsInstanzProduziert.h>
+#include <Auftrag/ppsInstanzProduziert.h>
 #include <Misc/Trace.h>
 #include <unistd.h>
 // Lieferschein
@@ -862,21 +862,24 @@ static void usage(const std::string &argv0,const std::string &argv1)
 
 int main(int argc,char *argv[])
 {  bool mit_reparatur_programm=false;
+   bool clean_only=false;
 
    static struct option long_options[] = {
      { "verbose", no_argument, 0, 'v' },
      { "repair", no_argument, 0, 'r' },
      { "continue", no_argument, 0, 'c' },
      { "trace", no_argument, 0, 't' },
+     { "clean-only", no_argument, 0, 'C' },
      { 0,0,0,0 },
    };
    
    int opt;
-   while ((opt=getopt_long(argc,argv,"vrct",long_options,0))!=-1)
+   while ((opt=getopt_long(argc,argv,"vrctC",long_options,0))!=-1)
     switch(opt)
    {  case 'v': verbose=true; break;
       case 'r': mit_reparatur_programm=true; break;
       case 'c': do_not_stop=true; break;
+      case 'C': clean_only=true; break;
       case 't': ManuProC::Tracer::Enable(AuftragBase::trace_channel);
       	ManuProC::Tracer::Enable(log_trace);
       	break;
@@ -886,6 +889,14 @@ int main(int argc,char *argv[])
    if(argc-optind!=1) { usage(argv[0],""); return 1; }
    e_mode mode=None;
    std::string mode_str=argv[optind];
+
+#ifdef MANU_PROC_TEST
+   putenv("PGDATABASE=anleitungdb");
+#elif defined MABELLA_TEST
+   putenv("PGDATABASE=mabella_test_db");
+#elif defined PETIG_TEST
+   putenv("PGDATABASE=testdb");
+#endif
 
    if(mode_str=="M" || mode_str=="Mengentest") mode=Mengentest;
    else if(mode_str=="P" || mode_str=="Plantest")  mode=Plantest;
@@ -914,18 +925,24 @@ int main(int argc,char *argv[])
    std::cout << "Initalisierung der Datenbank ...";
    std::cout.flush();
 
+   if (clean_only) // test for existance
+   {  try
+      {  ManuProC::dbconnect();
+         Kunde k(1);
+         ManuProC::dbdisconnect();
+      }
+      catch (SQLerror &e)
+      {  clean_only=false;
+      }
+   }
+
    std::string kill_output=" 2>/dev/null >/dev/null";
    if (verbose) kill_output="";
-#ifdef MANU_PROC_TEST
-   system((std::string(MANU_DATAPATH)+"/initdb.script "+MANU_DATAPATH+kill_output).c_str());
-   putenv("PGDATABASE=anleitungdb");
-#elif defined MABELLA_TEST
-   system((std::string(MANU_DATAPATH)+"/initdb.script "+MANU_DATAPATH+kill_output).c_str());
-   putenv("PGDATABASE=mabella_test_db");
-#elif defined PETIG_TEST
-   system(("database_tables_init/initdb.script"+kill_output).c_str());
-   putenv("PGDATABASE=testdb");
-#endif
+
+   if (clean_only)
+      system((std::string("./clean_db ")+getenv("PGDATABASE")+kill_output).c_str());
+   else
+      system((std::string(MANU_DATAPATH)+"/initdb.script "+MANU_DATAPATH+kill_output).c_str());
    std::cout << "...beendet\n";
 
    Petig::PrintUncaughtExceptions();
@@ -934,9 +951,7 @@ int main(int argc,char *argv[])
    mkdir("results",0777);
    std::ofstream logstream(("files.log/"+mode_str).c_str());
    testlog=&logstream;
-   Petig::dbconnect();
-
-//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
+   ManuProC::dbconnect();
 
    DataBase_init();
    return auftragstests(mode,mit_reparatur_programm);

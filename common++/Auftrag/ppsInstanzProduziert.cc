@@ -1,4 +1,4 @@
-// $Id: ppsInstanzProduziert.cc,v 1.18 2003/01/15 15:10:16 christof Exp $
+// $Id: ppsInstanzProduziert.cc,v 1.1 2003/01/31 16:24:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -333,9 +333,9 @@ void ManuProC::st_produziert::Reduce_Zuordnung_Add_Parent(const AufEintragBase &
 
 void ManuProC::st_produziert::check_dispo_auftraege(ppsInstanz::ID instanz)
 {
-#warning Erstmal abgeschaltet. Wir müssen noch einmal genau Überdenken
-#warning warum das genau gebraucht wird. Und einen entsprechenden Test
-#warning dafür designen
+//#warning Erstmal abgeschaltet. Wir müssen noch einmal genau Überdenken
+//#warning warum das genau gebraucht wird. Und einen entsprechenden Test
+//#warning dafür designen
 return;
 
   AuftragBase::mengen_t freie_menge2=
@@ -348,7 +348,6 @@ return;
 //   <<'\t'<<geplante_menge1<<' '<<freie_menge2<<'\n';
   if(geplante_menge1<freie_menge2)
    {
-//cout << "Do something\n";
      abschreiben_oder_reduzieren(instanz,AuftragBase::dispo_auftrag_id,
      			freie_menge2-geplante_menge1,true);
    }

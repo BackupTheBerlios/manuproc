@@ -2,7 +2,7 @@
 
 for x in M P S L Z D Ls Lm LZ LA ZK ZKM J RP Rg RK RZ RKZ ; do
 
-  if ./steuerprogramm $* $x
+  if ./steuerprogramm -C $* $x
   then
     echo ./steuerprogramm $x OK ;
   else
