@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.3 2003/06/04 10:30:43 christof Exp $
+// $Id: db_upgrade.cc,v 1.4 2003/06/06 09:57:09 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -62,6 +62,9 @@ int main(int argc,char *argv[])
   
   // Auftragsbestätigung an andere Adresse
   check_column("kunden","ab_an_rngadresse","bool");
+  
+  // Verkäufernr (?)
+  check_column("auftrag","verknr","integer");
   
   ManuProC::dbdisconnect();
   return 0;
