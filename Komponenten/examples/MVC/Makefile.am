@@ -25,3 +25,6 @@ noinst_HEADERS = \
 CXXFLAGS = @CXXFLAGS@ @GTKMM_CFLAGS@ @KOMPONENTEN_INCLUDES@
 
 mvc_LDADD = @LIBS@ @GTKMM_LIBS@ @KOMPONENTEN_LIBS@
+
+$(LINKS):
+	ln -sf ../../Basic/examples/MVC/$@ .

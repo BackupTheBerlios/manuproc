@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.20 2002/07/08 08:26:54 christof Exp $
+// $Id: ArtikelBox.cc,v 1.21 2002/07/26 07:43:50 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -219,9 +219,6 @@ void ArtikelBox::init()
 
  Benutzerprofil_laden();   // setzt signifikanz !!! 
 
-#ifdef ALLE_ARTIKEL
- if(!alle_artikel_anzeigen_bool)
-#endif 
   {
    reloop:
     for (std::vector<int>::iterator i=signifikanz.begin();i!=signifikanz.end();++i)
@@ -251,17 +248,6 @@ void ArtikelBox::init()
       }
     add(*oberstes);
    }
-#ifdef ALLE_ARTIKEL   
- else
-   {
-     int s=1;
-     if (alle_artikel_anzeigen_mit_id_bool) s=2;
-     combos.resize(s);
-     labels.resize(s);
-     oberstes = init_table_alle_artikel(s);
-     add(*oberstes);
-   }
-#endif
  std::string labtext = ArtikelTyp::get_string(schema->Typ())
       +": "+ cH_Kunde(schema->Id())->firma();
  tooltips.set_tip(*this,labtext);
@@ -321,57 +307,8 @@ Gtk::Container* ArtikelBox::init_table(int l)
  return ev;
 }
 
-#ifdef ALLE_ARTIKEL
-Gtk::Container* ArtikelBox::init_table_alle_artikel(int s)
-{
- Gtk::Table* table = manage(new Gtk::Table(2,s));
- Gtk::EventBox *ev = manage(new Gtk::EventBox());
- ev->add(*table);
-
- assert(!combos[s-1].size());
- assert(!labels[s-1].size());
- for(int i=0;i<s;++i)
-   {
-    Gtk::SearchCombo *sc;
-    combos[s].push_back(sc=manage (new Gtk::SearchCombo(true)));
-    sc->set_usize(50,0);
-    sc->set_autoexpand(autocompletebool);
-    sc->set_enable_tab(true);
-    sc->search.connect(SigC::bind(SigC::slot(this,&ArtikelBox::searchFunc_alle_artikel),i));
-    sc->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::selectFunc_alle_artikel),i));
-
-    Gtk::Label *lb;
-    std::string text;
-    if     (i==0) text="Artikel";
-    else if(i==1) text="ID";
-    labels[i].push_back(lb=manage(new Gtk::Label(text)));
-
-    if (i==0) 
-     {
-       Gtk::HBox *hb= manage(new Gtk::HBox());
-       pixmap= manage(new class Gtk::Pixmap()); // stock_button_cancel_xpm));
-       pixmap_setzen(false);
-       hb->pack_start(*pixmap,false,false);   pixmap->show();
-       hb->pack_start(*lb);                   hb->show();
-       table->attach(*hb,i,i+1,0,1);
-     }
-    else  table->attach(*lb,i,i+1,0,1);
-    table->attach(*sc,i,i+1,1,2);
-    sc->show();
-    lb->show();
-   }
- ev->button_press_event.connect(SigC::slot(this,&ArtikelBox::MouseButton));
- std::string labtext = "Artikelsuche in allen Schemata und für alle Kunden";
- label_typ = manage(new class Gtk::Label(labtext));
- table->attach(*label_typ,0,1,2,3);
- table->show();
- ev->show();
- return ev;
-}
-#endif
-
 #define USUAL_INIT(sch) vertikalbool(false), autocompletebool(false), \
-   kombiniertbool(false),labelbool(true), \
+   kombiniertbool(false),labelbool(false), \
    automatisch_anlegen_bool(false),eingeschraenkt(false),\
    alle_artikel_anzeigen_bool(false),alle_artikel_anzeigen_mit_id_bool(false),\
    artikel_automatisch_finden(false), \

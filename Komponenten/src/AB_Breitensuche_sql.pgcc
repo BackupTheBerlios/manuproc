@@ -87,6 +87,8 @@ bool ArtikelBox::BreitenSuche(GtkSCContext newsearch,unsigned int sp,unsigned in
        {  std::string squery="select exists(select true from "
        		+Tabellenname(s)+" where ";
 
+	  if (s->sigsize(i)==1 && s->sigbegin(i)->spaltenname=="id")
+	     continue;
           vector<cH_EntryValue>::const_iterator vi=v.begin();
           for (ExtBezSchema::const_sigiterator j=s->sigbegin(i);
  		j!=s->sigend(i);++j,++vi)
