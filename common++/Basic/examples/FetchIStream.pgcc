@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.20 2003/01/27 10:59:57 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.21 2003/01/27 12:10:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -72,7 +72,6 @@ int main()
    Query ("analyze pg_class");
    // should never select any lines
    Query ("update pg_class set relname=relname where relname='' and oid=0");
-   std::cout << "code " << SQLerror::SQLCode() << '\n';
    SQLerror::print("should be 100");
    ManuProC::dbdisconnect();
    return 0;
