@@ -1,4 +1,4 @@
-// $Id: vectormap.cc,v 1.1 2003/09/16 09:53:01 christof Exp $
+// $Id: vectormap.cc,v 1.2 2003/09/16 10:00:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,7 +22,7 @@
 #include <string>
 #include <iterator>
 
-std::ostream &operator<<(std::basic_ostream<char> &o,const std::pair<std::string,std::string> &p)
+std::ostream &operator<<(std::ostream &o,const std::pair<std::string,std::string> &p)
 {  return o << p.first << ':' << p.second;
 }
 
@@ -31,11 +31,11 @@ int main()
 
    v["A"]="b";
    v["B"]="c";
-   std::cout << v.front();
    std::copy(v.begin(),v.end(),std::ostream_iterator<std::pair<std::string,std::string> >
    		(std::cout,"\t"));
    std::cout << '\n';
    v["A"]="d";
+   v["0"]="e";
    std::copy(v.begin(),v.end(),std::ostream_iterator<std::pair<std::string,std::string> >
    		(std::cout,"\t"));
    std::cout << '\n';

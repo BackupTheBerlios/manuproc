@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.41 2003/09/16 09:53:01 christof Exp $
+# $Id: Makefile.am,v 1.42 2003/09/16 10:05:02 christof Exp $
 
 AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@ @SIGC_CFLAGS@
 
@@ -66,7 +66,10 @@ include_HEADERS=Ausgabe.h Ausgabe_neu.h Datum.h \
 		EntryValueFixed.h Global_Settings.h EAN.h AdminProblems.h \
 		EntryValueQuartal.h EntryValueFixedEinheit.h \
 		dbcapability.h \
-		multi_lang.h EntryValueTimeStamp.h inbetween.h
+		multi_lang.h EntryValueTimeStamp.h inbetween.h \
+		bitmask.h TemporaryValue.h vectormap.h germanstring.cc \
+		EntryValueIntGermanString.cc EntryValueIntGermanString.h \
+		recodestream.h 
 
 CLEANFILES= *~ $(BUILT_SOURCES)
 
