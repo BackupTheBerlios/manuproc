@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.6 2002/11/26 10:59:46 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.7 2002/11/27 23:38:00 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -197,7 +197,7 @@ void SimpleTreeStore::redisplay()
 }
 #endif
 
-void TreeBase::on_line_appended(cH_RowDataBase row)
+void SimpleTreeStore::on_line_appended(cH_RowDataBase row)
 {  insertLine(get_iter("0"),row,currseq,0);
 // Summen neu anzeigen (hmmm, overkill!)
 #if 0
@@ -208,12 +208,19 @@ void TreeBase::on_line_appended(cH_RowDataBase row)
 #endif
 }
 
-bool operator < (const TreeStore::iterator &a, const cH_EntryValue &b)
-{  return *((*a)[m_columns.node_val]) < *b;
-}
-
-bool operator < (const cH_EntryValue &a, const TreeStore::iterator &b)
-{  return *a < *((*a)[m_columns.node_val])b
+namespace {
+class CompareValue
+{	Gtk::TreeModelColumn<cH_EntryValue> node_val;
+public:
+	CompareValue(Gtk::TreeModelColumn<cH_EntryValue> &v)
+		: node_val(v) {}
+	bool operator()(const TreeStore::iterator &a, const cH_EntryValue &b)
+	{  return *((*a)[node_val]) < *b;
+	}
+	bool operator()(const cH_EntryValue &a, const TreeStore::iterator &b)
+	{  return *a < *((*b)[node_val]);
+	}
+};
 }
 
 //#define DEBUG_NEW
@@ -223,12 +230,12 @@ bool operator < (const cH_EntryValue &a, const TreeStore::iterator &b)
 #define NurEinKind(x) ((x).begin()!=(x).end() && ++((x).begin()) == (x).end())
 #define MehrAlsEinKind(x) ((x).begin()!=(x).end() && ++((x).begin()) != (x).end())
 
-void TreeBase::insertLine(TreeStore::iterator &parent,
+void SimpleTreeStore::insertLine(TreeStore::iterator &parent,
             const cH_RowDataBase &v, std::deque<guint> selseq, guint deep)
 {
 recurse:
- TreeStore::iterator current_iter=parent->begin();
- TreeStore::iterator apiend = parent->end();
+ TreeStore::iterator current_iter=parent.begin();
+ TreeStore::iterator apiend = parent.end();
  TreeStore::iterator upper_b=apiend;
  guint seqnr=selseq.front();	
  cH_EntryValue ev=v->Value(seqnr,ValueData());
@@ -237,22 +244,24 @@ recurse:
 // optimization: we expect to need upper_bound if this is the last attribute
  if (!MehrAlsEinKind(selseq))
  {  std::pair<TreeStore::iterator,TreeStore::iterator> range 
- 		= std::equal_range(current_iter,apiend,ev);
+ 		= std::equal_range(current_iter,apiend,ev,
+ 				CompareValue(m_columns.node_val));
     current_iter=range.first;	// lower_bound
     upper_b=range.second;	// upper_bound
  }
  else
-    current_iter=std::lower_bound(current_iter,apiend,ev);
+    current_iter=std::lower_bound(current_iter,apiend,ev,
+ 				CompareValue(m_columns.node_val));
 
  if(current_iter!=apiend) // dann einfuegen
    {// eigentlich nur ein gecastetes current_iter
     TreeRow *current_tclr=reinterpret_cast<TreeRow*>((*current_iter).get_user_data());
     //----------------- gleicher Wert ------------------
-    if((ev) == current_tclr->Value())
+    if((ev) == *((*current_iter)[m_columns.node_val]))
      { 
       if (MehrAlsEinKind(selseq)) // wenn Blatt noch nicht erreicht
       // eine neue Node erzeugen(?)
-      {  cH_RowDataBase v2=current_tclr->LeafData();
+      {  cH_RowDataBase v2=(*current_iter)[m_columns.row];
          guint child_s_deep=deep;
 
 	do 
