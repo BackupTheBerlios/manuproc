@@ -1020,6 +1020,8 @@
 
   <child>
     <widget class="GtkEventBox" id="IntStringBox">
+      <property agent="glademm" name="cxx_separate_class">True</property>
+      <property agent="glademm" name="cxx_separate_file">True</property>
       <property name="visible">True</property>
       <property name="events">GDK_BUTTON_PRESS_MASK</property>
 
