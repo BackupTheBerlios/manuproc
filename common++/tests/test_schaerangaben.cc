@@ -1,4 +1,4 @@
-// $Id: test_schaerangaben.cc,v 1.8 2004/06/22 09:57:10 christof Exp $
+// $Id: test_schaerangaben.cc,v 1.9 2004/06/22 09:58:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -74,6 +74,7 @@ int main()
    dump(ArtikelBase(127786),4,20000); // 1820/40/
    dump(ArtikelBase(127786),6,20000); // 1820/40/
    dump(ArtikelBase(219591),ArtikelBase(219602),1,11000); // 2030/40/260+355
+   // 22528/40/4641+4722 sollte kombinieren!
    dump(ArtikelBase(211974),ArtikelBase(222721),1,17000); // 22528/40/4641+4722
    dump(ArtikelBase(222722),2,17000); // 22528/40/5144
    dump(ArtikelBase(219020),ArtikelBase(225951),2,20000); // 22556/40/1110+2010
