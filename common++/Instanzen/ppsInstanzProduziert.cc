@@ -1,4 +1,4 @@
-// $Id: ppsInstanzProduziert.cc,v 1.13 2002/12/13 09:27:21 thoma Exp $
+// $Id: ppsInstanzProduziert.cc,v 1.14 2002/12/17 13:55:32 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -29,6 +29,7 @@
 #include <Aux/Trace.h>
 #include <Aux/Transaction.h>
 #include <Misc/relops.h>
+#include <Auftrag/AufEintragZuMengenAenderung.h>
 
 void ppsInstanz::Planen(ManuProC::st_produziert &P) const throw(SQLerror)
 {
@@ -70,6 +71,7 @@ void ppsInstanz::Produziert(ManuProC::st_produziert &P,ManuProC::Auftrag::Action
      { 
        P.AE.abschreiben(P.menge,P.lfrsid);
        P.Reduce_DispoEltern(P.AE,P.menge);      
+       AufEintragZuMengenAenderung::Change_Zuordnung_to_Children(true,P.AE,-P.menge);
        rekursion(P);
        tr.commit();
        return;
@@ -102,7 +104,7 @@ void ppsInstanz::Produziert(ManuProC::st_produziert &P,ManuProC::Auftrag::Action
         }       
      P.check_dispo_auftraege(Id());
     }
-   else //if(menge<0)
+   else //entspricht: if(menge<0)
     {
       AuftragBase::mengen_t restmenge=P.abschreiben_oder_reduzieren
                                     (Id(),AuftragBase::plan_auftrag_id,P.menge);
@@ -146,20 +148,15 @@ void ppsInstanz::Lager_abschreiben(ManuProC::st_produziert &P) const
 void ppsInstanz::rekursion(ManuProC::st_produziert &P) const 
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
-   "Instanz="+Name(),"Artikel=",P.artikel,
+   "Instanz="+Name(),"Artikel=",P.artikel,"AufEintrag",P.AE,
+   "AuftragBase",P.auftragbase,
    "Menge=",P.menge,"LfrsId="+itos(P.lfrsid));
  ArtikelStamm as(P.artikel);
  
  if(as.BestellenBei()==ppsInstanzID::None) return;
 
-//cout << *this<<'\t'<<EinlagernIn()<<'\t'
-//<<cH_ppsInstanz(EinlagernIn())->AutomatischEinlagern()<<'\n';
-//cout << *this<<'\t'<<GeplantVon()<<'\n';
  if(Id()!=ppsInstanz::getBestellInstanz(P.artikel)->Id())
    {
-//cout << Name()<<'\t'<<EinlagernIn()<<' '
-//<<cH_ppsInstanz(EinlagernIn())->AutomatischEinlagern()<<' '
-//<<PlanungsInstanz()<<'\n';
     if(EinlagernIn()!=ppsInstanzID::None && 
        cH_ppsInstanz(EinlagernIn())->AutomatischEinlagern() &&
        !PlanungsInstanz())
@@ -173,7 +170,6 @@ void ppsInstanz::rekursion(ManuProC::st_produziert &P) const
         P.kunde=ManuProC::DefaultValues::EigeneKundenId;
         P.AE=AufEintrag();
         P.lfrsid=LieferscheinBase::none_id;
-//cout << "C2\t"<<I<<'\t'<<I->ProduziertSelbst()<<'\n';
         if(I->ProduziertSelbst())  return;
         I->Produziert(P);
         return;
@@ -200,7 +196,7 @@ void ppsInstanz::rekursion(ManuProC::st_produziert &P) const
 AuftragBase::mengen_t ManuProC::st_produziert::abschreiben_oder_reduzieren(ppsInstanz::ID instanz,int id,AuftragBase::mengen_t abmenge,bool planen_und_abschreiben_von_ungeplaneten)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
-   "Instanz=",instanz,"AuftragID=",id,
+   "Instanz=",instanz,"AuftragID=",id,"AEB=",AE,
    "Menge=",abmenge);
 
   assert(id==AuftragBase::handplan_auftrag_id || id==AuftragBase::dispo_auftrag_id ||
@@ -232,13 +228,16 @@ AuftragBase::mengen_t ManuProC::st_produziert::abschreiben_oder_reduzieren(ppsIn
          if(i==--L.end()) abschreibmenge=abmenge ;
          AuftragBase zab(i->Instanz(),AuftragBase::plan_auftrag_id);
          if(auftragbase.valid()) zab=auftragbase;
+//std::cerr << "PPProduziert::  "<<*i
+//   <<" Menge:"<<abschreibmenge<<" alte Menge: "<<abmenge<<'\n'
+//AufEintragZu(ElternAEB).setMengeDiff__(*i,-abschreibmenge); // NEU
+         AufEintragZuMengenAenderung::Change_Zuordnung_to_Children(true,*i,-abschreibmenge);
+         
          if(planen_und_abschreiben_von_ungeplaneten)
           {
             int znr=i->Planen(uid,abschreibmenge,zab,i->getLieferdatum(),ManuProC::Auftrag::r_Produziert);
             AufEintragBase zaeb(zab,znr);
             AufEintrag(zaeb).abschreiben(abschreibmenge,lfrsid);
-//cerr << "Produziert:: Planen "<<zaeb<<" und Abschreiben bei "<<*i
-//<<" Menge:"<<abschreibmenge<<" alte Menge: "<<abmenge<<'\n';
           }
          else 
           { 
@@ -320,13 +319,12 @@ void ManuProC::st_produziert::Reduce_Zuordnung_Add_Parent(const AufEintragBase &
   {
     AuftragBase::mengen_t m=AufEintragZu(i->AEB).setMengeDiff__(aeb,menge);
     i->AEB.updateStkDiffBase__(uid,-m);
+//cout << "Reduce_Zuordnung_Add_Parent: "<<i->AEB<<'\t'<<aeb<<'\t'<<m<<'#'<<menge<<'\n';
+    AufEintragZuMengenAenderung::Change_Zuordnung_to_Children(false,i->AEB,-m);
     if(m==menge) break;
     menge-=m;
   }
 }
-
-
-
 
 
 void ManuProC::st_produziert::check_dispo_auftraege(ppsInstanz::ID instanz)

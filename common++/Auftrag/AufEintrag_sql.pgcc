@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.34 2002/12/10 12:28:50 thoma Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.35 2002/12/17 13:55:32 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -186,9 +186,9 @@ void AufEintrag::setInstanzen(const AufStatVal newstatus,const int uid,const Pet
  std::list<AufEintragZu::st_reflist> KindListe = AufEintragZu(*this).get_Referenz_list(*this,true);
  for(std::list<AufEintragZu::st_reflist>::const_iterator i=KindListe.begin();i!=KindListe.end();++i)
   {
-   mengen_t Mauftrag=AufEintrag(i->AEB).getRestStk();
-   mengen_t Mzuordnung=i->Menge;
    AufEintrag AE(i->AEB);
+   mengen_t Mauftrag=AE.getRestStk();
+   mengen_t Mzuordnung=i->Menge;
    // AufEintrag splitten und Anlegen in der Zuordnungsliste
    int znr=0,newznr=0; mengen_t menge=0;
    if(!i->AEB.existEntry(i->Art,lieferdate,znr,newznr,menge,newstatus))
@@ -218,7 +218,8 @@ void AufEintrag::setInstanzen(const AufStatVal newstatus,const int uid,const Pet
             AufEintragZu(class AufEintragBase(*this,myznr)).Neu(AEBZ,Mzuordnung); // 'Neu' versucht erst ein 'update'
          }
      }
-   AE.updateStkDiff__(uid,-Mauftrag,false,ManuProC::Auftrag::r_Anlegen); // macht auch das Lager
+   AE.updateStkDiff__(uid,-Mauftrag,false,ManuProC::Auftrag::r_Anlegen);
+
    if(auftragstatus==UNCOMMITED && newstatus==OPEN ) 
       AE.setStatusAuftragBase(newstatus);
 

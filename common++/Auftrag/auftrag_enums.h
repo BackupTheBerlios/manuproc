@@ -1,4 +1,4 @@
-/* $Id: auftrag_enums.h,v 1.1 2002/11/22 15:57:02 christof Exp $ */
+/* $Id: auftrag_enums.h,v 1.2 2002/12/17 13:55:32 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,12 +21,11 @@
 #ifndef AUFENUMS
 #define AUFENUMS
 
-//ManuProC::Auftrag::Action::
-
 namespace ManuProC 
 { 
  namespace Auftrag {
-    enum Action {r_None,r_Anlegen,r_Planen,r_Produziert,r_Closed,r_Reparatur};
+    enum Action {r_None,r_Anlegen,r_Planen,r_Produziert,r_Closed,
+                 r_Abbestellt,r_Reparatur};
   }
 }
 

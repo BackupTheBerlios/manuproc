@@ -1,4 +1,4 @@
-// $Id: AufEintragZuMengenAenderung.cc,v 1.3 2002/12/10 12:28:50 thoma Exp $
+// $Id: AufEintragZuMengenAenderung.cc,v 1.4 2002/12/17 13:55:32 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -40,20 +40,44 @@ void AufEintragZuMengenAenderung::change_parent(const int uid,
 
 
 void AufEintragZuMengenAenderung::increase_parents__reduce_assingments(const int uid,
-                     const AufEintragBase &child_aeb,const AuftragBase::mengen_t &menge) throw(SQLerror)
+                     const AufEintragBase &child_aeb,AuftragBase::mengen_t menge) throw(SQLerror)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AEB=",child_aeb,"Menge=",menge);
   std::list<AufEintragZu::st_reflist> L=AufEintragZu(child_aeb).get_Referenz_list(child_aeb);
-  AuftragBase::mengen_t M=menge;
-
   for(std::list<AufEintragZu::st_reflist>::iterator j=L.begin();j!=L.end();++j)
     {
-      AuftragBase::mengen_t m=AuftragBase::min(j->Menge,M);
+      AuftragBase::mengen_t m=AuftragBase::min(j->Menge,menge);
 
       AufEintragZu(j->AEB).setMengeDiff__(child_aeb,-m);
       AufEintrag(j->AEB).updateStkDiff__(uid,m,true,ManuProC::Auftrag::r_Produziert);
-      M-=m;
-      if(M==AuftragBase::mengen_t(0)) break;
+      menge-=m;
+      if(menge==AuftragBase::mengen_t(0)) break;
     }         
 }
 
+void AufEintragZuMengenAenderung::Change_Zuordnung_to_Children(const bool child,const AufEintrag &AE,
+                        const AuftragBase::mengen_t &menge) throw(SQLerror)
+{
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AE=",AE,"Menge=",menge,"Child=",child);
+  const bool reduce = (menge<0);
+  AuftragBase::mengen_t Me=menge;
+  if(reduce) Me*=-1;
+  // K ist nach Instanzen sortiert
+  std::list<AufEintragZu::st_reflist>  K=AufEintragZu(AE).get_Referenz_list_ungeplant();
+  std::map<cH_ppsInstanz,AuftragBase::mengen_t> IM;
+  for(std::list<AufEintragZu::st_reflist>::const_iterator i=K.begin();i!=K.end();++i)
+   {
+     // Wenn diese Instanz schon behandelt wurde und keine Menge mehr über ist
+     if(IM.find(i->AEB.Instanz())!=IM.end() && 
+        IM.find(i->AEB.Instanz())->second==Me) continue;
+
+     AuftragBase::mengen_t M;
+     ArtikelBaum::faktor_t F=ArtikelBaum(AE.Artikel()).Faktor(i->Art);
+     if (reduce) M=-AuftragBase::min(i->Menge,Me*F);
+     else        M=Me*F;
+     IM[i->AEB.Instanz()] += F*M.abs();
+cout << "Change_Zuordnung_to_Children: "<<AE<<'\t'<<i->AEB<<'\t'<<M;
+     AufEintragZu(AE).setMengeDiff__(i->AEB,M);
+cout <<"Faktor="<<F<<'\t'<<M<<'\n';
+   }
+}

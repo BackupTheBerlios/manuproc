@@ -1,4 +1,4 @@
-// $Id: AufEintragZuMengenAenderung.h,v 1.1 2002/11/22 15:57:02 christof Exp $
+// $Id: AufEintragZuMengenAenderung.h,v 1.2 2002/12/17 13:55:32 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -34,10 +34,9 @@ namespace AufEintragZuMengenAenderung {
   // Zuordnung wird reduzieren
   void increase_parents__reduce_assingments(const int uid,
                      const AufEintragBase &child_aeb,
-                     const AuftragBase::mengen_t &menge) throw(SQLerror);
+                     AuftragBase::mengen_t menge) throw(SQLerror);
 
-
-  int min(const AuftragBase::mengen_t &x,const AuftragBase::mengen_t &y);
-
+  void Change_Zuordnung_to_Children(const bool child,const AufEintrag &AE,
+                        const AuftragBase::mengen_t &menge) throw(SQLerror);
 }
 

@@ -182,12 +182,12 @@ int auftragstests(e_mode mode)
      }
     case Mengentest :
      {    
-
       // Menge des Auftrags erhöhen
       auftrag.kunden_bestellmenge_aendern(AEB,500);
       erfolgreich=C.teste(Check::Menge,"_menge_plus",mit_reparatur_programm);
       if(!erfolgreich) {cout << "Erhöhen der Auftragmenge \n\n";
                         return fehler();}
+
 
       // Menge des Auftrags erniedrigen (Rohwarenlager Menge reicht jetzt aus)
       auftrag.kunden_bestellmenge_aendern(AEB,100);
@@ -195,12 +195,13 @@ int auftragstests(e_mode mode)
       if(!erfolgreich) { cout << "Reduzieren der Auftragmenge unter Rohwarenlagerbestand \n\n";
                return fehler();}
 
-
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
       AE.updateLieferdatum(NEWDATUM,UID);
       erfolgreich=C.teste(Check::Menge,"_datumsaenderung",mit_reparatur_programm);
       if(!erfolgreich) { cout << "Datumsänderung \n\n";
                return fehler();}
 
+//exit(1);
 
       // Menge des Auftrags weiter erniedrigen (Bandlager Menge reicht jetzt aus)
       auftrag.kunden_bestellmenge_aendern(AEB,10);
@@ -307,6 +308,7 @@ std::cout << dummystring<<'\n';
          " values (101,212,700,'2002-11-28',2,1,1,'2002-01-01 12:00:00+01',"
          " 123755,false,712)";
       Query::Execute(qJ);
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
       SQLerror::test(__FILELINE__);
       erfolgreich=C.teste(Check::Menge,"_split_reparatur_bandlager",mit_reparatur_programm,true);
       if(!erfolgreich) { cout << "Reparatur-Split-Test (Bandlager) \n";
@@ -763,6 +765,9 @@ std::cout << "D13: "<<dummystring<<'\n';
 
        LieferscheinEntry le4(LieferscheinEntryBase(liefs,lznr));
        stueck=450;
+//cout << "\nLOS GEHTS\n\n";
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
+
        le4.changeMenge(stueck,menge);
        erfolgreich=C.teste(Check::Lieferschein|Check::Menge,"_LSZM",mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferscheinentry mit Zusatzeintrag Minus \n\n"; return fehler();}

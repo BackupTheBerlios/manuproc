@@ -1,4 +1,4 @@
-// $Id: ppsInstanzProduziert.h,v 1.8 2002/12/13 09:27:21 thoma Exp $
+// $Id: ppsInstanzProduziert.h,v 1.9 2002/12/17 13:55:32 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,6 +27,7 @@ namespace ManuProC{
                            enum Probleme {Mehr_ausgelagert_als_im_Lager_war,
                                           Mehr_produziert_als_moeglich};
 
+//                           AufEintragBase ElternAEB;
                            ArtikelBase artikel;Kunde::ID kunde;
                            AufEintrag AE;AuftragBase::mengen_t menge;
                            int uid;LieferscheinBase::ID lfrsid;
@@ -40,7 +41,7 @@ namespace ManuProC{
                           LieferscheinBase::ID _lfrsid=LieferscheinBase::none_id,
                           AuftragBase _auftragbase=AuftragBase(),
                           const Petig::Datum _datum=Petig::Datum())
-                     : artikel(a),kunde(_k),menge(m),uid(_uid),
+                     :  artikel(a),kunde(_k),menge(m),uid(_uid),
                         lfrsid(_lfrsid),auftragbase(_auftragbase),
                         ZNr(ManuProcEintrag::none_znr),
                         lieferdatum(_datum)

@@ -47,20 +47,21 @@ bool ppsInstanzReparatur::ReparaturKK_KundenKinder(const int uid,const bool anal
   return alles_ok;
 }
 
-bool ppsInstanzReparatur::KK_teste_summen_fuer(const AufEintragBase aeb,const ArtikelBase KundenArtikel,const int uid,const bool analyse_only) const
+bool ppsInstanzReparatur::KK_teste_summen_fuer(const AufEintragBase aeb,const ArtikelBase ElternArtikel,const int uid,const bool analyse_only) const
 {
   assert(aeb.Id()==AuftragBase::ungeplante_id);
   AufEintrag AE0(aeb);
-  AuftragBase::mengen_t KundenMenge=0;
-  // Kunden-Eltern
-  {
-  std::list<AufEintragZu::st_reflist> L=AufEintragZu(aeb).get_Referenz_listFull(false);
-  for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
-    if(i->AEB.Instanz()->KundenInstanz())
-       KundenMenge+= AufEintrag(i->AEB).getRestStk();
+  AuftragBase::mengen_t ElternMenge=0;
+  // ElternMenge
+  { 
+   std::list<AufEintragZu::st_reflist> L=AufEintragZu(aeb).get_Referenz_list(aeb,false);
+   for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+     {
+       ElternMenge += AufEintrag(i->AEB).getRestStk();
+     }
   }
-  ArtikelBaum::faktor_t F=ArtikelBaum(KundenArtikel).Faktor(AE0.Artikel());
-  KundenMenge = KundenMenge*F;
+  ArtikelBaum::faktor_t F=ArtikelBaum(ElternArtikel).Faktor(AE0.Artikel());
+  ElternMenge = ElternMenge*F;
   // Geplane Kinder
   AuftragBase::mengen_t PlanMenge=0;
   {
@@ -79,16 +80,16 @@ cout << "\tDispo: "<<D.size()<<'\n';
      PlanMenge += DispoAE.getRestStk() - DispoMenge;
    }
   }
-cout << "AUSGABE: "<<aeb<<'\t'<< KundenMenge <<" = "<< AE0.getStueck()
+cout << "AUSGABE: "<<aeb<<'\t'<< ElternMenge <<" = "<< AE0.getStueck()
 <<" + "<< PlanMenge<<'\t';
- if(KundenMenge != AE0.getStueck() + PlanMenge )
+ if(ElternMenge != AE0.getStueck() + PlanMenge )
   {
 cout << "\tFehler";
 /*
-   if(analyse_only) analyse("Von Kunden benötigte Menge (KM="+KundenMenge.String()+") stimmt nicht mit \n"
-      " offener Menge (OM="+AE0.getStueck().String()+") und"
+   if(analyse_only) analyse("Von Eltern benötigte Menge (EM="+ElternMenge.String()+") stimmt nicht mit \n"
+      " offener Menge (OM="+AE0.getStueck().Stringa()+") und"
       " der geplanter Menge (GM="+PlanMenge.String()+") überein.\n"
-      " KM = OM + Summe(GM - Summe(DispoMenge))\n",AE0);
+      " EM = OM + Summe(GM - Summe(DispoMenge))\n",AE0);
    else assert(!"nicht implementiertn");
 */
   }
@@ -98,8 +99,7 @@ cout << "\n";
   std::list<AufEintragZu::st_reflist> L=AufEintragZu(aeb).get_Referenz_list_ungeplant();
   for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
    {
-     ArtikelBaum::faktor_t F=ArtikelBaum(KundenArtikel).Faktor(AufEintrag(i->AEB).Artikel());
-     KK_teste_summen_fuer(i->AEB,KundenArtikel,uid,analyse_only);
+     KK_teste_summen_fuer(i->AEB,AE0.Artikel(),uid,analyse_only);
    }
 }
 
@@ -125,7 +125,7 @@ bool ppsInstanzReparatur::ReparaturK_Kundenzuordnung(const int uid,const bool an
         {
          try{ 
           AufEintrag AE(j->AEB);
-          if(j->Menge!=i->getStueck()) {
+          if(j->Menge!=i->getRestStk()) {
             alles_ok=false;
             if(analyse_only) analyse("Menge des Kundenauftrags und der Zuordnung ans Kind stimmt nicht überein",*i,i->getStueck(),j->Menge);
             else MengenReparatur(uid,*i,AE,j->Menge);
@@ -170,7 +170,7 @@ void ppsInstanzReparatur::Reparatur_Kundenauftrag_AEB(const int uid,const AufEin
 void ppsInstanzReparatur::MengenReparatur(const int uid,const AufEintrag &AE,AufEintrag &AEK,const ABmt& zumenge) const 
 {
    assert(AEK.Id()==AuftragBase::ungeplante_id);
-   AuftragBase::mengen_t diffmenge=AE.getStueck()-zumenge;
+   AuftragBase::mengen_t diffmenge=AE.getRestStk()-zumenge;
    AufEintragZu(AE).setMengeDiff__(AEK,diffmenge);
 
    AufEintrag::mengen_t verplante_menge=0;
@@ -493,6 +493,7 @@ void ppsInstanzReparatur::force_eigene_KundenId(const bool analyse_only) const t
 
 void ppsInstanzReparatur::ReparaturLager(const int uid,const bool analyse_only) const throw(SQLerror)
 {
+ManuProC::Tracer::Enable(AuftragBase::trace_channel);
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Name(),Id());
   assert(LagerInstanz());
   std::vector<LagerInhalt> LI=getLagerInhalt(); 

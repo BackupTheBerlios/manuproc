@@ -1,4 +1,4 @@
-// $Id: AuftragsEntryZuordnung_sql.pgcc,v 1.10 2002/04/03 06:38:09 christof Exp $
+// $Id: AuftragsEntryZuordnung_sql.pgcc,v 1.11 2002/12/17 13:55:32 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -233,6 +233,7 @@ void AufEintragZu::setMenge(const mengen_t menge,const AuftragBase& neuAuftrag,c
 
 bool AufEintragZu::setMengeDiff(const mengen_t menge,const AuftragBase& neuAuftrag,const int neuZnr)
 {
+ if(!menge) return;
  exec sql begin declare section;
   int db_aaid=AEB.Id();
   int db_ains=AEB.InstanzID();

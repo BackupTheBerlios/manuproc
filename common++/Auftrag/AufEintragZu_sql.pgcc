@@ -1,4 +1,4 @@
-// $Id: AufEintragZu_sql.pgcc,v 1.13 2002/12/10 12:28:50 thoma Exp $
+// $Id: AufEintragZu_sql.pgcc,v 1.14 2002/12/17 13:55:32 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -47,14 +47,16 @@ std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list(const AufEin
       "join auftragentry on (neuinstanz,neuauftragid,neuzeilennr)"
          "= (instanz,auftragid,zeilennr)"
       "where (altinstanz,altauftragid,altzeilennr) = "
-      "("+itos(aeb.InstanzID())+","+itos(aeb.Id())+","+itos(aeb.ZNr())+")";
+      "("+itos(aeb.InstanzID())+","+itos(aeb.Id())+","+itos(aeb.ZNr())+")"
+      " order by neuinstanz,neuauftragid,neuzeilennr ";
  else
     squery = "select altauftragid,altinstanz,altzeilennr,menge,artikelid "
       "from auftragsentryzuordnung "
       "join auftragentry on (altinstanz,altauftragid,altzeilennr)"
          "= (instanz,auftragid,zeilennr)"
       "where (neuinstanz,neuauftragid,neuzeilennr) = "
-       "("+itos(aeb.InstanzID())+","+itos(aeb.Id())+","+itos(aeb.ZNr())+")";
+       "("+itos(aeb.InstanzID())+","+itos(aeb.Id())+","+itos(aeb.ZNr())+")"
+       " order by altinstanz,altauftragid,altzeilennr" ;
  strncpy(query,squery.c_str(),sizeof(query));
  exec sql prepare ONAUF_ from :query;
 //std::cout << query<<"\n\n\n";
@@ -94,7 +96,8 @@ std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_without_chil
     squery = "select neuauftragid,neuinstanz,neuzeilennr,menge "
       "from auftragsentryzuordnung "
       "where (altinstanz,altauftragid,altzeilennr) = "
-      "("+itos(InstanzID())+","+itos(Id())+","+itos(ZNr())+")";
+      "("+itos(InstanzID())+","+itos(Id())+","+itos(ZNr())+")"
+      " order by neuinstanz,neuauftragid,neuzeilennr" ;
 
  strncpy(query,squery.c_str(),sizeof(query));
  exec sql prepare ONAUFC_ from :query;
@@ -139,7 +142,7 @@ std::list<cH_Kunde> AufEintragZu::get_Referenz_Kunden() const throw(SQLerror)
     INSTANZ=i->AEB.InstanzID();
     AUFTRAGID=i->AEB.Id();
     exec sql select kundennr into :KUNDE from auftrag where
-      (instanz,auftragid)=(:INSTANZ,:AUFTRAGID); 
+      (instanz,auftragid)=(:INSTANZ,:AUFTRAGID) order by kundennr; 
     SQLerror::test(__FILELINE__);
     LK.push_back(cH_Kunde(KUNDE));
   }
@@ -160,7 +163,8 @@ std::list<AufEintragBase> AufEintragZu::get_AufEintragList_from_Artikel
   std::string squery = "select auftragid,zeilennr from auftragentry "
       "where artikelid="+itos(artikel.Id()) +
       " and instanz!="+itos(ppsInstanzID::Kundenauftraege) //Nur interne Aufträge sind interessant
-      +" and auftragid=0"; // Nur die UNGEPLANTEN Aufträge bekommen neue Kinder
+      +" and auftragid=0" // Nur die UNGEPLANTEN Aufträge bekommen neue Kinder
+      " order by auftragid,zeilennr";
   if(status!=NOSTAT) squery += " and status="+itos(status);
   strncpy(query,squery.c_str(),sizeof(query));
   Transaction tr;
@@ -249,16 +253,14 @@ AuftragBase::mengen_t AufEintragZu::setMengeDiff__(const AufEintragBase &neuAEB,
  exec sql end declare section;
  if(menge<0)
   {
+//ECPGdebug(true,stdout);
    exec sql select menge into :db_oldmenge from auftragsentryzuordnung where 
       (altinstanz,altauftragid,altzeilennr, neuinstanz,neuauftragid,neuzeilennr)
        = (:db_ains,:db_aaid,:db_aznr, :db_nins,:db_naid,:db_nznr);
    SQLerror::test(__FILELINE__);
    if(mengen_t(db_oldmenge)<-menge)
-     {
        db_menge=-db_oldmenge;
-     }
   } 
-//ECPGdebug(true,stdout);
  exec sql update auftragsentryzuordnung
    set menge=menge+:db_menge where
    (altinstanz,altauftragid,altzeilennr, neuinstanz,neuauftragid,neuzeilennr)
