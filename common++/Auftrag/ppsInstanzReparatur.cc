@@ -288,16 +288,31 @@ void ppsInstanzReparatur::KinderErniedrigen(AufEintrag &ae,
 }
 
 bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, bool analyse_only, bool raise_prodselbst) const
-{  // 2er und Kundenaufträge dürfen keine Kinder haben!
+{  // 2er und Kundenaufträge dürfen keine Eltern haben!
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,ae,/*eltern.size(),*/analyse_only);
    if (ae.Id()==AuftragBase::dispo_auftrag_id || ae.Instanz()==ppsInstanzID::Kundenauftraege)
    {  if (!eltern.empty())
-      {  analyse("2er und Kundenaufträge dürfen keine Kinder haben!",ae);
+      {  analyse("2er und Kundenaufträge dürfen keine Eltern haben!",ae);
+       alle_weg:
          for (AufEintragZu::list_t::iterator i=eltern.begin();i!=eltern.end();)
          {  if (!analyse_only) AufEintragZu::remove(i->AEB,ae);
             i=eltern.erase(i);
          }
          return false;
+      }
+      return true;
+   }
+   if (ae.getCombinedStatus()==UNCOMMITED)
+   {  if (!eltern.empty())
+      {  analyse("unbestätigte Aufträge dürfen keine Eltern haben!",ae);
+         goto alle_weg;
+      }
+      return true;
+   }
+   if (in(ae.getCombinedStatus(),STORNO,CLOSED) && !ae.getGeliefert())
+   {  if (!eltern.empty())
+      {  analyse("stornierte/geschlossene Aufträge ohne Lieferungen sollten keine Eltern haben!",ae);
+         goto alle_weg;
       }
       return true;
    }
@@ -763,12 +778,13 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
       if (!analyse_only) ae.setStatus(CLOSED,true,true,false);
    }
    else if (ae.Instanz()!=ppsInstanzID::Kundenauftraege
-   	&& !(ae.Instanz()->Lieferschein() && ae.Id()>=AuftragBase::handplan_auftrag_id)
+   	&& !(ae.Instanz()->Lieferschein() || ae.Instanz()->ExterneBestellung())
+   	&& ae.Id()>=AuftragBase::handplan_id
    	&& ae.getGeliefert()!=ae.getStueck()
    	&& ae.getCombinedStatus()!=OPEN)
-   {  alles_ok=false;
-      analyse("Offene interne Aufträge müssen OPEN sein",ae,ae.getGeliefert(),ae.getStueck());
-      if (!analyse_only) ae.setStatus(OPEN,true,true,false);
+   {  // alles_ok=false;
+      analyse("Warnung: Offene interne Aufträge sollten OPEN sein",ae,ae.getGeliefert(),ae.getStueck());
+      // if (!analyse_only) ae.setStatus(OPEN,true,true,false);
    }
    
    if (ae.Instanz()->LagerInstanz() 
