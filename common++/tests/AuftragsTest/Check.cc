@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.51 2003/07/15 09:15:33 christof Exp $
+// $Id: Check.cc,v 1.52 2003/07/15 10:57:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -72,7 +72,7 @@ bool Check::vergleich(was_checken was,const std::string &zusatz)
   if (was & Lieferschein)
   {  files.push_back("lieferschein");
      files.push_back("lieferscheinentry");
-     if (!access((referenzdir+"lieferscheinentryzusatz_"+zusatz).c_str(),R_OK))
+     if (overwrite || !access((referenzdir+"lieferscheinentryzusatz_"+zusatz).c_str(),R_OK))
         files.push_back("lieferscheinentryzusatz");
   }
   if (was & Menge)
@@ -129,7 +129,7 @@ void Check::dump(was_checken check, const std::string &zusatz)
   	"select instanz,lfrsid,zeile,artikelid,refauftragid,stueck,refzeilennr,menge "
   	   " from lieferscheinentry order by instanz,lfrsid,zeile;"
   	    +"\" >"+resultdir+"lieferscheinentry_"+zusatz).c_str());
-     if (!access((referenzdir+"lieferscheinentryzusatz_"+zusatz).c_str(),R_OK))
+     if (overwrite || !access((referenzdir+"lieferscheinentryzusatz_"+zusatz).c_str(),R_OK))
        system((psql_cmd+" \""+
   	"select instanz,lfrsid,lfsznr,auftragid,auftragznr,menge "
   	   " from lieferscheinentryzusatz order by instanz,lfrsid,lfsznr,auftragid,auftragznr;"
