@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.72 2004/05/06 09:48:34 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.73 2004/05/06 09:56:59 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -609,7 +609,7 @@ int SimpleTreeStore::IterStamp() const
 SimpleTreeStore::iterator &SimpleTreeStore::iterconv(vfunc_iter_t iter)
 {  //if (!iter->stamp && !iter->user_data) return root.children.begin();
    assert(iter STS_GTKMM_22_24(->stamp,.get_stamp())==stamp);
-   return reinterpret_cast<SimpleTreeStore::iterator&>(iter STS_GTKMM_22_24(->,.gobj()->)user_data);
+   return reinterpret_cast<SimpleTreeStore::iterator&>(iter STS_GTKMM_22_24(,.gobj())->user_data);
 }
 
 const SimpleTreeStore::iterator &SimpleTreeStore::iterconv(vfunc_constiter_t iter) const
@@ -733,27 +733,33 @@ bool SimpleTreeStore::iter_next_vfunc(vfunc_iter_t iter)
    return true;
 }
 
-bool SimpleTreeStore::iter_children_vfunc(vfunc_iter_t iter, vfunc_constiter_t parent)
-{  ManuProC::Trace _t(trace_channel, __FUNCTION__,parent->user_data);
-   g_return_val_if_fail (parent->stamp == stamp, false);   
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+bool SimpleTreeStore::iter_children_vfunc(vfunc_constiter_t parent, vfunc_iter_t iter) const
+#else
+bool SimpleTreeStore::iter_children_vfunc(vfunc_iter_t iter, vfunc_constiter_t parent) 
+#endif
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__,parent STS_GTKMM_22_24(,.gobj())->user_data);
+   iterclear(iter);
+   if (!iter_valid(parent)) return false;
    iterator p=iterconv(parent);
    if (p->second.children.empty()) return false;
    iterinit(iter,p->second.children.begin());
    return true;
 }
 bool SimpleTreeStore::iter_has_child_vfunc(vfunc_constiter_t iter)
-{  g_return_val_if_fail (iter->stamp == stamp, false);
+{  if (!iter_valid(iter)) return false;
    return !(iterconv(iter)->second.children.empty());
 }
 int SimpleTreeStore::iter_n_children_vfunc(vfunc_constiter_t iter)
-{  g_return_val_if_fail (iter->stamp == stamp, 0);
+{  if (!iter_valid(iter)) return 0;
    return iterconv(iter)->second.children.size();
 }
 bool SimpleTreeStore::iter_nth_child_vfunc(vfunc_iter_t iter, vfunc_constiter_t parent, int n)
-{  ManuProC::Trace _t(trace_channel, __FUNCTION__,parent?parent->user_data:0,n);
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__,parent?parent STS_GTKMM_22_24(,.gobj())->user_data:0,n);
    iterator res,end;
+   iterclear(iter);
    if (parent)
-   {  g_return_val_if_fail (parent->stamp == stamp, false);
+   {  if (!iter_valid(parent)) return false;
 #if 0   
       if (!parent->user_data) 
       {  std::cerr << "iter_nth_child_vfunc with empty iter\n";
@@ -779,8 +785,9 @@ bool SimpleTreeStore::iter_nth_child_vfunc(vfunc_iter_t iter, vfunc_constiter_t 
 }
 
 bool SimpleTreeStore::iter_parent_vfunc(vfunc_iter_t iter, vfunc_constiter_t child)
-{  ManuProC::Trace _t(trace_channel, __FUNCTION__,child->user_data);
-   g_return_val_if_fail (child->stamp == stamp, false);
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__,child STS_GTKMM_22_24(,.gobj())->user_data);
+   iterclear(iter);
+   if (!iter_valid(child)) return false;
    iterator c=iterconv(child);
    if (!c->second.parent || c->second.parent==&root) return false;  
    iterator p=iterbyNode(*c->second.parent);
@@ -802,6 +809,7 @@ bool SimpleTreeStore::get_iter_vfunc(vfunc_iter_t iter, const Path& path)
    iterator res=root.children.begin();
    iterator end=root.children.end();
    
+   iterclear(iter);
    for (Path::const_iterator piter=path.begin();piter!=path.end();)
    {  if (res==end) return false;
       for (unsigned i=*piter;i>0;--i) 
