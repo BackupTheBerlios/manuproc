@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.70 2004/05/19 12:00:21 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.71 2004/06/21 14:14:48 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -299,6 +299,10 @@ FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry& z)
      >> FetchIStream::MapNull(z.lagerid,FertigWarenLager::none_lagerid)
      >> FetchIStream::MapNull(status,(AufStatVal)NOSTAT);
  z.status=(AufStatVal)status;
+#ifdef PETIG_EXTENSIONS 
+  // gibt es einen Grund, das nicht anzunehmen, immerhin war es früher so
+ if (status==NOSTAT) z.status=OPEN;
+#endif
  z.instanz=refauftrag.Instanz();
  // eliminate the valid Instanz
  if (!refauftrag) refauftrag=AufEintragBase();

@@ -1,4 +1,4 @@
-/* $Id: Kettscheibe.h,v 1.3 2004/02/25 10:17:18 christof Exp $ */
+/* $Id: Kettscheibe.h,v 1.4 2004/06/21 14:14:48 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -53,6 +53,6 @@ class Kettscheibe_CP //: Kette
       bool operator<(const Kettscheibe_CP& b) const {return Index()<b.Index();}
 };
 
-typedef Kettscheibe_CP Kettscheibe;
+//typedef Kettscheibe_CP Kettscheibe;
 
 #endif

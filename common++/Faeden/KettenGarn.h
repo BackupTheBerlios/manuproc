@@ -1,4 +1,4 @@
-/* $Id: KettenGarn.h,v 1.7 2004/05/26 10:44:01 christof Exp $ */
+/* $Id: KettenGarn.h,v 1.8 2004/06/21 14:14:48 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,6 +19,42 @@
 
 #ifndef _989D4D79_BC5D_4151_BF8F_5DC6C209D019
 #define _989D4D79_BC5D_4151_BF8F_5DC6C209D019
+#include <vector>
+#include <Ketten/ArtikelGang.h>
+#include <Faeden/Faden.hh>
+
+struct KS_Garn
+{       unsigned zeile;
+     	unsigned faeden;
+	ArtikelBase material;
+        unsigned wiederholungen; // vernünftigere Datenstruktur!!!
+
+        bool valid() const {return !!Artikel()&&faeden;}
+// old routines
+   const ArtikelBase &Artikel() const {return material;}
+	int Zeile() const throw() {  return zeile; }
+	int Faeden() const throw() {  return faeden; }
+   unsigned Wiederholung_anzahl() const { return wiederholungen; }
+};
+
+struct Kettscheibe
+{	int index; // dies ist nicht relationale Normalform!
+        int laenge;
+        int kettenzahl;
+        std::vector<ArtikelGang> artikel;
+        std::vector<KS_Garn> faeden;
+        std::vector<Wiederholung> wiederholungen;
+
+// old routines
+   int Index() const {return index;}
+   int Kettenzahl() const throw() { return kettenzahl;}
+   int Laenge() const throw() { return laenge;}
+   
+   static std::vector<Kettscheibe> Load(const std::vector<ArtikelGang> &ag,unsigned laenge);
+   static std::vector<Kettscheibe> Load(const ArtikelGang &ag,unsigned laenge);
+};
+
+#if 1
 #include <Artikel/ArtikelBezeichnung.h>
 #include <Faeden/Kettscheibe.h>
 class ArtikelGang;
@@ -64,8 +100,9 @@ public:
    
    static std::vector<KettenGarn_CP> Load(const ArtikelGang &ag,unsigned laenge);
 };
-
 //extern std::ostream& operator<<(std::ostream &o,const ArtikelGang &ag);
 
 typedef KettenGarn_CP KettenGarn;
+#endif
+
 #endif

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinVoll.cc,v 1.21 2004/04/20 07:30:43 jacek Exp $ */
+/* $Id: LieferscheinVoll.cc,v 1.22 2004/06/21 14:14:48 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -38,7 +38,6 @@ void LieferscheinVoll::deleteRow(LieferscheinEntry &le)
 LieferscheinVoll::LieferscheinVoll(const cH_ppsInstanz& _instanz,int lid,bool auforder) throw(SQLerror)
 : Lieferschein(_instanz,lid)
 {
- AufStatVal st=(AufStatVal)STORNO;
 
 // std::string tabelle="artbez_"+
 //       itos(ExtBezSchema::default_Typ)+"_"+
@@ -60,12 +59,11 @@ LieferscheinVoll::LieferscheinVoll(const cH_ppsInstanz& _instanz,int lid,bool au
 	  " from lieferscheinentry ly "+ // "left join "+tabelle+" b "+
 //	  " on (b.id=ly.artikelid) "+
 	  " where (instanz,lfrsid) = (?,?) "+
-	  " and coalesce(status,0) not in (?) order by "+sortstr;
+	  " and coalesce(status,0)<>? order by "+sortstr;
 
  Query q(query);
- q << Instanz()->Id() << Id() << st;
+ q << Instanz()->Id() << Id() << (AufStatVal)STORNO;
  q.FetchArray(lsentry);
- 
 }
 
 
