@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.44 2004/08/25 12:15:28 jacek Exp $
+// $Id: Kunde.cc,v 1.45 2004/08/25 13:49:38 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -366,7 +366,8 @@ fixedpoint<2> Kunde::getProvSatz_Artikel(const ArtikelBase art, ArtikelTyp::ID a
  int signatur=1;
  int bezkomptype=1;
 
-    if(VerkNr()!=Kunde::none_id)
+    if(VerkNr()!=Kunde::none_id &&
+       ArtikelTyp::hasAttribute(at,ArtikelTypAttr::provision))
       {
        fixedpoint<2> ps1=0.0,ps2=0.0;
        Query q("select provsatz1, provsatz2 from prov_verkaeufer where"
