@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.64 2004/05/06 08:41:50 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.65 2004/05/06 08:50:02 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -217,7 +217,7 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
   for (std::vector<bool>::iterator i=vec_hide_cols.begin();i!=vec_hide_cols.end();++i)
     (*i) = true;
    defaultSequence();
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#if 0 && GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
    getModel().signal_title_changed().connect(sigc::mem_fun(*this,&SimpleTreeStore::on_title_changed));
    getModel().signal_redraw_needed().connect(sigc::mem_fun(*this,&SimpleTreeStore::redisplay));
    getModel().signal_line_appended().connect(sigc::mem_fun(*this,&SimpleTreeStore::on_line_appended));
@@ -635,11 +635,16 @@ void SimpleTreeStore::iterinit(GtkTreeIter* iter,const iterator &schema) const
 }
 
 #if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#define VALUE_INIT0(type) \
+	g_value_init(value.gobj(),(type))
+#define VALUE_SET(type,val) \
+	g_value_set_##type(value.gobj(),(val))
 #else
 #define VALUE_INIT0(type) \
 	g_value_init(value,(type))
 #define VALUE_SET(type,val) \
 	g_value_set_##type(value,(val))
+#endif	
 
 #define VALUE_INIT3(type2,name,val) \
 	VALUE_INIT0(m_columns.name.type()); \
@@ -648,7 +653,6 @@ void SimpleTreeStore::iterinit(GtkTreeIter* iter,const iterator &schema) const
 #define VALUE_INIT_U(name) VALUE_INIT3(uint,name,nd.name)
 #define VALUE_STRING(val) \
 	VALUE_SET(string,(val).c_str())
-#endif	
 
 void SimpleTreeStore::get_value_vfunc(const TreeModel::iterator& iter, 
 		int column, STS_GTKMM_22_24(GValue*,Glib::ValueBase&) value) STS_VFUNC_CONST
