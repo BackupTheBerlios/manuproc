@@ -27,7 +27,7 @@ namespace ManuProC {
 
   namespace Waehrung {
    enum enum_t {
-    DM=1,EUR=2,USD=3,PND=4,
+    None=-1,DM=1,EUR=2,USD=3,PND=4,
    };
   }
 
@@ -39,7 +39,7 @@ namespace ManuProC {
 
   namespace Kundengruppen {
    enum enum_t {
-    None=-1,Kunden=1,Lieferanten=2,Personen=3,Privat=4,
+    None=-1,Kunden=1,Lieferanten=2,Personen=3,Privat=4,Lieferadresse=5,Rechnungsadresse=6,Auftragsadresse=7,
    };
   }
 
