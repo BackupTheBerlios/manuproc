@@ -1,4 +1,4 @@
-// $Id: bool_CheckMenuItem.cc,v 1.2 2002/12/11 16:50:47 christof Exp $
+// $Id: bool_CheckMenuItem.cc,v 1.3 2002/12/11 17:03:16 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -22,9 +22,9 @@
 
 void bool_CheckMenuItem::refresh(gpointer x)
 {  if (x==&model.Value())
-   {  my_ch_con.signal_di().connect();
+   {  my_ch_con.block();
       Gtk::CheckMenuItem::set_active(model.get_value());
-      my_ch_con=signal_toggled().connect(SigC::slot(*this,&bool_CheckMenuItem::on_toggled));
+      my_ch_con.unblock();
    }
 }
 
@@ -36,8 +36,8 @@ void bool_CheckMenuItem::refresh_sens(gpointer x)
     }
 }
 
-bool_CheckMenuItem::bool_CheckMenuItem(const Model_ref<T> &m, const std::string &text,gfloat x,gfloat y)
-	: Gtk::CheckMenuItem(text,x,y), model(m)
+bool_CheckMenuItem::bool_CheckMenuItem(const Model_ref<T> &m, const std::string &text)
+	: Gtk::CheckMenuItem(text), model(m)
 {  
    init();
 };
@@ -68,7 +68,7 @@ void bool_CheckMenuItem::setSensitive(const Model_ref<bool> &s,bool i)
 
 
 void bool_CheckMenuItem::on_toggled()
-{  ch_con.signal_di().connect();
+{  ch_con.block();
    model=Gtk::CheckMenuItem::get_active();
-   ch_con=model.signal_changed().connect(SigC::slot(*this,&bool_CheckMenuItem::refresh));
+   ch_con.unblock();
 }

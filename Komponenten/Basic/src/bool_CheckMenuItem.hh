@@ -1,4 +1,4 @@
-// $Id: bool_CheckMenuItem.hh,v 1.2 2002/12/11 16:50:47 christof Exp $
+// $Id: bool_CheckMenuItem.hh,v 1.3 2002/12/11 17:03:16 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -41,7 +41,7 @@ class bool_CheckMenuItem : public Gtk::CheckMenuItem
 	void set_active(bool);
 public:
    void setSensitive(const Model_ref<bool> &s,const bool sensitive_invert=false);
-	bool_CheckMenuItem(const Model_ref<T> &model, const std::string &text,gfloat x=0.0,gfloat y=0.5);
+	bool_CheckMenuItem(const Model_ref<T> &model, const std::string &text);
 	bool_CheckMenuItem(const Model_ref<T> &model, Gtk::Widget &widget);
 };
 
