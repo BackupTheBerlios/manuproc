@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.20 2004/01/26 20:03:02 jacek Exp $
+// $Id: Rechnung.cc,v 1.21 2004/02/17 14:46:08 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -22,16 +22,41 @@
 #include <Misc/FetchIStream.h>
 #include <Misc/itos.h>
 #include <Misc/Transaction.h>
+#include <Auftrag/auftrag_status.h>
 
 RechnungBase::geldbetrag_t Rechnung::MwStProz=MWSTPROZ;
 
 void Rechnung::setRngArt(const RngArt &art) throw(SQLerror)
 {
+ Transaction tr;
+ 
   Query("update rechnung set rngart=? where rngid=?")
   	<< char(art) << Id();
    SQLerror::test(__FILELINE__);
-// must be called separately due to bool argument not known here;
-//  if(art==RART_GUT) convert_to_gutschrift();
+ 
+  if(art==RART_STORNO)
+    {
+     std::vector<int> lfids;
+     ppsInstanz::ID insid(ppsInstanzID::Kundenauftraege);
+     
+     Query q("select lfrsid from lieferschein where rngid=? "
+     		" and instanz=?");
+     q << Id() << insid;
+     q.FetchArray(lfids);
+     
+     for(std::vector<int>::iterator i=lfids.begin();
+     		i!=lfids.end(); ++i)
+     	{ 
+         Query("update lieferscheinentry set status=? where "
+         	" (lfrsid,instanz)=(?,?) and status=?")
+         	<< (AufStatVal)OPEN << (*i) << insid << (AufStatVal)CLOSED;
+         	
+         Query("update lieferschein set rngid=null where (lfrsid,instanz)"
+         	" = (?,?) and rngid=?")
+    	   << (*i) << insid << Id();
+    	}
+    }
+ tr.commit();
 }
 
 void Rechnung::convert_to_gutschrift(bool lager_buchung) throw(SQLerror)

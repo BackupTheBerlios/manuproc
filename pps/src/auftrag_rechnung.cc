@@ -815,31 +815,17 @@ void auftrag_rechnung::on_storno_activate()
 
  int ret=jnf.run();
 
- Transaction tr;
-
+ try {
  if(ret==0) 
    {rechnung.setRngArt(RechnungBase::RART_STORNO);
-
-    typedef std::vector<LieferscheinBase::ID> LSI;
-    LSI lsvec;
-
-    Query q("select distinct lfrsid from rechnungentry where rngid=?");
-    q << rechnung.Id();
-
-    q.FetchArray(lsvec);
-
-    for(LSI::iterator i=lsvec.begin(); i!=lsvec.end(); ++i)
-      {
-       LieferscheinVoll lsv(ppsInstanzID::Kundenauftraege,*i);
-       lsv.changeStatusOnEntries((AufStatVal)STORNO);
-      }
-
-    tr.commit();
     on_rngnr_activate();
     storno->set_sensitive(false);
    }
+ }
+ catch(SQLerror &e) 
+  { meldung->Show(e); }
 
-
+ set_rtree_daten_content(rechnung.Id());
 }
 
 
