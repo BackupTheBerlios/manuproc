@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.41 2003/04/11 12:34:51 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.42 2003/04/12 11:33:38 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -187,11 +187,13 @@ rechnungsadresse(false),
 
 #ifdef MANUPROC_DYNAMICENUMS_CREATED
 const cH_Kunde Kunde::newKunde(const Kunde::ID kid, const std::string &firma,
+	const std::string &name2,
 	Kundengruppe::ID kgrid) throw(SQLerror)
 {
  exec sql begin declare section;
   int KID=kid;
   char *FIRMA;
+  char *NAME2; int INAME2=0;
   int WAEHRUNG;
   int GRPNR=kgrid;
  exec sql end declare section;
@@ -199,10 +201,13 @@ const cH_Kunde Kunde::newKunde(const Kunde::ID kid, const std::string &firma,
  Transaction tr;
 
  FIRMA=(char*)firma.c_str();
- 
- exec sql insert into kunden (kundennr, firma, waehrungid,rechnung_an,
+ NAME2=(char*)name2.c_str();
+
+ if(name2.empty()) INAME2=-1;
+
+ exec sql insert into kunden (kundennr, firma, name2, waehrungid,rechnung_an,
 		lieferung_an,aktiv) 
-      values (:KID, :FIRMA, :WAEHRUNG,:KID,:KID,true);
+      values (:KID, :FIRMA, :NAME2:INAME2, :WAEHRUNG,:KID,:KID,true);
  SQLerror::test(__FILELINE__);
 // exec sql insert into ku_warenkorb (prlsnr,kundennr,suchfolge)
 //   values (1,:KID,1);

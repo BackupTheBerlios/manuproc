@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.45 2003/04/11 12:34:51 jacek Exp $
+// $Id: Kunde.h,v 1.46 2003/04/12 11:33:38 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -156,6 +156,7 @@ public:
 	Kunde(ID nr=default_id) throw(SQLerror);
 #ifdef MANUPROC_DYNAMICENUMS_CREATED	
 	static const cH_Kunde newKunde(const Kunde::ID kid, const std::string &firma,
+			const std::string &name2,
 			Kundengruppe::ID kgid=KundengruppeID::Kunden) throw(SQLerror);
 #endif			
         const std::string LaTeX_von() const;
