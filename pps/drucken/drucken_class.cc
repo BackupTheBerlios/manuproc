@@ -380,7 +380,13 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
 #endif     
     schema_mem = bez->getExtBezSchema();
 #ifdef MABELLA_EXTENSIONS
+    try{
     schema_own = cH_ExtBezSchema(cH_Kunde(kunden_id)->getSchemaId(),ArtikelTyp(artikel));
+    }
+    catch(SQLerror &e)
+      {if(e.Code()!=100) {std::cout << e; exit(1);}
+       schema_own = schema_mem;
+    }
 #endif    
     Preis::preismenge_t preismenge_mem;
     Einheit einheit_mem = Einheit(artikel); 
