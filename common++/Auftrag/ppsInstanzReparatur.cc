@@ -1,5 +1,5 @@
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
+ *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #include <Lager/JumboLager.h>
 #include <Lager/RohwarenLager.h>
 //#include <Misc/SQLerror.h>
-#include <Misc/Trace.h>
+#include <Misc/TraceNV.h>
 //#include <sqlca.h>
 //#include <Auftrag/AufEintragZuMengenAenderung.h>
 //#include <Misc/Transaction.h>
@@ -94,11 +94,10 @@ void ppsInstanzReparatur::ReparaturLager(const int uid,const bool analyse_only) 
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Instanz());
   assert(Instanz()->LagerInstanz());
   std::vector<LagerInhalt> LI=getLagerInhalt(); 
-  vormerkungen_subrahieren(uid,LI,analyse_only);
+  vormerkungen_subtrahieren(uid,LI,analyse_only);
 }
 
-// hmm. das sieht sehr nach Baustelle aus CP
-void ppsInstanzReparatur::vormerkungen_subrahieren(int uid,const  std::vector<LagerInhalt> &LI,const bool analyse_only) const
+void ppsInstanzReparatur::vormerkungen_subtrahieren(int uid,const  std::vector<LagerInhalt> &LI,const bool analyse_only) const
 {
 //std::cout << "Anzahl der Artikel im Lager = "<<LI.size()<<'\n';
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Instanz());
@@ -106,60 +105,67 @@ void ppsInstanzReparatur::vormerkungen_subrahieren(int uid,const  std::vector<La
    {
      bool set_dispo_to_zero=false;
      AuftragBase::mengen_t menge=i->GesamtMenge();
-//std::cout <<i->Artikel().Id()<<' '<<cH_ArtikelBezeichnung(i->Artikel())->Bezeichnung()
-//  <<'\t'<<menge<<'\n';
+
+     ManuProC::Trace(AuftragBase::trace_channel, __FILELINE__,
+     		NV("artikel",i->Artikel()),NV("id",i->Artikel().Id()),
+     		NV("menge",menge));
 
      // Vorgemerkte Menge (1er Aufträge) wieder abziehen
      // Schon eingetragene Menge wieder abziehen
      SelectedFullAufList auftraglist1=SelectedFullAufList(SQLFullAuftragSelector::
        sel_Artikel_Planung_id(Instanz()->Id(),ManuProC::DefaultValues::EigeneKundenId,i->Artikel(),AuftragBase::plan_auftrag_id));
      // der Selector holt nur die Aufträge mit dem Status OPEN
-     for (SelectedFullAufList::const_iterator j=auftraglist1.begin();j!=auftraglist1.end();++j)
+     for (SelectedFullAufList::iterator j=auftraglist1.begin();j!=auftraglist1.end();++j)
        {
-         if(j->Id()!=AuftragBase::plan_auftrag_id) assert(!"never get here");
+         assert(j->Id()==AuftragBase::plan_auftrag_id);
          menge-=j->getRestStk() ;
-//std::cout << "\tPlanung abziehen "<<AufEintragBase(*j)<<'\t'<<j->getRestStk()<<'\t'<<menge<<'\n';
          if(menge<0) // mehr Menge vorgeplant als vorhanden
-           {
+         {  analyse("mehr Menge vorgeplant als vorhanden",*j,
+         	cH_ArtikelBezeichnung(i->Artikel())->Bezeichnung(),
+         	menge.String());
             set_dispo_to_zero=true;
-//std::cout << "\t"<<AufEintragBase(*j)<<'\t'<<j->getRestStk()<<'\t'<<menge<<'\n';
-//std::cout << "\t\tReparaturMenge: "<<-menge<<'\n';
-            if(analyse_only)
-              std::cout << "Analyse: Mengenupdate von "<<*j<<" Menge:"<<menge<<'\n';
-            else
-             {
-      assert(!"nicht implementiert\n");  
-//               j->updateStkDiffBase__(uid,menge);
-//               AufEintragZuMengenAenderung::increase_parents__reduce_assingments(uid,*j,-menge);
+            if(!analyse_only)
+            {AuftragBase::mengen_t M_rest=-menge;
+             AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(*j,
+            		AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
+             for(AufEintragZu::list_t::reverse_iterator k=L.rbegin();k!=L.rend();++k)
+             {  AuftragBase::mengen_t M2=AuftragBase::min(k->Menge,M_rest);
+                if (!M2) continue;
+
+                j->MengeAendern(uid,-M2,true,k->AEB,ManuProC::Auftrag::r_Reparatur);
+                AufEintrag::ArtikelInternNachbestellen(Instanz(),M2,j->getLieferdatum(),
+                		j->Artikel(),uid,k->AEB);
+
+                M_rest-=M2;
+                if(!M_rest) break;
              }
+             if (!!M_rest) analyse("Programmfehler: Es ist ein Rest geblieben",*j,M_rest);
+             assert(!M_rest);                
+            }
             menge=0;
-           }
-       }
+           }       
+        }
+
      SelectedFullAufList auftraglist2=SelectedFullAufList(SQLFullAuftragSelector::
           sel_Artikel_Planung_id(Instanz()->Id(),ManuProC::DefaultValues::EigeneKundenId,i->Artikel(),AuftragBase::dispo_auftrag_id));
      assert(auftraglist2.empty() || auftraglist2.size()==1);
-     for (SelectedFullAufList::const_iterator j=auftraglist2.begin();j!=auftraglist2.end();++j)
+     for (SelectedFullAufList::iterator j=auftraglist2.begin();j!=auftraglist2.end();++j)
       {
          if(j->Id()!=AuftragBase::dispo_auftrag_id) assert(!"never get here");
          assert(j->getStueck()==j->getRestStk());
          menge-=j->getRestStk();
-//std::cout << "\tDispo abziehne "<<AufEintragBase(*j)<<'\t'<<j->getRestStk()<<'\t'<<menge<<'\n';
-         if(set_dispo_to_zero)
-          {
-            if(analyse_only)
-              std::cout << "Analyse: Mengenupdate von "<<*j<<" Menge:"<<-j->getStueck()<<'\n';
-            else
-      assert(!"nicht implementiert\n");  
-//              j->updateStkDiffBase__(uid,-j->getStueck());
+         if(set_dispo_to_zero && !!j->getStueck())
+          { analyse("set_dispo_to_zero",*j,j->getStueck());
+            if(!analyse_only)
+               j->MengeAendern(uid,-j->getStueck(),false,AufEintragBase(),ManuProC::Auftrag::r_Reparatur);
           }
       }
-     if(menge!=0 && !set_dispo_to_zero) 
+      
+     if(menge>0 && !set_dispo_to_zero) 
       {
-        if(analyse_only)
-             std::cout << "Analyse: DispoAufträge_anlegen: "<<Instanz()<<'\t'<<i->Artikel()<<"\tMenge:"<<menge<<'\n';
-        else
-      assert(!"nicht implementiert\n");  
-//            DispoAuftraege_anlegen(uid,i->Artikel(),menge);
+        analyse("DispoAufträge_anlegen",AufEintragBase(Instanz(),2,-1),cH_ArtikelBezeichnung(i->Artikel())->Bezeichnung(),menge);
+        if (!analyse_only)
+            DispoAuftraege_anlegen(uid,i->Artikel(),menge);
       }
    }
 }   
@@ -193,21 +199,21 @@ std::vector<LagerInhalt> ppsInstanzReparatur::getLagerInhalt() const
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void ppsInstanzReparatur::analyse(const std::string &s,const AufEintrag &AE,const std::string &x,const std::string &y) const
+void ppsInstanzReparatur::analyse(const std::string &s,const AufEintragBase &AE,const std::string &x,const std::string &y) const
 {
   std::cout<<"Fehler Analyse: " << AE <<"  => "<<s<<"\t("<<x<<"), ("<<y<<")\n";
 }
 
-void ppsInstanzReparatur::analyse(const std::string &s,const AufEintrag &AE,const ABmt &x,const ABmt &y) const
+void ppsInstanzReparatur::analyse(const std::string &s,const AufEintragBase &AE,const ABmt &x,const ABmt &y) const
 {analyse(s,AE,x.String(),y.String());}
 
-void ppsInstanzReparatur::analyse(const std::string &s,const AufEintrag &AE,const AufEintragBase &x,const ABmt &y) const
+void ppsInstanzReparatur::analyse(const std::string &s,const AufEintragBase &AE,const AufEintragBase &x,const ABmt &y) const
 {analyse(s,AE,x.Instanz()->Name()+"/"+itos(x.Id())+"/"+itos(x.ZNr()),y.String());}
 
-void ppsInstanzReparatur::analyse(const std::string &s,const AufEintrag &AE,const ArtikelBase &x,const ArtikelBase &y) const
+void ppsInstanzReparatur::analyse(const std::string &s,const AufEintragBase &AE,const ArtikelBase &x,const ArtikelBase &y) const
 {analyse(s,AE,itos(x.Id()),itos(y.Id()));}
 
-void ppsInstanzReparatur::analyse(const std::string &s,const AufEintrag &AE,const cH_ppsInstanz &x,const cH_ppsInstanz &y) const
+void ppsInstanzReparatur::analyse(const std::string &s,const AufEintragBase &AE,const cH_ppsInstanz &x,const cH_ppsInstanz &y) const
 {analyse(s,AE,x->Name(),y->Name());}
 
 void ppsInstanzReparatur::Zuordnung_erniedrigen(AufEintrag &ae,

@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.4 2003/06/06 09:57:09 christof Exp $
+// $Id: db_upgrade.cc,v 1.5 2003/06/12 14:59:49 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,9 +26,14 @@
 void check_column(const std::string &table, const std::string &column,
 		const std::string &type)
 {  int oid,attnum;
-   Query("select oid from pg_class where relname=?") 
+  try
+  {Query("select oid from pg_class where relname=?") 
 	<< table
 	>> oid;
+  } catch (SQLerror &e)
+  {  std::cerr << "Table "<< table << " is missing\n";
+     return;
+  }
    try
    { Query("select attnum from pg_attribute where attrelid=? and attname=?")
    	<< oid << column

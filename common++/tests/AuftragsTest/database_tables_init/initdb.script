@@ -58,7 +58,8 @@ do
   cat $P/$i
 done ) | psql $PGDATABASE -q
 
+../../Programme/db_upgrade 
 ../../Programme/Instanzen $PGDATABASE
 
-#psql $PGDATABASE -c "vacuum analyze"
+psql $PGDATABASE -c "vacuum analyze"
 

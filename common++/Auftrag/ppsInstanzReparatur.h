@@ -1,4 +1,4 @@
-// $Id: ppsInstanzReparatur.h,v 1.9 2003/05/26 13:43:27 christof Exp $
+// $Id: ppsInstanzReparatur.h,v 1.10 2003/06/12 14:59:49 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,9 +22,7 @@
 
 #include <Instanzen/ppsInstanz.h>
 #include <Auftrag/AufEintrag.h>
-//class AufEintragBase;
 class LagerInhalt;
-//class AuftragBase;
 class SelectedFullAufList;
 
 class ppsInstanzReparatur : public cH_ppsInstanz
@@ -40,15 +38,15 @@ class ppsInstanzReparatur : public cH_ppsInstanz
       typedef fixedpoint<ManuProC::Precision::AuftragsMenge> ABmt;
 
       std::vector<LagerInhalt> getLagerInhalt() const;
-      void vormerkungen_subrahieren(int uid,const  std::vector<LagerInhalt> &LI,const bool analyse_only) const;
+      void vormerkungen_subtrahieren(int uid,const  std::vector<LagerInhalt> &LI,const bool analyse_only) const;
       void DispoAuftraege_anlegen(const int uid,const ArtikelBase &artikel,const fixedpoint<ManuProC::Precision::AuftragsMenge> &menge) const;
 
-      void analyse(const std::string &s,const AufEintrag &AE,const std::string &x=std::string(),const std::string &y=std::string()) const;
+      void analyse(const std::string &s,const AufEintragBase &AE,const std::string &x=std::string(),const std::string &y=std::string()) const;
       // Wrapper:
-      void analyse(const std::string &s,const AufEintrag &AE,const AufEintragBase &x,const ABmt &y=0) const;
-      void analyse(const std::string &s,const AufEintrag &AE,const ABmt &x,const ABmt &y=0) const;
-      void analyse(const std::string &s,const AufEintrag &AE,const ArtikelBase &x,const ArtikelBase &y=ArtikelBase()) const;
-      void analyse(const std::string &s,const AufEintrag &AE,const cH_ppsInstanz &x,const cH_ppsInstanz &y) const;
+      void analyse(const std::string &s,const AufEintragBase &AE,const AufEintragBase &x,const ABmt &y=0) const;
+      void analyse(const std::string &s,const AufEintragBase &AE,const ABmt &x,const ABmt &y=0) const;
+      void analyse(const std::string &s,const AufEintragBase &AE,const ArtikelBase &x,const ArtikelBase &y=ArtikelBase()) const;
+      void analyse(const std::string &s,const AufEintragBase &AE,const cH_ppsInstanz &x,const cH_ppsInstanz &y) const;
       
       static void Zuordnung_erniedrigen(AufEintrag &ae,
 	AufEintragZu::list_t &eltern,AuftragBase::mengen_t &m,
