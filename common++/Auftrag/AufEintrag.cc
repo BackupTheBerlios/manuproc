@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.78 2003/07/18 11:05:41 christof Exp $
+// $Id: AufEintrag.cc,v 1.79 2003/07/18 14:27:50 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -862,6 +862,11 @@ void AufEintrag::ProduziertNG(mengen_t M,const ProductionContext2 &ctx)
       if (distribute_parents(*this,M,MichProduzieren(*this,ctx))!=0)
    	 assert(!"Rest geblieben");
    }
+
+#ifdef MABELLA_EXTENSIONS
+// MABELLA FERTIGLAGER HACK
+
+#endif
 }
 
 namespace {
