@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.20 2003/03/17 16:28:41 christof Exp $
+# $Id: Makefile.am,v 1.21 2003/03/17 16:34:48 christof Exp $
 CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@  
 
@@ -47,7 +47,8 @@ libKomponenten_a_SOURCES=datewin.cc \
 	bool_CheckMenuItem.cc char_Pixmap.cc \
 	FlashingPixmap.cc LabelSpin.cc \
 	MyWindow.cc MyScale.cc logwin.cc TreeViewUtility.cc \
-	bool_properties.cc bool_ImageButton.cc      
+	bool_properties.cc bool_ImageButton.cc \
+	IntStringBox_glade.cc IntStringPopup_glade.cc
 
 lateron= \
 		$(BUILT_SOURCES_L) \

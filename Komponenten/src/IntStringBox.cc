@@ -1,4 +1,4 @@
-// $Id: IntStringBox.cc,v 1.2 2002/09/18 07:56:01 christof Exp $
+// $Id: IntStringBox.cc,v 1.3 2003/03/17 16:34:48 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++ Copyright (C)
  *  1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -18,7 +18,8 @@
  */
 
 #include "IntStringBox.hh"
-#include "Aux/itos.h"
+#include <Misc/itos.h>
+#include <gtk/gtksignal.h>
 
 void IntStringBox::hide_int(bool b)
 {
@@ -87,7 +88,7 @@ void IntStringBox::string2_activate()
 gint IntStringBox::try_grab_focus(GtkWidget *w,gpointer gp)
 {
    IntStringBox *this2((IntStringBox*)gp);
-   assert(Gtk::EventBox::isA(this2));
+   assert(dynamic_cast<Gtk::EventBox*>(this2));
 /*
    assert(Gtk::Table::isA(this2)); // very weak check
 */
@@ -104,7 +105,7 @@ IntStringBox::IntStringBox(ManuProcEntity::ID __none_id)
 {
  show_string2(false);
  // redirect our grab_focus
- gtk_signal_connect(GTK_OBJECT(gtkobj()), "grab_focus",
+ gtk_signal_connect(GTK_OBJECT(gobj()), "grab_focus",
                  GTK_SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
 }
 
