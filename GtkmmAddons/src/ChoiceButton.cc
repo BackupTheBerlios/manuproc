@@ -136,7 +136,7 @@ void ManuProC::ChoiceButton::set_tooltips(Gtk::Tooltips *_tips)
 }
 
 void ManuProC::ChoiceButton::set_index_sensitive(unsigned idx,bool sensitive)
-{ menu->items()[idx].set_sensitive(sensitive);
+{ menu->items()[idx+1].set_sensitive(sensitive);
 }
 
 void ManuProC::ChoiceButton::rebuild_button(bool horizontal)
