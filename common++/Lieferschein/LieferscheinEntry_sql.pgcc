@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry_sql.pgcc,v 1.32 2003/03/24 10:27:11 christof Exp $ */
+/* $Id: LieferscheinEntry_sql.pgcc,v 1.33 2003/03/24 10:41:19 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -101,7 +101,7 @@ LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
  	<< LE << art.Id() << Query::NullIf(LE.RefAuftrag().Id(),0)
  	<< Query::NullIf(LE.AufZeile(),0)
  	<< LE.Stueck() 
- 	<< Query::NullIf<mengen_t>(LE.Menge(),0)
+ 	<< Query::NullIf(LE.Menge(),0)
  	<< LE.Palette() << LE.ZusatzInfo();
  SQLerror::test(__FILELINE__":LieferscheinEntry: insert into lieferscheinentry");
  

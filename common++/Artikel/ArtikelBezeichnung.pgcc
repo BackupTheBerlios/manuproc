@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.17 2003/01/08 10:18:51 christof Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.18 2003/03/24 10:41:19 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -85,7 +85,7 @@ void ArtikelBezeichnung::setzeExtBezSchema(const cH_ExtBezSchema &_schema) throw
      FetchIStream is=q.Fetch();
      for (std::vector<int>::const_iterator i=gewaehlte_indizes.begin();i!=gewaehlte_indizes.end();++i)
       {  std::string s;
-         is >> FetchIStream::MapNull<std::string>(s,"");
+         is >> FetchIStream::MapNull(s,std::string());
          value[*i]=cH_EntryValueIntString(s);
       }
     }

@@ -1,4 +1,4 @@
-// $Id: Prozess_sql.pgcc,v 1.10 2003/01/29 13:57:13 christof Exp $
+// $Id: Prozess_sql.pgcc,v 1.12 2003/03/24 10:41:19 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -67,21 +67,14 @@ cH_Prozess::cH_Prozess(Prozess::ID pid)
 
 FetchIStream &operator>>(FetchIStream &is, Prozess::ID &v)
 {  int i;
-   is >> i;
-   v=Prozess::ID(i);
-   return is;
-}
-
-FetchIStream &operator>>(FetchIStream &is, Prozess::ID &v)
-{  int i;
-   is >> FetchIStream::MapNull<int>(i,ProzessID::None);
+   is >> FetchIStream::MapNull(i,ProzessID::None);
    v=Prozess::ID(i);
    return is;
 }
 
 FetchIStream &operator>>(FetchIStream &is, cH_Prozess &v)
 {  int i;
-   is >> FetchIStream::MapNull<int>(i,ProzessID::None);
+   is >> FetchIStream::MapNull(i,ProzessID::None);
    v=Prozess::ID(i);
    return is;
 }

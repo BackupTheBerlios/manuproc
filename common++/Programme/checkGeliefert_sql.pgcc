@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: checkGeliefert_sql.pgcc,v 1.6 2003/01/08 09:46:57 christof Exp $
+// $Id: checkGeliefert_sql.pgcc,v 1.7 2003/03/24 10:41:19 christof Exp $
 
 //#include <Lieferschein/Lieferschein.h>
 #include <Auftrag/AuftragFull.h>
@@ -42,7 +42,7 @@ int main()
          Query("select sum(coalesce(menge,1)*coalesce(stueck,1)) "
          	"from lieferscheinentry where refzeilennr="+itos(i->ZNr())
       		+" and refauftragid="+itos(id)+" and instanz=1").Fetch() 
-      		>> FetchIStream::MapNull<float>(menge,0) ;
+      		>> FetchIStream::MapNull(menge,0) ;
          if (i->getGeliefert()!=AuftragBase::mengen_t(menge))
          {  cout << "-- Auftrag " << i->Instanz()->Id() << '.' 
          	<< i->Id() << '.' << i->ZNr() << ' '

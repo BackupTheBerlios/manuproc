@@ -1,4 +1,4 @@
-/* $Id: Zahlungsart_sql.pgcc,v 1.18 2003/03/10 08:55:53 christof Exp $ */
+/* $Id: Zahlungsart_sql.pgcc,v 1.19 2003/03/24 10:41:19 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -37,21 +37,21 @@ FetchIStream &operator>>(FetchIStream &is, Zahlungsart &za)
    fixedpoint<2> satz[4];
    std::string verfahren;
    
-   is >> FetchIStream::MapNull<std::string>(za.kurzbezeichung,std::string())
-      >> FetchIStream::MapNull<std::string>(za.bezeichnung,std::string())
-      >> FetchIStream::MapNull<int>(za.zahlungsfrist,0)
-      >> FetchIStream::MapNull<fixedpoint<2> >(satz[1],0)
-      >> FetchIStream::MapNull<int>(frist[1],0)
-      >> FetchIStream::MapNull<fixedpoint<2> >(satz[2],0)
-      >> FetchIStream::MapNull<int>(frist[2],0)
-      >> FetchIStream::MapNull<fixedpoint<2> >(satz[3],0)
-      >> FetchIStream::MapNull<int>(frist[3],0)
+   is >> FetchIStream::MapNull(za.kurzbezeichung,std::string())
+      >> FetchIStream::MapNull(za.bezeichnung,std::string())
+      >> FetchIStream::MapNull(za.zahlungsfrist,0)
+      >> FetchIStream::MapNull(satz[1],0)
+      >> FetchIStream::MapNull(frist[1],0)
+      >> FetchIStream::MapNull(satz[2],0)
+      >> FetchIStream::MapNull(frist[2],0)
+      >> FetchIStream::MapNull(satz[3],0)
+      >> FetchIStream::MapNull(frist[3],0)
 #ifdef MABELLA_EXTENSIONS      
-      >> FetchIStream::MapNull<fixedpoint<2> >(za.einzugrabatt,0)
-      >> FetchIStream::MapNull<bool>(za.bankeinzug,false)
-      >> FetchIStream::MapNull<bool>(za.monatsende,false)
-      >> FetchIStream::MapNull<std::string>(verfahren,std::string())
-      >> FetchIStream::MapNull<int>(za.frist_monate,0)
+      >> FetchIStream::MapNull(za.einzugrabatt,0)
+      >> FetchIStream::MapNull(za.bankeinzug,false)
+      >> FetchIStream::MapNull(za.monatsende,false)
+      >> FetchIStream::MapNull(verfahren,std::string())
+      >> FetchIStream::MapNull(za.frist_monate,0)
 #endif      
       ;
    if (!verfahren.empty()) za.setVerfahren(verfahren);
