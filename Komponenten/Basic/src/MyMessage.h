@@ -1,7 +1,8 @@
 
 #include<gtkmm/messagedialog.h>
+#include<Datum.h>
+#include <strstream>
 #include<Misc/SQLerror.h>
-
 
 class MyMessage : public Gtk::MessageDialog
 {
@@ -22,6 +23,14 @@ public:
   _msg+=tmp;
   set_message(_msg);
  }
+ 
+ MyMessage(const ManuProC::Datumsfehler &e) :
+ 	 Gtk::MessageDialog("",Gtk::MESSAGE_ERROR)
+ {
+  std::strstream ostr;
+  ostr << e;  
+  set_message(ostr.str());
+ } 
  
  MyMessage(const std::string &s,Gtk::MessageType mt=Gtk::MESSAGE_INFO) : 
  		Gtk::MessageDialog(s,mt)
