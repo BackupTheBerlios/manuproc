@@ -49,10 +49,10 @@ extern MyMessage *meldung;
 int RC_OffenMenge(cH_ArtikelBezeichnung b, ManuProC::Datum &d);
 
 auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEintragBase *auftragbase)
-: instanz(_instanz), auftrag(0), aktaufeintrag(0), kunde(Kunde::default_id),
-	aufentrystat_chid(0), aufstat_chid(0), selectedentry(-1),
-	artikel_preisliste_geaendert(false), newauftrag(false),
-	splitdialog(NULL),
+: instanz(_instanz), auftrag(), aktaufeintrag(), kunde(Kunde::default_id),
+	aufentrystat_chid(), aufstat_chid(), selectedentry(-1),
+	artikel_preisliste_geaendert(), newauftrag(),
+	splitdialog(),
 	new_aufid_from_copy(AuftragBase::none_id)
 {
  MyWindow::setPositionSize(*this,"pps");
@@ -67,6 +67,7 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
 
  WAufStat->set_history((AufStatVal)OPEN);
 #ifdef MABELLA_EXTENSIONS
+ table_vorraetige_menge->show();
  _tooltips.set_tip(*button_drucken,"Linke Maustaste: 1 Original"
 "Mittlere Maustaste: 1 Kopie","");
 
@@ -165,6 +166,10 @@ void auftrag_bearbeiten::onSelArtikel()
     Preis p(ap.In(auftrag->getWaehrung()));
     WPreis->set_value(p);
     artikel_preisliste_geaendert=false;
+    if (!p.Wert()) // Wenn kein Preis gefunden eingeben
+    {  WPreis->grab_focus();
+       return;
+    }
   } catch (SQLerror &e) 
   {  std::cerr << e <<'\n';  }
  stkmtr_spinbutton->grab_focus();
@@ -445,9 +450,10 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
 	  artikelbox->set_focus(sigfkz-1,es->sigsize(sigfkz)-1);
       }
 #else      
-      else
-      {  stkmtr_spinbutton->grab_focus();
-         stkmtr_spinbutton->select_region(0,-1);
+      else // Masseneingabe
+      {  // stkmtr_spinbutton->grab_focus();
+         artikelbox->grab_focus();
+         // stkmtr_spinbutton->select_region(0,-1);
       }
 #endif
     }

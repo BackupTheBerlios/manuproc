@@ -3307,7 +3307,9 @@ Auftrag</label>
 
 	  <widget>
 	    <class>GtkTable</class>
-	    <name>table28</name>
+	    <name>table_vorraetige_menge</name>
+	<visible>False</visible>
+	    <cxx_visibility>protected</cxx_visibility>
 	    <rows>3</rows>
 	    <columns>3</columns>
 	    <homogeneous>False</homogeneous>
