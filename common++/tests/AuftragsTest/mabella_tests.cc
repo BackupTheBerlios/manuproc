@@ -39,12 +39,13 @@ static bool Lieferschein_Kunde(AufEintrag &AE)
 
 	AufEintragBase AEB(EINKAUF,0,1);
 	AufEintrag AE(AEB);
-        AE.Planen(5,auftrag,DATUM);
+        AE.Planen(10,auftrag,DATUM);
+       vergleichen(Check::Menge|Check::Lieferschein,"PL_Einkauf","Einkauf Planen","PL");
         AufEintragBase AEB2(EINKAUF,auftrag.Id(),1);
 
        Lieferschein liefs(EINKAUF,cH_Kunde(LIEFERANT));
 	AufEintrag ae(AEB2);
-       liefs.push_back(ae,ARTIKEL_TRIO,5);
+       liefs.push_back(ae,ARTIKEL_TRIO,10);
        vergleichen(Check::Menge|Check::Lieferschein,"LS_Einkauf","Lieferschein im Einkauf (Mabella) anlegen","VE");
 	}
 
@@ -54,7 +55,7 @@ static bool Lieferschein_Kunde(AufEintrag &AE)
 	 AufEintrag ae2(aeb2);
 
        Lieferschein liefs(KUNDENINSTANZ,cH_Kunde(KUNDE2));
-       liefs.push_back(ae2,ARTIKEL_TRIO,8);
+       liefs.push_back(ae2,ARTIKEL_TRIO,7);
 	}
        vergleichen(Check::Lieferschein|Check::Menge,"LS_volllieferung1","Lieferschein mit Volllieferung (Mabella) anlegen","V1");
 	
