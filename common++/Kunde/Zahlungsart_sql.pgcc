@@ -1,4 +1,4 @@
-/* $Id: Zahlungsart_sql.pgcc,v 1.15 2002/12/16 23:36:11 jacek Exp $ */
+/* $Id: Zahlungsart_sql.pgcc,v 1.16 2003/03/06 15:33:00 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -34,6 +34,7 @@ Zahlungsart::Zahlungsart(ID _id) throw (SQLerror)
    bool MONATSENDE;
    char *VERFAHREN=0;
    int IVERFAHREN;
+   int FRISTMONATE;
    char *KURZBEZ=0,*BEZ=0;
   exec sql end declare section;
   exec sql select coalesce(kurzbezeichnung,''),coalesce(bezeichnung,''),
@@ -43,10 +44,10 @@ Zahlungsart::Zahlungsart(ID _id) throw (SQLerror)
       coalesce(skontofrist_2,0),coalesce(skontosatz_3,0.0),
       coalesce(skontofrist_3,0),
 	coalesce(monatsende,false),
-	verfahren
+	verfahren, coalesce(frist_monate,0)
       into :KURZBEZ,:BEZ,:EINZURABATT,:BANKEINZUG,:ZAHLUNGSFRIST,:SKONTOS1,
          :SKONTOF1,:SKONTOS2,:SKONTOF2,:SKONTOS3,:SKONTOF3,
-	:MONATSENDE,:VERFAHREN:IVERFAHREN
+	:MONATSENDE,:VERFAHREN:IVERFAHREN,:FRISTMONATE
       from rechnung_zahlungsart where id=:ID;
   SQLerror::test(__FILELINE__);
 
@@ -56,7 +57,8 @@ Zahlungsart::Zahlungsart(ID _id) throw (SQLerror)
    bezeichnung    = BEZ;
    zahlungsfrist  = ZAHLUNGSFRIST;
    monatsende	  = MONATSENDE;
-      
+   frist_monate	  = FRISTMONATE;
+   
    if(IVERFAHREN==0) setVerfahren(VERFAHREN);
    else verfahren=NONE;
 

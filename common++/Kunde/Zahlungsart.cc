@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.cc,v 1.25 2003/02/03 12:57:04 jacek Exp $
+// $Id: Zahlungsart.cc,v 1.27 2003/03/06 15:33:00 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -48,11 +48,20 @@ const ManuProC::Datum Zahlungsart::getZahlungstermin
  
  if(!zahlungsfrist && !bankeinzug) termin=rgdatum+getSkonto(0).skontofrist;
 
+ // so viele Monate vorrücken
+ for(int i=0; i<frist_monate; i++)
+   {termin=termin+(termin.Tage_in_Monat() - termin.Tag());
+    termin++;
+   }
+
+ 
  if(monatsende)
    {
    termin=termin+(termin.Tage_in_Monat() - termin.Tag());
    }
  
+
+
  return termin;
 }
 
@@ -148,13 +157,24 @@ void Zahlungsart::TeX_out(std::ostream &os,
 				vec_skonto[0].skontofrist<<" netto.\\\\\n";
 	   }
 	 else
-	   {os << "Zahlung Vorauskasse";
+	   {
+	    char tmpbuf[100];
 	    if(!!vec_skonto[0].skontosatz)
-           	os << " mit "<<vec_skonto[0].skontosatz<<"\\.\\% Skonto"
-           	<< " = {\\bf "<<w->TeXsymbol()<<" "
+	      {TID::LangTXT txt;
+	       if(frist_monate)
+		 txt=TID::PRINTF_ZAHLUNG8;
+	       else
+		 txt=TID::PRINTF_ZAHLUNG7;
+
+		snprintf(tmpbuf,sizeof tmpbuf,
+			mld.MLT(txt).c_str(),
+			vec_skonto[0].skontosatz.String(false,0,"",",").c_str());
+           	os << tmpbuf
+	     	<< " = {\\bf "<<k->getWaehrung()->TeXsymbol()<<" "
 	   	<<FormatiereTeX_Preis(skontobetrag)<<"}\\\\\n";
+	      }
 	    else
-	   	os<<"}\\\\\n";
+	   	os<<"\\\\\n";
 	   }
 	}
       else

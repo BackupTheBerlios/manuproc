@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.h,v 1.18 2003/01/08 09:46:57 christof Exp $
+// $Id: Zahlungsart.h,v 1.19 2003/03/06 15:33:00 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -52,6 +52,7 @@ private:
     std::string kurzbezeichung,bezeichnung;
     int zahlungsfrist;
     bool monatsende;
+    int frist_monate;
     Verfahren verfahren;
 
     void setVerfahren(const std::string v);
@@ -73,6 +74,7 @@ public:
     const std::string Name() const {return kurzbezeichung;}
     const ManuProC::Datum getZahlungstermin(const ManuProC::Datum rgdatum) const;
     Verfahren getVerfahren() const { return verfahren; }
+    const int FristMonate() const { return frist_monate; }
     
     void TeX_out(std::ostream &os,
 		cP_Waehrung w, 
