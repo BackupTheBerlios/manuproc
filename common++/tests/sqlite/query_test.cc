@@ -3,7 +3,7 @@
 #include <Misc/dbconnect.h>
 
 int main(void)
-{Query::dbconnect();
+{ManuProC::dbconnect();
  Query::Execute("select * from tb");
- Query::dbdisconnect();
+ ManuProC::dbdisconnect();
 }

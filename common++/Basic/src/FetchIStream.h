@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.44 2004/03/11 10:05:44 christof Exp $
+// $Id: FetchIStream.h,v 1.45 2004/03/11 13:49:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -35,7 +35,6 @@ extern "C" {
 #include <libpq-fe.h>
 }
 
-
 class FetchIStream
 {public:
 	struct check_eol { check_eol() {} };
@@ -44,8 +43,7 @@ private:
 	/* const */ int zeile;
 	
 #ifdef MPC_SQLITE
-	typedef std::map<int,std::pair<std::string,std::string> > SQLiteResult;
-	SQLiteResult result;
+	const char * const * result;
 #else	
 	const PGresult * /* const */ result;
 #endif	
@@ -81,13 +79,13 @@ public:
 	FetchIStream(const PGresult *res=0, int line=0)
 	  : naechstesFeld(0), zeile(line), result(res)
 	{}
+#else
+	FetchIStream(const char *const *res=0, int line=0);
 #endif
 	
 	int getIndicator() const;
-#ifndef MPC_SQLITE	
 	bool good() const
 	{  return result; }
-#endif	
 	
 	FetchIStream &operator>>(std::string &str);
 	FetchIStream &operator>>(int &i);
@@ -199,10 +197,7 @@ class Query : public Query_types
 	bool eof;
 	int line;
 #ifdef MPC_SQLITE
-	std::string database;
-	
-	static int SQLiteCallBack(void *db_struct,int argc, 
-			char **argv, char **colname);
+	const char * const *result;
 #else	
 	const PGresult *result;
 #endif	
@@ -220,15 +215,14 @@ class Query : public Query_types
 	void Execute_if_complete();
 
 public:
-	Query(const std::string &command,const std::string db="");
+	Query(const std::string &command);
 	~Query();
 
 	bool good() const 
 	{ return !eof; }
 	void ThrowOnBad(const char *where) const;
 
-	static void Execute(const std::string &command
-			,const std::string database="") throw(SQLerror);
+	static void Execute(const std::string &command) throw(SQLerror);
 	static int Code(); // SQLCA.sqlcode
 	static unsigned Lines(); // SQLCA.sqlerrd[2]
 
