@@ -25,6 +25,7 @@
 #include <Artikel/Prozesspreis.h>
 #include <Misc/Transaction.h>
 #include <Misc/TraceNV.h>
+#include <Kunde/PreisListe.h>
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -208,7 +209,7 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
 	"where "+artbez_tabelle+".id=p.artikelid and p.kundennr=?"
 	" and p.mindestmenge=?)";
 
-    if(newstaffel) // no new articles; only new preisstaffel for existsing
+    if(newstaffel) // no new articles; only new preisstaffel for existing
       query+=" and exists (select true from artikelpreise p "
 	"where "+artbez_tabelle+".id=p.artikelid and p.kundennr=?)";
 
@@ -238,10 +239,18 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
 	<< (*i) << liste << p.Wert() << UID << MINDESTMENGE;
     SQLerror::test(__FILELINE__);	
 
-    Query("insert into artikelpreise "
- 	"(artikelid,kundennr,preis,preismenge,waehrung,mindestmenge) values "
- 	"(?,?,?,?,?,?)")
- 	<< (*i) << liste << p.Wert() << p.PreisMenge() << p.getWaehrung()->Id() << MINDESTMENGE;
+
+    cH_PreisListe pl(liste);
+
+    std::string query("insert into ");
+   
+    query+=pl->ViewTabelle();
+    query+="(artikelid,kundennr,preis,preismenge,waehrung,mindestmenge) "
+ 		" values (?,?,?,?,?,?)";
+
+    Query(query) << (*i) << liste << p.Wert() << p.PreisMenge() 
+		 << p.getWaehrung()->Id() << MINDESTMENGE;
+
     SQLerror::test(__FILELINE__);	
  }
 

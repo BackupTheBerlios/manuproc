@@ -1,5 +1,5 @@
 
-// $Id: PreisListe_sql.pgcc,v 1.11 2003/09/15 11:20:21 jacek Exp $
+// $Id: PreisListe_sql.pgcc,v 1.12 2003/12/09 15:24:14 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,8 +23,6 @@
 #include <Misc/Waehrung.h>
 exec sql include sqlca;
 
-
-
 PreisListe cH_PreisListe::default_object; 
 bool cH_PreisListe::default_object_ref=cH_PreisListe::default_object.is_static(true);
 cH_PreisListe::cache_t cH_PreisListe::cache;
@@ -43,7 +41,7 @@ cH_PreisListe::cH_PreisListe(PreisListe::ID id)
 
 
 PreisListe::PreisListe(ID _id) throw(SQLerror) 
-: ManuProcHandle<>(_id)
+: ManuProcHandle<>(_id), view_tabelle(DEF_VIEW_TABLE)
 {  
    if(_id == none_id) return;   
    exec sql begin declare section;
@@ -53,11 +51,14 @@ PreisListe::PreisListe(ID _id) throw(SQLerror)
      float BRUTTOSATZ=0;
      int IBRUTTOSATZ=-1;
      char ART;
+     char *TABLENAMEGRP=0;
+     int ITABLENAMEGRP;
    exec sql end declare section;
 
    exec sql select coalesce(notiz,''),waehrungid,
-	bruttosatz,art
-	into :NAME,:WAEHID,:BRUTTOSATZ:IBRUTTOSATZ,:ART
+	bruttosatz,art, tablename_gruppe
+	into :NAME,:WAEHID,:BRUTTOSATZ:IBRUTTOSATZ,:ART,
+		:TABLENAMEGRP:ITABLENAMEGRP
       from ku_preisliste
       where prlsnr = :ID;
    SQLerror::test(__FILELINE__,100);
@@ -67,6 +68,9 @@ PreisListe::PreisListe(ID _id) throw(SQLerror)
    rabatt_gesetzt=IBRUTTOSATZ!=-1;
    rabatt=BRUTTOSATZ;
    art=(PlArt)ART;
+   view_tabelle+=ITABLENAMEGRP == 0 ? (std::string("_")+TABLENAMEGRP) : ("");
+
+   ECPGfree_auto_mem();
 }
 
 PreisListe::ID PreisListe::createPreisliste(const std::string &name) throw(SQLerror)
