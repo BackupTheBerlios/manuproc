@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.h,v 1.9 2003/01/15 12:11:07 christof Exp $
+// $Id: Zeitpunkt_new.h,v 1.10 2003/01/16 15:11:56 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,7 +23,7 @@
 
 #include <Misc/Postgres.h>
 #include <Misc/Datum.h>
-#include <function.h> // to provide > != & Co for Zeitpunkt and Datum
+#include <Misc/relops.h>
 #include <iostream>
 #include <time.h>
 
