@@ -1,0 +1,158 @@
+// $Id: Webangaben_sql.pgcc,v 1.1 2002/09/26 15:05:43 thoma Exp $
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
+ *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+
+#include "Webangaben.hh"
+#include <Aux/Transaction.h>
+exec sql include sqlca;
+
+void Webangaben::create_if_not_exists() throw(SQLerror)
+{  
+   exec sql begin declare section;
+      int ARTIKEL=artikel.Id();
+   exec sql end declare section;
+   if(!exists())
+        exec sql insert into webangaben (artikel) values (:ARTIKEL);
+   SQLerror::test(__FILELINE__);
+}
+
+bool Webangaben::exists() throw(SQLerror)
+{
+   exec sql begin declare section;
+      int ARTIKEL=artikel.Id(),DUMMY;
+   exec sql end declare section;
+   exec sql select artikel into :DUMMY from webangaben where artikel= :ARTIKEL;
+   SQLerror::test(__FILELINE__ "select from webangaben",100);
+   if (sqlca.sqlcode)
+      return false;
+   return true;
+}
+
+
+bool Webangaben::Load() throw(SQLerror)
+{
+  exec sql begin declare section;
+    int ARTIKEL=artikel.Id();
+    int IGEAENDERT,IERSTELLT;
+    char ERSTELLT[30],GEAENDERT[30];
+    char RIET[101], BEMERKUNG[257];
+    int FANG;
+    float SCHUSSDICHTE;
+  exec sql end declare section;
+
+  exec sql select erstellt, geaendert, coalesce(riet,''), 
+      coalesce(bemerkungen,''),coalesce(fangfaden,0),coalesce(schussdichte,0)
+      into :ERSTELLT :IERSTELLT, :GEAENDERT :IGEAENDERT,
+           :RIET,:BEMERKUNG,:FANG,:SCHUSSDICHTE
+      from webangaben where artikel= :ARTIKEL;
+  SQLerror::test(__FILELINE__":Webangaben::Load: select from webangaben",100);
+
+  if(!sqlca.sqlcode)
+   {
+     if (!IERSTELLT) erstellt=Petig::Datum(ERSTELLT);
+     if (!IGEAENDERT) geaendert=Petig::Datum(GEAENDERT);
+     riet=RIET;
+     bemerkung=BEMERKUNG;
+     fangfaden=FANG;
+     schussdichte=SCHUSSDICHTE;
+     return true;
+   }
+  else // Keine Webangaben gefunden
+   {
+     riet="";
+     bemerkung="";
+     fangfaden=ArtikelBase();
+     schussdichte=0;
+     return false;
+   }
+}
+
+void Webangaben::set_datum(const Petig::Datum &datum) throw(SQLerror)
+{  
+   exec sql begin declare section;
+      char ERSTELLT[35];
+      int ARTIKEL=Artikel().Id();
+   exec sql end declare section;
+            
+   if(datum.valid())
+     {
+      datum.write_postgres(ERSTELLT, sizeof ERSTELLT);
+      exec sql update webangaben set erstellt= :ERSTELLT, geaendert=now()
+         where artikel= :ARTIKEL;
+     }
+   else 
+      exec sql update webangaben set geaendert=now() where artikel= :ARTIKEL;
+   SQLerror::test(__FILELINE__);
+   geaendert=datum;
+}
+
+void Webangaben::set_bemerkung(const std::string &s) throw(SQLerror)
+{  
+   exec sql begin declare section;
+      char BEMERKUNG[257];
+      int ARTIKEL=Artikel().Id();
+   exec sql end declare section;
+   strncpy(BEMERKUNG,s.c_str(),sizeof(BEMERKUNG));
+            
+   exec sql update webangaben set bemerkungen= :BEMERKUNG, geaendert=now()
+         where artikel= :ARTIKEL;
+   SQLerror::test(__FILELINE__);
+   bemerkung=s;
+}
+
+void Webangaben::set_riet(const std::string &s) throw(SQLerror)
+{  
+   exec sql begin declare section;
+      char RIET[101];
+      int ARTIKEL=Artikel().Id();
+   exec sql end declare section;
+   strncpy(RIET,s.c_str(),sizeof(RIET));
+            
+   exec sql update webangaben set riet= :RIET, geaendert=now()
+         where artikel= :ARTIKEL;
+   SQLerror::test(__FILELINE__);
+   riet=s;  
+}
+
+void Webangaben::set_fangfaden(const ArtikelBase &ab) throw(SQLerror)
+{  
+   exec sql begin declare section;
+      int FANG=ab.Id();
+      int ARTIKEL=Artikel().Id();
+   exec sql end declare section;
+   exec sql update webangaben set fangfaden=:FANG, geaendert=now()
+         where artikel= :ARTIKEL;
+   SQLerror::test(__FILELINE__);
+   fangfaden=ab;
+}
+
+void Webangaben::set_schussdichte(const fixedpoint<1> &f) throw(SQLerror)
+{  
+   exec sql begin declare section;
+     float SCHUSSDICHTE=f;
+     int ARTIKEL=Artikel().Id();
+   exec sql end declare section;
+   exec sql update webangaben set schussdichte=:SCHUSSDICHTE, geaendert=now()
+         where artikel= :ARTIKEL;
+   SQLerror::test(__FILELINE__);
+   schussdichte=f;
+}
+
+

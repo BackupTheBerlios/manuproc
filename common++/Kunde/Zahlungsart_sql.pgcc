@@ -1,0 +1,57 @@
+/* $Id: Zahlungsart_sql.pgcc,v 1.1 2002/09/26 15:03:13 thoma Exp $ */
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include "Zahlungsart.h"
+
+exec sql include sqlca;
+
+Zahlungsart::Zahlungsart(ID _id) throw (SQLerror)
+: ManuProcEntity(_id),bankeinzug(false),einzugrabatt(0),zahlungsfrist(0) 
+{
+  if(_id == Zahlungsart::none_id) return;
+  exec sql begin declare section;
+   int ID=_id;
+   double EINZURABATT,SKONTOS1,SKONTOS2,SKONTOS3;
+   int SKONTOF1,SKONTOF2,SKONTOF3,ZAHLUNGSFRIST;
+   bool BANKEINZUG;
+   char *KURZBEZ=0,*BEZ=0;
+  exec sql end declare section;
+  exec sql select coalesce(kurzbezeichnung,''),coalesce(bezeichnung,''),
+      coalesce(einzugrabatt,0.0),coalesce(bankeinzug,false),
+      coalesce(zahlungsfrist,0),coalesce(skontosatz_1,0.0),
+      coalesce(skontofrist_1,0),coalesce(skontosatz_2,0.0),
+      coalesce(skontofrist_2,0),coalesce(skontosatz_3,0.0),
+      coalesce(skontofrist_3,0)
+      into :KURZBEZ,:BEZ,:EINZURABATT,:BANKEINZUG,:ZAHLUNGSFRIST,:SKONTOS1,
+         :SKONTOF1,:SKONTOS2,:SKONTOF2,:SKONTOS3,:SKONTOF3
+      from rechnung_zahlungsart where id=:ID;
+  SQLerror::test(__FILELINE__);
+
+   bankeinzug     = BANKEINZUG;
+   einzugrabatt   = EINZURABATT;
+   kurzbezeichung = KURZBEZ;
+   bezeichnung    = BEZ;
+   zahlungsfrist  = ZAHLUNGSFRIST;
+ 
+      
+   if(SKONTOS1) vec_skonto.push_back(st_skonto(SKONTOF1,SKONTOS1));
+   if(SKONTOS2) vec_skonto.push_back(st_skonto(SKONTOF2,SKONTOS2));
+   if(SKONTOS3) vec_skonto.push_back(st_skonto(SKONTOF3,SKONTOS3));
+   ECPGfree_auto_mem();
+}
