@@ -1,0 +1,67 @@
+--
+-- Selected TOC Entries:
+--
+
+--
+-- TOC Entry ID 2 (OID 2716758)
+--
+-- Name: artbez_3_1 Type: TABLE Owner: jacek
+--
+drop table artbez_3_1;
+CREATE TABLE "artbez_3_1" (
+	"id" integer DEFAULT nextval('artikelbezeichnun_artikelid_seq'::text) NOT NULL,
+	"artikel" character varying(5),
+	"breite" character varying(7),
+	"farbe" character varying(3),
+	"aufmachung" character varying(20),
+	"stand" timestamp(0) with time zone DEFAULT now(),
+	"ean" character varying(13),
+	"bezeichnung" character varying(20),
+	"draht" boolean,
+	Constraint "artbez_3_1_pkey" Primary Key ("id")
+);
+
+--
+-- TOC Entry ID 3 (OID 2716758)
+--
+-- Name: artbez_3_1 Type: ACL Owner: 
+--
+
+REVOKE ALL on "artbez_3_1" from PUBLIC;
+GRANT SELECT on "artbez_3_1" to PUBLIC;
+GRANT ALL on "artbez_3_1" to "jacek";
+
+--
+-- Data for TOC Entry ID 5 (OID 2716758)
+--
+-- Name: artbez_3_1 Type: TABLE DATA Owner: jacek
+--
+
+
+COPY "artbez_3_1" FROM stdin;
+44803	2502	40	661	25	2002-05-15 00:01:01+02	4031197011391	Trio	\N
+44800	2500	40	600	25	2002-05-15 00:01:01+02	4031197011390	Trio00	\N
+\.
+--
+-- TOC Entry ID 4 (OID 3251444)
+--
+-- Name: "artbez_3_1_uniq" Type: INDEX Owner: jacek
+--
+
+CREATE UNIQUE INDEX artbez_3_1_uniq ON artbez_3_1 USING btree (artikel, breite, farbe, aufmachung);
+
+--
+-- TOC Entry ID 6 (OID 3251523)
+--
+-- Name: "RI_ConstraintTrigger_3251522" Type: TRIGGER Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "artbez_3_1"  FROM "artbez_3_99901" NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_del" ('<unnamed>', 'artbez_3_99901', 'artbez_3_1', 'UNSPECIFIED', 'id', 'id');
+
+--
+-- TOC Entry ID 7 (OID 3251525)
+--
+-- Name: "RI_ConstraintTrigger_3251524" Type: TRIGGER Owner: jacek
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "artbez_3_1"  FROM "artbez_3_99901" NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'artbez_3_99901', 'artbez_3_1', 'UNSPECIFIED', 'id', 'id');

@@ -1,0 +1,55 @@
+--
+-- Selected TOC Entries:
+--
+DROP INDEX "auftrag_speed";
+DROP INDEX "auftrag_pkey";
+DROP TABLE "auftrag";
+--
+-- TOC Entry ID 2 (OID 16636854)
+--
+-- Name: auftrag Type: TABLE Owner: thoma
+--
+
+CREATE TABLE "auftrag" (
+	"auftragid" numeric(6,0) NOT NULL,
+	"kundennr" numeric(5,0) NOT NULL,
+	"datum" timestamp with time zone DEFAULT now() NOT NULL,
+	"status" character varying(10) DEFAULT '' NOT NULL,
+	"youraufnr" character varying(20),
+	"bemerkung" text,
+	"dispoid" numeric(7,0),
+	"jahrgang" numeric(4,0) DEFAULT 2002 NOT NULL,
+	"stat" smallint DEFAULT 0,
+	"waehrung" numeric(2,0),
+	"instanz" integer DEFAULT 1,
+	"zahlungsziel" date,
+	"rabatt" numeric(4,2),
+	"zahlart" integer,
+   "notiz" text
+);
+
+--
+-- Data for TOC Entry ID 5 (OID 16636854)
+--
+-- Name: auftrag Type: TABLE DATA Owner: thoma
+--
+
+
+COPY "auftrag" FROM stdin;
+\.
+--
+-- TOC Entry ID 3 (OID 16637853)
+--
+-- Name: "auftrag_pkey" Type: INDEX Owner: thoma
+--
+
+CREATE UNIQUE INDEX auftrag_pkey ON auftrag USING btree (instanz, auftragid);
+
+--
+-- TOC Entry ID 4 (OID 16637854)
+--
+-- Name: "auftrag_speed" Type: INDEX Owner: thoma
+--
+
+CREATE INDEX auftrag_speed ON auftrag USING btree (status, auftragid);
+

@@ -1,0 +1,83 @@
+--
+-- Selected TOC Entries:
+--
+
+DROP TABLE "prod_instanz";
+--
+-- TOC Entry ID 2 (OID 51859016)
+--
+-- Name: prod_instanz Type: TABLE Owner: thoma
+--
+
+CREATE TABLE "prod_instanz" (
+	"insid" numeric(2,0) NOT NULL,
+	"name" character varying(20) NOT NULL,
+	"lager_fuer" integer,
+	"sortierung" integer,
+	"lieferschein" boolean,
+	"lagername" text,
+	"produziert_selbst" boolean,
+	"prod_dauer_tage" integer,
+	"einlagern_in" integer,
+	"automatisch_einlagern" boolean,
+	"typ" character(1),
+	"externe_bestellung" boolean,
+	"geplant_von" integer,
+	Constraint "prod_instanz_pkey" Primary Key ("insid")
+);
+
+--
+-- TOC Entry ID 3 (OID 51859016)
+--
+-- Name: prod_instanz Type: ACL Owner: 
+--
+
+REVOKE ALL on "prod_instanz" from PUBLIC;
+GRANT INSERT,SELECT,RULE,UPDATE,DELETE,REFERENCES,TRIGGER on "prod_instanz" to "thoma";
+
+--
+-- Data for TOC Entry ID 4 (OID 51859016)
+--
+-- Name: prod_instanz Type: TABLE DATA Owner: thoma
+--
+
+
+COPY "prod_instanz" FROM stdin;
+2	Fertigware	3	2	f	\N	f	\N	\N	t	L	f	\N
+1	Kundenaufträge	\N	1	t	\N	t	\N	\N	\N	P	f	\N
+4	Einkauf	\N	4	t	\N	t	\N	2	\N	P	t	3
+5	Weberei	\N	5	t	\N	t	\N	2	\N	P	\N	3
+3	Prod.Planung	\N	3	f	\N	f	\N	2	\N	E	t	\N
+\.
+--
+-- TOC Entry ID 5 (OID 51859028)
+--
+-- Name: "RI_ConstraintTrigger_51859027" Type: TRIGGER Owner: thoma
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "prod_instanz"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');
+
+--
+-- TOC Entry ID 6 (OID 51859030)
+--
+-- Name: "RI_ConstraintTrigger_51859029" Type: TRIGGER Owner: thoma
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "prod_instanz"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_del" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');
+
+--
+-- TOC Entry ID 7 (OID 51859032)
+--
+-- Name: "RI_ConstraintTrigger_51859031" Type: TRIGGER Owner: thoma
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "prod_instanz"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_del" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');
+
+--
+-- TOC Entry ID 8 (OID 51859034)
+--
+-- Name: "RI_ConstraintTrigger_51859033" Type: TRIGGER Owner: thoma
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "prod_instanz"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');
+

@@ -1,0 +1,25 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "artbez_warengruppe";
+--
+-- TOC Entry ID 2 (OID 31639211)
+--
+-- Name: artbez_warengruppe Type: TABLE Owner: thoma
+--
+
+CREATE TABLE "artbez_warengruppe" (
+	"id" smallint,
+	"text" character varying(40)
+);
+
+--
+-- Data for TOC Entry ID 3 (OID 31639211)
+--
+-- Name: artbez_warengruppe Type: TABLE DATA Owner: thoma
+--
+
+
+COPY "artbez_warengruppe" FROM stdin;
+3	Band
+\.

@@ -1,0 +1,25 @@
+--
+-- Selected TOC Entries:
+--
+--
+-- TOC Entry ID 2 (OID 26006283)
+--
+-- Name: banken Type: TABLE Owner: thoma
+--
+
+CREATE TABLE "banken" (
+	"bankindex" integer DEFAULT nextval('"banken_bankindex_seq"'::text) NOT NULL,
+	"blz" numeric(8,0) NOT NULL,
+	"name" character varying(30) NOT NULL,
+	Constraint "banken_pkey" Primary Key ("bankindex")
+);
+
+--
+-- Data for TOC Entry ID 3 (OID 26006283)
+--
+-- Name: banken Type: TABLE DATA Owner: thoma
+--
+
+
+COPY "banken" FROM stdin;
+\.

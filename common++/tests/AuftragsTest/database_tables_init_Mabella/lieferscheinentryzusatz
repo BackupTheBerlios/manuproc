@@ -1,0 +1,48 @@
+--
+-- Selected TOC Entries:
+--
+\connect - thoma
+
+DROP INDEX "lfrsentryzusatz_idx";
+DROP TABLE "lieferscheinentryzusatz";
+--
+-- TOC Entry ID 2 (OID 48754495)
+--
+-- Name: lieferscheinentryzusatz Type: TABLE Owner: thoma
+--
+
+CREATE TABLE "lieferscheinentryzusatz" (
+	"instanz" integer NOT NULL,
+	"lfrsid" integer NOT NULL,
+	"lfsznr" integer NOT NULL,
+	"auftragid" integer,
+	"auftragznr" integer,
+	"menge" integer NOT NULL
+);
+
+--
+-- TOC Entry ID 3 (OID 48754495)
+--
+-- Name: lieferscheinentryzusatz Type: ACL Owner: 
+--
+
+REVOKE ALL on "lieferscheinentryzusatz" from PUBLIC;
+GRANT INSERT,SELECT,RULE,UPDATE,DELETE,REFERENCES,TRIGGER on "lieferscheinentryzusatz" to "thoma";
+
+--
+-- Data for TOC Entry ID 5 (OID 48754495)
+--
+-- Name: lieferscheinentryzusatz Type: TABLE DATA Owner: thoma
+--
+
+
+COPY "lieferscheinentryzusatz" FROM stdin;
+\.
+--
+-- TOC Entry ID 4 (OID 48759006)
+--
+-- Name: "lfrsentryzusatz_idx" Type: INDEX Owner: thoma
+--
+
+CREATE INDEX lfrsentryzusatz_idx ON lieferscheinentryzusatz USING btree (instanz, lfrsid, lfsznr);
+

@@ -1,0 +1,42 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "prod_changejournal";
+--
+-- TOC Entry ID 2 (OID 16613287)
+--
+-- Name: prod_changejournal Type: TABLE Owner: thoma
+--
+
+CREATE TABLE "prod_changejournal" (
+	"chid" integer NOT NULL,
+	"datum" timestamp with time zone DEFAULT now() NOT NULL,
+	"chtype" character(1) NOT NULL,
+	"insid" numeric(2,0) NOT NULL,
+	"auftragid" numeric(6,0) NOT NULL,
+	"auftragzeile" integer NOT NULL,
+	"artikelid" integer NOT NULL,
+	"status" numeric(1,0) DEFAULT 0 NOT NULL,
+	"new_val" numeric(10,2),
+	"new_dat" date,
+	"delta" numeric(10,2),
+	Constraint "prod_changejournal_pkey" Primary Key ("chid", "insid")
+);
+
+--
+-- Data for TOC Entry ID 3 (OID 16613287)
+--
+-- Name: prod_changejournal Type: TABLE DATA Owner: thoma
+--
+
+
+COPY "prod_changejournal" FROM stdin;
+\.
+--
+-- TOC Entry ID 4 (OID 16618775)
+--
+-- Name: "RI_ConstraintTrigger_16618774" Type: TRIGGER Owner: thoma
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "prod_changejournal"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');
+

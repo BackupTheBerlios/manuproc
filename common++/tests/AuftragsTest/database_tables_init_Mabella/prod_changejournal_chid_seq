@@ -1,0 +1,20 @@
+--
+-- Selected TOC Entries:
+--
+DROP SEQUENCE "prod_changejournal_chid_seq";
+--
+-- TOC Entry ID 2 (OID 11499061)
+--
+-- Name: prod_changejournal_chid_seq Type: SEQUENCE Owner: thoma
+--
+
+CREATE SEQUENCE "prod_changejournal_chid_seq" start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
+
+--
+-- TOC Entry ID 3 (OID 11499061)
+--
+-- Name: prod_changejournal_chid_seq Type: SEQUENCE SET Owner: 
+--
+
+SELECT setval ('"prod_changejournal_chid_seq"', 44365, true);
+

@@ -1,0 +1,45 @@
+#!/bin/bash
+
+export PGHOST=localhost
+
+dropdb mabelladb
+createdb mabelladb
+
+P="database_tables_init_Mabella"
+
+for i in \
+   artikelbezeichnung \
+   artikelstamm \
+   artikelzusammensetzung \
+   artbez_3_1 \
+   artbez_warengruppe \
+   auftrag \
+   auftragentry \
+   auftrag_prozess \
+   auftragsentryzuordnung \
+   banken \
+   einheiten \
+   extbezschema \
+   global_settings \
+   lieferschein \
+   lieferscheinentry \
+   lieferscheinentryzusatz \
+   kunden \
+   ku_land \
+   problems \
+   prod_changejournal \
+   prod_changejournal_chid_seq \
+   prod_instanz \
+   prozesse \
+   rechnung_zahlungsart \
+   waehrung
+do
+
+psql mabelladb -q < $P/$i
+
+done
+
+../../Programme/Instanzen mabelladb
+
+#psql testdb -c "vacuum analyze"
+
