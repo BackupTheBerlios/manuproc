@@ -26,8 +26,8 @@ public:
  bool isWhite(const StrAct sa);
  bool isWhite(const ColAct ca);
 
- friend FetchIStream &operator>>(FetchIStream &is, pair<std::string,Action> &p);
- friend FetchIStream &operator>>(FetchIStream &is, pair<WhiteColumn,Action> &p); 
+ friend FetchIStream &operator>>(FetchIStream &is, std::pair<std::string,Action> &p);
+ friend FetchIStream &operator>>(FetchIStream &is, std::pair<WhiteColumn,Action> &p); 
 
 };
 
