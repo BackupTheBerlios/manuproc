@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.6 2004/03/11 16:09:26 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.7 2004/03/11 16:21:57 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -249,7 +249,7 @@ void Query::ThrowOnBad(const char *where) const
 // ====================== SQLite =================================
 
 #ifdef MPC_SQLITE
-FetchIStream::FetchIStream(const char *const *res=0, unsigned _nfields, int line=0)
+FetchIStream::FetchIStream(const char *const *res, unsigned _nfields, int line)
 	: naechstesFeld(), zeile(line), result(res), nfields(_nfields)
 {}
 

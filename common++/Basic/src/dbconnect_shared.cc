@@ -1,4 +1,4 @@
-// $Id: dbconnect_shared.cc,v 1.2 2004/03/11 15:17:32 christof Exp $
+// $Id: dbconnect_shared.cc,v 1.3 2004/03/11 16:21:57 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,6 +19,7 @@
 
 #include <ManuProCConfig.h>
 #include <Misc/dbconnect.h>
+#include <cassert>
 
 ManuProC::Connection::Connection(const std::string &h, const std::string &d, const std::string &u,const std::string &n)
         	: host(h), dbase(d), user(u), name(n)
