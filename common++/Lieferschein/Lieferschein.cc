@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.35 2003/07/09 12:48:13 jacek Exp $ */
+/* $Id: Lieferschein.cc,v 1.36 2003/07/09 14:39:52 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,7 +25,7 @@
 #include <Misc/TraceNV.h>
 
 
-#if __GNUC__ > 2  // fragt nicht ...
+#if __GNUC__ > 2 && defined (DPD_LIEFERSCHEINE)
 	 const int Lieferschein::Fertig;
 	 const int Lieferschein::Offen;
 #endif
