@@ -365,14 +365,14 @@ AC_COMPILE_IFELSE(
 #ifndef MPC_SQLITE
 #error not SQLITE
 #endif
-		])],[ECPG],[])
-
-
+		])],[MPC_SQLITE=1],[])
 CXXFLAGS="$old_cxxflags"
 
-COMMONXX_INCLUDES="$COMMONXX_INCLUDES $SIGC_CFLAGS"
-COMMONXX_LIBS="$COMMONXX_LIBS $SIGC_LIBS"
-COMMONXX_LDFLAGS="-lqlite"
+if test "x$MPC_SQLITE" = x
+	ECPG
+else
+	COMMONXX_LDFLAGS="$COMMONXX_LDFLAGS -lqlite"
+fi
 
 ])
 
