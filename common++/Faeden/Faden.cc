@@ -1,6 +1,6 @@
-// $Id: Faden.cc,v 1.10 2003/07/30 11:16:55 christof Exp $
+// $Id: Faden.cc,v 1.11 2003/10/23 10:40:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
+ *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,7 @@
 #include "Materialeigenschaft.hh"
 #include <Misc/relops.h>
 #include <Misc/compiler_ports.h>
+#include <Misc/FetchIStream.h>
 
 std::ostream& operator<< (std::ostream& os, const Faden& f)
 {
@@ -374,3 +375,56 @@ void Faden::create_wiederholung(const ArtikelBase &artikel, const Wiederholung &
   SQLerror::test(__FILELINE__);
 }
 
+static FetchIStream &operator>>(FetchIStream &is, Bindung &b)
+{  int bnr;
+   is >> bnr;
+   b=Bindung::getById(bnr);
+   return is;
+}
+
+static FetchIStream &operator>>(FetchIStream &is, Faden &f)
+{  int znr;
+   is >> znr >> f.anzahl >> f.material >> f.bindung
+   	>> FetchIStream::MapNull(f.kettscheibe,-1)
+   	>> FetchIStream::MapNull(f.max_kettlaenge)
+   	>> FetchIStream::MapNull(f.max_fadenzahl);
+   return is;
+}
+
+void Fadenliste::Load(const ArtikelBase &ab,const Bindungsliste &bindungsliste)
+{  erase();
+   
+   ArtikelBase var_von;
+   Query("select variante_von from webangaben where artikel=?")
+   	<< ab
+   	>> FetchIStream::MapNull(var_von);
+   if (!!var_von)
+   {
+   }
+   else
+   {  std::vector<Faden> vfd;
+      
+      Query q("select zeilennummer, anzahl, material, bindung, kettscheibe, "
+      	"max_kettlaenge, max_fadenzahl "
+      	"from webang_faeden where artikel=? order by zeilennummer");
+      q << ab;
+      q.FetchArray(vfd);
+      for (std::vector<Faden>::const_iterator i=vfd.begin();i!=vfd.end();++i)
+      {  add(*i,-1);
+      }
+
+      Query q2("select anfangszeile, endzeile, wiederholungen "
+		"from webang_wiederhol where artikel=? "
+		// request small ones first so we print it right
+		"order by endzeile-anfangszeile");
+      q2 << ab;
+      FetchIStream is;
+      while ((q2>>is).good())
+      {  int anfangszeile, endzeile, wiederholungen;
+         is >> anfangszeile >> endzeile >> wiederholungen;
+         is.ThrowIfNotEmpty(__FILELINE__);
+         rep_add(anfangszeile, endzeile, wiederholungen);
+      }
+      
+   }
+}
