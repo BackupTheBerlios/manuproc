@@ -2,7 +2,7 @@
 #include <Aux/itos.h>
 #include "window_neue_bank_anlegen.hh"
 #include <SelectMatching.h>
-#include "class_Preislisten.hh"
+#include "kundendaten_aux.hh"
 #include "MyMessage.h"
 
 
