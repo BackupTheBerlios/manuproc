@@ -1,4 +1,4 @@
-/* $Id: RechnungBase.cc,v 1.2 2003/06/19 13:20:29 jacek Exp $ */
+/* $Id: RechnungBase.cc,v 1.3 2003/07/09 10:06:50 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -37,4 +37,10 @@ void RechnungBase::setVerknr(const Kunde::ID vid) const throw(SQLerror)
 }
 
 
+
+void RechnungBase::setze_Zahlziel(ManuProC::Datum zziel) throw(SQLerror)
+{
+ Query("update rechnung set zahlziel=? where rngid=?")
+	<< zziel << Id();
+}
 

@@ -1,4 +1,4 @@
-/* $Id: RechnungBase.h,v 1.12 2003/07/08 15:05:03 jacek Exp $ */
+/* $Id: RechnungBase.h,v 1.13 2003/07/09 10:06:50 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -46,6 +46,7 @@ class RechnungBase // : ManuProcEntity
 	
 	RechnungBase() : rngid(none_id),verknr(Kunde::none_id) {}
 	RechnungBase(ID rid) : rngid(rid),verknr(Kunde::none_id) {}
+	virtual ~RechnungBase() {}
 
 	ID Id() const {return rngid;}
 	std::string getRngidToStr() const
@@ -57,6 +58,7 @@ class RechnungBase // : ManuProcEntity
 	void setEingezogen(int refnr, bool bezahlt=true) throw(SQLerror);
 	Kunde::ID getVerknr() const throw(SQLerror);
 	void setVerknr(const Kunde::ID vid) const throw(SQLerror);	
+	virtual void setze_Zahlziel(ManuProC::Datum zziel) throw(SQLerror);
 };
 
 #endif
