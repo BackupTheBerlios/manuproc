@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.49 2004/01/30 15:57:49 christof Exp $
+// $Id: AuftragBase.cc,v 1.50 2004/09/01 15:40:57 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -83,6 +83,9 @@ void AuftragBase::dispo_auftrag_aendern(cH_ppsInstanz instanz,const ArtikelBase 
 const AuftragBase::ID AuftragBase::handplan_auftrag_id,
 	AuftragBase::dispo_auftrag_id,
 	AuftragBase::plan_auftrag_id,
+	AuftragBase::handplan_id,
+	AuftragBase::dispo_id,
+	AuftragBase::plan_id,
 	AuftragBase::invalid_id,
 	AuftragBase::none_id,
 	AuftragBase::ungeplante_id;
