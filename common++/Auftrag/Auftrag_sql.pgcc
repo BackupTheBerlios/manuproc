@@ -483,11 +483,16 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
       {tr.rollback(); throw; }
 
 #ifdef MABELLA_EXTENSIONS
+    std::string tabelle="artbez_"+
+        itos(ExtBezSchema::default_Typ)+"_"+
+        itos(ExtBezSchema::default_id);
+
     if(getVerknr()!=Kunde::none_id)
       {Query("update auftragentry set provsatz="
       	"(select case when provsatznr=1 then provsatz1 else provsatz2 end"
       	" from prov_verkaeufer v, prov_config c"
-      	" where c.artikelid=auftragentry.artikelid"
+	" join "+tabelle+" b on (b.artike=c.artikel) "
+      	" where b.id=auftragentry.artikelid"
       	" and v.verknr=? and v.kundennr=?)"
       	" where (instanz,auftragid,zeilennr)=(?,?,?)")
       	<< getVerknr()

@@ -219,6 +219,10 @@ std::vector<LagerInhalt> ppsInstanzReparatur::getLagerInhalt() const
   if(Instanz() == ppsInstanzID::Rohwarenlager)  LI=RohwarenLager().LagerInhalt();
   else if(Instanz() == ppsInstanzID::Bandlager) LI=JumboLager().LagerInhalt();
   else 
+#elsif defined MABELLA_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
+  if(Instanz() == ppsInstanzID::FertigWarenLager)  
+	LI=FertigWarenLager::LagerInhalt();
+  else 
 #endif 
    { std::cout << Instanz()<<' '<<"\tKeine LagerKlasse implementiert\n";
      assert(!"never get here\n");

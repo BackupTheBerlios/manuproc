@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.88 2003/07/25 12:53:17 jacek Exp $
+// $Id: AufEintrag.cc,v 1.89 2003/07/26 11:14:43 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -395,14 +395,20 @@ void AufEintrag::setProvSatz(const fixedpoint<2> ps) throw(SQLerror)
 
 void AufEintrag::setDefaultProvSatz() throw(SQLerror)
 {
+ std::string tabelle="artbez_"+
+        itos(ExtBezSchema::default_Typ)+"_"+
+        itos(ExtBezSchema::default_id);
+
+
  Query q("update auftragentry set provsatz="
-	"(select case when provsatznr=1 then provsatz1 else provsatz2 end"
+	"(select case when c.provsatznr=1 then provsatz1 else provsatz2 end"
 	" from auftragentry e join auftrag a on (e.instanz=a.instanz"
 	" and e.auftragid=a.auftragid and "
 	" (a.instanz,a.auftragid,e.zeilennr)=(?,?,?))"
-	" join prov_config c using (artikelid) join"
-	" prov_verkaufer v on (v.kundennr=a.kundennr and v.verknr=a.verknr))"
-	" where (e.instanz,e.auftragid,e.zeilennr)=(?,?,?)");
+	" join "+tabelle+" b on (e.artikelid=b.id) "
+	" join prov_config c using (artikel) join"
+	" prov_verkaeufer v on (v.kundennr=a.kundennr and v.verknr=a.verknr))"
+	" where (instanz,auftragid,zeilennr)=(?,?,?)");
 
  q << InstanzID() << Id() << getZnr() << InstanzID() << Id() << getZnr();
 
