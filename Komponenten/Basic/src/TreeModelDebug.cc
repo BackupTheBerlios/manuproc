@@ -1,4 +1,4 @@
-// $Id: TreeModelDebug.cc,v 1.1 2004/05/05 11:56:36 christof Exp $
+// $Id: TreeModelDebug.cc,v 1.2 2004/05/05 12:00:44 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,22 +21,22 @@
 #include <iostream>
 #include <gtkmm/treepath.h>
 
-static void TreeModelDebug_sub(const Gtk::TreeModel &tm, unsigned indent,
+static void TreeModelDebug_sub(const Glib::RefPtr<Gtk::TreeModel> &tm, unsigned indent,
 				Gtk::TreeModel::Children c)
 {  for (Gtk::TreeModel::iterator i=c.begin();i!=c.end();++i)
    {  std::cout << std::string(indent,' ') 
-   		<< "Node " << tm.get_path(i).to_string()
+   		<< "Node " << tm->get_path(i).to_string()
    		<< " children=" << i->children().size() << '\n';
       TreeModelDebug_sub(tm,indent+1,i->children());
    }
 }
 
-void TreeModelDebug(const Gtk::TreeModel &tm)
-{  std::cout << "TreeModel @" << &tm << " flags=" << tm.get_flags()
-	<< " columns=" << tm.get_n_columns() << '\n';
+void TreeModelDebug(const Glib::RefPtr<Gtk::TreeModel> &tm)
+{  std::cout << "TreeModel @" << tm->gobj() << " flags=" << tm->get_flags()
+	<< " columns=" << tm->get_n_columns() << '\n';
    std::cout << " column types=(";
-   for (unsigned i=0;i<tm.get_n_columns();++i)
-      std::cout << tm.get_column_type(i) << ',';
+   for (unsigned i=0;i<tm->get_n_columns();++i)
+      std::cout << tm->get_column_type(i) << ',';
    std::cout << ")\n";
-   TreeModelDebug_sub(tm,1,tm.children());
+   TreeModelDebug_sub(tm,1,tm->children());
 }

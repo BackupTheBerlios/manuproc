@@ -1,4 +1,4 @@
-// $Id: TreeModelDebug.h,v 1.1 2004/05/05 11:56:36 christof Exp $
+// $Id: TreeModelDebug.h,v 1.2 2004/05/05 12:00:44 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,5 +22,5 @@
 
 #include <gtkmm/treemodel.h>
 
-void TreeModelDebug(const Gtk::TreeModel &);
+void TreeModelDebug(const Glib::RefPtr<Gtk::TreeModel> &);
 #endif
