@@ -1,4 +1,4 @@
-// $Id: delayed_reclaim.cc,v 1.5 2004/02/16 10:09:27 christof Exp $
+// $Id: delayed_reclaim.cc,v 1.6 2004/02/16 10:36:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -23,6 +23,7 @@
 #include <Misc/Transaction.h>
 #include <Misc/FetchIStream.h>
 #include <Lager/Lager.h>
+#include <Auftrag/VerfuegbareMenge.h>
 
 bool AufEintrag::delayed_reclaim::active;
 std::list<std::pair<cH_ppsInstanz,ArtikelBase> > 
@@ -48,7 +49,17 @@ void AufEintrag::delayed_reclaim::reclaim()
       }
       else
       {  // alle 2er suchen
+         VerfuegbareMenge vfm(act.first,act.second,ManuProC::Datum::Infinity());
+         for (VerfuegbareMenge::const_iterator i=vfm.getDispoAuftraege().begin();
+         		i!=vfm.getDispoAuftraege().end();++i)
+         {  if (!i->getRestStk()) continue;
+#if 0         
+            SelectedFullAufList auftraglist=SelectedFullAufList(SQLFullAuftragSelector::
+      	 	sel_Artikel_Planung_id(act.first,Kunde::eigene_id,act.second,
+	      	 	AuftragBase::ungeplant_auftrag_id));
          auf_positionen_verteilen(...)
+#endif
+         }
       }
       delayed.pop_front();
    }

@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.22 2004/02/16 10:09:27 christof Exp $ */
+/* $Id: Datum.h,v 1.23 2004/02/16 10:36:12 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -60,7 +60,7 @@ class ManuProC::Datum
 	mutable unsigned int quart:3;	/* Quartal */
 	unsigned int tag:5;  	/* tt */ 
 	unsigned int monat:4;	/* mm */
-	unsigned int jahr:11;     /* jjjj */
+	unsigned int jahr:12;     /* jjjj */
 
 
  static const char* const monate[];
