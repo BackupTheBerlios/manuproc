@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.64 2004/09/01 12:30:32 christof Exp $
+// $Id: Check.cc,v 1.65 2004/10/21 13:21:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -205,3 +205,10 @@ Check::was_checken operator|(Check::was_checken a, Check::was_checken b)
 {  return Check::was_checken(int(a)|int(b)); }
 bool operator&(Check::was_checken a, Check::was_checken b)
 {  return int(a)&int(b); }
+
+void Check::NeedsRepair()
+{ if (!reparieren)
+  { std::cerr << "Reparatur zugeschaltet (wird vom Test benötigt)\n";
+    reparieren=true;
+  }
+}

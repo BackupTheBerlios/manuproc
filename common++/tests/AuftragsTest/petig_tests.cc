@@ -214,7 +214,7 @@ static TestReihe Splittest_(&Splittest,"Split Test","S");
 static bool Rep_Petig_PhysikalischesLager(AufEintrag &AE)
 {     Splittest(AE);
       
-      assert(Check::reparieren);
+      Check::NeedsRepair();
       // Physikalisches Lager ändern
       std::string qB="insert into rl_inhalt (position_,kartons,reste,kg_per_karton,"
          " material,eingelagert,rest_kg)"
@@ -253,7 +253,7 @@ static bool Rep_Petig_PhysikalischesLager(AufEintrag &AE)
 static TestReihe Rep_Petig_PhysikalischesLager_(&Rep_Petig_PhysikalischesLager,"Reparatur-Test (Petig, Physikalisches Lager)","RP");
 
 static bool Rep_Zuordnungen(AufEintrag &AE)
-{  assert(Check::reparieren);
+{  Check::NeedsRepair();
        {
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Faerberei),Kunde::default_id);
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Faerberei,AuftragBase::ungeplante_id,1));
@@ -288,7 +288,7 @@ static TestReihe Rep_Zuordnungen_(&Rep_Zuordnungen,"Reparatur-Test (Petig, Zuord
 
 static bool Rep_KundenProgramm(AufEintrag &AE)
 {
-          assert(Check::reparieren);
+          Check::NeedsRepair();
       {
        Query("update auftragentry set artikelid=? where "
                          " (instanz,auftragid,zeilennr) = (10,0,1)")
@@ -338,7 +338,7 @@ static TestReihe Rep_KundenProgramm_(&Rep_KundenProgramm,"Reparatur Kundenaufträ
 
 static bool Rep_Kunden_Zuordnungen(AufEintrag &AE)
 {
-          assert(Check::reparieren);
+          Check::NeedsRepair();
           AuftragsVerwaltung auftrag;
        AufEintragBase AEB=auftrag.anlegen2();
        vergleichen(Check::Menge,"rep_zwei_auftraege_anlegen","Anlegen eines zweiten (offenen) Auftrags ["+AEB.str()+"]","");
@@ -431,7 +431,7 @@ static TestReihe Lagertest_(&Lagertest,"Lager","L");
 
 static bool Rep_Petig_0er_2er_gleichzeitig(AufEintrag &AE)
 {
-        assert(Check::reparieren);
+        Check::NeedsRepair();
 
       std::string q1="update auftragentry set bestellt=3000 where "
                      " (auftragid,zeilennr,instanz) = (2,1,8)";

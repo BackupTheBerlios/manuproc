@@ -1,4 +1,4 @@
-// $Id: Check.hh,v 1.33 2004/05/14 14:49:44 christof Exp $
+// $Id: Check.hh,v 1.34 2004/10/21 13:21:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, 
  *  written by Malte Thoma + Christof Petig
@@ -58,6 +58,7 @@ class Check
    vergleichstream vergleich_open(const std::string &name) const;
    // true=error
    bool vergleich_close(vergleichstream &v);
+   static void NeedsRepair();
 };
 
 Check::was_checken operator|(Check::was_checken a, Check::was_checken b);
