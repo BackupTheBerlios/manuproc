@@ -136,8 +136,10 @@ bool ean_set::cell_out(std::ostream &o,cH_ArtikelBezeichnung  ab,bool last_col)
 {
  std::string bez=ab->Bezeichnung(DEF_SIGNIFIKANZ,'/');
  std::string ean=ab->Bezeichnung(EAN_SIGNIFIKANZ);
+ cH_ExtBezSchema ebz=ab->getExtBezSchema();
+ std::string tabcol=(*ebz)[std::pair<int,int>(1,EAN_SIGNIFIKANZ)].spaltenname;
  
- if(ean.empty()) return false;
+ if(ean.empty() || tabcol!="ean") return false;
  
  o << "{\\rule[-2.6ex]{0mm}{21.1mm} ";
  o << "\\raisebox{1.2cm}[0pt][0pt]{\\makebox[0mm][s]{"
