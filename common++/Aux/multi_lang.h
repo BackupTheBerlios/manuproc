@@ -84,6 +84,7 @@ public:
 		PRINTF_ZAHLUNG8=69,
 		KARTENNR=70,
 		KOLLEKTION=71,
+		EAN_CODE=72,
 	     } LangTXT;
 
  MultiL_Dict(int sprache, int default_spr=1);
