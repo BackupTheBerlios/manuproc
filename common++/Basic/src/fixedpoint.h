@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.18 2003/03/19 08:27:03 christof Exp $
+// $Id: fixedpoint.h,v 1.19 2003/04/03 08:55:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -193,7 +193,7 @@ public:
            }
            unsigned scale=Scale();
            if (_short) while (scale>0 && !(val%10)) { val/=10; --scale; }
-           return sign+Formatiere(val,scale,0,TausenderTrennzeichen,Komma,' ');
+           return sign+Formatiere(val,scale,Ziellaenge,TausenderTrennzeichen,Komma,' ');
 	}
 	Itype Scaled() const { return scaled; }
 	size_t Scale() const { return decimals; }
