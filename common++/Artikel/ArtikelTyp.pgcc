@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.pgcc,v 1.15 2004/11/29 14:39:06 jacek Exp $
+// $Id: ArtikelTyp.pgcc,v 1.16 2004/11/29 15:55:37 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,6 +21,7 @@
 #include <Artikel/ArtikelStamm.h>
 #include <ExtBezSchema/ExtBezSchema.h>
 #include <Misc/SQLerror.h>
+#include <Misc/ExtraColumns.h>
 #include <DynamicEnums/DynamicDescr.h>
 exec sql include sqlca;
 
@@ -94,12 +95,18 @@ std::string ArtikelTyp::get_string(ID t)
 }
 
 
-cH_PreisListe ArtikelTyp::EK_PL() throw(SQLerror)
+cH_PreisListe ArtikelTyp::EK_PL() const throw(SQLerror)
 {
  ExtraColumns at("artikelgruppen","warengruppe");
  at << Id();
- if(at.hasColumn("ek_
+ PreisListe::ID pid=PreisListe::none_id;
+ if(at.hasColumn("ek_prls"))
+   Query("select ek_prls from artikelgruppen where warengruppe=?")
+     << Id() >> FetchIStream::MapNull(pid,PreisListe::none_id);
+     
+ if(pid==PreisListe::none_id) return cH_PreisListe();    
 
+ return cH_PreisListe(pid);    
 }
 
 

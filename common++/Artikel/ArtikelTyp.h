@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.h,v 1.22 2004/11/29 14:39:06 jacek Exp $
+// $Id: ArtikelTyp.h,v 1.23 2004/11/29 15:55:37 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,6 +24,7 @@
 #include <Artikel/ArtikelBase.h>
 #include <DynamicEnums/DynamicEnums.h>
 #include <DynamicEnums/DefaultValues.h>
+#include <Kunde/PreisListe.h>
 #include <exception>
 #include <map>
 #include <vector>
@@ -57,7 +58,7 @@ public:
 	
 	ArtikelTyp(const ArtikelBase &ab) throw(SQLerror);
 	ArtikelTyp(const ArtikelBase &ab,ID id) throw(SQLerror);
-	cH_PreisListe EK_PL() throw(SQLerror);
+	cH_PreisListe EK_PL() const throw(SQLerror);
 
 	static ArtikelTyp vonArtikel(const ArtikelBase &ab) throw(SQLerror)
 	{  return ArtikelTyp(ab); }
