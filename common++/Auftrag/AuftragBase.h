@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.56 2003/11/29 13:30:28 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.57 2003/12/08 17:29:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -96,6 +96,7 @@ class AuftragBase
    { mengen_t m; if(x<=y) m=x; else m=y; if(m<0) m=0; return m;}
    static mengen_t max(const mengen_t &x,const mengen_t &y)
    { if(x>=y) return x; return y; }
+   static mengen_t Gesamtmenge(int stueck,const mengen_t &x);
 
    static const UniqueValue::value_t trace_channel;
    static bool tolerate_inconsistency;
