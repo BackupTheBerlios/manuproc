@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.107 2004/05/05 15:55:00 jacek Exp $
+// $Id: AufEintrag.cc,v 1.108 2004/05/05 16:58:33 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -387,6 +387,7 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld,bool planen) throw(SQL
  	<< static_cast<const AufEintragBase&>(*this);
  SQLerror::test("updateLiefDatum: update lieferdate in auftragentry");
  lieferdatum=ld;
+ lasteditdate=ManuProC::Datum::today();
 
  if(getCombinedStatus()==OPEN) Verzeigern(getStueck(),planen);
  }

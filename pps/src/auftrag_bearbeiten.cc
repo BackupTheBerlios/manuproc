@@ -376,9 +376,10 @@ void auftrag_bearbeiten::on_stkmtr_spinbutton_activate()
        			
        AuftragBase::mengen_t mt=aktaufeintrag->MengeAendern(diffmenge);
        assert(mt==diffmenge);
+       int sel_row=selectedentry;
        fillCList();
        auftrag_clist->grab_focus();
-       auftrag_clist->moveto(selectedentry,0,.5,0);
+       auftrag_clist->moveto(sel_row,0,.5,0);
      }
  else
   if(stkmtr_spinbutton->get_value_as_int() > 0)
@@ -392,10 +393,46 @@ void auftrag_bearbeiten::on_lieferdatum_activate()
 {   
   assert(auftrag);
   if(aktaufeintrag  && ppsInstanzID::Kundenauftraege)
-      {aktaufeintrag->updateLieferdatum(liefdatum_datewin->get_value());
+      {
+       int sel_row=selectedentry;
+       
+       Transaction tr;
+
+       if(auftrag_clist->selection().size()==1)
+	  {aktaufeintrag->updateLieferdatum(liefdatum_datewin->get_value());
+	   std::cout << "Lieferdatum changed\n";
+	  }
+       else if(!auftrag_clist->selection().empty())
+         {
+	  std::string txt="Das Lieferdatum in ";
+	  txt+=itos(auftrag_clist->selection().size())+
+		". Zeile(n) auf "+
+		liefdatum_datewin->get_value().write_euro()+
+		" setzen."+
+		" Wollen Sie fortfahren ?";
+          ja_nein_frage jnf(txt);
+          jnf.set_transient_for(*this);
+          int ret=jnf.run();
+
+          if(ret!=0) 
+             return;
+
+	  for(Gtk::CList::SelectionList::iterator s=auftrag_clist->selection().begin();
+	      s!=auftrag_clist->selection().end(); ++s)
+	    {
+	     int znr(atoi((*s)->begin()->get_text().c_str())-1);
+	     AufEintrag *aentry=&auftrag->getAufEntry(znr);
+	     aentry->updateLieferdatum(liefdatum_datewin->get_value());	     
+	    }
+
+	 }
+       else return;
+
        fillCList();
-	    auftrag_clist->grab_focus();
-       auftrag_clist->moveto(selectedentry,0,.5,0);
+       auftrag_clist->grab_focus();
+       auftrag_clist->moveto(sel_row,0,.5,0);
+       
+       tr.commit();       
       }
  else
   aufentry_ok->grab_focus();
@@ -514,9 +551,10 @@ void auftrag_bearbeiten::on_rabattentry_spinbutton_activate()
    {
      gtk_spin_button_update(rabattentry_spinbutton->gtkobj());
      aktaufeintrag->updateRabatt(rabattentry_spinbutton->get_value_as_float());
+       int sel_row=selectedentry;
        fillCList();
        auftrag_clist->grab_focus();
-       auftrag_clist->moveto(selectedentry,0,.5,0);
+       auftrag_clist->moveto(sel_row,0,.5,0);
       }
  else
    {
@@ -530,9 +568,10 @@ void auftrag_bearbeiten::on_aufentrystat_optionmenu_clicked()
   if (aktaufeintrag)
     {
        aktaufeintrag->setStatus(WAufEntryStat->get_Status());
+       int sel_row=selectedentry;
        fillCList();
 	    auftrag_clist->grab_focus();
-       auftrag_clist->moveto(selectedentry,0,.5,0);
+       auftrag_clist->moveto(sel_row,0,.5,0);
        loadAuftrag(*auftrag);
        if(instanz->ExterneBestellung())
          WAufStat->set_history((AufStatVal)UNCOMMITED);
@@ -943,9 +982,10 @@ void auftrag_bearbeiten::on_activate_wpreis()
 #endif
 
      aktaufeintrag->updatePreis(pr);
+     int sel_row=selectedentry;
      fillCList();
      auftrag_clist->grab_focus();
-     auftrag_clist->moveto(selectedentry,0,.5,0);
+     auftrag_clist->moveto(sel_row,0,.5,0);
    }
  else
   {
