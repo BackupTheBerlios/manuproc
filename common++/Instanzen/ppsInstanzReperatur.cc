@@ -81,7 +81,7 @@ bool ppsInstanz::ReparaturK_Kundenzuordnung(const int uid,const bool analyse_onl
 
 void ppsInstanz::Reparatur_Kundenauftrag_AE(const int uid,const AufEintrag &KundeAE,AufEintrag &KindAE,const AuftragBase::mengen_t &menge) const
 {
-cout << "\n\nREP: "<<KindAE<<'\t'<<menge<<'\n';
+std::cout<< "\n\nREP: "<<KindAE<<'\t'<<menge<<'\n';
   KindAE.updateStkDiff__(uid,-menge,true,ManuProC::Auftrag::r_Anlegen);  
   Reparatur_Kundenauftrag_AEB(uid,KundeAE,KindAE,menge);
 }
