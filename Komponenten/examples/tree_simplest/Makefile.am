@@ -24,8 +24,8 @@ noinst_HEADERS = \
 	with_class_glade.hh \
 	with_class.hh \
 	simplest.hh \
-	simplest_glade.hh \
-   SimpleTree.hh
+	simplest_glade.hh 
+#   SimpleTree.hh
    
 
 CXXFLAGS = @CXXFLAGS@  @KOMPONENTEN_INCLUDES@ 
