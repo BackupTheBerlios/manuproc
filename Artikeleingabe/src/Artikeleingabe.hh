@@ -1,3 +1,23 @@
+// $Id: Artikeleingabe.hh,v 1.10 2004/11/29 10:43:40 christof Exp $
+/*  Artikeleingabe: ManuProC's article management program
+ *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
+ *  written by Christof Petig
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
 #ifndef _ARTIKELEINGABE_HH
 #  include "Artikeleingabe_glade.hh"
 #  define _ARTIKELEINGABE_HH
@@ -110,7 +130,7 @@ class Artikeleingabe : public Artikeleingabe_glade
         void on_change_no_instanz_toggled();
         void artikelbox_neu_activate();
         void neuenArtikelAnlegen(unsigned warengruppe,unsigned schema,
-                const std::vector<std::string>&entries);
+                const std::map<int,std::vector<std::string> >&entries);
 
         void on_mindbest_check_toggled();
         void on_mindbestand_activate();

@@ -1,3 +1,23 @@
+// $Id: Artikeleingabe_sql.pgcc,v 1.6 2004/11/29 10:45:22 christof Exp $
+/*  Artikeleingabe: ManuProC's article management program
+ *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
+ *  written by Christof Petig
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
 #include "Artikeleingabe.hh"
 #include <Aux/EntryValueIntString.h>
 #include <Auftrag/AuftragBase.h>
@@ -114,211 +134,4 @@ void Artikeleingabe::fill_eingabebox(int nr)
      list_sig2.unique();
    }
 }
-
-
-void Artikeleingabe::save_edited_artikel()
-{
-  cH_ExtBezSchema schema = artikelbox->getBezSchema();
-  std::string squery = "update artbez_"+itos(schema->Typ())+"_"+
-         itos(schema->Id())+" set ";
-
-  std::vector<bool> vec_all_empty;
-  for(std::list<int>::const_iterator i=list_sig.begin();i!=list_sig.end();++i)
-   {
-     bool all_empty=true;
-     for(unsigned int j=0;j<vec_eingabe.size();++j)
-      {
-        if( (*i) == vec_eingabe[j].signifikanz && 
-            eingabebox->get_value(j) != "" ) all_empty=false ;
-      }
-     vec_all_empty.push_back(all_empty);
-   }
-  int count=0;
-  int memsig=vec_eingabe[0].signifikanz;
-  for (unsigned int i=0;i<vec_eingabe.size();++i)
-   {
-     if(memsig!=vec_eingabe[i].signifikanz)
-      {
-        ++count;
-        memsig=vec_eingabe[i].signifikanz;
-      }
-     if(vec_all_empty[count]==true)
-        squery += vec_eingabe[i].spalte +"=null, ";
-     else
-        squery += vec_eingabe[i].spalte +"='"+eingabebox->get_value(i)+"', ";
-   }
-  squery += " stand=now() where id='"+itos(artikelbox->get_value().Id())+"'";
-  Query::Execute(squery);
-  SQLerror::test(__FILELINE__);
-}
-
-bool Artikeleingabe::update_edited_artikel2()
-{
-  std::string squery = "update artbez_"+itos(alias_warengruppe->get_value())+"_"+
-         itos(alias_schema->get_value())+" set ";
-
-  std::vector<bool> vec_all_empty;
-  for(std::list<int>::const_iterator i=list_sig2.begin();i!=list_sig2.end();++i)
-   {
-     bool all_empty=true;
-     for(unsigned int j=0;j<vec_alias_eingabe.size();++j)
-      {
-        if( (*i) == vec_alias_eingabe[j].signifikanz && 
-            alias_eingabe->get_value(j) != "" ) all_empty=false ;
-      }
-     vec_all_empty.push_back(all_empty);
-   }
-  int count=0;
-  int memsig=vec_eingabe[0].signifikanz;
-  for (unsigned int i=0;i<vec_alias_eingabe.size();++i)
-   {
-     if(memsig!=vec_alias_eingabe[i].signifikanz)
-      {
-        ++count;
-        memsig=vec_alias_eingabe[i].signifikanz;
-      }
-     if(vec_all_empty[count]==true)
-        squery += vec_alias_eingabe[i].spalte +"=null, ";
-     else
-        squery += vec_alias_eingabe[i].spalte +"='"+alias_eingabe->get_value(i)+"', ";
-   }
-  squery += " stand=now() where id='"+itos(artikelbox->get_value().Id())+"'";
-  Query::Execute(squery);
-  if(sqlca.sqlcode) return false;
-  return true;
-}
-
-
-void Artikeleingabe::save_edited_artikel2()
-{
-//  cH_ExtBezSchema schema = artikelbox->getBezSchema();
-
-  std::string squery = "insert into artbez_"+itos(alias_warengruppe->get_value())+"_"+
-         itos(alias_schema->get_value())+" (id,";
-
-  std::vector<bool> vec_all_empty;
-  for(std::list<int>::const_iterator i=list_sig2.begin();i!=list_sig2.end();++i)
-   {
-     bool all_empty=true;
-     
-     for(unsigned int j=0;j<vec_alias_eingabe.size();++j)
-      {
-        if( (*i) == vec_alias_eingabe[j].signifikanz && 
-            alias_eingabe->get_value(j) != "" ) all_empty=false ;
-      }
-     vec_all_empty.push_back(all_empty);
-   }
-  for (unsigned int i=0;i<vec_alias_eingabe.size();++i)
-   {
-     squery += vec_alias_eingabe[i].spalte +",";
-   }
-  squery += "stand) values ("+itos(artikelbox->get_value().Id())+",";
-//cout << von_artikel.Id()<<'\n';
-  int count=0;
-  int memsig=vec_alias_eingabe[0].signifikanz;
-  for (unsigned int i=0;i<vec_alias_eingabe.size();++i)
-   {
-     if(memsig!=vec_alias_eingabe[i].signifikanz)
-      {
-        ++count;
-        memsig=vec_alias_eingabe[i].signifikanz;
-      }
-     if(vec_all_empty[count]==true)
-        squery += "null,";
-     else
-        squery += "'"+alias_eingabe->get_value(i)+"',";
-   }
-  squery += "now())" ;
-  Query::Execute(squery);
-  SQLerror::test(__FILELINE__);
-}
-
-
-void Artikeleingabe::on_button_verschmelzen_clicked()
-{
-  ArtikelBase neu_art = artikelbox->get_value();
-  ArtikelBase alt_art = artbox_verschmelzen->get_value();
-
-  if(neu_art==ArtikelBase() || alt_art ==ArtikelBase()) return;
-
-  exec sql begin declare section;
-
-  exec sql end declare section;
-  std::vector<std::string> tabellen1; // Spaltenname = id
-  std::vector<std::string> tabellen2; // Spaltenname = artikelid
-  std::vector<std::string> tabellen3; // Spaltenname = material
-  std::vector<std::string> tabellen4; // Spaltenname = artikel
-  std::vector<std::string> tabellen5; // Spaltenname = art_id
-  tabellen1.push_back("artikelstamm");
-  tabellen1.push_back("artikelzusammensetzung");
-  tabellen1.push_back("artbez_0_1");
-  tabellen1.push_back("artbez_10_1");
-  tabellen1.push_back("artbez_3_1");
-  tabellen1.push_back("artbez_3_10000");
-  tabellen1.push_back("artbez_3_362");
-  tabellen1.push_back("artbez_3_629");
-  tabellen1.push_back("artbez_3_704");
-  tabellen1.push_back("artbez_4_1");
-  tabellen1.push_back("artbez_4_10000");
-  tabellen1.push_back("artbez_5_1");
-  tabellen1.push_back("artbez_8_1");
-  tabellen2.push_back("artikelpreise");
-  tabellen2.push_back("lieferscheinentry");
-  tabellen2.push_back("auftragentry");
-  tabellen2.push_back("dispoentry");
-  tabellen2.push_back("dispotabelle");
-  tabellen2.push_back("extartbez");
-  tabellen2.push_back("prod_changejournal");
-  tabellen2.push_back("rl_hide");
-  tabellen2.push_back("rohjumbo");
-  tabellen2.push_back("rohjumbo_archiv");
-  tabellen2.push_back("schaertabelle");
-  tabellen2.push_back("schussdichte2");
-  tabellen3.push_back("bl_inhalt");
-  tabellen3.push_back("bl_log");
-  tabellen3.push_back("rl_inhalt");
-  tabellen3.push_back("rl_inhalt_old");
-  tabellen3.push_back("rl_log");
-  tabellen4.push_back("ketten_garn");
-  tabellen5.push_back("maschinen_geschwindigkeit");
-  
-  Transaction tr;
-  for (std::vector<std::string>::const_iterator i=tabellen1.begin();i!=tabellen1.end();++i)
-   {
-      Query::Execute("update "+*i+" set id="+itos(neu_art.Id())
-         +" where id="+itos(alt_art.Id()));
-   }
-   {
-      Query::Execute("update artikelzusammensetzung set altartikelid="
-         +itos(neu_art.Id())
-         +" where altartikelid="+itos(alt_art.Id()));
-   }
-  for (std::vector<std::string>::const_iterator i=tabellen2.begin();i!=tabellen2.end();++i)
-   {
-      Query::Execute("update "+*i+" set artikelid="+itos(neu_art.Id())
-         +" where artikelid="+itos(alt_art.Id()));
-   }
-  for (std::vector<std::string>::const_iterator i=tabellen3.begin();i!=tabellen3.end();++i)
-   {
-      Query::Execute("update "+*i+" set material="+itos(neu_art.Id())
-         +" where material="+itos(alt_art.Id()));
-   }
-  for (std::vector<std::string>::const_iterator i=tabellen4.begin();i!=tabellen4.end();++i)
-   {
-      Query::Execute("update "+*i+" set artikel="+itos(neu_art.Id())
-         +" where artikel="+itos(alt_art.Id()));
-   }
-   {
-      Query::Execute("update ketten_garn set garn="
-         +itos(neu_art.Id())
-         +" where garn="+itos(alt_art.Id()));
-   }
-  for (std::vector<std::string>::const_iterator i=tabellen5.begin();i!=tabellen5.end();++i)
-   {
-      Query::Execute("update "+*i+" set art_id="+itos(neu_art.Id())
-         +" where art_id="+itos(alt_art.Id()));
-   }
- tr.commit();
-}
-
 
