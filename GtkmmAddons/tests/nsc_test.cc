@@ -1,4 +1,4 @@
-/* $Id: nsc_test.cc,v 1.4 2004/04/29 14:24:40 christof Exp $ */
+/* $Id: nsc_test.cc,v 1.5 2004/04/29 15:41:48 christof Exp $ */
 /*  Gtk--addons: a collection of gtk-- addons
     Copyright (C) 1998  Adolf Petig GmbH. & Co. KG
     Developed by Christof Petig <christof.petig@wtal.de>
@@ -26,6 +26,9 @@
 #include <SearchCombo.h>
 #include <unistd.h>
 #include <iostream>
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#  include <sigc++/compatibility.h>
+#endif
 
 const char *names[]=
   {
