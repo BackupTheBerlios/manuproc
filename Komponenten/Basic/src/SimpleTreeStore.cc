@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.83 2004/12/04 10:53:34 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.84 2004/12/16 08:20:31 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,7 +23,7 @@
 #include <Misc/Global_Settings.h>
 #include <unistd.h> // getuid
 #include <Misc/itos.h>
-#include <Misc/Trace.h>
+#include <Misc/TraceNV.h>
 //#include <GType_cH_EntryValue.h>
 #include <gtkmm/treepath.h>
 #include <Misc/EntryValueSort.h>
@@ -506,12 +506,17 @@ unsigned SimpleTreeStore::ColumnFromIndex(unsigned idx) const
 
 const UniqueValue::value_t SimpleTreeStore::trace_channel
       = ManuProC::Tracer::channels.get();
-static ManuProC::Tracer::Environment trace_channele("TRACE",SimpleTreeStore::trace_channel);
+static ManuProC::Tracer::Environment trace_channele("STS_TRACE",SimpleTreeStore::trace_channel);
 
 void SimpleTreeStore::on_line_removed(cH_RowDataBase r)
-{  ++stamp;
+{  ManuProC::Trace _t(trace_channel,__FUNCTION__,&*r);
+   ++stamp;
    std::list<iterator> l=find_row(r,true);
    assert(sortierspalte==invisible_column);
+   if (l.begin()==l.end()) 
+   { std::cerr << "SimpleTreeStore::on_line_removed: trying again unoptimized\n";
+     l=find_row(r,false);
+   }
    if (l.begin()!=l.end())
    {  ManuProC::Trace(trace_channel,__FUNCTION__,"depth=",l.size());
       Path p=getPath(l.front());
@@ -560,35 +565,46 @@ void SimpleTreeStore::on_line_removed(cH_RowDataBase r)
 // this is impossible, if a value has already changed ...
 
 bool SimpleTreeStore::find_row(Node &parent, const cH_RowDataBase &r,bool optimize,std::list<iterator> &result)
-{  if (optimize && parent.childrens_deep && sortierspalte!=invisible_column)
+{ ManuProC::Trace _t(trace_channel,__FUNCTION__,&parent,&*r);
+   if (optimize && parent.childrens_deep && sortierspalte==invisible_column)
    {  cH_EntryValue val=r->Value(currseq[parent.childrens_deep],ValueData());
+      ManuProC::Trace(trace_channel,"",NV("depth",parent.childrens_deep),
+                NV("val",val->getStrVal()));
       std::pair<iterator,iterator> p=parent.children.equal_range(val);
-      if (p.first==p.second) return false;
+      if (p.first==p.second) 
+      { ManuProC::Trace(trace_channel,"","empty equal_range");
+        return false;
+      }
       if (!p.first->second.childrens_deep) // nodes
-      {  for (iterator i=p.first;i!=p.second;++i) 
+      {  ManuProC::Trace(trace_channel,"","leaves");
+         for (iterator i=p.first;i!=p.second;++i) 
             if (&*i->second.leafdata==&*r)
             {  result.push_back(i);
                return true;
             }
       }
       else 
-      {  if (find_row(p.first->second,r,optimize,result))
+      {  ManuProC::Trace(trace_channel,"","nodes");
+         if (find_row(p.first->second,r,optimize,result))
          {  result.push_back(p.first);
             return true;
          }
       }
+      ManuProC::Trace(trace_channel,"","not found");
       return false;
    }
    
    for (iterator i= parent.children.begin(); i!=parent.children.end(); ++i)
    {  if (i->second.children.empty())
-      {  if (&*i->second.leafdata==&*r)
+      {  ManuProC::Trace(trace_channel,"",NV("found",&*i->second.leafdata));
+         if (&*i->second.leafdata==&*r)
          {  result.push_back(i);
             return true;
          }
       }
       else 
-      {  if (find_row(i->second,r,optimize,result))
+      {  ManuProC::Trace(trace_channel,"","recurse");
+         if (find_row(i->second,r,optimize,result))
          {  result.push_back(i);
             return true;
          }
@@ -598,9 +614,10 @@ bool SimpleTreeStore::find_row(Node &parent, const cH_RowDataBase &r,bool optimi
 }
 
 std::list<SimpleTreeStore::iterator> SimpleTreeStore::find_row(const cH_RowDataBase &r,bool optimize)
-{  std::list<iterator> result;
-   find_row(root,r,optimize,result);
-   return result;
+{ ManuProC::Trace _t(trace_channel,__FUNCTION__,&*r,optimize);
+  std::list<iterator> result;
+  find_row(root,r,optimize,result);
+  return result;
 }
 
 #if 1 // wird das noch gebraucht?
