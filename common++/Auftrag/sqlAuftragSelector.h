@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.17 2002/06/20 06:29:53 christof Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.18 2002/09/18 08:58:34 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -86,17 +86,16 @@ public:
   };
  SQLFullAuftragSelector(const sel_Kunde_Artikel &selstr);
 
- // bislang nur offene Aufträge
- // sortiert nach Lieferdatum (asc)
-//bool=false -> 0;
-
+ // sortiert nach Lieferdatum (asc) für OPEN
  struct sel_Artikel_Planung_id
   { ppsInstanz::ID instanz;
     ArtikelBase artikel;
     int auftragid;
+    AufStatVal status;
     
-    sel_Artikel_Planung_id(ppsInstanz::ID i, ArtikelBase a, int _id) 
-    : instanz(i), artikel(a), auftragid(_id)
+    sel_Artikel_Planung_id(ppsInstanz::ID i, ArtikelBase a, int _id,
+                           AufStatVal s=OPEN) 
+    : instanz(i), artikel(a), auftragid(_id), status(s)
     {}
   };
  SQLFullAuftragSelector(const sel_Artikel_Planung_id &selstr);

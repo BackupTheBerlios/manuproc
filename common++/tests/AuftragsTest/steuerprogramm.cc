@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.cc,v 1.11 2002/09/02 13:04:04 christof Exp $
+// $Id: steuerprogramm.cc,v 1.12 2002/09/18 08:58:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -16,7 +16,6 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-
 #include <ManuProCConfig.h>
 
 #include "DataBase_init.hh"
@@ -31,22 +30,41 @@
 #include <Ketten/KettplanKette.h>
 #include <Lager/JumboLager.h>
 
-enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
-      ZweiterAuftrag_frueheresDatum,JumboLager};
+// Lieferschein
+#include <Lieferschein/Lieferschein.h>
 
-void auftragstests(e_mode mode)
+
+enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
+      ZweiterAuftrag_frueheresDatum,Lieferscheintest,JumboLager};
+
+int fehler()
+{
+  cerr << "ABBRUCH \n";
+  return 1;
+}
+
+
+int kein_fehler()
+{
+  return 0;
+}
+
+
+int auftragstests(e_mode mode)
 {
    AuftragsVerwaltung  auftrag; 
    AufEintragBase AEB=auftrag.anlegen();
    AufEintrag AE=AEB;
    Check C;
+   bool erfolgreich=false;
    cout << "Anlegen eines Auftrags ["<<AEB<<"] beendet\n\n";
 
    // ANLEGEN eines Auftrags mit Bandlager und Rohwarenlager
    if (mode!=JumboLager)
    {  AE.setStatus(OPEN,UID);
-      C.teste(Check::Open);
-      cout << "Öffnen des Auftrags beendet\n";
+      erfolgreich=C.teste(Check::Open);
+      if(!erfolgreich) 
+         { cout << "Öffnen des Auftrags fehlgeschlagen\n"; return fehler();}
    }
 
    switch(mode) {
@@ -54,26 +72,31 @@ void auftragstests(e_mode mode)
      {    
       // Menge des Auftrags erhöhen
       auftrag.kunden_bestellmenge_aendern(AEB,500);
-      C.teste(Check::Menge_Plus);
-      cout << "Erhöhen der Auftragmenge beendet\n\n";
+      erfolgreich=C.teste(Check::Menge_Plus);
+      if(!erfolgreich) {cout << "Erhöhen der Auftragmenge \n\n";
+                        return fehler();}
 
       // Menge des Auftrags erniedrigen (Rohwarenlager Menge reicht jetzt aus)
       auftrag.kunden_bestellmenge_aendern(AEB,100);
-      C.teste(Check::Menge_Minus);
-      cout << "Reduzieren der Auftragmenge unter Rohwarenlagerbestand beendet\n\n";
+      erfolgreich=C.teste(Check::Menge_Minus);
+      if(!erfolgreich) { cout << "Reduzieren der Auftragmenge unter Rohwarenlagerbestand \n\n";
+               return fehler();}
 
       AE.updateLieferdatum(NEWDATUM,UID);
-      C.teste(Check::Datumsaenderung);
-      cout << "Datumsänderung beendet\n\n";
+      erfolgreich=C.teste(Check::Datumsaenderung);
+      if(!erfolgreich) { cout << "Datumsänderung \n\n";
+               return fehler();}
 
       // Menge des Auftrags weiter erniedrigen (Bandlager Menge reicht jetzt aus)
       auftrag.kunden_bestellmenge_aendern(AEB,10);
-      C.teste(Check::Menge_MinusMinus);
-      cout << "Reduzieren der Auftragmenge unter Bandlagerbestand beendet\n\n";
+      erfolgreich=C.teste(Check::Menge_MinusMinus);
+      if(!erfolgreich) { cout << "Reduzieren der Auftragmenge unter Bandlagerbestand \n\n";
+               return fehler();}
 
       AufEintrag(AEB).setStatus(CLOSED,UID);
-      C.teste(Check::StatusClosed);
-      cout << "Statussänderung (Closed) beendet\n\n";
+      erfolgreich=C.teste(Check::StatusClosed);
+      if(!erfolgreich) { cout << "Statussänderung (Closed) \n\n";
+               return fehler();}
 
       break;
      }
@@ -84,43 +107,47 @@ void auftragstests(e_mode mode)
        int kupfer_znr=2;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::_Garn__Einkauf,AuftragBase::ungeplante_id,kupfer_znr));
        AEP.Planen(UID,100,true,PA,PLANDATUM5);
-       C.teste(Check::Planen_Kupfer);
-       cout << "Planen des Kupfereinkaufs beendet\n\n";
+       erfolgreich=C.teste(Check::Planen_Kupfer);
+       if(!erfolgreich) { cout << "Planen des Kupfereinkaufs \n\n";
+               return fehler();}       
        }
        {
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Faerberei),Kunde::default_id);
        int faerberei_znr=1;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Faerberei,AuftragBase::ungeplante_id,faerberei_znr));
        AEP.Planen(UID,7000,true,PA,PLANDATUM4);
-       C.teste(Check::Planen_Faerberei_teil);
-       cout << "Teil-Planen der Färberei beendet\n\n";
+       erfolgreich=C.teste(Check::Planen_Faerberei_teil);
+       if(!erfolgreich) { cout << "Teil-Planen der Färberei \n\n";
+               return fehler();}
        }
-
        {
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Weberei),Kunde::default_id);
        int weberei_znr=1;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Weberei,AuftragBase::ungeplante_id,weberei_znr));
        AEP.Planen(UID,5000,true,PA,PLANDATUM6);
-       C.teste(Check::Planen_WebereiP);
-       cout << "Planen der Weberei beendet\n\n";
+       erfolgreich=C.teste(Check::Planen_WebereiP);
+       if(!erfolgreich) { cout << "Planen der Weberei \n\n";
+               return fehler();}
        }
-
       break;
      }
     case Splittest :
      {
       AE.split(UID,300,SPLITDATUM);
-      C.teste(Check::Split);
-      cout << "Splitten einer Auftragszeile beendet\n\n";
+      erfolgreich=C.teste(Check::Split);
+      if(!erfolgreich) { cout << "Splitten einer Auftragszeile \n\n";
+               return fehler();}
 
       H_Lager RL((cH_ppsInstanz(ppsInstanzID::Rohwarenlager)));
       RL->rein_ins_lager(ARTIKEL_KUPFER,100,UID);
-      C.teste(Check::Split_Rohwarenlager_einlagern);
-      cout << "Rohwarenlager einlagern\n";
+      erfolgreich=C.teste(Check::Split_Rohwarenlager_einlagern);
+      if(!erfolgreich) { cout << "Rohwarenlager einlagern\n";
+               return fehler();}
 
       RL->raus_aus_lager(ARTIKEL_KUPFER,100,UID);
-      C.teste(Check::Split_Rohwarenlager_auslagern);
-      cout << "Rohwarenlager auslagern\n";
+      erfolgreich=C.teste(Check::Split_Rohwarenlager_auslagern);
+      if(!erfolgreich) { cout << "Rohwarenlager auslagern\n";
+               return fehler();}
 
       break;
      }
@@ -128,34 +155,39 @@ void auftragstests(e_mode mode)
      {    
       H_Lager RL((cH_ppsInstanz(ppsInstanzID::Rohwarenlager)));
       RL->rein_ins_lager(ARTIKEL_KUPFER,100,UID);
-      C.teste(Check::Rohwarenlager_einlagern);
-      cout << "Rohwarenlager einlagern\n";
+      erfolgreich=C.teste(Check::Rohwarenlager_einlagern);
+      if(!erfolgreich) { cout << "Rohwarenlager einlagern\n";
+               return fehler();}
 
       RL->raus_aus_lager(ARTIKEL_KUPFER,120,UID);
-      C.teste(Check::Rohwarenlager_auslagern);
-      cout << "Rohwarenlager auslagern\n";
+      erfolgreich=C.teste(Check::Rohwarenlager_auslagern);
+      if(!erfolgreich) { cout << "Rohwarenlager auslagern\n";
+               return fehler();}
 
       Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Weberei),Kunde::default_id);
       int weberei_znr=1;
       AufEintrag AEP(AufEintragBase(ppsInstanzID::Weberei,AuftragBase::ungeplante_id,weberei_znr));
       assert(AEP.getStueck()==AEP.getRestStk());
       AEP.Planen(UID,5000,true,PA,PLANDATUM5);
-      C.teste(Check::Planen_WebereiL);
-      cout << "Planen der Weberei zum späteren Test des Bandlagers beendet\n\n";
+      erfolgreich=C.teste(Check::Planen_WebereiL);
+      if(!erfolgreich) { cout << "Planen der Weberei zum späteren Test des Bandlagers \n\n";
+               return fehler();}
 
       H_Lager BL((cH_ppsInstanz(ppsInstanzID::Bandlager)));
       BL->rein_ins_lager(ARTIKEL_BANDLAGER,12000,UID);
-      C.teste(Check::Bandlager_einlagern);
-      cout << "Bandlager einlagern\n";
+      erfolgreich=C.teste(Check::Bandlager_einlagern);
+      if(!erfolgreich) { cout << "Bandlager einlagern\n";
+               return fehler();}
 
       AufEintrag(AEB).abschreiben(300);
-      C.teste(Check::Kunden_Teillieferung);
-      cout << "Kunde Teillieferung\n";
+      erfolgreich=C.teste(Check::Kunden_Teillieferung);
+      if(!erfolgreich) { cout << "Kunde Teillieferung\n";
+               return fehler();}
 
       AufEintrag(AEB).abschreiben(120);
-      C.teste(Check::Kunden_Ueberlieferung);
-      cout << "Kunde Überlieferung\n";
-      break;
+      erfolgreich=C.teste(Check::Kunden_Ueberlieferung);
+      if(!erfolgreich) { cout << "Kunde Überlieferung\n";
+               return fehler();}      break;
      }
     case ZweiAuftraege:
      {
@@ -164,45 +196,76 @@ void auftragstests(e_mode mode)
        int faerberei_znr=1;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Faerberei,AuftragBase::ungeplante_id,faerberei_znr));
        AEP.Planen(UID,13000,true,PA,PLANDATUM6);
-       C.teste(Check::Planen_Faerberei_ueber);
-       cout << "Über-Planen der Färberei beendet\n\n";
+       erfolgreich=C.teste(Check::Planen_Faerberei_ueber);
+       if(!erfolgreich) { cout << "Über-Planen der Färberei \n\n";
+               return fehler();}
        }
 
        AufEintragBase AEB=auftrag.anlegen2();
-       C.teste(Check::ZweiAuftraege_anlegen);
-       cout << "Anlegen eines zweiten (offenen) Auftrags ["<<AEB<<"] beendet\n\n";
-
-      break;
+       erfolgreich=C.teste(Check::ZweiAuftraege_anlegen);
+       if(!erfolgreich) { cout << "Anlegen eines zweiten (offenen) Auftrags ["<<AEB<<"] \n\n";
+               return fehler();}
+ 
+       break;
      }    
     case ZweiterAuftrag_frueheresDatum:
      {
        AufEintragBase AEB=auftrag.anlegen3();
-       C.teste(Check::ZweiterAuftrag_frueheresDatum);
-       cout << "Anlegen eines zweiten (offenen) Auftrags ["<<AEB<<"] mit früherem Liefertermin beendet\n\n";
+       erfolgreich=C.teste(Check::ZweiterAuftrag_frueheresDatum);
+       if(!erfolgreich) { cout << "Anlegen eines zweiten (offenen) Auftrags ["<<AEB<<"] mit früherem Liefertermin \n\n";
+               return fehler();}
 
        AufEintrag(AEB).abschreiben(200);
-       C.teste(Check::ZweiterAuftrag_frueheresDatum_abschreiben);
-       cout << "Teil-Abschreiben des zweiten Auftrags ["<<AEB<<"] beendet\n\n";
-
+       erfolgreich=C.teste(Check::ZweiterAuftrag_frueheresDatum_abschreiben);
+       if(!erfolgreich) { cout << "Teil-Abschreiben des zweiten Auftrags ["<<AEB<<"] \n\n";
+               return fehler();}
+ 
        AufEintrag(AEB).setStatus(CLOSED,UID);
-       C.teste(Check::ZweiterAuftrag_frueheresDatum_closed);
-       cout << "Statussänderung(2) (Closed) beendet\n\n";
-
+       erfolgreich=C.teste(Check::ZweiterAuftrag_frueheresDatum_closed);
+       if(!erfolgreich) { cout << "Statussänderung(2) (Closed) \n\n";
+               return fehler();}
 
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Weberei),Kunde::default_id);
        int weberei_znr=1;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Weberei,AuftragBase::ungeplante_id,weberei_znr));
        assert(AEP.getStueck()==AEP.getRestStk());
        AEP.Planen(UID,7000,true,PA,PLANDATUM5);
-       C.teste(Check::Planen_WebereiD);
-       cout << "Planen der Weberei beendet\n\n";
-
+       erfolgreich=C.teste(Check::Planen_WebereiD);
+       if(!erfolgreich) { cout << "Planen der Weberei\n\n";
+               return fehler();}
+ 
        AE.setStatus(CLOSED,UID);
-       C.teste(Check::ErsterAuftrag_frueheresDatum_closed);
-       cout << "Statussänderung(1) (Closed) beendet\n\n";
-       
+       erfolgreich=C.teste(Check::ErsterAuftrag_frueheresDatum_closed);
+       if(!erfolgreich) { cout << "Statussänderung(1) (Closed)\n\n";
+               return fehler();}       
+
       break;
      }    
+    case Lieferscheintest:
+     {
+       Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
+       liefs.push_back(ARTIKEL_ROLLEREI,150,0,0);
+       erfolgreich=C.teste(Check::LieferscheinTeil);
+       if(!erfolgreich) { cout << "Lieferschein mit Teillieferung anlegen\n\n"; return fehler();}
+
+       int lznr=1;
+       LieferscheinEntry le((LieferscheinEntryBase(liefs,lznr)));
+       LieferscheinEntry::deleteEntry(le);
+       erfolgreich=C.teste(Check::LieferscheinZeileLoeschen);
+       if(!erfolgreich) { cout << "Lieferscheinzeile löschen\n\n";return fehler();}              
+
+       liefs.push_back(ARTIKEL_ROLLEREI,450,0,0);
+       erfolgreich=C.teste(Check::LieferscheinVoll);
+       if(!erfolgreich) { cout << "Lieferschein mit Volllieferung \n\n"; return fehler();}
+
+       int stueck=40;
+       AuftragBase::mengen_t menge=2;
+       le.changeMenge(stueck,menge);
+       erfolgreich=C.teste(Check::LieferscheinMengenaenderungPlus);
+       if(!erfolgreich) { cout << "Lieferschein Mengenaenderung Plus \n\n"; return fehler();}
+
+       break;
+     }
     case JumboLager:
      { 
 #if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
@@ -220,14 +283,14 @@ void auftragstests(e_mode mode)
        JR=JumboRolle::create(KK);
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp0);
        JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,"TEST",&zp1);
-       C.teste(Check::Jumbo_richtig);
+       erfolgreich=C.teste(Check::Jumbo_richtig);
        JR=JumboRolle::create(KK);
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp1);
        JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,"TEST",&zp0);
        JR=JumboRolle::create(KK);
        JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,"TEST",&zp1);
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp0);
-       C.teste(Check::Jumbo_falsch);
+       erfolgreich=C.teste(Check::Jumbo_falsch);
        JR=JumboRolle::create(KK);
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp0);
        try
@@ -240,17 +303,18 @@ void auftragstests(e_mode mode)
        JR=JumboRolle::create(KK);
        JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,"TEST",&zp0);
        JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,"TEST",&zp1);
-       C.teste(Check::Jumbo_doppelt);
+       erfolgreich=C.teste(Check::Jumbo_doppelt);
        break;
 #endif
      }
     case None: assert(!"Never get here\n");
    }
+ return kein_fehler();
 }
 
 void usage(const std::string &argv0,const std::string &argv1)
 {
-  cerr << argv0 <<" muß mit [(M)engentest|(P)lantest|(L)agertest|(S)plittest,(Z)weiAuftraege,ZweiterAuftrag_frueheres(D)atum,(J)umboLager] aufgerufen werden\n"
+  cerr << argv0 <<" muß mit [(M)engentest|(P)lantest|(L)agertest|(S)plittest,(Z)weiAuftraege,ZweiterAuftrag_frueheres(D)atum,(L)iefer(s)cheine,(J)umboLager] aufgerufen werden\n"
        << " nicht mit '"<<argv1<<"'\n";
   exit(1);
 }
@@ -265,6 +329,7 @@ int main(int argc,char *argv[])
    else if(std::string(argv[1])=="S" || std::string(argv[1])=="Splittest")  mode=Splittest;
    else if(std::string(argv[1])=="Z" || std::string(argv[1])=="ZweiAuftraege")  mode=ZweiAuftraege;
    else if(std::string(argv[1])=="D" || std::string(argv[1])=="ZweiterAuftrag_frueheresDatum")  mode=ZweiterAuftrag_frueheresDatum;
+   else if(std::string(argv[1])=="Ls" || std::string(argv[1])=="Lieferscheintest")  mode=Lieferscheintest;
    else if(std::string(argv[1])=="J" || std::string(argv[1])=="JumboLager")  mode=JumboLager;
 
    if(mode==None) { usage(argv[0],argv[1]); return 1; }
@@ -279,7 +344,7 @@ int main(int argc,char *argv[])
    Petig::dbconnect();  
    
    DataBase_init();
-   auftragstests(mode);
+   return auftragstests(mode);
    
    }catch(SQLerror &e){std::cout << e<<'\n';}
   return 0;

@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.9 2002/09/02 13:04:04 christof Exp $
+// $Id: Check.cc,v 1.10 2002/09/18 08:58:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -29,23 +29,29 @@
 static std::string tempdir="/tmp/";
 static std::string referenzdir="database_tables_test/";
 
-void Check::teste(e_check check)
+bool Check::teste(e_check check)
 {
   dump(check);  
-  vergleich(check);
+  return vergleich(check);
 }
 
 
-void Check::vergleich(e_check check)
+bool Check::vergleich(e_check check)
 { std::vector<std::string> files;
   bool error=false;
 
   switch (check)
-  {  case Jumbo_richtig: case Jumbo_falsch: case Jumbo_doppelt:
-  	files.push_back("rohjumbo");
-  	files.push_back("lager_bewegung");
-  	break;
-     default: 
+  {  
+   case Jumbo_richtig: case Jumbo_falsch: case Jumbo_doppelt:
+  	   files.push_back("rohjumbo");
+     	files.push_back("lager_bewegung");
+  	   break;
+   case LieferscheinTeil: case LieferscheinZeileLoeschen:
+   case LieferscheinVoll: case LieferscheinMengenaenderungPlus:
+   case LieferscheinMengenaenderungMinus:
+        files.push_back("lieferschein");
+        files.push_back("lieferscheinentry");
+   default: 
         files.push_back("auftragsentryzuordnung");
         files.push_back("auftragentry");
         break;
@@ -86,10 +92,13 @@ void Check::vergleich(e_check check)
      case ZweiterAuftrag_frueheresDatum_closed : zusatz="_zwei_auftraege_datum_closed"; break;
      case Planen_WebereiD : zusatz="_zwei_auftraege_weberei_planen"; break;
      case ErsterAuftrag_frueheresDatum_closed :  zusatz="_erster_auftrag_closed"; break;
+     // Lieferschein
+     case LieferscheinTeil : zusatz="_LS_teillieferung"; break;
+     case LieferscheinZeileLoeschen : zusatz="_LS_zeileloeschen"; break;
+     case LieferscheinVoll: zusatz="_LS_volllieferung"; break;
+     case LieferscheinMengenaenderungPlus : zusatz="_LS_mengenaenderung_plus"; break;
 
-     case Bandlager_auslagern : assert(!"absolet"); zusatz="_bandlager_raus"; break;
-     case Planen_Faerberei : assert(!"absolet"); zusatz="_planen_faerberei"; break;
-
+     // Jumbo 
      case Jumbo_richtig : zusatz="_richtig"; break;
      case Jumbo_falsch : zusatz="_falsch"; break;
      case Jumbo_doppelt : zusatz="_doppelt"; break;
@@ -107,16 +116,18 @@ void Check::vergleich(e_check check)
     cout << fz2<<" wurde neu erzeugt\n"; 
 #else
      std::string s="diff -q "+fz1+" "+fz2;
+//cout<<" DIFF: " << s<<'\n';
      int reg=system(s.c_str());
      if(reg==-1) { cout<< "Fehler im diff-Komando ("+*i+")\n"; exit(reg);}
-     else if(reg==0) {cout << *i << " OK\n";}
+     else if(reg==0) ;//zuviel Output :-( {cout << *i << " OK\n";}
      else 
       { cout << "Probleme, Empfehlung: \n "<< "mgdiff "+fz1+" "+fz2<<"\n"; 
         error=true;
       }
 #endif
   }
-  if (error) exit(1);
+  if (error) return false;//exit(1);
+  else return true;
 }
 
 
@@ -137,6 +148,23 @@ void Check::dump(e_check check)
   	    +"\" >"+tempdir+"lager_bewegung").c_str());
      return;
   }
+  else if(check == LieferscheinTeil || check == LieferscheinZeileLoeschen
+          || check == LieferscheinVoll || check==LieferscheinMengenaenderungPlus
+          || LieferscheinMengenaenderungMinus)
+  {  
+     unlink((tempdir+"lieferschein").c_str());
+     unlink((tempdir+"lieferscheinentry").c_str());
+
+     system((psql_cmd+" \""+
+  	"select instanz,lfrsid,kundennr,coalesce(rngid,-1) as rngid,instanz"
+  	  " from lieferschein order by instanz,lfrsid;"
+  	    +"\" >"+tempdir+"lieferschein").c_str());
+     system((psql_cmd+" \""+
+  	"select instanz,lfrsid,zeile,artikelid,refauftragid,stueck,refzeilennr,menge "
+  	   " from lieferscheinentry order by instanz,lfrsid,zeile;"
+  	    +"\" >"+tempdir+"lieferscheinentry").c_str());
+  }
+
   
   unlink((tempdir+"auftragsentryzuordnung").c_str());
   unlink((tempdir+"auftragentry").c_str());

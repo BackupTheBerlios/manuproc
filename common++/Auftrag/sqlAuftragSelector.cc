@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.17 2002/06/20 06:29:53 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.18 2002/09/18 08:58:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -148,26 +148,36 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Kunde_Artikel &selstr)
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel_Planung_id &selstr)
 {
- if(selstr.auftragid!=AuftragBase::handplan_auftrag_id)
-  {
-    setClausel(FULL_SELECT_FROM_WHERE 
-           " and "+StatusQualifier(OPEN)+
+  std::string clau=FULL_SELECT_FROM_WHERE
+           " and "+StatusQualifier(selstr.status)+
 	        " and a.instanz="+itos(selstr.instanz) +
-   	     " and artikelid="+itos(selstr.artikel.Id()) +
-	        " and a.auftragid="+itos(selstr.auftragid) + 
-	        " order by e.lieferdate");
+   	     " and artikelid="+itos(selstr.artikel.Id());
+
+  if(selstr.status==OPEN)
+   {
+    if(selstr.auftragid!=AuftragBase::handplan_auftrag_id)
+     {
+       clau+=" and a.auftragid="+itos(selstr.auftragid) +
+             " order by e.lieferdate";
+     }
+    else
+     {
+       clau+=" and a.auftragid!="+itos(AuftragBase::dispo_auftrag_id) + 
+	          " and a.auftragid!="+itos(AuftragBase::plan_auftrag_id) + 
+	          " and a.auftragid!="+itos(AuftragBase::ungeplante_id) + 
+	          " order by e.lieferdate";
+     }
+   }
+  else if(selstr.status==CLOSED)
+   {
+//    if(selstr.auftragid!=AuftragBase::handplan_auftrag_id)
+//     {
+       clau+=" and a.auftragid="+itos(selstr.auftragid) + 
+	          " order by e.lieferdate desc";
+//     }
   }
- else
-  {
-    setClausel(FULL_SELECT_FROM_WHERE 
-           " and "+StatusQualifier(OPEN)+
-	        " and a.instanz="+itos(selstr.instanz) +
-   	     " and artikelid="+itos(selstr.artikel.Id()) +
-	        " and a.auftragid!="+itos(AuftragBase::dispo_auftrag_id) + 
-	        " and a.auftragid!="+itos(AuftragBase::plan_auftrag_id) + 
-	        " and a.auftragid!="+itos(AuftragBase::ungeplante_id) + 
-	        " order by e.lieferdate");
-  }
+//cout << "CLAUSEL:"<<clau<<"\n\n";
+ setClausel(clau);
 }
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel &selstr)

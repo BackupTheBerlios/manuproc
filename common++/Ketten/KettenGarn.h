@@ -1,4 +1,4 @@
-/* $Id: KettenGarn.h,v 1.6 2002/09/02 13:04:03 christof Exp $ */
+/* $Id: KettenGarn.h,v 1.7 2002/09/18 08:58:34 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,6 +21,7 @@
 #define KETTENGARN_HH
 #include <Artikel/ArtikelBezeichnung.h>
 #include <Ketten/Kettscheibe.h>
+class ArtikelGang;
 
 class KettenGarn {
 
@@ -30,17 +31,15 @@ class KettenGarn {
      	  int faeden;
 	     ArtikelBase art;
         int laenge;
-        int kombiniert;
         std::string wiederholung;
 public:
 	typedef ArtikelBase::ID ID;
 
 	KettenGarn() 
-	        : index(0),zeile(0),kettenzahl(0),faeden(0), art(0),laenge(0),
-	         kombiniert(Kettscheibe::nicht_kombinierte_kette) {}
-	KettenGarn(int i,int z,int k,int f,ArtikelBase id,int l,int k2,std::string w) 
+	        : index(0),zeile(0),kettenzahl(0),faeden(0), art(0),laenge(0) {}
+	KettenGarn(int i,int z,int k,int f,ArtikelBase id,int l,std::string w) 
 	        : index(i), zeile(z),kettenzahl(k),faeden(f), art(id),laenge(l),
-	          kombiniert(k2),wiederholung(w) {}
+	          wiederholung(w) {}
 	bool operator==(const KettenGarn &b) const throw()
 	{  return Index()==b.Index() && 
 	          Artikel()==b.Artikel() &&
@@ -66,10 +65,15 @@ public:
 	int Faeden() const throw() {  return faeden; }
    int Kettenzahl() const throw() { return kettenzahl;}
    int Laenge() const throw() { return laenge;}
-   int Kombiniert() const {return kombiniert;}
+   void setFaeden(int l) {faeden=l;}
    std::string Wiederholung() const {return wiederholung;}
+   unsigned int Wiederholung_anzahl() const;
 
    void setWiederholung(const ArtikelGang &AG,std::string s)  throw(SQLerror);
+   void setKombiniert(const Kettscheibe::st_kombi &AG1,const ArtikelGang &AG2,int Index2)  throw(SQLerror);
+   void deleteKombiniert(const Kettscheibe::st_kombi &AG1,const ArtikelGang &AG2,int Index2)  throw(SQLerror);
+
+   void modify(const ArtikelGang & AG,int kettenzahl,int faeden,int faden_laenge,ArtikelBase garn);
 };
 
 //extern std::ostream& operator<<(std::ostream &o,const ArtikelGang &ag);

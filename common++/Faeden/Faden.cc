@@ -1,4 +1,4 @@
-// $Id: Faden.cc,v 1.4 2002/07/05 12:35:01 christof Exp $
+// $Id: Faden.cc,v 1.5 2002/09/18 08:58:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -342,5 +342,33 @@ fixedpoint<5> Faden::get_Gewicht_kg_mal_anzschfaeden_pro_km_und_breite_mm_und_sc
 //         anzschfaed+=i->getAnzahl();  
 //  this /(float)anzschfaed *breite_mm*schussfaeden.Schussdichte_cm();
          
+}
+
+
+#include <Aux/FetchIStream.h>
+#include <Aux/itos.h>
+void Faden::create(const ArtikelBase &artikel,const int znr,const int anzahl,const ArtikelBase &material,Bindung bindung) throw(SQLerror)
+{
+  std::string S="insert into webang_faeden (artikel,zeilennummer,"
+      "anzahl,material,bindung) values ("
+      +itos(artikel.Id())+","
+      +itos(znr)+","
+      +itos(anzahl)+","
+      +itos(material.Id())+","
+      +itos(bindung.getId())+")";
+  Query::Execute(S);
+  SQLerror::test(__FILELINE__);
+}
+
+void Faden::create_wiederholung(const ArtikelBase &artikel, const Wiederholung &W) throw(SQLerror)
+{
+  std::string S="insert into webang_wiederhol (artikel,anfangszeile,"
+      "endzeile,wiederholungen) values ("
+      +itos(artikel.Id())+","
+      +itos(W.getStart())+","
+      +itos(W.getEnd())+","
+      +itos(W.getAnzahl())+")";
+  Query::Execute(S);
+  SQLerror::test(__FILELINE__);
 }
 

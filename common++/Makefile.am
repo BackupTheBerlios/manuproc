@@ -72,7 +72,9 @@ libcommon___a_LIBADD= \
 		Faeden/Faden_sql.o \
 		Faeden/Faden.o \
 		Faeden/Materialeigenschaft_sql.o \
-		Faeden/Schussfaeden.o \
+		Faeden/Schussfaeden_sql.o \
+		Faeden/Webangaben.o \
+		Faeden/Webangaben_sql.o \
 		Instanzen/Produktionsdauer.o \
 		Instanzen/Produziert.o \
 		Instanzen/ppsInstanz_sql.o \

@@ -61,6 +61,9 @@ CREATE TABLE "kunden" (
 	"anz_firmenpapier" integer,
 	"anz_weissespapier" integer,
 	"lieferung_frei_haus" boolean,
+	"aktiv" boolean DEFAULT 't'::bool,
+	"preisauto" boolean,
+	"showean" boolean,
 	Constraint "kunden_pkey" Primary Key ("kundennr")
 );
 
@@ -72,8 +75,8 @@ CREATE TABLE "kunden" (
 
 
 COPY "kunden" FROM stdin;
-1	Petig		Adolf Petig GmbH & Co. KG		O-Str.		1	41000	1	41001	W	0	0.00	40	0.00	2002-05-08 11:24:16.471037+02	0	\N	\N	\N	1	0.0		1	f	f	\N	1	f	f	RL		0	37	\N	\N	2	f	\N	0	\N	\N	\N	\N		\N	1	\N	\N	\N	\N
-1000	\N		dVa		Straﬂe		1	40000			Ort	0	0.00	0	0.00	2002-05-29 12:29:39.508881+02	0	\N	\N	\N	1000	0.0	\N	1000	f	f	\N	1000	f	t	RL		1	40	0.0	\N	2	t	\N	0	\N	\N	\N	70413	1102813	\N	-1	\N	\N	\N	f
+1	Petig		Adolf Petig GmbH & Co. KG		O-Str.		1	41000	1	41001	W	0	0.00	40	0.00	2002-05-08 11:24:16.471037+02	0	\N	\N	\N	1	0.0		1	f	f	\N	1	f	f	RL		0	37	\N	\N	2	f	\N	0	\N	\N	\N	\N		\N	1	\N	\N	\N	\N	t	\N	\N
+1000	\N		dVa		Straﬂe		1	40000			Ort	0	0.00	0	0.00	2002-05-29 12:29:39.508881+02	0	\N	\N	\N	1000	0.0	\N	1000	f	f	\N	1000	f	t	RL		1	40	0.0	\N	2	t	\N	0	\N	\N	\N	70413	1102813	\N	-1	\N	\N	\N	f	t	\N	\N
 \.
 --
 -- TOC Entry ID 4 (OID 16135401)

@@ -1,4 +1,4 @@
-// $Id: AuftragsVerwaltung.hh,v 1.3 2002/07/05 12:35:02 christof Exp $
+// $Id: AuftragsVerwaltung.hh,v 1.4 2002/09/18 08:58:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -21,19 +21,9 @@
 #define AVERWALTUNG_H
 
 ///////////////////////////////////////////////////////////////////////////
-/*
-#include <Artikel/ArtikelBaum.h>
-#include <Artikel/Prozess.h>
-#include <Lager/LagerPlatz.hh>
-#include <Auftrag/AufEintragZu.h>
-#include <Auftrag/AufEintrag.h>
-*/
 #include <Auftrag/AufEintragBase.h>
 
 #define BESTELL_MENGE AuftragBase::mengen_t(400)
-//#define DATUM ManuProC::Datum(1,1,2010)
-//#define DATUM3 ManuProC::Datum(9,9,2009)
-//#define NEWDATUM ManuProC::Datum(2,2,2020)
 #define STATUS UNCOMMITED
 #define STATUS_NEW OPEN
 #define STATUS_NEW2 CLOSED

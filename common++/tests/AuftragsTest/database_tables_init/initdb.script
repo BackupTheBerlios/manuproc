@@ -19,9 +19,12 @@ for i in \
    auftragentry \
    auftrag_prozess \
    auftragsentryzuordnung \
+   banken \
    einheiten \
    extbezschema \
    global_settings \
+   lieferschein \
+   lieferscheinentry \
    ketten \
    ketten_kettid_seq \
    kunden \
@@ -34,11 +37,16 @@ for i in \
    prozesse \
    schaertabelle \
    schaertabelle_entryid_seq \
+   rechnung_zahlungsart \
    rl_inhalt \
    rl_log \
    rohjumbo \
    waehrung \
-   webangaben
+   webangaben \
+   webang_bindung \
+   webang_faeden \
+   webang_schuss \
+   webang_wiederhol
 do
 
 psql testdb -q < $P/$i

@@ -1,4 +1,4 @@
-// $Id: Bindung.hh,v 1.3 2002/07/05 12:35:01 christof Exp $
+// $Id: Bindung.hh,v 1.4 2002/09/18 08:58:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -33,6 +33,8 @@ public:
 	typedef int ID;
 	typedef enum {NIL=0,EFFBREITE=1} ExtraFunc;
 
+   const static ID standard_id=1;
+   
 private:
 	string name;
 	ID id;
@@ -40,7 +42,7 @@ private:
 	Efs ef;
 	friend ostream& operator<< (ostream&, const Bindung&);
 public:
-	Bindung () {}
+	Bindung ():id(standard_id) {}
 	Bindung (const ID i) throw(SQLerror);
 	Bindung (const string &s, const ID i) : name(s), id(i) {}
 	bool operator== (const Bindung&) const;

@@ -1,4 +1,4 @@
-// $Id: Faden.hh,v 1.3 2002/07/05 12:35:01 christof Exp $
+// $Id: Faden.hh,v 1.4 2002/09/18 08:58:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -28,6 +28,7 @@
 #include "Bindung.hh"
 #include <Artikel/ArtikelBase.h>
 #include <Aux/fixedpoint.h>
+class Wiederholung;
 
 class Faden {
         unsigned int anzahl;
@@ -45,6 +46,10 @@ public:
 	void setAnzahl (const int z) { anzahl = z; }
    fixedpoint<5> get_Gewicht_kg_pro_km_Faden() const ;
    fixedpoint<5> get_Gewicht_kg_mal_anzschfaeden_pro_km_und_breite_mm_und_schussdichte_cm() const ;
+
+   static void create(const ArtikelBase &artikel,const int znr,const int anzahl,
+               const ArtikelBase &material,Bindung bindung=Bindung()) throw(SQLerror);
+   static void create_wiederholung(const ArtikelBase &artikel, const Wiederholung &W) throw(SQLerror);
 };
 
 class Wiederholung {
@@ -62,14 +67,14 @@ public:
 };
 
 class Fadenliste {
-	vector<Faden> liste;
-	vector<Faden> sumliste;
-	vector<Wiederholung> repliste;
-	vector<unsigned int> repnumliste;
+	std::vector<Faden> liste;
+	std::vector<Faden> sumliste;
+	std::vector<Wiederholung> repliste;
+	std::vector<unsigned int> repnumliste;
 public:
-	typedef vector<Faden>::const_iterator const_iterator;
-	typedef vector<Faden>::const_iterator const_sumiterator;
-	typedef vector<Wiederholung>::const_iterator const_repiterator;
+	typedef std::vector<Faden>::const_iterator const_iterator;
+	typedef std::vector<Faden>::const_iterator const_sumiterator;
+	typedef std::vector<Wiederholung>::const_iterator const_repiterator;
 	
 	Fadenliste() : liste(), sumliste(), repliste(), repnumliste() {}
 	void Load(const ArtikelBase &ab,const Bindungsliste &bindungsliste);
@@ -92,9 +97,9 @@ public:
 	void print_out() const;
 	
 	void sort_sumliste();
-	void EntfalteWiederholungen(vector<Faden> &liste_out) const;
+	void EntfalteWiederholungen(std::vector<Faden> &liste_out) const;
 private:
-	void EntfalteWiederholungen_recurse(vector<Faden> &liste_out,
+	void EntfalteWiederholungen_recurse(std::vector<Faden> &liste_out,
 		const_repiterator ri,const_iterator i,
 		const_iterator e,unsigned int index) const;
 };

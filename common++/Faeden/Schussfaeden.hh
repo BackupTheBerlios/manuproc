@@ -1,4 +1,4 @@
-// $Id: Schussfaeden.hh,v 1.5 2002/07/05 12:35:01 christof Exp $
+// $Id: Schussfaeden.hh,v 1.6 2002/09/18 08:58:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,43 +21,49 @@
 #ifndef SFADEN_HH
 #define SFADEN_HH
 
-// $Id: Schussfaeden.hh,v 1.5 2002/07/05 12:35:01 christof Exp $
+// $Id: Schussfaeden.hh,v 1.6 2002/09/18 08:58:34 christof Exp $
 
 #include <Faeden/Faden.hh>
 #include <Artikel/ArtikelBase.h>
 #include <Aux/fixedpoint.h>
 
-class Schussfaeden
-{public:
-	typedef fixedpoint<1> schussdichte_t;
+class Schussfaeden 
+{
+//public:
+//	typedef fixedpoint<1> schussdichte_t;
 private:
-	vector<Faden> schussfaeden;
-	schussdichte_t schussdichte;
-	ArtikelBase::ID fangfaden;
+	std::vector<Faden> schussfaeden;
+//	schussdichte_t schussdichte;
+//	ArtikelBase::ID fangfaden;
 public:
 	typedef vector<Faden>::const_iterator const_iterator;
 	
-	Schussfaeden() : schussdichte(0), fangfaden(0)
-	{}
+	Schussfaeden() {}
 	void Load(const ArtikelBase &ab);
-	schussdichte_t Schussdichte_cm() const { return schussdichte; }
-	ArtikelBase::ID Fangfaden() const { return fangfaden; }
+
+//	use: Webangaben::Schussdichte()
+// schussdichte_t Schussdichte_cm() const { return schussdichte; }
+// use: Webangaben::Fangfaden()
+//	ArtikelBase::ID Fangfaden() const { return fangfaden; }
+
 	const_iterator begin() const { return schussfaeden.begin(); }
 	const_iterator end() const { return schussfaeden.end(); }
 	size_t size() const { return schussfaeden.size(); }
-	void clear() 
-	{ schussfaeden.clear(); schussdichte=0; fangfaden=0; }
-	void reset()
-	{ clear(); }
+	void clear() { schussfaeden.clear(); }
+	void reset() { clear(); }
 	const Faden &operator[](size_t index) const { return schussfaeden[index]; }
 
+#if 0
 	// ***** these do not yet alter the database ********
 	void Schussdichte(schussdichte_t s) { schussdichte=s; }
 	// ***** do not use these in new code! **************
+#endif
 	vector<Faden> &get_vector() { return schussfaeden; }
 	typedef vector<Faden>::iterator iterator;
 	iterator begin() { return schussfaeden.begin(); }
+#if 0
 	iterator end() { return schussfaeden.end(); }
 	schussdichte_t Schussdichte() const { return Schussdichte_cm(); }
+#endif
 };
 #endif

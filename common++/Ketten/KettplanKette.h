@@ -1,4 +1,4 @@
-// $Id: KettplanKette.h,v 1.10 2002/09/02 13:04:03 christof Exp $
+// $Id: KettplanKette.h,v 1.11 2002/09/18 08:58:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -73,6 +73,8 @@ public:
 		int kettlaenge, int stuecklaenge, int planmaschine=0);
 //private: Ketteneingabe braucht das
         void push_back(const ArtikelGang& artikel) const;
+  private:
+
 public:
 	
 	int Kettlaenge() const throw();
@@ -99,17 +101,18 @@ public:
         Kette Folge_Kette() const throw(SQLerror);
 //        ManuProC::Datum Fertig_am() const throw(SQLerror);
 	void set_info(int pm,int kl,int sl,int sd) throw();
+
 	const std::vector <ArtikelGang> &get_artikel() const
 	{  return get_artikel_sorted(); }
 	const std::vector <ArtikelGang> &get_artikel_sorted() const;
+ private:
+   const std::vector <ArtikelGang>& get_kombiartikel() const;
+ public:
 
-        void delete_Artikel(const ArtikelGang& artikel) const;
-        int get_aktual_Index(const ArtikelGang& artikel) const;
+
+   void delete_Artikel(const ArtikelGang& artikel) const;
+   int get_aktual_Index(const ArtikelGang& artikel) const;
         
-// warum hier ? CP
-//        void save_Garn(const ArtikelGang& artikel, const KettenGarn& garn) const;
-//        void delete_Garn(const ArtikelGang& artikel, const KettenGarn& garn) const;
-//        std::vector<KettenGarn> load_Garn(const ArtikelGang& artikel) const;
 
 public:
 	void UnCache(int what) const

@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.7 2002/07/15 15:37:53 christof Exp $
+// $Id: AufEintragZu.h,v 1.8 2002/09/18 08:58:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -100,6 +100,5 @@ public:
     static bool remove(const AufEintragBase& alt_AEB,const AufEintragBase& neu_AEB);
     static void moveInstanz(const VonNachDel vdl,const AufEintragBase &oldAEB, const AufEintragBase &newAEB) throw(SQLerror);
 };
-
 
 #endif

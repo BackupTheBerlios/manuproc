@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.16 2002/09/02 13:04:04 christof Exp $ */
+/* $Id: Lieferschein.h,v 1.17 2002/09/18 08:58:34 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -64,7 +64,6 @@ class Lieferschein : public LieferscheinBase, public HandleContent
 			const ManuProC::Datum &_geliefertam,int _dpdlnr); 
 			
  Lieferschein(const cH_ppsInstanz& instanz,cH_Kunde k,int jahr=0) throw(SQLerror);
-			
  void setDPDDatum() const throw(SQLerror);
 			
 #ifdef MABELLA_EXTENSIONS

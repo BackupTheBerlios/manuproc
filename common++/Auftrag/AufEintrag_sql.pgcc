@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.21 2002/09/02 13:04:03 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.22 2002/09/18 08:58:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -51,10 +51,9 @@ void AufEintrag::abschreiben(mengen_t menge,
   int INSTANZ=InstanzID();
   int STATUS=getEntryStatus();
   int GELIEFERT=(int)(menge+getGeliefert());
+  int BESTELLT=(int)(getStueck());
  exec sql end declare section;
 //if(Id()==2) ECPGdebug(1,stdout);
-
-// GELIEFERT=(int)menge+getGeliefert();
 
  if(menge>=0 && getEntryStatus()!=(AufStatVal)OPEN) 
     throw(SQLerror(__FILELINE__,-1,"Auftragszeile ist nicht offen sondern "+itos(STATUS)));
@@ -70,16 +69,24 @@ void AufEintrag::abschreiben(mengen_t menge,
  if(GELIEFERT>=getStueck()) STATUS=(AufStatVal)CLOSED;
  else if(menge<0 && GELIEFERT<getStueck()) STATUS=(AufStatVal)OPEN;
 
-
  Transaction tr;
  exec sql lock table auftragentry in exclusive mode;
- exec sql update auftragentry set geliefert= :GELIEFERT, status= :STATUS
+#ifdef PETIG_EXTENSIONS
+  if(menge<0 &&
+     Instanz()!=ppsInstanzID::Kundenauftraege && 
+     !Instanz()->ProduziertSelbst() && 
+     Id()==AuftragBase::plan_auftrag_id)
+  BESTELLT+=int(menge);
+  if(BESTELLT<0) BESTELLT=0;
+#endif
+ exec sql update auftragentry set geliefert= :GELIEFERT, status= :STATUS,
+   bestellt = :BESTELLT      
    where (instanz,auftragid,zeilennr) = (:INSTANZ,:AUFID,:AUFZNR);
  SQLerror::test(__FILELINE__);
 
 // TODO: Jacek, das muss später rein!
 #ifdef PETIG_EXTENSIONS
-  if(Instanz()==ppsInstanzID::Kundenauftraege && menge>0)
+  if(Instanz()==ppsInstanzID::Kundenauftraege )
    { static bool tested=false; // nur einmal testen
      assert(tested || cH_ppsInstanz(ppsInstanzID::Kundenauftraege)->ProduziertSelbst());
      if (!tested) tested=true;

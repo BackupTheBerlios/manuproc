@@ -1,4 +1,4 @@
-// $Id: KpK_get_artikel.pgcc,v 1.10 2002/09/02 13:04:03 christof Exp $
+// $Id: KpK_get_artikel.pgcc,v 1.11 2002/09/18 08:58:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,6 +22,7 @@
 #include <Aux/SQLerror.h>
 #include <Aux/Transaction.h>
 #include <Ketten/Kettscheibe.h>
+#include <algorithm>
 
 exec sql include sqlca;
 
@@ -43,10 +44,55 @@ const std::vector <ArtikelGang> &KettplanKette::get_artikel_sorted() const
    	where maschine= :refmasch and schaerdatum= :refdate
    	order by artikelbezeichnung(artikelid) limit 10;
    SQLerror::test(__FILELINE__,100);
-   for (int i=0;i<sqlca.sqlerrd[2];++i)
+   int m=sqlca.sqlerrd[2];
+   for (int i=0;i<m;++i)
    {
-     artikel.push_back(ArtikelGang(GAENGE[i],ID[i]));
+     artikel.push_back(ArtikelGang(GAENGE[i],ID[i],true,Kettlaenge()));
    }
    valid|=VA_ARTIKEL;
+   get_kombiartikel();
    return artikel;
 }
+
+const std::vector <ArtikelGang>& KettplanKette::get_kombiartikel() const
+{
+  assert(VA_ARTIKEL);
+  exec sql begin declare section;
+   int ART1,ART2,GANG1,GANG2,INDEX1,INDEX2;
+  exec sql end declare section;
+  Transaction tr;
+  for(std::vector<ArtikelGang>::iterator i=artikel.begin();i!=artikel.end();++i)
+   {
+     ART1=i->Artikel().Id();
+     GANG1=i->Gaenge();
+     for(std::list<Kettscheibe>::iterator j=i->getKettscheiben().begin();j!=i->getKettscheiben().end();++j)
+      {
+        INDEX1=j->Index();
+        exec sql declare kkc cursor for select artikel2,
+            gang2,kettenindex2
+            from ketten_kombiniert where (artikel1,gang1,kettenindex1)
+               =(:ART1,:GANG1,:INDEX1);
+        exec sql open kkc;
+        while(true)
+         {
+           exec sql fetch kkc into :ART2,:GANG2,:INDEX2;
+           SQLerror::test(__FILELINE__,100);
+           if (sqlca.sqlcode) break;
+           // ist der gefundene ArtikelGang in der Aktuellen Liste ?
+           ArtikelGang A=ArtikelGang(GANG1,ArtikelBase(ART1));
+           std::vector<ArtikelGang>::iterator l=std::find(artikel.begin(),artikel.end(),A);
+           if(l!=artikel.end())
+            {
+//cout << "Ich: "<<cH_ArtikelBezeichnung(i->Artikel())->Bezeichnung()
+// <<"\tDu: "<<cH_ArtikelBezeichnung(ART2)->Bezeichnung()<<'\t'<<INDEX2<<'\n';
+              j->setKombiniert(Kettscheibe::st_kombi(ArtikelBase(ART2),GANG2,INDEX2));
+              ArtikelGang B=ArtikelGang(GANG2,ArtikelBase(ART2));
+              std::find(artikel.begin(),artikel.end(),B)->setKombinierteKette(INDEX2,Kettscheibe::st_kombi(l->Artikel(),l->Gaenge(),INDEX1));
+            }
+         }
+        exec sql close kkc;
+      }
+   }
+  return artikel;
+}
+

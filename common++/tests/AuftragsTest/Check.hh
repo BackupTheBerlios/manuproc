@@ -1,4 +1,4 @@
-// $Id: Check.hh,v 1.9 2002/09/02 13:04:04 christof Exp $
+// $Id: Check.hh,v 1.10 2002/09/18 08:58:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -38,19 +38,20 @@ class Check
  public:
    enum e_check {Open,Menge_Plus,Menge_Minus,Menge_MinusMinus,StatusClosed,
                  Datumsaenderung,Rohwarenlager_einlagern,Bandlager_einlagern,
-                 Rohwarenlager_auslagern,Bandlager_auslagern,
-                 Planen_Kupfer,Planen_WebereiL,Planen_WebereiP,Planen_Faerberei_teil,Planen_Faerberei,
+                 Rohwarenlager_auslagern,
+                 Planen_Kupfer,Planen_WebereiL,Planen_WebereiP,Planen_Faerberei_teil,
                  Split,Split_Rohwarenlager_einlagern,Split_Rohwarenlager_auslagern,
                  Planen_Faerberei_ueber,ZweiAuftraege_anlegen,
                  ZweiterAuftrag_frueheresDatum,ZweiterAuftrag_frueheresDatum_abschreiben,
                  ZweiterAuftrag_frueheresDatum_closed,ErsterAuftrag_frueheresDatum_closed,Planen_WebereiD,
                  Jumbo_richtig,Jumbo_falsch,Jumbo_doppelt,
-                 Kunden_Teillieferung,Kunden_Ueberlieferung};
+                 Kunden_Teillieferung,Kunden_Ueberlieferung,
+                 LieferscheinTeil,LieferscheinZeileLoeschen,LieferscheinVoll,
+                 LieferscheinMengenaenderungPlus,LieferscheinMengenaenderungMinus};
  private:
    void dump(e_check);
-   void vergleich(e_check);
+   bool vergleich(e_check);
  public:
    Check(){}; 
-   void teste(e_check check);
-
+   bool teste(e_check check); // Erfolgreich: true; sonst false
 };

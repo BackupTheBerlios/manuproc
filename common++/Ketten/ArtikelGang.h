@@ -1,4 +1,4 @@
-/* $Id: ArtikelGang.h,v 1.7 2002/09/02 13:04:03 christof Exp $ */
+/* $Id: ArtikelGang.h,v 1.8 2002/09/18 08:58:34 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,18 +23,21 @@
 #include <Artikel/ArtikelBezeichnung.h>
 #include <Ketten/Kettscheibe.h>
 #include <Ketten/KettenGarn.h>
-
+//class Kettscheibe;
 
 class ArtikelGang {
 	int gaenge;
 	ArtikelBase art;
+   mutable std::list<Kettscheibe> kettscheiben;
+//   mutable int index; // Kettenindex für die Kombinierte Kette
 
 public:
 	typedef ArtikelBase::ID ID;
-	ArtikelGang(int g,ArtikelBase id) : gaenge(g), art(id){}
+	ArtikelGang(int g,ArtikelBase id,bool load_garn=false,int kettlaenge=0) : gaenge(g), art(id)
+	      { if(load_garn) load_Garn(kettlaenge);  }
 	ArtikelGang() : gaenge(0), art(0) {}
 	bool operator==(const ArtikelGang &b) const throw()
-	{  return Id()==b.Id(); }
+	{  return Id()==b.Id() && Gaenge()==b.Gaenge() ;}
 	bool operator<(const ArtikelGang &b) const throw()
 	{  return Id()<b.Id() || (Id()==b.Id() && Gaenge()<b.Gaenge()); }
 
@@ -47,11 +50,14 @@ public:
 
 	const ID &Id() const {  return art.Id(); }
 	int Gaenge() const throw() {  return gaenge; }
+   void setKombinierteKette(int index,Kettscheibe::st_kombi b) const ;
+   std::list<Kettscheibe>& getKettscheiben() {return kettscheiben;}
+   std::string KombiniertMit_c_str(const KettenGarn& garn) const;
+   std::vector<Kettscheibe::st_kombi> KombiniertMit(const KettenGarn& garn) const;
 
-   void save_Garn(const KettenGarn& garn,std::list<ArtikelGang> KombiArtikel) const  throw(SQLerror);
+   void save_Garn(const KettenGarn& garn/*,std::list<ArtikelGang> KombiArtikel*/) const  throw(SQLerror);
    void delete_Garn(const KettenGarn& garn) const  throw(SQLerror);
    std::vector<KettenGarn> load_Garn(int kettlaenge) const;
-   void delete_kombi_kette(int kombiniert) const  throw(SQLerror) ;
 
    enum e_wiederholung{Next,Same};
    std::string getWiederholung(const e_wiederholung &ew) const;

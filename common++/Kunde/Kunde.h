@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.23 2002/09/02 13:04:03 christof Exp $
+// $Id: Kunde.h,v 1.24 2002/09/18 08:58:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -244,7 +244,7 @@ public:
            B_Preisliste,B_Notiz,B_Entsorgung,B_Verknr,B_Kalkulation,
            B_Stand,B_KP_Position,B_KP_Notiz,
            B_AnzAusFirmenPapier,B_AnzAusWeissesPapier,
-           B_lieferung_frei_haus,B_MaxAnzS,B_Betreuer};
+           B_lieferung_frei_haus,B_Betreuer,B_MaxAnzS};
  public: 
          enum UpdateBitsAdresse {FGruppennr=1<<B_Gruppennr,
            FSortname=1<<B_Sortname,FIdnr=1<<B_Idnr,FFirma=1<<B_Firma,

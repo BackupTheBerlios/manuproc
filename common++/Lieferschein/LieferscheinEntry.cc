@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.8 2002/09/02 13:04:04 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.9 2002/09/18 08:58:34 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -40,13 +40,16 @@ void LieferscheinEntry::setPalette(int p) throw(SQLerror)
 
 bool LieferscheinEntry::changeMenge(int stueck,mengen_t menge) throw(SQLerror)
 {
-  assert(!ZusatzInfo());
+  if(ZusatzInfo()) {cerr <<"Mengenänderung für Zusatzinfos nicht möglich\n" ;return false;}
   Transaction tr;
   mengen_t abmenge=Abschreibmenge(stueck,menge);
+
+cout << "LE: "<<abmenge<<'\n';
   if(abmenge==mengen_t(0)) return true ;//nichts geändert
 
   if(RefAuftrag().valid()) // Keine Zusatzinfos
    {
+cout << "A\t"<<RefAuftrag().valid()<<'\t'<<RefAuftrag().Id()<<'\t'<<Zeile()<<'\n';
      AufEintragBase AEB(RefAuftrag(),AufZeile());
      try{
        AufEintrag AE(AEB);
@@ -59,18 +62,21 @@ bool LieferscheinEntry::changeMenge(int stueck,mengen_t menge) throw(SQLerror)
    }
   else // Zusatzinfos ODER kein Referenzauftrag
    {
+cout <<"B\n";
      LieferscheinEntry LE=*this;
      std::vector<LieferscheinEntry> VLE;
      do
       {
         try{
         LE=LieferscheinEntry(LieferscheinEntryBase(Instanz(),Id(),1+LE.Zeile()));
+cout << "a\n";
         if(LE.ZusatzInfo())
          {
            VLE.push_back(LE);
          }
         }catch(SQLerror &e) {cerr<< e<<'\n'; break;}
       } while (LE.ZusatzInfo()) ;
+cout << "LS: HIer\n";
      bool ok=menge_bei_zusatzinfos_abschreiben(VLE,abmenge);
      if(!ok) return false;
      updateLieferscheinMenge(stueck,menge);
