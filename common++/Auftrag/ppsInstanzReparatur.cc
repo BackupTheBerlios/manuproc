@@ -289,7 +289,7 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
    {  menge+=i->Menge;
       if (i->AEB.Id()==AuftragBase::dispo_auftrag_id)
       {  menge2+=i->Menge;
-         if (menge2>=ae.getRestStk())
+         if (menge2>ae.getRestStk())
          {  analyse("Mehr Dispomenge als noch frei",ae,i->AEB,menge2-ae.getRestStk());
             if (!analyse_only) 
                AufEintragZu(i->AEB).setMengeDiff__(ae,ae.getRestStk()-menge2);
