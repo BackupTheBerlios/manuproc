@@ -2,7 +2,7 @@
 # using glademm V0.6.2_cvs
 #
 # newer (non customized) versions of this file go to Makefile.am_new
-bin_PROGRAMS = AufArtKonsistenz_neu auftrags_shell
+EXTRA_PROGRAMS = AufArtKonsistenz_neu auftrags_shell
 
 #%.cc: %.pgcc ; @ECPG@ -o $*.cc $<
 #BUILT_SOURCES = Artikeleingabe_sql.cc
