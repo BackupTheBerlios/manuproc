@@ -1,4 +1,4 @@
-/* $Id: AufEintragBase.h,v 1.10 2001/10/08 09:08:12 christof Exp $ */
+/* $Id: AufEintragBase.h,v 1.11 2001/10/16 06:54:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -165,9 +165,9 @@ public:
  void split(int newmenge, const Petig::Datum &newld) throw(SQLerror);
  
  long getMeter() const { return (long)menge; }
- long getRest() const { return (long)rest; }	
+ long getRest() const { if(entrystatus==CLOSED)return 0; return (long)rest; }	
  long getStueck() const { return bestellt;}
- long getRestStk() const { return bestellt-geliefert;}
+ long getRestStk() const {if(entrystatus==CLOSED)return 0; return bestellt-geliefert;}
  long getGeliefert() const { return geliefert;}
  long getGeliefertM() const { return long(
  		(geliefert*(artikel->Stueckgroesse()*10.0))/10);}
@@ -189,7 +189,7 @@ public:
  cH_Prozess getProzess() const { return prozess;}
  const cP_Waehrung getWaehrung() const { return preis.getWaehrung(); }
  const Preis GPreis() const;
- void setVerarbeitung(const cH_Prozess p);  
+ void setVerarbeitung(const cH_Prozess p);
  const Preis EPreis() const { return preis;}
  int Rabatt() const { return rabatt;}
  float PreisMenge() const { return preis.PreisMenge(); }

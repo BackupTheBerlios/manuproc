@@ -1,4 +1,4 @@
-/* $Id: Prozess.h,v 1.4 2001/10/08 09:08:12 christof Exp $ */
+/* $Id: Prozess.h,v 1.5 2001/10/16 06:53:12 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -33,8 +33,13 @@ class Prozess : protected HandleContent
 	friend class Handle<const Prozess>;
 public:
 	typedef int ID;
-	static const ID default_id=0;
-        static const ID standard_id=31;
+	
+	enum ID2
+	{  None=0, Drucken=1, Faerben=30, Verarbeitung=31, Aequivalenz=38,
+		Weben=42, Schaeren=43, Verpacken=44, Giessen=45,
+		Rollen_Jumbo=16 };
+	static const ID default_id=None;
+        static const ID standard_id=Verarbeitung;
 
 private:
  ID prozessid;

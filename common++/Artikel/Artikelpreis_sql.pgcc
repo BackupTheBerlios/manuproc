@@ -1,4 +1,4 @@
-// $Id: Artikelpreis_sql.pgcc,v 1.1 2001/10/16 06:53:37 christof Exp $
+// $Id: Artikelpreis_sql.pgcc,v 1.2 2001/10/16 06:54:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,7 +19,7 @@
 
 
 #include "Artikel/Artikelpreis.h"
-#include <Artikel/Misc.h>
+//#include <Artikel/Misc.h>
 #include <Aux/CacheStatic.h>
 exec sql include sqlca;
 
@@ -30,6 +30,10 @@ class index_t
 {  Kunde::ID liste;
    ArtikelBase::ID art;
    index_t(Kunde::ID l, ArtikelBase::ID a) : liste(l), art(a) {} 
+   bool operator==(const index_t &b) const 
+   { return liste==b.liste && art==b.art; }
+   bool operator<(const index_t &b) const 
+   { return liste<b.liste || (liste==b.liste && art<b.art); }
 }
 
 class payload_t
@@ -44,6 +48,7 @@ typedef CacheStatic<index_t,payload_t> cache_t;
 static cache_t cache;
 
 Artikelpreis::Artikelpreis(const Kunde::ID liste,const ArtikelBase &a)
+	: errechnet(false)
 {  payload_t *cached=cache.lookup(index_t(liste,a.Id()));
    if (cached) { setPreis(cached->preis,cached->errechnet); }
    else

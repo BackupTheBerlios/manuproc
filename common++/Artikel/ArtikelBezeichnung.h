@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.h,v 1.7 2001/10/08 09:08:12 christof Exp $
+// $Id: ArtikelBezeichnung.h,v 1.8 2001/10/16 06:53:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -159,6 +159,9 @@ class cH_ArtikelBezeichnung : public Handle<const ArtikelBezeichnung>
 //	friend cache_t::stl_type;
 	friend class std::map<cache_key, cH_ArtikelBezeichnung>;
 	cH_ArtikelBezeichnung() {}
+	
+	// you don't want this to work silently !
+	cH_ArtikelBezeichnung(const ArtikelBezeichnung &b);
 
 public:
 	// please use variant 2
@@ -172,7 +175,7 @@ public:
 		: Handle<const ArtikelBezeichnung>(new ArtikelBezeichnung(signifikanz,values,schema))
 	{}
 /// default ctor
-	class Default {};
+	struct Default { Default(){} };
 	// call it like: cH_ArtikelBezeichnung(cH_ArtikelBezeichnung::Default());
 	cH_ArtikelBezeichnung(const Default &d) 
 		: Handle<const ArtikelBezeichnung>(new ArtikelBezeichnung())

@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.pgcc,v 1.4 2001/08/27 09:33:49 christof Exp $
+// $Id: ArtikelTyp.pgcc,v 1.5 2001/10/16 06:53:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,6 +20,9 @@
 #include <Artikel/ArtikelTyp.h>
 #include <Artikel/ArtikelStamm.h>
 #include <ExtBezSchema/ExtBezSchema.h>
+#include <Aux/SQLerror.h>
+exec sql include sqlca;
+
 
 ArtikelTyp::ArtikelTyp(const ArtikelBase &ab) throw (SQLerror)
 {  ArtikelStamm AS(ab);
@@ -29,4 +32,16 @@ ArtikelTyp::ArtikelTyp(const ArtikelBase &ab,ID id) throw (SQLerror)
 {  ArtikelStamm AS(ab);
    if (id==ExtBezSchema::default_id)  t=AS.InternWarengruppe();
    else         t=AS.Warengruppe();
+}
+
+std::string ArtikelTyp::get_string(typ t)
+{
+  exec sql begin declare section;
+   char TYP[50];
+   int ID=t;
+  exec sql end declare section;
+  exec sql select text into :TYP from artbez_warengruppe  where id  = :ID;
+ SQLerror::test(__FILELINE__,100);
+ if (sqlca.sqlcode) *TYP = 0;
+ return TYP;
 }

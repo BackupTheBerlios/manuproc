@@ -1,4 +1,4 @@
-// $Id: Preis.h,v 1.4 2001/10/02 15:26:22 christof Exp $
+// $Id: Preis.h,v 1.5 2001/10/16 06:53:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,7 +27,7 @@
 class Preis
 {
 private:
-	static const unsigned int nachkommastellen=3;
+	static const unsigned int nachkommastellen=2;
 	static const unsigned int rabattnachkommastellen=2;
 	typedef fixedpoint<nachkommastellen> pfennig_cent_t;
 	pfennig_cent_t pfennig_cent;

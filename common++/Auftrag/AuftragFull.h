@@ -47,8 +47,9 @@ public:
 	{ return eintragliste[idx];}
 	AufEintragBase &getAufEntry(int idx)  
 	{ return eintragliste[idx];}
+        int get_index_by_znr(int znr);
 	void setStatusEntry(int idx, AufStatVal st) {eintragliste[idx].setStatus(st);}
-	void setStatusEntryZnr(int znr, AufStatVal st) {eintragliste[znr-1].setStatus(st);}
+	void setStatusEntryZnr(int znr, AufStatVal st) {eintragliste[get_index_by_znr(znr)].setStatus(st);}
 	void updateStk(int idx, long stk) { eintragliste[idx].updateStk(stk);}	
 	void updatePreis(int idx, const Preis &pr) { eintragliste[idx].updatePreis(pr); }	
 	void updateLieferdatum(int idx, const Petig::Datum &ld) 

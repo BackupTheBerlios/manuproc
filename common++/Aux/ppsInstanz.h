@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.15 2001/10/05 15:42:00 christof Exp $
+// $Id: ppsInstanz.h,v 1.17 2001/10/15 06:23:20 cvs_christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,9 +27,14 @@
 class ppsInstanz : public HandleContent
 {
 public:
- enum ppsInstId {INST_NONE,INST_KNDAUF=1,INST_FAERB,INST_DRUCK,INST_WEB,
-        INST_SCHAER,INST_SPRITZ,INST_GARNEINKAUF,INST_BANDLAGER,
-        INST_ROHLAGER};
+ enum ppsInstId {INST_NONE,INST_KNDAUF=1,INST_FAERB=2,INST_DRUCK=3,INST_WEB=4,
+        INST_SCHAER=5,INST_SPRITZ=7,INST_GARNEINKAUF=6,INST_BANDLAGER=8,
+        INST_ROHLAGER=9,
+        // das gefaellt mir besser CP 10'2001
+        None=INST_NONE, Kundenauftraege=INST_KNDAUF, Faerberei=INST_FAERB,
+        Druckerei=INST_DRUCK, Bandlager=INST_BANDLAGER,
+        Rollerei=10
+        };
  
 private: 
  ppsInstId instid; 
@@ -49,8 +54,16 @@ public:
  std::string get_Name() const {return name;}
  
  operator ppsInstId () const {return instid;}
- void set(ppsInstId i) {instid=i;}
-  
+ void set(ppsInstId i) {instid=i; get_name();}
+ 
+ bool operator==(const ppsInstanz &b) const
+ {  return instid==b.instid; }
+ bool operator!=(const ppsInstanz &b) const
+ {  return instid!=b.instid; }
+ bool operator==(ppsInstId b) const
+ {  return instid==b; }
+ bool operator!=(ppsInstId b) const
+ {  return instid!=b; }
 };
 
 class cH_ppsInstanz : public Handle<const ppsInstanz>

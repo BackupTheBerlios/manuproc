@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.pgcc,v 1.5 2001/10/01 12:55:40 christof Exp $
+// $Id: ArtikelBaum.pgcc,v 1.6 2001/10/16 06:53:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,6 +22,7 @@
 #include <Faeden/Schussfaeden.hh>
 #include <Faeden/Faden.hh>
 #include <Faeden/Materialeigenschaft.hh>
+#include <Artikel/ArtikelStamm.h>
 exec sql include sqlca;
 
 ArtikelBaum::cache_t ArtikelBaum::cache;
@@ -59,11 +60,9 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
           zusammensetzung.push_back(ra);
        }
     }
-   exec sql select coalesce(bestellen_bei,0) into :BESTELLEN_BEI 
-      from artikelstamm where id=:ARTIKELID;
-   SQLerror::test(__FILELINE__);
-   if(BESTELLEN_BEI==ppsInstanz::INST_BANDLAGER || 
-      BESTELLEN_BEI==ppsInstanz::INST_WEB)
+    try {  ArtikelStamm AS(*this);
+   if(AS.BestellenBei()==ppsInstanz::INST_BANDLAGER || 
+      AS.BestellenBei()==ppsInstanz::INST_WEB)
      {
        Schussfaeden schussfaeden;
        Fadenliste fadenliste;
@@ -79,7 +78,7 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
           double gewicht_kg_m = i->get_Gewicht_kg_pro_km_Faden()/1000.;
           RohArtikel ra;
           ra.rohartikel=i->getMaterial();
-          ra.menge= i->getAnzahl()*gewicht_kg_m;
+          ra.menge= gewicht_kg_m;
           ra.erzeugung=cH_Prozess(31);
           zusammensetzung.push_back(ra);
         }
@@ -94,15 +93,20 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
           // Gewicht in kg/m ==> 1/cm*mm*(1cm/10mm) * g/10km*(kg/1000g)*(km/1000m)
           double gewicht_kg_m = 2*schussfaeden.Schussdichte_cm()*
             (i->getAnzahl()/(float)anzschfaed)*breite_mm
-             * M.Gewicht_g_10km() * 0.00000001 ;
+             * M.Gewicht_g_10km() * 0.000000001 ;
           RohArtikel ra;
           ra.rohartikel=i->getMaterial();
-          ra.menge= i->getAnzahl()*gewicht_kg_m;
+          ra.menge= gewicht_kg_m;
           ra.erzeugung=cH_Prozess(31);
           zusammensetzung.push_back(ra);
         }
       gleiche_Faeden_summieren();
-     }
+     }          
+    }
+    catch (SQLerror &e)
+    {  cerr << "Kein ArtikelStamm zu " << Id() << '\n';
+    }
+
    cache.Register(Id(),zusammensetzung);
  }
 }

@@ -305,14 +305,14 @@ void Fadenliste::EntfalteWiederholungen(vector<Faden> &liste_out) const
    EntfalteWiederholungen_recurse(liste_out,repbegin(),begin(),end(),index);
 }
 
-fixedpoint<2> Faden::get_Gewicht_kg_pro_km_Faden() const
+fixedpoint<5> Faden::get_Gewicht_kg_pro_km_Faden() const
 {
   Materialeigenschaft M(getMaterial());
   // Anzahl * g/10km * kg/1000g ==> Gewicht in kg ///////////
   return getAnzahl() * M.Gewicht_g_10km() * 0.0001 ;
 }
 
-fixedpoint<2> Faden::get_Gewicht_kg_mal_anzschfaeden_pro_km_und_breite_mm_und_schussdichte_cm() const
+fixedpoint<5> Faden::get_Gewicht_kg_mal_anzschfaeden_pro_km_und_breite_mm_und_schussdichte_cm() const
 {
   Materialeigenschaft M(getMaterial());
   //  1/cm*(1cm/10mm) * g/10km*(kg/1000g) ==> Gewicht in kg ///////////

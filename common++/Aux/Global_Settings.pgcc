@@ -13,6 +13,8 @@ Global_Settings::Global_Settings(int u,const std::string& p,const std::string& n
   strncpy(NAME,name.c_str(),sizeof(NAME));
   exec sql select wert into :WERT from global_settings where 
    userid=:USERID and program=:PROGRAM and name=:NAME;
+  SQLerror::test(__FILELINE__,100);
+  if (sqlca.sqlcode) *WERT=0;
   wert=WERT;
 }
 
@@ -54,10 +56,20 @@ Global_Settings::Global_Settings(int u,const std::string& p,const std::string& n
   if(wert!="now()")
    {
     strncpy(WERT,wert.c_str(),sizeof(WERT));
-    exec sql insert into global_settings (userid,program,name,wert) 
-      values (:USERID,:PROGRAM,:NAME,:WERT);
+    exec sql update global_settings set wert=:WERT 
+      where (userid,program,name) =  (:USERID,:PROGRAM,:NAME);
+    SQLerror::test(__FILELINE__,100);
+    if (sqlca.sqlcode) 
+       exec sql insert into global_settings (userid,program,name,wert) 
+         values (:USERID,:PROGRAM,:NAME,:WERT);
    }
   else
-    exec sql insert into global_settings (userid,program,name,wert) 
-      values (:USERID,:PROGRAM,:NAME,now());
+   {
+    exec sql update global_settings set wert=now() 
+      where (userid,program,name) =  (:USERID,:PROGRAM,:NAME);
+    SQLerror::test(__FILELINE__,100);
+    if (sqlca.sqlcode) 
+       exec sql insert into global_settings (userid,program,name,wert) 
+         values (:USERID,:PROGRAM,:NAME,now());
+   }
 }

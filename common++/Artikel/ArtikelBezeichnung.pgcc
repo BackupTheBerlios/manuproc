@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.7 2001/10/02 15:26:22 christof Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.8 2001/10/16 06:53:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -97,6 +97,7 @@ void ArtikelBezeichnung::setzeExtBezSchema(const cH_ExtBezSchema &_schema) throw
      exec sql close ein;
      SQLerror::test(__FILELINE__);
      exec sql deallocate descriptor mydesc;
+     tr.close();
     }
 } 
 

@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.h,v 1.3 2001/08/27 09:33:49 christof Exp $
+// $Id: ArtikelTyp.h,v 1.4 2001/10/16 06:53:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,8 +30,14 @@ class ArtikelTyp
 {
 public:
 	enum typ 
-	{ GewebtesBand, GefaerbtesBand, BedrucktesBand, AufgemachtesBand,
-	  Garn, Seitenscheiben, Verpackungsmaterial, Sonstiges };
+	 { JumboRollen=0, Band=3, Garn=4, Spulen=5, Kartonagen=6,Sonstiges=7,
+	        Lohn=8, Farben=9, Etiketten=10,
+	   
+	 
+	   GewebtesBand=JumboRollen, GefaerbtesBand=JumboRollen, 
+	   BedrucktesBand=JumboRollen, 
+	   AufgemachtesBand=Band,
+	   Seitenscheiben=Spulen };
 private:
         typedef unsigned int ID;
 	typ t;
@@ -51,5 +57,6 @@ public:
 	ArtikelTyp(const ArtikelBase &ab,ID id) throw(SQLerror);
 	static ArtikelTyp vonArtikel(const ArtikelBase &ab) throw(SQLerror)
 	{  return ArtikelTyp(ab); }
+        static std::string get_string(typ t);
 };
 #endif

@@ -23,8 +23,8 @@ public:
 	ArtikelBase::ID getMaterial() const { return material; }
 	Bindung getBindung() const { return bindung; }
 	void setAnzahl (const int z) { anzahl = z; }
-   fixedpoint<2> get_Gewicht_kg_pro_km_Faden() const ;
-   fixedpoint<2> get_Gewicht_kg_mal_anzschfaeden_pro_km_und_breite_mm_und_schussdichte_cm() const ;
+   fixedpoint<5> get_Gewicht_kg_pro_km_Faden() const ;
+   fixedpoint<5> get_Gewicht_kg_mal_anzschfaeden_pro_km_und_breite_mm_und_schussdichte_cm() const ;
 };
 
 class Wiederholung {

@@ -27,12 +27,9 @@ exec sql include sqlca;
 
 void Auftrag::deleteAuftrag() throw(SQLerror)
 {exec sql begin declare section;
- int AUFTRAGID;
- int INSTANZ;
+ int AUFTRAGID=Id();
+ int INSTANZ=int(Instanz());
  exec sql end declare section;
-
- AUFTRAGID=Id();
- INSTANZ=(int)Instanz();
 
  Transaction tr;
 
@@ -49,15 +46,11 @@ void Auftrag::deleteAuftrag() throw(SQLerror)
 void Auftrag::setJahrgang(int jahr) throw(SQLerror)
 {
  exec sql begin declare section;
- int JAHRGANG;
- int AUFTRAGID;
- int INSTANZ;
+ int JAHRGANG = jahr;
+ int AUFTRAGID = Id();
+ int INSTANZ = int(Instanz());
  exec sql end declare section;
 
- AUFTRAGID = Id();
- INSTANZ = (int)Instanz();
- JAHRGANG = jahr;
- 
  exec sql update auftrag set jahrgang = :JAHRGANG 
    where auftragid= :AUFTRAGID and instanz = :INSTANZ;
  SQLerror::test(__FILELINE__"Jahrgang setzen");
@@ -66,15 +59,11 @@ void Auftrag::setJahrgang(int jahr) throw(SQLerror)
 void Auftrag::setWaehrung(cP_Waehrung w) throw(SQLerror)
 {
  exec sql begin declare section;
- int WAEHRUNG;
- int AUFTRAGID;
- int INSTANZ;
+ int WAEHRUNG = w->Id();
+ int AUFTRAGID = Id();
+ int INSTANZ = int(Instanz());
  exec sql end declare section;
 
- AUFTRAGID = Id();
- INSTANZ = (int)Instanz();
- WAEHRUNG = w->Id();
- 
  exec sql update auftrag set waehrung = :WAEHRUNG 
    where auftragid= :AUFTRAGID and instanz = :INSTANZ;
  SQLerror::test(__FILELINE__"Waehrung setzen");
@@ -82,13 +71,11 @@ void Auftrag::setWaehrung(cP_Waehrung w) throw(SQLerror)
 
 void Auftrag::setStatusAuftrag(AufStatVal st) throw(SQLerror)
 {exec sql begin declare section;
- int AUFTRAGID;
- int INSTANZ;
+ int AUFTRAGID=Id();
+ int INSTANZ=int(Instanz());
  int STATUS=st;
  exec sql end declare section;
 
- AUFTRAGID=Id();
- INSTANZ=(int)Instanz();
  exec sql update auftrag set stat= :STATUS
 		 where auftragid= :AUFTRAGID and instanz=INSTANZ;    
  SQLerror::test(__FILELINE__"Status setzen");
@@ -97,22 +84,13 @@ void Auftrag::setStatusAuftrag(AufStatVal st) throw(SQLerror)
 
 
 
-void AuftragFull::deleteEintrag(int zeilennr, int idx) throw(SQLerror)
-{Auftrag::deleteEintrag(zeilennr);
- iterator i = begin()+idx;
- eintragliste.erase(i);    
-}
 
 void Auftrag::deleteEintrag(int zeilennr) throw(SQLerror)
 {exec sql begin declare section;
- int AUFTRAGID;
- int INSTANZ;
- int ZEILENNR;
+ int AUFTRAGID=Id();
+ int INSTANZ=int(Instanz());
+ int ZEILENNR=zeilennr;
  exec sql end declare section;
-
- AUFTRAGID=Id();
- INSTANZ=(int)Instanz();
- ZEILENNR=zeilennr;
 
  Transaction tr;
  
@@ -133,8 +111,8 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
 : AuftragBase(_auftrag)
 {
  exec sql begin declare section;
- int AUFTRAGID ;
- int INSTANZ ;
+ int AUFTRAGID = Id();
+ int INSTANZ =int(Instanz());
  int KUNDENNR;
  char DATUM[11];
  int STATUS;
@@ -144,8 +122,6 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
  int WAEHRUNG;
  short IKUNDENNR, IDATUM, IYOURAUFNR, IBEMERKUNG, IWAEHRUNG;
  exec sql end declare section;
- AUFTRAGID=Id();
- INSTANZ=(int)Instanz();
 
  exec sql select kundennr, date(datum), stat, youraufnr, bemerkung,
 		jahrgang, coalesce(waehrung,1)
@@ -165,34 +141,10 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
  waehrung = cP_Waehrung(WAEHRUNG);
 }
 
-AuftragFull::AuftragFull(const AuftragBase& auftrag) throw(SQLerror)
-	: Auftrag(auftrag)
-{
- SelectedFullAufList aufids((SQLFullAuftragSelector)
- 			(SQLFullAuftragSelector::sel_Aufid(auftrag)));
- for(std::vector<AufEintragBase>::iterator i = aufids.aufidliste.begin();
-				 	 i!=aufids.aufidliste.end(); i++)
- {  try { eintragliste.push_back(*i);
-    } catch (SQLerror &e)
-    {  if(e.Code() != 100) throw;
-       std::cerr << "AuftragFull::AuftragFull: " << e << '\n';
-    } 
- }
-}
-
-AuftragFull::AuftragFull(ppsInstanz::ID instanz, long kundennr, int jahr) throw(SQLerror)
-	: Auftrag(instanz, kundennr,jahr)
-{  // braucht nicht geladen zu werden
-}
-
-//AuftragFull::AuftragFull(const AuftragBase &AB, long kundennr, int jahr) throw(SQLerror)
-//	: Auftrag(AB, kundennr,jahr)
-//{  // braucht nicht geladen zu werden
-//}
 
 Auftrag::Auftrag(ppsInstanz::ID _instanz, long kdnr,int jahr) throw(SQLerror)
+	: AuftragBase(_instanz)
 {
- instanz=_instanz;
  exec sql begin declare section;
  int AUFTRAGID;
  char DATUM[11];
@@ -200,7 +152,7 @@ Auftrag::Auftrag(ppsInstanz::ID _instanz, long kdnr,int jahr) throw(SQLerror)
  int KUNDENNR=kdnr;
  int JAHRGANG=jahr;
  int STATUS;
- int INSTANZ=instanz->Id();
+ int INSTANZ=Id();
  exec sql end declare section;
 
  Transaction tr;
@@ -227,46 +179,30 @@ Auftrag::Auftrag(ppsInstanz::ID _instanz, long kdnr,int jahr) throw(SQLerror)
    where auftragid= :AUFTRAGID and instanz = :INSTANZ;
  SQLerror::test("Aufrtag: select datum");
 
- auftragid = AUFTRAGID;
  kundennr = kdnr;
  datum.from_postgres(DATUM);
  wrkstatus= INSERTED;
  status=(AufStatVal)STATUS;
  jahrgang = JAHRGANG;
+ auftragid= AUFTRAGID;
 
  tr.commit();
 }
 
 Auftrag::Auftrag(const AuftragBase &AB, long kdnr, int jahr) throw(SQLerror)
+	: AuftragBase(AB)
 {
  exec sql begin declare section;
- int AUFTRAGID;
+ int AUFTRAGID=Id();
  char DATUM[11];
  int YEAR;
  int KUNDENNR=kdnr;
  int JAHRGANG=jahr;
- int STATUS;
- int INSTANZ;
+ int STATUS = OPEN;
+ int INSTANZ =Instanz();
  exec sql end declare section;
- AUFTRAGID=AB.Id();
- INSTANZ=AB.Instanz();
- STATUS = OPEN;
 
  Transaction tr;
-/*
- exec sql lock table auftrag in exclusive mode;
- SQLerror::test(__FILELINE__"lock table auftrag");
-
- exec sql select date_part('year',date(now()))%100.0 into :YEAR;
- SQLerror::test(__FILELINE__"select year");
-*/ 
-/*
- exec sql select coalesce(max(auftragid)+1,:YEAR*10000) 
- 		into :AUFTRAGID from auftrag 
- 		where auftragid between (:YEAR*10000) and (:YEAR+1)*10000-1
- 		and instanz=:INSTANZ;
- SQLerror::test("Auftrag: select neue auftragid");
-*/
  exec sql insert into auftrag (auftragid, kundennr, status, jahrgang, 
 				stat, waehrung, instanz)
  	values (:AUFTRAGID, :KUNDENNR, :STATUS, :JAHRGANG, 0, 1,:INSTANZ);
@@ -276,7 +212,6 @@ Auftrag::Auftrag(const AuftragBase &AB, long kdnr, int jahr) throw(SQLerror)
    where auftragid= :AUFTRAGID and instanz = :INSTANZ;
  SQLerror::test("Aufrtag: select datum");
 
- auftragid = AUFTRAGID;
  kundennr = kdnr;
  datum.from_postgres(DATUM);
  wrkstatus= INSERTED;
@@ -290,22 +225,13 @@ Auftrag::Auftrag(const AuftragBase &AB, long kdnr, int jahr) throw(SQLerror)
 void Auftrag::setBemerkung(const std::string &bem) throw(SQLerror)
 {
  exec sql begin declare section;
- int AUFTRAGID;
- int INSTANZ;
- char BEMERKUNG[21];
+ int AUFTRAGID=Id();
+ int INSTANZ=int(Instanz());
+ const char *BEMERKUNG=bem.c_str();
  short IBEMERKUNG;
  exec sql end declare section;
 
- bemerkung=bem;
- AUFTRAGID=Id();
- INSTANZ=(int)Instanz();
-
- if(bemerkung!="")
-   {strncpy(BEMERKUNG,bemerkung.c_str(),20);BEMERKUNG[20]=0;IBEMERKUNG=0;}
- else  
-   {BEMERKUNG[0]=0;IBEMERKUNG=-1;}
-   
- exec sql update auftrag set bemerkung= :BEMERKUNG:IBEMERKUNG
+ exec sql update auftrag set bemerkung= nullif(:BEMERKUNG,'')
 	where auftragid= :AUFTRAGID and instanz=:INSTANZ;
  SQLerror::test("setBemerkung: update bemerkung");
 }
@@ -322,7 +248,7 @@ void Auftrag::setYourAufNr(const std::string &yanr) throw(SQLerror)
 
  youraufnr=yanr;
  AUFTRAGID=Id();
- INSTANZ=(int)Instanz();
+ INSTANZ=int(Instanz());
 
  if(youraufnr!="")
    {strncpy(YOURAUFNR,youraufnr.c_str(),20);YOURAUFNR[20]=0;IYOURAUFNR=0;}
@@ -341,7 +267,7 @@ int Auftrag::getIdFromYourAufId(const char *youraufid) throw(SQLerror)
  int INSTANZ;
  char YOURAUFNR[21];
  exec sql end declare section;
- INSTANZ=(int)Instanz();
+ INSTANZ=int(Instanz());
 
  strncpy(YOURAUFNR,youraufid,20); YOURAUFNR[20]=0;
 

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinVoll_sql.pgcc,v 1.5 2001/07/10 16:53:05 christof Exp $ */
+/* $Id: LieferscheinVoll_sql.pgcc,v 1.6 2001/10/09 10:53:50 cvs_malte Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,6 +25,7 @@ exec sql include sqlca;
 LieferscheinVoll::LieferscheinVoll(int lid) throw(SQLerror)
 : Lieferschein(lid)
 {
+try{
  exec sql begin declare section;
   int ARTIKELID[30], STUECK[30], PALETTE[30], ZEILE[30], LFRSID=lid;
   char YOURAUFTRAG[30][21];
@@ -59,4 +60,5 @@ LieferscheinVoll::LieferscheinVoll(int lid) throw(SQLerror)
    }
  exec sql close lein;
  tr.close();
+ }catch (SQLerror &e) {cerr <<e<<'\n';}
 }

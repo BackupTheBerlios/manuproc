@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.3 2001/07/05 09:23:02 christof Exp $
+# $Id: Makefile.am,v 1.4 2001/10/16 06:54:53 christof Exp $
 
 ENDUSER=-DPETIG
 
@@ -18,7 +18,7 @@ libAuftrag.o: $(libAuftrag_o_OBJECTS) $(libAuftrag_o_DEPENDENCIES)
 	touch $@
 
 BUILT_SOURCES_P= AuftragBase_sql.cc AufEintragBase_sql.cc selAufEntry_sql.cc\
-		AufEintragBase2.cc Auftrag_sql.cc
+		AufEintragBase2.cc Auftrag_sql.cc AuftragFull_sql.cc
 		
 BUILT_SOURCES=$(BUILT_SOURCES_P)
 

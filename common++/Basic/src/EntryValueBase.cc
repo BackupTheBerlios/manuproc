@@ -1,4 +1,4 @@
-/* $Id: EntryValueBase.cc,v 1.2 2001/06/22 09:47:18 christof Exp $ */
+/* $Id: EntryValueBase.cc,v 1.3 2001/10/16 06:54:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -38,7 +38,7 @@ bool EntryValueBase::operator==(const EntryValueBase &v) const
 
 bool EntryValueBase::operator<(const EntryValueBase &v) const
 {  int i(getIntVal()),j(v.getIntVal());
-   if (i!=int_NaN && j!=int_NaN) return i<j;
+   if (i!=int_NaN && j!=int_NaN && i!=j) return i<j;
    return getStrVal()<v.getStrVal();
 }
 

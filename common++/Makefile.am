@@ -12,7 +12,7 @@ libcommon___a_LIBADD= \
 		Artikel/ArtikelBezeichnung.o \
 		Artikel/ArtikelStamm.o \
 		Artikel/ArtikelTyp.o \
-		Artikel/Artikelpreis.o \
+		Artikel/Artikelpreis_sql.o \
 		Artikel/Aufmachung.o \
 		Artikel/Aufmachung_sql.o \
 		Artikel/Einheiten.o \
@@ -29,6 +29,7 @@ libcommon___a_LIBADD= \
 		Auftrag/AuftragBase_sql.o \
 		Auftrag/Auftrag.o \
 		Auftrag/Auftrag_sql.o \
+		Auftrag/AuftragFull_sql.o \
 		Aux/Ausgabe_neu.o \
 		Aux/Changejournal_sql.o \
 		Aux/Datum.o \
