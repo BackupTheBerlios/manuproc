@@ -241,12 +241,14 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
 }
 
 
-void Artikelpreis::changePreis(const Preis &p) throw(SQLerror)
+void Artikelpreis::changePreis(const Preis &p, int newmindmenge) throw(SQLerror)
 {
  int ARTIKELID=artikel;
  geldbetrag_t PREIS_ALT;
  int UID;
  int MINDESTMENGE=mindestmenge;
+ int NEWMINDMENGE=newmindmenge==0 ? mindestmenge : newmindmenge; 
+
 
  if(gefunden_in == PreisListe::none_id) return;
 
@@ -271,13 +273,13 @@ void Artikelpreis::changePreis(const Preis &p) throw(SQLerror)
 		"a.aufmachung=b.aufmachung "
 		"and b.id=?)"
 	"))")
-	<< gefunden_in << p.Wert() << UID << MINDESTMENGE
+	<< gefunden_in << p.Wert() << UID << NEWMINDMENGE
 	<< gefunden_in << MINDESTMENGE 
 	<< ARTIKELID;
  SQLerror::test(__FILELINE__);	
  
  Query("update artikelpreise set "
- 	"preis=?,preismenge=?,waehrung=? "
+ 	"preis=?,preismenge=?,waehrung=?,mindestmenge=? "
 	"where kundennr=? and "
 	"mindestmenge=? and artikelid in "
 	"(select a.id from artbez_3_1 a join artbez_3_1 b "
@@ -286,10 +288,14 @@ void Artikelpreis::changePreis(const Preis &p) throw(SQLerror)
 		"a.aufmachung=b.aufmachung and "
 		"b.id=?)"
 	")")
-	<< p.Wert() << p.PreisMenge() << p.getWaehrung()->Id() << gefunden_in << MINDESTMENGE 
+	<< p.Wert() << p.PreisMenge() << p.getWaehrung()->Id() 
+	<< NEWMINDMENGE
+	<< gefunden_in << MINDESTMENGE 
 	<< ARTIKELID;
  SQLerror::test(__FILELINE__);	
  
+ mindestmenge=NEWMINDMENGE;
+
  tr.commit();
  getPreis()=p;
 }

@@ -46,7 +46,8 @@ PreisListeFull::PreisListeFull(ID id, bool art_in_list,
    }
  else
    {
-    qu=std::string("select id,coalesce(preis_alt,0),0,1 from artikelstamm s "
+    qu=std::string("select id,coalesce(preis_alt,0),0,"
+	" coalesce(c.mindestmenge,1) from artikelstamm s "
 	" left join preis_change_journal c on "
 	" (c.artikelid=s.id and c.prlsnr=")+plid;
     qu+=std::string(" and preis_alt is not null and cast(preis_neu as float) = 0.0)"
