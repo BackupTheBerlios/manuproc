@@ -80,7 +80,7 @@ void SearchComboContent<T>::add_item(const std::string &text, const T &item)
 template<class T>
 const T &SearchComboContent<T>::Content() const
 {
- if(size()==0 && content.begin()!=content.end())
+ if(size()==0 && std_neq(content.begin(),content.end()))
    const_cast<std::vector<T>&>(content).clear();
  else assert(size()==content.size());
  
