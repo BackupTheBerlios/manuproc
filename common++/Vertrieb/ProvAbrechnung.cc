@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung.cc,v 1.1 2002/11/22 16:02:27 christof Exp $ */
+/* $Id: ProvAbrechnung.cc,v 1.2 2002/12/03 08:46:02 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -31,6 +31,3 @@ const ProvAbrechnung::ID ProvAbrechnung::getNextAbrNr(const Kunde::ID verkid) th
 
  return abrid;
 }
-
-
- 		
