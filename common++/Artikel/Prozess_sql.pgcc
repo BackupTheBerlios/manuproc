@@ -1,4 +1,4 @@
-// $Id: Prozess_sql.pgcc,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: Prozess_sql.pgcc,v 1.2 2001/10/23 08:45:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,7 +28,7 @@ Prozess::Prozess(ID pid) throw(SQLerror)
  float METERPROSTK;
  char LABEL[16];
  char TEXT[21];
- short IMETERPROSTK, ITEXT;
+ int IMETERPROSTK, ITEXT;
  exec sql end declare section;
  
  exec sql select label, meterprostk, text 

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.6 2001/10/08 09:08:12 christof Exp $
+// $Id: AufEintragBase.cc,v 1.7 2001/10/23 08:45:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -33,7 +33,7 @@ AufEintragBase::AufEintragBase(ppsInstanz::ID _instanz,int _auftragid, int _zeil
 	AufStatVal _entrystatus, const Petig::Datum _lasteditdate,
 	const cH_ExtBezSchema schema) throw()
 : AufEintragBase2(_instanz,_auftragid,_zeilennr),
-  artikel(0,cH_ExtBezSchema(ExtBezSchema::default_ID)),
+  artikel(0ul),
   prozess(Prozess::default_id)
 {
  artikel=cH_AufArtikel((AufArtikel::ID)_artikel,schema);
@@ -100,6 +100,16 @@ cH_AufArtikel::cH_AufArtikel(AufArtikel::ID pid, const cH_ExtBezSchema &schema)
    else
    {  if (pid==default_pid) *this=cH_AufArtikel(new AufArtikel());
       else *this=cH_AufArtikel(new AufArtikel(pid,schema));
+      cache.Register(pid,*this);
+   }
+}
+
+cH_AufArtikel::cH_AufArtikel(AufArtikel::ID pid)
+{  cH_AufArtikel *cached(cache.lookup(pid));
+   if (cached) *this=*cached;
+   else
+   {  if (pid==default_pid) *this=cH_AufArtikel(new AufArtikel());
+      else *this=cH_AufArtikel(new AufArtikel(ArtikelBase(pid)));
       cache.Register(pid,*this);
    }
 }

@@ -1,4 +1,4 @@
-// $Id: Bindung_sql.pgcc,v 1.1 2001/10/01 13:03:01 christof Exp $
+// $Id: Bindung_sql.pgcc,v 1.2 2001/10/23 08:45:19 christof Exp $
 
 #include "Bindung.hh"
 #include <Aux/Transaction.h>
@@ -11,7 +11,7 @@ Bindung::Bindung(const ID i) throw(SQLerror) : id(i)
  char NAME[20];
  int FID;
  char DATA[30];
- short INAME, IDATA;
+ int INAME, IDATA;
  exec sql end declare section;
  
  exec sql select name into :NAME:INAME from webang_bindung 
@@ -41,23 +41,24 @@ Bindung::Bindung(const ID i) throw(SQLerror) : id(i)
 
 void Bindungsliste::Load()
 {  exec sql begin declare section;
-   int ID;
-   char NAME [17];
-   short IID, INAME;
+   int ID[20];
+   char NAME[20][17];
    exec sql end declare section;
 
    exec sql declare bindungen cursor for
-   	select id,name from webang_bindung order by name;
+   	select id,name from webang_bindung 
+   	where id is not null and name is not null
+   	order by name;
    Transaction tr;
    exec sql open bindungen;
    SQLerror::test(__FILELINE__ "select from webang_bindung",100);
    while (! sqlca.sqlcode)
-   {  exec sql fetch bindungen into :ID :IID,:NAME :INAME;
+   {  exec sql fetch 20 from bindungen into :ID,:NAME;
       SQLerror::test(__FILELINE__ "fetch from webang_bindung",100);
       if (sqlca.sqlcode) break;
-      if (IID || INAME) continue;
-      Bindung bindung(NAME, ID);
-      add (bindung);
+      unsigned int lines=sqlca.sqlerrd[2];
+      for (unsigned int i=0;i<lines;++i) add(Bindung(NAME[i], ID[i]));
+      if (lines<20) break;
    }
    exec sql close bindungen;
    tr.commit();

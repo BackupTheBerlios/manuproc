@@ -1,4 +1,4 @@
-// $Id: Telefon.pgcc,v 1.8 2001/07/02 16:38:37 cvs_christof Exp $
+// $Id: Telefon.pgcc,v 1.10 2001/10/19 09:35:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -37,7 +37,7 @@ Telefon::Telefon(ID _tid) throw(SQLerror)
  Transaction tr;
 
  std::string qu = std::string ("select coalesce(kundennr,0),coalesce(persnr,0),"
-			"nummer,art from kunden_telefon where ");
+			"nummer,art from ku_telefon where ");
  qu = qu+" telid="+itos(TELID);
 
  QU = (char*)qu.c_str();
@@ -83,7 +83,7 @@ vector<Telefon::st_tel> Telefon::get_Telefon(int nr,const std::string& mod) thro
 // std::string qu = std::string ("select coalesce(kundennr,0),coalesce(persnr,0),"
 //			"nummer,art from kunden_telefon where ");
  std::string qu = std::string ("select nummer,art,coalesce(kundennr,"+itos(Kunde::none_id)+"), \
-      coalesce(persnr,"+itos(Person::none_id)+") from kunden_telefon where ");
+      coalesce(persnr,"+itos(Person::none_id)+") from ku_telefon where ");
  if (mod=="kundennr")  qu = qu+" kundennr="+itos(nr);
  else if (mod=="persnr")   qu = qu+"   persnr="+itos(nr);
  else abort();
@@ -126,7 +126,7 @@ void Telefon::update() const throw(SQLerror)
  if(kunde==Kunde::none_id && person==Person::none_id)
    throw(__FILELINE__"Kunde und Person dürfen nicht beide NULL sein");
 
- exec sql update kunden_telefon set nummer= :NUMMER, art= :ART, 
+ exec sql update ku_telefon set nummer= :NUMMER, art= :ART, 
 	kundennr= :KUNDENNR, persnr= :PERSNR where telid= :TELID;
  SQLerror::test(__FILELINE__);
 
@@ -162,9 +162,9 @@ const cH_Telefon Telefon::newTelefon(const Kunde::ID kid,const Person::ID pid,
  int TELID;
  int KUNDENNR;
  int PERSNR;
- char *NUMMER;
+ int NUMMER;
  char ART[1];
- short IKUNDENNR=0, IPERSNR=0;
+ int IKUNDENNR=0, IPERSNR=0;
  exec sql end declare section;
  if(kid==Kunde::none_id && pid==Person::none_id)
    throw(__FILELINE__"Kunde und Person dürfen nicht beide NULL sein");
@@ -176,14 +176,14 @@ const cH_Telefon Telefon::newTelefon(const Kunde::ID kid,const Person::ID pid,
  if(pid == Person::none_id) IPERSNR=-1;
  else PERSNR=pid;
 
- NUMMER=(char*)nr.c_str();
+ NUMMER=atoi(nr.c_str());
  ART[0]=art; 
  
  exec sql select nextval('kunden_telefon_telid_seq') into :TELID;
  SQLerror::test(__FILELINE__);
 
- exec sql insert into kunden_telefon
-		(telid,kundennr,persnr,nummer,art)
+ exec sql insert into ku_telefon
+		(telid,kundennr,persnr,telnr,art)
 	values 
 		(:TELID,:KUNDENNR:IKUNDENNR,:PERSNR:IPERSNR,:NUMMER,:ART);
  SQLerror::test(__FILELINE__);
@@ -193,23 +193,31 @@ const cH_Telefon Telefon::newTelefon(const Kunde::ID kid,const Person::ID pid,
  return cH_Telefon(TELID);
 }
 
-//void Telefon::delTelefon(const ID tid) throw(SQLerror)
-void Telefon::delTelefon(const std::string& nr,const std::string& mod) throw(SQLerror)
+void Telefon::delTelefon(const ID tid) throw(SQLerror)
 {
-/*
  exec sql begin declare section;
  int TELID=tid;
  exec sql end declare section;
-*/
- exec sql begin declare section;
-  char *TELNR;
- exec sql end declare section;
- TELNR=(char*)nr.c_str();
+
  Transaction tr;
 
- if (mod=="") exec sql delete from kunden_telefon where nummer= :TELNR;
- else if (mod=="persnr") exec sql delete from kunden_telefon where persnr= :TELNR;
- else abort();
+ exec sql delete from ku_telefon where telid= :TELID;
+
+ SQLerror::test(__FILELINE__,100);
+
+ tr.commit();
+}
+
+
+void Telefon::delPersonsTelefon(const ID pid) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int PERSID=pid;
+ exec sql end declare section;
+
+ Transaction tr;
+
+ exec sql delete from ku_telefon where persnr= :PERSID;
 
  SQLerror::test(__FILELINE__,100);
 

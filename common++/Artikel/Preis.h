@@ -1,4 +1,4 @@
-// $Id: Preis.h,v 1.5 2001/10/16 06:53:12 christof Exp $
+// $Id: Preis.h,v 1.6 2001/10/23 08:45:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,38 +26,42 @@
 
 class Preis
 {
-private:
+public:
+	typedef fixedpoint<2> preismenge_t;
+//	typedef unsigned int preismenge_t;
 	static const unsigned int nachkommastellen=2;
 	static const unsigned int rabattnachkommastellen=2;
 	typedef fixedpoint<nachkommastellen> pfennig_cent_t;
+
+private:
 	pfennig_cent_t pfennig_cent;
-    	float preismenge; // 100 == /100m
+    	preismenge_t preismenge; // 100 == /100m
     	cP_Waehrung waehrung;
     	bool short_shl:1;
 
     	const static float DM_EURO=1.95583;
     	const static float EURO_DM=1.0/DM_EURO;
 public:
-	Preis(float dm_euro, cP_Waehrung w,float pmenge=1)
+	Preis(float dm_euro, cP_Waehrung w,preismenge_t pmenge=1)
 		: pfennig_cent(dm_euro), 
 		  preismenge(pmenge), waehrung(w), 
 		  short_shl(false) {}
-	Preis(double dm_euro, cP_Waehrung w,float pmenge=1)
+	Preis(double dm_euro, cP_Waehrung w,preismenge_t pmenge=1)
 		: pfennig_cent(dm_euro), 
 		  preismenge(pmenge), waehrung(w), 
 		  short_shl(false) {}
-	Preis(pfennig_cent_t dm_euro, cP_Waehrung w,float pmenge=1)
+	Preis(pfennig_cent_t dm_euro, cP_Waehrung w,preismenge_t pmenge=1)
 		: pfennig_cent(dm_euro), 
 		  preismenge(pmenge), waehrung(w), 
 		  short_shl(false) {}
 	Preis() : pfennig_cent(0), preismenge(1), waehrung(0), 
 	          short_shl(false) {}
 	
-	int Wert_i(cP_Waehrung tp,float pmenge=0) const throw()
+	int Wert_i(cP_Waehrung tp,preismenge_t pmenge=0) const throw()
 	{  return Wert_fr(tp,pmenge).Scaled(); }
 	
-	pfennig_cent_t Wert_fr(cP_Waehrung tp,float pmenge=0) const throw();
-	pfennig_cent_t Wert(cP_Waehrung tp,float pmenge=0) const throw()
+	pfennig_cent_t Wert_fr(cP_Waehrung tp,preismenge_t pmenge=0) const throw();
+	pfennig_cent_t Wert(cP_Waehrung tp,preismenge_t pmenge=0) const throw()
 	{ return Wert_fr(tp,pmenge); }
 	pfennig_cent_t Wert() const { return pfennig_cent; }
 	
@@ -78,12 +82,11 @@ public:
 	Preis operator*(double b) const
 	{  return Preis(pfennig_cent*b,waehrung,preismenge); }
 	
-//	void write(float &dm_euro, char *waehrung, int size_w, char *einheit, int size_e) const;
-	float BezugsMenge() const
+	preismenge_t BezugsMenge() const
 	{  return preismenge; }
-	float PreisMenge() const
+	preismenge_t PreisMenge() const
 	{  return preismenge; }
-	void BezugsMenge(float pmenge)
+	void BezugsMenge(preismenge_t pmenge)
 // umrechnen ?	
 	{  preismenge=pmenge; }
 //	bool isStueckpreis() const 
@@ -92,13 +95,13 @@ public:
 	{  return waehrung; }
 	const std::string Typtext() const;
 
-	Preis In(cP_Waehrung tp,float stkgr=0) const
+	Preis In(cP_Waehrung tp,preismenge_t stkgr=0) const
 	{  if (!stkgr) stkgr=preismenge;
 	   Preis ret(Wert(tp,stkgr),tp,stkgr);
 	   ret.short_format(short_shl);
 	   return ret;
 	}
-	// Preis Gesamtpreis(cP_Waehrung tp,float stkgr=0) const;
+	// Preis Gesamtpreis(cP_Waehrung tp,preismenge_t stkgr=0) const;
 	
 	pfennig_cent_t Gesamtpreis(cP_Waehrung w,int anzahl,float menge,const fixedpoint<rabattnachkommastellen> &rabatt=fixedpoint<rabattnachkommastellen>(0.0)) const;
 	const Preis Gesamtpreis(int anzahl,float menge,const fixedpoint<rabattnachkommastellen> &rabatt=fixedpoint<rabattnachkommastellen>(0.0)) const;
@@ -114,4 +117,7 @@ public:
 };
 
 std::ostream &operator<<(std::ostream &,const Preis &p);
+// template?
+const Preis operator*(fixedpoint<5> f, const Preis &p);
+
 #endif

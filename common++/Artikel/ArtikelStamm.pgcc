@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.4 2001/10/08 09:08:12 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.5 2001/10/23 08:45:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,6 +18,7 @@
  */
 
 #include <Artikel/ArtikelStamm.h>
+#include <Artikel/ArtikelBaum.h>
 exec sql include sqlca;
 
 ArtikelStamm::cache_t ArtikelStamm::cache;
@@ -32,12 +33,14 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
    exec sql begin declare section;
     int id,typ,inttyp;
     int best_bei,defschem;
+    int einheit,ieinheit;
    exec sql end declare section;
    id=ab.Id();
       
    exec sql select warengruppe,coalesce(internwarengruppe,warengruppe)
-      ,coalesce(bestellen_bei,1),coalesce(defaultschema,1)
-   	into :typ, :inttyp, :best_bei, :defschem
+      ,coalesce(bestellen_bei,1),coalesce(defaultschema,1),
+      einheit
+   	into :typ, :inttyp, :best_bei, :defschem, :einheit :ieinheit
    	from artikelstamm where id= :id;
    SQLerror::test(__FILELINE__);
    
@@ -45,6 +48,38 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
    payload.interntyp=(ArtikelTyp::typ)inttyp;
    payload.bestellen_bei=cH_ppsInstanz((ppsInstanz::ID)best_bei);
    payload.defaultschema=defschem;
+   if (!ieinheit) payload.einh=Einheit(einheit);
+   else
+   {  payload.einh=EINH_STUECK;
+#ifdef PETIG_EXTENSIONS
+      switch(payload.interntyp)
+      {  case ArtikelTyp::JumboRollen:
+            payload.einh=EINH_METER; break;
+         
+         case ArtikelTyp::Band:
+            {  cache.Register(ab.Id(),payload); 
+               // since ArtikelBaum tries to read bestellen_bei
+               // we would loop forever if not registered here
+               ArtikelBaum baum(ab);
+               float stkgr(baum.Stueckgroesse());
+               // this is because Prozess_sql.pgcc is mad (Jumbo = 1m)
+               if (baum.size()<=1 && stkgr && stkgr!=1) payload.einh=EINH_STUECK;
+               else payload.einh=EINH_METER;
+               break;
+            }
+
+         case ArtikelTyp::Spulen:
+         default:
+            payload.einh=EINH_STUECK; break;
+            
+         case ArtikelTyp::Garn:
+            payload.einh=EINH_KG; break;
+         
+         case ArtikelTyp::Lohn:
+            payload.einh=EINH_FDKM; break;
+      }
+#endif
+   }
    cache.Register(ab.Id(),payload);
 }
 

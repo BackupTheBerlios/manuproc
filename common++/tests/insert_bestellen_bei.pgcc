@@ -13,7 +13,7 @@ try {
 
  exec sql begin declare section;
    int ID,PROZESSE,INSTANZ;
-   short IINSTANZ;
+   int IINSTANZ;
    char LABEL[50]; 
  exec sql end declare section;
  Transaction tr; 

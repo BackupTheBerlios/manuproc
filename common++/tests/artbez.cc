@@ -1,4 +1,4 @@
-// $Id: artbez.cc,v 1.1 2001/08/20 08:27:13 christof Exp $
+// $Id: artbez.cc,v 1.2 2001/10/23 08:45:19 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,10 +21,25 @@
 #include <Artikel/ArtikelBezeichnung.h>
 #include <Aux/exception.h>
 #include <Aux/dbconnect.h>
+#include <Artikel/ArtikelBaum.h>
+#include <Artikel/Einheiten.h>
+#include <Aux/Ausgabe_neu.h>
 
 int main()
 {  Petig::PrintUncaughtExceptions();
    Petig::dbconnect();
-   std::cout << ArtikelBezeichnung(209931,10000).Bezeichnung() << '\n';
+   std::cout << cH_ArtikelBezeichnung(209931,10000)->Bezeichnung() << '\n';
+   std::cout << cH_ArtikelBezeichnung(123479)->Bezeichnung() << " Breite "
+   	<< cH_ArtikelBezeichnung(123479)->Breite() << "mm\n";
+   std::cout << "-----------\n";
+   ArtikelBaum AB(127754); // 1812/25
+   Einheit e(AB);
+   std::cout << cH_ArtikelBezeichnung(AB)->Bezeichnung() << '\n';
+   for (ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
+   {  std::cout << "  " << Formatiere_short(i->menge) 
+   	<< (std::string)Einheit(i->rohartikel) << '/' << (std::string)e 
+   	<< ' ' << cH_ArtikelBezeichnung(i->rohartikel)->Bezeichnung() << '\n';
+   }
+   std::cout << "     (3.35g Ac, 1.25g Ku)\n";
    Petig::dbdisconnect();
 }

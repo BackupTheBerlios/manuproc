@@ -1,4 +1,4 @@
-// $Id: Faden_sql.pgcc,v 1.1 2001/10/01 13:03:01 christof Exp $
+// $Id: Faden_sql.pgcc,v 1.2 2001/10/23 08:45:19 christof Exp $
 
 #include <Faden.hh>
 #include <Aux/Transaction.h>
@@ -6,8 +6,9 @@ exec sql include sqlca;
 
 void Fadenliste::Load(const ArtikelBase &ab,const Bindungsliste &bindungsliste)
 {  exec sql begin declare section;
-   int ZEILENNUMMER, ANZAHL, BINDUNG, ANFANGSZEILE, ENDZEILE, WIEDERHOLUNGEN;
-   int ARTIKEL, MATERIAL;
+   int ZEILENNUMMER[20], ANZAHL[20], BINDUNG[20], 
+   	ANFANGSZEILE[20], ENDZEILE[20], WIEDERHOLUNGEN[20];
+   int ARTIKEL, MATERIAL[20];
    exec sql end declare section;
 
    erase();
@@ -22,12 +23,13 @@ void Fadenliste::Load(const ArtikelBase &ab,const Bindungsliste &bindungsliste)
    exec sql open zn;
    SQLerror::test(__FILELINE__ "select from webang_faeden",100);
    while (! sqlca.sqlcode)
-   {  exec sql fetch zn into :ZEILENNUMMER, :ANZAHL, :MATERIAL, :BINDUNG;
+   {  exec sql fetch 20 from zn into :ZEILENNUMMER, :ANZAHL, :MATERIAL, :BINDUNG;
       SQLerror::test(__FILELINE__ "fetch from webang_faeden",100);
       if (sqlca.sqlcode) break;
-
-      Bindung bindung(bindungsliste.getById (BINDUNG));
-      add (Faden (ANZAHL, MATERIAL, bindung), -1);
+      unsigned int lines=sqlca.sqlerrd[2];
+      for (unsigned int i=0;i<lines;++i)
+         add (Faden (ANZAHL[i], MATERIAL[i], bindungsliste.getById(BINDUNG[i])), -1);
+      if (lines<20) break;
    }
    exec sql close zn;
 
@@ -40,10 +42,13 @@ void Fadenliste::Load(const ArtikelBase &ab,const Bindungsliste &bindungsliste)
    exec sql open wdh;
    SQLerror::test(__FILELINE__ "select from webang_wiederhol",100);
    while (! sqlca.sqlcode)
-   {  exec sql fetch wdh into :ANFANGSZEILE , :ENDZEILE, :WIEDERHOLUNGEN;
+   {  exec sql fetch 20 from wdh into :ANFANGSZEILE , :ENDZEILE, :WIEDERHOLUNGEN;
       SQLerror::test(__FILELINE__ "fetch from webang_wiederhol",100);
       if (sqlca.sqlcode) break;
-      rep_add (ANFANGSZEILE, ENDZEILE, WIEDERHOLUNGEN);
+      unsigned int lines=sqlca.sqlerrd[2];
+      for (unsigned int i=0;i<lines;++i)
+         rep_add (ANFANGSZEILE[i], ENDZEILE[i], WIEDERHOLUNGEN[i]);
+      if (lines<20) break;
    }
    exec sql close wdh;
    tr.commit();

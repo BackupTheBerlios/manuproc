@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.6 2001/10/08 09:08:13 christof Exp $
+# $Id: Makefile.am,v 1.7 2001/10/23 08:45:19 christof Exp $
 
 CXXFLAGS=-s @ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -9,7 +9,7 @@ LDADD=../libcommon++.a @ECPG_LIBS@ @ECPG_LDFLAGS@
 
 noinst_PROGRAMS=preis test_Bankauftrag test_pgsql_conv testHandles \
 	testExtBezHandle testKW fixedpoint artbez \
-	Zeitpunkt insert_bestellen_bei FetchIStream
+	Zeitpunkt insert_bestellen_bei FetchIStream abschreiben
 
 preis_SOURCES=preis.cc
 artbez_SOURCES=artbez.cc
@@ -22,6 +22,7 @@ insert_bestellen_bei_SOURCES=insert_bestellen_bei.cc
 FetchIStream_SOURCES=FetchIStream.cc
 fixedpoint_SOURCES=fixedpoint.cc
 Zeitpunkt_SOURCES=Zeitpunkt.cc
+abschreiben_SOURCES=abschreiben.cc
 
 CLEANFILES= *~ $(LINKS)
 

@@ -1,4 +1,4 @@
-/* $Id: RechnungVoll_sql.pgcc,v 1.1 2001/10/01 13:01:08 christof Exp $ */
+/* $Id: RechnungVoll_sql.pgcc,v 1.2 2001/10/23 08:45:19 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,7 +30,7 @@ RechnungVoll::RechnungVoll(int rid) throw(SQLerror)
   int LFRSID,LIEFERZEILE;
   float MENGE,RABATT,PREISMENGE,PREIS;
   char LIEFERDATUM[11];
-  short ILIEFERDATUM;
+  int ILIEFERDATUM;
  exec sql end declare section;
 
  Transaction tr;

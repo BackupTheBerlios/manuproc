@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.h,v 1.4 2001/10/08 09:08:12 christof Exp $
+// $Id: ArtikelStamm.h,v 1.5 2001/10/23 08:45:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,7 +24,7 @@
 #include <Artikel/ArtikelTyp.h>
 #include <Aux/CacheStatic.h>
 #include <Aux/ppsInstanz.h>
-
+#include <Artikel/Einheiten.h>
 
 class ArtikelStamm
 {	// we can't include ExtBezSchema.h, so we duplicate what we need
@@ -35,11 +35,13 @@ class ArtikelStamm
 	{  ArtikelTyp::typ typ,interntyp;
 	   cH_ppsInstanz bestellen_bei;
 	   ExtBezSchema_ID defaultschema;
+	   Einheit einh;
 	   
 	   payload_t() 
 	   : typ((ArtikelTyp::typ)0), interntyp((ArtikelTyp::typ)0),
 	                 bestellen_bei(cH_ppsInstanz(ppsInstanz::INST_NONE)), 
-	                 defaultschema(ExtBezSchema_default_ID) {}
+	                 defaultschema(ExtBezSchema_default_ID),
+	                 einh(EINH_STUECK) {}
 	};
 	
 	ArtikelBase art;
@@ -59,6 +61,8 @@ public:
 	{  return payload.bestellen_bei; }
 	int defaultSchema() const
 	{  return payload.defaultschema; }
+	Einheit getEinheit() const
+	{  return payload.einh; }
 
         static void set_BestellenBei(const ArtikelBase &artikel,const ppsInstanz::ID instanz);
 };

@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.4 2001/10/16 06:54:53 christof Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.5 2001/10/23 08:45:19 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -32,9 +32,9 @@ try{
  char DATUM[11];
  int PAECKCHEN, PAKETE;
  char GELIEFERTAM[21];
- short IGELIEFERTAM;
+ int IGELIEFERTAM;
  int DPDLIEFNR;
- short IDPDLIEFNR;
+ int IDPDLIEFNR;
  exec sql end declare section;
 
  LFRSID = lid;

@@ -1,4 +1,4 @@
-/* $Id: Adresse.pgcc,v 1.14 2001/07/02 16:38:33 cvs_christof Exp $ */
+/* $Id: Adresse.pgcc,v 1.15 2001/10/19 09:35:54 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -45,9 +45,9 @@ Adresse::Adresse(int kdnr) throw(SQLerror)
    char POSTFACHNAME[41];
    char ISOCODE[4];
 
-   short IIDNR, IPOSTANWVOR, ISTRASSE, IPOSTANWNACH, IHSNR, IPLZ,
+   int IIDNR, IPOSTANWVOR, ISTRASSE, IPOSTANWNACH, IHSNR, IPLZ,
       IPOSTFACH, IPOSTFPLZ, IORT, IRNG_AN_POSTFACH;
-   short ILANDNAME,IPOSTFACHNAME;
+   int ILANDNAME,IPOSTFACHNAME;
    exec sql end declare section;
 
    exec sql SELECT firma, postanwvor, strasse, hsnr, postanwnach,

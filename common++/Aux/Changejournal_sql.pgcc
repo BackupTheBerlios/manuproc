@@ -1,4 +1,4 @@
-// $Id: Changejournal_sql.pgcc,v 1.4 2001/10/08 09:08:12 christof Exp $
+// $Id: Changejournal_sql.pgcc,v 1.5 2001/10/23 08:45:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -38,7 +38,7 @@ throw(SQLerror)
  double DELTA;
  char CHTYPE;
  int ARTIKELID;
- short INEWVAL=0, IDELTA=0;
+ int INEWVAL=0, IDELTA=0;
  exec sql end declare section;
  
  Transaction tr;
@@ -90,7 +90,7 @@ throw(SQLerror)
  double DELTA;
  char CHTYPE;
  int ARTIKELID;
- short INEWDAT=0, IDELTA=0;
+ int INEWDAT=0, IDELTA=0;
  exec sql end declare section;
  
  Transaction tr;
@@ -145,8 +145,8 @@ throw(SQLerror)
  int STATUS;
  char DATUM[20];
  char NEWDATUM[20];
- short INEWVAL, IDELTA;
- short INEWDATUM;
+ int INEWVAL, IDELTA;
+ int INEWDATUM;
  exec sql end declare section;
 
  Transaction tr;

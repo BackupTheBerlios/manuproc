@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.h,v 1.5 2001/10/01 12:55:40 christof Exp $ */
+/* $Id: Ausgabe_neu.h,v 1.6 2001/10/23 08:45:18 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -71,6 +71,11 @@ template <int decimals,class Ftype,class Itype>
    unsigned int scale(Zahl.Scale());
    while (scale>0 && !(val%10)) { val/=10; --scale; }
    return FormatiereTeX(val,scale);
+}
+
+// um transparent zwischen fixedpoints und ints umschalten zu können
+static inline const std::string Formatiere_short(unsigned int i)
+{  return Formatiere(i);
 }
 
 template <int decimals,class Ftype,class Itype>

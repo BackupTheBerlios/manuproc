@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.6 2001/08/20 08:24:32 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.7 2001/10/23 08:45:19 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -118,7 +118,7 @@ void Kunde::update() throw(SQLerror)
    double KUNDENUMSATZ,PLANUMSATZ,UMSATZ, RABATT,EINZUGRABATT;
    int SKONTOFRIST;
    int BANKINDEX;
-   short IBANKINDEX=0;
+   int IBANKINDEX=0;
    int PREISLISTE;
    char *VEREIN;
    bool BANKEINZUG;
@@ -165,6 +165,7 @@ void Kunde::update() throw(SQLerror)
  if (BANKINDEX==0) IBANKINDEX=-1;
  Transaction tr;
 
+/*
  exec sql UPDATE kunden SET
         kundennr                =       :KUNDENNR,
         sortname                =       :SORTNAME,
@@ -198,10 +199,11 @@ void Kunde::update() throw(SQLerror)
         notiz                   =       :NOTIZ
      WHERE kundennr = :KUNDENNR ;
      SQLerror::test(__FILELINE__);
-
+*/
  tr.commit();
 
 }
+
 
 const cH_Kunde Kunde::newKunde(const Kunde::ID kid, const std::string &firma) throw(SQLerror)
 {
@@ -269,4 +271,43 @@ unsigned long int Kunde::neue_bank_anlegen(const std::string& name, unsigned lon
    values (:BANKINDEX,:NAME,:BLZ);
  SQLerror::test(__FILELINE__);
  return BANKINDEX;
+}
+
+
+void Kunde::update_Bankeinzug(bool be) throw(SQLerror)
+{
+ exec sql begin declare section;
+ unsigned int KUNDENNR = Kundennr;
+ int BANKEINZUG = be;
+ exec sql end declare section;
+
+ Transaction tr;
+
+cout << BANKEINZUG;  
+if(BANKEINZUG) cout << "wahr";
+else cout << "falsch";
+
+ exec sql UPDATE kunden SET bankeinzug= :BANKEINZUG, stand= now()
+	WHERE kundennr = :KUNDENNR ;
+ SQLerror::test(__FILELINE__);
+
+ reread_Stand();
+ 
+ tr.commit();
+
+}
+
+
+void Kunde::reread_Stand() throw(SQLerror)
+{
+ exec sql begin declare section;
+ unsigned int KUNDENNR = Kundennr;
+ char STAND[20];
+ exec sql end declare section;
+
+ exec sql select stand into :STAND from kunden where kundennr = :KUNDENNR;
+ SQLerror::test(__FILELINE__);
+ 
+ kundendaten.stand = STAND; 
+
 }

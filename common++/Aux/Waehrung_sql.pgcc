@@ -1,4 +1,4 @@
-// $Id: Waehrung_sql.pgcc,v 1.4 2001/08/27 09:33:49 christof Exp $
+// $Id: Waehrung_sql.pgcc,v 1.5 2001/10/23 08:45:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,7 +28,7 @@ Waehrung::Waehrung(WaehID id) throw(SQLerror)
  char KURZ[10];
  char LANG[31];
  double DMFKT;
- short ILANG;
+ int ILANG;
  exec sql end declare section;
  
  exec sql select kurz, lang, dmfkt 

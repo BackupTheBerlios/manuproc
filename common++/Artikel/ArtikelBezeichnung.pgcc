@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.8 2001/10/16 06:53:12 christof Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.9 2001/10/23 08:45:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -78,13 +78,13 @@ void ArtikelBezeichnung::setzeExtBezSchema(const cH_ExtBezSchema &_schema) throw
          << Id();
      std::string this_string_holds_my_query=sq.str();
      (const char*)QUERY=this_string_holds_my_query.c_str();
-     Transaction tr;
+//     Transaction tr;
      exec sql allocate descriptor mydesc;
-     exec sql prepare ein_ from :QUERY;
-     exec sql declare ein cursor for ein_;
-     exec sql open ein;
-     SQLerror::test(__FILELINE__);
-     exec sql fetch from ein into sql descriptor mydesc; 
+     exec sql prepare ein from :QUERY;
+//     exec sql declare ein cursor for ein_;
+//     exec sql open ein;
+//     SQLerror::test(__FILELINE__);
+     exec sql execute ein into sql descriptor mydesc; 
      SQLerror::test(__FILELINE__);
      
      value.resize(gewaehlte_indizes[gewaehlte_indizes.size()-1]+1);
@@ -94,10 +94,10 @@ void ArtikelBezeichnung::setzeExtBezSchema(const cH_ExtBezSchema &_schema) throw
          is >> FetchIStream::MapNull<std::string>(s,"");
          value[*i]=cH_EntryValueIntString(s);  
       }
-     exec sql close ein;
-     SQLerror::test(__FILELINE__);
+//     exec sql close ein;
+//     SQLerror::test(__FILELINE__);
      exec sql deallocate descriptor mydesc;
-     tr.close();
+//     tr.close();
     }
 } 
 
@@ -124,7 +124,8 @@ std::string ArtikelBezeichnung::Bezeichnung(int signifikanz, char separator,int 
     return ret;
 }
 
-std::string ArtikelBezeichnung::Komponente(int feldnr,int signifikanz) const throw()
+cH_EntryValue ArtikelBezeichnung::Komponente_als_EntryValue
+	(int feldnr,int signifikanz) const throw()
 {
     const_sigiterator end=sigend(signifikanz);
     int f=0;
@@ -132,9 +133,9 @@ std::string ArtikelBezeichnung::Komponente(int feldnr,int signifikanz) const thr
     { if (i.BezKomp().bezkomptype<0 
     		|| (unsigned int)i.BezKomp().bezkomptype>value.size()) 
     	  continue;
-      if (f==feldnr) return value[i.BezKomp().bezkomptype]->getStrVal();
+      if (f==feldnr) return value[i.BezKomp().bezkomptype];
     }
- return "";
+ return cH_EntryValue();
 }
 
 ArtikelBezeichnung::ArtikelBezeichnung(int signifikanz, const std::vector<cH_EntryValue> &_val, const cH_ExtBezSchema &_schema) throw(SQLerror)

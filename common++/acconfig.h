@@ -18,3 +18,9 @@
 
 #undef DEFAULT_DB
 #undef DEFAULT_DBHOST
+
+/* whether to enable Petig extensions */
+#undef PETIG_EXTENSIONS
+
+/* whether to enable Mabella extensions */
+#undef MABELLA_EXTENSIONS

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase2.h,v 1.13 2001/10/04 08:17:01 cvs_christof Exp $
+// $Id: AufEintragBase2.h,v 1.18 2001/10/19 11:15:32 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,12 +24,17 @@
 #include<Aux/ppsInstanz.h>
 #include <Auftrag/AuftragBase.h>
 
+// eigentlich AufEintragBaseBase
 
 class AufEintragBase2 : public AuftragBase
 {
 protected:
  int zeilennr;
   
+ // noch benötigt? CP 10'01
+private:
+ inline int mapKey() const { return auftragid*10000+zeilennr; } 
+
 public:
  AufEintragBase2() : zeilennr(0) {}
  AufEintragBase2(cH_ppsInstanz inst) 
@@ -37,12 +42,14 @@ public:
  AufEintragBase2(cH_ppsInstanz inst,int a,int z) 
  	:  AuftragBase(inst,a), zeilennr(z) {}
  
- void setVerarbeitung(const cH_Prozess p) throw(SQLerror);
- inline int mapKey() const { return auftragid*10000+zeilennr; } 
-
+ void setVerarbeitung(const cH_Prozess p) const throw(SQLerror);
+ // gibt gelieferte Menge zurück
+ int abschreiben(int menge) const throw(SQLerror);
+ void deleteAuftragEntry() const throw(SQLerror);
+ 
  int ZNr() const { return zeilennr; }
  bool valid() const { return AuftragBase::valid(); }
-
+ 
 // deprecatetd
  int AufId() const { return Id(); }
  ppsInstanz::ID InstId() const { return AuftragBase::Instanz(); }

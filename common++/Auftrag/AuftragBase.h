@@ -22,6 +22,8 @@
 #include <Aux/Datum.h>
 #include <Artikel/ArtikelBase.h>
 
+// hier sollten noch viel mehr Funktionen aus Auftrag rein !!!
+
 class AuftragBase
 {
  protected:
@@ -35,7 +37,8 @@ class AuftragBase
         ppsInstanz::ID Instanz() const {return instanz->Id(); }
 	bool valid() const { return auftragid!=0; }
 
-        void insertNewEntry(unsigned long int bestellt, 
+        // gibt Zeilennummer zurück, MAT
+        int insertNewEntry(unsigned long int bestellt, 
                 Petig::Datum lieferdatum, ArtikelBase::ID artid) throw(SQLerror);
 };
 

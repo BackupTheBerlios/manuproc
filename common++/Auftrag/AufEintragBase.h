@@ -1,4 +1,4 @@
-/* $Id: AufEintragBase.h,v 1.11 2001/10/16 06:54:53 christof Exp $ */
+/* $Id: AufEintragBase.h,v 1.12 2001/10/23 08:45:18 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -39,6 +39,8 @@
 
 class cH_AufArtikel;
 
+// Diese Klasse kann weg -> ArtikelBase !!! CP 10'01
+
 class AufArtikel : public ArtikelBaum, protected HandleContent
 {friend class cH_AufArtikel;
  friend class Handle<const AufArtikel>;
@@ -69,6 +71,9 @@ public:
 
  AufArtikel(const ArtikelBase &artb, const cH_ExtBezSchema &schema)
  	: ArtikelBaum(artb.Id()), ArtikelBase(artb),  bez(artb,schema->Id())
+ 	{ }
+ AufArtikel(const ArtikelBase &artb)
+ 	: ArtikelBaum(artb.Id()), ArtikelBase(artb),  bez(artb)
  	{ }
 
  double Stueckgroesse() const;
@@ -104,6 +109,7 @@ private:
 public:
  static const AufArtikel::ID default_pid=AufArtikel::default_id;
  cH_AufArtikel(AufArtikel::ID pid, const cH_ExtBezSchema &schema);
+ cH_AufArtikel(AufArtikel::ID pid);
 };
 
 
@@ -125,6 +131,7 @@ protected:
  long geliefert;   /* Stück */
  double rest;        /* Meter */
  double menge;        /* Meter */
+// long geplante_menge;
  Petig::Datum lieferdatum;
  Petig::Datum lasteditdate;
  int jahrgang;
@@ -136,7 +143,7 @@ protected:
  	
 public:
  AufEintragBase() 
-   : artikel(0,cH_ExtBezSchema(ExtBezSchema::default_ID)), dispoentrynr(0),
+   : artikel(0ul), dispoentrynr(0),
    	disponr(0), status((AufStatVal)OPEN), entrystatus((AufStatVal)OPEN),
    	kdnr(0), 
    	bestellt(0),
@@ -155,6 +162,7 @@ public:
 	const Preis &_preis, int _rabatt,
 	AufStatVal _entrystat, const Petig::Datum _lasteditdate,
 	const cH_ExtBezSchema schema) throw();
+ AufEintragBase(const AufEintragBase2 &aebb) throw (SQLerror);
 	
  void updateDispoENr(int dinr) throw(SQLerror);
  void updateStk(long stk) throw(SQLerror);
@@ -163,8 +171,10 @@ public:
  void updateRabatt(int rb) throw(SQLerror);
  void setStatus(AufStatVal st) throw(SQLerror);		
  void split(int newmenge, const Petig::Datum &newld) throw(SQLerror);
+// void setPlanMeter(long gm) { geplante_menge=gm; }
  
  long getMeter() const { return (long)menge; }
+// long getPlanMeter() const { return geplante_menge; }
  long getRest() const { if(entrystatus==CLOSED)return 0; return (long)rest; }	
  long getStueck() const { return bestellt;}
  long getRestStk() const {if(entrystatus==CLOSED)return 0; return bestellt-geliefert;}
@@ -194,6 +204,9 @@ public:
  int Rabatt() const { return rabatt;}
  float PreisMenge() const { return preis.PreisMenge(); }
  const ArtikelBase::ID &ArtikelID() const { return artikel->Id(); }
+ void abschreiben(int menge) throw(SQLerror);
+ cH_Kunde get_Kunde() const throw(SQLerror);
+  
 
  void setArtikelBezeichnung(const cH_ExtBezSchema &cs)
  	{const_cast<AufArtikel&>(*artikel).setArtikelBezeichnung(cs); } 

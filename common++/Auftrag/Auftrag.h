@@ -26,6 +26,8 @@
 #include <Aux/SQLerror.h>
 #include <Kunde/Kunde.h> // vielleicht auch Basisklasse erzeugen
 
+// ein Teil dieser Funktionen sollte nach AuftragBase (vor allem der SQL Teil)
+
 class Auftrag : public AuftragBase
 {
 protected:
@@ -41,11 +43,23 @@ private:
 	std::string tmpstr;
 	
 public:
-//	Auftrag(ppsInstanz::ID instanz,int auftragid) throw(SQLerror);
+	// Diese Strukturen dienen dazu, das Anlegen explizit anzufordern
+        struct Anlegen
+        {  ppsInstanz::ID instanz;
+           explicit Anlegen(ppsInstanz::ID id) : instanz(id) {}
+           operator ppsInstanz::ID() const { return instanz; }
+        };
+        struct Anlegen2
+        {  AuftragBase AB;
+           explicit Anlegen2(const AuftragBase& _AB) : AB(_AB) {}
+           operator AuftragBase() const { return AB; }
+        };
+	Auftrag(ppsInstanz::ID instanz,int auftragid) throw(SQLerror);
 	Auftrag(const AuftragBase& auftrag) throw(SQLerror);
 	// neuen Auftrag anlegen
-        Auftrag(const AuftragBase& AB, long kundennr, int jahr=0) throw(SQLerror);
-        Auftrag(ppsInstanz::ID instanz, long kundennr, int jahr=0) throw(SQLerror);
+        Auftrag(Anlegen2 Auftragsnr, long kundennr, int jahr=0) throw(SQLerror);
+//        const AuftragBase& AB, long kundennr, int jahr=0) throw(SQLerror);
+        Auftrag(Anlegen instanz, long kundennr, int jahr=0) throw(SQLerror);
 //        void newArtWrkar(aktAufEintrag &entry) throw(SQLerror);
         void deleteAuftrag() throw(SQLerror);
 	void deleteEintrag(int zeilennr) throw(SQLerror);

@@ -1,4 +1,4 @@
-// $Id: selAufEntry_sql.pgcc,v 1.10 2001/10/08 09:08:12 christof Exp $
+// $Id: selAufEntry_sql.pgcc,v 1.11 2001/10/23 08:45:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -43,7 +43,7 @@ throw(SQLerror)
  int ROHARTIKELID[20];
  int BESTELLT[20], GELIEFERT[20];
  char LIEFERDATUM[20][21];
- short ILIEFERDATUM[20];
+ int ILIEFERDATUM[20];
  int PROZESSID[20];
  char PROZESSDATUM[20][11];
  int STATUS[20];
@@ -52,15 +52,15 @@ throw(SQLerror)
  int DISPOENTNR[20];
  int DISPONR[20];
  int JAHRGANG[20];
- short IDISPOENTNR[20], IDISPONR[20];
+ int IDISPOENTNR[20], IDISPONR[20];
  char YOURAUFNR[20][21];
- short IYOURAUFNR[20];
- short IROHARTIKELID[20];
+ int IYOURAUFNR[20];
+ int IROHARTIKELID[20];
  float PREIS[20];
  int RABATT[20];
  int PREISMENGE[20];
  int WAEHRUNG[20];
- short IPREIS[20],IRABATT[20],IWAEHRUNG[20];
+ int IPREIS[20],IRABATT[20],IWAEHRUNG[20];
  char *clausel;
  exec sql end declare section;
 	
@@ -132,7 +132,7 @@ void SelectedFullAufList::insert(const AuftragBase& auftrag, int znr) throw(SQLe
  int ROHARTIKELID;
  int BESTELLT, GELIEFERT;
  char LIEFERDATUM[21];
- short ILIEFERDATUM;
+ int ILIEFERDATUM;
  int PROZESSID;
  char PROZESSDATUM[11];
  int STATUS;
@@ -141,15 +141,15 @@ void SelectedFullAufList::insert(const AuftragBase& auftrag, int znr) throw(SQLe
  int DISPOENTNR=0;
  int DISPONR=0;
  int JAHRGANG;
- short IDISPOENTNR=-1, IDISPONR=-1;
+ int IDISPOENTNR=-1, IDISPONR=-1;
  char YOURAUFNR[21];
- short IYOURAUFNR;
- short IROHARTIKELID;
+ int IYOURAUFNR;
+ int IROHARTIKELID;
  float PREIS;
  int RABATT;
  int PREISMENGE;
  int WAEHRUNG;
- short IPREIS,IRABATT,IWAEHRUNG;
+ int IPREIS,IRABATT,IWAEHRUNG;
  char *clausel;
  exec sql end declare section;
 

@@ -38,7 +38,7 @@ public:
 	AuftragFull(const AuftragBase& auftrag) throw(SQLerror);
 	// neuen Auftrag anlegen
 //	AuftragFull(const AuftragBase& AB, long kundennr, int jahr=0) throw(SQLerror);
-	AuftragFull(ppsInstanz::ID _instanz, long kundennr, int jahr=0) throw(SQLerror);
+	AuftragFull(Auftrag::Anlegen _instanz, long kundennr, int jahr=0) throw(SQLerror);
 	
 	void deleteEintrag(int zeilennr, int idx) throw(SQLerror);	
 	bool existsAufEntry(int idx) const

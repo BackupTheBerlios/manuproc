@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.6 2001/10/08 09:08:12 christof Exp $
+// $Id: Kunde.h,v 1.7 2001/10/23 08:45:19 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -159,19 +159,18 @@ public:
 	void delete_Kunde(Kunde::ID kid) throw(SQLerror);
         unsigned int nextval();
         
-                
+	void reread_Stand() throw(SQLerror);                
 	
 	// HE und was ist mit der Datenbank? CP
 	void isLieferadresse(bool is) { lieferadresse=is; update();}
 	void isRechnungsadresse(bool is) { rechnungsadresse=is;update(); }
-	void isBankeinzug(bool is) { kundendaten.bankeinzug=is;update(); }
 	void RngAn(const Kunde::ID kid) { rngan=kid; update();}
 
 	ID Schema() const { return schema; }
 
 
         // Datenbank schreiben
-//        void set_Bank(const std::string& s); 
+        void update_Bankeinzug(bool be) throw(SQLerror);
         void set_sortname(const std::string& s) {adresse.sortname = s; update();} 
         void set_firma(const std::string& s){adresse.firma = s; update();} 
         void set_postanwvor(const std::string& s){adresse.postanwvor = s; update();} 
@@ -219,10 +218,16 @@ public:
 };
 
 class H_Kunde : public Handle<Kunde>
-{public:
+{
+        typedef CacheStatic<Kunde::ID,H_Kunde> cache_t;
+        static cache_t cache;
+	friend class std::map<int, H_Kunde>;
 	H_Kunde(Kunde *p) : Handle<Kunde>(p) {}	
+	H_Kunde() {}
+public:
 	typedef Kunde::ID ID;
 	static const ID default_id=Kunde::default_id;
+	H_Kunde(ID nr);
 };
 
 // typedef cH_Kunde const_KundeHandle; deprecated

@@ -1,4 +1,4 @@
-// $Id: Einheiten.pgcc,v 1.5 2001/10/16 06:53:12 christof Exp $
+// $Id: Einheiten.pgcc,v 1.6 2001/10/23 08:45:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,37 +19,12 @@
 
 exec sql include sqlca;
 #include <Artikel/Einheiten.h>
-#include <Artikel/ArtikelBaum.h>
-#include <Artikel/ArtikelTyp.h>
+#include <Artikel/ArtikelStamm.h>
 
 // furs erste sollte das funktionieren .. spater per Datenbank CP(?)
 // ... aber dann bitte mit cache MAT
 Einheit::Einheit(const ArtikelBase &ab) throw(SQLerror)
-{  switch((ArtikelTyp::typ)ArtikelTyp::vonArtikel(ab))
-   {  case ArtikelTyp::JumboRollen:
-      	 einh=EINH_METER; break;
-      
-      case ArtikelTyp::Band:
-         {  ArtikelBaum baum(ab);
-            float stkgr(baum.Stueckgroesse());
-            // this is because Prozess_sql.pgcc is mad (Jumbo = 1m)
-#warning Totaler Blödsinn, die Einheit sollte in ArtikelStamm stehen
-		// das ist dann flexibler und portabler !
-            if (baum.size()<=1 && stkgr && stkgr!=1) einh=EINH_STUECK;
-            else einh=EINH_METER;
-            break;
-         }
-
-      case ArtikelTyp::Spulen:
-      default:
-         einh=EINH_STUECK; break;
-         
-      case ArtikelTyp::Garn:
-         einh=EINH_KG; break;
-      
-      case ArtikelTyp::Lohn:
-         einh=EINH_FDKM; break;
-   }
+{  *this=ArtikelStamm(ab).getEinheit();
 }
 
 // aus StueckEinheit, MengenEinheit erzeugen
@@ -57,6 +32,7 @@ Einheit::operator std::string() const
 {  if (einh==EINH_METER) return "m";
    if (einh==EINH_KG) return "kg";
    if (einh==EINH_FDKM) return "Fd*km";
+   if (einh==EINH_STUECK) return "St.";
    return "";
 }
 
@@ -67,6 +43,7 @@ std::string Einheit::TeX() const
 
 std::string Einheit::StueckEinheit() const
 {  if (einh==EINH_FDKM) return "Fd";
+   if (einh==EINH_STUECK) return "St.";
    return "";
 }
 

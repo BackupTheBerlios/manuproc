@@ -1,4 +1,4 @@
-// $Id: AufEintragBase2.pgcc,v 1.9 2001/06/22 09:38:44 cvs_malte Exp $
+// $Id: AufEintragBase2.pgcc,v 1.14 2001/10/19 11:17:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,11 +19,13 @@
 
 #include <Auftrag/AufEintragBase2.h>
 #include <Aux/Transaction.h>
+#include <Auftrag/auftrag_status.h>
 
 exec sql include sqlca;
 
-void AufEintragBase2::setVerarbeitung(const cH_Prozess p) throw(SQLerror)
+void AufEintragBase2::setVerarbeitung(const cH_Prozess p) const throw(SQLerror)
 {
+ assert (Instanz()==ppsInstanz::Kundenauftraege);
  exec sql begin declare section;
  int AUFTRAGID=auftragid;
  int ZEILENNR=zeilennr;
@@ -47,3 +49,49 @@ void AufEintragBase2::setVerarbeitung(const cH_Prozess p) throw(SQLerror)
  tr.commit();
 }
 
+
+void AufEintragBase2::deleteAuftragEntry() const throw(SQLerror)
+{
+ // Kundenaufträge DÜRFEN NICHT gelöscht werden !!!
+ assert (Instanz()!=ppsInstanz::INST_KNDAUF) ;
+
+ exec sql begin declare section;
+ int AUFTRAGID=auftragid;
+ int ZEILENNR=zeilennr;
+ int INSTANZ=Instanz();
+ exec sql end declare section;
+ exec sql delete from auftragentry where auftragid=:AUFTRAGID
+      and zeilennr =:ZEILENNR and instanz=:INSTANZ;
+ SQLerror::test("DELETE AUFTRAG");
+}
+
+// gibt geliefert zurück
+int AufEintragBase2::abschreiben(int menge) const throw(SQLerror)
+{
+ exec sql begin declare section;
+ int AUFID=Id();
+ int AUFZNR=ZNr();
+ int INSTANZ=Instanz();
+ int STATUS; 
+ int BESTELLT;
+ int GELIEFERT;
+ exec sql end declare section;
+ 
+ Transaction tr;
+ exec sql lock table auftragentry in exclusive mode;
+ exec sql select bestellt, geliefert, status
+   into :BESTELLT, :GELIEFERT, :STATUS
+   from auftragentry where
+   auftragid = :AUFID and zeilennr = :AUFZNR and instanz=:INSTANZ;
+ SQLerror::test(__FILELINE__);
+ if(STATUS!=(AufStatVal)OPEN) 
+    throw(SQLerror(__FILELINE__,-1,"Auftragszeile ist bereits geschlossen"));
+ GELIEFERT+=menge;
+ if(GELIEFERT>=BESTELLT) STATUS=(AufStatVal)CLOSED;
+ exec sql update auftragentry set geliefert= :GELIEFERT, status= :STATUS
+   where auftragid= :AUFID and zeilennr= :AUFZNR and instanz=:INSTANZ;  
+ SQLerror::test(__FILELINE__);
+ tr.commit();
+
+ return GELIEFERT;
+}

@@ -1,4 +1,4 @@
-// $Id: Preis.cc,v 1.6 2001/10/02 15:26:22 christof Exp $
+// $Id: Preis.cc,v 1.7 2001/10/23 08:45:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,10 +22,12 @@
 #include<iostream>
 #include <Aux/string0.h>
 #include <Aux/itos.h>
+#include <iomanip.h>
+#include <Aux/Ausgabe_neu.h>
 
-Preis::pfennig_cent_t Preis::Wert_fr(cP_Waehrung tp,float stueckgr) const throw()
+Preis::pfennig_cent_t Preis::Wert_fr(cP_Waehrung tp,preismenge_t stueckgr) const throw()
 {  float result=pfennig_cent;
-   float preism=preismenge;
+   preismenge_t preism=preismenge;
    if (!preism) preism=1;
    if (tp!=waehrung) result*=Waehrung::Umrechnung(*waehrung,*tp);
    if (stueckgr>0 && preism!=stueckgr) result*=stueckgr/preism;
@@ -55,35 +57,6 @@ bool Preis::operator<(const Preis &b) const
 {  return pfennig_cent<b.Wert_fr(waehrung,preismenge);
 }
 
-#if 0
-Preis::Preis(float dm_euro, const char *_waehrung, const char *einheit,float stueckgr):
-	pfennig_cent(dm_euro), stueckgroesse(stueckgr), waehrung(0), 
-	stueckpreis(false), short_shl(false)
-{  if (!strcmp(_waehrung,"DM")) waehrung=DM;
-   else if (!strcmp(_waehrung,"EUR")) waehrung=EURO;
-   else std::cerr << "Preis::Preis: unbekannte Währung '" << waehrung << "'\n";
-   if (!strcmp(einheit,"stk")) stueckpreis=true;
-   else if (!strcmp(einheit,"100m")) 
-   {  stueckpreis=false; stueckgroesse=100; }
-   else if (!strcmp(einheit,"Tstk"))
-   {  stueckpreis=true; stueckgroesse=1000; }
-   else std::cerr << "Preis::Preis: unbekannte Einheit '" << einheit << "'\n";
-}
-#endif
-
-#if 0
-void Preis::write(float &dm_euro, char *waehr, int size_w, char *einheit, int size_e) const
-{  dm_euro=pfennig_cent;
-   if (waehrung==DM) strncpy0(waehr,"DM",size_w);
-   else strncpy0(waehr,"EUR",size_w);
-   if (!stueckpreis) strncpy0(einheit,"100m",size_e);
-   else if (stueckpreis && stueckgroesse!=1000) strncpy0(einheit,"stk",size_e);
-   else strncpy0(einheit,"Tstk",size_e);
-}
-#endif
-
-#include <iomanip.h>
-
 std::ostream &operator<<(std::ostream &o,const Preis &p)
 {  o << (p.pfennig_cent);
    if (!p.short_shl) o << p.Typtext();
@@ -91,15 +64,22 @@ std::ostream &operator<<(std::ostream &o,const Preis &p)
 }
 
 const std::string Preis::Typtext() const
-{  return waehrung->Kurzbezeichnung()+'/'+dtos(preismenge);
+{  return waehrung->Kurzbezeichnung() + '/'+ Formatiere_short(preismenge);
 }
 
 Preis::pfennig_cent_t Preis::Gesamtpreis(cP_Waehrung w,int anzahl,float menge,const fixedpoint<rabattnachkommastellen> &rabatt) const
-{  return Gesamtpreis(anzahl,menge,rabatt).In(w).Wert();
+{  if (!*this) return 0;
+   if (!menge) menge=1;
+   return (In(w,menge*anzahl)*(1-0.01*double(rabatt))).Wert();
 }
 
 const Preis Preis::Gesamtpreis(int anzahl,float menge,const fixedpoint<rabattnachkommastellen> &rabatt) const
 {  if (!*this) return *this;
-   if (menge) return In(waehrung,menge*anzahl)*(1-0.01*double(rabatt));
-   else return (*this)*(anzahl*(1-0.01*double(rabatt)));
+   if (!menge) menge=1;
+   return In(waehrung,menge*anzahl)*(1-0.01*double(rabatt));
+}
+
+const Preis operator*(fixedpoint<5> f, const Preis &p)
+{  if (f==fixedpoint<5>(1.0)) return p;
+   return Preis(p.Wert()*f.as_float(),p.getWaehrung(),p.BezugsMenge());
 }

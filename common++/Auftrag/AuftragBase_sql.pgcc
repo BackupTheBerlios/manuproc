@@ -24,7 +24,7 @@
 
 exec sql include sqlca;
 
-void AuftragBase::insertNewEntry(unsigned long int bestellt, 
+int AuftragBase::insertNewEntry(unsigned long int bestellt, 
   Petig::Datum lieferdatum, ArtikelBase::ID artid) throw(SQLerror)
 {
  exec sql begin declare section;
@@ -73,18 +73,11 @@ void AuftragBase::insertNewEntry(unsigned long int bestellt,
 	
  auftragid = AUFTRAGID;
  instanz = (ppsInstanz::ID)INSTANZ;
-// zeilennr = ZEILENNR;
  bestellt = BESTELLT;
-// menge = bestellt*artikel->Stueckgroesse();
-// rest = menge;
  lieferdatum = Petig::Datum(LIEFERDATUM);
-// geliefert = 0;
-// status=(AufStatVal)STATUS;
-// preis=Preis(PREIS,cP_Waehrung(Waehrung::DM));
-// rabatt=RABATT;
-// preismenge=PREISMENGE;
 
- try{
+ if(Instanz()==ppsInstanz::INST_KNDAUF)
+  { try{
      pps_ChJournalEntry::newChange(
                         instanz,
 			AufEintragBase2(instanz,AUFTRAGID,ZEILENNR),
@@ -95,7 +88,9 @@ void AuftragBase::insertNewEntry(unsigned long int bestellt,
         }
     catch(SQLerror &e)
       {tr.rollback(); throw; }
+  }
 
  tr.commit();
+ return ZEILENNR;
 }
 

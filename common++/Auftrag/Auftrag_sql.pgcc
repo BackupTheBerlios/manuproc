@@ -69,6 +69,7 @@ void Auftrag::setWaehrung(cP_Waehrung w) throw(SQLerror)
  SQLerror::test(__FILELINE__"Waehrung setzen");
 }
 
+#warning !!! FIXME: eigentlich alle Einträge entsprechend setzen oder geschieht das woanders ???
 void Auftrag::setStatusAuftrag(AufStatVal st) throw(SQLerror)
 {exec sql begin declare section;
  int AUFTRAGID=Id();
@@ -77,7 +78,7 @@ void Auftrag::setStatusAuftrag(AufStatVal st) throw(SQLerror)
  exec sql end declare section;
 
  exec sql update auftrag set stat= :STATUS
-		 where auftragid= :AUFTRAGID and instanz=INSTANZ;    
+		 where auftragid= :AUFTRAGID and instanz=:INSTANZ;    
  SQLerror::test(__FILELINE__"Status setzen");
  status=st;
 }
@@ -120,7 +121,7 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
  char BEMERKUNG[21];
  int JAHRGANG;
  int WAEHRUNG;
- short IKUNDENNR, IDATUM, IYOURAUFNR, IBEMERKUNG, IWAEHRUNG;
+ int IKUNDENNR, IDATUM, IYOURAUFNR, IBEMERKUNG, IWAEHRUNG;
  exec sql end declare section;
 
  exec sql select kundennr, date(datum), stat, youraufnr, bemerkung,
@@ -142,8 +143,8 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
 }
 
 
-Auftrag::Auftrag(ppsInstanz::ID _instanz, long kdnr,int jahr) throw(SQLerror)
-	: AuftragBase(_instanz)
+Auftrag::Auftrag(Anlegen _instanz, long kdnr,int jahr) throw(SQLerror)
+	: AuftragBase(cH_ppsInstanz(_instanz))
 {
  exec sql begin declare section;
  int AUFTRAGID;
@@ -152,7 +153,7 @@ Auftrag::Auftrag(ppsInstanz::ID _instanz, long kdnr,int jahr) throw(SQLerror)
  int KUNDENNR=kdnr;
  int JAHRGANG=jahr;
  int STATUS;
- int INSTANZ=Id();
+ int INSTANZ=Instanz();
  exec sql end declare section;
 
  Transaction tr;
@@ -189,13 +190,12 @@ Auftrag::Auftrag(ppsInstanz::ID _instanz, long kdnr,int jahr) throw(SQLerror)
  tr.commit();
 }
 
-Auftrag::Auftrag(const AuftragBase &AB, long kdnr, int jahr) throw(SQLerror)
+Auftrag::Auftrag(Anlegen2 AB, long kdnr, int jahr) throw(SQLerror)
 	: AuftragBase(AB)
 {
  exec sql begin declare section;
  int AUFTRAGID=Id();
  char DATUM[11];
- int YEAR;
  int KUNDENNR=kdnr;
  int JAHRGANG=jahr;
  int STATUS = OPEN;
@@ -228,7 +228,6 @@ void Auftrag::setBemerkung(const std::string &bem) throw(SQLerror)
  int AUFTRAGID=Id();
  int INSTANZ=int(Instanz());
  const char *BEMERKUNG=bem.c_str();
- short IBEMERKUNG;
  exec sql end declare section;
 
  exec sql update auftrag set bemerkung= nullif(:BEMERKUNG,'')
@@ -240,15 +239,13 @@ void Auftrag::setBemerkung(const std::string &bem) throw(SQLerror)
 void Auftrag::setYourAufNr(const std::string &yanr) throw(SQLerror)
 {
  exec sql begin declare section;
- int AUFTRAGID;
- int INSTANZ;
+ int AUFTRAGID=Id();
+ int INSTANZ=int(Instanz());
  char YOURAUFNR[21];
- short IYOURAUFNR;
+ int IYOURAUFNR;
  exec sql end declare section;
 
  youraufnr=yanr;
- AUFTRAGID=Id();
- INSTANZ=int(Instanz());
 
  if(youraufnr!="")
    {strncpy(YOURAUFNR,youraufnr.c_str(),20);YOURAUFNR[20]=0;IYOURAUFNR=0;}

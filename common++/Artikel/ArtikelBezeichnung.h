@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.h,v 1.8 2001/10/16 06:53:12 christof Exp $
+// $Id: ArtikelBezeichnung.h,v 1.9 2001/10/23 08:45:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -101,7 +101,9 @@ public:
  ArtikelBezeichnung(int signifikanz, const std::vector<cH_EntryValue> &values, const cH_ExtBezSchema &schema) throw(SQLerror);
 
  std::string Bezeichnung(int signifikanz=1, char separator=0,int felder=-1) const throw();
- std::string Komponente(int feldnr,int signifikanz=1) const throw();
+ std::string Komponente(int feldnr,int signifikanz=1) const throw()
+ {  return Komponente_als_EntryValue(feldnr,signifikanz)->getStrVal(); }
+ cH_EntryValue Komponente_als_EntryValue(int feldnr,int signifikanz=1) const throw();
  
  void setzeExtBezSchema(const cH_ExtBezSchema &schema) throw(SQLerror);
  const cH_ExtBezSchema getExtBezSchema() const throw()
@@ -134,9 +136,12 @@ public:
  const cH_EntryValue operator[](int feld) const throw(SQLerror)
  {  return feld<(int)value.size()?value[feld]:cH_EntryValueIntString("?"); }
 
- 
+#ifdef PETIG_EXTENSIONS
+ int Breite() const { return Komponente_als_EntryValue(1,1)->getIntVal(); }
+#endif
 
 // deprecated
+private:
  ArtikelBezeichnung(const ArtikelBase &artikel,const cH_ExtBezSchema &schema) throw();
 };
 

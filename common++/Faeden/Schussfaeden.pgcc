@@ -1,4 +1,4 @@
-// $Id: Schussfaeden.pgcc,v 1.1 2001/09/04 12:53:47 cvs_malte Exp $
+// $Id: Schussfaeden.pgcc,v 1.2 2001/10/19 08:59:36 christof Exp $
 
 #include "Schussfaeden.hh"
 #include <Aux/Transaction.h>
@@ -7,22 +7,21 @@ exec sql include sqlca;
 void Schussfaeden::Load(const ArtikelBase &ab)
 {  exec sql begin declare section;
    float SCHUSSDICHTE;
-   int ANZAHL;
-   short ISCHUSSDICHTE, IFANGFADEN;
-   int ARTIKEL, SCHUSSMATERIAL, FANGFADEN;
+   int ANZAHL[20];
+   int ARTIKEL, SCHUSSMATERIAL[20], FANGFADEN;
    exec sql end declare section;
 
    clear();
    ARTIKEL=ab.Id();
 
    exec sql select
-         schussdichte, fangfaden
-      into :SCHUSSDICHTE :ISCHUSSDICHTE, :FANGFADEN :IFANGFADEN
+         coalesce(schussdichte,0), coalesce(fangfaden,0)
+      into :SCHUSSDICHTE, :FANGFADEN
       from webangaben where artikel= :ARTIKEL;
    SQLerror::test(__FILELINE__ "select from webangaben");
 
-   schussdichte=ISCHUSSDICHTE?0.0:SCHUSSDICHTE;
-   fangfaden=IFANGFADEN?0:FANGFADEN;
+   schussdichte=SCHUSSDICHTE;
+   fangfaden=FANGFADEN;
 
    // schussfaeden einlesen!
    exec sql declare sf cursor for
@@ -34,10 +33,13 @@ void Schussfaeden::Load(const ArtikelBase &ab)
    exec sql open sf;
    SQLerror::test(__FILELINE__,100);
    while (!sqlca.sqlcode)
-   {  exec sql fetch sf into :ANZAHL, :SCHUSSMATERIAL;
+   {  exec sql fetch 20 from sf into :ANZAHL, :SCHUSSMATERIAL;
       SQLerror::test(__FILELINE__,100);
       if (sqlca.sqlcode) break;
-      schussfaeden.push_back(Faden(ANZAHL,SCHUSSMATERIAL));
+      unsigned int lines=sqlca.sqlerrd[2];
+      for (unsigned int i=0;i<lines;++i)
+         schussfaeden.push_back(Faden(ANZAHL[i],SCHUSSMATERIAL[i]));
+      if (lines<20) break;
    }
    exec sql close sf;
    tr.commit();

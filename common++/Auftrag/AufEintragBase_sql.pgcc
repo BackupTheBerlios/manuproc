@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.8 2001/10/08 09:08:12 christof Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.9 2001/10/23 08:45:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,7 +21,9 @@
 #include <stdio.h>
 #include <Aux/string0.h>
 #include <Aux/Transaction.h>
+#include "auftrag_status.h"
 #include <Aux/Changejournal.h>
+#include "selFullAufEntry.h"
 
 exec sql include sqlca;
 
@@ -124,10 +126,9 @@ void AufEintragBase::updatePreis(const Preis &pr) throw(SQLerror)
  int ZEILENNR = zeilennr;
  int INSTANZ=instanz->Id();
  float PREIS=pr.Wert();
- int PREISMENGE=pr.PreisMenge();
+ float PREISMENGE=pr.PreisMenge();
  exec sql end declare section;
-#warning PREISMENGE->float
-// WAEHRUNG=pr.getWaehrung()->Id();
+ 
  exec sql update auftragentry 
  	set preis= :PREIS, preismenge= :PREISMENGE
  	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR
@@ -194,40 +195,26 @@ void AufEintragBase::updateLieferdatum(const Petig::Datum &ld) throw(SQLerror)
 void AufEintragBase::split(int newmenge, const Petig::Datum &newld) throw(SQLerror)
 {
  exec sql begin declare section;
- int AUFTRAGID;
+ int AUFTRAGID=auftragid;
  int INSTANZ=instanz->Id();
- int ROHARTID;
+ int ROHARTID=artikel->getRohArtid();
+ int ZEILENNR_OLD=zeilennr;
+ long ARTIKELID=artikel->getArtid();
+ long BESTELLT=newmenge;
+ long BESTELLT_OLD=bestellt-newmenge;
+ int STATUS=status;
+ float PREIS = preis.Wert();
+ int RABATT = rabatt;
+ float PREISMENGE = preis.PreisMenge();
+ int WAEHRUNG=preis.getWaehrung()->Id();
+
  int ZEILENNR;
- int ZEILENNR_OLD;
- long ARTIKELID;
- long BESTELLT;
- long BESTELLT_OLD;
  long GELIEFERT;
  long GELIEFERT_OLD;
  char LIEFERDATUM[21];
- int STATUS;
- short IROHARTID;
- float PREIS;
- int RABATT;
- int PREISMENGE;
- int WAEHRUNG;
  exec sql end declare section;
  
  if(status==CLOSED) return;
-
- AUFTRAGID=auftragid;
- ZEILENNR_OLD=zeilennr;
- ARTIKELID=artikel->getArtid();
- ROHARTID=artikel->getRohArtid();
- if(ROHARTID) IROHARTID=0; else IROHARTID=-1;
- STATUS=status;
- BESTELLT=newmenge;
- BESTELLT_OLD=bestellt-newmenge;
-
- PREIS = preis.Wert();
- RABATT = rabatt;
- PREISMENGE = preis.PreisMenge();
- WAEHRUNG=preis.getWaehrung()->Id();
 
  newld.write_postgres(LIEFERDATUM,sizeof LIEFERDATUM);
  
@@ -252,7 +239,7 @@ void AufEintragBase::split(int newmenge, const Petig::Datum &newld) throw(SQLerr
  exec sql insert into auftragentry (auftragid, rohartikelid, zeilennr, artikelid,
 		bestellt, geliefert, lieferdate,
 		status,preis,rabatt,preismenge, waehrung)
-	values ( :AUFTRAGID, :ROHARTID:IROHARTID, :ZEILENNR, :ARTIKELID,
+	values ( :AUFTRAGID, nullif(:ROHARTID,0), :ZEILENNR, :ARTIKELID,
 		:BESTELLT, :GELIEFERT, :LIEFERDATUM,
 		:STATUS, :PREIS, :RABATT/100.0,
 		:PREISMENGE, :WAEHRUNG);
@@ -289,4 +276,86 @@ void AufEintragBase::split(int newmenge, const Petig::Datum &newld) throw(SQLerr
    }
 
  tr.commit();
+}
+
+AufEintragBase::AufEintragBase(const AufEintragBase2 &aebb) throw (SQLerror)
+  : AufEintragBase2(aebb), 
+    artikel(0,cH_ExtBezSchema(ExtBezSchema::default_ID)),
+    prozess(Prozess::default_id)
+{
+ try{
+  SelectedFullAufList aufids((SQLFullAuftragSelector)
+    (SQLFullAuftragSelector::sel_AufidZnr(aebb)));
+  assert(aufids.aufidliste.size()==1);
+  (*this)=aufids.aufidliste[0];
+ } catch (SQLerror &e) {std::cerr << e <<'\n';}
+}
+
+
+void AufEintragBase::abschreiben(int menge) throw(SQLerror)
+{
+/*
+<<<<<<< AufEintragBase_sql.pgcc
+ exec sql begin declare section;
+ int AUFID=Id();
+ int AUFZNR=ZNr();
+ int INSTANZ=Instanz();
+ int STATUS; 
+ int BESTELLT;
+ int GELIEFERT;
+ exec sql end declare section;
+ 
+ Transaction tr;
+// AUFID=Id();
+// AUFZNR=aeb.ZNr();
+// INSTANZ=aeb.Instanz();
+ exec sql lock table auftragentry in exclusive mode;
+ exec sql select bestellt, geliefert, status
+   into :BESTELLT, :GELIEFERT, :STATUS
+   from auftragentry where
+   auftragid = :AUFID and zeilennr = :AUFZNR and instanz=:INSTANZ;
+ SQLerror::test(__FILELINE__);
+ if(STATUS!=(AufStatVal)OPEN) throw("Auftragszeile ist bereits geschlossen");
+ GELIEFERT+=menge;
+ if(GELIEFERT>=BESTELLT) STATUS=(AufStatVal)CLOSED;
+ exec sql update auftragentry set geliefert= :GELIEFERT, status= :STATUS
+   where auftragid= :AUFID and zeilennr= :AUFZNR and instanz=:INSTANZ;  
+ SQLerror::test(__FILELINE__);
+ tr.commit();
+
+ geliefert=GELIEFERT;
+// rest = bestellt-geliefert; //Stueckgröße wird nicht berücksichtigt
+//cout << bestellt<<'-'<<geliefert<<'='<<rest<<'\n';
+// geplante_menge=menge;
+// status=(AufStatVal)STATUS;
+*/
+ geliefert=AufEintragBase2::abschreiben(menge);
+ rest = bestellt-geliefert;
+ if(geliefert>=bestellt) status=(AufStatVal)CLOSED;
+}
+
+
+cH_Kunde AufEintragBase::get_Kunde() const throw(SQLerror)
+{
+ exec sql begin declare section;
+  int INSTANZ=getAuftragInstanz();
+  int AUFTRAGID=getAuftragid();
+  int ZEILENNR=getZnr();
+  int OLDINSTANZ,OLDAUFTRAGID,OLDZEILENNR;
+  int KUNDE;
+ exec sql end declare section;
+ while (true)
+  {
+    exec sql select altauftragid,altinstanz,altzeilennr 
+      into :OLDAUFTRAGID,:OLDINSTANZ,:OLDZEILENNR
+      from auftragsentryzuordnung where
+      neuauftragid=:AUFTRAGID and neuinstanz=:INSTANZ and neuzeilennr=:ZEILENNR;
+    SQLerror::test(__FILELINE__,100);
+    if (sqlca.sqlcode) break;
+    INSTANZ=OLDINSTANZ; AUFTRAGID=OLDAUFTRAGID; ZEILENNR=OLDZEILENNR;
+  }
+ exec sql select kundennr into :KUNDE from auftrag where
+   auftragid=:AUFTRAGID and instanz=:INSTANZ; 
+ SQLerror::test(__FILELINE__);
+ return cH_Kunde(KUNDE);
 }

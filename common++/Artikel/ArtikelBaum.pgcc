@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.pgcc,v 1.6 2001/10/16 06:53:12 christof Exp $
+// $Id: ArtikelBaum.pgcc,v 1.7 2001/10/23 08:45:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -40,7 +40,6 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
     int PROZESSID[30];
     float MENGE[30];
     int IMENGE[30];
-    int BESTELLEN_BEI;
     exec sql end declare section;
     
    ARTIKELID=Id();
@@ -60,30 +59,30 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
           zusammensetzung.push_back(ra);
        }
     }
+#ifdef PETIG_EXTENSIONS    
     try {  ArtikelStamm AS(*this);
    if(AS.BestellenBei()==ppsInstanz::INST_BANDLAGER || 
       AS.BestellenBei()==ppsInstanz::INST_WEB)
      {
        Schussfaeden schussfaeden;
        Fadenliste fadenliste;
-       Bindungsliste bindungsliste;
+       static Bindungsliste bindungsliste;
        try {                  
           schussfaeden.Load(ARTIKELID);
-          bindungsliste.Load();
+          if (!bindungsliste.size()) bindungsliste.Load();
           fadenliste.Load(ARTIKELID,bindungsliste);
          }
        catch(SQLerror &e) {/*std::cerr << e << '\n';*/}
        for (Fadenliste::const_iterator i=fadenliste.sumbegin();i!=fadenliste.sumend();++i)
-        {
-          double gewicht_kg_m = i->get_Gewicht_kg_pro_km_Faden()/1000.;
+        { const double km_m= 1/1000.0;
+          double gewicht_kg_m = i->get_Gewicht_kg_pro_km_Faden() * km_m;
           RohArtikel ra;
           ra.rohartikel=i->getMaterial();
           ra.menge= gewicht_kg_m;
-          ra.erzeugung=cH_Prozess(31);
+          ra.erzeugung=cH_Prozess(Prozess::Weben);
           zusammensetzung.push_back(ra);
         }
-       ArtikelBezeichnung bez(Id(),cH_ExtBezSchema(1,ArtikelTyp::GewebtesBand));
-       int breite_mm(bez[2]->getIntVal());
+       int breite_mm=cH_ArtikelBezeichnung(*this)->Breite();
        int anzschfaed=0;
        for (Schussfaeden::const_iterator i=schussfaeden.begin();i!=schussfaeden.end();++i)
             anzschfaed+=i->getAnzahl();  
@@ -91,9 +90,15 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
         {
           Materialeigenschaft M(i->getMaterial());
           // Gewicht in kg/m ==> 1/cm*mm*(1cm/10mm) * g/10km*(kg/1000g)*(km/1000m)
-          double gewicht_kg_m = 2*schussfaeden.Schussdichte_cm()*
-            (i->getAnzahl()/(float)anzschfaed)*breite_mm
-             * M.Gewicht_g_10km() * 0.000000001 ;
+          const double cm_m = 100.0;
+          const double m_mm = 1/1000.0;
+          const double _10km_m = 1/10000.0;
+          const double kg_g = 1/1000.0;
+          double gewicht_kg_m = 
+          	2 * schussfaeden.Schussdichte_cm() * cm_m // Schuss per m
+          	* (i->getAnzahl() / (double)anzschfaed)	// Anteil des Mat.
+          	* breite_mm*m_mm	// m per Schuss
+          	* M.Gewicht_g_10km() * _10km_m * kg_g; // kg per m Mat.
           RohArtikel ra;
           ra.rohartikel=i->getMaterial();
           ra.menge= gewicht_kg_m;
@@ -106,6 +111,7 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
     catch (SQLerror &e)
     {  cerr << "Kein ArtikelStamm zu " << Id() << '\n';
     }
+#endif
 
    cache.Register(Id(),zusammensetzung);
  }

@@ -1,4 +1,4 @@
-// $Id: KettplanKette2.pgcc,v 1.4 2001/07/05 09:23:02 christof Exp $
+// $Id: KettplanKette2.pgcc,v 1.5 2001/10/23 08:45:19 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -45,7 +45,7 @@ int KettplanKette::defaultKettlaenge() throw(SQLerror)
    int refmasch;
    char refdate[11];
    int gaenge;
-   long laenge=0; short ilaenge=-1;
+   long laenge=0; int ilaenge=-1;
    exec sql end declare section;
    
    write(refmasch,refdate,sizeof refdate);
@@ -76,7 +76,7 @@ int KettplanKette::defaultStuecklaenge() throw(SQLerror)
    int refmasch;
    char refdate[11];
    int gaenge;
-   long laenge=0; short ilaenge=-1;
+   long laenge=0; int ilaenge=-1;
    exec sql end declare section;
    
    write(refmasch,refdate,sizeof refdate);
@@ -104,7 +104,7 @@ int KettplanKette::defaultStuecklaenge() throw(SQLerror)
 float KettplanKette::defaultSchussdichte() throw(SQLerror)
 {  exec sql begin declare section;
    long artikelid;
-   float schussdichte=0; short isd=-1;
+   float schussdichte=0; int isd=-1;
    exec sql end declare section;
    
    const std::vector <ArtikelGang> ag=get_artikel();
@@ -138,7 +138,7 @@ void KettplanKette::Schussdichte(float sd) throw(SQLerror)
 
    exec sql begin declare section;
    float schussdichte=sd;
-   short isd=!sd;
+   int isd=!sd;
    int refmasch;
    char refdate[11];
    exec sql end declare section;
@@ -155,7 +155,7 @@ int KettplanKette::barcoMaschine() throw()
 {  if (valid&VA_WEBMASCH) return webmasch;
    exec sql begin declare section;
    int masch;
-   short imasch=-1;
+   int imasch=-1;
    int refmasch;
    char refdate[11];
    exec sql end declare section;
@@ -180,7 +180,7 @@ void KettplanKette::setzeBarcoMasch(int m) throw(SQLerror)
 
    exec sql begin declare section;
    int bmasch=m;
-   short ibm=!m;
+   int ibm=!m;
    int refmasch;
    char refdate[11];
    exec sql end declare section;
@@ -188,7 +188,7 @@ void KettplanKette::setzeBarcoMasch(int m) throw(SQLerror)
    write(refmasch,refdate,sizeof refdate);
    exec sql update ketten 
    	set barcomaschine = :bmasch :ibm,
-   	    geaendert = timestamp
+   	    geaendert = now()
    	where maschine = :refmasch and
    	    schaerdatum = :refdate;
    SQLerror::test(__FILELINE__);
@@ -202,7 +202,7 @@ int KettplanKette::Kettlaenge() throw()
    int klen;
    int masch;
    char schaerdatum[11];
-   short iklen;
+   int iklen;
    exec sql end declare section;
    
    write(masch,schaerdatum,sizeof schaerdatum);
@@ -230,7 +230,7 @@ int KettplanKette::Stuecklaenge() throw()
   try
   {exec sql begin declare section;
    int slen;
-   short islen;
+   int islen;
    int masch;
    char schaerdatum[11];
    exec sql end declare section;
@@ -259,7 +259,7 @@ float KettplanKette::Schussdichte() throw()
   try
   {exec sql begin declare section;
    float sd;
-   short isd;
+   int isd;
    int masch;
    char schaerdatum[11];
    exec sql end declare section;

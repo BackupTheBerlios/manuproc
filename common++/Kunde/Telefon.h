@@ -1,4 +1,4 @@
-// $Id: Telefon.h,v 1.4 2001/10/08 09:08:12 christof Exp $
+// $Id: Telefon.h,v 1.5 2001/10/23 08:45:19 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -60,8 +60,9 @@ public:
 
  static const cH_Telefon newTelefon(const Kunde::ID kid, const Person::ID pid,
  		const std::string &nr, const TelArt art) throw(SQLerror);
-// static void delTelefon(const ID tid) throw(SQLerror);
- static void delTelefon(const std::string& nr,const std::string& mod="") throw(SQLerror);
+
+ static void delTelefon(const ID tid) throw(SQLerror);
+ static void delPersonsTelefon(const ID pid) throw(SQLerror);
  
  std::string Nummer() const { return nummer; }
  ID Id() const { return telid; } 

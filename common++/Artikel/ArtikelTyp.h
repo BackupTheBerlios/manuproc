@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.h,v 1.4 2001/10/16 06:53:12 christof Exp $
+// $Id: ArtikelTyp.h,v 1.5 2001/10/23 08:45:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,6 +21,12 @@
 #define ARTIKELTYP_H
 
 #include <Artikel/ArtikelBase.h>
+#include <ManuProCConfig.h>
+
+#ifndef PETIG_EXTENSIONS
+#warning Diese Klasse ist so nicht portabel
+#endif
+
 //#include <ExtBezSchema/ExtBezSchema.h>
 
 /* quick hack to support Types really fast,

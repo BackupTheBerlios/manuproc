@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.4 2001/08/20 08:24:32 christof Exp $
+// $Id: Kunde.cc,v 1.5 2001/10/23 08:45:19 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,6 +22,7 @@
 #include <Aux/Transaction.h>
 
 cH_Kunde::cache_t cH_Kunde::cache;
+H_Kunde::cache_t H_Kunde::cache;
 
 cH_Kunde::cH_Kunde(Kunde::ID id)
 {  cH_Kunde *cached(cache.lookup(id));
@@ -31,6 +32,16 @@ cH_Kunde::cH_Kunde(Kunde::ID id)
       cache.Register(id,*this);
    }
 }
+
+H_Kunde::H_Kunde(Kunde::ID id)
+{  H_Kunde *cached(cache.lookup(id));
+   if (cached) *this=*cached;
+   else
+   {  *this=H_Kunde(new Kunde(id));
+      cache.Register(id,*this);
+   }
+}
+
 
 const std::string Kunde::LaTeX_von() const
 {
