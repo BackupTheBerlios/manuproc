@@ -345,6 +345,10 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
             {  analyse("Instanz passt nicht",ae,j->AEB,j->Menge);
                goto weg;
             }
+            if (j->AEB.Id()<AuftragBase::handplan_auftrag_id)
+            {  analyse("Kind kein 3er",ae,j->AEB,j->Menge);
+               goto weg;
+            }
             AufEintrag ae2(j->AEB);
             if (ae2.Artikel()!=ae.Artikel()
          	|| ae2.getLieferdatum()!=ae.getLieferdatum()) 
@@ -393,6 +397,11 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
                   goto weg1;
                }
             }
+            if (j->AEB.Id()==AuftragBase::dispo_auftrag_id)
+            {  analyse("Kind darf kein 2er sein",ae,j->AEB,j->Menge);
+               goto weg1;
+            }
+
             AufEintrag ae2(j->AEB);
             if (ae2.getLieferdatum()>newdate)
             {  analyse("Datum passt nicht",ae,j->AEB,j->Menge);
@@ -506,12 +515,21 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
    if (ae.Instanz()!=ppsInstanzID::Kundenauftraege 
    	&& ae.getKdNr()!=Kunde::eigene_id)
    {  alles_ok=false;
-      analyse("Interne Kundennr falsch",ae);
+      analyse("Interne Kundennr falsch",ae,ae.getKdNr());
       if (!analyse_only) 
          Query("update auftrag set kundennr=? "
 		"where (instanz,auftragid) = (?,?)")
 		<< ae.getStueck() << static_cast<AuftragBase&>(ae);
       ae.kdnr=Kunde::eigene_id;
+   }
+   
+   if (ae.Instanz()!=ppsInstanzID::Kundenauftraege 
+   	&& !in(ae.Instanz(),ppsInstanz::getBestellInstanz(ae.Artikel()),
+   			ppsInstanz::getProduktionsInstanz(ae.Artikel()))
+   	&& !ppsInstanz::getBestellInstanz(ae.Artikel())->PlanungsInstanz())
+   {  alles_ok=false;
+      analyse("Artikel auf falscher Instanz",ae,cH_ArtikelBezeichnung(ae.Artikel())->Bezeichnung());
+      // den lösche ich aber nicht automatisch!
    }
    
    if (ae.Id()==AuftragBase::plan_auftrag_id)

@@ -1,4 +1,4 @@
-// $Id: ppsInstanzReparatur.h,v 1.7 2003/05/22 12:50:48 christof Exp $
+// $Id: ppsInstanzReparatur.h,v 1.8 2003/05/23 11:19:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -45,9 +45,9 @@ class ppsInstanzReparatur : public cH_ppsInstanz
 
       void analyse(const std::string &s,const AufEintrag &AE,const std::string &x=std::string(),const std::string &y=std::string()) const;
       // Wrapper:
-      void analyse(const std::string &s,const AufEintrag &AE,const AufEintragBase &x,const ABmt &y) const;
-      void analyse(const std::string &s,const AufEintrag &AE,const ABmt &x,const ABmt &y) const;
-      void analyse(const std::string &s,const AufEintrag &AE,const ArtikelBase &x,const ArtikelBase &y) const;
+      void analyse(const std::string &s,const AufEintrag &AE,const AufEintragBase &x,const ABmt &y=0) const;
+      void analyse(const std::string &s,const AufEintrag &AE,const ABmt &x,const ABmt &y=0) const;
+      void analyse(const std::string &s,const AufEintrag &AE,const ArtikelBase &x,const ArtikelBase &y=ArtikelBase()) const;
       void analyse(const std::string &s,const AufEintrag &AE,const cH_ppsInstanz &x,const cH_ppsInstanz &y) const;
  public:
       // Einlesen des Lagerinhalts und Anpassen der 2er unter Berücksichtigung der 1er

@@ -197,7 +197,7 @@ std::vector<class LagerInhalt> JumboLager::LagerInhalt_(const ArtikelBase& artik
     exec sql fetch summe_cursor into :ID,:ROLLEN,:RESTROLLEN,:METER,:RESTMETER;
     SQLerror::test(__FILELINE__,100);  
     if (sqlca.sqlcode) break;
-    V.push_back(class LagerInhalt(ID,ROLLEN,RESTROLLEN,METER,RESTMETER*reste_faktor));    
+    V.push_back(class LagerInhalt(ArtikelBase(ID),ROLLEN,RESTROLLEN,METER,RESTMETER*reste_faktor));    
    }
   exec sql close summe_cursor;
   tr.close();

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList_sql.pgcc,v 1.19 2003/05/19 09:22:05 christof Exp $ */
+/* $Id: LieferscheinList_sql.pgcc,v 1.20 2003/05/23 11:19:33 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,6 +20,7 @@
 
 #include <Lieferschein/LieferscheinList.h>
 #include <Misc/Transaction.h>
+#include <Misc/compiler_ports.h>
 
 exec sql include sqlca;
 
@@ -65,7 +66,7 @@ void LieferscheinList::build_list()
 
 // sehr Mabella spezifisch (da ab.artikel) statt ExtArtBez
  if(artikelid!=ArtikelBase::none_id && first_komponent)
-     {cH_ArtikelBezeichnung ab(artikelid);
+     {cH_ArtikelBezeichnung ab(make_value(ArtikelBase(artikelid)));
       std::string komp1=ab->Komponente(0);
       squery+=" and exists (select true from "+nametable+" ab "
 	" where ab.id=le.artikelid and ab.artikel="+komp1+")";
@@ -84,7 +85,7 @@ void LieferscheinList::build_list()
  squery+=")"; // on endet hier
 
  if(artikelid!=ArtikelBase::none_id && first_komponent)
-     {cH_ArtikelBezeichnung ab(artikelid);
+     {cH_ArtikelBezeichnung ab(make_value(ArtikelBase(artikelid)));
       std::string komp1=ab->Komponente(0);
       squery+=" join "+nametable+" ab on (ab.id=e.artikelid and ab.artikel="+komp1+")";
      }

@@ -1,4 +1,4 @@
-// $Id: Faden.cc,v 1.7 2003/01/08 09:46:57 christof Exp $
+// $Id: Faden.cc,v 1.8 2003/05/23 11:19:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,6 +21,7 @@
 #include "Faden.hh"
 #include "Materialeigenschaft.hh"
 #include <Misc/relops.h>
+#include <Misc/compiler_ports.h>
 
 std::ostream& operator<< (std::ostream& os, const Faden& f)
 {
@@ -328,14 +329,14 @@ void Fadenliste::EntfalteWiederholungen(std::vector<Faden> &liste_out) const
 
 fixedpoint<5> Faden::get_Gewicht_kg_pro_km_Faden() const
 {
-  Materialeigenschaft M(getMaterial());
+  Materialeigenschaft M(make_value(ArtikelBase(getMaterial())));
   // Anzahl * g/10km * kg/1000g ==> Gewicht in kg ///////////
   return getAnzahl() * M.Gewicht_g_10km() * 0.0001 ;
 }
 
 fixedpoint<5> Faden::get_Gewicht_kg_mal_anzschfaeden_pro_km_und_breite_mm_und_schussdichte_cm() const
 {
-  Materialeigenschaft M(getMaterial());
+  Materialeigenschaft M(make_value(ArtikelBase(getMaterial())));
   //  1/cm*(1cm/10mm) * g/10km*(kg/1000g) ==> Gewicht in kg ///////////
   return   2 * getAnzahl() * M.Gewicht_g_10km() * 0.00001 ;
   //usage:

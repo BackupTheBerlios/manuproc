@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.19 2003/05/19 08:59:52 christof Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.20 2003/05/23 11:19:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -170,7 +170,7 @@ ArtikelBezeichnung::ArtikelBezeichnung(int signifikanz, const std::vector<cH_Ent
  }
  catch (SQLerror &e) { throw; }
  
- *(ArtikelBase*)this=ARTIKELID;
+ *(ArtikelBase*)this=ArtikelBase(ARTIKELID);
  setzeExtBezSchema(schema);
 }
 

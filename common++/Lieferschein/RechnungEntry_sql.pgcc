@@ -57,7 +57,7 @@ throw(SQLerror)	:RechnungEntryBase(rechnung)
    where (ry.rngid,ry.zeilennr) = (:RNGID,:ZEILENNR);
  SQLerror::test(__FILELINE__);
 
-    artikel=ARTIKELID;
+    artikel=ArtikelBase(ARTIKELID);
     stueck=STUECK;
     menge=MENGE;
     preis=Preis(PREIS,Rechnung(rechnung.Id()).getWaehrung(),PREISMENGE);

@@ -1,4 +1,4 @@
-/* $Id: ArtikelBase.h,v 1.10 2003/01/08 09:46:56 christof Exp $ */
+/* $Id: ArtikelBase.h,v 1.11 2003/05/23 11:19:33 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -35,8 +35,10 @@ protected:
 
 public:
  ArtikelBase() : artikelid(none_id) {}
- ArtikelBase(const ID &stamp) throw()
+ explicit ArtikelBase(const ID stamp) throw()
    : artikelid(stamp) {}
+ const ArtikelBase &operator=(const ID i)
+ { artikelid=i; return *this; }
 
  const ID &getArtid() const {return artikelid;}
  /// I prefer this one ... (cp)

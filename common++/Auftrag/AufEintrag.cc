@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.50 2003/05/23 09:02:11 christof Exp $
+// $Id: AufEintrag.cc,v 1.51 2003/05/23 11:19:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -67,7 +67,7 @@ void AufEintrag::setLetzteLieferung(const ManuProC::Datum &datum) throw(SQLerror
 std::string AufEintrag::Planung() const
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
-  int tiefe = ArtikelBaum(ArtId()).Tiefe();
+  int tiefe = ArtikelBaum(Artikel()).Tiefe();
   return itos(maxPlanInstanz)+"/"+itos(tiefe);  
 }
 
@@ -683,7 +683,7 @@ void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftr
 
  assert(menge>0);
  try{
-      distribute_children(*this,menge,ArtId(),
+      distribute_children(*this,menge,Artikel(),
    			ArtikelInternAbbestellen_cb(*this,uid,reason));
   }catch(NoAEB_Error &e) 
   {std::cerr <<"Falsche Anzahl von AufEinträgen: "<<e.what()<<'\n'; 
