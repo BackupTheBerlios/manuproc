@@ -47,12 +47,12 @@ int main(int argc, char **argv)
       m.run();
       Petig::dbdisconnect();
    } catch (SQLerror &e)
-   {  cerr << e << '\n';
+   {  std::cerr << e << '\n';
       return 1;
    }
    
    catch (Petig::Datumsfehler &df)
-   {  cerr << df << '\n';
+   {  std::cerr << df << '\n';
       return 1;
    }   
 

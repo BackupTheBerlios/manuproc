@@ -15,7 +15,7 @@ void windowTop::changedFktF(Kunde::UpdateBitsFirma e)
      else if (e==Kunde::FFlaeche       ) kundendaten->set_flaeche(atoi(spinbutton_Flaeche->get_text().c_str()));
      else if (e==Kunde::FUnsereKundenNr) kundendaten->set_UnsereKundenNr(entry_eigene_kundennr->get_text()) ;
      else if (e==Kunde::FVerein        ) kundendaten->set_verein(entryVerein->get_text()) ;
-     else cerr<< "Falsche Funktion konektiert\n";
+     else std::cerr<< "Falsche Funktion konektiert\n";
 }
 
 
@@ -45,7 +45,7 @@ void windowTop::changedFktA(Kunde::UpdateBitsAdresse e)
      else if (e==Kunde::FBranr		) kundendaten->set_Anrede(scc_anrede->get_value());
      else if (e==Kunde::FName2		) kundendaten->set_name2(entryName2->get_text());     
 
-     else cerr<< "Falsche Funktion konektiert\n";
+     else std::cerr<< "Falsche Funktion konektiert\n";
 
   if(e==Kunde::FLieferadresse || e==Kunde::FRechnungadresse || 
      e==Kunde::FRng_an_postfach || e==Kunde::FLkz)
@@ -68,7 +68,7 @@ void windowTop::changedFktB(Kunde::UpdateBitsBank e)
      else if (e==Kunde::FZahlungsart ) { kundendaten->set_Zahlungsart(zahlungsartbox->get_value()); show_zahlungsziel();}
      else if (e==Kunde::FLieferantenkonto ) kundendaten->set_Lieferantenkonto(atoi(spinbutton_lieferantenkonto->get_text().c_str()));
      else if (e==Kunde::FGegenkonto  ) kundendaten->set_Gegenkonto(atoi(spinbutton_gegenkonto->get_text().c_str()));
-     else cerr<< "Falsche Funktion konektiert\n";
+     else std::cerr<< "Falsche Funktion konektiert\n";
 
   if(e==Kunde:: FWaehrungid || e==Kunde::FBankindex ||
      e==Kunde::FZeilenrabatt || e==Kunde::FZahlungsart)
@@ -93,7 +93,7 @@ void windowTop::changedFktS(Kunde::UpdateBitsSonst e)
      else if (e==Kunde::FAnzAusFirmenPapier) { spinbutton_firmenpapier->update(); kundendaten->set_anzahl_ausdruck_firmenpapier(spinbutton_firmenpapier->get_value_as_int());}
      else if (e==Kunde::FAnzAusWeissesPapier){ spinbutton_weissespapier->update();kundendaten->set_anzahl_ausdruck_weissespapier(spinbutton_weissespapier->get_value_as_int());}
      else if (e==Kunde::FGebDatum	) kundendaten->setGebDatum(geburtstag->get_value());
-     else cerr<< "Falsche Funktion konektiert\n";
+     else std::cerr<< "Falsche Funktion konektiert\n";
 
   if(e==Kunde::FNotiz || e==Kunde::FRechnungan || e==Kunde::FExtartbezid 
       || e==Kunde::FPreisliste || e==Kunde::FEntsorgung || 
@@ -117,7 +117,7 @@ void windowTop::activateFktS(Kunde::UpdateBitsSonst e)
      else if (e==Kunde::FKP_Notiz   ) ;
      else if (e==Kunde::FAnzAusFirmenPapier) spinbutton_weissespapier->grab_focus();
      else if (e==Kunde::FAnzAusWeissesPapier) ;
-     else cerr<< "Falsche Funktion konektiert\n";
+     else std::cerr<< "Falsche Funktion konektiert\n";
 }
 
 
@@ -136,7 +136,7 @@ void windowTop::activateFktB(Kunde::UpdateBitsBank e)
      else if (e==Kunde::FZahlungsart ) spinbutton_Rabatt->grab_focus();
      else if (e==Kunde::FLieferantenkonto ) spinbutton_gegenkonto->grab_focus();
      else if (e==Kunde::FGegenkonto  ) ;
-     else cerr<< "Falsche Funktion konektiert\n";
+     else std::cerr<< "Falsche Funktion konektiert\n";
 }
 
 
@@ -159,7 +159,7 @@ void windowTop::activateFktA(Kunde::UpdateBitsAdresse e)
      else if (e==Kunde::FLieferadresse  ) ;//die spinbuttons sind nicht konnektiert
      else if (e==Kunde::FRechnungadresse) ;
      else if (e==Kunde::FRng_an_postfach) ;
-     else cerr<< "Falsche Funktion konektiert\n";
+     else std::cerr<< "Falsche Funktion konektiert\n";
 }
 
 void windowTop::activateFktF(Kunde::UpdateBitsFirma e)
@@ -171,7 +171,7 @@ void windowTop::activateFktF(Kunde::UpdateBitsFirma e)
      else if (e==Kunde::FFlaeche       ) spinbutton_Mitarbeiter->grab_focus();
      else if (e==Kunde::FUnsereKundenNr ) spinbutton_lieferantenkonto->grab_focus();
      else if (e==Kunde::FVerein        ) ;
-     else cerr<< "Falsche Funktion konektiert\n";
+     else std::cerr<< "Falsche Funktion konektiert\n";
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -411,7 +411,7 @@ void windowTop::changedFktP(Person::UpdateBits e)
   else if (e==Person::FGebDatum) ;// {(const_cast<Person*>(&*person))->setGebDatum(geburtstag->get_value());scc_anrede->grab_focus();}
   else if (e==Person::FAnrede  ) ;// {(const_cast<Person*>(&*person))->setAnrede(scc_anrede->get_value());textPersonenPrivatNotiz->grab_focus();}
   else if (e==Person::FNotiz   ) ;// (const_cast<Person*>(&*person))->setNotiz(textPersonenPrivatNotiz->get_chars(0,textPersonenPrivatNotiz->get_length()));
-  else cerr<< "Falsche Funktion konektiert\n";
+  else std::cerr<< "Falsche Funktion konektiert\n";
   if(e==Person::FGebDatum || e==Person::FAnrede)
     update_person();
 }
@@ -423,7 +423,7 @@ void windowTop::activateFktP(Person::UpdateBits e)
      else if (e==Person::FGebDatum) ;//nicht konnektiert
      else if (e==Person::FAnrede  ) ;//nicht konnektiert
      else if (e==Person::FNotiz   ) ;//nicht konnektiert
-     else cerr<< "Falsche Funktion konektiert\n";
+     else std::cerr<< "Falsche Funktion konektiert\n";
 }
 
 gint windowTop::focus_outFktP(GdkEventFocus *ev,Person::UpdateBits e)

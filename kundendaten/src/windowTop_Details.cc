@@ -136,7 +136,7 @@ void windowTop::fillSPreis()
 {
   std::vector<cH_RowDataBase> datavec;
   try{
-  for(std::list<pair<int,PreisListe::ID> >::const_iterator i=kundendaten->Preislisten().begin();
+  for(std::list<std::pair<int,PreisListe::ID> >::const_iterator i=kundendaten->Preislisten().begin();
   		i!=kundendaten->Preislisten().end();++i)
    {
      cH_PreisListe P(i->second);

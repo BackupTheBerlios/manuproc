@@ -55,7 +55,7 @@ void windowTop::kunden_activate()
    assert(UpdateBank==0);
    assert(UpdateSonst==0);
 //   assert(UpdatePerson==0);
-   if(UpdatePerson!=0) cout << UpdatePerson<<'\n';
+   if(UpdatePerson!=0) std::cout << UpdatePerson<<'\n';
 //   clear_update_bits();
 
    kundendaten=H_Kunde(kundenauswahl->get_value());
@@ -72,7 +72,7 @@ void windowTop::kunden_activate()
 
 void windowTop::on_KundenTelefon_activate(cH_Telefon ct)
 {
-cout << "activated";
+std::cout << "activated";
 //   KundenTelefon->showTel(kundendaten->getTelefon());
 }
 
