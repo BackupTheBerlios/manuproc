@@ -1,4 +1,4 @@
-/* $Id: SearchCombo.hg,v 1.4 2003/11/10 08:23:45 christof Exp $ */
+/* $Id: SearchCombo.hg,v 1.5 2004/01/29 14:55:52 christof Exp $ */
 
 /* searchcombo.h
  * 
@@ -93,6 +93,9 @@ public:
 
   _WRAP_METHOD(void set_start_on_idle(bool val), gtk_searchcombo_set_start_on_idle)
     
+  //: please do not use this function in new programs - it's for compatibility
+  _MEMBER_GET_PTR(entry,entry,Entry*,GtkWidget*);
+  
   _WRAP_METHOD(gint get_selected_index() const, gtk_searchcombo_get_selected_index)
    
     bool empty() const {  return !get_size(); }
