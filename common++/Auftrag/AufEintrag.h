@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.53 2003/07/16 06:31:08 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.54 2003/07/17 15:57:18 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -45,6 +45,9 @@ class cH_Lieferschein;
 
 class Lager;
 class VerfuegbareMenge;
+class ProductionContext;
+class LieferscheinEntryBase;
+typedef LieferscheinEntryBase ProductionContext2;
 
 class AufEintrag : public AufEintragBase
 {
@@ -201,12 +204,15 @@ public:
 
 private:
  void Produziert_0er(mengen_t menge);
+ static void WiederEinlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
+         mengen_t menge,const ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Produziert) throw(SQLerror);
+ // bitte ProduziertNG aufrufen!         
+ void Produziert(mengen_t menge,ManuProcEntity<>::ID lfrsid);
 
 public:
  // wird z.B. von push_back verwendet
  void ArtikelInternNachbestellen(int uid,mengen_t menge,
  	ManuProC::Auftrag::Action reason) const;
- void Produziert(mengen_t menge,ManuProcEntity<>::ID lfrsid) throw(SQLerror);
 
  bool allesOK() const;
  std::string Planung() const;
@@ -252,14 +258,16 @@ public:
 
  // brauche ich noch ein statisches ProduziertNG (das nur eine Instanz erhält?)
  // z.B. (getRestStk())
- void ProduziertNG(mengen_t M);
+ void ProduziertNG(mengen_t M,const LieferscheinEntryBase &ctx);
 //internal ?
  void ProduziertNG(unsigned uid, mengen_t M,
 		const AufEintragBase &elter_alt,
-		const AufEintragBase &elter_neu);
+		const AufEintragBase &elter_neu,
+		const LieferscheinEntryBase &ctx);
  void Einlagern2(unsigned uid, mengen_t M,
 		const AufEintragBase &elter_alt,
-		const AufEintragBase &elter_neu);
+		const AufEintragBase &elter_neu,
+		const ProductionContext2 &ctx);
  // neuen (geschlossenen) 1er erzeugen (völlig unverzeigert)
  static AufEintragBase unbestellteMengeProduzieren(cH_ppsInstanz instanz,
  		const ArtikelBase &artikel,
@@ -269,16 +277,22 @@ public:
  // wird üblicherweise erst für 1er dann 2er aufgerufen
  // mit ProduziertNG vereinen?
  static mengen_t Auslagern
-	(const AuftragBase &ab,const ArtikelBase &artikel,mengen_t menge, unsigned uid,bool fuer_auftraege);
+	(const AuftragBase &ab,const ArtikelBase &artikel,mengen_t menge, 
+		unsigned uid,bool fuer_auftraege,
+		const LieferscheinEntryBase &ctx);
+ static mengen_t Auslagern
+	(cH_ppsInstanz instanz,const ArtikelBase &artikel,mengen_t menge,
+		unsigned uid,bool fuer_auftraege,
+		const ProductionContext &ctx);
    // wird aufgerufen wenn Menge ins Lager kommt (LagerBase::rein_ins_lager)
    // kümmert sich um 1er und 2er
    // sollte Aufträge als produziert markieren
    // ehemals AuftragBase::menge_neu_verplanen
    static void Einlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
-         const mengen_t &menge,bool produziert,const ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Produziert) throw(SQLerror);
+         const mengen_t &menge,bool produziert,
+         const ProductionContext &ctx,
+         const ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Produziert) throw(SQLerror);
    // Menge wurde als Produziert markiert, kam aber ins Lager zurück
-   static void WiederEinlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
-         mengen_t menge,const ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Produziert) throw(SQLerror);
 // intern aber public
    static AufEintragBase ArtikelInternNachbestellen(const cH_ppsInstanz &wo,
  	mengen_t menge,const ManuProC::Datum &lieferdatum,const ArtikelBase& artikel,

@@ -33,6 +33,7 @@
 #include <Misc/compiler_ports.h>
 #include <Artikel/ArtikelStamm.h>
 #include <math.h>
+#include <selFullAufEntry.h>
 
 bool ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al, const bool analyse_only) const throw(SQLerror)
 {  unsigned uid=getuid();

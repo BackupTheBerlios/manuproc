@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.76 2003/07/16 07:06:23 christof Exp $
+// $Id: AufEintrag.cc,v 1.77 2003/07/17 15:57:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -101,24 +101,6 @@ AufEintragBase AufEintrag::getFirstKundenAuftrag() const
  std::vector<AufEintragBase> V=AufEintragZu(*this).getKundenAuftragV();
  if(V.empty()) return *this;
  else return *(V.begin());
-}
-
-void AufEintrag::Produziert(mengen_t menge,
-   ManuProcEntity<>::ID lfrsid) throw(SQLerror)
-{
-  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("Menge",menge));
-  ProduziertNG(menge);
-
-#ifdef MABELLA_EXTENSIONS // Lager updaten
-#warning Jacek: Das muss raus, sobald es mehrstufig ist
-// if(Instanz() == ppsInstanzID::Kundenauftraege)
-//   {
-//    FertigWaren fw(Artikel(),(FertigWaren::enum_Aktion)'L',menge.as_int(),lfrsid);
-//    if(menge < 0) fw.Einlagern(1);
-//    else if(menge > 0) fw.Auslagern(1);
-//   }
-#endif
-
 }
 
 AufEintragBase AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
@@ -252,26 +234,30 @@ AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
 namespace { class MichProduzieren
 {	AufEintrag &mythis;
 	unsigned uid;
+	ProductionContext2 ctx;
 public:
 	AuftragBase::mengen_t operator()(const AufEintragBase &elter,AuftragBase::mengen_t m) const
 	{  if (elter.Id()==AuftragBase::dispo_auftrag_id) return 0;
-	   mythis.ProduziertNG(uid,m,elter,elter);
+	   mythis.ProduziertNG(uid,m,elter,elter,ctx);
 	   return m;
 	}
-	MichProduzieren(AufEintrag &_mythis) : mythis(_mythis), uid(getuid()) {}
+	MichProduzieren(AufEintrag &_mythis,const ProductionContext2 &_ctx) 
+		: mythis(_mythis), uid(getuid()), ctx(_ctx) {}
 };}
 
 // etwas bestelltes wird eingelagert -> produziert markieren & vormerken (?)
 namespace { class MichEinlagern
 {	AufEintrag &mythis;
 	unsigned uid;
+	ProductionContext2 ctx;
 public:
 	AuftragBase::mengen_t operator()(const AufEintragBase &elter,AuftragBase::mengen_t m) const
 	{  if (elter.Id()==AuftragBase::dispo_auftrag_id) return 0;
-	   mythis.Einlagern2(uid,m,elter,elter);
+	   mythis.Einlagern2(uid,m,elter,elter,ctx);
 	   return m;
 	}
-	MichEinlagern(AufEintrag &_mythis) : mythis(_mythis), uid(getuid()) {}
+	MichEinlagern(AufEintrag &_mythis,const ProductionContext2 &_ctx) 
+		: mythis(_mythis), uid(getuid()), ctx(_ctx) {}
 };}
 
 // etwas bestelltes wird eingelagert -> abbestellen & vormerken
@@ -330,10 +316,15 @@ namespace { struct Auslagern_cb
 
 AuftragBase::mengen_t AufEintrag::Auslagern
 	(const AuftragBase &ab,const ArtikelBase &artikel,mengen_t menge, 
-	 unsigned uid, bool fuer_auftraege)
+	 unsigned uid, bool fuer_auftraege,
+	 const ProductionContext2 &ctx)
 {  assert(ab.Instanz()->LagerInstanz());
    ManuProC::Trace _t(trace_channel, __FUNCTION__,ab,
 				   NV("artikel",artikel),NV("menge",menge));
+   if (menge<0)
+   { WiederEinlagern(uid,ab.Instanz(),artikel,-menge);
+     return 0;
+   }
    return
     auf_positionen_verteilen(SQLFullAuftragSelector(
 	  		SQLFullAuftragSelector::sel_Artikel_Planung_id
@@ -344,14 +335,24 @@ AuftragBase::mengen_t AufEintrag::Auslagern
      //   abschreibmenge=-min(-abmenge,i->getGeliefert());
 }
 
+AuftragBase::mengen_t AufEintrag::Auslagern
+	(cH_ppsInstanz inst,const ArtikelBase &artikel,mengen_t menge, 
+	 unsigned uid, bool fuer_auftraege,
+	 const ProductionContext &ctx)
+{  
+#warning hier fehlts ...
+   return 0;
+}
+
 namespace { class Einlagern_cb
 {	bool abbestellen;
+        ProductionContext ctx;
 public:
 	Einlagern_cb(bool abbest=false) : abbestellen(abbest) {}
 	AuftragBase::mengen_t operator()(AufEintrag &ae, AuftragBase::mengen_t m) const
 	{  AuftragBase::mengen_t rest;
 	   if (!abbestellen)
-	      rest=distribute_parents(ae,m,MichEinlagern(ae));
+	      rest=distribute_parents(ae,m,MichEinlagern(ae,ctx.leb));
 	   else
 	      rest=distribute_parents(ae,m,AbbestellenUndVormerken(ae));
            return m-rest;
@@ -389,7 +390,9 @@ void AufEintrag::MengeVormerken(cH_ppsInstanz instanz,const ArtikelBase &artikel
    // sollte Aufträge als produziert markieren
 // ehemals AuftragBase::menge_neu_verplanen
 void AufEintrag::Einlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
-         const mengen_t &menge,bool produziert,const ManuProC::Auftrag::Action reason) throw(SQLerror)
+         const mengen_t &menge,bool produziert,
+         const ProductionContext &ctx,
+         const ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
   ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("Instanz",instanz),
    NV("Artikel",artikel),NV("Menge",menge),NV("Reason",reason));
@@ -439,7 +442,7 @@ void AufEintrag::WiederEinlagern(const int uid,cH_ppsInstanz instanz,const Artik
   if (!!menge)
   {  // eigentlich soll das nicht passieren, da es ja vorher produziert wurde ...
      ManuProC::Trace(trace_channel, __FUNCTION__,NV("es ist ein Rest geblieben",menge));
-     Einlagern(uid,instanz,artikel,menge,false);
+     Einlagern(uid,instanz,artikel,menge,false,ProductionContext());
   }
 }
 
@@ -475,28 +478,6 @@ void AufEintrag::abschreiben(mengen_t menge) throw(SQLerror)
  Transaction tr;
  Query("lock table auftragentry in exclusive mode");
 
-#if 0
- bool delete_entry=false;
-
-  // Lieferung rückgängig machen, dann 1er löschen wenn es alle Menge war
-  // funktioniert nicht gut, da Zeiger verloren gehen,
-  // außerdem werden diese Einträge bald wieder erzeugt
-  if(menge<0 &&
-     Instanz()!=ppsInstanzID::Kundenauftraege &&
-     !Instanz()->ProduziertSelbst() &&
-     Id()==plan_auftrag_id)
-   {
-     BESTELLT+=menge.as_int();
-     if(BESTELLT<0) BESTELLT=0;
-     if(BESTELLT==GELIEFERT) STATUS=CLOSED;
-     if(BESTELLT==0 && GELIEFERT==0 &&  STATUS==CLOSED) delete_entry=true;
-   }
-
- if(delete_entry)
-   Query("delete from auftragentry where (instanz,auftragid,zeilennr) = (?,?,?)").lvalue()
-     << static_cast<const AufEintragBase&>(*this);
- else
-#endif
    Query("update auftragentry set geliefert=?, status=?, "
      "bestellt=?, letzte_lieferung=now() "
      "where (instanz,auftragid,zeilennr) = (?,?,?)").lvalue()
@@ -865,14 +846,14 @@ int AufEintrag::split(int uid,mengen_t newmenge, const Petig::Datum &newld,bool 
  return ZEILENNR;
 }
 
-void AufEintrag::ProduziertNG(mengen_t M)
+void AufEintrag::ProduziertNG(mengen_t M,const ProductionContext2 &ctx)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__, NV("this",*this), NV("M",M));
    if (Id()>=handplan_auftrag_id || Id()==plan_auftrag_id)
-   {  ProduziertNG(getuid(),M,AufEintragBase(),AufEintragBase());
+   {  ProduziertNG(getuid(),M,AufEintragBase(),AufEintragBase(),ctx);
    }
    else
    {  assert(M>=0);
-      if (distribute_parents(*this,M,MichProduzieren(*this))!=0)
+      if (distribute_parents(*this,M,MichProduzieren(*this,ctx))!=0)
    	 assert(!"Rest geblieben");
    }
 }
@@ -881,14 +862,16 @@ namespace {
 class ProduziertNG_cb2
 {  unsigned uid;
    AufEintragBase alterAEB,neuerAEB;
+   ProductionContext2 ctx;
 public:
-	ProduziertNG_cb2(unsigned _uid, const AufEintragBase &aAEB, const AufEintragBase &nAEB)
-		: uid(_uid), alterAEB(aAEB), neuerAEB(nAEB) {}
+	ProduziertNG_cb2(unsigned _uid, const AufEintragBase &aAEB, 
+		const AufEintragBase &nAEB,const ProductionContext2 &_ctx)
+		: uid(_uid), alterAEB(aAEB), neuerAEB(nAEB), ctx(_ctx) {}
 	AuftragBase::mengen_t operator()(const ArtikelBase &art,
 		const AufEintragBase &aeb,AuftragBase::mengen_t M) const
 	{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("aeb",aeb),NV("M",M));
 	   if (!aeb.Instanz()->ProduziertSelbst())
-              AufEintrag(aeb).ProduziertNG(uid,M,alterAEB,neuerAEB);
+              AufEintrag(aeb).ProduziertNG(uid,M,alterAEB,neuerAEB,ctx);
            else if (M<0) return 0; // soll ProdRueckgaengig2 machen ???
            else
            {  AufEintragZu(alterAEB).setMengeDiff__(aeb,-M);
@@ -957,7 +940,8 @@ public:
 // Einlagern==MengeVormerken   Auslagern==Produktion
 void AufEintrag::ProduziertNG(unsigned uid, mengen_t M,
 		const AufEintragBase &elter_alt,
-		const AufEintragBase &elter_neu)
+		const AufEintragBase &elter_neu,
+		const ProductionContext2 &ctx)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,
 			NV("this",*this),M,NV("alt",elter_alt),NV("neu",elter_neu));
    assert(Id()!=dispo_auftrag_id);
@@ -965,8 +949,8 @@ void AufEintrag::ProduziertNG(unsigned uid, mengen_t M,
    if (Instanz()->LagerInstanz())
    {  // Pfeile nach oben/von oben ???
       Lager L(Instanz());
-      if (M<0) L.wiedereinlagern(Artikel(),-M,uid);
-      else L.raus_aus_lager(Artikel(),M,uid,true);
+      // oder elter_neu?
+      L.raus_aus_lager(Artikel(),M,uid,true,ProductionContext(elter_alt,ctx));
       return;
    }
 
@@ -1018,7 +1002,7 @@ void AufEintrag::ProduziertNG(unsigned uid, mengen_t M,
    }
    ManuProC::Trace(trace_channel, "Kinder bearbeiten");
    // Kinder bearbeiten
-   distribute_children(*this,M,Artikel(),ProduziertNG_cb2(uid,*this,neuerAEB));
+   distribute_children(*this,M,Artikel(),ProduziertNG_cb2(uid,*this,neuerAEB,ctx));
    // bei ProduziertSelbst hilft obiges nicht allein (keine Pfeile nach unten)
    if (M<0)
    {  AufEintrag neuerAE=neuerAEB;
@@ -1029,14 +1013,15 @@ void AufEintrag::ProduziertNG(unsigned uid, mengen_t M,
    if(EI->AutomatischEinlagern())
    {  assert(Instanz()->ProduziertSelbst()); // sonst Endlosrekursion
       ManuProC::Trace(trace_channel, "AutomatischEinlagern");
-      LagerBase(EI).rein_ins_lager(Artikel(),M,uid,true);
+      Lager(EI).rein_ins_lager(Artikel(),M,uid,true);
    }
 }
 
 // ehemals von ProduziertNG kopiert ... aber anders?
 void AufEintrag::Einlagern2(unsigned uid, mengen_t M,
 		const AufEintragBase &elter_alt,
-		const AufEintragBase &elter_neu)
+		const AufEintragBase &elter_neu,
+		const ProductionContext2 &ctx)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,
 			NV("this",*this),M,NV("alt",elter_alt),NV("neu",elter_neu));
    if (!M) return;		
@@ -1062,7 +1047,7 @@ void AufEintrag::Einlagern2(unsigned uid, mengen_t M,
 
    ManuProC::Trace(trace_channel, "Kinder bearbeiten");
    // Kinder bearbeiten
-   distribute_children(*this,M,Artikel(),ProduziertNG_cb2(uid,*this,neuerAEB));
+   distribute_children(*this,M,Artikel(),ProduziertNG_cb2(uid,*this,neuerAEB,ctx));
    // bei ProduziertSelbst hilft obiges nicht allein (keine Pfeile nach unten)
    if (M<0)
    {  AufEintrag neuerAE=neuerAEB;
@@ -1078,7 +1063,8 @@ void AufEintrag::WurdeProduziert(mengen_t M,const AufEintragBase &ElternAEB)
    ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,M,NV("Eltern",ElternAEB));
 //   assert(M>=0);
 
-   ProduziertNG(uid,M,ElternAEB,ElternAEB);
+   assert(!"never get here");
+   ProduziertNG(uid,M,ElternAEB,ElternAEB,ProductionContext2());
 }
 
 // auf noch offene Menge beschränken

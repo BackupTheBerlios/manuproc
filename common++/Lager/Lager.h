@@ -1,4 +1,4 @@
-/* $Id: Lager.h,v 1.23 2003/07/16 06:31:08 christof Exp $ */
+/* $Id: Lager.h,v 1.24 2003/07/17 15:57:18 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -19,14 +19,16 @@
 
 #ifndef _LAGER_HH_
 #define _LAGER_HH_
-#include <Artikel/ArtikelBase.h>
-class ppsInstanzReparatur;
-#include "LagerPlatz.hh"
-#include <Auftrag/AuftragBase.h>
 #include <vector>
-#include <Misc/Handles.h>
-#include <Auftrag/selFullAufEntry.h>
-#include <Auftrag/auftrag_enums.h>
+//#include <Misc/Handles.h>
+#include <Artikel/ArtikelBase.h>
+#include <Auftrag/AufEintragBase.h>
+#include <Lieferschein/LieferscheinEntryBase.h>
+#include <Lager/LagerPlatz.hh>
+#include <Misc/Datum.h>
+//#include <Auftrag/selFullAufEntry.h>
+//#include <Auftrag/auftrag_enums.h>
+class ppsInstanzReparatur;
 class FetchIStream;
 
 class LagerInhalt
@@ -66,6 +68,17 @@ class LagerInhalt
          }
 };
 
+struct ProductionContext
+{  // Einlagern: Auftrag nach unten der erfüllt wird
+   // Auslagern: Auftrag für den es ausgelagert wird
+   AufEintragBase aeb; 
+   // zum Loggen: Lieferscheinzeile für diese Bewegung
+   LieferscheinEntryBase leb; // Auslagern
+   
+   ProductionContext() {}
+   ProductionContext(const AufEintragBase &a,const LieferscheinEntryBase &l)
+   	: aeb(a), leb(l) {}
+};
 
 class LagerBase : public cH_ppsInstanz
 {
@@ -78,7 +91,7 @@ class LagerBase : public cH_ppsInstanz
 
      // die folgenden Methoden müssen einlagern können
      friend class ppsInstanzReparatur;
-     friend void AufEintrag::ProduziertNG(unsigned, fixedpoint<0>, const AufEintragBase&, const AufEintragBase&);
+//     friend void AufEintrag::ProduziertNG(unsigned, fixedpoint<0>, const AufEintragBase&, const AufEintragBase&);
 
    protected:
       LagerBase(cH_ppsInstanz  instanz) : cH_ppsInstanz(instanz) {}
@@ -94,13 +107,23 @@ class LagerBase : public cH_ppsInstanz
    protected:
      // produziert bedeutet, dass der Artikel hergestellt wurde 
      // und nicht irgendwo "gefunden" (z.B. Inventur)
-     void rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid,bool produziert) const;
+     void rein_ins_lager(const ArtikelBase &artikel,
+     	const AuftragBase::mengen_t &menge,unsigned uid,bool produziert,
+     	const ProductionContext &ctx=ProductionContext()) const;
      
      // entspricht raus_aus_lager mit negativer Menge
-     void wiedereinlagern(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const;
+     __deprecated void wiedereinlagern(const ArtikelBase &artikel,
+     	const AuftragBase::mengen_t &menge,const int uid) const
+     {  raus_aus_lager(artikel,menge,uid,false); }
+     
      // fuer_auftrag bedeutet, dass der Artikel für einen Auftrag verwendet wurde
      // und nicht verschwunden ist (Entnahme außer der Reihe/Inventur)
-     void raus_aus_lager(const ArtikelBase &artikel,AuftragBase::mengen_t menge,const int uid,bool fuer_auftrag) const;
+     //
+     // negative Menge bedeutet: Lieferung rückgängig gemacht
+     // = wiedereinlagern
+     void raus_aus_lager(const ArtikelBase &artikel,
+     	AuftragBase::mengen_t menge,unsigned uid,bool fuer_auftrag,
+     	const ProductionContext &ctx=ProductionContext()) const;
 };
 
 class Lager : public LagerBase
@@ -109,13 +132,14 @@ class Lager : public LagerBase
       Lager(cH_ppsInstanz  instanz) ;
 // make these routines public      
      void rein_ins_lager(const ArtikelBase &artikel,
-     			const AuftragBase::mengen_t &menge,
-     			unsigned uid,bool produziert) const;
-     void wiedereinlagern(const ArtikelBase &artikel,
+     	const AuftragBase::mengen_t &menge,unsigned uid,bool produziert,
+     	const ProductionContext &ctx=ProductionContext()) const;
+     void raus_aus_lager(const ArtikelBase &artikel,
+     	AuftragBase::mengen_t menge,unsigned uid,bool fuer_auftrag,
+     	const ProductionContext &ctx=ProductionContext()) const;
+
+     __deprecated void wiedereinlagern(const ArtikelBase &artikel,
      			const AuftragBase::mengen_t &menge,
      			unsigned uid) const;
-     void raus_aus_lager(const ArtikelBase &artikel,
-     			AuftragBase::mengen_t menge,unsigned uid,
-     			bool fuer_auftrag) const;
 };
 #endif

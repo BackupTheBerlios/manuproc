@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.34 2003/07/15 15:01:15 jacek Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.35 2003/07/17 15:57:18 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -84,7 +84,7 @@ void LieferscheinEntry::changeMenge(int stueck, mengen_t menge, const Liefersche
      {  AufEintrag AE(VZusatz[0].aeb);
         // verhindern dass negative Menge auftritt
         assert (!(abmenge<0 && -abmenge>AE.getGeliefert()));
-        AE.Produziert(abmenge,Id());
+        AE.ProduziertNG(abmenge,*this);
      }
   }
   else 
@@ -104,7 +104,7 @@ void LieferscheinEntry::changeMenge(int stueck, mengen_t menge, const Liefersche
       {  AuftragBase::mengen_t abmenge3=AuftragBase::min(abmenge2,i->getRestStk());
          if (!abmenge3) continue;
            
-         i->Produziert(abmenge3,Id());
+         i->ProduziertNG(abmenge3,*this);
          addZusatzEntry(*i,abmenge3);
 
          abmenge2-=abmenge3;
@@ -132,7 +132,7 @@ void LieferscheinEntry::changeMenge(int stueck, mengen_t menge, const Liefersche
         if (!actualmenge) continue;
         
         if(i->aeb.valid()) 
-           AufEintrag(i->aeb).Produziert(actualmenge,Id());
+           AufEintrag(i->aeb).ProduziertNG(actualmenge,*this);
         if(!(i->menge + actualmenge)) deleteZusatzEntry(i->aeb);
         else updateZusatzEntry(i->aeb,i->menge + actualmenge);
         abmenge2-=actualmenge;

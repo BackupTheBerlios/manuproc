@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.31 2003/07/16 07:41:35 christof Exp $
+// $Id: Lager.cc,v 1.32 2003/07/17 15:57:18 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -23,6 +23,7 @@
 #include <Misc/relops.h>
 #include <Misc/TraceNV.h>
 #include <Misc/FetchIStream.h>
+#include <Auftrag/AufEintrag.h>
 
 Lager::Lager(cH_ppsInstanz instanz)
 : LagerBase(instanz)
@@ -38,9 +39,10 @@ Lager::Lager(cH_ppsInstanz instanz)
 
 
 void Lager::rein_ins_lager(const ArtikelBase &artikel,
-	const AuftragBase::mengen_t &menge,unsigned uid,bool produziert) const
+	const AuftragBase::mengen_t &menge,unsigned uid,bool produziert,
+	        const ProductionContext &ctx) const
 {  
- LagerBase::rein_ins_lager(artikel,menge,uid,produziert); 
+ LagerBase::rein_ins_lager(artikel,menge,uid,produziert,ctx); 
 }
 
 void Lager::wiedereinlagern(const ArtikelBase &artikel,
@@ -50,57 +52,65 @@ void Lager::wiedereinlagern(const ArtikelBase &artikel,
 }
 
 void Lager::raus_aus_lager(const ArtikelBase &artikel,
-	AuftragBase::mengen_t menge,unsigned uid,bool fuer_auftrag) const
+	AuftragBase::mengen_t menge,unsigned uid,bool fuer_auftrag,
+	        const ProductionContext &ctx) const
 {  
- LagerBase::raus_aus_lager(artikel,menge,uid,fuer_auftrag); 
+ LagerBase::raus_aus_lager(artikel,menge,uid,fuer_auftrag,ctx); 
 }
 
 
 
 
-void LagerBase::rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid,bool produziert) const
+void LagerBase::rein_ins_lager(const ArtikelBase &artikel,
+	const AuftragBase::mengen_t &menge,unsigned uid,bool produziert,
+	        const ProductionContext &ctx) const
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
      NV("Lager",*this),NV("Artikel",artikel),NV("Menge",menge));
   assert(menge>=0);
   // vielleicht doch besser nach AufEintrag?
-  AufEintrag::Einlagern(uid,*this,artikel,menge,produziert);
+  AufEintrag::Einlagern(uid,*this,artikel,menge,produziert,ctx);
 }
 
-void LagerBase::wiedereinlagern(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const
-{
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
-     NV("Lager",*this),NV("Artikel",artikel),NV("Menge",menge));
-  assert(menge>=0);
-  AufEintrag::WiederEinlagern(uid,*this,artikel,menge);
-}
-
-void LagerBase::raus_aus_lager(const ArtikelBase &artikel,AuftragBase::mengen_t menge,const int uid,bool fuer_auftrag) const 
+void LagerBase::raus_aus_lager(const ArtikelBase &artikel,
+	AuftragBase::mengen_t menge,unsigned uid,bool fuer_auftrag,
+	        const ProductionContext &ctx) const 
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
      				NV("artikel",artikel),NV("menge",menge));
-  assert(menge>=0);
-
-//  assert((*this)->ProduziertSelbst());
-//  assert(LagerInstanz());
   Transaction tr;
 
-  // alle Aufträge zu einem Artikel suchen, 1er vor 2er, 0er nicht
-  // geringstes Datum zuerst, abschreiben
-  // bei einem 2er 1er erzeugen  
-  if (menge!=0 && fuer_auftrag)
-     menge=AufEintrag::Auslagern(
-	  	AuftragBase(*this,AuftragBase::plan_auftrag_id),artikel,menge,uid,fuer_auftrag);
-  if (menge!=0)
-     menge=AufEintrag::Auslagern(
-     		AuftragBase(*this,AuftragBase::dispo_auftrag_id),artikel,menge,uid,fuer_auftrag);
-  if (menge!=0 && !fuer_auftrag)
-     menge=AufEintrag::Auslagern(
-	  	AuftragBase(*this,AuftragBase::plan_auftrag_id),artikel,menge,uid,fuer_auftrag);
-  
-  if (menge!=0 && fuer_auftrag)
-     // einfach als produziert vermerken
-     AufEintrag::unbestellteMengeProduzieren(*this,artikel,menge,uid);
+  if (!!ctx.aeb)
+  {  menge=AufEintrag::Auslagern(*this,artikel,menge,uid,fuer_auftrag,ctx);
+     if (menge>0)
+     {  AufEintrag::unbestellteMengeProduzieren(*this,artikel,menge,uid,false,ctx.aeb);
+        menge=0;
+     }
+     assert(!menge);
+  }
+  else
+  {
+   // alle Aufträge zu einem Artikel suchen, 1er vor 2er, 0er nicht
+   // geringstes Datum zuerst, abschreiben
+   // bei einem 2er 1er erzeugen
+   if (menge!=0 && fuer_auftrag)
+      menge=AufEintrag::Auslagern(
+ 	  	AuftragBase(*this,AuftragBase::plan_auftrag_id),artikel,menge,uid,fuer_auftrag,ctx.leb);
+   if (menge!=0)
+      menge=AufEintrag::Auslagern(
+      		AuftragBase(*this,AuftragBase::dispo_auftrag_id),artikel,menge,uid,fuer_auftrag,ctx.leb);
+   if (menge!=0 && !fuer_auftrag)
+      menge=AufEintrag::Auslagern(
+ 	  	AuftragBase(*this,AuftragBase::plan_auftrag_id),artikel,menge,uid,fuer_auftrag,ctx.leb);
+   
+   if (menge!=0 && fuer_auftrag)
+      // einfach als produziert vermerken
+   {  if (menge>0)
+         AufEintrag::unbestellteMengeProduzieren(*this,artikel,menge,uid);
+      else
+         assert(menge>0);
+   }
+  }
   
   tr.commit();
 }

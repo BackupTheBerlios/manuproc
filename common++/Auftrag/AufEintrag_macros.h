@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_macros.h,v 1.12 2003/07/16 06:31:08 christof Exp $ */
+/* $Id: AufEintrag_macros.h,v 1.13 2003/07/17 15:57:18 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,6 +23,8 @@
 #include <Auftrag/AufEintragZu.h>
 #include <Misc/TraceNV.h>
 #include <typeinfo>
+#include <Auftrag/sqlAuftragSelector.h>
+#include <Auftrag/selFullAufEntry.h>
 
 // one might do this with inheritance instead of templates
 
