@@ -1,4 +1,4 @@
-// $Id: vectormap.h,v 1.1 2003/09/16 08:54:37 christof Exp $
+// $Id: vectormap.h,v 1.2 2003/09/16 09:53:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -29,44 +29,49 @@
 
 template <typename _Key, typename _Tp> // perhaps some day we might need _Compare
  class vectormap_u : public std::vector<std::pair<_Key,_Tp> >
-{public:
+{
+	typedef std::vector<std::pair<_Key,_Tp> > _Rep_type;
+public:
 	typedef _Key key_type;
 	typedef _Tp mapped_type;
-	// value_type ?
-
+	typedef typename _Rep_type::value_type value_type;
+	typedef typename _Rep_type::iterator iterator;
+	typedef typename _Rep_type::const_iterator const_iterator;
+private:
+	void push_back(const value_type& __x);
+	
+	class equal
+	{  const key_type &k;
+	 public:
+	   equal(const key_type &_k) : k(_k) {}
+	   bool operator()(const value_type &b) const
+	   { return b.first==k; }
+	};
+public:
 	iterator find(const key_type& x)
-	{ return std::find(begin(),end(),x); }
+	{ return std::find_if(begin(),end(),equal(x)); }
 	const_iterator find(const key_type& x) const
-	{ return std::find(begin(),end(),x); }
+	{ return std::find_if(begin(),end(),equal(x)); }
 	
 	mapped_type &operator[](const key_type& k)
 	{  iterator i=find(k);
 	   if (i==end()) 
-	   {  push_back(value_type(k,mapped_type()));
-	      return back();
+	   {  _Rep_type::push_back(value_type(k,mapped_type()));
+	      return back().second;
 	   }
 	   return i->second;
 	}
-}
+};
 
 #if 0
-template <typename _Key, typename _Tp> // perhaps some day we might need _Compare
- class vectormap_s : public std::vector<std::pair<_Key,_Tp> >
+template <typename _Key, typename _Tp>
+ class vectormap_s : public vectormap_u<_Key,_Tp>
 {public:
-	typedef _Key key_type;
-	typedef _Tp mapped_type;
-	// value_type ?
-
-	iterator find(const key_type& x)
-	{ return std::find(begin(),end(),x); }
-	const_iterator find(const key_type& x) const
-	{ return std::find(begin(),end(),x); }
-	
 	mapped_type &operator[](const key_type& k)
 	{  iterator i=lower_bound(k);
 	   if (i==end()) 
 	   {  push_back(value_type(k,mapped_type()));
-	      return back();
+	      return back().second;
 	   }
 	   if (i->first==k)
 	   {  return i->second;
@@ -74,7 +79,7 @@ template <typename _Key, typename _Tp> // perhaps some day we might need _Compar
 	   i=insert(i,value_type(k,mapped_type()));
 	   return i->second;
 	}
-}
+};
 #endif
 
 #endif
