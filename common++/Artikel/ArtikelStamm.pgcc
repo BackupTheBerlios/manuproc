@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.35 2003/11/17 10:32:30 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.36 2004/03/09 15:21:15 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -100,10 +100,11 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
 void ArtikelStamm::set_BestellenBei(const ArtikelBase &artikel,const ppsInstanz::ID instanz)
 {
   Query("update artikelstamm set stand=now(),bestellen_bei=? "
-  	"where id=? and (bestellen_bei!=? or bestellen_bei is null)").lvalue()
+  	"where id=? ")
+//and (bestellen_bei!=? or bestellen_bei is null)").lvalue()
   	<< Query::NullIf(instanz,ppsInstanzID::None)
-  	<< artikel.Id() 
-  	<< instanz;
+  	<< artikel.Id();
+//  	<< instanz;
   SQLerror::test(__FILELINE__,100);
 
   // Und nun noch raus aus dem Cache
