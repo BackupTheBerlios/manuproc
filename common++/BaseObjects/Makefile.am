@@ -9,7 +9,7 @@ include_HEADERS=ManuProcEintrag.h ManuProcEntity.h ManuProcVorgang.h MVC.h \
 
 libBaseObjects_a_SOURCES=ManuProcEntity.cc
 
-libBaseObjects.a: $(libBaseObjects_a_OBJECTS) $(libBaseObjects_a_DEPENDENCIES)
+libBaseObjects.a: $(libBaseObjects_a_OBJECTS) $(libBaseObjects_a_DEPENDENCIES) Makefile
 	(for i in $(libBaseObjects_a_OBJECTS) ; do echo BaseObjects/$$i ; done ) >$@
 
 CLEANFILES= *~ 

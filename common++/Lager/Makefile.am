@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.11 2003/05/09 10:19:02 christof Exp $
+# $Id: Makefile.am,v 1.12 2003/05/09 10:25:22 christof Exp $
 
 ENDUSER=-DPETIG
 
@@ -13,7 +13,7 @@ includedir=@includedir@/Lager
 libProdLager_a_SOURCES= $(PGCC_Sources) Lager.cc RohwarenLager.cc \
    LagerPlatz.cc JumboRolle.cc JumboLager.cc FertigWaren.cc
 
-libProdLager.a: $(libProdLager_a_OBJECTS) $(libProdLager_a_DEPENDENCIES)
+libProdLager.a: $(libProdLager_a_OBJECTS) $(libProdLager_a_DEPENDENCIES) Makefile
 	(for i in $(libProdLager_a_OBJECTS) ; do echo Lager/$$i ; done ) >$@
 
 PGCC_Sources= Lager_Dispo_sql.cc \

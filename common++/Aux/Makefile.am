@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.35 2003/05/09 10:19:02 christof Exp $
+# $Id: Makefile.am,v 1.36 2003/05/09 10:25:22 christof Exp $
 
 AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@ @SIGC_CFLAGS@
 
@@ -24,7 +24,7 @@ libMisc_a_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
 		multi_lang.cc EntryValueTimeStamp.cc \
 		Event.cc
 
-libMisc.a: $(libMisc_a_OBJECTS) $(libMisc_a_DEPENDENCIES)
+libMisc.a: $(libMisc_a_OBJECTS) $(libMisc_a_DEPENDENCIES) Makefile
 	(for i in $(libMisc_a_OBJECTS) ; do echo Misc/$$i ; done ) >$@
 
 LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \

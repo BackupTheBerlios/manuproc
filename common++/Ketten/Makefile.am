@@ -9,7 +9,7 @@ includedir=@includedir@/Ketten
 libKetten_a_SOURCES=Kette.cc KettplanKette.cc Kettscheibe.cc ArtikelGang.cc \
 		$(BUILT_SOURCES) KettenGarn.cc
 	
-libKetten.a: $(libKetten_a_OBJECTS) $(libKetten_a_DEPENDENCIES)
+libKetten.a: $(libKetten_a_OBJECTS) $(libKetten_a_DEPENDENCIES) Makefile
 	(for i in $(libKetten_a_OBJECTS) ; do echo Ketten/$$i ; done ) >$@
 
 BUILT_SOURCES=KettplanKette2.cc KpK_get_artikel.cc \

@@ -10,7 +10,7 @@ libLieferschein_a_SOURCES=Lieferschein.cc LieferscheinEntry.cc \
 		LieferscheinList.cc LieferscheinVoll.cc $(BUILT_SOURCES) \
       Rechnung.cc 
 
-libLieferschein.a: $(libLieferschein_a_OBJECTS) $(libLieferschein_a_DEPENDENCIES)
+libLieferschein.a: $(libLieferschein_a_OBJECTS) $(libLieferschein_a_DEPENDENCIES) Makefile
 	(for i in $(libLieferschein_a_OBJECTS) ; do echo Lieferschein/$$i ; done ) >$@
         
 BUILT_SOURCES=LieferscheinEntry_sql.cc LieferscheinList_sql.cc \

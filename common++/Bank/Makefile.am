@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.5 2003/05/09 10:19:02 christof Exp $
+# $Id: Makefile.am,v 1.6 2003/05/09 10:25:22 christof Exp $
 
 CXXFLAGS=@CXXFLAGS@ @ECPG_INCLUDES@
 
@@ -11,7 +11,7 @@ includedir=@includedir@/Bank
 libBank_a_SOURCES=Bankauftrag.cc Datenfehler.cc \
 	Zahlvorgang.cc Ueberweisung.cc $(BUILT_SOURCES)
 
-libBank.a: $(libBank_a_OBJECTS) $(libBank_a_DEPENDENCIES)
+libBank.a: $(libBank_a_OBJECTS) $(libBank_a_DEPENDENCIES) Makefile
 	(for i in $(libBank_a_OBJECTS) ; do echo Bank/$$i ; done ) >$@
 
 BUILT_SOURCES=Bankauftrag2.cc

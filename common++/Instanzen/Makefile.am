@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.14 2003/05/09 10:19:02 christof Exp $
+# $Id: Makefile.am,v 1.15 2003/05/09 10:25:22 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -13,7 +13,7 @@ PGCC_Sources=ppsInstanz_sql.cc
 libInstanzen_a_SOURCES= $(PGCC_Sources) Produktionsdauer.cc \
       ppsInstanz.cc 
 
-libInstanzen.a: $(libInstanzen_a_OBJECTS) $(libInstanzen_a_DEPENDENCIES)
+libInstanzen.a: $(libInstanzen_a_OBJECTS) $(libInstanzen_a_DEPENDENCIES) Makefile
 	(for i in $(libInstanzen_a_OBJECTS) ; do echo Instanzen/$$i ; done ) >$@
 
 #LINKS= 

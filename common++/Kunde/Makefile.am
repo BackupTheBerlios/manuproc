@@ -12,7 +12,7 @@ libKunde_a_SOURCES=$(BUILT_SOURCES) Kunde.cc Person.cc KontaktListe.cc \
 
 #Adresse.cc  - das gibt es doch schon in Adresse_sql.cc
 
-libKunde.a: $(libKunde_a_OBJECTS) $(libKunde_a_DEPENDENCIES)
+libKunde.a: $(libKunde_a_OBJECTS) $(libKunde_a_DEPENDENCIES) Makefile
 	(for i in $(libKunde_a_OBJECTS) ; do echo Kunde/$$i ; done ) >$@
 
 BUILT_SOURCES=Telefon_sql.cc Kunde_sql.cc Person_sql.cc  Adresse_sql.cc \

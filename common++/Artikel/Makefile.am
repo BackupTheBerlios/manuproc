@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.22 2003/05/09 10:19:02 christof Exp $
+# $Id: Makefile.am,v 1.23 2003/05/09 10:25:22 christof Exp $
 
 AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -12,7 +12,7 @@ libArtikel_a_SOURCES=Aufmachung.cc Preis.cc ArtikelBase.cc \
 	ArtikelMengeSumme.cc ArtikelBaum_new_del.cc ArtikelBaum.cc \
 	$(BUILT_SOURCES_P)
 
-libArtikel.a: $(libArtikel_a_OBJECTS) $(libArtikel_a_DEPENDENCIES)
+libArtikel.a: $(libArtikel_a_OBJECTS) $(libArtikel_a_DEPENDENCIES) Makefile
 	(for i in $(libArtikel_a_OBJECTS) ; do echo Artikel/$$i ; done ) >$@
 	
 BUILT_SOURCES=$(BUILT_SOURCES_P)

@@ -5,7 +5,7 @@ includedir=@includedir@/ostream
 
 libostream_a_SOURCES=time_t_ostr.cc
 
-libostream.a: $(libostream_a_OBJECTS) $(libostream_a_DEPENDENCIES)
+libostream.a: $(libostream_a_OBJECTS) $(libostream_a_DEPENDENCIES) Makefile
 	(for i in $(libostream_a_OBJECTS) ; do echo ostream/$$i ; done ) >$@
         
 include_HEADERS=c++ostream.h

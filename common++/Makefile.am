@@ -7,22 +7,16 @@ lib_LIBRARIES=libcommon++.a
 
 libcommon___a_SOURCES=
 
+libcommon___a_DEPENDENCIES= Artikel/libArtikel.a Auftrag/libAuftrag.a \
+	Bank/libBank.a BaseObjects/libBaseObjects.a \
+	ExtBezSchema/libExtBezSchema.a Faeden/libFaeden.a \
+	Instanzen/libInstanzen.a Auftrag/libAuftrag.a \
+	Ketten/libKetten.a Kunde/libKunde.a Lager/libLager.a \
+	Lieferschein/libLieferschein.a Misc/libMisc.a \
+	ostream/libostream.a Vertrieb/libVertrieb.a
+
 libcommon___a_LIBADD= \
-		`cat Artikel/libArtikel.a` \
-		`cat Auftrag/libAuftrag.a` \
-		`cat Bank/libBank.a` \
-		`cat BaseObjects/libBaseObjects.a` \
-		`cat ExtBezSchema/libExtBezSchema.a` \
-		`cat Faeden/libFaeden.a` \
-		`cat Instanzen/libInstanzen.a` \
-		`cat Auftrag/libAuftrag.a` \
-		`cat Ketten/libKetten.a` \
-		`cat Kunde/libKunde.a` \
-		`cat Lager/libLager.a` \
-		`cat Lieferschein/libLieferschein.a` \
-		`cat Misc/libMisc.a` \
-		`cat ostream/libostream.a` \
-		`cat Vertrieb/libVertrieb.a` 
+		`cat $(libcommon___a_DEPENDENCIES)`
 
 BUILT_SOURCES=Misc
 
