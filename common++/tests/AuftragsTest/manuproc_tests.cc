@@ -35,22 +35,24 @@ static bool ManuProCTest(AufEintrag &AE)
 {
       {// Planen des Einkaufs (Granulat, grün)
       Auftrag PA=Auftrag(Auftrag::Anlegen(EINKAUF),ManuProC::DefaultValues::EigeneKundenId);
-      int znr=4;
+      int znr=3;
       AufEintrag AEP((AufEintragBase(EINKAUF,AuftragBase::ungeplante_id,znr)));
+      assert(AEP.Artikel()==ARTIKEL_GRANULAT_GRUEN);
       AufEintrag PAE(AEP.Planen(UID,200,PA,PLANDATUM5));
       vergleichen(Check::Menge,"planen_granulat","Planen des Einkaufs(Granulat)","P");
 
       // Spezifischen Lieferschein schreiben
       Lieferschein liefs(EINKAUF,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
-      liefs.push_back(PAE,ARTIKEL_GRANULAT_GRUEN,1,200);
-//unspezifisch   liefs.push_back(ARTIKEL_GRANULAT_GRUEN,1,200,0);
+      liefs.push_back(PAE, ARTIKEL_GRANULAT_GRUEN,1,200);
+//unspezifisch   liefs.push_back(ARTIKEL_GRANULAT_GRUEN,1,200);
       vergleichen(Check::Menge|Check::Lieferschein,"LS_teillieferung","Lieferschein (mit AEB, Granulat) anlegen","L");
       }
 
       {// Planen des Einkaufs (Metall)
       Auftrag PA=Auftrag(Auftrag::Anlegen(EINKAUF),ManuProC::DefaultValues::EigeneKundenId);
-      int znr=5;
+      int znr=4;
       AufEintrag AEP((AufEintragBase(EINKAUF,AuftragBase::ungeplante_id,znr)));
+      assert(AEP.Artikel()==ARTIKEL_METALL);
       AufEintrag PAE(AEP.Planen(UID,10,PA,PLANDATUM5));
       vergleichen(Check::Menge,"planen_weberei_fuer_lager","Planen des Einkaufs(Metall)","P2");
 
@@ -65,6 +67,7 @@ static bool ManuProCTest(AufEintrag &AE)
       Auftrag PA=Auftrag(Auftrag::Anlegen(GIESSEREI),ManuProC::DefaultValues::EigeneKundenId);
       int znr=1;
       AufEintrag AEP((AufEintragBase(GIESSEREI,AuftragBase::ungeplante_id,znr)));
+      assert(AEP.Artikel()==ARTIKEL_GRIFF_ROT);
       AufEintrag PAE(AEP.Planen(UID,500,PA,PLANDATUM5));
       vergleichen(Check::Menge,"planen_faerberei_teil","Planen der Giesserei (Griff rot)","PG");
 
