@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.21 2002/11/13 08:13:07 christof Exp $
+# $Id: Makefile.am,v 1.22 2002/12/05 08:23:10 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -25,6 +25,7 @@ libManuProC_Base_a_SOURCES=Ausgabe_neu.cc Datum.cc IOerror.cc \
 		time_t_ostr.cc \
       EntryValueBase.cc Handles.cc \
       EntryValueIntString.cc EntryValueDatum.cc $(DB_SRCES) Trace.cc
+      germanstring.cc
 
 EXTRA_DIST=dbconnect.pgcc SQLerror_postgres.pgcc Transaction.pgcc \
 	FetchIStream.pgcc
@@ -38,7 +39,8 @@ include_HEADERS=Ausgabe_neu.h CacheStatic.h Cache_Pointer.h Datum.h Handles.h \
    safemap.h string0.h mystring.h \
 	c++ostream.h mystream.h FetchIStream.h ctime_assert.h \
    EntryValueBase.h EntryValueIntString.h  EntryValueEmptyInt.h \
-   	EntryValueDatum.h EmptyInt_4TeX.h Long.h MVC.h
+   	EntryValueDatum.h EmptyInt_4TeX.h Long.h Model.h
+   	germanstring.h
 
 CLEANFILES= *~ $(BUILT_SOURCES)
 
