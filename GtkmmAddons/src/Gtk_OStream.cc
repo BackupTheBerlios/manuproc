@@ -1,4 +1,4 @@
-// $Id: Gtk_OStream.cc,v 1.2 2003/11/02 15:10:42 christof Exp $
+// $Id: Gtk_OStream.cc,v 1.3 2003/11/03 16:32:05 christof Exp $
 /*  Gtk--addons: a collection of gtk-- addons
     Copyright (C) 2002  Adolf Petig GmbH. & Co. KG
     Developed by Christof Petig <christof.petig@wtal.de>
@@ -44,10 +44,12 @@ Gtk::OStreamBase::OStreamBase(data_cbt d)
 
 std::streamsize Gtk::OStream::default_data(const char *s,std::streamsize n)
 {  data.append(s,n);
-   if (line_impl && memchr(s,'\n',n))
-   {  std::string::size_type end=data.find('\n');
-      (this->*line_impl)(data.substr(0,end));
-      data.erase(0,end!=std::string::npos?end+1:end);
+   if (line_impl) //  && memchr(s,'\n',n))
+   {  std::string::size_type end=std::string::npos;
+      while ((end=data.find('\n'))!=std::string::npos)
+      {  (this->*line_impl)(data.substr(0,end));
+         data.erase(0,end!=std::string::npos?end+1:end);
+      }
    }
    return n;
 }
@@ -63,6 +65,12 @@ void Gtk::OStreamBase::flush(gpointer _user_data,GtkDestroyNotify d)
 
    if (flush_impl) (dynamic_cast<Gtk::OStream*>(this)->*flush_impl)();
    else if (line_impl && data_impl==&OStream::default_data && !data.empty())
-      (dynamic_cast<Gtk::OStream*>(this)->*line_impl)(data);
+   {  (dynamic_cast<Gtk::OStream*>(this)->*line_impl)(data);
+      data="";
+   }
    flushed();
+}
+
+Gtk::OStream::~OStream()
+{  flush(); // flush before we destroy ourselves
 }
