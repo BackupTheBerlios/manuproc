@@ -4,6 +4,10 @@ OUTFILE=ung_lfrs
 
 AKTION=$1
 
+
+# für Lieferscheine
+INSTANZ=1
+
 psql mabelladb  -o $OUTFILE -c " \
 SELECT \
 l.lfrsid as LS_NR, \
@@ -11,7 +15,7 @@ e.zeile as zeile, \
 l.datum as datum, \
 artikel||'/'||breite||'/'||farbe||'/'||aufmachung as artikel \
 from lieferschein l join lieferscheinentry e on \
-((l.lfrsid,l.instanz)=(e.lfrsid,e.instanz) and e.status=0\
+((l.lfrsid,l.instanz)=(e.lfrsid,e.instanz) and l.instanz=$INSTANZ and e.status=0\
  and coalesce(e.lagerid,1)!=0) left join \
 rechnung r on (r.rngid=l.rngid) join artbez_3_1 b on (b.id=e.artikelid) \
 where coalesce(r.rngart,'R')='R' order by l.lfrsid,e.zeile"
@@ -22,7 +26,36 @@ a2ps -R -l60 --center-title="ungebuchte Lieferscheine" \
 --columns 1 $OUTFILE -o $OUTFILE.ps
 
 
+if [ "$AKTION" == "P" ]; then
+	if [ ! "$MANUPROC_PR_TRAY1" ]; then
+		lpr $OUTFILE.ps
+	else
+		lpr -P $MANUPROC_PR_TRAY1 $OUTFILE.ps
+	fi
+elif [ "$AKTION" == "V" ]; then
+	gv $OUTFILE.ps
+fi
 
+
+# für Wareneingang
+INSTANZ=3
+
+psql mabelladb  -o $OUTFILE -c " \
+SELECT \
+l.lfrsid as LS_NR, \
+e.zeile as zeile, \
+l.datum as datum, \
+artikel||'/'||breite||'/'||farbe||'/'||aufmachung as artikel \
+from lieferschein l join lieferscheinentry e on \
+((l.lfrsid,l.instanz)=(e.lfrsid,e.instanz) and l.instanz=$INSTANZ and e.status=0\
+ and coalesce(e.lagerid,1)!=0) left join \
+rechnung r on (r.rngid=l.rngid) join artbez_3_1 b on (b.id=e.artikelid) \
+where coalesce(r.rngart,'R')='R' order by l.lfrsid,e.zeile"
+
+
+
+a2ps -R -l60 --center-title="ungebuchter Wareneingang" \
+--columns 1 $OUTFILE -o $OUTFILE.ps
 
 
 if [ "$AKTION" == "P" ]; then
