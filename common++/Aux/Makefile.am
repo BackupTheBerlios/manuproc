@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.43 2003/09/16 21:42:18 christof Exp $
+# $Id: Makefile.am,v 1.44 2003/09/18 09:12:32 christof Exp $
 
 AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@ @SIGC_CFLAGS@
 
@@ -45,7 +45,8 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
    TraceNV.h TimeStamp.h EntryValueTimeStamp.cc EntryValueTimeStamp.h \
    Event.h Event.cc inbetween.h germanstring.h germanstring.cc \
    EntryValueIntGermanString.cc EntryValueIntGermanString.h \
-   recodestream.h bitmask.h TemporaryValue.h vectormap.h intmap.h
+   recodestream.h bitmask.h TemporaryValue.h vectormap.h intmap.h \
+   libManuProC_Base_dll.h
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
@@ -69,7 +70,7 @@ include_HEADERS=Ausgabe.h Ausgabe_neu.h Datum.h \
 		multi_lang.h EntryValueTimeStamp.h inbetween.h \
 		bitmask.h TemporaryValue.h vectormap.h germanstring.cc \
 		EntryValueIntGermanString.cc EntryValueIntGermanString.h \
-		recodestream.h intmap.h
+		recodestream.h intmap.h libManuProC_Base_dll.h
 
 CLEANFILES= *~ $(BUILT_SOURCES)
 
