@@ -1,4 +1,4 @@
-// $Id: IntStringBox_sql.pgcc,v 1.3 2002/06/20 09:27:56 christof Exp $
+// $Id: IntStringBox_sql.pgcc,v 1.4 2002/06/20 09:31:46 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++ Copyright (C)
  *  1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -25,10 +25,14 @@ bool IntStringBox::try_to_get_id()
 {
   std::string squery="select "+_int_;
   if(string_2_info_only) squery +=", "+_string2_ ;
-  squery +=" from "+_tabelle_+" where "+_string1_+
-     "='"+sc1_string->get_text()+"'";
+  squery +=" from "+_tabelle_+" where lower("+_string1_+
+     ")=lower('"+sc1_string->get_text()+"')";
   if(!_string2_.empty() && !string_2_info_only) 
-      squery   +=" and "+_string2_+"='"+sc2_string->get_text()+"'"; 
+      squery   +=" and lower("+_string2_+")=lower('"+sc2_string->get_text()+"')"; 
+
+  if(eingeschraenkt)   
+    squery+=einschraenkung;
+
   exec sql begin declare section;
     char query[1024];
     int ID;
@@ -110,8 +114,14 @@ void IntStringBox::string2_search(gboolean *_continue, GtkSCContext newsearch)
             tr2.open();
              squery = "select distinct "+_string2_+" from "+_tabelle_+" where "
                +_string2_+" ilike '"+sc2_string->get_text()+"%'" ;
-             if(!_string1_.empty()) squery += "and "+_string1_+" ilike '"
-                  +sc1_string->get_text()+"%' ";
+             if(!_string1_.empty()) 
+		{if(sc1_string->get_text().empty())
+		   squery += "and "+_string1_+"ilike '"
+                 	 +sc1_string->get_text()+"%' ";
+		 else
+		   squery += "and lower("+_string1_+")=lower('"
+                 	 +sc1_string->get_text()+"') ";
+		}
 
 	   if(eingeschraenkt)
 	     squery+=einschraenkung;
@@ -157,8 +167,14 @@ void IntStringBox::string1_search(gboolean *_continue, GtkSCContext newsearch)
             tr3.open();
              squery = "select distinct "+_string1_+" from "+_tabelle_+" where "
                   +_string1_+" ilike '"+sc1_string->get_text() +"%' ";
-             if(!_string2_.empty()) squery += "and "+_string2_+" ilike '"
-                  +sc2_string->get_text()+"%' ";
+             if(!_string2_.empty()) 
+		{if(sc2_string->get_text().empty())
+		  squery += "and "+_string2_+" ilike '"
+	                  +sc2_string->get_text()+"%' ";
+		 else
+		  squery += "and lower("+_string2_+")=lower('"
+        	          +sc2_string->get_text()+"') ";
+		}
 
 	   if(eingeschraenkt)
 	     squery+=einschraenkung;

@@ -7,7 +7,7 @@
 #include <gtk--/label.h>
 #include <gtk--/spinbutton.h>
 #include <Artikel/ArtikelBase.h>
-//#include <Aux/ppsInstanz.h>
+//#include <Instanzen/ppsInstanz.h>
 #include "ArtikelBox.hh"
 #include "ProzessBox.hh"
 

@@ -6,92 +6,101 @@
 #include <gtk--/button.h>
 #include <Aux/itos.h>
 
-void WTelefon::setNumber(int land,int vorwahl,int nummer)
+#include <rowdata.h>
+#include <Aux/EntryValueIntString.h>
+#include <SelectMatching.h>
+
+class Data_Tel :  public RowDataBase
 {
-  spinbutton_land->set_value(land);
-  spinbutton_vorwahl->set_value(vorwahl);
-//  spinbutton_nummer->set_value(nummer);
-  spinbutton_nummer->set_text(itos(nummer));
+      cH_Telefon T;
+   public:
+      Data_Tel(cH_Telefon t) : T(t){}
+      enum Spalten {NUMMER,ART};
+      virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
+       {
+         switch((Spalten)seqnr)
+          {
+            case NUMMER :  return cH_EntryValueIntString(T->Text());
+            case ART    :  
+               std::string s=T->ArtString();
+               if(T->isPrivat()) s+=" (privat)";
+               return cH_EntryValueIntString(s);
+          }
+         return cH_EntryValueIntString();
+       }
+   cH_Telefon getTelefon() const {return T;}
+};
+
+class cH_Data_Tel : public Handle<const Data_Tel>
+{
+ public:
+   cH_Data_Tel(const Data_Tel *r) : Handle<const Data_Tel>(r) {}
+};
+
+bool operator==(void *a, TelArt b)
+{  return a==(void*)b;
+}
+
+// ich vermute, dies wird nicht verwendet ... 
+void WTelefon::set_value(const cH_Telefon &t)
+{
+  _land->set_text(itos(t->Nummer().land));
+  _vorwahl->set_text(itos(t->Nummer().vorwahl));
+  _nummer->set_text(itos(t->Nummer().nummer));
+  _durchwahl->set_text(t->Nummer().durchwahl==-1 ? "" : itos(t->Nummer().durchwahl));
+  textfeld->set_text(t->getText());
+  Gtk::Menu_Helpers::SelectMatching(*option_menu,t->Nummer().art);
+  felder_anpassen(t->Nummer().art);
+}
+
+void WTelefon::felder_anpassen(TelArt art)
+{ if (art==TEL_E_MAIL || art==TEL_HOMEPAGE)
+  { //text_box->show();
+    telnummer_box->hide();
+  }
+  else
+  { //text_box->hide();
+    telnummer_box->show();
+  }
+}
+
+void WTelefon::anderer_typ()
+{ TelArt typ=TelArt(reinterpret_cast<int>(option_menu->get_menu()->get_active()->get_user_data()));
+  felder_anpassen(typ);
+cout << "andere_typ()\n";
 }
 
 gint WTelefon::try_grab_focus(GtkWidget *w,gpointer gp)
 { 
    WTelefon *this2((WTelefon*)gp);
    assert(Gtk::Table::isA(this2)); // very weak check
-   this2->spinbutton_land->grab_focus();
-   this2->spinbutton_land->select_region(0,-1);
+ if (this2->_land->is_visible()) 
+ { this2->_land->grab_focus();
+   this2->_land->select_region(0,this2->_land->get_text_length());
+ }
+ else 
+ { this2->textfeld->grab_focus();
+   this2->textfeld->select_region(0,this2->textfeld->get_text_length());
+ }
    return true;
 }
 
 WTelefon::WTelefon()
 {
-  option_menu = manage(new class Gtk::OptionMenu());
-  Gtk::OStream oms(option_menu);
+  {Gtk::OStream oms(option_menu);
   vector<pair<std::string,TelArt> > VT=Telefon::getTelArtVec();
   for(vector<pair<std::string,TelArt> >::const_iterator i=VT.begin();i!=VT.end();++i)
    {
      oms<<i->first;
      oms.flush(gpointer(i->second));
    }
+  }
+   option_menu->get_menu()->deactivate.connect(SigC::slot(static_cast<class WTelefon*>(this), &WTelefon::anderer_typ));
 
-  tree=manage(new class SimpleTree(2,2));
   setTitels();
-  Gtk::Viewport *viewport = manage(new class Gtk::Viewport());
-  viewport->set_shadow_type(GTK_SHADOW_NONE);
-  viewport->add(*tree);
-  Gtk::ScrolledWindow *scrolledwindow = manage(new class Gtk::ScrolledWindow());
-  scrolledwindow->set_policy(GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-  scrolledwindow->add(*viewport);
-
-  Gtk::Button *buttonNumLoeschen = manage(new class Gtk::Button("alte Nummer löschen"));
-
-
-  Gtk::Frame *frame_land=manage(new class Gtk::Frame("Landeskennzahl"));
-  Gtk::Adjustment *spinbutton_land_adj = manage(new class Gtk::Adjustment(0, 49, 9999, 1, 10, 10));
-  spinbutton_land = manage(new class Gtk::SpinButton(*spinbutton_land_adj, 1, 0));
-  spinbutton_land->activate.connect_after(SigC::slot(this,&WTelefon::spinbutton_land_activate));
-  frame_land->set_label_align(0, 0);
-  frame_land->set_shadow_type(GTK_SHADOW_ETCHED_IN);
-  frame_land->add(*spinbutton_land);
-
-  Gtk::Frame *frame_vorwahl=manage(new class Gtk::Frame("Vorwahl   "));
-  Gtk::Adjustment *spinbutton_vorwahl_adj = manage(new class Gtk::Adjustment(0, 0, 9999999, 1, 10, 10));
-  spinbutton_vorwahl = manage(new class Gtk::SpinButton(*spinbutton_vorwahl_adj, 1, 0));
-  spinbutton_vorwahl->activate.connect_after(SigC::slot(this,&WTelefon::spinbutton_vorwahl_activate));
-  frame_vorwahl->set_label_align(0, 0);
-  frame_vorwahl->set_shadow_type(GTK_SHADOW_ETCHED_IN);
-  frame_vorwahl->add(*spinbutton_vorwahl);
-
-  Gtk::Frame *frame_nummer=manage(new class Gtk::Frame("Nummer         "));
-//  Gtk::Adjustment *spinbutton_nummer_adj = manage(new class Gtk::Adjustment(0, 0, 999999999, 1, 10, 10));
-//  spinbutton_nummer = manage(new class Gtk::SpinButton(*spinbutton_nummer_adj, 1, 0));
-  spinbutton_nummer = manage(new class Gtk::Entry(8));
-  spinbutton_nummer->activate.connect_after(SigC::slot(this,&WTelefon::spinbutton_nummer_activate));
-  frame_nummer->set_label_align(0, 0);
-  frame_nummer->set_shadow_type(GTK_SHADOW_ETCHED_IN);
-  frame_nummer->add(*spinbutton_nummer);
-
-  Gtk::Table *subtab=manage (new class Gtk::Table(3,1));
-  Gtk::Frame *frame_neu=manage(new class Gtk::Frame("Neue Nummer eingeben"));
-  subtab->attach(*option_menu, 0, 1, 0, 1, 0, 0, 0, 0);
-  subtab->attach(*frame_land, 1, 2, 0, 1, GTK_FILL, 0, 0, 0);
-  subtab->attach(*frame_vorwahl, 2, 3, 0, 1, GTK_FILL, 0, 0, 0);
-  subtab->attach(*frame_nummer, 3, 4, 0, 1, GTK_FILL, 0, 0, 0);
-  frame_neu->set_label_align(0, 0);
-  frame_neu->set_shadow_type(GTK_SHADOW_ETCHED_IN);
-  frame_neu->add(*subtab);
-        
-
-  //Horizontal
-  attach(*frame_neu, 0, 1, 0, 1, GTK_FILL, 0, 0, 0);
-  attach(*scrolledwindow, 0, 1, 1, 2, GTK_EXPAND|GTK_FILL,GTK_EXPAND|GTK_FILL, 0, 0);
-  attach(*buttonNumLoeschen, 0, 1, 2, 3, 0, 0, 0, 0);
-
-  buttonNumLoeschen->clicked.connect(SigC::slot(static_cast<class WTelefon*>(this), &WTelefon::on_buttonNumLoeschen_clicked));
 
   clear();
   gtk_signal_connect(GTK_OBJECT(gtkobj()), "grab_focus",GTK_SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
-  show_all();
 }
 
 void WTelefon::on_buttonNumLoeschen_clicked()
@@ -102,7 +111,9 @@ void WTelefon::on_buttonNumLoeschen_clicked()
      Telefon::delTelefon(T->Id());
      TelList.remove(T);
      showTel();
+     remove(T);
    }
+cout << "loschen\n";   
 }
 
 
@@ -122,14 +133,15 @@ void WTelefon::showTel(std::list<cH_Telefon> VT)
 
 void WTelefon::showTel()
 {
+ clear(false);
  std::vector<cH_RowDataBase> datavec;
- for(std::list<cH_Telefon>::const_iterator i=TelList.begin();i!=TelList.end();++i)
+ for(std::list<cH_Telefon>::const_iterator i=TelList.begin();
+ 	i!=TelList.end();++i)
   {
     datavec.push_back(new Data_Tel(*i));
   }
  tree->setDataVec(datavec);
 }
-         
 
 bool WTelefon::getSelectedTel(cH_Telefon &T) const
 {
@@ -141,57 +153,62 @@ bool WTelefon::getSelectedTel(cH_Telefon &T) const
 }
 
 
-Telefon::st_nummer WTelefon::get_value() const
-{
-  TelArt TA = (TelArt) int(option_menu->get_menu()->get_active()->get_user_data());
-  return Telefon::st_nummer(getLand(),getVorwahl(),getNummer(),-1,TA);
+cH_Telefon WTelefon::get_value() const
+{ 
+  int durchwahl=-1;
+  TelArt typ=TelArt(reinterpret_cast<int>(option_menu->get_menu()->get_active()->get_user_data()));
+
+  if (!_durchwahl->get_text().empty()) 
+  	durchwahl=atoi(_durchwahl->get_text().c_str());
+  return cH_Telefon(typ,kundennr,persnr,
+  		atoi(_land->get_text().c_str()),
+		atoi(_vorwahl->get_text().c_str()),
+		atoi(_nummer->get_text().c_str()),
+		durchwahl,
+		textfeld->get_text());
 }
 
-int WTelefon::getLand() const
+void WTelefon::land_activate()
 {
-  gtk_spin_button_update(spinbutton_land->gtkobj());
-  return spinbutton_land->get_value_as_int();
+  _vorwahl->grab_focus();
+  _vorwahl->select_region(0,_vorwahl->get_text_length());
 }
 
-int WTelefon::getVorwahl() const
+void WTelefon::vorwahl_activate()
 {
-  gtk_spin_button_update(spinbutton_vorwahl->gtkobj());
-  return spinbutton_vorwahl->get_value_as_int();
+  _nummer->grab_focus();
+  _nummer->select_region(0,_nummer->get_text_length());
 }
 
-int WTelefon::getNummer() const
+void WTelefon::nummer_activate()
 {
-//  gtk_spin_button_update(spinbutton_nummer->gtkobj());
-//  return spinbutton_nummer->get_value_as_int();
-  std::string s=spinbutton_nummer->get_text();
-  return atoi(s.c_str());
+  _durchwahl->grab_focus();
+  _durchwahl->select_region(0,_durchwahl->get_text_length());
+}
+
+void WTelefon::durchwahl_activate()
+{
+ text_activate();
 }
 
 
-void WTelefon::spinbutton_land_activate()
-{
-  spinbutton_vorwahl->grab_focus();
-  spinbutton_vorwahl->select_region(0,-1);
+void WTelefon::text_activate()
+{ cH_Telefon ct=Telefon::create(get_value());
+  TelList.push_back(ct);
+  showTel();
+  add(ct);  
 }
 
-void WTelefon::spinbutton_vorwahl_activate()
-{
-  spinbutton_nummer->grab_focus();
-  spinbutton_nummer->select_region(0,-1);
-}
-
-void WTelefon::spinbutton_nummer_activate()
-{
-  activate();
-}
   
   
-void WTelefon::clear() const
+void WTelefon::clear(bool withtree) const
 {
- spinbutton_land->set_value(Telefon::Landeskennzahl);
- spinbutton_vorwahl->set_value(Telefon::Vorwahl);
-// spinbutton_nummer->set_value(0);
- spinbutton_nummer->set_text("");
- spinbutton_land->grab_focus();
- tree->clear();
+ _land->set_text(itos(Telefon::Landeskennzahl));
+ _vorwahl->set_text(itos(Telefon::Vorwahl));
+ _nummer->set_text("");
+ _durchwahl->set_text("");
+ textfeld->set_text("");
+ if(withtree)
+   tree->clear();
 }
+

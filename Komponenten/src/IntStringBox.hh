@@ -16,17 +16,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// generated 2000/8/28 14:42:53 CEST by christof@puck.petig.de
-// using guimm V0.5.9a
-//
-// newer (non customized) versions of this file go to PreisBox.hh_gui
-
-// you might replace
-//    class Foo : public Foo_gui { ... };
-// by
-//    typedef Foo_gui Foo;
-// if you didn't make any modifications to the widget
-
 #ifndef _INTSTRINGBOX_HH
 #  include "IntStringBox_gui.hh"
 #  define _INTSTRINGBOX_HH
@@ -38,20 +27,31 @@ class IntStringBox : public IntStringBox_gui
   friend class IntStringBox_gui;
         void int_activate();
         void int_search(gboolean *_continue, GtkSCContext newsearch);
-        void string_activate();
-        void string_search(gboolean *_continue, GtkSCContext newsearch);
-        void stringz_activate();
-        void stringz_search(gboolean *_continue, GtkSCContext newsearch);
+        void string1_activate();
+        void string1_search(gboolean *_continue, GtkSCContext newsearch);
+        void string2_activate();
+        void string2_search(gboolean *_continue, GtkSCContext newsearch);
         static gint try_grab_focus(GtkWidget *w,gpointer gp);
 
 	int id;
 	Transaction tr,tr2,tr3;
-   bool einschraenkung_b;
+
+   bool eingeschraenkt:1;
+   std::string einschraenkung;
+   std::string joinstring;
+
+   bool string_2_info_only;
+
+   bool try_to_get_id();
+
 protected:
-   std::string _tabelle_,_string_,_stringz_,_int_;
+   std::string _tabelle_,_string1_,_string2_,_int_;
+   int _none_id_;
 
 public:
 	IntStringBox();
+	// das findet aber nicht unbedingt meine Zustimmung, schlieﬂlich soll
+	// das eine _Int_String Box sein ...
    void setLabel(const std::string &nr,const std::string &name,const std::string& namez="");
    void setLabel(long int nr);
 
@@ -59,13 +59,16 @@ public:
 	void set_value(int i,const std::string &s,const std::string &sz="") ;
 	virtual void set_value(int i)=0 ;
    void hide_int(bool b);
-   void show_stringz(bool b);
-   void stringz_set_sensitive(bool b);
-	void reset();
-   void clear() {reset();}
+   void show_string2(bool b);
+//   void string2_set_sensitive(bool b);
+   void string2_info_only(bool b);
+   void clear(){reset();}
+   void reset();
 
-//   void Einschraenken_b(bool an);
+   void Einschraenken(bool an);
+   void Einschraenkung(const std::string &e, bool an=true);
 	
 	SigC::Signal0<void> activate;
+	SigC::Signal0<void> reset_signal;
 };
 #endif

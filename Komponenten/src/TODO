@@ -1,6 +1,4 @@
-stutze eliminieren:
+ArtikelBox:
 
-- Leaves einfügen, Nodes nach Bedarf erzeugen
-- Problem: Nodes haben nur einen Wert, zum Umbenennen müssen aber mehrere
-	bekannt sein (Liste/Vektor bis zum Node runter?)
-- danach Summen aktualisieren
+- beim Anlegen feuert activate nicht mehr
+- bei Breitensuche wird die Liste nicht gefüllt

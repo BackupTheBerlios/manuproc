@@ -27,7 +27,7 @@
 
 void Check::teste(e_check check)
 {
-  dump();  
+  dump(check);  
   vergleich(check);
 }
 
@@ -88,12 +88,14 @@ void Check::vergleich(e_check check)
 }
 
 
-void Check::dump()
+void Check::dump(e_check check)
 {
   system("rm /tmp/auftragsentryzuordnung");
   system("rm /tmp/auftragentry");
   system("rm /tmp/auftragentry_sed");
 
+//if(check == Jumbo_raus || check ==Jumbo_rein) => Christof
+  
   std::string s="pg_dump -i -c -O -x -T -t auftragsentryzuordnung testdb > /tmp/auftragsentryzuordnung";
   system(s.c_str());
 

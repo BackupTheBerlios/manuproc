@@ -24,7 +24,7 @@
 #include <unistd.h>
 #include <Aux/FetchIStream.h>
 #if (defined PETIG_EXTENSIONS) || (defined MABELLA_EXTENSIONS) 
-#include <Aux/ppsInstanz.h>
+#include <Instanzen/ppsInstanz.h>
 #include <Artikel/Prozess.h>
 #endif
 #ifdef MABELLA_EXTENSIONS

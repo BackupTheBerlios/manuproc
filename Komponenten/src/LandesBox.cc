@@ -1,5 +1,5 @@
 /*  libKomponenten: GUI components for ManuProC's libcommon++
- *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,26 +16,23 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "PersonenBox.hh"
+#include "LandesBox.hh"
+#include <Kunde/LandesListe.h>
 
-PersonenBox::PersonenBox()
+LandesBox::LandesBox()
 {
-  _tabelle_="ku_person";
-  _string1_="name";
-  _string2_="vname";
-  _int_="persnr";
-  _none_id_=Person::none_id;
-  setLabel("Id","Nachname","Vorname");
+  hide_int(true);
+  string2_info_only(true);
   show_string2(true);
+  _tabelle_="ku_land";
+  _string1_="name";
+  _string2_="lkz";
+  _int_="id";
+  _none_id_=LandesListe::none_id;
+  setLabel("LKZ","Land","LKZ");
 }
 
-void PersonenBox::set_value(int i)
-{  cH_Person PL(i);
-   IntStringBox::set_value(PL->Id(),PL->Name(),PL->Vorname());
+void LandesBox::set_value(int i)
+{  cH_LandesListe LL(i);
+   IntStringBox::set_value(LL->Id(),LL->Name(),LL->LKZ());
 }
-
-cH_Person PersonenBox::get_value()
-{
-  return cH_Person(IntStringBox::get_value());
-}
-

@@ -1,82 +1,52 @@
 #ifndef _WID_TELEFON_HH
 #  define _WID_TELEFON_HH
 
-#include <gtk--/spinbutton.h>
-#include <gtk--/optionmenu.h>
-#include <gtk--/table.h>
-#include <gtk--/frame.h>
-#include <SimpleTree.hh>
+#include "WTelefon_glade.hh"
 #include <Kunde/Telefon.h>
+#include <Kunde/Kunde.h>
 #include <list> 
 
-class WTelefon : public Gtk::Table
-{
+class WTelefon : public WTelefon_glade
+{	friend class WTelefon_glade;
  private:
-   class Gtk::OptionMenu *option_menu;
-   class Gtk::SpinButton *spinbutton_land; 
-   class Gtk::SpinButton *spinbutton_vorwahl; 
-//   class Gtk::SpinButton *spinbutton_nummer; 
-   class Gtk::Entry *spinbutton_nummer;
-   class SimpleTree *tree;
+  ManuProcEntity::ID kundennr;
+  ManuProcEntity::ID persnr;
 
-   std::list<cH_Telefon> TelList;
+//   std::list<cH_Telefon> TelList;
 
    void setTitels();
    void showTel();
 
-   void spinbutton_land_activate();
-   void spinbutton_vorwahl_activate();
-   void spinbutton_nummer_activate();
+   void anderer_typ();
+   void land_activate();
+   void vorwahl_activate();
+   void nummer_activate();
+   void durchwahl_activate();
+   void text_activate();
 
    bool getSelectedTel(cH_Telefon &T) const;
    void on_buttonNumLoeschen_clicked();
+   void felder_anpassen(TelArt art);
 
    static gint try_grab_focus(GtkWidget *w,gpointer gp);
+   
+   std::list<cH_Telefon> TelList;
+
  public:
    WTelefon();
-   void setNumber(int land,int vorwahl,int nummer);
-   void setNumber(int vorwahl,int nummer) {setNumber(49,vorwahl,nummer); }
-   void setNumber(Telefon::st_nummer T) {setNumber(T.land,T.vorwahl,T.nummer);}
+   
+   void set_value(const cH_Telefon &v);
+   cH_Telefon get_value() const;
+   
    void showTel(std::list<cH_Telefon> VT);
+   void setKdPer(const ManuProcEntity::ID kid, const ManuProcEntity::ID pid)
+	{kundennr=kid, persnr=pid;}
 
-   int getLand() const;
-   int getVorwahl() const;
-   int getNummer() const;
-   Telefon::st_nummer get_value() const;
-   void clear() const;
+   void clear(bool withtree=true) const;
 
-   SigC::Signal0<void> activate;
+   SigC::Signal1<void,cH_Telefon> add;
+   SigC::Signal1<void,cH_Telefon> remove;
 };
 
-#include <rowdata.h>
-#include <Aux/EntryValueIntString.h>
-
-class Data_Tel :  public RowDataBase
-{
-      cH_Telefon T;
-   public:
-      Data_Tel(cH_Telefon t) : T(t){}
-      enum Spalten {NUMMER,ART};
-      virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
-       {
-         switch((Spalten)seqnr)
-          {
-            case NUMMER :  return cH_EntryValueIntString(T->NummerStr());
-            case ART    :  
-               std::string s=T->ArtString();
-               if(T->isPrivat()) s+=" (privat)";
-               return cH_EntryValueIntString(s);
-          }
-         return cH_EntryValueIntString();
-       }
-   cH_Telefon getTelefon() const {return T;}
-};
-
-class cH_Data_Tel : public Handle<const Data_Tel>
-{
- public:
-   cH_Data_Tel(const Data_Tel *r) : Handle<const Data_Tel>(r) {}
-};
- 
 
 #endif

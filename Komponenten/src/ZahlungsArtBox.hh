@@ -1,5 +1,5 @@
 /*  libKomponenten: GUI components for ManuProC's libcommon++
- *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,26 +16,27 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "PersonenBox.hh"
+// generated 2000/8/28 14:42:53 CEST by christof@puck.petig.de
+// using glademm V0.5.9a
+//
+// newer (non customized) versions of this file go to PreisBox.hh_glade
 
-PersonenBox::PersonenBox()
-{
-  _tabelle_="ku_person";
-  _string1_="name";
-  _string2_="vname";
-  _int_="persnr";
-  _none_id_=Person::none_id;
-  setLabel("Id","Nachname","Vorname");
-  show_string2(true);
-}
+// you might replace
+//    class Foo : public Foo_glade { ... };
+// by
+//    typedef Foo_glade Foo;
+// if you didn't make any modifications to the widget
 
-void PersonenBox::set_value(int i)
-{  cH_Person PL(i);
-   IntStringBox::set_value(PL->Id(),PL->Name(),PL->Vorname());
-}
+#ifndef _ZAHLUNGSARTBOXX_HH
+#  define _ZAHLUNGSARTBOXX_HH
 
-cH_Person PersonenBox::get_value()
-{
-  return cH_Person(IntStringBox::get_value());
-}
+#include <IntStringBox.hh>
 
+class ZahlungsArtBox : public IntStringBox
+{	
+
+public:
+	ZahlungsArtBox();
+	void set_value(int i) ;
+};
+#endif

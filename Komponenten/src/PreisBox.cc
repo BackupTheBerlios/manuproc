@@ -17,17 +17,24 @@
  */
 
 #include "PreisBox.hh"
+#include <Aux/itos.h>
 
 PreisBox::PreisBox()
 {
   _tabelle_="ku_preisliste";
-  _string_="notiz";
+  _string1_="notiz";
   _int_="prlsnr";
+  _none_id_=PreisListe::none_id;
   setLabel("Nr.","Bezeichnung");
+
+#ifdef MABELLA_EXTENSIONS
+  sc_int->set_always_fill(true);
+#endif
+  
 }
 
 void PreisBox::set_value(int i)
 {  cH_PreisListe PL(i);
-   IntStringBox::set_value(PL->Id(),PL->Name());
+   IntStringBox::set_value(PL->Id(), PL->Name());
 }
 

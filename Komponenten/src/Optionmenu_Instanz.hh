@@ -4,7 +4,7 @@
 #include <gtk--/optionmenu.h>
 #include <vector>
 #include <string>
-#include <Aux/ppsInstanz.h>
+#include <Instanzen/ppsInstanz.h>
 
 
 class Optionmenu_Instanz :  public Gtk::OptionMenu

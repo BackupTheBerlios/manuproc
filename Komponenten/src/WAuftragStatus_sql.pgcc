@@ -30,7 +30,7 @@ void WAuftragStatus::fuelleMenu()
    ::add(os,UNCOMMITED);
    ::add(os,OPEN);
    ::add(os,CLOSED);
-//   ::add(os,STORNO);
+   ::add(os,STORNO);
   }
 
 // erst NACH dem zerstören von 'os' existiert das Menu 

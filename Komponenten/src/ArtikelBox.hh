@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.14 2002/04/11 11:57:59 christof Exp $
+// $Id: ArtikelBox.hh,v 1.15 2002/06/20 09:27:56 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -30,6 +30,7 @@
 #include <gtk--/eventbox.h>
 #include "SearchCombo.h"
 #include <gtk--/pixmap.h>
+#include <gtk--/tooltips.h>
 
 class ArtikelBoxErr
 {
@@ -47,6 +48,41 @@ public:
  const std::string ErrMsg() const;
 };
 
+class ArtikelBoxAnzeige
+{	int anzeige_pos,anzeige_neg,auswahl;
+	bool autocomplete,kombiniert;
+	cH_ExtBezSchema schema;
+public:
+	ArtikelBoxAnzeige(cH_ExtBezSchema s)
+	: anzeige_pos(0), anzeige_neg(0), auswahl(0),
+	  autocomplete(false), kombiniert(false), schema(s)
+	{}
+	
+	static ArtikelBoxAnzeige Laden(cH_ExtBezSchema schema);
+	void Speichern() const;
+	
+	cH_ExtBezSchema Schema() const { return schema; }
+	void Schema(cH_ExtBezSchema s) { schema=s; }
+	
+	bool Sichtbar(int signifikanz) const
+	{  if (!signifikanz) return false;
+	   else if (signifikanz<0) return anzeige_neg&(1<<(-signifikanz-1));
+	   else return anzeige_pos&(1<<(signifikanz-1));
+	}
+	void Sichtbar(int signifikanz,bool ja)
+	{  if (signifikanz<0) 
+		anzeige_neg=(anzeige_neg&~(1<<(-signifikanz-1)))|(ja?(1<<(-signifikanz-1)):0);
+	   else if (signifikanz>0) 
+		anzeige_pos=(anzeige_pos&~(1<<(signifikanz-1)))|(ja?(1<<(signifikanz-1)):0);
+	}
+	int Auswahl() const { return auswahl; }
+	void Auswahl(int a) { auswahl=a; }
+	bool AutoComplete() const { return autocomplete; }
+	void AutoComplete(bool ja) { autocomplete=ja; }
+	bool Kombiniert() const { return kombiniert; }
+	void Kombiniert(bool ja) { kombiniert=ja; }
+};
+
 class ArtikelBox : public Gtk::EventBox
 {
 // friend class SigC::ObjectSlot3_<void,int *,GtkSCContext,unsigned int,ArtikelBox>;
@@ -59,11 +95,15 @@ class ArtikelBox : public Gtk::EventBox
  bool labelbool:1;
  bool automatisch_anlegen_bool;
  bool eingeschraenkt:1;
- bool alle_artikel_anzeigen_bool;
- bool alle_artikel_anzeigen_mit_id_bool;
+ bool alle_artikel_anzeigen_bool:1;
+ bool alle_artikel_anzeigen_mit_id_bool:1;
+ bool artikel_automatisch_finden:1;
 
  std::string sprogram,sposition;
  cH_ExtBezSchema schema;
+ // Idee: dieses Schema will man für neue ArtikelTypen verwenden auch wenn
+ // zwischendurch andere aktiv waren (z.B. 1)
+ ExtBezSchema::ID gewaehltesSchema;
  std::string einschraenkung;
  std::string joinstring;
 
@@ -90,6 +130,8 @@ class ArtikelBox : public Gtk::EventBox
  Gtk::Pixmap *pixmap;
  Gtk::Label *label_typ;
  Gtk::CheckMenuItem *label;
+ 
+ Gtk::Tooltips tooltips;
 
  // ---- internal methods ----
  void searchFunc(int *cont, GtkSCContext newsearch, guint sp, guint l) throw(SQLerror);
@@ -99,13 +141,11 @@ class ArtikelBox : public Gtk::EventBox
  gint MouseButton(GdkEventButton *);
  void TypSelected(int typ);
  void fuelleMenu();
- std::string kombinierteAnzeige(int sig, int atyp, int id);
+ static std::string kombinierterName(cH_ExtBezSchema schema, int signifikanz);
  void Autocomplete(Gtk::CheckMenuItem *autocomplete);
  void kombiniert(Gtk::CheckMenuItem *kombi);
  void set_Label(Gtk::CheckMenuItem *label);
- std::vector<cH_EntryValue> expand_kombi_Artikel(unsigned int l,std::string text);
- enum enum_art_label {ARTIKEL,LABEL};
- std::vector<cH_EntryValue> expand_kombi(unsigned int l,enum_art_label eal);
+ 
  void set_Vertikal(Gtk::CheckMenuItem *verti);
  void einschraenken_cb(Gtk::CheckMenuItem *einschr_mi);
  void Benutzerprofil_speichern();
@@ -118,7 +158,7 @@ class ArtikelBox : public Gtk::EventBox
  unsigned int intern_id(int typ);
  void where_what(std::string& where, std::string& what,bool jumbo);
  bool neuanlegen();
- int artikel_exist(bool jumbo);
+ ArtikelBase::ID artikel_exist(bool jumbo);
  void insert_into_artikelzusammensetzung(int id, int id_jumbo, int prozess,double menge);
  double get_menge_from_artikelbox();
 
@@ -133,6 +173,16 @@ class ArtikelBox : public Gtk::EventBox
  void setzeSchemaTyp(int t2);
  void setzeSignifikanz(int t);
  void pixmap_setzen(bool);
+ bool BreitenSuche(GtkSCContext newsearch,unsigned int sp=0,unsigned int l=0,int *cont=0);
+
+// Kombiniert/nicht kombiniert: Zugriff auf Combos
+ std::vector<cH_EntryValue> get_content(unsigned int l=0,unsigned int spmax=G_MAXINT) const;
+ void set_content(const std::vector<cH_EntryValue> &v,unsigned int l=0);
+ std::vector<cH_EntryValue> expand_kombi_Artikel(unsigned int l,std::string text) const;
+ static std::string Kombinieren(cH_ExtBezSchema schema, unsigned int signif,const std::vector<std::string> &v);
+ static std::string Kombinieren(cH_ExtBezSchema schema, unsigned int signif,const std::vector<cH_EntryValue> &v);
+ enum enum_art_label {ARTIKEL,LABEL};
+ std::vector<cH_EntryValue> expand_kombi(unsigned int l,enum_art_label eal) const;
 
 public:
 	ArtikelBox(const cH_ExtBezSchema &_schema) throw(SQLerror);
@@ -141,13 +191,9 @@ public:
 
 	const cH_ExtBezSchema getBezSchema() const { return schema; }
 	void setExtBezSchema(const cH_ExtBezSchema &_schema);
-
-private: // come on, rethink your strategy
-// dangerous! no range checking!
-	const std::string operator[](guint i) const 
-	{ return combos[0][i]->get_text(); }
 	
-public:
+	void setExtBezSchemaID(ExtBezSchema::ID id); // ein Schema vorgeben, aber keinen ArtikelTyp
+
    void reset()
    { for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
       for (t_combos::iterator i=j->begin();i!=j->end();++i)
@@ -196,5 +242,8 @@ public:
 	SigC::Signal0<void> activate;
 	SigC::Signal1<void,ArtikelBase::ID> new_article_inserted;
 	SigC::Signal1<void,gpointer> MenueAusgewaehlt;
+	
+	// nette Dinge für jeden (?)
+	static std::string Tabellenname(cH_ExtBezSchema s);
 };
 #endif

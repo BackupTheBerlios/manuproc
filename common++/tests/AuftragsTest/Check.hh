@@ -1,4 +1,4 @@
-// $Id: Check.hh,v 1.2 2002/06/20 06:54:51 christof Exp $
+// $Id: Check.hh,v 1.3 2002/06/20 09:35:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -37,7 +37,7 @@ class Check
                  ZweiAuftraege_anlegen,ZweiterAuftrag_frueheresDatum,
                  Jumbo_raus,Jumbo_rein};
  private:
-   void dump();
+   void dump(e_check);
    void vergleich(e_check);
  public:
    Check(){}; 

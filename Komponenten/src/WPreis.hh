@@ -24,13 +24,13 @@ class WPreis : public Gtk::Table
       void waehrung();
       void preismenge();
       void einheit();
-      // wozu sollte man das brauchen ? CP
-//      int get_text_length(){return SP->get_text().size();}
+
    public:
       WPreis(bool wwaehrung=true);
       ~WPreis(){}
 
       SigC::Signal0<void> activate;
+      SigC::Signal0<void> preis_changed;
       
       void set_value(const Preis &p);
       const Preis get_value() const;

@@ -42,7 +42,6 @@ class PreisBox : public IntStringBox
 public:
 	PreisBox();
 	void set_value(int i) ;
-//   void Einschraenken_b(bool an);
 	
 };
 #endif

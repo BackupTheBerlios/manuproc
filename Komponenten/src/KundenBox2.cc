@@ -1,5 +1,5 @@
 /*  libKomponenten: GUI components for ManuProC's libcommon++
- *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,26 +16,31 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "PersonenBox.hh"
+#include "KundenBox2.hh"
 
-PersonenBox::PersonenBox()
+KundenBox2::KundenBox2()
 {
-  _tabelle_="ku_person";
-  _string1_="name";
-  _string2_="vname";
-  _int_="persnr";
-  _none_id_=Person::none_id;
-  setLabel("Id","Nachname","Vorname");
+  _tabelle_="kunden";
+  _string1_="coalesce(sortname,firma)";
+  _string2_="coalesce(ort,'')";
+  _int_="kundennr";
+  _none_id_=Kunde::none_id;  
+  setLabel("Id","Firma","Ort");
   show_string2(true);
 }
 
-void PersonenBox::set_value(int i)
-{  cH_Person PL(i);
-   IntStringBox::set_value(PL->Id(),PL->Name(),PL->Vorname());
+void KundenBox2::set_value(int i)
+{  cH_Kunde PL(i);
+   IntStringBox::set_value(PL->Id(),PL->firma(),PL->ort());
 }
-
-cH_Person PersonenBox::get_value()
+/*
+cH_Kunde KundenBox2::get_value() const 
 {
-  return cH_Person(IntStringBox::get_value());
+  return cH_Kunde(IntStringBox::get_value());
+}
+*/
+Kunde::ID KundenBox2::get_value() const
+{
+  return IntStringBox::get_value();
 }
 

@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.cc,v 1.2 2002/06/20 06:54:51 christof Exp $
+// $Id: steuerprogramm.cc,v 1.3 2002/06/20 09:35:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -83,16 +83,16 @@ void auftragstests(e_mode mode)
        C.teste(Check::Planen_Kupfer);
        cout << "Planen des Kupfereinkaufs beendet\n\n";
        }
-/*
+
        {
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Faerberei),Kunde::default_id);
        int faerberei_znr=1;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Faerberei,AuftragBase::ungeplante_id,faerberei_znr));
-       AEP.Planen(UID,8000,PA,PLANDATUM);
+       AEP.Planen(UID,7000,PA,PLANDATUM);
        C.teste(Check::Planen_Faerberei_teil);
        cout << "Teil-Planen der Färberei beendet\n\n";
        }
-*/
+
       break;
      }
     case Splittest :

@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.13 2002/04/19 15:26:03 christof Exp $
+# $Id: Makefile.am,v 1.14 2002/06/20 09:27:56 christof Exp $
 CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK_INCLUDES@ @COMMONXX_INCLUDES@  
 
@@ -8,7 +8,7 @@ LINKS= EingabeBox.cc EingabeBox.hh datewin.cc datewin.h \
 	datewin_glade.cc datewin_glade.hh logwin.cc logwin.h \
 	rowdata.h tclistleaf.cc tclistleaf.h tclistnode.cc tclistnode.h \
 	tclistrowdata.cc tclistrowdata.h treebase.cc treebase.h \
-	treebase_data.h
+	treebase_data.h 
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
@@ -25,7 +25,7 @@ include_HEADERS = datewin.h logwin.h\
    Optionmenu_Warengruppe.hh PPixmap.hh \
    Optionmenu_Einheit.hh PreisBox.hh WTelefon.hh \
    IntStringBox.hh IntStringBox_gui.hh PersonenBox.hh \
-   LandesBox.hh KundenBox2.hh
+   LandesBox.hh KundenBox2.hh ZahlungsArtBox.hh
 
 lib_LIBRARIES= libKomponenten.a
 
@@ -41,16 +41,19 @@ libKomponenten_a_SOURCES=datewin.cc \
       Optionmenu_Einheit.cc \
       Optionmenu_Instanz.cc \
       WTelefon.cc \
+      WTelefon_glade.cc \
       IntStringBox_gui.cc \
       IntStringBox.cc \
       PersonenBox.cc \
       PreisBox.cc \
+      WPreis.cc \
       LandesBox.cc \
-      KundenBox2.cc
+      KundenBox2.cc \
+      ZahlungsArtBox.cc
 
 BUILT_SOURCES_L= ArtikelBox_sql.cc ProzessBox_sql.cc KundenBox_sql.cc $(LINKS) \
-   WWaehrung_sql.cc WPreis_sql.cc WAuftragStatus_sql.cc \
-   Optionmenu_Warengruppe_sql.cc IntStringBox_sql.cc
+   WWaehrung_sql.cc WAuftragStatus_sql.cc \
+   Optionmenu_Warengruppe_sql.cc IntStringBox_sql.cc AB_Breitensuche_sql.cc
 
 BUILT_SOURCES=datewin.hh SimpleTree.hh logwin.hh $(BUILT_SOURCES_L) 
 
