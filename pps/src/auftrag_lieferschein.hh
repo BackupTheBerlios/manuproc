@@ -57,7 +57,7 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
 
 //	AufEintragBase2 auftragentry;
 //	ArtikelBase artikel;
-//	TCListRowData *selectedrow;
+//	TreeRow *selectedrow;
 	
 	void clear_offauf();
 	// refresh display

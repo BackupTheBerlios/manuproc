@@ -30,7 +30,9 @@ class auftrag_rechnung : public auftrag_rechnung_glade
         SigC::Connection timeout_connection;
 //        RechnungVoll rechnungvoll;
         Rechnung rechnung;
-
+         
+        void fill_optionmenu_zahlungsart();
+        void optionmenu_zahlart_deactivate();
         void set_tree_titles();
         void set_rtree_daten_content(RechnungBase::ID rngid);
         void set_rtree_offen_content();
@@ -60,8 +62,8 @@ class auftrag_rechnung : public auftrag_rechnung_glade
 	void rabatt_geaendert();
 	void redisplay();
 
-// TCListRowData *selectedrow_lief;
-// TCListRowData *selectedrow_rng;
+// TreeRow *selectedrow_lief;
+// TreeRow *selectedrow_rng;
 // cH_Kunde kunde;
 
 public:

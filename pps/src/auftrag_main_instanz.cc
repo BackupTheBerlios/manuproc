@@ -18,7 +18,6 @@ void auftrag_main::on_button_neue_anr_clicked()
 
 void auftrag_main::loadAuftrag(const AuftragBase& auftragbase)
 {
-if(instanz_auftrag)
   try { AuftragBase ab(auftragbase);
         if(instanz_auftrag) delete instanz_auftrag;
         instanz_auftrag = new AuftragFull(ab);
@@ -26,7 +25,7 @@ if(instanz_auftrag)
       { cerr << e ; instanz_auftrag=NULL; return;} 
         catch (Kalenderwoche::error &e)
       { cerr << "KW error\n"; } 
-cout <<"SIZE = "<< instanz_auftrag->size()<<'\n';
+//cout <<"SIZE = "<< instanz_auftrag->size()<<'\n';
  show_neuer_auftrag();
  searchcombo_auftragid->setContent(instanz_auftrag->getAuftragidToStr(),'0');
 }
@@ -43,11 +42,18 @@ void auftrag_main::tree_neuer_auftrag_leaf_selected(cH_RowDataBase d)
   Data_neuer_auftrag *Dna = const_cast<Data_neuer_auftrag*>(dt); 
   AufEintragBase IA=Dna->get_AufEintragBase();
 
-  IA.deleteAuftragEntry();
+  list<pair<AufEintragBase2,long> > ReferenzAufEintragK = IA.get_Referenz_AufEintragBase2(); // Entsprechenden Kundenauftrag hohlen
+  list<pair<AufEintragBase2,long> > ReferenzAufEintragR = IA.get_Referenz_AufEintragBase2(false); // direkte Referenen hohlen
 
-  list<pair<AufEintragBase2,long> > ReferenzAufEintrag = IA.get_Referenz_AufEintragBase2();
+  if(!IA.deleteAuftragEntry())  // Auftrag hat noch Kinder?
+   {
+     info_label_instanzen->set_text("Auftrag kann nicht gelöscht werden, es gibt noch Kindaufträge"); 
+     return;
+   }
+
+//  list<pair<AufEintragBase2,long> > ReferenzAufEintrag = IA.get_Referenz_AufEintragBase2();
   int tmp_menge = IA.getStueck();
-  for (list<pair<AufEintragBase2,long> >::iterator i=ReferenzAufEintrag.begin();i!=ReferenzAufEintrag.end();++i)
+  for (list<pair<AufEintragBase2,long> >::iterator i=ReferenzAufEintragK.begin();i!=ReferenzAufEintragK.end();++i)
    {
     if(tmp_menge<=0) break;
     // Prozess setzen, aber nur, wenn er nicht schon früher für diesen 
@@ -58,10 +64,13 @@ void auftrag_main::tree_neuer_auftrag_leaf_selected(cH_RowDataBase d)
        tmp_menge -= i->second;
      }
    }
-  ReferenzAufEintrag = IA.get_Referenz_AufEintragBase2(false); // direkte Referenen hohlen
+cout << "\n\n\n\n";
+//  ReferenzAufEintrag = IA.get_Referenz_AufEintragBase2(false); // direkte Referenen hohlen
+cout <<"Size = "<< ReferenzAufEintragR.size()<<'\n';
   tmp_menge = IA.getStueck();
-  for (list<pair<AufEintragBase2,long> >::iterator i=ReferenzAufEintrag.begin();i!=ReferenzAufEintrag.end();++i)
+  for (list<pair<AufEintragBase2,long> >::iterator i=ReferenzAufEintragR.begin();i!=ReferenzAufEintragR.end();++i)
    {
+cout << i->first.Id()<<'\t'<<i->first.Instanz()<<'\t'<<tmp_menge<<'\n';
     if(tmp_menge<=0) break;
     long rest = AufEintragBase(i->first).getRestStk();
     i->first.abschreiben( tmp_menge<rest ? -tmp_menge : -rest );
@@ -70,7 +79,7 @@ void auftrag_main::tree_neuer_auftrag_leaf_selected(cH_RowDataBase d)
 //???  IA.get_Referenz_AufEintragBase2().abschreiben(-IA.getStueck());
 //???  IA.get_Referenz_AufEintragBase2(true).setVerarbeitung(cH_Prozess(Prozess::None));
 
-  on_neuladen_activate();
+//  on_neuladen_activate();
   loadAuftrag(Dna->get_AufEintragBase());
 }
 
@@ -109,8 +118,8 @@ void auftrag_main::instanz_leaf_auftrag(AufEintragBase& selected_AufEintrag)
   AuftragsEntryZuordnung(selected_AufEintrag,menge,*instanz_auftrag,znr);
 
   cH_RowDataBase dt(maintree_s->getSelectedRowDataBase());
-  maintree_s->redisplay(dt,Data_auftrag::METER);         
-  maintree_s->redisplay(dt,Data_auftrag::STUECK);         
+  maintree_s->redisplay(dt,METER);
+  maintree_s->redisplay(dt,STUECK);
                   
   loadAuftrag(*instanz_auftrag);
 }
@@ -148,4 +157,15 @@ gint auftrag_main::on_button_instanz_print_clicked(GdkEventButton *ev)
      system(s.c_str());
    }
  return false;
+}
+
+void auftrag_main::on_togglebutton_geplante_menge_toggled()
+{
+ if (togglebutton_geplante_menge->get_active())
+  {
+   spinbutton_geplante_menge->show();
+   spinbutton_geplante_menge->grab_focus();
+  }
+ else
+   spinbutton_geplante_menge->hide();  
 }

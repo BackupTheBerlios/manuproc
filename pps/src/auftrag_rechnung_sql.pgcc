@@ -21,6 +21,7 @@
 #include"auftrag_rechnung.hh"
 #include <Aux/Transaction.h>
 #include"auftrag_rechnung_classes.h"
+#include <Gtk_OStream.h>
 exec sql include sqlca;
 
 void auftrag_rechnung::on_rngnr_search(int *_continue, GtkSCContext newsearch)
@@ -104,3 +105,28 @@ void auftrag_rechnung::set_rtree_offen_content()
  tr.close();
  rtree_offen->setDataVec(datavec);
 }
+
+
+void auftrag_rechnung::fill_optionmenu_zahlungsart()
+{
+ exec sql begin declare section;
+   int ID;
+   char KB[30];
+ exec sql end declare section;
+ exec sql declare ROMein cursor for select id,kurzbezeichnung from
+   rechnung_zahlungsart order by id;
+ Transaction tr;
+ exec sql open ROMein;
+ SQLerror::test(__FILELINE__);
+ Gtk::OStream t_(optionmenu_zahlart);
+
+ while(true)
+  {
+   exec sql fetch ROMein into :ID,:KB;
+   SQLerror::test(__FILELINE__,100);
+   if (sqlca.sqlcode) break;
+     t_ << KB;
+     t_.flush((gpointer)ID);
+  }
+}
+

@@ -19,6 +19,7 @@
 #include <Aux/dbconnect.h>
 #include "drucken.hh"
 #include "getopt.h"
+#include <Aux/itos.h>
 
 //struct Configuration Configuration;
 
@@ -27,7 +28,9 @@ const static struct option options[]=
  { "kopie",  no_argument, NULL, 'k' },  
  { "art",     required_argument,      NULL, 'a' }, 
  { "nr",     required_argument,      NULL, 'n' }, 
- { "plot",     no_argument,      NULL, 'p' }, 
+  // ich mag den Namen nicht, schlieﬂlich ist das kein Plotter CP
+ { "plot",     no_argument,      NULL, 'p' },
+ { "print",     no_argument,      NULL, 'p' }, 
  { "instanz", required_argument,      NULL, 'i' }, 
  { "database", required_argument,      NULL, 'd' }, 
  { NULL,      0,       NULL, 0 }
@@ -37,7 +40,7 @@ int main (int argc, char *argv[])
 {
  bool firmenpapier=false;
  bool kopie=false;
- LR_Base::typ was;
+ LR_Base::typ was=LR_Base::Auftrag;
  bool plot=false;
  bool toTeX=false;
  unsigned int auftragsnr = 0; 
@@ -55,6 +58,7 @@ int main (int argc, char *argv[])
        case 'a' : if(string("Rechnung")==optarg) was=LR_Base::Rechnung;
 		  else if(string("Lieferschein")==optarg) was=LR_Base::Lieferschein;
 		  else if(string("Auftrag")==optarg) was=LR_Base::Auftrag;
+		  else if(string("Intern")==optarg) was=LR_Base::Intern;
 		  else was=LR_Base::NICHTS;
 		break;
        case 'n' : auftragsnr=atoi(optarg);break;
@@ -63,15 +67,16 @@ int main (int argc, char *argv[])
 	case 'd' : database=optarg;break; 
 	case 't' : toTeX=true;break; 
 	case '?':
-            cout << "$Id: auftrag_drucken.cc,v 1.8 2001/11/05 08:58:53 christof Exp $\n\n"
-                   "USAGE:" << argv[0] << " [-a <Auftrag|Rechung|Lieferschein|Intern> -n <Nr> -k <kopien>][-f][-i <Instanz>][-t][-v][-d<dbase>] ...\n"
-		"\n\t-t\t nur TeX file erzeugen\n"
-		"\t-p\t drucken \n"
-		"\t-a\t Aufrag, Rechnung, Lieferschein, Intern\n"
-		"\t-n\t Papiernummer\n"
-		"\t-f\t auf Firmenpapier\n"
-		"\t-i\t Instanz ausw‰hlen\n"
-		"\t-d\t Datenbank\n";
+            cout << "$Id: auftrag_drucken.cc,v 1.9 2001/11/19 13:00:11 christof Exp $\n\n"
+                   "USAGE:" << argv[0] << " -n <Nr> [-a <Auftrag|Rechung|Lieferschein|Intern>] [-kft] [-i <Instanz>] [-d <Datenbank>]\n"
+		"\n\t-t\t nur TeX file erzeugen ("<< (toTeX?"an":"aus")<< ")\n"
+		"\t-p\t drucken ("<< (plot?"an":"aus")<< ")\n"
+		"\t-a\t Aufrag(*), Rechnung, Lieferschein, Intern\n"
+		"\t-n\t (A./R./L.)-Nummer (wichtig!)\n"
+		"\t-f\t auf Firmenpapier ("<< (firmenpapier?"an":"aus")<< ")\n"
+		"\t-f\t Kopien ("<< (kopie?"an":"aus")<< ")\n"
+		"\t-i\t Instanz ausw‰hlen ("<< instanz<< ")\n"
+		"\t-d\t Datenbank ("<< database<< ")\n";
             exit(1);
     }
   }                 
@@ -81,13 +86,7 @@ int main (int argc, char *argv[])
       conn.setDbase(database);
       Petig::dbconnect(conn);  
 
-//      LR_drucken l("Lieferschein",10025,"Preview",instanz);
-//      LR_drucken l("Rechnung",10023,"Preview",instanz);
-//      LR_drucken l("Auftrag",10040,"Preview");
-
-      std::string p="Preview";
-      if(plot) p="Plot";
-      LR_drucken l(was,auftragsnr,p,firmenpapier,
+      LR_drucken l(was,auftragsnr,plot,firmenpapier,
 			kopie,cH_ppsInstanz(instanz),toTeX);      
          
       Petig::dbdisconnect();

@@ -22,41 +22,41 @@
 #include "drucken_class.hh"
 #include <Aux/ppsInstanz.h>
 
-LR_drucken::LR_drucken(const LR_Base::typ RL_, unsigned int auftragsnr_, string view_plot,
+LR_drucken::LR_drucken(const LR_Base::typ RL_, unsigned int _auftragsnr, bool print,
    bool b_firmenpapier,bool b_kopie, cH_ppsInstanz _instanz, bool _toTeX=false)
-: auftragsnr(auftragsnr_),RL(RL_),instanz(_instanz),toTeX(_toTeX)
+: auftragsnr(_auftragsnr),RL(RL_),instanz(_instanz),toTeX(_toTeX)
 {
- LR_drucken::drucken(view_plot,b_firmenpapier,b_kopie);
+ LR_drucken::drucken(print,b_firmenpapier,b_kopie);
 }
 
-void LR_drucken::drucken(string view_plot,bool b_firmenpapier,bool b_kopie)
+void LR_drucken::drucken(bool print,bool b_firmenpapier,bool b_kopie)
 {
-   string kopie="";
-   if (b_kopie) kopie="Kopie ,";
+//   if (b_kopie) kopie="Kopie ,";
    string texplotter= " -Phl1260 ";
    if (b_firmenpapier) texplotter = " -Phl1260lt ";
+
    FILE *f;
    if(toTeX) f=popen("cat > ./rdr$$.tex","w");
-   else if (view_plot=="Preview") f=popen("tex2prn -2 -G ","w");
-   else if (view_plot=="Plot") f=popen(("tex2prn -q -2 "+texplotter).c_str(),"w");
+   else if (!print) f=popen("tex2prn -2 -G ","w");
+   else f=popen(("tex2prn -q -2 "+texplotter).c_str(),"w");
 
    ofstream os(fileno(f));
 
    if      (RL==LR_Base::Rechnung)      
     { RechnungVoll r(auftragsnr);
-      LR_Abstraktion(&r).drucken_table(os,kopie,instanz);
+      LR_Abstraktion(&r).drucken(os,b_kopie,instanz);
     }
    else if (RL==LR_Base::Lieferschein)  
     { cH_LieferscheinVoll l(auftragsnr);
-      LR_Abstraktion(&*l).drucken_table(os,kopie,instanz);
+      LR_Abstraktion(&*l).drucken(os,b_kopie,instanz);
     }
    else if (RL==LR_Base::Auftrag)  
-    { AuftragFull a=AuftragBase(cH_ppsInstanz(instanz),(int)auftragsnr);
-      LR_Abstraktion(&a).drucken_table(os,kopie,instanz);
+    { AuftragFull a=AuftragFull(AuftragBase(cH_ppsInstanz(instanz),(int)auftragsnr));
+      LR_Abstraktion(&a).drucken(os,b_kopie,instanz);
     }
    else if (RL==LR_Base::Intern)  
-    { AuftragFull a=AuftragBase(cH_ppsInstanz(instanz),(int)auftragsnr);
-      LR_Abstraktion(&a).drucken_table(os,kopie,instanz);
+    { AuftragFull a=AuftragFull(AuftragBase(cH_ppsInstanz(instanz),(int)auftragsnr));
+      LR_Abstraktion(&a).drucken(os,b_kopie,instanz);
     }
    else abort();
 }

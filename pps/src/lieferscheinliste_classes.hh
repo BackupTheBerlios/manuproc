@@ -67,7 +67,7 @@ class Data_LListe : public RowDataBase
 };
 
 
-class Data_ListeNode : public TCListNode
+class Data_ListeNode : public TreeRow
 {
    struct st_summe{int stueck;std::string seinheit; fixedpoint<3> menge;std::string meinheit;
         st_summe(int s,std::string se,fixedpoint<3> m,std::string me)
@@ -118,9 +118,9 @@ class Data_ListeNode : public TCListNode
       return cH_EntryValue();
     }
  Data_ListeNode::Data_ListeNode(guint deep,const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data,bool expand)
-   :TCListNode(deep,v,child_s_deep,child_s_data,expand) {}
+   :TreeRow(deep,v,child_s_deep,child_s_data,expand) {}
 
-  static TCListNode *create(guint col, const cH_EntryValue &v,guint child_s_deep, cH_RowDataBase child_s_data, bool expand)
+  static TreeRow *create(guint col, const cH_EntryValue &v,guint child_s_deep, cH_RowDataBase child_s_data, bool expand)
   {  return new Data_ListeNode(col,v,child_s_deep,child_s_data,expand);
   }
 };

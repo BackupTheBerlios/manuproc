@@ -1,3 +1,6 @@
+// diese Klassen sollten _nur_ von auftrag_lieferschein_classes_sql.pgcc 
+// verwendet werden, also ist diese H File Unsinn
+
 #ifndef LIEFERSCHEINTREEDATA
 #define LIEFERSCHEINTREEDATA
 #include<Aux/EntryValueIntString.h>
@@ -73,7 +76,7 @@ class cH_Data_Lieferdaten : public Handle<const Data_Lieferdaten>
 };
 
 /*
-class Data_Lieferdaten_Node : public TCListNode
+class Data_Lieferdaten_Node : public TreeRow
 {
  
 };

@@ -30,9 +30,10 @@ class LR_drucken
       cH_ppsInstanz instanz;
 	bool toTeX;
    private:
-      void drucken(string view_plot,bool b_firmenpapier,bool b_kopie);
+      void drucken(bool print,bool b_firmenpapier,bool b_kopie);
+      std::string get_Zahlungsziel(int);
    public:
-      LR_drucken(const LR_Base::typ RL, unsigned int auftragsnr,string view_plot, 
+      LR_drucken(const LR_Base::typ RL, unsigned int _auftragsnr,bool print, 
            	bool b_firmenpapier,bool b_kopie,cH_ppsInstanz _instanz,
 		bool toTeX);
 };

@@ -16,35 +16,3 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// perhaps this belongs to pps ???
-
-#ifndef AUFTRAG_AUFTRAGENTRY_H
-#define AUFTRAG_AUFTRAGENTRY_H
-#include "aktAufEintrag.h" // Datenabstraktion
-#include <Auftrag/AufEintragBase.h>
-#include <Auftrag/AuftragBase.h>
-#include <Aux/EntryValueBase.h>
-#include <Artikel/ArtikelBase.h> 
-#include <Aux/SQLerror.h>
-#include <iostream>
-
-
-class AufEintrag : public AufEintragBase
-{	
-//public:
-/*
- AufEintrag(const aktAufEintrag &aufentry,const AuftragBase& auftrag, int wrkst,
- 				const cH_ExtBezSchema &schema) throw(SQLerror);
- AufEintrag() {} ;
- AufEintrag(const AufEintragBase &ab) : AufEintragBase(ab) {} ;
- 
- const cH_EntryValue getSeqValue(int seqnr) const;
- const ArtikelBase::ID &ArtikelID() const { return artikel->Id(); }
-
- friend std::ostream &operator<<(std::ostream &o,const AufEintrag &a);
-*/
-};
-
-//typedef std::vector<AufEintrag> AufEintragList;
-
-#endif

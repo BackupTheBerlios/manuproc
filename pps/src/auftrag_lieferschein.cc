@@ -35,7 +35,7 @@
 #include<typeinfo>
 #include <tclistleaf.h>
 #include "lieferscheinliste.hh"
-#include "auftrag_lieferschein_classes.h"
+#include "auftrag_lieferschein_classes.h" // erforderlich?
 
 extern MyMessage *meldung;
 
@@ -186,12 +186,12 @@ void auftrag_lieferschein::on_offen_leaf_selected(cH_RowDataBase d)
 void auftrag_lieferschein::on_selectrow_offauf(int row, int col, GdkEvent* b)
 {   
  TCListRow_API *tclapi=(TCListRow_API*)(offene_auftraege->get_row_data(row));
- selectedrow=(TCListRowData*)(*tclapi).get_user_data();
+ selectedrow=(TreeRow*)(*tclapi).get_user_data();
 
  if(!selectedrow->Leaf()) return;
 
 // es ging nicht mit dynamic_cast auf OffAuf_Leaf ??!!
- cH_OffAuf_RowData entry((dynamic_cast<TCListLeaf*>(selectedrow))->LeafData());
+ cH_OffAuf_RowData entry((dynamic_cast<TreeRow*>(selectedrow))->LeafData());
 
  if(entry->Offen()<=0) return;
 

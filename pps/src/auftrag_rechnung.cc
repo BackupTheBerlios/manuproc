@@ -43,9 +43,14 @@ void auftrag_rechnung::on_rng_close()
 
 void auftrag_rechnung::on_rng_neu()
 {   
- newRechnung(lieferkunde->get_value());
- rngnr->setContent(Formatiere(rechnung.Id(),0,6,"","",'0'),rechnung.Id());
- on_rngnr_activate();
+ if(lieferkunde->get_value()!=-1 && lieferkunde->get_value()!=0)
+   {
+    newRechnung(lieferkunde->get_value());
+    rngnr->setContent(Formatiere(rechnung.Id(),0,6,"","",'0'),rechnung.Id());
+    on_rngnr_activate();
+   }
+ else
+  lieferkunde->grab_focus();
 }
 
 
@@ -64,7 +69,9 @@ void auftrag_rechnung::on_rng_save()
 void auftrag_rechnung::on_rng_preview()
 {   
    if (rngnr->get_text()=="") return;
-   string command = "auftrag_drucken -a Rechnung -n "+rngnr->get_text()+" -i "+itos(instanz->Id());
+   string command = "auftrag_drucken -a Rechnung -n "
+         +rngnr->get_text()
+         +" -i "+itos(instanz->Id());
    system(command.c_str());
 }
 
@@ -78,23 +85,28 @@ gint auftrag_rechnung::on_rng_print(GdkEventButton *ev)
 
    if (ev->button==1)
     {
-     std::string command = "auftrag_drucken "+firma+kopie+"-a Rechnung -n "+rngnr->get_text()+" -p -i "+itos(instanz->Id());
+     std::string command = "auftrag_drucken "+firma+kopie+"-a Rechnung -n "+rngnr->get_text()
+         +" -p -i "+itos(instanz->Id())
+         ;
      system(command.c_str());
     }
    if (ev->button==2)
     {
      std::string command = "auftrag_drucken --firma -a Rechnung -n "+rngnr->get_text()+" -p -i "+itos(instanz->Id());
      system(command.c_str());
-     command = "auftrag_drucken --kopie -a Rechnung -n "+rngnr->get_text()+" -p -i "+itos(instanz->Id());
+     command = "auftrag_drucken --kopie -a Rechnung -n "+rngnr->get_text()
+         +" -p -i "+itos(instanz->Id());
      system(command.c_str());
     }
    if (ev->button==3)
     {
      std::string command = "auftrag_drucken --kopie -a Rechnung -n "+rngnr->get_text()+" -p -i "+itos(instanz->Id());
      system(command.c_str());
-     command = "auftrag_drucken --kopie --firma -a Rechnung -n "+rngnr->get_text()+" -p -i "+itos(instanz->Id());
+     command = "auftrag_drucken --kopie --firma -a Rechnung -n "+rngnr->get_text()
+      +" -p -i "+itos(instanz->Id());
      system(command.c_str());
-     command = "auftrag_drucken --firma -a Rechnung -n "+rngnr->get_text()+" -p -i "+itos(instanz->Id());
+     command = "auftrag_drucken --firma -a Rechnung -n "+rngnr->get_text()
+         +" -p -i "+itos(instanz->Id());
      system(command.c_str());
     }
  return false;
@@ -107,7 +119,7 @@ void auftrag_rechnung::rngzeile_delete()
 //   {//const Rechnung &rg=rechnung_liste->getRechnung();
    if(!(rechnung.Bezahlt()))
 	{
-//	 cH_Data_Rechnung entry((dynamic_cast<TCListLeaf*>(selectedrow_rng))->LeafData());
+//	 cH_Data_Rechnung entry((dynamic_cast<TreeRow*>(selectedrow_rng))->LeafData());
 //	 const_cast<Rechnung&>(rg).deleteLieferschein(entry->LiefId());
     try{
      cH_Data_Rechnung dt(rtree_daten->getSelectedRowDataBase_as<cH_Data_Rechnung>());
@@ -165,6 +177,7 @@ void auftrag_rechnung::on_rngnr_activate()
  else rabatt_typ->set_history(rabatt_typ::Rabatt);
  rabatt_wert->set_value(rabatt);
  rngdatum->set_Datum(rechnung.getDatum());
+ optionmenu_zahlart->set_history(rechnung.getZahlungsart()->Id());
 
 // rechnung_liste->show();
  rtree_daten->show();
@@ -223,12 +236,12 @@ void auftrag_rechnung::on_unselectrow_rtree(int row, int col, GdkEvent* b)
 void auftrag_rechnung::on_selectrow_rechnung(int row, int col, GdkEvent* b)
 {
  TCListRow_API *tclapi=(TCListRow_API*)(rechnung_liste->get_row_data(row));
- selectedrow_rng=(TCListRowData*)(*tclapi).get_user_data();
+ selectedrow_rng=(TreeRow*)(*tclapi).get_user_data();
 
  if(!selectedrow_rng->Leaf()) return;
 
  // es ging nicht mit dynamic_cast auf OffAuf_Leaf ??!!
- cH_Rg_RowData entry((dynamic_cast<TCListLeaf*>(selectedrow_rng))->LeafData());
+ cH_Rg_RowData entry((dynamic_cast<TreeRow*>(selectedrow_rng))->LeafData());
 
  
  rngentry_del->set_sensitive(true); 
@@ -248,10 +261,10 @@ void auftrag_rechnung::on_roffen_leaf_selected(cH_RowDataBase d)
 void auftrag_rechnung::on_selectrow_offlief(int row, int col, GdkEvent* b)
 {
  TCListRow_API *tclapi=(TCListRow_API*)(offene_lieferscheine->get_row_data(row));
- selectedrow_lief=(TCListRowData*)(*tclapi).get_user_data();
+ selectedrow_lief=(TreeRow*)(*tclapi).get_user_data();
 
  // es ging nicht mit dynamic_cast auf OffAuf_Leaf ??!!
- cH_OffLief_RowData entry((dynamic_cast<TCListLeaf*>(selectedrow_lief))->LeafData());
+ cH_OffLief_RowData entry((dynamic_cast<TreeRow*>(selectedrow_lief))->LeafData());
 
  lieferscheinnr->set_text(itos(entry->Lief().Id()));
  lieferscheindatum->set_value(entry->Lief().LsDatum()); 
@@ -262,7 +275,6 @@ void auftrag_rechnung::on_selectrow_offlief(int row, int col, GdkEvent* b)
 
 void auftrag_rechnung::on_unselectrow_rtree_offen(int row, int col, GdkEvent* b)
 {
-// selectedrow_lief=NULL;
  lieferscheinnr->set_text("");
  lieferscheindatum->set_value(Petig::Datum::today());  
  lief_uebernehmen->set_sensitive(false); 
@@ -270,6 +282,7 @@ void auftrag_rechnung::on_unselectrow_rtree_offen(int row, int col, GdkEvent* b)
 
 void auftrag_rechnung::Preis_setzen()
 {  
+// ist das noch aktuell? 14.11.2001 MAT
 #warning TODO: nur aktiven Preis setzen, wenn selection
    RechnungVoll rg(rechnung.Id());
    for (RechnungVoll::iterator i=rg.begin();i!=rg.end();++i)
@@ -297,27 +310,27 @@ void auftrag_rechnung::Preis_ergaenzen()
 void auftrag_rechnung::waehrung_geaendert()
 {
  rechnung.setzeWaehrung(rng_WWaehrung->get_enum());
-
-   // eigentlich alle Preise umrechnen .... Katastrophe
-#warning dadurch wird der Knopf 'Preis setzen' doch eigentlich überflüssig, oder?
-#warning ich würde ihn wegnehmen MAT
-   Preis_setzen();
+ Preis_setzen();
 }
 
 void auftrag_rechnung::rabatt_geaendert()
-{  gtk_spin_button_update(rabatt_wert->gtkobj());
-   int plus_minus=(rabatt_typ::enum_t((int)(rabatt_typ->get_menu()->get_active()->get_user_data())))==rabatt_typ::Rabatt?+1:-1;
-//   rechnung_liste.setze_Rabatt(rabatt_wert->get_value_as_float()*plus_minus);
-   rechnung.setze_Rabatt(rabatt_wert->get_value_as_float()*plus_minus);
+{  
+  if ( rechnung.Id()!=-1)
+   {
+    gtk_spin_button_update(rabatt_wert->gtkobj());
+    int plus_minus=(rabatt_typ::enum_t((int)(rabatt_typ->get_menu()->get_active()->get_user_data())))==rabatt_typ::Rabatt?+1:-1;
+    rechnung.setze_Rabatt(rabatt_wert->get_value_as_float()*plus_minus);
+   }
 }
 
 
 auftrag_rechnung::auftrag_rechnung(cH_ppsInstanz _instanz)
-//: instanz(_instanz),selectedrow_lief(NULL), selectedrow_rng(NULL),kunde(Kunde::none_id)
 : instanz(_instanz)
 {
    set_tree_titles();
-//   rechnung_liste->hide();
+   fill_optionmenu_zahlungsart();
+   optionmenu_zahlart->get_menu()->deactivate.connect(SigC::slot(static_cast<class auftrag_rechnung*>(this), &auftrag_rechnung::optionmenu_zahlart_deactivate));
+   rngdatum->setLabel("");
    rtree_daten->hide();
    vbox_n_b_lieferscheine->hide();
    set_rtree_offen_content();
@@ -361,5 +374,12 @@ void auftrag_rechnung::set_rtree_daten_content(RechnungBase::ID rngid)
   }
  rtree_daten->setDataVec(datavec);
  
+}
+
+void auftrag_rechnung::optionmenu_zahlart_deactivate()
+{
+  int z = int(optionmenu_zahlart->get_menu()->get_active()->get_user_data());
+  if (rechnung.Id()!=-1 && rechnung.Id()!=0)
+     rechnung.setze_Zahlungsart(cH_Zahlungsart(z));
 }
 

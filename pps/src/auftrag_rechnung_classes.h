@@ -54,7 +54,7 @@ class cH_Data_Rechnung : public Handle<const Data_Rechnung>
 };
 
 /*
-class Data_Lieferdaten_Node : public TCListNode
+class Data_Lieferdaten_Node : public TreeRow
 {
  
 };

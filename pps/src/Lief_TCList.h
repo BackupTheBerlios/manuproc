@@ -43,13 +43,13 @@ public:
  			
  bool deleteLiefEntry();
 
-TCListNode *NewNode(guint deep, const cH_EntryValue &v, bool expand);
+TreeRow *NewNode(guint deep, const cH_EntryValue &v, bool expand);
 
 };
 
 #include<tclistnode.h>
 
-class Lief_Node : public TCListNode
+class Lief_Node : public TreeRow
 {
  float sumgeliefert;
  

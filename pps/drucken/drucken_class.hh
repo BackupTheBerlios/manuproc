@@ -24,10 +24,6 @@
 #include <fstream>
 #include "lr_base.h"
 
-#define ZEILEN_SEITE_1 33
-#define ZEILEN_SEITE_N 37
-
-
 class LR_Entry: public LR_Base
 {
    union u_t {const LieferscheinEntry *l ; const RechnungEntry *r; 
@@ -48,7 +44,7 @@ public:
 
    const ArtikelBase::ID ArtikelID() const {
       if (t==Rechnung)     return u.r->ArtikelID();
-      if (t==Auftrag)      return u.a->Id();
+      if (t==Auftrag)      return u.a->ArtId();
       if (t==Lieferschein) return u.r->ArtikelID(); abort();}
    const Preis getPreis() const {  
       if (t==Auftrag)      return u.a->EPreis(); 
@@ -61,7 +57,7 @@ public:
       if (t==Rechnung)     return u.r->Rabatt(); return 0;}
    fixedpoint<2> Menge() const { 
       if (t==Rechnung)     return u.r->Menge(); 
-      if (t==Auftrag)      return fixedpoint<2>(0) ;//u.a->getMeter(); 
+      if (t==Auftrag)      return fixedpoint<2>(0);
       if (t==Lieferschein) return (float)(u.l->Menge()); abort();}
    int Stueck() const { 
       if (t==Rechnung)     return u.r->Stueck(); 
@@ -73,7 +69,6 @@ public:
       if (t==Lieferschein) return u.l->ZusatzInfo(); return false;}
    string YourAuftrag() const { 
       if (t==Lieferschein) return u.l->YourAuftrag(); abort();}
-
 
 };
 
@@ -123,30 +118,70 @@ public:
    : LR_Base(Rechnung), u(r) {}
    LR_Iterator(const AuftragFull::const_iterator &a)
    : LR_Base(Auftrag), u(a) {}
+   
+   std::size_t operator-(const LR_Iterator &b) const
+        {  assert(t==b.t);
+           if (t==Lieferschein) return u.l-b.u.l;
+           if (t==Rechnung)     return u.r-b.u.r;
+           if (t==Auftrag)      return u.a-b.u.a;
+           abort();
+        }
 };
 
 class LR_Abstraktion: public LR_Base
 {
- bool firmenpapier;
+ bool firmenpapier:1;
+ bool kopie:1;
+ bool stueck_bool:1;
+ bool menge_bool:1;
+ bool rabatt_bool:1;
+ bool preise_addieren:1;
+ cH_ppsInstanz instanz;
+ 
+ unsigned int zeilen_passen_noch;
+ unsigned int page_counter;
+ unsigned int spaltenzahl;
+ string zur_preisspalte;
+
+ cH_ExtBezSchema schema_mem;
+
+ static const unsigned int signifikanz=1;
+ static const unsigned int ZEILEN_SEITE_1=33;
+ static const unsigned int ZEILEN_SEITE_N=43;
+
+ fixedpoint<2> betrag;
+ fixedpoint<2> tabellenbetrag;
+ 
 public:
   typedef LR_Iterator const_iterator;
 
+private:
   union { const LieferscheinVoll *l; 
           const class RechnungVoll *r; 
           const class AuftragFull *a; } u;
+
+#define UEBLICHE_INITIALISIERUNG(fp) \
+	firmenpapier(fp), kopie(false), stueck_bool(false), menge_bool(false), \
+	rabatt_bool(false), preise_addieren(false), \
+	instanz(ppsInstanz::default_id), \
+	zeilen_passen_noch(0), page_counter(1), \
+	spaltenzahl(0), schema_mem(ExtBezSchema::default_ID)
 public:
-  LR_Abstraktion():LR_Base(NICHTS),firmenpapier(false) {}
+	
+  LR_Abstraktion()
+  	: LR_Base(NICHTS),UEBLICHE_INITIALISIERUNG(false)
+  {}
   LR_Abstraktion(const LieferscheinVoll *l, bool fp=false) 
-		: LR_Base(Lieferschein), firmenpapier(fp)
+	: LR_Base(Lieferschein), UEBLICHE_INITIALISIERUNG(fp)
   { u.l=l; }
   LR_Abstraktion(const RechnungVoll *r, bool fp=false) 
-		: LR_Base(Rechnung), firmenpapier(fp)
+	: LR_Base(Rechnung), UEBLICHE_INITIALISIERUNG(fp)
   { u.r=r; }
   LR_Abstraktion(const AuftragFull *a, bool fp=false) 
-		: LR_Base(Auftrag), firmenpapier(fp)
+	: LR_Base(Auftrag), UEBLICHE_INITIALISIERUNG(fp)
   { u.a=a; }
 
- bool Firmenpapier() const {return firmenpapier;}
+  bool Firmenpapier() const {return firmenpapier;}
   
   const_iterator begin() const { 
       if (t==Rechnung)     return u.r->begin();
@@ -160,7 +195,6 @@ public:
       if (t==Rechnung)     return u.r->size();
       if (t==Auftrag)      return u.a->size();
       if (t==Lieferschein) return u.l->size(); abort();}
-
 
    cP_Waehrung getWaehrung() const { 
       if (t==Auftrag)      return u.a->getWaehrung(); 
@@ -180,31 +214,23 @@ public:
       if (t==Rechnung)     return u.r->Id(); 
       if (t==Auftrag)      return u.a->Id(); 
       if (t==Lieferschein) return u.l->Id(); abort(); }
-
-//dafür gibt es jetzt typString() Methode
-/*   string Was()         const {
-      if (t==Rechnung)     return "Rechnung"; 
-      if (t==Auftrag)      return "Auftrag"; 
-      if (t==Lieferschein) return "Lieferschein"; abort(); }
-*/
+   cH_Zahlungsart getZahlungsart() const {
+      if (t==Rechnung)     return u.r->getZahlungsart(); abort(); }
 
    typ Typ()         const { return t; }
 
+private:
+   void drucken_header(ostream &os);
+   void drucken_footer(ostream &os);
+   void page_header(ostream &os);
+   void lieferung_an(ostream &os, unsigned int lfrs_id, const Petig::Datum& datum,const string& sKunde);
 
-   void drucken_header(ofstream &os);
-   void drucken_footer(ofstream &os);
-   void page_header(int page,ofstream &os,const string& kopie,const cH_ppsInstanz& instanz);
-   void lieferung_an(ofstream &os, unsigned int lfrs_id, const Petig::Datum& datum,const string& sKunde);
+   void drucken_table_header(ostream &os, const cH_ExtBezSchema& schema,
+      		float preismenge, const string &preiseinheit);
 
-   void drucken_table(ofstream &os,const string& kopie,const cH_ppsInstanz& instanz);
-   unsigned int drucken_table_header(ofstream &os,  cH_ExtBezSchema& schema,
-      unsigned int signifikanz,bool stueck_bool,bool menge_bool,bool rabatt_bool,
-      float preismenge, string waehrung, string einheit,const cH_ppsInstanz& instanz);
-   fixedpoint<2> drucken_table_preissum_warengruppe(ofstream &os,
-      vector<fixedpoint<2> >& preissum_zeile, vector<fixedpoint<2> >& preissum_warengruppe,
-      unsigned int spaltenzahl,string text="");
-
+   void drucken_betrag(ostream &os, const string &text, fixedpoint<2> betrag);
+public:
+   void drucken(ostream &os,bool kopie,const cH_ppsInstanz& instanz);
 };
 
 #endif
-

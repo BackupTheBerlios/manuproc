@@ -16,12 +16,27 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+/*
 #include "drucken.hh"
 #include <Gtk2TeX.h>
 #include <Aux/Transaction.h>
 #include <Aux/SQLerror.h>
 exec sql include sqlca;
 
+std::string LR_drucken::get_Zahlungsziel(int z)
+{
+ exec sql begin declare section;
+   int ID=z;
+   char B[100];
+ exec sql end declare section;
+ exec sql select coalesce(bezeichnung,kurzbezeichnung) into :B
+   from rechnung_zahlungsziel where id=:ID;
+ SQLerror::test(__FILELINE__);
+ return B;
+}
+*/
+
+/*
 unsigned int LR_drucken::sql_kundennr(const string& RL,unsigned int auftragsnr)
 {
   exec sql begin declare section;
@@ -54,3 +69,4 @@ unsigned int LR_drucken::sql_kundennr(const string& RL,unsigned int auftragsnr)
   tr.close();
   return db_kundennr;
 }
+*/

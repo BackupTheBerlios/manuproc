@@ -27,12 +27,10 @@
 
 #include "auftrag_main.hh"
 #include "auftrag_bearbeiten.hh"
-#include"auftrag_lieferschein.hh"
-#include"auftragbase.h"
-#include<Aux/exception.h>
-
-#include<Aux/dbconnect.h>
-
+#include "auftragbase.h"
+#include <Aux/exception.h>
+#include <Aux/dbconnect.h>
+#include "MyMessage.h"
 
 MyMessage *meldung;
 auftrag_main *auftragmain;
@@ -74,7 +72,6 @@ int main(int argc, char **argv)
  if (argc-optind>1) instanz=cH_ppsInstanz(ppsInstanz::ID(atoi(argv[optind])));
 
   auftragmain = new auftrag_main();
-// auftrag_lieferschein *al = new auftrag_lieferschein();
 
 
 weiter:

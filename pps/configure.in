@@ -35,5 +35,12 @@ AC_SUBST(GNOMEMM_LIBS)
 
 PETIG_CHECK_KOMPONENTEN
 
+# we don't want to link auftrag_drucken with gtkmm !
+COMMONGTK_ONLY=`for i in $COMMONGTK_LIBS ; do \
+	if expr match "$i" ".*commongtk.*" >/dev/null; then echo -n "$i " ; fi ; \
+	if expr match "$i" ".*GtkmmAddons.*" >/dev/null; then echo -n "$i " ; fi ; \
+	done`
+AC_SUBST(COMMONGTK_ONLY)
+
 AC_OUTPUT(Makefile src/Makefile  macros/Makefile \
    drucken/Makefile auftragserfassung/Makefile)

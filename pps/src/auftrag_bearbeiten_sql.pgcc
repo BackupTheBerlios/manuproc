@@ -1,4 +1,4 @@
-// $Id: auftrag_bearbeiten_sql.pgcc,v 1.5 2001/09/19 14:42:48 christof Exp $
+// $Id: auftrag_bearbeiten_sql.pgcc,v 1.6 2001/11/19 13:00:11 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -90,6 +90,7 @@ throw(SQLerror)
 {
  exec sql begin declare section;
  int AUFID;
+ int INSTANZ=instanz;
  char YOURAUFID[21];
  char *PAT;
  int KUNDE;
@@ -114,6 +115,7 @@ throw(SQLerror)
        		from auftrag where
        		youraufnr like :PAT
                 and (:KUNDE<1 or kundennr=:KUNDE)
+                and instanz=:INSTANZ
        		order by youraufnr;
        	
        exec sql open YOURAUFNR_CURSOR;
