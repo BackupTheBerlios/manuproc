@@ -289,10 +289,8 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
  	<< p.Wert(getWaehrung(),p.BezugsMenge()) 
 	 	<< Query::NullIf(rabatt) << p.BezugsMenge()
 	 	<< Query::NullIf(provsatz) 
-// da preismege der PL 99999 nicht gespeichert wird, muß der Preis
-// auf 1 Einehit normiert werden; daher "Wert"/ek_preis.BezugsMenge()
-// 	<< Query::NullIf(ek_preis.Wert(getWaehrung(),p.BezugsMenge())
- 	<< Query::NullIf(ek_preis.Wert(getWaehrung())/ek_preis.Bezgsmenge());
+	 	<< Query::NullIf(ek_preis.Wert(Waehrung::default_id,
+						p.BezugsMenge()));
     lineno++;
  }
 #endif 
