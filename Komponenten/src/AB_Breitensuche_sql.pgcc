@@ -143,12 +143,12 @@ bool ArtikelBox::BreitenSuche_switch(BreitenSuche_switch_arg a)
    for (unsigned int k=0;k<signifikanz.size();++k)
       if (signifikanz[k]==a.i)
       {  set_content(v,k);
-         combos[k][v.size()-1]->get_entry()->set_position(-1);
          combos[k][v.size()-1]->trigger_search();
          block_selection=true;
          combos[k][v.size()-1]->get_entry()->grab_focus();
          block_selection=false;
          combos[k][v.size()-1]->get_entry()->select_region(0,0);
+         combos[k][v.size()-1]->get_entry()->set_position(-1);
       }
    return false;
 }
