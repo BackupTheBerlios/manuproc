@@ -107,7 +107,7 @@ void Lager_Vormerkungen::artikel_schnappen(AuftragBase::mengen_t menge,const Art
 
   // Bei den 1er (plan_auftrag_id) die verfügbare Menge wegnehmen
   AuftragBase::mengen_t abmenge=menge;
-cout << "artikel_schnappen\t"<<dispo_auftrag.size()<<'\n';
+//cout << "artikel_schnappen\t"<<dispo_auftrag.size()<<'\n';
   for(std::vector<pair<AufEintragBase,AuftragBase::mengen_t> >::reverse_iterator i=dispo_auftrag.rbegin();i!=dispo_auftrag.rend();++i)
    {
      assert(i->first.Id()==AuftragBase::PlanId_for(instanz));
@@ -127,6 +127,7 @@ cout << "artikel_schnappen\t"<<dispo_auftrag.size()<<'\n';
          if(j->Menge >= M) m=M;
          else              m=j->Menge;
          AufEintragZu(j->AEB).setMengeDiff__(i->first,-m);
+         AufEintrag(j->AEB).updateStkDiff__(uid,m,true);
          M-=m;
          if(M==AuftragBase::mengen_t(0)) break;
        }         

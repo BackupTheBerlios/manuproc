@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.13 2002/06/20 06:54:51 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.14 2002/06/20 13:27:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -435,9 +435,7 @@ int AufEintrag::split(int uid,mengen_t newmenge, const Petig::Datum &newld,void 
  if(Instanz()==ppsInstanzID::Kundenauftraege)
    ZEILENNR=insertNewEntry(newmenge,newld,artikel,entrystatus,uid,true,preis,rabatt);
  else
-  {
    ZEILENNR=split_zuordnungen_to(newmenge,newld,artikel,entrystatus,uid);
-  }
  mengen_t mt=updateStkDiff__(uid,-newmenge,true,callback,argument);
  assert(mt==-newmenge);
 
@@ -557,25 +555,14 @@ void AufEintrag::moveInstanz(int uid,const AuftragBase &newAuftrag) throw(SQLerr
   int OLDZEILENNR  = oldAEB.ZNr();  
  exec sql end declare section;
 
-/*XXXXXXXXXXXX
- if(newAuftrag.Instanz()->LagerInstanz())
-   {
-XXXXXXXXXXXX*/
-    AuftragBase::mengen_t menge=getRestStk();
-    mengen_t mt=oldAEB.updateStkDiffBase__(uid,-menge);
-    assert(mt==-menge);
-    zeilennr = newAuftrag.insertNewEntry(menge,getLieferdatum(),Artikel(),
-                               getEntryStatus(),uid,false,EPreis(),Rabatt());
-    Lager_Vormerkungen(class AufEintrag(newAuftrag.Instanz()->Id(),newAuftrag.Id()
-            ,zeilennr,menge,Artikel(),getLieferdatum(),getEntryStatus())).vormerken_oder_bestellen(uid);
-/*XXXXXXXXXXXXXXXXXX
-   }
- else 
-  { 
-    zeilennr = newAuftrag.insertNewEntry(getStueck(),getLieferdatum(),Artikel(),
-                        getEntryStatus(),uid,false,EPreis(),Rabatt());
-  }
-XXXXXXXXXXXX*/
+ AuftragBase::mengen_t menge=getRestStk();
+ mengen_t mt=oldAEB.updateStkDiffBase__(uid,-menge);
+ assert(mt==-menge);
+ zeilennr = newAuftrag.insertNewEntry(menge,getLieferdatum(),Artikel(),
+                            getEntryStatus(),uid,false,EPreis(),Rabatt());
+ Lager_Vormerkungen(class AufEintrag(newAuftrag.Instanz()->Id(),newAuftrag.Id()
+         ,zeilennr,menge,Artikel(),getLieferdatum(),getEntryStatus())).vormerken_oder_bestellen(uid);
+
 // exec sql delete from prod_changejournal where 
 //      (insid,auftragid,auftragzeile)=(:OLDINSTANZ,:OLDAUFTRAGID,:OLDZEILENNR);
  exec sql delete from auftragentry where 

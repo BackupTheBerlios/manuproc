@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.11 2002/06/20 06:29:53 christof Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.12 2002/06/20 13:27:55 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -64,7 +64,7 @@ try{
  rngid=RNGID;
 
  lsdatum.from_postgres(DATUM);	
- if(IGELIEFERTAM) geliefertam=Petig::Datum();		 
+ if(IGELIEFERTAM) geliefertam.from_postgres(DATUM) ;  //Petig::Datum();		 
  else geliefertam.from_postgres(GELIEFERTAM);		 
 #ifdef MABELLA_EXTENSIONS
  dpdliefnr=DPDLIEFNR;

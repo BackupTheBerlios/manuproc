@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.cc,v 1.3 2002/06/20 09:35:15 christof Exp $
+// $Id: steuerprogramm.cc,v 1.4 2002/06/20 13:27:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -88,7 +88,7 @@ void auftragstests(e_mode mode)
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Faerberei),Kunde::default_id);
        int faerberei_znr=1;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Faerberei,AuftragBase::ungeplante_id,faerberei_znr));
-       AEP.Planen(UID,7000,PA,PLANDATUM);
+       AEP.Planen(UID,7000,PA,PLANDATUM2);
        C.teste(Check::Planen_Faerberei_teil);
        cout << "Teil-Planen der Färberei beendet\n\n";
        }
@@ -179,7 +179,7 @@ int main(int argc,char *argv[])
    else if(std::string(argv[1])=="D" || std::string(argv[1])=="ZweiterAuftrag_frueheresDatum")  mode=ZweiterAuftrag_frueheresDatum;
    else if(std::string(argv[1])=="J" || std::string(argv[1])=="JumboLager")  mode=JumboLager;
 
-   if(mode==None) usage(argv[0],argv[1]);
+   if(mode==None) { usage(argv[0],argv[1]); return 1; }
    
    cout << "Initalisierung der Datenbank ...";
    system("database_tables_init/initdb.script");
@@ -187,9 +187,8 @@ int main(int argc,char *argv[])
 
    Petig::PrintUncaughtExceptions();
    try{
-   Petig::Connection conn;
-   conn.setDbase("testdb");
-   Petig::dbconnect(conn);  
+   putenv("PGDATABASE=testdb");
+   Petig::dbconnect();  
    
    DataBase_init();
    auftragstests(mode);

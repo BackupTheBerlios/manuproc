@@ -1,4 +1,4 @@
-// $Id: createDynEnums.cc,v 1.3 2002/05/09 12:46:01 christof Exp $
+// $Id: createDynEnums.cc,v 1.4 2002/06/20 13:27:55 christof Exp $
 
 #include <Aux/dbconnect.h>
 #include <Aux/FetchIStream.h>
@@ -57,6 +57,8 @@ int main()
       cout << "\n"
       		"   };\n"
       		"  }\n\n";
+      tr.close();
+      tr.open();
       
       //--- einheiten
       cout << "  namespace Einheiten {\n"
@@ -72,6 +74,8 @@ int main()
       cout << "\n"
       		"   };\n"
       		"  }\n\n";
+      tr.close();
+      tr.open();
       
       //--- prozesse
       cout << "  namespace Prozesse {\n"
@@ -88,6 +92,8 @@ int main()
       cout << "\n"
       		"   };\n"
       		"  }\n\n";
+      tr.close();
+      tr.open();
       
       //--- waehrung
       cout << "  namespace Waehrung {\n"
@@ -103,6 +109,8 @@ int main()
       cout << "\n"
       		"   };\n"
       		"  }\n\n";
+      tr.close();
+      tr.open();
       
       //--- prod_instanz
       cout << "  namespace Instanzen {\n"
