@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema_sql.pgcc,v 1.18 2003/03/24 17:13:15 christof Exp $
+// $Id: ExtBezSchema_sql.pgcc,v 1.19 2003/03/25 11:59:19 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -45,7 +45,7 @@ FetchIStream &operator>>(FetchIStream &is, ExtBezSchema::BezKomp &b)
 	>> FetchIStream::MapNull(b.signifikanz,0) 
 	>> FetchIStream::MapNull(b.TeXtabformat,"c");
 #ifndef PETIG_EXTENSIONS
-   is >> FetchIStream::MapNull(b.textid,0);
+   is >> FetchIStream::MapNull(b.textid,(MultiL_Dict::LangTXT)0);
 #endif
    return is;
 }
