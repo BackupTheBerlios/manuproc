@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.38 2003/08/02 14:54:24 christof Exp $
+# $Id: Makefile.am,v 1.39 2003/08/03 01:44:48 christof Exp $
 
 AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@ @SIGC_CFLAGS@
 
@@ -22,7 +22,7 @@ libMisc_a_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
 		EntryValueQuartal.cc Trace.cc FetchIStream_ops.cc \
 		dbcapability.cc Tag.cc TagStream.cc \
 		multi_lang.cc EntryValueTimeStamp.cc \
-		Event.cc
+		Event.cc germanstring.cc EntryValueIntGermanString.cc
 
 libMisc.a: $(libMisc_a_OBJECTS) $(libMisc_a_DEPENDENCIES) Makefile
 	(for i in $(libMisc_a_OBJECTS) ; do echo Misc/$$i ; done ) >$@
@@ -43,7 +43,9 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
    Trace.h Trace.cc relops.h EntryValueFixedEinheit.h UniqueValue.h \
    compiler_ports.h FILEstream.h TagStream.cc TagStream.h Tag.cc Tag.h \
    TraceNV.h TimeStamp.h EntryValueTimeStamp.cc EntryValueTimeStamp.h \
-   Event.h Event.cc inbetween.h bitmask.h
+   Event.h Event.cc inbetween.h germanstring.h germanstring.cc \
+   EntryValueIntGermanString.cc EntryValueIntGermanString.h \
+   recodestream.h bitmask.h
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
