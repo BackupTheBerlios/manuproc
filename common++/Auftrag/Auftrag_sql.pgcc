@@ -97,7 +97,8 @@ void Auftrag::Zahlart(cH_Zahlungsart zart) throw(SQLerror)
    ZAHLART = zart->Id();
  else
    {cH_Kunde k(kundennr);
-   ZAHLART = k->zahlungsart()->Id();
+    cH_Kunde krng(k->Rngan());
+   ZAHLART = krng->zahlungsart()->Id();
    }
   
  exec sql update auftrag set zahlart = :ZAHLART 
@@ -187,7 +188,7 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
 }
 
 
-Auftrag::Auftrag(Anlegen _instanz, long kdnr) throw(SQLerror)
+Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string yaufnr) throw(SQLerror)
 	: AuftragBase(cH_ppsInstanz(_instanz),invalid_id),
 	  zahlart(Zahlungsart::none_id)
 {
@@ -202,6 +203,7 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr) throw(SQLerror)
  int WAEHRUNG;
  int VERKNR;
  int IVERKNR=0;
+ char *YOURAUFNR=(char*)yaufnr.c_str();
  exec sql end declare section;
 
  exec sql select waehrungid,coalesce(verknr,-1) 
@@ -228,6 +230,12 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr) throw(SQLerror)
  SQLerror::test(__FILELINE__" insert into auftrag");
   
 #ifdef MABELLA_EXTENSIONS
+ if(!yaufnr.empty())
+   {exec sql update auftrag set youraufnr=:YOURAUFNR where
+	(auftragid,instanz)=(:AUFTRAGID,:INSTANZ);
+    SQLerror::test(__FILELINE__":Auftrag: update youraufnr");	
+   }
+
  if(VERKNR==-1) IVERKNR=-1;
  exec sql update auftrag set verknr=:VERKNR:IVERKNR where
 	(auftragid,instanz)=(:AUFTRAGID,:INSTANZ);
@@ -245,10 +253,11 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr) throw(SQLerror)
  status=(AufStatVal)STATUS;
  auftragid= AUFTRAGID;
  assert(valid()); 
+ waehrung=cP_Waehrung((Waehrung::ID)WAEHRUNG);
  tr.commit();
 }
 
-Auftrag::Auftrag(Anlegen2 AB, long kdnr) throw(SQLerror)
+Auftrag::Auftrag(Anlegen2 AB, long kdnr, const std::string yaufnr) throw(SQLerror)
 	: AuftragBase(AB), zahlart(Zahlungsart::none_id)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("Anlegen:",*this),NV("KnNr",kdnr));
@@ -261,6 +270,7 @@ Auftrag::Auftrag(Anlegen2 AB, long kdnr) throw(SQLerror)
  int WAEHRUNG;
  int VERKNR;
  int IVERKNR=0;
+ char *YOURAUFNR=(char*)yaufnr.c_str();
  exec sql end declare section;
 
  exec sql select waehrungid,coalesce(verknr,-1) 
@@ -274,6 +284,12 @@ Auftrag::Auftrag(Anlegen2 AB, long kdnr) throw(SQLerror)
  SQLerror::test(__FILELINE__" insert auftrag with auftragid 0");
   
 #ifdef MABELLA_EXTENSIONS
+ if(!yaufnr.empty())
+   {exec sql update auftrag set youraufnr=:YOURAUFNR where
+	(auftragid,instanz)=(:AUFTRAGID,:INSTANZ);
+    SQLerror::test(__FILELINE__":Auftrag: update youraufnr");	
+   }
+
  if(VERKNR==-1) IVERKNR=-1;
  exec sql update auftrag set verknr=:VERKNR:IVERKNR where
 	(auftragid,instanz)=(:AUFTRAGID,:INSTANZ);
@@ -413,10 +429,10 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
  PREISLISTENULL=PreisListe::none_id;
  
 // bei Mabella auf keinen Fall UNCOMMITED
-#ifdef MABELLA_EXTENSIONS
- if(status==UNCOMMITED)
-   STATUS=OPEN;   
-#endif
+//#ifdef MABELLA_EXTENSIONS
+// if(status==UNCOMMITED)
+//   STATUS=OPEN;   
+//#endif
 
  if(STATUS!=getStatus() && STATUS==OPEN) 
     setStatusAuftragBase(AufStatVal(STATUS));

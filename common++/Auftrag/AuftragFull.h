@@ -1,4 +1,4 @@
-/* $Id: AuftragFull.h,v 1.26 2002/11/07 07:48:30 christof Exp $ */
+/* $Id: AuftragFull.h,v 1.27 2003/03/14 13:14:37 jacek Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -43,7 +43,8 @@ private:
 public:
 	AuftragFull(const AuftragBase& auftrag,bool with_storno=true) throw(SQLerror);
 	// neuen Auftrag anlegen
-	AuftragFull(Auftrag::Anlegen _instanz, long kundennr) throw(SQLerror);
+	AuftragFull(Auftrag::Anlegen _instanz, long kundennr, 
+			const std::string yaufnr="") throw(SQLerror);
 	
 	void deleteEintrag(int zeilennr, int idx) throw(SQLerror);
 	const AufEintrag &getAufEntry(int idx) const 

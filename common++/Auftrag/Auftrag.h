@@ -1,4 +1,4 @@
-/* $Id: Auftrag.h,v 1.19 2003/01/08 09:46:56 christof Exp $ */
+/* $Id: Auftrag.h,v 1.20 2003/03/14 13:14:37 jacek Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -61,8 +61,8 @@ public:
         };
 	Auftrag(const AuftragBase& auftrag) throw(SQLerror);
 	// neuen Auftrag anlegen
-        Auftrag(Anlegen2 Auftragsnr, long kundennr) throw(SQLerror);
-        Auftrag(Anlegen instanz, long kundennr) throw(SQLerror);
+        Auftrag(Anlegen2 Auftragsnr, long kundennr, const std::string yaufnr="") throw(SQLerror);
+        Auftrag(Anlegen instanz, long kundennr, const std::string yaufnr="") throw(SQLerror);
         void deleteAuftrag() throw(SQLerror);
 	void deleteEintrag(int zeilennr) throw(SQLerror);
 	int getIdFromYourAufId(const char *youraufid) throw(SQLerror);

@@ -67,8 +67,9 @@ AuftragFull::AuftragFull(const AuftragBase& auftrag,bool with_storno) throw(SQLe
  }
 }
 
-AuftragFull::AuftragFull(Anlegen instanz, long kundennr) throw(SQLerror)
-	: Auftrag(instanz, kundennr)
+AuftragFull::AuftragFull(Anlegen instanz, long kundennr,
+		std::string yaufnr) throw(SQLerror)
+	: Auftrag(instanz, kundennr, yaufnr)
 {  
 ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
 // braucht nicht geladen zu werden
