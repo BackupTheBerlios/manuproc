@@ -1,4 +1,4 @@
-// $Id: germanstring.cc,v 1.1 2002/12/05 08:23:10 christof Exp $            
+// $Id: germanstring.cc,v 1.2 2002/12/05 08:33:38 christof Exp $            
 /*  Indexerstellung
  *  Copyright (C) 2002 Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <germanstring.h>
+#include <Misc/germanstring.h>
 
 namespace {
 typedef const char *str;
@@ -115,7 +115,7 @@ bool germanstring::operator<(const germanstring &b) const
       ++a;
       ++i;
    }
-   if (a!=end()) return true;
+   if (i!=b.end()) return true;
    return false;
 }
 
@@ -147,6 +147,7 @@ int main()
    COMP2("Wasser","Waßer");
    COMP2("Pfütze","Pfuetze");
    DO(germanstring("ÄÖÜäöüßaeoeuess")<germanstring("ÄÖÜäöüßaeoeuess"));
+   COMP2("Wasser","Wasserpflanze");
    return 0;
 }
 
