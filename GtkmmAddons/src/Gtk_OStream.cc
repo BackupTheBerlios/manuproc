@@ -1,4 +1,4 @@
-// $Id: Gtk_OStream.cc,v 1.4 2003/11/03 16:40:23 christof Exp $
+// $Id: Gtk_OStream.cc,v 1.5 2003/11/10 08:23:45 christof Exp $
 /*  Gtk--addons: a collection of gtk-- addons
     Copyright (C) 2002  Adolf Petig GmbH. & Co. KG
     Developed by Christof Petig <christof.petig@wtal.de>
