@@ -1,4 +1,4 @@
-// $Id: AuftragsVerwaltung.cc,v 1.21 2003/12/15 18:33:16 jacek Exp $
+// $Id: AuftragsVerwaltung.cc,v 1.22 2004/02/12 08:56:41 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -48,24 +48,28 @@ void AuftragsVerwaltung::kunden_bestellmenge_aendern(AufEintrag &AE,AuftragBase:
 
 AufEintragBase AuftragsVerwaltung::anlegen2()
 {
-   Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE2);
 #ifdef MANU_PROC_TEST
+   Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE2);
    return auftrag.push_back(300,DATUM,ARTIKEL_SORTIMENT_BUNT,OPEN,true);
 #elif defined PETIG_TEST 
+   Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
    return auftrag.push_back(300,DATUM,ARTIKEL_ROLLEREI,OPEN,true);
 #elif defined MABELLA_TEST 
+   Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE2);
    return auftrag.push_back(5,DATUM,ARTIKEL_TRIO,OPEN,true);
 #endif
 }
 
 AufEintragBase AuftragsVerwaltung::anlegen3()
 {
-   Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE2);
 #ifdef MANU_PROC_TEST
+   Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE2);
    return auftrag.push_back(300,DATUM9,ARTIKEL_SORTIMENT_BUNT,OPEN,true);
 #elif defined PETIG_TEST 
+   Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
    return auftrag.push_back(300,DATUM9,ARTIKEL_ROLLEREI,OPEN,true);
 #elif defined MABELLA_TEST 
+   Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE2);
    return auftrag.push_back(12,DATUM,ARTIKEL_TRIO,OPEN,true);
 #endif
 }
