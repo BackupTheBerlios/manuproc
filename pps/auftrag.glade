@@ -1794,7 +1794,21 @@ Auftrag</label>
 	      <signal>activate</signal>
 	    </accelerator>
 	    <label>Masseneingabe</label>
-	    <active>True</active>
+	    <active>False</active>
+	    <always_show_toggle>True</always_show_toggle>
+	  </widget>
+
+	  <widget>
+	    <class>GtkCheckMenuItem</class>
+	    <name>kombinierte_artikel</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <accelerator>
+	      <modifiers>0</modifiers>
+	      <key>GDK_F2</key>
+	      <signal>activate</signal>
+	    </accelerator>
+	    <label>Kombinierte Artikel</label>
+	    <active>False</active>
 	    <always_show_toggle>True</always_show_toggle>
 	  </widget>
 
@@ -2803,63 +2817,6 @@ Auftrag</label>
 	  </widget>
 
 	  <widget>
-	    <class>GtkButton</class>
-	    <name>aufentry_abbruch</name>
-	    <cxx_visibility>protected</cxx_visibility>
-	    <can_focus>True</can_focus>
-	    <signal>
-	      <name>clicked</name>
-	      <handler>on_aufentry_abbruch_clicked</handler>
-	      <last_modification_time>Thu, 07 Dec 2000 11:20:42 GMT</last_modification_time>
-	    </signal>
-	    <stock_button>GNOME_STOCK_BUTTON_CANCEL</stock_button>
-	    <relief>GTK_RELIEF_NORMAL</relief>
-	    <child>
-	      <left_attach>11</left_attach>
-	      <right_attach>12</right_attach>
-	      <top_attach>2</top_attach>
-	      <bottom_attach>3</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>False</yfill>
-	    </child>
-	  </widget>
-
-	  <widget>
-	    <class>GtkButton</class>
-	    <name>aufentry_ok</name>
-	    <cxx_visibility>protected</cxx_visibility>
-	    <has_default>True</has_default>
-	    <can_focus>True</can_focus>
-	    <signal>
-	      <name>clicked</name>
-	      <handler>on_aufentry_ok_clicked</handler>
-	      <last_modification_time>Thu, 07 Dec 2000 11:20:58 GMT</last_modification_time>
-	    </signal>
-	    <stock_button>GNOME_STOCK_BUTTON_OK</stock_button>
-	    <relief>GTK_RELIEF_NORMAL</relief>
-	    <child>
-	      <left_attach>11</left_attach>
-	      <right_attach>12</right_attach>
-	      <top_attach>3</top_attach>
-	      <bottom_attach>4</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>False</yfill>
-	    </child>
-	  </widget>
-
-	  <widget>
 	    <class>GtkSpinButton</class>
 	    <name>stkmtr_spinbutton</name>
 	    <width>70</width>
@@ -3528,8 +3485,8 @@ Auftrag</label>
 	    <label_xalign>0</label_xalign>
 	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
 	    <child>
-	      <left_attach>11</left_attach>
-	      <right_attach>12</right_attach>
+	      <left_attach>9</left_attach>
+	      <right_attach>10</right_attach>
 	      <top_attach>1</top_attach>
 	      <bottom_attach>2</bottom_attach>
 	      <xpad>0</xpad>
@@ -3555,6 +3512,63 @@ Auftrag</label>
 	      <stock_button>GNOME_STOCK_BUTTON_HELP</stock_button>
 	      <relief>GTK_RELIEF_NORMAL</relief>
 	    </widget>
+	  </widget>
+
+	  <widget>
+	    <class>GtkButton</class>
+	    <name>aufentry_abbruch</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <can_focus>True</can_focus>
+	    <signal>
+	      <name>clicked</name>
+	      <handler>on_aufentry_abbruch_clicked</handler>
+	      <last_modification_time>Thu, 07 Dec 2000 11:20:42 GMT</last_modification_time>
+	    </signal>
+	    <stock_button>GNOME_STOCK_BUTTON_CANCEL</stock_button>
+	    <relief>GTK_RELIEF_NORMAL</relief>
+	    <child>
+	      <left_attach>9</left_attach>
+	      <right_attach>10</right_attach>
+	      <top_attach>2</top_attach>
+	      <bottom_attach>3</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkButton</class>
+	    <name>aufentry_ok</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <has_default>True</has_default>
+	    <can_focus>True</can_focus>
+	    <signal>
+	      <name>clicked</name>
+	      <handler>on_aufentry_ok_clicked</handler>
+	      <last_modification_time>Thu, 07 Dec 2000 11:20:58 GMT</last_modification_time>
+	    </signal>
+	    <stock_button>GNOME_STOCK_BUTTON_OK</stock_button>
+	    <relief>GTK_RELIEF_NORMAL</relief>
+	    <child>
+	      <left_attach>9</left_attach>
+	      <right_attach>10</right_attach>
+	      <top_attach>3</top_attach>
+	      <bottom_attach>4</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
 	  </widget>
 	</widget>
       </widget>

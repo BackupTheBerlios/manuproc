@@ -508,6 +508,16 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
          else
             WAufEntryStat->set_history((AufStatVal)OPEN); 
 
+        bool combined=false;
+        if(kombinierte_artikel->get_active())
+          {
+           ja_nein_frage jnf("Soll ein Zusammengesetzter Artikel eingegeben werden ?");
+           jnf.set_transient_for(*this);
+           int ret=jnf.run();
+           if(ret==0) 
+             combined=true;
+          }
+
          auftrag->push_back(
                stkmtr_spinbutton->get_value_as_int(),
                liefdatum_datewin->get_value(),
@@ -516,6 +526,7 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
                WPreis->get_Preis(),
                rabattentry_spinbutton->get_value_as_float(),
                artpreis);
+
        }
       else 
       { meldung->Show("In dieser Produktionsebene können keine Aufträge geschrieben werden");
