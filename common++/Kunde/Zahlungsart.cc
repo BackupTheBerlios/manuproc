@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.cc,v 1.22 2003/01/29 16:58:48 jacek Exp $
+// $Id: Zahlungsart.cc,v 1.23 2003/01/30 10:08:14 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -74,7 +74,7 @@ void Zahlungsart::TeX_out(std::ostream &os,
   {
   if(verfahren==LCR)
     {
-     os << "Paiement: par traite Lettre de change relev\\'e (LCR)";
+     os << "par traite Lettre de change relev\\'e (LCR)";
      if(zahlungsfrist)
        {os << " \\`a "<<itos(zahlungsfrist)<<" jours";
         if(!monatsende)
@@ -185,7 +185,7 @@ void Zahlungsart::TeX_out(std::ostream &os,
   {
   if(verfahren==LCR)
     {
-     os << "Paiement: par traite Lettre de change relev\\'e (LCR)";
+     os << "par traite Lettre de change relev\\'e (LCR)";
      if(zahlungsfrist)
        {os << " \\`a "<<itos(zahlungsfrist)<<" jours";
         if(!monatsende)
