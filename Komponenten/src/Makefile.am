@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.44 2004/08/31 08:26:14 christof Exp $
+# $Id: Makefile.am,v 1.45 2004/11/08 08:32:18 christof Exp $
 AM_CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
@@ -65,7 +65,7 @@ libKomponenten_a_SOURCES= \
 	IntStringBox_glade.cc IntStringPopup_glade.cc \
 	string_Label.cc Event.cc Association.cc \
         CellRendererSimpleTree.cc ArtikelBox.cc \
-        KundenBox2.cc int_ImageButton.cc
+        KundenBox2.cc int_ImageButton.cc StringBox_sql.cc
 
 lateron= \
 		KundenBox_glade.cc \
@@ -83,7 +83,8 @@ lateron= \
       KundenBox2.cc
 
 BUILT_SOURCES_L= $(LINKS) \
-	IntStringBox_sql.cc ArtikelBox_sql.cc AB_Breitensuche_sql.cc
+	IntStringBox_sql.cc ArtikelBox_sql.cc AB_Breitensuche_sql.cc \
+	StringBox_sql.cc
 
 lateron2 = ProzessBox_sql.cc KundenBox_sql.cc \
    WWaehrung_sql.cc WAuftragStatus_sql.cc \
