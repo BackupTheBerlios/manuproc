@@ -1,4 +1,4 @@
-/* $Id: LieferscheinVoll.cc,v 1.22 2004/06/21 14:14:48 christof Exp $ */
+/* $Id: LieferscheinVoll.cc,v 1.23 2004/10/19 11:46:26 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -55,7 +55,7 @@ LieferscheinVoll::LieferscheinVoll(const cH_ppsInstanz& _instanz,int lid,bool au
 
  std::string query("select lfrsid, zeile, artikelid, stueck, menge, palette,");
  query+=std::string("zusatzinfo, instanz, refauftragid, ")+
-	  " refzeilennr, lagerid, status"+
+	  " refzeilennr, lagerid, status, text"+
 	  " from lieferscheinentry ly "+ // "left join "+tabelle+" b "+
 //	  " on (b.id=ly.artikelid) "+
 	  " where (instanz,lfrsid) = (?,?) "+
@@ -74,5 +74,4 @@ void LieferscheinVoll::changeStatusOnEntries(AufStatVal st) throw(SQLerror)
 		i!=lsentry.end(); ++i)
    (*i).changeStatus(st,fuer_auftrag);
 }
-
 
