@@ -1,4 +1,4 @@
-// $Id: datewin.cc,v 1.11 2003/03/17 15:38:25 christof Exp $
+// $Id: datewin.cc,v 1.12 2003/03/24 08:02:55 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,10 +22,11 @@
 #include <Misc/Global_Settings.h>
 #include <unistd.h>
 #include <gtk/gtksignal.h>
+#include <iostream>
 
 datewin::datewin(const std::string &inst) : block(false), instance(inst)
 {  set_value(ManuProC::Datum::today());
-   jahr->signal_activate().connect(activate.slot());
+   jahr->signal_activate().connect(signal_activate().slot());
    gtk_signal_connect(GTK_OBJECT(gobj()), "grab_focus",
     		GTK_SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
    set_scrollable(false); // for now ...
