@@ -1,4 +1,4 @@
-// $Id: mystring.cc,v 1.3 2002/07/17 09:42:58 christof Exp $
+// $Id: mystring.cc,v 1.4 2002/07/17 09:43:56 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <Aux/mystring.h>
+#include <Misc/mystring.h>
 
 void ManuProC::remove_last_from(std::string &s, const std::string &r)
 {  
