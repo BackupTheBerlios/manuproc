@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.77 2004/05/06 10:32:10 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.78 2004/05/06 10:41:35 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -723,13 +723,13 @@ bool SimpleTreeStore::iter_next_vfunc(vfunc_iter_t iter)
 {  GtkTreeIter *iter_next=iter;
 #endif
    ManuProC::Trace _t(trace_channel, __FUNCTION__,iter STS_GTKMM_22_24(,.gobj())->user_data);
-   iterclear(iter_next);
-   if (!iter_valid(iter)) return false;
+   if (!iter_valid(iter)) { iterclear(iter_next); return false; }
 
    iterator old=iterconv(iter),newit=old;
-   if (!old->second.parent) return false;
+   if (!old->second.parent) { iterclear(iter_next); return false; }
    newit++;
-   if (newit==old->second.parent->children.end()) return false;
+   if (newit==old->second.parent->children.end())
+      { iterclear(iter_next); return false; }
    iterinit(iter_next,newit);
    ManuProC::Trace(trace_channel,"new iter",iter_next STS_GTKMM_22_24(,.gobj())->user_data);
    return true;
