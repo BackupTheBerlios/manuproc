@@ -1,4 +1,4 @@
-// $Id: Event.cc,v 1.3 2003/05/09 12:06:40 christof Exp $
+// $Id: Event.cc,v 1.4 2003/05/12 07:25:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,7 +22,13 @@
 #include <libpq-fe.h>
 #include <Misc/Transaction.h>
 
+#ifndef SIGC1_2
+// if you care about memory leaks use gtk2.0!!!
+safemap<std::string, ManuProC::Event::filteredsignal_t*> ManuProC::Event::channels;
+#else
 safemap<std::string, ManuProC::Event::filteredsignal_t> ManuProC::Event::channels;
+#endif
+
 ManuProC::Event::fullsignal_t ManuProC::Event::event_sig;
 bool ManuProC::Event::connected;
 ManuProC::TimeStamp ManuProC::Event::last_processed;
@@ -61,7 +67,12 @@ void ManuProC::Event::read_notifications()
       	 >> FetchIStream::MapNull(key)
       	 >> FetchIStream::MapNull(data);
       event_sig(channel,key,data);
+#ifndef SIGC1_2
+      if (!channels[channel]) channels[channel]=new filteredsignal_t();
+      (*channels[channel])(key,data);
+#else      
       channels[channel](key,data);
+#endif      
    }
    tr.commit();
    last_processed=bis;
@@ -102,3 +113,12 @@ int ManuProC::Event::filedesc()
 // connect_gtk() :
 //   register a read callback which registers an idle method which reads
 //   events [PQsocket()]
+
+ManuProC::Event::filteredsignal_t &ManuProC::Event::signal_event(const std::string &channel)
+#ifdef SIGC1_2
+{  return channels[channel]; }
+#else
+{  if (!channels[channel]) channels[channel]=new filteredsignal_t();
+   return *channels[channel]; 
+}
+#endif

@@ -1,4 +1,4 @@
-// $Id: Event.h,v 1.3 2003/05/11 22:11:12 christof Exp $
+// $Id: Event.h,v 1.4 2003/05/12 07:25:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,7 +30,11 @@ namespace ManuProC {
 class Event
 {	typedef SigC::Signal3<void,const std::string &,const std::string &,const std::string &> fullsignal_t;
 	typedef SigC::Signal2<void,const std::string &,const std::string &> filteredsignal_t;
+#ifndef SIGC1_2
+	static safemap<std::string, filteredsignal_t *> channels;
+#else
 	static safemap<std::string, filteredsignal_t> channels;
+#endif
 	static fullsignal_t event_sig;
 	static TimeStamp last_processed;
 	static bool connected;
@@ -42,8 +46,7 @@ public:
 	Event(const std::string &channel,const std::string &key="",const std::string &data="");
    	static fullsignal_t &signal_event()
    	{  return event_sig; }
-   	static filteredsignal_t &signal_event(const std::string &channel)
-   	{  return channels[channel]; }
+   	static filteredsignal_t &signal_event(const std::string &channel);
    	
    	// connect to database
    	static void connect(bool ignore_old=true);
