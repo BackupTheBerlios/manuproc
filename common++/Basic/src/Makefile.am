@@ -1,11 +1,13 @@
-# $Id: Makefile.am,v 1.48 2004/04/29 14:26:58 christof Exp $
+# $Id: Makefile.am,v 1.49 2004/05/11 08:09:55 christof Exp $
 
 if WINDOWS
-WIN_LDFLAGS=-no-undefined -export-symbols libManuProC_Base@DATABASE_TYPE@.def
-DLL_LDADD=@SIGC_LIBS@ @ECPG_LIBS@ libManuProC_Base_res.lo
+WIN_LDFLAGS=-no-undefined -export-symbols libManuProC_Base@DATABASE_TYPE@.def 
+DLL_LDADD=libManuProC_Base_res.lo @SIGC_LIBS@ @ECPG_LIBS@ 
+DLL_DEF=libManuProC_Base@DATABASE_TYPE@.def
 else
 WIN_LDFLAGS=
 DLL_LDADD=
+DLL_DEF=
 endif
 
 libManuProC_Base_sqlite.def: libManuProC_Base.def libManuProC_Base_sqlite.defadd \
@@ -48,7 +50,7 @@ libManuProC_Base_la_SOURCES=Ausgabe_neu.cc Datum.cc IOerror.cc \
 EXTRA_DIST=dbconnect.pgcc SQLerror_postgres.pgcc Transaction.pgcc \
 	FetchIStream.pgcc
 
-BUILT_SOURCES=Misc ostream $(DB_SRCES)
+BUILT_SOURCES=Misc ostream $(DB_SRCES) $(DLL_DEF)
 
 include_HEADERS=Ausgabe_neu.h CacheStatic.h Cache_Pointer.h Datum.h Handles.h \
 	IOerror.h Kalenderwoche.h Pointer.h Postgres.h Rundungsmacros.h \

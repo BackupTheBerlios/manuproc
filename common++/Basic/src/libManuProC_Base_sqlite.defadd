@@ -27,7 +27,6 @@
 	_ZN15SQLerror_sqlite4testERKSsS1_i 
 	_ZN15SQLerror_sqlite4testERKSsi 
 	_ZN15SQLerror_sqlite5printERKSsi 
-	_ZN15SQLerror_sqlite7SQLCodeEv 
 	_ZN15SQLerror_sqlite9last_codeE  DATA
 	_ZN15SQLerror_sqliteC1ERKSsiS1_ 
 	_ZN15SQLerror_sqliteC2ERKSsiS1_ 
