@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.30 2004/05/13 09:35:17 christof Exp $
+// $Id: db_upgrade.cc,v 1.31 2004/06/16 12:56:13 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -61,7 +61,11 @@ bool check_table(const std::string &table, const std::string &definition="")
   {  if (!definition.empty()) 
      {  std::string q="create table "+table+" ("+definition+")";
         std::cout << q << '\n';
+        try {
         Query x(q);
+        } catch (SQLerror &e)
+        {  if (e.Code()!=-600) return false;  // NOTICE
+        }
      }
      return true;
   }
@@ -202,6 +206,23 @@ int main(int argc,char *argv[])
   check_column("prod_instanz","overview","text");
   // alternatives group number
   check_column("prod_instanz","alt_group_nr","integer");
+
+  if (!check_table("webangaben"))
+  {  if (check_table("webang_ketten","artikel integer not null,"
+                "kettscheibe integer not null,"
+     		"max_kettlaenge integer,"
+     		"max_fadenzahl integer,"
+     		"verlaengern boolean,"
+     		"ausn_gaenge1 integer,"
+     		"ausn_maxfd1 integer,"
+     		"ausn_gaenge2 integer,"
+     		"ausn_maxfd2 integer,"
+     		"primary key (artikel,kettscheibe)"))
+        Query_nt("insert into webang_ketten select distinct "
+            "artikel,kettscheibe,max_kettlaenge,max_fadenzahl,verlaengern,"
+            "ausn_gaenge, ausn_maxfd, ausn_gaenge2, ausn_maxfd2 "
+            "from webang_faeden where kettscheibe>0");
+  }
 
   ManuProC::dbdisconnect();
   return 0;
