@@ -9,5 +9,5 @@ kill `cat ~/mabellas_ssh.pid`
 
 echo $! > ~/mabellas_ssh.pid
 
-sleep 15
+sleep 18
 
