@@ -1,3 +1,23 @@
+// $Id: Artikeleingabe.cc,v 1.28 2004/11/29 10:43:40 christof Exp $
+/*  Artikeleingabe: ManuProC's article management program
+ *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
+ *  written by Christof Petig
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
 #include "config.h"
 #include "Artikeleingabe.hh"
 #include "Artikeleingabe_classes.hh"
@@ -7,7 +27,7 @@
 #include <Artikel/ArtikelBaum.h>
 #include <Artikel/ArtikelStamm.h>
 #include <Gtk2TeX.h>
-#include <fstream.h>
+#include <fstream>
 #include <cstdio>
 #include <algorithm>
 #include <Artikel/Einheiten.h>
@@ -62,12 +82,15 @@ Artikeleingabe::Artikeleingabe(int argc, char **argv)
      // warengruppe und schema id ermitteln
      unsigned warengruppe=cont.getAttr<int>("warengruppe");
      unsigned schema=cont.getAttr<int>("schema");
-     std::vector <std::string> entries;
-     FOR_EACH_CONST_TAG_OF(i,cont,"content")
-       entries.push_back(i->Value());
-     std::cerr << warengruppe << ':' << schema << ' ' << entries.size() << '\n';
+     std::map<int,std::vector<std::string> > entries_map;
+     FOR_EACH_CONST_TAG_OF(part,cont,"part")
+     { std::vector<std::string> &entries=entries_map[part->getAttr<int>("signifikanz")];
+       FOR_EACH_CONST_TAG_OF(i,*part,"content")
+         entries.push_back(i->Value());
+     }
+//     std::cerr << warengruppe << ':' << schema << ' ' << entries.size() << '\n';
      top_notebook->set_current_page(0);
-     neuenArtikelAnlegen(warengruppe,schema,entries);
+     neuenArtikelAnlegen(warengruppe,schema,entries_map);
    }
    catch (std::exception &e)
    { std::cerr << "Exception " << e.what() << '\n';
