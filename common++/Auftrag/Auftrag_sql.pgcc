@@ -110,7 +110,7 @@ void Auftrag::deleteEintrag(int zeilennr) throw(SQLerror)
 }
 
 Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
-: AuftragBase(_auftrag), zahlart(Zahlungsart::none_id)
+: AuftragBase(_auftrag), zahlart(Zahlungsart::none_id), labelid(0)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
  exec sql begin declare section;
@@ -150,6 +150,11 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
 	from auftrag where (auftragid,instanz) = (:AUFTRAGID,:INSTANZ) ;
  SQLerror::test(__FILELINE__"Auftrag laden");
 
+
+ ExtraColumns ec("auftrag","instanz","auftragid");
+ ec << *this;
+ labelid = ec.get<int>("label");
+
  kundennr = KUNDENNR;
  datum.from_postgres(DATUM);
 // wrkstatus = LOADED;
@@ -186,7 +191,6 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string &yaufnr) throw(S
  int VERKNR;
  int IVERKNR=0;
  char *YOURAUFNR=(char*)yaufnr.c_str();
- int UID;
  exec sql end declare section;
 
  exec sql select waehrungid,coalesce(verknr,-1) 
@@ -207,11 +211,9 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string &yaufnr) throw(S
  SQLerror::test("Auftrag: select neue auftragid");
  if (AUFTRAGID<handplan_auftrag_id) AUFTRAGID=handplan_auftrag_id;
 
- UID=getuid();
-
  exec sql insert into auftrag (auftragid, kundennr, 
-				stat, waehrung, instanz, uid)
- 	values (:AUFTRAGID, :KUNDENNR, :STATUS, :WAEHRUNG,:INSTANZ,:UID);
+				stat, waehrung, instanz)
+ 	values (:AUFTRAGID, :KUNDENNR, :STATUS, :WAEHRUNG,:INSTANZ);
  SQLerror::test(__FILELINE__" insert into auftrag");
   
 #ifdef MABELLA_EXTENSIONS
@@ -231,7 +233,13 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string &yaufnr) throw(S
  SQLerror::test(__FILELINE__":Auftrag: update notiz");	
 #endif
 
+ ExtraColumns ec("auftrag","instanz","auftragid");
+ ec << *this;
 
+ if(ec.hasColumn("uid"))
+   Query("update auftrag set uid=? where (instanz,auftragid)=?")
+     << getuid() << *this;
+     
  exec sql select date(datum) into :DATUM from auftrag 
    where auftragid= :AUFTRAGID and instanz = :INSTANZ;
  SQLerror::test("Aufrtag: select datum");
@@ -261,7 +269,6 @@ Auftrag::Auftrag(Anlegen2 AB, long kdnr, const std::string &yaufnr) throw(SQLerr
  int VERKNR;
  int IVERKNR=0;
  char *YOURAUFNR=(char*)yaufnr.c_str();
- int UID;
  exec sql end declare section;
 
  exec sql select waehrungid,coalesce(verknr,-1) 
@@ -270,11 +277,9 @@ Auftrag::Auftrag(Anlegen2 AB, long kdnr, const std::string &yaufnr) throw(SQLerr
 
  Transaction tr;
  
- UID=getuid();
- 
  exec sql insert into auftrag (auftragid, kundennr,  
-				stat, waehrung, instanz, uid)
- 	values (:AUFTRAGID, :KUNDENNR, :STATUS, :WAEHRUNG,:INSTANZ, :UID);
+				stat, waehrung, instanz)
+ 	values (:AUFTRAGID, :KUNDENNR, :STATUS, :WAEHRUNG,:INSTANZ);
  SQLerror::test(__FILELINE__" insert auftrag with auftragid 0");
   
 #ifdef MABELLA_EXTENSIONS
@@ -293,6 +298,13 @@ Auftrag::Auftrag(Anlegen2 AB, long kdnr, const std::string &yaufnr) throw(SQLerr
 	where kundennr=:KUNDENNR) where auftragid=:AUFTRAGID;
  SQLerror::test(__FILELINE__":Auftrag: update notiz");	
 #endif
+
+ ExtraColumns ec("auftrag","instanz","auftragid");
+ ec << INSTANZ << AUFTRAGID;
+
+ if(ec.hasColumn("uid"))
+   Query("update auftrag set uid=? where (instanz,auftragid)=?")
+     << getuid() << *this;
 
  exec sql select date(datum) into :DATUM from auftrag 
    where auftragid= :AUFTRAGID and instanz = :INSTANZ;
@@ -532,5 +544,26 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
    }
  tr.commit();
  return AEB;
+}
+
+
+void Auftrag::Label(unsigned int lid) throw(SQLerror)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
+
+ ExtraColumns ec("auftrag","instanz","auftragid");
+ ec << *this;
+ 
+ if(!ec.hasColumn("label")) return;
+ 
+ Transaction tr;
+ 
+ Query("update auftrag set label=? where (instanz,auftragid)=(?,?)")
+   << lid << *this;
+ SQLerror::test(__FILELINE__);
+
+ tr.commit();
+
+ labelid=lid;
 }
 

@@ -93,7 +93,6 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
    kundenbox->setExpandStr2(true);
    checkbutton_ean_drucken->show();
    youraufnr_scombo->set_value_in_list(false,false);
-   jahrgang_spinbutton->set_sensitive(false);
    artikelbox->set_always_fill(true);
 #endif 
 
@@ -114,6 +113,8 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
       }
    }
  auftragbearbeiten=this;  
+ 
+ auftrag_label->set_value(0);
 }
 
 
@@ -254,6 +255,9 @@ void auftrag_bearbeiten::clearEntry()
  lagerbest_label->set_text("0");
  verfuegbar_label->set_text("0");
  lieferant_offen->set_text("(0)");
+ auftrag_label->set_value(0);
+ 
+
 }
 
 gint auftrag_bearbeiten::on_aufrabatt_spinbutton_focus_out_event(GdkEventFocus *ev)
@@ -335,10 +339,6 @@ void auftrag_bearbeiten::on_aufdat_showkal_button_clicked()
 {   
 }
 
-void auftrag_bearbeiten::on_jahrgang_spinbutton_activate()
-{   
- aufbemerkung_entry->grab_focus();
-}
 
 void auftrag_bearbeiten::on_stkmtr_spinbutton_activate()
 {   
@@ -644,7 +644,6 @@ void auftrag_bearbeiten::fillMask()
  aufnr_scombo->setContent(auftrag->getAuftragidToStr(),auftrag->Id());
  youraufnr_scombo->setContent(auftrag->getYourAufNr(),auftrag->Id());
  aufbemerkung_entry->set_text(auftrag->getBemerkung());
-// jahrgang_spinbutton->set_value(auftrag->getJahrgang());
  aufdatum_datewin->set_value(auftrag->getDatum());
  bea_WWaehrung->set_History( auftrag->getWaehrung()->get_enum() );
  
@@ -654,6 +653,9 @@ void auftrag_bearbeiten::fillMask()
 
  aufrabatt_spinbutton->set_value(auftrag->getAuftragsRabatt().as_float());
  zahlziel_datewin->set_value(auftrag->Zahlziel());
+
+ auftrag_label->set_value(auftrag->Label());
+ 
  auftrag_clist->thaw();
  }
  catch(std::exception &e) 
@@ -848,7 +850,6 @@ bool auftrag_bearbeiten::splitEntry()
 
 void auftrag_bearbeiten::on_clear_all()
 {
-
  clearEntry();
  auftrag_clist->freeze();
  auftrag_clist->clear();
@@ -867,7 +868,6 @@ void auftrag_bearbeiten::on_clear_all()
  aufnr_scombo->reset();
  youraufnr_scombo->reset();
  aufbemerkung_entry->set_text("");
- jahrgang_spinbutton->set_value(ManuProC::Datum::today().Jahr());
  aufdatum_datewin->set_value(ManuProC::Datum::today());
  aufrabatt_spinbutton->set_value(0);
  zahlziel_datewin->set_value(ManuProC::Datum());
@@ -876,6 +876,7 @@ void auftrag_bearbeiten::on_clear_all()
  preislisten->reset();
  notiz->delete_text(0,-1);
  notiz_save->set_sensitive(false);
+ kundenbox->grab_focus();
 }
 
 
@@ -1183,5 +1184,16 @@ void auftrag_bearbeiten::on_offen_bei_lieferant_clicked()
    lieferant_offen->set_text("("+itos(offen)+")"+kwstr);
    }
 
+}
+
+void auftrag_bearbeiten::auftraglabel_geaendert()
+{
+ if(!auftrag) return;   
+ 
+ try{
+ auftrag->Label(auftrag_label->get_value());}
+ catch(SQLerror &e)
+  {meldung->Show(e); return;}  
+  
 }
 

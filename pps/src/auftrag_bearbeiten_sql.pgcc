@@ -1,4 +1,4 @@
-// $Id: auftrag_bearbeiten_sql.pgcc,v 1.15 2004/09/24 10:09:00 jacek Exp $
+// $Id: auftrag_bearbeiten_sql.pgcc,v 1.16 2004/09/28 13:32:22 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -69,7 +69,15 @@ throw(SQLerror)
 			
 	if(sqlca.sqlcode==100){*_continue=false; break; }
 	
-	aufnr_scombo->add_item(std::string(AUFIDCHR)+" "+DATUM,AUFID);
+	ExtraColumns ec("auftrag","instanz","auftragid");
+	ec << INSTANZ << AUFID;
+	std::string label;
+	if(ec.hasColumn("label"))
+	   Query("select kurz from auftrag_label where alid=?")
+	     << ec.get<int>("label") >> label;
+	
+	aufnr_scombo->add_item(std::string(AUFIDCHR)+
+	              " "+(label.empty()?"          ":label)+" "+DATUM,AUFID);
 	*_continue=true;
         break;
        }

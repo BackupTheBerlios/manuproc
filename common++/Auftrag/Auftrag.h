@@ -1,4 +1,4 @@
-/* $Id: Auftrag.h,v 1.26 2003/09/02 12:10:52 christof Exp $ */
+/* $Id: Auftrag.h,v 1.27 2004/09/28 13:36:02 jacek Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,6 +28,7 @@
 #include <Kunde/Kunde.h> // vielleicht auch Basisklasse erzeugen
 #include <Auftrag/AufEintragBase.h>
 #include <map>
+#include <Misc/ExtraColumns.h>
 
 // ein Teil dieser Funktionen sollte nach AuftragBase (vor allem der SQL Teil)
 
@@ -46,6 +47,7 @@ protected:
 	rabatt_t auftragsrabatt;
 	ManuProC::Datum zahlziel;
 	cH_Zahlungsart zahlart;
+	unsigned int labelid;		// for custimzed classifying
 private:
 	std::string tmpstr;
 
@@ -93,6 +95,8 @@ public:
 	void Zahlart(cH_Zahlungsart zart) throw(SQLerror);
 	void Notiz(const std::string &n) throw(SQLerror);
 	const std::string Notiz() const throw(SQLerror);
+	unsigned int Label() const { return labelid; }
+	void Label(unsigned int labelid) throw(SQLerror);
 	
    const ManuProC::Datum &getDatum() const { return datum; } 
    const ManuProC::Datum &Zahlziel() const { return zahlziel; }

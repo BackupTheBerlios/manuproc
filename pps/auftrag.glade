@@ -2263,44 +2263,6 @@ Auftrag</label>
 	</widget>
 
 	<widget>
-	  <class>GtkSpinButton</class>
-	  <name>jahrgang spinbutton</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <can_focus>True</can_focus>
-	  <signal>
-	    <name>activate</name>
-	    <handler>on_jahrgang spinbutton_activate</handler>
-	    <last_modification_time>Wed, 29 Nov 2000 13:29:01 GMT</last_modification_time>
-	  </signal>
-	  <climb_rate>1</climb_rate>
-	  <digits>0</digits>
-	  <numeric>True</numeric>
-	  <update_policy>GTK_UPDATE_ALWAYS</update_policy>
-	  <snap>False</snap>
-	  <wrap>False</wrap>
-	  <value>0</value>
-	  <lower>2000</lower>
-	  <upper>2100</upper>
-	  <step>1</step>
-	  <page>10</page>
-	  <page_size>10</page_size>
-	  <child>
-	    <left_attach>3</left_attach>
-	    <right_attach>4</right_attach>
-	    <top_attach>3</top_attach>
-	    <bottom_attach>4</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-	</widget>
-
-	<widget>
 	  <class>GtkEntry</class>
 	  <name>auftragswert</name>
 	  <width>45</width>
@@ -2425,6 +2387,7 @@ Auftrag</label>
 	  <signal>
 	    <name>activate</name>
 	    <handler>on_aufrabatt_spinbutton_activate</handler>
+	    <after>True</after>
 	    <last_modification_time>Tue, 17 Jun 2003 10:21:04 GMT</last_modification_time>
 	  </signal>
 	  <climb_rate>1</climb_rate>
@@ -2534,7 +2497,7 @@ Auftrag</label>
 	<widget>
 	  <class>GtkLabel</class>
 	  <name>label30</name>
-	  <label>Jahrgang</label>
+	  <label>Art des Auftrages</label>
 	  <justify>GTK_JUSTIFY_LEFT</justify>
 	  <wrap>False</wrap>
 	  <xalign>0</xalign>
@@ -2720,6 +2683,35 @@ Auftrag</label>
 	    <yfill>False</yfill>
 	  </child>
 	</widget>
+
+	<widget>
+	  <class>Custom</class>
+	  <name>auftrag_label</name>
+	  <cxx_visibility>protected</cxx_visibility>
+	  <signal>
+	    <name>activate</name>
+	    <handler>auftraglabel_geaendert</handler>
+	    <last_modification_time>Tue, 28 Sep 2004 10:02:33 GMT</last_modification_time>
+	  </signal>
+	  <creation_function>Optionmenu_AuftragLabel()</creation_function>
+	  <int1>0</int1>
+	  <int2>0</int2>
+	  <last_modification_time>Tue, 28 Sep 2004 10:01:46 GMT</last_modification_time>
+	  <child>
+	    <left_attach>3</left_attach>
+	    <right_attach>4</right_attach>
+	    <top_attach>3</top_attach>
+	    <bottom_attach>4</bottom_attach>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <xexpand>False</xexpand>
+	    <yexpand>False</yexpand>
+	    <xshrink>False</xshrink>
+	    <yshrink>False</yshrink>
+	    <xfill>True</xfill>
+	    <yfill>True</yfill>
+	  </child>
+	</widget>
       </widget>
     </widget>
 
@@ -2851,6 +2843,7 @@ Auftrag</label>
 	    <signal>
 	      <name>activate</name>
 	      <handler>on_stkmtr_spinbutton_activate</handler>
+	      <after>True</after>
 	      <last_modification_time>Wed, 29 Nov 2000 11:48:09 GMT</last_modification_time>
 	    </signal>
 	    <climb_rate>1</climb_rate>
@@ -3034,6 +3027,7 @@ Auftrag</label>
 	    <signal>
 	      <name>activate</name>
 	      <handler>on_rabattentry_spinbutton_activate</handler>
+	      <after>True</after>
 	      <last_modification_time>Wed, 29 Nov 2000 12:32:49 GMT</last_modification_time>
 	    </signal>
 	    <climb_rate>1</climb_rate>
@@ -4145,6 +4139,7 @@ löschen</label>
 	      <signal>
 		<name>activate</name>
 		<handler>on_spinbutton_netto_activate</handler>
+		<after>True</after>
 		<last_modification_time>Wed, 15 May 2002 13:59:34 GMT</last_modification_time>
 	      </signal>
 	      <signal>
@@ -4196,6 +4191,7 @@ löschen</label>
 	      <signal>
 		<name>activate</name>
 		<handler>on_spinbutton_brutto_activate</handler>
+		<after>True</after>
 		<last_modification_time>Wed, 15 May 2002 13:59:09 GMT</last_modification_time>
 	      </signal>
 	      <signal>
@@ -4247,6 +4243,7 @@ löschen</label>
 	      <signal>
 		<name>activate</name>
 		<handler>on_spinbutton_pakete_activate</handler>
+		<after>True</after>
 		<last_modification_time>Tue, 14 May 2002 10:28:14 GMT</last_modification_time>
 	      </signal>
 	      <signal>
@@ -4298,6 +4295,7 @@ löschen</label>
 	      <signal>
 		<name>activate</name>
 		<handler>on_spinbutton_paeckchen_activate</handler>
+		<after>True</after>
 		<last_modification_time>Tue, 14 May 2002 10:19:05 GMT</last_modification_time>
 	      </signal>
 	      <signal>
@@ -4758,6 +4756,7 @@ Fertig</label>
 	      <signal>
 		<name>activate</name>
 		<handler>on_liefermenge_activate</handler>
+		<after>True</after>
 		<last_modification_time>Fri, 26 Jan 2001 08:31:05 GMT</last_modification_time>
 	      </signal>
 	      <climb_rate>1</climb_rate>
@@ -4911,6 +4910,7 @@ Fertig</label>
 	      <signal>
 		<name>activate</name>
 		<handler>on_Palette_activate</handler>
+		<after>True</after>
 		<last_modification_time>Mon, 19 Mar 2001 07:31:34 GMT</last_modification_time>
 	      </signal>
 	      <climb_rate>1</climb_rate>
@@ -5069,6 +5069,7 @@ Fertig</label>
 		  <name>activate</name>
 		  <handler>grab_focus</handler>
 		  <object>auftragnr</object>
+		  <after>True</after>
 		  <last_modification_time>Thu, 12 Apr 2001 15:40:26 GMT</last_modification_time>
 		</signal>
 		<climb_rate>1</climb_rate>
@@ -5840,7 +5841,6 @@ löschen</label>
 	    <signal>
 	      <name>button_release_event</name>
 	      <handler>on_bezahlt_toggled</handler>
-	      <after>True</after>
 	      <last_modification_time>Wed, 20 Nov 2002 17:07:51 GMT</last_modification_time>
 	    </signal>
 	    <label>bezahlt</label>
@@ -5926,6 +5926,7 @@ Zuschlag
 	      <signal>
 		<name>activate</name>
 		<handler>rabatt_geaendert</handler>
+		<after>True</after>
 		<last_modification_time>Wed, 25 Apr 2001 14:34:09 GMT</last_modification_time>
 	      </signal>
 	      <climb_rate>1</climb_rate>

@@ -1,4 +1,4 @@
-// $Id: auftrag_bearbeiten.hh,v 1.27 2004/03/31 14:34:36 jacek Exp $
+// $Id: auftrag_bearbeiten.hh,v 1.28 2004/09/28 13:32:22 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -63,7 +63,6 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
         void on_zahlziel_activate();
         void on_zahlziel_showkal_button_clicked();
         void on_aufdat_showkal_button_clicked();
-        void on_jahrgang_spinbutton_activate();
         void on_stkmtr_spinbutton_activate();
         void on_lieferdatum_activate();
         void on_showkal_button_clicked();
@@ -90,6 +89,7 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
         void on_auftrag_abbruch_clicked();
         void on_auftrag_ok_clicked();
         void on_aufbemerkung_activate();
+        void auftraglabel_geaendert();        
         void on_kunden_activate();
 	void on_zahlart_activate();
 
