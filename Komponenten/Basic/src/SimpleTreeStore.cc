@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.36 2003/11/07 10:28:20 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.37 2003/11/19 14:02:22 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -610,6 +610,10 @@ void SimpleTreeStore::get_value_vfunc(const TreeModel::iterator& iter, int colum
 
 bool SimpleTreeStore::iter_next_vfunc(GtkTreeIter* iter)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,iter->user_data);
+   if (!iter->stamp) 
+   {  std::cerr << "iter_next_vfunc with empty iter\n";
+      return false; // how ever this happens
+   }
    iterator old=iterconv(iter),newit=old;
    newit++;
    if (!old->second.parent) return false;
