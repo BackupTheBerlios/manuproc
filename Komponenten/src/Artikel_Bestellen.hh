@@ -1,4 +1,4 @@
-// $Id: Artikel_Bestellen.hh,v 1.9 2004/11/08 08:53:53 christof Exp $
+// $Id: Artikel_Bestellen.hh,v 1.10 2004/11/08 09:13:37 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -37,6 +37,7 @@ class Artikel_Bestellen :  public Gtk::Table
    ArtikelBox *AB_artikel;
    ProzessBox *PB_prozess;
    Gtk::OptionMenu *OM_einheit;
+   SigC::Signal0<void> activate;
 
    void menge();
    void artikel();
@@ -52,6 +53,7 @@ class Artikel_Bestellen :  public Gtk::Table
    {  AB_artikel->grab_focus();
    }
 
-   SigC::Signal0<void> activate;
+   SigC::Signal0<void> &signal_activate()
+   { return activate; }
 };
 #endif

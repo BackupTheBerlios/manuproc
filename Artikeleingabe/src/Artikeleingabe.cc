@@ -20,6 +20,7 @@
 #define D(x) 
 //cerr << x << '\n'
 
+#define MAXCOLUMN 10
 
 extern MyMessage *mess;
 

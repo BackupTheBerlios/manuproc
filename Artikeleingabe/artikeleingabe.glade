@@ -943,7 +943,7 @@ wechsel</property>
 		    <widget class="Custom" id="tree">
 		      <property agent="glademm" name="cxx_visibility">protected</property>
 		      <property name="visible">True</property>
-		      <property name="creation_function">SimpleTree(MAXCOLUMN)</property>
+		      <property name="creation_function">SimpleTree(10)</property>
 		      <property name="int1">0</property>
 		      <property name="int2">0</property>
 		      <property name="last_modification_time">Mon, 24 Sep 2001 15:50:37 GMT</property>
@@ -995,7 +995,7 @@ wechsel</property>
 	      <property name="column_spacing">0</property>
 
 	      <child>
-		<widget class="GtkLabel" id="label1">
+		<widget class="GtkLabel" id="label3">
 		  <property name="visible">True</property>
 		  <property name="label" translatable="yes">Zeige Artikel der Instanz</property>
 		  <property name="use_underline">False</property>

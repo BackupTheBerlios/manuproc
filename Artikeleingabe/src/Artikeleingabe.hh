@@ -10,8 +10,6 @@
 #include <Aux/Ausgabe_neu.h>
 #include <gtkmm/notebook.h>
 
-static const unsigned int MAXCOLUMN=10;
-
 struct Artikelgruppe
 {  int schema,warengruppe,bestellen_bei,einheit;
    Artikelgruppe() 
