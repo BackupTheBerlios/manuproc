@@ -472,6 +472,8 @@ void auftrag_lieferschein::on_Palette_activate()
   {  // Menge verteilen
      lieferschein->push_back(artikel,anzahl->get_value_as_int(),
                   liefermenge->get_value_as_float(),Palette->get_value_as_int());
+    if(!checkVerkConsist())
+      return;
   }
   else
   {
@@ -515,15 +517,23 @@ void auftrag_lieferschein::on_Palette_activate()
 bool auftrag_lieferschein::checkVerkConsist(const AufEintragBase &ae)
 {
 #ifdef MABELLA_EXTENSIONS
- if(lieferschein->getVerknr()!=Kunde::none_id)
+ if((lieferschein->getVerknr()!=Kunde::none_id) &&
+	(ae.Id()!=AuftragBase::none_id) )
    {if(lieferschein->getVerknr()!=ae.getVerknr())
      { meldung->Show("Aufträge von verschiedenen Verkäufern dürfen nicht "
 		"auf einen Lieferschein; Bitte getrennte Lieferscheine erstellen");
        return false;
      }
    }
- else
-  lieferschein->setVerknr(ae.getVerknr());
+ else 
+   if(ae.Id()!=AuftragBase::none_id) 
+     {if(ae.getVerknr()!=Kunde::none_id)
+        lieferschein->setVerknr(ae.getVerknr());
+     }
+   else
+     {cH_Kunde k(lieferschein->KdNr());
+      lieferschein->setVerknr(k->VerkNr());
+     }
 #endif
  return true;
 }

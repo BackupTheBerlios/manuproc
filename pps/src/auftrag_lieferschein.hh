@@ -41,7 +41,7 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
         void on_unselectrow_offauf(int row, int col, GdkEvent* b);
         bool deleteLiefEntry();
 
-	bool checkVerkConsist(const AufEintragBase &ae);
+	bool checkVerkConsist(const AufEintragBase &ae=AufEintragBase());
 #ifdef DPD_LIEFERSCHEINE
         void on_button_rng_erledigt_clicked();
         void on_button_erledigt_clicked();
