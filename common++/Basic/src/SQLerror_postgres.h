@@ -1,4 +1,4 @@
-/* $Id: SQLerror_postgres.h,v 1.2 2001/06/27 08:04:09 christof Exp $ */
+/* $Id: SQLerror_postgres.h,v 1.3 2001/06/27 09:13:57 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -64,18 +64,22 @@ public:
 		int codeok=0) // throw(SQLerror_postgres)
    {  test(context,std::string(cursor),codeok);
    }
-private: // deprecated
-   static void test(const std::string &context,bool rollback);
-#if 0
-   // DEPRECATED, use Transaction
+
+// with Transaction rollback - please use class Transaction where possible
+// I don't like it too much but I have no better idea, CP 2001-6-27
+
+   static void test(const std::string &context,bool rollback)
+   { test(context,"",0,rollback); }
+   static void test(const std::string &context,int codeok,bool rollback)
+   { test(context,"",codeok,rollback); }
+   static void test(const std::string &context,const std::string &cursor,
+		int codeok,bool rollback); // throw(SQLerror_postgres);
    static void rollback_and_throw(const std::string &context) throw(SQLerror_postgres)
    {  SQLerror_postgres err(context);
       rollback(); 
       throw(err); 
    }
    static void rollback() throw();
-   // !DEPRECATED
-#endif   
 };
 
 std::ostream &operator<<(std::ostream&,const SQLerror_postgres &) throw();
