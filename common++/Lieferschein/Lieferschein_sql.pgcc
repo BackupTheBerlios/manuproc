@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.37 2004/01/14 20:10:06 jacek Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.38 2004/01/30 15:57:50 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -82,11 +82,8 @@ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,_instanz,NV("Kunde",
   int JAHR=jahr;
  exec sql end declare section;
 
- if (!JAHR)
- {  exec sql select to_char(now(),'yy') into :JAHR;
-    SQLerror::test(__FILELINE__);
- }
- else JAHR%=100;
+ if (!JAHR) JAHR=AuftragBase::aktuellesJahr();
+ JAHR%=100;
 
  KUNDENNR=k->Id();
  Transaction tr;

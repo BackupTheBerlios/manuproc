@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.48 2003/12/08 17:29:53 christof Exp $
+// $Id: AuftragBase.cc,v 1.49 2004/01/30 15:57:49 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -221,9 +221,14 @@ bool operator<(const AuftragBase &a, const AuftragBase &b)
 	(a.Instanz()==b.Instanz() && a.Id()<b.Id());
 }
 
-int aktuellesJahr()
-{  static ManuProC::Datum today=ManuProC::Datum::today();
-   return today.Jahr()%100;
+static ManuProC::Datum today=ManuProC::Datum::today();
+
+int AuftragBase::aktuellesJahr()
+{  return today.Jahr()%100;
+}
+
+void AuftragBase::setzeAktuellesJahr(int j)
+{  today=ManuProC::Datum(1,1,j);
 }
 
 AuftragBase::mengen_t AuftragBase::Gesamtmenge(int stueck,const mengen_t &menge)

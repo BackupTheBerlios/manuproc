@@ -197,8 +197,7 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string &yaufnr) throw(S
  exec sql lock table auftrag in exclusive mode;
  SQLerror::test(__FILELINE__"lock table auftrag");
 
- exec sql select cast(date_part('year',date(now())) as integer)%100 into :YEAR;
- SQLerror::test(__FILELINE__"select year");
+ YEAR=AuftragBase::aktuellesJahr()%100;
  
  exec sql select coalesce(max(auftragid)+1,:YEAR*10000) 
  		into :AUFTRAGID from auftrag 

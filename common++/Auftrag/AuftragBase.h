@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.57 2003/12/08 17:29:53 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.58 2004/01/30 15:57:49 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -124,6 +124,7 @@ public:
                   const AufStatVal status, mengen_t& menge_out) const throw();
 
    static int aktuellesJahr();
+   static void setzeAktuellesJahr(int j);
 };
 
 std::ostream &operator<<(std::ostream &o,const AuftragBase &a);
