@@ -1413,9 +1413,12 @@ void LR_Abstraktion::page_header(std::ostream &os)
     }
    else 
     {
-#ifdef MABELLA_EXTENSIONS
+#if defined MABELLA_EXTENSIONS && defined PRINT_LOGO
      if(!firmenpapier)
         os << "\\raisebox{0cm}[0pt][0pt]{\\makebox[0pt][l]{\\kern+140pt\\psfig{file=/usr/share/mabella/logo.eps}}}\\\\\n";
+#endif
+
+#ifdef MABELLA_EXTENSIONS
      os << "\\normalsize";        
 #else
      os <<"\\large";
