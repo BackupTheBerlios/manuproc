@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.h,v 1.9 2004/01/30 13:24:38 christof Exp $
+// $Id: TreeViewUtility.h,v 1.10 2004/01/30 16:59:27 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -50,6 +50,14 @@ public:
 	
 	int get_selected_row_num() const;
 	bool selection_empty() const;
+	void set_selection_mode(Gtk::SelectionMode x)
+	{  view->get_selection()->set_mode(x); }
+	void set_column_justification(int col, Gtk::AlignmentEnum just)
+	{  view->get_column(col)->set_alignment(just);
+	}
+	void set_column_justification(int col, Gtk::Justification just);
+	void column_titles_passive() {}
+	void append(const gchar* text[]);
 };
 
 class CList : public Gtk::TreeView
