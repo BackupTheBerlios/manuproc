@@ -1,4 +1,4 @@
-// $Id: Zuordnung_zeigen.cc,v 1.2 2003/05/23 13:53:27 christof Exp $
+// $Id: Zuordnung_zeigen.cc,v 1.3 2003/05/26 07:52:29 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -36,8 +36,12 @@ static void show(const AufEintragBase &ae, bool kinder, int indent=0)
    for (AufEintragZu::list_t::const_iterator i=l.begin();i!=l.end();++i)
    {  std::cout << std::string(indent,' ') << (kinder?"=":"<=") 
    	<< i->Menge << (kinder?"=>":"=");
-      show(i->AEB);
-      show(i->AEB,kinder,indent);
+      try 
+      {  show(i->AEB);
+         show(i->AEB,kinder,indent);
+      } catch (...) // SQLerror &e)
+      {  std::cout << i->AEB << " fehlt !!!\n";
+      }
    }
 }
 
