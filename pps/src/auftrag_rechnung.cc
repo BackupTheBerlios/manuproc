@@ -114,8 +114,10 @@ gint auftrag_rechnung::on_rng_print(GdkEventButton *ev)
       system((com+optionen).c_str());
    if (ev->button==2)
     {
+#ifdef MABELLA_EXTENSIONS
+     system((com+optionen).c_str());
+#else
      system((com+" --kopie").c_str());
-#ifndef MABELLA_EXTENSIONS
      system((com+" --firma").c_str());
 #endif
     }
