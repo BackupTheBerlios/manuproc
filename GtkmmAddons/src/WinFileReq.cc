@@ -50,7 +50,7 @@ namespace SigC
 #endif
 
 WinFileReq::WinFileReq(const SigC::Slot1<void,const std::string &> &sl,
-                const std::string &file, std::string filter, 
+                std::string file, std::string filter, 
                 std::string extension, std::string title, bool load,
 		Gtk::Window *parent, bool pass_cancel)
 #ifndef __MINGW32__
@@ -62,14 +62,38 @@ WinFileReq::WinFileReq(const SigC::Slot1<void,const std::string &> &sl,
    set_title(title);
    if (parent) set_transient_for(*parent);
 #else
+   // file is assumed to have UTF-8 encoding
+   TagStream::utf82iso(file);
+   TagStream::utf82iso(title);
+   
    TagStream::utf82iso(filter);
    TagStream::utf82iso(extension);
-   TagStream::utf82iso(title);
-   // file is assumed to have windows encoding
-   OPENFILENAME ofn;
-   char buf[10240];
 
+   char buf[MAX_PATH];
    strncpy(buf,file.c_str(),sizeof buf);
+
+   if (filter.empty() && extension.empty())
+   // browse for a directory
+   { BROWSEINFO bi;
+     ZeroMemory(&bi, sizeof(BROWSEINFO));
+     bi.hwndOwner = (HWND)GDK_WINDOW_HWND(parent->get_window()->gobj());
+     bi.pszDisplayName = buf;
+     bi.lpszTitle = title.c_str();
+     bi.ulFlags = BIF_EDITBOX | BIF_RETURNONLYFSDIRS;
+     
+     LPITEMIDLIST *iidl=SHBrowseForFolder(&bi);
+     if (iidl) 
+     { std::string result=buf;
+       TagStream::utf82iso(result);
+       const_cast<SigC::Slot1<void,const std::string &>&>(sl)(result);
+       // SHGetMalloc -> Free (iidl)
+     }
+     else if (pass_cancel)
+        const_cast<SigC::Slot1<void,const std::string &>&>(sl)(std::string());
+     return;
+   }
+   
+   OPENFILENAME ofn;
 
    ZeroMemory(&ofn, sizeof (OPENFILENAME));
    ofn.lStructSize = sizeof (OPENFILENAME);
@@ -97,7 +121,9 @@ WinFileReq::WinFileReq(const SigC::Slot1<void,const std::string &> &sl,
    else res=GetSaveFileName(&ofn);
 
    if (res) 
-   {  const_cast<SigC::Slot1<void,const std::string &>&>(sl)(buf);
+   { std::string result=buf;
+     TagStream::utf82iso(result);
+     const_cast<SigC::Slot1<void,const std::string &>&>(sl)(result);
    }
    else if (pass_cancel)
       const_cast<SigC::Slot1<void,const std::string &>&>(sl)(std::string());

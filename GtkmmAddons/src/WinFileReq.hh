@@ -1,4 +1,4 @@
-// $Id: WinFileReq.hh,v 1.9 2004/08/30 07:35:07 christof Exp $
+// $Id: WinFileReq.hh,v 1.10 2004/12/15 08:10:42 christof Exp $
 
 #ifndef _FILESELECTION1_HH
 #  define _FILESELECTION1_HH
@@ -29,12 +29,12 @@ class WinFileReq
         void on_cancel();
 #endif
 public:
-	WinFileReq(const SigC::Slot1<void,const std::string &> &sl,const std::string &file,
-		std::string filter="", std::string extension="", std::string title="", bool load=true,
+	WinFileReq(const SigC::Slot1<void,const std::string &> &sl, std::string file,
+		std::string filter=std::string(), std::string extension=std::string(), std::string title=std::string(), bool load=true,
 		Gtk::Window *parent=0,bool pass_cancel=false);
 	// to abstract the new/automatic behaviour on win32/linux
 	static void create(const SigC::Slot1<void,const std::string &> &sl,const std::string &file,
-		std::string filter="", std::string extension="", std::string title="", bool load=true,
+		std::string filter=std::string(), std::string extension=std::string(), std::string title=std::string(), bool load=true,
 		Gtk::Window *parent=0,bool pass_cancel=false);
 };
 #endif
