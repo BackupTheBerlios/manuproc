@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.hh,v 1.23 2004/02/02 15:52:17 christof Exp $
+// $Id: ArtikelBox.hh,v 1.24 2004/02/02 18:01:20 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.23 2004/02/02 15:52:17 christof Exp $
+// $Id: ArtikelBox.hh,v 1.24 2004/02/02 18:01:20 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -90,7 +90,7 @@ public:
 	void Kombiniert(bool ja) { kombiniert=ja; }
 };
 
-
+class ArtikelBezeichnung;
 
 class ArtikelBox : public Gtk::EventBox
 {
@@ -208,6 +208,7 @@ class ArtikelBox : public Gtk::EventBox
  bool BreitenSuche(GtkSCContext newsearch,unsigned sp=0,unsigned l=0,int *cont=0);
  // this is for an idle triggered callback
  bool BreitenSuche_switch(BreitenSuche_switch_arg a);
+ bool set_value_idle(Handle<const ArtikelBezeichnung> ab);
 
 // Kombiniert/nicht kombiniert: Zugriff auf Combos
  std::vector<cH_EntryValue> get_content(unsigned int l=0,unsigned int spmax=G_MAXINT) const;

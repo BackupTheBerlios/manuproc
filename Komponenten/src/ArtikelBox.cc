@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.26 2004/02/02 15:52:17 christof Exp $
+// $Id: ArtikelBox.cc,v 1.27 2004/02/02 18:01:20 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -114,16 +114,36 @@ gint ArtikelBox::try_grab_focus(GtkWidget *w,gpointer gp)
    return true;
 }
 
+bool ArtikelBox::set_value_idle(Handle<const ArtikelBezeichnung> artbez)
+{  setExtBezSchema(artbez->getExtBezSchema());
+   
+ artikel=*artbez;
+
+ pixmap_setzen(true);
+ for (unsigned int j=0;j<signifikanz.size();++j)
+ {  
+    assert(j<combos.size());
+    std::vector<cH_EntryValue> v;
+    for (ArtikelBezeichnung::const_sigiterator ci = artbez->sigbegin(signifikanz[j]);
+    		ci!=artbez->sigend(signifikanz[j]); ++ci)
+    	v.push_back((*ci));
+    set_content(v,j);
+ }
+ return false;
+}
 
 void ArtikelBox::set_value(const ArtikelBase &art)
 throw(SQLerror,ArtikelBoxErr)
 {cH_ArtikelBezeichnung artbez(art,schema->Id());
- if (schema!=artbez->getExtBezSchema()) 
-    setExtBezSchema(artbez->getExtBezSchema());
-
  artikel=art;
 
  pixmap_setzen(true);
+ 
+ if (schema!=artbez->getExtBezSchema()) 
+ {  Glib::signal_idle().connect(SigC::bind(SigC::slot
+ 		(*this,&ArtikelBox::set_value_idle),
+ 		artbez));
+ }
 
  for (unsigned int j=0;j<signifikanz.size();++j)
  {  
@@ -214,7 +234,6 @@ bool ArtikelBox::loadArtikel(unsigned int l) throw(SQLerror)
 {
  try {
   std::vector<cH_EntryValue> v=get_content(l);
-  // das gefällt mir hier nicht, sollte das nicht C++ machen? CP
   while (v.size()<schema->size(signifikanz[l])) v.push_back(cH_EntryValue());
   cH_ArtikelBezeichnung bez(signifikanz[l],v,schema);
   artikel=*bez;
