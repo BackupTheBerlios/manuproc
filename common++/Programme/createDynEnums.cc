@@ -1,4 +1,4 @@
-// $Id: createDynEnums.cc,v 1.23 2004/05/03 15:41:50 jacek Exp $
+// $Id: createDynEnums.cc,v 1.24 2004/05/03 17:48:19 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: createDynEnums.cc,v 1.23 2004/05/03 15:41:50 jacek Exp $
+// $Id: createDynEnums.cc,v 1.24 2004/05/03 17:48:19 jacek Exp $
 
 
 #include <Misc/dbconnect.h>
@@ -113,7 +113,8 @@ int main()
        const int ab_spalte=3; // ab der Spalte stehen Attribute (bools)
 
        Query q("select attname,attnum-? from pg_attribute where attrelid=?"
-	 " and attnum>=? order by attnum");
+	 " and attnum>=? and attname not like "
+	" '........pg.dropped.%........' order by attnum");
        q  << ab_spalte << oid << ab_spalte;
 
        while ((q >> is).good())
