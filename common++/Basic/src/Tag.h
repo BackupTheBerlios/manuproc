@@ -1,6 +1,6 @@
-// $Id: Tag.h,v 1.6 2003/04/07 06:41:44 christof Exp $
-/*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
- *  Copyright (C) 1998-2002  Christof Petig
+// $Id: Tag.h,v 1.7 2004/02/06 11:07:00 christof Exp $
+/*  ManuProC_Base: Main ManuProC Library
+ *  Copyright (C) 1998-2003  Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
