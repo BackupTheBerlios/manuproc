@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.cc,v 1.6 2003/02/03 12:57:04 jacek Exp $
+// $Id: ArtikelBaum.cc,v 1.7 2003/03/24 10:54:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -33,7 +33,7 @@ ArtikelBaum::cache_t ArtikelBaum::cache;
 
 FetchIStream &operator>>(FetchIStream &is, ArtikelBaum::RohArtikel &ra)
 {  is >> ra.rohartikel >> ra.erzeugung;
-   is >> FetchIStream::MapNull<ArtikelBaum::faktor_t>(ra.menge,ra.erzeugung->getMtrProStk());
+   is >> FetchIStream::MapNull(ra.menge,ra.erzeugung->getMtrProStk());
    if (!ra.menge) ra.menge=1; // 0 ist Unsinn!?
    return is;
 }

@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum_new_del.cc,v 1.4 2003/03/20 15:32:01 christof Exp $
+// $Id: ArtikelBaum_new_del.cc,v 1.5 2003/03/24 10:54:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, 
  *  written by Malte Thoma and Christof Petig
@@ -33,7 +33,7 @@ void ArtikelBaum::new_Artikel(int uid,ArtikelBase fuer_artikel,const RohArtikel&
  	"(id,prozessid,altartikelid,menge,stand,uid) "
  	"values (?,?,?,?,now(),?)").lvalue()
  	<< fuer_artikel.Id() << RA.erzeugung->Id()
- 	<< RA.rohartikel.Id() << Query::NullIf<faktor_t>(RA.menge,0)
+ 	<< RA.rohartikel.Id() << Query::NullIf(RA.menge,0)
  	<< uid;
  SQLerror::test(__FILELINE__);
 
