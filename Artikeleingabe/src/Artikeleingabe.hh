@@ -93,7 +93,7 @@ class Artikeleingabe : public Artikeleingabe_glade
         void on_button_verschmelzen_clicked();
 
 //****** edit ******
-	bool bestellen_bei_changed;
+	bool fire_toggles;
 
 //****** alias *****
         void on_alias_eingabe_activate();

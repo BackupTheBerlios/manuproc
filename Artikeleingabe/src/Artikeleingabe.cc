@@ -24,7 +24,7 @@
 extern MyMessage *mess;
 
 Artikeleingabe::Artikeleingabe(int argc, char **argv)
-  : leer(cH_ArtikelBezeichnung::Default()), bestellen_bei_changed(false) 
+  : leer(cH_ArtikelBezeichnung::Default()), fire_toggles(false) 
 {D("leer->Id() " << leer->Id());
  artikelbox->show_label(true);
  progressbar->hide();
@@ -77,22 +77,20 @@ void Artikeleingabe::artikelbox_activate()
 {
  toolbar_loeschen->hide();
  vec_artbase.clear();
+
+ fire_toggles=false;
+
  try {
     ArtikelBase AB(artikelbox->get_value());
     if (!!AB)
     {  vec_artbase.push_back(AB);
        ArtikelStamm as(AB);
 
-       bestellen_bei_changed=false;
-
        show_in_prlist->set_active(as.getAktive()); 
        cH_ppsInstanz pi(as.BestellenBei());
        change_no_instanz->set_active(pi->Id()==ppsInstanzID::None);
-//       no_instanz->set_active(change_no_instanz->get_active());       
 
-//       optionmenu_instanz->set_value(pi->Id());
        Artikel_Bestellen_bei->set_value(pi->Id());
-//       optionmenu_instanz->set_sensitive(change_no_instanz->get_active());
        Artikel_Bestellen_bei->set_sensitive(!change_no_instanz->get_active());
        
        mindbest_check->set_active(as.getCheckBest());
@@ -111,6 +109,8 @@ void Artikeleingabe::artikelbox_activate()
  fill_eingabebox(2);
 
  top_notebook->grab_focus();
+
+ fire_toggles=true;
 }
 
 
@@ -381,8 +381,6 @@ void Artikeleingabe::optionmenu_bestellen_bei_activate()
  for (vec_artbase_t::iterator i=vec_artbase.begin();i!=vec_artbase.end();++i)
    if((*i)==artikelbox->get_value()) { vec_artbase.erase(i); break;}
  set_Prozess();
-
- bestellen_bei_changed=true;
 }
 
 // missbrauch von label_warnung ...
@@ -585,7 +583,7 @@ void Artikeleingabe::on_notebook1_switch_page(GtkNotebookPage *p0, guint p1)
 
 void Artikeleingabe::on_no_instanz_toggled()
 {
-
+ if(!fire_toggles) return;
 
  if(no_instanz->get_active())
    {standard_instanz->set_sensitive(false);
@@ -595,12 +593,13 @@ void Artikeleingabe::on_no_instanz_toggled()
    {standard_instanz->set_sensitive(true);   
     aktuelle_gruppe.bestellen_bei=standard_instanz->get_value()->Id();
    }
- bestellen_bei_changed=false;
 }
 
 
 void Artikeleingabe::on_show_in_prlist_toggled()
 {
+ if(!fire_toggles) return;
+
  if(!artikelbox->get_value()) return;
  
  try{
@@ -616,6 +615,8 @@ void Artikeleingabe::on_show_in_prlist_toggled()
 
 void Artikeleingabe::on_change_no_instanz_toggled()
 { 
+ if(!fire_toggles) return;
+
  ppsInstanz::ID pid=change_no_instanz->get_active() ?
 		 ppsInstanzID::None : Artikel_Bestellen_bei->get_value()->Id();
  try{
@@ -635,7 +636,7 @@ void Artikeleingabe::on_change_no_instanz_toggled()
 
 void Artikeleingabe::on_mindbest_check_toggled()
 {
-
+ if(!fire_toggles) return;
 
  mindbestand->set_sensitive(mindbest_check->get_active());
 
@@ -658,7 +659,7 @@ void Artikeleingabe::on_mindbestand_activate()
  ArtikelStamm as(artikelbox->get_value());
  mindbestand->update();
  as.setMindBest(mindbestand->get_value_as_int());
- artikelbox->grab_focus(); 
+ top_notebook->grab_focus(); 
 }
 
 
