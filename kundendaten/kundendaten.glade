@@ -3821,7 +3821,7 @@ löschen</label>
 	      <xshrink>False</xshrink>
 	      <yshrink>False</yshrink>
 	      <xfill>True</xfill>
-	      <yfill>True</yfill>
+	      <yfill>False</yfill>
 	    </child>
 
 	    <widget>
