@@ -1,13 +1,13 @@
 drop function artikelbezeichnung(int4,int4,int4);
 create function artikelbezeichnung(int4,int4,int4) returns text as 
-        '/usr/local/pgsql/lib/artikelbezeichnung.so', 
+        '/usr/lib/postgresql/lib/artikelbezeichnung.so', 
         'artikelbezeichnung3' language 'c';
 drop function artikelbezeichnung(int4,int4,int4,int4);
 create function artikelbezeichnung(int4,int4,int4,int4) returns text as
-        '/usr/local/pgsql/lib/artikelbezeichnung.so',
+        '/usr/lib/postgresql/lib/artikelbezeichnung.so',
         'artikelbezeichnung4' language 'c';
 drop function artikelbezeichnung(int4);
 create function artikelbezeichnung(int4) returns text as
-        '/usr/local/pgsql/lib/artikelbezeichnung.so',
+        '/usr/lib/postgresql/lib/artikelbezeichnung.so',
         'artikelbezeichnung1' language 'c';
 update pg_proc set proiscachable=true where proname='artikelbezeichnung';

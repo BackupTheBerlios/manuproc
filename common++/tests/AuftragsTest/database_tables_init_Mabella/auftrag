@@ -25,7 +25,8 @@ CREATE TABLE "auftrag" (
 	"zahlungsziel" date,
 	"rabatt" numeric(4,2),
 	"zahlart" integer,
-   "notiz" text
+	"notiz" text,
+	"verknr" numeric(5)
 );
 
 --

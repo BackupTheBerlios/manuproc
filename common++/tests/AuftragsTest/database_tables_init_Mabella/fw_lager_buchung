@@ -1,0 +1,40 @@
+--
+-- Selected TOC Entries:
+--
+\connect - jacek
+
+DROP INDEX "fw_lager_buchung_artid";
+DROP TABLE "fw_lager_buchung";
+--
+-- TOC Entry ID 2 (OID 6223302)
+--
+-- Name: fw_lager_buchung Type: TABLE Owner: jacek
+--
+
+CREATE TABLE "fw_lager_buchung" (
+	"artikelid" integer,
+	"menge" integer,
+	"datum" timestamp with time zone,
+	"aktion" character(1),
+	"pid" numeric(3,0),
+	"bestand" integer,
+	"lfrsid" numeric(5,0)
+);
+
+--
+-- TOC Entry ID 3 (OID 6223302)
+--
+-- Name: fw_lager_buchung Type: ACL Owner: 
+--
+
+REVOKE ALL on "fw_lager_buchung" from PUBLIC;
+GRANT ALL on "fw_lager_buchung" to "jacek";
+
+--
+-- TOC Entry ID 4 (OID 6814510)
+--
+-- Name: "fw_lager_buchung_artid" Type: INDEX Owner: jacek
+--
+
+CREATE INDEX fw_lager_buchung_artid ON fw_lager_buchung USING btree (artikelid);
+

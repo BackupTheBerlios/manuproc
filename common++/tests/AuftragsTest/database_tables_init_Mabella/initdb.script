@@ -32,7 +32,8 @@ for i in \
    prod_instanz \
    prozesse \
    rechnung_zahlungsart \
-   waehrung
+   waehrung \
+	fw_lager_buchung
 do
 
 psql mabella_test_db -q < $P/$i
