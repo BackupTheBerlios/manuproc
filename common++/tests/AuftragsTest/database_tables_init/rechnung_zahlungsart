@@ -35,6 +35,6 @@ CREATE TABLE "rechnung_zahlungsart" (
 
 
 COPY "rechnung_zahlungsart" FROM stdin;
-0	sofort, ohne Abzug	sofort ohne Abzüge	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1	10d 4%, 30d 2,5%, 60d	Innerhalb von 10 Tagen 4% Skonto; 30 Tagen 2,5%; innerhalb von 60 Tagen netto	\N	\N	\N	4.0	10	2.5	30	0.0	60
+0	sofort, ohne Abzug	sofort ohne Abzüge	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+1	10d 4%, 30d 2,5%, 60d	Innerhalb von 10 Tagen 4% Skonto; 30 Tagen 2,5%; innerhalb von 60 Tagen netto	\N	\N	\N	4.0	10	2.5	30	0.0	60	\N
 \.

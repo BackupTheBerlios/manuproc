@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.24 2002/12/04 12:12:09 thoma Exp $
+// $Id: Check.cc,v 1.25 2002/12/05 09:30:27 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -81,16 +81,23 @@ Check::was_checken Check::WasChecken(e_check check)
   {  
    case Jumbo_richtig: case Jumbo_falsch: case Jumbo_doppelt:
 	return Jumbo; // |Menge; ??
-   case LieferscheinTeil: case LieferscheinZeileLoeschen: case LieferscheinZeileLoeschen_n:
-   case LieferscheinVoll: case LieferscheinMengenaenderungPlus:
-   case LieferscheinMengenaenderungMinus: case LieferscheinZusatz:
-   case LieferscheinZusatzPlus: case LieferscheinZusatzMinus:
-   case LieferscheinZusatzMinusKunde: case LieferscheinZweiAufTeil:
-   case LieferscheinZweiAufVoll: case LieferscheinJacek0:
-   case LieferscheinEinkaufTeillieferung:
-        return Lieferschein|Menge;
-   default: 
-        return Menge;
+//   case LieferscheinTeil: 
+//   case LieferscheinZeileLoeschen: 
+//   case LieferscheinZeileLoeschen_n:
+//   case LieferscheinVoll: 
+//   case LieferscheinMengenaenderungPlus:
+//   case LieferscheinMengenaenderungMinus: 
+//   case LieferscheinZusatz:
+//   case LieferscheinZusatzPlus: 
+//   case LieferscheinZusatzMinus:
+//   case LieferscheinZusatzMinusKunde: 
+//   case LieferscheinZweiAufTeil:
+//   case LieferscheinZweiAufVoll: 
+//   case LieferscheinJacek0:
+//   case LieferscheinEinkaufTeillieferung:
+//        return Lieferschein|Menge;
+   default: assert(!"never get here");
+//        return Menge;
   }
 }
 
@@ -98,60 +105,60 @@ std::string Check::Zusatz(e_check check)
 {  std::string zusatz;
   switch(check)
    {
-     case Open : zusatz="_mit_lager_open"; break;
+//     case Open : zusatz="_mit_lager_open"; break;
 
      // Mengentest
-     case Menge_Plus : zusatz="_menge_plus"; break;
-     case Menge_Minus : zusatz="_menge_minus"; break;
-     case Datumsaenderung : zusatz="_datumsaenderung"; break;
-     case Menge_MinusMinus : zusatz="_menge_minus_bandlager"; break;
-     case StatusClosed : zusatz="_status_closed"; break;
+//     case Menge_Plus : zusatz="_menge_plus"; break;
+//     case Menge_Minus : zusatz="_menge_minus"; break;
+//     case Datumsaenderung : zusatz="_datumsaenderung"; break;
+//     case Menge_MinusMinus : zusatz="_menge_minus_bandlager"; break;
+//     case StatusClosed : zusatz="_status_closed"; break;
      // Plantest
-     case Planen_Kupfer : zusatz="_planen_kupfer"; break;
-     case Planen_Faerberei_teil : zusatz="_planen_faerberei_teil"; break;
-     case Planen_WebereiP : zusatz="_planen_webereiP"; break;
-     case LieferscheinEinkaufTeillieferung : zusatz="_planen_einkauf_lieferschein"; break;
+//     case Planen_Kupfer : zusatz="_planen_kupfer"; break;
+//     case Planen_Faerberei_teil : zusatz="_planen_faerberei_teil"; break;
+//     case Planen_WebereiP : zusatz="_planen_webereiP"; break;
+//     case LieferscheinEinkaufTeillieferung : zusatz="_planen_einkauf_lieferschein"; break;
      // Splittest
-     case Split : zusatz="_split"; break;
-     case Split_Rohwarenlager_einlagern : zusatz="_split_rohwarenlager_rein"; break;
-     case Split_Rohwarenlager_auslagern : zusatz="_split_rohwarenlager_raus"; break;
+//     case Split : zusatz="_split"; break;
+//     case Split_Rohwarenlager_einlagern : zusatz="_split_rohwarenlager_rein"; break;
+//     case Split_Rohwarenlager_auslagern : zusatz="_split_rohwarenlager_raus"; break;
      // Lagertest
-     case Rohwarenlager_einlagern : zusatz="_rohwarenlager_rein"; break;
-     case Rohwarenlager_auslagern : zusatz="_rohwarenlager_raus"; break;
-     case Planen_WebereiL : zusatz="_planen_weberei_fuer_lager"; break;
-     case Bandlager_einlagern : zusatz="_bandlager_rein"; break;
-     case Kunden_Teillieferung : zusatz="_kunde_teillieferung"; break;
-     case Kunden_Ueberlieferung : zusatz="_kunde_ueberlieferung"; break;
+//     case Rohwarenlager_einlagern : zusatz="_rohwarenlager_rein"; break;
+//     case Rohwarenlager_auslagern : zusatz="_rohwarenlager_raus"; break;
+//     case Planen_WebereiL : zusatz="_planen_weberei_fuer_lager"; break;
+//     case Bandlager_einlagern : zusatz="_bandlager_rein"; break;
+//     case Kunden_Teillieferung : zusatz="_kunde_teillieferung"; break;
+//     case Kunden_Ueberlieferung : zusatz="_kunde_ueberlieferung"; break;
      // Zwei Aufträge
-     case Planen_Faerberei_ueber : zusatz="_planen_fuer_zweiten_auftrag"; break;
-     case ZweiAuftraege_anlegen : zusatz="_zwei_auftraege_anlegen"; break;
+//     case Planen_Faerberei_ueber : zusatz="_planen_fuer_zweiten_auftrag"; break;
+//     case ZweiAuftraege_anlegen : zusatz="_zwei_auftraege_anlegen"; break;
      // Zweiter Auftrag früheres Datum
-     case ZweiterAuftrag_frueheresDatum : zusatz="_zwei_auftraege_datum"; break;
-     case ZweiterAuftrag_frueheresDatum_abschreiben : zusatz="_zwei_auftraege_datum_abschreiben"; break;
-     case ZweiterAuftrag_frueheresDatum_closed : zusatz="_zwei_auftraege_datum_closed"; break;
-     case Planen_WebereiD : zusatz="_zwei_auftraege_weberei_planen"; break;
-     case ErsterAuftrag_frueheresDatum_closed :  zusatz="_erster_auftrag_closed"; break;
+//     case ZweiterAuftrag_frueheresDatum : zusatz="_zwei_auftraege_datum"; break;
+//     case ZweiterAuftrag_frueheresDatum_abschreiben : zusatz="_zwei_auftraege_datum_abschreiben"; break;
+//     case ZweiterAuftrag_frueheresDatum_closed : zusatz="_zwei_auftraege_datum_closed"; break;
+//     case Planen_WebereiD : zusatz="_zwei_auftraege_weberei_planen"; break;
+//     case ErsterAuftrag_frueheresDatum_closed :  zusatz="_erster_auftrag_closed"; break;
      // Lieferschein
-     case LieferscheinTeil : zusatz="_LS_teillieferung"; break;
-     case LieferscheinZeileLoeschen : zusatz="_LS_zeileloeschen"; break;
-     case LieferscheinZeileLoeschen_n : zusatz="_LS_zeileloeschen2"; break;
-     case LieferscheinVoll: zusatz="_LS_volllieferung"; break;
-     case LieferscheinMengenaenderungPlus : zusatz="_LS_mengenaenderung_plus"; break;
-     case LieferscheinMengenaenderungMinus : zusatz="_LS_mengenaenderung_minus"; break;
-     case LieferscheinZusatz : zusatz="_LSZ"; break;
-     case LieferscheinZusatzPlus : zusatz="_LSZP"; break;
-     case LieferscheinZusatzMinus: zusatz="_LSZM"; break;
-     case LieferscheinZusatzMinusKunde: zusatz="_LSZMK"; break;
-     case LieferscheinZweiAufTeil: zusatz="_LSZA"; break;
-     case LieferscheinZweiAufVoll: zusatz="_LSZAV"; break;
-     case LieferscheinJacek0 : zusatz="_LSJ0"; break;
-     case ProduktionsPlanungWeberei : zusatz="_PP"; break;
-     case ProduktionsPlanungEinkauf : zusatz="_PPE"; break;
-     case ZweiKundenTest_anlegen: zusatz="_ZK_anlegen"; break;
-     case ZweiKunden_Teil1: zusatz="_ZK_abschreiben1T"; break;
-     case ZweiKunden_Teil2: zusatz="_ZK_abschreiben2T"; break;
-     case ZweiKunden_Ueber1:zusatz="_ZK_abschreiben1U"; break;
-     case ZweiKundenMengeFuer: zusatz="_ZKM"; break;
+//     case LieferscheinTeil : zusatz="_LS_teillieferung"; break;
+//     case LieferscheinZeileLoeschen : zusatz="_LS_zeileloeschen"; break;
+//     case LieferscheinZeileLoeschen_n : zusatz="_LS_zeileloeschen2"; break;
+//     case LieferscheinVoll: zusatz="_LS_volllieferung"; break;
+//     case LieferscheinMengenaenderungPlus : zusatz="_LS_mengenaenderung_plus"; break;
+//     case LieferscheinMengenaenderungMinus : zusatz="_LS_mengenaenderung_minus"; break;
+//     case LieferscheinZusatz : zusatz="_LSZ"; break;
+//     case LieferscheinZusatzPlus : zusatz="_LSZP"; break;
+//     case LieferscheinZusatzMinus: zusatz="_LSZM"; break;
+//     case LieferscheinZusatzMinusKunde: zusatz="_LSZMK"; break;
+//     case LieferscheinZweiAufTeil: zusatz="_LSZA"; break;
+//     case LieferscheinZweiAufVoll: zusatz="_LSZAV"; break;
+//     case LieferscheinJacek0 : zusatz="_LSJ0"; break;
+//     case ProduktionsPlanungWeberei : zusatz="_PP"; break;
+//     case ProduktionsPlanungEinkauf : zusatz="_PPE"; break;
+//     case ZweiKundenTest_anlegen: zusatz="_ZK_anlegen"; break;
+//     case ZweiKunden_Teil1: zusatz="_ZK_abschreiben1T"; break;
+//     case ZweiKunden_Teil2: zusatz="_ZK_abschreiben2T"; break;
+//     case ZweiKunden_Ueber1:zusatz="_ZK_abschreiben1U"; break;
+//     case ZweiKundenMengeFuer: zusatz="_ZKM"; break;
 
      // Jumbo 
      case Jumbo_richtig : zusatz="_richtig"; break;

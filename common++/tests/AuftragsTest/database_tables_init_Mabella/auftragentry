@@ -65,7 +65,7 @@ CREATE INDEX auftragentry_artikelid ON auftragentry USING btree (artikelid, inst
 -- Name: "RI_ConstraintTrigger_16636850" Type: TRIGGER Owner: thoma
 --
 
-CREATE CONSTRAINT TRIGGER "chjour_constr" AFTER DELETE ON "auftragentry"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_del" ('chjour_constr', 'prod_changejournal', 'auftragentry', 'UNSPECIFIED', 'auftragid', 'auftragid', 'auftragzeile', 'zeilennr', 'insid', 'instanz');
+--CREATE CONSTRAINT TRIGGER "chjour_constr" AFTER DELETE ON "auftragentry"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_del" ('chjour_constr', 'prod_changejournal', 'auftragentry', 'UNSPECIFIED', 'auftragid', 'auftragid', 'auftragzeile', 'zeilennr', 'insid', 'instanz');
 
 --
 -- TOC Entry ID 6 (OID 16636853)
@@ -73,5 +73,5 @@ CREATE CONSTRAINT TRIGGER "chjour_constr" AFTER DELETE ON "auftragentry"  NOT DE
 -- Name: "RI_ConstraintTrigger_16636852" Type: TRIGGER Owner: thoma
 --
 
-CREATE CONSTRAINT TRIGGER "chjour_constr" AFTER UPDATE ON "auftragentry"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('chjour_constr', 'prod_changejournal', 'auftragentry', 'UNSPECIFIED', 'auftragid', 'auftragid', 'auftragzeile', 'zeilennr', 'insid', 'instanz');
+--CREATE CONSTRAINT TRIGGER "chjour_constr" AFTER UPDATE ON "auftragentry"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('chjour_constr', 'prod_changejournal', 'auftragentry', 'UNSPECIFIED', 'auftragid', 'auftragid', 'auftragzeile', 'zeilennr', 'insid', 'instanz');
 

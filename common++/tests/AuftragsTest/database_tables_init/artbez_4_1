@@ -1,7 +1,6 @@
 --
 -- Selected TOC Entries:
 --
-\
 
 DROP INDEX "artbez_4_1_unique";
 DROP INDEX "artbez_4_1_abk_uniq";

@@ -33,16 +33,16 @@ CREATE TABLE "prod_instanz" (
 
 
 COPY "prod_instanz" FROM stdin;
-1	Kundenauftr‰ge	\N	1	t	\N	t	\N	\N	\N	P
-10	Rollerei	\N	2	\N	\N	\N	2	\N	\N	P
-2	F‰rberei	\N	4	\N	\N	\N	2	\N	\N	P
-3	Druckerei	\N	3	\N	\N	\N	3	\N	\N	P
-5	Sch‰rerei	\N	8	\N	\N	\N	\N	\N	\N	P
-7	Spritzgieﬂerei	\N	11	\N	\N	\N	\N	\N	\N	P
-6	(Garn-)Einkauf	\N	10	t	\N	t	\N	9	\N	P	t
-8	Bandlager	4	5	\N	rohjumbo	t	\N	\N	\N	L
-9	Rohwarenlager	6	9	\N	rl_inhalt	t	\N	\N	\N	L
-4	Weberei	\N	6	\N	\N	\N	28	4	\N	P
+1	Kundenauftr‰ge	\N	1	t	\N	t	\N	\N	\N	P	\N	\N
+10	Rollerei	\N	2	\N	\N	\N	2	\N	\N	P	\N	\N
+2	F‰rberei	\N	4	\N	\N	\N	2	\N	\N	P	\N	\N
+3	Druckerei	\N	3	\N	\N	\N	3	\N	\N	P	\N	\N
+5	Sch‰rerei	\N	8	\N	\N	\N	\N	\N	\N	P	\N	\N
+7	Spritzgieﬂerei	\N	11	\N	\N	\N	\N	\N	\N	P	\N	\N
+6	(Garn-)Einkauf	\N	10	t	\N	t	\N	9	\N	P	t	\N
+8	Bandlager	4	5	\N	rohjumbo	t	\N	\N	\N	L	\N	\N
+9	Rohwarenlager	6	9	\N	rl_inhalt	t	\N	\N	\N	L	\N	\N
+4	Weberei	\N	6	\N	\N	\N	28	4	\N	P	\N	\N
 \.
 --
 -- TOC Entry ID 4 (OID 41730534)

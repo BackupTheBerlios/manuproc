@@ -28,26 +28,26 @@
 #include <Aux/Transaction.h>
 
 
-bool ppsInstanz::Reparatur_0_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror)
+bool ppsInstanz::ReparaturD_0_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror)
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
-  return Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::plan_auftrag_id,false,ez_ungeplant);
+  return Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::plan_auftrag_id,false,Dungeplant);
 }
 
-bool ppsInstanz::Reparatur_2_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror)
+bool ppsInstanz::ReparaturE_2_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror)
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
   if(LagerInstanz()) {cout << "Sinnlos für LagerInstanz\n"; return true;}
   else
-     return Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::dispo_auftrag_id,true,ez_geplant);
+     return Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::dispo_auftrag_id,true,Egeplant);
 }
 
-bool ppsInstanz::Reparatur_2_ZuSumme_1Rest(const int uid,const bool analyse_only) const throw(SQLerror)
+bool ppsInstanz::ReparaturF_2_ZuSumme_1Rest(const int uid,const bool analyse_only) const throw(SQLerror)
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
   if(LagerInstanz()) {cout << "Sinnlos für LagerInstanz\n"; return true;}
   else
-     return Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::plan_auftrag_id,false,ez_dispo);
+     return Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::plan_auftrag_id,false,Fdispo);
 }
 
 
@@ -64,13 +64,14 @@ bool ppsInstanz::Reparatur_Zuordnungen(const int uid,const bool analyse_only,
       AuftragBase::mengen_t Msum=0, M0sum=0;
       std::list<AufEintragZu::st_reflist> L;
       switch (zumode) {
-         case ez_ungeplant: { L=AufEintragZu(*i).get_Referenz_list_ungeplant(kinder);
+         case Dungeplant: { L=AufEintragZu(*i).get_Referenz_list_ungeplant(kinder);
                               std::list<AufEintragZu::st_reflist> L2=AufEintragZu(*i).get_Referenz_list_dispo(kinder);
                               L.splice(L.end(),L2);
                               break;}
-         case ez_geplant:   L=AufEintragZu(*i).get_Referenz_list_geplant(kinder); break;
-         case ez_dispo:     L=AufEintragZu(*i).get_Referenz_list_dispo(kinder); break;
+         case Egeplant:   L=AufEintragZu(*i).get_Referenz_list_geplant(kinder); break;
+         case Fdispo:     L=AufEintragZu(*i).get_Referenz_list_dispo(kinder); break;
         }
+//cout << "LSize="<<L.size()<<'\n';
       for(std::list<AufEintragZu::st_reflist>::const_iterator j=L.begin();j!=L.end();++j)
         {
           if(j->AEB.Id()==AuftragBase::ungeplante_id) M0sum+=j->Menge;
@@ -78,9 +79,9 @@ bool ppsInstanz::Reparatur_Zuordnungen(const int uid,const bool analyse_only,
 //cout << *i<<'\t'<<j->AEB<<'\t'<<j->Menge<<'\t'<<Msum<<'\n';
         }
       switch (zumode) {
-         case ez_ungeplant: alles_ok=check_D_ungeplant(analyse_only,*i,M0sum,Msum+M0sum); break;
-         case ez_geplant:   alles_ok=check_E_geplant(analyse_only,*i,Msum+M0sum); break;   
-         case ez_dispo:     alles_ok=check_F_dispo(analyse_only,*i,Msum+M0sum);break;
+         case Dungeplant: alles_ok=check_D_ungeplant(analyse_only,*i,M0sum,Msum+M0sum); break;
+         case Egeplant:   alles_ok=check_E_geplant(analyse_only,*i,Msum+M0sum); break;   
+         case Fdispo:     alles_ok=check_F_dispo(analyse_only,*i,Msum+M0sum);break;
        }
     }
  return alles_ok;

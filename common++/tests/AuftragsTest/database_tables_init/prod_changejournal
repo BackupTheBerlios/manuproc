@@ -38,5 +38,4 @@ COPY "prod_changejournal" FROM stdin;
 -- Name: "RI_ConstraintTrigger_16618774" Type: TRIGGER Owner: thoma
 --
 
-CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "prod_changejournal"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'prod_changejournal', 'prod_instanz', 'UNSPECIFIED', 'insid', 'insid');
 

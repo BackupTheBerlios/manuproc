@@ -8,259 +8,119 @@ digraph G {
 		center=true;
 
 	node [shape=record];
-		filenames [label="{mit_lager_open | planen_kupfer | LS_teillieferung}|{ | P | L}"];
+		filenames [label="{mit_lager_open | LS_volllieferung | LS_mengenaenderung_minus | PP | PPE | planen_kupfer}|{ | V | M | PPW | PPE | E}"];
 
 
 	subgraph p_1 {
 		node [shape=record];
-		my_1 [label="{Kundenaufträge/20000/1 | 3kb1-3/3er bunt | (31.12.2010,1)/P:/L: | 500/P:/L:}"];
+		my_1 [label="{Kundenaufträge/20000/1 | 2502/40/661/25 | (31.12.2010,1)/V:(31.12.2010,2)/M:(31.12.2010,1)/PPW:/PPE:/E: | 10/V:10(10)/M:10(3)/PPW:/PPE:/E:}"];
 		fontsize=12;}
 
 	subgraph p_2 {
 		node [shape=Mrecord];
-		my_2 [label="{Werkstatt/0/1 | Schraubenzieher/10-1.5/7-1/rot | (30.12.2010,1)/P:/L: | 500/P:/L:}"];
+		my_2 [label="{Fertigware/0/1 | 2502/40/661/25 | (31.12.2010,1)/V:/M:/PPW:/PPE:/E: | 6/V:0/M:7/PPW:/PPE:/E:}"];
 		fontsize=12;}
 
 	subgraph p_3 {
-		node [shape=Mrecord];
-		my_3 [label="{Werkstatt/0/2 | Schraubenzieher/10-1.5/7-2/gelb | (30.12.2010,1)/P:/L: | 500/P:/L:}"];
+		node [shape=record];
+		my_3 [label="{Fertigware/1/1 | 2502/40/661/25 | (31.12.2010,1)/V:(31.12.2010,2)/M:/PPW:/PPE:/E: | 4/V:4(4)/M:3(3)/PPW:/PPE:/E:}"];
 		fontsize=12;}
 
 	subgraph p_4 {
-		node [shape=Mrecord];
-		my_4 [label="{Werkstatt/0/3 | Schraubenzieher/10-1.5/7-3/grün | (30.12.2010,1)/P:/L: | 500/P:/L:}"];
+		node [shape=record];
+		my_4 [label="{Fertigware/1/2 | ? | V:(31.12.2010,2) | V:6(6)}"];
 		fontsize=12;}
 
 	subgraph p_5 {
 		node [shape=Mrecord];
-		my_5 [label="{Packerei/0/1 | 3kb1-3/3er bunt | (31.12.2010,1)/P:/L: | 500/P:/L:}"];
+		my_5 [label="{Fertigware/2/1 | 2502/40/661/25 | (1.1.1970,1)/V:/M:/PPW:/PPE:/E: | 0/V:/M:/PPW:/PPE:/E:}"];
 		fontsize=12;}
 
 	subgraph p_6 {
 		node [shape=Mrecord];
-		my_6 [label="{Gießerei/0/1 | Griff/10cm/1.5cm/rot | (29.12.2010,1)/P:/L: | 500/P:/L:}"];
+		my_6 [label="{Prod.Planung/0/1 | 2502/40/661/25 | (31.12.2010,1)/V:/M:/PPW:/PPE:/E: | 6/V:/M:/PPW:4/PPE:0/E:}"];
 		fontsize=12;}
 
 	subgraph p_7 {
 		node [shape=Mrecord];
-		my_7 [label="{Gießerei/0/2 | Griff/10cm/1.5cm/gelb | (29.12.2010,1)/P:/L: | 500/P:/L:}"];
+		my_7 [label="{Prod.Planung/0/2 | 2502/40/661/25 | PPW:(31.12.2006,1)/PPE:/E: | PPW:0/PPE:/E:}"];
 		fontsize=12;}
 
 	subgraph p_8 {
 		node [shape=Mrecord];
-		my_8 [label="{Gießerei/0/3 | Griff/10cm/1.5cm/grün | (29.12.2010,1)/P:/L: | 500/P:/L:}"];
+		my_8 [label="{Prod.Planung/2/1 | 2502/40/661/25 | PPE:(31.12.2006,1)/E: | PPE:16/E:}"];
 		fontsize=12;}
 
 	subgraph p_9 {
 		node [shape=Mrecord];
-		my_9 [label="{Schmelze/0/1 | Schaft/7cm/1mm | (29.12.2010,1)/P:/L: | 500/P:/L:}"];
+		my_9 [label="{Prod.Planung/2/2 | 2502/40/661/25 | E:(31.12.2005,1) | E:7}"];
 		fontsize=12;}
 
 	subgraph p_10 {
-		node [shape=Mrecord];
-		my_10 [label="{Schmelze/0/2 | Schaft/7cm/2mm | (29.12.2010,1)/P:/L: | 500/P:/L:}"];
+		node [shape=record];
+		my_10 [label="{Prod.Planung/20000/1 | 2502/40/661/25 | PPW:(31.12.2006,1)/PPE:/E: | PPW:2/PPE:/E:}"];
 		fontsize=12;}
 
 	subgraph p_11 {
-		node [shape=Mrecord];
-		my_11 [label="{Schmelze/0/3 | Schaft/7cm/3mm | (29.12.2010,1)/P:/L: | 500/P:/L:}"];
+		node [shape=record];
+		my_11 [label="{Prod.Planung/20001/1 | 2502/40/661/25 | PPE:(31.12.2006,1)/E: | PPE:20/E:}"];
 		fontsize=12;}
 
 	subgraph p_12 {
 		node [shape=Mrecord];
-		my_12 [label="{Schraubenzieherlager/0/1 | Schraubenzieher/10-1.5/7-1/rot | (30.12.2010,1)/P:/L: | 500/P:/L:}"];
+		my_12 [label="{Einkauf/0/1 | 2502/40/661/25 | PPE:(31.12.2006,1)/E: | PPE:20/E:0}"];
 		fontsize=12;}
 
 	subgraph p_13 {
 		node [shape=Mrecord];
-		my_13 [label="{Schraubenzieherlager/0/2 | Schraubenzieher/10-1.5/7-2/gelb | (30.12.2010,1)/P:/L: | 500/P:/L:}"];
+		my_13 [label="{Einkauf/0/2 | 2502/40/661/25 | E:(31.12.2005,1) | E:0}"];
 		fontsize=12;}
 
 	subgraph p_14 {
 		node [shape=Mrecord];
-		my_14 [label="{Schraubenzieherlager/0/3 | Schraubenzieher/10-1.5/7-3/grün | (30.12.2010,1)/P:/L: | 500/P:/L:}"];
+		my_14 [label="{Einkauf/2/1 | 2502/40/661/25 | E:(31.12.2005,1) | E:0}"];
 		fontsize=12;}
 
 	subgraph p_15 {
-		node [shape=Mrecord];
-		my_15 [label="{Rohwarenlager/0/1 | Schachtel/3x10x7 | (30.12.2010,1)/P:/L: | 500/P:/L:}"];
+		node [shape=record];
+		my_15 [label="{Einkauf/20000/1 | 2502/40/661/25 | E:(31.12.2005,1) | E:27}"];
 		fontsize=12;}
 
 	subgraph p_16 {
 		node [shape=Mrecord];
-		my_16 [label="{Rohwarenlager/0/2 | Granulat/klar/ | (24.12.2010,1)/P:/L: | 8/P:/L:}"];
+		my_16 [label="{Weberei/0/1 | 2502/40/661/25 | PPW:(31.12.2006,1)/PPE:/E: | PPW:2/PPE:/E:}"];
 		fontsize=12;}
 
-	subgraph p_17 {
-		node [shape=Mrecord];
-		my_17 [label="{Rohwarenlager/0/3 | Pigment/rot/ | (24.12.2010,1)/P:/L: | 3/P:/L:}"];
-		fontsize=12;}
+	my_1 -> my_2 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="10/////"];
 
-	subgraph p_18 {
-		node [shape=Mrecord];
-		my_18 [label="{Rohwarenlager/0/4 | Metall/silber/ | (19.12.2010,1)/P:/L: | 10/P:/L:}"];
-		fontsize=12;}
+	my_2 -> my_3 [fontsize=12,labeldistance=3.5,labelangle=90, labelfontsize=14,labelfontcolor=black,headlabel="4//3///", weight=-1];
+	{rank=same;my_2 my_3}
 
-	subgraph p_19 {
-		node [shape=Mrecord];
-		my_19 [label="{Rohwarenlager/0/5 | Granulat/gelb/ | (24.12.2010,1)/P:/L: | 0/P:/L:}"];
-		fontsize=12;}
+	my_2 -> my_4 [fontsize=12,labeldistance=3.5,labelangle=90, labelfontsize=14,labelfontcolor=black,headlabel="6/0///", weight=-1];
+	{rank=same;my_2 my_4}
 
-	subgraph p_20 {
-		node [shape=Mrecord];
-		my_20 [label="{Rohwarenlager/0/6 | Granulat/grün/ | (24.12.2010,1)/P:/L: | 58/P:/L:0}"];
-		fontsize=12;}
+	my_2 -> my_6 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="6///4/0/"];
 
-	subgraph p_21 {
-		node [shape=record];
-		my_21 [label="{Rohwarenlager/1/1 | Granulat/klar/ | (24.12.2010,1)/P:/L: | 50/P:/L:}"];
-		fontsize=12;}
+	my_2 -> my_7 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="2/6/"];
 
-	subgraph p_22 {
-		node [shape=record];
-		my_22 [label="{Rohwarenlager/1/2 | Metall/silber/ | (19.12.2010,1)/P:/L: | 200/P:/L:}"];
-		fontsize=12;}
+	my_7 -> my_10 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="2//"];
 
-	subgraph p_23 {
-		node [shape=record];
-		my_23 [label="{Rohwarenlager/1/3 | Granulat/gelb/ | (24.12.2010,1)/P:/L: | 58/P:/L:}"];
-		fontsize=12;}
+	my_7 -> my_11 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="4/"];
 
-	subgraph p_24 {
-		node [shape=record];
-		my_24 [label="{Rohwarenlager/1/4 | Granulat/grün/ | L:(24.12.2010,1) | L:58}"];
-		fontsize=12;}
+	my_7 -> my_12 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="20/0"];
 
-	subgraph p_25 {
-		node [shape=Mrecord];
-		my_25 [label="{Rohwarenlager/2/1 | Metall/silber/ | (1.1.1970,1)/P:/L: | 0/P:/L:}"];
-		fontsize=12;}
+	my_7 -> my_13 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="20"];
 
-	subgraph p_26 {
-		node [shape=Mrecord];
-		my_26 [label="{Rohwarenlager/2/2 | Granulat/klar/ | (1.1.1970,1)/P:/L: | 0/P:/L:}"];
-		fontsize=12;}
+	my_7 -> my_16 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="2//"];
 
-	subgraph p_27 {
-		node [shape=Mrecord];
-		my_27 [label="{Rohwarenlager/2/3 | Granulat/gelb/ | (1.1.1970,1)/P:/L: | 42/P:/L:}"];
-		fontsize=12;}
+	my_8 -> my_11 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="16/"];
 
-	subgraph p_28 {
-		node [shape=Mrecord];
-		my_28 [label="{Rohwarenlager/2/4 | Granulat/grün/ | L:(1.1.1970,1) | L:142}"];
-		fontsize=12;}
+	my_9 -> my_13 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="7"];
 
-	subgraph p_29 {
-		node [shape=Mrecord];
-		my_29 [label="{Einkauf/0/1 | Schachtel/3x10x7 | (30.12.2010,1)/P:/L: | 500/P:/L:}"];
-		fontsize=12;}
+	my_13 -> my_15 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="27"];
 
-	subgraph p_30 {
-		node [shape=Mrecord];
-		my_30 [label="{Einkauf/0/2 | Granulat/klar/ | (24.12.2010,1)/P:/L: | 8/P:/L:}"];
-		fontsize=12;}
-
-	subgraph p_31 {
-		node [shape=Mrecord];
-		my_31 [label="{Einkauf/0/3 | Pigment/rot/ | (24.12.2010,1)/P:/L: | 3/P:/L:}"];
-		fontsize=12;}
-
-	subgraph p_32 {
-		node [shape=Mrecord];
-		my_32 [label="{Einkauf/0/4 | Granulat/grün/ | (24.12.2010,1)/P:/L: | 58/P:0/L:}"];
-		fontsize=12;}
-
-	subgraph p_33 {
-		node [shape=Mrecord];
-		my_33 [label="{Einkauf/0/5 | Metall/silber/ | (19.12.2010,1)/P:/L: | 10/P:/L:}"];
-		fontsize=12;}
-
-	subgraph p_34 {
-		node [shape=Mrecord];
-		my_34 [label="{Einkauf/0/6 | Granulat/grün/ | P:(31.12.2005,1)/L: | P:0/L:}"];
-		fontsize=12;}
-
-	subgraph p_35 {
-		node [shape=Mrecord];
-		my_35 [label="{Einkauf/2/1 | Granulat/grün/ | P:(31.12.2005,1)/L: | P:142/L:0}"];
-		fontsize=12;}
-
-	subgraph p_36 {
-		node [shape=record];
-		my_36 [label="{Einkauf/20000/1 | Granulat/grün/ | P:(31.12.2005,1)/L:(31.12.2005,2) | P:200/L:200(200)}"];
-		fontsize=12;}
-
-	my_1 -> my_5 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="500//"];
-
-	my_2 -> my_6 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="500//"];
-
-	my_2 -> my_9 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="500//"];
-
-	my_3 -> my_7 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="500//"];
-
-	my_3 -> my_10 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="500//"];
-
-	my_4 -> my_8 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="500//"];
-
-	my_4 -> my_11 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="500//"];
-
-	my_5 -> my_12 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="500//"];
-
-	my_5 -> my_13 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="500//"];
-
-	my_5 -> my_14 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="500//"];
-
-	my_5 -> my_15 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="500//"];
-
-	my_6 -> my_16 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="58//"];
-
-	my_6 -> my_17 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="3//"];
-
-	my_7 -> my_19 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="58//"];
-
-	my_8 -> my_20 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="58//"];
-
-	my_9 -> my_18 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="70//"];
-
-	my_10 -> my_18 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="70//"];
-
-	my_11 -> my_18 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="70//"];
-
-	my_12 -> my_2 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="500//"];
-
-	my_13 -> my_3 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="500//"];
-
-	my_14 -> my_4 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="500//"];
-
-	my_15 -> my_29 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="500//"];
-
-	my_16 -> my_21 [fontsize=12,labeldistance=3.5,labelangle=90, labelfontsize=14,labelfontcolor=black,headlabel="50//", weight=-1];
-	{rank=same;my_16 my_21}
-
-	my_16 -> my_30 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="8//"];
-
-	my_17 -> my_31 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="3//"];
-
-	my_18 -> my_22 [fontsize=12,labeldistance=3.5,labelangle=90, labelfontsize=14,labelfontcolor=black,headlabel="200//", weight=-1];
-	{rank=same;my_18 my_22}
-
-	my_18 -> my_33 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="10//"];
-
-	my_19 -> my_23 [fontsize=12,labeldistance=3.5,labelangle=90, labelfontsize=14,labelfontcolor=black,headlabel="58//", weight=-1];
-	{rank=same;my_19 my_23}
-
-	my_20 -> my_24 [fontsize=12,labeldistance=3.5,labelangle=90, labelfontsize=14,labelfontcolor=black,headlabel="58", weight=-1];
-	{rank=same;my_20 my_24}
-
-	my_20 -> my_32 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="58/0/"];
-
-	my_20 -> my_34 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="58/"];
-
-	my_34 -> my_36 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="58/"];
-
-	my_35 -> my_36 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="142/"];
-		label="ManuProC"
+	my_14 -> my_15 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="0"];
+		label="Lieferschein Test für Jacek"
 		labelloc=top
 }
 END

@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.18 2002/12/04 12:12:09 thoma Exp $
+// $Id: adjust_store.cc,v 1.19 2002/12/05 09:30:27 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -62,9 +62,9 @@ bool check_for(const std::string &pname,cH_ppsInstanz I,const std::string &aktio
      }
     else if(aktion=="B" &&!I->KundenInstanz()) I->Reparatur_Konsistenz(analyse_only);
     else if(aktion=="C" &&!I->KundenInstanz()) I->Reparatur_0er_und_2er(getuid(),analyse_only);
-    else if(aktion=="D" &&!I->KundenInstanz()) alles_ok=I->Reparatur_0_ZuSumme_1(getuid(),analyse_only);
-    else if(aktion=="E" &&!I->KundenInstanz()) alles_ok=I->Reparatur_2_ZuSumme_1(getuid(),analyse_only);
-    else if(aktion=="F" &&!I->KundenInstanz()) alles_ok=I->Reparatur_2_ZuSumme_1Rest(getuid(),analyse_only);
+    else if(aktion=="D" &&!I->KundenInstanz()) alles_ok=I->ReparaturD_0_ZuSumme_1(getuid(),analyse_only);
+    else if(aktion=="E" &&!I->KundenInstanz()) alles_ok=I->ReparaturE_2_ZuSumme_1(getuid(),analyse_only);
+    else if(aktion=="F" &&!I->KundenInstanz()) alles_ok=I->ReparaturF_2_ZuSumme_1Rest(getuid(),analyse_only);
     else usage(pname);
    return alles_ok;
 }
