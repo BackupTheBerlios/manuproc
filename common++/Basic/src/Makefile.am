@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.49 2004/05/11 08:09:55 christof Exp $
+# $Id: Makefile.am,v 1.50 2004/07/06 12:03:40 christof Exp $
 
 if WINDOWS
 WIN_LDFLAGS=-no-undefined -export-symbols libManuProC_Base@DATABASE_TYPE@.def 
@@ -62,7 +62,7 @@ include_HEADERS=Ausgabe_neu.h CacheStatic.h Cache_Pointer.h Datum.h Handles.h \
 	EntryValueDatum.h EmptyInt_4TeX.h Long.h Model.h \
 	germanstring.h TagStream.h Tag.h recodestream.h \
 	callbackbuf.h TraceNV.h EntryValueTimeStamp.h \
-	Event.h bitmask.h Global_Settings.h
+	Event.h bitmask.h Global_Settings.h algorithm.h
 
 CLEANFILES= *~ $(BUILT_SOURCES)
 
