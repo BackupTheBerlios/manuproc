@@ -41,8 +41,8 @@ int main(int argc, char **argv)
      
  Gnome::Main m(PACKAGE, VERSION, 1, argv);
  try{ Petig::dbconnect(conn); 
- manage(new class Artikeleingabe(argc,argv));
  mess = manage(new MyMessage());
+ manage(new class Artikeleingabe(argc,argv));
  m.run();
  }
  catch(SQLerror &e)
