@@ -620,30 +620,23 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
    	&& !in(ae.Instanz(),ppsInstanz::getBestellInstanz(as),
    			ppsInstanz::getProduktionsInstanz(as))
    	&& !ppsInstanz::getBestellInstanz(as)->PlanungsInstanz())
-   {  alles_ok=false;
-      analyse("Artikel auf falscher Instanz",ae,cH_ArtikelBezeichnung(ae.Artikel())->Bezeichnung(),itos(ae.Artikel().Id()));
-      // den lösche ich aber nicht automatisch!
+   {  analyse("Artikel auf falscher Instanz",ae,cH_ArtikelBezeichnung(ae.Artikel())->Bezeichnung(),itos(ae.Artikel().Id()));
+     loeschen: 
+      alles_ok=false;
       if (really_delete) 
-      {  Query("delete from auftragentry where (instanz,auftragid,zeilennr)=(?,?,?)")
+         Query("delete from auftragentry where (instanz,auftragid,zeilennr)=(?,?,?)")
       		<< ae;
-         return false;
-      }
-      else std::cout << "$ delete from auftragentry where (instanz,auftragid,zeilennr)=("
-      	<< ae.Instanz()->Id() << ',' << ae.Id() << ',' << ae.ZNr() << ");\n";
+      else 
+         std::cout << "$ delete from auftragentry where (instanz,auftragid,zeilennr)=("
+		<< ae.Instanz()->Id() << ',' << ae.Id() << ',' << ae.ZNr() << ");\n";
+      return false;
+      // besser: Kinder für diesen Auftrag nicht aufrufen
    }
    
    if (ae.Id()==AuftragBase::plan_auftrag_id)
    {  if (ae.Instanz()==ppsInstanzID::Kundenauftraege)
-      {  alles_ok=false;   
-         analyse("Es darf keine 1er bei den Kundenaufträgen geben",ae);
-         // Bitte von Hand reparieren!
-         if (really_delete) 
-         {  Query("delete from auftragentry where (instanz,auftragid,zeilennr)=(?,?,?)")
-         		<< ae;
-            return false;
-         }
-         else std::cout << "$ delete from auftragentry where (instanz,auftragid,zeile)=("
- 	     	<< ae.Instanz()->Id() << ',' << ae.Id() << ',' << ae.ZNr() << ");\n";
+      {  analyse("Es darf keine 1er bei den Kundenaufträgen geben",ae);
+         goto loeschen;
       }
       else if (!!ae.getRestStk() && !ae.Instanz()->LagerInstanz())
       {  alles_ok=false;
@@ -671,7 +664,8 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
       analyse("Erfüllte Aufträge müssen CLOSED sein",ae,ae.getGeliefert(),ae.getStueck());
       if (!analyse_only) ae.setStatus(CLOSED,uid,true);
    }
-   else if (ae.Instanz()!=ppsInstanzID::Kundenauftraege 
+   else if (ae.Instanz()!=ppsInstanzID::Kundenauftraege
+   	&& !(ae.Instanz()->Lieferschein() && ae.Id()>=AuftragBase::handplan_auftrag_id)
    	&& ae.getGeliefert()!=ae.getStueck()
    	&& ae.getCombinedStatus()!=OPEN)
    {  alles_ok=false;
@@ -680,11 +674,21 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
    }
    
    if (ae.Instanz()->LagerInstanz() 
+   	&& ae.Id()>=AuftragBase::handplan_auftrag_id)
+   {  analyse("Es darf keine 3er im Lager geben",ae,ae.getStueck());
+      goto loeschen;
+   }
+   if (ae.Instanz()->LagerInstanz() 
    	&& ae.Id()==AuftragBase::dispo_auftrag_id
    	&& ae.getLieferdatum()!=LagerBase::Lagerdatum())
    {  alles_ok=false;
       analyse("Das Datum von 2ern im Lager sollte 'epoch' sein",ae);
-      // Bitte von Hand reparieren!
+      if (!analyse_only)
+         Query("update auftragentry "
+		"set lieferdate=? "
+		"where (instanz,auftragid,zeilennr)=(?,?,?)")
+		<< LagerBase::Lagerdatum()
+		<< ae;
    }
    return alles_ok;
 }
