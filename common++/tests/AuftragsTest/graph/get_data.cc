@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.34 2002/12/19 13:57:22 thoma Exp $
+// $Id: get_data.cc,v 1.35 2002/12/20 16:17:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -30,7 +30,7 @@ static std::string referenzdir="../database_tables_test";
 #endif
 
 
-graph_data_node::graph_data_node(emode mode)
+graph_data_node::graph_data_node(const std::string &mode)
 {
    get_files(mode);
    get_values_from_files();
@@ -239,37 +239,34 @@ std::list<AufEintragBase> graph_data_node::get_existing_aeb() const
 
 
 
-void graph_data_node::get_files(emode mode)
-{
-   switch(mode) {
-      case Menge : filenames=Mfiles(); break;
-      case Planung : filenames=Pfiles(); break;
-      case Split : filenames=Sfiles(); break;
-      case Lager : filenames=Lfiles(); break;
-      case ZweiAuftraege : filenames=Zfiles(); break;
-      case ZweiterAuftrag_frueheresDatum : filenames=Dfiles(); break;
-      case Lieferschein : filenames=Lsfiles(); break;
-      case LieferscheinMenge : filenames=Lmfiles(); break;
-      case LieferscheinZusatz : filenames=LZfiles(); break;
-      case LieferscheinZweiAuftraege : filenames=LAfiles(); break;
-      case LieferscheinJacek: filenames=LSJfiles(); break;
-      case ZweiKunden : filenames=ZKfiles(); break;
-      case ZweiKundenMengeFreigeben : filenames=ZKMfiles(); break;
-      case ManuProCTest : filenames=ManuProCfiles(); break;
-      case Rep_Petig_0er_2er_gleichzeitig: filenames=Rep02gleichzeitigfiles(); break;
-      case Rep_Petig_Kunde: filenames=RepKunde_files(); break;
-      case Rep_Petig_Zuordung: filenames=RepZu_files(); break;
-      case Rep_Petig_Kunden_Zuordung: filenames=RepKuZu_files(); break;
-      case Legende: break;
-      default: assert(!"never get here");
-    }
+void graph_data_node::get_files(const std::string &mode)
+{ ifstream i(("../files.log/"+mode).c_str());
+  if (!i.good()) 
+  {  std::cerr << "../files.log/"<<mode<<": konnte Datei nicht öffnen\n";
+     exit(1);
+  }
+  char buf[1024];
+  while (!i.eof())
+  {  i.getline(buf,sizeof buf);
+     std::string line=buf;
+     if (line.empty()) continue;
+     std::string::size_type space1,space2;
+     space1=line.find(' ');
+     if (space1==std::string::npos) continue;
+     space2=line.find(' ',space1+1);
+     if (space1==std::string::npos) continue;
+     filenames.push_back(st_files(line.substr(space1+1,space2-space1-1),
+     		line.substr(space2+1)));
+std::cerr << line.substr(space1+1,space2-space1-1) << ',' << line.substr(space2+1) << ",\n";
+  }
   for(std::vector<st_files>::const_iterator i=filenames.begin();i!=filenames.end();++i)
    {
-     vec_files_auftragentry.push_back(st_files(referenzdir+"/auftragentry_"+i->filename,i->prefix));
-     vec_files_auftragsentryzuordnung.push_back(referenzdir+"/auftragsentryzuordnung_"+i->filename);
+     vec_files_auftragentry.push_back(st_files(referenzdir+"/auftragentry"+i->filename,i->prefix));
+     vec_files_auftragsentryzuordnung.push_back(referenzdir+"/auftragsentryzuordnung"+i->filename);
    }
 }
 
+#if 0
 std::vector<graph_data_node::st_files> graph_data_node::Mfiles()
 {
   std::vector<st_files>  vec_files;
@@ -478,3 +475,4 @@ std::vector<graph_data_node::st_files> graph_data_node::RepKuZu_files()
   return vec_files;
 }
 
+#endif

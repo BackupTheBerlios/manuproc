@@ -1,4 +1,4 @@
-// $Id: dot_out.cc,v 1.16 2002/12/12 10:42:01 thoma Exp $
+// $Id: dot_out.cc,v 1.17 2002/12/20 16:17:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -27,7 +27,8 @@ void dot_out::write()
   ofstream fout("dot.script");
   write_header(fout);
 
-  std::string label;
+  std::string label=mode;
+#if 0  
   switch(mode) {
      case Menge : label="Mengen Test"; break;
      case Planung : label="Planungs Test"; break;
@@ -50,7 +51,8 @@ void dot_out::write()
      case Legende : label="Legende"; break;
      default: label= "Fehler, kein Label gestze \n"; 
    }
-  if(mode!=Legende)  write_node(fout);
+#endif
+  if(mode!="X")  write_node(fout);
   else write_legend(fout);
   write_footer(fout,label);
   fout.close();

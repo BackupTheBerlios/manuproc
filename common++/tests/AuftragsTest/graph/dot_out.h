@@ -1,4 +1,4 @@
-// $Id: dot_out.h,v 1.12 2002/11/22 15:47:37 thoma Exp $
+// $Id: dot_out.h,v 1.13 2002/12/20 16:17:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -52,7 +52,7 @@ class dot_out
       enum e_colour{Black,Colour};
 
   private:
-      emode mode;
+      std::string mode;
       e_colour colour;
       enum erank{None,same,sink};
       unsigned int cc; // cc=cluster_count
@@ -67,7 +67,7 @@ class dot_out
       void Edge(ofstream &fout,Node n1,Node n2, std::string s,erank rank);
 
   public:
-      dot_out(emode m,e_colour c) : mode(m),colour(c),cc(0) {};
+      dot_out(const std::string &m,e_colour c) : mode(m),colour(c),cc(0) {};
       void write();
 };
 

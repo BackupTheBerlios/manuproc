@@ -1,4 +1,4 @@
-// $Id: get_data.h,v 1.16 2002/12/12 10:42:01 thoma Exp $
+// $Id: get_data.h,v 1.17 2002/12/20 16:17:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -26,13 +26,14 @@
 #include <list>
 #include <Auftrag/AufEintragBase.h>
 
-
+#if 0
 enum emode {None,Legende,Menge,Planung,Split,Lager,ZweiAuftraege,
    ZweiterAuftrag_frueheresDatum,Lieferschein,LieferscheinMenge,
    LieferscheinZusatz,LieferscheinZweiAuftraege,LieferscheinJacek,
    ZweiKunden,ZweiKundenMengeFreigeben,
    ManuProCTest,Rep_Petig_0er_2er_gleichzeitig,
    Rep_Petig_Kunde,Rep_Petig_Zuordung,Rep_Petig_Kunden_Zuordung};
+#endif   
 
 class graph_data_node
 {
@@ -68,10 +69,11 @@ class graph_data_node
       std::map<AufEintragBase,std::vector<st_auftrag> > map_aeb;
       std::list<st_aebZ> list_auftragszuordnung;
 
-     void get_files(emode); 
+     void get_files(const std::string &mode); 
      void get_values_from_files();
      void get_values_from_files_Z();
      void fill_map();
+#if 0     
      std::vector<st_files> Mfiles();
      std::vector<st_files> Pfiles();
      std::vector<st_files> Sfiles();
@@ -90,9 +92,10 @@ class graph_data_node
      std::vector<st_files> RepKunde_files();
      std::vector<st_files> RepZu_files();
      std::vector<st_files> RepKuZu_files();
+#endif     
      std::vector<st_files> filenames;
   public:
-     graph_data_node(emode);
+     graph_data_node(const std::string &mode);
 
      std::vector<st_files> get_filenames() const {return filenames;}
      std::list<AufEintragBase> get_existing_aeb() const;
