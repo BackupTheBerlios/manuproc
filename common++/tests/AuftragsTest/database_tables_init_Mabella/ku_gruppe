@@ -1,0 +1,44 @@
+--
+-- PostgreSQL database dump
+--
+
+SET search_path = public, pg_catalog;
+
+ALTER TABLE ONLY public.ku_gruppe DROP CONSTRAINT ku_gruppe_pkey;
+DROP INDEX public.ku_gruppe_name_key;
+DROP TABLE public.ku_gruppe;
+--
+-- TOC entry 2 (OID 17477)
+--
+
+CREATE TABLE ku_gruppe (
+    grpnr numeric(4,0) NOT NULL,
+    name text NOT NULL,
+    obergruppe text,
+    kommentar text
+);
+
+
+--
+-- TOC entry 3 (OID 17477)
+--
+
+REVOKE ALL ON TABLE ku_gruppe FROM PUBLIC;
+GRANT INSERT,SELECT,UPDATE,DELETE ON TABLE ku_gruppe TO GROUP buro;
+
+
+--
+-- TOC entry 4 (OID 6684773)
+--
+
+CREATE UNIQUE INDEX ku_gruppe_name_key ON ku_gruppe USING btree (name);
+
+
+--
+-- TOC entry 5 (OID 17482)
+--
+
+ALTER TABLE ONLY ku_gruppe
+    ADD CONSTRAINT ku_gruppe_pkey PRIMARY KEY (grpnr);
+
+

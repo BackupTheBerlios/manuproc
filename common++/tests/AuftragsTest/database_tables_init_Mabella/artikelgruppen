@@ -1,0 +1,50 @@
+--
+-- PostgreSQL database dump
+--
+
+SET search_path = public, pg_catalog;
+
+ALTER TABLE ONLY public.artikelgruppen DROP CONSTRAINT artikelgruppen_pkey;
+DROP INDEX public.artikelgruppen_defgrp;
+DROP TABLE public.artikelgruppen;
+--
+-- TOC entry 2 (OID 17499)
+--
+
+CREATE TABLE artikelgruppen (
+    bezeichnung text NOT NULL,
+    "schema" integer NOT NULL,
+    warengruppe integer NOT NULL,
+    bestellen_bei integer NOT NULL,
+    einheit integer NOT NULL,
+    defaultgrp boolean
+);
+
+
+--
+-- TOC entry 3 (OID 17499)
+--
+
+REVOKE ALL ON TABLE artikelgruppen FROM PUBLIC;
+GRANT SELECT ON TABLE artikelgruppen TO PUBLIC;
+
+
+COPY artikelgruppen (bezeichnung, "schema", warengruppe, bestellen_bei, einheit, defaultgrp) FROM stdin;
+Band	1	3	3	0	t
+\.
+
+--
+-- TOC entry 4 (OID 7854293)
+--
+
+CREATE UNIQUE INDEX artikelgruppen_defgrp ON artikelgruppen USING btree (defaultgrp);
+
+
+--
+-- TOC entry 5 (OID 17504)
+--
+
+ALTER TABLE ONLY artikelgruppen
+    ADD CONSTRAINT artikelgruppen_pkey PRIMARY KEY (bezeichnung);
+
+
