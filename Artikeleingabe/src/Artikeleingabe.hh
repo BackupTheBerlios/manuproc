@@ -1,4 +1,4 @@
-// $Id: Artikeleingabe.hh,v 1.12 2004/11/29 18:05:07 christof Exp $
+// $Id: Artikeleingabe.hh,v 1.13 2005/03/02 11:49:40 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -70,7 +70,7 @@ class Artikeleingabe : public Artikeleingabe_glade
         void fill_datavec(datavec_t& datavec,const ArtikelBase& AB);
         void push_Artikel(vec_zeile_t &vec_zeile, const zeile_t &z);
         void ArtikelBaum_Pfad(ArtikelBase AB,menge_t menge,
-        	datavec_t& datavec,vec_zeile_t vec_zeile);
+        	datavec_t& datavec,vec_zeile_t vec_zeile, int maxrec=20);
 
         void get_artikel_list(ppsInstanz::ID instanz);
         void set_Data_from_artikelliste();

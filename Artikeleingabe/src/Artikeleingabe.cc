@@ -1,4 +1,4 @@
-// $Id: Artikeleingabe.cc,v 1.30 2004/11/29 16:38:51 christof Exp $
+// $Id: Artikeleingabe.cc,v 1.31 2005/03/02 11:49:40 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -289,20 +289,20 @@ try{
 
 // Ja der Vektor wird kopiert und dann verändert (Rekursion)
 void Artikeleingabe::ArtikelBaum_Pfad(ArtikelBase AB,menge_t menge,
-		datavec_t& datavec, vec_zeile_t vec_zeile)
+		datavec_t& datavec, vec_zeile_t vec_zeile, int maxrec)
 {
    cH_ArtikelBezeichnung ABez(AB,artikelbox->getBezSchema()->Id());
 //   cH_ArtikelBezeichnung ABez(AB);
    ArtikelBaum ABaum(AB);
    
    push_Artikel(vec_zeile,zeile_t(ABez,menge));
-   if (ABaum.begin()==ABaum.end()) 
+   if (!maxrec || ABaum.begin()==ABaum.end()) 
        datavec.push_back(new Data_tree(vec_zeile));
    else
     {
      for (ArtikelBaum::const_iterator i=ABaum.begin();i!=ABaum.end();++i)
       {
-       ArtikelBaum_Pfad(ArtikelBase(i->rohartikel),i->menge,datavec,vec_zeile);
+       ArtikelBaum_Pfad(ArtikelBase(i->rohartikel),i->menge,datavec,vec_zeile,maxrec-1);
       }
     }
 }
