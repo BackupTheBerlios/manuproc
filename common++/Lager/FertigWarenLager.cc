@@ -191,6 +191,14 @@ void FertigWarenLager::Inventur() throw(LagerError)
 
  fw.setStk(buchmenge);
 
+ // refresh last_inventur from fast access
+ Query("delete from last_inventur");
+ Query("insert into last_inventur (artikelid,datum) ("
+	" SELECT fw_lager_buchung.artikelid as artikelid, "
+	"max(fw_lager_buchung.datum) AS datum FROM "
+	" fw_lager_buchung WHERE fw_lager_buchung.aktion='I' "
+	" GROUP BY fw_lager_buchung.artikelid)");
+
  tr.commit();
 }
 
