@@ -38,7 +38,7 @@ static bool ManuProCTest(AufEintrag &AE)
       int znr=3;
       AufEintrag AEP((AufEintragBase(EINKAUF,AuftragBase::ungeplante_id,znr)));
       assert(AEP.Artikel()==ARTIKEL_GRANULAT_GRUEN);
-      AufEintrag PAE(AEP.Planen(UID,200,PA,PLANDATUM5));
+      AufEintrag PAE(AEP.Planen(200,PA,PLANDATUM5));
       vergleichen(Check::Menge,"planen_granulat","Planen des Einkaufs(Granulat)","P");
 
       // Spezifischen Lieferschein schreiben
@@ -53,7 +53,7 @@ static bool ManuProCTest(AufEintrag &AE)
       int znr=4;
       AufEintrag AEP((AufEintragBase(EINKAUF,AuftragBase::ungeplante_id,znr)));
       assert(AEP.Artikel()==ARTIKEL_METALL);
-      AufEintrag PAE(AEP.Planen(UID,10,PA,PLANDATUM5));
+      AufEintrag PAE(AEP.Planen(10,PA,PLANDATUM5));
       vergleichen(Check::Menge,"planen_weberei_fuer_lager","Planen des Einkaufs(Metall)","P2");
 
 
@@ -68,7 +68,7 @@ static bool ManuProCTest(AufEintrag &AE)
       int znr=1;
       AufEintrag AEP((AufEintragBase(GIESSEREI,AuftragBase::ungeplante_id,znr)));
       assert(AEP.Artikel()==ARTIKEL_GRIFF_ROT);
-      AufEintrag PAE(AEP.Planen(UID,500,PA,PLANDATUM5));
+      AufEintrag PAE(AEP.Planen(500,PA,PLANDATUM5));
       vergleichen(Check::Menge,"planen_faerberei_teil","Planen der Giesserei (Griff rot)","PG");
 
 

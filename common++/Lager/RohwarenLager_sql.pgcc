@@ -41,7 +41,7 @@ AuftragBase::mengen_t RohwarenLager::st_rohlager::Menge_fuer_Auftrag() const
 {  return kartons*kg_pro_karton  + reste_kg;
 }
 
-bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,const int uid,std::string &os,bool force,bool ist_leer,bool fuer_auftrag)
+bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,std::string &os,bool force,bool ist_leer,bool fuer_auftrag)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
   	NV("kartons",rohlager.kartons),NV("reste",rohlager.reste),
@@ -129,20 +129,20 @@ bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,const int uid,std::string 
        SQLerror::test(__FILELINE__);                  
     }
 
-   raus_aus_lager(rohlager.artikel,rohlager.Menge_fuer_Auftrag(),uid,fuer_auftrag);
-   RL_Log(rohlager,RLEntnehmen,uid,misc);
+   raus_aus_lager(rohlager.artikel,rohlager.Menge_fuer_Auftrag(),fuer_auftrag);
+   RL_Log(rohlager,RLEntnehmen,misc);
 
    tr.commit();
    return true;
 }
 
-void RohwarenLager::RL_Einlagern_real(st_rohlager& rohlager,unsigned uid,bool geliefert)
-{  if (geliefert) rein_ins_lager(rohlager.artikel,rohlager.Menge_fuer_Auftrag(),uid,true);
-   else wiedereinlagern(rohlager.artikel,rohlager.Menge_fuer_Auftrag(),uid);
-   RL_Log(rohlager,RLEinlagern,uid);
+void RohwarenLager::RL_Einlagern_real(st_rohlager& rohlager,bool geliefert)
+{  if (geliefert) rein_ins_lager(rohlager.artikel,rohlager.Menge_fuer_Auftrag(),true);
+   else wiedereinlagern(rohlager.artikel,rohlager.Menge_fuer_Auftrag());
+   RL_Log(rohlager,RLEinlagern);
 }
 
-bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager,const int uid,std::string &os,bool force,bool geliefert)
+bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager,std::string &os,bool force,bool geliefert)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
   	NV("kartons",rohlager.kartons),NV("reste",rohlager.reste),
@@ -174,7 +174,7 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
         values (:POSITION, :KARTONS, :MATERIAL, :KG_PER_KARTON,
               nullif(:RESTE,0), nullif(:RESTE_KG,0), :DATUM);
       SQLerror::test(__FILELINE__);
-      RL_Einlagern_real(rohlager,uid,geliefert);
+      RL_Einlagern_real(rohlager,geliefert);
       tr.commit();
       return true;
    }
@@ -183,7 +183,7 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
      st_rohlager was_ist_drin = RL_Inhalt(rohlager.position);
      if(force) // überschreiben, ohne Rücksicht auf Material
       { // wird nicht als Verbrauch gerechnet
-        RL_Entnahme(was_ist_drin,uid,os,true,true,false);
+        RL_Entnahme(was_ist_drin,os,true,true,false);
         if (!os.empty()) os+='\n';
         tr.close();
         tr.open(); // neue Transaktion beginnen
@@ -192,7 +192,7 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
            kg_per_karton=:KG_PER_KARTON, reste=nullif(:RESTE,0), 
            rest_kg=nullif(:RESTE_KG,0), eingelagert=:DATUM where position_=:POSITION;
         SQLerror::test(__FILELINE__);
-        RL_Einlagern_real(rohlager,uid,geliefert);
+        RL_Einlagern_real(rohlager,geliefert);
         tr.commit();
         return true;
       }
@@ -216,7 +216,7 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
                        reste=nullif(:RESTE,0), rest_kg=nullif(:RESTE_KG,0),
                         eingelagert=:DATUM where position_=:POSITION;
               SQLerror::test(__FILELINE__);
-              RL_Einlagern_real(rohlager,uid,geliefert);
+              RL_Einlagern_real(rohlager,geliefert);
               tr.commit();
               return true;
             }
@@ -243,7 +243,7 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
  assert(!" RohwarenLager::RL_Einlagern: Fehler");
 }
 
-void RohwarenLager::RL_Log(const st_rohlager& rohlager,RL_LogTyp typ,const int uid,const std::string& misc)
+void RohwarenLager::RL_Log(const st_rohlager& rohlager,RL_LogTyp typ,const std::string& misc)
 {
   exec sql begin declare section;
    int KARTONS=rohlager.kartons;

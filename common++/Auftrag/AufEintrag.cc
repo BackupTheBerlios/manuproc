@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.90 2003/08/14 08:30:09 christof Exp $
+// $Id: AufEintrag.cc,v 1.91 2003/09/02 12:10:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -65,7 +65,7 @@ std::string AufEintrag::Planung() const
 }
 
 // reason ist wichtig, da r_Produziert einen bereits geschlossenen Auftrag erzeugt
-void AufEintrag::move_to(int uid,AufEintrag ziel,mengen_t menge,ManuProC::Auftrag::Action reason) throw(std::exception)
+void AufEintrag::move_to(AufEintrag ziel,mengen_t menge,ManuProC::Auftrag::Action reason) throw(std::exception)
 {
   ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,NV("To",ziel),NV("Menge",menge),NV("Reason",reason));
   Transaction tr;
@@ -77,8 +77,8 @@ void AufEintrag::move_to(int uid,AufEintrag ziel,mengen_t menge,ManuProC::Auftra
   { mengen_t M=min(i->Menge,menge);
     if (!M) continue;
 
-    MengeAendern(uid,-M,true,i->AEB,reason);
-    ziel.MengeAendern(uid,M,true,i->AEB,reason);
+    MengeAendern(-M,true,i->AEB,reason);
+    ziel.MengeAendern(M,true,i->AEB,reason);
 
     menge-=M;
     if(!menge) break;
@@ -94,7 +94,7 @@ AufEintragBase AufEintrag::getFirstKundenAuftrag() const
  else return *(V.begin());
 }
 
-AufEintragBase AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
+AufEintragBase AufEintrag::Planen(mengen_t menge,const AuftragBase &zielauftrag,
    const Petig::Datum &datum,ManuProC::Auftrag::Action reason,
    AufEintragBase *verplanter_aeb,bool rekursiv) throw(std::exception)
 {
@@ -120,7 +120,7 @@ AufEintragBase AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &ziel
 
    // Zeile erzeugen/finden
    AufEintragBase neueZeile=AufEintragBase(zielauftrag,
-   	zielauftrag.PassendeZeile(datum,Artikel(),entrystatus,uid));
+   	zielauftrag.PassendeZeile(datum,Artikel(),entrystatus));
 // nix zu planen -> erledigt
    if(menge==0) {tr.commit();   return neueZeile;}
 
@@ -141,10 +141,10 @@ AufEintragBase AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &ziel
       menge-=dispomenge;
     }
 
-   move_to(uid,AE1er,menge,reason);
+   move_to(AE1er,menge,reason);
 
    if (!!dispomenge)
-      AE1er.Ueberplanen(uid,Artikel(),dispomenge,datum);
+      AE1er.Ueberplanen(Artikel(),dispomenge,datum);
    
 //---- ProzessInstanz setzen ------
   // nur wenn aktiv durch Benutzer geplant
@@ -167,7 +167,7 @@ AufEintragBase AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &ziel
 }
 
 // einen Dispo Auftrag für einen Auftrag anlegen (wegen freier Menge)
-void AufEintrag::Ueberplanen(int uid,const ArtikelBase& artikel,mengen_t menge,const ManuProC::Datum &datum)
+void AufEintrag::Ueberplanen(const ArtikelBase& artikel,mengen_t menge,const ManuProC::Datum &datum)
 {
  ManuProC::Trace _t(trace_channel, __FUNCTION__,str(),
    NV("Artikel",artikel),NV("Menge",menge),NV("Datum",datum));
@@ -176,13 +176,13 @@ void AufEintrag::Ueberplanen(int uid,const ArtikelBase& artikel,mengen_t menge,c
 
    AuftragBase dispoAB(Instanz(),dispo_auftrag_id);
    //int znr=
-   dispoAB.BestellmengeAendern(menge,datum,artikel,OPEN,uid,*this);
+   dispoAB.BestellmengeAendern(menge,datum,artikel,OPEN,*this);
 
    // zusätzliche Menge vermerken und Material bestellen
-   MengeAendern(uid,menge,true,AufEintragBase(),ManuProC::Auftrag::r_Anlegen); // oder Planen?
+   MengeAendern(menge,true,AufEintragBase(),ManuProC::Auftrag::r_Anlegen); // oder Planen?
 }
 
-void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerror)
+void AufEintrag::setStatus(AufStatVal newstatus,bool force) throw(SQLerror)
 {
  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("status",newstatus),force?"force":"");
  if(entrystatus == newstatus)
@@ -213,13 +213,13 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
 
  // InternAbbestellen
  if ((newstatus == CLOSED || newstatus == STORNO) && getRestStk()!=0)
-     ArtikelInternAbbestellen(uid,getRestStk(),ManuProC::Auftrag::r_Closed);
+     ArtikelInternAbbestellen(getRestStk(),ManuProC::Auftrag::r_Closed);
 
- std::string sqlcommand = "update auftragentry set status=?";
- if(uid) sqlcommand+=", lasteditdate = now(), lastedit_uid="+itos(uid);
- sqlcommand +=" where (instanz,auftragid,zeilennr)=(?,?,?)";
+ std::string sqlcommand = "update auftragentry set status=?"
+ ", lasteditdate = now(), lastedit_uid=?"
+ " where (instanz,auftragid,zeilennr)=(?,?,?)";
 
- Query(sqlcommand).lvalue() << newstatus << static_cast<AufEintragBase&>(*this);
+ Query(sqlcommand).lvalue() << newstatus << getuid() << static_cast<AufEintragBase&>(*this);
  SQLerror::test("setStatus: update auftragentry");
  AufStatVal oldentrystatus=entrystatus;
  entrystatus=newstatus;
@@ -231,7 +231,7 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
  }
 
  if(newstatus == OPEN  &&  oldentrystatus==UNCOMMITED && getRestStk()!=0)
-    ArtikelInternNachbestellen(uid,getRestStk(),ManuProC::Auftrag::r_Anlegen);
+    ArtikelInternNachbestellen(getRestStk(),ManuProC::Auftrag::r_Anlegen);
 
  if(newstatus==OPEN && bestellt!=0)
    {
@@ -280,13 +280,13 @@ void AufEintrag::updateRabatt(rabatt_t rb) throw(SQLerror)
 }
 
 
-void AufEintrag::updateLieferdatum(const Petig::Datum &ld,int uid) throw(SQLerror)
+void AufEintrag::updateLieferdatum(const Petig::Datum &ld) throw(SQLerror)
 {ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("Datum",ld));
  Transaction tr;
  Query("lock auftragentry in exclusive mode"); // unnötig? CP
  SQLerror::test("updateLieferdatum: lock table auftragentry");
 
- ArtikelInternAbbestellen(uid,getStueck(),ManuProC::Auftrag::r_Anlegen);
+ ArtikelInternAbbestellen(getStueck(),ManuProC::Auftrag::r_Anlegen);
 
  Query("update auftragentry "
  	"set lieferdate=? "
@@ -296,7 +296,7 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld,int uid) throw(SQLerro
  SQLerror::test("updateLiefDatum: update lieferdate in auftragentry");
  lieferdatum=ld;
 
- ArtikelInternNachbestellen(uid,getStueck(),ManuProC::Auftrag::r_Anlegen);
+ ArtikelInternNachbestellen(getStueck(),ManuProC::Auftrag::r_Anlegen);
 
  if(getCombinedStatus()==OPEN)// status->entrystatus
   {
@@ -315,7 +315,7 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld,int uid) throw(SQLerro
  tr.commit();
 }
 
-int AufEintrag::split(int uid,mengen_t newmenge, const Petig::Datum &newld,bool dispoplanung) throw(SQLerror)
+int AufEintrag::split(mengen_t newmenge, const Petig::Datum &newld,bool dispoplanung) throw(SQLerror)
 {
  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("NewMenge",newmenge),NV("NewDatum",newld),NV("dispoplanung(bool)",dispoplanung));
  if(getCombinedStatus()==CLOSED) return none_znr;
@@ -337,17 +337,17 @@ int AufEintrag::split(int uid,mengen_t newmenge, const Petig::Datum &newld,bool 
  Query("lock auftragentry in exclusive mode");
  SQLerror::test("split: lock table auftragentry");
 
- mengen_t mt=MengeAendern(uid,-newmenge,true,AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
+ mengen_t mt=MengeAendern(-newmenge,true,AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
  assert(mt==-newmenge);
 
  int ZEILENNR;
  if(Instanz()==ppsInstanzID::Kundenauftraege)
    {Auftrag A(*this);
-    AufEintragBase newaeb=A.push_back(newmenge,newld,artikel,entrystatus,uid,true,preis,rabatt);
+    AufEintragBase newaeb=A.push_back(newmenge,newld,artikel,entrystatus,true,preis,rabatt);
     ZEILENNR=newaeb.ZNr();
    }
  else
-   ZEILENNR=split_zuordnungen_to(newmenge,newld,artikel,entrystatus,uid,dispoplanung);
+   ZEILENNR=split_zuordnungen_to(newmenge,newld,artikel,entrystatus,dispoplanung);
 
  if(STATUS==OPEN)
    {   pps_ChJournalEntry::newChange(

@@ -1,4 +1,4 @@
-// $Id: AuftragsVerwaltung.cc,v 1.14 2003/01/29 12:30:33 christof Exp $
+// $Id: AuftragsVerwaltung.cc,v 1.15 2003/09/02 12:10:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -32,30 +32,30 @@ AufEintragBase AuftragsVerwaltung::anlegen()
 {
    Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
 #ifdef MANU_PROC_TEST
-   return auftrag.push_back(500,DATUM,ARTIKEL_SORTIMENT_BUNT,UNCOMMITED,UID,true);
+   return auftrag.push_back(500,DATUM,ARTIKEL_SORTIMENT_BUNT,UNCOMMITED,true);
 #elif defined PETIG_TEST 
-   return auftrag.push_back(400,DATUM,ARTIKEL_ROLLEREI,UNCOMMITED,UID,true);
+   return auftrag.push_back(400,DATUM,ARTIKEL_ROLLEREI,UNCOMMITED,true);
 #elif defined MABELLA_TEST 
-   return auftrag.push_back(10,DATUM,ARTIKEL_TRIO,OPEN,UID,true);
+   return auftrag.push_back(10,DATUM,ARTIKEL_TRIO,OPEN,true);
 #endif
 }
 
 void AuftragsVerwaltung::kunden_bestellmenge_aendern(AufEintrag &AE,AuftragBase::mengen_t menge)
 {
    AuftragBase::mengen_t diffmenge=menge-AE.getStueck();
-   AE.MengeAendern(UID,diffmenge,true,AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
+   AE.MengeAendern(diffmenge,true,AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
 }
 
 AufEintragBase AuftragsVerwaltung::anlegen2()
 {
    Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
 #ifdef MANU_PROC_TEST
-   return auftrag.push_back(300,DATUM,ARTIKEL_SORTIMENT_BUNT,OPEN,UID,true);
+   return auftrag.push_back(300,DATUM,ARTIKEL_SORTIMENT_BUNT,OPEN,true);
 #elif defined PETIG_TEST 
-   return auftrag.push_back(300,DATUM,ARTIKEL_ROLLEREI,OPEN,UID,true);
+   return auftrag.push_back(300,DATUM,ARTIKEL_ROLLEREI,OPEN,true);
 #elif defined MABELLA_TEST 
 assert(!"never get here");
-   return auftrag.push_back(400,DATUM,ARTIKEL_TRIO,UNCOMMITED,UID,true);
+   return auftrag.push_back(400,DATUM,ARTIKEL_TRIO,UNCOMMITED,true);
 #endif
 }
 
@@ -63,12 +63,12 @@ AufEintragBase AuftragsVerwaltung::anlegen3()
 {
    Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
 #ifdef MANU_PROC_TEST
-   return auftrag.push_back(300,DATUM9,ARTIKEL_SORTIMENT_BUNT,OPEN,UID,true);
+   return auftrag.push_back(300,DATUM9,ARTIKEL_SORTIMENT_BUNT,OPEN,true);
 #elif defined PETIG_TEST 
-   return auftrag.push_back(300,DATUM9,ARTIKEL_ROLLEREI,OPEN,UID,true);
+   return auftrag.push_back(300,DATUM9,ARTIKEL_ROLLEREI,OPEN,true);
 #elif defined MABELLA_TEST 
 assert(!"never get here");
-   return auftrag.push_back(400,DATUM,ARTIKEL_TRIO,UNCOMMITED,UID,true);
+   return auftrag.push_back(400,DATUM,ARTIKEL_TRIO,UNCOMMITED,true);
 #endif
 }
 
@@ -76,12 +76,12 @@ AufEintragBase AuftragsVerwaltung::anlegenK()
 {
    Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE2);
 #ifdef MANU_PROC_TEST
-   return auftrag.push_back(200,NEWDATUM,ARTIKEL_SORTIMENT_BUNT,OPEN,UID,true);
+   return auftrag.push_back(200,NEWDATUM,ARTIKEL_SORTIMENT_BUNT,OPEN,true);
 #elif defined PETIG_TEST 
-   return auftrag.push_back(200,NEWDATUM,ARTIKEL_ROLLEREI,OPEN,UID,true);
+   return auftrag.push_back(200,NEWDATUM,ARTIKEL_ROLLEREI,OPEN,true);
 #elif defined MABELLA_TEST 
 assert(!"never get here");
-   return auftrag.push_back(400,DATUM,ARTIKEL_TRIO,UNCOMMITED,UID,true);
+   return auftrag.push_back(400,DATUM,ARTIKEL_TRIO,UNCOMMITED,true);
 #endif
 }
 

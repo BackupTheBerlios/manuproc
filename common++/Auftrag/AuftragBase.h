@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.53 2003/07/18 15:47:23 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.54 2003/09/02 12:10:52 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -79,11 +79,11 @@ class AuftragBase
    
    // gibt Zeilennummer zurück
    int PassendeZeile(const ManuProC::Datum lieferdatum, const ArtikelBase& artikel,
-               AufStatVal status, unsigned uid) const throw(SQLerror);
+               AufStatVal status) const throw(SQLerror);
    // gibt Zeilennummer zurück
    int BestellmengeAendern(mengen_t bestellt, 
                const ManuProC::Datum lieferdatum, const ArtikelBase& artikel,
-               AufStatVal status,int uid,const AufEintragBase& altAEB) const throw(SQLerror);
+               AufStatVal status,const AufEintragBase& altAEB) const throw(SQLerror);
 
 	// wandelt enum in std::string um
 	static const std::string getStatusStr(AufStatVal a);
@@ -106,8 +106,8 @@ public:
 // wird in AufEintrag_sql.pgcc verwendet
    // könnte eigentlich durch 
    // AuftragBase(instanz,AB::dispo_auftrag_id).BestellmengeAendern 
-   // ersetzt werden (menge,datum,artikel,OPEN,uid,AufEintragBase())
-   static __deprecated void dispo_auftrag_aendern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
+   // ersetzt werden (menge,datum,artikel,OPEN,AufEintragBase())
+   static __deprecated void dispo_auftrag_aendern(cH_ppsInstanz instanz,const ArtikelBase artikel,
       const mengen_t &menge,const ManuProC::Datum &datum,const AufEintragBase &kindAEB) ;
 // Iiii bah - überprüfen!
 // zu viele merkwürdige Argumente

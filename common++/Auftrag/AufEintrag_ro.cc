@@ -1,4 +1,4 @@
-// $Id: AufEintrag_ro.cc,v 1.2 2003/06/19 15:41:13 jacek Exp $
+// $Id: AufEintrag_ro.cc,v 1.3 2003/09/02 12:10:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -26,14 +26,14 @@ AufEintrag::AufEintrag(const AufEintragBase &aeb, mengen_t _bestellt,
 	ArtikelBase _artikel, const ManuProC::Datum _lieferdatum,
 	AufStatVal _aufstatus, int _kdnr, const std::string _youraufnr,
 	const Preis &_preis, rabatt_t _rabatt, AufStatVal _entrystat, 
-	int uid, const cH_PreisListe &_preisliste) throw()
+	const cH_PreisListe &_preisliste) throw()
 : AufEintragBase(aeb),
  bestellt(_bestellt),
  geliefert(0),
  artikel(_artikel),
  entrystatus(_entrystat),
  lieferdatum(_lieferdatum),
- lasteditdate_uid(uid),
+ lasteditdate_uid(getuid()),
  lasteditdate(ManuProC::Datum::today()),
  letztePlanInstanz(ppsInstanzID::None),
  maxPlanInstanz(0),

@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.43 2003/07/18 15:47:23 christof Exp $
+// $Id: AuftragBase.cc,v 1.44 2003/09/02 12:10:52 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -76,13 +76,13 @@ bool AuftragBase::editierbar() const
 // könnte eigentlich ersetzt werden IMHO
 // wird aufgerufen von rein_ins_lager (+), ArtikelInternAbbestellen (-),
 // 
-void AuftragBase::dispo_auftrag_aendern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,const mengen_t &menge,
+void AuftragBase::dispo_auftrag_aendern(cH_ppsInstanz instanz,const ArtikelBase artikel,const mengen_t &menge,
          const ManuProC::Datum &datum,const AufEintragBase &kindAEB)
 {
   ManuProC::Trace _t(trace_channel, __FUNCTION__,
      NV("Artikel",artikel),NV("Menge",menge));
    AuftragBase(instanz,AuftragBase::dispo_auftrag_id)
-   	.BestellmengeAendern(menge,datum,artikel,OPEN,uid,kindAEB);
+   	.BestellmengeAendern(menge,datum,artikel,OPEN,kindAEB);
 }
 
 #if __GNUC__ > 2  // fragt nicht ...
@@ -100,7 +100,7 @@ static ManuProC::Tracer::Environment trace_channel_e("DEBUG_AUFTRAG",AuftragBase
 bool AuftragBase::tolerate_inconsistency;
 
 int AuftragBase::PassendeZeile(const ManuProC::Datum lieferdatum,const ArtikelBase& artikel,
-  AufStatVal status,unsigned uid) const throw(SQLerror)
+  AufStatVal status) const throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Artikel",artikel),
          NV("LieferDatum",lieferdatum),NV("Status",status));
@@ -116,7 +116,7 @@ int AuftragBase::PassendeZeile(const ManuProC::Datum lieferdatum,const ArtikelBa
        create_if_not_exists(status);
     }
     Auftrag A(*this);
-    AufEintragBase newaeb=A.push_back(0,lieferdatum,artikel,status,uid,false);
+    AufEintragBase newaeb=A.push_back(0,lieferdatum,artikel,status,false);
     znr=newaeb.ZNr();
   }
  return znr;
@@ -125,7 +125,7 @@ int AuftragBase::PassendeZeile(const ManuProC::Datum lieferdatum,const ArtikelBa
 // wird von ArtikelInternNachbestellen, dispo_auftrag_aendern verwendet
 int AuftragBase::BestellmengeAendern(mengen_t deltamenge, 
   const ManuProC::Datum lieferdatum,const ArtikelBase& artikel,
-  AufStatVal status,int uid,const AufEintragBase& altAEB) const throw(SQLerror)
+  AufStatVal status,const AufEintragBase& altAEB) const throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Artikel",artikel),
          NV("Menge",deltamenge),NV("AltAEB",altAEB),
@@ -136,11 +136,11 @@ int AuftragBase::BestellmengeAendern(mengen_t deltamenge,
  SQLerror::test(__FILELINE__);  
 
  bool kein_dispo= Id()!=dispo_auftrag_id;
- AufEintragBase NeuAEB(*this,PassendeZeile(lieferdatum,artikel,status,uid));
+ AufEintragBase NeuAEB(*this,PassendeZeile(lieferdatum,artikel,status));
 
  // ist die Reihenfolge hier wichtig?
  // rekursion nur falls kein DispoAuftrag
- AufEintrag(NeuAEB).MengeAendern(uid,deltamenge,kein_dispo,
+ AufEintrag(NeuAEB).MengeAendern(deltamenge,kein_dispo,
  	kein_dispo?altAEB:AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
 
  // dispo=> andere Richtung des Pfeils muss geändert werden 

@@ -412,7 +412,7 @@ void Auftrag::Notiz(const std::string &n) throw(SQLerror)
 
 AufEintragBase Auftrag::push_back(const mengen_t bestellt, 
   const ManuProC::Datum lieferdatum,const ArtikelBase& artikel,
-  const AufStatVal status,int uid,const bool setInstanzAuftraege,
+  const AufStatVal status,const bool setInstanzAuftraege,
   const Preis& preis,const fixedpoint<2> rabatt,
   const cH_PreisListe &preisliste) const throw(SQLerror)
 {
@@ -435,7 +435,7 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
  int STATUS=status;
  int PREISLISTE=preisliste->Id();
  int PREISLISTENULL;
- int UID=uid;
+ int UID=getuid();
  exec sql end declare section;
  PREISLISTENULL=PreisListe::none_id;
  
@@ -514,7 +514,7 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
       assert(Instanz()==ppsInstanzID::Kundenauftraege);
 
       AufEintrag AE(AEB);
-      AE.ArtikelInternNachbestellen(uid,bestellt,ManuProC::Auftrag::r_Anlegen);
+      AE.ArtikelInternNachbestellen(bestellt,ManuProC::Auftrag::r_Anlegen);
     }
  tr.commit();
  return AEB;

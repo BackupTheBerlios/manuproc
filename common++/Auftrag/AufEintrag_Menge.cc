@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.9 2003/08/14 16:33:02 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.10 2003/09/02 12:10:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -46,7 +46,7 @@
 // statische Variante (behandelt z.B. Vormerkungen, freie Menge etc.)
 AufEintragBase AufEintrag::ArtikelInternNachbestellen(const cH_ppsInstanz &wo,
   mengen_t menge,const ManuProC::Datum &lieferdatum,const ArtikelBase& artikel,
-  int uid,const AufEintragBase& ElternAEB)
+  const AufEintragBase& ElternAEB)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,
    	wo,menge,lieferdatum,artikel,NV("ElternAEB",ElternAEB));
    if (!menge) return AufEintragBase(); // hmmm
@@ -63,24 +63,24 @@ AufEintragBase AufEintrag::ArtikelInternNachbestellen(const cH_ppsInstanz &wo,
    // vormerken
    VerfuegbareMenge AIL(wo,artikel,lieferdatum);
    mengen_t M_dispo=min(AIL.getMengeDispo(),menge);
-   if(M_dispo>0) menge-=AIL.reduce_in_dispo(uid,M_dispo,ElternAEB);
+   if(M_dispo>0) menge-=AIL.reduce_in_dispo(M_dispo,ElternAEB);
 
    // Im Lager von späteren Aufträgen vorgemerkte Menge wegschnappen
    if (menge>0 && wo->LagerInstanz())
    {  M_dispo=min(AIL.getMengePlan(),menge);
-      menge-=AIL.reduce_in_plan(uid,M_dispo,ElternAEB);
+      menge-=AIL.reduce_in_plan(M_dispo,ElternAEB);
    }
    // Rest nachbestellen
    AuftragBase ab(wo,ungeplante_id);
    int znr=none_znr;
    if (menge>0)
-      znr=ab.BestellmengeAendern(menge,lieferdatum,artikel,OPEN,uid,ElternAEB);
+      znr=ab.BestellmengeAendern(menge,lieferdatum,artikel,OPEN,ElternAEB);
    return AufEintragBase(ab,znr);
 }
 
 // ehemals updateStkDiffInstanz__ mit menge>0
 // + ehemals BaumAnlegen
-void AufEintrag::ArtikelInternNachbestellen(int uid,mengen_t menge,
+void AufEintrag::ArtikelInternNachbestellen(mengen_t menge,
 	ManuProC::Auftrag::Action reason) const
 {
   ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,
@@ -95,7 +95,7 @@ void AufEintrag::ArtikelInternNachbestellen(int uid,mengen_t menge,
   ppsInstanz::ID next=Instanz()->NaechsteInstanz(ArtikelStamm(Artikel()));
   if (next!=ppsInstanzID::None)
   {  AufEintrag::ArtikelInternNachbestellen(next,menge,getLieferdatum(),
-  			Artikel(),uid,*this);
+  			Artikel(),*this);
   }
   else
   {  ManuProC::Datum newdate=getLieferdatum()-Instanz()->ProduktionsDauer();
@@ -103,13 +103,13 @@ void AufEintrag::ArtikelInternNachbestellen(int uid,mengen_t menge,
      ArtikelBaum AB(Artikel());
      for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
      {  ArtikelInternNachbestellen(ppsInstanz::getBestellInstanz(i->rohartikel),
-  		i->menge*menge,newdate,i->rohartikel,uid,*this);
+  		i->menge*menge,newdate,i->rohartikel,*this);
      }
   }
 }
 
 // bei 2ern geht der Pfeil in die andere Richtung
-AuftragBase::mengen_t AufEintrag::MengeAendern(int uid,mengen_t menge,bool instanzen,
+AuftragBase::mengen_t AufEintrag::MengeAendern(mengen_t menge,bool instanzen,
      const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
  ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,
@@ -128,14 +128,14 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(int uid,mengen_t menge,bool insta
  {  menge2=-min(-menge2,getRestStk());
  }
  if (!!menge2)
- { menge2=updateStkDiffBase__(uid,menge2);
+ { menge2=updateStkDiffBase__(menge2);
    bestellt+=menge2;
    if (menge2>0 && entrystatus==CLOSED)
-      setStatus(OPEN,uid,true);
+      setStatus(OPEN,true);
    else if (Id()!=ungeplante_id && Id()!=dispo_auftrag_id 
    		&& !getRestStk() && entrystatus==OPEN
    		&& (!Instanz()->LagerInstanz() || !!bestellt))
-      setStatus(CLOSED,uid);
+      setStatus(CLOSED);
  }
 
  if (ElternAEB.valid())
@@ -149,7 +149,7 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(int uid,mengen_t menge,bool insta
    // Rekursion von 0ern im Lager (es gibt keine 3er im Lager)
    //  Verplanen von freigewordener Menge bei 1er im Lager
    // Rekursion bei 0er, 1er oder 3er in Produktion
-      updateStkDiffInstanz__(uid,menge2,reason);
+      updateStkDiffInstanz__(menge2,reason);
   }
   tr.commit();
   // wir haben zwar weniger abbestellt, aber nur weil wir geliefert haben
@@ -160,23 +160,23 @@ AuftragBase::mengen_t AufEintrag::ArtikelInternAbbestellen_cb::operator()
 	(const ArtikelBase &i,const AufEintragBase &j,mengen_t M) const
 {  AufEintrag AE(j);
    if (j.Id()==ungeplante_id)
-      M=-AE.MengeAendern(uid,-M,true,mythis,reason);
+      M=-AE.MengeAendern(-M,true,mythis,reason);
    else if (j.Instanz()->LagerInstanz())
    {  // vorgemerkte Menge freigeben
       assert(j.Id()==plan_auftrag_id);
-      M=-AE.MengeAendern(uid,-M,true,mythis,reason);
+      M=-AE.MengeAendern(-M,true,mythis,reason);
    }
    else
      { // [1er oder] 3er - dispo anlegen, Bestellpfeil erniedrigen
        assert(j.Id()>=handplan_auftrag_id);
        AuftragBase(j.Instanz(),dispo_auftrag_id)
-       	.BestellmengeAendern(M,AE.getLieferdatum(),AE.Artikel(),OPEN,uid,j);
+       	.BestellmengeAendern(M,AE.getLieferdatum(),AE.Artikel(),OPEN,j);
        AufEintragZu(mythis).setMengeDiff__(j,-M);
      }
    return M;
 }
 
-void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftrag::Action reason) const
+void AufEintrag::ArtikelInternAbbestellen(mengen_t menge,ManuProC::Auftrag::Action reason) const
 {ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
    NV("menge",menge),NV("Reason",reason));
 
@@ -190,7 +190,7 @@ void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftr
     {  // in 2er rein
        AuftragBase(make_value(Instanz()),dispo_auftrag_id)
        	.BestellmengeAendern(menge,LagerBase::Lagerdatum(),Artikel(),
-       			OPEN,uid,AufEintragBase());
+       			OPEN,AufEintragBase());
        delayed_reclaim::delay(Instanz(),Artikel());
     }
     else
@@ -199,21 +199,21 @@ void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftr
  }
  else try{
       distribute_children(*this,menge,Artikel(),
-   			ArtikelInternAbbestellen_cb(*this,uid,reason));
+   			ArtikelInternAbbestellen_cb(*this,reason));
   }catch(NoAEB_Error &e)
   {std::cerr <<"Falsche Anzahl von AufEinträgen: "<<e.what()<<'\n';
    exit(1);}
 }
 
-void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t menge,ManuProC::Auftrag::Action reason) throw(SQLerror)
+void AufEintrag::updateStkDiffInstanz__(mengen_t menge,ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
  ManuProC::Trace _t(trace_channel, __FUNCTION__,
    NV("this",*this),NV("menge",menge),NV("reason",reason));
  if (menge<0)
- {  ArtikelInternAbbestellen(uid,-menge,reason);
+ {  ArtikelInternAbbestellen(-menge,reason);
  }
  else
- {  ArtikelInternNachbestellen(uid,menge,reason);
+ {  ArtikelInternNachbestellen(menge,reason);
  }
 }
 
@@ -222,7 +222,6 @@ AuftragBase::mengen_t AufEintrag::AnElternMengeAnpassen()
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this));
    AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(*this,
 		AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
-   unsigned uid=getuid();
    assert(Id()!=dispo_auftrag_id);
    assert(Instanz()!=ppsInstanzID::Kundenauftraege);
    mengen_t menge,menge2;
@@ -240,7 +239,7 @@ AuftragBase::mengen_t AufEintrag::AnElternMengeAnpassen()
          return menge-getStueck();
       }
       assert(Id()==ungeplante_id); // sonst Problem !
-      MengeAendern(uid,menge-getStueck(),true,AufEintragBase(),
+      MengeAendern(menge-getStueck(),true,AufEintragBase(),
                       ManuProC::Auftrag::r_Reparatur);
    }
    else if (menge<getRestStk())
@@ -248,7 +247,7 @@ AuftragBase::mengen_t AufEintrag::AnElternMengeAnpassen()
    {  ManuProC::Trace(trace_channel,"(menge<getRestStk())",menge,getRestStk());
       assert(in(Id(),ungeplante_id,plan_auftrag_id));
       assert(Id()!=plan_auftrag_id || Instanz()->LagerInstanz());
-      MengeAendern(uid,menge-getRestStk(),true,AufEintragBase(),
+      MengeAendern(menge-getRestStk(),true,AufEintragBase(),
          	ManuProC::Auftrag::r_Reparatur);
    }
    return 0;
@@ -256,7 +255,7 @@ AuftragBase::mengen_t AufEintrag::AnElternMengeAnpassen()
 
 // auf noch offene Menge beschränken
 // auf f.o. umstellen geht nicht sinnvoll, da die Funktion ein Unikat ist
-void AufEintrag::DispoBeschraenken(int uid)
+void AufEintrag::DispoBeschraenken()
 {
   ManuProC::Trace _t(trace_channel, __FUNCTION__,*this);
   AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(*this,AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
@@ -271,7 +270,7 @@ void AufEintrag::DispoBeschraenken(int uid)
          {
            mengen_t M=min(i->Menge,S-getRestStk());
            // warum nicht MengeAendern?
-           M=AufEintrag(i->AEB).MengeAendern(uid,-M,false,*this,ManuProC::Auftrag::r_Produziert);
+           M=AufEintrag(i->AEB).MengeAendern(-M,false,*this,ManuProC::Auftrag::r_Produziert);
            S-=M;
          }
       }

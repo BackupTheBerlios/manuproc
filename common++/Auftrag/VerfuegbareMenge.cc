@@ -1,4 +1,4 @@
-/* $Id: VerfuegbareMenge.cc,v 1.9 2003/09/02 09:26:20 christof Exp $ */
+/* $Id: VerfuegbareMenge.cc,v 1.10 2003/09/02 12:10:52 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -23,7 +23,7 @@
 #include <Misc/relops.h>
 
 #ifdef PETIG_EXTENSIONS
-#define MENGE_KLAUEN
+//#define MENGE_KLAUEN
 #endif
 
 VerfuegbareMenge::VerfuegbareMenge(const cH_ppsInstanz &_instanz,const ArtikelBase &artikel,
@@ -38,7 +38,11 @@ VerfuegbareMenge::VerfuegbareMenge(const cH_ppsInstanz &_instanz,const ArtikelBa
 // wahrscheinlich wäre ein selector 2er (und im Lager 1er) bez. Datum
 // sinnvoll !!!
   SelectedFullAufList auftraglist=SelectedFullAufList(SQLFullAuftragSelector::
+#ifdef MENGE_KLAUEN  
      sel_Kunde_Artikel(instanz->Id(),Kunde::eigene_id,artikel));
+#else
+     sel_Artikel_Planung_id(instanz->Id(),Kunde::eigene_id,artikel,AuftragBase::dispo_auftrag_id));
+#endif
   for (SelectedFullAufList::const_iterator i=auftraglist.begin();i!=auftraglist.end();++i)
    {
      // Nur wenn die freie Menge VOR dem Liefertermin frei wird AE verwenden
@@ -55,9 +59,9 @@ VerfuegbareMenge::VerfuegbareMenge(const cH_ppsInstanz &_instanz,const ArtikelBa
       }
      else // AuftragBase::handplan_auftrag_id || plan_auftrag_id
       {
+#ifdef MENGE_KLAUEN        
         if(i->getLieferdatum() <= datum) continue; 
         if(!i->Instanz()->LagerInstanz()) continue;
-#ifdef MENGE_KLAUEN        
 	ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,i->getRestStk(),*i);
         menge_plan_auftraege+=i->getRestStk();
         V_plan_auftraege.push_back(*i);
@@ -70,7 +74,7 @@ VerfuegbareMenge::VerfuegbareMenge(const cH_ppsInstanz &_instanz,const ArtikelBa
 
 #include <Auftrag/AufEintragZuMengenAenderung.h>
 
-AuftragBase::mengen_t VerfuegbareMenge::reduce_in_dispo_or_plan(const bool dispo,const int uid,AuftragBase::mengen_t menge,const AufEintragBase &ElternAEB) 
+AuftragBase::mengen_t VerfuegbareMenge::reduce_in_dispo_or_plan(const bool dispo,AuftragBase::mengen_t menge,const AufEintragBase &ElternAEB) 
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
      instanz,ArtikelBase(*this),dispo?"dispo":"plan",NV("menge",menge),NV("ElternAEB",ElternAEB));
@@ -86,12 +90,12 @@ AuftragBase::mengen_t VerfuegbareMenge::reduce_in_dispo_or_plan(const bool dispo
 
      // oder erst nachbestellen, dann (Lager)vormerkung freigeben ??
      if(!dispo)  
-        i->MengeNeubestellen(uid,M);
+        i->MengeNeubestellen(M);
      else
-        i->updateStkDiffBase__(uid,-M);
+        i->updateStkDiffBase__(-M);
      if(!instanz->LagerInstanz())
      // notwendig?
-     {  AufEintragZuMengenAenderung::freie_dispomenge_verwenden(uid,*i,M,ElternAEB);
+     {  AufEintragZuMengenAenderung::freie_dispomenge_verwenden(*i,M,ElternAEB);
      }
 
      wieviel_geschafft+=M;
@@ -100,7 +104,7 @@ AuftragBase::mengen_t VerfuegbareMenge::reduce_in_dispo_or_plan(const bool dispo
    }
    if (wieviel_geschafft!=0 && instanz->LagerInstanz())
    {  AuftragBase vormerkungen(instanz,AuftragBase::plan_auftrag_id);
-      vormerkungen.BestellmengeAendern(wieviel_geschafft,datum,ArtikelBase(*this),OPEN,uid,
+      vormerkungen.BestellmengeAendern(wieviel_geschafft,datum,ArtikelBase(*this),OPEN,
 			ElternAEB);
    }
    return wieviel_geschafft;

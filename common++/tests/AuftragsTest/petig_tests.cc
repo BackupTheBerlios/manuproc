@@ -41,8 +41,8 @@
 static bool Zusatzinfo()
 {	
    Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
-        AufEintragBase AEB2=auftrag.push_back(4000,DATUM,ARTIKEL_FAERBEREI,OPEN,UID,true);
-        AufEintragBase AEB3=auftrag.push_back(4000,DATUM+10,ARTIKEL_FAERBEREI,OPEN,UID,true);
+        AufEintragBase AEB2=auftrag.push_back(4000,DATUM,ARTIKEL_FAERBEREI,OPEN,true);
+        AufEintragBase AEB3=auftrag.push_back(4000,DATUM+10,ARTIKEL_FAERBEREI,OPEN,true);
        vergleichen(Check::Lieferschein|Check::Menge,"ZI_Ausgangspunkt","Ausgangspunkt","");
         
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
@@ -71,21 +71,21 @@ static bool Zusatzinfo2()
        std::vector<JumboRolle> JR=JumboRolle::create(KK); // 100
        Zeitpunkt_new zp0("2002-3-1 11:00"),zp1("2002-3-1 11:11");
        class JumboLager JL;
-       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0,true);
+       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,"TEST",&zp0,true);
        std::vector<JumboRolle> JR2=JumboRolle::create(KK); // 101
-       JL.Jumbo_Einlagern(LP,JR2.front(),JumboLager::Einlagern,UID,"TEST",&zp0,true);
+       JL.Jumbo_Einlagern(LP,JR2.front(),JumboLager::Einlagern,"TEST",&zp0,true);
 
    Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
-       AufEintragBase AEB3=auftrag.push_back(170,DATUM,ARTIKEL_BANDLAGER,OPEN,UID,true);
+       AufEintragBase AEB3=auftrag.push_back(170,DATUM,ARTIKEL_BANDLAGER,OPEN,true);
        
-       AufEintragBase AEB2=auftrag.push_back(17500,DATUM,ARTIKEL_BANDLAGER,OPEN,UID,true);
+       AufEintragBase AEB2=auftrag.push_back(17500,DATUM,ARTIKEL_BANDLAGER,OPEN,true);
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
        AufEintrag ae(AEB2);
        int lznr=liefs.push_back(ae,ARTIKEL_BANDLAGER,9,1000);
-       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp1,true);
-       JL.Jumbo_Entnahme(JR2.front(),JumboLager::Auslagern,UID,"TEST",&zp1,true);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp1,true);
+       JL.Jumbo_Entnahme(JR2.front(),JumboLager::Auslagern,"TEST",&zp1,true);
        JumboRolle jr(JumboRolle::Pruefziffer_anhaengen(100));
-       JL.Jumbo_Entnahme(jr,JumboLager::Auslagern,UID,"TEST",&zp1,true);
+       JL.Jumbo_Entnahme(jr,JumboLager::Auslagern,"TEST",&zp1,true);
        vergleichen(Check::Lieferschein|Check::Menge,"ZI2_Ausgangspunkt","init","");
        
        LieferscheinEntryBase lsb(liefs,lznr);
@@ -106,14 +106,14 @@ static bool Mengentest(AufEintrag &AE)
       auftrag.kunden_bestellmenge_aendern(AE,100);
       vergleichen(Check::Menge,"menge_minus","Reduzieren der Auftragmenge unter Rohwarenlagerbestand","");
 
-      AE.updateLieferdatum(NEWDATUM,UID);
+      AE.updateLieferdatum(NEWDATUM);
       vergleichen(Check::Menge,"datumsaenderung","Datumsänderung","D");
 
       // Menge des Auftrags weiter erniedrigen (Bandlager Menge reicht jetzt aus)
       auftrag.kunden_bestellmenge_aendern(AE,10);
       vergleichen(Check::Menge,"menge_minus_bandlager","Reduzieren der Auftragmenge unter Bandlagerbestand","");
 
-      AE.setStatus(CLOSED,UID);
+      AE.setStatus(CLOSED);
       vergleichen(Check::Menge,"status_closed","Statussänderung (Closed)","C");
        return true;
 }
@@ -128,7 +128,7 @@ static bool Plantest(AufEintrag &AE)
        int kupfer_znr=2;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::_Garn__Einkauf,AuftragBase::ungeplante_id,kupfer_znr));
 
-       AEP.Planen(UID,100,PA,PLANDATUM5);
+       AEP.Planen(100,PA,PLANDATUM5);
        vergleichen(Check::Menge,"planen_acetat","Planen des Acetateinkaufs","A");
        }
        ManuProC::Trace(log_trace,__FILELINE__);
@@ -139,7 +139,7 @@ static bool Plantest(AufEintrag &AE)
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Faerberei,AuftragBase::ungeplante_id,faerberei_znr));
 
        ManuProC::Trace(log_trace,__FILELINE__);
-       AEP.Planen(UID,7000,PA,PLANDATUM4);
+       AEP.Planen(7000,PA,PLANDATUM4);
        vergleichen(Check::Menge,"planen_faerberei_teil","Teil-Planen der Färberei","F");
        }
        ManuProC::Trace(log_trace,__FILELINE__);
@@ -147,7 +147,7 @@ static bool Plantest(AufEintrag &AE)
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Weberei),Kunde::default_id);
        int weberei_znr=1;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Weberei,AuftragBase::ungeplante_id,weberei_znr));
-       AEP.Planen(UID,5000,PA,PLANDATUM6);
+       AEP.Planen(5000,PA,PLANDATUM6);
        vergleichen(Check::Menge,"planen_webereiP","Planen der Weberei","P");
        }
        ManuProC::Trace(log_trace,__FILELINE__);
@@ -162,17 +162,17 @@ static TestReihe Plantest_(&Plantest,"Planungs Test","P");
 
 static bool Splittest(AufEintrag &AE)
 {
-      AE.split(UID,300,SPLITDATUM);
+      AE.split(300,SPLITDATUM);
       vergleichen(Check::Menge,"split","Splitten einer Auftragszeile","");
       RohwarenLager RL;
       RohwarenLager::st_rohlager stRL(LagerPlatzKupfer2,100,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
       std::string dummystring;
-      RL.RL_Einlagern(LagerPlatzKupfer2,stRL,UID,dummystring,false,true);
+      RL.RL_Einlagern(LagerPlatzKupfer2,stRL,dummystring,false,true);
 std::cout << dummystring<<'\n';
       vergleichen(Check::Menge,"split_rohwarenlager_rein","Rohwarenlager einlagern\n","+");
 
       RohwarenLager::st_rohlager stRL2(LagerPlatzKupfer2,100,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
-      RL.RL_Entnahme(stRL2,UID,dummystring,false,false,true);
+      RL.RL_Entnahme(stRL2,dummystring,false,false,true);
 std::cout << dummystring<<'\n';
       vergleichen(Check::Menge,"split_rohwarenlager_raus","Rohwarenlager auslagern\n","-");
       return true;
@@ -226,7 +226,7 @@ static bool Rep_Zuordnungen(AufEintrag &AE)
        {
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Faerberei),Kunde::default_id);
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Faerberei,AuftragBase::ungeplante_id,1));
-       AEP.Planen(UID,17000,PA,DATUMP);
+       AEP.Planen(17000,PA,DATUMP);
        vergleichen(Check::Menge,"rep_pf","Reparatur-Planen der Färberei","P");
        }
       {
@@ -272,7 +272,7 @@ static bool Rep_KundenProgramm(AufEintrag &AE)
        Query::Execute(q2);
        SQLerror::test(__FILELINE__);
        AufEintrag AE=AufEintrag(class AufEintragBase(class AuftragBase(ROLLEREI,AuftragBase::ungeplante_id),2));
-       AE.MengeAendern(UID,-100,true,AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
+       AE.MengeAendern(-100,true,AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
 
        vergleichen(Check::Menge,"reparatur_kunde_menge","Reparatur Kundenaufträge (Menge)","",true);
       }
@@ -314,13 +314,13 @@ static bool Rep_Kunden_Zuordnungen(AufEintrag &AE)
       {
        Auftrag PA=Auftrag(Auftrag::Anlegen(SPRITZGIESSEREI),ManuProC::DefaultValues::EigeneKundenId);
        AufEintrag AEP((AufEintragBase(SPRITZGIESSEREI,AuftragBase::ungeplante_id,1)));
-       AEP.Planen(UID,200,PA,PLANDATUM5);
+       AEP.Planen(200,PA,PLANDATUM5);
        vergleichen(Check::Menge,"rep_planen_spritz","Planen der Spritzgießerei (Reparatur)","");
        }
        {
        Auftrag PA=Auftrag(Auftrag::Anlegen(SPRITZGIESSEREI),ManuProC::DefaultValues::EigeneKundenId);
        AufEintrag AEP((AufEintragBase(SPRITZGIESSEREI,AuftragBase::ungeplante_id,1)));
-       AEP.Planen(UID,5000,PA,PLANDATUM5);
+       AEP.Planen(5000,PA,PLANDATUM5);
        vergleichen(Check::Menge,"rep_planen_spritz2","Planen der Spritzgießerei (Reparatur)","");
        }
        {
@@ -338,14 +338,14 @@ static bool Lagertest(AufEintrag &AE)
       RohwarenLager RL;
       RohwarenLager::st_rohlager stRL(LagerPlatzKupfer2,100,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
       std::string dummystring;
-      RL.RL_Einlagern(LagerPlatzKupfer2,stRL,UID,dummystring,false,true);
+      RL.RL_Einlagern(LagerPlatzKupfer2,stRL,dummystring,false,true);
       vergleichen(Check::Menge,"rohwarenlager_rein","Rohwarenlager einlagern\n","+");
 
       RohwarenLager::st_rohlager stRL2(LagerPlatzKupfer2,100,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
-      RL.RL_Entnahme(stRL2,UID,dummystring,false,false,true);
+      RL.RL_Entnahme(stRL2,dummystring,false,false,true);
 std::cout << "D1: "<<dummystring<<'\n';
       RohwarenLager::st_rohlager stRL3(LagerPlatzKupfer,2,10,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
-      RL.RL_Entnahme(stRL3,UID,dummystring,false,false,true);
+      RL.RL_Entnahme(stRL3,dummystring,false,false,true);
 std::cout << "D2:" <<dummystring<<'\n';
       vergleichen(Check::Menge,"rohwarenlager_raus","Rohwarenlager auslagern\n","-");
 
@@ -353,7 +353,7 @@ std::cout << "D2:" <<dummystring<<'\n';
       int weberei_znr=1;
       AufEintrag AEP(AufEintragBase(ppsInstanzID::Weberei,AuftragBase::ungeplante_id,weberei_znr));
       assert(AEP.getStueck()==AEP.getRestStk());
-      AEP.Planen(UID,5000,PA,PLANDATUM5);
+      AEP.Planen(5000,PA,PLANDATUM5);
       vergleichen(Check::Menge,"planen_weberei_fuer_lager","Planen der Weberei zum späteren Test des Bandlagers","W");
 
       DataBase_init::createJumbo(-10,12000,true);
@@ -372,23 +372,23 @@ std::cout << dummystring<<'\n';
 #if 1
       dummystring="";
       RohwarenLager::st_rohlager stRL10(LagerPlatzKupfer2,6,35,1,7,ARTIKEL_ACETAT,ManuProC::Datum().today());
-      RL.RL_Einlagern(LagerPlatzKupfer2,stRL10,UID,dummystring,true,true);
+      RL.RL_Einlagern(LagerPlatzKupfer2,stRL10,dummystring,true,true);
 std::cout << "D10: "<<dummystring<<'\n';
 
       dummystring="";
       RohwarenLager::st_rohlager stRL11(LagerPlatzKupfer,0,0,2,1,ARTIKEL_ACETAT,ManuProC::Datum().today());
-      RL.RL_Entnahme(stRL10,UID,dummystring,false,false,true);
+      RL.RL_Entnahme(stRL10,dummystring,false,false,true);
 std::cout << "D11: "<<dummystring<<'\n';
       vergleichen(Check::Menge|Check::RohLager,"force_art","force, falscher Artikel","");
 
       dummystring="";
       RohwarenLager::st_rohlager stRL12(LagerPlatzKupfer2,10,35,0,0,ARTIKEL_ACETAT,ManuProC::Datum().today());
-      RL.RL_Entnahme(stRL10,UID,dummystring,false,false,true);
+      RL.RL_Entnahme(stRL10,dummystring,false,false,true);
 std::cout << "D12: "<<dummystring<<'\n';
 
       dummystring="";
       RohwarenLager::st_rohlager stRL13(LagerPlatzAcetat,2,7,0,0,ARTIKEL_ACETAT,ManuProC::Datum().today());
-      RL.RL_Entnahme(stRL10,UID,dummystring,false,true,true);
+      RL.RL_Entnahme(stRL10,dummystring,false,true,true);
 std::cout << "D13: "<<dummystring<<'\n';
       vergleichen(Check::Menge|Check::RohLager,"zuviel","zuviel Entnommen","");
 #endif
@@ -427,7 +427,7 @@ static bool ZweiAuftraege(AufEintrag &AE)
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Faerberei),Kunde::default_id);
        int faerberei_znr=1;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Faerberei,AuftragBase::ungeplante_id,faerberei_znr));
-       AEP.Planen(UID,13000,PA,PLANDATUM6);
+       AEP.Planen(13000,PA,PLANDATUM6);
        vergleichen(Check::Menge,"planen_fuer_zweiten_auftrag","Über-Planen der Färberei","P");
        }
        AufEintragBase AEB=auftrag.anlegen2();
@@ -450,17 +450,17 @@ static bool ZweiterAuftrag_frueheresDatum(AufEintrag &AE)
        vergleichen(Check::Menge,"zwei_auftraege_datum_abschreiben","Teil-Abschreiben des zweiten Auftrags ["+AEB.str()+"]","A");
 
 
-       AufEintrag(AEB).setStatus(CLOSED,UID);
+       AufEintrag(AEB).setStatus(CLOSED);
        vergleichen(Check::Menge,"zwei_auftraege_datum_closed","Statussänderung(2) (Closed)","C");
 
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Weberei),Kunde::default_id);
        int weberei_znr=1;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Weberei,AuftragBase::ungeplante_id,weberei_znr));
        assert(AEP.getStueck()==AEP.getRestStk());
-       AEP.Planen(UID,7000,PA,PLANDATUM5);
+       AEP.Planen(7000,PA,PLANDATUM5);
        vergleichen(Check::Menge,"zwei_auftraege_weberei_planen","Planen der Weberei","P");
 
-       AE.setStatus(CLOSED,UID);
+       AE.setStatus(CLOSED);
 // OHNE ReparaturProgramm, da CLOSED-Kundedenaufträge noch nicht nach
 //  unten korrigiert werden
        vergleichen(Check::Menge,"erster_auftrag_closed","Statussänderung(1) (Closed)","CL",false);
@@ -570,7 +570,7 @@ static bool ZweiKundenMengeFreigebenTest(AufEintrag &AE)
          AufEintrag Fuer((class AufEintragBase(AuftragBase(I,AuftragBase::ungeplante_id),znrnach)));
 // hmmm was sollte das tun?         
 //#warning Test neu designen
-//         AufEintrag(Von).menge_fuer_aeb_freigeben(3000,Fuer,getuid());
+//         AufEintrag(Von).menge_fuer_aeb_freigeben(3000,Fuer);
 //         vergleichen(Check::Menge,"ZKM","Menge freigeben für einen anderen Auftrag","");
        }
        return true;
@@ -590,36 +590,36 @@ static bool JumboLager()
        Zeitpunkt_new zp0("2002-3-1 11:00"),
        		zp1("2002-3-1 11:11"),
        		zp0b("2002-3-1 11:02");
-       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0,true);
-       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp1,true);
+       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,"TEST",&zp0,true);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp1,true);
        //   101 |      3 | 2002-03-01 11:00:00+01 | 2002-03-01 11:11:00+01
        JR=JumboRolle::create(KK); // 102
-       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0,true);
-       JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp1,true);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp0,true);
+       JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,"TEST",&zp1,true);
        vergleichen(Check::Jumbo|Check::Menge,"richtig","Jumbo richtig","");
        //  102 |      2 | 2002-03-01 11:11:00+01 | 2002-03-01 11:00:00+01
        JR=JumboRolle::create(KK); // 103
-       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp1,true);
-       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0,true);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp1,true);
+       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,"TEST",&zp0,true);
        //  103 |      3 | 2002-03-01 11:00:00+01 | 2002-03-01 11:11:00+01
        JR=JumboRolle::create(KK); // 104
-       JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp1,true);
-       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0,true);
+       JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,"TEST",&zp1,true);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp0,true);
        vergleichen(Check::Jumbo,"falsch","Jumbo falsche Reihenfolge","");
        //  104 |      2 | 2002-03-01 11:11:00+01 | 2002-03-01 11:00:00+01
        JR=JumboRolle::create(KK); // 105
-       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0,true);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp0,true);
        try // kein Log Eintrag ist richtig
-       {JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0b,true);
+       {JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp0b,true);
         assert(!"Jumbo_Entnahme sollte 100 werfen");
        }catch (SQLerror &e)
        {  assert(e.Code()==100);
        }
-       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp1,true);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp1,true);
        //   105 |      3 |                        | 2002-03-01 11:11:00+01
        JR=JumboRolle::create(KK); // 106
-       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0,true);
-       JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp1,true);
+       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,"TEST",&zp0,true);
+       JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,"TEST",&zp1,true);
        //   106 |      2 | 2002-03-01 11:11:00+01 | 
        vergleichen(Check::Jumbo,"doppelt","Jumbo doppelt Aus-/Einlagern","");
 #endif
@@ -638,26 +638,26 @@ static bool AuftragLager(AufEintrag &AE)
        class JumboLager JL;
        Zeitpunkt_new zp0("2002-3-1 11:00"),
        		zp1("2002-3-1 11:11");
-       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0,true);
+       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,"TEST",&zp0,true);
        std::vector<JumboRolle> JR2=JumboRolle::create(KK); // 102
-       JL.Jumbo_Einlagern(LP,JR2.front(),JumboLager::Einlagern,UID,"TEST",&zp0,true);
+       JL.Jumbo_Einlagern(LP,JR2.front(),JumboLager::Einlagern,"TEST",&zp0,true);
        vergleichen(Check::Menge,"AL_normal_rein","Einlagern","");
 
        std::vector<JumboRolle> JR3=JumboRolle::create(KK); // 102
-       JL.Jumbo_Einlagern(LP,JR3.front(),JumboLager::Einlagern,UID,"TEST",&zp0,false);
+       JL.Jumbo_Einlagern(LP,JR3.front(),JumboLager::Einlagern,"TEST",&zp0,false);
        std::vector<JumboRolle> JR4=JumboRolle::create(KK); // 102
-       JL.Jumbo_Einlagern(LP,JR4.front(),JumboLager::Einlagern,UID,"TEST",&zp0,false);
+       JL.Jumbo_Einlagern(LP,JR4.front(),JumboLager::Einlagern,"TEST",&zp0,false);
        std::vector<JumboRolle> JR5=JumboRolle::create(KK); // 102
-       JL.Jumbo_Einlagern(LP,JR5.front(),JumboLager::Einlagern,UID,"TEST",&zp0,false);
+       JL.Jumbo_Einlagern(LP,JR5.front(),JumboLager::Einlagern,"TEST",&zp0,false);
        vergleichen(Check::Menge,"AL_gefunden","Gefunden","");
 
-       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp1,true);
-       JL.Jumbo_Entnahme(JR2.front(),JumboLager::Auslagern,UID,"TEST",&zp1,true);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp1,true);
+       JL.Jumbo_Entnahme(JR2.front(),JumboLager::Auslagern,"TEST",&zp1,true);
        vergleichen(Check::Menge,"AL_normal_raus","Auslagern","");
 
-       JL.Jumbo_Entnahme(JR3.front(),JumboLager::Auslagern,UID,"TEST",&zp1,false);
-       JL.Jumbo_Entnahme(JR4.front(),JumboLager::Auslagern,UID,"TEST",&zp1,false);
-       JL.Jumbo_Entnahme(JR5.front(),JumboLager::Auslagern,UID,"TEST",&zp1,false);
+       JL.Jumbo_Entnahme(JR3.front(),JumboLager::Auslagern,"TEST",&zp1,false);
+       JL.Jumbo_Entnahme(JR4.front(),JumboLager::Auslagern,"TEST",&zp1,false);
+       JL.Jumbo_Entnahme(JR5.front(),JumboLager::Auslagern,"TEST",&zp1,false);
        vergleichen(Check::Menge,"AL_verschwunden","Verschwunden","");
 #endif
        return true;

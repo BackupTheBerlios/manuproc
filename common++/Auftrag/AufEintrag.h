@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.68 2003/08/14 08:35:01 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.69 2003/09/02 12:10:52 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -124,7 +124,7 @@ public:
 	ArtikelBase _artikel, const ManuProC::Datum _lieferdatum,
 	AufStatVal _aufstatus, int _kdnr, const std::string _youraufnr,
 	const Preis &_preis, rabatt_t _rabatt, AufStatVal _entrystat, 
-	int uid, const cH_PreisListe &preisliste) throw();
+	const cH_PreisListe &preisliste) throw();
  // Dieser Konstuktor ist nur für ProdLager gedacht und macht KEINEN Datenbankzugriff
  AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, 
         mengen_t _bestellt,
@@ -134,25 +134,24 @@ public:
 
 	
  void updateDispoENr(int dinr) throw(SQLerror);
- mengen_t MengeAendern(int uid,mengen_t menge,bool instanzen,const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_None) throw(SQLerror);
+ mengen_t MengeAendern(mengen_t menge,bool instanzen,const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_None) throw(SQLerror);
 private:
   // nimmt alle Zuordnungen mit (oben & unten)
-  void move_to(int uid,AufEintrag ziel,mengen_t menge,ManuProC::Auftrag::Action reason) throw(std::exception);
- void updateStkDiffInstanz__(int uid,mengen_t menge,ManuProC::Auftrag::Action reason) throw(SQLerror);
- void ArtikelInternAbbestellen(int uid,mengen_t menge,
+  void move_to(AufEintrag ziel,mengen_t menge,ManuProC::Auftrag::Action reason) throw(std::exception);
+ void updateStkDiffInstanz__(mengen_t menge,ManuProC::Auftrag::Action reason) throw(SQLerror);
+ void ArtikelInternAbbestellen(mengen_t menge,
  	ManuProC::Auftrag::Action reason) const;
- void move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,const ArtikelBase artikel,int uid,ManuProC::Auftrag::Action reason);
+ void move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,const ArtikelBase artikel,ManuProC::Auftrag::Action reason);
  // wurde von ProduziertNG abgelöst
  __deprecated void WurdeProduziert(mengen_t menge,const AufEintragBase &ElternAEB);
 
  class ArtikelInternAbbestellen_cb : public distribute_children_cb
- {	unsigned uid;
-	ManuProC::Auftrag::Action reason;
+ {	ManuProC::Auftrag::Action reason;
 	const AufEintrag &mythis;
 
   public:
-	ArtikelInternAbbestellen_cb(const AufEintrag &_mythis, unsigned _uid, ManuProC::Auftrag::Action _reason)
-		: uid(_uid), reason(_reason), mythis(_mythis)
+	ArtikelInternAbbestellen_cb(const AufEintrag &_mythis, ManuProC::Auftrag::Action _reason)
+		: reason(_reason), mythis(_mythis)
 	{}
 	// das 1. Argument wird nicht verwendet
 	mengen_t operator()(const ArtikelBase &,
@@ -162,18 +161,18 @@ private:
  };
 
 public:
- void updateLieferdatum(const ManuProC::Datum &ld,int uid) throw(SQLerror);	
- void updateLieferdatum(const Kalenderwoche &K,int uid) {updateLieferdatum(ManuProC::Datum(K),uid);}	
+ void updateLieferdatum(const ManuProC::Datum &ld) throw(SQLerror);	
+ void updateLieferdatum(const Kalenderwoche &K) {updateLieferdatum(ManuProC::Datum(K));}	
  // was ist das denn? CP
  void updateLieferdatumInstanz(const ManuProC::Datum &ld) throw(SQLerror);	
  void updatePreis(const Preis &pr) throw(SQLerror);
  void updateRabatt(rabatt_t rb) throw(SQLerror);
  void setLetzteLieferung(const ManuProC::Datum &datum) throw(SQLerror);
  // Ist (uid!=0) wird lasteditdate verändert.
- void setStatus(AufStatVal newstatus,int uid,bool force=false) throw(SQLerror);		
-// void setInstanzen(const AufStatVal newstatus,const int uid,const Petig::Datum &lieferdate,const mengen_t &Menge,const int myznr=-1,const int yourznr=-1);
+ void setStatus(AufStatVal newstatus,bool force=false) throw(SQLerror);		
+// void setInstanzen(const AufStatVal newstatus,const Petig::Datum &lieferdate,const mengen_t &Menge,const int myznr=-1,const int yourznr=-1);
 
- int split(int uid,mengen_t newmenge, const ManuProC::Datum &newld,bool dispoplanung=false) throw(SQLerror);
+ int split(mengen_t newmenge, const ManuProC::Datum &newld,bool dispoplanung=false) throw(SQLerror);
  mengen_t getStueck() const { return bestellt;}
  mengen_t getRestStk() const; // Statusabhängig ...
  mengen_t getGeliefert() const { return geliefert;}
@@ -217,7 +216,7 @@ public:
 
 private:
  void Produziert_0er(mengen_t menge);
- static void WiederEinlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
+ static void WiederEinlagern(cH_ppsInstanz instanz,const ArtikelBase artikel,
          mengen_t menge,const ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Produziert) throw(SQLerror);
  // bitte ProduziertNG aufrufen!         
  void Produziert(mengen_t menge,ManuProcEntity<>::ID lfrsid);
@@ -226,7 +225,7 @@ private:
 
 public:
  // wird z.B. von push_back verwendet
- void ArtikelInternNachbestellen(int uid,mengen_t menge,
+ void ArtikelInternNachbestellen(mengen_t menge,
  	ManuProC::Auftrag::Action reason) const;
 
  bool allesOK() const;
@@ -236,7 +235,7 @@ public:
 
 
  // wird von Artikeleingabe verwendet; gibt Zeilennummer zurück;
-//Alter Code: void moveInstanz(int uid,const AuftragBase& auftrag) throw(SQLerror);
+//Alter Code: void moveInstanz(const AuftragBase& auftrag) throw(SQLerror);
 
  // der Rückgabewert von cH_Lieferschein gefällt mir nicht, LieferscheinBase
  // ist IMHO besser, CP
@@ -244,10 +243,10 @@ public:
 private:
  std::vector<AufEintragBase> getKundenAuftragV() const;
 
- void LagerMenge_beruecksichtigen(const int uid,const mengen_t &lagermengediff,const AufEintragBase &ElternAEB) ;
+ void LagerMenge_beruecksichtigen(const mengen_t &lagermengediff,const AufEintragBase &ElternAEB) ;
 
 // muss beim abschreiben geschehen
- void DispoBeschraenken(int uid);
+ void DispoBeschraenken();
 
 public:
  AufEintragBase getFirstKundenAuftrag() const;
@@ -261,32 +260,32 @@ public:
 // einen Teil des Auftrages=0 verplanen (in anderen Auftrag<>0 setzen)
 // gibt neue Zeile zurück; rekursiv = alle Instanzen darunter auch planen,
 // rekursiv wird asuschließlich vom Erfassungs/Reperaturprogramm verwendet
- AufEintragBase Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
+ AufEintragBase Planen(mengen_t menge,const AuftragBase &zielauftrag,
       const ManuProC::Datum &datum, ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Planen,
          AufEintragBase *verplanter_aeb=0,bool rekursiv=false) throw(std::exception);
 private:         
- __deprecated void ProduktionsPlanung(int uid,mengen_t menge,const AuftragBase &zielauftrag,
+ __deprecated void ProduktionsPlanung(mengen_t menge,const AuftragBase &zielauftrag,
       const ManuProC::Datum &datum,cH_ppsInstanz instanz) throw(std::exception);
       
  // 2er anlegen, Material bestellen
  // *this ist der ZielAufEintrag
- void Ueberplanen(int uid,const ArtikelBase& artikel,mengen_t menge,const ManuProC::Datum &datum);
+ void Ueberplanen(const ArtikelBase& artikel,mengen_t menge,const ManuProC::Datum &datum);
 
 // Eine bereits vorgemerkte Menge einem anderen AufEintag zuordnen
 // *this => Der reservierte 1er; ae => Der ungeplante 0er
-//?? void menge_fuer_aeb_freigeben(const mengen_t &menge,AufEintrag &ae,const int uid);
+//?? void menge_fuer_aeb_freigeben(const mengen_t &menge,AufEintrag &ae);
 
 public:
  // brauche ich noch ein statisches ProduziertNG (das nur eine Instanz erhält?)
  // z.B. (getRestStk())
  void ProduziertNG(mengen_t M,const ProductionContext2 &ctx);
 //internal ?
- void ProduziertNG(unsigned uid, mengen_t M,
+ void ProduziertNG(mengen_t M,
 		const AufEintragBase &elter_alt,
 		const AufEintragBase &elter_neu,
 		const ProductionContext2 &ctx);
 private:		
- void Einlagern2(unsigned uid, mengen_t M,
+ void Einlagern2(mengen_t M,
 		const AufEintragBase &elter_alt,
 		const AufEintragBase &elter_neu,
 		const ProductionContext2 &ctx);
@@ -294,7 +293,7 @@ private:
 public:
  static AufEintragBase unbestellteMengeProduzieren(cH_ppsInstanz instanz,
  		const ArtikelBase &artikel,
- 		mengen_t menge, unsigned uid,bool rekursiv=false,
+ 		mengen_t menge,bool rekursiv=false,
  		const AufEintragBase &elter=AufEintragBase(),
  		const ProductionContext2 &ctx=ProductionContext2(),
  		ManuProC::Datum termin=ManuProC::Datum());
@@ -303,15 +302,15 @@ public:
  // mit ProduziertNG vereinen?
  static mengen_t Auslagern
 	(const AuftragBase &ab,const ArtikelBase &artikel,mengen_t menge, 
-		unsigned uid,bool fuer_auftraege,
+		bool fuer_auftraege,
 		const ProductionContext2 &ctx);
- mengen_t Auslagern(mengen_t menge, unsigned uid, const ProductionContext &ctx,
+ mengen_t Auslagern(mengen_t menge, const ProductionContext &ctx,
  							bool fuer_auftraege=true);
    // wird aufgerufen wenn Menge ins Lager kommt (LagerBase::rein_ins_lager)
    // kümmert sich um 1er und 2er
    // sollte Aufträge als produziert markieren
    // ehemals AuftragBase::menge_neu_verplanen
-   static void Einlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
+   static void Einlagern(cH_ppsInstanz instanz,const ArtikelBase artikel,
          const mengen_t &menge,bool produziert,
          const ProductionContext &ctx,
          const ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Produziert) throw(SQLerror);
@@ -320,13 +319,13 @@ private:
 // intern aber public wegen der klassen
    static AufEintragBase ArtikelInternNachbestellen(const cH_ppsInstanz &wo,
  	mengen_t menge,const ManuProC::Datum &lieferdatum,const ArtikelBase& artikel,
- 	int uid,const AufEintragBase& ElternAEB);
+ 	const AufEintragBase& ElternAEB);
    static void MengeVormerken(cH_ppsInstanz instanz,const ArtikelBase &artikel,
 		mengen_t menge, bool abbestellen, const ProductionContext &ctx);
    // für ProduziertSelbst Instanzen
    mengen_t ProdRueckgaengigMenge(mengen_t) const;
    // ehemals increase_parents__reduce_assingments
-   void MengeNeubestellen(const int uid,mengen_t menge) throw(SQLerror);
+   void MengeNeubestellen(mengen_t menge) throw(SQLerror);
 };
 
 #endif

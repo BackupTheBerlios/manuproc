@@ -1,4 +1,4 @@
-/* $Id: Lager.h,v 1.28 2003/07/25 16:26:36 jacek Exp $ */
+/* $Id: Lager.h,v 1.29 2003/09/02 12:10:52 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -116,13 +116,13 @@ class LagerBase : public cH_ppsInstanz
      // produziert bedeutet, dass der Artikel hergestellt wurde 
      // und nicht irgendwo "gefunden" (z.B. Inventur)
      void rein_ins_lager(const ArtikelBase &artikel,
-     	const AuftragBase::mengen_t &menge,unsigned uid,bool produziert,
+     	const AuftragBase::mengen_t &menge,bool produziert,
      	const ProductionContext &ctx=ProductionContext()) const;
      
      // entspricht raus_aus_lager mit negativer Menge
      __deprecated void wiedereinlagern(const ArtikelBase &artikel,
-     	const AuftragBase::mengen_t &menge,const int uid) const
-     {  raus_aus_lager(artikel,-menge,uid,false); }
+     	const AuftragBase::mengen_t &menge) const
+     {  raus_aus_lager(artikel,-menge,false); }
      
      // fuer_auftrag bedeutet, dass der Artikel für einen Auftrag verwendet wurde
      // und nicht verschwunden ist (Entnahme außer der Reihe/Inventur)
@@ -130,7 +130,7 @@ class LagerBase : public cH_ppsInstanz
      // negative Menge bedeutet: Lieferung rückgängig gemacht
      // = wiedereinlagern
      void raus_aus_lager(const ArtikelBase &artikel,
-     	AuftragBase::mengen_t menge,unsigned uid,bool fuer_auftrag,
+     	AuftragBase::mengen_t menge,bool fuer_auftrag,
      	const ProductionContext &ctx=ProductionContext()) const;
 };
 
@@ -140,14 +140,13 @@ class Lager : public LagerBase
       Lager(cH_ppsInstanz  instanz) ;
 // make these routines public      
      void rein_ins_lager(const ArtikelBase &artikel,
-     	const AuftragBase::mengen_t &menge,unsigned uid,bool produziert,
+     	const AuftragBase::mengen_t &menge,bool produziert,
      	const ProductionContext &ctx=ProductionContext()) const;
      void raus_aus_lager(const ArtikelBase &artikel,
-     	AuftragBase::mengen_t menge,unsigned uid,bool fuer_auftrag,
+     	AuftragBase::mengen_t menge,bool fuer_auftrag,
      	const ProductionContext &ctx=ProductionContext()) const;
 
      __deprecated void wiedereinlagern(const ArtikelBase &artikel,
-     			const AuftragBase::mengen_t &menge,
-     			unsigned uid) const;
+     			const AuftragBase::mengen_t &menge) const;
 };
 #endif

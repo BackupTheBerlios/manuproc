@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.47 2003/07/25 12:53:17 jacek Exp $
+// $Id: AufEintragBase.cc,v 1.48 2003/09/02 12:10:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -82,7 +82,7 @@ void AufEintragBase::calculateProzessInstanz()
 #if 1 // wird von AufEintrag::split verwendet und scheint zu funktionieren ...
 //#warning sieht komisch aus ...
 int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
-                        ArtikelBase artikel,AufStatVal status,int uid,
+                        ArtikelBase artikel,AufStatVal status,
                         bool dispoplanung)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,str(),
@@ -97,7 +97,7 @@ int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
   for(AufEintragZu::list_t::iterator i=L.begin();i!=L.end();++i)
    {
     mengen_t M=min(i->Menge,menge);
-    znr=BestellmengeAendern(M,datum,artikel,status,uid,i->AEB);
+    znr=BestellmengeAendern(M,datum,artikel,status,i->AEB);
 // urks ??
     AufEintragZu(i->AEB).setMengeDiff__(*this,-M);
     menge-=M;
@@ -193,7 +193,7 @@ void AufEintragBase::setLetzteLieferung(const ManuProC::Datum &datum) const thro
 }
 
 
-AuftragBase::mengen_t AufEintragBase::updateStkDiffBase__(int uid,const mengen_t &menge) const throw(SQLerror)
+AuftragBase::mengen_t AufEintragBase::updateStkDiffBase__(const mengen_t &menge) const throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("AEB",*this),NV("menge",menge));
 
@@ -215,7 +215,7 @@ AuftragBase::mengen_t AufEintragBase::updateStkDiffBase__(int uid,const mengen_t
 
  Query("update auftragentry set bestellt=?,lasteditdate=now(),lastedit_uid=? "
 	"where (instanz,auftragid,zeilennr)=(?,?,?)").lvalue()
-	<< NEWMENGE << uid << *this;
+	<< NEWMENGE << getuid() << *this;
  SQLerror::test("updateStkDiff: update stk in auftragentry");
 
  pps_ChJournalEntry::newChange(instanz, *this,ArtikelBase(ARTIKELID),

@@ -1,4 +1,4 @@
-/* $Id: AuftragFull.h,v 1.28 2003/06/18 15:18:29 jacek Exp $ */
+/* $Id: AuftragFull.h,v 1.29 2003/09/02 12:10:52 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -38,8 +38,8 @@ private:
 	AufEintragList eintragliste;
 
 // die gefällt mir aber gar nicht (inkonsistente parameter etc) CP
-	void split(int idx, int uid,const ManuProC::Datum &liefdatum, int menge);
-//		{ eintragliste[idx].split(uid,menge, liefdatum);}
+	void split(int idx,const ManuProC::Datum &liefdatum, int menge);
+//		{ eintragliste[idx].split(menge, liefdatum);}
 public:
 	AuftragFull(const AuftragBase& auftrag,bool with_storno=true) throw(SQLerror);
 	// neuen Auftrag anlegen
@@ -67,7 +67,7 @@ public:
 	
    AufEintragBase push_back(AuftragBase::mengen_t bestellt,
                ManuProC::Datum lieferdatum, ArtikelBase artid,
-               AufStatVal status,int uid,
+               AufStatVal status,
                Preis preis=Preis(), rabatt_t rabatt=rabatt_t(0),
                const cH_PreisListe &preisliste=PreisListe::none_id) throw (SQLerror);
    void push_back(AufEintrag aeb);
@@ -76,6 +76,6 @@ public:
         		ManuProC::Datum lieferdatum) throw(SQLerror);               
    bool existsEntry(const ArtikelBase::ID art, AufStatVal stat) throw(SQLerror);
 
-   void setStatusAuftragFull(AufStatVal status,int uid) throw(SQLerror);
+   void setStatusAuftragFull(AufStatVal status) throw(SQLerror);
 };
 #endif

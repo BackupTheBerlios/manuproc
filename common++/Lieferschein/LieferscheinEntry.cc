@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.39 2003/09/02 09:26:20 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.40 2003/09/02 12:10:52 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -117,7 +117,7 @@ void LieferscheinEntry::changeMenge(int stueck, mengen_t menge, const Liefersche
          // da ist noch ein Rest geblieben, setzt ZusatzInfo
       {  AufEintragBase neuerAEB;
          if (instanz!=ppsInstanzID::Kundenauftraege) 
-            neuerAEB=AufEintrag::unbestellteMengeProduzieren(Instanz(),artikel,abmenge2,getuid());
+            neuerAEB=AufEintrag::unbestellteMengeProduzieren(Instanz(),artikel,abmenge2);
          addZusatzEntry(neuerAEB,abmenge2);
       }
 //      showZusatzInfos();

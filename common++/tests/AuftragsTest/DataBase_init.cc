@@ -1,4 +1,4 @@
-// $Id: DataBase_init.cc,v 1.18 2003/07/15 13:18:25 jacek Exp $
+// $Id: DataBase_init.cc,v 1.19 2003/09/02 12:10:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -37,12 +37,12 @@ DataBase_init::DataBase_init()
    JumboLager_initalisieren();
 #elif defined MANU_PROC_TEST 
    Lager L(ROHWARENLAGER); 
-   L.rein_ins_lager(ArtikelBase(1),200,getuid(),false); // Metall
-   L.rein_ins_lager(ArtikelBase(2),50,getuid(),false); // Granulat klar
-   L.rein_ins_lager(ArtikelBase(3),100,getuid(),false); // Granulat gelb
+   L.rein_ins_lager(ArtikelBase(1),200,false); // Metall
+   L.rein_ins_lager(ArtikelBase(2),50,false); // Granulat klar
+   L.rein_ins_lager(ArtikelBase(3),100,false); // Granulat gelb
 #elif defined MABELLA_TEST
    Lager L(FERTIGWLAGER); 
-   L.rein_ins_lager(ARTIKEL_TRIO,4,getuid(),false); 
+   L.rein_ins_lager(ARTIKEL_TRIO,4,false); 
 #endif
 }
 
@@ -90,7 +90,7 @@ void DataBase_init::RohwarenLager_initalisieren_execute(const ArtikelBase &artik
   RohwarenLager::st_rohlager rohlager(LP,kartons,kg_pro_karton,reste,kg_reste,
                                       artikel,ManuProC::Datum().today());
 #ifdef MIT_ROHWARENLAGER
-  RL.RL_Einlagern(LP,rohlager,UID,os,true,false);
+  RL.RL_Einlagern(LP,rohlager,os,true,false);
   SQLerror::test(__FILELINE__);
 #endif
 }
@@ -106,7 +106,7 @@ void DataBase_init::createJumbo(const int diffmaschine,const int menge,bool prod
   assert(JR.size()==1);
   Zeitpunkt_new zp("2002-1-1 12:00");
   class JumboLager JL;
-  JL.Jumbo_Einlagern(LagerPlatzJumbo,JR.front(),JumboLager::Einlagern,UID,"testuser",&zp,produziert);
+  JL.Jumbo_Einlagern(LagerPlatzJumbo,JR.front(),JumboLager::Einlagern,"testuser",&zp,produziert);
   SQLerror::test(__FILELINE__);
 #endif
 }

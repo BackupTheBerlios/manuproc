@@ -1,4 +1,4 @@
-/* $Id: ArtikelBaum.h,v 1.20 2003/05/20 10:01:33 christof Exp $ */
+/* $Id: ArtikelBaum.h,v 1.21 2003/09/02 12:10:52 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -103,8 +103,8 @@ public:
 // Hrmpf, warum sind das keine Members?
 // Weil sie dann mehr Datanbankzugriffe machen würden als nötig, MAT
 // Für einen neuen Artikel:
- static void new_Artikel(int uid,ArtikelBase fuer_artikel,const RohArtikel& RA);
- static void delete_Artikel(int uid,ArtikelBase fuer_artikel,ArtikelBase von_artikel);
+ static void new_Artikel(ArtikelBase fuer_artikel,const RohArtikel& RA);
+ static void delete_Artikel(ArtikelBase fuer_artikel,ArtikelBase von_artikel);
 private:
 //ALter Code static void delete_from_zuordnung(int uid,ArtikelBase alt_artikel,ArtikelBase kind_artikel); 
 //Alter Code static void reduceChildren(int uid,const AufEintrag& AEB,const AufEintrag& oldAEB,AufEintragBase::mengen_t menge);

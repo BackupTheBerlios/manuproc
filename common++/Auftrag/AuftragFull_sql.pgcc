@@ -31,14 +31,14 @@ void AuftragFull::push_back(AufEintrag aeb)
 
 AufEintragBase AuftragFull::push_back(AuftragBase::mengen_t bestellt,
                ManuProC::Datum lieferdatum, ArtikelBase artid,
-               AufStatVal status,int uid,
+               AufStatVal status,
                Preis preis, fixedpoint<2> rabatt,const cH_PreisListe &preisliste) throw (SQLerror)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
-  AufEintragBase newAEB=Auftrag::push_back(bestellt,lieferdatum,artid,status,uid,true,preis,rabatt,preisliste);
+  AufEintragBase newAEB=Auftrag::push_back(bestellt,lieferdatum,artid,status,true,preis,rabatt,preisliste);
   AufEintrag tmpae(newAEB,
       bestellt,artid,lieferdatum,getStatus(),getKundennr(),getYourAufNr(),
-      preis,rabatt,status,uid,preisliste);
+      preis,rabatt,status,preisliste);
   tmpae.ProvSatz(); // gets and caches provsatz in AufEintrag
   eintragliste.push_back(tmpae);
   return newAEB;
@@ -97,12 +97,12 @@ int AuftragFull::get_index_by_znr(int znr)
   abort();
 };
 
-void AuftragFull::setStatusAuftragFull(AufStatVal status,int uid) throw(SQLerror)
+void AuftragFull::setStatusAuftragFull(AufStatVal status) throw(SQLerror)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
   Auftrag::setStatusAuftrag_(status);
   for (AufEintragList::iterator i=eintragliste.begin();i!=eintragliste.end();++i)
-    i->setStatus(status,uid);
+    i->setStatus(status);
 }
 
 bool AuftragFull::existsEntry(const ArtikelBase::ID art, AufStatVal stat)

@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum_new_del.cc,v 1.5 2003/03/24 10:54:01 christof Exp $
+// $Id: ArtikelBaum_new_del.cc,v 1.6 2003/09/02 12:10:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, 
  *  written by Malte Thoma and Christof Petig
@@ -25,7 +25,7 @@
 #include <Auftrag/AufEintragZu.h>
 #include <Misc/Transaction.h>
 
-void ArtikelBaum::new_Artikel(int uid,ArtikelBase fuer_artikel,const RohArtikel& RA)
+void ArtikelBaum::new_Artikel(ArtikelBase fuer_artikel,const RohArtikel& RA)
 {assert(RA.rohartikel.Id()!=0);
  Transaction tr;
 
@@ -34,7 +34,7 @@ void ArtikelBaum::new_Artikel(int uid,ArtikelBase fuer_artikel,const RohArtikel&
  	"values (?,?,?,?,now(),?)").lvalue()
  	<< fuer_artikel.Id() << RA.erzeugung->Id()
  	<< RA.rohartikel.Id() << Query::NullIf(RA.menge,0)
- 	<< uid;
+ 	<< getuid();
  SQLerror::test(__FILELINE__);
 
 // create_in_zuordnung(uid,fuer_artikel,RA.rohartikel,RA.menge);
@@ -42,7 +42,7 @@ void ArtikelBaum::new_Artikel(int uid,ArtikelBase fuer_artikel,const RohArtikel&
 }
 
 #if 0
-void ArtikelBaum::create_in_zuordnung(int uid,ArtikelBase alt_artikel,ArtikelBase kind_artikel,faktor_t RohMenge)
+void ArtikelBaum::create_in_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel,faktor_t RohMenge)
 {
   std::list<AufEintragBase> elternliste = AufEintragZu::get_AufEintragList_from_Artikel(alt_artikel,ArtikelStamm(alt_artikel).BestellenBei()->Id(),NOSTAT);
 //std::cout << "Create :"<<elternliste.size()<<"\n\n\n\n";
@@ -52,12 +52,12 @@ void ArtikelBaum::create_in_zuordnung(int uid,ArtikelBase alt_artikel,ArtikelBas
      AufEintrag::ArtikelInternNachbestellen(
      	ppsInstanz::getBestellInstanz(kind_artikel),AE.getStueck()*RohMenge,
      	AE.getLieferdatum()-AE.Instanz()->ProduktionsDauer(),
-     	kind_artikel,uid,AE);
+     	kind_artikel,AE);
    }  
 }
 #endif
 
-void ArtikelBaum::delete_Artikel(int uid,ArtikelBase fuer_artikel,ArtikelBase von_artikel)
+void ArtikelBaum::delete_Artikel(ArtikelBase fuer_artikel,ArtikelBase von_artikel)
 {
  Transaction tr;
  Query("delete from artikelzusammensetzung "
@@ -65,7 +65,7 @@ void ArtikelBaum::delete_Artikel(int uid,ArtikelBase fuer_artikel,ArtikelBase vo
    << fuer_artikel.Id() << von_artikel.Id();
  SQLerror::test(__FILELINE__,100);
 
-// delete_from_zuordnung(uid,fuer_artikel,von_artikel);
+// delete_from_zuordnung(fuer_artikel,von_artikel);
  tr.commit();
 }
 
@@ -88,7 +88,7 @@ static FetchIStream &operator>>(FetchIStream &is, st_aam &b)
 {  return is >> b.oldAEB >> b.AEB >> b.menge;
 }
 
-void ArtikelBaum::delete_from_zuordnung(int uid,ArtikelBase alt_artikel,ArtikelBase kind_artikel)
+void ArtikelBaum::delete_from_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel)
 {  // Mengen holen und
    // AufEntrys um die Menge reduzieren
      std::vector<st_aam> V;
@@ -106,7 +106,7 @@ void ArtikelBaum::delete_from_zuordnung(int uid,ArtikelBase alt_artikel,ArtikelB
      
      for(std::vector<st_aam>::const_iterator i=V.begin();i!=V.end();++i)
       {
-        reduceChildren(uid,i->AEB,i->oldAEB,i->menge);
+        reduceChildren(i->AEB,i->oldAEB,i->menge);
         Query("delete from auftragsentryzuordnung "
         	"where (altinstanz,altauftragid,altzeilennr)=(?,?,?) "
         	"and (neuinstanz,neuauftragid,neuzeilennr)=(?,?,?) "
@@ -118,17 +118,17 @@ void ArtikelBaum::delete_from_zuordnung(int uid,ArtikelBase alt_artikel,ArtikelB
 
 #warning dies sollte nach AufEintrag wandern ... wenn es noch so stimmt
 
-void ArtikelBaum::reduceChildren(int uid,const AufEintrag& AEB,
+void ArtikelBaum::reduceChildren(const AufEintrag& AEB,
                                  const AufEintrag& oldAEB,
                                  AufEintragBase::mengen_t menge) 
 {
   ManuProC::Trace _t(AuftragBase::trace_channel,__FUNCTION__,AEB,oldAEB,menge);
 
-  const_cast<AufEintrag&>(AEB).MengeAendern(uid,-menge,false,oldAEB,ManuProC::Auftrag::r_Anlegen);
+  const_cast<AufEintrag&>(AEB).MengeAendern(-menge,false,oldAEB,ManuProC::Auftrag::r_Anlegen);
 
   AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(AEB,AufEintragZu::list_kinder);
   for(AufEintragZu::list_t::iterator i=L.begin();i!=L.end();++i)
-     reduceChildren(uid,AufEintrag(i->AEB),AEB,i->Menge);
+     reduceChildren(AufEintrag(i->AEB),AEB,i->Menge);
 }        
 
 #endif

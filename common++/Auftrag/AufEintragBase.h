@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.h,v 1.47 2003/07/03 15:54:52 christof Exp $
+// $Id: AufEintragBase.h,v 1.48 2003/09/02 12:10:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -63,7 +63,7 @@ public:
  // gibt die Menge zurück, die verändert wurde. Falls reduziert werden sollte
  // müssen die input/output menge nicht übereinstimmen, da keine negativen Mengen
  // bestellt werden können
- mengen_t updateStkDiffBase__(int uid,const mengen_t &menge) const throw(SQLerror);
+ mengen_t updateStkDiffBase__(const mengen_t &menge) const throw(SQLerror);
 
  void setLetztePlanungFuer(cH_ppsInstanz planinstanz) const throw(SQLerror);
  void calculateProzessInstanz(); // private?
@@ -74,7 +74,7 @@ public:
  bool operator!() const { return !valid(); }
 
 /*
- void vormerken_oder_bestellen(int uid,const AuftragBase::mengen_t &vormerkmenge,
+ void vormerken_oder_bestellen(const AuftragBase::mengen_t &vormerkmenge,
             AuftragBase::mengen_t bestellmenge,
             const ArtikelBase &artikel,const Petig::Datum &lieferdatum,
             std::vector<AufEintrag> dispo_auftrag,
@@ -85,7 +85,7 @@ private:
  friend class AuftragBase;
 /*
  void AufEintragBase::artikel_vormerken_oder_schnappen(bool schnappen,AuftragBase::mengen_t menge,
-      const ArtikelBase &artikel,int uid,ManuProC::Auftrag::Action reason,
+      const ArtikelBase &artikel,ManuProC::Auftrag::Action reason,
       std::vector<AufEintrag> dispo_auftrag) const ;
 */
 
@@ -93,7 +93,7 @@ public:
 
  int split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum, 
                          ArtikelBase artikel,AufStatVal status,
-                         int uid,bool dispoplanung);
+                         bool dispoplanung);
 
  bool operator<(const AufEintragBase& b) const 
        {return Instanz()<b.Instanz() 

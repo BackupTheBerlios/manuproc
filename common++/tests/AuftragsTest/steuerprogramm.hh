@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.hh,v 1.41 2003/07/16 12:22:28 christof Exp $
+// $Id: steuerprogramm.hh,v 1.42 2003/09/02 12:10:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -122,8 +122,6 @@
 #define KUNDE 1000
 #define KUNDE2 1111
 #endif
-
-#define UID 1001
 
 // convenience functions
 void vergleichen(Check::was_checken w, const std::string &zusatz,

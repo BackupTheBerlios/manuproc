@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.14 2003/08/14 09:22:15 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.15 2003/09/02 12:10:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -45,79 +45,75 @@
 // etwas bestelltes wird eingelagert -> produziert markieren & vormerken (?)
 class AufEintrag::MichEinlagern : public distribute_parents_cb
 {	AufEintrag &mythis;
-	unsigned uid;
 	ProductionContext ctx;
 public:
 	AuftragBase::mengen_t operator()(const AufEintragBase &elter,AuftragBase::mengen_t m) const
 	{  if (elter.Id()==AuftragBase::dispo_auftrag_id) return 0;
 	   if (ctx.aeb.valid() && ctx.aeb!=elter) return 0;
-	   mythis.Einlagern2(uid,m,elter,elter,ctx.leb);
+	   mythis.Einlagern2(m,elter,elter,ctx.leb);
 	   return m;
 	}
 	MichEinlagern(AufEintrag &_mythis,const ProductionContext &_ctx) 
-		: mythis(_mythis), uid(getuid()), ctx(_ctx) {}
+		: mythis(_mythis), ctx(_ctx) {}
 };
 
 // etwas bestelltes wird abbestellt -> intern abbestellen & vormerken
 class AufEintrag::AbbestellenUndVormerken : public distribute_parents_cb
 {	AufEintrag &mythis;
-	unsigned uid;
 	
 public:
 	AuftragBase::mengen_t operator()(const AufEintragBase &elter,AuftragBase::mengen_t m) const
-	{  mythis.MengeAendern(uid,-m,true,elter,ManuProC::Auftrag::r_Closed);
+	{  mythis.MengeAendern(-m,true,elter,ManuProC::Auftrag::r_Closed);
 	   AuftragBase zielauftrag(mythis.Instanz(),AuftragBase::plan_auftrag_id);
 	   AufEintragBase neuerAEB(zielauftrag,
                        zielauftrag.PassendeZeile(mythis.getLieferdatum(),
-                       			mythis.Artikel(),OPEN,uid));
+                       			mythis.Artikel(),OPEN));
 	   AufEintrag ae(neuerAEB);
-	   ae.MengeAendern(uid,m,false,elter,ManuProC::Auftrag::r_Closed);
+	   ae.MengeAendern(m,false,elter,ManuProC::Auftrag::r_Closed);
 	   return m;
 	}
 	AbbestellenUndVormerken(AufEintrag &_mythis) 
-		: mythis(_mythis), uid(getuid()) {}
+		: mythis(_mythis) {}
 };
 
 // Lagerinhalt ist verschwunden -> Vormerkung löschen & neu bestellen
 class AufEintrag::NeuBestellen : public distribute_parents_cb
 {	AufEintrag &mythis;
-	unsigned uid;
 public:
 	AuftragBase::mengen_t operator()(const AufEintragBase &elter,AuftragBase::mengen_t m) const
-	{  mythis.MengeAendern(uid,-m,false,elter,ManuProC::Auftrag::r_Reparatur);
+	{  mythis.MengeAendern(-m,false,elter,ManuProC::Auftrag::r_Reparatur);
 	   // Optimierung: direkt 0er nehmen?
 #if 0	   
            // passenden 0er erhöhen
             AuftragBase(child_ae.Instanz(),AuftragBase::ungeplante_id)
-              .BestellmengeAendern(m,child_ae.getLieferdatum(),child_ae.Artikel(),OPEN,uid,j->AEB);
+              .BestellmengeAendern(m,child_ae.getLieferdatum(),child_ae.Artikel(),OPEN,j->AEB);
 #endif
 	   AufEintrag::ArtikelInternNachbestellen(mythis.Instanz(),m,
-	   	mythis.getLieferdatum(),mythis.Artikel(),uid,elter);
+	   	mythis.getLieferdatum(),mythis.Artikel(),elter);
 	   return m;
 	}
-	NeuBestellen(AufEintrag &_mythis,unsigned u) : mythis(_mythis), uid(u) {}
+	NeuBestellen(AufEintrag &_mythis) : mythis(_mythis) {}
 };
 
 struct AufEintrag::Auslagern_cb : public auf_positionen_verteilen_cb
-{	unsigned uid;
-	bool fuer_auftraege;
+{	bool fuer_auftraege;
 	ProductionContext2 ctx;
 	
-	Auslagern_cb(unsigned u, bool fa, const ProductionContext2 &_ctx) 
-		: uid(u), fuer_auftraege(fa), ctx(_ctx) {}
+	Auslagern_cb(bool fa, const ProductionContext2 &_ctx) 
+		: fuer_auftraege(fa), ctx(_ctx) {}
 	AuftragBase::mengen_t operator()(AufEintrag &ae, AuftragBase::mengen_t abschreibmenge) const
 	{  if (ae.Id()==AuftragBase::plan_auftrag_id)
 	   {  if (!fuer_auftraege)
-	         distribute_parents(ae,abschreibmenge,NeuBestellen(ae,uid));
+	         distribute_parents(ae,abschreibmenge,NeuBestellen(ae));
 	      else ae.abschreiben(abschreibmenge);
 	   }
 	   else
 	   {  assert(ae.Id()==AuftragBase::dispo_auftrag_id);
-	      ae.MengeAendern(uid,-abschreibmenge,false,AufEintragBase(),ManuProC::Auftrag::r_Reparatur);
+	      ae.MengeAendern(-abschreibmenge,false,AufEintragBase(),ManuProC::Auftrag::r_Reparatur);
 	      // als produziert markieren!
 	      if (fuer_auftraege)
 	         AufEintrag::unbestellteMengeProduzieren(ae.Instanz(),
-	         		ae.Artikel(),abschreibmenge,uid);
+	         		ae.Artikel(),abschreibmenge);
 	   }
 	   return abschreibmenge;
 	}
@@ -125,20 +121,20 @@ struct AufEintrag::Auslagern_cb : public auf_positionen_verteilen_cb
 
 AuftragBase::mengen_t AufEintrag::Auslagern
 	(const AuftragBase &ab,const ArtikelBase &artikel,mengen_t menge, 
-	 unsigned uid, bool fuer_auftraege,
+	 bool fuer_auftraege,
 	 const ProductionContext2 &ctx)
 {  assert(ab.Instanz()->LagerInstanz());
    ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("ab",ab),
 		NV("artikel",artikel),NV("menge",menge),
 		NV("fuer_auftraege",fuer_auftraege),NV("ctx",ctx));
    if (menge<0)
-   { WiederEinlagern(uid,ab.Instanz(),artikel,-menge);
+   { WiederEinlagern(ab.Instanz(),artikel,-menge);
      return 0;
    }
    SQLFullAuftragSelector sel(make_value(SQLFullAuftragSelector::sel_Artikel_Planung_id
   			(ab.Instanz()->Id(),Kunde::eigene_id,artikel,ab.Id(),
   			 menge<0?CLOSED:OPEN)));
-   Auslagern_cb callback(uid,fuer_auftraege,ctx);
+   Auslagern_cb callback(fuer_auftraege,ctx);
    if (fuer_auftraege)
       return auf_positionen_verteilen(sel,menge,callback);
    else 
@@ -160,7 +156,7 @@ AufEintragBase (*AufEintrag::opfer_auswaehlen)(cH_ppsInstanz,mengen_t,const Arti
 	= &AufEintrag::default_opfer;
 
 AuftragBase::mengen_t AufEintrag::Auslagern
-	(mengen_t menge, unsigned uid, const ProductionContext &ctx,
+	(mengen_t menge, const ProductionContext &ctx,
 		bool fuer_auftraege)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
 		NV("ctx",ctx),NV("menge",menge));
@@ -173,7 +169,7 @@ AuftragBase::mengen_t AufEintrag::Auslagern
    }
    else if (Id()==ungeplante_id)
    {  // abbestellen
-      MengeAendern(uid,-menge,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
+      MengeAendern(-menge,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
       // LagerMenge reduzieren (wir sollen ja das Lager führen)
       mengen_t brauch_noch=menge;
 // müsste Produzierte Menge unten löschen wenn nicht prod_selbst!
@@ -184,10 +180,10 @@ AuftragBase::mengen_t AufEintrag::Auslagern
          brauch_noch=0;
       }
       else
-         brauch_noch=AufEintrag(opfer).Auslagern(brauch_noch,uid,ctx,false);
+         brauch_noch=AufEintrag(opfer).Auslagern(brauch_noch,ctx,false);
      }
       // produzieren
-      unbestellteMengeProduzieren(Instanz(),Artikel(),menge,uid,true,
+      unbestellteMengeProduzieren(Instanz(),Artikel(),menge,true,
       		ctx.aeb/*oder *this?*/,ctx.leb);
    }
    return 0;
@@ -235,7 +231,7 @@ void AufEintrag::MengeVormerken(cH_ppsInstanz instanz,const ArtikelBase &artikel
    if (m!=0)
       AuftragBase(instanz,dispo_auftrag_id).
    		BestellmengeAendern(m,LagerBase::Lagerdatum(),artikel,
-	   		OPEN,getuid(),AufEintragBase());
+	   		OPEN,AufEintragBase());
    tr.commit();
 }
 
@@ -244,7 +240,7 @@ void AufEintrag::MengeVormerken(cH_ppsInstanz instanz,const ArtikelBase &artikel
    // und gibt reservierte Menge zurück
    // sollte Aufträge als produziert markieren
 // ehemals AuftragBase::menge_neu_verplanen
-void AufEintrag::Einlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
+void AufEintrag::Einlagern(cH_ppsInstanz instanz,const ArtikelBase artikel,
          const mengen_t &menge,bool produziert,
          const ProductionContext &ctx,
          const ManuProC::Auftrag::Action reason) throw(SQLerror)
@@ -260,15 +256,14 @@ class AufEintrag::WiederEinlagern_cb : public auf_positionen_verteilen_cb
 {
 public:
 	AuftragBase::mengen_t operator()(AufEintrag &i, AuftragBase::mengen_t M) const
-	{  unsigned uid=getuid();
-	   assert(i.Id()==AuftragBase::plan_auftrag_id);
+	{  assert(i.Id()==AuftragBase::plan_auftrag_id);
 	   assert(M<0);
            i.abschreiben(M);
            // eventuell muss das in den 2er, wenn hier zu wenig offene Aufträge existieren
            {  AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(i,AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
               mengen_t sum=AufEintragZu::Summe(eltern);
               if (sum<i.getRestStk())
-              {  i.MengeAendern(uid,sum-i.getRestStk(),true,AufEintragBase(),ManuProC::Auftrag::r_Reparatur);
+              {  i.MengeAendern(sum-i.getRestStk(),true,AufEintragBase(),ManuProC::Auftrag::r_Reparatur);
               }
            }
 
@@ -281,16 +276,16 @@ public:
            // Menge nachbestellen
            AuftragBase zielauftrag(i.Instanz(),AuftragBase::ungeplante_id);
            AufEintragBase neuerAEB(zielauftrag,
-               	zielauftrag.PassendeZeile(i.getLieferdatum(),i.Artikel(),OPEN,uid));
+               	zielauftrag.PassendeZeile(i.getLieferdatum(),i.Artikel(),OPEN));
            AufEintrag ae(neuerAEB);
-           ae.MengeAendern(uid,-M,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
+           ae.MengeAendern(-M,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
            // Menge wird direkt neu verplant (evtl. wieder abbestellt)
-           i.MengeAendern(uid,M,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
+           i.MengeAendern(M,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
            // assert(i.getCombinedStatus()==CLOSED);
            if (i.getCombinedStatus()!=CLOSED)
            {  std::cerr << "merkwürdig ... " << i << ':' << i.getCombinedStatus() << ','
            		<< i.getRestStk() << '\n';
-              i.setStatus(CLOSED,uid);
+              i.setStatus(CLOSED);
            }
            return M;
 	}
@@ -298,7 +293,7 @@ public:
 
 // eigentlich auslagern mit negativer Menge ???
 // allerdings: Reihenfolge ist umgekehrt
-void AufEintrag::WiederEinlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
+void AufEintrag::WiederEinlagern(cH_ppsInstanz instanz,const ArtikelBase artikel,
          mengen_t menge,const ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
   ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("Instanz",instanz),
@@ -314,12 +309,12 @@ void AufEintrag::WiederEinlagern(const int uid,cH_ppsInstanz instanz,const Artik
   if (!!menge)
   {  // eigentlich soll das nicht passieren, da es ja vorher produziert wurde ...
      ManuProC::Trace(trace_channel, __FUNCTION__,NV("es ist ein Rest geblieben",menge));
-     Einlagern(uid,instanz,artikel,-menge,false,ProductionContext());
+     Einlagern(instanz,artikel,-menge,false,ProductionContext());
   }
 }
 
 // ehemals von ProduziertNG kopiert ... aber anders?
-void AufEintrag::Einlagern2(unsigned uid, mengen_t M,
+void AufEintrag::Einlagern2(mengen_t M,
 		const AufEintragBase &elter_alt,
 		const AufEintragBase &elter_neu,
 		const ProductionContext2 &ctx)
@@ -334,27 +329,27 @@ void AufEintrag::Einlagern2(unsigned uid, mengen_t M,
    {  assert(Id()==plan_auftrag_id);
 //      abschreiben(M); // dat kann nicht richtig sein ...
       // Rekursion bedeutet hier: freigewordene Menge neu verplanen
-      MengeAendern(uid,M,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
-      if (!getRestStk()) setStatus(AufStatVal(CLOSED),uid,true);
+      MengeAendern(M,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
+      if (!getRestStk()) setStatus(AufStatVal(CLOSED),true);
    }
    else // M>0
-   {  MengeAendern(uid,-M,false,elter_alt,ManuProC::Auftrag::r_Produziert);
+   {  MengeAendern(-M,false,elter_alt,ManuProC::Auftrag::r_Produziert);
       AuftragBase zielauftrag(Instanz(),plan_auftrag_id);
       neuerAEB=AufEintragBase(zielauftrag,
-         		zielauftrag.PassendeZeile(getLieferdatum(),Artikel(),OPEN,uid));
+         		zielauftrag.PassendeZeile(getLieferdatum(),Artikel(),OPEN));
       AufEintrag ae(neuerAEB);
-      ae.MengeAendern(uid,M,false,elter_neu,ManuProC::Auftrag::r_Produziert);
+      ae.MengeAendern(M,false,elter_neu,ManuProC::Auftrag::r_Produziert);
    }
 
    KinderProduzieren(M,neuerAEB,ctx);
 }
 
 // ehemals increase_parents__reduce_assingments
-void AufEintrag::MengeNeubestellen(const int uid,mengen_t menge) throw(SQLerror)
+void AufEintrag::MengeNeubestellen(mengen_t menge) throw(SQLerror)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("this",*this),NV("Menge",menge));
   assert(Id()==plan_auftrag_id);  
 //  AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(child_aeb,AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
-  distribute_parents(*this,menge,NeuBestellen(*this,uid));
+  distribute_parents(*this,menge,NeuBestellen(*this));
 }
 

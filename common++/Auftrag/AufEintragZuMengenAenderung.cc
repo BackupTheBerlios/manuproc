@@ -1,4 +1,4 @@
-// $Id: AufEintragZuMengenAenderung.cc,v 1.19 2003/08/14 08:35:01 christof Exp $
+// $Id: AufEintragZuMengenAenderung.cc,v 1.20 2003/09/02 12:10:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -25,7 +25,7 @@
 
 // ElternAEB erhält die Menge vom 2er
 // dies scheint den 1er im Lager zu erhöhen
-void AufEintragZuMengenAenderung::freie_dispomenge_verwenden(const int uid,
+void AufEintragZuMengenAenderung::freie_dispomenge_verwenden(
          const AufEintrag &AE2er,AuftragBase::mengen_t menge,const AufEintragBase &ElternAEB) throw(SQLerror)
 {
   AufEintragZu::list_t L=AufEintragZu(AE2er).get_Referenz_list_geplant();

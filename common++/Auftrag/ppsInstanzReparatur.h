@@ -1,4 +1,4 @@
-// $Id: ppsInstanzReparatur.h,v 1.16 2003/06/24 08:16:19 christof Exp $
+// $Id: ppsInstanzReparatur.h,v 1.17 2003/09/02 12:10:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -47,8 +47,8 @@ class ppsInstanzReparatur : public cH_ppsInstanz
       typedef fixedpoint<ManuProC::Precision::AuftragsMenge> ABmt;
 
       std::vector<LagerInhalt> getLagerInhalt() const;
-      bool vormerkungen_subtrahieren(int uid,const  std::vector<LagerInhalt> &LI,const bool analyse_only) const;
-      void DispoAuftraege_anlegen(const int uid,const ArtikelBase &artikel,const fixedpoint<ManuProC::Precision::AuftragsMenge> &menge) const;
+      bool vormerkungen_subtrahieren(const  std::vector<LagerInhalt> &LI,const bool analyse_only) const;
+      void DispoAuftraege_anlegen(const ArtikelBase &artikel,const fixedpoint<ManuProC::Precision::AuftragsMenge> &menge) const;
 
       void analyse(const std::string &s,const AufEintragBase &AE,const std::string &x=std::string(),const std::string &y=std::string()) const;
       // Wrapper:
@@ -61,14 +61,13 @@ class ppsInstanzReparatur : public cH_ppsInstanz
 	AufEintragZu::list_t &eltern,AuftragBase::mengen_t &m,
 	AuftragBase::ID typ);
       static void KinderErniedrigen(AufEintrag &ae,
-	AufEintragZu::list_t &kinder,AuftragBase::mengen_t m,
-	unsigned uid);
+	AufEintragZu::list_t &kinder,AuftragBase::mengen_t m);
 
  public:
       // Einlesen des Lagerinhalts und Anpassen der 2er unter Berücksichtigung der 1er
-      bool ReparaturLager(const int uid,const bool analyse_only) const throw(SQLerror);
+      bool ReparaturLager(const bool analyse_only) const throw(SQLerror);
       // Entweder existieren 0er oder es existieren 2er
-      // void Reparatur_0er_und_2er(const int uid,const bool analyse_only) const throw(SQLerror);
+      // void Reparatur_0er_und_2er(const bool analyse_only) const throw(SQLerror);
       bool Reparatur_0er_und_2er(SelectedFullAufList &L,const bool analyse_only) const throw(SQLerror);
 
       // neues Interface!

@@ -1,4 +1,4 @@
-/* $Id: JumboLager.h,v 1.9 2003/07/04 14:33:59 christof Exp $ */
+/* $Id: JumboLager.h,v 1.10 2003/09/02 12:10:52 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -37,7 +37,7 @@ class JumboLager : public LagerBase
   private:
       static const float reste_faktor = 0.3;
 
-      void Jumbo_Log(const JumboRolle& jumbo,Jumbo_LogTyp typ,const int uid,const std::string& user,const Zeitpunkt_new *zeit);
+      void Jumbo_Log(const JumboRolle& jumbo,Jumbo_LogTyp typ,const std::string& user,const Zeitpunkt_new *zeit);
       virtual std::vector<class LagerInhalt> LagerInhalt_(const ArtikelBase& artikel=ArtikelBase()) const;
 
   public:
@@ -47,8 +47,8 @@ class JumboLager : public LagerBase
 	JumboLager() : LagerBase(ppsInstanzID::None) {}      
 #endif
 
-      void Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jumbo_LogTyp typ,const int uid,const std::string& user,const Zeitpunkt_new *zeit,bool produziert);
-      void Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,const int uid,const std::string& user,const Zeitpunkt_new *zeit, bool fuer_auftrag);
+      void Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jumbo_LogTyp typ,const std::string& user,const Zeitpunkt_new *zeit,bool produziert);
+      void Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,const std::string& user,const Zeitpunkt_new *zeit, bool fuer_auftrag);
 };
 
 #endif

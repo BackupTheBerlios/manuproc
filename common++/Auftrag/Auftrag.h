@@ -1,4 +1,4 @@
-/* $Id: Auftrag.h,v 1.25 2003/07/03 09:15:16 christof Exp $ */
+/* $Id: Auftrag.h,v 1.26 2003/09/02 12:10:52 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -111,7 +111,7 @@ public:
 
    AufEintragBase push_back(const mengen_t bestellt, 
                 const ManuProC::Datum lieferdatum, const ArtikelBase& artikel,
-                const AufStatVal status,int uid,const bool setInstanzAuftraege,
+                const AufStatVal status,const bool setInstanzAuftraege,
                 const Preis& preis=Preis(),const rabatt_t aufeintragsrabatt=0,
                 const cH_PreisListe &preisliste=PreisListe::none_id) const throw(SQLerror);
 

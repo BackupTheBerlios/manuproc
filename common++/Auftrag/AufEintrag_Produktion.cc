@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.10 2003/09/02 09:26:20 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.11 2003/09/02 12:10:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -47,7 +47,7 @@
 #endif
 
 AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
-                const ArtikelBase &artikel,mengen_t menge,unsigned uid,bool rekursiv,
+                const ArtikelBase &artikel,mengen_t menge,bool rekursiv,
                 const AufEintragBase &elter,const ProductionContext2 &ctx,
                 ManuProC::Datum termin)
 {  // Code wie in ProduziertNG
@@ -58,10 +58,10 @@ AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
    Transaction tr;
    AuftragBase zielauftrag(instanz,plan_auftrag_id);
    AufEintragBase neuerAEB(zielauftrag,
-                       zielauftrag.PassendeZeile(termin,artikel,CLOSED,getuid()));
+                       zielauftrag.PassendeZeile(termin,artikel,CLOSED));
    AufEintrag ae(neuerAEB);
    // elter kann nicht übergeben werden, da sonst bereits mit Menge angelegt
-   ae.MengeAendern(uid,menge,false,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
+   ae.MengeAendern(menge,false,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
    ae.abschreiben(menge);
    if (elter.valid()) AufEintragZu(elter).Neu(ae,0);
    if (rekursiv)
@@ -69,7 +69,7 @@ AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
       if (instanz->LagerInstanz())
       {  cH_ppsInstanz pi=ppsInstanz::getProduktionsInstanz(artikel);
          if (pi!=ppsInstanzID::None && !pi->ProduziertSelbst())
-            unbestellteMengeProduzieren(pi,artikel,menge,uid,true,neuerAEB);
+            unbestellteMengeProduzieren(pi,artikel,menge,true,neuerAEB);
       }
       else
       {  ArtikelBaum AB(artikel);
@@ -77,7 +77,7 @@ AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
          {  cH_ppsInstanz bi=ppsInstanz::getBestellInstanz(i->rohartikel);
             if (bi!=ppsInstanzID::None && !bi->ProduziertSelbst())
                unbestellteMengeProduzieren(bi,i->rohartikel,i->menge*menge,
-               		uid,true,neuerAEB);
+               		true,neuerAEB);
          }
       }
    }
@@ -88,16 +88,15 @@ AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
 // etwas bestelltes wird produziert
 class AufEintrag::MichProduzieren : public distribute_parents_cb
 {	AufEintrag &mythis;
-	unsigned uid;
 	ProductionContext2 ctx;
 public:
 	AuftragBase::mengen_t operator()(const AufEintragBase &elter,AuftragBase::mengen_t m) const
 	{  if (elter.Id()==AuftragBase::dispo_auftrag_id) return 0;
-	   mythis.ProduziertNG(uid,m,elter,elter,ctx);
+	   mythis.ProduziertNG(m,elter,elter,ctx);
 	   return m;
 	}
 	MichProduzieren(AufEintrag &_mythis,const ProductionContext2 &_ctx) 
-		: mythis(_mythis), uid(getuid()), ctx(_ctx) {}
+		: mythis(_mythis), ctx(_ctx) {}
 };
 
 // Menge wurde geliefert.
@@ -108,8 +107,7 @@ public:
 // wo werden die Instanzen darunter behandelt?
 // ==> WurdeProduziert macht das ganze rekusiv
 void AufEintrag::abschreiben(mengen_t menge) throw(SQLerror)
-{int uid=getuid();
- ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),NV("Menge",menge));
+{ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),NV("Menge",menge));
 
   mengen_t GELIEFERT=getGeliefert()+menge;
   mengen_t BESTELLT=getStueck();
@@ -144,12 +142,12 @@ void AufEintrag::abschreiben(mengen_t menge) throw(SQLerror)
 
  // zumindest 2er werden nie geschlossen, nur auf 0 gesetzt
  if(STATUS!=oldstatus && Id()!=dispo_auftrag_id)
-     setStatus(AufStatVal(STATUS),uid,true);
+     setStatus(AufStatVal(STATUS),true);
 
  // eigentlich könnte das if hier weg ... geht aber schneller so
  // dispomenge auf offene Menge beschränken
  if (Instanz() != ppsInstanzID::Kundenauftraege && menge>0)
-    DispoBeschraenken(uid);
+    DispoBeschraenken();
 
  tr.commit();
 }
@@ -162,10 +160,10 @@ void AufEintrag::ProduziertNG(mengen_t M,const ProductionContext2 &ctx)
    // dies ist hier um Lieferscheine im Lager (=auslagern) zu handeln
    if (Instanz()->LagerInstanz())
    {  Lager L(Instanz());
-      L.raus_aus_lager(Artikel(),M,getuid(),true,ProductionContext(AufEintragBase(),ctx));
+      L.raus_aus_lager(Artikel(),M,true,ProductionContext(AufEintragBase(),ctx));
    }
    else if (Id()>=handplan_auftrag_id || Id()==plan_auftrag_id)
-   {  ProduziertNG(getuid(),M,AufEintragBase(),AufEintragBase(),ctx);
+   {  ProduziertNG(M,AufEintragBase(),AufEintragBase(),ctx);
    }
    else
    {  assert(M>=0);
@@ -188,13 +186,12 @@ if(Instanz() == ppsInstanzID::Kundenauftraege)
 }
 
 class AufEintrag::ProduziertNG_cb2 : public distribute_children_twice_cb
-{  unsigned uid;
-   AufEintragBase alterAEB,neuerAEB;
+{  AufEintragBase alterAEB,neuerAEB;
    ProductionContext2 ctx;
 public:
-	ProduziertNG_cb2(unsigned _uid, const AufEintragBase &aAEB, 
+	ProduziertNG_cb2(const AufEintragBase &aAEB, 
 		const AufEintragBase &nAEB,const ProductionContext2 &_ctx)
-		: uid(_uid), alterAEB(aAEB), neuerAEB(nAEB), ctx(_ctx) {}
+		: alterAEB(aAEB), neuerAEB(nAEB), ctx(_ctx) {}
 	AuftragBase::mengen_t operator()(const ArtikelBase &art,
 		const AufEintragBase &aeb,AuftragBase::mengen_t M,bool first) const
 	{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("aeb",aeb),NV("M",M));
@@ -203,10 +200,10 @@ public:
 	      {  AufEintragZu(alterAEB).setMengeDiff__(aeb,-M);
 		 Lager L(aeb.Instanz());
 		 // oder elter_neu?
-		 L.raus_aus_lager(art,M,uid,true,ProductionContext(alterAEB,ctx,aeb));
+		 L.raus_aus_lager(art,M,true,ProductionContext(alterAEB,ctx,aeb));
 	      }
 	      else
-	         AufEintrag(aeb).ProduziertNG(uid,M,alterAEB,neuerAEB,ctx);
+	         AufEintrag(aeb).ProduziertNG(M,alterAEB,neuerAEB,ctx);
            }
            else if (M<0) return 0; // soll ProdRueckgaengig2 machen ???
            else
@@ -244,25 +241,24 @@ public:
 	      {  inst=ppsInstanz::getBestellInstanz(as)->Id();
 	         termin=termin-neuerAEB.Instanz()->ProduktionsDauer();
 	      }
-	      AufEintrag::ArtikelInternNachbestellen(inst,-M,termin,art,uid,neuerAEB);
+	      AufEintrag::ArtikelInternNachbestellen(inst,-M,termin,art,neuerAEB);
 	      return;
 	   }
 	   assert(M>0); // NaechsteInstanz?
 	   cH_ppsInstanz wo=ppsInstanz::getBestellInstanz(art);
 	   if (wo==neuerAEB.Instanz()) wo=ppsInstanz::getProduktionsInstanz(art);
 	   assert(wo!=neuerAEB.Instanz());
-	   AufEintrag::unbestellteMengeProduzieren(wo,art,M,uid,true,neuerAEB,ctx);
+	   AufEintrag::unbestellteMengeProduzieren(wo,art,M,true,neuerAEB,ctx);
 	}
 };
 
 #if 0
 // noch erforderlich???
 class AufEintrag::ProduziertRueckgaengig2 : public distribute_children_cb
-{  unsigned uid;
-   AufEintrag alterAEB;
+{  AufEintrag alterAEB;
 public:
-	ProduziertRueckgaengig2(unsigned _uid, const AufEintrag &aAEB)
-		: uid(_uid), alterAEB(aAEB) {}
+	ProduziertRueckgaengig2(const AufEintrag &aAEB)
+		: alterAEB(aAEB) {}
 	AuftragBase::mengen_t operator()(const ArtikelBase &art,
 		const AufEintragBase &aeb,AuftragBase::mengen_t M) const
 	{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("aeb",aeb),NV("M",M));
@@ -291,7 +287,7 @@ public:
 	   {  AufEintrag::ArtikelInternNachbestellen(next,-M,
 	   		alterAEB.getLieferdatum()
 	   		  -alterAEB.Instanz()->ProduktionsDauer(),
-	   		art,uid,alterAEB);
+	   		art,alterAEB);
 	   }
 	   else std::cout << "ProduziertRueckgaengig2: Überproduktion " << M
 	   	<< " von "<< art.Id() <<  '\n';
@@ -302,7 +298,7 @@ public:
 // similar to move_to
 // Produktion im Lager bedeutet:
 // Einlagern==MengeVormerken   Auslagern==Produktion
-void AufEintrag::ProduziertNG(unsigned uid, mengen_t M,
+void AufEintrag::ProduziertNG(mengen_t M,
 		const AufEintragBase &elter_alt,
 		const AufEintragBase &elter_neu,
 		const ProductionContext2 &ctx)
@@ -342,15 +338,15 @@ void AufEintrag::ProduziertNG(unsigned uid, mengen_t M,
       {  assert(Id()==plan_auftrag_id);
          abschreiben(M);
       }
-      MengeAendern(uid,-M.abs(),false,M>0 ? elter_alt : AufEintragBase(),
+      MengeAendern(-M.abs(),false,M>0 ? elter_alt : AufEintragBase(),
       		ManuProC::Auftrag::r_Produziert);
-      if (M<0 && !getRestStk()) setStatus(AufStatVal(CLOSED),uid,true);
+      if (M<0 && !getRestStk()) setStatus(AufStatVal(CLOSED),true);
       AuftragBase zielauftrag(Instanz(),M>=0?plan_auftrag_id:ungeplante_id);
       AufStatVal st=(M<0) ? OPEN : CLOSED;
       neuerAEB=AufEintragBase(zielauftrag,
-         	zielauftrag.PassendeZeile(getLieferdatum(),Artikel(),st,uid));
+         	zielauftrag.PassendeZeile(getLieferdatum(),Artikel(),st));
       AufEintrag ae(neuerAEB);
-      ae.MengeAendern(uid,M.abs(),false,
+      ae.MengeAendern(M.abs(),false,
          	M<0 ?elter_neu:AufEintragBase(),
          	ManuProC::Auftrag::r_Produziert);
       if (M>0)
@@ -365,7 +361,7 @@ void AufEintrag::ProduziertNG(unsigned uid, mengen_t M,
    if(EI->AutomatischEinlagern())
    {  assert(Instanz()->ProduziertSelbst()); // sonst Endlosrekursion
       ManuProC::Trace(trace_channel, "AutomatischEinlagern");
-      Lager(EI).rein_ins_lager(Artikel(),M,uid,true);
+      Lager(EI).rein_ins_lager(Artikel(),M,true);
    }
 }
 
@@ -374,15 +370,14 @@ void AufEintrag::KinderProduzieren(mengen_t M, const AufEintragBase &neuerAEB,
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,
 			NV("this",*this),NV("M",M),
 			NV("neu",neuerAEB), NV("ctx",ctx));
-   unsigned uid=getuid();
    // Kinder bearbeiten
-   ProduziertNG_cb2 callback(uid,*this,neuerAEB,ctx);
+   ProduziertNG_cb2 callback(*this,neuerAEB,ctx);
    if (M<0)
    {  // vielleicht hier artbaum statt alles unten?
       distribute_children_artbaum(*this,M,Artikel(),callback);
       // bei ProduziertSelbst hilft obiges nicht allein (keine Pfeile nach unten entstanden)
 //      AufEintrag neuerAE=neuerAEB;
-//      distribute_children_artbaum(neuerAE,M,Artikel(),ProduziertRueckgaengig2(uid,neuerAE));
+//      distribute_children_artbaum(neuerAE,M,Artikel(),ProduziertRueckgaengig2(neuerAE));
    }
    else
    {  // bei ProdSelbst:

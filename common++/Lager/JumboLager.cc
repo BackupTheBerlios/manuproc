@@ -1,4 +1,4 @@
-// $Id: JumboLager.cc,v 1.8 2003/07/04 14:33:59 christof Exp $
+// $Id: JumboLager.cc,v 1.9 2003/09/02 12:10:52 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -30,7 +30,7 @@
 #include <Misc/FetchIStream.h>
 
 void JumboLager::Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jumbo_LogTyp typ,
-   const int uid,const std::string& user,const Zeitpunkt_new *zeit,bool produziert)
+   const std::string& user,const Zeitpunkt_new *zeit,bool produziert)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("code",jumbo.Code()),
   		NV("zeit",zeit?*zeit:Zeitpunkt_new()),
@@ -84,16 +84,16 @@ void JumboLager::Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jum
   jumbo.setStatus_nodb(JumboRolle::Jumbo_Status(STATUS));
   if(typ!=Umraeumen && STATUS==JumboRolle::ImLager)
   {  if (jumbo.VerarbDatum().valid())
-        wiedereinlagern(jumbo.Artikel(),jumbo.Meter(),uid);
+        wiedereinlagern(jumbo.Artikel(),jumbo.Meter());
      else
-        rein_ins_lager(jumbo.Artikel(),jumbo.Meter(),uid,produziert);
+        rein_ins_lager(jumbo.Artikel(),jumbo.Meter(),produziert);
   }
-  Jumbo_Log(jumbo,typ,uid,user,zeit);
+  Jumbo_Log(jumbo,typ,user,zeit);
   tr.commit();
 }
 
 void JumboLager::Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,
-   const int uid,const std::string& user,const Zeitpunkt_new *zeit,bool fuer_auftraege)
+   const std::string& user,const Zeitpunkt_new *zeit,bool fuer_auftraege)
 {  
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
   		NV("code",jumbo.Code()),
@@ -138,16 +138,16 @@ void JumboLager::Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,
   jumbo.setStatus_nodb(JumboRolle::Jumbo_Status(STATUS));
   if(typ!=SchonDraussen && STATUS==JumboRolle::Verarbeitet)
   {  if (!jumbo.InsLagerDatum().valid())  // oder vielleicht false?
-        rein_ins_lager(jumbo.Artikel(),jumbo.Meter(),uid,fuer_auftraege);
-     raus_aus_lager(jumbo.Artikel(),jumbo.Meter(),uid,fuer_auftraege);
+        rein_ins_lager(jumbo.Artikel(),jumbo.Meter(),fuer_auftraege);
+     raus_aus_lager(jumbo.Artikel(),jumbo.Meter(),fuer_auftraege);
   }
-  Jumbo_Log(jumbo,typ,uid,user,zeit);
+  Jumbo_Log(jumbo,typ,user,zeit);
   // hupen
   if (throw100) throw SQLerror("Entnahme",100,"Rolle schon erfasst");
   tr.commit();
 }
 
-void JumboLager::Jumbo_Log(const JumboRolle& jumbo,Jumbo_LogTyp typ,const int uid,const std::string& user,const Zeitpunkt_new *zeit)
+void JumboLager::Jumbo_Log(const JumboRolle& jumbo,Jumbo_LogTyp typ,const std::string& user,const Zeitpunkt_new *zeit)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
   Query q("insert into lager_bewegung "

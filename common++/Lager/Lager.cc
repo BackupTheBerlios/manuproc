@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.39 2003/07/30 11:16:55 christof Exp $
+// $Id: Lager.cc,v 1.40 2003/09/02 12:10:52 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -49,7 +49,7 @@ Lager::Lager(cH_ppsInstanz instanz)
 
 
 void Lager::rein_ins_lager(const ArtikelBase &artikel,
-	const AuftragBase::mengen_t &menge,unsigned uid,bool produziert,
+	const AuftragBase::mengen_t &menge,bool produziert,
 	        const ProductionContext &ctx) const
 {  
 #ifndef MABELLA_LAGERHACK
@@ -63,11 +63,11 @@ void Lager::rein_ins_lager(const ArtikelBase &artikel,
  FertigWarenLager fwl(fw);
  fwl.Einlagern();
 #else
- LagerBase::rein_ins_lager(artikel,menge,uid,produziert,ctx); 
+ LagerBase::rein_ins_lager(artikel,menge,produziert,ctx); 
 #endif
 
 #else
- LagerBase::rein_ins_lager(artikel,menge,uid,produziert,ctx); 
+ LagerBase::rein_ins_lager(artikel,menge,produziert,ctx); 
 #endif
 
 
@@ -75,13 +75,13 @@ void Lager::rein_ins_lager(const ArtikelBase &artikel,
 }
 
 void Lager::wiedereinlagern(const ArtikelBase &artikel,
-	const AuftragBase::mengen_t &menge,unsigned uid) const
+	const AuftragBase::mengen_t &menge) const
 {  
- LagerBase::wiedereinlagern(artikel,menge,uid); 
+ LagerBase::wiedereinlagern(artikel,menge); 
 }
 
 void Lager::raus_aus_lager(const ArtikelBase &artikel,
-	AuftragBase::mengen_t menge,unsigned uid,bool fuer_auftrag,
+	AuftragBase::mengen_t menge,bool fuer_auftrag,
 	        const ProductionContext &ctx) const
 {  
 #ifndef MABELLA_LAGERHACK
@@ -95,12 +95,12 @@ void Lager::raus_aus_lager(const ArtikelBase &artikel,
  FertigWarenLager fwl(fw);
  fwl.Auslagern();
 #else
- LagerBase::raus_aus_lager(artikel,menge,uid,fuer_auftrag,ctx); 
+ LagerBase::raus_aus_lager(artikel,menge,fuer_auftrag,ctx); 
 #endif
 
 #else
 
- LagerBase::raus_aus_lager(artikel,menge,uid,fuer_auftrag,ctx); 
+ LagerBase::raus_aus_lager(artikel,menge,fuer_auftrag,ctx); 
 
 #endif
 }
@@ -110,7 +110,7 @@ void Lager::raus_aus_lager(const ArtikelBase &artikel,
 
 
 void LagerBase::rein_ins_lager(const ArtikelBase &artikel,
-	const AuftragBase::mengen_t &menge,unsigned uid,bool produziert,
+	const AuftragBase::mengen_t &menge,bool produziert,
 	        const ProductionContext &ctx) const
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
@@ -118,11 +118,11 @@ void LagerBase::rein_ins_lager(const ArtikelBase &artikel,
      	NV("produziert",produziert),NV("ctx",ctx));
   assert(menge>=0);
   // vielleicht doch besser nach AufEintrag?
-  AufEintrag::Einlagern(uid,*this,artikel,menge,produziert,ctx);
+  AufEintrag::Einlagern(*this,artikel,menge,produziert,ctx);
 }
 
 void LagerBase::raus_aus_lager(const ArtikelBase &artikel,
-	AuftragBase::mengen_t menge,unsigned uid,bool fuer_auftrag,
+	AuftragBase::mengen_t menge,bool fuer_auftrag,
 	        const ProductionContext &ctx) const 
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
@@ -132,10 +132,10 @@ void LagerBase::raus_aus_lager(const ArtikelBase &artikel,
 
   if (ctx.lager_aeb.valid())
   {  assert(fuer_auftrag);
-     AufEintrag(ctx.lager_aeb).Auslagern(menge,uid,ctx);
+     AufEintrag(ctx.lager_aeb).Auslagern(menge,ctx);
 #if 0     
      if (menge>0)
-     {  AufEintrag::unbestellteMengeProduzieren(*this,artikel,menge,uid,false,ctx.aeb);
+     {  AufEintrag::unbestellteMengeProduzieren(*this,artikel,menge,false,ctx.aeb);
         menge=0;
      }
      assert(!menge);
@@ -148,18 +148,18 @@ void LagerBase::raus_aus_lager(const ArtikelBase &artikel,
    // bei einem 2er 1er erzeugen
    if (menge!=0 && fuer_auftrag)
       menge=AufEintrag::Auslagern(
- 	  	AuftragBase(*this,AuftragBase::plan_auftrag_id),artikel,menge,uid,fuer_auftrag,ctx.leb);
+ 	  	AuftragBase(*this,AuftragBase::plan_auftrag_id),artikel,menge,fuer_auftrag,ctx.leb);
    if (menge!=0)
       menge=AufEintrag::Auslagern(
-      		AuftragBase(*this,AuftragBase::dispo_auftrag_id),artikel,menge,uid,fuer_auftrag,ctx.leb);
+      		AuftragBase(*this,AuftragBase::dispo_auftrag_id),artikel,menge,fuer_auftrag,ctx.leb);
    if (menge!=0 && !fuer_auftrag)
       menge=AufEintrag::Auslagern(
- 	  	AuftragBase(*this,AuftragBase::plan_auftrag_id),artikel,menge,uid,fuer_auftrag,ctx.leb);
+ 	  	AuftragBase(*this,AuftragBase::plan_auftrag_id),artikel,menge,fuer_auftrag,ctx.leb);
    
    if (menge!=0 && fuer_auftrag)
       // einfach als produziert vermerken
    {  if (menge>0)
-         AufEintrag::unbestellteMengeProduzieren(*this,artikel,menge,uid);
+         AufEintrag::unbestellteMengeProduzieren(*this,artikel,menge);
       else
          assert(menge>0);
    }

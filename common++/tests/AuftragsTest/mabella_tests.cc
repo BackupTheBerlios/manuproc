@@ -46,7 +46,7 @@ static bool LieferscheinJacek(AufEintrag &AE)
       Auftrag PA=Auftrag(Auftrag::Anlegen(EINKAUF),KUNDE2);
       int znr=1;
       AufEintrag AEP((AufEintragBase(EINKAUF,AuftragBase::ungeplante_id,znr)));
-      AEP.Planen(UID,27,PA,PLANDATUM5);
+      AEP.Planen(27,PA,PLANDATUM5);
       vergleichen(Check::Menge,"planen_kupfer","Über-Planen des Einkaufs (Mabella)","E");
       }
 

@@ -1,4 +1,4 @@
-// $Id: AufEintragZuMengenAenderung.h,v 1.7 2003/05/16 06:43:40 christof Exp $
+// $Id: AufEintragZuMengenAenderung.h,v 1.8 2003/09/02 12:10:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -27,14 +27,14 @@
 namespace AufEintragZuMengenAenderung {
 
   // Beim 'vormerken' eines Artikels 
-  __deprecated void change_parent(const int uid,const AufEintragBase &old_parent,
+  __deprecated void change_parent(const AufEintragBase &old_parent,
                               const AufEintragBase &new_parent,
                               const AuftragBase::mengen_t &menge) throw(SQLerror);
 
   // Beim 'schnappen' eines anderen geplanten Auftrags werden die 
   // Eltern-'0er' des 'child_aeb=1er' erhöht, die
   // Zuordnung wird reduzieren
-  __deprecated void increase_parents__reduce_assingments(const int uid,
+  __deprecated void increase_parents__reduce_assingments(
                      const AufEintragBase &child_aeb,
                      AuftragBase::mengen_t menge) throw(SQLerror);
 
@@ -42,14 +42,14 @@ namespace AufEintragZuMengenAenderung {
                         const AuftragBase::mengen_t &menge) throw(SQLerror);
 
   // beim 'planen' eines AufEintrags
-  __deprecated void move_zuordnung_zu_geplantem(const int uid,
+  __deprecated void move_zuordnung_zu_geplantem(
                                    AufEintrag &AE0er, 
                                    AufEintrag &AE1er,
                                    AuftragBase::mengen_t menge,
                                    ManuProC::Auftrag::Action reason) throw(SQLerror);
 
    // ElternAEB erhält Menge vom 2er
-   __deprecated void freie_dispomenge_verwenden(const int uid,
+   __deprecated void freie_dispomenge_verwenden(
          const AufEintrag &AE2er,AuftragBase::mengen_t menge,const AufEintragBase &ElternAEB) throw(SQLerror);
 }
 

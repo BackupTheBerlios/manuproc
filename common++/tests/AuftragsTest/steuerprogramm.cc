@@ -82,7 +82,7 @@ static int auftragstests(TestReihe *mode)
       AufEintragBase AEB=auftrag.anlegen();
       AufEintrag AE=AEB;
       std::cout << "Anlegen eines Auftrags ["<<AEB<<"] beendet\n\n";
-      AE.setStatus(OPEN,UID);
+      AE.setStatus(OPEN);
       vergleichen(Check::Menge,"mit_lager_open","Öffnen des Auftrags","");
       
       (*(mode->aufruf_mit_auftrag))(AE);

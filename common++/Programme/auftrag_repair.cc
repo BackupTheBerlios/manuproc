@@ -1,4 +1,4 @@
-// $Id: auftrag_repair.cc,v 1.3 2003/08/05 10:37:53 christof Exp $
+// $Id: auftrag_repair.cc,v 1.4 2003/09/02 12:10:52 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -72,7 +72,7 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,const bool analys
      {
       if(I->EigeneLagerKlasseImplementiert())
         try
-        {alles_ok&=RI.ReparaturLager(getuid(),analyse_only);
+        {alles_ok&=RI.ReparaturLager(analyse_only);
         } catch (SQLerror &e)
         {  std::cout << "SQL Fehler " << e << '\n';
            alles_ok=false;
