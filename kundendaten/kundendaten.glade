@@ -337,7 +337,7 @@
 		<widget>
 		  <class>GtkFrame</class>
 		  <name>frame29</name>
-		  <label>Firma / Name</label>
+		  <label>Firma / Vorname</label>
 		  <label_xalign>0</label_xalign>
 		  <shadow_type>GTK_SHADOW_NONE</shadow_type>
 		  <child>
@@ -754,7 +754,7 @@
 		<widget>
 		  <class>GtkFrame</class>
 		  <name>frame71</name>
-		  <label>Firma2 / Vorname</label>
+		  <label>Firma2 / Name</label>
 		  <label_xalign>0</label_xalign>
 		  <shadow_type>GTK_SHADOW_NONE</shadow_type>
 		  <child>
@@ -1818,7 +1818,7 @@
 
 		    <widget>
 		      <class>Custom</class>
-		      <name>custom3</name>
+		      <name>extartbez</name>
 		      <cxx_visibility>protected</cxx_visibility>
 		      <creation_function>KundenBox2</creation_function>
 		      <int1>0</int1>
@@ -1879,7 +1879,7 @@
 
 		      <widget>
 			<class>Custom</class>
-			<name>custom4</name>
+			<name>rng_an</name>
 			<cxx_visibility>protected</cxx_visibility>
 			<creation_function>KundenBox2</creation_function>
 			<int1>0</int1>
@@ -1945,7 +1945,7 @@
 
 		      <widget>
 			<class>GtkCheckButton</class>
-			<name>checkbutton1</name>
+			<name>checkbuttonRchngAdr</name>
 			<border_width>2</border_width>
 			<width>0</width>
 			<height>0</height>
@@ -1972,7 +1972,7 @@
 
 		      <widget>
 			<class>GtkCheckButton</class>
-			<name>checkbutton2</name>
+			<name>checkbuttonLieferAdr</name>
 			<border_width>2</border_width>
 			<width>0</width>
 			<height>0</height>
@@ -1999,7 +1999,7 @@
 
 		      <widget>
 			<class>GtkCheckButton</class>
-			<name>checkbutton3</name>
+			<name>checkbuttonAuftrAdr</name>
 			<cxx_visibility>protected</cxx_visibility>
 			<can_focus>True</can_focus>
 			<label>Auftragsadresse</label>
@@ -2047,7 +2047,7 @@
 
 		  <widget>
 		    <class>GtkCheckButton</class>
-		    <name>checkbutton4</name>
+		    <name>checkbutton_rng_an_postfach</name>
 		    <width>0</width>
 		    <height>0</height>
 		    <cxx_visibility>protected</cxx_visibility>
@@ -2109,7 +2109,7 @@
 
 		      <widget>
 			<class>Custom</class>
-			<name>custom5</name>
+			<name>lfr_an</name>
 			<cxx_visibility>protected</cxx_visibility>
 			<signal>
 			  <name>activate</name>
