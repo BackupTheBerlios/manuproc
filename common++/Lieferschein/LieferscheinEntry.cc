@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.71 2004/06/21 14:14:48 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.72 2004/09/13 10:25:38 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -116,14 +116,12 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
     AuftragBase::mengen_t abmenge=Abschreibmenge(_stueck,_menge);
     ManuProC::Trace(trace_channel,"",NV("abmenge",abmenge));
 
-    if (ein_auftrag)
+    if (ein_auftrag && VZusatz[0].aeb.valid())
     {  assert(NurEinKind(VZusatz));
-       if(VZusatz[0].aeb.valid()) // => Keine Zusatzinfos
-       {  AufEintrag AE(VZusatz[0].aeb);
-          // verhindern dass negative Menge auftreten
-          assert (!(abmenge<0 && -abmenge>AE.getGeliefert()));
-          AE.ProduziertNG(abmenge,*this);
-       }
+       AufEintrag AE(VZusatz[0].aeb);
+       // verhindern dass negative Menge auftreten
+       assert (!(abmenge<0 && -abmenge>AE.getGeliefert()));
+       AE.ProduziertNG(abmenge,*this);
     }
     else 
      {
