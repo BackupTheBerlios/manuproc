@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.59 2004/02/12 15:15:45 jacek Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.60 2004/02/13 10:23:56 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -82,6 +82,13 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
    changeStatus(new_status,ls,ein_auftrag,stueck,menge);
 }
 
+namespace { struct stornoliste
+{	AufEintragBase aeb;
+	AuftragBase::mengen_t menge,abmenge;
+	
+	stornoliste(const AufEintragBase &a,AuftragBase::mengen_t m,AuftragBase::mengen_t am)
+	: aeb(a), menge(m), abmenge(am) {}
+}; }
 
 void LieferscheinEntry::changeStatus(AufStatVal new_status, 
 		const Lieferschein &ls, bool ein_auftrag,
@@ -156,6 +163,8 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
         zusaetze_t VZ=getZusatzInfos();
   #warning in dieser Reihenfolge Menge ermitteln aber umgekehrt abschreiben,
   //	damit der Erste eventuelle Lagerbestände reservieren kann!
+  	typedef std::vector<stornoliste> list_t;
+  	list_t liste;
         for(LieferscheinEntry::zusaetze_t::reverse_iterator i=VZ.rbegin();i!=VZ.rend();++i)
         {
           AuftragBase::mengen_t actualmenge=abmenge2;
@@ -165,12 +174,15 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
           	NV("i->menge",i->menge));
           if (!actualmenge) continue;
           
-          if(i->aeb.valid()) 
-             AufEintrag(i->aeb).ProduziertNG(actualmenge,*this);
-          if(!(i->menge + actualmenge)) deleteZusatzEntry(i->aeb);
-          else updateZusatzEntry(i->aeb,i->menge + actualmenge);
+          liste.push_back(stornoliste(i->aeb,i->menge,actualmenge));
           abmenge2-=actualmenge;
           if(!abmenge2) break;
+        }
+        for (list_t::reverse_iterator i=liste.rbegin();i!=liste.rend();++i)
+        { if(i->aeb.valid()) 
+             AufEintrag(i->aeb).ProduziertNG(i->abmenge,*this);
+          if(!(i->menge + i->abmenge)) deleteZusatzEntry(i->aeb);
+          else updateZusatzEntry(i->aeb,i->menge + i->abmenge);
         }
        }
      }
