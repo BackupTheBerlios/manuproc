@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.39 2004/05/05 12:08:08 christof Exp $
+# $Id: Makefile.am,v 1.40 2004/05/17 09:11:03 christof Exp $
 AM_CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
@@ -33,7 +33,6 @@ $(LINKS):
 include_HEADERS = datewin.h logwin.h \
 	EingabeBox.hh ProzessBox.hh \
 	ArtikelBox.hh datewin_glade.hh \
-	SearchComboContent.hh SearchCombo.hh \
 	Association.h TreeModelDebug.h
    
 oldheaders=\
