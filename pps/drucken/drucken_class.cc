@@ -316,7 +316,7 @@ catch(SQLerror &e) { std::cout << e; return; }
 	os << "~" << string2TeX(Notiz(),sf)<<"~" << "\\\\\n";
 	}
 
- if(Typ()==Rechnung)
+ if(Typ()==Rechnung && !gutschrift())
  if(kunde_an->land()->Auslaender())
    if(!kunde_an->land()->EU())
         {os << "~\\\\";
