@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: TeX.cc,v 1.4 2004/01/28 10:47:44 christof Exp $
+// $Id: TeX.cc,v 1.5 2004/02/29 21:33:22 christof Exp $
 
 #include <TeX.h>
 
@@ -34,7 +34,7 @@ std::ostream &TeX::Header(std::ostream &os, HeaderFlags fl)
    }
 
    // now output it
-   os << "% created using $Id: TeX.cc,v 1.4 2004/01/28 10:47:44 christof Exp $\n";
+   os << "% created using $Id: TeX.cc,v 1.5 2004/02/29 21:33:22 christof Exp $\n";
    os << "\\documentclass["<< fl.ptsize << "pt";
    if (fl.a4) os << ",a4paper";
    if (fl.twocolumn) os << ",twocolumn";
@@ -86,7 +86,12 @@ std::string TeX::string2TeX(const std::string &s, const StringFlags &fl) throw()
    std::string ret="";
 
    for (i = 0; i<s.size() ; i++)
-   {  switch ((unsigned char)(s[i]))
+   {  int value=(unsigned char)(s[i]);
+      // UTF-8 wandeln
+      if ((value&0xe0)==0xc0 && i+1<s.size() && (s[i+1]&0xc0)==0x80)
+      {  ++i; value=((value&0x1f)<<6)|(s[i]&0x3f);
+      }
+      switch (value)
       {	 case '&':
 	 case '%':
 	 case '{':
@@ -109,13 +114,13 @@ std::string TeX::string2TeX(const std::string &s, const StringFlags &fl) throw()
 	 case 160: in_line=true;
 	    ret+=' ';
 	    break;
-	 case (unsigned char)'µ': in_line=true;
+	 case 0xb5: in_line=true;
 	    ret+="$\\mu$";
 	    break;
-	 case (unsigned char)'²': in_line=true;
+	 case 0xb2: in_line=true;
 	    ret+="$^2$";
 	    break;
-	 case (unsigned char)'³': in_line=true;
+	 case 0xb3: in_line=true;
 	    ret+="$^3$";
 	    break;
 	 case '|':
@@ -132,7 +137,13 @@ std::string TeX::string2TeX(const std::string &s, const StringFlags &fl) throw()
 	    else { ret+= s[i]; in_line=true; }
 	    break;
 	 default:
-	    ret+= s[i]; in_line=true;
+	    if (value<0x80) // || value==(unsigned char)(s[i]))
+	       ret+= s[i];
+	    else // UTF-8 2 byte
+	    {  ret+=char(0xc0|((value>>6)&0x1f));
+	       ret+=char(0x80|(value&0x3f));
+	    }
+	    in_line=true;
 	    break;
       }
    }

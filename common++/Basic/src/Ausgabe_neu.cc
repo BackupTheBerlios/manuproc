@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.cc,v 1.15 2003/11/07 11:16:42 jacek Exp $ */
+/* $Id: Ausgabe_neu.cc,v 1.16 2004/02/29 21:32:32 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -123,7 +123,12 @@ std::string string2TeX(const std::string s, int flags) throw()
    std::string ret="";
 
    for (i = 0; i<s.size() ; i++)
-   {  switch ((unsigned char)(s[i]))
+   {  int value=(unsigned char)(s[i]);
+      // UTF-8 umwandeln
+      if ((value&0xe0)==0xc0 && i+1<s.size() && (s[i+1]&0xc0)==0x80)
+      {  ++i; value=((value&0x1f)<<6)|(s[i]&0x3f);
+      }
+      switch (value)
       {	 case '&':
 	 case '%':
 	 case '{':
@@ -146,7 +151,7 @@ std::string string2TeX(const std::string s, int flags) throw()
 	 case 160: in_line=true;
 	    ret+=' ';
 	    break;
-	 case (unsigned char)'µ': in_line=true;
+	 case 0xb5: in_line=true;
 	    ret+="$\\mu$";
 	    break;
 	 case '\\': in_line=true;
@@ -164,7 +169,13 @@ std::string string2TeX(const std::string s, int flags) throw()
 	    ret+= s[i];
 	    break;
 	 default:
-	    ret+= s[i]; in_line=true;
+	    if (value<0x80 || value==(unsigned char)(s[i]))
+               ret+= s[i];
+            else // UTF-8 2 byte
+            {  ret+=char(0xc0|((value>>6)&0x1f));
+               ret+=char(0x80|(value&0x3f));
+            }
+	    in_line=true;
 	    break;
       }
    }
