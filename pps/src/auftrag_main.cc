@@ -1002,7 +1002,6 @@ void auftrag_main::on_togglebutton_bestellen_toggled()
 {
   if(togglebutton_bestellen->get_active()) 
    { 
-     OptMen_Instanz_Bestellen->set_nur_geplant_von(instanz);
      if(OptMen_Instanz_Bestellen->get_menu()->items().empty())
           {OptMen_Instanz_Bestellen->hide();
           kunden_lieferant->show();
