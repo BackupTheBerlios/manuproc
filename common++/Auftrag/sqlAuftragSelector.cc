@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.32 2004/01/20 09:57:49 jacek Exp $
+// $Id: sqlAuftragSelector.cc,v 1.33 2004/02/02 16:59:02 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -73,7 +73,7 @@
 	" from " FULL_FROM " where true "
 
 
-//#define FULL_SELECT_NO_0 " and bestellt!=0 "
+#define FULL_SELECT_NO_0 " and bestellt!=0 "
 #define FULL_SELECT_NO_STORNO " and e.status!="+itos(STORNO)+" "
 
 // Vorsicht: enthält keine führenden/abschließenden Leerzeichen
@@ -119,6 +119,8 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Status& selstr)
    cl=FULL_SELECT_FROM_WHERE2(WARENGRUPPE_JOIN);
  else
    cl=FULL_SELECT_FROM_WHERE; 
+
+  cl+=FULL_SELECT_NO_0;
 
   cl+= IDQualifier(selstr.id) +" and "
     + StatusQualifier(selstr.status)+
@@ -237,7 +239,7 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel &selstr)
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Kunde_Status &selstr)
 {
  setClausel(FULL_SELECT_FROM_WHERE 
-        " and bestellt!=0 "
+	FULL_SELECT_NO_0
 	     " and "+StatusQualifier(selstr.stat)+
 	     " and a.instanz="+itos(selstr.instanz) +
 	     " and a.kundennr=" + itos(selstr.kundennr) +

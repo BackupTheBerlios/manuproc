@@ -1,8 +1,9 @@
-# $Id: Makefile.am,v 1.29 2003/12/16 10:53:50 jacek Exp $
+# $Id: Makefile.am,v 1.30 2004/02/02 16:59:02 jacek Exp $
 
 ENDUSER=-DPETIG
 
-AM_CXXFLAGS=-D MABELLA_LAGERHACK -I/home/share/include @CXXFLAGS@ @ECPG_INCLUDES@
+#AM_CXXFLAGS=-D MABELLA_LAGERHACK -I/home/share/include @CXXFLAGS@ @ECPG_INCLUDES@
+AM_CXXFLAGS=-I/home/share/include @CXXFLAGS@ @ECPG_INCLUDES@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
 
