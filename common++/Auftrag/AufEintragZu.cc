@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.25 2003/08/14 09:22:15 christof Exp $
+// $Id: AufEintragZu.cc,v 1.26 2003/09/02 16:17:41 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -332,9 +332,9 @@ void AufEintragZu::moveInstanz(const VonNachDel vdl,const AufEintragBase &oldAEB
 AuftragBase::mengen_t AufEintragZu::getMenge(const AufEintragBase& aeb) const
 {
  ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,aeb);
- return (Query("select menge from auftragsentryzuordnung "
+ return (Query("select sum(menge) from auftragsentryzuordnung "
     "where (altinstanz,altauftragid,altzeilennr, "
-    	"neuinstanz,neuauftragid,neuzeilennr) = (?,?,?, ?,?,?)").lvalue()
+    	"neuinstanz,neuauftragid,neuzeilennr) = (?,?,?, ?,?,?)")
     << static_cast<const AufEintragBase&>(*this) << aeb).FetchOne<int>();
 }
 
