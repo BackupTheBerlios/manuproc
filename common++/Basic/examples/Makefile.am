@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.19 2004/05/03 12:38:03 christof Exp $
+# $Id: Makefile.am,v 1.20 2004/06/01 10:54:49 christof Exp $
 	
 LDADD=$(top_srcdir)/src/libManuProC_Base.la @ECPG_LIBS@ @SIGC_LIBS@
 
@@ -17,7 +17,7 @@ B_SRCES=
 endif
 
 EXTRA_PROGRAMS=FetchIStream test_pgsql_conv testHandles testKW fixedpoint \
-	Zeitpunkt mvc trace rexml
+	Zeitpunkt mvc trace rexml tagstream
 
 test_pgsql_conv_SOURCES=test_pgsql_conv.cc
 testHandles_SOURCES=testHandles.cc
@@ -28,6 +28,7 @@ trace_SOURCES=trace.cc
 FetchIStream_SOURCES=$(B_SRCES)
 mvc_SOURCES=mvc.cc
 rexml_SOURCES=rexml.cc
+tagstream_SOURCES=tagstream.cc
 
 CLEANFILES= *~ $(EXTRA_PROGRAMS)
 
