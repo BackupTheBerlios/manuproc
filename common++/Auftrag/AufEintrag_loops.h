@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.h,v 1.11 2004/02/27 15:14:11 christof Exp $ */
+/* $Id: AufEintrag_loops.h,v 1.12 2004/02/27 16:35:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,7 +33,7 @@ struct distribute_children_cb
 	{  return operator()(a,r.AEB,m); }
 	// backward compatibility (less information)
 	virtual AuftragBase::mengen_t operator()(const ArtikelBase &,
-		const AufEintragBase &,AuftragBase::mengen_t) const=0;
+		const AufEintragBase &,AuftragBase::mengen_t) const;
 	// for the remainder
 	virtual void operator()(const ArtikelBase &,AuftragBase::mengen_t) const=0;
 	// Strict Weak Ordering (sort) a<b
@@ -46,7 +46,7 @@ public:
 	distribute_children_cb_inverter(const distribute_children_cb &c)
 		: callee(c) {}	
 	virtual AuftragBase::mengen_t operator()(const ArtikelBase &a, 
-		const AufEintragBase &e,AuftragBase::mengen_t m) const
+		const AufEintragZu::st_reflist &e,AuftragBase::mengen_t m) const
 	{ return callee(a,e,m); }
 	virtual void operator()(const ArtikelBase &a,AuftragBase::mengen_t m) const
 	{ return callee(a,m); }

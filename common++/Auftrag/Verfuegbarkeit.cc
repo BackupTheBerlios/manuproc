@@ -1,4 +1,4 @@
-/* $Id: Verfuegbarkeit.cc,v 1.8 2004/02/23 10:09:15 christof Exp $ */
+/* $Id: Verfuegbarkeit.cc,v 1.9 2004/02/27 16:35:59 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -41,7 +41,7 @@ struct verf_recurse : distribute_children_cb
 	AufEintragBase elter;
 
 	AuftragBase::mengen_t operator()(const ArtikelBase &, 
-	                const AufEintragBase &,AuftragBase::mengen_t) const;
+	                const AufEintragZu::st_reflist &,AuftragBase::mengen_t) const;
 	void operator()(const ArtikelBase &,AuftragBase::mengen_t) const;
 	bool operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const
 	{  return AufEintragZu_sort::auftr_1230(a,b);
@@ -55,29 +55,48 @@ struct verf_recurse : distribute_children_cb
 };
 }
 
+namespace{ struct verf_recurse_sort
+{	bool operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const
+	{  return AufEintragZu_sort::priority(b,a); }
+};}
+
 AuftragBase::mengen_t verf_recurse::operator()(const ArtikelBase &art, 
-	                const AufEintragBase &aeb,AuftragBase::mengen_t m) const
-{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("art",art),
-		NV("aeb",aeb),NV("m",m),NV("offset",offset),NV("elter",elter));
+	                const AufEintragZu::st_reflist &rl,AuftragBase::mengen_t m) const
+{  ManuProC::Trace(AuftragBase::trace_channel, "",
+		NV("lastoffs",lastoffs),NV("elter",elter));
+   // über die Kinder von elter den passenden Eintrag suchen
+   // lastoffs beinhaltet den aktuell gültigen offset
    if (art!=lastart)
    {  lastart=art;
       lastoffs=offset*artbaum.Faktor(art);
-      lastinst=aeb.Instanz();
+      lastinst=rl.AEB.Instanz();
+      ManuProC::Trace(AuftragBase::trace_channel,"[new Article]",
+   		NV("offset",offset),NV("lastart",lastart),
+   		NV("lastoffs",lastoffs)); // ,NV("lastinst",lastinst));
    }
    AuftragBase::mengen_t offset=lastoffs;
+   lastoffs-=rl.Menge;
+   if (lastoffs<0) lastoffs=0;
+//   if (offset>=m) return 0;
+   
+   AufEintrag ae(rl.AEB);
+   if (m+offset>ae.getStueck()) m=ae.getStueck()-offset;
+   if (m<=0) return 0;
    
    AufEintragZu::list_t Eltern= 
-   	AufEintragZu::get_Referenz_list(aeb,AufEintragZu::list_eltern,
-					AufEintragZu::list_ohneArtikel);
+   	AufEintragZu::get_Referenz_list(ae,AufEintragZu::list_eltern,
+					AufEintragZu::list_ohneArtikel,
+					AufEintragZu::list_unsorted);
+   Eltern.sort(verf_recurse_sort());
+   AuftragBase::mengen_t local_offset=ae.getStueck();
    for (AufEintragZu::list_t::iterator i=Eltern.begin();i!=Eltern.end();++i)
-   {  if (i->AEB==elter) break;
-      else offset+=i->Menge;
+   {  local_offset-=i->Menge;
+      if (i->AEB==elter && i->Pri==rl.Pri) break;
    }
    ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,
+   		NV("local_offset",local_offset),
    		NV("lastoffs",lastoffs),NV("offset",offset));
-   Verfuegbarkeit::verfuegbar(aeb,result,m,offset);
-   lastoffs-=m;
-   if (lastoffs<0) lastoffs=0;
+   Verfuegbarkeit::verfuegbar(ae,result,m,local_offset+offset);
    return m;
 }
 
@@ -95,24 +114,37 @@ void verf_recurse::operator()(const ArtikelBase &art,AuftragBase::mengen_t m) co
    }
 }
 
+static void verf_Trace(const Verfuegbarkeit::Mengen &m)
+{  ManuProC::Trace(AuftragBase::trace_channel,"=",
+   		NV("vorr",m.vorraetig),NV("gepl",m.geplant),
+   		NV("unge",m.ungeplant),NV("err",m.error));
+}
+
 void Verfuegbarkeit::verfuegbar(const AufEintrag &ae, map_t &result, 
 	mengen_t menge, mengen_t offset)
 {  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("ae",ae),
 		NV("menge",menge),NV("offset",offset));
-   if (!menge) menge=ae.getRestStk();
-   if (offset>=ae.getRestStk()) return;
+   mapindex idx(ae.Instanz(),ae.Artikel());
+   if (!menge) menge=ae.getStueck();
+   if (!!ae.getGeliefert())
+   {  AuftragBase::mengen_t m=0;
+      if (ae.getGeliefert()>offset)
+         m=AuftragBase::min(menge,ae.getGeliefert()-offset);
+      result[idx].vorraetig+=m;
+      menge-=m;
+      offset-=ae.getGeliefert();
+   }
+   if (offset>=ae.getRestStk()) { verf_Trace(result[idx]); return; }
    if (offset+menge>ae.getRestStk()) menge=ae.getRestStk()-offset;
-   if (!menge) return;
-   ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,NV("menge",menge));
+   if (!menge) { verf_Trace(result[idx]); return; }
+   ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,
+   		NV("menge",menge),NV("offset",offset));
    
    assert(ae.Id()!=AuftragBase::dispo_auftrag_id);
-   mapindex idx(ae.Instanz(),ae.Artikel());
    if (ae.Id()==AuftragBase::plan_auftrag_id || ae.Id()>=AuftragBase::handplan_auftrag_id)
    {  if (ae.Instanz()->LagerInstanz())
       {  result[idx].vorraetig+=AuftragBase::min(ae.getRestStk(),menge);
-         ManuProC::Trace(AuftragBase::trace_channel,"result",
-   		NV("vorr",result[idx].vorraetig),NV("gepl",result[idx].geplant),
-   		NV("unge",result[idx].ungeplant),NV("err",result[idx].error));
+         verf_Trace(result[idx]);
          return;
       }
       else
@@ -126,9 +158,7 @@ void Verfuegbarkeit::verfuegbar(const AufEintrag &ae, map_t &result,
    // Rekursion (order 1230)
    distribute_children_artbaum(ae,menge,ae.Artikel(),
    		verf_recurse(offset,result,ae.Artikel(),ae));
-   ManuProC::Trace(AuftragBase::trace_channel,"=",
-   		NV("vorr",result[idx].vorraetig),NV("gepl",result[idx].geplant),
-   		NV("unge",result[idx].ungeplant),NV("err",result[idx].error));
+   verf_Trace(result[idx]);
 }
 
 namespace
@@ -182,7 +212,5 @@ void Verfuegbarkeit::wozu_benoetigt(const AufEintrag &ae, map_t &result,
    
    // Rekursion (Priority)
    distribute_parents(ae,menge,benoe_recurse(offset,result,ae.Artikel(),ae));
-   ManuProC::Trace(AuftragBase::trace_channel,"=",
-   		NV("vorr",result[idx].vorraetig),NV("gepl",result[idx].geplant),
-   		NV("unge",result[idx].ungeplant),NV("err",result[idx].error));   
+   verf_Trace(result[idx]);
 }

@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.cc,v 1.19 2004/02/27 15:14:11 christof Exp $ */
+/* $Id: AufEintrag_loops.cc,v 1.20 2004/02/27 16:35:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -335,3 +335,7 @@ AuftragBase::mengen_t auf_positionen_verteilen_rev(const SQLFullAuftragSelector 
    return m;
 }
 
+AuftragBase::mengen_t distribute_children_cb::operator()(const ArtikelBase &,
+		const AufEintragBase &,AuftragBase::mengen_t) const
+{  assert(!"called");
+}
