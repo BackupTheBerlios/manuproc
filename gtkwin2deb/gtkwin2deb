@@ -11,6 +11,7 @@ calculate_deps() {
     gtkdep) EXTRA_FILES="lib/libgdi32.la lib/libiconv.la lib/libintl.la"
       ;;
     glib) EXTRA_FILES="lib/libglib-2.0.la lib/libgmodule-2.0.la lib/libgobject-2.0.la"
+      DEPENDS="mingw32 mingw32-gtkdep-dev"
       ;;
     gtk+) DEPENDS="mingw32 mingw32-glib-dev mingw32-pango-dev mingw32-atk-dev"
       EXTRA_FILES="lib/libgdk_pixbuf-2.0.la lib/libgdk-win32-2.0.la lib/libgtk-win32-2.0.la"
@@ -66,6 +67,7 @@ PKGSUF=$4
 OLDWD=$PWD
 PREFIX=usr/i586-mingw32msvc
 PREFIX=usr/local/mingw2/local
+EXTRADIR=`dirname $0`
 
 if [ -z "$SUF" ] ; then SUF=.zip ; fi
 
@@ -102,6 +104,11 @@ fi
 
 movedir contrib
 move COPYING.LIB-2
+
+for i in $(EXTRA_FILES)
+do
+  cp $(EXTRADIR)/$i $i
+done
 
 cd $TEMPDIR
 
