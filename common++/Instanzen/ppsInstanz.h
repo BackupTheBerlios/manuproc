@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.3 2002/09/27 06:43:29 thoma Exp $
+// $Id: ppsInstanz.h,v 1.4 2002/09/27 09:23:01 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -46,8 +46,8 @@ private:
  int produktionsdauer_tage;
  
 public:
- static const ID default_id=ppsInstanzID::Kundenauftraege;
-// static const ID default_id=DEFAULT_INSTANZ;
+// static const ID default_id=ppsInstanzID::Kundenauftraege;
+ static const ID default_id=ManuProC::DefaultValues::Instanz;
  
  ppsInstanz(ID iid) : instid(iid),
                              lager_fuer(ppsInstanzID::None),bestellung_fuer(ppsInstanzID::None),
