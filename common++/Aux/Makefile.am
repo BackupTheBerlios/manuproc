@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.28 2003/01/20 14:38:18 christof Exp $
+# $Id: Makefile.am,v 1.29 2003/01/30 16:57:24 christof Exp $
 
 AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -41,7 +41,7 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
    EntryValueIntString.h EntryValueEmptyInt.h EntryValueDatum.h \
    EntryValueDatum.cc EmptyInt_4TeX.h EntryValueFixed.h Long.h \
    Trace.h Trace.cc relops.h EntryValueFixedEinheit.h UniqueValue.h \
-   compiler_ports.h
+   compiler_ports.h FILEstream.h
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
