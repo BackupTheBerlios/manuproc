@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.52 2004/02/09 21:33:42 jacek Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.53 2004/02/11 12:11:21 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -111,7 +111,7 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
     {  assert(NurEinKind(VZusatz));
        if(VZusatz[0].aeb.valid()) // => Keine Zusatzinfos
        {  AufEintrag AE(VZusatz[0].aeb);
-          // verhindern dass negative Menge auftritt
+          // verhindern dass negative Menge auftreten
           assert (!(abmenge<0 && -abmenge>AE.getGeliefert()));
           AE.ProduziertNG(abmenge,*this);
        }
@@ -120,7 +120,10 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
      {
        AuftragBase::mengen_t abmenge2=abmenge;
        if(abmenge>0) 
-       {
+       {if (status==UNCOMMITED) // erstmaliges Anpassen an Aufträge
+        {  assert(abmenge==AuftragBase::Gesamtmenge(_stueck,_menge));
+           VZusatz.clear();
+        }
         // was ist mit 0ern im Einkauf, diese werden auch bei Überproduktion nicht
         // direkt erledigt - allerdings beim Einlagern ??? CP
         SQLFullAuftragSelector psel(SQLFullAuftragSelector::sel_Artikel_Planung_id
@@ -187,7 +190,9 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
 
 
 void LieferscheinEntry::changeMenge(int _stueck, mengen_t _menge) throw(SQLerror)
-{
+{ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
+	NV("stueck",_stueck),NV("menge",_menge));
+#warning ganz schlechte Idee ... entweder wir brauchen das gleiche Lieferscheinobjekt oder gar keins ...
  changeMenge(_stueck,_menge,*cH_Lieferschein(Instanz(),Id()),false);
 }
 
@@ -195,7 +200,7 @@ void LieferscheinEntry::changeMenge(int _stueck, mengen_t _menge) throw(SQLerror
 void LieferscheinEntry::changeMenge(int _stueck, mengen_t _menge,
 		const Lieferschein &ls, bool ein_auftrag) throw(SQLerror)
 { ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
-	NV("stueck",_stueck),NV("menge",_menge));
+	NV("stueck",_stueck),NV("menge",_menge),NV("ein_auftrag",ein_auftrag));
   if(_stueck==Stueck() && _menge==Menge()) return ; //nichts geändert
 
   if(status>OPEN) return;
