@@ -33,30 +33,43 @@
 
 static bool Lieferschein_Kunde(AufEintrag &AE)
 {
+	{
+       AufEintragBase auf2=AuftragsVerwaltung().anlegen2();
+	AufEintragBase aeb2(KUNDENINSTANZ,auf2.Id(),1);
+	 AufEintrag ae2(aeb2);
+       vergleichen(Check::Menge,"LS_auftrag2","2. Auftrag anlegen","a2");
+	}
 
 	{// Einkauf liefert Vollmenge
         Auftrag auftrag=Auftrag(Auftrag::Anlegen(EINKAUF),LIEFERANT);
 
 	AufEintragBase AEB(EINKAUF,0,1);
 	AufEintrag AE(AEB);
-        AE.Planen(10,auftrag,DATUM);
+        AE.Planen(8,auftrag,DATUM9);
+	AufEintragBase AEB2(EINKAUF,0,2);
+	AufEintrag AE2(AEB2);
+        AE2.Planen(5,auftrag,DATUM);
        vergleichen(Check::Menge|Check::Lieferschein,"PL_Einkauf","Einkauf Planen","PL");
-        AufEintragBase AEB2(EINKAUF,auftrag.Id(),1);
+        AufEintragBase AEB3(EINKAUF,auftrag.Id(),1);
 
        Lieferschein liefs(EINKAUF,cH_Kunde(LIEFERANT));
-	AufEintrag ae(AEB2);
-       liefs.push_back(ae,ARTIKEL_TRIO,10);
+	AufEintrag ae(AEB3);
+       liefs.push_back(ae,ARTIKEL_TRIO,8);
+        AufEintragBase AEB4(EINKAUF,auftrag.Id(),2);
+	AufEintrag ae2(AEB4);
+       liefs.push_back(ae2,ARTIKEL_TRIO,5);
+
        vergleichen(Check::Menge|Check::Lieferschein,"LS_Einkauf","Lieferschein im Einkauf (Mabella) anlegen","VE");
 	}
 
 	{
-       AufEintragBase auf2=AuftragsVerwaltung().anlegen2();
+       AufEintragBase auf2=AuftragsVerwaltung().anlegen3();
 	AufEintragBase aeb2(KUNDENINSTANZ,auf2.Id(),1);
 	 AufEintrag ae2(aeb2);
-       vergleichen(Check::Menge,"LS_auftrag2","2. Auftrag anlegen","a");
+       vergleichen(Check::Menge,"LS_auftrag3","3. Auftrag anlegen","a3");
 
        Lieferschein liefs(KUNDENINSTANZ,cH_Kunde(KUNDE2));
-       liefs.push_back(ae2,ARTIKEL_TRIO,7);
+       liefs.push_back(ae2,ARTIKEL_TRIO,12);
 	}
        vergleichen(Check::Lieferschein|Check::Menge,"LS_volllieferung1","Lieferschein mit Volllieferung (Mabella) anlegen","V1");
 	

@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.hh,v 1.43 2003/12/02 14:06:50 jacek Exp $
+// $Id: steuerprogramm.hh,v 1.44 2003/12/15 18:33:16 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -117,6 +117,7 @@
 #define PLANDATUM5 ManuProC::Datum(31,12,2005)
 #define PLANDATUM6 ManuProC::Datum(31,12,2006)
 #define DATUM9 ManuProC::Datum(31,12,2009)
+#define DATUM8 ManuProC::Datum(31,12,2008)
 #define NEWDATUM ManuProC::Datum(31,12,2020)
 
 #ifndef KUNDE
