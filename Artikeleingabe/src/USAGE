@@ -1,1 +1,1 @@
-./artikeleingabe '<?xml version="1.0"?><neu_anlegen warengruppe="3" schema="629"><content>2030</content><content>25</content></neu_anlegen>'
+./artikeleingabe '<?xml version="1.0"?><neu_anlegen warengruppe="3" schema="629"><part signifikanz=1><content>2030</content><content>25</content></part></neu_anlegen>'
