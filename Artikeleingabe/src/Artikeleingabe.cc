@@ -1,4 +1,4 @@
-// $Id: Artikeleingabe.cc,v 1.29 2004/11/29 10:45:22 christof Exp $
+// $Id: Artikeleingabe.cc,v 1.30 2004/11/29 16:38:51 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -804,7 +804,7 @@ bool Artikeleingabe::update_edited_artikel2()
    }
   squery += " stand=now() where id='"+itos(artikelbox->get_value().Id())+"'";
   Query::Execute(squery);
-  if(sqlca.sqlcode) return false;
+  if (Query::Code()) return false;
   return true;
 }
 

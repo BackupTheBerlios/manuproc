@@ -13,7 +13,8 @@ artikeleingabe_SOURCES = \
    $(BUILT_SOURCES) \
 	artikeleingabe.cc\
 	Artikeleingabe_glade.cc \
-	Artikeleingabe.cc Artikeleingabe_neu.cc
+	Artikeleingabe.cc Artikeleingabe_neu.cc \
+	table_preis.cc
 
 artikel_shell_SOURCES = artikel_shell.cc
 

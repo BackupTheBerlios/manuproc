@@ -1,4 +1,4 @@
-// $Id: Artikeleingabe.hh,v 1.10 2004/11/29 10:43:40 christof Exp $
+// $Id: Artikeleingabe.hh,v 1.11 2004/11/29 16:38:51 christof Exp $
 /*  Artikeleingabe: ManuProC's article management program
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -139,4 +139,18 @@ class Artikeleingabe : public Artikeleingabe_glade
        Artikeleingabe(int argc, char **argv);
 };
 
+class table_preis : public table_preis_glade
+{  
+public:
+        
+        table_preis(GlademmData *gmm_data) : table_preis_glade(gmm_data) {  }
+private:
+        
+        void activate_preis();
+        void waehrung_deactivate();
+        void preismenge_activate();
+        void mindestmenge_activate();
+        void preis_uebernehmen();
+        void andere_Liste();
+};
 #endif
