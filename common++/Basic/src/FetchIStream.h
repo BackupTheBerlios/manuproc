@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.28 2003/04/24 10:21:51 jacek Exp $
+// $Id: FetchIStream.h,v 1.29 2003/05/09 10:01:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -90,6 +90,8 @@ public:
 
 	template <class T,class U> static MapNull_s<T> MapNull(T &v,const U&nv)
 	{ return MapNull_s<T>(v,nv); }
+	template <class T> static MapNull_s<T> MapNull(T &v)
+	{ return MapNull_s<T>(v,T()); }
 	template <class T>
 	 FetchIStream &operator>>(const MapNull_s<T> &mn)
 	{  if (getIndicator()) 
@@ -213,6 +215,8 @@ public:
 	}
 	template <class T,class U> static NullIf_s<T> NullIf(const T &a,const U &b)
 	{  return NullIf_s<T>(a,b); }
+	template <class T> static NullIf_s<T> NullIf(const T &a)
+	{  return NullIf_s<T>(a,T()); }
 	
 	//--------------- result --------------------
 	FetchIStream &Fetch();
