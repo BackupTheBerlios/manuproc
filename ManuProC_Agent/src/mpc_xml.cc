@@ -1,9 +1,9 @@
 
 #include "mpc_agent.hh"
-#include <TagStream.h>
+#include <Misc/TagStream.h>
 #include <MyMessage.h>
-#include <itos.h>
-#include <FetchIStream.h>
+#include <Misc/itos.h>
+#include <Misc/FetchIStream.h>
 
 void mpc_agent::on_senden_clicked()
 {

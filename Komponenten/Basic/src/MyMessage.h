@@ -1,6 +1,6 @@
 
 #include<gtkmm/messagedialog.h>
-#include<Datum.h>
+#include<Misc/Datum.h>
 #include <strstream>
 #include<Misc/SQLerror.h>
 

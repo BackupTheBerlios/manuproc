@@ -1,8 +1,8 @@
 #include "mpc_agent.hh"
-#include <FetchIStream.h>
-#include <itos.h>
-#include <Datum.h>
-#include <Transaction.h>
+#include <Misc/FetchIStream.h>
+#include <Misc/itos.h>
+#include <Misc/Datum.h>
+#include <Misc/Transaction.h>
 #include <MyMessage.h>
 #include <treebase_data.h>
 
