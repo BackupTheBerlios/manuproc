@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.cc,v 1.13 2004/01/31 23:33:33 christof Exp $
+// $Id: TreeViewUtility.cc,v 1.14 2004/02/02 07:29:49 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -37,10 +37,11 @@ TreeViewUtility::CListEmulator::CListEmulator(const Glib::ustring &title)
 }
 
 void TreeViewUtility::CListEmulator::attach_to(Gtk::TreeView &tv)
-{  tv.set_model(m_refStore);
+{  view=&tv;
+   view->remove_all_columns();
+   view->set_model(m_refStore);
    for (unsigned i=0;i<cols.size();++i)
-      tv.append_column(titles.at(i),cols.at(i));
-   view=&tv;
+      view->append_column(titles.at(i),cols.at(i));
 }
 
 TreeViewUtility::CList::CList(const std::vector<Glib::ustring> &titles)
@@ -65,17 +66,19 @@ TreeViewUtility::CList::CList(const char *title1, ...)
 
 void TreeViewUtility::CListEmulator::set_titles(const std::vector<Glib::ustring> &_titles)
 {  unsigned old_size=titles.size(),new_size=_titles.size();
-   assert(new_size>old_size); // nur vergrößern
+   assert(new_size>=old_size); // nur vergrößern
    cols.resize(new_size);
    titles=_titles;
    for (unsigned i=old_size;i<new_size;++i)
       add(cols[i]);
    m_refStore=Gtk::ListStore::create(*this);
+   if (view) // eigentlich sollte das attach erst später passiert sein ...
+      attach_to(*view);
 }
 
 void TreeViewUtility::CListEmulator::set_title(const Glib::ustring &_title)
 {  std::vector<Glib::ustring> _titles;
-   titles.push_back(_title);
+   _titles.push_back(_title);
    set_titles(_titles);
 }
 
