@@ -54,8 +54,11 @@ void LR_Abstraktion::calc_all(cH_Kunde k,bool mwst)
 // if(!k->zeilenrabatt())
 //     {
      fixedpoint<2> kunden_rabatt = Rabatt();
-     fixedpoint<2> endrabatt = nettobetrag*kunden_rabatt/100;
-     rabattiert = nettobetrag - endrabatt;
+//     fixedpoint<2> endrabatt = nettobetrag*(kunden_rabatt.as_float()/100.0);
+     float rabsatz= 1 - .01 * kunden_rabatt.as_float();
+     float endrabatt = nettobetrag.as_float() * (.01 * kunden_rabatt.as_float());
+//     rabattiert = nettobetrag - endrabatt;
+     rabattiert = nettobetrag.as_float() * rabsatz;
 //     }
 
 #ifdef MABELLA_EXTENSIONS 
