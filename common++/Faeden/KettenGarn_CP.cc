@@ -1,4 +1,4 @@
-/* $Id: KettenGarn_CP.cc,v 1.18 2004/07/06 08:41:17 christof Exp $ */
+/* $Id: KettenGarn_CP.cc,v 1.19 2004/07/06 13:10:05 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,6 +22,7 @@
 #include <Faeden/Faden.hh>
 #include <Ketten/ArtikelGang.h>
 #include <Misc/TraceNV.h>
+#include <Misc/algorithm.h>
 
 static const UniqueValue::value_t trace_channel=ManuProC::Tracer::channels.get();
 static ManuProC::Tracer::Environment trace_channel_e("DEBUG_KETTEN",trace_channel);
@@ -205,6 +206,10 @@ struct map_index_t
               (ag==b.ag && ag2<b.ag2) ||
               (ag==b.ag && ag2==b.ag2 && scheibe<b.scheibe); 
         }
+        const map_index_t &operator++()
+        {  ++scheibe;
+           return *this;
+        }
 };
 }
 
@@ -260,38 +265,25 @@ std::vector<Kettscheibe> Kettscheibe::Load(const std::vector<ArtikelGang> &ag, u
       if (gang->gaenge==i->ausn_gaenge && i->ausn_faeden) 
       	 x.faeden=i->ausn_faeden;
       x.material=i->material;
+      // Einzelwiederholungen komprimieren !!!
+      // look for single line repeats
+      for (Fadenliste::const_repiterator r=fdl.repbegin();r!=fdl.repend();++r)
+      {  if (r->start==r->end && r->start==i->zeilennummer)
+            x.faeden*=r->anzahl;
+      }
+      y.faeden.push_back(x);
+      y.fadenzahl+=x.faeden;
    }
 
 #if 0
    for (Fadenliste::const_repiterator r=fdl.repbegin();r!=fdl.repend();++r)
    {  if (r->start==r->end && r->start==i->zeilennummer)
-      {  // Sonderfall: Einzelwiederholung
-            x.faeden*=r->anzahl;
-      }
+         ;
       else if (r->start<=i->zeilennummer && i->zeilennummer<=r->end)
       {  x.wiederholungen*=r->anzahl;
       }
    }
 #endif   
-  // Einzelwiederholungen komprimieren !!!
-
-#if 0
-      // in gleich große Portionen teilen
-      if (max_fadenzahl && x.faeden>max_fadenzahl) // && !(x.kettenzahl&1))
-      {  unsigned ketten=(x.faeden*x.kettenzahl+max_fadenzahl-1)/max_fadenzahl;
-         unsigned klein=x.faeden*x.kettenzahl/ketten;
-         unsigned anz_klein=(klein+1)*ketten-x.faeden*x.kettenzahl;
-         if (anz_klein!=ketten)
-         {  x.faeden=klein+1;
-            x.kettenzahl=ketten-anz_klein;
-            result.push_back(x);
-            x.index++;
-         }
-         x.faeden=klein;
-         x.kettenzahl=anz_klein;
-      }
-      result.push_back(x);
-#endif      
    }
 #if 0
    // sortieren?
@@ -337,8 +329,47 @@ std::vector<Kettscheibe> Kettscheibe::Load(const std::vector<ArtikelGang> &ag, u
       i=ks_end;
    }
 #endif
+reloop:
    // kombinieren
+   for (map_t::iterator i=intermed.begin();i!=intermed.end();++i)
+   {  Kettscheibe &x=i->second;
+      // Einschränkung auf x.faeden.size()==1 später aufheben
+      if (x.max_fadenzahl && 3*x.fadenzahl<=x.max_fadenzahl 
+            && !(x.kettenzahl%3) && x.faeden.size()==1)
+      {  x.kettenzahl/=3;
+         x.fadenzahl*=3;
+         x.faeden.begin()->faeden*=3;
+         goto reloop;
+      }
+      if (x.max_fadenzahl && 2*x.fadenzahl<=x.max_fadenzahl 
+            && !(x.kettenzahl%2) && x.faeden.size()==1)
+      {  x.kettenzahl/=2;
+         x.fadenzahl*=2;
+         x.faeden.begin()->faeden*=2;
+         goto reloop;
+      }
+   }
    // aufteilen
+   for (map_t::iterator i=intermed.begin();i!=intermed.end();++i)
+   {  Kettscheibe &x=i->second;
+      if (x.max_fadenzahl && x.fadenzahl>x.max_fadenzahl && x.faeden.size()==1)
+      {  Kettscheibe y=x;
+         unsigned ketten=(x.fadenzahl*x.kettenzahl+x.max_fadenzahl-1)/x.max_fadenzahl;
+         unsigned klein=x.fadenzahl*x.kettenzahl/ketten;
+         unsigned anz_klein=(klein+1)*ketten-x.fadenzahl*x.kettenzahl;
+         x.fadenzahl=klein;
+         x.faeden.begin()->faeden=klein;
+         x.kettenzahl=anz_klein;
+         if (anz_klein!=ketten)
+         {  y.fadenzahl=klein+1;
+            y.faeden.begin()->faeden=klein+1;
+            y.kettenzahl=ketten-anz_klein;
+            insert_between(intermed,i->first)=y;
+            goto reloop;
+         }
+      }
+   }
+   
    for (map_t::const_iterator i=intermed.begin();i!=intermed.end();++i)
    {  if (i->second.index) result.push_back(i->second);
    }

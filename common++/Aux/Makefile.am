@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.58 2004/03/11 17:11:16 christof Exp $
+# $Id: Makefile.am,v 1.59 2004/07/06 13:10:05 christof Exp $
 
 AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@ @SIGC_CFLAGS@ 
 
@@ -53,7 +53,7 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
    Global_Settings_db.cc EntryValueSort.h EntryValueSort.cc \
    EntryValueInvert.h create_parse.cc create_parse.h \
    dbconnect_shared.cc SQLerror_sqlite.h FetchIStream_common.cc \
-   SQLerror_sqlite.cc
+   SQLerror_sqlite.cc algorithm.h
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
