@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.58 2003/06/18 11:14:29 christof Exp $
+// $Id: AufEintrag.cc,v 1.59 2003/06/19 15:41:13 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -1036,6 +1036,17 @@ AuftragBase::mengen_t AufEintrag::getRestStk() const
 {  if (in(entrystatus,CLOSED,STORNO)) return 0;
    if (in(auftragstatus,CLOSED,STORNO)) return 0;
    return bestellt-geliefert;
+}
+
+fixedpoint<2> AufEintrag::ProvSatz() const throw(SQLerror)
+{
+ if(provsatz!=-1) return provsatz;
+
+ Query("select provsatz from autragentry where"
+	" (instanz,auftragid,zeilennr) = (?,?,?)")
+ 	<< InstanzID() << Id() << getZnr() >> provsatz;
+
+ return provsatz;
 }
 
 // angepasste Variante von ppsInstanzReparatur::Eltern

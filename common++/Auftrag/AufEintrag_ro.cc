@@ -1,4 +1,4 @@
-// $Id: AufEintrag_ro.cc,v 1.1 2003/03/13 08:19:54 christof Exp $
+// $Id: AufEintrag_ro.cc,v 1.2 2003/06/19 15:41:13 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -45,7 +45,7 @@ AufEintrag::AufEintrag(const AufEintragBase &aeb, mengen_t _bestellt,
  auftragstatus(_aufstatus), 
  dispoentrynr(0),
  prozess(Prozess::default_id),
- preisliste(_preisliste)
+ preisliste(_preisliste),provsatz(-1)
 {
 }
 	
@@ -61,7 +61,7 @@ AufEintrag::AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr,
  lieferdatum(_lieferdatum),
  lasteditdate_uid(0),
  auftragstatus(_entrystatus),
- prozess(Prozess::default_id)
+ prozess(Prozess::default_id),provsatz(-1)
 {}
 	
 
@@ -90,7 +90,7 @@ bool AufEintrag::allesOK() const
 
 AufEintrag::AufEintrag(const AufEintragBase &aebb) throw (SQLerror,NoAEB_Error)
   : AufEintragBase(aebb), artikel(0),
-    prozess(Prozess::default_id)
+    prozess(Prozess::default_id),provsatz(-1)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,aebb);
  try{

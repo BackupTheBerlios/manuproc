@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.46 2003/06/18 11:14:29 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.47 2003/06/19 15:41:13 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -70,7 +70,7 @@ private:
 
  Preis preis;
  rabatt_t rabatt;
- fixedpoint<2> provsatz;
+ mutable fixedpoint<2> provsatz;
  
 private: // weg von hier!
  Kunde::ID kdnr;
@@ -100,7 +100,8 @@ public:
    : bestellt(0), geliefert(0), artikel(0ul), entrystatus((AufStatVal)UNCOMMITED),
    	letztePlanInstanz(ppsInstanzID::None),maxPlanInstanz(0), rabatt(0),
    	kdnr(0), disponr(0), auftragstatus((AufStatVal)UNCOMMITED), 
-   	dispoentrynr(0),prozess(Prozess::default_id)
+   	dispoentrynr(0),prozess(Prozess::default_id),
+   	provsatz(-1)
  {}
  
  // Dieser ctor ist für AuftragFull::push_back
@@ -186,7 +187,7 @@ public:
  cH_PreisListe getPreisliste() const {return preisliste;}
  rabatt_t Rabatt() const { return rabatt;}
  Preis::preismenge_t PreisMenge() const { return preis.PreisMenge(); }
- fixedpoint<2> ProvSatz() const { return provsatz; }
+ fixedpoint<2> ProvSatz() const throw(SQLerror);
  fixedpoint<2> DefaultProvSatz() const throw(SQLerror); 
  void setDefaultProvSatz() throw(SQLerror);
  void setProvSatz(const fixedpoint<2> ps) throw(SQLerror);

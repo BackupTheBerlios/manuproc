@@ -36,9 +36,11 @@ AufEintragBase AuftragFull::push_back(AuftragBase::mengen_t bestellt,
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
   AufEintragBase newAEB=Auftrag::push_back(bestellt,lieferdatum,artid,status,uid,true,preis,rabatt,preisliste);
-  eintragliste.push_back(AufEintrag(newAEB,
+  AufEintrag tmpae(newAEB,
       bestellt,artid,lieferdatum,getStatus(),getKundennr(),getYourAufNr(),
-      preis,rabatt,status,uid,preisliste));
+      preis,rabatt,status,uid,preisliste);
+  tmpae.ProvSatz(); // gets and caches provsatz in AufEintrag
+  eintragliste.push_back(tmpae);
   return newAEB;
 }
 
