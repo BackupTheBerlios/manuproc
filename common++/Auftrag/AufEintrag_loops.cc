@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.cc,v 1.11 2004/02/11 09:16:16 christof Exp $ */
+/* $Id: AufEintrag_loops.cc,v 1.12 2004/02/12 07:21:00 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,6 +24,7 @@
 #include <Auftrag/sqlAuftragSelector.h>
 #include <Auftrag/selFullAufEntry.h>
 #include <Artikel/ArtikelStamm.h>
+#include <iterator>
 
 // Kinder !!! d.h. nicht nach Priorität
 bool distribute_children_cb::operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const
@@ -85,7 +86,7 @@ public:
 	{  return c(a,b); }
 };}
 
-ostream &operator<<(ostream &o,const AufEintragZu::st_reflist &r)
+std::ostream &operator<<(std::ostream &o,const AufEintragZu::st_reflist &r)
 {  return o << r.Pri << ':' << r.AEB;
 }
 
