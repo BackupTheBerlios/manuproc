@@ -69,8 +69,10 @@ private:
               return *this;
             }
            };
+public:           
    typedef std::pair<st_index,st_mengen> artmeng;
 
+private:
  std::vector<cH_Prozess> prozlist;
         
         friend class auftrag_main_glade;

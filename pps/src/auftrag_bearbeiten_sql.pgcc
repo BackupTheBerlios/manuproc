@@ -1,4 +1,4 @@
-// $Id: auftrag_bearbeiten_sql.pgcc,v 1.7 2002/03/20 08:03:36 christof Exp $
+// $Id: auftrag_bearbeiten_sql.pgcc,v 1.8 2003/01/30 16:07:30 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,6 +22,7 @@
 
 exec sql include sqlca;
 
+
 void auftrag_bearbeiten::on_aufnrscombo_search(
 		int *_continue, GtkSCContext newsearch)
 throw(SQLerror)
@@ -33,7 +34,7 @@ throw(SQLerror)
  int KUNDE;
  int INSTANZ=instanz->Id();
  exec sql end declare section;
- static bool transaction = false;
+ static Transaction tr("",false);
  KUNDE= kundenbox->get_value();
   
  switch(newsearch)
@@ -42,10 +43,8 @@ throw(SQLerror)
       {
        std::string pat = aufnr_scombo->get_text() + "%";
        PAT = (char*)pat.c_str();
-       
-       exec sql begin;
-       SQLerror::test(__FILELINE__"begin",ECPG_NOTICE_IN_TRANSACTION);
-       transaction = sqlca.sqlcode!=ECPG_NOTICE_IN_TRANSACTION;
+
+       tr.open();       
                    
        exec sql declare AUFNR_CURSOR cursor for
        		select auftragid, ltrim(to_char(auftragid,'000000'))
@@ -56,15 +55,14 @@ throw(SQLerror)
        		order by auftragid;
        	
        exec sql open AUFNR_CURSOR;
-       SQLerror::test(__FILELINE__":on_aufnrscombo_search: open cursor",
-       						transaction);
+       SQLerror::test(__FILELINE__":on_aufnrscombo_search: open cursor");
       } 							
            
   case GTK_SEARCH_FETCH :
        {
         exec sql fetch AUFNR_CURSOR into :AUFID, :AUFIDCHR;
 	SQLerror::test(__FILELINE__":on_aufnrscombo_search: "
-			" fetch","AUFNR_CURSOR",100,transaction);
+			" fetch","AUFNR_CURSOR",100);
 			
 	if(sqlca.sqlcode==100){*_continue=false; break; }
 	
@@ -74,9 +72,8 @@ throw(SQLerror)
        }
  
   case GTK_SEARCH_CLOSE :
-       {
-	exec sql close AUFNR_CURSOR;
-	if(transaction) exec sql commit;
+       {exec sql close AUFNR_CURSOR;
+	tr.commit();
 	break;
        }
 
@@ -95,7 +92,7 @@ throw(SQLerror)
  char *PAT;
  int KUNDE;
  exec sql end declare section;
- static bool transaction = false;
+ static Transaction tr("",false);
  KUNDE= kundenbox->get_value();
 
  if(newauftrag) {*_continue=false; return;}  
@@ -106,10 +103,7 @@ throw(SQLerror)
        std::string pat = youraufnr_scombo->get_text() + "%";
        PAT = (char*)pat.c_str();
        
-       exec sql begin;
-       SQLerror::test(__FILELINE__"begin",ECPG_NOTICE_IN_TRANSACTION);
-       transaction = sqlca.sqlcode!=ECPG_NOTICE_IN_TRANSACTION;
-                   
+       tr.open();
        exec sql declare YOURAUFNR_CURSOR cursor for
        		select auftragid, youraufnr
        		from auftrag where
@@ -139,7 +133,7 @@ throw(SQLerror)
   case GTK_SEARCH_CLOSE :
        {
 	exec sql close YOURAUFNR_CURSOR;
-	if(transaction) exec sql commit;
+	tr.commit();
 	break;
        }
 
