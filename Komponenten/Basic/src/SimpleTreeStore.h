@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.15 2002/12/04 09:22:14 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.16 2002/12/04 17:27:27 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -50,6 +50,7 @@ class SimpleTreeStore : public SigC::Object, public SimpleTreeModel_Proxy
 	typedef Handle<TreeRow> (*NewNode_fp)(const Handle<const TreeRow> &suminit);
 	// sadly there's no real const_iterator
 	typedef Gtk::TreeStore::iterator const_iterator;
+	typedef Gtk::TreeStore::iterator iterator;
 
 private:
 	NewNode_fp node_creation;
@@ -69,6 +70,9 @@ private:
 	bool color_bool:1; // or in Widget?
 
 	std::string mem_prog,mem_inst;
+	
+	std::vector<Gdk_Color> colors;
+	static const unsigned num_colors=8;
 
 	void save_remembered() const;
 	void load_remembered();
@@ -77,8 +81,13 @@ private:
 	void on_title_changed(guint idx);
 	
 	void redisplay();
-	void InitColumns(Gtk::TreeRow &node, guint deep, const cH_EntryValue &ev, const cH_RowDataBase &v);
-	void insertLine(Gtk::TreeModel::Children parent,const cH_RowDataBase &d, std::deque<guint> q,guint deep);
+	void SummenAnzeigen(Gtk::TreeModel::Children parent);
+	void SummenAnzeigen(const Gtk::TreeRow &row,const Handle<TreeRow> &htr);
+	void InitColumns(Gtk::TreeRow &node, guint deep, const cH_EntryValue &ev, 
+			const cH_RowDataBase &v);
+	void insertLine(Gtk::TreeModel::Children parent,const cH_RowDataBase &d, 
+			std::deque<guint>::const_iterator q,guint deep,
+			bool summe_aktualisieren);
 	Gtk::TreeRow CopyTree(Gtk::TreeRow src, Gtk::TreeModel::Children dest);
 	Gtk::TreeStore::iterator MoveTree(
 		Gtk::TreeStore::iterator current_iter,
@@ -132,6 +141,8 @@ public:
 	const_iterator end() const
 	{  return m_refTreeStore->children().end();
 	}
+
+	void set_tree_column_visibility(unsigned int column,bool visible);
 };
 
 #endif
