@@ -3243,41 +3243,6 @@ Auftrag</label>
 
 	  <widget>
 	    <class>Custom</class>
-	    <name>WPreis</name>
-	    <width>110</width>
-	    <cxx_visibility>protected</cxx_visibility>
-	    <signal>
-	      <name>activate</name>
-	      <handler>on_activate_wpreis</handler>
-	      <last_modification_time>Tue, 07 Aug 2001 09:05:57 GMT</last_modification_time>
-	    </signal>
-	    <signal>
-	      <name>preis_changed</name>
-	      <handler>on_preis_changed</handler>
-	      <last_modification_time>Thu, 16 May 2002 10:53:46 GMT</last_modification_time>
-	    </signal>
-	    <creation_function>WPreis(false)</creation_function>
-	    <int1>0</int1>
-	    <int2>0</int2>
-	    <last_modification_time>Fri, 26 Oct 2001 07:58:42 GMT</last_modification_time>
-	    <child>
-	      <left_attach>0</left_attach>
-	      <right_attach>1</right_attach>
-	      <top_attach>2</top_attach>
-	      <bottom_attach>4</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>True</yfill>
-	    </child>
-	  </widget>
-
-	  <widget>
-	    <class>Custom</class>
 	    <name>liefdatum_datewin</name>
 	    <cxx_visibility>protected</cxx_visibility>
 	    <signal>
@@ -3591,6 +3556,41 @@ Auftrag</label>
 	      <yshrink>False</yshrink>
 	      <xfill>True</xfill>
 	      <yfill>False</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>Custom</class>
+	    <name>WPreis</name>
+	    <width>110</width>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <signal>
+	      <name>activate</name>
+	      <handler>on_activate_wpreis</handler>
+	      <last_modification_time>Tue, 07 Aug 2001 09:05:57 GMT</last_modification_time>
+	    </signal>
+	    <signal>
+	      <name>preis_changed</name>
+	      <handler>on_preis_changed</handler>
+	      <last_modification_time>Thu, 16 May 2002 10:53:46 GMT</last_modification_time>
+	    </signal>
+	    <creation_function>WPreis(false)</creation_function>
+	    <int1>0</int1>
+	    <int2>0</int2>
+	    <last_modification_time>Fri, 26 Oct 2001 07:58:42 GMT</last_modification_time>
+	    <child>
+	      <left_attach>0</left_attach>
+	      <right_attach>1</right_attach>
+	      <top_attach>2</top_attach>
+	      <bottom_attach>4</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>True</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>True</yfill>
 	    </child>
 	  </widget>
 	</widget>

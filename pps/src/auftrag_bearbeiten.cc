@@ -171,7 +171,7 @@ void auftrag_bearbeiten::onSelArtikel()
     Artikelpreis ap(kunde->preisliste(),artikelbox->get_value());
 #endif
 
-    Preis p(ap.In(auftrag->getWaehrung()));
+    Preis p(ap.In(auftrag->getWaehrung(),ap.PreisMenge() ));
     WPreis->set_value(p);
     artikel_preisliste_geaendert=false;
     if (!p.Wert()) // Wenn kein Preis gefunden eingeben
@@ -337,7 +337,7 @@ void auftrag_bearbeiten::on_stkmtr_spinbutton_activate()
 			stkmtr_spinbutton->get_value_as_int());	
 #endif
 
-       Preis p(ap.In(auftrag->getWaehrung()));
+       Preis p(ap.In(auftrag->getWaehrung(),ap.PreisMenge() ));
        WPreis->set_value(p,ap.MindMenge());
        artikel_preisliste_geaendert=false;
        on_activate_wpreis();
