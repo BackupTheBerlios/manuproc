@@ -1026,7 +1026,9 @@ void auftrag_lieferschein::on_lager_buchen_clicked()
 				get_active()->get_user_data());
             Transaction tr;
 	    try {
-	    LE.changeStatus((AufStatVal)OPEN,LE.getZusatzInfos().empty());
+	      // !empty() means must distrubute the amount on opne orders
+              // 
+	    LE.changeStatus((AufStatVal)OPEN,true);
 	    LE.setLagerid(int(lagerwahl->get_menu()->
 			      get_active()->get_user_data()) );
 	
