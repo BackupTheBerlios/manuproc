@@ -1,4 +1,4 @@
-// $Id: TagStream.h,v 1.8 2004/11/09 12:00:39 christof Exp $
+// $Id: TagStream.h,v 1.9 2004/11/24 08:16:34 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2004  Christof Petig
  *
@@ -27,7 +27,7 @@
 class TagStream : public Tag
 {	// ---- for reading -----
 	// copied from _GbWidgetLoadData
-	static const int GB_BUFFER_SIZE=10240;
+	static const int GB_BUFFER_SIZE=40960;
 	char buffer[GB_BUFFER_SIZE];
 	bool read_again;
 	int pointer,end_pointer;
