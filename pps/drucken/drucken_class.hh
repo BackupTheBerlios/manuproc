@@ -329,9 +329,9 @@ private:
         const Preis &BruttoPreis, const Preis &NettoPreis,
         const AuftragBase::rabatt_t &rabatt, const ManuProC::Datum &lieferdatum,
         const int palette, const std::string &your_auftrag,
+        const cH_PreisListe pl,
         const AufEintragBase AEB=AufEintragBase()
         );
-   void Zeile_Ausgeben(std::ostream &os, const LR_Entry &lre);
 
    void drucken_header(std::ostream &os);
    void drucken_footer(std::ostream &os);

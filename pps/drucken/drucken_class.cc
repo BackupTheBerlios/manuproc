@@ -533,6 +533,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
             (*k).Rest(),(*k).Artikel(),false,(*k).Stueck(),
             (*k).Menge(),(*k).getPreis(true),(*k).getPreis(false),
             (*k).Rabatt(),(*k).getLieferdatum(),(*k).Palette(),YourAuftrag,
+	    (*k).getPreisliste(),
             AEB);
         if(auftragmenge.size()>1) 
          { 
@@ -542,7 +543,8 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
               Zeile_Ausgeben(os,preismenge_mem,einheit_mem,einheitsize,
                0,(*k).Artikel(),true,einheit_mem.hatMenge()?1:l->menge.as_int(),
                einheit_mem.hatMenge()?l->menge:0,Preis(),Preis(),
-               0,ManuProC::Datum(),0,Auftrag::getYourAufNr(l->ab),AEB);
+               0,ManuProC::Datum(),0,Auftrag::getYourAufNr(l->ab),
+		(*k).getPreisliste(), AEB);
             }           
          }
       }
@@ -704,6 +706,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
    const Preis &BruttoPreis, const Preis &NettoPreis,
    const AuftragBase::rabatt_t &rabatt, const ManuProC::Datum &lieferdatum,
    const int palette, const std::string &your_auftrag,
+   const cH_PreisListe pl,
    const AufEintragBase AEB)
 {
 #ifdef MABELLA_EXTENSIONS // gelieferte Zeilen nicht anzeigen beim Rückstand     
@@ -818,9 +821,9 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
          if (preise_addieren)       
           { neue_spalte(erste_spalte,os);
 #ifdef MABELLA_EXTENSIONS // Anzeigen, dass der Preis manuell eingegeben wurde
-//	    if(Typ()==Auftrag)
-//	      if(getPreisliste()->Id() == PreisListe::none_id)
-//	        os << "{\\color{altgray}(M) }";
+	    if(Typ()==Auftrag)
+	      if(pl->Id() == PreisListe::none_id)
+	        os << "{\\color{altgray}(M) }";
 #endif
             if (rabatt_bool) 
               {os <<linecolor<<FormatiereTeX_Preis( BruttoPreis.Wert() );
