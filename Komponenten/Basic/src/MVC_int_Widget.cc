@@ -1,4 +1,4 @@
-// $Id: MVC_int_Widget.cc,v 1.1 2002/07/08 08:25:20 christof Exp $
+// $Id: MVC_int_Widget.cc,v 1.2 2002/09/18 13:28:49 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -48,11 +48,12 @@ gint MVC_int_Widget::on_focus_in(GdkEventFocus *ev)
 }
 
 MVC_int_Widget::MVC_int_Widget(const Model_ref<T> &m,T min,T max)
-	: Gtk::SpinButton(1), any_change(false), model(m)
+	: Gtk::SpinButton(), any_change(false), model(m)
 {  set_update_policy(GTK_UPDATE_ALWAYS);
    set_numeric(true);
    get_adjustment()->set_lower(min);
    get_adjustment()->set_upper(max);
+   get_adjustment()->set_step_increment(1);
    Gtk::SpinButton::set_value(model.get_value());
    focus_out_event.connect_after(SigC::slot(this,&MVC_int_Widget::on_focus_out));
    focus_in_event.connect_after(SigC::slot(this,&MVC_int_Widget::on_focus_in));
