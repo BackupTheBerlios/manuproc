@@ -1,4 +1,4 @@
-// $Id: ppsInstanzProduziert.cc,v 1.10 2002/12/04 16:06:45 thoma Exp $
+// $Id: ppsInstanzProduziert.cc,v 1.11 2002/12/05 14:54:18 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -257,9 +257,9 @@ AuftragBase::mengen_t ManuProC::st_produziert::abschreiben_oder_reduzieren(ppsIn
      else // plan_auftrag_id || handplan_auftrag_id
        {
         i->abschreiben(abschreibmenge,lfrsid);
-//cerr << "Produziert:: Abschreiben bei "<<*i<<" Menge:"<<abschreibmenge<<'\n';
         if(abschreibmenge<0) // Zuordnung reduzieren beim abbestellen
-            Reduce_Zuordnung_Add_Parent(*i,abschreibmenge);
+              Reduce_Zuordnung_Add_Parent(*i,abschreibmenge);
+        else  Reduce_Zuordnung_And_2er_Parent(*i,abschreibmenge);
        }
      abmenge-=abschreibmenge;
      if(!abmenge) break;
@@ -293,21 +293,36 @@ void ManuProC::st_produziert::Reduce_DispoEltern(const AufEintragBase &aeb,Auftr
 }
 
 
+void ManuProC::st_produziert::Reduce_Zuordnung_And_2er_Parent(const AufEintragBase &aeb,AuftragBase::mengen_t menge)
+{
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"AEB=",aeb,
+   "Menge=",menge);
+ std::list<AufEintragZu::st_reflist> L=AufEintragZu(aeb).get_Referenz_list_dispo(false);
+ for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+  {
+    AuftragBase::mengen_t m=AufEintragZu(i->AEB).setMengeDiff__(aeb,-menge);
+    i->AEB.updateStkDiffBase__(uid,m);
+    if(m==menge) break;
+    menge-=m;
+  }
+}
+
 void ManuProC::st_produziert::Reduce_Zuordnung_Add_Parent(const AufEintragBase &aeb,AuftragBase::mengen_t menge)
 {
  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"AEB=",aeb,
    "Menge=",menge);
-
-   std::list<AufEintragZu::st_reflist> L=AufEintragZu(aeb).get_Referenz_list_ungeplant(false);
-   for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
-    {
-      AuftragBase::mengen_t m=AufEintragZu(i->AEB).setMengeDiff__(aeb,menge);
-      i->AEB.updateStkDiffBase__(uid,-m);
-
-      if(m==menge) break;
-      menge-=m;
-    }
+ std::list<AufEintragZu::st_reflist> L=AufEintragZu(aeb).get_Referenz_list_ungeplant(false);
+ for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+  {
+    AuftragBase::mengen_t m=AufEintragZu(i->AEB).setMengeDiff__(aeb,menge);
+    i->AEB.updateStkDiffBase__(uid,-m);
+    if(m==menge) break;
+    menge-=m;
+  }
 }
+
+
+
 
 
 void ManuProC::st_produziert::check_dispo_auftraege(ppsInstanz::ID instanz)

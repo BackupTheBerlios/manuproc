@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.18 2002/12/05 09:30:27 thoma Exp $
+// $Id: ppsInstanz.h,v 1.19 2002/12/05 14:54:18 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -164,6 +164,13 @@ public:
       bool check_D_ungeplant(const bool analyse_only,const AufEintrag &AE,const ABmt &M0sum,const ABmt &Msum) const;
       bool check_E_geplant(const bool analyse_only,const AufEintrag &AE,const ABmt &Msum) const;
       bool check_F_dispo(const bool analyse_only,const AufEintrag &AE,const ABmt &Msum) const;
+
+      void analyse(const std::string &s,const AufEintrag &AE,const std::string &x,const std::string &y) const;
+      // Wrapper:
+      void analyse(const std::string &s,const AufEintrag &AE) const{analyse(s,AE,"","");}
+      void analyse(const std::string &s,const AufEintrag &AE,const ABmt &x,const ABmt &y) const;
+      void analyse(const std::string &s,const AufEintrag &AE,const ArtikelBase &x,const ArtikelBase &y) const;
+      void analyse(const std::string &s,const AufEintrag &AE,const cH_ppsInstanz &x,const cH_ppsInstanz &y) const;
  public:
       // Einlesen des Lagerinhalts und Anpassen der 2er unter Berücksichtigung der 1er
       void ReparaturLager(const int uid,const bool analyse_only) const throw(SQLerror);
@@ -176,6 +183,8 @@ public:
       bool ReparaturE_2_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror);
       // Summe aller 2er-Zuordnungen zu einem 1|20000 <= REST-Menge des 1|20000
       bool ReparaturF_2_ZuSumme_1Rest(const int uid,const bool analyse_only) const throw(SQLerror);
+      // Zuordnung von Kunden an Bestell-Instanz' entspricht Kundenbestellmenge
+      bool ReparaturK_Kundenzuordnung(const int uid,const bool analyse_only) const;
 };
 
 

@@ -28,6 +28,49 @@
 #include <Aux/Transaction.h>
 
 
+
+bool ppsInstanz::ReparaturK_Kundenzuordnung(const int uid,const bool analyse_only) const
+{
+   bool alles_ok=true;
+   assert(KundenInstanz());
+   SQLFullAuftragSelector sel1er= SQLFullAuftragSelector::sel_Status(Id(),OPEN,AuftragBase::plan_auftrag_id);
+   SelectedFullAufList AL1(sel1er);
+   for(SelectedFullAufList::iterator i=AL1.begin();i!=AL1.end();++i)
+    {
+      cH_ppsInstanz I=ppsInstanz::getBestellInstanz(i->Artikel());
+      std::list<AufEintragZu::st_reflist> L=AufEintragZu(*i).get_Referenz_list_ungeplant(true);
+      assert(L.size()<=1);
+      if(L.empty()) {
+         alles_ok=false;
+         if(analyse_only) analyse("Keine Kinder für Kundenauftrag",*i);
+         else assert(!"nicht implementiert");
+       }
+      for(std::list<AufEintragZu::st_reflist>::const_iterator j=L.begin();j!=L.end();++j)
+        {
+          if(j->Menge!=i->getStueck()) {
+            alles_ok=false;
+            if(analyse_only) analyse("Menge des Kundenauftrags und der Zuordnung ans Kind stimmt nicht überein",*i,j->Menge,i->getStueck());
+            else assert(!"nicht implementiert");
+           }
+          AufEintrag AE(j->AEB);
+          if(AE.Artikel()!=i->Artikel()){
+            alles_ok=false;
+            if(analyse_only) analyse("Artikel des Kundenauftrags und dem Kind stimmt nicht überein",*i,AE.Artikel(),i->Artikel());
+            else assert(!"nicht implementiert");
+           }
+          if(AE.Instanz()!=I){
+            alles_ok=false;
+            if(analyse_only) analyse("Instanzen des Kundenauftrags und des Kindes stimmt nicht überein",*i,AE.Instanz(),I);
+            else assert(!"nicht implementiert");
+           }
+        }      
+    }
+  return alles_ok;
+}
+
+
+///////////////////////////////////////////////////////////////////////////
+
 bool ppsInstanz::ReparaturD_0_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror)
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
@@ -68,10 +111,13 @@ bool ppsInstanz::Reparatur_Zuordnungen(const int uid,const bool analyse_only,
                               std::list<AufEintragZu::st_reflist> L2=AufEintragZu(*i).get_Referenz_list_dispo(kinder);
                               L.splice(L.end(),L2);
                               break;}
-         case Egeplant:   L=AufEintragZu(*i).get_Referenz_list_geplant(kinder); break;
+         case Egeplant: {  L=AufEintragZu(*i).get_Referenz_list_geplant(kinder); 
+                           if(PlanungsInstanz() && L.empty())
+                              L=AufEintragZu(*i).get_Referenz_list_ungeplant(kinder);
+                           break;}
          case Fdispo:     L=AufEintragZu(*i).get_Referenz_list_dispo(kinder); break;
         }
-//cout << "LSize="<<L.size()<<'\n';
+cout << *i<<"\tChild-LSize="<<L.size()<<'\n';
       for(std::list<AufEintragZu::st_reflist>::const_iterator j=L.begin();j!=L.end();++j)
         {
           if(j->AEB.Id()==AuftragBase::ungeplante_id) M0sum+=j->Menge;
@@ -93,7 +139,7 @@ bool ppsInstanz::check_D_ungeplant(const bool analyse_only,const AufEintrag &AE,
   else if(Msum>AE.getStueck())
    { 
 cout << Msum<<'\t'<<AE.getStueck()<<'\t'<<AE.getRestStk()<<'\n';
-     if(analyse_only) std::cout << "Analyse: Zuord.-Summen ("<<Msum<<") ist größer als ("<<AE.getStueck()<<") für "<<AE<<'\n';
+     if(analyse_only) analyse("Zuord.-Summen ist größer als Auftragssumme",AE,Msum,AE.getStueck());
      else assert(!"nicht implementiert\n");
      return false;
    }
@@ -374,4 +420,19 @@ std::vector<LagerInhalt> ppsInstanz::getLagerInhalt() const
   LagerBase::LagerInhaltSum(LI);
   return LI;
 }
+
+
+void ppsInstanz::analyse(const std::string &s,const AufEintrag &AE,const std::string &x,const std::string &y) const
+{
+  cout << AE <<"  => "<<s<<"\t("<<x<<"), ("<<y<<")\n";
+}
+
+void ppsInstanz::analyse(const std::string &s,const AufEintrag &AE,const ABmt &x,const ABmt &y) const
+{analyse(s,AE,x.String(),y.String());}
+
+void ppsInstanz::analyse(const std::string &s,const AufEintrag &AE,const ArtikelBase &x,const ArtikelBase &y) const
+{analyse(s,AE,itos(x.Id()),itos(y.Id()));}
+
+void ppsInstanz::analyse(const std::string &s,const AufEintrag &AE,const cH_ppsInstanz &x,const cH_ppsInstanz &y) const
+{analyse(s,AE,x->Name(),y->Name());}
 

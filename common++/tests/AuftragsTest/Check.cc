@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.26 2002/12/05 10:05:59 thoma Exp $
+// $Id: Check.cc,v 1.27 2002/12/05 14:54:18 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -84,6 +84,7 @@ Check::was_checken Check::WasChecken(e_check check)
    default: assert(!"never get here");
 //        return Menge;
   }
+  assert(!"never get here"); abort();
 }
 
 std::string Check::Zusatz(e_check check)
