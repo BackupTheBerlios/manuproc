@@ -1,3 +1,9 @@
+mingw32-gtkmm-meta (2) experimental; urgency=low
+
+  * more dependancies
+
+ -- Christof Petig <christof@petig-baender.de>  Mon, 25 Oct 2004 14:49:33 +0200
+
 mingw32-gtkmm-meta (1) experimental; urgency=low
 
   * initial revision

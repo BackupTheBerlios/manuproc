@@ -7,8 +7,8 @@ Build-Depends-Indep: cdbs, debhelper (>= 4.1.51)
 Package: mingw32-gtkmm-meta-dev
 Architecture: all
 Depends: mingw32-gtkmm-dev (>= 2.4.5), mingw32-runtime (>= 3.3), mingw32 (>= 3.3)
-Conflicts: mingw32-sigc, mingw32-zlib-lib
-Suggests: mingw32-gtkmm24-runtime
+Conflicts: mingw32-sigc, mingw32-atk, mingw32-glib, mingw32-glibmm, mingw32-gtk+, mingw32-gtkmm, mingw32-pango, mingw32-sigc, mingw32-zlib-lib, mingw32-gtk-la, mingw32-libpng-lib
+Suggests: mingw32-gtkmm-meta-runtime
 Description: MinGW Gtkmm 2.4 cross development environment
  This meta package contains all needed packages for setting up
  a gtkmm 2.4 development environment for windows. As a side
@@ -17,9 +17,10 @@ Description: MinGW Gtkmm 2.4 cross development environment
 
 Package: mingw32-gtkmm-meta-runtime
 Architecture: all
-Depends: mingw32-atk-runtime (>= 1.6.0), mingw32-zlib-runtime (>= 1.7.1), mingw32-jpeg-bin, 
-Conflicts: mingw32-zlib-bin, mingw32-atk, mingw32-glib, mingw32-glibmm, mingw32-gtk+, mingw32-gtkmm, mingw32-pango, mingw32-sigc
-Suggests: mingw32-glib-exe
+Depends: mingw32-atk-runtime (>= 1.6.0), mingw32-zlib-runtime (>= 1.7.1), mingw32-jpeg-bin, mingw32-glib-runtime, mingw32-glibmm-runtime, mingw32-gtkmm-runtime, mingw32-gtk+-runtime, mingw32-libiconv.bin, mingw32-libintl, mingw32-libpng-runtime (>= 1.2.7), mingw32-pango-runtime, mingw32-sigc++-runtime, mingw32-tiff
+Conflicts: mingw32-zlib-bin, mingw32-libpng-bin
+Suggests: mingw32-gtk-ms-windows-engine-runtime, mingw32-librsvg-runtime
+# mingw32-glib-exe, 
 Description: Gtkmm for Windows 2.4: shared libraries
  This meta package contains all needed packages for setting up
  a gtkmm 2.4 runtime environment on windows. As a side
