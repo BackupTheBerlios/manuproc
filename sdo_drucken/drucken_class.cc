@@ -1477,12 +1477,12 @@ void LR_Abstraktion::page_header(std::ostream &os)
         {if(Typ()==Rechnung || Typ()==Auftrag)
            {os << kunde_rng->Id();   
             os.width(5);os.fill('0');
-            os << "\\tiny ("<<kunde_an->Id()<<")";
+            os << " \\tiny ("<<kunde_an->Id()<<")";
            }
         else
            {os << kunde_an->Id();
             os.width(5);os.fill('0');
-            os << "\\tiny ("<<kunde_rng->Id()<<")";
+            os << " \\tiny ("<<kunde_rng->Id()<<")";
            }
         } 
       else
