@@ -1,4 +1,4 @@
-// $Id: createDynEnums.cc,v 1.13 2003/11/26 15:59:55 jacek Exp $
+// $Id: createDynEnums.cc,v 1.14 2004/03/26 13:20:37 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: createDynEnums.cc,v 1.13 2003/11/26 15:59:55 jacek Exp $
+// $Id: createDynEnums.cc,v 1.14 2004/03/26 13:20:37 jacek Exp $
 
 #include <Misc/dbconnect.h>
 #include <Misc/FetchIStream.h>
@@ -63,7 +63,7 @@ int main()
 		"namespace ManuProC {\n"
 		" namespace DynamicEnums {\n";
       
-      //---
+      //--- warenart, artikeltyp
       std::cout << "  namespace ArtikelTyp {\n"
 		"   enum enum_t {\n"
 		"    None=-1, ";
@@ -80,6 +80,23 @@ int main()
       tr.close();
       tr.open();
       
+      //--- artikeltyp attribute
+      std::cout << "  namespace ArtikelTyp_Attributes {\n"
+		"   enum enum_t {\n";
+      {  
+	const int attr_column=3; // ab der dritten Spalte stehen Attribute
+
+       std::cout << "LagerArtikel" << '=' << attr_column++ << ',';
+       std::cout << "MitEAN" << '=' << attr_column++ << ',';
+
+      }
+      std::cout << "\n"
+     		"   };\n"
+      		"  }\n\n";
+      tr.close();
+      tr.open();
+
+
       //--- einheiten
       std::cout << "  namespace Einheiten {\n"
 		"   enum enum_t {\n"
