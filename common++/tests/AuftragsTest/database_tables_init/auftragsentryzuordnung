@@ -18,7 +18,8 @@ CREATE TABLE "auftragsentryzuordnung" (
 	"neuauftragid" integer NOT NULL,
 	"neuinstanz" integer NOT NULL,
 	"neuzeilennr" integer NOT NULL,
-	"menge" integer
+	"menge" integer,
+	prioritaet timestamp with time zone
 );
 
 --
@@ -52,5 +53,5 @@ CREATE INDEX ae_zo_neu ON auftragsentryzuordnung USING btree (neuinstanz, neuauf
 -- Name: "auftragsentryzuordnung_altauftr" Type: INDEX Owner: christof
 --
 
-CREATE UNIQUE INDEX auftragsentryzuordnung_altauftr ON auftragsentryzuordnung USING btree (altauftragid, altinstanz, altzeilennr, neuauftragid, neuinstanz, neuzeilennr);
+CREATE UNIQUE INDEX auftragsentryzuordnung_altauftr ON auftragsentryzuordnung USING btree (altauftragid, altinstanz, altzeilennr, neuauftragid, neuinstanz, neuzeilennr, prioritaet);
 
