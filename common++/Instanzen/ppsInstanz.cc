@@ -20,6 +20,18 @@
 #include "ppsInstanz.h"
 #include <Artikel/ArtikelStamm.h>
 
+ppsInstanz::ppsInstanz(ID iid)
+ : instid(iid),
+                      lager_fuer(ppsInstanzID::None),
+                      einlagern_in(ppsInstanzID::None),
+                      sortierung(),
+                      lieferschein(),produziert_selbst(),
+                      automatisch_einlagern(),
+                      produktionsdauer_tage(),
+                      typ('0'),
+                      externe_bestellung()
+                      {get_name(); check(); }
+
 std::ostream &operator<<(std::ostream &o,const cH_ppsInstanz &i)
 {return o<<i->Name()<<"("<<i->Id()<<")";}
 
@@ -41,9 +53,6 @@ void  ppsInstanz::check() const
    if(AutomatischEinlagern())  assert(LagerInstanz());
    if(Lieferschein())          assert(ProduziertSelbst());
    if(ExterneBestellung())     assert(instid!=ppsInstanzID::Kundenauftraege);
-   if(PlanungsInstanz())      {assert(!ProduziertSelbst()); 
-                               assert(!Lieferschein());
-                               }
 //   if(EinlagernIn()!=ppsInstanzID::None) assert(ProduziertSelbst());
 }     
 
@@ -81,12 +90,6 @@ bool ppsInstanz::EigeneLagerKlasseImplementiert() const
 bool ppsInstanz::ProduktionsInstanz() const
 {
   if(typ=='P' || typ=='E') return true;
-  return false;
-}
-
-bool ppsInstanz::PlanungsInstanz() const
-{
-  if(typ=='E') return true;
   return false;
 }
 

@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.30 2004/05/13 09:19:53 christof Exp $
+// $Id: ppsInstanz.h,v 1.31 2004/05/24 09:59:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -54,7 +54,6 @@ private:
  bool automatisch_einlagern;
  int produktionsdauer_tage;
  char typ;
- ID geplant_von;
  bool externe_bestellung;
 public: // see Stroustrup about OO abuse
  std::string overview; // short hint on which intance is used in pps
@@ -67,16 +66,7 @@ private:
 public:
  static const ID default_id=ManuProC::DefaultValues::Instanz;
  
- ppsInstanz(ID iid=ppsInstanzID::None) : instid(iid),
-                      lager_fuer(ppsInstanzID::None),
-                      einlagern_in(ppsInstanzID::None),
-                      sortierung(),
-                      lieferschein(),produziert_selbst(),
-                      automatisch_einlagern(),
-                      produktionsdauer_tage(),      
-                      typ('0'),geplant_von(ppsInstanzID::None),
-                      externe_bestellung()
-                      {get_name(); check(); }
+ ppsInstanz(ID iid=ppsInstanzID::None);
 
  ID Id() const { return instid; }
  bool valid() const {return Id()!=ppsInstanzID::None;}
@@ -92,11 +82,9 @@ public:
  bool LagerInstanz() const ;
  bool EigeneLagerKlasseImplementiert() const;
  bool ProduktionsInstanz() const ;
- bool PlanungsInstanz() const ;
  ID EinlagernIn() const { return einlagern_in;}
  bool AutomatischEinlagern() const {return automatisch_einlagern;}
  bool ExterneBestellung() const {return externe_bestellung;}
- ID GeplantVon() const {return geplant_von;} 
  // nächste Instanz für einen Artikel (dort wird von hier bestellt)
  ID NaechsteInstanz(const ArtikelStamm &art) const;
 
@@ -129,19 +117,6 @@ public:
  static cH_ppsInstanz getProduktionsInstanz(const ArtikelBase &artikel);
  static cH_ppsInstanz getBestellInstanz(const ArtikelStamm &artikel);
  static cH_ppsInstanz getProduktionsInstanz(const ArtikelStamm &artikel);
-
- //////////////////////////////////////////////////////////////////////////
- // Für die Produktion
- public:
-      // void Produziert(const ArtikelBase &artikel, mengen_t menge) const throw(SQLerror);
-      
-      //void Lager_abschreiben(ManuProC::st_produziert &P) const ;
-
-      // Geplant wird von pps wenn im Einkauf Ware bestellt wird,
-      // ohne benötigte Menge auszuwählen.
-      // dieses Argument ist eine Strafe!!!
-      //NICHT rekursiv 
-//      void Planen(ManuProC::st_produziert &P) const throw(SQLerror);
 };
 
 

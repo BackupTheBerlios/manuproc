@@ -46,7 +46,6 @@ FetchIStream &operator>>(FetchIStream &is, ppsInstanz &i)
 	>> FetchIStream::MapNull(i.automatisch_einlagern)
 	>> i.typ
 	>> FetchIStream::MapNull(i.externe_bestellung)
-	>> FetchIStream::MapNull(i.geplant_von,ppsInstanzID::None)
 	>> FetchIStream::MapNull(i.overview)
 	>> FetchIStream::MapNull(i.alt_group_nr,ppsInstanzID::None)
 	;
@@ -59,7 +58,7 @@ void ppsInstanz::get_name() throw(SQLerror)
  if(instid == ppsInstanzID::None) return;
  Query("select name,lager_fuer,sortierung,"
       "lieferschein,produziert_selbst,lagername,prod_dauer_tage,"
-      "einlagern_in,automatisch_einlagern,typ,externe_bestellung,geplant_von,"
+      "einlagern_in,automatisch_einlagern,typ,externe_bestellung,"
       "overview,alt_group_nr "
       "from prod_instanz where insid=?") << instid >> *this;
 }

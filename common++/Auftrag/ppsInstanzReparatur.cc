@@ -577,7 +577,7 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
                {  analyse("Eine ExterneBestellung-Instanz darf nicht intern bestellen",ae,j->AEB,j->Menge);
                   goto weg1;
                }
-               else if (j->AEB.Instanz()!=bestellinstanz && !bestellinstanz->PlanungsInstanz())
+               else if (j->AEB.Instanz()!=bestellinstanz)
                {  analyse("Kindartikel bei falscher Instanz",ae,j->AEB,j->Menge);
                   goto weg1;
                }

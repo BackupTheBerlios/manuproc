@@ -1,4 +1,4 @@
-// $Id: checkInstanzen.cc,v 1.3 2003/09/30 08:29:24 christof Exp $
+// $Id: checkInstanzen.cc,v 1.4 2004/05/24 09:59:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -48,8 +48,6 @@ void check(cH_ppsInstanz I)
  ausgabe("AutomatischEinlagern","LagerInstanz",I->AutomatischEinlagern(),I->LagerInstanz());
  ausgabe("Lieferschein","ProduziertSelbst",I->Lieferschein(),I->ProduziertSelbst());
  ausgabe("ExterneBestellung","Kein Kundenauftrag",I->ExterneBestellung(),(I->Id()!=ppsInstanzID::Kundenauftraege));
- ausgabe("PlanungsInstanz","Nicht ProduziertSelbst",I->PlanungsInstanz(),!I->ProduziertSelbst());
- ausgabe("PlanungsInstanz","Nicht Lieferschein",I->PlanungsInstanz(),!I->Lieferschein());
 }
 
 
