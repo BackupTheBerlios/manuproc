@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.82 2003/07/18 16:06:28 jacek Exp $
+// $Id: AufEintrag.cc,v 1.83 2003/07/18 16:43:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -377,6 +377,7 @@ AuftragBase::mengen_t AufEintrag::Auslagern
    for(AufEintragZu::list_t::const_reverse_iterator zuloop_var=l.rbegin();
 	   		zuloop_var!=l.rend();++zuloop_var)
    {  AuftragBase::mengen_t mengen_var;
+      if (zuloop_var->AEB.Instanz()!=inst) continue;
       if (menge>=0) 
          mengen_var=AuftragBase::min(zuloop_var->Menge,AE_menge2);
       else 
@@ -396,8 +397,10 @@ AuftragBase::mengen_t AufEintrag::Auslagern
       if(!AE_menge2) break;
    }
    // pass the remainder
-   assert(!AE_menge2); // eventuell aus Lager verschwinden lassen
-   // oder unbestellte Menge produzieren???
+   if (AE_menge2>0)
+   {  unbestellteMengeProduzieren(inst,artikel,AE_menge2,uid,true,ae,ctx.leb);
+   }
+   else assert(!AE_menge2); // eventuell vergessen?
    return 0;
 }
 
