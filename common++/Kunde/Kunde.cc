@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.40 2003/09/16 10:16:21 jacek Exp $
+// $Id: Kunde.cc,v 1.41 2003/10/23 14:56:08 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -333,6 +333,16 @@ bool Kunde::MwSt() const
  return false;
 }
 
+void Kunde::set_idnr(const std::string& s)
+{
+ std::string t(s);
+
+ while(t.find(" ")!=std::string::npos)
+  t.replace(t.find(" "),1,"");
+
+ IDnr = t;
+
+}
 
 #if !defined(__GNUC__) || __GNUC__ > 2
 const Kunde::ID Kunde::eigene_id;
