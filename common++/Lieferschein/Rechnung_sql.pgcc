@@ -251,15 +251,18 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
  
  exec sql insert into rechnungentry 
  	(rngid,zeilennr, artikelid, lfrsid,lfrszeile, stueck,menge,
- 		preis,rabatt,preismenge,provsatz)
+ 		preis,rabatt,preismenge,provsatz,ek_preis)
  	(select :RNGID,l.zeile - :MINZNR + :MAXZNR,
  		l.artikelid, l.lfrsid,l.zeile, l.stueck,l.menge,
  		coalesce(ae.preis,0),coalesce(ae.rabatt,0),
- 		coalesce(ae.preismenge,1),ae.provsatz
+ 		coalesce(ae.preismenge,1),ae.provsatz,
+		coalesce(p.preis,0)
  	 from lieferscheinentry l
  	 	left join auftragentry ae 
  	 	on (l.instanz,l.refauftragid,l.refzeilennr)
  	 		= (ae.instanz,ae.auftragid,ae.zeilennr)
+		left join artikelpreise p
+		on (p.artikelid=ae.artikelid and p.kundennr=99999)
  	 where (l.instanz,l.lfrsid)=(:INSTANZ,:LFRSID)
  	 order by l.zeile);
  SQLerror::test(__FILELINE__); 
