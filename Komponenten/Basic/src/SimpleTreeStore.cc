@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.51 2004/01/09 15:44:28 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.52 2004/01/09 15:46:58 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -194,7 +194,8 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
 	  showdeep(), gp(), 
 	  auffuellen_bool(), expandieren_bool(), block_save(),
 	  color_bool(),
-	  sortierspalte(invisible_column), m_columns(max_col)
+	  sortierspalte(invisible_column), invert_sortierspalte(), 
+	  m_columns(max_col)
 {  
 //m_refTreeStore=Gtk::TreeStore::create(m_columns);
   vec_hide_cols.resize(Cols());
