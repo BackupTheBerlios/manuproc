@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.11 2002/11/28 17:09:42 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.12 2002/11/28 18:06:36 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -78,6 +78,9 @@ friend class SimpleTree;
 	void InitColumns(Gtk::TreeRow &node, guint deep, const cH_EntryValue &ev, const cH_RowDataBase &v);
 	void insertLine(Gtk::TreeModel::Children parent,const cH_RowDataBase &d, std::deque<guint> q,guint deep);
 	Gtk::TreeRow CopyTree(Gtk::TreeRow src, Gtk::TreeModel::Children dest);
+	Gtk::TreeStore::iterator MoveTree(
+		Gtk::TreeStore::iterator current_iter,
+		guint deep,guint child_s_deep,guint value_index);
 	
 	void on_line_appended(cH_RowDataBase);
 	void on_line_removed(cH_RowDataBase);

@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.9 2002/11/28 17:09:42 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.10 2002/11/28 18:06:36 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -267,8 +267,9 @@ recurse:
 	 // darum muss sich eine andere Node kümmern
          if (child_s_deep==(*current_iter)[m_columns.childrens_deep])
          {weiter_unten_einhaengen:
-            if (!!(*current_iter)[m_columns.row])
-               (*current_iter)[m_columns.row]->cumulate(v);
+            if (!!static_cast<Handle<TreeRow> >((*current_iter)[m_columns.row]))
+               static_cast<Handle<TreeRow> >((*current_iter)[m_columns.row])
+               		->cumulate(v);
             // goto ist schneller als (end?)rekursion !!!
             parent=current_iter->children();
             deep=child_s_deep;
@@ -284,7 +285,7 @@ recurse:
 	 // mitten in current_iter einfügen 
 	 // (current_iter wandert nach unten rechts)
          // (man könnte dies auch aufbrechen nennen)
-         current_iter= MoveTree (current_iter,deep,child_s_deep,ev);
+         current_iter= MoveTree (current_iter,deep,child_s_deep,selseq.front());
          goto weiter_unten_einhaengen;
       }
       else // Blatt erreicht
@@ -315,20 +316,20 @@ void SimpleTreeStore::InitColumns(Gtk::TreeRow &node, guint deep,
    node[m_columns.deep]=deep;
    node[m_columns.childrens_deep]=0;
    for (guint i=deep;i<Cols();++i)
-      node[m_columns.cols[i]]=v->Value(currseq[i],ValueData())->StrVal();
+      node[m_columns.cols[i]]=v->Value(currseq[i],ValueData())->getStrVal();
 }
 
 Gtk::TreeRow SimpleTreeStore::CopyTree(Gtk::TreeRow src, Gtk::TreeModel::Children dest)
 {  Gtk::TreeRow newrow = *(m_refTreeStore->append(dest));
 
 // isn't there an easier way to copy _all_ columns?   
-   newrow[m_columns.row]= src[m_columns.row];
-   newrow[m_columns.value]= src[m_columns.value];
-   newrow[m_columns.leafdata]= src[m_columns.leafdata];
-   newrow[m_columns.deep]= src[m_columns.deep];
-   newrow[m_columns.childrens_deep]= src[m_columns.childrens_deep];
+   newrow[m_columns.row]= static_cast<Handle<TreeRow> >(src[m_columns.row]);
+   newrow[m_columns.value]= static_cast<cH_EntryValue>(src[m_columns.value]);
+   newrow[m_columns.leafdata]= static_cast<cH_RowDataBase>(src[m_columns.leafdata]);
+   newrow[m_columns.deep]= static_cast<guint>(src[m_columns.deep]);
+@   newrow.set_value(m_columns.childrens_deep, src[m_columns.childrens_deep]);
    for (guint i=0;i<m_columns.cols.size();++i)
-      newrow[m_columns.cols[i]]= src[m_columns.cols[i]];
+      newrow.set_value(m_columns.cols[i], src[m_columns.cols[i]]);
       
    for (Gtk::TreeStore::iterator i=src.children().begin();
    		i!=src.children().end();++i)
