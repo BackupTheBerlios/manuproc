@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.44 2003/12/23 00:09:48 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.45 2003/12/23 09:14:29 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -258,8 +258,9 @@ void SimpleTreeStore::resort(Node &parent, unsigned stop_at)
    std::swap(swapmap,parent.children);
    for (SimpleTreeStoreNode::map_t::iterator i=swapmap.begin();i!=swapmap.end();++i)
    {  cH_EntryValue x=i->first;
-      Handle<TreeRow> htr=i->second.row;
-      if (htr) x=cH_EntryValueSort(htr->Value(sortierspalte,ValueData()),x);
+      if (i->second.row)
+         x=cH_EntryValueSort(i->second.row->Value(sortierspalte,ValueData()),x);
+      else x=cH_EntryValueSort(i->second.leafdata->Value(sortierspalte,ValueData()),x);
       Node &nd=parent.children.insert(parent.children.upper_bound(x),std::make_pair(x,Node()))->second;
       std::swap(i->second,nd);
       nd.parent=&parent;
@@ -845,4 +846,11 @@ unsigned SimpleTreeStore::Node2nth_child(const Node &nd) const
    			i!=nd.parent->children.end();++i,++res)
       if (&i->second==&nd) return res;
    abort();
+}
+
+void SimpleTreeStore::setSortierspalte(unsigned s)
+{  if (sortierspalte!=s)
+   {  sortierspalte=s;
+      redisplay();
+   }
 }
