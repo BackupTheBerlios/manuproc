@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.81 2004/07/16 22:42:11 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.82 2004/09/27 15:39:57 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -580,8 +580,8 @@ void SimpleTreeStore::redisplay_old(cH_RowDataBase data, unsigned index)
 }
 
 void SimpleTreeStore::set_tree_column_visibility(unsigned index,bool visible)
-{  vec_hide_cols.at(index)=visible;
-   on_visibly_changed(vec_hide_cols.begin()+index);
+{  ShowColumn(index)=visible;
+//   on_visibly_changed(vec_hide_cols.begin()+index);
 }
 
 Gtk::TreeModelFlags SimpleTreeStore::get_flags_vfunc() STS_VFUNC_CONST
