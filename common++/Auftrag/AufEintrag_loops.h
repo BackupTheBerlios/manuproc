@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.h,v 1.10 2004/02/16 15:29:05 christof Exp $ */
+/* $Id: AufEintrag_loops.h,v 1.11 2004/02/27 15:14:11 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,6 +28,10 @@ class AufEintragBase;
 
 struct distribute_children_cb
 {	// return the amount of the third argument you processed
+	virtual AuftragBase::mengen_t operator()(const ArtikelBase &a,
+		const AufEintragZu::st_reflist &r,AuftragBase::mengen_t m) const
+	{  return operator()(a,r.AEB,m); }
+	// backward compatibility (less information)
 	virtual AuftragBase::mengen_t operator()(const ArtikelBase &,
 		const AufEintragBase &,AuftragBase::mengen_t) const=0;
 	// for the remainder
@@ -56,7 +60,7 @@ bool distribute_children(const AufEintragBase &startAEB,
  		const ArtikelBase &article, 
  		const distribute_children_cb &callee);
 // please use distribute_children(...,distribute_children_cb_inverter(callee));
-bool distribute_children_rev(const AufEintragBase &startAEB,
+__deprecated bool distribute_children_rev(const AufEintragBase &startAEB,
  		AuftragBase::mengen_t menge,
  		const ArtikelBase &article, 
  		const distribute_children_cb &callee);
@@ -66,7 +70,7 @@ void distribute_children_artbaum(const AufEintragBase &startAEB,
  		AuftragBase::mengen_t menge,
  		const ArtikelBase &article, 
  		const distribute_children_cb &callee);
-void distribute_children_rev_artbaum(const AufEintragBase &startAEB,
+__deprecated void distribute_children_rev_artbaum(const AufEintragBase &startAEB,
  		AuftragBase::mengen_t menge,
  		const ArtikelBase &article, 
  		const distribute_children_cb &callee);

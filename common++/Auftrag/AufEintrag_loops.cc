@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.cc,v 1.18 2004/02/20 10:09:13 christof Exp $ */
+/* $Id: AufEintrag_loops.cc,v 1.19 2004/02/27 15:14:11 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -134,7 +134,7 @@ std::cout << '\n';
          if (!mengen_var) continue;
 
          {ManuProC::Trace _t(AuftragBase::trace_channel,callee_t,artloop_var->first,zuloop_var->AEB,mengen_var);
-          mengen_var=callee(artloop_var->first,zuloop_var->AEB,mengen_var);
+          mengen_var=callee(artloop_var->first,*zuloop_var,mengen_var);
          }
 
          AE_menge2-=mengen_var;
@@ -177,7 +177,7 @@ void distribute_children_artbaum(const AufEintragBase &startAEB,
          if (!mengen_var) continue;
 
          {ManuProC::Trace _t(AuftragBase::trace_channel,callee_t,artloop_var->first,zuloop_var->AEB,mengen_var);
-          mengen_var=callee(artloop_var->first,zuloop_var->AEB,mengen_var);
+          mengen_var=callee(artloop_var->first,*zuloop_var,mengen_var);
          }
 
          AE_menge2-=mengen_var;
