@@ -73,7 +73,7 @@ class Data_Lieferdaten : public RowDataBase
       	  return cH_EntryValueIntString(liefentry.lagerid);
       case PROZ_BEST:
         {  fixedpoint<1> genutzt=liefentry.DurchAuftraegeAbgedeckt();
-           if (genutzt>0) return cH_EntryValueIntString(genutzt.String()+"%");
+           if (genutzt<1) return cH_EntryValueIntString(genutzt.String()+"%");
            return cH_EntryValue();
         }
       default : return cH_EntryValue();

@@ -1,7 +1,10 @@
 #ifdef PETIG_EXTENSIONS
 #  define HIDE_PREISAUSWAHL
 #  define LIFERDATUM_STANDARD 1 /* KW */
+#  define LIEFERSCHEINE_BESTAETIGT
+
 #elif defined MABELLA_EXTENSIONS
 #  define MASSENEINGABE_AUS
+
 #else
 #endif
