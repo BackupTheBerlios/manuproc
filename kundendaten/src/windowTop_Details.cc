@@ -133,6 +133,13 @@ void windowTop::scc_verkaeufer_activate()
 
  Transaction tr;
 
+ // initial setting for new customers in prov_config table
+ if(kundendaten->VerkNr()==Kunde::none_id)
+   {
+    Query("insert into prov_config (artikel,provsatznr,kundennr) "
+		" (select distinct artikel,provsatznr,? from prov_config "
+		" where provsatznr=0)") << kundendaten->Id();
+   }
 
  Query q("update kunden set verknr=? where kundennr=?");
  q << Query::NullIf(scc_verkaeufer->get_value(),Kunde::none_id) << kundendaten->Id();
@@ -147,6 +154,8 @@ void windowTop::scc_verkaeufer_activate()
  SQLerror::test(__FILELINE__,100);
 
  tr.commit();
+
+ kundendaten->setVerkNr(scc_verkaeufer->get_value());
 //  changedFktS(Kunde::FVerknrku);
 }
 
