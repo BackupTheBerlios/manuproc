@@ -1,4 +1,4 @@
-// $Id: TagStream.cc,v 1.6 2004/06/02 07:31:23 christof Exp $
+// $Id: TagStream.cc,v 1.7 2004/06/03 06:51:12 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2002  Christof Petig
  *
@@ -276,7 +276,7 @@ char *TagStream::next_tag(Tag *parent)
          while (endcomment && endcomment[1]!='-' && endcomment[2]!='>')
             endcomment=find(endcomment+1,'-');
          if (!endcomment) ERROR2("Comment does not end",tag);
-         parent->push_back(Tag("--",recode_load(std::string(tag+3,endcomment-(tag+3)))));
+         parent->push_back(Tag("--",recode_load(de_xml(std::string(tag+3,endcomment-(tag+3))))));
          set_pointer(endcomment+3);
          continue; // outer
       }
@@ -294,7 +294,7 @@ char *TagStream::next_tag(Tag *parent)
          }
          
          parent->push_back(Tag(recode_load(std::string(tag+1,tagend-(tag+1))),
-         	std::string(value,valueend-value)));
+         	recode_load(de_xml(std::string(value,valueend-value)))));
          set_pointer(valueend+1);
          continue; // outer
       }
@@ -409,7 +409,7 @@ void TagStream::write(std::ostream &o, const Tag &t, int indent,bool indent_firs
       }
       else o << "/>";
    }
-   else o << t.Value();
+   else o << toXML(recode_save(t.Value()));
 }
 
 void TagStream::write(std::ostream &o,bool compact) const
