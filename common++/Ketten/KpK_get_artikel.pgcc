@@ -1,4 +1,4 @@
-// $Id: KpK_get_artikel.pgcc,v 1.15 2003/10/17 12:32:39 christof Exp $
+// $Id: KpK_get_artikel.pgcc,v 1.16 2004/05/26 09:56:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,7 +21,7 @@
 #include <iostream>
 #include <Misc/SQLerror.h>
 #include <Misc/Transaction.h>
-#include <Ketten/Kettscheibe.h>
+//#include <Ketten/Kettscheibe.h>
 #include <algorithm>
 
 exec sql include sqlca;
