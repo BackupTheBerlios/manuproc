@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.49 2004/01/08 16:01:51 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.50 2004/01/08 16:04:12 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -299,7 +299,7 @@ void SimpleTreeStore::redisplay()
  {  sequence_t::const_iterator si=std::find(currseq.begin(),currseq.end(),sortierspalte); 
     resort(root,si-currseq.begin());
     root.fix_pointer();
-    test();
+//    test();
  }
  needs_redisplay();
 }
