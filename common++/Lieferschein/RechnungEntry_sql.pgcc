@@ -24,7 +24,8 @@ exec sql include sqlca;
 
 
 RechnungEntry::RechnungEntry(const RechnungEntryBase& rechnung)
-throw(SQLerror)	: RechnungEntryBase(rechnung) 
+throw(SQLerror)	:RechnungEntryBase(rechnung),
+bezahlt(false),bezahlt_valid(false) 
 {
  exec sql begin declare section;
    int ARTIKELID, STUECK, LFRSID, LFRSZN;

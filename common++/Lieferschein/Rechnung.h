@@ -1,4 +1,4 @@
-/* $Id: Rechnung.h,v 1.23 2002/12/11 12:10:13 jacek Exp $ */
+/* $Id: Rechnung.h,v 1.24 2002/12/11 14:55:47 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -41,14 +41,14 @@ private:
  ManuProC::Datum zahlziel;
  ManuProC::Datum rgdatum;
  cP_Waehrung waehrung;
- fixedpoint<5> kurs;
  rabatt_t rabatt;
  cH_Zahlungsart zahlungsart;
  bool bezahlt;
  bool entsorgung;
  mutable std::string notiz;
  mutable bool notiz_valid;
-  
+ fixedpoint<5> kurs;  
+ 
 public:
         
  Rechnung(ID rid) throw(SQLerror);

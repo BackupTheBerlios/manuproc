@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung.h,v 1.2 2002/12/02 14:55:25 jacek Exp $ */
+/* $Id: ProvAbrechnung.h,v 1.3 2002/12/11 14:55:47 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -47,6 +47,11 @@ public:
  Kunde::ID VerkNr() const { return verkaeufer; }
  const ManuProC::Datum getDatum() const { return datum; }
  const ManuProC::Datum getBis() const { return bis; }
+
+ std::vector<ProvAbrechnungEntry*>::const_iterator begin() const
+ 	{ return entries.begin(); }
+ std::vector<ProvAbrechnungEntry*>::const_iterator end() const
+ 	{ return entries.end(); } 	
 
  static ProvAbrechnung* newProvAbrechnung(const Kunde::ID verkid,
  		ProvAbrechnung::ID abrnr, ManuProC::Datum bis,

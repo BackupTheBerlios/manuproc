@@ -1,4 +1,4 @@
-/* $Id: RechnungEntry.h,v 1.15 2002/12/05 16:15:09 jacek Exp $ */
+/* $Id: RechnungEntry.h,v 1.16 2002/12/11 14:55:47 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -74,7 +74,7 @@ public:
                         const AuftragBase &ab)
   		: RechnungEntryBase(l,z),artikel(a),stueck(s),menge(m),preis(p),
                         rabatt(r),lieferdatum(ld),lfrs(ls),auftrag(ab),
-                        bezahlt(false)
+                        bezahlt(false),bezahlt_valid(false)
                 {};
 
  mengen_t Menge() const { return menge; }
