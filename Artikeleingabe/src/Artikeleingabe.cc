@@ -87,9 +87,10 @@ void Artikeleingabe::artikelbox_activate()
        cH_ppsInstanz pi(as.BestellenBei());
        change_no_instanz->set_active(pi->Id()==ppsInstanzID::None);
        no_instanz->set_active(change_no_instanz->get_active());       
+
        optionmenu_instanz->set_value(pi->Id());
-       optionmenu_instanz->set_sensitive(change_no_instanz->get_active());
        Artikel_Bestellen_bei->set_value(pi->Id());
+       optionmenu_instanz->set_sensitive(change_no_instanz->get_active());
        Artikel_Bestellen_bei->set_sensitive(!change_no_instanz->get_active());
        
        mindbest_check->set_active(as.getCheckBest());

@@ -46,7 +46,7 @@ int main(int argc, char **argv)
  m.run();
  }
  catch(SQLerror &e)
-   { cerr<< e << '\n';
+   { std::cerr<< e << '\n';
    }
 
  Petig::dbdisconnect_nt(conn.Dbase());
