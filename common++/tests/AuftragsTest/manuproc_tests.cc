@@ -172,7 +172,7 @@ static bool Set()
       AufEintrag aeb=PA.push_back(2,DATUM,newart,OPEN,true);
       vergleichen(Check::Menge,"set_auftrag","Auftrag Anlegen","");
       
-      aeb.MengeAendern(-1,true,AufEintragBase());
+      aeb.MengeAendern(-1);
       vergleichen(Check::Menge,"set_abbest","Hälfte abbestellen","-");
       
     return true;

@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.99 2004/02/16 15:29:05 christof Exp $
+// $Id: AufEintrag.cc,v 1.100 2004/02/17 09:54:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -208,15 +208,22 @@ struct AufEintrag::Planen_cb : public auf_positionen_verteilen_cb
    }
 };
 
-void AufEintrag::Verzeigern()
-{  if (Instanz()->KundenInstanz())
-       ArtikelInternNachbestellen(getRestStk());
+void AufEintrag::Verzeigern(mengen_t M)
+{ ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),NV("M",M));
+  if (!M) return;
+  assert(getCombinedStatus()==OPEN);
+  assert(Id()>=handplan_id);
+  if (Instanz()->KundenInstanz())
+  {  if (M>=0) ArtikelInternNachbestellen(M);
+     else ArtikelInternAbbestellen(-M);
+  }
     else // planen (Pfeile von oben ebenfalls anlegen)
-    {  SQLFullAuftragSelector sel(make_value(SQLFullAuftragSelector::sel_Artikel_Planung_id
+    {  assert(M>0);
+       SQLFullAuftragSelector sel(make_value(SQLFullAuftragSelector::sel_Artikel_Planung_id
     		(Instanz()->Id(),Kunde::eigene_id,Artikel(),ungeplante_id,
     			OPEN)));
        Transaction tr;
-       mengen_t m=getRestStk();
+       mengen_t m=M;
        // Menge wird gleich häppchenweise wieder hinzugebucht
        MengeAendern(-m,false,AufEintragBase());
        m=auf_positionen_verteilen(sel,m,Planen_cb(*this));
@@ -257,9 +264,7 @@ void AufEintrag::setStatus(AufStatVal newstatus,bool force) throw(SQLerror)
 
  // InternAbbestellen
  if ((newstatus == CLOSED || newstatus == STORNO) && getRestStk()!=0)
- {   
-#warning // Planung Rückgängig machen ...
-     ArtikelInternAbbestellen(getRestStk());
+ {   Verzeigern(-getRestStk());
  }
 
  std::string sqlcommand = "update auftragentry set status=?"
@@ -278,7 +283,7 @@ void AufEintrag::setStatus(AufStatVal newstatus,bool force) throw(SQLerror)
  }
 
  if(newstatus == OPEN  &&  oldentrystatus==UNCOMMITED && getRestStk()!=0)
- {  Verzeigern();
+ {  Verzeigern(getRestStk());
  }
 
  if(newstatus==OPEN && bestellt!=0 && Id()>=handplan_auftrag_id)
@@ -335,7 +340,7 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld) throw(SQLerror)
  SQLerror::test("updateLieferdatum: lock table auftragentry");
 
  {delayed_reclaim dlr;
- ArtikelInternAbbestellen(getStueck());
+ if(getCombinedStatus()==OPEN) Verzeigern(-getStueck());
 
  Query("update auftragentry "
  	"set lieferdate=? "
@@ -345,7 +350,7 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld) throw(SQLerror)
  SQLerror::test("updateLiefDatum: update lieferdate in auftragentry");
  lieferdatum=ld;
 
- ArtikelInternNachbestellen(getStueck());
+ if(getCombinedStatus()==OPEN) Verzeigern(getStueck());
  }
 
  if(getCombinedStatus()==OPEN)// status->entrystatus

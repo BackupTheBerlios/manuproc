@@ -304,7 +304,7 @@ static bool Rep_KundenProgramm(AufEintrag &AE)
        Query::Execute(q2);
        SQLerror::test(__FILELINE__);
        AufEintrag AE=AufEintrag(class AufEintragBase(class AuftragBase(ROLLEREI,AuftragBase::ungeplante_id),2));
-       AE.MengeAendern(-100,true,AufEintragBase());
+       AE.MengeAendern(-100);
 
        vergleichen(Check::Menge,"reparatur_kunde_menge","Reparatur Kundenaufträge (Menge)","",true);
       }
@@ -729,10 +729,10 @@ static bool Planung_torture()
     AufEintragBase AEBP=PA.push_back(1200,DATUM-40,ARTIKEL_BANDLAGER,OPEN,true);
     vergleichen(Check::Menge,"V_Planung","Planung Weberei","");
     
-    AufEintrag(AEBP).MengeAendern(+400,true,AufEintragBase());
+    AufEintrag(AEBP).MengeAendern(+400);
     vergleichen(Check::Menge,"Pt_Planung_pl","Weberei +400","+");
     
-    AufEintrag(AEBP).MengeAendern(-700,true,AufEintragBase());
+    AufEintrag(AEBP).MengeAendern(-700);
     vergleichen(Check::Menge,"Pt_Planung_mi","Weberei -400","-");
 
     AufEintrag(AEB3).setStatus(STORNO);

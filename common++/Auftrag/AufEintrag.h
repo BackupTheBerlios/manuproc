@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.84 2004/02/13 17:38:07 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.85 2004/02/17 09:54:58 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -165,11 +165,11 @@ public:
 
 	
  void updateDispoENr(int dinr) throw(SQLerror);
- mengen_t MengeAendern(mengen_t menge,bool instanzen,const AufEintragBase &ElternAEB) throw(SQLerror);
+ mengen_t MengeAendern(mengen_t mengendelta);
+ mengen_t MengeAendern(mengen_t menge,bool instanzen,const AufEintragBase &ElternAEB,bool planen=false) throw(SQLerror);
 private:
   // nimmt alle Zuordnungen mit (oben & unten)
   void move_to(AufEintrag ziel,mengen_t menge) throw(std::exception);
- void updateStkDiffInstanz__(mengen_t menge) throw(SQLerror);
  void ArtikelInternAbbestellen(mengen_t menge) const;
  void move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,const ArtikelBase artikel);
  // wurde von ProduziertNG abgelöst
@@ -322,7 +322,8 @@ public:
 		const AufEintragBase &elter_neu,
 		const ProductionContext2 &ctx);
  // Pfeile nach oben wie unten anlegen
- void Verzeigern();
+ __deprecated void Verzeigern();
+ void Verzeigern(mengen_t M);
 private:		
  void Einlagern2(mengen_t M,
 		const AufEintragBase &elter_alt,

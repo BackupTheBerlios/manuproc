@@ -555,9 +555,10 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
  // Kundenaufträge legen automatisch einen Auftrag bei der entsprechenden Instanz 
  // für denselben Artikel an.
  AufEintragBase AEB(*this,ZEILENNR);
- if(status==OPEN && setInstanzAuftraege) // Nur offene Aufträge werden nach unten bestellt
+ if(status==OPEN && setInstanzAuftraege)
+  // Nur offene Aufträge werden nach unten bestellt
    {  AufEintrag AE(AEB);
-      AE.Verzeigern();
+      AE.Verzeigern(AE.getRestStk());
    }
  tr.commit();
  return AEB;
