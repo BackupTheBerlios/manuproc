@@ -1,4 +1,4 @@
-// $Id: auftrag_bearbeiten.hh,v 1.24 2003/10/18 13:41:56 jacek Exp $
+// $Id: auftrag_bearbeiten.hh,v 1.25 2003/10/20 12:46:00 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -75,6 +75,7 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
         void on_aufentrystat_optionmenu_clicked();
      	  void waehrung_geaendert();
         void on_preisart_optionmenu_clicked();
+        void on_offen_bei_lieferant_clicked();
         void on_preisautomatik_clicked();
         void on_auftrag_clist_select_row(gint row, gint column, GdkEvent *event);
         void on_auftrag_clist_unselect_row(gint row, gint column, GdkEvent *event);

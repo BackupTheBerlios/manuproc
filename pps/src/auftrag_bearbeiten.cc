@@ -213,6 +213,7 @@ void auftrag_bearbeiten::clearEntry()
  bestellt_label->set_text("0");
  lagerbest_label->set_text("0");
  verfuegbar_label->set_text("0");
+ lieferant_offen->set_text("(0)");
 }
 
 gint auftrag_bearbeiten::on_aufrabatt_spinbutton_focus_out_event(GdkEventFocus *ev)
@@ -1012,10 +1013,13 @@ void auftrag_bearbeiten::on_aufrabatt_spinbutton_activate()
 
 int RC_OffenMenge(cH_ArtikelBezeichnung b);
 
-void auftrag_bearbeiten::on_lager_bestand_clicked()
-{
+void auftrag_bearbeiten::on_offen_bei_lieferant_clicked()
+{  
  int offen=
 	RC_OffenMenge(cH_ArtikelBezeichnung(artikelbox->get_value()));
- lieferant_offen->set_text(itos(offen));
+ if(offen==-1)
+   lieferant_offen->set_text("--");
+ else
+   lieferant_offen->set_text("("+itos(offen)+")");
 }
 
