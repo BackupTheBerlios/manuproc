@@ -1,0 +1,16 @@
+cvs -z3 -d petig:/usr/local/cvsroot co Komponenten
+for i in `find -name .cvsignore` ; do echo `dirname "$i"` ; (cd $i; rm `cat .cvsignore`) ; done
+rm -r `find -name .deps`
+rm -r `find -name .libs`
+rm `find -type l`
+rm -r `find -name CVS`
+gcvs -z3 -d christof@cvs.manuproc.berlios.de:/cvsroot/manuproc import -ko common++ none import
+-------------------------
+gcvs -z3 -d christof@cvs.manuproc.berlios.de:/cvsroot/manuproc co Komponenten
+cd Komponenten
+tar cvzf ~/cvs/Komponenten/t.tgz `find -name gCVS`
+-------------------------
+tar xvzf t.tgz
+cvs add `find -name gCVS`
+cvs add -kb `find -path \*/gCVS/\*` # problem: gCVS/CVS/*
+cvs ci

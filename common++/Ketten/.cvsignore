@@ -7,3 +7,5 @@ Makefile
 Makefile.in
 *_pg.cc
 *_p.cc
+Kettscheibe_sql.cc
+ArtikelGang_sql.cc

@@ -1,6 +1,7 @@
-// $Id: FertigWaren.cc,v 1.2 2002/11/22 15:39:22 christof Exp $
-/*  pps: ManuProC's production planning system
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+/* $Id: ManuProcEntity.cc,v 1.1 2002/11/22 15:46:00 christof Exp $ */
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
+ *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,26 +18,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "FertigWaren.h"
-#include <Aux/Zeitpunkt_new.h>
+#include<BaseObjects/ManuProcEntity.h>
 
-FetchIStream &operator>>(FetchIStream &is, FertigWaren &fw)
- { std::string zeit;
-  
-   is >> fw.stk >> 
-   	zeit >> 
-   	(char)fw.aktion >>
-   	fw.uname >> 
- 	fw.uid >> 
- 	fw.lieferschein >> 
- 	fw.artikel;
- 	
-   fw.zeit=Zeitpunkt_new(zeit.c_str());
-   	
-   return is;	
+
+bool ManuProcEntity::Valid(ID i) //const
+{
+   if(i==none_id) return false;
+   return true;
 }
-  
-  
-
-
 

@@ -6,3 +6,5 @@ Bindung_sql.cc
 Makefile
 Bindung.cc
 Makefile.in
+Webangaben_sql.cc
+Schussfaeden_sql.cc

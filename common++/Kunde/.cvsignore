@@ -14,3 +14,5 @@ Anrede_sql.cc
 PreisListe_sql.cc
 LandesListe_sql.cc
 Adresse_sql.cc
+PreisListeFull_sql.cc
+Zahlungsart_sql.cc

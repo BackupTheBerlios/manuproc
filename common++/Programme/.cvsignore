@@ -1,0 +1,10 @@
+.deps
+.libs
+Instanzen
+Makefile
+Makefile.in
+checkGeliefert_sql.cc
+checkInstanzen
+adjust_store
+createDynEnums
+checkGeliefert.cc
