@@ -1,6 +1,6 @@
-// $Id: FetchIStream_common.cc,v 1.10 2004/05/07 09:48:23 jacek Exp $
+// $Id: FetchIStream_common.cc,v 1.11 2004/05/25 11:46:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 2001-2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -45,6 +45,16 @@ Query::debug_environment Query::debugging;
 void FetchIStream::mythrow(const SQLerror &e)
 {  if (Query::debugging.on) std::cerr << e << '\n';
    throw e;
+}
+
+void Query::Check100() const throw(SQLerror)
+{  if (!params.complete()) mythrow(SQLerror(query,ECPG_TOO_FEW_ARGUMENTS,"to few input parameter"));
+   if (!LinesAffected()) mythrow(SQLerror(query,100,"no lines selected"));
+}
+
+Query &Query::operator>>(const check100 &s)
+{  Check100();
+   return *this;
 }
 
 #define DEBUG_FIS(x) std::cerr << x << '\n'
@@ -235,6 +245,7 @@ Query &Query::operator>>(FetchIStream &s)
 
 FetchIStream &Query::FetchOne()
 {  ThrowOnBad(__FUNCTION__);
+   Check100();
    Fetch(embedded_iterator);
    FetchIStream dummy;
    Fetch(dummy);

@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.53 2004/03/12 20:50:46 jacek Exp $
+// $Id: FetchIStream.h,v 1.54 2004/05/25 11:46:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -227,6 +227,8 @@ class Query : public Query_types
 	void Execute_if_complete();
 
 public:
+	struct check100 { check100(){} };
+
 	Query(const std::string &command);
 	~Query();
 
@@ -237,6 +239,9 @@ public:
 	static void Execute(const std::string &command) throw(SQLerror);
 	int Result() { return error; }
 	unsigned LinesAffected() { return lines; }
+	
+	void Check100() const throw(SQLerror);
+	
 	// please migrate to the functions above
 	static __deprecated int Code(); // SQLCA.sqlcode
 #ifndef MPC_SQLITE
@@ -269,6 +274,7 @@ public:
 	FetchIStream &FetchOne();
 	void Fetch(FetchIStream &);
         Query &operator>>(FetchIStream &s);
+        Query &operator>>(const check100 &s);
         // we might as well define >> for this
 	template <class T> void FetchArray(std::vector<T> &);
 	template <class T> void FetchArray(std::list<T> &);
