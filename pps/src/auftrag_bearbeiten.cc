@@ -297,7 +297,7 @@ void auftrag_bearbeiten::on_stkmtr_spinbutton_activate()
         aktaufeintrag->getStueck();
        			
        AuftragBase::mengen_t mt=aktaufeintrag->MengeAendern
-	(getuid(),diffmenge,true,AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
+	(diffmenge,true,AufEintragBase());
        assert(mt==diffmenge);
        fillCList();
        auftrag_clist->grab_focus();
