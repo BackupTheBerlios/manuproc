@@ -1,4 +1,4 @@
-// $Id: dbconnect_shared.cc,v 1.8 2004/11/18 16:45:44 christof Exp $
+// $Id: dbconnect_shared.cc,v 1.9 2005/03/30 12:32:58 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,14 +27,18 @@ ManuProC::Connection::Connection(const std::string &h, const std::string &d,
 {
    std::string host_=DEFAULT_DBHOST;
    std::string db_=DEFAULT_DB;
+   std::string opt_port;
 
    char *h_opt(getenv("PGHOST"));
    char *d_opt(getenv("PGDATABASE"));
+   char *p_opt(getenv("PGPORT"));   
    if(h_opt) host_=h_opt;
    if(d_opt) db_=d_opt;
+   if(p_opt) opt_port=p_opt;   
 
    if(host.empty())  host=host_;
    if(dbase.empty()) dbase=db_;
+   if(!opt_port.empty()) port=atoi(opt_port.c_str());
 }
 
 void ManuProC::dbconnect_nt(const Connection &c) throw()

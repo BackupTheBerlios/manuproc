@@ -195,13 +195,17 @@ void Artikelpreis::UnCache(const PreisListe::ID liste,const ArtikelBase &ab)
 
 Artikelpreis::Artikelpreis(const cH_Kunde &k,const ArtikelBase &a, 
 				int bestellmenge)
-	: errechnet(false), gefunden(false), gefunden_in(ManuProcEntity<>::none_id)
+	: errechnet(false), gefunden(false), 
+	gefunden_in(ManuProcEntity<>::none_id), 
+	pl_parent(ManuProcEntity<>::none_id)
 {  Artikelpreis ap;
 
    for (std::list<std::pair<int,PreisListe::ID> >::const_iterator i=k->Preislisten().begin();
    	i!=k->Preislisten().end();++i)
    {  ap=Artikelpreis(cH_PreisListe(i->second),a,bestellmenge);
-      if (ap.Gefunden()) { *this=ap; return; }
+      if (ap.Gefunden()) { *this=ap; 
+                pl_parent=ap.getParent();
+                return; }
    }
 
    // oder für alle?   	
