@@ -3,6 +3,7 @@
 #include "Kundengruppe.h"
 #include <BaseObjects/ManuProcEntity_FetchIStream.h>
 
+const Kundengruppe::ID Kundengruppe::default_ID=ManuProC::DefaultValues::Kunden;
 
 Kundengruppe::Kundengruppe(ID kgid, const std::string _obg, 
 	const std::string _grpnm, const std::string _komm) 

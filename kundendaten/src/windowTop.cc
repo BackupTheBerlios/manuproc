@@ -59,8 +59,7 @@ windowTop::windowTop()
  button_spreis_add->set_sensitive(false);
  
 
-#warning Der default Wert soll aus der Db geholt werden
- gruppenwahl->set_value(KundengruppeID::Kunden);
+ gruppenwahl->set_value(Kundengruppe::default_ID);
  kundenauswahl->reset();
  kundenauswahl->EinschraenkenKdGr(gruppenwahl->get_value());
  geburtstag->setLabel("Geburtstag");
@@ -229,10 +228,10 @@ void windowTop::on_preisautomatik_clicked()
 
 void windowTop::on_gruppenwahl_activate()
 {  
-cout << "gruppe:" <<  gruppenwahl->get_value();
  kundenauswahl->reset();
  kundenauswahl->EinschraenkenKdGr(gruppenwahl->get_value());
  clear_entrys();
+ notebook_main->set_page(PAGE_KUNDE);
 }
 
 
@@ -466,12 +465,15 @@ void windowTop::on_gruppe_in_clicked()
  if(kundendaten->Id()==Kunde::none_id) return;
  kundendaten->putInGrp(allgrp->GrpId());
  showGruppen(); 
+ allgrp=NULL;
 }
 
 void windowTop::on_gruppe_out_clicked()
 {  
- kundendaten->pullFromGrp(allgrp->GrpId());
- showGruppen(); 
+ if(kundendaten->Id()==Kunde::none_id) return;
+ kundendaten->pullFromGrp(wahlgrp->GrpId());
+ showGruppen();
+ wahlgrp=NULL; 
 }
 
 

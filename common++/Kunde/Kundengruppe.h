@@ -13,12 +13,13 @@ namespace KundengruppeID=ManuProC::DynamicEnums::Kundengruppen;
 
 class Kundengruppe : public ManuProcEntity<KundengruppeID::enum_t>
 {
- static const ID default_ID=ManuProC::DefaultValues::Kunden;
+
  std::string grpname;
  std::string obergruppe;
  std::string kommentar;
   
 public:
+ static const ID default_ID;
 
  friend class Handle<const Kundengruppe>;
  friend class cH_Kundengruppe;
