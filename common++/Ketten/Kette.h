@@ -1,4 +1,4 @@
-/* $Id: Kette.h,v 1.11 2004/02/26 16:05:48 christof Exp $ */
+/* $Id: Kette.h,v 1.12 2004/11/04 17:17:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,6 +26,8 @@
 #include <vector>
 #include <exception>
 
+class FetchIStream;
+
 struct Kette {
 	int maschine;
 	ManuProC::Datum schaerdatum;
@@ -42,7 +44,7 @@ public:
 		: maschine(m), schaerdatum(adabasDatum)
 	{}
 	Kette(const char *barconame) throw(ManuProC::Datumsfehler,illegal_format);
-	Kette() : maschine(0), schaerdatum() {}
+	Kette() : maschine(), schaerdatum() {}
 	const ManuProC::Datum &Schaerdatum() const throw() { return schaerdatum; }
 	int Maschine() const throw() { return maschine; }
 	
@@ -56,7 +58,7 @@ public:
    bool Valid() const;
 
 	friend std::ostream& operator<<(std::ostream &o,const Kette &k);
-
+	friend FetchIStream& operator>>(FetchIStream &i,Kette &k);
 };
 
 extern inline std::ostream& operator<<(std::ostream &o,const Kette &k)

@@ -1,4 +1,4 @@
-// $Id: KettplanKette.cc,v 1.6 2004/05/26 09:01:24 christof Exp $
+// $Id: KettplanKette.cc,v 1.7 2004/11/04 17:17:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -60,3 +60,7 @@ KettplanKette::KettplanKette(const Kette &k)
 		: Kette(k), USUAL_INIT
 	{}
 #undef USUAL_INIT
+
+Query::Row &operator>>(Query::Row &r, Kette &m)
+{ return r >> m.maschine >> m.schaerdatum;
+}
