@@ -1,4 +1,4 @@
-// $Id: MVC_int_RadioButtons.hh,v 1.1 2002/11/22 12:05:23 christof Exp $
+// $Id: MVC_int_RadioButtons.hh,v 1.2 2002/11/22 14:28:20 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,8 +21,8 @@
 #ifndef MANUPROC_WIDGETS_MVC_INT_RB_H
 #define MANUPROC_WIDGETS_MVC_INT_RB_H
 
-#include <gtkmm/radiobutton.h>
-#include <gtkmm/box.h>
+#include <gtk--/radiobutton.h>
+#include <gtk--/box.h>
 #include <BaseObjects/MVC.h>
 #include <vector>
 

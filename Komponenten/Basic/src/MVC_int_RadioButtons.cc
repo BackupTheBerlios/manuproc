@@ -1,4 +1,4 @@
-// $Id: MVC_int_RadioButtons.cc,v 1.1 2002/11/22 12:05:23 christof Exp $
+// $Id: MVC_int_RadioButtons.cc,v 1.2 2002/11/22 14:28:20 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -22,9 +22,9 @@
 
 void MVC_int_RadioButtons::refresh(gpointer x)
 {  if (x==&model.Value())
-   {  my_ch_con.block();
+   {  my_ch_con.disconnect();
       Gtk::CheckButton::set_active(model.get_value());
-      my_ch_con.unblock();
+      my_ch_con=toggled.connect(SigC::slot(this,&MVC_int_RadioButtons::on_toggled));
    }
 }
 
@@ -36,7 +36,7 @@ MVC_int_RadioButtons::MVC_int_RadioButtons(const Model_ref<T> &m, const std::str
 };
 
 void MVC_int_RadioButtons::on_toggled()
-{  ch_con.block();
+{  ch_con.disconnect();
    model=Gtk::CheckButton::get_active();
-   ch_con.unblock();
+   ch_con=model.changed.connect(SigC::slot(this,&MVC_int_RadioButtons::refresh));
 }

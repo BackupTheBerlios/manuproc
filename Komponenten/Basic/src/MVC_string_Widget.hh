@@ -1,4 +1,4 @@
-// $Id: MVC_string_Widget.hh,v 1.3 2002/10/17 07:17:24 christof Exp $
+// $Id: MVC_string_Widget.hh,v 1.4 2002/11/22 14:28:20 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
