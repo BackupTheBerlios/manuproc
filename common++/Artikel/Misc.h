@@ -1,4 +1,4 @@
-// $Id: Misc.h,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: Misc.h,v 1.2 2001/05/10 16:31:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -49,7 +49,7 @@ struct ProzessListe
 public:   // members
    ID rohartikel;
    ID endartikel;
-   cH_Kunde kunde;
+   Kunde::ID liste;
 
    unsigned int rohartikel_preis_index;
    ID rohartikel_preis;
@@ -58,8 +58,8 @@ public:   // members
    vector<ProzessSchritt> schritte; 
 
 public:   // methods
-   ProzessListe() : kunde(Kunde::default_id) {}
-   ProzessListe(const cH_Kunde &k,const ArtikelBase &ab) : kunde(k)
+   ProzessListe() : liste(Kunde::default_id) {}
+   ProzessListe(const Kunde::ID l,const ArtikelBase &ab) : liste(l)
    {  LeseProzesse(ab,*this); }
    void ErzeugePreisArtikelDummy(void); // this is nearly const
    float BezugsMenge() const
@@ -72,10 +72,10 @@ public:   // methods
    preis_iterator preis_begin() const
    { return schritte.rbegin()+(schritte.size()-rohartikel_preis_index); }
    preis_iterator preis_end() const { return schritte.rend(); }
-   const cH_Kunde &getKunde() const
-   {  return kunde; }
-   void setKunde(const cH_Kunde &k)
-   {  kunde=k; }
+   const Kunde::ID getListe() const
+   {  return liste; }
+   void setListe(const Kunde::ID l)
+   {  liste=l; }
 };
 };
 #endif

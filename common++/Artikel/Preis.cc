@@ -1,4 +1,4 @@
-// $Id: Preis.cc,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: Preis.cc,v 1.2 2001/05/10 16:31:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -97,6 +97,7 @@ Preis::pfennig_cent_t Preis::Gesamtpreis(cP_Waehrung w,int anzahl,float menge,co
 }
 
 const Preis Preis::Gesamtpreis(int anzahl,float menge,const fixedpoint<2> &rabatt) const
-{  if (menge) return In(waehrung,menge*anzahl)*(1-0.01*double(rabatt));
+{  if (!*this) return *this;
+   if (menge) return In(waehrung,menge*anzahl)*(1-0.01*double(rabatt));
    else return (*this)*(anzahl*(1-0.01*double(rabatt)));
 }

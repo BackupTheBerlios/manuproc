@@ -1,4 +1,4 @@
-/* $Id: AufEintragBase.h,v 1.2 2001/04/23 08:29:46 christof Exp $ */
+/* $Id: AufEintragBase.h,v 1.3 2001/05/10 16:31:37 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -52,13 +52,12 @@ public:
  void setArtikelBezeichnung(const cH_ExtBezSchema &cs) 
  	{ bez= cH_ArtikelBezeichnung(Id(),cs); }
  static const ID default_id=0;
+
  AufArtikel(const ID &stamp,const cH_ExtBezSchema &schema)
  	: ArtikelBaum(stamp),ArtikelBase(stamp),bez(stamp,schema)
  	{}
-
  AufArtikel(const cH_ExtBezSchema &schema) 
  	: bez(ID(),schema) {}
-
  AufArtikel() : bez(cH_ArtikelBezeichnung::Default())
  	{}
 

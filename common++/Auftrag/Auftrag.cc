@@ -1,6 +1,5 @@
-/* $Id: AuftragBase.h,v 1.2 2001/05/10 16:31:37 christof Exp $ */
-/*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+/*  pps: ManuProC's ProductionPlanningSystem
+ *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,18 +16,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef AUFTRAGBASE_H
-#define AUFTRAGBASE_H
+#include"AuftragFull.h"
+#include<Aux/Ausgabe_neu.h>
 
-class AuftragBase
-{
- protected:
- 	int auftragid;	
- 	
- public:
-	AuftragBase() : auftragid(0) {}
-	AuftragBase(int &aufid) throw() : auftragid(aufid) {}
-	int Id() const {return auftragid;}
-};
+string Auftrag::getAuftragidToStr() const
+{ return Formatiere(auftragid,0,6,"","",'0'); }
 
-#endif
+string Auftrag::getJahrgangStr() const 
+{ return Formatiere(jahrgang,0,4,"",""); }

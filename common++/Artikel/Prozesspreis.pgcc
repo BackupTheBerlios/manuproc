@@ -1,4 +1,4 @@
-// $Id: Prozesspreis.pgcc,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: Prozesspreis.pgcc,v 1.2 2001/05/10 16:31:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,7 +21,7 @@
 
 exec sql include sqlca;
 
-Prozesspreis::Prozesspreis(const cH_Kunde &k,const cH_Prozess &proz)
+Prozesspreis::Prozesspreis(const Kunde::ID liste,const cH_Prozess &proz)
 	: Preis()
 {  exec sql begin declare section;
    int prozessid;
@@ -31,7 +31,7 @@ Prozesspreis::Prozesspreis(const cH_Kunde &k,const cH_Prozess &proz)
    float preismenge;
    exec sql end declare section;
    
-   kundennr=k->getNummer();
+   kundennr=liste;
    prozessid=proz->Id();
    
    exec sql select preis,waehrung,preismenge 

@@ -24,6 +24,8 @@ libcommon___a_LIBADD= \
 		Auftrag/selAufEntry.o \
 		Auftrag/selAufEntry_sql.o \
 		Auftrag/sqlAuftragSelector.o \
+		Auftrag/Auftrag.o \
+		Auftrag/Auftrag_sql.o \
 		Aux/Ausgabe_neu.o \
 		Aux/Changejournal_sql.o \
 		Aux/Datum.o \

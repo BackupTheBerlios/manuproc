@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.2 2001/04/30 15:30:25 christof Exp $
+# $Id: Makefile.am,v 1.3 2001/05/10 16:31:37 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -10,6 +10,9 @@ includedir=@includedir@/Artikel
 
 libArtikel_o_SOURCES=Aufmachung.cc Preis.cc \
 	$(BUILT_SOURCES_P) Artikelpreis.cc
+
+libArtikel.o: $(libArtikel_o_OBJECTS) $(libArtikel_o_DEPENDENCIES)
+	touch $@
 	
 BUILT_SOURCES=$(BUILT_SOURCES_P)
 

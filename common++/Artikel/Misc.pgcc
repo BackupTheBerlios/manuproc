@@ -1,4 +1,4 @@
-// $Id: Misc.pgcc,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: Misc.pgcc,v 1.2 2001/05/10 16:31:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,7 +33,7 @@ void LeseProzesse(const ArtikelBase &ab,ProzessListe &out)
    float preismenge;
    exec sql end declare section;
    
-   kundennr=out.getKunde()->getNummer();
+   kundennr=out.getListe();
    // init output structure
    out.schritte.erase(out.schritte.begin(),out.schritte.end());
    out.endartikel=ab.Id();
@@ -77,7 +77,7 @@ void LeseProzesse(const ArtikelBase &ab,ProzessListe &out)
    ps.prozessname+='"'; // ecpg can't handle this ;-) "
    ps.stueckgroesse=ps.prozess->getMtrProStk();
 
-   Prozesspreis pr(out.kunde,ps.prozess);
+   Prozesspreis pr(out.liste,ps.prozess);
    ps.preis=pr;
 
    assert(out.schritte.size()==actual_index);

@@ -1,4 +1,4 @@
-// $Id: Artikelpreis.cc,v 1.6 2000/12/15 17:00:23 cvs_christof Exp $
+// $Id: Artikelpreis.cc,v 1.7 2001/05/04 10:05:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,8 +21,8 @@
 #include "Artikel/Artikelpreis.h"
 #include <Artikel/Misc.h>
 
-Artikelpreis::Artikelpreis(const cH_Kunde &k,const ArtikelBase &a)
-{  ArtikelMisc::ProzessListe pl(k,a);
+Artikelpreis::Artikelpreis(const Kunde::ID liste,const ArtikelBase &a)
+{  ArtikelMisc::ProzessListe pl(liste,a);
    init(pl);
 }
 

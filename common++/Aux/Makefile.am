@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.2 2001/04/30 15:30:25 christof Exp $
+# $Id: Makefile.am,v 1.3 2001/05/10 16:31:37 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -15,6 +15,9 @@ libAux_o_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
 		EntryValueBase.cc EntryValueIntString.cc \
 		auto_conversion.cc $(PGCC_SOURCES) \
 		exception.cc itos.cc 
+
+libAux.o: $(libAux_o_OBJECTS) $(libAux_o_DEPENDENCIES)
+	touch $@
 
 PGCC_SOURCES=   dbconnect.cc SQLerror_postgres.cc Transaction.cc \
 		Waehrung_sql.cc Changejournal_sql.cc FetchIStream.cc

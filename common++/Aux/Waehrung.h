@@ -1,4 +1,4 @@
-// $Id: Waehrung.h,v 1.2 2001/04/30 15:30:26 christof Exp $
+// $Id: Waehrung.h,v 1.3 2001/05/10 16:31:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -31,6 +31,7 @@ public:
 
 // muesste aus Datenbank generiert werden 
  enum enum_t { DM=1, EUR, USD };
+ static const enum_t default_id=DM;
  
 private:
  WaehID wid;  

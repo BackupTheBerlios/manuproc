@@ -1,4 +1,4 @@
-// $Id: Artikelpreis.h,v 1.2 2001/04/23 12:05:50 christof Exp $
+// $Id: Artikelpreis.h,v 1.3 2001/05/10 16:31:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -31,11 +31,14 @@ class Artikelpreis : public Preis
 	Preis &getPreis()
 	{  return *(Preis*)this; }
 	void init(const ArtikelMisc::ProzessListe &pl);
+	// cH_Kunde weg !
+	Artikelpreis(const cH_Kunde &liste,const ArtikelBase &a)
+	{  *this=Artikelpreis(liste->Id(),a);
+	}
 public:
 	const Preis &getPreis() const
 	{  return *(Preis*)this; }
-	// cH_Kunde weg !
-	Artikelpreis(const cH_Kunde &liste,const ArtikelBase &a);
+	Artikelpreis(const Kunde::ID liste,const ArtikelBase &a);
 	Artikelpreis(const ArtikelMisc::ProzessListe &pl)
 	{  init(pl); }
 	void setPreis(const Preis &p)

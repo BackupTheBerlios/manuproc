@@ -1,4 +1,4 @@
-// $Id: Prozesspreis.h,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: Prozesspreis.h,v 1.2 2001/05/10 16:31:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -29,7 +29,7 @@ class Prozesspreis : public Preis
 public:
 	const Preis &getPreis() const
 	{  return *(Preis*)this; }
-	Prozesspreis(const cH_Kunde &k,const cH_Prozess &id);
+	Prozesspreis(const Kunde::ID liste,const cH_Prozess &id);
 	void setPreis(const Preis &p)
 	{  getPreis()=p; }
 };
