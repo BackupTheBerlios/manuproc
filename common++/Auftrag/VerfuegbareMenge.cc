@@ -1,4 +1,4 @@
-/* $Id: VerfuegbareMenge.cc,v 1.10 2003/09/02 12:10:52 christof Exp $ */
+/* $Id: VerfuegbareMenge.cc,v 1.11 2004/09/01 12:25:48 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -21,6 +21,7 @@
 #include <Misc/TraceNV.h>
 #include <Auftrag/selFullAufEntry.h>
 #include <Misc/relops.h>
+#include <Artikel/ArtikelStamm.h>
 
 #ifdef PETIG_EXTENSIONS
 //#define MENGE_KLAUEN
@@ -53,8 +54,15 @@ VerfuegbareMenge::VerfuegbareMenge(const cH_ppsInstanz &_instanz,const ArtikelBa
         assert(i->getRestStk()==i->getStueck());
         ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,i->getLieferdatum());
         if(i->getLieferdatum() > datum) continue;
-	ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,i->getRestStk(),*i);
-        menge_dispo_auftraege+=i->getRestStk();
+        AuftragBase::mengen_t freieMenge=i->getRestStk();
+        if (_instanz->LagerInstanz())
+        {  AufEintragZu::list_t nachbestellt = AufEintragZu::get_Referenz_list
+                    (*i,AufEintragZu::list_kinder,
+                   AufEintragZu::list_ohneArtikel,AufEintragZu::list_unsorted);
+           freieMenge-=Summe(nachbestellt);
+        }
+	ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,freieMenge,*i);
+        menge_dispo_auftraege+=freieMenge;
         V_dispo_auftraege.push_back(*i);
       }
      else // AuftragBase::handplan_auftrag_id || plan_auftrag_id
@@ -70,6 +78,8 @@ VerfuegbareMenge::VerfuegbareMenge(const cH_ppsInstanz &_instanz,const ArtikelBa
    }
  assert(menge_dispo_auftraege>=0);
  assert(menge_plan_auftraege>=0);
+ ManuProC::Trace(AuftragBase::trace_channel,"=",NV("dispo",menge_dispo_auftraege),
+           NV("plan",menge_plan_auftraege));
 }
 
 #include <Auftrag/AufEintragZuMengenAenderung.h>
@@ -91,8 +101,19 @@ AuftragBase::mengen_t VerfuegbareMenge::reduce_in_dispo_or_plan(const bool dispo
      // oder erst nachbestellen, dann (Lager)vormerkung freigeben ??
      if(!dispo)  
         i->MengeNeubestellen(M);
-     else
-        i->updateStkDiffBase__(-M);
+     else // DispoAuftrag
+     {  // i->updateStkDiffBase__(-M);
+        i->MengeAendern(-M,false,AufEintragBase());
+        ArtikelStamm astamm(i->Artikel());
+        if (instanz->LagerInstanz() && astamm.getMindBest()>0
+            && i->getRestStk()<astamm.getMindBest())
+        {  AuftragBase::mengen_t differenz=AuftragBase::mengen_t(astamm.getMindBest())-i->getRestStk();
+           i->MengeAendern(differenz,false,AufEintragBase());
+           ppsInstanz::ID next=i->Instanz()->NaechsteInstanz(astamm);
+           assert(next!=ppsInstanzID::None);
+           AufEintrag::ArtikelInternNachbestellen(cH_ppsInstanz(next),differenz,datum,i->Artikel(),*i);
+        }
+     }
      if(!instanz->LagerInstanz())
      // notwendig?
      {  AufEintragZuMengenAenderung::freie_dispomenge_verwenden(*i,M,ElternAEB);

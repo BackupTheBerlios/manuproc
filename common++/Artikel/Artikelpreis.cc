@@ -34,8 +34,10 @@
 #include <functional>
 #include <Misc/Event.h>
 
-#ifndef SIGC1_2
+#if MPC_SIGC_VERSION < 0x120
 #include <sigc++/func_slot.h>
+#elif MPC_SIGC_VERSION >= 0x200
+#include <sigc++/compatibility.h>
 #endif
 
 namespace // index_t and payload_t should not be globally visible

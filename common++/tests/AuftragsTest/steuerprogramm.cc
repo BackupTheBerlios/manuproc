@@ -119,7 +119,9 @@ int main(int argc,char *argv[])
 #if defined(PETIG_TEST) || defined(MANU_PROC_TEST)
    AuftragBase::setzeAktuellesJahr(2000);
 #else
-   AuftragBase::setzeAktuellesJahr(2003);
+   // wird zum Teil von den Tests in 2000 geändert ...
+   // sollte auch wenn möglich ...
+   AuftragBase::setzeAktuellesJahr(2003); 
 #endif
    static struct option long_options[] = {
      { "verbose", no_argument, 0, 'v' },

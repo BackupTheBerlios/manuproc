@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.31 2004/06/16 12:56:13 christof Exp $
+// $Id: db_upgrade.cc,v 1.32 2004/09/01 12:30:32 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -223,6 +223,9 @@ int main(int argc,char *argv[])
             "ausn_gaenge, ausn_maxfd, ausn_gaenge2, ausn_maxfd2 "
             "from webang_faeden where kettscheibe>0");
   }
+
+  // MindestMenge auf lager
+  check_column("artikelstamm","mindbestand","integer");
 
   ManuProC::dbdisconnect();
   return 0;

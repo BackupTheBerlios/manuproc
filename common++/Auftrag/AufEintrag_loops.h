@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.h,v 1.13 2004/03/01 17:11:01 christof Exp $ */
+/* $Id: AufEintrag_loops.h,v 1.14 2004/09/01 12:25:48 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -56,6 +56,11 @@ public:
 
 // 0er zuerst
 bool distribute_children(const AufEintragBase &startAEB,
+ 		AuftragBase::mengen_t menge,
+ 		const ArtikelBase &article, 
+ 		const distribute_children_cb &callee);
+// wenn die Liste schon verfügbar ist ...
+bool distribute_children(AufEintragZu::map_t &MapArt,
  		AuftragBase::mengen_t menge,
  		const ArtikelBase &article, 
  		const distribute_children_cb &callee);

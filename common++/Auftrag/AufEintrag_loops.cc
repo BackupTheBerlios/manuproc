@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.cc,v 1.23 2004/09/01 08:57:45 christof Exp $ */
+/* $Id: AufEintrag_loops.cc,v 1.24 2004/09/01 12:25:48 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -120,6 +120,15 @@ bool distribute_children(const AufEintragBase &startAEB,
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,article,callee_t);
    AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel
    	(startAEB,AufEintragZu::list_kinder,AufEintragZu::list_unsorted));
+   return distribute_children(MapArt,menge,article,callee);
+}
+
+bool distribute_children(AufEintragZu::map_t &MapArt,
+ 		AuftragBase::mengen_t menge,
+ 		const ArtikelBase &article, 
+ 		const distribute_children_cb &callee)
+{  std::string callee_t=Nametrans(typeid(callee).name());
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,menge,article,callee_t);
    ArtikelBaum AE_artbaum(article);
    for(AufEintragZu::map_t::iterator artloop_var=MapArt.begin();artloop_var!=MapArt.end();++artloop_var)
    {  ArtikelBaum::faktor_t AE_faktor = AE_artbaum.Faktor(artloop_var->first);
@@ -238,8 +247,9 @@ bool distribute_children_twice(const AufEintragBase &startAEB,
       		=MinPfeil_or_MinGeliefert(*zuloop_var,AE_menge2);
          if (!mengen_var) continue;
 
-         {ManuProC::Trace _t(AuftragBase::trace_channel,callee_t,artloop_var->first,zuloop_var->AEB,mengen_var,true);
+         {ManuProC::Trace _t(AuftragBase::trace_channel,callee_t,artloop_var->first,zuloop_var->AEB,mengen_var,NV("first",true));
           mengen_var=callee(artloop_var->first,zuloop_var->AEB,mengen_var,true);
+          ManuProC::Trace(AuftragBase::trace_channel,"=",mengen_var);
          }
 
 	 zuloop_var->Menge-=mengen_var; // for the second iteration
@@ -252,7 +262,7 @@ bool distribute_children_twice(const AufEintragBase &startAEB,
       		=MinPfeil_or_MinGeliefert(*zuloop_var,AE_menge2);
          if (!mengen_var) continue;
 
-         {ManuProC::Trace _t(AuftragBase::trace_channel,callee_t,artloop_var->first,zuloop_var->AEB,mengen_var,false);
+         {ManuProC::Trace _t(AuftragBase::trace_channel,callee_t,artloop_var->first,zuloop_var->AEB,mengen_var,NV("first",false));
           mengen_var=callee(artloop_var->first,zuloop_var->AEB,mengen_var,false);
          }
 

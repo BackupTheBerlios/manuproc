@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.88 2004/02/20 10:44:53 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.89 2004/09/01 12:25:48 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -74,6 +74,7 @@ class AufEintrag : public AufEintragBase
      class ArtikelInternAbbestellen_cb;
      struct Planen_cb;
      struct Planen_undo_cb;
+     struct zweierKinderAbbestellen_cb;
 
      #if ( __GNUC__ < 3 )
      friend class Abbestellen_cb;
@@ -92,6 +93,7 @@ class AufEintrag : public AufEintragBase
      friend class WiederEinlagern_cb;
      friend class Planen_cb;
      friend class Planen_undo_cb;
+     friend class zweierKinderAbbestellen_cb;
      #endif
 
 
@@ -168,10 +170,16 @@ public:
 	
  void updateDispoENr(int dinr) throw(SQLerror);
  mengen_t MengeAendern(mengen_t mengendelta);
+ // zum Abbestellen im Lager bitte Abbestellen nehmen
  mengen_t MengeAendern(mengen_t menge,bool instanzen,const AufEintragBase &ElternAEB,bool planen=false) throw(SQLerror);
 private:
   // nimmt alle Zuordnungen mit (oben & unten)
   void move_to(AufEintrag ziel,mengen_t menge) throw(std::exception);
+  // Menge abbestellen und abhängige Dinge tun 
+  // (z.B. freie Menge erhöhen, neu verplanen)
+  // i.d.R. sinnvollere Variante für MengeAendern in LagerInstanzen
+  mengen_t Abbestellen(const mengen_t &M,const AufEintragBase &mythis);
+  // rekursion
  void ArtikelInternAbbestellen(mengen_t menge) const;
  void move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,const ArtikelBase artikel);
  // wurde von ProduziertNG abgelöst

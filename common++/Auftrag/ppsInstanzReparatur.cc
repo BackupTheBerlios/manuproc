@@ -32,6 +32,53 @@
 #include <math.h>
 #include <selFullAufEntry.h>
 
+bool ppsInstanzReparatur::Reparatur_MindestMenge(bool analyse_only,ArtikelBase art) const
+{  bool alles_ok=true;
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,analyse_only,art);
+   AuftragBase ab(Instanz()->Id(),AuftragBase::dispo_id);
+    AufEintragBase zweier(ab,ab.PassendeZeile(LagerBase::Lagerdatum(),
+                art,OPEN));
+    AufEintrag ae(zweier);
+    ArtikelStamm artstamm(art);
+    if (artstamm.getMindBest()>0 && ae.getRestStk()<artstamm.getMindBest())
+    { AuftragBase::mengen_t fehlt=AuftragBase::mengen_t(artstamm.getMindBest())-ae.getRestStk();
+      std::cout << "Mindestmenge unterschritten " << zweier << ": " << fehlt 
+          << " (" <<artstamm.getMindBest()<<'-'<< ae.getRestStk() <<")" << '\n';
+      alles_ok=false;
+      if(!analyse_only)
+      { ae.MengeAendern(fehlt,false,AufEintragBase());
+        // eigentlich ... mit Datum des 1. 1ers der noch nicht
+        // hier als Zeiger existiert nachbestellen (aber ich nehme mal
+        // das auffällige Lagerdatum (epoch))
+        ppsInstanz::ID next=ae.Instanz()->NaechsteInstanz(artstamm);
+        assert(next!=ppsInstanzID::None);
+        AufEintrag::ArtikelInternNachbestellen(next,fehlt,
+                                      LagerBase::Lagerdatum(),art,zweier);
+      }
+    }
+   else if (ae.getRestStk()>=artstamm.getMindBest())
+   {  // etwas nachbestellt obwohl nicht notwendig?
+      AufEintragZu::list_t nachbestellt
+             = AufEintragZu::get_Referenz_list(ae,AufEintragZu::list_kinder,
+                   AufEintragZu::list_Artikel,AufEintragZu::list_unsorted);
+      if (!nachbestellt.empty())
+      {  // einfach soviel wie nötig abbestellen
+         // das geht doch bestimmt auch per funktor ...
+         AuftragBase::mengen_t zuviel=ae.getRestStk()-artstamm.getMindBest();
+//         AufEintrag::ArtikelInternAbbestellen_cb cb(ae);
+         for (AufEintragZu::list_t::const_iterator i=nachbestellt.begin();i!=nachbestellt.end();++i)
+         { AuftragBase::mengen_t M=AuftragBase::min(zuviel,i->Menge);
+           if (!M) continue;
+           ae.MengeAendern(-i->Menge,false,AufEintragBase());
+#warning richtig?
+           M=AufEintrag(i->AEB).Abbestellen(i->Menge,ae);
+           zuviel-=M;
+         }
+      }
+   }
+   return alles_ok;
+}
+
 bool ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al, const bool analyse_only) const throw(SQLerror)
 {  bool alles_ok=true;
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,analyse_only);
@@ -53,10 +100,18 @@ bool ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al, const b
        {  assert ((*j)->Id()==AuftragBase::dispo_auftrag_id);
           if ((*j)->Artikel()!=i->Artikel()) continue;
          if((*j)->getLieferdatum()>i->getLieferdatum()) continue;
-         
          if (!(*j)->getRestStk()) continue;
-
+         ArtikelStamm astamm(i->Artikel());
          AuftragBase::mengen_t M=AuftragBase::min(menge0er,(*j)->getRestStk());
+         if ((*j)->Instanz()->LagerInstanz() && astamm.getMindBest()>0)
+         {  AufEintragZu::list_t nachbestellt
+             = AufEintragZu::get_Referenz_list(**j,AufEintragZu::list_kinder,
+                   AufEintragZu::list_ohneArtikel,AufEintragZu::list_unsorted);
+            if ((*j)->getRestStk()-Summe(nachbestellt)<=0)
+               continue;
+            M-=Summe(nachbestellt);
+            if (M<0) M=0;
+         }
          
          analyse("Es existieren passende 0er und 2er",*i,**j,M);
          alles_ok=false;
@@ -171,11 +226,35 @@ bool ppsInstanzReparatur::Lagermenge_setzen(bool analyse_only, const ArtikelBase
      SelectedFullAufList auftraglist2=SelectedFullAufList(SQLFullAuftragSelector::
           sel_Artikel_Planung_id(Instanz()->Id(),ManuProC::DefaultValues::EigeneKundenId,art,AuftragBase::dispo_auftrag_id));
      assert(auftraglist2.empty() || auftraglist2.size()==1);
+     ArtikelStamm artstamm(art);
      for (SelectedFullAufList::iterator j=auftraglist2.begin();j!=auftraglist2.end();++j)
       {
          if(j->Id()!=AuftragBase::dispo_auftrag_id) assert(!"never get here");
          assert(j->getStueck()==j->getRestStk());
-         menge-=j->getRestStk();
+         // Zuordnungen addieren (die sind ja nicht verfügbar)
+         AufEintragZu::list_t nachbestellt
+             = AufEintragZu::get_Referenz_list(*j,AufEintragZu::list_kinder,
+                   AufEintragZu::list_ohneArtikel,AufEintragZu::list_unsorted);
+         AuftragBase::mengen_t freieMenge=j->getRestStk()-Summe(nachbestellt);
+         menge-=freieMenge;
+
+         // nachbestellen wenn unter Mindestmenge!
+         if (artstamm.getMindBest()>0 && j->getRestStk()<artstamm.getMindBest())
+         {  AuftragBase::mengen_t fehlt=AuftragBase::mengen_t(artstamm.getMindBest())-j->getRestStk();
+            analyse("Mindestmenge unterschritten",*j,fehlt);
+            alles_ok=false;
+            if(!analyse_only)
+            { j->MengeAendern(fehlt,false,AufEintragBase());
+              // eigentlich ... mit Datum des 1. 1ers der noch nicht
+              // hier als Zeiger existiert nachbestellen (aber ich nehme mal
+              // das auffällige Lagerdatum (epoch))
+              ppsInstanz::ID next=j->Instanz()->NaechsteInstanz(artstamm);
+              assert(next!=ppsInstanzID::None);
+              AufEintrag::ArtikelInternNachbestellen(next,fehlt,
+                                            LagerBase::Lagerdatum(),art,*j);
+            }
+         }
+         
          if(set_dispo_to_zero && !!j->getStueck())
           { analyse("set_dispo_to_zero",*j,j->getStueck());
             alles_ok=false;
@@ -285,11 +364,12 @@ void ppsInstanzReparatur::Zuordnung_erniedrigen(AufEintrag &ae,
 
 void ppsInstanzReparatur::KinderErniedrigen(AufEintrag &ae,
 	AufEintragZu::list_t &kinder,AuftragBase::mengen_t m)
-{  AufEintrag::ArtikelInternAbbestellen_cb aia(ae);
+{  // AufEintrag::ArtikelInternAbbestellen_cb aia(ae);
    for (AufEintragZu::list_t::iterator i=kinder.begin();i!=kinder.end();++i)
    {  AuftragBase::mengen_t M=AuftragBase::min(m,i->Menge);
       if (!M) continue;
-      M=aia(ArtikelBase(),i->AEB,M);
+      M=AufEintrag(i->AEB).Abbestellen(M,ae);
+//      M=aia(ArtikelBase(),i->AEB,M);
       i->Menge-=M;
       m-=M;
       if (!m) break;
@@ -352,7 +432,7 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
          }
       }
       else
-      {  if (i->AEB.Id()==AuftragBase::dispo_auftrag_id) 
+      {  if (i->AEB.Id()==AuftragBase::dispo_auftrag_id && !i->AEB.Instanz()->LagerInstanz()) 
          {  analyse("2er müssen auf der gleichen instanz liegen",ae,i->AEB,i->Menge);
             goto weg;
          }
@@ -509,15 +589,27 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
       
       for (AufEintragZu::map_t::iterator i=kinder.begin();i!=kinder.end();++i)
       {  for (AufEintragZu::list_t::iterator j=i->second.begin();j!=i->second.end();)
-         {  if (ae.Instanz()->LagerInstanz())
-            {  analyse("Ein Lager 2er darf keine Kinder haben",ae,j->AEB,j->Menge);
+         {  ArtikelStamm astamm(ae.Artikel());
+            if (ae.Instanz()->LagerInstanz())
+           {if (!astamm.getMindBest())
+            {  analyse("Ein Lager 2er ohne MindestMenge darf keine Kinder haben",ae,j->AEB,j->Menge);
              weg:
                if (!analyse_only) AufEintragZu::remove(ae,j->AEB);
                j=i->second.erase(j);
                alles_ok=false;
                continue;
             }
-            if (j->AEB.Instanz()!=ae.Instanz())
+            if (j->AEB.Instanz()!=ppsInstanz::getProduktionsInstanz(astamm))
+            {  analyse("Instanz passt nicht",ae,j->AEB,j->Menge);
+               goto weg;
+            }
+            if (j->Art!=ae.Artikel())
+            {  analyse("Artikel passt nicht",ae,j->AEB,j->Menge);
+               goto weg;
+            }
+           }
+           else 
+           {if (j->AEB.Instanz()!=ae.Instanz())
             {  analyse("Instanz passt nicht",ae,j->AEB,j->Menge);
                goto weg;
             }
@@ -532,7 +624,8 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
                goto weg;
             }
             menge2+=j->Menge;
-            ++j;
+           }
+           ++j;
          }
       }
       if (!ae.Instanz()->LagerInstanz() && menge2!=ae.getStueck())

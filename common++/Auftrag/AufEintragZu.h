@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.28 2004/02/12 11:53:11 christof Exp $
+// $Id: AufEintragZu.h,v 1.29 2004/09/01 12:25:48 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -122,5 +122,7 @@ namespace AufEintragZu_sort
 	bool auftr_43210(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b);
 	bool auftr_34012(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b);
 };
+
+AufEintragZu::mengen_t Summe(const AufEintragZu::list_t &l);
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.h,v 1.22 2004/02/09 15:14:29 jacek Exp $
+// $Id: ArtikelStamm.h,v 1.23 2004/09/01 12:30:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -38,13 +38,15 @@ class ArtikelStamm
 	   cH_ppsInstanz bestellen_bei;
 	   ExtBezSchema_ID defaultschema;
 	   Einheit einh;
-           int mindbest;	   
+           // Vorsicht !!! Mindestverfügbare (d.h. unversprochene) Menge auf Lager
+           int mindbest;
 	   
 	   payload_t() 
 	   : typ((ArtikelTyp::ID)0), interntyp((ArtikelTyp::ID)0),
 	                 bestellen_bei(cH_ppsInstanz(ppsInstanzID::None)), 
 	                 defaultschema(ExtBezSchema_default_ID),
-	                 einh(Einheit::default_id),mindbest(NO_CHECK) {}
+	                 einh(Einheit::default_id),mindbest(NO_CHECK)
+	                 {}
 	};
 	
 	ArtikelBase art;
@@ -84,6 +86,7 @@ public:
 			bool ak, bool all_color=false) throw(SQLerror);
 	bool getAktive() const throw(SQLerror);        
 	bool getCheckBest() const { return payload.mindbest!=NO_CHECK; }
+	// Mindestmenge auf Lager (Vorsicht !!!)
 	int getMindBest() const { return payload.mindbest; }
 	void setMindBest(int mb) throw(SQLerror);
 	

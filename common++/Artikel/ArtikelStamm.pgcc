@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.37 2004/04/08 16:22:25 jacek Exp $
+// $Id: ArtikelStamm.pgcc,v 1.38 2004/09/01 12:30:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -48,10 +48,7 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
    int ieinheit=0;
 
    Query q("select warengruppe,coalesce(internwarengruppe,warengruppe),"
-	"bestellen_bei,defaultschema,einheit"
-#ifdef MABELLA_EXTENSIONS	
-	",mindbestand"
-#endif
+	"bestellen_bei,defaultschema,einheit,mindbestand"
 	" from artikelstamm where id=?");
    q << ab.Id();
    FetchIStream is=q.FetchOne();
@@ -59,9 +56,7 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
       >> FetchIStream::MapNull(payload.bestellen_bei,ppsInstanzID::None)
       >> FetchIStream::MapNull(payload.defaultschema,1)
       >> FetchIStream::WithIndicator(payload.einh,ieinheit)
-#ifdef MABELLA_EXTENSIONS
       >> FetchIStream::MapNull(payload.mindbest,NO_CHECK)
-#endif
       ;
       
    if (ieinheit) 

@@ -1,4 +1,4 @@
-// $Id: ppsInstanzReparatur.h,v 1.21 2004/05/14 10:47:40 christof Exp $
+// $Id: ppsInstanzReparatur.h,v 1.22 2004/09/01 12:25:48 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -76,6 +76,7 @@ class ppsInstanzReparatur : public cH_ppsInstanz
       bool Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bool analyse_only) const;
 
       bool Lagermenge_setzen(bool analyse_only, const ArtikelBase &art,const AuftragBase::mengen_t &gesmenge,bool retry=false) const;
+      bool Reparatur_MindestMenge(bool analyse_only,ArtikelBase art) const;
       
       static bool really_delete,silence_warnings,
       		not_strict; // some conditions are legal but ugly (accept them)

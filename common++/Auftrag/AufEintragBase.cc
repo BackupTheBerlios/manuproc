@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.51 2003/09/15 11:58:40 jacek Exp $
+// $Id: AufEintragBase.cc,v 1.52 2004/09/01 12:25:48 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -226,3 +226,9 @@ AuftragBase::mengen_t AufEintragBase::updateStkDiffBase__(const mengen_t &menge)
 }
 
 const int AufEintragBase::none_znr;
+
+AufEintragBase AufEintragBase::PassendeZeile(const AuftragBase &a,
+          const ManuProC::Datum &lieferdatum, const ArtikelBase& artikel,
+          AufStatVal status) throw(SQLerror)
+{  return AufEintragBase(a,a.PassendeZeile(lieferdatum,artikel,status));
+}

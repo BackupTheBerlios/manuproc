@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.h,v 1.48 2003/09/02 12:10:52 christof Exp $
+// $Id: AufEintragBase.h,v 1.49 2004/09/01 12:25:48 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -109,6 +109,10 @@ public:
   // Diese Funktion ist zum Debuggen sehr nützlich:
   void ExistMenge(const std::string &s="") const;
   
+  // vereinfachte Variante für AuftragBase::PassendeZeile
+  static AufEintragBase PassendeZeile(const AuftragBase &a,
+          const ManuProC::Datum &lieferdatum, const ArtikelBase& artikel,
+          AufStatVal status) throw(SQLerror);
 };
 
 std::ostream &operator<<(std::ostream &o,const AufEintragBase &ae);

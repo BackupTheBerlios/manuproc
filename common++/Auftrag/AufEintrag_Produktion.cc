@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.41 2004/04/20 11:09:37 jacek Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.42 2004/09/01 12:25:48 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -227,9 +227,7 @@ public:
 		: alterAEB(aAEB), neuerAEB(nAEB), ctx(_ctx), reverse(rev) {}
 	AuftragBase::mengen_t operator()(const ArtikelBase &art,
 		const AufEintragBase &aeb,AuftragBase::mengen_t M,bool first) const
-	{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
-			NV("aeb",aeb),NV("M",M),NV("first",first));
-	   if (!aeb.Instanz()->ProduziertSelbst())
+	{  if (!aeb.Instanz()->ProduziertSelbst())
 	   {  if (aeb.Instanz()->LagerInstanz())
 	      {  // Zuordnung anpassen
 	         if (M>0) AufEintragZu(alterAEB).setMengeDiff__(aeb,-M);
@@ -246,20 +244,25 @@ public:
            else if (M<0) return 0; // soll ProdRueckgaengig2 machen ???
            else
            {  AufEintrag ae(aeb);
-              if (first && aeb.Id()==AuftragBase::plan_auftrag_id)
+              if (first && aeb.Id()==AuftragBase::plan_id)
               {  // wieviel geht noch ohne abzubestellen?
                  AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(ae,
               		AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
-                 AuftragBase::mengen_t menge;
-                 for (AufEintragZu::list_t::iterator i=eltern.begin();i!=eltern.end();++i)
-                    menge+=i->Menge;
+                 AuftragBase::mengen_t menge=Summe(eltern);
 		 ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,
 			   NV("M",M),NV("menge",menge),NV("Rest",ae.getRestStk()));
                  M=AuftragBase::min(M,menge-ae.getRestStk());
+                 // ich weiß nicht genau wann dieser Code aktiv wird, aber er war
+                 // notwendig (weniger Rest als bestellt, wir wissen nicht für wen
+                 // ausgelagert, also nehmen wir mal uns an)
                  if (!!M) AufEintragZu(alterAEB).setMengeDiff__(ae,-M);
+                 else ManuProC::Trace(AuftragBase::trace_channel,"",
+                       "keine unbenutzte Auslagerung");
    	      }
               else
-              {  AufEintragZu(alterAEB).setMengeDiff__(ae,-M);
+              {  // kappen und dann sehen, wieviel _mindestens_ 
+                 // abbestellt werden muss (exakte Menge wird später klar)
+                 AufEintragZu(alterAEB).setMengeDiff__(ae,-M);
                  AuftragBase::mengen_t m2=ae.AnElternMengeAnpassen();
                  assert(!m2);
               }

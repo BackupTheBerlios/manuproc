@@ -1,4 +1,4 @@
-// $Id: auftrag_repair.cc,v 1.11 2004/05/14 14:49:44 christof Exp $
+// $Id: auftrag_repair.cc,v 1.12 2004/09/01 12:30:32 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -26,7 +26,7 @@
 #include <Auftrag/selFullAufEntry.h>
 #include <Misc/Trace.h>
 
-enum action_bits { b_physical, b_exclude, b_tree, b_raise, b_links };
+enum action_bits { b_physical, b_exclude, b_tree, b_raise, b_links, b_minmenge };
 
 // auf bitmask<action_bits> umstellen;
 enum action_flags { f_none=0 };
@@ -54,11 +54,12 @@ static void usage(const std::string &s)
            "\tL: Löschen von ungültigen Zuordnungen (ohne Quelle oder Ziel)\n"
            "\tD: Löschen von ungültigen Einträgen (Vorsicht)\n"
            "\tN: Unschöne aber mögliche Zustände akzeptieren (für test)\n"
+           "\tM: Mindestmenge auf Lager sicherstellen (Überbestellungen kappen)\n"
            "\t*: Alle Analysen/Reparaturen auf einmal (meist mit -I)\n";
 
  std::cerr << "USAGE:  ";
  std::cerr << s <<" [-i<instanz>|-I]  -a<aktion> [-d<database>] [-h<dbhost>] [-l|-y] \n"
-           "\twobei die aktion=[A|C|X|T|*] [-A<Id>] ist.\n"
+           "\twobei die aktion=[A|C|X|T|M|*] [-A<Id>] ist.\n"
            "\t-y Analysemodus (keine Reparaturen)\n"
            "\t-s Warnungen unterdrücken\n"
            "\t-l Reparatur wiederholen bis keine Fehler mehr auftreten\n"
@@ -74,6 +75,56 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,
 {  AuftragBase::tolerate_inconsistency=true;
    ppsInstanzReparatur RI(I->Id());
    bool alles_ok=true;
+    if (actions&b_minmenge && I->LagerInstanz())
+    {  Query q("select id from artikelstamm "
+          // gar keine Lagermenge vorhanden
+          "where (not exists "
+          "(select true from auftragentry "
+          "where (instanz,auftragid,artikelid)=(?,?,artikelstamm.id))"
+          // oder zu wenige freie Menge
+          " or exists "
+          "(select true from auftragentry "
+          "where (instanz,auftragid,artikelid)=(?,?,artikelstamm.id)"
+          "and bestellt<mindbestand)"
+          // oder genügend freie Menge bei gleichzeitigen Nachbestellungen
+          " or (exists "
+          "(select true from auftragentry "
+          "where (instanz,auftragid,artikelid)=(?,?,artikelstamm.id)"
+          "and bestellt>=mindbestand "
+          "and exists "
+          "(select true from auftragsentryzuordnung where "
+          "(altinstanz,altauftragid,altzeilennr)=(instanz,auftragid,zeilennr)"
+          ")))"
+          ") "
+          // und wird bei dieser Instanz bestellt (parallelInstanzen fehlen)
+          // Einschränkung notwendig?
+          "and (bestellen_bei=? or exists "
+          "(select true from prod_instanz where lager_fuer=? and insid=bestellen_bei)"
+          ") "
+          // und ein Mindestbestand ist erforderlich
+          "and mindbestand>0");
+       q << I->Id() << AuftragBase::dispo_id
+         << I->Id() << AuftragBase::dispo_id
+         << I->Id() << AuftragBase::dispo_id
+         << I->Id() << I->Id();
+       std::vector<ArtikelBase> arr;
+       q.FetchArray(arr);
+       for (std::vector<ArtikelBase>::const_iterator i=arr.begin();i!=arr.end();++i)
+       {  alles_ok&=RI.Reparatur_MindestMenge(analyse_only,*i);
+       }
+       Query q2("select id from auftragentry join artikelstamm "
+         "on (artikelstamm.id=auftragentry.artikelid) "
+         "where (mindbestand is null or mindbestand=0) "
+         "and (instanz,auftragid)=(?,?) "
+         "and exists (select true from auftragsentryzuordnung "
+         "where (altauftragid,altinstanz)"
+         "=(auftragentry.instanz,auftragentry.auftragid))");
+       q2 << I->Id() << AuftragBase::dispo_id;
+       q2.FetchArray(arr);
+       for (std::vector<ArtikelBase>::const_iterator i=arr.begin();i!=arr.end();++i)
+       {  alles_ok&=RI.Reparatur_MindestMenge(analyse_only,*i);
+       }
+    }
     if (actions&b_physical)
      {
       if(I->EigeneLagerKlasseImplementiert())
@@ -153,6 +204,7 @@ int main(int argc,char *argv[])
           if (strchr(optarg,'R')||strchr(optarg,'*')) actions|=b_raise;
           if (strchr(optarg,'X')||strchr(optarg,'*')||strchr(optarg,'R')) actions|=b_tree;
           if (strchr(optarg,'L')||strchr(optarg,'*')) actions|=b_links;
+          if (strchr(optarg,'M')||strchr(optarg,'*')) actions|=b_minmenge;
           if (strchr(optarg,'D')) ppsInstanzReparatur::really_delete=true;
           if (strchr(optarg,'N')) ppsInstanzReparatur::not_strict=true;
           break;

@@ -61,4 +61,33 @@ static bool Rollereiplanung()
 
 static TestReihe Rollereiplanung_(&Rollereiplanung,"Rollereiplanung","roll");
 
+#include <Artikel/ArtikelStamm.h>
+
+static bool MindestMenge()
+{  AuftragBase::setzeAktuellesJahr(2000);
+
+   Lager L(FERTIGWLAGER);
+   L.rein_ins_lager(ARTIKEL_TRIO,5,false);
+   ArtikelStamm(make_value(ArtikelBase(ARTIKEL_TRIO))).setMindBest(5);
+   vergleichen(Check::Menge,"minmen_Ausgangspunkt","Ausgangspunkt","a");
+   
+   Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
+   AufEintragBase AEB2=auftrag.push_back(4,DATUM,ARTIKEL_TRIO,OPEN,true);
+   vergleichen(Check::Menge,"minmen_Bestellung","Bestellung","b");   
+   
+   AufEintragBase AEB3=auftrag.push_back(4,DATUM9,ARTIKEL_TRIO,OPEN,true);
+   vergleichen(Check::Menge,"minmen_Best2","Bestellung 2","b2");
+   
+   AufEintrag(AEB2).changeStatus(STORNO);
+   vergleichen(Check::Menge,"minmen_storno","Storno","s");   
+   
+   Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
+   LieferscheinEntryBase lsb(liefs,liefs.push_back(ARTIKEL_TRIO,5));
+   LieferscheinEntry(lsb).changeStatus(OPEN,false);
+   vergleichen(Check::Lieferschein|Check::Menge,"minmen_Auslief","Lieferung","l");
+
+   return true;
+}
+
+static TestReihe MindestMenge_(&MindestMenge,"Mindestmenge","minMen");
 #endif

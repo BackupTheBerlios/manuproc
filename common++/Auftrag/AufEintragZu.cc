@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.33 2004/02/20 09:43:56 christof Exp $
+// $Id: AufEintragZu.cc,v 1.34 2004/09/01 12:25:48 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -388,4 +388,11 @@ bool AufEintragZu_sort::auftr_34012(const AufEintragZu::st_reflist &a,const AufE
    if (b.AEB.Id()<AuftragBase::handplan_auftrag_id) order-=1;
    if (order) return order<0;
    return AufEintragZu_sort::auftr_0123(a,b);
+}
+
+AufEintragZu::mengen_t Summe(const AufEintragZu::list_t &l)
+{  AufEintragZu::mengen_t res;
+   for (AufEintragZu::list_t::const_iterator i=l.begin();i!=l.end();++i)
+      res+=i->Menge;
+   return res;
 }

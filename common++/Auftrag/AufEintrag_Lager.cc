@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.34 2004/02/17 12:22:12 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.35 2004/09/01 12:25:48 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -348,7 +348,7 @@ public:
            {  AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(i,AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
               mengen_t sum=AufEintragZu::Summe(eltern);
               if (sum<i.getRestStk())
-              {  i.MengeAendern(sum-i.getRestStk(),true,AufEintragBase());
+              {  i.Abbestellen(i.getRestStk()-sum,AufEintragBase());
               }
            }
 
