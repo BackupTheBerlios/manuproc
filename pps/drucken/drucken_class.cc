@@ -226,11 +226,13 @@ catch(SQLerror &e) { std::cout << e; return; }
 
 #else
      cH_Kunde kunde_von(Kunde::default_id);
-     
+
+#ifdef PETIG_EXTENSIONS
 #warning // Ja ein Hack    
      if (kunde_an->Id()==629)
         os <<"\n\n\\footnotesize Stadtsparkasse Wuppertal, BLZ 330 500 00, Konto 406 728\\\\\n";
      else
+#endif
         os <<"\n\n\\footnotesize "<< kunde_von->getBank()<<"\\\\\n";
 
      os << "Zahlung: "<< string2TeX(getZahlungsart()->Bezeichnung())<<"\\\\\n";
@@ -259,7 +261,9 @@ catch(SQLerror &e) { std::cout << e; return; }
     os << "\\bigskip\n";
     if(kunde_an->get_lieferung_frei_haus()) 
       os << "\\\\" << mld->MLT(MultiL_Dict::TXT_LIEF_FREI) <<"\\\\\n";
+#ifndef PETIG_EXTENSIONS      
     os << "\\\\"<<mld->MLT(MultiL_Dict::TXT_LIEFERWOCHE)<<": "<<min_KWStr<<"\\\\\n";
+#endif    
 
    }
  else if(Typ()==Extern )
