@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistrowdata.cc,v 1.5 2001/11/05 09:38:53 christof Exp $
+// $Id: tclistrowdata.cc,v 1.6 2001/11/07 07:43:41 christof Exp $
 
 #include <tclistrowdata.h>
 #include <treebase.h>
@@ -24,13 +24,13 @@
 void TCListRowData::initTCL(TCListRow_API *api, TCListRow_API::iterator davor,
 			const TreeBase &tb) // ,int deep)
 {
- listrow = api->insert(davor, getColEntries(tb.Cols()),Leaf()?-1:int(Children_s_Deep()),expand);
+ listrow = api->insert(davor, getColEntries(tb),Leaf()?-1:int(Children_s_Deep()),expand);
  listrow->set_user_data(this);
 }
 
 void TCListRowData::initTCL(TCListRow_API *api, const TreeBase &tb) // ,int deep)
 {
- listrow = api->push_back(getColEntries(tb.Cols()),Leaf()?-1:int(Children_s_Deep()),expand);
+ listrow = api->push_back(getColEntries(tb),Leaf()?-1:int(Children_s_Deep()),expand);
  listrow->set_user_data(this);
 }
 
@@ -55,6 +55,8 @@ void TCListRowData::Children_s_Deep(guint _deep)
 // rekursiv!
 void TCListRowData::refreshSum(const TreeBase &tb)
 {if (Leaf() || tb.Attrs()==tb.Cols()) return;
+// std::deque<guint> order=tb.get_seq();
+ 
  for(guint i=tb.Attrs();i<tb.Cols();i++)
    try { dynamic_cast<TCListRow*>(listrow)
    	->relabel(i, Value(i,tb.ValueData())->getStrVal());
@@ -73,7 +75,6 @@ void TCListRowData::refreshSum(const TreeBase &tb)
 
 // Sehr optimiert, da sämtliche Aufrufe an TCListRowData::Value(col,gp) 
 // abgekürzt sind
-
 const std::vector<std::string> TCListRowData::getColEntries(const TreeBase &tb) const
 {std::vector<std::string> v(tb.Cols());
  std::deque<guint> order=tb.get_seq();
@@ -81,9 +82,12 @@ const std::vector<std::string> TCListRowData::getColEntries(const TreeBase &tb) 
  v[deep]=value->getStrVal();
  
  if (Leaf())
-    for(guint i=deep+1;i<(guint)tb.Cols();++i)
+ {  for(guint i=deep+1;i<(guint)tb.Attrs();++i)
         v[i]=LeafData()->Value(order[i],tb.ValueData())->getStrVal();
- else
+    for(guint i=tb.Attrs();i<(guint)tb.Cols();++i)
+        v[i]=LeafData()->Value(i,tb.ValueData())->getStrVal();
+ }
+ else // Summen werden später gesetzt
     for(guint i=deep+1;i<(guint)Children_s_Deep();++i)
         v[i]=LeafData()->Value(order[i],tb.ValueData())->getStrVal();
  return v;

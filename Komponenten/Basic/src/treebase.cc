@@ -218,12 +218,14 @@ void TreeBase::refillTCL()
     insertIntoTCL((TCListRow_API*)this,*this,*i,currseq,0);
 
 // Aeste mit einem Blatt kuerzen 
+#ifndef NEW_INSERT
  if (stutzen_bool)
     for(TCListRow_API::iterator i = begin(); i!=end();)
     {  if (stutzen((TCListRow_API*)this,(TCListRow_API*)(&(*i)),*this))
           i=begin(); // reloop
        else ++i;
     }
+#endif
 
 // Summen anzeigen
  for(TCListRow_API::iterator i = begin(); i!=end(); ++i)

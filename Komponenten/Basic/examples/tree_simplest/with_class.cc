@@ -15,7 +15,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// $Id: with_class.cc,v 1.10 2001/11/05 08:57:31 christof Exp $
+// $Id: with_class.cc,v 1.11 2001/11/07 07:43:41 christof Exp $
 
 #include "config.h"
 #include "with_class.hh"
@@ -29,8 +29,8 @@ void with_class::on_Beenden_activate()
 }
 
 enum Spalten
-//{  SP_ATT0, SP_ATT1, SP_ATT2, SP_SUM0, SP_SUM1, SP_SUM2 };
-{  SP_ATT0, SP_ATT1, SP_ATT2, SP_ATT3, SP_ATT4, SP_SUM0 };
+{  SP_ATT0, SP_ATT1, SP_ATT2, SP_ATT3, SP_ATT4, 
+   SP_SUM0 /* , SP_SUM1, SP_SUM2 */ };
 
 class MyRowData : public RowDataBase
 {
@@ -52,7 +52,7 @@ public:
 		 case SP_ATT3 : return cH_EntryValueIntString(i3);
 		 case SP_ATT4 : return cH_EntryValueIntString(s1);
 // 		 case SP_SUM0 ... SP_SUM2 : return cH_EntryValueIntString(Data(_seqnr-SP_SUM0));
- 		 case SP_SUM0 : return cH_EntryValueIntString(Data(_seqnr));
+ 		 case SP_SUM0 : return cH_EntryValueIntString(Data(_seqnr-SP_SUM0));
  		 default : return cH_EntryValue();
 		}
 	}
@@ -87,7 +87,7 @@ public:
       { case SP_SUM0 : return cH_EntryValueEmptyInt(sum0);
 //        case SP_SUM1 : return cH_EntryValueEmptyInt(sum1);
 //        case SP_SUM2 : return cH_EntryValueEmptyInt(sum2);
-        default : return cH_EntryValueIntString("?");
+        default : return cH_EntryValue();
       }
    }
 
@@ -107,7 +107,6 @@ public:
  cH_MyRowData(ContentType *r) : cH_RowDataBase(r) {}
 //  cH_MyRowData() {}  // not recommended
  cH_MyRowData(int i,const std::string &s,int _i2,int _i3,const std::string _s1)
-//	: cH_RowDataBase(new MyRowData(i,s)) {}
 	: cH_RowDataBase(new MyRowData(i,s,_i2,_i3,_s1)) {}
  cH_MyRowData(const cH_RowDataBase &d)
 // better check here ...
@@ -124,7 +123,6 @@ void with_class::on_leaf_selected(cH_RowDataBase d)
 // cH_MyRowData dt(d); // looks better, eh?
    try
    {  // test this variant, too
-//      cH_MyRowData dt=treebase->getSelectedRowDataBase_as<cH_MyRowData,const MyRowData>();
       cH_MyRowData dt=treebase->getSelectedRowDataBase_as<cH_MyRowData>();
       std::cout << "Data " << dt->Data(0) << ',' << dt->Data(1) << ',' << dt->Data(2) << '\n';
    }
@@ -160,19 +158,19 @@ with_class::with_class()
    datavec.push_back(new MyRowData(2,"Y",2,3,"A"));
    datavec.push_back(new MyRowData(10,"Z",2,3,"A"));
 #endif
-#if 0
-   for (int i=0;i<100/*00*/;++i)
-      datavec.push_back(new MyRowData(i%4+1,"same" /*
-      string(1,char('A'+(i%3)))*/,(i%5),(i%7),itos(i)));
-#endif
 #if 1
+   for (int i=0;i<1000;++i)
+      datavec.push_back(new MyRowData(i%4+1,/*"same" */
+      string(1,char('A'+(i%3))),(i%5),(i%7),itos(i)));
+#endif
+#if 0
    datavec.push_back(new MyRowData(1,"1810",25,755,"25m"));
    datavec.push_back(new MyRowData(1,"1810",40,100,"9999"));
    datavec.push_back(new MyRowData(1,"1955",25,855,"50m"));
    datavec.push_back(new MyRowData(1,"1955",40,210,"Jumbo"));
 #endif
+   treebase->set_NewNode(&SumNode::create);
    treebase->setDataVec(datavec);
    
    treebase->leaf_selected.connect(SigC::slot(this,&with_class::on_leaf_selected));
-   treebase->set_NewNode(&SumNode::create);
 }

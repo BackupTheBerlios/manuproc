@@ -105,7 +105,7 @@ public:
  static void Expand_recursively(TCListRow_API &api);
  void Expand_recursively();
  
- std::deque<guint> get_seq() const {return currseq;}
+ const std::deque<guint> &get_seq() const {return currseq;}
  void show_titles(bool show);
  
  void clear();
