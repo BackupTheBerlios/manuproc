@@ -1,4 +1,4 @@
-// $Id: FILEstream.h,v 1.5 2004/05/03 14:29:57 christof Exp $
+// $Id: FILEstream.h,v 1.6 2004/05/03 16:49:27 christof Exp $
 /*  Midgard Character Generator
  *  Copyright (C) 2001-2004 Christof Petig
  *
@@ -28,7 +28,7 @@ class FILEbuf : public std::streambuf
    typedef char char_type;
    typedef int int_type;
    static const int_type eof=
-#if !defined(__GNUC__) || __GNUC__>=3
+#if 0 && ( !defined(__GNUC__) || __GNUC__>=3)
        traits_type::eof();
 #else       
        -1;
