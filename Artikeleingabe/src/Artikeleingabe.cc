@@ -17,6 +17,7 @@
 #include <Misc/FILEstream.h>
 #include <gtkmm/separatortoolitem.h>
 #include <glibmm/main.h>
+#include <Misc/TagStream.h>
 
 #define D(x) 
 //cerr << x << '\n'
@@ -50,10 +51,27 @@ Artikeleingabe::Artikeleingabe(int argc, char **argv)
  no_instanz->set_active(false);
 #endif
 
- if (argc==2) 
+ if (argc==2 && !strncmp(argv[1],"<?xml ",6))
+ { try
+   { TagStream ts(argv[1]);
+     const Tag &cont=ts.getContent();
+     // warengruppe und schema id ermitteln
+     unsigned warengruppe=cont.getAttr<int>("warengruppe");
+     unsigned schema=cont.getAttr<int>("schema");
+     std::vector <std::string> entries;
+     FOR_EACH_CONST_TAG_OF(i,cont,"content")
+       entries.push_back(i->Value());
+     std::cerr << warengruppe << ':' << schema << ' ' << entries.size() << '\n';
+   }
+   catch (std::exception &e)
+   { std::cerr << "Exception " << e.what() << '\n';
+   }
+ }
+ else if (argc==2) 
  {top_notebook->set_current_page(2);
   artikelbox->set_value(ArtikelBase(atoi(argv[1])));
-  artikelbox_activate();}
+  artikelbox_activate();
+ }
 }
 
 
