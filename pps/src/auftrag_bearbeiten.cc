@@ -192,7 +192,7 @@ gint auftrag_bearbeiten::on_aufrabatt_spinbutton_focus_out_event(GdkEventFocus *
 }
 
 void auftrag_bearbeiten::on_backtomain_button_clicked()
-{if (splitdialog) splitdialog->destroy();
+{if (splitdialog) { splitdialog->destroy(); splitdialog=0; }
  destroy();
  auftragmain->show(); 
  MyWindow::setPositionSize(*auftragmain,"pps");
@@ -612,9 +612,9 @@ void auftrag_bearbeiten::setAufEntries()
 
 void auftrag_bearbeiten::on_splitten()
 {
- if(splitdialog) splitdialog->destroy();
+ if(splitdialog) { splitdialog->destroy(); splitdialog=0; }
  if (!auftrag || !aktaufeintrag) return;
- splitdialog = manage(new termsplidial(this,aktaufeintrag->getLieferdatum()));
+ splitdialog = new termsplidial(this,aktaufeintrag->getLieferdatum());
 }
 
 bool auftrag_bearbeiten::splitEntry()
