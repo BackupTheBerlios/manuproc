@@ -90,17 +90,12 @@ void lieferscheinliste::on_radiobutton_kunde_toggled()
    }
  else kundenbox->hide();
 
-
-#warning must be implemented yet
-/*
  if (radiobutton_kundengruppe->get_active())
-   {  kundengruppe->reset();
+   {  kundengruppe->set_value(KundengruppeID::None);
       kundengruppe->grab_focus();
       kundengruppe->show();
    }
  else kundengruppe->hide();
-*/
-
 }
 
 
@@ -131,7 +126,9 @@ void lieferscheinliste::on_button_show_clicked()
   try {
        LL.setForArtikel(artbase.Id());
        LL.setFirstKompOnly(first_komponent->get_active());
-       LL.setForKunde(kundenid);
+       if (radiobutton_kundengruppe->get_active()) 
+          LL.setKundenGruppe(kundengruppe->get_value());
+       else LL.setForKunde(kundenid);
        LL.setForInstanz(instanz);
        
        if(radiobutton_alle_zeit_von->get_active())
