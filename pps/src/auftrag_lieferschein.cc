@@ -381,7 +381,12 @@ auftrag_lieferschein::auftrag_lieferschein(cH_ppsInstanz _instanz)
 #ifndef PETIG_EXTENSIONS
   std::string nuraktiv("and coalesce(aktiv,true)=true");
   liefer_kunde->Einschraenkung(nuraktiv,true);
-  liefer_kunde->EinschraenkenKdGr(KundengruppeID::Auftragsadresse);
+
+  if(instanz->Id()==ppsInstanzID::Kundenauftraege)
+     liefer_kunde->EinschraenkenKdGr(KundengruppeID::Auftragsadresse);
+  else
+     if(instanz->ExterneBestellung())
+       liefer_kunde->EinschraenkenKdGr(KundengruppeID::Lieferanten);
 #endif
 
   liefer_kunde->setExpandStr1(true);
