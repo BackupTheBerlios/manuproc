@@ -1,4 +1,4 @@
-// $Id: TagStream.cc,v 1.3 2003/05/01 08:20:43 christof Exp $
+// $Id: TagStream.cc,v 1.4 2003/10/17 14:31:31 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2002  Christof Petig
  *
@@ -386,8 +386,8 @@ static std::string toXML(const std::string &s)
    return res;
 }
 
-void TagStream::write(std::ostream &o, const Tag &t, int indent,bool indent_first) const
-{  if (indent_first) o << '\n' << std::string(indent,' ');
+void TagStream::write(std::ostream &o, const Tag &t, int indent,bool indent_first,bool compact) const
+{  if (indent_first && !compact) o << '\n' << std::string(indent,' ');
    if (!t.Type().empty()) 
    {  o << "<" << recode_save(t.Type());
       // save attributes 
@@ -401,10 +401,10 @@ void TagStream::write(std::ostream &o, const Tag &t, int indent,bool indent_firs
          o << toXML(recode_save(t.Value()));
          bool indent_next=t.Value().empty();
          for (Tag::const_iterator i=t.begin();i!=t.end();++i) 
-         {  write(o,*i,indent,indent_next);
+         {  write(o,*i,indent,indent_next,compact);
             indent_next=!i->Type().empty();
          }
-         if (indent_next) o << '\n' << std::string(indent-1,' ');
+         if (indent_next && !compact) o << '\n' << std::string(indent-1,' ');
          o << "</" << recode_save(t.Type()) << '>';
       }
       else o << "/>";
@@ -412,10 +412,11 @@ void TagStream::write(std::ostream &o, const Tag &t, int indent,bool indent_firs
    else o << t.Value();
 }
 
-void TagStream::write(std::ostream &o) const
-{  o << "<?xml version=\"1.0\" encoding=\"" << encoding << "\"?>\n";
-   write(o, getContent());
-   o << '\n';
+void TagStream::write(std::ostream &o,bool compact) const
+{  o << "<?xml version=\"1.0\" encoding=\"" << encoding << "\"?>";
+   if (!compact) o << '\n';
+   write(o, getContent(),0,true,compact);
+   if (!compact) o << '\n';
 }
 
 bool TagStream::write(const std::string &filename,const std::string &_encoding)

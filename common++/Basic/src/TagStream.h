@@ -1,4 +1,4 @@
-// $Id: TagStream.h,v 1.3 2003/05/01 08:20:43 christof Exp $
+// $Id: TagStream.h,v 1.4 2003/10/17 14:31:31 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2002  Christof Petig
  *
@@ -100,9 +100,9 @@ public:
 	void setEncoding(const std::string &s)
 	{  encoding=s; }
 	bool write(const std::string &filename="",const std::string &_encoding="");
-	void write(std::ostream &o) const;
+	void write(std::ostream &o,bool compact=false) const;
 private:
-	void write(std::ostream &o, const Tag &t, int indent=0, bool indent_first=true) const;
+	void write(std::ostream &o, const Tag &t, int indent=0, bool indent_first=true,bool compact=false) const;
 };
 
 #endif
