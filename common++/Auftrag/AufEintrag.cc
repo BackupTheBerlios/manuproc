@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.37 2003/03/17 08:29:46 christof Exp $
+// $Id: AufEintrag.cc,v 1.38 2003/03/17 09:01:25 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -106,9 +106,23 @@ void AufEintrag::Produziert(mengen_t menge,
    ManuProcEntity<>::ID lfrsid) throw(SQLerror)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("Menge",menge));
-#warning Produziert mit negatviver Menge nicht implementiert
+#warning Produziert mit negativer Menge nicht implementiert
   if(menge>0)  
     ProduziertNG(menge);
+  else if(menge<0)
+    abschreiben(menge);
+  else assert(menge != 0);
+
+#ifdef MABELLA_EXTENSIONS // Lager updaten
+#warning Jacek: Das muss raus, sobald es mehrstufig ist
+ if(Instanz() == ppsInstanzID::Kundenauftraege)
+   {
+    FertigWaren fw(Artikel(),(FertigWaren::enum_Aktion)'L',menge.as_int(),lfrsid);
+    if(menge < 0) fw.Einlagern(1);
+    else if(menge > 0) fw.Auslagern(1);
+   }
+#endif
+
 }
 
 
@@ -430,16 +444,6 @@ void AufEintrag::abschreiben(mengen_t menge,ManuProcEntity<>::ID lfrsid) throw(S
      << GELIEFERT << STATUS << BESTELLT 
      << static_cast<const AufEintragBase&>(*this);
  SQLerror::test(__FILELINE__);
-
-#ifdef MABELLA_EXTENSIONS // Lager updaten
-#warning Jacek: Das muss raus, sobald es mehrstufig ist
- if(Instanz() == ppsInstanzID::Kundenauftraege)
-   {
-    FertigWaren fw(Artikel(),(FertigWaren::enum_Aktion)'L',menge.as_int(),lfrsid);
-    if(menge < 0) fw.Einlagern(1);
-    else if(menge > 0) fw.Auslagern(1);
-   }
-#endif
 
  geliefert=GELIEFERT;
  if(geliefert>=bestellt) entrystatus=(AufStatVal)CLOSED;
