@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.cc,v 1.21 2003/01/16 15:06:06 jacek Exp $
+// $Id: Zahlungsart.cc,v 1.22 2003/01/29 16:58:48 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -238,11 +238,20 @@ void Zahlungsart::TeX_out(std::ostream &os,
       if(vec_skonto.size()>=1)
         {if(vec_skonto[0].skontofrist)
 	 {
-	 os << "Bei Zahlung innerhalb "
-            << vec_skonto[0].skontofrist<<" Tage "
-            << vec_skonto[0].skontosatz<<"\\.\\% Skonto\\\\\n";
+	 char tmpbuf[100];
+	 snprintf(tmpbuf,sizeof
+		tmpbuf,mld.MLT(TID::PRINTF_ZAHLUNG5).c_str(),	
+            		vec_skonto[0].skontofrist,
+		vec_skonto[0].skontosatz.String(false,0,"",",").c_str());
+//<<"\\.\\% Skonto\\\\\n";
+	 os << tmpbuf;
 	 if(zahlungsfrist)
-   	   os << "Bei Zahlung innerhalb "<<zahlungsfrist<<" Tage netto\\\\\n";
+	   {
+	    snprintf(tmpbuf,sizeof
+		tmpbuf,mld.MLT(TID::PRINTF_ZAHLUNG1).c_str(),	
+            		zahlungsfrist);
+   	    os << "\\\\\n"<<tmpbuf<<"\\\\\n";
+	  }
 	 }
 	 else
 	   {os << "Zahlung Vorauskasse";
