@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung.cc,v 1.7 2003/12/16 15:36:47 jacek Exp $ */
+/* $Id: ProvAbrechnung.cc,v 1.8 2003/12/19 14:44:42 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -46,7 +46,7 @@ const ManuProC::Datum ProvAbrechnung::getNextVomDate(const Kunde::ID verkid) thr
 }
 
 
-fixedpoint<2> ProvAbrechnung::getAuszahlung() const
+Preis::geldbetrag_out ProvAbrechnung::getAuszahlung() const
 {
  fixedpoint<2> summe=0;
  fixedpoint<2> rng_summe=0;

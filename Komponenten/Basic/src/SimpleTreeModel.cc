@@ -1,4 +1,4 @@
-// $Id: SimpleTreeModel.cc,v 1.3 2002/12/11 11:47:48 christof Exp $
+// $Id: SimpleTreeModel.cc,v 1.4 2003/12/19 14:44:39 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -47,7 +47,7 @@ void SimpleTreeModel::setDataVec(const std::vector<cH_RowDataBase> &d)
    redraw_needed();
 }
 
-void SimpleTreeModel::setTitles(const std::vector<std::string>& T)
+void SimpleTreeModel::setTitles(const std::vector<std::string> &T)
 {  titles=T;
    for (guint i=0;i<T.size();++i) title_changed(i);
 }

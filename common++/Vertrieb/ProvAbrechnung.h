@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung.h,v 1.12 2003/12/16 15:36:47 jacek Exp $ */
+/* $Id: ProvAbrechnung.h,v 1.13 2003/12/19 14:44:42 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -60,7 +60,9 @@ public:
  const ManuProC::Datum getUeberweisungDatum() const 
  			{ return ueberweisung.Erfasstam(); } 
  void setUeberweisung(const Ueberweisung &u) throw(SQLerror);
- fixedpoint<2> getAuszahlung() const;
+ Preis::geldbetrag_out getUberweisungsBetrag() const 
+ 			{ return ueberweisung.Betrag(); }
+ Preis::geldbetrag_out getAuszahlung() const;
 
  const_iterator begin() const
  	{ return entries.begin(); }

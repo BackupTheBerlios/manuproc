@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.30 2003/12/17 16:37:39 christof Exp $
+// $Id: SimpleTree.hh,v 1.31 2003/12/19 14:44:39 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -40,7 +40,7 @@ public:
 
 	// these are from model
 	void setDataVec(const std::vector<cH_RowDataBase> &d) {  sts->getModel().setDataVec(d); }
-	void setTitles(const std::vector<std::string>& T) {  sts->getModel().setTitles(T); }
+	void setTitles(const std::vector<std::string> &T) {  sts->getModel().setTitles(T); }
 	const Glib::RefPtr<SimpleTreeStore> &getStore() { return sts; }
 	const Glib::RefPtr<Gtk::TreeModel> getTreeModel() { return Glib::RefPtr<Gtk::TreeModel>(sts); }
 	SimpleTreeModel &getModel() { return sts->getModel(); }
@@ -110,7 +110,7 @@ public:
 
  void Expand_recursively();
  void Collapse();
-	void setTitles(const std::vector<std::string>& T);
+	void setTitles(const std::vector<std::string> &T);
 };
 
 // I put the more esoteric features here, so they may not confuse the

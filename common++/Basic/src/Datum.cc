@@ -1,4 +1,4 @@
-// $Id: Datum.cc,v 1.22 2003/09/17 07:04:49 christof Exp $
+// $Id: Datum.cc,v 1.23 2003/12/19 14:44:42 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.22 2003/09/17 07:04:49 christof Exp $ */
+/* $Id: Datum.cc,v 1.23 2003/12/19 14:44:42 jacek Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
@@ -32,7 +32,7 @@
 
 const char* const ManuProC::Datum::monate[]={"Januar",
  		    "Februar",
- 		    "März",
+ 		    "Maerz",
  		    "April",
  		    "Mai",
  		    "Juni",
