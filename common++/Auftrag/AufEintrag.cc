@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.32 2003/03/08 08:51:54 christof Exp $
+// $Id: AufEintrag.cc,v 1.33 2003/03/10 14:44:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,8 +23,7 @@
 #include <Auftrag/AufEintragZu.h>
 #include <Auftrag/Auftrag.h>
 #include <unistd.h>
-#include <Auftrag/ppsInstanzProduziert.h>
-#include <Misc/Trace.h>
+#include <Misc/TraceNV.h>
 #include <Lager/Lager.h>
 #include <Auftrag/AufEintragZuMengenAenderung.h>
 
@@ -132,7 +131,7 @@ std::string AufEintrag::Planung() const
 // reason ist wichtig, da r_Produziert einen bereits geschlossenen Auftrag erzeugt
 void AufEintrag::move_to(int uid,AufEintrag ziel,AuftragBase::mengen_t menge,ManuProC::Auftrag::Action reason) throw(std::exception)
 {
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"To=",ziel,"Menge=",menge,"Reason=",reason);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("To",ziel),NV("Menge",menge),NV("Reason",reason));
   Transaction tr;
 
   AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(*this,
@@ -165,10 +164,8 @@ AufEintragBase AufEintrag::getFirstKundenAuftrag() const
 void AufEintrag::Produziert(mengen_t menge,
    ManuProcEntity<>::ID lfrsid) throw(SQLerror)
 {
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Menge=",menge);
-  Kunde::ID kunde=Auftrag(*this).getKundennr();
-  ManuProC::st_produziert sp(kunde,*this,menge,getuid(),lfrsid);
-  Instanz()->Produziert(sp,ManuProC::Auftrag::r_Produziert);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("Menge",menge));
+  ProduziertNG(menge);
 }
 
 
@@ -182,7 +179,7 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
    const Petig::Datum &datum,ManuProC::Auftrag::Action reason,
    AufEintragBase *verplanter_aeb,bool rekursiv) throw(std::exception)
 {
-   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Menge=",menge,"Reason=",reason,"Zielauftrag=",zielauftrag,"rekursiv=",rekursiv);
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("Menge",menge),NV("Reason",reason),NV("Zielauftrag",zielauftrag),NV("rekursiv",rekursiv));
    assert(Id()==AuftragBase::ungeplante_id);
    assert(entrystatus==OPEN);
    assert(auftragstatus==OPEN);
@@ -270,7 +267,7 @@ void AufEintrag::ProduktionsPlanung(int uid,mengen_t menge,const AuftragBase &zi
 void AufEintrag::Ueberplanen(int uid,const ArtikelBase& artikel,mengen_t menge,const ManuProC::Datum &datum)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,str(),
-   "Artikel=",artikel,"Menge=",menge,"Datum=",datum);
+   NV("Artikel",artikel),NV("Menge",menge),NV("Datum",datum));
    // automatisch geplant ??
    assert(Id()!=plan_auftrag_id);
 

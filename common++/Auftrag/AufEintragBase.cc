@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.39 2003/02/14 09:53:53 christof Exp $
+// $Id: AufEintragBase.cc,v 1.40 2003/03/10 14:44:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,7 +30,7 @@
 #include<Lager/FertigWaren.h>
 #include<Artikel/ArtikelBase.h>
 #endif
-#include <Misc/Trace.h>
+#include <Misc/TraceNV.h>
 #include<Misc/FetchIStream.h>
 #include <Auftrag/AufEintragZuMengenAenderung.h>
 
@@ -85,8 +85,8 @@ int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
                         bool dispoplanung)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,str(),
-   "Artikel=",artikel,
-   "Menge=",menge,"Status=",status,"DispoPlanung=",dispoplanung);
+   NV("Artikel",artikel),
+   NV("Menge",menge),NV("Status",status),NV("DispoPlanung",dispoplanung));
 
   assert(Id()==AuftragBase::ungeplante_id);
   // ElternListe holen

@@ -1,6 +1,6 @@
-// $Id: ppsInstanzProduziert.cc,v 1.4 2003/02/12 13:54:32 christof Exp $
+// $Id: ppsInstanzProduziert.cc,v 1.5 2003/03/10 14:44:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,6 +17,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#error deprecated file
+
 #include <Instanzen/ppsInstanz.h>
 #include "ppsInstanzProduziert.h"
 
@@ -26,7 +28,7 @@
 //#include <Auftrag/selFullAufEntry.h>
 #include <Misc/AdminProblems.h>    
 #include <Lager/Lager.h>
-#include <Misc/Trace.h>
+#include <Misc/TraceNV.h>
 #include <Misc/Transaction.h>
 #include <Misc/relops.h>
 #include <Auftrag/AufEintragZuMengenAenderung.h>

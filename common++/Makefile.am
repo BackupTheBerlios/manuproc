@@ -55,7 +55,6 @@ libcommon___a_LIBADD= \
 		Faeden/Webangaben.o \
 		Faeden/Webangaben_sql.o \
 		Instanzen/ppsInstanz.o \
-		Auftrag/ppsInstanzProduziert.o \
       Auftrag/ppsInstanzReparatur.o \
 		Instanzen/ppsInstanz_sql.o \
 		Instanzen/Produktionsdauer.o \

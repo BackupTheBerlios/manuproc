@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.59 2003/03/10 10:24:20 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.60 2003/03/10 14:44:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -51,7 +51,7 @@
 // ==> WurdeProduziert macht das ganze rekusiv
 void AufEintrag::abschreiben(mengen_t menge,ManuProcEntity<>::ID lfrsid) throw(SQLerror)
 {int uid=getuid();
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Menge=",menge,"Lfrsid=",lfrsid);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("Menge",menge),NV("Lfrsid",lfrsid));
 
   mengen_t GELIEFERT=getGeliefert()+menge;
   mengen_t BESTELLT=getStueck();
@@ -125,7 +125,7 @@ void AufEintrag::abschreiben(mengen_t menge,ManuProcEntity<>::ID lfrsid) throw(S
 
 void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerror)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Status=",newstatus,"Force=",force);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("Status",newstatus),NV("Force",force));
  if(entrystatus == newstatus)
  {  ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,*this,"status bereits",newstatus);
     return;
@@ -201,7 +201,7 @@ AufEintragBase AufEintrag::ArtikelInternNachbestellen(const cH_ppsInstanz &wo,
   mengen_t menge,const ManuProC::Datum &lieferdatum,const ArtikelBase& artikel,
   int uid,const AufEintragBase& ElternAEB)
 {  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
-   	wo,menge,lieferdatum,artikel,"ElternAEB=",ElternAEB);
+   	wo,menge,lieferdatum,artikel,NV("ElternAEB",ElternAEB));
    if (!menge) return AufEintragBase(); // hmmm
    assert(menge>0);
    assert(ElternAEB.valid());
@@ -231,7 +231,7 @@ void AufEintrag::ArtikelInternNachbestellen(int uid,mengen_t menge,
 	ManuProC::Auftrag::Action reason) const
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
-   "menge=",menge,"Reason=",reason);
+   NV("menge",menge),NV("Reason",reason));
   assert(menge>0);
   assert(Id()!=dispo_auftrag_id);
 
@@ -263,8 +263,8 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(int uid,mengen_t menge,bool insta
      const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
-   "Eltern=",ElternAEB,
-   "menge=",menge,"instanzen=",instanzen,"reason=",reason);
+   NV("Eltern",ElternAEB),
+   NV("menge",menge),NV("instanzen",instanzen),NV("reason",reason));
  assert(reason!=ManuProC::Auftrag::r_None);
  if (!menge)  return menge;
 
@@ -337,7 +337,7 @@ AuftragBase::mengen_t ArtikelInternAbbestellen_cb::operator()
 
 void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftrag::Action reason) const
 {ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
-   "menge=",menge,"Reason=",reason);
+   NV("menge",menge),NV("Reason",reason));
 
  assert(menge>0);
  try{
@@ -351,7 +351,7 @@ void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftr
 void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t menge,const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
-   "ElternAEB=",ElternAEB,"Menge=",menge,"Reason=",reason);
+   NV("ElternAEB",ElternAEB),NV("Menge",menge),NV("Reason",reason));
  if (menge<0) 
  {  assert(ElternAEB==AufEintragBase(*this)); // ?
     ArtikelInternAbbestellen(uid,-menge,reason);
@@ -388,7 +388,7 @@ void AufEintrag::updateRabatt(rabatt_t rb) throw(SQLerror)
 
 
 void AufEintrag::updateLieferdatum(const Petig::Datum &ld,int uid) throw(SQLerror)
-{ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Datum=",ld);
+{ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("Datum",ld));
  Transaction tr;
  Query("lock auftragentry in exclusive mode"); // unnötig? CP
  SQLerror::test("updateLieferdatum: lock table auftragentry");
@@ -426,7 +426,7 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld,int uid) throw(SQLerro
   
 int AufEintrag::split(int uid,mengen_t newmenge, const Petig::Datum &newld,bool dispoplanung) throw(SQLerror)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"NewMenge=",newmenge,"NewDatum=",newld,"dispoplanung(bool)=",dispoplanung);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("NewMenge",newmenge),NV("NewDatum",newld),NV("dispoplanung(bool)",dispoplanung));
  if(entrystatus==CLOSED) return none_znr;
 
  mengen_t BESTELLT_OLD=bestellt-newmenge;
@@ -592,7 +592,7 @@ void AufEintrag::ProduziertNG(unsigned uid, AuftragBase::mengen_t M,
 // & ehemals ppsInstanz::Produziert
 void AufEintrag::WurdeProduziert(AuftragBase::mengen_t M,const AufEintragBase &ElternAEB)
 {  int uid=getuid();
-   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,M,"Eltern=",ElternAEB);
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,M,NV("Eltern",ElternAEB));
    assert(M>=0);
 
    ProduziertNG(uid,M,ElternAEB,ElternAEB);

@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.11 2003/02/15 22:53:21 christof Exp $
+// $Id: AufEintragZu.cc,v 1.12 2003/03/10 14:44:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -24,12 +24,12 @@
 #include <Artikel/ArtikelStamm.h>
 #include <Artikel/ArtikelBezeichnung.h>
 #include <Misc/FetchIStream.h>
-#include <Misc/Trace.h>
+#include <Misc/TraceNV.h>
 
 // was tut das eigentlich ? CP
 AufEintragZu::list_t AufEintragZu::get_Referenz_list_id(const AuftragBase::ID id,bool kinder,bool artikel) const throw(SQLerror)
 {
-   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"Id=",id,"Kinder=",kinder);
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Id",id),NV("Kinder",kinder));
    list_t L=get_Referenz_list(*this,kinder,artikel); // kinder/* oder false? */);
    list_t N=select_Id(id,L);
    if(N.empty() && kinder) // Für die Reparatur; ein Pfeil könnte ins nichts zeigen ...
@@ -51,7 +51,7 @@ AufEintragZu::list_t AufEintragZu::select_Id(const AuftragBase::ID id,const list
 
 AufEintragZu::list_t AufEintragZu::get_Referenz_list_geplant(bool kinder) const throw(SQLerror)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"Kinder=",kinder);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Kinder",kinder));
 
  if(Instanz()->LagerInstanz())
      return get_Referenz_list_id(AuftragBase::plan_auftrag_id,kinder);
@@ -83,7 +83,7 @@ AufEintragZu::list_t AufEintragZu::get_Referenz_list_geplant(bool kinder) const 
 
 AufEintragZu::list_t AufEintragZu::get_Referenz_listFull(bool kinder,bool nur_ende) const throw(SQLerror)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"Kinder=",kinder,"NurEnde=",nur_ende);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Kinder",kinder),NV("NurEnde",nur_ende));
  list_t tv=get_Referenz_list(*this,kinder,list_ohneArtikel);
  list_t vaeb;
  list_t tvxx;
@@ -106,7 +106,7 @@ reloop:
 
 AufEintragZu::list_t AufEintragZu::get_Referenz_list_for_geplant(bool kinder) const throw(SQLerror)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"Kinder=",kinder);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Kinder",kinder));
   // Ungeplante Referenz Aufträge
   list_t URA=get_Referenz_list(*this,false,list_ohneArtikel);
  //NEU
@@ -127,7 +127,7 @@ AufEintragZu::list_t AufEintragZu::get_Referenz_list_for_geplant(bool kinder) co
 
 AuftragBase::mengen_t AufEintragZu::verteileMenge(list_t L, mengen_t menge,bool add)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"Menge=",menge,"Add=",add);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Menge",menge),NV("Add",add));
   for(list_t::const_iterator i=L.begin();i!=L.end();++i)
    {
      if(menge==AuftragBase::mengen_t(0)) return menge;

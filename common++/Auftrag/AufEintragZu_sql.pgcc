@@ -1,4 +1,4 @@
-// $Id: AufEintragZu_sql.pgcc,v 1.20 2003/02/13 13:08:26 christof Exp $
+// $Id: AufEintragZu_sql.pgcc,v 1.21 2003/03/10 14:44:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -21,7 +21,7 @@
 #include <Auftrag/auftrag_status.h>
 #include <Artikel/ArtikelBezeichnung.h>
 #include <Misc/FetchIStream.h>
-#include <Misc/Trace.h>
+#include <Misc/TraceNV.h>
 #include <Misc/FetchIStream_fixedpoint.h>
 
 FetchIStream &operator>>(FetchIStream &i, AufEintragZu::st_reflist &rl)
@@ -87,7 +87,7 @@ std::list<cH_Kunde> AufEintragZu::get_Referenz_Kunden() const throw(SQLerror)
 std::list<AufEintragBase> AufEintragZu::get_AufEintragList_from_Artikel
                (const ArtikelBase& artikel,ppsInstanz::ID instanz,AufStatVal status)
 {
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Artikel=",artikel,"Status=",status,"Instanz=",instanz);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("artikel",artikel),NV("status",status),NV("instanz",instanz));
   std::list<AufEintragBase> L;
   
   (Query("select instanz,auftragid,zeilennr from auftragentry "
@@ -129,7 +129,7 @@ void AufEintragZu::Neu(const AufEintragBase& neuAEB,
 
 bool AufEintragZu::setMenge(const AufEintragBase& neuAEB,const mengen_t menge)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,neuAEB,"Menge=",menge);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,neuAEB,NV("Menge",menge));
 
  Query("update auftragsentryzuordnung set menge=? "
  	"where (altinstanz,altauftragid,altzeilennr, "
@@ -143,7 +143,7 @@ bool AufEintragZu::setMenge(const AufEintragBase& neuAEB,const mengen_t menge)
 
 AuftragBase::mengen_t AufEintragZu::setMengeDiff__(const AufEintragBase &neuAEB,mengen_t menge)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,neuAEB,"Menge=",menge);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,neuAEB,NV("Menge",menge));
  if(menge<0)
   {  AuftragBase::mengen_t M;
      Query("select menge from auftragsentryzuordnung "
@@ -153,7 +153,7 @@ AuftragBase::mengen_t AufEintragZu::setMengeDiff__(const AufEintragBase &neuAEB,
 	>> M;
      if(mengen_t(M)<-menge) menge=-M;
   }
-  if (menge!=0)
+//  if (menge!=0) auch 0er sind interessant (bei Produziert)
   {  Query("update auftragsentryzuordnung set menge=menge+? "
  	"where (altinstanz,altauftragid,altzeilennr, "
  		"neuinstanz,neuauftragid,neuzeilennr)= (?,?,?, ?,?,?)").lvalue()
@@ -184,7 +184,7 @@ bool AufEintragZu::setKindZnr(const AufEintragBase& neuAEB)
 void AufEintragZu::moveInstanz(const VonNachDel vdl,const AufEintragBase &oldAEB, const AufEintragBase &newAEB) throw(SQLerror)
 {
 
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,oldAEB,"VonNachDel=",vdl);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,oldAEB,NV("VonNachDel",vdl));
 
  switch(vdl)
   {

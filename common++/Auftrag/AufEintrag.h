@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.32 2003/03/08 08:51:54 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.33 2003/03/10 14:44:14 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -168,13 +168,13 @@ public:
  rabatt_t Rabatt() const { return rabatt;}
  Preis::preismenge_t PreisMenge() const { return preis.PreisMenge(); }
 
-private: 
-   friend struct ManuProC::st_produziert;
-   friend void ppsInstanz::Produziert(ManuProC::st_produziert &P,ManuProC::Auftrag::Action reason) const;
+//   friend void ppsInstanz::Produziert(ManuProC::st_produziert &P,ManuProC::Auftrag::Action reason) const;
    friend class AufEintragBase;
  // das lfrsid ist nur für alten Code (und nur Kundenauftr.) von Mabella
  // , soll weg!
+public: // sollte nur von Lieferschein aufgerufen werden
  void abschreiben(mengen_t menge,ManuProcEntity<>::ID lfrsid=ManuProcEntity<>::none_id) throw(SQLerror);
+private: 
  void Produziert_0er(mengen_t menge);
 
 public:

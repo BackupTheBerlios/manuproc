@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.23 2003/01/31 16:23:15 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.24 2003/03/10 14:44:14 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,9 +23,8 @@
 #include <Artikel/Einheiten.h>
 #include <Misc/FetchIStream.h>
 //#include <Instanzen/Produziert.h>
-#include <Auftrag/ppsInstanzProduziert.h>
 #include <unistd.h> 
-#include <Misc/Trace.h>
+#include <Misc/TraceNV.h>
 
 Lieferschein::Lieferschein(const LieferscheinBase &lsbase, const ManuProC::Datum &_lsdatum,
 int _kdnr,int _rngid, int _paeckchen, int _pakete, const ManuProC::Datum &_geliefertam,
@@ -37,6 +36,22 @@ int _dpdlnr)
 #endif
 {}
 
+static void unbestellteMengeProduzieren(cH_ppsInstanz instanz,
+	const ArtikelBase &artikel,
+	LieferscheinEntry::mengen_t menge,
+	LieferscheinEntry &LE)
+{  if (instanz!=ppsInstanzID::Kundenauftraege) 
+   {  // Code wie in AufEintrag::ProduziertNG
+       AuftragBase zielauftrag(instanz,AuftragBase::plan_auftrag_id);
+       AufEintragBase neuerAEB(zielauftrag,   
+                       zielauftrag.PassendeZeile(ManuProC::Datum(1,1,1970),artikel,OPEN,getuid()));
+       AufEintrag ae(neuerAEB);
+       ae.MengeAendern(getuid(),menge,false,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
+       ae.abschreiben(menge);
+       LE.setZusatzInfo(neuerAEB,menge);
+   }
+}
+
 void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl, 
 		mengen_t mengeneinheit, int palette)
 {  
@@ -44,8 +59,8 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
    // Wenn man einn Lieferschein schriebe, ohne daß diese Instanz 
    // selber produzierte, würde doppelt produziert werden.
    assert(Instanz()->Lieferschein());
-   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Artikel="+cH_ArtikelBezeichnung(artikel)->Bezeichnung(),
-           "Anzahl="+itos(anzahl),"Menge=",mengeneinheit,"Palette="+itos(palette));                     
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("artikel",artikel),
+           NV("anzahl",anzahl),NV("mengeneinheit",mengeneinheit),NV("palette",palette));
    Transaction tr;
    SQLFullAuftragSelector psel(SQLFullAuftragSelector::sel_Artikel_Planung_id
    			(instanz->Id(),getKunde()->Id(),artikel.Id(),AuftragBase::handplan_auftrag_id));
@@ -58,12 +73,8 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
 
    if (auftraglist.aufidliste.begin()==auftraglist.aufidliste.end())
      // kann nicht abschreiben
-   {  LieferscheinEntry::create(*this, artikel, anzahl,mengeneinheit,palette,false);
-      if(Instanz()!=ppsInstanzID::Kundenauftraege)
-       {
-         ManuProC::st_produziert p(artikel,menge,getuid(),getKunde()->Id(),Id());
-         Instanz()->Produziert(p);
-       }
+   {  LieferscheinEntry LE=LieferscheinEntry::create(*this, artikel, anzahl,mengeneinheit,palette,false);
+      unbestellteMengeProduzieren(Instanz(),artikel,menge,LE);
    }
    else if (menge<=auftraglist.aufidliste.begin()->getRestStk())
      // kann in einem Stueck abschreiben
@@ -89,11 +100,9 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
         {  
            LE.setZusatzInfo(AufEintragBase(),menge);
         }
-    if(menge>0) 
-     {
-       ManuProC::st_produziert p(artikel,menge,getuid(),getKunde()->Id(),Id());
-       Instanz()->Produziert(p);
-     }
+    if(menge>0)
+    // da ist noch ein Rest geblieben
+       unbestellteMengeProduzieren(Instanz(),artikel,menge,LE);
    }
    tr.commit();
 }
@@ -106,9 +115,9 @@ void Lieferschein::push_back(AufEintrag &aufeintrag,
    // Wenn man einn Lieferschein schriebe, ohne daß diese Instanz 
    // selber produzierte, würde doppelt produziert werden.
    assert(Instanz()->Lieferschein());
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AufEintrag="+aufeintrag.str(),
-           "Artikel="+cH_ArtikelBezeichnung(artikel)->Bezeichnung(),
-           "Anzahl="+itos(anzahl),"Menge=",menge,"Palette="+itos(palette));                     
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("AufEintrag",aufeintrag),
+           NV("artikel",artikel),
+           NV("Anzahl",anzahl),NV("Menge",menge),NV("Palette",palette));                     
  LieferscheinEntry::create(*this, aufeintrag ,artikel, anzahl,menge,palette);
 
  mengen_t mng;

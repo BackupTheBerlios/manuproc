@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry_sql.pgcc,v 1.27 2003/01/31 16:23:15 christof Exp $ */
+/* $Id: LieferscheinEntry_sql.pgcc,v 1.28 2003/03/10 14:44:14 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,7 +23,6 @@
 #include <Auftrag/AufEintragBase.h>
 #include<Auftrag/auftrag_status.h>
 #include <unistd.h>
-#include <Auftrag/ppsInstanzProduziert.h>
 #include<Misc/FetchIStream.h>
 #include <Misc/FetchIStream_fixedpoint.h>
 exec sql include sqlca;

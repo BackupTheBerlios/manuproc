@@ -1,4 +1,4 @@
-// $Id: ppsInstanzProduziert.h,v 1.2 2003/02/10 14:33:59 christof Exp $
+// $Id: ppsInstanzProduziert.h,v 1.3 2003/03/10 14:44:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -16,6 +16,8 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+
+#error deprecated file
 
 #include <Artikel/ArtikelBase.h>
 #include <Auftrag/AufEintrag.h>

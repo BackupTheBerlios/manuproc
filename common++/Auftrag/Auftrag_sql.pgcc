@@ -27,7 +27,7 @@ exec sql include sqlca;
 #include <Kunde/Zahlungsart.h>
 #include<Misc/Changejournal.h>
 #include <Artikel/ArtikelStamm.h>
-#include <Misc/Trace.h>
+#include <Misc/TraceNV.h>
 
 void Auftrag::deleteAuftrag() throw(SQLerror)
 {
@@ -109,7 +109,7 @@ void Auftrag::Zahlart(cH_Zahlungsart zart) throw(SQLerror)
 
 void Auftrag::deleteEintrag(int zeilennr) throw(SQLerror)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"ZNr=",zeilennr);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("ZNr",zeilennr));
  exec sql begin declare section;
  int AUFTRAGID=Id();
  int INSTANZ=int(Instanz());
@@ -251,7 +251,7 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr) throw(SQLerror)
 Auftrag::Auftrag(Anlegen2 AB, long kdnr) throw(SQLerror)
 	: AuftragBase(AB), zahlart(Zahlungsart::none_id)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Anlegen:",*this,"KnNr=",kdnr);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("Anlegen:",*this),NV("KnNr",kdnr));
  exec sql begin declare section;
  int AUFTRAGID=Id();
  char DATUM[11];
@@ -390,9 +390,9 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
   const cH_PreisListe &preisliste) const throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
-   "Menge=",bestellt,"Datum=",lieferdatum,
-   "Artikel=",artikel,
-   "Status=",status,"InstanzAufträgeSetzen=",setInstanzAuftraege);
+   NV("Menge",bestellt),NV("Datum",lieferdatum),
+   NV("Artikel",artikel),
+   NV("Status",status),NV("InstanzAufträgeSetzen",setInstanzAuftraege));
  assert(Instanz()==ppsInstanzID::Kundenauftraege ^ setInstanzAuftraege==false);
   // wieso auch nicht ... CP
  exec sql begin declare section;

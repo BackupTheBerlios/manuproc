@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.26 2003/02/12 13:54:32 christof Exp $
+// $Id: ppsInstanz.h,v 1.27 2003/03/10 14:44:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -33,7 +33,6 @@
 #include <BaseObjects/ManuProcEntity.h>
 
 namespace ppsInstanzID=ManuProC::DynamicEnums::Instanzen;
-namespace ManuProC{ struct st_produziert; }
 
 class cH_ppsInstanz;
 class ArtikelBase;
@@ -126,16 +125,15 @@ public:
  //////////////////////////////////////////////////////////////////////////
  // Für die Produktion
  public:
-      void Produziert(ManuProC::st_produziert &P,ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_None) const throw(SQLerror);
-      void Lager_abschreiben(ManuProC::st_produziert &P) const ;
+      // void Produziert(const ArtikelBase &artikel, mengen_t menge) const throw(SQLerror);
+      
+      //void Lager_abschreiben(ManuProC::st_produziert &P) const ;
 
       // Geplant wird von pps wenn im Einkauf Ware bestellt wird,
       // ohne benötigte Menge auszuwählen.
       // dieses Argument ist eine Strafe!!!
       //NICHT rekursiv 
-      void Planen(ManuProC::st_produziert &P) const throw(SQLerror);
- private:
-      void rekursion(ManuProC::st_produziert &P) const ;
+//      void Planen(ManuProC::st_produziert &P) const throw(SQLerror);
 };
 
 

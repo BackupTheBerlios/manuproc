@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.25 2003/02/10 14:43:34 christof Exp $
+// $Id: Lager.cc,v 1.26 2003/03/10 14:44:14 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -20,9 +20,8 @@
 #include "Lager.h"
 #include <Misc/Transaction.h>
 #include <algorithm>
-#include <Auftrag/ppsInstanzProduziert.h>
 #include <Misc/relops.h>
-#include <Misc/Trace.h>
+#include <Misc/TraceNV.h>
 
 
 Lager::Lager(cH_ppsInstanz instanz)
@@ -40,7 +39,7 @@ Lager::Lager(cH_ppsInstanz instanz)
 void LagerBase::rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
-     "Lager=",*this,"Artikel=",artikel,"Menge=",menge);
+     NV("Lager",*this),NV("Artikel",artikel),NV("Menge",menge));
   assert(menge>=0);
 
   AuftragBase::menge_neu_verplanen(uid,*this,artikel,menge);
@@ -49,13 +48,27 @@ void LagerBase::rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::men
 void LagerBase::raus_aus_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const 
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
-     "Artikel=",artikel,"Menge=",menge);
+     NV("Artikel",artikel),NV("Menge",menge));
   assert(menge>=0);
 
     assert((*this)->ProduziertSelbst());
-
-     ManuProC::st_produziert sp(artikel,menge,uid);
-     (*this)->Lager_abschreiben(sp);
+//    (*this)->Lager_abschreiben(artikel,menge,uid);
+//  assert(LagerInstanz());
+  Transaction tr;
+#warning hier fehlt etwas !!!
+#if 0  
+  AuftragBase::mengen_t restmenge=P.abschreiben_oder_reduzieren(Id(),
+                    AuftragBase::plan_auftrag_id,P.menge,true);
+  if(restmenge>0)
+   {
+     AuftragBase::mengen_t restmenge2=P.abschreiben_oder_reduzieren(Id(),
+                  AuftragBase::dispo_auftrag_id,restmenge,true);
+     if(restmenge2!=AuftragBase::mengen_t(0) && !PlanungsInstanz()) 
+         P.fehler(*this,P.Mehr_produziert_als_moeglich,
+               AuftragBase::dispo_auftrag_id,P.menge,restmenge2) ;
+   }
+#endif   
+  tr.commit();
 }
 
 

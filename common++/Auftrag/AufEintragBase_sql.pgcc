@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.36 2003/02/14 09:53:53 christof Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.37 2003/03/10 14:44:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,7 +24,7 @@
 #include <Auftrag/AuftragsBaum.h> 
 #include <Misc/Changejournal.h>
 #include <Auftrag/AufEintragZu.h>
-#include <Misc/Trace.h>
+#include <Misc/TraceNV.h>
 #include <Misc/FetchIStream_ops.h>
 
 void AufEintragBase::setVerarbeitung(const cH_Prozess p) const throw(SQLerror)
@@ -74,7 +74,7 @@ bool AufEintragBase::deleteAuftragEntry() const throw(SQLerror)
 
 void AufEintragBase::setLetztePlanungFuer(cH_ppsInstanz planinstanz) const throw(SQLerror)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Instanz=",planinstanz);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("Instanz",planinstanz));
 
  assert (Instanz()==ppsInstanzID::Kundenauftraege);
 
@@ -96,7 +96,7 @@ void AufEintragBase::setLetztePlanungFuer(cH_ppsInstanz planinstanz) const throw
 void AufEintragBase::setMaxPlanInstanz(int anzahl_maxplaninstanzen) const throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
-   "Anzahl=",anzahl_maxplaninstanzen);
+   NV("Anzahl",anzahl_maxplaninstanzen));
  Query("update auftrag_prozess set maxPlanInstanz=?, datum=now() "
  	"where (instanz,auftragid,zeilennr) = (?,?,?)")
  	<< anzahl_maxplaninstanzen << *this;
@@ -115,7 +115,7 @@ void AufEintragBase::setLetzteLieferung(const ManuProC::Datum &datum) const thro
 
 AuftragBase::mengen_t AufEintragBase::updateStkDiffBase__(int uid,const mengen_t &menge) const throw(SQLerror)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AEB=",*this,"menge=",menge);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("AEB",*this),NV("menge",menge));
 
  Transaction tr;
  Query("lock auftragentry in exclusive mode");

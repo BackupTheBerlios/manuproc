@@ -1,6 +1,6 @@
-// $Id: AufEintragZuMengenAenderung.cc,v 1.16 2003/02/15 22:53:21 christof Exp $
+// $Id: AufEintragZuMengenAenderung.cc,v 1.17 2003/03/10 14:44:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
+ *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 #include <Auftrag/AufEintragZu.h>  
 #include <Auftrag/AufEintrag.h>  
 #include <Auftrag/AufEintragZuMengenAenderung.h>
-#include <Misc/Trace.h>
+#include <Misc/TraceNV.h>
 #include <Misc/relops.h>
 
 void AufEintragZuMengenAenderung::change_parent(const int uid,
@@ -29,7 +29,7 @@ void AufEintragZuMengenAenderung::change_parent(const int uid,
                                                 const AuftragBase::mengen_t &menge) throw(SQLerror)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
-      "Old_AEB=",old_parent,"New_AEB=",new_parent,"Menge=",menge);
+      NV("Old_AEB",old_parent),NV("New_AEB",new_parent),NV("Menge",menge));
   AufEintragZu::list_t K=AufEintragZu(old_parent).get_Referenz_list(old_parent,true,AufEintragZu::list_ohneArtikel);
   for(AufEintragZu::list_t::const_iterator i=K.begin();i!=K.end();++i)
    {
@@ -42,7 +42,7 @@ void AufEintragZuMengenAenderung::change_parent(const int uid,
 void AufEintragZuMengenAenderung::increase_parents__reduce_assingments(const int uid,
                      const AufEintragBase &child_aeb,AuftragBase::mengen_t menge) throw(SQLerror)
 {
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AEB=",child_aeb,"Menge=",menge);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("AEB",child_aeb),NV("Menge",menge));
   AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(child_aeb,AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
   for(AufEintragZu::list_t::iterator j=L.begin();j!=L.end();++j)
     {
@@ -66,7 +66,7 @@ void AufEintragZuMengenAenderung::increase_parents__reduce_assingments(const int
 void AufEintragZuMengenAenderung::Change_Zuordnung_to_Children(const bool child,const AufEintrag &AE,
                         const AuftragBase::mengen_t &menge) throw(SQLerror)
 {
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AE=",AE,"Menge=",menge,"Child=",child);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("AE",AE),NV("Menge",menge),NV("Child",child));
   const bool reduce = (menge<0);
   AuftragBase::mengen_t Me=menge;
   if(reduce) Me*=-1;
@@ -96,7 +96,7 @@ void AufEintragZuMengenAenderung::move_zuordnung_zu_geplantem(const int uid,
          AuftragBase::mengen_t menge,
          ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AE0er=",AE0er,"AE1er=",AE1er,"Menge=",menge);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("AE0er",AE0er),NV("AE1er",AE1er),NV("Menge",menge));
   assert(!"AufEintragZuMengenAenderung::move_zuordnung_zu_geplantem  called");
   AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(AE0er,AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
   for(AufEintragZu::list_t::reverse_iterator i=L.rbegin();i!=L.rend();++i)

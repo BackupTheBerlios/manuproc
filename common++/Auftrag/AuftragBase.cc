@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.27 2003/02/13 13:08:26 christof Exp $
+// $Id: AuftragBase.cc,v 1.28 2003/03/10 14:44:14 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,7 +27,7 @@
 #include <Artikel/ArtikelStamm.h>
 #include <Auftrag/VerfuegbareMenge.h>
 #include <Auftrag/AufEintragZu.h>
-#include <Misc/Trace.h>
+#include <Misc/TraceNV.h>
 #include <Lager/Lager.h>
 
 std::string AuftragBase::str() const
@@ -80,7 +80,7 @@ void AuftragBase::dispo_auftrag_aendern(const int uid,cH_ppsInstanz instanz,cons
          const ManuProC::Datum &datum,const AufEintragBase &kindAEB)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
-     "Artikel=",artikel,"Menge=",menge);
+     NV("Artikel",artikel),NV("Menge",menge));
    AuftragBase(instanz,AuftragBase::dispo_auftrag_id)
    	.BestellmengeAendern(menge,datum,artikel,OPEN,uid,kindAEB);
 }
@@ -92,8 +92,8 @@ void AuftragBase::dispo_auftrag_aendern(const int uid,cH_ppsInstanz instanz,cons
 void AuftragBase::menge_neu_verplanen(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
          const mengen_t &menge,const ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Instanz=",instanz,
-   "Artikel=",artikel,"Menge=",menge,"Reason=",reason);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("Instanz",instanz),
+   NV("Artikel",artikel),NV("Menge",menge),NV("Reason",reason));
 
 //  assert(reason==ManuProC::Auftrag::r_Anlegen || reason==ManuProC::Auftrag::r_Planen||
 //        reason==ManuProC::Auftrag::r_Closed || 
@@ -126,12 +126,12 @@ void AuftragBase::menge_neu_verplanen(const int uid,cH_ppsInstanz instanz,const 
      {  // Sortierung egal?
         AuftragBase::mengen_t m2=AuftragBase::min(j->Menge,M);
         if (!m2) continue;
-        
-        i->WurdeProduziert(m2,j->AEB);
-        // 1er erhöhen
-        // Rückgabewert?
-        AufEintragBase(instanz,AuftragBase::plan_auftrag_id)
-           .BestellmengeAendern(m2,i->getLieferdatum(),artikel,OPEN,uid,j->AEB);
+
+	AuftragBase ab1(instanz,AuftragBase::plan_auftrag_id);
+	AufEintragBase aeb1(ab1,ab1.PassendeZeile(i->getLieferdatum(),artikel,OPEN,uid));
+        i->ProduziertNG(uid,m2,j->AEB,aeb1);
+        AufEintrag(aeb1).MengeAendern(uid,m2,false,j->AEB,ManuProC::Auftrag::r_Produziert);
+
         m-=m2;
         if(!m) break;
      }

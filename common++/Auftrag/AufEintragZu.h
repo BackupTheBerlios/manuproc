@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.19 2003/03/07 08:10:12 christof Exp $
+// $Id: AufEintragZu.h,v 1.20 2003/03/10 14:44:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -111,8 +111,8 @@ public:
     AuftragBase::mengen_t verteileMenge(list_t L, AuftragBase::mengen_t menge, bool add);
     
 
-    // Zuordnung ändern:
-    bool setKindZnr(const AufEintragBase& neuAEB);
+    // Zuordnung ändern: schudder CP
+    __deprecated bool setKindZnr(const AufEintragBase& neuAEB);
 
     static bool remove(const AufEintragBase& alt_AEB,const AufEintragBase& neu_AEB);
     static void moveInstanz(const VonNachDel vdl,const AufEintragBase &oldAEB, const AufEintragBase &newAEB) throw(SQLerror);

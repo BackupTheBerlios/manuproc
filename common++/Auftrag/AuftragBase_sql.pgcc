@@ -24,7 +24,7 @@
 #include "AufEintrag.h"
 #include <Artikel/ArtikelStamm.h>
 #include <Auftrag/AufEintragZu.h>
-#include <Misc/Trace.h>
+#include <Misc/TraceNV.h>
 #include <Auftrag/VerfuegbareMenge.h>
 
 exec sql include sqlca;
@@ -63,7 +63,7 @@ bool AuftragBase::Exists() const throw(SQLerror)
 
 void AuftragBase::create_if_not_exists(AufStatVal status,Kunde::ID kunde) const
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"Status=",status,"Kunde=",kunde);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Status",status),NV("Kunde",kunde));
   if(Exists()) return;
   exec sql begin declare section;
    int AUFTRAGID=Id();
@@ -79,7 +79,7 @@ void AuftragBase::create_if_not_exists(AufStatVal status,Kunde::ID kunde) const
 
 void AuftragBase::setStatusAuftragBase(AufStatVal st) const throw(SQLerror)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"Status=",st);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Status",st));
  exec sql begin declare section;
   int AUFTRAGID=Id();
   int INSTANZ=InstanzID();
@@ -114,8 +114,8 @@ bool AuftragBase::existEntry(const ArtikelBase& artikel,
                              AufStatVal status) const throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
-         "Artikel=",artikel,
-         "LieferDatum=",lieferdatum,"ZNr=",znr,"Status=",status);
+         NV("Artikel",artikel),
+         NV("LieferDatum",lieferdatum),NV("ZNr",znr),NV("Status",status));
  exec sql begin declare section;
    int AUFTRAGID =Id();
    long ARTIKELID=artikel.Id();
@@ -158,8 +158,8 @@ bool AuftragBase::existEntry(const ArtikelBase& artikel,
 int AuftragBase::PassendeZeile(const ManuProC::Datum lieferdatum,const ArtikelBase& artikel,
   AufStatVal status,unsigned uid) const throw(SQLerror)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"Artikel=",artikel,
-         "LieferDatum=",lieferdatum,"Status=",status);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Artikel",artikel),
+         NV("LieferDatum",lieferdatum),NV("Status",status));
  assert(status==OPEN || Id()==ppsInstanzID::Kundenauftraege);
  // Auftrag anlegen, wenn noch nicht da
  create_if_not_exists(status);
@@ -180,10 +180,10 @@ int AuftragBase::BestellmengeAendern(mengen_t deltamenge,
   AufStatVal status,int uid,const AufEintragBase& altAEB,
   st_BestellmengeAendern st_bool) const throw(SQLerror)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"Artikel=",artikel,
-         "Menge=",deltamenge,"AltAEB=",altAEB,
-         "LieferDatum=",lieferdatum,
-         "Status=",status);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Artikel",artikel),
+         NV("Menge",deltamenge),NV("AltAEB",altAEB),
+         NV("LieferDatum",lieferdatum),
+         NV("Status",status));
  Transaction tr;
  exec sql lock table auftragentry in exclusive mode;
  SQLerror::test(__FILELINE__);  

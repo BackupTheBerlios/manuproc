@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.18 2003/01/31 16:23:15 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.19 2003/03/10 14:44:14 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,7 +23,6 @@
 #include<Auftrag/AufEintrag.h>
 #include <unistd.h>
 #include <Lieferschein/Lieferschein.h>
-#include <Auftrag/ppsInstanzProduziert.h>
 
 bool LieferscheinEntry::Valid() const
 {
