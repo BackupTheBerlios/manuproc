@@ -141,7 +141,7 @@ void windowTop::scc_verkaeufer_activate()
 		" where provsatznr=0)") << kundendaten->Id();
    }
 
- Query q("update kunden set verknr=? where kundennr=?");
+ Query q("update kunden set stand=now(), verknr=? where kundennr=?");
  q << Query::NullIf(scc_verkaeufer->get_value(),Kunde::none_id) << kundendaten->Id();
 
  Query("delete from prov_verkaeufer where kundennr=?") << kundendaten->Id();
