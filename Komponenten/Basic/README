@@ -1,0 +1,15 @@
+These are those parts of Komponenten's main library which are of 
+interest to a wider user group.
+
+This library contains:
+
+- treebase and advanced Class derived from  GTK-CTrees/Gtk-CLists
+
+and perhaps more.
+
+I apologize for not documenting them up to now and (of course) these 
+classes have a long history so they sometimes start to smell ...
+
+Use them, improve them, share them.
+    Malte & Christof
+
