@@ -121,7 +121,7 @@ static bool AutoProduktion()
       LieferscheinEntry(lsb).changeMenge(0,0,liefs,false);
       vergleichen(Check::Lieferschein|Check::Menge,"ap_liefern_weg","Lieferung Edukt zurücknehmen","-E");
       
-      Lieferschein liefs2(ppsInstanzID::Kundenauftraege,KUNDE);
+      Lieferschein liefs2(KUNDENINSTANZ,cH_Kunde(KUNDE));
       int lznr2=liefs2.push_back(ArtikelBase(40),5);
       vergleichen(Check::Lieferschein|Check::Menge,"ap_liefern","Lieferung Produkt","L");
 

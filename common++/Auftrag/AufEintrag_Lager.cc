@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.21 2003/09/09 07:33:59 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.22 2003/09/10 07:05:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -193,7 +193,7 @@ AuftragBase::mengen_t AufEintrag::Auslagern
      }
       // produzieren
       unbestellteMengeProduzieren(Instanz(),Artikel(),menge,true,
-      		ctx.aeb/*oder *this?*/,ctx.leb);
+      		ctx.aeb/*oder *this?*/,ctx.leb,getLieferdatum());
    }
    return 0;
 }

@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.14 2003/09/08 08:11:10 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.15 2003/09/10 07:05:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -53,7 +53,8 @@ AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
 {  // Code wie in ProduziertNG
    // vielleicht zusammenführen?
    ManuProC::Trace _t(trace_channel, __FUNCTION__,instanz,
-			   NV("artikel",artikel),NV("menge",menge),NV("rekursiv",rekursiv));
+			   NV("artikel",artikel),NV("menge",menge),NV("rekursiv",rekursiv),
+			   NV("elter",elter),NV("ctx",ctx),NV("termin",termin));
    assert(instanz!=ppsInstanzID::Kundenauftraege && instanz!=ppsInstanzID::None);
    if (!termin.valid()) termin=ManuProC::Datum(1,1,1970);
    Transaction tr;
@@ -208,8 +209,7 @@ public:
 	      {  // Zuordnung anpassen
 	         AufEintragZu(alterAEB).setMengeDiff__(aeb,-M);
 		 Lager L(aeb.Instanz());
-		 // oder elter_neu?
-		 L.raus_aus_lager(art,M,true,ProductionContext(alterAEB,ctx,aeb));
+		 L.raus_aus_lager(art,M,true,ProductionContext(neuerAEB,ctx,aeb));
 	      }
 	      else
 	         AufEintrag(aeb).ProduziertNG(M,alterAEB,neuerAEB,ctx);
