@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.68 2004/03/22 18:09:10 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.69 2004/05/18 11:02:30 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -335,6 +335,9 @@ LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
  LE.menge=_menge;
  LE.palette=_palette;
  LE.status=(AufStatVal)UNCOMMITED;
+#ifdef LIEFERSCHEINE_IMMER_BESTAETIGT
+ LE.status=(AufStatVal)OPEN;
+#endif
  if (!_zusatzinfo) LE.VZusatz.push_back(st_AufEintragMenge(auf,LE.menge));
 
  Transaction tr;
@@ -557,5 +560,8 @@ fixedpoint<1> LieferscheinEntry::DurchAuftraegeAbgedeckt() const
          m+=i->getRestStk();
       m=AuftragBase::min(m,AuftragBase::Gesamtmenge(Stueck(),Menge()));
    }
-   return 100.0*m/AuftragBase::Gesamtmenge(Stueck(),Menge()).as_float();
+   mengen_t m2=AuftragBase::Gesamtmenge(Stueck(),Menge());
+   if (!m) return 0;
+   if (m==m2) return 1;
+   return 100.0*m/m2.as_float();
 }
