@@ -1,7 +1,19 @@
 #!/bin/bash
 # 1. Argument: Test mit dem begonnen werden soll
 
-ALLTESTS="M P S L Z D Ls Lm LZ LA ZK ZKM J ZI ZI2 AL RP Rg RK RZ RKZ"
+case `./where_are_the_tables` in
+   */Anleitung/datenbank)
+   	ALLTESTS="MP AL ZK"
+   	;;
+   petigdb)
+   	ALLTESTS="M P S L Z D Ls Lm LZ LA ZK ZKM J ZI ZI2 AL RP Rg RK RZ RKZ"
+   	;;
+   mabelladb)
+   	ALLTESTS="LJ ZK RM"
+   	;;
+   *) ALLTESTS=""
+   	;;
+esac
 
 if [ $# -lt 1 ]
 then TESTS="$ALLTESTS"
