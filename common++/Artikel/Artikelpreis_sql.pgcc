@@ -1,4 +1,4 @@
-// $Id: Artikelpreis_sql.pgcc,v 1.13 2003/01/08 15:52:21 jacek Exp $
+// $Id: Artikelpreis_sql.pgcc,v 1.14 2003/01/14 16:02:30 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -29,6 +29,9 @@ exec sql include sqlca;
 
 #include <unistd.h>
 #include <sys/types.h>
+#include <algo.h>
+#include <functional>
+
 
 
 namespace // index_t and payload_t should not be globally visible
@@ -44,44 +47,98 @@ struct index_t
    { return liste<b.liste || (liste==b.liste && art<b.art); }
 };
 
+
+
+class Preis_lseq : public unary_function<std::pair<int,Preis>,bool>
+{
+ int bestellmenge;
+public:
+ explicit Preis_lseq (const int m) : bestellmenge(m) {}
+ bool operator() (const std::pair<int,Preis> &p) const 
+	{ return p.first <= bestellmenge; }
+};
+
+
 struct payload_t
-{  Preis preis;
+{  
+ typedef std::map<int,Preis> Pmap;
+
+   Pmap preis;
    bool errechnet;
    bool gefunden;
-   payload_t(const Preis &p,bool gef, bool e=true)
-   	: preis(p), errechnet(e), gefunden(gef) {}
+   payload_t(bool gef, bool e=true)
+   	: errechnet(e), gefunden(gef) {}
+   std::pair<int,Preis> get_preis(int bestellmenge=1)
+	{ Pmap::reverse_iterator p=find_if(preis.rbegin(),preis.rend(),
+			Preis_lseq(bestellmenge));
+	  if(p!=preis.rend()) return (*p);
+	  else return std::pair<int,Preis>(1,Preis());
+	}
    payload_t() : errechnet(false),gefunden(false) {}
 };
+
+
+
+
 
 typedef CacheStatic<index_t,payload_t> cache_t;
 
 static cache_t cache;
 
-Artikelpreis::Artikelpreis(const PreisListe::ID liste,const ArtikelBase &a)
-	: errechnet(false), gefunden(false), gefunden_in(ManuProcEntity<>::none_id)
+Artikelpreis::Artikelpreis(const PreisListe::ID liste,const ArtikelBase &a,
+				int bestellmenge=1)
+	: errechnet(false), gefunden(false),
+	  gefunden_in(ManuProcEntity<>::none_id),mindestmenge(1)
 {  payload_t *cached=cache.lookup(index_t(liste,a.Id()));
-   if (cached) { setPreis(a.Id(),cached->preis,liste,cached->errechnet); 
+   if (cached) { std::pair<int,Preis> p=cached->get_preis(bestellmenge);
+		 setPreis(a.Id(),p.second,liste,
+				cached->errechnet);
+		 mindestmenge=p.first;
 	 	 gefunden=cached->gefunden;
 		}
    else
-   {  exec sql begin declare section;
-      int ARTIKELID=a.Id();
-      int kundennr=liste;
-      double preis;
-      double preismenge;
-      int waehrung;
+   {
+      exec sql begin declare section;
+      double PREIS[20];
+      double PREISMENGE[20];
+      int WAEHRUNG[20];
+      int MINDESTMENGE[20];
+      char *QU;
       exec sql end declare section;
-      
-      exec sql select preis, coalesce(preismenge,1), waehrung
-      	into :preis, :preismenge, :waehrung
-      	from artikelpreise
-      	where artikelid=:ARTIKELID and kundennr=:kundennr;
+      int ARTIKELID=a.Id();
+      int KUNDENNR=liste;      
+	std::string qu;
+
+	
+      Transaction tr;
+
+      qu=string("select preis, mindestmenge, coalesce(preismenge,1), waehrung"
+	      	" from artikelpreise where artikelid=")+
+		itos(ARTIKELID)+" and kundennr="+itos(KUNDENNR);
+	QU=(char*) qu.c_str();
+	exec sql prepare PSTAFFEL_ from :QU;
+	exec sql declare PSTAFFEL cursor for PSTAFFEL_;
+	exec sql open PSTAFFEL;
+      SQLerror::test(__FILELINE__);
+
+
+	exec sql fetch 20 in PSTAFFEL into
+		:PREIS,:MINDESTMENGE,:PREISMENGE,:WAEHRUNG;
       SQLerror::test(__FILELINE__,100);
+
+      payload_t pyl(sqlca.sqlcode==0, false);
       if (!sqlca.sqlcode) 
-         setPreis(ARTIKELID,Preis(preis, Waehrung::ID(waehrung), preismenge),liste,false);
+         {
+	  for(int i=0; i<sqlca.sqlerrd[2]; i++)
+	    pyl.preis[MINDESTMENGE[i]]=
+		Preis(PREIS[i],Waehrung::ID(WAEHRUNG[i]),PREISMENGE[i]);
+
+	  std::pair<int,Preis> p=pyl.get_preis(bestellmenge);
+	  setPreis(a.Id(),p.second,liste,false);
+	  mindestmenge=p.first;		
+	 }
          
-      cache.Register(index_t(liste,a.Id()), payload_t(getPreis(),
-			sqlca.sqlcode==0, istErrechnet()));
+      cache.Register(index_t(liste,a.Id()), pyl);
    }
 }
 
@@ -89,13 +146,14 @@ void Artikelpreis::UnCache(const PreisListe::ID liste,const ArtikelBase &ab)
 {  cache.deregister(index_t(liste,ab.Id()));
 };
 
-Artikelpreis::Artikelpreis(const cH_Kunde &k,const ArtikelBase &a)
+Artikelpreis::Artikelpreis(const cH_Kunde &k,const ArtikelBase &a, 
+				int bestellmenge=1)
 	: errechnet(false), gefunden(false), gefunden_in(ManuProcEntity<>::none_id)
 {  Artikelpreis ap;
 
    for (std::list<std::pair<int,PreisListe::ID> >::const_iterator i=k->Preislisten().begin();
    	i!=k->Preislisten().end();++i)
-   {  ap=Artikelpreis(i->second,a);
+   {  ap=Artikelpreis(i->second,a,bestellmenge);
       if (ap.Gefunden()) { *this=ap; return; }
    }
 
@@ -114,6 +172,7 @@ Artikelpreis::Artikelpreis(const cH_Kunde &k,const ArtikelBase &a)
 
 const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
 		const Preis &p, const ArtikelBase &a,
+		int mindmenge=1,
 		std::vector<std::string> ins_all_komp) throw(SQLerror)
 {
  exec sql begin declare section;
@@ -123,6 +182,7 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
  int PRLSID;
  int WAEHRUNG;
  int UID;
+ int MINDESTMENGE=mindmenge;
  exec sql end declare section;
 
 
@@ -153,7 +213,7 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
 
     query+=" not exists (select true from artikelpreise p "
 	"where "+artbez_tabelle+".id=p.artikelid and p.kundennr="+
-	itos(PRLSID)+")";
+	itos(PRLSID)+" and p.mindestmenge="+itos(mindmenge)+")";
 
     to_insert=Query(query).FetchArray<int>();
     
@@ -175,19 +235,19 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
     ARTIKELID=(*i);
 
  exec sql insert into preis_change_journal (artikelid,prlsnr,zeitpunkt,
-		preis_alt,preis_neu,uid) values
-		(:ARTIKELID,:PRLSID,now(),null,:PREIS,:UID);
+		preis_alt,preis_neu,uid,mindestmenge) values
+		(:ARTIKELID,:PRLSID,now(),null,:PREIS,:UID,:MINDESTMENGE);
  SQLerror::test(__FILELINE__);	
 
  exec sql insert into artikelpreise 
- 	(artikelid,kundennr,preis,preismenge,waehrung) values
- 	(:ARTIKELID,:PRLSID,:PREIS,:PREISMENGE,:WAEHRUNG);
+ 	(artikelid,kundennr,preis,preismenge,waehrung,mindestmenge) values
+ 	(:ARTIKELID,:PRLSID,:PREIS,:PREISMENGE,:WAEHRUNG,:MINDESTMENGE);
  SQLerror::test(__FILELINE__);	
  }
 
  tr.commit();
   
- return Artikelpreis(liste,a);
+ return Artikelpreis(liste,a,mindmenge);
 }
 
 
@@ -201,6 +261,7 @@ void Artikelpreis::changePreis(const Preis &p) throw(SQLerror)
  int PRLSID=gefunden_in;
  int WAEHRUNG=p.getWaehrung()->Id();
  int UID;
+ int MINDESTMENGE=mindestmenge;
  exec sql end declare section;
 
  if(gefunden_in == PreisListe::none_id) return;
@@ -210,12 +271,17 @@ void Artikelpreis::changePreis(const Preis &p) throw(SQLerror)
  Transaction tr;
 
  exec sql select preis into :PREIS_ALT from artikelpreise where
-	artikelid=:ARTIKELID and kundennr=:PRLSID;
+	artikelid=:ARTIKELID and kundennr=:PRLSID
+	and mindestmenge=:MINDESTMENGE;
  SQLerror::test(__FILELINE__);	
 
- exec sql insert into preis_change_journal (select
-	artikelid, :PRLSID, now(), preis, :PREIS, :UID from
-	artikelpreise where kundennr=:PRLSID and artikelid in 
+ exec sql insert into preis_change_journal 
+	(artikelid,prlsnr,zeitpunkt,preis_alt,preis_neu,uid,mindestmenge)
+	(select	artikelid, :PRLSID, now(), preis, :PREIS, :UID, :MINDESTMENGE
+	from
+	artikelpreise where kundennr=:PRLSID and 
+	mindestmenge=:MINDESTMENGE and
+	artikelid in 
 	(select a.id from artbez_3_1 a join artbez_3_1 b	
 	on (	a.artikel=b.artikel and 
 		a.breite=b.breite and 
@@ -227,7 +293,8 @@ void Artikelpreis::changePreis(const Preis &p) throw(SQLerror)
  exec sql update artikelpreise set
  	preis=:PREIS,preismenge=:PREISMENGE,
 	waehrung =:WAEHRUNG
-	where kundennr=:PRLSID and artikelid in 
+	where kundennr=:PRLSID and
+	mindestmenge=:MINDESTMENGE and artikelid in 
 	(select a.id from artbez_3_1 a join artbez_3_1 b	
 	on (	a.artikel=b.artikel and 
 		a.breite=b.breite and 
@@ -250,6 +317,7 @@ void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a,
   int PRLSID=liste;
   float PREIS;
   int UID;
+  int MINDESTMENGE=1;
  exec sql end declare section;
 
  UID=int(getuid());
@@ -265,7 +333,8 @@ void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a,
     cH_ExtBezSchema ebz=ab->getExtBezSchema();
     artbez_tabelle=" artbez_"+itos(ebz->Typ().Id())+"_"+itos(ebz->Id());
     query="select id,preis from "+artbez_tabelle+" a join artikelpreise p "
-	" on (id=artikelid and p.kundennr="+itos(PRLSID)+") where ";
+	" on (id=artikelid and p.kundennr="+itos(PRLSID)+
+	" and p.mindestmenge="+itos(MINDESTMENGE)+") where ";
     for(std::vector<std::string>::const_iterator s=del_all_komp.begin();
 	s!=del_all_komp.end(); ++s)
 	{
@@ -281,7 +350,8 @@ void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a,
  else
    {
    exec sql select preis into :PREIS from artikelpreise where
-	artikelid=:ARTIKELID and kundennr=:PRLSID;
+	artikelid=:ARTIKELID and kundennr=:PRLSID
+	and mindestmenge=:MINDESTMENGE;
    SQLerror::test(__FILELINE__);
 
    to_delete.push_back(std::pair<int,float>(ARTIKELID,PREIS));	
@@ -298,12 +368,13 @@ void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a,
     PREIS=(*i).second;
 
     exec sql insert into preis_change_journal (artikelid,prlsnr,zeitpunkt,
-   		preis_alt,preis_neu,uid) values
-   		(:ARTIKELID,:PRLSID,now(),:PREIS,0.0,:UID);
+   		preis_alt,preis_neu,uid,mindestmenge) values
+   		(:ARTIKELID,:PRLSID,now(),:PREIS,0.0,:UID,:MINDESTMENGE);
     SQLerror::test(__FILELINE__);	
    	
     exec sql delete from artikelpreise 
-   	where kundennr=:PRLSID and artikelid=:ARTIKELID;
+   	where kundennr=:PRLSID and artikelid=:ARTIKELID
+	and mindestmenge=:MINDESTMENGE;
     SQLerror::test(__FILELINE__);	
   }
 

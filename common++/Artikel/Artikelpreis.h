@@ -1,4 +1,4 @@
-// $Id: Artikelpreis.h,v 1.14 2003/01/08 09:46:56 christof Exp $
+// $Id: Artikelpreis.h,v 1.15 2003/01/14 16:02:30 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -32,14 +32,17 @@ class Artikelpreis : public Preis
         bool gefunden:1;
         PreisListe::ID gefunden_in;
         ArtikelBase::ID artikel;
+        int mindestmenge;
         
 	Preis &getPreis()
 	{  return *(Preis*)this; }
 	void setPreis(const ArtikelBase::ID art, const Preis &p, 
 		PreisListe::ID wo=ManuProcEntity<>::none_id, bool e=false)
-	{  artikel=art, getPreis()=p; errechnet=e; gefunden=true; gefunden_in=wo; }
+	{  artikel=art; getPreis()=p; errechnet=e; gefunden=true; gefunden_in=wo; 
+	}
 	Artikelpreis()
-	: errechnet(false), gefunden(false), gefunden_in(ManuProcEntity<>::none_id) 
+	: errechnet(false), gefunden(false), gefunden_in(ManuProcEntity<>::none_id),
+	  mindestmenge(1) 
 	{}
 
 	friend FetchIStream &operator>>(FetchIStream &is,std::pair<int, float> &kg);  
@@ -47,20 +50,23 @@ public:
 	 		
 	const Preis &getPreis() const
 	{  return (const Preis &)*this; }
-	Artikelpreis(const cH_Kunde &k,const ArtikelBase &a);
-	Artikelpreis(const PreisListe::ID liste,const ArtikelBase &a);
+	Artikelpreis(const cH_Kunde &k,const ArtikelBase &a, int bestellmenge);
+	Artikelpreis(const PreisListe::ID liste,const ArtikelBase &a, int bestellmenge);
 
 	bool istErrechnet() const { return errechnet; }
 	bool Gefunden() const { return gefunden; }
+	int MindMenge() const { return mindestmenge; }
 	PreisListe::ID GefundenIn() const { return gefunden_in; }
 	const ArtikelBase::ID Artikel() const { return artikel; }
 	
 	static void UnCache(const PreisListe::ID liste,const ArtikelBase &a);
 	static const Artikelpreis create(const PreisListe::ID liste,
                	const Preis &p, const ArtikelBase &a,
+		int mindmenge,               	
                	std::vector<std::string> ins_all_komp=std::vector<std::string>()) throw(SQLerror);
 // tut nix sinnvolles, oder? MAT	void updatePreis(const Preis &p) throw(SQLerror);
 	void changePreis(const Preis &p) throw(SQLerror);
+	void changeMindMenge(int mindmenge) throw(SQLerror) {}	
    static void remove(const PreisListe::ID liste,const ArtikelBase &a,
    		std::vector<std::string> del_all_komp=std::vector<std::string>()) throw(SQLerror);
    		
