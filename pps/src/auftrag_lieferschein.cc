@@ -347,6 +347,7 @@ void auftrag_lieferschein::fill_with(const AufEintrag& AE,const Einheit& E,
      anzahl->set_value(stueck);
 
   menge_einheit->set_text(E.StueckEinheit());
+  label_stueck->set_text(E.StueckEinheit());
   if (E.hatMenge())
    {
      table_menge->show();
@@ -786,6 +787,9 @@ void auftrag_lieferschein::on_artikelbox_activate()
 {
  Einheit e(artikelbox->get_value());
  menge_einheit->set_text(e.StueckEinheit());
+
+ label_stueck->set_text(e.StueckEinheit());
+
  if (e.hatMenge()) 
  { table_menge->show();
    menge_einheit->set_text(e.MengenEinheit());

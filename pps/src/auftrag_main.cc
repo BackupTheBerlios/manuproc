@@ -514,8 +514,8 @@ void auftrag_main::set_column_titles_of_simple_tree()
  ct.push_back("L.P.");
  ct.push_back("Ver.");
  ct.push_back("Letze Lieferung");
- ct.push_back("offene Meter");
- ct.push_back("offene Stück");
+ ct.push_back("offene Menge (Rohware)");
+ ct.push_back("offene Menge");
  maintree_s->setTitles(ct);
  maintree_s->set_NewNode(&Data_Node::create);
  int cols=maintree_s->columns().size();
