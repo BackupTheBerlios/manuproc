@@ -1,4 +1,4 @@
-// $Id: createDynEnums.cc,v 1.24 2004/05/03 17:48:19 jacek Exp $
+// $Id: createDynEnums.cc,v 1.25 2004/05/13 13:41:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: createDynEnums.cc,v 1.24 2004/05/03 17:48:19 jacek Exp $
+// $Id: createDynEnums.cc,v 1.25 2004/05/13 13:41:01 christof Exp $
 
 
 #include <Misc/dbconnect.h>
@@ -90,8 +90,9 @@ int main()
 
       std::string default_arttyp;
       {
-       Query q2("select max(bezeichnung) from artikelgruppen where "
-       		"coalesce(defaultgrp,false)=true");
+       Query q2("select max(artbez_warengruppe.text) from artbez_warengruppe "
+       		"join artikelgruppen on (artbez_warengruppe.id=artikelgruppen.warengruppe) "
+       		"where coalesce(defaultgrp,false)=true");
        if(q2.good()) q2 >> default_arttyp;
        else default_arttyp=DEFAULT_ARTTYP;
       }
