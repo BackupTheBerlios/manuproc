@@ -1,4 +1,4 @@
-/* $Id: RechnungVoll_sql.pgcc,v 1.15 2003/01/08 09:46:57 christof Exp $ */
+/* $Id: RechnungVoll_sql.pgcc,v 1.16 2003/03/28 12:53:43 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -50,7 +50,7 @@ RechnungVoll::RechnungVoll(int rid, bool order_by_artikel) throw(SQLerror)
 	"=(e.instanz,e.lfrsid,e.zeile) ";
 
  if(order_by_artikel)
-   qu=qu+" join artbez_3_1 b on b.id=e.artikelid";
+   qu=qu+" left join artbez_3_1 b on b.id=e.artikelid";
 
  qu=qu+" where ry.rngid ="+itos(rid);
 
