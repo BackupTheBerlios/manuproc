@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.2 2001/05/04 09:14:17 christof Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.3 2001/06/27 08:04:09 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -82,25 +82,31 @@ void Lieferschein::setDPDDatum() throw(SQLerror)
  SQLerror::test(__FILELINE__);
 }
 
-Lieferschein::Lieferschein(cH_Kunde k) throw(SQLerror)
+Lieferschein::Lieferschein(cH_Kunde k,int jahr) throw(SQLerror)
 	: LieferscheinBase(none_id), lsdatum(Petig::Datum::today()),
  	kunde(k),rngid(0),paeckchen(0),pakete(0),dpdliefnr(0) 
 {
  exec sql begin declare section;
  int LFRSID;
  int KUNDENNR;
+ int JAHR=jahr;
  exec sql end declare section;
+
+ if (!JAHR)
+ {  exec sql select to_char(now(),'yy') into :JAHR;
+    SQLerror::test(__FILELINE__);
+ }
+ else JAHR%=100;
 
  KUNDENNR=k->Id();
  Transaction tr;
   
  exec sql lock table lieferschein in exclusive mode;
  
- exec sql select coalesce(max(lfrsid)+1,(to_char(now(),'yy')||'0000')::int4)
+ exec sql select coalesce(max(lfrsid)+1,:JAHR*10000)
  		into :LFRSID
  		from lieferschein where lfrsid 
- 		between (to_char(now(),'yy')||'0000')::int4 and
- 			(to_char(now(),'yy')||'9999')::int4;
+ 		between :JAHR*10000 and (:JAHR+1)*10000-1;
  SQLerror::test(__FILELINE__":Lieferschein: select next lfrsid");
  
  exec sql insert into lieferschein (lfrsid, kundennr)

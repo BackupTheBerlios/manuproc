@@ -1,4 +1,4 @@
-// $Id: c++ostream.h,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: c++ostream.h,v 1.2 2001/06/27 08:04:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,5 +28,5 @@ public:
    operator time_t() const { return payload; }
 };
 
-ostream &operator<<(ostream &o,const time_t_wrapper &t);
-ostream &operator<<(ostream &o,const struct tm &tm);
+std::ostream &operator<<(std::ostream &o,const time_t_wrapper &t);
+std::ostream &operator<<(std::ostream &o,const struct tm &tm);

@@ -1,4 +1,4 @@
-/* $Id: SQLerror_postgres.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $ */
+/* $Id: SQLerror_postgres.pgcc,v 1.2 2001/06/27 08:04:09 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,11 +23,11 @@
 
 exec sql include sqlca;
 
-SQLerror_postgres::SQLerror_postgres(const string &ctext,int _code,const string &_name) throw()
+SQLerror_postgres::SQLerror_postgres(const std::string &ctext,int _code,const std::string &_name) throw()
 	: context(ctext), code(_code), name (_name), separator(' ')
 {  }
 
-SQLerror_postgres::SQLerror_postgres(const string &ctext) throw()
+SQLerror_postgres::SQLerror_postgres(const std::string &ctext) throw()
 	: context(ctext), separator(' ')
 {  exec sql begin declare section;
    exec sql end declare section;
@@ -38,54 +38,46 @@ SQLerror_postgres::SQLerror_postgres(const string &ctext) throw()
    for (;*errmc==' ';++errmc) ;
    int len=strlen(errmc);
    for (;len>0 && errmc[len-1]==' ';--len) ;
-   name=string(errmc,len);
+   name=std::string(errmc,len);
 }
 
+#if 0
 void SQLerror_postgres::rollback() throw()
 {  exec sql rollback;
 }
+#endif
 
-void SQLerror_postgres::close_cursor(const string &c) throw()
+void SQLerror_postgres::close_cursor(const std::string &c) throw()
 {exec sql begin declare section;
  char *q;
  exec sql end declare section;
 
- string query=string("close ")+c;
+ std::string query=std::string("close ")+c;
  q=(char *)query.c_str();
 
  exec sql execute immediate :q;
 }
 
-ostream &operator<<(ostream &o,const SQLerror_postgres &e) throw()
+std::ostream &operator<<(std::ostream &o,const SQLerror_postgres &e) throw()
 {  o<<e.context;
    if (e.code)
       o <<':'<<e.separator<<e.code<<e.separator<<e.name;
    return o;
 }
 
-void SQLerror_postgres::test(const string &context,bool _rollback) throw(SQLerror_postgres)
-{  if (sqlca.sqlcode) 
-   {  if (_rollback) rollback_and_throw(context);
-      else throw SQLerror_postgres(context);
-   }
-}
-void SQLerror_postgres::test(const string &context,int codeok,bool _rollback) throw(SQLerror_postgres)
-{  if (sqlca.sqlcode && sqlca.sqlcode!=codeok) 
-   {  if (_rollback) rollback_and_throw(context);
-      else throw SQLerror_postgres(context);
-   }
+void SQLerror_postgres::test(const std::string &context,int codeok) // throw(SQLerror_postgres)
+{  if (sqlca.sqlcode && sqlca.sqlcode!=codeok) throw SQLerror_postgres(context);
 }
 
-void SQLerror_postgres::test(const string &context,const string &cursor,
-		int codeok, bool _rollback ) throw(SQLerror_postgres)
+void SQLerror_postgres::test(const std::string &context,const std::string &cursor,
+		int codeok) // throw(SQLerror_postgres)
 {  if (sqlca.sqlcode && sqlca.sqlcode!=codeok) 
    {  close_cursor(cursor);
-      if (_rollback) rollback_and_throw(context);
-      else throw SQLerror_postgres(context);
+      throw SQLerror_postgres(context);
    }
 }
 
-void SQLerror_postgres::print(const string &context,int codeok=0)
+void SQLerror_postgres::print(const std::string &context,int codeok=0)
 {  if (sqlca.sqlcode && sqlca.sqlcode!=codeok)
-      cerr << SQLerror_postgres(context) << '\n';
+      std::cerr << SQLerror_postgres(context) << '\n';
 }

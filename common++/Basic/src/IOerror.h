@@ -1,4 +1,4 @@
-/* $Id: IOerror.h,v 1.1 2001/04/23 08:11:59 christof Exp $ */
+/* $Id: IOerror.h,v 1.2 2001/06/27 08:04:09 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,15 +22,16 @@
 #include <string>
 #include <exception>
 
-class IOerror : public exception
+class IOerror : public std::exception
 {	int IOerrno;
-	string name;
+	std::string name;
    public:
    	virtual const char* what() const throw() { return "IOerror"; }
    	IOerror() throw();
-   	IOerror(const string &) throw();
-   	IOerror(const string &,int) throw();
-   	string toString() const throw();
+   	IOerror(const std::string &) throw();
+   	IOerror(const std::string &,int) throw();
+   	std::string toString() const throw();
+   	virtual ~IOerror() throw() {}
 };
 
 #endif

@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.3 2001/06/06 07:27:39 christof Exp $ */
+/* $Id: Datum.cc,v 1.4 2001/06/27 08:04:09 christof Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
@@ -61,7 +61,7 @@ void Petig::Datum::teste() const throw (Petig::Datumsfehler)
    if (monat<1 || monat>12) falsch|=Datumsfehler::monatfalsch;
    if (jahr<1970 || jahr>2999) falsch|=Datumsfehler::jahrfalsch;
    if (falsch) 
-   {  throw(Datumsfehler(*this,falsch));
+   {  throw(Datumsfehler(falsch));
    }
 }
 
@@ -166,8 +166,7 @@ ostream &operator<<(ostream&o,const Petig::Datum&d) throw()
 }
 
 ostream &operator<<(ostream&o,const Petig::Datumsfehler &df)
-{  o << df.getDatum() << ":";
-   if (df.falsch&Petig::Datumsfehler::tagfalsch) o << "d";
+{  if (df.falsch&Petig::Datumsfehler::tagfalsch) o << "d";
    if (df.falsch&Petig::Datumsfehler::monatfalsch) o << "m";
    if (df.falsch&Petig::Datumsfehler::jahrfalsch) o << "y";
    return o;

@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.h,v 1.3 2001/06/06 07:27:39 christof Exp $ */
+/* $Id: Ausgabe_neu.h,v 1.4 2001/06/27 08:04:09 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,13 +24,13 @@
 #include <Aux/fixedpoint.h>
 #include <cmath>
 
-const string Formatiere(unsigned long Zahl,
+const std::string Formatiere(unsigned long Zahl,
                 unsigned int Nachkommastellen=0,
                 unsigned int Ziellaenge=0,
                 const char *TausenderTrennzeichen=".",
                 const char *Komma=",",char fuehrendesZeichen=' ');
 #if 0                
-extern inline const string Formatiere(double Zahl,
+extern inline const std::string Formatiere(double Zahl,
                 unsigned int Nachkommastellen,
                 unsigned int Ziellaenge=0,
                 const char *TausenderTrennzeichen=".",
@@ -40,13 +40,13 @@ extern inline const string Formatiere(double Zahl,
 		TausenderTrennzeichen,Komma,fuehrendesZeichen);
 }
 #endif
-extern inline const string FormatiereTeX(unsigned long Zahl,
+extern inline const std::string FormatiereTeX(unsigned long Zahl,
                 unsigned int Nachkommastellen=0,
                 unsigned int Ziellaenge=0,char fuehrendesZeichen=' ')
 {  return Formatiere(Zahl,Nachkommastellen,Ziellaenge,"\\,", ",", fuehrendesZeichen);
 }
 #if 0
-extern inline const string FormatiereTeX(double Zahl,
+extern inline const std::string FormatiereTeX(double Zahl,
                 unsigned int Nachkommastellen,
                 unsigned int Ziellaenge=0,char fuehrendesZeichen=' ')
 {  return FormatiereTeX((unsigned long)(Zahl*pow(10,Nachkommastellen)+.5),
@@ -54,12 +54,12 @@ extern inline const string FormatiereTeX(double Zahl,
 }
 #endif
                 
-ostream &Formatiere(ostream &os,unsigned long Zahl,
+std::ostream &Formatiere(std::ostream &os,unsigned long Zahl,
                 unsigned int Nachkommastellen=0,
                 unsigned int Ziellaenge=0,
                 const char *TausenderTrennzeichen=".",
                 const char *Komma=",",char fuehrendesZeichen=' ');
-extern inline ostream &FormatiereTeX(ostream &os,unsigned long Zahl,
+extern inline std::ostream &FormatiereTeX(std::ostream &os,unsigned long Zahl,
                 unsigned int Nachkommastellen=0,
                 unsigned int Ziellaenge=0)
 {  return Formatiere(os,Zahl,Nachkommastellen,Ziellaenge,"\\,", ",", '~');
@@ -67,15 +67,15 @@ extern inline ostream &FormatiereTeX(ostream &os,unsigned long Zahl,
 
 static const int NEEDCHAR=1;
 static const int BARISNEWLINE=2;
-string string2TeX(const string s, int flags=0) throw();
+std::string string2TeX(const std::string s, int flags=0) throw();
 
 template <int decimals,class Ftype,class Itype>
- const string FormatiereTeX(const fixedpoint<decimals,Ftype,Itype> &Zahl)
+ const std::string FormatiereTeX(const fixedpoint<decimals,Ftype,Itype> &Zahl)
 {  return FormatiereTeX(Zahl.Scaled(),Zahl.Scale());
 }
 
 template <int decimals,class Ftype,class Itype>
- const string Formatiere(const fixedpoint<decimals,Ftype,Itype> &Zahl, unsigned int Ziellaenge=0,
+ const std::string Formatiere(const fixedpoint<decimals,Ftype,Itype> &Zahl, unsigned int Ziellaenge=0,
                 const char *TausenderTrennzeichen=".",
                 const char *Komma=",",char fuehrendesZeichen=' ')
 {  return Formatiere(Zahl.Scaled(),Zahl.Scale(),Ziellaenge,
@@ -84,7 +84,7 @@ template <int decimals,class Ftype,class Itype>
 
 // unnoetige Nachkommastellen unterdruecken
 template <int decimals,class Ftype,class Itype>
- const string FormatiereTeX_short(const fixedpoint<decimals,Ftype,Itype> &Zahl)
+ const std::string FormatiereTeX_short(const fixedpoint<decimals,Ftype,Itype> &Zahl)
 {  Itype val(Zahl.Scaled());
    unsigned int scale(Zahl.Scale());
    while (scale>0 && !(val%10)) { val/=10; --scale; }
@@ -92,7 +92,7 @@ template <int decimals,class Ftype,class Itype>
 }
 
 template <int decimals,class Ftype,class Itype>
- const string Formatiere_short(const fixedpoint<decimals,Ftype,Itype> &Zahl)
+ const std::string Formatiere_short(const fixedpoint<decimals,Ftype,Itype> &Zahl)
 {  Itype val(Zahl.Scaled());
    unsigned int scale(Zahl.Scale());
    while (scale>0 && !(val%10)) { val/=10; --scale; }

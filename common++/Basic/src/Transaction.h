@@ -1,4 +1,4 @@
-// $Id: Transaction.h,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: Transaction.h,v 1.2 2001/06/27 08:04:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,14 +26,14 @@
 class Transaction
 {	bool owner:1;
 	bool commit_vs_rollback:1;
-	string connection;
+	std::string connection;
 public:
-	Transaction(const string &connection="",bool open_now=true) throw(SQLerror);
+	Transaction(const std::string &connection="",bool open_now=true) throw(SQLerror);
 //	Transaction(bool open_now) throw(SQLerror); // old ctor
 	// attention: if you specify no connection its last value is used
 	//            e.g. by last open or ctor
 	// I feel this is the most intuitive behaviour
-	void open(const string &connection="") throw(SQLerror);
+	void open(const std::string &connection="") throw(SQLerror);
 	void close() throw(SQLerror);
 	void commit_on_close(bool val=true)
 	{  commit_vs_rollback=val; }

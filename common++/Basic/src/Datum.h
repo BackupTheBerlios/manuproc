@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.2 2001/06/06 07:27:39 christof Exp $ */
+/* $Id: Datum.h,v 1.3 2001/06/27 08:04:09 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,13 +30,31 @@ class Datumsfehler;
 class Datum;
 };
 
+/// Ein Datum ist ungültig
+class Petig::Datumsfehler : public std::exception
+{  /// eine Kombination aus tagfalsch, monatfalsch, jahrfalsch
+   int falsch;
+public:
+   /** Werte für falsch: */
+   static const int tagfalsch=1;
+   static const int monatfalsch=2;
+   static const int jahrfalsch=4;
+   Datumsfehler(int _falsch) throw() 
+   	:  falsch(_falsch)
+   {}
+   friend std::ostream &operator<<(std::ostream&,const Datumsfehler &);
+   virtual const char* what() const throw() { return "Petig::Datumsfehler"; }
+};
+
+std::ostream &operator<<(std::ostream&,const Petig::Datumsfehler&);
+
 class Petig::Datum
 {	int tag;  	/* tt */ 
 	int monat;	/* mm */
 	int jahr;     /* jjjj */
 	
 public:
-	class Formatfehler : public exception 
+	class Formatfehler : public std::exception 
 	{public:
 		virtual const char* what() const throw() { return "Petig::Datum::Formatfehler"; }
 	};
@@ -86,6 +104,8 @@ public:
         /// zwei Daten sind gleich?
         bool operator==(const Datum &b) const throw()
         {  return b.tag==tag && b.monat==monat && b.jahr==jahr; }
+        bool operator!=(const Datum &b) const throw()
+        {  return !(*this==b);  }
         /// erstes Datum vor dem zweiten?
         bool operator<(const Datum &b) const throw(Datumsfehler);
         /** morgen
@@ -144,31 +164,11 @@ public:
 			      return 4;		
 			 }
 	
-	friend ostream &operator<<(ostream&,const Datum&) throw();
+	friend std::ostream &operator<<(std::ostream&,const Datum&) throw();
 	
 	bool valid() const throw();
 };
 
-ostream &operator<<(ostream&,const Petig::Datum&) throw();
-
-/// Ein Datum ist ungültig
-class Petig::Datumsfehler : public exception
-{  /// eine Kombination aus tagfalsch, monatfalsch, jahrfalsch
-   int falsch;
-   Petig::Datum offender;
-public:
-   /** Werte für falsch: */
-   static const int tagfalsch=1;
-   static const int monatfalsch=2;
-   static const int jahrfalsch=4;
-   Datumsfehler(const class Datum &d,int _falsch) throw() 
-   	:  falsch(_falsch), offender(d)
-   {}
-   Petig::Datum getDatum() const { return offender; }
-   friend ostream &operator<<(ostream&,const Datumsfehler &);
-   virtual const char* what() const throw() { return "Petig::Datumsfehler"; }
-};
-
-ostream &operator<<(ostream&,const Petig::Datumsfehler&);
+std::ostream &operator<<(std::ostream&,const Petig::Datum&) throw();
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: fixedpoint.cc,v 1.3 2001/05/10 16:33:00 christof Exp $
+// $Id: fixedpoint.cc,v 1.5 2001/06/27 08:04:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,21 +24,21 @@
 
 int main()
 {  
-   cout << zehnhochminus<3>() << '\n';
+   std::cout << zehnhochminus<3>() << '\n';
    fixedpoint<> a(4.60),b(3.2),c(4.599),d("4.599");
-   cout << "a="<<a << " b="<<b<< " c="<<c<< " d="<<d<< '\n';
-   cout << "a/7=" << a/7 << " b=a/7=" << (b=a/7) << '\n';
-   cout << "float(b)="<< float(b) << '\n';
-   cout << "a+b=" << a+b << '\n';
+   std::cout << "a="<<a << " b="<<b<< " c="<<c<< " d="<<d<< '\n';
+   std::cout << "a/7=" << a/7 << " b=a/7=" << (b=a/7) << '\n';
+   std::cout << "float(b)="<< float(b) << '\n';
+   std::cout << "a+b=" << a+b << '\n';
    
    // Formatiere
-   cout << Formatiere(12345) << "\n";
-   cout << Formatiere(12345,4) << "\n";
-   cout << Formatiere(12345,2) << "\n";
-   cout << Formatiere(12345678901234ULL,6) << "\n";
-   cout << Formatiere(fixedpoint<2>(12.567)) << '\n';
-   cout << FormatiereTeX_short(fixedpoint<5>(12.4)) << '\n';
+   std::cout << Formatiere(12345) << "\n";
+   std::cout << Formatiere(12345,4) << "\n";
+   std::cout << Formatiere(12345,2) << "\n";
+   std::cout << Formatiere(12345678901234ULL,6) << "\n";
+   std::cout << Formatiere(fixedpoint<2>(12.567)) << '\n';
+   std::cout << FormatiereTeX_short(fixedpoint<5>(12.4)) << '\n';
    // compile time assertion
-   cout << Formatiere(12.45) << '\n';
+   std::cout << Formatiere(12.45) << '\n';
    return 0;
 }

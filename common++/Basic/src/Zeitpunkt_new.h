@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.h,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: Zeitpunkt_new.h,v 1.2 2001/06/27 08:04:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -112,12 +112,12 @@ public:
    const Petig::Datum &Datum() const throw();
    operator time_t() throw();
    
-   friend ostream &operator<<(ostream&,const Zeitpunkt_new&);
+   friend std::ostream &operator<<(std::ostream&,const Zeitpunkt_new&);
    
    unsigned int Stunde() const { return hour; }
    unsigned int Minuten() const { return minute; }
 };
 
-ostream &operator<<(ostream&,const Zeitpunkt_new&);
+std::ostream &operator<<(std::ostream&,const Zeitpunkt_new&);
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: testKW.cc,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: testKW.cc,v 1.2 2001/06/27 08:04:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,56 +21,56 @@
 #include <Aux/Datum.h>
 #include <iostream>
 
-ostream &operator<<(ostream &o,const Kalenderwoche &kw)
+std::ostream &operator<<(std::ostream &o,const Kalenderwoche &kw)
 {  return o << kw.Woche() << '\'' << kw.Jahr();
 }
 
 int main()
 {  Kalenderwoche kw(1,2000);
    Petig::Datum d(kw);
-   cout << "KW "<<kw << " = "<<d << " = " << d.KW() << '\n';
+   std::cout << "KW "<<kw << " = "<<d << " = " << d.KW() << '\n';
    
    kw=Kalenderwoche(52,1999);
    d=Petig::Datum(kw);
-   cout << "KW "<<kw << " = "<<d << " = " << d.KW() << '\n';
+   std::cout << "KW "<<kw << " = "<<d << " = " << d.KW() << '\n';
    
    d=Petig::Datum(2,1,2000);
-   cout << d << " = " << d.KW() << '\n';
+   std::cout << d << " = " << d.KW() << '\n';
 
    d=Petig::Datum(3,1,2000);
-   cout << d << " = " << d.KW() << '\n';
+   std::cout << d << " = " << d.KW() << '\n';
    
    d=Petig::Datum(31,12,2000);
-   cout << d << " = " << d.KW() << '\n';
+   std::cout << d << " = " << d.KW() << '\n';
    
    d=Petig::Datum(1,1,2001);
-   cout << d << " = " << d.KW() << '\n';
+   std::cout << d << " = " << d.KW() << '\n';
    
    d=Petig::Datum(1,1,1997);
-   cout << d << " = " << d.KW() << '\n';
+   std::cout << d << " = " << d.KW() << '\n';
    
    d=Petig::Datum(31,12,1996);
-   cout << d << " = " << d.KW() << '\n';
+   std::cout << d << " = " << d.KW() << '\n';
    
    d=Petig::Datum(1,1,1998);
-   cout << d << " = " << d.KW() << '\n';
+   std::cout << d << " = " << d.KW() << '\n';
    
    d=Petig::Datum(31,12,1997);
-   cout << d << " = " << d.KW() << '\n';
+   std::cout << d << " = " << d.KW() << '\n';
    
    d=Petig::Datum(1,1,1999);
-   cout << d << " = " << d.KW() << '\n';
+   std::cout << d << " = " << d.KW() << '\n';
    
    d=Petig::Datum(31,12,1998);
-   cout << d << " = " << d.KW() << '\n';
+   std::cout << d << " = " << d.KW() << '\n';
    
    kw=Kalenderwoche(53,1998);
    d=Petig::Datum(kw);
-   cout << "KW "<<kw << " = "<<d << " = " << d.KW() << '\n';
+   std::cout << "KW "<<kw << " = "<<d << " = " << d.KW() << '\n';
    
    kw=Kalenderwoche(13,1970);
    d=Petig::Datum(kw);
-   cout << "KW "<<kw << " = "<<d << " = " << d.KW() << '\n';
+   std::cout << "KW "<<kw << " = "<<d << " = " << d.KW() << '\n';
 
    return 0;
 }

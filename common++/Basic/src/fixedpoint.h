@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.3 2001/06/06 07:27:39 christof Exp $
+// $Id: fixedpoint.h,v 1.4 2001/06/27 08:04:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -75,7 +75,7 @@ class fixedpoint
 	typename ctime_assert<(decimals>=0)>::_true failed;
 public:
 	fixedpoint() : scaled(0) {}
-	fixedpoint(const string &val)
+	fixedpoint(const std::string &val)
 	{  *this=strtod(val.c_str(),0);
 	}
 	fixedpoint(Ftype d) { *this=d; }
@@ -122,7 +122,7 @@ public:
 	   return *this;
 	}
 	// do we really need this function?
-	string String() const
+	std::string String() const
 	{  char buf[64];
 	   snprintf(buf,sizeof buf,"%.*f",decimals,Ftype(*this));
 	   return buf;
@@ -152,7 +152,7 @@ public:
 };
 
 template <int decimals,class Ftype,class Itype>
- inline ostream &operator<<(ostream &o,const fixedpoint<decimals,Ftype,Itype> &f)
+ inline std::ostream &operator<<(std::ostream &o,const fixedpoint<decimals,Ftype,Itype> &f)
 {  return o << f.String();
 }
 

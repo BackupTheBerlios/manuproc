@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.2 2001/05/04 09:14:17 christof Exp $ */
+/* $Id: Lieferschein.h,v 1.3 2001/06/27 08:04:09 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -55,7 +55,7 @@ class Lieferschein : public LieferscheinBase
 			int _kdnr, int _rngid, int _paeckchen, int _pakete,
 			const Petig::Datum &_geliefertam,int _dpdlnr); 
 			
- Lieferschein(cH_Kunde k) throw(SQLerror);
+ Lieferschein(cH_Kunde k,int jahr=0) throw(SQLerror);
 			
  void setDPDlnr(int dpdlnr) throw(SQLerror);
  void setDPDDatum() throw(SQLerror);

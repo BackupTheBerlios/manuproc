@@ -17,5 +17,5 @@
  */
 
 #include <string>
-string itos(int i);
-string ulltos(unsigned long long i);
+std::string itos(int i);
+std::string ulltos(unsigned long long i);

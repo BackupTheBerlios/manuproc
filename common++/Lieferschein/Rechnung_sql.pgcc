@@ -90,13 +90,20 @@ Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
 
 }
 
-Rechnung::Rechnung(const cH_Kunde k) throw(SQLerror)
+Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
 	: RechnungBase(none_id), kunde(k),rabatt(0)
 {
  exec sql begin declare section;
  int RNGID;
  int KUNDENNR;
+ int JAHR=jahr;
  exec sql end declare section;
+ 
+ if (!JAHR)
+ {  exec sql select to_char(now(),'yy') into :JAHR;
+    SQLerror::test(__FILELINE__);
+ }
+ else JAHR%=100;
 
  KUNDENNR=k->Id();
 
@@ -104,11 +111,10 @@ Rechnung::Rechnung(const cH_Kunde k) throw(SQLerror)
   
  exec sql lock table lieferschein in exclusive mode;
  
- exec sql select coalesce(max(rngid)+1,(to_char(now(),'yy')||'0000')::int4)
+ exec sql select coalesce(max(rngid)+1,:JAHR*10000)
  		into :RNGID
  		from rechnung where rngid 
- 		between (to_char(now(),'yy')||'0000')::int4 and
- 			(to_char(now(),'yy')||'9999')::int4;
+ 		between :JAHR*10000 and (:JAHR+1)*10000-1;
  SQLerror::test(__FILELINE__":Rechnung: select next rngid");
  
  exec sql insert into rechnung (rngid, kundennr,zahlart)

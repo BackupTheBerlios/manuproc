@@ -1,4 +1,4 @@
-// $Id: testHandles.cc,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: testHandles.cc,v 1.2 2001/06/27 08:04:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,18 +26,18 @@ class A : protected HandleContent
 	friend class Handle<A>;
 public:
 	A(int x) : val(x) 
-	{  cerr << "ctor " << val << '/' << this << '\n';
+	{  std::cerr << "ctor " << val << '/' << this << '\n';
 	}
 	~A()
-	{  cerr << "dtor " << val << '/' << this << '\n';
+	{  std::cerr << "dtor " << val << '/' << this << '\n';
 	}
 	bool operator==(const A &b)
 	{  return val==b.val;
 	}
-	friend ostream &operator<<(ostream &o,const A &a);
+	friend std::ostream &operator<<(std::ostream &o,const A &a);
 };
 
-ostream &operator<<(ostream &o,const A &a)
+std::ostream &operator<<(std::ostream &o,const A &a)
 {  return o << a.val;
 }
 
@@ -47,7 +47,7 @@ class Ah : public Handle<A>
 {public:
 	Ah(int x=-1) : Handle<A>(new A(x)) {};
 	Ah(A *a) : Handle<A>(a) {}; // dangerous, you pass ownership
-	~Ah() { cerr << "Handle " << **this << '/' << this << " dtor\n"; }
+	~Ah() { std::cerr << "Handle " << **this << '/' << this << " dtor\n"; }
 };
 
 class Storage
@@ -59,19 +59,19 @@ public:
 };
 
 void a(const Ah2 &v)
-{  cerr << "a(" << *v << ")\n";
+{  std::cerr << "a(" << *v << ")\n";
 }
 
 void b(Ah2 v)
-{  cerr << "b(" << *v << ") -> ";
+{  std::cerr << "b(" << *v << ") -> ";
 }
 
 void c(const Ah &v)
-{  cerr << "c(" << *v << ")\n";
+{  std::cerr << "c(" << *v << ")\n";
 }
 
 void d(Ah v)
-{  cerr << "d(" << *v << ") -> ";
+{  std::cerr << "d(" << *v << ") -> ";
 }
 
 int main()
@@ -85,17 +85,17 @@ int main()
    }
    
    a(Ah(4)); b(Ah(5)); c(6); d(7);
-   cerr << "new + Ownership passing\n";
+   std::cerr << "new + Ownership passing\n";
    c(new A(8)); a(new A(9));
-   cerr << "Storage class -> ";
+   std::cerr << "Storage class -> ";
    Storage s;
    s.Store(y);
    s.Store(new A(10));
-   cerr << "Assignment -> ";
+   std::cerr << "Assignment -> ";
    y=z;
    c(y); c(z);
-   cerr << "Self Assignment (no op)\n";
+   std::cerr << "Self Assignment (no op)\n";
    y=y;
    c(y);
-   cerr << "main() ending -> ";
+   std::cerr << "main() ending -> ";
 }

@@ -16,11 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: exception.cc,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: exception.cc,v 1.2 2001/06/27 08:04:09 christof Exp $
 // long explantion at the end
 
 #include <iostream>
 #include <Aux/exception.h>
+#include <unistd.h>
 
 // taken from gcc/eh_common.h
 
@@ -62,19 +63,19 @@ struct cp_eh_info
 extern "C" cp_eh_info **__get_eh_info ();       // actually void **
 
 static void print_exception_u()
-{  cerr << "unexpected exception: ";
-   cerr << ((std::type_info*)((*__get_eh_info ())->type))->name();
-   cerr << '\n';
-   cerr.flush();
+{  std::cerr << "unexpected exception: ";
+   std::cerr << ((std::type_info*)((*__get_eh_info ())->type))->name();
+   std::cerr << '\n';
+   std::cerr.flush();
    _exit(1);
 }
 
 static void print_exception_t()
 {  
-   cerr << "uncaught exception: ";
-   cerr << ((std::type_info*)((*__get_eh_info ())->type))->name();
-   cerr << '\n';
-   cerr.flush();
+   std::cerr << "uncaught exception: ";
+   std::cerr << ((std::type_info*)((*__get_eh_info ())->type))->name();
+   std::cerr << '\n';
+   std::cerr.flush();
    _exit(1);
 }
 

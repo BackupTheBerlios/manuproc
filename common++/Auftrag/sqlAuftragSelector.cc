@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.3 2001/06/25 08:13:37 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.4 2001/06/27 08:04:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,79 +22,6 @@
 #include <Aux/itos.h>
 #include<auftrag_status.h>
 
-#if 0
-#define NORMAL_SELECTIONS " a.auftragid, e.zeilennr, a.kundennr "
-#define NORMAL_FROM " auftrag a join auftragentry e using (auftragid) "
-//#define NORMAL_WHERE " a.auftragid=e.auftragid "
-#define NORMAL_SELECT_FROM_WHERE "select " NORMAL_SELECTIONS \
- 	     " from " NORMAL_FROM 
-
-SQLAuftragSelector::SQLAuftragSelector()
-{
- char tmp[200];
- snprintf0(tmp,sizeof tmp,NORMAL_SELECT_FROM_WHERE
-	     " order by e.auftragid,zeilennr");
- clausel=tmp;
-}
-
-SQLAuftragSelector::SQLAuftragSelector(const sel_Aufid& selstr)
-{
- char tmp[200];
- snprintf0(tmp,sizeof tmp,NORMAL_SELECT_FROM_WHERE
-	     " where a.auftragid=%d order by zeilennr",selstr.auftrag.Id());
- clausel=tmp;
-}
-
-SQLAuftragSelector::SQLAuftragSelector(const sel_Jahr& selstr,char *order=0)
-{
- char tmp[200];
- if(order)
-   snprintf0(tmp,sizeof tmp,NORMAL_SELECT_FROM_WHERE
-	     " where a.jahrgang=%d order by %s,a.auftragid",selstr.jahrgang,order);
- else
-   snprintf0(tmp,sizeof tmp,NORMAL_SELECT_FROM_WHERE
-	     " where a.jahrgang=%d order by a.auftragid,zeilennr",selstr.jahrgang);
- clausel=tmp;
-}
-
-SQLAuftragSelector::SQLAuftragSelector(const sel_Status& selstr, int aufid=0)
-{
- char tmp[500];
- if(aufid)
-   snprintf0(tmp,sizeof tmp,NORMAL_SELECT_FROM_WHERE
-	     " where a.status=%d and e.bestellt > e.geliefert"
-	     " and lastedit not in ('storno','fertig') and a.auftragid=%d",
-		selstr.status, aufid);
- else
-   snprintf0(tmp,sizeof tmp,NORMAL_SELECT_FROM_WHERE
-	     " where a.status=%d and e.bestellt > e.geliefert"
-	     " and lastedit not in ('storno','fertig') order by e.auftragid",
-		selstr.status);
- clausel = tmp;
-}
-
-SQLAuftragSelector::SQLAuftragSelector(const sel_Status_Mab& selstr)
-{
- char tmp[500];
- snprintf0(tmp,sizeof tmp,NORMAL_SELECT_FROM_WHERE
-	     " where e.bestellt > e.geliefert"
-	     " and a.status='%s' order by e.auftragid",
-		selstr.status.c_str());
- clausel = tmp;
-}
-
-SQLAuftragSelector::SQLAuftragSelector(const sel_Status& selstr, char *order)
-{
- char tmp[500];
- if(order)
- snprintf0(tmp,sizeof tmp,NORMAL_SELECT_FROM_WHERE
-	     " order by %s, e.auftragid", order);
- else
- snprintf0(tmp,sizeof tmp,NORMAL_SELECT_FROM_WHERE
-	     " order by e.auftragid");
- clausel = tmp;
-}
-#endif
 
 #define FULL_SELECTIONS "a.instanz, a.auftragid, e.zeilennr, bestellt," \
 	" e.artikelid, e.rohartikelid," \
@@ -106,8 +33,9 @@ SQLAuftragSelector::SQLAuftragSelector(const sel_Status& selstr, char *order)
 	" e.status, e.lasteditdate "
 
 #define FULL_FROM "auftrag a join " \
-	" (auftragentry e left join auftrag_prozess p using(auftragid,zeilennr))" \
-	" using (instanz,auftragid) "
+	" (auftragentry e left join auftrag_prozess p" \
+	"  on (e.instanz,e.auftragid,e.zeilennr)=(1,p.auftragid,p.zeilennr))" \
+	" on (a.instanz,a.auftragid)=(e.instanz,e.auftragid) "
 
 //#define FULL_WHERE " a.instanz=e.instanz and a.auftragid=e.auftragid "
 

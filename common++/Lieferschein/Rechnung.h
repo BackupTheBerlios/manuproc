@@ -47,9 +47,9 @@ public:
  typedef vector<RechnungEntry>::iterator iterator;
         
  Rechnung(int rid) throw(SQLerror);
- Rechnung(const cH_Kunde k) throw(SQLerror);
+ Rechnung(const cH_Kunde k,int jahr=0) throw(SQLerror);
 
- const Kunde::ID KdNr() const {return kunde->Id();}			
+ const Kunde::ID KdNr() const {return kunde->Id();}
  const cH_Kunde getKunde() const { return kunde; }
  
 // string RngArt() const {return rngart; } 

@@ -1,4 +1,4 @@
-// $Id: Transaction.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: Transaction.pgcc,v 1.2 2001/06/27 08:04:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,12 +27,12 @@ Transaction::Transaction(bool open_now) throw(SQLerror)
 }
 #endif
 
-Transaction::Transaction(const string &_connection,bool open_now) throw(SQLerror)
+Transaction::Transaction(const std::string &_connection,bool open_now) throw(SQLerror)
 	: owner(false), connection(_connection)
 {  if (open_now) open(connection);
 }
 
-void Transaction::open(const string &_connection) throw(SQLerror)
+void Transaction::open(const std::string &_connection) throw(SQLerror)
 {  assert(!owner); // crash and burn on recursion!
    if (_connection.size()) connection=_connection;
    
@@ -72,5 +72,5 @@ void Transaction::close() throw(SQLerror)
 Transaction::~Transaction()
 {  if (owner) 
       try { close(); }
-      catch (SQLerror &e) { cerr << e << '\n'; }
+      catch (SQLerror &e) { std::cerr << e << '\n'; }
 }

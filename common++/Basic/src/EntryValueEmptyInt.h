@@ -1,4 +1,4 @@
-/* $Id: EntryValueEmptyInt.h,v 1.1 2001/06/22 07:29:02 christof Exp $ */
+/* $Id: EntryValueEmptyInt.h,v 1.2 2001/06/27 08:04:09 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,7 +25,7 @@
 class EntryValueEmptyInt : public EntryValueBase
 {
  int intval;
- string strval;
+ std::string strval;
  
 public:
 
@@ -33,11 +33,11 @@ public:
  EntryValueEmptyInt(int v):intval(v)
      { if (v!=0) strval=itos(v); else strval=""; }
    
- operator const string() const { return strval;}
+ operator const std::string() const { return strval;}
  operator int() const { return intval;}
  
  int getIntVal() const { return intval;}
- const string getStrVal() const { return strval;}
+ const std::string getStrVal() const { return strval;}
 };
 
 class cH_EntryValueEmptyInt : public cH_EntryValue

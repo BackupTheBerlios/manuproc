@@ -1,4 +1,4 @@
-/* $Id: EntryValueIntString.cc,v 1.2 2001/06/22 09:47:18 christof Exp $ */
+/* $Id: EntryValueIntString.cc,v 1.3 2001/06/27 08:04:09 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2000-2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,13 +19,14 @@
 
 #include <EntryValueIntString.h>
 #include <string0.h>
+#include <cctype>
 
 EntryValueIntString::EntryValueIntString(int v)
 	: intval(v)
    { char s[50]; snprintf0(s,50,"%d",v); strval=s;}
 
 
-EntryValueIntString::EntryValueIntString(const string &s)
+EntryValueIntString::EntryValueIntString(const std::string &s)
 	: strval(s)
    {unsigned char *x=(unsigned char*)s.c_str();
     while (isspace(*x)) ++x;

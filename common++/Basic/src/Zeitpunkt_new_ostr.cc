@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new_ostr.cc,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: Zeitpunkt_new_ostr.cc,v 1.2 2001/06/27 08:04:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,7 +20,7 @@
 #include <Aux/Zeitpunkt_new.h>
 #include <iomanip>
 
-ostream &operator<<(ostream &o,const Zeitpunkt_new &t)
+std::ostream &operator<<(std::ostream &o,const Zeitpunkt_new &t)
 {  o << t.datum << " ";
    if (t.prec<=Zeitpunkt_new::days) return o;
    char oldfill=o.fill('0');

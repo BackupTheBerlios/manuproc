@@ -19,14 +19,14 @@
 #include <cstdio>
 #include <Aux/itos.h>
 
-string itos(int i)
+std::string itos(int i)
 {
  char buffer[100];
  snprintf(buffer,sizeof buffer,"%i",i);
  return(buffer);
 }
 
-string ulltos(unsigned long long i)
+std::string ulltos(unsigned long long i)
 {
  char buffer[100];
  snprintf(buffer,sizeof buffer,"%llu",i);

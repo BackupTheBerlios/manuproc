@@ -1,4 +1,4 @@
-/* $Id: SQLerror_postgres.h,v 1.1 2001/04/23 08:11:59 christof Exp $ */
+/* $Id: SQLerror_postgres.h,v 1.2 2001/06/27 08:04:09 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,43 +33,51 @@
 #define sprintfx(dest,src,val...) snprintf0((dest),sizeof(dest),src,##val)
 
 #ifdef __cplusplus
-class SQLerror_postgres : public exception
-{  string context;
+class SQLerror_postgres : public std::exception
+{  std::string context;
    int code;
-   string name;
+   std::string name;
    char separator;
 
 public:
-   SQLerror_postgres(const string &context) throw();
-   SQLerror_postgres(const string &context,int code,const string &name) throw();
+   ~SQLerror_postgres() throw() {}
+   SQLerror_postgres(const std::string &context) throw();
+   SQLerror_postgres(const std::string &context,int code,const std::string &name) throw();
    
    virtual const char* what() const throw() { return "SQLerror"; }
-   friend ostream &operator<<(ostream&,const SQLerror_postgres &) throw();
+   friend std::ostream &operator<<(std::ostream&,const SQLerror_postgres &) throw();
    
    const SQLerror_postgres &Separator(char sep) { separator=sep; return *this; }
    // member access functions
-   const string Context() const { return context; }
+   const std::string Context() const { return context; }
    int Code() const { return code; }
-   const string Message() const { return name; }
+   const std::string Message() const { return name; }
 
-   static void print(const string &context,int codeok=0);
-   static void close_cursor(const string &c) throw();
+   static void print(const std::string &context,int codeok=0);
+   static void close_cursor(const std::string &c) throw();
    
+   static void test(const std::string &context,int codeok=0);
+//   		throw(SQLerror_postgres);
+   static void test(const std::string &context,const std::string &cursor,
+		int codeok=0); // throw(SQLerror_postgres);
+   static void test(const std::string &context,const char *cursor,
+		int codeok=0) // throw(SQLerror_postgres)
+   {  test(context,std::string(cursor),codeok);
+   }
+private: // deprecated
+   static void test(const std::string &context,bool rollback);
+#if 0
    // DEPRECATED, use Transaction
-   static void test(const string &context,bool rollback) throw(SQLerror_postgres);
-   static void test(const string &context,int codeok=0,bool rollback=false) 
-   		throw(SQLerror_postgres);
-   static void test(const string &context,const string &cursor,
-		int codeok=0,bool rollback=false) throw(SQLerror_postgres);
-   static void rollback_and_throw(const string &context) throw(SQLerror_postgres)
+   static void rollback_and_throw(const std::string &context) throw(SQLerror_postgres)
    {  SQLerror_postgres err(context);
       rollback(); 
       throw(err); 
    }
    static void rollback() throw();
    // !DEPRECATED
+#endif   
 };
 
-ostream &operator<<(ostream&,const SQLerror_postgres &) throw();
+std::ostream &operator<<(std::ostream&,const SQLerror_postgres &) throw();
 #endif
 #endif

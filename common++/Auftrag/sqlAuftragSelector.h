@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.5 2001/06/25 09:40:42 christof Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.6 2001/06/27 08:04:09 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -80,7 +80,8 @@ class SQLFullAuftragSelector // : public SQLAuftragSelector
  string clausel;
 public:
  struct sel_Status
-  { sel_Status(int st) : status(st) {}
+  { sel_Status(ppsInstanz::ppsInstId in, int st) : instanz(in),status(st) {}
+    ppsInstanz::ppsInstId instanz;
     int status;
   };  
 
@@ -100,7 +101,7 @@ public:
 // wird von bestserv verwendet, sollte auch erfüllte Einträge selektieren
   { unsigned int jahr; // jahrgang _oder_ Lieferdatum in diesem Jahr
     unsigned int artikelid;
-    sel_Jahr_Artikel(unsigned int j,unsigned int a) : jahr(j), artikelid(a) {}
+    sel_Jahr_Artikel(ppsInstanz::ppsInstId instanz, unsigned int j,unsigned int a) : jahr(j), artikelid(a) {}
   };
   
  SQLFullAuftragSelector(const sel_Jahr_Artikel &selstr);
@@ -109,7 +110,7 @@ public:
 // d.h. sortiert nach Lieferdatum (asc)
   { unsigned int kundennr;
     unsigned int artikelid;
-    sel_Kunde_Artikel(unsigned int k,unsigned int a) : kundennr(k), artikelid(a)
+    sel_Kunde_Artikel(ppsInstanz::ppsInstId instanz, unsigned int k,unsigned int a) : kundennr(k), artikelid(a)
     {}
   };
  SQLFullAuftragSelector(const sel_Kunde_Artikel &selstr);

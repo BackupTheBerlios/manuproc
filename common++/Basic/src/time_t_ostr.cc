@@ -1,4 +1,4 @@
-// $Id: time_t_ostr.cc,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: time_t_ostr.cc,v 1.2 2001/06/27 08:04:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,12 +20,12 @@
 
 #include <c++ostream.h>
 
-ostream &operator<<(ostream &o,const time_t_wrapper &t)
+std::ostream &operator<<(std::ostream &o,const time_t_wrapper &t)
 {  struct tm *tm=localtime(&(time_t&)t);
    return o << *tm;
 }
 
-ostream &operator<<(ostream &o,const struct tm &tm)
+std::ostream &operator<<(std::ostream &o,const struct tm &tm)
 {  return o << tm.tm_year+1900 << "-" << tm.tm_mon+1 << "-" << tm.tm_mday << " " 
 	<< tm.tm_hour << ":" << tm.tm_min << ":" << tm.tm_sec << "/"
 	<< tm.tm_isdst << "." << tm.tm_yday << "." << tm.tm_wday;

@@ -1,4 +1,4 @@
-// $Id: dbconnect.h,v 1.2 2001/06/06 07:27:39 christof Exp $
+// $Id: dbconnect.h,v 1.3 2001/06/27 08:04:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,35 +23,35 @@ namespace Petig
 {
    class Connection
    {
-    string host;
-    string dbase;
-    string user;
-    string name;
+    std::string host;
+    std::string dbase;
+    std::string user;
+    std::string name;
     
     public:
-    Connection(const string &h="", const string &d="", const string &u="",const string &n="")
+    Connection(const std::string &h="", const std::string &d="", const std::string &u="",const std::string &n="")
         	: host(h), dbase(d), user(u), name(n)
         	{}
         	
-    const string Host() const { return host; }
-    const string Dbase() const { return dbase; }
-    const string User() const { return user; }
-    const string Name() const { return name; }
-    void setHost(const string &h) { host=h; }
-    void setDbase(const string &d) { dbase=d; }
-    void setUser(const string &u) { user=u; }
-    void setName(const string &n) { name=n; }
+    const std::string Host() const { return host; }
+    const std::string Dbase() const { return dbase; }
+    const std::string User() const { return user; }
+    const std::string Name() const { return name; }
+    void setHost(const std::string &h) { host=h; }
+    void setDbase(const std::string &d) { dbase=d; }
+    void setUser(const std::string &u) { user=u; }
+    void setName(const std::string &n) { name=n; }
     // alternative API:
-    void Host(const string &h) { host=h; }
-    void Dbase(const string &d) { dbase=d; }
-    void User(const string &u) { user=u; }
-    void Name(const string &n) { name=n; }
+    void Host(const std::string &h) { host=h; }
+    void Dbase(const std::string &d) { dbase=d; }
+    void User(const std::string &u) { user=u; }
+    void Name(const std::string &n) { name=n; }
    };
 
    void dbconnect_nt(const Connection &c=Connection()) throw();
-   void dbdisconnect_nt(const string &name="") throw();  
+   void dbdisconnect_nt(const std::string &name="") throw();  
    void dbconnect(const Connection &c=Connection()) throw(SQLerror);
-   void dbdisconnect(const string &name="") throw(SQLerror);
+   void dbdisconnect(const std::string &name="") throw(SQLerror);
    void setDTstyle(char *style="ISO") throw(SQLerror);
-   void dbdefault(const string &name="") throw(SQLerror);
+   void dbdefault(const std::string &name="") throw(SQLerror);
 };
