@@ -11,12 +11,12 @@ DROP TABLE "webangaben";
 CREATE TABLE "webangaben" (
 	"artikel" integer NOT NULL,
 	"riet" character varying(100),
-	"schussdichte" numeric(2,0),
+	"schussdichte" integer,
 	"schussmaterial" integer,
 	"fangfaden" integer,
 	"bemerkungen" character varying(256),
-	"kettlaenge" numeric(5,0),
-	"schnittlaenge" numeric(4,0),
+	"kettlaenge" integer,
+	"schnittlaenge" integer,
 	"erstellt" timestamp with time zone,
 	"geaendert" timestamp with time zone,
 	Constraint "webangaben_pkey" Primary Key ("artikel")

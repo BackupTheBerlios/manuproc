@@ -12,7 +12,7 @@ DROP TABLE "artikelzusammensetzung";
 
 CREATE TABLE "artikelzusammensetzung" (
 	"id" integer NOT NULL,
-	"prozessid" numeric(2,0) NOT NULL,
+	"prozessid" integer NOT NULL,
 	"altartikelid" integer NOT NULL,
 	"menge" numeric(9,5),
 	"stand" timestamp with time zone DEFAULT now() NOT NULL,

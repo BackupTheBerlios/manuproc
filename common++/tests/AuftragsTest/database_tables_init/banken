@@ -9,7 +9,7 @@
 
 CREATE TABLE "banken" (
 	"bankindex" integer DEFAULT nextval('"banken_bankindex_seq"'::text) NOT NULL,
-	"blz" numeric(8,0) NOT NULL,
+	"blz" integer NOT NULL,
 	"name" character varying(30) NOT NULL,
 	Constraint "banken_pkey" Primary Key ("bankindex")
 );

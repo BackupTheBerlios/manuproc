@@ -9,11 +9,11 @@ DROP TABLE "lager_bewegung";
 --
 
 CREATE TABLE "lager_bewegung" (
-	"code" numeric(7,0) NOT NULL,
+	"code" integer NOT NULL,
 	"action" character(1) NOT NULL,
 	"name" character(4) NOT NULL,
 	"zeit" timestamp with time zone DEFAULT now(),
-	"lagerplatz" numeric(4,0)
+	"lagerplatz" integer
 );
 
 --

@@ -10,10 +10,10 @@ DROP TABLE "webang_faeden";
 
 CREATE TABLE "webang_faeden" (
 	"artikel" integer NOT NULL,
-	"zeilennummer" numeric(2,0) NOT NULL,
-	"anzahl" numeric(3,0) NOT NULL,
+	"zeilennummer" integer NOT NULL,
+	"anzahl" integer NOT NULL,
 	"material" integer,
-	"bindung" numeric(2,0),
+	"bindung" integer,
 	Constraint "webang_faeden_pkey" Primary Key ("artikel", "zeilennummer")
 );
 

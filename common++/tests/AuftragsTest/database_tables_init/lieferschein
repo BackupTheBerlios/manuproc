@@ -9,12 +9,12 @@
 DROP TABLE lieferschein;
 
 CREATE TABLE "lieferschein" (
-	"lfrsid" numeric(6,0) NOT NULL,
-	"kundennr" numeric(5,0) NOT NULL,
+	"lfrsid" integer NOT NULL,
+	"kundennr" integer NOT NULL,
 	"datum" timestamp with time zone DEFAULT now() NOT NULL,
-	"rngid" numeric(6,0),
-	"pakete" numeric(2,0),
-	"paeckchen" numeric(3,0),
+	"rngid" integer,
+	"pakete" integer,
+	"paeckchen" integer,
 	"dpdliefnr" integer,
 	"geliefertam" date,
 	"instanz" integer DEFAULT 1 NOT NULL,

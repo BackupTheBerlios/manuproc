@@ -9,7 +9,7 @@ DROP TABLE "webang_bindung";
 --
 
 CREATE TABLE "webang_bindung" (
-	"id" numeric(2,0) NOT NULL,
+	"id" integer NOT NULL,
 	"name" character varying(16),
 	Constraint "webang_bindung_pkey" Primary Key ("id")
 );

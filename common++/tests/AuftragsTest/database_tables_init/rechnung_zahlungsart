@@ -16,13 +16,13 @@ CREATE TABLE "rechnung_zahlungsart" (
 	"bezeichnung" text,
 	"einzugrabatt" numeric(3,1),
 	"bankeinzug" boolean,
-	"zahlungsfrist" numeric(3,0),
+	"zahlungsfrist" integer,
 	"skontosatz_1" numeric(3,1),
-	"skontofrist_1" numeric(3,0),
+	"skontofrist_1" integer,
 	"skontosatz_2" numeric(3,1),
-	"skontofrist_2" numeric(3,0),
+	"skontofrist_2" integer,
 	"skontosatz_3" numeric(3,1),
-	"skontofrist_3" numeric(3,0),
+	"skontofrist_3" integer,
    "monatsende" bool,
 	Constraint "rechnung_zahlungsziel_pkey" Primary Key ("id")
 );

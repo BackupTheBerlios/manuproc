@@ -9,7 +9,7 @@ DROP TABLE "lastcode";
 --
 
 CREATE TABLE "lastcode" (
-	"code" numeric(7,0) NOT NULL
+	"code" integer NOT NULL
 );
 
 --

@@ -10,9 +10,9 @@ DROP TABLE "webang_wiederhol";
 
 CREATE TABLE "webang_wiederhol" (
 	"artikel" integer NOT NULL,
-	"anfangszeile" numeric(2,0) NOT NULL,
-	"endzeile" numeric(2,0) NOT NULL,
-	"wiederholungen" numeric(2,0) NOT NULL,
+	"anfangszeile" integer NOT NULL,
+	"endzeile" integer NOT NULL,
+	"wiederholungen" integer NOT NULL,
 	Constraint "webang_wiederhol_pkey" Primary Key ("artikel", "anfangszeile", "endzeile")
 );
 

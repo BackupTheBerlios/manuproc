@@ -9,8 +9,8 @@ DROP TABLE "extbezschema";
 --
 
 CREATE TABLE "extbezschema" (
-	"extartbezid" numeric(5,0) NOT NULL,
-	"bezkomptype" numeric(2,0) NOT NULL,
+	"extartbezid" integer NOT NULL,
+	"bezkomptype" integer NOT NULL,
 	"bezkomptext" character varying(20) NOT NULL,
 	"separator" character(1),
 	"artikeltyp" smallint,

@@ -17,7 +17,7 @@ CREATE TABLE "schaertabelle" (
 	"gaenge" smallint NOT NULL,
 	"menge" integer NOT NULL,
 	"status" smallint NOT NULL,
-	"jahrgang" numeric(4,0) NOT NULL,
+	"jahrgang" integer NOT NULL,
 	"artikelid" integer NOT NULL,
 	Constraint "schaertabelle_pkey" Primary Key ("entryid")
 );

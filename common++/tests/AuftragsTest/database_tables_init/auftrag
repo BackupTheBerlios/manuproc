@@ -11,16 +11,16 @@ DROP TABLE "auftrag";
 --
 
 CREATE TABLE "auftrag" (
-	"auftragid" numeric(6,0) NOT NULL,
-	"kundennr" numeric(5,0) NOT NULL,
+	"auftragid" integer NOT NULL,
+	"kundennr" integer NOT NULL,
 	"datum" timestamp with time zone DEFAULT now() NOT NULL,
 	"status" character varying(10) DEFAULT '' NOT NULL,
 	"youraufnr" character varying(20),
 	"bemerkung" text,
-	"dispoid" numeric(7,0),
-	"jahrgang" numeric(4,0) DEFAULT 2002 NOT NULL,
+	"dispoid" integer,
+	"jahrgang" integer DEFAULT 2002 NOT NULL,
 	"stat" smallint DEFAULT 0,
-	"waehrung" numeric(2,0),
+	"waehrung" integer,
 	"instanz" integer DEFAULT 1,
 	"zahlungsziel" date,
 	"rabatt" numeric(4,2),

@@ -13,23 +13,23 @@ DROP TABLE "rohjumbo";
 --
 
 CREATE TABLE "rohjumbo" (
-	"code" numeric(8,0) NOT NULL,
-	"maschine" numeric(3,0) NOT NULL,
-	"webmaschine" numeric(3,0),
-	"soll_meter" numeric(5,0),
+	"code" integer NOT NULL,
+	"maschine" integer NOT NULL,
+	"webmaschine" integer,
+	"soll_meter" integer,
 	"plan_datum" date NOT NULL,
 	"verarb_datum" timestamp with time zone,
-	"status" numeric(2,0) DEFAULT 0 NOT NULL,
-	"lauf" numeric(2,0) NOT NULL,
-	"gang" numeric(2,0) NOT NULL,
-	"barcoist" numeric(5,0),
+	"status" integer DEFAULT 0 NOT NULL,
+	"lauf" integer NOT NULL,
+	"gang" integer NOT NULL,
+	"barcoist" integer,
 	"barcofert_datum" timestamp with time zone,
 	"wiederinslager" timestamp with time zone,
 	"artikelid" integer,
 	"inventur2000" boolean,
 	"action2000" character(1),
 	"rest" boolean DEFAULT 'f'::bool,
-	"lagerplatz" numeric(4,0)
+	"lagerplatz" integer
 );
 
 --

@@ -11,15 +11,15 @@ DROP TABLE "auftragentry";
 --
 
 CREATE TABLE "auftragentry" (
-	"auftragid" numeric(6,0) NOT NULL,
-	"zeilennr" numeric(4,0) NOT NULL,
-	"bestellt" numeric(8,0) NOT NULL,
-	"geliefert" numeric(8,0) NOT NULL,
+	"auftragid" integer NOT NULL,
+	"zeilennr" integer NOT NULL,
+	"bestellt" integer NOT NULL,
+	"geliefert" integer NOT NULL,
 	"lasteditdate" timestamp with time zone DEFAULT now() NOT NULL,
 	"lasteditor" character varying(10),
-	"lieferdatum" numeric(6,0),
+	"lieferdatum" integer,
 	"lastedit" character varying(10),
-	"dispoentrynr" numeric(5,0),
+	"dispoentrynr" integer,
 	"artikelid" integer NOT NULL,
 	"rohartikelid" integer,
 	"status" smallint,

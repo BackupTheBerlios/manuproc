@@ -9,7 +9,7 @@ DROP TABLE "prod_instanz";
 --
 
 CREATE TABLE "prod_instanz" (
-	"insid" numeric(2,0) NOT NULL,
+	"insid" integer NOT NULL,
 	"name" character varying(20) NOT NULL,
 	"lager_fuer" integer,
 	"sortierung" integer,
@@ -17,7 +17,7 @@ CREATE TABLE "prod_instanz" (
 	"lagername" text,
 	"produziert_selbst" boolean,
 	"prod_dauer_tage" integer,
-	"einlagern_in" numeric(2,0),
+	"einlagern_in" integer,
 	"automatisch_einlagern" boolean,
 	"typ" character(1),
    "externe_bestellung" boolean,

@@ -10,13 +10,13 @@
 DROP TABLE lieferscheinentry;
 
 CREATE TABLE "lieferscheinentry" (
-	"lfrsid" numeric(6,0) NOT NULL,
-	"zeile" numeric(3,0) NOT NULL,
+	"lfrsid" integer NOT NULL,
+	"zeile" integer NOT NULL,
 	"artikelid" integer NOT NULL,
-	"refauftragid" numeric(6,0),
-	"stueck" numeric(6,0),
-	"refzeilennr" numeric(3,0),
-	"palette" numeric(3,0),
+	"refauftragid" integer,
+	"stueck" integer,
+	"refzeilennr" integer,
+	"palette" integer,
 	"menge" numeric(8,2),
 	"zusatzinfo" boolean DEFAULT 'f'::bool,
 	"instanz" integer DEFAULT 1 NOT NULL,

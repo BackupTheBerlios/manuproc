@@ -10,9 +10,9 @@ DROP TABLE "auftrag_prozess";
 --
 
 CREATE TABLE "auftrag_prozess" (
-	"auftragid" numeric(6,0) NOT NULL,
-	"zeilennr" numeric(3,0) NOT NULL,
-	"prozessid" numeric(2,0) NOT NULL,
+	"auftragid" integer NOT NULL,
+	"zeilennr" integer NOT NULL,
+	"prozessid" integer NOT NULL,
 	"datum" timestamp with time zone DEFAULT now() NOT NULL,
 	"instanz" integer DEFAULT 1 NOT NULL,
 	"letzteplaninstanz" integer,

@@ -9,7 +9,7 @@ DROP TABLE "waehrung";
 --
 
 CREATE TABLE "waehrung" (
-	"wid" numeric(2,0) NOT NULL,
+	"wid" integer NOT NULL,
 	"kurz" character varying(5) NOT NULL,
 	"lang" character varying(30),
 	"dmfkt" numeric(12,5) NOT NULL,
