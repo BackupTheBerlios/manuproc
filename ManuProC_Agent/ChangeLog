@@ -277,6 +277,11 @@
 
 2004/10/22 18:26:27 CEST
 	update files from .glade file
+<<<<<<< ChangeLog
+
+2004/10/22 18:27:45 CEST
+	update files from .glade file
+=======
 
 2004/10/22 18:48:27 CEST
 	update files from .glade file
@@ -303,4 +308,11 @@
 	update files from .glade file
 
 2004/10/22 19:15:54 CEST
+	update files from .glade file
+>>>>>>> 1.22
+
+2004/10/22 20:08:57 CEST
+	update files from .glade file
+
+2004/10/26 13:40:48 CEST
 	update files from .glade file

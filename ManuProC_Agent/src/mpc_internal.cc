@@ -189,22 +189,19 @@ void mpc_agent::on_article_entry_search(gboolean *cont,GtkSCContext context)
    {  
     std::string squery("select distinct artnr from artikel");
 
-    squery=squery+" where 1=? and artnr like '"+article_entry->get_text()+"%'";
+    squery=squery+" where artnr like '"+article_entry->get_text()+"%'";
 
-    Query qu(squery);
 
     switch(context)
 	{  
          case GTK_SEARCH_OPEN:
 	 case GTK_SEARCH_REOPEN:
-           {
-	    qu << 1; // only to trigger a Query at this place;
-	    // fall through
-	   }
 
 	 case GTK_SEARCH_FETCH:
 	   // dont need idle loops here. It is rapid enouth from SQLite.
 	   {
+	    Query qu(squery);
+	   
 	    std::string artikel;
 	    FetchIStream fi=qu.Fetch();
  	    while(fi.good())
@@ -237,23 +234,18 @@ void mpc_agent::on_width_entry_search(gboolean *cont,GtkSCContext context)
    {  
     std::string squery("select distinct breite from artikel");
 
-    squery=squery+" where 1=? and artnr = '"+article_entry->get_text()+"'";
+    squery=squery+" where artnr = '"+article_entry->get_text()+"'";
     squery=squery+" and breite like '"+width_entry->get_text()+"%'";
-
-    Query qu(squery);
 
     switch(context)
 	{  
          case GTK_SEARCH_OPEN:
 	 case GTK_SEARCH_REOPEN:
-           {
-	    qu << 1; // only to trigger a Query at this place;
-	    // fall through
-	   }
-
 	 case GTK_SEARCH_FETCH:
 	   // dont need idle loops here. It is rapid enouth from SQLite.
 	   {
+	    Query qu(squery);
+
 	    std::string artikel;
 	    FetchIStream fi=qu.Fetch();
  	    while(fi.good())
@@ -285,24 +277,21 @@ void mpc_agent::on_color_entry_search(gboolean *cont,GtkSCContext context)
    {  
     std::string squery("select distinct farbe from artikel");
 
-    squery=squery+" where 1=? and artnr = '"+article_entry->get_text()+"'";
+    squery=squery+" where artnr = '"+article_entry->get_text()+"'";
     squery=squery+" and breite = '"+width_entry->get_text()+"'";
     squery=squery+" and farbe like '"+color_entry->get_text()+"%'";
 
-    Query qu(squery);
+
 
     switch(context)
 	{  
          case GTK_SEARCH_OPEN:
 	 case GTK_SEARCH_REOPEN:
-           {
-	    qu << 1; // only to trigger a Query at this place;
-	    // fall through
-	   }
 
 	 case GTK_SEARCH_FETCH:
 	   // dont need idle loops here. It is rapid enouth from SQLite.
-	   {
+	   {Query qu(squery);
+	   
 	    std::string artikel;
 	    FetchIStream fi=qu.Fetch();
  	    while(fi.good())
@@ -334,25 +323,23 @@ void mpc_agent::on_makeup_entry_search(gboolean *cont,GtkSCContext context)
    {  
     std::string squery("select distinct aufmachung from artikel");
 
-    squery=squery+" where 1=? and artnr = '"+article_entry->get_text()+"'";
+    squery=squery+" where artnr = '"+article_entry->get_text()+"'";
     squery=squery+" and breite = '"+width_entry->get_text()+"'";
     squery=squery+" and farbe = '"+color_entry->get_text()+"'";
     squery=squery+" and aufmachung like '"+makeup_entry->get_text()+"%'";
 
-    Query qu(squery);
+
 
     switch(context)
 	{  
          case GTK_SEARCH_OPEN:
 	 case GTK_SEARCH_REOPEN:
-           {
-	    qu << 1; // only to trigger a Query at this place;
-	    // fall through
-	   }
 
 	 case GTK_SEARCH_FETCH:
 	   // dont need idle loops here. It is rapid enouth from SQLite.
 	   {
+	    Query qu(squery);
+	    
 	    std::string artikel;
 	    FetchIStream fi=qu.Fetch();
  	    while(fi.good())
