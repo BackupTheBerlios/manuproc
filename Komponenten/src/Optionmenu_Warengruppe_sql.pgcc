@@ -1,0 +1,68 @@
+#include "Optionmenu_Warengruppe.hh"
+#include <Aux/Transaction.h>
+#include <Aux/SQLerror.h>
+#include <Gtk_OStream.h>
+exec sql include sqlca;
+
+
+Optionmenu_Warengruppe::Optionmenu_Warengruppe(int extartbezid)
+{
+  fuelle_menu(extartbezid);
+  get_menu()->deactivate.connect(activate.slot());
+  show();
+}
+
+
+ArtikelTyp Optionmenu_Warengruppe::get_value() const
+{
+ int iw = int(get_menu()->get_active()->get_user_data());
+ return ArtikelTyp(iw);
+}
+std::string Optionmenu_Warengruppe::get_value_as_Name() const
+{
+ int iw = int(get_menu()->get_active()->get_user_data());
+ std::string s = const_cast<std::map<int,std::string>&>(map_warengruppe)[iw];
+ return s;
+}
+void Optionmenu_Warengruppe::fuelle_menu(int extartbezid)
+{
+  exec sql begin declare section;
+   char db_name[30];
+   int db_id;   
+   int db_extartbezid=extartbezid;
+  exec sql end declare section;
+  exec sql declare Win_ein cursor for 
+   select distinct e.artikeltyp, w.text from extbezschema e,
+       artbez_warengruppe w where w.id = e.artikeltyp
+       and extartbezid=:db_extartbezid order by e.artikeltyp;
+  Transaction tr;
+  exec sql open Win_ein;
+  SQLerror::test(__FILELINE__);
+
+  Gtk::OStream os(this);
+  while(true)
+   {
+    exec sql fetch Win_ein into :db_id,:db_name;
+    SQLerror::test(__FILELINE__,100);
+    if (sqlca.sqlcode) break; 
+    map_warengruppe[db_id]=db_name;
+    os << db_name;
+    os.flush((gpointer)db_id);      
+   }
+ exec sql close Win_ein;
+ tr.close();
+}
+
+void Optionmenu_Warengruppe::set_value(const ArtikelTyp& artikeltyp)
+{
+ int count=0;
+ for(map<int,std::string>::const_iterator i=map_warengruppe.begin();i!=map_warengruppe.end();++i)
+   {
+     if(i->first==int(artikeltyp)) 
+      { 
+        set_history(count);
+        break;
+      }     
+     ++count;
+   }
+}
