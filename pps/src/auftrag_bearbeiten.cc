@@ -796,7 +796,7 @@ void auftrag_bearbeiten::fillCList()
   int znr=1;
   for(AuftragFull::const_iterator i = auftrag->begin();i!=auftrag->end();++i)
    {
-     os << znr++
+     os << znr++ <<'\t'
      	<< i->getStueck()<<'\t'
         << cH_ArtikelBezeichnung(ArtikelBase(i->ArtId()))->Bezeichnung()<<'\t'
         << '\t'

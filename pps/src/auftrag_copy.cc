@@ -13,9 +13,12 @@ auftrag_copy::auftrag_copy(const AuftragFull &auftrag)
 {
  alt_aufnr->set_text(itos(auftrag.Id()));
  alt_aufdatum->set_value(auftrag.getDatum());
+ alt_aufdatum->setLabel("");
  alt_aufkunde->set_value(auftrag.getKundennr());
  neu_aufkunde->set_value(auftrag.getKundennr());
- 
+ neu_lieferdatum->setLabel("");
+ neu_lieferdatum->set_value(ManuProC::Datum());
+  
 }
 
 

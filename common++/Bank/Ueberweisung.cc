@@ -1,4 +1,4 @@
-/* $Id: Ueberweisung.cc,v 1.8 2003/05/13 13:20:27 jacek Exp $ */
+/* $Id: Ueberweisung.cc,v 1.9 2003/05/13 14:21:35 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -162,7 +162,7 @@ void Ueberweisung::setErfolgt(int diskettennr) throw(SQLerror)
 {
  Transaction tr;
  
- Query("update ueberweisungen set erfolgt_am=now(), disk_refnr=? "
+ Query("update ueberweisungen set erfolgt_am=now(), disk_refnr=?, "
  	" erfolgtdurch=? where id=?") << diskettennr << getuid() << Id();
  SQLerror::test(__FILELINE__);
  	
