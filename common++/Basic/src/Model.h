@@ -1,4 +1,4 @@
-/* $Id: Model.h,v 1.1 2002/12/02 12:17:58 christof Exp $ */
+/* $Id: Model.h,v 1.2 2003/02/26 13:31:08 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -103,6 +103,9 @@ public:
 	{  return *value; }
 	const T &Value() const
 	{  return *value; }
+	bool matches(const void *gp) const
+	{  return gp==static_cast<const void *>(value);
+	}
 	
 	const T &operator=(const T &v)
 	{  *value=v;
