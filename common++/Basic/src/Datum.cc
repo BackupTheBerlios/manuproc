@@ -1,4 +1,4 @@
-// $Id: Datum.cc,v 1.29 2004/05/03 13:07:38 christof Exp $
+// $Id: Datum.cc,v 1.30 2004/06/03 09:52:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,12 +17,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.29 2004/05/03 13:07:38 christof Exp $ */
+/* $Id: Datum.cc,v 1.30 2004/06/03 09:52:14 christof Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
 #include <Misc/string0.h>
-#include <iomanip.h>
+#include <iomanip>
 #include <stdlib.h>
 #include <Misc/itos.h>
 #include <ManuProCConfig.h>
@@ -243,7 +243,7 @@ ManuProC::Datum ManuProC::Datum::operator-(unsigned int tage) const throw(Datums
 std::ostream &operator<<(std::ostream&o,const ManuProC::Datum&d) throw()
 {  int w=o.width(); 
    char f=o.fill(); 
-   o << d.tag << "." << setfill(f) << setw(w) << d.monat << "." << d.jahr;
+   o << d.tag << "." << std::setfill(f) << std::setw(w) << d.monat << "." << d.jahr;
    return o;
 }
 
