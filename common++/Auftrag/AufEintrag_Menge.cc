@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.28 2004/05/13 16:20:44 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.29 2004/09/01 09:28:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -207,7 +207,7 @@ public:
 	// falls LagerInstanz 1er zuerst nehmen
 	mengen_t operator()(const ArtikelBase &art,
  		const AufEintragBase &aeb,AuftragBase::mengen_t m,bool first) const
- 	{  if (aeb.Instanz()->LagerInstanz() && aeb.Id()==handplan_auftrag_id)
+ 	{  if (aeb.Instanz()->LagerInstanz() && aeb.Id()==plan_auftrag_id)
  	   {  if (first) return backend(art,aeb,m);
  	   }
  	   else
