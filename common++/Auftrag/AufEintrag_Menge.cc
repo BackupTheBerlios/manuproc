@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.8 2003/08/14 10:14:33 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.9 2003/08/14 16:33:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -133,7 +133,8 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(int uid,mengen_t menge,bool insta
    if (menge2>0 && entrystatus==CLOSED)
       setStatus(OPEN,uid,true);
    else if (Id()!=ungeplante_id && Id()!=dispo_auftrag_id 
-   		&& !getRestStk() && entrystatus==OPEN)
+   		&& !getRestStk() && entrystatus==OPEN
+   		&& (!Instanz()->LagerInstanz() || !!bestellt))
       setStatus(CLOSED,uid);
  }
 
