@@ -1,10 +1,10 @@
-# $Id: configure.in,v 1.28 2003/06/04 10:39:53 christof Exp $
+# $Id: configure.in,v 1.29 2003/06/04 11:07:50 christof Exp $
 
 AC_PREREQ(2.50)
 AC_INIT(Artikel/ArtikelBase.h)
 
 AM_INIT_AUTOMAKE(libcommon++, 0.0, nomacros)
-AM_CONFIG_HEADER(ManuProCConfig.h)
+AC_CONFIG_HEADERS(ManuProCConfig.h)
 
 AC_PREFIX_DEFAULT(/usr/local)
 
