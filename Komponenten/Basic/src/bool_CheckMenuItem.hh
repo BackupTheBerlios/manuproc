@@ -1,6 +1,6 @@
-// $Id: bool_CheckMenuItem.hh,v 1.4 2003/03/07 08:10:25 christof Exp $
+// $Id: bool_CheckMenuItem.hh,v 1.5 2003/04/07 13:26:32 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
- *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
+ *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -23,16 +23,23 @@
 
 #include <gtkmm/checkmenuitem.h>
 #include <gtkmm/table.h>
-#include <BaseObjects/Model.h>
+#include <ModelWidgetConnection.h>
 
 class bool_CheckMenuItem : public Gtk::CheckMenuItem
 {	typedef bool T;
-	SigC::Connection ch_con, my_ch_con;
-	Model_ref<T> model;
+public:
+	class Connection : public ModelWidgetConnection<T,Gtk::CheckMenuItem>
+	{	void model2widget();
+		void widget2model();
+		SigC::Connection connect();
+	public:
+		Connection(widget_t *w=0) { set_widget(w); }
+		Connection(const Model_ref<T> &m, widget_t *w=0) 
+		: this_t(m) { set_widget(w); }
+	};
+private:
+	Connection conn;
 	
-	void init();
-	void refresh(gpointer);
-	void on_toggled();
 	// explicitely forbid to use these (make them private)
 	bool get_active() const;
 	void set_active(bool);
@@ -40,7 +47,7 @@ public:
 	bool_CheckMenuItem(const Model_ref<T> &model, const std::string &text);
 	bool_CheckMenuItem(const Model_ref<T> &model, Gtk::Widget &widget);
 
-	// you might as well use bool_properties.hh for this
+	// you might as well use bool_properties.hh directly for this
 	void setSensitive(const Model_ref<bool> &s,const bool sensitive_invert=false);
 };
 
