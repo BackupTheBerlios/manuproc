@@ -23,7 +23,9 @@ else
 fi
 echo `autoconf$AC_POSTFIX --version | head -1` found
 
-if which automake-1.7 >/dev/null
+if which automake-1.8 >/dev/null
+then AM_POSTFIX=-1.8
+elif which automake-1.7 >/dev/null
 then AM_POSTFIX=-1.7
 elif which automake-1.6 >/dev/null
 then AM_POSTFIX=-1.6
@@ -40,11 +42,11 @@ echo You did remember necessary arguments for configure, right?
 echo
 
 libtoolize --force --copy
-autoheader$AC_POSTFIX
 if test -f /usr/share/aclocal/petig.m4
 then aclocal$AM_POSTFIX
 else aclocal$AM_POSTFIX -I macros
 fi
+autoheader$AC_POSTFIX
 automake$AM_POSTFIX --add-missing --copy --gnu
 autoconf$AC_POSTFIX
 ./configure $* && $MAKE
