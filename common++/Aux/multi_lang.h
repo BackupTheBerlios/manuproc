@@ -105,7 +105,7 @@ public:
 
  MultiL_Dict(int sprache, int default_spr=1);
  MultiL_Dict() : sprid(-1) {}
- std::string MLT(const LangTXT textid);
+ std::string MLT(const LangTXT textid, std::string def_string="UNKNOWN");
  bool valid() const { return sprid!=-1; }
  int getSprId() const { return sprid; }
 };

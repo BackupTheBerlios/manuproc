@@ -13,13 +13,13 @@ MultiL_Dict::MultiL_Dict(int sprache, int default_spr) : sprid(sprache)
 }
 
 
-std::string MultiL_Dict::MLT(const LangTXT textid)
+std::string MultiL_Dict::MLT(const LangTXT textid, std::string def_str)
 {
  std::string ret(textmap[textid]);
  
  if (ret.empty())
  {  ret=defaultmap[textid];
-    if (ret.empty()) ret="MLD-"+itos(textid);
+    if (ret.empty()) ret=def_str;//ret="MLD-"+itos(textid);
  }
  return ret;
 }

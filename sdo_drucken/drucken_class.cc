@@ -432,9 +432,9 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
         ArtikelBase artikelbase  = (*j).Artikel();
         cH_ArtikelBezeichnung bez(artikelbase,cH_Kunde(kunden_id)->getSchemaId());
         cH_ExtBezSchema schema = bez->getExtBezSchema();
-#ifndef MABELLA_EXTENSIONS        
+//#ifndef MABELLA_EXTENSIONS        
         if (schema!=schema_mem && !Configuration.combine) break; // Schema hat gewechselt
-#endif        
+//#endif        
         
         if (Einheit(artikelbase) != einheit_mem ) break;  // Einheit wechselt
         
@@ -1065,7 +1065,7 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
      for(ExtBezSchema::const_sigiterator j=schema->sigbegin(signifikanz);j!=schema->sigend(signifikanz);++j)
          { tabcolumn += j->TeXtabformat ; ++spaltenzahl ; 
 //           ueberschriften += "&\\mbox{"+ug + j->bezkomptext+"}";
-           ueberschriften += "&\\mbox{"+ug +mld->MLT(j->textid)+"}";
+           ueberschriften += "&\\mbox{"+ug +mld->MLT(j->textid,j->bezkomptext)+"}";
 //	  int t=(int)mld_idx; 
 //	  t++; 
 //	  mld_idx=(MultiL_Dict::LangTXT)t;
