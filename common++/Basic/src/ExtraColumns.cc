@@ -1,4 +1,4 @@
-// $Id: ExtraColumns.cc,v 1.1 2004/09/24 15:20:11 christof Exp $
+// $Id: ExtraColumns.cc,v 1.2 2004/09/24 15:30:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,3 +17,4 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <Misc/ExtraColumns.h>

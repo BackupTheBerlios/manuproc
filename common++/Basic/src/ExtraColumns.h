@@ -1,4 +1,4 @@
-// $Id: ExtraColumns.h,v 1.1 2004/09/24 15:20:11 christof Exp $
+// $Id: ExtraColumns.h,v 1.2 2004/09/24 15:30:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,6 +20,10 @@
 #ifndef E70FA3BE_6B3E_4FF7_AB14_6B173AE5BAF1
 #define E70FA3BE_6B3E_4FF7_AB14_6B173AE5BAF1
 
+#include <Misc/Query.h>
+#include <set>
+#include <map>
+
 class ExtraColumns {
     class TableInformation
     { std::string table_name;
@@ -37,7 +41,7 @@ class ExtraColumns {
     ArgumentList key_values;
     void Execute_if_complete();
 
-    FetchIStream::Fake &fake_istream(const std::string &column);
+    Query::Row::Fake &fake_istream(const std::string &column);
 public:
     ExtraColumns(const std::string &table, const std::string &keycol1);
     ExtraColumns(const std::string &table, const std::string &keycol1,
@@ -51,10 +55,9 @@ public:
        return *this;
     }
     template <class T>
-     void get(const std::string &column, const T &def_value=T())
-    { fake_istream( >>
+     T get(const std::string &column, const T &def_value=T())
+    { return fake_istream(column).FetchMap(def_value);
     }
 };
-
 
 #endif
