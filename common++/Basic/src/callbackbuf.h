@@ -1,4 +1,4 @@
-// $Id: callbackbuf.h,v 1.1 2002/12/17 10:03:30 christof Exp $
+// $Id: callbackbuf.h,v 1.2 2002/12/18 10:31:40 christof Exp $
 /*  Gtk--addons: a collection of gtk-- addons
     Copyright (C) 2002  Adolf Petig GmbH. & Co. KG
     Developed by Christof Petig <christof.petig@wtal.de>
@@ -24,26 +24,27 @@
 
 template <class T>
  class callbackbuf : public std::streambuf
-{	T &os;
-	callback_t cb;
-public:
+{public:
 	typedef char char_type;
 	typedef int int_type;
-	typedef streamsize (*T::callback_t)(const char_type* __s, streamsize __n);
+	typedef std::streamsize (T::*callback_t)(const char_type* __s, std::streamsize __n);
         
 	callbackbuf(T &_o, callback_t _cb) : os(_o), cb(_cb) {}
 protected:
+	T &os;
+	callback_t cb;
+	
    int_type overflow(int_type c) 
    {  char_type a=c;
       if (c!=-1) 
-      {  if (os.(*cb)(&a,1)<1)
+      {  if (((os.*cb)(&a,1))<1)
          {  return -1;
          }
       }
       return c;
    }
-	streamsize xsputn(const char_type* __s, streamsize __n)
-	{  return os.(*cb)(__s,__n);
+	std::streamsize xsputn(const char_type* __s, std::streamsize __n)
+	{  return (os.*cb)(__s,__n);
 	}
 };
 #endif

@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.15 2002/12/11 16:53:51 christof Exp $
+# $Id: Makefile.am,v 1.16 2002/12/18 10:33:13 christof Exp $
 	
 LDADD=$(top_srcdir)/src/libManuProC_Base.a @ECPG_LIBS@ @SIGC_LIBS@
 
@@ -28,7 +28,7 @@ trace_SOURCES=trace.cc
 FetchIStream_SOURCES=$(B_SRCES)
 mvc_SOURCES=mvc.cc
 
-CLEANFILES= *~ 
+CLEANFILES= *~ $(EXTRA_PROGRAMS)
 
 BUILT_SOURCES=$(B_SRCES)
 
