@@ -1,4 +1,4 @@
-/* $Id: KettenGarn.h,v 1.1 2004/02/25 10:03:09 christof Exp $ */
+/* $Id: KettenGarn.h,v 1.2 2004/02/25 10:06:19 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,10 +20,10 @@
 #ifndef KETTENGARN_HH
 #define KETTENGARN_HH
 #include <Artikel/ArtikelBezeichnung.h>
-#include <Ketten/Kettscheibe.h>
+#include <Faeden/Kettscheibe.h>
 class ArtikelGang;
 
-struct KettenGarn_MT {
+struct KettenGarn_CP {
 
         int index;
         int zeile;
@@ -35,18 +35,18 @@ struct KettenGarn_MT {
 public:
 	typedef ArtikelBase::ID ID;
 
-	KettenGarn_MT() 
+	KettenGarn_CP() 
 	        : index(0),zeile(0),kettenzahl(0),faeden(0), art(0),laenge(0) {}
-	KettenGarn_MT(int i,int z,int k,int f,ArtikelBase id,int l,std::string w) 
+	KettenGarn_CP(int i,int z,int k,int f,ArtikelBase id,int l,std::string w) 
 	        : index(i), zeile(z),kettenzahl(k),faeden(f), art(id),laenge(l),
 	          wiederholung(w) {}
-	bool operator==(const KettenGarn &b) const throw()
+	bool operator==(const KettenGarn_CP &b) const throw()
 	{  return Index()==b.Index() && 
 	          Artikel()==b.Artikel() &&
 	          Faeden()==b.Faeden() &&
 	          Kettenzahl()==b.Kettenzahl() &&
 	          Laenge()==b.Laenge() ;}
-	bool operator<(const KettenGarn &b) const throw()
+	bool operator<(const KettenGarn_CP &b) const throw()
 	{  return (Index()<b.Index()) || 
 	          (Index()==b.Index() && Artikel()<b.Artikel() );}
 	          
@@ -67,16 +67,10 @@ public:
    int Laenge() const throw() { return laenge;}
    void setFaeden(int l) {faeden=l;}
    std::string Wiederholung() const {return wiederholung;}
-   unsigned int Wiederholung_anzahl() const;
-
-   void setWiederholung(const ArtikelGang &AG,std::string s)  throw(SQLerror);
-   void setKombiniert(const Kettscheibe::st_kombi &AG1,const ArtikelGang &AG2,int Index2)  throw(SQLerror);
-   void deleteKombiniert(const Kettscheibe::st_kombi &AG1,const ArtikelGang &AG2,int Index2)  throw(SQLerror);
-
-   void modify(const ArtikelGang & AG,int kettenzahl,int faeden,int faden_laenge,ArtikelBase garn);
+   unsigned int Wiederholung_anzahl() const { return 0; }
 };
 
 //extern std::ostream& operator<<(std::ostream &o,const ArtikelGang &ag);
 
-typedef KettenGarn_MT KettenGarn;
+typedef KettenGarn_CP KettenGarn;
 #endif
