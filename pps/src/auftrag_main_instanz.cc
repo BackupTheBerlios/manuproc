@@ -34,7 +34,10 @@ void auftrag_main::on_button_neue_anr_clicked()
       { meldung->Show("Keine Lieferantennummer vergeben");
         return;}
     instanz_auftrag = new AuftragFull(Auftrag::Anlegen(instanz->Id()),kid);
-    instanz_auftrag->setStatusAuftragFull(OPEN);
+    if(instanz->ExterneBestellung())
+      instanz_auftrag->setStatusAuftragFull(UNCOMMITED);
+    else
+      instanz_auftrag->setStatusAuftragFull(OPEN);
     AuftragBase ab(*instanz_auftrag);
     loadAuftragInstanz(ab);
     searchcombo_auftragid->setContent(instanz_auftrag->getAuftragidToStr(),'0');
@@ -57,6 +60,7 @@ void auftrag_main::loadAuftragInstanz(const AuftragBase& auftragbase)
 //std::cout <<"SIZE = "<< instanz_auftrag->size()<<'\n';
  show_neuer_auftrag();
  searchcombo_auftragid->setContent(instanz_auftrag->getAuftragidToStr(),'0');
+ kunden_lieferant->set_value(instanz_auftrag->getKundennr()) ;
 }
 
 

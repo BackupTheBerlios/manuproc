@@ -525,6 +525,10 @@ void auftrag_bearbeiten::on_aufentrystat_optionmenu_clicked()
 	    auftrag_clist->grab_focus();
        auftrag_clist->moveto(selectedentry,0,.5,0);
        loadAuftrag(*auftrag);
+       if(instanz->ExterneBestellung())
+         WAufStat->set_history((AufStatVal)UNCOMMITED);
+       else
+         WAufStat->set_history((AufStatVal)OPEN);
     }
 }
 
