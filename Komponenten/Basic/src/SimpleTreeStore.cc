@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.5 2002/11/26 08:04:21 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.6 2002/11/26 10:59:46 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -209,11 +209,11 @@ void TreeBase::on_line_appended(cH_RowDataBase row)
 }
 
 bool operator < (const TreeStore::iterator &a, const cH_EntryValue &b)
-{  return *(reinterpret_cast<TreeRow*>(a.get_user_data())->Value()) < *b;
+{  return *((*a)[m_columns.node_val]) < *b;
 }
 
 bool operator < (const cH_EntryValue &a, const TreeStore::iterator &b)
-{  return *a < *(reinterpret_cast<TreeRow*>(b.get_user_data())->Value());
+{  return *a < *((*a)[m_columns.node_val])b
 }
 
 //#define DEBUG_NEW
@@ -310,6 +310,3 @@ recurse:
 	 tree.initDepth(newleaf,deep);
     }
 }                                
-
-
-#endif
