@@ -16,6 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#ifdef MANUPROC_WITH_DATABASE
 #include "MyWindow.hh"
 #include <Misc/Global_Settings.h>
 #include <Misc/itos.h>
@@ -25,7 +26,7 @@
 void MyWindow::saveWindowSize(Gtk::Window &window,const std::string &programm)
 {
   gint width,height,x,y;
-  Gdk_Window fenster=window.get_window();
+  Gdk::Window fenster=window.get_window();
   fenster.get_size(width,height);
   fenster.get_position(x,y);
   Global_Settings::create(int(getuid()),programm,"Size",itos(width)+":"+itos(height));
@@ -34,7 +35,7 @@ void MyWindow::saveWindowSize(Gtk::Window &window,const std::string &programm)
 
 void MyWindow::setPositionSize(Gtk::Window &window,const std::string &programm)
 {
-  Global_Settings position=Global_Settings(int(getuid()),programm,"Position");
+  Global::Settings position=Global_Settings(int(getuid()),programm,"Position");
   int x=atoi(position.get_Wert(":",1).c_str());
   int y=atoi(position.get_Wert(":",2).c_str());
   Global_Settings size=Global_Settings(int(getuid()),programm,"Size");
@@ -46,3 +47,4 @@ void MyWindow::setPositionSize(Gtk::Window &window,const std::string &programm)
   window.set_default_size(width,height);
 }
 
+#endif

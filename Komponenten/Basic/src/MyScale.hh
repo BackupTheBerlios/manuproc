@@ -30,7 +30,7 @@ class MyScale : public Gtk::Table
    private:
       int value;
       void init();
-      gint on_scale_release_event(GdkEventButton *ev);
+      bool on_scale_release_event(GdkEventButton *ev);
       void on_bup_clicked();
       void on_bdown_clicked();
       void set_labels();

@@ -58,11 +58,11 @@ void MyScale::init()
    scale->set_draw_value(false);
    scale->set_flags(Gtk::CAN_FOCUS);
    
-   attach(*ltop, 0, 1, 0, 1, Gtk::FILL, 0, 0, 0); 
-   attach(*bup, 0, 1, 1, 2, 0, 0, 0, 0); 
-   attach(*scale, 0, 1, 2, 3, 0, Gtk::EXPAND|Gtk::FILL,0, 0);
-   attach(*bdown, 0, 1, 3, 4, 0, 0, 0, 0); 
-   attach(*lbottom, 0, 1, 4, 5, Gtk::FILL, 0, 0, 0); 
+   attach(*ltop, 0, 1, 0, 1, Gtk::FILL, Gtk::AttachOptions(0), 0, 0); 
+   attach(*bup, 0, 1, 1, 2, Gtk::AttachOptions(0), Gtk::AttachOptions(0), 0, 0); 
+   attach(*scale, 0, 1, 2, 3, Gtk::AttachOptions(0), Gtk::EXPAND|Gtk::FILL,0, 0);
+   attach(*bdown, 0, 1, 3, 4, Gtk::AttachOptions(0), Gtk::AttachOptions(0), 0, 0); 
+   attach(*lbottom, 0, 1, 4, 5, Gtk::FILL, Gtk::AttachOptions(0), 0, 0); 
    show_all();
 
    set_labels();
@@ -85,7 +85,7 @@ void MyScale::set_value(int v)
 }
 
 
-gint MyScale::on_scale_release_event(GdkEventButton *ev)
+bool MyScale::on_scale_release_event(GdkEventButton *ev)
 {
    value=(int)scale->get_adjustment()->get_value();   
    set_labels();
