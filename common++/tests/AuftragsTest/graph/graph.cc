@@ -1,4 +1,4 @@
-// $Id: graph.cc,v 1.20 2003/01/08 09:46:58 christof Exp $
+// $Id: graph.cc,v 1.21 2003/01/08 14:25:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -39,7 +39,7 @@ const static struct option options[]=
 
 void usage(std::string s)
 {
-  cout << "USAGE: " << s <<" [-bgr] <Dateisammlung z.B. M,P oder S, X=Legende>\n";
+  std::cout << "USAGE: " << s <<" [-bgr] <Dateisammlung z.B. M,P oder S, X=Legende>\n";
 #if 0
        << "\t\t[P]lanung \n"
        << "\t\t[S]plit \n"
@@ -60,7 +60,7 @@ void usage(std::string s)
        << "\t\t[RKZ] Rep_Petig_Kunden_Zuordung\n"
        << "\t\t[X]  LEGENDE \n";
 #endif       
-  cout << "\t -b --black [default]\n"
+  std::cout << "\t -b --black [default]\n"
        << "\t -c --colour\n"
        << "\t -r --referenz\tReferenz anzeigen\n"
        << "\t -l --limit <number>\tHöchstanzahl von angezeigten Schritten\n"

@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.41 2003/01/08 09:53:49 christof Exp $
+// $Id: Check.cc,v 1.42 2003/01/08 14:25:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -180,8 +180,8 @@ void Check::dump(was_checken check, const std::string &zusatz)
 
   std::string s2=psql_cmd+" \"select to_char(altinstanz,'99') ||' - ' "
       "|| to_char(altauftragid,'99999') || ' - ' || text(altzeilennr) as "
-      "\\\"ALT:instanz-id-znr\\\",
-      to_char(neuinstanz,'99') ||' - ' "
+      "\\\"ALT:instanz-id-znr\\\","
+      "to_char(neuinstanz,'99') ||' - ' "
       "|| to_char(neuauftragid,'99999') || ' - ' || text(neuzeilennr) as "
       "\\\"NEU:instanz-id-znr\\\",menge from auftragsentryzuordnung "
       "order by 1,2;\" > "+resultdir+"auftragsentryzuordnung"+"_"+zusatz; 

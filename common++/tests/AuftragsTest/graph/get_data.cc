@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.41 2003/01/07 13:59:49 christof Exp $
+// $Id: get_data.cc,v 1.42 2003/01/08 14:25:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -20,6 +20,7 @@
 #include "get_data.h"
 #include <fstream>
 #include "../steuerprogramm.hh"
+#include <Misc/relops.h>
 
 #ifdef  MANU_PROC_TEST
 static std::string referenzdir="../database_tables_test_ManuProC";
@@ -45,7 +46,7 @@ void graph_data_node::get_values_from_files()
   for(std::vector<st_files>::const_iterator i=vec_files_auftragentry.begin();i!=vec_files_auftragentry.end();++i)
    {
      std::ifstream F((i->filename).c_str());
-     if(!F) {cout <<"FEHLER: "<< i->filename<<" kann nicht geöffnet werden: "<<F<<"\n"; exit(1);}
+     if(!F) {std::cout <<"FEHLER: "<< i->filename<<" kann nicht geöffnet werden: "<<F<<"\n"; exit(1);}
      std::string zeile;
      for(int j=0;j<2;++j) std::getline(F,zeile); // Kopfzeilen überlesen
      while(std::getline(F,zeile))
@@ -87,7 +88,7 @@ void graph_data_node::get_values_from_files_Z()
   for(std::vector<std::string>::const_iterator i=vec_files_auftragsentryzuordnung.begin();i!=vec_files_auftragsentryzuordnung.end();++i)
    {
      std::ifstream F((*i).c_str());
-     if(!F) {cout <<"FEHLER: "<< *i<<" kann nicht geöffnet werden\n"; exit(1);}
+     if(!F) {std::cout <<"FEHLER: "<< *i<<" kann nicht geöffnet werden\n"; exit(1);}
      std::string zeile;
      for(int j=0;j<2;++j) std::getline(F,zeile); // Kopfzeilen überlesen
      while(std::getline(F,zeile))
@@ -166,7 +167,7 @@ graph_data_node::st_node_strings graph_data_node::get_mengen_for_node(AufEintrag
       M+=+"/";
       Mmem=m;
 
-      std::string z="("+string(j->datum.c_str())+","+itos(j->status)+")";
+      std::string z="("+std::string(j->datum.c_str())+","+itos(j->status)+")";
       if(Zmem != z )  Z+=prefix+z ;
       Z+="/";
       Zmem=z;
@@ -178,7 +179,7 @@ graph_data_node::st_node_strings graph_data_node::get_mengen_for_node(AufEintrag
   return st_node_strings(aeb,M,Z);
 }
 
-std::vector<pair<std::string,std::string> > graph_data_node::get_edges_for(AufEintragBase aeb)
+std::vector<std::pair<std::string,std::string> > graph_data_node::get_edges_for(AufEintragBase aeb)
 {
   std::list<st_child> list_child;
   for(std::list<st_aebZ>::const_iterator i=list_auftragszuordnung.begin();i!=list_auftragszuordnung.end();++i)
@@ -187,7 +188,7 @@ std::vector<pair<std::string,std::string> > graph_data_node::get_edges_for(AufEi
    }
 
   list_child.sort();
-  std::vector<pair<std::string,std::string> > V;
+  std::vector<std::pair<std::string,std::string> > V;
   AufEintragBase aeb_mem;
   if(!list_child.empty()) aeb_mem=list_child.front().aeb;
   std::string S,Mmem;
@@ -206,7 +207,7 @@ std::vector<pair<std::string,std::string> > graph_data_node::get_edges_for(AufEi
         std::string A=aeb_mem.Instanz()->Name()+"/"+itos(aeb_mem.Id())+"/"+itos(aeb_mem.ZNr());
         std::string::size_type st1=S.find_last_of("/");
         if(st1!=std::string::npos) S.erase(st1,1);
-        V.push_back(pair<std::string,std::string>(A,S));
+        V.push_back(std::pair<std::string,std::string>(A,S));
 
         S=i->menge.String()+"/";
         Mmem=i->menge.String();
@@ -218,7 +219,7 @@ std::vector<pair<std::string,std::string> > graph_data_node::get_edges_for(AufEi
     std::string A=aeb_mem.Instanz()->Name()+"/"+itos(aeb_mem.Id())+"/"+itos(aeb_mem.ZNr());
     std::string::size_type st1=S.find_last_of("/");
     if(st1!=std::string::npos) S.erase(st1,1);
-    V.push_back(pair<std::string,std::string>(A,S));
+    V.push_back(std::pair<std::string,std::string>(A,S));
   }
  return V;
 }
@@ -239,7 +240,7 @@ std::list<AufEintragBase> graph_data_node::get_existing_aeb() const
 
 
 void graph_data_node::get_files(const std::string &mode)
-{ ifstream i(("../files.log/"+mode).c_str());
+{ std::ifstream i(("../files.log/"+mode).c_str());
   if (!i.good()) 
   {  std::cerr << "../files.log/"<<mode<<": konnte Datei nicht öffnen\n";
      exit(1);

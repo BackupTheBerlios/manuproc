@@ -1,4 +1,4 @@
-// $Id: get_data.h,v 1.20 2003/01/07 13:59:49 christof Exp $
+// $Id: get_data.h,v 1.21 2003/01/08 14:25:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -77,7 +77,7 @@ class graph_data_node
             st_node_strings(AufEintragBase a,std::string m,std::string z) 
                : auftrag(a),mengen(m),zusatz(z) {} };
      st_node_strings get_mengen_for_node(AufEintragBase aeb);
-     std::vector<pair<std::string,std::string> >  get_edges_for(AufEintragBase aeb);
+     std::vector<std::pair<std::string,std::string> >  get_edges_for(AufEintragBase aeb);
 
 // global parameters - evil ... but I don't want to rewrite the program
 	static bool show_referenz;

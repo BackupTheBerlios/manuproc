@@ -1,4 +1,4 @@
-// $Id: dot_out.h,v 1.13 2002/12/20 16:17:09 christof Exp $
+// $Id: dot_out.h,v 1.14 2003/01/08 14:25:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -33,7 +33,7 @@ class Node
       Node(std::string s,unsigned int cc,AufEintragBase a) : 
             bezeichner(s),cluster_count(cc),auftrag(a) {};
 
-      void write(ofstream &fout,AufEintragBase auftrag,std::string menge,std::string zusatz);
+      void write(std::ofstream &fout,AufEintragBase auftrag,std::string menge,std::string zusatz);
       std::string Name() const {return bezeichner;}
       unsigned int ClusterCount() const {return cluster_count;}
 
@@ -57,14 +57,14 @@ class dot_out
       enum erank{None,same,sink};
       unsigned int cc; // cc=cluster_count
       
-      void write_header(ofstream &fout);
-      void write_legend(ofstream &fout);
-      void write_footer(ofstream &fout,std::string label);
+      void write_header(std::ofstream &fout);
+      void write_legend(std::ofstream &fout);
+      void write_footer(std::ofstream &fout,std::string label);
       
-      void write_filenames(ofstream &fout,const std::vector<graph_data_node::st_files>& filenames);
-      void write_node(ofstream &fout);
+      void write_filenames(std::ofstream &fout,const std::vector<graph_data_node::st_files>& filenames);
+      void write_node(std::ofstream &fout);
 
-      void Edge(ofstream &fout,Node n1,Node n2, std::string s,erank rank);
+      void Edge(std::ofstream &fout,Node n1,Node n2, std::string s,erank rank);
 
   public:
       dot_out(const std::string &m,e_colour c) : mode(m),colour(c),cc(0) {};

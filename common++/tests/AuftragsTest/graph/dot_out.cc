@@ -1,4 +1,4 @@
-// $Id: dot_out.cc,v 1.20 2003/01/08 09:46:58 christof Exp $
+// $Id: dot_out.cc,v 1.21 2003/01/08 14:25:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -26,7 +26,7 @@
 
 void dot_out::write()
 {
-  ofstream fout("dot.script");
+  std::ofstream fout("dot.script");
   write_header(fout);
 
   if(mode=="X" || mode=="?") 
@@ -43,7 +43,7 @@ void dot_out::write()
   system("sh dot.script");
 }
 
-void dot_out::write_legend(ofstream &fout)
+void dot_out::write_legend(std::ofstream &fout)
 {
   fout << "\tnode[shape=record]\n"
        << "\t\tfilenames [label=\"{Dateiname 1 | Dateiname 2} | {P1 | P2}\"];\n\n";
@@ -52,8 +52,8 @@ void dot_out::write_legend(ofstream &fout)
 }
 
 
-struct st_edge{Node node;std::string bez;std::vector<pair<std::string,std::string> > child;
-       st_edge(Node n,std::string b,std::vector<pair<std::string,std::string> > c)
+struct st_edge{Node node;std::string bez;std::vector<std::pair<std::string,std::string> > child;
+       st_edge(Node n,std::string b,std::vector<std::pair<std::string,std::string> > c)
          :node(n),bez(b),child(c) {}};
 
 std::string aeb_to_string(AufEintragBase aeb)
@@ -61,7 +61,7 @@ std::string aeb_to_string(AufEintragBase aeb)
   return aeb.Instanz()->Name()+"/"+itos(aeb.Id())+"/"+itos(aeb.ZNr());
 }
 
-void dot_out::write_node(ofstream &fout)
+void dot_out::write_node(std::ofstream &fout)
 {
   graph_data_node N(mode);
   write_filenames(fout,N.get_filenames());
@@ -74,11 +74,11 @@ void dot_out::write_node(ofstream &fout)
      graph_data_node::st_node_strings M=N.get_mengen_for_node(*i);
      Node node("my_"+itos(++cc),cc,M.auftrag);
      node.write(fout,M.auftrag,M.mengen,M.zusatz);
-     std::vector<pair<std::string,std::string> >  E=N.get_edges_for(*i);
-     std::vector<pair<std::string,std::string> > Vchild;
-     for(std::vector<pair<std::string,std::string> >::const_iterator j=E.begin();j!=E.end();++j)
+     std::vector<std::pair<std::string,std::string> >  E=N.get_edges_for(*i);
+     std::vector<std::pair<std::string,std::string> > Vchild;
+     for(std::vector<std::pair<std::string,std::string> >::const_iterator j=E.begin();j!=E.end();++j)
       {
-        Vchild.push_back(pair<std::string,std::string>(j->first,j->second));        
+        Vchild.push_back(std::pair<std::string,std::string>(j->first,j->second));        
       }
      vec_edge.push_back(st_edge(node,aeb_to_string(M.auftrag),Vchild));
    }
@@ -86,7 +86,7 @@ void dot_out::write_node(ofstream &fout)
 
   for(std::vector<st_edge>::const_iterator i=vec_edge.begin();i!=vec_edge.end();++i)
    {
-     for(std::vector<pair<std::string,std::string> >::const_iterator j=i->child.begin();j!=i->child.end();++j)
+     for(std::vector<std::pair<std::string,std::string> >::const_iterator j=i->child.begin();j!=i->child.end();++j)
       {
         for(std::vector<st_edge>::const_iterator k=vec_edge.begin();k!=vec_edge.end();++k)
          {
@@ -110,7 +110,7 @@ void dot_out::write_node(ofstream &fout)
    }
 }
 
-void Node::write(ofstream &fout,AufEintragBase auftrag,std::string menge,std::string zusatz)
+void Node::write(std::ofstream &fout,AufEintragBase auftrag,std::string menge,std::string zusatz)
 {
   std::string shape="Mrecord";
   if(Auftrag().Id()>=CUSTOM_ORDERNO || Auftrag().Id()==1) shape="record";
@@ -125,7 +125,7 @@ void Node::write(ofstream &fout,AufEintragBase auftrag,std::string menge,std::st
           "\t\tfontsize=12;}\n";
 }
 
-void dot_out::Edge(ofstream &fout,Node n1,Node n2, std::string s,erank rank)
+void dot_out::Edge(std::ofstream &fout,Node n1,Node n2, std::string s,erank rank)
 {
   fout << "\n\t"<<n1.Name()<<" -> "<<n2.Name()
        << " [fontsize=12,";
@@ -135,7 +135,7 @@ void dot_out::Edge(ofstream &fout,Node n1,Node n2, std::string s,erank rank)
   switch (colour) {
     case Black : fout << ",labelfontcolor=black"; break;
     case Colour: fout << ",labelfontcolor=coral"; break;
-    default : cerr<< "Undefined Colour\n"; abort();
+    default : std::cerr<< "Undefined Colour\n"; abort();
    }
   fout << ",headlabel=\""<<s<<"\"";
   if(rank==same) fout << ", weight=-1";
@@ -144,7 +144,7 @@ void dot_out::Edge(ofstream &fout,Node n1,Node n2, std::string s,erank rank)
     fout << "\t{rank=same;"<< n1.Name()<<" "<<n2.Name()<<"}\n";
 }
 
-void dot_out::write_header(ofstream &fout)
+void dot_out::write_header(std::ofstream &fout)
 {
   fout << "#!/bin/bash\n\n"
           "dot -Tps << END > G.ps \n"
@@ -156,7 +156,7 @@ void dot_out::write_header(ofstream &fout)
           "\t\tcenter=true;\n";
 }
 
-void dot_out::write_footer(ofstream &fout,std::string label)
+void dot_out::write_footer(std::ofstream &fout,std::string label)
 {
   fout << "\t\tlabel=\""<<label<<"\"\n"
           "\t\tlabelloc=top\n"
@@ -166,7 +166,7 @@ void dot_out::write_footer(ofstream &fout,std::string label)
 }
 
 #include <Misc/mystring.h>
-void dot_out::write_filenames(ofstream &fout,const std::vector<graph_data_node::st_files> &filenames)
+void dot_out::write_filenames(std::ofstream &fout,const std::vector<graph_data_node::st_files> &filenames)
 {
   std::string F="{";
   for(std::vector<graph_data_node::st_files>::const_iterator i=filenames.begin();i!=filenames.end();++i)
