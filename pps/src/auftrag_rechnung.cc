@@ -324,10 +324,16 @@ void auftrag_rechnung::lieferschein_uebernehmen()
            
           // Wenn Zahlungsziel schon vergangen, dann auf Standard setzten
             
-          if((zahlziel->get_value()-8)<rechnung.getDatum())
+          cH_Zahlungsart za(rechnung.getZahlungsart());
+          if( ((zahlziel->get_value()-8)<rechnung.getDatum())
+		&& !za->getBankeinzug())
             rechnung.setze_Zahlungsart(cH_Zahlungsart(
             			Zahlungsart::default_Zahlart));
-            
+	     // bei Bankeinzug und vergangener Valuta, sofort einziehen
+          else if( ((zahlziel->get_value())<rechnung.getDatum())
+		&& za->getBankeinzug())
+	    rechnung.setze_Zahlziel(ManuProC::Datum());
+
          }
        else {
          cH_Zahlungsart za(rechnung.getZahlungsart());
@@ -528,8 +534,8 @@ auftrag_rechnung::auftrag_rechnung(cH_ppsInstanz _instanz)
 {
 #ifdef MABELLA_EXTENSIONS
   preis_ergaenzen->hide();
- _tooltips.set_tip(*button27,"Linke Maustaste: 1 Orig. 2 Kopien. "
-		"Mittlere Maustaste: 1 Kopie","");
+ _tooltips.set_tip(*button27,"Linke Maustaste: N Orig. (Brief) + N Kopien (Weiß). "
+		"Mittlere Maustaste: 1 Kopie (Weiß oder Brief)","");
   std::string nuraktiv(" and coalesce(aktiv,true)=true");
   lieferkunde->Einschraenkung(nuraktiv,true);
   lieferkunde->EinschraenkenKdGr(KundengruppeID::Auftragsadresse);      
