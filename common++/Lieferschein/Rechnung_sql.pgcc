@@ -256,14 +256,16 @@ void Rechnung::push_back(unsigned &lineno,ArtikelBase art,
     Query("select lohn_id,material_id from artbez_"+itos(as.Warengruppe())+"_1 "
 	"where id=?") << art
 	>> Query::Row::MapNull(lohn) >> Query::Row::MapNull(material);
+    int faeden=atoi(ab->Komponente(2).c_str());
+    int dtex=atoi(ab->Komponente(1).c_str());
     if (!!lohn) 
-      push_back(lineno,lohn,lfrsid,lfrsznr,min(50,atoi(ab->Komponente(2).c_str())),
-	  int(stk)*min(menge,mengen_t(10000))/1000.0,Preis(),rabatt,
+      push_back(lineno,lohn,lfrsid,lfrsznr,max(50,faeden),
+	  int(stk)*max(menge,mengen_t(10000))/1000.0,Preis(),rabatt,
 	  provsatz,Preis());
     if (!!material) 
       push_back(lineno,material,lfrsid,lfrsznr,stk,
-	  1.05*atoi(ab->Komponente(1).c_str())*menge/10000.0,Preis(),rabatt,
-	  provsatz,Preis());
+	  1.05*float(menge/1000.0)*faeden*(dtex/10000.0),
+	  Preis(),rabatt,provsatz,Preis());
   }
 #endif
 }
