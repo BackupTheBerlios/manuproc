@@ -33,7 +33,7 @@ std::string Global_Settings::get_Wert(const std::string &seperator,int field) co
      --field;
   }
   std::string::size_type end=gs.find(seperator,start);
-  return std::string(gs,start,end);
+  return std::string(gs,start,end==std::string::npos?end:(end-start));
 }
 
 void Global_Settings::set_Wert(const std::string& _wert)
