@@ -1,4 +1,4 @@
-// $Id: safemap.h,v 1.2 2001/07/05 09:23:02 christof Exp $
+// $Id: safemap.h,v 1.3 2001/07/05 12:41:42 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -66,6 +66,7 @@ public:
   reverse_iterator rend() { init(); return m->rend(); }
   const_reverse_iterator rend() const { init(); return m->rend(); }
   bool empty() const { init(); return m->empty(); }
+  void clear() { init(); m->clear();}
   size_type size() const { init(); return m->size(); }
   size_type max_size() const { init(); return m->max_size(); }
   _Tp& operator[](const key_type& k) { init(); return (*m)[k]; }

@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.2 2001/07/05 09:23:02 christof Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.3 2001/07/05 12:41:42 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,16 +28,10 @@ exec sql include sqlca;
 
 ArtikelBezeichnung::ArtikelBezeichnung(const ArtikelBase &artikel, const cH_ExtBezSchema &_schema) throw(SQLerror)
  : ArtikelBase(artikel), schema(_schema)
-{  setzeExtBezSchema(_schema);
+{  *this=ArtikelBezeichnung(artikel,_schema->Id());
 }
 
-ArtikelBezeichnung::ArtikelBezeichnung(const ArtikelBase &artikel, const ExtBezSchema::ID _schema) throw(SQLerror)
- : ArtikelBase(artikel),
-   schema(cH_ExtBezSchema(_schema,ArtikelTyp::vonArtikel(artikel)))
-{  setzeExtBezSchema(schema);
-}
-
-ArtikelBezeichnung::ArtikelBezeichnung(const ArtikelBase &artikel, ExtBezSchema::ID _schema, dont_throw dummy) throw()
+ArtikelBezeichnung::ArtikelBezeichnung(const ArtikelBase &artikel, ExtBezSchema::ID _schema) throw()
  : ArtikelBase(artikel), schema(1)
 {  try
    {  ArtikelStamm AS( artikel );
@@ -58,6 +52,11 @@ ArtikelBezeichnung::ArtikelBezeichnung(const ArtikelBase &artikel, ExtBezSchema:
    }
 }
 
+ArtikelBezeichnung::ArtikelBezeichnung(const ArtikelBase &artikel, ExtBezSchema::ID _schema, dont_throw dummy) throw()
+ : ArtikelBase(artikel), schema(1)
+{  *this=ArtikelBezeichnung(artikel,_schema);
+}
+
 void ArtikelBezeichnung::setzeExtBezSchema(const cH_ExtBezSchema &_schema) throw(SQLerror)
 {   
  schema = _schema;
@@ -70,12 +69,12 @@ void ArtikelBezeichnung::setzeExtBezSchema(const cH_ExtBezSchema &_schema) throw
     value.clear();
     if (Id())
     {mystream sq; 
-     std::vector<int> ibezkom;
+     std::vector<int> gewaehlte_indizes;
      sq << "SELECT ";
      for (ExtBezSchema::const_iterator i=schema->begin();i!=schema->end();)
       {
          sq << i->spaltenname;
-         ibezkom.push_back(i->bezkomptype);
+         gewaehlte_indizes.push_back(i->bezkomptype);
          ++i;
          if (i!=schema->end()) sq <<", " ;
       }
@@ -90,20 +89,19 @@ void ArtikelBezeichnung::setzeExtBezSchema(const cH_ExtBezSchema &_schema) throw
      exec sql open ein;
      SQLerror::test(__FILELINE__);
      exec sql fetch from ein into sql descriptor mydesc; 
-     std::vector<string> sbezkom;
-     sbezkom.resize(ibezkom.size());
-     value.resize(ibezkom[ibezkom.size()-1]+1);
-     FetchIStream is("mydesc");
-     for (size_t i=0;i<ibezkom.size();++i)
-      {
-         std::string s;
-         is >> s;
-         sbezkom[i]=s;
-         value[ibezkom[i]]=EntryValue(sbezkom[i]);  
-//std::cout << ibezkom[i] <<"\t"<<sbezkom[i]<<"  <--\n";
-      }
      SQLerror::test(__FILELINE__);
+     value.resize(gewaehlte_indizes[gewaehlte_indizes.size()-1]+1);
+     FetchIStream is("mydesc");
+//     for (size_t i=0;i<gewaehlte_indizes.size();++i)
+     for (std::vector<int>::const_iterator i=gewaehlte_indizes.begin();i!=gewaehlte_indizes.end();++i)
+      {
+           std::string s;
+         is >> FetchIStream::MapNull<std::string>(s,"");
+         value[*i]=EntryValue(s);  
+//std::cout << *i <<"\t"<<s<<"  <--\n";
+      }
      exec sql close ein;
+     SQLerror::test(__FILELINE__);
      exec sql deallocate descriptor mydesc;
 //     tr.close(); // passiert automatisch
     }
