@@ -321,7 +321,7 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
    if (in(ae.getCombinedStatus(),STORNO,CLOSED) && !ae.getGeliefert())
    {  if (!eltern.empty())
       {  analyse("stornierte/geschlossene Aufträge ohne Lieferungen sollten keine Eltern haben!",ae);
-         goto alle_weg;
+         if (!not_strict) goto alle_weg;
       }
       return true;
    }
@@ -845,3 +845,4 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
 
 bool ppsInstanzReparatur::really_delete;
 bool ppsInstanzReparatur::silence_warnings;
+bool ppsInstanzReparatur::not_strict;

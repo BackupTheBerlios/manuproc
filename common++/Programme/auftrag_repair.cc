@@ -1,4 +1,4 @@
-// $Id: auftrag_repair.cc,v 1.9 2004/05/04 10:44:20 jacek Exp $
+// $Id: auftrag_repair.cc,v 1.10 2004/05/14 10:47:40 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -53,6 +53,7 @@ static void usage(const std::string &s)
            "\tR: Erhöhen von Produziert-Selbst-Instanzen auf noch benötigte Menge\n"
            "\tL: Löschen von ungültigen Zuordnungen (ohne Quelle oder Ziel)\n"
            "\tD: Löschen von ungültigen Einträgen (Vorsicht)\n"
+           "\tN: Unschöne aber mögliche Zustände akzeptieren (für test)\n"
            "\t*: Alle Analysen/Reparaturen auf einmal (meist mit -I)\n";
 
  std::cerr << "USAGE:  ";
@@ -153,6 +154,7 @@ int main(int argc,char *argv[])
           if (strchr(optarg,'X')||strchr(optarg,'*')||strchr(optarg,'R')) actions|=b_tree;
           if (strchr(optarg,'L')||strchr(optarg,'*')) actions|=b_links;
           if (strchr(optarg,'D')) ppsInstanzReparatur::really_delete=true;
+          if (strchr(optarg,'N')) ppsInstanzReparatur::not_strict=true;
           break;
        case 'd' : database=optarg;break;
        case 'h' : dbhost=optarg;break;

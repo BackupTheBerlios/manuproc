@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.61 2004/02/27 11:10:14 christof Exp $
+// $Id: Check.cc,v 1.62 2004/05/14 10:47:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -92,7 +92,7 @@ bool Check::teste(was_checken check,const std::string &zusatz, bool vor_dem_test
   
   std::vector<cH_ppsInstanz> VI=cH_ppsInstanz::get_all_instanz();
   Query::Execute("vacuum analyze");
-  std::string cmd="../../Programme/auftrag_repair -I -aAXC";
+  std::string cmd="../../Programme/auftrag_repair -I -aAXC -aN";
   if (analyse) cmd+=" -y";
   else cmd+=" -l";
   if (delete_repair) cmd+=" -aD";
