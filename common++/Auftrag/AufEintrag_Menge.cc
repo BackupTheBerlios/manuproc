@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.32 2004/09/06 10:36:01 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.33 2004/11/02 14:56:04 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -284,7 +284,8 @@ AuftragBase::mengen_t AufEintrag::Abbestellen(const mengen_t &menge,const AufEin
             (zweier,AufEintragZu::list_kinder,AufEintragZu::list_unsorted));
         ManuProC::Trace(trace_channel, __FILELINE__,NV("M",M),NV("Menge 2er",zweier_ae.getRestStk()),NV("Anz. Kinder",MapArt.size()));
         // Optimierung
-        if (!MapArt.empty())
+	// für auftrag_repair Zeile 541
+        if (!MapArt.empty() && !!parent)
         {  ManuProC::Trace(trace_channel, __FILELINE__,NV("M",M),NV("Menge K.",Summe(MapArt[Artikel()])),NV("Anz. K.",MapArt.size()));
            // alles verteilen
            AufEintrag AE_parent(parent);
