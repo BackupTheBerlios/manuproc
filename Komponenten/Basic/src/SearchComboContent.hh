@@ -1,4 +1,4 @@
-// $Id: SearchComboContent.hh,v 1.3 2004/05/17 12:36:19 christof Exp $
+// $Id: SearchComboContent.hh,v 1.4 2004/05/17 12:37:36 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: SearchComboContent.hh,v 1.3 2004/05/17 12:36:19 christof Exp $
+// $Id: SearchComboContent.hh,v 1.4 2004/05/17 12:37:36 christof Exp $
 
 #include <SearchComboContent.h>
-#include <Kunde/Kunde.h>
