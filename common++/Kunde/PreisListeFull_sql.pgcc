@@ -21,12 +21,26 @@
 #include <Kunde/PreisListeFull.h>
 #include <Misc/itos.h>
 #include <Misc/Transaction.h>
+#include <ExtBezSchema/ExtBezSchemaHandle.h>
+#include <ExtBezSchema/ExtBezSchema.h>
 
-
-PreisListeFull::PreisListeFull(ID id, bool art_in_list,
-			ArtikelTyp at) throw(SQLerror) : PreisListe(id)
+void PreisListeFull::load_preisliste(bool with_artbez,
+	ID id, bool art_in_list, ArtikelTyp at)
 {
- exec sql begin declare section;
+ std::string bezkomps;
+ std::string beztable;
+ int signifikanz=1;
+ cH_ExtBezSchema ebz(ExtBezSchema::default_id,at);
+ if(with_artbez)
+   {
+    ExtBezSchema::const_sigiterator bezit=ebz->sigbegin(signifikanz);
+    ExtBezSchema::const_sigiterator bezend=ebz->sigend(signifikanz);    
+    for(;bezit!=bezend;++bezit)
+      bezkomps+=" b."+(*bezit).spaltenname+",";
+    beztable = " artbez_"+itos(at)+"_"+itos(ebz->Id());
+   }
+
+/* exec sql begin declare section;
  int ARTIKELID[100];
  int PRLSNR=id;
  float PREIS[100];
@@ -34,15 +48,22 @@ PreisListeFull::PreisListeFull(ID id, bool art_in_list,
  int MINDMENGE[100];
  char *QU;
  exec sql end declare section;
- std::string qu;
- preise.erase(preise.begin(),preise.end());
+*/
 
- std::string plid=itos(PRLSNR);
+ std::string qu;
+ payoff.erase(payoff.begin(),payoff.end());
+
+ 
+ std::string plid=itos(id);
 
  if(art_in_list)
-   {qu=std::string("select artikelid,preis,preismenge,coalesce(mindestmenge,1) from artikelpreise p"
+   {qu=std::string("select ");
+    qu+=bezkomps+"artikelid,preis,preismenge,coalesce(mindestmenge,1) from artikelpreise p"
  	" join artikelstamm s on (p.artikelid=s.id and "
-	" s.warengruppe="+itos(at.Id())+") where  kundennr = ")+plid;
+	" s.warengruppe="+itos(at.Id())+") ";
+    if(with_artbez)
+      qu+=" join "+beztable+" b using (id) ";
+    qu+=" where  kundennr = "+plid;
    }
  else
    {
@@ -56,31 +77,56 @@ PreisListeFull::PreisListeFull(ID id, bool art_in_list,
 	"  where p.artikelid=s.id and kundennr = ")+plid+
 	") and s.warengruppe="+itos(at.Id())+" order by zeitpunkt";
    }
- QU = (char*)qu.c_str();
+// QU = (char*)qu.c_str();
  
  Transaction tr;
 
- exec sql prepare PRLSQU from :QU;
- exec sql declare PRLS cursor for PRLSQU; 
- exec sql open PRLS;
- SQLerror::test(__FILELINE__":PreisListeFull: select from artikelpreise",100);
+// exec sql prepare PRLSQU from :QU;
+// exec sql declare PRLS cursor for PRLSQU; 
+// exec sql open PRLS;
 
- while(1)
+ Query q(qu);
+
+ FetchIStream is=q.Fetch();
+
+ while(is.good())
    {
-    exec sql fetch 100 in PRLS into :ARTIKELID, :PREIS, :PREISMENGE,
-		:MINDMENGE;
-    SQLerror::test(__FILELINE__":PreisListeFull: fetch from artikelpreise",100);    
+    int ARTIKELID;
+    float PREIS;
+    int PREISMENGE;
+    int MINDMENGE;
+    std::string beztext;
+    struct PayOff po;
     
-    int j=sqlca.sqlerrd[2];    
-    for(int i=0; i<j; i++)
+    if(with_artbez)
       {
-        preise[UniqPreis(ARTIKELID[i],MINDMENGE[i])]=
-		Preis(PREIS[i],getWaehrung(),PREISMENGE[i]);
+       for(unsigned int i=0; i<ebz->size(signifikanz); i++)
+         {is >> beztext;
+          po.b.push_back(cH_EntryValueIntString(beztext));
+         }
       }
-    if(j<100) break;  
-   }
- exec sql close PRLS;  
+    is >> ARTIKELID >> PREIS >> PREISMENGE >> MINDMENGE;  
 
+    po.p=Preis(PREIS,getWaehrung(),PREISMENGE);
+    payoff[UniqPreis(ARTIKELID,MINDMENGE)]=po;
+
+    is=q.Fetch();
+   }
+// exec sql close PRLS;  
+
+}
+
+
+PreisListeFull::PreisListeFull(ID id, bool art_in_list,
+			ArtikelTyp at) throw(SQLerror) : PreisListe(id)
+{
+ load_preisliste(false,id,art_in_list,at);
+}
+
+PreisListeFull::PreisListeFull(bool with_artbez,ID id, bool art_in_list,
+		ArtikelTyp at) throw(SQLerror) : PreisListe(id)
+{
+ load_preisliste(with_artbez,id,art_in_list,at);
 }
 
 

@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.26 2004/05/13 10:39:22 christof Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.27 2004/08/24 11:46:09 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -98,6 +98,25 @@ void ArtikelBezeichnung::setzeExtBezSchema(const cH_ExtBezSchema &_schema) throw
     }
 } 
 
+
+void ArtikelBezeichnung::setzeExtBezSchema(
+		const std::vector<cH_EntryValueIntString> &_val,
+		const cH_ExtBezSchema &_schema)
+{   
+ schema = _schema;
+
+ value.clear();
+    
+ if (Id())
+    {
+     value.resize(_val.size()+1);
+     int cnt=1;
+     for (std::vector<cH_EntryValueIntString>::const_iterator i=_val.begin();
+			i!=_val.end();++i)
+         value[cnt++]=(*i);
+    }
+} 
+
 std::string ArtikelBezeichnung::Bezeichnung(int signifikanz, char separator,int felder) const throw()
 {   std::string ret;
     int f=0;
@@ -179,6 +198,15 @@ ArtikelBezeichnung::ArtikelBezeichnung(int signifikanz, const std::vector<cH_Ent
  
  *(ArtikelBase*)this=ArtikelBase(ARTIKELID);
  setzeExtBezSchema(schema);
+}
+
+
+ArtikelBezeichnung::ArtikelBezeichnung(const ArtikelBase &artikel, 
+const std::vector<cH_EntryValueIntString> &_val, const cH_ExtBezSchema &_schema) throw()
+: schema(_schema)
+{
+ *(ArtikelBase*)this=artikel;
+ setzeExtBezSchema(_val,schema);
 }
 
 cH_ArtikelBezeichnung::cache_t cH_ArtikelBezeichnung::cache;

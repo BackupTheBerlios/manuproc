@@ -1,4 +1,4 @@
-// $Id: PreisListeFull.h,v 1.15 2003/07/30 16:58:10 jacek Exp $
+// $Id: PreisListeFull.h,v 1.16 2004/08/24 11:46:09 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,6 +27,8 @@
 #include <Artikel/Preis.h>
 #include <Artikel/ArtikelTyp.h>
 #include<map>
+#include <Misc/EntryValueIntString.h>
+
 
 class Artikelpreis;
 
@@ -34,15 +36,24 @@ class PreisListeFull : public PreisListe
 {
 public:
  typedef std::pair<ArtikelBase::ID,int> UniqPreis; // Artikel mit Mindestmenge
- 
+
+ struct PayOff {
+       Preis p;
+       std::vector<cH_EntryValueIntString> b;
+     };
+     
 private:
- std::map<UniqPreis,Preis > preise;
+ std::map<UniqPreis,struct PayOff> payoff;
  
+ void load_preisliste(bool with_artbez,ID id, bool art_in_list, ArtikelTyp at);
+
 public:
   PreisListeFull(ID id, bool art_in_list=true, 
   		ArtikelTyp at=ArtikelTyp::default_ID) throw(SQLerror);
+  PreisListeFull(bool with_artbez,ID id, bool art_in_list=true, 
+	ArtikelTyp at=ArtikelTyp::default_ID) throw(SQLerror); 
   PreisListeFull() {}
-  const std::map<UniqPreis,Preis > &Preise() const { return preise; }
+  const std::map<UniqPreis,struct PayOff > &PayOff() const { return payoff; }
 };
 
 

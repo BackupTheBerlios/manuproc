@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.h,v 1.21 2003/11/14 15:08:43 christof Exp $
+// $Id: ArtikelBezeichnung.h,v 1.22 2004/08/24 11:46:09 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -99,6 +99,9 @@ private:
 /// Vorsicht: Der Artikeltyp muss stimmen!
  ArtikelBezeichnung(int signifikanz, const std::vector<cH_EntryValue> &values, const cH_ExtBezSchema &schema) throw(SQLerror);
 
+// keine Datenbankkzugriffe nötig, ArtikelBase wird bereits übergeben
+ ArtikelBezeichnung(const ArtikelBase &artikel, const std::vector<cH_EntryValueIntString> &values, const cH_ExtBezSchema &schema) throw(); 
+
 public:
  ArtikelBezeichnung() : schema(ExtBezSchema::default_id) {}
 
@@ -108,6 +111,9 @@ public:
  cH_EntryValue Komponente_als_EntryValue(int feldnr,int signifikanz=1) const throw();
  
  void setzeExtBezSchema(const cH_ExtBezSchema &schema) throw(SQLerror);
+ void setzeExtBezSchema(const std::vector<cH_EntryValueIntString> &_val,
+		const cH_ExtBezSchema &_schema);
+ 
  const cH_ExtBezSchema getExtBezSchema() const throw()
  {  return schema;
  }
@@ -198,6 +204,15 @@ public:
 	cH_ArtikelBezeichnung(int signifikanz, const std::vector<cH_EntryValue> &values, const cH_ExtBezSchema &schema) throw(SQLerror)
 		: Handle<const ArtikelBezeichnung>(new ArtikelBezeichnung(signifikanz,values,schema))
 	{}
+
+/// Objekt erzugen ohne Datenbankzugriffe, alles wird bereits übergeben
+	cH_ArtikelBezeichnung(
+	              const ArtikelBase &artikel, 
+	              const std::vector<cH_EntryValueIntString> &values, 
+                      const cH_ExtBezSchema &schema=ExtBezSchema::default_id) throw()
+		: Handle<const ArtikelBezeichnung>(new ArtikelBezeichnung(artikel,values,schema))
+	{}	
+	
 /// default ctor
 	struct Default { Default(){} };
 	// call it like: cH_ArtikelBezeichnung(cH_ArtikelBezeichnung::Default());
