@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.23 2003/12/09 13:54:09 christof Exp $
+// $Id: db_upgrade.cc,v 1.24 2003/12/10 10:10:58 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -135,6 +135,8 @@ int main(int argc,char *argv[])
      Query_nt("alter table ku_preisliste alter art set not null");
      Query_nt("alter table ku_preisliste alter art set not null");
     }
+
+  check_column("ku_preisliste","tablename_gruppe","text");
 
   // FiBu
   check_column("buchjournal","geschlossen_am","date");
