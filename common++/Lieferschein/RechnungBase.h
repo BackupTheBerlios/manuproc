@@ -1,4 +1,4 @@
-/* $Id: RechnungBase.h,v 1.14 2003/07/09 10:51:10 jacek Exp $ */
+/* $Id: RechnungBase.h,v 1.15 2003/11/07 11:12:50 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -50,7 +50,7 @@ class RechnungBase // : ManuProcEntity
 
 	ID Id() const {return rngid;}
 	std::string getRngidToStr() const
-	{ return Formatiere(rngid,0,6,"","",'0'); }
+	{ return Formatiere((unsigned long)rngid,0,6,"","",'0'); }
 
    // sobald von ManuProcEntity abgeleitet die folgende Zeile löschen MAT
    bool Valid() const {return ManuProcEntity<>::Valid(rngid);}

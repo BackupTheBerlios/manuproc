@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.h,v 1.17 2002/12/19 13:24:40 jacek Exp $ */
+/* $Id: Ausgabe_neu.h,v 1.18 2003/11/07 11:12:50 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,12 +30,11 @@ const std::string Formatiere(unsigned long Zahl,
                 const char *TausenderTrennzeichen=".",
                 const char *Komma=",",char fuehrendesZeichen=' ');
                 
-/*const std::string Formatiere(unsigned long long Zahl,
+const std::string Formatiere(unsigned long long Zahl,
                 unsigned int Nachkommastellen=0,
                 unsigned int Ziellaenge=0,
                 const char *TausenderTrennzeichen=".",
                 const char *Komma=",",char fuehrendesZeichen=' ');                
-*/
                 
 // #warning TODO: für double sollte es einen Fehler geben ?
 extern inline const std::string FormatiereTeX(unsigned long Zahl,
@@ -44,12 +43,11 @@ extern inline const std::string FormatiereTeX(unsigned long Zahl,
 {  return Formatiere(Zahl,Nachkommastellen,Ziellaenge,"\\,", ",", fuehrendesZeichen);
 }
 
-/*extern inline const std::string FormatiereTeX(unsigned long long Zahl,
+extern inline const std::string FormatiereTeX(unsigned long long Zahl,
                 unsigned int Nachkommastellen=0,
                 unsigned int Ziellaenge=0,char fuehrendesZeichen=' ')
 {  return Formatiere(Zahl,Nachkommastellen,Ziellaenge,"\\,", ",", fuehrendesZeichen);
 }
-*/
 
 static const int NEEDCHAR=1;
 static const int BARISNEWLINE=2;
@@ -85,7 +83,7 @@ template <int decimals,class Ftype,class Itype>
 
 // um transparent zwischen fixedpoints und ints umschalten zu können
 extern inline const std::string Formatiere_short(unsigned int i)
-{  return Formatiere(i);
+{  return Formatiere((unsigned long)i);
 }
 
 // als Preis (2 Nachkommastellen, alle weiteren als superscript (Potenzen))

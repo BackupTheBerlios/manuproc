@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.cc,v 1.13 2002/12/19 13:24:40 jacek Exp $ */
+/* $Id: Ausgabe_neu.cc,v 1.14 2003/11/07 11:12:50 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -68,7 +68,7 @@ std::ostream &Formatiere(std::ostream &os,unsigned long Zahl,
    return os;
 }
 
-/*std::ostream &Formatiere(std::ostream &os,unsigned long long Zahl, 
+std::ostream &Formatiere(std::ostream &os,unsigned long long Zahl, 
 		unsigned int Nachkommastellen,
 		unsigned int Ziellaenge,
 		const char *TausenderTrennzeichen,
@@ -115,7 +115,6 @@ std::ostream &Formatiere(std::ostream &os,unsigned long Zahl,
    return os;
 }
 
-*/
 
 
 std::string string2TeX(const std::string s, int flags) throw()
@@ -179,12 +178,25 @@ const std::string FormatiereEmptyInt(long Zahl)
 {
   if(Zahl==0) return "";
   std::string s;
-  if(Zahl>=0) return Formatiere(Zahl);
-  else        return "-"+Formatiere(-Zahl);
+  if(Zahl>=0) return Formatiere((unsigned long)Zahl);
+  else        return "-"+Formatiere((unsigned long)(Zahl*-1));
   abort();//never get here
 }
 
 const std::string Formatiere(unsigned long Zahl,
+                unsigned int Nachkommastellen,
+                unsigned int Ziellaenge,
+                const char *TausenderTrennzeichen,
+                const char *Komma,char fuehrendesZeichen)
+{  std::ostrstream os;
+   Formatiere(os,Zahl,Nachkommastellen,Ziellaenge,TausenderTrennzeichen,Komma,fuehrendesZeichen) 
+   	<< char(0);
+   const std::string res(os.str());
+   os.freeze(0);
+   return res;
+}
+
+const std::string Formatiere(unsigned long long Zahl,
                 unsigned int Nachkommastellen,
                 unsigned int Ziellaenge,
                 const char *TausenderTrennzeichen,

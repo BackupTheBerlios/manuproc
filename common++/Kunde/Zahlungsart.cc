@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.cc,v 1.33 2003/06/26 09:01:36 jacek Exp $
+// $Id: Zahlungsart.cc,v 1.34 2003/11/07 11:12:50 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -126,7 +126,7 @@ void Zahlungsart::TeX_out(std::ostream &os,
        os << itos(zahlungsfrist) << " Tage nach Rechnungsstellung\\\\\n";     
      os << "von Ihrem Konto "<< ulltos(k->getKtnr());
      os << "\\\\\n bei der " <<k->getbank();
-     os << "\n BLZ "<<FormatiereTeX(k->getblz())<<" abgebucht\\\\\n";
+     os << "\n BLZ "<<FormatiereTeX((unsigned long)k->getblz())<<" abgebucht\\\\\n";
     }    
       
   }
@@ -271,7 +271,7 @@ void Zahlungsart::TeX_out(std::ostream &os,
        os << itos(zahlungsfrist) << " Tage nach Rechnungsstellung\\\\\n";
      os << "von Ihrem Konto "<< ulltos(k->getKtnr());
      os << "\\\\\n bei der " <<k->getbank();
-     os << "\n BLZ "<<FormatiereTeX(k->getblz())<<" abgebucht\\\\\n";
+     os << "\n BLZ "<<FormatiereTeX((unsigned long)k->getblz())<<" abgebucht\\\\\n";
    }
   }
  else
