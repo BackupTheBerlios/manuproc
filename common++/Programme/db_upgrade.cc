@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.13 2003/07/28 10:07:45 christof Exp $
+// $Id: db_upgrade.cc,v 1.14 2003/09/15 11:20:21 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,7 +23,7 @@
 #include <Misc/inbetween.h>
 #include <ecpgerrno.h>
 
-void check_column(const std::string &table, const std::string &column,
+bool check_column(const std::string &table, const std::string &column,
 		const std::string &type)
 {  int oid,attnum;
   try
@@ -32,7 +32,7 @@ void check_column(const std::string &table, const std::string &column,
 	>> oid;
   } catch (SQLerror &e)
   {  std::cerr << "Table "<< table << " is missing\n";
-     return;
+     return false;
   }
    try
    { Query("select attnum from pg_attribute where attrelid=? and attname=?")
@@ -45,8 +45,10 @@ void check_column(const std::string &table, const std::string &column,
       {  std::string q="ALTER TABLE "+table+" ADD "+column+" "+type;
          std::cout << q << '\n';
          Query x(q);
+	 return true;
       }
    }
+   return false;
 }
 
 int main(int argc,char *argv[])

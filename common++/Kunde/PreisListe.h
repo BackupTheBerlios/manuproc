@@ -1,4 +1,4 @@
-// $Id: PreisListe.h,v 1.11 2003/04/24 13:44:37 jacek Exp $
+// $Id: PreisListe.h,v 1.12 2003/09/15 11:20:21 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -32,15 +32,17 @@ class PreisListe : public ManuProcHandle<>
 {
 public:
  typedef fixedpoint<2> rabatt_t;
+ typedef enum { PL_UNKNOWN='U', PL_EINKAUF='E', PL_VERKAUF='V'} PlArt;
 private:
  std::string name;
  cP_Waehrung waehrung;
  mutable bool rabatt_gesetzt;
  mutable rabatt_t rabatt;
+ PlArt art;
 
 public:
   PreisListe(ID id) throw(SQLerror);
-  PreisListe() : rabatt_gesetzt(false),rabatt(0)  {}
+  PreisListe() : rabatt_gesetzt(false),rabatt(0),art(PL_UNKNOWN)  {}
   ID Id() const { return entityid; } 
   const std::string Name() const { return name; }
   static ID createPreisliste(const std::string &name) throw(SQLerror);
@@ -48,6 +50,7 @@ public:
   const rabatt_t getRabatt() const { return rabatt;}
   const cP_Waehrung getWaehrung() const { return waehrung; }
   void setRabatt(bool fest, rabatt_t rab) throw(SQLerror);
+  PlArt Art() const { return art; }
 };
 
 

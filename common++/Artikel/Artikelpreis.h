@@ -1,4 +1,4 @@
-// $Id: Artikelpreis.h,v 1.21 2003/09/12 13:03:39 jacek Exp $
+// $Id: Artikelpreis.h,v 1.22 2003/09/15 11:20:21 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -78,7 +78,7 @@ public:
 
 	void changePreis(const Preis &p, int newmindmenge=0) throw(SQLerror);
 	void changeMindMenge(int mindmenge) throw(SQLerror) {}	
-   static void remove(const PreisListe::ID liste,const ArtikelBase &a,
+   static void remove(const cH_PreisListe liste,const ArtikelBase &a,
    		std::vector<std::string> del_all_komp=std::vector<std::string>(),
    		int mindmenge=0, bool from_all_lists=false) throw(SQLerror);
 

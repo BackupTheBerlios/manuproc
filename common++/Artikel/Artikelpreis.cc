@@ -313,7 +313,7 @@ void Artikelpreis::changePreis(const Preis &p, int newmindmenge) throw(SQLerror)
 
 
 
-void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a,
+void Artikelpreis::remove(const cH_PreisListe liste,const ArtikelBase &a,
 	std::vector<std::string> del_all_komp,
 	int mindmenge, bool from_all_lists) throw(SQLerror)
 {
@@ -321,7 +321,7 @@ void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a,
  geldbetrag_t PREIS;
  int UID=getuid();
  int MINDESTMENGE=mindmenge;
- int PRLSNR=liste;
+ int PRLSNR=liste->Id();
 
 // typedef std::pair<ArtikelBase::ID,int> UniqPreis; // artikel, mindestmenge
 
@@ -337,7 +337,7 @@ void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a,
 	" on (id=artikelid ";
 
    if(!from_all_lists)
-	query+=" and p.kundennr="+itos(liste);
+	query+=" and p.kundennr="+itos(liste->Id());
 
     if(MINDESTMENGE)
 	query+=" and p.mindestmenge="+itos(MINDESTMENGE);
