@@ -22,3 +22,5 @@ stamp-h.in
 install-sh
 *_new
 macros
+autom4te.cache
+stamp-h1

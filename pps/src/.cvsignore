@@ -17,3 +17,5 @@ auftrag_rechnung_sql.cc
 AuftragEntry_sql.cc
 auftrag_main_sql.cc
 auftrag_main_instanz_sql.cc
+auftrag_lieferschein_sql.cc
+auftrag_lieferschein_classes_sql.cc
