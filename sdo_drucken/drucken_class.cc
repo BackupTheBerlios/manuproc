@@ -221,18 +221,18 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
 	     os << mld->MLT(MultiL_Dict::TXT_KONTO) << " " << ulltos(kunde_von->getKtnr()) << ", ";
 	     os << "BLZ " << itos(kunde_von->getblz()) << ", ";	  
 	     os << mld->MLT(MultiL_Dict::TXT_BANK) << " " << kunde_von->getbank();
-//	     os << "~\\\\S.W.I.F.T.: WELA DE D1 VEL - IBANDE61334500000000240044\\\\\n";
-	     os << "~\\\\S.W.I.F.T.: WUPS DE 33 - IBANDE91330500000000423111\\\\\n";
+	     os << "~\\\\S.W.I.F.T.: BOTK DE DX - IBAN " << kunde_von->getIBAN_Code() << "\\\\\n";
 	    }
 	  else
 	    os << "~\\\\~\\\\\n";
 
-	  os << mld->MLT(MultiL_Dict::TXT_BTN)<<": 58063210\n";
+	  os << mld->MLT(MultiL_Dict::TXT_BTN)<<": \n";
 	 }
 
   if(kunde_an->land()->Auslaender())
     { os << "~\\\\\\footnotesize - "<<mld->MLT(MultiL_Dict::TXT_WARE_ZOLL)<<"\\\\\\\\\n";
-      os << "\\bigskip "<< mld->MLT(MultiL_Dict::TXT_MADEINGER) <<"\n";
+
+//      os << "\\bigskip "<< mld->MLT(MultiL_Dict::TXT_MADEINGER) <<"\n";
 
    try{u.r->setGewicht();}
 
@@ -334,7 +334,7 @@ catch(SQLerror &e) { std::cout << e; return; }
 	os << "~" << string2TeX(Notiz(),sf)<<"~" << "\\\\\n";
 	}
 
- if(Typ()==Rechnung && !gutschrift() && !storniert())
+/* if(Typ()==Rechnung && !gutschrift() && !storniert())
  if(kunde_an->land()->Auslaender())
    if(!kunde_an->land()->EU())
         {os << "~\\\\";
@@ -345,6 +345,7 @@ catch(SQLerror &e) { std::cout << e; return; }
 	os << "\\\\\n";
 	os << "~\\\\\n"<<kunde_von->ort()<<", "<<mld->MLT(MultiL_Dict::TXT_DEN);
 	}
+*/
   Gtk2TeX::Footer(os);
 }
 
