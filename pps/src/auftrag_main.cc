@@ -36,6 +36,10 @@
 //#include <Lager/Lager_Vormerkungen.hh>
 #include <unistd.h>
 #include <MyWindow.hh>
+#include <Misc/Trace.h>
+
+const UniqueValue::value_t auftrag_main::trace_instanzen
+      = ManuProC::Tracer::channels.get();
 
 extern MyMessage *meldung;
 
@@ -478,11 +482,9 @@ void auftrag_main::getAufEintrag_fromNode(TCListRow_API::const_iterator b,
         const Data_auftrag *dt=dynamic_cast<const Data_auftrag*>(&*(tlr->LeafData()));
         if(togglebutton_material->get_active()) 
           get_ArtikelZusammensetzung(dt->get_AufEintrag(),M);
-/*
         else if(togglebutton_auftraege->get_active())
           get_ArtikelHerkunft(ArtikelBase(dt->get_Artikel_ID()),
                                         dt->get_AufEintrag(),M);
-*/
       }
     if ((*i).begin()!=(*i).end()) getAufEintrag_fromNode((*i).begin(),(*i).end(),M);
   }
@@ -542,7 +544,7 @@ void auftrag_main::show_something_for(AufEintrag& selAufEintrag)
 
 void auftrag_main::get_ArtikelZusammensetzung(const AufEintrag& AE_Kunde,
                                    std::map<st_index,st_mengen>& map_allart)
-{
+{ ManuProC::Trace _t(trace_instanzen, __FUNCTION__,AufEintragBase(AE_Kunde),AE_Kunde.Artikel());
   std::list<AufEintragZu::st_reflist> artikelreflist=AufEintragZu(AE_Kunde).get_Referenz_listFull(true,false);
   for(std::list<AufEintragZu::st_reflist>::const_iterator i=artikelreflist.begin();i!=artikelreflist.end();++i)
    {
@@ -551,7 +553,7 @@ void auftrag_main::get_ArtikelZusammensetzung(const AufEintrag& AE_Kunde,
      AuftragBase::mengen_t bestellMenge=AE.getStueck();
      ArtikelBaum::faktor_t faktor = ArtikelBaum(AE_Kunde.ArtId()).Faktor(i->Art);
      AuftragBase::mengen_t sollMenge=AE_Kunde.getStueck()*faktor;
-//     AuftragBase::mengen_t sollMenge=AE.getStueck();
+
      if(i->AEB.Id()!=0) // nur Mengen der geplante Aufträge berücksichtigen
       {
         planMenge=AE.getStueck();
@@ -559,25 +561,16 @@ void auftrag_main::get_ArtikelZusammensetzung(const AufEintrag& AE_Kunde,
       }
      map_allart[st_index(i->AEB.Instanz(),i->Art)] += 
          st_mengen(sollMenge,planMenge,bestellMenge,geliefertMenge);
-
-/*
-cout << i->AEB.Instanz()->Name()<<' '<<i->AEB.Id()<<' '
-<<cH_ArtikelBezeichnung(i->AB)->Bezeichnung()<<'\t';
-cout << map_allart[st_index(i->AEB.Instanz(),i->AB)].sollMenge
-<<' '<< map_allart[st_index(i->AEB.Instanz(),i->AB)].planMenge
-<<' '<< map_allart[st_index(i->AEB.Instanz(),i->AB)].bestellMenge
-<<' '<< map_allart[st_index(i->AEB.Instanz(),i->AB)].gelieferteMenge
-<<'\n';
-*/
+     ManuProC::Trace(trace_instanzen, __FILELINE__,i->AEB,i->AB,sollMenge,planMenge,bestellMenge,geliefertMenge);
    }
 }
 
 void auftrag_main::get_ArtikelHerkunft(const AufEintrag& AEB,
                                        std::map<st_index,st_mengen>& map_allart)
-{
+{ ManuProC::Trace _t(trace_instanzen, __FUNCTION__,AufEintragBase(AEB),AEB.Artikel());
   std::list<AufEintragZu::st_reflist> artikelreflist=AufEintragZu(AEB).get_Referenz_listFull(false,false);
-//cout << AEB.Instanz()->Id()<<' '<<AEB.Instanz()->Name()<<' '<<AEB.Id()<<' '<<AEB.ZNr()<<'\n';
-//cout <<"SIZE="<<artikelreflist.size()<<'\n';
+  if (ManuProC::Tracer::enabled(trace_instanzen))
+     ManuProC::Trace(trace_instanzen, __FILELINE__,"size",artikelreflist.size());
   for(std::list<AufEintragZu::st_reflist>::const_iterator i=artikelreflist.begin();i!=artikelreflist.end();++i)
    {
      std::list<cH_Kunde> KL;
@@ -585,14 +578,13 @@ void auftrag_main::get_ArtikelHerkunft(const AufEintrag& AEB,
               KL=AufEintragZu(AEB).get_Referenz_Kunden() ;
      else KL.push_back(cH_Kunde(Kunde::none_id)) ;
       AufEintrag AE(i->AEB);
-//cout << i->AEB2.Instanz()->Name()<<' '<<cH_ArtikelBezeichnung(i->Art)->Bezeichnung()
-//<<" Menge= "<<' '<<i->Menge<<'\n';
-//cout << AEB.getRestStk()<<'\t'<<AEB.getStueck()<<'\n';
-//cout << AE.getRestStk()<<'\t'<<AE.getStueck()<<'\n';
+      
+     ManuProC::Trace(trace_instanzen, __FILELINE__,i->AEB2,i->Art,"menge",i->Menge,
+      		AEB.getRestStk(),AEB.getStueck(),AE.getRestStk(),AE.getStueck());
+
      for(std::list<cH_Kunde>::const_iterator j=KL.begin();j!=KL.end();++j)
         map_allart[st_index(i->AEB.Instanz(),*j,i->Art)] 
                    += st_mengen(i->Menge,0,AE.getRestStk(),0);     
-//                   += st_mengen(i->Menge,0,i->Menge,0);     
     }
 }
 
@@ -633,7 +625,7 @@ void auftrag_main::show_selected_line(bool lager)
 }
 
 void auftrag_main::instanz_menge(const std::map<st_index,st_mengen>& map_allart)
-{
+{ ManuProC::Trace _t(trace_instanzen, __FUNCTION__);
   if(!togglebutton_material->get_active() &&
      !togglebutton_auftraege->get_active()) 
    {
@@ -645,8 +637,8 @@ void auftrag_main::instanz_menge(const std::map<st_index,st_mengen>& map_allart)
   for (std::map<st_index,st_mengen>::const_iterator i=map_allart.begin();i!=map_allart.end();++i)
     {
       LM[i->first.instanz].push_back(artmeng(i->first,i->second));
-//cout <<i->first.instanz->Name()<<' '<<cH_ArtikelBezeichnung(i->first.artikel)->Bezeichnung()
-// <<' '<<i->second.sollMenge<<' '<<i->second.planMenge<<' '<<i->second.bestellMenge<<'\n';
+      ManuProC::Trace(trace_instanzen, __FILELINE__,i->first.instanz,i->first.artikel,
+      		i->second.sollMenge,i->second.planMenge,i->second.bestellMenge);
     }
   // 2. Schritt Überschriften (Instanzen) in die Tabelle schreiben
   //            UND Listen sortieren UND in Tabelle einfügen

@@ -28,7 +28,7 @@
 #include <Auftrag/AufEintragZu.h>
 #include<Auftrag/selFullAufEntry.h>
 #include <Aux/Long.h>
-
+#include <Misc/UniqueValue.h>
 
 class auftrag_main : public auftrag_main_glade
 {   
@@ -43,7 +43,8 @@ class auftrag_main : public auftrag_main_glade
 
  AuftragBase::ID SelectedAuftragsId() const;
 public:
-
+ static const UniqueValue::value_t trace_instanzen;
+ 
 private:
    struct st_index {cH_ppsInstanz instanz; cH_Kunde Kunde; ArtikelBase artikel;
           st_index(cH_ppsInstanz i,cH_Kunde k,ArtikelBase a)
