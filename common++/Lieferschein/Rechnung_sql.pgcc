@@ -20,6 +20,7 @@
 #include "Rechnung.h"
 #include <Misc/Transaction.h>
 #include <Misc/FetchIStream.h>
+#include<math.h>
 exec sql include sqlca;
 
 
@@ -304,29 +305,32 @@ void Rechnung::setze_Rabatt(rabatt_t r) throw(SQLerror)
 // nur Warenwert, ohne MwSt., ggf. rabattiert
 Rechnung::geldbetrag_t Rechnung::Betrag(bool brutto) const throw(SQLerror)
 {
- exec sql begin declare section;
- float BETRAG;
- int IBETRAG;
- int RNGID= Id();
- exec sql end declare section;
+ int ROUND=ManuProC::Precision::GeldBetrag; //Rundungstellen
+ int HELPFKT=(int)pow(10.0,ROUND);
+ Preis::geldbetrag_out betrag; // Rückgabe immer mit zwei Stellen
 
  if(brutto)
-   {exec sql select  sum(round(preis*stueck,2)) 
-	into :BETRAG:IBETRAG from rechnungentry
-	where rngid = :RNGID;   
+   {
+    Query q("select  sum(round(preis*stueck,2)) "
+	    " from rechnungentry where rngid = ?");
+    q << Id();
     SQLerror::test(__FILELINE__);
+
+    q >> FetchIStream::MapNull(betrag,0.0);   
    }
  else
-   {exec sql select  sum(round((round(preis*((100-rabatt)/100),2))*stueck,2)) 
-	into :BETRAG:IBETRAG from rechnungentry
-	where rngid = :RNGID; 
+   {Query q("select  sum(round((round(preis*((100-rabatt)/100), case "
+	" when (preis*?)%10!=0 then ? else 2 end))*stueck,2))" 
+	" from rechnungentry where rngid = ?");
+    q << HELPFKT << ROUND << Id(); 
     SQLerror::test(__FILELINE__);
-    float rab = (100.0 - rabatt.as_float()) / 100.0;
-    fixedpoint<2> betr = BETRAG * rab; 
-    BETRAG = betr.as_float();
+    q >> FetchIStream::MapNull(betrag,0.0);   
+
+    float rab = 1 - .01*rabatt.as_float();
+    betrag = betrag.as_float() * rab; 
    }
 
- return (IBETRAG ? 0 : BETRAG);
+ return betrag;
 }
 
 

@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.15 2003/11/18 11:46:31 jacek Exp $
+// $Id: Rechnung.cc,v 1.16 2003/11/18 15:05:11 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -68,7 +68,7 @@ const throw(SQLerror)
  bool brutto=false;
  int stsatz=0;
 
- Preis::geldbetrag_t betrag=Betrag(brutto);
+ Preis::geldbetrag_out betrag=Betrag(brutto);
  
  if(entsorgung)
    betrag = betrag.as_float() * (1.0 + ENTSSATZ);
