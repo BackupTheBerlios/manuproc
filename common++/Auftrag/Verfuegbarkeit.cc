@@ -1,4 +1,4 @@
-/* $Id: Verfuegbarkeit.cc,v 1.7 2004/02/13 17:38:07 christof Exp $ */
+/* $Id: Verfuegbarkeit.cc,v 1.8 2004/02/23 10:09:15 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -126,7 +126,63 @@ void Verfuegbarkeit::verfuegbar(const AufEintrag &ae, map_t &result,
    // Rekursion (order 1230)
    distribute_children_artbaum(ae,menge,ae.Artikel(),
    		verf_recurse(offset,result,ae.Artikel(),ae));
-   ManuProC::Trace(AuftragBase::trace_channel,"result",
+   ManuProC::Trace(AuftragBase::trace_channel,"=",
    		NV("vorr",result[idx].vorraetig),NV("gepl",result[idx].geplant),
    		NV("unge",result[idx].ungeplant),NV("err",result[idx].error));
+}
+
+namespace
+{
+struct benoe_recurse : distribute_parents_cb
+{	Verfuegbarkeit::mengen_t offset;
+	mutable Verfuegbarkeit::map_t &result;
+	mutable ArtikelBaum artbaum;
+
+	mutable ArtikelBase lastart;
+	mutable Verfuegbarkeit::mengen_t lastoffs;
+	mutable cH_ppsInstanz lastinst;
+	
+	AufEintragBase elter;
+
+	AuftragBase::mengen_t operator()(const AufEintragBase &aeb,AuftragBase::mengen_t m) const
+	{  return m; }
+	bool operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const
+	{  return AufEintragZu_sort::priority(a,b);
+	}
+
+	virtual ~benoe_recurse() {}
+	benoe_recurse(const Verfuegbarkeit::mengen_t &o, Verfuegbarkeit::map_t &r,
+			const ArtikelBaum &ab, const AufEintragBase &e) 
+		: offset(o), result(r), artbaum(ab), elter(e) 
+	{}
+};
+}
+
+void Verfuegbarkeit::wozu_benoetigt(const AufEintrag &ae, map_t &result, 
+	mengen_t menge, mengen_t offset,const AufEintrag &von)
+{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("ae",ae),
+		NV("menge",menge),NV("offset",offset));
+   if (offset>=ae.getStueck()) return;
+   if (offset+menge>ae.getStueck()) menge=ae.getStueck()-offset;
+   if (!menge) return;
+   ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,NV("menge",menge));
+   
+   mapindex idx(ae.Instanz(),ae.Artikel()); // kunde?
+   if (ae.Id()==AuftragBase::dispo_id)
+   {  result[idx].vorraetig+=menge;
+   }
+   else if (ae.Id()==AuftragBase::plan_auftrag_id || ae.Id()>=AuftragBase::handplan_auftrag_id)
+   {  assert(!ae.Instanz()->LagerInstanz());
+      result[idx].geplant+=menge;
+   }
+   else
+   {  assert(ae.Id()==AuftragBase::ungeplante_id);
+      result[idx].ungeplant+=menge;
+   }
+   
+   // Rekursion (Priority)
+   distribute_parents(ae,menge,benoe_recurse(offset,result,ae.Artikel(),ae));
+   ManuProC::Trace(AuftragBase::trace_channel,"=",
+   		NV("vorr",result[idx].vorraetig),NV("gepl",result[idx].geplant),
+   		NV("unge",result[idx].ungeplant),NV("err",result[idx].error));   
 }
