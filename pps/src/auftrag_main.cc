@@ -472,6 +472,7 @@ void auftrag_main::on_node_selected(const TreeRow &node)
   erfassen_button->set_sensitive(false);
 }
 
+
 void auftrag_main::getAufEintrag_fromNode(TCListRow_API::const_iterator b,
          TCListRow_API::const_iterator e, std::map<st_index,st_mengen>& M)
 {  
@@ -483,8 +484,8 @@ void auftrag_main::getAufEintrag_fromNode(TCListRow_API::const_iterator b,
         if(togglebutton_material->get_active()) 
           get_ArtikelZusammensetzung(dt->get_AufEintrag(),M);
         else if(togglebutton_auftraege->get_active())
-          get_ArtikelHerkunft(ArtikelBase(dt->get_Artikel_ID()),
-                                        dt->get_AufEintrag(),M);
+;//          get_ArtikelHerkunft(ArtikelBase(dt->get_Artikel_ID()),
+//                                        dt->get_AufEintrag(),M);
       }
     if ((*i).begin()!=(*i).end()) getAufEintrag_fromNode((*i).begin(),(*i).end(),M);
   }
@@ -561,7 +562,7 @@ void auftrag_main::get_ArtikelZusammensetzung(const AufEintrag& AE_Kunde,
       }
      map_allart[st_index(i->AEB.Instanz(),i->Art)] += 
          st_mengen(sollMenge,planMenge,bestellMenge,geliefertMenge);
-     ManuProC::Trace(trace_instanzen, __FILELINE__,i->AEB,i->AB,sollMenge,planMenge,bestellMenge,geliefertMenge);
+//     ManuProC::Trace(trace_instanzen, __FILELINE__,i->AEB,i->AB,sollMenge,planMenge,bestellMenge,geliefertMenge);
    }
 }
 
@@ -579,8 +580,8 @@ void auftrag_main::get_ArtikelHerkunft(const AufEintrag& AEB,
      else KL.push_back(cH_Kunde(Kunde::none_id)) ;
       AufEintrag AE(i->AEB);
       
-     ManuProC::Trace(trace_instanzen, __FILELINE__,i->AEB2,i->Art,"menge",i->Menge,
-      		AEB.getRestStk(),AEB.getStueck(),AE.getRestStk(),AE.getStueck());
+//     ManuProC::Trace(trace_instanzen, __FILELINE__,i->AEB2,i->Art,"menge",i->Menge,
+//      		AEB.getRestStk(),AEB.getStueck(),AE.getRestStk(),AE.getStueck());
 
      for(std::list<cH_Kunde>::const_iterator j=KL.begin();j!=KL.end();++j)
         map_allart[st_index(i->AEB.Instanz(),*j,i->Art)] 

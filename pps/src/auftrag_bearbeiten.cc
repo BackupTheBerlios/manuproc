@@ -255,7 +255,8 @@ void auftrag_bearbeiten::on_stkmtr_spinbutton_activate()
        	AuftragBase::mengen_t(stkmtr_spinbutton->get_value_as_int())-
         aktaufeintrag->getStueck();
        			
-       AuftragBase::mengen_t mt=aktaufeintrag->updateStkDiff__(getuid(),diffmenge,true,ManuProC::Auftrag::r_Anlegen);
+       AuftragBase::mengen_t mt=aktaufeintrag->updateStkDiff__
+	(getuid(),diffmenge,true,AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
        assert(mt==diffmenge);
        fillCList();
        auftrag_clist->grab_focus();
@@ -429,7 +430,6 @@ void auftrag_bearbeiten::loadAuftrag(const AuftragBase& auftragbase)
 // scrolledwindow_auftraege->show();
  aufeintrag_box->show();
  zahlart->set_value(auftrag->Zahlart()->Id());
-
 }
 
 void auftrag_bearbeiten::fillMask() 
