@@ -280,7 +280,11 @@ void auftrag_lieferschein::on_offen_leaf_selected(cH_RowDataBase d)
 void auftrag_lieferschein::fill_input(const AufEintrag& AE)
 {
   fill_with(AE,Einheit(AE.Artikel()),AE.getRestStk().as_int(),
+#ifndef MABELLA_EXTENSIONS
   Lieferschein::StandardLaenge(AE.Artikel()).as_int()
+#else
+  0
+#endif
   );
 }
 void auftrag_lieferschein::fill_input(const AufEintrag& AE,const LieferscheinEntry& LE)

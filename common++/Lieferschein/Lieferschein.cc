@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.34 2003/07/08 12:27:24 jacek Exp $ */
+/* $Id: Lieferschein.cc,v 1.35 2003/07/09 12:48:13 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,6 +23,13 @@
 //#include <Instanzen/Produziert.h>
 #include <unistd.h> 
 #include <Misc/TraceNV.h>
+
+
+#if __GNUC__ > 2  // fragt nicht ...
+	 const int Lieferschein::Fertig;
+	 const int Lieferschein::Offen;
+#endif
+
 
 Lieferschein::Lieferschein(const LieferscheinBase &lsbase, const ManuProC::Datum &_lsdatum,
 int _kdnr,int _rngid, int _paeckchen, int _pakete, const ManuProC::Datum &_geliefertam,

@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.71 2003/07/08 12:27:24 jacek Exp $
+// $Id: AufEintrag.cc,v 1.72 2003/07/09 12:48:13 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -111,12 +111,12 @@ void AufEintrag::Produziert(mengen_t menge,
 
 #ifdef MABELLA_EXTENSIONS // Lager updaten
 #warning Jacek: Das muss raus, sobald es mehrstufig ist
- if(Instanz() == ppsInstanzID::Kundenauftraege)
-   {
-    FertigWaren fw(Artikel(),(FertigWaren::enum_Aktion)'L',menge.as_int(),lfrsid);
-    if(menge < 0) fw.Einlagern(1);
-    else if(menge > 0) fw.Auslagern(1);
-   }
+// if(Instanz() == ppsInstanzID::Kundenauftraege)
+//   {
+//    FertigWaren fw(Artikel(),(FertigWaren::enum_Aktion)'L',menge.as_int(),lfrsid);
+//    if(menge < 0) fw.Einlagern(1);
+//    else if(menge > 0) fw.Auslagern(1);
+//   }
 #endif
 
 }
