@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema.h,v 1.17 2003/03/24 17:13:15 christof Exp $
+// $Id: ExtBezSchema.h,v 1.18 2003/03/28 18:18:25 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -34,6 +34,7 @@ public:
 	typedef unsigned int ID;
 	static const ID default_ID=1; // KundenId
 	static const ID default_id=default_ID;
+	static const ID none_id = 0;
 	static const ArtikelTyp::ID default_Typ=ArtikelTyp::default_ID;
 	struct BezKomp
 	{	int bezkomptype; // =Index
