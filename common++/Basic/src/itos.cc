@@ -1,4 +1,4 @@
-// $Id: itos.cc,v 1.12 2002/10/24 14:06:49 thoma Exp $
+// $Id: itos.cc,v 1.13 2004/02/12 11:26:43 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,6 +30,16 @@ std::string itos0p(int i, int c,bool show_plus)
   if(i==c) return "";
   if(!show_plus || i<0) return itos(i) ;
   return  "+"+itos(i) ;
+}
+
+
+
+std::string itos0pad(int i,int p)
+{
+ char buffer[20];
+ if(p>20) p=20;
+ snprintf(buffer,sizeof buffer,"%0*i",p,i);
+ return(buffer);
 }
 
 

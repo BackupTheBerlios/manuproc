@@ -1,4 +1,4 @@
-/* $Id: ManuProcEntity.h,v 1.8 2003/04/25 10:27:26 christof Exp $ */
+/* $Id: ManuProcEntity.h,v 1.9 2004/02/12 11:26:43 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -23,6 +23,7 @@
 #ifndef MANU_PROC_ENTITY
 #define MANU_PROC_ENTITY
 
+#include <Misc/itos.h>
 
 template <class T=long int> class ManuProcEntity
 {
@@ -46,6 +47,7 @@ public:
       return true;
       }
 
+ std::string strId() const { itos0pad(entityid,6);}
 
 };
 
