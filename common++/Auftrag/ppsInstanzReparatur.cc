@@ -346,7 +346,10 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
          if (!!m) Zuordnung_erniedrigen(ae,eltern,m,AuftragBase::ungeplante_id);
          if (!!m) Zuordnung_erniedrigen(ae,eltern,m,AuftragBase::plan_auftrag_id);
          if (!!m) Zuordnung_erniedrigen(ae,eltern,m,AuftragBase::handplan_auftrag_id);
-         assert(!m);
+         if (!!m) 
+         {  analyse("Die Zuordnungen konnten nicht alle entfernt werden",ae,m);
+            assert(AuftragBase::tolerate_inconsistency || !m);
+         }
        }
       }
    }
