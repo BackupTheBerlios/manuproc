@@ -1,4 +1,4 @@
-/* $Id: Bankauftrag.cc,v 1.10 2003/04/18 11:23:39 jacek Exp $ */
+/* $Id: Bankauftrag.cc,v 1.11 2003/05/13 17:32:42 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -44,11 +44,11 @@ void Bankauftrag::string2Bank(char *buf,const char *s) throw (Datenfehler)
    for (;i<27;i++) buf[i]=' ';
 }
 
-Bankauftrag::Bankauftrag(char _kennz, long myblz, std::string myname,long long mykonto,
+Bankauftrag::Bankauftrag(char _aufart, long myblz, std::string myname,long long mykonto,
 			const std::string TeX_cmd) throw(IOerror,Datenfehler)
 	: druckerpipe(0), dtausfile(-1), Kontosumme(0), BLZsumme(0),
-	  anzahlDatensaetze(0), Betragssumme(0), Kennziffer(_kennz),
-	  eigeneBLZ(0), eigenesKonto(0), eigenerName(myname), Auftragsart(0), 
+	  anzahlDatensaetze(0), Betragssumme(0),
+	  eigeneBLZ(0), eigenesKonto(0), eigenerName(myname), Auftragsart(_aufart), 
 	  eD_Policy(P_FORMAT|P_CHECK|P_ERASE), logfile(0)
 {  
    eigeneBLZ = myblz;
@@ -61,8 +61,8 @@ Bankauftrag::Bankauftrag(char _kennz, long myblz, std::string myname,long long m
    Kennziffer=time(NULL); 
    struct tm *tm=localtime(&Kennziffer); 
    char buf[128];
-   if (_kennz!='G' && _kennz!='L') throw Datenfehler("A2 muß 'G' oder 'L' sein");
-   snprintf0(buf,sizeof buf,"0128A%cK",_kennz);
+   if (Auftragsart!='G' && Auftragsart!='L') throw Datenfehler("A2 muß 'G' oder 'L' sein");
+   snprintf0(buf,sizeof buf,"0128A%cK",Auftragsart);
    if (myblz<10000000 || myblz>89999999) throw Datenfehler("ungültige BLZ");
    snprintf0(buf+7,sizeof(buf)-7,"%08ld",myblz); /* A4 */
    memcpy(buf+15,"00000000",8);  /* A5 */
