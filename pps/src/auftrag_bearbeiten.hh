@@ -1,4 +1,4 @@
-// $Id: auftrag_bearbeiten.hh,v 1.25 2003/10/20 12:46:00 jacek Exp $
+// $Id: auftrag_bearbeiten.hh,v 1.26 2003/10/22 10:19:11 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -29,7 +29,7 @@
 #include <vector>
 
 void ArtBestandData(const ArtikelBase::ID aid, int &off,
-			int &bestand, int &verfuegbar);
+	int &bestand, int &verfuegbar) throw(SQLerror);
 
 class auftrag_bearbeiten : public auftrag_bearbeiten_glade
 {   

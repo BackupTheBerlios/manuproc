@@ -1,4 +1,4 @@
-// $Id: auftrag_bearbeiten_sql.pgcc,v 1.12 2003/10/17 11:41:59 jacek Exp $
+// $Id: auftrag_bearbeiten_sql.pgcc,v 1.13 2003/10/22 10:19:11 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -154,9 +154,9 @@ throw(SQLerror)
 
 
 void ArtBestandData(const ArtikelBase::ID aid, int &off,
-			int &bestand, int &verfuegbar)
+	int &bestand, int &verfuegbar) throw(SQLerror)
 {
- Query("SELECT sum(coalesce(bestellt-geliefert,0)) as offen, " 
+ Query q("SELECT sum(coalesce(bestellt-geliefert,0)) as offen, " 
 	"l.bestand as bestand, "
 	"l.bestand - sum(coalesce(bestellt-geliefert,0)) as verfuegbar "
 	" from (auftrag a join "
@@ -166,11 +166,14 @@ void ArtBestandData(const ArtikelBase::ID aid, int &off,
 	" right outer join artikel_bestand l on "
 	" (l.artikelid=auf.artikelid) "
 	" where l.artikelid=? "
-	" group by l.artikelid,bestand") 
- << aid
- >> off
- >> bestand
- >> verfuegbar;
+	" group by l.artikelid,bestand");
+ q << aid;
+ SQLerror::test(__FILELINE__);
+
+ q >> off
+   >> bestand
+   >> verfuegbar;
+
 }
 
 
