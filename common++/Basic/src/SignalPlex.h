@@ -1,4 +1,4 @@
-// $Id: SignalPlex.h,v 1.5 2004/05/06 13:14:47 christof Exp $
+// $Id: SignalPlex.h,v 1.6 2004/11/15 08:51:37 christof Exp $
 /*  libcommon++: ManuProC's OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -58,7 +58,7 @@ public:
 	void set_signal(S &s)
 	{  con.disconnect();
 	   actback=&s;
-	   con=s.connect(slot());
+	   con=s.connect(this->slot());
 	}
 	void unset_signal()
 	{  con.disconnect();

@@ -1,4 +1,4 @@
-// $Id: ModelPlex.h,v 1.7 2004/06/04 13:40:51 christof Exp $
+// $Id: ModelPlex.h,v 1.8 2004/11/15 08:51:37 christof Exp $
 /*  libcommon++: ManuProC's OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -67,13 +67,13 @@ template <class T>
 	void we2actmodel(void *x)
 	{  MODELPLEX_DEBUG(__FUNCTION__,Id(),actmodel.Id());
 	   mv_con.block();
-	   if (actmodel.valid()) actmodel=Value();
+	   if (actmodel.valid()) actmodel=this->Value();
            mv_con.unblock();
 	}
 	void actmodel2us()
 	{  MODELPLEX_DEBUG(__FUNCTION__,Id(),actmodel.Id());
 	   cm_con.block();
-	   if (actmodel.valid() && Value()!=actmodel.Value()) // do not fire if unchanged
+	   if (actmodel.valid() && this->Value()!=actmodel.Value()) // do not fire if unchanged
 	      *this=actmodel.Value(); 
 	   cm_con.unblock();
 	}
@@ -86,7 +86,7 @@ template <class T>
 public:
 	ModelPlex(const Model_ref<T> &m=Model_ref<T>())
 	{ MODELPLEX_DEBUG(__FUNCTION__,Id(),m.Id());
-	  cm_con=signal_changed().connect(
+	  cm_con=this->signal_changed().connect(
 			SigC::slot(*this,&this_t::we2actmodel));
 	  if (m.valid()) set_model(m); 
 	}
@@ -94,7 +94,7 @@ public:
 	ModelPlex(const ModelPlex<T> &a)
 	: SigC::Object(a), Model_copyable<T>(a)
 	{  MODELPLEX_DEBUG(__PRETTY_FUNCTION__,Id(),a.Id());
-	   cm_con=signal_changed().connect(
+	   cm_con=this->signal_changed().connect(
 			SigC::slot(*this,&this_t::we2actmodel));
 	   if (a.actmodel.valid()) set_model(a.actmodel);
 	}
