@@ -76,6 +76,7 @@ windowTop::windowTop()
   betreuer->setExpandStr2(true); 
 #ifdef MABELLA_EXTENSIONS  
   betreuer->set_gruppe(KundengruppeID::Personen);
+  KontaktPersonenBox->set_gruppe(KundengruppeID::Personen);
 #endif
 
  scc_verkaeufer->reset();
