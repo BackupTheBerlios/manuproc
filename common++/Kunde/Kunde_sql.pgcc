@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.58 2004/03/24 20:58:37 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.59 2004/08/03 14:21:03 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -243,13 +243,29 @@ const cH_Kunde Kunde::newKunde(const Kunde::ID kid, const std::string &firma,
 //#endif
 //}
 
-const Kunde::ID Kunde::nextval()
+const Kunde::ID Kunde::nextval() throw(SQLerror)
 {
  exec sql begin declare section;
-   unsigned int KUNDENNR;
+   int KUNDENNR;
+   int OLDKUNDENNR,IOLDKUNDENNR;
  exec sql end declare section;
  exec sql select nextval('kunden_seq') into :KUNDENNR;
  SQLerror::test(__FILELINE__);
+
+ while(1)
+  {
+   OLDKUNDENNR=-1;
+   exec sql select kundennr into :OLDKUNDENNR:IOLDKUNDENNR 
+   	from kunden where kundennr=:KUNDENNR;
+   SQLerror::test(__FILELINE__,"select kundennr",100);
+
+   if(sqlca.sqlcode==100) break;
+
+   // search next new kundennr
+   exec sql select nextval('kunden_seq') into :KUNDENNR;
+   SQLerror::test(__FILELINE__);
+  }
+
  return KUNDENNR;
 }
 
