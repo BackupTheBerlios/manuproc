@@ -4,3 +4,12 @@
 
 replace 	"\*=",\*,	NV("\0",\1),
 		,"\*=",\*)	,NV("\0",\1))
+
+- -C erzeugt falsche Zuordnungen (leere 0er haben dann 1er)
+	[liegt aber vermutlich nicht an C, sondern an der Quellinstanz]
+ Bandlager(8) 1 486: 21725 78/25/ 16.12.2002
+  <=7725=Färberei(2) 0 614: 0 22279/25/2000 18.12.2002
+  <=8000=Färberei(2) 0 615: 0 22279/25/2500 18.12.2002
+  <=6000=Färberei(2) 0 616: 0 22279/25/4400 18.12.2002
+    
+- -A funktioniert nicht
