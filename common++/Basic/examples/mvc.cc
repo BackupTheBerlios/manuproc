@@ -1,4 +1,4 @@
-// $Id: mvc.cc,v 1.7 2002/12/10 10:04:46 christof Exp $
+// $Id: mvc.cc,v 1.8 2003/03/07 08:10:13 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -34,7 +34,7 @@ class View_int : public SigC::Object
 	SigC::Connection c;
 	
 	void refresh(void *x)
-	{  if (&model.get_value()==x)
+	{  if (model.matches(x))
 	      std::cout << "View: value changed to " << model.get_value() << '\n';
 	}
 public:

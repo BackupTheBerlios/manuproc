@@ -1,4 +1,4 @@
-// $Id: char_Pixmap.cc,v 1.3 2002/12/11 18:01:56 christof Exp $
+// $Id: char_Pixmap.cc,v 1.4 2003/03/07 08:10:25 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -22,7 +22,7 @@
 
 void char_Pixmap::refresh(gpointer x)
 {
-  if (x==&model.Value())
+  if (model.matches(x))
    { set(Gdk::Pixbuf::create_from_xpm_data(model.get_value()));
    }
 }

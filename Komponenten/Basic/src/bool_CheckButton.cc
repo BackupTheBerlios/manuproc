@@ -1,4 +1,4 @@
-// $Id: bool_CheckButton.cc,v 1.5 2002/12/12 10:58:12 christof Exp $
+// $Id: bool_CheckButton.cc,v 1.6 2003/03/07 08:10:25 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,7 +21,7 @@
 #include "bool_CheckButton.hh"
 
 void bool_CheckButton::refresh(gpointer x)
-{  if (x==&model.Value())
+{  if (model.matches(x))
    {  my_ch_con.block();
       Gtk::CheckButton::set_active(model.get_value());
       my_ch_con.unblock();

@@ -1,4 +1,4 @@
-// $Id: string_Entry.cc,v 1.3 2002/12/03 09:10:44 christof Exp $
+// $Id: string_Entry.cc,v 1.4 2003/03/07 08:10:25 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,7 +21,7 @@
 #include "string_Entry.hh"
 
 void string_Entry::refresh(gpointer x)
-{ if (x==&model.Value()) 
+{ if (model.matches(x))
   {my_ch_con.block();
    Gtk::Entry::set_text(model.get_value());
    any_change=false;

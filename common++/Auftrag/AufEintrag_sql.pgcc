@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.55 2003/02/15 22:53:21 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.56 2003/03/07 08:10:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -41,6 +41,7 @@
 #include <Misc/Trace.h>
 #include <Auftrag/VerfuegbareMenge.h>
 #include <Misc/FetchIStream_ops.h>
+#include <Auftrag/AufEintrag_macros.h>
 
 // Menge wurde geliefert. 
 // Um die Pfeile über uns muss sich jemand anderes kümmern
@@ -309,19 +310,8 @@ void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftr
 
  assert(menge>0);
  try{
-   AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel(*this));
-
-  for(AufEintragZu::map_t::const_iterator i=MapArt.begin();i!=MapArt.end();++i)
-   {
-     ArtikelBaum::faktor_t faktor = ArtikelBaum(ArtId()).Faktor(i->first);
-     AuftragBase::mengen_t menge2=faktor*menge;
-     
-     for(AufEintragZu::list_t::const_iterator j=i->second.begin();j!=i->second.end();++j)
-      {
+   BEGIN_AE_DISTRIBUTE_CHILDREN(*this,menge,ArtId(),i,j,M)
         AufEintrag AE(j->AEB);
-        mengen_t M=AuftragBase::min(j->Menge,menge2);
-        if (!M) continue;
-        
         if(j->AEB.Id()==AuftragBase::ungeplante_id || j->AEB.Instanz()->LagerInstanz())
            M=-AE.MengeAendern(uid,-M,true,AufEintragBase(),reason);
         else // Abbestellung im Lager
@@ -333,11 +323,7 @@ void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftr
         if(j->AEB.Instanz()->LagerInstanz() && 
            j->AEB.Id()==AuftragBase::plan_auftrag_id)
             dispo_auftrag_aendern(uid,j->AEB.Instanz(),i->first,M,LagerBase::Lagerdatum(),AufEintragBase());
-        menge2-=M;
-        if(!menge2) break;
-      }
-    }
-
+   END_AE_DISTRIBUTE_CHILDREN(M)
   }catch(NoAEB_Error &e) 
   {std::cerr <<"Falsche Anzahl von AufEinträgen: "<<e.what()<<'\n'; 
    exit(1);}

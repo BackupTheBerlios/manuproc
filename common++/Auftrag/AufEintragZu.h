@@ -1,6 +1,6 @@
-// $Id: AufEintragZu.h,v 1.18 2003/02/15 22:53:21 christof Exp $
+// $Id: AufEintragZu.h,v 1.19 2003/03/07 08:10:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
+ *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

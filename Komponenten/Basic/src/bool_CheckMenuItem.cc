@@ -1,4 +1,4 @@
-// $Id: bool_CheckMenuItem.cc,v 1.3 2002/12/11 17:03:16 christof Exp $
+// $Id: bool_CheckMenuItem.cc,v 1.4 2003/03/07 08:10:25 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -19,21 +19,14 @@
  */
 
 #include "bool_CheckMenuItem.hh"
+#include "bool_properties.hh"
 
 void bool_CheckMenuItem::refresh(gpointer x)
-{  if (x==&model.Value())
+{  if (model.matches(x))
    {  my_ch_con.block();
       Gtk::CheckMenuItem::set_active(model.get_value());
       my_ch_con.unblock();
    }
-}
-
-void bool_CheckMenuItem::refresh_sens(gpointer x)
-{  if (x==&sensitive.Value())
-    {
-     if(sensitive_invert) set_sensitive(!sensitive.get_value());
-     else                 set_sensitive( sensitive.get_value());
-    }
 }
 
 bool_CheckMenuItem::bool_CheckMenuItem(const Model_ref<T> &m, const std::string &text)
@@ -57,15 +50,8 @@ void bool_CheckMenuItem::init()
 }
 
 void bool_CheckMenuItem::setSensitive(const Model_ref<bool> &s,bool i)
-{
- sensitive=s;
- sensitive_invert=i;
- ch_sens=sensitive.signal_changed().connect(SigC::slot(*this,&bool_CheckMenuItem::refresh_sens));
- if(sensitive_invert) set_sensitive(!sensitive.get_value());
- else                 set_sensitive( sensitive.get_value());
+{  Gtk::AssociateSensitivity(this,s,i);
 }
-
-
 
 void bool_CheckMenuItem::on_toggled()
 {  ch_con.block();

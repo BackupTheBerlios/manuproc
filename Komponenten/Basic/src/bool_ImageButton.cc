@@ -1,4 +1,4 @@
-// $Id: int_RadioButtons.cc,v 1.4 2003/03/07 08:10:25 christof Exp $
+// $Id: bool_ImageButton.cc,v 1.1 2003/03/07 08:10:25 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,25 +18,34 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "int_RadioButtons.hh"
+#include "bool_ImageButton.hh"
 
-void int_RadioButtons::refresh(gpointer x)
+void bool_ImageButton::refresh(gpointer x)
 {  if (model.matches(x))
-   {  my_ch_con.disconnect();
+   {  my_ch_con.block();
       Gtk::CheckButton::set_active(model.get_value());
-      my_ch_con=toggled.connect(SigC::slot(this,&int_RadioButtons::on_toggled));
+
+      imag->set(model.Value()?on:off,Glib::RefPtr<Gdk::Bitmap>());
+      my_ch_con.unblock();
    }
 }
 
-int_RadioButtons::int_RadioButtons(const Model_ref<T> &m, const std::string &text)
-	: Gtk::CheckButton(text), model(m)
-{  Gtk::ToggleButton::set_active(m.get_value());
-   my_ch_con=toggled.connect(SigC::slot(this,&int_RadioButtons::on_toggled));
-   ch_con=model.changed.connect(SigC::slot(this,&int_RadioButtons::refresh));
+// mask?
+bool_ImageButton::bool_ImageButton(const Model_ref<T> &m, 
+		Glib::RefPtr<Gdk::Pixmap> _off, Glib::RefPtr<Gdk::Pixmap> _on)
+	: off(_off), on(_on), model(m), imag(0)
+{  imag=Gtk::manage(new Gtk::Image(model.Value()?on:off,Glib::RefPtr<Gdk::Bitmap>()));
+   imag->show();
+   Gtk::ToggleButton::add(*imag);
+   set_mode(false);
+   Gtk::ToggleButton::set_active(model.get_value());
+   my_ch_con=signal_toggled().connect(SigC::slot(*this,&bool_ImageButton::on_toggled));
+   ch_con=model.signal_changed().connect(SigC::slot(*this,&bool_ImageButton::refresh));
 };
 
-void int_RadioButtons::on_toggled()
-{  ch_con.disconnect();
+void bool_ImageButton::on_toggled()
+{  ch_con.block();
    model=Gtk::CheckButton::get_active();
-   ch_con=model.changed.connect(SigC::slot(this,&int_RadioButtons::refresh));
+   imag->set(model.Value()?on:off,Glib::RefPtr<Gdk::Bitmap>());
+   ch_con.unblock();
 }
