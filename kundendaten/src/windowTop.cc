@@ -76,7 +76,9 @@ windowTop::windowTop()
 
 
  scc_verkaeufer->reset();
+#ifdef MABELLA_EXTENSIONS 
  scc_verkaeufer->EinschraenkenKdGr(KundengruppeID::Verkaeufer);
+#endif 
  scc_verkaeufer->setExpandStr1(true);
  scc_verkaeufer->setExpandStr2(true); 
 
