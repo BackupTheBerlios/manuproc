@@ -674,13 +674,16 @@ bool auftrag_lieferschein::deleteLiefEntry()
        lv.deleteRow(LE);
      else
        if(LE.Status()==(AufStatVal)OPEN)
+	 {
          LE.changeStatus((AufStatVal)STORNO,*lieferschein,
 #ifdef MABELLA_EXTENSIONS
 				true
 #else
 				false
 #endif
-	);
+	      );
+	 datavec_liefoff.clear();
+	}
      else
  	return false;
 
