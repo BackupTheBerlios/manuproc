@@ -1,4 +1,4 @@
-// $Id: Faden.cc,v 1.14 2003/10/28 08:37:31 christof Exp $
+// $Id: Faden.cc,v 1.15 2004/01/26 12:39:47 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -40,8 +40,9 @@ int Faden::displayBreite() const
    return getAnzahl();
 }
 
-Faden::Faden (unsigned int z, ArtikelBase::ID s, Bindung b) : 
-anzahl(z), material(s), bindung(b)
+Faden::Faden (int znr, unsigned int z, ArtikelBase::ID s, Bindung b) 
+: zeilennummer(znr), anzahl(z), material(s), bindung(b), kettscheibe(-1),
+	max_kettlaenge(), max_fadenzahl()
 {
 }
 
@@ -383,8 +384,7 @@ static FetchIStream &operator>>(FetchIStream &is, Bindung &b)
 }
 
 static FetchIStream &operator>>(FetchIStream &is, Faden &f)
-{  int znr;
-   is >> znr >> f.anzahl >> f.material >> f.bindung
+{  is >> f.zeilennummer >> f.anzahl >> f.material >> f.bindung
    	>> FetchIStream::MapNull(f.kettscheibe,-1)
    	>> FetchIStream::MapNull(f.max_kettlaenge)
    	>> FetchIStream::MapNull(f.max_fadenzahl);

@@ -1,4 +1,4 @@
-// $Id: Faden.hh,v 1.7 2003/10/23 09:27:27 christof Exp $
+// $Id: Faden.hh,v 1.8 2004/01/26 12:39:47 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -31,6 +31,7 @@
 class Wiederholung;
 
 struct Faden {
+        int zeilennummer;
         unsigned anzahl;
         ArtikelBase material;
         Bindung bindung;
@@ -40,8 +41,8 @@ struct Faden {
         
 	friend std::ostream& operator<< (std::ostream&, const Faden&);
 public:
-	Faden (unsigned int anzahl, ArtikelBase::ID, Bindung=Bindung());
-	Faden() : anzahl(), kettscheibe(-1), max_kettlaenge(), max_fadenzahl() {}
+	Faden (int zeilennr, unsigned int anzahl, ArtikelBase::ID, Bindung=Bindung());
+	Faden() : zeilennummer(-1), anzahl(), kettscheibe(-1), max_kettlaenge(), max_fadenzahl() {}
 	bool operator== (const Faden&) const;
 	bool operator!= (const Faden&) const;
 	int getAnzahl() const { return anzahl; }
