@@ -118,6 +118,7 @@ libcommon___a_LIBADD= \
 		Misc/EntryValueDatum.o \
 		Misc/EntryValueIntString.o \
 		Misc/EntryValueQuartal.o \
+		Misc/EntryValueTimeStamp.o \
 		Misc/exception.o \
 		Misc/FetchIStream.o \
 		Misc/FetchIStream_ops.o \
