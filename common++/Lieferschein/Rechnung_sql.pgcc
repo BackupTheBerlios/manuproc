@@ -328,9 +328,9 @@ Rechnung::geldbetrag_t Rechnung::Betrag(bool brutto) const throw(SQLerror)
 
  if(brutto)
    {
-    Query q("select  sum(round(preis* "
+    Query q("select sum(round(preis* "
 	       "((coalesce(menge,1)*stueck) / "
-		" (coalesce(preismenge,1)),2)) "
+		" (coalesce(preismenge,1))),2)) "
 	    " from rechnungentry where rngid = ?");
     q << Id();
     SQLerror::test(__FILELINE__);
