@@ -89,6 +89,16 @@ cd $TEMPDIR
 mkdir -p $PREFIX
 cd $PREFIX
 unzip $OLDWD/$ARCHIVE_NAME
+if [ "$PKGSUF" = "-bin" -a -f "$OLDWD/$PKG-$VER-lib$SUF" ]
+then
+  unzip $OLDWD/$PKG-$VER-lib$SUF
+  DEB_NAME=mingw32-$PKG
+fi
+if [ "$PKGSUF" = "-lib" -a -f "$OLDWD/$PKG-$VER-bin$SUF" ]
+then
+  unzip $OLDWD/$PKG-$VER-bin$SUF
+  DEB_NAME=mingw32-$PKG
+fi
 
 # evtl PFADE anpassen
 if [ -e lib/pkgconfig ]
@@ -105,9 +115,9 @@ fi
 movedir contrib
 move COPYING.LIB-2
 
-for i in $(EXTRA_FILES)
+for i in ${EXTRA_FILES}
 do
-  cp $(EXTRADIR)/$i $i
+  cp ${EXTRADIR}/$i $i
 done
 
 cd $TEMPDIR
