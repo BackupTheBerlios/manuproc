@@ -1,4 +1,4 @@
-// $Id: testHandles.cc,v 1.7 2003/11/23 10:24:00 christof Exp $
+// $Id: testHandles.cc,v 1.8 2003/11/26 14:06:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -84,13 +84,15 @@ void e(Handle<B> b)
    Handle<const A> ca=a; // adding constness
    Handle<A> a2=ca.cast_const<A>();
    Handle<B> b3=a.cast_static<B>();
-   
+
+#if ! defined(__GNUC__) || __GNUC__>2
    Handle<B> b4=Handle<B>::cast_dynamic(a);
    Handle<B> b5=Handle<B>::cast_static(a);
    Handle<A> a3=Handle<A>::cast_const(ca);
 #if 0 // these give errors   
    Handle<B> b6=Handle<B>::cast_const(ca);
    Handle<B> b7=a;
+#endif
 #endif
 }
 
