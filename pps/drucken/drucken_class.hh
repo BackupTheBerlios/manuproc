@@ -58,7 +58,7 @@ public:
                 }
               else
                 {
-                 Artikelpreis ap(u.l->KdID(),u.l->Artikel(),u.l->Stueck());
+                 Artikelpreis ap(cH_Kunde(u.l->KdID()),u.l->Artikel(),u.l->Stueck());
                  if(ap.Gefunden())
                    we_preis[AufEintragBase()]= Preis(ap.Wert(),Waehrung::default_id);
 		 else
@@ -84,8 +84,16 @@ public:
       if (Typ()==Wareneingang) 
         {if(u.l->getZusatzInfos().size() > 1)
            return Preis((float)0.0,Waehrung::default_id);          
-        else
-           return (*(we_preis.find((u.l->getZusatzInfos()[0]).aeb))).second;
+        else 
+           if(u.l->getZusatzInfos().size() == 1)
+           {if( ((u.l->getZusatzInfos()[0]).aeb.valid()) &&
+                 ((u.l->getZusatzInfos()[0]).aeb.Id() >= AuftragBase::handplan_auftrag_id)
+                )
+               return (*(we_preis.find((u.l->getZusatzInfos()[0]).aeb))).second;
+	    else
+	       return (*(we_preis.find(AufEintragBase()))).second;
+	   }
+	 else return Preis();
         }
         
       return Preis();
