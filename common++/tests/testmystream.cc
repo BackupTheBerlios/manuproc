@@ -1,4 +1,4 @@
-// $Id: testmystream.cc,v 1.1 2004/05/07 06:52:25 christof Exp $
+// $Id: testmystream.cc,v 1.2 2004/11/26 15:08:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,6 +19,7 @@
 
 #include <Misc/mystream.h>
 #include <iostream>
+#include <Misc/TagStream.h>
 
 int main()
 { mystream m;
@@ -27,6 +28,11 @@ int main()
     m << ":test2";
     std::cout << m.str(true) << '\n';
     m << ":test3";
+    std::cout << m.str(true) << '\n';
+    
+    TagStream ts;
+    ts.push_back(Tag("content"));
+    ts.write(m,true);
     std::cout << m.str(true) << '\n';
    return 0;
 }
