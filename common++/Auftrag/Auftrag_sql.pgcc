@@ -338,6 +338,20 @@ void Auftrag::setVerknr(const Kunde::ID vid) throw(SQLerror)
 void Auftrag::setYourAufNr(const std::string &yanr) throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
+
+ Query q("update auftrag set youraufnr=? where (auftragid,instanz)=(?,?)");
+
+ q << yanr << Id() <<  Instanz();
+ SQLerror::test(__FILELINE__);
+
+ std::string new_yaid;
+ Query("select youraufnr from auftrag where (auftragid,instanz)=(?,?)")
+	<< Id() << Instanz() >> new_yaid;
+
+ youraufnr_cache[*this]=new_yaid;
+
+/*
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
  exec sql begin declare section;
  int AUFTRAGID=Id();
  int INSTANZ=int(Instanz());
@@ -352,6 +366,7 @@ void Auftrag::setYourAufNr(const std::string &yanr) throw(SQLerror)
  exec sql update auftrag set youraufnr= nullif(:YOURAUFNR,'')
 	where auftragid= :AUFTRAGID and instanz = :INSTANZ;
  SQLerror::test("setYourAufNr: update youraufnr");
+*/
 }
 
 int Auftrag::getIdFromYourAufId(const char *youraufid) throw(SQLerror)
@@ -521,3 +536,4 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
  tr.commit();
  return AEB;
 }
+
