@@ -1,4 +1,4 @@
-/* $Id: Verfuegbarkeit.cc,v 1.12 2004/03/01 17:31:22 christof Exp $ */
+/* $Id: Verfuegbarkeit.cc,v 1.13 2004/03/02 10:49:47 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -124,7 +124,7 @@ void Verfuegbarkeit::verfuegbar(const AufEintrag &ae, map_t &result,
 	mengen_t menge, mengen_t offset)
 {  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("ae",ae),
 		NV("menge",menge),NV("offset",offset));
-   mapindex idx(ae.Instanz(),ae.Artikel());
+   mapindex idx(ae.Instanz(),ae.Artikel(),ae.getKdNr());
    if (!menge) menge=ae.getStueck();
    if (!!ae.getGeliefert())
    {  AuftragBase::mengen_t m=0;
@@ -214,6 +214,7 @@ AuftragBase::mengen_t benoe_recurse::operator()(const AufEintragZu::st_reflist &
    		NV("local_offset",local_offset),NV("offset",offset),
    		NV("offset_elter",offset_elter),NV("m_elter",m_elter));
    Verfuegbarkeit::wozu_benoetigt(ae,result,m_elter,offset_elter);
+   offset=0; // wenn es für uns schon reichte, dann wird der nächste auch dran sein
    return m; 
 }
 
@@ -222,7 +223,7 @@ void Verfuegbarkeit::wozu_benoetigt(const AufEintrag &ae, map_t &result,
 	mengen_t menge, mengen_t offset)
 {  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("ae",ae),
 		NV("menge",menge),NV("offset",offset));
-   mapindex idx(ae.Instanz(),ae.Artikel()); // ,ae.Kunde);
+   mapindex idx(ae.Instanz(),ae.Artikel(),ae.getKdNr());
    if (!menge && !offset) menge=ae.getStueck();
 #if 0   
    if (!!ae.getGeliefert())
