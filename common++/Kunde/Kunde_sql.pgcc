@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.51 2003/08/01 13:17:39 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.52 2003/09/05 10:43:46 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -129,6 +129,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    adresse.firma=NAME;
    adresse.name2=NAME2;
    adresse.branr=BRANRID;
+   SORTNAME[30]=0; // mit FetchIStream wäre das nicht passiert ...
    adresse.sortname=SORTNAME;
    adresse.strasse=STRASSE;
    adresse.postanwvor=POSTANWVOR;
