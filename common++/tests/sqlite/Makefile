@@ -1,6 +1,6 @@
 
-CXXFLAGS=-I$(HOME)/cvs/c++ -I/usr/include/postgresql/
-LDFLAGS=-L$(HOME)/cvs/c++
+CXXFLAGS=-I../.. -I/usr/include/postgresql/
+LDFLAGS=-L../..
 
 sqlitetest: sqlitetest.o -lsqlite
 
