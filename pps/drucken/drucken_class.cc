@@ -159,6 +159,8 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
   if(! kunde_an->isRechnungsadresse())
     kunde_an = cH_Kunde(kunde_an->Rngan());
     
+  if(((signed int)zeilen_passen_noch)<0) zeilen_passen_noch=0;
+
   if (Typ()==Rechnung && !gutschrift())
    {
 #ifdef MABELLA_EXTENSIONS
@@ -384,7 +386,8 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
 // falls Auftrag sich geändert hat, neue Nummer unten ausgeben
 // merken welche Werte in der 1. Zeile stehen
     if ((Typ()==Lieferschein || Typ()==Rechnung) && (*i).AufId()!=aufid_mem)
-    {  aufid_drucken=true;
+    {  if(!gutschrift())
+	 aufid_drucken=true;
        aufid_mem=(*i).AufId();
     }    
 #endif    
@@ -474,7 +477,8 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
         std::string sKunde;
 
 #ifdef MABELLA_EXTENSIONS
-       	lieferung_an(os,lfrsid_mem,l->LsDatum(),""); 
+	if(!gutschrift())
+       	  lieferung_an(os,lfrsid_mem,l->LsDatum(),""); 
 #else
         if (k->Id() != kunden_id) sKunde = k->firma();
        	lieferung_an(os,lfrsid_mem,l->getDatum(),sKunde);
@@ -1352,12 +1356,13 @@ void LR_Abstraktion::lieferung_an(std::ostream &os, unsigned int lfrs_id,
   os << "~\\\\[2ex]""\n";  
 #endif  
 
-  --zeilen_passen_noch;  
+    --zeilen_passen_noch;  
 
-  os << mld->MLT(MultiL_Dict::TXT_UNSERELIEF)<<" "<<lfrs_id;
-  os << " "<<mld->MLT(MultiL_Dict::TXT_VOM)<<" "<<datum;
-  if(!sKunde.empty())  os << " an "<< string2TeX(sKunde);
-  os << "\\\\[-2ex]\n";
+    os << mld->MLT(MultiL_Dict::TXT_UNSERELIEF)<<" "<<lfrs_id;
+    os << " "<<mld->MLT(MultiL_Dict::TXT_VOM)<<" "<<datum;
+    if(!sKunde.empty())  os << " an "<< string2TeX(sKunde);
+    os << "\\\\[-2ex]\n";
+
 }
 
 #ifdef MABELLA_EXTENSIONS
