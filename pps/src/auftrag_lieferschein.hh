@@ -75,6 +75,7 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
         void on_lief_print();
         void on_checkbutton_ean_drucken_clicked();
         void on_liefnr_activate();
+        void on_lieferkunde_reset();
         void on_liefnr_search(int *_continue, GtkSCContext newsearch);
         void on_lieferkunde_activate();
         void on_liefdate_activate();
@@ -95,7 +96,8 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
 	void clear_input();
    void fill_input(const AufEintrag& AE);
    void fill_input(const AufEintrag& AE,const LieferscheinEntry& LE);
-   void fill_with(const AufEintrag& AE,const Einheit& E,int stueck,double menge);
+   void fill_with(const AufEintrag& AE,const Einheit& E,int stueck,
+				double menge, bool check_bestand=true);
 	void display(int lfrsid);
 	void display2(int kdnr);
 	

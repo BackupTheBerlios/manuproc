@@ -16,6 +16,7 @@
 #include<Auftrag/AufEintrag.h>
 #include <unistd.h>
 #include <Lager/Lager.h>
+#include<functional>
 
 #include "auftrag_main.hh"
 
@@ -70,10 +71,29 @@ class Data_Lieferdaten : public RowDataBase
    }
 
   int get_Lieferschein_Id() const {return liefentry.Id();}
-  LieferscheinEntry get_LieferscheinEntry() const {return liefentry;}
+  const LieferscheinEntry &get_LieferscheinEntry() const {return liefentry;}
   bool istZusatzinfo() const {return zusatzinfo;}
-  AufEintragBase getAufEintragBase() const { return AEB; }
+  const AufEintragBase &getAufEintragBase() const { return AEB; }
+  int getLiefMenge() const { return liefentry.Stueck(); }
 };
+
+class Lief_ref_Auftrag : public std::unary_function<AufEintragBase,bool>
+{
+ AufEintragBase aeb;
+
+public:
+ explicit Lief_ref_Auftrag(const AufEintragBase _aeb):aeb(_aeb) {}
+ bool operator() (cH_RowDataBase l) const 
+   {
+    Handle<const Data_Lieferdaten> h_ld=
+    	l.cast_dynamic<const Data_Lieferdaten>();
+    if(aeb.Id() != h_ld->getAufEintragBase().Id()) return false;
+    if(aeb.ZNr() != h_ld->getAufEintragBase().ZNr()) return false;
+    return true;
+   }
+};
+
+
 
 class cH_Data_Lieferdaten : public Handle<const Data_Lieferdaten>
 {
@@ -96,7 +116,7 @@ class Data_Lieferoffen : public RowDataBase
       AufEintrag AE;
       const auftrag_main *AM ;
 
-  public:
+public:
    Data_Lieferoffen(const AufEintrag& ae,const auftrag_main* am) 
       : AE(ae),AM(am) {}
    enum SeqNr {AUFNR_SEQ=0,ARTIKEL_SEQ,LIEFDAT_SEQ,OFFMNG_SEQ,
@@ -142,6 +162,23 @@ class Data_Lieferoffen : public RowDataBase
 //#endif      
 
 };
+
+class Auftrag_ref_Lief : public std::unary_function<AufEintragBase,bool>
+{
+ AufEintragBase aeb;
+
+public:
+ explicit Auftrag_ref_Lief(const AufEintragBase _aeb):aeb(_aeb) {}
+ bool operator() (cH_RowDataBase l) const 
+   {
+    Handle<const Data_Lieferoffen> h_ld=
+    	l.cast_dynamic<const Data_Lieferoffen>();
+    if(aeb.Id() != h_ld->getAufEintrag().Id()) return false;
+    if(aeb.ZNr() != h_ld->getAufEintrag().ZNr()) return false;
+    return true;
+   }
+};
+
 
 class cH_Data_Lieferoffen : public Handle<const Data_Lieferoffen>
 {

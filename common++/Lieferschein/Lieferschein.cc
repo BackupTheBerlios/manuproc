@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.40 2004/02/03 13:06:06 jacek Exp $ */
+/* $Id: Lieferschein.cc,v 1.41 2004/02/04 19:43:30 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -84,7 +84,7 @@ void Lieferschein::aufraumen() throw(SQLerror)
  Query("update lieferschein set rngid=0 where rngid is null "
 // 		"and instanz=? "
  		"and not exists(select true from lieferscheinentry "
- 		"where lieferscheinentry.lfrsid=lieferschein.lfrsid)") 
+ 		"where lieferscheinentry.lfrsid=lieferschein.lfrsid)");
 //   	<< Instanz()->Id()
 	;
  SQLerror::test(__FILELINE__,100);
@@ -96,6 +96,8 @@ void Lieferschein::closeLfrs()
  Query("update lieferschein set rngid=0 where rngid is null "
  		"and (instanz,lfrsid) = (?,?)") 
    	<< Instanz()->Id() << Id();
+ Query("update lieferscheinentry set status=? where (instanz,lfrsid)=(?,?)")
+ 	<< (AufStatVal)CLOSED << Instanz()->Id() << Id();
  SQLerror::test(__FILELINE__);
 }
 

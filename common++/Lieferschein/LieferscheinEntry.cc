@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.48 2004/02/03 14:48:06 jacek Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.49 2004/02/04 19:43:30 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -90,7 +90,7 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
 
   Transaction tr;
 
-  if(new_status==OPEN || new_status==STORNO)
+  if(new_status==OPEN || (status==OPEN && new_status==STORNO))
    {
     AuftragBase::mengen_t abmenge=Abschreibmenge(stueck,menge);
 

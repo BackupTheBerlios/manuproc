@@ -36,6 +36,8 @@
 extern MyMessage *meldung;
 extern auftrag_main *auftragmain;
 
+typedef std::vector<cH_RowDataBase>::iterator DVI;
+
 void auftrag_lieferschein::on_liefer_close()
 {   
  destroy();
@@ -144,9 +146,12 @@ void auftrag_lieferschein::on_liefnr_activate()
    lieferschein = new Lieferschein(instanz,liefernr->Content());
 
    if(lieferschein->KdNr()!=liefer_kunde->get_value())
-     liefer_kunde->set_value(lieferschein->KdNr());
+     {liefer_kunde->set_value(lieferschein->KdNr());
+      datavec_liefoff.clear();
+     }
 
    display(liefernr->Content());
+
  }catch(SearchComboContent<int>::ContentError &e)
  { display(atoi(liefernr->get_text().c_str()));
    spinbutton_paeckchen->grab_focus();
@@ -156,6 +161,7 @@ void auftrag_lieferschein::on_liefnr_activate()
 
 void auftrag_lieferschein::on_lieferkunde_activate()
 {
+datavec_liefdata.clear();
 try{display2(liefer_kunde->get_value());
  liefernr->reset();
  } catch(SQLerror &e) {meldung->Show(e);}
@@ -298,19 +304,23 @@ void auftrag_lieferschein::fill_input(const AufEintrag& AE)
 void auftrag_lieferschein::fill_input(const AufEintrag& AE,const LieferscheinEntry& LE)
 {
   // Zusatzinfos dürfen nicht geändert werden:
-  fill_with(AE,Einheit(LE.Artikel()),LE.Stueck(),LE.Menge().as_float());
+  fill_with(AE,Einheit(LE.Artikel()),LE.Stueck(),LE.Menge().as_float(),false);
   Palette->set_value(LE.Palette());
 }
 
 
 void auftrag_lieferschein::fill_with(const AufEintrag& AE,const Einheit& E,
-         int stueck,double menge)
+         int stueck,double menge,bool check_bestand)
 {
   artikelbox->set_value(AE.Artikel());
   auftragnr->set_text(itos(AE.Id()));
 
-  int bestand(AE.getAmLager().as_int());
-  anzahl->set_value(stueck<bestand ? stueck : (bestand>0?bestand:0));
+  if(check_bestand)
+    {int bestand(AE.getAmLager().as_int());
+     anzahl->set_value(stueck<bestand ? stueck : (bestand>0?bestand:0));
+    }
+  else
+     anzahl->set_value(stueck);
 
   menge_einheit->set_text(E.StueckEinheit());
   if (E.hatMenge())
@@ -358,6 +368,7 @@ auftrag_lieferschein::auftrag_lieferschein(cH_ppsInstanz _instanz)
 #ifdef MABELLA_EXTENSIONS
  button_zeile_uebernehmen->set_sensitive(false);
  button_kompletter_auftrag->set_sensitive(false);
+ masseneingabe2->set_active(false);
 #else
  lagerwahl->hide();
 #endif
@@ -414,14 +425,15 @@ void auftrag_lieferschein::set_tree_titles()
 void auftrag_lieferschein::set_tree_daten_content(LieferscheinBase::ID lfrsid)
 {
  tree_daten->clear();
+ datavec_liefdata.clear();
+
  if(lfrsid!=LieferscheinBase::none_id)
    {
     try{ 
       cH_LieferscheinVoll LV=cH_LieferscheinVoll(instanz,lfrsid);
-      std::vector<cH_RowDataBase> datavec;
       for(std::vector<LieferscheinEntry>::const_iterator i=LV->LsEntries().begin();i!=LV->LsEntries().end();++i)
        {
-         datavec.push_back(new Data_Lieferdaten(*i));
+         datavec_liefdata.push_back(new Data_Lieferdaten(*i));
          if(i->getZusatzInfos().size()>1)
           {
             std::vector<LieferscheinEntry::st_zusatz> VZ=i->getZusatzInfos();
@@ -429,14 +441,14 @@ void auftrag_lieferschein::set_tree_daten_content(LieferscheinBase::ID lfrsid)
             char z='a';
             for(std::vector<LieferscheinEntry::st_zusatz>::const_iterator j=VZ.begin();j!=VZ.end();++j)
              {
-               datavec.push_back(new Data_Lieferdaten(zeile+(z++),*i,j->aeb,j->menge)); 
+               datavec_liefdata.push_back(new Data_Lieferdaten(zeile+(z++),*i,j->aeb,j->menge)); 
              }
           }
        }
-      tree_daten->setDataVec(datavec);
+      tree_daten->setDataVec(datavec_liefdata);
 #warning warum geht das moveto nicht? MAT
-      tree_daten->cell(datavec.size()-1,0).moveto();
-//      tree_daten->moveto(datavec.size(),0,0.5,0);
+      tree_daten->cell(datavec_liefdata.size()-1,0).moveto();
+//      tree_daten->moveto(datavec_liefdata.size(),0,0.5,0);
      }
     catch(SQLerror &e)
      { meldung->Show(e); return; }
@@ -505,6 +517,7 @@ void auftrag_lieferschein::on_Palette_activate()
     lieferschein->push_back(auftragentry, artikel, anzahl->get_value_as_int(),
      		e.hatMenge()?liefermenge->get_value_as_float():0.0,
      		Palette->get_value_as_int());
+    dt->getAufEintrag().tmp_geliefert=anzahl->get_value_as_int();
   } 
 
 
@@ -569,16 +582,19 @@ void auftrag_lieferschein::on_newlieferentryall_ok()
    }
  cH_Data_Lieferoffen dt=tree_offen->getSelectedRowDataBase_as<cH_Data_Lieferoffen>();
  AufEintragBase auftragentry=dt->getAufEintrag();
- AuftragFull AF(auftragentry);
+// AuftragFull AF(auftragentry);
 
  if(!checkVerkConsist(auftragentry))
    return;
 
- for(AuftragFull::const_iterator i=AF.begin();i!=AF.end();++i)
+ typedef std::vector<cH_RowDataBase>::iterator DVI;
+
+ for(DVI i=datavec_liefoff.begin(); i!=datavec_liefoff.end(); ++i)
    {
-     if(i->getEntryStatus()!=AufStatVal(OPEN)) continue;
-     if(i->getGeliefert()>=i->getStueck()) continue;
-     auftragzeile_zeile_uebernehmen(*i);   
+    Handle<const Data_Lieferoffen> h_lo=
+			(*i).cast_dynamic<const Data_Lieferoffen>();
+     if(h_lo->getAufEintrag().Id()!=auftragentry.Id()) continue;
+     auftragzeile_zeile_uebernehmen(h_lo->getAufEintrag());   
    }
   set_tree_daten_content(lieferschein->Id());
   set_tree_offen_content();
@@ -599,9 +615,11 @@ void auftrag_lieferschein::auftragzeile_zeile_uebernehmen(const AufEintrag &AE)
 
    int stk=stueck < bestand ? stueck : (bestand > 0 ? bestand:0);
    if(stk>0)
-     lieferschein->push_back(ae,AE.Artikel(), AE.getRestStk().as_int(),
+     {lieferschein->push_back(ae,AE.Artikel(), AE.getRestStk().as_int(),
      		e.hatMenge()?liefermenge->get_value_as_float():0.0,
      		Palette->get_value_as_int());
+      AE.tmp_geliefert=stk;
+     }
 }
 
 
@@ -612,8 +630,8 @@ void auftrag_lieferschein::liefzeile_delete()
  if(rngnr->get_text()=="")
    if(lieferschein->Id()!=LieferscheinBase::none_id)
 	if(deleteLiefEntry())
-	  {  set_tree_daten_content(lieferschein->Id());
-        set_tree_offen_content();
+	  {set_tree_daten_content(lieferschein->Id());
+           set_tree_offen_content();
 	  }
   }
  catch (SQLerror &e)
@@ -631,6 +649,21 @@ bool auftrag_lieferschein::deleteLiefEntry()
     {
      LieferscheinVoll lv(instanz,LE.Id());
      lv.deleteRow(LE);
+
+     DVI j = find_if(datavec_liefoff.begin(),datavec_liefoff.end(),
+		Auftrag_ref_Lief(dt->getAufEintragBase()));
+
+     if(j!=datavec_liefoff.end())
+        {
+	 Handle<const Data_Lieferoffen> h_lo=
+			(*j).cast_dynamic<const Data_Lieferoffen>();
+	 h_lo->getAufEintrag().tmp_geliefert-=dt->getLiefMenge();
+	 h_lo->getAufEintrag().tmp_geliefert=
+		h_lo->getAufEintrag().tmp_geliefert<0?0
+			:h_lo->getAufEintrag().tmp_geliefert;
+	}
+	
+
 #ifdef MABELLA_EXTENSIONS     
      if(lv.size()==0) // Verkäufer auf NONE setzten
        lieferschein->setVerknr(Kunde::none_id);
@@ -720,10 +753,30 @@ void auftrag_lieferschein::set_tree_offen_content()
      }
 
    std::vector<cH_RowDataBase> datavec;
-   std::vector<cH_RowDataBase>::const_iterator i=datavec_liefoff.begin();
-   for(;i!=datavec_liefoff.end();++i)
+   typedef std::vector<cH_RowDataBase>::const_iterator DVI;
+   
+   for(DVI i=datavec_liefoff.begin(); i!=datavec_liefoff.end();++i)
      {
-      datavec.push_back(*i);
+      Handle<const Data_Lieferoffen> h_lo=
+			(*i).cast_dynamic<const Data_Lieferoffen>();
+
+      DVI j = find_if(datavec_liefdata.begin(),datavec_liefdata.end(),
+		Lief_ref_Auftrag(h_lo->getAufEintrag()));
+
+      if(j==datavec_liefdata.end())
+	{
+	 Handle<const Data_Lieferoffen> h_lo=
+		(*i).cast_dynamic<const Data_Lieferoffen>();
+	 if(h_lo->getAufEintrag().getRestStk().as_int()>0)
+           datavec.push_back(*i);
+	}
+      else
+        {Handle<const Data_Lieferdaten> h_ld=
+				(*j).cast_dynamic<const Data_Lieferdaten>();
+	 int rest=h_lo->getAufEintrag().getRestStk().as_int();
+	 if(rest>0)
+	   datavec.push_back(*i);
+	}
      }
    tree_offen->setDataVec(datavec);
   }catch (SQLerror &e) {std::cerr <<e<<'\n';}
@@ -757,10 +810,10 @@ void auftrag_lieferschein::on_button_zeile_modifizieren_clicked()
 #else
 				false
 #endif
-		       			);
-       set_tree_offen_content();
+	);
     }
    set_tree_daten_content(lieferschein->Id());
+   set_tree_offen_content();
   } 
  catch(SQLerror &e)
    {meldung->Show(e); return;}
@@ -821,5 +874,16 @@ void auftrag_lieferschein::on_lagerwahl_changed()
  try{display2(liefer_kunde->get_value());
  liefernr->reset();
  } catch(SQLerror &e) {meldung->Show(e);}  
+}
+
+void auftrag_lieferschein::on_lieferkunde_reset()
+{
+ clear_input();
+ tree_daten->clear();
+ tree_offen->clear();
+ datavec_liefoff.clear();
+ datavec_liefdata.clear();
+ liefernr->reset();
+std::cout << "KUNDE reset\n";
 }
 

@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.95 2004/01/25 22:06:31 jacek Exp $
+// $Id: AufEintrag.cc,v 1.96 2004/02/04 19:43:30 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -379,7 +379,7 @@ int AufEintrag::split(mengen_t newmenge, const Petig::Datum &newld,bool dispopla
 AuftragBase::mengen_t AufEintrag::getRestStk() const
 {  if (in(entrystatus,CLOSED,STORNO)) return 0;
    if (in(auftragstatus,CLOSED,STORNO)) return 0;
-   return bestellt-geliefert;
+   return bestellt-geliefert-tmp_geliefert;
 }
 
 fixedpoint<2> AufEintrag::ProvSatz() const throw(SQLerror)

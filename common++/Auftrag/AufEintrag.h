@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.82 2004/01/29 10:28:26 jacek Exp $ */
+/* $Id: AufEintrag.h,v 1.83 2004/02/04 19:43:30 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -96,6 +96,8 @@ private:
  mengen_t geliefert;
  mengen_t am_lager;
  ArtikelBase artikel;
+ 
+
 
  AufStatVal entrystatus; /* Status des zugehörigen Eintrags */
  ManuProC::Datum lieferdatum;
@@ -126,6 +128,8 @@ private: // weg von hier!
 
  cH_PreisListe preisliste;
 public:
+ mutable mengen_t tmp_geliefert; // not persisten; only for use with UNCOMMITED Lief.
+ 
  struct Error : public std::exception
    {  virtual const char* what() const throw() { return "AufEintrag::AufEintragError"; }
        Error() {}
@@ -141,7 +145,7 @@ public:
    : bestellt(), geliefert(), am_lager(), artikel(), entrystatus((AufStatVal)UNCOMMITED),
    	letztePlanInstanz(ppsInstanzID::None),maxPlanInstanz(), rabatt(),
    	provsatz(-1),kdnr(), disponr(), auftragstatus((AufStatVal)UNCOMMITED),
-   	dispoentrynr(),prozess(Prozess::default_id)
+   	dispoentrynr(),prozess(Prozess::default_id),tmp_geliefert(0)
  {}
  
  // Dieser ctor ist für AuftragFull::push_back
@@ -198,8 +202,8 @@ public:
  int split(mengen_t newmenge, const ManuProC::Datum &newld,bool dispoplanung=false) throw(SQLerror);
  mengen_t getStueck() const { return bestellt;}
  mengen_t getRestStk() const; // Statusabhängig ...
- mengen_t getGeliefert() const { return geliefert;}
- mengen_t getAmLager() const { return am_lager; }
+ mengen_t getGeliefert() const { return geliefert+tmp_geliefert;}
+ mengen_t getAmLager() const { return am_lager-tmp_geliefert; }
  AufStatVal getAufStatus() const { return auftragstatus; }
  int getZnr() const { return zeilennr;}
  int getAuftragid() const {return auftragid;}
