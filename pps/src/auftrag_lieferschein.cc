@@ -460,6 +460,8 @@ void auftrag_lieferschein::on_Palette_activate()
     cH_Data_Lieferoffen dt=tree_offen->getSelectedRowDataBase_as<cH_Data_Lieferoffen>();
     AufEintrag auftragentry(dt->getAufEintrag());
     Einheit e(artikel);
+    if(!checkVerkConsist(auftragentry))
+      return;
     lieferschein->push_back(auftragentry, artikel, anzahl->get_value_as_int(),
      		e.hatMenge()?liefermenge->get_value_as_float():0.0,
      		Palette->get_value_as_int());
@@ -492,6 +494,21 @@ void auftrag_lieferschein::on_Palette_activate()
 }
 
 
+bool auftrag_lieferschein::checkVerkConsist(const AufEintragBase &ae)
+{
+ if(lieferschein->getVerknr()!=Kunde::none_id)
+   {if(lieferschein->getVerknr()!=ae.getVerknr())
+     { meldung->Show("Aufträge von verschiedenen Verkäufern dürfen nicht "
+		"auf einen Lieferschein; Bitte getrennte Lieferscheine erstellen");
+       return false;
+     }
+   }
+ else
+  lieferschein->setVerknr(ae.getVerknr());
+
+ return true;
+}
+
 
 void auftrag_lieferschein::on_newlieferentryall_ok()
 {   
@@ -505,6 +522,10 @@ void auftrag_lieferschein::on_newlieferentryall_ok()
  cH_Data_Lieferoffen dt=tree_offen->getSelectedRowDataBase_as<cH_Data_Lieferoffen>();
  AufEintragBase auftragentry=dt->getAufEintrag();
  AuftragFull AF(auftragentry);
+
+ if(!checkVerkConsist(auftragentry))
+   return;
+
  for(AuftragFull::const_iterator i=AF.begin();i!=AF.end();++i)
    {
      if(i->getEntryStatus()!=AufStatVal(OPEN)) continue;
@@ -552,7 +573,10 @@ bool auftrag_lieferschein::deleteLiefEntry()
    LieferscheinEntry LE = dt->get_LieferscheinEntry();
    if (LE.Zeile()!=0)
     {
-     LieferscheinVoll(instanz,LE.Id()).deleteRow(LE);
+     LieferscheinVoll lv(instanz,LE.Id());
+     lv.deleteRow(LE);
+     if(lv.size()==0) // Verkäufer auf NONE setzten
+       lv.setVerknr(Kunde::none_id);
      return true;
     }
   } catch(...){}

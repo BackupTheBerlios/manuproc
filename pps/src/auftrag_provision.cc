@@ -10,7 +10,7 @@
 #include <Gtk_OStream.h>
 #include "MyMessage.h"  
 #include <Kunde/Kunde.h>
-#include "ja_nein_frage.h"
+#include "ja_nein_frage.hh"
 
 extern MyMessage *meldung;
 
@@ -24,7 +24,6 @@ auf(auftrag)
 
  prov_verkaeufer->EinschraenkenKdGr(KundengruppeID::Verkaeufer);
 
- prov_allpos->set_active(true);
  fillProvEntryList();
 
  if(auftrag->getVerknr()==Kunde::none_id)
@@ -49,33 +48,37 @@ auf(auftrag)
 
 void auftrag_provision::fillProvEntryList()
 {
+ prov_aufentries->clear();
+
  Gtk::OStream os(prov_aufentries);
  
  for(AuftragFull::const_iterator i=auf->begin(); i!=auf->end(); ++i)
    {
+    os << (*i).getZnr() << "\t";
     os << (*i).getStueck() << "\t";
     cH_ArtikelBezeichnung ab(ArtikelBase((*i).ArtId()));
     os << ab->Bezeichnung() << "\t";
-    os << (*i).EPreis().Wert() << "\t";
-    os << (*i).Rabatt() << "\t";
-    os << (*i).GPreis().Wert() << "\t";
-    os << (*i).ProvSatz() << "\n";
+    os << (*i).EPreis().Wert().String() << "\t";
+    os << (*i).Rabatt().String() << "\t";
+    os << (*i).GPreis().Wert().String() << "\t";
+    os << (*i).ProvSatz().String() << "\n";
    }
 
- for(guint i=0; i<prov_aufentries->soljumns().size(); i++)
-   prov_aufentires->set_column_auto_resize(i,true);
+ for(guint i=0; i<prov_aufentries->columns().size(); i++)
+   prov_aufentries->set_column_auto_resize(i,true);
 }
 
 void auftrag_provision::on_prov_ok_clicked()
 {  
 }
 
+
 void auftrag_provision::on_prov_apply_clicked()
 {  
  if(prov_aufentries->selection().empty()) 
    return;
 
- ja_neion_frage fr("Wollen Sie jetzt die Provisionssätze ändern ?");
+ ja_nein_frage fr("Wollen Sie jetzt die Provisionssätze ändern ?");
 
  fr.set_transient_for(*this);
  int ret=fr.run(); 
@@ -86,9 +89,20 @@ void auftrag_provision::on_prov_apply_clicked()
   for(Gtk::CList::SelectionList::iterator s=prov_aufentries->selection().begin();
 	s!=prov_aufentries->selection().end(); ++s)
     {
+     int znr(atoi((*s)->begin()->get_text().c_str()));
 
-
+     Query("update auftragentry set provsatz=? where "
+	" (instanz,auftragid,zeilennr)=(?,?,?)")
+	<< prov_provsatz->get_value_as_float()
+	<< auf->InstanzID()
+	<< auf->Id()
+	<< znr;
+     SQLerror::test(__FILELINE__);
     }
+
+ auf->loadEntries();
+ fillProvEntryList();
+ prov_provsatz->set_value(0);
 }
 
 void auftrag_provision::on_prov_cancel_clicked()
