@@ -1,4 +1,4 @@
-/* $Id: Ueberweisung.cc,v 1.5 2003/05/05 14:25:13 jacek Exp $ */
+/* $Id: Ueberweisung.cc,v 1.6 2003/05/06 14:46:01 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -100,7 +100,7 @@ Ueberweisung *Ueberweisung::newUeberweisung(const InsertStr &is) throw(SQLerror)
  	"  verwendungszweck1,"
  	"  verwendungszweck2,"
  	"  verwendungszweck3,"
- 	"  eingegeben_am,eingegebendurch,faelligam) values "
+ 	"  eingegeben_am,eingegebendurch,faellig) values "
  	" (?,?,?,?,?,"
  	"  ?,?,?,?,?,?,?,"
  	"  now(),?,?)") << ui << 
