@@ -26,7 +26,6 @@
 #include <Aux/Ausgabe_neu.h>
 #include <Aux/dbconnect.h>
 #include <unistd.h>
-#include <Auftrag/ppsInstanzProduziert.h>
 
 #ifndef OLD
 #include<Auftrag/selFullAufEntry.h>
