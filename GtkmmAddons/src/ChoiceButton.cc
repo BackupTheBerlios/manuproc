@@ -116,7 +116,7 @@ void ManuProC::ChoiceButton::set_style(bool _image, bool _text)
    }
 }
 
-void ChoiceButton::set_tooltips(Gtk::Tooltips *_tips);
+void ManuProC::ChoiceButton::set_tooltips(Gtk::Tooltips *_tips)
 {  tips=_tips; 
    if (!label->is_visible() && tips) 
          tips->set_tip(*this, texts[actual_index]);

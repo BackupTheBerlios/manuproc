@@ -26,6 +26,7 @@
 #include <gtkmm/image.h>
 #include <gtkmm/label.h>
 #include <gtkmm/menu.h>
+#include <gtkmm/tooltips.h>
 
 namespace ManuProC {
 
