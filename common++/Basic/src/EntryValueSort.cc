@@ -1,4 +1,4 @@
-/* $Id: EntryValueSort.cc,v 1.2 2004/01/13 10:41:12 christof Exp $ */
+/* $Id: EntryValueSort.cc,v 1.3 2004/02/10 10:51:54 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -50,7 +50,9 @@ bool EntryValueReverseSort::operator==(const EntryValueBase &v) const
 bool EntryValueReverseSort::operator<(const EntryValueBase &v) const
 {  try
    {  const EntryValueReverseSort &b=dynamic_cast<const EntryValueReverseSort &>(v);
-      return (!(sort==b.sort) && !(sort<b.sort)) || (sort==b.sort && value<b.value);
+// perhaps this works better ...   
+      return b.sort<sort || (sort==b.sort && value<b.value);
+//      (!(sort==b.sort) && !(sort<b.sort)) || (sort==b.sort && value<b.value);
    } catch (std::bad_cast &e)
    {  return false;
    }
