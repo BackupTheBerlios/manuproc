@@ -356,10 +356,10 @@ void Artikeleingabe::on_Artikel_Bestellen_activate()
 {
 //cout << artikelboxb->get_Artikel().Id()<<'\t'<<artikelboxb->get_Menge()
 //   <<'\t'<<artikelboxb->get_Instanz_Id()<<'\n';
-  if(artikelboxb->get_Artikel().Id()==ArtikelBase::none_id ||
-     artikelboxb->get_Menge()==0 )
+  if(artikelboxb->get_Artikel().Id()==ArtikelBase::none_id )
+//     artikelboxb->get_Menge()==0 )
    {
-    mess->Show("Menge und Artikel müssen eingegebne werden");
+    mess->Show("Artikel muß eingegeben werden");
     return;
    }
   label_warnung->set_text("");
