@@ -3786,6 +3786,11 @@ Auftrag</label>
   <cxx_separate_file>True</cxx_separate_file>
   <cxx_separate_class>True</cxx_separate_class>
   <cxx_visibility>protected</cxx_visibility>
+  <signal>
+    <name>delete_event</name>
+    <handler>on_liefer_delete</handler>
+    <last_modification_time>Sat, 07 Feb 2004 18:49:28 GMT</last_modification_time>
+  </signal>
   <title>Lieferscheine</title>
   <type>GTK_WINDOW_TOPLEVEL</type>
   <position>GTK_WIN_POS_NONE</position>
@@ -3989,6 +3994,21 @@ löschen</label>
 	<child>
 	  <new_group>True</new_group>
 	</child>
+      </widget>
+
+      <widget>
+	<class>GtkButton</class>
+	<child_name>Toolbar:button</child_name>
+	<name>lager_buchen</name>
+	<cxx_visibility>protected</cxx_visibility>
+	<sensitive>False</sensitive>
+	<signal>
+	  <name>clicked</name>
+	  <handler>on_lager_buchen_clicked</handler>
+	  <last_modification_time>Sat, 07 Feb 2004 18:36:30 GMT</last_modification_time>
+	</signal>
+	<label>Lager buchen</label>
+	<stock_pixmap>GNOME_STOCK_PIXMAP_PREFERENCES</stock_pixmap>
       </widget>
     </widget>
 
@@ -9036,6 +9056,132 @@ Jahr
 	    </widget>
 	  </widget>
 	</widget>
+      </widget>
+    </widget>
+  </widget>
+</widget>
+
+<widget>
+  <class>GnomeDialog</class>
+  <name>buchen_dialog</name>
+  <cxx_visibility>protected</cxx_visibility>
+  <type>GTK_WINDOW_TOPLEVEL</type>
+  <position>GTK_WIN_POS_CENTER</position>
+  <modal>True</modal>
+  <allow_shrink>False</allow_shrink>
+  <allow_grow>False</allow_grow>
+  <auto_shrink>False</auto_shrink>
+  <auto_close>False</auto_close>
+  <hide_on_close>False</hide_on_close>
+
+  <widget>
+    <class>GtkVBox</class>
+    <child_name>GnomeDialog:vbox</child_name>
+    <name>dialog-vbox5</name>
+    <homogeneous>False</homogeneous>
+    <spacing>8</spacing>
+    <child>
+      <padding>4</padding>
+      <expand>True</expand>
+      <fill>True</fill>
+    </child>
+
+    <widget>
+      <class>GtkHButtonBox</class>
+      <child_name>GnomeDialog:action_area</child_name>
+      <name>dialog-action_area5</name>
+      <layout_style>GTK_BUTTONBOX_END</layout_style>
+      <spacing>8</spacing>
+      <child_min_width>85</child_min_width>
+      <child_min_height>27</child_min_height>
+      <child_ipad_x>7</child_ipad_x>
+      <child_ipad_y>0</child_ipad_y>
+      <child>
+	<padding>0</padding>
+	<expand>False</expand>
+	<fill>True</fill>
+	<pack>GTK_PACK_END</pack>
+      </child>
+
+      <widget>
+	<class>GtkButton</class>
+	<name>button34</name>
+	<sensitive>False</sensitive>
+	<can_default>True</can_default>
+	<can_focus>True</can_focus>
+	<stock_button>GNOME_STOCK_BUTTON_YES</stock_button>
+      </widget>
+
+      <widget>
+	<class>GtkButton</class>
+	<name>button35</name>
+	<can_default>True</can_default>
+	<can_focus>True</can_focus>
+	<stock_button>GNOME_STOCK_BUTTON_NO</stock_button>
+      </widget>
+
+      <widget>
+	<class>GtkButton</class>
+	<name>button36</name>
+	<can_default>True</can_default>
+	<can_focus>True</can_focus>
+	<stock_button>GNOME_STOCK_BUTTON_CANCEL</stock_button>
+      </widget>
+    </widget>
+
+    <widget>
+      <class>GtkHBox</class>
+      <name>hbox34</name>
+      <homogeneous>False</homogeneous>
+      <spacing>0</spacing>
+      <child>
+	<padding>0</padding>
+	<expand>False</expand>
+	<fill>False</fill>
+      </child>
+
+      <widget>
+	<class>GtkToolbar</class>
+	<name>toolbar17</name>
+	<orientation>GTK_ORIENTATION_HORIZONTAL</orientation>
+	<type>GTK_TOOLBAR_BOTH</type>
+	<space_size>5</space_size>
+	<space_style>GTK_TOOLBAR_SPACE_EMPTY</space_style>
+	<relief>GTK_RELIEF_NORMAL</relief>
+	<tooltips>True</tooltips>
+	<child>
+	  <padding>0</padding>
+	  <expand>False</expand>
+	  <fill>False</fill>
+	</child>
+
+	<widget>
+	  <class>GtkButton</class>
+	  <child_name>Toolbar:button</child_name>
+	  <name>button37</name>
+	  <sensitive>False</sensitive>
+	  <label></label>
+	  <stock_pixmap>GNOME_STOCK_PIXMAP_HELP</stock_pixmap>
+	</widget>
+      </widget>
+
+      <widget>
+	<class>GtkLabel</class>
+	<name>label119</name>
+	<cxx_visibility>protected</cxx_visibility>
+	<label>Der Lieferschein ist noch nicht im Lager gebucht.
+Wollen Sie die Mengen jetzt vom Lager abbuchen ?</label>
+	<justify>GTK_JUSTIFY_CENTER</justify>
+	<wrap>False</wrap>
+	<xalign>0.5</xalign>
+	<yalign>0.5</yalign>
+	<xpad>0</xpad>
+	<ypad>0</ypad>
+	<child>
+	  <padding>0</padding>
+	  <expand>False</expand>
+	  <fill>False</fill>
+	</child>
       </widget>
     </widget>
   </widget>

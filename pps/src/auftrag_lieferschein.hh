@@ -69,6 +69,7 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
         gint on_spinbutton_netto_focus_out_event(GdkEventFocus *ev){return false;}
 #endif
         void on_liefer_close();
+        gint on_liefer_delete(GdkEventAny *ev);
         void on_liefer_neu();
         void on_lief_save();
         void on_lief_preview();
@@ -91,6 +92,7 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
 
         void liefzeile_delete();
         void on_button_liste_clicked();
+        void on_lager_buchen_clicked();
 	void on_lagerwahl_changed();
 
 	void clear_input();

@@ -346,6 +346,7 @@ AuftragBase::ID auftrag_main::SelectedAuftragsId() const
   else if(dispo_menge_menu->get_active()) return AuftragBase::dispo_auftrag_id;
   else if(alle_lagermengen->get_active()) return AuftragBase::none_id;
   else assert(!"never get here");
+  return AuftragBase::none_id;
 }
 
 

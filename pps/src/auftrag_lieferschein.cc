@@ -32,15 +32,30 @@
 //#include "auftrag_main.hh"
 #include <unistd.h>
 #include <Misc/Trace.h>
+#include "buchen_dialog.hh"
 
 extern MyMessage *meldung;
 extern auftrag_main *auftragmain;
 
 typedef std::vector<cH_RowDataBase>::iterator DVI;
 
+gint auftrag_lieferschein::on_liefer_delete(GdkEventAny *ev)
+{
+ on_liefer_close();
+ return 0;
+}
+
 void auftrag_lieferschein::on_liefer_close()
 {   
- destroy();
+ if(lieferschein->Id()!=LieferscheinBase::none_id)
+   {
+    if(lager_buchen->sensitive())
+      on_lager_buchen_clicked();
+    else
+      destroy();	
+   }
+ else
+   destroy();
 }
 
 void auftrag_lieferschein::on_liefer_neu()
@@ -62,6 +77,7 @@ void auftrag_lieferschein::on_liefer_neu()
  tree_daten->show();
 
  rngnr->set_text("");
+ lager_buchen->set_sensitive(true);
  spinbutton_paeckchen->set_value(1);
  spinbutton_pakete->set_value(1);
  spinbutton_brutto->set_value(0);
@@ -151,6 +167,8 @@ void auftrag_lieferschein::on_liefnr_activate()
      }
 
    display(liefernr->Content());
+
+   lager_buchen->set_sensitive(datavec_liefdata.size()==0);
 
  }catch(SearchComboContent<int>::ContentError &e)
  { display(atoi(liefernr->get_text().c_str()));
@@ -886,4 +904,41 @@ void auftrag_lieferschein::on_lieferkunde_reset()
  liefernr->reset();
 std::cout << "KUNDE reset\n";
 }
+
+void auftrag_lieferschein::on_lager_buchen_clicked()
+{
+   buchen_dialog bd;
+   bd.set_transient_for(*this);
+   int ret=bd.run();
+
+   if(ret==0)
+     {
+      Transaction tr;
+
+      try {
+
+      if(datavec_liefdata.empty()) return;
+      std::vector<cH_RowDataBase>::iterator i=datavec_liefdata.begin();
+      for(;i!=datavec_liefdata.end();++i)
+	{
+	 Handle<const Data_Lieferdaten> ld=
+			(*i).cast_dynamic<const Data_Lieferdaten>();
+         LieferscheinEntry LE = ld->get_LieferscheinEntry();
+	 LE.changeStatus((AufStatVal)OPEN,*lieferschein,true);
+	}
+
+       on_liefnr_activate();     
+      }
+      catch(SQLerror &e) {meldung->Show(e); return;}
+
+      lager_buchen->set_sensitive(false);
+     }
+   else
+   if(ret==1)
+     destroy();
+   else
+     return;
+}
+
+
 

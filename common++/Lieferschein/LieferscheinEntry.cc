@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.49 2004/02/04 19:43:30 jacek Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.50 2004/02/09 11:48:40 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -75,9 +75,19 @@ void LieferscheinEntry::showZusatzInfos() const
 
 void LieferscheinEntry::changeStatus(AufStatVal new_status, 
 		const Lieferschein &ls, bool ein_auftrag) throw(SQLerror)
+{ 
+ changeStatus(new_status,ls,ein_auftrag,stueck,menge);
+}
+
+
+void LieferscheinEntry::changeStatus(AufStatVal new_status, 
+		const Lieferschein &ls, bool ein_auftrag,
+		int _stueck, mengen_t _menge) throw(SQLerror)
 { ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
 	NV("new_status",new_status),
-	NV("status",status),NV("ein_auftrag",ein_auftrag));
+	NV("status",status),NV("ein_auftrag",ein_auftrag),
+	NV("stueck",_stueck),NV("menge",_menge));
+
 
   if(status==CLOSED || status==STORNO) return; // not changable any more
 
@@ -92,7 +102,7 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
 
   if(new_status==OPEN || (status==OPEN && new_status==STORNO))
    {
-    AuftragBase::mengen_t abmenge=Abschreibmenge(stueck,menge);
+    AuftragBase::mengen_t abmenge=Abschreibmenge(_stueck,_menge);
 
     if (ein_auftrag)
     {  assert(NurEinKind(VZusatz));
@@ -163,7 +173,7 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
   } // END OF if(new_status==OPEN || new_status==STORNO)
 
  Query("update lieferscheinentry set status=? where "
-	"(lfrsid,instanz,zeilennr)=(?,?,?)")
+	"(lfrsid,instanz,zeile)=(?,?,?)")
 	<< Query::NullIf(new_status,(AufStatVal)NOSTAT)
 	<< Id() << Instanz()->Id() << Zeile();
 
@@ -171,17 +181,17 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
 }
 
 
-void LieferscheinEntry::changeMenge(int stueck, mengen_t menge) throw(SQLerror)
+void LieferscheinEntry::changeMenge(int _stueck, mengen_t _menge) throw(SQLerror)
 {
- changeMenge(stueck,menge,*cH_Lieferschein(Instanz(),Id()),false);
+ changeMenge(_stueck,_menge,*cH_Lieferschein(Instanz(),Id()),false);
 }
 
 
-void LieferscheinEntry::changeMenge(int stueck, mengen_t menge,
+void LieferscheinEntry::changeMenge(int _stueck, mengen_t _menge,
 		const Lieferschein &ls, bool ein_auftrag) throw(SQLerror)
 { ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
-	NV("stueck",stueck),NV("menge",menge));
-  if(stueck==Stueck() && menge==Menge()) return ; //nichts geändert
+	NV("stueck",_stueck),NV("menge",_menge));
+  if(_stueck==Stueck() && _menge==Menge()) return ; //nichts geändert
 
   if(status>OPEN) return;
 
@@ -190,19 +200,19 @@ void LieferscheinEntry::changeMenge(int stueck, mengen_t menge,
 
   if(status==OPEN) changeStatus((AufStatVal)OPEN,ls,ein_auftrag);
 
-  updateLieferscheinMenge(stueck,menge);
+  updateLieferscheinMenge(_stueck,_menge);
 
   tr.commit();
 }
 
-void LieferscheinEntry::updateLieferscheinMenge(int stueck,mengen_t menge)  throw(SQLerror)
+void LieferscheinEntry::updateLieferscheinMenge(int _stueck,mengen_t _menge)  throw(SQLerror)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
-	NV("stueck",stueck),NV("menge",menge));
-   this->stueck=stueck;
-   this->menge=menge;
+	NV("stueck",_stueck),NV("menge",_menge));
+   this->stueck=_stueck;
+   this->menge=_menge;
    Query("update lieferscheinentry set stueck=?,menge=? "
    	"where (instanz,lfrsid,zeile)=(?,?,?)")
-   	<< stueck << Query::NullIf(menge)
+   	<< _stueck << Query::NullIf(_menge)
    	<< *this;
    SQLerror::test(__FILELINE__);
 }
@@ -215,13 +225,17 @@ void LieferscheinEntry::deleteMe(const LieferscheinEntry &LE)  throw(SQLerror)
    SQLerror::test(__FILELINE__);
 }
 
-LieferscheinBase::mengen_t LieferscheinEntry::Abschreibmenge(int stueck,mengen_t menge) const
+LieferscheinBase::mengen_t LieferscheinEntry::Abschreibmenge(int _stueck,
+							mengen_t _menge) const
 {
+   if(status==(AufStatVal)UNCOMMITED)
+     return AuftragBase::Gesamtmenge(_stueck,_menge);
+
    mengen_t alte_menge=Stueck();
    if(Menge()!=0) alte_menge=alte_menge*Menge();
    
-   mengen_t neue_menge=stueck;
-   if(menge!=0 || Menge()!=0) neue_menge=neue_menge*menge;
+   mengen_t neue_menge=_stueck;
+   if(menge!=0 || Menge()!=0) neue_menge=neue_menge*_menge;
    
    return neue_menge-alte_menge;
 }

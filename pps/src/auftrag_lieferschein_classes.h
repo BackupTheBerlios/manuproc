@@ -57,8 +57,7 @@ class Data_Lieferdaten : public RowDataBase
          { if (AEB.valid())
            return cH_EntryValueIntString(Formatiere(
            			(unsigned long)AEB.Id(),0,6,"","",'0'));
-           else return cH_EntryValue();
-         }
+           else return cH_EntryValue();         }
       case ARTIKEL_SEQ :   return cH_EntryValueIntString(zusatzinfo?std::string()
       		:cH_ArtikelBezeichnung(liefentry.Artikel())->Bezeichnung());
       case PALETTE_SEQ :   return zusatzinfo?cH_EntryValue()

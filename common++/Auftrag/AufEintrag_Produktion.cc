@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.31 2004/01/30 15:57:49 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.32 2004/02/09 11:48:40 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -196,16 +196,22 @@ void AufEintrag::ProduziertNG(mengen_t M,const ProductionContext2 &ctx)
    	 assert(!"Rest geblieben");
    }
 
-#if defined(MABELLA_EXTENSIONS) && defined(MABELLA_LAGERHACK)
 
-if(Instanz() == ppsInstanzID::Kundenauftraege)
-  {  FertigWaren fw(artikel,(FertigWaren::enum_Aktion)'L',
-                      M.abs().as_int(),ctx.Id());
-     FertigWarenLager fwl(fw,ctx.lagerid);
-     if(M < 0) fwl.Einlagern(ctx);
-     else if(M > 0) fwl.Auslagern(ctx);
-  }
+#if 0     // not needed any more
+ ArtikelStamm as(Artikel());
 
+ if(as.BestellenBei()==ppsInstanzID::None)
+   if(as.Warengruppe()==ArtikelTypID::aufgemachtes_Band ||
+      as.Warengruppe()==ArtikelTypID::gewebtes_Band)
+     {
+      if(Instanz() == ppsInstanzID::Kundenauftraege)
+        {  FertigWaren fw(artikel,(FertigWaren::enum_Aktion)'L',
+                            M.abs().as_int(),ctx.Id());
+           FertigWarenLager fwl(fw,ctx.lagerid);
+           if(M < 0) fwl.Einlagern(ctx);
+           else if(M > 0) fwl.Auslagern(ctx);
+        }
+     }
 #endif
 
 }
