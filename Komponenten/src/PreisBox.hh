@@ -1,4 +1,4 @@
-// $Id: PreisBox.hh,v 1.3 2002/07/05 12:36:56 christof Exp $
+// $Id: PreisBox.hh,v 1.4 2002/09/18 07:56:01 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -33,15 +33,13 @@
 
 #include <Kunde/PreisListe.h>
 #include <IntStringBox.hh>
+#include <BaseObjects/ManuProcEntity.h>
 
 class PreisBox : public IntStringBox
 {	
 
-//	PreisListe::ID id;
-//   bool einschraenkung_b;
-
 public:
-	PreisBox();
+	PreisBox(ManuProcEntity::ID __none_id=ManuProcEntity::none_id);
 	void set_value(int i) ;
 	
 };

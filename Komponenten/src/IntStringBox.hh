@@ -1,4 +1,4 @@
-// $Id: IntStringBox.hh,v 1.5 2002/07/05 12:36:56 christof Exp $
+// $Id: IntStringBox.hh,v 1.6 2002/09/18 07:56:01 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -22,6 +22,7 @@
 #  define _INTSTRINGBOX_HH
 
 #include <Aux/Transaction.h>
+#include <BaseObjects/ManuProcEntity.h>
 
 class IntStringBox : public IntStringBox_gui
 {	
@@ -34,7 +35,7 @@ class IntStringBox : public IntStringBox_gui
         void string2_search(gboolean *_continue, GtkSCContext newsearch);
         static gint try_grab_focus(GtkWidget *w,gpointer gp);
 
-	int id;
+	ManuProcEntity::ID id;
 	Transaction tr,tr2,tr3;
 
    bool eingeschraenkt:1;
@@ -50,14 +51,14 @@ protected:
    int _none_id_;
 
 public:
-	IntStringBox();
+	IntStringBox(ManuProcEntity::ID __none_id=ManuProcEntity::none_id);
 	// das findet aber nicht unbedingt meine Zustimmung, schlieﬂlich soll
 	// das eine _Int_String Box sein ...
    void setLabel(const std::string &nr,const std::string &name,const std::string& namez="");
    void setLabel(long int nr);
 
-	int get_value() const { return id; }
-	void set_value(int i,const std::string &s,const std::string &sz="") ;
+	ManuProcEntity::ID get_value() const { return id; }
+	void set_value(ManuProcEntity::ID i,const std::string &s,const std::string &sz="") ;
 	virtual void set_value(int i)=0 ;
    void hide_int(bool b);
    void show_string2(bool b);

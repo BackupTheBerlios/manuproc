@@ -1,4 +1,4 @@
-// $Id: PreisBox.cc,v 1.3 2002/07/05 12:36:56 christof Exp $
+// $Id: PreisBox.cc,v 1.4 2002/09/18 07:56:01 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,12 +20,12 @@
 #include "PreisBox.hh"
 #include <Aux/itos.h>
 
-PreisBox::PreisBox()
+PreisBox::PreisBox(ManuProcEntity::ID __none_id) 
+	: IntStringBox(__none_id)
 {
   _tabelle_="ku_preisliste";
   _string1_="notiz";
   _int_="prlsnr";
-  _none_id_=PreisListe::none_id;
   setLabel("Nr.","Bezeichnung");
 
 #ifdef MABELLA_EXTENSIONS
@@ -33,6 +33,8 @@ PreisBox::PreisBox()
 #endif
   
 }
+
+
 
 void PreisBox::set_value(int i)
 {  cH_PreisListe PL(i);

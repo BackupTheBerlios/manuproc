@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.21 2002/07/26 07:43:50 christof Exp $
+// $Id: ArtikelBox.cc,v 1.22 2002/09/18 07:56:01 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -304,6 +304,7 @@ Gtk::Container* ArtikelBox::init_table(int l)
  table->attach(*label_typ,0,cls,2,3);
  table->show();
  ev->show();
+ active_sc=0;
  return ev;
 }
 
@@ -313,7 +314,7 @@ Gtk::Container* ArtikelBox::init_table(int l)
    alle_artikel_anzeigen_bool(false),alle_artikel_anzeigen_mit_id_bool(false),\
    artikel_automatisch_finden(false), \
   schema(sch), gewaehltesSchema(sch->Id()), tr("",false), tr2("",false),\
-  oberstes(0), menu(0),  pixmap(0), label_typ(0), label(0)
+  oberstes(0), menu(0),  pixmap(0), label_typ(0), label(0), active_sc(0)
 
 ArtikelBox::ArtikelBox(const cH_ExtBezSchema &_schema)  throw(SQLerror)
 : USUAL_INIT(_schema)
@@ -566,11 +567,51 @@ void ArtikelBox::AlleArtikelAnzeigenId(Gtk::CheckMenuItem *cmi)
 }
 
 bool ArtikelBox::determineFocus(guint &sigidx_out, guint &entryidx_out) const
-{  for (guint l=0;l<combos.size();++l)
+{
+  for (guint l=0;l<combos.size();++l)
       for (guint sp=0;sp<combos[l].size();++sp)
+#if 0 // this simply does not work - don't know why ....
          if (combos[l][sp]->has_focus())
+#else
+	 if (combos[l][sp]==active_sc)
+#endif
          {  sigidx_out=l; entryidx_out=sp;
+//std::cerr << "fokus " << l << "," << sp << '\n';
             return true;
          }
    return false;
 }
+
+void ArtikelBox::reset()
+   { for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
+      for (t_combos::iterator i=j->begin();i!=j->end();++i)
+        (*i)->reset(); 
+     eingeschraenkt=false;
+     einschraenkung="";
+     joinstring="";
+   }  
+
+void ArtikelBox::set_editable(bool edit)
+   { for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
+      for (t_combos::iterator i=j->begin();i!=j->end();++i)
+        (*i)->set_editable(edit); }  
+
+void ArtikelBox::set_autoexpand(bool exp)
+   { for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
+      for (t_combos::iterator i=j->begin();i!=j->end();++i)
+        (*i)->set_autoexpand(exp); }  
+
+void ArtikelBox::set_always_fill(bool fill)
+   { for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
+      for (t_combos::iterator i=j->begin();i!=j->end();++i)
+        (*i)->set_always_fill(fill); }  
+
+void ArtikelBox::set_focus(int sig, int field)
+   {
+    assert(combos.size()>sig);
+    assert(combos[sig].size()>field);
+    combos[sig][field]->reset();
+    combos[sig][field]->grab_focus();
+   }
+  
+   

@@ -1,6 +1,7 @@
-// $Id: logwin.cc,v 1.3 2002/09/18 07:56:01 christof Exp $
-/*  libKomponenten: GUI components for ManuProC's libcommon++
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
+// $Id: MVC_bool_Widget.hh,v 1.1 2002/09/18 07:56:01 christof Exp $
+/*  libKomponenten: ManuProC's Widget library
+ *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
+ *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,19 +18,24 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "logwin.h"
-#include <gtk--/adjustment.h>
+#ifndef MANUPROC_WIDGETS_MVC_INT_H
+#define MANUPROC_WIDGETS_MVC_INT_H
 
-void logwin::scroll() throw()
-{  Gtk::Adjustment *adj=(Gtk::Adjustment *)get_vadjustment();
-   if (adj) adj->set_value(adj->gtkobj()->upper);
-}
+#include <gtk--/checkbutton.h>
+#include <BaseObjects/MVC.h>
 
-logwin::logwin(guint minimum_size)
-{  add(vp);
-   vp.add(gtklist);
-   vp.show();
-   gtklist.show();
-   set_usize(-1,minimum_size);
-   set_policy(GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-}
+class MVC_bool_Widget : public Gtk::CheckButton
+{	typedef bool T;
+	SigC::Connection ch_con, my_ch_con;
+	Model_ref<T> model;
+	
+	void refresh(gpointer);
+	void on_toggled();
+	// explicitely forbid to use these (make them private)
+	bool get_active() const;
+	void set_active(bool);
+public:
+	MVC_bool_Widget(const Model_ref<T> &model, const std::string &text);
+};
+
+#endif

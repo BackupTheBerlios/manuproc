@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.hh,v 1.17 2002/07/08 08:26:54 christof Exp $
+// $Id: ArtikelBox.hh,v 1.18 2002/09/18 07:56:01 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.17 2002/07/08 08:26:54 christof Exp $
+// $Id: ArtikelBox.hh,v 1.18 2002/09/18 07:56:01 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -131,6 +131,7 @@ class ArtikelBox : public Gtk::EventBox
  Gtk::Pixmap *pixmap;
  Gtk::Label *label_typ;
  Gtk::CheckMenuItem *label;
+ Gtk::SearchCombo *active_sc;
  
  Gtk::Tooltips tooltips;
 
@@ -165,6 +166,7 @@ class ArtikelBox : public Gtk::EventBox
 
  void loadArtikel(unsigned int l) throw(SQLerror);
  static gint try_grab_focus(GtkWidget *w,gpointer gp);
+
  
  void artbox_start();
  void init();
@@ -198,29 +200,10 @@ public:
 	
 	void setExtBezSchemaID(ExtBezSchema::ID id); // ein Schema vorgeben, aber keinen ArtikelTyp
 
-   void reset()
-   { for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
-      for (t_combos::iterator i=j->begin();i!=j->end();++i)
-        (*i)->reset(); 
-     eingeschraenkt=false;
-     einschraenkung="";
-     joinstring="";
-   }  
-
-	void set_editable(bool edit)
-   { for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
-      for (t_combos::iterator i=j->begin();i!=j->end();++i)
-        (*i)->set_editable(edit); }  
-
-	void set_autoexpand(bool exp)
-   { for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
-      for (t_combos::iterator i=j->begin();i!=j->end();++i)
-        (*i)->set_autoexpand(exp); }  
-
-	void set_always_fill(bool fill)
-   { for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
-      for (t_combos::iterator i=j->begin();i!=j->end();++i)
-        (*i)->set_always_fill(fill); }  
+   void reset();
+   void set_editable(bool edit);
+	void set_autoexpand(bool exp);
+	void set_always_fill(bool fill);
 
    const ArtikelBase &get_value() const
         {  return artikel; }
@@ -236,11 +219,19 @@ public:
 	void ClearUserMenus();
 
 #ifdef MABELLA_EXTENSIONS
-	void NurWarenkorb(Kunde::ID kid)
-	  {joinstring = " join artikelpreise on (id=artikelid) ";
-	   einschraenkung=" kundennr="+itos(kid);
+	void EinWarenkorb(PreisListe::ID pid)
+	  {joinstring = " join artikelpreise ap on (id=artikelid) ";
+	   einschraenkung=" ap.kundennr="+itos(pid);
+	  }
+
+	void AlleWarenkorb(Kunde::ID kid)
+	  {joinstring = " join artikelpreise ap on (id=artikelid) ";
+	   einschraenkung=" exists (select prlsnr from ku_warenkorb kw"
+			" where kw.prlsnr=ap.kundennr and"
+			" kw.kundennr="+itos(kid)+")";		
 	  }
 #endif
+	void set_focus(int sig, int field);
 
 	// ----- Signale -----
 	SigC::Signal0<void> activate;

@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.16 2002/07/08 08:26:54 christof Exp $
+# $Id: Makefile.am,v 1.17 2002/09/18 07:56:01 christof Exp $
 CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK_INCLUDES@ @COMMONXX_INCLUDES@  
 
@@ -9,7 +9,8 @@ LINKS= EingabeBox.cc EingabeBox.hh datewin.cc datewin.h \
 	rowdata.h tclistleaf.cc tclistleaf.h tclistnode.cc tclistnode.h \
 	tclistrowdata.cc tclistrowdata.h treebase.cc treebase.h \
 	treebase_data.h MVC_int_Widget.hh MVC_int_Widget.cc \
-	MVC_string_Widget.hh MVC_string_Widget.cc 
+	MVC_string_Widget.hh MVC_string_Widget.cc \
+	MVC_bool_Widget.hh MVC_bool_Widget.cc
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
@@ -27,7 +28,7 @@ include_HEADERS = datewin.h logwin.h\
    Optionmenu_Einheit.hh PreisBox.hh WTelefon.hh \
    IntStringBox.hh IntStringBox_gui.hh PersonenBox.hh \
    LandesBox.hh KundenBox2.hh ZahlungsArtBox.hh \
-   MVC_int_Widget.hh MVC_string_Widget.hh
+   MVC_int_Widget.hh MVC_string_Widget.hh MVC_bool_Widget.hh
 
 lib_LIBRARIES= libKomponenten.a
 
@@ -52,7 +53,7 @@ libKomponenten_a_SOURCES=datewin.cc \
       LandesBox.cc \
       KundenBox2.cc \
       ZahlungsArtBox.cc \
-      MVC_int_Widget.cc MVC_string_Widget.cc 
+      MVC_int_Widget.cc MVC_string_Widget.cc MVC_bool_Widget.cc
 
 BUILT_SOURCES_L= ArtikelBox_sql.cc ProzessBox_sql.cc KundenBox_sql.cc $(LINKS) \
    WWaehrung_sql.cc WAuftragStatus_sql.cc \

@@ -1,4 +1,4 @@
-// $Id: WAuftragStatus.hh,v 1.9 2002/09/18 07:56:01 christof Exp $
+// $Id: MVC_bool_Widget.cc,v 1.1 2002/09/18 07:56:01 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,32 +18,25 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef _WAuftragStatus_HH
-#  define _WAuftragStatus_HH
+#include "MVC_bool_Widget.hh"
 
-#include <gtk--/optionmenu.h>
-#include <Auftrag/auftrag_status.h>
-#include <Auftrag/AuftragBase.h>
-#include <vector>
+void MVC_bool_Widget::refresh(gpointer x)
+{  if (x==&model.Value())
+   {  my_ch_con.disconnect();
+      Gtk::CheckButton::set_active(model.get_value());
+      my_ch_con=toggled.connect(SigC::slot(this,&MVC_bool_Widget::on_toggled));
+   }
+}
 
-class WAuftragStatus : public Gtk::OptionMenu 
-{
-   private:
-//      std::string status;
-      void fuelleMenu();
-   public:
-
-      WAuftragStatus();
-      ~WAuftragStatus(){}
-      
-      void set_value(AufStatVal a);
-      AufStatVal get_value() const;
-      SigC::Signal0<void> activate;
-
-// Veraltet!
-      void set_History(AufStatVal a) {set_value(a);} 
-      AufStatVal get_Status() const { return get_value(); }
-      const std::string get_Status_Name() const 
-      { return AuftragBase::getStatusStr(get_value()); }
+MVC_bool_Widget::MVC_bool_Widget(const Model_ref<T> &m, const std::string &text)
+	: Gtk::CheckButton(text), model(m)
+{  Gtk::ToggleButton::set_active(m.get_value());
+   my_ch_con=toggled.connect(SigC::slot(this,&MVC_bool_Widget::on_toggled));
+   ch_con=model.changed.connect(SigC::slot(this,&MVC_bool_Widget::refresh));
 };
-#endif
+
+void MVC_bool_Widget::on_toggled()
+{  ch_con.disconnect();
+   model=Gtk::CheckButton::get_active();
+   ch_con=model.changed.connect(SigC::slot(this,&MVC_bool_Widget::refresh));
+}

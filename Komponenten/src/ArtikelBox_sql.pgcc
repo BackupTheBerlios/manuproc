@@ -36,6 +36,7 @@ exec sql include sqlca;
 
 void ArtikelBox::searchFunc(int *cont, GtkSCContext newsearch, unsigned int sp,unsigned int l) throw(SQLerror)
 {std::vector<cH_EntryValue> v=get_content(l,sp);
+ active_sc=combos[l][sp];
 
  try
  {switch(newsearch)
@@ -372,6 +373,7 @@ void ArtikelBox::Benutzerprofil_speichern()
 
 void ArtikelBox::Neuer_Eintrag()
 {
+ if(kombiniertbool) return;
  try {
 // hier (und weiter unten) sollte man irgendwann mal 'ID' und 'EAN-Code' in die 
 // Tabellenspalten der jeweiligen Schemata umwandeln.

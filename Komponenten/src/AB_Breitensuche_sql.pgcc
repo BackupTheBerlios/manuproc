@@ -18,13 +18,23 @@
 
 #include <ManuProCConfig.h>
 #include "ArtikelBox.hh"
-exec sql include sqlca;
+#include <Misc/FetchIStream.h>
 
-#if 0
+//#define DODEBUG
+
+#ifdef DODEBUG
 static ostream &operator<<(ostream &o,cH_ExtBezSchema s)
 {  return o << '[' << s->Id() << ';' << s->Typ().Id() << ']';
 }
 #endif
+
+struct intint
+{  int first,second;
+};
+
+FetchIStream &operator>>(FetchIStream &is, intint &i)
+{  return is >> i.first >> i.second;
+}
 
 // true: BreitenSuche aktiv
 bool ArtikelBox::BreitenSuche(GtkSCContext newsearch,unsigned int sp,unsigned int l, int *cont)
@@ -38,36 +48,41 @@ bool ArtikelBox::BreitenSuche(GtkSCContext newsearch,unsigned int sp,unsigned in
     return false;
  }
  else if (newsearch==GTK_SEARCH_OPEN)
- {  exec sql begin declare section;
-    int sch=schema->Id(),typ=schema->Typ().Id();
-    int schemas[40],typen[40];
-    exec sql end declare section;
-    
-    exec sql select distinct extartbezid into :schemas 
-    	from extbezschema where artikeltyp=:typ and extartbezid<>:sch;
-    SQLerror::test(__FILELINE__,100);
-    {  int res=sqlca.sqlerrd[2];
-       for (int i=0;i<res;++i) 
-          breitensuche.push_back(cH_ExtBezSchema(schemas[i],typ));
+ {  {  vector<int> res=Query("select distinct extartbezid from extbezschema"
+    	" where artikeltyp="+itos(schema->Typ().Id())+
+    	" and extartbezid<>"+itos(schema->Id())
+    	).FetchArray<int>();
+       for (vector<int>::const_iterator i=res.begin();i!=res.end();++i)
+          breitensuche.push_back(cH_ExtBezSchema(*i,schema->Typ().Id()));
     }
-    exec sql select distinct artikeltyp into :typen
-    	from extbezschema where artikeltyp<>:typ and extartbezid=:sch;
-    SQLerror::test(__FILELINE__,100);
-    {  int res=sqlca.sqlerrd[2];
-       for (int i=0;i<res;++i) 
-          breitensuche.push_back(cH_ExtBezSchema(sch,typen[i]));
+    {  vector<int> res=Query("select distinct artikeltyp from extbezschema"
+    	" where artikeltyp<>"+itos(schema->Typ().Id())+
+    	" and extartbezid="+itos(schema->Id())
+#ifdef PETIG_EXTENSIONS
+        +" and artikeltyp<>"+itos(ArtikelTypID::Veraltet_Fehler)
+        +" order by artikeltyp desc"
+#endif    	
+    	).FetchArray<int>();
+       for (vector<int>::const_iterator i=res.begin();i!=res.end();++i)
+          breitensuche.push_back(cH_ExtBezSchema(schema->Id(),*i));
     }
-    exec sql select distinct extartbezid,artikeltyp into :schemas,:typen
-    	from extbezschema where artikeltyp<>:typ and extartbezid<>:sch;
-    SQLerror::test(__FILELINE__,100);
-    {  int res=sqlca.sqlerrd[2];
-       for (int i=0;i<res;++i) 
-          breitensuche.push_back(cH_ExtBezSchema(schemas[i],typen[i]));
+    {  vector<intint> res=Query("select distinct extartbezid,artikeltyp from extbezschema"
+    	" where artikeltyp<>"+itos(schema->Typ().Id())+
+    	" and extartbezid<>"+itos(schema->Id())
+#ifdef PETIG_EXTENSIONS
+        +" and artikeltyp<>"+itos(ArtikelTypID::Veraltet_Fehler)
+        +" order by artikeltyp desc"
+#endif    	
+    	).FetchArray<intint>();
+       for (vector<intint>::const_iterator i=res.begin();i!=res.end();++i)
+          breitensuche.push_back(cH_ExtBezSchema(i->first,i->second));
     }
 
-//std::copy(breitensuche.begin(),breitensuche.end(),
-// ostream_iterator<cH_ExtBezSchema>(std::cout,","));
-//std::cout<<'\n';
+#ifdef DODEBUG
+std::copy(breitensuche.begin(),breitensuche.end(),
+ ostream_iterator<cH_ExtBezSchema>(std::cout,","));
+std::cout<<'\n';
+#endif
 
     *cont=true;
     return true;
@@ -100,15 +115,11 @@ bool ArtikelBox::BreitenSuche(GtkSCContext newsearch,unsigned int sp,unsigned in
                squery += "text("+j->spaltenname +")='"+(*vi)->getStrVal()+"' AND ";
           }
           squery+=')';
-          exec sql begin declare section;
-          char *QUERY;
-          bool result=false;
-          exec sql end declare section;
           
-          QUERY=const_cast<char*>(squery.c_str());
-          exec sql prepare STMT from :QUERY;
-          exec sql execute STMT into :result;
-          
+         try 
+         {bool result=false;
+          Query(squery).Fetch() >> result;
+
           if (result)
           {  breitensuche.clear();
              setExtBezSchema(s);
@@ -121,6 +132,8 @@ bool ArtikelBox::BreitenSuche(GtkSCContext newsearch,unsigned int sp,unsigned in
                 }
              return true;
           }
+         } catch (SQLerror &e) 
+         { std::cerr << e <<'\n'; }
        }
     }
     // nicht gefunden ... weiter suchen    
