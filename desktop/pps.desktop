@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=pps
+Name[de]=Aufträge
+Comment[de]=Aufträge und Rechnungen
+Exec=pps
+Icon=pps.png
+Terminal=0
+Type=Application
+Encoding=ISO-8859-1
