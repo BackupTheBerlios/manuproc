@@ -1,4 +1,4 @@
-// $Id: Handles.h,v 1.13 2002/11/29 08:25:48 christof Exp $
+// $Id: Handles.h,v 1.14 2002/11/29 08:32:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -192,6 +192,8 @@ private: // deprecated, use cH->Foo() !
 	void *ref_from_const() const;
 	void unref() const;
 	static void unref(void *ptr);
+	// to make it clear that this won't work
+	operator int() const;
 };
 
 #undef NOISE
