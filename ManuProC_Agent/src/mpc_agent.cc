@@ -12,7 +12,7 @@
 #include "mpc_agent.hh"
 #include <MyMessage.h>
 #include <itos.h>
-
+#include "kunden_selector.hh"
 
 int main(int argc, char **argv)
 {  
@@ -72,7 +72,6 @@ void mpc_agent::on_beenden_activate()
 
 void mpc_agent::on_kunde_activate()
 {
- std::cout << "Kunde\n";
 }
 
 
@@ -103,21 +102,36 @@ void mpc_agent::on_activate_entry(int enr)
     return;
    }
 
- q >> kundennr >> name >> ort;
+
+ if(q.LinesAffected()>1)
+   {std::string kn;
+    kunden_selector ks(q,&kn,&name,&ort);
+    ks.set_transient_for(*this);
+    int ret;
+    ret=ks.run();
+    kundennr=atoi(kn.c_str());
+    if(ret==Gtk::RESPONSE_CANCEL)
+      return;
+   }
+ else
+    q >> kundennr >> name >> ort;
+
  }
  catch(SQLerror &e)
  {
   MyMessage msg(e);
   msg.set_transient_for(*this);
   msg.run();
+  return;
  }
-   
+
  kunde->set_value(KDBOX_NR,itos(kundennr));
  kunde->set_value(KDBOX_NAME,name);
  kunde->set_value(KDBOX_ORT,ort);
-
+   
  kunde->set_sensitive(false);
  customer_clear->set_sensitive(true);
+ neu->set_sensitive(true);
 }
 
 
@@ -127,6 +141,7 @@ void mpc_agent::on_customer_clear_activate()
  kunde->set_sensitive(true);
  kunde->grab_focus();
  customer_clear->set_sensitive(false); 
+ neu->set_sensitive(false);
 }
 
 void mpc_agent::on_order_clear_clicked()
@@ -141,7 +156,7 @@ void mpc_agent::on_artikel_activate_entry(int enr)
 {  
 }
 
-void mpc_agent::on_spinbutton1_editing_done()
+void mpc_agent::on_menge_editing_done()
 {  
 }
 
@@ -160,6 +175,18 @@ void mpc_agent::on_senden_clicked()
 
 void mpc_agent::on_neu_clicked()
 {
+ MyMessage msg;
+
+ if(kunde->sensitive()==true)
+    {msg.set_transient_for(*this);
+     msg.set_Message("select one customer first");
+     msg.run();
+     return;
+    }
+ clear_order();
+ int oi=create_new_order(atoi(kunde->get_value(KDBOX_NR).c_str()));
+ load_order(oi);   
+
 }
 
 

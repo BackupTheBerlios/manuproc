@@ -34,12 +34,16 @@ class mpc_agent : public mpc_agent_glade
         void on_order_clear_clicked();
         void on_artikel_aktivate();
         void on_artikel_activate_entry(int enr);
-        void on_spinbutton1_editing_done();
+        void on_menge_editing_done();
         void on_artikel_ok_clicked();
         void on_artikel_cancel_clicked();
         void on_orderid_entry_editing_done();
         void on_orderid_activate();
         void on_orderid_search(gboolean *cont,GtkSCContext context);
+
+	void clear_order();
+	void load_order(int oid){}
+	int create_new_order(int kdnr){return 0;}
 
 public:
  mpc_agent();

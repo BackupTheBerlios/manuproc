@@ -25,11 +25,15 @@ endif
 mpc_agent_SOURCES = \
 	mpc_agent_glade.cc \
 	mpc_agent.cc \
-	mpc_internal.cc
+	mpc_internal.cc \
+	kunden_selector.cc \
+	kunden_selector_glade.cc
 
 noinst_HEADERS = \
 	mpc_agent_glade.hh \
-	mpc_agent.hh 
+	mpc_agent.hh \
+	kunden_selector_glade.hh \
+	kunden_selector.hh
 
 AM_CXXFLAGS = @KOMPONENTEN2_INCLUDES@ 
 AM_CPPFLAGS = @KOMPONENTEN2_INCLUDES@ $(WIN_INCLUDES) -I..

@@ -48,3 +48,14 @@ void mpc_agent::on_orderid_search(gboolean *cont,GtkSCContext context)
 
 
 
+void mpc_agent::clear_order()
+{
+ orderid->reset();
+ label_orderdate->set_text("dated");
+ artikel->reset();
+ menge->set_value(0);
+ order->clear();
+}
+
+
+
