@@ -53,7 +53,7 @@ void windowTop::show_details()
    try{
    fill_bank_bei(kundendaten->getblz());
     }catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e);}
-   Gtk::Menu_Helpers::SelectMatching(*optionmenu_bankbei,(gpointer)kundendaten->getindex());
+//   Gtk::Menu_Helpers::SelectMatching(*optionmenu_bankbei,(gpointer)kundendaten->getindex());
    textNotiz->delete_text(0,textNotiz->get_length());
    gint pos=0;
    textNotiz->insert_text(kundendaten->notiz().c_str(), (kundendaten->notiz()).size(), &pos);

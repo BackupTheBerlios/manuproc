@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.54 2003/07/21 12:41:35 jacek Exp $
+// $Id: Kunde.h,v 1.55 2003/08/01 13:17:39 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -385,7 +385,9 @@ public:
 
         // set_bankkonto machte einen Datenbankzugriff
 
-        unsigned long int neue_bank_anlegen(const std::string& name, unsigned long int blz);        
+        static unsigned long int neue_bank_anlegen(const std::string& name, unsigned long int blz);
+        static unsigned long int bankname_aendern(unsigned long int blz, const std::string& name);
+        
         void get_blz_from_bankindex(unsigned int bankindex);
         cP_Waehrung getWaehrung() const { return waehrung; }
         void setWaehrung(cP_Waehrung w) {waehrung=w; }

@@ -51,7 +51,7 @@ windowTop::windowTop()
    UpdateBank(Kunde::UpdateBitsBank(0)), 
    UpdateSonst(Kunde::UpdateBitsSonst(0)), 
    UpdatePerson(Person::UpdateBits(0)), fire_enabled(true),
-   allgrp(NULL),wahlgrp(NULL)
+   allgrp(NULL),wahlgrp(NULL),bankid(0)
 {
  clear_entrys();
  label_speichern->set_text("");
@@ -70,6 +70,10 @@ windowTop::windowTop()
  
  rng_an->EinschraenkenKdGr(KundengruppeID::Rechnungsadresse);
  lfr_an->EinschraenkenKdGr(KundengruppeID::Lieferadresse);
+
+  betreuer->setExpandStr1(true);
+  betreuer->setExpandStr2(true); 
+
  connectFkt();
 }
 

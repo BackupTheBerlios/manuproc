@@ -81,7 +81,7 @@ void windowDetails::on_buttonDetailsUebernehmen_clicked()
     manage(new window_neue_bank_anlegen(this,st,blz));
   }
  else  kundendaten->set_bankindex(bank_index);
- int bank_index_ = int(optionmenu_bankbei->get_menu()->get_active()->get_user_data());
+ int bank_index_ = bankid;
  kundendaten->set_bankindex(bank_index_);
 
  kundendaten->set_schema(extartbez->get_value());
@@ -136,10 +136,12 @@ windowDetails::windowDetails(H_Kunde& kd)
    checkbuttonLieferAdr->set_active(kundendaten->isLieferadresse());
    checkbuttonRchngAdr->set_active(kundendaten->isRechnungsadresse());
 
+/*
    Gtk::Menu *_m(manage(new Gtk::Menu()));
    Gtk::MenuItem *_mi;
    _mi = manage(new Gtk::MenuItem(kundendaten->getbank()));
    _m->append(*_mi) ; _mi->show() ; optionmenu_bankbei->set_menu(*_m) ;
+*/
 
    textNotiz->delete_text(0,textNotiz->get_length());
    gint pos=0;

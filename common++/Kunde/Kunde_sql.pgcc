@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.50 2003/07/17 07:26:09 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.51 2003/08/01 13:17:39 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -264,16 +264,31 @@ unsigned long int Kunde::neue_bank_anlegen(const std::string& name, unsigned lon
 {
  exec sql begin declare section;
    unsigned int BANKINDEX;
-   char NAME[50];
+   char *NAME;
    unsigned long int BLZ=blz;   
  exec sql end declare section;
- exec sql select nextval('banken_bankindex_seq') into :BANKINDEX;
+
+ NAME = (char*)name.c_str();
+ 
+ exec sql insert into banken (name,blz) values (:NAME,:BLZ);
  SQLerror::test(__FILELINE__);
- strncpy(NAME,name.c_str(),sizeof(NAME));
- exec sql insert into banken (bankindex,name,blz)
-   values (:BANKINDEX,:NAME,:BLZ);
+ exec sql select bankindex into :BANKINDEX from banken where blz=:BLZ;
  SQLerror::test(__FILELINE__);
+
  return BANKINDEX;
+}
+
+unsigned long int Kunde::bankname_aendern(unsigned long int blz, const std::string& name)
+{
+ Query("update banken set name=? where blz=?")
+	<< name << blz;
+  SQLerror::test(__FILELINE__);
+
+ int bankindex;
+ Query("select bankindex from banken where blz=?") << blz >> bankindex;
+ SQLerror::test(__FILELINE__); 
+
+ return bankindex;
 }
 
 

@@ -193,7 +193,8 @@ public:
 private:
 	Data_Gruppe *allgrp;
 	Data_Gruppe *wahlgrp;
-
+public:
+	int bankid;
 };
 #endif
 

@@ -59,7 +59,7 @@ void windowTop::changedFktB(Kunde::UpdateBitsBank e)
   UpdateBank =  Kunde::UpdateBitsBank(UpdateBank|e);
      if      (e==Kunde::FKtonr       ) kundendaten->set_bank_konto(strtoll(entryBankKonto->get_text().c_str(),NULL,10));
      else if (e==Kunde::FBlz         ) ;//on_entry_blz_activate();
-     else if (e==Kunde::FBankindex   ) kundendaten->set_bankindex(int(optionmenu_bankbei->get_menu()->get_active()->get_user_data()));
+     else if (e==Kunde::FBankindex   ) kundendaten->set_bankindex(bankid);
 //     else if (e==Kunde::FBankeinzug  ) kundendaten->update_Bank_einzug(checkbuttonBankeinzug->get_active());
      else if (e==Kunde::FRabatt      ) kundendaten->set_rabatt(spinbutton_Rabatt->get_text());
      else if (e==Kunde::FZeilenrabatt) kundendaten->set_zeilenrabatt(checkbutton_zeilenrabatt->get_active());
@@ -314,7 +314,6 @@ void windowTop::connectFkt()
   entry_blz->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktB),Kunde::FBlz));
   entry_blz->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktB),Kunde::FBlz));
   entry_blz->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktB),Kunde::FBlz));
-  // 'optionmenu_bankbei' muß NACH dem füllen des Optionmenus konnectiert werden.
 //  checkbuttonBankeinzug->toggled.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktB),Kunde::FBankeinzug));
   checkbutton_zeilenrabatt->toggled.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktB),Kunde::FZeilenrabatt));
 

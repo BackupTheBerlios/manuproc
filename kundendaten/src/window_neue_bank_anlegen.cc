@@ -8,6 +8,7 @@
 #include "config.h"
 #include "window_neue_bank_anlegen.hh"
 #include "windowTop.hh"
+#include "MyMessage.h"
 
 void window_neue_bank_anlegen::on_entry_bankname_activate()
 {   
@@ -21,10 +22,20 @@ void window_neue_bank_anlegen::on_entry_blz_activate()
 
 void window_neue_bank_anlegen::on_button_uebernehmen_clicked()
 {   
-std::string name = entry_bankname->get_text();
+ std::string name = entry_bankname->get_text();
  long unsigned int blz = strtol(entry_blz->get_text().c_str(),NULL,10);
- Kunde K;
- unsigned long int bank_index = K.neue_bank_anlegen(name,blz);
+ unsigned long int bank_index;
+
+ try {
+ bank_index = Kunde::neue_bank_anlegen(name,blz);
+ }
+ catch(SQLerror &e)
+   {
+    if(e.Code() != -400) {MyMessage *m=manage(new MyMessage()); m->Show(e);}
+    try {bank_index=Kunde::bankname_aendern(blz,name);}
+    catch(SQLerror &e)
+	{MyMessage *m=manage(new MyMessage()); m->Show(e);}
+   }
  hauptfenster->neue_bank_uebernehmen(bank_index);
  destroy();
 }

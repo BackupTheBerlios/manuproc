@@ -12,24 +12,18 @@ exec sql include sqlca;
 int windowTop::fill_bank_bei(unsigned long int blz)
 {
  exec sql begin declare section;
-  int BANKINDEX[10];
+  int BANKINDEX;
   long int BLZ=blz;
-  char BANKNAME[10][50]; 
+  char *BANKNAME=0; 
  exec sql end declare section;
  exec sql select bankindex,
-	case when name='' then 'UNBEKANNT' else name end into :BANKINDEX, :BANKNAME
+	case when coalesce(name,'')='' then 'UNBEKANNT' else name end into :BANKINDEX, :BANKNAME
    from banken where blz = :BLZ;
  SQLerror::test(__FILELINE__,100);
- if (sqlca.sqlcode) { /*manage(new dialogError() );*/ return false;}
+ if (sqlca.sqlcode) { bankname_entry->set_text(""); bankid=0; return 0;}
 
- {Gtk::OStream os(optionmenu_bankbei);
-  for (int i=0;i<sqlca.sqlerrd[2];++i)
-   {
-    os << BANKNAME[i];
-    os.flush((gpointer)BANKINDEX[i]);
-   }
- }
- optionmenu_bankbei->get_menu()->deactivate.connect
-   (SigC::bind(SigC::slot(this,&windowTop::changedFktB),Kunde::FBankindex));
- return BANKINDEX[0];
+ bankname_entry->set_text(BANKNAME);
+ bankid=BANKINDEX;
+
+ return BANKINDEX;
 }
