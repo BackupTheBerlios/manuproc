@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.27 2003/03/10 14:44:14 christof Exp $
+// $Id: ppsInstanz.h,v 1.28 2003/05/02 06:13:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -92,7 +92,8 @@ public:
  bool AutomatischEinlagern() const {return automatisch_einlagern;}
  bool ExterneBestellung() const {return externe_bestellung;}
  ID GeplantVon() const {return geplant_von;} 
- 
+ // nächste Instanz für einen Artikel (dort wird von hier bestellt)
+ ID NaechsteInstanz(const ArtikelBase &art) const;
 
  cH_Prozess get_Prozess() const;
 //private:

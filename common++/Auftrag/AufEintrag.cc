@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.42 2003/03/26 15:13:17 christof Exp $
+// $Id: AufEintrag.cc,v 1.43 2003/05/02 06:13:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -246,7 +246,7 @@ AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
    ae.abschreiben(menge);
    if (elter.valid()) AufEintragZu(elter).Neu(ae,0);
    if (rekursiv)
-   {  if (instanz->LagerInstanz())
+   {  if (instanz->LagerInstanz()) // NaechsteInstanz verwenden
       {  cH_ppsInstanz pi=ppsInstanz::getProduktionsInstanz(artikel);
          if (pi!=ppsInstanzID::None && !pi->ProduziertSelbst())
             unbestellteMengeProduzieren(pi,artikel,menge,uid,true,neuerAEB);
@@ -565,7 +565,7 @@ void AufEintrag::ArtikelInternNachbestellen(int uid,mengen_t menge,
   assert(menge>0);
   assert(Id()!=dispo_auftrag_id);
 
-  if (Instanz()==ppsInstanzID::Kundenauftraege)  
+  if (Instanz()==ppsInstanzID::Kundenauftraege) // NaechsteInstanz ?
   {  cH_ppsInstanz i=ppsInstanz::getBestellInstanz(Artikel());
      if (i!=ppsInstanzID::None && i!=ppsInstanzID::Kundenauftraege)
      {  AufEintrag::ArtikelInternNachbestellen(i,menge,
@@ -862,7 +862,7 @@ public:
 	
 	// Überproduktion
 	void operator()(const ArtikelBase &art,AuftragBase::mengen_t M) const
-	{  assert(M>0);
+	{  assert(M>0); // NaechsteInstanz?
 	   cH_ppsInstanz wo=ppsInstanz::getBestellInstanz(art);
 	   if (wo==neuerAEB.Instanz()) wo=ppsInstanz::getProduktionsInstanz(art);
 	   assert(wo!=neuerAEB.Instanz());

@@ -129,3 +129,9 @@ int ProdLager::Lieferzeit_in_Tagen()
   return dauer;
 }
 */
+
+ppsInstanz::ID ppsInstanz::NaechsteInstanz(const ArtikelBase &art) const
+{  if (Id()==ppsInstanzID::Kundenauftraege) return getBestellInstanz(art)->Id();
+   if (LagerInstanz()) return getProduktionsInstanz(art)->Id();
+   return ppsInstanzID::None;
+}
