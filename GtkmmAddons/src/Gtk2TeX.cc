@@ -16,9 +16,10 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: Gtk2TeX.cc,v 1.4 2003/11/11 10:15:28 christof Exp $
+// $Id: Gtk2TeX.cc,v 1.5 2003/11/11 12:07:36 christof Exp $
 
 #include "Gtk2TeX.h"
+#include "gtkhacks.h"
 
 static bool is_lines(const std::string &s)
 {  if (s.begin()==s.end()) return false;
@@ -27,51 +28,59 @@ static bool is_lines(const std::string &s)
    return true;
 }
 
-#if 0
-static void CList2Table_sub(std::ostream &os,const Gtk::CList *cl,const Gtk2TeX::TableFlags &fl,const Gtk::CList::Row &y,bool is_last_line)
+static Glib::ustring get_text(const Gtk::TreeModel::iterator &y,const Gtk::TreeViewColumn*col)
+{  int column=get_ModelColumn(col,"text");
+   if (!column==-1) return std::string();
+   Glib::ustring content;
+   y->get_value(column,content);
+   return content;
+}
+
+static void TreeView2Table_sub(std::ostream &os,const Gtk::TreeView *cl,
+	const Gtk2TeX::TableFlags &fl,const Gtk::TreeModel::iterator &y,
+	bool is_last_line)
 {  bool has_lines(false),has_text(false);
    int col(1);
    if (fl.preline_cb) (*fl.preline_cb)(os,y,fl.user_data);
    // transform '[-]*' into '\cline'
    int x2=0;
-   for (Gtk::CList::Row::iterator x=y.begin(),xend=y.end();x!=xend;++x,++x2)
-   {  if (!cl->gtkobj()->column[x2].visible) continue;
-      Gtk::nstring content;
-      if (!(content=x->get_text()).null())
+   
+   // gtkmm2 seems to have problems with const pointers so we trick
+   Glib::ListHandle<Gtk::TreeViewColumn*> cols=const_cast<Gtk::TreeView*>(cl)->get_columns();
+   for (Glib::ListHandle<Gtk::TreeViewColumn*>::const_iterator x=cols.begin();x!=cols.end();++x,++x2)
+   {  Glib::ustring content=get_text(y,*x);
+      
+      if (!content.empty())
       {  if (is_lines(content))
          {  has_lines=true;
             os << "\\cline{"<<col<<'-'<<col<<'}';
          }
-         else if (content.size()) has_text=true;
+         else if (!has_text && !content.empty()) has_text=true;
       }
       col++;
    }
    if (has_text) 
    {  x2=0;
       guint next2=x2;
-      for (Gtk::CList::Row::iterator x=y.begin(),xend=y.end(),next=x;x!=xend;x=next,x2=next2)
-      {  if (!cl->gtkobj()->column[x2].visible) continue;
-         guint multicol=1;
+      for (Glib::ListHandle<Gtk::TreeViewColumn*>::const_iterator x=cols.begin(),xend=cols.end(),next=x;x!=xend;x=next,x2=next2)
+//      for (Gtk::CList::Row::iterator x=y.begin(),xend=y.end(),next=x;x!=xend;x=next,x2=next2)
+      {  guint multicol=1;
          
+      // x->get_alignment() 0.0-1.0
          for (++next,++next2;next!=xend;++next,++next2)
-         {  if (!cl->gtkobj()->column[next2].visible) continue;
-            if (fl.multicolumn && 
-            	(next->get_text().null() || next->get_text().empty())
-            	// we could move this out of the for loop
-            	&& cl->gtkobj()->column[x2].justification!=GTK_JUSTIFY_RIGHT)
+         {  if (fl.multicolumn && get_text(y,*next).empty()
+            	&& (*next)->get_alignment()<0.9)
                ++multicol;
             else break;
          }
-         Gtk::nstring content;
+         Glib::ustring content=get_text(y,*x);
          if (multicol>1) 
          {  os << "\\multicolumn{"<< multicol<< "}{l}{";
          }
-         if (!(content=x->get_text()).null()) 
-         {  if (fl.element_cb)
-               os << (*fl.element_cb)(y,x2,Gtk2TeX::string2TeX(content),fl.user_data);
-            else 
-               os << Gtk2TeX::string2TeX(content);
-         }
+         if (fl.element_cb)
+            os << (*fl.element_cb)(y,x2,Gtk2TeX::string2TeX(content),fl.user_data);
+         else 
+            os << Gtk2TeX::string2TeX(content);
          if (multicol>1) os << '}';
          if (next!=xend) os << '&';
       }
@@ -81,6 +90,8 @@ static void CList2Table_sub(std::ostream &os,const Gtk::CList *cl,const Gtk2TeX:
    	// Nur clines und letzte Zeile erfordern kein '\\'
       os << "\\\\\n";
 }
+
+#if 0
 
 std::ostream &Gtk2TeX::CList2Table(std::ostream &os,const Gtk::CList *cl,const TableFlags &fl)
 {  int columns(cl->gtkobj()->columns);

@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: Gtk2TeX.h,v 1.4 2003/11/11 10:15:28 christof Exp $
+// $Id: Gtk2TeX.h,v 1.5 2003/11/11 12:07:36 christof Exp $
 
 #include <TeX.h>
 #include <iostream>
@@ -27,8 +27,8 @@ namespace Gtk2TeX
 
 	typedef std::string (*ColumnType_cb)(int col,const std::string &typ,const std::string &title,gpointer user_data);
 	typedef std::string (*ColumnTitle_cb)(int col,const std::string &title,gpointer user_data);
-	typedef std::string (*Element_cb)(const Gtk::CList::Row &r,int col,const std::string &text,gpointer user_data);
-	typedef void (*Row_cb)(std::ostream &o,const Gtk::CList::Row &r,gpointer user_data);
+	typedef std::string (*Element_cb)(const Gtk::TreeModel::iterator &r,int col,const std::string &text,gpointer user_data);
+	typedef void (*Row_cb)(std::ostream &o,const Gtk::TreeModel::iterator &r,gpointer user_data);
 	struct TableFlags
 	{	bool longtable:1;
 		bool headline:1; // output ...\endhead

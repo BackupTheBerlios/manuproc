@@ -1,4 +1,4 @@
-// $Id: Gtk_OStream_TreeView.cc,v 1.5 2003/11/10 08:23:45 christof Exp $
+// $Id: Gtk_OStream_TreeView.cc,v 1.6 2003/11/11 12:07:36 christof Exp $
 /*  Gtk--addons: a collection of gtk-- addons
     Copyright (C) 2002  Adolf Petig GmbH. & Co. KG
     Developed by Christof Petig <christof.petig@wtal.de>
@@ -22,8 +22,7 @@
 #include <gtkmm/treeview.h>
 #include <gtkmm/liststore.h>
 #include <gtkmm/treeviewcolumn.h>
-
-static int get_ModelColumn(Gtk::TreeViewColumn *tvc);
+#include "gtkhacks.h"
 
 void Gtk::OStream::erase_TreeView(openmode mode)
 {  if (mode&std::ios::trunc) 
@@ -55,7 +54,7 @@ void Gtk::OStream::line_TreeView(const std::string &line)
       if (b>=linesize) break;
       end=line.find('\t',b);
       
-      int column=get_ModelColumn(*coli);
+      int column=get_ModelColumn(*coli,"text");
       if (column!=-1)
          row.set_value(column, Glib::ustring(line.substr(b,end)));
            
@@ -63,54 +62,4 @@ void Gtk::OStream::line_TreeView(const std::string &line)
       b=end+1;
    } while(end!=std::string::npos);
 }
-
-// HACKERY !
-// there seems to be no decent way to get the model column 
-// of a treeview column's text attribute
-
-#include <gtk/gtktreeviewcolumn.h>
-
-namespace {
-// copied from gtktreeviewcolumn.c ...
-struct my_GtkTreeViewColumnCellInfo
-{
-  GtkCellRenderer *cell;
-  GSList *attributes;
-  // and more I don't care for
-};
-}
-
-// copied from gtk_tree_view_column_cell_set_cell_data
-static int get_ModelColumn(Gtk::TreeViewColumn *tvc)
-{  GtkTreeViewColumn *tree_column= tvc->gobj();
-   GList *cell_list;
-   GSList *list;
-
-   g_return_val_if_fail (GTK_IS_TREE_VIEW_COLUMN (tree_column), -1);
-   g_return_val_if_fail (tree_column->cell_list != NULL, -1);
-     
-  for (cell_list = tree_column->cell_list; cell_list; cell_list = cell_list->next)
-    {
-      struct my_GtkTreeViewColumnCellInfo *info = (my_GtkTreeViewColumnCellInfo *) cell_list->data;
-      list = info->attributes;
-      
-      while (list && list->next)
-	{ gint number=GPOINTER_TO_INT (list->next->data);
-	  const gchar *name=(const gchar *)list->data;
-	  if (name && !strcmp(name,"text")) return number;
-	  list = list->next->next;
-	}
-    }
-  return -1;
-}
-
-
-// gtk_cell_renderer_text_get_property
-//      ->_property_renderable();
-      
-//      GtkCellRenderer *cr=coli->get_first_cell_renderer()->_property_renderable
-// gobj();
-//      Gtk::CellRendererText *crt=dynamic_cast<Gtk::CellRendererText*>(coli->get_first_cell_renderer());
-      
-//      Glib::Object *obj=cr->property_text().get_object();
 
