@@ -1,4 +1,4 @@
-/* $Id: DynEnums_default.h,v 1.8 2003/11/14 08:53:43 christof Exp $ */
+/* $Id: DynEnums_default.h,v 1.9 2004/02/16 16:16:36 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: DynEnums_default.h,v 1.8 2003/11/14 08:53:43 christof Exp $
+// $Id: DynEnums_default.h,v 1.9 2004/02/16 16:16:36 christof Exp $
 
 #ifndef MANUPROC_DYNAMICENUMS_H
 #define MANUPROC_DYNAMICENUMS_H
@@ -51,7 +51,7 @@ namespace ManuProC {
 
   namespace Instanzen {
    enum enum_t {
-    None=0,Kundenauftraege=1
+    None=-1,Kundenauftraege=1
    };
   }
   

@@ -1,4 +1,4 @@
-// $Id: delayed_reclaim.cc,v 1.7 2004/02/16 15:29:05 christof Exp $
+// $Id: delayed_reclaim.cc,v 1.8 2004/02/16 16:16:36 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -25,6 +25,7 @@
 #include <Lager/Lager.h>
 #include <Auftrag/VerfuegbareMenge.h>
 #include <Auftrag/selFullAufEntry.h>
+#include <Misc/relops.h>
 //#include <Auftrag/AufEintragZu.h>
 
 bool AufEintrag::delayed_reclaim::active;
@@ -131,7 +132,7 @@ void AufEintrag::delayed_reclaim::reclaim()
       {  // alle 2er suchen
          VerfuegbareMenge vfm(act.first,act.second,ManuProC::Datum::Infinity());
          for (VerfuegbareMenge::iterator i=vfm.getDispoAuftraege().begin();
-         		i!=vfm.getDispoAuftraege().end();++i)
+         		std_neq(i,vfm.getDispoAuftraege().end());++i)
          {  if (!i->getRestStk()) continue;
             SQLFullAuftragSelector waiting_orders(make_value(SQLFullAuftragSelector::
       	 	sel_Artikel_Planung_id(act.first->Id(),Kunde::eigene_id,act.second,
