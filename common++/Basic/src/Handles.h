@@ -1,4 +1,4 @@
-// $Id: Handles.h,v 1.15 2003/06/02 10:31:26 jacek Exp $
+// $Id: Handles.h,v 1.16 2003/11/23 10:24:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -138,7 +138,18 @@ public:
 	// replace this default value FAST via *this=Something !!!
 	// usually this is only needed for cached values
 	Handle() : _data(0) { NOISE("Handle()\n"); }
+
+	template <typename X>
+	 Handle(const Handle<X> &b) : _data(b.operator->())
+	{  NOISE("Handle(from " << b << '.' << (b?b->_references:0) << ")\n");
+	   if (_data) _data->ref();
+	}
 	
+	Handle(ContentType *b) : _data(b)
+	{  NOISE("Handle(from " << b << '.' << (b?b->_references:0) << ")\n");
+	   if (_data) _data->ref();
+	}
+
 	// without this test any std::exception in T::T(...) would kill your program
 	~Handle()
 	{  NOISE("~Handle" << _data << '.' << (_data?_data->_references:0) << '\n');
@@ -181,10 +192,28 @@ public:
 	{  return *_data;
 	}
 	
-	Handle(ContentType *b) : _data(b)
-	{  NOISE("Handle(from " << b << '.' << (b?b->_references:0) << ")\n");
-	   if (_data) _data->ref();
-	}
+	// geht auch über ctor?
+	template <typename X>
+	 operator Handle<X>() const { return _data; }
+	 
+	// Variant:  base.cast_static<Derived>();
+	template <typename X>
+	 Handle<X> cast_static() const { return static_cast<X*>(_data); }
+	template <typename X>
+	 Handle<X> cast_dynamic() const { return dynamic_cast<X*>(_data); }
+	template <typename X>
+	 Handle<X> cast_const() const { return const_cast<X*>(_data); }
+	 
+	// Variant: Handle<Derived>::cast_static(base);
+	template <class X>
+	 static inline Handle<T> cast_static(const Handle<X>& src)
+	{  return static_cast<T*>(src.operator->()); }
+	template <class X>
+	 static inline Handle<T> cast_dynamic(const Handle<X>& src)
+	{  return dynamic_cast<T*>(src.operator->()); }
+	template <class X>
+	 static inline Handle<T> cast_const(const Handle<X>& src)
+	{  return const_cast<T*>(src.operator->()); }
 
 //	ContentType &operator ContentType() { return *_data; } ???
 

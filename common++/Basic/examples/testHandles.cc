@@ -1,4 +1,4 @@
-// $Id: testHandles.cc,v 1.6 2002/06/24 07:35:40 christof Exp $
+// $Id: testHandles.cc,v 1.7 2003/11/23 10:24:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -35,6 +35,10 @@ public:
 	{  return val==b.val;
 	}
 	friend std::ostream &operator<<(std::ostream &o,const A &a);
+};
+
+struct B : public A
+{  B() : A('B') {}
 };
 
 std::ostream &operator<<(std::ostream &o,const A &a)
@@ -74,12 +78,30 @@ void d(Ah v)
 {  std::cerr << "d(" << *v << ") -> ";
 }
 
+void e(Handle<B> b)
+{  Handle<A> a=b; // downcast
+   Handle<B> b2=a.cast_dynamic<B>();
+   Handle<const A> ca=a; // adding constness
+   Handle<A> a2=ca.cast_const<A>();
+   Handle<B> b3=a.cast_static<B>();
+   
+   Handle<B> b4=Handle<B>::cast_dynamic(a);
+   Handle<B> b5=Handle<B>::cast_static(a);
+   Handle<A> a3=Handle<A>::cast_const(ca);
+#if 0 // these give errors   
+   Handle<B> b6=Handle<B>::cast_const(ca);
+   Handle<B> b7=a;
+#endif
+}
+
 // demonstrate static elements
 
 A static_a(42);
 bool dummy=static_a.is_static(true);
 
 Ah static_test(&static_a);
+
+
 
 int main()
 {  Ah y(2);
