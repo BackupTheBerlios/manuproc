@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.35 2004/10/19 11:46:26 christof Exp $
+// $Id: db_upgrade.cc,v 1.36 2004/10/25 16:07:22 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -193,8 +193,9 @@ int main(int argc,char *argv[])
   // Buchung
   check_column("buchung","waehrung","integer");
   
-  //
+  // Zahlungsarten
   check_column("rechnung_zahlungsart","frist_monate","integer");
+  check_column("rechnung_zahlungsart","textid","integer");  
   
   // genau eine Warengruppe ist default
   if(check_column("artikelgruppen","defaultgrp","bool"))
