@@ -15,7 +15,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// $Id: with_class.cc,v 1.5 2001/07/05 12:58:06 christof Exp $
+// $Id: with_class.cc,v 1.6 2001/08/05 20:41:32 thoma Exp $
 
 #include "config.h"
 #include "with_class.hh"
@@ -56,7 +56,13 @@ public:
     if (i==1) return intval*2;
     return intval*intval;
  }
+
+ vector<cH_EntryValueIntString> get_orderd(guint _seqnr) const
+   {
+     
+   }
 };
+
 
 class SumNode : public TCListNode
 {  int sum0,sum1,sum2;

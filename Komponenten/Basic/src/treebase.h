@@ -95,11 +95,13 @@ public:
  void set_value_data(gpointer _p) {gp = _p;}
  gpointer ValueData() const { return gp; }
  void Stutzen ( bool s) {stutzen_bool=s;}
+ std::deque<guint> get_seq() const {return currseq;}
  
  void clear();
  SigC::Signal1<void,cH_RowDataBase> leaf_selected;
 };
 
+///////////////////////////////////////////////////////////////////
 // newer, more simplyfied API:
 class SimpleTree : public TreeBase
 {protected:
@@ -141,6 +143,7 @@ public:
    {  if (seq>=0 && seq<titles.size()) return titles[seq];
       return ""; 
    }
+
   
  void set_NewNode(NewNode_fp x) { node_creation=x; }
 };

@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistleaf.h,v 1.3 2001/06/29 11:30:18 christof Exp $
+// $Id: tclistleaf.h,v 1.4 2001/08/05 20:37:15 thoma Exp $
 
 #ifndef KOMPONENTEN_TCLISTLEAF
 #define KOMPONENTEN_TCLISTLEAF
@@ -37,6 +37,7 @@ public:
 // virtual void cumulate(const cH_RowDataBase &rd)
 // {};
 // virtual void refreshSum(const TreeBase &tb) {};
+
  
  const cH_RowDataBase LeafData() const { return leafdata; }
  const std::vector<std::string> getColEntries(const TreeBase &tb) const;

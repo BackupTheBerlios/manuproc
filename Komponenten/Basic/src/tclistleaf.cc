@@ -17,6 +17,7 @@
  */
 
 #include"tclistleaf.h"
+#include <Aux/EntryValueIntString.h> ///
 
 const std::vector<std::string> TCListLeaf::getColEntries(const TreeBase &tb) const
 {

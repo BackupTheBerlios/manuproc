@@ -193,8 +193,8 @@ void TreeBase::refillTCL()
  for(TCListRow_API::iterator i = begin(); i!=end(); ++i)
  {  if (!((TCListRowData*)(*i).get_user_data())->Leaf())
    	((TCListNode*)(*i).get_user_data())->refreshSum(*this);
+//   	((TCListLeaf*)(*i).get_user_data())->refreshSum(*this); ///MAT?
  }
-
  show_or_hide_Spalten();
  expand();
 
