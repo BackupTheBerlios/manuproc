@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.45 2003/06/24 10:16:41 christof Exp $
+// $Id: adjust_store.cc,v 1.46 2003/06/25 07:06:58 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -6,7 +6,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -53,7 +53,7 @@ static void usage(const std::string &s)
            "\tL: Löschen von ungültigen Zuordnungen (ohne Quelle oder Ziel)\n"
            "\tD: Löschen von ungültigen Einträgen (Vorsicht)\n"
            "\t*: Alle Analysen/Reparaturen auf einmal (meist mit -I)\n";
-           
+
  std::cerr << "USAGE:  ";
  std::cerr << s <<" [-i<instanz>|-I]  -a<aktion> [-d<database>] [-h<dbhost>] [-l|-y] \n"
            "\twobei die aktion=[A|C|X|T|*] ist.\n"
@@ -69,7 +69,7 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,const bool analys
    bool alles_ok=true;
     if (actions&b_physical)
      {
-      if(I->EigeneLagerKlasseImplementiert()) 
+      if(I->EigeneLagerKlasseImplementiert())
         try
         {alles_ok&=RI.ReparaturLager(getuid(),analyse_only);
         } catch (SQLerror &e)
@@ -83,24 +83,24 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,const bool analys
     if (actions&b_tree || actions&b_exclude)
     {  SQLFullAuftragSelector psel=SQLFullAuftragSelector::sel_InstanzAlle(I->Id());
        SelectedFullAufList K(psel);
-      if (actions&b_exclude) 
+      if (actions&b_exclude)
       {  alles_ok&=RI.Reparatur_0er_und_2er(K,analyse_only);
          // if (!alles_ok) goto reload; // eigentlich verändert diese F. K
       }
       if (actions&b_tree)
-      {try
-       {for(SelectedFullAufList::iterator i = K.begin();i!=K.end(); ++i)
-        {  AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(*i,
+      {for(SelectedFullAufList::iterator i = K.begin();i!=K.end(); ++i)
+        {try
+         {AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(*i,
        			AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
        	  alles_ok&=RI.Eltern(*i,eltern,analyse_only,actions&b_raise);
        	  alles_ok&=RI.Lokal(*i,analyse_only);
        	  AufEintragZu::map_t kinder=AufEintragZu::get_Kinder_nach_Artikel(*i);
        	  alles_ok&=RI.Kinder(*i,kinder,analyse_only);
+         } catch (SQLerror &e)
+         {  std::cout << "SQL Fehler " << e << '\n';
+            alles_ok=false;
+         }
         }
-       } catch (SQLerror &e)
-       {  std::cout << "SQL Fehler " << e << '\n';
-          alles_ok=false;
-       }
       }
     }
    return alles_ok;
@@ -111,9 +111,9 @@ const static struct option options[]=
 {{ "instanz", required_argument, NULL, 'i' },
  { "aktion", required_argument, NULL, 'a' },
  { "database", required_argument,      NULL, 'd' },
- { "dbhost", required_argument,      NULL, 'h' },  
- { "analyse_only", no_argument,      NULL, 'y' },  
- { "alle_Instanzen", no_argument,      NULL, 'I' },  
+ { "dbhost", required_argument,      NULL, 'h' },
+ { "analyse_only", no_argument,      NULL, 'y' },
+ { "alle_Instanzen", no_argument,      NULL, 'I' },
  { NULL,      0,       NULL, 0 }
 };
 
@@ -122,7 +122,7 @@ int main(int argc,char *argv[])
   int opt;
   ppsInstanz::ID instanz= ppsInstanzID::None;
   std::string database="";
-  std::string dbhost="";  
+  std::string dbhost="";
   bool analyse_only=false;
   bool all_instanz=false;
   bool loop=false;
@@ -143,11 +143,11 @@ int main(int argc,char *argv[])
           if (strchr(optarg,'D')) ppsInstanzReparatur::really_delete=true;
           break;
        case 'd' : database=optarg;break;
-       case 'h' : dbhost=optarg;break;  
-       case 'y' : analyse_only=true;break;  
+       case 'h' : dbhost=optarg;break;
+       case 'y' : analyse_only=true;break;
        case 'l' : loop=true; break;
        case 't' : ManuProC::Tracer::Enable(AuftragBase::trace_channel); break;
-       case '?' : usage(argv[0]);        
+       case '?' : usage(argv[0]);
      }
    }
 
@@ -175,7 +175,7 @@ restart:
        {  std::cout << Query::Lines() << " ungültige Zuordnungen gelöscht\n";
        }
     }
-    if(instanz!=ppsInstanzID::None) 
+    if(instanz!=ppsInstanzID::None)
       alles_ok&=check_for(argv[0],cH_ppsInstanz(instanz),analyse_only);
     else
      { std::vector<cH_ppsInstanz> VI=cH_ppsInstanz::get_all_instanz();
@@ -187,17 +187,15 @@ restart:
          alles_ok&=check_for(argv[0],*i,analyse_only);
          actions=save;
         }
-     }    
-    if (loop && !alles_ok && loops < 99) 
+     }
+    if (loop && !alles_ok && loops < 99)
     {  std::cout << "adjust_store: repairing again\n";
        goto restart;
     }
-    
+
     if (loop && loops>1)
        std::cout << "adjust_store: repairing took " << loops << " loops\n";
     ManuProC::dbdisconnect();
   }catch(SQLerror &e){std::cout << e<<'\n'; return 1;}
   return !alles_ok;
 }
-
-
