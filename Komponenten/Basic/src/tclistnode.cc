@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistnode.cc,v 1.5 2001/07/05 12:58:06 christof Exp $
+// $Id: tclistnode.cc,v 1.6 2001/10/02 15:28:01 christof Exp $
 
 #include <tclistnode.h>
 #include <Aux/EntryValueIntString.h>
@@ -28,8 +28,10 @@ const cH_EntryValue TCListNode::Value(guint col, gpointer gp) const
 // errechnete Summe in CList anzeigen
 void TCListNode::refreshSum(const TreeBase &tb)
 {for(guint i=tb.Attrs();i<tb.Cols();i++)
-   dynamic_cast<TCListRow*>(listrow)
+   try { dynamic_cast<TCListRow*>(listrow)
    	->relabel(i, Value(i,tb.ValueData())->getStrVal());
+   } catch(...)
+   { assert(!"listrow is a TCListRow"); }
 
  for (TCListRow_API::iterator i = listrow->begin();i!=listrow->end();++i)
  {  if (!((TCListRowData*)(*i).get_user_data())->Leaf())

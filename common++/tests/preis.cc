@@ -1,4 +1,4 @@
-// $Id: preis.cc,v 1.2 2001/07/05 09:23:02 christof Exp $
+// $Id: preis.cc,v 1.3 2001/10/02 15:26:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -41,4 +41,7 @@ int main()
    Preis e(1.0,Waehrung::DM,7);
    Preis f(.1,Waehrung::EUR,100);
    std::cout << e << '+'<< f<<"=" << e+f<<'\n';
+   
+   Preis g(5.0,Waehrung::DM,4);
+   std::cout << g << " -> 20Stk. = " << g.Gesamtpreis(20,1.0) << '\n';
 }

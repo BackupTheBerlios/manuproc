@@ -138,7 +138,7 @@ case GTK_SEARCH_CLOSE:
  break;
   }
  } catch (SQLerror &e)
-  {  std::cerr << e << '\n';
+  {  //std::cerr << e << '\n';
   }
 
 }
@@ -462,7 +462,7 @@ void ArtikelBox::Neuer_Eintrag()
   pixmap->set(stock_button_apply_xpm);
   new_article_inserted(db_id);
   activate();
-  }catch (SQLerror &e)   {  std::cerr << e << '\n';}
+  }catch (SQLerror &e)   {  /*std::cerr << e << '\n';*/}
 }
 
 

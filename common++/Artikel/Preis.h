@@ -1,4 +1,4 @@
-// $Id: Preis.h,v 1.3 2001/10/01 12:55:40 christof Exp $
+// $Id: Preis.h,v 1.4 2001/10/02 15:26:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,7 +27,9 @@
 class Preis
 {
 private:
-	typedef fixedpoint<3> pfennig_cent_t;
+	static const unsigned int nachkommastellen=3;
+	static const unsigned int rabattnachkommastellen=2;
+	typedef fixedpoint<nachkommastellen> pfennig_cent_t;
 	pfennig_cent_t pfennig_cent;
     	float preismenge; // 100 == /100m
     	cP_Waehrung waehrung;
@@ -54,7 +56,6 @@ public:
 	int Wert_i(cP_Waehrung tp,float pmenge=0) const throw()
 	{  return Wert_fr(tp,pmenge).Scaled(); }
 	
-	/// fixedpoint<2>
 	pfennig_cent_t Wert_fr(cP_Waehrung tp,float pmenge=0) const throw();
 	pfennig_cent_t Wert(cP_Waehrung tp,float pmenge=0) const throw()
 	{ return Wert_fr(tp,pmenge); }
@@ -99,8 +100,8 @@ public:
 	}
 	// Preis Gesamtpreis(cP_Waehrung tp,float stkgr=0) const;
 	
-	pfennig_cent_t Gesamtpreis(cP_Waehrung w,int anzahl,float menge,const fixedpoint<2> &rabatt=fixedpoint<2>(0.0)) const;
-	const Preis Gesamtpreis(int anzahl,float menge,const fixedpoint<2> &rabatt=fixedpoint<2>(0.0)) const;
+	pfennig_cent_t Gesamtpreis(cP_Waehrung w,int anzahl,float menge,const fixedpoint<rabattnachkommastellen> &rabatt=fixedpoint<rabattnachkommastellen>(0.0)) const;
+	const Preis Gesamtpreis(int anzahl,float menge,const fixedpoint<rabattnachkommastellen> &rabatt=fixedpoint<rabattnachkommastellen>(0.0)) const;
 	
 	void short_format(bool b=true)
 	{  short_shl=b; }

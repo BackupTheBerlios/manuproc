@@ -1,0 +1,63 @@
+#include "Global_Settings.h"
+#include <Aux/SQLerror.h>
+exec sql include sqlca;
+
+Global_Settings::Global_Settings(int u,const std::string& p,const std::string& n)
+: userid(u),program(p),name(n)
+{
+  exec sql begin declare section;
+   int USERID=userid;
+   char PROGRAM[50],NAME[50],WERT[50];
+  exec sql end declare section;
+  strncpy(PROGRAM,program.c_str(),sizeof(PROGRAM));
+  strncpy(NAME,name.c_str(),sizeof(NAME));
+  exec sql select wert into :WERT from global_settings where 
+   userid=:USERID and program=:PROGRAM and name=:NAME;
+  wert=WERT;
+}
+
+
+void Global_Settings::set_Wert(const std::string& wert)
+{
+  exec sql begin declare section;
+   int USERID=userid;
+   char PROGRAM[50],NAME[50],WERT[50];
+  exec sql end declare section;
+  strncpy(PROGRAM,program.c_str(),sizeof(PROGRAM));
+  strncpy(NAME,name.c_str(),sizeof(NAME));
+  strncpy(WERT,wert.c_str(),sizeof(WERT));
+  exec sql update global_settings set wert=:WERT where 
+   userid=:USERID and program=:PROGRAM and name=:NAME;
+}
+
+void Global_Settings::update_Date()
+{
+  exec sql begin declare section;
+   int USERID=userid;
+   char PROGRAM[50],NAME[50];
+  exec sql end declare section;
+  strncpy(PROGRAM,program.c_str(),sizeof(PROGRAM));
+  strncpy(NAME,name.c_str(),sizeof(NAME));
+  exec sql update global_settings set wert=now() where 
+   userid=:USERID and program=:PROGRAM and name=:NAME;
+}
+
+Global_Settings::Global_Settings(int u,const std::string& p,const std::string& n,const std::string& w)
+: userid(u),program(p),name(n),wert(w)
+{
+  exec sql begin declare section;
+   int USERID=userid;
+   char PROGRAM[50],NAME[50],WERT[50];
+  exec sql end declare section;
+  strncpy(PROGRAM,program.c_str(),sizeof(PROGRAM));
+  strncpy(NAME,name.c_str(),sizeof(NAME));
+  if(wert!="now()")
+   {
+    strncpy(WERT,wert.c_str(),sizeof(WERT));
+    exec sql insert into global_settings (userid,program,name,wert) 
+      values (:USERID,:PROGRAM,:NAME,:WERT);
+   }
+  else
+    exec sql insert into global_settings (userid,program,name,wert) 
+      values (:USERID,:PROGRAM,:NAME,now());
+}

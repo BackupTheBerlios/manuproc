@@ -1,4 +1,4 @@
-// $Id: Preis.cc,v 1.5 2001/08/31 10:03:07 christof Exp $
+// $Id: Preis.cc,v 1.6 2001/10/02 15:26:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -94,11 +94,11 @@ const std::string Preis::Typtext() const
 {  return waehrung->Kurzbezeichnung()+'/'+dtos(preismenge);
 }
 
-Preis::pfennig_cent_t Preis::Gesamtpreis(cP_Waehrung w,int anzahl,float menge,const fixedpoint<2> &rabatt) const
+Preis::pfennig_cent_t Preis::Gesamtpreis(cP_Waehrung w,int anzahl,float menge,const fixedpoint<rabattnachkommastellen> &rabatt) const
 {  return Gesamtpreis(anzahl,menge,rabatt).In(w).Wert();
 }
 
-const Preis Preis::Gesamtpreis(int anzahl,float menge,const fixedpoint<2> &rabatt) const
+const Preis Preis::Gesamtpreis(int anzahl,float menge,const fixedpoint<rabattnachkommastellen> &rabatt) const
 {  if (!*this) return *this;
    if (menge) return In(waehrung,menge*anzahl)*(1-0.01*double(rabatt));
    else return (*this)*(anzahl*(1-0.01*double(rabatt)));

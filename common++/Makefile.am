@@ -36,6 +36,7 @@ libcommon___a_LIBADD= \
 		Aux/EntryValueDatum.o \
 		Aux/EntryValueIntString.o \
 		Aux/FetchIStream.o \
+      Aux/Global_Settings.o \
 		Aux/IOerror.o \
 		Aux/SQLerror_postgres.o \
 		Aux/Transaction.o \

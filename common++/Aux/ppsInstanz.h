@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.10 2001/09/27 14:24:29 cvs_malte Exp $
+// $Id: ppsInstanz.h,v 1.12 2001/10/02 08:47:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,9 +27,9 @@
 class ppsInstanz : public HandleContent
 {
 public:
- typedef enum {INST_NONE,INST_KNDAUF=1,INST_FAERB,INST_DRUCK,INST_WEB,
+ enum ppsInstId {INST_NONE,INST_KNDAUF=1,INST_FAERB,INST_DRUCK,INST_WEB,
         INST_SCHAER,INST_SPRITZ,INST_GARNEINKAUF,INST_BANDLAGER,
-        INST_ROHLAGER} ppsInstId;
+        INST_ROHLAGER};
  
 private: 
  ppsInstId instid; 
@@ -61,8 +61,6 @@ class cH_ppsInstanz : public const_Handle<ppsInstanz>
      cH_ppsInstanz(ppsInstanz::ppsInstId iid);
 
      bool operator==(const cH_ppsInstanz &b) const {return (*this)->Id()==b->Id();}
-
-
 };
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.6 2001/10/01 12:55:40 christof Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.7 2001/10/02 15:26:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -105,7 +105,8 @@ std::string ArtikelBezeichnung::Bezeichnung(int signifikanz, char separator,int 
     int f=0;
     const_sigiterator end=sigend(signifikanz);
     for (const_sigiterator i=sigbegin(signifikanz);i!=end;++i)
-    {  if (i.BezKomp().bezkomptype<0 || i.BezKomp().bezkomptype>value.size()) 
+    {  if (i.BezKomp().bezkomptype<0 
+    		|| (unsigned int)i.BezKomp().bezkomptype>value.size()) 
     	  continue;
        ret+=value[i.BezKomp().bezkomptype]->getStrVal();
        if (separator)
@@ -127,7 +128,8 @@ std::string ArtikelBezeichnung::Komponente(int feldnr,int signifikanz) const thr
     const_sigiterator end=sigend(signifikanz);
     int f=0;
     for (const_sigiterator i=sigbegin(signifikanz);i!=end;++i,++f)
-    { if (i.BezKomp().bezkomptype<0 || i.BezKomp().bezkomptype>value.size()) 
+    { if (i.BezKomp().bezkomptype<0 
+    		|| (unsigned int)i.BezKomp().bezkomptype>value.size()) 
     	  continue;
       if (f==feldnr) return value[i.BezKomp().bezkomptype]->getStrVal();
     }

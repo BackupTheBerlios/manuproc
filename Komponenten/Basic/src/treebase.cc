@@ -142,7 +142,7 @@ bool TreeBase::stutzen(TCListRow_API *parent, TCListRow_API *we,
 
        we->reparent_children(*parent);
        // copy non-empty attribute cells
-       for (unsigned int i=0;i<we->get_expanding_column();++i)
+       for (int i=0;i<we->get_expanding_column();++i)
        {  const std::string t(we_as_a_row->get_text(i));
           if (t.size())
              child_and_brother_to_be->set_text(i,t);
@@ -231,23 +231,26 @@ void TreeBase::insertIntoTCL(TCListRow_API *tclapi,const TreeBase &tb,
 
  cH_EntryValue ev=v->Value(seqnr,gp);
 
+
  while((lfind!=lend) &&
    *( reinterpret_cast<TCListRowData*>((*lfind).get_user_data())->Value()) < (*ev))
    lfind++;
-	
+
  if(lfind!=lend) // einfuegen
    { // gleicher Wert
     if((*ev) == *reinterpret_cast<TCListRowData*>((*lfind).get_user_data())->Value())
-     { if(!reinterpret_cast<TCListRowData*>((*lfind).get_user_data())->Leaf())
-	{reinterpret_cast<TCListNode*>((*lfind).get_user_data())->cumulate(v);
-	 selseq.pop_front();
-	 ++deep;
-         insertIntoTCL((&*lfind),tb,v,selseq,deep);
-	}
+     { 
+       if(!reinterpret_cast<TCListRowData*>((*lfind).get_user_data())->Leaf())
+         {
+          reinterpret_cast<TCListNode*>((*lfind).get_user_data())->cumulate(v);
+          selseq.pop_front();
+	       ++deep;
+          insertIntoTCL((&*lfind),tb,v,selseq,deep);
+	      }
       return;
      }
      // kleinerer Wert
-    if(selseq.size()>1) // noch nicht am Blatt
+  if(selseq.size()>1) // noch nicht am Blatt
 	{
 	 TCListNode *newnode=NewNode(deep,v->Value(seqnr,ValueData()),deep < showdeep);
 	 newnode->cumulate(v);
@@ -266,28 +269,39 @@ void TreeBase::insertIntoTCL(TCListRow_API *tclapi,const TreeBase &tb,
  else // anhaengen
    {
     if(selseq.size()>1) // noch nicht am Blatt
-	{
-	 TCListNode *newnode=NewNode(deep,v->Value(seqnr,ValueData()),deep < showdeep);
-	 newnode->cumulate(v);
-	 newnode->initTCL(tclapi,tb); // ,deep);
-         selseq.pop_front();
-         ++deep;
-	 insertIntoTCL(newnode->getTCL_API(),tb,v,selseq,deep);
-	}
+	  {
+   	 TCListNode *newnode=NewNode(deep,v->Value(seqnr,ValueData()),deep < showdeep);
+//cout << "u1\t"<<&v<< ' ' << typeid(*newnode).name() << '\n';
+	    newnode->cumulate(v);
+//cout << "u2\n";
+   	 newnode->initTCL(tclapi,tb); 
+       selseq.pop_front();
+       ++deep;
+	    insertIntoTCL(newnode->getTCL_API(),tb,v,selseq,deep);
+	   }
      else
-	{
-	 TCListLeaf *newleaf=NewLeaf(deep,v->Value(seqnr,ValueData()),v);
-	 newleaf->initTCL(tclapi,tb); // ,deep);
-	}
-   }
+	   {
+	    TCListLeaf *newleaf=NewLeaf(deep,v->Value(seqnr,ValueData()),v);
+	    newleaf->initTCL(tclapi,tb); 
+	   }
+    }
 }
 
 void TreeBase::Expand_recursively(TCListRow_API &api)
 {  api.expand();
    for (TCListRow_API::iterator i=api.begin();i!=api.end();++i)
+   { (*i).expand();
      if ((*i).size()) Expand_recursively(*i);
+   }
 }
-         
+
+void TreeBase::Expand_recursively()
+{  detach_from_clist();
+   for (TCListRow_API::iterator i=begin();i!=end();++i)
+   {  Expand_recursively(*i);
+   }
+   attach_to_clist();
+}         
 
 void TreeBase::fillMenu()
 { assert(menu==0); 
@@ -317,11 +331,13 @@ void TreeBase::fillMenu()
     }
    menu->append(*optionen);
    optionen->set_submenu(*optionen_menu);
+   Gtk::CheckMenuItem *titles = manage(new class Gtk::CheckMenuItem("Spaltenüberschriften anzeigen"));
    Gtk::CheckMenuItem *auffuellen = manage(new class Gtk::CheckMenuItem("Auffüllen mit aktueller Reinfolge\n(statt Anfangsreinfolge)"));
    Gtk::CheckMenuItem *expandieren = manage(new class Gtk::CheckMenuItem("Gewählte Knoten expandieren"));
+   optionen_menu->append(*titles);
    optionen_menu->append(*auffuellen);
    optionen_menu->append(*expandieren);
-   auffuellen->set_active(true);
+   titles->show();
    auffuellen->show();
    expandieren->show();
    
@@ -330,6 +346,13 @@ void TreeBase::fillMenu()
    zuruecksetzen->activate.connect(SigC::slot(this,&TreeBase::on_zuruecksetzen_clicked));
    abbrechen->activate.connect(SigC::slot(this,&TreeBase::on_abbrechen_clicked));
 
+   titles_menu=titles;
+   titles_bool=true;
+   if(titles_bool) titles->set_active(true);
+   else            titles->set_active(false);
+   titles->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::Titles),titles));
+
+   auffuellen_bool= true;
    if(auffuellen_bool) auffuellen->set_active(true);
    else                auffuellen->set_active(false);
    auffuellen->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::Auffuellen),auffuellen));
@@ -416,6 +439,17 @@ void TreeBase::on_abbrechen_clicked()
   setColTitles();
 }
 
+void TreeBase::show_titles(bool show)
+{
+ if (show) {column_titles_show(); titles_menu->set_active(true);}
+ else { column_titles_hide(); titles_menu->set_active(false);}
+}
+
+void TreeBase::Titles(Gtk::CheckMenuItem *titles)
+{
+  titles_bool=titles->get_active();
+  show_titles(titles_bool);
+}
 void TreeBase::Auffuellen(Gtk::CheckMenuItem *auffuellen)
 {
   auffuellen_bool=auffuellen->get_active();
@@ -429,8 +463,13 @@ void TreeBase::on_row_select(int row, int col, GdkEvent* b)
 { TCListRow_API *tclapi=(TCListRow_API*)(get_row_data(row));
   TCListRowData *selectedrow=(TCListRowData*)(*tclapi).get_user_data();
 
-  if(!selectedrow->Leaf()) return;
-  leaf_selected((dynamic_cast<TCListLeaf*>(selectedrow))->LeafData());
+  try { 
+  if(!selectedrow->Leaf()) 
+     node_selected(*(dynamic_cast<TCListNode*>(selectedrow)));
+  else
+     leaf_selected((dynamic_cast<TCListLeaf*>(selectedrow))->LeafData());
+  } catch(...)
+   { assert(!"selectedrow is a TCListNode/Leaf"); }
 }
 
 TCListNode *TreeBase::NewNode

@@ -39,17 +39,21 @@ class TreeBase : public TCList
  gpointer gp;
  
  Gtk::Menu *menu;  
+ Gtk::CheckMenuItem *titles_menu;
+ bool titles_bool:1; 
  bool auffuellen_bool:1; 
  bool expandieren_bool:1; 
  bool stutzen_bool:1;
  
+ 
+ void Titles(Gtk::CheckMenuItem *titles);
  void Auffuellen(Gtk::CheckMenuItem *auffuellen);
  void Expandieren(Gtk::CheckMenuItem *expandieren);
  void summen_knoepfe();
  void on_neuordnen_clicked();
  void on_zuruecksetzen_clicked();
  void on_abbrechen_clicked();
- void on_row_select(int row, int col, GdkEvent* b); // XX
+ void on_row_select(int row, int col, GdkEvent* b);
  void fillMenu();
  gint MouseButton(GdkEventButton *event);
  void welche_Spalten(guint i,const Gtk::CheckMenuItem *sp);
@@ -95,11 +99,16 @@ public:
  void set_value_data(gpointer _p) {gp = _p;}
  gpointer ValueData() const { return gp; }
  void Stutzen ( bool s) {stutzen_bool=s;}
- void Expand_recursively(TCListRow_API &api);
+ 
+ static void Expand_recursively(TCListRow_API &api);
+ void Expand_recursively();
+ 
  std::deque<guint> get_seq() const {return currseq;}
+ void show_titles(bool show);
  
  void clear();
  SigC::Signal1<void,cH_RowDataBase> leaf_selected;
+ SigC::Signal1<void,const TCListNode &> node_selected;
 };
 
 ///////////////////////////////////////////////////////////////////

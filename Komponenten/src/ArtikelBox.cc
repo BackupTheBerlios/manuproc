@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.9 2001/09/19 15:00:04 christof Exp $
+// $Id: ArtikelBox.cc,v 1.10 2001/10/02 15:28:01 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -106,7 +106,11 @@ throw(SQLerror,ArtikelBoxErr)
         ExtBezSchema::const_sigiterator is=schema->sigbegin(signifikanz[j]);
         for(;ci!=artbez->sigend(signifikanz[j])
             && is!=schema->sigend(signifikanz[j]) ;++ci,++is)
-           text += (*ci)->getStrVal() + is->separator;
+          {  
+           std::string sep = is->separator;
+           if (sep==" ") sep = "_";
+           text += (*ci)->getStrVal() + sep;
+          }
         combos[j][0]->set_text(text);
       }
  }
@@ -135,13 +139,13 @@ vector<cH_EntryValue> ArtikelBox::expand_kombi_Artikel(unsigned int l,std::strin
       std::string sep = i->separator;
       ExtBezSchema::const_sigiterator j=i;
       if (sep==" "&& ++j!=schema->sigend(signifikanz[l]) ) sep="_";
-//      if (sep==" ") sep="_";
       std::string::size_type s2=0;
       if (sep.size()==0) s2 = std::string::npos;
       else s2 = text.find(sep,s1);
       std::string sx(text,s1,s2-s1);
-      s1=s2   + sep.size();
-      if (sx!="") v.push_back(cH_EntryValueIntString(sx));
+      s1=s2 + sep.size();
+//cout << s1 <<'\t'<<s2<<"\t->"<<sx<<"<-\n";
+      v.push_back(cH_EntryValueIntString(sx));
       if (s2==std::string::npos) break;
      }
  return v;
@@ -159,7 +163,8 @@ void ArtikelBox::loadArtikel(unsigned int l) throw(SQLerror)
   cH_ArtikelBezeichnung bez(signifikanz[l],v,schema);
   artikel=bez->Id();
   pixmap->set(stock_button_apply_xpm);
-
+  set_value(artikel);
+/*
   std::string st=bez->Bezeichnung();
   for (unsigned int j=0;j<signifikanz.size();++j)
    {  ExtBezSchema::const_sigiterator ci = schema->sigbegin(signifikanz[j]);
@@ -171,6 +176,7 @@ void ArtikelBox::loadArtikel(unsigned int l) throw(SQLerror)
             combos[j][i]->set_text((*bez)[ci->bezkomptype]->getStrVal());
        }
    }
+*/
  } catch (SQLerror &e)
  {  std::cerr << "ArtikelBox::loadArtikel: setArtikel threw "<< e<< "\n";
  } catch (std::exception &e)
@@ -255,7 +261,7 @@ Gtk::Container* ArtikelBox::init_table(int l)
     else text = j->bezkomptext;
     labels[l].push_back(lb=manage(new Gtk::Label(text)));
 
-    if (i==0) 
+    if (i==0&&l==0) 
      {
        Gtk::HBox *hb= manage(new Gtk::HBox());
        pixmap= manage(new class Gtk::Pixmap(stock_button_cancel_xpm));

@@ -1,4 +1,4 @@
-// $Id: selAufEntry_sql.pgcc,v 1.8 2001/07/16 09:54:26 christof Exp $
+// $Id: selAufEntry_sql.pgcc,v 1.9 2001/10/02 15:26:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -138,10 +138,10 @@ void SelectedFullAufList::insert(const AuftragBase& auftrag, int znr) throw(SQLe
  int STATUS;
  int ENTRYSTATUS;
  char LASTEDITDATE[21];
- int DISPOENTNR;
- int DISPONR;
+ int DISPOENTNR=0;
+ int DISPONR=0;
  int JAHRGANG;
- short IDISPOENTNR, IDISPONR;
+ short IDISPOENTNR=-1, IDISPONR=-1;
  char YOURAUFNR[21];
  short IYOURAUFNR;
  short IROHARTIKELID;
