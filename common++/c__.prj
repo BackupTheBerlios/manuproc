@@ -1,0 +1,504 @@
+# Anjuta Version 1.1.97 
+Compatibility Level: 1 
+
+<PROJECT_DESCRIPTION_START>
+Some description<PROJECT_DESCRIPTION_END>
+<CONFIG_PROGS_START>
+<CONFIG_PROGS_END>
+<CONFIG_LIBS_START>
+<CONFIG_LIBS_END>
+<CONFIG_HEADERS_START>
+<CONFIG_HEADERS_END>
+<CONFIG_CHARACTERISTICS_START>
+<CONFIG_CHARACTERISTICS_END>
+<CONFIG_LIB_FUNCS_START>
+<CONFIG_LIB_FUNCS_END>
+<CONFIG_ADDITIONAL_START>
+<CONFIG_ADDITIONAL_END>
+<CONFIG_FILES_START>
+<CONFIG_FILES_END>
+<MAKEFILE_AM_START>
+<MAKEFILE_AM_END>
+
+props.file.type=project
+
+anjuta.version=1.1.97
+anjuta.compatibility.level=1
+
+project.name=c__
+project.type=GENERIC
+project.target.type=EXECUTABLE
+project.version=0.99
+project.author=Christof Petig
+project.source.target=?
+project.has.gettext=0
+project.gui.command=
+project.programming.language=C++
+project.excluded.modules=intl
+
+project.config.extra.modules.before=
+project.config.extra.modules.after=
+project.config.blocked=1
+project.config.disable.overwriting=1 1 1 1 1 1 1 1 1 
+
+project.menu.entry=c__ Version 0.99
+project.menu.group=Application
+project.menu.comment=c__ Version 0.99
+project.menu.icon=
+project.menu.need.terminal=0
+
+project.configure.options=
+anjuta.program.arguments=
+preferences.build.option.jobs=0
+preferences.build.option.silent=0
+preferences.build.option.autosave=0
+preferences.anjuta.make.options=-k
+preferences.make=make
+preferences.build.option.keep.going=1
+preferences.build.option.warn.undef=0
+preferences.autoformat.custom.style= -i8 -sc -bli0 -bl0 -cbi0 -ss
+preferences.autoformat.style=Style of Kangleipak
+preferences.indent.opening=0
+preferences.autoformat.disable=1
+preferences.indent.automatic=1
+preferences.use.tabs=1
+preferences.indent.size=4
+preferences.tabsize=4
+preferences.indent.closing=0
+
+module.include.name=.
+module.include.type=
+module.include.files=\
+	Artikel/ArtikelBase.h\
+	Artikel/ArtikelBaum.h\
+	Artikel/ArtikelBezeichnung.h\
+	Artikel/ArtikelDispo.h\
+	Artikel/ArtikelEAN.h\
+	Artikel/ArtikelMengeSumme.h\
+	Artikel/ArtikelStamm.h\
+	Artikel/ArtikelTyp.h\
+	Artikel/Artikelpreis.h\
+	Artikel/Aufmachung.h\
+	Artikel/Einheiten.h\
+	Artikel/Misc.h\
+	Artikel/Preis.h\
+	Artikel/Prozess.h\
+	Artikel/Prozesspreis.h\
+	Auftrag/AufEintrag.h\
+	Auftrag/AufEintragBase.h\
+	Auftrag/AufEintragZu.h\
+	Auftrag/AufEintragZuMengenAenderung.h\
+	Auftrag/Auftrag.h\
+	Auftrag/AuftragBase.h\
+	Auftrag/AuftragFull.h\
+	Auftrag/AuftragMitEintrag.h\
+	Auftrag/AuftragsBaum.h\
+	Auftrag/VerfuegbareMenge.h\
+	Auftrag/auftrag_enums.h\
+	Auftrag/auftrag_status.h\
+	Auftrag/ppsInstanzProduziert.h\
+	Auftrag/ppsInstanzReparatur.h\
+	Auftrag/selFullAufEntry.h\
+	Auftrag/sqlAuftragSelector.h\
+	Auftrag/AufEintrag_loops.h\
+	Auftrag/AufEintrag_delayedreclaim.h\
+	Aux/AdminProblems.h\
+	Aux/Ausgabe.h\
+	Aux/Changejournal.h\
+	Aux/EAN.h\
+	Aux/EntryValue.h\
+	Aux/EntryValueBool.h\
+	Aux/EntryValueQuartal.h\
+	Aux/FetchIStream_fixedpoint.h\
+	Aux/FetchIStream_ops.h\
+	Aux/Global_Settings.h\
+	Aux/Preis.h\
+	Aux/Waehrung.h\
+	Aux/dbcapability.h\
+	Aux/multi_lang.h\
+	Bank/Bankauftrag.h\
+	Bank/Datenfehler.h\
+	Bank/Ueberweisung.h\
+	Bank/Zahlvorgang.h\
+	BaseObjects/ManuProcEintrag.h\
+	BaseObjects/ManuProcEntity.h\
+	BaseObjects/ManuProcEntity_FetchIStream.h\
+	BaseObjects/ManuProcHandle.h\
+	BaseObjects/ManuProcVorgang.h\
+	Basic/acconfig.h\
+	Basic/src/Ausgabe_neu.h\
+	Basic/src/CacheStatic.h\
+	Basic/src/Cache_Pointer.h\
+	Basic/src/Datum.h\
+	Basic/src/EmptyInt_4TeX.h\
+	Basic/src/EntryValueBase.h\
+	Basic/src/EntryValueDatum.h\
+	Basic/src/EntryValueEmptyInt.h\
+	Basic/src/EntryValueFixed.h\
+	Basic/src/EntryValueFixedEinheit.h\
+	Basic/src/EntryValueIntGermanString.h\
+	Basic/src/EntryValueIntString.h\
+	Basic/src/EntryValueTimeStamp.h\
+	Basic/src/Event.h\
+	Basic/src/FILEstream.h\
+	Basic/src/FetchIStream.h\
+	Basic/src/Handles.h\
+	Basic/src/IOerror.h\
+	Basic/src/Kalenderwoche.h\
+	Basic/src/Long.h\
+	Basic/src/MVC.h\
+	Basic/src/Model.h\
+	Basic/src/Pointer.h\
+	Basic/src/Postgres.h\
+	Basic/src/Rundungsmacros.h\
+	Basic/src/SQLerror.h\
+	Basic/src/SQLerror_postgres.h\
+	Basic/src/Tag.h\
+	Basic/src/TagStream.h\
+	Basic/src/TimeStamp.h\
+	Basic/src/Trace.h\
+	Basic/src/TraceNV.h\
+	Basic/src/Transaction.h\
+	Basic/src/UniqueValue.h\
+	Basic/src/Zeitpunkt_new.h\
+	Basic/src/c++ostream.h\
+	Basic/src/callbackbuf.h\
+	Basic/src/compiler_ports.h\
+	Basic/src/ctime_assert.h\
+	Basic/src/dbconnect.h\
+	Basic/src/exception.h\
+	Basic/src/fixedpoint.h\
+	Basic/src/germanstring.h\
+	Basic/src/inbetween.h\
+	Basic/src/itos.h\
+	Basic/src/mystream.h\
+	Basic/src/mystring.h\
+	Basic/src/recodestream.h\
+	Basic/src/relops.h\
+	Basic/src/safemap.h\
+	Basic/src/string0.h\
+	Basic/src/bitmask.h\
+	Basic/src/ModelPlex.h\
+	Basic/src/TemporaryValue.h\
+	DynamicEnums/DefaultValues.h\
+	DynamicEnums/DynEnums_default.h\
+	DynamicEnums/DynamicEnums.h\
+	ExtBezSchema/ArtikelTyp.h\
+	ExtBezSchema/ExtBezSchema.h\
+	ExtBezSchema/ExtBezSchemaHandle.h\
+	Faeden/Bindung.hh\
+	Faeden/Faden.hh\
+	Faeden/Materialeigenschaft.hh\
+	Faeden/Schussfaeden.hh\
+	Faeden/Webangaben.hh\
+	Instanzen/Produktionsdauer.h\
+	Instanzen/ppsInstanz.h\
+	Ketten/ArtikelGang.h\
+	Ketten/Kette.h\
+	Ketten/KettenGarn.h\
+	Ketten/KettplanKette.h\
+	Ketten/Kettscheibe.h\
+	Ketten/Maschtyp.h\
+	Kunde/Adresse.h\
+	Kunde/AdressenIterator.h\
+	Kunde/Anrede.h\
+	Kunde/KontaktListe.h\
+	Kunde/Kunde.h\
+	Kunde/Kundengruppe.h\
+	Kunde/LandesListe.h\
+	Kunde/Lieferart.h\
+	Kunde/Person.h\
+	Kunde/PreisListe.h\
+	Kunde/PreisListeFull.h\
+	Kunde/Telefon.h\
+	Kunde/TelefonArt.h\
+	Kunde/Zahlungsart.h\
+	Lager/CodeError.h\
+	Lager/FertigWaren.h\
+	Lager/FertigWarenLager.h\
+	Lager/JumboLager.h\
+	Lager/JumboRolle.h\
+	Lager/Lager.h\
+	Lager/LagerPlatz.hh\
+	Lager/Lager_Dispo.h\
+	Lager/RohwarenLager.h\
+	Lager/maschinen_geschwindigkeit.hh\
+	Lieferschein/Lieferschein.h\
+	Lieferschein/LieferscheinBase.h\
+	Lieferschein/LieferscheinEntry.h\
+	Lieferschein/LieferscheinList.h\
+	Lieferschein/LieferscheinVoll.h\
+	Lieferschein/Rechnung.h\
+	Lieferschein/RechnungBase.h\
+	Lieferschein/RechnungEntry.h\
+	Lieferschein/RechnungVoll.h\
+	Lieferschein/Zahlungsart.hh\
+	Lieferschein/LieferscheinEntryBase.h\
+	Material/MaterialBase.h\
+	Material/Materiallisten.h\
+	Programme/adjust_store.h\
+	Vertrieb/ProvAbrechnung.h\
+	Vertrieb/ProvAbrechnungEntry.h\
+	tests/AuftragsTest/graph/dot_out.h\
+	tests/AuftragsTest/graph/get_data.h\
+	tests/AuftragsTest/AuftragsVerwaltung.hh\
+	tests/AuftragsTest/Check.hh\
+	tests/AuftragsTest/DataBase_init.hh\
+	tests/AuftragsTest/steuerprogramm.hh\
+	tests/AuftragsTest/database_tables_init/DynamicEnums.h\
+	tests/AuftragsTest/TestReihe.h\
+	acconfig.h\
+	ManuProCConfig.h
+
+module.source.name=.
+module.source.type=
+module.source.files=\
+	Artikel/ArtikelBase.cc\
+	Artikel/ArtikelBaum.cc\
+	Artikel/ArtikelBaum_new_del.cc\
+	Artikel/ArtikelMengeSumme.cc\
+	Artikel/Aufmachung.cc\
+	Artikel/Preis.cc\
+	Artikel/ArtikelBezeichnung.cc\
+	Artikel/Misc.cc\
+	Artikel/Aufmachung_sql.cc\
+	Artikel/Prozesspreis.cc\
+	Artikel/Prozess_sql.cc\
+	Artikel/ArtikelTyp.cc\
+	Artikel/Einheiten.cc\
+	Artikel/ArtikelStamm.cc\
+	Artikel/Artikelpreis_sql.cc\
+	Artikel/ArtikelDispo_sql.cc\
+	Artikel/ArtikelEAN_sql.cc\
+	Artikel/Artikelpreis.cc\
+	Auftrag/AufEintrag.cc\
+	Auftrag/AufEintragBase.cc\
+	Auftrag/AufEintragZu.cc\
+	Auftrag/AufEintragZuMengenAenderung.cc\
+	Auftrag/AufEintrag_ro.cc\
+	Auftrag/Auftrag.cc\
+	Auftrag/AuftragBase.cc\
+	Auftrag/AuftragsBaum.cc\
+	Auftrag/VerfuegbareMenge.cc\
+	Auftrag/ppsInstanzProduziert.cc\
+	Auftrag/ppsInstanzReparatur.cc\
+	Auftrag/selAufEntry.cc\
+	Auftrag/sqlAuftragSelector.cc\
+	Auftrag/AuftragBase_sql.cc\
+	Auftrag/selAufEntry_sql.cc\
+	Auftrag/Auftrag_sql.cc\
+	Auftrag/AuftragFull_sql.cc\
+	Auftrag/AufEintrag_loops.cc\
+	Auftrag/AufEintrag_Menge.cc\
+	Auftrag/AufEintrag_Produktion.cc\
+	Auftrag/AufEintrag_Lager.cc\
+	Auftrag/delayed_reclaim.cc\
+	Aux/AdminProblems.cc\
+	Aux/EAN.cc\
+	Aux/EntryValueQuartal.cc\
+	Aux/FetchIStream_ops.cc\
+	Aux/Global_Settings.cc\
+	Aux/dbcapability.cc\
+	Aux/multi_lang.cc\
+	Aux/dbconnect.cc\
+	Aux/SQLerror_postgres.cc\
+	Aux/Transaction.cc\
+	Aux/Waehrung_sql.cc\
+	Aux/Changejournal_sql.cc\
+	Aux/FetchIStream.cc\
+	Aux/Global_Settings_sql.cc\
+	Aux/EAN_sql.cc\
+	Bank/Bankauftrag.cc\
+	Bank/Bankauftrag3.cc\
+	Bank/Datenfehler.cc\
+	Bank/Ueberweisung.cc\
+	Bank/Zahlvorgang.cc\
+	Bank/Bankauftrag2.cc\
+	BaseObjects/ManuProcEntity.cc\
+	Basic/examples/Zeitpunkt.cc\
+	Basic/examples/fixedpoint.cc\
+	Basic/examples/long.cc\
+	Basic/examples/mvc.cc\
+	Basic/examples/testHandles.cc\
+	Basic/examples/testKW.cc\
+	Basic/examples/test_pgsql_conv.cc\
+	Basic/examples/trace.cc\
+	Basic/src/Ausgabe_neu.cc\
+	Basic/src/Datum.cc\
+	Basic/src/EntryValueBase.cc\
+	Basic/src/EntryValueDatum.cc\
+	Basic/src/EntryValueIntGermanString.cc\
+	Basic/src/EntryValueIntString.cc\
+	Basic/src/EntryValueTimeStamp.cc\
+	Basic/src/Event.cc\
+	Basic/src/Handles.cc\
+	Basic/src/IOerror.cc\
+	Basic/src/Tag.cc\
+	Basic/src/TagStream.cc\
+	Basic/src/Trace.cc\
+	Basic/src/Zeitpunkt_new.cc\
+	Basic/src/Zeitpunkt_new_ostr.cc\
+	Basic/src/Zeitpunkt_new_write.cc\
+	Basic/src/auto_conversion.cc\
+	Basic/src/exception.cc\
+	Basic/src/germanstring.cc\
+	Basic/src/itos.cc\
+	Basic/src/mystring.cc\
+	Basic/src/postgres_conversion.cc\
+	Basic/src/string0.c\
+	Basic/src/time_t_ostr.cc\
+	ExtBezSchema/ExtBezSchema_sql.cc\
+	Faeden/Bindung.cc\
+	Faeden/Faden.cc\
+	Faeden/Webangaben.cc\
+	Faeden/Bindung_sql.cc\
+	Faeden/Faden_sql.cc\
+	Faeden/Schussfaeden_sql.cc\
+	Faeden/Materialeigenschaft_sql.cc\
+	Faeden/Webangaben_sql.cc\
+	Instanzen/Produktionsdauer.cc\
+	Instanzen/ppsInstanz.cc\
+	Instanzen/ppsInstanz_sql.cc\
+	Ketten/ArtikelGang.cc\
+	Ketten/Kette.cc\
+	Ketten/KettenGarn.cc\
+	Ketten/KettplanKette.cc\
+	Ketten/Kettscheibe.cc\
+	Ketten/KettplanKette2.cc\
+	Ketten/KpK_get_artikel.cc\
+	Ketten/ArtikelGang_sql.cc\
+	Ketten/Kettscheibe_sql.cc\
+	Kunde/KontaktListe.cc\
+	Kunde/Kunde.cc\
+	Kunde/Kundengruppe.cc\
+	Kunde/Lieferart.cc\
+	Kunde/Person.cc\
+	Kunde/Telefon.cc\
+	Kunde/Zahlungsart.cc\
+	Kunde/Telefon_sql.cc\
+	Kunde/Kunde_sql.cc\
+	Kunde/Person_sql.cc\
+	Kunde/Adresse_sql.cc\
+	Kunde/Anrede_sql.cc\
+	Kunde/PreisListe_sql.cc\
+	Kunde/LandesListe_sql.cc\
+	Kunde/Zahlungsart_sql.cc\
+	Kunde/PreisListeFull_sql.cc\
+	Kunde/Lieferart_sql.cc\
+	Lager/FertigWaren.cc\
+	Lager/JumboLager.cc\
+	Lager/JumboRolle.cc\
+	Lager/Lager.cc\
+	Lager/LagerPlatz.cc\
+	Lager/RohwarenLager.cc\
+	Lager/Lager_Dispo_sql.cc\
+	Lager/maschinen_geschwindigkeit_sql.cc\
+	Lager/JumboRolle_sql.cc\
+	Lager/FertigWarenLager_sql.cc\
+	Lager/FertigWaren_sql.cc\
+	Lager/JumboLager_sql.cc\
+	Lager/RohwarenLager_sql.cc\
+	Lager/FertigWarenLager.cc\
+	Lieferschein/Lieferschein.cc\
+	Lieferschein/LieferscheinEntry.cc\
+	Lieferschein/LieferscheinList.cc\
+	Lieferschein/LieferscheinVoll.cc\
+	Lieferschein/Rechnung.cc\
+	Lieferschein/RechnungBase.cc\
+	Lieferschein/LieferscheinList_sql.cc\
+	Lieferschein/Lieferschein_sql.cc\
+	Lieferschein/Rechnung_sql.cc\
+	Lieferschein/RechnungEntry_sql.cc\
+	Lieferschein/RechnungVoll_sql.cc\
+	Lieferschein/Zahlungsart_sql.cc\
+	Programme/Instanzen.cc\
+	Programme/Zuordnung_zeigen.cc\
+	Programme/auftrag_repair.cc\
+	Programme/checkInstanzen.cc\
+	Programme/createDynEnums.cc\
+	Programme/db_upgrade.cc\
+	Programme/checkGeliefert_sql.cc\
+	Vertrieb/ProvAbrechnung.cc\
+	Vertrieb/ProvAbrechnung_sql.cc\
+	Vertrieb/ProvAbrechnungEntry_sql.cc\
+	docs/exception.cc\
+	tests/AuftragsTest/graph/dot_out.cc\
+	tests/AuftragsTest/graph/get_data.cc\
+	tests/AuftragsTest/graph/graph.cc\
+	tests/AuftragsTest/AuftragsVerwaltung.cc\
+	tests/AuftragsTest/Check.cc\
+	tests/AuftragsTest/DataBase_init.cc\
+	tests/AuftragsTest/steuerprogramm.cc\
+	tests/AuftragsTest/petig_tests.cc\
+	tests/AuftragsTest/mabella_tests.cc\
+	tests/AuftragsTest/manuproc_tests.cc\
+	tests/AuftragsTest/common_tests.cc\
+	tests/ArtikelSumme.cc\
+	tests/Jumbo_lager.cc\
+	tests/Lieferschein.cc\
+	tests/RL_lager.cc\
+	tests/abschreiben.cc\
+	tests/artbez.cc\
+	tests/artikelbaum.cc\
+	tests/auftrag_ohne_instanzen.cc\
+	tests/event_listen.cc\
+	tests/event_talk.cc\
+	tests/instanz_ArtikelBaum.cc\
+	tests/instanz_auftrag.cc\
+	tests/ppsInstanz.cc\
+	tests/preis.cc\
+	tests/testExtBezHandle.cc\
+	tests/test_Bankauftrag.cc\
+	tests/trans.cc\
+	tests/FetchIStream.cc\
+	tests/insert_bestellen_bei.cc
+
+module.pixmap.name=.
+module.pixmap.type=
+module.pixmap.files=
+
+module.data.name=.
+module.data.type=
+module.data.files=
+
+module.help.name=.
+module.help.type=
+module.help.files=
+
+module.doc.name=.
+module.doc.type=
+module.doc.files=\
+	AUTHORS\
+	ChangeLog\
+	NEWS\
+	README\
+	TODO\
+	Basic/AUTHORS\
+	Basic/ChangeLog\
+	Basic/NEWS\
+	Basic/README\
+	Basic/TODO\
+	tests/AuftragsTest/graph/TODO\
+	COPYING\
+	INSTALL
+
+module.po.files=
+
+compiler.options.supports=
+compiler.options.include.paths=\
+	.\
+	..
+compiler.options.library.paths=
+compiler.options.libraries=
+compiler.options.libraries.selected=
+compiler.options.defines=\
+	HAVE_CONFIG_H
+compiler.options.defines.selected=
+compiler.options.warning.buttons=0 0 1 1 0 1 0 0 0 0 0 0 0 1 0 0 
+compiler.options.optimize.buttons=0 0 1 0 
+compiler.options.other.buttons=1 0 
+compiler.options.other.c.flags=
+compiler.options.other.l.flags=
+compiler.options.other.l.libs=
+
+project.src.paths=

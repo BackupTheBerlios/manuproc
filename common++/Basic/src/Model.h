@@ -1,4 +1,4 @@
-/* $Id: Model.h,v 1.7 2003/09/03 07:48:58 christof Exp $ */
+/* $Id: Model.h,v 1.8 2003/09/03 11:35:35 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -58,8 +58,8 @@ public:
 	const T &Value() const
 	{  return value; }
 	// only use this to create a Model_ref !!!
-	T &Value() 
-	{  return value; }
+	T *Valueptr() 
+	{  return &value; }
 
 	const void *Id() const
 	{  return static_cast<const void *>(&value); }
@@ -115,9 +115,11 @@ template <class T>
 	SigC::Signal1<void,void*> *changed;
 public:
 	Model_ref(Model<T> &model)
-	: value(&model.Value()), changed(&model.changed) {}
+	: value(model.Valueptr()), changed(&model.changed) {}
 	Model_ref(T &v, SigC::Signal1<void,void*> &sig)
 	: value(&v), changed(&sig) {}
+	Model_ref(T *v, SigC::Signal1<void,void*> &sig)
+	: value(v), changed(&sig) {}
 	Model_ref() : value(0), changed(0) {}
 
 	bool valid() const { return value && changed; }
