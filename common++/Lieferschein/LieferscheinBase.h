@@ -1,4 +1,4 @@
-/* $Id: LieferscheinBase.h,v 1.16 2004/02/02 18:34:52 jacek Exp $ */
+/* $Id: LieferscheinBase.h,v 1.17 2004/02/20 08:19:44 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -16,6 +16,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+
 
 
 #ifndef LIEFERBASE
