@@ -71,6 +71,7 @@ CREATE TABLE "kunden" (
 
 
 COPY "kunden" FROM stdin;
-1000	Dreher		Dreher AG		Drehstarsse		2	40000			Drehort	0	0.00	0	0.00	2002-09-20 10:36:53.322273+02	0	\N	\N	\N	1000	0.0	\N	1000	f	f	\N	1000	f	t	RL		1	40	0.0	\N	2	t	\N	0	\N	\N	\N	70413	1102813	\N	-1	\N	\N	\N	f	t	\N	\N
+1000	Dreher		Dreher AG		Drehstrasse		2	40000			Drehort	0	0.00	0	0.00	2002-09-20 10:36:53.322273+02	0	\N	\N	\N	1000	0.0	\N	1000	f	f	\N	1000	f	t	RL		1	40	0.0	\N	2	t	\N	0	\N	\N	\N	70413	1102813	\N	-1	\N	\N	\N	f	t	\N	\N
+1111	Versand		Versand AG		Sendstrasse		5	40012			Drehort	0	0.00	0	0.00	2002-09-20 10:36:53.322273+02	0	\N	\N	\N	1000	0.0	\N	1000	f	f	\N	1000	f	t	RL		1	40	0.0	\N	2	t	\N	0	\N	\N	\N	70413	1102813	\N	-1	\N	\N	\N	f	t	\N	\N
 1	Schrauben		Schrauben GmbH		Schraubenstr.		1	10000	1234	41001	Schraubenstadt	0	0.00	40	0.00	2002-09-24 14:01:40.605718+02	0	\N	123	\N	1	0.0		1	f	f	\N	1	f	f	RL		1	1	\N	\N	2	f	\N	0	\N	\N	\N	\N		\N	1	\N	\N	\N	\N	t	t	\N
 \.

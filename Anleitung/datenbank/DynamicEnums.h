@@ -9,7 +9,7 @@ namespace ManuProC {
  namespace DynamicEnums {
   namespace ArtikelTyp {
    enum enum_t {
-    Rohware=1,Griffe=2,Schaefte=3,Schraubenzieher=4,Verpackungen=5,Sortimente=6,
+    None=-1,Rohware=1,Griffe=2,Schaefte=3,Schraubenzieher=4,Verpackungen=5,Sortimente=6,
    };
   }
 
