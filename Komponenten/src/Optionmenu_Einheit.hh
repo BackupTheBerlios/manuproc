@@ -1,4 +1,4 @@
-// $Id: Optionmenu_Einheit.hh,v 1.3 2004/11/08 14:34:33 christof Exp $
+// $Id: Optionmenu_Einheit.hh,v 1.4 2004/11/16 14:58:30 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -31,9 +31,10 @@ class Optionmenu_Einheit :  public Gtk::OptionMenu
 {
    void fuelle_menu();
 
+   SigC::Signal0<void> activate;
  public:
    Optionmenu_Einheit() ;
-   SigC::Signal0<void> activate;
+   SigC::Signal0<void> &signal_activate() { return activate; }
 
    void set_value(const Einheit &i);
    Einheit get_value() const;

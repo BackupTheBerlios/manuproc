@@ -1,4 +1,4 @@
-// $Id: Optionmenu_Instanz.hh,v 1.11 2004/11/08 08:34:05 christof Exp $
+// $Id: Optionmenu_Instanz.hh,v 1.12 2004/11/16 14:58:30 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -36,9 +36,10 @@ class Optionmenu_Instanz :  public Gtk::OptionMenu
    void fuelle_menu(emode mode);
    void set_mode(emode mode);
 
+   SigC::Signal0<void> activate;
  public:
    Optionmenu_Instanz(emode mode=alles_und_none) ;
-   SigC::Signal0<void> activate;
+   SigC::Signal0<void> &signal_activate() { return activate; }
 
    void set_value(const cH_ppsInstanz &i);
    cH_ppsInstanz get_value() const;

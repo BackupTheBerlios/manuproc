@@ -1,4 +1,4 @@
-// $Id: StringBox.hh,v 1.2 2004/11/08 07:55:09 christof Exp $
+// $Id: StringBox.hh,v 1.3 2004/11/16 15:02:25 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -30,6 +30,7 @@ class StringBox : public Gtk::SearchCombo
         void string1_search(gboolean *_continue, GtkSCContext newsearch);
 
 	Transaction tr;
+	SigC::Signal0<void> reset_signal;
 
 protected:
    std::string _tabelle_,_string1_;
@@ -42,7 +43,6 @@ public:
 	{  set_text(s); }
    void clear(){reset();}
    void reset();
-
-	SigC::Signal0<void> reset_signal;
+	SigC::Signal0<void> &signal_reset_signal() { return reset_signal; }
 };
 #endif

@@ -1,4 +1,4 @@
-// $Id: WAuftragStatus.hh,v 1.16 2004/11/16 11:47:51 christof Exp $
+// $Id: WAuftragStatus.hh,v 1.17 2004/11/16 15:02:25 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -31,6 +31,7 @@ class WAuftragStatus : public Gtk::OptionMenu
    private:
 //      std::string status;
       void fuelleMenu();
+      SigC::Signal0<void> activate;
    public:
 
       WAuftragStatus();
@@ -38,7 +39,7 @@ class WAuftragStatus : public Gtk::OptionMenu
       
       void set_value(AufStatVal a);
       AufStatVal get_value() const;
-      SigC::Signal0<void> activate;
+      SigC::Signal0<void> &signal_activate() { return activate; }
 
 // Veraltet!
       void set_History(AufStatVal a) {set_value(a);} 

@@ -1,4 +1,4 @@
-// $Id: Optionmenu_Warengruppe.hh,v 1.6 2004/11/08 08:50:30 christof Exp $
+// $Id: Optionmenu_Warengruppe.hh,v 1.7 2004/11/16 14:58:30 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -30,9 +30,10 @@
 
 class Optionmenu_Warengruppe :  public Gtk::OptionMenu
 {
+   SigC::Signal0<void> activate;
  public:
    Optionmenu_Warengruppe(int extbezschema=ExtBezSchema::none_id); // extartbezid=kundenid
-   SigC::Signal0<void> activate;
+   SigC::Signal0<void> &signal_activate() { return activate; }
 
    void set_extartbezid(int i);
    void set_value(const ArtikelTyp& a);

@@ -18,6 +18,7 @@
 #include <gtkmm/separatortoolitem.h>
 #include <glibmm/main.h>
 #include <Misc/TagStream.h>
+#include <Misc/TraceNV.h>
 
 #define D(x) 
 //cerr << x << '\n'
@@ -25,6 +26,8 @@
 #define MAXCOLUMN 10
 
 extern MyMessage *mess;
+const UniqueValue::value_t trace_channel=ManuProC::Tracer::channels.get();
+static ManuProC::Tracer::Environment trace_channel_e("DEBUG",trace_channel);
 
 Artikeleingabe::Artikeleingabe(int argc, char **argv)
   : leer(cH_ArtikelBezeichnung::Default()), fire_toggles(false) 
@@ -421,10 +424,11 @@ void Artikeleingabe::on_Artikel_Bestellen_activate()
 }
 
 void Artikeleingabe::optionmenu_bestellen_bei_activate()
-{
+{ManuProC::Trace _t(trace_channel, __FUNCTION__, artikelbox->get_value());
  if (!(artikelbox->get_value())) return;
  ppsInstanz::ID oldInstanz=ArtikelStamm(artikelbox->get_value()).BestellenBei()->Id();
  ppsInstanz::ID newInstanz = Artikel_Bestellen_bei->get_value()->Id(); 
+ ManuProC::Trace(trace_channel, "", oldInstanz,newInstanz);
  if(oldInstanz==newInstanz) return;
  ArtikelStamm::set_BestellenBei(artikelbox->get_value(),newInstanz);
  

@@ -1,4 +1,4 @@
-// $Id: WWaehrung.hh,v 1.16 2004/11/16 11:47:51 christof Exp $
+// $Id: WWaehrung.hh,v 1.17 2004/11/16 15:02:25 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -50,5 +50,6 @@ class WWaehrung : public Gtk::OptionMenu //, Waehrung
       {  set_value(et);}
       WaehrungID::enum_t get_enum() const
       {  return get_value()->get_enum(); }
+      SigC::Signal0<void> &signal_activate() { return activate; }
 };
 #endif
