@@ -78,7 +78,7 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
  zahlart->hide_int(true);
  zahlart->setLabel("","");
  
- zahlziel_datewin->setLabel(std::string("Zahlungsziel"));
+ zahlziel_datewin->setLabel(std::string(""));
  zahlziel_datewin->set_value(ManuProC::Datum());
  aufdatum_datewin->setLabel(std::string("Auftragsdatum"));
 
@@ -924,4 +924,8 @@ void auftrag_bearbeiten::on_provisionierung_activate()
  ret=ap.run();
 }
 
+void auftrag_bearbeiten::on_aufrabatt_spinbutton_activate()
+{  
+ aufnr_scombo->grab_focus();  
+}
 

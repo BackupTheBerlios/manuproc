@@ -23,6 +23,7 @@ class auftrag_provision : public auftrag_provision_glade
         void on_prov_cancel_clicked();
         void on_prov_enable_toggled();
         void on_prov_verk_activate();
+        void on_prov_provsatz_changed();
 
  void auftrag_provision::fillProvEntryList();
 

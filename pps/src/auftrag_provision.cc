@@ -10,6 +10,7 @@
 #include <Gtk_OStream.h>
 #include "MyMessage.h"  
 #include <Kunde/Kunde.h>
+#include "ja_nein_frage.h"
 
 extern MyMessage *meldung;
 
@@ -58,9 +59,11 @@ void auftrag_provision::fillProvEntryList()
     os << (*i).EPreis().Wert() << "\t";
     os << (*i).Rabatt() << "\t";
     os << (*i).GPreis().Wert() << "\t";
-    os << "provision" << "\n";
+    os << (*i).ProvSatz() << "\n";
    }
 
+ for(guint i=0; i<prov_aufentries->soljumns().size(); i++)
+   prov_aufentires->set_column_auto_resize(i,true);
 }
 
 void auftrag_provision::on_prov_ok_clicked()
@@ -69,6 +72,23 @@ void auftrag_provision::on_prov_ok_clicked()
 
 void auftrag_provision::on_prov_apply_clicked()
 {  
+ if(prov_aufentries->selection().empty()) 
+   return;
+
+ ja_neion_frage fr("Wollen Sie jetzt die Provisionssätze ändern ?");
+
+ fr.set_transient_for(*this);
+ int ret=fr.run(); 
+
+ if(ret!=0) return;
+
+
+  for(Gtk::CList::SelectionList::iterator s=prov_aufentries->selection().begin();
+	s!=prov_aufentries->selection().end(); ++s)
+    {
+
+
+    }
 }
 
 void auftrag_provision::on_prov_cancel_clicked()
@@ -125,7 +145,18 @@ void auftrag_provision::on_prov_verk_activate()
  catch(SQLerror &e)
    { meldung->Show(e); }
   
+ for(AuftragFull::const_iterator i=auf->begin(); i!=auf->end(); ++i)
+   {
+//    (*i).setProvSatz();
+   }
+
  fillProvEntryList();
+}
+
+
+void auftrag_provision::on_prov_provsatz_changed()
+{
+ prov_apply->set_sensitive(true);  
 }
 
 

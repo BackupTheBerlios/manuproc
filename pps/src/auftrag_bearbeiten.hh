@@ -1,4 +1,4 @@
-// $Id: auftrag_bearbeiten.hh,v 1.19 2003/06/03 12:05:00 jacek Exp $
+// $Id: auftrag_bearbeiten.hh,v 1.20 2003/06/18 11:02:22 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -66,6 +66,7 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
         void on_showkal_button_clicked();
         void on_rabattentry_spinbutton_activate();
         gint on_aufrabatt_spinbutton_focus_out_event(GdkEventFocus *ev);
+	void on_aufrabatt_spinbutton_activate();
         void Rabatt_setzen(const cH_Kunde &kunde,AuftragFull *a=NULL);
         void Rabatt_setzen(const cH_PreisListe &liste);
         void on_aufentrystat_optionmenu_clicked();
