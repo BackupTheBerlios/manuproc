@@ -52,8 +52,9 @@ auf(auftrag)
 
  DBCapability::WhiteColumn wc("auftrag","verknr");
 
- if(! dbcapability->isWhite(DBCapability::ColAct(wc,DBCapability::UPDATE)) )
-   verkprov_frame->set_sensitive(false);
+ verkprov_frame->set_sensitive(
+		dbcapability->isWhite(DBCapability::ColAct(wc,DBCapability::UPDATE)) 
+		);
 }
 
 void auftrag_provision::fillProvEntryList()
