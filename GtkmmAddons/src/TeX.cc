@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: TeX.cc,v 1.6 2004/04/29 14:24:40 christof Exp $
+// $Id: TeX.cc,v 1.7 2004/12/21 08:17:39 thoma Exp $
 
 #include <TeX.h>
 
@@ -34,7 +34,7 @@ std::ostream &TeX::Header(std::ostream &os, HeaderFlags fl)
    }
 
    // now output it
-   os << "% created using $Id: TeX.cc,v 1.6 2004/04/29 14:24:40 christof Exp $\n";
+   os << "% created using $Id: TeX.cc,v 1.7 2004/12/21 08:17:39 thoma Exp $\n";
    os << "\\documentclass["<< fl.ptsize << "pt";
    if (fl.a4) os << ",a4paper";
    if (fl.twocolumn) os << ",twocolumn";
@@ -151,9 +151,14 @@ std::string TeX::string2TeX(const std::string &s, const StringFlags &fl) throw()
    return ret;
 }
 
-std::string TeX::scale(const std::string& is, unsigned int  maxlength, const std::string& scale)
+std::string TeX::scale(const std::string& is, unsigned int  maxlength, 
+                       const std::string& scale, const bool use_string2TeX)
 {
+  std::string s;
+  if(use_string2TeX)  s = TeX::string2TeX(is);
+  else                s = is ;
+
   if (is.size() > maxlength) 
-      return "\\resizebox*{"+scale+"}{1.5ex}{"+is+"}" ;
-  return is;
+      return "\\resizebox*{"+scale+"}{1.5ex}{"+s+"}" ;
+  return s;
 }

@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: TeX.h,v 1.4 2004/04/29 14:24:40 christof Exp $
+// $Id: TeX.h,v 1.5 2004/12/21 08:17:39 thoma Exp $
 
 #include <iostream>
 #include <string>
@@ -69,5 +69,6 @@ namespace TeX
 	std::ostream &Header(std::ostream &os, HeaderFlags fl=HeaderFlags());
 	std::ostream &Footer(std::ostream &os);
 	std::string string2TeX(const std::string &s, const StringFlags &fl=StringFlags()) throw();
-   std::string scale(const std::string& is, unsigned int maxlength, const std::string& scale);
+   std::string scale(const std::string& is, unsigned int maxlength, 
+                     const std::string& scale,const bool use_string2TeX=true);
 };
