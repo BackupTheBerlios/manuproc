@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<glademm-callbacks>
+  <class name="mpc_agent_glade">
+    <callback name="on_activate_entry" args="int enr"/>
+  </class>
+</glademm-callbacks>

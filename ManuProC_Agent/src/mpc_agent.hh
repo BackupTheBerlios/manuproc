@@ -13,14 +13,23 @@
 #  include "mpc_agent_glade.hh"
 #  define _MPC_AGENT_HH
 
-typedef enum {KDBOX_NR=0,KDBOX_NAME,KDBOX_ORT} KdTitle;
-typedef enum {OD_ROW,OD_ARTICLE,OD_AMOUNT} OderEntries;
+typedef enum {KDBOX_NR=0,KDBOX_NAME,KDBOX_ORT} KdEntries;
+typedef enum {OD_ROW,OD_ARTICLE,OD_AMOUNT} OrderEntries;
 
 class mpc_agent : public mpc_agent_glade
 {  
- void on_beenden_activate();
- void on_kunde_activate();
- void on_activate_entry(int enr);
+        void on_beenden_activate();
+        void on_neu_clicked();
+        void on_senden_clicked();
+        void on_kunde_activate();
+        void on_activate_entry(int enr);
+        void on_customer_clear_activate();
+        void on_order_clear_clicked();
+        void on_artikel_aktivate();
+        void on_artikel_activate_entry(int enr);
+        void on_spinbutton1_editing_done();
+        void on_artikel_ok_clicked();
+        void on_artikel_cancel_clicked();
 
 public:
  mpc_agent();

@@ -9,7 +9,8 @@ public:
 
  MyMessage() : Gtk::MessageDialog("") {}
 
- MyMessage(const SQLerror &e) : Gtk::MessageDialog("")
+ MyMessage(const SQLerror &e) :
+ 	 Gtk::MessageDialog("",Gtk::MESSAGE_ERROR)
  {char tmp[100]; 
   std::string _msg;
   
@@ -22,7 +23,8 @@ public:
   set_message(_msg);
  }
  
- MyMessage(const std::string &s) : Gtk::MessageDialog(s)
+ MyMessage(const std::string &s,Gtk::MessageType mt=Gtk::MESSAGE_INFO) : 
+ 		Gtk::MessageDialog(s,mt)
  {
  }
 

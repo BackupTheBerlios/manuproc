@@ -11,6 +11,7 @@
 #include <FetchIStream.h>
 #include "mpc_agent.hh"
 #include <MyMessage.h>
+#include <itos.h>
 
 
 int main(int argc, char **argv)
@@ -77,21 +78,32 @@ void mpc_agent::on_kunde_activate()
 
 void mpc_agent::on_activate_entry(int enr)
 {
- std::cout << "entry" << enr << "\n";
  std::string name,ort;
-
+ std::string search_column,query;
+ int kundennr;
+ 
+ switch(enr)
+   {
+    case KDBOX_NR : search_column="kundennr"; break;
+    case KDBOX_NAME : search_column="name"; break;
+    case KDBOX_ORT : search_column="ort"; break;
+   }
 
  try{
- Query q("select name,ort from kunden where kundennr=?");
+ std::string query("select kundennr,name,ort from kunden where ");
+ query+=search_column+" like '"+kunde->get_value(enr)+"%'";
+       
+ Query q(query);
+
  if(q.Result()==100)
    {
-    MyMessage msg("Customer not found");
+    MyMessage msg("Customer not found",Gtk::MESSAGE_ERROR);
     msg.set_transient_for(*this);
     msg.run();
     return;
    }
- q << atoi(kunde->get_value(enr).c_str());
- q >> name >> ort;
+
+ q >> kundennr >> name >> ort;
  }
  catch(SQLerror &e)
  {
@@ -100,8 +112,54 @@ void mpc_agent::on_activate_entry(int enr)
   msg.run();
  }
    
- kunde->set_value(enr+1,name);
- kunde->set_value(enr+2,ort);
+ kunde->set_value(KDBOX_NR,itos(kundennr));
+ kunde->set_value(KDBOX_NAME,name);
+ kunde->set_value(KDBOX_ORT,ort);
 
+ kunde->set_sensitive(false);
+ customer_clear->set_sensitive(true);
 }
+
+
+void mpc_agent::on_customer_clear_activate()
+{  
+ kunde->reset();
+ kunde->set_sensitive(true);
+ kunde->grab_focus();
+ customer_clear->set_sensitive(false); 
+}
+
+void mpc_agent::on_order_clear_clicked()
+{  
+}
+
+void mpc_agent::on_artikel_aktivate()
+{  
+}
+
+void mpc_agent::on_artikel_activate_entry(int enr)
+{  
+}
+
+void mpc_agent::on_spinbutton1_editing_done()
+{  
+}
+
+void mpc_agent::on_artikel_ok_clicked()
+{  
+}
+
+void mpc_agent::on_artikel_cancel_clicked()
+{  
+}
+
+
+void mpc_agent::on_senden_clicked()
+{
+}
+
+void mpc_agent::on_neu_clicked()
+{
+}
+
 
