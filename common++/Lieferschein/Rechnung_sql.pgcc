@@ -52,7 +52,7 @@ Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
  			coalesce(waehrung,1), coalesce(rabatt,0), bezahlt,
 			coalesce(entsorgung,false),
 			coalesce(kurs,1),
-			coalesce(einzug_refnr,0)
+			coalesce(einzug_refnr::int,0)
 		into :KDNR, :DATUM, :RNGART, :ZAHLART, :ZAHLZIEL:IZAHLZIEL,
 		   :WAEHRUNG, :RABATT, :BEZAHLT, :ENTSORGUNG,
 		   :KURS, :EINZUG_REFNR
