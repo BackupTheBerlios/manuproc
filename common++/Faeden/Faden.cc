@@ -1,4 +1,4 @@
-// $Id: Faden.cc,v 1.12 2003/10/23 14:26:21 christof Exp $
+// $Id: Faden.cc,v 1.13 2003/10/23 14:46:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -407,9 +407,8 @@ void Fadenliste::Load(const ArtikelBase &ab,const Bindungsliste &bindungsliste)
       q << ab;
       while ((q>>is).good())
       {  ArtikelBase altmaterial,neumaterial;
-         is >> altmaterial >> neumaterial;
+         is >> altmaterial >> neumaterial >> Query::check_eol();
          ersetzen[altmaterial]=neumaterial;
-         is.ThrowIfNotEmpty(__FILELINE__);
       }
    }
       
@@ -418,8 +417,13 @@ void Fadenliste::Load(const ArtikelBase &ab,const Bindungsliste &bindungsliste)
       	"from webang_faeden where artikel=? order by zeilennummer");
       q << zu_laden;
       while ((q>>is).good())
-      {  add(is.Fetch<Faden>(),-1);
-         is.ThrowIfNotEmpty(__FILELINE__);
+      {  Faden f;
+         is >> f >> Query::check_eol();
+         if (!ersetzen.empty())
+         {  map<ArtikelBase,ArtikelBase>::const_iterator found=ersetzen.find(f.material);
+            if (found!=ersetzen.end()) f.material=found->second;
+         }
+         add(f,-1);
       }
 
       Query q2("select anfangszeile, endzeile, wiederholungen "
@@ -429,8 +433,7 @@ void Fadenliste::Load(const ArtikelBase &ab,const Bindungsliste &bindungsliste)
       q2 << zu_laden;
       while ((q2>>is).good())
       {  int anfangszeile, endzeile, wiederholungen;
-         is >> anfangszeile >> endzeile >> wiederholungen;
-         is.ThrowIfNotEmpty(__FILELINE__);
+         is >> anfangszeile >> endzeile >> wiederholungen >> Query::check_eol();
          rep_add(anfangszeile, endzeile, wiederholungen);
       }
 }
