@@ -27,7 +27,7 @@ void window_neue_Kundennummer::on_name2_activate()
 void window_neue_Kundennummer::on_button_ok_clicked()
 {   
  int kid = atoi(entry_kundennr->get_text().c_str());
- K.newKunde(kid,entry_firma->get_text(),entry_name2->get_text(),
+ Kunde::newKunde(kid,entry_firma->get_text(),entry_name2->get_text(),
  		gruppe->get_value()); 
  hauptfenster->neue_kundennmmer(kid);
  destroy();

@@ -5671,8 +5671,7 @@ anlegen</label>
 
       <widget>
 	<class>GtkFrame</class>
-	<name>gruppe</name>
-	<cxx_visibility>protected</cxx_visibility>
+	<name>frame_gruppe</name>
 	<label>Gruppe</label>
 	<label_xalign>0</label_xalign>
 	<shadow_type>GTK_SHADOW_NONE</shadow_type>
@@ -5693,13 +5692,8 @@ anlegen</label>
 
 	<widget>
 	  <class>Custom</class>
-	  <name>custom3</name>
+	  <name>gruppe</name>
 	  <cxx_visibility>protected</cxx_visibility>
-	  <signal>
-	    <name>activate</name>
-	    <handler>on_gruppenwahl_activate</handler>
-	    <last_modification_time>Thu, 17 Oct 2002 00:21:03 GMT</last_modification_time>
-	  </signal>
 	  <creation_function>Optionmenu_Kundengruppe</creation_function>
 	  <int1>0</int1>
 	  <int2>0</int2>
