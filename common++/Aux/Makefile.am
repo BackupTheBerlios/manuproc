@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.5 2001/06/22 07:29:02 christof Exp $
+# $Id: Makefile.am,v 1.6 2001/06/22 09:52:02 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -28,7 +28,7 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
 	SQLerror_postgres.pgcc Transaction.h Transaction.pgcc Zeitpunkt_new.cc \
 	Zeitpunkt_new.h Zeitpunkt_new_ostr.cc Zeitpunkt_new_write.cc \
 	auto_conversion.cc dbconnect.h dbconnect.pgcc \
-	exception.cc exception.h fixedpoint.cc fixedpoint.h mystream.h \
+	exception.cc exception.h fixedpoint.h mystream.h \
 	postgres_conversion.cc safemap.h string0.c string0.h itos.cc itos.h \
 	FetchIStream.pgcc FetchIStream.h ctime_assert.h \
    EntryValueBase.cc EntryValueBase.h EntryValueIntString.cc \
