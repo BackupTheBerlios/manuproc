@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.43 2003/05/21 10:24:38 christof Exp $
+// $Id: Check.cc,v 1.44 2003/06/12 17:09:47 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -47,19 +47,19 @@ bool Check::teste(was_checken check,const std::string &zusatz, bool mit_reparatu
   
   std::vector<cH_ppsInstanz> VI=cH_ppsInstanz::get_all_instanz();
   Query::Execute("vacuum analyze");
-  std::string Com="../../Programme/adjust_store -y -d "+std::string(getenv("PGDATABASE"));
+  std::string Com="../../Programme/adjust_store");
   for(std::vector<cH_ppsInstanz>::const_iterator i=VI.begin();i!=VI.end();++i)
    {
      if((*i)->LagerInstanz() && (*i)->EigeneLagerKlasseImplementiert())
       {
-        std::string com=Com+" -i "+itos((*i)->Id())+" -a A";
+        std::string com=Com+" -i"+itos((*i)->Id())+" -aA";
         system(com.c_str());
       }
-     std::string com=Com+" -i "+itos((*i)->Id())+" -a X";
+     std::string com=Com+" -i"+itos((*i)->Id())+" -aX";
      int x=system(com.c_str());
 
-     std::string com2=Com+" -i "+itos((*i)->Id())+" -a C";
-     int c=0; // system(com2.c_str());
+     std::string com2=Com+" -i"+itos((*i)->Id())+" -aC";
+     int c=system(com2.c_str());
 
      if(x||c) 
      {std::cout <<*i<<'\t'<< c<<x<<'\n'; return false; }

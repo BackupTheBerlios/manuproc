@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.33 2003/05/26 13:43:27 christof Exp $
+// $Id: adjust_store.cc,v 1.34 2003/06/12 17:09:47 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -59,7 +59,6 @@ bool check_for(const std::string &pname,cH_ppsInstanz I,const std::string &aktio
     else if (aktion=="*" || aktion=="X" || aktion=="C")
     {  SQLFullAuftragSelector psel=SQLFullAuftragSelector::sel_InstanzAlle(I->Id());
        SelectedFullAufList K(psel);
-       bool alles_ok=true;
       if (aktion=="*" || aktion=="C")
        RI.Reparatur_0er_und_2er(K,analyse_only);
       if (aktion=="*" || aktion=="X")

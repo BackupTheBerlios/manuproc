@@ -433,7 +433,11 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
             }
 
             AufEintrag ae2(j->AEB);
-            if (ae2.getLieferdatum()>newdate)
+            if (ae2.getLieferdatum()>newdate 
+                // Ausnahme für unbestellte aber doch gelieferte Mengen
+            	&& !(ae.Id()==AuftragBase::plan_auftrag_id 
+            		&& !ae.Instanz()->LagerInstanz()
+            		&& ae.getLieferdatum()==LagerBase::Lagerdatum()))
             {  analyse("Datum passt nicht",ae,j->AEB,j->Menge);
                goto weg1;
             }
