@@ -335,9 +335,9 @@ auftrag_lieferschein::auftrag_lieferschein(cH_ppsInstanz _instanz)
 #endif 
 
 #ifndef PETIG_EXTENSIONS
-  std::string nurliefer(" and lieferadresse=true  and coalesce(aktiv,true)=true");
-  liefer_kunde->Einschraenkung(nurliefer);
-  liefer_kunde->Einschraenken(true);     
+  std::string nuraktiv("and coalesce(aktiv,true)=true");
+  liefer_kunde->Einschraenkung(nuraktiv,true);
+  liefer_kunde->EinschraenkenKdGr(KundengruppeID::Auftragsadresse);
 #endif
 
 #ifdef MABELLA_EXTENSIONS

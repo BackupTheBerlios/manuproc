@@ -473,9 +473,9 @@ auftrag_rechnung::auftrag_rechnung(cH_ppsInstanz _instanz)
 // preis_ergaenzen->hide();
  _tooltips.set_tip(*button27,"Linke Maustaste: 1 Orig. 2 Kopien. "
 		"Mittlere Maustaste: 1 Kopie","");
-  std::string nurliefer(" and lieferadresse=true  and coalesce(aktiv,true)=true");
-  lieferkunde->Einschraenkung(nurliefer);
-  lieferkunde->Einschraenken(true);      
+  std::string nuraktiv(" and coalesce(aktiv,true)=true");
+  lieferkunde->Einschraenkung(nuraktiv,true);
+  lieferkunde->EinschraenkenKdGr(KundengruppeID::Auftragsadresse);      
   checkbutton_ean_drucken->show(); 
   button_lieferscheine_aufraumen->hide();
 #endif

@@ -150,7 +150,7 @@ if(!firmenpapier)
          "}}}}%%\\\\\n";
 #endif
 
- if(! kunde_an->isRechnungsadresse())
+ if(! kunde_an->isInGrp(KundengruppeID::Rechnungsadresse))
    kunde_an = cH_Kunde(kunde_an->Rngan());
     
  mld=new MultiL_Dict(kunde_an->Sprache());
@@ -160,7 +160,7 @@ if(!firmenpapier)
 void LR_Abstraktion::drucken_footer(std::ostream &os)
 {
   cH_Kunde kunde_an(KdNr());
-  if(! kunde_an->isRechnungsadresse())
+  if(! kunde_an->isInGrp(KundengruppeID::Rechnungsadresse))
     kunde_an = cH_Kunde(kunde_an->Rngan());
     
   if(((signed int)zeilen_passen_noch)<0) zeilen_passen_noch=0;
@@ -561,7 +561,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
 
   cH_Kunde kunde_rng(KdNr());
 #ifdef MABELLA_EXTENSIONS
-  if(! kunde_rng->isRechnungsadresse())
+  if(! kunde_rng->isInGrp(KundengruppeID::Rechnungsadresse))
     kunde_rng = cH_Kunde(kunde_rng->Rngan());
 #endif
 
@@ -1198,7 +1198,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
          telart=TEL_FAX; // Im Moment werden alle Telefonnummern angezeigt
      os << kunde_an->LaTeX_an(Typ()==Lieferschein,telart)<<"\n\n";
 #elif MABELLA_EXTENSIONS
-     if(Typ()==Rechnung && !kunde_an->isRechnungsadresse())
+     if(Typ()==Rechnung && !kunde_an->isInGrp(KundengruppeID::Rechnungsadresse))
        os << kunde_rng->LaTeX_an(Typ()==Lieferschein,telart,"1\\textwidth")<<"\n\n";
      else  
        os << kunde_an->LaTeX_an(Typ()==Lieferschein,telart,"1\\textwidth")<<"\n\n";
@@ -1212,7 +1212,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
 	      "\\begin{flushleft}\n";
 
         
-	if(!kunde_an->isRechnungsadresse() && Typ()!=Rechnung)
+	if(!kunde_an->isInGrp(KundengruppeID::Rechnungsadresse) && Typ()!=Rechnung)
 		{
 		os << "\\bf "<<mld->MLT(MultiL_Dict::TXT_RNGADRESSE)<<":\\rm\\\\\n"
 		   << string2TeX(kunde_rng->firma())+"\\\\\n";
@@ -1230,7 +1230,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
 		os << "\\smallskip\n";   
 		}		
 
-	if(!kunde_an->isRechnungsadresse() && Typ()==Rechnung)
+	if(!kunde_an->isInGrp(KundengruppeID::Rechnungsadresse) && Typ()==Rechnung)
 		{
 		os << "\\bf "<<mld->MLT(MultiL_Dict::TXT_LIEFADRESSE)<<":\\rm\\\\\n"
 		   << string2TeX(kunde_an->firma())+"\\\\\n"
@@ -1283,7 +1283,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
 #endif     
 
 #ifdef MABELLA_EXTENSIONS
-     if(!kunde_an->isRechnungsadresse() && Typ()==Rechnung)
+     if(!kunde_an->isInGrp(KundengruppeID::Rechnungsadresse) && Typ()==Rechnung)
        os <<"\n "<< string2TeX(kunde_rng->getName())<<"\\\\\\bigskip";
      else
        os <<"\n  "<< string2TeX(kunde_an->getName())<<"\\\\\\bigskip";
@@ -1291,7 +1291,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
      zeilen_passen_noch=ZEILEN_SEITE_N;
     }
 #else
-     if(!kunde_an->isRechnungsadresse() && Typ()==Rechnung)
+     if(!kunde_an->isInGrp(KundengruppeID::Rechnungsadresse) && Typ()==Rechnung)
        os <<"\n "<<mld->MLT(MultiL_Dict::TXT_FIRMA)<<" "<< string2TeX(kunde_rng->getName())<<"\\\\\\bigskip";
      else
        os <<"\n "<<mld->MLT(MultiL_Dict::TXT_FIRMA)<<" "<< string2TeX(kunde_an->getName())<<"\\\\\\bigskip";

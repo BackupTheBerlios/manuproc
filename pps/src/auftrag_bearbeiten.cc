@@ -63,9 +63,9 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
  _tooltips.set_tip(*button_drucken,"Linke Maustaste: 1 Original"
 "Mittlere Maustaste: 1 Kopie","");
 
-   std::string nurliefer(" and lieferadresse=true and coalesce(aktiv,true)=true");
-   kundenbox->Einschraenkung(nurliefer);
-   kundenbox->Einschraenken(true); 
+   std::string nuraktiv(" and coalesce(aktiv,true)=true");
+   kundenbox->Einschraenkung(nuraktiv,true);
+   kundenbox->EinschraenkenKdGr(KundengruppeID::Auftragsadresse);
    checkbutton_ean_drucken->show();
 #endif 
 
@@ -475,7 +475,7 @@ void auftrag_bearbeiten::fillMask()
 
 void auftrag_bearbeiten::Rabatt_setzen(const cH_Kunde &kunde,AuftragFull *a)
 {
- cH_Kunde rngk(kunde->isRechnungsadresse() ? kunde->Id() : kunde->Rngan());
+ cH_Kunde rngk(kunde->isInGrp(KundengruppeID::Rechnungsadresse) ? kunde->Id() : kunde->Rngan());
 
     if(rngk->zeilenrabatt())
      {
