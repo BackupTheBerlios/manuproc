@@ -162,29 +162,17 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
 		int mindmenge,
 		std::vector<std::string> ins_all_komp) throw(SQLerror)
 {
- int ARTIKELID;
- float PREIS;
- int PREISMENGE;
- int PRLSID;
- int WAEHRUNG;
  int UID;
  int MINDESTMENGE=mindmenge;
 
- PREIS=p.Wert().as_float();
- PREISMENGE=p.PreisMenge().as_int();
- PRLSID=liste;
- WAEHRUNG=p.getWaehrung()->Id();
-
-
  std::vector<int> to_insert; // Artikel, alter Preis
- std::string query;
- std::string artbez_tabelle;
-
 
 
  if(ins_all_komp.size())
    {cH_ArtikelBezeichnung ab(a);
     cH_ExtBezSchema ebz=ab->getExtBezSchema();
+    std::string query;
+    std::string artbez_tabelle;
     artbez_tabelle=" artbez_"+itos(ebz->Typ().Id())+"_"+itos(ebz->Id());
 
     query="select id from "+artbez_tabelle+" where ";
@@ -200,12 +188,12 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
 	"where "+artbez_tabelle+".id=p.artikelid and p.kundennr=?"
 	" and p.mindestmenge=?)";
 
-    (Query(query) << PRLSID << mindmenge).FetchArray(to_insert);
+    (Query(query) << liste << mindmenge).FetchArray(to_insert);
     
    }
  else
    {
-   to_insert.push_back(ARTIKELID);	
+   to_insert.push_back(a.Id());	
    }
 
  Transaction tr;
@@ -215,18 +203,16 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
  for(std::vector<int>::const_iterator i=to_insert.begin();
 	i!=to_insert.end(); ++i)
    {
-    ARTIKELID=(*i);
-
     Query("insert into preis_change_journal (artikelid,prlsnr,zeitpunkt,"
 		"preis_alt,preis_neu,uid,mindestmenge) values "
 		"(?,?,now(),null,?,?,?)")
-	<< ARTIKELID << PRLSID << PREIS << UID << MINDESTMENGE;
+	<< (*i) << liste << p.Wert() << UID << MINDESTMENGE;
     SQLerror::test(__FILELINE__);	
 
     Query("insert into artikelpreise "
  	"(artikelid,kundennr,preis,preismenge,waehrung,mindestmenge) values "
  	"(?,?,?,?,?,?)")
- 	<< ARTIKELID << PRLSID << PREIS << PREISMENGE << WAEHRUNG << MINDESTMENGE;
+ 	<< (*i) << liste << p.Wert() << p.PreisMenge() << p.getWaehrung()->Id() << MINDESTMENGE;
     SQLerror::test(__FILELINE__);	
  }
 
@@ -239,11 +225,7 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
 void Artikelpreis::changePreis(const Preis &p) throw(SQLerror)
 {
  int ARTIKELID=artikel;
- float PREIS=p.Wert().as_float();
- float PREIS_ALT;
- int PREISMENGE=p.PreisMenge().as_int();
- int PRLSID=gefunden_in;
- int WAEHRUNG=p.getWaehrung()->Id();
+ geldbetrag_t PREIS_ALT;
  int UID;
  int MINDESTMENGE=mindestmenge;
 
@@ -255,7 +237,7 @@ void Artikelpreis::changePreis(const Preis &p) throw(SQLerror)
 
  Query("select preis from artikelpreise where "
 	"artikelid=? and kundennr=? and mindestmenge=?")
-	<< ARTIKELID << PRLSID << MINDESTMENGE
+	<< ARTIKELID << gefunden_in << MINDESTMENGE
 	>> PREIS_ALT;
 
  Query("insert into preis_change_journal "
@@ -270,8 +252,8 @@ void Artikelpreis::changePreis(const Preis &p) throw(SQLerror)
 		"a.aufmachung=b.aufmachung "
 		"and b.id=?)"
 	"))")
-	<< PRLSID << PREIS << UID << MINDESTMENGE
-	<< PRLSID << MINDESTMENGE 
+	<< gefunden_in << p.Wert() << UID << MINDESTMENGE
+	<< gefunden_in << MINDESTMENGE 
 	<< ARTIKELID;
  SQLerror::test(__FILELINE__);	
  
@@ -285,7 +267,7 @@ void Artikelpreis::changePreis(const Preis &p) throw(SQLerror)
 		"a.aufmachung=b.aufmachung"
 		"and b.id=?)"
 	")")
-	<< PREIS << PREISMENGE << WAEHRUNG << PRLSID << MINDESTMENGE 
+	<< p.Wert() << p.PreisMenge() << p.getWaehrung()->Id() << gefunden_in << MINDESTMENGE 
 	<< ARTIKELID;
  SQLerror::test(__FILELINE__);	
  
@@ -299,14 +281,11 @@ void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a,
 	std::vector<std::string> del_all_komp) throw(SQLerror)
 {
   int ARTIKELID=a.Id();
-  int PRLSID=liste;
-  float PREIS;
-  int UID;
+  geldbetrag_t PREIS;
+  int UID=getuid();
   int MINDESTMENGE=1;
 
- UID=int(getuid());
-
- std::vector<std::pair<int,float> > to_delete; // Artikel, alter Preis
+ std::vector<std::pair<int,geldbetrag_t> > to_delete; // Artikel, alter Preis
  std::string query;
  std::string artbez_tabelle;
 
@@ -317,7 +296,7 @@ void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a,
     cH_ExtBezSchema ebz=ab->getExtBezSchema();
     artbez_tabelle=" artbez_"+itos(ebz->Typ().Id())+"_"+itos(ebz->Id());
     query="select id,preis from "+artbez_tabelle+" a join artikelpreise p "
-	" on (id=artikelid and p.kundennr="+itos(PRLSID)+
+	" on (id=artikelid and p.kundennr="+itos(liste)+
 	" and p.mindestmenge="+itos(MINDESTMENGE)+") where ";
     for(std::vector<std::string>::const_iterator s=del_all_komp.begin();
 	s!=del_all_komp.end(); ++s)
@@ -335,19 +314,19 @@ void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a,
    {
    Query("select preis from artikelpreise where "
 	"artikelid=? and kundennr=? and mindestmenge=?")
-	<< ARTIKELID << PRLSID
+	<< ARTIKELID << liste
 	<< MINDESTMENGE
 	>> PREIS;
    SQLerror::test(__FILELINE__);
 
-   to_delete.push_back(std::pair<int,float>(ARTIKELID,PREIS));	
+   to_delete.push_back(std::pair<int,geldbetrag_t>(ARTIKELID,PREIS));	
    }
 
 
 
  Transaction tr;
 
- for(std::vector<std::pair<int,float> >::const_iterator i=to_delete.begin();
+ for(std::vector<std::pair<int,geldbetrag_t> >::const_iterator i=to_delete.begin();
 	i!=to_delete.end(); ++i)
    {
     ARTIKELID=(*i).first;
@@ -356,12 +335,12 @@ void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a,
     Query("insert into preis_change_journal (artikelid,prlsnr,zeitpunkt,"
    		"preis_alt,preis_neu,uid,mindestmenge) values "
    		"(?,?,now(),?,0.0,?,?)")
-   		<< ARTIKELID << PRLSID << PREIS << UID << MINDESTMENGE;
+   		<< ARTIKELID << liste << PREIS << UID << MINDESTMENGE;
     SQLerror::test(__FILELINE__);	
    	
     Query("delete from artikelpreise "
    	"where (kundennr,artikelid,mindestmenge)=(?,?,?)")
-	<< PRLSID << ARTIKELID << MINDESTMENGE;
+	<< liste << ARTIKELID << MINDESTMENGE;
     SQLerror::test(__FILELINE__);	
   }
 
@@ -371,8 +350,9 @@ void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a,
 
 };
 
-FetchIStream &operator>>(FetchIStream &is,std::pair<int,float> &ag)
+FetchIStream &operator>>(FetchIStream &is,std::pair<int,Preis::geldbetrag_t> &ag)
 {  return is >> ag.first >> ag.second;
 }
 
 const UniqueValue::value_t Artikelpreis::trace_channel=ManuProC::Tracer::channels.get();
+static ManuProC::Tracer::Environment trace_channel_e("DEBUG_PREIS",Artikelpreis::trace_channel);
