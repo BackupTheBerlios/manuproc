@@ -46,17 +46,20 @@ public:
       : LR_Base(_typ), u(l) 
       {
        if(_typ==Wareneingang)
-         if(u.l->getZusatzInfos().empty())
-           {Artikelpreis ap(u.l->KdID(),u.l->Artikel(),u.l->Stueck());
-            we_preis[AufEintragBase()]=Preis(ap.Wert(),Waehrung::default_id);
-           }
-         else
           {LieferscheinEntry::zusaetze_t::const_iterator i=
                                   u.l->getZusatzInfos().begin();
            for(;i!=u.l->getZusatzInfos().end(); ++i)
              {
-              AufEintrag AB((*i).aeb);
-              we_preis[(*i).aeb]=AB.EPreis();
+              if((*i).aeb.valid())
+                {AufEintrag AB((*i).aeb);
+                 we_preis[(*i).aeb]=AB.EPreis();
+                }
+              else
+                {
+                 Artikelpreis ap(u.l->KdID(),u.l->Artikel(),u.l->Stueck());
+                 Preis p=we_preis[AufEintragBase()];
+                 we_preis[AufEintragBase()]= (p + Preis(ap.Wert(),Waehrung::default_id));
+                }
              }
           }
       }
