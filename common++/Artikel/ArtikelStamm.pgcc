@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.36 2004/03/09 15:21:15 jacek Exp $
+// $Id: ArtikelStamm.pgcc,v 1.37 2004/04/08 16:22:25 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -128,12 +128,19 @@ void ArtikelStamm::setEinheit(const ArtikelBase &artikel,const Einheit e)
 void ArtikelStamm::setAktive(const ArtikelBase &artikel, bool ak
 		, bool all_color) throw(SQLerror)
 { 
+ std::string table(" artbez_");
+ table+=itos(ArtikelTyp::default_ID)+"_"+itos(ExtBezSchema::default_id);
+
  if(all_color)
-   Query("update artikelstamm set stand=now(),aktiv=? where id in "
-	" (SELECT b1.id from artbez_3_1 b1 join artbez_3_1 b2 "
-	"  on (b1.artikel=b2.artikel and b1.breite=b2.breite "
-	"      and b1.aufmachung=b2.aufmachung and b2.id=?)) ")
-  	<< ak << artikel.Id();
+   {
+    std::string query("update artikelstamm set stand=now(), "
+    	              "aktiv=? where id in ");
+    query+=std::string(" (SELECT b1.id from ")+
+    	table+" b1 join "+table+" b2 "+
+	"  on (b1.artikel=b2.artikel and b1.breite=b2.breite "+
+	"      and b1.aufmachung=b2.aufmachung and b2.id=?)) ";
+    Query(query) << ak << artikel.Id();
+   }
  else
    Query("update artikelstamm set stand=now(),aktiv=? where id=?")
   	<< ak << artikel.Id();

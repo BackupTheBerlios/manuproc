@@ -1,4 +1,4 @@
-// $Id: ArtikelEAN_sql.pgcc,v 1.10 2002/11/22 15:31:04 christof Exp $
+// $Id: ArtikelEAN_sql.pgcc,v 1.11 2004/04/08 16:22:25 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,17 +20,22 @@
 
 
 #include"ArtikelEAN.h"
+#include<Aux/itos.h>
+#include<ExtBezSchema/ExtBezSchema.h>
+#include<Aux/FetchIStream.h>
 
-ArtikelEAN::ArtikelEAN(const std::string _ean) throw(SQLerror)
+
+ArtikelEAN::ArtikelEAN(const std::string _ean, const ArtikelTyp at) throw(SQLerror)
 {
- exec sql begin declare section;
  int ARTID;
- char *EAN=(char*)_ean.c_str();
- exec sql end declare section;
-
  
+ std::string table("artbez_");
+ table+=itos(at)+"_"+itos(ExtBezSchema::default_id); 
 
- exec sql select id into :ARTID from artbez_3_1 where ean= :EAN; 
+ std::string query("select id from ");
+ query+=table+" where ean=?";
+
+ Query(query) << _ean >> ARTID;
  SQLerror::test(__FILELINE__);
 
  artikelid = ARTID;

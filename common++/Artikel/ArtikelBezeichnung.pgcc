@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.21 2003/11/14 15:08:43 christof Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.22 2004/04/08 16:22:25 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -212,10 +212,12 @@ void ArtikelBezeichnung::Anlegen(const cH_ExtBezSchema &schema,const ArtikelBase
 {  std::string col="(id,"+columns+",";
    std::string val="("+itos(art.Id())+","+values+",";
 #ifdef MABELLA_EXTENSIONS  
-  if(schema->Id()==ExtBezSchema::default_id && schema->Typ() == ArtikelTyp::default_ID)
+  if(schema->Id()==ExtBezSchema::default_id && 
+	ArtikelTyp::hasAttribute(schema->Typ(),
+	  ManuProC::DynamicEnums::ArtikelTyp_Attributes::mit_ean))
      {
      col +="ean,";
-     val += EAN::next_value()+",";
+     val += EAN::next_value(schema->Typ())+",";
      }  
 #endif
    assert(col[col.size()-1]==',' && val[val.size()-1]==',');

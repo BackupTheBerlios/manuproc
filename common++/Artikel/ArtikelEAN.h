@@ -1,4 +1,4 @@
-/* $Id: ArtikelEAN.h,v 1.11 2003/01/08 09:46:56 christof Exp $ */
+/* $Id: ArtikelEAN.h,v 1.12 2004/04/08 16:22:25 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,6 +23,7 @@
 #include<string>
 #include<Misc/SQLerror.h>
 #include"Artikel/ArtikelBase.h"
+#include"Artikel/ArtikelTyp.h"
 
 class ArtikelEAN : public ArtikelBase
 {
@@ -31,7 +32,7 @@ class ArtikelEAN : public ArtikelBase
 public:
 
  ArtikelEAN() {}
- ArtikelEAN(const std::string _ean) throw(SQLerror); 
+ ArtikelEAN(const std::string _ean,const ArtikelTyp at) throw(SQLerror); 
 
  const std::string getEAN() const {return ean;}
 

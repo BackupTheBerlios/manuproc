@@ -1,4 +1,4 @@
-// $Id: EAN_sql.pgcc,v 1.15 2003/01/08 09:46:56 christof Exp $
+// $Id: EAN_sql.pgcc,v 1.16 2004/04/08 16:22:25 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -18,21 +18,27 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */ 
     
-exec sql include sqlca;
 #include <Misc/Transaction.h>
 #include <EAN.h>
 #include <Misc/itos.h>
+#include <ExtBezSchema/ExtBezSchema.h>
+#include <Aux/FetchIStream.h>
 
-std::string EAN::next_value()
+std::string EAN::next_value(const ArtikelTyp at)
 {
-  exec sql begin declare section;
-   char *RESULT=0; 
-  exec sql end declare section;
-  exec sql select max(substr(ean,0,13)) into :RESULT from artbez_3_1;
+ std::string table("artbez_");
+ table+=itos(at)+"_"+itos(ExtBezSchema::default_id);
 
-  unsigned long long int ean=strtoll(RESULT,NULL,10);
-  ean+=1;
-  ECPGfree_auto_mem();
-  return add_Pruefsumme(ulltos(ean));                
+ std::string RESULT;
+
+ std::string query("select max(substr(ean,0,13)) from ");
+ query+=table;
+
+ Query(query) >> RESULT;
+
+ unsigned long long int ean=strtoll(RESULT.c_str(),NULL,10);
+ ean+=1;
+ return add_Pruefsumme(ulltos(ean));                
 }    
+
                  
