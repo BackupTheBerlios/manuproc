@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.52 2003/02/12 13:54:32 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.53 2003/02/13 08:53:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -267,14 +267,21 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(int uid,mengen_t menge,bool insta
    "Eltern=",ElternAEB,
    "menge=",menge,"instanzen=",instanzen,"reason=",reason);
  assert(reason!=ManuProC::Auftrag::r_None);
-// if (reason==ManuProC::Auftrag::r_None) assert(!instanzen);
  if (!menge)  return menge;
+
  Transaction tr; // Beschleunigung
  Query("lock auftragentry in exclusive mode");
  SQLerror::test("updateStkDiff: lock table auftragentry");
 
- menge=updateStkDiffBase__(uid,menge);
- bestellt+=menge;
+ mengen_t menge2=menge;
+ if (menge2<0) // nicht mehr abbestellen als noch offen ist
+ 		// aber dennoch den Pfeil reduzieren
+ {  menge2=-AuftragBase::min(-menge2,getRestStk());
+ }
+ if (!!menge2) 
+ { menge2=updateStkDiffBase__(uid,menge2);
+   bestellt+=menge2;
+ }
 
  if (ElternAEB.valid()) 
  {  if (Id()!=dispo_auftrag_id) AufEintragZu(ElternAEB).Neu(*this,menge);
@@ -290,10 +297,10 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(int uid,mengen_t menge,bool insta
    // Rekursion bei 1er oder 3er in Produktion
    if ((!Instanz()->LagerInstanz() || Id()==AuftragBase::ungeplante_id) 
    	&& instanzen)
-      updateStkDiffInstanz__(uid,menge,*this,reason);
+      updateStkDiffInstanz__(uid,menge2,*this,reason);
   }
   tr.commit();
- return menge;
+ return menge2;
 }
 
 void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftrag::Action reason) const
@@ -323,6 +330,7 @@ void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftr
       {
         AufEintrag AE(j->AEB);
         mengen_t M=AuftragBase::min(j->Menge,menge2);
+        if (!M) continue;
         
         if(j->AEB.Id()==AuftragBase::ungeplante_id || j->AEB.Instanz()->LagerInstanz())
            M=-AE.MengeAendern(uid,-M,true,AufEintragBase(),reason);
