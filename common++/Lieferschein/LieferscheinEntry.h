@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.8 2002/04/11 12:01:08 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.9 2002/04/12 06:37:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -89,6 +89,8 @@ public:
  AufEintragBase getAufEintragBase() const {return AufEintragBase(Instanz(),AufId(),AufZeile());}
  bool ZusatzInfo() const { return zusatzinfo; }
 
+ void setPalette(int p) throw(SQLerror);
+ void changeMenge(int stueck,mengen_t menge) throw(SQLerror);
  static void deleteEntry(const LieferscheinEntry &lse) throw(SQLerror);
 };
 

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.2 2002/04/11 12:01:08 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.3 2002/04/12 06:37:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -18,9 +18,20 @@
  */
 
 #include"LieferscheinEntry.h"
+#include<Aux/FetchIStream.h>
 
 bool LieferscheinEntry::Valid() const
 {
   if(Zeile()!=0) return true;
   return false;
 }
+
+void LieferscheinEntry::setPalette(int p) throw(SQLerror)
+{
+  std::string Q="update lieferscheinentry set palette="+itos(p)
+                 +" where (instanz,lfrsid,zeile)=("
+                 +itos(Instanz())+","+itos(Id())+","+itos(Zeile())+")";
+  Query::Execute(Q);
+  SQLerror::test(__FILELINE__);
+}
+
