@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.98 2004/02/16 07:37:46 christof Exp $
+// $Id: AufEintrag.cc,v 1.99 2004/02/16 15:29:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -66,25 +66,30 @@ std::string AufEintrag::Planung() const
   return itos(maxPlanInstanz)+"/"+itos(tiefe);
 }
 
+class move_to_Move : public distribute_parents_cb
+{	AufEintrag &quelle,&ziel;
+public:
+	move_to_Move(AufEintrag &q,AufEintrag &z) : quelle(q), ziel(z) {}
+	virtual AuftragBase::mengen_t operator()(const AufEintragBase &,
+				AuftragBase::mengen_t) const;
+	virtual bool operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const
+	{  return AufEintragZu_sort::auftr_34012(a,b); }
+};
+
+AuftragBase::mengen_t move_to_Move::operator()(const AufEintragBase &ae,
+				AuftragBase::mengen_t M) const
+{  quelle.MengeAendern(-M,true,ae);
+   ziel.MengeAendern(M,true,ae);
+   return M;
+}
+
 void AufEintrag::move_to(AufEintrag ziel,mengen_t menge) throw(std::exception)
 {
   ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,NV("To",ziel),NV("Menge",menge));
   Transaction tr;
-
- {delayed_reclaim dlr;
-  AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(*this,
-		AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
-  for(AufEintragZu::list_t::reverse_iterator i=L.rbegin();i!=L.rend();++i)
-  { mengen_t M=min(i->Menge,menge);
-    if (!M) continue;
-
-    MengeAendern(-M,true,i->AEB);
-    ziel.MengeAendern(M,true,i->AEB);
-
-    menge-=M;
-    if(!menge) break;
+  {delayed_reclaim dlr;
+   distribute_parents(*this,menge,move_to_Move(*this,ziel));
   }
- }
   tr.commit();
 }
 

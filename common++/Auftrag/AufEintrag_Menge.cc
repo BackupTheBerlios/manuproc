@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.22 2004/02/16 10:56:52 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.23 2004/02/16 15:29:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -168,15 +168,26 @@ AuftragBase::mengen_t AufEintrag::ArtikelInternAbbestellen_cb::operator()
      { // [1er oder] 3er - dispo anlegen, Bestellpfeil erniedrigen
        assert(j.Id()>=handplan_auftrag_id);
        AufEintragZu(mythis).setMengeDiff__(j,-M);
-#if 1       
        mengen_t noch_frei=AuftragBase::min(M,AE.getRestStk());
-//#warning geht bei EinlagernIn+Automatisch einlagern von Teilmenge fehl?       
        if (!!noch_frei)
-       {  AuftragBase(j.Instanz(),dispo_auftrag_id)
-       	     .BestellmengeAendern(noch_frei,AE.getLieferdatum(),AE.Artikel(),OPEN,j);
-          AE.DispoBeschraenken();
+       {  // wie in ArtikelInternAbbestellen
+          if (delayed_reclaim::Active())
+          {  AuftragBase(j.Instanz(),dispo_auftrag_id)
+       	     		.BestellmengeAendern(noch_frei,AE.getLieferdatum(),
+	       	     		AE.Artikel(),OPEN,j);
+	     delayed_reclaim::delay(j.Instanz(),AE.Artikel());
+             AE.DispoBeschraenken(); // vielleicht in dr ???
+          }
+          else
+          {  noch_frei=delayed_reclaim::MengeNutzen(AE,noch_frei);
+             if (!!noch_frei)
+             {  AuftragBase(j.Instanz(),dispo_auftrag_id)
+       	     		.BestellmengeAendern(noch_frei,AE.getLieferdatum(),
+	       	     		AE.Artikel(),OPEN,j);
+	        AE.DispoBeschraenken();
+	     }
+          }
        }
-#endif       
      }
    return M;
 }

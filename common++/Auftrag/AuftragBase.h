@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.58 2004/01/30 15:57:49 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.59 2004/02/16 15:29:05 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -43,10 +43,14 @@ class AuftragBase
    static const ID handplan_auftrag_id =  3; // gemeint sind alle Aufträge, die NICHT 0,1,2 sind
    static const ID dispo_auftrag_id =  2;
    static const ID plan_auftrag_id  =  1;
+   static const ID ungeplante_auftrag_id    =  0;
    static const ID invalid_id       = ManuProcEntity<>::none_id ;
    // warum umbenennen?
    static const ID none_id       = ManuProcEntity<>::none_id ;
-   static const ID ungeplante_id    =  0;
+   static const ID ungeplante_id    =  ungeplante_auftrag_id;
+   static const ID handplan_id =  handplan_auftrag_id;
+   static const ID dispo_id =  dispo_auftrag_id;
+   static const ID plan_id  =  plan_auftrag_id;
    
    static const int jahresmultiplikator = 10000;
 

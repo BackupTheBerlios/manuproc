@@ -1,4 +1,4 @@
-/* $Id: VerfuegbareMenge.h,v 1.6 2004/02/16 10:36:12 christof Exp $ */
+/* $Id: VerfuegbareMenge.h,v 1.7 2004/02/16 15:29:05 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -41,6 +41,7 @@ class VerfuegbareMenge : public ArtikelBase
 
    public:
       typedef std::vector<AufEintrag>::const_iterator const_iterator;
+      typedef std::vector<AufEintrag>::iterator iterator;
       
       VerfuegbareMenge(const cH_ppsInstanz &instanz,const ArtikelBase &artikel,const ManuProC::Datum &datum) throw(SQLerror);
 
@@ -48,6 +49,7 @@ class VerfuegbareMenge : public ArtikelBase
       AuftragBase::mengen_t getMengePlan() const {return menge_plan_auftraege;}
 
       const std::vector<AufEintrag> &getDispoAuftraege() const {return V_dispo_auftraege;}
+      std::vector<AufEintrag> &getDispoAuftraege() {return V_dispo_auftraege;}
       const std::vector<AufEintrag> &getPlanAuftraege() const {return V_plan_auftraege;}
 
 	// wird von AE::ArtikelInternNachbestellen verwendet

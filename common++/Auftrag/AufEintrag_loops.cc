@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.cc,v 1.13 2004/02/12 11:53:11 christof Exp $ */
+/* $Id: AufEintrag_loops.cc,v 1.14 2004/02/16 15:29:05 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -34,6 +34,10 @@ bool distribute_children_cb::operator()(const AufEintragZu::st_reflist &a,const 
 
 bool distribute_children_twice_cb::operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const
 {  return distribute_children_cb::operator()(a,b);
+}
+
+bool distribute_parents_cb::operator()(AufEintragZu::st_reflist const &a, AufEintragZu::st_reflist const &b) const
+{  return AufEintragZu_sort::priority(a,b);
 }
 
 static std::string Nametrans(std::string n)
@@ -79,10 +83,10 @@ static AufEintragBase::mengen_t
 // if anybody has a more straight way to do this tell me !
 /*  list::sort(comp) seems to try to allocate new objects of the passed type
 */
-namespace{ class sort_wrapper
-{	const distribute_children_cb &c;
+namespace{ template <typename T=distribute_children_cb> class sort_wrapper
+{	const T &c;
 public:
-	sort_wrapper(const distribute_children_cb &dcc) : c(dcc) {}
+	sort_wrapper(const T &dcc) : c(dcc) {}
 	bool operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const
 	{  return c(a,b); }
 };}
@@ -102,7 +106,7 @@ bool distribute_children(const AufEintragBase &startAEB,
    for(AufEintragZu::map_t::iterator artloop_var=MapArt.begin();artloop_var!=MapArt.end();++artloop_var)
    {  ArtikelBaum::faktor_t AE_faktor = AE_artbaum.Faktor(artloop_var->first);
       AuftragBase::mengen_t AE_menge2=AE_faktor*menge;
-      artloop_var->second.sort(sort_wrapper(callee));
+      artloop_var->second.sort(sort_wrapper<>(callee));
 if (ManuProC::Tracer::enabled(AuftragBase::trace_channel))
 {   std::ostream_iterator<AufEintragZu::st_reflist> os(std::cout," ");
 std::cout << "after sort ";
@@ -145,7 +149,7 @@ void distribute_children_artbaum(const AufEintragBase &startAEB,
    for(AufEintragZu::map_t::iterator artloop_var=MapArt.begin();artloop_var!=MapArt.end();++artloop_var)
    {  ArtikelBaum::faktor_t AE_faktor = AE_artbaum.Faktor(artloop_var->first);
       AuftragBase::mengen_t AE_menge2=AE_faktor*menge;
-      artloop_var->second.sort(sort_wrapper(callee));
+      artloop_var->second.sort(sort_wrapper<>(callee));
       for(AufEintragZu::list_t::const_iterator zuloop_var=artloop_var->second.begin();
 	   		zuloop_var!=artloop_var->second.end();++zuloop_var)
       {  AuftragBase::mengen_t mengen_var
@@ -190,7 +194,7 @@ bool distribute_children_twice(const AufEintragBase &startAEB,
    for(AufEintragZu::map_t::iterator artloop_var=MapArt.begin();artloop_var!=MapArt.end();++artloop_var)
    {  ArtikelBaum::faktor_t AE_faktor = AE_artbaum.Faktor(artloop_var->first);
       AuftragBase::mengen_t AE_menge2=AE_faktor*menge;
-      artloop_var->second.sort(sort_wrapper(callee));
+      artloop_var->second.sort(sort_wrapper<>(callee));
       for(AufEintragZu::list_t::iterator zuloop_var=artloop_var->second.begin();
 	   		zuloop_var!=artloop_var->second.end();++zuloop_var)
       {  AuftragBase::mengen_t mengen_var
@@ -226,7 +230,8 @@ AuftragBase::mengen_t distribute_parents(const AufEintragBase &startAEB,
 //   assert(menge>0);
    AufEintragZu::list_t Eltern =
         AufEintragZu::get_Referenz_list(startAEB,AufEintragZu::list_eltern,
-                                         AufEintragZu::list_ohneArtikel);
+			AufEintragZu::list_ohneArtikel,AufEintragZu::list_unsorted);
+   Eltern.sort(sort_wrapper<distribute_parents_cb>(callee));
    for (AufEintragZu::list_t::iterator i=Eltern.begin();i!=Eltern.end();++i)
    {  AuftragBase::mengen_t m=MinPfeil_or_MinGeliefert(*i,menge,true);
       if (!m) continue;
