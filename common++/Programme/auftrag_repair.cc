@@ -1,4 +1,4 @@
-// $Id: auftrag_repair.cc,v 1.13 2004/12/22 11:02:12 christof Exp $
+// $Id: auftrag_repair.cc,v 1.14 2005/02/23 09:34:12 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -76,7 +76,7 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,
    ppsInstanzReparatur RI(I->Id());
    bool alles_ok=true;
     if (actions&b_minmenge && I->LagerInstanz())
-    {  Query q("select id from artikelstamm "
+    {  std::string qstr("select id from artikelstamm "
           // gar keine Lagermenge vorhanden
           "where (not exists "
           "(select true from auftragentry "
@@ -103,6 +103,10 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,
           ") "
           // und ein Mindestbestand ist erforderlich
           "and mindbestand>0");
+       if(aid!=ArtikelBase::none_id)
+          qstr+=" and id="+itos(aid);
+   
+       Query q(qstr);
        q << I->Id() << AuftragBase::dispo_id
          << I->Id() << AuftragBase::dispo_id
          << I->Id() << AuftragBase::dispo_id
@@ -112,13 +116,19 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,
        for (std::vector<ArtikelBase>::const_iterator i=arr.begin();i!=arr.end();++i)
        {  alles_ok&=RI.Reparatur_MindestMenge(analyse_only,*i);
        }
-       Query q2("select id from auftragentry join artikelstamm "
-         "on (artikelstamm.id=auftragentry.artikelid) "
-         "where (mindbestand is null or mindbestand=0) "
+       qstr="select id from auftragentry join artikelstamm "
+         "on (artikelstamm.id=auftragentry.artikelid ";
+      if(aid!=ArtikelBase::none_id)
+          qstr+=" and artikelstamm.id="+itos(aid)+") ";  
+      else
+          qstr+=" ) ";    
+       qstr+="where (mindbestand is null or mindbestand=0) "
          "and (instanz,auftragid)=(?,?) "
          "and exists (select true from auftragsentryzuordnung "
          "where (altauftragid,altinstanz)"
-         "=(auftragentry.instanz,auftragentry.auftragid))");
+         "=(auftragentry.instanz,auftragentry.auftragid))";
+
+      Query q2(qstr);
        q2 << I->Id() << AuftragBase::dispo_id;
        q2.FetchArray(arr);
        for (std::vector<ArtikelBase>::const_iterator i=arr.begin();i!=arr.end();++i)
