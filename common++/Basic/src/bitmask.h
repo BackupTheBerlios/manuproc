@@ -1,4 +1,4 @@
-// $Id: bitmask.h,v 1.1 2003/08/02 14:54:24 christof Exp $
+// $Id: bitmask.h,v 1.2 2003/08/02 22:28:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,6 +27,7 @@ template <class E>
 	bitmask(long b) : value(b) {}
 public:
 	static const E none=E();
+	static const E all=E(-1);
 	bitmask() : value() {}
 	bitmask(E b) : value(long(b)) {}
 	bool operator&(E b) const
