@@ -1,4 +1,4 @@
-/* $Id: ManuProcEntity.h,v 1.7 2003/04/24 11:09:40 jacek Exp $ */
+/* $Id: ManuProcEntity.h,v 1.8 2003/04/25 10:27:26 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -33,7 +33,7 @@ protected:
  ID entityid;
  
 public:
- static const ID none_id=(T)-1;
+ static const ID none_id=static_cast<ID>(-1);
  ManuProcEntity() : entityid(none_id) {}
  ManuProcEntity(const ID i) : entityid(i) {}
  virtual ID Id() const = 0;
