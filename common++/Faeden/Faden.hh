@@ -1,4 +1,4 @@
-// $Id: Faden.hh,v 1.5 2002/10/24 14:06:50 thoma Exp $
+// $Id: Faden.hh,v 1.6 2003/06/27 08:04:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -32,7 +32,7 @@ class Wiederholung;
 
 class Faden {
         unsigned int anzahl;
-        ArtikelBase::ID material;
+        ArtikelBase material;
         Bindung bindung;
 	friend std::ostream& operator<< (std::ostream&, const Faden&);
 public:
@@ -41,7 +41,7 @@ public:
 	bool operator!= (const Faden&) const;
 	int getAnzahl() const { return anzahl; }
 	int displayBreite() const;
-	ArtikelBase::ID getMaterial() const { return material; }
+	ArtikelBase getMaterial() const { return material; }
 	Bindung getBindung() const { return bindung; }
 	void setAnzahl (const int z) { anzahl = z; }
    fixedpoint<5> get_Gewicht_kg_pro_km_Faden() const ;

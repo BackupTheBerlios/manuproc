@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.cc,v 1.9 2003/05/23 11:19:33 christof Exp $
+// $Id: ArtikelBaum.cc,v 1.10 2003/06/27 08:04:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -69,7 +69,7 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
         { const double km_m= 1/1000.0;
           double gewicht_kg_m = i->get_Gewicht_kg_pro_km_Faden() * km_m;
           RohArtikel ra;
-          ra.rohartikel=ArtikelBase(i->getMaterial());
+          ra.rohartikel=i->getMaterial();
           ra.menge= gewicht_kg_m;
           ra.erzeugung=cH_Prozess(ProzessID::Weben);
           zusammensetzung.push_back(ra);
@@ -80,7 +80,7 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
             anzschfaed+=i->getAnzahl();  
        for (Schussfaeden::const_iterator i=schussfaeden.begin();i!=schussfaeden.end();++i)
         {
-          Materialeigenschaft M(ArtikelBase(i->getMaterial()));
+          Materialeigenschaft M(i->getMaterial());
           // Gewicht in kg/m ==> 1/cm*mm*(1cm/10mm) * g/10km*(kg/1000g)*(km/1000m)
           const double cm_m = 100.0;
           const double m_mm = 1/1000.0;
@@ -92,7 +92,7 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
           	* breite_mm*m_mm	// m per Schuss
           	* M.Gewicht_g_10km() * _10km_m * kg_g; // kg per m Mat.
           RohArtikel ra;
-          ra.rohartikel=ArtikelBase(i->getMaterial());
+          ra.rohartikel=i->getMaterial();
           ra.menge= gewicht_kg_m;
           ra.erzeugung=cH_Prozess(ProzessID::Verarbeitung);
           zusammensetzung.push_back(ra);

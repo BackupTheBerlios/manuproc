@@ -1,4 +1,4 @@
-// $Id: Faden.cc,v 1.8 2003/05/23 11:19:33 christof Exp $
+// $Id: Faden.cc,v 1.9 2003/06/27 08:04:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -329,14 +329,14 @@ void Fadenliste::EntfalteWiederholungen(std::vector<Faden> &liste_out) const
 
 fixedpoint<5> Faden::get_Gewicht_kg_pro_km_Faden() const
 {
-  Materialeigenschaft M(make_value(ArtikelBase(getMaterial())));
+  Materialeigenschaft M(getMaterial());
   // Anzahl * g/10km * kg/1000g ==> Gewicht in kg ///////////
   return getAnzahl() * M.Gewicht_g_10km() * 0.0001 ;
 }
 
 fixedpoint<5> Faden::get_Gewicht_kg_mal_anzschfaeden_pro_km_und_breite_mm_und_schussdichte_cm() const
 {
-  Materialeigenschaft M(make_value(ArtikelBase(getMaterial())));
+  Materialeigenschaft M(getMaterial());
   //  1/cm*(1cm/10mm) * g/10km*(kg/1000g) ==> Gewicht in kg ///////////
   return   2 * getAnzahl() * M.Gewicht_g_10km() * 0.00001 ;
   //usage:
