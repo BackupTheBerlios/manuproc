@@ -271,6 +271,7 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
 	 	<< Query::NullIf(rabatt) << p.BezugsMenge()
 	 	<< Query::NullIf(provsatz) 
 	 	<< Query::NullIf(ek_preis.Wert(getWaehrung(),p.BezugsMenge()));
+    lineno++;
  }
 #endif 
 

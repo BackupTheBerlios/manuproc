@@ -1,4 +1,4 @@
-/* $Id: RechnungVoll_sql.pgcc,v 1.16 2003/03/28 12:53:43 jacek Exp $ */
+/* $Id: RechnungVoll_sql.pgcc,v 1.17 2003/12/09 08:00:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -74,7 +74,7 @@ RechnungVoll::RechnungVoll(int rid, bool order_by_artikel) throw(SQLerror)
 	 :AUFTRAGID;
     if (sqlca.sqlcode) break;
 
-    Preis p(PREIS,Rechnung(rid).getWaehrung(),PREISMENGE);
+    Preis p(PREIS,getWaehrung(),PREISMENGE);
     ManuProC::Datum ldatum;
     if(!ILIEFERDATUM) ldatum.from_postgres(LIEFERDATUM);
     rentry.push_back(RechnungEntry(rngid,ZEILE,
