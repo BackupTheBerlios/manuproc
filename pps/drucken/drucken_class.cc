@@ -44,23 +44,25 @@ MultiL_Dict *mld;
 void LR_Abstraktion::calc_all(cH_Kunde k,bool mwst)
 {
  nettobetrag = betrag;
+ 
+
+// if(!k->zeilenrabatt())
+//     {
+     fixedpoint<2> kunden_rabatt = Rabatt();
+     fixedpoint<2> endrabatt = nettobetrag*kunden_rabatt/100;
+     rabattiert = nettobetrag - endrabatt;
+//     }
 
 #ifdef MABELLA_EXTENSIONS 
  
  if(Typ()==Rechnung) ents_flag=getEntsorgung();
  else ents_flag=k->entsorgung();
 
- entskosten = nettobetrag * (ents_flag ? ENTSSATZ : 0.0);
+ entskosten = rabattiert * (ents_flag ? ENTSSATZ : 0.0);
 #endif 
- entsbetrag = nettobetrag + entskosten;
 
-// if(!k->zeilenrabatt())
-//     {
-     fixedpoint<2> kunden_rabatt = Rabatt();
-     fixedpoint<2> endrabatt = entsbetrag*kunden_rabatt/100;
-     entsbetrag -= endrabatt;
-//     }
- 
+ entsbetrag = rabattiert + entskosten;
+
  
  
  if(mwst) 
@@ -999,10 +1001,12 @@ void LR_Abstraktion::drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,
 	      }
      	  }
 	if(s->Id()==ExtBezSchema::default_id)
-     	   { neue_spalte( erste_spalte, os);
+     	   {
 	    if(ArtikelTyp::hasAttribute(s->Typ(),
 				ArtikelTypAttr::mit_bezeichnung))
-	      os << bez->Bezeichnung(BEZEICHNUNG_SIGNIFIKANZ);
+	      { neue_spalte( erste_spalte, os);
+	        os << bez->Bezeichnung(BEZEICHNUNG_SIGNIFIKANZ);
+	      }
 	   }
 #endif 
 	   

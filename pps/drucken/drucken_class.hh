@@ -209,9 +209,10 @@ class LR_Abstraktion: public LR_Base
  fixedpoint<2> tabellenbetrag;	// 
 
  fixedpoint<2> nettobetrag;	// netto
+ fixedpoint<2> rabattiert;	// netto + rabatt
  fixedpoint<2> entsbetrag;	// netto + entsorgungskosten
  fixedpoint<2> entskosten;	// entsorgungskosten
- fixedpoint<2> bruttobetrag;	// brutto (mit MWST)
+ fixedpoint<2> bruttobetrag;	// rabattiert + MWST
  fixedpoint<2> mwstbetrag;	// mwst betrag
  fixedpoint<2> skontobetrag;	// brutto - skonto
  fixedpoint<2> einzugbetrag;	// brutto - skonto - einzugrabatt
