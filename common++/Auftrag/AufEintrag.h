@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.2 2002/02/28 15:19:29 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.3 2002/04/30 09:49:06 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -87,7 +87,7 @@ public:
    	kdnr(0), disponr(0), auftragstatus((AufStatVal)UNCOMMITED), 
    	dispoentrynr(0),prozess(Prozess::default_id)
  {}
-
+ 
  AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, 
         mengen_t _bestellt,
 	ArtikelBase _artikel, const Petig::Datum _lieferdatum,
@@ -159,7 +159,8 @@ public:
  ArtikelBase Artikel() const {return artikel;}
 
 // einen Teil des Auftrages=0 verplanen (in anderen Auftrag<>0 setzen)
- int Planen(mengen_t menge, const AuftragBase &zielauftrag);
+// gibt Zeilennummer zurück; rekursiv = alle Instanzen darunter auch planen
+ int Planen(mengen_t menge, const AuftragBase &zielauftrag,bool rekursiv=false);
 
  friend std::ostream &operator<<(std::ostream &o,const AufEintrag &aeb);
 };

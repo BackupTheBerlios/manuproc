@@ -24,7 +24,7 @@ void Lager_Vormerkungen::vormerken_oder_bestellen()
 //cout <<"bestellt sind "<<getRestStk()<<' '<<getStueck()<<'\n';
   if (getRestStk() <= menge_im_lager) // Artikel vormerken
     {
-//cout << "Lager reicht aus\n";
+//cout << "Lager reicht aus für"<<getRestStk()<<'\n';
       artikel_vormerken(getRestStk());
     }
   else  
@@ -37,7 +37,7 @@ void Lager_Vormerkungen::vormerken_oder_bestellen()
 
 //cout << "tryUpdate Menge= "<<getStueck()<<' '<<getRestStk()<<' '<<menge_im_lager<<' '<<'\n';
 //cout << "Mange die fehlt: "<<fehlende_menge<<'\n';
-      AuftragBase AB(Instanz()->LagerFuer());
+      AuftragBase AB(Instanz()->LagerFuer(),AuftragBase::ungeplante_id);
       //AB.tryUpdateEntry(fehlende_menge,getLieferdatum(),
       AB.tryUpdateEntry(getRestStk(),getLieferdatum(),
             ArtId(),getEntryStatus(),*this);

@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.14 2002/04/19 06:23:22 christof Exp $
+// $Id: Kunde.cc,v 1.15 2002/04/30 09:49:06 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -83,7 +83,12 @@ std::string Kunde::get_first_telefon(const TelArt& art) const
  std::list<cH_Telefon> L=getTelefon();
  for(std::list<cH_Telefon>::const_iterator i=L.begin();i!=L.end();++i)
   {
-    if((*i)->TelefonArt()==art) return (*i)->NummerStr(); 
+    if((*i)->TelefonArt()==art)
+      switch(art) {
+         case TEL_TEL:
+         case TEL_FAX: return (*i)->NummerStr(); break;
+         default : return (*i)->Text();
+         }
   }
  return "";
 }
@@ -136,5 +141,6 @@ const std::string Kunde::LaTeX_an(bool liefer,TelArt telart,
 
   return  string("\\parbox[t]{")+telwidth+"}{"+s+s2+"}\n";
 }
+
 
 

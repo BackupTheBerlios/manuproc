@@ -36,12 +36,9 @@ protected:
 	AufStatVal status;
 	std::string youraufnr;
 	std::string bemerkung;
-// wrkstatus soll weg !!!
-//	enum wrkstatus_t {  LOADED, INSERTED } wrkstatus;
 	cP_Waehrung waehrung;
 private:
 	std::string tmpstr;
-	int getAuftragid() const { return auftragid; } //use:=> Id()
 	
 public:
 	// Diese Strukturen dienen dazu, das Anlegen explizit anzufordern
@@ -55,7 +52,6 @@ public:
            explicit Anlegen2(const AuftragBase& _AB) : AB(_AB) {}
            operator AuftragBase() const { return AB; }
         };
-//	Auftrag(ppsInstanz::ID instanz,int auftragid) throw(SQLerror);
 	Auftrag(const AuftragBase& auftrag) throw(SQLerror);
 	// neuen Auftrag anlegen
         Auftrag(Anlegen2 Auftragsnr, long kundennr) throw(SQLerror);
@@ -74,8 +70,6 @@ public:
 	std::string getAuftragidToStr() const;
 	std::string getYourAufNr() const { return youraufnr;}
 	std::string getBemerkung() const { return bemerkung;}
-//	bool isNew() const { return wrkstatus==INSERTED;}
-//	void setWrkStatus(wrkstatus_t status) {wrkstatus=status;}
 	Kunde::ID getKundennr() const { return kundennr; }
 	cP_Waehrung getWaehrung() const { return waehrung; }
 };        

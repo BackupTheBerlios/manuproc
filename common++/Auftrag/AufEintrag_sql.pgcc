@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.6 2002/04/19 06:23:22 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.7 2002/04/30 09:49:06 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -332,7 +332,7 @@ AufEintrag::AufEintrag(const AufEintragBase &aebb) throw (SQLerror,NoAEB_Error)
  } catch (SQLerror &e) {std::cerr << e <<'\n';}
 }
 
-int AufEintrag::Planen(mengen_t menge, const AuftragBase &zielauftrag)
+int AufEintrag::Planen(mengen_t menge, const AuftragBase &zielauftrag,bool rekursiv)
 {
    assert(!Id());
 
@@ -349,11 +349,25 @@ int AufEintrag::Planen(mengen_t menge, const AuftragBase &zielauftrag)
 			         AufEintragZu(*this).get_Referenz_listFull(false);
 
    for (std::list<AufEintragZu::st_reflist>::iterator i=ReferenzAufEintrag.begin();i!=ReferenzAufEintrag.end();++i)
-   {
+    {
      if(i->AEB.Instanz()->Id()!=ppsInstanz::Kundenauftraege) continue;
      i->AEB.setLetztePlanungFuer(instanz);
      i->AEB.calculateProzessInstanz();
-   }
+    }
+   if(rekursiv)
+    {
+     // bei dem gerade geplaneten Auftrag abschreiben:
+     AufEintragBase(zielauftrag,znr).abschreiben(menge);
+     std::list<AufEintragZu::st_reflist> L=AufEintragZu(*this).get_Referenz_list_ungeplant();
+     for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+      {
+        // Lager nicht rekursiv Planen
+        if(i->AEB.Instanz()->LagerInstanz()) continue;
+        AuftragBase ab(i->AEB.Instanz(),plan_auftrag_id);
+        AuftragBase::mengen_t M=menge*ArtikelBaum(ArtId()).Faktor(i->Art);
+        AufEintrag(i->AEB).Planen(M,ab,rekursiv);
+      }
+    }
  return znr;
 }
 

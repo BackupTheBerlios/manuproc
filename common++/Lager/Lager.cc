@@ -17,10 +17,36 @@
  */
 
 #include "Lager.h"
+#include "JumboLager.h"
+#include "RohwarenLager.h"
 #include "Lager_Vormerkungen.h"
 #include <Auftrag/AufEintrag.h>
 #include <Auftrag/AufEintragZu.h>
 #include <Auftrag/selFullAufEntry.h>
+#include <Aux/ppsInstanz.h>
+#include <Artikel/ArtikelStamm.h>
+#include <algorithm>
+
+H_Lager::H_Lager(const ArtikelBase& artikel) 
+{
+ *this=H_Lager(ArtikelStamm(artikel).BestellenBei());
+}
+
+H_Lager::H_Lager(const cH_ppsInstanz& instanz) 
+{
+#ifdef PETIG_EXTENSIONS
+ switch (instanz->Id())
+   {
+      case ppsInstanz::Bandlager : *this= new JumboLager() ; break;
+      case ppsInstanz::Rohlager  : *this= new RohwarenLager(); break;
+      default : assert (!"Ungültiges Lager");
+   }
+#else
+  assert(!"Keine Lagerklasse definiert");
+#endif
+
+}
+
 
 
 void Lager::rein_ins_lager(ArtikelBase artikel,AuftragBase::mengen_t menge)
@@ -77,3 +103,30 @@ Lager::Lager(ppsInstanz::ppsInstId _instanz)
 }
 
 
+std::vector<class LagerInhalt> Lager::LagerInhalt()  const
+{
+  return LagerInhalt_(ArtikelBase());
+} 
+  
+class LagerInhalt Lager::LagerInhalt(const ArtikelBase& artikel) const
+{
+  std::vector<class LagerInhalt> L=LagerInhalt_(artikel);
+  if(L.empty()) return class LagerInhalt(artikel,0,0,0,0);
+  else return *(L.begin());
+}
+        
+void Lager::LagerInhaltSum(std::vector<class LagerInhalt>& LI) 
+{
+  std::sort(LI.begin(),LI.end());  
+  std::vector<class LagerInhalt>::iterator i,j,k;
+  for(i=LI.begin();i!=LI.end();)
+   {
+     j=i; ++j;
+     if(*i!=*j) {++i; continue;}
+     k=j;
+     for(;k!=LI.end() && *i==*k ;++k)  *i+=*k ;
+     i=LI.erase(j,k);     
+   }
+}
+
+        

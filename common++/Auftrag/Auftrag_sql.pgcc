@@ -123,7 +123,7 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
 
 
 Auftrag::Auftrag(Anlegen _instanz, long kdnr) throw(SQLerror)
-	: AuftragBase(cH_ppsInstanz(_instanz))
+	: AuftragBase(cH_ppsInstanz(_instanz),invalid_id)
 {
  exec sql begin declare section;
  int AUFTRAGID;
@@ -166,7 +166,7 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr) throw(SQLerror)
 // wrkstatus= INSERTED;
  status=(AufStatVal)STATUS;
  auftragid= AUFTRAGID;
-
+ assert(valid()); 
  tr.commit();
 }
 

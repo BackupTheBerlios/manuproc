@@ -7,11 +7,17 @@ exec sql include sqlca;
 #include <Auftrag/sqlAuftragSelector.h>
 #include <Auftrag/selFullAufEntry.h>
 #include <Artikel/ArtikelStamm.h>
-
-static const float reste_faktor = 0.25;
+#include <Lager/Lager.h>
 
 AuftragBase::mengen_t  Lager_Vormerkungen::artikel_auf_lager(const ArtikelBase& artikel)
 {
+  // Was ist drin?
+  class LagerInhalt lagerinhalt = 
+      H_Lager(ArtikelStamm(artikel).BestellenBei())->LagerInhalt(artikel);
+  AuftragBase::mengen_t summe=lagerinhalt.GesamtMenge();
+
+
+/*  
   std::string lagername = ArtikelStamm(artikel).BestellenBei()->LagerName();
 
   exec sql begin declare section;
@@ -48,14 +54,18 @@ AuftragBase::mengen_t  Lager_Vormerkungen::artikel_auf_lager(const ArtikelBase& 
      if (sqlca.sqlcode) break;
      if (lagername=="rohjumbo")
       { if (!db_rest) summe += db_menge;
-        else          summe += db_menge*reste_faktor; }
+        else          summe += db_menge*reste_faktor; 
+cout << db_menge<<' '<<db_rest<<' '<<reste_faktor<<' '<<summe<<'\n';
+      }
      else if (lagername=="rl_inhalt")
         summe += db_menge + db_restmenge * reste_faktor;
    }
   exec sql close menge_ein;
 //cout << "Im Lager: "<<summe<<" von "<<cH_ArtikelBezeichnung(artikel)->Bezeichnung()<<'\n'; 
+*/
   ///////////////////////////////////////////////////////
   // und nun die vorgemerkte Menge wieder abziehen
+
 //cout << Instanz()->Id();
 //cout <<"S="<< summe<<'\n';
   SelectedFullAufList auftraglist=SelectedFullAufList(SQLFullAuftragSelector::sel_Artikel_Planung(Instanz()->Id(),artikel,true));

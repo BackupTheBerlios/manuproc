@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.8 2002/02/28 15:19:29 christof Exp $
+// $Id: fixedpoint.h,v 1.9 2002/04/30 09:49:06 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -135,7 +135,7 @@ public:
 	   return *this;
 	}
 	self_t operator*=(const Ftype f)
-	{  scaled=Itype(scaled*f+(f>0?.5:-.5));
+	{  scaled=Itype(scaled*f+(f*scaled>=0?.5:-.5));
 	   return *this;
 	}
 	self_t operator-=(const self_t b)

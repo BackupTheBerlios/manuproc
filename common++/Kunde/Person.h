@@ -1,4 +1,4 @@
-// $Id: Person.h,v 1.7 2002/03/20 07:43:31 christof Exp $
+// $Id: Person.h,v 1.8 2002/04/30 09:49:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,29 +22,32 @@
 #define KUNDE_PERSON_HH
 
 #include<Aux/Datum.h>
-//#include<Kunde/Kunde.h>
 #include<Aux/SQLerror.h>
 #include <Aux/Handles.h>
 #include <Aux/CacheStatic.h>
+#include <Kunde/TelefonArt.h>
+//#include <Kunde/KontaktListe.h>
 
-//class cH_Person;
 class cH_Telefon;
-#include "Anrede.h"
+class cH_Kunde;
+
+#include <Kunde/Anrede.h>
+
 #include <list>
+
 
 class Person : public HandleContent
 {
 public:
         typedef long int ID;
 private:
-// Kunde::ID kundennr;
  ID personennr;	
  std::string name;
  std::string vorname;
  Petig::Datum gebdatum;
  cH_Anrede anrede;
  std::string notiz;
-// ,notiz_firma;
+// KontaktListe kontakt;
  
  friend class Handle<const Person>;
  friend class Handle<Person>;
@@ -54,9 +57,7 @@ private:
 
 public:
  ID Id() const { return personennr; } 
-// Kunde::ID KId() const { return kundennr; }
-// Person() : kundennr(0), personennr(0) {}
- Person() : personennr(0) {}
+ Person() : personennr(none_id) {}
  Person(ID pid) throw(SQLerror);
  static int createPerson(std::string s="");
 
@@ -68,20 +69,17 @@ public:
  const std::string Vorname() const { return vorname; }
  const Petig::Datum GebDatum() const { return gebdatum; }
  const cH_Anrede Anrede() const { return anrede; }
-// const std::string Position() const { return position; }
  const std::string Notiz() const { return notiz; }
-// const std::string NotizFirma() const { return notiz_firma; }
 
- const std::list<cH_Telefon> getTelefon() const;
+ const std::list<cH_Telefon> getTelefon(cH_Kunde k) const;
+
+// std::string get_kontakt(const TelArt& art,cH_Kunde k) const;
  
-// void setKundennr(unsigned long int i) { kundennr=i; }
  void setName(const std::string &s) { name=s; }
  void setVorname(const std::string &s) { vorname=s; }
  void setGebDatum(const Petig::Datum &d) { gebdatum=d; }
  void setAnrede(const cH_Anrede &s) { anrede=s; }
-// void setPosition(const std::string &s) { position=s; }
  void setNotiz(const std::string &s) { notiz=s; }
-// void setNotizFirma(const std::string &s) { notiz_firma=s; }
 
 private:
  enum B_UPDATE_BITS{B_Name,B_Vorname,B_GebDatum,B_Anrede,B_Notiz,B_MaxAnz};
@@ -109,24 +107,11 @@ class cH_Person : public Handle<const Person>
     friend class std::map<long int, cH_Person>;
     cH_Person() {}
 public:
-//   cH_Person(const Person *p) : Handle<const Person>(p) {}	
 	typedef Person::ID ID;
 	static const ID none_id=Person::none_id;
 	cH_Person(ID nr);
 };
 
-/*
-class H_Person : public Handle<Person>
-{	
-          
-  H_Person() {}
-public:
-  H_Person(Person *p) : Handle<Person>(p) {}	
-	typedef Person::ID ID;
-	static const ID none_id=Person::none_id;
-	H_Person(ID nr);
-};
-*/
 
 #endif
 

@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.16 2002/04/19 06:23:22 christof Exp $
+// $Id: Kunde.h,v 1.17 2002/04/30 09:49:06 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,10 +30,10 @@
 #include <list>
 #include <Kunde/TelefonArt.h>
 #include <Kunde/LandesListe.h>
+#include <Kunde/Person.h>
 
 class cH_Kunde;
 class H_Kunde;
-#include "Person.h"
 class cH_Telefon;
 
 class Kunde : protected HandleContent
@@ -122,6 +122,7 @@ private:
         Kundendaten kundendaten;
         
    Verkaeufer verkaeufer;
+   Person::ID betreuer;
 	
 	friend class Handle<const Kunde>;
 	friend class Handle<Kunde>;
@@ -211,6 +212,7 @@ public:
         // Telefon
         std::list<cH_Telefon> getTelefon() const;
         std::string get_first_telefon(const TelArt& art) const;
+        Person::ID getBetreuer() const { return betreuer;}
 
   private:
         enum B_UPDATE_BITS_ADRESSE{B_Gruppennr,B_Sortname,B_Idnr,B_Firma,

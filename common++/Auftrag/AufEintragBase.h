@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.h,v 1.24 2002/02/28 15:19:29 christof Exp $
+// $Id: AufEintragBase.h,v 1.25 2002/04/30 09:49:06 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,8 +17,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef AUFEINTRAGBASE2
-#define AUFEINTRAGBASE2
+#ifndef AUFEINTRAGBASE
+#define AUFEINTRAGBASE
 #include<Artikel/Prozess.h>
 #include<Aux/SQLerror.h>
 //#include<Aux/ppsInstanz.h>
@@ -40,8 +40,8 @@ private:
 
 public:
  AufEintragBase() : zeilennr(0) {}
- AufEintragBase(cH_ppsInstanz inst) 
- 	: AuftragBase(inst), zeilennr(0) {}
+ AufEintragBase(cH_ppsInstanz inst,int auftragid) 
+ 	: AuftragBase(inst,auftragid), zeilennr(0) {}
  AufEintragBase(cH_ppsInstanz inst,int auftragid,int z) 
  	:  AuftragBase(inst,auftragid), zeilennr(z) {}
  AufEintragBase(const AuftragBase& a,int z) 
@@ -55,19 +55,19 @@ public:
  bool deleteAuftragEntry() const throw(SQLerror);
  void updateStkDiff(mengen_t menge) const throw(SQLerror);
 
-    void setLetztePlanungFuer(cH_ppsInstanz planinstanz) const throw(SQLerror);
-    void calculateProzessInstanz(); // private?
-    void setMaxPlanInstanz(int anzahl_planinstanzen) const throw(SQLerror); // private?
+ void setLetztePlanungFuer(cH_ppsInstanz planinstanz) const throw(SQLerror);
+ void calculateProzessInstanz(); // private?
+ void setMaxPlanInstanz(int anzahl_planinstanzen) const throw(SQLerror); // private?
  
-    int ZNr() const { return zeilennr; }
-    bool valid() const { return AuftragBase::valid(); }
+ int ZNr() const { return zeilennr; }
+ bool valid() const { return AuftragBase::valid(); }
 
-    bool operator<(const AufEintragBase& b) const 
-        {return Instanz()<b.Instanz() 
-        	|| (Instanz()==b.Instanz() && (Id()<b.Id()
-        		|| (Id()==b.Id() && ZNr()<b.ZNr())));
+ bool operator<(const AufEintragBase& b) const 
+       {return Instanz()<b.Instanz() 
+       	|| (Instanz()==b.Instanz() && (Id()<b.Id()
+    		|| (Id()==b.Id() && ZNr()<b.ZNr())));
         }
-    bool operator==(const AufEintragBase& b) const 
+ bool operator==(const AufEintragBase& b) const 
         {return Instanz()==b.Instanz() && Id()==b.Id() && ZNr()==b.ZNr();}
 };
 

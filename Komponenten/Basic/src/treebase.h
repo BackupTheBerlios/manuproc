@@ -150,13 +150,13 @@ public:
  std::vector<cH_RowDataBase> getSelectedRowDataBase_vec() const 
  	throw(notLeafSelected);
 
- template <class T,class CT> T getSelectedRowDataBase_as() const
+ template <class T,class CT> T getSelectedRowDataBase_as2() const
 // this could be optimzed to avoid the dynamic_cast within 
 // cH_RowDataBase::operator*, but it does not hurt that much
  {  return T(dynamic_cast<CT*>(&*getSelectedRowDataBase()));
  }
  template <class T> T getSelectedRowDataBase_as() const
- {  return getSelectedRowDataBase_as<T,typename T::ContentType>(); 
+ {  return getSelectedRowDataBase_as2<T,typename T::ContentType>(); 
  }
 
 

@@ -1,4 +1,4 @@
-/* $Id: ArtikelBase.h,v 1.3 2002/04/03 06:38:09 christof Exp $ */
+/* $Id: ArtikelBase.h,v 1.4 2002/04/30 09:49:06 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -40,6 +40,7 @@ public:
  /// I prefer this one ... (cp)
  const ID &Id() const {return artikelid;}
  void setID(const ID &id) {artikelid=id;}
+ bool valid() const {if(Id()==none_id) return false; else return true;}
  
  bool operator!() const { return !artikelid; }
  bool operator==(const ArtikelBase &b) const { return artikelid==b.artikelid; }

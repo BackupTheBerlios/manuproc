@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.41 2002/04/09 10:00:21 cvs_christof Exp $
+// $Id: ppsInstanz.h,v 1.42 2002/04/25 10:40:40 malte Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -81,7 +81,9 @@ public:
  std::string shortName() const;
  ppsInstId LagerFuer() const { return lager_fuer; }
  bool LagerInstanz() const ;
+private: // wenn das keiner mehr braucht, dann auch aus der Datenbank löschen MAT
  std::string LagerName() const {return lagername;}
+public:
  ppsInstId BestellungFuer() const { return bestellung_fuer; }
  cH_Prozess get_Prozess() const;
   // Gegenteil von 'Lieferant' ist 'Kunde'

@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.cc,v 1.6 2002/04/08 14:00:05 christof Exp $ */
+/* $Id: Ausgabe_neu.cc,v 1.7 2002/04/30 09:49:06 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -123,11 +123,13 @@ std::string string2TeX(const std::string s, int flags) throw()
 
 #include <strstream>
 
-const std::string FormatiereEmptyInt(unsigned long Zahl)
+const std::string FormatiereEmptyInt(long Zahl)
 {
-  std::string s=Formatiere(Zahl);
-  if(s=="0") return "";
-  return s;
+  if(Zahl==0) return "";
+  std::string s;
+  if(Zahl>=0) return Formatiere(Zahl);
+  else        return "-"+Formatiere(-Zahl);
+  abort();//never get here
 }
 
 const std::string Formatiere(unsigned long Zahl,

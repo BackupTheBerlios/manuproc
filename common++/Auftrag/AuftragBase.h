@@ -36,14 +36,17 @@ class AuftragBase
         typedef fixedpoint<0> mengen_t;
 //        typedef Preis::rabatt_t rabatt_t;
 	typedef int rabatt_t; // vorläufig ...
+   static const int plan_auftrag_id =  1;
+   static const int invalid_id      = -1;
+   static const int ungeplante_id   =  0;
 
  protected:
-        cH_ppsInstanz instanz; 	
+   cH_ppsInstanz instanz; 	
  	int auftragid;	
  public:
 	AuftragBase() 
-	        : instanz(ppsInstanz::INST_NONE), auftragid(0) {}
-	AuftragBase(cH_ppsInstanz _instanz, int aufid=0) throw() 
+	        : instanz(ppsInstanz::INST_NONE), auftragid(invalid_id) {}
+	AuftragBase(cH_ppsInstanz _instanz, int aufid) throw() 
 	        :instanz(_instanz), auftragid(aufid) 
 	        {}
 	AuftragBase(cH_ppsInstanz _instanz, int aufid,int kid) throw(SQLerror) ;
@@ -52,7 +55,7 @@ class AuftragBase
    void set_Id(int i) {auftragid = i;}
    ppsInstanz::ID InstanzID() const {return instanz->Id(); }
    cH_ppsInstanz Instanz() const {return instanz; }
-	bool valid() const { return auftragid!=0; }
+	bool valid() const { return auftragid!=invalid_id; }
    void setStatusAuftragBase(AufStatVal st) const throw(SQLerror);
 
    void create_if_not_exists(AufStatVal status,Kunde::ID kunde=Kunde::default_id) const;
@@ -68,9 +71,11 @@ class AuftragBase
                         const Petig::Datum& lieferdatum,
                         int& znr,int &newznr, mengen_t& menge, const AufStatVal status
                         ) const throw(SQLerror);
-   void tryUpdateEntry(mengen_t bestellt, 
+   // gibt Zeilennummer zurück
+   int tryUpdateEntry(mengen_t bestellt, 
                const Petig::Datum lieferdatum, const ArtikelBase& artikel,
-                AufStatVal status,const AufEintragBase& altAEB) const throw(SQLerror);
+                AufStatVal status,const AufEintragBase& altAEB,bool force_new=false) 
+                const throw(SQLerror);
 
 	// wandelt enum in std::string um
 	static const std::string getStatusStr(AufStatVal a);

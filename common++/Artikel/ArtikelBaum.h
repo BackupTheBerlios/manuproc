@@ -1,4 +1,4 @@
-/* $Id: ArtikelBaum.h,v 1.11 2002/04/19 06:23:22 christof Exp $ */
+/* $Id: ArtikelBaum.h,v 1.12 2002/04/30 09:49:06 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -102,6 +102,8 @@ public:
  {  return zusammensetzung.begin(); }
  iterator end() 
  {  return zusammensetzung.end(); }
+ const RohArtikel operator[](int i) {return zusammensetzung[i];}
+ void Sort(); // stable sort 
 
  static void UnCache(const ArtikelBase &stamp);
 

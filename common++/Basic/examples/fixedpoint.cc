@@ -1,4 +1,4 @@
-// $Id: fixedpoint.cc,v 1.6 2001/10/01 12:55:40 christof Exp $
+// $Id: fixedpoint.cc,v 1.7 2002/04/30 09:49:06 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -48,5 +48,13 @@ int main()
    std::cout << (fixedpoint<5,double,long long>(15000.00015)*10ll) << '\n';
    std::cout << (fixedpoint<5,double,long long>(15000.00015)*=10) << '\n';
    
+   // test rounding for negative Values
+   {  fixedpoint<0> a=-100;
+      fixedpoint<5> b=25;
+      
+      std::cout << a*b << '=' << b*a << '\n';
+      a*=b;
+      std::cout << a.Scaled() << '/' << a << '\n';
+   }   
    return 0;
 }

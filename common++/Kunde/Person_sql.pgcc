@@ -1,4 +1,4 @@
-// $Id: Person_sql.pgcc,v 1.8 2002/04/11 12:01:07 christof Exp $
+// $Id: Person_sql.pgcc,v 1.9 2002/04/30 09:49:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,6 +19,7 @@
 
 #include <Kunde/Person.h>
 #include <Kunde/Telefon.h>
+#include <Kunde/Kunde.h>
 #include <Aux/Transaction.h>
 #include <Aux/FetchIStream.h>
 exec sql include sqlca;
@@ -148,24 +149,35 @@ void Person::delPerson(const ID pid) throw(SQLerror)
 
 }
 
-const list<cH_Telefon> Person::getTelefon() const
+const list<cH_Telefon> Person::getTelefon(cH_Kunde k) const
 {
  exec sql begin declare section;
-   int TELID;  
-   int PID=Id();
+   int TELID;
+   char *QS;
  exec sql end declare section;
+ string QUERY;
 
  Transaction tr;
  
- exec sql declare telein cursor for
-   SELECT telid FROM ku_telefon WHERE persnr= :PID;
- exec sql open telein;
+ 
+ if(k->Id() == Kunde::none_id)
+   QUERY = string("SELECT telid FROM ku_telefon WHERE persnr=")+itos(Id());
+ else
+   QUERY = string("SELECT telid FROM ku_telefon WHERE persnr=")+itos(Id())+
+	"and kundennr= "+itos(k->Id());
+
+ QS=(char*)QUERY.c_str();
+
+ exec sql prepare telein_pers_ from :QS;
+ exec sql declare telein_pers cursor for telein_pers_;
+
+ exec sql open telein_pers;
  SQLerror::test(__FILELINE__);
 
  list<cH_Telefon> T;
  while(true)
       {
-         exec sql fetch telein into :TELID;
+         exec sql fetch telein_pers into :TELID;
          SQLerror::test(__FILELINE__,"teleein",100);
          if (sqlca.sqlcode) break;
          T.push_back(cH_Telefon(TELID));
