@@ -30,7 +30,7 @@ lieferscheinliste_glade::lieferscheinliste_glade(
    Gtk::Window *lieferscheinliste = this;
    Gtk::AccelGroup *lieferscheinliste_accgrp = Gtk::AccelGroup::create();
    gmm_data = new GlademmData(lieferscheinliste_accgrp);
-   tree = new class SimpleTree(12, 10);
+   tree = new class SimpleTree(13, 11);
    
    Gtk::ScrolledWindow *scrolledwindow10 = manage(new class Gtk::ScrolledWindow());
    progressbar = manage(new class Gtk::ProgressBar());

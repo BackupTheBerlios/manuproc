@@ -41,7 +41,7 @@ private:
 	 option_timecumulate(kv) {}
 
    typedef enum {KUNDE,AUFTRAG,ARTIKEL,BREITE,FARBE,AUFMACHUNG,LIEFERNR,
-         LIEFERDATUM,RECHNUNG,RECHNUNGSDATUM,SUM_MENGE,SUM_AMENGE} Spalten;
+         LIEFERDATUM,RECHNUNG,RECHNUNGSDATUM,ARTIKELTYP,SUM_MENGE,SUM_AMENGE} Spalten;
 
    virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const;
    const ArtikelMenge getArtikelMenge() const { return menge; }

@@ -12,6 +12,9 @@ const cH_EntryValue Data_LListe::Value(guint seqnr,gpointer gp) const
       cH_ArtikelBezeichnung AB(ArtikelBase(entry.ArtikelID()));
       return AB->Komponente_als_EntryValue(seqnr-ARTIKEL);
     }
+   case ARTIKELTYP: { ArtikelTyp atyp(make_value(ArtikelBase(entry.ArtikelID())));
+      return cH_EntryValueIntString(atyp.Id(),ArtikelTyp::get_string(atyp.Id()));
+    }
    case KUNDE : return cH_EntryValueIntString(cH_Kunde(liefer->KdNr())->firma());
    case AUFTRAG : 
      {  std::string res;

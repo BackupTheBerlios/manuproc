@@ -160,7 +160,8 @@ void lieferscheinliste::fill_tree()
   for (LieferscheinList::const_iterator i=LL.begin();i!=LL.end();++i)
    {
      Rechnung R;
-     if((*i)->RngNr()!=ManuProcEntity<>::none_id) R = Rechnung((*i)->RngNr());
+     if((*i)->RngNr()!=ManuProcEntity<>::none_id && (*i)->RngNr()>0)
+        R = Rechnung((*i)->RngNr());
      for (std::vector<LieferscheinEntryBase>::const_iterator j=LL.begin((*i)->Id());
      		j!=LL.end((*i)->Id()); ++j)
         datavec.push_back(new Data_LListe(*i,LieferscheinEntry(*j),R,
@@ -189,6 +190,7 @@ void lieferscheinliste::set_titles()
   t[Data_LListe::LIEFERDATUM]="Lieferdatum";
   t[Data_LListe::RECHNUNG]="Rechnung";
   t[Data_LListe::RECHNUNGSDATUM]="Rng.Datum";
+  t[Data_LListe::ARTIKELTYP]="Art";
   t[Data_LListe::SUM_MENGE]="Einzelmenge";  
   t[Data_LListe::SUM_AMENGE]="Menge";
 

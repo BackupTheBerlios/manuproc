@@ -7413,8 +7413,8 @@ Zuschlag
 	<name>tree</name>
 	<cxx_visibility>protected</cxx_visibility>
 	<creation_function>SimpleTree</creation_function>
-	<int1>12</int1>
-	<int2>10</int2>
+	<int1>13</int1>
+	<int2>11</int2>
 	<last_modification_time>Thu, 13 Sep 2001 12:52:12 GMT</last_modification_time>
       </widget>
     </widget>
