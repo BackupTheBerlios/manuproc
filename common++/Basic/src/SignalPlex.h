@@ -1,4 +1,4 @@
-// $Id: SignalPlex.h,v 1.4 2004/05/06 13:11:49 christof Exp $
+// $Id: SignalPlex.h,v 1.5 2004/05/06 13:14:47 christof Exp $
 /*  libcommon++: ManuProC's OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -36,7 +36,11 @@
 
 // one way variant - two way variant should be similar to ModelPlex
 template <class S>
- class SignalPlex1 : public SigC::Object, public S
+ class SignalPlex1 : 
+#if MPC_SIGC_VERSION<0x200
+ 			public SigC::Object,
+#endif
+ 			public S
 {	typedef SignalPlex1<S> this_t;
 	
 	SigC::Connection con;
