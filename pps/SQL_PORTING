@@ -1,0 +1,37 @@
+alter table auftragentry add lieferdate date;
+
+update auftragentry set lieferdate=kw2date(lieferdatum) 
+where lieferdate!=date(kw2date(lieferdatum));
+update auftragentry set lieferdate=kw2date(lieferdatum) 
+where lieferdate is null;
+
+update auftragentry set preismenge=1 where  preismenge is null;
+
+vacuum verbose analyze auftragentry;
+
+update auftrag set stat=aufstat_2id(status) where stat is null 
+or stat!=aufstat_2id(status);
+
+select distinct stat,status from auftrag;
+
+update auftragentry set status=aufstat_2id('offen') where lastedit in
+('offen','','menge','split_new','split_old','termin','artikel','nachtrag')
+and geliefert<bestellt and status!=aufstat_2id('offen');
+
+update auftragentry set status=aufstat_2id('fertig') where lastedit in
+('fertig','offen','','menge','split_new','split_old','termin','artikel'
+,'nachtrag') and geliefert>=bestellt and status!=aufstat_2id('fertig');
+
+update auftragentry set status=aufstat_2id('fertig') where lastedit='fertig'
+and status!=aufstat_2id('fertig');
+
+update auftragentry set status=aufstat_2id('storno') where
+lastedit='storno' and status!=aufstat_2id('storno');
+
+select distinct status, lastedit, bool(geliefert<bestellt) from auftragentry;
+
+update auftrag set waehrung=1 where waehrung is null;
+
+------ Kontrolle --------
+select * from auftragentry where lieferdate!=kw2date(lieferdatum);
+select * from auftrag where stat!=aufstat_2id(status);

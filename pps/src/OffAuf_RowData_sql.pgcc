@@ -1,0 +1,63 @@
+/*  pps: ManuProC's ProductionPlanningSystem
+ *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+
+#include"OffAuf_RowData.h"
+#include<Auftrag/auftrag_status.h>
+#include<Aux/Transaction.h>
+
+exec sql include sqlca;
+
+void OffAuf_RowData::abschreiben(int menge) 
+{  abschreiben(auftrag.Id(),auftrag.ZNr(),menge);
+   offen = (offen<=menge) ? 0 : (offen-menge);
+   geliefert += menge;
+}
+
+void OffAuf_RowData::abschreiben(int aufid,int aufznr,int menge) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int AUFID=aufid;
+ int AUFZNR=aufznr;
+ int STATUS;
+ int BESTELLT;
+ int GELIEFERT;
+ exec sql end declare section;
+ 
+ Transaction tr;
+ 
+ exec sql lock table auftragentry in exclusive mode;
+ 
+ exec sql select bestellt, geliefert, status
+ 	into :BESTELLT, :GELIEFERT, :STATUS
+ 	from auftragentry where
+ 	auftragid = :AUFID and zeilennr = :AUFZNR;
+ SQLerror::test(__FILELINE__);
+ 
+ if(STATUS!=(AufStatVal)OPEN) throw("Auftragszeile ist bereits geschlossen"); 	
+ 
+ GELIEFERT+=menge;
+ if(GELIEFERT>=BESTELLT) STATUS=(AufStatVal)CLOSED;
+ 
+ exec sql update auftragentry set geliefert= :GELIEFERT, status= :STATUS
+ 	where auftragid= :AUFID and zeilennr= :AUFZNR;
+ SQLerror::test(__FILELINE__);
+ 
+ tr.commit();	
+}
+

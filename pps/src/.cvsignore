@@ -1,0 +1,14 @@
+*_new
+Makefile.in
+Makefile
+OffAuf_TCList_sql.cc
+auftrag_liefer_sql.cc
+.libs
+auftrag
+auftrag_bearbeiten_sql.cc
+Auftrag_sql.cc
+.deps
+auftragentry_sql.cc
+OffAuf_RowData_sql.cc
+OffLief_Tree_sql.cc
+auftrag_rechnung_sql.cc

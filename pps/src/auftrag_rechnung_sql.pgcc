@@ -1,0 +1,76 @@
+/*  pps: ManuProC's ProductionPlanningSystem
+ *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+
+
+#include"auftrag_rechnung.hh"
+
+exec sql include sqlca;
+
+void auftrag_rechnung::on_rngnr_search(int *_continue, GtkSCContext newsearch)
+{   
+ exec sql begin declare section;
+ int RNGID;
+ char RNGIDSTR[10];
+ char *PAT;
+ int KUNDE;
+ exec sql end declare section;
+ static bool transaction = false;
+  
+ switch(newsearch)
+   {
+    case GTK_SEARCH_OPEN :
+      {
+       string pat = rngnr->get_text() + "%";
+       PAT = (char*)pat.c_str();
+       KUNDE=lieferkunde->get_value();
+       
+       exec sql begin;
+       SQLerror::test(__FILELINE__"begin",ECPG_NOTICE_IN_TRANSACTION);
+       transaction = sqlca.sqlcode!=ECPG_NOTICE_IN_TRANSACTION;
+                   
+       exec sql declare RNGNR_CURSOR cursor for
+       		select rngid, ltrim(to_char(rngid,'000000'))
+       		from rechnung where
+       		ltrim(to_char(rngid,'000000')) like :PAT
+       		and (:KUNDE<1 or kundennr=:KUNDE);
+       	
+       exec sql open RNGNR_CURSOR;
+       SQLerror::test(__FILELINE__":on_rngnr_search: open cursor","RNGNR_CURSOR",transaction);
+      } 							
+  case GTK_SEARCH_FETCH :
+       {
+        exec sql fetch RNGNR_CURSOR into :RNGID, :RNGIDSTR;
+	SQLerror::test(__FILELINE__":on_rngnr_search: "
+			" fetch cursor RNGNR_CURSOR","RNGNR_CURSOR",100,transaction);
+			
+	if(sqlca.sqlcode==100){*_continue=false; break; }
+	
+	rngnr->add_item(RNGIDSTR,RNGID);
+	*_continue=true;
+        break;
+       }
+  case GTK_SEARCH_CLOSE :
+       {
+	exec sql close RNGNR_CURSOR;
+	if(transaction) exec sql commit;
+	break;
+       }
+  }
+}
+

@@ -1,0 +1,90 @@
+/*  pps: ManuProC's ProductionPlanningSystem
+ *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+
+
+#include"OffAuf_TCList.hh"
+#include<Auftrag/auftrag_status.h>
+#include<Aux/Transaction.h>
+#include<Aux/Datum.h>
+#include<Auftrag/AufEintragBase2.h>
+#include<vector>
+#include"OffAuf_RowData.h"
+
+exec sql include sqlca;
+
+void OffAuf_TCList::loadOffAuf() throw(SQLerror)
+{
+ exec sql begin declare section;
+ int KUNDENNR;
+ int AUFID[20];
+ int ZNR[20];
+ int ARTNR[20];
+ int BESTELLT[20];
+ int GELIEFERT[20];
+ char LIEFDATUM[20][20];
+ short ILIEFDATUM[20];
+ int AUFST;
+ exec sql end declare section;
+
+ Transaction tr;
+
+ AUFST = (AufStatVal)OPEN;
+ KUNDENNR=kundennr;
+ 
+ exec sql declare LOADOFFAUF cursor for
+ 	select e.auftragid, e.zeilennr, e.artikelid, e.bestellt,
+ 		e.geliefert, e.lieferdate
+ 	from auftragentry e, auftrag a where
+ 		e.auftragid=a.auftragid and
+ 		a.kundennr= :KUNDENNR and
+ 		e.status = a.stat and
+ 		a.stat = :AUFST;
+
+ exec sql open LOADOFFAUF;
+ SQLerror::test(__FILELINE__"loadOffAuf:select from auftragentry");
+
+ datavec.erase(datavec.begin(), datavec.end());
+
+ bool weiter=true;
+ while(weiter)
+   {
+   exec sql fetch 20 in LOADOFFAUF into
+	:AUFID,:ZNR,:ARTNR,:BESTELLT,:GELIEFERT,:LIEFDATUM:ILIEFDATUM;
+   SQLerror::test(__FILELINE__":loadOffAuf:fetch fromauftragentry","LOADOFFAUF",100);
+
+   weiter=(sqlca.sqlcode==0);
+
+   int j=sqlca.sqlerrd[2];
+   for(int i=0;i<j;++i)
+     datavec.push_back(cH_OffAuf_RowData(AufEintragBase2(AUFID[i],ZNR[i]),
+			cH_ArtikelBezeichnung(ArtikelBase(ARTNR[i]), 
+				cH_ExtBezSchema(ExtBezSchema::default_id)),
+			BESTELLT[i]-GELIEFERT[i],
+			GELIEFERT[i],
+			ILIEFDATUM[i] ?Petig::Datum::today():Petig::Datum(LIEFDATUM[i])
+			)
+		);
+   weiter=(j==20);
+   }
+   
+ exec sql close LOADOFFAUF;
+
+}
+
+

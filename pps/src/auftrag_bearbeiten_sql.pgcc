@@ -1,0 +1,139 @@
+// $Id: auftrag_bearbeiten_sql.pgcc,v 1.1 2001/04/23 11:59:26 christof Exp $
+/*  pps: ManuProC's production planning system
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+
+#include"auftrag_bearbeiten.hh"
+
+exec sql include sqlca;
+
+void auftrag_bearbeiten::on_aufnrscombo_search(
+		int *_continue, GtkSCContext newsearch)
+throw(SQLerror)
+{
+ exec sql begin declare section;
+ int AUFID;
+ char AUFIDCHR[10];
+ char *PAT;
+ exec sql end declare section;
+ static bool transaction = false;
+  
+ switch(newsearch)
+   {
+    case GTK_SEARCH_OPEN :
+      {
+       string pat = aufnr_scombo->get_text() + "%";
+       PAT = (char*)pat.c_str();
+       
+       exec sql begin;
+       SQLerror::test(__FILELINE__"begin",ECPG_NOTICE_IN_TRANSACTION);
+       transaction = sqlca.sqlcode!=ECPG_NOTICE_IN_TRANSACTION;
+                   
+       exec sql declare AUFNR_CURSOR cursor for
+       		select auftragid, ltrim(to_char(auftragid,'000000'))
+       		from auftrag where
+       		ltrim(to_char(auftragid,'000000')) like :PAT;
+       	
+       exec sql open AUFNR_CURSOR;
+       SQLerror::test(__FILELINE__":on_aufnrscombo_search: open cursor",
+       						transaction);
+      } 							
+           
+  case GTK_SEARCH_FETCH :
+       {
+        exec sql fetch AUFNR_CURSOR into :AUFID, :AUFIDCHR;
+	SQLerror::test(__FILELINE__":on_aufnrscombo_search: "
+			" fetch cursor AUFNR_CURSOR",100,transaction);
+			
+	if(sqlca.sqlcode==100){*_continue=false; break; }
+	
+	aufnr_scombo->add_item(AUFIDCHR,AUFID);
+	*_continue=true;
+        break;
+       }
+ 
+  case GTK_SEARCH_CLOSE :
+       {
+	exec sql close AUFNR_CURSOR;
+	if(transaction) exec sql commit;
+	break;
+       }
+
+  }
+
+}
+
+
+void auftrag_bearbeiten::on_youraufnrscombo_search(
+		int *_continue, GtkSCContext newsearch)
+throw(SQLerror)
+{
+ exec sql begin declare section;
+ int AUFID;
+ char YOURAUFID[21];
+ char *PAT;
+ exec sql end declare section;
+ static bool transaction = false;
+
+ if(newauftrag) {*_continue=false; return;}  
+ switch(newsearch)
+   {
+    case GTK_SEARCH_OPEN :
+      {
+       string pat = youraufnr_scombo->get_text() + "%";
+       PAT = (char*)pat.c_str();
+       
+       exec sql begin;
+       SQLerror::test(__FILELINE__"begin",ECPG_NOTICE_IN_TRANSACTION);
+       transaction = sqlca.sqlcode!=ECPG_NOTICE_IN_TRANSACTION;
+                   
+       exec sql declare YOURAUFNR_CURSOR cursor for
+       		select auftragid, youraufnr
+       		from auftrag where
+       		youraufnr like :PAT;
+       	
+       exec sql open YOURAUFNR_CURSOR;
+       SQLerror::test(__FILELINE__":on_youraufnrscombo_search: open cursor",
+       						transaction);
+      } 							
+           
+  case GTK_SEARCH_FETCH :
+       {
+        exec sql fetch YOURAUFNR_CURSOR into :AUFID, :YOURAUFID;
+	SQLerror::test(__FILELINE__":on_youraufnrscombo_search: "
+			" fetch cursor YOURAUFNR_CURSOR",100,transaction);
+			
+	if(sqlca.sqlcode==100){*_continue=false; break; }
+	
+	youraufnr_scombo->add_item(YOURAUFID,AUFID);
+	*_continue=true;
+        break;
+       }
+ 
+  case GTK_SEARCH_CLOSE :
+       {
+	exec sql close YOURAUFNR_CURSOR;
+	if(transaction) exec sql commit;
+	break;
+       }
+
+  }
+   
+}
+
+
