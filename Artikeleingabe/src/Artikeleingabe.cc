@@ -40,6 +40,9 @@ Artikeleingabe::Artikeleingabe(int argc, char **argv)
 #ifndef MABELLA_EXTENSIONS
  artikelbox_neu->set_automatisch_anlegen(true);
 #endif
+#ifdef PETIG_EXTENSIONS
+ no_instanz->set_active(false);
+#endif
 
  if (argc==2) 
  {top_notebook->set_page(2);
