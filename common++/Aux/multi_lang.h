@@ -9,8 +9,8 @@
 class MultiL_Dict
 {
  int sprid;
- map<int,std::string> textmap;
- map<int,std::string> defaultmap; 
+ std::map<int,std::string> textmap;
+ std::map<int,std::string> defaultmap; 
 
 public:
  typedef enum {	TXT_RECHNUNG=1,
