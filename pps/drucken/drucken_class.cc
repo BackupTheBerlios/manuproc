@@ -424,7 +424,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
 	   
 #ifdef MABELLA_EXTENSIONS
 	   {cH_Kunde chk(kunden_id);
- 	    if(chk->land()->LKZ() == "I")
+ 	    if(chk->land()->LKZ() == "I" || chk->land()->LKZ()=="IL")
              if (!!(*j).Rabatt()) rabatt_bool=true;
 	   }
 #else

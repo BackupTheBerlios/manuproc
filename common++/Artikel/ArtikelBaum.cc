@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.cc,v 1.5 2003/01/31 16:55:53 christof Exp $
+// $Id: ArtikelBaum.cc,v 1.6 2003/02/03 12:57:04 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -142,11 +142,12 @@ int ArtikelBaum::Tiefe() const
   return tiefe;
 }
 
+#ifdef PETIG_EXTENSIONS
 void ArtikelBaum::Sort()
 {
  std::sort(zusammensetzung.begin(),zusammensetzung.end());
 }
-
+#endif
 
 void ArtikelBaum::UnCache(const ArtikelBase &stamp)
 {  cache.deregister(stamp.Id());
