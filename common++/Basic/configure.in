@@ -1,12 +1,12 @@
-# $Id: configure.in,v 1.25 2003/11/05 10:06:17 christof Exp $
+# $Id: configure.in,v 1.26 2003/11/05 10:52:25 christof Exp $
 
 AC_PREREQ(2.50)
-MPC_BASE_MAJOR_VERSION 0
-MPC_BASE_MINOR_VERSION 6
-MPC_BASE_MICRO_VERSION 2
-AC_INIT(libcommon++,$MPC_BASE_MAJOR_VERSION.$MPC_BASE_MINOR_VERSION.$MPC_BASE_MICRO_VERSION, [manuproc-developer-de@berlios.de])
+AC_INIT(libcommon++,0.6.2, [manuproc-developer-de@berlios.de])
 AC_CONFIG_AUX_DIR(.)
 
+MPC_BASE_MAJOR_VERSION=`echo $PACKAGE_VERSION | sed -e 's/^\(.*\)\..*\..*$/\1/'`
+MPC_BASE_MINOR_VERSION=`echo $PACKAGE_VERSION | sed -e 's/^.*\.\(.*\)\..*$/\1/'`
+MPC_BASE_MICRO_VERSION=`echo $PACKAGE_VERSION | sed -e 's/^.*\..*\.\(.*\)$/\1/'`
 AC_SUBST(MPC_BASE_MAJOR_VERSION)
 AC_SUBST(MPC_BASE_MINOR_VERSION)
 AC_SUBST(MPC_BASE_MICRO_VERSION)
