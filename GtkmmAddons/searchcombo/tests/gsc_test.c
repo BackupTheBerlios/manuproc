@@ -1,4 +1,4 @@
-/* $Id: gsc_test.c,v 1.3 2003/11/10 08:23:45 christof Exp $ */
+/* $Id: gsc_test.c,v 1.4 2004/01/28 10:15:20 christof Exp $ */
 
 #include <gtk/gtk.h>
 #include "gtksearchcombo.h"
@@ -7,7 +7,9 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#define SLOW_DOWN
+//#define SLOW_DOWN
+
+static gboolean reopen;
 
 const char *names[]=
   {
@@ -82,9 +84,10 @@ void search_cb_names(GtkSearchCombo *sc, gboolean *continue_, GtkSCContext new, 
     int added=0;
 
     if (new==GTK_SEARCH_CLOSE) return;
-    if (new==GTK_SEARCH_OPEN) nextval=0;
+    if (new==GTK_SEARCH_OPEN || new==GTK_SEARCH_REOPEN) 
+    { nextval=0; reopen=new==GTK_SEARCH_REOPEN; }
     for (;nextval<namenum;nextval++)
-    {   if (!strncasecmp(prefix,names[nextval],strlen(prefix)))
+    {   if (reopen || !strncasecmp(prefix,names[nextval],strlen(prefix)))
         {   gtk_searchcombo_add_item(sc,names[nextval]);
             added++;
             if (added>
@@ -139,8 +142,9 @@ void search_cb(GtkSearchCombo *sc, gboolean *continue_, GtkSCContext new, gpoint
        DEBUG(puts("closed"));
        return;
     }
-    else if (new==GTK_SEARCH_OPEN)
+    else if (new==GTK_SEARCH_OPEN || new==GTK_SEARCH_REOPEN)
     {  char *s;
+       reopen=new==GTK_SEARCH_REOPEN;
        assert(!d);
        strncpy(path,gtk_searchcombo_get_text(sc),sizeof path);
        if ((s=strrchr(path,'/'))) 
@@ -172,7 +176,7 @@ void search_cb(GtkSearchCombo *sc, gboolean *continue_, GtkSCContext new, gpoint
     {  struct dirent *de=readdir(d);
        if (de)
        {  DEBUG(printf("%s=readdir(%p)\n",de->d_name,d));
-          if (!strncasecmp(prefix,de->d_name,strlen(prefix)))
+          if (reopen||!strncasecmp(prefix,de->d_name,strlen(prefix)))
           {  char buf[10240];
              struct stat statb;
              g_snprintf(buf,sizeof buf,"%s%s",path,de->d_name);

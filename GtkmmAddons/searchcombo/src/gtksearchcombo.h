@@ -45,7 +45,8 @@ typedef enum
 {
   GTK_SEARCH_FETCH,
   GTK_SEARCH_OPEN,
-  GTK_SEARCH_CLOSE
+  GTK_SEARCH_CLOSE,
+  GTK_SEARCH_REOPEN
 } GtkSCContext;
 
 /* you should access only the entry and list fields directly */
@@ -78,6 +79,7 @@ struct _GtkSearchCombo {
 	gboolean already_started:1;	/** if not true we have to start at idle time */
 	gboolean search_finished:1;	/** search is finished, simply display */
 	gboolean value_selected:1;	/** a value has been selected, do not search without explicit request */
+	gboolean reopen:1;		/** next open should be reopen */
 	
 	guint entries_max_width;	/** for optimal popup width */
 	guint entries_max_strlen;	/** speedup trick */

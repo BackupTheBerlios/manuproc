@@ -58,6 +58,7 @@ enum {
 const gchar * gtk_searchcombo_string_key = "gtk-searchcombo-string-value";
 static guint searchcombo_signals[LAST_SIGNAL] = { 0 };
 static GtkListItem *	gtk_searchcombo_find (const GtkSearchCombo * searchcombo);
+const gboolean select_on_refocus=TRUE;
 
 #define SEARCHCOMBO_LIST_MAX_HEIGHT	(400)
 #define	EMPTY_LIST_HEIGHT	(20)
@@ -122,7 +123,8 @@ static gboolean gtksearchcombo_close_search(GtkSearchCombo * searchcombo,
 		 gint *children_present_p);
 static gint gtk_searchcombo_fill_idle (GtkSearchCombo * searchcombo);
 static void gtk_searchcombo_do_autoexpand(GtkSearchCombo *searchcombo);
-static void         gtk_searchcombo_size_allocate      (GtkWidget        *widget,
+static void gtk_searchcombo_fill_list(GtkSearchCombo *searchcombo);
+static void gtk_searchcombo_size_allocate(GtkWidget        *widget,
 						  GtkAllocation   *allocation);
 
 static GtkHBoxClass *parent_class = NULL;
@@ -325,6 +327,8 @@ gtk_searchcombo_activate (GtkWidget        *widget,
    gtk_widget_hide (searchcombo->popwin);
    gtk_searchcombo_stop_if_running(searchcombo);
    gtk_signal_emit (GTK_OBJECT (searchcombo), searchcombo_signals[SELECTED]);
+   searchcombo->value_selected=TRUE;
+DEBUG(printf("SCB: abe, value_selected=%d\n",searchcombo->value_selected));
 }
 
 static GtkListItem *
@@ -370,7 +374,9 @@ gtk_searchcombo_activate_by_enter (GtkWidget        *widget,
       // autoexpand might activate within fill_idle, so it's disallowed
 
       // typed too fast, do at least one search to have a legal value
-   {  guint idle_id=searchcombo->idle_handler_id;
+   {  guint idle_id=-1;
+     try_to_get_entry:
+      idle_id=searchcombo->idle_handler_id;
       if (!gtk_searchcombo_fill_idle(searchcombo))
       {  // if we already closed, prevent idle function call
          // otherwise this is done during activate
@@ -387,13 +393,46 @@ gtk_searchcombo_activate_by_enter (GtkWidget        *widget,
         }
         else
         {  DEBUG(printf("!in list\n"));
-           return;
+           if (searchcombo->value_selected && (!GTK_LIST(searchcombo->list)->children
+                   || !GTK_LIST(searchcombo->list)->children->data))
+           	 // retry search if outcome likely
+           {   DEBUG(printf("retry search\n"));
+               // like gtk_searchcombo_fill_list but without popping up
+               gtk_searchcombo_fill_list(searchcombo);
+               goto try_to_get_entry;
+#if 0               
+               searchcombo->value_selected=FALSE;
+               searchcombo->search_finished=FALSE;
+               searchcombo->search_in_progress=TRUE;
+               searchcombo->already_started=FALSE;
+
+               gboolean continue_=FALSE;
+               gtk_signal_emit (GTK_OBJECT (searchcombo), searchcombo_signals[SEARCH],
+      		&continue_,GTK_SEARCH_OPEN);
+      	       if (continue_)
+                gtk_signal_emit (GTK_OBJECT (searchcombo), searchcombo_signals[SEARCH],
+      		    &continue_,GTK_SEARCH_FETCH);
+      	       if (!continue_ && GTK_LIST(searchcombo->list)->children)
+      	       {
+      	       }
+      	       else if (!continue_) // nix gefunden
+      	       {  gtk_signal_emit (GTK_OBJECT (searchcombo), searchcombo_signals[SEARCH],
+      		       &continue_,GTK_SEARCH_CLOSE);
+      	          return;
+      	       }
+      	       else // suche geht weiter
+      	       {  searchcombo->already_started=TRUE;
+      	          searchcombo->search_finished=FALSE;
+      	          searchcombo->search_in_progress=TRUE;
+      	          searchcombo->value_selected=FALSE;
+      	       }
+#endif      	       
+           }
+           else return;
         }
    }
 
    gtk_searchcombo_activate(widget,searchcombo);
-   searchcombo->value_selected=TRUE;
-DEBUG(printf("SCB: abe, value_selected=%d\n",searchcombo->value_selected));
 }
 
 static void
@@ -412,12 +451,13 @@ gtk_searchcombo_init (GtkSearchCombo * searchcombo)
   searchcombo->backspace = FALSE;
   searchcombo->search_finished = FALSE;
   searchcombo->value_selected = FALSE;
-  searchcombo->auto_narrow = TRUE;
 DEBUG(printf("SCB: value_selected=%d\n",searchcombo->value_selected));
+  searchcombo->auto_narrow = TRUE;
   searchcombo->idle_handler_id=-1;
   searchcombo->autoexpand_on_activate = TRUE;
   searchcombo->start_idle=TRUE;
   searchcombo->already_started=FALSE;
+  searchcombo->reopen=FALSE;
   
   searchcombo->entries_max_width=FALSE;
   searchcombo->entries_max_strlen=FALSE;
@@ -540,7 +580,8 @@ static gint gtk_searchcombo_fill_idle (GtkSearchCombo * searchcombo)
       DEBUG(printf("fill idle: already_started=%d\n",searchcombo->already_started));
       gtk_signal_emit (GTK_OBJECT (searchcombo), searchcombo_signals[SEARCH],
    		&continue_, 
-   		searchcombo->already_started?GTK_SEARCH_FETCH:GTK_SEARCH_OPEN);
+   		searchcombo->already_started?GTK_SEARCH_FETCH:
+   		(searchcombo->reopen?GTK_SEARCH_REOPEN:GTK_SEARCH_OPEN));
       searchcombo->already_started=TRUE;
       if (!continue_)
       {  DEBUG(puts("fill idle: stopped"));
@@ -582,6 +623,7 @@ gtk_searchcombo_fill_list(GtkSearchCombo      *searchcombo)
    g_return_if_fail (searchcombo != NULL);
    g_return_if_fail (GTK_IS_SEARCHCOMBO (searchcombo));
    
+   searchcombo->reopen=searchcombo->value_selected;
    gtk_searchcombo_clear_list(searchcombo);
    g_return_if_fail (!searchcombo->search_in_progress);
    searchcombo->search_in_progress=TRUE;
@@ -594,7 +636,8 @@ DEBUG(printf("SCB: fl, value_selected=%d\n",searchcombo->value_selected));
       {  continue_=FALSE;
          gtk_signal_emit (GTK_OBJECT (searchcombo), searchcombo_signals[SEARCH],
       		&continue_,
-      		searchcombo->already_started?GTK_SEARCH_FETCH:GTK_SEARCH_OPEN);
+      		searchcombo->already_started?GTK_SEARCH_FETCH:
+      		(searchcombo->reopen?GTK_SEARCH_REOPEN:GTK_SEARCH_OPEN));
          searchcombo->already_started=TRUE;
          if (!continue_) break;
          /* I know this is inefficient ... but easy to implement */
@@ -622,7 +665,14 @@ gtk_searchcombo_entry_focus_in (GtkEntry      *entry,
    DEBUG(printf("gtk_searchcombo_entry_focus_in\n"));
    
    // do not pop up if value selected and no change happened
-   if (searchcombo->value_selected) return FALSE;
+   DEBUG(printf("value_selected %d\n",searchcombo->value_selected));
+   if (searchcombo->value_selected)
+   {  if (select_on_refocus)
+      {  DEBUG(printf("select_on_refocus\n"));
+         gtk_editable_select_region(GTK_EDITABLE(searchcombo->entry),0,-1);
+      }
+      return FALSE;
+   }
    if (searchcombo->search_in_progress || searchcombo->search_finished)
       gtk_searchcombo_popup_list(searchcombo); 
    else if (GTK_ENTRY(searchcombo->entry)->text_length 
@@ -717,11 +767,13 @@ gtk_searchcombo_button_click(GtkButton *button, GtkSearchCombo *searchcombo)
       gtk_searchcombo_stop_if_running(searchcombo);
    }
    else 
-   {  if (!searchcombo->search_in_progress && !searchcombo->search_finished)
+   {  if ((!searchcombo->search_in_progress && !searchcombo->search_finished)
+   		|| searchcombo->value_selected)
          gtk_searchcombo_fill_list(searchcombo);
       else 
          gtk_searchcombo_popup_list(searchcombo);
       searchcombo->value_selected=FALSE;
+DEBUG(printf("SCB: bc, value_selected=%d\n",searchcombo->value_selected));
       gtk_widget_grab_focus (searchcombo->entry);
    }
    return FALSE;
