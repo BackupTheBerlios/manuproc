@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.43 2004/03/11 16:18:07 christof Exp $
+# $Id: Makefile.am,v 1.44 2004/03/11 16:22:34 christof Exp $
 
 if WINDOWS
 WIN_LDFLAGS=-no-undefined -export-symbols libManuProC_Base.def
@@ -24,7 +24,7 @@ AM_LDFLAGS=@LDFLAGS@ @ECPG_LDFLAGS@ $(WIN_LDFLAGS)
 
 if DATABASE
 DB_SRCES=dbconnect.cc SQLerror_postgres.cc Transaction.cc FetchIStream.cc \
-	Event.cc Global_Settings_sql.cc dbconnect_shared.cc \
+	Event.cc Global_Settings_db.cc dbconnect_shared.cc \
 	FetchIStream_common.cc SQLerror_sqlite.cc
 else 
 DB_SRCES=
