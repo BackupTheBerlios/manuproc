@@ -1,4 +1,4 @@
-/* $Id: Message.h,v 1.6 2004/04/29 14:24:40 christof Exp $ */
+/* $Id: Message.h,v 1.7 2004/09/28 08:07:24 jacek Exp $ */
 /*  Gtk--addons: a collection of gtk-- addons
     Copyright (C) 1998  Adolf Petig GmbH. & Co. KG
     Developed by Jacek Jakubowski <jacek@wtal.de>
@@ -28,6 +28,7 @@
 #include <string>
 #include <gtk/gtkmain.h>
 #include <gtk/gtkwidget.h>
+#include <sigc++/compatibility.h>
 
 class Message : public Gtk::Dialog
 {
