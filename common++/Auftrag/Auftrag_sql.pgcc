@@ -17,7 +17,6 @@
  */
 
 #include <Auftrag/AuftragFull.h>
-//#include"auftrag_main.hh"
 #include <string.h>
 #include <strstream>
 #include <Aux/SQLerror.h>
@@ -70,6 +69,7 @@ void Auftrag::setWaehrung(cP_Waehrung w) throw(SQLerror)
  SQLerror::test(__FILELINE__"Waehrung setzen");
 }
 
+// Braucht man das warning noch? 14.11.01 MAT
 #warning !!! FIXME: eigentlich alle Einträge entsprechend setzen oder geschieht das woanders ???
 void Auftrag::setStatusAuftrag(AufStatVal st) throw(SQLerror)
 {exec sql begin declare section;

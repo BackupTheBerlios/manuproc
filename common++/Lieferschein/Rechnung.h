@@ -27,6 +27,7 @@
 #include<Kunde/Kunde.h>
 #include <vector>
 #include "LieferscheinBase.h"
+#include "Zahlungsart.hh"
 
 class Rechnung : public RechnungBase
 {
@@ -37,6 +38,7 @@ private:
  cH_Kunde kunde;
  RngArt rngart;
  Petig::Datum zahlziel;
+ cH_Zahlungsart zahlungsart;
  Petig::Datum rgdatum;
  cP_Waehrung waehrung;
  fixedpoint<2> rabatt;
@@ -48,6 +50,7 @@ public:
  Rechnung(const cH_Kunde k,int jahr=0) throw(SQLerror);
  Rechnung() : RechnungBase(none_id), kunde(Kunde::none_id), 
               rngart(RART_NONE), zahlziel(Petig::Datum::today()),
+              zahlungsart(Zahlungsart::none_id),
               rgdatum(Petig::Datum::today()),waehrung(0),
               rabatt(0),bezahlt(false) {} 
 
@@ -67,6 +70,8 @@ public:
  void setze_Rabatt(fixedpoint<2> r) throw(SQLerror);
  const Petig::Datum getDatum() const { return rgdatum; }
  void setze_Datum(Petig::Datum rgdatum) throw(SQLerror);
+ cH_Zahlungsart getZahlungsart() const {return zahlungsart;}
+ void setze_Zahlungsart(cH_Zahlungsart z)   throw(SQLerror);
 };
 
 #endif

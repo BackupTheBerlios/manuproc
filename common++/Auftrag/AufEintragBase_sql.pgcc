@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.11 2001/11/07 08:23:25 christof Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.12 2001/11/19 12:49:24 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -36,6 +36,7 @@ void AufEintragBase::setStatus(AufStatVal st) throw(SQLerror)
  int STATUS=st;
  exec sql end declare section;
 
+// Braucht man das noch? 14.11.2001 MAT
 #warning was ist mit status (Auftragsstatus), kann das ignoriert werden?
  if(entrystatus == CLOSED) return; // nichts geht mehr
  if(st == UNCOMMITED) return; // zurück geht nicht, nur vor
@@ -343,10 +344,10 @@ list<pair<AufEintragBase2,long> > AufEintragBase::get_Referenz_list(const AufEin
  return vaeb;
 }
 
-list<pair<AufEintragBase2,long> > AufEintragBase::get_Referenz_AufEintragBase2(bool ursprung) const throw(SQLerror)
+list<pair<AufEintragBase2,long> > AufEintragBase::get_Referenz_AufEintragBase2(bool ursprung,bool kinder) const throw(SQLerror)
 {
  AufEintragBase2 aeb=*this;
- list<pair<AufEintragBase2,long> > tv=get_Referenz_list(aeb);
+ list<pair<AufEintragBase2,long> > tv=get_Referenz_list(aeb,kinder);
  if(!ursprung) return tv;
  list<pair<AufEintragBase2,long> > vaeb;
  list<pair<AufEintragBase2,long> > tvxx;
@@ -354,7 +355,7 @@ reloop:
  tv.merge(tvxx);
  for (list<pair<AufEintragBase2,long> >::iterator i=tv.begin();i!=tv.end();++i)
    {
-     tvxx=get_Referenz_list(i->first);
+     tvxx=get_Referenz_list(i->first,kinder);
      if (tvxx.size()==0) vaeb.splice(vaeb.end(),tv,i) ;
      else tv.erase(i) ;
      goto reloop;
@@ -392,3 +393,30 @@ list<cH_Kunde> AufEintragBase::get_Referenz_Kunden() const throw(SQLerror)
 }
 
 
+std::list<AufEintragBase2> AufEintragBase::get_AufEintragList_from_Artikel
+               (const ArtikelBase& artikel,const cH_ppsInstanz& instanz)
+{
+  std::list<AufEintragBase2> L;
+  exec sql begin declare section;
+   char query[1024];
+   int db_auftragid,db_zeilennr;
+  exec sql end declare section;
+  std::string squery = "select auftragid,zeilennr from auftragentry
+      where artikelid="+itos(artikel.Id())+" 
+      and instanz="+itos(instanz->Id())+" and status="+itos(OPEN);
+  strncpy(query,squery.c_str(),sizeof(query));
+  Transaction tr;
+  exec sql prepare AELfAein_ from :query ;
+  exec sql declare AELfAein cursor for AELfAein_ ;
+
+  exec sql open AELfAein;
+  SQLerror::test(__FILELINE__);
+  while(true)
+   {
+     exec sql fetch AELfAein into :db_auftragid,:db_zeilennr;
+     SQLerror::test(__FILELINE__,100);
+     if (sqlca.sqlcode) break;
+     L.push_back(AufEintragBase2(instanz,db_auftragid,db_zeilennr));
+   }  
+  return L;
+}

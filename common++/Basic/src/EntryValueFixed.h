@@ -1,4 +1,4 @@
-/* $Id: EntryValueFixed.h,v 1.1 2001/10/01 13:01:08 christof Exp $ */
+/* $Id: EntryValueFixed.h,v 1.2 2001/11/19 12:49:24 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,7 +25,7 @@
 #include <Aux/Ausgabe_neu.h>
 #include <typeinfo> // for bad_cast
 
-template <int decimals=2,class Ftype=double,class Itype=long> 
+template <int decimals=2,class Ftype=double,class Itype=long,bool shorten=true> 
 	class EntryValueFixed : public EntryValueBase
 {
  fixedpoint<decimals,Ftype,Itype> wert;
@@ -37,7 +37,7 @@ public:
  virtual bool operator==(const EntryValueBase &v) const
  {  try
    {  const EntryValueFixed<decimals,Ftype,Itype> &b
-   		=dynamic_cast<const EntryValueFixed<decimals,Ftype,Itype> &>(v);
+   		=dynamic_cast<const EntryValueFixed<decimals,Ftype,Itype,shorten> &>(v);
       return wert==b.wert;
    } catch (std::bad_cast &e)
    {  return false;
@@ -46,7 +46,7 @@ public:
  virtual bool operator<(const EntryValueBase &v) const
  { try
    {  const EntryValueFixed<decimals,Ftype,Itype> &b
-   		=dynamic_cast<const EntryValueFixed<decimals,Ftype,Itype> &>(v);
+   		=dynamic_cast<const EntryValueFixed<decimals,Ftype,Itype,shorten> &>(v);
       return wert<b.wert;
    } catch (std::bad_cast &e)
    {  return getIntVal()<v.getIntVal();
@@ -56,15 +56,17 @@ public:
  const fixedpoint<decimals,Ftype,Itype> &Wert() const { return wert; }
  virtual int getIntVal() const { return int(wert);}
  virtual const std::string getStrVal() const 
- { return Formatiere(wert); }
+ { if (shorten) return Formatiere_short(wert);
+   else return Formatiere(wert); 
+ }
 };
 
-template <int decimals=2,class Ftype=double,class Itype=long> 
+template <int decimals=2,class Ftype=double,class Itype=long,bool shorten=true> 
    class cH_EntryValueFixed : public cH_EntryValue
 {
 public:
  cH_EntryValueFixed(const fixedpoint<decimals,Ftype,Itype> &v) 
- : cH_EntryValue(new EntryValueFixed<decimals,Ftype,Itype>(v)) {}
+ : cH_EntryValue(new EntryValueFixed<decimals,Ftype,Itype,shorten>(v)) {}
 };
   
 #endif 

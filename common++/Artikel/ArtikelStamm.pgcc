@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.5 2001/10/23 08:45:18 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.6 2001/11/19 12:49:24 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,6 +20,7 @@
 #include <Artikel/ArtikelStamm.h>
 #include <Artikel/ArtikelBaum.h>
 exec sql include sqlca;
+//#include <Aux/itos.h>
 
 ArtikelStamm::cache_t ArtikelStamm::cache;
 
@@ -36,7 +37,8 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
     int einheit,ieinheit;
    exec sql end declare section;
    id=ab.Id();
-      
+
+//cout << "ArtikelStamm "<<itos(id)<<'\n';      
    exec sql select warengruppe,coalesce(internwarengruppe,warengruppe)
       ,coalesce(bestellen_bei,1),coalesce(defaultschema,1),
       einheit

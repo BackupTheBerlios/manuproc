@@ -1,4 +1,4 @@
-// $Id: selAufEntry_sql.pgcc,v 1.12 2001/11/05 08:58:29 christof Exp $
+// $Id: selAufEntry_sql.pgcc,v 1.13 2001/11/19 12:49:24 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -115,8 +115,7 @@ throw(SQLerror)
 }
 
 
-#warning Argument in AufEntryBase2 wandeln!
-void SelectedFullAufList::insert(const AuftragBase& auftrag, int znr) throw(SQLerror)
+void SelectedFullAufList::insert(const AufEintragBase2& aeb) throw(SQLerror)
 {
  exec sql begin declare section;
  int INSTANZ;
@@ -149,7 +148,7 @@ void SelectedFullAufList::insert(const AuftragBase& auftrag, int znr) throw(SQLe
  exec sql end declare section;
 
  std::string cmd=SQLFullAuftragSelector(
-		SQLFullAuftragSelector::sel_AufidZnr(auftrag,znr)).getClausel();
+		SQLFullAuftragSelector::sel_AufidZnr(aeb)).getClausel();
 	clausel = (char *)cmd.c_str();
 
 	Transaction tr;

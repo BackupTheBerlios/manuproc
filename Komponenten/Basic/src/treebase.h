@@ -25,7 +25,7 @@
 #include<vector>
 #include"tclistrowdata.h"
 
-class TCListRowData;
+class TreeRow;
 class cH_RowDataBase;
 
 class TreeBase : public TCList
@@ -75,12 +75,12 @@ protected:
  virtual void setSequence();
  virtual const std::string getColTitle(guint seq) const;
  // einen neuen Ast erzeugen, deep ist die Spalte, v der Wert dieser Spalte
- virtual TCListRowData *NewNode
+ virtual TreeRow *NewNode
  		(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand);
  // ein neues Blatt erzeugen, deep ist die Spalte, seqnr der Werteindex
  // deep == Attrs() !
  // eigentlich Unsinn, das hier zu überladen ...
- virtual TCListRowData *NewLeaf
+ virtual TreeRow *NewLeaf
  		(guint deep, const cH_EntryValue &v, const cH_RowDataBase &d);
 
  virtual void setColTitles();
@@ -111,7 +111,7 @@ public:
  
  void clear();
  SigC::Signal1<void,cH_RowDataBase> leaf_selected;
- SigC::Signal1<void,const TCListRowData &> node_selected;
+ SigC::Signal1<void,const TreeRow &> node_selected;
  
  struct SelectionError : public std::exception
  {  virtual const char* what() const throw() { return "TreeBase::SelectionError"; }
@@ -158,7 +158,7 @@ public:
 
 
 // TCListNode &getSelectedNode() const 
- TCListRowData &getSelectedNode() const 
+ TreeRow &getSelectedNode() const 
  	throw(noNodeSelected,multipleNodesSelected,notNodeSelected);
  template <class T> T &getSelectedNode_as() const
  {  return dynamic_cast<T&>(getSelectedNode());
@@ -168,7 +168,7 @@ private:
  template <class T> void selectMatchingLines(TCListRow_API::const_iterator b, 
  			TCListRow_API::const_iterator e, const T &t)
  {  for (TCListRow_API::const_iterator i=b;i!=e;++i)
-    {  const TCListRowData *tlr=reinterpret_cast<const TCListRowData *>((*i).get_user_data());
+    {  const TreeRow *tlr=reinterpret_cast<const TreeRow *>((*i).get_user_data());
        if (tlr->LeafData()==t)
        {  int rowno=static_cast<const TCListRow&>(*i).get_lineno();
           if (rowno!=-1) row(rowno).select();
@@ -188,16 +188,16 @@ public:
 // newer, more simplyfied API:
 class SimpleTree : public TreeBase
 {protected:
- typedef TCListRowData *(*NewNode_fp)
+ typedef TreeRow *(*NewNode_fp)
  		(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand);
 
  std::vector<std::string> titles;
  NewNode_fp node_creation;
  
 // @ ins cc file ?
- static TCListRowData *defaultNewNode
+ static TreeRow *defaultNewNode
  		(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand);
- virtual TCListRowData *NewNode
+ virtual TreeRow *NewNode
  		(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand)
  {  return (*node_creation)(deep,v,child_s_deep,child_s_data,expand); }
 public:

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.9 2001/11/07 08:23:25 christof Exp $
+// $Id: AufEintragBase.cc,v 1.10 2001/11/19 12:49:24 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -77,13 +77,9 @@ std::ostream &operator<<(std::ostream &o,const AufEintragBase &aeb)
 }
 
 
-//#warning geht so nicht mehr (Umstellung von ArtikelZusammensetzung)
-//double AufArtikel::Stueckgroesse() const
-//{ return ArtikelBaum::Stueckgroesse();
-//}
-
 const Preis AufEintragBase::GPreis() const
 { return preis.In(preis.getWaehrung(),bestellt)*(1-rabatt/10000.0);
+// Braucht man die warnings noch? 14.11.01 MAT
 #warning rabatt auf fixedpoint umstellen
 #warning ob rabatt auf den Einzelpreis oder den Gesamtpreis (wie hier) gerechnet werden soll?
 }
@@ -146,4 +142,34 @@ std::string AufEintragBase::getProzess2_c_str() const
    if(i+1!=L.end()) s+= ", ";
   }
  return s;
+}
+
+
+AufEintragBase2 AufEintragBase::get_AufEintrag_from_Artikel_by_Lfdate   
+               (const ArtikelBase& artikel,const cH_ppsInstanz& instanz)
+{
+  std::list<AufEintragBase2> LI=get_AufEintragList_from_Artikel(artikel,instanz);
+  std::list<pair<AufEintragBase2,long> > LR;
+  for(std::list<AufEintragBase2>::const_iterator i=LI.begin();i!=LI.end();++i)
+   {
+     std::list<pair<AufEintragBase2,long> > LRtmp =
+               AufEintragBase(*i).get_Referenz_AufEintragBase2();
+     LR.merge(LRtmp); 
+   }
+  Petig::Datum lieferdatum;
+  AufEintragBase2 AEB;
+  // lieferdatum initialisieren
+  if(LR.begin()!=LR.end()) 
+  { lieferdatum=AufEintragBase(LR.begin()->first).getLieferdatum();
+    AEB=LR.begin()->first;
+   for(std::list<pair<AufEintragBase2,long> >::const_iterator i=LR.begin();i!=LR.end();++i)
+   {
+    Petig::Datum ld=AufEintragBase(i->first).getLieferdatum();
+    if(ld<lieferdatum) 
+      {
+        AEB=i->first;
+        lieferdatum=ld;
+      }
+   }
+  }
 }

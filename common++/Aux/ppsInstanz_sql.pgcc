@@ -29,7 +29,6 @@ void ppsInstanz::get_name()
 
 cH_Prozess ppsInstanz::get_Prozess() const
 {
-  #warning das sollte iegentlich in die Datenbank, oder MAT
   int pid;
   if (instid==INST_FAERB)      pid=Prozess::Faerben;
   else if (instid==INST_DRUCK) pid=Prozess::Drucken;

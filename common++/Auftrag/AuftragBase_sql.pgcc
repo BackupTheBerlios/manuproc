@@ -26,6 +26,22 @@
 exec sql include sqlca;
 
 
+AuftragBase::AuftragBase(cH_ppsInstanz _instanz, int aufid,int kid) throw(SQLerror)
+: instanz(_instanz),auftragid(aufid)
+{
+ exec sql begin declare section;
+   int KID=kid;
+   int AID=auftragid;
+   int INST=instanz->Id();
+   int ID;
+ exec sql end declare section;
+ exec sql select auftragid into :ID from auftrag where instanz=:INST and
+      kundennr=:KID and youraufnr=:AID;
+ SQLerror::test(__FILELINE__);	
+ *this=AuftragBase(instanz,ID);
+}
+
+
 
 int AuftragBase::insertNewEntry(const unsigned long int bestellt, 
   const Petig::Datum lieferdatum,const ArtikelBase::ID artid,

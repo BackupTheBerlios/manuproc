@@ -180,7 +180,7 @@ bool TreeBase::redisplay_recurse(TCListRow_API *a, const RowDataBase *r, guint c
    {  if ((*i).begin()!=(*i).end())
       {  if (redisplay_recurse(&*i,r,col)) return true;
       }
-      const TCListRowData *tlr=reinterpret_cast<const TCListRowData *>((*i).get_user_data());
+      const TreeRow *tlr=reinterpret_cast<const TreeRow *>((*i).get_user_data());
       if (tlr->Leaf())
       {  if (&*(tlr->LeafData()) == r)
          {  dynamic_cast<TCListRow&>(*i).relabel(col,r->Value(col,ValueData())->getStrVal());
@@ -229,8 +229,8 @@ void TreeBase::refillTCL()
 
 // Summen anzeigen
  for(TCListRow_API::iterator i = begin(); i!=end(); ++i)
- {  if (!((TCListRowData*)(*i).get_user_data())->Leaf())
-   	((TCListRowData*)(*i).get_user_data())->refreshSum(*this);
+ {  if (!((TreeRow*)(*i).get_user_data())->Leaf())
+   	((TreeRow*)(*i).get_user_data())->refreshSum(*this);
  }
  show_or_hide_Spalten();
  expand();
@@ -244,11 +244,11 @@ void TreeBase::refillTCL()
 #ifdef NEW_INSERT
 
 bool operator < (const TCListRow_API &a, const cH_EntryValue &b)
-{  return *(reinterpret_cast<TCListRowData*>(a.get_user_data())->Value()) < *b;
+{  return *(reinterpret_cast<TreeRow*>(a.get_user_data())->Value()) < *b;
 }
 
 bool operator < (const cH_EntryValue &a, const TCListRow_API &b)
-{  return *a < *(reinterpret_cast<TCListRowData*>(b.get_user_data())->Value());
+{  return *a < *(reinterpret_cast<TreeRow*>(b.get_user_data())->Value());
 }
 
 //#define DEBUG_NEW
@@ -277,15 +277,15 @@ recurse:
 #ifdef DEBUG_NEW 
 cout << "inserting @"<< deep << " " << ev->getStrVal() << " <= ";
 if (current_iter!=apiend) 
- cout << reinterpret_cast<TCListRowData*>((*current_iter).get_user_data())->Value()->getStrVal();
+ cout << reinterpret_cast<TreeRow*>((*current_iter).get_user_data())->Value()->getStrVal();
 if (!MehrAlsEinKind(selseq) && upper_b!=apiend) 
- cout << " <= " << reinterpret_cast<TCListRowData*>((*upper_b).get_user_data())->Value()->getStrVal();
+ cout << " <= " << reinterpret_cast<TreeRow*>((*upper_b).get_user_data())->Value()->getStrVal();
 cout << '\n';
 #endif
 
  if(current_iter!=apiend) // dann einfuegen
    {// eigentlich nur ein gecastetes current_iter
-    TCListRowData *current_tclr=reinterpret_cast<TCListRowData*>((*current_iter).get_user_data());
+    TreeRow *current_tclr=reinterpret_cast<TreeRow*>((*current_iter).get_user_data());
     //----------------- gleicher Wert ------------------
     if((ev) == current_tclr->Value())
      { 
@@ -314,7 +314,7 @@ cout << '\n';
 				==v2->Value(selseq.front(),ValueData()));
          
 	 // vor current_iter einfügen
-         TCListRowData *newnode=NewNode(deep, ev, child_s_deep, v, child_s_deep < showdeep);
+         TreeRow *newnode=NewNode(deep, ev, child_s_deep, v, child_s_deep < showdeep);
 	 newnode->initTCL(parent,current_iter,tree);
 	 
 	 if (current_tclr->Leaf()) newnode->cumulate(v2);
@@ -332,7 +332,7 @@ cout << '\n';
       else // Blatt erreicht
       {  // als letztes der Gleichen an parent anhängen
          // upper_b steht schon richtig (s.o.)
-         TCListRowData *newleaf=NewLeaf(deep,ev,v);
+         TreeRow *newleaf=NewLeaf(deep,ev,v);
 	 newleaf->initTCL(parent, upper_b, tree);
       }
       return;
@@ -342,7 +342,7 @@ cout << '\n';
 #ifdef DEBUG_NEW
 cout << "davor\n";
 #endif
-	 TCListRowData *newleaf=NewLeaf(deep,ev,v);
+	 TreeRow *newleaf=NewLeaf(deep,ev,v);
 	 newleaf->initTCL(parent,current_iter,tree);
 	}
    }
@@ -351,7 +351,7 @@ cout << "davor\n";
 #ifdef DEBUG_NEW   
 cout << "am Ende\n";
 #endif
-	    TCListRowData *newleaf=NewLeaf(deep,ev,v);
+	    TreeRow *newleaf=NewLeaf(deep,ev,v);
 	    newleaf->initTCL(parent,tree); 
     }
 }                                
@@ -367,10 +367,10 @@ void TreeBase::insertIntoTCL(TCListRow_API *parent,const TreeBase &tree,
  guint seqnr=selseq.front();	
 
  cH_EntryValue ev=v->Value(seqnr,ValueData());
- TCListRowData *current_tclr=0;
+ TreeRow *current_tclr=0;
 
  while((current_iter!=apiend) &&
-   *( (current_tclr=reinterpret_cast<TCListRowData*>((*current_iter).get_user_data()))
+   *( (current_tclr=reinterpret_cast<TreeRow*>((*current_iter).get_user_data()))
    	->Value()) < (*ev))
    current_iter++;
 
@@ -389,10 +389,10 @@ void TreeBase::insertIntoTCL(TCListRow_API *parent,const TreeBase &tree,
       {  // als letztes der Gleichen an parent anhängen
          ++current_iter;
          while ((current_iter!=apiend) &&
-            *( (current_tclr=reinterpret_cast<TCListRowData*>((*current_iter).get_user_data()))
+            *( (current_tclr=reinterpret_cast<TreeRow*>((*current_iter).get_user_data()))
             			->Value()) == (*ev))
             current_iter++;
-         TCListRowData *newleaf=NewLeaf(deep,ev,v);
+         TreeRow *newleaf=NewLeaf(deep,ev,v);
 	 newleaf->initTCL(parent,apiend,tree);
       }
       return;
@@ -400,7 +400,7 @@ void TreeBase::insertIntoTCL(TCListRow_API *parent,const TreeBase &tree,
      // kleinerer Wert
   if(MehrAlsEinKind(selseq)) // noch nicht am Blatt
 	{
-	 TCListRowData *newnode=NewNode(deep,ev,deep+1,v,deep < showdeep);
+	 TreeRow *newnode=NewNode(deep,ev,deep+1,v,deep < showdeep);
 	 newnode->initTCL(parent,current_iter,tree);
 	 newnode->cumulate(v);
          selseq.pop_front();
@@ -410,7 +410,7 @@ void TreeBase::insertIntoTCL(TCListRow_API *parent,const TreeBase &tree,
 	}
      else
 	{
-	 TCListRowData *newleaf=NewLeaf(deep,ev,v);
+	 TreeRow *newleaf=NewLeaf(deep,ev,v);
 	 newleaf->initTCL(parent,current_iter,tree);
 	}
    }
@@ -418,7 +418,7 @@ void TreeBase::insertIntoTCL(TCListRow_API *parent,const TreeBase &tree,
    {
     if(MehrAlsEinKind(selseq)) // noch nicht am Blatt
 	  {
-   	 TCListRowData *newnode=NewNode(deep,ev,deep+1,v,deep < showdeep);
+   	 TreeRow *newnode=NewNode(deep,ev,deep+1,v,deep < showdeep);
    	 newnode->initTCL(parent,tree); 
 	    newnode->cumulate(v);
        selseq.pop_front();
@@ -427,7 +427,7 @@ void TreeBase::insertIntoTCL(TCListRow_API *parent,const TreeBase &tree,
 	   }
      else
 	   {
-	    TCListRowData *newleaf=NewLeaf(deep,ev,v);
+	    TreeRow *newleaf=NewLeaf(deep,ev,v);
 	    newleaf->initTCL(parent,tree); 
 	   }
     }
@@ -608,29 +608,29 @@ void TreeBase::Expandieren(Gtk::CheckMenuItem *expandieren)
 
 void TreeBase::on_row_select(int row, int col, GdkEvent* b)
 { TCListRow_API *tclapi=(TCListRow_API*)(get_row_data(row));
-  TCListRowData *selectedrow=(TCListRowData*)(*tclapi).get_user_data();
+  TreeRow *selectedrow=(TreeRow*)(*tclapi).get_user_data();
 
   try { 
   if(!selectedrow->Leaf()) 
-     node_selected(*(dynamic_cast<TCListRowData*>(selectedrow)));
+     node_selected(*(dynamic_cast<TreeRow*>(selectedrow)));
   else
-     leaf_selected((dynamic_cast<TCListRowData*>(selectedrow))->LeafData());
+     leaf_selected((dynamic_cast<TreeRow*>(selectedrow))->LeafData());
   } catch(...)
-   { assert(!"selectedrow is a TCListRowData/Leaf"); }
+   { assert(!"selectedrow is a TreeRow/Leaf"); }
 }
 
-TCListRowData *TreeBase::NewNode
+TreeRow *TreeBase::NewNode
  		(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand)
-{  return new TCListRowData(deep,v,child_s_deep, child_s_data, expand); }
+{  return new TreeRow(deep,v,child_s_deep, child_s_data, expand); }
 
-TCListRowData *TreeBase::NewLeaf
+TreeRow *TreeBase::NewLeaf
  		(guint deep, const cH_EntryValue &v, const cH_RowDataBase &d)
-{  return new TCListRowData(deep,v,0,d); }
+{  return new TreeRow(deep,v,0,d); }
 
 
-TCListRowData *SimpleTree::defaultNewNode
+TreeRow *SimpleTree::defaultNewNode
  		(guint deep, const cH_EntryValue &v, guint child_s_deep, cH_RowDataBase child_s_data, bool expand)
-{  return new TCListRowData(deep,v,child_s_deep, child_s_data, expand); }
+{  return new TreeRow(deep,v,child_s_deep, child_s_data, expand); }
 
 cH_RowDataBase TreeBase::getSelectedRowDataBase() const
 	throw(noRowSelected,multipleRowsSelected,notLeafSelected)
@@ -642,9 +642,9 @@ cH_RowDataBase TreeBase::getSelectedRowDataBase() const
    if (second!=e) throw multipleRowsSelected();
    // perhaps put this into another function
    TCListRow_API *tclapi=(TCListRow_API*)(b->get_data());
-   TCListRowData *selectedrow=(TCListRowData*)(*tclapi).get_user_data();
+   TreeRow *selectedrow=(TreeRow*)(*tclapi).get_user_data();
    if (!selectedrow->Leaf()) throw notLeafSelected();
-   return (dynamic_cast<TCListRowData*>(selectedrow))->LeafData();
+   return (dynamic_cast<TreeRow*>(selectedrow))->LeafData();
 }
 
 std::vector<cH_RowDataBase> TreeBase::getSelectedRowDataBase_vec() const throw(notLeafSelected)
@@ -654,9 +654,9 @@ std::vector<cH_RowDataBase> TreeBase::getSelectedRowDataBase_vec() const throw(n
    for (SelectionList::iterator i=selection().begin(); i!=e; ++i)
     {
       TCListRow_API *tclapi=(TCListRow_API*)(i->get_data());
-      TCListRowData *selectedrow=(TCListRowData*)(*tclapi).get_user_data();
+      TreeRow *selectedrow=(TreeRow*)(*tclapi).get_user_data();
       if (!selectedrow->Leaf()) throw notLeafSelected();
-      v.push_back((dynamic_cast<TCListRowData*>(selectedrow))->LeafData());
+      v.push_back((dynamic_cast<TreeRow*>(selectedrow))->LeafData());
     }
    return v;
 }
@@ -672,7 +672,7 @@ TCListNode &TreeBase::getSelectedNode() const
    // perhaps put this into another function
 
    TCListRow_API *tclapi=(TCListRow_API*)(b->get_data());
-   TCListRowData *selectedrow=(TCListRowData*)(*tclapi).get_user_data();
+   TreeRow *selectedrow=(TreeRow*)(*tclapi).get_user_data();
    if (selectedrow->Leaf()) throw notNodeSelected();
    return *dynamic_cast<TCListNode*>(selectedrow);
 }

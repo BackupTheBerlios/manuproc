@@ -33,8 +33,12 @@ class AuftragBase
         cH_ppsInstanz instanz; 	
  	int auftragid;	
  public:
-	AuftragBase() : instanz(ppsInstanz::INST_NONE), auftragid(0) {}
-	AuftragBase(cH_ppsInstanz _instanz, int aufid=0) throw() : instanz(_instanz), auftragid(aufid) {}
+	AuftragBase() 
+	        : instanz(ppsInstanz::INST_NONE), auftragid(0) {}
+	AuftragBase(cH_ppsInstanz _instanz, int aufid=0) throw() 
+	        :instanz(_instanz), auftragid(aufid) 
+	        {}
+	AuftragBase(cH_ppsInstanz _instanz, int aufid,int kid) throw(SQLerror) ;
 	int Id() const {return auftragid;}
         void set_Id(int i) {auftragid = i;}
         ppsInstanz::ID Instanz() const {return instanz->Id(); }

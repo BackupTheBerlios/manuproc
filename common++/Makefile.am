@@ -10,6 +10,7 @@ libcommon___a_LIBADD= \
 		Artikel/ArtikelBaum.o \
 		Artikel/ArtikelBaumFull.o \
 		Artikel/ArtikelBezeichnung.o \
+		Artikel/ArtikelMengeSumme.o \
 		Artikel/ArtikelStamm.o \
 		Artikel/ArtikelTyp.o \
 		Artikel/Artikelpreis_sql.o \
@@ -83,6 +84,7 @@ libcommon___a_LIBADD= \
 		Lieferschein/Rechnung_sql.o \
 		Lieferschein/RechnungEntry_sql.o \
       Lieferschein/RechnungVoll_sql.o \
+      Lieferschein/Zahlungsart_sql.o \
       ProdInstanz/ProdInstanz_sql.o \
       ProdInstanz/maschinen_geschwindigkeit_sql.o \
 		ostream/time_t_ostr.o

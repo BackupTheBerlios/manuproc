@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Einheiten.h,v 1.3 2001/07/05 09:23:02 christof Exp $
+// $Id: Einheiten.h,v 1.4 2001/11/19 12:49:24 christof Exp $
 
 // diese Datei ... sollte vielleicht demnaechst aus einer Datenbanktabelle
 // erzeugt werden? Tabelle: Einheiten
@@ -27,15 +27,18 @@
 #include <Artikel/ArtikelBase.h>
 #include <Aux/SQLerror.h>
 
-enum Einheiten
-{  EINH_STUECK, EINH_METER, EINH_KG, EINH_FDKM };
-
 class Einheit
-{	enum Einheiten einh;
-public:
+{public:
+	enum Einheiten { Stueck, Meter, kg, Fdkm };
 	typedef enum Einheiten ID;
-	
+	static const ID default_id=Stueck;
+
+private:
+	enum Einheiten einh;
+
+public:
 	Einheit(ID e) : einh(e) {}
+	ID Id() const { return einh; }
 	operator std::string() const;
 	operator Einheiten() const
 	{ return einh;
@@ -49,5 +52,11 @@ public:
 	std::string MengenEinheit() const;
 	std::string TeX() const;
 };
+
+// bitte nicht mehr verwenden ! (globaler Namensraum)
+static const Einheit::ID EINH_STUECK=Einheit::Stueck;
+static const Einheit::ID EINH_METER=Einheit::Meter;
+static const Einheit::ID EINH_KG=Einheit::kg;
+static const Einheit::ID EINH_FDKM=Einheit::Fdkm;
 
 #endif

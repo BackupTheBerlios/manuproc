@@ -31,6 +31,7 @@ Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
    int KDNR;
    char RNGART[1];
    char DATUM[21];
+   int ZAHLART;
    char ZAHLZIEL[11];
    int IZAHLZIEL;
    int WAEHRUNG;
@@ -40,15 +41,17 @@ Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
 
  Transaction tr;
 
- exec sql select r.kundennr, date(r.datum), r.rngart, zahlziel, 
+ exec sql select r.kundennr, date(r.datum), r.rngart, 
+         zahlart, zahlziel, 
  			coalesce(waehrung,1), coalesce(rabatt,0), bezahlt
-		into :KDNR, :DATUM, :RNGART, :ZAHLZIEL:IZAHLZIEL,
+		into :KDNR, :DATUM, :RNGART, :ZAHLART, :ZAHLZIEL:IZAHLZIEL,
 		   :WAEHRUNG, :RABATT, :BEZAHLT
  	from rechnung r where r.rngid = :RNGID ;
  SQLerror::test(__FILELINE__);
 
  kunde=cH_Kunde(KDNR);
  rngart = (RngArt)RNGART[0];
+ zahlungsart = cH_Zahlungsart(ZAHLART);
  waehrung=cP_Waehrung(WAEHRUNG);
  rabatt=RABATT;
  rgdatum=Petig::Datum(DATUM);
@@ -98,14 +101,24 @@ Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
 void Rechnung::setze_Datum(Petig::Datum rgdatum) throw(SQLerror)
 {
  exec sql begin declare section;
-   int RNGID;
+   int RNGID=Id();
    char DATE[50]; 
  exec sql end declare section;
- RNGID=Id();
  //strncpy(DATE,rgdatum.c_str(),sizeof(DATE));
  rgdatum.write_postgres(DATE,sizeof(DATE));
  exec sql update rechnung set datum=:DATE where rngid=:RNGID;
  SQLerror::test(__FILELINE__":Rechnung: setze_Datum(Petig::Datum rgdatum)");	
+}
+
+
+void Rechnung::setze_Zahlungsart(cH_Zahlungsart z) throw(SQLerror)
+{
+ exec sql begin declare section;
+   int RNGID=Id();
+   int ZAHLART=z->Id(); 
+ exec sql end declare section;
+ exec sql update rechnung set zahlart=:ZAHLART where rngid=:RNGID;
+ SQLerror::test(__FILELINE__":Rechnung: setze_Zahlungsart");	
 }
 
 
@@ -120,20 +133,6 @@ void Rechnung::deleteLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror)
  
  RNGID=Id();
  LFRSID=lfrsid;
-/*
- std::vector<RechnungEntry>::iterator i;
- std::vector<RechnungEntry>::iterator j=end();
- for(i=begin();i!=j;)
-	{if((*i).Lfrs_Id()==lfrsid)
-	  {RechnungEntry::deleteEntry(*i);
-	   REntries.erase(i);
-	   i=begin(); j=end();
-	  }
-	 ++i;
-	}
-*/
-#warning das alte funktionierte nicht fehlerfrei, ich hoffe
-#warning daa  neue (nur eine Zeile!) erfüllt auch seinen Zweck MAT
  exec sql delete from rechnungentry where lfrsid=:LFRSID and rngid=:RNGID; 
 
  exec sql update lieferschein set rngid=null where lfrsid= :LFRSID;

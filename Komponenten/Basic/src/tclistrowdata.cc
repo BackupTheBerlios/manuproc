@@ -16,26 +16,26 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistrowdata.cc,v 1.6 2001/11/07 07:43:41 christof Exp $
+// $Id: tclistrowdata.cc,v 1.7 2001/11/19 12:49:56 christof Exp $
 
 #include <tclistrowdata.h>
 #include <treebase.h>
 
-void TCListRowData::initTCL(TCListRow_API *api, TCListRow_API::iterator davor,
+void TreeRow::initTCL(TCListRow_API *api, TCListRow_API::iterator davor,
 			const TreeBase &tb) // ,int deep)
 {
  listrow = api->insert(davor, getColEntries(tb),Leaf()?-1:int(Children_s_Deep()),expand);
  listrow->set_user_data(this);
 }
 
-void TCListRowData::initTCL(TCListRow_API *api, const TreeBase &tb) // ,int deep)
+void TreeRow::initTCL(TCListRow_API *api, const TreeBase &tb) // ,int deep)
 {
  listrow = api->push_back(getColEntries(tb),Leaf()?-1:int(Children_s_Deep()),expand);
  listrow->set_user_data(this);
 }
 
 // deep kann sinnvollerweise eigentlich nur erhöht werden
-void TCListRowData::ValueDeep(const cH_EntryValue &ev, guint _deep)
+void TreeRow::ValueDeep(const cH_EntryValue &ev, guint _deep)
 {  // Felder löschen !
    for (guint i=Deep();i<_deep;++i)
       static_cast<TCListRow*>(getTCL_API())->set_text(i,"");
@@ -44,7 +44,7 @@ void TCListRowData::ValueDeep(const cH_EntryValue &ev, guint _deep)
 }
 
 // childrens_deep kann sinnvollerweise eigentlich nur erniedrigt werden
-void TCListRowData::Children_s_Deep(guint _deep)
+void TreeRow::Children_s_Deep(guint _deep)
 {  // Felder löschen !
    for (guint i=_deep;i<Children_s_Deep();++i)
       static_cast<TCListRow*>(getTCL_API())->set_text(i,"");
@@ -53,7 +53,7 @@ void TCListRowData::Children_s_Deep(guint _deep)
 
 // errechnete Summe in CList anzeigen, nur für Nodes sinnvoll
 // rekursiv!
-void TCListRowData::refreshSum(const TreeBase &tb)
+void TreeRow::refreshSum(const TreeBase &tb)
 {if (Leaf() || tb.Attrs()==tb.Cols()) return;
 // std::deque<guint> order=tb.get_seq();
  
@@ -64,8 +64,8 @@ void TCListRowData::refreshSum(const TreeBase &tb)
    { assert(!"listrow is a TCListRow"); }
 
  for (TCListRow_API::iterator i = listrow->begin();i!=listrow->end();++i)
- {  if (!((TCListRowData*)(*i).get_user_data())->Leaf())
-	 ((TCListRowData*)(*i).get_user_data())->refreshSum(tb);
+ {  if (!((TreeRow*)(*i).get_user_data())->Leaf())
+	 ((TreeRow*)(*i).get_user_data())->refreshSum(tb);
  }
 }
 
@@ -73,9 +73,9 @@ void TCListRowData::refreshSum(const TreeBase &tb)
 // leaves zeigen bis zum Ende an, Nodes bis Children_s_Deep
 // Summen kommen hier nicht so vor ...
 
-// Sehr optimiert, da sämtliche Aufrufe an TCListRowData::Value(col,gp) 
+// Sehr optimiert, da sämtliche Aufrufe an TreeRow::Value(col,gp) 
 // abgekürzt sind
-const std::vector<std::string> TCListRowData::getColEntries(const TreeBase &tb) const
+const std::vector<std::string> TreeRow::getColEntries(const TreeBase &tb) const
 {std::vector<std::string> v(tb.Cols());
  std::deque<guint> order=tb.get_seq();
 
@@ -93,7 +93,7 @@ const std::vector<std::string> TCListRowData::getColEntries(const TreeBase &tb) 
  return v;
 }
 
-const cH_EntryValue TCListRowData::Value(guint col, gpointer gp) const
+const cH_EntryValue TreeRow::Value(guint col, gpointer gp) const
 { if (col<Deep() || (!Leaf() && col>=Children_s_Deep()))
      return cH_EntryValue();
   return LeafData()->Value(col, gp);

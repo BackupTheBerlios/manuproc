@@ -1,4 +1,4 @@
-/* $Id: KettenGarn.h,v 1.1 2001/11/07 08:23:25 christof Exp $ */
+/* $Id: KettenGarn.h,v 1.2 2001/11/19 12:49:24 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -35,8 +35,11 @@ public:
 	        : index(0),zeile(0),kettenzahl(0),faeden(0), art(0) {}
 	KettenGarn(int i,int z,int k,int f,ArtikelBase id) 
 	        : index(i), zeile(z),kettenzahl(k),faeden(f), art(id) {}
-//	bool operator==(const ArtikelGang &b) const throw()
-//	{  return Id()==b.Id(); }
+	bool operator==(const KettenGarn &b) const throw()
+	{  return Index()==b.Index() && 
+	          Artikel()==b.Artikel() &&
+	          Faeden()==b.Faeden() &&
+	          Kettenzahl()==b.Kettenzahl(); }
 
 // this is for convenience only	
 	const cH_ArtikelBezeichnung Bezeichnung(const cH_ExtBezSchema &h) const throw()

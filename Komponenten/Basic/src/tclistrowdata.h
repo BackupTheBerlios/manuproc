@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistrowdata.h,v 1.7 2001/11/05 08:57:31 christof Exp $
+// $Id: tclistrowdata.h,v 1.8 2001/11/19 12:49:56 christof Exp $
 
 // BAD name for this include file actually it's a TreeRow
 
@@ -33,7 +33,7 @@ class TreeBase;
 
 // better name this class TreeRow - or TreeNode ?
 
-class TCListRowData 
+class TreeRow
 {protected:
 	TCListRow_API *listrow;
 	cH_EntryValue value;
@@ -76,21 +76,23 @@ class TCListRowData
  virtual const std::string getColText() const { return value->getStrVal(); }
 
 public:
+ typedef TCListRow_API::const_iterator const_iterator;
+ 
 	// deep2:=0 for a leaf
- TCListRowData(guint _deep1, const cH_EntryValue &v, guint _deep2, 
+ TreeRow(guint _deep1, const cH_EntryValue &v, guint _deep2, 
  		cH_RowDataBase data, bool exp=false)
    : listrow(0), value(v), expand(exp), deep(_deep1), childrens_deep(_deep2),
    	leafdata(data)
  {}
- virtual ~TCListRowData() {}
+ virtual ~TreeRow() {}
 
- static TCListRowData *create(guint _deep1, const cH_EntryValue &v, guint _deep2, 
+ static TreeRow *create(guint _deep1, const cH_EntryValue &v, guint _deep2, 
  		cH_RowDataBase data, bool exp=false)
- {  return new TCListRowData(_deep1,v, _deep2, data, exp); }
+ {  return new TreeRow(_deep1,v, _deep2, data, exp); }
 
- bool operator==(const TCListRowData &v) const
+ bool operator==(const TreeRow &v) const
  {  return (*value) == *(v.Value()); }
- bool operator<(const TCListRowData &v) const
+ bool operator<(const TreeRow &v) const
  {  return (*value) < *(v.Value()); }
 
  bool Leaf() const { return childrens_deep==0; }
@@ -106,9 +108,16 @@ public:
  virtual void cumulate(const cH_RowDataBase &rd) {} 
  // wenn mir jemand verrät, was das hier ist ... CP 10'01
 // virtual void orderit(const cH_RowDataBase &rd) {}
+
+ const_iterator begin() const
+ {  return getTCL_API()->begin();
+ }
+ const_iterator end() const
+ {  return getTCL_API()->end();
+ }
 };
 
-typedef TCListRowData TreeRow;
+typedef TreeRow TCListRowData;
 typedef TCListRowData TCListNode;
 typedef TCListRowData TCListLeaf; // no difference any longer
 

@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.h,v 1.10 2001/11/07 08:23:25 christof Exp $
+// $Id: ArtikelBezeichnung.h,v 1.11 2001/11/19 12:49:24 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -109,6 +109,20 @@ public:
  const cH_ExtBezSchema getExtBezSchema() const throw()
  {  return schema;
  }
+ bool operator<(const ArtikelBezeichnung& b) const
+   { cH_EntryValue a1=Komponente_als_EntryValue(0);
+     cH_EntryValue a2=Komponente_als_EntryValue(1);
+     cH_EntryValue a3=Komponente_als_EntryValue(2);
+     cH_EntryValue a4=Komponente_als_EntryValue(3);
+     cH_EntryValue b1=b.Komponente_als_EntryValue(0);
+     cH_EntryValue b2=b.Komponente_als_EntryValue(1);
+     cH_EntryValue b3=b.Komponente_als_EntryValue(2);
+     cH_EntryValue b4=b.Komponente_als_EntryValue(3);
+     return   a1 <b1 || 
+             (a1==b1 && a2 <b2 ||
+                       (a2==b2 && a3 <b3 ||
+                                  a3==b3 && a4 <b4));
+         }
 
 // bloedes Konzept !!! eine Map waere besser als dieser HACK (erhoehen um 1)
 // bitte so nicht mehr verwenden

@@ -1,4 +1,4 @@
-/* $Id: AufEintragBase.h,v 1.14 2001/11/07 08:23:25 christof Exp $ */
+/* $Id: AufEintragBase.h,v 1.15 2001/11/19 12:49:24 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -138,11 +138,16 @@ private:
  list<cH_Kunde> get_Referenz_Kunden_long() const throw(SQLerror);
 public:
  list<pair<AufEintragBase2,long> > get_Referenz_list(const AufEintragBase2& aeb,bool kinder=false) const throw(SQLerror);
- list<pair<AufEintragBase2,long> > get_Referenz_AufEintragBase2(bool ursprung=true) const throw(SQLerror);
+ list<pair<AufEintragBase2,long> > get_Referenz_AufEintragBase2(bool ursprung=true,bool kinder=false) const throw(SQLerror);
                 //false: Alle Referenzaufträge 
                 //true:  Alle Kinderaufträge
  list<cH_Kunde> get_Referenz_Kunden() const throw(SQLerror);
  ArtikelBase::ID ArtId() const {return artikel.Id();}
+
+ static std::list<AufEintragBase2> get_AufEintragList_from_Artikel
+               (const ArtikelBase& artikel,const cH_ppsInstanz& instanz);
+ static AufEintragBase2 get_AufEintrag_from_Artikel_by_Lfdate
+               (const ArtikelBase& artikel,const cH_ppsInstanz& instanz); 
   
 
 // void setArtikelBezeichnung(const cH_ExtBezSchema &cs)
