@@ -9169,7 +9169,7 @@ Jahr
 	<class>GtkLabel</class>
 	<name>text</name>
 	<cxx_visibility>protected</cxx_visibility>
-	<label></label>
+	<label> </label>
 	<justify>GTK_JUSTIFY_CENTER</justify>
 	<wrap>False</wrap>
 	<xalign>0.5</xalign>

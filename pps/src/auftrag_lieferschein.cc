@@ -968,7 +968,7 @@ std::cout << "KUNDE reset\n";
 
 void auftrag_lieferschein::on_lager_buchen_clicked()
 {
-   buchen_dialog bd;
+   buchen_dialog bd(!instanz->ExterneBestellung());
    bd.set_transient_for(*this);
    int ret=bd.run();
    bd.destroy();
