@@ -213,7 +213,7 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string &yaufnr) throw(S
   
 #ifdef MABELLA_EXTENSIONS
  if(!yaufnr.empty())
-   {exec sql update auftrag set youraufnr=:YOURAUFNR where
+   {exec sql update auftrag set youraufnr=nullif(:YOURAUFNR,'') where
 	(auftragid,instanz)=(:AUFTRAGID,:INSTANZ);
     SQLerror::test(__FILELINE__":Auftrag: update youraufnr");	
    }
@@ -225,7 +225,7 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string &yaufnr) throw(S
 
  exec sql update auftrag set notiz=(select auf_notiz from kunden
 	where kundennr=:KUNDENNR) where auftragid=:AUFTRAGID;
- SQLerror::test(__FILELINE__":Auftrag: update youraufnr");	
+ SQLerror::test(__FILELINE__":Auftrag: update notiz");	
 #endif
 
 
@@ -272,7 +272,7 @@ Auftrag::Auftrag(Anlegen2 AB, long kdnr, const std::string &yaufnr) throw(SQLerr
   
 #ifdef MABELLA_EXTENSIONS
  if(!yaufnr.empty())
-   {exec sql update auftrag set youraufnr=:YOURAUFNR where
+   {exec sql update auftrag set youraufnr=nullif(:YOURAUFNR,'') where
 	(auftragid,instanz)=(:AUFTRAGID,:INSTANZ);
     SQLerror::test(__FILELINE__":Auftrag: update youraufnr");	
    }
@@ -284,7 +284,7 @@ Auftrag::Auftrag(Anlegen2 AB, long kdnr, const std::string &yaufnr) throw(SQLerr
 
  exec sql update auftrag set notiz=(select auf_notiz from kunden
 	where kundennr=:KUNDENNR) where auftragid=:AUFTRAGID;
- SQLerror::test(__FILELINE__":Auftrag: update youraufnr");	
+ SQLerror::test(__FILELINE__":Auftrag: update notiz");	
 #endif
 
  exec sql select date(datum) into :DATUM from auftrag 
@@ -341,11 +341,11 @@ void Auftrag::setYourAufNr(const std::string &yanr) throw(SQLerror)
 
  Query q("update auftrag set youraufnr=? where (auftragid,instanz)=(?,?)");
 
- q << yanr << Id() <<  Instanz();
+ q << Query::NullIf(yanr,"") << Id() <<  Instanz();
  SQLerror::test(__FILELINE__);
 
  std::string new_yaid;
- Query("select youraufnr from auftrag where (auftragid,instanz)=(?,?)")
+ Query("select coalesce(youraufnr,'') from auftrag where (auftragid,instanz)=(?,?)")
 	<< Id() << Instanz() >> new_yaid;
 
  youraufnr_cache[*this]=new_yaid;
