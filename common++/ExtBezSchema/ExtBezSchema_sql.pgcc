@@ -1,6 +1,6 @@
-// $Id: ExtBezSchema_sql.pgcc,v 1.17 2003/03/24 13:56:26 jacek Exp $
+// $Id: ExtBezSchema_sql.pgcc,v 1.18 2003/03/24 17:13:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,8 +20,7 @@
 #include <ExtBezSchema/ExtBezSchemaHandle.h>
 #include <Misc/Transaction.h>
 #include <Misc/itos.h>
-
-exec sql include sqlca;
+#include <Misc/FetchIStream.h>
 
 cH_ExtBezSchema::cache_t cH_ExtBezSchema::cache;
 
@@ -34,74 +33,66 @@ cH_ExtBezSchema::cH_ExtBezSchema(ExtBezSchema::ID eid,const ArtikelTyp &t) throw
    }
 }
 
+FetchIStream &operator>>(FetchIStream &is, MultiL_Dict::LangTXT &x)
+{  x = MultiL_Dict::LangTXT(is.Fetch<int>());
+   return is;
+}
+
+FetchIStream &operator>>(FetchIStream &is, ExtBezSchema::BezKomp &b)
+{  is >> b.bezkomptype >> b.bezkomptext 
+	>> FetchIStream::MapNull(b.separator,"") 
+	>> b.spaltenname
+	>> FetchIStream::MapNull(b.signifikanz,0) 
+	>> FetchIStream::MapNull(b.TeXtabformat,"c");
+#ifndef PETIG_EXTENSIONS
+   is >> FetchIStream::MapNull(b.textid,0);
+#endif
+   return is;
+}
+
 ExtBezSchema::ExtBezSchema(ID eid,const ArtikelTyp &t) throw(SQLerror)
-	: typ(t)
+	: extartbezid(eid), typ(t)
 {
- exec sql begin declare section;
-  char query[1024];
- exec sql end declare section;
  bool IDseen=false; // hack?
  int maxBKT=0;
-
- std::string squery;
-   squery = "select bezkomptype, bezkomptext, coalesce(separator,''), "
- 	    " coalesce(spaltenname,bezkomptext), coalesce(signifikanz,0), "
-	    " coalesce(textabformat,'c'),coalesce(jumbo_bez,''),"
-	    " coalesce(textid,0) "
- 	" from extbezschema"
-	" where extartbezid= "+itos(eid)+" and artikeltyp="+itos(t)
-	+" order by signifikanz,bezkomptype" ;
- strncpy(query,squery.c_str(),sizeof(query));
-
- Transaction tr;
- exec sql prepare BEZKOMP_ from :query;
- exec sql declare BEZKOMP cursor for BEZKOMP_; 
- exec sql open BEZKOMP;
- SQLerror::test(__FILELINE__"ExtBezSchema::ExtBezSchema");
-
- extartbezid=eid; 
  int tmp_sig=-1;
- int folgenr_in_sig;
+ int folgenr_in_sig=0;
 
- while(!sqlca.sqlcode)
-   {
-    exec sql begin declare section;
-    int BEZKOMPTYPE[20];
-    char BEZKOMPTEXT[20][21];
-    char SEPARATOR[20][2];
-    char SPALTENNAME[20][21];
-    char TEXTABFORMAT[20][10];
-    int SIGNIFIKANZ[20];
-    char JUMBOBEZ[20][10];
-    int TEXTID[20];
-    exec sql end declare section;
-    exec sql fetch 20 from BEZKOMP 
-	into :BEZKOMPTYPE, :BEZKOMPTEXT, :SEPARATOR,
-		:SPALTENNAME, :SIGNIFIKANZ, :TEXTABFORMAT, :JUMBOBEZ,
-		:TEXTID ;
-    SQLerror::test(__FILELINE__"ExtBezSchema::ExtBezSchema","BEZKOMP",100);
-    if(sqlca.sqlcode==100) break;
-    unsigned int lines=sqlca.sqlerrd[2];
-    for (unsigned int i=0;i<lines;++i)
-    {  
-	if(tmp_sig!=SIGNIFIKANZ[i])
-	  {tmp_sig=SIGNIFIKANZ[i]; folgenr_in_sig=0;}
-       bezkomps.push_back(BezKomp(BEZKOMPTYPE[i],BEZKOMPTEXT[i],
-    		SEPARATOR[i],SPALTENNAME[i],SIGNIFIKANZ[i],
-		folgenr_in_sig++,TEXTABFORMAT[i],
-		(MultiL_Dict::LangTXT)TEXTID[i]));
-       if (!IDseen && std::string(SPALTENNAME[i])=="id") IDseen=true;
-       if (BEZKOMPTYPE[i]>maxBKT) maxBKT=BEZKOMPTYPE[i];
-       if ((std::string)JUMBOBEZ[i]!="") 
-       { jumbobez=JUMBOBEZ[i]; 
-         jumboindex=BEZKOMPTYPE[i];
-       	 jumbotitel=BEZKOMPTEXT[i];
-       	 jumbospalte=SPALTENNAME[i];
-       }
+ Query q("select bezkomptype,bezkomptext,separator,"
+ 	    "coalesce(spaltenname,bezkomptext),signifikanz,"
+	    "textabformat "
+#ifndef PETIG_EXTENSIONS
+	    ",textid "
+#else
+	    ",jumbo_bez "
+#endif
+ 	"from extbezschema "
+	"where (extartbezid,artikeltyp)=(?,?) "
+	"order by signifikanz,bezkomptype");
+ q << eid << t;
+ FetchIStream is;
+ q.ThrowOnBad(__FUNCTION__);
+ while ((q>>is).good()) 
+ {  BezKomp komp;
+    is >> komp;
+    if(tmp_sig!=komp.signifikanz) 
+    {  tmp_sig=komp.signifikanz; folgenr_in_sig=0; }
+    komp.folgenr_in_sig=folgenr_in_sig++;
+    bezkomps.push_back(komp);
+    
+    if (!IDseen && komp.spaltenname=="id") IDseen=true;
+    if (komp.bezkomptype>maxBKT) maxBKT=komp.bezkomptype;
+#ifdef PETIG_EXTENSIONS    
+    std::string jumbobez_t= is.FetchMap<std::string>(std::string());
+    if (!jumbobez_t.empty()) 
+    {  jumbobez=jumbobez_t; 
+       jumboindex=komp.bezkomptype;
+       jumbotitel=komp.bezkomptext;
+       jumbospalte=komp.spaltenname;
     }
-    if (lines<20) break;
-   }
- exec sql close BEZKOMP;
+#endif
+ }
+       
  if (bezkomps.empty()) 
     throw SQLerror(__FILELINE__,100,"Schema leer = nicht vorhanden");
  if (!IDseen) bezkomps.push_back(BezKomp(maxBKT+1,"ID","","id",99,-1,"r",

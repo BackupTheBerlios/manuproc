@@ -7,9 +7,9 @@ noinst_LIBRARIES=libBaseObjects.a
 include_HEADERS=ManuProcEintrag.h ManuProcEntity.h ManuProcVorgang.h MVC.h \
 	ManuProcEntity_FetchIStream.h
 
-#libBaseObjects_a_SOURCES=ManuProcEntity.cc
+libBaseObjects_a_SOURCES=ManuProcEntity.cc
 
-libBaseObjects.a: $(libLieferschein_a_OBJECTS) $(libBaseObjects_a_DEPENDENCIE)
+libBaseObjects.a: $(libBaseObjects_a_OBJECTS) $(libBaseObjects_a_DEPENDENCIES)
 	touch $@
 
 CLEANFILES= *~ 

@@ -43,6 +43,7 @@ libcommon___a_LIBADD= \
 		Bank/Bankauftrag.o \
 		Bank/Datenfehler.o \
 		Bank/Zahlvorgang.o \
+		BaseObjects/ManuProcEntity.o \
 		ExtBezSchema/ExtBezSchema_sql.o \
 		Faeden/Bindung.o \
 		Faeden/Bindung_sql.o \

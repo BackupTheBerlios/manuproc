@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema.h,v 1.16 2003/03/24 13:56:26 jacek Exp $
+// $Id: ExtBezSchema.h,v 1.17 2003/03/24 17:13:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -53,6 +53,10 @@ public:
 			, spaltenname(sname), signifikanz(sign), 
 			folgenr_in_sig(snr),TeXtabformat(texf),
 			textid(_textid)
+		{}
+		BezKomp() 
+		: bezkomptype(0), signifikanz(0), folgenr_in_sig(0), 
+			textid(MultiL_Dict::LangTXT(0))
 		{}
 	};
 	typedef std::vector<BezKomp>::const_iterator const_iterator;

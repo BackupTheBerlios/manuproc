@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.25 2003/03/24 10:36:01 christof Exp $
+// $Id: FetchIStream.h,v 1.26 2003/03/24 17:13:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -102,6 +102,12 @@ public:
 	 T Fetch()
 	{  T res;
 	   *this >> res;
+	   return res;
+	}
+	template <class T>
+	 T FetchMap(const T &nv)
+	{  T res;
+	   *this >> MapNull(res,nv);
 	   return res;
 	}
 	
