@@ -1,11 +1,11 @@
-dnl $Id: petig.m4,v 1.71 2004/04/22 16:20:05 christof Exp $
+dnl $Id: petig.m4,v 1.72 2004/04/29 16:27:08 christof Exp $
 
 dnl Configure paths for some libraries
 dnl derived from kde's acinclude.m4
 
 dnl why not /usr/local/lib/mico-setup.sh
 
-AC_DEFUN(EXKDE_CHECK_LIBDL,
+AC_DEFUN([EXKDE_CHECK_LIBDL],
 [
 AC_CHECK_LIB(dl, dlopen, [
 LIBDL="-ldl"
@@ -20,7 +20,7 @@ ac_cv_have_shload=yes
 AC_SUBST(LIBDL)
 ])
 
-AC_DEFUN(EXKDE_CHECK_MICO,
+AC_DEFUN([EXKDE_CHECK_MICO],
 [
 AC_REQUIRE([EXKDE_CHECK_LIBDL])
 AC_MSG_CHECKING(for MICO)
@@ -100,7 +100,7 @@ IDL=$kde_micodir/bin/idl
 AC_SUBST(IDL)
 ])
 
-AC_DEFUN(EXKDE_CHECK_MINI_STL,
+AC_DEFUN([EXKDE_CHECK_MINI_STL],
 [
 AC_REQUIRE([EXKDE_CHECK_MICO])
 
@@ -130,7 +130,7 @@ if test "$kde_cv_have_mini_stl" = "yes"; then
 fi
 ])
 
-AC_DEFUN(PETIG_CHECK_MICO,
+AC_DEFUN([PETIG_CHECK_MICO],
 [
 EXKDE_CHECK_MICO([2.3.3])
 AC_REQUIRE([EXKDE_CHECK_MINI_STL])
@@ -142,7 +142,7 @@ MICO_GTKLIBS="-lmicogtk$kde_cv_mico_version"
 AC_SUBST(MICO_GTKLIBS)
 ])
 
-AC_DEFUN(PETIG_CHECK_ECPG,
+AC_DEFUN([PETIG_CHECK_ECPG],
 [
 if test "x$ECPG_INCLUDES" == "x"
 then
@@ -216,13 +216,13 @@ fi
 ])
 
 dnl this name not that consistent
-AC_DEFUN(PETIG_CHECK_POSTGRES,
+AC_DEFUN([PETIG_CHECK_POSTGRES],
 [ PETIG_CHECK_ECPG
 ])
 
 dnl PETIG_CHECK_LIB(lib name,dir name,define name,alt.lib+dir name,dep1,dep2)
 
-AC_DEFUN(PETIG_CHECK_LIB,
+AC_DEFUN([PETIG_CHECK_LIB],
 [
 dnl only if not already checked
 if test "x$$3_INCLUDES" == "x" 
@@ -308,7 +308,7 @@ then
 fi
 ])
 
-AC_DEFUN(PETIG_CHECK_GTKMM,
+AC_DEFUN([PETIG_CHECK_GTKMM],
 [
 if test "x$GTKMM_CFLAGS" == "x"
 then
@@ -318,11 +318,13 @@ GTKMM_INCLUDES="$GTKMM_CFLAGS"
 AC_SUBST(GTKMM_INCLUDES)
 GTKMM_NODB_LIBS="$GTKMM_LIBS"
 AC_SUBST(GTKMM_NODB_LIBS)
+GTKMM_SIGC_VERSION=0x100
 ])
 
-AC_DEFUN(PETIG_CHECK_GTKMM2,
+AC_DEFUN([PETIG_CHECK_GTKMM2],
 [
-PKG_CHECK_MODULES(GTKMM2,[gtkmm-2.0 >= 1.3.20])
+PKG_CHECK_MODULES(GTKMM2,[gtkmm-2.4 >= 2.4.0],GTKMM_SIGC_VERSION=0x200,
+	[PKG_CHECK_MODULES(GTKMM2,[gtkmm-2.0 >= 1.3.20],GTKMM_SIGC_VERSION=0x120)])
 GTKMM2_CFLAGS="$GTKMM2_CFLAGS"
 AC_SUBST(GTKMM2_CFLAGS)
 GTKMM2_INCLUDES="$GTKMM2_CFLAGS"
@@ -331,27 +333,43 @@ GTKMM2_NODB_LIBS="$GTKMM2_LIBS"
 AC_SUBST(GTKMM2_NODB_LIBS)
 ])
 
-AC_DEFUN(PETIG_CHECK_COMMONXX,
+AC_DEFUN([MPC_CHECK_COMMONXX_SIGC],
+[ if test -z "$MPC_SIGC_VERSION"
+  then
+   CXXFLAGS="$COMMONXX_INCLUDES $CXXFLAGS"
+   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
+#include <ManuProCConfig.h>
+#if MPC_SIGC_VERSION != $1
+#error MPC_SIGC_VERSION not $1
+#endif
+		])],[MPC_SIGC_VERSION=$1],[])
+   CXXFLAGS="$old_cxxflags"
+  fi
+])
+
+AC_DEFUN([PETIG_CHECK_COMMONXX],
 [
 PETIG_CHECK_LIB(common++,c++,COMMONXX,ManuProC_Base)
 # check which sigc was used to configure ManuProC_Base
-old_cxxflags="$CXXFLAGS"
-CXXFLAGS="$COMMONXX_INCLUDES $CXXFLAGS"
-AC_COMPILE_IFELSE(
-	[AC_LANG_PROGRAM([
-#include <ManuProCConfig.h>
-#ifndef SIGC1_2
-#error not 1.2
-#endif
-		])],[SIGC1_2=1],[])
-CXXFLAGS="$old_cxxflags"
-if test "x$SIGC1_2" = x
+AC_MSG_CHECKING(which sigc++ was used to configure ManuProC_Base)
+MPC_CHECK_COMMONXX_SIGC(0x200)
+MPC_CHECK_COMMONXX_SIGC(0x120)
+MPC_CHECK_COMMONXX_SIGC(0x100)
+AC_MSG_RESULT($MPC_SIGC_VERSION)
+  
+if test "$MPC_SIGC_VERSION" = 0x100
 then
    ifdef([AM_PATH_SIGC],
    	[AM_PATH_SIGC(1.0.0,,AC_MSG_ERROR("SigC++ 1.0.x not found or broken - see config.log for details."))],
    	[AC_MSG_ERROR("sigc-config (from SigC++ 1.0.x development package) missing")])
-else
+fi
+if test "$MPC_SIGC_VERSION" = 0x120
+then
    PKG_CHECK_MODULES(SIGC,[sigc++-1.2 >= 1.2.0])
+fi
+if test "$MPC_SIGC_VERSION" = 0x200
+then
+   PKG_CHECK_MODULES(SIGC,[sigc++-2.0 >= 1.9.15])
 fi
 COMMONXX_INCLUDES="$COMMONXX_INCLUDES $SIGC_CFLAGS"
 COMMONXX_LIBS="$COMMONXX_LIBS $SIGC_LIBS"
@@ -383,33 +401,36 @@ fi
 
 ])
 
-AC_DEFUN(PETIG_CHECK_KOMPONENTEN,
+AC_DEFUN([MPC_CHECK_SIGC_MATCH],
 [
-PETIG_CHECK_LIB(Komponenten,Komponenten,KOMPONENTEN,ManuProC_Widgets,COMMONXX,COMMONGTK)
-if test "x$SIGC1_2" != x
-then AC_MSG_ERROR([ManuProC_Base/common++ was not configured with sigc++ 1.0 support])
+if test "$MPC_SIGC_VERSION" != "$GTKMM_SIGC_VERSION"
+then AC_MSG_ERROR([ManuProC_Base was configured with different sigc++ ($MPC_SIGC_VERSION) version than gtkmm ($GTKMM_SIGC_VERSION)])
 fi
 ])
 
-AC_DEFUN(PETIG_CHECK_COMMONGTK,
+AC_DEFUN([PETIG_CHECK_KOMPONENTEN],
+[
+PETIG_CHECK_LIB(Komponenten,Komponenten,KOMPONENTEN,ManuProC_Widgets,COMMONXX,COMMONGTK)
+MPC_CHECK_SIGC_MATCH
+])
+
+AC_DEFUN([PETIG_CHECK_COMMONGTK],
 [
 PETIG_CHECK_LIB(GtkmmAddons,gtk,COMMONGTK,GtkmmAddons,GTKMM)
 ])
 
-AC_DEFUN(PETIG_CHECK_COMMONGTK2,
+AC_DEFUN([PETIG_CHECK_COMMONGTK2],
 [
 PETIG_CHECK_LIB(GtkmmAddons,gtk2,COMMONGTK2,GtkmmAddons,GTKMM2)
 ])
 
-AC_DEFUN(PETIG_CHECK_KOMPONENTEN2,
+AC_DEFUN([PETIG_CHECK_KOMPONENTEN2],
 [
 PETIG_CHECK_LIB(Komponenten,Komponenten2,KOMPONENTEN2,ManuProC_Widgets,COMMONXX,COMMONGTK2)
-if test "x$SIGC1_2" = x
-then AC_MSG_ERROR([ManuProC_Base/common++ was not configured with sigc++ 1.2 support])
-fi   
+MPC_CHECK_SIGC_MATCH
 ])
 
-AC_DEFUN(PETIG_CHECK_BARCOLIB,
+AC_DEFUN([PETIG_CHECK_BARCOLIB],
 [
 PETIG_CHECK_LIB(barco,barcolib,BARCOLIB) 
 ])
