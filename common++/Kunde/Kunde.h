@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.46 2003/04/12 11:33:38 jacek Exp $
+// $Id: Kunde.h,v 1.47 2003/04/12 11:51:41 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -313,7 +313,7 @@ public:
         void update_e(UpdateBitsSonst e);
 
 //	void delete_Kunde(Kunde::ID kid) throw(SQLerror);
-        unsigned int nextval();
+        static const Kunde::ID nextval();
         
 	void reread_Stand() throw(SQLerror);                
 	

@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.42 2003/04/12 11:33:38 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.43 2003/04/12 11:51:42 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -233,7 +233,7 @@ const cH_Kunde Kunde::newKunde(const Kunde::ID kid, const std::string &firma,
 //#endif
 //}
 
-unsigned int Kunde::nextval()
+const Kunde::ID Kunde::nextval()
 {
  exec sql begin declare section;
    unsigned int KUNDENNR;
