@@ -35,6 +35,7 @@
 #include <PPixmap.hh>
 //#include <Lager/Lager_Vormerkungen.hh>
 #include <unistd.h>
+#include <MyWindow.hh>
 
 extern MyMessage *meldung;
 
@@ -49,11 +50,23 @@ bool auftragflag;/* zeigt an ab wann auftragid in den Zeilen */
 
 void auftrag_main::on_beenden_activate()
 {   
+ save_WindowSize();
  maintree_s->detach_from_clist();
  tree_lager_frei->detach_from_clist();
  tree_lager_verplant->detach_from_clist();
  Gtk::Main::instance()->quit();
 }
+
+void auftrag_main::save_WindowSize()
+{
+  gint width,height,x,y;
+  Gdk_Window fenster=get_window();
+  fenster.get_size(width,height);
+  fenster.get_position(x,y);
+  Global_Settings::create(int(getuid()),"pps","Size",itos(width)+":"+itos(height));
+  Global_Settings::create(int(getuid()),"pps","Position",itos(x)+":"+itos(y));
+}
+
 
 void auftrag_main::on_erfassen_activate()
 {   
@@ -71,9 +84,16 @@ void auftrag_main::on_erfassen_activate()
 
 void auftrag_main::on_neuladen_activate()
 {
- if(allaufids) { delete(allaufids); allaufids=NULL; }
  fill_simple_tree();
 }
+
+void auftrag_main::neuladen()
+{
+ if(preload_orders->get_active()) fill_simple_tree();
+ else maintree_s->clear();
+}
+
+
 
 #define TEXCMD "tex2prn -2 -q -Phl1260"
 
@@ -209,20 +229,29 @@ void auftrag_main::on_materialbedarf_sortiert()
   bool b=materialbedarf_sortiert_nach_artikel->get_active();
   Global_Settings::create(int(getuid()),"pps","Materialbedarf_Artikelsortiert",bool2str(b)); 
 }
-void auftrag_main::on_offene_auftraege_activate()
-{
-#warning diese Funktion wird durch jeden Mausklick
-#warning 2x aufgerufen!!!! MAT
-  if(block_callback) return;
-  if (offene_auftraege->get_active())             selected_status=OPEN;
-  else if (unbestaetigte_auftraege->get_active()) selected_status=UNCOMMITED;
-  else if (stornierte_auftraege->get_active())    selected_status=STORNO;
-  else if (geschlossene_auftraege->get_active())  selected_status=CLOSED;
-  else assert(!"Falscher Status");
 
+void auftrag_main::statusaenderung()
+{
+  if(block_callback) return;
   on_neuladen_activate();
   Global_Settings::create(int(getuid()),"pps","Status_shown",itos(selected_status)); 
 }
+
+void auftrag_main::on_closed_auftraege_activate()
+{ if(geschlossene_auftraege->get_active())  
+    { selected_status=CLOSED; statusaenderung();}}
+
+void auftrag_main::on_offene_auftraege_activate()
+{ if(offene_auftraege->get_active())
+    {selected_status=OPEN; statusaenderung();}}
+
+void auftrag_main::on_unbest_auftraege_activate()
+{ if (unbestaetigte_auftraege->get_active()) 
+   { selected_status=UNCOMMITED; statusaenderung();}}
+
+void auftrag_main::on_storno_auftraege_activate()
+{ if (stornierte_auftraege->get_active())    
+   {selected_status=STORNO; statusaenderung();}}
 
 void auftrag_main::on_auftraege_kunde_activate()
 {
@@ -234,6 +263,8 @@ void auftrag_main::on_auftraege_kunde_activate()
 
 void auftrag_main::loadEinstellungen()
 {
+  MyWindow::setPositionSize(*this,"pps");
+  ////////////////////////////////////////////////
   block_callback=true;
   std::string bs;
 
@@ -302,13 +333,17 @@ auftrag_main::auftrag_main()
 
 
 #ifdef MABELLA_EXTENSIONS    
-    button_Kunden_erledigt->hide();
-    button_auftrag_erledigt->hide();
     button_faerben->hide();
 #endif     
+    button_auftrag_erledigt->hide(); // nicht implementiert
+    button_Kunden_erledigt->hide();  // nicht implementiert
+
  kunden_lieferant->setLabel("Lieferantennr","Lieferantenname");
+ kunden_lieferant->EinschraenkenKdGr(KundengruppeID::Lieferanten);
  set_column_titles_of_simple_tree();
- show_frame_instanzen_material();
+ neuer_auftrag_tree_titel_setzen();
+
+ instanz_selected(instanz); 
 
  if(preload_orders->get_active()) fill_simple_tree();
  maintree_s->set_remember("pps","maintree-"+itos(instanz->Id()));
@@ -339,6 +374,7 @@ void auftrag_main::set_column_titles_of_simple_tree()
 
 void auftrag_main::fill_simple_tree()
 {
+  if(allaufids) { delete(allaufids); allaufids=0; }
   if(instanz->LagerInstanz())
       lager_zeigen();   
   else
@@ -410,6 +446,7 @@ void auftrag_main::on_leaf_selected(cH_RowDataBase d)
  selected_AufEintrag = &dt->get_AufEintrag();
 //cout << "SE="<< selected_AufEintrag<<'\t'<<selected_AufEintrag->Instanz()->Name()<<' '<<selected_AufEintrag->Id()<<' '<<selected_AufEintrag->ZNr()<<'\n';;
  show_something_for(*selected_AufEintrag);
+ instanz_auftrag_anlegen(*selected_AufEintrag); 
  }catch(std::exception &e) {std::cerr<<e.what();}
 }
 
@@ -493,7 +530,7 @@ void auftrag_main::get_ArtikelHerkunft(const AufEintrag& AEB,
 
 void auftrag_main::on_unselect_row(gint row, gint column, GdkEvent *event)
 {
-  show_frame_instanzen_material();
+//  show_frame_instanzen_material();
 }
 
 
@@ -601,7 +638,7 @@ void auftrag_main::instanz_menge(const std::map<st_index,st_mengen>& map_allart)
                   j->second.planMenge<  j->second.bestellMenge)
              {  pixmapG = PPixmap().getPixMap('?'); 
              }
-          else pixmapG = PPixmap().getPixProz(j->second.planMenge,j->second.sollMenge);            
+          else pixmapG = PPixmap().getPixProz(j->second.planMenge.as_float(),j->second.sollMenge.as_float());            
            tab->attach(*pixmapG,0,1,row,row+1,GTK_FILL,0,0,0);
         }
 #endif
@@ -662,6 +699,7 @@ void auftrag_main::on_button_artikeleingabe_clicked()
 
 void auftrag_main::menu_instanz()
 {
+ try{
  Gtk::Menu *instanz_menu = manage(new class Gtk::Menu());
  Gtk::MenuItem *instanz = manage(new class Gtk::MenuItem("Instanz"));
  instanz->set_submenu(*instanz_menu);
@@ -673,10 +711,11 @@ void auftrag_main::menu_instanz()
     Gtk::RadioMenuItem *rm = manage(new class Gtk::RadioMenuItem(_RadioMIGroup_,(*i)->Name()));
     instanz_menu->append(*rm);
     rm->show();    
-    rm->activate.connect(SigC::bind(SigC::slot(this,&auftrag_main::instanz_selected),*i));
+    rm->activate.connect(SigC::bind(SigC::slot(this,&auftrag_main::radio_instanz_selected),rm,*i));
   }
  main_menubar->append(*instanz);
  instanz->show();
+ }catch(SQLerror &e) {meldung->Show(e);}
 }
 
 // Diese struct kann weg, wenn uns kein anderes Vergleichskriterium einfällt
@@ -697,14 +736,13 @@ bool operator==(cH_RowDataBase rdb, const show_maching_compare &comp)
   return false;
 }
 
+void auftrag_main::radio_instanz_selected(const Gtk::RadioMenuItem *rm,const cH_ppsInstanz _instanz)
+{
+  if(rm->get_active()) instanz_selected(_instanz);
+}
 
 void auftrag_main::instanz_selected(const cH_ppsInstanz _instanz)
 {
-#warning drei SINNLOSE Zeilen wegen eines Bugs???? MAT
-  static int x=1;
-  if(x==1) {++x;return;}
-  else x=1;
-  
   instanz=_instanz;
   set_title(instanz->get_Name());
   instanz_auftrag=0;
@@ -719,7 +757,7 @@ void auftrag_main::instanz_selected(const cH_ppsInstanz _instanz)
   AufEintrag AEK;
   if(selected_AufEintrag) AEK=selected_AufEintrag->getFirstKundenAuftrag();
 
-  on_neuladen_activate();
+  neuladen();
 
   if(AEK.Instanz()!=ppsInstanzID::None)
    {
@@ -732,90 +770,79 @@ void auftrag_main::instanz_selected(const cH_ppsInstanz _instanz)
         maintree_s->moveto(maintree_s->selection().begin()->get_row_num(),0,0.5,0);
 }
    }
+  frame_instanzen->hide() ;
   show_frame_instanzen_material();   
+//  guint psize=GTK_WIDGET(vpaned_an_mat->gtkobj())->allocation.height;
+//  vpaned_an_mat->set_position(5*psize);
 }
 
 void auftrag_main::show_frame_instanzen_material()
 {
  // noch nicht implementiert ?
  button_Kunden_erledigt->hide();
+ tree_neuer_auftrag->clear();
+ Datum_instanz->setLabel("");
+ spinbutton_geplante_menge->hide();
+ searchcombo_auftragid->reset();
+ togglebutton_geplante_menge->set_active(false);
 
+  if(instanz->LagerInstanz())
+   { 
+     hpaned_tree_lager->show();
+     vpaned_an_mat->hide();
+     togglebutton_auftraege->hide();
+     togglebutton_material->hide();
+     togglebutton_bestellen->hide();
+   }
+  else
+   { 
+     vpaned_an_mat->show();
+     hpaned_tree_lager->hide();
+     togglebutton_auftraege->show();
+     togglebutton_material->show();
+     togglebutton_bestellen->show();
+   }
+
+  if(instanz->Lieferschein())  lieferschein_button->show();
+  else                         lieferschein_button->hide();
+
+  if(instanz == ppsInstanzID::Kundenauftraege)
+   {
+    togglebutton_bestellen->hide(); 
+    mainprint_button->show();
+    rechnung_button->show();
+    togglebutton_auftraege->hide();
+    button_faerben->show();    
+   }
+  else
+   {
+    mainprint_button->hide();
+    rechnung_button->hide();
+    button_faerben->hide();    
+   }
+
+  if(instanz->ExterneBestellung() || instanz == ppsInstanzID::Kundenauftraege)  
+    { kunden_lieferant->show();
+      erfassen_button->show();
+    }
+  else
+    { kunden_lieferant->hide();
+      erfassen_button->hide();
+    }
+
+
+// Spalten im Baum
  if (instanz->Id() == ppsInstanzID::Kundenauftraege)
    {
     maintree_s->set_column_visibility(KUNDE,true);
     maintree_s->set_column_visibility(AUFTRAG,true);
     maintree_s->set_column_visibility(LETZEPLANINSTANZ,true);
-
-    mainprint_button->show();
-    rechnung_button->show();
-#ifdef MABELLA_EXTENSIONS    
-    button_auftrag_erledigt->hide();
-#endif    
-    togglebutton_auftraege->hide();
    }
   else 
    { 
     maintree_s->set_column_visibility(KUNDE,false); 
     maintree_s->set_column_visibility(AUFTRAG,false); 
     maintree_s->set_column_visibility(LETZEPLANINSTANZ,false);
-
-    mainprint_button->hide();
-    rechnung_button->hide();
-    button_auftrag_erledigt->hide();
-    togglebutton_auftraege->show();
-
-    // warum fehlt das denn bei Kundenaufträgen ? CP
-    neuer_auftrag_tree_titel_setzen(); // Kann auch in den Konstruktor MAT
-    tree_neuer_auftrag->clear();
-    Datum_instanz->setLabel("");
-
-    spinbutton_geplante_menge->hide();
-    searchcombo_auftragid->reset();
-    togglebutton_geplante_menge->set_active(false);
-    button_Kunden_erledigt->show();
-   }
-
-  erfassen_button->show(); 
-  // Grund: auch in der Färberei könnte es nett sein, sich Aufträge anzusehen
-  // oder welche einzugeben.
-  // auch wenn es vielleicht noch nicht funktioniert
-
-  if(instanz->Lieferschein())
-   { lieferschein_button->show();
-     togglebutton_bestellen->hide(); 
-     kunden_lieferant->show();
-   }
-  else
-   {
-    lieferschein_button->hide();
-    togglebutton_bestellen->show();
-    kunden_lieferant->hide();
-   }
-
-  if(togglebutton_bestellen->get_active()) 
-    { frame_instanzen->show() ;
-      maintree_s->set_selection_mode(GTK_SELECTION_MULTIPLE);
-    }
-  else 
-    { frame_instanzen->hide() ;
-      maintree_s->set_selection_mode(GTK_SELECTION_SINGLE);
-    }
-
-
-  if(instanz->LagerInstanz())
-   { 
-     maintree_s->hide();
-     hpaned_tree_lager->show();
-//     togglebutton_auftraege->hide();
-//     togglebutton_material->hide();
-     button_Kunden_erledigt->hide();
-     togglebutton_bestellen->hide();
-   }
-  else
-   { maintree_s->show();
-     hpaned_tree_lager->hide();
-     togglebutton_auftraege->show();
-     togglebutton_material->show();
    }
 
   // frame_materialbedarf
@@ -841,17 +868,24 @@ void auftrag_main::show_frame_instanzen_material()
 
 void auftrag_main::on_togglebutton_bestellen_toggled()
 {
-  if(togglebutton_bestellen->get_active()) frame_instanzen->show() ;
-  else { 
+  if(togglebutton_bestellen->get_active()) 
+   { frame_instanzen->show() ;
+     maintree_s->set_selection_mode(GTK_SELECTION_MULTIPLE);
+   }
+  else 
+   { 
      frame_instanzen->hide() ;
+     maintree_s->set_selection_mode(GTK_SELECTION_SINGLE);
      guint psize=GTK_WIDGET(vpaned_an_mat->gtkobj())->allocation.height;
      vpaned_an_mat->set_position(5*psize);
    }
 }
+
 void auftrag_main::on_togglebutton_material_toggled()
 {
   if(togglebutton_material->get_active()) handle_togglebutton('M');
 }
+
 void auftrag_main::on_togglebutton_auftraege_toggled()
 {
   if(togglebutton_auftraege->get_active()) handle_togglebutton('A');

@@ -31,7 +31,7 @@
 #include <Auftrag/AuftragFull.h>
 //#include "auftrag_main.hh"
 #include <unistd.h>
-
+#include <Aux/Trace.h>
 
 extern MyMessage *meldung;
 extern auftrag_main *auftragmain;
@@ -47,7 +47,11 @@ void auftrag_lieferschein::on_liefer_neu()
  {  liefer_kunde->grab_focus();
     return;
  }
+ try{
  lieferschein = new Lieferschein(instanz,cH_Kunde(liefer_kunde->get_value()));
+ }
+ catch(SQLerror &e) {meldung->Show(e); return;}
+ 
  liefdate->set_value(ManuProC::Datum::today());
 
  tree_daten->clear();
@@ -55,6 +59,13 @@ void auftrag_lieferschein::on_liefer_neu()
  vbox_eingabe->show();
  tree_daten->show();
 
+ rngnr->set_text("");
+ spinbutton_paeckchen->set_value(1);
+ spinbutton_pakete->set_value(1);
+ spinbutton_brutto->set_value(0);
+ spinbutton_netto->set_value(0);
+ entry_dpdnr->set_text("");
+  
 }
 
 void auftrag_lieferschein::on_lief_save()
@@ -96,8 +107,8 @@ void auftrag_lieferschein::display(int lfrsid)
  entry_dpdnr->set_text(itos0p(lieferschein->getDPDlnr(),Lieferschein::Offen));
  spinbutton_pakete->set_value(lieferschein->Pakete());
  spinbutton_paeckchen->set_value(lieferschein->Paeckchen());
- spinbutton_brutto->set_value(lieferschein->GewichtBrutto());
- spinbutton_netto->set_value(lieferschein->GewichtNetto());
+ spinbutton_brutto->set_value(lieferschein->GewichtBrutto().as_float());
+ spinbutton_netto->set_value(lieferschein->GewichtNetto().as_float());
 #endif
 }
 
@@ -109,7 +120,7 @@ try{
  cH_Kunde k(kdnr);
 
 #ifdef PETIG_EXTENSIONS 
-   if(instanz->BestellungFuer()!=ppsInstanzID::None)
+   if(instanz->EinlagernIn()!=ppsInstanzID::None)
     { artikelbox->setExtBezSchema(cH_Kunde(Kunde::default_id)->getSchema(ArtikelTypID::Garn)); }
    else if (artikelbox->getBezSchema()->Id() != k->getSchemaId())
     { artikelbox->setExtBezSchema(k->getSchema(ArtikelTypID::Band)); }
@@ -253,7 +264,7 @@ void auftrag_lieferschein::on_offen_leaf_selected(cH_RowDataBase d)
  const Data_Lieferoffen *dt=dynamic_cast<const Data_Lieferoffen*>(&*d);
  if(dt->getAufEintrag().getRestStk()<=0) return;
  fill_input(dt->getAufEintrag());
- if(lieferschein->RngNr() == ManuProcEntity::none_id)
+ if(lieferschein->RngNr() == ManuProcEntity<>::none_id)
    {button_zeile_uebernehmen->set_sensitive(true);
     button_kompletter_auftrag->set_sensitive(true);
    }
@@ -267,7 +278,7 @@ void auftrag_lieferschein::on_offen_leaf_selected(cH_RowDataBase d)
 
 void auftrag_lieferschein::fill_input(const AufEintrag& AE)
 {
-  fill_with(AE,Einheit(AE.Artikel()),AE.getRestStk(),1);
+  fill_with(AE,Einheit(AE.Artikel()),AE.getRestStk().as_int(),1);
 }
 void auftrag_lieferschein::fill_input(const AufEintrag& AE,const LieferscheinEntry& LE)
 {
@@ -275,7 +286,7 @@ void auftrag_lieferschein::fill_input(const AufEintrag& AE,const LieferscheinEnt
   if(LE.Valid() && LE.ZusatzInfo()) 
    { button_zeile_modifizieren->set_sensitive(false) ; 
      return; }
-  fill_with(AE,Einheit(LE.Artikel()),LE.Stueck(),LE.Menge());
+  fill_with(AE,Einheit(LE.Artikel()),LE.Stueck(),LE.Menge().as_float());
   Palette->set_value(LE.Palette());
 }
 
@@ -328,6 +339,11 @@ auftrag_lieferschein::auftrag_lieferschein(cH_ppsInstanz _instanz)
   liefer_kunde->Einschraenken(true);     
 #endif
 
+#ifdef MABELLA_EXTENSIONS
+ button_zeile_uebernehmen->set_sensitive(false);
+ button_kompletter_auftrag->set_sensitive(false);
+#endif
+
  set_tree_titles();
  liefernr->set_value_in_list(false,false);
  liefernr->set_always_fill(false);
@@ -377,7 +393,19 @@ void auftrag_lieferschein::set_tree_daten_content(LieferscheinBase::ID lfrsid)
       cH_LieferscheinVoll LV=cH_LieferscheinVoll(instanz,lfrsid);
       std::vector<cH_RowDataBase> datavec;
       for(std::vector<LieferscheinEntry>::const_iterator i=LV->LsEntries().begin();i!=LV->LsEntries().end();++i)
+       {
          datavec.push_back(new Data_Lieferdaten(*i));
+         if(i->ZusatzInfo())
+          {
+            std::vector<LieferscheinEntry::st_zusatz> VZ=i->getZusatzInfos();
+            std::string zeile=itos(i->Zeile());
+            char z='a';
+            for(std::vector<LieferscheinEntry::st_zusatz>::const_iterator j=VZ.begin();j!=VZ.end();++j)
+             {
+               datavec.push_back(new Data_Lieferdaten(zeile+(z++),*i,j->aeb,j->menge)); 
+             }
+          }
+       }
       tree_daten->setDataVec(datavec);
 #warning warum geht das moveto nicht? MAT
       tree_daten->cell(datavec.size()-1,0).moveto();
@@ -405,6 +433,7 @@ void auftrag_lieferschein::clear_input()
 
 void auftrag_lieferschein::on_Palette_activate()
 { 
+//ManuProC::Tracer::Enable(ManuProC::Tracer::Artikel);
   anzahl->update();
   liefermenge->update();
   Palette->update();
@@ -414,18 +443,6 @@ void auftrag_lieferschein::on_Palette_activate()
 
  try 
  {Transaction tr;
-#ifdef PETIG_EXTENSIONS 
-  if(instanz->Id()==ppsInstanzID::_Garn__Einkauf)
-   {
-     int anzahl_kartons = anzahl->get_value_as_int();
-     Lieferschein::mengen_t kg_pro_karton = liefermenge->get_value_as_float();
-     RohwarenLager L;  
-     AuftragBase::mengen_t menge;
-     if(Einheit(artikel).hatMenge()) menge=anzahl_kartons*kg_pro_karton;
-     else menge=anzahl_kartons;
-     L.rein_ins_lager(artikel,menge,getuid());
-   }
-#endif
   if (!tree_offen->selection().size())
   {  // Menge verteilen
      lieferschein->push_back(artikel,anzahl->get_value_as_int(),
@@ -440,16 +457,20 @@ void auftrag_lieferschein::on_Palette_activate()
      		e.hatMenge()?liefermenge->get_value_as_float():0.0,
      		Palette->get_value_as_int());
   } 
-  tr.commit();
+
+
   
   bool grab=!tree_offen->selection().size();
   set_tree_daten_content(lieferschein->Id());
   set_tree_offen_content();  // refresh display
   clear_input();
+//ManuProC::Tracer::Enable(ManuProC::Tracer::Artikel,false);
   if (grab)
   {  anzahl->select_region(0,anzahl->get_text_length());
      anzahl->grab_focus();
   }
+  tr.commit();
+
  }
  catch(SQLerror &e) 
  { if(e.Code()==-400) liefernr->grab_focus(); //noch kein Liefrschein vorhanden 
@@ -490,7 +511,7 @@ void auftrag_lieferschein::auftragzeile_zeile_uebernehmen(const AufEintrag &AE)
 {
    Einheit e(AE.Artikel());
    AufEintrag ae(AE);
-   lieferschein->push_back(ae,AE.Artikel(), AE.getRestStk(),
+   lieferschein->push_back(ae,AE.Artikel(), AE.getRestStk().as_int(),
      		e.hatMenge()?liefermenge->get_value_as_float():0.0,
      		Palette->get_value_as_int());
 }
@@ -532,7 +553,7 @@ void auftrag_lieferschein::on_daten_leaf_selected(cH_RowDataBase d)
  tree_offen->unselect_all();
  try{
  const Data_Lieferdaten *dt=dynamic_cast<const Data_Lieferdaten*>(&*d);
- if(rngnr->get_text()=="" && 
+ if(lieferschein->RngNr() == ManuProcEntity<>::none_id && 
     dt->get_Lieferschein_Id()!=LieferscheinBase::none_id)
    {
     lieferzeile_delete->set_sensitive(true);
@@ -578,6 +599,7 @@ void auftrag_lieferschein::on_button_liste_clicked()
 
 void auftrag_lieferschein::set_tree_offen_content()
 {
+//return;
  clear_input();
  tree_offen->clear();
 // if (!show_offen) return; 
@@ -628,3 +650,29 @@ void auftrag_lieferschein::on_checkbutton_ean_drucken_clicked()
      showEAN(checkbutton_ean_drucken->get_active());
     }  
 }
+
+
+std::string Data_Lieferdaten::FormatiereMenge(ArtikelBase artikel, int stueck, AuftragBase::mengen_t menge)
+{
+ return  FormatiereMenge(artikel,stueck,LieferscheinBase::mengen_t(menge));
+}
+
+
+
+std::string Data_Lieferdaten::FormatiereMenge(ArtikelBase artikel, int stueck, LieferscheinBase::mengen_t menge)
+{
+  std::string s;
+  if (stueck!=1)
+   {  s=Formatiere(stueck)
+        + Einheit(artikel).StueckEinheit();
+   }
+  if (menge.Scaled()!=0)
+   {  if (stueck!=1) smenge+="*";
+      s+=Formatiere_short(menge)
+         + Einheit(artikel).MengenEinheit();
+   }
+  if (stueck==1 && menge.Scaled()==0)
+      s=Formatiere(stueck)+Einheit(artikel).MengenEinheit();
+ return s;
+}
+

@@ -22,7 +22,8 @@ pps_SOURCES = pps.cc\
 	auftrag_rechnung.cc \
 	auftrag_rechnung_glade.cc \
 	termsplidial.cc \
-	termsplidial_glade.cc 
+	termsplidial_glade.cc \
+	lieferscheinliste_classes.cc
 
 
 noinst_HEADERS = \

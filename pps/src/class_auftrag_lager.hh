@@ -52,7 +52,7 @@ public:
       case MENGE  : {
           if(subleaf) return cH_EntryValueIntString("");
 //          return cH_EntryValueIntString(FormatiereEmptyInt(LI.GesamtMenge()));
-          return cH_EntryValueIntString(FormatiereEmptyInt(AE.getStueck()));
+          return cH_EntryValueIntString(FormatiereEmptyInt(AE.getStueck().as_int()));
         }
 /*
       case VERPLANT : return cH_EntryValueIntString(FormatiereEmptyInt(verplant));

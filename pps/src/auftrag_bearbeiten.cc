@@ -26,15 +26,15 @@
 #include <Aux/Ausgabe_neu.h>
 #include <Aux/dbconnect.h>
 #include <unistd.h>
-//#include <Auftrag/AufEintrag.h>
-
-//#include <Auftrag/AuftragsEntryZuordnung.h>
+#include <Instanzen/ppsInstanzProduziert.h>
 
 #ifndef OLD
 #include<Auftrag/selFullAufEntry.h>
 #include "MyMessage.h"  
 #include "auftragbase.h"
 #endif
+#include <MyWindow.hh>
+
 
 extern auftrag_main *auftragmain;
 
@@ -48,9 +48,9 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
 	artikel_preisliste_geaendert(false), newauftrag(false),
 	splitdialog(0)
 {
+ MyWindow::setPositionSize(*this,"pps");
+ set_title("Auftragserfassung: "+instanz->get_Name());
  liefdatum_datewin->set_tab_pos(GTK_POS_TOP);
-// table_auftragseintraege->hide();
-// scrolledwindow_auftraege->hide();
  aufeintrag_box->hide(); // beinhaltet beide oben
  
 #ifdef PETIG_EXTENSIONS
@@ -115,8 +115,7 @@ void auftrag_bearbeiten::onSelArtikel()
 #endif
 
     Preis p(ap.In(auftrag->getWaehrung()));
-    WPreis->set_Waehrung(auftrag->getWaehrung());
-    WPreis->set_all(p.Wert(),p.PreisMenge());
+    WPreis->set_value(p);
     artikel_preisliste_geaendert=false;
   } catch (SQLerror &e) 
   {  std::cerr << e <<'\n';  }
@@ -182,6 +181,7 @@ void auftrag_bearbeiten::on_backtomain_button_clicked()
 {if (splitdialog) splitdialog->destroy();
  destroy();
  auftragmain->show(); 
+ MyWindow::setPositionSize(*auftragmain,"pps");
 }
 
 void auftrag_bearbeiten::on_newauftrag_button_clicked()
@@ -248,7 +248,7 @@ void auftrag_bearbeiten::on_jahrgang_spinbutton_activate()
 void auftrag_bearbeiten::on_stkmtr_spinbutton_activate()
 {   
  assert(auftrag);
- if(aktaufeintrag)
+ if(aktaufeintrag && ppsInstanzID::Kundenauftraege)
       {
        gtk_spin_button_update(stkmtr_spinbutton->gtkobj());
        AuftragBase::mengen_t diffmenge=
@@ -270,7 +270,7 @@ void auftrag_bearbeiten::on_stkmtr_spinbutton_activate()
 void auftrag_bearbeiten::on_lieferdatum_activate()
 {   
   assert(auftrag);
-  if(aktaufeintrag)
+  if(aktaufeintrag  && ppsInstanzID::Kundenauftraege)
       {aktaufeintrag->updateLieferdatum(liefdatum_datewin->get_value(),getuid());
        fillCList();
 	    auftrag_clist->grab_focus();
@@ -294,8 +294,6 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
     return;
    }
    
-// assert(auftrag);
-
  if (!aktaufeintrag)
    {
      stkmtr_spinbutton->update();
@@ -304,7 +302,6 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
       { artpreis=cH_PreisListe(PreisListe::none_id);
         artikel_preisliste_geaendert=false;
       }
-//     int znr=
 
 #ifdef MABELLA_EXTENSIONS // auf keinen Fall Preis=0.0 akzeptieren
  if(!(WPreis->get_Preis()!=Preis(0.0,WPreis->get_Preis().getWaehrung())) )
@@ -313,23 +310,34 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
    }
    
   if(  auftrag->existsEntry(artikelbox->get_value().Id(),
-  		       WAufEntryStat->get_Status(),
-	               liefdatum_datewin->get_value()) )
-   {meldung->Show("Der Artikel ist für diesen Lifertermin bereits erfaßt");
+  		       WAufEntryStat->get_Status()) )
+   {meldung->Show("Der Artikel ist in diesem Auftrag bereits erfaßt");
     return;
    }	           
    
 #endif
-
-     auftrag->AuftragFull::push_back(
+      if(instanz==ppsInstanzID::Kundenauftraege)
+       {
+         auftrag->AuftragFull::push_back(
                stkmtr_spinbutton->get_value_as_int(),
                liefdatum_datewin->get_value(),
-               artikelbox->get_value().Id(),
+               artikelbox->get_value(),
                WAufEntryStat->get_Status(),
                getuid(),
                WPreis->get_Preis(),
                rabattentry_spinbutton->get_value_as_float(),
                artpreis);
+       }
+      else if(instanz->ExterneBestellung())
+       {
+         AuftragBase AB(*auftrag);
+         ManuProC::st_produziert sp(artikelbox->get_value(),stkmtr_spinbutton->get_value_as_int(),
+               getuid(),Kunde::eigene_id,LieferscheinBase::none_id,AB,liefdatum_datewin->get_value());
+         instanz->Planen(sp);
+         AufEintragBase aeb(AB,sp.ZNr);
+         auftrag->AuftragFull::push_back(AufEintrag(aeb));
+       }
+      else assert(!"never get here");
       fillCList();
       if (!masseneingabe1->get_active())
       {  artikelbox->reset();
@@ -345,7 +353,6 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
          stkmtr_spinbutton->select_region(0,-1);
       }
 #endif
-      
     }
 }
 
@@ -423,6 +430,8 @@ void auftrag_bearbeiten::loadAuftrag(const AuftragBase& auftragbase)
 
 void auftrag_bearbeiten::fillMask() 
 {if (!auftrag) return;
+
+ try {
  kundenbox->set_value(auftrag->getKundennr());
  andererKunde(); // adjust Schema
  fillCList();
@@ -438,9 +447,14 @@ void auftrag_bearbeiten::fillMask()
  notiz->insert_text(auftrag->Notiz().c_str(),auftrag->Notiz().size(),&pos);
  notiz_save->set_sensitive(false);
 
- aufrabatt_spinbutton->set_value(auftrag->getAuftragsRabatt());
+ aufrabatt_spinbutton->set_value(auftrag->getAuftragsRabatt().as_float());
  zahlziel_datewin->set_value(auftrag->Zahlziel());
  auftrag_clist->thaw();
+ }
+ catch(std::exception &e) 
+   {meldung->Show(e.what());
+    return;
+   }	            
 }
 
 void auftrag_bearbeiten::Rabatt_setzen(const cH_Kunde &kunde)
@@ -452,12 +466,12 @@ void auftrag_bearbeiten::Rabatt_setzen(const cH_Kunde &kunde)
       aufrabatt_spinbutton->set_sensitive(false);
       aufrabatt_spinbutton->set_value(0);
       rabattentry_spinbutton->set_sensitive(true);
-      rabattentry_spinbutton->set_value(rngk->rabatt());
+      rabattentry_spinbutton->set_value(rngk->rabatt().as_float());
      }          
     else
      {
       aufrabatt_spinbutton->set_sensitive(true);
-      aufrabatt_spinbutton->set_value(rngk->rabatt());
+      aufrabatt_spinbutton->set_value(rngk->rabatt().as_float());
       rabattentry_spinbutton->set_value(0);
      }          
 }
@@ -465,9 +479,9 @@ void auftrag_bearbeiten::Rabatt_setzen(const cH_Kunde &kunde)
 void auftrag_bearbeiten::Rabatt_setzen(const cH_PreisListe &liste)
 {if (!kunde->zeilenrabatt()) return;
  if (liste->festerRabatt())
-    rabattentry_spinbutton->set_value(liste->getRabatt());
+    rabattentry_spinbutton->set_value(liste->getRabatt().as_float());
  else 
-    rabattentry_spinbutton->set_value(kunde->rabatt());
+    rabattentry_spinbutton->set_value(kunde->rabatt().as_float());
 }
 
 void auftrag_bearbeiten::andererKunde()
@@ -548,12 +562,12 @@ auftrag_bearbeiten::~auftrag_bearbeiten()
 void auftrag_bearbeiten::setAufEntries()
 {
  assert(aktaufeintrag);
- stkmtr_spinbutton->set_value(aktaufeintrag->getStueck());
+ stkmtr_spinbutton->set_value(aktaufeintrag->getStueck().as_int());
  liefdatum_datewin->set_value(aktaufeintrag->getLieferdatum());
 
- WPreis->set_Betrag(aktaufeintrag->EPreis().Wert());
- rabattentry_spinbutton->set_value(float(aktaufeintrag->Rabatt()));
- WPreis->set_Preismenge(aktaufeintrag->PreisMenge());
+ WPreis->set_Betrag(aktaufeintrag->EPreis().Wert().as_float());
+ rabattentry_spinbutton->set_value(aktaufeintrag->Rabatt().as_float());
+ WPreis->set_Preismenge(aktaufeintrag->PreisMenge().as_float());
  
  WAufEntryStat->set_history(aktaufeintrag->getEntryStatus());
 }
@@ -753,9 +767,9 @@ void auftrag_bearbeiten::fillCList()
         << cH_ArtikelBezeichnung(ArtikelBase(i->ArtId()))->Bezeichnung()<<'\t'
         << '\t'
         << i->getRestStk()<<'\t'
-        << i->EPreis().Wert()<<'\t'
+        << Formatiere(i->EPreis().Wert())<<'\t'
         << Formatiere(i->Rabatt()) <<'\t'
-        << i->GPreis().Wert()<<'\t'
+        << Formatiere(i->GPreis().Wert())<<'\t'
         << i->getLieferdatum()<<'\t'
         << i->getEntryStatusStr()<<"\t"
         << i->LastEditDate()<<"\n";

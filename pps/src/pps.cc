@@ -24,6 +24,7 @@
 #include <Aux/exception.h>
 #include <Aux/dbconnect.h>
 #include "MyMessage.h"
+#include <Misc/Trace.h>
 
 MyMessage *meldung;
 auftrag_main *auftragmain;
@@ -52,6 +53,8 @@ int main(int argc, char **argv)
    Gnome::Main m("auftrag", "0.0", 1, argv);
  ManuProC::PrintUncaughtExceptions();
 
+// ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+ 
  meldung = new MyMessage();
  try{ 
  ManuProC::dbconnect(*Conn); }
@@ -80,3 +83,4 @@ weiter:
  delete Conn;
  return 0;
 }
+

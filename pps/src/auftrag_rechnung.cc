@@ -182,10 +182,14 @@ void auftrag_rechnung::on_rngnr_activate()
  Rechnung::rabatt_t rabatt=rechnung.Rabatt();
  if (rabatt<0.0) { rabatt=-rabatt; rabatt_typ->set_history(rabatt_typ::Zuschlag); }
  else rabatt_typ->set_history(rabatt_typ::Rabatt);
- rabatt_wert->set_value(rabatt);
+ rabatt_wert->set_value(rabatt.as_float());
  rngdatum->set_value(rechnung.getDatum());
  zahlziel->set_value(rechnung.getZahlziel());
  optionmenu_zahlart->set_history(rechnung.getZahlungsart()->Id());
+
+ gint pos=0; 
+ rng_notiz->insert_text(rechnung.Notiz().c_str(),rechnung.Notiz().size(),&pos);
+ rng_notiz_save->set_sensitive(false);
 
  rtree_daten->show();
 // vbox_n_b_lieferscheine->show();
@@ -224,12 +228,12 @@ void auftrag_rechnung::lieferschein_uebernehmen()
    if(!(rechnung.Bezahlt()))
 	{
     try {
-       cH_Data_RLieferoffen dt(rtree_offen->getSelectedRowDataBase_as<cH_Data_RLieferoffen>());
+      cH_Data_RLieferoffen dt(rtree_offen->getSelectedRowDataBase_as<cH_Data_RLieferoffen>());
 
-	cH_Lieferschein chl(dt->get_Lieferschein()); 
-       if(rechnung.Rabatt() != (chl->AufRabatt()) && 
-	  rechnung.Rabatt() != (Rechnung::rabatt_t)0)
-           {meldung->Show("Aufträge mir unterschiedlichenn Rabatten\n"
+   	cH_Lieferschein chl(dt->get_Lieferschein()); 
+      if(rechnung.Rabatt() != (chl->AufRabatt()) && 
+         rechnung.Rabatt() != (Rechnung::rabatt_t)0)
+           {meldung->Show("Aufträge mit unterschiedlichen Rabatten\n"
            	"(Rechnung "
            	+Formatiere_short(rechnung.Rabatt())+"% Lieferschein/Auftrag "
            	+Formatiere_short(chl->AufRabatt())+"%)\n"
@@ -285,7 +289,7 @@ try{
   RechnungEntry RE=dt->get_RechnungEntry();
   Artikelpreis::UnCache(cH_Kunde(lieferkunde->get_value())->preisliste(),RE.Artikel());
   label_artikelpreis->set_text(Formatiere(Artikelpreis(cH_Kunde(lieferkunde->get_value())->preisliste(),RE.Artikel()).Wert()));
-  spinbutton_preiseingabe->set_value(RE.getPreis().Wert());
+  spinbutton_preiseingabe->set_value(RE.getPreis().Wert().as_float());
   table_preisvergleich->show_all();
   try{
     label_auftragspreis->set_text(Formatiere(RE.getAuftragsPreis().Wert()));
@@ -433,6 +437,7 @@ Mittlere Maustaste: 1 Kopie","");
    fill_optionmenu_zahlungsart();
    optionmenu_zahlart->get_menu()->deactivate.connect(SigC::slot(static_cast<class auftrag_rechnung*>(this), &auftrag_rechnung::optionmenu_zahlart_deactivate));
    rngdatum->setLabel("");
+   zahlziel->setLabel("");
 //   rtree_daten->hide();
    on_button_allopen_clicked();   
 }
@@ -555,4 +560,18 @@ void auftrag_rechnung::on_button_lieferscheine_aufraumen_clicked()
      Lieferschein::aufraumen();
      on_button_allopen_clicked();
   }catch(SQLerror &e) {meldung->Show(e);}
+}
+
+
+
+void auftrag_rechnung::on_notiz_changed()
+{
+  rng_notiz_save->set_sensitive(true);
+}
+
+void auftrag_rechnung::on_notiz_save_clicked()
+{   
+  if(rechnung.Id()!=Rechnung::none_id) 
+    rechnung.Notiz(rng_notiz->get_chars(0,rng_notiz->get_length()));
+  rng_notiz_save->set_sensitive(false);
 }

@@ -1,5 +1,10 @@
-#include <Aux/EntryValueIntString.h>
-#include <Aux/EntryValueDatum.h>
+
+
+#ifndef LLISTE_CLASSES
+#define LLISTE_CLASSES
+
+#include <Aux/EntryValueBase.h>
+
 #include <Aux/Datum.h>
 #include <Lieferschein/LieferscheinList.h>
 #include <Lieferschein/LieferscheinEntry.h>
@@ -14,45 +19,33 @@
 
 class Data_LListe : public RowDataBase
 {
+public:
+ typedef enum {KUM_DATUM,KUM_WOCHE,KUM_MONAT,KUM_QUARTAL,KUM_JAHR} KumVal;
+
+private:
 
     cH_Lieferschein liefer;
     LieferscheinEntry entry;
     Rechnung rechnung;
     ArtikelMenge menge;
+    KumVal option_timecumulate;
 
  public:
 
+
+
    Data_LListe(const cH_Lieferschein& l,const LieferscheinEntry& e,
-         const Rechnung& r)
+         const Rechnung& r, KumVal kv=KUM_DATUM)
       :  liefer(l),entry(e),rechnung(r),
-         menge(entry.ArtikelID(),entry.Stueck(),entry.Menge()) {}
+         menge(entry.ArtikelID(),entry.Stueck(),entry.Menge()),
+	 option_timecumulate(kv) {}
 
-   enum {KUNDE,AUFTRAG,ARTIKEL,BREITE,FARBE,AUFMACHUNG,LIEFERNR,
-         LIEFERDATUM/*,GELIEFERTAM*/,RECHNUNG,RECHNUNGSDATUM,SUM_MENGE,SUM_AMENGE};
+   typedef enum {KUNDE,AUFTRAG,ARTIKEL,BREITE,FARBE,AUFMACHUNG,LIEFERNR,
+         LIEFERDATUM,RECHNUNG,RECHNUNGSDATUM,SUM_MENGE,SUM_AMENGE} Spalten;
 
-    virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
-      {
-
-       switch(seqnr) {
-         case ARTIKEL ... AUFMACHUNG: {
-            cH_ArtikelBezeichnung AB(entry.ArtikelID());
-            return AB->Komponente_als_EntryValue(seqnr-ARTIKEL);
-          }
-         case KUNDE : return cH_EntryValueIntString(cH_Kunde(liefer->KdNr())->firma());
-         case AUFTRAG : return cH_EntryValueIntString(itos(entry.RefAuftrag().Id())+" ("+itos(entry.AufZeile())+")");
-         case LIEFERNR :return cH_EntryValueIntString( entry.Id());
-         case LIEFERDATUM : return cH_EntryValueDatum( liefer->getDatum());
-//         case GELIEFERTAM : return cH_EntryValueDatum( liefer->getDatum());
-         case RECHNUNG : return cH_EntryValueIntString( liefer->RngNr());
-         case RECHNUNGSDATUM : return cH_EntryValueDatum(rechnung.getDatum());
-         case SUM_MENGE: 
-              return cH_EntryValueIntString(menge.Menge());
-         case SUM_AMENGE: 
-              return cH_EntryValueIntString(menge.abgeleiteteMenge());
-        }
-       return cH_EntryValue();
-      }
+   virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const;
    const ArtikelMenge getArtikelMenge() const { return menge; }
+   void setTimeCumulate(KumVal opt) { option_timecumulate=opt;}
 };
 
 
@@ -96,3 +89,6 @@ protected:
 public:   
  cH_Data_LListe(Data_LListe *r) : Handle<const Data_LListe>(r) {}
 };
+
+#endif
+

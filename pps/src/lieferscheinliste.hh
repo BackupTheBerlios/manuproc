@@ -1,14 +1,3 @@
-// generated 2001/9/13 14:54:32 CEST by thoma@Tiger.
-// using glademm V0.6.2_cvs
-//
-// newer (non customized) versions of this file go to lieferscheinliste.hh_new
-
-// you might replace
-//    class foo : public foo_glade { ... };
-// by
-//    typedef foo_glade foo;
-// if you didn't make any modifications to the widget
-
 #ifndef _LIEFERSCHEINLISTE_HH
 #  include "lieferscheinliste_glade.hh"
 #  define _LIEFERSCHEINLISTE_HH
@@ -16,6 +5,7 @@
 
 class lieferscheinliste : public lieferscheinliste_glade
 {   
+
         LieferscheinList LL;
         ArtikelBase artbase;
         int kundenid;

@@ -30,9 +30,9 @@ class Data_Rechnung : public RowDataBase
                return cH_EntryValueIntString(AB->Bezeichnung());
               }
            case STUECK_SEQ :
-              return cH_EntryValueIntString(FormatiereEmpty_short(rentry.Stueck()));
+              return cH_EntryValueIntString(FormatiereEmptyInt(rentry.Stueck()));
            case LIEFMNG_SEQ :
-              return cH_EntryValueIntString(FormatiereEmpty_short(rentry.Menge()));
+              return cH_EntryValueIntString(rentry.Menge().String());
            case LIEFZEILE_SEQ :
               return cH_EntryValueIntString(rentry.Zeile());
            case PREIS_SEQ :

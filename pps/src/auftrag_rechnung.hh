@@ -70,6 +70,9 @@ class auftrag_rechnung : public auftrag_rechnung_glade
    void on_button_allopen_clicked();
    void on_button_lieferscheine_aufraumen_clicked();
 
+        void on_notiz_changed();
+        void on_notiz_save_clicked();
+
 // TreeRow *selectedrow_lief;
 // TreeRow *selectedrow_rng;
 // cH_Kunde kunde;

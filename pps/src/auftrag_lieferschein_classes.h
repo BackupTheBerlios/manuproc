@@ -14,7 +14,8 @@
 #include<Artikel/ArtikelBezeichnung.h>
 #include<Artikel/Einheiten.h>
 #include<Auftrag/AufEintrag.h>
-#include <Instanzen/Produziert.h>
+//#include <Instanzen/Produziert.h>
+#include <Instanzen/ppsInstanzProduziert.h>
 #include <unistd.h>
 
 
@@ -23,9 +24,30 @@
 class Data_Lieferdaten : public RowDataBase
 {
       LieferscheinEntry liefentry;
+      bool zusatzinfo;
+      std::string zeile;
+      AufEintragBase AEB;
+      std::string smenge;
+      int palette;
+      std::string artikel;
+      std::string FormatiereMenge(ArtikelBase artikel, int stueck, LieferscheinBase::mengen_t menge);
+      std::string FormatiereMenge(ArtikelBase artikel, int stueck, AuftragBase::mengen_t menge);
   public:
    Data_Lieferdaten(LieferscheinEntry _liefentry)
-      :liefentry(_liefentry) {}
+      : liefentry(_liefentry), zusatzinfo(false) 
+      { zeile=itos(liefentry.Zeile());
+        AEB=liefentry.getAufEintragBase();
+        palette=liefentry.Palette();
+        artikel=cH_ArtikelBezeichnung(liefentry.Artikel())->Bezeichnung();
+        smenge=FormatiereMenge(liefentry.Artikel(),liefentry.Stueck(),liefentry.Menge());
+      }
+   Data_Lieferdaten(std::string z,LieferscheinEntry _liefentry,
+                    AufEintragBase aeb,AuftragBase::mengen_t m)
+      : liefentry(_liefentry), zusatzinfo(true),zeile(z),AEB(aeb)
+       {  
+         smenge="("+FormatiereMenge(liefentry.Artikel(),1,m)+")";
+         palette=0;
+       }
 
    enum SeqNr {LIEFZEILE_SEQ,ARTIKEL_SEQ,AUFNR_SEQ,PALETTE_SEQ,LIEFMNG_SEQ};
 
@@ -34,43 +56,14 @@ class Data_Lieferdaten : public RowDataBase
      switch(seqnr)
       {
       case AUFNR_SEQ :
-         {  AuftragBase auf=liefentry.RefAuftrag();
-            if (auf.valid())
-          return cH_EntryValueIntString(Formatiere(auf.Id(),0,6,"","",'0'));
-            else return cH_EntryValueIntString("");
+         { if (AEB.valid())
+           return cH_EntryValueIntString(Formatiere(AEB.Id(),0,6,"","",'0'));
+           else return cH_EntryValueIntString("");
          }
-      case ARTIKEL_SEQ :
-         {
-           if (liefentry.ZusatzInfo()) return cH_EntryValueIntString("");
-           cH_ArtikelBezeichnung AB(liefentry.ArtikelID());
-           return cH_EntryValueIntString(AB->Bezeichnung());
-         }
-      case PALETTE_SEQ :
-         {
-           if (liefentry.ZusatzInfo()) return cH_EntryValueIntString("");
-           return cH_EntryValueEmptyInt(liefentry.Palette());
-         }
-      case LIEFMNG_SEQ :
-        {  
-           int stueck = liefentry.Stueck();
-           fixedpoint<3> menge = liefentry.Menge();
-           std::string a;
-           if (stueck!=1)
-             {  a=Formatiere(stueck)
-                 + Einheit(ArtikelBase(liefentry.ArtikelID())).StueckEinheit();
-             }
-           if (menge.Scaled()!=0)
-             {  if (stueck!=1) a+="*";
-                a+=Formatiere_short(menge)
-                 + Einheit(ArtikelBase(liefentry.ArtikelID())).MengenEinheit();
-             }
-           if (stueck==1 && menge.Scaled()==0)
-               a=Formatiere(stueck)+Einheit(ArtikelBase(liefentry.ArtikelID())).MengenEinheit();
-           if (liefentry.ZusatzInfo()) a="("+a+")";
-             return cH_EntryValueIntString(a);
-         }
-      case LIEFZEILE_SEQ :
-         return cH_EntryValueIntString(liefentry.Zeile());
+      case ARTIKEL_SEQ :   return cH_EntryValueIntString(artikel);
+      case PALETTE_SEQ :   return cH_EntryValueEmptyInt(palette);
+      case LIEFMNG_SEQ :   return cH_EntryValueIntString(smenge);
+      case LIEFZEILE_SEQ : return cH_EntryValueIntString(zeile);
       default : return cH_EntryValue();
      }
    }
@@ -121,17 +114,27 @@ class Data_Lieferoffen : public RowDataBase
                return cH_EntryValueDatum(AE.getLieferdatum());
            }
          case OFFMNG_SEQ :
-            return cH_EntryValueIntString(AE.getRestStk());
+            return cH_EntryValueIntString(AE.getRestStk().as_int());
          case GELIEF_SEQ :
-            return cH_EntryValueIntString(AE.getGeliefert());
+            return cH_EntryValueIntString(AE.getGeliefert().as_int());
          default : return cH_EntryValueIntString();
         }
     }
    const AufEintrag &getAufEintrag() const { return AE; }
    void abschreiben(AuftragBase::mengen_t menge) 
-      { Produziert(AE,menge,getuid(),ManuProcEntity::none_id).NichtSelbst();
+//#ifdef MABELLA_EXTENSIONS
+//        {AE.abschreiben(menge,ManuProcEntity::none_id); }   
+//#else        
+      { 
+//          Kunde::ID kunde=Auftrag(AE).getKundennr();
+//          ManuProC::st_produziert sp(kunde,AE,menge,getuid());
+//          AE.Instanz()->Produziert(sp);
+         AE.Produziert(menge,ManuProcEntity<>::none_id);
+      
+       //Produziert(AE,menge,getuid(),ManuProcEntity::none_id).NichtSelbst();
       }
-//        {AE.abschreiben(menge,ManuProcEntity::none_id); }
+//#endif      
+
 };
 
 class cH_Data_Lieferoffen : public Handle<const Data_Lieferoffen>

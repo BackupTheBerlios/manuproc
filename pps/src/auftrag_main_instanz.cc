@@ -5,7 +5,8 @@
 #include <Auftrag/AufEintragZu.h>
 #include <unistd.h>
 #include "MyMessage.h"
-#include <Instanzen/Produziert.h>
+//#include <Instanzen/Produziert.h>
+#include <Instanzen/ppsInstanzProduziert.h>
 
 
 extern MyMessage *meldung;
@@ -22,8 +23,10 @@ void auftrag_main::on_button_neue_anr_clicked()
  try { 
     Kunde::ID kid=Kunde::none_id; 
     if(instanz->Lieferschein()) kid = kunden_lieferant->get_value() ;
-    else                        kid = Kunde::default_id ;
-    if(kid==Kunde::none_id) return;
+    else                        kid = ManuProC::DefaultValues::EigeneKundenId ;
+    if(kid==Kunde::none_id) 
+      { meldung->Show("Keine Lieferantennummer vergeben");
+        return;}
     instanz_auftrag = new AuftragFull(Auftrag::Anlegen(instanz->Id()),kid);
     instanz_auftrag->setStatusAuftragFull(OPEN,int(getuid()));
     AuftragBase ab(*instanz_auftrag);
@@ -113,34 +116,45 @@ void auftrag_main::on_button_instanz_get_selection_clicked()
   if(!Datum_instanz->get_value().valid()) 
       { meldung->Show("Datum ist ungültig");
                          return; }
-  std::vector<cH_RowDataBase> V=maintree_s->getSelectedRowDataBase_vec();
+
+  std::vector<cH_RowDataBase> V;
+  try{ V=maintree_s->getSelectedRowDataBase_vec();
+     }catch(TreeBase::notLeafSelected) {meldung->Show("Fehler: Keine Knoten anwählen"); return;}
   ArtikelBase artikel;
   AuftragBase::mengen_t menge=0;
-  vector<AufEintrag> VAE;
+  std::vector<AufEintrag> VAE;
   for(std::vector<cH_RowDataBase>::const_iterator i=V.begin();i!=V.end();++i)
    {
      const Data_auftrag *dt=dynamic_cast<const Data_auftrag*>(&*(*i));
      AufEintrag AE=dt->get_AufEintrag();
      // Alle Ausgewählten Zeilen müssen den selben Artikel beinhalten
      if(artikel==ArtikelBase::none_id) artikel=AE.Artikel();
-     else { if(artikel!=AE.Artikel()) 
-       {meldung->Show("Die Artikel der ausgewählten Zeilen sind nicht einheitlich");
+     else { if(artikel!=AE.Artikel() && togglebutton_geplante_menge->get_active() ) 
+       {meldung->Show("Die Artikel der ausgewählten Zeilen sind nicht einheitlich.\n Wenn eine Menge vorgegeben wird, dann müssen sie es sein.");
         return; }}
      menge += AE.getRestStk();
      VAE.push_back(AE);
    }
+  bool mengenplanung=false;
   if (togglebutton_geplante_menge->get_active())
    {
      spinbutton_geplante_menge->update();
      AuftragBase::mengen_t m=spinbutton_geplante_menge->get_value_as_int();
      if(VAE.size()>1 && m < menge)
-       {meldung->Show("Teilmengen für mehrer Zeilen sind nicht möglich");
+       {meldung->Show("Sind mehrere Zeilen mit demselben Artikel gewählt und es wird eine Menge vorgegeben,\nso muß diese Menge größer sein als die Summer der Mengen der Einzelzeilen.");
         return; }
-     menge=m;
+     menge=m-menge;
+     if(menge!=0) mengenplanung=true;
    }   
    // Planen
   try{
-  AufEintragBase::Planen(getuid(),VAE,menge,*instanz_auftrag,Datum_instanz->get_value());
+    for(std::vector<AufEintrag>::iterator i=VAE.begin();i!=VAE.end();++i)
+     {
+       AuftragBase::mengen_t m=i->getRestStk();
+       if(mengenplanung && i+1 == VAE.end() )  m+=menge;
+       i->Planen(getuid(),m,true,*instanz_auftrag,Datum_instanz->get_value());
+     }     
+
   for(std::vector<cH_RowDataBase>::const_iterator i=V.begin();i!=V.end();++i)
    {
 #warning Das geht so nicht :-( Vermutung: Das push_back legt eine Kopie an?
@@ -155,23 +169,11 @@ void auftrag_main::on_button_instanz_get_selection_clicked()
 void auftrag_main::instanz_auftrag_anlegen(AufEintrag& AE)
 // entspricht 'on_leaf_selected' im Hauptbaum
 {
-/*
-  if(!instanz_auftrag) return;
-  AuftragBase::mengen_t menge=0;
-  if (togglebutton_geplante_menge->get_active())
-   {
-    gtk_spin_button_update(spinbutton_geplante_menge->gtkobj());
-    menge = spinbutton_geplante_menge->get_value_as_int();
-    if(menge>selected_AufEintrag.getRestStk()) menge=selected_AufEintrag.getRestStk();
-   }   
-  else  menge = selected_AufEintrag.getRestStk();
-  
-  selected_AufEintrag.Planen(getuid(),menge, *instanz_auftrag,Datum_instanz->get_value());
-
+  Datum_instanz->set_value(AE.getLieferdatum());
+  try{
   cH_RowDataBase dt(maintree_s->getSelectedRowDataBase());
   dynamic_cast<Data_auftrag&>(const_cast<RowDataBase&>(*dt)).redisplayMenge(maintree_s);
-  loadAuftragInstanz(*instanz_auftrag);
-*/
+  }catch(TreeBase::multipleRowsSelected) {}
 }
 
 void auftrag_main::show_neuer_auftrag()
@@ -196,14 +198,16 @@ void auftrag_main::neuer_auftrag_tree_titel_setzen()
 
 gint auftrag_main::on_button_instanz_print_clicked(GdkEventButton *ev)
 {
+  std::string EI="Intern";
+  if(instanz->ExterneBestellung()) EI="Extern";
   if (ev->button==1)
    {
-     std::string s="auftrag_drucken -p -a Intern -n "+searchcombo_auftragid->get_text()+" -i "+itos(instanz->Id());
+     std::string s="auftrag_drucken -p -a "+EI+" -n "+searchcombo_auftragid->get_text()+" -i "+itos(instanz->Id());
      system(s.c_str());
    } 
   if (ev->button==3); 
    {
-     std::string s="auftrag_drucken -a Intern -n "+searchcombo_auftragid->get_text()+" -i "+itos(instanz->Id());
+     std::string s="auftrag_drucken -a "+EI+" -n "+searchcombo_auftragid->get_text()+" -i "+itos(instanz->Id());
      system(s.c_str());
    }
  return false;
@@ -237,10 +241,8 @@ void auftrag_main::on_button_Kunden_erledigt_clicked()
       if(AEB.getEntryStatus()==CLOSED)
        {
          AuftragBase::mengen_t menge = i->getRestStk();
-//std::cout << j->Menge <<'\t'<<menge<<'\n';
          try{ 
-Produziert(*i,menge,getuid(),ManuProcEntity::none_id).NichtSelbst();
-//            i->abschreiben(menge,ManuProcEntity::none_id);
+              i->Produziert(menge,ManuProcEntity<>::none_id);
               change=true;
             } catch(SQLerror &e){std::cerr <<e<<'\n';}
        }

@@ -231,13 +231,10 @@
   <auto_shrink>False</auto_shrink>
 
   <widget>
-    <class>GtkTable</class>
-    <name>table16</name>
-    <rows>5</rows>
-    <columns>1</columns>
+    <class>GtkVBox</class>
+    <name>vbox15</name>
     <homogeneous>False</homogeneous>
-    <row_spacing>0</row_spacing>
-    <column_spacing>0</column_spacing>
+    <spacing>0</spacing>
 
     <widget>
       <class>GtkMenuBar</class>
@@ -245,18 +242,9 @@
       <cxx_visibility>protected</cxx_visibility>
       <shadow_type>GTK_SHADOW_OUT</shadow_type>
       <child>
-	<left_attach>0</left_attach>
-	<right_attach>1</right_attach>
-	<top_attach>0</top_attach>
-	<bottom_attach>1</bottom_attach>
-	<xpad>0</xpad>
-	<ypad>0</ypad>
-	<xexpand>False</xexpand>
-	<yexpand>False</yexpand>
-	<xshrink>False</xshrink>
-	<yshrink>False</yshrink>
-	<xfill>True</xfill>
-	<yfill>False</yfill>
+	<padding>0</padding>
+	<expand>False</expand>
+	<fill>False</fill>
       </child>
 
       <widget>
@@ -463,8 +451,8 @@
 	    <name>unbestaetigte_auftraege</name>
 	    <signal>
 	      <name>activate</name>
-	      <handler>on_offene_auftraege_activate</handler>
-	      <last_modification_time>Thu, 29 Nov 2001 15:21:19 GMT</last_modification_time>
+	      <handler>on_unbest_auftraege_activate</handler>
+	      <last_modification_time>Tue, 05 Nov 2002 07:51:48 GMT</last_modification_time>
 	    </signal>
 	    <label>Unbestätigte Aufträge</label>
 	    <active>False</active>
@@ -477,8 +465,8 @@
 	    <name>geschlossene_auftraege</name>
 	    <signal>
 	      <name>activate</name>
-	      <handler>on_offene_auftraege_activate</handler>
-	      <last_modification_time>Thu, 29 Nov 2001 15:30:04 GMT</last_modification_time>
+	      <handler>on_closed_auftraege_activate</handler>
+	      <last_modification_time>Tue, 05 Nov 2002 07:51:48 GMT</last_modification_time>
 	    </signal>
 	    <label>Geschlossene Aufträge</label>
 	    <active>False</active>
@@ -491,8 +479,8 @@
 	    <name>stornierte_auftraege</name>
 	    <signal>
 	      <name>activate</name>
-	      <handler>on_offene_auftraege_activate</handler>
-	      <last_modification_time>Thu, 29 Nov 2001 15:30:04 GMT</last_modification_time>
+	      <handler>on_storno_auftraege_activate</handler>
+	      <last_modification_time>Tue, 05 Nov 2002 07:51:48 GMT</last_modification_time>
 	    </signal>
 	    <label>Stornierte Aufträge</label>
 	    <active>True</active>
@@ -640,6 +628,221 @@
     </widget>
 
     <widget>
+      <class>GtkToolbar</class>
+      <name>toolbar1</name>
+      <orientation>GTK_ORIENTATION_HORIZONTAL</orientation>
+      <type>GTK_TOOLBAR_BOTH</type>
+      <space_size>5</space_size>
+      <space_style>GTK_TOOLBAR_SPACE_EMPTY</space_style>
+      <relief>GTK_RELIEF_NORMAL</relief>
+      <tooltips>True</tooltips>
+      <child>
+	<padding>0</padding>
+	<expand>False</expand>
+	<fill>False</fill>
+      </child>
+
+      <widget>
+	<class>GtkButton</class>
+	<child_name>Toolbar:button</child_name>
+	<name>endemain_button</name>
+	<cxx_visibility>protected</cxx_visibility>
+	<signal>
+	  <name>clicked</name>
+	  <handler>on_beenden_activate</handler>
+	  <last_modification_time>Mon, 27 Nov 2000 15:21:41 GMT</last_modification_time>
+	</signal>
+	<label>beenden</label>
+	<stock_pixmap>GNOME_STOCK_PIXMAP_EXIT</stock_pixmap>
+      </widget>
+
+      <widget>
+	<class>GtkButton</class>
+	<child_name>Toolbar:button</child_name>
+	<name>mainprint_button</name>
+	<cxx_visibility>protected</cxx_visibility>
+	<tooltip>linke Maustaste: drucken    rechte Maustaste: anzeigen</tooltip>
+	<signal>
+	  <name>button_press_event</name>
+	  <handler>on_mainprint_button_clicked</handler>
+	  <last_modification_time>Tue, 24 Sep 2002 08:07:07 GMT</last_modification_time>
+	</signal>
+	<label>drucken</label>
+	<stock_pixmap>GNOME_STOCK_PIXMAP_PRINT</stock_pixmap>
+      </widget>
+
+      <widget>
+	<class>GtkButton</class>
+	<child_name>Toolbar:button</child_name>
+	<name>mainreload_button</name>
+	<cxx_visibility>protected</cxx_visibility>
+	<signal>
+	  <name>clicked</name>
+	  <handler>on_neuladen_activate</handler>
+	  <last_modification_time>Mon, 27 Nov 2000 15:20:44 GMT</last_modification_time>
+	</signal>
+	<label>neu laden</label>
+	<stock_pixmap>GNOME_STOCK_PIXMAP_REFRESH</stock_pixmap>
+      </widget>
+
+      <widget>
+	<class>GtkButton</class>
+	<child_name>Toolbar:button</child_name>
+	<name>erfassen_button</name>
+	<cxx_visibility>protected</cxx_visibility>
+	<signal>
+	  <name>clicked</name>
+	  <handler>on_erfassen_activate</handler>
+	  <last_modification_time>Fri, 01 Dec 2000 10:36:38 GMT</last_modification_time>
+	</signal>
+	<label>Auftrag</label>
+	<stock_pixmap>GNOME_STOCK_PIXMAP_BOOK_RED</stock_pixmap>
+	<child>
+	  <new_group>True</new_group>
+	</child>
+      </widget>
+
+      <widget>
+	<class>GtkButton</class>
+	<child_name>Toolbar:button</child_name>
+	<name>lieferschein_button</name>
+	<cxx_visibility>protected</cxx_visibility>
+	<signal>
+	  <name>clicked</name>
+	  <handler>on_lieferscheine_activate</handler>
+	  <last_modification_time>Wed, 23 Jan 2002 17:20:35 GMT</last_modification_time>
+	</signal>
+	<label>Liefersch.</label>
+	<stock_pixmap>GNOME_STOCK_PIXMAP_BOOK_GREEN</stock_pixmap>
+      </widget>
+
+      <widget>
+	<class>GtkButton</class>
+	<child_name>Toolbar:button</child_name>
+	<name>rechnung_button</name>
+	<cxx_visibility>protected</cxx_visibility>
+	<signal>
+	  <name>clicked</name>
+	  <handler>on_rechnung_activate</handler>
+	  <last_modification_time>Wed, 04 Apr 2001 13:30:49 GMT</last_modification_time>
+	</signal>
+	<label>Rechnung</label>
+	<stock_pixmap>GNOME_STOCK_PIXMAP_BOOK_YELLOW</stock_pixmap>
+      </widget>
+
+      <widget>
+	<class>GtkToggleButton</class>
+	<child_name>Toolbar:button</child_name>
+	<name>togglebutton_bestellen</name>
+	<cxx_visibility>protected</cxx_visibility>
+	<signal>
+	  <name>toggled</name>
+	  <handler>on_togglebutton_bestellen_toggled</handler>
+	  <last_modification_time>Fri, 15 Mar 2002 11:29:02 GMT</last_modification_time>
+	</signal>
+	<label>Bestellen</label>
+	<stock_pixmap>GNOME_STOCK_PIXMAP_PROPERTIES</stock_pixmap>
+	<active>False</active>
+	<child>
+	  <new_group>True</new_group>
+	</child>
+      </widget>
+
+      <widget>
+	<class>GtkToggleButton</class>
+	<child_name>Toolbar:button</child_name>
+	<name>togglebutton_material</name>
+	<cxx_visibility>protected</cxx_visibility>
+	<signal>
+	  <name>toggled</name>
+	  <handler>on_togglebutton_material_toggled</handler>
+	  <last_modification_time>Fri, 15 Mar 2002 11:28:51 GMT</last_modification_time>
+	</signal>
+	<label>Material</label>
+	<stock_pixmap>GNOME_STOCK_PIXMAP_CONVERT</stock_pixmap>
+	<active>False</active>
+      </widget>
+
+      <widget>
+	<class>GtkToggleButton</class>
+	<child_name>Toolbar:button</child_name>
+	<name>togglebutton_auftraege</name>
+	<cxx_visibility>protected</cxx_visibility>
+	<signal>
+	  <name>toggled</name>
+	  <handler>on_togglebutton_auftraege_toggled</handler>
+	  <last_modification_time>Fri, 30 Nov 2001 08:52:16 GMT</last_modification_time>
+	</signal>
+	<label>Aufträge</label>
+	<icon>stock_convert_rev2.xpm</icon>
+	<active>False</active>
+      </widget>
+
+      <widget>
+	<class>GtkButton</class>
+	<child_name>Toolbar:button</child_name>
+	<name>button_artikeleingabe</name>
+	<signal>
+	  <name>clicked</name>
+	  <handler>on_button_artikeleingabe_clicked</handler>
+	  <last_modification_time>Mon, 08 Oct 2001 11:31:14 GMT</last_modification_time>
+	</signal>
+	<label>Artikel</label>
+	<stock_pixmap>GNOME_STOCK_PIXMAP_COLORSELECTOR</stock_pixmap>
+	<child>
+	  <new_group>True</new_group>
+	</child>
+      </widget>
+
+      <widget>
+	<class>GtkButton</class>
+	<child_name>Toolbar:button</child_name>
+	<name>button_auftrag_erledigt</name>
+	<cxx_visibility>protected</cxx_visibility>
+	<tooltip>Der gewählte Auftrag wird als 'erledigt' markiert</tooltip>
+	<signal>
+	  <name>clicked</name>
+	  <handler>on_button_auftrag_erledigt_clicked</handler>
+	  <last_modification_time>Thu, 29 Nov 2001 17:43:35 GMT</last_modification_time>
+	</signal>
+	<label>erledigt</label>
+	<stock_pixmap>GNOME_STOCK_PIXMAP_TRASH</stock_pixmap>
+	<child>
+	  <new_group>True</new_group>
+	</child>
+      </widget>
+
+      <widget>
+	<class>GtkButton</class>
+	<child_name>Toolbar:button</child_name>
+	<name>button_Kunden_erledigt</name>
+	<cxx_visibility>protected</cxx_visibility>
+	<tooltip>Die zu erledigten Kundenaufträgen gehörenden Einträge dieser Instanz werden als 'erledigt' markiert.</tooltip>
+	<signal>
+	  <name>clicked</name>
+	  <handler>on_button_Kunden_erledigt_clicked</handler>
+	  <last_modification_time>Thu, 29 Nov 2001 17:45:32 GMT</last_modification_time>
+	</signal>
+	<label>aufräumen</label>
+	<stock_pixmap>GNOME_STOCK_PIXMAP_TRASH_FULL</stock_pixmap>
+      </widget>
+
+      <widget>
+	<class>GtkButton</class>
+	<child_name>Toolbar:button</child_name>
+	<name>button_faerben</name>
+	<cxx_visibility>protected</cxx_visibility>
+	<signal>
+	  <name>clicked</name>
+	  <handler>on_button_faerben_clicked</handler>
+	  <last_modification_time>Fri, 17 May 2002 09:08:47 GMT</last_modification_time>
+	</signal>
+	<label>Färben</label>
+	<stock_pixmap>GNOME_STOCK_PIXMAP_LINE_IN</stock_pixmap>
+      </widget>
+    </widget>
+
+    <widget>
       <class>GtkVPaned</class>
       <name>vpaned_an_mat</name>
       <cxx_visibility>protected</cxx_visibility>
@@ -647,24 +850,17 @@
       <gutter_size>1</gutter_size>
       <position>167</position>
       <child>
-	<left_attach>0</left_attach>
-	<right_attach>1</right_attach>
-	<top_attach>3</top_attach>
-	<bottom_attach>4</bottom_attach>
-	<xpad>0</xpad>
-	<ypad>0</ypad>
-	<xexpand>True</xexpand>
-	<yexpand>True</yexpand>
-	<xshrink>False</xshrink>
-	<yshrink>False</yshrink>
-	<xfill>True</xfill>
-	<yfill>True</yfill>
+	<padding>0</padding>
+	<expand>True</expand>
+	<fill>True</fill>
       </child>
 
       <widget>
 	<class>GtkFrame</class>
-	<name>frame12</name>
-	<label>Ansichtsbaum</label>
+	<name>frame_offene_mengen</name>
+	<border_width>5</border_width>
+	<cxx_visibility>protected</cxx_visibility>
+	<label>offene Mengen</label>
 	<label_xalign>0</label_xalign>
 	<shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
 	<child>
@@ -673,213 +869,48 @@
 	</child>
 
 	<widget>
-	  <class>GtkScrolledWindow</class>
-	  <name>scrolledwindow_maintree_s</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
-	  <vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
-	  <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
-	  <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
+	  <class>GtkVBox</class>
+	  <name>vbox11</name>
+	  <homogeneous>False</homogeneous>
+	  <spacing>0</spacing>
 
 	  <widget>
-	    <class>GtkViewport</class>
-	    <name>viewport6</name>
-	    <shadow_type>GTK_SHADOW_NONE</shadow_type>
+	    <class>GtkScrolledWindow</class>
+	    <name>scrolledwindow_maintree_s</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
+	    <vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
+	    <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
+	    <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
+	    <child>
+	      <padding>0</padding>
+	      <expand>True</expand>
+	      <fill>True</fill>
+	    </child>
 
 	    <widget>
-	      <class>GtkVBox</class>
-	      <name>vbox8</name>
-	      <homogeneous>False</homogeneous>
-	      <spacing>0</spacing>
-
-	      <widget>
-		<class>Custom</class>
-		<name>maintree_s</name>
-		<cxx_visibility>protected</cxx_visibility>
-		<signal>
-		  <name>leaf_selected</name>
-		  <handler>on_leaf_selected</handler>
-		  <last_modification_time>Thu, 06 Sep 2001 12:54:43 GMT</last_modification_time>
-		</signal>
-		<signal>
-		  <name>unselect_row</name>
-		  <handler>on_unselect_row</handler>
-		  <last_modification_time>Thu, 27 Sep 2001 17:33:16 GMT</last_modification_time>
-		</signal>
-		<signal>
-		  <name>node_selected</name>
-		  <handler>on_node_selected</handler>
-		  <last_modification_time>Thu, 27 Sep 2001 18:45:59 GMT</last_modification_time>
-		</signal>
-		<creation_function>SimpleTree</creation_function>
-		<int1>12</int1>
-		<int2>10</int2>
-		<last_modification_time>Mon, 25 Jun 2001 08:37:46 GMT</last_modification_time>
-		<child>
-		  <padding>0</padding>
-		  <expand>True</expand>
-		  <fill>True</fill>
-		</child>
-	      </widget>
-
-	      <widget>
-		<class>GtkHPaned</class>
-		<name>hpaned_tree_lager</name>
-		<cxx_visibility>protected</cxx_visibility>
-		<handle_size>6</handle_size>
-		<gutter_size>6</gutter_size>
-		<child>
-		  <padding>0</padding>
-		  <expand>True</expand>
-		  <fill>True</fill>
-		</child>
-
-		<widget>
-		  <class>GtkVBox</class>
-		  <name>vbox9</name>
-		  <homogeneous>False</homogeneous>
-		  <spacing>0</spacing>
-		  <child>
-		    <shrink>True</shrink>
-		    <resize>True</resize>
-		  </child>
-
-		  <widget>
-		    <class>GtkLabel</class>
-		    <name>label95</name>
-		    <label>Freie Menge</label>
-		    <justify>GTK_JUSTIFY_CENTER</justify>
-		    <wrap>False</wrap>
-		    <xalign>0.5</xalign>
-		    <yalign>0.5</yalign>
-		    <xpad>0</xpad>
-		    <ypad>0</ypad>
-		    <child>
-		      <padding>0</padding>
-		      <expand>False</expand>
-		      <fill>False</fill>
-		    </child>
-		  </widget>
-
-		  <widget>
-		    <class>GtkScrolledWindow</class>
-		    <name>scrolledwindow13</name>
-		    <hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
-		    <vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
-		    <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
-		    <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
-		    <child>
-		      <padding>0</padding>
-		      <expand>True</expand>
-		      <fill>True</fill>
-		    </child>
-
-		    <widget>
-		      <class>GtkViewport</class>
-		      <name>viewport12</name>
-		      <shadow_type>GTK_SHADOW_NONE</shadow_type>
-
-		      <widget>
-			<class>Custom</class>
-			<name>tree_lager_frei</name>
-			<cxx_visibility>protected</cxx_visibility>
-			<signal>
-			  <name>leaf_selected</name>
-			  <handler>on_lager_leaf_selected</handler>
-			  <last_modification_time>Thu, 04 Apr 2002 10:33:01 GMT</last_modification_time>
-			</signal>
-			<signal>
-			  <name>unselect_row</name>
-			  <handler>on_lager_unselect_row</handler>
-			  <last_modification_time>Thu, 04 Apr 2002 10:33:07 GMT</last_modification_time>
-			</signal>
-			<signal>
-			  <name>node_selected</name>
-			  <handler>on_lager_node_selected</handler>
-			  <last_modification_time>Thu, 04 Apr 2002 10:33:14 GMT</last_modification_time>
-			</signal>
-			<creation_function>SimpleTree</creation_function>
-			<int1>2</int1>
-			<int2>2</int2>
-			<last_modification_time>Mon, 25 Jun 2001 08:37:46 GMT</last_modification_time>
-		      </widget>
-		    </widget>
-		  </widget>
-		</widget>
-
-		<widget>
-		  <class>GtkVBox</class>
-		  <name>vbox10</name>
-		  <homogeneous>False</homogeneous>
-		  <spacing>0</spacing>
-		  <child>
-		    <shrink>True</shrink>
-		    <resize>True</resize>
-		  </child>
-
-		  <widget>
-		    <class>GtkLabel</class>
-		    <name>label96</name>
-		    <label>Verplante Menge</label>
-		    <justify>GTK_JUSTIFY_CENTER</justify>
-		    <wrap>False</wrap>
-		    <xalign>0.5</xalign>
-		    <yalign>0.5</yalign>
-		    <xpad>0</xpad>
-		    <ypad>0</ypad>
-		    <child>
-		      <padding>0</padding>
-		      <expand>False</expand>
-		      <fill>False</fill>
-		    </child>
-		  </widget>
-
-		  <widget>
-		    <class>GtkScrolledWindow</class>
-		    <name>scrolledwindow14</name>
-		    <hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
-		    <vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
-		    <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
-		    <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
-		    <child>
-		      <padding>0</padding>
-		      <expand>True</expand>
-		      <fill>True</fill>
-		    </child>
-
-		    <widget>
-		      <class>GtkViewport</class>
-		      <name>viewport11</name>
-		      <shadow_type>GTK_SHADOW_NONE</shadow_type>
-
-		      <widget>
-			<class>Custom</class>
-			<name>tree_lager_verplant</name>
-			<cxx_visibility>protected</cxx_visibility>
-			<signal>
-			  <name>leaf_selected</name>
-			  <handler>on_lager_leaf_selected</handler>
-			  <last_modification_time>Thu, 04 Apr 2002 10:33:01 GMT</last_modification_time>
-			</signal>
-			<signal>
-			  <name>unselect_row</name>
-			  <handler>on_lager_unselect_row</handler>
-			  <last_modification_time>Thu, 04 Apr 2002 10:33:07 GMT</last_modification_time>
-			</signal>
-			<signal>
-			  <name>node_selected</name>
-			  <handler>on_lager_node_selected</handler>
-			  <last_modification_time>Thu, 04 Apr 2002 10:33:14 GMT</last_modification_time>
-			</signal>
-			<creation_function>SimpleTree</creation_function>
-			<int1>3</int1>
-			<int2>3</int2>
-			<last_modification_time>Mon, 25 Jun 2001 08:37:46 GMT</last_modification_time>
-		      </widget>
-		    </widget>
-		  </widget>
-		</widget>
-	      </widget>
+	      <class>Custom</class>
+	      <name>maintree_s</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <signal>
+		<name>leaf_selected</name>
+		<handler>on_leaf_selected</handler>
+		<last_modification_time>Thu, 06 Sep 2001 12:54:43 GMT</last_modification_time>
+	      </signal>
+	      <signal>
+		<name>unselect_row</name>
+		<handler>on_unselect_row</handler>
+		<last_modification_time>Thu, 27 Sep 2001 17:33:16 GMT</last_modification_time>
+	      </signal>
+	      <signal>
+		<name>node_selected</name>
+		<handler>on_node_selected</handler>
+		<last_modification_time>Thu, 27 Sep 2001 18:45:59 GMT</last_modification_time>
+	      </signal>
+	      <creation_function>SimpleTree</creation_function>
+	      <int1>12</int1>
+	      <int2>10</int2>
+	      <last_modification_time>Mon, 25 Jun 2001 08:37:46 GMT</last_modification_time>
 	    </widget>
 	  </widget>
 	</widget>
@@ -888,6 +919,7 @@
       <widget>
 	<class>GtkFrame</class>
 	<name>frame_materialbedarf</name>
+	<border_width>5</border_width>
 	<height>120</height>
 	<cxx_visibility>protected</cxx_visibility>
 	<label>Materialbedarf</label>
@@ -922,274 +954,148 @@
     </widget>
 
     <widget>
-      <class>GtkTable</class>
-      <name>table21</name>
-      <rows>1</rows>
-      <columns>1</columns>
-      <homogeneous>False</homogeneous>
-      <row_spacing>0</row_spacing>
-      <column_spacing>0</column_spacing>
+      <class>GtkHPaned</class>
+      <name>hpaned_tree_lager</name>
+      <cxx_visibility>protected</cxx_visibility>
+      <handle_size>6</handle_size>
+      <gutter_size>6</gutter_size>
       <child>
-	<left_attach>0</left_attach>
-	<right_attach>1</right_attach>
-	<top_attach>2</top_attach>
-	<bottom_attach>3</bottom_attach>
-	<xpad>0</xpad>
-	<ypad>0</ypad>
-	<xexpand>False</xexpand>
-	<yexpand>False</yexpand>
-	<xshrink>False</xshrink>
-	<yshrink>False</yshrink>
-	<xfill>True</xfill>
-	<yfill>True</yfill>
-      </child>
-    </widget>
-
-    <widget>
-      <class>GtkTable</class>
-      <name>table22</name>
-      <rows>1</rows>
-      <columns>1</columns>
-      <homogeneous>False</homogeneous>
-      <row_spacing>0</row_spacing>
-      <column_spacing>0</column_spacing>
-      <child>
-	<left_attach>0</left_attach>
-	<right_attach>1</right_attach>
-	<top_attach>1</top_attach>
-	<bottom_attach>2</bottom_attach>
-	<xpad>0</xpad>
-	<ypad>0</ypad>
-	<xexpand>False</xexpand>
-	<yexpand>False</yexpand>
-	<xshrink>False</xshrink>
-	<yshrink>False</yshrink>
-	<xfill>True</xfill>
-	<yfill>True</yfill>
+	<padding>0</padding>
+	<expand>True</expand>
+	<fill>True</fill>
       </child>
 
       <widget>
-	<class>GtkToolbar</class>
-	<name>toolbar1</name>
-	<orientation>GTK_ORIENTATION_HORIZONTAL</orientation>
-	<type>GTK_TOOLBAR_BOTH</type>
-	<space_size>5</space_size>
-	<space_style>GTK_TOOLBAR_SPACE_EMPTY</space_style>
-	<relief>GTK_RELIEF_NORMAL</relief>
-	<tooltips>True</tooltips>
+	<class>GtkVBox</class>
+	<name>vbox9</name>
+	<homogeneous>False</homogeneous>
+	<spacing>0</spacing>
 	<child>
-	  <left_attach>0</left_attach>
-	  <right_attach>1</right_attach>
-	  <top_attach>0</top_attach>
-	  <bottom_attach>1</bottom_attach>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>False</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>False</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>True</xfill>
-	  <yfill>False</yfill>
+	  <shrink>True</shrink>
+	  <resize>True</resize>
 	</child>
 
 	<widget>
-	  <class>GtkButton</class>
-	  <child_name>Toolbar:button</child_name>
-	  <name>endemain_button</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <signal>
-	    <name>clicked</name>
-	    <handler>on_beenden_activate</handler>
-	    <last_modification_time>Mon, 27 Nov 2000 15:21:41 GMT</last_modification_time>
-	  </signal>
-	  <label>beenden</label>
-	  <stock_pixmap>GNOME_STOCK_PIXMAP_EXIT</stock_pixmap>
-	</widget>
-
-	<widget>
-	  <class>GtkButton</class>
-	  <child_name>Toolbar:button</child_name>
-	  <name>mainprint_button</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <tooltip>linke Maustaste: drucken    rechte Maustaste: anzeigen</tooltip>
-	  <signal>
-	    <name>button_press_event</name>
-	    <handler>on_mainprint_button_clicked</handler>
-	    <last_modification_time>Tue, 24 Sep 2002 08:07:07 GMT</last_modification_time>
-	  </signal>
-	  <label>drucken</label>
-	  <stock_pixmap>GNOME_STOCK_PIXMAP_PRINT</stock_pixmap>
-	</widget>
-
-	<widget>
-	  <class>GtkButton</class>
-	  <child_name>Toolbar:button</child_name>
-	  <name>mainreload_button</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <signal>
-	    <name>clicked</name>
-	    <handler>on_neuladen_activate</handler>
-	    <last_modification_time>Mon, 27 Nov 2000 15:20:44 GMT</last_modification_time>
-	  </signal>
-	  <label>neu laden</label>
-	  <stock_pixmap>GNOME_STOCK_PIXMAP_REFRESH</stock_pixmap>
-	</widget>
-
-	<widget>
-	  <class>GtkButton</class>
-	  <child_name>Toolbar:button</child_name>
-	  <name>erfassen_button</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <signal>
-	    <name>clicked</name>
-	    <handler>on_erfassen_activate</handler>
-	    <last_modification_time>Fri, 01 Dec 2000 10:36:38 GMT</last_modification_time>
-	  </signal>
-	  <label>Auftrag</label>
-	  <stock_pixmap>GNOME_STOCK_PIXMAP_BOOK_RED</stock_pixmap>
+	  <class>GtkLabel</class>
+	  <name>label95</name>
+	  <label>Freie Menge</label>
+	  <justify>GTK_JUSTIFY_CENTER</justify>
+	  <wrap>False</wrap>
+	  <xalign>0.5</xalign>
+	  <yalign>0.5</yalign>
+	  <xpad>0</xpad>
+	  <ypad>0</ypad>
 	  <child>
-	    <new_group>True</new_group>
+	    <padding>0</padding>
+	    <expand>False</expand>
+	    <fill>False</fill>
 	  </child>
 	</widget>
 
 	<widget>
-	  <class>GtkButton</class>
-	  <child_name>Toolbar:button</child_name>
-	  <name>lieferschein_button</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <signal>
-	    <name>clicked</name>
-	    <handler>on_lieferscheine_activate</handler>
-	    <last_modification_time>Wed, 23 Jan 2002 17:20:35 GMT</last_modification_time>
-	  </signal>
-	  <label>Liefersch.</label>
-	  <stock_pixmap>GNOME_STOCK_PIXMAP_BOOK_GREEN</stock_pixmap>
-	</widget>
-
-	<widget>
-	  <class>GtkButton</class>
-	  <child_name>Toolbar:button</child_name>
-	  <name>rechnung_button</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <signal>
-	    <name>clicked</name>
-	    <handler>on_rechnung_activate</handler>
-	    <last_modification_time>Wed, 04 Apr 2001 13:30:49 GMT</last_modification_time>
-	  </signal>
-	  <label>Rechnung</label>
-	  <stock_pixmap>GNOME_STOCK_PIXMAP_BOOK_YELLOW</stock_pixmap>
-	</widget>
-
-	<widget>
-	  <class>GtkToggleButton</class>
-	  <child_name>Toolbar:button</child_name>
-	  <name>togglebutton_bestellen</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <signal>
-	    <name>toggled</name>
-	    <handler>on_togglebutton_bestellen_toggled</handler>
-	    <last_modification_time>Fri, 15 Mar 2002 11:29:02 GMT</last_modification_time>
-	  </signal>
-	  <label>Bestellen</label>
-	  <stock_pixmap>GNOME_STOCK_PIXMAP_PROPERTIES</stock_pixmap>
-	  <active>False</active>
+	  <class>GtkScrolledWindow</class>
+	  <name>scrolledwindow14</name>
+	  <hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
+	  <vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
+	  <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
+	  <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
 	  <child>
-	    <new_group>True</new_group>
+	    <padding>0</padding>
+	    <expand>True</expand>
+	    <fill>True</fill>
+	  </child>
+
+	  <widget>
+	    <class>Custom</class>
+	    <name>tree_lager_frei</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <signal>
+	      <name>leaf_selected</name>
+	      <handler>on_lager_leaf_selected</handler>
+	      <last_modification_time>Thu, 04 Apr 2002 10:33:01 GMT</last_modification_time>
+	    </signal>
+	    <signal>
+	      <name>unselect_row</name>
+	      <handler>on_lager_unselect_row</handler>
+	      <last_modification_time>Thu, 04 Apr 2002 10:33:07 GMT</last_modification_time>
+	    </signal>
+	    <signal>
+	      <name>node_selected</name>
+	      <handler>on_lager_node_selected</handler>
+	      <last_modification_time>Thu, 04 Apr 2002 10:33:14 GMT</last_modification_time>
+	    </signal>
+	    <creation_function>SimpleTree</creation_function>
+	    <int1>2</int1>
+	    <int2>2</int2>
+	    <last_modification_time>Mon, 25 Jun 2001 08:37:46 GMT</last_modification_time>
+	  </widget>
+	</widget>
+      </widget>
+
+      <widget>
+	<class>GtkVBox</class>
+	<name>vbox10</name>
+	<homogeneous>False</homogeneous>
+	<spacing>0</spacing>
+	<child>
+	  <shrink>True</shrink>
+	  <resize>True</resize>
+	</child>
+
+	<widget>
+	  <class>GtkLabel</class>
+	  <name>label96</name>
+	  <label>Verplante Menge</label>
+	  <justify>GTK_JUSTIFY_CENTER</justify>
+	  <wrap>False</wrap>
+	  <xalign>0.5</xalign>
+	  <yalign>0.5</yalign>
+	  <xpad>0</xpad>
+	  <ypad>0</ypad>
+	  <child>
+	    <padding>0</padding>
+	    <expand>False</expand>
+	    <fill>False</fill>
 	  </child>
 	</widget>
 
 	<widget>
-	  <class>GtkToggleButton</class>
-	  <child_name>Toolbar:button</child_name>
-	  <name>togglebutton_material</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <signal>
-	    <name>toggled</name>
-	    <handler>on_togglebutton_material_toggled</handler>
-	    <last_modification_time>Fri, 15 Mar 2002 11:28:51 GMT</last_modification_time>
-	  </signal>
-	  <label>Material</label>
-	  <stock_pixmap>GNOME_STOCK_PIXMAP_CONVERT</stock_pixmap>
-	  <active>False</active>
-	</widget>
-
-	<widget>
-	  <class>GtkToggleButton</class>
-	  <child_name>Toolbar:button</child_name>
-	  <name>togglebutton_auftraege</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <signal>
-	    <name>toggled</name>
-	    <handler>on_togglebutton_auftraege_toggled</handler>
-	    <last_modification_time>Fri, 30 Nov 2001 08:52:16 GMT</last_modification_time>
-	  </signal>
-	  <label>Aufträge</label>
-	  <icon>stock_convert_rev2.xpm</icon>
-	  <active>False</active>
-	</widget>
-
-	<widget>
-	  <class>Placeholder</class>
-	</widget>
-
-	<widget>
-	  <class>GtkButton</class>
-	  <child_name>Toolbar:button</child_name>
-	  <name>button_artikeleingabe</name>
-	  <signal>
-	    <name>clicked</name>
-	    <handler>on_button_artikeleingabe_clicked</handler>
-	    <last_modification_time>Mon, 08 Oct 2001 11:31:14 GMT</last_modification_time>
-	  </signal>
-	  <label>Artikel</label>
-	  <stock_pixmap>GNOME_STOCK_PIXMAP_COLORSELECTOR</stock_pixmap>
-	</widget>
-
-	<widget>
-	  <class>GtkButton</class>
-	  <child_name>Toolbar:button</child_name>
-	  <name>button_auftrag_erledigt</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <tooltip>Der gewählte Auftrag wird als 'erledigt' markiert</tooltip>
-	  <signal>
-	    <name>clicked</name>
-	    <handler>on_button_auftrag_erledigt_clicked</handler>
-	    <last_modification_time>Thu, 29 Nov 2001 17:43:35 GMT</last_modification_time>
-	  </signal>
-	  <label>erledigt</label>
-	  <stock_pixmap>GNOME_STOCK_PIXMAP_TRASH</stock_pixmap>
+	  <class>GtkScrolledWindow</class>
+	  <name>scrolledwindow15</name>
+	  <hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
+	  <vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
+	  <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
+	  <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
 	  <child>
-	    <new_group>True</new_group>
+	    <padding>0</padding>
+	    <expand>True</expand>
+	    <fill>True</fill>
 	  </child>
-	</widget>
 
-	<widget>
-	  <class>GtkButton</class>
-	  <child_name>Toolbar:button</child_name>
-	  <name>button_Kunden_erledigt</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <tooltip>Die zu erledigten Kundenaufträgen gehörenden Einträge dieser Instanz werden als 'erledigt' markiert.</tooltip>
-	  <signal>
-	    <name>clicked</name>
-	    <handler>on_button_Kunden_erledigt_clicked</handler>
-	    <last_modification_time>Thu, 29 Nov 2001 17:45:32 GMT</last_modification_time>
-	  </signal>
-	  <label>aufräumen</label>
-	  <stock_pixmap>GNOME_STOCK_PIXMAP_TRASH_FULL</stock_pixmap>
-	</widget>
-
-	<widget>
-	  <class>GtkButton</class>
-	  <child_name>Toolbar:button</child_name>
-	  <name>button_faerben</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <signal>
-	    <name>clicked</name>
-	    <handler>on_button_faerben_clicked</handler>
-	    <last_modification_time>Fri, 17 May 2002 09:08:47 GMT</last_modification_time>
-	  </signal>
-	  <label>Färben</label>
-	  <stock_pixmap>GNOME_STOCK_PIXMAP_LINE_IN</stock_pixmap>
+	  <widget>
+	    <class>Custom</class>
+	    <name>tree_lager_verplant</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <signal>
+	      <name>leaf_selected</name>
+	      <handler>on_lager_leaf_selected</handler>
+	      <last_modification_time>Thu, 04 Apr 2002 10:33:01 GMT</last_modification_time>
+	    </signal>
+	    <signal>
+	      <name>unselect_row</name>
+	      <handler>on_lager_unselect_row</handler>
+	      <last_modification_time>Thu, 04 Apr 2002 10:33:07 GMT</last_modification_time>
+	    </signal>
+	    <signal>
+	      <name>node_selected</name>
+	      <handler>on_lager_node_selected</handler>
+	      <last_modification_time>Thu, 04 Apr 2002 10:33:14 GMT</last_modification_time>
+	    </signal>
+	    <creation_function>SimpleTree</creation_function>
+	    <int1>3</int1>
+	    <int2>3</int2>
+	    <last_modification_time>Mon, 25 Jun 2001 08:37:46 GMT</last_modification_time>
+	  </widget>
 	</widget>
       </widget>
     </widget>
@@ -1197,34 +1103,598 @@
     <widget>
       <class>GtkFrame</class>
       <name>frame_instanzen</name>
+      <border_width>5</border_width>
       <cxx_visibility>protected</cxx_visibility>
       <label>Materialbestellung</label>
       <label_xalign>0</label_xalign>
       <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
       <child>
-	<left_attach>0</left_attach>
-	<right_attach>1</right_attach>
-	<top_attach>4</top_attach>
-	<bottom_attach>5</bottom_attach>
-	<xpad>0</xpad>
-	<ypad>0</ypad>
-	<xexpand>False</xexpand>
-	<yexpand>False</yexpand>
-	<xshrink>False</xshrink>
-	<yshrink>False</yshrink>
-	<xfill>True</xfill>
-	<yfill>False</yfill>
+	<padding>0</padding>
+	<expand>True</expand>
+	<fill>True</fill>
       </child>
 
       <widget>
-	<class>GtkTable</class>
-	<name>table_instanzen</name>
-	<cxx_visibility>protected</cxx_visibility>
-	<rows>3</rows>
-	<columns>4</columns>
+	<class>GtkVBox</class>
+	<name>vbox16</name>
 	<homogeneous>False</homogeneous>
-	<row_spacing>0</row_spacing>
-	<column_spacing>0</column_spacing>
+	<spacing>0</spacing>
+
+	<widget>
+	  <class>GtkTable</class>
+	  <name>table_instanzen</name>
+	  <cxx_visibility>protected</cxx_visibility>
+	  <rows>2</rows>
+	  <columns>4</columns>
+	  <homogeneous>False</homogeneous>
+	  <row_spacing>0</row_spacing>
+	  <column_spacing>0</column_spacing>
+	  <child>
+	    <padding>0</padding>
+	    <expand>False</expand>
+	    <fill>True</fill>
+	  </child>
+
+	  <widget>
+	    <class>GtkLabel</class>
+	    <name>info_label_instanzen</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <label>info text (etwas länger)</label>
+	    <justify>GTK_JUSTIFY_CENTER</justify>
+	    <wrap>False</wrap>
+	    <xalign>0</xalign>
+	    <yalign>0.5</yalign>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <child>
+	      <left_attach>0</left_attach>
+	      <right_attach>4</right_attach>
+	      <top_attach>0</top_attach>
+	      <bottom_attach>1</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkTable</class>
+	    <name>table18</name>
+	    <rows>1</rows>
+	    <columns>2</columns>
+	    <homogeneous>False</homogeneous>
+	    <row_spacing>0</row_spacing>
+	    <column_spacing>0</column_spacing>
+	    <child>
+	      <left_attach>0</left_attach>
+	      <right_attach>4</right_attach>
+	      <top_attach>1</top_attach>
+	      <bottom_attach>2</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
+
+	    <widget>
+	      <class>GtkFrame</class>
+	      <name>frame13</name>
+	      <label_xalign>0</label_xalign>
+	      <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+	      <child>
+		<left_attach>0</left_attach>
+		<right_attach>1</right_attach>
+		<top_attach>0</top_attach>
+		<bottom_attach>1</bottom_attach>
+		<xpad>10</xpad>
+		<ypad>0</ypad>
+		<xexpand>True</xexpand>
+		<yexpand>False</yexpand>
+		<xshrink>False</xshrink>
+		<yshrink>False</yshrink>
+		<xfill>True</xfill>
+		<yfill>False</yfill>
+	      </child>
+
+	      <widget>
+		<class>GtkTable</class>
+		<name>table20</name>
+		<rows>1</rows>
+		<columns>2</columns>
+		<homogeneous>False</homogeneous>
+		<row_spacing>0</row_spacing>
+		<column_spacing>0</column_spacing>
+
+		<widget>
+		  <class>GtkSpinButton</class>
+		  <name>spinbutton_geplante_menge</name>
+		  <width>80</width>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <can_focus>True</can_focus>
+		  <climb_rate>1</climb_rate>
+		  <digits>0</digits>
+		  <numeric>False</numeric>
+		  <update_policy>GTK_UPDATE_ALWAYS</update_policy>
+		  <snap>False</snap>
+		  <wrap>False</wrap>
+		  <value>1</value>
+		  <lower>1</lower>
+		  <upper>1e+07</upper>
+		  <step>1</step>
+		  <page>10</page>
+		  <page_size>10</page_size>
+		  <child>
+		    <left_attach>1</left_attach>
+		    <right_attach>2</right_attach>
+		    <top_attach>0</top_attach>
+		    <bottom_attach>1</bottom_attach>
+		    <xpad>0</xpad>
+		    <ypad>0</ypad>
+		    <xexpand>True</xexpand>
+		    <yexpand>True</yexpand>
+		    <xshrink>False</xshrink>
+		    <yshrink>False</yshrink>
+		    <xfill>True</xfill>
+		    <yfill>False</yfill>
+		  </child>
+		</widget>
+
+		<widget>
+		  <class>GtkToggleButton</class>
+		  <name>togglebutton_geplante_menge</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <tooltip>Ist dieser Knopf NICHT gedrückt, so wird die komplette Menge verplant</tooltip>
+		  <can_focus>True</can_focus>
+		  <signal>
+		    <name>toggled</name>
+		    <handler>on_togglebutton_geplante_menge_toggled</handler>
+		    <last_modification_time>Thu, 15 Nov 2001 15:55:15 GMT</last_modification_time>
+		  </signal>
+		  <relief>GTK_RELIEF_NORMAL</relief>
+		  <active>False</active>
+		  <child>
+		    <left_attach>0</left_attach>
+		    <right_attach>1</right_attach>
+		    <top_attach>0</top_attach>
+		    <bottom_attach>1</bottom_attach>
+		    <xpad>0</xpad>
+		    <ypad>0</ypad>
+		    <xexpand>False</xexpand>
+		    <yexpand>False</yexpand>
+		    <xshrink>False</xshrink>
+		    <yshrink>False</yshrink>
+		    <xfill>False</xfill>
+		    <yfill>False</yfill>
+		  </child>
+
+		  <widget>
+		    <class>GtkHBox</class>
+		    <name>hbox8</name>
+		    <homogeneous>False</homogeneous>
+		    <spacing>0</spacing>
+
+		    <widget>
+		      <class>GtkPixmap</class>
+		      <name>pixmap1</name>
+		      <filename>configure.xpm</filename>
+		      <xalign>0.5</xalign>
+		      <yalign>0.5</yalign>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <build_insensitive>True</build_insensitive>
+		      <child>
+			<padding>0</padding>
+			<expand>True</expand>
+			<fill>True</fill>
+		      </child>
+		    </widget>
+
+		    <widget>
+		      <class>GtkLabel</class>
+		      <name>label82</name>
+		      <label>Teilmenge</label>
+		      <justify>GTK_JUSTIFY_CENTER</justify>
+		      <wrap>False</wrap>
+		      <xalign>0.5</xalign>
+		      <yalign>0.5</yalign>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <child>
+			<padding>0</padding>
+			<expand>False</expand>
+			<fill>False</fill>
+		      </child>
+		    </widget>
+		  </widget>
+		</widget>
+	      </widget>
+	    </widget>
+
+	    <widget>
+	      <class>GtkFrame</class>
+	      <name>frame15</name>
+	      <label_xalign>0</label_xalign>
+	      <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+	      <child>
+		<left_attach>1</left_attach>
+		<right_attach>2</right_attach>
+		<top_attach>0</top_attach>
+		<bottom_attach>1</bottom_attach>
+		<xpad>0</xpad>
+		<ypad>0</ypad>
+		<xexpand>False</xexpand>
+		<yexpand>False</yexpand>
+		<xshrink>False</xshrink>
+		<yshrink>False</yshrink>
+		<xfill>True</xfill>
+		<yfill>False</yfill>
+	      </child>
+
+	      <widget>
+		<class>GtkTable</class>
+		<name>table24</name>
+		<rows>3</rows>
+		<columns>5</columns>
+		<homogeneous>False</homogeneous>
+		<row_spacing>0</row_spacing>
+		<column_spacing>0</column_spacing>
+
+		<widget>
+		  <class>GtkButton</class>
+		  <name>button_neue_anr</name>
+		  <height>30</height>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <can_focus>True</can_focus>
+		  <signal>
+		    <name>clicked</name>
+		    <handler>on_button_neue_anr_clicked</handler>
+		    <last_modification_time>Thu, 18 Oct 2001 09:35:04 GMT</last_modification_time>
+		  </signal>
+		  <relief>GTK_RELIEF_NORMAL</relief>
+		  <child>
+		    <left_attach>0</left_attach>
+		    <right_attach>1</right_attach>
+		    <top_attach>1</top_attach>
+		    <bottom_attach>3</bottom_attach>
+		    <xpad>0</xpad>
+		    <ypad>0</ypad>
+		    <xexpand>False</xexpand>
+		    <yexpand>False</yexpand>
+		    <xshrink>False</xshrink>
+		    <yshrink>False</yshrink>
+		    <xfill>True</xfill>
+		    <yfill>False</yfill>
+		  </child>
+
+		  <widget>
+		    <class>GtkHBox</class>
+		    <name>hbox11</name>
+		    <homogeneous>False</homogeneous>
+		    <spacing>0</spacing>
+
+		    <widget>
+		      <class>GtkPixmap</class>
+		      <name>pixmap3</name>
+		      <filename>wintext.xpm</filename>
+		      <xalign>0.5</xalign>
+		      <yalign>0.5</yalign>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <build_insensitive>True</build_insensitive>
+		      <child>
+			<padding>0</padding>
+			<expand>True</expand>
+			<fill>True</fill>
+		      </child>
+		    </widget>
+
+		    <widget>
+		      <class>GtkLabel</class>
+		      <name>label84</name>
+		      <label>Neuer Auftrag</label>
+		      <justify>GTK_JUSTIFY_CENTER</justify>
+		      <wrap>False</wrap>
+		      <xalign>0.5</xalign>
+		      <yalign>0.5</yalign>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <child>
+			<padding>0</padding>
+			<expand>False</expand>
+			<fill>False</fill>
+		      </child>
+		    </widget>
+		  </widget>
+		</widget>
+
+		<widget>
+		  <class>GtkLabel</class>
+		  <name>label85</name>
+		  <label>geplante Verfügbarkeit</label>
+		  <justify>GTK_JUSTIFY_CENTER</justify>
+		  <wrap>False</wrap>
+		  <xalign>0</xalign>
+		  <yalign>0.5</yalign>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <child>
+		    <left_attach>2</left_attach>
+		    <right_attach>3</right_attach>
+		    <top_attach>1</top_attach>
+		    <bottom_attach>2</bottom_attach>
+		    <xpad>0</xpad>
+		    <ypad>0</ypad>
+		    <xexpand>False</xexpand>
+		    <yexpand>False</yexpand>
+		    <xshrink>False</xshrink>
+		    <yshrink>False</yshrink>
+		    <xfill>False</xfill>
+		    <yfill>False</yfill>
+		  </child>
+		</widget>
+
+		<widget>
+		  <class>Custom</class>
+		  <name>searchcombo_auftragid</name>
+		  <width>150</width>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <signal>
+		    <name>activate</name>
+		    <handler>on_searchcombo_auftragid_activate</handler>
+		    <last_modification_time>Fri, 07 Sep 2001 13:47:38 GMT</last_modification_time>
+		  </signal>
+		  <signal>
+		    <name>search</name>
+		    <handler>on_searchcombo_auftragid_search</handler>
+		    <last_modification_time>Fri, 07 Sep 2001 13:47:45 GMT</last_modification_time>
+		  </signal>
+		  <creation_function>SearchComboContent&lt;int&gt;</creation_function>
+		  <int1>0</int1>
+		  <int2>0</int2>
+		  <last_modification_time>Fri, 07 Sep 2001 12:56:36 GMT</last_modification_time>
+		  <child>
+		    <left_attach>1</left_attach>
+		    <right_attach>2</right_attach>
+		    <top_attach>2</top_attach>
+		    <bottom_attach>3</bottom_attach>
+		    <xpad>0</xpad>
+		    <ypad>0</ypad>
+		    <xexpand>False</xexpand>
+		    <yexpand>False</yexpand>
+		    <xshrink>False</xshrink>
+		    <yshrink>False</yshrink>
+		    <xfill>True</xfill>
+		    <yfill>True</yfill>
+		  </child>
+		</widget>
+
+		<widget>
+		  <class>Custom</class>
+		  <name>Datum_instanz</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <creation_function>Datewin</creation_function>
+		  <int1>0</int1>
+		  <int2>0</int2>
+		  <last_modification_time>Thu, 18 Oct 2001 09:32:43 GMT</last_modification_time>
+		  <child>
+		    <left_attach>2</left_attach>
+		    <right_attach>3</right_attach>
+		    <top_attach>2</top_attach>
+		    <bottom_attach>3</bottom_attach>
+		    <xpad>0</xpad>
+		    <ypad>0</ypad>
+		    <xexpand>False</xexpand>
+		    <yexpand>False</yexpand>
+		    <xshrink>False</xshrink>
+		    <yshrink>False</yshrink>
+		    <xfill>True</xfill>
+		    <yfill>True</yfill>
+		  </child>
+		</widget>
+
+		<widget>
+		  <class>GtkButton</class>
+		  <name>button_instanz_get_selection</name>
+		  <height>30</height>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <can_focus>True</can_focus>
+		  <signal>
+		    <name>clicked</name>
+		    <handler>on_button_instanz_get_selection_clicked</handler>
+		    <last_modification_time>Tue, 04 Jun 2002 10:51:17 GMT</last_modification_time>
+		  </signal>
+		  <relief>GTK_RELIEF_NORMAL</relief>
+		  <child>
+		    <left_attach>3</left_attach>
+		    <right_attach>4</right_attach>
+		    <top_attach>1</top_attach>
+		    <bottom_attach>3</bottom_attach>
+		    <xpad>0</xpad>
+		    <ypad>0</ypad>
+		    <xexpand>False</xexpand>
+		    <yexpand>False</yexpand>
+		    <xshrink>False</xshrink>
+		    <yshrink>False</yshrink>
+		    <xfill>False</xfill>
+		    <yfill>False</yfill>
+		  </child>
+
+		  <widget>
+		    <class>GtkHBox</class>
+		    <name>hbox14</name>
+		    <homogeneous>False</homogeneous>
+		    <spacing>0</spacing>
+
+		    <widget>
+		      <class>GtkPixmap</class>
+		      <name>pixmap6</name>
+		      <filename>stock_convert_rev2.xpm</filename>
+		      <xalign>0.5</xalign>
+		      <yalign>0.5</yalign>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <build_insensitive>True</build_insensitive>
+		      <child>
+			<padding>0</padding>
+			<expand>True</expand>
+			<fill>True</fill>
+		      </child>
+		    </widget>
+
+		    <widget>
+		      <class>GtkLabel</class>
+		      <name>label93</name>
+		      <label>Selektierte(n)  
+Auftr. planen</label>
+		      <justify>GTK_JUSTIFY_CENTER</justify>
+		      <wrap>False</wrap>
+		      <xalign>0.5</xalign>
+		      <yalign>0.5</yalign>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <child>
+			<padding>0</padding>
+			<expand>False</expand>
+			<fill>False</fill>
+		      </child>
+		    </widget>
+		  </widget>
+		</widget>
+
+		<widget>
+		  <class>GtkLabel</class>
+		  <name>label75</name>
+		  <label>Auftragsnummer</label>
+		  <justify>GTK_JUSTIFY_CENTER</justify>
+		  <wrap>False</wrap>
+		  <xalign>0</xalign>
+		  <yalign>0.5</yalign>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <child>
+		    <left_attach>1</left_attach>
+		    <right_attach>2</right_attach>
+		    <top_attach>1</top_attach>
+		    <bottom_attach>2</bottom_attach>
+		    <xpad>0</xpad>
+		    <ypad>0</ypad>
+		    <xexpand>False</xexpand>
+		    <yexpand>False</yexpand>
+		    <xshrink>False</xshrink>
+		    <yshrink>False</yshrink>
+		    <xfill>False</xfill>
+		    <yfill>False</yfill>
+		  </child>
+		</widget>
+
+		<widget>
+		  <class>GtkButton</class>
+		  <name>button_instanz_print</name>
+		  <tooltip>Linker Knopf: Drucken, rechter Knopf: Vorschau</tooltip>
+		  <can_focus>True</can_focus>
+		  <signal>
+		    <name>button_press_event</name>
+		    <handler>on_button_instanz_print_clicked</handler>
+		    <last_modification_time>Thu, 18 Oct 2001 12:24:44 GMT</last_modification_time>
+		  </signal>
+		  <relief>GTK_RELIEF_NORMAL</relief>
+		  <child>
+		    <left_attach>4</left_attach>
+		    <right_attach>5</right_attach>
+		    <top_attach>1</top_attach>
+		    <bottom_attach>3</bottom_attach>
+		    <xpad>0</xpad>
+		    <ypad>0</ypad>
+		    <xexpand>False</xexpand>
+		    <yexpand>False</yexpand>
+		    <xshrink>False</xshrink>
+		    <yshrink>False</yshrink>
+		    <xfill>True</xfill>
+		    <yfill>False</yfill>
+		  </child>
+
+		  <widget>
+		    <class>GtkHBox</class>
+		    <name>hbox12</name>
+		    <homogeneous>False</homogeneous>
+		    <spacing>0</spacing>
+
+		    <widget>
+		      <class>GtkPixmap</class>
+		      <name>pixmap4</name>
+		      <filename>print_image.xpm</filename>
+		      <xalign>0.5</xalign>
+		      <yalign>0.5</yalign>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <build_insensitive>True</build_insensitive>
+		      <child>
+			<padding>0</padding>
+			<expand>True</expand>
+			<fill>True</fill>
+		      </child>
+		    </widget>
+
+		    <widget>
+		      <class>GtkLabel</class>
+		      <name>label86</name>
+		      <label>Drucken</label>
+		      <justify>GTK_JUSTIFY_CENTER</justify>
+		      <wrap>False</wrap>
+		      <xalign>0.5</xalign>
+		      <yalign>0.5</yalign>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <child>
+			<padding>0</padding>
+			<expand>False</expand>
+			<fill>False</fill>
+		      </child>
+		    </widget>
+		  </widget>
+		</widget>
+
+		<widget>
+		  <class>Custom</class>
+		  <name>kunden_lieferant</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <signal>
+		    <name>activate</name>
+		    <handler>on_kunden_lieferant_activate</handler>
+		    <last_modification_time>Fri, 25 Jan 2002 15:05:17 GMT</last_modification_time>
+		  </signal>
+		  <creation_function>KundenBox2</creation_function>
+		  <int1>0</int1>
+		  <int2>0</int2>
+		  <last_modification_time>Thu, 31 Oct 2002 16:02:17 GMT</last_modification_time>
+		  <child>
+		    <left_attach>0</left_attach>
+		    <right_attach>5</right_attach>
+		    <top_attach>0</top_attach>
+		    <bottom_attach>1</bottom_attach>
+		    <xpad>0</xpad>
+		    <ypad>0</ypad>
+		    <xexpand>False</xexpand>
+		    <yexpand>False</yexpand>
+		    <xshrink>False</xshrink>
+		    <yshrink>False</yshrink>
+		    <xfill>True</xfill>
+		    <yfill>True</yfill>
+		  </child>
+		</widget>
+	      </widget>
+	    </widget>
+	  </widget>
+	</widget>
 
 	<widget>
 	  <class>GtkScrolledWindow</class>
@@ -1234,599 +1704,24 @@
 	  <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
 	  <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
 	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>4</right_attach>
-	    <top_attach>2</top_attach>
-	    <bottom_attach>3</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>True</xexpand>
-	    <yexpand>True</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>True</yfill>
+	    <padding>0</padding>
+	    <expand>True</expand>
+	    <fill>True</fill>
 	  </child>
 
 	  <widget>
-	    <class>GtkViewport</class>
-	    <name>viewport9</name>
-	    <shadow_type>GTK_SHADOW_NONE</shadow_type>
-
-	    <widget>
-	      <class>Custom</class>
-	      <name>tree_neuer_auftrag</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <signal>
-		<name>leaf_selected</name>
-		<handler>tree_neuer_auftrag_leaf_selected</handler>
-		<last_modification_time>Mon, 10 Sep 2001 12:24:06 GMT</last_modification_time>
-	      </signal>
-	      <creation_function>SimpleTree</creation_function>
-	      <int1>4</int1>
-	      <int2>0</int2>
-	      <last_modification_time>Mon, 10 Sep 2001 12:20:14 GMT</last_modification_time>
-	    </widget>
-	  </widget>
-	</widget>
-
-	<widget>
-	  <class>GtkLabel</class>
-	  <name>info_label_instanzen</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <label>info text (etwas länger)</label>
-	  <justify>GTK_JUSTIFY_CENTER</justify>
-	  <wrap>False</wrap>
-	  <xalign>0</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>4</right_attach>
-	    <top_attach>0</top_attach>
-	    <bottom_attach>1</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>GtkTable</class>
-	  <name>table18</name>
-	  <rows>1</rows>
-	  <columns>3</columns>
-	  <homogeneous>False</homogeneous>
-	  <row_spacing>0</row_spacing>
-	  <column_spacing>0</column_spacing>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>4</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>2</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-
-	  <widget>
-	    <class>GtkFrame</class>
-	    <name>frame13</name>
-	    <label_xalign>0</label_xalign>
-	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	    <child>
-	      <left_attach>0</left_attach>
-	      <right_attach>1</right_attach>
-	      <top_attach>0</top_attach>
-	      <bottom_attach>1</bottom_attach>
-	      <xpad>10</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>False</xfill>
-	      <yfill>False</yfill>
-	    </child>
-
-	    <widget>
-	      <class>GtkTable</class>
-	      <name>table20</name>
-	      <rows>1</rows>
-	      <columns>2</columns>
-	      <homogeneous>False</homogeneous>
-	      <row_spacing>0</row_spacing>
-	      <column_spacing>0</column_spacing>
-
-	      <widget>
-		<class>GtkSpinButton</class>
-		<name>spinbutton_geplante_menge</name>
-		<width>80</width>
-		<cxx_visibility>protected</cxx_visibility>
-		<can_focus>True</can_focus>
-		<climb_rate>1</climb_rate>
-		<digits>0</digits>
-		<numeric>False</numeric>
-		<update_policy>GTK_UPDATE_ALWAYS</update_policy>
-		<snap>False</snap>
-		<wrap>False</wrap>
-		<value>1</value>
-		<lower>1</lower>
-		<upper>1e+07</upper>
-		<step>1</step>
-		<page>10</page>
-		<page_size>10</page_size>
-		<child>
-		  <left_attach>1</left_attach>
-		  <right_attach>2</right_attach>
-		  <top_attach>0</top_attach>
-		  <bottom_attach>1</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>True</xexpand>
-		  <yexpand>True</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>True</xfill>
-		  <yfill>False</yfill>
-		</child>
-	      </widget>
-
-	      <widget>
-		<class>GtkToggleButton</class>
-		<name>togglebutton_geplante_menge</name>
-		<cxx_visibility>protected</cxx_visibility>
-		<tooltip>Ist dieser Knopf NICHT gedrückt, so wird die komplette Menge verplant</tooltip>
-		<can_focus>True</can_focus>
-		<signal>
-		  <name>toggled</name>
-		  <handler>on_togglebutton_geplante_menge_toggled</handler>
-		  <last_modification_time>Thu, 15 Nov 2001 15:55:15 GMT</last_modification_time>
-		</signal>
-		<relief>GTK_RELIEF_NORMAL</relief>
-		<active>False</active>
-		<child>
-		  <left_attach>0</left_attach>
-		  <right_attach>1</right_attach>
-		  <top_attach>0</top_attach>
-		  <bottom_attach>1</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>False</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>False</xfill>
-		  <yfill>False</yfill>
-		</child>
-
-		<widget>
-		  <class>GtkHBox</class>
-		  <name>hbox8</name>
-		  <homogeneous>False</homogeneous>
-		  <spacing>0</spacing>
-
-		  <widget>
-		    <class>GtkPixmap</class>
-		    <name>pixmap1</name>
-		    <filename>configure.xpm</filename>
-		    <xalign>0.5</xalign>
-		    <yalign>0.5</yalign>
-		    <xpad>0</xpad>
-		    <ypad>0</ypad>
-		    <build_insensitive>True</build_insensitive>
-		    <child>
-		      <padding>0</padding>
-		      <expand>True</expand>
-		      <fill>True</fill>
-		    </child>
-		  </widget>
-
-		  <widget>
-		    <class>GtkLabel</class>
-		    <name>label82</name>
-		    <label>Teilmenge</label>
-		    <justify>GTK_JUSTIFY_CENTER</justify>
-		    <wrap>False</wrap>
-		    <xalign>0.5</xalign>
-		    <yalign>0.5</yalign>
-		    <xpad>0</xpad>
-		    <ypad>0</ypad>
-		    <child>
-		      <padding>0</padding>
-		      <expand>False</expand>
-		      <fill>False</fill>
-		    </child>
-		  </widget>
-		</widget>
-	      </widget>
-	    </widget>
-	  </widget>
-
-	  <widget>
-	    <class>GtkFrame</class>
-	    <name>frame15</name>
-	    <label_xalign>0</label_xalign>
-	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	    <child>
-	      <left_attach>1</left_attach>
-	      <right_attach>2</right_attach>
-	      <top_attach>0</top_attach>
-	      <bottom_attach>1</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>True</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>False</yfill>
-	    </child>
-
-	    <widget>
-	      <class>GtkTable</class>
-	      <name>table24</name>
-	      <rows>3</rows>
-	      <columns>5</columns>
-	      <homogeneous>False</homogeneous>
-	      <row_spacing>0</row_spacing>
-	      <column_spacing>0</column_spacing>
-
-	      <widget>
-		<class>GtkButton</class>
-		<name>button_instanz_print</name>
-		<tooltip>Linker Knopf: Drucken, rechter Knopf: Vorschau</tooltip>
-		<can_focus>True</can_focus>
-		<signal>
-		  <name>button_press_event</name>
-		  <handler>on_button_instanz_print_clicked</handler>
-		  <last_modification_time>Thu, 18 Oct 2001 12:24:44 GMT</last_modification_time>
-		</signal>
-		<relief>GTK_RELIEF_NORMAL</relief>
-		<child>
-		  <left_attach>4</left_attach>
-		  <right_attach>5</right_attach>
-		  <top_attach>1</top_attach>
-		  <bottom_attach>3</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>False</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>True</xfill>
-		  <yfill>False</yfill>
-		</child>
-
-		<widget>
-		  <class>GtkHBox</class>
-		  <name>hbox12</name>
-		  <homogeneous>False</homogeneous>
-		  <spacing>0</spacing>
-
-		  <widget>
-		    <class>GtkPixmap</class>
-		    <name>pixmap4</name>
-		    <filename>print_image.xpm</filename>
-		    <xalign>0.5</xalign>
-		    <yalign>0.5</yalign>
-		    <xpad>0</xpad>
-		    <ypad>0</ypad>
-		    <build_insensitive>True</build_insensitive>
-		    <child>
-		      <padding>0</padding>
-		      <expand>True</expand>
-		      <fill>True</fill>
-		    </child>
-		  </widget>
-
-		  <widget>
-		    <class>GtkLabel</class>
-		    <name>label86</name>
-		    <label>Drucken</label>
-		    <justify>GTK_JUSTIFY_CENTER</justify>
-		    <wrap>False</wrap>
-		    <xalign>0.5</xalign>
-		    <yalign>0.5</yalign>
-		    <xpad>0</xpad>
-		    <ypad>0</ypad>
-		    <child>
-		      <padding>0</padding>
-		      <expand>False</expand>
-		      <fill>False</fill>
-		    </child>
-		  </widget>
-		</widget>
-	      </widget>
-
-	      <widget>
-		<class>Custom</class>
-		<name>kunden_lieferant</name>
-		<cxx_visibility>protected</cxx_visibility>
-		<signal>
-		  <name>activate</name>
-		  <handler>on_kunden_lieferant_activate</handler>
-		  <last_modification_time>Fri, 25 Jan 2002 15:05:17 GMT</last_modification_time>
-		</signal>
-		<creation_function>KundenBox</creation_function>
-		<int1>0</int1>
-		<int2>0</int2>
-		<last_modification_time>Fri, 25 Jan 2002 15:04:00 GMT</last_modification_time>
-		<child>
-		  <left_attach>0</left_attach>
-		  <right_attach>5</right_attach>
-		  <top_attach>0</top_attach>
-		  <bottom_attach>1</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>False</xexpand>
-		  <yexpand>True</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>True</xfill>
-		  <yfill>True</yfill>
-		</child>
-	      </widget>
-
-	      <widget>
-		<class>GtkButton</class>
-		<name>button_instanz_get_selection</name>
-		<height>30</height>
-		<cxx_visibility>protected</cxx_visibility>
-		<can_focus>True</can_focus>
-		<signal>
-		  <name>clicked</name>
-		  <handler>on_button_instanz_get_selection_clicked</handler>
-		  <last_modification_time>Tue, 04 Jun 2002 10:51:17 GMT</last_modification_time>
-		</signal>
-		<relief>GTK_RELIEF_NORMAL</relief>
-		<child>
-		  <left_attach>3</left_attach>
-		  <right_attach>4</right_attach>
-		  <top_attach>1</top_attach>
-		  <bottom_attach>3</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>False</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>True</xfill>
-		  <yfill>False</yfill>
-		</child>
-
-		<widget>
-		  <class>GtkHBox</class>
-		  <name>hbox14</name>
-		  <homogeneous>False</homogeneous>
-		  <spacing>0</spacing>
-
-		  <widget>
-		    <class>GtkPixmap</class>
-		    <name>pixmap6</name>
-		    <filename>stock_convert_rev2.xpm</filename>
-		    <xalign>0.5</xalign>
-		    <yalign>0.5</yalign>
-		    <xpad>0</xpad>
-		    <ypad>0</ypad>
-		    <build_insensitive>True</build_insensitive>
-		    <child>
-		      <padding>0</padding>
-		      <expand>True</expand>
-		      <fill>True</fill>
-		    </child>
-		  </widget>
-
-		  <widget>
-		    <class>GtkLabel</class>
-		    <name>label93</name>
-		    <label>Selektierte Aufträge
-übernehmen</label>
-		    <justify>GTK_JUSTIFY_CENTER</justify>
-		    <wrap>False</wrap>
-		    <xalign>0.5</xalign>
-		    <yalign>0.5</yalign>
-		    <xpad>0</xpad>
-		    <ypad>0</ypad>
-		    <child>
-		      <padding>0</padding>
-		      <expand>False</expand>
-		      <fill>False</fill>
-		    </child>
-		  </widget>
-		</widget>
-	      </widget>
-
-	      <widget>
-		<class>GtkButton</class>
-		<name>button_neue_anr</name>
-		<height>30</height>
-		<cxx_visibility>protected</cxx_visibility>
-		<can_focus>True</can_focus>
-		<signal>
-		  <name>clicked</name>
-		  <handler>on_button_neue_anr_clicked</handler>
-		  <last_modification_time>Thu, 18 Oct 2001 09:35:04 GMT</last_modification_time>
-		</signal>
-		<relief>GTK_RELIEF_NORMAL</relief>
-		<child>
-		  <left_attach>0</left_attach>
-		  <right_attach>1</right_attach>
-		  <top_attach>1</top_attach>
-		  <bottom_attach>3</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>False</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>True</xfill>
-		  <yfill>False</yfill>
-		</child>
-
-		<widget>
-		  <class>GtkHBox</class>
-		  <name>hbox11</name>
-		  <homogeneous>False</homogeneous>
-		  <spacing>0</spacing>
-
-		  <widget>
-		    <class>GtkPixmap</class>
-		    <name>pixmap3</name>
-		    <filename>wintext.xpm</filename>
-		    <xalign>0.5</xalign>
-		    <yalign>0.5</yalign>
-		    <xpad>0</xpad>
-		    <ypad>0</ypad>
-		    <build_insensitive>True</build_insensitive>
-		    <child>
-		      <padding>0</padding>
-		      <expand>True</expand>
-		      <fill>True</fill>
-		    </child>
-		  </widget>
-
-		  <widget>
-		    <class>GtkLabel</class>
-		    <name>label84</name>
-		    <label>Neuer Auftrag</label>
-		    <justify>GTK_JUSTIFY_CENTER</justify>
-		    <wrap>False</wrap>
-		    <xalign>0.5</xalign>
-		    <yalign>0.5</yalign>
-		    <xpad>0</xpad>
-		    <ypad>0</ypad>
-		    <child>
-		      <padding>0</padding>
-		      <expand>False</expand>
-		      <fill>False</fill>
-		    </child>
-		  </widget>
-		</widget>
-	      </widget>
-
-	      <widget>
-		<class>GtkLabel</class>
-		<name>label75</name>
-		<label>Auftragsnummer</label>
-		<justify>GTK_JUSTIFY_CENTER</justify>
-		<wrap>False</wrap>
-		<xalign>0</xalign>
-		<yalign>0.5</yalign>
-		<xpad>0</xpad>
-		<ypad>0</ypad>
-		<child>
-		  <left_attach>1</left_attach>
-		  <right_attach>2</right_attach>
-		  <top_attach>1</top_attach>
-		  <bottom_attach>2</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>False</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>False</xfill>
-		  <yfill>False</yfill>
-		</child>
-	      </widget>
-
-	      <widget>
-		<class>GtkLabel</class>
-		<name>label85</name>
-		<label>geplante Verfügbarkeit</label>
-		<justify>GTK_JUSTIFY_CENTER</justify>
-		<wrap>False</wrap>
-		<xalign>0</xalign>
-		<yalign>0.5</yalign>
-		<xpad>0</xpad>
-		<ypad>0</ypad>
-		<child>
-		  <left_attach>2</left_attach>
-		  <right_attach>3</right_attach>
-		  <top_attach>1</top_attach>
-		  <bottom_attach>2</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>False</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>False</xfill>
-		  <yfill>False</yfill>
-		</child>
-	      </widget>
-
-	      <widget>
-		<class>Custom</class>
-		<name>searchcombo_auftragid</name>
-		<width>150</width>
-		<cxx_visibility>protected</cxx_visibility>
-		<signal>
-		  <name>activate</name>
-		  <handler>on_searchcombo_auftragid_activate</handler>
-		  <last_modification_time>Fri, 07 Sep 2001 13:47:38 GMT</last_modification_time>
-		</signal>
-		<signal>
-		  <name>search</name>
-		  <handler>on_searchcombo_auftragid_search</handler>
-		  <last_modification_time>Fri, 07 Sep 2001 13:47:45 GMT</last_modification_time>
-		</signal>
-		<creation_function>SearchComboContent&lt;int&gt;</creation_function>
-		<int1>0</int1>
-		<int2>0</int2>
-		<last_modification_time>Fri, 07 Sep 2001 12:56:36 GMT</last_modification_time>
-		<child>
-		  <left_attach>1</left_attach>
-		  <right_attach>2</right_attach>
-		  <top_attach>2</top_attach>
-		  <bottom_attach>3</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>False</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>True</xfill>
-		  <yfill>True</yfill>
-		</child>
-	      </widget>
-
-	      <widget>
-		<class>Custom</class>
-		<name>Datum_instanz</name>
-		<cxx_visibility>protected</cxx_visibility>
-		<creation_function>Datewin</creation_function>
-		<int1>0</int1>
-		<int2>0</int2>
-		<last_modification_time>Thu, 18 Oct 2001 09:32:43 GMT</last_modification_time>
-		<child>
-		  <left_attach>2</left_attach>
-		  <right_attach>3</right_attach>
-		  <top_attach>2</top_attach>
-		  <bottom_attach>3</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>False</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>True</xfill>
-		  <yfill>True</yfill>
-		</child>
-	      </widget>
-	    </widget>
+	    <class>Custom</class>
+	    <name>tree_neuer_auftrag</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <signal>
+	      <name>leaf_selected</name>
+	      <handler>tree_neuer_auftrag_leaf_selected</handler>
+	      <last_modification_time>Mon, 10 Sep 2001 12:24:06 GMT</last_modification_time>
+	    </signal>
+	    <creation_function>SimpleTree</creation_function>
+	    <int1>4</int1>
+	    <int2>0</int2>
+	    <last_modification_time>Mon, 10 Sep 2001 12:20:14 GMT</last_modification_time>
 	  </widget>
 	</widget>
       </widget>
@@ -3349,7 +3244,7 @@
 	<cxx_visibility>protected</cxx_visibility>
 	<handle_size>15</handle_size>
 	<gutter_size>6</gutter_size>
-	<position>220</position>
+	<position>84</position>
 	<child>
 	  <padding>0</padding>
 	  <expand>True</expand>
@@ -3551,6 +3446,7 @@
 		<padding>0</padding>
 		<expand>True</expand>
 		<fill>True</fill>
+		<pack>GTK_PACK_END</pack>
 	      </child>
 
 	      <widget>
@@ -4868,31 +4764,19 @@ Fertig</label>
   <auto_shrink>False</auto_shrink>
 
   <widget>
-    <class>GtkTable</class>
-    <name>table25</name>
-    <rows>5</rows>
-    <columns>2</columns>
+    <class>GtkVBox</class>
+    <name>vbox13</name>
     <homogeneous>False</homogeneous>
-    <row_spacing>0</row_spacing>
-    <column_spacing>0</column_spacing>
+    <spacing>0</spacing>
 
     <widget>
       <class>GtkMenuBar</class>
       <name>menubar3</name>
       <shadow_type>GTK_SHADOW_OUT</shadow_type>
       <child>
-	<left_attach>0</left_attach>
-	<right_attach>1</right_attach>
-	<top_attach>0</top_attach>
-	<bottom_attach>1</bottom_attach>
-	<xpad>0</xpad>
-	<ypad>0</ypad>
-	<xexpand>True</xexpand>
-	<yexpand>False</yexpand>
-	<xshrink>False</xshrink>
-	<yshrink>False</yshrink>
-	<xfill>True</xfill>
-	<yfill>False</yfill>
+	<padding>0</padding>
+	<expand>False</expand>
+	<fill>False</fill>
       </child>
 
       <widget>
@@ -4919,173 +4803,669 @@ Fertig</label>
     </widget>
 
     <widget>
-      <class>GtkFrame</class>
-      <name>frame_rechnung</name>
-      <cxx_visibility>protected</cxx_visibility>
-      <label>Rechnung</label>
-      <label_xalign>0</label_xalign>
-      <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+      <class>GtkVBox</class>
+      <name>vbox14</name>
+      <homogeneous>False</homogeneous>
+      <spacing>0</spacing>
       <child>
-	<left_attach>0</left_attach>
-	<right_attach>1</right_attach>
-	<top_attach>2</top_attach>
-	<bottom_attach>3</bottom_attach>
-	<xpad>0</xpad>
-	<ypad>0</ypad>
-	<xexpand>True</xexpand>
-	<yexpand>False</yexpand>
-	<xshrink>True</xshrink>
-	<yshrink>True</yshrink>
-	<xfill>True</xfill>
-	<yfill>False</yfill>
+	<padding>0</padding>
+	<expand>True</expand>
+	<fill>True</fill>
       </child>
 
       <widget>
-	<class>GtkTable</class>
-	<name>table10</name>
-	<rows>4</rows>
-	<columns>5</columns>
-	<homogeneous>False</homogeneous>
-	<row_spacing>0</row_spacing>
-	<column_spacing>0</column_spacing>
+	<class>GtkToolbar</class>
+	<name>toolbar7</name>
+	<orientation>GTK_ORIENTATION_HORIZONTAL</orientation>
+	<type>GTK_TOOLBAR_BOTH</type>
+	<space_size>5</space_size>
+	<space_style>GTK_TOOLBAR_SPACE_EMPTY</space_style>
+	<relief>GTK_RELIEF_NORMAL</relief>
+	<tooltips>True</tooltips>
+	<child>
+	  <padding>0</padding>
+	  <expand>False</expand>
+	  <fill>False</fill>
+	</child>
 
 	<widget>
-	  <class>GtkLabel</class>
-	  <name>label66</name>
-	  <label>Währung</label>
-	  <justify>GTK_JUSTIFY_CENTER</justify>
-	  <wrap>False</wrap>
-	  <xalign>0</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <child>
-	    <left_attach>3</left_attach>
-	    <right_attach>4</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>2</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>Custom</class>
-	  <name>rng_WWaehrung</name>
-	  <cxx_visibility>protected</cxx_visibility>
+	  <class>GtkButton</class>
+	  <child_name>Toolbar:button</child_name>
+	  <name>button23</name>
 	  <signal>
-	    <name>activate</name>
-	    <handler>waehrung_geaendert</handler>
-	    <last_modification_time>Fri, 17 Aug 2001 12:36:02 GMT</last_modification_time>
+	    <name>clicked</name>
+	    <handler>on_rng_close</handler>
+	    <last_modification_time>Wed, 28 Mar 2001 10:47:08 GMT</last_modification_time>
 	  </signal>
-	  <creation_function>WWaehrung(WWaehrung::KURZ)</creation_function>
-	  <int1>0</int1>
-	  <int2>0</int2>
-	  <last_modification_time>Mon, 13 Aug 2001 09:50:40 GMT</last_modification_time>
-	  <child>
-	    <left_attach>4</left_attach>
-	    <right_attach>5</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>2</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>False</xfill>
-	    <yfill>False</yfill>
-	  </child>
+	  <label>Schließen</label>
+	  <stock_pixmap>GNOME_STOCK_PIXMAP_CLOSE</stock_pixmap>
 	</widget>
 
 	<widget>
-	  <class>GtkLabel</class>
-	  <name>label87</name>
-	  <label>Zahlung</label>
-	  <justify>GTK_JUSTIFY_CENTER</justify>
-	  <wrap>False</wrap>
-	  <xalign>0</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <child>
-	    <left_attach>3</left_attach>
-	    <right_attach>4</right_attach>
-	    <top_attach>0</top_attach>
-	    <bottom_attach>1</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>GtkOptionMenu</class>
-	  <name>optionmenu_zahlart</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <can_focus>True</can_focus>
+	  <class>GtkButton</class>
+	  <child_name>Toolbar:button</child_name>
+	  <name>button24</name>
 	  <signal>
-	    <name>deactivate</name>
-	    <handler>optionmenu_zahlart_deactivate</handler>
-	    <last_modification_time>Wed, 14 Nov 2001 17:13:23 GMT</last_modification_time>
+	    <name>clicked</name>
+	    <handler>on_rng_neu</handler>
+	    <last_modification_time>Wed, 28 Mar 2001 10:47:20 GMT</last_modification_time>
 	  </signal>
-	  <items>Zahlungsart
-</items>
-	  <initial_choice>0</initial_choice>
-	  <child>
-	    <left_attach>4</left_attach>
-	    <right_attach>5</right_attach>
-	    <top_attach>0</top_attach>
-	    <bottom_attach>1</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
+	  <label>Neu</label>
+	  <stock_pixmap>GNOME_STOCK_PIXMAP_NEW</stock_pixmap>
+	</widget>
+
+	<widget>
+	  <class>GtkButton</class>
+	  <child_name>Toolbar:button</child_name>
+	  <name>button25</name>
+	  <sensitive>False</sensitive>
+	  <signal>
+	    <name>clicked</name>
+	    <handler>on_rng_save</handler>
+	    <last_modification_time>Wed, 28 Mar 2001 10:47:30 GMT</last_modification_time>
+	  </signal>
+	  <label>Speichern</label>
+	  <stock_pixmap>GNOME_STOCK_PIXMAP_SAVE</stock_pixmap>
+	</widget>
+
+	<widget>
+	  <class>GtkButton</class>
+	  <child_name>Toolbar:button</child_name>
+	  <name>button26</name>
+	  <signal>
+	    <name>clicked</name>
+	    <handler>on_rng_preview</handler>
+	    <last_modification_time>Wed, 28 Mar 2001 10:47:41 GMT</last_modification_time>
+	  </signal>
+	  <label>Anzeigen</label>
+	  <stock_pixmap>GNOME_STOCK_PIXMAP_SEARCH</stock_pixmap>
+	</widget>
+
+	<widget>
+	  <class>GtkButton</class>
+	  <child_name>Toolbar:button</child_name>
+	  <name>button27</name>
+	  <cxx_visibility>protected</cxx_visibility>
+	  <tooltip>Linke Maustaste: Drucken wie gewählt. Mittlere Maustaste: Originalrechnung auf Firmanpapier und Kopie auf Standardpapier. Rechte Maustaste: Original auf Firmanpapier und je eine Kopie auf Firmenpapier und Standardpapier.</tooltip>
+	  <signal>
+	    <name>button_press_event</name>
+	    <handler>on_rng_print</handler>
+	    <last_modification_time>Wed, 17 Oct 2001 10:58:14 GMT</last_modification_time>
+	  </signal>
+	  <label>Drucken</label>
+	  <stock_pixmap>GNOME_STOCK_PIXMAP_PRINT</stock_pixmap>
 	</widget>
 
 	<widget>
 	  <class>GtkTable</class>
-	  <name>table23</name>
-	  <rows>2</rows>
-	  <columns>2</columns>
+	  <name>table17</name>
+	  <rows>3</rows>
+	  <columns>1</columns>
 	  <homogeneous>False</homogeneous>
 	  <row_spacing>0</row_spacing>
 	  <column_spacing>0</column_spacing>
+
+	  <widget>
+	    <class>GtkCheckButton</class>
+	    <name>checkbutton_firmenpapier</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <can_focus>True</can_focus>
+	    <label>Firmenpapier</label>
+	    <active>True</active>
+	    <draw_indicator>True</draw_indicator>
+	    <child>
+	      <left_attach>0</left_attach>
+	      <right_attach>1</right_attach>
+	      <top_attach>0</top_attach>
+	      <bottom_attach>1</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkCheckButton</class>
+	    <name>checkbutton_kopie</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <can_focus>True</can_focus>
+	    <label>Kopie</label>
+	    <active>False</active>
+	    <draw_indicator>True</draw_indicator>
+	    <child>
+	      <left_attach>0</left_attach>
+	      <right_attach>1</right_attach>
+	      <top_attach>1</top_attach>
+	      <bottom_attach>2</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkCheckButton</class>
+	    <name>checkbutton_ean_drucken</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <visible>False</visible>
+	    <can_focus>True</can_focus>
+	    <signal>
+	      <name>clicked</name>
+	      <handler>on_checkbutton_ean_drucken_clicked</handler>
+	      <after>True</after>
+	      <last_modification_time>Fri, 02 Aug 2002 07:37:05 GMT</last_modification_time>
+	    </signal>
+	    <label>EAN</label>
+	    <active>False</active>
+	    <draw_indicator>True</draw_indicator>
+	    <child>
+	      <left_attach>0</left_attach>
+	      <right_attach>1</right_attach>
+	      <top_attach>2</top_attach>
+	      <bottom_attach>3</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
+	  </widget>
+	</widget>
+
+	<widget>
+	  <class>GtkButton</class>
+	  <child_name>Toolbar:button</child_name>
+	  <name>preis_ergaenzen</name>
+	  <cxx_visibility>protected</cxx_visibility>
+	  <signal>
+	    <name>clicked</name>
+	    <handler>Preis_ergaenzen</handler>
+	    <last_modification_time>Thu, 10 May 2001 06:45:32 GMT</last_modification_time>
+	  </signal>
+	  <label>Preise
+ergänzen</label>
+	  <stock_pixmap>GNOME_STOCK_PIXMAP_SEARCH</stock_pixmap>
+	</widget>
+
+	<widget>
+	  <class>GtkButton</class>
+	  <child_name>Toolbar:button</child_name>
+	  <name>rngentry_del</name>
+	  <cxx_visibility>protected</cxx_visibility>
+	  <sensitive>False</sensitive>
+	  <signal>
+	    <name>clicked</name>
+	    <handler>rngzeile_delete</handler>
+	    <last_modification_time>Wed, 28 Mar 2001 10:48:03 GMT</last_modification_time>
+	  </signal>
+	  <label>Rng.Zeile
+löschen</label>
+	  <stock_pixmap>GNOME_STOCK_PIXMAP_CLEAR</stock_pixmap>
 	  <child>
-	    <left_attach>3</left_attach>
-	    <right_attach>5</right_attach>
-	    <top_attach>2</top_attach>
-	    <bottom_attach>3</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>True</yfill>
+	    <new_group>True</new_group>
 	  </child>
+	</widget>
+
+	<widget>
+	  <class>GtkButton</class>
+	  <child_name>Toolbar:button</child_name>
+	  <name>button_pr</name>
+	  <cxx_visibility>protected</cxx_visibility>
+	  <sensitive>False</sensitive>
+	  <signal>
+	    <name>clicked</name>
+	    <handler>Preis_setzen</handler>
+	    <last_modification_time>Wed, 18 Apr 2001 11:45:18 GMT</last_modification_time>
+	  </signal>
+	  <label>Preis
+überschreiben</label>
+	  <stock_pixmap>GNOME_STOCK_PIXMAP_SRCHRPL</stock_pixmap>
+	</widget>
+
+	<widget>
+	  <class>GtkTable</class>
+	  <name>table_preisvergleich</name>
+	  <cxx_visibility>protected</cxx_visibility>
+	  <visible>False</visible>
+	  <rows>3</rows>
+	  <columns>3</columns>
+	  <homogeneous>True</homogeneous>
+	  <row_spacing>0</row_spacing>
+	  <column_spacing>0</column_spacing>
 
 	  <widget>
 	    <class>GtkLabel</class>
-	    <name>label94</name>
-	    <label>Zahlungsziel</label>
+	    <name>label88</name>
+	    <label>Preis in</label>
+	    <justify>GTK_JUSTIFY_CENTER</justify>
+	    <wrap>False</wrap>
+	    <xalign>0</xalign>
+	    <yalign>0.5</yalign>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <child>
+	      <left_attach>0</left_attach>
+	      <right_attach>2</right_attach>
+	      <top_attach>0</top_attach>
+	      <bottom_attach>1</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkLabel</class>
+	    <name>label_auftragspreis</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <label>2,00</label>
+	    <justify>GTK_JUSTIFY_CENTER</justify>
+	    <wrap>False</wrap>
+	    <xalign>0.5</xalign>
+	    <yalign>0.5</yalign>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <child>
+	      <left_attach>1</left_attach>
+	      <right_attach>2</right_attach>
+	      <top_attach>2</top_attach>
+	      <bottom_attach>3</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkRadioButton</class>
+	    <name>radiobutton_artikelpreis</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <can_focus>True</can_focus>
+	    <label>Artikel</label>
+	    <active>True</active>
+	    <draw_indicator>False</draw_indicator>
+	    <group>artaufpreis</group>
+	    <child>
+	      <left_attach>0</left_attach>
+	      <right_attach>1</right_attach>
+	      <top_attach>1</top_attach>
+	      <bottom_attach>2</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkRadioButton</class>
+	    <name>radiobutton_auftragspreis</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <can_focus>True</can_focus>
+	    <label>Auftrag</label>
+	    <active>False</active>
+	    <draw_indicator>False</draw_indicator>
+	    <group>artaufpreis</group>
+	    <child>
+	      <left_attach>1</left_attach>
+	      <right_attach>2</right_attach>
+	      <top_attach>1</top_attach>
+	      <bottom_attach>2</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkLabel</class>
+	    <name>label_artikelpreis</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <label>2,00</label>
+	    <justify>GTK_JUSTIFY_CENTER</justify>
+	    <wrap>False</wrap>
+	    <xalign>0.5</xalign>
+	    <yalign>0.5</yalign>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <child>
+	      <left_attach>0</left_attach>
+	      <right_attach>1</right_attach>
+	      <top_attach>2</top_attach>
+	      <bottom_attach>3</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkRadioButton</class>
+	    <name>radiobutton_preiseingabe</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <can_focus>True</can_focus>
+	    <label>Eingabe</label>
+	    <active>False</active>
+	    <draw_indicator>False</draw_indicator>
+	    <group>artaufpreis</group>
+	    <child>
+	      <left_attach>2</left_attach>
+	      <right_attach>3</right_attach>
+	      <top_attach>1</top_attach>
+	      <bottom_attach>2</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkSpinButton</class>
+	    <name>spinbutton_preiseingabe</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <can_focus>True</can_focus>
+	    <climb_rate>1</climb_rate>
+	    <digits>2</digits>
+	    <numeric>False</numeric>
+	    <update_policy>GTK_UPDATE_ALWAYS</update_policy>
+	    <snap>False</snap>
+	    <wrap>False</wrap>
+	    <value>0.3</value>
+	    <lower>0</lower>
+	    <upper>10000</upper>
+	    <step>0.1</step>
+	    <page>10</page>
+	    <page_size>10</page_size>
+	    <child>
+	      <left_attach>2</left_attach>
+	      <right_attach>3</right_attach>
+	      <top_attach>2</top_attach>
+	      <bottom_attach>3</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>True</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
+	  </widget>
+	</widget>
+      </widget>
+
+      <widget>
+	<class>GtkFrame</class>
+	<name>frame_rechnung</name>
+	<border_width>5</border_width>
+	<cxx_visibility>protected</cxx_visibility>
+	<label>Rechnung</label>
+	<label_xalign>0</label_xalign>
+	<shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+	<child>
+	  <padding>0</padding>
+	  <expand>False</expand>
+	  <fill>True</fill>
+	</child>
+
+	<widget>
+	  <class>GtkTable</class>
+	  <name>table10</name>
+	  <rows>4</rows>
+	  <columns>5</columns>
+	  <homogeneous>False</homogeneous>
+	  <row_spacing>0</row_spacing>
+	  <column_spacing>0</column_spacing>
+
+	  <widget>
+	    <class>GtkLabel</class>
+	    <name>label66</name>
+	    <label>Währung</label>
+	    <justify>GTK_JUSTIFY_CENTER</justify>
+	    <wrap>False</wrap>
+	    <xalign>0</xalign>
+	    <yalign>0.5</yalign>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <child>
+	      <left_attach>3</left_attach>
+	      <right_attach>4</right_attach>
+	      <top_attach>1</top_attach>
+	      <bottom_attach>2</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>Custom</class>
+	    <name>rng_WWaehrung</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <signal>
+	      <name>activate</name>
+	      <handler>waehrung_geaendert</handler>
+	      <last_modification_time>Fri, 17 Aug 2001 12:36:02 GMT</last_modification_time>
+	    </signal>
+	    <creation_function>WWaehrung(WWaehrung::KURZ)</creation_function>
+	    <int1>0</int1>
+	    <int2>0</int2>
+	    <last_modification_time>Mon, 13 Aug 2001 09:50:40 GMT</last_modification_time>
+	    <child>
+	      <left_attach>4</left_attach>
+	      <right_attach>5</right_attach>
+	      <top_attach>1</top_attach>
+	      <bottom_attach>2</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>False</xfill>
+	      <yfill>False</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkLabel</class>
+	    <name>label87</name>
+	    <label>Zahlung</label>
+	    <justify>GTK_JUSTIFY_CENTER</justify>
+	    <wrap>False</wrap>
+	    <xalign>0</xalign>
+	    <yalign>0.5</yalign>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <child>
+	      <left_attach>3</left_attach>
+	      <right_attach>4</right_attach>
+	      <top_attach>0</top_attach>
+	      <bottom_attach>1</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkOptionMenu</class>
+	    <name>optionmenu_zahlart</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <can_focus>True</can_focus>
+	    <signal>
+	      <name>deactivate</name>
+	      <handler>optionmenu_zahlart_deactivate</handler>
+	      <last_modification_time>Wed, 14 Nov 2001 17:13:23 GMT</last_modification_time>
+	    </signal>
+	    <items>Zahlungsart
+</items>
+	    <initial_choice>0</initial_choice>
+	    <child>
+	      <left_attach>4</left_attach>
+	      <right_attach>5</right_attach>
+	      <top_attach>0</top_attach>
+	      <bottom_attach>1</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>Custom</class>
+	    <name>rngdatum</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <signal>
+	      <name>activate</name>
+	      <handler>on_rngdate_activate</handler>
+	      <last_modification_time>Wed, 28 Mar 2001 10:48:36 GMT</last_modification_time>
+	    </signal>
+	    <creation_function>Datewin</creation_function>
+	    <int1>0</int1>
+	    <int2>0</int2>
+	    <last_modification_time>Wed, 17 Jan 2001 16:12:26 GMT</last_modification_time>
+	    <child>
+	      <left_attach>1</left_attach>
+	      <right_attach>2</right_attach>
+	      <top_attach>2</top_attach>
+	      <bottom_attach>3</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>False</xfill>
+	      <yfill>True</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>Custom</class>
+	    <name>rngnr</name>
+	    <width>100</width>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <signal>
+	      <name>activate</name>
+	      <handler>on_rngnr_activate</handler>
+	      <last_modification_time>Wed, 28 Mar 2001 10:48:19 GMT</last_modification_time>
+	    </signal>
+	    <signal>
+	      <name>search</name>
+	      <handler>on_rngnr_search</handler>
+	      <last_modification_time>Wed, 28 Mar 2001 10:48:26 GMT</last_modification_time>
+	    </signal>
+	    <creation_function>SearchComboContent&lt;int&gt;</creation_function>
+	    <int1>0</int1>
+	    <int2>0</int2>
+	    <last_modification_time>Fri, 26 Jan 2001 08:54:33 GMT</last_modification_time>
+	    <child>
+	      <left_attach>1</left_attach>
+	      <right_attach>2</right_attach>
+	      <top_attach>1</top_attach>
+	      <bottom_attach>2</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>False</xfill>
+	      <yfill>False</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>Custom</class>
+	    <name>lieferkunde</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <signal>
+	      <name>activate</name>
+	      <handler>on_lieferkunde_activate</handler>
+	      <last_modification_time>Fri, 26 Jan 2001 09:17:25 GMT</last_modification_time>
+	    </signal>
+	    <creation_function>KundenBox2</creation_function>
+	    <int1>0</int1>
+	    <int2>0</int2>
+	    <last_modification_time>Wed, 15 May 2002 16:04:09 GMT</last_modification_time>
+	    <child>
+	      <left_attach>1</left_attach>
+	      <right_attach>3</right_attach>
+	      <top_attach>0</top_attach>
+	      <bottom_attach>1</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>True</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkLabel</class>
+	    <name>label72</name>
+	    <label>Kunde</label>
 	    <justify>GTK_JUSTIFY_CENTER</justify>
 	    <wrap>False</wrap>
 	    <xalign>0</xalign>
@@ -5109,145 +5489,20 @@ Fertig</label>
 	  </widget>
 
 	  <widget>
-	    <class>Custom</class>
-	    <name>zahlziel</name>
-	    <cxx_visibility>protected</cxx_visibility>
-	    <signal>
-	      <name>activate</name>
-	      <handler>on_zahlziel_activate</handler>
-	      <last_modification_time>Thu, 04 Jul 2002 13:53:00 GMT</last_modification_time>
-	    </signal>
-	    <creation_function>Datewin</creation_function>
-	    <int1>0</int1>
-	    <int2>0</int2>
-	    <last_modification_time>Thu, 04 Jul 2002 13:52:21 GMT</last_modification_time>
-	    <child>
-	      <left_attach>1</left_attach>
-	      <right_attach>2</right_attach>
-	      <top_attach>0</top_attach>
-	      <bottom_attach>1</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>True</yfill>
-	    </child>
-	  </widget>
-
-	  <widget>
-	    <class>GtkOptionMenu</class>
-	    <name>rabatt_typ</name>
-	    <cxx_visibility>protected</cxx_visibility>
-	    <tooltip>Rabatt/Zuschlag auf alle Rechnungsposten</tooltip>
-	    <can_focus>True</can_focus>
-	    <signal>
-	      <name>deactivate</name>
-	      <handler>rabatt_geaendert</handler>
-	      <last_modification_time>Wed, 25 Apr 2001 14:34:30 GMT</last_modification_time>
-	    </signal>
-	    <items>Rabatt
-Zuschlag
-</items>
-	    <initial_choice>0</initial_choice>
-	    <child>
-	      <left_attach>0</left_attach>
-	      <right_attach>1</right_attach>
-	      <top_attach>1</top_attach>
-	      <bottom_attach>2</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>False</yfill>
-	    </child>
-	  </widget>
-
-	  <widget>
-	    <class>GtkSpinButton</class>
-	    <name>rabatt_wert</name>
-	    <width>60</width>
-	    <cxx_visibility>protected</cxx_visibility>
-	    <tooltip>Rabatt/Zuschlag auf alle Rechnungsposten</tooltip>
-	    <can_focus>True</can_focus>
-	    <signal>
-	      <name>activate</name>
-	      <handler>rabatt_geaendert</handler>
-	      <last_modification_time>Wed, 25 Apr 2001 14:34:09 GMT</last_modification_time>
-	    </signal>
-	    <climb_rate>1</climb_rate>
-	    <digits>2</digits>
-	    <numeric>True</numeric>
-	    <update_policy>GTK_UPDATE_ALWAYS</update_policy>
-	    <snap>False</snap>
+	    <class>GtkLabel</class>
+	    <name>label60</name>
+	    <label>Rg. Nr.</label>
+	    <justify>GTK_JUSTIFY_CENTER</justify>
 	    <wrap>False</wrap>
-	    <value>0</value>
-	    <lower>0</lower>
-	    <upper>99</upper>
-	    <step>1</step>
-	    <page>10</page>
-	    <page_size>10</page_size>
-	    <child>
-	      <left_attach>1</left_attach>
-	      <right_attach>2</right_attach>
-	      <top_attach>1</top_attach>
-	      <bottom_attach>2</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>True</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>False</yfill>
-	    </child>
-	  </widget>
-	</widget>
-
-	<widget>
-	  <class>GtkTable</class>
-	  <name>table_gutschrift</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <rows>2</rows>
-	  <columns>1</columns>
-	  <homogeneous>False</homogeneous>
-	  <row_spacing>0</row_spacing>
-	  <column_spacing>0</column_spacing>
-	  <child>
-	    <left_attach>2</left_attach>
-	    <right_attach>3</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>3</bottom_attach>
+	    <xalign>0</xalign>
+	    <yalign>0.5</yalign>
 	    <xpad>0</xpad>
 	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>False</xfill>
-	    <yfill>False</yfill>
-	  </child>
-
-	  <widget>
-	    <class>GtkButton</class>
-	    <name>button_gutschrift</name>
-	    <can_focus>True</can_focus>
-	    <signal>
-	      <name>clicked</name>
-	      <handler>on_button_gutschrift_clicked</handler>
-	      <last_modification_time>Fri, 17 May 2002 10:10:57 GMT</last_modification_time>
-	    </signal>
-	    <relief>GTK_RELIEF_NORMAL</relief>
 	    <child>
 	      <left_attach>0</left_attach>
 	      <right_attach>1</right_attach>
-	      <top_attach>0</top_attach>
-	      <bottom_attach>1</bottom_attach>
+	      <top_attach>1</top_attach>
+	      <bottom_attach>2</bottom_attach>
 	      <xpad>0</xpad>
 	      <ypad>0</ypad>
 	      <xexpand>False</xexpand>
@@ -5257,64 +5512,75 @@ Zuschlag
 	      <xfill>True</xfill>
 	      <yfill>False</yfill>
 	    </child>
+	  </widget>
 
-	    <widget>
-	      <class>GtkHBox</class>
-	      <name>hbox13</name>
-	      <homogeneous>False</homogeneous>
-	      <spacing>0</spacing>
+	  <widget>
+	    <class>GtkLabel</class>
+	    <name>label61</name>
+	    <label>Rg. Datum</label>
+	    <justify>GTK_JUSTIFY_CENTER</justify>
+	    <wrap>False</wrap>
+	    <xalign>0</xalign>
+	    <yalign>0.5</yalign>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <child>
+	      <left_attach>0</left_attach>
+	      <right_attach>1</right_attach>
+	      <top_attach>2</top_attach>
+	      <bottom_attach>3</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
+	  </widget>
 
-	      <widget>
-		<class>GtkPixmap</class>
-		<name>pixmap5</name>
-		<filename>stock_convert_rev2.xpm</filename>
-		<xalign>0.5</xalign>
-		<yalign>0.5</yalign>
-		<xpad>0</xpad>
-		<ypad>0</ypad>
-		<build_insensitive>True</build_insensitive>
-		<child>
-		  <padding>0</padding>
-		  <expand>True</expand>
-		  <fill>True</fill>
-		</child>
-	      </widget>
-
-	      <widget>
-		<class>GtkLabel</class>
-		<name>label92</name>
-		<label>In Gutschrift
-umwandeln</label>
-		<justify>GTK_JUSTIFY_CENTER</justify>
-		<wrap>False</wrap>
-		<xalign>0.5</xalign>
-		<yalign>0.5</yalign>
-		<xpad>0</xpad>
-		<ypad>0</ypad>
-		<child>
-		  <padding>0</padding>
-		  <expand>False</expand>
-		  <fill>False</fill>
-		</child>
-	      </widget>
-	    </widget>
+	  <widget>
+	    <class>GtkLabel</class>
+	    <name>label_rechnung_ctl</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <label></label>
+	    <justify>GTK_JUSTIFY_LEFT</justify>
+	    <wrap>False</wrap>
+	    <xalign>0</xalign>
+	    <yalign>0.5</yalign>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <child>
+	      <left_attach>1</left_attach>
+	      <right_attach>3</right_attach>
+	      <top_attach>3</top_attach>
+	      <bottom_attach>4</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
 	  </widget>
 
 	  <widget>
 	    <class>GtkTable</class>
-	    <name>table_gutschrift_sicherheit</name>
+	    <name>table_gutschrift</name>
 	    <cxx_visibility>protected</cxx_visibility>
-	    <visible>False</visible>
-	    <rows>1</rows>
-	    <columns>2</columns>
-	    <homogeneous>True</homogeneous>
+	    <rows>2</rows>
+	    <columns>1</columns>
+	    <homogeneous>False</homogeneous>
 	    <row_spacing>0</row_spacing>
 	    <column_spacing>0</column_spacing>
 	    <child>
-	      <left_attach>0</left_attach>
-	      <right_attach>1</right_attach>
+	      <left_attach>2</left_attach>
+	      <right_attach>3</right_attach>
 	      <top_attach>1</top_attach>
-	      <bottom_attach>2</bottom_attach>
+	      <bottom_attach>3</bottom_attach>
 	      <xpad>0</xpad>
 	      <ypad>0</ypad>
 	      <xexpand>False</xexpand>
@@ -5327,15 +5593,185 @@ umwandeln</label>
 
 	    <widget>
 	      <class>GtkButton</class>
-	      <name>button_gutschrift_ja</name>
+	      <name>button_gutschrift</name>
 	      <can_focus>True</can_focus>
 	      <signal>
 		<name>clicked</name>
-		<handler>on_button_gutschrift_ja_clicked</handler>
-		<last_modification_time>Fri, 17 May 2002 10:16:26 GMT</last_modification_time>
+		<handler>on_button_gutschrift_clicked</handler>
+		<last_modification_time>Fri, 17 May 2002 10:10:57 GMT</last_modification_time>
 	      </signal>
-	      <stock_button>GNOME_STOCK_BUTTON_YES</stock_button>
 	      <relief>GTK_RELIEF_NORMAL</relief>
+	      <child>
+		<left_attach>0</left_attach>
+		<right_attach>1</right_attach>
+		<top_attach>0</top_attach>
+		<bottom_attach>1</bottom_attach>
+		<xpad>0</xpad>
+		<ypad>0</ypad>
+		<xexpand>False</xexpand>
+		<yexpand>False</yexpand>
+		<xshrink>False</xshrink>
+		<yshrink>False</yshrink>
+		<xfill>True</xfill>
+		<yfill>False</yfill>
+	      </child>
+
+	      <widget>
+		<class>GtkHBox</class>
+		<name>hbox13</name>
+		<homogeneous>False</homogeneous>
+		<spacing>0</spacing>
+
+		<widget>
+		  <class>GtkPixmap</class>
+		  <name>pixmap5</name>
+		  <filename>stock_convert_rev2.xpm</filename>
+		  <xalign>0.5</xalign>
+		  <yalign>0.5</yalign>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <build_insensitive>True</build_insensitive>
+		  <child>
+		    <padding>0</padding>
+		    <expand>True</expand>
+		    <fill>True</fill>
+		  </child>
+		</widget>
+
+		<widget>
+		  <class>GtkLabel</class>
+		  <name>label92</name>
+		  <label>In Gutschrift
+umwandeln</label>
+		  <justify>GTK_JUSTIFY_CENTER</justify>
+		  <wrap>False</wrap>
+		  <xalign>0.5</xalign>
+		  <yalign>0.5</yalign>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <child>
+		    <padding>0</padding>
+		    <expand>False</expand>
+		    <fill>False</fill>
+		  </child>
+		</widget>
+	      </widget>
+	    </widget>
+
+	    <widget>
+	      <class>GtkTable</class>
+	      <name>table_gutschrift_sicherheit</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <visible>False</visible>
+	      <rows>1</rows>
+	      <columns>2</columns>
+	      <homogeneous>True</homogeneous>
+	      <row_spacing>0</row_spacing>
+	      <column_spacing>0</column_spacing>
+	      <child>
+		<left_attach>0</left_attach>
+		<right_attach>1</right_attach>
+		<top_attach>1</top_attach>
+		<bottom_attach>2</bottom_attach>
+		<xpad>0</xpad>
+		<ypad>0</ypad>
+		<xexpand>False</xexpand>
+		<yexpand>False</yexpand>
+		<xshrink>False</xshrink>
+		<yshrink>False</yshrink>
+		<xfill>False</xfill>
+		<yfill>False</yfill>
+	      </child>
+
+	      <widget>
+		<class>GtkButton</class>
+		<name>button_gutschrift_ja</name>
+		<can_focus>True</can_focus>
+		<signal>
+		  <name>clicked</name>
+		  <handler>on_button_gutschrift_ja_clicked</handler>
+		  <last_modification_time>Fri, 17 May 2002 10:16:26 GMT</last_modification_time>
+		</signal>
+		<stock_button>GNOME_STOCK_BUTTON_YES</stock_button>
+		<relief>GTK_RELIEF_NORMAL</relief>
+		<child>
+		  <left_attach>0</left_attach>
+		  <right_attach>1</right_attach>
+		  <top_attach>0</top_attach>
+		  <bottom_attach>1</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>False</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>False</yfill>
+		</child>
+	      </widget>
+
+	      <widget>
+		<class>GtkButton</class>
+		<name>button_gutschrift_nein</name>
+		<can_focus>True</can_focus>
+		<signal>
+		  <name>clicked</name>
+		  <handler>on_button_gutschrift_nein_clicked</handler>
+		  <last_modification_time>Fri, 17 May 2002 10:15:51 GMT</last_modification_time>
+		</signal>
+		<stock_button>GNOME_STOCK_BUTTON_NO</stock_button>
+		<relief>GTK_RELIEF_NORMAL</relief>
+		<child>
+		  <left_attach>1</left_attach>
+		  <right_attach>2</right_attach>
+		  <top_attach>0</top_attach>
+		  <bottom_attach>1</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>False</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>False</yfill>
+		</child>
+	      </widget>
+	    </widget>
+	  </widget>
+
+	  <widget>
+	    <class>GtkTable</class>
+	    <name>table23</name>
+	    <rows>2</rows>
+	    <columns>2</columns>
+	    <homogeneous>False</homogeneous>
+	    <row_spacing>0</row_spacing>
+	    <column_spacing>0</column_spacing>
+	    <child>
+	      <left_attach>3</left_attach>
+	      <right_attach>5</right_attach>
+	      <top_attach>2</top_attach>
+	      <bottom_attach>4</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>True</yfill>
+	    </child>
+
+	    <widget>
+	      <class>GtkLabel</class>
+	      <name>label94</name>
+	      <label>Zahlungsziel</label>
+	      <justify>GTK_JUSTIFY_CENTER</justify>
+	      <wrap>False</wrap>
+	      <xalign>0</xalign>
+	      <yalign>0.5</yalign>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
 	      <child>
 		<left_attach>0</left_attach>
 		<right_attach>1</right_attach>
@@ -5353,16 +5789,18 @@ umwandeln</label>
 	    </widget>
 
 	    <widget>
-	      <class>GtkButton</class>
-	      <name>button_gutschrift_nein</name>
-	      <can_focus>True</can_focus>
+	      <class>Custom</class>
+	      <name>zahlziel</name>
+	      <cxx_visibility>protected</cxx_visibility>
 	      <signal>
-		<name>clicked</name>
-		<handler>on_button_gutschrift_nein_clicked</handler>
-		<last_modification_time>Fri, 17 May 2002 10:15:51 GMT</last_modification_time>
+		<name>activate</name>
+		<handler>on_zahlziel_activate</handler>
+		<last_modification_time>Thu, 04 Jul 2002 13:53:00 GMT</last_modification_time>
 	      </signal>
-	      <stock_button>GNOME_STOCK_BUTTON_NO</stock_button>
-	      <relief>GTK_RELIEF_NORMAL</relief>
+	      <creation_function>Datewin</creation_function>
+	      <int1>0</int1>
+	      <int2>0</int2>
+	      <last_modification_time>Thu, 04 Jul 2002 13:52:21 GMT</last_modification_time>
 	      <child>
 		<left_attach>1</left_attach>
 		<right_attach>2</right_attach>
@@ -5375,640 +5813,223 @@ umwandeln</label>
 		<xshrink>False</xshrink>
 		<yshrink>False</yshrink>
 		<xfill>True</xfill>
+		<yfill>True</yfill>
+	      </child>
+	    </widget>
+
+	    <widget>
+	      <class>GtkOptionMenu</class>
+	      <name>rabatt_typ</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <tooltip>Rabatt/Zuschlag auf alle Rechnungsposten</tooltip>
+	      <can_focus>True</can_focus>
+	      <signal>
+		<name>deactivate</name>
+		<handler>rabatt_geaendert</handler>
+		<last_modification_time>Wed, 25 Apr 2001 14:34:30 GMT</last_modification_time>
+	      </signal>
+	      <items>Rabatt
+Zuschlag
+</items>
+	      <initial_choice>0</initial_choice>
+	      <child>
+		<left_attach>0</left_attach>
+		<right_attach>1</right_attach>
+		<top_attach>1</top_attach>
+		<bottom_attach>2</bottom_attach>
+		<xpad>0</xpad>
+		<ypad>0</ypad>
+		<xexpand>False</xexpand>
+		<yexpand>False</yexpand>
+		<xshrink>False</xshrink>
+		<yshrink>False</yshrink>
+		<xfill>True</xfill>
+		<yfill>False</yfill>
+	      </child>
+	    </widget>
+
+	    <widget>
+	      <class>GtkSpinButton</class>
+	      <name>rabatt_wert</name>
+	      <width>60</width>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <tooltip>Rabatt/Zuschlag auf alle Rechnungsposten</tooltip>
+	      <can_focus>True</can_focus>
+	      <signal>
+		<name>activate</name>
+		<handler>rabatt_geaendert</handler>
+		<last_modification_time>Wed, 25 Apr 2001 14:34:09 GMT</last_modification_time>
+	      </signal>
+	      <climb_rate>1</climb_rate>
+	      <digits>2</digits>
+	      <numeric>True</numeric>
+	      <update_policy>GTK_UPDATE_ALWAYS</update_policy>
+	      <snap>False</snap>
+	      <wrap>False</wrap>
+	      <value>0</value>
+	      <lower>0</lower>
+	      <upper>99</upper>
+	      <step>1</step>
+	      <page>10</page>
+	      <page_size>10</page_size>
+	      <child>
+		<left_attach>1</left_attach>
+		<right_attach>2</right_attach>
+		<top_attach>1</top_attach>
+		<bottom_attach>2</bottom_attach>
+		<xpad>0</xpad>
+		<ypad>0</ypad>
+		<xexpand>True</xexpand>
+		<yexpand>False</yexpand>
+		<xshrink>False</xshrink>
+		<yshrink>False</yshrink>
+		<xfill>True</xfill>
 		<yfill>False</yfill>
 	      </child>
 	    </widget>
 	  </widget>
 	</widget>
-
-	<widget>
-	  <class>Custom</class>
-	  <name>rngdatum</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <signal>
-	    <name>activate</name>
-	    <handler>on_rngdate_activate</handler>
-	    <last_modification_time>Wed, 28 Mar 2001 10:48:36 GMT</last_modification_time>
-	  </signal>
-	  <creation_function>Datewin</creation_function>
-	  <int1>0</int1>
-	  <int2>0</int2>
-	  <last_modification_time>Wed, 17 Jan 2001 16:12:26 GMT</last_modification_time>
-	  <child>
-	    <left_attach>1</left_attach>
-	    <right_attach>2</right_attach>
-	    <top_attach>2</top_attach>
-	    <bottom_attach>3</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>False</xfill>
-	    <yfill>True</yfill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>Custom</class>
-	  <name>rngnr</name>
-	  <width>100</width>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <signal>
-	    <name>activate</name>
-	    <handler>on_rngnr_activate</handler>
-	    <last_modification_time>Wed, 28 Mar 2001 10:48:19 GMT</last_modification_time>
-	  </signal>
-	  <signal>
-	    <name>search</name>
-	    <handler>on_rngnr_search</handler>
-	    <last_modification_time>Wed, 28 Mar 2001 10:48:26 GMT</last_modification_time>
-	  </signal>
-	  <creation_function>SearchComboContent&lt;int&gt;</creation_function>
-	  <int1>0</int1>
-	  <int2>0</int2>
-	  <last_modification_time>Fri, 26 Jan 2001 08:54:33 GMT</last_modification_time>
-	  <child>
-	    <left_attach>1</left_attach>
-	    <right_attach>2</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>2</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>False</xfill>
-	    <yfill>False</yfill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>Custom</class>
-	  <name>lieferkunde</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <signal>
-	    <name>activate</name>
-	    <handler>on_lieferkunde_activate</handler>
-	    <last_modification_time>Fri, 26 Jan 2001 09:17:25 GMT</last_modification_time>
-	  </signal>
-	  <creation_function>KundenBox2</creation_function>
-	  <int1>0</int1>
-	  <int2>0</int2>
-	  <last_modification_time>Wed, 15 May 2002 16:04:09 GMT</last_modification_time>
-	  <child>
-	    <left_attach>1</left_attach>
-	    <right_attach>3</right_attach>
-	    <top_attach>0</top_attach>
-	    <bottom_attach>1</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>True</yfill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>GtkLabel</class>
-	  <name>label_rechnung_ctl</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <label></label>
-	  <justify>GTK_JUSTIFY_LEFT</justify>
-	  <wrap>False</wrap>
-	  <xalign>0</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <child>
-	    <left_attach>1</left_attach>
-	    <right_attach>5</right_attach>
-	    <top_attach>3</top_attach>
-	    <bottom_attach>4</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>GtkLabel</class>
-	  <name>label72</name>
-	  <label>Kunde</label>
-	  <justify>GTK_JUSTIFY_CENTER</justify>
-	  <wrap>False</wrap>
-	  <xalign>0</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>1</right_attach>
-	    <top_attach>0</top_attach>
-	    <bottom_attach>1</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>GtkLabel</class>
-	  <name>label60</name>
-	  <label>Rg. Nr.</label>
-	  <justify>GTK_JUSTIFY_CENTER</justify>
-	  <wrap>False</wrap>
-	  <xalign>0</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>1</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>2</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>GtkLabel</class>
-	  <name>label61</name>
-	  <label>Rg. Datum</label>
-	  <justify>GTK_JUSTIFY_CENTER</justify>
-	  <wrap>False</wrap>
-	  <xalign>0</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>1</right_attach>
-	    <top_attach>2</top_attach>
-	    <bottom_attach>3</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-	</widget>
-      </widget>
-    </widget>
-
-    <widget>
-      <class>GtkToolbar</class>
-      <name>toolbar7</name>
-      <orientation>GTK_ORIENTATION_HORIZONTAL</orientation>
-      <type>GTK_TOOLBAR_BOTH</type>
-      <space_size>5</space_size>
-      <space_style>GTK_TOOLBAR_SPACE_EMPTY</space_style>
-      <relief>GTK_RELIEF_NORMAL</relief>
-      <tooltips>True</tooltips>
-      <child>
-	<left_attach>0</left_attach>
-	<right_attach>1</right_attach>
-	<top_attach>1</top_attach>
-	<bottom_attach>2</bottom_attach>
-	<xpad>0</xpad>
-	<ypad>0</ypad>
-	<xexpand>True</xexpand>
-	<yexpand>False</yexpand>
-	<xshrink>False</xshrink>
-	<yshrink>False</yshrink>
-	<xfill>True</xfill>
-	<yfill>False</yfill>
-      </child>
-
-      <widget>
-	<class>GtkButton</class>
-	<child_name>Toolbar:button</child_name>
-	<name>button23</name>
-	<signal>
-	  <name>clicked</name>
-	  <handler>on_rng_close</handler>
-	  <last_modification_time>Wed, 28 Mar 2001 10:47:08 GMT</last_modification_time>
-	</signal>
-	<label>Schließen</label>
-	<stock_pixmap>GNOME_STOCK_PIXMAP_CLOSE</stock_pixmap>
       </widget>
 
       <widget>
-	<class>GtkButton</class>
-	<child_name>Toolbar:button</child_name>
-	<name>button24</name>
-	<signal>
-	  <name>clicked</name>
-	  <handler>on_rng_neu</handler>
-	  <last_modification_time>Wed, 28 Mar 2001 10:47:20 GMT</last_modification_time>
-	</signal>
-	<label>Neu</label>
-	<stock_pixmap>GNOME_STOCK_PIXMAP_NEW</stock_pixmap>
-      </widget>
-
-      <widget>
-	<class>GtkButton</class>
-	<child_name>Toolbar:button</child_name>
-	<name>button25</name>
-	<sensitive>False</sensitive>
-	<signal>
-	  <name>clicked</name>
-	  <handler>on_rng_save</handler>
-	  <last_modification_time>Wed, 28 Mar 2001 10:47:30 GMT</last_modification_time>
-	</signal>
-	<label>Speichern</label>
-	<stock_pixmap>GNOME_STOCK_PIXMAP_SAVE</stock_pixmap>
-      </widget>
-
-      <widget>
-	<class>GtkButton</class>
-	<child_name>Toolbar:button</child_name>
-	<name>button26</name>
-	<signal>
-	  <name>clicked</name>
-	  <handler>on_rng_preview</handler>
-	  <last_modification_time>Wed, 28 Mar 2001 10:47:41 GMT</last_modification_time>
-	</signal>
-	<label>Anzeigen</label>
-	<stock_pixmap>GNOME_STOCK_PIXMAP_SEARCH</stock_pixmap>
-      </widget>
-
-      <widget>
-	<class>GtkButton</class>
-	<child_name>Toolbar:button</child_name>
-	<name>button27</name>
+	<class>GtkFrame</class>
+	<name>frame_rechnungsdaten</name>
+	<border_width>5</border_width>
 	<cxx_visibility>protected</cxx_visibility>
-	<tooltip>Linke Maustaste: Drucken wie gewählt. Mittlere Maustaste: Originalrechnung auf Firmanpapier und Kopie auf Standardpapier. Rechte Maustaste: Original auf Firmanpapier und je eine Kopie auf Firmenpapier und Standardpapier.</tooltip>
-	<signal>
-	  <name>button_press_event</name>
-	  <handler>on_rng_print</handler>
-	  <last_modification_time>Wed, 17 Oct 2001 10:58:14 GMT</last_modification_time>
-	</signal>
-	<label>Drucken</label>
-	<stock_pixmap>GNOME_STOCK_PIXMAP_PRINT</stock_pixmap>
-      </widget>
-
-      <widget>
-	<class>GtkTable</class>
-	<name>table17</name>
-	<rows>3</rows>
-	<columns>1</columns>
-	<homogeneous>False</homogeneous>
-	<row_spacing>0</row_spacing>
-	<column_spacing>0</column_spacing>
-
-	<widget>
-	  <class>GtkCheckButton</class>
-	  <name>checkbutton_firmenpapier</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <can_focus>True</can_focus>
-	  <label>Firmenpapier</label>
-	  <active>True</active>
-	  <draw_indicator>True</draw_indicator>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>1</right_attach>
-	    <top_attach>0</top_attach>
-	    <bottom_attach>1</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>GtkCheckButton</class>
-	  <name>checkbutton_kopie</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <can_focus>True</can_focus>
-	  <label>Kopie</label>
-	  <active>False</active>
-	  <draw_indicator>True</draw_indicator>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>1</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>2</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>GtkCheckButton</class>
-	  <name>checkbutton_ean_drucken</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <visible>False</visible>
-	  <can_focus>True</can_focus>
-	  <signal>
-	    <name>clicked</name>
-	    <handler>on_checkbutton_ean_drucken_clicked</handler>
-	    <after>True</after>
-	    <last_modification_time>Fri, 02 Aug 2002 07:37:05 GMT</last_modification_time>
-	  </signal>
-	  <label>EAN</label>
-	  <active>False</active>
-	  <draw_indicator>True</draw_indicator>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>1</right_attach>
-	    <top_attach>2</top_attach>
-	    <bottom_attach>3</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-	</widget>
-      </widget>
-
-      <widget>
-	<class>GtkButton</class>
-	<child_name>Toolbar:button</child_name>
-	<name>preis_ergaenzen</name>
-	<cxx_visibility>protected</cxx_visibility>
-	<signal>
-	  <name>clicked</name>
-	  <handler>Preis_ergaenzen</handler>
-	  <last_modification_time>Thu, 10 May 2001 06:45:32 GMT</last_modification_time>
-	</signal>
-	<label>Preise
-ergänzen</label>
-	<stock_pixmap>GNOME_STOCK_PIXMAP_SEARCH</stock_pixmap>
-      </widget>
-
-      <widget>
-	<class>GtkButton</class>
-	<child_name>Toolbar:button</child_name>
-	<name>rngentry_del</name>
-	<cxx_visibility>protected</cxx_visibility>
-	<sensitive>False</sensitive>
-	<signal>
-	  <name>clicked</name>
-	  <handler>rngzeile_delete</handler>
-	  <last_modification_time>Wed, 28 Mar 2001 10:48:03 GMT</last_modification_time>
-	</signal>
-	<label>Rng.Zeile
-löschen</label>
-	<stock_pixmap>GNOME_STOCK_PIXMAP_CLEAR</stock_pixmap>
+	<label>Rechnungsdaten</label>
+	<label_xalign>0</label_xalign>
+	<shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
 	<child>
-	  <new_group>True</new_group>
+	  <padding>0</padding>
+	  <expand>True</expand>
+	  <fill>True</fill>
 	</child>
-      </widget>
-
-      <widget>
-	<class>GtkButton</class>
-	<child_name>Toolbar:button</child_name>
-	<name>button_pr</name>
-	<cxx_visibility>protected</cxx_visibility>
-	<sensitive>False</sensitive>
-	<signal>
-	  <name>clicked</name>
-	  <handler>Preis_setzen</handler>
-	  <last_modification_time>Wed, 18 Apr 2001 11:45:18 GMT</last_modification_time>
-	</signal>
-	<label>Preis
-überschreiben</label>
-	<stock_pixmap>GNOME_STOCK_PIXMAP_SRCHRPL</stock_pixmap>
-      </widget>
-
-      <widget>
-	<class>GtkTable</class>
-	<name>table_preisvergleich</name>
-	<cxx_visibility>protected</cxx_visibility>
-	<visible>False</visible>
-	<rows>3</rows>
-	<columns>3</columns>
-	<homogeneous>True</homogeneous>
-	<row_spacing>0</row_spacing>
-	<column_spacing>0</column_spacing>
 
 	<widget>
-	  <class>GtkLabel</class>
-	  <name>label88</name>
-	  <label>Preis in</label>
-	  <justify>GTK_JUSTIFY_CENTER</justify>
-	  <wrap>False</wrap>
-	  <xalign>0</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>2</right_attach>
-	    <top_attach>0</top_attach>
-	    <bottom_attach>1</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-	</widget>
+	  <class>GtkVPaned</class>
+	  <name>vpaned1</name>
+	  <handle_size>15</handle_size>
+	  <gutter_size>6</gutter_size>
+	  <position>130</position>
 
-	<widget>
-	  <class>GtkLabel</class>
-	  <name>label_auftragspreis</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <label>2,00</label>
-	  <justify>GTK_JUSTIFY_CENTER</justify>
-	  <wrap>False</wrap>
-	  <xalign>0.5</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <child>
-	    <left_attach>1</left_attach>
-	    <right_attach>2</right_attach>
-	    <top_attach>2</top_attach>
-	    <bottom_attach>3</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-	</widget>
+	  <widget>
+	    <class>GtkScrolledWindow</class>
+	    <name>scrolledwindow6</name>
+	    <hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
+	    <vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
+	    <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
+	    <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
+	    <child>
+	      <shrink>True</shrink>
+	      <resize>False</resize>
+	    </child>
 
-	<widget>
-	  <class>GtkRadioButton</class>
-	  <name>radiobutton_artikelpreis</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <can_focus>True</can_focus>
-	  <label>Artikel</label>
-	  <active>True</active>
-	  <draw_indicator>False</draw_indicator>
-	  <group>artaufpreis</group>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>1</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>2</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-	</widget>
+	    <widget>
+	      <class>GtkViewport</class>
+	      <name>viewport2</name>
+	      <shadow_type>GTK_SHADOW_NONE</shadow_type>
 
-	<widget>
-	  <class>GtkRadioButton</class>
-	  <name>radiobutton_auftragspreis</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <can_focus>True</can_focus>
-	  <label>Auftrag</label>
-	  <active>False</active>
-	  <draw_indicator>False</draw_indicator>
-	  <group>artaufpreis</group>
-	  <child>
-	    <left_attach>1</left_attach>
-	    <right_attach>2</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>2</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-	</widget>
+	      <widget>
+		<class>Custom</class>
+		<name>rtree_daten</name>
+		<cxx_visibility>protected</cxx_visibility>
+		<signal>
+		  <name>leaf_selected</name>
+		  <handler>on_rdaten_leaf_selected</handler>
+		  <last_modification_time>Fri, 05 Oct 2001 09:58:46 GMT</last_modification_time>
+		</signal>
+		<signal>
+		  <name>unselect_row</name>
+		  <handler>on_unselectrow_rtree</handler>
+		  <last_modification_time>Fri, 05 Oct 2001 09:59:23 GMT</last_modification_time>
+		</signal>
+		<creation_function>SimpleTree</creation_function>
+		<int1>7</int1>
+		<int2>3</int2>
+		<last_modification_time>Fri, 05 Oct 2001 09:58:12 GMT</last_modification_time>
+	      </widget>
+	    </widget>
+	  </widget>
 
-	<widget>
-	  <class>GtkLabel</class>
-	  <name>label_artikelpreis</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <label>2,00</label>
-	  <justify>GTK_JUSTIFY_CENTER</justify>
-	  <wrap>False</wrap>
-	  <xalign>0.5</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>1</right_attach>
-	    <top_attach>2</top_attach>
-	    <bottom_attach>3</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-	</widget>
+	  <widget>
+	    <class>GtkFrame</class>
+	    <name>frame29</name>
+	    <border_width>5</border_width>
+	    <label>Notiz</label>
+	    <label_xalign>0</label_xalign>
+	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+	    <child>
+	      <shrink>True</shrink>
+	      <resize>True</resize>
+	    </child>
 
-	<widget>
-	  <class>GtkRadioButton</class>
-	  <name>radiobutton_preiseingabe</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <can_focus>True</can_focus>
-	  <label>Eingabe</label>
-	  <active>False</active>
-	  <draw_indicator>False</draw_indicator>
-	  <group>artaufpreis</group>
-	  <child>
-	    <left_attach>2</left_attach>
-	    <right_attach>3</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>2</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-	</widget>
+	    <widget>
+	      <class>GtkHBox</class>
+	      <name>hbox20</name>
+	      <homogeneous>False</homogeneous>
+	      <spacing>0</spacing>
 
-	<widget>
-	  <class>GtkSpinButton</class>
-	  <name>spinbutton_preiseingabe</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <can_focus>True</can_focus>
-	  <climb_rate>1</climb_rate>
-	  <digits>2</digits>
-	  <numeric>False</numeric>
-	  <update_policy>GTK_UPDATE_ALWAYS</update_policy>
-	  <snap>False</snap>
-	  <wrap>False</wrap>
-	  <value>0.3</value>
-	  <lower>0</lower>
-	  <upper>10000</upper>
-	  <step>0.1</step>
-	  <page>10</page>
-	  <page_size>10</page_size>
-	  <child>
-	    <left_attach>2</left_attach>
-	    <right_attach>3</right_attach>
-	    <top_attach>2</top_attach>
-	    <bottom_attach>3</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>True</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
+	      <widget>
+		<class>GtkScrolledWindow</class>
+		<name>scrolledwindow13</name>
+		<hscrollbar_policy>GTK_POLICY_NEVER</hscrollbar_policy>
+		<vscrollbar_policy>GTK_POLICY_ALWAYS</vscrollbar_policy>
+		<hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
+		<vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
+		<child>
+		  <padding>0</padding>
+		  <expand>True</expand>
+		  <fill>True</fill>
+		  <pack>GTK_PACK_END</pack>
+		</child>
+
+		<widget>
+		  <class>GtkText</class>
+		  <name>rng_notiz</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <can_focus>True</can_focus>
+		  <signal>
+		    <name>changed</name>
+		    <handler>on_notiz_changed</handler>
+		    <last_modification_time>Tue, 02 Jul 2002 12:34:11 GMT</last_modification_time>
+		  </signal>
+		  <editable>True</editable>
+		  <text></text>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkToolbar</class>
+		<name>toolbar15</name>
+		<orientation>GTK_ORIENTATION_HORIZONTAL</orientation>
+		<type>GTK_TOOLBAR_BOTH</type>
+		<space_size>5</space_size>
+		<space_style>GTK_TOOLBAR_SPACE_EMPTY</space_style>
+		<relief>GTK_RELIEF_NORMAL</relief>
+		<tooltips>True</tooltips>
+		<child>
+		  <padding>0</padding>
+		  <expand>False</expand>
+		  <fill>False</fill>
+		</child>
+
+		<widget>
+		  <class>GtkButton</class>
+		  <child_name>Toolbar:button</child_name>
+		  <name>rng_notiz_save</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <sensitive>False</sensitive>
+		  <signal>
+		    <name>clicked</name>
+		    <handler>on_notiz_save_clicked</handler>
+		    <last_modification_time>Tue, 02 Jul 2002 12:50:05 GMT</last_modification_time>
+		  </signal>
+		  <label>speichern</label>
+		  <stock_pixmap>GNOME_STOCK_PIXMAP_SAVE</stock_pixmap>
+		</widget>
+	      </widget>
+	    </widget>
+	  </widget>
 	</widget>
       </widget>
     </widget>
@@ -6016,22 +6037,14 @@ löschen</label>
     <widget>
       <class>GtkFrame</class>
       <name>frame9</name>
+      <border_width>5</border_width>
       <label>nicht berechnete Lieferscheine</label>
       <label_xalign>0</label_xalign>
       <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
       <child>
-	<left_attach>0</left_attach>
-	<right_attach>1</right_attach>
-	<top_attach>4</top_attach>
-	<bottom_attach>5</bottom_attach>
-	<xpad>0</xpad>
-	<ypad>0</ypad>
-	<xexpand>True</xexpand>
-	<yexpand>True</yexpand>
-	<xshrink>True</xshrink>
-	<yshrink>True</yshrink>
-	<xfill>True</xfill>
-	<yfill>True</yfill>
+	<padding>0</padding>
+	<expand>True</expand>
+	<fill>True</fill>
       </child>
 
       <widget>
@@ -6294,87 +6307,23 @@ aufräumen</label>
 	  </child>
 
 	  <widget>
-	    <class>GtkViewport</class>
-	    <name>viewport5</name>
-	    <shadow_type>GTK_SHADOW_NONE</shadow_type>
-
-	    <widget>
-	      <class>Custom</class>
-	      <name>rtree_offen</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <signal>
-		<name>unselect_row</name>
-		<handler>on_unselectrow_rtree_offen</handler>
-		<last_modification_time>Fri, 05 Oct 2001 10:22:56 GMT</last_modification_time>
-	      </signal>
-	      <signal>
-		<name>leaf_selected</name>
-		<handler>on_roffen_leaf_selected</handler>
-		<last_modification_time>Fri, 05 Oct 2001 10:23:20 GMT</last_modification_time>
-	      </signal>
-	      <creation_function>SimpleTree</creation_function>
-	      <int1>4</int1>
-	      <int2>4</int2>
-	      <last_modification_time>Fri, 05 Oct 2001 10:22:37 GMT</last_modification_time>
-	    </widget>
-	  </widget>
-	</widget>
-      </widget>
-    </widget>
-
-    <widget>
-      <class>GtkFrame</class>
-      <name>frame_rechnungsdaten</name>
-      <cxx_visibility>protected</cxx_visibility>
-      <label>Rechnungsdaten</label>
-      <label_xalign>0</label_xalign>
-      <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-      <child>
-	<left_attach>0</left_attach>
-	<right_attach>1</right_attach>
-	<top_attach>3</top_attach>
-	<bottom_attach>4</bottom_attach>
-	<xpad>0</xpad>
-	<ypad>0</ypad>
-	<xexpand>True</xexpand>
-	<yexpand>True</yexpand>
-	<xshrink>True</xshrink>
-	<yshrink>True</yshrink>
-	<xfill>True</xfill>
-	<yfill>True</yfill>
-      </child>
-
-      <widget>
-	<class>GtkScrolledWindow</class>
-	<name>scrolledwindow6</name>
-	<hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
-	<vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
-	<hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
-	<vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
-
-	<widget>
-	  <class>GtkViewport</class>
-	  <name>viewport2</name>
-	  <shadow_type>GTK_SHADOW_NONE</shadow_type>
-
-	  <widget>
 	    <class>Custom</class>
-	    <name>rtree_daten</name>
+	    <name>rtree_offen</name>
 	    <cxx_visibility>protected</cxx_visibility>
 	    <signal>
-	      <name>leaf_selected</name>
-	      <handler>on_rdaten_leaf_selected</handler>
-	      <last_modification_time>Fri, 05 Oct 2001 09:58:46 GMT</last_modification_time>
+	      <name>unselect_row</name>
+	      <handler>on_unselectrow_rtree_offen</handler>
+	      <last_modification_time>Fri, 05 Oct 2001 10:22:56 GMT</last_modification_time>
 	    </signal>
 	    <signal>
-	      <name>unselect_row</name>
-	      <handler>on_unselectrow_rtree</handler>
-	      <last_modification_time>Fri, 05 Oct 2001 09:59:23 GMT</last_modification_time>
+	      <name>leaf_selected</name>
+	      <handler>on_roffen_leaf_selected</handler>
+	      <last_modification_time>Fri, 05 Oct 2001 10:23:20 GMT</last_modification_time>
 	    </signal>
 	    <creation_function>SimpleTree</creation_function>
-	    <int1>7</int1>
-	    <int2>3</int2>
-	    <last_modification_time>Fri, 05 Oct 2001 09:58:12 GMT</last_modification_time>
+	    <int1>4</int1>
+	    <int2>4</int2>
+	    <last_modification_time>Fri, 05 Oct 2001 10:22:37 GMT</last_modification_time>
 	  </widget>
 	</widget>
       </widget>
@@ -6408,7 +6357,7 @@ aufräumen</label>
       <class>GtkScrolledWindow</class>
       <name>scrolledwindow10</name>
       <hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
-      <vscrollbar_policy>GTK_POLICY_ALWAYS</vscrollbar_policy>
+      <vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
       <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
       <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
       <child>
@@ -6427,19 +6376,13 @@ aufräumen</label>
       </child>
 
       <widget>
-	<class>GtkViewport</class>
-	<name>viewport10</name>
-	<shadow_type>GTK_SHADOW_NONE</shadow_type>
-
-	<widget>
-	  <class>Custom</class>
-	  <name>tree</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <creation_function>SimpleTree</creation_function>
-	  <int1>12</int1>
-	  <int2>10</int2>
-	  <last_modification_time>Thu, 13 Sep 2001 12:52:12 GMT</last_modification_time>
-	</widget>
+	<class>Custom</class>
+	<name>tree</name>
+	<cxx_visibility>protected</cxx_visibility>
+	<creation_function>SimpleTree</creation_function>
+	<int1>12</int1>
+	<int2>10</int2>
+	<last_modification_time>Thu, 13 Sep 2001 12:52:12 GMT</last_modification_time>
       </widget>
     </widget>
 
@@ -6584,416 +6527,433 @@ aufräumen</label>
 	<yexpand>False</yexpand>
 	<xshrink>False</xshrink>
 	<yshrink>False</yshrink>
-	<xfill>True</xfill>
-	<yfill>True</yfill>
+	<xfill>False</xfill>
+	<yfill>False</yfill>
       </child>
 
       <widget>
-	<class>GtkVBox</class>
-	<name>fixed3</name>
-	<homogeneous>False</homogeneous>
-	<spacing>0</spacing>
-	<child>
-	  <left_attach>0</left_attach>
-	  <right_attach>1</right_attach>
-	  <top_attach>0</top_attach>
-	  <bottom_attach>1</bottom_attach>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>True</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>True</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>True</xfill>
-	  <yfill>True</yfill>
-	</child>
-
-	<widget>
-	  <class>GtkRadioButton</class>
-	  <name>radiobutton_alle_kunden</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <can_focus>True</can_focus>
-	  <signal>
-	    <name>toggled</name>
-	    <handler>on_radiobutton_kunde_toggled</handler>
-	    <last_modification_time>Fri, 14 Sep 2001 14:53:12 GMT</last_modification_time>
-	  </signal>
-	  <label>Zeige alle Kunden</label>
-	  <active>True</active>
-	  <draw_indicator>True</draw_indicator>
-	  <group>kunde</group>
-	  <child>
-	    <padding>0</padding>
-	    <expand>True</expand>
-	    <fill>True</fill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>GtkRadioButton</class>
-	  <name>radiobutton_nur_kunde</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <can_focus>True</can_focus>
-	  <signal>
-	    <name>toggled</name>
-	    <handler>on_radiobutton_kunde_toggled</handler>
-	    <last_modification_time>Fri, 14 Sep 2001 14:40:31 GMT</last_modification_time>
-	  </signal>
-	  <label>Zeige nur Kunde</label>
-	  <active>False</active>
-	  <draw_indicator>True</draw_indicator>
-	  <group>kunde</group>
-	  <child>
-	    <padding>0</padding>
-	    <expand>True</expand>
-	    <fill>True</fill>
-	  </child>
-	</widget>
-      </widget>
-
-      <widget>
-	<class>GtkVSeparator</class>
-	<name>vseparator1</name>
-	<child>
-	  <left_attach>3</left_attach>
-	  <right_attach>4</right_attach>
-	  <top_attach>0</top_attach>
-	  <bottom_attach>2</bottom_attach>
-	  <xpad>6</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>False</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>False</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>True</xfill>
-	  <yfill>True</yfill>
-	</child>
-      </widget>
-
-      <widget>
-	<class>GtkVBox</class>
-	<name>fixed1</name>
-	<homogeneous>False</homogeneous>
-	<spacing>0</spacing>
+	<class>GtkFrame</class>
+	<name>frame27</name>
+	<label>Zeitraumauswahl</label>
+	<label_xalign>0</label_xalign>
+	<shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
 	<child>
 	  <left_attach>2</left_attach>
 	  <right_attach>3</right_attach>
 	  <top_attach>0</top_attach>
 	  <bottom_attach>1</bottom_attach>
 	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>True</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>True</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>True</xfill>
-	  <yfill>True</yfill>
-	</child>
-
-	<widget>
-	  <class>GtkRadioButton</class>
-	  <name>radiobutton_alle_artikel</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <can_focus>True</can_focus>
-	  <signal>
-	    <name>toggled</name>
-	    <handler>on_radiobutton_artikel_toggled</handler>
-	    <last_modification_time>Fri, 14 Sep 2001 09:47:16 GMT</last_modification_time>
-	  </signal>
-	  <label>Zeige alle Artikel</label>
-	  <active>True</active>
-	  <draw_indicator>True</draw_indicator>
-	  <group>artikel</group>
-	  <child>
-	    <padding>0</padding>
-	    <expand>True</expand>
-	    <fill>True</fill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>GtkRadioButton</class>
-	  <name>radiobutton_nur_artikel</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <can_focus>True</can_focus>
-	  <signal>
-	    <name>toggled</name>
-	    <handler>on_radiobutton_artikel_toggled</handler>
-	    <last_modification_time>Fri, 14 Sep 2001 09:45:37 GMT</last_modification_time>
-	  </signal>
-	  <label>Zeige nur Artikel</label>
-	  <active>False</active>
-	  <draw_indicator>True</draw_indicator>
-	  <group>artikel</group>
-	  <child>
-	    <padding>0</padding>
-	    <expand>True</expand>
-	    <fill>True</fill>
-	  </child>
-	</widget>
-      </widget>
-
-      <widget>
-	<class>GtkVBox</class>
-	<name>fixed2</name>
-	<homogeneous>False</homogeneous>
-	<spacing>0</spacing>
-	<child>
-	  <left_attach>4</left_attach>
-	  <right_attach>5</right_attach>
-	  <top_attach>0</top_attach>
-	  <bottom_attach>1</bottom_attach>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>True</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>True</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>True</xfill>
-	  <yfill>True</yfill>
-	</child>
-
-	<widget>
-	  <class>GtkRadioButton</class>
-	  <name>radiobutton_alle_zeit_von</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <can_focus>True</can_focus>
-	  <signal>
-	    <name>toggled</name>
-	    <handler>on_radiobutton_zeit_toggled</handler>
-	    <last_modification_time>Fri, 14 Sep 2001 09:53:02 GMT</last_modification_time>
-	  </signal>
-	  <label>Zeige vom Anfang</label>
-	  <active>True</active>
-	  <draw_indicator>True</draw_indicator>
-	  <group>zeit</group>
-	  <child>
-	    <padding>0</padding>
-	    <expand>True</expand>
-	    <fill>True</fill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>GtkRadioButton</class>
-	  <name>radiobutton_nur_zeit_von</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <can_focus>True</can_focus>
-	  <signal>
-	    <name>toggled</name>
-	    <handler>on_radiobutton_zeit_toggled</handler>
-	    <last_modification_time>Fri, 14 Sep 2001 09:52:36 GMT</last_modification_time>
-	  </signal>
-	  <label>Zeige vom</label>
-	  <active>False</active>
-	  <draw_indicator>True</draw_indicator>
-	  <group>zeit</group>
-	  <child>
-	    <padding>0</padding>
-	    <expand>True</expand>
-	    <fill>True</fill>
-	  </child>
-	</widget>
-      </widget>
-
-      <widget>
-	<class>GtkVBox</class>
-	<name>fixed4</name>
-	<homogeneous>False</homogeneous>
-	<spacing>0</spacing>
-	<child>
-	  <left_attach>5</left_attach>
-	  <right_attach>6</right_attach>
-	  <top_attach>0</top_attach>
-	  <bottom_attach>1</bottom_attach>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>True</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>True</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>True</xfill>
-	  <yfill>True</yfill>
-	</child>
-
-	<widget>
-	  <class>GtkRadioButton</class>
-	  <name>radiobutton_alle_zeit_bis</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <can_focus>True</can_focus>
-	  <signal>
-	    <name>toggled</name>
-	    <handler>on_radiobutton_zeit_2_toggled</handler>
-	    <last_modification_time>Mon, 17 Sep 2001 08:38:31 GMT</last_modification_time>
-	  </signal>
-	  <label>bis heute</label>
-	  <active>True</active>
-	  <draw_indicator>True</draw_indicator>
-	  <group>zeit_2</group>
-	  <child>
-	    <padding>0</padding>
-	    <expand>True</expand>
-	    <fill>True</fill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>GtkRadioButton</class>
-	  <name>radiobutton_nur_zeit_bis</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <can_focus>True</can_focus>
-	  <signal>
-	    <name>toggled</name>
-	    <handler>on_radiobutton_zeit_2_toggled</handler>
-	    <last_modification_time>Mon, 17 Sep 2001 08:38:23 GMT</last_modification_time>
-	  </signal>
-	  <label>bis zum</label>
-	  <active>False</active>
-	  <draw_indicator>True</draw_indicator>
-	  <group>zeit_2</group>
-	  <child>
-	    <padding>0</padding>
-	    <expand>True</expand>
-	    <fill>True</fill>
-	  </child>
-	</widget>
-      </widget>
-
-      <widget>
-	<class>GtkVSeparator</class>
-	<name>vseparator2</name>
-	<child>
-	  <left_attach>1</left_attach>
-	  <right_attach>2</right_attach>
-	  <top_attach>0</top_attach>
-	  <bottom_attach>2</bottom_attach>
-	  <xpad>6</xpad>
 	  <ypad>0</ypad>
 	  <xexpand>False</xexpand>
 	  <yexpand>False</yexpand>
 	  <xshrink>False</xshrink>
 	  <yshrink>False</yshrink>
 	  <xfill>False</xfill>
-	  <yfill>True</yfill>
+	  <yfill>False</yfill>
 	</child>
+
+	<widget>
+	  <class>GtkHBox</class>
+	  <name>hbox19</name>
+	  <homogeneous>False</homogeneous>
+	  <spacing>0</spacing>
+
+	  <widget>
+	    <class>GtkVBox</class>
+	    <name>fixed2</name>
+	    <homogeneous>False</homogeneous>
+	    <spacing>0</spacing>
+	    <child>
+	      <padding>0</padding>
+	      <expand>False</expand>
+	      <fill>True</fill>
+	    </child>
+
+	    <widget>
+	      <class>GtkRadioButton</class>
+	      <name>radiobutton_alle_zeit_von</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <can_focus>True</can_focus>
+	      <signal>
+		<name>toggled</name>
+		<handler>on_radiobutton_zeit_toggled</handler>
+		<last_modification_time>Fri, 14 Sep 2001 09:53:02 GMT</last_modification_time>
+	      </signal>
+	      <label>Zeige vom Anfang</label>
+	      <active>True</active>
+	      <draw_indicator>True</draw_indicator>
+	      <group>zeit</group>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>True</fill>
+	      </child>
+	    </widget>
+
+	    <widget>
+	      <class>GtkRadioButton</class>
+	      <name>radiobutton_nur_zeit_von</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <can_focus>True</can_focus>
+	      <signal>
+		<name>toggled</name>
+		<handler>on_radiobutton_zeit_toggled</handler>
+		<last_modification_time>Fri, 14 Sep 2001 09:52:36 GMT</last_modification_time>
+	      </signal>
+	      <label>Zeige vom</label>
+	      <active>False</active>
+	      <draw_indicator>True</draw_indicator>
+	      <group>zeit</group>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>True</fill>
+	      </child>
+	    </widget>
+
+	    <widget>
+	      <class>Custom</class>
+	      <name>Wdatum_von</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <signal>
+		<name>activate</name>
+		<handler>datum_von_activate</handler>
+		<last_modification_time>Fri, 14 Sep 2001 08:22:53 GMT</last_modification_time>
+	      </signal>
+	      <creation_function>Datewin</creation_function>
+	      <int1>0</int1>
+	      <int2>0</int2>
+	      <last_modification_time>Fri, 14 Sep 2001 08:22:30 GMT</last_modification_time>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>True</fill>
+	      </child>
+	    </widget>
+	  </widget>
+
+	  <widget>
+	    <class>GtkVBox</class>
+	    <name>fixed4</name>
+	    <homogeneous>False</homogeneous>
+	    <spacing>0</spacing>
+	    <child>
+	      <padding>0</padding>
+	      <expand>False</expand>
+	      <fill>True</fill>
+	    </child>
+
+	    <widget>
+	      <class>GtkRadioButton</class>
+	      <name>radiobutton_alle_zeit_bis</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <can_focus>True</can_focus>
+	      <signal>
+		<name>toggled</name>
+		<handler>on_radiobutton_zeit_2_toggled</handler>
+		<last_modification_time>Mon, 17 Sep 2001 08:38:31 GMT</last_modification_time>
+	      </signal>
+	      <label>bis heute</label>
+	      <active>True</active>
+	      <draw_indicator>True</draw_indicator>
+	      <group>zeit_2</group>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>True</fill>
+	      </child>
+	    </widget>
+
+	    <widget>
+	      <class>GtkRadioButton</class>
+	      <name>radiobutton_nur_zeit_bis</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <can_focus>True</can_focus>
+	      <signal>
+		<name>toggled</name>
+		<handler>on_radiobutton_zeit_2_toggled</handler>
+		<last_modification_time>Mon, 17 Sep 2001 08:38:23 GMT</last_modification_time>
+	      </signal>
+	      <label>bis zum</label>
+	      <active>False</active>
+	      <draw_indicator>True</draw_indicator>
+	      <group>zeit_2</group>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>True</fill>
+	      </child>
+	    </widget>
+
+	    <widget>
+	      <class>Custom</class>
+	      <name>Wdatum_bis</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <signal>
+		<name>activate</name>
+		<handler>datum_bis_activate</handler>
+		<last_modification_time>Mon, 17 Sep 2001 08:38:46 GMT</last_modification_time>
+	      </signal>
+	      <creation_function>Datewin</creation_function>
+	      <int1>0</int1>
+	      <int2>0</int2>
+	      <last_modification_time>Fri, 14 Sep 2001 08:22:30 GMT</last_modification_time>
+	      <child>
+		<padding>0</padding>
+		<expand>True</expand>
+		<fill>True</fill>
+	      </child>
+	    </widget>
+	  </widget>
+
+	  <widget>
+	    <class>GtkFrame</class>
+	    <name>frame28</name>
+	    <label>Kummulieren</label>
+	    <label_xalign>0</label_xalign>
+	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+	    <child>
+	      <padding>0</padding>
+	      <expand>False</expand>
+	      <fill>False</fill>
+	    </child>
+
+	    <widget>
+	      <class>GtkVBox</class>
+	      <name>vbox12</name>
+	      <homogeneous>False</homogeneous>
+	      <spacing>0</spacing>
+
+	      <widget>
+		<class>GtkOptionMenu</class>
+		<name>date_cumulate</name>
+		<cxx_visibility>protected</cxx_visibility>
+		<can_focus>True</can_focus>
+		<items>Datum
+Woche
+Monat
+Quartal
+Jahr
+</items>
+		<initial_choice>0</initial_choice>
+		<child>
+		  <padding>0</padding>
+		  <expand>False</expand>
+		  <fill>False</fill>
+		</child>
+	      </widget>
+	    </widget>
+	  </widget>
+	</widget>
       </widget>
 
       <widget>
-	<class>Custom</class>
-	<name>Wdatum_bis</name>
-	<cxx_visibility>protected</cxx_visibility>
-	<signal>
-	  <name>activate</name>
-	  <handler>datum_bis_activate</handler>
-	  <last_modification_time>Mon, 17 Sep 2001 08:38:46 GMT</last_modification_time>
-	</signal>
-	<creation_function>Datewin</creation_function>
-	<int1>0</int1>
-	<int2>0</int2>
-	<last_modification_time>Fri, 14 Sep 2001 08:22:30 GMT</last_modification_time>
+	<class>GtkFrame</class>
+	<name>frame26</name>
+	<label>Artikelauswahl</label>
+	<label_xalign>0</label_xalign>
+	<shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
 	<child>
-	  <left_attach>5</left_attach>
-	  <right_attach>6</right_attach>
-	  <top_attach>1</top_attach>
-	  <bottom_attach>2</bottom_attach>
+	  <left_attach>1</left_attach>
+	  <right_attach>2</right_attach>
+	  <top_attach>0</top_attach>
+	  <bottom_attach>1</bottom_attach>
 	  <xpad>0</xpad>
 	  <ypad>0</ypad>
-	  <xexpand>True</xexpand>
+	  <xexpand>False</xexpand>
 	  <yexpand>False</yexpand>
-	  <xshrink>True</xshrink>
-	  <yshrink>True</yshrink>
-	  <xfill>True</xfill>
-	  <yfill>True</yfill>
+	  <xshrink>False</xshrink>
+	  <yshrink>False</yshrink>
+	  <xfill>False</xfill>
+	  <yfill>False</yfill>
 	</child>
+
+	<widget>
+	  <class>GtkVBox</class>
+	  <name>fixed1</name>
+	  <homogeneous>False</homogeneous>
+	  <spacing>0</spacing>
+
+	  <widget>
+	    <class>GtkRadioButton</class>
+	    <name>radiobutton_alle_artikel</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <can_focus>True</can_focus>
+	    <signal>
+	      <name>toggled</name>
+	      <handler>on_radiobutton_artikel_toggled</handler>
+	      <last_modification_time>Fri, 14 Sep 2001 09:47:16 GMT</last_modification_time>
+	    </signal>
+	    <label>Zeige alle Artikel</label>
+	    <active>True</active>
+	    <draw_indicator>True</draw_indicator>
+	    <group>artikel</group>
+	    <child>
+	      <padding>0</padding>
+	      <expand>False</expand>
+	      <fill>True</fill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkHBox</class>
+	    <name>hbox18</name>
+	    <homogeneous>False</homogeneous>
+	    <spacing>0</spacing>
+	    <child>
+	      <padding>0</padding>
+	      <expand>False</expand>
+	      <fill>True</fill>
+	    </child>
+
+	    <widget>
+	      <class>GtkRadioButton</class>
+	      <name>radiobutton_nur_artikel</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <can_focus>True</can_focus>
+	      <signal>
+		<name>toggled</name>
+		<handler>on_radiobutton_artikel_toggled</handler>
+		<last_modification_time>Fri, 14 Sep 2001 09:45:37 GMT</last_modification_time>
+	      </signal>
+	      <label>Zeige nur Artikel</label>
+	      <active>False</active>
+	      <draw_indicator>True</draw_indicator>
+	      <group>artikel</group>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>False</fill>
+	      </child>
+	    </widget>
+
+	    <widget>
+	      <class>GtkCheckButton</class>
+	      <name>first_komponent</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <can_focus>True</can_focus>
+	      <label>nur Art.Nr. einschränken</label>
+	      <active>True</active>
+	      <draw_indicator>True</draw_indicator>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>False</fill>
+	      </child>
+	    </widget>
+	  </widget>
+
+	  <widget>
+	    <class>Custom</class>
+	    <name>artikelbox</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <signal>
+	      <name>activate</name>
+	      <handler>artikelbox_activate</handler>
+	      <last_modification_time>Thu, 13 Sep 2001 12:54:26 GMT</last_modification_time>
+	    </signal>
+	    <creation_function>ArtikelBox</creation_function>
+	    <int1>1</int1>
+	    <int2>0</int2>
+	    <last_modification_time>Thu, 13 Sep 2001 12:53:30 GMT</last_modification_time>
+	    <child>
+	      <padding>0</padding>
+	      <expand>True</expand>
+	      <fill>True</fill>
+	    </child>
+	  </widget>
+	</widget>
       </widget>
 
       <widget>
-	<class>Custom</class>
-	<name>Wdatum_von</name>
-	<width>180</width>
-	<cxx_visibility>protected</cxx_visibility>
-	<signal>
-	  <name>activate</name>
-	  <handler>datum_von_activate</handler>
-	  <last_modification_time>Fri, 14 Sep 2001 08:22:53 GMT</last_modification_time>
-	</signal>
-	<creation_function>Datewin</creation_function>
-	<int1>0</int1>
-	<int2>0</int2>
-	<last_modification_time>Fri, 14 Sep 2001 08:22:30 GMT</last_modification_time>
-	<child>
-	  <left_attach>4</left_attach>
-	  <right_attach>5</right_attach>
-	  <top_attach>1</top_attach>
-	  <bottom_attach>2</bottom_attach>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>True</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>True</xshrink>
-	  <yshrink>True</yshrink>
-	  <xfill>True</xfill>
-	  <yfill>True</yfill>
-	</child>
-      </widget>
-
-      <widget>
-	<class>Custom</class>
-	<name>artikelbox</name>
-	<width>350</width>
-	<cxx_visibility>protected</cxx_visibility>
-	<signal>
-	  <name>activate</name>
-	  <handler>artikelbox_activate</handler>
-	  <last_modification_time>Thu, 13 Sep 2001 12:54:26 GMT</last_modification_time>
-	</signal>
-	<creation_function>ArtikelBox</creation_function>
-	<int1>1</int1>
-	<int2>0</int2>
-	<last_modification_time>Thu, 13 Sep 2001 12:53:30 GMT</last_modification_time>
-	<child>
-	  <left_attach>2</left_attach>
-	  <right_attach>3</right_attach>
-	  <top_attach>1</top_attach>
-	  <bottom_attach>2</bottom_attach>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>True</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>True</xshrink>
-	  <yshrink>True</yshrink>
-	  <xfill>True</xfill>
-	  <yfill>True</yfill>
-	</child>
-      </widget>
-
-      <widget>
-	<class>Custom</class>
-	<name>kundenbox</name>
-	<cxx_visibility>protected</cxx_visibility>
-	<signal>
-	  <name>activate</name>
-	  <handler>kundenbox_activate</handler>
-	  <last_modification_time>Fri, 14 Sep 2001 14:42:38 GMT</last_modification_time>
-	</signal>
-	<creation_function>KundenBox2</creation_function>
-	<int1>0</int1>
-	<int2>0</int2>
-	<last_modification_time>Wed, 15 May 2002 16:08:35 GMT</last_modification_time>
+	<class>GtkFrame</class>
+	<name>frame25</name>
+	<label>Kundenauswahl</label>
+	<label_xalign>0</label_xalign>
+	<shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
 	<child>
 	  <left_attach>0</left_attach>
 	  <right_attach>1</right_attach>
-	  <top_attach>1</top_attach>
-	  <bottom_attach>2</bottom_attach>
+	  <top_attach>0</top_attach>
+	  <bottom_attach>1</bottom_attach>
 	  <xpad>0</xpad>
 	  <ypad>0</ypad>
-	  <xexpand>True</xexpand>
+	  <xexpand>False</xexpand>
 	  <yexpand>False</yexpand>
-	  <xshrink>True</xshrink>
-	  <yshrink>True</yshrink>
-	  <xfill>True</xfill>
-	  <yfill>True</yfill>
+	  <xshrink>False</xshrink>
+	  <yshrink>False</yshrink>
+	  <xfill>False</xfill>
+	  <yfill>False</yfill>
 	</child>
+
+	<widget>
+	  <class>GtkVBox</class>
+	  <name>fixed3</name>
+	  <homogeneous>False</homogeneous>
+	  <spacing>0</spacing>
+
+	  <widget>
+	    <class>GtkRadioButton</class>
+	    <name>radiobutton_alle_kunden</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <can_focus>True</can_focus>
+	    <signal>
+	      <name>toggled</name>
+	      <handler>on_radiobutton_kunde_toggled</handler>
+	      <last_modification_time>Fri, 14 Sep 2001 14:53:12 GMT</last_modification_time>
+	    </signal>
+	    <label>Zeige alle Kunden</label>
+	    <active>True</active>
+	    <draw_indicator>True</draw_indicator>
+	    <group>kunde</group>
+	    <child>
+	      <padding>0</padding>
+	      <expand>False</expand>
+	      <fill>True</fill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkRadioButton</class>
+	    <name>radiobutton_nur_kunde</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <can_focus>True</can_focus>
+	    <signal>
+	      <name>toggled</name>
+	      <handler>on_radiobutton_kunde_toggled</handler>
+	      <last_modification_time>Fri, 14 Sep 2001 14:40:31 GMT</last_modification_time>
+	    </signal>
+	    <label>Zeige nur Kunde</label>
+	    <active>False</active>
+	    <draw_indicator>True</draw_indicator>
+	    <group>kunde</group>
+	    <child>
+	      <padding>0</padding>
+	      <expand>False</expand>
+	      <fill>True</fill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>Custom</class>
+	    <name>kundenbox</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <signal>
+	      <name>activate</name>
+	      <handler>kundenbox_activate</handler>
+	      <last_modification_time>Fri, 14 Sep 2001 14:42:38 GMT</last_modification_time>
+	    </signal>
+	    <creation_function>KundenBox2</creation_function>
+	    <int1>0</int1>
+	    <int2>0</int2>
+	    <last_modification_time>Wed, 15 May 2002 16:08:35 GMT</last_modification_time>
+	    <child>
+	      <padding>0</padding>
+	      <expand>True</expand>
+	      <fill>True</fill>
+	    </child>
+	  </widget>
+	</widget>
       </widget>
     </widget>
   </widget>

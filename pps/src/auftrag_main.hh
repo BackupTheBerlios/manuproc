@@ -74,7 +74,9 @@ private:
         friend class auftrag_main_glade;
         void loadEinstellungen();
         void on_beenden_activate();
+        void save_WindowSize();
         void on_erfassen_activate();
+        void neuladen();
         void on_neuladen_activate();
         void on_main_drucken_activate();
         void on_lieferscheine_activate();
@@ -87,7 +89,14 @@ private:
         void on_kundendarstellung_activate();
         void on_materialbedarf_sortiert();
         void on_kunden_anr_activate();
+
+        // Statusänderung
         void on_offene_auftraege_activate();
+        void on_closed_auftraege_activate();
+        void on_storno_auftraege_activate();
+        void on_unbest_auftraege_activate();
+        void statusaenderung();
+
         void on_auftraege_kunde_activate();
         gint on_mainprint_button_clicked(GdkEventButton *ev);
         void on_leaf_selected(cH_RowDataBase d);
@@ -114,6 +123,7 @@ private:
         void menu_instanz();
 
         std::vector<cH_ppsInstanz> get_all_instanz();
+        void radio_instanz_selected(const Gtk::RadioMenuItem *rm,const cH_ppsInstanz instanz);
         void instanz_selected(const cH_ppsInstanz instanz);
          
         void on_button_faerben_clicked(); 

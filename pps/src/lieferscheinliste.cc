@@ -1,10 +1,3 @@
-// generated 2001/9/13 14:54:32 CEST by thoma@Tiger.
-// using glademm V0.6.2_cvs
-//
-// newer (non customized) versions of this file go to lieferscheinliste.cc_new
-
-// This file is for your program, I won't touch it again!
-
 #include "config.h"
 #include "lieferscheinliste.hh"
 #include "lieferscheinliste_classes.hh"
@@ -83,7 +76,7 @@ void lieferscheinliste::on_radiobutton_kunde_toggled()
 {
  if (radiobutton_alle_kunden->get_active())
    {  kundenbox->hide();
-      kundenid = ManuProcEntity::none_id;
+      kundenid = ManuProcEntity<>::none_id;
    }
  if (radiobutton_nur_kunde->get_active())
    {  
@@ -109,7 +102,9 @@ lieferscheinliste::lieferscheinliste(const cH_ppsInstanz& _instanz)
   kundenbox->hide();
   set_titles();
   tree->set_remember("pps","lieferscheinliste");
-  kundenid=ManuProcEntity::none_id;
+  kundenid=ManuProcEntity<>::none_id;
+  
+  LL.setHoleEntries(true);
 }
 
 void lieferscheinliste::on_button_show_clicked()
@@ -118,10 +113,18 @@ void lieferscheinliste::on_button_show_clicked()
   LL.reset();
   try {
        LL.setForArtikel(artbase.Id());
+       LL.setFirstKompOnly(first_komponent->get_active());
        LL.setForKunde(kundenid);
        LL.setForInstanz(instanz);
-       LL.setFromDate(Wdatum_von->get_value());
-       LL.setToDate(Wdatum_bis->get_value());
+       
+       if(radiobutton_alle_zeit_von->get_active())
+         LL.setFromDate(ManuProC::Datum(1,1,1970));
+       else LL.setFromDate(Wdatum_von->get_value());
+       
+       if(radiobutton_alle_zeit_bis->get_active())
+         LL.setToDate(ManuProC::Datum::today());
+       else LL.setToDate(Wdatum_bis->get_value());
+       
        LL.build_list();
    } catch (SQLerror &e) 
    	   {meldung->Show(e); return;}
@@ -140,21 +143,29 @@ void lieferscheinliste::fill_tree()
 
   for (LieferscheinList::const_iterator i=LL.begin();i!=LL.end();++i)
    {
-     LieferscheinVoll LV(instanz,(*i)->Id());
      Rechnung R;
-     if((*i)->RngNr()!=ManuProcEntity::none_id) R = Rechnung((*i)->RngNr());
-     cH_Lieferschein L(new Lieferschein(instanz,(*i)->Id()));
-     for (LieferscheinVoll::const_iterator j=LV.begin();j!=LV.end();++j)
-	{if(artbase.Id()!=ManuProcEntity::none_id) 
+     if((*i)->RngNr()!=ManuProcEntity<>::none_id) R = Rechnung((*i)->RngNr());
+//   cH_Lieferschein L(instanz,(*i)->Id());
+//   cH_LieferscheinVoll LV(instanz,(*i)->Id());
+     for (vector<LieferscheinEntryBase>::const_iterator j=LL.begin((*i)->Id());
+     		j!=LL.end((*i)->Id()); ++j)
+//	{if(artbase.Id()!=ArtikelBase::none_id) 
 		// man muﬂ noch LieferscheinVoll um Bedingungen erg‰nzen um
 		// das hier einzusparen (z.B. auf Artikel beschr.)
-	   {ArtikelBase::ID aid=(*j).ArtikelID();
-	    if( aid == artbase.Id())
-             datavec.push_back(new Data_LListe(L,*j,R));
-	   }
-	 else
-             datavec.push_back(new Data_LListe(L,*j,R));	
-	}
+//	   {ArtikelBase::ID aid=(*j).ArtikelID();
+//	    if( aid == artbase.Id())
+//             datavec.push_back(new Data_LListe(*i,*j,R));
+//	   }
+//	 else
+//	{try{
+             datavec.push_back(new Data_LListe(*i,LieferscheinEntry(*j),R,
+             	Data_LListe::KumVal(reinterpret_cast<int>(date_cumulate->get_menu()->get_active()->get_user_data()))
+             	));
+//             }
+//	 catch (SQLerror &e) 
+//   	   {meldung->Show(e); return;}             
+//        }
+//	}
       progressbar->set_percentage(count/size);
       while(Gtk::Main::events_pending()) Gtk::Main::iteration() ;
       ++count;
@@ -167,25 +178,26 @@ void lieferscheinliste::fill_tree()
  progressbar->set_show_text(false);
 }
 
-
 void lieferscheinliste::set_titles()
 {
-  std::vector<std::string> t;
-  t.push_back("Kunde");
-  t.push_back("Auftrag(ZNr)");
-  t.push_back("Artikel");
-  t.push_back("Breite");
-  t.push_back("Farbe");
-  t.push_back("Aufm.");
-  t.push_back("Lieferschein");
-  t.push_back("Lieferdatum");
-  t.push_back("geliefert am");
-  t.push_back("Rechnung");
-  t.push_back("Rng.Datum");
-  t.push_back("Menge");
-  t.push_back("Einzelmenge");
+  std::vector<std::string> t(tree->Cols());
+  t[Data_LListe::KUNDE]="Kunde";
+  t[Data_LListe::AUFTRAG]="Auftrag(ZNr)";
+  t[Data_LListe::ARTIKEL]="Artikel";
+  t[Data_LListe::BREITE]="Breite";
+  t[Data_LListe::FARBE]="Farbe";
+  t[Data_LListe::AUFMACHUNG]="Aufm.";
+  t[Data_LListe::LIEFERNR]="Lieferschein";
+  t[Data_LListe::LIEFERDATUM]="Lieferdatum";
+  t[Data_LListe::RECHNUNG]="Rechnung";
+  t[Data_LListe::RECHNUNGSDATUM]="Rng.Datum";
+  t[Data_LListe::SUM_MENGE]="Einzelmenge";  
+  t[Data_LListe::SUM_AMENGE]="Menge";
+
   tree->setTitles(t);
   tree->set_NewNode(&Data_ListeNode::create);
+  tree->set_column_justification(Data_LListe::SUM_AMENGE, GTK_JUSTIFY_RIGHT);
+  tree->set_column_justification(Data_LListe::SUM_MENGE, GTK_JUSTIFY_RIGHT);  
 }
 
 void lieferscheinliste::on_button_close_clicked()

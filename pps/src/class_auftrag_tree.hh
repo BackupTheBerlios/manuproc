@@ -16,7 +16,7 @@ class Data_auftrag : public RowDataBase
 
 public:
    Data_auftrag(const AufEintrag& ab, auftrag_main* am) :
-      AB(ab),AM(am),menge(AB.ArtId(),AB.getRestStk()) {}
+      AB(ab),AM(am),menge(AB.ArtId(),AB.getRestStk().as_int()) {}
 
     virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
  { 
@@ -120,7 +120,7 @@ public:
    return cH_EntryValue();
  }
 
-   int offene_Stueck()const {return AB.getRestStk();}
+   AuftragBase::mengen_t offene_Stueck()const {return AB.getRestStk();}
    int get_aid() const {return AB.getAuftragid();} 
    int get_zeilennr() const {return AB.getZnr();} 
    int get_Artikel_ID() const {return AB.ArtId();}
@@ -129,7 +129,7 @@ public:
    AufEintrag& get_AufEintrag() const {return const_cast<AufEintrag&>(AB);}
    const ArtikelMenge getArtikelMenge() const { return menge; }
    void redisplayMenge(TreeBase *maintree_s) 
-   {  menge=ArtikelMenge(AB.ArtId(),AB.getRestStk());
+   {  menge=ArtikelMenge(AB.ArtId(),AB.getRestStk().as_int());
       maintree_s->redisplay(this,auftrag_main::METER);
       maintree_s->redisplay(this,auftrag_main::STUECK);
    }

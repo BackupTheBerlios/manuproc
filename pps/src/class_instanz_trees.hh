@@ -43,7 +43,7 @@ public:
          cH_ArtikelBezeichnung AZ(aufeintrag.ArtId());
          return cH_EntryValueIntString(AZ->Bezeichnung());
         }
-      case MENGE   : return cH_EntryValueIntString(itos(aufeintrag.getStueck()));
+      case MENGE   : return cH_EntryValueIntString(aufeintrag.getStueck().as_int());
       case DATUM   : {
          std::string lw;
          if (AM->Zeit_kw_bool())

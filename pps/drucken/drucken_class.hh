@@ -24,6 +24,9 @@
 #include <Auftrag/AufEintragZu.h>
 #include <fstream>
 #include "lr_base.h"
+//#include <Artikel/Einheiten.h>
+
+class Einheit;
 
 class LR_Entry: public LR_Base
 {
@@ -42,38 +45,47 @@ public:
       : LR_Base(_typ),u(a) {}
 
 
-   const ArtikelBase::ID ArtikelID() const {
-      if (Typ()==Rechnung)     return u.r->ArtikelID();
-      if (Typ()==Auftrag || Typ()==Intern || Typ()==Extern)      return u.a->ArtId();
-      if (Typ()==Lieferschein) return u.l->ArtikelID(); abort();}
+   const ArtikelBase Artikel() const {
+      if (Typ()==Rechnung)     return u.r->Artikel();
+      if (Typ()==Auftrag || Typ()==Intern || Typ()==Extern)      return u.a->Artikel();
+      if (Typ()==Lieferschein) return u.l->Artikel(); abort();}
    const Preis getPreis(bool brutto=true) const {  
       if (Typ()==Intern||Typ()==Extern) return u.a->EPreis(brutto); 
-      if (Typ()==Auftrag) return u.a->EPreis(brutto);  
-      if (Typ()==Rechnung)     return u.r->getPreis(brutto); abort();}
+      if (Typ()==Auftrag)  return u.a->EPreis(brutto);  
+      if (Typ()==Rechnung) return u.r->getPreis(brutto); 
+      return Preis();
+      abort();}
    LieferscheinEntryBase Lfrs() const {
       if (Typ()==Rechnung)     return u.r->Lfrs();
       if (Typ()==Lieferschein) return *u.l;  abort();}
    fixedpoint<2> Rabatt() const { 
-      if (Typ()==Auftrag)    return float(u.a->Rabatt());
+      if (Typ()==Auftrag)    return u.a->Rabatt();
       if (Typ()==Intern||Typ()==Extern)      return u.a->Rabatt(); 
       if (Typ()==Rechnung)     return u.r->Rabatt(); return 0;}
-   fixedpoint<2> Menge() const { 
+
+   LieferscheinBase::mengen_t  Menge() const { 
       if (Typ()==Rechnung)     return u.r->Menge(); 
-      if (Typ()==Auftrag || Typ()==Intern||Typ()==Extern)      return fixedpoint<2>(0);
-      if (Typ()==Lieferschein) return (float)(u.l->Menge()); abort();}
+      if (Typ()==Auftrag || Typ()==Intern||Typ()==Extern) return 0;
+      if (Typ()==Lieferschein) return u.l->Menge(); abort();}
    int Stueck() const { 
       if (Typ()==Rechnung)     return u.r->Stueck(); 
-      if (Typ()==Auftrag ||  Typ()==Intern||Typ()==Extern)      return u.a->getStueck(); 
+      if (Typ()==Auftrag ||  Typ()==Intern||Typ()==Extern) return u.a->getStueck().as_int(); 
       if (Typ()==Lieferschein) return u.l->Stueck(); abort();}
-   int Rest() const {
-      if (Typ()==Auftrag ||  Typ()==Intern||Typ()==Extern)      return u.a->getRestStk(); 
+   AuftragBase::mengen_t Rest() const {
+      if (Typ()==Auftrag ||  Typ()==Intern||Typ()==Extern) return u.a->getRestStk(); 
+      return 0;
       abort();}
    int Palette() const { 
       if (Typ()==Lieferschein) return u.l->Palette(); return 0;}
    bool ZusatzInfo() const { 
       if (Typ()==Lieferschein) return u.l->ZusatzInfo(); return false;}
+   std::vector<LieferscheinEntry::st_zusatz> getZusatzInfos() const {
+      if (Typ()==Lieferschein) return u.l->getZusatzInfos();
+      return std::vector<LieferscheinEntry::st_zusatz>();
+      }
    std::string YourAuftrag() const { 
       if (Typ()==Lieferschein) return u.l->YourAuftrag(); 
+      return "";
       abort();}
    int AufId() const { 
       if (Typ()==Lieferschein) return u.l->RefAuftrag().Id();
@@ -81,7 +93,13 @@ public:
 	abort(); 
       }
    const ManuProC::Datum getLieferdatum() const {
-	if (Typ()==Auftrag) return u.a->getLieferdatum(); abort();}
+	   if (Typ()==Auftrag) return u.a->getLieferdatum(); 
+	   return ManuProC::Datum();}
+   AufEintragBase getAEB() const {
+      if (Typ()==Intern) return *(u.a);
+      abort();
+      }
+/*
    std::list<AufEintragZu::st_reflist> get_Referenz_list_for_geplant(bool b) const {
 #ifdef PETIG_EXTENSIONS
       AufEintragBase AEB=*(u.a);
@@ -89,6 +107,7 @@ public:
       abort();
 #endif
 	}
+*/
 };
 
 class LR_Iterator: public LR_Base
@@ -161,8 +180,8 @@ class LR_Abstraktion: public LR_Base
  
  unsigned int zeilen_passen_noch;
  unsigned int page_counter;
- unsigned int spaltenzahl;
  unsigned int preisspalte;
+ unsigned int spaltenzahl;
  std::string zur_preisspalte;
 
 
@@ -195,7 +214,6 @@ private:
   union { const LieferscheinVoll *l; 
           const class RechnungVoll *r; 
           const class AuftragFull *a; } u;
-
 #define UEBLICHE_INITIALISIERUNG(fp,inst) \
 	firmenpapier(fp), kopie(false), stueck_bool(false), menge_bool(false), \
 	rabatt_bool(false), preise_addieren(false), ean_code(false), \
@@ -204,6 +222,8 @@ private:
 	preisspalte(0), \
 	spaltenzahl(0), schema_mem(ExtBezSchema::default_ID), \
 	schema_own(ExtBezSchema::default_ID)
+
+
 
 public:
 	
@@ -241,7 +261,7 @@ public:
       if (Typ()==Auftrag || Typ()==Intern||Typ()==Extern)      return u.a->getWaehrung(); 
       if (Typ()==Rechnung)     return u.r->getWaehrung(); abort(); }
    fixedpoint<2> Rabatt() const { 
-      if (Typ()==Auftrag) return  float(u.a->getAuftragsRabatt());
+      if (Typ()==Auftrag) return  u.a->getAuftragsRabatt();
       if (Typ()==Intern||Typ()==Extern)      return 0; 
       if (Typ()==Rechnung)     return u.r->Rabatt(); abort();}
    const Kunde::ID KdNr() const {
@@ -260,6 +280,20 @@ public:
       if (Typ()==Rechnung)     return u.r->getZahlungsart(); 
       if (Typ()==Auftrag)     return u.a->Zahlart(); 
 	abort(); }
+   fixedpoint<2> Skontosatz() const {
+	if (Typ()==Rechnung)
+	  return u.r->getZahlungsart()->getSkonto(1).skontosatz; 
+	if (Typ()==Auftrag)
+	  return u.a->Zahlart()->getSkonto(1).skontosatz; 
+	  abort();}
+   fixedpoint<2> Einzugrabatt() const {
+	if( Typ()==Rechnung)
+	  return u.r->getZahlungsart()->getEinzugrabatt();
+	if (Typ()==Auftrag)
+	  return u.a->Zahlart()->getEinzugrabatt(); 
+	  abort();}
+   bool getEntsorgung() const {
+	if(Typ()==Rechnung) return u.r->Entsorgung(); abort(); }
    std::string getBemerkung() const {
       if (Typ()==Extern)        return u.a->getBemerkung(); abort(); }
    std::string YourAuftrag() const { 
@@ -267,12 +301,23 @@ public:
       abort();}
    std::string Notiz() const { 
       if (Typ()==Auftrag) return u.a->Notiz();
+      if (Typ()==Rechnung) return u.r->Notiz();
       abort();}
 private:
    void drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,
                         bool zusatzinfo,std::string linecolor,bool& erste_spalte,
                         cH_ExtBezSchema s,AuftragBase::mengen_t menge=0);
    void neue_spalte(bool& erste_spalte, std::ostream &os);
+   void Zeile_Ausgeben(std::ostream &os,
+        const Preis::preismenge_t &preismenge_mem,
+        const Einheit &einheit_mem,const std::string &einheitsize,
+        const AuftragBase::mengen_t rest,const ArtikelBase &artikelbase,
+        const bool zusatzinfo,const int stueck, const AuftragBase::mengen_t &menge,
+        const Preis &BruttoPreis, const Preis &NettoPreis,
+        const fixedpoint<2> &rabatt, const ManuProC::Datum &lieferdatum,
+        const int palette, const std::string &your_auftrag,
+        const AufEintragBase AEB=AufEintragBase()
+        );
    void drucken_header(std::ostream &os);
    void drucken_footer(std::ostream &os);
    void page_header(std::ostream &os);
@@ -283,7 +328,7 @@ private:
 #endif
 
    void drucken_table_header(std::ostream &os, const cH_ExtBezSchema& schema,
-      		float preismenge, const std::string &preiseinheit);
+      		fixedpoint<2> preismenge, const std::string &preiseinheit);
 
    void drucken_betrag(std::ostream &os, const std::string &text, fixedpoint<2> betrag);
 
