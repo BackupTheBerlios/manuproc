@@ -114,10 +114,10 @@ static int auftragstests(e_mode mode)
        vergleichen(C,Check::Lieferschein|Check::Menge,"ZI_Auslieferung","Auslieferung","L");
        
        LieferscheinEntryBase lsb(liefs,lznr);
-       LieferscheinEntry(lsb).changeMenge(1,1000);
+       LieferscheinEntry(lsb).changeMenge(1,1000,liefs,false);
        vergleichen(C,Check::Lieferschein|Check::Menge,"ZI_Aenderung","weniger","-");
 
-       LieferscheinEntry(lsb).changeMenge(10,1000);
+       LieferscheinEntry(lsb).changeMenge(10,1000,liefs,false);
        vergleichen(C,Check::Lieferschein|Check::Menge,"ZI_Aenderung2","mehr","+");
 
        LieferscheinEntry le(lsb);
@@ -615,12 +615,12 @@ std::cout << "D13: "<<dummystring<<'\n';
        AuftragBase::mengen_t menge=0;
        int lznr=1;
        LieferscheinEntry le(LieferscheinEntryBase(liefs,lznr));
-       le.changeMenge(stueck,menge);
+       le.changeMenge(stueck,menge,liefs,false);
        vergleichen(C,Check::Menge|Check::Lieferschein,"LS_mengenaenderung_minus","Lieferschein Mengenaenderung Minus","");
 
        stueck=400;
        LieferscheinEntry le2(LieferscheinEntryBase(liefs,lznr));
-       le2.changeMenge(stueck,menge);
+       le2.changeMenge(stueck,menge,liefs,false);
        vergleichen(C,Check::Menge|Check::Lieferschein,"LS_mengenaenderung_plus","Lieferschein Mengenaenderung Plus","");
 #endif
        break;
@@ -652,18 +652,18 @@ std::cout << "D13: "<<dummystring<<'\n';
        AuftragBase::mengen_t menge=0;
 
        LieferscheinEntry le3(LieferscheinEntryBase(liefs,lznr));
-       le3.changeMenge(stueck,menge);
+       le3.changeMenge(stueck,menge,liefs,false);
        vergleichen(C,Check::Lieferschein|Check::Menge,"LSZP","Lieferscheinentry mit Zusatzeintrag Plus","+");
 
        LieferscheinEntry le4(LieferscheinEntryBase(liefs,lznr));
        stueck=450;
 
-       le4.changeMenge(stueck,menge);
+       le4.changeMenge(stueck,menge,liefs,false);
        vergleichen(C,Check::Lieferschein|Check::Menge,"LSZM","Lieferscheinentry mit Zusatzeintrag Minus","-");
 
        LieferscheinEntry le5(LieferscheinEntryBase(liefs,lznr));
        stueck=350;
-       le5.changeMenge(stueck,menge);
+       le5.changeMenge(stueck,menge,liefs,false);
        vergleichen(C,Check::Lieferschein|Check::Menge,"LSZMK","Lieferscheinentry mit Zusatzeintrag Minus Kunde","-K");
 #endif
        break;
@@ -680,7 +680,7 @@ std::cout << "D13: "<<dummystring<<'\n';
        int lznr=1;
        LieferscheinEntry le1(LieferscheinEntryBase(liefs,lznr));
        int stueck=3;
-       le1.changeMenge(stueck,0);
+       le1.changeMenge(stueck,0,liefs,true);
        vergleichen(C,Check::Lieferschein|Check::Menge,"LS_mengenaenderung_minus","Lieferscheinentry: Minus","M");
 
        {// Produktionsplaner

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.25 2003/07/03 13:32:29 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.26 2003/07/03 17:17:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,6 +24,22 @@
 #include <unistd.h>
 #include <Lieferschein/Lieferschein.h>
 #include <Misc/FetchIStream.h>
+#include <Auftrag/selFullAufEntry.h>
+#include <Artikel/Einheiten.h>
+#include <Misc/TraceNV.h>
+#include <iostream>
+
+#ifdef MABELLA_EXTENSIONS
+#include <Lager/FertigWaren.h>
+#include <Artikel/ArtikelBase.h>
+#endif
+
+#define NurEinKind(x) ((x).begin()!=(x).end() && ++((x).begin()) == (x).end())
+#define MehrAlsEinKind(x) ((x).begin()!=(x).end() && ++((x).begin()) != (x).end())
+
+std::ostream &operator<<(std::ostream &o, const LieferscheinEntryBase &b)
+{  return o << b.Instanz()->Id() << '|' << b.Id() << '|' << b.ZNr();
+}
 
 bool LieferscheinEntry::Valid() const
 {
@@ -39,9 +55,16 @@ void LieferscheinEntry::setPalette(int p) throw(SQLerror)
   SQLerror::test(__FILELINE__);
 }
 
-// It seems that this routine works <50% of the time - needs a rewrite
-void LieferscheinEntry::changeMenge(int stueck, mengen_t menge, bool ein_auftrag) throw(SQLerror)
-{
+void LieferscheinEntry::showZusatzInfos() const
+{  std::cerr << "Zusatzinfos " << *this << ": ";
+   for (zusaetze_t::const_iterator i=VZusatz.begin();i!=VZusatz.end();++i)
+      std::cerr << i->aeb << '=' << i->menge << ' ';
+   std::cerr << '\n';
+}
+
+void LieferscheinEntry::changeMenge(int stueck, mengen_t menge, const Lieferschein &ls, bool ein_auftrag) throw(SQLerror)
+{ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("this",*this),
+	NV("stueck",stueck),NV("menge",menge),NV("ein_auftrag",ein_auftrag));
   if(stueck==Stueck() && menge==Menge()) return ; //nichts geändert
 
   Transaction tr;
@@ -50,70 +73,97 @@ void LieferscheinEntry::changeMenge(int stueck, mengen_t menge, bool ein_auftrag
   AuftragBase::mengen_t abmenge=Abschreibmenge(stueck,menge);
 
   if (ein_auftrag)
-  {  if(RefAuftrag().valid()) // => Keine Zusatzinfos
-     {  AufEintrag AE(RefAuftrag());
+  {  assert(NurEinKind(VZusatz));
+     if(VZusatz[0].aeb.valid()) // => Keine Zusatzinfos
+     {  AufEintrag AE(VZusatz[0].aeb);
         // verhindern dass negative Menge auftritt
         assert (!(abmenge<0 && -abmenge>AE.getGeliefert()));
         AE.Produziert(abmenge,Id());
      }
   }
-#endif
-  
-  else if(!ZusatzInfo()) ;// s.u. updateLieferscheinMenge(stueck,menge) ;
-  else // Zusatzinfos existieren
+  else 
    {
-     zusaetze_t VZ=getZusatzInfos();
+     AuftragBase::mengen_t abmenge2=abmenge;
      if(abmenge>0) 
-     for(LieferscheinEntry::zusaetze_t::iterator i=VZ.begin();i!=VZ.end();++i)
-      {
-        AuftragBase::mengen_t actualmenge=abmenge;
-        if(i->aeb.valid())
-         {
-           AufEintrag AE(i->aeb);
-           if(AE.getEntryStatus()!=OPEN) continue;
-           if(AE.getRestStk()<abmenge) actualmenge=AE.getRestStk();
-           AE.Produziert(actualmenge,Id());
-           updateZusatzEntry(*i,i->menge + actualmenge);
-         }
-        else 
-           updateZusatzEntry(*i,i->menge + actualmenge);
-        abmenge-=actualmenge;
-        if(!abmenge) break;
+     {
+      // was ist mit 0ern im Einkauf, diese werden auch bei Überproduktion nicht
+      // direkt erledigt - allerdings beim Einlagern ??? CP
+      SQLFullAuftragSelector psel(SQLFullAuftragSelector::sel_Artikel_Planung_id
+      			(instanz->Id(),ls.getKunde()->Id(),artikel,AuftragBase::handplan_auftrag_id));
+      SelectedFullAufList auftraglist(psel);
+
+
+      for (SelectedFullAufList::iterator i=auftraglist.aufidliste.begin();
+     	        !!abmenge2 && i!=auftraglist.aufidliste.end(); ++i)
+      {  AuftragBase::mengen_t abmenge3=AuftragBase::min(abmenge2,i->getRestStk());
+         if (!abmenge3) continue;
+           
+         i->Produziert(abmenge3,Id());
+         addZusatzEntry(*i,abmenge3);
+
+         abmenge2-=abmenge3;
+         if (!abmenge2) break;
       }
+      if(abmenge2>0)
+         // da ist noch ein Rest geblieben, setzt ZusatzInfo
+      {  AufEintragBase neuerAEB;
+         if (instanz!=ppsInstanzID::Kundenauftraege) 
+            neuerAEB=AufEintrag::unbestellteMengeProduzieren(Instanz(),artikel,abmenge2,getuid());
+         addZusatzEntry(neuerAEB,abmenge2);
+      }
+      showZusatzInfos();
+     }
      else
-     for(LieferscheinEntry::zusaetze_t::reverse_iterator i=VZ.rbegin();i!=VZ.rend();++i)
+     {showZusatzInfos();
+      zusaetze_t VZ=getZusatzInfos();
+      for(LieferscheinEntry::zusaetze_t::reverse_iterator i=VZ.rbegin();i!=VZ.rend();++i)
       {
-        AuftragBase::mengen_t actualmenge=abmenge;
-        if(i->menge.abs() < actualmenge.abs()) actualmenge = -i->menge;
-        if(i->menge + actualmenge==AuftragBase::mengen_t(0)) 
-             deleteZusatzEntry(*i);
-        else updateZusatzEntry(*i,i->menge + actualmenge);
+        AuftragBase::mengen_t actualmenge=abmenge2;
+        if(i->menge < actualmenge.abs()) actualmenge = -i->menge;
+        ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,
+        	NV("abmenge2",abmenge2),NV("actualmenge",actualmenge),
+        	NV("i->menge",i->menge));
+        if (!actualmenge) continue;
+        
         if(i->aeb.valid()) 
            AufEintrag(i->aeb).Produziert(actualmenge,Id());
-        abmenge-=actualmenge;
-        if(!abmenge) break;
+        if(!(i->menge + actualmenge)) deleteZusatzEntry(i->aeb);
+        else updateZusatzEntry(i->aeb,i->menge + actualmenge);
+        abmenge2-=actualmenge;
+        if(!abmenge2) break;
       }
+     }
    }
+
   updateLieferscheinMenge(stueck,menge);
 
+#ifdef MABELLA_EXTENSIONS // auf keinen Fall nach offenen Aufträgen suchen
+#warnung Uebler Hack, muss weg wenn Mabella Instanzen hat!
+  if(Instanz() == ppsInstanzID::Kundenauftraege)
+  {  FertigWaren fw(artikel,(FertigWaren::enum_Aktion)'L',
+  			abmenge.abs().as_int(),Id());
+     if(abmenge < 0) fw.Einlagern(1);
+     else if(abmenge > 0) fw.Auslagern(1);
+   }
+#endif
   tr.commit();
 }
 
 void LieferscheinEntry::updateLieferscheinMenge(int stueck,mengen_t menge)  throw(SQLerror)
-{
-   std::string Q1="update lieferscheinentry set stueck="+itos(stueck)
-         +", menge=nullif("+menge.String()+",0) where (instanz,lfrsid,zeile)=("
-         +itos(Instanz()->Id())+","+itos(Id())+","+itos(Zeile())+")";
-   Query::Execute(Q1);
+{  this->stueck=stueck;
+   this->menge=menge;
+   Query("update lieferscheinentry set stueck=?,menge=? "
+   	"where (instanz,lfrsid,zeile)=(?,?,?)")
+   	<< stueck << Query::NullIf(menge)
+   	<< *this;
    SQLerror::test(__FILELINE__);
 }
 
 void LieferscheinEntry::deleteMe(const LieferscheinEntry &LE)  throw(SQLerror)
 {
-   std::string Q1="delete from lieferscheinentry "
-         " where (instanz,lfrsid,zeile)=("
-         +itos(LE.Instanz()->Id())+","+itos(LE.Id())+","+itos(LE.Zeile())+")";
-   Query::Execute(Q1);
+   Query("delete from lieferscheinentry "
+         "where (instanz,lfrsid,zeile)=(?,?,?)")
+         << LE;
    SQLerror::test(__FILELINE__);
 }
 
@@ -218,13 +268,14 @@ LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
 			const ArtikelBase &art, int anzahl,
 			mengen_t _menge,int _palette, bool zusatz) throw(SQLerror) 
 {  
- return create(lsb,AufEintragBase(lsb.Instanz(),0,0),art,anzahl,_menge,_palette,zusatz);
+ return create(lsb,AufEintragBase(lsb.Instanz(),AufEintragBase::none_id,
+ 		AufEintragBase::none_znr),art,anzahl,_menge,_palette,zusatz);
 }
 
 void LieferscheinEntry::deleteEntry(LieferscheinEntry &lse) throw(SQLerror)
 {
- lse.changeMenge(0,0);
- deleteMe(*this);
+ lse.changeMenge(0,0,Lieferschein(),false);
+ deleteMe(lse);
 }
 
 
@@ -232,68 +283,90 @@ void LieferscheinEntry::deleteEntry(LieferscheinEntry &lse) throw(SQLerror)
 
 void LieferscheinEntry::setZusatzInfos(const zusaetze_t &zis)
 {  VZusatz=zis;
+   setZusatzInfos();
+}
 
+void LieferscheinEntry::setZusatzInfos()
+{ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("this",*this));
   Query("delete from lieferscheinentryzusatz "
       "where (instanz,lfrsid,lfsznr) = (?,?,?)") << *this;
-  SQLerror::test(__FILELINE__);
-  if (zis.size()==1)
-  {  Query("update from lieferscheinentry "
+  SQLerror::test(__FILELINE__,100);
+  if (NurEinKind(VZusatz))
+  {  Query("update lieferscheinentry "
 	"set zusatzinfo=false,refauftragid=?,refzeilennr=? "
-	"where (instanz,lfrsid,lfsznr) = (?,?,?)")
-	<< Query::NullIf(zis[0].aeb.Id(),AufEintragBase::none_id)
-  	<< Query::NullIf(zis[0].aeb.ZNr(),AufEintragBase::none_znr)
+	"where (instanz,lfrsid,zeile) = (?,?,?)")
+	<< Query::NullIf(VZusatz[0].aeb.Id(),AufEintragBase::none_id)
+  	<< Query::NullIf(VZusatz[0].aeb.ZNr(),AufEintragBase::none_znr)
 	<< *this;
   }
   else
-  {  Query("update from lieferscheinentry "
+  {  Query("update lieferscheinentry "
 	"set zusatzinfo=?,refauftragid=null,refzeilennr=null "
-	"where (instanz,lfrsid,lfsznr) = (?,?,?)")
-	<< (!zis.empty())
+	"where (instanz,lfrsid,zeile) = (?,?,?)")
+	<< (!VZusatz.empty())
 	<< *this;
-     for (zusaetze_t::const_iterator i=zis.begin();i!=zis.end();++i)
-        addZusatzEntry(i->aeb,i->menge);
+     for (zusaetze_t::const_iterator i=VZusatz.begin();i!=VZusatz.end();++i)
+        addZusatzEntry_db(i->aeb,i->menge);
   }
 }
 
-void LieferscheinEntry::updateZusatzEntry(const st_AufEintragMenge &Z,const AuftragBase::mengen_t &menge) throw(SQLerror)
-{
+void LieferscheinEntry::updateZusatzEntry(const AufEintragBase &Z,const AuftragBase::mengen_t &menge) throw(SQLerror)
+{ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("this",*this),
+	NV("AEB",Z),NV("menge",menge));
+  if (NurEinKind(VZusatz))
+  {  assert (VZusatz[0].aeb==Z);
+     VZusatz[0].menge=menge;
+     setZusatzInfos();
+  }
   std::string Q="update lieferscheinentryzusatz set menge=?"
       " where (instanz,lfrsid,lfsznr) = (?,?,?) and ";
-  if(Z.aeb.Id()!=AufEintragBase::none_id)
+  if(Z.Id()!=AufEintragBase::none_id)
     Q += "(auftragid,auftragznr)=(?,?)";
   else
   { Q += "auftragid is ? and auftragznr is ?";
-    assert(Z.aeb.ZNr()==AufEintragBase::none_znr);
+    assert(Z.ZNr()==AufEintragBase::none_znr);
   }
 
   Query(Q) << menge
   	<< *this 
-  	<< Query::NullIf(Z.aeb.Id(),AufEintragBase::none_id)
-  	<< Query::NullIf(Z.aeb.ZNr(),AufEintragBase::none_znr);
+  	<< Query::NullIf(Z.Id(),AufEintragBase::none_id)
+  	<< Query::NullIf(Z.ZNr(),AufEintragBase::none_znr);
   SQLerror::test(__FILELINE__);
-  ZusaetzeLaden();
+  for (zusaetze_t::iterator i=VZusatz.begin();i!=VZusatz.end();++i)
+     if (i->aeb==Z)
+     {  i->menge=menge;
+        break;
+     }
 }
 
-void LieferscheinEntry::deleteZusatzEntry(const st_AufEintragMenge &Z) throw(SQLerror)
-{
+void LieferscheinEntry::deleteZusatzEntry(const AufEintragBase &Z) throw(SQLerror)
+{ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("this",*this),
+	NV("AEB",Z));
+  bool nek0=NurEinKind(VZusatz);
   std::string Q="delete from lieferscheinentryzusatz "
       "where (instanz,lfrsid,lfsznr) = (?,?,?) and ";
-  if(Z.aeb.Id()!=AufEintragBase::none_id)
+  if(Z.Id()!=AufEintragBase::none_id)
     Q += "(auftragid,auftragznr)=(?,?)";
   else
   { Q += "auftragid is ? and auftragznr is ?";
-    assert(Z.aeb.ZNr()==AufEintragBase::none_znr);
+    assert(Z.ZNr()==AufEintragBase::none_znr);
   }
 
   Query(Q) << *this 
-  	<< Query::NullIf(Z.aeb.Id(),AufEintragBase::none_id)
-  	<< Query::NullIf(Z.aeb.ZNr(),AufEintragBase::none_znr);
-  SQLerror::test(__FILELINE__);
-  ZusaetzeLaden();
+  	<< Query::NullIf(Z.Id(),AufEintragBase::none_id)
+  	<< Query::NullIf(Z.ZNr(),AufEintragBase::none_znr);
+  SQLerror::test(__FILELINE__,100);
+  for (zusaetze_t::iterator i=VZusatz.begin();i!=VZusatz.end();++i)
+     if (i->aeb==Z)
+     {  i=VZusatz.erase(i);
+        break;
+     }
+  if (NurEinKind(VZusatz)^nek0) setZusatzInfos();
 }
 
-void LieferscheinEntry::addZusatzEntry(const AufEintragBase &AEB,const mengen_t &menge) throw(SQLerror)
-{
+void LieferscheinEntry::addZusatzEntry_db(const AufEintragBase &AEB,const mengen_t &menge) throw(SQLerror)
+{ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("this",*this),
+	NV("AEB",AEB),NV("menge",menge));
   Query("insert into lieferscheinentryzusatz (instanz,lfrsid,lfsznr,"
       "auftragid,auftragznr,menge) values (?,?,?, ?,?, ?)").lvalue() 
 	<< *this 
@@ -301,6 +374,26 @@ void LieferscheinEntry::addZusatzEntry(const AufEintragBase &AEB,const mengen_t 
   	<< Query::NullIf(AEB.ZNr(),AufEintragBase::none_znr)
   	<< menge;
   SQLerror::test(__FILELINE__);
+}
+
+void LieferscheinEntry::addZusatzEntry(const AufEintragBase &AEB,const mengen_t &menge) throw(SQLerror)
+{ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("this",*this),
+	NV("AEB",AEB),NV("menge",menge));
+  for (zusaetze_t::const_iterator i=VZusatz.begin();i!=VZusatz.end();++i)
+     if (i->aeb==AEB)
+     {  updateZusatzEntry(AEB,i->menge+menge);
+        return;
+     }
+  bool nek0=NurEinKind(VZusatz);
+  // dummy Eintrag wegnehmen
+  if (nek0 && !VZusatz[0].aeb && !VZusatz[0].menge)
+  {  VZusatz.erase(VZusatz.begin()); 
+     nek0=false; 
+  }
+  VZusatz.push_back(st_AufEintragMenge(AEB,menge));
+
+  if (NurEinKind(VZusatz)^nek0) setZusatzInfos();
+  else addZusatzEntry_db(AEB,menge);
 }
 
 std::vector<LieferscheinEntry::st_AuftragMenge> LieferscheinEntry::getAuftragsMenge() const

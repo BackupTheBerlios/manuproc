@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.24 2003/07/03 13:32:29 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.25 2003/07/03 17:17:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,6 +28,8 @@
 #include <Misc/fixedpoint.h>
 #include <BaseObjects/ManuProcEintrag.h>
 #include <Misc/compiler_ports.h>
+
+class Lieferschein;
 
 class LieferscheinEntryBase : public LieferscheinBase
 {
@@ -104,26 +106,29 @@ public:
  // nach Aufträgen summiert (nicht nach Zeilen getrennt)
  std::vector<st_AuftragMenge> getAuftragsMenge() const;
  void setZusatzInfos(const zusaetze_t &zis);
+ void setZusatzInfos();
 
  __deprecated void setZusatzInfo(const AufEintragBase &AEB,const mengen_t &menge) throw(SQLerror)
  {  addZusatzEntry(AEB,menge); }
 
  void setPalette(int p) throw(SQLerror);
- void changeMenge(int stueck,mengen_t menge) throw(SQLerror);
+ void changeMenge(int stueck,mengen_t menge,const Lieferschein &ls, bool ein_auftrag) throw(SQLerror);
  static void deleteEntry(LieferscheinEntry &lse) throw(SQLerror);
 
  // bitte getZusatzInfos() nehmen, es könnten mehrere sein
- __deprecated const AuftragBase RefAuftrag() const { return getAufEintragBase(); }
- __deprecated int AufZeile() const { return getAufEintragBase().ZNr();} 
+ __deprecated const AuftragBase RefAuftrag() const { return VZusatz.at(0).aeb; }
+ __deprecated int AufZeile() const { return VZusatz.at(0).aeb.ZNr();}
  __deprecated AufEintragBase getAufEintragBase() const {return VZusatz.at(0).aeb; }
  __deprecated bool ZusatzInfo() const { return true; }
 private:
  static void deleteMe(const LieferscheinEntry &lse) throw(SQLerror);
- void deleteZusatzEntry(const st_AufEintragMenge &Z) throw(SQLerror);
+ void deleteZusatzEntry(const AufEintragBase &Z) throw(SQLerror);
  void addZusatzEntry(const AufEintragBase &AEB,const mengen_t &menge) throw(SQLerror);
- void updateZusatzEntry(const st_AufEintragMenge &Z,const AuftragBase::mengen_t &menge) throw(SQLerror);
+ void addZusatzEntry_db(const AufEintragBase &AEB,const mengen_t &menge) throw(SQLerror);
+ void updateZusatzEntry(const AufEintragBase &Z,const AuftragBase::mengen_t &menge) throw(SQLerror);
  void ZusaetzeLaden();
  friend FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry &aeb);
+ void showZusatzInfos() const;
 };
 
 class ArgumentList;

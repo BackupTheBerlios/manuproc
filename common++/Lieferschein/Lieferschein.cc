@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.31 2003/07/03 08:22:16 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.32 2003/07/03 17:17:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,18 +19,10 @@
 
 #include"Lieferschein.h"
 #include <Misc/Transaction.h>
-#include <Auftrag/selFullAufEntry.h>
-#include <Artikel/Einheiten.h>
 #include <Misc/FetchIStream.h>
 //#include <Instanzen/Produziert.h>
 #include <unistd.h> 
 #include <Misc/TraceNV.h>
-
-#ifdef MABELLA_EXTENSIONS
-#include <Lager/FertigWaren.h>
-#include <Artikel/ArtikelBase.h>
-#endif
-
 
 Lieferschein::Lieferschein(const LieferscheinBase &lsbase, const ManuProC::Datum &_lsdatum,
 int _kdnr,int _rngid, int _paeckchen, int _pakete, const ManuProC::Datum &_geliefertam,
@@ -44,110 +36,43 @@ int _dpdlnr)
 ,verknr(Kunde::none_id)
 {}
 
-static void unbestellteMengeProduzieren(cH_ppsInstanz instanz,
-	const ArtikelBase &artikel,
-	LieferscheinEntry::mengen_t menge,
-	LieferscheinEntry &LE)
-{  AufEintragBase neuerAEB;
-   if (instanz!=ppsInstanzID::Kundenauftraege) 
-      neuerAEB=AufEintrag::unbestellteMengeProduzieren(instanz,artikel,menge,getuid());
-   LE.setZusatzInfo(neuerAEB,menge);
-}
-
 int Lieferschein::push_back(const ArtikelBase &artikel, int anzahl, 
 		mengen_t mengeneinheit, int palette)
 {  
-
    // Eine Instanz, die Lieferscheine schreibt, produziert auch selber (assert in ppsInstanz).
    // Wenn man einn Lieferschein schriebe, ohne daß diese Instanz 
    // selber produzierte, würde doppelt produziert werden.
    assert(Instanz()->Lieferschein());
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("artikel",artikel),
            NV("anzahl",anzahl),NV("mengeneinheit",mengeneinheit),NV("palette",palette));
+
    Transaction tr;
-   int result=LieferscheinBase::none_id;
-
-   AuftragBase::mengen_t menge(anzahl);
-   Einheit e(artikel);
-   if (!e.hatMenge()) mengeneinheit=0;
-   else menge *= mengeneinheit.as_float();
-
-#ifndef MABELLA_EXTENSIONS // auf keinen Fall nach offenen Aufträgen suchen
-
-   SQLFullAuftragSelector psel(SQLFullAuftragSelector::sel_Artikel_Planung_id
-   			(instanz->Id(),getKunde()->Id(),artikel,AuftragBase::handplan_auftrag_id));
-   SelectedFullAufList auftraglist(psel);
-
-   if (auftraglist.aufidliste.begin()==auftraglist.aufidliste.end())
-     // kann nicht abschreiben
-   {  LieferscheinEntry LE=LieferscheinEntry::create(*this, artikel, anzahl,mengeneinheit,palette,false);
-      unbestellteMengeProduzieren(Instanz(),artikel,menge,LE);
-      result=LE.ZNr();
-   }
-   else if (menge<=auftraglist.aufidliste.begin()->getRestStk())
-     // kann in einem Stueck abschreiben
-   {  SelectedFullAufList::iterator i=auftraglist.aufidliste.begin();
-      LieferscheinEntry LE=LieferscheinEntry::create(*this, *i,artikel, anzahl,mengeneinheit,palette,false);
-      i->Produziert(menge,Id());
-      result=LE.ZNr();
-   }
-   else
-   // stueckeln (1*Lieferung, dann Zuordnung)
-   {  LieferscheinEntry LE=LieferscheinEntry::create(*this,artikel,anzahl,mengeneinheit,palette,true);
-
-      for (SelectedFullAufList::iterator i=auftraglist.aufidliste.begin();
-     	        !!menge && i!=auftraglist.aufidliste.end(); ++i)
-      {  AuftragBase::mengen_t abmenge=AuftragBase::min(menge,i->getRestStk());
-         if (!abmenge) continue;
-           
-         LE.setZusatzInfo(*i,abmenge);
-         i->Produziert(abmenge,Id());
-           
-         menge-=abmenge;
-         if (!menge) break;
-      }
-      if(menge>0)
-         // da ist noch ein Rest geblieben, setzt ZusatzInfo
-         unbestellteMengeProduzieren(Instanz(),artikel,menge,LE);
-      result=LE.ZNr();
-   }
+   LieferscheinEntry LE=LieferscheinEntry::create(*this, artikel,0,0,palette);
+   // damit der Code nicht 2x erscheint
+   LE.changeMenge(anzahl,mengeneinheit,*this,
+#ifdef MABELLA_EXTENSIONS // auf keinen Fall nach offenen Aufträgen suchen
+						true
 #else
- if(menge>0)
-   {LieferscheinEntry LE=LieferscheinEntry::create(*this, artikel, anzahl,mengeneinheit,palette,false);
-    unbestellteMengeProduzieren(Instanz(),artikel,menge,LE);
-    if(Instanz() == ppsInstanzID::Kundenauftraege)
-      {
-       FertigWaren fw(artikel,(FertigWaren::enum_Aktion)'L',
-			menge.as_int(),Id());
-       if(menge < 0) fw.Einlagern(1);
-       else if(menge > 0) fw.Auslagern(1);
-      }
-     result=LE.ZNr();
-   }
-#endif
-
+	   					false
+#endif   					
+   							);
    tr.commit();
-   return result;
+   return LE.ZNr();
 }
 
+// fast das gleiche ...
 int Lieferschein::push_back(AufEintrag &aufeintrag,
 		const ArtikelBase &artikel, int anzahl, 
 		mengen_t menge, int palette)
 {
-   // Eine Instanz, die Lieferscheine schreibt, produziert auch selber (assert in ppsInstanz).
-   // Wenn man einn Lieferschein schriebe, ohne daß diese Instanz 
-   // selber produzierte, würde doppelt produziert werden.
    assert(Instanz()->Lieferschein());
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("AufEintrag",aufeintrag),
            NV("artikel",artikel),
            NV("Anzahl",anzahl),NV("Menge",menge),NV("Palette",palette));                     
- LieferscheinEntry LE=LieferscheinEntry::create(*this, aufeintrag ,artikel, anzahl,menge,palette);
-
- mengen_t mng;
- if(!menge) mng = anzahl;
- else mng= anzahl*menge;
- 
- aufeintrag.Produziert(mng,Id());
+ Transaction tr;          
+ LieferscheinEntry LE=LieferscheinEntry::create(*this, aufeintrag ,artikel, 0,0,palette);
+ LE.changeMenge(anzahl,menge,*this,true);
+ tr.commit();
  return LE.ZNr();
 }
 
