@@ -90,7 +90,7 @@ void TreeBase::summen_knoepfe()
 TreeBase::TreeBase(guint cols, guint attr) : 
 	TCList(cols), showdeep(0), attrcount(attr ? attr : cols),
 	gp(0), menu(0),
-	auffuellen_bool(false), expandieren_bool(true)
+	titles_bool(true), auffuellen_bool(false), expandieren_bool(true)
 {
   this->button_press_event.connect(SigC::slot(this,&TreeBase::MouseButton));
   click_column.connect(SigC::slot(this,&TreeBase::on_click_column));
@@ -109,7 +109,6 @@ TreeBase::TreeBase(guint cols, guint attr) :
 
 void TreeBase::init()
 { setColTitles();
-//  fillMenu();
   fillTCL();
 }
 
@@ -360,19 +359,18 @@ void TreeBase::fillMenu()
    menu->append(*spalten);
    spalten->set_submenu(*spalten_menu);
 
-//   for (std::deque<guint>::const_iterator i=currseq.begin();i!=currseq.end();++i)
    for (guint i=0;i<Cols();++i)
     {
       Gtk::CheckMenuItem *sp = manage(new class Gtk::CheckMenuItem(getColTitle(i)));
       spalten_menu->append(*sp);
-      sp->set_active(true);
-//      sp->show();
+      if (vec_hide_cols[i]) sp->set_active(true);
+      sp->show();
       sp->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::welche_Spalten),i,sp));
     }
    menu->append(*optionen);
    optionen->set_submenu(*optionen_menu);
    Gtk::CheckMenuItem *titles = manage(new class Gtk::CheckMenuItem("Spaltenüberschriften anzeigen"));
-   Gtk::CheckMenuItem *auffuellen = manage(new class Gtk::CheckMenuItem("Auffüllen mit aktueller Reinfolge\n(statt Anfangsreinfolge)"));
+   Gtk::CheckMenuItem *auffuellen = manage(new class Gtk::CheckMenuItem("Auffüllen mit Standardreihenfolge\n(statt der aktuellen)"));
    Gtk::CheckMenuItem *expandieren = manage(new class Gtk::CheckMenuItem("Gewählte Knoten expandieren"));
    Gtk::MenuItem *exp_all = manage(new class Gtk::MenuItem("Alle Knoten expandieren"));
    Gtk::MenuItem *col_all = manage(new class Gtk::MenuItem("Alle Knoten kollabieren"));
@@ -381,27 +379,22 @@ void TreeBase::fillMenu()
    optionen_menu->append(*expandieren);
    optionen_menu->append(*exp_all);
    optionen_menu->append(*col_all);
-//   titles->show();
-//   auffuellen->show();
-//   expandieren->show();
+   titles->show();
+   auffuellen->show();
+   expandieren->show();
    
    neuordnen->activate.connect(SigC::slot(this,&TreeBase::on_neuordnen_clicked));
    zuruecksetzen->activate.connect(SigC::slot(this,&TreeBase::on_zuruecksetzen_clicked));
    abbrechen->activate.connect(SigC::slot(this,&TreeBase::on_abbrechen_clicked));
 
    titles_menu=titles;
-   titles_bool=true;
-   if(titles_bool) titles->set_active(true);
-   else            titles->set_active(false);
+   titles->set_active(titles_bool);
    titles->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::Titles),titles));
 
-   auffuellen_bool= true;
-   if(auffuellen_bool) auffuellen->set_active(true);
-   else                auffuellen->set_active(false);
+   auffuellen->set_active(auffuellen_bool);
    auffuellen->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::Auffuellen),auffuellen));
 
-   if(expandieren_bool) expandieren->set_active(true);
-   else                 expandieren->set_active(false);
+   expandieren->set_active(expandieren_bool);
    expandieren->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::Expandieren),expandieren));
 
    exp_all->activate.connect(SigC::slot(this,&TreeBase::Expand_recursively));
@@ -421,9 +414,10 @@ void TreeBase::welche_Spalten(guint i,const Gtk::CheckMenuItem *sp)
   if (sp->get_active()) vec_hide_cols[i] = true;
   else vec_hide_cols[i] = false;
   show_or_hide_Spalten();
+  save_remembered();
 }
 
-void TreeBase::set_tree_column_visibility(int column,bool visible)
+void TreeBase::set_tree_column_visibility(unsigned int column,bool visible)
 {
   if(column<Cols())
    {
@@ -456,12 +450,8 @@ gint TreeBase::MouseButton(GdkEventButton *event)
    return false;
 }
 
-
-void TreeBase::on_neuordnen_clicked()
-{
-  if (!clicked_seq.size()) return; // nichts tun
-  
-  // Auffüllen
+void TreeBase::reihenfolge_anzeigen()
+{ // Auffüllen
   if(clicked_seq.size()<Attrs())
    {if (auffuellen_bool) setSequence(); // Standardreihenfolge
    
@@ -481,6 +471,14 @@ void TreeBase::on_neuordnen_clicked()
   refillTCL();
 }
 
+void TreeBase::on_neuordnen_clicked()
+{
+  if (!clicked_seq.size()) return; // nichts tun
+
+  reihenfolge_anzeigen();
+  save_remembered();  
+}
+
 void TreeBase::on_zuruecksetzen_clicked()
 { setSequence();
   showdeep=0;
@@ -497,22 +495,26 @@ void TreeBase::on_abbrechen_clicked()
 
 void TreeBase::show_titles(bool show)
 {
- if (show) {column_titles_show(); titles_menu->set_active(true);}
- else { column_titles_hide(); titles_menu->set_active(false);}
+ if (show) column_titles_show();
+ else column_titles_hide(); 
+ titles_menu->set_active(show);
 }
 
 void TreeBase::Titles(Gtk::CheckMenuItem *titles)
 {
   titles_bool=titles->get_active();
   show_titles(titles_bool);
+  save_remembered();
 }
 void TreeBase::Auffuellen(Gtk::CheckMenuItem *auffuellen)
 {
   auffuellen_bool=auffuellen->get_active();
+  save_remembered();
 }
 void TreeBase::Expandieren(Gtk::CheckMenuItem *expandieren)
 {
   expandieren_bool=expandieren->get_active();
+  save_remembered();
 }
 
 void TreeBase::on_row_select(int row, int col, GdkEvent* b)
@@ -586,3 +588,77 @@ TCListNode &TreeBase::getSelectedNode() const
    return *dynamic_cast<TCListNode*>(selectedrow);
 }
 
+#ifdef MANUPROC_WITH_DATABASE
+#include <Misc/Global_Settings.h>
+#include <unistd.h> // getuid
+#endif
+
+void TreeBase::set_remember(const std::string &program, const std::string &instance)
+{  if (mem_prog!=program || mem_inst!=instance)
+   {  mem_prog=program;
+      mem_inst=instance;
+      load_remembered();
+   }
+}
+
+void TreeBase::save_remembered() const
+{  if (mem_prog.empty()) return;
+#ifdef MANUPROC_WITH_DATABASE
+   unsigned int sichtbar=0,bit=1;
+   for (std::vector<bool>::const_iterator i=vec_hide_cols.begin();
+   		bit && i!=vec_hide_cols.end();++i,bit<<=1)
+      if (!*i) sichtbar|=bit;
+   std::string flags;
+   if (!titles_bool) flags+='T';
+   if (auffuellen_bool) flags+='a';
+   if (!expandieren_bool) flags+='E';
+   Global_Settings::create(getuid(),mem_prog,mem_inst+":visible",
+   	itos(sichtbar)+','+itos(showdeep)+','+flags);
+   std::string cseq;
+   guint last=999999; // big enough
+   std::deque<guint>::const_reverse_iterator i=currseq.rbegin();
+   for (;i!=currseq.rend();++i)
+   {  if (*i>last) break;
+      last=*i;
+   }
+   for (;i!=currseq.rend();++i) cseq=itos(*i)+','+cseq;
+   Global_Settings::create(getuid(),mem_prog,mem_inst+":order",cseq);
+#endif
+}
+
+void TreeBase::load_remembered()
+{  if (mem_prog.empty()) return;
+#ifdef MANUPROC_WITH_DATABASE
+   std::string visible=Global_Settings(getuid(),mem_prog,mem_inst+":visible").get_Wert();
+   titles_bool=visible.find('T')==std::string::npos;
+   expandieren_bool=visible.find('E')==std::string::npos;
+   
+   std::string::size_type k0=visible.find(','),k1=std::string::npos;
+   if (k0!=std::string::npos) 
+   {  guint sichtbar=strtoul(visible.substr(0,k0).c_str(),0,10),bit=1;
+      for (guint j=0;j<attrcount;++j,bit<<=1)
+         vec_hide_cols[j]=!bit ? true : !(sichtbar&bit);
+      k1=visible.find(',',k0+1);
+   }
+   if (k1!=std::string::npos)
+   {  showdeep=strtoul(visible.substr(k0+1,k1-(k0+1)).c_str(),0,10);
+   }
+
+   std::deque<guint> s;
+   auffuellen_bool=false;
+   std::string order=Global_Settings(getuid(),mem_prog,mem_inst+":order").get_Wert();
+   for (std::string::size_type b=0;;)
+   {  std::string::size_type e=order.find(',',b);
+      if (e==std::string::npos) break;
+      s.push_back(strtoul(order.substr(b,e-b).c_str(),0,10));
+      b=e+1;
+   }
+   clicked_seq=s;
+   reihenfolge_anzeigen();
+   
+   auffuellen_bool=visible.find('a')!=std::string::npos;
+   delete menu;
+   menu=0;
+   fillMenu();
+#endif
+}

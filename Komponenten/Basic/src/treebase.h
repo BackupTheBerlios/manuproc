@@ -43,6 +43,7 @@ class TreeBase : public TCList
  bool auffuellen_bool:1; 
  bool expandieren_bool:1; 
  
+ std::string mem_prog,mem_inst;
  
  void Titles(Gtk::CheckMenuItem *titles);
  void Auffuellen(Gtk::CheckMenuItem *auffuellen);
@@ -61,6 +62,7 @@ class TreeBase : public TCList
  void insertIntoTCL(TCListRow_API *tclapi,const TreeBase &tb,
 		 	const cH_RowDataBase &d, std::deque<guint> q,guint deep);
  bool redisplay_recurse(TCListRow_API *a, const RowDataBase *r, guint col);
+ void reihenfolge_anzeigen();
  
 protected: 
  std::vector<cH_RowDataBase> datavec;
@@ -106,7 +108,7 @@ public:
  
  const std::deque<guint> &get_seq() const {return currseq;}
  void show_titles(bool show);
- void set_tree_column_visibility(int column,bool visible);
+ void set_tree_column_visibility(unsigned int column,bool visible);
  
  void clear();
  SigC::Signal1<void,cH_RowDataBase> leaf_selected;
@@ -194,6 +196,8 @@ private:
     }
  }
 
+ void save_remembered() const;
+ void load_remembered();
 public:
  template <class T> void selectMatchingLines(const T &t)
  {  selection().clear();
@@ -205,6 +209,8 @@ public:
  }
  template <class T> void ForEachLeaf(T &t) const
  {  ForEachLeaf2(begin(),end(),t); }
+ 
+ void set_remember(const std::string &program, const std::string &instance);
 };
 
 ///////////////////////////////////////////////////////////////////

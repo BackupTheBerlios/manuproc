@@ -30,6 +30,7 @@
 #ifdef MABELLA_EXTENSIONS
 #include <Aux/EAN.h>
 #endif
+#include <Aux/Global_Settings.h>
 
 exec sql include sqlca;
 
@@ -525,54 +526,27 @@ void ArtikelBox::insert_into_artikelzusammensetzung(int id, int id_jumbo, int pr
 ArtikelBoxAnzeige ArtikelBoxAnzeige::Laden(cH_ExtBezSchema schema)
 {  ArtikelBoxAnzeige res=ArtikelBoxAnzeige(schema);
 
-  exec sql begin declare section;
-   int db_uid, db_artikeltyp, db_schema, 
-       db_anzeige_pos, db_anzeige_neg, db_auswahl;
-   bool db_autocomplete, db_kombiniert;
-  exec sql end declare section;
-  db_uid=getuid();
-  db_artikeltyp=schema->Typ().Id();
-  db_schema=schema->Id();
-  exec sql select anzeige_pos, anzeige_neg, auswahl, autocomplete, kombiniert
-   into :db_anzeige_pos, :db_anzeige_neg, :db_auswahl, :db_autocomplete, :db_kombiniert
-   from artbez_anzeige 
-   where uid=:db_uid and artikeltyp=:db_artikeltyp and schema=:db_schema;
-  SQLerror::test(__FILELINE__,100);
-
-  if (!sqlca.sqlcode) 
-  {  res.anzeige_neg=db_anzeige_neg;
-     res.anzeige_pos=db_anzeige_pos;
-     res.auswahl=db_auswahl;
-     res.autocomplete=db_autocomplete;
-     res.kombiniert=db_kombiniert;
-  }
-  return res;  
+   std::string qual=itos(schema->Typ().Id())+"_"+itos(schema->Id());
+   std::string val=Global_Settings(getuid(),"ArtikelBox",qual).get_Wert();
+   if (!val.empty())
+   {  res.autocomplete=val.find('a')!=std::string::npos;
+         res.kombiniert=val.find('k')!=std::string::npos;
+         std::string::size_type komma1=val.find(','),komma2=std::string::npos;
+         if (komma1!=std::string::npos) komma2=val.find(',',komma1+1);
+         if (komma2!=std::string::npos)
+         {  res.anzeige_pos=strtol(val.substr(0,komma1).c_str(),0,10);
+std::cout << "AB: " << val << "->" << val.substr(komma1+1,komma2-(komma1+1)) << '\n';
+            res.anzeige_neg=strtol(val.substr(komma1+1,komma2-(komma1+1)).c_str(),0,10);
+         }
+   }
+   return res;
 }
 
 void ArtikelBoxAnzeige::Speichern() const
-{
-  exec sql begin declare section;
-   int db_uid, db_artikeltyp, db_schema, 
-       db_anzeige_pos, db_anzeige_neg, db_auswahl;
-   bool db_autocomplete, db_kombiniert;
-  exec sql end declare section;
-  
-  db_autocomplete=autocomplete; 
-  db_kombiniert=kombiniert; 
-  db_uid=getuid();
-  db_artikeltyp=schema->Typ();
-  db_schema=schema->Id();
-  db_anzeige_pos=anzeige_pos;
-  db_anzeige_neg=anzeige_neg;
-  db_auswahl=0;
-  
-  exec sql delete from artbez_anzeige where 
-      (uid,artikeltyp,schema)=(:db_uid,:db_artikeltyp,:db_schema);
-  exec sql insert into artbez_anzeige 
-      (uid,artikeltyp,schema,anzeige_pos,anzeige_neg,auswahl,autocomplete,kombiniert)
-   values
-      (:db_uid,:db_artikeltyp,:db_schema,:db_anzeige_pos,:db_anzeige_neg,:db_auswahl,:db_autocomplete,:db_kombiniert);
-  SQLerror::test(__FILELINE__);
+{  std::string qual=itos(schema->Typ().Id())+"_"+itos(schema->Id());
+   std::string val=itos(anzeige_pos)+','+itos(anzeige_neg)+','
+   	+(autocomplete?"a":"")+(kombiniert?"k":"");
+   Global_Settings::create(getuid(),"ArtikelBox",qual,val);
 }
 
 std::string ArtikelBox::Tabellenname(cH_ExtBezSchema s)

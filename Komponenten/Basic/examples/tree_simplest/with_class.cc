@@ -15,7 +15,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// $Id: with_class.cc,v 1.14 2002/06/24 07:45:24 christof Exp $
+// $Id: with_class.cc,v 1.15 2002/06/26 13:43:42 christof Exp $
 
 #include "config.h"
 #include "with_class.hh"
@@ -202,4 +202,5 @@ with_class::with_class()
       treebase->ForEachLeaf(of);
       std::cout << "=" << of.Sum() << '\n';
    }
+   treebase->set_remember("(example)","with_class");
 }

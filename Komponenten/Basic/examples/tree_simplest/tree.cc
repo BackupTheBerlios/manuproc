@@ -9,9 +9,15 @@
 
 #include "simplest.hh"
 #include "with_class.hh"
+#ifdef MANUPROC_WITH_DATABASE
+#  include <Misc/dbconnect.h>
+#endif
 
 int main(int argc, char **argv)
 {   
+#ifdef MANUPROC_WITH_DATABASE
+   Petig::dbconnect();
+#endif
    
    Gtk::Main m(&argc, &argv);
 //manage(new class simplest());
