@@ -1,4 +1,4 @@
-// $Id: checkInstanzen.cc,v 1.2 2003/01/08 09:46:57 christof Exp $
+// $Id: checkInstanzen.cc,v 1.3 2003/09/30 08:29:24 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -23,6 +23,13 @@
 #include <Misc/exception.h>
 #include <Auftrag/AuftragBase.h>
 #include <Kunde/Kunde.h>
+
+/*     b1 false   true
+b2 false  return  N E I N
+   true   return  OK
+*/
+
+// ok= !b1 || b2;
 
 void ausgabe(const std::string &s1, const std::string &s2, bool b1,bool b2)
 {
