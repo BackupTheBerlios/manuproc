@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.22 2002/12/11 11:47:48 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.23 2002/12/11 14:18:26 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -454,13 +454,55 @@ const UniqueValue::value_t SimpleTreeStore::trace_channel
       = ManuProC::Tracer::channels.get();
 
 void SimpleTreeStore::on_line_removed(cH_RowDataBase r)
-{
+{  std::list<Gtk::TreeStore::iterator> l=find_row(r);
+   if (l.begin()!=l.end())
+   {  ManuProC::Trace(trace_channel,__FUNCTION__,"depth=",l.size());
+      for (std::list<Gtk::TreeStore::iterator>::const_iterator i=l.rbegin();
+      		i!=l.rend();++i)
+      {  Handle<TreeRow> htr=(**i)[m_columns.row];
+         if (htr)
+         {  htr->deduct(r);
+            SummenAnzeigen(**i,htr);
+         }
+      }
+      m_refTreeStore->erase(*l.begin());
+      // TODO: we might be able to eliminate the nodes if they no longer
+      //   have children
+   }
 }
 
 void SimpleTreeStore::on_value_changed(cH_RowDataBase r,guint idx)
-{
+{  std::list<Gtk::TreeStore::iterator> l=find_row(r);
+   if (l.begin()!=l.end())
+   {  ManuProC::Trace(trace_channel,__FUNCTION__,l.size());
+   }
 }
 
-Gtk::TreeStore::iterator SimpleTreeStore::find_row(cH_RowDataBase r,bool optimize)
-{
+// optimize indicates we could binary search by value (possible optimization)
+// this is impossible, if a value has changed ...
+
+bool SimpleTreeStore::find_row(Gtk::TreeModel::Children parent, const cH_RowDataBase &r,bool optimize,std::list<Gtk::TreeStore::iterator> &result)
+{  for (iterator i= parent.begin(); i!=parent.end(); ++i)
+   {  Gtk::TreeModel::Children ch=i->children();
+      if (ch.begin()==ch.end())
+      {  cH_RowDataBase v2=(*i)[m_columns.leafdata];
+         if (&*v2==&*r) 
+         {  result.push_back(i);
+            return true;
+         }
+      }
+      else 
+      {  if (find_row(ch,r,optimize,result))
+         {  result.push_back(i);
+            return true;
+         }
+      }
+   }
+   return false;
+}
+
+std::list<Gtk::TreeStore::iterator> SimpleTreeStore::find_row(const cH_RowDataBase &r,bool optimize)
+{  std::list<Gtk::TreeStore::iterator> result;
+   find_row(m_refTreeStore->children(),r,optimize,result);
+   return result;
 }
