@@ -1,4 +1,4 @@
-// $Id: Preis.cc,v 1.16 2003/11/06 10:05:43 jacek Exp $
+// $Id: Preis.cc,v 1.17 2003/11/06 10:57:37 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,6 +25,7 @@
 #include <iomanip.h>
 #include <Misc/Ausgabe_neu.h>
 #include <utility>
+#include<ManuProCConfig.h>
 
 Preis::geldbetrag_t Preis::Wert_fr(const cP_Waehrung w,preismenge_t stueckgr) const throw()
 {  if (w==waehrung && (!stueckgr || stueckgr==preismenge)) 
