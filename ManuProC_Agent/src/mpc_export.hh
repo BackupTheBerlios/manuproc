@@ -18,5 +18,7 @@ class mpc_export : public mpc_export_glade
         void on_do_file_export_clicked();
         void on_do_file_send_clicked();
 	void set_entry_text(const std::string &s);
+public:
+ mpc_export();
 };
 #endif

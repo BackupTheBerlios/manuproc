@@ -63,7 +63,7 @@ class mpc_agent : public mpc_agent_glade
 public:
  mpc_agent();
  void export_xml(const std::string file);
-
+ int get_orderid() const { return orderid->Content();}
 
 };
 #endif

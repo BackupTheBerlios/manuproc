@@ -13,9 +13,16 @@
 #include <gtkmm/entry.h>
 #include "mpc_export.hh"
 #include "mpc_agent.hh"
-
+#include <Misc/itos.h>
 
 extern mpc_agent *mpca;
+
+mpc_export::mpc_export()
+{
+ std::string fname("mpca_");
+ fname=fname+itos(VERKNR)+"_"+itos(mpca->get_orderid())+".xml";
+ export_file_name->set_text(fname);
+}
 
 void mpc_export::set_entry_text(const std::string &s)
 {
