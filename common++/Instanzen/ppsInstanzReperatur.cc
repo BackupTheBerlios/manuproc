@@ -26,7 +26,7 @@
 #include <sqlca.h>
 #include <Auftrag/AufEintragZuMengenAenderung.h>
 #include <Aux/Transaction.h>
-
+#include <Misc/relops.h>
 
 
 bool ppsInstanz::ReparaturK_Kundenzuordnung(const int uid,const bool analyse_only) const
@@ -119,7 +119,7 @@ bool ppsInstanz::ReparaturD_0_ZuSumme_1(const int uid,const bool analyse_only) c
 bool ppsInstanz::ReparaturE_2_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror)
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
-  if(LagerInstanz()) {cout << "Sinnlos für LagerInstanz\n"; return true;}
+  if(LagerInstanz()) {std::cout << "Sinnlos für LagerInstanz\n"; return true;}
   else
      return Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::dispo_auftrag_id,true,Egeplant);
 }
@@ -127,7 +127,7 @@ bool ppsInstanz::ReparaturE_2_ZuSumme_1(const int uid,const bool analyse_only) c
 bool ppsInstanz::ReparaturF_2_ZuSumme_1Rest(const int uid,const bool analyse_only) const throw(SQLerror)
 {
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,Name(),Id());
-  if(LagerInstanz()) {cout << "Sinnlos für LagerInstanz\n"; return true;}
+  if(LagerInstanz()) {std::cout << "Sinnlos für LagerInstanz\n"; return true;}
   else
      return Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::plan_auftrag_id,false,Fdispo);
 }
@@ -156,7 +156,7 @@ bool ppsInstanz::Reparatur_Zuordnungen(const int uid,const bool analyse_only,
                            break;}
          case Fdispo:     L=AufEintragZu(*i).get_Referenz_list_dispo(kinder); break;
         }
-cout << *i<<"\tChild-LSize="<<L.size()<<'\n';
+std::cout << *i<<"\tChild-LSize="<<L.size()<<'\n';
       for(std::list<AufEintragZu::st_reflist>::const_iterator j=L.begin();j!=L.end();++j)
         {
           if(j->AEB.Id()==AuftragBase::ungeplante_id) M0sum+=j->Menge;
@@ -177,7 +177,7 @@ bool ppsInstanz::check_D_ungeplant(const bool analyse_only,const AufEintrag &AE,
   if(AE.getGeliefert() <= M0sum) return check_E_geplant(analyse_only,AE,Msum);
   else if(Msum>AE.getStueck())
    { 
-cout << Msum<<'\t'<<AE.getStueck()<<'\t'<<AE.getRestStk()<<'\n';
+std::cout << Msum<<'\t'<<AE.getStueck()<<'\t'<<AE.getRestStk()<<'\n';
      if(analyse_only) analyse("Zuord.-Summen ist größer als Auftragssumme",AE,Msum,AE.getStueck());
      else assert(!"nicht implementiert\n");
      return false;
@@ -189,7 +189,7 @@ bool ppsInstanz::check_E_geplant(const bool analyse_only,const AufEintrag &AE,co
 {
   if(Msum!=AE.getStueck())
    { 
-cout << Msum<<'\t'<<AE.getStueck()<<'\t'<<AE.getRestStk()<<'\n';
+std::cout << Msum<<'\t'<<AE.getStueck()<<'\t'<<AE.getRestStk()<<'\n';
      if(analyse_only) std::cout << "Analyse: Zuord.-Summen ("<<Msum<<") stimmen nicht ("<<AE.getStueck()<<") für "<<AE<<'\n';
      else assert(!"nicht implementiert\n");
      return false;
@@ -222,7 +222,7 @@ void ppsInstanz::Reparatur_0er_und_2er(const int uid,const bool analyse_only) co
    for(SelectedFullAufList::iterator i=AL.begin();i!=AL.end();++i)
     {
       SQLFullAuftragSelector sel2er;
-      if(PlanungsInstanz()) {cerr<<"U N G E T E S T E T für PlanungsInstenz\n"; continue;}
+      if(PlanungsInstanz()) {std::cerr<<"U N G E T E S T E T für PlanungsInstenz\n"; continue;}
       if(LagerInstanz())
          sel2er=SQLFullAuftragSelector::sel_Artikel_Planung_id(Id(),Kunde::eigene_id,i->Artikel(),AuftragBase::dispo_auftrag_id,OPEN,LagerBase::Lagerdatum());
       else 
@@ -236,9 +236,9 @@ void ppsInstanz::Reparatur_0er_und_2er(const int uid,const bool analyse_only) co
          AuftragBase::mengen_t M=AuftragBase::min(menge0er,j->getStueck());
          if(M==0) continue;
          AuftragBase zielauftrag(Id(),AuftragBase::plan_auftrag_id);
-cout << "RepLan: "<<*i<<'\t'<<zielauftrag<<"Menge: "<<M<<'\n';
+std::cout << "RepLan: "<<*i<<'\t'<<zielauftrag<<"Menge: "<<M<<'\n';
          if(analyse_only)
-           cout << "Analyse: Planen von "<<*i<<"  nach  "<<zielauftrag<<"\tMenge: "<<M<<'\n';
+           std::cout << "Analyse: Planen von "<<*i<<"  nach  "<<zielauftrag<<"\tMenge: "<<M<<'\n';
          else
           {
             int znr=i->Planen(uid,M,zielauftrag,i->getLieferdatum(),ManuProC::Auftrag::r_Reparatur);
@@ -394,7 +394,7 @@ void ppsInstanz::vormerkungen_subrahieren(int uid,const  std::vector<LagerInhalt
 //std::cout << "\t"<<AufEintragBase(*j)<<'\t'<<j->getRestStk()<<'\t'<<menge<<'\n';
 //std::cout << "\t\tReparaturMenge: "<<-menge<<'\n';
             if(analyse_only)
-              cout << "Analyse: Mengenupdate von "<<*j<<" Menge:"<<menge<<'\n';
+              std::cout << "Analyse: Mengenupdate von "<<*j<<" Menge:"<<menge<<'\n';
             else
              {
                j->updateStkDiffBase__(uid,menge);
@@ -415,7 +415,7 @@ void ppsInstanz::vormerkungen_subrahieren(int uid,const  std::vector<LagerInhalt
          if(set_dispo_to_zero)
           {
             if(analyse_only)
-              cout << "Analyse: Mengenupdate von "<<*j<<" Menge:"<<-j->getStueck()<<'\n';
+              std::cout << "Analyse: Mengenupdate von "<<*j<<" Menge:"<<-j->getStueck()<<'\n';
             else
               j->updateStkDiffBase__(uid,-j->getStueck());
           }
@@ -423,7 +423,7 @@ void ppsInstanz::vormerkungen_subrahieren(int uid,const  std::vector<LagerInhalt
      if(menge!=0 && !set_dispo_to_zero) 
       {
         if(analyse_only)
-             cout << "Analyse: DispoAufträge_anlegen: "<<Name()<<'\t'<<i->Artikel()<<"\tMenge:"<<menge<<'\n';
+             std::cout << "Analyse: DispoAufträge_anlegen: "<<Name()<<'\t'<<i->Artikel()<<"\tMenge:"<<menge<<'\n';
         else
             DispoAuftraege_anlegen(uid,i->Artikel(),menge);
       }
@@ -463,7 +463,7 @@ std::vector<LagerInhalt> ppsInstanz::getLagerInhalt() const
 
 void ppsInstanz::analyse(const std::string &s,const AufEintrag &AE,const std::string &x,const std::string &y) const
 {
-  cout<<"Fehler Analyse: " << AE <<"  => "<<s<<"\t("<<x<<"), ("<<y<<")\n";
+  std::cout<<"Fehler Analyse: " << AE <<"  => "<<s<<"\t("<<x<<"), ("<<y<<")\n";
 }
 
 void ppsInstanz::analyse(const std::string &s,const AufEintrag &AE,const ABmt &x,const ABmt &y) const
