@@ -1,4 +1,4 @@
-// $Id: ModelPlex.h,v 1.1 2003/09/03 07:48:58 christof Exp $
+// $Id: ModelPlex.h,v 1.2 2003/09/03 08:03:27 christof Exp $
 /*  libcommon++: ManuProC's OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -50,33 +50,36 @@ template <class T>
 	SigC::Connection mv_con, cm_con;
 	Model_ref<T> actmodel;
 
-	void model2view()
-	{  cm_con.block();
-	   if (Value()!=actmodel.Value()) // do not fire if unchanged
-	      Value()=actmodel.Value(); 
-	   cm_con.unblock();
-	}
-	void controller2model(void *x)
+	// model ist actmodel, we+we ist this
+	void we2actmodel(void *x)
 	{  mv_con.block();
-	   if (!!actmodel) actmodel=Value();
+	   if (actmodel.valid()) actmodel=Value();
            mv_con.unblock();
 	}
-	void refresh(void *x)
-	{  if (actmodel.matches(x)) 
-	      model2view();
+	void actmodel2us()
+	{  cm_con.block();
+	   if (Value()!=actmodel.Value()) // do not fire if unchanged
+	      *this=actmodel.Value(); 
+	   cm_con.unblock();
+	}
+	void actmodel_value_changed(void *x)
+	{  if (actmodel.matches(x)) actmodel2us();
 	}
 
 public:
 	ModelPlex(const Model_ref<T> &m=Model_ref<T>())
-	{ cm_con=signal_changed().connect(SigC::slot(*this,&this_t::controller2model));
+	{ cm_con=signal_changed().connect(
+			SigC::slot(*this,&this_t::we2actmodel));
 	  if (m.valid()) set_model(m); 
 	}
 
 	void set_model(const Model_ref<T> &m)
 	{  mv_con.disconnect();
 	   actmodel=m;
-	   model2view();
-	   mv_con=actmodel.signal_changed().connect(SigC::slot(*this,&this_t::refresh));
+	   actmodel2us();
+	   if (actmodel.valid())
+	      mv_con=actmodel.signal_changed().connect(
+	      		SigC::slot(*this,&this_t::actmodel_value_changed));
 	}
 	
 	const T &operator=(const T &v)

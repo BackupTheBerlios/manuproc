@@ -1,4 +1,4 @@
-// $Id: mvc.cc,v 1.10 2003/09/03 07:48:58 christof Exp $
+// $Id: mvc.cc,v 1.11 2003/09/03 08:03:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -101,9 +101,8 @@ int main()
    { std::cout << "Multiplexer test\n";
      Model<int> model(2),model2(4);
      ModelPlex<int> plex;
-     View_int view(plex),view2(model);
+     View_int view(plex); // ,view2(model);
      plex.set_model(model);
-     model=6;
      plex=7;
      plex.set_model(model2);
      model2=1;
