@@ -18,6 +18,7 @@
 
 #include "FertigWarenLager.h"
 #include <Misc/Transaction.h>
+#include <Misc/TraceNV.h>
 
 std::pair<Zeitpunkt_new,int> FertigWarenLager::letzteInventur()
 {
@@ -83,6 +84,10 @@ std::vector<class LagerInhalt> FertigWarenLager::LagerInhalt_
 
 void FertigWarenLager::Buchen(FertigWaren::e_buchen buchen)
 {
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
+	NV("buchen",int(buchen)),NV("artikel",fw.Artikel()),
+	NV("menge",fw.Stk(buchen)),
+     	NV("aktion",char(fw.Aktion())));
  assert(fw.Artikel().Id() != ArtikelBase::none_id);
 
  Zeitpunkt_new z;

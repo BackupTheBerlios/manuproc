@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.42 2003/09/09 07:33:59 christof Exp $
+// $Id: Lager.cc,v 1.43 2003/11/26 17:16:34 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -84,6 +84,9 @@ void Lager::raus_aus_lager(const ArtikelBase &artikel,
 	AuftragBase::mengen_t menge,bool fuer_auftrag,
 	        const ProductionContext &ctx) const
 {  
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
+	NV("artikel",artikel),NV("menge",menge),
+     	NV("fuer_auftrag",fuer_auftrag),NV("ctx",ctx));
 #ifndef MABELLA_LAGERHACK
 
 #ifdef MABELLA_EXTENSIONS
