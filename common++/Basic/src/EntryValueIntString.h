@@ -1,4 +1,4 @@
-/* $Id: EntryValueIntString.h,v 1.11 2002/12/05 10:07:03 thoma Exp $ */
+/* $Id: EntryValueIntString.h,v 1.12 2003/03/24 13:35:19 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,6 +21,7 @@
 #define ENTRYVALUEINTSTRING_H
 
 #include <Misc/EntryValueBase.h>
+#include <Misc/compiler_ports.h>
 
 class EntryValueIntString : public EntryValueBase
 {
@@ -34,10 +35,13 @@ public:
    {}
  EntryValueIntString(int v);
  EntryValueIntString(const std::string &s);
+ EntryValueIntString(int v, const std::string &s) 
+ 	: intval(v), strval(s) {}
    
  virtual int getIntVal() const { return intval;}
  virtual const std::string getStrVal() const { return strval;}
- virtual bool getBoolVal() const { return strval=="t";}
+ // CP: völliger Unsinn, sollte besser ein EntryValueBool (zu schreiben) sein 
+ virtual __deprecated bool getBoolVal() const { return strval=="t";}
 };
 
 class cH_EntryValueIntString : public cH_EntryValue
@@ -46,7 +50,7 @@ public:
  cH_EntryValueIntString() : cH_EntryValue(new EntryValueIntString()) {}
  cH_EntryValueIntString(int v) : cH_EntryValue(new EntryValueIntString(v)) {}
  cH_EntryValueIntString(const std::string &s) : cH_EntryValue(new EntryValueIntString(s)) {}
+ cH_EntryValueIntString(int v,const std::string &s) : cH_EntryValue(new EntryValueIntString(v,s)) {}
 };
   
 #endif // ENTRYVALH
-
