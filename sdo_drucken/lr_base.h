@@ -52,7 +52,7 @@ public:
 			     break;     
 			case Intern : return std::string("Intern"); break;
 //			case Extern : return std::string("Bestellung \\small Nr."); break;
-			case Extern : return std::string("Bestellung"); break;
+			case Extern : return mld->MLT(MultiL_Dict::BESTELLUNG); break;
 			case NICHTS : default : return std::string("-");
 			}
 		}
