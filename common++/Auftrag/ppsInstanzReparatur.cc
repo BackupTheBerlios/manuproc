@@ -79,8 +79,8 @@ bool ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al, const b
                 M_rest-=M2;
                 if(!M_rest) break;
              }
-             if (!!M_rest) analyse("Programmfehler: Es ist ein Rest geblieben",*i,M_rest);
-             assert(!M_rest);
+             if (!!M_rest) analyse("Fehler: Der 0er hat nicht genügend Eltern",*i,M_rest);
+             assert(AuftragBase::tolerate_inconsistency || !M_rest);
           }
          menge0er-=M;
          if(!menge0er) break;

@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.44 2003/06/24 09:31:58 christof Exp $
+// $Id: adjust_store.cc,v 1.45 2003/06/24 10:16:41 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -64,7 +64,7 @@ static void usage(const std::string &s)
 }
 
 static bool check_for(const std::string &pname,cH_ppsInstanz I,const bool analyse_only)
-{   
+{  AuftragBase::tolerate_inconsistency=true;
    ppsInstanzReparatur RI(I->Id());
    bool alles_ok=true;
     if (actions&b_physical)
@@ -79,13 +79,16 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,const bool analys
       else if (!(actions&b_tree)) // Meldung bei * unterdrücken
          std::cout << "\t"<< I << " 'A' nicht sinnvoll\n";
      }
+   reload:
     if (actions&b_tree || actions&b_exclude)
     {  SQLFullAuftragSelector psel=SQLFullAuftragSelector::sel_InstanzAlle(I->Id());
        SelectedFullAufList K(psel);
-      if (actions&b_exclude) alles_ok&=RI.Reparatur_0er_und_2er(K,analyse_only);
+      if (actions&b_exclude) 
+      {  alles_ok&=RI.Reparatur_0er_und_2er(K,analyse_only);
+         // if (!alles_ok) goto reload; // eigentlich verändert diese F. K
+      }
       if (actions&b_tree)
-      {AuftragBase::tolerate_inconsistency=true;
-       try
+      {try
        {for(SelectedFullAufList::iterator i = K.begin();i!=K.end(); ++i)
         {  AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(*i,
        			AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
