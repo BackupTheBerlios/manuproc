@@ -1,4 +1,4 @@
-// $Id: Preis.cc,v 1.22 2003/11/19 09:03:07 jacek Exp $
+// $Id: Preis.cc,v 1.23 2004/01/23 09:46:38 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,7 +28,9 @@
 #include<ManuProCConfig.h>
 
 Preis::geldbetrag_t Preis::Wert_fr(const cP_Waehrung w,preismenge_t stueckgr) const throw()
-{  if (w==waehrung && (!stueckgr || stueckgr==preismenge)) 
+{  
+// if (w==waehrung && (!stueckgr || stueckgr==preismenge)) 
+  if (w==waehrung && stueckgr==preismenge) 
 	return pfennig_cent;
 
    float result=pfennig_cent.as_float();
@@ -36,7 +38,7 @@ Preis::geldbetrag_t Preis::Wert_fr(const cP_Waehrung w,preismenge_t stueckgr) co
    if (!preism) preism=1;
 // Währung und Stückgröße werden zusammen umgerechnet und dann erst gerundet
    if (w!=waehrung) result*=Waehrung::Umrechnung(*waehrung,*w);
-   if (stueckgr>0 && preism!=stueckgr) result*=stueckgr.as_float()/preism.as_float();
+   if (stueckgr>=0 && preism!=stueckgr) result*=stueckgr.as_float()/preism.as_float();
    return result; // erst hier wird wieder gerundet!
 }
 
