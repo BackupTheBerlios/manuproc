@@ -1056,7 +1056,12 @@ catch(SQLerror &e)
 
 void auftrag_bearbeiten::on_rueckstand_clicked()
 {
- std::string command = "auftrag_drucken -a Auftrag -R -n "+itos(auftrag->Id())+
+ std::string typ;
+ if(instanz->ExterneBestellung()) typ="Extern";
+ else typ="Auftrag";
+
+ std::string command = std::string("auftrag_drucken -a ")+typ+
+	" -R -n "+itos(auftrag->Id())+
    	" -p -i " + itos(instanz->Id());
    system(command.c_str());  
 }
