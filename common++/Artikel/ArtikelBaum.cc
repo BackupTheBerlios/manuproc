@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.cc,v 1.12 2003/11/14 15:08:43 christof Exp $
+// $Id: ArtikelBaum.cc,v 1.13 2003/11/17 10:06:36 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,6 +21,7 @@
 #include <Artikel/ArtikelStamm.h>
 #include <Misc/FetchIStream_fixedpoint.h>
 #include <Misc/compiler_ports.h>
+#include <unistd.h>
 
 #ifdef PETIG_EXTENSIONS
 #include <Artikel/ArtikelBezeichnung.h>
