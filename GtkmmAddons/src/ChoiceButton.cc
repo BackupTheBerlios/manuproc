@@ -20,7 +20,7 @@
 #include <gtkmm/box.h>
 #include <gtkmm/menuitem.h>
 
-ManuProC::ChoiceButton::ChoiceButton()
+ManuProC::ChoiceButton::ChoiceButton(bool tearoff)
 	: actual_index(0), image(0), label(0), menu(0)
 {  Gtk::VBox *vbox=manage(new Gtk::VBox());
    DoubleButton::add(*vbox);
@@ -67,7 +67,8 @@ void ManuProC::ChoiceButton::on_button_pressed()
 
 void ManuProC::ChoiceButton::on_sbutton_pressed(int mbutton)
 {  // menu zeigen
-   menu->popup(mbutton,0);
+   if (mbutton!=1) menu->popup(mbutton,0);
+   else menu->popup(0,0);
 }
 
 void ManuProC::ChoiceButton::on_menuitem_selected(unsigned idx)

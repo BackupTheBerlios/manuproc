@@ -45,12 +45,13 @@ class ChoiceButton : public DoubleButton
 	void on_menuitem_selected(unsigned idx);
  
 public:
-	ChoiceButton();
+	ChoiceButton(bool tearoff=true);
 	~ChoiceButton();
 	void add(const Glib::RefPtr<Gdk::Pixbuf> &image, const Glib::ustring &text, const SigC::Slot0<void> &callback);
 	unsigned get_index() const { return actual_index; }
 	void set_index(unsigned idx);
 	void set_style(bool image=true, bool text=false);
+	void set_tearoff_title(const Glib::ustring &title);
 };
 
 }
