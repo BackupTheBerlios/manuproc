@@ -31,6 +31,7 @@ void auftrag_rechnung::on_rngnr_search(int *_continue, GtkSCContext newsearch)
  char RNGIDSTR[10];
  char *PAT;
  int KUNDE;
+ char RNGART;
  exec sql end declare section;
  static Transaction tr("",false);
   
@@ -45,7 +46,7 @@ void auftrag_rechnung::on_rngnr_search(int *_continue, GtkSCContext newsearch)
        tr.open();
                    
        exec sql declare RNGNR_CURSOR cursor for
-       		select rngid, ltrim(to_char(rngid,'000000'))
+       		select rngid, ltrim(to_char(rngid,'000000')),rngart
        		from rechnung where
        		ltrim(to_char(rngid,'000000')) like :PAT
        		and (:KUNDE<1 or kundennr=:KUNDE)
@@ -56,12 +57,12 @@ void auftrag_rechnung::on_rngnr_search(int *_continue, GtkSCContext newsearch)
       } 							
   case GTK_SEARCH_FETCH :
        {
-        exec sql fetch RNGNR_CURSOR into :RNGID, :RNGIDSTR;
+        exec sql fetch RNGNR_CURSOR into :RNGID, :RNGIDSTR, :RNGART;
 	SQLerror::test(__FILELINE__":on_rngnr_search: "
 			" fetch cursor RNGNR_CURSOR","RNGNR_CURSOR",100);
 			
 	if(sqlca.sqlcode==100){*_continue=false; break; }
-	
+	if(RNGART!='R') {RNGIDSTR[6]=RNGART; RNGIDSTR[7]=0;}
 	rngnr->add_item(RNGIDSTR,RNGID);
 	*_continue=true;
         break;
