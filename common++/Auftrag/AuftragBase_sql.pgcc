@@ -26,63 +26,8 @@
 #include <Auftrag/AufEintragZu.h>
 #include <Misc/TraceNV.h>
 #include <Auftrag/VerfuegbareMenge.h>
-#include <Misc/FetchIStream_fixedpoint.h>
 
 exec sql include sqlca;
-
-// aufid sollte string sein (es ist immerhin youraufnr gemeint)
-AuftragBase::AuftragBase(cH_ppsInstanz _instanz, ID aufid,Kunde::ID kid) throw(SQLerror)
-: instanz(_instanz),auftragid(none_id)
-{
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
- Query("select auftragid from auftrag "
- 	"where instanz=? and kundennr=? and youraufnr=?")
- 	<< instanz->Id() << kid << aufid
- 	>> auftragid;
-}
-
-Query &operator<<(Query &q, const AuftragBase &ab)
-{  return q << ab.InstanzID() << ab.Id();
-}
-
-bool AuftragBase::Exists() const throw(SQLerror)
-{
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
- return (Query("select exists(select true from auftrag "
- 		"where (instanz,auftragid)=(?,?))").lvalue()
- 	<< *this)
- 	.FetchOne<bool>();
-}
-
-void AuftragBase::create_if_not_exists(AufStatVal status,Kunde::ID kunde) const
-{
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Status",status),NV("Kunde",kunde));
-  if(Exists()) return;
-  Query("insert into auftrag (instanz,auftragid,kundennr,stat) "
-  	"values (?,?,?,?)").lvalue()
-  	<< *this << kunde << status;
- SQLerror::test(__FILELINE__);
-}
-
-
-void AuftragBase::setStatusAuftragBase(AufStatVal st) const throw(SQLerror)
-{
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Status",st));
- Query("update auftrag set stat=? where (instanz,auftragid)=(?,?)").lvalue()
- 	<< st << *this;
- SQLerror::test(__FILELINE__"Status setzen");
-}
-
-
-void AuftragBase::setRabatt(const rabatt_t auftragsrabatt) const throw(SQLerror)
-{
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
- Query("update auftrag set rabatt=? where (instanz,auftragid)=(?,?)").lvalue()
- 	<< auftragsrabatt << *this;
- SQLerror::test(__FILELINE__"Rabatt setzen");
-}
-
-// braucht irgendjemand newznr?, sonst könnte ein join wegfallen!!!
 
 bool AuftragBase::existEntry(const ArtikelBase& artikel,
                              const ManuProC::Datum& lieferdatum,

@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.30 2003/03/13 08:19:54 christof Exp $
+// $Id: AuftragBase.cc,v 1.31 2003/03/19 08:31:49 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -29,6 +29,7 @@
 #include <Auftrag/AufEintragZu.h>
 #include <Misc/TraceNV.h>
 #include <Lager/Lager.h>
+#include <Misc/FetchIStream_ops.h>
 
 std::string AuftragBase::str() const
 {
@@ -110,9 +111,9 @@ int AuftragBase::PassendeZeile(const ManuProC::Datum lieferdatum,const ArtikelBa
     create_if_not_exists(status);
  }
  
- int znr=ManuProcEntity<>::none_id,neuznr=ManuProcEntity<>::none_id;
  mengen_t dummy=0;
- if(!existEntry(artikel,lieferdatum,znr,neuznr,dummy,status))
+ int znr=existEntry(artikel,lieferdatum,status,dummy);
+ if(znr==none_id)
   { Auftrag A(*this);
     AufEintragBase newaeb=A.push_back(0,lieferdatum,artikel,status,uid,false);
     znr=newaeb.ZNr();
@@ -149,3 +150,74 @@ int AuftragBase::BestellmengeAendern(mengen_t deltamenge,
   tr.commit();
   return NeuAEB.ZNr();
 }
+
+// aufid sollte string sein (es ist immerhin youraufnr gemeint)
+AuftragBase::AuftragBase(cH_ppsInstanz _instanz, ID aufid,Kunde::ID kid) throw(SQLerror)
+: instanz(_instanz),auftragid(none_id)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
+ Query("select auftragid from auftrag "
+ 	"where instanz=? and kundennr=? and youraufnr=?")
+ 	<< instanz->Id() << kid << aufid
+ 	>> auftragid;
+}
+
+Query &operator<<(Query &q, const AuftragBase &ab)
+{  return q << ab.InstanzID() << ab.Id();
+}
+
+bool AuftragBase::Exists() const throw(SQLerror)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
+ return (Query("select exists(select true from auftrag "
+ 		"where (instanz,auftragid)=(?,?))").lvalue()
+ 	<< *this)
+ 	.FetchOne<bool>();
+}
+
+void AuftragBase::create_if_not_exists(AufStatVal status,Kunde::ID kunde) const
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Status",status),NV("Kunde",kunde));
+  if(Exists()) return;
+  Query("insert into auftrag (instanz,auftragid,kundennr,stat) "
+  	"values (?,?,?,?)").lvalue()
+  	<< *this << kunde << status;
+ SQLerror::test(__FILELINE__);
+}
+
+
+void AuftragBase::setStatusAuftragBase(AufStatVal st) const throw(SQLerror)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Status",st));
+ Query("update auftrag set stat=? where (instanz,auftragid)=(?,?)").lvalue()
+ 	<< st << *this;
+ SQLerror::test(__FILELINE__"Status setzen");
+}
+
+
+void AuftragBase::setRabatt(const rabatt_t auftragsrabatt) const throw(SQLerror)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
+ Query("update auftrag set rabatt=? where (instanz,auftragid)=(?,?)").lvalue()
+ 	<< auftragsrabatt << *this;
+ SQLerror::test(__FILELINE__"Rabatt setzen");
+}
+
+int AuftragBase::existEntry(const ArtikelBase& artikel, const ManuProC::Datum& lieferdatum,
+                             AufStatVal status, mengen_t& menge_out) const throw()
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
+         NV("Artikel",artikel),NV("LieferDatum",lieferdatum),NV("Status",status));
+   int ZEILENNR;
+ try
+ {  Query("select zeilennr,bestellt from auftragentry "
+	"where (instanz,auftragid)= (?,?) and "
+        "lieferdate=? and artikelid=? and status=? limit 1").lvalue()
+        << *this << lieferdatum << artikel.Id() << status
+        >> ZEILENNR >> menge_out;
+     return ZEILENNR;
+ } catch (SQLerror &e)
+ {  return none_id;
+ }
+}
+

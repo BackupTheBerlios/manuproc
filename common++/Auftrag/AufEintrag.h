@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.37 2003/03/17 13:35:42 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.38 2003/03/19 08:31:49 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -208,10 +208,9 @@ public:
  ArtikelBase Artikel() const {return artikel;}
 
 // einen Teil des Auftrages=0 verplanen (in anderen Auftrag<>0 setzen)
-// gibt Zeilennummer zurück; rekursiv = alle Instanzen darunter auch planen,
+// gibt neue Zeile zurück; rekursiv = alle Instanzen darunter auch planen,
 // rekursiv wird asuschließlich vom Erfassungs/Reperaturprogramm verwendet
-// Wenn 'reduce_old=true' wird von *this die Menge reduziert
- int Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
+ AufEintragBase Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
       const ManuProC::Datum &datum, ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Planen,
          AufEintragBase *verplanter_aeb=0,bool rekursiv=false) throw(std::exception);
  __deprecated void ProduktionsPlanung(int uid,mengen_t menge,const AuftragBase &zielauftrag,

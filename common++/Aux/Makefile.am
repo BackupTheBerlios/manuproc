@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.32 2003/03/13 08:30:22 christof Exp $
+# $Id: Makefile.am,v 1.33 2003/03/19 08:31:49 christof Exp $
 
 AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -21,7 +21,7 @@ libAux_a_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
 		exception.cc itos.cc EntryValueDatum.cc Handles.cc EAN.cc \
 		EntryValueQuartal.cc Trace.cc FetchIStream_ops.cc \
 		dbcapability.cc Tag.cc TagStream.cc \
-		multi_lang.cc
+		multi_lang.cc EntryValueTimeStamp.cc
 		
 
 libAux.a: $(libAux_a_OBJECTS) $(libAux_a_DEPENDENCIES)
@@ -42,7 +42,7 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
    EntryValueDatum.cc EmptyInt_4TeX.h EntryValueFixed.h Long.h \
    Trace.h Trace.cc relops.h EntryValueFixedEinheit.h UniqueValue.h \
    compiler_ports.h FILEstream.h TagStream.cc TagStream.h Tag.cc Tag.h \
-   TraceNV.h TimeStamp.h
+   TraceNV.h TimeStamp.h EntryValueTimeStamp.cc EntryValueTimeStamp.h
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
@@ -63,7 +63,7 @@ include_HEADERS=Ausgabe.h Ausgabe_neu.h Datum.h \
 		EntryValueFixed.h Global_Settings.h EAN.h AdminProblems.h \
 		EntryValueQuartal.h EntryValueFixedEinheit.h \
 		dbcapability.h \
-		multi_lang.h
+		multi_lang.h EntryValueTimeStamp.h
 
 CLEANFILES= *~ $(BUILT_SOURCES)
 

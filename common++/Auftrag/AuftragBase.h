@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.43 2003/03/12 09:06:29 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.44 2003/03/19 08:31:49 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -110,10 +110,13 @@ public:
 // Iiii bah - überprüfen!
 // zu viele merkwürdige Argumente
    // -> BestellmengeAendern ??? PassendeZeile?
-   bool existEntry(const ArtikelBase& artid,
+   __deprecated bool existEntry(const ArtikelBase& artid,
                         const ManuProC::Datum& lieferdatum,
                         int& znr,int &newznr, mengen_t& menge, const AufStatVal status
                         ) const throw(SQLerror);
+   // gibt Zeilennr zurück
+   int existEntry(const ArtikelBase& artid, const ManuProC::Datum& lieferdatum,
+                  const AufStatVal status, mengen_t& menge_out) const throw();
 };
 
 std::ostream &operator<<(std::ostream &o,const AuftragBase &a);

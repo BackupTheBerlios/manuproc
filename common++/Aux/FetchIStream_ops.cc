@@ -1,4 +1,4 @@
-// $Id: FetchIStream_ops.cc,v 1.4 2003/01/20 14:15:57 christof Exp $
+// $Id: FetchIStream_ops.cc,v 1.5 2003/03/19 08:31:49 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <Misc/FetchIStream_ops.h>
+#include <Misc/FetchIStream.h>
 #include <Misc/Datum.h>
 #include <Misc/Zeitpunkt_new.h>
 
