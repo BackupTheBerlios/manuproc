@@ -1,4 +1,4 @@
-/* $Id: Adresse.h,v 1.9 2003/06/25 12:40:04 jacek Exp $ */
+/* $Id: Adresse.h,v 1.10 2003/06/25 13:09:00 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -47,6 +47,7 @@ class Adresse
    const std::string Plz() const { return PLZ;}
    const std::string PostAnwVor() const { return postanwvor; }
    const std::string PostAnwNach() const { return postanwnach; }   
+   const std::string Lkz() const { return lkz; }
  
 #warning alte Methoden; bitte ersetzen
 // sollen weg
