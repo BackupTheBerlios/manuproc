@@ -1,4 +1,4 @@
-// $Id: Event.cc,v 1.1 2003/05/11 22:09:28 christof Exp $
+// $Id: Event.cc,v 1.2 2003/05/12 06:37:03 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -32,4 +32,5 @@ void ManuProC::Event::connect_glib(bool ignore_old)
 {  ManuProC::Event::connect(ignore_old);
    iosrc=Glib::IOSource::create(ManuProC::Event::filedesc(),Glib::IO_IN);
    iosrc->connect(&IOevent);
+   iosrc->attach(); // Glib::MainContext::get_default());
 }

@@ -1,4 +1,4 @@
-// $Id: Event.cc,v 1.1 2003/05/11 22:09:28 christof Exp $
+// $Id: Event.cc,v 1.2 2003/05/12 06:37:03 christof Exp $
 /*  ManuProcWidgets: ManuProC's GUI element library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -34,7 +34,7 @@ public:
 };
 
 MeinFenster::MeinFenster()
-  : Gtk::Window(Gtk::WINDOW_TOPLEVEL)
+  : Gtk::Window(Gtk::WINDOW_TOPLEVEL), label("noch kein Event")
 {  add(label);
    label.show();
    show();
@@ -42,7 +42,7 @@ MeinFenster::MeinFenster()
 }
 
 void MeinFenster::Callback(const std::string &a, const std::string &b, const std::string &c)
-{  label.set_text(a,"["+a+","+b+"] "+c);
+{  label.set_text("["+a+","+b+"] "+c);
 }
 
 int main(int argc, char **argv)
