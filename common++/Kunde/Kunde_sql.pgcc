@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.54 2004/03/19 16:17:16 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.55 2004/03/19 16:33:39 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -786,12 +786,13 @@ void Kunde::init_AuslandZahlung() const throw(SQLerror)
  SQLerror::test(__FILELINE__,100);
 
  if(sqlca.sqlcode==100)
-   {abi="";cab="";iban="";}
+   {abi="";cab="";iban="";acc="";}
  else
    {
     abi=std::string(ABI);
     cab=std::string(CAB);
     iban=std::string(IBAN);
+    acc=std::string(ACC);
 
     exec sql select bankname into :BANK from banken_abicab
 	where abi = :ABI;
@@ -805,35 +806,41 @@ void Kunde::init_AuslandZahlung() const throw(SQLerror)
  ECPGfree_auto_mem(); 
 }
 
-void Kunde::setABI_CAB(const std::string _abi, const std::string _cab) const throw(SQLerror)
+void Kunde::setABI_CAB(const std::string _abi, const std::string _cab,
+			const std::string _acc) const throw(SQLerror)
 {
  exec sql begin declare section;
  unsigned int KUNDENNR = entityid;
  char *CAB;
  char *ABI;
- int ICAB=0,IABI=0;
+ char *ACC;
+ int ICAB=0,IABI=0, IACC=0;
  exec sql end declare section;
 
  CAB=(char*)_cab.c_str();
  ABI=(char*)_abi.c_str();
+ ACC=(char*)_acc.c_str();
  
  if(_abi.empty()) IABI=-1;
  if(_cab.empty()) ICAB=-1;
+ if(_acc.empty()) IACC=-1;
 
  Transaction tr;
 
- exec sql update ausland_bankverbindung set cab=:CAB:ICAB, abi=:ABI:IABI 
+ exec sql update ausland_bankverbindung set cab=:CAB:ICAB, abi=:ABI:IABI,
+		account=:ACC:IACC
 	where kundennr= :KUNDENNR;
  SQLerror::test(__FILELINE__,100);
 
  if(sqlca.sqlcode)
    {exec sql insert into ausland_bankverbindung 
-	(kundennr,cab,abi) values (:KUNDENNR,:CAB,:ABI);
+	(kundennr,cab,abi,account) values (:KUNDENNR,:CAB,:ABI,:ACC);
     SQLerror::test(__FILELINE__);
    }
 
  abi=_abi;
  cab=_cab;
+ acc=_acc;
 
  tr.commit(); 
 }
