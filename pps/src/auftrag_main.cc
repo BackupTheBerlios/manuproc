@@ -447,8 +447,9 @@ void auftrag_main::set_column_titles_of_simple_tree()
  ct.push_back("Kunde");
 
  int i=0;
+ ExtBezSchema::const_sigiterator bezend=ebz->sigend(signif);
  for(ExtBezSchema::const_sigiterator bezit=ebz->sigbegin(signif); 
-	bezit!=ebz->sigend(signif); ++bezit,i++) 
+	bezit!=bezend; ++bezit,i++) 
    ct.push_back(bezit->bezkomptext);
  for(int j=i; j<4; j++) // auffüllen bis 4
    ct.push_back("");
@@ -1092,8 +1093,9 @@ void auftrag_main::on_offwarengrp_activate()
 
  int i=0;
  int bezidx=A1;
+ ExtBezSchema::const_sigiterator bezend=ebz->sigend(signif);
  for(ExtBezSchema::const_sigiterator bezit=ebz->sigbegin(signif); 
-	bezit!=ebz->sigend(signif); ++bezit,i++,bezidx++) 
+	bezit!=bezend; ++bezit,i++,bezidx++) 
 	maintree_s->setTitleAt(bezidx,bezit->bezkomptext);
 //   maintree_s->set_column_title(maintree_s->ColumnFromIndex(bezidx)
 //				,bezit->bezkomptext);
@@ -1103,4 +1105,5 @@ void auftrag_main::on_offwarengrp_activate()
 //				,"");
 
 }
+
 
