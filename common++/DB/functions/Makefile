@@ -8,9 +8,10 @@ CFLAGS=-Wall -fPIC  \
 	-I/usr/local/postgresql/include 
 
 ALL=auftrag_status.so artikelbezeichnung.so kw2date.so \
-	atoi.so artikelid.so
+	atoi.so artikelid.so 
 
 all: $(ALL)
+
 
 %.so: %.o
 	ld -shared -o $*.so $^
