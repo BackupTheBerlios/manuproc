@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.36 2002/11/25 15:21:52 thoma Exp $ */
+/* $Id: AuftragBase.h,v 1.37 2002/11/28 15:59:27 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -71,7 +71,7 @@ class AuftragBase
    void setRabatt(const rabatt_t auftragsrabatt) const throw(SQLerror);
 
 
-   static bool dispo_auftrag_aendern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,const mengen_t &menge) ;
+   static void dispo_auftrag_aendern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,const mengen_t &menge) ;
    static void menge_neu_verplanen(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
          const mengen_t &menge,const ManuProC::Auftrag::Action reason) throw(SQLerror);
    

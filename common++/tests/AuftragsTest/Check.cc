@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.20 2002/11/27 15:42:09 christof Exp $
+// $Id: Check.cc,v 1.21 2002/11/28 15:59:28 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -52,13 +52,13 @@ bool Check::teste(was_checken check,const std::string &zusatz, bool mit_reparatu
   for(std::vector<cH_ppsInstanz>::const_iterator i=VI.begin();i!=VI.end();++i)
    {
      if((*i)->KundenInstanz()) continue;
-     std::string com="../../Programme/adjust_store -i "+itos((*i)->Id())+" -a B";
-     system(com.c_str());
      if((*i)->LagerInstanz() && (*i)->EigeneLagerKlasseImplementiert())
       {
         std::string com="../../Programme/adjust_store -i "+itos((*i)->Id())+" -a A";
         system(com.c_str());
       }
+     std::string com="../../Programme/adjust_store -i "+itos((*i)->Id())+" -a B";
+     system(com.c_str());
      std::string com2="../../Programme/adjust_store -i "+itos((*i)->Id())+" -a C";
      system(com2.c_str());
    }  

@@ -1,4 +1,4 @@
-// $Id: DataBase_init.cc,v 1.8 2002/11/25 15:21:52 thoma Exp $
+// $Id: DataBase_init.cc,v 1.9 2002/11/28 15:59:28 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -85,8 +85,6 @@ void DataBase_init::RohwarenLager_initalisieren()
   LagerPlatz LP(ppsInstanzID::Rohwarenlager,ACETAT_LAGERPLATZ);
   RohwarenLager_initalisieren_execute(ARTIKEL_ACETAT,LP,ACETAT_KARTONS,ACETAT_KG_PRO_KARTON,ACETAT_RESTE,ACETAT_RESTE_KG);
 
-//  std::string com="../../Programme/adjust_store -d testdb -a A -i "+itos(ppsInstanzID::Rohwarenlager);
-//  system(com.c_str());
 }
 
 void DataBase_init::RohwarenLager_initalisieren_execute(const ArtikelBase &artikel,
@@ -106,6 +104,21 @@ void DataBase_init::RohwarenLager_initalisieren_execute(const ArtikelBase &artik
 #endif
 }
 
+void DataBase_init::createJumbo(const int diffmaschine,const int menge)
+{
+#ifdef MIT_BANDLAGER
+  Kette K(MASCHIENE+diffmaschine,SCHAERDATUM);
+  std::vector <ArtikelGang> artgang;
+  artgang.push_back(ArtikelGang(GAENGE,ARTIKEL_BANDLAGER));
+  KettplanKette KK=KettplanKette::create(K,artgang,menge,menge);
+  std::vector<JumboRolle> JR=JumboRolle::create(KK);
+  assert(JR.size()==1);
+  Zeitpunkt_new zp("2002-1-1 12:00");
+  class JumboLager JL;
+  JL.Jumbo_Einlagern(LagerPlatzJumbo,JR.front(),JumboLager::Einlagern,UID,"testuser",&zp);
+  SQLerror::test(__FILELINE__);
+#endif
+}
 
 
 void DataBase_init::JumboLager_initalisieren()
@@ -117,22 +130,7 @@ void DataBase_init::JumboLager_initalisieren()
                   +itos(MASCHIENE)+",'"+SCHAERDATUM.to_iso()+"')";
   Query::Execute(s2);
   SQLerror::test(__FILELINE__,100);
-#ifdef MIT_BANDLAGER
-  LagerPlatz LP(ppsInstanzID::Bandlager,JUMBO_LAGERPLATZ);
-  Kette K(MASCHIENE,SCHAERDATUM);
-  std::vector <ArtikelGang> artgang;
-  artgang.push_back(ArtikelGang(GAENGE,ARTIKEL_BANDLAGER));
-  KettplanKette KK=KettplanKette::create(K,artgang,KETTLAENGE,STUECKLAENGE);
-  vector<JumboRolle> JR=JumboRolle::create(KK);
-  assert(JR.size()==1);
-  class JumboLager JL;
-  Zeitpunkt_new zp("2002-1-1 12:00");
-  JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"testuser",&zp);
-  SQLerror::test(__FILELINE__);
-#endif
-
-//  std::string com="../../Programme/adjust_store -d testdb -a A -i "+itos(ppsInstanzID::Bandlager);
-//  system(com.c_str());
+  createJumbo(0,2000);
 }
 
 #endif

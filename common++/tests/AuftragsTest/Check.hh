@@ -61,7 +61,8 @@ class Check
                  LieferscheinZweiAufVoll,LieferscheinJacek0,ProduktionsPlanungWeberei,
                  ProduktionsPlanungEinkauf,
                  ZweiKundenTest_anlegen,ZweiKunden_Teil1,ZweiKunden_Teil2,
-                 ZweiKunden_Ueber1,ZweiKundenMengeFuer
+                 ZweiKunden_Ueber1,ZweiKundenMengeFuer,
+                  Split_Reparatur
                      };
  private:
    static was_checken WasChecken(e_check);

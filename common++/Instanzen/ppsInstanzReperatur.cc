@@ -198,7 +198,8 @@ std::cout << "Endmenge: "<<menge<<'\n';
 void ppsInstanz::DispoAuftraege_anlegen(const int uid,const ArtikelBase &artikel,const AuftragBase::mengen_t &menge) const
 {
    assert(EigeneLagerKlasseImplementiert());
-   LagerBase(this).rein_ins_lager(artikel,menge,uid);
+   if(menge!>0)
+      LagerBase(this).rein_ins_lager(artikel,menge,uid);
 /*
    bool alt=AuftragBase::dispo_auftrag_aendern(uid,this,artikel,menge);  
    const std::string ab=cH_ArtikelBezeichnung(artikel)->Bezeichnung();

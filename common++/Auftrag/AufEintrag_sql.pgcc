@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.30 2002/11/25 15:21:52 thoma Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.31 2002/11/28 15:59:27 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -331,10 +331,6 @@ void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,ManuProC::Auft
         AufEintragZu(*this).Neu(i->AEB,M);
         updateStkDiffBase__(uid,-M);
         restmenge-=M;
-
-//        if(reason==r_Closed || reason==r_Standard)
-//            verplante_menge_freigeben_nach_abbestellung(KindListeG,i->Menge,uid);
-
         if(restmenge==mengen_t(0)) break;
       }
    }  

@@ -1,4 +1,4 @@
-// $Id: DataBase_init.hh,v 1.3 2002/11/25 15:21:52 thoma Exp $
+// $Id: DataBase_init.hh,v 1.4 2002/11/28 15:59:28 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -55,8 +55,8 @@
 #define KUPFER_RESTE_KG 2
 
 #define GAENGE 1
-#define KETTLAENGE 2000
-#define STUECKLAENGE 2000
+//#define KETTLAENGE 2000
+//#define STUECKLAENGE 2000
 #define MASCHIENE 211
 #define SCHAERDATUM ManuProC::Datum().today()
 #define JUMBO_LAGERPLATZ 712
@@ -75,6 +75,8 @@ class DataBase_init
 
   public:
     DataBase_init();
+
+    static void createJumbo(const int diffmaschine,const int menge);
 };
 
 #endif
