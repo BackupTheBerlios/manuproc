@@ -1,4 +1,4 @@
-/* $Id: KettenGarn.h,v 1.8 2002/10/24 14:06:50 thoma Exp $ */
+/* $Id: KettenGarn.h,v 1.9 2003/10/23 16:56:10 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,7 +23,7 @@
 #include <Ketten/Kettscheibe.h>
 class ArtikelGang;
 
-class KettenGarn {
+struct KettenGarn {
 
         int index;
         int zeile;
