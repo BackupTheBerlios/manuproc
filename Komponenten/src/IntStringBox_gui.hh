@@ -1,4 +1,4 @@
-// $Id: IntStringBox_gui.hh,v 1.4 2003/03/17 16:34:48 christof Exp $
+// $Id: IntStringBox_gui.hh,v 1.5 2003/03/17 16:49:28 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,11 +27,13 @@ class IntStringBox_gui : public IntStringBox_glade
 {   
         void fuelleMenu();
         bool MouseButton(GdkEventButton *event);
+        virtual void reset() = 0;
 protected:
 
         IntStringPopup_glade *menu;
 
         IntStringBox_gui();
         ~IntStringBox_gui();
+        
 };
 #endif

@@ -1,4 +1,4 @@
-// $Id: IntStringBox_gui.cc,v 1.4 2003/03/17 16:44:20 christof Exp $
+// $Id: IntStringBox_gui.cc,v 1.5 2003/03/17 16:49:28 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,9 +24,10 @@ static GlademmData gd=GlademmData(Glib::RefPtr<Gtk::AccelGroup>());
 namespace { struct IntStringPopup : public IntStringPopup_glade
 {  IntStringPopup() : IntStringPopup_glade(&gd)
    {  }
-   SigC::Signal0<void> &signal_zurueck()
+   Glib::SignalProxy0<void> signal_zurueck()
    {  return zurueck->signal_activate();
    }
+   ~IntStringPopup() {}
 }; }
 
 IntStringBox_gui::IntStringBox_gui() 
