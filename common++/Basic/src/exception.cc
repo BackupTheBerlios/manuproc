@@ -1,4 +1,4 @@
-// $Id: exception.cc,v 1.9 2002/10/24 14:06:49 thoma Exp $
+// $Id: exception.cc,v 1.10 2002/10/29 08:33:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: exception.cc,v 1.9 2002/10/24 14:06:49 thoma Exp $
+// $Id: exception.cc,v 1.10 2002/10/29 08:33:05 christof Exp $
 // long explantion at the end
 
 #include <iostream>
@@ -26,7 +26,7 @@
 #include <typeinfo>
 //#include <stddef.h>
 
-#if __GCC__ == 2 
+#if __GNUC__ == 2 
 // taken from gcc/eh_common.h
 
 typedef void * (*__eh_matcher) (void *, void *, void *);
@@ -67,7 +67,7 @@ extern "C" cp_eh_info **__get_eh_info ();       // actually void **
 
 static void print_exception_u()
 {  std::cerr << "unexpected std::exception: ";
-#if __GCC__ == 2
+#if __GNUC__ == 2
    std::cerr << ((std::type_info*)((*__get_eh_info ())->type))->name();
 #endif   
    std::cerr << '\n';
@@ -78,7 +78,7 @@ static void print_exception_u()
 static void print_exception_t()
 {  
    std::cerr << "uncaught std::exception: ";
-#if __GCC__ == 2   
+#if __GNUC__ == 2   
    std::cerr << ((std::type_info*)((*__get_eh_info ())->type))->name();
 #endif   
    std::cerr << '\n';

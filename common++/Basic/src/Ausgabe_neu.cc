@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.cc,v 1.10 2002/07/15 15:37:53 christof Exp $ */
+/* $Id: Ausgabe_neu.cc,v 1.11 2002/10/29 08:33:05 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,6 +18,8 @@
  */
 
 #include "Ausgabe_neu.h"
+#include <iostream>
+//#include <cmath>
 
 std::ostream &Formatiere(std::ostream &os,unsigned long Zahl, 
 		unsigned int Nachkommastellen,
@@ -176,3 +178,8 @@ template<> const std::string FormatiereTeX_Preis<2>(const fixedpoint<2> &Zahl)
 {  return FormatiereTeX(Zahl);
 }
 
+#if 0 // when is this needed?
+const std::string Formatiere_short(unsigned int i)
+{  return Formatiere(i);
+}
+#endif

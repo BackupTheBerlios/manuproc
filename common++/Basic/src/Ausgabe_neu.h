@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.h,v 1.14 2002/07/15 15:37:53 christof Exp $ */
+/* $Id: Ausgabe_neu.h,v 1.15 2002/10/29 08:33:05 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,9 +20,7 @@
 #ifndef AUSGABE_NEW_H
 #define AUSGABE_NEW_H
 #include <string>
-#include <iostream>
 #include <Misc/fixedpoint.h>
-#include <cmath>
 
 const std::string FormatiereEmptyInt(long Zahl);
 
@@ -31,22 +29,11 @@ const std::string Formatiere(unsigned long Zahl,
                 unsigned int Ziellaenge=0,
                 const char *TausenderTrennzeichen=".",
                 const char *Komma=",",char fuehrendesZeichen=' ');
-// #warning TODO: f¨r double sollte es einen Fehler geben ?
+// #warning TODO: für double sollte es einen Fehler geben ?
 extern inline const std::string FormatiereTeX(unsigned long Zahl,
                 unsigned int Nachkommastellen=0,
                 unsigned int Ziellaenge=0,char fuehrendesZeichen=' ')
 {  return Formatiere(Zahl,Nachkommastellen,Ziellaenge,"\\,", ",", fuehrendesZeichen);
-}
-                
-std::ostream &Formatiere(std::ostream &os,unsigned long Zahl,
-                unsigned int Nachkommastellen=0,
-                unsigned int Ziellaenge=0,
-                const char *TausenderTrennzeichen=".",
-                const char *Komma=",",char fuehrendesZeichen=' ');
-extern inline std::ostream &FormatiereTeX(std::ostream &os,unsigned long Zahl,
-                unsigned int Nachkommastellen=0,
-                unsigned int Ziellaenge=0)
-{  return Formatiere(os,Zahl,Nachkommastellen,Ziellaenge,"\\,", ",", '~');
 }
 
 static const int NEEDCHAR=1;
@@ -55,53 +42,35 @@ std::string string2TeX(const std::string s, int flags=0) throw();
 
 template <int decimals,class Ftype,class Itype>
  const std::string FormatiereTeX(const fixedpoint<decimals,Ftype,Itype> &Zahl)
-{  if (Zahl.Scaled()<0) return "-"+FormatiereTeX(-Zahl.Scaled(),Zahl.Scale());
-   return FormatiereTeX(Zahl.Scaled(),Zahl.Scale());
+{  return Zahl.String(false, 0, "\\,", ",");
 }
 
 template <int decimals,class Ftype,class Itype>
  const std::string Formatiere(const fixedpoint<decimals,Ftype,Itype> &Zahl, unsigned int Ziellaenge=0,
                 const char *TausenderTrennzeichen=".",
                 const char *Komma=",",char fuehrendesZeichen=' ')
-{  if (Zahl.Scaled()<0) return "-"+Formatiere(-Zahl.Scaled(),Zahl.Scale(),
-		Ziellaenge?Ziellaenge-1:0,TausenderTrennzeichen,Komma,
-		fuehrendesZeichen);
-   return Formatiere(Zahl.Scaled(),Zahl.Scale(),Ziellaenge,
-		TausenderTrennzeichen,Komma,fuehrendesZeichen);
+{  return Zahl.String(false, Ziellaenge, TausenderTrennzeichen, Komma,
+	fuehrendesZeichen);
 }
 
-// unnoetige Nachkommastellen unterdruecken
+// unnötige Nachkommastellen unterdrücken
 template <int decimals,class Ftype,class Itype>
  const std::string FormatiereTeX_short(const fixedpoint<decimals,Ftype,Itype> &Zahl)
-{  Itype val(Zahl.Scaled());
-   if (val<0) val=-val;
-   unsigned int scale(Zahl.Scale());
-   while (scale>0 && !(val%10)) { val/=10; --scale; }
-   return (Zahl.Scaled()<0?"-":"")+FormatiereTeX(val,scale);
+{  return Zahl.String(true, 0, "\\,", ",");
+}
+template <int decimals,class Ftype,class Itype>
+ const std::string Formatiere_short(const fixedpoint<decimals,Ftype,Itype> &Zahl)
+{  return Zahl.String(true, 0, ".", ",");
 }
 
 // um transparent zwischen fixedpoints und ints umschalten zu können
-static inline const std::string Formatiere_short(unsigned int i)
+extern inline const std::string Formatiere_short(unsigned int i)
 {  return Formatiere(i);
-}
-static inline const std::string FormatiereEmpty_short(unsigned int i)
-{  return FormatiereEmptyInt(i);
-}
-
-template <int decimals,class Ftype,class Itype>
- const std::string Formatiere_short(const fixedpoint<decimals,Ftype,Itype> &Zahl)
-{  Itype val(Zahl.Scaled());
-   if (val<0) val=-val;
-   unsigned int scale(Zahl.Scale());
-   while (scale>0 && !(val%10)) { val/=10; --scale; }
-   return (Zahl.Scaled()<0?"-":"")+Formatiere(val,scale);
 }
 
 // als Preis (2 Nachkommastellen, alle weiteren als superscript (Potenzen))
 // ausgeben
-
 template <int decimals,class Ftype,class Itype>
  const std::string FormatiereTeX_Preis(const fixedpoint<decimals,Ftype,Itype> &Zahl);
-
-
 #endif
+	

@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.14 2002/07/15 15:37:53 christof Exp $
+// $Id: fixedpoint.h,v 1.15 2002/10/29 08:33:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,6 +22,7 @@
 #define AUX_FIXEDPOINT_H
 
 #include <Misc/ctime_assert.h>
+#include <string>
 
 // WOW prepare for black template magic
 // The compiler optimizes this fully away (once -O is used)
@@ -55,23 +56,6 @@ template <>
 static inline int zehnhochplusI<0>()
 { return 1; }
 
-#include <string>
-
-#if 0 // trying to avoid snprintf
-template <int dec,class Ftype,class Itype> class fixedpoint;
-template <int decimals,class Ftype,class Itype>
- const std::string Formatiere_short(const fixedpoint<decimals,Ftype,Itype> &Zahl);
-#endif
-
-//#include <cstdlib>
-
-// I don't want to include <cstdio>
-#ifndef _STDIO_H
-extern "C" 
-{  int snprintf(char *str, size_t size, const  char  *format, ...);
-};
-#endif
-
 template <int decimals=2,class Ftype=double,class Itype=long>
 class fixedpoint
 {
@@ -99,13 +83,42 @@ public:
 	{  scaled=Itype(d*zehnhochplus<decimals>()+(d>0?.5:-.5));
    	   return *this;
 	}
-#if 1 // undefine this if you suspect trouble
+#if 0 // sadly explicit does not work with operators
+	explicit operator Ftype() const
+	{  return as_float();
+	}
+	explicit operator Itype() const
+	{  return as_int();
+	}
+#endif
+#if 1 // stop this if you want to debug rounding errors
 	operator Ftype() const
-	{  return scaled*zehnhochminus<decimals>();
+	{  return as_float();
+	}
+	bool operator>(int i) const
+	{  return operator>(self_t(i));
+	}
+	bool operator<(int i) const
+	{  return operator<(self_t(i));
+	}
+	bool operator>=(int i) const
+	{  return operator>=(self_t(i));
+	}
+	bool operator<=(int i) const
+	{  return operator<=(self_t(i));
+	}
+	bool operator!=(int i) const
+	{  return operator!=(self_t(i));
+	}
+	bool operator==(int i) const
+	{  return operator==(self_t(i));
 	}
 #endif
 	Ftype as_float() const
 	{  return scaled*zehnhochminus<decimals>();
+	}
+	Itype as_int() const
+	{  return (scaled+(zehnhochplusI<decimals>()/2))/zehnhochplusI<decimals>();
 	}
 	self_t operator*(Itype b) const
 	{  self_t res;
@@ -113,10 +126,10 @@ public:
 	   return res;
 	}
 	Ftype operator*(Ftype b) const
-	{  return b* this->as_float();
+	{  return b* as_float();
 	}
 	Ftype operator/(Ftype b) const
-	{  return this->as_float()/b;
+	{  return as_float()/b;
 	}
 	self_t operator+(const self_t b) const
 	{  self_t res;
@@ -152,13 +165,34 @@ public:
 	bool operator!=(const self_t b) const
 	{  return scaled!=b.scaled;
 	}
+	bool operator<(const self_t b) const
+	{  return scaled<b.scaled;
+	}
+	bool operator<=(const self_t b) const
+	{  return scaled<=b.scaled;
+	}
+	bool operator>(const self_t b) const
+	{  return scaled>b.scaled;
+	}
+	bool operator>=(const self_t b) const
+	{  return scaled>=b.scaled;
+	}
 	
-	// do we really need this function? Ausgabe_neu::Formatiere is for this
-	std::string String() const
-	{  char buf[64];
-//           return Formatiere(*this,0,"",".");
-	   snprintf(buf,sizeof buf,"%.*f",decimals,Ftype(*this));
-	   return buf;
+	std::string String(bool _short=false, unsigned int Ziellaenge=0,
+		const char *TausenderTrennzeichen="",const char *Komma=".",
+		char fuehrendesZeichen=' ') const
+	{  extern const std::string Formatiere(unsigned long,
+                unsigned int,unsigned int,const char *,const char *,char);
+           const char *sign="";
+           unsigned long val=Scaled();
+           if (Scaled()<0) 
+           {  sign="-"; 
+              val=-Scaled(); 
+              if (Ziellaenge) --Ziellaenge;
+           }
+           unsigned scale=Scale();
+           if (_short) while (scale>0 && !(val%10)) { val/=10; --scale; }
+           return sign+Formatiere(val,scale,0,TausenderTrennzeichen,Komma,' ');
 	}
 	Itype Scaled() const { return scaled; }
 	size_t Scale() const { return decimals; }
@@ -182,6 +216,10 @@ public:
 	{  *this=(Ftype)(f.as_float());
 	   return *this;
 	}
+	template <int decimals2,class Ftype2,class Itype2>
+	 Ftype operator*(const fixedpoint<decimals2,Ftype2,Itype2> &f) const
+	{  return as_float()*f.as_float();
+	}
 	
 	// to tell the compiler which way to prefer
 	self_t operator+(const Ftype b) const
@@ -192,7 +230,22 @@ public:
 
 template <int decimals,class Ftype,class Itype>
  inline std::ostream &operator<<(std::ostream &o,const fixedpoint<decimals,Ftype,Itype> &f)
-{  return o << f.String();
+{  return o << f.String(true);
+}
+
+template <int decimals,class Ftype,class Itype>
+ inline fixedpoint<decimals,Ftype,Itype> operator*(Itype i,const fixedpoint<decimals,Ftype,Itype> &f)
+{  return f*i;
+}
+
+// allow int arguments explicitely
+template <int decimals,class Ftype,class Itype>
+ inline fixedpoint<decimals,Ftype,Itype> operator*(int i,const fixedpoint<decimals,Ftype,Itype> &f)
+{  return f*Itype(i);
+}
+template <int decimals,class Ftype,class Itype>
+ inline fixedpoint<decimals,Ftype,Itype> operator*(const fixedpoint<decimals,Ftype,Itype> &f, int i)
+{  return f.operator*(Itype(i));
 }
 
 #endif
