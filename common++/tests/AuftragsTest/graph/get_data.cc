@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.48 2003/08/06 09:45:16 christof Exp $
+// $Id: get_data.cc,v 1.49 2003/08/07 08:13:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -228,7 +228,7 @@ std::vector<std::pair<std::string,std::string> > graph_data_node::get_edges_for(
   list_child.sort(); // spannend, dass dies die Reihenfolge nicht stört ... CP
   AufEintragBase aeb_mem=list_child.front().aeb;
   std::vector<std::string> S(1);
-  AuftragBase::mengen_t Mmem;
+  std::vector<AuftragBase::mengen_t> Mmem(1);
   unsigned fileindex_mem=unsigned(-1);
   unsigned index=0;
   ManuProC::Trace _t(trace_channel, __FUNCTION__,aeb);
@@ -239,12 +239,15 @@ std::vector<std::pair<std::string,std::string> > graph_data_node::get_edges_for(
       { if (fileindex_mem==i->fileindex) 
         { ++index; 
           if (S.size()<index+1) S.resize(index+1);
+          if (Mmem.size()<index+1) Mmem.resize(index+1);
         }
         else
         { index=0; fileindex_mem=i->fileindex; }
         if (!S[index].empty()) S[index]+="/";
-        if(Mmem != i->menge) S[index]+=i->menge.String();
-        Mmem=i->menge;
+        if(Mmem[index] != i->menge || S[index].empty()) 
+        {  S[index]+=i->menge.String();
+           Mmem[index]=i->menge;
+        }
       }
      else
       { std::string S2;
@@ -256,7 +259,8 @@ std::vector<std::pair<std::string,std::string> > graph_data_node::get_edges_for(
 
 	S.clear();
         S.push_back(i->menge.String());
-        Mmem=i->menge;
+        Mmem.clear();
+        Mmem.push_back(i->menge);
         aeb_mem=i->aeb;
         fileindex_mem=i->fileindex;
         index=0;

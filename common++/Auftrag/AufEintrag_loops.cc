@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.cc,v 1.4 2003/07/25 08:00:09 christof Exp $ */
+/* $Id: AufEintrag_loops.cc,v 1.5 2003/08/07 08:13:00 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -39,13 +39,21 @@ static std::string Nametrans(std::string n)
    return n;
 }
 
+static const UniqueValue::value_t trace_channel_menge=ManuProC::Tracer::channels.get();
+static ManuProC::Tracer::Environment trace_channelme("DEBUG_MENGE",trace_channel_menge);
+
 // passende Menge für distribute_children
 static AufEintragBase::mengen_t
 	MinPfeil_or_MinGeliefert(const AufEintragZu::st_reflist &zuloop_var,AufEintragBase::mengen_t AE_menge2)
 {  if (AE_menge2>=0) 
+   {  ManuProC::Trace _t(trace_channel_menge, __FUNCTION__,"min",zuloop_var.Menge,AE_menge2);
       return AuftragBase::min(zuloop_var.Menge,AE_menge2);
+   }
    else 
-      return -AuftragBase::min(-AE_menge2,AufEintrag(zuloop_var.AEB).getGeliefert());
+   {  AufEintrag ae(zuloop_var.AEB);
+      ManuProC::Trace _t(trace_channel_menge, __FUNCTION__,"-min",-AE_menge2,ae.getGeliefert());
+      return -AuftragBase::min(-AE_menge2,ae.getGeliefert());
+   }
 }
 
 bool distribute_children(const AufEintragBase &startAEB,

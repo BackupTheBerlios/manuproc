@@ -97,7 +97,7 @@ static void usage(const std::string &argv0,const std::string &argv1)
 {
   std::cerr << argv0 <<" [<option> ...] <test>\n";
   std::cerr << "options: --verbose|-v --analyse|-y --repair|-r\n"
-  	"\t--continue|-c --trace|-t --reinit|-R --overwrite|-O\n";
+  	"\t--continue|-c --trace|-t --reinit|-R --overwrite|-O --tolerate|-T\n";
   std::cerr << "tests:\n";
   for (const TestReihe *i=TestReihe::first; i; i=i->next)
   {  std::cerr << '\t' << i->kuerzel << '\t' << i->bezeichnung << '\n';
@@ -118,11 +118,12 @@ int main(int argc,char *argv[])
      { "reinit", no_argument, 0, 'R' },
      { "analyse", no_argument, 0, 'y' },
      { "overwrite", no_argument, 0, 'O' },
+     { "tolerate", no_argument, 0, 'T' },
      { 0,0,0,0 },
    };
    
    int opt;
-   while ((opt=getopt_long(argc,argv,"vrctCRyO",long_options,0))!=-1)
+   while ((opt=getopt_long(argc,argv,"vrctCRyOT",long_options,0))!=-1)
     switch(opt)
    {  case 'v': verbose=true; break;
       case 'r': Check::reparieren=true; break;
@@ -130,6 +131,7 @@ int main(int argc,char *argv[])
       case 'C': clean_only=true; break;
       case 'R': clean_only=false; break;
       case 'y': Check::analyse=true; break;
+      case 'T': AuftragBase::tolerate_inconsistency=true; break;
       case 't': ManuProC::Tracer::Enable(AuftragBase::trace_channel);
       	ManuProC::Tracer::Enable(log_trace);
       	break;

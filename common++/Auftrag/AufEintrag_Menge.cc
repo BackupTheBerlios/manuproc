@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.4 2003/08/02 14:54:24 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.5 2003/08/07 08:12:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -123,7 +123,7 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(int uid,mengen_t menge,bool insta
 
  mengen_t menge2=menge;
  if (menge2<0) // nicht mehr abbestellen als noch offen ist
- 		// aber dennoch den Pfeil reduzieren 
+ 		// aber dennoch den Pfeil reduzieren (wegen ProdSelbst)
  {  menge2=-min(-menge2,getRestStk());
  }
  if (!!menge2)
