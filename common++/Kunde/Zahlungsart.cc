@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.cc,v 1.18 2003/01/06 00:16:01 jacek Exp $
+// $Id: Zahlungsart.cc,v 1.19 2003/01/06 01:07:09 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -87,7 +87,10 @@ void Zahlungsart::TeX_out(std::ostream &os,
     }
   else if(verfahren==RIBA)  
     {
-  
+	snprintf(strbuf,BSIZE,mld.MLT(
+		(monatsende ? TID::PRINTF_ZAHLUNG3 : TID::PRINTF_ZAHLUNG4)).c_str(),
+	     	zahlungsfrist);
+	os << strbuf;
     }
   else
      {
@@ -173,6 +176,11 @@ void Zahlungsart::TeX_out(std::ostream &os,
 		const fixedpoint<2> skontobetrag,
 		MultiL_Dict &mld) const
 {
+ char strbuf[1000];
+ int BSIZE=sizeof strbuf;
+ 
+  typedef MultiL_Dict TID;
+
  if(bankeinzug)
   {
   if(verfahren==LCR)
@@ -190,7 +198,10 @@ void Zahlungsart::TeX_out(std::ostream &os,
     }
   else if(verfahren==RIBA)  
     {
-  
+	snprintf(strbuf,BSIZE,mld.MLT(
+		(monatsende ? TID::PRINTF_ZAHLUNG3 : TID::PRINTF_ZAHLUNG4)).c_str(),
+	     	zahlungsfrist);
+	os << strbuf;  
     }
   else  
    {  
@@ -245,11 +256,11 @@ void Zahlungsart::TeX_out(std::ostream &os,
 	}
       else        
         if(zahlungsfrist)
-	     {if(Id()==3)
-            os << "Zahlung innerhalb " << zahlungsfrist << "  Tage (dann bis Monatsende) netto.";
-	      else
-            os << "Zahlung innerhalb " << zahlungsfrist << " Tage netto.";
-	     }
+	     {snprintf(strbuf,BSIZE,mld.MLT(
+	     	(monatsende ? TID::PRINTF_ZAHLUNG2 : TID::PRINTF_ZAHLUNG1)).c_str(),
+	     	zahlungsfrist);
+             os << strbuf;
+	     }        
          else
             os << "Zahlung sofort netto\\\\\n";
      }

@@ -26,6 +26,8 @@ public:
 		TXT_ZAHLUNG,
 		PRINTF_ZAHLUNG1,
 		PRINTF_ZAHLUNG2,		
+		PRINTF_ZAHLUNG3,
+		PRINTF_ZAHLUNG4,				
 	     } LangTXT;
 
  MultiL_Dict(int sprache, int default_spr=1);
