@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.h,v 1.15 2002/12/10 10:04:46 christof Exp $
+// $Id: ArtikelStamm.h,v 1.16 2002/12/10 10:13:24 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,7 +25,7 @@
 #include <Aux/CacheStatic.h>
 #include <Instanzen/ppsInstanz.h>
 #include <Artikel/Einheiten.h>
-#include <Misc/Trace.h>
+#include <Misc/UniqueValue.h>
 
 class ArtikelStamm
 {	// we can't include ExtBezSchema.h, so we duplicate what we need
