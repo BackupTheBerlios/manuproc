@@ -34,8 +34,9 @@ GRANT SELECT ON TABLE artikelzusammensetzung TO PUBLIC;
 -- TOC entry 4 (OID 1752084)
 --
 
+copy artikelzusammensetzung (id, prozessid, altartikelid, menge, stand, uid) from stdin;
+1	12	2	25	2004-5-13	100
+\.
+
 CREATE INDEX artikelzusamm_key ON artikelzusammensetzung USING btree (id);
 
-copy artikelzusammensetzung (id, prozessid, altartikelid, menge, uid) from stdin;
-2	12	1	25	100
-\.
