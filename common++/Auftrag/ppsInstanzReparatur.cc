@@ -175,7 +175,7 @@ void ppsInstanzReparatur::DispoAuftraege_anlegen(const int uid,const ArtikelBase
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Instanz());
    assert(Instanz()->EigeneLagerKlasseImplementiert());
-std::cout << "Mengenänderung im Lager "<<Instanz()<<'\t'<<menge<<'\n';
+std::cout << "Mengenänderung im Lager "<<Instanz()<<'\t'<<menge<<" von " << artikel.Id() << '\n';
    if(menge>=0)
       LagerBase(make_value(Instanz())).rein_ins_lager(artikel,menge,uid);
 }
@@ -440,6 +440,17 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
             {  analyse("Kind darf kein 2er sein",ae,j->AEB,j->Menge);
                goto weg1;
             }
+            if (ae.getEntryStatus()==CLOSED)
+            {  if (!!j->Menge)
+               {  analyse("Geschlossene Aufträge dürfen nichts mehr bestellen",ae,j->AEB,j->Menge);
+                  goto weg1;
+               }
+            }
+            else if (ae.getEntryStatus()!=OPEN)
+            {  analyse("Nichtoffene Aufträge dürfen keine Kinder haben",ae,j->AEB,j->Menge);
+               artikel_passt_nicht=true;
+               goto weg1;
+            }
 
             AufEintrag ae2(j->AEB);
             if (ae2.getLieferdatum()>newdate 
@@ -490,6 +501,7 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
       }
       if (ae.Id()==AuftragBase::plan_auftrag_id && ae.Instanz()->LagerInstanz())
          goto exit;
+      if (ae.getEntryStatus()!=OPEN) goto exit;
       // kam der Artikel überhaupt vor ?
       if (next!=ppsInstanzID::None)
       {  AufEintragZu::map_t::const_iterator f=kinder.find(ae.Artikel());

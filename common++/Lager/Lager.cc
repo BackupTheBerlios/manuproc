@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.27 2003/03/12 09:06:29 christof Exp $
+// $Id: Lager.cc,v 1.28 2003/06/16 16:35:07 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -43,6 +43,14 @@ void LagerBase::rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::men
   assert(menge>=0);
   // vielleicht doch besser nach AufEintrag?
   AufEintrag::Einlagern(uid,*this,artikel,menge);
+}
+
+void LagerBase::wiedereinlagern(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const
+{
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
+     NV("Lager",*this),NV("Artikel",artikel),NV("Menge",menge));
+  assert(menge>=0);
+  AufEintrag::WiederEinlagern(uid,*this,artikel,menge);
 }
 
 void LagerBase::raus_aus_lager(const ArtikelBase &artikel,AuftragBase::mengen_t menge,const int uid) const 

@@ -27,7 +27,7 @@ exec sql include sqlca;
 #include <Misc/itos.h>
 #include <unistd.h>
 #include <Misc/relops.h>
-#include <Misc/Trace.h>
+#include <Misc/TraceNV.h>
 
 std::string RohwarenLager::st_rohlager::Menge_als_Text() const
 {  std::string s;
@@ -43,7 +43,10 @@ AuftragBase::mengen_t RohwarenLager::st_rohlager::Menge_fuer_Auftrag() const
 
 bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,const int uid,std::string &os,bool force,bool ist_leer)
 {
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
+  	NV("kartons",rohlager.kartons),NV("reste",rohlager.reste),
+  	NV("artikel",rohlager.artikel.Id()),
+  	NV("position",rohlager.position.SPosition()));
   Transaction tr;
   exec sql begin declare section;
    int KARTONS;
@@ -136,7 +139,10 @@ bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,const int uid,std::string 
 
 bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager,const int uid,std::string &os,bool force)
 {
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
+  	NV("kartons",rohlager.kartons),NV("reste",rohlager.reste),
+  	NV("artikel",rohlager.artikel.Id()),
+  	NV("position",position.SPosition()));
   Transaction tr;
   rohlager.setPosition(position);
 

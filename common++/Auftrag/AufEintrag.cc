@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.54 2003/06/13 09:38:30 christof Exp $
+// $Id: AufEintrag.cc,v 1.55 2003/06/16 16:35:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -376,6 +376,29 @@ void AufEintrag::Einlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase
 
   assert(reason==ManuProC::Auftrag::r_Produziert);
   MengeVormerken(instanz,artikel,menge,false);  
+}
+
+void AufEintrag::WiederEinlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
+         mengen_t menge,const ManuProC::Auftrag::Action reason) throw(SQLerror)
+{
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("Instanz",instanz),
+   NV("Artikel",artikel),NV("Menge",menge),NV("Reason",reason));
+
+  assert(reason==ManuProC::Auftrag::r_Produziert);
+  // eigentlich sind nur die 1er interessant, dann aber OPEN wie CLOSED ...
+  SQLFullAuftragSelector sel(make_value(SQLFullAuftragSelector::
+      			sel_Artikel(instanz->Id(),artikel)));
+  SelectedFullAufList auftraglist(sel);
+  for (SelectedFullAufList::reverse_iterator i=auftraglist.rbegin();i!=auftraglist.rend();++i)
+  {  AuftragBase::mengen_t M=AuftragBase::min(i->getGeliefert(),menge);
+     if (!M) continue;
+                 
+     i->ProduziertNG(-M);
+                      
+     menge-=M;
+     if(!menge) break;
+  }
+  assert(!menge); // eigentlich darf das nicht passieren, da es ja vorher produziert wurde ...
 }
 
 // Menge wurde geliefert. 
@@ -879,7 +902,10 @@ public:
 };
 }
 
-// similar to move_to	
+// similar to move_to
+// das Problem ist, dass es diffus ist, was Produktion im Lager bedeutet:
+//		Einlagern oder Auslagern?
+// Einlagern==MengeVormerken   Auslagern==Produktion
 void AufEintrag::ProduziertNG(unsigned uid, AuftragBase::mengen_t M,
 		const AufEintragBase &elter_alt,
 		const AufEintragBase &elter_neu)
@@ -892,7 +918,7 @@ void AufEintrag::ProduziertNG(unsigned uid, AuftragBase::mengen_t M,
 	|| Id()>=handplan_auftrag_id)
    {  assert(!Instanz()->LagerInstanz());
       // Überproduktion wird einfach vermerkt (geht nur bei 3ern)
-      if (M<0) assert(M<=getGeliefert());
+      if (M<0) assert(-M<=getGeliefert());
       abschreiben(M); // M<0 ? -M : M);
       if (elter_alt.valid()) 
       {  mengen_t zmenge=AufEintragZu(elter_alt).getMenge(*this);
@@ -909,23 +935,26 @@ void AufEintrag::ProduziertNG(unsigned uid, AuftragBase::mengen_t M,
       if (M>0 && elter_neu!=elter_alt) AufEintragZu(elter_neu).Neu(*this,0);
    }
    else
-   {  // keine Rekursion!  // und für Lager?
-      if (M<0) assert(Id()==plan_auftrag_id);
-      if (M<0 && !Instanz()->LagerInstanz()) abschreiben(M);
-      MengeAendern(uid,M<0 ? M : -M,false,M>0 ? elter_alt : AufEintragBase(),
+   {  if (M<0) assert(Id()==plan_auftrag_id);
+      if (M<0) /* && !Instanz()->LagerInstanz())*/ abschreiben(M);
+      // Rekursion bedeutet hier: freigewordene Menge neu verplanen
+      bool rek=Instanz()->LagerInstanz() && M<0;
+      MengeAendern(uid,M<0 ? M : -M,rek,M>0 ? elter_alt : AufEintragBase(),
       				ManuProC::Auftrag::r_Produziert);
       if (M<0 && !getRestStk()) setStatus(AufStatVal(CLOSED),uid,true);
-      AuftragBase zielauftrag(Instanz(),M>=0?plan_auftrag_id:ungeplante_id);
-      AufStatVal st=(Instanz()->LagerInstanz() || M<0) ? OPEN : CLOSED;
-      neuerAEB=AufEintragBase(zielauftrag,
-      		zielauftrag.PassendeZeile(getLieferdatum(),Artikel(),st,uid));
-      AufEintrag ae(neuerAEB);
-      ae.MengeAendern(uid,M<0 ? -M : M,false,
-      		M<0 || Instanz()->LagerInstanz()?elter_neu:AufEintragBase(),
-      		ManuProC::Auftrag::r_Produziert);
-      if (M>0 && !Instanz()->LagerInstanz())
-      {  ae.abschreiben(M);
-         AufEintragZu(elter_neu).Neu(neuerAEB,0);
+      if (M>0 || !Instanz()->LagerInstanz())
+      {  AuftragBase zielauftrag(Instanz(),M>=0?plan_auftrag_id:ungeplante_id);
+         AufStatVal st=(Instanz()->LagerInstanz() || M<0) ? OPEN : CLOSED;
+         neuerAEB=AufEintragBase(zielauftrag,
+         		zielauftrag.PassendeZeile(getLieferdatum(),Artikel(),st,uid));
+         AufEintrag ae(neuerAEB);
+         ae.MengeAendern(uid,M<0 ? -M : M,false,
+         		M<0 || Instanz()->LagerInstanz()?elter_neu:AufEintragBase(),
+         		ManuProC::Auftrag::r_Produziert);
+         if (M>0 && !Instanz()->LagerInstanz())
+         {  ae.abschreiben(M);
+            AufEintragZu(elter_neu).Neu(neuerAEB,0);
+         }
       }
    }
    // Kinder bearbeiten

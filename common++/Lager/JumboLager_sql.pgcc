@@ -26,13 +26,14 @@ exec sql include sqlca;
 #include <Misc/Transaction.h>
 #include <Misc/itos.h>
 #include <unistd.h>
-#include <Misc/Trace.h>
-
+#include <Misc/TraceNV.h>
 
 void JumboLager::Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jumbo_LogTyp typ,
    const int uid,const std::string& user,const Zeitpunkt_new *zeit)
 {
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("code",jumbo.Code()),
+  		NV("zeit",zeit?*zeit:Zeitpunkt_new()),
+  		NV("position",position.IPosition()));
   Transaction tr;
   Zeitpunkt_new zeit_local_storage;
   exec sql begin declare section;
@@ -88,7 +89,11 @@ void JumboLager::Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jum
   if(jumbo.getStatus()==JumboRolle::ImLager) typ=Umraeumen;
   jumbo.setStatus_nodb(JumboRolle::Jumbo_Status(STATUS));
   if(typ!=Umraeumen && STATUS==JumboRolle::ImLager)
-     rein_ins_lager(jumbo.Artikel(),jumbo.Meter(),uid);
+  {  if (jumbo.VerarbDatum().valid())
+        wiedereinlagern(jumbo.Artikel(),jumbo.Meter(),uid);
+     else
+        rein_ins_lager(jumbo.Artikel(),jumbo.Meter(),uid);
+  }
   Jumbo_Log(jumbo,typ,uid,user,zeit);
   tr.commit();
 }
@@ -96,7 +101,9 @@ void JumboLager::Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jum
 void JumboLager::Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,
    const int uid,const std::string& user,const Zeitpunkt_new *zeit)
 {  
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
+  		NV("code",jumbo.Code()),
+  		NV("zeit",zeit?*zeit:Zeitpunkt_new()));
   Transaction tr;
   Zeitpunkt_new zeit_local_storage;
   exec sql begin declare section;
@@ -142,7 +149,10 @@ void JumboLager::Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,
   if (jumbo.getStatus()==JumboRolle::Verarbeitet) typ=SchonDraussen;
   jumbo.setStatus_nodb(JumboRolle::Jumbo_Status(STATUS));
   if(typ!=SchonDraussen && STATUS==JumboRolle::Verarbeitet)
+  {  if (!jumbo.InsLagerDatum().valid())
+        rein_ins_lager(jumbo.Artikel(),jumbo.Meter(),uid);
      raus_aus_lager(jumbo.Artikel(),jumbo.Meter(),uid);
+  }
   Jumbo_Log(jumbo,typ,uid,user,zeit);
   // hupen
   if (throw100) throw SQLerror("Entnahme",100,"Rolle schon erfasst");

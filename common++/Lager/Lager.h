@@ -1,4 +1,4 @@
-/* $Id: Lager.h,v 1.18 2003/05/22 12:50:48 christof Exp $ */
+/* $Id: Lager.h,v 1.19 2003/06/16 16:35:07 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -77,9 +77,7 @@ class LagerBase : public cH_ppsInstanz
         const {assert(!"Nicht implementiert für Lager ohne eigene Tabelle");abort();} 
 
      // die folgenden Methoden müssen einlagern können
-//     friend void ppsInstanz::rekursion(ManuProC::st_produziert &P) const;
      friend class ppsInstanzReparatur;
-//     friend void AufEintrag::WurdeProduziert(fixedpoint<0>, const AufEintragBase&);
      friend void AufEintrag::ProduziertNG(unsigned, fixedpoint<0>, const AufEintragBase&, const AufEintragBase&);
 
    protected:
@@ -95,6 +93,7 @@ class LagerBase : public cH_ppsInstanz
 
    protected:
      void rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const;
+     void wiedereinlagern(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const;
      void raus_aus_lager(const ArtikelBase &artikel,AuftragBase::mengen_t menge,const int uid) const;
 };
 
@@ -102,10 +101,10 @@ class Lager : LagerBase
 {
   public:  
       Lager(cH_ppsInstanz  instanz) ;
-      void rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const 
-         {LagerBase::rein_ins_lager(artikel,menge,uid);}
-      void raus_aus_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const
-         {LagerBase::raus_aus_lager(artikel,menge,uid);}
+//      void rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const 
+//         {LagerBase::rein_ins_lager(artikel,menge,uid);}
+//      void raus_aus_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const
+//         {LagerBase::raus_aus_lager(artikel,menge,uid);}
 };
 #endif
 

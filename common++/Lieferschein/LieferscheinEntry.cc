@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.20 2003/03/20 15:32:01 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.21 2003/06/16 16:35:07 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -38,7 +38,7 @@ void LieferscheinEntry::setPalette(int p) throw(SQLerror)
   SQLerror::test(__FILELINE__);
 }
 
-
+// It seems that this routine works <50% of the time - needs a rewrite
 bool LieferscheinEntry::changeMenge(int stueck,mengen_t menge) throw(SQLerror)
 {
   if(stueck==Stueck() && menge==Menge()) return true ; //nichts geändert

@@ -1,5 +1,5 @@
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
+ *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,8 +15,8 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-#include <ManuProCConfig.h>
 
+#include <ManuProCConfig.h>
 #include "DataBase_init.hh"
 #include "AuftragsVerwaltung.hh"
 #include "Check.hh"
@@ -29,7 +29,6 @@
 #include <unistd.h>
 // Lieferschein
 #include <Lieferschein/Lieferschein.h>
-
 #include <fstream>
 #include <sys/stat.h>
 #include <getopt.h>
@@ -62,8 +61,11 @@ static void vergleichen(Check &C, Check::was_checken w, const std::string &zusat
 {   (*testlog) << int(w) << ' ' << zusatz << ' ' << graphname << ' ' << name << '\n';
     bool erfolgreich=C.teste(w,zusatz,mit_reparatur_programm,vor_dem_test_reparieren);
     if(!erfolgreich)
-    { std::cout << name << " fehlgeschlagen\n\n"; 
+    { std::cout << name << "("<<zusatz<<") fehlgeschlagen\n\n"; 
       if (!do_not_stop) { testlog->flush(); exit(1); }
+    }
+    else if (verbose)
+    { std::cout << name << "("<<zusatz<<") ok\n";
     }
 }
 
@@ -797,7 +799,7 @@ std::cout << "D13: "<<dummystring<<'\n';
        LagerPlatz LP(ppsInstanzID::Bandlager,JUMBO_LAGERPLATZ);
        LagerPlatz LP2(ppsInstanzID::Bandlager,JUMBO_LAGERPLATZ+1);
        KettplanKette KK=KettplanKette(Kette(MASCHIENE,SCHAERDATUM));
-       std::vector<JumboRolle> JR=JumboRolle::create(KK);
+       std::vector<JumboRolle> JR=JumboRolle::create(KK); // 101
        assert(JR.size()==1);
        class JumboLager JL;
        Zeitpunkt_new zp0("2002-3-1 11:00"),
@@ -805,17 +807,21 @@ std::cout << "D13: "<<dummystring<<'\n';
        		zp0b("2002-3-1 11:02");
        JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0);
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp1);
+       //   101 |      3 | 2002-03-01 11:00:00+01 | 2002-03-01 11:11:00+01
        JR=JumboRolle::create(KK); // 102
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0);
        JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp1);
        vergleichen(C,Check::Jumbo,"richtig","Jumbo richtig","",mit_reparatur_programm);
+       //  102 |      2 | 2002-03-01 11:11:00+01 | 2002-03-01 11:00:00+01
        JR=JumboRolle::create(KK); // 103
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp1);
        JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0);
+       //  103 |      3 | 2002-03-01 11:00:00+01 | 2002-03-01 11:11:00+01
        JR=JumboRolle::create(KK); // 104
        JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp1);
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0);
        vergleichen(C,Check::Jumbo,"falsch","Jumbo falsche Reihenfolge","",mit_reparatur_programm);
+       //  104 |      2 | 2002-03-01 11:11:00+01 | 2002-03-01 11:00:00+01
        JR=JumboRolle::create(KK); // 105
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0);
        try // kein Log Eintrag ist richtig
@@ -825,9 +831,11 @@ std::cout << "D13: "<<dummystring<<'\n';
        {  assert(e.Code()==100);
        }
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp1);
-       JR=JumboRolle::create(KK);
+       //   105 |      3 |                        | 2002-03-01 11:11:00+01
+       JR=JumboRolle::create(KK); // 106
        JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0);
        JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp1);
+       //   106 |      2 | 2002-03-01 11:11:00+01 | 
        vergleichen(C,Check::Jumbo,"doppelt","Jumbo doppelt Aus-/Einlagern","",mit_reparatur_programm);
        break;
 #endif

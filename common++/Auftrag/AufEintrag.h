@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.43 2003/05/26 13:43:27 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.44 2003/06/16 16:35:07 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -265,6 +265,9 @@ public:
    // ehemals AuftragBase::menge_neu_verplanen
    static void Einlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
          const mengen_t &menge,const ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Produziert) throw(SQLerror);
+   // Menge wurde als Produziert markiert, kam aber ins Lager zurück
+   static void WiederEinlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
+         mengen_t menge,const ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Produziert) throw(SQLerror);
 // intern aber public
    static void MengeVormerken(cH_ppsInstanz instanz,const ArtikelBase &artikel,
 		mengen_t menge, bool abbestellen=false);
