@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.40 2003/03/19 08:31:49 christof Exp $
+// $Id: AufEintrag.cc,v 1.41 2003/03/21 07:21:51 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -882,12 +882,12 @@ void AufEintrag::ProduziertNG(unsigned uid, AuftragBase::mengen_t M,
    {  assert(!Instanz()->LagerInstanz());
       // Überproduktion wird einfach vermerkt (geht nur bei 3ern)
       if (M<0) assert(M<=getGeliefert());
-      abschreiben(M);
+      abschreiben(M); // M<0 ? -M : M);
       if (elter_alt.valid()) 
       {  mengen_t zmenge=AufEintragZu(elter_alt).getMenge(*this);
          if (M<0)
          {  assert(elter_neu.valid());
-            AufEintragZu(elter_neu).setMengeDiff__(*this,-M);
+            AufEintragZu(elter_neu).setMengeDiff__(*this,M);
          }
          else if (!!zmenge)
             AufEintragZu(elter_alt).setMengeDiff__(*this,-AuftragBase::min(zmenge,M));
@@ -901,14 +901,15 @@ void AufEintrag::ProduziertNG(unsigned uid, AuftragBase::mengen_t M,
    {  // keine Rekursion!  // und für Lager?
       if (M<0) assert(Id()==plan_auftrag_id);
       if (M<0 && !Instanz()->LagerInstanz()) abschreiben(M);
-      MengeAendern(uid,-M,false,elter_alt,ManuProC::Auftrag::r_Produziert);
+      MengeAendern(uid,M<0 ? M : -M,false,M>0 ? elter_alt : AufEintragBase(),
+      				ManuProC::Auftrag::r_Produziert);
       AuftragBase zielauftrag(Instanz(),M>=0?plan_auftrag_id:ungeplante_id);
-      AufStatVal st=Instanz()->LagerInstanz() || M<0 ? OPEN : CLOSED;
+      AufStatVal st=(Instanz()->LagerInstanz() || M<0) ? OPEN : CLOSED;
       neuerAEB=AufEintragBase(zielauftrag,
       		zielauftrag.PassendeZeile(getLieferdatum(),Artikel(),st,uid));
       AufEintrag ae(neuerAEB);
-      ae.MengeAendern(uid,M,false,
-      		Instanz()->LagerInstanz()?elter_neu:AufEintragBase(),
+      ae.MengeAendern(uid,M<0 ? -M : M,false,
+      		M<0 || Instanz()->LagerInstanz()?elter_neu:AufEintragBase(),
       		ManuProC::Auftrag::r_Produziert);
       if (M>0 && !Instanz()->LagerInstanz())
       {  ae.abschreiben(M);
