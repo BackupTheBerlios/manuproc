@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.23 2003/10/21 10:40:17 christof Exp $
+// $Id: SimpleTree.cc,v 1.24 2003/10/21 10:54:17 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -125,10 +125,17 @@ cH_RowDataBase SimpleTree::getSelectedRowDataBase() const
    else throw noRowSelected(); // oder multipleRowsSelected()
 }
 
-void SimpleTree::Expand_recursively()
-{
-#warning 2do expand
+void SimpleTree_Basic::Expand_recursively()
+{  expand_all();
 }
+
+void SimpleTree_Basic::Collapse()
+{  collapse_all();
+}
+
+// Pivot element might use expand_to_path
+
+// expand_row(path,false)/collapse_row(path)
 
 std::vector<cH_RowDataBase> SimpleTree::getSelectedRowDataBase_vec() const
 	throw (SimpleTree::notLeafSelected)
@@ -158,8 +165,8 @@ void SimpleTree_Basic::fillMenu()
   add_mitem(menu,"Abbrechen",SigC::slot(*this,&SimpleTree_Basic::on_abbrechen_clicked));
 //  add_mitem(menu,"Neuordnen",SigC::slot(*this,&SimpleTree_Basic::Neuordnen));
   Gtk::MenuItem *spalten=add_mitem(menu,"Sichtbare Spalten",SigC::Slot0<void>());
-//  add_mitem(menu,"Alle Knoten expandieren",SigC::slot(*this,&SimpleTree_Basic::on_zuruecksetzen_clicked));
-//  add_mitem(menu,"Alle Knoten kollabieren",SigC::slot(*this,&SimpleTree_Basic::on_abbrechen_clicked));
+  add_mitem(menu,"Alles aufklappen",SigC::slot(*this,&SimpleTree_Basic::Expand_recursively));
+  add_mitem(menu,"Alles zuklappen",SigC::slot(*this,&SimpleTree_Basic::Collapse));
 #if 0
    Gtk::MenuItem *neuordnen = manage(new class Gtk::MenuItem("Neuordnen"));
    Gtk::MenuItem *zuruecksetzen = manage(new class Gtk::MenuItem("Zurücksetzen"));

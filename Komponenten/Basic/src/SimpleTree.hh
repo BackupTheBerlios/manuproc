@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.22 2003/10/21 10:40:17 christof Exp $
+// $Id: SimpleTree.hh,v 1.23 2003/10/21 10:54:17 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -105,6 +105,9 @@ public:
 	void attach();
 	void setDataVec(const std::vector<cH_RowDataBase> &d) 
 	{  detach(); SimpleTreeStore_Proxy::setDataVec(d); attach(); }
+
+ void Expand_recursively();
+ void Collapse();
 };
 
 // I put the more esoteric features here, so they may not confuse the
@@ -209,8 +212,6 @@ public:
  template <class T> void ForEachLeaf(T &t) const
  {  ForEachLeaf2(begin(),end(),t); }
  
- void Expand_recursively();
- void Collapse();
 };
 
 #if 0
