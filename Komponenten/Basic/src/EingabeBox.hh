@@ -1,4 +1,4 @@
-// $Id: EingabeBox.hh,v 1.8 2004/05/06 13:43:07 jacek Exp $
+// $Id: EingabeBox.hh,v 1.9 2004/05/06 13:56:16 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: EingabeBox.hh,v 1.8 2004/05/06 13:43:07 jacek Exp $
+// $Id: EingabeBox.hh,v 1.9 2004/05/06 13:56:16 jacek Exp $
 
 #ifndef _EINGABEBOX_HH
 #define _EINGABEBOX_HH
@@ -65,7 +65,6 @@ public:
 	int size() const
 	{  return visible_size; }
 	void reset();
-//	void on_entry_activate(int i);
 
 	SigC::Signal0<void> &signal_activate() { return _activate; }
 	SigC::Signal1<void,int> &signal_activate_entry() 
