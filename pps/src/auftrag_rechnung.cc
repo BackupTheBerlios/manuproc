@@ -549,6 +549,7 @@ auftrag_rechnung::auftrag_rechnung(cH_ppsInstanz _instanz)
    
 // set GUI for DBCapabilities
  DBCapability::WhiteColumn wc("rechnung","bezahlt");
+
  bezahlt->set_sensitive(dbcapability->isWhite(DBCapability::ColAct(wc,DBCapability::UPDATE)) );
 }
 

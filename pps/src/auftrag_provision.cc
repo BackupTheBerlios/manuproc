@@ -15,6 +15,9 @@
 
 extern MyMessage *meldung;
 
+#include <Aux/dbcapability.h>
+extern DBCapability *dbcapability;
+
 auftrag_provision::auftrag_provision(AuftragFull *auftrag) :
 auf(auftrag)
 {
@@ -46,6 +49,11 @@ auf(auftrag)
     }
    }
 #endif
+
+ DBCapability::WhiteColumn wc("auftrag","verknr");
+
+ if(! dbcapability->isWhite(DBCapability::ColAct(wc,DBCapability::UPDATE)) )
+   verkprov_frame->set_sensitive(false);
 }
 
 void auftrag_provision::fillProvEntryList()
