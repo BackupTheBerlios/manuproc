@@ -727,6 +727,8 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
        if(Rueckstand() && rest==0) return;
 #endif
 
+ static int zeilenzaehler = 1;
+ 
 //---------------------- Seitenumbruch innerhalb einer Tabelle ----------      
         if (zeilen_passen_noch<=1)
           {
@@ -755,7 +757,12 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 	if(zeilen_passen_noch%2) os << "\\shaderow";
 #endif
          if (zusatzinfo) linecolor = "\\mygray";
-         
+
+	 if(Configuration.zaehle_spalten)
+	 {
+	  neue_spalte(erste_spalte,os);
+	  os << Formatiere((unsigned long)zeilenzaehler++) << ".";
+	 }         
          
          if (stueck_bool)
          {  neue_spalte(erste_spalte,os);
@@ -1016,23 +1023,28 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
   preisspalte=0;
 
 // NEW COLUMNS; ab hier irgendwo einfügen um spaltenzahl zu setzten
+   if(Configuration.zaehle_spalten)
+     {ueberschriften+= "\\mbox{\\#}&";
+      tabcolumn+="r";	// Zeilennummer
+      spaltenzahl++;
+     }
 
-   if (stueck_bool || menge_bool)
-   {
-
-    if(Rueckstand())
-	ueberschriften="\\multicolumn{1}{c}{"+ug+mld->MLT(MultiL_Dict::TXT_OFFEN)+"}";
-    else ueberschriften="\\multicolumn{1}{c}{"+ug+mld->MLT(MultiL_Dict::TXT_MENGE)+"}";
-    tabcolumn+="r"; spaltenzahl++;
-
-   }   
    if (menge_bool && stueck_bool) 
    { tabcolumn+="r"; spaltenzahl++;
-     ueberschriften="\\multicolumn{2}{c}{"+ug+mld->MLT(MultiL_Dict::TXT_MENGE)+"}";
+     ueberschriften+="\\multicolumn{2}{c}{"+ug+mld->MLT(MultiL_Dict::TXT_MENGE)+"}";
    
      tabcolumn+="r"; spaltenzahl++; 
      ueberschriften+="&\\multicolumn{1}{c}{"+sg+"Gesamtmenge}";
    }
+   else
+   if (stueck_bool || menge_bool)
+   {
+    if(Rueckstand())
+	ueberschriften+="\\multicolumn{1}{c}{"+ug+mld->MLT(MultiL_Dict::TXT_OFFEN)+"}";
+    else ueberschriften+="\\multicolumn{1}{c}{"+ug+mld->MLT(MultiL_Dict::TXT_MENGE)+"}";
+    tabcolumn+="r"; spaltenzahl++;
+   }
+
   
   if(Typ()==Intern)
      { tabcolumn += "ccc"; spaltenzahl+=3;

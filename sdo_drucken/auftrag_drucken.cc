@@ -50,7 +50,7 @@ const static struct option options[]=
 void usage(std::string n, ppsInstanz::ID instanz,
    	std::string database,std::string dbhost)
 {
-   std::cout << "$Id: auftrag_drucken.cc,v 1.2 2004/10/12 15:54:38 jacek Exp $\n\n"
+   std::cout << "$Id: auftrag_drucken.cc,v 1.3 2004/10/20 10:16:59 jacek Exp $\n\n"
               "USAGE:" << n << " -n <Nr> [-a <Typ>] [-kft] [-i <Instanz>] [-d <Datenbank>]\n"
 		"\n\t-t<file>\t nur TeX file erzeugen; in file speichern("<< (Configuration.toTeX?"an":"aus")<< ")\n"
 	        "\n\t-B<printer>\t batch mode on <printer>; kein GUI ("<< (Configuration.batch?"an":"aus")<< ")\n"
@@ -119,6 +119,9 @@ int main (int argc, char *argv[])
       conn.setDbase(database);
       conn.setHost(dbhost);
       ManuProC::dbconnect(conn);  
+
+#warning: must be at properly place
+Configuration.zaehle_spalten=true;
 
       LR_drucken l(was,auftragsnr, cH_ppsInstanz(instanz),
 		rueckstand,ean_code);
