@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.47 2004/05/03 11:47:18 christof Exp $
+// $Id: SimpleTree.cc,v 1.48 2004/05/17 12:04:34 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -188,6 +188,22 @@ cH_RowDataBase SimpleTree::getSelectedRowDataBase() const
 		->get_selection()->get_selected();
    if (sel)
    {  const Gtk::TreeRow row=*sel;
+      if (!row[getStore()->m_columns.childrens_deep])
+         return row[getStore()->m_columns.leafdata];
+      else throw notLeafSelected();
+   }
+   else throw noRowSelected(); // oder multipleRowsSelected()
+}
+
+
+cH_RowDataBase SimpleTree::getCursorRowDataBase() const
+// actually it does not throw multipleRowsSelected
+	throw(noRowSelected,multipleRowsSelected,notLeafSelected)
+{  Gtk::TreeModel::Path path;
+   Gtk::TreeViewColumn *col=0;
+   const_cast<SimpleTree*>(this)->get_cursor(path,col);
+   if (!path.empty())
+   {  const Gtk::TreeRow row=*const_cast<SimpleTree*>(this)->getTreeModel()->get_iter(path);
       if (!row[getStore()->m_columns.childrens_deep])
          return row[getStore()->m_columns.leafdata];
       else throw notLeafSelected();
