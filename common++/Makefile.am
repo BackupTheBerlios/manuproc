@@ -87,7 +87,7 @@ libcommon___a_LIBADD= \
 		Ketten/KettplanKette.o \
 		Ketten/KettplanKette2.o \
 		Ketten/KpK_get_artikel.o \
-		Kunde/Adresse.o \
+		Kunde/Adresse_sql.o \
 		Kunde/Anrede_sql.o \
 		Kunde/Kunde.o \
 		Kunde/Kunde_sql.o \

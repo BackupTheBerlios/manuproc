@@ -1,0 +1,12 @@
+#!/bin/bash
+
+for x in M P L S Z D Ls Lm LZ; do
+
+  ./steuerprogramm $x
+
+  if [ $? -eq 1 ] ; then
+    echo Abbruch
+    exit;
+  fi
+
+done
