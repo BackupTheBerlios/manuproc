@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_macros.h,v 1.2 2003/03/07 09:00:31 christof Exp $ */
+/* $Id: AufEintrag_macros.h,v 1.3 2003/03/07 10:34:47 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -37,7 +37,7 @@
 	{  ArtikelBaum::faktor_t AE_faktor = AE_artbaum.Faktor(artloop_var->first); \
 	   AuftragBase::mengen_t AE_menge2=AE_faktor*menge; \
 	   for(AufEintragZu::list_t::const_iterator zuloop_var=artloop_var->second.begin(); \
-	   		zuloop_var!=artloop_var->second.end();++j) \
+	   		zuloop_var!=artloop_var->second.end();++zuloop_var) \
 	   {  mengen_t mengen_var=AuftragBase::min(zuloop_var->Menge,AE_menge2); \
 	      if (!mengen_var) continue;
 	      
@@ -62,7 +62,7 @@ template <class T>
    {  ArtikelBaum::faktor_t AE_faktor = AE_artbaum.Faktor(artloop_var->first); 
       AuftragBase::mengen_t AE_menge2=AE_faktor*menge; 
       for(AufEintragZu::list_t::const_iterator zuloop_var=artloop_var->second.begin(); 
-	   		zuloop_var!=artloop_var->second.end();++j) 
+	   		zuloop_var!=artloop_var->second.end();++zuloop_var) 
       {  AuftragBase::mengen_t mengen_var=AuftragBase::min(zuloop_var->Menge,AE_menge2); 
          if (!mengen_var) continue;
 

@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.56 2003/03/07 08:10:12 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.57 2003/03/07 10:34:47 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -304,6 +304,51 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(int uid,mengen_t menge,bool insta
  return menge2;
 }
 
+#if 1
+class ArtikelInternAbbestellen_cb
+{	unsigned uid;
+	ManuProC::Auftrag::Action reason;
+	const AufEintrag &mythis;
+
+public:
+	ArtikelInternAbbestellen_cb(const AufEintrag &_mythis, unsigned _uid, ManuProC::Auftrag::Action _reason)
+		: uid(_uid), reason(_reason), mythis(_mythis)
+	{}
+	AuftragBase::mengen_t operator()(const ArtikelBase &,
+ 		const AufEintragBase &,AuftragBase::mengen_t) const;
+};
+
+AuftragBase::mengen_t ArtikelInternAbbestellen_cb::operator()
+	(const ArtikelBase &i,
+ 		const AufEintragBase &j,AuftragBase::mengen_t M) const
+{  AufEintrag AE(j);
+   if(j.Id()==AuftragBase::ungeplante_id || j.Instanz()->LagerInstanz())
+      M=-AE.MengeAendern(uid,-M,true,AufEintragBase(),reason);
+   else // Abbestellung im Lager
+     {
+       assert(j.Id()!=AuftragBase::dispo_auftrag_id);
+       AuftragBase::dispo_auftrag_aendern(uid,j.Instanz(),i,M,AE.getLieferdatum(),j);
+     } 
+   AufEintragZu(mythis).setMengeDiff__(j,-M);
+   if(j.Instanz()->LagerInstanz() && 
+      j.Id()==AuftragBase::plan_auftrag_id)
+       AuftragBase::dispo_auftrag_aendern(uid,j.Instanz(),i,M,LagerBase::Lagerdatum(),AufEintragBase());
+   return M;
+}
+
+void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftrag::Action reason) const
+{ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
+   "menge=",menge,"Reason=",reason);
+
+ assert(menge>0);
+ try{
+      distribute_children(*this,menge,ArtId(),
+   			ArtikelInternAbbestellen_cb(*this,uid,reason));
+  }catch(NoAEB_Error &e) 
+  {std::cerr <<"Falsche Anzahl von AufEinträgen: "<<e.what()<<'\n'; 
+   exit(1);}
+}
+#else
 void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftrag::Action reason) const
 {ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
    "menge=",menge,"Reason=",reason);
@@ -328,6 +373,7 @@ void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftr
   {std::cerr <<"Falsche Anzahl von AufEinträgen: "<<e.what()<<'\n'; 
    exit(1);}
 }
+#endif
 
 void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t menge,const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
