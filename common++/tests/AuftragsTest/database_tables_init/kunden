@@ -739,3 +739,4 @@ CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "kunden"  NOT DEFERRABLE I
 
 CREATE CONSTRAINT TRIGGER "kunden_betreuer_ref" AFTER INSERT OR UPDATE ON "kunden"  FROM "ku_person" NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('kunden_betreuer_ref', 'kunden', 'ku_person', 'UNSPECIFIED', 'betreuer', 'persnr');
 
+alter table kunden add ab_an_rngadresse bool;
