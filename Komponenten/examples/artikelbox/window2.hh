@@ -1,4 +1,4 @@
-// $Id: window2.hh,v 1.1 2002/11/22 11:36:46 christof Exp $
+// $Id: window2.hh,v 1.2 2002/11/22 14:28:20 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma

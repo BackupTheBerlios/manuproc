@@ -1,4 +1,4 @@
-/* $Id: RowDataBase.h,v 1.4 2002/11/22 14:21:34 christof Exp $ */
+/* $Id: RowDataBase.h,v 1.5 2002/11/22 14:28:20 christof Exp $ */
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: RowDataBase.h,v 1.4 2002/11/22 14:21:34 christof Exp $
+// $Id: RowDataBase.h,v 1.5 2002/11/22 14:28:20 christof Exp $
 
 #ifndef KOMPONENTEN_ROWDATA_H
 #define KOMPONENTEN_ROWDATA_H
@@ -36,9 +36,8 @@ public:
 
 class cH_RowDataBase : public Handle<const RowDataBase>
 {
-protected:
- cH_RowDataBase() {}
 public:
+ cH_RowDataBase() {}
  cH_RowDataBase(const RowDataBase *r) : Handle<const RowDataBase>(r){}
 };
 

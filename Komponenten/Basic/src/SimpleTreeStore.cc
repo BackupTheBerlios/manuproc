@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.3 2002/11/22 11:08:00 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.4 2002/11/22 14:28:20 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -121,6 +121,8 @@ SimpleTreeStore::SimpleTreeStore(int cols,int attrs)
 	  color_bool(false), m_columns(cols)
 {  if (attrs<1) attrcount=cols;
    m_refTreeStore=Gtk::TreeStore::create(m_columns);
+   getModel().signal_title_changed().connect(SigC::slot(*this,&SimpleTreeStore::on_title_changed));
+   defaultSequence();
 }
 
 class TreeModelColumn_C : public Gtk::TreeModelColumnBase
@@ -138,6 +140,171 @@ SimpleTreeStore::ModelColumns::ModelColumns(int _cols)
       add(cols.back());
 //      assert(c.index()==i);
    }
+   add(row);
 }
 
 // CellItem ^= TreeRow
+
+void SimpleTreeStore::on_title_changed(guint idx)
+{  for (guint i=0; i<Cols(); ++i)
+   {  if (currseq[i]==idx)
+      {  title_changed(i);
+         return; // this assumes that there are no duplicates
+      }
+   }
+}
+
+const std::string SimpleTreeStore::getColTitle(guint idx) const
+{  return getModel().getColTitle(currseq[idx]);
+}
+
+void SimpleTreeStore::defaultSequence()
+{  currseq.clear();
+   for(guint i=0; i<Cols(); ++i) currseq.push_back(i);
+}
+
+#if 0
+void SimpleTreeStore::redisplay()
+{
+ 
+// liste loeschen
+ if(clear_me) TCList::clear();
+
+ std::vector<cH_RowDataBase>::const_iterator i=datavec.begin();
+ std::vector<cH_RowDataBase>::const_iterator j=datavec.end();
+
+// neu einordnen, Summen berechnen
+ for(; i!=j; ++i)
+    insertLine((TCListRow_API*)this,*this,*i,currseq,0);
+
+#if 0
+// Summen anzeigen
+ for(TCListRow_API::iterator i = begin(); i!=end(); ++i)
+ {  if (!((TreeRow*)(*i).get_user_data())->Leaf())
+   	((TreeRow*)(*i).get_user_data())->refreshSum(*this);
+ }
+ show_or_hide_Spalten();
+ expand();
+
+//CList Breite anpassen
+ for (unsigned int i=0;i<Cols();++i)
+        set_column_auto_resize(i,true);
+
+ // callback breitstellen:
+ reorder();
+#endif
+}
+
+void TreeBase::on_line_appended(cH_RowDataBase row)
+{  insertLine((TCListRow_API*)this,*this,row,currseq,0);
+// Summen neu anzeigen (hmmm, overkill!)
+#if 0
+ for(TCListRow_API::iterator i = begin(); i!=end(); ++i)
+ {  if (!((TreeRow*)(*i).get_user_data())->Leaf())
+   	((TreeRow*)(*i).get_user_data())->refreshSum(*this);
+ }
+#endif
+}
+
+#if 0
+bool operator < (const TCListRow_API &a, const cH_EntryValue &b)
+{  return *(reinterpret_cast<TreeRow*>(a.get_user_data())->Value()) < *b;
+}
+
+bool operator < (const cH_EntryValue &a, const TCListRow_API &b)
+{  return *a < *(reinterpret_cast<TreeRow*>(b.get_user_data())->Value());
+}
+#endif
+
+//#define DEBUG_NEW
+
+void TreeBase::insertIntoTCL(TCListRow_API *parent, const TreeBase &tree,
+            const cH_RowDataBase &v, std::deque<guint> selseq, guint deep)
+{
+recurse:
+ TCListRow_API::iterator current_iter=parent->begin();
+ TCListRow_API::iterator apiend = parent->end();
+ TCListRow_API::iterator upper_b=apiend;
+ guint seqnr=selseq.front();	
+ cH_EntryValue ev=v->Value(seqnr,ValueData());
+
+// node/leaf mit Wert<=ev suchen
+// optimization: we expect to need upper_bound if this is the last attribute
+ if (!MehrAlsEinKind(selseq))
+ {  std::pair<TCListRow_API::iterator,TCListRow_API::iterator> range 
+ 		= std::equal_range(current_iter,apiend,ev);
+    current_iter=range.first;	// lower_bound
+    upper_b=range.second;	// upper_bound
+ }
+ else
+    current_iter=std::lower_bound(current_iter,apiend,ev);
+
+ if(current_iter!=apiend) // dann einfuegen
+   {// eigentlich nur ein gecastetes current_iter
+    TreeRow *current_tclr=reinterpret_cast<TreeRow*>((*current_iter).get_user_data());
+    //----------------- gleicher Wert ------------------
+    if((ev) == current_tclr->Value())
+     { 
+      if (MehrAlsEinKind(selseq)) // wenn Blatt noch nicht erreicht
+      // eine neue Node erzeugen(?)
+      {  cH_RowDataBase v2=current_tclr->LeafData();
+         guint child_s_deep=deep;
+
+	do 
+	{selseq.pop_front();
+	 ++child_s_deep;
+	 
+	 // darum muss sich eine andere Node kümmern
+         if (child_s_deep==current_tclr->Children_s_Deep())
+         {  current_tclr->cumulate(v);
+            // insertIntoTCL((&*current_iter),tree,v,selseq,child_s_deep);
+            // return;
+            // goto ist schneller als (end?)rekursion !!!
+            parent=&*current_iter;
+            deep=child_s_deep;
+            goto recurse;
+         }
+         
+        } while (MehrAlsEinKind(selseq) 
+			&& v->Value(selseq.front(),ValueData())
+				==v2->Value(selseq.front(),ValueData()));
+         
+	 // vor current_iter einfügen
+         TreeRow *newnode=NewNode(deep, ev, child_s_deep, v2, child_s_deep < showdeep, *current_tclr);
+	 newnode->initTCL(parent,current_iter,tree);
+	 tree.initDepth(newnode,deep);
+	 
+	 current_tclr->getTCL_API()->reparent(*parent,*newnode->getTCL_API());
+	 current_tclr->ValueDeep(v2->Value(selseq.front(),ValueData()),child_s_deep);
+	 tree.initDepth(current_tclr,child_s_deep);
+
+	 // das neue Blatt einsortieren
+	 newnode->cumulate(v);
+         // insertIntoTCL(newnode->getTCL_API(),tree,v,selseq,child_s_deep);
+         parent=newnode->getTCL_API();
+         deep=child_s_deep;
+         goto recurse;
+      }
+      else // Blatt erreicht
+      {  // als letztes der Gleichen an parent anhängen
+         // upper_b steht schon richtig (s.o.)
+         TreeRow *newleaf=NewLeaf(deep,ev,v);
+	 newleaf->initTCL(parent, upper_b, tree);
+      }
+      return;
+     }
+     else // --------------- kleinerer Wert (davor Einfügen) ----------
+	{  TreeRow *newleaf=NewLeaf(deep,ev,v);
+	 newleaf->initTCL(parent,current_iter,tree);
+	 tree.initDepth(newleaf,deep);
+	}
+   }
+ else //----------------- am Ende der Liste: anhängen ---------------------
+   {   TreeRow *newleaf=NewLeaf(deep,ev,v);
+	    newleaf->initTCL(parent,tree); 
+	 tree.initDepth(newleaf,deep);
+    }
+}                                
+
+
+#endif

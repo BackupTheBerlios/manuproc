@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.3 2002/11/22 11:08:00 christof Exp $
+// $Id: SimpleTree.hh,v 1.4 2002/11/22 14:28:20 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -35,12 +35,17 @@ public:
 	// these are from model
 	void setDataVec(const std::vector<cH_RowDataBase> &d) {  sts.getModel().setDataVec(d); }
 	void setTitles(const std::vector<std::string>& T) {  sts.getModel().setTitles(T); }
+	SimpleTreeStore &getStore() { return sts; }
+	const SimpleTreeStore &getStore() const { return sts; }
+	const std::string getColTitle(guint idx) const { return sts.getColTitle(idx); }
 };
 
 class SimpleTree : public Gtk::TreeView, public SimpleTreeStore_Proxy
-{public:
+{private:
+	void on_title_changed(guint nr);
+
+public:
    SimpleTree(unsigned int cols,int attrs=-1);
-   
 };
 
 #if 0

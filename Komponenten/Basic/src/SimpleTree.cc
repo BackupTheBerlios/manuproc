@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.5 2002/11/22 14:28:20 christof Exp $
+// $Id: SimpleTree.cc,v 1.6 2002/11/22 14:29:19 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
