@@ -1,4 +1,4 @@
-// $Id: Produktionsdauer.cc,v 1.8 2002/10/24 14:08:59 thoma Exp $
+// $Id: Produktionsdauer.cc,v 1.9 2002/10/24 14:14:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *

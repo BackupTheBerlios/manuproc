@@ -1,4 +1,4 @@
-// $Id: ppsInstanzProduziert.cc,v 1.3 2002/10/24 14:08:59 thoma Exp $
+// $Id: ppsInstanzProduziert.cc,v 1.4 2002/10/24 14:14:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *

@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.h,v 1.9 2002/10/24 14:08:59 thoma Exp $
+// $Id: Zahlungsart.h,v 1.10 2002/10/24 14:14:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

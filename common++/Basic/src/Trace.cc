@@ -1,6 +1,6 @@
-// $Id: ArtikelEAN_sql.pgcc,v 1.8 2002/10/24 14:14:30 christof Exp $
+// $Id: Trace.cc,v 1.1 2002/10/24 14:17:17 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,29 +17,33 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <Misc/Trace.h>
 
+static int enabled_parts;
+static int depth;
 
-#include"ArtikelEAN.h"
+static std::ostream *os;
 
-ArtikelEAN::ArtikelEAN(const std::string _ean) throw(SQLerror)
-{
- exec sql begin declare section;
- int ARTID;
- char *EAN=(char*)_ean.c_str();
- exec sql end declare section;
-
- 
-
- exec sql select id into :ARTID from artbez_3_1 where ean= :EAN; 
- SQLerror::test(__FILELINE__);
-
- artikelid = ARTID;
-
+void ManuProC::Tracer::Enable(Channel c, bool an)
+{  if (!os) os = &std::cerr;
+   assert ((unsigned int)(c)<sizeof(enabled_parts)*8);
+   if (an) enabled_parts|=1<<int(c);
+   else enabled_parts&=~(1<<int(c));
 }
 
+std::ostream &ManuProC::Tracer::FunctionStart(const std::string &s)
+{  
+  if (depth<0) depth=0; // nonsense
+  else if (depth) (*os) << std::string(depth,' ');
+   (*os) << s << '(';
+   depth++;
+   return *os;
+}
 
+void ManuProC::Tracer::FunctionEnd()
+{  --depth;
+}
 
-
-
-
-
+bool ManuProC::Tracer::enabled(Channel c)
+{  return enabled_parts&(1<<int(c));
+}
