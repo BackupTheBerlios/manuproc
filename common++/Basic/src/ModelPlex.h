@@ -1,4 +1,4 @@
-// $Id: ModelPlex.h,v 1.6 2004/05/06 13:11:49 christof Exp $
+// $Id: ModelPlex.h,v 1.7 2004/06/04 13:40:51 christof Exp $
 /*  libcommon++: ManuProC's OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -73,7 +73,7 @@ template <class T>
 	void actmodel2us()
 	{  MODELPLEX_DEBUG(__FUNCTION__,Id(),actmodel.Id());
 	   cm_con.block();
-	   if (Value()!=actmodel.Value()) // do not fire if unchanged
+	   if (actmodel.valid() && Value()!=actmodel.Value()) // do not fire if unchanged
 	      *this=actmodel.Value(); 
 	   cm_con.unblock();
 	}
