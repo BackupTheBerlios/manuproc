@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.63 2004/05/06 08:19:09 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.64 2004/05/06 08:41:50 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -205,7 +205,8 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
 	  auffuellen_bool(), expandieren_bool(), block_save(),
 	  color_bool(),
 	  sortierspalte(invisible_column), invert_sortierspalte(), 
-	  m_columns(max_col), stamp(reinterpret_cast<unsigned>(this))
+	  stamp(reinterpret_cast<unsigned>(this)),
+	  m_columns(max_col)
 {  
 #ifndef OLD_MODEL
   //We need to specify a particular get_type() from one of the virtual base classes, but they should
@@ -637,12 +638,16 @@ void SimpleTreeStore::iterinit(GtkTreeIter* iter,const iterator &schema) const
 #else
 #define VALUE_INIT0(type) \
 	g_value_init(value,(type))
-#define VALUE_INIT2(name,val) \
+#define VALUE_SET(type,val) \
+	g_value_set_##type(value,(val))
+
+#define VALUE_INIT3(type2,name,val) \
 	VALUE_INIT0(m_columns.name.type()); \
-	g_value_set_boxed(value,(val))
-#define VALUE_INIT(name) VALUE_INIT2(name,&nd.name)
+	VALUE_SET(type2,(val))
+#define VALUE_INIT(name) VALUE_INIT3(boxed,name,&nd.name)
+#define VALUE_INIT_U(name) VALUE_INIT3(uint,name,nd.name)
 #define VALUE_STRING(val) \
-	g_value_set_string(value,(val).c_str())
+	VALUE_SET(string,(val).c_str())
 #endif	
 
 void SimpleTreeStore::get_value_vfunc(const TreeModel::iterator& iter, 
@@ -652,13 +657,13 @@ void SimpleTreeStore::get_value_vfunc(const TreeModel::iterator& iter,
    switch(e_spalten(column))
    {  case s_row: VALUE_INIT(row);
          return;
-      case s_deep: VALUE_INIT(deep);
+      case s_deep: VALUE_INIT_U(deep);
          return;
-      case s_childrens_deep: VALUE_INIT(childrens_deep);
+      case s_childrens_deep: VALUE_INIT_U(childrens_deep);
          return;
       case s_leafdata: VALUE_INIT(leafdata);
          return;
-      case s_background: VALUE_INIT2(background,colors[nd.deep%num_colors].gobj());
+      case s_background: VALUE_INIT3(boxed,background,colors[nd.deep%num_colors].gobj());
          return;
       default:
          if (int(s_text_start)<=column && column<int(s_text_start)+int(max_column))
