@@ -51,7 +51,7 @@ void auftrag_lieferschein::on_liefer_neu()
  lieferschein_liste->newLieferschein(liefer_kunde->get_value());
 //cout << "liefID" << lieferschein_liste->getLieferschein().Id() << "\n";
  liefernr->set_text(
-	Formatiere(lieferschein_liste->getLieferschein().Id(),0,0,""));
+	Formatiere(lieferschein_liste->getLieferschein().Id(),0,6,"","",'0'));
  on_liefnr_activate();
 }
 
@@ -84,6 +84,7 @@ void auftrag_lieferschein::display(int lfrsid)
  else rngnr->set_text("");
  lieferschein_liste->show();
  vbox_eingabe->show();
+ liefdate->set_value(lieferschein_liste->getLieferschein().getDatum());
 }
 
 void auftrag_lieferschein::display2(int kdnr)
@@ -229,7 +230,7 @@ void auftrag_lieferschein::on_Palette_activate()
      	                        _anzahl,
      	                        e==EINH_STUECK?0.0:mengeneinheit,
      	                        Palette->get_value_as_int(),false);
-     	   OffAuf_RowData::abschreiben(i->getAuftragid(),i->getZnr(),menge);
+     	   OffAuf_RowData::abschreiben(*i,menge);
         }
         else
         // stueckeln (1*Lieferung, dann Zuordnung)
@@ -247,7 +248,7 @@ void auftrag_lieferschein::on_Palette_activate()
      	                        e==EINH_STUECK?abmenge:1,
      	                        e==EINH_STUECK?0.0:abmenge,
      	                        0,true);
-              OffAuf_RowData::abschreiben(i->getAuftragid(),i->getZnr(),abmenge);
+              OffAuf_RowData::abschreiben(*i,abmenge);
               menge-=abmenge;
        	   }
            if (menge)

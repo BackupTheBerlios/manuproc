@@ -329,13 +329,13 @@ void auftrag_main::on_prozlistscombo_activate()
       foot_statusbar->push(0,selectedmyrow->Description(
                                 cH_ExtBezSchema(ExtBezSchema::default_ID)));
 
-      EntryValue ev((cH_Prozess)(pid),SUBID_SPAWN,Petig::Datum::today());
-      vector<int> buf = maintree->getCurrSeq();
+      cH_EntryValue ev=af.getSeqValue(PROZ_SEQ);
 
+      vector<int> buf = maintree->getCurrSeq();
       size_t i;
       for(i=0; (i<buf.size()) && (buf[i]!=PROZ_SEQ); i++);
 
-      selectedmyrow->setText(i,ev.getStrProzVal());
+      selectedmyrow->setText(i,ev->getStrVal());
      }
 }
 

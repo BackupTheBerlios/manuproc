@@ -163,11 +163,11 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie)
         if(Was()!="Auftrag")
           {if (stueck_bool && (!(*k).ZusatzInfo() || (*k).Stueck()!=1))
             {  os <<linecolor ;
-             	if ((*k).ZusatzInfo()) os << '(';
+             	// if ((*k).ZusatzInfo()) os << '(';
               	os << FormatiereTeX((*k).Stueck());
            	   if (Einheit(artikel_id).StueckEinheit().size())
               	   os <<'{'<< einheitsize <<Einheit(artikel_id).StueckEinheit() <<'}';
-           	   if ((*k).ZusatzInfo()) os << ')';
+           	//   if ((*k).ZusatzInfo()) os << ')';
             }
             if (stueck_bool) os <<" & " ;         
             if (menge_bool) 
@@ -177,12 +177,12 @@ void LR_Abstraktion::drucken_table(ofstream &os,const string& kopie)
            }
          if (stueck_bool && menge_bool)
            { if (Was()=="Auftrag") os << linecolor << FormatiereTeX_short(fixedpoint<3>((*k).Stueck() ))<<einheitsize <<Einheit(artikel_id).TeX();
-             else if (!(*k).ZusatzInfo()) os <<linecolor<< FormatiereTeX_short(fixedpoint<3>((*k).Stueck() * (*k).Menge()))<<einheitsize <<Einheit(artikel_id).TeX();
-             os <<" & ";   
+             else os <<linecolor<< FormatiereTeX_short(fixedpoint<3>((*k).Stueck() * (*k).Menge()))<<einheitsize <<Einheit(artikel_id).TeX();
+             os <<" & ";
            }
 	 for(ExtBezSchema::const_sigiterator l=schema_mem->sigbegin(signifikanz);l!=schema_mem->sigend(signifikanz);++l)
-	   { if ((*k).ZusatzInfo()) os << "\\mbox";
-             os <<"{"<<linecolor<< Gtk2TeX::string2TeX(string((*bez)[l->bezkomptype])) <<"}  &  ";
+	   { if ((*k).ZusatzInfo()) os << "&";
+             else os <<"{"<<linecolor<< Gtk2TeX::string2TeX((*bez)[l->bezkomptype]->getStrVal()) <<"}&";
 	   }
          if(Was()=="Rechnung")       
           {

@@ -101,16 +101,16 @@ void MainTree::fill(SelectedFullAufList &allids, int deep=0)
 	  AufEintrag &tmpentry=aufentrymap[mk];	
 
 	  int tmp = selseq.front();
-	  EntryValue val = tmpentry.getSeqValue(tmp);
+	  cH_EntryValue val = tmpentry.getSeqValue(tmp);
 	  while((l!=end()) &&
-		(val > ((MyRow*)(*l).get_user_data())->getValue()))
+		(*val > *(((MyRow*)(*l).get_user_data())->getValue())))
 	  	l++;
 	
-	  if((tmp==AUFM_SEQ) && (val)) stuecksumme=true;
+	  if((tmp==AUFM_SEQ) && *(val)) stuecksumme=true;
 	  if(tmp==AUFID_SEQ) auftragflag=true;
 	  if(l!=end())
 	    {
-	    if(val == ((MyRow*)(*l).get_user_data())->getValue())
+	    if(*val == *(((MyRow*)(*l).get_user_data())->getValue()))
 	      {selseq.pop_front();
        	       d = d ? d-1 : 0;
       	       ((MyRow*)(*l).get_user_data())->summeter+=tmpentry.getRest();

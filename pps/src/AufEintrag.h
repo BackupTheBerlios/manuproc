@@ -23,7 +23,7 @@
 #include "aktAufEintrag.h" // Datenabstraktion
 #include <Auftrag/AufEintragBase.h>
 #include <Auftrag/AuftragBase.h>
-#include <Aux/EntryValue.h> // veraltet
+#include <Aux/EntryValueBase.h>
 #include <Artikel/ArtikelBase.h> 
 #include <Aux/SQLerror.h>
 #include <iostream>
@@ -41,7 +41,7 @@ public:
  AufEintrag() {} ;
  AufEintrag(const AufEintragBase &ab) : AufEintragBase(ab) {} ;
  
- const EntryValue getSeqValue(int seqnr) const;
+ const cH_EntryValue getSeqValue(int seqnr) const;
  const ArtikelBase::ID &ArtikelID() const { return artikel->Id(); }
 
  friend std::ostream &operator<<(std::ostream &o,const AufEintrag &a);

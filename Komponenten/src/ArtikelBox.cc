@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.5 2001/07/05 12:58:06 christof Exp $
+// $Id: ArtikelBox.cc,v 1.6 2001/07/16 14:22:15 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -23,13 +23,14 @@
 #include <gtk--/box.h>
 #include <gtk--/paned.h>
 #include <algorithm>
+#include <Aux/EntryValueIntString.h>
 #include "stock_button_apply.xpm"
 #include "stock_button_cancel.xpm"
 
 void ArtikelBox::selectFunc(unsigned int sp,unsigned int l) throw(SQLerror)
 {
  // Signifikanz testen
- if(sp == (schema->size(signifikanz[l])-1) || kombiniertbool)
+ if(sp == (schema->sigsize(signifikanz[l])-1) || kombiniertbool)
    {try
      {
       loadArtikel(l);
@@ -81,35 +82,39 @@ gint ArtikelBox::try_grab_focus(GtkWidget *w,gpointer gp)
 void ArtikelBox::set_value(const ArtikelBase &art)
 throw(SQLerror,ArtikelBoxErr)
 {cH_ArtikelBezeichnung artbez(art,schema->Id());
- if (schema->Typ()!=artbez->getExtBezSchema()->Typ()) 
+ if (schema!=artbez->getExtBezSchema()) 
     setExtBezSchema(artbez->getExtBezSchema());
 
  artikel=art;
 
  pixmap->set(stock_button_apply_xpm);
 
- ExtBezSchema::const_iterator ci = schema->begin();
-
- for (unsigned int j=0;j<=signifikanz.size();++j)
- for (unsigned int i=0; ci!=schema->end() && i<combos[j].size(); ++ci)
- { if (ci->signifikanz!=signifikanz[j]) continue;
-   combos[j][i]->set_text((*artbez)[ci->bezkomptype].getStrVal());
-   ++i;
+ for (unsigned int j=0;j<signifikanz.size();++j)
+ {  
+#if 0 
+    if (j>=combos.size())
+    {  cerr << __FILELINE__": Keine Ahnung warum aber in ArtikelBox stimmt was nicht\n";
+       cerr << combos.size() << '/' << signifikanz.size() << ' '
+       	<< schema->Id() << ',' << schema->Typ() << '|'
+       	<< artbez->getExtBezSchema()->Id() << ',' 
+       	<< artbez->getExtBezSchema()->Typ() << '\n';
+       return;
+    }
+#endif
+    assert(j<combos.size());
+    ArtikelBezeichnung::const_sigiterator ci = artbez->sigbegin(signifikanz[j]);
+    for (unsigned int i=0; ci!=artbez->sigend(signifikanz[j]) 
+    		&& i<combos[j].size(); ++ci, ++i)
+    { combos[j][i]->set_text((*ci)->getStrVal());
+    }
  }
 
-/*
- for (unsigned int i=0; ci!=schema->end() && i<combos.size(); ++ci)
- { if (ci->signifikanz!=signifikanz[0]) continue;
-   combos[0][i]->set_text((*artbez)[ci->bezkomptype].getStrVal());
-   ++i;
- }
-*/
 }
 
 
-vector<EntryValue> ArtikelBox::expand_kombi_Artikel(unsigned int l)
+vector<cH_EntryValue> ArtikelBox::expand_kombi_Artikel(unsigned int l)
 {
-     std::vector<EntryValue> v;
+     std::vector<cH_EntryValue> v;
      const std::string text=combos[l][0]->get_text();
      std::string::const_iterator i1=text.begin();
      for (ExtBezSchema::const_sigiterator i=schema->sigbegin(signifikanz[l]);i!=schema->sigend(signifikanz[l]);++i)
@@ -119,16 +124,16 @@ vector<EntryValue> ArtikelBox::expand_kombi_Artikel(unsigned int l)
       else i2 = search(i1,text.end(),i->separator.begin(),i->separator.end());
       std::string sx(i1,i2);
       i1=i2+i->separator.size();
-      v.push_back(sx);
+      v.push_back(cH_EntryValueIntString(sx));
      }
  return v;
 }
 
 void ArtikelBox::loadArtikel(unsigned int l) throw(SQLerror)
-{std::vector<EntryValue> v;
+{std::vector<cH_EntryValue> v;
  if(!kombiniertbool)
   { for (unsigned int i=0;i<combos[l].size();++i)
-     v.push_back(combos[l][i]->get_text());
+     v.push_back(cH_EntryValueIntString(combos[l][i]->get_text()));
   }
  else v = expand_kombi_Artikel(l);
  try {
@@ -136,15 +141,11 @@ void ArtikelBox::loadArtikel(unsigned int l) throw(SQLerror)
   artikel=bez->Id();
   pixmap->set(stock_button_apply_xpm);
 
-  ExtBezSchema::const_iterator ci = schema->begin();
-  for (unsigned int j=0;j<=signifikanz.size();++j)
-   {
-    for (unsigned int i=0; ci!=schema->end() && i<combos[j].size(); ++ci)
-     { 
-      if (ci->signifikanz!=signifikanz[j]) continue;
-      combos[j][i]->set_text((*bez)[ci->bezkomptype].getStrVal());
-      ++i;
-     }
+  for (unsigned int j=0;j<signifikanz.size();++j)
+   {  ExtBezSchema::const_sigiterator ci = schema->sigbegin(signifikanz[j]);
+      for (unsigned int i=0; ci!=schema->sigend(signifikanz[j]) 
+      		&& i<combos[j].size(); ++ci, ++i)
+         combos[j][i]->set_text((*bez)[ci->bezkomptype]->getStrVal());
    }
  } catch (SQLerror &e)
  {  std::cerr << "ArtikelBox::loadArtikel: setArtikel threw "<< e<< "\n";
@@ -166,13 +167,9 @@ void ArtikelBox::init()
 
 reloop:
  for (std::vector<int>::iterator i=signifikanz.begin();i!=signifikanz.end();++i)
-   if (schema->size(*i) == 0) {signifikanz.erase(i);goto reloop;}
-/*
-cout << signifikanz.size()<<"\t";
-for (int i=0;i<signifikanz.size();++i)std::cout << signifikanz[i]<<"\t";
-cout << "\n";
-*/
+   if (schema->sigsize(*i) == 0) {signifikanz.erase(i);goto reloop;}
  if (signifikanz.size()==0)  signifikanz.push_back(1); 
+
  combos.resize(signifikanz.size());
  labels.resize(signifikanz.size());
 
@@ -187,7 +184,7 @@ cout << "\n";
       {Gtk::VPaned* hp=manage(new Gtk::VPaned);
        hp->set_handle_size(10);
        hp->set_gutter_size(10);
-//       hp->set_position(50*schema->size(*i));
+//       hp->set_position(50*schema->sigsize(*i));
        hp->pack1(*table, true, true);
        hp->pack2(*oberstes, true, true);
        hp->show();
@@ -197,7 +194,7 @@ cout << "\n";
       {Gtk::HPaned* hp=manage(new Gtk::HPaned);
        hp->set_handle_size(10);
        hp->set_gutter_size(10);
-//       hp->set_position(50*schema->size(*i));
+//       hp->set_position(50*schema->sigsize(*i));
        hp->pack1(*table, true, true);
        hp->pack2(*oberstes, true, true);
        hp->show();
@@ -209,7 +206,7 @@ cout << "\n";
 
 Gtk::Container* ArtikelBox::init_table(int l)
 {
- unsigned int cls=schema->size(signifikanz[l]); // Anzahl der Spalten
+ unsigned int cls=schema->sigsize(signifikanz[l]); // Anzahl der Spalten
  Gtk::Table* table = manage(new Gtk::Table(2,cls));
  Gtk::EventBox *ev = manage(new Gtk::EventBox());
  ev->add(*table);
@@ -276,13 +273,13 @@ void ArtikelBox::setExtBezSchema(const cH_ExtBezSchema &_schema)
       menu=0;
    }
    reset();
- ArtikelBox::Benutzerprofil_laden();
 
    // Altes Widget löschen
    remove();
    combos.clear();
    labels.clear();
    schema=_schema;
+//   Benutzerprofil_laden(); // wird in init gemacht
    init();
    menu=manage(new Gtk::Menu());
    fuelleMenu();

@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.6 2001/07/09 14:14:20 christof Exp $
+// $Id: ArtikelBox.hh,v 1.7 2001/07/16 14:22:15 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -84,7 +84,7 @@ class ArtikelBox : public Gtk::EventBox
  std::string kombinierteAnzeige(int sig, int atyp, int id);
  void Autocomplete(Gtk::CheckMenuItem *autocomplete);
  void kombiniert(Gtk::CheckMenuItem *kombi);
- std::vector<EntryValue> expand_kombi_Artikel(unsigned int l);
+ std::vector<cH_EntryValue> expand_kombi_Artikel(unsigned int l);
  void set_Vertikal(Gtk::CheckMenuItem *verti);
  void Benutzerprofil_speichern();
  void Benutzerprofil_laden();
@@ -105,11 +105,11 @@ public:
 	ArtikelBox(const cH_ExtBezSchema &_schema) throw(SQLerror);
 	~ArtikelBox();
 
-	const std::string operator[](guint i) const { return combos[i][0]->get_text(); }
 	const cH_ExtBezSchema getBezSchema() const { return schema; }
-//	int getSignif() const { return schema->size(signifikanz[0]); }
-	
 	void setExtBezSchema(const cH_ExtBezSchema &_schema);
+
+// dangerous! no range checking!
+	const std::string operator[](guint i) const { return combos[0][i]->get_text(); }
 
    void reset()
 

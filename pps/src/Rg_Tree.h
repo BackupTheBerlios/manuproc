@@ -75,7 +75,7 @@ class Rg_RowData : public RowDataBase
   
 public:
  Rg_RowData(const RechnungEntry &le, ExtBezSchema::ID ebzid) : 
- 	rechnungentry(le), artikelbez(le.ArtikelID(),ebzid,ArtikelBezeichnung::dont_throw()) {}
+ 	rechnungentry(le), artikelbez(le.ArtikelID(),ebzid) {}
 
  const cH_EntryValue Value(guint _seqnr,gpointer _gp) const;
  const ArtikelBase::ID ArtikelID() const { return artikelbez->Id(); }

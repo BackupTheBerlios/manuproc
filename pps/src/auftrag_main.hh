@@ -32,9 +32,6 @@ class auftrag_main : public auftrag_main_glade
  bool interne_namen;
  AufEintragBase2 selected;
  MyRow *selectedmyrow;  // spaeter weg!
-// int selectedaufzeile;
-// int selectedaufid; 
-// AuftragBase *selectedauftragbase;
  int showdeep;
  static const unsigned int Artikelgroesse = 4;
 
@@ -73,14 +70,10 @@ public:
 class Data_auftrag : public RowDataBase
 {
    const AufEintragBase &AB ;
-//   const AufEintrag &AB ;
    const auftrag_main *AM ;
 
 public:
    Data_auftrag(const AufEintragBase& ab, auftrag_main* am) :AB(ab),AM(am) {}
-//   Data_auftrag(const AufEintrag& ab, auftrag_main* am) :AB(ab),AM(am) {}
-
-   
 
     virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
  { 
@@ -93,8 +86,9 @@ public:
          cH_ExtBezSchema schema = 1;
          ArtikelBase artbase=ArtikelBase(artikelid);
          cH_ArtikelBezeichnung artbez(artbase,schema);
-         std::string art = (*artbez)[seqnr];
-         return cH_EntryValueIntString(art); }
+#warning horrible hack
+         return (*artbez)[seqnr];
+         }
       case 5 : {
          int lieferwoche     = AB.getZnr();
          return cH_EntryValueIntString(lieferwoche); }
@@ -104,20 +98,19 @@ public:
          else                            auftrag =      AB.getYourAufNr();
          return cH_EntryValueIntString(auftrag);}
       case 7 : {
-//         std::string verarbeitung;
-//         try {
+         std::string verarbeitung;
+         try {
 //          verarbeitung = AufEintrag(AB).getProzess()->getText() +" "+  AufEintrag(AB).getProzDat().c_str();  
-//         } catch (std::exception &e ) {std::cout << e.what() <<'\n'; }
-//         return cH_EntryValueIntString(verarbeitung); }
-}
-/*
+         } catch (std::exception &e ) 
+         { verarbeitung=e.what(); }
+	 return cH_EntryValueIntString(verarbeitung);
+	 }
       case 8 : {
          int offene_meter    = AB.getRest();     
          return cH_EntryValueIntString(offene_meter);   }
       case 9 : {
          int offene_stueck   = AB.getRestStk();
          return cH_EntryValueIntString(offene_stueck); }
-*/
      }
    return cH_EntryValueIntString("?");
  }
@@ -144,13 +137,9 @@ public:
  virtual void cumulate(const cH_RowDataBase &rd)
    {
     sum_meter += (dynamic_cast<const Data_auftrag &>(*rd)).offene_Meter();
-//    sum_stueck+= (dynamic_cast<const MyRowData &>(*rd)).offene_Stueck();
     sum_stueck+= (dynamic_cast<const Data_auftrag &>(*rd)).offene_Stueck();
    }
 
-// virtual const std::vector<string> getColEntries(int cols);
-//// virtual void resetSumValues(gpointer p);
-// virtual const std::string getSumCol(int col)
   const cH_EntryValue Value(guint index,gpointer gp) const
    {
     switch(index) 
@@ -160,8 +149,6 @@ public:
       }
    }
 
-// Data_Node::Data_Node(int _seqnr, gpointer gp, const cH_RowDataBase &v, int deep)
-//   :TCListNode(_seqnr,gp, v,deep), sum_meter(0),sum_stueck(0) {}
  Data_Node::Data_Node(guint deep,const cH_EntryValue &v, bool expand)
    :TCListNode(deep,v,expand), sum_meter(0),sum_stueck(0) {}
 
@@ -175,13 +162,11 @@ class Data_Sum : public SimpleTree
 {
  public:
 
-// Data_Sum(guint cols, guint attr=8):TreeBase(cols,attr)
   Data_Sum(guint cols, guint attr=8):SimpleTree(cols,attr)
    { // make sure this is not called if you derive this from class !
      init();
    }
 
-#warning Stutzen und Summieren klappt nicht gleichzeitig
 /*
  TCListNode *NewNode(guint _seqnr, gpointer gp, const cH_RowDataBase &v, guint deep)
    { return new  Data_Node(_seqnr,gp, v,deep); }

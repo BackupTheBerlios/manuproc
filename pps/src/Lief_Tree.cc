@@ -1,4 +1,4 @@
-// $Id: Lief_Tree.cc,v 1.10 2001/07/04 10:42:07 cvs_christof Exp $
+// $Id: Lief_Tree.cc,v 1.14 2001/07/13 06:51:26 christof Exp $
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -122,24 +122,33 @@ const cH_EntryValue Lief_RowData::Value(guint _seqnr,gpointer _gp) const
  switch(_seqnr)
    {
 	case Lief_TCList::AUFNR_SEQ :
-		return cH_EntryValueIntString(Formatiere(liefentry.AufId(),0,6,"","",'0'));
+	   {  int aufid=liefentry.AufId();
+	      if (aufid)
+		 return cH_EntryValueIntString(Formatiere(aufid,0,6,"","",'0'));
+	      else return cH_EntryValueIntString("");
+	   }
 	case Lief_TCList::ARTIKEL_SEQ :
+	        if (liefentry.ZusatzInfo()) return cH_EntryValueIntString("");
 		return cH_EntryValueIntString(artikelbez->Bezeichnung());
 	case Lief_TCList::LIEFMNG_SEQ :
 	        {  int stueck(GeliefertS());
 	           fixedpoint<3> menge(GeliefertM());
                    std::string a;
-                   if (stueck!=1) a=Formatiere(stueck);
+                   if (stueck!=1) 
+                   {  a=Formatiere(stueck)
+                   	+ Einheit(liefentry.ArtikelID()).StueckEinheit();
+                   }
                    if (menge.Scaled()!=0)
                    {  if (stueck!=1) a+="*";
-                      a+=Formatiere(menge)
-                        +std::string(Einheit(liefentry.ArtikelID()));
+                      a+=Formatiere_short(menge)
+              		+ Einheit(liefentry.ArtikelID()).MengenEinheit();
                    }
+                   if (liefentry.ZusatzInfo()) a="("+a+")";
                    return cH_EntryValueIntString(a);
 		}
 	case Lief_TCList::LIEFZEILE_SEQ :
 		return cH_EntryValueIntString(liefentry.Zeile());
-	default : return cH_EntryValueIntString("-");
+	default : return cH_EntryValue();
    }
 }
 

@@ -20,13 +20,15 @@
 #include "AufEintrag.h"
 #include <Aux/Ausgabe_neu.h>
 #include <Auftrag/AuftragFull.h>
+#include <Aux/EntryValueDatum.h>
 
-const EntryValue AufEintrag::getSeqValue(int seqnr) const
+const cH_EntryValue AufEintrag::getSeqValue(int seqnr) const
 {
 
  switch(seqnr)
   {
-#warning : seqnr=bezkomptype for 1-4 (hack)
+#warning seqnr=bezkomptype for 1-4 (hack) 
+#warning bloss weg mit diesem Code!
 	case ART_SEQ :return (*artikel)[ART_SEQ];
           break;
 	case BR_SEQ :return (*artikel)[BR_SEQ];
@@ -35,25 +37,29 @@ const EntryValue AufEintrag::getSeqValue(int seqnr) const
           break;
 	case AUFM_SEQ :return (*artikel)[AUFM_SEQ];
           break;
-	case KW_SEQ : return lieferdatum; 
-	case AUFID_SEQ : return auftragid; 
-        case KNDNR_SEQ : return kdnr;  
+	case KW_SEQ : return cH_EntryValueDatum(lieferdatum);
+	case AUFID_SEQ : return cH_EntryValueIntString(auftragid);
+        case KNDNR_SEQ : return cH_EntryValueIntString(kdnr);
+           // das sortiert so nie richtig ... lieber 2 Spalten
 	case PROZ_SEQ : 
-           { EntryValue tmpev(prozess,prozess->Id() ? SUBID_SPAWN : 0, getProzDat());
-            return tmpev;
+           {  if (prozess->Id())
+              {  string res=prozess->getTyp()+" "+prozess->getText()+" "
+              		+ getProzDat().c_str();
+                 return cH_EntryValueIntString(res);
+              }
+              return cH_EntryValueIntString("");
            }
-	default : return -1;
+	default : return cH_EntryValue();
   }
- return -1;
 }
 
 ostream &operator<<(ostream &o,const AufEintrag &a)
 {
  o 	<< a.getStueck() << "\t"
-	<< a.getSeqValue(ART_SEQ).getStrVal() << "\t"
-	<< a.getSeqValue(BR_SEQ).getStrVal() << "\t"
-	<< a.getSeqValue(FB_SEQ).getStrVal() << "\t"   
-	<< a.getSeqValue(AUFM_SEQ).getStrVal() << "\t"
+	<< a.getSeqValue(ART_SEQ)->getStrVal() << "\t"
+	<< a.getSeqValue(BR_SEQ)->getStrVal() << "\t"
+	<< a.getSeqValue(FB_SEQ)->getStrVal() << "\t"   
+	<< a.getSeqValue(AUFM_SEQ)->getStrVal() << "\t"
 	<< a.getMeter() << "\t";
 
  int rest=a.getRest();  	    	    
@@ -61,7 +67,7 @@ ostream &operator<<(ostream &o,const AufEintrag &a)
  else o << "" << "\t";
  o	<< Formatiere(a.GPreis().Wert(),2,0,".") << "\t";
  try {    
-        Petig::Datum d(a.getSeqValue(KW_SEQ).Datum());
+        Petig::Datum d(a.getLieferdatum());
 	o << d.KW().Woche()<<"'"<<d.Jahr();
  } catch (Petig::Datumsfehler &e)
  {  o << "Fehler"; }

@@ -17,24 +17,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// generated 2000/11/29 14:48:51 MET by jacek@mimi.
-// using glademm V0.5.10
-//
-// newer (non customized) versions of this file go to auftrag_bearbeiten.hh_glade
-
-// you might replace
-//    class Foo : public Foo_glade { ... };
-// by
-//    typedef Foo_glade Foo;
-// if you didn't make any modifications to the widget
-
 #ifndef _AUFTRAG_BEARBEITEN_HH
 #  include "auftrag_bearbeiten_glade.hh"
 #  define _AUFTRAG_BEARBEITEN_HH
 
 #include "termsplidial.hh"
 #include <Auftrag/AuftragFull.h>
-//#include <Auftrag/AufEintragBase2.h>
 #include "aktAufEintrag.h"
 #include <Aux/SQLerror.h>
 #include <Artikel/Prozess.h>
@@ -58,7 +46,6 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
         void on_backtomain_button_clicked();
         void on_newauftrag_button_clicked();
 	void auftragstatus_geaendert();
-//	void on_aufstatoptionmenu_clicked();
         void on_youraufnrscombo_activate();
         void on_youraufnrscombo_search(int *_continue, GtkSCContext newsearch)
 							throw(SQLerror);
@@ -107,7 +94,6 @@ public:
  
  bool splitEntry();
 
-//auftrag_bearbeiten(const AuftragBase& selectedauftragbase, int zeilennr);
 auftrag_bearbeiten(const AufEintragBase2& auftragbase);
 ~auftrag_bearbeiten();
 

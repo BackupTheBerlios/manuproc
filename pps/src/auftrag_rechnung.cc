@@ -42,7 +42,7 @@ void auftrag_rechnung::on_rng_close()
 void auftrag_rechnung::on_rng_neu()
 {   
  rechnung_liste->newRechnung(lieferkunde->get_value());
- rngnr->setContent(Formatiere(rechnung_liste->getRechnung().Id(),0,6,""),
+ rngnr->setContent(Formatiere(rechnung_liste->getRechnung().Id(),0,6,"","",'0'),
 			rechnung_liste->getRechnung().Id());
  on_rngnr_activate();
 }

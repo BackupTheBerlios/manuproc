@@ -28,24 +28,19 @@ extern bool auftragflag;/* zeigt an ab wann auftragid in den Zeilen */
 
 extern auftrag_main *auftragmain;
 
+#warning horrible code
 const string MyRow::getColText() const 
 {
 
- if(seqnr==KW_SEQ)
-   {
-    return value.Datum().c_str();}
- else
+// nonsense!
   if(seqnr==AUFID_SEQ)
      {if(auftragmain->interneNamen())
-	 return Formatiere(value.getIntVal(),0,6,"","",'0')/*+"."+youraufnr*/;
+	 return Formatiere(value->getIntVal(),0,6,"","",'0')/*+"."+youraufnr*/;
       else
         return youraufnr/*+"."+str*/;
      }
  else
-   if(seqnr==PROZ_SEQ)
-     return value.getStrProzVal();
-  else
-    return value.getStrVal();
+    return value->getStrVal();
 }
 
 
@@ -54,27 +49,28 @@ const string &MyRow::getStkSumText() const
  static string ret;
 
  if(sumstueck)
-   ret=Formatiere((ulong)sumstueck,0,0,"","");
+   ret=Formatiere((ulong)sumstueck);
  else ret = "";
  return ret;
 }
 
 
+#warning und dann noch alles doppelt
 void MyRow::insertAufEintrag(const AufEintrag& entry, deque<int> &seq, int deep=0)
 {
 	int tmp = seq.front();
-	EntryValue val = entry.getSeqValue(tmp);
+	cH_EntryValue val = entry.getSeqValue(tmp);
 	TCListRow::iterator i = tclistrow->begin();
 
 	while((i!=tclistrow->end()) &&
-		(val > ((MyRow*)(*i).get_user_data())->getValue())) i++;
+		((*val) > *(((MyRow*)(*i).get_user_data())->getValue()))) i++;
 	
-	if((tmp==AUFM_SEQ) && val) stuecksumme=true;
+	if((tmp==AUFM_SEQ) && *val) stuecksumme=true;
 	if(tmp==AUFID_SEQ) auftragflag=true; 
 		
 	if(i!=tclistrow->end())
 	  {
-	   if(val == ((MyRow*)(*i).get_user_data())->getValue())
+	   if(*val == *(((MyRow*)(*i).get_user_data())->getValue()))
 	     {seq.pop_front();
 	      deep = deep ? deep-1 : 0;
 	      ((MyRow*)(*i).get_user_data())->summeter+=entry.getRest(); 
@@ -207,13 +203,14 @@ void MyRow::drucken(FILE *f,vector<int> &len,const vector<int>&maxlen)
 const string MyRow::Description(const cH_ExtBezSchema &s) const
 {
  string str;
- cH_ArtikelBezeichnung artbez(artbase,s->Id(),ArtikelBezeichnung::dont_throw());
+ cH_ArtikelBezeichnung artbez(artbase,s->Id());
 
  str=artbez->Bezeichnung();
  return str;   
 }
 
 #warning weg damit!
+#warning aber schnell!
 vector<string> &MyRow::getColEntries(int seqdeep)
 {
  static vector<string> v;
@@ -221,30 +218,20 @@ vector<string> &MyRow::getColEntries(int seqdeep)
  
   v.erase(v.begin(),v.end());
  while(i>seqdeep) {v.push_back(""); --i;}
- if(seqnr==KW_SEQ)
-   {
-    v.push_back(value.Datum().c_str());
-   }
- else 
+
    if(seqnr==AUFID_SEQ)
      {if(auftragmain->interneNamen())
-        v.push_back(Formatiere(value.getIntVal(),0,6,"","",'0')/*+"."+youraufnr*/);
+        v.push_back(Formatiere(value->getIntVal(),0,6,"","",'0')/*+"."+youraufnr*/);
       else
         v.push_back(youraufnr/*+"."+str*/);
      }
- else
-   if(seqnr==PROZ_SEQ)
-     v.push_back(value.getStrProzVal());
- else
-   v.push_back(value.getStrVal());
-
-
+ else v.push_back(value->getStrVal());
 
  while(i>1) {v.push_back(""); --i;}
- v.push_back(Formatiere((ulong)summeter,0,0,","));
+ v.push_back(Formatiere((ulong)summeter));
 
  if(sumstueck)
-   v.push_back(Formatiere((ulong)sumstueck,0,0,","));
+   v.push_back(Formatiere((ulong)sumstueck));
  else v.push_back("");
 
  v.push_back("");

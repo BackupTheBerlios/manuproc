@@ -24,7 +24,7 @@ void aktAufEintrag::fill(const AufEintrag &aufentry)
 {
  zeile=aufentry.getZnr();
  stueck=aufentry.getStueck();
- lieferdatum=aufentry.getSeqValue(KW_SEQ).Datum();
+ lieferdatum=aufentry.getLieferdatum();
  status=aufentry.getEntryStatus();
  artikel=ArtikelBase(aufentry.ArtikelID());
  stk_ok=lief_ok=true; 

@@ -21,7 +21,7 @@
 #include<TCList.h>
 #include<deque>
 #include<deque>
-#include<Aux/EntryValue.h>
+#include<Aux/EntryValueBase.h>
 #include<Artikel/ArtikelBase.h>
 
 
@@ -36,7 +36,7 @@ class MyRow
  long sumstueck;
  cH_Prozess prozess;
  Petig::Datum prozessdatum;
- EntryValue value;
+ cH_EntryValue value;
  int seqnr;
  bool toshow;
  int auftragid;
@@ -59,7 +59,7 @@ const ArtikelBase::ID getArtID() const
 void updateSummen();
 void stutzeBaum(TCList &tcl, int deep, int showdeep);
 
-MyRow(EntryValue v, bool _leaf)
+MyRow(cH_EntryValue v, bool _leaf)
 	: prozess(Prozess::default_id)
 {
  leaf = _leaf;
@@ -71,7 +71,7 @@ MyRow(EntryValue v, bool _leaf)
  auftragid=0;
 }
 
-EntryValue getValue() { return value; }
+cH_EntryValue getValue() { return value; }
 int getAuftragid() { return auftragid;}
 int getZeilennr() { return zeilennr;}
 bool Leaf() { return leaf; }

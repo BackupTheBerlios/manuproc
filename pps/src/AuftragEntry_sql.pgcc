@@ -28,9 +28,9 @@ AufEintrag::AufEintrag(const aktAufEintrag &aufentry,const AuftragBase& auftrag,
 			const cH_ExtBezSchema &schema) throw(SQLerror)
 {
  exec sql begin declare section;
+ int INSTANZ;
  int AUFTRAGID;
  long ARTIKELID;
- int INSTANZ;
  int ZEILENNR;
  int BESTELLT;
  char LIEFERDATUM[21];
@@ -56,7 +56,7 @@ AufEintrag::AufEintrag(const aktAufEintrag &aufentry,const AuftragBase& auftrag,
  artikel=cH_AufArtikel(ARTIKELID,schema);
 
  exec sql select coalesce(max(zeilennr)+1,1) into :ZEILENNR from auftragentry
-	where auftragid= :AUFTRAGID;
+	where auftragid= :AUFTRAGID and instanz=:INSTANZ;
  SQLerror::test("generate next zeilennr");
 
  exec sql insert into auftragentry (instanz,auftragid, zeilennr,
@@ -76,9 +76,9 @@ AufEintrag::AufEintrag(const aktAufEintrag &aufentry,const AuftragBase& auftrag,
  lieferdatum = Petig::Datum(LIEFERDATUM);
  geliefert = 0;
  status=(AufStatVal)STATUS;
- preis=Preis(PREIS,cP_Waehrung(Waehrung::DM));
+ preis=Preis(PREIS,cP_Waehrung(Waehrung::DM),PREISMENGE);
  rabatt=RABATT;
- preismenge=PREISMENGE;
+// preismenge=PREISMENGE;
 
  try{
      pps_ChJournalEntry::newChange(

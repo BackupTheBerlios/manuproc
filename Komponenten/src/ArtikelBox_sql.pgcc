@@ -306,13 +306,23 @@ void ArtikelBox::Benutzerprofil_laden()
    from artbez_anzeige where uid=:db_uid and artikeltyp=:db_artikeltyp
    and schema=:db_schema;
   SQLerror::test(__FILELINE__,100);
-  if (sqlca.sqlcode) return ;
+  if (sqlca.sqlcode) 
+  {  signifikanz.clear();
+     autocompletebool=false;
+     kombiniertbool=false;
+     return;
+  }
   
   signifikanz.clear();
-  for (unsigned int i=0;i<sizeof(int)*8;++i)
+  for (unsigned int i=0;i<sizeof(db_anzeige_pos)*8;++i)
    {
      unsigned int sig = (db_anzeige_pos &(1<<i));
      if (sig!=0) signifikanz.push_back(i+1);
+   }
+  for (unsigned int i=0;i<sizeof(db_anzeige_neg)*8;++i)
+   {
+     unsigned int sig = (db_anzeige_neg &(1<<i));
+     if (sig!=0) signifikanz.push_back(-(i+1));
    }
   autocompletebool=db_autocomplete;
   kombiniertbool=db_kombiniert;
@@ -334,8 +344,8 @@ void ArtikelBox::Benutzerprofil_speichern()
   db_anzeige_neg=0;
   for(std::vector<int>::const_iterator i=signifikanz.begin();i!=signifikanz.end();++i)
    {
-     if ((*i)>0) db_anzeige_pos += 1<<( (*i)-1);
-     if ((*i)<0) db_anzeige_neg += 1<<(-(*i)-1);
+     if ((*i)>0) db_anzeige_pos |= 1<<( (*i)-1);
+     else if ((*i)<0) db_anzeige_neg |= 1<<(-(*i)-1);
    }
   db_auswahl=0;
   exec sql delete from artbez_anzeige where 
@@ -424,12 +434,12 @@ void ArtikelBox::where_what(std::string& where, std::string& what)
      if (labels[l][0]->get_text() =="ID") continue;
      for(ExtBezSchema::const_sigiterator j=schema->sigbegin(signifikanz[l]);j!=schema->sigend(signifikanz[l]);)
       {
-        std::vector<EntryValue> v;
+        std::vector<cH_EntryValue> v;
         if (kombiniertbool) v = expand_kombi_Artikel(l);
         if (j->spaltenname!="id") where += j->spaltenname  ;
         if (j->spaltenname!="id") 
          { if (!kombiniertbool) what += "'"+combos[l][spalte]->get_text()+"'" ; 
-           else what += "'"+std::string(v[spalte])+"'";
+           else what += "'"+v[spalte]->getStrVal()+"'";
          }
          ++spalte; ++j;
         if (j!=schema->sigend(signifikanz[l]) 

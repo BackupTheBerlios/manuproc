@@ -52,10 +52,10 @@ public:
  int AufId() const { return auftrag.AufId(); }
  const AufEintragBase2 &AuftragEntry() const { return auftrag; } 
  const ArtikelBase &Artikel() const { return *artikel; }
+ // int -> fixedpoint oder sowas
  void abschreiben(int menge);
- static void abschreiben(int aufid,int aufznr,int menge) throw(SQLerror);
+ static void abschreiben(const AufEintragBase2 &auf,int menge) throw(SQLerror);
 };
-
 
 class cH_OffAuf_RowData : public cH_RowDataBase
 {
@@ -82,6 +82,5 @@ public:
         }                 
         
 };
-
 
 #endif

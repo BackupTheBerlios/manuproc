@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt.cc,v 1.1 2001/07/16 09:54:26 christof Exp $
+// $Id: Zeitpunkt.cc,v 1.2 2001/07/16 14:23:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

@@ -24,16 +24,17 @@
 exec sql include sqlca;
 
 void OffAuf_RowData::abschreiben(int menge) 
-{  abschreiben(auftrag.Id(),auftrag.ZNr(),menge);
+{  abschreiben(auftrag,menge);
    offen = (offen<=menge) ? 0 : (offen-menge);
    geliefert += menge;
 }
 
-void OffAuf_RowData::abschreiben(int aufid,int aufznr,int menge) throw(SQLerror)
+void OffAuf_RowData::abschreiben(const AufEintragBase2 &aeb,int menge) throw(SQLerror)
 {
  exec sql begin declare section;
- int AUFID=aufid;
- int AUFZNR=aufznr;
+ int AUFID;
+ int AUFZNR;
+ int INSTANZ;
  int STATUS;
  int BESTELLT;
  int GELIEFERT;
@@ -41,12 +42,16 @@ void OffAuf_RowData::abschreiben(int aufid,int aufznr,int menge) throw(SQLerror)
  
  Transaction tr;
  
+ AUFID=aeb.Id();
+ AUFZNR=aeb.ZNr();
+ INSTANZ=aeb.Instanz();
+ 
  exec sql lock table auftragentry in exclusive mode;
  
  exec sql select bestellt, geliefert, status
  	into :BESTELLT, :GELIEFERT, :STATUS
  	from auftragentry where
- 	auftragid = :AUFID and zeilennr = :AUFZNR;
+ 	auftragid = :AUFID and zeilennr = :AUFZNR and instanz=:INSTANZ;
  SQLerror::test(__FILELINE__);
  
  if(STATUS!=(AufStatVal)OPEN) throw("Auftragszeile ist bereits geschlossen"); 	
@@ -55,7 +60,7 @@ void OffAuf_RowData::abschreiben(int aufid,int aufznr,int menge) throw(SQLerror)
  if(GELIEFERT>=BESTELLT) STATUS=(AufStatVal)CLOSED;
  
  exec sql update auftragentry set geliefert= :GELIEFERT, status= :STATUS
- 	where auftragid= :AUFID and zeilennr= :AUFZNR;
+ 	where auftragid= :AUFID and zeilennr= :AUFZNR and instanz=:INSTANZ;
  SQLerror::test(__FILELINE__);
  
  tr.commit();	
