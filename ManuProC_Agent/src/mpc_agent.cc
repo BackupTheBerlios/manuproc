@@ -8,8 +8,10 @@
 #include <config.h>
 #include <gtkmm/main.h>
 #include <dbconnect.h>
-
+#include <FetchIStream.h>
 #include "mpc_agent.hh"
+#include <MyMessage.h>
+
 
 int main(int argc, char **argv)
 {  
@@ -75,6 +77,25 @@ void mpc_agent::on_kunde_activate()
 
 void mpc_agent::on_activate_entry(int enr)
 {
- std::cout << "hallo" << enr;
+ std::cout << "entry" << enr << "\n";
+ std::string name,ort;
+
+
+ try{
+ Query q("select name,ort from kunden where kundennr=?");
+ q << atoi(kunde->get_value(enr).c_str());
+ q >> name >> ort;
+ }
+ catch(SQLerror &e)
+ {
+  MyMessage msg(e);
+  msg.set_transient_for(*this);
+  msg.run();
+ }
+
+   
+ kunde->set_value(enr+1,name);
+ kunde->set_value(enr+2,ort);
+
 }
 
