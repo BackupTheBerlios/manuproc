@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.48 2003/06/19 12:03:58 jacek Exp $ */
+/* $Id: AuftragBase.h,v 1.49 2003/07/03 09:15:16 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -130,5 +130,7 @@ class ArgumentList;
 ArgumentList &operator<<(ArgumentList &q, const AuftragBase &ab);
 //FetchIStream& operator>>(FetchIStream& is,AuftragBase::mengen_t &menge);
 
+// für map<AuftragBase,...>
+bool operator<(const AuftragBase &a, const AuftragBase &b);
 
 #endif

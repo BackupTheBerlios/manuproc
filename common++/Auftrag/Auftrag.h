@@ -1,4 +1,4 @@
-/* $Id: Auftrag.h,v 1.24 2003/06/19 12:03:58 jacek Exp $ */
+/* $Id: Auftrag.h,v 1.25 2003/07/03 09:15:16 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,6 +27,7 @@
 #include <Misc/SQLerror.h>
 #include <Kunde/Kunde.h> // vielleicht auch Basisklasse erzeugen
 #include <Auftrag/AufEintragBase.h>
+#include <map>
 
 // ein Teil dieser Funktionen sollte nach AuftragBase (vor allem der SQL Teil)
 
@@ -42,11 +43,14 @@ protected:
 	mutable std::string notiz;
 	mutable bool notiz_valid:1;
 	cP_Waehrung waehrung;
-   rabatt_t auftragsrabatt;
-   ManuProC::Datum zahlziel;
-   cH_Zahlungsart zahlart;
+	rabatt_t auftragsrabatt;
+	ManuProC::Datum zahlziel;
+	cH_Zahlungsart zahlart;
 private:
 	std::string tmpstr;
+
+	typedef std::map<AuftragBase,std::string> youraufnr_cache_t;	
+	static youraufnr_cache_t youraufnr_cache;
 	
 public:
 	// Diese Strukturen dienen dazu, das Anlegen explizit anzufordern
@@ -65,15 +69,15 @@ public:
         { Kunde::ID kundennr;
           int bestellt;
           std::string youraufnr;
-          AuftragCopy(const Kunde::ID kid, int b, const std::string yanr):
+          AuftragCopy(const Kunde::ID kid, int b, const std::string &yanr):
           	kundennr(kid), bestellt(b), youraufnr(yanr) {}
           ManuProC::Datum liefdate;
         };
         
 	Auftrag(const AuftragBase& auftrag) throw(SQLerror);
 	// neuen Auftrag anlegen
-        Auftrag(Anlegen2 Auftragsnr, long kundennr, const std::string yaufnr="") throw(SQLerror);
-        Auftrag(Anlegen instanz, long kundennr, const std::string yaufnr="") throw(SQLerror);
+        Auftrag(Anlegen2 Auftragsnr, long kundennr, const std::string &yaufnr="") throw(SQLerror);
+        Auftrag(Anlegen instanz, long kundennr, const std::string &yaufnr="") throw(SQLerror);
    
         Auftrag::ID Copy(AuftragCopy &ac) throw(SQLerror);
         
@@ -87,7 +91,7 @@ public:
 	void setRabatt(const rabatt_t auftragsrabatt) throw(SQLerror);
 	void Zahlziel(const ManuProC::Datum &zziel) throw(SQLerror);
 	void Zahlart(cH_Zahlungsart zart) throw(SQLerror);
-	void Notiz(const std::string n) throw(SQLerror);
+	void Notiz(const std::string &n) throw(SQLerror);
 	const std::string Notiz() const throw(SQLerror);
 	
    const ManuProC::Datum &getDatum() const { return datum; } 
@@ -97,8 +101,8 @@ public:
 	AufStatVal getStatus() const { return status; }
    ppsInstanz::ID Instanz() const {return instanz->Id();}
 	std::string getAuftragidToStr() const;
-	std::string getYourAufNr() const { return youraufnr;}
-	std::string getBemerkung() const { return bemerkung;}
+	const std::string &getYourAufNr() const { return youraufnr;}
+	const std::string &getBemerkung() const { return bemerkung;}
 	Kunde::ID getKundennr() const { return kundennr; }
 
 	void setVerknr(const Kunde::ID) throw(SQLerror);
@@ -111,6 +115,8 @@ public:
                 const Preis& preis=Preis(),const rabatt_t aufeintragsrabatt=0,
                 const cH_PreisListe &preisliste=PreisListe::none_id) const throw(SQLerror);
 
+	// wenn möglich aus dem Cache ...
+	static std::string getYourAufNr(const AuftragBase &ab);
 };        
 
 #endif

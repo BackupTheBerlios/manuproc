@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.37 2003/06/19 12:03:58 jacek Exp $
+// $Id: AuftragBase.cc,v 1.38 2003/07/03 09:15:16 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -220,3 +220,7 @@ int AuftragBase::existEntry(const ArtikelBase& artikel, const ManuProC::Datum& l
  }
 }
 
+bool operator<(const AuftragBase &a, const AuftragBase &b)
+{  return a.Instanz()<b.Instanz() || 
+	(a.Instanz()==b.Instanz() && a.Id()<b.Id());
+}

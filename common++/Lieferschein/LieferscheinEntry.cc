@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.22 2003/07/03 08:25:29 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.23 2003/07/03 09:15:16 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -65,9 +65,9 @@ bool LieferscheinEntry::changeMenge(int stueck,mengen_t menge) throw(SQLerror)
   else if(!ZusatzInfo()) ;// s.u. updateLieferscheinMenge(stueck,menge) ;
   else // Zusatzinfos existieren
    {
-     std::vector<LieferscheinEntry::st_zusatz> VZ=getZusatzInfos();
+     std::vector<st_AufEintragMenge> VZ=getZusatzInfos();
      if(abmenge>0) 
-     for(std::vector<LieferscheinEntry::st_zusatz>::iterator i=VZ.begin();i!=VZ.end();++i)
+     for(std::vector<LieferscheinEntry::st_AufEintragMenge>::iterator i=VZ.begin();i!=VZ.end();++i)
       {
         AuftragBase::mengen_t actualmenge=abmenge;
         if(i->aeb.valid())
@@ -84,7 +84,7 @@ bool LieferscheinEntry::changeMenge(int stueck,mengen_t menge) throw(SQLerror)
         if(!abmenge) break;
       }
      else
-     for(std::vector<LieferscheinEntry::st_zusatz>::reverse_iterator i=VZ.rbegin();i!=VZ.rend();++i)
+     for(std::vector<LieferscheinEntry::st_AufEintragMenge>::reverse_iterator i=VZ.rbegin();i!=VZ.rend();++i)
       {
         AuftragBase::mengen_t actualmenge=abmenge;
         if(i->menge.abs() < actualmenge.abs()) actualmenge = -i->menge;
@@ -133,7 +133,7 @@ LieferscheinBase::mengen_t LieferscheinEntry::Abschreibmenge(int stueck,mengen_t
    return neue_menge-alte_menge;
 }
 
-void LieferscheinEntry::updateZusatzEntry(const st_zusatz &Z,const AuftragBase::mengen_t &menge) throw(SQLerror)
+void LieferscheinEntry::updateZusatzEntry(const st_AufEintragMenge &Z,const AuftragBase::mengen_t &menge) throw(SQLerror)
 {
   std::string Q="update lieferscheinentryzusatz set menge="
       +menge.String()+" where (instanz,lfrsid,lfsznr) = ("
@@ -150,7 +150,7 @@ void LieferscheinEntry::updateZusatzEntry(const st_zusatz &Z,const AuftragBase::
   SQLerror::test(__FILELINE__);
 }
 
-void LieferscheinEntry::deleteZusatzEntry(const st_zusatz &Z) throw(SQLerror)
+void LieferscheinEntry::deleteZusatzEntry(const st_AufEintragMenge &Z) throw(SQLerror)
 {
   std::string Q="delete from lieferscheinentryzusatz "
       " where (instanz,lfrsid,lfsznr) = ("
@@ -167,7 +167,7 @@ void LieferscheinEntry::deleteZusatzEntry(const st_zusatz &Z) throw(SQLerror)
   SQLerror::test(__FILELINE__);
 }
 
-FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry::st_zusatz& z)
+FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry::st_AufEintragMenge& z)
 {
   return is >> z.aeb /*>> z.stueck*/ >> z.menge 
   	>> FetchIStream::MapNull(z.yourauftrag,std::string());

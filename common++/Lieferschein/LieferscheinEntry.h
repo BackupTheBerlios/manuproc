@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.21 2003/07/03 06:47:10 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.22 2003/07/03 09:15:16 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,7 +27,7 @@
 #include <Lieferschein/LieferscheinBase.h>
 #include <Misc/fixedpoint.h>
 #include <BaseObjects/ManuProcEintrag.h>
-
+#include <Misc/compiler_ports.h>
 
 class LieferscheinEntryBase : public LieferscheinBase
 {
@@ -60,13 +60,20 @@ class LieferscheinEntry : public LieferscheinEntryBase
  std::string yourauftrag;
  bool zusatzinfo;
 public:
- struct st_zusatz{AufEintragBase aeb; AuftragBase::mengen_t menge;std::string yourauftrag;
-        st_zusatz()  {};
-        st_zusatz(AufEintragBase a, AuftragBase::mengen_t m,std::string y) 
-         : aeb(a),menge(m),yourauftrag(y) {}
+ struct st_AufEintragMenge{AufEintragBase aeb; AuftragBase::mengen_t menge;
+        st_AufEintragMenge()  {};
+        st_AufEintragMenge(AufEintragBase a, AuftragBase::mengen_t m) 
+         : aeb(a),menge(m) {}
         };
+ struct st_AuftragMenge{AuftragBase aeb; AuftragBase::mengen_t menge;
+        st_AuftragMenge()  {};
+        st_AuftragMenge(AuftragBase a, AuftragBase::mengen_t m) 
+         : aeb(a),menge(m) {}
+        };
+ typedef st_AufEintragMenge st_zusatz;
+
 private:
- std::vector<st_zusatz> VZusatz;
+ std::vector<st_AufEintragMenge> VZusatz;
 
    void updateLieferscheinMenge(int stueck,mengen_t menge)  throw(SQLerror);
    mengen_t Abschreibmenge(int stueck,mengen_t menge) const;
@@ -94,20 +101,23 @@ public:
  const std::string YourAuftrag() const {return yourauftrag; }
  const ArtikelBase::ID ArtikelID() const { return artikel.Id(); }
  const ArtikelBase Artikel() const { return artikel; }
- const AuftragBase RefAuftrag() const { return refauftrag; }
- int AufZeile() const { return refauftrag.ZNr();} 
- AufEintragBase getAufEintragBase() const {return AufEintragBase(RefAuftrag(),AufZeile());}
- bool ZusatzInfo() const { return zusatzinfo; }
- std::vector<st_zusatz> getZusatzInfos() const {return VZusatz;}
+
+ std::vector<st_AufEintragMenge> getZusatzInfos() const {return VZusatz;}
  void setZusatzInfo(const AufEintragBase &AEB,/*const int stueck,*/const mengen_t &menge) throw(SQLerror);
 
  void setPalette(int p) throw(SQLerror);
- bool changeMenge(int stueck,mengen_t menge) throw(SQLerror);
+ void changeMenge(int stueck,mengen_t menge) throw(SQLerror);
  static void deleteEntry(LieferscheinEntry &lse) throw(SQLerror);
+
+ // bitte getZusatzInfos() nehmen, es könnten mehrere sein
+ __deprecated const AuftragBase RefAuftrag() const { return refauftrag; }
+ __deprecated int AufZeile() const { return refauftrag.ZNr();} 
+ __deprecated AufEintragBase getAufEintragBase() const {return AufEintragBase(RefAuftrag(),AufZeile());}
+ __deprecated bool ZusatzInfo() const { return true; }
 private:
  static void deleteMe(const LieferscheinEntry &lse) throw(SQLerror);
- void deleteZusatzEntry(const st_zusatz &Z) throw(SQLerror);
- void updateZusatzEntry(const st_zusatz &Z,const AuftragBase::mengen_t &menge) throw(SQLerror);
+ void deleteZusatzEntry(const st_AufEintragMenge &Z) throw(SQLerror);
+ void updateZusatzEntry(const st_AufEintragMenge &Z,const AuftragBase::mengen_t &menge) throw(SQLerror);
  friend FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry &aeb);
 };
 

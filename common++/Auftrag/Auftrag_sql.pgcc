@@ -187,10 +187,11 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
  notiz_valid=true;
  verknr = IVERKNR == 0 ? VERKNR : Kunde::none_id;
  ECPGfree_auto_mem();
+ youraufnr_cache[*this]=youraufnr;
 }
 
 
-Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string yaufnr) throw(SQLerror)
+Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string &yaufnr) throw(SQLerror)
 	: AuftragBase(cH_ppsInstanz(_instanz),invalid_id),
 	  zahlart(Zahlungsart::none_id)
 {
@@ -261,9 +262,10 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string yaufnr) throw(SQ
  assert(valid()); 
  waehrung=cP_Waehrung((Waehrung::ID)WAEHRUNG);
  tr.commit();
+ youraufnr_cache[*this]=yaufnr;
 }
 
-Auftrag::Auftrag(Anlegen2 AB, long kdnr, const std::string yaufnr) throw(SQLerror)
+Auftrag::Auftrag(Anlegen2 AB, long kdnr, const std::string &yaufnr) throw(SQLerror)
 	: AuftragBase(AB), zahlart(Zahlungsart::none_id)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("Anlegen:",*this),NV("KnNr",kdnr));
@@ -314,7 +316,7 @@ Auftrag::Auftrag(Anlegen2 AB, long kdnr, const std::string yaufnr) throw(SQLerro
  datum.from_postgres(DATUM);
 // wrkstatus= INSERTED;
  status=(AufStatVal)STATUS;
-
+ youraufnr_cache[*this]=yaufnr;
  tr.commit();
 }
 
@@ -364,6 +366,7 @@ void Auftrag::setYourAufNr(const std::string &yanr) throw(SQLerror)
  exec sql end declare section;
 
  youraufnr=yanr;
+ youraufnr_cache[*this]=youraufnr;
 
  strncpy0(YOURAUFNR,youraufnr.c_str(),20);
 
@@ -409,7 +412,7 @@ const std::string Auftrag::Notiz() const throw(SQLerror)
  return notiz;
 }
 
-void Auftrag::Notiz(const std::string n) throw(SQLerror)
+void Auftrag::Notiz(const std::string &n) throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
  exec sql begin declare section;
@@ -534,9 +537,3 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
  tr.commit();
  return AEB;
 }
-
-
-
-
-
-

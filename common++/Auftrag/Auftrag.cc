@@ -1,4 +1,4 @@
-// $Id: Auftrag.cc,v 1.8 2003/05/05 14:25:13 jacek Exp $
+// $Id: Auftrag.cc,v 1.9 2003/07/03 09:15:16 christof Exp $
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -44,3 +44,21 @@ Auftrag::ID Auftrag::Copy(AuftragCopy &ac) throw(SQLerror)
 
 }
 
+Auftrag::youraufnr_cache_t Auftrag::youraufnr_cache;
+
+std::string Auftrag::getYourAufNr(const AuftragBase &ab)
+{  youraufnr_cache_t::const_iterator i=youraufnr_cache.find(ab);
+   if (i!=youraufnr_cache.end()) return i->second;
+   try
+   {  std::string yan;
+      Query("select youraufnr from auftrag where (instanz,auftragid)=(?,?)")
+   	<< ab
+   	>> FetchIStream::MapNull(yan);
+      youraufnr_cache[ab]=yan;
+      return yan;
+   }
+   catch (SQLerror &e)
+   {  // erzeugt implizit einen Leerstring
+      return youraufnr_cache[ab];
+   }
+}
