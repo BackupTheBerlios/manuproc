@@ -1,4 +1,4 @@
-// $Id: FertigWarenLager.h,v 1.12 2003/07/29 09:15:03 jacek Exp $
+// $Id: FertigWarenLager.h,v 1.13 2003/12/02 10:33:47 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -28,7 +28,7 @@ class FertigWarenLager : public LagerBase
 private:
    FertigWaren fw;
 
-   void Buchen(FertigWaren::e_buchen e);     
+   void Buchen(FertigWaren::e_buchen e,const ProductionContext &ctx);     
    
 public:
 #if defined MABELLA_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
@@ -52,9 +52,9 @@ public:
    int Bestand(ManuProC::Datum date);
    int Bestand() { return Bestand(ManuProC::Datum::today()) ;}
    
-  void Einlagern() {Buchen(FertigWaren::Rein);}
-  void Auslagern() {Buchen(FertigWaren::Raus);}
-  void WiederEinlagern() {Buchen(FertigWaren::WiederRein);}
+  void Einlagern(const ProductionContext &ctx) {Buchen(FertigWaren::Rein,ctx);}
+  void Auslagern(const ProductionContext &ctx) {Buchen(FertigWaren::Raus,ctx);}
+  void WiederEinlagern() {Buchen(FertigWaren::WiederRein,ProductionContext());}
   void Inventur();
   const FertigWaren &getFertigWaren() const { return fw; }
   virtual std::vector<class LagerInhalt> LagerInhalt_

@@ -44,7 +44,7 @@ static bool Lieferschein_Kunde(AufEintrag &AE)
 
        Lieferschein liefs(EINKAUF,cH_Kunde(KUNDE2));
 	AufEintrag ae(AEB2);
-       liefs.push_back(ae,ARTIKEL_TRIO,15);
+       liefs.push_back(ae,ARTIKEL_TRIO,10);
        vergleichen(Check::Menge|Check::Lieferschein,"LS_Einkauf","Lieferschein im Einkauf (Mabella) anlegen","VE");
 	}
 

@@ -82,7 +82,8 @@ std::vector<class LagerInhalt> FertigWarenLager::LagerInhalt_
 
 
 
-void FertigWarenLager::Buchen(FertigWaren::e_buchen buchen)
+void FertigWarenLager::Buchen(FertigWaren::e_buchen buchen,
+		const ProductionContext &ctx)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
 	NV("buchen",int(buchen)),NV("artikel",fw.Artikel()),
@@ -114,10 +115,10 @@ void FertigWarenLager::Buchen(FertigWaren::e_buchen buchen)
  fw.setStk(fw.Stk(buchen));
 
  if(buchen == FertigWaren::Rein)
-   rein_ins_lager(fw.Artikel(),fw.Stk(FertigWaren::AsIs),true);
+   rein_ins_lager(fw.Artikel(),fw.Stk(FertigWaren::AsIs),true,ctx);
  else
  if(buchen == FertigWaren::Raus)
-   raus_aus_lager(fw.Artikel(),fw.Stk(FertigWaren::AsIs),true);
+   raus_aus_lager(fw.Artikel(),fw.Stk(FertigWaren::AsIs),true,ctx);
  else
  if(buchen == FertigWaren::WiederRein)
    wiedereinlagern(fw.Artikel(), fw.Stk(FertigWaren::Rein));
