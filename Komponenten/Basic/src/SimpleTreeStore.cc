@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.42 2003/12/22 13:56:31 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.43 2003/12/22 13:59:44 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -549,7 +549,7 @@ int SimpleTreeStore::IterStamp() const
 }
 
 SimpleTreeStore::iterator &SimpleTreeStore::iterconv(GtkTreeIter* iter)
-{  if (!iter->stamp && !iter->user_data) return root.children.begin();
+{  //if (!iter->stamp && !iter->user_data) return root.children.begin();
    assert(iter->stamp==IterStamp());
    return reinterpret_cast<SimpleTreeStore::iterator&>(iter->user_data);
 }
