@@ -1102,7 +1102,11 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
       { tabcolumn += j->TeXtabformat ; ++spaltenzahl ; 
         if((!ean_code && !rabatt_bool) || Typ()==Lieferschein)
 //          ueberschriften += "&\\mbox{"+ug + j->bezkomptext+"}";
-          ueberschriften += "&\\mbox{"+ug+mld->MLT(MultiL_Dict::IHR_ARTIKEL)+"}";
+	 {if(j->textid==72)
+           ueberschriften += "&\\mbox{"+ug+"Votre Barcode}";       
+          else
+           ueberschriften += "&\\mbox{"+ug+mld->MLT(MultiL_Dict::IHR_ARTIKEL)+"}";
+	 }
 	else
           ueberschriften += "&";
       }    
