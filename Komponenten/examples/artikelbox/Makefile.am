@@ -1,11 +1,11 @@
-# $Id: Makefile.am,v 1.1 2001/04/23 08:36:49 christof Exp $
-CXXFLAGS+=-Wall -g -I$(top_srcdir)/src @GTKMM_CFLAGS@ \
+# $Id: Makefile.am,v 1.3 2001/06/21 09:56:40 christof Exp $
+CXXFLAGS+=-Wall -g -I$(top_srcdir)/src  \
 	@COMMONXX_INCLUDES@ @COMMONGTK_INCLUDES@
 
 LIBS =  $(top_srcdir)/src/libKomponenten.a \
-	@COMMONXX_LIBS@ @COMMONGTK_LIBS@ @GTKMM_LIBS@ @ECPG_LIBS@
+	@COMMONXX_LIBS@ @COMMONGTK_LIBS@ 
 	
-LDFLAGS = @LDFLAGS@ @ECPG_LDFLAGS@
+LDFLAGS = @LDFLAGS@ @COMMONXX_LDFLAGS@ @COMMONGTK_LDFLAGS@
 
 noinst_PROGRAMS = marc
 

@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.3 2001/06/21 08:12:02 christof Exp $
+// $Id: ArtikelBox.cc,v 1.4 2001/06/21 09:56:40 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma

@@ -56,7 +56,7 @@ void TreeBase::on_click_column(int col)
 bool TreeBase::col_schon_ausgewaehlt(int col)
 {
  deque<guint>::const_iterator i =clicked_seq.begin();
- while (i!=clicked_seq.end() && *i!=(unsigned int)col) ++i;
+ while (i!=clicked_seq.end() && *i!=currseq[col]) ++i;
  if (i==clicked_seq.end()) return false;
  else return true;
 }
@@ -73,7 +73,7 @@ TreeBase::TreeBase(guint cols, guint attr) :
 	TCList(cols), showdeep(0), attrcount(attr ? attr : cols), menu(0),
 	auffuellen_bool(false), expandieren_bool(true)
 {
-  button_press_event.connect(SigC::slot(this,&TreeBase::MouseButton));
+  this->button_press_event.connect(SigC::slot(this,&TreeBase::MouseButton));
   click_column.connect(SigC::slot(this,&TreeBase::on_click_column));
   select_row.connect(SigC::slot(this, &TreeBase::on_row_select));
   setSequence();
@@ -87,7 +87,7 @@ TreeBase::TreeBase(guint cols, guint attr) :
 
 void TreeBase::init()
 { setColTitles();
-//  fillMenu(); called by setColTitles()
+//  fillMenu();
   fillTCL();
 }
 
@@ -140,15 +140,8 @@ bool TreeBase::stutzen(TCListRow_API *parent, TCListRow_API *we,
     }
     return true;
  }
- if(we->size()>1)
- {  TCListRow_API::iterator i = we->begin();
-    while(i!=we->end())
-    {  if (stutzen(we,&*i,tclist,deep+1)) return true;
-       i++;
-    }
- }
- 
- return false;
+
+  return false;
 }
 
 void TreeBase::fillTCL()
@@ -164,7 +157,8 @@ TreeBase::~TreeBase()
 void TreeBase::refillTCL()
 {
 // liste loeschen
- this->clear();
+ collapse();
+ TCList::clear();
 
  vector<cH_RowDataBase>::const_iterator i=datavec.begin();
  vector<cH_RowDataBase>::const_iterator j=datavec.end();
@@ -173,7 +167,6 @@ void TreeBase::refillTCL()
  for(; i!=j; ++i)
     insertIntoTCL((TCListRow_API*)this,*this,*i,currseq,0);
 
- collapse(); // offscreen umsortieren
 // Aeste mit einem Blatt kuerzen 
  for(TCListRow_API::iterator i = begin(); i!=end();)
  {if (stutzen((TCListRow_API*)this,(TCListRow_API*)(&(*i)),*this,0))
@@ -184,11 +177,15 @@ void TreeBase::refillTCL()
 // Summen errechnen
  for(TCListRow_API::iterator i = begin(); i!=end(); ++i)
    ((TCListRowData*)(*i).get_user_data())->refreshSum(*this);
+
  expand();
- 
- //CList Breite anpassen
- for (unsigned int i=0;i<Cols();++i) set_column_auto_resize(i,true);
+
+//CList Breite anpassen
+ for (unsigned int i=0;i<Cols();++i)
+        set_column_auto_resize(i,true);
+
 }
+
 
 void TreeBase::insertIntoTCL(TCListRow_API *tclapi,const TreeBase &tb,
 				const cH_RowDataBase &v,deque<guint> selseq,guint deep)

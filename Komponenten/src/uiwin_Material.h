@@ -1,4 +1,4 @@
-// $Id: uiwin_Material.h,v 1.17 2001/01/11 16:37:18 cvs_christof Exp $
+// $Id: uiwin_Material.h,v 1.16 2001/01/10 13:26:56 cvs_christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

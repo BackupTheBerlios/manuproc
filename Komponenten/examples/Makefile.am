@@ -1,1 +1,1 @@
-SUBDIRS=artikelbox eingabe dwhouse
+SUBDIRS=artikelbox eingabe dwhouse tree_simplest

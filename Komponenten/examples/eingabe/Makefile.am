@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.1 2001/04/23 08:36:50 christof Exp $
+# $Id: Makefile.am,v 1.2 2001/06/21 09:56:40 christof Exp $
 CXXFLAGS=@CXXFLAGS@ -I$(top_srcdir)/src @GNOMEMM_CFLAGS@ \
 	@COMMONGTK_INCLUDES@ @COMMONXX_INCLUDES@
 

@@ -36,6 +36,10 @@
     <spacing>0</spacing>
 
     <widget>
+      <class>Placeholder</class>
+    </widget>
+
+    <widget>
       <class>GtkMenuBar</class>
       <name>menubar1</name>
       <shadow_type>GTK_SHADOW_OUT</shadow_type>

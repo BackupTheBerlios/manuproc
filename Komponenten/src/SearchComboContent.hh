@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: SearchComboContent.hh,v 1.1 2001/04/23 08:36:50 christof Exp $
+// $Id: SearchComboContent.hh,v 1.2 2001/06/21 09:56:40 christof Exp $
 
 #include <SearchComboContent.h>
 #include <Kunde/Kunde.h>
