@@ -1,7 +1,6 @@
 #!/bin/sh
 
 psql $1 <<EOF
-delete from artikelzusammensetzung;
 delete from prod_changejournal;
 delete from auftrag_prozess;
 delete from auftragsentryzuordnung;
