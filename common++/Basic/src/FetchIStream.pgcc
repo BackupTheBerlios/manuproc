@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.6 2001/12/27 09:44:42 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.7 2002/01/02 15:30:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -109,7 +109,7 @@ FetchIStream &FetchIStream::operator>>(bool &b)
 
 // note cursor is the name for both the cursor and the descriptor
 Query::Query(const std::string &command)
-: cursor(std::string("Query")+itos(reinterpret_cast<int>(this))), eof(false)
+: cursor(std::string("Query")+ulltos(reinterpret_cast<unsigned long long>(this))), eof(false)
 {  exec sql begin declare section;
    char *COMMAND=const_cast<char*>(command.c_str(GARNIX));
    exec sql end declare section;
