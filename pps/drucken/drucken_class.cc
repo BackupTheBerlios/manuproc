@@ -506,10 +506,15 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
         }
         if ((Typ()==Lieferschein || Typ()==Wareneingang) && notice_column_possible)
         { if (!(*j).Text().empty())
-          { if ((*j).Text().size()>10) 
+          {
+#ifdef MABELLA_EXTENSIONS // immer in einer eigenen Zeile Zeigen
+	    notice_column_bool=notice_column_possible=false; 
+#else
+            if ((*j).Text().size()>10) 
             { notice_column_bool=notice_column_possible=false; 
             }
             else notice_column_bool=true;
+#endif
           }
         }
         if ((Typ()==Lieferschein || Typ()==Wareneingang) && !palette_bool && (*j).Palette())

@@ -3,6 +3,6 @@
 AUTOMAKE_OPTIONS = 1.4
 
 
-SUBDIRS = macros src drucken sdo_drucken
+SUBDIRS = macros src drucken 
 
 EXTRA_DIST = AUTHORS TODO README configure 
