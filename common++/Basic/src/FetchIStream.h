@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.56 2004/09/24 15:20:11 christof Exp $
+// $Id: FetchIStream.h,v 1.57 2004/09/24 15:24:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -39,6 +39,7 @@ extern "C" {
 }
 #endif
 
+// please access this class under the new alias "Query::Row"
 class FetchIStream
 {public:
 	struct check_eol { check_eol() {} };
@@ -244,7 +245,9 @@ class Query : public Query_types
 	void Execute_if_complete();
 
 public:
+        typedef FetchIStream Row;
 	struct check100 { check100(){} };
+	typedef Row::check_eol check_eol;
 
 	Query(const std::string &command);
 	~Query();
