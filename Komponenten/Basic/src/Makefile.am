@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.18 2002/12/12 08:50:29 christof Exp $
+# $Id: Makefile.am,v 1.19 2002/12/12 09:30:43 christof Exp $
 CXXFLAGS=@CXXFLAGS@ @COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
@@ -21,7 +21,7 @@ libManuProC_Widgets_a_SOURCES=EingabeBox.cc \
 		GType_cH_EntryValue.cc SimpleTree.cc \
 		bool_CheckMenuItem.cc char_Pixmap.cc \
 		FlashingPixmap.cc LabelSpin.cc \
-		MyWindow.cc MyScale.cc
+		MyWindow.cc MyScale.cc logwin.cc
 
 dummy_SOURCES=datewin.cc datewin_glade.cc
 

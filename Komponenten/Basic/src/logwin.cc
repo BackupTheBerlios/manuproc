@@ -1,4 +1,4 @@
-// $Id: logwin.cc,v 1.4 2002/09/27 09:48:44 christof Exp $
+// $Id: logwin.cc,v 1.5 2002/12/12 09:30:43 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,15 +21,20 @@
 #include <gtkmm/adjustment.h>
 
 void logwin::scroll() throw()
-{  Gtk::Adjustment *adj=(Gtk::Adjustment *)get_vadjustment();
-   if (adj) adj->set_value(adj->gtkobj()->upper);
+{  Gtk::Adjustment *adj=static_cast<Gtk::Adjustment *>(get_vadjustment());
+   if (adj) adj->set_value(adj->gobj()->upper);
 }
 
 logwin::logwin(guint minimum_size)
-{  add(vp);
-   vp.add(gtklist);
-   vp.show();
+{  m_refStore=Gtk::ListStore::create(m_columns);
+   add(gtklist);
    gtklist.show();
-   set_usize(-1,minimum_size);
-   set_policy(GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+   set_size_request(-1,minimum_size);
+   set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
+   gtklist.set_model(m_refStore);
+   gtklist.append_column("", m_columns.col);
+}
+
+logwin::ModelColumns::ModelColumns()
+{  add(col);
 }

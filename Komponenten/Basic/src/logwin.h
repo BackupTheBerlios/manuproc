@@ -1,4 +1,4 @@
-// $Id: logwin.h,v 1.4 2002/09/27 09:48:44 christof Exp $
+// $Id: logwin.h,v 1.5 2002/12/12 09:30:43 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,19 +20,25 @@
 #ifndef LOGWIN_HH
 #define LOGWIN_HH
 
-
-
-#include <gtkmm/list.h>
+#include <gtkmm/treeview.h>
+#include <gtkmm/liststore.h>
 #include <gtkmm/scrolledwindow.h>
 #include <gtkmm/viewport.h>
 
 class logwin : public Gtk::ScrolledWindow
-{  	Gtk::Viewport vp;
- 	Gtk::List gtklist;
+{  	Gtk::TreeView gtklist;
+ 	Glib::RefPtr<Gtk::ListStore> m_refStore;
+ 	struct ModelColumns : public Gtk::TreeModelColumnRecord
+ 	{  Gtk::TreeModelColumn<Glib::ustring> col;
+ 	   ModelColumns();
+ 	};
+ 	ModelColumns m_columns;
    public:
 	logwin(guint minimum_size=200);
-	Gtk::List *get_list()
-	{ return &gtklist; } 
+	Glib::RefPtr<Gtk::ListStore> get_list()
+	{ return m_refStore; } 
+	const Gtk::TreeModelColumn<Glib::ustring> &get_column() const
+	{ return m_columns.col; }
 	void scroll() throw();
 }; 
 #endif
