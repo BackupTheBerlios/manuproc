@@ -485,7 +485,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
              if (!!(*j).Rabatt()) rabatt_bool=true;
 
 #warning provisory HACK, must be made soon
-	     if(kunden_id==22954)
+	     if(kunden_id==22954 || kunden_id==23219)
                rabatt_bool=true;
 	   }
 #else
