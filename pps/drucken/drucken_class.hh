@@ -183,7 +183,7 @@ class LR_Abstraktion: public LR_Base
  unsigned int preisspalte;
  unsigned int spaltenzahl;
  std::string zur_preisspalte;
-
+ 
 
  cH_ExtBezSchema schema_mem;
  cH_ExtBezSchema schema_own;
@@ -207,6 +207,9 @@ class LR_Abstraktion: public LR_Base
  fixedpoint<2> skontobetrag;	// brutto - skonto
  fixedpoint<2> einzugbetrag;	// brutto - skonto - einzugrabatt
  
+
+ ManuProC::Datum min_liefdatum;
+ std::string min_KWStr;
 public:
   typedef LR_Iterator const_iterator;
 

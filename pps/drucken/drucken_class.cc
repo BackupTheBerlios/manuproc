@@ -191,12 +191,11 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
 	  os << "BLZ " << itos(kunde_von->getblz()) << ", ";	  
 	  os << mld->MLT(MultiL_Dict::TXT_BANK) << " " << kunde_von->getbank();
 	  os << "~\\\\S.W.I.F.T.: WELA DE D1 VEL - IBANDE61334500000000240044\\\\\n";
-	  os << "BTN / HSC-Code / Num\\'{e}ro de Douane / Nomenclatura combinata : 58063210\\\\\n";
+	  os << mld->MLT(MultiL_Dict::TXT_BTN)<<": 58063210\n";
 	 }
 
-
-  if(kunde_an->Auslaender())
-    { os << "~\\\\\\footnotesize - "<<mld->MLT(MultiL_Dict::TXT_WARE_ZOLL)<<"\\\\\n";
+  if(kunde_an->land()->Auslaender())
+    { os << "~\\\\\\footnotesize - "<<mld->MLT(MultiL_Dict::TXT_WARE_ZOLL)<<"\\\\\\\\\n";
       os << "\\bigskip Made in Germany\n";
 
    try{u.r->setGewicht();}
@@ -248,7 +247,7 @@ catch(SQLerror &e) { cout << e; return; }
     os << "\\bigskip\n";
     if(kunde_an->get_lieferung_frei_haus()) 
       os << "\\\\" << mld->MLT(MultiL_Dict::TXT_LIEF_FREI) <<"\\\\\n";
-    os << "\\\\"<<mld->MLT(MultiL_Dict::TXT_LIEFERINFO)<<"\\\\\n";
+    os << "\\\\"<<mld->MLT(MultiL_Dict::TXT_LIEFERWOCHE)<<": "<<min_KWStr<<"\\\\\n";
 
    }
  else if(Typ()==Extern )
@@ -759,6 +758,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
             if (rabatt_bool) 
               {os <<linecolor<<FormatiereTeX_Preis( BruttoPreis.Wert() );
                neue_spalte(erste_spalte,os); os << linecolor<<FormatiereTeX(rabatt); 
+               neue_spalte(erste_spalte,os); os << linecolor<<FormatiereTeX_Preis(NettoPreis.Wert()); 
 	      }
 	    else
 	      os <<linecolor<<FormatiereTeX_Preis( NettoPreis.Wert() );
@@ -775,14 +775,26 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
             os <<linecolor<< FormatiereTeX(preis);
           }
           
+
 	if(Typ() == Auftrag)
-	  { neue_spalte(erste_spalte,os);
+	  { 
+#ifndef MABELLA_EXTENSIONS
+	    neue_spalte(erste_spalte,os);
+#endif
 	    Kalenderwoche kw(lieferdatum.KW());
 	    char jahr[3];
 	    snprintf(jahr,3,"%02d",kw.Jahr()%100);
 	    string kws = kw.valid() ? itos(kw.Woche())+"'"+jahr : "-";
+#ifndef MABELLA_EXTENSIONS
 	    os << linecolor << kws;
+#endif
+	    if(!min_liefdatum.valid()) min_liefdatum=ManuProC::Datum::today();
+	    if(min_liefdatum>lieferdatum) 
+		{min_liefdatum=lieferdatum;
+		 min_KWStr=kws;	
+		}
 	  }
+
 
 #ifdef PETIG_EXTENSIONS
         if (Typ()==Lieferschein) 
@@ -952,14 +964,20 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
   { 
     tabcolumn+="rr"; spaltenzahl+=2; preisspalte=spaltenzahl;
     ueberschriften += "&\\multicolumn{1}{c}{"+sg+getWaehrung()->TeXsymbol();
+    if(rabatt_bool) ueberschriften +=" "+mld->MLT(MultiL_Dict::TXT_BRUTTO);
      if (preismenge!=1 || !preiseinheit.empty()) ueberschriften += "\\,/";
      if (preismenge!=1) ueberschriften += "\\,"+ Formatiere(preismenge);
      if (!preiseinheit.empty())  ueberschriften += "\\," + preiseinheit;
-     ueberschriften +="} ";
+     ueberschriften +="} ";   	// Einzelpreis brutto
      
-    if (preise_addieren && rabatt_bool)  // Rabatt
-      {  tabcolumn+="r"; ++spaltenzahl;
-         ueberschriften += "&\\multicolumn{1}{c}{"+ug+mld->MLT(MultiL_Dict::TXT_RABATT)+"}";
+    if (rabatt_bool)  
+      {  tabcolumn+="r"; ++spaltenzahl; // Rabatt
+         ueberschriften += "&\\multicolumn{1}{c}{"+ug+"\\%\\,"+mld->MLT(MultiL_Dict::TXT_RABATT)+"}";
+         tabcolumn+="r"; ++spaltenzahl;  // Einzelpreis netto
+         ueberschriften += "&\\multicolumn{1}{c}{"+
+		ug+getWaehrung()->TeXsymbol()+" "+mld->MLT(MultiL_Dict::TXT_NETTO);
+	 if (!preiseinheit.empty())  ueberschriften += "\\,/\\," + preiseinheit;
+	ueberschriften+="}";
       }     
      
 #ifndef MABELLA_EXTENSIONS
@@ -970,11 +988,13 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
 #endif
   }
 
+#ifndef MABELLA_EXTENSIONS
   if (Typ()==Auftrag)
   { tabcolumn+="r"; spaltenzahl+=1; ueberschriften +=  "&{"+sg
 			+mld->MLT(MultiL_Dict::TXT_LIEFERKW)+"}"; }
+#endif
   
-  os << "\\settowidth{\\breite}{"<<ug<<" Bezeichnung}%\n";
+  os << "\\settowidth{\\breite}{"<<ug<<" "<<mld->MLT(MultiL_Dict::TXT_BEZEICHNUNG)<<"}%\n";
   os << "\\begin{tabularx}{" << TABW << "cm}{"<<tabcolumn<<"}"<<"\\\\\n";
 
   os << ueberschriften << "\\\\" "\\hline\n";
@@ -982,7 +1002,7 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
 
   if(preise_addieren && preisspalte>=2)
     {zur_preisspalte="";
-     if(rabatt_bool) preisspalte++;
+     if(rabatt_bool) preisspalte+=2;
      for (unsigned int i=0;i<preisspalte-2;++i)  zur_preisspalte+='&';
     }
 
@@ -1159,8 +1179,9 @@ void LR_Abstraktion::page_header(std::ostream &os)
 		<<" " <<getDatum()<<". ";
 
 
-   if(Typ()==Auftrag && page_counter==1)
+   if(Typ()==Auftrag  && page_counter==1)
      os <<mld->MLT(MultiL_Dict::TXT_DANKE_AUFTR)<<" \\\\\n";
+   else os << "~\\\\\n";
 
    if(!Rueckstand())
    if(Typ()==Auftrag) {auftrag_von(os,class Auftrag(AuftragBase(
@@ -1236,6 +1257,8 @@ void LR_Abstraktion::auftrag_von(std::ostream &os, const class Auftrag &a,
        os << "~\\\\"<<mld->MLT(MultiL_Dict::TXT_UNSEREAUFNR)<<" ";
      os.width(6);os.fill('0'); os<< a.Id();
      os << " "<< mld->MLT(MultiL_Dict::TXT_VOM)<<" "<< a.getDatum();
+     --zeilen_passen_noch;
+     os <<". "<<mld->MLT(MultiL_Dict::TXT_DANKE_AUFTR)<<" \\\\\n";
     }
     
   if(a.getYourAufNr() != a.getBemerkung())

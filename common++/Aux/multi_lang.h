@@ -61,6 +61,8 @@ public:
 		TXT_LIEFERINFO=46,
 		TXT_WERT=47,
 		TXT_OFFEN=48,
+		TXT_BTN=49,
+		TXT_LIEFERWOCHE=50,
 	     } LangTXT;
 
  MultiL_Dict(int sprache, int default_spr=1);
