@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.43 2003/04/09 20:34:17 jacek Exp $
+// $Id: Kunde.h,v 1.44 2003/04/11 10:15:14 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -77,7 +77,8 @@ public:
     const std::string getBankverb() const { return  bank+": BLZ "+itos(blz)+", Kto.Nr. "+ulltos(konto);}
     st_bankverb():bankindex(0),blz(0),konto(0),
     lieferantenkonto(0),gegenkonto(0),zahlungsart(Zahlungsart::none_id),
-    lieferart(Lieferart::none_id) {}
+    lieferart(Lieferart::none_id)
+    {}
    };
  typedef struct st_bankverb Bankverbindung;
 
@@ -205,12 +206,13 @@ public:
         void deletePreisListe(const PreisListe::ID p) throw(SQLerror);
         const std::string verein() const { return kundendaten.verein; }
         const std::string notiz() const { return kundendaten.notiz; }
+        const ManuProC::Datum getGebDatum() const { return kundendaten.gebdatum; }
         const std::string stand() const { return kundendaten.stand.c_str(); }
 
         const std::string getName() const {  return adresse.firma; }
         const std::string getSortName() const {  return adresse.sortname; }
         ID Id() const {  return entityid; }
-        ID GruppenId() const {  return KundenGruppennr; }
+//        ID GruppenId() const {  return KundenGruppennr; }
         const std::string idnr() const { return IDnr; } 
         ID getNummer() const {  return entityid; }
         cH_ExtBezSchema getSchema(class ArtikelTyp t) const
@@ -260,7 +262,7 @@ public:
            B_Rabatt,B_Zeilenrabatt,B_Waehrungid,
            B_Zahlungsart,B_Lieferantenkonto,
            B_Gegenkonto,B_MaxAnzB};
-        enum B_UPDATE_BITS_SONST{B_Rechnungan,B_Extartbezid,
+        enum B_UPDATE_BITS_SONST{B_Rechnungan,B_Lieferscheinan,B_Extartbezid,
            B_Preisliste,B_Notiz,B_Entsorgung,B_Verknr,B_Kalkulation,
            B_Stand,B_KP_Position,B_KP_Notiz,
            B_AnzAusFirmenPapier,B_AnzAusWeissesPapier,
@@ -288,6 +290,7 @@ public:
            FZahlungsart=1<<B_Zahlungsart,FLieferantenkonto=1<<B_Lieferantenkonto,
            FGegenkonto=1<<B_Gegenkonto};
          enum UpdateBitsSonst{FRechnungan=1<<B_Rechnungan,
+         	FLieferscheinan=1<<B_Lieferscheinan,
            FExtartbezid=1<<B_Extartbezid,FPreisliste=1<<B_Preisliste,
            FNotiz=1<<B_Notiz,FEntsorgung=1<<B_Entsorgung,
             FVerknr=1<<B_Verknr,Kalkulation=1<<B_Kalkulation,
@@ -363,6 +366,7 @@ public:
         void set_Gegenkonto(const int i) {bankverb.gegenkonto=i;}
         void set_Zahlungsart(cH_Zahlungsart i) {bankverb.zahlungsart=i; }
         void set_Anrede(const cH_Anrede &s) { adresse.branr=s; }
+        void setGebDatum(const ManuProC::Datum &d) { kundendaten.gebdatum=d; }        
 
         // Notfall API sollte ersetzt werden MAT
         fixedpoint<2> skontosatz() const {return zahlungsart()->getSkonto(1).skontosatz;} 

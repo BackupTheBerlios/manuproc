@@ -41,6 +41,9 @@ void windowTop::changedFktA(Kunde::UpdateBitsAdresse e)
      else if (e==Kunde::FLieferadresse  ) kundendaten->isLieferadresse(checkbuttonLieferAdr->get_active());
      else if (e==Kunde::FRechnungadresse) kundendaten->isRechnungsadresse(checkbuttonRchngAdr->get_active());
      else if (e==Kunde::FRng_an_postfach) kundendaten->Rng_an_postfach(checkbutton_rng_an_postfach->get_active());
+     else if (e==Kunde::FBranr		) kundendaten->set_Anrede(scc_anrede->get_value());
+     else if (e==Kunde::FName2		) kundendaten->set_name2(entryName2->get_text());     
+
      else cerr<< "Falsche Funktion konektiert\n";
 
   if(e==Kunde::FLieferadresse || e==Kunde::FRechnungadresse || 
@@ -76,6 +79,7 @@ void windowTop::changedFktS(Kunde::UpdateBitsSonst e)
   if(!fire_enabled) return;
   UpdateSonst =  Kunde::UpdateBitsSonst(UpdateSonst|e);
      if      (e==Kunde::FRechnungan ) kundendaten->RngAn(rng_an->get_value());
+     else if (e==Kunde::FLieferscheinan ) kundendaten->LfrAn(lfr_an->get_value());
      else if (e==Kunde::FExtartbezid) kundendaten->set_schema(cH_Kunde(extartbez->get_value())->getSchemaId());
      else if (e==Kunde::FNotiz      ) kundendaten->set_notiz(textNotiz->get_chars(0,textNotiz->get_length()));
      else if (e==Kunde::FEntsorgung ) kundendaten->entsorgung(checkbutton_entsorgung->get_active());
@@ -87,6 +91,7 @@ void windowTop::changedFktS(Kunde::UpdateBitsSonst e)
      else if (e==Kunde::FKP_Notiz   ) ;
      else if (e==Kunde::FAnzAusFirmenPapier) { spinbutton_firmenpapier->update(); kundendaten->set_anzahl_ausdruck_firmenpapier(spinbutton_firmenpapier->get_value_as_int());}
      else if (e==Kunde::FAnzAusWeissesPapier){ spinbutton_weissespapier->update();kundendaten->set_anzahl_ausdruck_weissespapier(spinbutton_weissespapier->get_value_as_int());}
+     else if (e==Kunde::FGebDatum	) kundendaten->setGebDatum(geburtstag->get_value());     
      else cerr<< "Falsche Funktion konektiert\n";
 
   if(e==Kunde::FNotiz || e==Kunde::FRechnungan || e==Kunde::FExtartbezid 
@@ -215,6 +220,10 @@ void windowTop::connectFkt()
   entryFirma->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktA),Kunde::FFirma));
   entryFirma->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktA),Kunde::FFirma));
 
+  entryName2->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FName2));
+  entryName2->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktA),Kunde::FName2));
+  entryName2->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktA),Kunde::FName2));  
+
   entryPostanwVor->changed.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FPostanwvor));
   entryPostanwVor->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktA),Kunde::FPostanwvor));
   entryPostanwVor->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktA),Kunde::FPostanwvor));
@@ -257,7 +266,8 @@ void windowTop::connectFkt()
 
   landesbox->activate.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FLkz));
 
-
+  geburtstag->activate.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktS),Kunde::FGebDatum));
+  scc_anrede->activate.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktA),Kunde::FBranr));
 
   //Kunde::BFirma
 
@@ -381,8 +391,7 @@ void windowTop::connectFkt()
   textPersonenPrivatNotiz->activate.connect_after(SigC::bind(SigC::slot(this,&windowTop::activateFktP),Person::FNotiz));
   textPersonenPrivatNotiz->focus_out_event.connect(SigC::bind(SigC::slot(this,&windowTop::focus_outFktP),Person::FNotiz));
 
-  geburtstag->activate.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktP),Person::FGebDatum));
-  scc_anrede->activate.connect(SigC::bind(SigC::slot(this,&windowTop::changedFktP),Person::FAnrede));
+
 
 }
 
@@ -396,9 +405,9 @@ void windowTop::changedFktP(Person::UpdateBits e)
   UpdatePerson = Person::UpdateBits(UpdatePerson|e);
   if      (e==Person::FName    ) (const_cast<Person*>(&*person))->setName(entryPersonenDatenName->get_text());
   else if (e==Person::FVorname ) (const_cast<Person*>(&*person))->setVorname(entryPersonenDatenVorname->get_text());
-  else if (e==Person::FGebDatum) {(const_cast<Person*>(&*person))->setGebDatum(geburtstag->get_value());scc_anrede->grab_focus();}
-  else if (e==Person::FAnrede  ) {(const_cast<Person*>(&*person))->setAnrede(scc_anrede->get_value());textPersonenPrivatNotiz->grab_focus();}
-  else if (e==Person::FNotiz   ) (const_cast<Person*>(&*person))->setNotiz(textPersonenPrivatNotiz->get_chars(0,textPersonenPrivatNotiz->get_length()));
+  else if (e==Person::FGebDatum) ;// {(const_cast<Person*>(&*person))->setGebDatum(geburtstag->get_value());scc_anrede->grab_focus();}
+  else if (e==Person::FAnrede  ) ;// {(const_cast<Person*>(&*person))->setAnrede(scc_anrede->get_value());textPersonenPrivatNotiz->grab_focus();}
+  else if (e==Person::FNotiz   ) ;// (const_cast<Person*>(&*person))->setNotiz(textPersonenPrivatNotiz->get_chars(0,textPersonenPrivatNotiz->get_length()));
   else cerr<< "Falsche Funktion konektiert\n";
   if(e==Person::FGebDatum || e==Person::FAnrede)
     update_person();
