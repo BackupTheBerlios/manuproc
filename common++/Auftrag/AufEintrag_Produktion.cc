@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.8 2003/08/12 08:38:13 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.9 2003/08/12 16:16:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -173,9 +173,7 @@ void AufEintrag::ProduziertNG(mengen_t M,const ProductionContext2 &ctx)
    	 assert(!"Rest geblieben");
    }
 
-#ifdef MABELLA_EXTENSIONS
-
-#ifdef MABELLA_LAGERHACK
+#if defined MABELLA_EXTENSIONS && defined MABELLA_LAGERHACK
 
 if(Instanz() == ppsInstanzID::Kundenauftraege)
   {  FertigWaren fw(artikel,(FertigWaren::enum_Aktion)'L',
@@ -184,7 +182,6 @@ if(Instanz() == ppsInstanzID::Kundenauftraege)
      if(M < 0) fwl.Einlagern();
      else if(M > 0) fwl.Auslagern();
   }
-#endif
 
 #endif
 
@@ -237,7 +234,8 @@ public:
 
 	// Überproduktion
 	void operator()(const ArtikelBase &art,AuftragBase::mengen_t M) const
-	{  if (M<0) // Ein Teil der Lieferung konnte nicht rückgängig gemacht werden
+	{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("art",art),NV("M",M));
+	   if (M<0) // Ein Teil der Lieferung konnte nicht rückgängig gemacht werden
 	   {  // similar code in AufEintrag::ArtikelInternNachbestellen
 	      ArtikelStamm as(art);
 	      ppsInstanz::ID inst= alterAEB.Instanz()->NaechsteInstanz(as);
@@ -284,6 +282,7 @@ public:
 	void operator()(const ArtikelBase &art,AuftragBase::mengen_t M) const
 	{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("M",M));
 	   //assert(!"needed");
+	   assert(M<0);
 	   ArtikelStamm as(art);
 	   cH_ppsInstanz next=alterAEB.Instanz()->NaechsteInstanz(as);
 	   if (next==ppsInstanzID::None)
@@ -378,13 +377,15 @@ void AufEintrag::KinderProduzieren(mengen_t M, const AufEintragBase &neuerAEB,
    // Kinder bearbeiten
    ProduziertNG_cb2 callback(uid,*this,neuerAEB,ctx);
    if (M<0)
-   {  distribute_children(*this,M,Artikel(),callback);
+   {  // vielleicht hier artbaum statt alles unten?
+      distribute_children(*this,M,Artikel(),callback);
       // bei ProduziertSelbst hilft obiges nicht allein (keine Pfeile nach unten entstanden)
       AufEintrag neuerAE=neuerAEB;
-      distribute_children(neuerAE,M,Artikel(),ProduziertRueckgaengig2(uid,neuerAE));
+      distribute_children_artbaum(neuerAE,M,Artikel(),ProduziertRueckgaengig2(uid,neuerAE));
    }
    else
-   {  // bei ProdSelbst 0er zuerst abbestellen ...
+   {  // bei ProdSelbst:
+      // gelieferte 1er nutzen, 0er abbestellen dann erst 1er abbestellen
       distribute_children_twice_rev(*this,M,Artikel(),callback);
    }
 }

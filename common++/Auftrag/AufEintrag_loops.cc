@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.cc,v 1.5 2003/08/07 08:13:00 christof Exp $ */
+/* $Id: AufEintrag_loops.cc,v 1.6 2003/08/12 16:16:25 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -108,6 +108,38 @@ bool distribute_children_rev(const AufEintragBase &startAEB,
       if (!!AE_menge2) callee(artloop_var->first,AE_menge2);
    }
    return !MapArt.empty();
+}
+
+void distribute_children_artbaum(const AufEintragBase &startAEB,
+ 		AuftragBase::mengen_t menge,
+ 		const ArtikelBase &article, 
+ 		const distribute_children_cb &callee)
+{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,article,Nametrans(typeid(callee).name()));
+   AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel(startAEB));
+   ArtikelBaum AE_artbaum(article);
+   for(AufEintragZu::map_t::const_iterator artloop_var=MapArt.begin();artloop_var!=MapArt.end();++artloop_var)
+   {  ArtikelBaum::faktor_t AE_faktor = AE_artbaum.Faktor(artloop_var->first);
+      AuftragBase::mengen_t AE_menge2=AE_faktor*menge;
+      for(AufEintragZu::list_t::const_iterator zuloop_var=artloop_var->second.begin();
+	   		zuloop_var!=artloop_var->second.end();++zuloop_var)
+      {  AuftragBase::mengen_t mengen_var
+      		=MinPfeil_or_MinGeliefert(*zuloop_var,AE_menge2);
+         if (!mengen_var) continue;
+
+         mengen_var=callee(artloop_var->first,zuloop_var->AEB,mengen_var);
+
+         AE_menge2-=mengen_var;
+         if(!AE_menge2) break;
+      }
+      // pass the remainder
+      if (!!AE_menge2) callee(artloop_var->first,AE_menge2);
+   }
+   for(ArtikelBaum::const_iterator i=AE_artbaum.begin();i!=AE_artbaum.end();++i)
+   {  AufEintragZu::map_t::const_iterator j=MapArt.find(i->rohartikel);
+      if (j==MapArt.end())
+      {  callee(i->rohartikel,menge*i->menge);
+      }
+   }
 }
 
 bool distribute_children_twice_rev(const AufEintragBase &startAEB,
