@@ -1,4 +1,4 @@
-// $Id: event_talk.cc,v 1.1 2003/05/09 11:08:06 christof Exp $
+// $Id: event_talk.cc,v 1.2 2003/05/09 12:34:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,7 +18,13 @@
  */
 
 #include <Misc/Event.h>
+#include <Misc/dbconnect.h>
 
-int main()
-{
+int main(int argc, char **argv)
+{  ManuProC::dbconnect();
+   std::string c="test",k,d;
+   if (argc>1) c=argv[1];
+   if (argc>2) k=argv[2];
+   if (argc>3) d=argv[3];
+   ManuProC::Event(c,k,d);
 }
