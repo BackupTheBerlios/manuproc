@@ -5,9 +5,15 @@
 #define MULTI_LANG
 
 
+#define CUSTOMER_IDS	1000
+#define DEFAULT_SPRACHE	1
+
+
 class MultiL_Dict
 {
  int sprid;
+ int def_sprid;
+ 
  std::map<int,std::string> textmap;
  std::map<int,std::string> defaultmap; 
 
@@ -114,8 +120,13 @@ public:
 		TXT_RGNR=109,
 		TXT_IHRESTNR=110,
 	     } LangTXT;
+	     
+ // id's >=  CUSTOMER_IDS werden nicht im Konstruktor, sondern on demand geladen
+ // mann kann ab CUSTOMER_IDS die Texte in die Datenbank packen, ohne am h. file was
+ // zu müssen. 
+	     
 
- MultiL_Dict(int sprache, int default_spr=1);
+ MultiL_Dict(int sprache, int default_spr=DEFAULT_SPRACHE);
  MultiL_Dict() : sprid(-1) {}
  std::string MLT(const LangTXT textid, std::string def_string="UNKNOWN");
  bool valid() const { return sprid!=-1; }
