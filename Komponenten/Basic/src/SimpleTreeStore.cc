@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.11 2002/11/29 07:43:30 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.12 2002/11/29 09:34:48 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -121,8 +121,9 @@ SimpleTreeStore::SimpleTreeStore(int cols,int attrs)
 	  color_bool(false), m_columns(cols)
 {  if (attrs<1) attrcount=cols;
    m_refTreeStore=Gtk::TreeStore::create(m_columns);
-   getModel().signal_title_changed().connect(SigC::slot(*this,&SimpleTreeStore::on_title_changed));
    defaultSequence();
+   getModel().signal_title_changed().connect(SigC::slot(*this,&SimpleTreeStore::on_title_changed));
+   getModel().signal_redraw_needed().connect(SigC::slot(*this,&SimpleTreeStore::redisplay));
 }
 
 class TreeModelColumn_C : public Gtk::TreeModelColumnBase
@@ -141,6 +142,9 @@ SimpleTreeStore::ModelColumns::ModelColumns(int _cols)
    }
    add(row);
    add(deep);
+   add(childrens_deep);
+   add(value);
+   add(leafdata);
 }
 
 // CellItem ^= TreeRow
@@ -316,7 +320,8 @@ void SimpleTreeStore::InitColumns(Gtk::TreeRow &node, guint deep,
    node[m_columns.deep]=deep;
    node[m_columns.childrens_deep]=0;
    for (guint i=deep;i<Cols();++i)
-      node[m_columns.cols[i]]=v->Value(currseq[i],ValueData())->getStrVal();
+   {  node[m_columns.cols[i]]=v->Value(currseq[i],ValueData())->getStrVal();
+   }
 }
 
 Gtk::TreeRow SimpleTreeStore::CopyTree(Gtk::TreeRow src, Gtk::TreeModel::Children dest)
@@ -347,7 +352,9 @@ Gtk::TreeRow SimpleTreeStore::CopyTree(Gtk::TreeRow src, Gtk::TreeModel::Childre
 Gtk::TreeStore::iterator SimpleTreeStore::MoveTree(
 	Gtk::TreeStore::iterator current_iter,
 	guint deep,guint child_s_deep,guint value_index)
-{  Gtk::TreeStore::iterator new_iter= m_refTreeStore->insert(current_iter);
+{  return current_iter;
+
+   Gtk::TreeStore::iterator new_iter= m_refTreeStore->insert(current_iter);
    Gtk::TreeRow newnode = *new_iter;
    Gtk::TreeRow oldnode = *current_iter;
    Gtk::TreeRow oldnode2 = CopyTree(oldnode, newnode.children());

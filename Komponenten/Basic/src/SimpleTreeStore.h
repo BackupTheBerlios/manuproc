@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.12 2002/11/28 18:06:36 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.13 2002/11/29 09:34:48 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -107,7 +107,7 @@ public:
 	SimpleTreeStore(int cols,int attrs=-1);
 	
 	void set_showdeep(int i) {showdeep=i;}
-	guint Attrs() const { return attrcount; }
+	//guint Attrs() const { return attrcount; }
 	guint Cols() const  { return columns;}
 
 	void set_value_data(gpointer _p) {gp = _p;}

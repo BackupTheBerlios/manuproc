@@ -135,7 +135,6 @@ window1::window1() : st(SP_ANZ,SP_SUM0)
    datavec.push_back(new MyRowData(1,"Y",2,3,"A"));
 #endif
 #if 1
-   std::cout << itos(200) << '\n';
    for (int i=0;i<100;++i)
       datavec.push_back(new MyRowData(i%4+1,/*"same" */
       std::string(1,char('A'+(i%3))),(i%5),(i%7),itos(i)));
