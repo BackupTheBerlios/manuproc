@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.27 2003/04/03 11:47:54 jacek Exp $ */
+/* $Id: Lieferschein.cc,v 1.28 2003/06/18 15:18:29 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -41,6 +41,7 @@ int _dpdlnr)
 ,dpdliefnr(_dpdlnr),paeckchen(_paeckchen),pakete(_pakete)
 #endif
 ,notiz_valid(false)
+,verknr(Kunde::none_id)
 {}
 
 static void unbestellteMengeProduzieren(cH_ppsInstanz instanz,

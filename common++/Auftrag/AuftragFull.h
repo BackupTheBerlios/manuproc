@@ -1,4 +1,4 @@
-/* $Id: AuftragFull.h,v 1.27 2003/03/14 13:14:37 jacek Exp $ */
+/* $Id: AuftragFull.h,v 1.28 2003/06/18 15:18:29 jacek Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -62,6 +62,8 @@ public:
 	iterator begin() { return eintragliste.begin(); }
 	iterator end() { return eintragliste.end(); }
 	size_t size() const { return eintragliste.size(); }
+	
+	void loadEntries(bool with_storno=true) throw(SQLerror);
 	
    AufEintragBase push_back(AuftragBase::mengen_t bestellt,
                ManuProC::Datum lieferdatum, ArtikelBase artid,

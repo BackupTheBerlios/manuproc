@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.25 2003/03/25 16:29:37 jacek Exp $ */
+/* $Id: Lieferschein.h,v 1.26 2003/06/18 15:18:29 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -46,12 +46,13 @@ class Lieferschein : public LieferscheinBase, public HandleContent
 #endif
  mutable std::string notiz;
  mutable bool notiz_valid;
+ Kunde::ID verknr;
 
  public:
         
  	Lieferschein(const LieferscheinBase &source)
  		: LieferscheinBase(source), kunde(Kunde::none_id),
- 			notiz_valid(false)  {}
+ 			notiz_valid(false),verknr(Kunde::none_id)  {}
  		
  	Lieferschein() : LieferscheinBase(),
  			lsdatum(ManuProC::Datum::today()),
@@ -62,6 +63,7 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  			paeckchen(0),pakete(0)
 #endif
 			,notiz_valid(false)
+			,verknr(Kunde::none_id)
  			{}
  			
  	Lieferschein(const cH_ppsInstanz& instanz,int lid) throw(SQLerror);
@@ -87,6 +89,8 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  void setGewichtBrutto(const gewicht_t i) throw(SQLerror);
  void setGewichtNetto(const gewicht_t i) throw(SQLerror);
  const ManuProC::Datum getMaxZahlziel() const throw(SQLerror);
+ Kunde::ID getVerknr() const { return verknr; }
+ void setVerknr(const Kunde::ID vknr) throw(SQLerror);
 #endif 
  const Preis::rabatt_t AufRabatt() const throw(SQLerror);
  

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.h,v 1.44 2003/04/13 20:42:17 christof Exp $
+// $Id: AufEintragBase.h,v 1.45 2003/06/18 15:18:29 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -107,6 +107,8 @@ public:
 
   // Diese Funktion ist zum Debuggen sehr nützlich:
   void ExistMenge(const std::string &s="") const;
+  
+  Kunde::ID getVerknr() const { return verknr; }
 };
 
 std::ostream &operator<<(std::ostream &o,const AufEintragBase &ae);

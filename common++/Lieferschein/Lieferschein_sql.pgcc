@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.32 2003/03/27 09:47:22 jacek Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.33 2003/06/18 15:18:29 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,6 +21,7 @@
 #include<Misc/Transaction.h>
 exec sql include sqlca;
 #include <Misc/TraceNV.h>
+#include <Aux/FetchIStream.h>
 
 Lieferschein::Lieferschein(const cH_ppsInstanz& _instanz,int lid) throw(SQLerror)
 : LieferscheinBase(_instanz,lid),kunde(Kunde::default_id), notiz_valid(false)
@@ -43,18 +44,24 @@ try{
   int DPDLIEFNR;
   int PAECKCHEN, PAKETE;
   double NETTO_KG,BRUTTO_KG;
+  int VERKNR;
+  int NONEID;
  exec sql end declare section;
 #endif
+
+ NONEID=Kunde::none_id;
+
 
 #ifdef DPD_LIEFERSCHEINE
  exec sql select kundennr, date(datum), coalesce(rngid,:INVALID_ENTITY),
 		coalesce(paeckchen,0),
 		coalesce(pakete,0),date(coalesce(geliefertam,datum)),
 		coalesce(dpdliefnr,:INVALID_ENTITY),
-      coalesce(brutto_kg,0), coalesce(netto_kg,0)
+      coalesce(brutto_kg,0), coalesce(netto_kg,0), 
+	coalesce(verknr,:NONEID)
 		into :KDNR, :DATUM, :RNGID, :PAECKCHEN, :PAKETE,
 		:GELIEFERTAM:IGELIEFERTAM, :DPDLIEFNR,
-      :BRUTTO_KG, :NETTO_KG
+      :BRUTTO_KG, :NETTO_KG, :VERKNR
  	from lieferschein where (instanz,lfrsid) = (:INSTANZ,:LFRSID);
 #else
  exec sql select kundennr, date(datum), coalesce(rngid,:INVALID_ENTITY),
@@ -76,6 +83,7 @@ try{
  pakete=PAKETE;
  brutto_kg=BRUTTO_KG;
  netto_kg=NETTO_KG;
+ verknr=VERKNR;
 #endif
 
  }catch (SQLerror &e) {std::cerr <<e<<'\n';}
@@ -95,6 +103,7 @@ Lieferschein::Lieferschein(const cH_ppsInstanz& _instanz,cH_Kunde k,int jahr) th
  	,dpdliefnr(-1) ,paeckchen(0),pakete(0)
 #endif
  ,notiz_valid(false)
+,verknr(Kunde::none_id)
 {
 ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,_instanz,NV("Kunde",k),NV("Jahr",jahr)); 
 
@@ -278,6 +287,18 @@ void Lieferschein::Notiz(const std::string n) throw(SQLerror)
 }
 
 
+
+void Lieferschein::setVerknr(const Kunde::ID vknr) throw(SQLerror)
+{
+ Query("update lieferschein set verknr=? where"
+	" (instanz,lfrsid)=(?,?)")
+	<< Query::NullIf(vknr,Kunde::none_id)
+	<< Instanz()->Id()
+	<< Id();
+ SQLerror::test(__FILELINE__);
+
+ verknr=vknr;
+}
 
 
 

@@ -55,8 +55,17 @@ AuftragFull::AuftragFull(const AuftragBase& auftrag,bool with_storno) throw(SQLe
 	: Auftrag(auftrag)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
+
+ loadEntries(with_storno);
+}
+
+
+void AuftragFull::loadEntries(bool with_storno) throw(SQLerror)
+{
+ eintragliste.erase(eintragliste.begin(),eintragliste.end());
+
  SelectedFullAufList aufids((SQLFullAuftragSelector)
- 			(SQLFullAuftragSelector::sel_Aufid(auftrag,with_storno)));
+ 			(SQLFullAuftragSelector::sel_Aufid(*this,with_storno)));
  for(SelectedFullAufList::iterator i = aufids.aufidliste.begin();
 				 	 i!=aufids.aufidliste.end(); ++i)
  {  try { eintragliste.push_back(*i);
@@ -66,6 +75,7 @@ AuftragFull::AuftragFull(const AuftragBase& auftrag,bool with_storno) throw(SQLe
     } 
  }
 }
+
 
 AuftragFull::AuftragFull(Anlegen instanz, long kundennr,
 		std::string yaufnr) throw(SQLerror)

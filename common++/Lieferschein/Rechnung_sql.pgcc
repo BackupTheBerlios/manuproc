@@ -250,11 +250,11 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
  
  exec sql insert into rechnungentry 
  	(rngid,zeilennr, artikelid, lfrsid,lfrszeile, stueck,menge,
- 		preis,rabatt,preismenge)
+ 		preis,rabatt,preismenge,provsatz)
  	(select :RNGID,l.zeile - :MINZNR + :MAXZNR,
  		l.artikelid, l.lfrsid,l.zeile, l.stueck,l.menge,
  		coalesce(ae.preis,0),coalesce(ae.rabatt,0),
- 		coalesce(ae.preismenge,1)
+ 		coalesce(ae.preismenge,1,ae.provsatz)
  	 from lieferscheinentry l
  	 	left join auftragentry ae 
  	 	on (l.instanz,l.refauftragid,l.refzeilennr)

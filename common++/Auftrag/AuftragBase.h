@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.46 2003/05/26 08:47:55 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.47 2003/06/18 15:18:29 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -52,7 +52,9 @@ class AuftragBase
 
  protected:
    cH_ppsInstanz instanz; 	
- 	ID auftragid;	
+   ID auftragid;	
+   Kunde::ID verknr;	
+   
  public:
 	AuftragBase() 
 	        : instanz(ppsInstanzID::None), auftragid(invalid_id) {}
