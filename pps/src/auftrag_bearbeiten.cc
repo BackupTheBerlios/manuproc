@@ -256,8 +256,8 @@ void auftrag_bearbeiten::clearEntry()
  verfuegbar_label->set_text("0");
  lieferant_offen->set_text("(0)");
  auftrag_label->set_value(0);
- 
-
+ notiz->delete_text(0,-1);
+ notiz_save->set_sensitive(false);
 }
 
 gint auftrag_bearbeiten::on_aufrabatt_spinbutton_focus_out_event(GdkEventFocus *ev)
@@ -767,6 +767,7 @@ void auftrag_bearbeiten::preisliste_reset()
 
 void auftrag_bearbeiten::on_aufnrscombo_activate()
 {
+ clearEntry();
  loadAuftrag(AuftragBase(instanz,aufnr_scombo->Content()));
 }
 
