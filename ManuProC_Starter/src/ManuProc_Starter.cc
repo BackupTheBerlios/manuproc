@@ -7,19 +7,27 @@
 
 #include "config.h"
 #include "ManuProc_Starter.hh"
+#include <gtkmm/main.h>
 
 void ManuProc_Starter::on_pps_start_clicked()
 {  
+ std::string cmd("/bin/sh -c pps &");
+ system(cmd.c_str());
 }
 
 void ManuProc_Starter::on_kunden_start_enter()
-{  
+{
+ std::string cmd("/bin/sh -c kundendaten &");
+ system(cmd.c_str());
 }
 
 void ManuProc_Starter::on_lager_start_clicked()
 {  
+ std::string cmd("/bin/sh -c fertigwlager &");
+ system(cmd.c_str());
 }
 
 void ManuProc_Starter::on_quit_clicked()
-{  
+{
+ Gtk::Main::instance()->quit();
 }

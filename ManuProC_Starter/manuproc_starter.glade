@@ -43,7 +43,7 @@
 	      <property name="label" translatable="yes">Kunden</property>
 	      <property name="use_underline">True</property>
 	      <property name="stock_pixmap">gtk-open</property>
-	      <signal name="enter" handler="on_kunden_start_enter" last_modification_time="Fri, 07 May 2004 12:49:10 GMT"/>
+	      <signal name="clicked" handler="on_kunden_start_enter" last_modification_time="Fri, 07 May 2004 13:45:32 GMT"/>
 	    </widget>
 	  </child>
 
