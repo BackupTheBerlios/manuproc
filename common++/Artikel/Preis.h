@@ -1,4 +1,4 @@
-// $Id: Preis.h,v 1.19 2003/12/16 15:36:47 jacek Exp $
+// $Id: Preis.h,v 1.20 2004/01/22 17:12:32 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -99,7 +99,8 @@ public:
 	const std::string Typtext() const;
 
 	Preis In(cP_Waehrung w,preismenge_t stkgr=0) const
-	{  if (!stkgr) stkgr=preismenge;
+	{  
+//	if (!stkgr) stkgr=preismenge;
 	   Preis ret(Wert_fr(w,stkgr),w,stkgr);
 	   ret.short_format(short_shl);
 	   return ret;
