@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry_sql.pgcc,v 1.28 2003/03/10 14:44:14 christof Exp $ */
+/* $Id: LieferscheinEntry_sql.pgcc,v 1.29 2003/03/20 13:41:57 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -54,7 +54,9 @@ FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry::st_zusatz& z)
   return is >> z.aeb /*>> z.stueck*/ >>z.menge >> z.yourauftrag;
 }
 
-
+Query &operator<<(Query &q, const LieferscheinEntryBase &leb)
+{  return q << leb.Instanz()->Id() << leb.Id() << leb.Zeile();
+}
 
 LieferscheinEntry::LieferscheinEntry(const LieferscheinEntryBase &lsbase)
  throw(SQLerror) : LieferscheinEntryBase(lsbase) 
@@ -67,9 +69,8 @@ LieferscheinEntry::LieferscheinEntry(const LieferscheinEntryBase &lsbase)
   " coalesce(ly.refzeilennr,"+itos(ManuProcEintrag::none_znr)+")"
   " from lieferscheinentry ly "
   " left join auftrag a on (ly.refauftragid,ly.instanz) = (a.auftragid,a.instanz)"
-  " where (ly.instanz,ly.lfrsid,ly.zeile) = ("
-   +itos(Instanz()->Id())+","+itos(Id())+","+itos(Zeile())+")"; 
- Query(qstr).FetchOne(*this);
+  " where (ly.instanz,ly.lfrsid,ly.zeile) = (?,?,?)";
+ (Query(qstr) << *this).FetchOne(*this);
 }
 
 LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
@@ -141,16 +142,11 @@ void LieferscheinEntry::deleteEntry(LieferscheinEntry &lse) throw(SQLerror)
 
 void LieferscheinEntry::setZusatzInfo(const AufEintragBase &AEB,const mengen_t &menge) throw(SQLerror)
 {
-  std::string Q="insert into lieferscheinentryzusatz (instanz,lfrsid,lfsznr,"
-      "auftragid,auftragznr,menge) values ("
-      +itos(Instanz()->Id())+","
-      +itos(Id())+","
-      +itos(Zeile())+","
-      +"nullif("+itos(AEB.Id())+","+itos(ManuProcEntity<>::none_id)+"),"
-      +"nullif("+itos(AEB.ZNr())+","+itos(ManuProcEintrag::none_znr)+"),"      
-      +menge.String()+
-      ")";
-  Query::Execute(Q);
+  Query("insert into lieferscheinentryzusatz (instanz,lfrsid,lfsznr,"
+      "auftragid,auftragznr,menge) values (?,?,?, ?,?, ?)") << *this 
+  	<< Query::NullIf<int>(AEB.Id(),ManuProcEntity<>::none_id)
+  	<< Query::NullIf<int>(AEB.ZNr(),ManuProcEintrag::none_znr);
+  	<< menge;
   SQLerror::test(__FILELINE__);
 }
 
