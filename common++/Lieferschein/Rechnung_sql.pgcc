@@ -311,7 +311,8 @@ Rechnung::geldbetrag_t Rechnung::Betrag(bool brutto) const throw(SQLerror)
 
  if(brutto)
    {
-    Query q("select  sum(round(preis*stueck,2)) "
+    Query q("select  sum(round(preis* "
+	       "(coalesce(menge,1)*stueck),2)) "
 	    " from rechnungentry where rngid = ?");
     q << Id();
     SQLerror::test(__FILELINE__);
@@ -320,7 +321,8 @@ Rechnung::geldbetrag_t Rechnung::Betrag(bool brutto) const throw(SQLerror)
    }
  else
    {Query q("select  sum(round((round(preis*((100-rabatt)/100), case "
-	" when (preis*?)%10!=0 then ? else 2 end))*stueck,2))" 
+	" when (preis*?)%10!=0 then ? else 2 end))*"
+	"(coalesce(menge,1)*stueck),2))" 
 	" from rechnungentry where rngid = ?");
     q << HELPFKT << ROUND << Id(); 
     SQLerror::test(__FILELINE__);
