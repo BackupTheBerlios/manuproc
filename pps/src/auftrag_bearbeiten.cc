@@ -116,6 +116,8 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
  auftragbearbeiten=this;  
  
  auftrag_label->set_value(0);
+ bestellplan->set_sensitive(instanz->ExterneBestellung());
+ 
 }
 
 
@@ -1210,4 +1212,13 @@ void auftrag_bearbeiten::auftraglabel_geaendert()
   {meldung->Show(e); return;}  
   
 }
+
+#include "bestell_plan.hh"
+bestell_plan *BP=NULL;
+void auftrag_bearbeiten::on_bestellplan_clicked()
+{  
+ if(BP==NULL)
+   BP=new bestell_plan();
+}
+
 

@@ -1,4 +1,4 @@
-// generated 2004/12/6 21:04:57 CET by jacek@jaceksdell.(none)
+// generated 2005/1/27 10:54:39 CET by jacek@jaceksdell.(none)
 // using glademm V2.6.0_cvs
 //
 // newer (non customized) versions of this file go to bestell_plan.hh_new
@@ -12,9 +12,26 @@
 #ifndef _BESTELL_PLAN_HH
 #  include "bestell_plan_glade.hh"
 #  define _BESTELL_PLAN_HH
+
+#include <vector.h>
+#include <string.h>
+#include <Artikel/ArtikelBase.h>
+
 class bestell_plan : public bestell_plan_glade
 {  
-        
+ std::vector<ArtikelBase> artikel;
+ ArtikelBase akt_artikel;
+ 
+        void on_bp_quit_clicked();
+        void on_prev_artikel_clicked();
+        void on_next_artikel_clicked();
         void on_plan_artikel_activate();
+ void clear_all();
+ void load_artikel_list();
+
+public:
+ bestell_plan(const ArtikelBase ab=ArtikelBase());
+        
 };
 #endif
+

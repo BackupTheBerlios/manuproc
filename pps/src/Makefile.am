@@ -34,7 +34,9 @@ pps_SOURCES = pps.cc \
 	buchen_dialog_glade.cc \
 	info_dialog_glade.cc \
 	info_dialog.cc \
-	petig_we.cc petig_we_glade.cc
+	petig_we.cc petig_we_glade.cc \
+	bestell_plan.cc \
+	bestell_plan_glade.cc
 
 #	auftrag_main_lager.cc 
 
@@ -59,13 +61,15 @@ noinst_HEADERS = \
 	buchen_dialog_glade.hh \
 	info_dialog_glade.hh \
 	info_dialog.hh \
-	petig_we.hh petig_we_glade.hh
+	petig_we.hh petig_we_glade.hh \
+	bestell_plan.hh \
+	bestell_plan_glade.hh
 
 BUILT_SOURCES= \
 	auftrag_bearbeiten_sql.cc \
 	auftrag_liefer_sql.cc \
 	auftrag_rechnung_sql.cc \
-   auftrag_main_instanz_sql.cc
+	auftrag_main_instanz_sql.cc
 
 
 AM_CXXFLAGS = @KOMPONENTEN_INCLUDES@ @GNOMEMM_CFLAGS@ 
