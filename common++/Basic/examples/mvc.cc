@@ -1,4 +1,4 @@
-// $Id: mvc.cc,v 1.11 2003/09/03 08:03:27 christof Exp $
+// $Id: mvc.cc,v 1.12 2003/09/03 12:32:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -68,8 +68,8 @@ int main()
    
    // now we test a structure with a shared signal (and use a Model_ref)
    { Model<std::pair<int,int> > model(std::pair<int,int>(1,2));
-     Model_ref<int> a(model.Value().first, model.signal_changed()),
-     		b(model.Value().second, model.signal_changed());
+     Model_ref<int> a(model.Valueptr()->first, model.signal_changed()),
+     		b(model.Valueptr()->second, model.signal_changed());
      View_int view(a);
      View_int view2(b);
      a=12;
@@ -78,10 +78,10 @@ int main()
 
    // now we test a structure with a shared signal (complicated way)
    { Model<std::pair<int,int> > model(std::pair<int,int>(1,2));
-     View_int view(Model_ref<int>(model.Value().first, model.signal_changed()));
-     View_int view2(Model_ref<int>(model.Value().second, model.signal_changed()));
-     model.Assign(model.Value().first, 10);
-     model.Assign(model.Value().second, 11);
+     View_int view(Model_ref<int>(model.Valueptr()->first, model.signal_changed()));
+     View_int view2(Model_ref<int>(model.Valueptr()->second, model.signal_changed()));
+     model.Assign(model.Valueptr()->first, 10);
+     model.Assign(model.Valueptr()->second, 11);
    }
 
    // perhaps the ease recommends the extra bytes for a signal per element
