@@ -73,8 +73,14 @@ void AuftragFull::loadEntries(bool with_storno) throw(SQLerror)
 {
  eintragliste.erase(eintragliste.begin(),eintragliste.end());
 
- SelectedFullAufList aufids((SQLFullAuftragSelector)
- 			(SQLFullAuftragSelector::sel_Aufid(*this,with_storno)));
+ std::string tabelle="artbez_"+
+        itos(ExtBezSchema::default_Typ)+"_"+
+        itos(ExtBezSchema::default_id);
+
+ SQLFullAuftragSelector sl(SQLFullAuftragSelector::sel_Aufid(*this,with_storno)
+				,tabelle);
+ SelectedFullAufList aufids(sl);
+
  for(SelectedFullAufList::iterator i = aufids.aufidliste.begin();
 				 	 i!=aufids.aufidliste.end(); ++i)
  {  try { eintragliste.push_back(*i);

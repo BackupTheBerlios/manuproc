@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema.h,v 1.20 2003/10/31 15:29:02 jacek Exp $
+// $Id: ExtBezSchema.h,v 1.21 2004/03/26 10:45:38 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,9 +19,9 @@
 
 #ifndef EXTBEZSCHEMA
 #define EXTBEZSCHEMA
-#include<Misc/SQLerror.h>
-#include<vector>
-#include<string>
+#include <Misc/SQLerror.h>
+#include <vector>
+#include <string>
 #include <Misc/Handles.h>
 #include <Artikel/ArtikelTyp.h>
 #include <Aux/multi_lang.h>
@@ -32,7 +32,7 @@ class ExtBezSchema : public HandleContent
 {
 public:
 	typedef unsigned int ID;
-	static const ID default_ID=1; // KundenId
+	static const ID default_ID=ManuProC::DefaultValues::EigeneKundenId; // KundenId
 	static const ID default_id=default_ID;
 	static const ID none_id = 0;
 	static const ArtikelTyp::ID default_Typ=ArtikelTyp::default_ID;
