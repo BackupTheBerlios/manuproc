@@ -281,7 +281,12 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
    // 
    bool alles_ok=true;
    for (AufEintragZu::list_t::iterator i=eltern.begin();i!=eltern.end();)
-   {  if (ae.Instanz()==i->AEB.Instanz())
+   {  if (ae.Instanz()==i->AEB.Instanz() && i->AEB.Id()!=AuftragBase::dispo_auftrag_id)
+      {  analyse("(Roh-Artikel wird auf gleicher Instanz bestellt)",ae,i->AEB,i->Menge);
+      }
+      if (ae.Instanz()==i->AEB.Instanz() 
+// Vorerst deaktiviert   
+   		&& i->AEB.Id()==AuftragBase::dispo_auftrag_id)
       {  if (i->AEB.Id()!=AuftragBase::dispo_auftrag_id)
          {  analyse("Eltern auf gleicher Instanz müssen 2er sein",ae,i->AEB,i->Menge);
            weg:
