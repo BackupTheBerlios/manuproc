@@ -1,4 +1,4 @@
-// $Id: Faden.cc,v 1.22 2004/06/23 09:19:53 christof Exp $
+// $Id: Faden.cc,v 1.23 2004/06/23 09:24:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -445,12 +445,12 @@ void Fadenliste::Load(const Webangaben &wa)
          rep_add(anfangszeile, endzeile, wiederholungen);
       }
 
-      Query q3("select kettscheibe, endzeile, wiederholungen "
+      Query q3("select kettscheibe, "
       	"max_kettlaenge,max_fadenzahl,verlaengern,"
       	"ausn_gaenge,ausn_faeden,ausn_maxfd,ausn_gaenge2,ausn_maxfd2 "
-		"from webang_wiederhol where artikel=? "
-		// request small ones first so we print it right
-		"order by endzeile-anfangszeile");
+		"from webang_ketten where artikel=? "
+		// request last one first so that we resize efficiently
+		"order by kettscheibe desc");
       q3 << ab;
       while ((q3>>is).good())
       {  Fd_Kettscheibe ks;
@@ -461,7 +461,8 @@ void Fadenliste::Load(const Webangaben &wa)
 }
 
 const Fd_Kettscheibe &Fadenliste::Kettscheibe(unsigned nr) const
-{  if (nr>=kettscheiben.size()) 
+{  assert(nr<10000);
+   if (nr>=kettscheiben.size()) 
       const_cast<Fadenliste*>(this)->kettscheiben.resize(nr+1);
    return kettscheiben[nr];
 }
