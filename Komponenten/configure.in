@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.10 2003/04/24 10:18:49 christof Exp $
+# $Id: configure.in,v 1.11 2003/10/17 15:13:27 christof Exp $
 
 AC_INIT(src/ArtikelBox.hh)
 
@@ -28,4 +28,5 @@ AC_SUBST(KOMPONENTEN2_LIBS)
 
 AC_OUTPUT(Makefile src/Makefile examples/Makefile \
 	examples/artikelbox/Makefile examples/eingabe/Makefile 
-	examples/tree_simplest/Makefile examples/MVC/Makefile)
+	examples/tree_simplest/Makefile examples/MVC/Makefile
+	examples/newtree/Makefile)

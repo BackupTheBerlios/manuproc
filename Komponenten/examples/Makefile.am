@@ -1,4 +1,4 @@
-SUBDIRS=artikelbox eingabe tree_simplest MVC
+SUBDIRS=artikelbox eingabe tree_simplest MVC newtree
 
 EXTRA_PROGRAMS=Handles Event owntreemodel
 
