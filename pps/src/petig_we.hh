@@ -42,6 +42,7 @@ class petig_we : public petig_we_glade
  void identify_article() throw(SQLerror); 
 
  cH_Data_Lieferoffen getHandleForAufEntry(AuftragBase::ID abid, 
-                         ArtikelBase::ID artid);
+                         ArtikelBase::ID artid,
+                         const std::string youraufnr);
 };
 #endif

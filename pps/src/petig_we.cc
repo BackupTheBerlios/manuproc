@@ -141,7 +141,7 @@ void petig_we::on_petig_we_ok_clicked()
        {
         cH_Data_Lieferoffen h_lo=getHandleForAufEntry(
                     (AuftragBase::ID)atoi((*refif).first.c_str()),
-                     (*wee).artikel.Id());
+                     (*wee).artikel.Id(),(*refif).first);
         if(h_lo->Valid())
           {             
            AufEintrag ae(h_lo->getAufEintrag());	 
@@ -166,7 +166,7 @@ void petig_we::on_petig_we_ok_clicked()
       else             
        {cH_Data_Lieferoffen h_lo=getHandleForAufEntry(
                     (AuftragBase::ID)atoi((*wee).first_auf_ref.c_str()),
-                     (*wee).artikel.Id());
+                     (*wee).artikel.Id(),(*wee).first_auf_ref);
         if(h_lo->Valid())
           {             
            AufEintrag ae(h_lo->getAufEintrag());	 
@@ -192,7 +192,8 @@ void petig_we::on_petig_we_ok_clicked()
 
 
 cH_Data_Lieferoffen petig_we::getHandleForAufEntry(
-      AuftragBase::ID abid, ArtikelBase::ID artid)
+      AuftragBase::ID abid, ArtikelBase::ID artid,
+      const std::string youraufnr)
 {
  typedef std::vector<cH_RowDataBase>::iterator DVI;
  std::vector<cH_RowDataBase> lo=auftraglieferschein->getLiefOff();
@@ -202,9 +203,14 @@ cH_Data_Lieferoffen petig_we::getHandleForAufEntry(
    {
     Handle<const Data_Lieferoffen> h_lo=
                         (*ai).cast_dynamic<const Data_Lieferoffen>();
-    if(h_lo->getAufEintrag().Id()==abid)
-      if(h_lo->getArtikel().Id() == artid)
-        return cH_Data_Lieferoffen(&*h_lo);    
+    if(h_lo->getArtikel().Id() == artid)
+      {
+       if(h_lo->getAufEintrag().Id()==abid)
+         return cH_Data_Lieferoffen(&*h_lo);    
+       if(atoi(h_lo->getAufEintrag().getYourAufNr().c_str())==
+          atoi(youraufnr.c_str()))
+         return cH_Data_Lieferoffen(&*h_lo);           
+      }  
    }
  return cH_Data_Lieferoffen(new Data_Lieferoffen());
 }          
