@@ -257,12 +257,12 @@ static int auftragstests(e_mode mode, bool mit_reparatur_programm)
       std::string dummystring;
       RL.RL_Einlagern(LagerPlatzKupfer2,stRL,UID,dummystring);
 std::cout << dummystring<<'\n';
-      vergleichen(C,Check::Menge,"split_rohwarenlager_rein","Rohwarenlager einlagern\n","+ ",mit_reparatur_programm);
+      vergleichen(C,Check::Menge,"split_rohwarenlager_rein","Rohwarenlager einlagern\n","+",mit_reparatur_programm);
 
       RohwarenLager::st_rohlager stRL2(LagerPlatzKupfer2,100,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
       RL.RL_Entnahme(stRL2,UID,dummystring);
 std::cout << dummystring<<'\n';
-      vergleichen(C,Check::Menge,"split_rohwarenlager_raus","Rohwarenlager auslagern\n","- ",mit_reparatur_programm);
+      vergleichen(C,Check::Menge,"split_rohwarenlager_raus","Rohwarenlager auslagern\n","-",mit_reparatur_programm);
 
       if(mode!=Rep_Petig_PhysikalischesLager) break;
       
@@ -424,7 +424,7 @@ std::cout << dummystring<<'\n';
       RohwarenLager::st_rohlager stRL(LagerPlatzKupfer2,100,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
       std::string dummystring;
       RL.RL_Einlagern(LagerPlatzKupfer2,stRL,UID,dummystring);
-      vergleichen(C,Check::Menge,"rohwarenlager_rein","Rohwarenlager einlagern\n","+ ",mit_reparatur_programm);
+      vergleichen(C,Check::Menge,"rohwarenlager_rein","Rohwarenlager einlagern\n","+",mit_reparatur_programm);
 
       RohwarenLager::st_rohlager stRL2(LagerPlatzKupfer2,100,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
       RL.RL_Entnahme(stRL2,UID,dummystring);
@@ -432,7 +432,7 @@ std::cout << "D1: "<<dummystring<<'\n';
       RohwarenLager::st_rohlager stRL3(LagerPlatzKupfer,2,10,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
       RL.RL_Entnahme(stRL3,UID,dummystring);
 std::cout << "D2:" <<dummystring<<'\n';
-      vergleichen(C,Check::Menge,"rohwarenlager_raus","Rohwarenlager auslagern\n","- ",mit_reparatur_programm);
+      vergleichen(C,Check::Menge,"rohwarenlager_raus","Rohwarenlager auslagern\n","-",mit_reparatur_programm);
 
       Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Weberei),Kunde::default_id);
       int weberei_znr=1;
@@ -444,7 +444,7 @@ std::cout << "D2:" <<dummystring<<'\n';
 //ManuProC::Tracer::Enable(AuftragBase::trace_channel);
       DataBase_init::createJumbo(-10,12000);
 std::cout << dummystring<<'\n';
-      vergleichen(C,Check::Menge,"bandlager_rein","Bandlager einlagern\n","+ ",mit_reparatur_programm);
+      vergleichen(C,Check::Menge,"bandlager_rein","Bandlager einlagern\n","b",mit_reparatur_programm);
 
       {AufEintrag AE(AEB);
         AE.Produziert(300,Lieferschein::none_id);
@@ -627,7 +627,7 @@ std::cout << "D13: "<<dummystring<<'\n';
        int lznr=1;
        LieferscheinEntry le3(LieferscheinEntryBase(liefs,lznr));
        le3.changeMenge(stueck,menge);
-       vergleichen(C,Check::Lieferschein|Check::Menge,"LSZP","Lieferscheinentry mit Zusatzeintrag Plus","+ ",mit_reparatur_programm);
+       vergleichen(C,Check::Lieferschein|Check::Menge,"LSZP","Lieferscheinentry mit Zusatzeintrag Plus","+",mit_reparatur_programm);
 
        LieferscheinEntry le4(LieferscheinEntryBase(liefs,lznr));
        stueck=450;
@@ -635,7 +635,7 @@ std::cout << "D13: "<<dummystring<<'\n';
 //ManuProC::Tracer::Enable(AuftragBase::trace_channel);
 
        le4.changeMenge(stueck,menge);
-       vergleichen(C,Check::Lieferschein|Check::Menge,"LSZM","Lieferscheinentry mit Zusatzeintrag Minus","- ",mit_reparatur_programm);
+       vergleichen(C,Check::Lieferschein|Check::Menge,"LSZM","Lieferscheinentry mit Zusatzeintrag Minus","-",mit_reparatur_programm);
 
        LieferscheinEntry le5(LieferscheinEntryBase(liefs,lznr));
        stueck=350;

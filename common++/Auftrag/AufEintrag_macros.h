@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_macros.h,v 1.5 2003/03/12 09:06:29 christof Exp $ */
+/* $Id: AufEintrag_macros.h,v 1.6 2003/03/13 08:19:54 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -49,10 +49,15 @@
 	}
 #endif	
 
+// one might do this with inheritance instead of templates
+
 /* callee needs:
  *   AuftragBase::mengen_t operator()(const ArtikelBase &,
  *		const AufEintragBase &,AuftragBase::mengen_t) const;
  * return the amount of the third argument you processed
+ *
+ *   void operator()(const ArtikelBase &,AuftragBase::mengen_t) const;
+ *	for the remainder
  */
 
 template <class T>
@@ -74,6 +79,8 @@ template <class T>
          AE_menge2-=mengen_var;
          if(!AE_menge2) break;
       }
+      // pass the remainder
+      if (!!AE_menge2) callee(artloop_var->first,AE_menge2);
    }
 }
 

@@ -27,12 +27,10 @@ libcommon___a_LIBADD= \
 		Artikel/Prozess_sql.o \
       Auftrag/VerfuegbareMenge.o \
 		Auftrag/AufEintragBase.o \
-		Auftrag/AufEintragBase_sql.o \
 		Auftrag/AufEintrag.o \
-		Auftrag/AufEintrag_sql.o\
+		Auftrag/AufEintrag_ro.o\
 		Auftrag/AufEintragZuMengenAenderung.o \
 		Auftrag/AufEintragZu.o \
-		Auftrag/AufEintragZu_sql.o \
 		Auftrag/AuftragBase.o \
 		Auftrag/AuftragBase_sql.o \
 		Auftrag/AuftragFull_sql.o \

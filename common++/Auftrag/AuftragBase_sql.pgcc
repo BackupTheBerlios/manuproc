@@ -26,53 +26,41 @@
 #include <Auftrag/AufEintragZu.h>
 #include <Misc/TraceNV.h>
 #include <Auftrag/VerfuegbareMenge.h>
+#include <Misc/FetchIStream_fixedpoint.h>
 
 exec sql include sqlca;
 
-
+// aufid sollte string sein (es ist immerhin youraufnr gemeint)
 AuftragBase::AuftragBase(cH_ppsInstanz _instanz, ID aufid,Kunde::ID kid) throw(SQLerror)
-: instanz(_instanz),auftragid(aufid)
+: instanz(_instanz),auftragid(none_id)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
- exec sql begin declare section;
-   int KID=kid;
-   int AID=auftragid;
-   int INST=instanz->Id();
-   int ID;
- exec sql end declare section;
- exec sql select auftragid into :ID from auftrag where instanz=:INST and
-      kundennr=:KID and youraufnr=:AID;
- SQLerror::test(__FILELINE__);	
- *this=AuftragBase(instanz,ID);
+ Query("select auftragid from auftrag "
+ 	"where instanz=? and kundennr=? and youraufnr=?")
+ 	<< instanz->Id() << kid << aufid
+ 	>> auftragid;
+}
+
+Query &operator<<(Query &q, const AuftragBase &ab)
+{  return q << ab.InstanzID() << ab.Id();
 }
 
 bool AuftragBase::Exists() const throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
- exec sql begin declare section;
-  int AUFTRAGID=Id();
-  int INSTANZ=InstanzID();
-  bool DUMMY;
- exec sql end declare section;
- exec sql select true into :DUMMY from auftrag where 
-	(instanz,auftragid)= (:INSTANZ,:AUFTRAGID);
- SQLerror::test(__FILELINE__,100);
- if(sqlca.sqlcode) return false;
- return true;
+ return (Query("select exists(select true from auftrag "
+ 		"where (instanz,auftragid)=(?,?))").lvalue()
+ 	<< *this)
+ 	.FetchOne<bool>();
 }
 
 void AuftragBase::create_if_not_exists(AufStatVal status,Kunde::ID kunde) const
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Status",status),NV("Kunde",kunde));
   if(Exists()) return;
-  exec sql begin declare section;
-   int AUFTRAGID=Id();
-   int INSTANZ=InstanzID();
-   int KUNDE=kunde;
-   int STATUS=status;
-  exec sql end declare section;
-  exec sql insert into auftrag (instanz,auftragid,kundennr,stat) 
-      values (:INSTANZ,:AUFTRAGID,:KUNDE,:STATUS);
+  Query("insert into auftrag (instanz,auftragid,kundennr,stat) "
+  	"values (?,?,?,?)").lvalue()
+  	<< *this << kunde << status;
  SQLerror::test(__FILELINE__);
 }
 
@@ -80,14 +68,8 @@ void AuftragBase::create_if_not_exists(AufStatVal status,Kunde::ID kunde) const
 void AuftragBase::setStatusAuftragBase(AufStatVal st) const throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Status",st));
- exec sql begin declare section;
-  int AUFTRAGID=Id();
-  int INSTANZ=InstanzID();
-  int STATUS=st;
- exec sql end declare section;
-
- exec sql update auftrag set stat= :STATUS
-       where (instanz,auftragid)= (:INSTANZ,:AUFTRAGID);
+ Query("update auftrag set stat=? where (instanz,auftragid)=(?,?)").lvalue()
+ 	<< st << *this;
  SQLerror::test(__FILELINE__"Status setzen");
 }
 
@@ -95,14 +77,8 @@ void AuftragBase::setStatusAuftragBase(AufStatVal st) const throw(SQLerror)
 void AuftragBase::setRabatt(const rabatt_t auftragsrabatt) const throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
- exec sql begin declare section;
-  int AUFTRAGID=Id();
-  int INSTANZ=InstanzID();
-  double RABATT=auftragsrabatt.as_float();
- exec sql end declare section;
-
- exec sql update auftrag set rabatt= :RABATT
-       where (instanz,auftragid)= (:INSTANZ,:AUFTRAGID);
+ Query("update auftrag set rabatt=? where (instanz,auftragid)=(?,?)").lvalue()
+ 	<< auftragsrabatt << *this;
  SQLerror::test(__FILELINE__"Rabatt setzen");
 }
 
@@ -155,58 +131,5 @@ bool AuftragBase::existEntry(const ArtikelBase& artikel,
     return true;  }
 }
 
-int AuftragBase::PassendeZeile(const ManuProC::Datum lieferdatum,const ArtikelBase& artikel,
-  AufStatVal status,unsigned uid) const throw(SQLerror)
-{
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Artikel",artikel),
-         NV("LieferDatum",lieferdatum),NV("Status",status));
- // spezieller Fall für unbestellte Lieferungen
- if (status==CLOSED && Id()==plan_auftrag_id)
-    create_if_not_exists(OPEN);
- else
- {  assert(status==OPEN || Instanz()->Id()==ppsInstanzID::Kundenauftraege);
-    // Auftrag anlegen, wenn noch nicht da
-    create_if_not_exists(status);
- }
- 
- int znr=ManuProcEntity<>::none_id,neuznr=ManuProcEntity<>::none_id;
- mengen_t dummy=0;
- if(!existEntry(artikel,lieferdatum,znr,neuznr,dummy,status))
-  { Auftrag A(*this);
-    AufEintragBase newaeb=A.push_back(0,lieferdatum,artikel,status,uid,false);
-    znr=newaeb.ZNr();
-   }
- return znr;
-}
-
-// wird von ArtikelInternNachbestellen, dispo_auftrag_aendern verwendet
-int AuftragBase::BestellmengeAendern(mengen_t deltamenge, 
-  const ManuProC::Datum lieferdatum,const ArtikelBase& artikel,
-  AufStatVal status,int uid,const AufEintragBase& altAEB,
-  st_BestellmengeAendern st_bool) const throw(SQLerror)
-{
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Artikel",artikel),
-         NV("Menge",deltamenge),NV("AltAEB",altAEB),
-         NV("LieferDatum",lieferdatum),
-         NV("Status",status));
- Transaction tr;
- exec sql lock table auftragentry in exclusive mode;
- SQLerror::test(__FILELINE__);  
-
- bool kein_dispo= Id()!=dispo_auftrag_id;
- AufEintragBase NeuAEB(*this,PassendeZeile(lieferdatum,artikel,status,uid));
-
- // ist die Reihenfolge hier wichtig?
- // rekursion nur falls kein DispoAuftrag
- AufEintrag(NeuAEB).MengeAendern(uid,deltamenge,kein_dispo,
- 	kein_dispo?altAEB:AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
-
- // dispo=> andere Richtung des Pfeils muss geändert werden 
- if (!kein_dispo && altAEB.valid())
-      AufEintragZu(NeuAEB).Neu(altAEB,deltamenge);
-
-  tr.commit();
-  return NeuAEB.ZNr();
-}
 
 

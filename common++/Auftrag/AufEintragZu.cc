@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.12 2003/03/10 14:44:14 christof Exp $
+// $Id: AufEintragZu.cc,v 1.13 2003/03/13 08:19:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -25,6 +25,7 @@
 #include <Artikel/ArtikelBezeichnung.h>
 #include <Misc/FetchIStream.h>
 #include <Misc/TraceNV.h>
+#include <Misc/FetchIStream_fixedpoint.h>
 
 // was tut das eigentlich ? CP
 AufEintragZu::list_t AufEintragZu::get_Referenz_list_id(const AuftragBase::ID id,bool kinder,bool artikel) const throw(SQLerror)
@@ -166,3 +167,209 @@ AufEintragZu::map_t AufEintragZu::get_Kinder_nach_Artikel(const AufEintragBase &
      }
    return MapArt;
 }
+
+FetchIStream &operator>>(FetchIStream &i, AufEintragZu::st_reflist &rl)
+{  return i >> rl.AEB >> rl.Menge >> rl.Art;
+}
+
+AufEintragZu::list_t AufEintragZu::get_Referenz_list(const AufEintragBase& aeb,bool kinder,bool artikel) throw(SQLerror) 
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,aeb,kinder?"Kinder":"Eltern",artikel?"mit Artikel":"ohne Artikel");
+
+ assert(kinder || !artikel); // Eltern mit Artikel macht keinen Sinn
+
+ std::string squery, selected,specified, artsel,join;
+ 
+ if (kinder) { selected="neu"; specified="alt"; }
+ else { selected="alt"; specified="neu"; }
+ 
+ if (artikel) 
+ {  artsel="artikelid"; 
+    join="join auftragentry on "
+      "("+selected+"instanz,"+selected+"auftragid,"+selected+"zeilennr)"
+      			   "= (instanz,auftragid,zeilennr)";
+ }
+ else { artsel="NULL"; }
+ 
+ squery = "select "+selected+"instanz,"+selected+"auftragid,"
+ 		+selected+"zeilennr,menge,"+artsel+" "
+      "from auftragsentryzuordnung "
+      +join+
+      "where ("+specified+"instanz,"+specified+"auftragid,"
+      			+specified+"zeilennr) = (?,?,?) "
+      "order by "+selected+"instanz,"+selected+"auftragid,"
+      			+selected+"zeilennr ";
+ std::list<st_reflist> vaeb;
+ (Query(squery).lvalue() << aeb).FetchArray(vaeb);
+ return vaeb;
+}
+
+AufEintragZu::list_t AufEintragZu::get_Referenz_list_without_child() const throw(SQLerror)
+{return get_Referenz_list(*this,list_kinder,list_ohneArtikel);
+}
+
+std::list<cH_Kunde> AufEintragZu::get_Referenz_Kunden() const throw(SQLerror)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
+ std::list<cH_Kunde> LK;
+ std::list<st_reflist> vaeb = get_Referenz_listFull(false);
+
+ for (std::list<st_reflist>::const_iterator i=vaeb.begin();i!=vaeb.end();++i)
+  {
+    int kdnr=(Query("select kundennr from auftrag "
+    		"where (instanz,auftragid)=(?,?) order by kundennr")
+    		<< i->AEB.InstanzID() << i->AEB.Id())
+    	.FetchOne<int>(); 
+    LK.push_back(cH_Kunde(kdnr));
+  }
+ LK.sort();
+ LK.unique();
+ return LK;
+}
+
+// wieso ist das in AufEintragZu ?
+std::list<AufEintragBase> AufEintragZu::get_AufEintragList_from_Artikel
+               (const ArtikelBase& artikel,ppsInstanz::ID instanz,AufStatVal status)
+{
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("artikel",artikel),NV("status",status),NV("instanz",instanz));
+  std::list<AufEintragBase> L;
+  
+  (Query("select instanz,auftragid,zeilennr from auftragentry "
+  	"where artikelid=? "
+  	"and instanz<>? " //Nur interne Aufträge sind interessant
+  	"and auftragid=0 " // Nur die UNGEPLANTEN Aufträge bekommen neue Kinder
+  	+(status!=NOSTAT ? " and status="+itos(status) : std::string())+
+  	"order by auftragid,zeilennr").lvalue()
+    << artikel.Id() << int(ppsInstanzID::Kundenauftraege))
+  .FetchArray(L);
+  return L;
+}
+
+void AufEintragZu::Neu(const AufEintragBase& neuAEB,const mengen_t menge)
+{ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
+      "--",menge,"-->",neuAEB);
+
+ // erst erhöhen versuchen 
+ try{ mengen_t mt=setMengeDiff__(neuAEB,menge); 
+      assert(menge==mt);
+    }
+ catch (SQLerror &e) // anlegen
+ {  Query("insert into auftragsentryzuordnung "
+         "(altinstanz,altauftragid,altzeilennr, menge, "
+           "neuinstanz,neuauftragid,neuzeilennr) "
+         "values (?,?,?, ?, ?,?,?)").lvalue() 
+      << static_cast<const AufEintragBase &>(*this) << menge << neuAEB;
+    SQLerror::test(__FILELINE__);
+ }
+}
+
+void AufEintragZu::Neu(const AufEintragBase& neuAEB,
+                       const mengen_t menge,const int oldZnr)
+{ if (oldZnr) Neu(AufEintragBase(AuftragBase(*this),oldZnr),menge);
+  else Neu(neuAEB,menge);
+}
+
+bool AufEintragZu::setMenge(const AufEintragBase& neuAEB,const mengen_t menge)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,neuAEB,NV("Menge",menge));
+
+ Query("update auftragsentryzuordnung set menge=? "
+ 	"where (altinstanz,altauftragid,altzeilennr, "
+ 		"neuinstanz,neuauftragid,neuzeilennr)= (?,?,?, ?,?,?)").lvalue()
+	<< menge 		
+ 	<< static_cast<const AufEintragBase&>(*this) << neuAEB;
+ SQLerror::test(__FILELINE__,100);
+ return !SQLerror::SQLCode();
+}
+
+
+AuftragBase::mengen_t AufEintragZu::setMengeDiff__(const AufEintragBase &neuAEB,mengen_t menge)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,neuAEB,NV("Menge",menge));
+ if(menge<0)
+  {  AuftragBase::mengen_t M;
+     Query("select menge from auftragsentryzuordnung "
+     	"where (altinstanz,altauftragid,altzeilennr, "
+     	       "neuinstanz,neuauftragid,neuzeilennr)= (?,?,?, ?,?,?)").lvalue()
+	<< static_cast<const AufEintragBase&>(*this) << neuAEB
+	>> M;
+     if(mengen_t(M)<-menge) menge=-M;
+  }
+//  if (menge!=0) auch 0er sind interessant (bei Produziert)
+  {  Query("update auftragsentryzuordnung set menge=menge+? "
+ 	"where (altinstanz,altauftragid,altzeilennr, "
+ 		"neuinstanz,neuauftragid,neuzeilennr)= (?,?,?, ?,?,?)").lvalue()
+	<< menge 		
+ 	<< static_cast<const AufEintragBase&>(*this) << neuAEB;
+     SQLerror::test(__FILELINE__);
+  }
+ return menge;
+}
+
+
+// wer braucht denn so etwas krankes? CP
+bool AufEintragZu::setKindZnr(const AufEintragBase& neuAEB)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,neuAEB);
+ std::cerr << "mit "<< __PRETTY_FUNCTION__ << " bin ich nicht einverstanden CP\n";
+
+ Query("update auftragsentryzuordnung set neuzeilennr=? "
+ 	"where (altinstanz,altauftragid,altzeilennr, "
+ 		"neuinstanz,neuauftragid)= (?,?,?, ?,?)").lvalue()
+	<< neuAEB.ZNr()
+ 	<< static_cast<const AufEintragBase&>(*this) 
+ 	<< neuAEB.InstanzID() << neuAEB.Id();
+ SQLerror::test(__FILELINE__,100);
+ return !SQLerror::SQLCode();
+}
+
+void AufEintragZu::moveInstanz(const VonNachDel vdl,const AufEintragBase &oldAEB, const AufEintragBase &newAEB) throw(SQLerror)
+{
+
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,oldAEB,NV("VonNachDel",vdl));
+
+ switch(vdl)
+  {
+   case Von:
+    Query("update auftragsentryzuordnung set "
+      "altinstanz=?,altauftragid=?,altzeilennr=? where "
+      "(altinstanz,altauftragid,altzeilennr)=(?,?,?)").lvalue()
+      	<< newAEB << oldAEB;
+    break;
+   case Nach:
+    Query("update auftragsentryzuordnung set "
+      "neuinstanz=?,neuauftragid=?,neuzeilennr=? where "
+      "(neuinstanz,neuauftragid,neuzeilennr)=(?,?,?)").lvalue()
+      	<< newAEB << oldAEB;
+    break;
+   case Delete:
+    std::cerr << "please use remove instead of " << __PRETTY_FUNCTION__ << '\n';
+    remove(oldAEB,newAEB);
+    return;
+  }
+ SQLerror::test(__FILELINE__,100);
+}
+
+
+AuftragBase::mengen_t AufEintragZu::getMenge(const AufEintragBase& aeb) const
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,aeb);
+ return (Query("select menge from auftragsentryzuordnung "
+    "where (altinstanz,altauftragid,altzeilennr, "
+    	"neuinstanz,neuauftragid,neuzeilennr) = (?,?,?, ?,?,?)").lvalue()
+    << static_cast<const AufEintragBase&>(*this) << aeb).FetchOne<int>();
+}
+
+bool AufEintragZu::remove(const AufEintragBase& alt,const AufEintragBase& neu)
+{
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,alt,neu);
+
+  Query("delete from auftragsentryzuordnung where "
+                 "(altinstanz,altauftragid,altzeilennr,"
+                 "neuinstanz,neuauftragid,neuzeilennr)"
+                 "=(?,?,?, ?,?,?)").lvalue()
+      << alt << neu;
+ SQLerror::test(__FILELINE__,100);
+ return !SQLerror::SQLCode();
+}
+

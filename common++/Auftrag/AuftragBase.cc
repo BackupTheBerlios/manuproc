@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.29 2003/03/12 09:06:29 christof Exp $
+// $Id: AuftragBase.cc,v 1.30 2003/03/13 08:19:54 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -96,3 +96,56 @@ const AuftragBase::ID AuftragBase::handplan_auftrag_id,
 
 const UniqueValue::value_t AuftragBase::trace_channel=ManuProC::Tracer::channels.get(); 
 
+int AuftragBase::PassendeZeile(const ManuProC::Datum lieferdatum,const ArtikelBase& artikel,
+  AufStatVal status,unsigned uid) const throw(SQLerror)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Artikel",artikel),
+         NV("LieferDatum",lieferdatum),NV("Status",status));
+ // spezieller Fall für unbestellte Lieferungen
+ if (status==CLOSED && Id()==plan_auftrag_id)
+    create_if_not_exists(OPEN);
+ else
+ {  assert(status==OPEN || Instanz()->Id()==ppsInstanzID::Kundenauftraege);
+    // Auftrag anlegen, wenn noch nicht da
+    create_if_not_exists(status);
+ }
+ 
+ int znr=ManuProcEntity<>::none_id,neuznr=ManuProcEntity<>::none_id;
+ mengen_t dummy=0;
+ if(!existEntry(artikel,lieferdatum,znr,neuznr,dummy,status))
+  { Auftrag A(*this);
+    AufEintragBase newaeb=A.push_back(0,lieferdatum,artikel,status,uid,false);
+    znr=newaeb.ZNr();
+   }
+ return znr;
+}
+
+// wird von ArtikelInternNachbestellen, dispo_auftrag_aendern verwendet
+int AuftragBase::BestellmengeAendern(mengen_t deltamenge, 
+  const ManuProC::Datum lieferdatum,const ArtikelBase& artikel,
+  AufStatVal status,int uid,const AufEintragBase& altAEB,
+  st_BestellmengeAendern st_bool) const throw(SQLerror)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Artikel",artikel),
+         NV("Menge",deltamenge),NV("AltAEB",altAEB),
+         NV("LieferDatum",lieferdatum),
+         NV("Status",status));
+ Transaction tr;
+ Query::Execute("lock table auftragentry in exclusive mode");
+ SQLerror::test(__FILELINE__);  
+
+ bool kein_dispo= Id()!=dispo_auftrag_id;
+ AufEintragBase NeuAEB(*this,PassendeZeile(lieferdatum,artikel,status,uid));
+
+ // ist die Reihenfolge hier wichtig?
+ // rekursion nur falls kein DispoAuftrag
+ AufEintrag(NeuAEB).MengeAendern(uid,deltamenge,kein_dispo,
+ 	kein_dispo?altAEB:AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
+
+ // dispo=> andere Richtung des Pfeils muss geändert werden 
+ if (!kein_dispo && altAEB.valid())
+      AufEintragZu(NeuAEB).Neu(altAEB,deltamenge);
+
+  tr.commit();
+  return NeuAEB.ZNr();
+}

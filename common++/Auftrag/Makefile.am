@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.19 2003/03/10 14:44:14 christof Exp $
+# $Id: Makefile.am,v 1.20 2003/03/13 08:19:54 christof Exp $
 
 ENDUSER=-DPETIG
 
@@ -13,14 +13,13 @@ includedir=@includedir@/Auftrag
 libAuftrag_a_SOURCES=AufEintrag.cc AufEintragBase.cc AuftragBase.cc \
 	sqlAuftragSelector.cc Auftrag.cc $(BUILT_SOURCES_P) AuftragsBaum.cc \
    AufEintragZuMengenAenderung.cc AufEintragZu.cc VerfuegbareMenge.cc \
-   ppsInstanzReparatur.cc
+   ppsInstanzReparatur.cc AufEintrag_ro.cc
 
 libAuftrag.a: $(libAuftrag_a_OBJECTS) $(libAuftrag_a_DEPENDENCIES)
 	touch $@
 
-BUILT_SOURCES_P= AuftragBase_sql.cc AufEintrag_sql.cc selAufEntry_sql.cc\
-		AufEintragBase_sql.cc Auftrag_sql.cc AuftragFull_sql.cc \
-      AufEintragZu_sql.cc
+BUILT_SOURCES_P= AuftragBase_sql.cc selAufEntry_sql.cc\
+		Auftrag_sql.cc AuftragFull_sql.cc 
 		
 BUILT_SOURCES=$(BUILT_SOURCES_P)
 

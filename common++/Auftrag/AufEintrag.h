@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.34 2003/03/12 09:06:29 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.35 2003/03/13 08:19:54 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -235,7 +235,8 @@ public:
  // neuen (geschlossenen) 1er erzeugen (völlig unverzeigert)
  static AufEintragBase unbestellteMengeProduzieren(cH_ppsInstanz instanz,
  		const ArtikelBase &artikel,
- 		mengen_t menge, unsigned uid);
+ 		mengen_t menge, unsigned uid,bool rekursiv=false,
+ 		const AufEintragBase &elter=AufEintragBase());
  // aus dem Lager auslagern (abschreiben), ehemals abschreiben_oder_reduzieren
  // wird üblicherweise erst für 1er dann 2er aufgerufen
  // mit ProduziertNG vereinen?

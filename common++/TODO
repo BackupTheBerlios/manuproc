@@ -2,12 +2,8 @@
 		zum Sortieren)
 	Praktisch für Tree/List überschneidungen (Dispo)
 
-- Weberei/0/1 -> Rohwarenlager/1/1 bleiben 50 in Zuordnung (ist schon bei W
-	falsch)
-- der 1er in der Weberei [4/1/1] 3000(3000) hat keine Zuordnungen
 + Auslagern muss programmiert werden (ProduziertNG)
-- Produziert NG erzeugt merkwürdige 0er Zuornungen
-	S: setMengeDiff__(Rohwarenlager(9) 1 3,Rohwarenlager(9) 0 3,Menge=0)
+- kunde_ueberlieferung: erzeugt neuen 1er in Rollerei: warum?
 
 replace 	"\*=",\*,	NV("\0",\1),
 		,"\*=",\*)	,NV("\0",\1))

@@ -1,6 +1,7 @@
-// $Id: AufEintrag.cc,v 1.34 2003/03/12 09:06:29 christof Exp $
+// $Id: AufEintrag.cc,v 1.35 2003/03/13 08:19:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
+ *  written by Jacek Jakubowski & Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,7 +18,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include"AufEintrag.h"
+#include <Auftrag/AufEintrag.h>
+#include <Misc/FetchIStream.h>
 #include <Misc/string0.h>
 #include <Misc/Transaction.h>
 #include <Auftrag/AufEintragZu.h>
@@ -26,62 +28,16 @@
 #include <Misc/TraceNV.h>
 #include <Lager/Lager.h>
 #include <Auftrag/AufEintragZuMengenAenderung.h>
+#include <Auftrag/VerfuegbareMenge.h>
+#include <Misc/Changejournal.h>
+#include <Lieferschein/Lieferschein.h>
+#include <Misc/FetchIStream_ops.h>
+#include <Auftrag/AufEintrag_macros.h>
 
-AufEintrag::AufEintrag(const AufEintragBase &aeb, mengen_t _bestellt,
-	ArtikelBase _artikel, const ManuProC::Datum _lieferdatum,
-	AufStatVal _aufstatus, int _kdnr, const std::string _youraufnr,
-	const Preis &_preis, rabatt_t _rabatt, AufStatVal _entrystat, 
-	int uid, const cH_PreisListe &_preisliste) throw()
-: AufEintragBase(aeb),
- bestellt(_bestellt),
- geliefert(0),
- artikel(_artikel),
- entrystatus(_entrystat),
- lieferdatum(_lieferdatum),
- lasteditdate_uid(uid),
- lasteditdate(ManuProC::Datum::today()),
- letztePlanInstanz(ppsInstanzID::None),
- maxPlanInstanz(0),
- preis(_preis),
- rabatt(_rabatt),
- kdnr(_kdnr),
- youraufnr(_youraufnr),
- disponr(0),
- auftragstatus(_aufstatus), 
- dispoentrynr(0),
- prozess(Prozess::default_id),
- preisliste(_preisliste)
-{
-}
-	
-AufEintrag::AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr,
-   mengen_t _bestellt,
-	ArtikelBase _artikel, const ManuProC::Datum _lieferdatum,
-	AufStatVal _entrystatus) throw()
-: AufEintragBase(_instanz,_auftragid,_zeilennr),
- bestellt(_bestellt),
- geliefert(0),
- artikel(_artikel),
- entrystatus(_entrystatus),
- lieferdatum(_lieferdatum),
- lasteditdate_uid(0),
- auftragstatus(_entrystatus),
- prozess(Prozess::default_id)
-{}
-	
-
-const Preis AufEintrag::GPreis() const
-{ return preis.Gesamtpreis(1,bestellt.as_float(),rabatt);
-}
-
-const Preis AufEintrag::EPreis(bool brutto) const
-{
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
- if(brutto) return preis;
- else
- return preis.Gesamtpreis(preis.PreisMenge().as_int(),0,rabatt);
-}
-
+#ifdef MABELLA_EXTENSIONS
+#include <Lager/FertigWaren.h>
+#include <Artikel/ArtikelBase.h>
+#endif
 
 void AufEintrag::setLetztePlanungFuer(cH_ppsInstanz planinstanz) throw(SQLerror)
 {
@@ -89,7 +45,6 @@ void AufEintrag::setLetztePlanungFuer(cH_ppsInstanz planinstanz) throw(SQLerror)
   AufEintragBase::setLetztePlanungFuer(planinstanz);
   letztePlanInstanz=planinstanz->Id();
 }
-
 
 #if 0
 void AufEintrag::setVerarbeitung(const cH_Prozess p)
@@ -109,17 +64,6 @@ void AufEintrag::setLetzteLieferung(const ManuProC::Datum &datum) throw(SQLerror
  letzte_lieferung=datum;
 }
 
-
-const std::string AufEintrag::getEntryStatusStr() const
-{  return AuftragBase::getStatusStr(entrystatus);
-}
-
-bool AufEintrag::allesOK() const
-{
- if (!getStueck()) return false;
- if (!getLieferdatum().valid()) return false;
- return true;
-}
 
 std::string AufEintrag::Planung() const
 {
@@ -244,6 +188,7 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
  return neueZeile.ZNr();
 }
 
+#if 0
 // was soll diese Funktion? sieht mir fehlerhaft aus CP
 void AufEintrag::ProduktionsPlanung(int uid,mengen_t menge,const AuftragBase &zielauftrag, 
       const ManuProC::Datum &datum,cH_ppsInstanz instanz) throw(std::exception)
@@ -260,7 +205,7 @@ void AufEintrag::ProduktionsPlanung(int uid,mengen_t menge,const AuftragBase &zi
 //   tr.commit();
 #endif
 }
-
+#endif
 
 // einen Dispo Auftrag für einen Auftrag anlegen (wegen freier Menge)
 void AufEintrag::Ueberplanen(int uid,const ArtikelBase& artikel,mengen_t menge,const ManuProC::Datum &datum)
@@ -281,17 +226,37 @@ void AufEintrag::Ueberplanen(int uid,const ArtikelBase& artikel,mengen_t menge,c
 }
 
 AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
-                const ArtikelBase &artikel,mengen_t menge,unsigned uid)
+                const ArtikelBase &artikel,mengen_t menge,unsigned uid,bool rekursiv,
+                const AufEintragBase &elter)
 {  // Code wie in ProduziertNG
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,instanz,
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,instanz,
 			   NV("artikel",artikel),NV("menge",menge));
+   assert(instanz!=ppsInstanzID::Kundenauftraege && instanz!=ppsInstanzID::None);
    Transaction tr;
    AuftragBase zielauftrag(instanz,AuftragBase::plan_auftrag_id);
    AufEintragBase neuerAEB(zielauftrag,   
                        zielauftrag.PassendeZeile(ManuProC::Datum(1,1,1970),artikel,CLOSED,getuid()));
    AufEintrag ae(neuerAEB);
+   // elter kann nicht übergeben werden, da sonst bereits mit Menge angelegt
    ae.MengeAendern(uid,menge,false,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
    ae.abschreiben(menge);
+   if (elter.valid()) AufEintragZu(elter).Neu(ae,0);
+   if (rekursiv)
+   {  if (instanz->LagerInstanz())
+      {  cH_ppsInstanz pi=ppsInstanz::getProduktionsInstanz(artikel);
+         if (pi!=ppsInstanzID::None && !pi->ProduziertSelbst())
+            unbestellteMengeProduzieren(pi,artikel,menge,uid,true,neuerAEB);
+      }
+      else
+      {  ArtikelBaum AB(artikel);
+         for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
+         {  cH_ppsInstanz bi=ppsInstanz::getBestellInstanz(i->rohartikel);
+            if (bi!=ppsInstanzID::None && !bi->ProduziertSelbst())
+               unbestellteMengeProduzieren(bi,i->rohartikel,i->menge*menge,
+               		uid,true,neuerAEB);
+         }
+      }
+   }
    tr.commit();
    return neuerAEB;
 }
@@ -389,3 +354,609 @@ void AufEintrag::Einlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase
    tr.commit();
 }
 
+// Menge wurde geliefert. 
+// Um die Pfeile über uns muss sich jemand anderes kümmern
+
+// menge kann negativ sein ...
+// wo wird der 2er reduziert?
+// wo werden die Instanzen darunter behandelt?
+// ==> WurdeProduziert macht das ganze rekusiv
+void AufEintrag::abschreiben(mengen_t menge,ManuProcEntity<>::ID lfrsid) throw(SQLerror)
+{int uid=getuid();
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("Menge",menge),NV("Lfrsid",lfrsid));
+
+  mengen_t GELIEFERT=getGeliefert()+menge;
+  mengen_t BESTELLT=getStueck();
+  AufStatVal STATUS=getEntryStatus();
+
+ if(menge>=0 && getEntryStatus()!=(AufStatVal)OPEN) 
+    throw(SQLerror(__FILELINE__,-1,"Auftragszeile ist nicht offen sondern "+itos(STATUS)));
+ if(menge<0 && getEntryStatus()==(AufStatVal)UNCOMMITED) 
+    throw(SQLerror(__FILELINE__,-1,"Auftragszeile ist nicht bestätigt"));
+ if (menge<0 && -menge>getGeliefert()) 
+ {  menge=-getGeliefert(); GELIEFERT=0; }
+
+ if (!menge) return;
+
+ AufStatVal oldstatus=getEntryStatus();
+
+ if(mengen_t(GELIEFERT)>=getStueck()) STATUS=(AufStatVal)CLOSED;
+ else if(menge<0 && mengen_t(GELIEFERT)<getStueck()) STATUS=(AufStatVal)OPEN;
+
+ Transaction tr;
+ Query("lock table auftragentry in exclusive mode");
+ bool delete_entry=false;
+
+  // Lieferung rückgängig machen, dann 1er löschen wenn es alle Menge war
+  if(menge<0 &&
+     Instanz()!=ppsInstanzID::Kundenauftraege && 
+     !Instanz()->ProduziertSelbst() && 
+     Id()==AuftragBase::plan_auftrag_id)
+   {
+     BESTELLT+=menge.as_int();
+     if(BESTELLT<0) BESTELLT=0;
+     if(BESTELLT==GELIEFERT) STATUS=CLOSED;
+     if(BESTELLT==0 && GELIEFERT==0 &&  STATUS==CLOSED) delete_entry=true;
+   }   
+
+ if(delete_entry)
+   Query("delete from auftragentry where (instanz,auftragid,zeilennr) = (?,?,?)").lvalue()
+     << static_cast<const AufEintragBase&>(*this);
+ else
+   Query("update auftragentry set geliefert=?, status=?, "
+     "bestellt=?, letzte_lieferung=now() "
+     "where (instanz,auftragid,zeilennr) = (?,?,?)").lvalue()
+     << GELIEFERT << STATUS << BESTELLT 
+     << static_cast<const AufEintragBase&>(*this);
+ SQLerror::test(__FILELINE__);
+
+#ifdef MABELLA_EXTENSIONS // Lager updaten
+#warning Jacek: Das muss raus, sobald es mehrstufig ist
+ if(Instanz() == ppsInstanzID::Kundenauftraege)
+   {
+    FertigWaren fw(Artikel(),(FertigWaren::enum_Aktion)'L',menge.as_int(),lfrsid);
+    if(menge < 0) fw.Einlagern(1);
+    else if(menge > 0) fw.Auslagern(1);
+   }
+#endif
+
+ geliefert=GELIEFERT;
+ if(geliefert>=bestellt) entrystatus=(AufStatVal)CLOSED;
+
+ // zumindest 2er werden nie geschlossen, nur auf 0 gesetzt
+ if(STATUS!=oldstatus && Id()!=dispo_auftrag_id)
+     setStatus(AufStatVal(STATUS),uid,true);
+ 
+ // eigentlich könnte das if hier weg ... geht aber schneller so
+ // dispomenge auf offene Menge beschränken
+ if (Instanz() != ppsInstanzID::Kundenauftraege) DispoBeschraenken(uid);
+
+ tr.commit();
+}
+
+
+void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerror)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("status",newstatus),force?"force":"");
+ if(entrystatus == newstatus)
+ {  ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,*this,NV("status bereits",newstatus));
+    return;
+ }
+ if(newstatus == STORNO) force=true;
+ if(newstatus == STORNO && getGeliefert()!=mengen_t(0))  
+ {  std::cerr << "Kann nicht storniert werden da bereits geliefert\n";
+    return;
+ }
+ if(entrystatus == CLOSED && !force )
+ {  std::cerr << "Auftragszeile bereits geschlossen\n";
+    return;
+ }
+ if(newstatus == UNCOMMITED)
+ {  std::cerr << "bestätigte Zeilen können nicht wieder unbestätigt werden\n";
+    return;
+ }
+ if(newstatus == OPEN && entrystatus != UNCOMMITED && !force)
+ {  std::cerr << "nur unbestätigte Zeilen können geöffnet werden\n";
+    return;
+ }
+
+ Transaction tr; 
+ Query("lock auftragentry in exclusive mode");
+ SQLerror::test("setStatus: lock table auftragentry");
+
+ // InternAbbestellen
+ if(newstatus == CLOSED || newstatus == STORNO)
+     ArtikelInternAbbestellen(uid,getRestStk(),ManuProC::Auftrag::r_Closed);
+
+ std::string sqlcommand = "update auftragentry set status=?";
+ if(uid) sqlcommand+=", lasteditdate = now(), lastedit_uid="+itos(uid);
+ sqlcommand +=" where (instanz,auftragid,zeilennr)=(?,?,?)";
+
+ Query(sqlcommand).lvalue() << newstatus << static_cast<AufEintragBase&>(*this);
+ SQLerror::test("setStatus: update auftragentry");
+ AufStatVal oldentrystatus=entrystatus;
+ entrystatus=newstatus;
+
+
+ if(newstatus==OPEN && auftragstatus==UNCOMMITED)
+ {  setStatusAuftragBase(newstatus);
+    auftragstatus=newstatus;
+ }
+
+ if(newstatus == OPEN  &&  oldentrystatus==UNCOMMITED)
+    ArtikelInternNachbestellen(uid,getRestStk(),ManuProC::Auftrag::r_Anlegen);
+
+ if(newstatus==OPEN)
+   {
+    pps_ChJournalEntry::newChange(
+			instanz, *this, artikel,
+			bestellt.as_float(),
+			bestellt.as_float(),
+			pps_ChJournalEntry::CH_MENGE);
+  }
+ else if(newstatus==CLOSED && oldentrystatus!=UNCOMMITED) 
+ // UNCOMMITED->CLOSED => kein Eintrag
+   {
+    pps_ChJournalEntry::newChange(
+			instanz, *this, artikel,
+			geliefert.as_float(),
+			(geliefert-bestellt).as_float(),
+			pps_ChJournalEntry::CH_MENGE);
+   }
+
+ tr.commit(); 
+}
+
+// statische Variante (behandelt z.B. Vormerkungen, freie Menge etc.)
+AufEintragBase AufEintrag::ArtikelInternNachbestellen(const cH_ppsInstanz &wo,
+  mengen_t menge,const ManuProC::Datum &lieferdatum,const ArtikelBase& artikel,
+  int uid,const AufEintragBase& ElternAEB)
+{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
+   	wo,menge,lieferdatum,artikel,NV("ElternAEB",ElternAEB));
+   if (!menge) return AufEintragBase(); // hmmm
+   assert(menge>0);
+   assert(ElternAEB.valid());
+
+   // 2er Menge (freie Menge im Lager, freie Produktionsplanung)
+   // vormerken
+   VerfuegbareMenge AIL(wo,artikel,lieferdatum);
+   mengen_t M_dispo=AuftragBase::min(AIL.getMengeDispo(),menge);
+   if(M_dispo>0) menge-=AIL.reduce_in_dispo(uid,M_dispo,ElternAEB);
+
+   // Im Lager von späteren Aufträgen vorgemerkte Menge wegschnappen
+   if (menge>0 && wo->LagerInstanz())
+   {  M_dispo=AuftragBase::min(AIL.getMengePlan(),menge);
+      menge-=AIL.reduce_in_plan(uid,M_dispo,ElternAEB);
+   }
+   // Rest nachbestellen
+   AuftragBase ab(wo,ungeplante_id);
+   int znr=ManuProcEntity<>::none_id;
+   if (menge>0)
+      znr=ab.BestellmengeAendern(menge,lieferdatum,artikel,OPEN,uid,ElternAEB);
+   return AufEintragBase(ab,znr);
+}
+
+// ehemals updateStkDiffInstanz__ mit menge>0
+// + ehemals BaumAnlegen
+void AufEintrag::ArtikelInternNachbestellen(int uid,mengen_t menge,
+	ManuProC::Auftrag::Action reason) const
+{
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
+   NV("menge",menge),NV("Reason",reason));
+  assert(menge>0);
+  assert(Id()!=dispo_auftrag_id);
+
+  if (Instanz()==ppsInstanzID::Kundenauftraege)  
+  {  cH_ppsInstanz i=ppsInstanz::getBestellInstanz(Artikel());
+     if (i!=ppsInstanzID::None && i!=ppsInstanzID::Kundenauftraege)
+     {  AufEintrag::ArtikelInternNachbestellen(i,menge,
+		getLieferdatum(),Artikel(),uid,*this);
+     }
+  }
+  else if (Instanz()->LagerInstanz())
+  {  assert(Id()==ungeplante_id);
+     ArtikelInternNachbestellen(ppsInstanz::getProduktionsInstanz(Artikel()),
+     		menge,getLieferdatum(),Artikel(),uid,*this);
+  }
+  else
+  {  ManuProC::Datum newdate=getLieferdatum()-Instanz()->ProduktionsDauer();
+
+     ArtikelBaum AB(Artikel());
+     for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
+     {  ArtikelInternNachbestellen(ppsInstanz::getBestellInstanz(i->rohartikel),
+  		i->menge*menge,newdate,i->rohartikel,uid,*this);
+     }
+  }
+}
+
+// bei 2ern geht der Pfeil in die andere Richtung
+AuftragBase::mengen_t AufEintrag::MengeAendern(int uid,mengen_t menge,bool instanzen,
+     const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason) throw(SQLerror)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,
+   NV("Eltern",ElternAEB),
+   NV("menge",menge),NV("instanzen",instanzen),NV("reason",reason));
+ assert(reason!=ManuProC::Auftrag::r_None);
+ if (!menge)  return menge;
+
+ Transaction tr; // Beschleunigung
+ Query("lock auftragentry in exclusive mode");
+ SQLerror::test("updateStkDiff: lock table auftragentry");
+
+ mengen_t menge2=menge;
+ if (menge2<0) // nicht mehr abbestellen als noch offen ist
+ 		// aber dennoch den Pfeil reduzieren
+ {  menge2=-AuftragBase::min(-menge2,getRestStk());
+ }
+ if (!!menge2) 
+ { menge2=updateStkDiffBase__(uid,menge2);
+   bestellt+=menge2;
+   if (menge2>0 && entrystatus==CLOSED) 
+      setStatus(OPEN,uid,true);
+ }
+
+ if (ElternAEB.valid()) 
+ {  if (Id()!=dispo_auftrag_id) AufEintragZu(ElternAEB).Neu(*this,menge);
+    // bei dispoaufträgen geht der Pfeil in die andere Richtung
+    else AufEintragZu(*this).Neu(ElternAEB,menge);
+ }
+
+ if(auftragstatus==OPEN)
+  {
+   // Rekursion von 2ern verbieten
+   assert(Id()!=dispo_auftrag_id || !instanzen); 
+   // keine Rekursion bei 1er im Lager 
+   // Rekursion bei 1er oder 3er in Produktion
+   if ((!Instanz()->LagerInstanz() || Id()==AuftragBase::ungeplante_id) 
+   	&& instanzen)
+      updateStkDiffInstanz__(uid,menge2,*this,reason);
+  }
+  tr.commit();
+  // wir haben zwar weniger abbestellt, aber nur weil wir geliefert haben
+ return menge;
+}
+
+namespace {
+class ArtikelInternAbbestellen_cb
+{	unsigned uid;
+	ManuProC::Auftrag::Action reason;
+	const AufEintrag &mythis;
+
+public:
+	ArtikelInternAbbestellen_cb(const AufEintrag &_mythis, unsigned _uid, ManuProC::Auftrag::Action _reason)
+		: uid(_uid), reason(_reason), mythis(_mythis)
+	{}
+	AuftragBase::mengen_t operator()(const ArtikelBase &,
+ 		const AufEintragBase &,AuftragBase::mengen_t) const;
+ 	// ignore remainder
+ 	void operator()(const ArtikelBase &,AuftragBase::mengen_t) const {}
+};
+}
+
+AuftragBase::mengen_t ArtikelInternAbbestellen_cb::operator()
+	(const ArtikelBase &i,
+ 		const AufEintragBase &j,AuftragBase::mengen_t M) const
+{  AufEintrag AE(j);
+   if (j.Id()==AuftragBase::ungeplante_id)
+      M=-AE.MengeAendern(uid,-M,true,mythis,reason);
+   else if (j.Instanz()->LagerInstanz())
+   {  // vorgemerkte Menge freigeben
+      assert(j.Id()==AuftragBase::plan_auftrag_id);
+      AuftragBase::mengen_t wahreMenge=AuftragBase::min(M,AE.getRestStk());
+      M=-AE.MengeAendern(uid,-M,true,mythis,reason);
+      // == Einlagern ohne Produktion?
+      if (j.Instanz()->LagerInstanz() && j.Id()==AuftragBase::plan_auftrag_id)
+         // freie Menge erhöhen
+#warning sollten das nicht andere 1er bekommen wenn möglich? (dann abbestellen)
+         AuftragBase(j.Instanz(),AuftragBase::dispo_auftrag_id)
+       		.BestellmengeAendern(wahreMenge,LagerBase::Lagerdatum(),
+       				AE.Artikel(),OPEN,uid,AufEintragBase());
+   }
+   else 
+     { // 1er oder 3er - dispo anlegen, Bestellpfeil erniedrigen
+       assert(j.Id()!=AuftragBase::dispo_auftrag_id);
+       AuftragBase(j.Instanz(),AuftragBase::dispo_auftrag_id)
+       	.BestellmengeAendern(M,AE.getLieferdatum(),AE.Artikel(),OPEN,uid,j);
+       AufEintragZu(mythis).setMengeDiff__(j,-M);
+     } 
+   return M;
+}
+
+void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftrag::Action reason) const
+{ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
+   NV("menge",menge),NV("Reason",reason));
+
+ assert(menge>0);
+ try{
+      distribute_children(*this,menge,ArtId(),
+   			ArtikelInternAbbestellen_cb(*this,uid,reason));
+  }catch(NoAEB_Error &e) 
+  {std::cerr <<"Falsche Anzahl von AufEinträgen: "<<e.what()<<'\n'; 
+   exit(1);}
+}
+
+void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t menge,const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason) throw(SQLerror)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
+   NV("ElternAEB",ElternAEB),NV("Menge",menge),NV("Reason",reason));
+ if (menge<0) 
+ {  assert(ElternAEB==AufEintragBase(*this)); // ?
+    ArtikelInternAbbestellen(uid,-menge,reason);
+ }
+ else 
+ {  assert(ElternAEB==AufEintragBase(*this));
+    ArtikelInternNachbestellen(uid,menge,reason);
+ }
+}
+
+void AufEintrag::updatePreis(const Preis &pr) throw(SQLerror)
+{ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
+ Query("update auftragentry "
+ 	"set preis=?, preismenge=? "
+ 	"where (instanz,auftragid,zeilennr)=(?,?,?)").lvalue()
+ 	<< pr.Wert() << pr.PreisMenge() 
+ 	<< static_cast<const AufEintragBase&>(*this);
+ SQLerror::test("updatePreis: update preis in auftragentry");
+ preis=pr;
+}
+
+
+
+void AufEintrag::updateRabatt(rabatt_t rb) throw(SQLerror)
+{ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
+ Query("update auftragentry "
+ 	"set rabatt=? "
+ 	"where (instanz,auftragid,zeilennr)=(?,?,?)").lvalue()
+ 	<< rb 
+ 	<< static_cast<const AufEintragBase&>(*this);
+ SQLerror::test("updateRabatt: update rabatt in auftragentry");
+ rabatt=rb;
+}
+
+
+void AufEintrag::updateLieferdatum(const Petig::Datum &ld,int uid) throw(SQLerror)
+{ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("Datum",ld));
+ Transaction tr;
+ Query("lock auftragentry in exclusive mode"); // unnötig? CP
+ SQLerror::test("updateLieferdatum: lock table auftragentry");
+
+ ArtikelInternAbbestellen(uid,getStueck(),ManuProC::Auftrag::r_Anlegen);
+
+ Query("update auftragentry "
+ 	"set lieferdate=? "
+ 	"where (instanz,auftragid,zeilennr)=(?,?,?)").lvalue()
+ 	<< ld
+ 	<< static_cast<const AufEintragBase&>(*this);
+ SQLerror::test("updateLiefDatum: update lieferdate in auftragentry");
+ lieferdatum=ld;
+
+ ArtikelInternNachbestellen(uid,getStueck(),ManuProC::Auftrag::r_Anlegen);
+
+ if(entrystatus==OPEN)// status->entrystatus
+  {
+   try 
+    {
+     pps_ChJournalEntry::newChange(
+  			instanz, *this,
+  			artikel, ld,
+  			(double)(ld-getLieferdatum()),
+  			pps_ChJournalEntry::CH_LIEFDAT);
+    }
+   catch(SQLerror &e)
+     {tr.rollback(); throw; }
+  }
+ 
+ tr.commit(); 
+}
+
+#include <Misc/relops.h>
+  
+int AufEintrag::split(int uid,mengen_t newmenge, const Petig::Datum &newld,bool dispoplanung) throw(SQLerror)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("NewMenge",newmenge),NV("NewDatum",newld),NV("dispoplanung(bool)",dispoplanung));
+ if(entrystatus==CLOSED) return none_znr;
+
+ mengen_t BESTELLT_OLD=bestellt-newmenge;
+ int STATUS=entrystatus;
+
+ double GELIEFERT;
+ double GELIEFERT_OLD;
+
+ if(lieferdatum>newld)
+   {GELIEFERT=(geliefert>newmenge ? mengen_t(newmenge) : geliefert).as_float();
+    GELIEFERT_OLD=(geliefert>newmenge ? geliefert-mengen_t(newmenge) : mengen_t(0)).as_float();}
+ else
+   {GELIEFERT_OLD=(geliefert>BESTELLT_OLD ? mengen_t(BESTELLT_OLD) : geliefert).as_float();
+    GELIEFERT=(geliefert>BESTELLT_OLD ? geliefert-mengen_t(BESTELLT_OLD) : mengen_t(0)).as_float();}
+    
+ Transaction tr;
+ Query("lock auftragentry in exclusive mode");
+ SQLerror::test("split: lock table auftragentry");
+
+ mengen_t mt=MengeAendern(uid,-newmenge,true,AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
+ assert(mt==-newmenge);
+
+ int ZEILENNR;
+ if(Instanz()==ppsInstanzID::Kundenauftraege)
+   {Auftrag A(*this);
+    AufEintragBase newaeb=A.push_back(newmenge,newld,artikel,entrystatus,uid,true,preis,rabatt);
+    ZEILENNR=newaeb.ZNr();
+   }
+ else
+   ZEILENNR=split_zuordnungen_to(newmenge,newld,artikel,entrystatus,uid,dispoplanung);
+
+ if(STATUS==OPEN)
+   {   pps_ChJournalEntry::newChange(
+    			instanz, *this,
+    			artikel, BESTELLT_OLD.as_float(), (BESTELLT_OLD-bestellt).as_float(),
+    			pps_ChJournalEntry::CH_MENGE);
+       pps_ChJournalEntry::newChange(
+    			instanz, *this,
+    			artikel, newmenge.as_float(), newmenge.as_float(),
+    			pps_ChJournalEntry::CH_MENGE);
+   }
+
+ tr.commit();
+ return ZEILENNR;
+}
+
+// hässlich ! warum denn ein cH_Lieferschein statt eines LieferscheinEntryBase?
+cH_Lieferschein AufEintrag::getLieferschein() const
+{
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
+  int LFRSID,LFRZNR;
+ // bislang cH_Lieferschein(ppsInstanzID::None,0); wenn keine Zeile
+ // jetzt SQLerror
+ Query("select lfrsid,zeile from lieferscheinentry "
+ 	"where (instanz,refauftragid,refzeilennr)=(?,?,?) "
+ 	"limit 1").lvalue()
+ 	<< static_cast<const AufEintragBase&>(*this)
+ 	>> LFRSID >> LFRZNR;
+ // kann es mehr als eine Zeile geben? kann es, außerdem fehlt hier ZusatzInfo
+ return cH_Lieferschein(Instanz(),LFRSID);
+}
+
+// Aufruf: ProduziertNG(uid,RestStk(),ElternAEB,ElternAEB)
+
+namespace {
+class ProduziertNG_cb
+{	AufEintrag &mythis;
+	unsigned uid;
+public:	
+	AuftragBase::mengen_t operator()(const AufEintragBase &elter,AuftragBase::mengen_t m) const
+	{  if (elter.Id()==AuftragBase::dispo_auftrag_id) return 0;
+	   mythis.ProduziertNG(uid,m,elter,elter);
+	   return m;
+	}
+	ProduziertNG_cb(AufEintrag &_mythis) : mythis(_mythis), uid(getuid()) {}
+};
+}
+
+void AufEintrag::ProduziertNG(AuftragBase::mengen_t M)
+{  if (Id()>=handplan_auftrag_id || Id()==plan_auftrag_id)
+   {  ProduziertNG(getuid(),M,AufEintragBase(),AufEintragBase());
+   }
+   else
+   {  if (distribute_parents(*this,M,ProduziertNG_cb(*this))!=0)
+   	 assert(!"Rest geblieben");
+   }
+}
+
+namespace {
+class ProduziertNG_cb2
+{  unsigned uid;
+   AufEintragBase alterAEB,neuerAEB;
+public:
+	ProduziertNG_cb2(unsigned _uid, const AufEintragBase &aAEB, const AufEintragBase &nAEB)
+		: uid(_uid), alterAEB(aAEB), neuerAEB(nAEB) {}
+	AuftragBase::mengen_t operator()(const ArtikelBase &art,
+		const AufEintragBase &aeb,AuftragBase::mengen_t M) const
+	{  if (!aeb.Instanz()->ProduziertSelbst())
+              AufEintrag(aeb).ProduziertNG(uid,M,alterAEB,neuerAEB);
+           else AufEintragZu(alterAEB).setMengeDiff__(aeb,-M);
+           return M;
+	}
+	
+	// Überproduktion
+	void operator()(const ArtikelBase &art,AuftragBase::mengen_t M) const
+	{  cH_ppsInstanz wo=ppsInstanz::getBestellInstanz(art);
+	   if (wo==neuerAEB.Instanz()) wo=ppsInstanz::getProduktionsInstanz(art);
+	   assert(wo!=neuerAEB.Instanz());
+	   AufEintrag::unbestellteMengeProduzieren(wo,art,M,uid,true,neuerAEB);
+	}
+};
+}
+
+// similar to move_to	
+void AufEintrag::ProduziertNG(unsigned uid, AuftragBase::mengen_t M,
+		const AufEintragBase &elter_alt,
+		const AufEintragBase &elter_neu)
+{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,M,elter_alt,elter_neu);
+   assert(M>=0); // notwendig?
+   assert(Id()!=dispo_auftrag_id);
+   
+   AufEintragBase neuerAEB=*this;
+   if (Id()==AuftragBase::plan_auftrag_id 
+	|| Id()>=AuftragBase::handplan_auftrag_id)
+   {  assert(!Instanz()->LagerInstanz());
+      // Überproduktion wird einfach vermerkt (geht nur bei 3ern)
+      abschreiben(M);
+      if (elter_alt.valid()) 
+      {  mengen_t zmenge=AufEintragZu(elter_alt).getMenge(*this);
+         if (!!zmenge)
+            AufEintragZu(elter_alt).setMengeDiff__(*this,-AuftragBase::min(zmenge,M));
+         else
+            std::cout << "ProduziertNG: kann von " << elter_alt << " nach " << *this 
+            	<< " keine " << M << " abziehen\n";
+      }
+      if (elter_neu!=elter_alt) AufEintragZu(elter_neu).Neu(*this,0);
+   }
+   else
+   {  // keine Rekursion!  // und für Lager?
+      MengeAendern(uid,-M,false,elter_alt,ManuProC::Auftrag::r_Produziert);
+      AuftragBase zielauftrag(Instanz(),plan_auftrag_id);
+      neuerAEB=AufEintragBase(zielauftrag,
+      		zielauftrag.PassendeZeile(getLieferdatum(),Artikel(),
+      			Instanz()->LagerInstanz()?OPEN:CLOSED,uid));
+      AufEintrag ae(neuerAEB);
+      ae.MengeAendern(uid,M,false,
+      		Instanz()->LagerInstanz()?elter_neu:AufEintragBase(),
+      		ManuProC::Auftrag::r_Produziert);
+      if (!Instanz()->LagerInstanz())
+      {  ae.abschreiben(M);
+         AufEintragZu(elter_neu).Neu(neuerAEB,0);
+      }
+   }
+   // Kinder bearbeiten
+   distribute_children(*this,M,Artikel(),ProduziertNG_cb2(uid,*this,neuerAEB));
+
+   cH_ppsInstanz EI=Instanz()->EinlagernIn();
+   if(EI->AutomatischEinlagern())
+   {  assert(Instanz()->ProduziertSelbst()); // sonst Endlosrekursion
+      LagerBase(EI).rein_ins_lager(Artikel(),M,uid);
+   }
+}
+
+// wird bislang von menge_neu_verplanen für 0er aufgerufen
+// vermutlich ehemals abschreiben_oder_reduzieren 
+// & ehemals ppsInstanz::Produziert
+void AufEintrag::WurdeProduziert(AuftragBase::mengen_t M,const AufEintragBase &ElternAEB)
+{  int uid=getuid();
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,M,NV("Eltern",ElternAEB));
+   assert(M>=0);
+
+   ProduziertNG(uid,M,ElternAEB,ElternAEB);
+}
+
+#if 0
+void AufEintrag::ProduktionRueckgaengig(AuftragBase::mengen_t M)
+{
+}
+#endif
+
+// auf noch offene Menge beschränken
+void AufEintrag::DispoBeschraenken(int uid)
+{
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this);
+  AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(*this,AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
+
+  AuftragBase::mengen_t S=0;
+  for(AufEintragZu::list_t::const_iterator i=L.begin();i!=L.end();++i)
+   {
+     if(i->AEB.Id()==AuftragBase::dispo_auftrag_id) S+=i->Menge;
+   }
+  if (getRestStk()<S)
+  {   ManuProC::Trace(AuftragBase::trace_channel, __FILELINE__,
+  		"Dispo muss um ",S-getRestStk()," erniedrigt werden");
+      for(AufEintragZu::list_t::const_iterator i=L.begin();i!=L.end();++i)
+      {
+        if(i->AEB.Id()==AuftragBase::dispo_auftrag_id)
+         {
+           AuftragBase::mengen_t M=AuftragBase::min(i->Menge,S-getRestStk());
+           // warum nicht MengeAendern?
+           M=AufEintrag(i->AEB).MengeAendern(uid,-M,false,*this,ManuProC::Auftrag::r_Produziert);
+           S-=M;
+         } 
+      }  
+  }
+}
