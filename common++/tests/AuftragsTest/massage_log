@@ -1,0 +1,4 @@
+#!/bin/sh
+DATE=`date +%e.%l.%Y | sed "s/ //g"`
+sed -e 's/\.cc:.*(/\.cc:?(/' -e 's/'$DATE' .*:.*:.*\....... +./$DATE ?/'
+# -e 's/pri=.*,menge=/pri=?,menge=/' 
