@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.39 2003/07/30 10:18:52 christof Exp $
+// $Id: Kunde.cc,v 1.40 2003/09/16 10:16:21 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -312,6 +312,30 @@ void Kunde::AB_an_rngadresse(bool b) throw(SQLerror)
  
 }
 
+
+
+// weak test for UST-ID integrity
+bool Kunde::idnr_valid() const
+{
+ if(IDnr.size()<8) return false; // wahrscheinlich zu kurz
+ if(atoi(IDnr.substr(0,2).c_str())>0) return false; // keine LKZ am Anfang
+ return true;   // wahrscheinlich OK 
+}
+
+
+
+bool Kunde::MwSt() const
+{
+ if(!Auslaender()) return true;
+ if(EU())
+   if(!idnr_valid()) return true;
+   
+ return false;
+}
+
+
 #if !defined(__GNUC__) || __GNUC__ > 2
 const Kunde::ID Kunde::eigene_id;
 #endif
+
+

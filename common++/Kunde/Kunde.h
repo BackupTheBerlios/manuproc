@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.55 2003/08/01 13:17:39 jacek Exp $
+// $Id: Kunde.h,v 1.56 2003/09/16 10:16:21 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -218,6 +218,9 @@ public:
         ID Id() const {  return entityid; }
 //        ID GruppenId() const {  return KundenGruppennr; }
         const std::string idnr() const { return IDnr; } 
+private:        
+        bool idnr_valid() const;
+public:
         ID getNummer() const {  return entityid; }
         cH_ExtBezSchema getSchema(class ArtikelTyp t) const
         	{  return cH_ExtBezSchema(schema,t); }
@@ -234,6 +237,7 @@ public:
         bool Rng_an_postfach() const {return rng_an_postfach;}
         bool AB_an_rngadresse() const {return ab_an_rngadresse;}        
         bool Auslaender() const { return adresse.land->Auslaender(); }
+        bool MwSt() const;
         bool EU() const { return adresse.land->EU(); }
 	bool Preisautomatik() const { return preisautomatik;}
 	void Preisautomatik(bool pa) throw(SQLerror);
