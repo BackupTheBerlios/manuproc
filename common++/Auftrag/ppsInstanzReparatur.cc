@@ -442,7 +442,7 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
    if (ae.Id()==AuftragBase::plan_auftrag_id && !!ae.getGeliefert()
     	&& !ae.Instanz()->ProduziertSelbst())
    {  AuftragBase::mengen_t geliefert_eltern;
-      for (AufEintragZu::list_t::iterator i=eltern.begin();i!=eltern.end();)
+      for (AufEintragZu::list_t::iterator i=eltern.begin();i!=eltern.end();++i)
       {  AufEintrag el(i->AEB);
          geliefert_eltern+=ArtikelBaum(el.Artikel()).Faktor(ae.Artikel())
          	* ae.getGeliefert();

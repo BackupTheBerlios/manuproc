@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.58 2003/08/11 15:14:19 christof Exp $
+// $Id: Check.cc,v 1.59 2003/09/11 13:34:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -42,10 +42,11 @@ bool Check::overwrite=false;
 bool Check::resort=false;
 bool Check::verbose=false;
 bool Check::continue_=false;
+bool Check::delete_repair=false;
 
 bool Check::teste(was_checken check,const std::string &zusatz, bool vor_dem_test_reparieren)
 {
-  if(!vor_dem_test_reparieren)
+  if(!analyse && !reparieren) // sonst unlogisch ... !vor_dem_test_reparieren)
    { dump(check,zusatz);  
      if (!vergleich(check,zusatz)) return false;
      if (!analyse && !reparieren) return true;
@@ -56,6 +57,7 @@ bool Check::teste(was_checken check,const std::string &zusatz, bool vor_dem_test
   std::string cmd="../../Programme/auftrag_repair -I -aAXC";
   if (analyse) cmd+=" -y";
   else cmd+=" -l";
+  if (delete_repair) cmd+=" -aD";
   int c=system(cmd.c_str());
   if(verbose || c) 
   { std::cerr << cmd << " returned " << c<<'\n'; 
@@ -63,7 +65,7 @@ bool Check::teste(was_checken check,const std::string &zusatz, bool vor_dem_test
   }
 
   // einmal reicht dann  
-  if (!vor_dem_test_reparieren && !reparieren) return true;
+//  if (!vor_dem_test_reparieren && !reparieren) return true;
   
   dump(check,zusatz);  
   return vergleich(check,zusatz);

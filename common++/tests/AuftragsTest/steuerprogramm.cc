@@ -98,7 +98,7 @@ static void usage(const std::string &argv0,const std::string &argv1)
   std::cerr << argv0 <<" [<option> ...] <test>\n";
   std::cerr << "options: --verbose|-v --analyse|-y --repair|-r\n"
   	"\t--continue|-c --trace|-t --reinit|-R --overwrite|-O\n"
-  	"\t--tolerate|-T --resort|-S\n"
+  	"\t--tolerate|-T --resort|-S --delete|-D\n"
   	"\t\t--continue twice gives different results\n";
   std::cerr << "tests:\n";
   for (const TestReihe *i=TestReihe::first; i; i=i->next)
@@ -122,11 +122,12 @@ int main(int argc,char *argv[])
      { "overwrite", no_argument, 0, 'O' },
      { "tolerate", no_argument, 0, 'T' },
      { "resort", no_argument, 0, 'S' },
+     { "delete", no_argument, 0, 'D' },
      { 0,0,0,0 },
    };
    
    int opt;
-   while ((opt=getopt_long(argc,argv,"vrctCRyOTS",long_options,0))!=-1)
+   while ((opt=getopt_long(argc,argv,"vrctCRyOTSD",long_options,0))!=-1)
     switch(opt)
    {  case 'v': verbose=true; Check::verbose=true; break;
       case 'r': Check::reparieren=true; break;
@@ -135,6 +136,7 @@ int main(int argc,char *argv[])
          else do_not_stop=true;
          break;
       case 'C': clean_only=true; break;
+      case 'D': Check::delete_repair=true; break;
       case 'R': clean_only=false; break;
       case 'y': Check::analyse=true; break;
       case 'S': Check::resort=true; break;
