@@ -1,6 +1,6 @@
-# $Id: Makefile.am,v 1.18 2003/10/21 11:01:46 christof Exp $
+# $Id: Makefile.am,v 1.19 2004/05/03 12:38:03 christof Exp $
 	
-LDADD=$(top_srcdir)/src/libManuProC_Base.a @ECPG_LIBS@ @SIGC_LIBS@
+LDADD=$(top_srcdir)/src/libManuProC_Base.la @ECPG_LIBS@ @SIGC_LIBS@
 
 AM_CXXFLAGS=@CXXFLAGS@ -I$(top_srcdir)/src @ECPG_INCLUDES@ @SIGC_CFLAGS@
 
