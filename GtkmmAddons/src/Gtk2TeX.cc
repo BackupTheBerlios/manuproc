@@ -16,7 +16,7 @@
  *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: Gtk2TeX.cc,v 1.7 2003/11/12 10:35:29 christof Exp $
+// $Id: Gtk2TeX.cc,v 1.8 2003/12/29 13:19:08 jacek Exp $
 
 #include "Gtk2TeX.h"
 #include "gtkhacks.h"
@@ -95,7 +95,7 @@ static void TreeView2Table_sub(std::ostream &os,const Gtk::TreeView *cl,
    if (visible_children)
       for (Gtk::TreeModel::Children::const_iterator i=y->children().begin();
    		i!=y->children().end();++i)
-         TreeView2Table_sub(os,cl,fl,i,is_last_line?(i+1!=y->children().end()):false);
+         TreeView2Table_sub(os,cl,fl,i,is_last_line?(i+1==y->children().end()):false);
 }
 
 std::ostream &Gtk2TeX::TreeView2Table(std::ostream &os,const Gtk::TreeView *cl,const TableFlags &fl)
@@ -151,8 +151,9 @@ std::ostream &Gtk2TeX::TreeView2Table(std::ostream &os,const Gtk::TreeView *cl,c
    else
    {  Gtk::TreeModel::const_iterator yend(const_cast<Gtk::TreeView*>(cl)->get_model()->children().end());
       // no working const_iterator yet ...   
-      for (Gtk::TreeModel::iterator y=const_cast<Gtk::TreeView*>(cl)->get_model()->children().begin();y!=yend;++y)
-         TreeView2Table_sub(os,cl,fl,y,y+1!=yend);
+      for (Gtk::TreeModel::iterator y=const_cast<Gtk::TreeView*>(cl)->get_model()->children().begin();
+			y!=yend;++y)
+         TreeView2Table_sub(os,cl,fl,y,y+1==yend);
    }
    
    if (fl.postlist_cb) (*fl.postlist_cb)(os,fl.user_data);
