@@ -3,6 +3,7 @@
 #include <TagStream.h>
 #include <MyMessage.h>
 #include <itos.h>
+#include <FetchIStream.h>
 
 void mpc_agent::on_senden_clicked()
 {
@@ -17,16 +18,32 @@ void mpc_agent::on_senden_clicked()
  auftrag.setAttr("origin","mpc_agent");
  auftrag.setAttr("orderid",ord_id);
  auftrag.setAttr("agent",itos(VERKNR));
+ ManuProC::Datum ad;
+ Query("select datum from auftrag where aufid=? and vknr=?")
+	<< ord_id << VERKNR >> ad;
+ auftrag.setAttr("date",ad.to_iso());
+ auftrag.setAttr("customer_no",kunde->get_value(KDBOX_NR));
+ auftrag.setAttr("customer",kunde->get_value(KDBOX_NAME)); 
 
- Tag &aufentry=auftrag.push_back(Tag("OrderRow"));
- aufentry.setAttr("article","12345");
- aufentry.setAttr("ean","1122334455667");
- aufentry.setAttr("amount","10");
- Tag &aufentry2=auftrag.push_back(Tag("OrderRow"));
- aufentry2.setAttr("article","12345");
- aufentry2.setAttr("ean","1122334455667");
- aufentry2.setAttr("amount","10");
 
+ Query q("select artnr||'/'||breite||'/'||farbe||'/'||aufmachung,"
+	"ean,stueck from auftragentry where aufid=? and vknr=?");
+
+ q << ord_id << VERKNR;
+ FetchIStream fs=q.Fetch();
+
+ while(fs.good())
+   {
+    std::string art,ean;
+    int stk;
+    fs >> art >> FetchIStream::MapNull(ean,"") >> stk;
+    Tag &aufentry=auftrag.push_back(Tag("OrderRow"));
+    aufentry.setAttr("article",art);
+    aufentry.setAttr("ean",ean);
+    aufentry.setAttr("amount",itos(stk));
+    fs=q.Fetch();
+   }
+   
  std::ofstream of(file.c_str());
  ts.write(of);
 
