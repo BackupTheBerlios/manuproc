@@ -1,5 +1,5 @@
 /* src/ManuProCConfig.h.in.  Generated from configure.in by autoheader.  */
-/* $Id: ManuProCConfig.h.in,v 1.12 2003/06/04 09:48:33 christof Exp $ */
+/* $Id: ManuProCConfig.h.in,v 1.13 2003/09/17 07:04:49 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -51,6 +51,12 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
+/* Define to 1 if you use ecpg 2.9. */
+#undef OLD_ECPG
+
+/* Name of package */
+#undef PACKAGE
+
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
 
@@ -66,5 +72,11 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
+/* we use SigC++ 1.2.x (not 1.0.x) */
+#undef SIGC1_2
+
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
+
+/* Version number of package */
+#undef VERSION

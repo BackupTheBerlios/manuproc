@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.21 2003/06/23 07:08:53 christof Exp $
+// $Id: fixedpoint.h,v 1.22 2003/09/17 07:04:49 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,6 +21,7 @@
 #ifndef AUX_FIXEDPOINT_H
 #define AUX_FIXEDPOINT_H
 
+#include <ManuProCConfig.h>
 #include <Misc/ctime_assert.h>
 #include <string>
 
@@ -273,6 +274,7 @@ template <int decimals,class Ftype,class Itype>
 }
 #endif
 
+#ifdef DEFAULT_DB // actually we should test for database support
 #include <Misc/FetchIStream.h>
 
 static inline FetchIStream &operator>>(FetchIStream &is, fixedpoint<0> &v)
@@ -295,5 +297,6 @@ ArgumentList &operator<<(ArgumentList &q, const fixedpoint<decimals,Ftype,Itype>
 {  q.add_argument(v.String(true));
    return q;
 }
+#endif
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new.cc,v 1.8 2003/05/12 07:26:50 christof Exp $
+// $Id: Zeitpunkt_new.cc,v 1.9 2003/09/17 07:04:49 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,7 +21,10 @@
 
 #include <Misc/Zeitpunkt_new.h>
 #include <cassert>
+#include <ManuProCConfig.h>
+#ifdef DEFAULT_DB // actually we should test for database support
 #include <Misc/FetchIStream.h>
+#endif
 
 int Zeitpunkt_new::operator-(const Zeitpunkt_new &b) const throw()
 {  int prec2=prec<b.prec?prec:b.prec;
@@ -150,6 +153,7 @@ Zeitpunkt_new::Zeitpunkt_new(time_t t) throw()
 #endif
 }
 
+#ifdef DEFAULT_DB // actually we should test for database support
 FetchIStream &operator>>(FetchIStream &is, Zeitpunkt_new &v)
 {  std::string s;
    int ind;
@@ -166,4 +170,4 @@ ArgumentList &operator<<(ArgumentList &q, const Zeitpunkt_new &v)
    q.add_argument('\''+std::string(buf)+'\'');
    return q;
 }
-
+#endif

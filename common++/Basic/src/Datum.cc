@@ -1,4 +1,4 @@
-// $Id: Datum.cc,v 1.21 2003/05/12 07:26:50 christof Exp $
+// $Id: Datum.cc,v 1.22 2003/09/17 07:04:49 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.21 2003/05/12 07:26:50 christof Exp $ */
+/* $Id: Datum.cc,v 1.22 2003/09/17 07:04:49 christof Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
@@ -25,7 +25,10 @@
 #include <iomanip.h>
 #include <stdlib.h>
 #include <Misc/itos.h>
+#include <ManuProCConfig.h>
+#ifdef DEFAULT_DB // actually we should test for database support
 #include <Misc/FetchIStream.h>
+#endif
 
 const char* const ManuProC::Datum::monate[]={"Januar",
  		    "Februar",
@@ -344,6 +347,7 @@ ManuProC::Datum::Datum(int t, int m, int j,bool expandyear) throw(Datumsfehler)
    teste();
 }
 
+#ifdef DEFAULT_DB // actually we should test for database support
 FetchIStream &operator>>(FetchIStream &is, ManuProC::Datum &v)
 {  std::string s;
    int ind;
@@ -358,3 +362,4 @@ ArgumentList &operator<<(ArgumentList &q, const ManuProC::Datum &v)
    return q;
 }
 
+#endif

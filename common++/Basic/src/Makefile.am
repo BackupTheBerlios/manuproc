@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.34 2003/08/02 14:54:24 christof Exp $
+# $Id: Makefile.am,v 1.35 2003/09/17 07:04:49 christof Exp $
 
 AM_CXXFLAGS=@ECPG_INCLUDES@ @SIGC_CFLAGS@
 
@@ -11,7 +11,8 @@ includedir=@includedir@/ManuProC_Base
 AM_LDFLAGS=@LDFLAGS@ @ECPG_LDFLAGS@
 
 if DATABASE
-DB_SRCES=dbconnect.cc SQLerror_postgres.cc Transaction.cc FetchIStream.cc
+DB_SRCES=dbconnect.cc SQLerror_postgres.cc Transaction.cc FetchIStream.cc \
+	Event.cc
 else 
 DB_SRCES=
 endif
@@ -25,8 +26,7 @@ libManuProC_Base_a_SOURCES=Ausgabe_neu.cc Datum.cc IOerror.cc \
 		time_t_ostr.cc EntryValueBase.cc Handles.cc \
 		EntryValueIntString.cc EntryValueIntGermanString.cc \
 		EntryValueDatum.cc $(DB_SRCES) Trace.cc \
-		germanstring.cc TagStream.cc Tag.cc EntryValueTimeStamp.cc \
-		Event.cc
+		germanstring.cc TagStream.cc Tag.cc EntryValueTimeStamp.cc		
 
 EXTRA_DIST=dbconnect.pgcc SQLerror_postgres.pgcc Transaction.pgcc \
 	FetchIStream.pgcc
