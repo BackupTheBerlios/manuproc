@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.77 2004/10/21 08:44:49 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.78 2004/10/21 13:06:43 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -100,16 +100,23 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
 	NV("stueck",_stueck),NV("menge",_menge));
 
 
-  if(status==CLOSED || status==STORNO) return; // not changable any more
+  if(status==CLOSED || status==STORNO) 
+  {  ManuProC::Trace("","status not changeable any more",status);
+     return;
+  }
 
   if(status>new_status) return;
-				// down changed
+  {  ManuProC::Trace("","will not change status down",status,new_status);
+     return;
+  }
 
-
-  if(status!=OPEN && status==new_status) return; //nothing changed 
-						// if OPEN == OPEN
-					// means really changed amount
-					// so go forward
+  if(status!=OPEN && status==new_status)
+  {  ManuProC::Trace("","status unchanged",status,new_status);
+     return;
+  }
+  // if OPEN == OPEN
+  // means really changed amount
+  // so go forward
   Transaction tr;
 
   if(new_status==OPEN || ((status==OPEN || status==CLOSED) && new_status==STORNO))
@@ -214,6 +221,7 @@ void LieferscheinEntry::change_status(AufStatVal new_status)
 	<< Query::NullIf(new_status,(AufStatVal)NOSTAT)
 	<< Id() << Instanz()->Id() << Zeile();
   }
+ status=new_status;
 }
 
 
