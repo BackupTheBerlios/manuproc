@@ -22,6 +22,7 @@ void windowTop::on_notebook1_switch_page(Gtk::Notebook_Helpers::Page* page,guint
                                    frame_kundenkontakt->set_sensitive(false);
                                  }
                                 break;
+     case PAGE_ZAHLUNG		:
      case PAGE_DETAILS        : if(kundendaten->Id()==Kunde::none_id) 
                                    table_details->set_sensitive(false);
                                 else show_details(); 

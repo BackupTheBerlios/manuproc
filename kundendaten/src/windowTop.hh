@@ -20,7 +20,8 @@ class windowTop : public windowTop_glade
 
         Transaction transaction; // Für die SearchCombos
         friend class windowTop_glade;
-        enum enum_notebook{PAGE_KUNDE,PAGE_DETAILS,PAGE_KONTAKTPERSON,
+        enum enum_notebook{PAGE_KUNDE,PAGE_DETAILS,PAGE_ZAHLUNG,
+			PAGE_KONTAKTPERSON,
 			PAGE_PERSON, PAGE_NOTIZEN, PAGE_GRUPPEN};
         enum enum_zahl_verfahren{PAGE_DTAUS,PAGE_RIBA,PAGE_LCR};
         void on_notebook1_switch_page(Gtk::Notebook_Helpers::Page* page,guint pagenr);
