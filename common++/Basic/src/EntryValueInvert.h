@@ -1,4 +1,4 @@
-/* $Id: EntryValueInvert.h,v 1.1 2004/01/09 15:24:20 christof Exp $ */
+/* $Id: EntryValueInvert.h,v 1.2 2004/01/09 15:37:13 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -47,10 +47,10 @@ struct cH_EntryValueInvert : public cH_EntryValue
 {
  template <typename T>
   cH_EntryValueInvert(const Handle<const T> &t) 
- : Handle<const EntryValueInvert<T> >(new EntryValueInvert<T>(t)) {}
+ : cH_EntryValue(new EntryValueInvert<T>(t)) {}
  template <typename T>
-  cH_EntryValueInvert(const T *t) 
- : Handle<const EntryValueInvert<T> >(new EntryValueInvert<T>(t)) {}
+  cH_EntryValueInvert(const T * const t) 
+ : cH_EntryValue(new EntryValueInvert<T>(t)) {}
 };
 
 #endif 
