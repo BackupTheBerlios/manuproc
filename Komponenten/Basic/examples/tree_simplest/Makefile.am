@@ -20,7 +20,7 @@ noinst_HEADERS = \
 CXXFLAGS = @CXXFLAGS@  -I$(top_srcdir)/src @COMMONGTK_INCLUDES@ \
 		@COMMONXX_INCLUDES@
 
-tree_LDADD = @LIBS@ $(top_srcdir)/src/libKomponenten.a \
+tree_LDADD = @LIBS@ $(top_srcdir)/src/libManuProC_Widgets.a \
         @COMMONGTK_LIBS@ @COMMONXX_LIBS@
 
 LDFLAGS= @LDFLAGS@ @COMMONXX_LDFLAGS@ @COMMONGTK_LDFLAGS@

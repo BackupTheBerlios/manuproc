@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.1 2001/06/21 09:05:27 christof Exp $
+# $Id: Makefile.am,v 1.2 2001/06/21 13:17:44 christof Exp $
 CXXFLAGS=@CXXFLAGS@ @COMMONGTK_INCLUDES@ @COMMONXX_INCLUDES@  
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
@@ -7,6 +7,8 @@ include_HEADERS = datewin.h logwin.h\
 	EingabeBox.hh datewin_glade.hh \
 	rowdata.h tclistrowdata.h treebase_data.h \
 	tclistnode.h tclistleaf.h treebase.h
+
+noinst_HEADERS=SimpleTree.hh
 
 lib_LIBRARIES= libManuProC_Widgets.a
 
