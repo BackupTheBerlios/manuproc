@@ -357,24 +357,20 @@ std::cout << dummystring<<'\n';
        Query::Execute(q2);
        SQLerror::test(__FILELINE__);
        AufEintrag AE=AufEintrag(class AufEintragBase(class AuftragBase(ROLLEREI,AuftragBase::ungeplante_id),2));
-cout << "VOR: "<<AE.getStueck()<<'\n';       
        AE.updateStkDiff__(UID,-100,true,ManuProC::Auftrag::r_Anlegen);
-cout << "NACH: "<<AE.getStueck()<<'\n';       
 
        erfolgreich=C.teste(Check::Menge,"_reparatur_kunde",mit_reparatur_programm,true);
        if(!erfolgreich) { cout << "Reparatur Kundenaufträge (Menge)\n";
                            return fehler();} 
       }
 
-#if 0
       {
        std::string q2a="update auftragentry set instanz=3 where "
-                         " (auftragid,zeilennr,instanz) = (0,1,10)";                            
+                         " (auftragid,zeilennr,instanz) = (0,2,10)";                            
        std::string q2b="update auftragsentryzuordnung set neuinstanz=3 where "
                          " (neuauftragid,neuinstanz) = (0,10)";                            
        std::string q2c="update auftragsentryzuordnung set altinstanz=3 where "
                          " (altauftragid,altinstanz) = (0,10)";                            
-cout << q2a<<'\n';
        Query::Execute(q2a);
        SQLerror::test(__FILELINE__);
        Query::Execute(q2b);
@@ -382,11 +378,19 @@ cout << q2a<<'\n';
        Query::Execute(q2c);
        SQLerror::test(__FILELINE__);
 
-       erfolgreich=C.teste(Check::Menge,"_reparatur_kunde",mit_reparatur_programm);
+       erfolgreich=C.teste(Check::Menge,"_reparatur_kunde_instanz",mit_reparatur_programm,true);
        if(!erfolgreich) { cout << "Reparatur Kundenaufträge (Instanz)\n";
                            return fehler();} 
       }
-#endif
+      {
+       std::string q2="update auftragentry set lieferdate='2009-12-31' where "
+                         " (instanz) = (1)";                            
+       Query::Execute(q2);
+       SQLerror::test(__FILELINE__);
+       erfolgreich=C.teste(Check::Menge,"_reparatur_kunde_datum",mit_reparatur_programm,true);
+       if(!erfolgreich) { cout << "Reparatur Kundenaufträge (Datum)\n";
+                           return fehler();} 
+      }
        cout << "Reparatur Kundeaufträge (Artikel, Instanz) erfolgreich\n";
                                
        break;

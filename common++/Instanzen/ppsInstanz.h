@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.20 2002/12/09 11:22:28 thoma Exp $
+// $Id: ppsInstanz.h,v 1.21 2002/12/09 13:13:23 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -168,7 +168,8 @@ public:
 
       void Reparatur_Kundenauftrag_AE(const int uid,const AufEintrag &KundeAE,AufEintrag &KindAE,const ABmt &menge) const;
       void Reparatur_Kundenauftrag_AEB(const int uid,const AufEintrag &KundeAE,const AufEintragBase &KindAE,const ABmt &menge) const;
-      void MengenReparatur(const int uid,const AufEintrag &AE,const AufEintragBase &AEB,const ABmt& zumenge) const;
+      void MengenReparatur(const int uid,const AufEintrag &AE, AufEintrag &AEB,const ABmt& zumenge) const;
+//      void ReparaturDatum(const int uid,const AufEintrag &AE,const AufEintrag &AEK,const ABmt &menge) const ;
 
 
       void analyse(const std::string &s,const AufEintrag &AE,const std::string &x,const std::string &y) const;
