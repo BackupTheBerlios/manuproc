@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.23 2002/12/05 08:45:21 christof Exp $
+# $Id: Makefile.am,v 1.24 2002/12/05 09:46:37 thoma Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -24,7 +24,8 @@ libManuProC_Base_a_SOURCES=Ausgabe_neu.cc Datum.cc IOerror.cc \
 		exception.cc itos.cc \
 		time_t_ostr.cc \
       EntryValueBase.cc Handles.cc \
-      EntryValueIntString.cc EntryValueDatum.cc $(DB_SRCES) Trace.cc \
+      EntryValueIntString.cc \
+      EntryValueDatum.cc $(DB_SRCES) Trace.cc \
       germanstring.cc
 
 EXTRA_DIST=dbconnect.pgcc SQLerror_postgres.pgcc Transaction.pgcc \
@@ -38,7 +39,8 @@ include_HEADERS=Ausgabe_neu.h CacheStatic.h Cache_Pointer.h Datum.h Handles.h \
 	dbconnect.h exception.h fixedpoint.h itos.h \
    safemap.h string0.h mystring.h \
 	c++ostream.h mystream.h FetchIStream.h ctime_assert.h \
-   EntryValueBase.h EntryValueIntString.h  EntryValueEmptyInt.h \
+   EntryValueBase.h EntryValueIntString.h  EntryValueGermanString.h
+   EntryValueEmptyInt.h \
    	EntryValueDatum.h EmptyInt_4TeX.h Long.h Model.h \
    	germanstring.h
 
