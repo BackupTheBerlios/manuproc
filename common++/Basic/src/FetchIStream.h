@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.16 2003/01/15 11:35:24 christof Exp $
+// $Id: FetchIStream.h,v 1.17 2003/01/15 16:42:04 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -149,6 +149,19 @@ public:
 	
         Query &operator>>(FetchIStream &s);
 	template <class T> FetchIStream operator>>(T &x);
+	
+	template <class T>
+	 struct NullIf
+	{	T data;
+		bool null;
+		
+		NullIf(const T &a,const T &b) : data(a), null(a==b) {}
+	};
+	template <class T>
+	 Query &operator<<(const NullIf<T> &n)
+	{  if (n.null) return operator<<(null());
+	   return operator<<(n.data);
+	}
 };
 
 template <class T>
