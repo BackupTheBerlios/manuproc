@@ -26,6 +26,24 @@ void WinFileReq::on_cancel()
 {  delete this;
 }
 
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#  include <sigc++/bind.h>
+// don't ask me why this does not work:
+// #  include <sigc++/compatibility.h>
+// /usr/include/sigc++-2.0/sigc++/object_slot.h: In function `
+//    SigC::Slot0<T_return> SigC::slot(T_obj1&, T_return (T_obj2::*)()) [with 
+//    T_return = void, T_obj1 = WinFileReq_glade, T_obj2 = WinFileReq_glade]':
+// WinFileReq_glade.cc:35:   instantiated from here
+// /usr/include/sigc++-2.0/sigc++/object_slot.h:32: error: cannot convert from 
+//    base `sigc::trackable' to derived type `WinFileReq_glade' via virtual base `
+//    sigc::trackable'
+      
+namespace SigC
+{  template <class T> 
+    Slot0<void> slot(T &t, void (T::*p)()) { return sigc::mem_fun(t,p); }
+}
+#endif
+
 #include "WinFileReq_glade.cc"
 #endif
 
