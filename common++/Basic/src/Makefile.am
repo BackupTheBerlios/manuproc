@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.47 2004/03/12 20:50:12 jacek Exp $
+# $Id: Makefile.am,v 1.48 2004/04/29 14:26:58 christof Exp $
 
 if WINDOWS
 WIN_LDFLAGS=-no-undefined -export-symbols libManuProC_Base@DATABASE_TYPE@.def
@@ -8,7 +8,8 @@ WIN_LDFLAGS=
 DLL_LDADD=
 endif
 
-libManuProC_Base_sqlite.def: libManuProC_Base.def libManuProC_Base_sqlite.defadd
+libManuProC_Base_sqlite.def: libManuProC_Base.def libManuProC_Base_sqlite.defadd \
+		libManuProC_Base_sigc@SIGC_MAJOR@.defadd
 	cat >$@ $^
 libManuProC_Base_res.lo: libManuProC_Base.rc
 	WINDRES=i586-mingw32msvc-windres $(top_srcdir)/build/win32/lt-compile-resource $< $@
