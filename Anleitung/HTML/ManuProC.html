@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>ManuProC.html</title>
-                                               
+                                                     
   <meta http-equiv="content-type"
  content="text/html; charset=ISO-8859-1">
 </head>
@@ -16,28 +16,28 @@ Manufactor Program Collection <br>
   <li><a href="#Voraussetzungen">Voraussetzungen</a></li>
   <li><a href="#Bestandteile_des_Paketes">Bestandteile des Paketes</a></li>
   <li><a href="#Aufsetzen_der_Datenbank">Aufsetzen der Datenbank</a></li>
-                    
+                       
   <ul>
     <li>Firmenspezifische Anpassungen</li>
-              
+                   
     <ul>
       <li><a href="#Preise">Preise</a><br>
       </li>
-              
+                   
     </ul>
-                                  
+                                       
     <ul>
       <li><a href="#Instanzen">Instanzen</a><br>
       </li>
       <li><a href="#Artikel_">Artikel</a><br>
       </li>
-                                  
+                                       
     </ul>
-                    
+                       
   </ul>
   <li><a href="#Kompilieren_und_Installieren">Kompilieren und Installieren</a></li>
   <li><a href="#Anleitung_zur_Benutzung_der_einzelnen">Die Programme im Einzelnen</a></li>
-                       
+                          
   <ul>
     <li><a href="#Kundendaten">Kundendaten</a></li>
     <li><a href="#Artikeleingabe">Artikeleingabe</a><br>
@@ -46,7 +46,7 @@ Manufactor Program Collection <br>
     <li>Lager<br>
     </li>
     <li>pps</li>
-                       
+                          
   </ul>
   <li><a href="#Hilfe_und_Kontakt">Hilfe und Kontakt</a><br>
   </li>
@@ -85,11 +85,11 @@ verarbeitet, das Metall wird in der<b>Schmelze</b> zu <b>Sch&auml;ften</b>
 gegossen. Sowohl die Griffe als auch die Sch&auml;fte wanderen ins <b>Zwischenlager</b>
 bevor sie <br>
 in der <b>Werkstatt</b> zu <b>Schraubenziehern</b> zusammengesetzt werden.
-Die <b>Aufmachung</b> schlie&szlig;lich packt die Schraubenzieher in die Verpackungen
-und liefert diese an die Kunden aus.<br>
+Die <b>Aufmachung</b> schlie&szlig;lich packt die Schraubenzieher in die
+Verpackungen und liefert diese an die Kunden aus.<br>
       </td>
     </tr>
-                       
+                          
   </tbody>
 </table>
 <br>
@@ -106,7 +106,8 @@ Zur Installation und zum Betrieb werden ben&ouml;tigt:<br>
   </li>
 </ul>
 Es wird davon ausgegangen, da&szlig; der Administrator, der das Programmpaket
-installieren will, einige grundlegende Kenntnissen &uuml;ber C++ und SQL beitzt.<br>
+installieren will, einige grundlegende Kenntnissen &uuml;ber C++ und SQL
+beitzt.<br>
 <h2><a name="Bestandteile_des_Paketes"></a>Bestandteile des Paketes</h2>
 Das Programmpaket besteht aus mehreren Programmen, die &uuml;ber die Datenbank
 miteinander Daten austauschen. Im einzelnen sind dies:<br>
@@ -147,7 +148,7 @@ Die Firma Schrauben GmbH mit der Kundennummer <b>1</b> an. <br>
 Der Kunde Dreher AG mit der Kundennummer <b>1000</b>.<br>
       </td>
     </tr>
-                       
+                          
   </tbody>
 </table>
 <br>
@@ -163,7 +164,7 @@ angepa&szlig;t werden.<br>
   <tbody>
     <tr>
       <td valign="top">Die Tabelle <b>prod_instanzen</b> wie folgt aus:<br>
-                    
+                           
       <table cellpadding="2" cellspacing="2" border="1" width="100%">
         <tbody>
           <tr>
@@ -207,7 +208,7 @@ Instanz<br>
             <td valign="top">Die Instanzen werden in dieser Reinfolge sortiert<br>
             </td>
             <td valign="top">Durch diese Spalte ist es m&ouml;glich Instanzen
-auch nachtr&auml;glich noch dazwischen zu schieben.<br>
+auch nachtr&auml;glich noch einzuf&uuml;gen.<br>
             </td>
           </tr>
           <tr>
@@ -216,15 +217,14 @@ auch nachtr&auml;glich noch dazwischen zu schieben.<br>
             <td valign="top">F&uuml;r diese Instanzen kann man Lieferscheine
 schreiben<br>
             </td>
-            <td valign="top">Wird vermutlich meistens f&uuml;r Wareneingang
-und Warenausgang ben&ouml;tigt.<br>
+            <td valign="top">Darf nur 'true' sein, wenn gleichzeitig auch
+            <i>produziert_selbst</i>='true' gesetzt ist.<br>
             </td>
           </tr>
           <tr>
             <td valign="top">lagername<br>
             </td>
-            <td valign="top">Name der Tabelle, die die Informationen &uuml;ber
-das Lager enth&auml;lt.<br>
+            <td valign="top">absolet<br>
             </td>
             <td valign="top"><br>
             </td>
@@ -232,8 +232,9 @@ das Lager enth&auml;lt.<br>
           <tr>
             <td valign="top">produziert_selbst<br>
             </td>
-            <td valign="top">Gibt an, ob diese Instanz selbsst&auml;ndig Informationen
-&uuml;ber Zu- und Abg&auml;nge von Auftr&auml;gen und Waren gibt.<br>
+            <td valign="top">Gibt an, ob diese Instanz selbsst&auml;ndig
+Informationen &uuml;ber Zu- und Abg&auml;nge von Auftr&auml;gen und Waren
+gibt.<br>
             </td>
             <td valign="top"><br>
             </td>
@@ -251,26 +252,39 @@ Abfertigung eines Auftrags ben&ouml;tigt. <br>
             <td valign="top">einlagern_in<br>
             </td>
             <td valign="top">Gibt an in welches Lager etwas eingelagert werden
-soll, wenn f&uuml;r diese Instanz ein Lieferschein geschreiben wird<br>
+soll<br>
             </td>
             <td valign="top"><br>
             </td>
           </tr>
-                          
-        </tbody>                    
+          <tr>
+            <td valign="top">automatisch_einlagern<br>
+            </td>
+            <td valign="top">Ob in dieses Lager automatisch eingelagert sird,
+wenn auf einer dauterliegenden Instanz etwas produziert wurde.<br>
+            </td>
+            <td valign="top">Darf nur f&uuml;r ein Lager dann 'true' sein.<br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">typ<br>
+            </td>
+            <td valign="top">Erlaubt sind 'P'=Produktion und&nbsp; 'L'=Lager<br>
+            </td>
+            <td valign="top"><br>
+            </td>
+          </tr>
+                                   
+        </tbody>                           
       </table>
-      Anmerkungen: <br>
-1. F&uuml;r eine Instanz, die bei der <i>lager_fuer</i> gesetzt ist, darf
-      <i>lieferschein</i> nicht <i>true</i> sein.<br>
-2. F&uuml;r eine Instanz, bei der <i>einlagern_in</i> gesetzt ist mu&szlig;
-      <i>lieferschein</i> true sein.<br>
+      <br>
       <br>
 Die mitgelieferte Tabelle <b>prod_instanz</b> ist f&uuml;r die Firma Schrauben
 GmbH bereits fertig angepa&szlig;t.<br>
       <br>
       </td>
     </tr>
-                       
+                          
   </tbody>
 </table>
 <br>
@@ -282,8 +296,8 @@ ausmacht. Zun&auml;chst einmal ist ein Artikel durch eine Identifikationsnummer,
 die <b>ID</b> eindeutig bestimmt. Aber kaum eine Firma wird seine Artikel
 nur mit einer Nummer bezeichnen, sondern mit einer<b> </b><b>Artikelbezeichnung</b>,
 die aus einer oder mehreren Komponenten bestehen kann. Zus&auml;tzlich k&ouml;nnte
-es auch noch andere Bezeichnungen f&uuml;r denselben Artikel geben, etwa eine
-Abk&uuml;rzung oder einen EAN-Code. Au&szlig;erdem kann mehrere verschiedene
+es auch noch andere Bezeichnungen f&uuml;r denselben Artikel geben, etwa
+eine Abk&uuml;rzung oder einen EAN-Code. Au&szlig;erdem kann mehrere verschiedene
 <b>Warengruppen</b> geben, die jeweils andere <b>Bezeichnungsschema</b> haben.
 Um sie Sache noch komplizierter zu machen, kann es sein, da&szlig; Kunden
 und/oder Lieferanten andere Bezeichnungen f&uuml;r identische Artikel verwenden.
@@ -305,7 +319,7 @@ aufeinanderfolgend).&nbsp;<b> </b>Anschlie&szlig;end mu&szlig; die Tabelle
       <b>extbezschema</b> gef&uuml;llt werden: <br>
       <br>
       <br>
-                                                
+                                                       
       <table cellpadding="2" cellspacing="2" border="1" width="100%">
         <tbody>
           <tr>
@@ -396,9 +410,9 @@ setzen, und nur die jeweils letzte Komponente auf die komplette Tabellenbreite
 auszudehnen (X).<br>
             </td>
           </tr>
-                                                                         
-       
-        </tbody>                                                
+                                                                        
+                
+        </tbody>                                                       
       </table>
  <br>
  Die mitgelieferte Tabelle <b>extbezschema</b> ist f&uuml;r die Firma Schrauben
@@ -407,9 +421,9 @@ GmbH bereits fertig angepa&szlig;t. <br>
       <br>
 Alle Artikel der Firma Schrauben GmbH sind in der Tabelle <b>artikelstamm</b>
 enthalten. Anders ausgedr&uuml;ckt: Ein Artikel, der hier nicht verzeichnet
-ist, den gibt es in der Firma auch nicht. Da ein Artikel immer auch eine
-Einheit haben kann empfihlt es sich, diese zun&auml;chst festzulegen.<br>
-                           
+ist, den gibt es in der Firma auch nicht. Da ein Artikel immer auch eine Einheit
+haben kann empfihlt es sich, diese zun&auml;chst festzulegen.<br>
+                                  
       <table cellpadding="2" cellspacing="2" border="1" width="100%">
         <tbody>
           <tr>
@@ -453,8 +467,7 @@ auch keine)<br>
           <tr>
             <td valign="top">bez_anzahl<br>
             </td>
-            <td valign="top">Diese Bezeichnung wird f&uuml;r die Einheit
-verwendet<br>
+            <td valign="top">Diese Bezeichnung wird f&uuml;r die Einheit verwendet<br>
             </td>
             <td valign="top"><br>
             </td>
@@ -475,8 +488,8 @@ verwendet<br>
             <td valign="top"><br>
             </td>
           </tr>
-                                   
-        </tbody>                           
+                                            
+        </tbody>                                  
       </table>
       <br>
       <br>
@@ -484,7 +497,7 @@ Die Tabellen <b>artikelstamm</b> wird hier nur kurz erl&auml;utert, sie wird
 genauso wie die Tabellen <b>artbez_x_y</b> mithilfe des Programmes <b>Artikeleingabe</b>
 gef&uuml;llt und verwaltet. Eine Anpassung mu&szlig; nicht vorgenommen werden.<br>
       <br>
-                           
+                                  
       <table cellpadding="2" cellspacing="2" border="1" width="100%">
         <tbody>
           <tr>
@@ -563,20 +576,20 @@ Warengruppe definiert werden.<br>
           <tr>
             <td valign="top">uid<br>
             </td>
-            <td valign="top">User ID der Person, die den Artikel zuletzt
-ge&auml;ndert oder modifiziert hat.<br>
+            <td valign="top">User ID der Person, die den Artikel zuletzt ge&auml;ndert
+oder modifiziert hat.<br>
             </td>
             <td valign="top"><br>
             </td>
           </tr>
-                                   
-        </tbody>                           
+                                            
+        </tbody>                                  
       </table>
       <br>
       <br>
 F&uuml;r jede Kombination von Warengruppen <i>x</i> und Kundenbezeichnungsschema
-      <i>y</i> mu&szlig; eine Tabelle <i>artbez_x_y</i> angelegt werden.
-    <br>
+      <i>y</i> mu&szlig; eine Tabelle <i>artbez_x_y</i> angelegt werden. 
+   <br>
 Das bedeutet, die Firma Schrauben GmbH ben&ouml;tigt die Tabellen <b>artbez_[1|2|3|4|5|6]_1</b>
 und <b>artbez_[4|6]_1000</b>. Jede dieser Tabellen besteht aus den in der
 Tabelle <b>extbezschema</b> angegebenen Spalten plus einer Spalte <i>stand</i>,
@@ -587,18 +600,50 @@ f&uuml;r diese Tabelle einen <b>VIEW</b> auf <b>artbez_4_1</b> zu verweden.<br>
       <br>
       </td>
     </tr>
-                       
+                          
   </tbody>
 </table>
 <br>
 Wenn ein Artikel angelegt wird, dann wird er in die Tabellen <b>artikelstamm</b>
 und <b>artbez_x_y</b> eingetragen. Will man zu einer Artikel<b>-ID</b> (nur
-diese wird in Auftr&auml;gen, Lieferscheinen und Rechnungen gespeichert) die
-Artikel-<b>Bezeichnung</b> erhalten, so wird zun&auml;chst in der Tabelle
+diese wird in Auftr&auml;gen, Lieferscheinen und Rechnungen gespeichert)
+die Artikel-<b>Bezeichnung</b> erhalten, so wird zun&auml;chst in der Tabelle
 artikelstamm nachgeschaut um was f&uuml;r eine Art Artikel es sich handelt
 und in welcher artbez_x_y Tabelle er abgelegt ist, bevor aus der entsprechenden
-artbez_x_y Tabelle die Korrekte Bezeichnung f&uuml;r diesen Artikel und Kunden
+artbez_x_y Tabelle die korrekte Bezeichnung f&uuml;r diesen Artikel und Kunden
 geholt wird.<br>
+Je nachdem, welche Instanz in <i>bestellen_bei</i> eingetragen ist, ist es
+m&ouml;glich <b>ein Lager f&uuml;r mehrere Produktionsinstanzen</b> oder
+<b>mehrere Lager f&uuml;r eine Produktionsinstanz</b> zu verwenden:<br>
+<table cellpadding="1" cellspacing="0" border="2" width="100%">
+  <tbody>
+    <tr>
+      <td valign="top">In <i>bestellen_bei</i> ist die Produktionsinstanz
+eingetragen: <br>
+Der Artikel, in Instanz 1 ben&ouml;tigt zur Herstellung einen Artikel aus
+Instanz 3, der Artikel in Instanz 2 ben&ouml;tigt zur Herstellung einen Artikel
+aus Instanz 4. F&uuml;r die Instanzen 3 und 4 ist <i>einlagern_in</i> das
+Lager 1<br>
+      </td>
+      <td valign="top">In <i>bestellen_bei</i> ist eine Lagerinstanz eingetragen:<br>
+Die Artikel in den Instanzen 1 und 2 ben&ouml;tige zur Herstellung einen
+Artikel aus Lager 1, die Artikel in den Instanzen 3 und 4 ben&ouml;tigen
+zur Herstellung einen Artikel aus Lager 2. &nbsp;Beide Lager sind <i>lager_fuer</i>
+Instanz 5.<br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top"><img src="Lager_V2.png" alt="" width="230"
+ height="278"><br>
+      </td>
+      <td valign="top"><img
+ src="file:///home/thoma/ManuProC/Anleitung/HTML/Lager_V1.png" alt=""
+ width="480" height="278"></td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
 <br>
 <h4><a name="Preise"></a>Preise</h4>
 Jedem Kunden wird eine Preisliste zugeordnet. Dies geschieht mithilfe der
@@ -608,7 +653,7 @@ Tabelle <b>ku_preisliste</b>.<br>
  bgcolor="#ffff00">
   <tbody>
     <tr>
-      <td valign="top">                           
+      <td valign="top">                                  
       <table cellpadding="2" cellspacing="2" border="1" width="100%">
         <tbody>
           <tr>
@@ -652,8 +697,8 @@ Tabelle <b>ku_preisliste</b>.<br>
             <td valign="top"><br>
             </td>
           </tr>
-                                    
-        </tbody>                           
+                                             
+        </tbody>                                  
       </table>
       <br>
 Die mitgelieferte Tabelle <b>prod_instanz</b> ist f&uuml;r die Firma Schrauben
@@ -661,7 +706,7 @@ GmbH bereits fertig angepa&szlig;t.<br>
       <br>
       </td>
     </tr>
-                       
+                          
   </tbody>
 </table>
 <br>
@@ -689,7 +734,7 @@ Im Verzeichnis <b>commom++/DynamicEnums/DefaultValues.h</b>
   <tbody>
     <tr>
       <td valign="top" bgcolor="#ffff00"><br>
-                    
+                           
       <table cellpadding="2" cellspacing="2" border="1" width="100%">
         <tbody>
           <tr>
@@ -732,14 +777,14 @@ recreate</b> ein und kompiliert das komplette Verzeichnis noch einmal.<br>
             <td valign="top">KundenInstanz<br>
             </td>
           </tr>
-                          
-        </tbody>                    
+                                   
+        </tbody>                           
       </table>
       <br>
       <br>
       </td>
     </tr>
-        
+           
   </tbody>
 </table>
 <br>
@@ -776,8 +821,7 @@ um die ausf&uuml;hrbaren Programme zu bauen mu&szlig; in den jeweiligen Unterver
 <font color="#ff6666">make </font>ausgef&uuml;hrt werden.<br>
 </font></font></font></font></font></font><br>
 <br>
-<h2><a name="Anleitung_zur_Benutzung_der_einzelnen"></a>Die Programme im
-Einzelnen</h2>
+<h2><a name="Anleitung_zur_Benutzung_der_einzelnen"></a>Die Programme im Einzelnen</h2>
 <h4><a name="Kundendaten"></a>Kundendaten</h4>
 In diesem Programm werden die Daten von Firmen und Personen verwaltet. Die
 Oberfl&auml;che gliedert sich dabei in vier Teile: <br>
@@ -810,10 +854,10 @@ dar. &Uuml;ber die rechte Maustaste ist ein Kontestmen&uuml; f&uuml;r die
 ArtikelBox erh&auml;ltlich, &uuml;ber das die wichtigesten Parameter steuerbar
 sind. <b>Neu</b>e Artikel lassen sich verh&auml;ltnism&auml;&szlig;ig schnell
 eingeben, nachdem man den gleichnamigen Knopf gedr&uuml;ckt hat. M&ouml;chte
-man die Bezeichnung eines bereits existierenden Artikels &auml;ndern, so ist
-dies &uuml;ber <b>Editieren</b> m&ouml;glich. Au&szlig;erdem kann man den
-gleichen Artikel f&uuml;r einen anderen Kunden mit einem anderen Namen versehen
-(vorausgesetzt f&uuml;r diesen Kunden existiert ein Schema in Tabelle<i>extbezschema
+man die Bezeichnung eines bereits existierenden Artikels &auml;ndern, so
+ist dies &uuml;ber <b>Editieren</b> m&ouml;glich. Au&szlig;erdem kann man
+den gleichen Artikel f&uuml;r einen anderen Kunden mit einem anderen Namen
+versehen (vorausgesetzt f&uuml;r diesen Kunden existiert ein Schema in Tabelle<i>extbezschema
 </i>und die dazu geh&ouml;rende Tabelle <i>artbez_artikeltyp_kundenschema</i>.<br>
 Der unteren Bereich des Programms Artikeleingabe dient dazu Verkn&uuml;pfungen
 zwischen Artikeln herzustellen. &nbsp;Zun&auml;chst mu&szlig; die Zeile mit
@@ -846,9 +890,10 @@ Entwickelt und gepflegt wird das Programmpaket von<br>
       <td valign="top"><a href="mailto:thoma@uni-muenster.de">thoma@uni-muenster.de</a><br>
       </td>
     </tr>
-                       
+                          
   </tbody>
 </table>
+<br>
 <br>
 <br>
 <br>
