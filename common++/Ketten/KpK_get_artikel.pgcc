@@ -1,4 +1,4 @@
-// $Id: KpK_get_artikel.pgcc,v 1.14 2003/10/02 07:40:30 christof Exp $
+// $Id: KpK_get_artikel.pgcc,v 1.15 2003/10/17 12:32:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -50,7 +50,7 @@ const std::vector <ArtikelGang> &KettplanKette::get_artikel_sorted() const
      artikel.push_back(ArtikelGang(GAENGE[i],ArtikelBase(ID[i]))); // ,true,Kettlaenge()));
    }
    valid|=VA_ARTIKEL;
-   get_kombiartikel();
+//   get_kombiartikel();
    return artikel;
 }
 

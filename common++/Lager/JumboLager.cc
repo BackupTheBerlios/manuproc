@@ -1,4 +1,4 @@
-// $Id: JumboLager.cc,v 1.9 2003/09/02 12:10:52 christof Exp $
+// $Id: JumboLager.cc,v 1.10 2003/10/17 12:32:39 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -53,25 +53,9 @@ void JumboLager::Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jum
    { STATUS=JumboRolle::Verarbeitet;
      LAGERPLATZ=0;
    }
+   
+  if (jumbo.Archiviert()) jumbo.ausArchivHolen();
 
-  Query("select true from rohjumbo where code=?") << CODE >> DUMMY;
-  SQLerror::test(__FILELINE__,100);
-  if (Query::Code()==100)
-   {
-     Query("insert into rohjumbo "
-            "(code,maschine,webmaschine,soll_meter,plan_datum,verarb_datum,"
-            "status,lauf,gang,barcoist,barcofert_datum,wiederinslager,"
-            "artikelid) "
-      "select code,maschine,webmaschine,soll_meter,plan_datum,verarb_datum,"
-            "status,lauf,gang,barcoist,barcofert_datum,wiederinslager,"
-            "artikelid "
-            "from rohjumbo_archiv where code=?") << CODE;
-     SQLerror::test("JumboRolle::buchen archiv-kopie",100);
-     if (Query::Code()==100)
-         throw SQLerror("JumboRolle::buchen",100,"Rolle nicht im Archiv");
-     Query("delete from rohjumbo_archiv where code=?") << CODE;
-     SQLerror::test("JumboRolle::buchen archiv-löschen");
-   }
   Query("update rohjumbo "
        "set wiederinslager=?,rest=?,status=?,lagerplatz=? where code=?")
 	<< *zeit << REST << STATUS 
@@ -110,6 +94,8 @@ void JumboLager::Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,
   {  Query("select now()") >> zeit_local_storage;
      zeit=&zeit_local_storage;
   }
+
+  if (jumbo.Archiviert()) jumbo.ausArchivHolen();
 
   if (jumbo.InsLagerDatum().valid() && *zeit<jumbo.InsLagerDatum()) 
      STATUS=JumboRolle::ImLager;

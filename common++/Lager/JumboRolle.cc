@@ -1,4 +1,4 @@
-// $Id: JumboRolle.cc,v 1.3 2002/07/05 12:35:01 christof Exp $
+// $Id: JumboRolle.cc,v 1.4 2003/10/17 12:32:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -84,8 +84,24 @@ std::string JumboRolle::MeterStr() const
 int JumboRolle::Meter() const 
 {
  if(barcoist) return barcoist;
- else return sollmeter;
- abort();
+ return sollmeter;
 }
 
 
+void JumboRolle::ausArchivHolen()
+{  if (!im_archiv) return;
+   Query("insert into rohjumbo "
+            "(code,maschine,webmaschine,soll_meter,plan_datum,verarb_datum,"
+            "status,lauf,gang,barcoist,barcofert_datum,wiederinslager,"
+            "artikelid) "
+      "select code,maschine,webmaschine,soll_meter,plan_datum,verarb_datum,"
+            "status,lauf,gang,barcoist,barcofert_datum,wiederinslager,"
+            "artikelid "
+            "from rohjumbo_archiv where code=?") << code;
+   if (Query::Code()==100)
+         throw SQLerror("JumboRolle::ausArchivHolen",100,"Rolle nicht im Archiv");
+   SQLerror::test("JumboRolle::ausArchivHolen");
+   Query("delete from rohjumbo_archiv where code=?") << code;
+   SQLerror::test("JumboRolle::buchen archiv-löschen");
+   im_archiv=false;
+}

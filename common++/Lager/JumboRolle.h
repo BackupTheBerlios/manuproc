@@ -1,4 +1,4 @@
-/* $Id: JumboRolle.h,v 1.11 2003/01/08 09:46:57 christof Exp $ */
+/* $Id: JumboRolle.h,v 1.12 2003/10/17 12:32:39 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: JumboRolle.h,v 1.11 2003/01/08 09:46:57 christof Exp $
+// $Id: JumboRolle.h,v 1.12 2003/10/17 12:32:39 christof Exp $
 
 #ifndef _JUMBOROLLE_HH
 #  define _JUMBOROLLE_HH
@@ -73,13 +73,15 @@ private:
  Zeitpunkt_new wiederinslager;
  bool rest;
  LagerPlatz lagerposition;
+ bool im_archiv;
+
+ JumboRolle(ID _code,int _maschine,const ManuProC::Datum &datum,int _webmaschine,
+                 int soll_meter,int _status,int _lauf,int _gang,
+                 ArtikelBase::ID artikelid) throw();
  
 public:
  JumboRolle();
  JumboRolle(ID code) throw(SQLerror,CodeError);
- JumboRolle(ID _code,int _maschine,const ManuProC::Datum &datum,int _webmaschine,
-                 int soll_meter,int _status,int _lauf,int _gang,
-                 ArtikelBase::ID artikelid) throw();
  static std::vector<JumboRolle> create(const KettplanKette &k, bool rest=false);
  
  const std::vector<int> lagerPositionen() throw(SQLerror) { return lagerPositionen(artikel); }
@@ -109,6 +111,9 @@ public:
 
  static bool isRollNrOK(ID code);
  static int Pruefziffer_anhaengen(int nummer);
+ 
+ void ausArchivHolen();
+ bool Archiviert() const { return im_archiv; }
 };
 
 //#endif

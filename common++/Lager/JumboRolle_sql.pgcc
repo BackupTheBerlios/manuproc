@@ -28,7 +28,7 @@ exec sql include sqlca;
 #if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
 
 JumboRolle::JumboRolle(ID c) throw(SQLerror,CodeError)
- : code(c)
+ : code(c), im_archiv()
 {
  if(!isRollNrOK(c)) throw CodeError(c,"JumboRolle::JumboRolle");
 
@@ -38,21 +38,23 @@ JumboRolle::JumboRolle(ID c) throw(SQLerror,CodeError)
  int MASCHINE,WEBMASCHINE,SOLL_METER;
  int STATUS,LAUF,GANG,BARCOIST;
  char PLANDATUM[11];
- int LAGERPLATZ;
+ int LAGERPLATZ=0;
  char VERARB_DATUM[32];
  char BARCOFERT_DATUM[32];
  char WIEDERINSLAGER[32];
-/* bool REST; */
+ bool REST=false;
  exec sql end declare section;
 
  exec sql select coalesce(artikelid,0),maschine,coalesce(webmaschine,0)
       ,coalesce(soll_meter,0),
  		plan_datum,coalesce(text(verarb_datum),''),status,lauf,gang,
  		coalesce(barcoist,0),coalesce(text(barcofert_datum),''),
-      coalesce(text(wiederinslager),''),coalesce(lagerplatz,0)
+      coalesce(text(wiederinslager),''),coalesce(lagerplatz,0),
+      coalesce(rest,false)
  	into :ARTIKELID, :MASCHINE,:WEBMASCHINE,
  	:SOLL_METER,:PLANDATUM,	:VERARB_DATUM,:STATUS,
- 	:LAUF,:GANG,:BARCOIST,:BARCOFERT_DATUM,:WIEDERINSLAGER,:LAGERPLATZ
+ 	:LAUF,:GANG,:BARCOIST,:BARCOFERT_DATUM,:WIEDERINSLAGER,:LAGERPLATZ,
+ 	:REST
  	from rohjumbo where code= :CODE;
  if(sqlca.sqlcode==100) 
  {  exec sql select coalesce(artikelid,0),maschine,coalesce(webmaschine,0),
@@ -64,6 +66,7 @@ JumboRolle::JumboRolle(ID c) throw(SQLerror,CodeError)
  	:SOLL_METER,:PLANDATUM,:VERARB_DATUM,:STATUS,
  	:LAUF,:GANG,:BARCOIST,:BARCOFERT_DATUM,:WIEDERINSLAGER
  	from rohjumbo_archiv where code= :CODE;
+    im_archiv=true;
  }
  SQLerror::test("DB-error: JumboRolle: fetch from rohjumbo");	
  
@@ -80,6 +83,7 @@ JumboRolle::JumboRolle(ID c) throw(SQLerror,CodeError)
  barcofertdatum= !*BARCOFERT_DATUM ? Zeitpunkt_new() : Zeitpunkt_new(BARCOFERT_DATUM);
  wiederinslager= !*WIEDERINSLAGER ? Zeitpunkt_new() : Zeitpunkt_new(WIEDERINSLAGER);
  lagerposition=LagerPlatz(ppsInstanzID::Bandlager,LAGERPLATZ);
+ rest=REST;
 }
 
 JumboRolle::JumboRolle(ID _code,int _maschine,const ManuProC::Datum &datum,int _webmaschine,
@@ -88,13 +92,15 @@ JumboRolle::JumboRolle(ID _code,int _maschine,const ManuProC::Datum &datum,int _
    : code(_code), artikel(artikelid), maschine(_maschine), plandatum(datum),
    	webmaschine(_webmaschine), sollmeter(soll_meter), 
    	status(Jumbo_Status(_status)), lauf(_lauf), gang(_gang),
-   	barcoist(0), rest(false), lagerposition(ppsInstanzID::Bandlager,0)
+   	barcoist(), rest(), lagerposition(ppsInstanzID::Bandlager,0),
+   	im_archiv()
 {}
 
 JumboRolle::JumboRolle()
-   : code(0), maschine(0), webmaschine(0), sollmeter(0), 
-   	status(Gedruckt), lauf(0), gang(0),
-   	barcoist(0), rest(false), lagerposition(ppsInstanzID::Bandlager,0)
+   : code(), maschine(), webmaschine(), sollmeter(), 
+   	status(Gedruckt), lauf(), gang(),
+   	barcoist(), rest(), lagerposition(ppsInstanzID::Bandlager,0),
+   	im_archiv()
 {}
 
 #include <Ketten/KettplanKette.h>

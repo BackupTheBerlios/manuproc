@@ -1,4 +1,4 @@
-// $Id: KettplanKette.h,v 1.14 2003/10/02 07:40:30 christof Exp $
+// $Id: KettplanKette.h,v 1.15 2003/10/17 12:32:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -106,7 +106,7 @@ public:
 	{  return get_artikel_sorted(); }
 	const std::vector <ArtikelGang> &get_artikel_sorted() const;
  private:
-   const std::vector <ArtikelGang_Malte>& get_kombiartikel() const;
+//   const std::vector <ArtikelGang_Malte>& get_kombiartikel() const;
  public:
 
 
