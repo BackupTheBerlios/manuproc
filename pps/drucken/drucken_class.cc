@@ -851,10 +851,12 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 	    Preis::geldbetrag_out preis;
 	    if(Rueckstand())
 //            	preis = BruttoPreis.Gesamtpreis(getWaehrung(),rest.as_int(),menge,rabatt);
-            	preis = NettoPreis.Gesamtpreis(getWaehrung(),rest.as_int(),menge);
+            	preis = NettoPreis.Gesamtpreis(getWaehrung(),
+				rest.as_int(),menge);
 	    else
 //            	preis = BruttoPreis.Gesamtpreis(getWaehrung(),stueck,menge,rabatt);
-            	preis = NettoPreis.Gesamtpreis(getWaehrung(),stueck,menge);
+            	preis = NettoPreis.Gesamtpreis(getWaehrung(),
+				stueck,menge);
 
             betrag+=preis;
             tabellenbetrag+=preis;

@@ -1,4 +1,4 @@
-// $Id: Preis.cc,v 1.21 2003/11/18 16:50:56 jacek Exp $
+// $Id: Preis.cc,v 1.22 2003/11/19 09:03:07 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -107,9 +107,10 @@ Preis::geldbetrag_t Preis::Gesamtpreis(const cP_Waehrung w,int anzahl,preismenge
 }
 
 // braucht man diese Routine wirklich? ich würde den anderen Gesamtpreis empfehlen CP
-const Preis Preis::Gesamtpreis(int anzahl,float menge,const rabatt_t &rabatt) const
-{  return Preis(Gesamtpreis(waehrung,anzahl,menge,rabatt),waehrung,1);
-}
+// jetzt nicht mehr
+//const Preis Preis::Gesamtpreis(int anzahl,float menge,const rabatt_t &rabatt) const
+//{  return Preis(Gesamtpreis(waehrung,anzahl,menge,rabatt),waehrung,1);
+//}
 
 
 const Preis operator*(fixedpoint<5> f, const Preis &p)
