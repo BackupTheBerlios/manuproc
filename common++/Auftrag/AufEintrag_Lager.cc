@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.2 2003/07/22 11:54:50 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.3 2003/07/23 09:07:36 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -246,7 +246,12 @@ void AufEintrag::WiederEinlagern(const int uid,cH_ppsInstanz instanz,const Artik
       ae.MengeAendern(uid,M,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
      // Menge wird direkt neu verplant (evtl. wieder abbestellt)
      i->MengeAendern(uid,-M,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
-     assert(i->getCombinedStatus()==CLOSED);
+//     assert(i->getCombinedStatus()==CLOSED);
+     if (i->getCombinedStatus()!=CLOSED)
+     {  std::cerr << "merkwürdig ... " << *i << ':' << i->getCombinedStatus() << ','
+     		<< i->getRestStk() << '\n';
+        i->setStatus(CLOSED,uid);
+     }
      menge-=M;
      if(!menge) break;
   }
