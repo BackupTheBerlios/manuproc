@@ -295,8 +295,12 @@ try{
 
   // Preise
   RechnungEntry RE=dt->get_RechnungEntry();
-  Artikelpreis::UnCache(cH_Kunde(lieferkunde->get_value())->preisliste(),RE.Artikel());
-  label_artikelpreis->set_text(Formatiere(Artikelpreis(cH_Kunde(lieferkunde->get_value())->preisliste(),RE.Artikel(),RE.Stueck()).Wert()));
+
+  cH_Kunde liefknd(lieferkunde->get_value());
+  cH_Kunde rngkd(liefknd->Rngan());
+
+  Artikelpreis::UnCache(rngkd->preisliste(),RE.Artikel());
+  label_artikelpreis->set_text(Formatiere(Artikelpreis(rngkd->preisliste(),RE.Artikel(),RE.Stueck()).Wert()));
   spinbutton_preiseingabe->set_value(RE.getPreis().Wert().as_float());
   table_preisvergleich->show_all();
   try{
@@ -375,12 +379,15 @@ void auftrag_rechnung::on_unselectrow_rtree_offen(int row, int col, GdkEvent* b)
 
 void auftrag_rechnung::Preis_setzen()
 {  
+  cH_Kunde liefknd(lieferkunde->get_value());
+  cH_Kunde rngkd(liefknd->Rngan());
+
  try{
   const Data_Rechnung *dt=dynamic_cast<const Data_Rechnung*>(&*(rtree_daten->getSelectedRowDataBase()));
   RechnungEntry RE=dt->get_RechnungEntry();
   if(radiobutton_artikelpreis->get_active())
    {
-     RE.setzePreis(Artikelpreis(cH_Kunde(lieferkunde->get_value())->preisliste(),RE.Artikel(),RE.Stueck()));
+     RE.setzePreis(Artikelpreis(rngkd->preisliste(),RE.Artikel(),RE.Stueck()));
    }
   else if(radiobutton_auftragspreis->get_active())
    {
@@ -397,12 +404,15 @@ void auftrag_rechnung::Preis_setzen()
 }
 
 void auftrag_rechnung::Preis_ergaenzen()
-{  
+{
+  cH_Kunde liefknd(lieferkunde->get_value());
+  cH_Kunde rngkd(liefknd->Rngan());  
+
    if(!rechnung.Valid()) return;
    RechnungVoll rg=rechnung.Id();
    for (RechnungVoll::iterator i=rg.begin();i!=rg.end();++i)
    {  if (!(i->getPreis()))
-      {  Artikelpreis p(cH_Kunde(lieferkunde->get_value())->preisliste(),i->ArtikelID(),i->Stueck());
+      {  Artikelpreis p(rngkd->preisliste(),i->ArtikelID(),i->Stueck());
          if (!(!p))
          {  i->setzePreis(p.In(rg.getWaehrung()));
          }

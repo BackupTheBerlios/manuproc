@@ -95,10 +95,11 @@ void auftrag_bearbeiten::onSelArtikel()
  try {
     WPreis->reset();
 #ifdef MABELLA_EXTENSIONS
-
+    cH_Kunde kndrng(kunde->Rngan());
+ 
     if(preisautomatik->get_active())
       {
-         Artikelpreis AP(kunde,artikelbox->get_value(),1);
+         Artikelpreis AP(kndrng,artikelbox->get_value(),1);
          if (AP.Gefunden())
             {artikel_preisliste=cH_PreisListe(AP.GefundenIn());
              preislisten->set_value(artikel_preisliste->Id());
@@ -290,8 +291,6 @@ void auftrag_bearbeiten::on_aufentry_abbruch_clicked()
 {   
  clearEntry();
  artikelbox->grab_focus();
-// preislisten->set_value(kunde->preisliste());
-// artikel_preisliste_geaendert=false;
 }
 
 void auftrag_bearbeiten::on_aufentry_ok_clicked()
@@ -505,6 +504,7 @@ void auftrag_bearbeiten::Rabatt_setzen(const cH_PreisListe &liste)
 void auftrag_bearbeiten::andererKunde()
 {  
    kunde = kundenbox->get_value();
+   cH_Kunde rngkd(kunde->Rngan());
  
    aufnr_scombo->reset();
    youraufnr_scombo->reset();
@@ -513,33 +513,34 @@ void auftrag_bearbeiten::andererKunde()
 #ifdef MABELLA_EXTENSIONS
    std::string eins_prlist(" and exists (select prlsnr from ku_warenkorb"
    	" where prlsnr=ku_preisliste.prlsnr and kundennr=");
-   eins_prlist+=itos(kunde->Id())+")";
+   eins_prlist+=itos(kunde->Rngan())+")";
    preislisten->Einschraenkung(eins_prlist);
-   preislisten->set_value(kunde->preisliste());
-   Rabatt_setzen(cH_PreisListe(kunde->preisliste()));
-#endif
+   preislisten->set_value(rngkd->preisliste());
+   Rabatt_setzen(cH_PreisListe(rngkd->preisliste()));
+
+   artikelbox->setExtBezSchemaID(rngkd->getSchemaId());
+
+    bea_WWaehrung->set_History(rngkd->getWaehrung()->get_enum());
+    WPreis->set_Waehrung(rngkd->getWaehrung()->get_enum() );
+#else
    artikelbox->setExtBezSchemaID(kunde->getSchemaId());
 
     bea_WWaehrung->set_History(kunde->getWaehrung()->get_enum());
     WPreis->set_Waehrung(kunde->getWaehrung()->get_enum() );
+#endif
 
     preisautomatik->set_active(kunde->Preisautomatik());
     
 #ifdef MABELLA_EXTENSIONS
    if(preisautomatik->get_active())
-     artikelbox->AlleWarenkorb(kunde->Id());
+     artikelbox->AlleWarenkorb(kunde->Rngan());
    else
-     artikelbox->EinWarenkorb(kunde->preisliste());   
+     artikelbox->EinWarenkorb(rngkd->preisliste());   
    artikelbox->Einschraenken_b(true);
    checkbutton_ean_drucken->set_active(kunde->showEAN());
 #endif
 
-   if(!kunde->isRechnungsadresse())
-     {cH_Kunde krng(kunde->Rngan());
-      zahlart->set_value(krng->zahlungsart()->Id());
-     }
-   else
-      zahlart->set_value(kunde->zahlungsart()->Id());
+   zahlart->set_value(rngkd->zahlungsart()->Id());
 }
 
 void auftrag_bearbeiten::preisliste_reset()
