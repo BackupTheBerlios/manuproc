@@ -1,27 +1,30 @@
 ===== reading simple file =====
-"" @0x7fffd1b0 P0
-  "?xml" @0x10012f28 P0x7fffd1b0
+"" @* P0
+  "?xml" @* P*
   .version="1.0"
-  "test" @0x10012f4c P0x7fffd1b0
-    "test" @0x10012bb8 P0x10012f4c
+  "test" @* P*
+    "test" @* P*
     .A="a"
 <?xml version="1.0" encoding="UTF-8"?><test><test A="a"/></test>
 ===== iso 8859-1 =====
-"" @0x7fffd1b0 P0
-  "?xml" @0x10012f28 P0x7fffd1b0
+"" @* P0
+  "?xml" @* P*
   .version="1.0"
   .encoding="ISO-8859-1"
-  "test" @0x10012f4c P0x7fffd1b0
-    "sÃ¼b"="Ã¨Ã¯" P0x10012f4c
+  "test" @* P*
+    "sÃ¼b"="Ã¨Ã¯" P*
     .Ã„Ã–ÃœÃ¤Ã¶Ã¼ÃŸ="Ã\x84Ã\x96Ã\x9CÃ¤Ã¶Ã¼Ã\x9FÂ°uÃ©"
-      "Ã¤" @0x10012f70 P0x10012bb8
-      ""="Â¥" P0x10012bb8
-<?xml version="1.0" encoding="ISO-8859-1"?><test><süb ÄÖÜäöüß="ÄÖÜäöüß°ué">èï<ä/>Â¥</süb></test>
+      "Ã¤" @* P*
+      ""="Â¥" P*
+<?xml version="1.0" encoding="ISO-8859-1"?><test><süb ÄÖÜäöüß="ÄÖÜäöüß°ué">èï<ä/>¥</süb></test>
 ===== special chars =====
-"" @0x7fffd1b0 P0
-  "?xml" @0x10012f28 P0x7fffd1b0
+"" @* P0
+  "?xml" @* P*
   .version="1.0"
   .encoding="ISO-8859-1"
-  "test" @0x10012f4c P0x7fffd1b0
-    "sub"="Ã¼Ã\x83Â¤&<>"A" P0x10012f4c
-<?xml version="1.0" encoding="ISO-8859-1"?><test><sub>üÃ¤&amp;&lt;&gt;&quot;A</sub></test>
+  "test" @* P*
+    "sub"="Ã¼Ã\x83Â¤&<>"A" P*
+      "subsub" @* P*
+      .attr="&"
+      ""="&" P*
+<?xml version="1.0" encoding="ISO-8859-1"?><test><sub>üÃ¤&amp;&lt;&gt;&quot;A<subsub attr="&amp;"/>&amp;</sub></test>
