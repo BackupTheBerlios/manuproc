@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.56 2003/07/18 14:48:17 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.57 2003/07/18 15:47:23 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -41,6 +41,7 @@
 #include <Auftrag/AufEintragZu.h>
 #include <Auftrag/auftrag_enums.h>
 #include <Misc/compiler_ports.h>
+#include <Lieferschein/LieferscheinEntryBase.h> // wegen opt. arg. von unbestellteMengeProduzieren
 
 class Lager;
 class VerfuegbareMenge;
@@ -125,7 +126,7 @@ public:
 private:
   // nimmt alle Zuordnungen mit (oben & unten)
   void move_to(int uid,AufEintrag ziel,mengen_t menge,ManuProC::Auftrag::Action reason) throw(std::exception);
- void updateStkDiffInstanz__(int uid,mengen_t menge,const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason) throw(SQLerror);
+ void updateStkDiffInstanz__(int uid,mengen_t menge,ManuProC::Auftrag::Action reason) throw(SQLerror);
  void ArtikelInternAbbestellen(int uid,mengen_t menge,
  	ManuProC::Auftrag::Action reason) const;
  void move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,const ArtikelBase artikel,int uid,ManuProC::Auftrag::Action reason);
@@ -272,7 +273,8 @@ public:
  static AufEintragBase unbestellteMengeProduzieren(cH_ppsInstanz instanz,
  		const ArtikelBase &artikel,
  		mengen_t menge, unsigned uid,bool rekursiv=false,
- 		const AufEintragBase &elter=AufEintragBase());
+ 		const AufEintragBase &elter=AufEintragBase(),
+ 		const ProductionContext2 &ctx=ProductionContext2());
  // aus dem Lager auslagern (abschreiben), ehemals abschreiben_oder_reduzieren
  // wird üblicherweise erst für 1er dann 2er aufgerufen
  // mit ProduziertNG vereinen?

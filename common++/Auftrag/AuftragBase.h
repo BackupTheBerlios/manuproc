@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.52 2003/07/11 10:31:10 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.53 2003/07/18 15:47:23 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -77,20 +77,13 @@ class AuftragBase
    void setStatusAuftragBase(AufStatVal st) const throw(SQLerror);
    void setRabatt(const rabatt_t auftragsrabatt) const throw(SQLerror);
    
-   struct st_BestellmengeAendern{bool automatisch_geplant;bool force_new;bool dispoplanung;
-          explicit st_BestellmengeAendern() : automatisch_geplant(false),force_new(false),dispoplanung(false){}
-          explicit st_BestellmengeAendern(bool a) : automatisch_geplant(a),force_new(false),dispoplanung(false){}
-          explicit st_BestellmengeAendern(bool a,bool b,bool c) 
-            : automatisch_geplant(a),force_new(b),dispoplanung(c){}
-         };
    // gibt Zeilennummer zurück
    int PassendeZeile(const ManuProC::Datum lieferdatum, const ArtikelBase& artikel,
                AufStatVal status, unsigned uid) const throw(SQLerror);
    // gibt Zeilennummer zurück
    int BestellmengeAendern(mengen_t bestellt, 
                const ManuProC::Datum lieferdatum, const ArtikelBase& artikel,
-               AufStatVal status,int uid,const AufEintragBase& altAEB,
-               st_BestellmengeAendern st_bool=st_BestellmengeAendern()) const throw(SQLerror);
+               AufStatVal status,int uid,const AufEintragBase& altAEB) const throw(SQLerror);
 
 	// wandelt enum in std::string um
 	static const std::string getStatusStr(AufStatVal a);

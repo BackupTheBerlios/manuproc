@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.42 2003/07/11 10:31:10 christof Exp $
+// $Id: AuftragBase.cc,v 1.43 2003/07/18 15:47:23 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -125,8 +125,7 @@ int AuftragBase::PassendeZeile(const ManuProC::Datum lieferdatum,const ArtikelBa
 // wird von ArtikelInternNachbestellen, dispo_auftrag_aendern verwendet
 int AuftragBase::BestellmengeAendern(mengen_t deltamenge, 
   const ManuProC::Datum lieferdatum,const ArtikelBase& artikel,
-  AufStatVal status,int uid,const AufEintragBase& altAEB,
-  st_BestellmengeAendern st_bool) const throw(SQLerror)
+  AufStatVal status,int uid,const AufEintragBase& altAEB) const throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Artikel",artikel),
          NV("Menge",deltamenge),NV("AltAEB",altAEB),

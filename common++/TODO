@@ -19,3 +19,8 @@
 	>0	~	ungeplant (evtl. teilgeplant)
 	0	zum 1/3er	geliefert
 	>0	~		vorgemerkt, geplant (evtl. teilgeliefert)
+
+- testen: überliefern, löschen bei !prod_selbst Lager :
+	dadrin, dadrüber, 2 drüber
+
+- uid und reason entfernen
