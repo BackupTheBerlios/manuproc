@@ -5,7 +5,7 @@
 
 #include <glibmm.h>
 
-/* $Id: SearchCombo.hg,v 1.1.1.1 2003/01/06 15:07:33 christof Exp $ */
+/* $Id: SearchCombo.hg,v 1.5 2004/01/29 14:55:52 christof Exp $ */
 
 /* searchcombo.h
  * 
@@ -26,12 +26,8 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-//#include <glibmm/listhandle.h>
-//#include <glibmm/helperlist.h>
 #include <gtkmm/box.h>
 #include <gtksearchcombo.h>
-//#include <gtkmm/entry.h>
-//#include <gtkmm/item.h>
 
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -118,7 +114,10 @@ public:
   static GType get_base_type() G_GNUC_CONST;
 #endif
 
+  ///Provides access to the underlying C GtkObject.
   GtkSearchCombo*       gobj()       { return reinterpret_cast<GtkSearchCombo*>(gobject_); }
+
+  ///Provides access to the underlying C GtkObject.
   const GtkSearchCombo* gobj() const { return reinterpret_cast<GtkSearchCombo*>(gobject_); }
 
 
@@ -216,17 +215,36 @@ public:
   
   void set_start_on_idle(bool val);
     
+  //: please do not use this function in new programs - it's for compatibility
+  Entry* get_entry();
+  const Entry* get_entry() const;
+  
   
   gint get_selected_index() const;
    
     bool empty() const {  return !get_size(); }
     guint size() const {  return get_size(); }
 
-  Glib::PropertyProxy<bool> property_case_sensitive();
+  /**
+ * You rarely need to use properties because there are get_ and set_ methods for almost all of them.
+ * @return A PropertyProxy that allows you to get or set the property of the value, or receive notification when
+ * the value of the property changes. 
+ */
+Glib::PropertyProxy<bool> property_case_sensitive();
 
-  Glib::PropertyProxy<bool> property_allow_empty();
+  /**
+ * You rarely need to use properties because there are get_ and set_ methods for almost all of them.
+ * @return A PropertyProxy that allows you to get or set the property of the value, or receive notification when
+ * the value of the property changes. 
+ */
+Glib::PropertyProxy<bool> property_allow_empty();
    
-  Glib::PropertyProxy<bool> property_value_in_list();
+  /**
+ * You rarely need to use properties because there are get_ and set_ methods for almost all of them.
+ * @return A PropertyProxy that allows you to get or set the property of the value, or receive notification when
+ * the value of the property changes. 
+ */
+Glib::PropertyProxy<bool> property_value_in_list();
  
 
 };
