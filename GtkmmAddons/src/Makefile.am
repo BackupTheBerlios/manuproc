@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.1 2003/01/06 15:07:33 christof Exp $
+# $Id: Makefile.am,v 1.2 2003/01/10 17:12:08 christof Exp $
 
 CLEANFILES = *~
 
@@ -19,12 +19,15 @@ libGtkmmAddons_a_SOURCES = Gtk_OStream_label.cc \
 		 SearchCombo.cc TeX.cc Gtk_OStream.cc \
 		 gtksearchcombo.c Gtk_OStream_TreeView.cc
 
-BUILT_SOURCES=SearchCombo.cc SearchCombo.h gtksearchcombo.c gtksearchcombo.h
+BUILT_SOURCES=SearchCombo.cc SearchCombo.h gtksearchcombo.c gtksearchcombo.h \
+	gtkmm
 
 EXTRA_DIST=SearchCombo.gen_h private/SearchCombo_p.h
 
-SearchCombo.cc SearchCombo.h: SearchCombo.hg SearchCombo.ccg
-	if [ ! -e gtkmm ] ; then ln -s . gtkmm ; fi
+gtkmm:
+	ln -sf . gtkmm
+
+SearchCombo.cc SearchCombo.h: gtkmm SearchCombo.hg SearchCombo.ccg
 	if [ ! -d private ] ; then mkdir private ; fi
 	echo perl -I$(GTKMMTOOLS)/pm $(GTKMMTOOLS)/gtkmmproc -I $(GTKMMTOOLS)/m4 --defs . SearchCombo . .
 
