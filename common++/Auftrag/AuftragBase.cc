@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.50 2004/09/01 15:40:57 christof Exp $
+// $Id: AuftragBase.cc,v 1.51 2004/10/21 11:02:19 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -29,6 +29,7 @@
 #include <Auftrag/AufEintragZu.h>
 #include <Misc/TraceNV.h>
 #include <Lager/Lager.h>
+#include <Misc/Ausgabe_neu.h>
 
 std::string AuftragBase::str() const
 {
@@ -237,4 +238,8 @@ void AuftragBase::setzeAktuellesJahr(int j)
 AuftragBase::mengen_t AuftragBase::Gesamtmenge(int stueck,const mengen_t &menge)
 {  if (!menge) return stueck;
    else return stueck*menge;
+}
+
+std::string AuftragBase::ID2string(ID id)
+{ return Formatiere((unsigned long)id,0,6,"","",'0');
 }

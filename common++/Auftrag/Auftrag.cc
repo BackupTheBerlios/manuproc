@@ -1,4 +1,4 @@
-// $Id: Auftrag.cc,v 1.11 2003/11/07 11:12:50 jacek Exp $
+// $Id: Auftrag.cc,v 1.12 2004/10/21 11:02:19 christof Exp $
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,8 +22,7 @@
 
 
 std::string Auftrag::getAuftragidToStr() const
-{ return Formatiere((unsigned long)auftragid,0,6,"","",'0'); }
-
+{ return ID2string(auftragid); }
 
 
 void Auftrag::setStatusAuftrag_(AufStatVal st) throw(SQLerror)
