@@ -41,9 +41,21 @@ class mpc_agent : public mpc_agent_glade
         void on_orderid_activate();
         void on_orderid_search(gboolean *cont,GtkSCContext context);
 
+        void on_article_entry_search(gboolean *cont,GtkSCContext context);
+        void on_ean_entry_search(gboolean *cont,GtkSCContext context);
+        void on_article_entry_activate();
+        void on_ean_entry_activate();
+        void on_width_entry_search(gboolean *cont,GtkSCContext context);
+        void on_width_entry_activate();
+        void on_color_entry_search(gboolean *cont,GtkSCContext context);
+        void on_color_entry_activate();
+        void on_makeup_entry_search(gboolean *cont,GtkSCContext context);
+        void on_makeup_entry_activate();
+
 	void clear_order();
 	void load_order(int oid);
 	int create_new_order(int kdnr);
+	void artikel_clean();
 
 public:
  mpc_agent();

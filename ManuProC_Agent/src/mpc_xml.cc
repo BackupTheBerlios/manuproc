@@ -13,10 +13,19 @@ void mpc_agent::on_senden_clicked()
 
  TagStream ts;
  ts.setEncoding("ISO-8859-1");
- Tag &data=ts.push_back(Tag("ManuProC-Order"));
- data.setAttr("origin","mpc_agent");
- data.setAttr("orderid",ord_id);
- data.push_back(Tag("test")); 
+ Tag &auftrag=ts.push_back(Tag("ManuProC-Order"));
+ auftrag.setAttr("origin","mpc_agent");
+ auftrag.setAttr("orderid",ord_id);
+ auftrag.setAttr("agent",itos(VERKNR));
+
+ Tag &aufentry=auftrag.push_back(Tag("OrderRow"));
+ aufentry.setAttr("article","12345");
+ aufentry.setAttr("ean","1122334455667");
+ aufentry.setAttr("amount","10");
+ Tag &aufentry2=auftrag.push_back(Tag("OrderRow"));
+ aufentry2.setAttr("article","12345");
+ aufentry2.setAttr("ean","1122334455667");
+ aufentry2.setAttr("amount","10");
 
  std::ofstream of(file.c_str());
  ts.write(of);

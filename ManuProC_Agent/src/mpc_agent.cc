@@ -64,6 +64,9 @@ mpc_agent::mpc_agent()
  orderid->set_always_fill(true);
  orderid->set_start_on_idle(true);
  orderid->set_autoexpand(true);
+ label_orderid_prefix->set_text(itos(VERKNR)+label_orderid_prefix->get_text());
+
+ set_title(get_title()+" - Ag.No.("+itos(VERKNR)+")");
 }
 
 
@@ -242,3 +245,24 @@ void mpc_agent::on_customer_search_clicked()
 
 
 
+
+void mpc_agent::on_article_entry_activate()
+{  
+}
+
+void mpc_agent::on_ean_entry_activate()
+{  
+}
+
+void mpc_agent::on_width_entry_activate()
+{  
+}
+
+
+void mpc_agent::on_color_entry_activate()
+{  
+}
+
+void mpc_agent::on_makeup_entry_activate()
+{  
+}

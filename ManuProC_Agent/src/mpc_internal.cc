@@ -145,10 +145,9 @@ void mpc_agent::on_article_entry_search(gboolean *cont,GtkSCContext context)
 {
  try
    {  
-    std::string squery("select artnr from artikel");
+    std::string squery("select distinct artnr from artikel");
 
-    if(!orderid->get_text().empty())
-      squery=squery+" where 1=? and artnr like '"+article_entry->get_text()+"%'";
+    squery=squery+" where 1=? and artnr like '"+article_entry->get_text()+"%'";
 
     Query qu(squery);
 

@@ -8,6 +8,7 @@
     <callback name="search" args="gboolean *cont,GtkSCContext context"/>
   </class>
  <class name="SearchComboContent&lt;int&gt;" parent="SearchCombo"/>
+ <class name="SearchComboContent&lt;std::string&gt;" parent="SearchCombo"/>
 
  <class name="TreeBase" parent="GtkCList">
     <callback name="leaf_selected" args="cH_RowDataBase leaf"/>
