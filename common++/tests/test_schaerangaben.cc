@@ -1,4 +1,4 @@
-// $Id: test_schaerangaben.cc,v 1.13 2004/07/06 14:29:12 christof Exp $
+// $Id: test_schaerangaben.cc,v 1.14 2004/07/06 14:59:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -57,7 +57,7 @@ void dump(const ArtikelBase &ab, unsigned gaenge, unsigned laenge)
 
 // müssten eigentlich kombiniert werden ...
 void dump(const ArtikelBase &ab, const ArtikelBase &ab2, unsigned gaenge, unsigned laenge)
-#if 0
+#if 1
 {  std::vector<ArtikelGang> vag;
    vag.push_back(ArtikelGang(gaenge,ab));
    vag.push_back(ArtikelGang(gaenge,ab2));
