@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.47 2003/09/18 16:02:34 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.48 2004/03/09 16:26:20 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,7 +21,14 @@
 
 #include <Misc/FetchIStream.h>
 #include <Misc/SQLerror.h>
+
+#ifdef SQLITE
+int sqlite_error;
+int sqlite_lines;
+#else
 exec sql include sqlca;
+#endif
+
 #include <Misc/itos.h>
 #include <locale.h>
 #include <cassert>
@@ -57,7 +64,7 @@ extern "C" {
 extern PGresult **ECPGdescriptor_lvalue(int line, const char *descriptor);
 }
 
-// ecpg intcoming descriptor has to be FetchIStream
+// ecpg incoming descriptor has to be FetchIStream
 
 FetchIStream::FetchIStream(const std::string &descr, int line)
 	: naechstesFeld(0), zeile(line), result(0)
@@ -168,8 +175,24 @@ FetchIStream &FetchIStream::operator>>(bool &b)
 /// QUERY
 
 // note cursor is the name for both the cursor and the descriptor
-void Query::Execute()
-{  exec sql begin declare section;
+void Query::Execute() throw(SQLerror)
+{
+#ifdef SQLITE
+   if(database.empty())
+     throw SQLerror(__FUNCTION__,SQLITE_ERROR,"no SQLite Database specified");
+
+   char *msgbuf=0;
+   sqlite *db=sqlite_open(database.c_str(),0,&msgbuf);
+   if(db==0)
+     throw SQLerror(__FUNCTION__,SQLITE_ERROR,msgbuf);
+   int rc=sqlite_exec(db, query.c_str(), Query::SQLiteCallBack, 0, &msgbuf);   
+   sqlite_error=rc;
+   if(rc!=SQLITE_OK)
+     throw SQLerror(__FUNCTION__,rc,msgbuf);
+ 
+   sqlite_close(db);
+#else
+   exec sql begin declare section;
    char *COMMAND=const_cast<char*>(query.c_str());
    exec sql end declare section;
 
@@ -192,6 +215,8 @@ sqlca.sqlcode=0;
    {  DEBUG_FIS("no lines returned/changed");
    }
    result=*(ECPGdescriptor_lvalue(__LINE__,descriptor.c_str()));
+#endif
+
 }
 
 // copied from ecpg/lib/execute.c
@@ -211,9 +236,15 @@ static const char *next_insert(const char *text)
 
 
 // note cursor is the name for both the cursor and the descriptor
-Query::Query(const std::string &command)
+Query::Query(const std::string &command,const std::string db)
 : descriptor(std::string("Query")+ulltos(reinterpret_cast<unsigned long long>(this))), 
-	eof(true), line(), result(), query(command), num_params()
+	eof(true), line(), 
+#ifdef SQLITE
+	database(db),
+#else
+	result(), 
+#endif
+	query(command), num_params()
 {  const char *p=query.c_str();
    while ((p=next_insert(p))) { ++num_params; ++p; }
    params.setNeededParams(num_params);
@@ -311,6 +342,16 @@ FetchIStream &Query::Fetch()
 void Query::Fetch(FetchIStream &is)
 {  if (!params.complete())
       FetchIStream::mythrow(SQLerror(query,ECPG_TOO_FEW_ARGUMENTS,"to few input parameter"));
+
+#ifdef SQLITE
+   if (!eof)
+   {  if (line<result.size()) 
+      {  is=FetchIStream(result,line++);
+         return;
+      }
+      eof=true;
+   }
+#else
    if (!eof)
    {  if (line<PQntuples(result)) 
       {  is=FetchIStream(result,line++);
@@ -318,7 +359,9 @@ void Query::Fetch(FetchIStream &is)
       }
       eof=true;
    }
-   is=FetchIStream();
+#endif
+
+ is=FetchIStream();
 }
 
 Query::~Query()
@@ -342,12 +385,43 @@ Query::~Query()
    }
 }
 
-void Query::Execute(const std::string &command)
-{  exec sql begin declare section;
+
+#ifdef SQLITE
+int Query::SQLiteCallBack(void *db_struct,int argc, char **argv, char **colname)
+{
+ sqlite_lines=0;
+ for(int i=0; i<argc; i++){
+    printf("%s = %s\n", colname[i], argv[i] ? argv[i] : "NULL");
+    sqlite_lines++;
+  }
+ return 0;
+}
+#endif
+
+
+void Query::Execute(const std::string &command,const std::string database) throw(SQLerror)
+{
+#ifdef SQLITE
+   if(database.empty())
+     throw SQLerror(__FUNCTION__,SQLITE_ERROR,"no SQLite Database specified");
+
+   char *msgbuf=0;
+   sqlite *db=sqlite_open(database.c_str(),0,&msgbuf);
+   if(db==0)
+     throw SQLerror(__FUNCTION__,SQLITE_ERROR,msgbuf);
+   int rc=sqlite_exec(db, command.c_str(), Query::SQLiteCallBack, 0, &msgbuf);   
+   sqlite_error=rc;
+   if(rc!=SQLITE_OK)
+     throw SQLerror(__FUNCTION__,rc,msgbuf);
+ 
+   sqlite_close(db);
+#else
+   exec sql begin declare section;
    char *COMMAND=const_cast<char*>(command.c_str());
    exec sql end declare section;
 
    exec sql execute immediate :COMMAND;
+#endif
 }
 
 Query &Query::operator>>(FetchIStream &s)
@@ -371,5 +445,24 @@ void Query::ThrowOnBad(const char *where) const
    }
 }
 
-int Query::Code() {  return sqlca.sqlcode; }
-unsigned Query::Lines() { return sqlca.sqlerrd[2]; }
+int Query::Code() {  
+
+#ifdef SQLITE
+	return sqlite_error;
+#else
+	return sqlca.sqlcode; 
+#endif
+
+}
+
+unsigned Query::Lines() { 
+#ifdef SQLITE
+	return sqlite_lines;
+#else
+	return sqlca.sqlerrd[2]; 
+#endif
+
+}
+
+
+

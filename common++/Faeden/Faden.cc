@@ -1,4 +1,4 @@
-// $Id: Faden.cc,v 1.18 2004/02/26 12:30:30 christof Exp $
+// $Id: Faden.cc,v 1.19 2004/03/09 16:26:20 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -24,6 +24,8 @@
 #include <Misc/compiler_ports.h>
 #include <Misc/FetchIStream.h>
 #include <Faeden/Webangaben.hh>
+#include <cassert>
+
 
 std::ostream& operator<< (std::ostream& os, const Faden& f)
 {

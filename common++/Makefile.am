@@ -2,6 +2,8 @@ SUBDIRS= DynamicEnums Misc BaseObjects ostream Artikel Auftrag Bank \
 		ExtBezSchema Ketten \
 		Kunde Lieferschein Material Lager Faeden Instanzen \
 		Vertrieb . Programme tests 
+
+AM_LDFLAGS=-lsqlite
 	
 lib_LIBRARIES=libcommon++.a
 
