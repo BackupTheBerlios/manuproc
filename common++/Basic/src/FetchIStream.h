@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.37 2003/10/23 14:35:42 christof Exp $
+// $Id: FetchIStream.h,v 1.38 2003/10/23 14:41:48 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -258,8 +258,7 @@ void Query::FetchArray(std::vector<T> &res)
 {  ThrowOnBad(__FUNCTION__);
    while (((*this)>>embedded_iterator).good()) 
    { T x;
-     embedded_iterator >> x;
-     embedded_iterator.ThrowIfNotEmpty(__FUNCTION__);
+     embedded_iterator >> x >> Query::check_eol();
      res.push_back(x);
    }
 }
@@ -269,8 +268,7 @@ void Query::FetchArrayMap(std::vector<T> &res, const T &nv)
 {  ThrowOnBad(__FUNCTION__);
    while (((*this)>>embedded_iterator).good()) 
    { T x;
-     embedded_iterator >> FetchIStream::MapNull(x,nv);
-     embedded_iterator.ThrowIfNotEmpty(__FUNCTION__);
+     embedded_iterator >> FetchIStream::MapNull(x,nv) >> Query::check_eol();
      res.push_back(x);
    }
 }
@@ -281,8 +279,7 @@ void Query::FetchArray(std::map<T1,T2> &res)
    while (((*this)>>embedded_iterator).good()) 
    { T1 x;
      T2 y;
-     embedded_iterator >> x >> y;
-     embedded_iterator.ThrowIfNotEmpty(__FUNCTION__);
+     embedded_iterator >> x >> y >> Query::check_eol();
      res[x]=y;
    }
 }
@@ -292,8 +289,7 @@ void Query::FetchArray(std::list<T> &res)
 {  ThrowOnBad(__FUNCTION__);
    while (((*this)>>embedded_iterator).good()) 
    { T x;
-     embedded_iterator >> x;
-     embedded_iterator.ThrowIfNotEmpty(__FUNCTION__);
+     embedded_iterator >> x >> Query::check_eol();
      res.push_back(x);
    }
 }
@@ -302,13 +298,13 @@ void Query::FetchArray(std::list<T> &res)
 template <class T>
 void Query::FetchOne(T &res)
 {  ThrowOnBad(__FUNCTION__);
-   (FetchOne() >> res).ThrowIfNotEmpty(__FUNCTION__);
+   FetchOne() >> res >> Query::check_eol();
 }
 
 template <class T>
 void Query::FetchOneMap(T &res, const T &nv)
 {  ThrowOnBad(__FUNCTION__);
-   (FetchOne() >> FetchIStream::MapNull(res,nv)).ThrowIfNotEmpty(__FUNCTION__);
+   (FetchOne() >> FetchIStream::MapNull(res,nv)) >> Query::check_eol();
 }
 
 // T a = q.FetchOne<T>(); variant (slower)
