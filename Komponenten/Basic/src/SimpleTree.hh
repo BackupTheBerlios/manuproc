@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.38 2004/06/30 10:57:25 christof Exp $
+// $Id: SimpleTree.hh,v 1.39 2004/07/01 07:13:46 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -69,7 +69,7 @@ namespace Gtk { class Menu; }
 // so they do not confuse the beginner
 class SimpleTree_Basic : public Gtk::TreeView, public SimpleTreeStore_Proxy
 {public:
-        typedef bool (*button_press_vfunc_t)(const cH_RowDataBase &row, int col_idx);
+        typedef bool (*button_press_vfunc_t)(SimpleTree_Basic *_this, const cH_RowDataBase &row, int col_idx);
         button_press_vfunc_t button_press_vfunc;
 private:
 	sequence_t clicked_seq;

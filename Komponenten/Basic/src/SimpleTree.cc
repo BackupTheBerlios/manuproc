@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.52 2004/06/30 11:11:21 christof Exp $
+// $Id: SimpleTree.cc,v 1.53 2004/07/01 07:13:46 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -354,7 +354,7 @@ bool SimpleTree_Basic::MouseButton(GdkEventButton *event)
          {  idx=getStore()->currseq[colno];
             break;
          }
-      return (*button_press_vfunc)((*it)[getStore()->m_columns.leafdata],idx);
+      return (*button_press_vfunc)(this,(*it)[getStore()->m_columns.leafdata],idx);
    }
    if (event->type == GDK_BUTTON_PRESS && event->button==3  && menu)
    {  menu->popup(event->button,event->time);
