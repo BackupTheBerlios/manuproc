@@ -543,7 +543,7 @@ void windowTop::on_ab_an_rngadresse_toggled()
 void windowTop::scc_verkaeufer_reset()
 {  
  try{
- kundendaten->setVerkNr(scc_verkaeufer->get_value());
+// kundendaten->setVerkNr(scc_verkaeufer->get_value());
  }
  catch(SQLerror &e)
  {
