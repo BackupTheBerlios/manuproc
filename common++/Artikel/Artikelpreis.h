@@ -1,4 +1,4 @@
-// $Id: Artikelpreis.h,v 1.12 2002/10/24 14:06:49 thoma Exp $
+// $Id: Artikelpreis.h,v 1.13 2002/11/07 07:48:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -42,7 +42,7 @@ class Artikelpreis : public Preis
 	: errechnet(false), gefunden(false), gefunden_in(ManuProcEntity<>::none_id) 
 	{}
 
-	friend FetchIStream &operator>>(FetchIStream &is,pair<int, float> &kg);  
+	friend FetchIStream &operator>>(FetchIStream &is,std::pair<int, float> &kg);  
 public:
 	 		
 	const Preis &getPreis() const
@@ -58,11 +58,11 @@ public:
 	static void UnCache(const PreisListe::ID liste,const ArtikelBase &a);
 	static const Artikelpreis create(const PreisListe::ID liste,
                	const Preis &p, const ArtikelBase &a,
-               	vector<std::string> ins_all_komp=vector<std::string>()) throw(SQLerror);
+               	std::vector<std::string> ins_all_komp=std::vector<std::string>()) throw(SQLerror);
 // tut nix sinnvolles, oder? MAT	void updatePreis(const Preis &p) throw(SQLerror);
 	void changePreis(const Preis &p) throw(SQLerror);
    static void remove(const PreisListe::ID liste,const ArtikelBase &a,
-   		vector<std::string> del_all_komp=vector<std::string>()) throw(SQLerror);
+   		std::vector<std::string> del_all_komp=std::vector<std::string>()) throw(SQLerror);
    		
 
    

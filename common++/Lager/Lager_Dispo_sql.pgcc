@@ -44,9 +44,9 @@ void Lager_Dispo::setMengen()
   exec sql begin declare section;
    int INSTANZ=instanz->Id();
    int ARTIKEL=artikel.Id();
-   double MAX=MaxMenge();
-   double MIN=MinMenge();
-   double OPT=OptimaleMenge();
+   double MAX=MaxMenge().as_float();
+   double MIN=MinMenge().as_float();
+   double OPT=OptimaleMenge().as_float();
   exec sql end declare section;
   exec sql update prod_lager_dispo set 
       max_menge=:MAX, min_menge=:MIN ,optimale_menge=:OPT 

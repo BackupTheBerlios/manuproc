@@ -1,4 +1,4 @@
-// $Id: createDynEnums.cc,v 1.6 2002/10/24 14:06:50 thoma Exp $
+// $Id: createDynEnums.cc,v 1.7 2002/11/07 07:50:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: createDynEnums.cc,v 1.6 2002/10/24 14:06:50 thoma Exp $
+// $Id: createDynEnums.cc,v 1.7 2002/11/07 07:50:05 christof Exp $
 
 #include <Aux/dbconnect.h>
 #include <Aux/FetchIStream.h>
@@ -135,7 +135,7 @@ int main()
       //--- prod_instanz
       std::cout << "  namespace Instanzen {\n"
 		"   enum enum_t {\n"
-		"    None=0,";
+		"    None=-1,";
       {  Query q("select insid,name from prod_instanz order by insid");
          while ((q >> is).good())
          {  int id; std::string text;

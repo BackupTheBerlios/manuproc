@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.20 2002/10/24 14:06:50 thoma Exp $ */
+/* $Id: Lieferschein.h,v 1.21 2002/11/07 07:48:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -41,7 +41,8 @@ class Lieferschein : public LieferscheinBase, public HandleContent
 #ifdef DPD_LIEFERSCHEINE
  int dpdliefnr;
  int paeckchen, pakete;
- fixedpoint<1> brutto_kg,netto_kg;
+ typedef fixedpoint<ManuProC::Precision::LieferscheinGewicht> gewicht_t;
+ gewicht_t brutto_kg,netto_kg;
 #endif
  public:
         
@@ -76,10 +77,10 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  int Paeckchen() const {return paeckchen;}
  void setPakete(const int i) throw(SQLerror);
  void setPaeckchen(const int i) throw(SQLerror);
- fixedpoint<1> GewichtBrutto() const {return brutto_kg;}
- fixedpoint<1> GewichtNetto() const {return netto_kg;}
- void setGewichtBrutto(const fixedpoint<1> i) throw(SQLerror);
- void setGewichtNetto(const fixedpoint<1> i) throw(SQLerror);
+ gewicht_t GewichtBrutto() const {return brutto_kg;}
+ gewicht_t GewichtNetto() const {return netto_kg;}
+ void setGewichtBrutto(const gewicht_t i) throw(SQLerror);
+ void setGewichtNetto(const gewicht_t i) throw(SQLerror);
  const ManuProC::Datum getMaxZahlziel() const throw(SQLerror);
 #endif 
  const Preis::rabatt_t AufRabatt() const throw(SQLerror);
@@ -98,6 +99,7 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  		const ArtikelBase &artikel, int anzahl, mengen_t menge, int palette);
  // DB: Menge verteilt auf mehrere Aufträge abschreiben
  void push_back(const ArtikelBase &artikel, int anzahl, mengen_t menge, int palette);
+
 
  // Rechnungsnummer von Lieferscheinen ohne Entrys auf '0' setzen
  static void aufraumen() throw(SQLerror);

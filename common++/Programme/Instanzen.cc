@@ -1,4 +1,4 @@
-// $Id: Instanzen.cc,v 1.8 2002/10/24 14:06:50 thoma Exp $
+// $Id: Instanzen.cc,v 1.9 2002/11/07 07:50:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
   {
     std::cout << argv[0]<<" legt Standardaufträge an, dieses Programm muß nur einmal \n"
             " bei der Datenbankinitilisierung laufen.\n"
-            " Programmaufruf: "<<argv[0]<<" <DATNBANK>\n";
+            " Programmaufruf: "<<argv[0]<<" <DATENBANK>\n";
     exit(1);
   }
  std::cout <<"Initialisierung der Datenbank "<<argv[1]<<"\n";

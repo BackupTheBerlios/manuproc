@@ -20,6 +20,8 @@ CREATE TABLE "prod_instanz" (
 	"einlagern_in" numeric(2,0),
 	"automatisch_einlagern" boolean,
 	"typ" character(1),
+   "externe_bestellung" boolean,
+   "geplant_von" integer,
 	Constraint "prod_instanz_pkey" Primary Key ("insid")
 );
 
@@ -37,7 +39,7 @@ COPY "prod_instanz" FROM stdin;
 3	Druckerei	\N	3	\N	\N	\N	3	\N	\N	P
 5	Sch‰rerei	\N	8	\N	\N	\N	\N	\N	\N	P
 7	Spritzgieﬂerei	\N	11	\N	\N	\N	\N	\N	\N	P
-6	(Garn-)Einkauf	\N	10	t	\N	t	\N	9	\N	P
+6	(Garn-)Einkauf	\N	10	t	\N	t	\N	9	\N	P	t
 8	Bandlager	4	5	\N	rohjumbo	t	\N	\N	\N	L
 9	Rohwarenlager	6	9	\N	rl_inhalt	t	\N	\N	\N	L
 4	Weberei	\N	6	\N	\N	\N	28	4	\N	P

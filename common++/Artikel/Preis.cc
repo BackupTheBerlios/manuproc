@@ -1,4 +1,4 @@
-// $Id: Preis.cc,v 1.13 2002/10/24 14:06:49 thoma Exp $
+// $Id: Preis.cc,v 1.14 2002/11/07 07:48:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,12 +30,12 @@ Preis::geldbetrag_t Preis::Wert_fr(const cP_Waehrung w,preismenge_t stueckgr) co
 {  if (w==waehrung && (!stueckgr || stueckgr==preismenge)) 
 	return pfennig_cent;
 
-   float result=pfennig_cent;
+   float result=pfennig_cent.as_float();
    preismenge_t preism=preismenge;
    if (!preism) preism=1;
 // Währung und Stückgröße werden zusammen umgerechnet und dann erst gerundet
    if (w!=waehrung) result*=Waehrung::Umrechnung(*waehrung,*w);
-   if (stueckgr>0 && preism!=stueckgr) result*=stueckgr/preism;
+   if (stueckgr>0 && preism!=stueckgr) result*=stueckgr.as_float()/preism.as_float();
    return result; // erst hier wird wieder gerundet!
 }
 
@@ -72,14 +72,14 @@ const std::string Preis::Typtext() const
 {  return waehrung->Kurzbezeichnung() + '/'+ Formatiere_short(preismenge);
 }
 
-Preis::geldbetrag_t Preis::Gesamtpreis(const cP_Waehrung w,int anzahl,float menge,const rabatt_t &rabatt) const
+Preis::geldbetrag_t Preis::Gesamtpreis(const cP_Waehrung w,int anzahl,preismenge_t menge,const rabatt_t &rabatt) const
 {  if (!*this) return 0;
    if (!menge) menge=1;
    Preis result=*this;
    // Währung umrechnen?
    if (w!=waehrung) result=result.In(w,result.preismenge);
    // Rabattieren?
-   if (!!rabatt) result.pfennig_cent=result.pfennig_cent*(1-0.01*double(rabatt));
+   if (!!rabatt) result.pfennig_cent=result.pfennig_cent*(1-0.01*rabatt.as_float());
    // mit Menge multiplizieren
    return result.In(result.waehrung,menge*anzahl).Wert();
 }
@@ -88,6 +88,7 @@ Preis::geldbetrag_t Preis::Gesamtpreis(const cP_Waehrung w,int anzahl,float meng
 const Preis Preis::Gesamtpreis(int anzahl,float menge,const rabatt_t &rabatt) const
 {  return Preis(Gesamtpreis(waehrung,anzahl,menge,rabatt),waehrung,1);
 }
+
 
 const Preis operator*(fixedpoint<5> f, const Preis &p)
 {  if (f==fixedpoint<5>(1.0)) return p;

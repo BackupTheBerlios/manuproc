@@ -1,4 +1,4 @@
-// $Id: Webangaben_sql.pgcc,v 1.8 2002/10/24 14:14:30 christof Exp $
+// $Id: Webangaben_sql.pgcc,v 1.9 2002/11/07 07:49:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -146,7 +146,7 @@ void Webangaben::set_fangfaden(const ArtikelBase &ab) throw(SQLerror)
 void Webangaben::set_schussdichte(const fixedpoint<1> &f) throw(SQLerror)
 {  
    exec sql begin declare section;
-     float SCHUSSDICHTE=f;
+     float SCHUSSDICHTE=f.as_float();
      int ARTIKEL=Artikel().Id();
    exec sql end declare section;
    exec sql update webangaben set schussdichte=:SCHUSSDICHTE, geaendert=now()

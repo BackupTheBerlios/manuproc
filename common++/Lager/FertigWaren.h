@@ -1,4 +1,4 @@
-// $Id: FertigWaren.h,v 1.6 2002/10/24 14:06:50 thoma Exp $
+// $Id: FertigWaren.h,v 1.7 2002/11/07 07:49:51 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -22,14 +22,10 @@
 
 
 #include<Aux/SQLerror.h>
-//#include<Aux/Datum.h>
 #include<Artikel/ArtikelBezeichnung.h>
-//#include <iostream>
-//#include <vector>
 #include <Aux/Zeitpunkt_new.h>
-//#include <Lager/LagerPlatz.hh>
 #include <BaseObjects/ManuProcEntity.h>
-
+#include <Aux/FetchIStream.h>
 
 class FertigWaren
 {
@@ -42,24 +38,27 @@ private:
   enum_Aktion aktion;
   int stk;
   ManuProcEntity<>::ID lieferschein;
-//  LagerPlatz lagerposition;
-
+  int uid;
+  std::string uname;
+  
   enum e_buchen{Rein,Raus};
   void Buchen(int pid,e_buchen e); 
 public:
  FertigWaren(ArtikelBase a,enum_Aktion a2,int s,
  		ManuProcEntity<>::ID lfrsid=ManuProcEntity<>::none_id)
-   : artikel(a)/*,zeit()*/,aktion(a2),stk(s),lieferschein(lfrsid)  {};
-// FertigWaren(ArtikelBase a,Zeitpunkt_new z,enum_Aktion a2,int s)
-//   : artikel(a),zeit(z),aktion(a2),stk(s) {} throw(SQLerror);
+   : artikel(a)/*,zeit()*/,aktion(a2),stk(s),lieferschein(lfrsid),uid(0)  {};
  
+ FertigWaren() : aktion(eLieferschein),stk(0),lieferschein(ManuProcEntity<>::none_id),
+ 	uid(0)  {};
+ 		
  std::string artBezeichnung() const { return cH_ArtikelBezeichnung(artikel)->Bezeichnung();}
  int Stk() const {return stk;};
  ManuProcEntity<>::ID Lfrsid() const { return lieferschein;}
  Zeitpunkt_new Zeit() const { return zeit;}
  enum_Aktion Aktion() const {return aktion;}
  const ArtikelBase &Artikel() const { return artikel; }
-// LagerPlatz LagerPosition() const {return lagerposition;}
+ const std::string User() const { return uname;}
+ void setUser(const std::string user) { uname=user;}
 
  
  // Die unterschiedlichen Funktionen garantieren ein korrektes Vorzeichen.
@@ -67,6 +66,9 @@ public:
  void Auslagern(int pid) {Buchen(pid,Raus);}
  void Inventur(int pid);
 
+ friend FetchIStream &operator>>(FetchIStream &is, FertigWaren &fw);
 };
+
+FetchIStream &operator>>(FetchIStream &is, FertigWaren &fw);
 
 #endif

@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.20 2002/10/24 14:06:49 thoma Exp $
+# $Id: Makefile.am,v 1.21 2002/11/07 07:48:35 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -10,11 +10,11 @@ includedir=@includedir@/Aux
 
 PGCC_Sources=dbconnect.cc SQLerror_postgres.cc Transaction.cc \
 		Waehrung_sql.cc Changejournal_sql.cc FetchIStream.cc \
-      Global_Settings.cc EAN_sql.cc 
+      Global_Settings_sql.cc EAN_sql.cc 
 
 libAux_a_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
 		postgres_conversion.cc Zeitpunkt_new.cc \
-		Zeitpunkt_new_ostr.cc \
+		Zeitpunkt_new_ostr.cc Global_Settings.cc \
 		Zeitpunkt_new_write.cc string0.c mystring.cc \
 		EntryValueBase.cc EntryValueIntString.cc \
 		auto_conversion.cc $(PGCC_Sources) AdminProblems.cc \
@@ -37,7 +37,7 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
    EntryValueBase.cc EntryValueBase.h EntryValueIntString.cc \
    EntryValueIntString.h EntryValueEmptyInt.h EntryValueDatum.h \
    EntryValueDatum.cc EmptyInt_4TeX.h EntryValueFixed.h Long.h \
-   Trace.h Trace.cc
+   Trace.h Trace.cc relops.h
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .

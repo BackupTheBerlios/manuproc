@@ -26,6 +26,7 @@
 #include <Auftrag/AufEintragZu.h>
 #include <Lager/Lager_Vormerkungen.h>
 #include <Aux/Trace.h>
+#include <Artikel/ArtikelImLager.h>
 
 exec sql include sqlca;
 
@@ -33,7 +34,7 @@ exec sql include sqlca;
 AuftragBase::AuftragBase(cH_ppsInstanz _instanz, int aufid,int kid) throw(SQLerror)
 : instanz(_instanz),auftragid(aufid)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str());
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this);
  exec sql begin declare section;
    int KID=kid;
    int AID=auftragid;
@@ -48,7 +49,7 @@ AuftragBase::AuftragBase(cH_ppsInstanz _instanz, int aufid,int kid) throw(SQLerr
 
 bool AuftragBase::Exists() const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str());
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this);
  exec sql begin declare section;
   int AUFTRAGID=Id();
   int INSTANZ=InstanzID();
@@ -63,7 +64,7 @@ bool AuftragBase::Exists() const throw(SQLerror)
 
 void AuftragBase::create_if_not_exists(AufStatVal status,Kunde::ID kunde) const
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str(),"Status="+itos(status),"Kunde="+itos(kunde));
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"Status=",status,"Kunde=",kunde);
   if(Exists()) return;
   exec sql begin declare section;
    int AUFTRAGID=Id();
@@ -79,7 +80,7 @@ void AuftragBase::create_if_not_exists(AufStatVal status,Kunde::ID kunde) const
 
 void AuftragBase::setStatusAuftragBase(AufStatVal st) const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str(),"Status="+itos(st));
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"Status=",st);
  exec sql begin declare section;
   int AUFTRAGID=Id();
   int INSTANZ=InstanzID();
@@ -94,11 +95,11 @@ void AuftragBase::setStatusAuftragBase(AufStatVal st) const throw(SQLerror)
 
 void AuftragBase::setRabatt(const rabatt_t auftragsrabatt) const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str());
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this);
  exec sql begin declare section;
   int AUFTRAGID=Id();
   int INSTANZ=InstanzID();
-  double RABATT=auftragsrabatt;
+  double RABATT=auftragsrabatt.as_float();
  exec sql end declare section;
 
  exec sql update auftrag set rabatt= :RABATT
@@ -114,9 +115,9 @@ bool AuftragBase::existEntry(const ArtikelBase& artikel,
                              int& znr,int &newznr,mengen_t& menge,
                              AufStatVal status) const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str(),
-         "Artikel="+cH_ArtikelBezeichnung(artikel)->Bezeichnung(),
-         "LieferDatum="+lieferdatum.to_iso(),"ZNr="+itos(znr),"Status="+itos(status));
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,
+         "Artikel=",artikel,
+         "LieferDatum=",lieferdatum,"ZNr=",znr,"Status=",status);
  exec sql begin declare section;
    int AUFTRAGID =Id();
    long ARTIKELID=artikel.Id();
@@ -156,17 +157,16 @@ bool AuftragBase::existEntry(const ArtikelBase& artikel,
     return true;  }
 }
 
-#include <Artikel/ArtikelBezeichnung.h> //debug
 int AuftragBase::tryUpdateEntry(mengen_t bestellt, 
   const ManuProC::Datum lieferdatum,const ArtikelBase& artikel,
   AufStatVal status,int uid,const AufEintragBase& altAEB,
   st_tryUpdateEntry st_bool) const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str(),"Artikel="+cH_ArtikelBezeichnung(artikel)->Bezeichnung(),
-         "Menge="+dtos(bestellt),"AltAEB="+altAEB.str(),
-         "LieferDatum="+lieferdatum.to_iso(),
-         "Status="+itos(status),"ForceNew="+itos(st_bool.force_new),
-         "DispoPlanung="+itos(st_bool.dispoplanung));
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"Artikel=",artikel,
+         "Menge=",bestellt,"AltAEB=",altAEB,
+         "LieferDatum=",lieferdatum,
+         "Status=",status,"ForceNew=",st_bool.force_new,
+         "DispoPlanung=",st_bool.dispoplanung);
 
  create_if_not_exists(status);
  int znr=-99,neuznr=-99;
@@ -174,9 +174,10 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
  Transaction tr;
  exec sql lock table auftragentry in exclusive mode;
  SQLerror::test(__FILELINE__);  
- AuftragBase::mengen_t lagermenge=Lager_Vormerkungen::artikel_auf_lager(artikel,instanz,lieferdatum,AuftragBase::dispo_auftrag_id);
-// AuftragBase::mengen_t lagermenge2=Lager_Vormerkungen::artikel_auf_lager(artikel,instanz,lieferdatum,AuftragBase::PlanId_for(instanz),false);
-//cout << Instanz()->Name()<<"   Lagermenge = "<<lagermenge<<' '<<lagermenge2<<'\n';
+
+ ArtikelImLager AIL(instanz,artikel,lieferdatum);
+ AuftragBase::mengen_t lagermenge=AIL.getMengeDispo();
+
  mengen_t auftragbestellmenge;
  if(lagermenge>=bestellt) {auftragbestellmenge = 0; lagermenge=bestellt;}
  else                      auftragbestellmenge = bestellt-lagermenge;
@@ -189,26 +190,24 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
    }
  else
    {
-     if(auftragbestellmenge)
+     if(!!auftragbestellmenge)
       {
        mengen_t mt=AufEintragBase(instanz,auftragid,znr).updateStkDiffBase__(uid,auftragbestellmenge);
        assert(mt==auftragbestellmenge);
       }
    }
 
-//cout << "\nTryUpdate: "<<AufEintragBase(instanz,auftragid,znr)<<'\t'
-//<<"Betsellte="<<bestellt<<" Lagermenge="<<lagermenge<<" auftragbestellmenge="
-//<<auftragbestellmenge<<'\t'<<st_bool.dispoplanung<<'\n';
-
   if(!st_bool.dispoplanung)
    {    
      if(altAEB.valid())
         AufEintragZu(altAEB).Neu(AufEintragBase(*this,znr),bestellt);
-//cout << AufEintragBase(*this,znr)<<'\t'<<altemenge<<'+'<<auftragbestellmenge<<'\t'
-//<<bestellt<<' '<<lagermenge<<'\n';
+      AufEintragBase(*this,znr).vormerken_oder_bestellen(uid,lagermenge,
+         bestellt,artikel,lieferdatum,st_bool);
+/*
      Lager_Vormerkungen(class AufEintrag(Instanz()->Id(),Id(),znr,
             altemenge+auftragbestellmenge,artikel,lieferdatum,status)).
             vormerken_oder_bestellen(uid,lagermenge,bestellt,st_bool);
+*/
    }
   else 
    {

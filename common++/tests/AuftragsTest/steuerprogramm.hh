@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.hh,v 1.8 2002/10/24 14:06:50 thoma Exp $
+// $Id: steuerprogramm.hh,v 1.9 2002/11/07 07:49:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -21,19 +21,23 @@
 #define STEUERFILE_H
 
 
-#define MANU_PROC_TEST
-/* else PETIG_TEST */
+//#define MANU_PROC_TEST
+//#define MABELLA_TEST
+#define PETIG_TEST
 
 #ifdef MANU_PROC_TEST
-#define MANU_DATAPATH "~/ManuProC/Anleitung/datenbank"
+  #define MANU_DATAPATH "~/ManuProC/Anleitung/datenbank"
+#else if defined MABELLA_TEST
+  #define MANU_DATAPATH "./database_tables_init_Mabella"
 #endif
+
 
 
 #include <Artikel/ArtikelBase.h>
 #include <Auftrag/auftrag_status.h>
 #include <Instanzen/ppsInstanz.h>
 
-#ifndef MANU_PROC_TEST
+#ifdef PETIG_TEST
 
 #define MIT_ROHWARENLAGER
 #define MIT_BANDLAGER
@@ -44,7 +48,8 @@
 #define ARTIKEL_ACETAT ArtikelBase(211007)
 #define ARTIKEL_KUPFER ArtikelBase(209813)
 
-#else 
+#elif defined MANU_PROC_TEST 
+
 #define ARTIKEL_SORTIMENT_SCHWARZ ArtikelBase(27)
 #define ARTIKEL_SORTIMENT_BUNT ArtikelBase(28)
 #define ARTIKEL_METALL ArtikelBase(1)
@@ -62,7 +67,17 @@
 #define SCHRAUBENZIEHERLAGER (ppsInstanz::ID(5))
 #define KUNDENINSTANZ (ppsInstanz::ID(1))
 
+#elif defined MABELLA_TEST
+
+#define ARTIKEL_TRIO ArtikelBase(44803)
+
+#define FERTIGWARENLAGER (ppsInstanz::ID(2))
+#define EINKAUF (ppsInstanz::ID(4))
+#define PRODPLANUNG (ppsInstanz::ID(3))
+
 #endif
+
+
 
 #define DATUM ManuProC::Datum(31,12,2010)
 #define SPLITDATUM ManuProC::Datum(31,12,2011)

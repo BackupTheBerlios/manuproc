@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.28 2002/10/24 14:06:49 thoma Exp $
+// $Id: AufEintragBase.cc,v 1.29 2002/11/07 07:48:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,12 +20,11 @@
 #include <Auftrag/AufEintragBase.h>
 #include "AufEintragBase.h"
 #include <Aux/Transaction.h>
-//#include <Auftrag/auftrag_status.h>
 #include <Auftrag/AuftragsBaum.h> 
-//#include <Aux/Changejournal.h>
 #include <Auftrag/AufEintragZu.h>
 #include <Artikel/ArtikelBaum.h>
 #include <Artikel/ArtikelStamm.h>
+#include <Artikel/ArtikelImLager.h>
 #include "AufEintrag.h"
 #ifdef MABELLA_EXTENSIONS
 #include<Lager/FertigWaren.h>
@@ -61,7 +60,7 @@ std::string AufEintragBase::str() const
 
 void AufEintragBase::calculateProzessInstanz()
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str());
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this);
   assert (Instanz()==ppsInstanzID::Kundenauftraege);
   AuftragsBaum AB(*this,true);
   int anz=0;
@@ -77,11 +76,12 @@ void AufEintragBase::calculateProzessInstanz()
 
 
 // Ich weiﬂ nicht mehr wer dies braucht .... MAT :-(
+/*
 void AufEintragBase::Planen(int uid,std::vector<AufEintrag> LAE,mengen_t menge,
       const AuftragBase &zielauftrag,const ManuProC::Datum &datum)
 {
  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
-   "Menge="+dtos(menge),"Zielauftrag="+zielauftrag.str(),"Datum="+datum.to_iso());
+   "Menge=",menge,"Zielauftrag=",zielauftrag,"Datum=",datum);
  int znr=AufEintragBase::none_znr;
  ArtikelBase artikel=ArtikelBase::none_id;
  Transaction tr;
@@ -109,13 +109,12 @@ void AufEintragBase::Planen(int uid,std::vector<AufEintrag> LAE,mengen_t menge,
   }
  tr.commit();
 }
-
+*/
 
 void AufEintragBase::PlanenDispo(int uid,const ArtikelBase& artikel,mengen_t menge,const ManuProC::Datum &datum)
 {
  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str(),
-   "Artikel="+cH_ArtikelBezeichnung(artikel)->Bezeichnung(),
-   "Menge="+dtos(menge),"Datum="+datum.to_iso());
+   "Artikel=",artikel,"Menge=",menge,"Datum=",datum);
 
    AuftragBase dispoAB(Instanz(),dispo_auftrag_id);
    st_tryUpdateEntry st(false,false,true);
@@ -128,7 +127,7 @@ void AufEintragBase::PlanenDispo(int uid,const ArtikelBase& artikel,mengen_t men
    bool automatisch_geplant=false;
    if(Id()==plan_auftrag_id)  automatisch_geplant=true  ;
    dispoAEB.InstanzAuftraegeAnlegen(AE,menge,uid,automatisch_geplant);
-   if(automatisch_geplant)  AE.abschreiben(menge) ;
+   if(automatisch_geplant)  AE.abschreiben(menge,ManuProcEntity<>::none_id) ;
 }
 
 
@@ -137,8 +136,8 @@ int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
                         bool dispoplanung)
 {
  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str(),
-   "Artikel="+cH_ArtikelBezeichnung(artikel)->Bezeichnung(),
-   "Menge="+dtos(menge),"Status="+itos(status),"DispoPlanung="+itos(dispoplanung));
+   "Artikel=",artikel,
+   "Menge=",menge,"Status=",status,"DispoPlanung=",dispoplanung);
 
   assert(Id()==AuftragBase::ungeplante_id);
   // ElternListe holen
@@ -172,5 +171,53 @@ void AufEintragBase::ExistMenge(const std::string &s) const
      std::cout << *this<<" existiert mit " <<AE.getStueck()<<" bestellt und "
           <<AE.getGeliefert()<<" geliefert ("<<s<<")\n";
    }catch(...){std::cout << *this<<"\texistiert noch nicht ("<<s<<")\n";}
+}
+
+
+#include <Lager/Lager_Vormerkungen.h>
+void AufEintragBase::vormerken_oder_bestellen(int uid,const AuftragBase::mengen_t &vormerkmenge,
+            AuftragBase::mengen_t bestellmenge,
+            const ArtikelBase &artikel,const Petig::Datum &lieferdatum,
+            AuftragBase::st_tryUpdateEntry st_bool) throw(SQLerror)
+{
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Vormerkmenge=",vormerkmenge,
+      "Bestellmenge=",bestellmenge);
+  assert(vormerkmenge<=bestellmenge);
+
+
+Lager_Vormerkungen LV(*this);
+
+  // 1. Fall: Reicht die Menge, die wir bekommen haben aus?
+  if(vormerkmenge>mengen_t(0))
+     LV.artikel_vormerken_oder_schnappen(false,vormerkmenge,artikel,uid,false);
+  bestellmenge-=vormerkmenge;
+  if(bestellmenge==AuftragBase::mengen_t(0)) return;
+
+  // 2. Fall: Haben wir vorgemerkte Menge mit sp‰terem Lieferdatum
+  //          in einer LagerInstanz die wir uns schnappen kˆnnen?
+  if(instanz->LagerInstanz())
+   {
+     ArtikelImLager AIL(Instanz(),artikel,lieferdatum);
+     AuftragBase::mengen_t menge_vorgemerkt = AIL.getMengePlan();
+     if(menge_vorgemerkt>mengen_t(0))
+      {     
+        AuftragBase::mengen_t Mv=menge_vorgemerkt;
+        if(bestellmenge<Mv)   Mv=bestellmenge;
+        LV.artikel_vormerken_oder_schnappen(true,Mv,artikel,uid,true,AIL.getPlanAuftraege());
+        bestellmenge-=Mv;
+        if(bestellmenge==AuftragBase::mengen_t(0)) return;
+      }     
+   }
+
+  // 3. Fall: Wir m¸ssen weiter bestellen
+  if(Instanz()->LagerInstanz())
+    {
+      AuftragBase AB(ppsInstanz::getProduktionsInstanz(artikel),AuftragBase::ungeplante_id);
+      AB.tryUpdateEntry(bestellmenge,lieferdatum,artikel,OPEN,uid,*this);
+    }
+  else
+    { 
+      InstanzAuftraegeAnlegen(*this,bestellmenge,uid,st_bool.automatisch_geplant);
+    }
 }
 

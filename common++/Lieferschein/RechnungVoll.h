@@ -31,8 +31,8 @@ class RechnungVoll : public Rechnung
  std::vector<RechnungEntry> rentry;
 
 #ifdef DPD_LIEFERSCHEINE
- mutable fixedpoint<1> netto_gewicht;
- mutable fixedpoint<1> brutto_gewicht;  
+ mutable fixedpoint<ManuProC::Precision::LieferscheinGewicht> netto_gewicht;
+ mutable fixedpoint<ManuProC::Precision::LieferscheinGewicht> brutto_gewicht;  
  mutable int pakete;
 #endif
  
@@ -57,8 +57,8 @@ public:
 
 #ifdef DPD_LIEFERSCHEINE
  void setGewicht() const throw(SQLerror);
- fixedpoint<1> const NettoGew() const {return netto_gewicht;}
- fixedpoint<1> const BruttoGew() const {return brutto_gewicht;} 
+ fixedpoint<ManuProC::Precision::LieferscheinGewicht> const NettoGew() const {return netto_gewicht;}
+ fixedpoint<ManuProC::Precision::LieferscheinGewicht> const BruttoGew() const {return brutto_gewicht;} 
  int const Pakete() const {return pakete;}
 #endif 
  

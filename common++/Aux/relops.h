@@ -1,4 +1,4 @@
-/* $Id: relops.h,v 1.2 2002/10/11 08:54:22 christof Exp $ */
+/* $Id: relops.h,v 1.1 2002/10/31 14:57:17 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

@@ -1,4 +1,4 @@
-// $Id: instanz_auftrag.cc,v 1.11 2002/06/27 07:42:50 christof Exp $
+// $Id: instanz_auftrag.cc,v 1.12 2002/11/07 07:49:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -39,7 +39,7 @@ void showChildren(AufEintragBase AEB)
    }
 }
 
-vector<AufEintrag> showTest(Auftrag id)
+std::vector<AufEintrag> showTest(Auftrag id)
 {
    AuftragFull af(id);
    std::vector<AufEintrag> VAEB;

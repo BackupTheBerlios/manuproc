@@ -1,4 +1,4 @@
-/* $Id: DefaultValues.h,v 1.10 2002/10/24 14:14:30 christof Exp $ */
+/* $Id: DefaultValues.h,v 1.11 2002/11/07 07:50:10 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -28,6 +28,14 @@
 /////////////////////////////////////////////////////////////////////////
 
 namespace ManuProC {
+ namespace Precision {
+   const static int AuftragsMenge = 0;
+   const static int LieferscheinMenge = 3;
+   const static int LieferscheinGewicht = 1;
+   const static int GeldBetrag = 2;
+   const static int Rabatt = 2;
+  }
+   
  namespace DefaultValues {
 
 // nach dem ersten Durchlauf muﬂ in diesem Verzeichnis 'make recreate' 
@@ -74,6 +82,10 @@ namespace ManuProC {
    #define DPD_LIEFERSCHEINE
    #define EAN_AUSDRUCKEN_IN_PPS
 #endif
+#ifdef PETIG_EXTENSIONS
+   #define KEIN_PREIS_IM_EXTERNEN_AUFTRAG
+#endif
+
 
 #define INSTANZEN_VERWALTUNG
 #endif

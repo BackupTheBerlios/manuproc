@@ -1,4 +1,4 @@
-// $Id: RL_lager.cc,v 1.7 2002/06/27 07:42:50 christof Exp $
+// $Id: RL_lager.cc,v 1.8 2002/11/07 07:49:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -22,7 +22,7 @@
 #include <Aux/dbconnect.h>
 #include <Instanzen/ppsInstanz.h>
 #include <Artikel/ArtikelBezeichnung.h>
-#include <Lager/Lager.hh>
+#include <Lager/Lager.h>
 
 void showLager(const Lager& L,const LagerPlatz& P)
 {

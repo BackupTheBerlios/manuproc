@@ -1,4 +1,4 @@
-/* $Id: Global_Settings.h,v 1.4 2002/07/05 12:35:01 christof Exp $ */
+/* $Id: Global_Settings.h,v 1.5 2002/11/07 07:48:35 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -31,6 +31,7 @@ class Global_Settings
                 const std::string& name);
 
     std::string get_Wert() const {return wert;}
+    std::string get_Wert(const std::string &seperator,int field) const;
     void set_Wert(const std::string& wert);
     void update_Date();
 

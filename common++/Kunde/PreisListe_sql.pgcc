@@ -1,4 +1,5 @@
-// $Id: PreisListe_sql.pgcc,v 1.7 2002/10/24 14:06:50 thoma Exp $
+
+// $Id: PreisListe_sql.pgcc,v 1.8 2002/11/07 07:48:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -86,14 +87,17 @@ PreisListe::ID PreisListe::createPreisliste(const std::string &name) throw(SQLer
  return NR;
 }
 
-void PreisListe::setRabatt(bool fest, rabatt_t rab)
+void PreisListe::setRabatt(bool fest, rabatt_t rab) throw(SQLerror)
 {exec sql begin declare section;
  int NR=Id();
  int IRABATT=fest?0:-1;
- float RABATT=rab;
+ float RABATT=rab.as_float();
  exec sql end declare section;
  
  exec sql update ku_preisliste set bruttosatz=:RABATT:IRABATT
  	where prlsnr=:NR;
- SQLerror(__FILELINE__);
+ SQLerror::test(__FILELINE__);
+
+ rabatt=rab;
+ rabatt_gesetzt=fest;
 }

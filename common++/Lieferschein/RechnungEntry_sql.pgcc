@@ -87,8 +87,8 @@ void RechnungEntry::setzePreis(const Preis &p) throw (SQLerror)
 {  preis=p;
    exec sql begin declare section;
    int RNGID=Id(),ZNR=Zeile();
-   float PREISMENGE=p.BezugsMenge();
-   float PREIS=p.Wert();
+   float PREISMENGE=p.BezugsMenge().as_float();
+   float PREIS=p.Wert().as_float();
    exec sql end declare section;
    
     exec sql update rechnungentry

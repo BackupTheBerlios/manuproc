@@ -24,7 +24,7 @@ exec sql include sqlca;
 
 Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
 : RechnungBase(rid), kunde(Kunde::default_id), 
-   zahlungsart(Zahlungsart::none_id)
+   zahlungsart(Zahlungsart::none_id),notiz_valid(false)
 {
  if(rid==none_id) return;
 
@@ -75,7 +75,7 @@ Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
 
 Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
 	: RechnungBase(none_id), kunde(k),rabatt(0),
-   zahlungsart(Zahlungsart::none_id)
+   zahlungsart(Zahlungsart::none_id),notiz_valid(false)
 {
  exec sql begin declare section;
  int RNGID;
@@ -120,7 +120,7 @@ Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
  	values (:RNGID, :KUNDENNR,:ZAHLUNGSART,:WAEHRUNG);
  SQLerror::test(__FILELINE__":Rechnung: insert into rechnung");	
 
-#ifdef MABELLA_EXTENSIOSN
+#ifdef MABELLA_EXTENSIONS
  exec sql begin declare section;
  bool ENTSORGUNG=krng->entsorgung();
  exec sql end declare section;
@@ -236,7 +236,6 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
  	 	on (l.instanz,l.refauftragid,l.refzeilennr)
  	 		= (ae.instanz,ae.auftragid,ae.zeilennr)
  	 where (l.instanz,l.lfrsid)=(:INSTANZ,:LFRSID)
- 	 and not coalesce(zusatzinfo,'f')
  	 order by l.zeile);
  SQLerror::test(__FILELINE__); 
 
@@ -269,7 +268,7 @@ void Rechnung::setze_Rabatt(rabatt_t r) throw(SQLerror)
  exec sql end declare section;
 
  RNGID=Id();
- RABATT=r;
+ RABATT=r.as_float();
  exec sql update rechnung set rabatt=:RABATT where rngid=:RNGID;
  SQLerror::test(__FILELINE__);
 }
@@ -310,6 +309,46 @@ void RechnungBase::setEingezogen(int refnr) throw(SQLerror)
 	where rngid= :RNGID;
 
  tr.commit();
+}
+
+
+const std::string Rechnung::Notiz() const throw(SQLerror)
+{
+// ManuProC::Trace _t(ManuProC::Tracer::Rechnung, __FUNCTION__,str());
+ if(notiz_valid) return notiz;
+
+ exec sql begin declare section;
+ int RNGID = Id();
+ char *NOTIZ=0;
+ exec sql end declare section;
+
+ exec sql select coalesce(notiz,'') into :NOTIZ from 
+	rechnung where rngid= :RNGID;
+ SQLerror::test(__FILELINE__);
+
+ notiz=NOTIZ;
+ ECPGfree_auto_mem();
+ notiz_valid=true;
+ return notiz;
+}
+
+void Rechnung::Notiz(const std::string n) throw(SQLerror)
+{
+// ManuProC::Trace _t(ManuProC::Tracer::Rechnung, __FUNCTION__,str());
+ exec sql begin declare section;
+ int RNGID = Id();
+ char *NOTIZ;
+ exec sql end declare section;
+
+ NOTIZ = (char*)n.c_str();
+
+ Transaction tr;
+
+ exec sql update rechnung set notiz=:NOTIZ where rngid= :RNGID;
+ SQLerror::test(__FILELINE__);
+
+ tr.commit();
+ notiz=n;
 }
 
 

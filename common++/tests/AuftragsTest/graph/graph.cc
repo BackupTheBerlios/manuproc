@@ -1,4 +1,4 @@
-// $Id: graph.cc,v 1.8 2002/10/24 14:14:41 christof Exp $
+// $Id: graph.cc,v 1.9 2002/11/07 07:49:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -47,6 +47,7 @@ void usage(std::string s)
        << "\t\t[Lm] Lieferschein Mengenänderung\n"
        << "\t\t[LZ] Lieferschein mit Zustazeinträgen\n"
        << "\t\t[LA] Lieferschein mit Zwei Aufträgen\n"
+       << "\t\t[LJ] Lieferschein für Jacek\n"
        << "\t\t[ZK] Zwei Kunden Zwei Aufträgen\n"
        << "\t\t[MP] ManuProC\n"
        << "\t\t[X]  LEGENDE \n";
@@ -79,6 +80,7 @@ int main(int argc, char *argv[])
   else if(string(argv[optind])=="Lm")mode=LieferscheinMenge;
   else if(string(argv[optind])=="LZ")mode=LieferscheinZusatz;
   else if(string(argv[optind])=="LA")mode=LieferscheinZweiAuftraege;
+  else if(string(argv[optind])=="LJ")mode=LieferscheinJacek;
   else if(string(argv[optind])=="ZK")mode=ZweiKunden;
   else if(string(argv[optind])=="MP")mode=ManuProCTest;
   else if(string(argv[optind])=="X") mode=Legende;
@@ -86,6 +88,8 @@ int main(int argc, char *argv[])
   try{try{
 #ifdef  MANU_PROC_TEST
    putenv("PGDATABASE=anleitungdb");
+#elif defined  MABELLA_TEST
+   putenv("PGDATABASE=mabelladb");
 #else
    putenv("PGDATABASE=testdb");
 #endif

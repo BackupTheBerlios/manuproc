@@ -1,4 +1,4 @@
-/* $Id: ArtikelBase.h,v 1.8 2002/10/24 14:06:49 thoma Exp $ */
+/* $Id: ArtikelBase.h,v 1.9 2002/11/07 07:48:23 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,6 +23,7 @@
 #include<string>
 #include"Aux/SQLerror.h"
 #include <Aux/FetchIStream.h>
+
 
 class ArtikelBase
 {
@@ -49,5 +50,8 @@ public:
 };
 
 FetchIStream& operator>>(FetchIStream& is,ArtikelBase &a);
+//class cH_ArtikelBezeichnung;
+
+std::ostream &operator<<(std::ostream &o,const ArtikelBase &a);
 
 #endif

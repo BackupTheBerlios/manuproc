@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.14 2002/10/24 14:06:50 thoma Exp $
+// $Id: Check.cc,v 1.15 2002/11/07 07:49:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -30,7 +30,9 @@
 static std::string tempdir="/tmp/";
 #ifdef  MANU_PROC_TEST
 static std::string referenzdir="database_tables_test_ManuProC/";
-#else
+#elif defined  MABELLA_TEST
+static std::string referenzdir="database_tables_test_Mabella/";
+#elif defined PETIG_TEST
 static std::string referenzdir="database_tables_test/";
 #endif
 
@@ -51,14 +53,15 @@ bool Check::vergleich(e_check check)
   	   files.push_back("rohjumbo");
      	files.push_back("lager_bewegung");
   	   break;
-   case LieferscheinTeil: case LieferscheinZeileLoeschen:
+   case LieferscheinTeil: case LieferscheinZeileLoeschen: case LieferscheinZeileLoeschen_n:
    case LieferscheinVoll: case LieferscheinMengenaenderungPlus:
    case LieferscheinMengenaenderungMinus: case LieferscheinZusatz:
    case LieferscheinZusatzPlus: case LieferscheinZusatzMinus:
    case LieferscheinZusatzMinusKunde: case LieferscheinZweiAufTeil:
-   case LieferscheinZweiAufVoll:
+   case LieferscheinZweiAufVoll: case LieferscheinJacek0:
         files.push_back("lieferschein");
         files.push_back("lieferscheinentry");
+        files.push_back("lieferscheinentryzusatz");
    default: 
         files.push_back("auftragsentryzuordnung");
         files.push_back("auftragentry");
@@ -103,6 +106,7 @@ bool Check::vergleich(e_check check)
      // Lieferschein
      case LieferscheinTeil : zusatz="_LS_teillieferung"; break;
      case LieferscheinZeileLoeschen : zusatz="_LS_zeileloeschen"; break;
+     case LieferscheinZeileLoeschen_n : zusatz="_LS_zeileloeschen2"; break;
      case LieferscheinVoll: zusatz="_LS_volllieferung"; break;
      case LieferscheinMengenaenderungPlus : zusatz="_LS_mengenaenderung_plus"; break;
      case LieferscheinMengenaenderungMinus : zusatz="_LS_mengenaenderung_minus"; break;
@@ -112,6 +116,7 @@ bool Check::vergleich(e_check check)
      case LieferscheinZusatzMinusKunde: zusatz="_LSZMK"; break;
      case LieferscheinZweiAufTeil: zusatz="_LSZA"; break;
      case LieferscheinZweiAufVoll: zusatz="_LSZAV"; break;
+     case LieferscheinJacek0 : zusatz="_LSJ0"; break;
      case ZweiKundenTest_anlegen: zusatz="_ZK_anlegen"; break;
      case ZweiKunden_Teil1: zusatz="_ZK_abschreiben1T"; break;
      case ZweiKunden_Teil2: zusatz="_ZK_abschreiben2T"; break;
@@ -168,6 +173,7 @@ void Check::dump(e_check check)
      return;
   }
   else if(check == LieferscheinTeil || check == LieferscheinZeileLoeschen
+          || check == LieferscheinZeileLoeschen_n
           || check == LieferscheinVoll || check==LieferscheinMengenaenderungPlus
           || check == LieferscheinMengenaenderungMinus 
           || check == LieferscheinZusatz || check == LieferscheinZusatzPlus
@@ -178,6 +184,7 @@ void Check::dump(e_check check)
   {  
      unlink((tempdir+"lieferschein").c_str());
      unlink((tempdir+"lieferscheinentry").c_str());
+     unlink((tempdir+"lieferscheinentryzusatz").c_str());
 
      system((psql_cmd+" \""+
   	"select instanz,lfrsid,kundennr,coalesce(rngid,-1) as rngid,instanz"
@@ -187,6 +194,10 @@ void Check::dump(e_check check)
   	"select instanz,lfrsid,zeile,artikelid,refauftragid,stueck,refzeilennr,menge "
   	   " from lieferscheinentry order by instanz,lfrsid,zeile;"
   	    +"\" >"+tempdir+"lieferscheinentry").c_str());
+     system((psql_cmd+" \""+
+  	"select instanz,lfrsid,lfsznr,auftragid,auftragznr,menge "
+  	   " from lieferscheinentryzusatz order by instanz,lfrsid,lfsznr,auftragid,auftragznr;"
+  	    +"\" >"+tempdir+"lieferscheinentryzusatz").c_str());
   }
   
   unlink((tempdir+"auftragsentryzuordnung").c_str());

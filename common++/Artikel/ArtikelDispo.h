@@ -1,4 +1,4 @@
-/* $Id: ArtikelDispo.h,v 1.2 2002/07/05 12:35:01 christof Exp $ */
+/* $Id: ArtikelDispo.h,v 1.3 2002/11/07 07:48:23 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -16,6 +16,10 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+
+#ifndef ARTIKELDISPO
+#define ARTIKELDISPO
+
 
 #include <Artikel/ArtikelBase.h>
 #include <Aux/fixedpoint.h>
@@ -35,3 +39,4 @@ class ArtikelDispo : ArtikelBase
 };
 
 
+#endif

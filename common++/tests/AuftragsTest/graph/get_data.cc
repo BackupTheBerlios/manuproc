@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.8 2002/10/24 14:14:41 christof Exp $
+// $Id: get_data.cc,v 1.9 2002/11/07 07:49:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -23,7 +23,9 @@
 
 #ifdef  MANU_PROC_TEST
 static std::string referenzdir="../database_tables_test_ManuProC";
-#else
+#elif defined MABELLA_TEST
+static std::string referenzdir="../database_tables_test_Mabella";
+#elif defined PETIG_TEST
 static std::string referenzdir="../database_tables_test";
 #endif
 
@@ -150,8 +152,8 @@ graph_data_node::st_node_strings graph_data_node::get_mengen_for_node(AufEintrag
     {
       if(j->prefix!="") {M+=j->prefix+":"; Z+=j->prefix+":";}
       
-      std::string m=dtos(j->bestellt);
-      if(j->geliefert!=AuftragBase::mengen_t(0)) m+="("+dtos(j->geliefert)+")";
+      std::string m=j->bestellt.String();
+      if(j->geliefert!=AuftragBase::mengen_t(0)) m+="("+j->geliefert.String()+")";
       if(Mmem != m) M+=m;
       M+=+"/";
       Mmem=m;
@@ -186,7 +188,7 @@ std::vector<pair<std::string,std::string> > graph_data_node::get_edges_for(AufEi
 //cout <<"X\t" <<aeb<<'\t'<<i->aeb<<'\t'<<i->menge<<'\n';
      if(aeb_mem==i->aeb) 
       {
-        std::string m=dtos(i->menge);
+        std::string m=i->menge.String();
         if(Mmem != m) S+=m;
         S+="/";
         Mmem=m;
@@ -198,8 +200,8 @@ std::vector<pair<std::string,std::string> > graph_data_node::get_edges_for(AufEi
         if(st1!=std::string::npos) S.erase(st1,1);
         V.push_back(pair<std::string,std::string>(A,S));
 
-        S=dtos(i->menge)+"/";
-        Mmem=dtos(i->menge);
+        S=i->menge.String()+"/";
+        Mmem=i->menge.String();
         aeb_mem=i->aeb;
       }
    }
@@ -241,6 +243,7 @@ void graph_data_node::get_files(emode mode)
       case LieferscheinMenge : filenames=Lmfiles(); break;
       case LieferscheinZusatz : filenames=LZfiles(); break;
       case LieferscheinZweiAuftraege : filenames=LAfiles(); break;
+      case LieferscheinJacek: filenames=LSJfiles(); break;
       case ZweiKunden : filenames=ZKfiles(); break;
       case ManuProCTest : filenames=ManuProCfiles(); break;
       case Legende: break;
@@ -359,6 +362,17 @@ std::vector<graph_data_node::st_files> graph_data_node::LAfiles()
   return vec_files;
 }
 
+std::vector<graph_data_node::st_files> graph_data_node::LSJfiles()
+{
+  std::vector<st_files>  vec_files;
+  vec_files.push_back(st_files("mit_lager_open"));  
+  vec_files.push_back(st_files("LS_volllieferung","V"));  
+  vec_files.push_back(st_files("LS_mengenaenderung_minus","M"));  
+  return vec_files;
+}
+
+
+
 std::vector<graph_data_node::st_files> graph_data_node::ZKfiles()
 {
   std::vector<st_files>  vec_files;
@@ -384,6 +398,7 @@ std::vector<graph_data_node::st_files> graph_data_node::ManuProCfiles()
   vec_files.push_back(st_files("LSZM","LR"));  
   vec_files.push_back(st_files("LSZMK","LK"));  
   vec_files.push_back(st_files("LSZA","LKÜ"));  
+
   return vec_files;
 }
 

@@ -1,4 +1,4 @@
-// $Id: Check.hh,v 1.13 2002/10/09 14:47:22 thoma Exp $
+// $Id: Check.hh,v 1.14 2002/11/07 07:49:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -46,11 +46,11 @@ class Check
                  ZweiterAuftrag_frueheresDatum_closed,ErsterAuftrag_frueheresDatum_closed,Planen_WebereiD,
                  Jumbo_richtig,Jumbo_falsch,Jumbo_doppelt,
                  Kunden_Teillieferung,Kunden_Ueberlieferung,
-                 LieferscheinTeil,LieferscheinZeileLoeschen,LieferscheinVoll,
+                 LieferscheinTeil,LieferscheinZeileLoeschen,LieferscheinZeileLoeschen_n,LieferscheinVoll,
                  LieferscheinMengenaenderungPlus,LieferscheinMengenaenderungMinus,
                  LieferscheinZusatz,LieferscheinZusatzPlus,LieferscheinZusatzMinus,
                  LieferscheinZusatzMinusKunde,LieferscheinZweiAufTeil,
-                 LieferscheinZweiAufVoll,
+                 LieferscheinZweiAufVoll,LieferscheinJacek0,
                  ZweiKundenTest_anlegen,ZweiKunden_Teil1,ZweiKunden_Teil2,
                      ZweiKunden_Ueber1};
  private:

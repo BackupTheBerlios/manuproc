@@ -1,4 +1,4 @@
-// $Id: preis.cc,v 1.7 2002/06/27 07:42:51 christof Exp $
+// $Id: preis.cc,v 1.8 2002/11/07 07:49:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,31 +25,31 @@
 int main()
 {  ManuProC::PrintUncaughtExceptions();
    ManuProC::dbconnect();
-   Preis p(1.00,Waehrung::DM,100);
+   Preis p(1.00,WaehrungID::DM,100);
    std::cout << "1DM/100 "<<p<<'\n';
-   Preis b(2.0,Waehrung::DM,100);
+   Preis b(2.0,WaehrungID::DM,100);
    std::cout << "2DM/100 " << b << '\n';
    std::cout << "Summe "<<p+b<< ", " << b+p<< '\n';
    std::cout << "-------------------\n";
-   std::cout << "2DM = "<< b.Wert(Waehrung::EUR) << "Euro\n";
+   std::cout << "2DM = "<< b.Wert(WaehrungID::EUR) << "Euro\n";
    std::cout << "-------------------\n";
-   Preis c(3.0,Waehrung::EUR,100);
+   Preis c(3.0,WaehrungID::EUR,100);
    std::cout << "3Euro/100 "<<c<<'\n';
    std::cout << "1DM + 3Euro "<<p+c<< ", " << c+p<< '\n';
    std::cout << "-------------------\n";
-   Preis d(4.0,Waehrung::EUR,25);
+   Preis d(4.0,WaehrungID::EUR,25);
    std::cout << d << '\n';
    std::cout << "+ 1DM/100 " << p+d << ", " << d+p << '\n';
    std::cout << "--------------------\n";
-   Preis e(1.0,Waehrung::DM,7);
-   Preis f(.1,Waehrung::EUR,100);
+   Preis e(1.0,WaehrungID::DM,7);
+   Preis f(.1,WaehrungID::EUR,100);
    std::cout << e << " + " << f << " = " << e+f << ", " << f+e << '\n';
    std::cout << "-------------------\n";
-   Preis g(5.0,Waehrung::DM,4);
+   Preis g(5.0,WaehrungID::DM,4);
    std::cout << g << " -> 20Stk. = " << g.Gesamtpreis(20,1.0) << '\n';
    std::cout << "-------------------\n";
-   Preis g2(7.10,Waehrung::DM,2);
-   std::cout << g2 << " -> 80Stk. = " << g2.Gesamtpreis(Waehrung::DM,80,0.0,0.0) << '\n';
+   Preis g2(7.10,WaehrungID::DM,2);
+   std::cout << g2 << " -> 80Stk. = " << g2.Gesamtpreis(WaehrungID::DM,80,0.0,0.0) << '\n';
    std::cout << "-------------------\n";
    std::cout << "!" << g2 << " = " << !g2 << '\n';
    Preis g3;

@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.12 2002/10/24 14:06:49 thoma Exp $
+// $Id: AufEintrag.cc,v 1.13 2002/11/07 07:48:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -103,7 +103,7 @@ std::ostream &operator<<(std::ostream &o,const AufEintrag &aeb)
 */
 
 const Preis AufEintrag::GPreis() const
-{ return preis.Gesamtpreis(1,bestellt,rabatt);
+{ return preis.Gesamtpreis(1,bestellt.as_float(),rabatt);
 }
 
 const Preis AufEintrag::EPreis(bool brutto) const
@@ -111,7 +111,7 @@ const Preis AufEintrag::EPreis(bool brutto) const
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__);
  if(brutto) return preis;
  else
- return preis.Gesamtpreis(preis.PreisMenge(),0,rabatt);
+ return preis.Gesamtpreis(preis.PreisMenge().as_int(),0,rabatt);
 }
 
 
@@ -163,7 +163,7 @@ std::string AufEintrag::Planung() const
 
 void AufEintrag::move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,bool reduce_old) throw(std::exception)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str(),"To="+AEB.str(),"Menge="+dtos(menge),"ReduceOld="+itos(reduce_old));
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"To=",AEB,"Menge=",menge,"ReduceOld=",reduce_old);
   Transaction tr;
   if(reduce_old)
    {
@@ -172,7 +172,7 @@ void AufEintrag::move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,
      assert(-menge==mt1);
 //     if(-menge!=mt1) menge=-mt1;
    }
-  mengen_t mt2=AufEintrag(AEB).updateStkDiff__(uid,+menge,false,r_Produziert);
+  mengen_t mt2=AufEintrag(AEB).updateStkDiff__(uid,menge,false,r_Produziert);
   assert(menge==mt2);
   AufEintragZu(*this).Neu(AEB,menge); 
   tr.commit();
@@ -224,11 +224,11 @@ assert(!"XXXXX");
 */
 
 #include <Lager/Lager.h>
-#include <Lager/Lager_Vormerkungen.h>
+//#include <Lager/Lager_Vormerkungen.h>
 
 void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,int uid,e_reduce_reason reason)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Menge="+dtos(menge),"Reason="+itos(reason));
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Menge=",menge,"Reason=",reason);
  std::list<AufEintragZu::st_reflist> K=AufEintragZu(*this).get_Referenz_list(*this,true);
  for (std::list<AufEintragZu::st_reflist>::const_iterator i=K.begin();i!=K.end();++i)
   {
@@ -246,7 +246,9 @@ void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,int uid,e
 
       H_Lager L(Instanz());
       L->dispo_auftrag_aendern(Artikel(),M);
-      Lager_Vormerkungen::freigegeben_menge_neu_verplanen(Instanz(),Artikel(),M,uid,reason);
+      L->menge_neu_verplanen(uid,Artikel(),M,reason);
+//      ArtikelVormerken::im_lager_menge_neu_verplanen(uid,Instanz(),Artikel(),M,reason);
+//      Lager_Vormerkungen::freigegeben_menge_neu_verplanen(Instanz(),Artikel(),M,uid,reason);
 
       assert(mt==mengen_t(-M));
      }
@@ -283,7 +285,7 @@ void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,int uid,e
 void AufEintrag::Produziert(mengen_t menge,
    ManuProcEntity<>::ID lfrsid) throw(SQLerror)
 {
-  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Menge="+dtos(menge));
+  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Menge=",menge);
   Kunde::ID kunde=Auftrag(*this).getKundennr();
   ManuProC::st_produziert sp(kunde,*this,menge,getuid(),lfrsid);
   Instanz()->Produziert(sp);

@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.17 2002/10/24 14:06:49 thoma Exp $ */
+/* $Id: AufEintrag.h,v 1.18 2002/11/07 07:48:30 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -38,15 +38,17 @@
 #include <vector>
 #include <list>
 #include <Aux/itos.h>
-//#include <Lieferschein/Lieferschein.h>
 class cH_Lieferschein;
 #include <Auftrag/AufEintragZu.h>
 
+class Lager;
 
 class AufEintrag : public AufEintragBase
 {
- friend class Lager_Vormerkungen;
-
+//   friend void Lager::menge_neu_verplanen(int uid,
+//                 const ArtikelBase& artikel,AuftragBase::mengen_t menge,
+//                               const AufEintragBase::e_reduce_reason reason) throw(SQLerror);
+     friend class Lager;
  public:
   enum e_problems{Geplant,Geplant_nolager,Lager,Geliefert,GeliefertFatal};
   struct st_problems{e_problems art; AufEintragBase AEB; mengen_t menge_input;
@@ -175,11 +177,11 @@ private:
    friend void ppsInstanz::Produziert(ManuProC::st_produziert &P) const;
    friend class AufEintragBase;
  void abschreiben(mengen_t menge,
-    ManuProcEntity<>::ID lfrsid=ManuProcEntity<>::none_id) throw(SQLerror);
+    ManuProcEntity<>::ID lfrsid) throw(SQLerror);
 
 public:
  void Produziert(mengen_t menge,
-     ManuProcEntity<>::ID lfrsid=ManuProcEntity<>::none_id)  throw(SQLerror);
+     ManuProcEntity<>::ID lfrsid)  throw(SQLerror);
 
 
 public:
@@ -188,7 +190,6 @@ public:
  ppsInstanz::ID LetztePlanInstanz() const { return letztePlanInstanz; }
  void setLetztePlanungFuer(cH_ppsInstanz planinstanz) throw(SQLerror);
 
-// void move_menge_to_dispo_zuordnung(mengen_t menge);
 
  // wird von Artikeleingabe verwendet; gibt Zeilennummer zurück;
  void moveInstanz(int uid,const AuftragBase& auftrag) throw(SQLerror);
@@ -209,11 +210,8 @@ public:
  int Planen(int uid,mengen_t menge, bool reduce_old,const AuftragBase &zielauftrag,
       const ManuProC::Datum &datum,bool rekursiv=false) throw(std::exception);
 
-// friend std::ostream &operator<<(std::ostream &o,const AufEintrag &aeb);
-
+ 
 
 };
-
-//std::ostream &operator<<(std::ostream &o,const AufEintrag &aeb);
 
 #endif

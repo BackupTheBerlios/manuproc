@@ -1,4 +1,4 @@
-// $Id: dot_out.cc,v 1.8 2002/10/24 14:14:41 christof Exp $
+// $Id: dot_out.cc,v 1.9 2002/11/07 07:49:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -39,10 +39,11 @@ void dot_out::write()
      case LieferscheinMenge : label="LieferscheinMengen Test"; break;
      case LieferscheinZusatz : label="Lieferschein Zusatz Test"; break;
      case LieferscheinZweiAuftraege : label="Lieferschein Zwei Aufträge"; break;
+     case LieferscheinJacek : label="Lieferschein Test für Jacek"; break;
      case ZweiKunden : label="ZweiKunden"; break;
      case ManuProCTest : label="ManuProC"; break;
      case Legende : label="Legende"; break;
-     default: label= "Fehler, kein Laberl gestze \n"; 
+     default: label= "Fehler, kein Label gestze \n"; 
    }
   if(mode!=Legende)  write_node(fout);
   else write_legend(fout);

@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.cc,v 1.10 2002/10/24 14:14:30 christof Exp $
+// $Id: Zahlungsart.cc,v 1.11 2002/11/07 07:48:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -54,12 +54,12 @@ void Zahlungsart::TeX_out(std::ostream &os,
    if(vec_skonto.size()>=1)
      {os << "\\\\abzgl. "<<FormatiereTeX_short(vec_skonto[0].skontosatz)
          <<"\\% Skonto";
-      if(einzugrabatt)
+      if(!!einzugrabatt)
         os << " = "<<w->TeXsymbol()<<" "<<FormatiereTeX_Preis(skontobetrag);
       else
         os << " = {\\bf "<<w->TeXsymbol()<<" "<<FormatiereTeX_Preis(skontobetrag)<<"}";
      }
-  if(einzugrabatt)
+  if(!!einzugrabatt)
     os << "\\\\abzgl. "<<FormatiereTeX_short(einzugrabatt)
        <<"\\% wg. Abbuchung = {\\bf "<<w->TeXsymbol()
        <<" "<<FormatiereTeX_Preis(einzugrabattbetrag)<<"}\\\\";
@@ -95,7 +95,7 @@ void Zahlungsart::TeX_out(std::ostream &os,
 	   	<<FormatiereTeX_Preis(skontobetrag)<<"}\\\\\n";
 	 else
 	   {os << "Zahlung Vorauskasse";
-	    if(vec_skonto[0].skontosatz)
+	    if(!!vec_skonto[0].skontosatz)
            	os << " mit "<<vec_skonto[0].skontosatz<<"\\.\\% Skonto"
            	<< " = {\\bf "<<w->TeXsymbol()<<" "
 	   	<<FormatiereTeX_Preis(skontobetrag)<<"}\\\\\n";
@@ -129,7 +129,7 @@ void Zahlungsart::TeX_out(std::ostream &os,
      {os << "\\\\abzgl. "<<FormatiereTeX_short(vec_skonto[0].skontosatz)
          <<"\\% Skonto\\\\\n";
      }
-  if(einzugrabatt)
+  if(!!einzugrabatt)
     os << "\\\\abzgl. "<<FormatiereTeX_short(einzugrabatt)
        <<"\\% wg. Abbuchung\\\\\n";
   os << "wird ";
@@ -164,7 +164,7 @@ void Zahlungsart::TeX_out(std::ostream &os,
 	 }
 	 else
 	   {os << "Zahlung Vorauskasse";
-	    if(vec_skonto[0].skontosatz)
+	    if(!!vec_skonto[0].skontosatz)
            	os << " mit "<<vec_skonto[0].skontosatz<<"\\.\\% Skonto"
 	     	<< " = {\\bf "<<k->getWaehrung()->TeXsymbol()<<" "
 	   	<<FormatiereTeX_Preis(skontobetrag)<<"}\\\\\n";

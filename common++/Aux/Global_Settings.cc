@@ -1,6 +1,6 @@
-// $Id: ArtikelEAN_sql.pgcc,v 1.9 2002/11/07 07:48:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
+ *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,29 +17,15 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "Global_Settings.h"
 
-
-#include"ArtikelEAN.h"
-
-ArtikelEAN::ArtikelEAN(const std::string _ean) throw(SQLerror)
+std::string Global_Settings::get_Wert(const std::string &seperator,int field) const
 {
- exec sql begin declare section;
- int ARTID;
- char *EAN=(char*)_ean.c_str();
- exec sql end declare section;
-
- 
-
- exec sql select id into :ARTID from artbez_3_1 where ean= :EAN; 
- SQLerror::test(__FILELINE__);
-
- artikelid = ARTID;
-
+  std::string gs = get_Wert();
+  std::string::size_type  p=gs.find(seperator);
+  if(p==std::string::npos) return "";
+  if(field==1) return std::string(gs,0,p);
+  else if(field==2) return std::string(gs,p+seperator.size(),std::string::npos);
+  else return "";
 }
-
-
-
-
-
-
 

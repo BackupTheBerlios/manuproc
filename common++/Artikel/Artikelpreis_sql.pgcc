@@ -1,4 +1,4 @@
-// $Id: Artikelpreis_sql.pgcc,v 1.10 2002/10/24 14:06:49 thoma Exp $
+// $Id: Artikelpreis_sql.pgcc,v 1.11 2002/11/07 07:48:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -110,7 +110,7 @@ Artikelpreis::Artikelpreis(const cH_Kunde &k,const ArtikelBase &a)
 
 const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
 		const Preis &p, const ArtikelBase &a,
-		vector<std::string> ins_all_komp) throw(SQLerror)
+		std::vector<std::string> ins_all_komp) throw(SQLerror)
 {
  exec sql begin declare section;
  int ARTIKELID;
@@ -122,13 +122,13 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
  exec sql end declare section;
 
 
- PREIS=p.Wert();
- PREISMENGE=p.PreisMenge();
+ PREIS=p.Wert().as_float();
+ PREISMENGE=p.PreisMenge().as_int();
  PRLSID=liste;
  WAEHRUNG=p.getWaehrung()->Id();
 
 
- vector<int> to_insert; // Artikel, alter Preis
+ std::vector<int> to_insert; // Artikel, alter Preis
  std::string query;
  std::string artbez_tabelle;
 
@@ -139,7 +139,7 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
     cH_ExtBezSchema ebz=ab->getExtBezSchema();
     artbez_tabelle=" artbez_"+itos(ebz->Typ().Id())+"_"+itos(ebz->Id());
     query="select id from "+artbez_tabelle+" where ";
-    for(vector<std::string>::const_iterator s=ins_all_komp.begin();
+    for(std::vector<std::string>::const_iterator s=ins_all_komp.begin();
 	s!=ins_all_komp.end(); ++s)
 	{
 	 ExtBezSchema::BezKomp bk=(*ebz)[*s];
@@ -165,7 +165,7 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
  
  UID=int(getuid());
 
- for(vector<int>::const_iterator i=to_insert.begin();
+ for(std::vector<int>::const_iterator i=to_insert.begin();
 	i!=to_insert.end(); ++i)
    {
     ARTIKELID=(*i);
@@ -191,9 +191,9 @@ void Artikelpreis::changePreis(const Preis &p) throw(SQLerror)
 {
  exec sql begin declare section;
  int ARTIKELID=artikel;
- float PREIS=p.Wert();
+ float PREIS=p.Wert().as_float();
  float PREIS_ALT;
- int PREISMENGE=p.PreisMenge();
+ int PREISMENGE=p.PreisMenge().as_int();
  int PRLSID=gefunden_in;
  int WAEHRUNG=p.getWaehrung()->Id();
  int UID;
@@ -239,7 +239,7 @@ void Artikelpreis::changePreis(const Preis &p) throw(SQLerror)
 
 
 void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a,
-	vector<std::string> del_all_komp) throw(SQLerror)
+	std::vector<std::string> del_all_komp) throw(SQLerror)
 {
  exec sql begin declare section;
   int ARTIKELID=a.Id();
@@ -250,7 +250,7 @@ void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a,
 
  UID=int(getuid());
 
- vector<pair<int,float> > to_delete; // Artikel, alter Preis
+ std::vector<std::pair<int,float> > to_delete; // Artikel, alter Preis
  std::string query;
  std::string artbez_tabelle;
 
@@ -262,7 +262,7 @@ void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a,
     artbez_tabelle=" artbez_"+itos(ebz->Typ().Id())+"_"+itos(ebz->Id());
     query="select id,preis from "+artbez_tabelle+" a join artikelpreise p "
 	" on (id=artikelid and p.kundennr="+itos(PRLSID)+") where ";
-    for(vector<std::string>::const_iterator s=del_all_komp.begin();
+    for(std::vector<std::string>::const_iterator s=del_all_komp.begin();
 	s!=del_all_komp.end(); ++s)
 	{
 	 ExtBezSchema::BezKomp bk=(*ebz)[*s];
@@ -271,7 +271,7 @@ void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a,
 	}
     query+=" true "; // damit am Ende kein einsames "and" stehen bleibt
 
-    to_delete=Query(query).FetchArray< pair<int,float> >();
+    to_delete=Query(query).FetchArray< std::pair<int,float> >();
     
    }
  else
@@ -280,14 +280,14 @@ void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a,
 	artikelid=:ARTIKELID and kundennr=:PRLSID;
    SQLerror::test(__FILELINE__);
 
-   to_delete.push_back(pair<int,float>(ARTIKELID,PREIS));	
+   to_delete.push_back(std::pair<int,float>(ARTIKELID,PREIS));	
    }
 
 
 
  Transaction tr;
 
- for(vector<pair<int,float> >::const_iterator i=to_delete.begin();
+ for(std::vector<std::pair<int,float> >::const_iterator i=to_delete.begin();
 	i!=to_delete.end(); ++i)
    {
     ARTIKELID=(*i).first;
@@ -309,7 +309,7 @@ void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a,
 
 };
 
-FetchIStream &operator>>(FetchIStream &is,pair<int,float> &ag)
+FetchIStream &operator>>(FetchIStream &is,std::pair<int,float> &ag)
 {  return is >> ag.first >> ag.second;
 }
 

@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema.h,v 1.13 2002/10/24 14:06:49 thoma Exp $
+// $Id: ExtBezSchema.h,v 1.14 2002/11/07 07:48:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -159,7 +159,7 @@ public:
    throw;  
  }
  
- const BezKomp operator[](pair<int,int> ktyp_sig) const throw()
+ const BezKomp operator[](std::pair<int,int> ktyp_sig) const throw()
  { for(const_sigiterator i=sigbegin(ktyp_sig.second); 
  	i!=sigend(ktyp_sig.second); ++i)
      if((*i).bezkomptype==ktyp_sig.first) return (*i);

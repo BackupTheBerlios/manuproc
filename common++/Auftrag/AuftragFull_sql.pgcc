@@ -22,8 +22,15 @@
 #include <Aux/Trace.h>
 
 
-AufEintragBase AuftragFull::push_back(unsigned long int bestellt,
-               ManuProC::Datum lieferdatum, ArtikelBase::ID artid,
+void AuftragFull::push_back(AufEintrag aeb)
+{
+  eintragliste.push_back(aeb);
+}
+
+
+
+AufEintragBase AuftragFull::push_back(AuftragBase::mengen_t bestellt,
+               ManuProC::Datum lieferdatum, ArtikelBase artid,
                AufStatVal status,int uid,
                Preis preis, fixedpoint<2> rabatt,const cH_PreisListe &preisliste) throw (SQLerror)
 {
@@ -31,8 +38,12 @@ AufEintragBase AuftragFull::push_back(unsigned long int bestellt,
   AufEintragBase newAEB=Auftrag::push_back(bestellt,lieferdatum,artid,status,uid,true,preis,rabatt,preisliste);
   eintragliste.push_back(AufEintrag(
       Instanz(),Id(),newAEB.ZNr(),bestellt,artid,lieferdatum,
-      0,0,0,getStatus(),getKundennr(),getYourAufNr(),
-      ManuProC::Datum(),Prozess::default_id,ppsInstanzID::None,0,
+      	0,	// geliefert
+	0,	// dispoentrynr
+	0,	// disponr
+	getStatus(),getKundennr(),getYourAufNr(),
+      ManuProC::Datum(),Prozess::default_id,ppsInstanzID::None,
+	0,	// maxPlanInstanz
       preis,rabatt,status,uid,ManuProC::Datum::today(),"",preisliste));
   return newAEB;
 }

@@ -1,4 +1,4 @@
-/* $Id: RechnungEntry.h,v 1.12 2002/09/02 13:04:04 christof Exp $ */
+/* $Id: RechnungEntry.h,v 1.13 2002/11/07 07:48:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -88,7 +88,7 @@ public:
  const Preis getPreis(bool brutto=true) const 
  { 
    if(brutto) return preis;
-   else return preis.Gesamtpreis(preis.PreisMenge(),0,rabatt);
+   else return preis.Gesamtpreis(preis.PreisMenge().as_int(),0.0,rabatt);
  }
  
  // Waehrung muss zu der in Rechnung passen (kein Vergleich)
@@ -100,7 +100,7 @@ public:
  const ArtikelBase Artikel() const { return artikel; }
  ManuProC::Datum LieferDatum() const {return lieferdatum; }
  const int AuftragId() const { return auftrag.Id();}
- const Preis GPreis() const { return preis.Gesamtpreis(stueck,menge,rabatt); }
+ const Preis GPreis() const { return preis.Gesamtpreis(stueck,menge.as_float(),rabatt); }
 };
 
 #endif

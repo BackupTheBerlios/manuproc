@@ -28,6 +28,7 @@ for i in \
    global_settings \
    lieferschein \
    lieferscheinentry \
+   lieferscheinentryzusatz \
    ketten \
    ketten_kettid_seq \
    kunden \

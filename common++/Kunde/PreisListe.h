@@ -1,4 +1,4 @@
-// $Id: PreisListe.h,v 1.8 2002/10/24 14:06:50 thoma Exp $
+// $Id: PreisListe.h,v 1.9 2002/11/07 07:48:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -35,8 +35,8 @@ public:
 private:
  std::string name;
  cP_Waehrung waehrung;
- bool rabatt_gesetzt;
- rabatt_t rabatt;
+ mutable bool rabatt_gesetzt;
+ mutable rabatt_t rabatt;
 
 public:
   PreisListe(ID id) throw(SQLerror);
@@ -47,7 +47,7 @@ public:
   bool festerRabatt() const { return rabatt_gesetzt; }
   const rabatt_t getRabatt() const { return rabatt;}
   const cP_Waehrung getWaehrung() const { return waehrung; }
-  void setRabatt(bool fest, rabatt_t rab);
+  void setRabatt(bool fest, rabatt_t rab) throw(SQLerror);
 };
 
 

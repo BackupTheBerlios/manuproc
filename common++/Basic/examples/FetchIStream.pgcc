@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.14 2002/10/31 08:29:36 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.15 2002/11/07 07:49:38 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,6 +21,7 @@
 #include <Misc/FetchIStream.h>
 #include <Misc/dbconnect.h>
 exec sql include sqlca;
+#include <iterator>
 
 exec sql whenever sqlerror do X();
 #define X() throw SQLerror(__FILELINE__)
@@ -49,7 +50,7 @@ int main()
   {Query query("select relname from pg_class limit 10");
    std::vector<std::string> v;
    query.FetchArray(v);
-   std::copy(v.begin(),v.end(),ostream_iterator<std::string>(std::cout,"\n"));
+   std::copy(v.begin(),v.end(),std::ostream_iterator<std::string>(std::cout,"\n"));
   }
 // test nasty error? (overlapping)
 {

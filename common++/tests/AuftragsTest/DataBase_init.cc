@@ -1,4 +1,4 @@
-// $Id: DataBase_init.cc,v 1.5 2002/10/24 14:06:50 thoma Exp $
+// $Id: DataBase_init.cc,v 1.6 2002/11/07 07:49:16 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -17,9 +17,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-//#include <ManuProCConfig.h>
-
-//#include "steuerfile.hh"
 #include "DataBase_init.hh"
 
 #include <Aux/FetchIStream.h>
@@ -33,23 +30,22 @@
 
 DataBase_init::DataBase_init() 
 {
-#ifdef PETIG_EXTENSIONS
-#ifndef MANU_PROC_TEST
+#ifdef PETIG_TEST
    ArtikelBaum_anlegen();
    RohwarenLager_initalisieren();
    JumboLager_initalisieren();
-#endif   
-#endif   
-#ifdef MANU_PROC_TEST 
+#elif defined MANU_PROC_TEST 
    Lager L(ROHWARENLAGER); 
    L.rein_ins_lager(1,200,getuid()); // Metall
    L.rein_ins_lager(2,50,getuid()); // Granulat klar
    L.rein_ins_lager(3,100,getuid()); // Granulat gelb
+#elif defined MABELLA_TEST
+   Lager L(FERTIGWARENLAGER); 
+   L.rein_ins_lager(ARTIKEL_TRIO,4,getuid()); 
 #endif
 }
 
-#ifdef  PETIG_EXTENSIONS
-#ifndef MANU_PROC_TEST
+#ifdef  PETIG_TEST
 
 void DataBase_init::ArtikelBaum_anlegen()
 {
@@ -72,7 +68,7 @@ void DataBase_init::ArtikelBaum_anlegen_execute(const ArtikelBase &art,
   std::string s2="insert into artikelzusammensetzung (id,prozessid,altartikelid";
   if(faktor!=ArtikelBaum::faktor_t(0)) s2 +=",menge";
   s2 +=") values ("+itos(art.Id())+","+itos(prozess->Id())+","+itos(art_von.Id());
-  if(faktor!=ArtikelBaum::faktor_t(0)) s2 +=","+dtos(faktor);
+  if(faktor!=ArtikelBaum::faktor_t(0)) s2 +=","+faktor.String();
   s2+=")"; 
   Query::Execute(s2);
   SQLerror::test(__FILELINE__);
@@ -135,6 +131,5 @@ void DataBase_init::JumboLager_initalisieren()
   system(com.c_str());
 }
 
-#endif
 #endif
 

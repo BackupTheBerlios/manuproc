@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.27 2002/10/24 14:06:49 thoma Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.28 2002/11/07 07:48:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -40,21 +40,22 @@
 #include <unistd.h>
 //#include <Instanzen/ppsInstanzProduziert.h>
 #include <Aux/Trace.h>
+#include <Artikel/ArtikelImLager.h>
 
 exec sql include sqlca;
 
 void AufEintrag::abschreiben(mengen_t menge,
     ManuProcEntity<>::ID lfrsid) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Menge="+dtos(menge),"Lfrsid="+itos(lfrsid));
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Menge=",menge,"Lfrsid=",lfrsid);
 
  exec sql begin declare section;
   int AUFID=Id();
   int AUFZNR=ZNr();
   int INSTANZ=InstanzID();
   int STATUS=getEntryStatus();
-  int GELIEFERT=(int)(menge+getGeliefert());
-  int BESTELLT=(int)(getStueck());
+  int GELIEFERT=(menge+getGeliefert()).as_int();
+  int BESTELLT=getStueck().as_int();
   char LASTDATE[21];
  exec sql end declare section;
  Petig::Datum::today().write_postgres(LASTDATE,sizeof LASTDATE);
@@ -71,8 +72,8 @@ void AufEintrag::abschreiben(mengen_t menge,
 
  AufStatVal oldstatus=getEntryStatus();
 
- if(GELIEFERT>=getStueck()) STATUS=(AufStatVal)CLOSED;
- else if(menge<0 && GELIEFERT<getStueck()) STATUS=(AufStatVal)OPEN;
+ if(mengen_t(GELIEFERT)>=getStueck()) STATUS=(AufStatVal)CLOSED;
+ else if(menge<0 && mengen_t(GELIEFERT)<getStueck()) STATUS=(AufStatVal)OPEN;
 
  Transaction tr;
  exec sql lock table auftragentry in exclusive mode;
@@ -83,7 +84,7 @@ void AufEintrag::abschreiben(mengen_t menge,
      !Instanz()->ProduziertSelbst() && 
      Id()==AuftragBase::plan_auftrag_id)
    {
-     BESTELLT+=int(menge);
+     BESTELLT+=menge.as_int();
      if(BESTELLT<0) BESTELLT=0;
      if(BESTELLT==GELIEFERT) STATUS=CLOSED;
      if(BESTELLT==0 && GELIEFERT==0 &&  STATUS==CLOSED) delete_entry=true;
@@ -99,9 +100,12 @@ void AufEintrag::abschreiben(mengen_t menge,
  SQLerror::test(__FILELINE__);
 
 #ifdef MABELLA_EXTENSIONS // Lager updaten
- FertigWaren fw(Artikel(),(FertigWaren::enum_Aktion)'L',(int)menge,lfrsid);
- if(menge < 0) fw.Einlagern(1);
- else if(menge > 0) fw.Auslagern(1);
+ if(Instanz() == ppsInstanzID::Kundenauftraege)
+   {
+    FertigWaren fw(Artikel(),(FertigWaren::enum_Aktion)'L',menge.as_int(),lfrsid);
+    if(menge < 0) fw.Einlagern(1);
+    else if(menge > 0) fw.Auslagern(1);
+   }
 #endif
 
  geliefert=GELIEFERT;
@@ -120,7 +124,7 @@ void AufEintrag::abschreiben(mengen_t menge,
 
 void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Status="+itos(newstatus),"Force="+itos(force));
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Status=",newstatus,"Force=",force);
  if(newstatus == STORNO) force=true;
  if(newstatus == STORNO && getGeliefert()!=mengen_t(0))  return;
  if(entrystatus == CLOSED && !force ) return; // nichts geht mehr
@@ -134,7 +138,7 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
  SQLerror::test("setStatus: lock table auftragentry");
 
  if(newstatus == CLOSED || newstatus == STORNO)
-     updateStkDiffInstanz__(uid,-getRestStk(),r_Closed/*0,0*/);    
+     updateStkDiffInstanz__(uid,-getRestStk(),r_Closed);    
 
  std::string sqlcommand = "update auftragentry set status="+itos(newstatus);
  if(uid) sqlcommand+=", lasteditdate = now(), lastedit_uid="+itos(uid);
@@ -159,8 +163,8 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
    {
     pps_ChJournalEntry::newChange(
 			instanz, *this, artikel,
-			(double)bestellt,
-			(double)bestellt,
+			bestellt.as_float(),
+			bestellt.as_float(),
 			pps_ChJournalEntry::CH_MENGE);
   }
  else if(newstatus==CLOSED && oldentrystatus!=UNCOMMITED) 
@@ -168,8 +172,8 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
    {
     pps_ChJournalEntry::newChange(
 			instanz, *this, artikel,
-			(double)geliefert,
-			(double)geliefert-bestellt,
+			geliefert.as_float(),
+			(geliefert-bestellt).as_float(),
 			pps_ChJournalEntry::CH_MENGE);
    }
 
@@ -179,7 +183,7 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
 
 void AufEintrag::setInstanzen(AufStatVal newstatus,int uid,Petig::Datum lieferdate,mengen_t Menge,int myznr,int yourznr)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Status="+itos(newstatus),"Menge="+dtos(Menge),"MyZNr="+itos(myznr),"YourZNr="+itos(yourznr));
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Status=",newstatus,"Menge=",Menge,"MyZNr=",myznr,"YourZNr=",yourznr);
  std::list<AufEintragZu::st_reflist> KindListe = AufEintragZu(*this).get_Referenz_list(*this,true);
  for(std::list<AufEintragZu::st_reflist>::const_iterator i=KindListe.begin();i!=KindListe.end();++i)
   {
@@ -233,7 +237,7 @@ void AufEintrag::setInstanzen(AufStatVal newstatus,int uid,Petig::Datum lieferda
 
 AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool instanzen,e_reduce_reason reason) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Menge="+dtos(menge),"Instanzen(bool)="+itos(instanzen),"Reason="+itos(reason));
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Menge=",menge,"Instanzen(bool)=",instanzen,"Reason=",reason);
  if(menge==mengen_t(0))  return menge;
  if(auftragstatus==OPEN || auftragstatus==UNCOMMITED)
   {
@@ -246,7 +250,7 @@ AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool in
 //ECPGdebug(false,0);
 
    if(instanzen)
-      updateStkDiffInstanz__(uid,mt,reason/*,callback,argument*/);
+      updateStkDiffInstanz__(uid,mt,reason);
 
    bestellt+=menge;
 
@@ -259,7 +263,8 @@ AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool in
 
 void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,e_reduce_reason reason) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"OldMenge="+dtos(oldmenge),"Reason="+itos(reason));
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"OldMenge=",oldmenge,
+   "Reason=",reason);
  std::list<AufEintragZu::st_reflist> KindListeU = AufEintragZu(*this).get_Referenz_list_ungeplant();
 // std::list<AufEintragZu::st_reflist> KindListeG = AufEintragZu(*this).get_Referenz_list(*this,true);
  try{
@@ -344,8 +349,8 @@ void AufEintrag::updatePreis(const Preis &pr) throw(SQLerror)
  int AUFTRAGID = auftragid;
  int ZEILENNR = zeilennr;
  int INSTANZ=instanz->Id();
- float PREIS=pr.Wert();
- float PREISMENGE=pr.PreisMenge();
+ float PREIS=pr.Wert().as_float();
+ float PREISMENGE=pr.PreisMenge().as_float();
  exec sql end declare section;
  
  exec sql update auftragentry 
@@ -364,7 +369,7 @@ void AufEintrag::updateRabatt(rabatt_t rb) throw(SQLerror)
  int AUFTRAGID = auftragid;
  int INSTANZ=instanz->Id();
  int ZEILENNR = zeilennr;
- float RABATT = rb;
+ float RABATT = rb.as_float();
  exec sql end declare section;
 
  exec sql update auftragentry set rabatt= :RABATT
@@ -377,7 +382,8 @@ void AufEintrag::updateRabatt(rabatt_t rb) throw(SQLerror)
 
 void AufEintrag::updateLieferdatum(const Petig::Datum &ld,int uid) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Datum="+ld.to_iso());
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
+   "Datum=",ld);
  exec sql begin declare section;
  int AUFTRAGID = auftragid;
  int INSTANZ=instanz->Id();
@@ -421,7 +427,7 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld,int uid) throw(SQLerro
   
 int AufEintrag::split(int uid,mengen_t newmenge, const Petig::Datum &newld,bool dispoplanung,void (*callback)(void *,st_problems),void* argument) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"NewMenge="+dtos(newmenge),"NewDatum="+newld.to_iso(),"dispoplanung(bool)="+itos(dispoplanung));
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"NewMenge=",newmenge,"NewDatum=",newld,"dispoplanung(bool)=",dispoplanung);
  if(entrystatus==CLOSED) return none_znr;
 
  mengen_t BESTELLT_OLD=bestellt-newmenge;
@@ -431,11 +437,11 @@ int AufEintrag::split(int uid,mengen_t newmenge, const Petig::Datum &newld,bool 
  double GELIEFERT_OLD;
 
  if(lieferdatum>newld)
-   {GELIEFERT=geliefert>newmenge ? mengen_t(newmenge) : geliefert;
-    GELIEFERT_OLD=geliefert>newmenge ? geliefert-mengen_t(newmenge) : mengen_t(0);}
+   {GELIEFERT=(geliefert>newmenge ? mengen_t(newmenge) : geliefert).as_float();
+    GELIEFERT_OLD=(geliefert>newmenge ? geliefert-mengen_t(newmenge) : mengen_t(0)).as_float();}
  else
-   {GELIEFERT_OLD=geliefert>BESTELLT_OLD ? mengen_t(BESTELLT_OLD) : geliefert;
-    GELIEFERT=geliefert>BESTELLT_OLD ? geliefert-mengen_t(BESTELLT_OLD) : mengen_t(0);}
+   {GELIEFERT_OLD=(geliefert>BESTELLT_OLD ? mengen_t(BESTELLT_OLD) : geliefert).as_float();
+    GELIEFERT=(geliefert>BESTELLT_OLD ? geliefert-mengen_t(BESTELLT_OLD) : mengen_t(0)).as_float();}
     
  Transaction tr;
  exec sql lock auftragentry in exclusive mode;
@@ -460,11 +466,11 @@ int AufEintrag::split(int uid,mengen_t newmenge, const Petig::Datum &newld,bool 
  if(STATUS==OPEN)
    {   pps_ChJournalEntry::newChange(
     			instanz, *this,
-    			artikel, BESTELLT_OLD, +(BESTELLT_OLD-bestellt),
+    			artikel, BESTELLT_OLD.as_float(), (BESTELLT_OLD-bestellt).as_float(),
     			pps_ChJournalEntry::CH_MENGE);
        pps_ChJournalEntry::newChange(
     			instanz, *this,
-    			artikel, newmenge, +newmenge,
+    			artikel, newmenge.as_float(), newmenge.as_float(),
     			pps_ChJournalEntry::CH_MENGE);
    }
 
@@ -492,7 +498,7 @@ AufEintrag::AufEintrag(const AufEintragBase &aebb) throw (SQLerror,NoAEB_Error)
 int AufEintrag::Planen(int uid,mengen_t menge,bool reduce_old,const AuftragBase &zielauftrag,
    const Petig::Datum &datum,bool rekursiv) throw(std::exception)
 {
-   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Menge="+dtos(menge),"reduce_old="+itos(reduce_old),"Zielauftrag="+zielauftrag.str());
+   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Menge=",menge,"reduce_old=",reduce_old,"Zielauftrag=",zielauftrag);
    assert(!Id());
    assert(Instanz()->LagerInstanz() || entrystatus==OPEN);
    assert(Instanz()->LagerInstanz() || auftragstatus==OPEN);
@@ -543,7 +549,7 @@ int AufEintrag::Planen(int uid,mengen_t menge,bool reduce_old,const AuftragBase 
    for (std::list<AufEintragZu::st_reflist>::iterator i=ReferenzAufEintrag.begin();i!=ReferenzAufEintrag.end();++i)
     {
      if(i->AEB.Instanz()->Id()!=ppsInstanzID::Kundenauftraege) continue;
-if(zielauftrag.Id()==AuftragBase::plan_auftrag_id) continue;
+     if(zielauftrag.Id()==AuftragBase::plan_auftrag_id) continue;
      i->AEB.setLetztePlanungFuer(instanz);
      i->AEB.calculateProzessInstanz();
     }
@@ -552,7 +558,8 @@ if(zielauftrag.Id()==AuftragBase::plan_auftrag_id) continue;
    if(rekursiv) // Braucht nur das Erfassungs/Reperaturprogramm
     {
      // bei dem gerade geplaneten Auftrag abschreiben:
-     AufEintrag(class AufEintragBase(zielauftrag,znr)).abschreiben(menge);
+     AufEintrag(class AufEintragBase(zielauftrag,znr)).
+		abschreiben(menge,ManuProcEntity<>::none_id);
      std::list<AufEintragZu::st_reflist> L=AufEintragZu(*this).get_Referenz_list_ungeplant();
      for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
       {
@@ -568,7 +575,7 @@ if(zielauftrag.Id()==AuftragBase::plan_auftrag_id) continue;
 
 void AufEintrag::moveInstanz(int uid,const AuftragBase &newAuftrag) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"NewAuftrag="+newAuftrag.str());
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"NewAuftrag=",newAuftrag);
  AufEintragBase oldAEB = *this;
  auftragid=newAuftrag.Id(); 
  instanz=newAuftrag.Instanz();
@@ -583,7 +590,11 @@ void AufEintrag::moveInstanz(int uid,const AuftragBase &newAuftrag) throw(SQLerr
  mengen_t mt=oldAEB.updateStkDiffBase__(uid,-menge);
  assert(mt==-menge);
 
- AuftragBase::mengen_t lagermenge=Lager_Vormerkungen::artikel_auf_lager(artikel,instanz,lieferdatum,AuftragBase::dispo_auftrag_id);
+ ArtikelImLager AIL(instanz,artikel,lieferdatum);
+ AuftragBase::mengen_t lagermenge=AIL.getMengeDispo();
+
+//cout << "AufEintrag_sql.pgcc: "<<lagermenge_new<<' '<<lagermenge<<'\n';
+ 
  mengen_t bestellmenge;
  if(lagermenge>=bestellt) bestellmenge = 0;
  else                     bestellmenge = bestellt-lagermenge;
@@ -592,10 +603,8 @@ void AufEintrag::moveInstanz(int uid,const AuftragBase &newAuftrag) throw(SQLerr
  AufEintragBase newaeb= A.push_back(bestellmenge,getLieferdatum(),Artikel(),
                             getEntryStatus(),uid,false,EPreis(),Rabatt());
  zeilennr = newaeb.ZNr();
- Lager_Vormerkungen(class AufEintrag(newAuftrag.Instanz()->Id(),newAuftrag.Id()
-         ,zeilennr,menge,Artikel(),getLieferdatum(),getEntryStatus()))
-      .vormerken_oder_bestellen(uid,bestellt-bestellmenge,bestellt);
-
+ AufEintragBase(newAuftrag,zeilennr).vormerken_oder_bestellen(
+     uid,bestellt-bestellmenge,bestellt,Artikel(),getLieferdatum());
 
 // exec sql delete from prod_changejournal where 
 //      (insid,auftragid,auftragzeile)=(:OLDINSTANZ,:OLDAUFTRAGID,:OLDZEILENNR);

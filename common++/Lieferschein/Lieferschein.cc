@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.16 2002/10/24 14:06:50 thoma Exp $ */
+/* $Id: Lieferschein.cc,v 1.17 2002/11/07 07:48:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -45,7 +45,7 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
    // selber produzierte, würde doppelt produziert werden.
    assert(Instanz()->Lieferschein());
    ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Artikel="+cH_ArtikelBezeichnung(artikel)->Bezeichnung(),
-           "Anzahl="+itos(anzahl),"Menge="+dtos(mengeneinheit),"Palette="+itos(palette));                     
+           "Anzahl="+itos(anzahl),"Menge=",mengeneinheit,"Palette="+itos(palette));                     
    Transaction tr;
    SQLFullAuftragSelector psel(SQLFullAuftragSelector::sel_Artikel_Planung_id
    			(instanz->Id(),getKunde()->Id(),artikel.Id(),AuftragBase::handplan_auftrag_id));
@@ -54,12 +54,11 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
    AuftragBase::mengen_t menge(anzahl);
    Einheit e(artikel);
    if (!e.hatMenge()) mengeneinheit=0;
-   else menge *= mengeneinheit;
+   else menge *= mengeneinheit.as_float();
 
    if (auftraglist.aufidliste.begin()==auftraglist.aufidliste.end())
      // kann nicht abschreiben
-   {  LieferscheinEntry(*this, artikel, anzahl,
-                           mengeneinheit,palette,false);
+   {  LieferscheinEntry::create(*this, artikel, anzahl,mengeneinheit,palette,false);
       if(Instanz()!=ppsInstanzID::Kundenauftraege)
        {
          ManuProC::st_produziert p(artikel,menge,getuid(),getKunde()->Id(),Id());
@@ -69,39 +68,26 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
    else if (menge<=auftraglist.aufidliste.begin()->getRestStk())
      // kann in einem Stueck abschreiben
    {  SelectedFullAufList::iterator i=auftraglist.aufidliste.begin();
-      LieferscheinEntry(*this, *i,artikel, anzahl,mengeneinheit,palette,false);
-
-//cout <<"Lieferscheinauftrag: "<< *i<< ' '<<i->getRestStk()
-//<<'\t'<<menge<<' '<<anzahl<<' '<<mengeneinheit<<'\n';
-
+      LieferscheinEntry::create(*this, *i,artikel, anzahl,mengeneinheit,palette,false);
       i->Produziert(menge,Id());
    }
    else
    // stueckeln (1*Lieferung, dann Zuordnung)
-   {  LieferscheinEntry(*this,artikel,anzahl,mengeneinheit,palette);
+   {  LieferscheinEntry LE=LieferscheinEntry::create(*this,artikel,anzahl,mengeneinheit,palette,true);
 
         for (SelectedFullAufList::iterator i=auftraglist.aufidliste.begin();
-     	        menge && i!=auftraglist.aufidliste.end(); ++i)
-        {  AuftragBase::mengen_t abmenge(menge);
+     	        !!menge && i!=auftraglist.aufidliste.end(); ++i)
+        {  
+           AuftragBase::mengen_t abmenge(menge);
            if (i->getRestStk()<abmenge) abmenge=i->getRestStk();
            
-           int lstueck=1;
-           LieferscheinBase::mengen_t lmenge=0;
-           if (!e.hatMenge()) lstueck=int(float(abmenge)+.5);
-           else lmenge=abmenge;
-           LieferscheinEntry(*this,*i,artikel,lstueck,lmenge,0,true);
-
+           LE.setZusatzInfo(*i,abmenge);
            i->Produziert(abmenge,Id());
-
            menge-=abmenge;
     	   }
-        if (menge)
+        if (!!menge)
         {  
-           int lstueck=1;
-           LieferscheinBase::mengen_t lmenge=0;
-           if (!e.hatMenge()) lstueck=int(float(menge)+.5);
-           else lmenge=menge;
-           LieferscheinEntry(*this,artikel,lstueck,lmenge,0,true);
+           LE.setZusatzInfo(AufEintragBase(),menge);
         }
    }
    tr.commit();
@@ -117,8 +103,8 @@ void Lieferschein::push_back(AufEintrag &aufeintrag,
    assert(Instanz()->Lieferschein());
  ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"AufEintrag="+aufeintrag.str(),
            "Artikel="+cH_ArtikelBezeichnung(artikel)->Bezeichnung(),
-           "Anzahl="+itos(anzahl),"Menge="+dtos(menge),"Palette="+itos(palette));                     
- LieferscheinEntry(*this, aufeintrag ,artikel, anzahl,menge,palette);
+           "Anzahl="+itos(anzahl),"Menge=",menge,"Palette="+itos(palette));                     
+ LieferscheinEntry::create(*this, aufeintrag ,artikel, anzahl,menge,palette);
 
  mengen_t mng;
  if(!menge) mng = anzahl;
@@ -174,7 +160,7 @@ void Lieferschein::setPaeckchen(const int p) throw(SQLerror)
 
 void Lieferschein::setGewichtNetto(const fixedpoint<1> i) throw(SQLerror)
 {  
- std::string query="update lieferschein set netto_kg="+dtos(i)
+ std::string query="update lieferschein set netto_kg="+i.String()
    +" where (instanz,lfrsid) = ("+itos(Instanz()->Id())+","+itos(Id())+")";
  Query::Execute(query);
  SQLerror::test(__FILELINE__);
@@ -182,7 +168,7 @@ void Lieferschein::setGewichtNetto(const fixedpoint<1> i) throw(SQLerror)
 
 void Lieferschein::setGewichtBrutto(const fixedpoint<1> i) throw(SQLerror)
 {  
- std::string query="update lieferschein set brutto_kg="+dtos(i)
+ std::string query="update lieferschein set brutto_kg="+i.String()
    +" where (instanz,lfrsid) = ("+itos(Instanz()->Id())+","+itos(Id())+")";
  Query::Execute(query);
  SQLerror::test(__FILELINE__);

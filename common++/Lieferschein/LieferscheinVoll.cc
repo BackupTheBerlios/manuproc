@@ -1,4 +1,4 @@
-/* $Id: LieferscheinVoll.cc,v 1.10 2002/10/24 14:06:50 thoma Exp $ */
+/* $Id: LieferscheinVoll.cc,v 1.11 2002/11/07 07:48:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,7 +24,7 @@
 #include<Aux/FetchIStream.h>
 #include <BaseObjects/ManuProcEintrag.h>
 
-void LieferscheinVoll::deleteRow(const LieferscheinEntry &le)
+void LieferscheinVoll::deleteRow(LieferscheinEntry &le)
 {
 
  for(std::vector<LieferscheinEntry>::iterator i=lsentry.begin();i!=lsentry.end(); ++i)
@@ -40,7 +40,7 @@ LieferscheinVoll::LieferscheinVoll(const cH_ppsInstanz& _instanz,int lid,bool au
 {
 
  std::string qstr =
-  "select ly.artikelid, ly.zeile, coalesce(ly.stueck,0), "
+  "select ly.lfrsid, ly.zeile, ly.artikelid, coalesce(ly.stueck,0), "
   " coalesce(ly.menge,0), coalesce(ly.palette,0), coalesce(youraufnr,''),"
   "coalesce(ly.zusatzinfo,'f'), ly.instanz, coalesce(ly.refauftragid,"+itos(ManuProcEntity<>::none_id)+"),"
   " coalesce(ly.refzeilennr,"+itos(ManuProcEintrag::none_znr)+")"

@@ -1,4 +1,4 @@
-/* $Id: Einheiten.h,v 1.14 2002/10/24 14:06:49 thoma Exp $ */
+/* $Id: Einheiten.h,v 1.15 2002/11/07 07:48:23 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Einheiten.h,v 1.14 2002/10/24 14:06:49 thoma Exp $
+// $Id: Einheiten.h,v 1.15 2002/11/07 07:48:23 christof Exp $
 
 #ifndef ARTIKEL_EINHEITEN_H
 #define ARTIKEL_EINHEITEN_H
@@ -81,8 +81,8 @@ public:
 	bool hatMenge() const
 	{  return !bez_menge.empty();
 	}
-	
-        static std::vector<Einheit> alleEinheiten();
+
+   static std::vector<Einheit> alleEinheiten();
 };
 /*
 class cH_Einheit : public Handle<const Einheit>   

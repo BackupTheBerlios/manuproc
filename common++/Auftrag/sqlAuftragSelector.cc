@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.20 2002/10/24 14:06:49 thoma Exp $
+// $Id: sqlAuftragSelector.cc,v 1.21 2002/11/07 07:48:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,14 +23,18 @@
 #include<auftrag_status.h>
 #include<BaseObjects/ManuProcEntity.h>
 
+#include<DynamicEnums/DynamicEnums.h>
+
+
+
 #define FULL_SELECTIONS "a.instanz, a.auftragid, e.zeilennr, bestellt, " \
 	"e.artikelid, e.rohartikelid, " \
 	"e.lieferdate, geliefert, " \
 	"a.stat, " \
 	"a.kundennr, youraufnr, " \
-	"coalesce(p.prozessid,0), " \
-	"coalesce(p.letzteplaninstanz,0), " \
-   	"coalesce(p.maxplaninstanz,0), " \
+	"coalesce(p.prozessid,"+itos(ProzessID::None)+"), " \
+	"coalesce(p.letzteplaninstanz,"+itos(ppsInstanzID::None)+"), " \
+   	"coalesce(p.maxplaninstanz,"+itos(ppsInstanzID::None)+"), " \
 	"date(coalesce(p.datum,now())), " \
 	"e.preis, coalesce(e.rabatt,0.0), " \
 	"coalesce(e.preismenge,1), a.waehrung, " \

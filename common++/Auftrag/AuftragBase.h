@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.33 2002/10/24 14:08:59 thoma Exp $ */
+/* $Id: AuftragBase.h,v 1.34 2002/11/07 07:48:30 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,7 +24,6 @@
 #include <Artikel/ArtikelBase.h>
 #include <Aux/Preis.h>
 #include <Auftrag/auftrag_status.h>
-//#include <Aux/Datum.h>
 class AufEintrag;
 #include <Kunde/Kunde.h>
 // hier sollten noch viel mehr Funktionen aus Auftrag rein !!!
@@ -37,7 +36,7 @@ class AuftragBase
 {
         bool Exists() const throw(SQLerror) ;
  public:
-   typedef fixedpoint<0> mengen_t;
+   typedef fixedpoint<ManuProC::Precision::AuftragsMenge> mengen_t;
    typedef Preis::rabatt_t rabatt_t;
    static const int handplan_auftrag_id =  20000; // gemeint sind alle Aufträge, die NICHT 0,1,2 sind
    static const int dispo_auftrag_id =  2;
@@ -88,12 +87,16 @@ class AuftragBase
                AufStatVal status,int uid,const AufEintragBase& altAEB,
                st_tryUpdateEntry st_bool=st_tryUpdateEntry()) const throw(SQLerror);
 
+
 	// wandelt enum in std::string um
 	static const std::string getStatusStr(AufStatVal a);
 
    bool operator==(const AuftragBase &b) const 
       {return instanz==b.instanz && auftragid==b.auftragid;}
+
 };
+
+std::ostream &operator<<(std::ostream &o,const AuftragBase &a);
 
 //FetchIStream& operator>>(FetchIStream& is,AuftragBase::mengen_t &menge);
 

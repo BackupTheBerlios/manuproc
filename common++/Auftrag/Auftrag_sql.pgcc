@@ -31,7 +31,7 @@ exec sql include sqlca;
 
 void Auftrag::deleteAuftrag() throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str());
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this);
  exec sql begin declare section;
  int AUFTRAGID=Id();
  int INSTANZ=int(Instanz());
@@ -52,7 +52,7 @@ void Auftrag::deleteAuftrag() throw(SQLerror)
 
 void Auftrag::setWaehrung(cP_Waehrung w) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str());
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this);
  exec sql begin declare section;
  int WAEHRUNG = w->Id();
  int AUFTRAGID = Id();
@@ -66,7 +66,7 @@ void Auftrag::setWaehrung(cP_Waehrung w) throw(SQLerror)
 
 void Auftrag::Zahlziel(const ManuProC::Datum &zziel) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str(),"Datum="+zziel.to_iso());
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,zziel);
  exec sql begin declare section;
  int AUFTRAGID = Id();
  int INSTANZ = int(Instanz());
@@ -86,7 +86,7 @@ void Auftrag::Zahlziel(const ManuProC::Datum &zziel) throw(SQLerror)
 
 void Auftrag::Zahlart(cH_Zahlungsart zart) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str());
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this);
  exec sql begin declare section;
  int AUFTRAGID = Id();
  int INSTANZ = int(Instanz());
@@ -109,7 +109,7 @@ void Auftrag::Zahlart(cH_Zahlungsart zart) throw(SQLerror)
 
 void Auftrag::deleteEintrag(int zeilennr) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str(),"ZNr="+itos(zeilennr));
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,"ZNr=",zeilennr);
  exec sql begin declare section;
  int AUFTRAGID=Id();
  int INSTANZ=int(Instanz());
@@ -134,7 +134,7 @@ void Auftrag::deleteEintrag(int zeilennr) throw(SQLerror)
 Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
 : AuftragBase(_auftrag), zahlart(Zahlungsart::none_id)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str());
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this);
  exec sql begin declare section;
  int AUFTRAGID = Id();
  int INSTANZ =int(Instanz());
@@ -151,16 +151,18 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
  int NONE_ID;
  char *NOTIZ=0;
  int INVALID_ENTITY;
+ int DEFAULT_WID;
  exec sql end declare section;
  INVALID_ENTITY=ManuProcEntity<>::none_id;
 
  NONE_ID=Zahlungsart::none_id;
+ DEFAULT_WID=Waehrung::default_id;
 
 //if(Instanz()==ppsInstanzID::Kundenauftraege)
 //ECPGdebug(true,stdout);
  exec sql select coalesce(kundennr,:INVALID_ENTITY), date(coalesce(datum,now())), 
  		stat, coalesce(youraufnr,''), coalesce(bemerkung,''),
-		 coalesce(waehrung,2),coalesce(rabatt,0),
+		 coalesce(waehrung,:DEFAULT_WID),coalesce(rabatt,0),
 		zahlungsziel, coalesce(zahlart,:NONE_ID),
 		coalesce(notiz,'')
 	into 	:KUNDENNR, :DATUM, :STATUS, :YOURAUFNR, :BEMERKUNG,
@@ -189,7 +191,7 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr) throw(SQLerror)
 	: AuftragBase(cH_ppsInstanz(_instanz),invalid_id),
 	  zahlart(Zahlungsart::none_id)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Anlegen:"+str());
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Anlegen:",*this);
  exec sql begin declare section;
  int AUFTRAGID;
  char DATUM[11];
@@ -238,7 +240,7 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr) throw(SQLerror)
 Auftrag::Auftrag(Anlegen2 AB, long kdnr) throw(SQLerror)
 	: AuftragBase(AB), zahlart(Zahlungsart::none_id)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Anlegen:"+str(),"KnNr="+itos(kdnr));
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Anlegen:",*this,"KnNr=",kdnr);
  exec sql begin declare section;
  int AUFTRAGID=Id();
  char DATUM[11];
@@ -272,7 +274,7 @@ Auftrag::Auftrag(Anlegen2 AB, long kdnr) throw(SQLerror)
 
 void Auftrag::setBemerkung(const std::string &bem) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str());
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this);
  exec sql begin declare section;
  int AUFTRAGID=Id();
  int INSTANZ=int(Instanz());
@@ -286,7 +288,7 @@ void Auftrag::setBemerkung(const std::string &bem) throw(SQLerror)
 
 void Auftrag::setYourAufNr(const std::string &yanr) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str());
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this);
  exec sql begin declare section;
  int AUFTRAGID=Id();
  int INSTANZ=int(Instanz());
@@ -304,7 +306,7 @@ void Auftrag::setYourAufNr(const std::string &yanr) throw(SQLerror)
 
 int Auftrag::getIdFromYourAufId(const char *youraufid) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str());
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this);
  exec sql begin declare section;
  int AUFTRAGID;
  int INSTANZ;
@@ -322,7 +324,7 @@ int Auftrag::getIdFromYourAufId(const char *youraufid) throw(SQLerror)
 
 const std::string Auftrag::Notiz() const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str());
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this);
  if(notiz_valid) return notiz;
 
  exec sql begin declare section;
@@ -341,7 +343,7 @@ const std::string Auftrag::Notiz() const throw(SQLerror)
 
 void Auftrag::Notiz(const std::string n) throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str());
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this);
  exec sql begin declare section;
  int AUFID = Id();
  char *NOTIZ;
@@ -366,20 +368,20 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
   const Preis& preis,const fixedpoint<2> rabatt,
   const cH_PreisListe &preisliste) const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,str(),
-   "Menge="+dtos(bestellt),"Datum="+lieferdatum.to_iso(),
-   "Artikel="+cH_ArtikelBezeichnung(artikel)->Bezeichnung(),
-   "Status="+itos(status),"InstanzAufträgeSetzen="+itos(setInstanzAuftraege));
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,*this,
+   "Menge=",bestellt,"Datum=",lieferdatum,
+   "Artikel=",artikel,
+   "Status=",status,"InstanzAufträgeSetzen=",setInstanzAuftraege);
  exec sql begin declare section;
  int AUFTRAGID =Id();
  long ARTIKELID=artikel.Id();
  int INSTANZ =InstanzID();
  int ZEILENNR;
- int BESTELLT=bestellt;
+ int BESTELLT=bestellt.as_int();
  char LIEFERDATUM[21];
- double PREIS=preis.Wert();
- int RABATT=rabatt;
- float PREISMENGE=preis.PreisMenge();
+ double PREIS=preis.Wert().as_float();
+ int RABATT=rabatt.as_int();
+ float PREISMENGE=preis.PreisMenge().as_float();
  int STATUS=status;
  int PREISLISTE=preisliste->Id();
  int PREISLISTENULL;

@@ -1,4 +1,4 @@
-/* $Id: Rechnung.h,v 1.19 2002/10/04 13:57:49 thoma Exp $ */
+/* $Id: Rechnung.h,v 1.20 2002/11/07 07:48:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -45,7 +45,9 @@ private:
  cH_Zahlungsart zahlungsart;
  bool bezahlt;
  bool entsorgung;
- 
+ mutable std::string notiz;
+ mutable bool notiz_valid;
+  
 public:
         
  Rechnung(ID rid) throw(SQLerror);
@@ -54,7 +56,7 @@ public:
               rngart(RART_NONE), zahlziel(ManuProC::Datum::today()),
               rgdatum(ManuProC::Datum::today()),waehrung(0),
               rabatt(0),zahlungsart(Zahlungsart::none_id),bezahlt(false),
-              entsorgung(false) {} 
+              entsorgung(false),notiz_valid(false) {} 
 
  const Kunde::ID KdNr() const {return kunde->Id();}
  const cH_Kunde getKunde() const { return kunde; }
@@ -80,6 +82,8 @@ public:
  cH_Zahlungsart getZahlungsart() const {return zahlungsart;}
  void setze_Zahlungsart(cH_Zahlungsart z)   throw(SQLerror);
  bool Entsorgung() const { return entsorgung;}
+ const std::string Notiz() const throw(SQLerror);
+ void Notiz(const std::string _notiz) throw(SQLerror);
 };
 
 /*

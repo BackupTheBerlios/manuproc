@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.h,v 1.35 2002/10/24 14:06:49 thoma Exp $
+// $Id: AufEintragBase.h,v 1.36 2002/11/07 07:48:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,10 +21,8 @@
 #define AUFEINTRAGBASE
 #include<Artikel/Prozess.h>
 #include<Aux/SQLerror.h>
-//#include<Instanzen/ppsInstanz.h>
 #include <Auftrag/AuftragBase.h>
 #include <Auftrag/auftrag_status.h>
-//#include <list>
 #include<BaseObjects/ManuProcEintrag.h>
 class cH_Kunde;
 
@@ -55,13 +53,7 @@ public:
 private:
  void setVerarbeitung(const cH_Prozess p) const throw(SQLerror);
 
- // gibt danach gesamte gelieferte Menge zurück
- // USE: AufEintrag.abschreiben(menge)
-// void abschreiben(mengen_t menge,ManuProcEntity::ID lfrsid=
-// 			ManuProcEntity::none_id) const throw(SQLerror) 
-// 			  {assert("!dont use me!");};
 public:
-//??? void abschreiben_fuer_Instanzen(mengen_t menge) const throw(SQLerror);
  bool deleteAuftragEntry() const throw(SQLerror);
  void setLetzteLieferung(const ManuProC::Datum &datum) const throw(SQLerror);
 
@@ -80,8 +72,12 @@ public:
  // Planen
  // *this ist der ZielAufEintragBase
  void PlanenDispo(int uid,const ArtikelBase& artikel,mengen_t menge,const ManuProC::Datum &datum);
- static void Planen(int uid,std::vector<AufEintrag> LAE,mengen_t menge,
-      const AuftragBase &zielauftrag,const ManuProC::Datum &datum);
+
+ void vormerken_oder_bestellen(int uid,const AuftragBase::mengen_t &vormerkmenge,
+            AuftragBase::mengen_t bestellmenge,
+            const ArtikelBase &artikel,const Petig::Datum &lieferdatum,
+            AuftragBase::st_tryUpdateEntry st_bool=st_tryUpdateEntry()) throw(SQLerror);
+public:
 
  int split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum, 
                          ArtikelBase artikel,AufStatVal status,
@@ -98,6 +94,9 @@ public:
 
  friend std::ostream &operator<<(std::ostream &o,const AufEintragBase &ae);
  std::string str() const;
+
+
+
 
   // Diese Funktion ist zum Debuggen sehr nützlich:
   void ExistMenge(const std::string &s="") const;

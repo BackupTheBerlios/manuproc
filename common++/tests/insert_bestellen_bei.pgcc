@@ -57,7 +57,7 @@ try {
 
    exec sql update artikelstamm set bestellen_bei = :INSTANZ:IINSTANZ 
       where id=:ID; 
-cout << ID<<"\n";
+std::cout << ID<<"\n";
   }
 
    exec sql update artikelstamm set bestellen_bei = 9 where not exists 

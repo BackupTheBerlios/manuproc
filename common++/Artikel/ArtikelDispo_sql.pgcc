@@ -38,7 +38,7 @@ void ArtikelDispo::setMindestBestellMenge(mengen_t m)
 {
   exec sql begin declare section; 
     int ARTIKEL=Id();
-    int MINBM=m;
+    int MINBM=m.as_int();
   exec sql end declare section;
   exec sql update artikel_dispo set min_best_menge=:MINBM
       where artikel=:ARTIKEL;

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.29 2002/10/24 14:06:49 thoma Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.30 2002/11/07 07:48:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -96,7 +96,7 @@ bool AufEintragBase::deleteAuftragEntry() const throw(SQLerror)
 
 void AufEintragBase::setLetztePlanungFuer(cH_ppsInstanz planinstanz) const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Instanz="+planinstanz->Name());
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Instanz=",planinstanz);
 //cout << "Instanz: "<<planinstanz<<'\n';
  assert (Instanz()==ppsInstanzID::Kundenauftraege);
 
@@ -129,7 +129,8 @@ void AufEintragBase::setLetztePlanungFuer(cH_ppsInstanz planinstanz) const throw
 
 void AufEintragBase::setMaxPlanInstanz(int anzahl_maxplaninstanzen) const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"Anzahl="+itos(anzahl_maxplaninstanzen));
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,
+   "Anzahl=",anzahl_maxplaninstanzen);
  exec sql begin declare section;
   int AUFTRAGID=Id();
   int ZEILENNR=ZNr();
@@ -150,7 +151,7 @@ void AufEintragBase::setMaxPlanInstanz(int anzahl_maxplaninstanzen) const throw(
 
 void AufEintragBase::setLetzteLieferung(const ManuProC::Datum &datum) const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,datum.to_iso());
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,datum);
  exec sql begin declare section;
  int AUFTRAGID = auftragid;
  int ZEILENNR = zeilennr;  
@@ -168,13 +169,13 @@ void AufEintragBase::setLetzteLieferung(const ManuProC::Datum &datum) const thro
 
 AuftragBase::mengen_t AufEintragBase::updateStkDiffBase__(int uid,mengen_t menge) const throw(SQLerror)
 {
- ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"AEB="+str(),"Menge="+dtos(menge));
+ ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"AEB=",*this,"Menge=",menge);
 
  exec sql begin declare section;
  int AUFTRAGID = Id();
  int INSTANZ=instanz->Id();
  int ZEILENNR = ZNr();  
- double MENGE = menge;
+ double MENGE = menge.as_float();
  double OLDMENGE;
  double NEWMENGE;
  int ARTIKELID;

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.16 2002/10/24 14:06:50 thoma Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.17 2002/11/07 07:48:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -59,43 +59,32 @@ class LieferscheinEntry : public LieferscheinEntryBase
  std::string yourauftrag;
  bool zusatzinfo;
 public:
- struct st_zusatz{AufEintragBase aeb;AuftragBase::mengen_t menge;
-        st_zusatz() {};
-        st_zusatz(AufEintragBase a,AuftragBase::mengen_t m) : aeb(a),menge(m){}
+ struct st_zusatz{AufEintragBase aeb; AuftragBase::mengen_t menge;std::string yourauftrag;
+        st_zusatz()  {};
+        st_zusatz(AufEintragBase a, AuftragBase::mengen_t m,std::string y) 
+         : aeb(a),menge(m),yourauftrag(y) {}
         };
 private:
  std::vector<st_zusatz> VZusatz;
 
    void updateLieferscheinMenge(int stueck,mengen_t menge)  throw(SQLerror);
-   void menge_bei_zusatzinfos_abschreiben(std::vector<LieferscheinEntry>& VLE,int stueck,mengen_t menge);
    mengen_t Abschreibmenge(int stueck,mengen_t menge) const;
 
 public:
 
  	LieferscheinEntry() : stueck(0),palette(0) {};
- // laedt aus Datenbank
  	LieferscheinEntry(const LieferscheinEntryBase &lsbase) throw(SQLerror);
-// erzeugen entsprechende Zeilen in der Datenbank 	
 private:
   friend class Lieferschein;
- 	LieferscheinEntry(const LieferscheinBase &lsb,	
- 			const AufEintragBase &auf,
- 			const ArtikelBase &art, int anzahl, mengen_t menge,
- 			int _palette=0,bool zusatzinfo=false) throw(SQLerror);
- 	LieferscheinEntry(const LieferscheinBase &lsb,	
- 			const ArtikelBase &art, int anzahl, mengen_t menge,
- 			int _palette=0,bool zusatzinfo=false) throw(SQLerror);
+  static LieferscheinEntry create(const LieferscheinBase &lsb,
+           const AufEintragBase &auf,
+           const ArtikelBase &art, int anzahl, mengen_t menge,
+           int _palette=0,bool zusatzinfo=false) throw(SQLerror);
+  static LieferscheinEntry create(const LieferscheinBase &lsb,
+           const ArtikelBase &art, int anzahl, mengen_t menge,
+           int _palette=0,bool zusatzinfo=false) throw(SQLerror);
+
 public:
-// Konstruktor mit Datenbankdaten 			
-/*
-        LieferscheinEntry(const cH_ppsInstanz& _instanz,int l,int z,int a, int s,mengen_t m,int p,
-        		const std::string &y,bool zi,const AufEintragBase &aeb)
-                : LieferscheinEntryBase(LieferscheinBase(_instanz,l),z),
-                	artikel(a),refauftrag(aeb),
-                	stueck(s),menge(m),palette(p),yourauftrag(y),
-                	zusatzinfo(zi) 
-                {};
-*/
  bool Valid() const;
  mengen_t Menge() const { return menge; }
  int Anzahl() const { return stueck; }
@@ -109,11 +98,15 @@ public:
  AufEintragBase getAufEintragBase() const {return AufEintragBase(RefAuftrag(),AufZeile());}
  bool ZusatzInfo() const { return zusatzinfo; }
  std::vector<st_zusatz> getZusatzInfos() const {return VZusatz;}
- 
+ void setZusatzInfo(const AufEintragBase &AEB,/*const int stueck,*/const mengen_t &menge) throw(SQLerror);
 
  void setPalette(int p) throw(SQLerror);
  bool changeMenge(int stueck,mengen_t menge) throw(SQLerror);
- static void deleteEntry(const LieferscheinEntry &lse) throw(SQLerror);
+ static void deleteEntry(LieferscheinEntry &lse) throw(SQLerror);
+private:
+ static void deleteMe(const LieferscheinEntry &lse) throw(SQLerror);
+ void deleteZusatzEntry(const st_zusatz &Z) throw(SQLerror);
+ void updateZusatzEntry(const st_zusatz &Z,const AuftragBase::mengen_t &menge) throw(SQLerror);
  friend FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry &aeb);
 };
 

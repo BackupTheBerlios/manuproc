@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.9 2002/10/24 14:14:30 christof Exp $
+// $Id: ppsInstanz.h,v 1.10 2002/11/07 07:50:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,6 +23,7 @@
 #include <string>
 #include <Aux/Handles.h>
 #include <Aux/CacheStatic.h>
+#include <Aux/SQLerror.h>
 #include <Artikel/Prozess.h>
 #include <vector>
 #include <DynamicEnums/DynamicEnums.h>
@@ -51,8 +52,10 @@ private:
  bool automatisch_einlagern;
  int produktionsdauer_tage;
  char typ;
+ ID geplant_von;
+ bool externe_bestellung;
 
- void get_name();
+ void get_name() throw(SQLerror);
  void check() const; 
 public:
  static const ID default_id=ManuProC::DefaultValues::Instanz;
@@ -79,10 +82,10 @@ public:
  bool LagerInstanz() const ;
  bool ProduktionsInstanz() const ;
  bool PlanungsInstanz() const ;
-public:
-// ID BestellungFuer() const { return bestellung_fuer; }
  ID EinlagernIn() const { return einlagern_in;}
  bool AutomatischEinlagern() const {return automatisch_einlagern;}
+ bool ExterneBestellung() const {return externe_bestellung;}
+ ID GeplantVon() const {return geplant_von;} 
  
 
  cH_Prozess get_Prozess() const;
@@ -113,8 +116,11 @@ public:
  //////////////////////////////////////////////////////////////////////////
  // Für die Produktion
  public:
-      void Produziert(ManuProC::st_produziert &P) const ;
+      void Produziert(ManuProC::st_produziert &P) const throw(SQLerror);
       void Lager_abschreiben(ManuProC::st_produziert &P) const ;
+      // Geplant wird von pps wenn im Einkauf ware bestellt wird ohne
+      // einen spezielen '0er' auszuwählen.
+      void Planen(ManuProC::st_produziert &P) const throw(SQLerror); //NICHT rekursiv
  private:
       void rekursion(ManuProC::st_produziert &P) const ;
 
@@ -131,7 +137,7 @@ class cH_ppsInstanz : public Handle<const ppsInstanz>
      cH_ppsInstanz(ppsInstanz::ID iid);
      cH_ppsInstanz(const ppsInstanz *s) : Handle<const ppsInstanz>(s) {};
 
-     static std::vector<cH_ppsInstanz> get_all_instanz();
+     static std::vector<cH_ppsInstanz> get_all_instanz() throw(SQLerror);
 
      bool operator==(ppsInstanz::ID b) const
      {  return *(*this)==b; }
@@ -140,5 +146,9 @@ class cH_ppsInstanz : public Handle<const ppsInstanz>
      bool operator==(const cH_ppsInstanz &b) const
      {  return *(*this)==*b; }
 };
+
+std::ostream &operator<<(std::ostream &o,const cH_ppsInstanz &i);
+
+
 
 #endif

@@ -18,22 +18,22 @@
  */
 
 #include "ppsInstanz.h"
-#include <Aux/SQLerror.h>
 #include <Aux/Transaction.h>
 exec sql include sqlca;
 
 
-void ppsInstanz::get_name()
+void ppsInstanz::get_name() throw(SQLerror)
 {
  if(instid == ppsInstanzID::None) return;
- try{
 
  exec sql begin declare section;
-   char db_name[50];
+   char *db_name=0;
    int db_nr=instid,db_lager_fuer,db_sortierung,db_produktionsdauer_tage;
+   int db_geplant_von;
    int IN;
    int db_einlagern_in;
    bool db_liefer,db_produziert_selbst,db_automatisch_einlagern;
+   bool db_externe_bestellung;
    char db_lagername[50];
    char db_typ;
  exec sql end declare section;
@@ -42,10 +42,11 @@ void ppsInstanz::get_name()
       coalesce(lieferschein,'f'),coalesce(produziert_selbst,'f'),
       coalesce(lagername,''),coalesce(prod_dauer_tage,0),
       coalesce(einlagern_in,:IN),coalesce(automatisch_einlagern,'f'),
-      typ
+      typ,coalesce(externe_bestellung,'f'),coalesce(geplant_von,:IN)
       into :db_name,:db_lager_fuer,:db_sortierung ,:db_liefer,
       :db_produziert_selbst,:db_lagername,:db_produktionsdauer_tage,
-      :db_einlagern_in,:db_automatisch_einlagern,:db_typ
+      :db_einlagern_in,:db_automatisch_einlagern,:db_typ,
+      :db_externe_bestellung,:db_geplant_von
       from prod_instanz where insid= :db_nr;
  SQLerror::test(__FILELINE__);
 // if(sqlca.sqlcode) *db_name=0;
@@ -62,23 +63,19 @@ void ppsInstanz::get_name()
  einlagern_in=ID(db_einlagern_in);
  automatisch_einlagern=db_automatisch_einlagern;
  typ=db_typ;
+ geplant_von=ID(db_geplant_von);
+ externe_bestellung=db_externe_bestellung;
 
  assert(typ=='L' || typ=='P' || typ=='E');
-/*  
-  exec sql select insid into :db_best_fuer from prod_instanz 
-         where lager_fuer=:db_nr;
-  SQLerror::test(__FILELINE__,100);
-  if(sqlca.sqlcode) bestellung_fuer=ppsInstanzID::None;
-  else              bestellung_fuer=ID(db_best_fuer);
-*/
- }catch(SQLerror &e) {std::cerr<<e<<'\n'; exit(1);}
+ ECPGfree_auto_mem();
+
 }
 
 
-std::vector<cH_ppsInstanz> cH_ppsInstanz::get_all_instanz()
+std::vector<cH_ppsInstanz> cH_ppsInstanz::get_all_instanz() throw(SQLerror)
 {
  std::vector<cH_ppsInstanz> v;
- try{
+
   exec sql begin declare section;
     int db_i;
   exec sql end declare section;
@@ -94,7 +91,7 @@ std::vector<cH_ppsInstanz> cH_ppsInstanz::get_all_instanz()
      if (sqlca.sqlcode) break;
      v.push_back(cH_ppsInstanz(ppsInstanz::ID(db_i)));
    }
- }catch(SQLerror &e){std::cerr << e<<'\n';}
+
  return v;
 }
 

@@ -1,4 +1,4 @@
-// $Id: ppsInstanzProduziert.h,v 1.4 2002/10/24 14:14:30 christof Exp $
+// $Id: ppsInstanzProduziert.h,v 1.5 2002/11/07 07:50:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,12 +30,22 @@ namespace ManuProC{
                            ArtikelBase artikel;Kunde::ID kunde;
                            AufEintrag AE;AuftragBase::mengen_t menge;
                            int uid;LieferscheinBase::ID lfrsid;
+                           // Die folgenden Argumente werden nur für die Planug benötigt
+                           AuftragBase auftragbase; 
+                           int ZNr;
+                           Petig::Datum lieferdatum;
             st_produziert(ArtikelBase a,AuftragBase::mengen_t m,
               	           int _uid,
-                          Kunde::ID _k=ManuProC::DefaultValues::EigeneKundenId,
-                          LieferscheinBase::ID _lfrsid=LieferscheinBase::none_id)
-                     : artikel(a),kunde(_k),menge(m),uid(_uid),lfrsid(_lfrsid)
-                           {}
+                          Kunde::ID _k=Kunde::eigene_id,
+                          LieferscheinBase::ID _lfrsid=LieferscheinBase::none_id,
+                          AuftragBase _auftragbase=AuftragBase(),
+                          const Petig::Datum _datum=Petig::Datum())
+                     : artikel(a),kunde(_k),menge(m),uid(_uid),
+                        lfrsid(_lfrsid),auftragbase(_auftragbase),
+                        ZNr(ManuProcEintrag::none_znr),
+                        lieferdatum(_datum)
+                         {}
+// auftragbase ist nur für die ppsInstanz::Planung() interessant.
          private:
             friend class AufEintrag;
             st_produziert(const Kunde::ID kunde,AufEintrag ae,AuftragBase::mengen_t m,int _uid,
@@ -43,9 +53,10 @@ namespace ManuProC{
                    { *this=st_produziert(ae.Artikel(),m,_uid,kunde,_lfrsid);
                  AE=ae; }
 
-      friend void ppsInstanz::Produziert(ManuProC::st_produziert &P) const;
+      friend void ppsInstanz::Produziert(ManuProC::st_produziert &P) const throw(SQLerror);
+      friend void ppsInstanz::Planen(ManuProC::st_produziert &P) const throw(SQLerror);
       friend void ppsInstanz::Lager_abschreiben(ManuProC::st_produziert &P) const;
-      AuftragBase::mengen_t abschreiben_oder_reduzieren(ppsInstanz::ID instanz,int id,AuftragBase::mengen_t abmenge);
+      AuftragBase::mengen_t abschreiben_oder_reduzieren(ppsInstanz::ID instanz,int id,AuftragBase::mengen_t abmenge,bool planen_und_abschreiben_von_ungeplaneten=true);
       void Reduce_Zuordnung_Add_Parent(const AufEintragBase &aeb,AuftragBase::mengen_t menge);
       void Reduce_DispoEltern(const AufEintragBase &aeb,AuftragBase::mengen_t menge);
       void check_dispo_auftraege(ppsInstanz::ID instanz);
@@ -54,6 +65,6 @@ namespace ManuProC{
                                       AuftragBase::mengen_t m2);
 
 
-                          };
+   };
 }
 

@@ -1,4 +1,4 @@
-// $Id: Preis.h,v 1.14 2002/10/24 14:06:49 thoma Exp $
+// $Id: Preis.h,v 1.15 2002/11/07 07:48:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,20 +23,19 @@
 #include <iostream>
 #include <string>
 #include <Aux/Waehrung.h>
+#include <DynamicEnums/DefaultValues.h>
 
 class Preis
 {
 public:
-	typedef fixedpoint<2> preismenge_t;
-//	typedef unsigned int preismenge_t;
-	static const unsigned int nachkommastellen=2;
-	static const unsigned int rabattnachkommastellen=2;
-	typedef fixedpoint<nachkommastellen> geldbetrag_t;
+	typedef fixedpoint<ManuProC::Precision::LieferscheinMenge> preismenge_t;
+   
+	typedef fixedpoint<ManuProC::Precision::GeldBetrag> geldbetrag_t;
 	typedef geldbetrag_t pfennig_cent_t;
-	typedef fixedpoint<rabattnachkommastellen> rabatt_t;
+	typedef fixedpoint<ManuProC::Precision::Rabatt> rabatt_t;
 	
 private:
-	geldbetrag_t pfennig_cent;
+      geldbetrag_t pfennig_cent;
     	preismenge_t preismenge; // 100 == /100m
     	cP_Waehrung waehrung;
     	bool short_shl:1;
@@ -105,7 +104,7 @@ public:
 	   return ret;
 	}
 
-	geldbetrag_t Gesamtpreis(cP_Waehrung w,int anzahl,float menge,const rabatt_t &rabatt=rabatt_t(0.0)) const;
+	geldbetrag_t Gesamtpreis(cP_Waehrung w,int anzahl,preismenge_t menge,const rabatt_t &rabatt=rabatt_t(0.0)) const;
 	// braucht man diese Routine wirklich? ich würde den anderen Gesamtpreis empfehlen
 	const Preis Gesamtpreis(int anzahl,float menge,const rabatt_t &rabatt=rabatt_t(0.0)) const;
 	

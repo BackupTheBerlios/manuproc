@@ -1,4 +1,4 @@
-/* $Id: Lager.h,v 1.5 2002/10/24 14:06:50 thoma Exp $ */
+/* $Id: Lager.h,v 1.6 2002/11/07 07:49:52 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -19,15 +19,11 @@
 
 #ifndef _LAGER_HH_
 #define _LAGER_HH_
-//#include <Aux/Datum.h>
-//#include <Aux/Zeitpunkt_new.h>
 #include <Artikel/ArtikelBase.h>
-//#include <Auftrag/AufEintrag.h>
 #include <Instanzen/ppsInstanz.h>
 #include "LagerPlatz.hh"
 #include <Auftrag/AuftragBase.h>
 #include <vector>
-//#include <list>
 #include <Aux/Handles.h>
 #include <Auftrag/selFullAufEntry.h>
 
@@ -93,6 +89,10 @@ class Lager : public HandleContent
 
       /// Datum für freie Lagermengen (Aufträge)
       static ManuProC::Datum Lagerdatum() {return ManuProC::Datum(ManuProC::Datum(1,1,1970));}
+
+      void menge_neu_verplanen(int uid,
+                  const ArtikelBase& artikel,AuftragBase::mengen_t menge,
+                  const AufEintragBase::e_reduce_reason reason) throw(SQLerror);
 
 };
 

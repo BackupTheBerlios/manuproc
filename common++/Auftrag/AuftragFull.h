@@ -1,4 +1,4 @@
-/* $Id: AuftragFull.h,v 1.25 2002/10/09 14:48:07 thoma Exp $ */
+/* $Id: AuftragFull.h,v 1.26 2002/11/07 07:48:30 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -62,16 +62,17 @@ public:
 	iterator end() { return eintragliste.end(); }
 	size_t size() const { return eintragliste.size(); }
 	
-	AufEintragBase push_back(unsigned long int bestellt,
-               ManuProC::Datum lieferdatum, ArtikelBase::ID artid,
+   AufEintragBase push_back(AuftragBase::mengen_t bestellt,
+               ManuProC::Datum lieferdatum, ArtikelBase artid,
                AufStatVal status,int uid,
                Preis preis=Preis(), rabatt_t rabatt=rabatt_t(0),
                const cH_PreisListe &preisliste=PreisListe::none_id) throw (SQLerror);
+   void push_back(AufEintrag aeb);
                
-	bool existsEntry(const ArtikelBase::ID art, AufStatVal stat,
+   bool existsEntry(const ArtikelBase::ID art, AufStatVal stat,
         		ManuProC::Datum lieferdatum) throw(SQLerror);               
-	bool existsEntry(const ArtikelBase::ID art, AufStatVal stat) throw(SQLerror);
+   bool existsEntry(const ArtikelBase::ID art, AufStatVal stat) throw(SQLerror);
 
-        void setStatusAuftragFull(AufStatVal status,int uid) throw(SQLerror);
+   void setStatusAuftragFull(AufStatVal status,int uid) throw(SQLerror);
 };
 #endif

@@ -1,4 +1,4 @@
-// $Id: ArtikelMengeSumme.cc,v 1.3 2002/07/05 12:35:01 christof Exp $
+// $Id: ArtikelMengeSumme.cc,v 1.4 2002/11/07 07:48:23 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -29,7 +29,7 @@ void ArtikelMenge::summiere(const ArtikelBaum &baum, mengen_t menge, const Einhe
       else if (find(emenge.begin(),emenge.end(),e2)!=emenge.end())
       {  // ignore this unit because it is implied in something else
       }
-      else summiere(ArtikelBase(i->rohartikel),menge*i->menge,e2,!same);
+      else summiere(ArtikelBase(i->rohartikel),menge.as_float()*i->menge.as_float(),e2,!same);
    }
    if (add) lvalue(e)+=menge;
 }
