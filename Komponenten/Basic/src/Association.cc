@@ -1,4 +1,4 @@
-// $Id: Association.cc,v 1.2 2003/09/18 16:16:05 christof Exp $
+// $Id: Association.cc,v 1.3 2003/11/29 13:33:21 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -28,8 +28,11 @@
 #include <memory>
 
 static std::auto_ptr<Glib::Quark> quark;
-
 static const char * const quarkname = "ManuProC::Association";
+
+static void attach(Glib::Object &widget, SigC::Object &connobj)
+{  ManuProC::attach(widget,connobj,quark,quarkname);
+}
 
 static void destruct_object(void *obj)
 {  if (obj) delete static_cast<SigC::Object*>(obj);
@@ -40,9 +43,10 @@ static SigC::Object *lookup(Glib::Object &widget)
    return static_cast<SigC::Object *>(widget.get_data(*quark));
 }
 
-static void attach(Glib::Object &widget, SigC::Object &connobj)
-{  if (!quark.get()) quark.reset(new Glib::Quark(quarkname));
-   widget.set_data(*quark,&connobj,&destruct_object);
+void ManuProC::attach(Glib::Object &widget, SigC::Object &connobj, 
+	std::auto_ptr<Glib::Quark> &q,const char * const qname)
+{  if (!q.get()) q.reset(new Glib::Quark(qname));
+   widget.set_data(*q,&connobj,&destruct_object);
 }
 
 template <class T,class W,class C>
