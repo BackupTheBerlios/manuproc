@@ -8,12 +8,17 @@
 
 #if !defined(_MVCBASECLASSES_HH)
 #define _MVCBASECLASSES_HH 
+
+#include <gdkmm/pixbuf.h>
+#include <BaseObjects/Model.h>
+
 class window1_base
 {protected:
         Model<int> myint;
         Model<std::string> mystring;
-        Model<bool> mybool,mybool2;
+        Model<bool> mybool,mybool2,mybool3;
+        Glib::RefPtr<Gdk::Pixbuf> auto_roll,hand_roll;
 public: 
-	window1_base() : myint(0), mybool(false), mybool2() {}
+	window1_base();
 };
 #endif //

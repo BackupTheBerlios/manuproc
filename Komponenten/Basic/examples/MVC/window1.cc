@@ -23,6 +23,7 @@ window1::window1()
    mystring.signal_changed().connect(SigC::slot(*this,&window1::string_changed));
    mystring.signal_changed().connect(SigC::slot(*this,&window1::someth_changed));
    mybool.signal_changed().connect(SigC::slot(*this,&window1::bool_changed));
+   mybool3.signal_changed().connect(SigC::slot(*this,&window1::someth_changed));
    Gtk::AssociateVisibility(stringwidget,mybool2);
    Gtk::AssociateSensitivity(boolwidget,mybool2);
    srand(time(0));
@@ -41,8 +42,10 @@ void window1::string_changed(gpointer)
 }
 
 void window1::someth_changed(gpointer x)
-{  if (x==&myint.Value()) std::cout << "int changed\n";
-   else if (x==&mystring.Value()) std::cout << "string changed\n";
+{  if (myint.matches(x)) std::cout << "int changed\n";
+   else if (mystring.matches(x)) std::cout << "string changed\n";
+   else if (mybool3.matches(x)) 
+      std::cout << (mybool3.Value() ? "Würfeln von Hand" : "Magus würfelt") << '\n';
    else std::cout << "something else changed\n";
 }
 

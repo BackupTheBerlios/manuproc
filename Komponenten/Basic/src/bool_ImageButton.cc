@@ -1,4 +1,4 @@
-// $Id: bool_ImageButton.cc,v 1.2 2003/03/07 08:20:31 christof Exp $
+// $Id: bool_ImageButton.cc,v 1.3 2003/03/11 07:57:57 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -25,18 +25,20 @@ void bool_ImageButton::refresh(gpointer x)
    {  my_ch_con.block();
       Gtk::CheckButton::set_active(model.get_value());
 
-      imag->set(model.Value()?on:off,model.Value()?onm:offm);
+      imag->set(model.Value()?on:off);
       my_ch_con.unblock();
    }
 }
 
 bool_ImageButton::bool_ImageButton(const Model_ref<T> &m, 
-		const Glib::RefPtr<Gdk::Pixmap> &_off, const Glib::RefPtr<Gdk::Bitmap> &_offm,
-		const Glib::RefPtr<Gdk::Pixmap> &_on, const Glib::RefPtr<Gdk::Bitmap> &_onm)
-	: off(_off), on(_on), offm(_offm), onm(_onm), model(m), imag(0)
-{  imag=Gtk::manage(new Gtk::Image(model.Value()?on:off,model.Value()?onm:offm));
+		const Glib::RefPtr<Gdk::Pixbuf> &_off,
+		const Glib::RefPtr<Gdk::Pixbuf> &_on)
+	: off(_off), on(_on), model(m), imag(0)
+{  imag=Gtk::manage(new Gtk::Image(model.Value()?on:off));
    imag->show();
    Gtk::ToggleButton::add(*imag);
+   set_relief(Gtk::RELIEF_NONE);
+   set_border_width(0);
    set_mode(false);
    Gtk::ToggleButton::set_active(model.get_value());
    my_ch_con=signal_toggled().connect(SigC::slot(*this,&bool_ImageButton::on_toggled));
@@ -46,6 +48,6 @@ bool_ImageButton::bool_ImageButton(const Model_ref<T> &m,
 void bool_ImageButton::on_toggled()
 {  ch_con.block();
    model=Gtk::CheckButton::get_active();
-   imag->set(model.Value()?on:off,model.Value()?onm:offm);
+   imag->set(model.Value()?on:off);
    ch_con.unblock();
 }

@@ -7,7 +7,8 @@ EXTRA_PROGRAMS = mvc
 mvc_SOURCES = \
 	mvc.cc\
 	window1_glade.cc \
-	window1.cc 
+	window1.cc \
+	pixmaps.cc
 
 noinst_HEADERS = \
 	window1_glade.hh \
