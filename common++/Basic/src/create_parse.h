@@ -1,4 +1,4 @@
-// $Id: create_parse.h,v 1.4 2004/04/01 08:58:53 christof Exp $
+// $Id: create_parse.h,v 1.5 2004/11/12 07:41:44 christof Exp $
 /*  ManuProC_Base: Main ManuProC Library
  *  Copyright (C) 2004  Christof Petig
  *
@@ -33,21 +33,25 @@ namespace ManuProC
 }
 
 // you can skip these declarations while reading this file
-template <> std::string ManuProC::create<int>(const int &val);
-template <> std::string ManuProC::create<double>(const double &val);
-template <> std::string ManuProC::create<bool>(const bool &val);
-template <> int ManuProC::parse<int>(const std::string &value) throw(std::out_of_range);
-template <> bool ManuProC::parse<bool>(const std::string &value) throw(std::out_of_range);
-template <> long ManuProC::parse<long>(const std::string &value) throw(std::out_of_range);
-template <> double ManuProC::parse<double>(const std::string &value) throw(std::out_of_range);
-template <> float ManuProC::parse<float>(const std::string &value) throw(std::out_of_range);
-template <> std::string ManuProC::parse<std::string>(const std::string &value) throw(std::out_of_range);
+namespace ManuProC {
+template <> std::string create<int>(const int &val);
+template <> std::string create<double>(const double &val);
+template <> std::string create<bool>(const bool &val);
+template <> int parse<int>(const std::string &value) throw(std::out_of_range);
+template <> bool parse<bool>(const std::string &value) throw(std::out_of_range);
+template <> long parse<long>(const std::string &value) throw(std::out_of_range);
+template <> double parse<double>(const std::string &value) throw(std::out_of_range);
+template <> float parse<float>(const std::string &value) throw(std::out_of_range);
+template <> std::string parse<std::string>(const std::string &value) throw(std::out_of_range);
+}
 
 // g++ 2.95 does not like these inlined
+namespace ManuProC {
 template <class T>
- T ManuProC::parse_def(const std::string &val, const T &def)
+ T parse_def(const std::string &val, const T &def)
 {  try { return parse<T>(val); } 
    catch (std::out_of_range &e) { return def; }
+}
 }
 
 #endif
