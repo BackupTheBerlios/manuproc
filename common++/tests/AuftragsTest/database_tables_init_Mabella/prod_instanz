@@ -2,8 +2,6 @@
 -- PostgreSQL database dump
 --
 
-\connect - jacek
-
 SET search_path = public, pg_catalog;
 
 DROP TABLE public.prod_instanz;
