@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.40 2003/07/04 11:08:23 christof Exp $
+// $Id: AuftragBase.cc,v 1.41 2003/07/11 10:13:35 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -32,12 +32,12 @@
 
 std::string AuftragBase::str() const
 {
-  return instanz->Name()+"|"+itos(Id());
+  return instanz->Name().substr(0,4)+"="+itos(instanz->Id())+"."+itos(Id());
 }
 
 std::ostream &operator<<(std::ostream &o,const AuftragBase &a)
 {
-  return  o<<a.Instanz()->Name()<< "(" << a.Id() <<")";
+  return  o<<a.str();
 }
 
 const std::string AuftragBase::getStatusStr(AufStatVal a)
