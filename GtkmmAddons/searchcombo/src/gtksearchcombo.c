@@ -197,10 +197,13 @@ gtk_searchcombo_class_init (GtkSearchComboClass * klass)
 
 static void
 gtk_searchcombo_destroy (GtkObject * searchcombo)
-{
-  gtk_searchcombo_stop_if_running(GTK_SEARCHCOMBO (searchcombo));
-  gtk_widget_destroy (GTK_SEARCHCOMBO (searchcombo)->popwin);
-  gtk_widget_unref (GTK_SEARCHCOMBO (searchcombo)->popwin);
+{ GtkSearchCombo *sc=GTK_SEARCHCOMBO (searchcombo);
+  gtk_searchcombo_stop_if_running(sc);
+  if (sc->popwin)
+  {  gtk_widget_destroy (sc->popwin);
+     g_object_unref (sc->popwin);
+     sc->popwin = NULL;
+  }
 
   if (GTK_OBJECT_CLASS (parent_class)->destroy)
     (*GTK_OBJECT_CLASS (parent_class)->destroy) (searchcombo);
@@ -488,7 +491,7 @@ DEBUG(printf("SCB: value_selected=%d\n",searchcombo->value_selected));
      (GtkSignalFunc)gtk_searchcombo_button_click, searchcombo);
 
   searchcombo->popwin = gtk_window_new (GTK_WINDOW_POPUP);
-  gtk_widget_ref (searchcombo->popwin);
+  g_object_ref (searchcombo->popwin);
   gtk_window_set_policy (GTK_WINDOW (searchcombo->popwin), 1, 1, 0);
 
   frame = gtk_frame_new (NULL);
@@ -718,10 +721,10 @@ gtk_searchcombo_entry_changed     (GtkEntry      *entry,
             continue;
           DEBUG(printf("narrow compare %s %s\n",ltext, text));
           if (!(*string_compare) (ltext, text, strlen(text)))
-          {  gtk_widget_ref(GTK_WIDGET(me));
+          {  g_object_ref(GTK_WIDGET(me));
              gtk_container_remove(GTK_CONTAINER(searchcombo->list),GTK_WIDGET(me));
              gtk_container_add(GTK_CONTAINER(list),GTK_WIDGET(me));
-             gtk_widget_unref(GTK_WIDGET(me));
+             g_object_unref(GTK_WIDGET(me));
              DEBUG(printf("narrow add %s\n", ltext));
           }
         }
