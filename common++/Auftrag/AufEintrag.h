@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.58 2003/07/21 10:33:20 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.59 2003/07/22 08:13:27 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -42,6 +42,7 @@
 #include <Auftrag/auftrag_enums.h>
 #include <Misc/compiler_ports.h>
 #include <Lieferschein/LieferscheinEntryBase.h> // wegen opt. arg. von unbestellteMengeProduzieren
+#include <Auftrag/AufEintrag_loops.h>
 
 class Lager;
 class VerfuegbareMenge;
@@ -133,7 +134,7 @@ private:
  // wurde von ProduziertNG abgelöst
  __deprecated void WurdeProduziert(mengen_t menge,const AufEintragBase &ElternAEB);
 
- class ArtikelInternAbbestellen_cb
+ class ArtikelInternAbbestellen_cb : public distribute_children_cb
  {	unsigned uid;
 	ManuProC::Auftrag::Action reason;
 	const AufEintrag &mythis;

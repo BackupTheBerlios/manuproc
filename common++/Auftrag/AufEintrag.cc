@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.85 2003/07/22 07:19:16 christof Exp $
+// $Id: AufEintrag.cc,v 1.86 2003/07/22 08:13:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -30,10 +30,12 @@
 #include <Auftrag/VerfuegbareMenge.h>
 #include <Misc/Changejournal.h>
 //#include <Lieferschein/Lieferschein.h>
-#include <Auftrag/AufEintrag_macros.h>
+#include <Auftrag/AufEintrag_loops.h>
 #include <Misc/inbetween.h>
 #include <Artikel/ArtikelStamm.h>
 #include <Misc/relops.h>
+#include <Auftrag/sqlAuftragSelector.h>
+#include <Auftrag/selFullAufEntry.h>
 
 #ifdef MABELLA_EXTENSIONS
 #include <Lager/FertigWarenLager.h>
@@ -218,7 +220,7 @@ AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
 }
 
 // etwas bestelltes wird produziert
-namespace { class MichProduzieren
+namespace { class MichProduzieren : public distribute_parents_cb
 {	AufEintrag &mythis;
 	unsigned uid;
 	ProductionContext2 ctx;
@@ -233,7 +235,7 @@ public:
 };}
 
 // etwas bestelltes wird eingelagert -> produziert markieren & vormerken (?)
-namespace { class MichEinlagern
+namespace { class MichEinlagern : public distribute_parents_cb
 {	AufEintrag &mythis;
 	unsigned uid;
 	ProductionContext ctx;
@@ -249,7 +251,7 @@ public:
 };}
 
 // etwas bestelltes wird abbestellt -> intern abbestellen & vormerken
-namespace { class AbbestellenUndVormerken
+namespace { class AbbestellenUndVormerken : public distribute_parents_cb
 {	AufEintrag &mythis;
 	unsigned uid;
 public:
@@ -267,7 +269,7 @@ public:
 };}
 
 // Lagerinhalt ist verschwunden -> Vormerkung löschen & neu bestellen
-namespace { class NeuBestellen
+namespace { class NeuBestellen : public distribute_parents_cb
 {	AufEintrag &mythis;
 	unsigned uid;
 public:
@@ -280,7 +282,7 @@ public:
 	NeuBestellen(AufEintrag &_mythis,unsigned u) : mythis(_mythis), uid(u) {}
 };}
 
-namespace { struct Auslagern_cb
+namespace { struct Auslagern_cb : public auf_positionen_verteilen_cb
 {	unsigned uid;
 	bool fuer_auftraege;
 	ProductionContext2 ctx;
@@ -339,14 +341,14 @@ void AufEintrag::Auslagern
       abschreiben(menge);
    }
    else if (Id()==ungeplante_id)
-   {  
+   {  // @@@
 #warning Könnte von anderem Auftrag weggenommen worden sein
       // sollte ich das jetzt als Produziert markieren oder nicht?
       MengeAendern(uid,-menge,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
    }
 }
 
-namespace { class Einlagern_cb
+namespace { class Einlagern_cb : public auf_positionen_verteilen_cb
 {	bool abbestellen;
         ProductionContext ctx;
 public:
@@ -881,7 +883,7 @@ if(Instanz() == ppsInstanzID::Kundenauftraege)
 }
 
 namespace {
-class ProduziertNG_cb2
+class ProduziertNG_cb2 : public distribute_children_cb
 {  unsigned uid;
    AufEintragBase alterAEB,neuerAEB;
    ProductionContext2 ctx;
@@ -924,7 +926,7 @@ public:
 }
 
 namespace {
-class ProduziertRueckgaengig2
+class ProduziertRueckgaengig2 : public distribute_children_cb
 {  unsigned uid;
    AufEintrag alterAEB;
 public:
