@@ -96,9 +96,9 @@ class windowTop : public windowTop_glade
         int fill_bank_bei(unsigned long int blz);
         void on_button_neue_bank_clicked();
 
-        void on_abi_entry_changed();
-        void on_cab_entry_changed();
-        void on_iban_entry_changed();
+        gint on_abi_entry_changed(GdkEventFocus *e);
+        gint on_cab_entry_changed(GdkEventFocus *e);
+        gint on_iban_entry_changed(GdkEventFocus *e);
 
         void on_riba_save_clicked();
         void on_riba_abbruch_clicked();

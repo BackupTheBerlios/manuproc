@@ -200,8 +200,6 @@ void windowTop::on_gruppenwahl_activate()
 
 void windowTop::on_riba_save_clicked()
 {
- riba_save->set_sensitive(false);
- riba_abbruch->set_sensitive(false);
  
  try{
  kundendaten->setABI_CAB(abi_entry->get_text(),cab_entry->get_text());
@@ -209,6 +207,9 @@ void windowTop::on_riba_save_clicked()
  cab_entry->set_text(kundendaten->getCAB_Code());
  }  
  catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e); }   
+
+ riba_save->set_sensitive(false);
+ riba_abbruch->set_sensitive(false); 
 }
 
 void windowTop::on_riba_abbruch_clicked()
@@ -220,46 +221,55 @@ void windowTop::on_riba_abbruch_clicked()
  abi_entry->set_text(kundendaten->getABI_Code());
  cab_entry->set_text(kundendaten->getCAB_Code());
  } 
+ catch(SQLerror &e) 
+  { if(e.Code()==100) 
+      {
+       abi_entry->set_text("");
+       cab_entry->set_text("");
+       riba_save->set_sensitive(false);
+       riba_abbruch->set_sensitive(false);       
+       return; 
+      }
+   MyMessage *m=manage(new MyMessage()); m->Show(e); 
+  } 
+}
+
+void windowTop::on_iban_abbruch_clicked()
+{
+ iban_save->set_sensitive(false);
+ iban_abbruch->set_sensitive(false);  
+
+ try{iban_entry->set_text(kundendaten->getIBAN_Code());}
  catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e); } 
 }
 
 void windowTop::on_iban_save_clicked()
-{
- iban_save->set_sensitive(false);
- iban_abbruch->set_sensitive(false);
- 
- try{iban_entry->set_text(kundendaten->getIBAN_Code())}
- catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e); } 
-  
-}
-
-void windowTop::on_iban_abbruch_clicked()
 {  
- iban_save->set_sensitive(false);
- iban_abbruch->set_sensitive(false);
- 
  try{
  kundendaten->setIBAN(iban_entry->get_text());
  iban_entry->set_text(kundendaten->getIBAN_Code(true));
  }
- catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e); } 
+ catch(SQLerror &e) 
+   { MyMessage *m=manage(new MyMessage()); m->Show(e); } 
 
+ iban_save->set_sensitive(false);
+ iban_abbruch->set_sensitive(false);
 }
 
-void windowTop::on_abi_entry_changed()
+gint windowTop::on_abi_entry_changed(GdkEventFocus *e)
 {
  riba_save->set_sensitive(true);
  riba_abbruch->set_sensitive(true);  
 }
 
-void windowTop::on_cab_entry_changed()
+gint windowTop::on_cab_entry_changed(GdkEventFocus *e)
 {  
  riba_save->set_sensitive(true);
  riba_abbruch->set_sensitive(true);  
 }
 
 
-void windowTop::on_iban_entry_changed()
+gint windowTop::on_iban_entry_changed(GdkEventFocus *e)
 {
  iban_save->set_sensitive(true);
  iban_abbruch->set_sensitive(true);    
@@ -270,18 +280,19 @@ void windowTop::on_zahlverfahren_book_switch_page(Gtk::Notebook_Helpers::Page *p
  try{
  switch(enum_zahl_verfahren(pagenr))
    {
-    PAGE_DTAUS: break;
-    PAGE_RIBA:
+    case PAGE_DTAUS: break;
+    case PAGE_RIBA:
     	 abi_entry->set_text(kundendaten->getABI_Code());
  	 cab_entry->set_text(kundendaten->getCAB_Code());
  	 break;
-    PAGE_LCR:
+    case PAGE_LCR:
    	 iban_entry->set_text(kundendaten->getIBAN_Code(true)); 	 
    	 break;
     default: return;
    }
  }
- catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e); } 
+ catch(SQLerror &e) { if(e.Code()==100) return;
+ 	MyMessage *m=manage(new MyMessage()); m->Show(e); } 
  
 }
 

@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.27 2002/12/18 13:16:31 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.28 2002/12/18 15:24:38 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -693,37 +693,60 @@ void Kunde::init_AuslandZahlung() const throw(SQLerror)
  ECPGfree_auto_mem(); 
 }
 
-void Kunde::setABI_CAB(const std::string abi, const std::string cab) const throw(SQLerror)
+void Kunde::setABI_CAB(const std::string _abi, const std::string _cab) const throw(SQLerror)
 {
  exec sql begin declare section;
  unsigned int KUNDENNR = entityid;
  char *CAB;
  char *ABI;
- int ICAB,IABI,IIBAN;
  exec sql end declare section;
 
- CAB=(char*)cab.c_str();
- ABI=(char*)abi.c_str();
+ CAB=(char*)_cab.c_str();
+ ABI=(char*)_abi.c_str();
  
-############
+ Transaction tr;
 
- exec sql select iban,cab,abi 
-	into :IBAN:IIBAN,:CAB:ICAB,:ABI:IABI from riba_code where
-	kundennr= :KUNDENNR;
- SQLerror::test(__FILELINE__);
+ exec sql update ausland_bankverbindung set cab=:CAB, abi=:ABI 
+	where kundennr= :KUNDENNR;
+ SQLerror::test(__FILELINE__,100);
 
- abi=string(ABI);
- cab=string(CAB);
- iban=string(IBAN);
- 
- ECPGfree_auto_mem(); 
+ if(sqlca.sqlcode)
+   {exec sql insert into ausland_bankverbindung 
+	(kundennr,cab,abi) values (:KUNDENNR,:CAB,:ABI);
+    SQLerror::test(__FILELINE__);
+   }
 
+ abi=_abi;
+ cab=_cab;
+
+ tr.commit(); 
 }
 
 
-void Kunde::setIBAN(const std::string iban) const throw(SQLerror)
+void Kunde::setIBAN(const std::string _iban) const throw(SQLerror)
 {
+ exec sql begin declare section;
+ unsigned int KUNDENNR = entityid;
+ char *IBAN;
+ exec sql end declare section;
 
+ IBAN=(char*)_iban.c_str();
+ 
+ Transaction tr;
+
+ exec sql update ausland_bankverbindung set iban=:IBAN
+	where kundennr= :KUNDENNR;
+ SQLerror::test(__FILELINE__,100);
+
+ if(sqlca.sqlcode)
+   {exec sql insert into ausland_bankverbindung 
+	(kundennr,iban) values (:KUNDENNR,:IBAN);
+    SQLerror::test(__FILELINE__);
+   }
+
+ iban=_iban;
+
+ tr.commit(); 
 
 }
 
