@@ -193,6 +193,7 @@ void windowTop::clear_entrys()
    iban_entry->set_text("");
    cab_entry->set_text("");
    abi_entry->set_text("");
+   acc_entry->set_text("");
    bankname_italy->set_text("");
    iban_save->set_sensitive(false);
    iban_abbruch->set_sensitive(false);      
@@ -292,12 +293,14 @@ void windowTop::on_riba_abbruch_clicked()
  try{
  abi_entry->set_text(kundendaten->getABI_Code());
  cab_entry->set_text(kundendaten->getCAB_Code());
+ acc_entry->set_text(kundendaten->getRiBaACC());
  } 
  catch(SQLerror &e) 
   { if(e.Code()==100) 
       {
        abi_entry->set_text("");
        cab_entry->set_text("");
+       acc_entry->set_text("");
        riba_save->set_sensitive(false);
        riba_abbruch->set_sensitive(false);       
        return; 
@@ -372,6 +375,7 @@ void windowTop::on_zahlverfahren_book_switch_page(Gtk::Notebook_Helpers::Page *p
     case PAGE_RIBA:
     	 abi_entry->set_text(kundendaten->getABI_Code());
  	 cab_entry->set_text(kundendaten->getCAB_Code());
+	 acc_entry->set_text(kundendaten->getRiBaACC());
  	 bankname_italy->set_text(kundendaten->getABIBankName());
  	 break;
     case PAGE_LCR:
