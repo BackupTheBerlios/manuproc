@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.5 2004/03/11 15:17:32 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.6 2004/03/11 16:09:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -288,12 +288,13 @@ void Query::Execute() throw(SQLerror)
 {  char **result=0;
    char *msgbuf=0;
    int rows,cols;
-   int rc=sqlite_get_table(ManuProC::db_connection, query.c_str(), 
+   error=sqlite_get_table(ManuProC::db_connection, query.c_str(), 
    		&result, &rows, &cols, &msgbuf);
-   if(rc!=SQLITE_OK)
+   SQLerror::last_code=error;
+   if(error!=SQLITE_OK)
    {  std::string err=msgbuf;
       sqlite_freemem(msgbuf);
-      throw SQLerror(__FUNCTION__,rc,msgbuf);
+      throw SQLerror(__FUNCTION__,error,msgbuf);
    }
    lines=rows;
    nfields=cols;
@@ -313,6 +314,27 @@ void Query::Fetch(FetchIStream &is)
       eof=true;
    }
   is=FetchIStream();
+}
+
+Query::Query(const std::string &command)
+: eof(true), line(), result(), query(command), num_params(), 
+	error(ECPG_TOO_FEW_ARGUMENTS), lines()
+{  const char *p=query.c_str();
+   while ((p=ArgumentList::next_insert(p))) { ++num_params; ++p; }
+   params.setNeededParams(num_params);
+   Execute_if_complete();
+}
+
+Query::~Query()
+{  if (!params.complete())
+   {  std::cerr << "The query " << query << " still needed " 
+   	<< params.HowManyNeededParams() 
+   	<< " parameters on destruction and got never executed!\n";
+   }
+   if (result)
+   {  sqlite_free_table((char**)result);
+      result=0;
+   }
 }
 
 #endif

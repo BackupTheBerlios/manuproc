@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.50 2004/03/11 15:21:17 christof Exp $
+// $Id: FetchIStream.h,v 1.51 2004/03/11 16:09:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -198,7 +198,10 @@ public:
 };
 
 class Query : public Query_types
-{	std::string descriptor;
+{
+#ifndef MPC_SQLITE
+	std::string descriptor;
+#endif
 	bool eof;
 	int line;
 #ifdef MPC_SQLITE

@@ -1,4 +1,4 @@
-/* $Id: SQLerror_sqlite.h,v 1.2 2004/03/11 14:35:53 christof Exp $ */
+/* $Id: SQLerror_sqlite.h,v 1.3 2004/03/11 16:09:26 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,6 +23,7 @@
 #include <iostream>
 #include <string>
 #include <exception>
+#include <Misc/compiler_ports.h>
 #endif
 
 #define _sql_STRING2__(a) #a
@@ -37,6 +38,8 @@ class SQLerror_sqlite : public std::exception
 //   char separator;
    
 public:
+   static int last_code;
+   
    ~SQLerror_sqlite() throw() {}
 //   SQLerror_sqlite(const std::string &context) throw();
    SQLerror_sqlite(const std::string &context,int code,const std::string &name) throw();
@@ -52,16 +55,16 @@ public:
 
    static void print(const std::string &context,int codeok=0);
    
-   static void test(const std::string &context,int codeok=0);
+   static __deprecated void test(const std::string &context,int codeok=0);
 //   		throw(SQLerror_sqlite);
-   static void test(const std::string &context,const std::string &cursor,
+   static __deprecated void test(const std::string &context,const std::string &cursor,
 		int codeok=0); // throw(SQLerror_sqlite);
-   static void test(const std::string &context,const char *cursor,
+   static __deprecated void test(const std::string &context,const char *cursor,
 		int codeok=0) // throw(SQLerror_sqlite)
    {  test(context,std::string(cursor),codeok);
    }
    
-   static int SQLCode();
+   static __deprecated int SQLCode();
 };
 
 std::ostream &operator<<(std::ostream&,const SQLerror_sqlite &) throw();
