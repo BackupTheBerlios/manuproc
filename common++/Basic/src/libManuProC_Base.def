@@ -14,6 +14,7 @@ EXPORTS
 	_Z6itos0piib 
 	_Z6ulltosy 
 	_Z8iso2utf8RKSs 
+	_Z8itos0padii 
 	_Z8utf82isoRKSs 
 	_ZN13HandleContentD0Ev 
 	_ZN13HandleContentD1Ev 
@@ -81,6 +82,8 @@ EXPORTS
 	_ZN7IOerrorC2Ev 
 	_ZN7IOerrorD0Ev 
 	_ZN7IOerrorD1Ev 
+	_ZN8ManuProC12DatumsfehlerC1Ei 
+	_ZN8ManuProC12DatumsfehlerC2Ei 
 	_ZN8ManuProC12DatumsfehlerD0Ev 
 	_ZN8ManuProC12DatumsfehlerD1Ev 
 	_ZN8ManuProC16remove_last_fromERSsRKSs 
@@ -90,6 +93,7 @@ EXPORTS
 	_ZN8ManuProC5Datum5todayEv 
 	_ZN8ManuProC5Datum6getnumEPKhi 
 	_ZN8ManuProC5Datum6monateE DATA
+	_ZN8ManuProC5Datum8InfinityEv 
 	_ZN8ManuProC5Datum9from_autoEPKcPS2_ 
 	_ZN8ManuProC5DatumC1ERK13Kalenderwoche 
 	_ZN8ManuProC5DatumC1Eiiib 
@@ -101,6 +105,12 @@ EXPORTS
 	_ZN8ManuProC5DatummmEv 
 	_ZN8ManuProC5DatumppEi 
 	_ZN8ManuProC5DatumppEv 
+	_ZN8ManuProC5parseISsEET_RKSs 
+	_ZN8ManuProC5parseIbEET_RKSs 
+	_ZN8ManuProC5parseIdEET_RKSs 
+	_ZN8ManuProC5parseIfEET_RKSs 
+	_ZN8ManuProC5parseIiEET_RKSs 
+	_ZN8ManuProC5parseIlEET_RKSs 
 	_ZN8ManuProC6Tracer11EnvironmentC1ERKSsj 
 	_ZN8ManuProC6Tracer11EnvironmentC2ERKSsj 
 	_ZN8ManuProC6Tracer11FunctionEndEv 
@@ -108,6 +118,9 @@ EXPORTS
 	_ZN8ManuProC6Tracer6EnableEjb 
 	_ZN8ManuProC6Tracer7enabledEj 
 	_ZN8ManuProC6Tracer8channelsE DATA
+	_ZN8ManuProC6createIbEESsRKT_ 
+	_ZN8ManuProC6createIdEESsRKT_ 
+	_ZN8ManuProC6createIiEESsRKT_ 
 	_ZN9TagStream10getContentEv 
 	_ZN9TagStream12find_tagend2EPc 
 	_ZN9TagStream12find_wordendEPc 

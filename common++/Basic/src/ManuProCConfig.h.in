@@ -1,4 +1,4 @@
-/* $Id: ManuProCConfig.h.in,v 1.19 2004/03/08 15:33:36 christof Exp $ */
+/* $Id: ManuProCConfig.h.in,v 1.20 2004/03/12 11:53:23 christof Exp $ */
 /*  ManuProCBase: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,6 +23,12 @@
 
 #undef DEFAULT_DB
 #undef DEFAULT_DBHOST
+
+/* we have support for pgsql/ecpg */
+#undef MANUPROC_WITH_DATABASE
+
+/* Define to 1 if you want to use the SQLite backend */
+#undef MPC_SQLITE
 
 /* 
    Define to 1 if you use ecpg 2.9.
