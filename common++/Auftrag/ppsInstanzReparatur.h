@@ -1,4 +1,4 @@
-// $Id: ppsInstanzReparatur.h,v 1.1 2003/01/31 16:24:43 christof Exp $
+// $Id: ppsInstanzReparatur.h,v 1.2 2003/02/10 14:33:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -59,7 +59,7 @@ class ppsInstanzReparatur : public ppsInstanz
 
       typedef fixedpoint<ManuProC::Precision::AuftragsMenge> ABmt;
 //      bool check_D_ungeplant(const int uid,const bool analyse_only,const AufEintrag &AE,const ABmt &M0sum,const ABmt &Msum) const;
-      bool check_D_ungeplant(const int uid,const bool analyse_only,const AufEintrag &AE,const std::list<AufEintragZu::st_reflist> &L) const;
+      bool check_D_ungeplant(const int uid,const bool analyse_only,const AufEintrag &AE,const AufEintragZu::list_t &L) const;
       bool check_E_geplant(const int uid,const bool analyse_only,const AufEintrag &AE,const ABmt &Msum) const;
       bool check_F_dispo(const int uid,const bool analyse_only,const AufEintrag &AE,const ABmt &Msum) const;
 

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.37 2003/01/15 15:10:16 christof Exp $
+// $Id: AufEintragBase.cc,v 1.38 2003/02/10 14:33:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -44,6 +44,12 @@ FetchIStream& operator>>(FetchIStream& is,AufEintragBase &aeb)
   return is;
 }
 
+Query &operator<<(Query &o, const AufEintragBase &aeb)
+{  o.add_argument(itos(aeb.Instanz()->Id()));
+   o.add_argument(itos(aeb.Id()));
+   o.add_argument(itos(aeb.ZNr()));
+   return o;
+}
 
 std::ostream &operator<<(std::ostream &o,const AufEintragBase &ae)
 {
@@ -84,10 +90,10 @@ int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
 
   assert(Id()==AuftragBase::ungeplante_id);
   // ElternListe holen
-  std::list<AufEintragZu::st_reflist> L=AufEintragZu(*this).get_Referenz_list(*this,false);
+  AufEintragZu::list_t L=AufEintragZu(*this).get_Referenz_list(*this,false);
   int znr=none_znr;
   assert(!L.empty());
-  for(std::list<AufEintragZu::st_reflist>::iterator i=L.begin();i!=L.end();++i)
+  for(AufEintragZu::list_t::iterator i=L.begin();i!=L.end();++i)
    {
     mengen_t M=min(i->Menge,menge);
     znr=BestellmengeAendern(M,datum,artikel,status,uid,i->AEB);

@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.28 2003/01/31 16:23:15 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.29 2003/02/10 14:33:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -127,6 +127,7 @@ private:
  void ArtikelInternAbbestellen(int uid,mengen_t menge,
  	ManuProC::Auftrag::Action reason) const;
  void move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,const ArtikelBase artikel,int uid,ManuProC::Auftrag::Action reason);
+ void WurdeProduziert(mengen_t menge,const AufEintragBase &ElternAEB);
 
 public:
  void updateLieferdatum(const ManuProC::Datum &ld,int uid) throw(SQLerror);	

@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.28 2003/01/31 16:23:15 christof Exp $
+// $Id: AufEintrag.cc,v 1.29 2003/02/10 14:33:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -222,9 +222,9 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
   if (zielauftrag.Id() != AuftragBase::plan_auftrag_id)
   { assert(zielauftrag.Id()>=handplan_auftrag_id);
     // Kundenauftrag suchen
-   std::list<AufEintragZu::st_reflist> ReferenzAufEintrag =
+   AufEintragZu::list_t ReferenzAufEintrag =
 			         AufEintragZu(*this).get_Referenz_listFull(false);
-   for (std::list<AufEintragZu::st_reflist>::iterator i=ReferenzAufEintrag.begin();i!=ReferenzAufEintrag.end();++i)
+   for (AufEintragZu::list_t::iterator i=ReferenzAufEintrag.begin();i!=ReferenzAufEintrag.end();++i)
     {
      if(i->AEB.Instanz()->Id()!=ppsInstanzID::Kundenauftraege) continue;
      // aha ? CP

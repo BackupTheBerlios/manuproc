@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.48 2003/01/31 16:25:44 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.49 2003/02/10 14:33:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -87,14 +87,14 @@ void AufEintrag::abschreiben(mengen_t menge,ManuProcEntity<>::ID lfrsid) throw(S
    }   
 
  if(delete_entry)
-   Query("delete from auftragentry where (instanz,auftragid,zeilennr) = (?,?,?)")
-     << InstanzID() << Id() << ZNr();
+   Query("delete from auftragentry where (instanz,auftragid,zeilennr) = (?,?,?)").lvalue()
+     << static_cast<const AufEintragBase&>(*this);
  else
    Query("update auftragentry set geliefert=?, status=?, "
      "bestellt=?, letzte_lieferung=now() "
      "where (instanz,auftragid,zeilennr) = (?,?,?)").lvalue()
      << GELIEFERT << STATUS << BESTELLT 
-     << InstanzID() << Id() << ZNr();
+     << static_cast<const AufEintragBase&>(*this);
  SQLerror::test(__FILELINE__);
 
 #ifdef MABELLA_EXTENSIONS // Lager updaten
@@ -290,12 +290,12 @@ void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftr
    "menge=",menge,"Reason=",reason);
 
  assert(menge>0);
- std::list<AufEintragZu::st_reflist> KindListeU = AufEintragZu(*this).get_Referenz_list(*this,true);
+ AufEintragZu::list_t KindListeU = AufEintragZu(*this).get_Referenz_list(*this,true);
  try{
-   typedef  std::map<ArtikelBase,std::list<AufEintragZu::st_reflist> > MapArt_t;
+   typedef  std::map<ArtikelBase,AufEintragZu::list_t > MapArt_t;
    MapArt_t MapArt;
 
-   for(std::list<AufEintragZu::st_reflist>::iterator i=KindListeU.begin();i!=KindListeU.end();++i)
+   for(AufEintragZu::list_t::iterator i=KindListeU.begin();i!=KindListeU.end();++i)
     {
       // Nach dem Planen kann es zu einem Auftrag mehrere Kindaufträge 
       // mit demselben Artikel geben, nur bei EINEM darf die Menge geändert
@@ -307,7 +307,7 @@ void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftr
      ArtikelBaum::faktor_t faktor = ArtikelBaum(ArtId()).Faktor(i->first);
      AuftragBase::mengen_t menge2=faktor*menge;
      
-     for(std::list<AufEintragZu::st_reflist>::iterator j=i->second.begin();j!=i->second.end();++j)
+     for(AufEintragZu::list_t::iterator j=i->second.begin();j!=i->second.end();++j)
       {
         AufEintrag AE(j->AEB);
         mengen_t M=AuftragBase::min(j->Menge,menge2);
@@ -353,7 +353,7 @@ void AufEintrag::updatePreis(const Preis &pr) throw(SQLerror)
  	"set preis=?, preismenge=? "
  	"where (instanz,auftragid,zeilennr)=(?,?,?)").lvalue()
  	<< pr.Wert() << pr.PreisMenge() 
- 	<< instanz->Id() << auftragid << zeilennr;
+ 	<< static_cast<const AufEintragBase&>(*this);
  SQLerror::test("updatePreis: update preis in auftragentry");
  preis=pr;
 }
@@ -366,7 +366,7 @@ void AufEintrag::updateRabatt(rabatt_t rb) throw(SQLerror)
  	"set rabatt=? "
  	"where (instanz,auftragid,zeilennr)=(?,?,?)").lvalue()
  	<< rb 
- 	<< instanz->Id() << auftragid << zeilennr;
+ 	<< static_cast<const AufEintragBase&>(*this);
  SQLerror::test("updateRabatt: update rabatt in auftragentry");
  rabatt=rb;
 }
@@ -384,7 +384,7 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld,int uid) throw(SQLerro
  	"set lieferdate=? "
  	"where (instanz,auftragid,zeilennr)=(?,?,?)").lvalue()
  	<< ld
- 	<< instanz->Id() << auftragid << zeilennr;
+ 	<< static_cast<const AufEintragBase&>(*this);
  SQLerror::test("updateLiefDatum: update lieferdate in auftragentry");
  lieferdatum=ld;
 
@@ -484,8 +484,27 @@ cH_Lieferschein AufEintrag::getLieferschein() const
  Query("select lfrsid,zeile from lieferscheinentry "
  	"where (instanz,refauftragid,refzeilennr)=(?,?,?) "
  	"limit 1").lvalue()
- 	<< instanz->Id() << Id() << ZNr()
+ 	<< static_cast<const AufEintragBase&>(*this)
  	>> LFRSID >> LFRZNR;
 #warning kann es mehr als eine Zeile geben? 
  return cH_Lieferschein(Instanz(),LFRSID);
 }
+
+// wird bislang von menge_neu_verplanen für 0er aufgerufen
+// vermutlich ehemals abschreiben_oder_reduzieren 
+void AufEintrag::WurdeProduziert(AuftragBase::mengen_t M,const AufEintragBase &ElternAEB)
+{  // Gilt für Lager && 
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,M,ElternAEB);
+   assert(Id()==ungeplante_id);
+   assert(Instanz()->LagerInstanz());
+   if (Id()==ungeplante_id)
+   {  MengeAendern(getuid(),-M,false,ElternAEB,ManuProC::Auftrag::r_Produziert);
+#warning Rekursion fehlt
+   }
+}
+
+#if 0
+void AufEintrag::ProduktionRueckgaengig(AuftragBase::mengen_t M)
+{
+}
+#endif

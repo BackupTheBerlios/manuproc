@@ -1,4 +1,4 @@
-// $Id: AufEintragZuMengenAenderung.cc,v 1.11 2003/01/15 15:10:16 christof Exp $
+// $Id: AufEintragZuMengenAenderung.cc,v 1.12 2003/02/10 14:33:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -30,8 +30,8 @@ void AufEintragZuMengenAenderung::change_parent(const int uid,
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
       "Old_AEB=",old_parent,"New_AEB=",new_parent,"Menge=",menge);
-  std::list<AufEintragZu::st_reflist> K=AufEintragZu(old_parent).get_Referenz_list(old_parent,true);
-  for(std::list<AufEintragZu::st_reflist>::const_iterator i=K.begin();i!=K.end();++i)
+  AufEintragZu::list_t K=AufEintragZu(old_parent).get_Referenz_list(old_parent,true);
+  for(AufEintragZu::list_t::const_iterator i=K.begin();i!=K.end();++i)
    {
      AufEintragZu(new_parent).Neu(i->AEB,menge); // Neu versucht zunächst ein update
      AufEintragZu(old_parent).Neu(i->AEB,-menge); 
@@ -43,16 +43,16 @@ void AufEintragZuMengenAenderung::increase_parents__reduce_assingments(const int
                      const AufEintragBase &child_aeb,AuftragBase::mengen_t menge) throw(SQLerror)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AEB=",child_aeb,"Menge=",menge);
-  std::list<AufEintragZu::st_reflist> L=AufEintragZu(child_aeb).get_Referenz_list(child_aeb);
-  for(std::list<AufEintragZu::st_reflist>::iterator j=L.begin();j!=L.end();++j)
+  AufEintragZu::list_t L=AufEintragZu(child_aeb).get_Referenz_list(child_aeb);
+  for(AufEintragZu::list_t::iterator j=L.begin();j!=L.end();++j)
     {
 //cout << child_aeb<<'\t'<<j->AEB<<'\t'<<menge<<'\t'<<j->Menge<<'\n';
       AuftragBase::mengen_t m=AuftragBase::min(j->Menge,menge);
 
       AufEintragZu(j->AEB).setMengeDiff__(child_aeb,-m);
 
-      std::list<AufEintragZu::st_reflist> L2=AufEintragZu(j->AEB).get_Referenz_list_ungeplant();
-      for(std::list<AufEintragZu::st_reflist>::iterator k=L2.begin();k!=L2.end();++k)
+      AufEintragZu::list_t L2=AufEintragZu(j->AEB).get_Referenz_list_ungeplant();
+      for(AufEintragZu::list_t::iterator k=L2.begin();k!=L2.end();++k)
        {
          if(k->Art!=AufEintrag(child_aeb).Artikel()) continue;
          AufEintragZu(j->AEB).setMengeDiff__(k->AEB,m);
@@ -84,9 +84,9 @@ void AufEintragZuMengenAenderung::Change_Zuordnung_to_Children(const bool child,
   AuftragBase::mengen_t Me=menge;
   if(reduce) Me*=-1;
   // K ist nach Instanzen sortiert
-  std::list<AufEintragZu::st_reflist>  K=AufEintragZu(AE).get_Referenz_list_ungeplant();
+  AufEintragZu::list_t  K=AufEintragZu(AE).get_Referenz_list_ungeplant();
   std::map<cH_ppsInstanz,AuftragBase::mengen_t> IM;
-  for(std::list<AufEintragZu::st_reflist>::const_iterator i=K.begin();i!=K.end();++i)
+  for(AufEintragZu::list_t::const_iterator i=K.begin();i!=K.end();++i)
    {
      // Wenn diese Instanz schon behandelt wurde und keine Menge mehr über ist
      if(IM.find(i->AEB.Instanz())!=IM.end() && 
@@ -110,8 +110,8 @@ void AufEintragZuMengenAenderung::move_zuordnung_zu_geplantem(const int uid,
          ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AE0er=",AE0er,"AE1er=",AE1er,"Menge=",menge);
-  std::list<AufEintragZu::st_reflist> L=AufEintragZu(AE0er).get_Referenz_list(AE0er);
-  for(std::list<AufEintragZu::st_reflist>::reverse_iterator i=L.rbegin();i!=L.rend();++i)
+  AufEintragZu::list_t L=AufEintragZu(AE0er).get_Referenz_list(AE0er);
+  for(AufEintragZu::list_t::reverse_iterator i=L.rbegin();i!=L.rend();++i)
    {
     AuftragBase::mengen_t M=AuftragBase::min(i->Menge,menge);
     AufEintragZu(i->AEB).setMengeDiff__(AE0er,-M);
@@ -125,8 +125,8 @@ void AufEintragZuMengenAenderung::move_zuordnung_zu_geplantem(const int uid,
 void AufEintragZuMengenAenderung::freie_dispomenge_verwenden(const int uid,
          const AufEintrag &AE2er,AuftragBase::mengen_t menge,const AufEintragBase &ElternAEB) throw(SQLerror)
 {
-  std::list<AufEintragZu::st_reflist> L=AufEintragZu(AE2er).get_Referenz_list_geplant();
-  for(std::list<AufEintragZu::st_reflist>::reverse_iterator i=L.rbegin();i!=L.rend();++i)
+  AufEintragZu::list_t L=AufEintragZu(AE2er).get_Referenz_list_geplant();
+  for(AufEintragZu::list_t::reverse_iterator i=L.rbegin();i!=L.rend();++i)
    {
     AuftragBase::mengen_t M=AuftragBase::min(i->Menge,menge);
     AufEintragZu(AE2er).setMengeDiff__(i->AEB,-M);

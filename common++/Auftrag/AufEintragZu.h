@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.13 2003/01/08 09:46:56 christof Exp $
+// $Id: AufEintragZu.h,v 1.14 2003/02/10 14:33:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -28,50 +28,56 @@
 
 class AufEintragZu : public AufEintragBase
 {
-// AufEintragBase AEB;
-
 public:
  AufEintragZu(AufEintragBase aeb) 
   : AufEintragBase(aeb) {}
 
- struct st_reflist {AufEintragBase AEB;ArtikelBase Art;mengen_t Menge;
-         st_reflist(AufEintragBase aeb,ArtikelBase ab,mengen_t menge) 
-              :AEB(aeb),Art(ab),Menge(menge){}
-              bool operator<(const st_reflist &b) const {return Art<b.Art;}
-              bool operator==(const st_reflist &b) const 
+ struct st_reflist 
+ {	AufEintragBase AEB;
+ 	ArtikelBase Art;
+ 	mengen_t Menge;
+        
+        st_reflist(AufEintragBase aeb,ArtikelBase ab,mengen_t menge) 
+              : AEB(aeb),Art(ab),Menge(menge) {}
+        st_reflist() : Menge(0) {}
+        bool operator<(const st_reflist &b) const {return Art<b.Art;}
+        bool operator==(const st_reflist &b) const 
                {return AEB==b.AEB && Art==b.Art && Menge==b.Menge ;}
-              };
+  };
+ typedef std::list<st_reflist> list_t;
 
  enum VonNachDel {Von,Nach,Delete} ;
 
-  std::list<st_reflist> get_Referenz_list_id(const AuftragBase::ID id,bool kinder) const throw(SQLerror);
-  std::list<st_reflist> select_Id(const AuftragBase::ID id,const std::list<st_reflist> &L) const;
-  std::list<st_reflist> get_Referenz_list_without_child() const throw(SQLerror);
+  list_t get_Referenz_list_id(const AuftragBase::ID id,bool kinder) const throw(SQLerror);
+  list_t select_Id(const AuftragBase::ID id,const list_t &L) const;
+  list_t get_Referenz_list_without_child() const throw(SQLerror);
 
 public:
     AuftragBase::mengen_t getMenge(const AufEintragBase& aeb) const;
     // Eine Benachbarte Liste von Kind- bzw. Elternaufträgen:
-    std::list<st_reflist> get_Referenz_list(const AufEintragBase& aeb,bool kinder=false) const throw(SQLerror);
+    static list_t get_Referenz_list(const AufEintragBase& aeb,bool kinder=false) throw(SQLerror);
+    static const bool list_kinder=true;
+    static const bool list_eltern=false;
 
     // Eine Benachbarte Liste von (Kind-)aufträgen aber nur ungeplante(0er) Aufträge:
-    std::list<st_reflist> get_Referenz_list_ungeplant(bool kinder=true) const throw(SQLerror)
+    list_t get_Referenz_list_ungeplant(bool kinder=true) const throw(SQLerror)
       {return get_Referenz_list_id(AuftragBase::ungeplante_id,kinder);}
 
     // Eine Benachbarte Liste von (Kind-)aufträgen aber nur dispo(2er) Aufträge:
-    std::list<st_reflist> get_Referenz_list_dispo(bool kinder=true) const throw(SQLerror)
+    list_t get_Referenz_list_dispo(bool kinder=true) const throw(SQLerror)
       {return get_Referenz_list_id(AuftragBase::dispo_auftrag_id,kinder);}
 
     // Eine Benachbarte Liste von (Kind-)aufträgen aber nur geplante(1|20000er) Aufträge:
-    std::list<st_reflist> get_Referenz_list_geplant(bool kinder=true) const throw(SQLerror);
+    list_t get_Referenz_list_geplant(bool kinder=true) const throw(SQLerror);
 
     // Eine Benachbarte Liste von Kind- bzw. Elternaufträgen des zu mir gehörenden
     // geplanten Auftrags holen
-    std::list<st_reflist> get_Referenz_list_for_geplant(bool kinder=false) const throw(SQLerror);
+    list_t get_Referenz_list_for_geplant(bool kinder=false) const throw(SQLerror);
 
-    std::list<st_reflist> get_Referenz_list_for_geplant_neu(bool kinder=false) const throw(SQLerror);
+    list_t get_Referenz_list_for_geplant_neu(bool kinder=false) const throw(SQLerror);
     // Für einen KOMPLETTEN Auftragsbaum nur_ende=false setzen
     // die folgende Funktion liefert sonst nur die Endaufträge OHNE Knoten
-    std::list<st_reflist> get_Referenz_listFull(bool kinder,bool nur_ende=true) const throw(SQLerror);
+    list_t get_Referenz_listFull(bool kinder,bool nur_ende=true) const throw(SQLerror);
                  //kinder=false:   Elternaufträge 
                  //kinder=true:    Kinderaufträge 
 
@@ -92,8 +98,8 @@ public:
     // gibt die Menge zurück, die verändert wurde. Falls reduziert werden sollte
     // müssen die input/output menge nicht übereinstimmen, da keine negativen Mengen
     // bestellt werden können
-    mengen_t setMengeDiff__(const AufEintragBase& neuAEB,const mengen_t menge);
-    AuftragBase::mengen_t verteileMenge(std::list<st_reflist> L, AuftragBase::mengen_t menge, bool add);
+    mengen_t setMengeDiff__(const AufEintragBase& neuAEB,mengen_t menge);
+    AuftragBase::mengen_t verteileMenge(list_t L, AuftragBase::mengen_t menge, bool add);
     
 
     // Zuordnung ändern:

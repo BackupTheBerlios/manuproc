@@ -1,4 +1,4 @@
-// $Id: AuftragsEntryZuordnung_sql.pgcc,v 1.12 2003/01/08 09:03:41 christof Exp $
+// $Id: AuftragsEntryZuordnung_sql.pgcc,v 1.13 2003/02/10 14:33:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -28,7 +28,7 @@
 exec sql include sqlca;
 
 
-std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list(const AufEintragBase& aeb,bool kinder) const throw(SQLerror) 
+AufEintragZu::list_t AufEintragZu::get_Referenz_list(const AufEintragBase& aeb,bool kinder) const throw(SQLerror) 
 {
  exec sql begin declare section;
   int INSTANZ[30],AUFTRAGID[30],ZEILENNR[30];
@@ -78,11 +78,11 @@ std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list(const AufEin
 }
 
 
-std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_ungeplant(const AufEintragBase& aeb,bool kinder) const throw(SQLerror)
+AufEintragZu::list_t AufEintragZu::get_Referenz_list_ungeplant(const AufEintragBase& aeb,bool kinder) const throw(SQLerror)
 {
    std::list<st_reflist> L=get_Referenz_list(aeb,kinder);
    std::list<st_reflist> N;
-   for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+   for(AufEintragZu::list_t::const_iterator i=L.begin();i!=L.end();++i)
      {
        if(i->AEB2.Id()==0)
          N.push_back(*i);
@@ -113,7 +113,7 @@ reloop:
 }
 
 
-std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_for_geplant(bool kinder=false) const throw(SQLerror)
+AufEintragZu::list_t AufEintragZu::get_Referenz_list_for_geplant(bool kinder=false) const throw(SQLerror)
 {
 //cout << AEB.Instanz()->Name()<<' '<<AEB.Id()<<' '<<AEB.ZNr()<<'\n';
   // Ungeplante Referenz Aufträge

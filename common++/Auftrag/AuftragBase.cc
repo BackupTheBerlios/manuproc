@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.23 2003/01/31 16:23:15 christof Exp $
+// $Id: AuftragBase.cc,v 1.24 2003/02/10 14:33:59 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -115,14 +115,29 @@ void AuftragBase::menge_neu_verplanen(const int uid,cH_ppsInstanz instanz,const 
      AuftragBase::mengen_t M=AuftragBase::min(i->getRestStk(),m);
 //     i->Produziert_0er(M);
 //     i->abschreiben(
-     // i->WurdeProduziert(M);
-#warning this seems fishy CP     
+     // ich brauche hier keinen Artikel, ist das dann richtig?
+     AufEintragZu::list_t eltern = AufEintragZu(*i)
+     			.get_Referenz_list(*i,AufEintragZu::list_eltern);
+     // woher bekomme ich die passenden Eltern?
+     // unser Datum gibt dann auch den 1er an.
+     for (AufEintragZu::list_t::const_iterator j=eltern.begin();
+     		j!=eltern.end();++j)
+     {  // Sortierung egal?
+        AuftragBase::mengen_t m2=AuftragBase::min(j->Menge,M);
+        i->WurdeProduziert(m2,j->AEB);
+        // 1er erhöhen
+        // Rückgabewert?
+        AufEintragBase(instanz,AuftragBase::plan_auftrag_id)
+           .BestellmengeAendern(m2,i->getLieferdatum(),artikel,OPEN,uid,j->AEB);
+        m-=m2;
+        if(!m) break;
+     }
+     // Zuordnung erniedrigen, 1er erzeugen, 
      // 0er abbestellen, aber wo wird der 1er erhöht?
      // 0er nicht abbestellen sondern als Produziert markieren!!!
      // i->updateStkDiffInstanz__(uid,-M,AufEintragBase(),reason);
      // produziert markieren
-#warning hier gehts weiter     
-     m-=M;
+//     @@@
      if(!m) break;
    }
    

@@ -1,4 +1,4 @@
-// $Id: AuftragsBaum.cc,v 1.8 2002/10/24 14:06:49 thoma Exp $
+// $Id: AuftragsBaum.cc,v 1.9 2003/02/10 14:33:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -26,11 +26,11 @@
 
 AuftragsBaum::AuftragsBaum(const AufEintragBase aeb,bool kinder)
 {
- std::list<AufEintragZu::st_reflist> tv=AufEintragZu(aeb).get_Referenz_list(aeb,kinder);
- std::list<AufEintragZu::st_reflist> tvxx;
+ AufEintragZu::list_t tv=AufEintragZu(aeb).get_Referenz_list(aeb,kinder);
+ AufEintragZu::list_t tvxx;
 reloop:
  tv.splice(tv.end(),tvxx);
- for (std::list<AufEintragZu::st_reflist>::iterator i=tv.begin();i!=tv.end();++i)
+ for (AufEintragZu::list_t::iterator i=tv.begin();i!=tv.end();++i)
    {
      st_AuftragsBlatt AuftragsBlatt(i->AEB,i->Art,i->Menge);
      auftragsbaum.push_back(AuftragsBlatt);

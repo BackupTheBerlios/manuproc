@@ -36,9 +36,9 @@ bool ppsInstanzReparatur::ReparaturKK_KundenKinder(const int uid,const bool anal
   bool alles_ok=true;
   for(SelectedFullAufList::const_iterator i = K.begin();i!=K.end(); ++i)
    {
-     std::list<AufEintragZu::st_reflist> L=AufEintragZu(*i).get_Referenz_list_ungeplant(true);
+     AufEintragZu::list_t L=AufEintragZu(*i).get_Referenz_list_ungeplant(true);
      assert(L.size()==1);
-     for(std::list<AufEintragZu::st_reflist>::const_iterator j=L.begin();j!=L.end();++j)
+     for(AufEintragZu::list_t::const_iterator j=L.begin();j!=L.end();++j)
       { 
         bool ok=KK_teste_summen_fuer(j->AEB,i->Artikel(),uid,analyse_only);
         if(!ok) alles_ok=false;
@@ -54,8 +54,8 @@ bool ppsInstanzReparatur::KK_teste_summen_fuer(const AufEintragBase aeb,const Ar
   AuftragBase::mengen_t ElternMenge=0;
   // ElternMenge
   { 
-   std::list<AufEintragZu::st_reflist> L=AufEintragZu(aeb).get_Referenz_list(aeb,false);
-   for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+   AufEintragZu::list_t L=AufEintragZu(aeb).get_Referenz_list(aeb,false);
+   for(AufEintragZu::list_t::const_iterator i=L.begin();i!=L.end();++i)
      {
        ElternMenge += AufEintrag(i->AEB).getRestStk();
      }
@@ -65,14 +65,14 @@ bool ppsInstanzReparatur::KK_teste_summen_fuer(const AufEintragBase aeb,const Ar
   // Geplane Kinder
   AuftragBase::mengen_t PlanMenge=0;
   {
-  std::list<AufEintragZu::st_reflist> L=AufEintragZu(aeb).get_Referenz_list_geplant();
-  for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+  AufEintragZu::list_t L=AufEintragZu(aeb).get_Referenz_list_geplant();
+  for(AufEintragZu::list_t::const_iterator i=L.begin();i!=L.end();++i)
    {
      // Und deren Dispo-Eltern
      AuftragBase::mengen_t DispoMenge=0;
-     std::list<AufEintragZu::st_reflist> D=AufEintragZu(i->AEB).get_Referenz_list_dispo(false);
+     AufEintragZu::list_t D=AufEintragZu(i->AEB).get_Referenz_list_dispo(false);
 std::cout << "\tDispo: "<<D.size()<<'\n';
-     for(std::list<AufEintragZu::st_reflist>::const_iterator j=D.begin();j!=D.end();++j)
+     for(AufEintragZu::list_t::const_iterator j=D.begin();j!=D.end();++j)
       { assert(j->AEB.Id()==AuftragBase::dispo_auftrag_id);
         DispoMenge += j->Menge;
       }
@@ -96,8 +96,8 @@ std::cout << "\tFehler";
 std::cout << "\n";
 
   // und nun rekursiv
-  std::list<AufEintragZu::st_reflist> L=AufEintragZu(aeb).get_Referenz_list_ungeplant();
-  for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+  AufEintragZu::list_t L=AufEintragZu(aeb).get_Referenz_list_ungeplant();
+  for(AufEintragZu::list_t::const_iterator i=L.begin();i!=L.end();++i)
    {
      KK_teste_summen_fuer(i->AEB,AE0.Artikel(),uid,analyse_only);
    }
@@ -122,13 +122,13 @@ bool ppsInstanzReparatur::ReparaturST_AuftragsZuordnung(const int uid,const bool
   SelectedFullAufList AL1(sel1er);
   for(SelectedFullAufList::iterator i=AL1.begin();i!=AL1.end();++i)
    {
-     std::list<AufEintragZu::st_reflist> L=AufEintragZu(*i).get_Referenz_list(*i,kinder);
+     AufEintragZu::list_t L=AufEintragZu(*i).get_Referenz_list(*i,kinder);
      if(i->Id() == AuftragBase::dispo_auftrag_id && !kinder && !L.empty())
          return ReparaturG_keine_Eltern(uid,analyse_only);
 
 //     std::map<st_art_instanz,AuftragBase::mengen_t> MArt;
      std::map<ArtikelBase,AuftragBase::mengen_t> MArt;
-     for(std::list<AufEintragZu::st_reflist>::const_iterator j=L.begin();j!=L.end();++j)
+     for(AufEintragZu::list_t::const_iterator j=L.begin();j!=L.end();++j)
       {
 //         MArt[st_art_instanz(j->AEB.Instanz(),j->Art)]+=j->Menge;
         MArt[j->Art]+=j->Menge;
@@ -161,7 +161,7 @@ bool ppsInstanzReparatur::ReparaturH_LagerZuordnungen(const int uid,const bool a
   SelectedFullAufList K(psel);
   for(SelectedFullAufList::const_iterator i = K.begin();i!=K.end(); ++i)
    {
-     std::list<AufEintragZu::st_reflist> L=AufEintragZu(*i).get_Referenz_list(*i,true);
+     AufEintragZu::list_t L=AufEintragZu(*i).get_Referenz_list(*i,true);
      if(!L.empty())
       { if(analyse_only) {analyse("Analyse: 1er im Lager dürfen keine Kinder haben\n",*i); return false;}
         else assert(!"nicht implementiert");
@@ -172,12 +172,12 @@ bool ppsInstanzReparatur::ReparaturH_LagerZuordnungen(const int uid,const bool a
   SelectedFullAufList K2(psel);
   for(SelectedFullAufList::const_iterator i = K2.begin();i!=K2.end(); ++i)
    {
-     std::list<AufEintragZu::st_reflist> L=AufEintragZu(*i).get_Referenz_list(*i,true);
+     AufEintragZu::list_t L=AufEintragZu(*i).get_Referenz_list(*i,true);
      if(!L.empty())
       { if(analyse_only) {analyse("Analyse: 2er im Lager dürfen keine Kinder haben\n",*i); return false;}
         else assert(!"nicht implementiert");
       }
-     std::list<AufEintragZu::st_reflist> L2=AufEintragZu(*i).get_Referenz_list(*i,false);
+     AufEintragZu::list_t L2=AufEintragZu(*i).get_Referenz_list(*i,false);
      if(!L.empty())
       { if(analyse_only) {analyse("Analyse: 2er im Lager dürfen keine Eltern haben\n",*i); return false;}
         else assert(!"nicht implementiert");
@@ -199,14 +199,14 @@ bool ppsInstanzReparatur::ReparaturK_Kundenzuordnung(const int uid,const bool an
    for(SelectedFullAufList::iterator i=AL1.begin();i!=AL1.end();++i)
     {
       cH_ppsInstanz I=ppsInstanz::getBestellInstanz(i->Artikel());
-      std::list<AufEintragZu::st_reflist> L=AufEintragZu(*i).get_Referenz_list_ungeplant(true);
+      AufEintragZu::list_t L=AufEintragZu(*i).get_Referenz_list_ungeplant(true);
       assert(L.size()<=1);
       if(L.empty()) {
          alles_ok=false;
          if(analyse_only) analyse("Keine Kinder für Kundenauftrag",*i);
          else assert(!"nicht implementiert");
        }
-      for(std::list<AufEintragZu::st_reflist>::const_iterator j=L.begin();j!=L.end();++j)
+      for(AufEintragZu::list_t::const_iterator j=L.begin();j!=L.end();++j)
         {
          try{ 
           AufEintrag AE(j->AEB);
@@ -264,8 +264,8 @@ void ppsInstanzReparatur::MengenReparatur(const int uid,const AufEintrag &AE,Auf
    AufEintragZu(AE).setMengeDiff__(AEK,diffmenge);
 
    AufEintrag::mengen_t verplante_menge=0;
-   std::list<AufEintragZu::st_reflist> L=AufEintragZu(AEK).get_Referenz_list_geplant(true);
-   for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+   AufEintragZu::list_t L=AufEintragZu(AEK).get_Referenz_list_geplant(true);
+   for(AufEintragZu::list_t::const_iterator i=L.begin();i!=L.end();++i)
       verplante_menge+=i->Menge;
    AuftragBase::mengen_t sollmenge = verplante_menge + AEK.getStueck();
    if(sollmenge!=AE.getStueck())
@@ -310,10 +310,10 @@ bool ppsInstanzReparatur::Reparatur_Zuordnungen(const int uid,const bool analyse
    for(SelectedFullAufList::iterator i=AL1.begin();i!=AL1.end();++i)
     {
       AuftragBase::mengen_t Msum=0, M0sum=0;
-      std::list<AufEintragZu::st_reflist> L;
+      AufEintragZu::list_t L;
       switch (zumode) {
          case Dungeplant: { L=AufEintragZu(*i).get_Referenz_list_dispo(kinder);
-//                            std::list<AufEintragZu::st_reflist> L2=AufEintragZu(*i).get_Referenz_list_dispo(kinder);
+//                            AufEintragZu::list_t L2=AufEintragZu(*i).get_Referenz_list_dispo(kinder);
 //                              L.splice(L.end(),L2);
                               break;}
          case Egeplant: {  L=AufEintragZu(*i).get_Referenz_list_geplant(kinder); 
@@ -323,7 +323,7 @@ bool ppsInstanzReparatur::Reparatur_Zuordnungen(const int uid,const bool analyse
          case Fdispo:     L=AufEintragZu(*i).get_Referenz_list_dispo(kinder); break;
         }
 //cout << *i<<"\tChild-LSize="<<L.size()<<'\n';
-      for(std::list<AufEintragZu::st_reflist>::const_iterator j=L.begin();j!=L.end();++j)
+      for(AufEintragZu::list_t::const_iterator j=L.begin();j!=L.end();++j)
         {
           if(j->AEB.Id()==AuftragBase::ungeplante_id) M0sum+=j->Menge;
           else Msum+=j->Menge;
@@ -338,10 +338,10 @@ bool ppsInstanzReparatur::Reparatur_Zuordnungen(const int uid,const bool analyse
  return alles_ok;
 } 
 
-bool ppsInstanzReparatur::check_D_ungeplant(const int uid,const bool analyse_only,const AufEintrag &AE,const std::list<AufEintragZu::st_reflist> &L) const
+bool ppsInstanzReparatur::check_D_ungeplant(const int uid,const bool analyse_only,const AufEintrag &AE,const AufEintragZu::list_t &L) const
 {
   int count=0;
-  for(std::list<AufEintragZu::st_reflist>::const_iterator j=L.begin();j!=L.end();++j)
+  for(AufEintragZu::list_t::const_iterator j=L.begin();j!=L.end();++j)
       if(j->AEB.Id()==AuftragBase::ungeplante_id) ++count;
   if(!count) return true;
   if(analyse_only) { 
@@ -380,8 +380,8 @@ void ppsInstanzReparatur::check_D_ungeplantReparatur(const int uid,const AufEint
   assert(DiffMenge!=0);
   ReparaturE_2_ZuSumme_1(uid,true); 
 //std::cout << "REP1: "<<AE<<'\t'<<DiffMenge<<'\n';
-  std::list<AufEintragZu::st_reflist> L=AufEintragZu(AE).get_Referenz_list_dispo(false);
-  for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+  AufEintragZu::list_t L=AufEintragZu(AE).get_Referenz_list_dispo(false);
+  for(AufEintragZu::list_t::const_iterator i=L.begin();i!=L.end();++i)
    {
      AuftragBase::mengen_t M=0;
      if(DiffMenge>0) M =  DiffMenge;
@@ -394,7 +394,7 @@ void ppsInstanzReparatur::check_D_ungeplantReparatur(const int uid,const AufEint
    }
   L=AufEintragZu(AE).get_Referenz_list_ungeplant(false);
   if(DiffMenge<0) DiffMenge*=-1;
-  for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+  for(AufEintragZu::list_t::const_iterator i=L.begin();i!=L.end();++i)
    {
      AuftragBase::mengen_t M=AuftragBase::min(i->Menge,DiffMenge);
 //std::cout << "REP3: "<<i->AEB<<'\t'<<M<<'\n';
@@ -438,8 +438,8 @@ void ppsInstanzReparatur::check_F_dispoReparatur(const int uid,const AufEintrag 
   AuftragBase::mengen_t ReduceMenge=menge-AE.getRestStk();
   assert(ReduceMenge>0);
 //std::cout << "R1: "<<AE<<'\t'<<ReduceMenge<<'\n';
-  std::list<AufEintragZu::st_reflist> L=AufEintragZu(AE).get_Referenz_list_dispo(false);
-  for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+  AufEintragZu::list_t L=AufEintragZu(AE).get_Referenz_list_dispo(false);
+  for(AufEintragZu::list_t::const_iterator i=L.begin();i!=L.end();++i)
    {
      AuftragBase::mengen_t M=AuftragBase::min(ReduceMenge,i->Menge);
 //std::cout << "R2: "<<i->AEB<<'\t'<<M<<'\n';
@@ -717,7 +717,7 @@ bool ppsInstanzReparatur::ReparaturG_keine_Eltern(const int uid,const bool analy
    SelectedFullAufList AL1(sel1er);
    for(SelectedFullAufList::iterator i=AL1.begin();i!=AL1.end();++i)
     {
-      std::list<AufEintragZu::st_reflist> L=AufEintragZu(*i).get_Referenz_list(*i);
+      AufEintragZu::list_t L=AufEintragZu(*i).get_Referenz_list(*i);
       if(!L.empty())
        {
          if(analyse_only) {analyse("Analyse: Kundenauftrag und 2er dürfen keine Eltern haben.\n",*i);

@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum_new_del.cc,v 1.1 2003/01/30 09:51:49 christof Exp $
+// $Id: ArtikelBaum_new_del.cc,v 1.2 2003/02/10 14:33:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, 
  *  written by Malte Thoma and Christof Petig
@@ -127,8 +127,8 @@ void ArtikelBaum::reduceChildren(int uid,const AufEintrag& AEB,
 
   const_cast<AufEintrag&>(AEB).MengeAendern(uid,-menge,false,oldAEB,ManuProC::Auftrag::r_Anlegen);
 
-  std::list<AufEintragZu::st_reflist> L=AufEintragZu(AEB).get_Referenz_list(AEB,true);
-  for(std::list<AufEintragZu::st_reflist>::iterator i=L.begin();i!=L.end();++i)
+  AufEintragZu::list_t L=AufEintragZu(AEB).get_Referenz_list(AEB,true);
+  for(AufEintragZu::list_t::iterator i=L.begin();i!=L.end();++i)
      reduceChildren(uid,AufEintrag(i->AEB),AEB,i->Menge);
 }        
 

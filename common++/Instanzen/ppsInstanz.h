@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.24 2003/01/08 09:46:57 christof Exp $
+// $Id: ppsInstanz.h,v 1.25 2003/02/10 14:33:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -127,12 +127,14 @@ public:
  public:
       void Produziert(ManuProC::st_produziert &P,ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_None) const throw(SQLerror);
       void Lager_abschreiben(ManuProC::st_produziert &P) const ;
-      // Geplant wird von pps wenn im Einkauf ware bestellt wird ohne
-      // einen spezielen '0er' auszuwählen.
-      void Planen(ManuProC::st_produziert &P) const throw(SQLerror); //NICHT rekursiv
+
+      // Geplant wird von pps wenn im Einkauf Ware bestellt wird,
+      // ohne benötigte Menge auszuwählen.
+      // dieses Argument ist eine Strafe!!!
+      //NICHT rekursiv 
+      void Planen(ManuProC::st_produziert &P) const throw(SQLerror);
  private:
       void rekursion(ManuProC::st_produziert &P) const ;
-
 };
 
 

@@ -841,7 +841,7 @@ std::cout << "D13: "<<dummystring<<'\n';
 
 static void usage(const std::string &argv0,const std::string &argv1)
 {
-  std::cerr << argv0 <<" [--verbose] [--repair] {(M)engentest|(P)lantest|(L)agertest|\n"
+  std::cerr << argv0 <<" {(M)engentest|(P)lantest|(L)agertest|\n"
                   "\t(S)plittest|(Z)weiAuftraege|"
                   "\tZweiterAuftrag_frueheres(D)atum|\n"
                   "\t(L)iefer(s)cheine|(L)ieferscheine(m)engen|\n"
@@ -856,13 +856,14 @@ static void usage(const std::string &argv0,const std::string &argv1)
                   "\t(R)eparatur_(K)undenprogramm\n"
                   "\t(R)eparatur_(Z)uordnungen\n"
                   "\t(R)eparatur_(K)unden_(Z)uordnungen\n"
-                  "\t(R)eparartur(M)Mabella, =0er+2er OPEN, bestellt=0, Kundenid=1}\n";
+                  "\t(R)eparartur(M)Mabella, =0er+2er OPEN, bestellt=0, Kundenid=1}\n"
+                  "Valid options include --verbose --repair --continue --trace --reinit\n";
   exit(1);
 }
 
 int main(int argc,char *argv[])
 {  bool mit_reparatur_programm=false;
-   bool clean_only=false;
+   bool clean_only=true;
 
    static struct option long_options[] = {
      { "verbose", no_argument, 0, 'v' },
@@ -870,16 +871,18 @@ int main(int argc,char *argv[])
      { "continue", no_argument, 0, 'c' },
      { "trace", no_argument, 0, 't' },
      { "clean-only", no_argument, 0, 'C' },
+     { "reinit", no_argument, 0, 'R' },
      { 0,0,0,0 },
    };
    
    int opt;
-   while ((opt=getopt_long(argc,argv,"vrctC",long_options,0))!=-1)
+   while ((opt=getopt_long(argc,argv,"vrctCR",long_options,0))!=-1)
     switch(opt)
    {  case 'v': verbose=true; break;
       case 'r': mit_reparatur_programm=true; break;
       case 'c': do_not_stop=true; break;
       case 'C': clean_only=true; break;
+      case 'R': clean_only=false; break;
       case 't': ManuProC::Tracer::Enable(AuftragBase::trace_channel);
       	ManuProC::Tracer::Enable(log_trace);
       	break;
