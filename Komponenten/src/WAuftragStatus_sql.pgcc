@@ -1,0 +1,57 @@
+/*  libKomponenten: ManuProC's Widget library
+ *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
+ *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include "WAuftragStatus.hh"
+#include <Gtk_OStream.h>
+#include <SelectMatching.h>
+
+WAuftragStatus::WAuftragStatus()
+{
+  fuelleMenu();
+//  show();  // sollte das Widget dadrüber tun!
+}
+
+void WAuftragStatus::set_value(AufStatVal a)
+{  Gtk::Menu_Helpers::SelectMatching(*this,gpointer(int(a)));
+}
+
+AufStatVal WAuftragStatus::get_value() const
+{
+  return (AufStatVal) int(get_menu()->get_active()->get_user_data());
+}
+
+static void add(Gtk::OStream &os, AufStatVal v)
+{  os << AuftragBase::getStatusStr(v);
+   os.flush(gpointer(v));
+}
+
+void WAuftragStatus::fuelleMenu()
+{
+  {
+   // Reinfolge wie in <Auftrag/auftrag_status.h> !
+   Gtk::OStream os(this);
+   ::add(os,UNCOMMITED);
+   ::add(os,OPEN);
+   ::add(os,CLOSED);
+   ::add(os,STORNO);
+  }
+
+// erst NACH dem zerstören von 'os' existiert das Menu 
+  get_menu()->deactivate.connect(activate.slot());
+}
