@@ -1,4 +1,4 @@
-// $Id: germanstring.cc,v 1.2 2002/12/05 08:33:38 christof Exp $            
+// $Id: germanstring.cc,v 1.3 2002/12/05 15:13:36 christof Exp $            
 /*  Indexerstellung
  *  Copyright (C) 2002 Christof Petig
  *
@@ -18,6 +18,7 @@
  */
 
 #include <Misc/germanstring.h>
+#include <cctype>
 
 namespace {
 typedef const char *str;
@@ -133,6 +134,8 @@ bool germanstring::operator==(const germanstring &b) const
 #endif
 
 #ifdef TEST
+
+#include <iostream>
 
 // compile via
 // g++ -o test -DTEST -I. germanstring.cc
