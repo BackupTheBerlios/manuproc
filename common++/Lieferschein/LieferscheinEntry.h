@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.26 2003/07/04 08:52:00 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.27 2003/07/17 13:59:05 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -18,39 +18,17 @@
  */
 
 
-#ifndef LIEFERENTRY
-#define LIEFERENTRY
+#ifndef LIEFERENTRY_H
+#define LIEFERENTRY_H
 
+#include <Lieferschein/LieferscheinBase.h>
 #include <Misc/SQLerror.h>
 #include <Artikel/ArtikelBase.h>
 #include <Auftrag/AufEintragBase.h>
-#include <Lieferschein/LieferscheinBase.h>
 #include <Misc/fixedpoint.h>
-#include <BaseObjects/ManuProcEintrag.h>
 #include <Misc/compiler_ports.h>
 
 class Lieferschein;
-
-class LieferscheinEntryBase : public LieferscheinBase
-{
-public: 
-   static const int none_znr = ManuProcEintrag::none_znr;
- protected:
-	int zeilennr;
-
-	LieferscheinEntryBase(const LieferscheinBase &lsb)
-	: LieferscheinBase(lsb), zeilennr(none_znr) {}
-public:
-	LieferscheinEntryBase() : zeilennr(none_znr) {}
-	LieferscheinEntryBase(const LieferscheinBase &lsb, int znr)
-	: LieferscheinBase(lsb), zeilennr(znr) {}
-	// unschön, da Ints ...
-	LieferscheinEntryBase(cH_ppsInstanz inst, int ls, int znr)
-	: LieferscheinBase(inst,ls), zeilennr(znr) {}
-
- int Zeile() const { return zeilennr; }
- int ZNr() const { return zeilennr; }
-};
 
 class LieferscheinEntry : public LieferscheinEntryBase
 {
@@ -132,8 +110,5 @@ private:
  friend FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry &aeb);
  void showZusatzInfos() const;
 };
-
-class ArgumentList;
-ArgumentList& operator<<(ArgumentList &,const LieferscheinEntryBase &aeb);
 
 #endif
