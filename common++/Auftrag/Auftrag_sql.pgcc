@@ -437,7 +437,7 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
    NV("Menge",bestellt),NV("Datum",lieferdatum),
    NV("Artikel",artikel),
    NV("Status",status),NV("InstanzAufträgeSetzen",setInstanzAuftraege));
- assert(Instanz()!=ppsInstanzID::Kundenauftraege ^ setInstanzAuftraege==true);
+ assert(Instanz()!=ppsInstanzID::Kundenauftraege || setInstanzAuftraege==true);
   // wieso auch nicht ... CP
  exec sql begin declare section;
  int AUFTRAGID =Id();
