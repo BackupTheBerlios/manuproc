@@ -1,4 +1,4 @@
-// $Id: marc.cc,v 1.2 2002/11/22 14:28:20 christof Exp $
+// $Id: marc.cc,v 1.3 2004/11/16 11:40:06 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -25,7 +25,7 @@
 
 // This file is for your program, I won't touch it again!
 
-#include <gtk--/main.h>
+#include <gtkmm/main.h>
 
 #include "window1.hh"
 #include "window2.hh"

@@ -1,4 +1,4 @@
-// $Id: main.cc,v 1.6 2002/06/27 07:44:32 christof Exp $
+// $Id: main.cc,v 1.7 2004/11/16 11:40:06 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,7 +23,7 @@
 
 // This file is for your program, I won't touch it again!
 
-#include <gtk--/main.h>
+#include <gtkmm/main.h>
 #include <Aux/dbconnect.h>
 #include "window1.hh"
 

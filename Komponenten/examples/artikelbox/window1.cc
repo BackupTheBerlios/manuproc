@@ -1,4 +1,4 @@
-// $Id: window1.cc,v 1.10 2002/04/19 15:26:03 christof Exp $
+// $Id: window1.cc,v 1.11 2004/11/16 11:40:06 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,7 +18,7 @@
  */
 
 #include "window1.hh"
-#include <gtk--/main.h>
+#include <gtkmm/main.h>
 #include <Artikel/ArtikelBezeichnung.h>
 
 void window1::andererKunde()
@@ -34,10 +34,10 @@ void window1::menu_cb(gpointer data)
 }
 
 window1::window1()
-{  destroy.connect(Gtk::Main::quit.slot());
+{  signal_destroy().connect(Gtk::Main::quit.slot());
    artikelbox->AddUserMenu("My User Menu 0",(gpointer)0);
    artikelbox->AddUserMenu("My User Menu 1",(gpointer)1);
-   artikelbox->MenueAusgewaehlt.connect(SigC::slot(this,&window1::menu_cb));
+   artikelbox->signal_MenueAusgewaehlt().connect(SigC::slot(*this,&window1::menu_cb));
    artikelbox->Einschraenken("exists (select true from webangaben where "
    		"artboxtable.id=webangaben.artikel)");
 }
