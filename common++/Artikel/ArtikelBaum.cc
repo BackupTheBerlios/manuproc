@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.cc,v 1.13 2003/11/17 10:06:36 christof Exp $
+// $Id: ArtikelBaum.cc,v 1.14 2004/03/04 09:46:11 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -58,12 +58,10 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
        Schussfaeden schussfaeden;
        Webangaben webangaben(make_value(ArtikelBase(Id())));
        Fadenliste fadenliste;
-       static Bindungsliste bindungsliste;
        try {                  
           schussfaeden.Load(ArtikelBase(Id()));
           bool w=webangaben.Load();
-          if (bindungsliste.empty()) bindungsliste.Load();
-          if (w) fadenliste.Load(ArtikelBase(Id()),bindungsliste);
+          if (w) fadenliste.Load(webangaben);
          }
        catch(SQLerror &e) {std::cerr << e << '\n';}
        for (Fadenliste::const_iterator i=fadenliste.sumbegin();i!=fadenliste.sumend();++i)
