@@ -37,6 +37,7 @@ void windowTop::show_details()
 
    Waehrung->set_value(kundendaten->getWaehrung());
    geburtstag->set_value(kundendaten->getGebDatum());
+   geburtstag->setLabel("Geburtstag");
 
    checkbutton_zeilenrabatt->set_active(kundendaten->zeilenrabatt());
    checkbuttonLieferAdr->set_active(kundendaten->isLieferadresse());
