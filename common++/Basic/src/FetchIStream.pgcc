@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.36 2003/05/15 14:28:41 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.37 2003/05/15 15:37:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -254,33 +254,27 @@ ArgumentList &ArgumentList::operator<<(const std::string &str)
       p+=*i;
    }
    p+='\'';
-   add_argument(p);
-   return *this;
+   return add_argument(p);
 }
 
 ArgumentList &ArgumentList::operator<<(long i)
-{  add_argument(itos(i));
-   return *this;
+{  return add_argument(itos(i));
 }
 
 ArgumentList &ArgumentList::operator<<(unsigned long i)
-{  add_argument(ulltos(i));
-   return *this;
+{  return add_argument(ulltos(i));
 }
 
 ArgumentList &ArgumentList::operator<<(unsigned long long i)
-{  add_argument(ulltos(i));
-   return *this;
+{  return add_argument(ulltos(i));
 }
 
 ArgumentList &ArgumentList::operator<<(double i)
-{  add_argument(dtos(i));
-   return *this;
+{  return add_argument(dtos(i));
 }
 
 ArgumentList &ArgumentList::operator<<(bool i)
-{  add_argument(btos(i));
-   return *this;
+{  return add_argument(btos(i));
 }
 
 ArgumentList &ArgumentList::operator<<(char i)
@@ -289,8 +283,7 @@ ArgumentList &ArgumentList::operator<<(char i)
    x[1]=i;
    x[2]='\'';
    x[3]=0;
-   add_argument(x);
-   return *this;
+   return add_argument(x);
 }
 
 ArgumentList &ArgumentList::operator<<(const ArgumentList &list)

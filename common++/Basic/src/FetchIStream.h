@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.31 2003/05/15 14:28:41 christof Exp $
+// $Id: FetchIStream.h,v 1.32 2003/05/15 15:37:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -161,7 +161,7 @@ public:
 	ArgumentList &operator<<(const char *s)
 	{  return operator<<(std::string(s)); }
 	ArgumentList &operator<<(Query_types::null n)
-	{  add_argument("null"); return *this; }
+	{  return add_argument("null"); }
 	
 	template <class T>
 	 ArgumentList &operator<<(const Query_types::NullIf_s<T> &n)
