@@ -1,4 +1,4 @@
-/* $Id: EntryValueSort.h,v 1.1 2003/12/23 00:10:09 christof Exp $ */
+/* $Id: EntryValueSort.h,v 1.2 2004/01/13 10:41:13 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -35,11 +35,31 @@ public:
  virtual const std::string getStrVal() const { return value->getStrVal();}
 };
 
+class EntryValueReverseSort : public EntryValueBase
+{cH_EntryValue sort,value;
+
+public:
+ EntryValueReverseSort(const cH_EntryValue &s,const cH_EntryValue &v) 
+ : sort(s), value(v) {}
+   
+ virtual bool operator==(const EntryValueBase &v) const;
+ virtual bool operator<(const EntryValueBase &v) const;
+ virtual int getIntVal() const { return value->getIntVal(); }
+ virtual const std::string getStrVal() const { return value->getStrVal();}
+};
+
 class cH_EntryValueSort : public cH_EntryValue
 {
 public:
  cH_EntryValueSort(const cH_EntryValue &s,const cH_EntryValue &v) 
  : cH_EntryValue(new EntryValueSort(s,v)) {}
+};
+
+class cH_EntryValueReverseSort : public cH_EntryValue
+{
+public:
+ cH_EntryValueReverseSort(const cH_EntryValue &s,const cH_EntryValue &v) 
+ : cH_EntryValue(new EntryValueReverseSort(s,v)) {}
 };
 
 #endif 
