@@ -370,7 +370,7 @@ CXXFLAGS="$old_cxxflags"
 
 if test "x$MPC_SQLITE" = x
 then
-	PETIG_CHECK_ECPG
+	AC_MSG_RESULT("Use PostgreSQL instead of SQlite") 
 else
 	COMMONXX_LDFLAGS="$COMMONXX_LDFLAGS -lqlite"
 fi
