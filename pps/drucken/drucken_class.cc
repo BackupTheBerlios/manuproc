@@ -705,7 +705,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
             if (preise_addieren)
             {  drucken_betrag(os,mld->MLT(MultiL_Dict::TXT_UEBERTRAG),betrag);
             }
-   	    os << "\\end{tabularx}%XF\n"
+   	    os << "\\end{tabularx}\n"
             	 "\\newpage\n";
             ++page_counter;
             page_header(os);
@@ -867,9 +867,12 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 	  {
 	   cH_ArtikelBezeichnung own_bez(artikelbase,schema_own->Id());
 	   os << "&&&&";
-           if(schema_own->Id()!=own_bez->getExtBezSchema()->Id())
-	     drucken_artikel(os,own_bez,false,linecolor,erste_spalte,schema_own);
-	   os << "\\multicolumn{4}{l}{" <<own_bez->Bezeichnung()<<"}";
+//           if(schema_own->Id()!=own_bez->getExtBezSchema()->Id())
+//	     drucken_artikel(os,own_bez,false,linecolor,erste_spalte,schema_own);
+           if(schema_own->Id()==own_bez->getExtBezSchema()->Id())	     
+	     os << "\\multicolumn{4}{l}{" <<own_bez->Bezeichnung()<<"}";
+           else
+	     os << "\\multicolumn{4}{l}{ }";
 	   os << "\\\\\n";
            --zeilen_passen_noch;
 	  }
