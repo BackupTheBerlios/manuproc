@@ -426,12 +426,15 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
 
 #ifdef MABELLA_EXTENSIONS // auf keinen Fall Preis=0.0 akzeptieren
  if(!(WPreis->get_Preis()!=Preis(0.0,WPreis->get_Preis().getWaehrung())) )
-  if(ArtikelTyp(artikelbox->get_value())==ArtikelTypID::aufgemachtes_Band
+  {
+   ArtikelTyp at(artikelbox->get_value());
+   if(ArtikelTyp::hasAttribute(at.Id(),ArtikelTypAttr::NullPreisCheck)
 	&& instanz->Id()==ppsInstanzID::Kundenauftraege)
    {meldung->Show("Preis 0,00 ist nicht erlaubt");
     return;
    }
-   
+  }
+ 
   if(  auftrag->existsEntry(artikelbox->get_value().Id(),
   		       WAufEntryStat->get_Status()) )
    {meldung->Show("Der Artikel ist in diesem Auftrag bereits erfaßt");
