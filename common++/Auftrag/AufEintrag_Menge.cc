@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.13 2003/09/11 15:25:55 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.14 2003/09/15 10:31:41 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -167,9 +167,13 @@ AuftragBase::mengen_t AufEintrag::ArtikelInternAbbestellen_cb::operator()
    else
      { // [1er oder] 3er - dispo anlegen, Bestellpfeil erniedrigen
        assert(j.Id()>=handplan_auftrag_id);
-       AuftragBase(j.Instanz(),dispo_auftrag_id)
-       	.BestellmengeAendern(M,AE.getLieferdatum(),AE.Artikel(),OPEN,j);
-       AufEintragZu(mythis).setMengeDiff__(j,-M);
+       mengen_t noch_frei=AuftragBase::min(M,AE.getRestStk());
+#warning geht bei EinlagernIn+Automatisch einlagern von Teilmenge fehl?       
+       if (!!noch_frei)
+       {  AuftragBase(j.Instanz(),dispo_auftrag_id)
+       	     .BestellmengeAendern(noch_frei,AE.getLieferdatum(),AE.Artikel(),OPEN,j);
+          AufEintragZu(mythis).setMengeDiff__(j,-noch_frei);
+       }
      }
    return M;
 }
