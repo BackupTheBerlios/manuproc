@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.21 2003/10/21 09:39:20 christof Exp $
+// $Id: SimpleTree.hh,v 1.22 2003/10/21 10:40:17 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -83,6 +83,9 @@ class SimpleTree_Basic : public Gtk::TreeView, public SimpleTreeStore_Proxy
 	
 	void on_title_clicked(unsigned no);
 	void fillMenu();
+	void on_neuordnen_clicked();
+	void on_zuruecksetzen_clicked();
+	void on_abbrechen_clicked();
 	
 public:
 	SimpleTree_Basic(unsigned max_col);

@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.22 2003/10/21 09:39:20 christof Exp $
+// $Id: SimpleTree.cc,v 1.23 2003/10/21 10:40:17 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,6 +19,8 @@
 
 #include <SimpleTree.hh>
 #include <Misc/itos.h>
+#include <gtkmm/menu.h>
+#include <bool_CheckMenuItem.hh>
 
 void SimpleTree_Basic::detach()
 {  set_model(Glib::RefPtr<Gtk::TreeModel>());
@@ -64,23 +66,31 @@ void SimpleTree_Basic::on_title_clicked(unsigned nr)
    if (i==clicked_seq.end())
    {  clicked_seq.push_back(idx);
       // if alles voll -> umsortieren
-      if (clicked_seq.size()==Cols()) goto resort;
-      get_column(nr)->set_title(itos(clicked_seq.size()));
+      if (clicked_seq.size()==Cols()) on_neuordnen_clicked();
+      else get_column(nr)->set_title(itos(clicked_seq.size()));
    }
    else if (i==--clicked_seq.end())
    {  // umsortieren
-      getStore()->fillSequence(clicked_seq);
-     resort:
-      getStore()->setSequence(clicked_seq);
-      clicked_seq.clear();
+      on_neuordnen_clicked();
    }
    else
    {  // abbrechen
+      on_abbrechen_clicked();
+   }
+}
+
+void SimpleTree_Basic::on_abbrechen_clicked()
+{  
       clicked_seq.clear();
       // Titel wiederherstellen
       for (unsigned i=0;i<Cols();++i) 
          get_column(i)->set_title(getColTitle(i));
-   }
+}
+
+void SimpleTree_Basic::on_neuordnen_clicked()
+{   getStore()->fillSequence(clicked_seq);
+      getStore()->setSequence(clicked_seq);
+      clicked_seq.clear();
 }
 
 void SimpleTree_Basic::on_title_changed(guint nr)
@@ -131,8 +141,6 @@ std::vector<cH_RowDataBase> SimpleTree::getSelectedRowDataBase_vec() const
    return result;
 }
 
-#include <gtkmm/menu.h>
-#include <bool_CheckMenuItem.hh>
 
 static Gtk::MenuItem *add_mitem(Gtk::Menu *m,const std::string text,const SigC::Slot0<void> &callback)
 {  Gtk::MenuItem *it=manage(new class Gtk::MenuItem(text));
@@ -146,7 +154,12 @@ void SimpleTree_Basic::fillMenu()
 {  assert(menu==0); 
   menu=new Gtk::Menu();
   // Hauptmenü
+  add_mitem(menu,"Zurücksetzen",SigC::slot(*this,&SimpleTree_Basic::on_zuruecksetzen_clicked));
+  add_mitem(menu,"Abbrechen",SigC::slot(*this,&SimpleTree_Basic::on_abbrechen_clicked));
 //  add_mitem(menu,"Neuordnen",SigC::slot(*this,&SimpleTree_Basic::Neuordnen));
+  Gtk::MenuItem *spalten=add_mitem(menu,"Sichtbare Spalten",SigC::Slot0<void>());
+//  add_mitem(menu,"Alle Knoten expandieren",SigC::slot(*this,&SimpleTree_Basic::on_zuruecksetzen_clicked));
+//  add_mitem(menu,"Alle Knoten kollabieren",SigC::slot(*this,&SimpleTree_Basic::on_abbrechen_clicked));
 #if 0
    Gtk::MenuItem *neuordnen = manage(new class Gtk::MenuItem("Neuordnen"));
    Gtk::MenuItem *zuruecksetzen = manage(new class Gtk::MenuItem("Zurücksetzen"));
