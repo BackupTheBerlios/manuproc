@@ -17,6 +17,8 @@
  */
 
 
+#ifndef OFFAUF_NODE_H
+#define OFFAUF_NODE_H
 #include<tclistnode.h>
 
 class OffAuf_Node : public TCListNode
@@ -37,3 +39,4 @@ public:
 
 };
 
+#endif

@@ -180,11 +180,25 @@ void auftrag_rechnung::on_unselectrow_offlief(int row, int col, GdkEvent* b)
 }        
 
 void auftrag_rechnung::Preis_setzen()
-{  Rechnung &rg=rechnung_liste->getRechnung();
+{  
+#warning TODO: nur aktiven Preis setzen, wenn selection
+   Rechnung &rg=rechnung_liste->getRechnung();
    for (Rechnung::iterator i=rg.begin();i!=rg.end();++i)
    {  Artikelpreis p(cH_Kunde(lieferkunde->get_value())->Preisliste(),i->ArtikelID());
       if (!!p)
       {  i->setzePreis(p.In(rg.getWaehrung()));
+      }
+   }
+}
+
+void auftrag_rechnung::Preis_ergaenzen()
+{  Rechnung &rg=rechnung_liste->getRechnung();
+   for (Rechnung::iterator i=rg.begin();i!=rg.end();++i)
+   {  if (!!i->getPreis())
+      {  Artikelpreis p(cH_Kunde(lieferkunde->get_value())->Preisliste(),i->ArtikelID());
+         if (!!p)
+         {  i->setzePreis(p.In(rg.getWaehrung()));
+         }
       }
    }
 }

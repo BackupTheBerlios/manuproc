@@ -18,13 +18,13 @@
 
 #ifndef AUFTRAG_AUFTRAGENTRY_H
 #define AUFTRAG_AUFTRAGENTRY_H
-#include"aktAufEintrag.h"
-#include<Auftrag/selAufEntry.h>
+#include"aktAufEintrag.h" // hmmmm
+#include<Auftrag/selAufEntry.h> // erforderlich?
 #include<Auftrag/AufEintragBase.h>
-#include<Aux/EntryValue.h>
-#include<Artikel/ArtikelBase.h>
+#include<Aux/EntryValue.h> // veraltet
+#include<Artikel/ArtikelBase.h> 
 #include<Aux/SQLerror.h>
-#include<Gtk_OStream.h>
+#include<Gtk_OStream.h> // weg da!
 
 typedef map<int,AufEintrag> AUFENTRYMAP;
 typedef vector<AufEintrag> AufEintragList;

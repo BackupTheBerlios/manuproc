@@ -18,6 +18,9 @@
 
 #include "auftrag_bearbeiten.hh"
 #include "auftrag_main.hh"
+#include <Aux/ctime_assert.h>
+#include <Artikel/Einheiten.h>
+#include <Artikel/Artikelpreis.h>
 
 typedef map<int ,AufEintrag *> X;
 extern X aufentrymap;
@@ -26,18 +29,17 @@ extern SelectedFullAufList *allaufids;
 extern auftrag_main *auftragmain;
 extern auftrag_bearbeiten *auftragbearbeiten;
 
+// some assertions about constant equivalency
+typedef ctime_assert<(AufStatVal(auftrag_bearbeiten::aufstat::unbest_tigt)==UNCOMMITED)>::_true failed;
+typedef ctime_assert<(AufStatVal(auftrag_bearbeiten::aufstat::offen)==OPEN)>::_true failed2;
+typedef ctime_assert<(AufStatVal(auftrag_bearbeiten::aufstat::fertig)==CLOSED)>::_true failed3;
+typedef ctime_assert<(AufStatVal(auftrag_bearbeiten::aufentrystat::unbest_tigt)==UNCOMMITED)>::_true failed4;
+typedef ctime_assert<(AufStatVal(auftrag_bearbeiten::aufentrystat::offen)==OPEN)>::_true failed5;
+typedef ctime_assert<(AufStatVal(auftrag_bearbeiten::aufentrystat::fertig)==CLOSED)>::_true failed6;
+
 auftrag_bearbeiten::auftrag_bearbeiten(int aufid, int znr)
 : kunde(Kunde::default_id)
 {
-// perhaps compilation time asserts
- assert(aufstat::unbest_tigt==UNCOMMITED);
- assert(aufstat::offen==OPEN);
- assert(aufstat::fertig==CLOSED);
- assert(aufentrystat::unbest_tigt==UNCOMMITED);
- assert(aufentrystat::offen==OPEN);
- assert(aufentrystat::fertig==CLOSED);
-// -------
-
  splitdialog=0;
 
  liefertermin->set_page(0);
@@ -58,15 +60,31 @@ auftrag_bearbeiten::auftrag_bearbeiten(int aufid, int znr)
        auftrag_clist->row(znr-1).select();
       }
    }
-
+// warum nicht mit glade?
  artikelbox->activate.connect(SigC::slot(this,&auftrag_bearbeiten::onSelArtikel));
 }
 
 void auftrag_bearbeiten::onSelArtikel()
-{
- aktaufeintrag->setArtikel(artikelbox->get_value());
- preis_spinbutton->grab_focus();
- preis_spinbutton->select_region(0,preis_spinbutton->get_text().size());
+{aktaufeintrag->setArtikel(artikelbox->get_value());
+ Einheit e(artikelbox->get_value());
+ mengeeinheit->set_text((string)e);
+ preiseinheit->set_text((string)e);
+ try {
+    preis_spinbutton->set_value(0.0);
+    waehrunglabel->set_text(auftrag->getWaehrung()->Kurzbezeichnung());
+    preismenge->set_value(1.0);
+    Artikelpreis ap(kunde->Preisliste(),artikelbox->get_value());
+    Preis p(ap.In(auftrag->getWaehrung()));
+    preis_spinbutton->set_value(p.Wert());
+    preismenge->set_value(p.PreisMenge());
+ } catch (SQLerror &e)
+ {  cerr << e <<'\n';
+ }
+ 
+// preis_spinbutton->grab_focus();
+// preis_spinbutton->select_region(0,preis_spinbutton->get_text().size());
+ stkmtr_spinbutton->grab_focus();
+ stkmtr_spinbutton->select_region(0,preis_spinbutton->get_text().size());
 }
 
 void auftrag_bearbeiten::on_auftrag_clist_select_row
@@ -74,7 +92,11 @@ void auftrag_bearbeiten::on_auftrag_clist_select_row
 {   
  if(!auftrag->existsAufEntry(row)) return;
  AufEintrag &aufe=auftrag->getAufEntry(row);
- try{artikelbox->set_value(ArtikelBase(aufe.ArtikelID()));}
+ try{artikelbox->set_value(ArtikelBase(aufe.ArtikelID()));
+ Einheit e(artikelbox->get_value());
+ mengeeinheit->set_text((string)e);
+ preiseinheit->set_text((string)e);
+ }
  catch(SQLerror &e)
    {meldung->Show(e); return;}
  catch(ArtikelBoxErr &e)
@@ -133,10 +155,16 @@ void auftrag_bearbeiten::on_newauftrag_button_clicked()
  kundenbox->grab_focus();
 }
 
-void auftrag_bearbeiten::on_aufstatoptionmenu_clicked()
-{   
+void auftrag_bearbeiten::auftragstatus_geaendert()
+{ if (auftrag)
+  {  auftrag->setStatusAuftrag((AufStatVal)get_active_index(aufstat->get_menu()));
+     loadAuftrag(auftrag->Id());
+  }
 }
 
+void auftrag_bearbeiten::waehrung_geaendert()
+{
+}
 
 void auftrag_bearbeiten::on_zahlziel_showkal_button_clicked()
 {   
@@ -291,6 +319,11 @@ void auftrag_bearbeiten::on_aufentrystat_optionmenu_clicked()
       }
 }
 
+void waehrung_geaendert()
+{
+#warning TODO
+}
+
 void auftrag_bearbeiten::on_preismenge_activate()
 {   
  if(aktaufeintrag->getZln()>0)
@@ -336,7 +369,7 @@ void auftrag_bearbeiten::loadAuftrag(int aid)
 {
 // int aufid = aid ? aid : atoi(aufnrentry.get_text().c_str());
  
- try { if(auftrag) delete(auftrag); auftrag = new Auftrag(aid);}
+ try { if(auftrag) delete(auftrag); auftrag = new AuftragFull(aid);}
  catch(SQLerror &e)
   {
    meldung->Show(e); auftrag=NULL; return;}
@@ -487,7 +520,7 @@ void auftrag_bearbeiten::on_auftrag_abbruch_clicked()
 void auftrag_bearbeiten::on_auftrag_ok_clicked()
 {   
  try {
-      auftrag = new Auftrag(kundenbox->get_value(),
+      auftrag = new AuftragFull(kundenbox->get_value(),
 			jahrgang_spinbutton->get_value_as_int());
      }
 

@@ -17,7 +17,7 @@
  */
 
 #include"auftragbase.h"
-#include"auftragentry.h"
+#include"AufEintrag.h"
 #include<Aux/Ausgabe_neu.h>
 
 AufEintrag::AufEintrag(const SelectedAufentry &aufentry,

@@ -37,6 +37,7 @@ public:
  void showLieferschein(LieferscheinBase::ID lfrsid); 
  void newLieferschein(const Kunde::ID kid);
  const LieferscheinVoll &getLieferschein() const { return lieferschein; }
+ LieferscheinVoll &getLieferschein() { return lieferschein; }
  void setLieferschein(const LieferscheinBase::ID lsid) 
  			{ showLieferschein(lsid); }
  			
@@ -45,6 +46,39 @@ public:
  TCListNode *NewNode(guint _seqnr, const cH_RowDataBase &v, guint deep);
 
  TCListLeaf *NewLeaf(guint _seqnr, const cH_RowDataBase &v, guint deep);
+
+};
+
+#include<tclistnode.h>
+
+class Lief_Node : public TCListNode
+{
+ mutable float sumgeliefert;
+ 
+public:
+ 
+ virtual void cumulate(const cH_RowDataBase &rd, int seqnr) const;
+ virtual const vector<string> getColEntries(int cols);
+ virtual void resetSumValues(gpointer p);
+ virtual const string getSumCol(int col);
+  
+ Lief_Node::Lief_Node(int _seqnr, const cH_RowDataBase &v, int deep);
+ float SumGeliefert() const { return sumgeliefert; }
+
+};
+
+
+#include<tclistleaf.h>
+
+class Lief_Leaf : public TCListLeaf
+{
+ 
+public:
+ 
+ const vector<string> getColEntries(int cols);
+
+ Lief_Leaf::Lief_Leaf(int _seqnr, const cH_RowDataBase &v,int deep) 
+		: TCListLeaf(_seqnr,v,deep) {}
 
 };
 

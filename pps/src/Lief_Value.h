@@ -16,11 +16,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: */
-
-
-#ifndef LIEFERSCHEIN_VALUE
-#define LIEFERSCHEIN_VALUE
+#ifndef LIEF_VALUE_H
+#define LIEF_VALUE_H
 
 #include<Aux/EntryValueIntString.h>
 
@@ -44,5 +41,3 @@ public:
 };
 
 #endif
-
- 

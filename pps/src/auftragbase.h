@@ -33,10 +33,6 @@
 
 #define ATTRCOUNT	8
 
-
-#define LOADED		0
-#define INSERTED	1
-
 #define STKCOL		4
 #define UEBERCOL	8
 

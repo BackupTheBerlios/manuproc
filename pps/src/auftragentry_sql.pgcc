@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include"auftragentry.h"
+#include"AufEintrag.h"
 #include"auftragbase.h"
 #include<stdio.h>
 #include <Aux/Transaction.h>
@@ -42,7 +42,7 @@ AufEintrag::AufEintrag(const aktAufEintrag &aufentry,int aufid, int wrkst,
  double PREIS;
  int RABATT;
  float PREISMENGE;
- int STATUS=UNCOMMITED;
+ int STATUS=OPEN;
  exec sql end declare section;
  
  AUFTRAGID = aufid;

@@ -1,3 +1,4 @@
+// $Id: Lief_Tree.cc,v 1.2 2001/05/10 14:48:05 cvs_christof Exp $
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -16,16 +17,16 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
 #include"Lief_TCList.h"
-#include"Lief_RowData.h"
-#include"Lief_Node.h"
-#include"Lief_Leaf.h"
+#include"Lief_Value.h"
+#include "Lief_RowData.h"
 #include"MyMessage.h"
 #include<ExtBezSchema/ExtBezSchema.h>
+#include<Aux/Transaction.h>
+#include<Aux/Ausgabe_neu.h>
+#include <Artikel/Einheiten.h>
 
 extern MyMessage *meldung;
-
 
 Lief_TCList::Lief_TCList(guint _cols, guint _attrs) 
 	: TreeBase(_cols,_attrs)
@@ -101,8 +102,6 @@ void Lief_TCList::newLieferschein(const Kunde::ID kid)
 }
 
 
-#include<Aux/Transaction.h>
-
 bool Lief_TCList::deleteLiefEntry()
 {
  if(selection().size()==1)
@@ -126,5 +125,80 @@ bool Lief_TCList::deleteLiefEntry()
  return false;
 }
 
+const cH_EntryValue Lief_RowData::Value(int _seqnr) const
+{
+ switch(_seqnr)
+   {
+	case Lief_TCList::AUFNR_SEQ :
+		return cH_Lief_Value(Formatiere(liefentry.AufId(),0,6,"","",'0'));
+		break;
+	case Lief_TCList::ARTIKEL_SEQ :
+		return cH_Lief_Value(artikelbez->Bezeichnung());
+		break;
+	case Lief_TCList::LIEFMNG_SEQ :
+		return cH_Lief_Value(liefentry.Menge());
+		break;
+	case Lief_TCList::LIEFZEILE_SEQ :
+		return cH_Lief_Value(liefentry.Zeile());
+		break;
+	default : return cH_Lief_Value("-");
+   }
+ return cH_Lief_Value("-");
+}
+
+const vector<string> Lief_Leaf::getColEntries(int cols)
+{
+ static vector<string> v;
+ v=TCListRowData::getColEntries(cols);
+
+ int stueck((dynamic_cast<const Lief_RowData &>(*leafdata)).GeliefertS());
+ fixedpoint<3> menge((dynamic_cast<const Lief_RowData &>(*leafdata)).GeliefertM());
+ string a;
+ if (stueck!=1) a=Formatiere(stueck);
+ if (menge.Scaled()!=0) 
+ {  if (stueck!=1) a+="*";
+    a+=Formatiere(menge)
+      +string(Einheit((dynamic_cast<const Lief_RowData &>(*leafdata)).ArtikelID()));
+ }
+ v[Lief_TCList::LIEFMNG_SEQ]=a;
+
+// cout << "getColEntries Leaf\n";
+ return v;
+
+}
+
+Lief_Node::Lief_Node(int _seqnr, 
+		const cH_RowDataBase &v, int deep) 
+ : TCListNode(_seqnr,v,deep), sumgeliefert(0)
+{}
 
 
+void Lief_Node::cumulate(const cH_RowDataBase &rd, int seqnr) const
+{fixedpoint<3> menge(dynamic_cast<const Lief_RowData &>(*rd).GeliefertM());
+ if (!menge) menge=1.0;
+ sumgeliefert+=float(menge)*(dynamic_cast<const Lief_RowData &>(*rd)).GeliefertS();
+}
+
+void Lief_Node::resetSumValues(gpointer p)
+{
+ sumgeliefert=((Lief_Node*)p)->SumGeliefert();
+}
+
+const string Lief_Node::getSumCol(int col)
+{
+ return Formatiere(sumgeliefert);
+}
+
+
+const vector<string> Lief_Node::getColEntries(int cols)
+{
+ static vector<string> v;
+
+ v=TCListRowData::getColEntries(cols);
+
+ v[Lief_TCList::LIEFMNG_SEQ]=Formatiere(sumgeliefert);
+
+// cout << "getColEntries Node\n";
+ return v;
+
+}

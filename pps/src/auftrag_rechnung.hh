@@ -54,6 +54,7 @@ class auftrag_rechnung : public auftrag_rechnung_glade
         void on_selectrow_offlief(int row, int col, GdkEvent* b);
         void on_unselectrow_offlief(int row, int col, GdkEvent* b);        
         void Preis_setzen();
+        void Preis_ergaenzen();
         void waehrung_geaendert();
 	void rabatt_geaendert();
 

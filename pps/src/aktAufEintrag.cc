@@ -17,7 +17,7 @@
  */
 
 #include"aktAufEintrag.h"
-#include"auftragentry.h"
+#include"AufEintrag.h"
 #include"auftragbase.h"
 #include"glademm_support.hh"
 #include<SearchCombo.h>

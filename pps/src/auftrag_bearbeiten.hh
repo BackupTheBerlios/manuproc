@@ -33,7 +33,7 @@
 #include "glademm_support.hh"
 
 #include"termsplidial.hh"
-#include"Auftrag.h"
+#include"AuftragFull.h"
 #include"aktAufEintrag.h"
 #include<Aux/SQLerror.h>
 #include<Artikel/Prozess.h>
@@ -41,7 +41,7 @@
 
 class auftrag_bearbeiten : public auftrag_bearbeiten_glade
 {   
- Auftrag *auftrag;      
+ AuftragFull *auftrag;      
  aktAufEintrag *aktaufeintrag;  
  const_KundeHandle kunde;
  gint aufentrystat_chid;
@@ -55,7 +55,8 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
         friend class auftrag_bearbeiten_glade;
         void on_backtomain_button_clicked();
         void on_newauftrag_button_clicked();
-	void on_aufstatoptionmenu_clicked();
+	void auftragstatus_geaendert();
+//	void on_aufstatoptionmenu_clicked();
         void on_youraufnrscombo_activate();
         void on_youraufnrscombo_search(int *_continue, GtkSCContext newsearch)
 							throw(SQLerror);
@@ -70,6 +71,7 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
         void on_showkal_button_clicked();
         void on_rabattentry_spinbutton_activate();
         void on_aufentrystat_optionmenu_clicked();
+	void waehrung_geaendert();
         void on_preisart_optionmenu_clicked();
         void on_preis_spinbutton_activate();
 	void on_preismenge_activate();

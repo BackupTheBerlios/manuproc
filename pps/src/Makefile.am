@@ -5,19 +5,18 @@
 
 %.cc: %.pgcc ; $(ECPG) -o $*.cc $<
 
-bin_PROGRAMS = auftrag
+bin_PROGRAMS = pps
 
-auftrag_SOURCES = $(BUILT_SOURCES) \
+pps_SOURCES = $(BUILT_SOURCES) \
 	Rg_Tree.cc \
 	OffLief_Tree.cc \
 	auftrag_rechnung.cc \
 	auftrag_rechnung_glade.cc \
 	Lief_Tree.cc \
 	OffAuf_Tree.cc \
-	OffAuf_RowData.cc \
 	aktAufEintrag.cc \
 	Auftrag.cc \
-	auftrag.cc\
+	pps.cc\
 	termsplidial_glade.cc \
 	termsplidial.cc \
 	auftragliste_glade.cc \
@@ -56,5 +55,5 @@ CXXFLAGS += @CXXFLAGS@ @KOMPONENTEN_INCLUDES@ @GNOMEMM_CFLAGS@
 
 LDFLAGS= @LDFLAGS@ @KOMPONENTEN_LDFLAGS@ 
 
-auftrag_LDADD =  @LIBS@ @KOMPONENTEN_LIBS@ @GNOMEMM_LIBS@
+pps_LDADD =  @LIBS@ @KOMPONENTEN_LIBS@ @GNOMEMM_LIBS@
 

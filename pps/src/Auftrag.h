@@ -16,55 +16,47 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef AUFTRAG
-#define AUFTRAG
-#include"auftragbase.h"
-#include"auftragentry.h"
-#include"termsplidial.hh"
-#include<Auftrag/auftrag_status.h>
-
+#ifndef AUFTRAG_H
+#define AUFTRAG_H
+//#include"auftragbase.h" // eigentlich nur fuer Baum - weg hier!
+//#include"termsplidial.hh" // nicht hier !!!
+#include<Auftrag/auftrag_status.h> // hier ??
+#include <Auftrag/AuftragBase.h>
 #include<Aux/Datum.h>
-#include<Aux/Ausgabe_neu.h>
+#include<Aux/Ausgabe_neu.h> // besser ins C!
 #include<string>
-#include<gtk--/clist.h>
+#include <Aux/Waehrung.h>
+#include <Aux/SQLerror.h>
+#include <Kunde/Kunde.h> // vielleicht auch Basisklasse erzeugen
 
-extern termsplidial *splitdial;
+// extern termsplidial *splitdial;
 
-class Auftrag
-{	int auftragid;
+class Auftrag : public AuftragBase
+{
+protected:
 	int kundennr;
 	Petig::Datum datum;
 	AufStatVal status;
 	string youraufnr;
 	string bemerkung;
-	int wrkstatus;
-	string tmpstr;
+	enum wrkstatus_t {  LOADED, INSERTED } wrkstatus;
 	int jahrgang;
-	AufEintragList eintragliste;
 	cP_Waehrung waehrung;
+private:
+	string tmpstr;
 	
 public:
-
 	Auftrag(int auftragid) throw(SQLerror);
         Auftrag(long kundennr, int jahr=0) throw(SQLerror);
-        void newArtWrkar(aktAufEintrag &entry) throw(SQLerror);
+//        void newArtWrkar(aktAufEintrag &entry) throw(SQLerror);
         void deleteAuftrag() throw(SQLerror);
-	void deleteEintrag(int zeilennr, int idx) throw(SQLerror);	
-	int insertNewEntry(aktAufEintrag &aufentry,const cH_ExtBezSchema &ebsh);
-	void fillCList(Gtk::CList &list);
-	void fillCListEntry(Gtk::CList &list, int idx);
+	void deleteEintrag(int zeilennr) throw(SQLerror);
 	int getIdFromYourAufId(const char *youraufid) throw(SQLerror);
 	void setBemerkung(const string &bem) throw(SQLerror);
 	void setYourAufNr(const string &yanr) throw(SQLerror);
 	void setStatusAuftrag(AufStatVal st) throw(SQLerror);
 	void setJahrgang(int jahr) throw(SQLerror);
 	
-	bool existsAufEntry(int idx) const
-	{ return ((uint)idx) < eintragliste.size(); }
-	const AufEintrag &getAufEntry(int idx) const 
-	{ return eintragliste[idx];}
-	AufEintrag &getAufEntry(int idx)  
-	{ return eintragliste[idx];}
         const Petig::Datum &getDatum() const { return datum; } 
 	AufStatVal getStatus() const { return status; }
 	int getAuftragid() const { return auftragid; }
@@ -73,15 +65,7 @@ public:
 	string getYourAufNr() const { return youraufnr;}
 	string getBemerkung() const { return bemerkung;}
 	bool isNew() const { return wrkstatus==INSERTED;}
-	void setWrkStatus(int status) {wrkstatus=status;}
-	void setStatusEntry(int idx, AufStatVal st) {eintragliste[idx].setStatus(st);}
-	void updateStk(int idx, long stk) { eintragliste[idx].updateStk(stk);}	
-	void updatePreis(int idx, const Preis &pr) { eintragliste[idx].updatePreis(pr); }	
-	void updateLieferdatum(int idx, const Petig::Datum &ld) 
-			{ eintragliste[idx].updateLieferdatum(ld);}			
-	void updateRabatt(int idx, int r) { eintragliste[idx].updateRabatt(r); }
-	void split(int idx, const Petig::Datum &liefdatum, int menge)
-		{ eintragliste[idx].split(menge, liefdatum);}
+	void setWrkStatus(wrkstatus_t status) {wrkstatus=status;}
 	string getJahrgangStr() const { return Formatiere(jahrgang,0,4,"",""); }
 	int getJahrgang() const { return jahrgang; }
 	Kunde::ID getKundennr() const { return kundennr; }

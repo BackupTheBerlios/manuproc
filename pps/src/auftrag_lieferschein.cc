@@ -101,8 +101,10 @@ try{display2(liefer_kunde->get_value());
 }
 
 void auftrag_lieferschein::on_liefdate_activate()
-{   
-#warning implementation missing
+{ 
+try{  
+  lieferschein_liste->getLieferschein().setDatum(liefdate->get_value());
+  } catch(SQLerror &e) {meldung->Show(e);}
 }
 
 void auftrag_lieferschein::on_liefermenge_activate()

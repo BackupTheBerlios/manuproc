@@ -16,22 +16,21 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include<stdlib.h>
+#ifndef AKTAUFEINTRAG
+#define AKTAUFEINTRAG
+
+#include<cstdlib>
 #include<string>
 #include<Aux/SQLerror.h>
-#include<gtk--/list.h>
-#include<SearchCombo.h>
-//#include<more_param.h>
+#include<gtk--/list.h> // weg !
+#include<SearchCombo.h> // weg !
 #include<Artikel/ArtikelBase.h>
-#include<ArtikelBox.hh>
+#include<ArtikelBox.hh> // weg !
 #include <Aux/Kalenderwoche.h>
 #include<Auftrag/auftrag_status.h>
 #include<Auftrag/AufEintragBase.h>
 
 class AufEintrag;
-
-#ifndef AKTAUFEINTRAG
-#define AKTAUFEINTRAG
 
 class aktAufEintrag
 {

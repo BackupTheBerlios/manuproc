@@ -16,36 +16,19 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include"Auftrag.h"
+#include"AuftragFull.h"
 #include<Gtk_OStream.h>
 #include<Aux/Ausgabe_neu.h>
+#include <gtk--/clist.h>
 
-int Auftrag::insertNewEntry(aktAufEintrag &aufentry, const cH_ExtBezSchema &ebsh)
+int AuftragFull::insertNewEntry(const aktAufEintrag &aufentry, const cH_ExtBezSchema &ebsh) throw (SQLerror)
 {
- AufEintrag *tmp;
- bool tried=false;
- int znr;
-
- try {tmp = new AufEintrag(aufentry, auftragid, wrkstatus, ebsh); }
- catch(SQLerror &e)
- {if((e.Code()==100) && !tried)
-    {meldung->Message::Show("Artikel existiert noch nicht und\n"
-		    "wird auch nicht mehr automatisch erzeugt");
-     return 0; }
-  else
-    {meldung->Show(e);
-     return 0;}
-  }
-
- eintragliste.push_back(*tmp);   
- znr=tmp->getZnr();
- delete(tmp);
- return znr;
+ AufEintrag tmp(aufentry, auftragid, wrkstatus, ebsh);
+ eintragliste.push_back(tmp);
+ return tmp.getZnr();
 }
 
-
-
-void Auftrag::fillCList(Gtk::CList &list)
+void AuftragFull::fillCList(Gtk::CList &list)
 {
  Gtk::OStream os(&list);
  Preis psum;
@@ -65,7 +48,7 @@ void Auftrag::fillCList(Gtk::CList &list)
 }
 
 
-void Auftrag::fillCListEntry(Gtk::CList &list, int idx)
+void AuftragFull::fillCListEntry(Gtk::CList &list, int idx)
 {
  Gtk::OStream os(&list, idx, (ios::out|ios::trunc), true);
 
@@ -74,6 +57,3 @@ void Auftrag::fillCListEntry(Gtk::CList &list, int idx)
  if(i!=eintragliste.end())
    os << (*i);	
 }
-
-
-
