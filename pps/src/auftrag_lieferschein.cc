@@ -463,12 +463,14 @@ void auftrag_lieferschein::on_Palette_activate()
   ArtikelBase artikel = artikelbox->get_value();
   if(artikel.Id() == 0) return;
 
+  Einheit e(artikel);
  try 
  {Transaction tr;
   if (!tree_offen->selection().size())
   {  // Menge verteilen
      lieferschein->push_back(artikel,anzahl->get_value_as_int(),
-                  liefermenge->get_value_as_float(),Palette->get_value_as_int());
+                  e.hatMenge()?liefermenge->get_value_as_float():0.0,
+                  Palette->get_value_as_int());
     if(!checkVerkConsist())
       return;
   }
@@ -476,7 +478,6 @@ void auftrag_lieferschein::on_Palette_activate()
   {
     cH_Data_Lieferoffen dt=tree_offen->getSelectedRowDataBase_as<cH_Data_Lieferoffen>();
     AufEintrag auftragentry(dt->getAufEintrag());
-    Einheit e(artikel);
     if(!checkVerkConsist(auftragentry))
       return;
     lieferschein->push_back(auftragentry, artikel, anzahl->get_value_as_int(),

@@ -4583,7 +4583,7 @@ Fertig</label>
       <name>vpaned3</name>
       <handle_size>10</handle_size>
       <gutter_size>6</gutter_size>
-      <position>0</position>
+      <position>300</position>
       <child>
 	<padding>0</padding>
 	<expand>True</expand>
@@ -4607,7 +4607,7 @@ Fertig</label>
 	  <name>vpaned2</name>
 	  <handle_size>10</handle_size>
 	  <gutter_size>10</gutter_size>
-	  <position>180</position>
+	  <position>230</position>
 
 	  <widget>
 	    <class>GtkScrolledWindow</class>

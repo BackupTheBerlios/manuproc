@@ -395,7 +395,7 @@ auftrag_lieferschein_glade::auftrag_lieferschein_glade(
    frame5->add(*vbox_eingabe);
    vpaned3->set_handle_size(10);
    vpaned3->set_gutter_size(6);
-   vpaned3->set_position(0);
+   vpaned3->set_position(200);
    vpaned3->pack1(*frame6, false, true);
    vpaned3->pack2(*frame5, true, true);
    vbox5->pack_start(*menubar2, false, false, 0);
