@@ -1,4 +1,4 @@
-// $Id: Preis.cc,v 1.18 2003/11/06 11:22:50 jacek Exp $
+// $Id: Preis.cc,v 1.19 2003/11/18 12:59:28 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -90,7 +90,10 @@ Preis::geldbetrag_t Preis::Gesamtpreis(const cP_Waehrung w,int anzahl,preismenge
 
 #ifdef MABELLA_EXTENSIONS
    if(rescale)
-     return fixedpoint<2>(result.In(result.waehrung,menge*anzahl).Wert());
+     {fixedpoint<2> retpr(result.Wert());
+      Preis ret(retpr,result.waehrung,menge*anzahl);
+      return fixedpoint<2>(ret.In(ret.waehrung,menge*anzahl).Wert());
+     }
    else
 #endif
      return result.In(result.waehrung,menge*anzahl).Wert();
