@@ -384,12 +384,14 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
   { //********* je Durchlauf eine Tabelle ausgeben ********************
   
      ArtikelBase artikel  = (*i).Artikel();
-#ifdef MABELLA_EXTENSIONS     
-     cH_ArtikelBezeichnung bez(artikel,ExtBezSchema::default_id);
-#else     
+
+#ifndef MABELLA_EXTENSIONS
      cH_ArtikelBezeichnung bez(artikel,cH_Kunde(kunden_id)->getSchemaId());
-#endif     
+#else
+     cH_ArtikelBezeichnung bez(artikel,ExtBezSchema::default_id);
+#endif
     schema_mem = bez->getExtBezSchema();
+
 #ifdef MABELLA_EXTENSIONS
     try{
     schema_own = cH_ExtBezSchema(cH_Kunde(kunden_id)->getSchemaId(),ArtikelTyp(artikel));
@@ -432,9 +434,12 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
         ArtikelBase artikelbase  = (*j).Artikel();
         cH_ArtikelBezeichnung bez(artikelbase,cH_Kunde(kunden_id)->getSchemaId());
         cH_ExtBezSchema schema = bez->getExtBezSchema();
-//#ifndef MABELLA_EXTENSIONS        
+
+#ifndef MABELLA_EXTENSIONS        
         if (schema!=schema_mem && !Configuration.combine) break; // Schema hat gewechselt
-//#endif        
+else
+        if (schema!=schema_own && !Configuration.combine) break; // Schema hat gewechselt
+#endif        
         
         if (Einheit(artikelbase) != einheit_mem ) break;  // Einheit wechselt
         
