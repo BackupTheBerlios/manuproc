@@ -143,6 +143,7 @@ void auftrag_bearbeiten::onSelArtikel()
     Rabatt_setzen(artikel_preisliste);
 
     showBestandData();
+    lieferant_offen->set_text("(0)");
 
 #else
     // hmmm die Menge beeinflusst den Preis, also vielleicht später nochmal 
