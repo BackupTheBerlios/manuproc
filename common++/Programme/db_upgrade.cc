@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.16 2003/09/17 10:05:38 christof Exp $
+// $Id: db_upgrade.cc,v 1.17 2003/09/18 17:01:47 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -78,6 +78,11 @@ int main(int argc,char *argv[])
   // Provisionsaten in Rechnung
   check_column("rechnung","verknr","numeric(5)");
   check_column("rechnungentry","provsatz","numeric(4,2)");
+  check_column("rechnung","an_fibu_am","date");
+  if(check_column("rechnung","fibu_buchid","integer"))
+    Query("ALTER TABLE rechnung add foreign key (fibu_buchid)"
+	" references buchung (buchungid)");
+  
 
   // Provisionsdaten in Auftrag
   check_column("auftrag","verknr","numeric(5)");
@@ -102,6 +107,17 @@ int main(int argc,char *argv[])
      Query("alter table ku_preisliste alter art set not null");
      Query("alter table ku_preisliste alter art set not null");
     }
+
+  // FiBu
+  check_column("buchjournal","geschlossen_am","date");
+  if(check_column("buchung","buchungid","integer"))
+    {
+     Query("alter table buchung set not null");
+     Query("create sequence buchung_id_seq");
+     Query("alter table buchung set default nextval('buchung_id_seq')");
+     Query("create unique index buchung_uniq on buchung (buchungid)");
+    }
+     
 
   // neue definitive Priorität bei den Zuordnungen
   // allerdings muss der Index auftragsentryzuordnung_altauftr noch
