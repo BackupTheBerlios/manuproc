@@ -1,4 +1,4 @@
-// $Id: intmap.cc,v 1.1 2003/09/16 21:43:24 christof Exp $
+// $Id: intmap.cc,v 1.2 2003/09/17 09:07:07 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -51,6 +51,10 @@ typedef vectormap_s<int,int> type;
 typedef std::map<int,int> type;
 #endif
 
+//#define MEM_BORDER (char*)sbrk(0)
+//#define MEM_BORDER (char*)malloc(1)
+#define MEM_BORDER new char
+
 #include <iostream>
 #include <sys/times.h>
 #include <cstdlib>
@@ -61,9 +65,9 @@ int main()
 //   getrusage(RUSAGE_SELF,&rusage);
 //   long mem_start=rusage.ru_idrss;
    srand(time(0));
-   char *init_mem=(char*)sbrk(0);
+   char *init_mem=MEM_BORDER;
    char *mem_start=init_mem;
-//   while ((mem_start=(char*)sbrk(0))==init_mem) malloc(4);
+//   while ((mem_start=MEM_BORDER)==init_mem) malloc(4);
    struct tms tms;
    
    times(&tms);
@@ -79,7 +83,7 @@ int main()
 						
 //   getrusage(RUSAGE_SELF,&rusage);
 //   long mem_creation=rusage.ru_idrss;
-   char *mem_creation=(char*)sbrk(0);
+   char *mem_creation=MEM_BORDER;
 
 #if WHAT==6 || WHAT==7
    for (int i=0;i<DIMENSION;++i) var[i*SPARSE]=rand();
@@ -90,7 +94,7 @@ int main()
    clock_t firstD=tms.tms_utime;
 //   getrusage(RUSAGE_SELF,&rusage);
 //   long mem_firstD=rusage.ru_idrss;
-   char *mem_firstD=(char*)sbrk(0);
+   char *mem_firstD=MEM_BORDER;
    
    for (int i=0;i<LOOPS;++i) 
       var[(rand()%DIMENSION)*SPARSE]+=rand();
@@ -98,10 +102,17 @@ int main()
    clock_t loop=tms.tms_utime;
 //   getrusage(RUSAGE_SELF,&rusage);
 //   long mem_loop=rusage.ru_idrss;
-   char *mem_loop=(char*)sbrk(0);
+   char *mem_loop=MEM_BORDER;
    
    std::cout << "what=" << WHAT << " dimension=" << DIMENSION << " sparse=" << SPARSE << " loops=" << LOOPS << '\n';
    std::cout << "creation\t\t" << (mem_creation-mem_start)/1024 << "kb\n";
    std::cout << "population\t" << (firstD-start) <<"ticks\t" << (mem_firstD-mem_creation)/1024 << "kb\n";
    std::cout << "loop\t\t" << (loop-firstD) <<"ticks\t" << (mem_loop-mem_firstD)/1024 << "kb\n";
+   
+#if WHAT==0
+   // free(var);
+#else
+   // create a memory leak to measure memory footprint
+   new type(var);
+#endif   
 }
