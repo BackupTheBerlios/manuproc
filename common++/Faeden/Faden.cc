@@ -1,4 +1,4 @@
-// $Id: Faden.cc,v 1.17 2004/02/26 11:18:40 christof Exp $
+// $Id: Faden.cc,v 1.18 2004/02/26 12:30:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -403,11 +403,13 @@ void Fadenliste::Load(const Webangaben &wa)
 {  erase();
    FetchIStream is;
    const Webangaben::ersetzen_t &ersetzen=wa.Ersetzen();
+   ArtikelBase ab=wa.Artikel();
+   if (!!wa.VarianteVon()) ab=wa.VarianteVon();
       
       Query q("select zeilennummer, anzahl, material, bindung, kettscheibe, "
       	"max_kettlaenge, max_fadenzahl "
       	"from webang_faeden where artikel=? order by zeilennummer");
-      q << wa.Artikel();
+      q << ab;
       while ((q>>is).good())
       {  Faden f;
          is >> f >> Query::check_eol();
@@ -422,7 +424,7 @@ void Fadenliste::Load(const Webangaben &wa)
 		"from webang_wiederhol where artikel=? "
 		// request small ones first so we print it right
 		"order by endzeile-anfangszeile");
-      q2 << wa.Artikel();
+      q2 << ab;
       while ((q2>>is).good())
       {  int anfangszeile, endzeile, wiederholungen;
          is >> anfangszeile >> endzeile >> wiederholungen >> Query::check_eol();
