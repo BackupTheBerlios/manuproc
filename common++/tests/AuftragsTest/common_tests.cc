@@ -46,3 +46,77 @@ static bool ZweiKundenTest(AufEintrag &AE)
 
 static TestReihe ZweiKundenTest_(&ZweiKundenTest,"Zwei Kunden","ZK");
 
+// es fehlen noch: Auftrag::Copy
+
+static bool Funktionstest(AufEintrag &AE)
+{{std::string uv("481186c6-4dc0-4dca-9309-650ce51749c4");
+  { Auftrag a(AE);
+    a.setBemerkung(uv);
+  }
+  { Auftrag a(AE);
+    assert(a.getBemerkung()==uv);
+ }}
+ {std::string uv("634a8c8a-87d5");
+  { Auftrag a(AE);
+    a.setYourAufNr(uv);
+  }
+  { Auftrag a(AE);
+    assert(a.getYourAufNr()==uv);
+ }}
+ {cP_Waehrung uv(Waehrung::ID(3));
+  { Auftrag a(AE);
+    a.setWaehrung(uv);
+  }
+  { Auftrag a(AE);
+    assert(a.getWaehrung()==uv);
+ }}
+ {Auftrag::rabatt_t uv(4);
+  { Auftrag a(AE);
+    a.setRabatt(uv);
+  }
+  { Auftrag a(AE);
+    assert(a.getAuftragsRabatt()==uv);
+ }}
+ {ManuProC::Datum uv(ManuProC::Datum::today()+10);
+  { Auftrag a(AE);
+    a.Zahlziel(uv);
+  }
+  { Auftrag a(AE);
+    assert(a.Zahlziel()==uv);
+ }}
+ Query("insert into rechnung_zahlungsart (id,kurzbezeichnung) values (2,'test')");
+ {cH_Zahlungsart uv(2);
+  { Auftrag a(AE);
+    a.Zahlart(uv);
+  }
+  { Auftrag a(AE);
+    assert(a.Zahlart()==uv);
+ }}
+ {std::string uv("80b259b7-8900-4edb-9fbd-49459d506bcf");
+  { Auftrag a(AE);
+    a.Notiz(uv);
+  }
+  { Auftrag a(AE);
+    assert(a.Notiz()==uv);
+ }}
+ {unsigned uv(2);
+  { Auftrag a(AE);
+    a.Label(uv);
+  }
+  { Auftrag a(AE);
+    assert(a.Label()==uv);
+ }}
+#ifdef MABELLA_EXTENSIONS 
+ {Kunde::ID uv(123);
+  { Auftrag a(AE);
+    a.setVerknr(uv);
+  }
+  { //Auftrag a(AE);
+    assert((Query("select verknr from auftrag where (instanz,auftragid)=(?,?)")
+          << AuftragBase(a)).FetchOne<int>()==uv);
+ }}
+#endif 
+  return true;
+}
+
+static TestReihe Funktionstest_(&Funktionstest,"korrekte Funktion","fun");
