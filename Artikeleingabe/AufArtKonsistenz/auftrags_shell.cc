@@ -138,7 +138,8 @@ int main(int argc,char *argv[])
                        int znr;
                        if(AEB1.Instanz()==ppsInstanzID::Kundenauftraege)
                         {
-                          AuftragBase AB(ArtikelStamm(ArtBase).BestellenBei(),AuftragBase::ungeplante_id);
+//                          AuftragBase AB(ArtikelStamm(ArtBase).BestellenBei(),AuftragBase::ungeplante_id);
+                          AuftragBase AB(ppsInstanz::getBestellInstanz(ArtBase),AuftragBase::ungeplante_id);
                           znr=AB.tryUpdateEntry(menge,AE1.getLieferdatum(),ArtBase,AE1.getEntryStatus(),getuid(),AEB1,true);
                           Planauftrag=AufEintragBase(AB,znr);
                         }

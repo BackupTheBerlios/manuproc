@@ -49,7 +49,7 @@ void Artikeleingabe::fill_eingabebox(int nr)
       list_sig.clear();
     }
    if (nr==2) 
-    { vec_eingabe2.clear();
+    { vec_alias_eingabe.clear();
       list_sig2.clear();
     }
    exec sql begin declare section;
@@ -64,11 +64,11 @@ void Artikeleingabe::fill_eingabebox(int nr)
      }
    if(nr==2)
      {
-      if(kundenbox->get_value()==1) 
-         db_atyp=optionmenu_warengruppe->get_value();
+      if(alias_schema->get_value()==1) 
+         db_atyp=alias_warengruppe->get_value();
       else 
          db_atyp=schema->Typ();
-      db_aid =kundenbox->get_value();
+      db_aid =alias_schema->get_value();
 //cout << db_atyp<<'\n';
      }
    // genau das tut ExtBezSchema::ExtBezSchema, warum verdoppelt ?? CP
@@ -83,7 +83,7 @@ void Artikeleingabe::fill_eingabebox(int nr)
    {  
      int sanz = sqlca.sqlerrd[2];
      if(nr==1) eingabebox->set_size(sanz);
-     if(nr==2) eingabe2->set_size(sanz);
+     if(nr==2) alias_eingabe->set_size(sanz);
      cH_ArtikelBezeichnung AB(artikelbox->get_value(),db_aid);
      int sigmem=-99;
      int x=-1;
@@ -94,17 +94,17 @@ void Artikeleingabe::fill_eingabebox(int nr)
            { vec_eingabe.push_back(st_eingabe(db_spaV[i],db_sigV[i]));
              list_sig.push_back(db_sigV[i]); }
         if (nr==2) 
-           { vec_eingabe2.push_back(st_eingabe(db_spaV[i],db_sigV[i]));
+           { vec_alias_eingabe.push_back(st_eingabe(db_spaV[i],db_sigV[i]));
              list_sig2.push_back(db_sigV[i]); }
         if(nr==1)eingabebox->set_label(i,db_bezV[i]);
-        if(nr==2)eingabe2->set_label(i,db_bezV[i]);
+        if(nr==2)alias_eingabe->set_label(i,db_bezV[i]);
         if(sigmem==db_sigV[i]) ++x;
         else {x=0;sigmem=db_sigV[i];}
         if(nr==1)eingabebox->set_value(i,AB->Komponente(x,db_sigV[i]));
 	if(nr==2)
-	  {eingabe2->set_value(i,"");
+	  {alias_eingabe->set_value(i,"");
 	   if(db_aid==AB->getExtBezSchema()->Id()) // defaultschema will ich nicht sehen
-	     eingabe2->set_value(i,AB->Komponente(x,db_sigV[i]));
+	     alias_eingabe->set_value(i,AB->Komponente(x,db_sigV[i]));
 	  }
 	
       }
@@ -118,9 +118,6 @@ void Artikeleingabe::fill_eingabebox(int nr)
 
 void Artikeleingabe::save_edited_artikel()
 {
-  exec sql begin declare section;
-   char query[1024];
-  exec sql end declare section;
   cH_ExtBezSchema schema = artikelbox->getBezSchema();
   std::string squery = "update artbez_"+itos(schema->Typ())+"_"+
          itos(schema->Id())+" set ";
@@ -150,111 +147,90 @@ void Artikeleingabe::save_edited_artikel()
      else
         squery += vec_eingabe[i].spalte +"='"+eingabebox->get_value(i)+"', ";
    }
-//  squery += " stand=now() where id='"+itos(artikelbox->get_value().Id())+"'";
   squery += " stand=now() where id='"+itos(fuer_artikel.Id())+"'";
-  strncpy(query,squery.c_str(),sizeof(query));
-  exec sql execute immediate :query;
+  Query::Execute(squery);
   SQLerror::test(__FILELINE__);
 }
 
 bool Artikeleingabe::update_edited_artikel2()
 {
-  exec sql begin declare section;
-   char query[1024];
-  exec sql end declare section;
-//  cH_ExtBezSchema schema = artikelbox->getBezSchema();
-//  std::string squery = "update artbez_"+itos(schema->Typ())+"_"+
-//         itos(schema->Id())+" set ";
-
-  std::string squery = "update artbez_"+itos(optionmenu_warengruppe->get_value())+"_"+
-         itos(kundenbox->get_value())+" set ";
+  std::string squery = "update artbez_"+itos(alias_warengruppe->get_value())+"_"+
+         itos(alias_schema->get_value())+" set ";
 
   vector<bool> vec_all_empty;
   for(std::list<int>::const_iterator i=list_sig2.begin();i!=list_sig2.end();++i)
    {
      bool all_empty=true;
-     for(unsigned int j=0;j<vec_eingabe2.size();++j)
+     for(unsigned int j=0;j<vec_alias_eingabe.size();++j)
       {
-        if( (*i) == vec_eingabe2[j].signifikanz && 
-            eingabe2->get_value(j) != "" ) all_empty=false ;
+        if( (*i) == vec_alias_eingabe[j].signifikanz && 
+            alias_eingabe->get_value(j) != "" ) all_empty=false ;
       }
      vec_all_empty.push_back(all_empty);
    }
   int count=0;
   int memsig=vec_eingabe[0].signifikanz;
-  for (unsigned int i=0;i<vec_eingabe2.size();++i)
+  for (unsigned int i=0;i<vec_alias_eingabe.size();++i)
    {
-     if(memsig!=vec_eingabe2[i].signifikanz)
+     if(memsig!=vec_alias_eingabe[i].signifikanz)
       {
         ++count;
-        memsig=vec_eingabe2[i].signifikanz;
+        memsig=vec_alias_eingabe[i].signifikanz;
       }
      if(vec_all_empty[count]==true)
-        squery += vec_eingabe2[i].spalte +"=null, ";
+        squery += vec_alias_eingabe[i].spalte +"=null, ";
      else
-        squery += vec_eingabe2[i].spalte +"='"+eingabe2->get_value(i)+"', ";
+        squery += vec_alias_eingabe[i].spalte +"='"+alias_eingabe->get_value(i)+"', ";
    }
-//  squery += " stand=now() where id='"+itos(artikelbox->get_value().Id())+"'";
   squery += " stand=now() where id='"+itos(fuer_artikel.Id())+"'";
-  strncpy(query,squery.c_str(),sizeof(query));
-  Transaction tr;
-  exec sql execute immediate :query;
-  SQLerror::test(__FILELINE__,100);
-  if(sqlca.sqlcode==100) return false;
-  tr.commit();
+  Query::Execute(squery);
+  if(sqlca.sqlcode) return false;
   return true;
 }
 
 
 void Artikeleingabe::save_edited_artikel2()
 {
-  exec sql begin declare section;
-   char query[1024];
-  exec sql end declare section;
 //  cH_ExtBezSchema schema = artikelbox->getBezSchema();
 
-  std::string squery = "insert into artbez_"+itos(optionmenu_warengruppe->get_value())+"_"+
-         itos(kundenbox->get_value())+" (id,";
+  std::string squery = "insert into artbez_"+itos(alias_warengruppe->get_value())+"_"+
+         itos(alias_schema->get_value())+" (id,";
 
   vector<bool> vec_all_empty;
   for(std::list<int>::const_iterator i=list_sig2.begin();i!=list_sig2.end();++i)
    {
      bool all_empty=true;
      
-     for(unsigned int j=0;j<vec_eingabe2.size();++j)
+     for(unsigned int j=0;j<vec_alias_eingabe.size();++j)
       {
-        if( (*i) == vec_eingabe2[j].signifikanz && 
-            eingabe2->get_value(j) != "" ) all_empty=false ;
+        if( (*i) == vec_alias_eingabe[j].signifikanz && 
+            alias_eingabe->get_value(j) != "" ) all_empty=false ;
       }
      vec_all_empty.push_back(all_empty);
    }
-  for (unsigned int i=0;i<vec_eingabe2.size();++i)
+  for (unsigned int i=0;i<vec_alias_eingabe.size();++i)
    {
-     squery += vec_eingabe2[i].spalte +",";
+     squery += vec_alias_eingabe[i].spalte +",";
    }
   squery += "stand) values ("+itos(fuer_artikel.Id())+",";
 //cout << von_artikel.Id()<<'\n';
   int count=0;
-  int memsig=vec_eingabe2[0].signifikanz;
-  for (unsigned int i=0;i<vec_eingabe2.size();++i)
+  int memsig=vec_alias_eingabe[0].signifikanz;
+  for (unsigned int i=0;i<vec_alias_eingabe.size();++i)
    {
-     if(memsig!=vec_eingabe2[i].signifikanz)
+     if(memsig!=vec_alias_eingabe[i].signifikanz)
       {
         ++count;
-        memsig=vec_eingabe2[i].signifikanz;
+        memsig=vec_alias_eingabe[i].signifikanz;
       }
      if(vec_all_empty[count]==true)
         squery += "null,";
      else
-        squery += "'"+eingabe2->get_value(i)+"',";
+        squery += "'"+alias_eingabe->get_value(i)+"',";
    }
   squery += "now())" ;
-  strncpy(query,squery.c_str(),sizeof(query));
-cout << query<<'\n';
-  Transaction tr;
-  exec sql execute immediate :query;
+  Query::Execute(squery);
   SQLerror::test(__FILELINE__);
-  tr.commit();
 }
 
 
@@ -307,52 +283,38 @@ void Artikeleingabe::on_button_verschmelzen_clicked()
   Transaction tr;
   for (vector<std::string>::const_iterator i=tabellen1.begin();i!=tabellen1.end();++i)
    {
-      std::string squery="update "+*i+" set id="+itos(neu_art.Id())
-         +" where id="+itos(alt_art.Id());
-      strncpy(query,squery.c_str(),sizeof(query));
-      exec sql execute immediate :query;
+      Query::Execute("update "+*i+" set id="+itos(neu_art.Id())
+         +" where id="+itos(alt_art.Id()));
    }
    {
-     std::string squery="update artikelzusammensetzung set altartikelid="
+      Query::Execute("update artikelzusammensetzung set altartikelid="
          +itos(neu_art.Id())
-         +" where altartikelid="+itos(alt_art.Id());
-     strncpy(query,squery.c_str(),sizeof(query));
-     exec sql execute immediate :query;
+         +" where altartikelid="+itos(alt_art.Id()));
    }
   for (vector<std::string>::const_iterator i=tabellen2.begin();i!=tabellen2.end();++i)
    {
-      std::string squery="update "+*i+" set artikelid="+itos(neu_art.Id())
-         +" where artikelid="+itos(alt_art.Id());
-      strncpy(query,squery.c_str(),sizeof(query));
-      exec sql execute immediate :query;
+      Query::Execute("update "+*i+" set artikelid="+itos(neu_art.Id())
+         +" where artikelid="+itos(alt_art.Id()));
    }
   for (vector<std::string>::const_iterator i=tabellen3.begin();i!=tabellen3.end();++i)
    {
-      std::string squery="update "+*i+" set material="+itos(neu_art.Id())
-         +" where material="+itos(alt_art.Id());
-      strncpy(query,squery.c_str(),sizeof(query));
-      exec sql execute immediate :query;
+      Query::Execute("update "+*i+" set material="+itos(neu_art.Id())
+         +" where material="+itos(alt_art.Id()));
    }
   for (vector<std::string>::const_iterator i=tabellen4.begin();i!=tabellen4.end();++i)
    {
-      std::string squery="update "+*i+" set artikel="+itos(neu_art.Id())
-         +" where artikel="+itos(alt_art.Id());
-      strncpy(query,squery.c_str(),sizeof(query));
-      exec sql execute immediate :query;
+      Query::Execute("update "+*i+" set artikel="+itos(neu_art.Id())
+         +" where artikel="+itos(alt_art.Id()));
    }
    {
-     std::string squery="update ketten_garn set garn="
+      Query::Execute("update ketten_garn set garn="
          +itos(neu_art.Id())
-         +" where garn="+itos(alt_art.Id());
-     strncpy(query,squery.c_str(),sizeof(query));
-     exec sql execute immediate :query;
+         +" where garn="+itos(alt_art.Id()));
    }
   for (vector<std::string>::const_iterator i=tabellen5.begin();i!=tabellen5.end();++i)
    {
-      std::string squery="update "+*i+" set art_id="+itos(neu_art.Id())
-         +" where art_id="+itos(alt_art.Id());
-      strncpy(query,squery.c_str(),sizeof(query));
-      exec sql execute immediate :query;
+      Query::Execute("update "+*i+" set art_id="+itos(neu_art.Id())
+         +" where art_id="+itos(alt_art.Id()));
    }
  tr.commit();
 }

@@ -3,5 +3,4 @@ marc2
 .deps
 Makefile.in
 Makefile
-gCVS
 .libs

@@ -1,14 +1,3 @@
-// generated 2001/9/18 9:40:08 CEST by thoma@Tiger.
-// using glademm V0.6.2_cvs
-//
-// newer (non customized) versions of this file go to Artikeleingabe.hh_new
-
-// you might replace
-//    class foo : public foo_glade { ... };
-// by
-//    typedef foo_glade foo;
-// if you didn't make any modifications to the widget
-
 #ifndef _ARTIKELEINGABE_HH
 #  include "Artikeleingabe_glade.hh"
 #  define _ARTIKELEINGABE_HH
@@ -19,8 +8,18 @@
 #include <Instanzen/ppsInstanz.h>
 #include <Artikel_Bestellen.hh>
 #include <Aux/Ausgabe_neu.h>
+#include <gtk--/notebook.h>
 
-#define MAXCOLUMN 10
+static const unsigned int MAXCOLUMN=10;
+
+struct Artikelgruppe
+{  int schema,warengruppe,bestellen_bei,einheit;
+   Artikelgruppe() 
+   : schema(-1),warengruppe(-1),bestellen_bei(ppsInstanzID::None),einheit(-1) {}
+   bool valid() const 
+   { return schema!=-1 && warengruppe!=-1 && 
+	bestellen_bei!=ppsInstanzID::Kundenauftraege && einheit!=-1; }
+};
 
 class Artikeleingabe : public Artikeleingabe_glade
 {   
@@ -45,6 +44,7 @@ class Artikeleingabe : public Artikeleingabe_glade
         void on_button_artikel_wechsel_clicked();
         void on_neuladen_clicked();
         void set_tree_titels();
+        void on_notebook1_switch_page(GtkNotebookPage *p0, guint p1);
 
         void fill_datavec(datavec_t& datavec,const ArtikelBase& AB);
         void push_Artikel(vec_zeile_t &vec_zeile, const zeile_t &z);
@@ -70,8 +70,8 @@ class Artikeleingabe : public Artikeleingabe_glade
             st_eingabe(std::string sp, int si) 
                : spalte(sp),signifikanz(si) {} 
             };
-        vector<st_eingabe> vec_eingabe,vec_eingabe2;
-        std::list<int> list_sig,list_sig2;
+        vector<st_eingabe> vec_eingabe;
+        std::list<int> list_sig;
         void on_togglebutton_edit_toggled();
         void fill_eingabebox(int nr);
         void eingabe_activate();
@@ -83,17 +83,30 @@ class Artikeleingabe : public Artikeleingabe_glade
         gint timeout_warnung();
         SigC::Connection des,des2,des3;
         void on_kunde_activate();
-        void on_eingabe2_activate();
         void save_edited_artikel2();   
         bool update_edited_artikel2();
-        void on_optionmenu_warengruppe_activate();
 
+//****** später
         void on_button_verschmelzen_clicked();
 
-        void on_togglebutton_neue_toggled();
+//****** edit ******
+
+//****** alias *****
+        void on_alias_eingabe_activate();
+        void on_alias_warengruppe_activate();
+        vector<st_eingabe> vec_alias_eingabe;
+        std::list<int> list_sig2;
+
+//****** neu *******
+	Artikelgruppe aktuelle_gruppe;
+	
         void on_standard_einheit_activate();
         void on_optionmenu_standardinstanz_activate();
-        
+        void on_was_tun_activate();
+        void on_no_instanz_toggled();
+        void on_show_in_prlist_toggled();
+        void on_change_no_instanz_toggled();
+        void artikelbox_neu_activate();
 
    public: 
        Artikeleingabe(int argc, char **argv);

@@ -27,3 +27,4 @@ autom4te.cache
 ManuProCConfig.h.in
 depcomp
 stamp-h1
+macros

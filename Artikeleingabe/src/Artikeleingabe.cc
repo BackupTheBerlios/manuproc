@@ -1,10 +1,3 @@
-// generated 2001/9/18 9:40:08 CEST by thoma@Tiger.
-// using glademm V0.6.2_cvs
-//
-// newer (non customized) versions of this file go to Artikeleingabe.cc_new
-
-// This file is for your program, I won't touch it again!
-
 #include "config.h"
 #include "Artikeleingabe.hh"
 #include "Artikeleingabe_classes.hh"
@@ -36,13 +29,21 @@ Artikeleingabe::Artikeleingabe(int argc, char **argv)
  progressbar->hide();
  toolbar_loeschen->hide();
  table_verschmelzen->hide(); // Nur für Administratoren!!!!
- frame_artikel->set_sensitive(false);
- frame_editieren->hide();
- kundenbox->Einschraenken_b(true);
- optionmenu_warengruppe->hide();
+// frame_artikel->set_sensitive(false);
+// frame_editieren->hide();
+ alias_schema->Einschraenken_b(true);
+ alias_warengruppe->hide();
  set_tree_titels();
  tree->set_NewNode(&Data_Node::create);
- if (argc==2) {artikelbox->set_value(atoi(argv[1]));artikelbox_activate();}
+
+#ifndef MABELLA_EXTENSIONS
+ artikelbox_neu->set_automatisch_anlegen(true);
+#endif
+
+ if (argc==2) 
+ {top_notebook->set_page(2);
+  artikelbox->set_value(atoi(argv[1]));
+  artikelbox_activate();}
 }
 
 
@@ -50,7 +51,8 @@ void Artikeleingabe::on_checkbutton_offene_auftraege_toggled()
 {
  if(checkbutton_offene_auftraege->get_active())
   {
-   optionmenu_instanz->set_History(ppsInstanzID::Kundenauftraege);
+//   optionmenu_instanz->set_History(ppsInstanzID::Kundenauftraege);
+   optionmenu_instanz->set_value(cH_ppsInstanz(ppsInstanzID::Kundenauftraege));
    load_for_optionmenu_instanz();
   }   
 }
@@ -76,25 +78,35 @@ void Artikeleingabe::artikelbox_activate()
  vec_artbase.clear();
  try {
     ArtikelBase AB(artikelbox->get_value());
-    if (AB.Id())
+    if (AB.Id()!=ArtikelBase::none_id)
     {  vec_artbase.push_back(AB.Id());
-       optionmenu_instanz->set_value(ArtikelStamm(AB).BestellenBei()->Id());
+       ArtikelStamm as(AB);
+
+       show_in_prlist->set_active(as.getAktive()); 
+       cH_ppsInstanz pi(as.BestellenBei());
+       change_no_instanz->set_active(pi->Id()==ppsInstanzID::None);
+       no_instanz->set_active(change_no_instanz->get_active());       
+       optionmenu_instanz->set_value(pi->Id());
+       optionmenu_instanz->set_sensitive(change_no_instanz->get_active());
+       Artikel_Bestellen_bei->set_value(pi->Id());
+       Artikel_Bestellen_bei->set_sensitive(!change_no_instanz->get_active());
     }
-   } catch (SQLerror &e) {cerr << e<<'\n';}
+   } catch (SQLerror &e)   {mess->Show(e);} 
  set_Data_from_artikelliste();
 
- frame_artikel->set_sensitive(true);
+// frame_artikel->set_sensitive(true);
  fuer_artikel = artikelbox->get_value();
  Eingabe_fuer(artikelbox->get_value());
  fill_eingabebox(1);
- optionmenu_warengruppe->set_extartbezid(artikelbox->getBezSchema()->Id());
- optionmenu_warengruppe->set_value(artikelbox->getBezSchema()->Typ());
+ alias_warengruppe->set_extartbezid(artikelbox->getBezSchema()->Id());
+ alias_warengruppe->set_value(artikelbox->getBezSchema()->Typ());
  fill_eingabebox(2);
+
 }
 
-void Artikeleingabe::on_optionmenu_warengruppe_activate()
+void Artikeleingabe::on_alias_warengruppe_activate()
 {
-// ArtikelTyp::ID t=optionmenu_warengruppe->get_value();
+// ArtikelTyp::ID t=alias_warengruppe->get_value();
  fill_eingabebox(2);
 }
 
@@ -122,27 +134,29 @@ void Artikeleingabe::set_Data_from_artikelliste()
  tree->clear();
  datavec_t datavec;
  instanz_spalte.clear();
- double size=vec_artbase.size();
- instanz_spalte.push_back(ppsInstanzID::None);
+ unsigned size=vec_artbase.size();
+ if (size==1) instanz_spalte.push_back(ArtikelStamm(vec_artbase[0]).BestellenBei());
+ else instanz_spalte.push_back(ppsInstanzID::None);
 
  if (size>10) // sinnvolle Reihenfolge vorgeben
  {
 #ifdef PETIG_EXTENSIONS
+    instanz_spalte.push_back(ppsInstanzID::Bandlager);
     instanz_spalte.push_back(ppsInstanzID::Druckerei);
     instanz_spalte.push_back(ppsInstanzID::Faerberei);
-//Was soll das sein? MAT    instanz_spalte.push_back(ppsInstanzID::Bandlager__Weberei_);
     instanz_spalte.push_back(ppsInstanzID::Bandlager);
     instanz_spalte.push_back(ppsInstanzID::Weberei);
 #endif
  }
 
- double count=0;
+ unsigned count=0;
+
  label_warnung->set_text(itos((int)size)+" Artikel");
  vec_artbase_t::const_iterator end=vec_artbase.end();
  for (vec_artbase_t::const_iterator i=vec_artbase.begin();i!=end;++i)
   {
    fill_datavec(datavec,*i);
-   progressbar->set_percentage(count/size);
+   progressbar->set_percentage(count/double(size));
    while(Gtk::Main::events_pending()) Gtk::Main::iteration() ;
    ++count;
   }
@@ -250,11 +264,12 @@ void Artikeleingabe::on_node_selected(const TCListNode &node)
 void Artikeleingabe::Eingabe_fuer(const ArtikelBase& art)
 {
  try{
- Artikel_Bestellen_bei->set_History(ArtikelStamm(art).BestellenBei()->Id());
+// Artikel_Bestellen_bei->set_History(ArtikelStamm(art).BestellenBei()->Id());
+ Artikel_Bestellen_bei->set_value(ArtikelStamm(art).BestellenBei());
  set_Prozess(); 
 // frame_artikel->set_label("Artikel "+cH_ArtikelBezeichnung(art)->Bezeichnung());
- frame_artikel->set_label("Artikel "+cH_ArtikelBezeichnung(art,artikelbox->getBezSchema()->Id())->Bezeichnung());
- frame_artikel->set_sensitive(true);
+// frame_artikel->set_label("Artikel "+cH_ArtikelBezeichnung(art,artikelbox->getBezSchema()->Id())->Bezeichnung());
+// frame_artikel->set_sensitive(true);
  OM_Einheit->set_value(Einheit(artikelbox->get_value()));
  } catch (SQLerror &e)
  {  cout << "Artikeleingabe::Eingabe_fuer " << e << '\n';
@@ -307,7 +322,7 @@ void Artikeleingabe::Loeschen_von(const ArtikelBase& art)
 void Artikeleingabe::on_unselect_row(gint row, gint column, GdkEvent *event)
 {
  toolbar_loeschen->hide();
- frame_artikel->set_sensitive(false);
+// frame_artikel->set_sensitive(false);
 }
 
 
@@ -346,7 +361,7 @@ void Artikeleingabe::optionmenu_bestellen_bei_activate()
   Transaction tr;
   if (!fuer_artikel) return;
   ppsInstanz::ID oldInstanz=ArtikelStamm(fuer_artikel).BestellenBei()->Id();
-  ppsInstanz::ID newInstanz = Artikel_Bestellen_bei->get_Instanz_Id(); 
+  ppsInstanz::ID newInstanz = Artikel_Bestellen_bei->get_value()->Id(); 
   if(oldInstanz==newInstanz) return;
   ArtikelStamm::set_BestellenBei(fuer_artikel,newInstanz);
   
@@ -367,6 +382,7 @@ void Artikeleingabe::optionmenu_bestellen_bei_activate()
  tr.commit();
 }
 
+// missbrauch von label_warnung ...
 void Artikeleingabe::warnung(std::string s)
 {
   label_warnung->set_text(s);
@@ -405,8 +421,10 @@ void Artikeleingabe::set_tree_titels()
 
 void Artikeleingabe::on_togglebutton_edit_toggled()
 {
+#if 0
  if(togglebutton_edit->get_active()) frame_editieren->show();
  else frame_editieren->hide();
+#endif 
 }
 
 
@@ -417,12 +435,14 @@ void Artikeleingabe::eingabe_activate()
 {
   ArtikelBase artikel=fuer_artikel;
   
+ try{
   save_edited_artikel();
   cH_ArtikelBezeichnung::Deregister(artikelbox->getBezSchema()->Id(),artikel.Id());
   artikelbox->set_value(artikel);
   pixmap_edit->set(stock_button_apply_xpm);
   while(Gtk::Main::events_pending()) Gtk::Main::iteration() ;
   des = Gtk::Main::timeout.connect(slot(this,&Artikeleingabe::timeout_save_edited_artikel),4000);
+ }catch(SQLerror &e) {mess->Show(e);}
 }
 
 void Artikeleingabe::on_einheit_activate()
@@ -443,22 +463,23 @@ void Artikeleingabe::on_kunde_activate()
 {
   try{
   fill_eingabebox(2);
-  eingabe2->grab_focus();
-  if(kundenbox->get_value()==1) 
-    optionmenu_warengruppe->show();
+  alias_eingabe->grab_focus();
+  // diese Heuristik ist etwas fraglich CP
+  if(alias_schema->get_value()==1) 
+    alias_warengruppe->show();
   else 
-    optionmenu_warengruppe->hide();
+    alias_warengruppe->hide();
   }catch(SQLerror &e) {cerr << e<<'\n';}
  fill_eingabebox(2);
 }
 
-void Artikeleingabe::on_eingabe2_activate()
+void Artikeleingabe::on_alias_eingabe_activate()
 {
   try{
   if(!update_edited_artikel2())
     save_edited_artikel2();
-  cH_ArtikelBezeichnung::Deregister(kundenbox->get_value(),fuer_artikel.Id());  
-  pixmap_edit2->set(stock_button_apply_xpm);
+  cH_ArtikelBezeichnung::Deregister(alias_schema->get_value(),fuer_artikel.Id());  
+  alias_pixmap->set(stock_button_apply_xpm);
   while(Gtk::Main::events_pending()) Gtk::Main::iteration() ;
   des2 = Gtk::Main::timeout.connect(slot(this,&Artikeleingabe::timeout_save_edited_artikel2),4000);
   }
@@ -466,7 +487,7 @@ void Artikeleingabe::on_eingabe2_activate()
     {cerr<<e<<'\n';
       if(e.Code()==-400)
      	{string msg("Die Bezeichnung ");
-     	 msg=msg+eingabe2->get_value(0)+"... existiert schon";
+     	 msg=msg+alias_eingabe->get_value(0)+"... existiert schon";
      	 mess->Show(msg);
      	}
      else
@@ -476,17 +497,11 @@ void Artikeleingabe::on_eingabe2_activate()
 
 gint Artikeleingabe::timeout_save_edited_artikel2()
 {
-  pixmap_edit2->set(stock_button_cancel_xpm);
+  alias_pixmap->set(stock_button_cancel_xpm);
   return 0;
 }
 
-
-
-
-
-//#define TEXCMD "tex2prn -2 -q -Phl1260 -t landscape"
-//#define TEXCMD "tex2prn -2 -q -Pps -t landscape"
-#define TEXCMD "tex2prn -2 -G -Phl1260 -t landscape" // Preview
+#define TEXCMD "tex2prn -2 -G -tlandscape" // Preview
 
 void Artikeleingabe::on_button_drucken_clicked()
 {
@@ -559,36 +574,50 @@ ArtikelBase Data_tree::Artikel2() const
    return ArtikelBase();
 }
 
-void Artikeleingabe::on_kunde_activate();        
+void Artikeleingabe::on_notebook1_switch_page(GtkNotebookPage *p0, guint p1)
+{  artikelbox->set_sensitive(p1==1 || p1==2);
+}
 
-void Artikeleingabe::on_togglebutton_neue_toggled()
+void Artikeleingabe::on_no_instanz_toggled()
 {
-  if(togglebutton_neue_artikel->get_active()) 
-   {  
-     artikelbox->set_automatisch_anlegen(true);
-     artikelbox->grab_focus();
-     on_standard_einheit_activate();
-     on_optionmenu_standardinstanz_activate();
-     frame_neue_artikel->show();
+ if(no_instanz->get_active())
+   {standard_instanz->set_sensitive(false);
+   aktuelle_gruppe.bestellen_bei=ppsInstanzID::None;
    }
-  else
-   {
-     artikelbox->set_automatisch_anlegen(false);
-     artikelbox->set_Default_Instanz(ppsInstanzID::None);
-     artikelbox->set_Default_Einheit(Einheit::default_id);  
-     frame_neue_artikel->hide();
+ else
+   {standard_instanz->set_sensitive(true);   
+    aktuelle_gruppe.bestellen_bei=standard_instanz->get_value()->Id();
    }
 }
 
 
-void Artikeleingabe::on_standard_einheit_activate()
+void Artikeleingabe::on_show_in_prlist_toggled()
 {
-  artikelbox->set_Default_Einheit(standard_einheit->get_value());  
+ if(artikelbox->get_value() == ArtikelBase::none_id) return;
+ 
+ try{
+ ArtikelStamm::setAktive(artikelbox->get_value(),show_in_prlist->get_active()); 
+ }
+ catch(SQLerror &e)
+  {mess->Show(e); 
+  }
 }
 
 
-void Artikeleingabe::on_optionmenu_standardinstanz_activate()
-{
-  artikelbox->set_Default_Instanz(standard_instanz->get_value()->Id());
+void Artikeleingabe::on_change_no_instanz_toggled()
+{ 
+ if(artikelbox->get_value() == ArtikelBase::none_id) return;
+ 
+ try{
+ if(change_no_instanz->get_active())
+   ArtikelStamm::set_BestellenBei(artikelbox->get_value(),ppsInstanzID::None); 
+ else   
+   ArtikelStamm::set_BestellenBei(artikelbox->get_value(),
+   			Artikel_Bestellen_bei->get_value()->Id());
+ Artikel_Bestellen_bei->set_sensitive(!change_no_instanz->get_active());   
+ }
+ catch(SQLerror &e)
+  {mess->Show(e); 
+  } 
 }
-                
+

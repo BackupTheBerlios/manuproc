@@ -13,7 +13,7 @@ artikeleingabe_SOURCES = \
    $(BUILT_SOURCES) \
 	artikeleingabe.cc\
 	Artikeleingabe_glade.cc \
-	Artikeleingabe.cc 
+	Artikeleingabe.cc Artikeleingabe_neu.cc
 
 artikel_shell_SOURCES = artikel_shell.cc
 
