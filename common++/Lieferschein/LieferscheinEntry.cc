@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.76 2004/10/20 07:33:08 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.77 2004/10/21 08:44:49 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -555,7 +555,8 @@ void LieferscheinEntry::setLagerid(int _lagid) throw(SQLerror)
 {
  Query("update lieferscheinentry set lagerid=? where "
 	"(instanz,lfrsid,zeile)=(?,?,?) ")
-	<< Query::NullIf(_lagid,FertigWarenLager::none_lagerid) << *this;
+	<< Query::NullIf(_lagid,int(FertigWarenLager::none_lagerid)) 
+	<< *this;
  lagerid=_lagid;
 }
 
@@ -582,4 +583,20 @@ fixedpoint<1> LieferscheinEntry::DurchAuftraegeAbgedeckt() const
    if (!m) return 0;
    if (m==m2) return 1;
    return 100.0*m/m2.as_float();
+}
+
+void LieferscheinEntry::Text(const std::string &t)
+{ Query("update lieferscheinentry set text=? "
+      "where (instanz,lfrsid,zeile)=(?,?,?)")
+      << t
+      << *this;
+  text=t;
+}
+
+void LieferscheinEntry::setRefOrder(const std::string &t)
+{ Query("update lieferscheinentry set reforder_free=? "
+      "where (instanz,lfrsid,zeile)=(?,?,?)")
+      << t
+      << *this;
+  reforder_free=t;
 }

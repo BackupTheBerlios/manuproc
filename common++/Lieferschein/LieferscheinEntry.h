@@ -1,6 +1,7 @@
-/* $Id: LieferscheinEntry.h,v 1.41 2004/10/20 07:33:08 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.42 2004/10/21 08:44:49 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 1998-2004 Adolf Petig GmbH & Co. KG
+ *  written by Jacek Jakubowski, Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -85,13 +86,18 @@ public:
  const ArtikelBase::ID ArtikelID() const { return artikel.Id(); }
  const ArtikelBase Artikel() const { return artikel; }
  const AufStatVal Status() const { return status; }
+ 
  const std::string &Text() const { return text; }
+ void Text(const std::string &t);
  
  const zusaetze_t &getZusatzInfos() const {return VZusatz;}
  // nach Aufträgen summiert (nicht nach Zeilen getrennt)
  std::vector<st_AuftragMenge> getAuftragsMenge() const;
  void setZusatzInfos(const zusaetze_t &zis);
  void setZusatzInfos();
+ 
+ const std::string &getRefOrder() const { return reforder_free; }
+ void setRefOrder(const std::string &t);
 
  __deprecated void setZusatzInfo(const AufEintragBase &AEB,const mengen_t &menge) throw(SQLerror)
  {  addZusatzEntry(AEB,menge); }
@@ -111,13 +117,6 @@ public:
  fixedpoint<1> DurchAuftraegeAbgedeckt() const; // in % 
 
  // bitte getZusatzInfos() nehmen, es könnten mehrere sein
-#if 0 
- __deprecated const AuftragBase RefAuftrag() const { return VZusatz.at(0).aeb; }
- __deprecated int AufZeile() const { return VZusatz.at(0).aeb.ZNr();}
- __deprecated AufEintragBase getAufEintragBase() const {return VZusatz.at(0).aeb; }
- __deprecated bool ZusatzInfo() const { return true; }
-#endif 
-
 
 private:
  static void deleteMe(const LieferscheinEntry &lse) throw(SQLerror);
