@@ -1,6 +1,6 @@
-/* $Id: EntryValueIntString.cc,v 1.1 2001/06/20 11:25:26 cvs_malte Exp $ */
+/* $Id: EntryValueBase.cc,v 1.1 2001/06/22 09:46:23 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 2000-2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,19 +17,28 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <EntryValueIntString.h>
-#include <string0.h>
+#include <Aux/EntryValueBase.h>
 
-EntryValueIntString::EntryValueIntString(int v)
-	: intval(v)
-   { char s[50]; snprintf0(s,50,"%d",v); strval=s;}
+EntryValueBase::operator bool() const
+{  return getIntVal()!=int_NaN || getStrVal()!="";
+}
 
+bool EntryValueBase::operator==(const EntryValueBase &v) const
+{  int i(getIntVal());
+   int j(v.getIntVal());
 
-EntryValueIntString::EntryValueIntString(const string &s)
-	: strval(s)
-   {unsigned char *x=(unsigned char*)s.c_str();
-    while (isspace(*x)) ++x;
-    if (!isdigit(*x)) intval=int_NaN;
-    else intval=atoi(s.c_str());
-   }
+   if(i!=int_NaN && j!=int_NaN)
+     {
+      if(i!=j) return false;
+      else return getStrVal()==v.getStrVal();
+     }
+
+   return getStrVal()==v.getStrVal();
+}
+
+bool EntryValueBase::operator<(const EntryValueBase &v) const
+{  int i(getIntVal()),j(v.getIntVal());
+   if (i!=int_NaN && j!=int_NaN) return i<j;
+   return getStrVal()<v.getStrVal();
+}
 
