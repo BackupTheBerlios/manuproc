@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.25 2003/09/11 16:59:23 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.26 2003/09/15 09:37:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -183,6 +183,13 @@ AuftragBase::mengen_t AufEintrag::Auslagern
             const bool egal=false;
             if (kinder.empty())
                MengeAendern(menge,egal,AufEintragBase());
+            else // Menge neu verplanen
+            {  // für AP:-2 notwendig
+               // the concept breaks here: 2er do not have a connection
+               // to the producing entry !!!
+               // with luck everything looks well though
+               MengeAendern(menge,true,AufEintragBase());
+            }
          }
       }
       else
