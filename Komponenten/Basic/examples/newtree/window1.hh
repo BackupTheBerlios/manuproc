@@ -8,6 +8,8 @@ class window1 : public window1_glade
 	virtual void add_one();
 	virtual void eine_weg();
 	virtual void refresh();
+	virtual void change1();
+	virtual void change2();
 
 public:
 	window1();

@@ -29,7 +29,6 @@ public:
 		 case SP_ATT2 : return cH_EntryValueIntString(i2);
 		 case SP_ATT3 : return cH_EntryValueIntString(i3);
 		 case SP_ATT4 : return cH_EntryValueIntString(s1);
-// 		 case SP_SUM0 ... SP_SUM2 : return cH_EntryValueIntString(Data(_seqnr-SP_SUM0));
  		 case SP_SUM0 : return cH_EntryValueIntString(Data(_seqnr-SP_SUM0));
  		 default : return cH_EntryValue();
 		}
@@ -39,6 +38,10 @@ public:
     if (i==1) return intval*2;
     return intval*intval;
  }
+ void setIntVal(int i) { intval=i; }
+ void setIntVal2(int i) { i2=i; }
+ int getIntVal() const { return intval; }
+ int getIntVal2() const { return i2; }
 
 #if 0
  std::vector<cH_EntryValueIntString> get_orderd(guint _seqnr) const
@@ -85,26 +88,28 @@ public:
 
 // this creates a nice Handle class for convenience
 // not strictly needed
-class cH_MyRowData : public cH_RowDataBase
+class H_MyRowData : public Handle<RowDataBase>
 {
 public:
- typedef const MyRowData ContentType;
- cH_MyRowData(ContentType *r) : cH_RowDataBase(r) {}
-//  cH_MyRowData() {}  // not recommended
- cH_MyRowData(int i,const std::string &s,int _i2,int _i3,const std::string _s1)
-	: cH_RowDataBase(new MyRowData(i,s,_i2,_i3,_s1)) {}
- cH_MyRowData(const cH_RowDataBase &d)
+ typedef MyRowData ContentType;
+ H_MyRowData(ContentType *r) : Handle<RowDataBase>(r) {}
+//  H_MyRowData() {}  // not recommended
+ H_MyRowData(int i,const std::string &s,int _i2,int _i3,const std::string _s1)
+	: Handle<RowDataBase>(new MyRowData(i,s,_i2,_i3,_s1)) {}
+ H_MyRowData(const cH_RowDataBase &d)
 // better check here ...
- 	: cH_RowDataBase(d) {}
+ 	: Handle<RowDataBase>(const_cast<RowDataBase*>(&*d)) {}
  ContentType *operator*() const
- 	{  return &((Handle<const ContentType>*)this)->operator*(); }
- ContentType *operator->() const
- 	{  return &((Handle<const ContentType>*)this)->operator*(); }
+ 	{  return &((Handle<ContentType>*)this)->operator*(); }
+ ContentType *operator->()
+ 	{  return &((Handle<ContentType>*)this)->operator*(); }
+ operator cH_RowDataBase() const
+        {  return operator*(); }
 };
 
 bool operator==(const cH_RowDataBase &b, int i)
 {  try
-   {  cH_MyRowData m(b);
+   {  H_MyRowData m(b);
 //      std::cout << m->Data(0) << ',' << i << '\n';
       return m->Data(0)==i;
    }
@@ -118,7 +123,7 @@ class OutputFunctor
 public:
 	OutputFunctor(std::ostream &o) : os(o), sum(0) {}
 	void operator()(const cH_RowDataBase &b)
-	{  cH_MyRowData m(b);
+	{  H_MyRowData m(b);
 	   os << m->Data(0) << ',';
 	   sum+=m->Data(0);
 	}
@@ -178,17 +183,39 @@ window1::window1() : st(SP_ANZ)
    ManuProC::Tracer::Enable(SimpleTreeStore::trace_channel);
 }
 
-cH_RowDataBase newrow;
-
 void window1::add_one()
-{  newrow=new MyRowData(1,"1810",25,755,"25m");
+{  cH_RowDataBase newrow=new MyRowData(1,"1810",25,755,"25m");
    st.getModel().append_line(newrow);
 }
 
 void window1::eine_weg()
-{  st.getModel().remove_line(newrow);
+{  try 
+   {  cH_RowDataBase row=st.getSelectedRowDataBase();
+      st.getModel().remove_line(row);
+   }
+   catch (...) {}
 }
 
 void window1::refresh()
 {  st.getModel().signal_redraw_needed()();
+}
+
+void window1::change1()
+{  try 
+   {  H_MyRowData row=st.getSelectedRowDataBase();
+      st.getModel().about_to_change(row);
+      row->setIntVal(row->getIntVal()+1);
+      st.getModel().has_changed(row);
+   }
+   catch (...) {}
+}
+
+void window1::change2()
+{  try 
+   {  H_MyRowData row=st.getSelectedRowDataBase();
+      st.getModel().about_to_change(row);
+      row->setIntVal2(row->getIntVal2()+1);
+      st.getModel().has_changed(row);
+   }
+   catch (...) {}
 }
