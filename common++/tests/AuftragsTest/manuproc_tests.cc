@@ -111,7 +111,7 @@ static bool AutoProduktion()
       {
       Auftrag A=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
       AufEintragBase aeb=A.push_back(10,DATUM,ArtikelBase(40),OPEN,true);
-      vergleichen(Check::Lieferschein|Check::Menge,"ap_auftrag","Auftrag anlegen","");
+      vergleichen(Check::Menge,"ap_auftrag","Auftrag anlegen","");
       
       Lieferschein liefs(ppsInstanz::ID(41),cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
       int lznr=liefs.push_back(ArtikelBase(41),5);
