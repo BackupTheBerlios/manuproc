@@ -1,10 +1,13 @@
-# $Id: Makefile.am,v 1.3 2003/04/10 06:31:11 christof Exp $
+# $Id: Makefile.am,v 1.4 2003/04/30 07:02:52 christof Exp $
 
 SUBDIRS=close_window
 
 AM_CXXFLAGS=-I$(top_srcdir)/searchcombo/src -I$(top_srcdir)/src
 
-EXTRA_PROGRAMS = nsc_test sccont_test optionmenu db_test
+EXTRA_PROGRAMS = nsc_test sccont_test optionmenu db_test back_test
+
+back_test_SOURCES = back_test.cc db_embed.cc
+back_test_LDADD = $(top_srcdir)/src/libGtkmmAddons.a
 
 sccont_test_SOURCES = sccont_test.cc
 sccont_test_LDADD = $(top_srcdir)/src/libGtkmmAddons.a
