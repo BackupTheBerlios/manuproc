@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.33 2004/02/09 11:48:40 jacek Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.34 2004/02/17 17:55:27 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -38,6 +38,7 @@ class LieferscheinEntry : public LieferscheinEntryBase
  mengen_t menge;
  int palette;
  AufStatVal status;
+ mutable Kunde::ID kid;
  
 public:
  struct st_AufEintragMenge{AufEintragBase aeb; AuftragBase::mengen_t menge;
@@ -60,7 +61,8 @@ private:
    mengen_t Abschreibmenge(int stueck,mengen_t menge) const;
 
 public:
- 	LieferscheinEntry() : stueck(0),palette(0),status((AufStatVal)NOSTAT) {};
+ 	LieferscheinEntry() : stueck(0),palette(0),
+ 		status((AufStatVal)NOSTAT), kid(Kunde::none_id) {};
  	LieferscheinEntry(const LieferscheinEntryBase &lsbase) throw(SQLerror);
 private:
   friend class Lieferschein;
@@ -92,13 +94,15 @@ public:
  {  addZusatzEntry(AEB,menge); }
 
  void setPalette(int p) throw(SQLerror);
- void changeMenge(int stueck,mengen_t menge,const Lieferschein &ls, bool ein_auftrag) throw(SQLerror);
- void changeMenge(int stueck,mengen_t menge) throw(SQLerror); 
- void changeStatus(AufStatVal new_status,const Lieferschein &ls, 
+ void changeMenge(int stueck,mengen_t menge, bool ein_auftrag) throw(SQLerror);
+// void changeMenge(int stueck,mengen_t menge) throw(SQLerror); 
+ void changeStatus(AufStatVal new_status, 
  		bool ein_auftrag, int _stk, mengen_t _mng) throw(SQLerror);
- void changeStatus(AufStatVal new_status,const Lieferschein &ls, 
+ void changeStatus(AufStatVal new_status, 
  		bool ein_auftrag) throw(SQLerror); 		
  static void deleteEntry(LieferscheinEntry &lse) throw(SQLerror);
+
+ Kunde::ID KdID() const throw(SQLerror);
 
  // bitte getZusatzInfos() nehmen, es könnten mehrere sein
 #if 0 
@@ -107,6 +111,7 @@ public:
  __deprecated AufEintragBase getAufEintragBase() const {return VZusatz.at(0).aeb; }
  __deprecated bool ZusatzInfo() const { return true; }
 #endif 
+ 
 private:
  static void deleteMe(const LieferscheinEntry &lse) throw(SQLerror);
  void deleteZusatzEntry(const AufEintragBase &Z) throw(SQLerror);

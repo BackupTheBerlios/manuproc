@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.61 2004/02/16 19:49:10 jacek Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.62 2004/02/17 17:55:27 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -74,12 +74,12 @@ void LieferscheinEntry::showZusatzInfos() const
 
 #warning Diese Funktion ist IMHO unsinnig
 void LieferscheinEntry::changeStatus(AufStatVal new_status, 
-		const Lieferschein &ls, bool ein_auftrag) throw(SQLerror)
+				bool ein_auftrag) throw(SQLerror)
 { 
  if((status==OPEN || status==CLOSED) && new_status==STORNO)
-   changeStatus(new_status,ls,ein_auftrag,0,0);
+   changeStatus(new_status,ein_auftrag,0,0);
  else
-   changeStatus(new_status,ls,ein_auftrag,stueck,menge);
+   changeStatus(new_status,ein_auftrag,stueck,menge);
 }
 
 namespace { struct stornoliste
@@ -91,7 +91,7 @@ namespace { struct stornoliste
 }; }
 
 void LieferscheinEntry::changeStatus(AufStatVal new_status, 
-		const Lieferschein &ls, bool ein_auftrag,
+		bool ein_auftrag,
 		int _stueck, mengen_t _menge) throw(SQLerror)
 { ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
 	NV("new_status",new_status),
@@ -134,7 +134,7 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
         // was ist mit 0ern im Einkauf, diese werden auch bei Überproduktion nicht
         // direkt erledigt - allerdings beim Einlagern ??? CP
         SQLFullAuftragSelector psel(SQLFullAuftragSelector::sel_Artikel_Planung_id
-        			(instanz->Id(),ls.getKunde()->Id(),artikel,AuftragBase::handplan_auftrag_id));
+        			(instanz->Id(),KdID(),artikel,AuftragBase::handplan_auftrag_id));
         SelectedFullAufList auftraglist(psel);
 
 
@@ -187,24 +187,20 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
        }
      }
 
-//  if(new_status==STORNO)
-//    updateLieferscheinMenge(0,0);
 
   } 
   // END OF   
   // if(new_status==OPEN || ((status==OPEN || status==CLOSED) && new_status==STORNO))
 
 
-#ifdef MABELLA_EXTENSIONS // doch LiefZeile löschen wenn storno
- if(new_status==STORNO)
+if(new_status==STORNO)
    {Query("delete from lieferscheinentry  where "
 	"(lfrsid,instanz,zeile)=(?,?,?)")
 	<< Id() << Instanz()->Id() << Zeile();
    }
  else
-#endif
   {
- Query("update lieferscheinentry set status=? where "
+   Query("update lieferscheinentry set status=? where "
 	"(lfrsid,instanz,zeile)=(?,?,?)")
 	<< Query::NullIf(new_status,(AufStatVal)NOSTAT)
 	<< Id() << Instanz()->Id() << Zeile();
@@ -214,17 +210,8 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
 }
 
 
-void LieferscheinEntry::changeMenge(int _stueck, mengen_t _menge) throw(SQLerror)
-{ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
-	NV("stueck",_stueck),NV("menge",_menge));
-#warning ganz schlechte Idee ... entweder wir brauchen das gleiche Lieferscheinobjekt oder gar keins ...
- std::cerr << __FUNCTION__ << ": I believe this function to be buggy, CP\n";
- changeMenge(_stueck,_menge,*cH_Lieferschein(Instanz(),Id()),false);
-}
-
-
 void LieferscheinEntry::changeMenge(int _stueck, mengen_t _menge,
-		const Lieferschein &ls, bool ein_auftrag) throw(SQLerror)
+				bool ein_auftrag) throw(SQLerror)
 { ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
 	NV("stueck",_stueck),NV("menge",_menge),NV("ein_auftrag",ein_auftrag));
   if(_stueck==Stueck() && _menge==Menge()) return ; //nichts geändert
@@ -234,7 +221,7 @@ void LieferscheinEntry::changeMenge(int _stueck, mengen_t _menge,
   Transaction tr;
   Query::Execute("lock table lieferscheinentry in exclusive mode");
 
-  if(status==OPEN) changeStatus((AufStatVal)OPEN,ls,ein_auftrag,_stueck,_menge);
+  if(status==OPEN) changeStatus((AufStatVal)OPEN,ein_auftrag,_stueck,_menge);
   updateLieferscheinMenge(_stueck,_menge);
 
   tr.commit();
@@ -323,7 +310,7 @@ FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry& z)
 }
 
 LieferscheinEntry::LieferscheinEntry(const LieferscheinEntryBase &lsbase)
- throw(SQLerror) : LieferscheinEntryBase(lsbase) 
+ throw(SQLerror) : LieferscheinEntryBase(lsbase), kid(Kunde::none_id) 
 {
   (Query("select lfrsid, zeile,artikelid, stueck, "
 	  " menge, palette, zusatzinfo, instanz, refauftragid, refzeilennr,"
@@ -387,10 +374,23 @@ LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
 
 void LieferscheinEntry::deleteEntry(LieferscheinEntry &lse) throw(SQLerror)
 {
-#warning ganz schlechte Idee ... entweder wir brauchen das gleiche Lieferscheinobjekt oder gar keins ...
- lse.changeMenge(0,0,*cH_Lieferschein(lse.Instanz(),lse.Id()),false);
+ lse.changeMenge(0,0,false);
  deleteMe(lse);
 }
+
+
+Kunde::ID LieferscheinEntry::KdID() const throw(SQLerror)
+{
+ if(kid!=Kunde::none_id) return kid;
+
+ Query("select kundennr from lieferschein where (lfrsid,instanz)=(?,?)")
+	<< Id() 
+	<< Instanz()->Id()
+	>> kid;
+
+ return kid;
+}
+
 
 
 //============================ Zusatzinfos =================================
