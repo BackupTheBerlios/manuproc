@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.36 2003/06/20 17:34:23 jacek Exp $
+// $Id: Kunde.cc,v 1.37 2003/06/20 18:14:10 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -224,31 +224,6 @@ void Kunde::pullFromGrp(const Kundengruppe::ID gid)
 }
 
 
-/*******************
-* use isInGrp instead of all these methodes below
-***
-bool Kunde::isLieferadresse() const 
-{
-#ifdef MANUPROC_DYNAMICENUMS_CREATED
- std::vector<cH_Kundengruppe>::const_iterator f;
- 
- if(gruppen.empty())
-   return (std::find(gruppen.begin(),gruppen.end(),
-   		KundengruppeID::Lieferadresse)!=
-   		gruppen.end());
-  
- load_Gruppen();
-   
- return (std::find(gruppen.begin(),gruppen.end(),
- 		KundengruppeID::Lieferadresse)!=
-   		gruppen.end());
-#else
- return false;
-#endif
-}
-
-
-
 void Kunde::isLieferadresse(bool is) 
 {
 #ifdef MANUPROC_DYNAMICENUMS_CREATED
@@ -281,7 +256,7 @@ void Kunde::isAuftragsadresse(bool is)
 }
 
 
-up to here ******+*/
+
 
 void Kunde::load_Gruppen() const throw(SQLerror)
 {

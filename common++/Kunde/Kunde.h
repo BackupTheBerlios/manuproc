@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.52 2003/06/18 10:17:57 jacek Exp $
+// $Id: Kunde.h,v 1.53 2003/06/20 18:14:10 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -262,7 +262,7 @@ public:
            B_Postanwvor,B_Strasse,B_Postanwnach,B_Hsnr,B_Plz,B_Postfach,
            B_Postfachplz,B_Ort,B_Lkz,B_Lieferadresse,B_Rechnungadresse,
            B_Auftragadresse,
-           B_Rng_an_postfach,B_MaxAnzA,B_BrAnrede};
+           B_Rng_an_postfach,B_BrAnrede,B_MaxAnzA};
         enum B_UPDATE_BITS_FIRMA{B_Planumsatz,B_Umsatz,B_Mitarbeiter,
            B_Kundenumsatz,B_Flaeche,B_UnsereKundenNr,B_Verein,B_MaxAnzF};
         enum B_UPDATE_BITS_BANK{B_Ktonr,B_Blz,B_Bankindex,
@@ -273,8 +273,8 @@ public:
            B_Preisliste,B_Notiz,B_Entsorgung,B_Verknr,B_Kalkulation,
            B_Stand,B_KP_Position,B_KP_Notiz,
            B_AnzAusFirmenPapier,B_AnzAusWeissesPapier,
-           B_lieferung_frei_haus,B_Betreuer,B_MaxAnzS,
-           B_GebDatum};
+           B_lieferung_frei_haus,B_Betreuer,
+           B_GebDatum,B_MaxAnzS};
  public: 
          enum UpdateBitsAdresse {FName2=1<<B_Name2,
            FSortname=1<<B_Sortname,FIdnr=1<<B_Idnr,FFirma=1<<B_Firma,

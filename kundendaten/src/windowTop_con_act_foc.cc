@@ -48,7 +48,8 @@ void windowTop::changedFktA(Kunde::UpdateBitsAdresse e)
      else std::cerr<< "Falsche Funktion konektiert\n";
 
   if(e==Kunde::FLieferadresse || e==Kunde::FRechnungadresse || 
-     e==Kunde::FRng_an_postfach || e==Kunde::FLkz)
+     e==Kunde::FRng_an_postfach || e==Kunde::FLkz ||
+	e==Kunde::FBranr)
     saveAll();
 }
 
