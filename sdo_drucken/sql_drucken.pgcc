@@ -1,0 +1,72 @@
+/*  pps: ManuProC's ProductionPlanningSystem
+ *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+/*
+#include "drucken.hh"
+#include <Gtk2TeX.h>
+#include <Aux/Transaction.h>
+#include <Aux/SQLerror.h>
+exec sql include sqlca;
+
+std::string LR_drucken::get_Zahlungsziel(int z)
+{
+ exec sql begin declare section;
+   int ID=z;
+   char B[100];
+ exec sql end declare section;
+ exec sql select coalesce(bezeichnung,kurzbezeichnung) into :B
+   from rechnung_zahlungsziel where id=:ID;
+ SQLerror::test(__FILELINE__);
+ return B;
+}
+*/
+
+/*
+unsigned int LR_drucken::sql_kundennr(const std::string& RL,unsigned int auftragsnr)
+{
+  exec sql begin declare section;
+   unsigned int db_kundennr;
+   char db_query[1024];
+  exec sql end declare section;
+  std::string query;
+  std::string RL_table,idhead;
+
+  if (RL=="Lieferschein") 
+    { RL_table = "lieferschein";
+      idhead = "lfrsid";
+    }
+  if (RL=="Rechnung") 
+    { RL_table = "rechnung";
+      idhead = "rngid";
+    }
+
+  query= "select kundennr from " + RL_table 
+        + " where "+ idhead +"= '"+ itos(auftragsnr)+"'" ;
+  strncpy(db_query,query.c_str(),sizeof(db_query));
+
+  Transaction tr;
+  exec sql prepare ein_ from :db_query;
+  exec sql declare ein cursor for ein_;
+  exec sql open ein;
+  exec sql fetch ein into :db_kundennr;
+  SQLerror::test(__FILELINE__);
+  exec sql close ein;
+  tr.close();
+  return db_kundennr;
+}
+*/

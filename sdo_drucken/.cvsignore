@@ -1,0 +1,6 @@
+Makefile.in
+Makefile
+.deps
+.libs
+auftrag_drucken
+sql_drucken.cc
