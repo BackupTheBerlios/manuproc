@@ -1,4 +1,4 @@
-// $Id: DataBase_init.cc,v 1.15 2003/07/08 07:14:05 christof Exp $
+// $Id: DataBase_init.cc,v 1.16 2003/07/08 07:17:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -32,20 +32,17 @@
 DataBase_init::DataBase_init() 
 {
 #ifdef PETIG_TEST
-//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
    ArtikelBaum_anlegen();
    RohwarenLager_initalisieren();
    JumboLager_initalisieren();
 #elif defined MANU_PROC_TEST 
    Lager L(ROHWARENLAGER); 
-   L.rein_ins_lager(1,200,getuid(),false); // Metall
-   L.rein_ins_lager(2,50,getuid(),false); // Granulat klar
-   L.rein_ins_lager(3,100,getuid(),false); // Granulat gelb
+   L.rein_ins_lager(ArtikelBase(1),200,getuid(),false); // Metall
+   L.rein_ins_lager(ArtikelBase(2),50,getuid(),false); // Granulat klar
+   L.rein_ins_lager(ArtikelBase(3),100,getuid(),false); // Granulat gelb
 #elif defined MABELLA_TEST
    Lager L(FERTIGWARENLAGER); 
-//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
    L.rein_ins_lager(ARTIKEL_TRIO,4,getuid(),false); 
-//exit(1);
 #endif
 }
 
@@ -67,18 +64,11 @@ void DataBase_init::ArtikelBaum_anlegen_execute(const ArtikelBase &art,
          const cH_Prozess &prozess,const ArtikelBase& art_von,  
          const ArtikelBaum::faktor_t& faktor)
 {
-  std::string s1="delete from artikelzusammensetzung where id="
-                +itos(art.Id())+" and altartikelid="+itos(art_von.Id());
-  Query::Execute(s1);
-  SQLerror::test(__FILELINE__,100);
-
-  std::string s2="insert into artikelzusammensetzung (id,prozessid,altartikelid";
-  if(faktor!=ArtikelBaum::faktor_t(0)) s2 +=",menge";
-  s2 +=") values ("+itos(art.Id())+","+itos(prozess->Id())+","+itos(art_von.Id());
-  if(faktor!=ArtikelBaum::faktor_t(0)) s2 +=","+faktor.String();
-  s2+=")"; 
-  Query::Execute(s2);
-  SQLerror::test(__FILELINE__);
+  Query("delete from artikelzusammensetzung where id=? and altartikelid=?")
+  	<< art.Id() << art_von.Id();
+  Query("insert into artikelzusammensetzung (id,prozessid,altartikelid,menge) "
+  	"values (?,?,?,?)")
+  	<< art.Id() << prozess->Id() << art_von.Id() << Query::NullIf(faktor);
 }
 
 void DataBase_init::RohwarenLager_initalisieren()
