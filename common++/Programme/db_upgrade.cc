@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.38 2005/02/23 09:34:12 jacek Exp $
+// $Id: db_upgrade.cc,v 1.39 2005/03/10 16:44:38 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -253,6 +253,13 @@ int main(int argc,char *argv[])
 
   // Einheiten
   check_column("einheiten","textid","integer");
+  
+  // abhängige Preislisten
+#ifdef MABELLA_EXTENSIONS  
+  check_column("ku_preisliste","pl_parent","integer");
+  check_column("ku_preisliste","fkt_parent","integer");
+  check_column("ku_preisliste","add_parent","integer");
+#endif
 
   ManuProC::dbdisconnect();
   return 0;
