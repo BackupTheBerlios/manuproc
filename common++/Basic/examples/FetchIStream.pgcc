@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.22 2003/03/24 09:47:37 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.23 2003/03/24 10:36:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -41,7 +41,7 @@ int main()
    int ind3=0;
    
    query >> s >> s2 >> FetchIStream::WithIndicator(s3,ind3)
-      >> FetchIStream::MapNull<std::string>(s4,"<NULL>")
+      >> FetchIStream::MapNull(s4,"<NULL>")
       >> i >> f >> b;
    std::cout << s << ", " << s2 << ", " << ind3 << ", " << s4 << '\n';
    std::cout << i << ", " << f << ", " << b << '\n';

@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.24 2003/03/24 09:47:37 christof Exp $
+// $Id: FetchIStream.h,v 1.25 2003/03/24 10:36:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -44,7 +44,7 @@ class FetchIStream
 		
 		friend class FetchIStream;
 	 public:
-	 	MapNull_s(T &v,const T &nv)
+	 	template <class U> MapNull_s(T &v,const U &nv)
 	 	 : var(v), nullval(nv) {}
 	};
 	template <class T>
@@ -86,7 +86,7 @@ public:
 	   return *this;
 	}
 
-	template <class T> static MapNull_s<T> MapNull(T &v,const T&nv)
+	template <class T,class U> static MapNull_s<T> MapNull(T &v,const U&nv)
 	{ return MapNull_s<T>(v,nv); }
 	template <class T>
 	 FetchIStream &operator>>(const MapNull_s<T> &mn)
@@ -131,7 +131,7 @@ class Query
 	{	T data;
 		bool null;
 		
-		NullIf_s(const T &a,const T &b) : data(a), null(a==b) {}
+		template <class U> NullIf_s(const T &a,const U &b) : data(a), null(a==b) {}
 	};
 public:
 	Query(const std::string &command);
@@ -169,7 +169,7 @@ public:
 	Query &operator<<(null n)
 	{  add_argument("null"); return *this; }
 	
-	template <class T> static NullIf_s<T> NullIf(const T &a,const T &b)
+	template <class T,class U> static NullIf_s<T> NullIf(const T &a,const U &b)
 	{  return NullIf_s<T>(a,b); }
 	template <class T>
 	 Query &operator<<(const NullIf_s<T> &n)
