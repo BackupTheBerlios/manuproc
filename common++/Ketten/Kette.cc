@@ -1,4 +1,4 @@
-// $Id: Kette.cc,v 1.9 2003/01/08 09:46:57 christof Exp $
+// $Id: Kette.cc,v 1.11 2003/05/19 09:09:08 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,9 +20,9 @@
 
 #include <Ketten/Kette.h>
 #include <Misc/string0.h>
-#include <strstream.h>
 #include <iomanip.h>
 #include <stdio.h> // snprintf0
+#include <Misc/mystream.h>
 
 bool Kette::Valid() const
 {
@@ -34,11 +34,9 @@ bool Kette::Valid() const
 
 
 std::string Kette::barco_format() const throw()
-{  std::ostrstream o;
-   o << setw(3) << setfill('0') << maschine << "/" << setw(2) << schaerdatum << char(0);
-   std::string ret((const char*)o.str());
-   o.freeze(0);
-   return ret;
+{  mystream o;
+   o << setw(3) << setfill('0') << maschine << "/" << setw(2) << schaerdatum;
+   return o.str();
 }
 
 void Kette::write(int &a, char*rdat, unsigned int sz) const throw()
