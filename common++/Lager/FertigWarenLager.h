@@ -1,4 +1,4 @@
-// $Id: FertigWarenLager.h,v 1.15 2004/01/13 22:11:36 jacek Exp $
+// $Id: FertigWarenLager.h,v 1.16 2004/01/14 20:10:06 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -35,19 +35,17 @@ private:
    int lagerid;
    std::string bezeichnung;
    std::string tabelle;   
+   std::string view_tabelle;      
    
    void initLager() 
    {
-    Query("select bezeichnung,tabelle from lager"
+    Query("select bezeichnung,tabelle,bestand_view from lager"
        	    " where lagerid=?") << lagerid 
-       		>> bezeichnung >> tabelle;
+       		>> bezeichnung >> tabelle >> view_tabelle;
    }
    
-   
+
 public:
-
-
-
 
 #if defined MABELLA_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
     static const unsigned int default_lagerid=1;
@@ -69,6 +67,7 @@ public:
   int Id() const { return lagerid; }
   const std::string Bezeichnung() const { return bezeichnung; }
   const std::string Tabelle() const { return tabelle; } 
+  const std::string ViewTabelle() const { return view_tabelle; }   
      
 #else
       FertigWarenLager(const FertigWaren _fw) :

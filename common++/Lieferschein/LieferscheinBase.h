@@ -1,4 +1,4 @@
-/* $Id: LieferscheinBase.h,v 1.13 2003/12/12 14:59:07 christof Exp $ */
+/* $Id: LieferscheinBase.h,v 1.14 2004/01/14 20:10:06 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -31,6 +31,7 @@ class LieferscheinBase
    cH_ppsInstanz instanz;
   	int lieferid;	
 	static const int _illegal=-1;
+	
 public:	
 	static const UniqueValue::value_t trace_channel;
 
@@ -38,13 +39,16 @@ public:
 	typedef int ID;
 	static const ID none_id=_illegal;
 	
-	LieferscheinBase() : instanz(ppsInstanzID::None), lieferid(none_id) {}
+	LieferscheinBase() : instanz(ppsInstanzID::None), lieferid(none_id),
+				lagerid(0) {}
 	LieferscheinBase(const cH_ppsInstanz& _instanz,int lid) 
-	     : instanz(_instanz), lieferid(lid) {}
+	     : instanz(_instanz), lieferid(lid), lagerid(0) {}
 
 	ID Id() const {return lieferid;}
    cH_ppsInstanz Instanz() const {return instanz; }
    bool valid() const { return Id()!=none_id; }
+   
+   int lagerid; // Lager aus dem die Lieferung abgebucht werden soll.
 };
 
 #endif

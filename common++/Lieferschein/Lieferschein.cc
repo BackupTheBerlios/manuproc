@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.38 2003/12/12 14:59:07 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.39 2004/01/14 20:10:06 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -56,6 +56,7 @@ int Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
    Transaction tr;
    LieferscheinEntry LE=LieferscheinEntry::create(*this, artikel,0,0,palette);
    // damit der Code nicht 2x erscheint
+   LE.lagerid=lagerid;
    LE.changeMenge(anzahl,mengeneinheit,*this,
 #ifdef MABELLA_EXTENSIONS // auf keinen Fall nach offenen Aufträgen suchen
 						true
@@ -78,6 +79,7 @@ int Lieferschein::push_back(AufEintrag &aufeintrag,
            NV("Anzahl",anzahl),NV("Menge",menge),NV("Palette",palette));                     
  Transaction tr;          
  LieferscheinEntry LE=LieferscheinEntry::create(*this, aufeintrag ,artikel, 0,0,palette);
+ LE.lagerid=lagerid;
  LE.changeMenge(anzahl,menge,*this,true);
  tr.commit();
  return LE.ZNr();

@@ -1,4 +1,4 @@
-/* $Id: DefaultValues.h,v 1.14 2003/10/31 11:42:07 jacek Exp $ */
+/* $Id: DefaultValues.h,v 1.15 2004/01/14 20:10:06 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -84,6 +84,7 @@ namespace DefaultValues {
 #ifdef MABELLA_EXTENSIONS
    #define DPD_LIEFERSCHEINE
    #define EAN_AUSDRUCKEN_IN_PPS
+   #define MULTI_LAGER
 #endif
 #ifdef PETIG_EXTENSIONS
    #define KEIN_PREIS_IM_EXTERNEN_AUFTRAG

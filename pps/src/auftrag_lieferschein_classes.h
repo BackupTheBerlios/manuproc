@@ -26,6 +26,7 @@ class Data_Lieferdaten : public RowDataBase
       std::string zeile;
       AufEintragBase AEB;
       std::string smenge;
+      std::string lagerbez;
 //      int palette;
 //      std::string artikel;
       std::string FormatiereMenge(ArtikelBase artikel, int stueck, LieferscheinBase::mengen_t menge);
@@ -44,7 +45,8 @@ class Data_Lieferdaten : public RowDataBase
          smenge="("+FormatiereMenge(liefentry.Artikel(),1,m)+")";
        }
 
-   enum SeqNr {LIEFZEILE_SEQ,ARTIKEL_SEQ,AUFNR_SEQ,PALETTE_SEQ,LIEFMNG_SEQ};
+   enum SeqNr {LIEFZEILE_SEQ,ARTIKEL_SEQ,AUFNR_SEQ,PALETTE_SEQ,
+   		LIEFMNG_SEQ,VOMLAGER_SEQ};
 
    virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
     {
@@ -62,6 +64,7 @@ class Data_Lieferdaten : public RowDataBase
       		:cH_EntryValueEmptyInt(liefentry.Palette());
       case LIEFMNG_SEQ :   return cH_EntryValueIntString(smenge);
       case LIEFZEILE_SEQ : return cH_EntryValueIntString(zeile);
+      case VOMLAGER_SEQ : return cH_EntryValueIntString(liefentry.lagerid);
       default : return cH_EntryValue();
      }
    }
@@ -96,7 +99,8 @@ class Data_Lieferoffen : public RowDataBase
   public:
    Data_Lieferoffen(const AufEintrag& ae,const auftrag_main* am) 
       : AE(ae),AM(am) {}
-   enum SeqNr {AUFNR_SEQ=0,ARTIKEL_SEQ,LIEFDAT_SEQ,OFFMNG_SEQ,GELIEF_SEQ,};
+   enum SeqNr {AUFNR_SEQ=0,ARTIKEL_SEQ,LIEFDAT_SEQ,OFFMNG_SEQ,
+   		GELIEF_SEQ,IMLAGER_SEQ};
    virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
     {
        switch(seqnr)
@@ -117,6 +121,8 @@ class Data_Lieferoffen : public RowDataBase
             return cH_EntryValueIntString(AE.getRestStk().as_int());
          case GELIEF_SEQ :
             return cH_EntryValueIntString(AE.getGeliefert().as_int());
+         case IMLAGER_SEQ : 
+            return cH_EntryValueIntString(AE.getAmLager().as_int());
          default : return cH_EntryValueIntString();
         }
     }

@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.30 2003/11/12 13:04:05 jacek Exp $
+// $Id: sqlAuftragSelector.cc,v 1.31 2004/01/14 20:10:06 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,7 +27,7 @@
 
 
 
-#define FULL_SELECTIONS "a.instanz, a.auftragid, e.zeilennr, bestellt, " \
+#define FULL_SELECTIONS_BASE "a.instanz, a.auftragid, e.zeilennr, bestellt, " \
 	"e.artikelid, " \
 	"e.lieferdate, geliefert, " \
 	"a.stat, " \
@@ -42,6 +42,8 @@
 	"e.letzte_lieferung," \
 	"coalesce(e.preisliste,"+itos(ManuProcEntity<>::none_id)+"), " \
 	"e.provsatz "
+
+#define FULL_SELECTIONS FULL_SELECTIONS_BASE",0" 
 
 #define FULL_FROM "(auftrag a join auftragentry e using (instanz,auftragid))" \
 	" left join auftrag_prozess p" \
@@ -241,3 +243,24 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Kunde_Status &selstr)
 	     " and a.kundennr=" + itos(selstr.kundennr) +
 	     " order by e.lieferdate");
 }
+
+
+SQLFullAuftragSelector::SQLFullAuftragSelector(
+			const sel_Kunde_Status_Lager &selstr)
+{
+ std::string query("select ");
+ query+= FULL_SELECTIONS_BASE+",best.bestand "+
+	" from "+FULL_FROM+" left join "+
+	selstr.lager.ViewTabelle()+" best "
+	" using (artikelid) where true "
+        " and bestellt!=0 "
+	     " and "+StatusQualifier(selstr.stat)+
+	     " and a.instanz="+itos(selstr.instanz) +
+	     " and a.kundennr=" + itos(selstr.kundennr) +
+	     " order by e.lieferdate";
+
+ setClausel(query);
+}
+
+
+

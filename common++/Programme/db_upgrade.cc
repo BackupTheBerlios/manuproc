@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.24 2003/12/10 10:10:58 jacek Exp $
+// $Id: db_upgrade.cc,v 1.25 2004/01/14 20:10:06 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -118,6 +118,8 @@ int main(int argc,char *argv[])
 
   // Verkaeufer in Lieferschein
   check_column("lieferschein","verknr","numeric(5)");
+  // Lagerid in Lieferscheinentry
+  check_column("lieferscheinentry","lagerid","integer");
   
   // Verkäuferspezifische Daten
 	// es gibt noch die alte Spalte verknr mit anderem Nummernkreis,

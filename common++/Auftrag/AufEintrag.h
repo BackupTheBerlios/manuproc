@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.79 2003/12/10 08:30:54 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.80 2004/01/14 20:10:06 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -94,6 +94,7 @@ class AufEintrag : public AufEintragBase
 private: 
  mengen_t bestellt;
  mengen_t geliefert;
+ mengen_t am_lager;
  ArtikelBase artikel;
 
  AufStatVal entrystatus; /* Status des zugehörigen Eintrags */
@@ -137,7 +138,7 @@ public:
    };
 
  AufEintrag() 
-   : bestellt(), geliefert(), artikel(), entrystatus((AufStatVal)UNCOMMITED),
+   : bestellt(), geliefert(), am_lager(), artikel(), entrystatus((AufStatVal)UNCOMMITED),
    	letztePlanInstanz(ppsInstanzID::None),maxPlanInstanz(), rabatt(),
    	provsatz(-1),kdnr(), disponr(), auftragstatus((AufStatVal)UNCOMMITED),
    	dispoentrynr(),prozess(Prozess::default_id)
@@ -198,6 +199,7 @@ public:
  mengen_t getStueck() const { return bestellt;}
  mengen_t getRestStk() const; // Statusabhängig ...
  mengen_t getGeliefert() const { return geliefert;}
+ mengen_t getAmLager() const { return am_lager; }
  AufStatVal getAufStatus() const { return auftragstatus; }
  int getZnr() const { return zeilennr;}
  int getAuftragid() const {return auftragid;}

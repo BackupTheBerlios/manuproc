@@ -58,7 +58,7 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
  MyWindow::setPositionSize(*this,"pps");
  set_title("Auftragserfassung: "+instanz->get_Name());
  liefdatum_datewin->set_tab_pos(GTK_POS_TOP);
- aufeintrag_box->hide(); // beinhaltet beide oben
+// aufeintrag_box->hide(); // beinhaltet beide oben
  
 #ifdef PETIG_EXTENSIONS
  table_preislisten->hide();

@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.36 2003/07/03 08:20:40 christof Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.37 2004/01/14 20:10:06 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,70 +22,46 @@
 exec sql include sqlca;
 #include <Misc/TraceNV.h>
 #include <Aux/FetchIStream.h>
+#include <Lager/FertigWarenLager.h>
 
 Lieferschein::Lieferschein(const cH_ppsInstanz& _instanz,int lid) throw(SQLerror)
 : LieferscheinBase(_instanz,lid),kunde(Kunde::default_id), notiz_valid(false)
 {
 ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,_instanz,NV("LieferscheinId",lid)); 
-try{
- exec sql begin declare section;
-  int INSTANZ=Instanz()->Id();
-  int LFRSID=Id();
-  int KDNR;
-  int RNGID;
-  char DATUM[11];
-  char GELIEFERTAM[21];
-  int IGELIEFERTAM;
-  int INVALID_ENTITY;
- exec sql end declare section;
- INVALID_ENTITY=ManuProcEntity<>::none_id;
-#ifdef DPD_LIEFERSCHEINE
- exec sql begin declare section;
-  int DPDLIEFNR;
-  int PAECKCHEN, PAKETE;
-  double NETTO_KG,BRUTTO_KG;
-  int VERKNR;
-  int NONEID;
- exec sql end declare section;
 
- NONEID=Kunde::none_id;
-#endif
+ int KDNR;
+
+ std::string query="select kundennr, date(datum), "
+		   " rngid, date(coalesce(geliefertam,datum)) ";
 
 #ifdef DPD_LIEFERSCHEINE
- exec sql select kundennr, date(datum), coalesce(rngid,:INVALID_ENTITY),
-		coalesce(paeckchen,0),
-		coalesce(pakete,0),date(coalesce(geliefertam,datum)),
-		coalesce(dpdliefnr,:INVALID_ENTITY),
-      coalesce(brutto_kg,0), coalesce(netto_kg,0), 
-	coalesce(verknr,:NONEID)
-		into :KDNR, :DATUM, :RNGID, :PAECKCHEN, :PAKETE,
-		:GELIEFERTAM:IGELIEFERTAM, :DPDLIEFNR,
-      :BRUTTO_KG, :NETTO_KG, :VERKNR
- 	from lieferschein where (instanz,lfrsid) = (:INSTANZ,:LFRSID);
-#else
- exec sql select kundennr, date(datum), coalesce(rngid,:INVALID_ENTITY),
-		date(coalesce(geliefertam,datum))
-		into :KDNR, :DATUM, :RNGID, :GELIEFERTAM:IGELIEFERTAM
- 	from lieferschein where (instanz,lfrsid) = (:INSTANZ,:LFRSID);
+ query += ",paeckchen,pakete,dpdliefnr,brutto_kg,netto_kg,verknr ";
 #endif
+
+ query+=" from lieferschein where (instanz,lfrsid) = (?,?)";
+
+ Query q(query);
+
+ q << Instanz()->Id() << Id();
  SQLerror::test(__FILELINE__);
- 
- kunde=cH_Kunde(KDNR);
- rngid=RNGID;
 
- lsdatum.from_postgres(DATUM);	
- if(IGELIEFERTAM) geliefertam.from_postgres(DATUM) ;  //ManuProC::Datum();		 
- else geliefertam.from_postgres(GELIEFERTAM);		 
+ FetchIStream fi=q.Fetch();
+
+ fi >> KDNR
+    >> lsdatum 
+    >> FetchIStream::MapNull(rngid,ManuProcEntity<>::none_id) 
+    >> geliefertam
 #ifdef DPD_LIEFERSCHEINE
- dpdliefnr=DPDLIEFNR;
- paeckchen=PAECKCHEN;
- pakete=PAKETE;
- brutto_kg=BRUTTO_KG;
- netto_kg=NETTO_KG;
- verknr=VERKNR;
+    >> FetchIStream::MapNull(paeckchen,0) 
+    >> FetchIStream::MapNull(pakete,0) 
+    >> FetchIStream::MapNull(dpdliefnr,ManuProcEntity<>::none_id)
+    >> FetchIStream::MapNull(brutto_kg,0)
+    >> FetchIStream::MapNull(netto_kg,0)
+    >> FetchIStream::MapNull(verknr,Kunde::none_id)
 #endif
+    ;
 
- }catch (SQLerror &e) {std::cerr <<e<<'\n';}
+ kunde=cH_Kunde(KDNR);
 }
 
 Lieferschein::Lieferschein(const cH_ppsInstanz& _instanz,cH_Kunde k,int jahr) throw(SQLerror)

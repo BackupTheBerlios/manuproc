@@ -23,8 +23,6 @@
 std::pair<Zeitpunkt_new,int> FertigWarenLager::letzteInventur()
 {
  
-
- 
  Query q("select fw.datum, fw.bestand from "+tabelle+" fw where fw.datum="
 	" (select max(lb.datum) from "+tabelle+" lb where lb.aktion=?"
 	"  and lb.artikelid=fw.artikelid) and fw.artikelid=?");

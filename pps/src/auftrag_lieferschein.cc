@@ -307,7 +307,7 @@ void auftrag_lieferschein::fill_with(const AufEintrag& AE,const Einheit& E,
          int stueck,double menge)
 {
   artikelbox->set_value(AE.Artikel());
-  auftragnr->set_text(Formatiere((unsigned long)AE.Id()));
+  auftragnr->set_text(itos(AE.Id()));
   anzahl->set_value(stueck);
   menge_einheit->set_text(E.StueckEinheit());
   if (E.hatMenge())
@@ -361,8 +361,8 @@ auftrag_lieferschein::auftrag_lieferschein(cH_ppsInstanz _instanz)
  liefernr->set_value_in_list(false,false);
  liefernr->set_always_fill(false);
 
- tree_daten->hide();
- vbox_eingabe->hide();
+// tree_daten->hide();
+// vbox_eingabe->hide();
  liefdate->setLabel("");
 }
 
@@ -374,7 +374,11 @@ void auftrag_lieferschein::set_tree_titles()
  t1.push_back("Auftrag");
  t1.push_back("Palette");
  t1.push_back("Liefermenge");
+ t1.push_back("vom Lager");
  tree_daten->setTitles(t1); 
+
+ tree_daten->set_column_justification(
+		Data_Lieferdaten::VOMLAGER_SEQ, GTK_JUSTIFY_RIGHT);
 
  std::vector<std::string> t2;
  t2.push_back("Auftrag");
@@ -382,7 +386,11 @@ void auftrag_lieferschein::set_tree_titles()
  t2.push_back("Lieferdatum");
  t2.push_back("offen");
  t2.push_back("geliefert");
+ t2.push_back("im Lager");
  tree_offen->setTitles(t2); 
+
+ tree_offen->set_column_justification(
+		Data_Lieferoffen::IMLAGER_SEQ, GTK_JUSTIFY_RIGHT);
 
  set_title("Lieferschein: "+instanz->get_Name());
 
@@ -455,6 +463,8 @@ void auftrag_lieferschein::on_Palette_activate()
     meldung->Show("Berechnete Lieferscheine können nicht mehr geändert werden");
     return;
    }
+
+ lieferschein->lagerid=int(lagerwahl->get_menu()->get_active()->get_user_data());
 
   anzahl->update();
   liefermenge->update();
@@ -569,6 +579,8 @@ void auftrag_lieferschein::auftragzeile_zeile_uebernehmen(const AufEintrag &AE)
  
    Einheit e(AE.Artikel());
    AufEintrag ae(AE);
+   lieferschein->lagerid=
+		int(lagerwahl->get_menu()->get_active()->get_user_data());
    lieferschein->push_back(ae,AE.Artikel(), AE.getRestStk().as_int(),
      		e.hatMenge()?liefermenge->get_value_as_float():0.0,
      		Palette->get_value_as_int());
@@ -672,8 +684,16 @@ void auftrag_lieferschein::set_tree_offen_content()
 
  try {
    SQLFullAuftragSelector sel;
+#ifdef MABELLA_EXTENSIONS
+
+sel=SQLFullAuftragSelector(SQLFullAuftragSelector::sel_Kunde_Status_Lager(
+                   instanz->Id(), liefer_kunde->get_value(), 
+			(AufStatVal)OPEN, 
+		int(lagerwahl->get_menu()->get_active()->get_user_data())));
+#else
      sel=SQLFullAuftragSelector(SQLFullAuftragSelector::sel_Kunde_Status(
                    instanz->Id(), liefer_kunde->get_value(), (AufStatVal)OPEN));
+#endif
 
    std::vector<cH_RowDataBase> datavec;
    SelectedFullAufList *offene_auftraege=new SelectedFullAufList(sel);
@@ -768,3 +788,12 @@ void auftrag_lieferschein::on_liefnotiz_save_clicked()
    lieferschein->Notiz(lief_notiz->get_chars(0,lief_notiz->get_length()));
  liefnotiz_save->set_sensitive(false);
 }
+
+
+void auftrag_lieferschein::on_lagerwahl_changed()
+{
+ try{display2(liefer_kunde->get_value());
+ liefernr->reset();
+ } catch(SQLerror &e) {meldung->Show(e);}  
+}
+

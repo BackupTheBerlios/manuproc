@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.43 2003/12/12 14:59:07 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.44 2004/01/14 20:10:06 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -29,9 +29,9 @@
 #include <Misc/TraceNV.h>
 #include <iostream>
 #include <Misc/relops.h>
+#include <Lager/FertigWarenLager.h>
 
 #ifdef MABELLA_EXTENSIONS
-//#include <Lager/FertigWaren.h>
 #include <Artikel/ArtikelBase.h>
 #endif
 
@@ -211,7 +211,8 @@ FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry& z)
  	>> FetchIStream::MapNull(z.stueck)
  	>> FetchIStream::MapNull(z.menge) 
  	>> FetchIStream::MapNull(z.palette)
-     >> FetchIStream::MapNull(zusatzinfo) >> refauftrag ;
+     >> FetchIStream::MapNull(zusatzinfo) >> refauftrag 
+     >> FetchIStream::MapNull(z.lagerid,1);
  z.instanz=refauftrag.Instanz();
  // eliminate the valid Instanz
  if (!refauftrag) refauftrag=AufEintragBase();
@@ -230,7 +231,8 @@ LieferscheinEntry::LieferscheinEntry(const LieferscheinEntryBase &lsbase)
  throw(SQLerror) : LieferscheinEntryBase(lsbase) 
 {
   (Query("select lfrsid, zeile,artikelid, stueck, "
-	  " menge, palette, zusatzinfo, instanz, refauftragid, refzeilennr"
+	  " menge, palette, zusatzinfo, instanz, refauftragid, refzeilennr,"
+	  " lagerid "
 	  " from lieferscheinentry ly "
 	  " where (instanz,lfrsid,zeile) = (?,?,?)")
  	<< *this
@@ -244,6 +246,7 @@ LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
  LieferscheinEntry LE;
  LE.instanz=lsb.Instanz();
  LE.lieferid=lsb.Id();
+ LE.lagerid=lsb.lagerid;
  LE.artikel=art;
  LE.stueck=anzahl;
  LE.menge=_menge;
@@ -262,14 +265,15 @@ LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
 
  Query("insert into lieferscheinentry"
  		"(instanz,lfrsid,zeile, artikelid, refauftragid,refzeilennr, stueck,"
-		"menge,palette,zusatzinfo)"
- 	"values (?,?,?, ?, ?,?, ?,?,?,?)").lvalue()
+		"menge,palette,zusatzinfo,lagerid)"
+ 	"values (?,?,?, ?, ?,?, ?,?,?,?,?)").lvalue()
  	<< LE << art.Id() 
  	<< Query::NullIf(auf.Id(),AufEintragBase::none_id)
  	<< Query::NullIf(auf.ZNr(),AufEintragBase::none_znr)
  	<< LE.Stueck() 
  	<< Query::NullIf(LE.Menge(),0)
- 	<< LE.Palette() << _zusatzinfo;
+ 	<< LE.Palette() << _zusatzinfo
+	<< LE.lagerid;
  SQLerror::test(__FILELINE__":LieferscheinEntry: insert into lieferscheinentry");
  
  tr.commit();
