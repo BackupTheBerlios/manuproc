@@ -86,6 +86,7 @@ void scan_list::init_tables()
      }
         
    tables[artikel].add_cell(breite,farbe,ean);
+   tables[artikel].br_aufmachung[breite]=aufm;
    fi=q.Fetch();
   }
 
@@ -144,7 +145,7 @@ void tex_table::add_cell(const std::string w,
 }
 
 
-tex_table::tex_table(const std::string a, int _cols, const std::string query) : columns(_cols), artnr(a) 
+tex_table::tex_table(const std::string a, int _cols, const std::string query) : columns(_cols), artnr(a)
 {
  Query q("select distinct farbe from artbez_3_1 where "
  	" id in ("+query+") and artikel=? order by farbe");
@@ -168,6 +169,8 @@ void tex_table::begin_table(std::ostream &o,
  for(int c=0; c<columns-1; c++)
    {if(i!=tablecols.end())
       {o << " & \\Large "<<(*i).first<<"mm ";
+       c_to_ean::const_iterator aufit=br_aufmachung.find((*i).first);
+	o << "\\small (" << (*aufit).second << " m)";
        ++i;
       }
     else

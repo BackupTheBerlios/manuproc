@@ -14,9 +14,11 @@ class tex_table
  static int rows_left;
 
  typedef std::map<std::string, std::string> c_to_ean;
- 
+
 	// maps width to map of colors which in turn holds the ean
  std::map<std::string, c_to_ean > tablecols;
+
+
  
  void cell_out(std::ostream &o, const std::string c, const std::string w) const;
  void row_out(std::ostream &o, const std::string c,
@@ -29,6 +31,7 @@ class tex_table
  void new_page(std::ostream &o) const;
 
 public:
+ c_to_ean br_aufmachung; //maps aufmachung to breite
  static void set_rows_on_page(int r) {rows_left=r;}
  void tex_table_out(std::ostream &o) const;
 
