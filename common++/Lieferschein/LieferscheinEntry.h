@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.20 2003/04/13 20:42:17 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.21 2003/07/03 06:47:10 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -47,6 +47,7 @@ public:
 	: LieferscheinBase(inst,ls), zeilennr(znr) {}
 
  int Zeile() const { return zeilennr; }
+ int ZNr() const { return zeilennr; }
 };
 
 class LieferscheinEntry : public LieferscheinEntryBase

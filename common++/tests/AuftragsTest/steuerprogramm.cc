@@ -32,6 +32,7 @@
 #include <fstream>
 #include <sys/stat.h>
 #include <getopt.h>
+#include <Misc/inbetween.h>
 
 #ifdef PETIG_EXTENSIONS
 #include <Lager/RohwarenLager.h>
@@ -46,7 +47,7 @@ enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
       ZweiKundenTest,ZweiKundenMengeFreigebenTest,ManuProCTest,
       JumboLager,Rep_Mabella,Rep_Petig_PhysikalischesLager,
       Rep_Petig_0er_2er_gleichzeitig,Rep_KundenProgramm,Rep_Zuordnungen,
-      Rep_Kunden_Zuordnungen};
+      Rep_Kunden_Zuordnungen, Zusatzinfo};
 
 static std::ostream *testlog;
 // for more output ...
@@ -92,7 +93,7 @@ static int auftragstests(e_mode mode)
    std::cout << "Anlegen eines Auftrags ["<<AEB<<"] beendet\n\n";
 
    // ANLEGEN eines Auftrags mit Bandlager und Rohwarenlager
-   if (mode!=JumboLager)
+   if (!in(mode,JumboLager,Zusatzinfo))
    {
 //ManuProC::Tracer::Enable(AuftragBase::trace_channel);
       AE.setStatus(OPEN,UID);
@@ -100,6 +101,30 @@ static int auftragstests(e_mode mode)
    }
 
    switch(mode) {
+    case Zusatzinfo:
+     {  
+#ifdef PETIG_TEST
+       AE.setStatus(CLOSED,UID);
+        AufEintragBase AEB2=Auftrag(AEB).push_back(4000,DATUM,ARTIKEL_FAERBEREI,OPEN,UID,true);
+        AufEintragBase AEB3=Auftrag(AEB).push_back(4000,DATUM+10,ARTIKEL_FAERBEREI,OPEN,UID,true);
+       vergleichen(C,Check::Lieferschein|Check::Menge,"ZI_Ausgangspunkt","Ausgangspunkt","");
+        
+       Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
+       int lznr=liefs.push_back(ARTIKEL_FAERBEREI,9,1000);
+       vergleichen(C,Check::Lieferschein|Check::Menge,"ZI_Auslieferung","Auslieferung","L");
+       
+       LieferscheinEntryBase lsb(liefs,lznr);
+       LieferscheinEntry(lsb).changeMenge(1,1000);
+       vergleichen(C,Check::Lieferschein|Check::Menge,"ZI_Aenderung","weniger","-");
+
+       LieferscheinEntry(lsb).changeMenge(10,1000);
+       vergleichen(C,Check::Lieferschein|Check::Menge,"ZI_Aenderung2","mehr","+");
+
+       LieferscheinEntry le(lsb);
+       LieferscheinEntry::deleteEntry(le);
+       vergleichen(C,Check::Lieferschein|Check::Menge,"ZI_Storno","Storno","0");
+#endif
+     }
     case ManuProCTest :
      {
       #ifdef MANU_PROC_TEST
@@ -115,7 +140,7 @@ static int auftragstests(e_mode mode)
       // Spezifischen Lieferschein schreiben
       Lieferschein liefs(EINKAUF,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
 //ManuProC::Tracer::Enable(AuftragBase::trace_channel);
-      liefs.push_back(PAE,ARTIKEL_GRANULAT_GRUEN,1,200,0);
+      liefs.push_back(PAE,ARTIKEL_GRANULAT_GRUEN,1,200);
 //unspezifisch   liefs.push_back(ARTIKEL_GRANULAT_GRUEN,1,200,0);
       vergleichen(C,Check::Menge|Check::Lieferschein,"LS_teillieferung","Lieferschein (mit AEB, Granulat) anlegen","L");
       }
@@ -131,7 +156,7 @@ static int auftragstests(e_mode mode)
 
       // Unspezifischen Lieferschein schreiben
       Lieferschein liefs(EINKAUF,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
-      liefs.push_back(ARTIKEL_METALL,1,5,0);
+      liefs.push_back(ARTIKEL_METALL,1,5);
       vergleichen(C,Check::Lieferschein|Check::Menge,"LS_volllieferung","Lieferschein (unbestimmt, Metall) anlegen","L2");
       }
 
@@ -146,7 +171,7 @@ static int auftragstests(e_mode mode)
 
       // Unspezifischen Lieferschein schreiben
       Lieferschein liefs(GIESSEREI,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
-      liefs.push_back(ARTIKEL_GRIFF_ROT,500,0,0);
+      liefs.push_back(ARTIKEL_GRIFF_ROT,500);
       vergleichen(C,Check::Lieferschein|Check::Menge,"LSZ","Lieferschein (Gießerei) anlegen","LG");
       }
 
@@ -161,20 +186,20 @@ static int auftragstests(e_mode mode)
       {// Lieferscheinschreiben für das Schraubenzieherlager => auslagern
       Lieferschein liefs(SCHRAUBENZIEHERLAGER,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
 //ManuProC::Tracer::Enable(AuftragBase::trace_channel);
-      liefs.push_back(ARTIKEL_SCHRAUBENZIEHER_ROT,450,0,0);
+      liefs.push_back(ARTIKEL_SCHRAUBENZIEHER_ROT,450);
       vergleichen(C,Check::Lieferschein|Check::Menge,"LSZM","Lieferschein für das Rohwarenlager (auslagern)","LR");
       }
 
       {// Lieferscheinschreiben für den Kunden
       Lieferschein liefs(KUNDENINSTANZ,cH_Kunde(KUNDE));
 //ManuProC::Tracer::Enable(AuftragBase::trace_channel);
-      liefs.push_back(ARTIKEL_SORTIMENT_BUNT,450,0,0);
+      liefs.push_back(ARTIKEL_SORTIMENT_BUNT,450);
       vergleichen(C,Check::Lieferschein|Check::Menge,"LSZMK","Lieferschein für den Kunden","LK");
       }
 
       {// Lieferscheinschreiben für den Kunden  (Überlieferung)
       Lieferschein liefs(KUNDENINSTANZ,cH_Kunde(KUNDE));
-      liefs.push_back(ARTIKEL_SORTIMENT_BUNT,60,0,0);
+      liefs.push_back(ARTIKEL_SORTIMENT_BUNT,60);
       vergleichen(C,Check::Lieferschein|Check::Menge,"LSZA","Lieferschein für den Kunden (Überlieferung)","LKÜ");
       }
       #endif
@@ -244,7 +269,7 @@ static int auftragstests(e_mode mode)
 
        Lieferschein liefs(ppsInstanzID::_Garn__Einkauf,cH_Kunde(Kunde::eigene_id));
 //ManuProC::Tracer::Enable(AuftragBase::trace_channel);
-       liefs.push_back(ARTIKEL_ACETAT,1,66,0);
+       liefs.push_back(ARTIKEL_ACETAT,1,66);
        vergleichen(C,Check::Menge,"planen_einkauf_lieferschein","Lieferschein mit Teillieferung für Einkauf anlegen","L");
       #endif
      }
@@ -412,7 +437,7 @@ std::cout << dummystring<<'\n';
        {
         Lieferschein liefs(KUNDENINSTANZ,cH_Kunde(KUNDE));
 //ManuProC::Tracer::Enable(AuftragBase::trace_channel);
-        liefs.push_back(ARTIKEL_ROLLEREI,390,1,0);
+        liefs.push_back(ARTIKEL_ROLLEREI,390,1);
         vergleichen(C,Check::Menge,"rep_lieferschein","Reparatur-Lieferschein anlegen","L");
        }
 
@@ -561,7 +586,7 @@ std::cout << "D13: "<<dummystring<<'\n';
      {graphheader("Lieferschein");
 #ifdef PETIG_TEST
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
-       liefs.push_back(ARTIKEL_ROLLEREI,150,0,0);
+       liefs.push_back(ARTIKEL_ROLLEREI,150);
        vergleichen(C,Check::Menge|Check::Lieferschein,"LS_teillieferung","Lieferschein mit Teillieferung anlegen","");
 
        int lznr=1;
@@ -569,7 +594,7 @@ std::cout << "D13: "<<dummystring<<'\n';
        LieferscheinEntry::deleteEntry(le);
        vergleichen(C,Check::Menge|Check::Lieferschein,"LS_zeileloeschen","Lieferscheinzeile löschen","");
 
-       liefs.push_back(ARTIKEL_ROLLEREI,450,0,0);
+       liefs.push_back(ARTIKEL_ROLLEREI,450);
        vergleichen(C,Check::Menge|Check::Lieferschein,"LS_volllieferung","Lieferschein mit Volllieferung","V");
 
        LieferscheinEntry le2((LieferscheinEntryBase(liefs,lznr)));
@@ -583,7 +608,7 @@ std::cout << "D13: "<<dummystring<<'\n';
      {graphheader("Lieferschein Mengen-Test");
 #ifdef PETIG_TEST
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
-       liefs.push_back(ARTIKEL_ROLLEREI,150,0,0);
+       liefs.push_back(ARTIKEL_ROLLEREI,150);
        vergleichen(C,Check::Menge|Check::Lieferschein,"LS_teillieferung","Lieferschein mit Teillieferung anlegen","");
 
        int stueck=140;
@@ -608,10 +633,10 @@ std::cout << "D13: "<<dummystring<<'\n';
 #ifdef PETIG_TEST
 
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
-       liefs.push_back(ARTIKEL_ROLLEREI,50,0,0);
+       liefs.push_back(ARTIKEL_ROLLEREI,50);
        vergleichen(C,Check::Lieferschein|Check::Menge,"LSZA","Lieferschein mit Teillieferung und 2 Aufträgen anlegen","T");
 
-       liefs.push_back(ARTIKEL_ROLLEREI,600,0,0);
+       liefs.push_back(ARTIKEL_ROLLEREI,600);
        vergleichen(C,Check::Lieferschein|Check::Menge,"LSZAV","Lieferschein mit Volllieferung und 2 Aufträgen anlegen","V");
 #endif
        break;
@@ -620,21 +645,18 @@ std::cout << "D13: "<<dummystring<<'\n';
      {graphheader("Lieferschein Zusatz");
 #ifdef PETIG_TEST
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
-       liefs.push_back(ARTIKEL_ROLLEREI,550,0,0);
+       int lznr=liefs.push_back(ARTIKEL_ROLLEREI,550);
        vergleichen(C,Check::Lieferschein|Check::Menge,"LSZ","Lieferschein mit Zusatzeintrag anlegen","");
 
        int stueck=633;
        AuftragBase::mengen_t menge=0;
 
-       int lznr=1;
        LieferscheinEntry le3(LieferscheinEntryBase(liefs,lznr));
        le3.changeMenge(stueck,menge);
        vergleichen(C,Check::Lieferschein|Check::Menge,"LSZP","Lieferscheinentry mit Zusatzeintrag Plus","+");
 
        LieferscheinEntry le4(LieferscheinEntryBase(liefs,lznr));
        stueck=450;
-//cout << "\nLOS GEHTS";
-//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
 
        le4.changeMenge(stueck,menge);
        vergleichen(C,Check::Lieferschein|Check::Menge,"LSZM","Lieferscheinentry mit Zusatzeintrag Minus","-");
@@ -651,7 +673,7 @@ std::cout << "D13: "<<dummystring<<'\n';
      { graphheader("Lieferschein Test für Mabella");
 #ifdef MABELLA_TEST
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
-       liefs.push_back(ARTIKEL_TRIO,10,0,0);
+       liefs.push_back(ARTIKEL_TRIO,10);
        vergleichen(C,Check::Lieferschein|Check::Menge,"LS_volllieferung","Lieferschein mit Volllieferung (Mabella) anlegen","V");
 //ManuProC::Tracer::Enable(AuftragBase::trace_channel);
 
@@ -690,21 +712,21 @@ std::cout << "D13: "<<dummystring<<'\n';
       {// Weberei liefert mehr als geplant
        Lieferschein liefs(WEBEREI,cH_Kunde(Kunde::eigene_id));
 //ManuProC::Tracer::Enable(AuftragBase::trace_channel);
-       liefs.push_back(ARTIKEL_TRIO,5,0,0);
+       liefs.push_back(ARTIKEL_TRIO,5);
        vergleichen(C,Check::Menge|Check::Lieferschein,"LSZ","Lieferschein in Weberei mit Überlieferung (Mabella)","");
       }
 
       {// Einkauf liefert Teilmenge
        Lieferschein liefs(EINKAUF,cH_Kunde(KUNDE2));
 //ManuProC::Tracer::Enable(AuftragBase::trace_channel);
-       liefs.push_back(ARTIKEL_TRIO,13,0,0);
+       liefs.push_back(ARTIKEL_TRIO,13);
        vergleichen(C,Check::Menge|Check::Lieferschein,"LSZP","Lieferschein im Einkauf mit Teillieferung (Mabella)","");
       }
 
       {// Einkauf liefert Vollmenge
        Lieferschein liefs(EINKAUF,cH_Kunde(KUNDE2));
 //ManuProC::Tracer::Enable(AuftragBase::trace_channel);
-       liefs.push_back(ARTIKEL_TRIO,25,0,0);
+       liefs.push_back(ARTIKEL_TRIO,25);
        vergleichen(C,Check::Menge|Check::Lieferschein,"LSZM","Lieferschein im Einkauf Weberei mit Restlieferung (Mabella)","");
       }
 
@@ -857,14 +879,14 @@ static void usage(const std::string &argv0,const std::string &argv1)
                   "\t(Z)wei(K)unden)\n"
                   "\t(Z)wei(K)unden(M)engeFreigeben\n"
                   "\t(M)anu(P)roCTest\n"
-                  "\t(J)umboLager\n"
+                  "\t(J)umboLager, (Z)usatz(I)nfo\n"
                   "\t(R)eparatur(P)hysikalischesLager\n"
                   "\t(R)eparatur_0er_2er_(g)leichzeitig\n"
                   "\t(R)eparatur_(K)undenprogramm\n"
                   "\t(R)eparatur_(Z)uordnungen\n"
                   "\t(R)eparatur_(K)unden_(Z)uordnungen\n"
                   "\t(R)eparartur(M)Mabella, =0er+2er OPEN, bestellt=0, Kundenid=1}\n"
-                  "Valid options include --verbose --analyse --repair --continue --trace --reinit\n";
+                  "Valid options include --verbose --analyse --repair --continue --trace --reinit --overwrite\n";
   exit(1);
 }
 
@@ -925,6 +947,7 @@ int main(int argc,char *argv[])
    else if(mode_str=="LA" || mode_str=="Lieferscheintest_ZweiterAuftrag_frueheresDatum")  mode=Lieferscheintest_ZweiterAuftrag_frueheresDatum;
    else if(mode_str=="LJ" || mode_str=="Lieferscheintest_ZweiterAuftrag_frueheresDatum")  mode=LieferscheinJacek;
    else if(mode_str=="ZK" || mode_str=="ZweiKunden")  mode=ZweiKundenTest;
+   else if(mode_str=="ZI")  mode=Zusatzinfo;
    else if(mode_str=="ZKM"|| mode_str=="ZweiKundenMengeFreigebenTest")  mode=ZweiKundenMengeFreigebenTest;
    else if(mode_str=="MP" || mode_str=="ManuProCTest")  mode=ManuProCTest;
    else if(mode_str=="J" || mode_str=="JumboLager")  mode=JumboLager;

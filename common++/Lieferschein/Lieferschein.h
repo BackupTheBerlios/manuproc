@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.26 2003/06/18 15:18:29 jacek Exp $ */
+/* $Id: Lieferschein.h,v 1.27 2003/07/03 06:47:10 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -103,11 +103,12 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  const ManuProC::Datum LsDatum() const { return lsdatum; }
  const ManuProC::Datum getDatum() const { return geliefertam; }
  void setDatum(const ManuProC::Datum &d) throw(SQLerror);
+ // gibt Zeilennr zurück
  // DB Zugriff mit abschreiben
- void push_back(AufEintrag &auftragentry, 
- 		const ArtikelBase &artikel, int anzahl, mengen_t menge, int palette);
+ int push_back(AufEintrag &auftragentry, 
+ 		const ArtikelBase &artikel, int anzahl, mengen_t menge=0, int palette=0);
  // DB: Menge verteilt auf mehrere Aufträge abschreiben
- void push_back(const ArtikelBase &artikel, int anzahl, mengen_t menge, int palette);
+ int push_back(const ArtikelBase &artikel, int anzahl, mengen_t menge=0, int palette=0);
 
 
  // Rechnungsnummer von Lieferscheinen ohne Entrys auf '0' setzen

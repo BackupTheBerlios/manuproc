@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.34 2003/06/24 07:21:48 christof Exp $
+// $Id: FetchIStream.h,v 1.35 2003/07/03 06:47:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -109,7 +109,7 @@ public:
 	   return res;
 	}
 	template <class T>
-	 T FetchMap(const T &nv)
+	 T FetchMap(const T &nv=T())
 	{  T res;
 	   *this >> MapNull(res,nv);
 	   return res;
@@ -234,7 +234,9 @@ public:
 	// template <class T> std::vector<T> FetchArray();
 
 	template <class T> T FetchOne();
-	template <class T> void FetchOne(T &);
+	template <class T> void FetchOne(T &v);
+	template <class T> T FetchOneMap(const T &nv=T());
+	template <class T> void FetchOneMap(T &v, const T &nv=T());
 
 	template <class T> FetchIStream &operator>>(T &x)
 	{  return FetchOne() >> x; }
@@ -287,11 +289,24 @@ void Query::FetchOne(T &res)
    (FetchOne() >> res).ThrowIfNotEmpty(__FUNCTION__);
 }
 
+template <class T>
+void Query::FetchOneMap(T &res, const T &nv)
+{  ThrowOnBad(__FUNCTION__);
+   (FetchOne() >> FetchIStream::MapNull(res,nv)).ThrowIfNotEmpty(__FUNCTION__);
+}
+
 // T a = q.FetchOne<T>(); variant (slower)
 template <class T>
 T Query::FetchOne()
 {  T res;
    FetchOne(res);
+   return res;
+}
+
+template <class T>
+T Query::FetchOneMap(const T &nv)
+{  T res;
+   FetchOneMap(res,nv);
    return res;
 }
 

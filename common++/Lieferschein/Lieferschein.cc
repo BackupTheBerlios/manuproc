@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.28 2003/06/18 15:18:29 jacek Exp $ */
+/* $Id: Lieferschein.cc,v 1.29 2003/07/03 06:47:10 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -54,7 +54,7 @@ static void unbestellteMengeProduzieren(cH_ppsInstanz instanz,
    LE.setZusatzInfo(neuerAEB,menge);
 }
 
-void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl, 
+int Lieferschein::push_back(const ArtikelBase &artikel, int anzahl, 
 		mengen_t mengeneinheit, int palette)
 {  
 
@@ -65,6 +65,7 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("artikel",artikel),
            NV("anzahl",anzahl),NV("mengeneinheit",mengeneinheit),NV("palette",palette));
    Transaction tr;
+   int result=LieferscheinBase::none_id;
 
    AuftragBase::mengen_t menge(anzahl);
    Einheit e(artikel);
@@ -81,12 +82,14 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
      // kann nicht abschreiben
    {  LieferscheinEntry LE=LieferscheinEntry::create(*this, artikel, anzahl,mengeneinheit,palette,false);
       unbestellteMengeProduzieren(Instanz(),artikel,menge,LE);
+      result=LE.ZNr();
    }
    else if (menge<=auftraglist.aufidliste.begin()->getRestStk())
      // kann in einem Stueck abschreiben
    {  SelectedFullAufList::iterator i=auftraglist.aufidliste.begin();
-      LieferscheinEntry::create(*this, *i,artikel, anzahl,mengeneinheit,palette,false);
+      LieferscheinEntry LE=LieferscheinEntry::create(*this, *i,artikel, anzahl,mengeneinheit,palette,false);
       i->Produziert(menge,Id());
+      result=LE.ZNr();
    }
    else
    // stueckeln (1*Lieferung, dann Zuordnung)
@@ -106,6 +109,7 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
       if(menge>0)
          // da ist noch ein Rest geblieben, setzt ZusatzInfo
          unbestellteMengeProduzieren(Instanz(),artikel,menge,LE);
+      result=LE.ZNr();
    }
 #else
  if(menge>0)
@@ -118,13 +122,15 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
        if(menge < 0) fw.Einlagern(1);
        else if(menge > 0) fw.Auslagern(1);
       }
+     result=LE.ZNr();
    }
 #endif
 
    tr.commit();
+   return result;
 }
 
-void Lieferschein::push_back(AufEintrag &aufeintrag,
+int Lieferschein::push_back(AufEintrag &aufeintrag,
 		const ArtikelBase &artikel, int anzahl, 
 		mengen_t menge, int palette)
 {
@@ -135,30 +141,33 @@ void Lieferschein::push_back(AufEintrag &aufeintrag,
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("AufEintrag",aufeintrag),
            NV("artikel",artikel),
            NV("Anzahl",anzahl),NV("Menge",menge),NV("Palette",palette));                     
- LieferscheinEntry::create(*this, aufeintrag ,artikel, anzahl,menge,palette);
+ LieferscheinEntry LE=LieferscheinEntry::create(*this, aufeintrag ,artikel, anzahl,menge,palette);
 
  mengen_t mng;
  if(!menge) mng = anzahl;
  else mng= anzahl*menge;
  
  aufeintrag.Produziert(mng,Id());
+ return LE.ZNr();
 }
 
 void Lieferschein::aufraumen() throw(SQLerror)
 {
- std::string query="update lieferschein set rngid=0 where rngid is null "
-      " and lfrsid not in (select e.lfrsid from lieferscheinentry e "
-      " where e.lfrsid=lieferschein.lfrsid)";
- Query::Execute(query);
+ Query("update lieferschein set rngid=0 where rngid is null "
+// 		"and instanz=? "
+ 		"and not exists(select true from lieferscheinentry "
+ 		"where lieferscheinentry.lfrsid=lieferschein.lfrsid)") 
+//   	<< Instanz()->Id()
+	;
  SQLerror::test(__FILELINE__,100);
 }
 
 
 void Lieferschein::closeLfrs()
 {
- std::string query="update lieferschein set rngid=0 where rngid is null "
- 	" and lfrsid = "+itos(Id());
- Query::Execute(query);
+ Query("update lieferschein set rngid=0 where rngid is null "
+ 		"and (instanz,lfrsid) = (?,?)") 
+   	<< Instanz()->Id() << Id();
  SQLerror::test(__FILELINE__);
 }
 
@@ -167,42 +176,119 @@ void Lieferschein::closeLfrs()
 
 void Lieferschein::setDPDlnr(int d) const throw(SQLerror)
 {
- std::string query="update lieferschein set dpdliefnr=nullif("+itos(d)
-      +","+itos(Offen)+") where (instanz,lfrsid) = ("+itos(Instanz()->Id())+","+itos(Id())+")";
- Query::Execute(query);
+ Query("update lieferschein set dpdliefnr=? where (instanz,lfrsid) = (?,?)") 
+   	<< Query::NullIf(d,Offen) << Instanz()->Id() << Id();
  SQLerror::test(__FILELINE__);
 }
 
 void Lieferschein::setPakete(const int p) throw(SQLerror)
 {  
- std::string query="update lieferschein set pakete="+itos(p)
-   +" where (instanz,lfrsid) = ("+itos(Instanz()->Id())+","+itos(Id())+")";
- Query::Execute(query);
+ Query("update lieferschein set pakete=? where (instanz,lfrsid) = (?,?)") 
+   	<< p << Instanz()->Id() << Id();
  SQLerror::test(__FILELINE__);
 }
 
 void Lieferschein::setPaeckchen(const int p) throw(SQLerror)
 {  
- std::string query="update lieferschein set paeckchen="+itos(p)
-   +" where (instanz,lfrsid) = ("+itos(Instanz()->Id())+","+itos(Id())+")";
- Query::Execute(query);
+ Query("update lieferschein set paeckchen=? where (instanz,lfrsid) = (?,?)") 
+   	<< p << Instanz()->Id() << Id();
  SQLerror::test(__FILELINE__);
 }
 
 void Lieferschein::setGewichtNetto(const fixedpoint<1> i) throw(SQLerror)
 {  
- std::string query="update lieferschein set netto_kg="+i.String()
-   +" where (instanz,lfrsid) = ("+itos(Instanz()->Id())+","+itos(Id())+")";
- Query::Execute(query);
+ Query("update lieferschein set netto_kg=? where (instanz,lfrsid) = (?,?)") 
+   	<< i << Instanz()->Id() << Id();
  SQLerror::test(__FILELINE__);
 }
 
 void Lieferschein::setGewichtBrutto(const fixedpoint<1> i) throw(SQLerror)
 {  
- std::string query="update lieferschein set brutto_kg="+i.String()
-   +" where (instanz,lfrsid) = ("+itos(Instanz()->Id())+","+itos(Id())+")";
- Query::Execute(query);
+ Query("update lieferschein set brutto_kg=? where (instanz,lfrsid) = (?,?)")
+   << i << Instanz()->Id() << Id();
  SQLerror::test(__FILELINE__);
 }
 
+
+void Lieferschein::setDPDDatum() const throw(SQLerror)
+{
+ Query("update lieferschein set geliefertam=now() "
+ 	"where (instanz,lfrsid)=(?,?)") << Instanz()->Id() << Id();
+ SQLerror::test(__FILELINE__);
+}
+#endif
+
+int Lieferschein::maxZnr() throw(SQLerror)
+{
+ return (Query("select max(zeile) from lieferscheinentry where "
+ 	"(instanz,lfrsid) = (?,?)") 
+ 	<< Instanz()->Id() << Id()
+ 	).FetchOneMap<int>();
+}
+
+const Preis::rabatt_t Lieferschein::AufRabatt() const throw(SQLerror)
+{
+ return (Query("select max(rabatt) from "
+ 	"auftrag a join lieferscheinentry e "
+   	"on (refauftragid=auftragid and a.instanz=e.instanz) where "
+   	"(e.instanz,e.lfrsid)=(?,?)") << Instanz()->Id() << Id()
+   	).FetchOneMap<int>();;
+}
+
+LieferscheinBase::mengen_t Lieferschein::StandardLaenge(const ArtikelBase artikel) throw (SQLerror)
+{
+ return (Query("select menge from lieferscheinentry e join lieferschein l "
+   "on (lfrsid,instanz) where artikelid=? " // "and l.instanz=? "
+   "order by datum desc limit 1") << artikel.Id() /* << Instanz()->Id() */
+   ).FetchOneMap<LieferscheinBase::mengen_t>();
+}
+
+#ifdef DPD_LIEFERSCHEINE
+const ManuProC::Datum Lieferschein::getMaxZahlziel() const throw(SQLerror)
+{
+ return Query("SELECT max(a.zahlungsziel) from "
+ 	"auftrag a join lieferscheinentry e "
+   	"on (refauftragid=auftragid and a.instanz=e.instanz) "
+   	"where (e.instanz,e.lfrsid)=(?,?)")
+   	<< Instanz()->Id() << Id()
+   	).FetchOneMap<ManuProC::Datum>();
+}
+#endif
+
+const std::string Lieferschein::Notiz() const throw(SQLerror)
+{
+// ManuProC::Trace _t(ManuProC::Tracer::Lieferschein, __FUNCTION__,str());
+ if(notiz_valid) return notiz;
+
+ Query("select notiz from lieferschein where (instanz,lfrsid)=(?,?)")
+ 	<< Instanz()->Id() << Id()
+ 	>> FetchIStream::MapNull(notiz);
+ notiz_valid=true;
+ return notiz;
+}
+
+void Lieferschein::Notiz(const std::string n) throw(SQLerror)
+{
+// ManuProC::Trace _t(ManuProC::Tracer::Lieferschein, __FUNCTION__,str());
+
+ Query("update lieferschein set notiz=? where (instanz,lfrsid)=(?,?)")
+ 	<< n 
+ 	<< Instanz()->Id() << Id();
+ SQLerror::test(__FILELINE__);
+
+ notiz=n;
+}
+
+#ifdef MABELLA_EXTENSIONS
+void Lieferschein::setVerknr(const Kunde::ID vknr) throw(SQLerror)
+{
+ Query("update lieferschein set verknr=? where"
+	" (instanz,lfrsid)=(?,?)")
+	<< Query::NullIf(vknr,Kunde::none_id)
+	<< Instanz()->Id()
+	<< Id();
+ SQLerror::test(__FILELINE__);
+
+ verknr=vknr;
+}
 #endif
