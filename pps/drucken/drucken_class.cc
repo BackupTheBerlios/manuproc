@@ -554,7 +554,7 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
           {
 	   fixedpoint<2> zwb=betrag - zwischensumme_betrag;
 	   drucken_betrag(os,mld->MLT(MultiL_Dict::TXT_ZWISCHENSUMME),
-					zwb,preisspalte-1); 
+					zwb,2); 
                       // Zwischensumme zum Lieferschein
 	   zwischensumme_betrag=betrag;
            zwischensumme_drucken=false;
@@ -673,7 +673,7 @@ std::cout << "table ends\n";
    if(Typ() == Rechnung)
      {fixedpoint<2> zwb=betrag - zwischensumme_betrag;
       drucken_betrag(os,mld->MLT(MultiL_Dict::TXT_ZWISCHENSUMME),
-					zwb,preisspalte-1);  
+					zwb,2);  
      }
 
 #ifdef MABELLA_EXTENSIONS
