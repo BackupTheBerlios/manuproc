@@ -1,4 +1,4 @@
-/* $Id: ManuProcEntity.h,v 1.7 2003/04/24 11:09:40 jacek Exp $ */
+/* $Id: ManuProcHandle.h,v 1.1 2003/04/24 11:09:40 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -20,32 +20,18 @@
 
 
 
-#ifndef MANU_PROC_ENTITY
-#define MANU_PROC_ENTITY
+#ifndef MANU_PROC_HANDLE
+#define MANU_PROC_HANDLE
+
+#include<Misc/Handles.h>
 
 
-template <class T=long int> class ManuProcEntity
+template <class T=long int> class ManuProcHandle 
+: public ManuProcEntity, public HandleContent
 {
-public:
- typedef T ID;
- 
-protected:
- ID entityid;
  
 public:
- static const ID none_id=(T)-1;
- ManuProcEntity() : entityid(none_id) {}
- ManuProcEntity(const ID i) : entityid(i) {}
  virtual ID Id() const = 0;
- virtual void setId(ID _id) { entityid=_id;}
- 
-// static bool Valid(ID) ;//const; // wenn die Klassen von *this abgeleitet werden
-                            // soll das 'statis' verschwinden
-   static bool Valid(ID i) {
-      if(i==none_id) return false;
-      return true;
-      }
-
 
 };
 
