@@ -1447,9 +1447,9 @@ void LR_Abstraktion::auftrag_von(std::ostream &os, const class Auftrag &a,
     {os <<" \\small{";
       if(!a.getYourAufNr().empty()) 
 	{os << mld->MLT(MultiL_Dict::TXT_IHRAUFTRAG);	
-	 os <<" "<<a.getYourAufNr();
+	 os <<" "<<string2TeX(a.getYourAufNr());
 	}
-      if(!a.getBemerkung().empty()) os << " "<<a.getBemerkung();
+      if(!a.getBemerkung().empty()) os << " "<<string2TeX(a.getBemerkung());
      os << "}";
     }
   os << "\\normalsize";
