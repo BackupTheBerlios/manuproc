@@ -756,9 +756,15 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
               		os << FormatiereTeX((unsigned long)stueck);
 
                std::string einheit;
-//               if(Typ()==Rechnung || Typ()==Lieferschein) einheit=Einheit(artikelbase).StueckEinheit_TeX();
+
+//             if(Typ()==Rechnung || Typ()==Lieferschein) einheit=Einheit(artikelbase).StueckEinheit_TeX();
 //               else 
-	       einheit=Einheit(artikelbase).TeX(*mld);
+
+	       if(menge_bool)
+	          einheit=Einheit(artikelbase).StueckEinheit_TeX();
+	  	else
+	          einheit=Einheit(artikelbase).TeX(*mld);
+
                if (einheit.size()) 
                   os <<'{'<< einheitsize <<einheit <<'}';
             }
@@ -772,7 +778,8 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
            { neue_spalte(erste_spalte,os);
              // diese Hartcodierung von 3 sieht nicht gut aus CP
 //             os <<linecolor<< FormatiereTeX_short(fixedpoint<3>(stueck * menge))<<einheitsize <<Einheit(artikelbase).TeX();
-             os <<linecolor<< FormatiereTeX_short(stueck * menge)<<einheitsize <<Einheit(artikelbase).TeX();
+             os <<linecolor<< FormatiereTeX_short(stueck * menge)<<
+			einheitsize << Einheit(artikelbase).MengenEinheit_TeX();
            }
 
 // NEW COLUMNS; ab hier irgendwo einfügen um Tabellenspalten auszugeben
