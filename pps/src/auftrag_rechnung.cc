@@ -532,7 +532,7 @@ auftrag_rechnung::auftrag_rechnung(cH_ppsInstanz _instanz)
    fill_optionmenu_zahlungsart();
    optionmenu_zahlart->get_menu()->deactivate.connect(SigC::slot(static_cast<class auftrag_rechnung*>(this), &auftrag_rechnung::optionmenu_zahlart_deactivate));
    rngdatum->setLabel("");
-   zahlziel->setLabel("Zahlungsziel");
+   zahlziel->setLabel("");
    zahlziel->set_value(ManuProC::Datum());
    lieferscheindatum->setLabel("");
    rtree_daten->hide();
