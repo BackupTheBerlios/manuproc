@@ -222,7 +222,7 @@ void auftrag_bearbeiten::on_newauftrag_button_clicked()
  }
  else
  kundenbox->grab_focus();
- 
+ newauftrag=true;
 }
 
 void auftrag_bearbeiten::auftragstatus_geaendert()
@@ -714,6 +714,7 @@ void auftrag_bearbeiten::on_auftrag_abbruch_clicked()
  auftrag_abbruch->set_sensitive(false);
  aufnr_scombo->grab_focus();
  aufnr_scombo->set_sensitive(true);
+ newauftrag=false;
 }
 
 void auftrag_bearbeiten::on_auftrag_ok_clicked()
@@ -742,6 +743,7 @@ void auftrag_bearbeiten::on_auftrag_ok_clicked()
  auftrag_abbruch->set_sensitive(false);
  artikelbox->grab_focus();
  aufnr_scombo->set_sensitive(true);
+ newauftrag=false;
       }
  catch(SQLerror &e)
    {meldung->Show(e);
