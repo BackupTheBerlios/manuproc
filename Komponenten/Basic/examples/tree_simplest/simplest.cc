@@ -1,4 +1,4 @@
-// $Id: simplest.cc,v 1.8 2002/12/04 09:22:14 christof Exp $
+// $Id: simplest.cc,v 1.9 2004/05/04 08:10:49 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -22,6 +22,9 @@
 #include "simplest.hh"
 #include "treebase_data.h"
 #include <iostream>
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#  include <sigc++/compatibility.h>
+#endif
 
 void simplest::on_Beenden_activate()
 {   
