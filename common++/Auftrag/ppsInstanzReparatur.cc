@@ -644,9 +644,10 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
       else for (ArtikelBaum::const_iterator i=ab.begin();i!=ab.end();++i)
       {  AufEintragZu::map_t::const_iterator f=kinder.find(i->rohartikel);
          AuftragBase::mengen_t M=ae.getRestStk()*i->menge;
-         if (f==kinder.end() && 
-	     !!M &&
-	     ppsInstanz::getBestellInstanz(i->rohartikel)!=ppsInstanzID::None
+         if (f==kinder.end() 
+             && !!M 
+             && ppsInstanz::getBestellInstanz(i->rohartikel)!=ppsInstanzID::None
+             && ppsInstanz::getBestellInstanz(i->rohartikel)!=ppsInstanzID::Kundenauftraege
 	     ) // Artikel nie bestellt
          {  alles_ok=false;
             analyse("Rohartikel fehlt völlig",ae,itos(i->rohartikel.Id()),M.String(true));
@@ -731,7 +732,8 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
    		&& !!ae.getRestStk()
    		&& !in(ae.Instanz(),ppsInstanz::getBestellInstanz(as),
    			ppsInstanz::getProduktionsInstanz(as)))
-   {  analyse("(Lagerinhalt auf falscher Instanz)",ae,cH_ArtikelBezeichnung(ae.Artikel())->Bezeichnung(),itos(ae.Artikel().Id()));
+   {  if (!silence_warnings)
+         analyse("(Lagerinhalt auf falscher Instanz)",ae,cH_ArtikelBezeichnung(ae.Artikel())->Bezeichnung(),itos(ae.Artikel().Id()));
    }
    else if (ae.Instanz()!=ppsInstanzID::Kundenauftraege 
    	&& !in(ae.Instanz(),ppsInstanz::getBestellInstanz(as),
