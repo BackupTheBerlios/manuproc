@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.18 2003/09/05 10:42:39 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.19 2003/09/05 11:00:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -352,7 +352,8 @@ void AufEintrag::Einlagern2(mengen_t M,
          AufEintragZu(neuerAEB).Neu(ctx.aeb,0);
    }
 
-   KinderProduzieren(M,neuerAEB,ctx);
+   if (!ctx.aeb.valid())
+      KinderProduzieren(M,neuerAEB,ctx.leb);
 }
 
 // ehemals increase_parents__reduce_assingments
