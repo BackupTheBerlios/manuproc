@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.38 2003/07/30 11:16:56 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.39 2003/09/02 09:26:20 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -125,6 +125,8 @@ void LieferscheinEntry::changeMenge(int stueck, mengen_t menge, const Liefersche
      else
      {//showZusatzInfos();
       zusaetze_t VZ=getZusatzInfos();
+#warning in dieser Reihenfolge Menge ermitteln aber umgekehrt abschreiben,
+//	damit der Erste eventuelle Lagerbestände reservieren kann!
       for(LieferscheinEntry::zusaetze_t::reverse_iterator i=VZ.rbegin();i!=VZ.rend();++i)
       {
         AuftragBase::mengen_t actualmenge=abmenge2;

@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.cc,v 1.6 2003/08/12 16:16:25 christof Exp $ */
+/* $Id: AufEintrag_loops.cc,v 1.7 2003/09/02 09:26:20 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,6 +23,7 @@
 #include <typeinfo>
 #include <Auftrag/sqlAuftragSelector.h>
 #include <Auftrag/selFullAufEntry.h>
+#include <Artikel/ArtikelStamm.h>
 
 static std::string Nametrans(std::string n)
 {  if (n[0]=='N')
@@ -134,11 +135,14 @@ void distribute_children_artbaum(const AufEintragBase &startAEB,
       // pass the remainder
       if (!!AE_menge2) callee(artloop_var->first,AE_menge2);
    }
-   for(ArtikelBaum::const_iterator i=AE_artbaum.begin();i!=AE_artbaum.end();++i)
-   {  AufEintragZu::map_t::const_iterator j=MapArt.find(i->rohartikel);
-      if (j==MapArt.end())
-      {  callee(i->rohartikel,menge*i->menge);
-      }
+   ppsInstanz::ID next= startAEB.Instanz()->NaechsteInstanz(ArtikelStamm(article));
+   if (next!=ppsInstanzID::None)
+   {  if (MapArt.find(article)==MapArt.end()) 
+         callee(article,menge);
+   }
+   else for(ArtikelBaum::const_iterator i=AE_artbaum.begin();i!=AE_artbaum.end();++i)
+   {  if (MapArt.find(i->rohartikel)==MapArt.end())
+         callee(i->rohartikel,menge*i->menge);
    }
 }
 

@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.9 2003/08/12 16:16:25 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.10 2003/09/02 09:26:20 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -238,14 +238,13 @@ public:
 	   if (M<0) // Ein Teil der Lieferung konnte nicht rückgängig gemacht werden
 	   {  // similar code in AufEintrag::ArtikelInternNachbestellen
 	      ArtikelStamm as(art);
-	      ppsInstanz::ID inst= alterAEB.Instanz()->NaechsteInstanz(as);
-	      ManuProC::Datum termin=AufEintrag(alterAEB).getLieferdatum();
+	      ppsInstanz::ID inst= neuerAEB.Instanz()->NaechsteInstanz(as);
+	      ManuProC::Datum termin=AufEintrag(neuerAEB).getLieferdatum();
 	      if (inst==ppsInstanzID::None)
 	      {  inst=ppsInstanz::getBestellInstanz(as)->Id();
-	         termin=termin-alterAEB.Instanz()->ProduktionsDauer();
+	         termin=termin-neuerAEB.Instanz()->ProduktionsDauer();
 	      }
-	      AufEintrag::ArtikelInternNachbestellen(inst,-M,
-	   	termin,art,uid,alterAEB);
+	      AufEintrag::ArtikelInternNachbestellen(inst,-M,termin,art,uid,neuerAEB);
 	      return;
 	   }
 	   assert(M>0); // NaechsteInstanz?
@@ -256,6 +255,7 @@ public:
 	}
 };
 
+#if 0
 // noch erforderlich???
 class AufEintrag::ProduziertRueckgaengig2 : public distribute_children_cb
 {  unsigned uid;
@@ -297,6 +297,7 @@ public:
 	   	<< " von "<< art.Id() <<  '\n';
 	}
 };
+#endif
 
 // similar to move_to
 // Produktion im Lager bedeutet:
@@ -378,10 +379,10 @@ void AufEintrag::KinderProduzieren(mengen_t M, const AufEintragBase &neuerAEB,
    ProduziertNG_cb2 callback(uid,*this,neuerAEB,ctx);
    if (M<0)
    {  // vielleicht hier artbaum statt alles unten?
-      distribute_children(*this,M,Artikel(),callback);
+      distribute_children_artbaum(*this,M,Artikel(),callback);
       // bei ProduziertSelbst hilft obiges nicht allein (keine Pfeile nach unten entstanden)
-      AufEintrag neuerAE=neuerAEB;
-      distribute_children_artbaum(neuerAE,M,Artikel(),ProduziertRueckgaengig2(uid,neuerAE));
+//      AufEintrag neuerAE=neuerAEB;
+//      distribute_children_artbaum(neuerAE,M,Artikel(),ProduziertRueckgaengig2(uid,neuerAE));
    }
    else
    {  // bei ProdSelbst:

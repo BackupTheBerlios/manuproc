@@ -1,4 +1,4 @@
-/* $Id: VerfuegbareMenge.cc,v 1.8 2003/08/11 15:05:26 christof Exp $ */
+/* $Id: VerfuegbareMenge.cc,v 1.9 2003/09/02 09:26:20 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -85,11 +85,12 @@ AuftragBase::mengen_t VerfuegbareMenge::reduce_in_dispo_or_plan(const bool dispo
      if (!M) continue;
 
      // oder erst nachbestellen, dann (Lager)vormerkung freigeben ??
-     i->updateStkDiffBase__(uid,-M);
      if(!dispo)  
         i->MengeNeubestellen(uid,M);
+     else
+        i->updateStkDiffBase__(uid,-M);
      if(!instanz->LagerInstanz())
-     // diese nichtssagenden Aufrufe gefallen mir nicht CP
+     // notwendig?
      {  AufEintragZuMengenAenderung::freie_dispomenge_verwenden(uid,*i,M,ElternAEB);
      }
 
