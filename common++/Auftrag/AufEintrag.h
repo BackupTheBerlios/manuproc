@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.61 2003/07/24 11:16:24 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.62 2003/07/25 08:00:09 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -277,7 +277,8 @@ public:
  		const ArtikelBase &artikel,
  		mengen_t menge, unsigned uid,bool rekursiv=false,
  		const AufEintragBase &elter=AufEintragBase(),
- 		const ProductionContext2 &ctx=ProductionContext2());
+ 		const ProductionContext2 &ctx=ProductionContext2(),
+ 		ManuProC::Datum termin=ManuProC::Datum());
  // aus dem Lager auslagern (abschreiben), ehemals abschreiben_oder_reduzieren
  // wird üblicherweise erst für 1er dann 2er aufgerufen
  // mit ProduziertNG vereinen?

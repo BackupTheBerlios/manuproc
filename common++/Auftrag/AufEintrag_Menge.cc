@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.1 2003/07/22 08:32:59 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.2 2003/07/25 08:00:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -172,7 +172,7 @@ AuftragBase::mengen_t AufEintrag::ArtikelInternAbbestellen_cb::operator()
 }
 
 void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftrag::Action reason) const
-{ManuProC::Trace _t(trace_channel, __FUNCTION__,
+{ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
    NV("menge",menge),NV("Reason",reason));
 
  assert(menge>0);
@@ -181,7 +181,8 @@ void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftr
 
  // Menge im Lager freigeben == Einlagern ohne Produktion?
  if (Instanz()->LagerInstanz() && Id()==plan_auftrag_id)
- {  AufEintrag::MengeVormerken(Instanz(),Artikel(),menge,true,ProductionContext());
+ {  AufEintrag::MengeVormerken(Instanz(),Artikel(),menge,true,ProductionContext()); 
+	 // ,*this);
  }
  else try{
       distribute_children(*this,menge,Artikel(),
@@ -205,7 +206,8 @@ void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t menge,ManuProC::Auftrag
 
 // angepasste Variante von ppsInstanzReparatur::Eltern
 AuftragBase::mengen_t AufEintrag::AnElternMengeAnpassen()
-{  AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(*this,
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this));
+   AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(*this,
 		AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
    unsigned uid=getuid();
    assert(Id()!=dispo_auftrag_id);
@@ -217,7 +219,8 @@ AuftragBase::mengen_t AufEintrag::AnElternMengeAnpassen()
    }
    if (menge>getStueck())
    // mehr v.o. benötigt als jemals bestellt (z.B. durch ProdRückgängig)
-   {  if (Id()==plan_auftrag_id) // && Instanz()->LagerInstanz())
+   {  ManuProC::Trace(trace_channel,"(menge>getStueck())",menge,getStueck());
+      if (Id()==plan_auftrag_id) // && Instanz()->LagerInstanz())
       {  // sonst ist der Code ungetestet, könnte aber funktionieren
          // bitte Nachricht an mich (CP), sobald das stört
          assert(Instanz()->LagerInstanz());
@@ -229,7 +232,8 @@ AuftragBase::mengen_t AufEintrag::AnElternMengeAnpassen()
    }
    else if (menge<getRestStk())
    // mehr offen als nun v.o. benötigt
-   {  assert(in(Id(),ungeplante_id,plan_auftrag_id));
+   {  ManuProC::Trace(trace_channel,"(menge<getRestStk())",menge,getRestStk());
+      assert(in(Id(),ungeplante_id,plan_auftrag_id));
       assert(Id()!=plan_auftrag_id || Instanz()->LagerInstanz());
       MengeAendern(uid,menge-getRestStk(),true,AufEintragBase(),
          	ManuProC::Auftrag::r_Reparatur);

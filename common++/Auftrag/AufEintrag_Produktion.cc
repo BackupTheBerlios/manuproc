@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.2 2003/07/24 11:16:24 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.3 2003/07/25 08:00:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -44,15 +44,17 @@
 
 AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
                 const ArtikelBase &artikel,mengen_t menge,unsigned uid,bool rekursiv,
-                const AufEintragBase &elter,const ProductionContext2 &ctx)
+                const AufEintragBase &elter,const ProductionContext2 &ctx,
+                ManuProC::Datum termin)
 {  // Code wie in ProduziertNG
    ManuProC::Trace _t(trace_channel, __FUNCTION__,instanz,
-			   NV("artikel",artikel),NV("menge",menge));
+			   NV("artikel",artikel),NV("menge",menge),NV("rekursiv",rekursiv));
    assert(instanz!=ppsInstanzID::Kundenauftraege && instanz!=ppsInstanzID::None);
+   if (!termin.valid()) termin=ManuProC::Datum(1,1,1970);
    Transaction tr;
    AuftragBase zielauftrag(instanz,plan_auftrag_id);
    AufEintragBase neuerAEB(zielauftrag,
-                       zielauftrag.PassendeZeile(ManuProC::Datum(1,1,1970),artikel,CLOSED,getuid()));
+                       zielauftrag.PassendeZeile(termin,artikel,CLOSED,getuid()));
    AufEintrag ae(neuerAEB);
    // elter kann nicht übergeben werden, da sonst bereits mit Menge angelegt
    ae.MengeAendern(uid,menge,false,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
@@ -182,7 +184,7 @@ if(Instanz() == ppsInstanzID::Kundenauftraege)
 }
 
 namespace {
-class ProduziertNG_cb2 : public distribute_children_cb
+class ProduziertNG_cb2 : public distribute_children_twice_cb
 {  unsigned uid;
    AufEintragBase alterAEB,neuerAEB;
    ProductionContext2 ctx;
@@ -191,7 +193,7 @@ public:
 		const AufEintragBase &nAEB,const ProductionContext2 &_ctx)
 		: uid(_uid), alterAEB(aAEB), neuerAEB(nAEB), ctx(_ctx) {}
 	AuftragBase::mengen_t operator()(const ArtikelBase &art,
-		const AufEintragBase &aeb,AuftragBase::mengen_t M) const
+		const AufEintragBase &aeb,AuftragBase::mengen_t M,bool first) const
 	{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("aeb",aeb),NV("M",M));
 	   if (!aeb.Instanz()->ProduziertSelbst())
 	   {  if (aeb.Instanz()->LagerInstanz())
@@ -205,9 +207,24 @@ public:
            }
            else if (M<0) return 0; // soll ProdRueckgaengig2 machen ???
            else
-           {  AufEintragZu(alterAEB).setMengeDiff__(aeb,-M);
-              AuftragBase::mengen_t m2=AufEintrag(aeb).AnElternMengeAnpassen();
-              assert(!m2);
+           {  AufEintrag ae(aeb);
+              if (first && aeb.Id()==AuftragBase::plan_auftrag_id)
+              {  // wieviel geht noch ohne abzubestellen?
+                 AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(ae,
+              		AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
+                 AuftragBase::mengen_t menge;
+                 for (AufEintragZu::list_t::iterator i=eltern.begin();i!=eltern.end();++i)
+                    menge+=i->Menge;
+		 ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,
+			   NV("M",M),NV("menge",menge),NV("Rest",ae.getRestStk()));
+                 M=AuftragBase::min(M,menge-ae.getRestStk());
+                 if (!!M) AufEintragZu(alterAEB).setMengeDiff__(ae,-M);
+   	      }
+              else
+              {  AufEintragZu(alterAEB).setMengeDiff__(ae,-M);
+                 AuftragBase::mengen_t m2=ae.AnElternMengeAnpassen();
+                 assert(!m2);
+              }
            }
            return M;
 	}
@@ -351,5 +368,7 @@ void AufEintrag::KinderProduzieren(mengen_t M, const AufEintragBase &neuerAEB,
       distribute_children(neuerAE,M,Artikel(),ProduziertRueckgaengig2(uid,neuerAE));
    }
    else
-      distribute_children_rev(*this,M,Artikel(),callback);
+   {  // bei ProdSelbst 0er zuerst abbestellen ...
+      distribute_children_twice_rev(*this,M,Artikel(),callback);
+   }
 }

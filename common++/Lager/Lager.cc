@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.34 2003/07/21 10:33:20 christof Exp $
+// $Id: Lager.cc,v 1.35 2003/07/25 08:00:09 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -26,7 +26,9 @@
 #include <Auftrag/AufEintrag.h>
 
 std::ostream &operator<<(std::ostream &o,const ProductionContext &pc)
-{  return o << pc.aeb << '|' << pc.leb;
+{  o << pc.aeb << '|' << pc.leb;
+   if (pc.lager_aeb.valid()) o << '|' << pc.lager_aeb;
+   return o;
 }
 
 Lager::Lager(cH_ppsInstanz instanz)

@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.5 2003/07/24 12:49:32 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.6 2003/07/25 08:00:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -62,6 +62,7 @@ public:
 namespace { class AbbestellenUndVormerken : public distribute_parents_cb
 {	AufEintrag &mythis;
 	unsigned uid;
+	
 public:
 	AuftragBase::mengen_t operator()(const AufEintragBase &elter,AuftragBase::mengen_t m) const
 	{  mythis.MengeAendern(uid,-m,true,elter,ManuProC::Auftrag::r_Closed);
@@ -73,7 +74,8 @@ public:
 	   ae.MengeAendern(uid,m,false,elter,ManuProC::Auftrag::r_Closed);
 	   return m;
 	}
-	AbbestellenUndVormerken(AufEintrag &_mythis) : mythis(_mythis), uid(getuid()) {}
+	AbbestellenUndVormerken(AufEintrag &_mythis) 
+		: mythis(_mythis), uid(getuid()) {}
 };}
 
 // Lagerinhalt ist verschwunden -> Vormerkung löschen & neu bestellen
@@ -173,11 +175,12 @@ void AufEintrag::Auslagern
 namespace { class Einlagern_cb : public auf_positionen_verteilen_cb
 {	bool abbestellen;
         ProductionContext ctx;
+        
 public:
 	Einlagern_cb(const ProductionContext &_ctx) 
 		: abbestellen(false), ctx(_ctx) {}
 	Einlagern_cb(bool abbest,const ProductionContext &_ctx) 
-		: abbestellen(abbest), ctx(_ctx) 
+		: abbestellen(abbest), ctx(_ctx)
 	{  assert(!abbest || !ctx.aeb.valid()); }
 	AuftragBase::mengen_t operator()(AufEintrag &ae, AuftragBase::mengen_t m) const
 	{  AuftragBase::mengen_t rest;
@@ -190,13 +193,14 @@ public:
 };}
 
 // abbestellen bedeutet: Menge wurde abbestellt und kann nun anderweitig vor-
-// 	gemerkt werden, es werden keine 1er erzeugt sondern die Menge
-//	auf unteren Instanzen abgezogen
+// 	gemerkt werden, es werden keine geschlossenen 1er erzeugt 
+//	sondern die Menge auf unteren Instanzen abgezogen
 void AufEintrag::MengeVormerken(cH_ppsInstanz instanz,const ArtikelBase &artikel,
 		mengen_t menge, bool abbestellen, const ProductionContext &ctx)
 {
    ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("instanz",instanz),
-      NV("artikel",artikel),NV("menge",menge),(abbestellen?"abbestellen":"produzieren"));
+      NV("artikel",artikel),NV("menge",menge),(abbestellen?"abbestellen":"produzieren"),
+      NV("ctx",ctx));
   assert(instanz->LagerInstanz());
   assert(menge>=0);
   if(menge==0) return;

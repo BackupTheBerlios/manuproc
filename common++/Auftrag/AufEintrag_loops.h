@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.h,v 1.3 2003/07/24 11:16:24 christof Exp $ */
+/* $Id: AufEintrag_loops.h,v 1.4 2003/07/25 08:00:09 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -42,6 +42,24 @@ bool distribute_children_rev(const AufEintragBase &startAEB,
  		AuftragBase::mengen_t menge,
  		const ArtikelBase &article, 
  		const distribute_children_cb &callee);
+
+// somewhat strange construct, needed for testdb:D: 
+// first try 1er which have been rolled out, then cancel 0er, then 1er
+struct distribute_children_twice_cb : public distribute_children_cb
+{	// return the amount of the third argument you processed
+	virtual AuftragBase::mengen_t operator()(const ArtikelBase &,
+		const AufEintragBase &,AuftragBase::mengen_t,bool first) const=0;
+	virtual void operator()(const ArtikelBase &,AuftragBase::mengen_t) const=0;
+	// if we get called as a base class
+private: // forbid to overload again
+	AuftragBase::mengen_t operator()(const ArtikelBase &a,
+		const AufEintragBase &b,AuftragBase::mengen_t c) const
+	{  return operator()(a,b,c,true); }
+};
+bool distribute_children_twice_rev(const AufEintragBase &startAEB,
+ 		AuftragBase::mengen_t menge,
+ 		const ArtikelBase &article, 
+ 		const distribute_children_twice_cb &callee);
 
 struct distribute_parents_cb
 {	// return the amount of the third argument you processed
