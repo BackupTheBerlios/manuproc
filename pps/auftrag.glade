@@ -2434,7 +2434,7 @@ Auftrag</label>
 	  <snap>False</snap>
 	  <wrap>False</wrap>
 	  <value>0</value>
-	  <lower>0</lower>
+	  <lower>-100</lower>
 	  <upper>100</upper>
 	  <step>1</step>
 	  <page>10</page>
@@ -3043,7 +3043,7 @@ Auftrag</label>
 	    <snap>False</snap>
 	    <wrap>False</wrap>
 	    <value>0</value>
-	    <lower>0</lower>
+	    <lower>-100</lower>
 	    <upper>100</upper>
 	    <step>1</step>
 	    <page>10</page>
