@@ -1,4 +1,4 @@
-//  DynamicEnums.h  created 13.5.2004 16:01:41 +2
+//  DynamicEnums.h  created 20.10.2004 18:09:36 +2
 
 #ifndef MANUPROC_DYNAMICENUMS_H
 #define MANUPROC_DYNAMICENUMS_H
@@ -18,7 +18,7 @@ const static enum enum_t defaultArtikelTyp=aufgemachtes_Band;
 
   namespace ArtikelTyp_Attributes {
    enum enum_t {
-mit_ean=0,bez_as_view=1,lagerartikel=2,
+lagerartikel=0,mit_ean=1,null_preis_check=2,mit_bezeichnung=3,bez_as_view=4,color_same_price=5,provision=6,
    };
   }
 
@@ -42,7 +42,7 @@ mit_ean=0,bez_as_view=1,lagerartikel=2,
 
   namespace Instanzen {
    enum enum_t {
-    None=-1,Kundenauftraege=1,Fertigwarenlager=2,Einkauf=3,Rollerei=4,Weberei=5,
+    None=-1,Kundenauftraege=1,Fertigwarenlager=2,Einkauf=3,Musterung=4,
    };
   }
 
