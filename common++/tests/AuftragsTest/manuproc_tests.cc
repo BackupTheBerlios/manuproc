@@ -105,4 +105,19 @@ static bool ManuProCTest(AufEintrag &AE)
 }
 
 static TestReihe ManuProCTest_(&ManuProCTest,"ManuProC Test","MP");
+
+static bool AutoProduktion()
+{
+      {
+      Auftrag A=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
+      AufEintragBase aeb=A.push_back(10,DATUM,ArtikelBase(40),OPEN,true);
+      vergleichen(Check::Lieferschein|Check::Menge,"ap_auftrag","Auftrag anlegen","");
+      
+      
+      }
+   return true;
+}
+
+static TestReihe ManuProCTest_(&AutoProduktion,"automatisches Produzieren","AP");
+
 #endif
