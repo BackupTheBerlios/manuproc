@@ -1,4 +1,4 @@
-// $Id: createDynEnums.cc,v 1.19 2004/04/20 11:09:01 jacek Exp $
+// $Id: createDynEnums.cc,v 1.20 2004/04/29 10:48:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: createDynEnums.cc,v 1.19 2004/04/20 11:09:01 jacek Exp $
+// $Id: createDynEnums.cc,v 1.20 2004/04/29 10:48:27 christof Exp $
 
 
 #include <Misc/dbconnect.h>
@@ -28,6 +28,16 @@
 #include <iostream>
 #include <Misc/Zeitpunkt_new.h>
 #include <Artikel/Einheiten.h>
+
+#ifndef DEFAULT_ARTTYP
+# ifdef PETIG_EXTENSIONS
+#  define DEFAULT_ARTTYP "Band"
+# elif defined(MABELLA_EXTENSIONS)
+#  define DEFAULT_ARTTYP "aufgemachtes_Band"
+# else
+#  define DEFAULT_ARTTYP "None"
+# endif
+#endif
 
 std::string toIdentifier(const std::string &s)
 {  std::string res;
