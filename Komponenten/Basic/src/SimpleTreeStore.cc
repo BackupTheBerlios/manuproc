@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.55 2004/03/24 10:26:11 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.56 2004/05/03 08:01:53 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -35,6 +35,7 @@
 #include <gtkmm/treepath.h>
 #include <Misc/EntryValueSort.h>
 //#include <Misc/EntryValueInvert.h>
+#include <sigc++/compatibility.h>
 
 #ifdef __MINGW32__
 #define getuid() 0
@@ -202,12 +203,21 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
   for (std::vector<bool>::iterator i=vec_hide_cols.begin();i!=vec_hide_cols.end();++i)
     (*i) = true;
    defaultSequence();
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+   getModel().signal_title_changed().connect(sigc::mem_fun(*this,&SimpleTreeStore::on_title_changed));
+   getModel().signal_redraw_needed().connect(sigc::mem_fun(*this,&SimpleTreeStore::redisplay));
+   getModel().signal_line_appended().connect(sigc::mem_fun(*this,&SimpleTreeStore::on_line_appended));
+   getModel().signal_line_to_remove().connect(sigc::mem_fun(*this,&SimpleTreeStore::on_line_removed));
+   signal_save.connect(sigc::mem_fun(*this,&SimpleTreeStore::save_remembered1));
+   signal_visibly_changed.connect(sigc::mem_fun(*this,&SimpleTreeStore::on_visibly_changed));
+#else
    getModel().signal_title_changed().connect(SigC::slot(*this,&SimpleTreeStore::on_title_changed));
    getModel().signal_redraw_needed().connect(SigC::slot(*this,&SimpleTreeStore::redisplay));
    getModel().signal_line_appended().connect(SigC::slot(*this,&SimpleTreeStore::on_line_appended));
    getModel().signal_line_to_remove().connect(SigC::slot(*this,&SimpleTreeStore::on_line_removed));
    signal_save.connect(SigC::slot(*this,&SimpleTreeStore::save_remembered1));
    signal_visibly_changed.connect(SigC::slot(*this,&SimpleTreeStore::on_visibly_changed));
+#endif
   Gdk::Color c;
   c.set_rgb(col1,col1,col1); colors.push_back(c); // white
   c.set_rgb(col1,col0,col0); colors.push_back(c); // red

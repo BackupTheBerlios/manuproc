@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.45 2004/03/24 10:26:11 christof Exp $
+// $Id: SimpleTree.cc,v 1.46 2004/05/03 08:01:53 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,6 +23,7 @@
 #include <bvector_item_CheckMenuItem.hh>
 #include <bool_CheckMenuItem.hh>
 #include <CellRendererSimpleTree.h>
+#include <SigC2SlotEmu.h>
 
 #include <iostream>
 
