@@ -54,7 +54,7 @@ bool ppsInstanzReparatur::KK_teste_summen_fuer(const AufEintragBase aeb,const Ar
   AuftragBase::mengen_t ElternMenge=0;
   // ElternMenge
   { 
-   AufEintragZu::list_t L=AufEintragZu(aeb).get_Referenz_list(aeb,false);
+   AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(aeb,false,AufEintragZu::list_ohneArtikel);
    for(AufEintragZu::list_t::const_iterator i=L.begin();i!=L.end();++i)
      {
        ElternMenge += AufEintrag(i->AEB).getRestStk();
@@ -101,6 +101,7 @@ std::cout << "\n";
    {
      KK_teste_summen_fuer(i->AEB,AE0.Artikel(),uid,analyse_only);
    }
+  return false; // oder true?
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -122,7 +123,7 @@ bool ppsInstanzReparatur::ReparaturST_AuftragsZuordnung(const int uid,const bool
   SelectedFullAufList AL1(sel1er);
   for(SelectedFullAufList::iterator i=AL1.begin();i!=AL1.end();++i)
    {
-     AufEintragZu::list_t L=AufEintragZu(*i).get_Referenz_list(*i,kinder);
+     AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(*i,kinder,AufEintragZu::list_ohneArtikel);
      if(i->Id() == AuftragBase::dispo_auftrag_id && !kinder && !L.empty())
          return ReparaturG_keine_Eltern(uid,analyse_only);
 
@@ -161,7 +162,7 @@ bool ppsInstanzReparatur::ReparaturH_LagerZuordnungen(const int uid,const bool a
   SelectedFullAufList K(psel);
   for(SelectedFullAufList::const_iterator i = K.begin();i!=K.end(); ++i)
    {
-     AufEintragZu::list_t L=AufEintragZu(*i).get_Referenz_list(*i,true);
+     AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(*i,true,AufEintragZu::list_ohneArtikel);
      if(!L.empty())
       { if(analyse_only) {analyse("Analyse: 1er im Lager dürfen keine Kinder haben\n",*i); return false;}
         else assert(!"nicht implementiert");
@@ -172,12 +173,12 @@ bool ppsInstanzReparatur::ReparaturH_LagerZuordnungen(const int uid,const bool a
   SelectedFullAufList K2(psel);
   for(SelectedFullAufList::const_iterator i = K2.begin();i!=K2.end(); ++i)
    {
-     AufEintragZu::list_t L=AufEintragZu(*i).get_Referenz_list(*i,true);
+     AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(*i,true,AufEintragZu::list_ohneArtikel);
      if(!L.empty())
       { if(analyse_only) {analyse("Analyse: 2er im Lager dürfen keine Kinder haben\n",*i); return false;}
         else assert(!"nicht implementiert");
       }
-     AufEintragZu::list_t L2=AufEintragZu(*i).get_Referenz_list(*i,false);
+     AufEintragZu::list_t L2=AufEintragZu::get_Referenz_list(*i,false,AufEintragZu::list_ohneArtikel);
      if(!L.empty())
       { if(analyse_only) {analyse("Analyse: 2er im Lager dürfen keine Eltern haben\n",*i); return false;}
         else assert(!"nicht implementiert");
@@ -717,7 +718,7 @@ bool ppsInstanzReparatur::ReparaturG_keine_Eltern(const int uid,const bool analy
    SelectedFullAufList AL1(sel1er);
    for(SelectedFullAufList::iterator i=AL1.begin();i!=AL1.end();++i)
     {
-      AufEintragZu::list_t L=AufEintragZu(*i).get_Referenz_list(*i);
+      AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(*i,AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
       if(!L.empty())
        {
          if(analyse_only) {analyse("Analyse: Kundenauftrag und 2er dürfen keine Eltern haben.\n",*i);

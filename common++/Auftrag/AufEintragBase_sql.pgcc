@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.35 2003/01/08 10:51:35 christof Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.36 2003/02/14 09:53:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,42 +24,24 @@
 #include <Auftrag/AuftragsBaum.h> 
 #include <Misc/Changejournal.h>
 #include <Auftrag/AufEintragZu.h>
-#ifdef MABELLA_EXTENSIONS
-#include<Lager/FertigWaren.h>
-#include<Artikel/ArtikelBase.h>
-#endif
 #include <Misc/Trace.h>
-
-exec sql include sqlca;
+#include <Misc/FetchIStream_ops.h>
 
 void AufEintragBase::setVerarbeitung(const cH_Prozess p) const throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
  assert (Instanz()==ppsInstanzID::Kundenauftraege);
- exec sql begin declare section;
-  int AUFTRAGID=Id();
-  int INSTANZ=InstanzID();
-  int ZEILENNR=ZNr();
-  int PROZESSID;
- exec sql end declare section;
- PROZESSID=p->getProzessID();
  
- Transaction tr;
- 
- exec sql update auftrag_prozess 
- 	set prozessid= :PROZESSID, datum= now() 
- 	where (instanz,auftragid,zeilennr) = (:INSTANZ,:AUFTRAGID,:ZEILENNR);
- SQLerror::test("Prozessaktualisierung (1) ",100);
- 
- if((sqlca.sqlcode==100) || sqlca.sqlerrd[2]==0)
-   {
-    exec sql insert into auftrag_prozess 
-      (instanz,auftragid,zeilennr,prozessid,datum)
-      values
-    	(:INSTANZ, :AUFTRAGID, :ZEILENNR, :PROZESSID, now());
-    SQLerror::test("Prozessaktualisierung (2)");
-   }
- tr.commit();
+ Query("update auftrag_prozess set prozessid=?,datum=now() "
+ 	"where (instanz,auftragid,zeilennr) = (?,?,?)")
+	<< p->getProzessID() << *this;
+ if (SQLerror::SQLCode()==100)
+ {  Query("insert into auftrag_prozess "
+        "(instanz,auftragid,zeilennr,prozessid)"
+	"values (?,?,?,?)").lvalue()
+	<< *this << p->getProzessID();
+ }
+ SQLerror::test("Prozessaktualisierung (Verarbeitung)");
 }
 
 
@@ -75,21 +57,17 @@ bool AufEintragBase::deleteAuftragEntry() const throw(SQLerror)
  if(!AB.empty()) return false;
 
  Transaction tr;
- exec sql begin declare section;
- int AUFTRAGID=auftragid;
- int ZEILENNR=zeilennr;
- int INSTANZ=InstanzID();
- exec sql end declare section;
  // Löschen aus Auftragszuordnung
- exec sql delete from auftragsentryzuordnung 
- 	where (neuinstanz,neuauftragid,neuzeilennr)
- 		=(:INSTANZ,:AUFTRAGID,:ZEILENNR);
- SQLerror::test(__FILELINE__+(std::string)" DELETE AUFTRAG 1");
+ Query("delete from auftragsentryzuordnung "
+ 	"where (neuinstanz,neuauftragid,neuzeilennr)=(?,?,?)").lvalue()
+ 	<< *this;
+ SQLerror::test(__FILELINE__" DELETE AUFTRAG 1");
 
  // Löschen aus Auftragentry
- exec sql delete from auftragentry 
- 	where (instanz,auftragid,zeilennr)=(:INSTANZ,:AUFTRAGID,:ZEILENNR);
- SQLerror::test(__FILELINE__+(std::string)" DELETE AUFTRAG 2");
+ Query("delete from auftragentry "
+ 	"where (instanz,auftragid,zeilennr)=(?,?,?)").lvalue()
+ 	<< *this;
+ SQLerror::test(__FILELINE__" DELETE AUFTRAG 2");
  tr.commit();
  return true;
 }
@@ -97,72 +75,40 @@ bool AufEintragBase::deleteAuftragEntry() const throw(SQLerror)
 void AufEintragBase::setLetztePlanungFuer(cH_ppsInstanz planinstanz) const throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Instanz=",planinstanz);
-//cout << "Instanz: "<<planinstanz<<'\n';
+
  assert (Instanz()==ppsInstanzID::Kundenauftraege);
 
  if(planinstanz->LagerInstanz()) return;
 
- exec sql begin declare section;
-  int AUFTRAGID=Id();
-  int ZEILENNR=ZNr();
-  int INSTANZ=InstanzID();
-  int PLANUNG=planinstanz->Id();
-  int PROZESSID=planinstanz->get_Prozess()->Id();
- exec sql end declare section;
- Transaction tr;
- 
- exec sql update auftrag_prozess set letzteplaninstanz= :PLANUNG,
-   maxPlanInstanz=null, datum= now() 
-   where (instanz,auftragid,zeilennr) = (:INSTANZ,:AUFTRAGID,:ZEILENNR) ;
- SQLerror::test("Prozessaktualisierung",100);
-
- if((sqlca.sqlcode==100) || sqlca.sqlerrd[2]==0)
-   {
-    exec sql insert into auftrag_prozess 
-        (instanz,auftragid,zeilennr,prozessid,letztePlanInstanz)
-      values
-    	(:INSTANZ,:AUFTRAGID,:ZEILENNR,:PROZESSID,:PLANUNG);
-    SQLerror::test("Prozessaktualisierung");
-   }
- tr.commit();
+ Query("update auftrag_prozess set letzteplaninstanz=?,"
+ 	"maxPlanInstanz=NULL,datum=now() "
+ 	"where (instanz,auftragid,zeilennr) = (?,?,?)")
+	<< planinstanz->Id() << *this;
+ if (SQLerror::SQLCode()==100)
+ {  Query("insert into auftrag_prozess "
+        "(instanz,auftragid,zeilennr,prozessid,letztePlanInstanz)"
+	"values (?,?,?,?,?)").lvalue()
+	<< *this << planinstanz->get_Prozess()->Id() << planinstanz->Id();
+ }
+ SQLerror::test("Prozessaktualisierung");
 }
 
 void AufEintragBase::setMaxPlanInstanz(int anzahl_maxplaninstanzen) const throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
    "Anzahl=",anzahl_maxplaninstanzen);
- exec sql begin declare section;
-  int AUFTRAGID=Id();
-  int ZEILENNR=ZNr();
-  int INSTANZ=InstanzID();
-  int PLANUNG=anzahl_maxplaninstanzen;
- exec sql end declare section;
-
- Transaction tr;
- 
- exec sql update auftrag_prozess set maxPlanInstanz= :PLANUNG,
-   datum= now() 
-   where (instanz,auftragid,zeilennr) = (:INSTANZ,:AUFTRAGID,:ZEILENNR);
+ Query("update auftrag_prozess set maxPlanInstanz=?, datum=now() "
+ 	"where (instanz,auftragid,zeilennr) = (?,?,?)")
+ 	<< anzahl_maxplaninstanzen << *this;
  SQLerror::test("Prozessaktualisierung",100);
- // Wenn die Zeile nicht da ist, dann auch nichts eintragen
-
- tr.commit();
 }
 
 void AufEintragBase::setLetzteLieferung(const ManuProC::Datum &datum) const throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,datum);
- exec sql begin declare section;
- int AUFTRAGID = auftragid;
- int ZEILENNR = zeilennr;  
- int INSTANZ=instanz->Id();
- char DATUM[21];
- exec sql end declare section;
- datum.write_postgres(DATUM,sizeof DATUM);
-
- exec sql update auftragentry  
-   set letzte_lieferung= :DATUM
-   where (instanz,auftragid,zeilennr)=(:INSTANZ,:AUFTRAGID,:ZEILENNR);
+ Query("update auftragentry set letzte_lieferung=? "
+ 	"where (instanz,auftragid,zeilennr)=(?,?,?)").lvalue()
+ 	<< datum << *this;
  SQLerror::test(__FILELINE__" setLetzeLieferung");
 }
 
@@ -171,36 +117,29 @@ AuftragBase::mengen_t AufEintragBase::updateStkDiffBase__(int uid,const mengen_t
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AEB=",*this,"menge=",menge);
 
- exec sql begin declare section;
- int AUFTRAGID = Id();
- int INSTANZ=instanz->Id();
- int ZEILENNR = ZNr();  
- double MENGE = menge.as_float();
- double OLDMENGE;
- double NEWMENGE;
- int ARTIKELID;
- int UID=uid;
- exec sql end declare section;
-
  Transaction tr;
+ Query("lock auftragentry in exclusive mode");
+ SQLerror::test("lock auftragentry");
 
- exec sql select bestellt,artikelid into :OLDMENGE,:ARTIKELID from auftragentry 
-      where (instanz,auftragid,zeilennr) = (:INSTANZ,:AUFTRAGID,:ZEILENNR);
-
+ mengen_t OLDMENGE,MENGE=menge;
+ ArtikelBase::ID ARTIKELID;
+ Query("select bestellt,artikelid from auftragentry "
+      "where (instanz,auftragid,zeilennr) = (?,?,?)").lvalue()
+      << *this
+      >> OLDMENGE >> ARTIKELID;
 // Sicherstellen, daß keine negativen Mengen bestellt werden
-    if((MENGE < 0) && OLDMENGE < -MENGE)  MENGE = -OLDMENGE;
+ if(MENGE < 0 && OLDMENGE < -MENGE)  MENGE = -OLDMENGE;
 
- NEWMENGE=OLDMENGE+MENGE;
+ mengen_t NEWMENGE=OLDMENGE+MENGE;
  ManuProC::Trace(AuftragBase::trace_channel, __FILELINE__, OLDMENGE, MENGE, NEWMENGE);
 
- exec sql update auftragentry set bestellt= :NEWMENGE,lasteditdate=now(),
-   lastedit_uid=:UID
-   where (instanz,auftragid,zeilennr) = 
-	(:INSTANZ,:AUFTRAGID,:ZEILENNR);
+ Query("update auftragentry set bestellt=?,lasteditdate=now(),lastedit_uid=? "
+	"where (instanz,auftragid,zeilennr)=(?,?,?)").lvalue()
+	<< NEWMENGE << uid << *this;
  SQLerror::test("updateStkDiff: update stk in auftragentry");
 
- pps_ChJournalEntry::newChange(
-	instanz, *this,ARTIKELID,NEWMENGE,MENGE,pps_ChJournalEntry::CH_MENGE);
+ pps_ChJournalEntry::newChange(instanz, *this,ARTIKELID,
+ 	NEWMENGE.as_float(),MENGE.as_float(),pps_ChJournalEntry::CH_MENGE);
 
  tr.commit(); 
  return MENGE;

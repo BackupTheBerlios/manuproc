@@ -1,4 +1,4 @@
-/* $Id: VerfuegbareMenge.cc,v 1.2 2003/01/15 15:10:16 christof Exp $ */
+/* $Id: VerfuegbareMenge.cc,v 1.3 2003/02/14 09:53:53 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -76,13 +76,16 @@ AuftragBase::mengen_t VerfuegbareMenge::reduce_in_dispo_or_plan(const bool dispo
    {
      AuftragBase::mengen_t M=AuftragBase::min(i->getRestStk(),menge);
      ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,*i,M);
-     i->updateStkDiffBase__(uid,-M);
-     
+
+     // erst nachbestellen, dann (Lager)vormerkung freigeben
+     // diese nichtssagenden Aufrufe gefallen mir nicht CP
      if(!dispo)  
         AufEintragZuMengenAenderung::increase_parents__reduce_assingments(uid,*i,M);
      if(!instanz->LagerInstanz())
      {  AufEintragZuMengenAenderung::freie_dispomenge_verwenden(uid,*i,M,ElternAEB);
      }
+
+     i->updateStkDiffBase__(uid,-M);
      wieviel_geschafft+=M;
      menge-=M;
      if(menge==0) break;

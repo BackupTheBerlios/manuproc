@@ -1,4 +1,4 @@
-// $Id: AuftragsBaum.cc,v 1.9 2003/02/10 14:33:59 christof Exp $
+// $Id: AuftragsBaum.cc,v 1.10 2003/02/14 09:53:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -23,10 +23,10 @@
 #include <Auftrag/AufEintragZu.h>
 #include <list>
 
-
+// ich vermute dass der Artikel hier auch interessant ist ...
 AuftragsBaum::AuftragsBaum(const AufEintragBase aeb,bool kinder)
 {
- AufEintragZu::list_t tv=AufEintragZu(aeb).get_Referenz_list(aeb,kinder);
+ AufEintragZu::list_t tv=AufEintragZu::get_Referenz_list(aeb,kinder,AufEintragZu::list_Artikel);
  AufEintragZu::list_t tvxx;
 reloop:
  tv.splice(tv.end(),tvxx);
@@ -34,7 +34,7 @@ reloop:
    {
      st_AuftragsBlatt AuftragsBlatt(i->AEB,i->Art,i->Menge);
      auftragsbaum.push_back(AuftragsBlatt);
-     tvxx=AufEintragZu(i->AEB).get_Referenz_list(i->AEB,kinder);
+     tvxx=AufEintragZu::get_Referenz_list(i->AEB,kinder,AufEintragZu::list_Artikel);
      tv.erase(i);
      goto reloop;
    }

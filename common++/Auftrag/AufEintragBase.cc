@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.38 2003/02/10 14:33:59 christof Exp $
+// $Id: AufEintragBase.cc,v 1.39 2003/02/14 09:53:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -90,7 +90,7 @@ int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
 
   assert(Id()==AuftragBase::ungeplante_id);
   // ElternListe holen
-  AufEintragZu::list_t L=AufEintragZu(*this).get_Referenz_list(*this,false);
+  AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(*this,false,AufEintragZu::list_ohneArtikel);
   int znr=none_znr;
   assert(!L.empty());
   for(AufEintragZu::list_t::iterator i=L.begin();i!=L.end();++i)
