@@ -1,4 +1,4 @@
-/* $Id: ManuProCConfig.h.in,v 1.21 2004/03/12 20:51:16 jacek Exp $ */
+/* $Id: ManuProCConfig.h.in,v 1.22 2004/04/29 09:31:09 christof Exp $ */
 /*  ManuProCBase: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,6 +28,9 @@
 /* we have support for pgsql/ecpg */
 #undef MANUPROC_WITH_DATABASE
 
+/* which SigC++ version to use (e.g. 0x120) */
+#undef MPC_SIGC_VERSION
+
 /* Define to 1 if you want to use the SQLite backend */
 #undef MPC_SQLITE
 
@@ -36,6 +39,6 @@
    */
 #undef OLD_ECPG
 
-/* 
-   we use SigC++ 1.2.x (not 1.0.x) */
+/* deprecated: we use SigC++ 1.2 */
 #undef SIGC1_2
+

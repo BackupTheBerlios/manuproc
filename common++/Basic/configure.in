@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.30 2004/04/29 08:53:11 christof Exp $
+# $Id: configure.in,v 1.31 2004/04/29 09:31:09 christof Exp $
 
 AC_PREREQ(2.50)
 AC_INIT(ManuProC_Base,0.6.4, [manuproc-developer-de@berlios.de])
@@ -28,14 +28,25 @@ m4_ifdef([AM_PATH_SIGC],[],[AC_DEFUN(AM_PATH_SIGC,[$3])])
 
 AC_ARG_ENABLE(sigc1-0, [  --enable-sigc1-0	prefer sigc 1.0],
 	[AM_PATH_SIGC(1.0.0,,AC_MSG_ERROR("SigC++ 1.0.0 or newer not found or broken - see config.log for details."))],
-	[PKG_CHECK_MODULES(SIGC,[sigc++-1.2 >= 1.2.0],[
+	[PKG_CHECK_MODULES(SIGC,[sigc++-2.0 >= 1.9.15],[
 		AC_SUBST(SIGC_CFLAGS)
 		AC_SUBST(SIGC_LIBS)
-		AC_DEFINE(SIGC1_2,1,[we use SigC++ 1.2.x (not 1.0.x)])
+		mpc_sigc_version=0x200
 	 ],[
-		AM_PATH_SIGC(1.0.0,,AC_MSG_ERROR("SigC++ 1.0.0 or newer not found or broken - see config.log for details."))
+		PKG_CHECK_MODULES(SIGC,[sigc++-1.2 >= 1.2.0],[
+		AC_SUBST(SIGC_CFLAGS)
+		AC_SUBST(SIGC_LIBS)
+		mpc_sigc_version=0x120
+		AC_DEFINE(SIGC1_2,1,[deprecated: we use SigC++ 1.2])
+	 ],[
+		AM_PATH_SIGC(1.0.0,[mpc_sigc_version=0x100],AC_MSG_ERROR("SigC++ 1.0.0 or newer not found or broken - see config.log for details."))
+	 ])
 	 ]) 
 	])
+if test \! -z "$mpc_sigc_version"
+then 
+  AC_DEFINE_UNQUOTED(MPC_SIGC_VERSION,$mpc_sigc_version,[which SigC++ version to use (e.g. 0x120)])
+fi
 
 AC_ARG_ENABLE(sqlite, [  --enable-sqlite	prefer SQLite over PostgreSQL],
 	[prefer_sqlite=0 
