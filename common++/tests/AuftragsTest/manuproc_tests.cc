@@ -30,6 +30,7 @@
 #include <Lieferschein/Lieferschein.h>
 //#include <Misc/inbetween.h>
 #include "TestReihe.h"
+#include <Artikel/ArtikelStamm.h>
 
 static bool ManuProCTest(AufEintrag &AE)
 {
@@ -152,5 +153,24 @@ static bool AutoProduktion()
 }
 
 static TestReihe AutoProduktion_(&AutoProduktion,"automatisches Produzieren","AP");
+
+static bool Set()
+{  ArtikelBase newart=ArtikelStamm::Anlegen(ArtikelTypID::Sortimente,1);
+   ArtikelBezeichnung::Anlegen(cH_ExtBezSchema(1,ArtikelTypID::Sortimente),
+   		newart,"sortiment,bezeichnung", "'all','Alle Sortimente'");
+   ArtikelBaum::Anlegen(newart,ArtikelBase(27),ProzessID::Zusammenfuegen,3);
+   ArtikelBaum::Anlegen(newart,ArtikelBase(28),ProzessID::Zusammenfuegen,2);
+
+      Auftrag PA=Auftrag(Auftrag::Anlegen(KUNDENINSTANZ),KUNDE);
+      AufEintrag aeb=PA.push_back(2,DATUM,newart,OPEN,true);
+      vergleichen(Check::Menge,"set_auftrag","Auftrag Anlegen","");
+      
+      aeb.MengeAendern(1,true,AufEintragBase());
+      vergleichen(Check::Menge,"set_abbest","Hälfte abbestellen","-");
+      
+    return true;
+}
+
+static TestReihe Set_(&Set,"Set Test","S");
 
 #endif
