@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.2 2001/04/30 15:30:26 christof Exp $
+// $Id: fixedpoint.h,v 1.3 2001/06/06 07:27:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -139,10 +139,15 @@ public:
 	bool operator!() const
 	{  return scaled==0;
 	}
-	// conversion operator
+	// conversion operators
 	template <int decimals2,class Ftype2,class Itype2>
 	 fixedpoint(const fixedpoint<decimals2,Ftype2,Itype2> &f)
 	{  *this=(Ftype)(Ftype2)f;
+	}
+	template <int decimals2,class Ftype2,class Itype2>
+	 const self_t &operator=(const fixedpoint<decimals2,Ftype2,Itype2> &f)
+	{  *this=(Ftype)(Ftype2)f;
+	   return *this;
 	}
 };
 

@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.pgcc,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: ArtikelBaum.pgcc,v 1.2 2001/06/06 07:27:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -40,18 +40,19 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
  {  exec sql begin declare section;
     int ARTIKELID;
     int ALTARTIKELID;
-    int IALTARTIKELID;
+    int IALTARTIKELID=-1;
     int PROZESSID;
-    int IPROZESSID;
+    int IPROZESSID=-1;
     exec sql end declare section;
     
     ARTIKELID=Id();
     exec sql select altartikelid, prozessid 
         into :ALTARTIKELID:IALTARTIKELID, :PROZESSID:IPROZESSID
- 	from artikelbezeichnung
-	where artikelid= :ARTIKELID;
-    SQLerror::test(__FILELINE__);
-
+ 	from artikelzusammensetzung
+	where id= :ARTIKELID;
+    SQLerror::test(__FILELINE__,100);
+//  sind schon auf -1 gesetzt
+//    if (sqlca.sqlcode==100) IALTARTIKELID=IPROZESSID=-1;
     altartikel = IALTARTIKELID ? 0 : ALTARTIKELID;
     if (IPROZESSID) PROZESSID = Prozess::default_id;
     prozess = cH_Prozess(PROZESSID);

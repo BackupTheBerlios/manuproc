@@ -1,4 +1,4 @@
-/* $Id: Kette.h,v 1.1 2001/04/23 08:11:58 christof Exp $ */
+/* $Id: Kette.h,v 1.2 2001/06/06 07:27:39 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -44,6 +44,7 @@ public:
 	Kette(const char *barconame) throw(Petig::Datumsfehler,illegal_format);
 	Kette() : maschine(0), schaerdatum() {}
 	const Petig::Datum &Schaerdatum() const throw() { return schaerdatum; }
+	int Maschine() const throw() { return maschine; }
 	
 	string barco_format() const throw();
 	void write(int &a, char*, unsigned int) const throw();

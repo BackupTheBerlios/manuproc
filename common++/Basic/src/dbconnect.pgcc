@@ -1,4 +1,4 @@
-// $Id: dbconnect.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: dbconnect.pgcc,v 1.2 2001/06/06 07:27:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,6 +27,7 @@
 void Petig::dbconnect(const Connection &c) throw(SQLerror)
 {  exec sql begin declare section;
    char connstr[80];
+   char NAME[80];
    exec sql end declare section;
 
    string host;
@@ -39,15 +40,11 @@ void Petig::dbconnect(const Connection &c) throw(SQLerror)
    char *d_opt(getenv("PGDATABASE"));
    if(h_opt) host=h_opt;
    if(d_opt) db=d_opt;
-//cout << "host1" << host << "\n";
-//cout << "db1" << db << "\n";
 
-   if(c.hFilled()) host=c.Host();
-   if(c.dFilled()) db=c.Dbase();
-
-
-//cout << "host1" << host << "\n";
-//cout << "db1" << db << "\n";
+   if(c.Host().size()) host=c.Host();
+   if(c.Dbase().size()) db=c.Dbase();
+   if(c.Name().size()) strncpy0(NAME,c.Name().c_str(),sizeof NAME);
+   else strncpy0(NAME,db.c_str(),sizeof NAME);
 
   if (host=="localhost") strncpy0(connstr,db.c_str(),sizeof connstr);
   else 
@@ -56,28 +53,52 @@ void Petig::dbconnect(const Connection &c) throw(SQLerror)
 #else     
      snprintf0(connstr,sizeof connstr,"%s@%s",db.c_str(),host.c_str());
 #endif     
-
+   
    char *opt(getenv("SQLOPT"));
    if (!opt) {} 
    else if (!strcmp(opt,"-X"))
-   {  FILE *f=fopen("dbconnect.pct","w");
+   {  char fname[200];
+      snprintf(fname,sizeof fname,"%s.sqllog",NAME);
+      FILE *f=fopen(fname,"w");
       ECPGdebug(1,f);
    } 
    else if (!strcmp(opt,"-E"))
    {  ECPGdebug(1,stderr);
-   } 
-   exec sql connect to :connstr as petigdb;
+   }
+   exec sql connect to :connstr as :NAME;
    SQLerror::test("dbconnect");
-   exec sql at petigdb set autocommit to on;
+   exec sql at :NAME set autocommit to on;
+   SQLerror::test("dbconnect,autocommit");
+//   exec sql at :NAME set datestyle to 'ISO';
+//   SQLerror::test("dbconnect,datestyle=ISO");
+   // ex ec sql at :NAME set datestyle to 'ISO';
+   { ECPGdo(__LINE__, NAME, "set datestyle to 'ISO'", 
+	ECPGt_EOIT, ECPGt_EORT);}
+   SQLerror::test("dbconnect,datestyle=ISO");
 }
 
-void Petig::dbdisconnect() throw(SQLerror)
-{  exec sql disconnect petigdb;
-   SQLerror::test("dbdisconnect");
+void Petig::dbdisconnect(const string &name) throw(SQLerror)
+{  if (!name.size()) 
+   {  exec sql disconnect; }
+   else 
+   {  exec sql begin declare section;
+      const char *NAME;
+      exec sql end declare section;
+      NAME=name.c_str();
+      
+      exec sql disconnect :NAME;
+      SQLerror::test("dbdisconnect");
+   }
 }
 
-void Petig::dbdefault() throw(SQLerror)
-{  exec sql set connection to petigdb;
+void Petig::dbdefault(const string &name) throw(SQLerror)
+{  exec sql begin declare section;
+   const char *NAME;
+   exec sql end declare section;
+   if (!name.size()) NAME=DEFAULT_DB;
+   else NAME=name.c_str();
+   
+   exec sql set connection to :NAME;
    SQLerror::test("dbdefault");
 }
 
@@ -86,14 +107,10 @@ void Petig::dbconnect_nt(const Connection &c) throw()
    catch (SQLerror &e)
    {  cerr << e << '\n';
    }
-   try { setDTstyle("ISO"); }
-   catch (SQLerror &e)
-   {  cerr << e << '\n';
-   }   
 }
 
-void Petig::dbdisconnect_nt() throw()
-{  try { dbdisconnect(); }
+void Petig::dbdisconnect_nt(const string &name) throw()
+{  try { dbdisconnect(name); }
    catch (SQLerror &e)
    {  cerr << e << '\n';
    }
@@ -106,8 +123,8 @@ void Petig::setDTstyle(char *style) throw(SQLerror)
  exec sql end declare section;
  
  snprintf0(ST,sizeof ST,"set datestyle to '%s'",style);
- exec sql at petigdb execute immediate :ST;
- // later
+ exec sql execute immediate :ST;
+ // later ??
 /* exec sql at petigdb set datestyle to :ST; */
  SQLerror::test("Datumsformat setzen");
 }

@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.1 2001/04/23 08:11:59 christof Exp $ */
+/* $Id: Datum.h,v 1.2 2001/06/06 07:27:39 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -87,12 +87,12 @@ public:
         bool operator==(const Datum &b) const throw()
         {  return b.tag==tag && b.monat==monat && b.jahr==jahr; }
         /// erstes Datum vor dem zweiten?
-        bool operator<(const Datum &b) const throw();
+        bool operator<(const Datum &b) const throw(Datumsfehler);
         /** morgen
             noch nicht implementiert */
         Datum &operator++();
         Datum operator++(int);
-        Datum operator+(int) const throw();
+        Datum operator+(int) const throw(Datumsfehler);
         Datum &operator+=(int tage)
         {  return *this=*this+tage;
         }
@@ -102,7 +102,7 @@ public:
         Datum operator--(int);
         
         /// Differenz in Tagen
-        int operator-(const Datum &b) const throw();
+        int operator-(const Datum &b) const throw(Datumsfehler);
 
 	/** führende Leerzeichen überlesen, dann Dezimalziffern in ulong wandeln
 	    bis zu einer bestimmten Länge */
@@ -124,15 +124,15 @@ public:
 	{  return Schaltjahr(jahr)?366:365; }
 	
 	/// Der [1..366]. Tag im Jahr
-	int Julian() const throw();
+	int Julian() const throw(Datumsfehler);
 	/** Tage seit 1.1.1900 
             <br>(1.1.1 waere möglich gewesen, 
 	    aber: Kalenderreformationen sind ein Kreuz) */
-	int Internal() const throw();
+	int Internal() const throw(Datumsfehler);
 	/// Kalenderwoche
-	Kalenderwoche KW() const throw();
+	Kalenderwoche KW() const throw(Datumsfehler);
 	/// Wochentag: 0=Montag 6=Sonntag
-	int Wochentag() const throw();
+	int Wochentag() const throw(Datumsfehler);
 	
 	/**member access */
 	int Tag() const { return tag; }

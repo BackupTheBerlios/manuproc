@@ -1,4 +1,4 @@
-// $Id: Telefon.h,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: Telefon.h,v 1.2 2001/06/06 07:27:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,6 +24,7 @@
 #include<Aux/Datum.h>
 #include<Kunde/Kunde.h>
 #include<Kunde/Person.h>
+#include<vector>
 
 class cH_Telefon;
 
@@ -31,9 +32,14 @@ class Telefon : protected HandleContent
 {
 public:
  typedef int ID;
+
  
  static const ID none_id=0;
- typedef enum {TEL_NONE=0,TEL_TEL='T',TEL_FAX='F',TEL_MOB='M'} TelArt;
+ typedef enum {TEL_NONE=0,TEL_TEL='T',TEL_FAX='F',TEL_MOB='M',
+        TEL_E_MAIL='E',TEL_HOMEPAGE='W'} TelArt;
+ struct st_tel{string nummer;string art;Kunde::ID kid;Person::ID pid;
+        st_tel(string n,string a,Kunde::ID k,Person::ID p) 
+        : nummer(n),art(a),kid(k),pid(p) {}};
  
 private: 
 
@@ -42,6 +48,7 @@ private:
  Kunde::ID kunde;
  Person::ID person;
  string nummer;
+ vector<st_tel> vec_telefon;
  
  friend class const_Handle<Telefon>;
  
@@ -49,10 +56,12 @@ public:
  Telefon() : telid(none_id), telart(TEL_NONE), kunde(Kunde::none_id), 
  		person(Person::none_id) {}
  Telefon(ID _tid) throw(SQLerror);
+ vector<Telefon::st_tel> get_Telefon(int nr,const string& mod) throw(SQLerror);
 
  static const cH_Telefon newTelefon(const Kunde::ID kid, const Person::ID pid,
  		const string &nr, const TelArt art) throw(SQLerror);
- static void delTelefon(const ID tid) throw(SQLerror);
+// static void delTelefon(const ID tid) throw(SQLerror);
+ static void delTelefon(const string& nr,const string& mod="") throw(SQLerror);
  
  string Nummer() const { return nummer; }
  ID Id() const { return telid; } 

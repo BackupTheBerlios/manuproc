@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.h,v 1.2 2001/04/30 15:30:26 christof Exp $ */
+/* $Id: Ausgabe_neu.h,v 1.3 2001/06/06 07:27:39 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -89,5 +89,13 @@ template <int decimals,class Ftype,class Itype>
    unsigned int scale(Zahl.Scale());
    while (scale>0 && !(val%10)) { val/=10; --scale; }
    return FormatiereTeX(val,scale);
+}
+
+template <int decimals,class Ftype,class Itype>
+ const string Formatiere_short(const fixedpoint<decimals,Ftype,Itype> &Zahl)
+{  Itype val(Zahl.Scaled());
+   unsigned int scale(Zahl.Scale());
+   while (scale>0 && !(val%10)) { val/=10; --scale; }
+   return Formatiere(val,scale);
 }
 #endif

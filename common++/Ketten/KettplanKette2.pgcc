@@ -1,4 +1,4 @@
-// $Id: KettplanKette2.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: KettplanKette2.pgcc,v 1.2 2001/06/06 07:27:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -305,3 +305,111 @@ int KettplanKette::holePlanMaschine() const throw(SQLerror)
   return 0;
 }
 
+Petig::Datum KettplanKette::Abgzuletzt() const throw(SQLerror)
+{ try { 
+  exec sql begin declare section;
+    char azu[30];
+    int masch;
+    char schaerdatum[11];
+   exec sql end declare section;
+   write(masch,schaerdatum,sizeof schaerdatum);
+   exec sql select coalesce(abgzuletzt,null) into :azu from ketten
+   	where maschine= :masch and schaerdatum= :schaerdatum;
+   SQLerror::test(__FILELINE__,100);
+   if (sqlca.sqlcode) abort(); // Funktioniert nicht ??? MAT
+//cout << "Datum:"<<azu<<"\n";
+   const_cast<KettplanKette*>(this)->abgzuletz=azu;
+   return azu;
+ }catch(SQLerror &e) {}
+return Petig::Datum(1);
+}
+
+Petig::Datum KettplanKette::Maschinen_start() const throw(SQLerror)
+{ try { 
+  exec sql begin declare section;
+    char m_start[30];
+    int masch;
+    char schaerdatum[11];
+   exec sql end declare section;
+   write(masch,schaerdatum,sizeof schaerdatum);
+   exec sql select coalesce(abg0,null) into :m_start from ketten
+   	where maschine= :masch and schaerdatum= :schaerdatum;
+   SQLerror::test(__FILELINE__,100);
+   if (sqlca.sqlcode) abort(); // Funktioniert nicht ??? MAT
+//cout << "Datum:"<<azu<<"\n";
+   const_cast<KettplanKette*>(this)->maschinen_start=m_start;
+   return m_start;
+ }catch(SQLerror &e) {}
+return Petig::Datum(1);
+}
+
+unsigned int KettplanKette::Abgeschnitten() const throw(SQLerror)
+{  try
+  {exec sql begin declare section;
+   int laenge;
+   int masch;
+   char schaerdatum[11];
+   exec sql end declare section;
+   write(masch,schaerdatum,sizeof schaerdatum);
+   exec sql select coalesce(abgeschnitten,0) into :laenge from ketten
+   	where maschine= :masch and schaerdatum= :schaerdatum;
+   SQLerror::test(__FILELINE__);
+   if (laenge)
+   {  const_cast<KettplanKette*>(this)->abgeschnitten=laenge;
+      return laenge;
+   }
+  } 
+  catch(SQLerror &e) {}
+  return 0;
+}
+
+Kette KettplanKette::Aktuelle_Kette(int webmasch) throw(SQLerror)
+{ exec sql begin declare section;
+   int amasch;
+   int masch=webmasch;
+   char aschaerdatum[11];
+   exec sql end declare section;
+   exec sql select maschine,schaerdatum into :amasch, :aschaerdatum from ketten
+   	where maschine= :masch
+      and abg0 is not null and abgewebt is null and geloescht is null ;
+   SQLerror::test(__FILELINE__,100);
+   if (sqlca.sqlcode) // Aktuell läuft die Maschine nicht
+      {
+        exec sql select maschine,schaerdatum into :amasch, :aschaerdatum from ketten
+      	where abgewebt = (select max(abgewebt) from ketten where 
+         planmaschine = :masch and geloescht is null) limit 1;
+      }
+   SQLerror::test(__FILELINE__);
+   Kette AK(amasch,aschaerdatum);
+   return AK;
+}
+
+Kette KettplanKette::Folge_Kette() throw(SQLerror)
+{ 
+  exec sql begin declare section;
+      int masch=webmasch;
+      char schaerdatum[11];
+      int folgenr;
+      int fm;
+      char fs[11];
+   exec sql end declare section;
+   write(masch,schaerdatum,sizeof schaerdatum);
+   exec sql select folgenr into :folgenr from ketten
+   	where maschine= :masch and schaerdatum= :schaerdatum;
+   SQLerror::test(__FILELINE__);
+
+   exec sql select maschine, schaerdatum into :fm, :fs
+      from ketten where planmaschine=:masch
+      and folgenr=(select min(folgenr) from ketten where 
+      planmaschine=:masch and folgenr> :folgenr and abgewebt is null 
+      and geloescht is null ) ;
+   SQLerror::test(__FILELINE__,100);
+   if (sqlca.sqlcode) return Kette(0,Petig::Datum().today());
+  return Kette(fm,fs);
+}
+
+/*
+Petig::Datum KettplanKette::Fertig_am() const throw(SQLerror)
+{
+}
+*/

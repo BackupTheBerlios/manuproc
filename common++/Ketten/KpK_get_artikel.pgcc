@@ -1,4 +1,4 @@
-// $Id: KpK_get_artikel.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: KpK_get_artikel.pgcc,v 1.2 2001/06/06 07:27:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -48,6 +48,7 @@ const vector <ArtikelGang> &KettplanKette::get_artikel_sorted()
    	 and s.artikelid=e.artikelid and kundennr=1 and bezkomptype=0
    	order by e.text limit 10;
    SQLerror::test(__FILELINE__,100);
+//cout << refmasch<<"\t"<<refdate<<"\n";//<<GAENGE[i]<<"\t"<<ID[i]<<"\n";
    for (int i=0;i<sqlca.sqlerrd[2];++i)
    {  if (IID[i]) continue;
 #warning TEXT is ignored - why?

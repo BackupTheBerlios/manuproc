@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.2 2001/05/04 09:14:17 christof Exp $ */
+/* $Id: Datum.cc,v 1.3 2001/06/06 07:27:39 christof Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
@@ -72,23 +72,26 @@ bool Petig::Datum::valid() const throw ()
    return true;
 }
 
-bool Petig::Datum::operator<(const Datum &b) const throw()
-{  if (jahr<b.jahr) return true;
+bool Petig::Datum::operator<(const Datum &b) const throw(Datumsfehler)
+{  teste(); b.teste();
+   if (jahr<b.jahr) return true;
    if (jahr>b.jahr) return false;
    if (monat<b.monat) return true;
    if (monat>b.monat) return false;
    return tag<b.tag;
 }
 
-int Petig::Datum::Julian() const throw()
-{  static const int monatsbeginn[10]=
+int Petig::Datum::Julian() const throw(Datumsfehler)
+{  teste();
+   static const int monatsbeginn[10]=
 	{ /* 0,31, */ 59,90,120,151,181,212,243,273,304,334 };
    if (monat<3) return monat<2?tag:tag+31;
    return tag+monatsbeginn[monat-3]+(Schaltjahr(jahr)?1:0);
 }
 
-int Petig::Datum::Internal() const throw()
-{  //const TageProVierJahre=1461; this uses integer arithmetic
+int Petig::Datum::Internal() const throw(Datumsfehler)
+{  teste();
+//const TageProVierJahre=1461; this uses integer arithmetic
    //return ((jahr-1900)*TageProVierJahre)/4+Julian();
    return (int)((jahr-1900)*365.25)+Julian()-2;
    // Julian beginnt bei 1 (statt 0)
@@ -96,12 +99,13 @@ int Petig::Datum::Internal() const throw()
    // zum 1.3.1900 wird falsch gerechnet ...
 }
 
-int Petig::Datum::operator-(const Datum &b) const throw()
+int Petig::Datum::operator-(const Datum &b) const throw(Datumsfehler)
 {  return Internal()-b.Internal();
 }
 
 Petig::Datum &Petig::Datum::operator--()
-{  if (tag>1) tag--;
+{  teste();
+   if (tag>1) tag--;
    else
    {  if (monat>1) monat--;
       else
@@ -120,7 +124,8 @@ Petig::Datum Petig::Datum::operator--(int)
 }
 
 Petig::Datum &Petig::Datum::operator++()
-{  if (tag<Tage_in_Monat()) tag++;
+{  teste();
+   if (tag<Tage_in_Monat()) tag++;
    else
    {  tag=1;
       if (monat<12) monat++;
@@ -138,8 +143,9 @@ Petig::Datum Petig::Datum::operator++(int)
    return temp;
 }
 
-Petig::Datum Petig::Datum::operator+(int tage) const throw()
-{  Datum ret(*this);
+Petig::Datum Petig::Datum::operator+(int tage) const throw(Datumsfehler)
+{  teste();
+   Datum ret(*this);
    ret.tag+=tage;
    while (ret.tag>ret.Tage_in_Monat())
    {  ret.tag-=ret.Tage_in_Monat();
@@ -191,8 +197,9 @@ Petig::Datum::Datum(const Kalenderwoche &kw) throw(Datumsfehler)
 //#define DEBUG(x) cout << x
 #define DEBUG(x)
 
-Kalenderwoche Petig::Datum::KW() const throw()  
-{  struct tm tm;
+Kalenderwoche Petig::Datum::KW() const throw(Datumsfehler)
+{  teste();
+   struct tm tm;
    bool try_again=true;
    memset(&tm,0,sizeof tm);
    tm.tm_mday=tag;
@@ -237,8 +244,9 @@ previous_year:
    return Kalenderwoche(woche,tm.tm_year+1900);
 }
 
-int Petig::Datum::Wochentag(void) const throw()
-{  struct tm tm;
+int Petig::Datum::Wochentag(void) const throw(Datumsfehler)
+{  teste();
+   struct tm tm;
    memset(&tm,0,sizeof tm);
    tm.tm_mday=tag;
    tm.tm_mon=monat-1;

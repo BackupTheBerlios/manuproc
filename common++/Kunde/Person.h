@@ -1,4 +1,4 @@
-// $Id: Person.h,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: Person.h,v 1.2 2001/06/06 07:27:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,7 +30,11 @@ class cH_Person;
 class Person : protected HandleContent
 {
 public:
-	typedef int ID;
+        typedef long int ID;
+     struct st_person{ID id; string name; string vorname; string position; 
+                Petig::Datum gebdat; string anrede; string notiz;
+       st_person(ID i, string n,string v, string p,Petig::Datum g, string a, string no)
+        :id(i),name(n),vorname(v),position(p),gebdat(g),anrede(a),notiz(no){}};
 	
 private:
  Kunde::ID kundennr;
@@ -41,6 +45,7 @@ private:
  Petig::Datum gebdatum;
  string anrede;
  string notiz;
+ vector<Person::st_person> vec_person;
  
  friend class const_Handle<Person>;
  static const ID _illegal=-1; 
@@ -53,6 +58,8 @@ public:
  static cH_Person newPerson(const Kunde::ID _knr, const string &_name, const string &_vorname,
  	const string &_pos, const Petig::Datum &gd, const string &_anrede,
  	const string &_not) throw(SQLerror);
+ vector<Person::st_person> get_Person(ID nr) throw(SQLerror);
+ 
  void update() throw(SQLerror);	
  static void delPerson(const ID pid) throw(SQLerror);
  
@@ -65,6 +72,7 @@ public:
  const string Position() const { return position; }
  const string Notiz() const { return notiz; }
  
+ void setKundennr(unsigned long int i) { kundennr=i; }
  void setName(const string &s) { name=s; }
  void setVorname(const string &s) { vorname=s; }
  void setGebDatum(const Petig::Datum &d) { gebdatum=d; }

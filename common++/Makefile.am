@@ -1,5 +1,5 @@
 
-SUBDIRS=Aux ostream Artikel Auftrag Bank ExtBezSchema Ketten Kunde \
+SUBDIRS= Aux ostream Artikel Auftrag Bank ExtBezSchema Ketten Kunde \
 		Lieferschein Material . tests
 	
 lib_LIBRARIES=libcommon++.a

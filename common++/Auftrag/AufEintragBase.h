@@ -1,4 +1,4 @@
-/* $Id: AufEintragBase.h,v 1.3 2001/05/10 16:31:37 christof Exp $ */
+/* $Id: AufEintragBase.h,v 1.4 2001/06/06 07:27:39 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,22 +21,22 @@
 #define CXX_AUFTRAG_AUFEINTRAGBASE_H
 
 // na ob das alles erforderlich ist ... CP
-#include"Aux/SQLerror.h"
-#include"Aux/Datum.h"
-#include "Aux/Kalenderwoche.h"
-#include"Auftrag/selAufEntry.h"
-#include"Auftrag/AufEintragBase2.h"
-#include"Artikel/ArtikelBezeichnung.h"
-#include"Artikel/ArtikelBaum.h"
-#include"Kunde/Kunde.h"
-#include<string>
-#include<vector>
-#include<map>
-#include<Aux/CacheStatic.h>
-#include<Aux/Handles.h>
-#include<Aux/Waehrung.h>
-#include<Auftrag/auftrag_status.h>
+#include <Artikel/ArtikelBaum.h> //?
+#include <Artikel/ArtikelBezeichnung.h> //?
 #include <Artikel/Preis.h>
+#include <Auftrag/AufEintragBase2.h>
+#include <Auftrag/auftrag_status.h>
+#include <Auftrag/selAufEntry.h> //?
+#include <Aux/CacheStatic.h>
+#include <Aux/Datum.h>
+#include <Aux/Handles.h>
+#include <Aux/Kalenderwoche.h>
+#include <Aux/SQLerror.h>
+#include <Aux/Waehrung.h>
+#include <Kunde/Kunde.h>
+#include <map>
+#include <string>
+#include <vector>
 
 class cH_AufArtikel;
 
@@ -104,10 +104,6 @@ public:
  static const AufArtikel::ID default_pid=AufArtikel::default_id;
  cH_AufArtikel(AufArtikel::ID pid, const cH_ExtBezSchema &schema);
 };
-
-
-
-
 
 
 
@@ -204,6 +200,7 @@ public:
  const Preis EPreis() const { return preis;}
  int Rabatt() const { return rabatt;}
  float PreisMenge() const { return preis.PreisMenge(); }
+ const ArtikelBase::ID &ArtikelID() const { return artikel->Id(); }
 
  void setArtikelBezeichnung(const cH_ExtBezSchema &cs)
  	{const_cast<AufArtikel&>(*artikel).setArtikelBezeichnung(cs); } 

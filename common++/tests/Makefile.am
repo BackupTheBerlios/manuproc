@@ -1,6 +1,6 @@
-# $Id: Makefile.am,v 1.2 2001/04/30 15:30:26 christof Exp $
+# $Id: Makefile.am,v 1.3 2001/06/06 07:27:39 christof Exp $
 
-CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
+CXXFLAGS=-s @ECPG_INCLUDES@ @CXXFLAGS@
 
 LDADD=../libcommon++.a @ECPG_LIBS@ @ECPG_LDFLAGS@
 

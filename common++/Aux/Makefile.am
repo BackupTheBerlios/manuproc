@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.3 2001/05/10 16:31:37 christof Exp $
+# $Id: Makefile.am,v 1.4 2001/06/06 07:27:39 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -14,14 +14,14 @@ libAux_o_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
 		Zeitpunkt_new_write.cc string0.c \
 		EntryValueBase.cc EntryValueIntString.cc \
 		auto_conversion.cc $(PGCC_SOURCES) \
-		exception.cc itos.cc 
+		exception.cc itos.cc
 
 libAux.o: $(libAux_o_OBJECTS) $(libAux_o_DEPENDENCIES)
 	touch $@
 
 PGCC_SOURCES=   dbconnect.cc SQLerror_postgres.cc Transaction.cc \
 		Waehrung_sql.cc Changejournal_sql.cc FetchIStream.cc
-		
+
 LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
 	Datum.cc Datum.h Handles.h IOerror.cc IOerror.h Kalenderwoche.h Pointer.h \
 	Postgres.h Rundungsmacros.h SQLerror.h SQLerror_postgres.h \
@@ -33,7 +33,7 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
 	FetchIStream.pgcc FetchIStream.h ctime_assert.h
 
 $(LINKS):
-	ln -sf ../Basic/src/$@ . 
+	ln -sf ../Basic/src/$@ .
 
 BUILT_SOURCES=$(PGCC_SOURCES) $(LINKS)
 

@@ -1,4 +1,4 @@
-// $Id: Kette.cc,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: Kette.cc,v 1.2 2001/06/06 07:27:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -49,4 +49,3 @@ Kette::Kette(const char *b) throw(Petig::Datumsfehler,illegal_format)
    maschine=Petig::Datum::getnum((unsigned char*)b,3);
    schaerdatum.from_c_str(b+4);
 }
-

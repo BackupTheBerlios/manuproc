@@ -1,4 +1,4 @@
-/* $Id: selFullAufEntry.h,v 1.1 2001/04/23 08:11:58 christof Exp $ */
+/* $Id: selFullAufEntry.h,v 1.2 2001/06/06 07:27:39 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,12 +30,19 @@
 class SelectedFullAufList
 {
 public:
+ typedef vector<AufEintragBase>::const_iterator const_iterator;
+ // this should be private!
  vector<AufEintragBase> aufidliste;
 
  SelectedFullAufList(const SQLFullAuftragSelector &sel)	throw(SQLerror);
  SelectedFullAufList(const SQLFullAuftragSelector &sel,	cH_ExtBezSchema es) throw(SQLerror);
- int getLen() { return aufidliste.size();}
  void insert(int aid, int znr) throw(SQLerror);
+ const_iterator begin() const { return aufidliste.begin(); }
+ const_iterator end() const { return aufidliste.end(); }
+ // please use size()!
+ int getLen() const { return aufidliste.size();}
+ size_t size() const { return aufidliste.size();}
+ 
 // void delEntry(int aid, int znr);
 // void delAuftrag(int aid);
 // void addList(const SQLFullAuftragSelector &sel) throw(SQLerror);

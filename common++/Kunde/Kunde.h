@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.2 2001/04/23 12:05:50 christof Exp $
+// $Id: Kunde.h,v 1.3 2001/06/06 07:27:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,6 +27,7 @@
 #include<Aux/itos.h>
 
 class cH_Kunde;
+class H_Kunde;
 
 class Kunde : protected HandleContent
 {
@@ -95,8 +96,10 @@ private:
         
 	Adresse adresse;
 	Bankverbindung bankverb;
+        Kundendaten kundendaten;
 	
 	friend class const_Handle<Kunde>;
+	friend class Handle<Kunde>;
 	static const ID _wir=1;
 	static const ID _illegal=-1;
    // ...
@@ -109,6 +112,11 @@ public:
         const string LaTeX_an(const string& wo) const;
         
         const string getBank() const { return bankverb.getBankverb(); }
+        const unsigned long long int getKtnr() const { return bankverb.konto; }
+        const unsigned int getblz() const { return bankverb.blz; }
+        const string getbank() const { return bankverb.bank; }
+        const int getindex() const { return bankverb.bankindex; }
+
         const string sortname() const { return adresse.sortname; }
         const string firma() const { return adresse.firma; }
         const string postanwvor() const { return adresse.postanwvor; }
@@ -119,6 +127,20 @@ public:
         const string ort() const { return adresse.ort; }
         const string postfach() const { return adresse.postfach; }
         const string postfachplz() const { return adresse.postfachplz; }
+
+        const long int flaeche() const { return kundendaten.flaeche; }
+        const long int mitarbeiter() const { return kundendaten.mitarbeiter; }
+        const double kundenumsatz() const { return kundendaten.kundenumsatz; }
+        const double planumsatz() const { return kundendaten.planumsatz; }
+        const double umsatz() const { return kundendaten.umsatz; }
+        const double rabatt() const { return kundendaten.rabatt; }
+        const double einzugrabatt() const { return kundendaten.einzugrabatt; }
+//        const int preisliste() const { return kundendaten.preisliste; }
+        const int skontofrist() const { return kundendaten.skontofrist; }
+        const string verein() const { return kundendaten.verein; }
+        const bool bankeinzug() const { return kundendaten.bankeinzug; }
+        const string notiz() const { return kundendaten.notiz; }
+        const string stand() const { return kundendaten.stand.c_str(); }
 
         const string getName() const {  return adresse.firma; }
         const string getSortName() const {  return adresse.sortname; }
@@ -131,14 +153,50 @@ public:
         bool isRechnungsadresse() const { return rechnungsadresse; }
         ID Rngan() const { return rngan; }
 
+
 	void update() throw(SQLerror);
+        unsigned int nextval();
+        
+                
 	
 	// HE und was ist mit der Datenbank? CP
-	void isLieferadresse(bool is) { lieferadresse=is; }
-	void isRechnungsadresse(bool is) { rechnungsadresse=is; }
-	void RngAn(const Kunde::ID kid) { rngan=kid; }
+	void isLieferadresse(bool is) { lieferadresse=is; update();}
+	void isRechnungsadresse(bool is) { rechnungsadresse=is;update(); }
+	void isBankeinzug(bool is) { kundendaten.bankeinzug=is;update(); }
+	void RngAn(const Kunde::ID kid) { rngan=kid; update();}
 
 	ID Preisliste() const { return preisliste; }
+
+
+        // Datenbank schreiben
+//        void set_Bank(const string& s); 
+        void set_sortname(const string& s) {adresse.sortname = s; update();} 
+        void set_firma(const string& s){adresse.firma = s; update();} 
+        void set_postanwvor(const string& s){adresse.postanwvor = s; update();} 
+        void set_strasse(const string& s){adresse.strasse = s; update();} 
+        void set_hausnr(const string& s){adresse.hsnr = s; update();}  
+        void set_postanwnach(const string& s){adresse.postanwnach = s; update();} 
+        void set_plz(const string& s){adresse.plz = s; update();} 
+        void set_ort(const string& s){adresse.ort = s; update();}  
+        void set_postfach(const string& s){adresse.postfach = s; update();} 
+        void set_postfachplz(const string& s){adresse.postfachplz = s; update();} 
+        void set_idnr(const string& s){IDnr = s; update();} 
+
+        void set_planumsatz(const fixedpoint<2> s){kundendaten.planumsatz = s; update();}
+        void set_rabatt(const fixedpoint<2> s){kundendaten.rabatt = s; update();}
+        void set_flaeche(const int s) {kundendaten.flaeche = s; update();}
+        void set_mitarbeiter(const int s){kundendaten.mitarbeiter = s; update();}
+        void set_kundenumsatz(const fixedpoint<2> s){kundendaten.kundenumsatz = s; update();}
+        void set_umsatz(const fixedpoint<2> s){kundendaten.umsatz = s; update();}
+        void set_verein(const string& s){kundendaten.verein = s; update();}
+        void set_preisliste(const ID s){kundendaten.preisliste = s; update();}
+        void set_skontofrist(const int s){kundendaten.skontofrist = s; update();}
+        void set_einzugrabatt(const fixedpoint<2> s){kundendaten.einzugrabatt = s; update();}
+        void set_notiz(const string& s){kundendaten.notiz = s; update();} 
+        void set_bankindex(const int s){bankverb.bankindex = s; update();} 
+        void set_bankkonto(const unsigned long long int s){bankverb.konto = s; update();} 
+        
+
 };
 
 class cH_Kunde : public const_Handle<Kunde>
@@ -155,6 +213,13 @@ public:
  
 };
 
-typedef cH_Kunde const_KundeHandle;
+class H_Kunde : public Handle<Kunde>
+{public:
+	H_Kunde(Kunde *p) : Handle<Kunde>(p) {}	
+	typedef Kunde::ID ID;
+	static const ID default_id=Kunde::default_id;
+};
+
+// typedef cH_Kunde const_KundeHandle; deprecated
 
 #endif

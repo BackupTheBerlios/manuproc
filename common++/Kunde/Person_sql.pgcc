@@ -1,4 +1,4 @@
-// $Id: Person_sql.pgcc,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: Person_sql.pgcc,v 1.2 2001/06/06 07:27:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,6 +19,7 @@
 
 #include <Kunde/Person.h>
 #include <Aux/Transaction.h>
+exec sql include sqlca;
 
 Person::Person(ID _id) throw(SQLerror) : personennr(_id)
 {  exec sql begin declare section;
@@ -49,7 +50,40 @@ Person::Person(ID _id) throw(SQLerror) : personennr(_id)
    gebdatum=IGEBDATE ? Petig::Datum() : Petig::Datum(GEBDATE);
    anrede=ANREDE;
    notiz=NOTIZ;	
+}
 
+vector<Person::st_person> Person::get_Person(ID nr) throw(SQLerror)
+{  exec sql begin declare section;
+   int PERSNR;
+   int KUNDENNR=nr;
+   char NAME[31], VORNAME[31], POSITION[31];
+   char GEBDATE[21],ANREDE[21],NOTIZ[1000];
+   short IGEBDATE,IKUNDENNR;
+   char *QU;
+   exec sql end declare section;
+
+   Transaction tr;
+   string qu =  "select persnr,name, coalesce(vorname,''), \
+      coalesce(_position,''),geburtstag, coalesce(anrede,''), \
+      coalesce(notiz,'') from kunden_personen where kundennr='"+itos(nr)+"'";
+   QU = (char*)qu.c_str();
+   exec sql prepare perqu from :QU;
+    exec sql declare PER cursor for perqu;
+    exec sql open PER;
+    SQLerror::test(__FILELINE__);
+ while (true)
+  { 
+    exec sql fetch PER into
+	    :PERSNR,:NAME, :VORNAME, :POSITION,
+		 :GEBDATE:IGEBDATE, :ANREDE, :NOTIZ;
+    SQLerror::test(__FILELINE__,100);
+    if (sqlca.sqlcode) break;
+    gebdatum=IGEBDATE ? Petig::Datum() : Petig::Datum(GEBDATE);
+    vec_person.push_back(st_person(PERSNR,NAME,VORNAME,POSITION,gebdatum,ANREDE,NOTIZ));
+   }
+  exec sql close PER;
+  tr.close();
+  return vec_person;
 }
 
 
@@ -76,7 +110,7 @@ cH_Person Person::newPerson(const Kunde::ID _knr, const string &_name, const str
  SQLerror::test(__FILELINE__);
 
  exec sql insert into kunden_personen
-       (kundennr, persnr, name,vorname,_position,geburt,anrede,notiz)
+       (kundennr, persnr, name,vorname,_position,geburtstag,anrede,notiz)
     values
        (:KUNDENNR,:PERSNR,:NAME,:VORNAME,:POSITION,:GEBURT,:ANREDE,:NOTIZ);
   SQLerror::test(__FILELINE__);
@@ -107,7 +141,7 @@ void Person::update() throw(SQLerror)
  exec sql update kunden_personen set
 	kundennr= :KUNDENNR,
        name= :NAME, vorname= :VORNAME, _position= :POSITION,
-	geburt= :GEBURT, anrede= :ANREDE, notiz= :NOTIZ
+	geburtstag= :GEBURT, anrede= :ANREDE, notiz= :NOTIZ
 	where persnr= :PERSNR;
   SQLerror::test(__FILELINE__);
 
@@ -129,4 +163,3 @@ void Person::delPerson(const ID pid) throw(SQLerror)
  tr.commit();
 
 }
-

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.2 2001/06/06 07:27:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,6 +28,7 @@ exec sql include sqlca;
 
 #warning Warum ist dieser Code 2x da? wo sind die Unterschiede CP
 
+#if 0 // offenbar veraltet (lieferdatum)
 AufEintragBase::AufEintragBase(int aufid, int znr, const cH_ExtBezSchema schema) throw(SQLerror)
 	: AufEintragBase2(aufid,znr),
 	  artikel(0,cH_ExtBezSchema(ExtBezSchema::default_ID)),
@@ -48,7 +49,7 @@ AufEintragBase::AufEintragBase(int aufid, int znr, const cH_ExtBezSchema schema)
  int JAHRGANG;
  float PREIS;
  int RABATT;
- int WID;	//waehurng
+ int WID;	//Waehrung
  float PREISMENGE;
  char YOURAUFNR[21];
  short IYOURAUFNR,ILASTEDIT, IWID;
@@ -63,9 +64,9 @@ AufEintragBase::AufEintragBase(int aufid, int znr, const cH_ExtBezSchema schema)
 		:DISPOENTRYNR:IDISPONR, :JAHRGANG, :STATUS, :KDNR,
 		:YOURAUFNR:IYOURAUFNR,
 		:PREIS,:RABATT,:PREISMENGE, :WID:IWID
- 	from auftragentry e, auftrag a, artikelbezeichnung b
-	where e.auftragid=a.auftragid and e.artikelid=b.artikelid and
-	a.auftragid = :AUFTRAGID and zeilennr = :ZEILENNR;
+ 	from auftragentry e
+ 	join auftrag a using (auftragid)
+	where a.auftragid = :AUFTRAGID and zeilennr = :ZEILENNR;
 
  SQLerror::test("AufEintragBase: select from auftragentry");	
 	
@@ -86,6 +87,7 @@ AufEintragBase::AufEintragBase(int aufid, int znr, const cH_ExtBezSchema schema)
  preis = Preis(PREIS,IWID ? 1 : WID,PREISMENGE);
  rabatt = RABATT;
 }
+#endif
 
 
 AufEintragBase::AufEintragBase(const SelectedAufentry &aufentry, 
@@ -136,10 +138,9 @@ AufEintragBase::AufEintragBase(const SelectedAufentry &aufentry,
 		:DISPOENTRYNR:IDISPOENTNR, :DISPONR:IDISPONR, :JAHRGANG,
 		:STATUS, :KDNR, :YOURAUFNR:IYOURAUFNR,
 		:PREIS,:RABATT,:PREISMENGE, :WID:IWID
-	from auftragentry e, auftrag a   
-        where a.auftragid=e.auftragid and
-	e.auftragid = :AUFTRAGID and
-        e.zeilennr = :ZEILENNR;
+	from auftragentry e
+	join auftrag a using (auftragid)
+        where e.auftragid = :AUFTRAGID and e.zeilennr = :ZEILENNR;
  SQLerror::test("AufEintragBase: select from auftragentry");	
 
  exec sql select ap.prozessid, date(ap.datum) 
@@ -396,7 +397,7 @@ void AufEintragBase::split(int newmenge, const Petig::Datum &newld) throw(SQLerr
  SQLerror::test("split: select max(zeielnnr) auftragentry");
 
  exec sql insert into auftragentry (auftragid, rohartikelid, zeilennr, artikelid,
-		bestellt, geliefert, lieferdatum,
+		bestellt, geliefert, lieferdate,
 		status,preis,rabatt,preismenge, waehrung)
 	values ( :AUFTRAGID, :ROHARTID:IROHARTID, :ZEILENNR, :ARTIKELID,
 		:BESTELLT, :GELIEFERT, :LIEFERDATUM,

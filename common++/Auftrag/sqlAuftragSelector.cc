@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.2 2001/06/06 07:27:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -144,7 +144,7 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Jahr_Artikel &selstr)
 
  setClausel(FULL_SELECT_FROM_WHERE
 	     " where (a.jahrgang="+jahr+
-	     " or e.lieferdatum between '"+jahr+"-1-1' and '"+jahr+"-12-31') "
+	     " or e.lieferdate between date('"+jahr+"-1-1') and date('"+jahr+"-12-31')) "
 	     " and artikelid="+itos(selstr.artikelid));
 }
 

@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.pgcc,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: ArtikelTyp.pgcc,v 1.2 2001/06/06 07:27:39 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -31,7 +31,7 @@ ArtikelTyp ArtikelTyp::vonArtikel(const ArtikelBase &ab)
    id=ab.Id();
       
    exec sql select warengruppe into :styp:ityp
-   	from artikelbezeichnung where artikelid= :id;
+   	from artikelstamm where id= :id;
    if (sqlca.sqlcode || ityp) styp=AufgemachtesBand;
    cache.Register(ab.Id(),(ArtikelTyp::typ)styp);
    return ArtikelTyp::typ(styp);

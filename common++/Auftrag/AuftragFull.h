@@ -61,7 +61,7 @@ public:
 	
 	// these do not belong here - they are part of pps
 	void fillCList(Gtk::CList &list);
-	void fillCListEntry(Gtk::CList &list, int idx);
+//	void fillCListEntry(Gtk::CList &list, int idx);
 	
 	// komische Funktion ... Schema ueberdenken ???
 	int insertNewEntry(const aktAufEintrag &aufentry,const cH_ExtBezSchema &ebsh) throw (SQLerror);

@@ -1,9 +1,9 @@
-# $Id: configure.in,v 1.1 2001/04/23 08:11:59 christof Exp $
+# $Id: configure.in,v 1.2 2001/06/06 07:28:59 christof Exp $
 
 AC_INIT(src/SQLerror.h)
 AC_CONFIG_AUX_DIR(.)
 
-AM_INIT_AUTOMAKE(ManuProC_Base, 0.2.4)
+AM_INIT_AUTOMAKE(ManuProC_Base, 0.2.5)
 AM_CONFIG_HEADER(config.h)
 
 AC_PREFIX_DEFAULT(/usr/local)
