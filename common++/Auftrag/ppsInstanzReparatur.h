@@ -1,4 +1,4 @@
-// $Id: ppsInstanzReparatur.h,v 1.11 2003/06/13 09:38:30 christof Exp $
+// $Id: ppsInstanzReparatur.h,v 1.12 2003/06/17 08:15:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -38,7 +38,7 @@ class ppsInstanzReparatur : public cH_ppsInstanz
       typedef fixedpoint<ManuProC::Precision::AuftragsMenge> ABmt;
 
       std::vector<LagerInhalt> getLagerInhalt() const;
-      void vormerkungen_subtrahieren(int uid,const  std::vector<LagerInhalt> &LI,const bool analyse_only) const;
+      bool vormerkungen_subtrahieren(int uid,const  std::vector<LagerInhalt> &LI,const bool analyse_only) const;
       void DispoAuftraege_anlegen(const int uid,const ArtikelBase &artikel,const fixedpoint<ManuProC::Precision::AuftragsMenge> &menge) const;
 
       void analyse(const std::string &s,const AufEintragBase &AE,const std::string &x=std::string(),const std::string &y=std::string()) const;
@@ -57,10 +57,10 @@ class ppsInstanzReparatur : public cH_ppsInstanz
 
  public:
       // Einlesen des Lagerinhalts und Anpassen der 2er unter Berücksichtigung der 1er
-      void ReparaturLager(const int uid,const bool analyse_only) const throw(SQLerror);
+      bool ReparaturLager(const int uid,const bool analyse_only) const throw(SQLerror);
       // Entweder existieren 0er oder es existieren 2er
       // void Reparatur_0er_und_2er(const int uid,const bool analyse_only) const throw(SQLerror);
-      void Reparatur_0er_und_2er(SelectedFullAufList &L,const bool analyse_only) const throw(SQLerror);
+      bool Reparatur_0er_und_2er(SelectedFullAufList &L,const bool analyse_only) const throw(SQLerror);
 
       // neues Interface!
       bool Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, bool analyse_only, bool limit_prodselbst) const;

@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.36 2003/06/17 08:15:59 christof Exp $
+// $Id: adjust_store.cc,v 1.37 2003/06/17 08:18:01 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -53,7 +53,7 @@ static void usage(const std::string &s)
            "\t*: Alle Analysen/Reparaturen auf einmal (meist mit -I)\n";
            
  std::cerr << "USAGE:  ";
- std::cerr << s <<" [-i<instanz>|-I]  -a<aktion> [-d<database>] [-h<dbhost>] [-l] [-y] \n"
+ std::cerr << s <<" [-i<instanz>|-I]  -a<aktion> [-d<database>] [-h<dbhost>] [-l|-y] \n"
            "\twobei die aktion=[A|C|X|T|*] ist.\n"
            "\t-y Analysemodus (keine Reparaturen)\n"
            "\t-l Reparatur wiederholen bis keine Fehler mehr auftreten\n"
@@ -133,7 +133,8 @@ int main(int argc,char *argv[])
      }
    }
 
-  if (((instanz==ppsInstanzID::None) ^ all_instanz) || actions==f_none) usage(argv[0]);
+  if (((instanz==ppsInstanzID::None) ^ all_instanz) || actions==f_none
+  	|| (!loop ^ analyse_only)) usage(argv[0]);
 
   ManuProC::PrintUncaughtExceptions();
   bool alles_ok=true;
@@ -158,7 +159,10 @@ restart:
          actions=save;
         }
      }    
-    if (loop && !alles_ok) goto restart;
+    if (loop && !alles_ok) 
+    {  std::cout << "adjust_store: repairing again\n";
+       goto restart;
+    }
     
     ManuProC::dbdisconnect();
   }catch(SQLerror &e){std::cout << e<<'\n'; return 1;}

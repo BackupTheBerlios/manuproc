@@ -33,8 +33,9 @@
 #include <Misc/compiler_ports.h>
 #include <Artikel/ArtikelStamm.h>
 
-void ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al, const bool analyse_only) const throw(SQLerror)
+bool ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al, const bool analyse_only) const throw(SQLerror)
 {  unsigned uid=getuid();
+   bool alles_ok=true;
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,analyse_only);
    assert(Instanz() != ppsInstanzID::Kundenauftraege);
    
@@ -60,6 +61,7 @@ void ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al, const b
          AuftragBase::mengen_t M=AuftragBase::min(menge0er,(*j)->getRestStk());
          
          analyse("Es existieren passende 0er und 2er",*i,**j,M);
+         alles_ok=false;
          
          if(!analyse_only)
           {  AuftragBase::mengen_t M_rest=M;
@@ -83,22 +85,25 @@ void ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al, const b
          if(!menge0er) break;
        }
     }
+  return alles_ok;
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-void ppsInstanzReparatur::ReparaturLager(const int uid,const bool analyse_only) const throw(SQLerror)
+bool ppsInstanzReparatur::ReparaturLager(const int uid,const bool analyse_only) const throw(SQLerror)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Instanz());
   assert(Instanz()->LagerInstanz());
   std::vector<LagerInhalt> LI=getLagerInhalt(); 
-  vormerkungen_subtrahieren(uid,LI,analyse_only);
+  return vormerkungen_subtrahieren(uid,LI,analyse_only);
 }
 
-void ppsInstanzReparatur::vormerkungen_subtrahieren(int uid,const  std::vector<LagerInhalt> &LI,const bool analyse_only) const
-{
+bool ppsInstanzReparatur::vormerkungen_subtrahieren(int uid,const  std::vector<LagerInhalt> &LI,const bool analyse_only) const
+{ bool looped=false;
+  bool alles_ok=true;
+try_again:
 //std::cout << "Anzahl der Artikel im Lager = "<<LI.size()<<'\n';
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Instanz());
   for(std::vector<LagerInhalt>::const_iterator i=LI.begin();i!=LI.end();++i)
@@ -123,6 +128,7 @@ void ppsInstanzReparatur::vormerkungen_subtrahieren(int uid,const  std::vector<L
          {  analyse("mehr Menge vorgeplant als vorhanden",*j,
          	cH_ArtikelBezeichnung(i->Artikel())->Bezeichnung(),
          	menge.String());
+            alles_ok=false;
             set_dispo_to_zero=true;
             if(!analyse_only)
             {AuftragBase::mengen_t M_rest=-menge;
@@ -140,8 +146,14 @@ void ppsInstanzReparatur::vormerkungen_subtrahieren(int uid,const  std::vector<L
                 M_rest-=M2;
                 if(!M_rest) break;
              }
-             if (!!M_rest) analyse("Programmfehler: Es ist ein Rest geblieben",*j,M_rest);
-             assert(!M_rest);                
+             if (!!M_rest) 
+             {  analyse("Es ist ein Rest geblieben, erneuter Versuch",*j,M_rest);
+                if (!looped)
+                {  looped=true;
+                   goto try_again;
+                }
+                analyse("Programmfehler? Es ist ein Rest geblieben",*j,M_rest);
+             }
             }
             menge=0;
            }       
@@ -157,18 +169,20 @@ void ppsInstanzReparatur::vormerkungen_subtrahieren(int uid,const  std::vector<L
          menge-=j->getRestStk();
          if(set_dispo_to_zero && !!j->getStueck())
           { analyse("set_dispo_to_zero",*j,j->getStueck());
+            alles_ok=false;
             if(!analyse_only)
                j->MengeAendern(uid,-j->getStueck(),false,AufEintragBase(),ManuProC::Auftrag::r_Reparatur);
           }
       }
       
      if(menge>0 && !set_dispo_to_zero) 
-      {
-        analyse("DispoAufträge_anlegen",AufEintragBase(Instanz(),2,-1),cH_ArtikelBezeichnung(i->Artikel())->Bezeichnung(),menge);
+      { alles_ok=false;
+        analyse("DispoAufträge_anlegen",AufEintragBase(Instanz(),2,-1),cH_ArtikelBezeichnung(i->Artikel())->Bezeichnung(),menge.String());
         if (!analyse_only)
             DispoAuftraege_anlegen(uid,i->Artikel(),menge);
       }
    }
+   return alles_ok;
 }   
 
 
