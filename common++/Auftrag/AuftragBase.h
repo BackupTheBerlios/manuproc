@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.3 2001/06/08 19:32:33 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.4 2001/06/22 09:42:44 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,18 +19,18 @@
 
 #ifndef AUFTRAGBASE_H
 #define AUFTRAGBASE_H
+#include<Aux/ppsInstanz.h>
 
 class AuftragBase
 {
  protected:
- 	int stage;
+        ppsInstanz::ppsInstId instanz; 	
  	int auftragid;	
- 	
  public:
-	AuftragBase() : stage(1), auftragid(0) {}
-	AuftragBase(int &aufid) throw() : stage(1), auftragid(aufid) {}
+	AuftragBase() : instanz(ppsInstanz::INST_KNDAUF), auftragid(0) {}
+	AuftragBase(ppsInstanz::ppsInstId _instanz, int aufid) throw() : instanz(_instanz), auftragid(aufid) {}
 	int Id() const {return auftragid;}
-	int Stage() const { return stage; }
+        ppsInstanz::ppsInstId Instanz() {return instanz; }
 };
 
 #endif

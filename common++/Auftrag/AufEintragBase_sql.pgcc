@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.2 2001/06/06 07:27:39 christof Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.3 2001/06/22 09:42:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,70 +26,6 @@
 
 exec sql include sqlca;
 
-#warning Warum ist dieser Code 2x da? wo sind die Unterschiede CP
-
-#if 0 // offenbar veraltet (lieferdatum)
-AufEintragBase::AufEintragBase(int aufid, int znr, const cH_ExtBezSchema schema) throw(SQLerror)
-	: AufEintragBase2(aufid,znr),
-	  artikel(0,cH_ExtBezSchema(ExtBezSchema::default_ID)),
-	  prozess(Prozess::default_id)
-{
- exec sql begin declare section;
- int AUFTRAGID=aufid;
- int ZEILENNR=znr;
- int KDNR;
- long ARTIKELID;
- long BESTELLT, GELIEFERT;
- int LIEFERDATUM;
- char LASTEDITDATE[40];
- char LASTEDIT[11];
- int STATUS;
- int DISPOENTRYNR;
- short IDISPONR;
- int JAHRGANG;
- float PREIS;
- int RABATT;
- int WID;	//Waehrung
- float PREISMENGE;
- char YOURAUFNR[21];
- short IYOURAUFNR,ILASTEDIT, IWID;
- exec sql end declare section;
- 
- exec sql select bestellt, e.artikelid,	e.lieferdatum, date(lasteditdate),
-	lastedit, geliefert, dispoentrynr, jahrgang, a.stat,
-	a.kundennr, youraufnr, coalesce(e.preis,0),
-	int4(coalesce(e.rabatt,0)*100), coalesce(e.preismenge,1), waehrung 
-	into 	:BESTELLT, :ARTIKELID, :LIEFERDATUM,
-		:LASTEDITDATE, :LASTEDIT:ILASTEDIT, :GELIEFERT,
-		:DISPOENTRYNR:IDISPONR, :JAHRGANG, :STATUS, :KDNR,
-		:YOURAUFNR:IYOURAUFNR,
-		:PREIS,:RABATT,:PREISMENGE, :WID:IWID
- 	from auftragentry e
- 	join auftrag a using (auftragid)
-	where a.auftragid = :AUFTRAGID and zeilennr = :ZEILENNR;
-
- SQLerror::test("AufEintragBase: select from auftragentry");	
-	
- artikel = cH_AufArtikel(ARTIKELID,schema);
- bestellt = BESTELLT;
- float tmpstkgr = artikel->Stueckgroesse();
- tmpstkgr = tmpstkgr ? tmpstkgr : 1;
- menge = BESTELLT*tmpstkgr;
- rest = (BESTELLT-GELIEFERT)*tmpstkgr;
- lieferdatum = LIEFERDATUM;
- status=(AufStatVal)STATUS;
- geliefert = GELIEFERT;
- dispoentrynr = IDISPONR==0 ? DISPOENTRYNR : 0;
- kdnr = KDNR;
- youraufnr = IYOURAUFNR ? "" : YOURAUFNR;
- jahrgang = JAHRGANG;
- 
- preis = Preis(PREIS,IWID ? 1 : WID,PREISMENGE);
- rabatt = RABATT;
-}
-#endif
-
-
 AufEintragBase::AufEintragBase(const SelectedAufentry &aufentry, 
 			const cH_ExtBezSchema schema) throw(SQLerror)
 	: artikel(0,cH_ExtBezSchema(ExtBezSchema::default_ID)),
@@ -97,6 +33,7 @@ AufEintragBase::AufEintragBase(const SelectedAufentry &aufentry,
 {
  exec sql begin declare section;
  int AUFTRAGID;
+ int INSTANZ;
  int ZEILENNR;
  int KDNR;
  unsigned long ARTIKELID;
@@ -124,6 +61,7 @@ AufEintragBase::AufEintragBase(const SelectedAufentry &aufentry,
  exec sql end declare section;
  
  AUFTRAGID = aufentry.getAuftragid();
+ INSTANZ  = aufentry.Instanz();
  ZEILENNR = aufentry.getZeilennr();
 
  exec sql select bestellt, e.artikelid, e.rohartikelid, 
@@ -140,7 +78,8 @@ AufEintragBase::AufEintragBase(const SelectedAufentry &aufentry,
 		:PREIS,:RABATT,:PREISMENGE, :WID:IWID
 	from auftragentry e
 	join auftrag a using (auftragid)
-        where e.auftragid = :AUFTRAGID and e.zeilennr = :ZEILENNR;
+        where e.auftragid = :AUFTRAGID and e.zeilennr = :ZEILENNR
+         and instanz = :INSTANZ;
  SQLerror::test("AufEintragBase: select from auftragentry");	
 
  exec sql select ap.prozessid, date(ap.datum) 
@@ -182,9 +121,11 @@ AufEintragBase::AufEintragBase(const SelectedAufentry &aufentry,
 void AufEintragBase::setStatus(AufStatVal st) throw(SQLerror)
 {exec sql begin declare section;
  int AUFTRAGID = auftragid;
+ int INSTANZ;
  int ZEILENNR = zeilennr;
  int STATUS=st;
  exec sql end declare section;
+ INSTANZ=instanz;
 
 #warning was ist mit status (Auftragsstatus), kann das ignoriert werden?
  if(entrystatus == CLOSED) return; // nichts geht mehr
@@ -196,7 +137,8 @@ void AufEintragBase::setStatus(AufStatVal st) throw(SQLerror)
  Transaction tr; 
  
  exec sql update auftragentry set status= :STATUS
-	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR;
+	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR 
+   and instanz =:INSTANZ;
  SQLerror::test("setStatus: update auftragentry");
 
 
@@ -204,8 +146,8 @@ void AufEintragBase::setStatus(AufStatVal st) throw(SQLerror)
   {try 
    {
     pps_ChJournalEntry::newChange(
-			instanz.Id(),
-			AufEintragBase2(AUFTRAGID,ZEILENNR,instanz.Id()),
+			instanz,
+			AufEintragBase2(AUFTRAGID,ZEILENNR,instanz),
 			ArtikelBase(artikel->Id()),
 			(double)bestellt,
 			(double)bestellt,
@@ -219,8 +161,8 @@ void AufEintragBase::setStatus(AufStatVal st) throw(SQLerror)
   {try 
    {
     pps_ChJournalEntry::newChange(
-			instanz.Id(),
-			AufEintragBase2(AUFTRAGID,ZEILENNR,instanz.Id()),
+			instanz,
+			AufEintragBase2(AUFTRAGID,ZEILENNR,instanz),
 			ArtikelBase(artikel->Id()),
 			(double)geliefert,
 			(double)geliefert-bestellt,
@@ -238,14 +180,17 @@ void AufEintragBase::setStatus(AufStatVal st) throw(SQLerror)
 void AufEintragBase::updateStk(long stk) throw(SQLerror)
 {exec sql begin declare section;
  int AUFTRAGID = auftragid;
+ int INSTANZ;
  int ZEILENNR = zeilennr;
  long BESTELLT = stk;
  exec sql end declare section;
+ INSTANZ=instanz;
 
  Transaction tr;
 
  exec sql update auftragentry set bestellt= :BESTELLT
- 	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR;
+ 	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR
+   and instanz =:INSTANZ;
  SQLerror::test("updateStk: update stk in auftragentry");
  
  if(status==OPEN)
@@ -253,8 +198,8 @@ void AufEintragBase::updateStk(long stk) throw(SQLerror)
    try 
     {
      pps_ChJournalEntry::newChange(
-  			instanz.Id(),
-  			AufEintragBase2(AUFTRAGID,ZEILENNR,instanz.Id()),
+  			instanz,
+  			AufEintragBase2(AUFTRAGID,ZEILENNR,instanz),
   			ArtikelBase(artikel->Id()),
   			(double)BESTELLT,
   			(double)(BESTELLT-bestellt),
@@ -272,10 +217,12 @@ void AufEintragBase::updatePreis(const Preis &pr) throw(SQLerror)
 {exec sql begin declare section;
  int AUFTRAGID = auftragid;
  int ZEILENNR = zeilennr;
+ int INSTANZ;
  float PREIS;
  int PREISMENGE;
  int WAEHRUNG;
  exec sql end declare section;
+ INSTANZ=instanz;
 #warning PREISMENGE->float
 
  PREIS=preis.Wert();
@@ -283,7 +230,8 @@ void AufEintragBase::updatePreis(const Preis &pr) throw(SQLerror)
  WAEHRUNG=preis.getWaehrung()->Id();
  exec sql update auftragentry 
  	set preis= :PREIS, waehrung= :WAEHRUNG, preismenge= :PREISMENGE
- 	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR;
+ 	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR
+   and instanz=:INSTANZ;
  SQLerror::test("updatePreis: update preis in auftragentry");
  preis=pr;
 }
@@ -292,12 +240,15 @@ void AufEintragBase::updatePreis(const Preis &pr) throw(SQLerror)
 void AufEintragBase::updateRabatt(int rb) throw(SQLerror)
 {exec sql begin declare section;
  int AUFTRAGID = auftragid;
+ int INSTANZ;
  int ZEILENNR = zeilennr;
  int RABATT = rb;
  exec sql end declare section;
+ INSTANZ=instanz; 
 
  exec sql update auftragentry set rabatt= :RABATT/100.0
- 	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR;
+ 	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR
+   and instanz=:INSTANZ;
  SQLerror::test("updateRabatt: update rabatt in auftragentry");
  
  rabatt=RABATT;
@@ -307,16 +258,19 @@ void AufEintragBase::updateRabatt(int rb) throw(SQLerror)
 void AufEintragBase::updateLieferdatum(const Petig::Datum &ld) throw(SQLerror)
 {exec sql begin declare section;
  int AUFTRAGID = auftragid;
+ int INSTANZ;
  int ZEILENNR = zeilennr;
  char LIEFERDATUM[21];
  exec sql end declare section;
+ INSTANZ=instanz;
 
  Transaction tr;
 
  ld.write_postgres(LIEFERDATUM,sizeof LIEFERDATUM);
  
  exec sql update auftragentry set lieferdate= :LIEFERDATUM
- 	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR;
+ 	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR
+   and instanz=:INSTANZ;
  SQLerror::test("updateLiefDatum: update lieferdate in auftragentry");
 
  if(status==OPEN)
@@ -324,8 +278,8 @@ void AufEintragBase::updateLieferdatum(const Petig::Datum &ld) throw(SQLerror)
    try 
     {
      pps_ChJournalEntry::newChange(
-  			instanz.Id(),
-  			AufEintragBase2(AUFTRAGID,ZEILENNR,instanz.Id()),
+  			instanz,
+  			AufEintragBase2(AUFTRAGID,ZEILENNR,instanz),
   			ArtikelBase(artikel->Id()),
   			ld,
   			(double)(ld-getLieferdatum()),
@@ -343,6 +297,7 @@ void AufEintragBase::split(int newmenge, const Petig::Datum &newld) throw(SQLerr
 {
  exec sql begin declare section;
  int AUFTRAGID;
+ int INSTANZ;
  int ROHARTID;
  int ZEILENNR;
  int ZEILENNR_OLD;
@@ -363,6 +318,7 @@ void AufEintragBase::split(int newmenge, const Petig::Datum &newld) throw(SQLerr
  if(status==CLOSED) return;
 
  AUFTRAGID=auftragid;
+ INSTANZ=instanz;
  ZEILENNR_OLD=zeilennr;
  ARTIKELID=artikel->getArtid();
  ROHARTID=artikel->getRohArtid();
@@ -393,7 +349,7 @@ void AufEintragBase::split(int newmenge, const Petig::Datum &newld) throw(SQLerr
  SQLerror::test("split: lock table auftragentry");
    
  exec sql select (max(zeilennr))+1 into :ZEILENNR from auftragentry
-	where auftragid= :AUFTRAGID;
+	where auftragid= :AUFTRAGID and instanz =:INSTANZ;
  SQLerror::test("split: select max(zeielnnr) auftragentry");
 
  exec sql insert into auftragentry (auftragid, rohartikelid, zeilennr, artikelid,
@@ -407,7 +363,8 @@ void AufEintragBase::split(int newmenge, const Petig::Datum &newld) throw(SQLerr
 
  exec sql update auftragentry set bestellt= :BESTELLT_OLD,
 	geliefert= :GELIEFERT_OLD
-	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR_OLD;
+	where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR_OLD
+   and instanz=:INSTANZ;
  SQLerror::test("split: update auftragentry");
 
  if(STATUS==OPEN)
@@ -415,16 +372,16 @@ void AufEintragBase::split(int newmenge, const Petig::Datum &newld) throw(SQLerr
     try 
       {
        pps_ChJournalEntry::newChange(
-    			instanz.Id(),
-    			AufEintragBase2(AUFTRAGID,ZEILENNR_OLD,instanz.Id()),
+    			instanz,
+    			AufEintragBase2(AUFTRAGID,ZEILENNR_OLD,instanz),
     			ArtikelBase(ARTIKELID),
     			(double)BESTELLT_OLD,
     			(double)(BESTELLT_OLD-bestellt),
     			pps_ChJournalEntry::CH_MENGE);
 
        pps_ChJournalEntry::newChange(
-    			instanz.Id(),
-    			AufEintragBase2(AUFTRAGID,ZEILENNR,instanz.Id()),
+    			instanz,
+    			AufEintragBase2(AUFTRAGID,ZEILENNR,instanz),
     			ArtikelBase(ARTIKELID),
     			(double)BESTELLT,
     			(double)BESTELLT,

@@ -1,4 +1,4 @@
-// $Id: Changejournal.h,v 1.2 2001/06/22 07:29:02 christof Exp $
+// $Id: Changejournal.h,v 1.3 2001/06/22 09:42:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -59,17 +59,17 @@ private:
  ChJType type;   
 
 public:
- static const pps_ChJournalEntry newChange(int instid,
+ static const pps_ChJournalEntry newChange(ppsInstanz::ppsInstId instid,
  		const AufEintragBase2 &aufe, const ArtikelBase &art,
  		double _newval, double _delta, ChJType _type,
  		CID change=0) throw(SQLerror);
  	
- static const pps_ChJournalEntry newChange(int instanz,
+ static const pps_ChJournalEntry newChange(ppsInstanz::ppsInstId instanz,
  		const AufEintragBase2 &aufe, const ArtikelBase &art,
  		const Petig::Datum &_newdat, double _delta, ChJType _type,
  		CID change=0) throw(SQLerror); 	
  		
- pps_ChJournalEntry(int instid, CID change) throw(SQLerror);
+ pps_ChJournalEntry(ppsInstanz::ppsInstId instid, CID change) throw(SQLerror);
 
 };
 

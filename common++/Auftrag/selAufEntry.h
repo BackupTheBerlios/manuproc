@@ -1,4 +1,4 @@
-/* $Id: selAufEntry.h,v 1.12 2000/12/15 16:39:41 cvs_christof Exp $ */
+/* $Id: selAufEntry.h,v 1.13 2001/06/22 09:38:51 cvs_malte Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,14 +27,16 @@
 
 class SelectedAufentry
 {
+ int instanz;
  int auftragid;
  int zeilennr;
  int kdnr;
  
 public:
- SelectedAufentry(int aufid, int znr, int knr=1); 
+ SelectedAufentry(int _instanz, int aufid, int znr, int knr=1); 
 	
  int getAuftragid() const { return auftragid;}
+ int Instanz() const { return instanz;}
  int getZeilennr() const { return zeilennr;}
  int getKdNr() const { return kdnr; }
  inline int mapKey() { return auftragid*10000+zeilennr; }
@@ -49,9 +51,9 @@ public:
 
  SelectedAufList(const SQLAuftragSelector &sel) throw(SQLerror);
  int getLen() { return aufidliste.size();}
- void insert(int aid, int znr, int knr=1);
- void delEntry(int aid, int znr);
- void delAuftrag(int aid);
+ void insert(int instanz,int aid, int znr, int knr=1);
+ void delEntry(int instanz,int aid, int znr);
+ void delAuftrag(int instanz,int aid);
  void addList(const SQLAuftragSelector &sel) throw(SQLerror);
 };
 

@@ -1,4 +1,4 @@
-/* $Id: AufEintragBase.h,v 1.4 2001/06/06 07:27:39 christof Exp $ */
+/* $Id: AufEintragBase.h,v 1.5 2001/06/22 09:42:44 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -111,6 +111,7 @@ class AufEintragBase : public AufEintragBase2
 {
 protected: 
  cH_AufArtikel artikel;
+ ppsInstanz::ppsInstId instanz;
 
  int dispoentrynr;
  int disponr;
@@ -139,7 +140,7 @@ protected:
  	
 public:
  AufEintragBase() 
-   : artikel(0,cH_ExtBezSchema(ExtBezSchema::default_ID)), dispoentrynr(0),
+   : artikel(0,cH_ExtBezSchema(ExtBezSchema::default_ID)), instanz(ppsInstanz::INST_KNDAUF),dispoentrynr(0),
    	disponr(0), status((AufStatVal)OPEN), entrystatus((AufStatVal)OPEN),
    	kdnr(0), 
    	bestellt(0),
@@ -150,7 +151,7 @@ public:
  AufEintragBase(const SelectedAufentry &aufentry, 
  		const cH_ExtBezSchema schema) throw(SQLerror);
 
- AufEintragBase(int _auftragid, int _zeilennr, int _bestellt,
+ AufEintragBase(ppsInstanz::ppsInstId _instanz,int _auftragid, int _zeilennr, int _bestellt,
 	int _artikel, const Petig::Datum _lieferdatum,
 	int _geliefert,
 	int _dispoentrynr, int _disponr, int _jahrgang,
@@ -162,7 +163,7 @@ public:
 	AufStatVal _entrystat, const Petig::Datum _lasteditdate,
 	const cH_ExtBezSchema schema) throw();
 	
- AufEintragBase(int aufid, int znr, const cH_ExtBezSchema schema) throw(SQLerror);
+// AufEintragBase(ppsInstanz::ppsInstId _instanz,int aufid, int znr, const cH_ExtBezSchema schema) throw(SQLerror);
 
  void updateDispoENr(int dinr) throw(SQLerror);
  void updateStk(long stk) throw(SQLerror);

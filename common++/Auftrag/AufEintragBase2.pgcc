@@ -1,4 +1,4 @@
-// $Id: AufEintragBase2.pgcc,v 1.8 2000/12/15 16:27:17 cvs_christof Exp $
+// $Id: AufEintragBase2.pgcc,v 1.9 2001/06/22 09:38:44 cvs_malte Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -35,7 +35,7 @@ void AufEintragBase2::setVerarbeitung(const cH_Prozess p) throw(SQLerror)
  Transaction tr;
  
  exec sql update auftrag_prozess set prozessid= :PROZESSID,
- 	datum= now() where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR;
+ 	datum= now() where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR ;
  SQLerror::test("Prozessaktualisierung",100);
  
  if((sqlca.sqlcode==100) || sqlca.sqlerrd[2]==0)

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: AufEintragBase.cc,v 1.2 2001/06/22 09:42:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,7 +21,7 @@
 #include <Aux/string0.h>
  
 
-AufEintragBase::AufEintragBase(int _auftragid, int _zeilennr, int _bestellt,
+AufEintragBase::AufEintragBase(ppsInstanz::ppsInstId _instanz,int _auftragid, int _zeilennr, int _bestellt,
 	int _artikel, const Petig::Datum _lieferdatum,
 	int _geliefert,
 	int _dispoentrynr, int _disponr, int _jahrgang,
@@ -32,7 +32,7 @@ AufEintragBase::AufEintragBase(int _auftragid, int _zeilennr, int _bestellt,
 	const Preis &_preis, int _rabatt,
 	AufStatVal _entrystatus, const Petig::Datum _lasteditdate,
 	const cH_ExtBezSchema schema) throw()
-: AufEintragBase2(_auftragid,_zeilennr),
+: AufEintragBase2(_auftragid,_zeilennr,_instanz),
   artikel(0,cH_ExtBezSchema(ExtBezSchema::default_ID)),
   prozess(Prozess::default_id)
 {
@@ -68,7 +68,7 @@ AufEintragBase::AufEintragBase(int _auftragid, int _zeilennr, int _bestellt,
 
 
 ostream &operator<<(ostream &o,const AufEintragBase &aeb)
-{  o << "{artikel="<< aeb.artikel->Bezeichnung() << " menge="
+{  o << "{artikel="<< aeb.artikel->Bezeichnung() << "Instanz = "<<aeb.instanz<< " menge="
 	<<aeb.menge << " dispoentrynr="
 	<<aeb.dispoentrynr
 	<< " auftragid="<<aeb.auftragid
@@ -125,11 +125,10 @@ void AufEintragBase::setVerarbeitung(const cH_Prozess p)
 const string AufEintragBase::getEntryStatusStr() const
 {
  switch(entrystatus)
-   {case (AufStatVal)UNCOMMITED : return "ubestätigt"; break;
-    case (AufStatVal)OPEN : return "offen"; break;
-    case (AufStatVal)CLOSED : return "fertig"; break;
-    case (AufStatVal)STORNO : return "storno"; break;
-    default : "-";
+   {case (AufStatVal)UNCOMMITED : return "ubestätigt"; 
+    case (AufStatVal)OPEN : return "offen"; 
+    case (AufStatVal)CLOSED : return "fertig";
+    case (AufStatVal)STORNO : return "storno";
    }
  return "-";
 }

@@ -1,4 +1,4 @@
-// $Id: selAufEntry_sql.pgcc,v 1.3 2001/05/10 16:31:37 christof Exp $
+// $Id: selAufEntry_sql.pgcc,v 1.4 2001/06/22 09:42:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -90,6 +90,7 @@ SelectedFullAufList::SelectedFullAufList(const SQLFullAuftragSelector &selector)
 throw(SQLerror)
 {
  exec sql begin declare section;
+ int INSTANZ[20];
  int AUFID[20];
  int ZNUMMER[20];
  int KDNR[20];
@@ -129,7 +130,7 @@ throw(SQLerror)
 	while(1)
 	  {
 	   exec sql fetch 20 in AUFENTRYFULL2
-	   into :AUFID, :ZNUMMER,
+	   into :INSTANZ, :AUFID, :ZNUMMER,
 		:BESTELLT, :ARTIKELID, :ROHARTIKELID:IROHARTIKELID,
 		:LIEFERDATUM:ILIEFERDATUM,
 		:GELIEFERT, :JAHRGANG,
@@ -143,7 +144,7 @@ throw(SQLerror)
 	   int j=sqlca.sqlerrd[2];
            for (int i=0;i<j;++i)
 	      aufidliste.push_back(
-			AufEintragBase(
+			AufEintragBase((ppsInstanz::ppsInstId)INSTANZ[i],
 			AUFID[i], ZNUMMER[i], BESTELLT[i], ARTIKELID[i],
 	ILIEFERDATUM[i] ? Petig::Datum() : Petig::Datum(LIEFERDATUM[i]),
 			GELIEFERT[i],
@@ -174,6 +175,7 @@ throw(SQLerror)
 {
  exec sql begin declare section;
  int AUFID[20];
+ int INSTANZ[20];
  int ZNUMMER[20];
  int KDNR[20];
  int ARTIKELID[20];
@@ -212,7 +214,7 @@ throw(SQLerror)
 	while(1)
 	  {
 	   exec sql fetch 20 in AUFENTRYFULL
-	   into :AUFID, :ZNUMMER,
+	   into :INSTANZ, :AUFID, :ZNUMMER,
 		:BESTELLT, :ARTIKELID, :ROHARTIKELID:IROHARTIKELID,
 		:LIEFERDATUM:ILIEFERDATUM,
 		:GELIEFERT, :JAHRGANG,
@@ -228,7 +230,7 @@ throw(SQLerror)
            for (int i=0;i<j;++i)
            { try {
 	      aufidliste.push_back(
-			AufEintragBase(
+			AufEintragBase((ppsInstanz::ppsInstId)INSTANZ[i],
 			AUFID[i], ZNUMMER[i], BESTELLT[i], ARTIKELID[i],
 	ILIEFERDATUM[i] ? Petig::Datum() : Petig::Datum(LIEFERDATUM[i]),
 			GELIEFERT[i],
@@ -257,9 +259,10 @@ throw(SQLerror)
 }
 
 
-void SelectedFullAufList::insert(int aid, int znr) throw(SQLerror)
+void SelectedFullAufList::insert(ppsInstanz::ppsInstId instanz, int aid, int znr) throw(SQLerror)
 {
  exec sql begin declare section;
+ int INSTANZ;
  int AUFID;
  int ZNUMMER;
  int KDNR;
@@ -289,7 +292,7 @@ void SelectedFullAufList::insert(int aid, int znr) throw(SQLerror)
  exec sql end declare section;
 
  string cmd=SQLFullAuftragSelector(
-		SQLFullAuftragSelector::sel_AufidZnr(aid,znr)).getClausel();
+		SQLFullAuftragSelector::sel_AufidZnr(instanz,aid,znr)).getClausel();
 	clausel = (char *)cmd.c_str();
 
 	Transaction tr;
@@ -299,7 +302,7 @@ void SelectedFullAufList::insert(int aid, int znr) throw(SQLerror)
 	SQLerror::test(__FILELINE__":SelectedFullAufList::insert: select all auftragids");
 
 	   exec sql fetch in AUFENTRYINSERT
-	   into :AUFID, :ZNUMMER,
+	   into :INSTANZ, :AUFID, :ZNUMMER,
 		:BESTELLT, :ARTIKELID, :ROHARTIKELID:IROHARTIKELID,
 		:LIEFERDATUM:ILIEFERDATUM,
 		:GELIEFERT, :JAHRGANG,
@@ -312,7 +315,7 @@ void SelectedFullAufList::insert(int aid, int znr) throw(SQLerror)
 						"AUFENTRYINSERT");
 
 	      aufidliste.push_back(
-			AufEintragBase(
+			AufEintragBase((ppsInstanz::ppsInstId)INSTANZ,
 			AUFID, ZNUMMER, BESTELLT, ARTIKELID,
 	ILIEFERDATUM ? Petig::Datum() : Petig::Datum(LIEFERDATUM),
 			GELIEFERT,

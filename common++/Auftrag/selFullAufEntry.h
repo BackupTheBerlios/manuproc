@@ -1,4 +1,4 @@
-/* $Id: selFullAufEntry.h,v 1.2 2001/06/06 07:27:39 christof Exp $ */
+/* $Id: selFullAufEntry.h,v 1.3 2001/06/22 09:42:44 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -36,7 +36,7 @@ public:
 
  SelectedFullAufList(const SQLFullAuftragSelector &sel)	throw(SQLerror);
  SelectedFullAufList(const SQLFullAuftragSelector &sel,	cH_ExtBezSchema es) throw(SQLerror);
- void insert(int aid, int znr) throw(SQLerror);
+ void insert(ppsInstanz::ppsInstId instanz, int aid, int znr) throw(SQLerror);
  const_iterator begin() const { return aufidliste.begin(); }
  const_iterator end() const { return aufidliste.end(); }
  // please use size()!

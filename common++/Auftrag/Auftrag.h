@@ -41,9 +41,9 @@ private:
 	string tmpstr;
 	
 public:
-	Auftrag(int auftragid) throw(SQLerror);
+	Auftrag(ppsInstanz::ppsInstId instanz,int auftragid) throw(SQLerror);
 	// neuen Auftrag anlegen
-        Auftrag(int stage, long kundennr, int jahr=0) throw(SQLerror);
+        Auftrag(ppsInstanz::ppsInstId instanz, long kundennr, int jahr=0) throw(SQLerror);
 //        void newArtWrkar(aktAufEintrag &entry) throw(SQLerror);
         void deleteAuftrag() throw(SQLerror);
 	void deleteEintrag(int zeilennr) throw(SQLerror);

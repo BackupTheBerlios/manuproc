@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.2 2000/12/15 16:40:06 cvs_christof Exp $
+// $Id: ppsInstanz.h,v 1.3 2001/06/22 09:38:57 cvs_malte Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -31,6 +31,7 @@ private:
 public:
  ppsInstanz(ppsInstId iid) : instid(iid) {}
  ppsInstanz() : instid((ppsInstId)0) {}
+
  ppsInstId Id() const { return instid; }
   
 };

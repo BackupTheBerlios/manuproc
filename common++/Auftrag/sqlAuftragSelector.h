@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.2 2001/04/30 15:30:25 christof Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.3 2001/06/22 09:42:44 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,6 +19,7 @@
 
 #include<string>
 #include<Artikel/ArtikelBase.h>
+#include<Aux/ppsInstanz.h>
 
 #ifndef SQLSELECTORH
 #define SQLSELECTORH
@@ -29,12 +30,14 @@ class SQLAuftragSelector
  
 public:
  struct sel_Aufid
-  { sel_Aufid(int id) : aufid(id) {}
+  { sel_Aufid(ppsInstanz::ppsInstId _i, int id) : instanz(_i), aufid(id) {}
+    ppsInstanz::ppsInstId instanz;
     int aufid;
   };
   
  struct sel_AufidZnr
-  { sel_AufidZnr(int id, int zeile) : aufid(id), znr(zeile) {}
+  { sel_AufidZnr(ppsInstanz::ppsInstId _i, int id, int zeile) : instanz(_i), aufid(id), znr(zeile) {}
+    ppsInstanz::ppsInstId instanz;
     int aufid;
     int znr;
   };

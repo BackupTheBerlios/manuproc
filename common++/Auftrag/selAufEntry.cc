@@ -1,4 +1,4 @@
-// $Id: selAufEntry.cc,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: selAufEntry.cc,v 1.2 2001/06/22 09:42:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,23 +20,23 @@
 #include"selAufEntry.h"
 
 
-SelectedAufentry::SelectedAufentry(int aufid, int znr, int knr)
-: auftragid(aufid), zeilennr(znr), kdnr(knr) 
+SelectedAufentry::SelectedAufentry(int _instanz, int aufid, int znr, int knr)
+: instanz(_instanz), auftragid(aufid), zeilennr(znr), kdnr(knr) 
 {
 }
 
-void SelectedAufList::insert(int aid, int znr, int knr)
+void SelectedAufList::insert(int instanz, int aid, int znr, int knr)
 {
- aufidliste.push_back(SelectedAufentry(aid, znr, knr));
+ aufidliste.push_back(SelectedAufentry(instanz,aid, znr, knr));
 }
 
-void SelectedAufList::delEntry(int aid, int znr)
+void SelectedAufList::delEntry(int instanz, int aid, int znr)
 {
  vector<SelectedAufentry>::iterator i =  aufidliste.begin();
 
  while(i!=aufidliste.end())
   {
-   if((*i).getAuftragid()==aid)
+   if((*i).getAuftragid()==aid && (*i).Instanz()==instanz)
       if((*i).getZeilennr()==znr)  
          {aufidliste.erase(i);
           break;
@@ -46,7 +46,7 @@ void SelectedAufList::delEntry(int aid, int znr)
 }
 
 
-void SelectedAufList::delAuftrag(int aid)
+void SelectedAufList::delAuftrag(int instanz,int aid)
 {
  vector<SelectedAufentry>::iterator i;
 
@@ -54,7 +54,7 @@ void SelectedAufList::delAuftrag(int aid)
   {
    if(i!=aufidliste.end())
      {
-      if((*i).getAuftragid()==aid)
+      if((*i).getAuftragid()==aid && (*i).Instanz()==instanz)
        {aufidliste.erase(i);
         i = aufidliste.begin();
         }
