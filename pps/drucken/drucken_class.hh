@@ -82,7 +82,13 @@ public:
       return std::vector<LieferscheinEntry::st_AuftragMenge>();
       }
    int AufId() const { 
-//      if (Typ()==Lieferschein) return u.l->RefAuftrag().Id();
+      if (Typ()==Lieferschein) 
+	{
+	 if(u.l->getAuftragsMenge().empty())
+	   return AuftragBase::none_id;
+	 else
+	   return u.l->getAuftragsMenge()[0].ab.Id();
+	}
       if (Typ()==Rechnung) return u.r->AuftragId();
 	abort(); 
       }

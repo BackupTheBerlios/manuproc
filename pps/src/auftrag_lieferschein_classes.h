@@ -15,7 +15,7 @@
 #include<Artikel/Einheiten.h>
 #include<Auftrag/AufEintrag.h>
 #include <unistd.h>
-
+#include <Lager/Lager.h>
 
 #include "auftrag_main.hh"
 
@@ -127,7 +127,7 @@ class Data_Lieferoffen : public RowDataBase
 //          Kunde::ID kunde=Auftrag(AE).getKundennr();
 //          ManuProC::st_produziert sp(kunde,AE,menge,getuid());
 //          AE.Instanz()->Produziert(sp);
-         AE.Produziert(menge,ManuProcEntity<>::none_id);
+         AE.ProduziertNG(menge,LieferscheinEntryBase());
       
        //Produziert(AE,menge,getuid(),ManuProcEntity::none_id).NichtSelbst();
       }

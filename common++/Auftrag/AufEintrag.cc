@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.81 2003/07/18 15:47:23 christof Exp $
+// $Id: AufEintrag.cc,v 1.82 2003/07/18 16:06:28 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -36,7 +36,7 @@
 #include <Misc/relops.h>
 
 #ifdef MABELLA_EXTENSIONS
-#include <Lager/FertigWaren.h>
+#include <Lager/FertigWarenLager.h>
 #include <Artikel/ArtikelBase.h>
 #endif
 
@@ -926,6 +926,14 @@ void AufEintrag::ProduziertNG(mengen_t M,const ProductionContext2 &ctx)
 
 #ifdef MABELLA_EXTENSIONS
 // MABELLA FERTIGLAGER HACK
+
+if(Instanz() == ppsInstanzID::Kundenauftraege)
+  {  FertigWaren fw(artikel,(FertigWaren::enum_Aktion)'L',
+                      M.abs().as_int(),ctx.Id());
+     FertigWarenLager fwl(fw);
+     if(M < 0) fwl.Einlagern();
+     else if(M > 0) fwl.Auslagern();
+  }
 
 #endif
 }

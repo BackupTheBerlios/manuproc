@@ -314,7 +314,7 @@ void auftrag_main::on_button_Kunden_erledigt_clicked()
        {
          AuftragBase::mengen_t menge = i->getRestStk();
          try{ 
-              i->Produziert(menge,ManuProcEntity<>::none_id);
+              i->ProduziertNG(menge,ManuProcEntity<>::none_id);
               change=true;
             } catch(SQLerror &e){std::cerr <<e<<'\n';}
        }

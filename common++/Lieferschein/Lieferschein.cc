@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.36 2003/07/09 14:39:52 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.37 2003/07/18 16:06:28 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -164,7 +164,7 @@ const Preis::rabatt_t Lieferschein::AufRabatt() const throw(SQLerror)
  	"auftrag a join lieferscheinentry e "
    	"on (refauftragid=auftragid and a.instanz=e.instanz) where "
    	"(e.instanz,e.lfrsid)=(?,?)") << Instanz()->Id() << Id()
-   	).FetchOneMap<int>();;
+   	).FetchOneMap<Preis::rabatt_t>();;
 }
 
 LieferscheinBase::mengen_t Lieferschein::StandardLaenge(const ArtikelBase artikel) throw (SQLerror)
