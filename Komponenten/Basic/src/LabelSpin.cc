@@ -83,14 +83,14 @@ void LabelSpin::edit_add() const
   spinbutton->select_region(0,-1);
 }
 
-gint LabelSpin::Focus_in_event(GdkEventFocus *ev)
+bool LabelSpin::Focus_in_event(GdkEventFocus *ev)
 {
  spinbutton->grab_focus();
  spinbutton->select_region(0,-1);
  return false;
 }
 
-gint LabelSpin::Focus_out_event(GdkEventFocus *ev)
+bool LabelSpin::Focus_out_event(GdkEventFocus *ev)
 {
 // spin_activate();
  FocusOutEvent();
