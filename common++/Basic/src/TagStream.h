@@ -1,4 +1,4 @@
-// $Id: TagStream.h,v 1.2 2002/12/12 10:38:10 christof Exp $
+// $Id: TagStream.h,v 1.3 2003/05/01 08:20:43 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2002  Christof Petig
  *
@@ -71,6 +71,7 @@ class TagStream : public Tag
 	}
 public:
 	// this is the encoding used in the internal data structures
+	// if you do not want UTF-8 set this variable to "ISO-8859-1"
 	static std::string host_encoding;
 
 	TagStream(const std::string &path);

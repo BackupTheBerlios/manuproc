@@ -1,4 +1,4 @@
-// $Id: TagStream.cc,v 1.2 2002/12/12 10:38:10 christof Exp $
+// $Id: TagStream.cc,v 1.3 2003/05/01 08:20:43 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2002  Christof Petig
  *
@@ -53,12 +53,7 @@ std::string utf82iso(const std::string &s)
    return ret;
 }
 
-std::string TagStream::host_encoding=
-#if defined (__MINGW32__) || defined(SIGC1_2)
-				"UTF-8";
-#else
-				"ISO-8859-1";
-#endif
+std::string TagStream::host_encoding="UTF-8";
 
 std::string TagStream::recode_load(const std::string &in) const
 {  if (encoding==host_encoding) return in;
