@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.36 2003/12/11 16:37:57 christof Exp $
+// $Id: SimpleTree.cc,v 1.37 2003/12/11 16:50:24 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -165,7 +165,7 @@ Handle<const TreeRow> SimpleTree::getSelectedNode() const
    if (sel)
    { const Gtk::TreeRow &row=*sel;  
      if (row[getStore()->m_columns.childrens_deep])
-       return row[getStore()->m_columns.row];
+       return static_cast<Handle<TreeRow> >(row[getStore()->m_columns.row]);
      else
        throw notNodeSelected();
    }
