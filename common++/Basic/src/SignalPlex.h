@@ -1,4 +1,4 @@
-// $Id: SignalPlex.h,v 1.3 2004/04/29 13:17:23 christof Exp $
+// $Id: SignalPlex.h,v 1.4 2004/05/06 13:11:49 christof Exp $
 /*  libcommon++: ManuProC's OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -30,6 +30,9 @@
 #endif
 #include <sigc++/signal.h>
 #include <sigc++/object_slot.h>
+#if MPC_SIGC_VERSION>0x120
+#  include <sigc++/compatibility.h>
+#endif
 
 // one way variant - two way variant should be similar to ModelPlex
 template <class S>
