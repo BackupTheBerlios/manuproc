@@ -20,3 +20,5 @@ mkinstalldirs
 stamp-h
 stamp-h.in
 install-sh
+autom4te.cache
+depcomp

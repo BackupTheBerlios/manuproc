@@ -7,3 +7,8 @@ Transaction.cc
 FetchIStream.cc
 .libs
 *.lo
+libManuProC_Base.la
+ManuProCConfig.h
+stamp-h
+stamp-h1
+stamp-h.in
