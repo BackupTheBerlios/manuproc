@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.4 2002/06/20 06:29:52 christof Exp $
+// $Id: AufEintrag.cc,v 1.5 2002/06/26 09:04:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -72,8 +72,8 @@ AufEintrag::AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr,
  geliefert(0),
  artikel(_artikel),
  entrystatus(_entrystatus),
- lasteditdate_uid(0),
  lieferdatum(_lieferdatum),
+ lasteditdate_uid(0),
  auftragstatus(_entrystatus),
  prozess(Prozess::default_id)
 {}
@@ -152,14 +152,19 @@ std::string AufEintrag::Planung() const
 }
 
 
-void AufEintrag::move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge) throw(std::exception)
+void AufEintrag::move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,bool reduce_old) throw(std::exception)
 {
 //cout << "MOVE: "<<AufEintragBase(*this)<<'\t'<<AEB<<' '<<
 //entrystatus<<' '<<auftragstatus<<'\t'<<menge<<'\n';
-//cout << "move_to: "<<*this<<"  ==>  "<<AEB<<'\t'<<menge<<'\n';
+//cout << "move_to: "<<*this<<"  ==>  "<<AEB<<'\t'<<menge<<'\t';
   Transaction tr;
-  mengen_t mt1=updateStkDiff__(uid,-menge,false);
-  assert(-menge==mt1);
+  if(reduce_old)
+   {
+//cout << "reduce ME";
+     mengen_t mt1=updateStkDiff__(uid,-menge,false);
+     assert(-menge==mt1);
+   }
+//cout << '\n';
   mengen_t mt2=AufEintrag(AEB).updateStkDiff__(uid,+menge,false);
   assert(menge==mt2);
   AufEintragZu(*this).Neu(AEB,menge); 
@@ -186,3 +191,5 @@ AufEintragBase AufEintrag::getFirstKundenAuftrag() const
  if(V.empty()) return *this;
  else return *(V.begin());
 }
+
+

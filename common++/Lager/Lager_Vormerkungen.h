@@ -31,20 +31,28 @@ class Lager_Vormerkungen : AufEintrag
       static AuftragBase::mengen_t artikel_auf_lager(const ArtikelBase &artikel,
                                                      cH_ppsInstanz instanz,
                    std::vector<pair<AufEintragBase,AuftragBase::mengen_t> >&dispo_auftrag,
-                   const Petig::Datum &datum=Lager::Lagerdatum());
+                   const Petig::Datum &datum,int auftragsid);
 //      int Lieferzeit_in_Tagen(); 
+        void move_menge_from_dispo_to_plan(int uid,AufEintragBase dispo_aeb,mengen_t menge);
+
    public:
       Lager_Vormerkungen(const AufEintrag&);
 
+      // verfügbare Menge für einen Artikel bestimmen
+      static AuftragBase::mengen_t artikel_auf_lager(const ArtikelBase artikel,cH_ppsInstanz instanz,const Petig::Datum &datum,int auftragsid)
+         { std::vector<pair<AufEintragBase,AuftragBase::mengen_t> > d;
+           return artikel_auf_lager(artikel,instanz,d,datum,auftragsid);}
+
       // Das macht ein Auftrag:
-      void vormerken_oder_bestellen(int uid);
+      // Rückgabewert: Lagermenge
+      void vormerken_oder_bestellen(int uid,AuftragBase::mengen_t vormerkmenge,AuftragBase::mengen_t bestellmenge);
 
       // Das macht das einlagern:
       static void freigegeben_menge_neu_verplanen(cH_ppsInstanz instanz,const ArtikelBase& artikel,AuftragBase::mengen_t menge,int uid);
  private:
       void reduziere_ungeplant(int uid,AuftragBase::mengen_t menge);
       void artikel_vormerken(AuftragBase::mengen_t menge,const ArtikelBase &artikel,int uid,
-         std::vector<pair<AufEintragBase,AuftragBase::mengen_t> > dispo_auftrag);
+         std::vector<pair<AufEintragBase,AuftragBase::mengen_t> > dispo_auftrag,bool reduce_old=false);
       void artikel_schnappen(AuftragBase::mengen_t menge,const ArtikelBase &artikel,int uid,
          std::vector<pair<AufEintragBase,AuftragBase::mengen_t> > dispo_auftrag);
 

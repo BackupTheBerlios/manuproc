@@ -3,7 +3,11 @@
   100 | A      | test |        712
   101 | A      | TEST |        712
   101 | B      | TEST |          0
-  102 | A      | TEST |        712
   102 | B      | TEST |          0
-(5 rows)
+  102 | A      | TEST |        713
+  103 | A      | TEST |        712
+  103 | B      | TEST |          0
+  104 | B      | TEST |        713
+  104 | A      | TEST |        713
+(9 rows)
 

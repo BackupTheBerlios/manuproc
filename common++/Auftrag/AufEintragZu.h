@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.4 2002/06/20 06:29:53 christof Exp $
+// $Id: AufEintragZu.h,v 1.5 2002/06/26 09:04:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -44,21 +44,25 @@ public:
 
  enum VonNachDel {Von,Nach,Delete} ;
 
-  std::list<st_reflist> get_Referenz_list_id(const int id) const throw(SQLerror);
+  std::list<st_reflist> get_Referenz_list_id(const int id,bool kinder) const throw(SQLerror);
 
 public:
     AuftragBase::mengen_t getMenge(const AufEintragBase& aeb) const;
     // Eine Benachbarte Liste von Kind- bzw. Elternaufträgen:
     std::list<st_reflist> get_Referenz_list(const AufEintragBase& aeb,bool kinder=false) const throw(SQLerror);
-    // Eine Benachbarte Liste von Kindaufträgen aber nur ungeplante(0er) Aufträge:
-    std::list<st_reflist> get_Referenz_list_ungeplant() const throw(SQLerror)
-      {return get_Referenz_list_id(AuftragBase::ungeplante_id);}
-    // Eine Benachbarte Liste von Kindaufträgen aber nur geplante Aufträge:
-    std::list<st_reflist> get_Referenz_list_geplant() const throw(SQLerror)
-      {return get_Referenz_list_id(AuftragBase::plan_auftrag_id);}
+
+    // Eine Benachbarte Liste von (Kind-)aufträgen aber nur ungeplante(0er) Aufträge:
+    std::list<st_reflist> get_Referenz_list_ungeplant(bool kinder=true) const throw(SQLerror)
+      {return get_Referenz_list_id(AuftragBase::ungeplante_id,kinder);}
+
+    // Eine Benachbarte Liste von (Kind-)aufträgen aber nur geplante(1er) Aufträge:
+    std::list<st_reflist> get_Referenz_list_geplant(bool kinder=true) const throw(SQLerror);
+
     // Eine Benachbarte Liste von Kind- bzw. Elternaufträgen des zu mir gehörenden
     // geplanten Auftrags holen
+private:
     std::list<st_reflist> get_Referenz_list_for_geplant(bool kinder=false) const throw(SQLerror);
+public:
     // Für einen KOMPLETTEN Auftragsbaum nur_ende=false setzen
     // die folgende Funktion liefert sonst nur die Endaufträge OHNE Knoten
     std::list<st_reflist> get_Referenz_listFull(bool kinder,bool nur_ende=true) const throw(SQLerror);
@@ -83,6 +87,8 @@ public:
     // müssen die input/output menge nicht übereinstimmen, da keine negativen Mengen
     // bestellt werden können
     mengen_t setMengeDiff__(const AufEintragBase& neuAEB,const mengen_t menge);
+    AuftragBase::mengen_t verteileMenge(std::list<st_reflist> L, AuftragBase::mengen_t menge, bool add);
+    
 
     // Zuordnung ändern:
     bool setKindZnr(const AufEintragBase& neuAEB);

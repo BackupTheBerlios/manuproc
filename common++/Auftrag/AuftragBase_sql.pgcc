@@ -201,6 +201,7 @@ bool AuftragBase::existEntry(const ArtikelBase& artikel,
    int STATUS=status;
  exec sql end declare section;
  lieferdatum.write_postgres(LIEFERDATUM,sizeof LIEFERDATUM);
+//ECPGdebug(true,stdout);
 
  exec sql select zeilennr,neuzeilennr,bestellt into :ZEILENNR, :NEUZNR,:MENGE
    from auftragentry join auftragsentryzuordnung on
@@ -219,6 +220,7 @@ bool AuftragBase::existEntry(const ArtikelBase& artikel,
       and status=:STATUS limit 1;
     SQLerror::test(__FILELINE__,100);
    }
+//ECPGdebug(false,0);
 
  if (sqlca.sqlcode==100) return false;
  else  {
@@ -237,40 +239,46 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
       const throw(SQLerror)
 {
  create_if_not_exists(status);
-//std::cout << "Try for: "<< altAEB <<"\n";
-// AufEintragBase AEB(altAuftrag,altZnr);
-//std::cout << "\tErfolg\n";
+//cout << "TryUpdateEntry\t"<<Instanz()->Name()<<' '<<Id()<<' '<<bestellt<<'\n';
  int znr=-99,neuznr=-99;
- mengen_t menge=0;
+ mengen_t dummymenge=0;
  Transaction tr;
  exec sql lock table auftragentry in exclusive mode;
  SQLerror::test(__FILELINE__);  
- if(force_new || !existEntry(artikel,lieferdatum,znr,neuznr,menge,status))
+ AuftragBase::mengen_t lagermenge=Lager_Vormerkungen::artikel_auf_lager(artikel,instanz,lieferdatum,AuftragBase::dispo_auftrag_id);
+ mengen_t bestellmenge;
+ if(lagermenge>=bestellt) bestellmenge = 0;
+ else                     bestellmenge = bestellt-lagermenge;
+//cout << "Lagermenge ="<<lagermenge<<'\t'<< "bestellmenge = "<<bestellmenge<<'\n';
+
+ if(force_new || !existEntry(artikel,lieferdatum,znr,neuznr,dummymenge,status))
   {
-    znr=insertNewEntry(bestellt,lieferdatum,artikel,status,uid,false)  ;
-    if(!dispoplanung)
-     {    
-       Lager_Vormerkungen(class AufEintrag(Instanz()->Id(),Id(),znr,bestellt,artikel,lieferdatum,status)).vormerken_oder_bestellen(uid);
-       AufEintragZu(altAEB).Neu(AufEintragBase(*this,znr),bestellt);
-     }
-    else AufEintragZu(class AufEintragBase(*this,znr)).Neu(altAEB,bestellt);
-  }
+//cout << "Insert "<<Instanz()->Name()<<' '<<Id()<<' '<<bestellmenge<<'\n';
+    znr=insertNewEntry(bestellmenge,lieferdatum,artikel,status,uid,false)  ;
+//cout << "\tNew: "<<znr<<'\n';
+   }
  else
-  {
-    if(!dispoplanung) 
-     {
-       AufEintragZu(altAEB).Neu(AufEintragBase(*this,znr),bestellt);
-       mengen_t mt=AufEintragBase(instanz,auftragid,znr).updateStkDiffBase__(uid,bestellt);
+   {
+     if(bestellmenge)
+      {
+       mengen_t mt=AufEintragBase(instanz,auftragid,znr).updateStkDiffBase__(uid,bestellmenge);
        assert(mt==bestellt);
-       Lager_Vormerkungen(class AufEintrag(Instanz()->Id(),Id(),znr,bestellt,artikel,lieferdatum,status)).vormerken_oder_bestellen(uid);
-     }
-    else
-     {
-       AufEintragZu(class AufEintragBase(*this,znr)).Neu(altAEB,bestellt);
-       mengen_t mt=AufEintragBase(instanz,auftragid,znr).updateStkDiffBase__(uid,bestellt);
-       assert(mt==bestellt);
-     }
-  }
+      }
+   }
+   
+  if(!dispoplanung)
+   {    
+//cout << Instanz()->Name()<<' '<<Id()<<'\t'<<bestellmenge<<' '<<lagermenge<<' '<<bestellt<<'\n';
+     Lager_Vormerkungen(class AufEintrag(Instanz()->Id(),Id(),znr,bestellmenge,artikel,lieferdatum,status)).vormerken_oder_bestellen(uid,lagermenge,bestellt);
+     AufEintragZu(altAEB).Neu(AufEintragBase(*this,znr),bestellt);
+   }
+  else 
+   {
+     AufEintragZu(class AufEintragBase(*this,znr)).Neu(altAEB,bestellt);
+   }
+//  mengen_t mt=AufEintragBase(instanz,auftragid,znr).updateStkDiffBase__(uid,bestellt);
+//  assert(mt==bestellt);
+
   tr.commit();
   return znr;
 }

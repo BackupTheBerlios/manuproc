@@ -1,4 +1,4 @@
-// $Id: AufEintragZu_sql.pgcc,v 1.4 2002/06/20 06:29:53 christof Exp $
+// $Id: AufEintragZu_sql.pgcc,v 1.5 2002/06/26 09:04:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -78,9 +78,9 @@ std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list(const AufEin
 }
 
 
-std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_id(const int id) const throw(SQLerror)
+std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_id(const int id,bool kinder) const throw(SQLerror)
 {
-   std::list<st_reflist> L=get_Referenz_list(AEB,true);
+   std::list<st_reflist> L=get_Referenz_list(AEB,kinder);
    std::list<st_reflist> N;
    for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
      {
@@ -88,6 +88,26 @@ std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_id(const int
      }
    return N;
 }
+
+std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_geplant(bool kinder=true) const throw(SQLerror)
+{
+ if(Instanz()->LagerInstanz())
+     return get_Referenz_list_id(AuftragBase::plan_auftrag_id,kinder);
+
+ std::list<st_reflist> L=get_Referenz_list(AEB,kinder);
+ std::list<st_reflist> N;
+ for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+   {
+     if(i->AEB.Id()!=AuftragBase::dispo_auftrag_id &&
+        i->AEB.Id()!=AuftragBase::plan_auftrag_id &&
+        i->AEB.Id()!=AuftragBase::ungeplante_id &&
+        i->AEB.Id()!=AuftragBase::invalid_id ) 
+       N.push_back(*i);
+   }
+ return N;
+}
+      
+
 
 std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_listFull(bool kinder,bool nur_ende) const throw(SQLerror)
 {
@@ -347,3 +367,22 @@ AuftragBase::mengen_t AufEintragZu::getMenge(const AufEintragBase& aeb) const
  SQLerror::test(__FILELINE__);
  return db_menge;
 }
+
+AuftragBase::mengen_t AufEintragZu::verteileMenge(std::list<st_reflist> L, mengen_t menge,bool add)
+{
+  for(std::list<st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
+   {
+     if(menge==AuftragBase::mengen_t(0)) return menge;
+     AuftragBase::mengen_t M;
+     if(i->Menge >= menge) M=menge;
+     else M=i->Menge;
+     if(add)  setMengeDiff__(i->AEB,M)  ;
+     else     setMengeDiff__(i->AEB,-M) ;
+     menge-=M;
+   }
+  if(menge!=AuftragBase::mengen_t(0)) 
+      cerr << "WARNING: 'AufEintragZu::verteileMenge' Restmenge = "<<menge<<'\n';
+  return menge;
+}
+
+

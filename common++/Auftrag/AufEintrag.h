@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.9 2002/06/20 06:54:51 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.10 2002/06/26 09:04:27 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -55,8 +55,8 @@ private:
  ArtikelBase artikel;
 
  AufStatVal entrystatus; /* Status des zugehörigen Eintrags */
- 
  Petig::Datum lieferdatum;
+ 
 
  int lasteditdate_uid;
  Petig::Datum lasteditdate, letzte_lieferung;
@@ -73,9 +73,10 @@ private: // weg von hier!
  int disponr;
  AufStatVal auftragstatus; /* Status des zugehörigen Auftrages */
 
- // unnötig 	
+
  int dispoentrynr; // unnötig
  cH_Prozess prozess; // unnötig
+
 
  cH_PreisListe preisliste;
 public:
@@ -122,7 +123,7 @@ public:
  void updateDispoENr(int dinr) throw(SQLerror);
  mengen_t updateStkDiff__(int uid,mengen_t menge,bool instanzen /*=true*/,
            void (*callback)(void *,st_problems)=0,void* argument=0) throw(SQLerror);
- void move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge) throw(std::exception);
+ void move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,bool reduce_old) throw(std::exception);
 // void updateStk(mengen_t stk,bool instanz) throw(SQLerror);
 private:
  void updateStkDiffInstanz__(int uid,mengen_t menge,void (*callback)(void *,st_problems),void* argument) throw(SQLerror);
@@ -136,7 +137,7 @@ public:
  // Ist (uid!=0) wird lasteditdate verändert.
  void setStatus(AufStatVal newstatus,int uid,bool force=false) throw(SQLerror);		
  void setInstanzen(AufStatVal newstatus,int uid,Petig::Datum lieferdate,mengen_t part,int myznr=-1,int yourznr=-1);
- int split(int uid,mengen_t newmenge, const Petig::Datum &newld,void (*callback)(void *,st_problems)=0,void* argument=0) throw(SQLerror);
+ int split(int uid,mengen_t newmenge, const Petig::Datum &newld,bool dispoplanung=false,void (*callback)(void *,st_problems)=0,void* argument=0) throw(SQLerror);
  mengen_t getStueck() const { return bestellt;}
  mengen_t getRestStk() const {if(entrystatus==CLOSED)return 0; return bestellt-geliefert;}
  mengen_t getGeliefert() const { return geliefert;}
@@ -168,6 +169,9 @@ public:
  std::string Planung() const;
  ppsInstanz::ID LetztePlanInstanz() const { return letztePlanInstanz; }
  void setLetztePlanungFuer(cH_ppsInstanz planinstanz) throw(SQLerror);
+
+// void move_menge_to_dispo_zuordnung(mengen_t menge);
+
  // wird von Artikeleingabe verwendet; gibt Zeilennummer zurück;
  void moveInstanz(int uid,const AuftragBase& auftrag) throw(SQLerror);
 
@@ -183,7 +187,8 @@ public:
 // einen Teil des Auftrages=0 verplanen (in anderen Auftrag<>0 setzen)
 // gibt Zeilennummer zurück; rekursiv = alle Instanzen darunter auch planen,
 // rekursiv wird asuschließlich vom Erfassungs/Reperaturprogramm verwendet
- int Planen(int uid,mengen_t menge, const AuftragBase &zielauftrag,
+// Wenn 'reduce_old=true' wird von *this die Menge reduziert
+ int Planen(int uid,mengen_t menge, bool reduce_old,const AuftragBase &zielauftrag,
       const Petig::Datum &datum,bool rekursiv=false) throw(std::exception);
 
 // friend std::ostream &operator<<(std::ostream &o,const AufEintrag &aeb);

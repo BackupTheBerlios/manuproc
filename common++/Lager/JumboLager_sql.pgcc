@@ -100,6 +100,7 @@ void JumboLager::Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,
     char DSTAMP[32];
     int LAGERPLATZ=jumbo.LagerPosition().IPosition();
   exec sql end declare section;
+  bool throw100=false;
   STATUS=JumboRolle::Verarbeitet;
 
   if (zeit) zeit->write(PostgresTimestamp(ZEIT,sizeof ZEIT));
@@ -112,10 +113,15 @@ void JumboLager::Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,
 
   if (jumbo.InsLagerDatum().valid() && *zeit<jumbo.InsLagerDatum()) 
      STATUS=JumboRolle::ImLager;
-  else LAGERPLATZ=0;
+  else 
+  {  LAGERPLATZ=0;
+     if (jumbo.VerarbDatum().valid() && jumbo.VerarbDatum()<*zeit &&
+     		*zeit-jumbo.VerarbDatum()<5) 
+        throw100=true;
+  }
   
   exec sql update rohjumbo set verarb_datum=:ZEIT, status=:STATUS,
-  		lagerplatz=nullif(LAGERPLATZ,0)
+  		lagerplatz=nullif(:LAGERPLATZ,0)
       where code= :CODE;  
   SQLerror::test("JumboRolle::buchen entnahme");
 
@@ -126,6 +132,8 @@ void JumboLager::Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,
   if (jumbo.getStatus()==JumboRolle::Verarbeitet) typ=SchonDraussen;
   jumbo.setStatus_nodb(JumboRolle::Jumbo_Status(STATUS));
   Jumbo_Log(jumbo,typ,user,zeit);
+  // hupen
+  if (throw100) throw SQLerror("Entnahme",100,"Rolle schon erfasst");
 }
 
 void JumboLager::Jumbo_Log(const JumboRolle& jumbo,Jumbo_LogTyp typ,const std::string& user,const Zeitpunkt_new *zeit)

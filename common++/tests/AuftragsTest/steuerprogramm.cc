@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.cc,v 1.5 2002/06/21 13:15:41 christof Exp $
+// $Id: steuerprogramm.cc,v 1.6 2002/06/26 09:04:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -83,7 +83,7 @@ void auftragstests(e_mode mode)
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::_Garn__Einkauf),Kunde::default_id);
        int kupfer_znr=2;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::_Garn__Einkauf,AuftragBase::ungeplante_id,kupfer_znr));
-       AEP.Planen(UID,100,PA,PLANDATUM);
+       AEP.Planen(UID,100,true,PA,PLANDATUM5);
        C.teste(Check::Planen_Kupfer);
        cout << "Planen des Kupfereinkaufs beendet\n\n";
        }
@@ -92,7 +92,7 @@ void auftragstests(e_mode mode)
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Faerberei),Kunde::default_id);
        int faerberei_znr=1;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Faerberei,AuftragBase::ungeplante_id,faerberei_znr));
-       AEP.Planen(UID,7000,PA,PLANDATUM2);
+       AEP.Planen(UID,7000,true,PA,PLANDATUM4);
        C.teste(Check::Planen_Faerberei_teil);
        cout << "Teil-Planen der Färberei beendet\n\n";
        }
@@ -131,7 +131,7 @@ void auftragstests(e_mode mode)
       int weberei_znr=1;
       AufEintrag AEP(AufEintragBase(ppsInstanzID::Weberei,AuftragBase::ungeplante_id,weberei_znr));
       assert(AEP.getStueck()==AEP.getRestStk());
-      AEP.Planen(UID,5000,PA,PLANDATUM);
+      AEP.Planen(UID,5000,true,PA,PLANDATUM5);
       C.teste(Check::Planen_Weberei);
       cout << "Planen der Weberei zum späteren Test des Bandlagers beendet\n\n";
 
@@ -148,7 +148,7 @@ void auftragstests(e_mode mode)
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Faerberei),Kunde::default_id);
        int faerberei_znr=1;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Faerberei,AuftragBase::ungeplante_id,faerberei_znr));
-       AEP.Planen(UID,12000,PA,PLANDATUM2);
+       AEP.Planen(UID,13000,true,PA,PLANDATUM6);
        C.teste(Check::Planen_Faerberei_ueber);
        cout << "Über-Planen der Färberei beendet\n\n";
        }
@@ -167,25 +167,39 @@ void auftragstests(e_mode mode)
      }    
     case JumboLager:
      { LagerPlatz LP(ppsInstanzID::Bandlager,JUMBO_LAGERPLATZ);
+       LagerPlatz LP2(ppsInstanzID::Bandlager,JUMBO_LAGERPLATZ+1);
        KettplanKette KK=KettplanKette(Kette(MASCHIENE,SCHAERDATUM));
        vector<JumboRolle> JR=JumboRolle::create(KK);
        assert(JR.size()==1);
        class JumboLager JL;
        Zeitpunkt_new zp0("2002-3-1 11:00"),
-       		zp1("2002-3-1 11:11");
+       		zp1("2002-3-1 11:11"),
+       		zp0b("2002-3-1 11:02");
        JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,"TEST",&zp0);
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp1);
+       JR=JumboRolle::create(KK);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp0);
+       JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,"TEST",&zp1);
        C.teste(Check::Jumbo_richtig);
        JR=JumboRolle::create(KK);
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp1);
        JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,"TEST",&zp0);
+       JR=JumboRolle::create(KK);
+       JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,"TEST",&zp1);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp0);
        C.teste(Check::Jumbo_falsch);
        JR=JumboRolle::create(KK);
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp0);
+       try
+       {JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp0b);
+        assert(!"Jumbo_Entnahme sollte 100 werfen");
+       }catch (SQLerror &e)
+       {  assert(e.Code()==100);
+       }
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp1);
        JR=JumboRolle::create(KK);
        JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,"TEST",&zp0);
-       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,"TEST",&zp1);
+       JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,"TEST",&zp1);
        C.teste(Check::Jumbo_doppelt);
        break;
      }

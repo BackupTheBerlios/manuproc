@@ -82,13 +82,13 @@ void Check::vergleich(e_check check)
   {  std::string fz1=tempdir+*i;
      std::string fz2=referenzdir+*i+zusatz;
       
-  std::string s="diff --ignore-matching-lines=OID -q "+fz1+" "+fz2;
+  std::string s="diff --ignore-matching-lines=OID --ignore-matching-lines=TRIGGER -q "+fz1+" "+fz2;
   int reg=system(s.c_str());
   if(reg==-1) 
   {cout<< "Fehler im diff-Komando ("+*i+")\n"; exit(reg);}
    else if(reg==0) {cout << *i << " OK\n";}
    else 
-   { cout << "Probleme, Empfehlung: \n'"<< "mgdiff "+fz1+" "+fz2<<"'\n"; 
+   { cout << "Probleme, Empfehlung: \n "<< "mgdiff "+fz1+" "+fz2<<"\n"; 
      error=true;
    }
   }

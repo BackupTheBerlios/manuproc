@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.h,v 1.30 2002/06/20 06:54:51 christof Exp $
+// $Id: AufEintragBase.h,v 1.31 2002/06/26 09:04:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -81,7 +81,11 @@ public:
       const AuftragBase &zielauftrag,const Petig::Datum &datum);
 
  int split_zuordnungen_to(mengen_t menge,Petig::Datum datum, 
-                         ArtikelBase artikel,AufStatVal status,int uid);
+                         ArtikelBase artikel,AufStatVal status,
+                         int uid,bool dispoplanung);
+
+void move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,ArtikelBase artikel,int uid);
+
 
  bool operator<(const AufEintragBase& b) const 
        {return Instanz()<b.Instanz() 

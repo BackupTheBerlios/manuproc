@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.hh,v 1.3 2002/06/20 13:27:55 christof Exp $
+// $Id: steuerprogramm.hh,v 1.4 2002/06/26 09:04:27 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -37,8 +37,9 @@
 
 #define DATUM Petig::Datum(1,1,2010)
 #define SPLITDATUM Petig::Datum(2,2,2011)
-#define PLANDATUM Petig::Datum(5,5,2005)
-#define PLANDATUM2 Petig::Datum(6,6,2006)
+#define PLANDATUM4 Petig::Datum(4,4,2004)
+#define PLANDATUM5 Petig::Datum(5,5,2005)
+#define PLANDATUM6 Petig::Datum(6,6,2006)
 #define NEWDATUM Petig::Datum(2,2,2020)
 
 #define KUNDE 1000
