@@ -1,4 +1,4 @@
-// $Id: ppsInstanzReparatur.h,v 1.12 2003/06/17 08:15:59 christof Exp $
+// $Id: ppsInstanzReparatur.h,v 1.13 2003/06/18 07:45:51 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -63,7 +63,7 @@ class ppsInstanzReparatur : public cH_ppsInstanz
       bool Reparatur_0er_und_2er(SelectedFullAufList &L,const bool analyse_only) const throw(SQLerror);
 
       // neues Interface!
-      bool Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, bool analyse_only, bool limit_prodselbst) const;
+      bool Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, bool analyse_only, bool raise_prodselbst) const;
       bool Lokal(AufEintrag &ae, bool analyse_only) const;
       bool Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bool analyse_only) const;
 };

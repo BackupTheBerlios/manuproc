@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.37 2003/06/17 08:18:01 christof Exp $
+// $Id: adjust_store.cc,v 1.38 2003/06/18 07:45:51 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -26,7 +26,7 @@
 #include <Auftrag/selFullAufEntry.h>
 #include <Misc/Trace.h>
 
-enum action_bits { b_physical, b_exclude, b_tree, b_cut };
+enum action_bits { b_physical, b_exclude, b_tree, b_raise };
 
 enum action_flags { f_none=0 };
 bool operator&(action_flags a,action_bits b) { return int(a)&(1<<int(b)); }
@@ -49,7 +49,7 @@ static void usage(const std::string &s)
            "\tC: Es wird sichergestellt, daß nur entweder 0er- oder 2er-Aufträge\n"
            "\t   (pro Instanz,Artikel,Lieferdatum) existieren.\n"
            "\tX: Reparaturen von Zuordnungen+lokalen Einschränkungen\n"
-           "\tT: Beschränken von produziert_selbst Instanzen auf benötigte Menge\n"
+           "\tR: Erhöhen von Produziert-Selbst-Instanzen auf noch benötigte Menge\n"
            "\t*: Alle Analysen/Reparaturen auf einmal (meist mit -I)\n";
            
  std::cerr << "USAGE:  ";
@@ -82,7 +82,7 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,const bool analys
        {  AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(*i,
        			AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
        	  AufEintragZu::map_t kinder=AufEintragZu::get_Kinder_nach_Artikel(*i);
-       	  alles_ok&=RI.Eltern(*i,eltern,analyse_only,actions&b_cut);
+       	  alles_ok&=RI.Eltern(*i,eltern,analyse_only,actions&b_raise);
        	  alles_ok&=RI.Lokal(*i,analyse_only);
        	  alles_ok&=RI.Kinder(*i,kinder,analyse_only);
        }
@@ -121,8 +121,8 @@ int main(int argc,char *argv[])
        case 'I' : all_instanz=true;break;
        case 'a' : if (strchr(optarg,'A')||strchr(optarg,'*')) actions|=b_physical;
           if (strchr(optarg,'C')||strchr(optarg,'*')) actions|=b_exclude;
-          if (strchr(optarg,'T')||strchr(optarg,'*')) actions|=b_cut;
-          if (strchr(optarg,'X')||strchr(optarg,'*')||strchr(optarg,'T')) actions|=b_tree;
+          if (strchr(optarg,'R')||strchr(optarg,'*')) actions|=b_raise;
+          if (strchr(optarg,'X')||strchr(optarg,'*')||strchr(optarg,'R')) actions|=b_tree;
           break;
        case 'd' : database=optarg;break;
        case 'h' : dbhost=optarg;break;  

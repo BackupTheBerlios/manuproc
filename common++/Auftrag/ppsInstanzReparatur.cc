@@ -259,7 +259,7 @@ void ppsInstanzReparatur::KinderErniedrigen(AufEintrag &ae,
    }
 }
 
-bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, bool analyse_only, bool limit_prodselbst) const
+bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, bool analyse_only, bool raise_prodselbst) const
 {  // 2er und Kundenaufträge dürfen keine Kinder haben!
    unsigned uid=getuid();
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,ae,/*eltern.size(),*/analyse_only);
@@ -326,8 +326,27 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
          }
       }
    }
-   // Sum zu groß: nachbestellen
-   if (menge>ae.getStueck())
+   if (menge>ae.getRestStk()
+   	&& (!ae.Instanz()->ProduziertSelbst() || raise_prodselbst))
+   {  analyse("mehr v.o. benötigt als noch offen",ae,menge,ae.getStueck());
+      alles_ok=false;
+      if (!analyse_only)
+      {if (ae.Id()==AuftragBase::ungeplante_id) 
+         ae.MengeAendern(uid,menge-ae.getStueck(),true,AufEintragBase(),
+         	ManuProC::Auftrag::r_Reparatur);
+       else
+       { // Zuordnung erniedrigen, Reihenfolge: 2,0,1,3)
+         // danach müssen die Eltern neu bestellen (Reparatur)!
+         AuftragBase::mengen_t m=menge-ae.getRestStk(); // positiv
+         Zuordnung_erniedrigen(ae,eltern,m,AuftragBase::dispo_auftrag_id);
+         if (!!m) Zuordnung_erniedrigen(ae,eltern,m,AuftragBase::ungeplante_id);
+         if (!!m) Zuordnung_erniedrigen(ae,eltern,m,AuftragBase::plan_auftrag_id);
+         if (!!m) Zuordnung_erniedrigen(ae,eltern,m,AuftragBase::handplan_auftrag_id);
+       }
+      }
+   }
+   // Sum zu groß: nachbestellen (kann nur bei ProduziertSelbst passieren)
+   else if (menge>ae.getStueck())
    {  analyse("mehr v.o. benötigt als jemals bestellt",ae,menge,ae.getStueck());
       alles_ok=false;
       if (!analyse_only)
@@ -346,8 +365,7 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
       }
    }
    // Sum zu klein: abbestellen (falls 0er, bei 1er 2er erzeugen)
-   else if (menge<ae.getRestStk() 
-   	&& (!ae.Instanz()->ProduziertSelbst() || limit_prodselbst))
+   else if (menge<ae.getRestStk())
    {  analyse("mehr offen als nun v.o. benötigt",ae,menge,ae.getStueck());
       alles_ok=false;
       if (!analyse_only)
