@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.46 2004/08/25 14:47:11 jacek Exp $
+// $Id: Kunde.cc,v 1.47 2004/08/31 08:14:34 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -359,6 +359,7 @@ void Kunde::set_idnr(const std::string& s)
 fixedpoint<2> Kunde::getProvSatz_Artikel(const ArtikelBase art) const throw(SQLerror)
 {
  int t; // ArtikelTyp;
+ // Jacek: Warum hast du nicht den Cache von ArtikelStamm genommen?
  Query("select warengruppe from artikelstamm where id=?")   
                << art.Id() >> t;
  ArtikelTyp at(t);
@@ -368,6 +369,7 @@ fixedpoint<2> Kunde::getProvSatz_Artikel(const ArtikelBase art) const throw(SQLe
         itos(ExtBezSchema::default_id);
 
  fixedpoint<2> to_set=0;
+#ifdef MABELLA_EXTENSIONS
  int signatur=1;
  int bezkomptype=1;
 
@@ -410,6 +412,7 @@ fixedpoint<2> Kunde::getProvSatz_Artikel(const ArtikelBase art) const throw(SQLe
  	}
        	
       }
+#endif      
  return to_set;
 
 }
