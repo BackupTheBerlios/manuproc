@@ -1,4 +1,4 @@
-dnl $Id: petig.m4,v 1.63 2002/10/18 09:08:01 christof Exp $
+dnl $Id: petig.m4,v 1.64 2002/12/04 14:12:53 christof Exp $
 
 dnl Configure paths for some libraries
 dnl derived from kde's acinclude.m4
@@ -179,10 +179,12 @@ dnl omit these standard paths even though ecpg mentions them
         if (echo $i | fgrep -q include )
         then
           LDIR=`echo $i | sed s+/include+/lib+`
-          if test -d $LDIR
+          if test -r $LDIR/libecpg.so
           then
-          	 dnl perhaps test for libpq etc.
              ECPG_LDFLAGS="$ECPG_LDFLAGS -L$LDIR"
+          elif test -r $LDIR/lib/libecpg.so
+          then # this strange path is right for debian
+             ECPG_LDFLAGS="$ECPG_LDFLAGS -L$LDIR/lib"
           fi
         fi
         ECPG_INCLUDES="$ECPG_INCLUDES -I$i"
