@@ -640,6 +640,8 @@ void auftrag_lieferschein::on_newlieferentryall_ok()
 }
 
 
+
+
 void auftrag_lieferschein::auftragzeile_zeile_uebernehmen(const AufEintrag &AE)
 {
  if(lieferschein->Id()==LieferscheinBase::none_id) return;
@@ -1087,6 +1089,20 @@ void auftrag_lieferschein::on_ungeb_lief_print_activate()
 
 void auftrag_lieferschein::on_petig_we_activate()
 {
+ if(!instanz->ExterneBestellung()) return;
+
+ if(lieferschein->Id()==ManuProcEntity<>::none_id)
+   {
+    meldung->Show("Bitte einen Lieferschein erstellen oder laden");
+    return;
+   }
+   
+ if(lieferschein->RngNr()!=ManuProcEntity<>::none_id)
+   {
+    meldung->Show("Lieferschein ist fakturiert und darf nicht mehr gänder werden");
+    return;
+   }   
+
  petig_we pwe;  
  pwe.set_transient_for(*this);
 

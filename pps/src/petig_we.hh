@@ -15,6 +15,7 @@
 #include <Artikel/ArtikelBase.h>
 #include <vector>
 #include <string>
+#include <Artikel/ArtikelMengeSumme.h>
 
 class petig_we : public petig_we_glade
 {
@@ -22,15 +23,15 @@ class petig_we : public petig_we_glade
    ArtikelBase	artikel;
    std::vector<std::string> artbez;
    int stueck;
+   ArtikelMenge::mengen_t menge;
    std::string auftrag_referenz;
-   we_entry(const std::vector<std::string> a, int s, 
-            const std::string auf) : artbez(a),stueck(s),
-              auftrag_referenz(auf) {}
-   we_entry() : stueck(0) {}
+   we_entry() : stueck(0),menge(0) {}
    };
  std::vector<struct we_entry> we_ls;
-  
+ 
         void on_petig_we_ok_clicked();
         void on_petig_we_cancel_clicked();  
+ void identify_article() throw(SQLerror); 
+        
 };
 #endif

@@ -37,8 +37,7 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
         
         friend class auftrag_lieferschein_glade;
         void set_tree_titles();
-        void set_tree_daten_content(LieferscheinBase::ID lfrsid);
-        void set_tree_offen_content();
+
         void on_daten_leaf_selected(cH_RowDataBase d);
         void on_daten_unselect_row(int row, int col, GdkEvent* b);
         void on_offen_leaf_selected(cH_RowDataBase d);
@@ -110,10 +109,15 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
 
 	void adjustOffAufEntry(cH_Data_Lieferdaten dt, int deltaMenge);
 public:
+        void set_tree_daten_content(LieferscheinBase::ID lfrsid);
+        void set_tree_offen_content();
+
 	auftrag_lieferschein(cH_ppsInstanz _instanz);
 	Kunde::ID getKdNr() { return liefer_kunde->get_value();}
 	const H_Lieferschein getLieferschein() const { return lieferschein; }
         cH_ppsInstanz getInstanz() const { return instanz; }
+        
+ std::vector<cH_RowDataBase> getLiefOff() const {return datavec_liefoff; }
 };
 
 
