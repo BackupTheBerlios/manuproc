@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.16 2003/09/11 15:25:55 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.17 2003/09/11 16:38:51 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -210,8 +210,11 @@ public:
 	         if (M>0) AufEintragZu(alterAEB).setMengeDiff__(aeb,-M);
 		 Lager L(aeb.Instanz());
 		 L.raus_aus_lager(art,M,true,ProductionContext(neuerAEB,ctx,aeb));
+		 // einen Verweis anlegen
+		 if (M>0) AufEintragZu(neuerAEB).Neu(aeb,0);
+		 // muss noch nachbestellt werden (vielleicht ist das wie NeuBestellen)
 		 if (M<0) 
-		    AufEintrag(neuerAEB).MengeAendern(-M,true,AufEintragBase());
+		    AufEintrag(neuerAEB).ArtikelInternNachbestellen(-M);
 	      }
 	      else
 	         AufEintrag(aeb).ProduziertNG(M,alterAEB,neuerAEB,ctx);

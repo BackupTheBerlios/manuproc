@@ -241,7 +241,7 @@ void ppsInstanzReparatur::analyse(const std::string &s,const AufEintragBase &AE,
 {analyse(s,AE,x.String(),y.String());}
 
 void ppsInstanzReparatur::analyse(const std::string &s,const AufEintragBase &AE,const AufEintragBase &x,const ABmt &y) const
-{analyse(s,AE,x.Instanz()->Name()+"/"+itos(x.Id())+"/"+itos(x.ZNr()),y.String());}
+{analyse(s,AE,x.str(),y.String());}
 
 void ppsInstanzReparatur::analyse(const std::string &s,const AufEintragBase &AE,const ArtikelBase &x,const ArtikelBase &y) const
 {analyse(s,AE,itos(x.Id()),itos(y.Id()));}
@@ -343,7 +343,7 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
             continue;      	    
       	 }
       	 if (ae.Id()==AuftragBase::plan_auftrag_id && !ae.getGeliefert())
-      	 {  analyse("Zuordnungen zu unausgelieferten 1ern können weg",ae,i->AEB,i->Menge);
+      	 {  analyse("Zuordnungen zu leeren 1ern können weg",ae,i->AEB,i->Menge);
       	    if (really_delete) goto nur_der_weg;
       	 }
       	 unsigned count=0;

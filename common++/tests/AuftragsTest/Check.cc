@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.59 2003/09/11 13:34:30 christof Exp $
+// $Id: Check.cc,v 1.60 2003/09/11 16:38:51 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -61,13 +61,13 @@ bool Check::teste(was_checken check,const std::string &zusatz, bool vor_dem_test
   int c=system(cmd.c_str());
   if(verbose || c) 
   { std::cerr << cmd << " returned " << c<<'\n'; 
-    if (c) return false; 
   }
 
   // einmal reicht dann  
 //  if (!vor_dem_test_reparieren && !reparieren) return true;
   
   dump(check,zusatz);  
+  if (c) return false; 
   return vergleich(check,zusatz);
 }
 
