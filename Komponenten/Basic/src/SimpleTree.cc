@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.20 2003/10/20 07:39:22 christof Exp $
+// $Id: SimpleTree.cc,v 1.21 2003/10/21 07:41:41 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,7 +33,7 @@ void SimpleTree_Basic::on_redisplay()
 }
 
 SimpleTree_Basic::SimpleTree_Basic(unsigned maxcol)
-	: SimpleTreeStore_Proxy(maxcol)
+	: SimpleTreeStore_Proxy(maxcol), menu()
 {  attach();
 
    for (unsigned int i=0;i<Cols();++i)
@@ -43,8 +43,8 @@ SimpleTree_Basic::SimpleTree_Basic(unsigned maxcol)
       if (pColumn)
       {  pColumn->signal_clicked().connect(SigC::bind(SigC::slot(*this,&SimpleTree_Basic::on_title_clicked),i));
          pColumn->add_attribute(crt->property_text(),sts->m_columns.cols[i]);
-         // TODO: Farbe abschaltbar
-         pColumn->add_attribute(crt->property_background_gdk(),sts->m_columns.background);
+         if (getStore()->ShowColor().Value())
+            pColumn->add_attribute(crt->property_background_gdk(),sts->m_columns.background);
       }
    }
    set_headers_clickable();
@@ -127,3 +127,80 @@ std::vector<cH_RowDataBase> SimpleTree::getSelectedRowDataBase_vec() const
    return result;
 }
 
+#include <gtkmm/menu.h>
+#include <bool_CheckMenuItem.hh>
+
+void SimpleTree_Basic::fillMenu()
+{  assert(menu==0); 
+  menu=new Gtk::Menu();
+  // Hauptmenü        
+#if 0
+   Gtk::MenuItem *neuordnen = manage(new class Gtk::MenuItem("Neuordnen"));
+   Gtk::MenuItem *zuruecksetzen = manage(new class Gtk::MenuItem("Zurücksetzen"));
+   Gtk::MenuItem *abbrechen = manage(new class Gtk::MenuItem("Abbrechen"));
+   Gtk::Menu *spalten_menu = manage(new class Gtk::Menu());
+   Gtk::MenuItem *spalten = manage(new class Gtk::MenuItem("Sichtbare Spalten"));
+   Gtk::Menu *optionen_menu = manage(new class Gtk::Menu());
+   Gtk::MenuItem *optionen = manage(new class Gtk::MenuItem("Optionen"));
+
+   menu->append(*zuruecksetzen);     
+   menu->append(*abbrechen);   
+   menu->append(*spalten);
+   spalten->set_submenu(*spalten_menu);
+
+   for (guint i=0;i<Cols();++i)
+    {
+      Gtk::CheckMenuItem *sp = manage(new class Gtk::CheckMenuItem(getColTitle(i)));
+      spalten_menu->append(*sp);
+      if (vec_hide_cols[i]) sp->set_active(true);
+      sp->show();
+      sp->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::welche_Spalten),i,sp));
+    }
+   menu->append(*optionen);
+   optionen->set_submenu(*optionen_menu);
+   Gtk::CheckMenuItem *titles = manage(new class Gtk::CheckMenuItem("Spaltenüberschriften anzeigen"));
+   Gtk::CheckMenuItem *auffuellen = manage(new class Gtk::CheckMenuItem("Auffüllen mit Standardreihenfolge\n(statt der aktuellen)"));
+   Gtk::CheckMenuItem *expandieren = manage(new class Gtk::CheckMenuItem("Gewählte Knoten expandieren"));
+   Gtk::CheckMenuItem *colorize = manage(new class Gtk::CheckMenuItem("farblich markieren"));
+   Gtk::MenuItem *exp_all = manage(new class Gtk::MenuItem("Alle Knoten expandieren"));
+   Gtk::MenuItem *col_all = manage(new class Gtk::MenuItem("Alle Knoten kollabieren"));
+   optionen_menu->append(*titles);
+   optionen_menu->append(*auffuellen);
+   optionen_menu->append(*expandieren);
+   optionen_menu->append(*colorize);
+   optionen_menu->append(*exp_all);
+   optionen_menu->append(*col_all);
+   titles->show();
+   auffuellen->show();
+   expandieren->show();
+   colorize->show();
+   
+   neuordnen->activate.connect(SigC::slot(this,&TreeBase::on_neuordnen_clicked));
+   zuruecksetzen->activate.connect(SigC::slot(this,&TreeBase::on_zuruecksetzen_clicked));
+   abbrechen->activate.connect(SigC::slot(this,&TreeBase::on_abbrechen_clicked));
+
+   titles_menu=titles;
+   titles->set_active(titles_bool);
+   titles->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::Titles),titles));
+
+   auffuellen->set_active(auffuellen_bool);
+   auffuellen->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::Auffuellen),auffuellen));
+
+   expandieren->set_active(expandieren_bool);
+   expandieren->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::Expandieren),expandieren));
+
+   colorize->set_active(color_bool);
+   colorize->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::on_Color),colorize));
+
+   exp_all->activate.connect(SigC::slot(this,&TreeBase::Expand_recursively));
+   col_all->activate.connect(SigC::slot(this,&TreeBase::Collapse_recursively));
+
+   // Menu anzeigen
+//   neuordnen->show();
+//   zuruecksetzen->show();
+//   abbrechen->show();
+//   spalten->show();
+//   optionen->show();
+   menu->show_all();
+#endif
+}

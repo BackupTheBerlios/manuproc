@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.19 2003/10/20 07:41:30 christof Exp $
+// $Id: SimpleTree.hh,v 1.20 2003/10/21 07:41:41 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -65,11 +65,13 @@ public:
 	void redisplay(cH_RowDataBase row, unsigned index) {  sts->redisplay_old(row,index); }
 };
 
+namespace Gtk { class Menu; }
 // I took the more esoteric features out to SimpleTree, 
 // so they do not confuse the beginner
 class SimpleTree_Basic : public Gtk::TreeView, public SimpleTreeStore_Proxy
 {private:
 	sequence_t clicked_seq;
+	Gtk::Menu *menu;
 
 	void on_title_changed(guint nr);
 	void on_selection_changed();
@@ -80,6 +82,7 @@ class SimpleTree_Basic : public Gtk::TreeView, public SimpleTreeStore_Proxy
 	SigC::Signal0<void> _reorder;
 	
 	void on_title_clicked(unsigned no);
+	void fillMenu();
 	
 public:
 	SimpleTree_Basic(unsigned max_col);
@@ -210,8 +213,7 @@ public:
 #include <gtkmm/checkmenuitem.h>
 
 class SimpleTree : public Gtk::TreeView
-{Gtk::Menu *menu;  
- Gtk::CheckMenuItem *titles_menu;
+{Gtk::CheckMenuItem *titles_menu;
  bool titles_bool:1; 
  
  void Titles(Gtk::CheckMenuItem *titles);
@@ -222,7 +224,6 @@ class SimpleTree : public Gtk::TreeView
  void on_zuruecksetzen_clicked();
  void on_abbrechen_clicked();
  void on_row_select(int row, int col, GdkEvent* b);
- void fillMenu();
  gint MouseButton(GdkEventButton *event);
  void welche_Spalten(guint i,const Gtk::CheckMenuItem *sp);
  void show_or_hide_Spalten();
