@@ -1,4 +1,4 @@
-// $Id: SimpleTreeModel.h,v 1.4 2002/11/22 14:28:20 christof Exp $
+// $Id: SimpleTreeModel.h,v 1.5 2002/11/28 13:21:23 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,8 +28,10 @@
 #include <RowDataBase.h>
 
 class SimpleTreeModel : SigC::Object
-{private:
-	std::vector<cH_RowDataBase> datavec;
+{public:
+	typedef std::vector<cH_RowDataBase> datavec_t;
+private:
+	datavec_t datavec;
 	std::vector<std::string> titles;
 	std::vector<bool> column_editable;
 
@@ -46,7 +48,9 @@ public:
 	{  return title_changed; }
 	void clear();
 	
-	void setDataVec(const std::vector<cH_RowDataBase> &d);
+	void setDataVec(const datavec_t &d);
+	const datavec_t &getDataVec() const
+	{  return datavec; }
 	void setTitles(const std::vector<std::string>& T);
 	const std::string getColTitle(guint idx) const;
 };

@@ -1,4 +1,4 @@
-/* $Id: TreeRow.h,v 1.4 2002/11/28 10:08:50 christof Exp $ */
+/* $Id: TreeRow.h,v 1.5 2002/11/28 13:21:23 christof Exp $ */
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: TreeRow.h,v 1.4 2002/11/28 10:08:50 christof Exp $
+// $Id: TreeRow.h,v 1.5 2002/11/28 13:21:23 christof Exp $
 
 #ifndef TCLISTROWDATA
 #define TCLISTROWDATA
@@ -28,10 +28,12 @@
 
 //class TreeBase;
 
+// perhaps we should move as much members of this class into the model
+// as possible
+
 class TreeRow : public HandleContent
 {protected:
 	cH_EntryValue value;
-	bool expand:1;
 	
 	// childrens_deep=0 -> Leaf
 	guint childrens_deep;
@@ -55,8 +57,8 @@ public:
  
 	// deep2:=0 for a leaf
  TreeRow(guint dummy_deep1, const cH_EntryValue &v, guint _deep2, 
- 		cH_RowDataBase data, bool exp=false)
-   : value(v), expand(exp), childrens_deep(_deep2),
+ 		cH_RowDataBase data, bool dummy_exp=false)
+   : value(v), childrens_deep(_deep2),
    	leafdata(data)
  {}
  virtual ~TreeRow() {}

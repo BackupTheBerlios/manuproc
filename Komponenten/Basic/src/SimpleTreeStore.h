@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.9 2002/11/28 10:08:50 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.10 2002/11/28 13:21:23 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -39,7 +39,8 @@ public:
 	const SimpleTreeModel &getModel() const { return *model; }
 	void setModel(SimpleTreeModel &model);
 
-	void setDataVec(const std::vector<cH_RowDataBase> &d) {  model->setDataVec(d); }
+	void setDataVec(const SimpleTreeModel::datavec_t &d) {  model->setDataVec(d); }
+	const SimpleTreeModel::datavec_t &getDataVec() const { return model->getDataVec(); }
 	void setTitles(const std::vector<std::string>& T) {  model->setTitles(T); }
 };
 
@@ -77,7 +78,9 @@ friend class SimpleTree;
 	void on_title_changed(guint idx);
 	
 	void redisplay();
-	void insertLine(/* ??? */const cH_RowDataBase &d, std::deque<guint> q,guint deep);
+	void insertLine(Gtk::TreeModel::Children parent,const cH_RowDataBase &d, std::deque<guint> q,guint deep);
+	
+	void on_line_appended(cH_RowDataBase);
 public:
 	struct ModelColumns : public Gtk::TreeModelColumnRecord
 	{  std::vector<Gtk::TreeModelColumn<Glib::ustring> > cols;

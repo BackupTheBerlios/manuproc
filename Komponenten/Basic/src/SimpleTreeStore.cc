@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.7 2002/11/27 23:38:00 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.8 2002/11/28 13:21:23 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -141,7 +141,6 @@ SimpleTreeStore::ModelColumns::ModelColumns(int _cols)
 //      assert(c.index()==i);
    }
    add(row);
-   add(node_val);
 }
 
 // CellItem ^= TreeRow
@@ -164,19 +163,18 @@ void SimpleTreeStore::defaultSequence()
    for(guint i=0; i<Cols(); ++i) currseq.push_back(i);
 }
 
-#if 0
 void SimpleTreeStore::redisplay()
 {
  
 // liste loeschen
- if(clear_me) TCList::clear();
+ m_refTreeStore->clear();
 
- std::vector<cH_RowDataBase>::const_iterator i=datavec.begin();
- std::vector<cH_RowDataBase>::const_iterator j=datavec.end();
+ std::vector<cH_RowDataBase>::const_iterator i=getDataVec().begin();
+ std::vector<cH_RowDataBase>::const_iterator j=getDataVec().end();
 
 // neu einordnen, Summen berechnen
  for(; i!=j; ++i)
-    insertLine((TCListRow_API*)this,*this,*i,currseq,0);
+    insertLine(m_refTreeStore->children(),*i,currseq,0);
 
 #if 0
 // Summen anzeigen
@@ -195,10 +193,9 @@ void SimpleTreeStore::redisplay()
  reorder();
 #endif
 }
-#endif
 
 void SimpleTreeStore::on_line_appended(cH_RowDataBase row)
-{  insertLine(get_iter("0"),row,currseq,0);
+{  insertLine(m_refTreeStore->children(),row,currseq,0);
 // Summen neu anzeigen (hmmm, overkill!)
 #if 0
  for(TCListRow_API::iterator i = begin(); i!=end(); ++i)
@@ -210,15 +207,15 @@ void SimpleTreeStore::on_line_appended(cH_RowDataBase row)
 
 namespace {
 class CompareValue
-{	Gtk::TreeModelColumn<cH_EntryValue> node_val;
+{	Gtk::TreeModelColumn<Handle<TreeRow> > row;
 public:
-	CompareValue(Gtk::TreeModelColumn<cH_EntryValue> &v)
-		: node_val(v) {}
-	bool operator()(const TreeStore::iterator &a, const cH_EntryValue &b)
-	{  return *((*a)[node_val]) < *b;
+	CompareValue(Gtk::TreeModelColumn<Handle<TreeRow> > &v)
+		: row(v) {}
+	bool operator()(const Gtk::TreeStore::iterator &a, const cH_EntryValue &b)
+	{  return *static_cast<Handle<TreeRow> >((*a)[row])->Value() < *b;
 	}
-	bool operator()(const cH_EntryValue &a, const TreeStore::iterator &b)
-	{  return *a < *((*b)[node_val]);
+	bool operator()(const cH_EntryValue &a, const Gtk::TreeStore::iterator &b)
+	{  return *a < *static_cast<Handle<TreeRow> >((*b)[row])->Value();
 	}
 };
 }
@@ -230,38 +227,38 @@ public:
 #define NurEinKind(x) ((x).begin()!=(x).end() && ++((x).begin()) == (x).end())
 #define MehrAlsEinKind(x) ((x).begin()!=(x).end() && ++((x).begin()) != (x).end())
 
-void SimpleTreeStore::insertLine(TreeStore::iterator &parent,
+void SimpleTreeStore::insertLine(Gtk::TreeModel::Children parent,
             const cH_RowDataBase &v, std::deque<guint> selseq, guint deep)
 {
 recurse:
- TreeStore::iterator current_iter=parent.begin();
- TreeStore::iterator apiend = parent.end();
- TreeStore::iterator upper_b=apiend;
+ Gtk::TreeStore::iterator current_iter=parent.begin();
+ Gtk::TreeStore::iterator apiend = parent.end();
+ Gtk::TreeStore::iterator upper_b=apiend;
  guint seqnr=selseq.front();	
  cH_EntryValue ev=v->Value(seqnr,ValueData());
 
 // node/leaf mit Wert<=ev suchen
 // optimization: we expect to need upper_bound if this is the last attribute
  if (!MehrAlsEinKind(selseq))
- {  std::pair<TreeStore::iterator,TreeStore::iterator> range 
+ {  std::pair<Gtk::TreeStore::iterator,Gtk::TreeStore::iterator> range 
  		= std::equal_range(current_iter,apiend,ev,
- 				CompareValue(m_columns.node_val));
+ 				CompareValue(m_columns.row));
     current_iter=range.first;	// lower_bound
     upper_b=range.second;	// upper_bound
  }
  else
     current_iter=std::lower_bound(current_iter,apiend,ev,
- 				CompareValue(m_columns.node_val));
+ 				CompareValue(m_columns.row));
 
  if(current_iter!=apiend) // dann einfuegen
    {// eigentlich nur ein gecastetes current_iter
-    TreeRow *current_tclr=reinterpret_cast<TreeRow*>((*current_iter).get_user_data());
+    Handle<TreeRow> current_row=(*current_iter)[m_columns.row];
     //----------------- gleicher Wert ------------------
-    if((ev) == *((*current_iter)[m_columns.node_val]))
+    if ((ev) == current_row->Value())
      { 
       if (MehrAlsEinKind(selseq)) // wenn Blatt noch nicht erreicht
       // eine neue Node erzeugen(?)
-      {  cH_RowDataBase v2=(*current_iter)[m_columns.row];
+      {  cH_RowDataBase v2=current_row->LeafData();
          guint child_s_deep=deep;
 
 	do 
@@ -269,12 +266,12 @@ recurse:
 	 ++child_s_deep;
 	 
 	 // darum muss sich eine andere Node kümmern
-         if (child_s_deep==current_tclr->Children_s_Deep())
-         {  current_tclr->cumulate(v);
+         if (child_s_deep==current_row->Children_s_Deep())
+         {  current_row->cumulate(v);
             // insertIntoTCL((&*current_iter),tree,v,selseq,child_s_deep);
             // return;
             // goto ist schneller als (end?)rekursion !!!
-            parent=&*current_iter;
+            parent=current_iter->children();
             deep=child_s_deep;
             goto recurse;
          }
@@ -284,38 +281,47 @@ recurse:
 				==v2->Value(selseq.front(),ValueData()));
          
 	 // vor current_iter einfügen
-         TreeRow *newnode=NewNode(deep, ev, child_s_deep, v2, child_s_deep < showdeep, *current_tclr);
-	 newnode->initTCL(parent,current_iter,tree);
+#if 0	 
+         TreeRow *newnode=NewNode(deep, ev, child_s_deep, v2, child_s_deep < showdeep, *current_row);
 	 tree.initDepth(newnode,deep);
 	 
-	 current_tclr->getTCL_API()->reparent(*parent,*newnode->getTCL_API());
-	 current_tclr->ValueDeep(v2->Value(selseq.front(),ValueData()),child_s_deep);
-	 tree.initDepth(current_tclr,child_s_deep);
+	 current_row->getTCL_API()->reparent(*parent,*newnode->getTCL_API());
+	 current_row->ValueDeep(v2->Value(selseq.front(),ValueData()),child_s_deep);
+	 tree.initDepth(current_row,child_s_deep);
 
 	 // das neue Blatt einsortieren
 	 newnode->cumulate(v);
          // insertIntoTCL(newnode->getTCL_API(),tree,v,selseq,child_s_deep);
          parent=newnode->getTCL_API();
+#endif         
          deep=child_s_deep;
          goto recurse;
       }
       else // Blatt erreicht
       {  // als letztes der Gleichen an parent anhängen
          // upper_b steht schon richtig (s.o.)
+#if 0
          TreeRow *newleaf=NewLeaf(deep,ev,v);
 	 newleaf->initTCL(parent, upper_b, tree);
+#endif	 
       }
       return;
      }
      else // --------------- kleinerer Wert (davor Einfügen) ----------
-	{  TreeRow *newleaf=NewLeaf(deep,ev,v);
+	{
+#if 0	
+	  TreeRow *newleaf=NewLeaf(deep,ev,v);
 	 newleaf->initTCL(parent,current_iter,tree);
 	 tree.initDepth(newleaf,deep);
+#endif	 
 	}
    }
  else //----------------- am Ende der Liste: anhängen ---------------------
-   {   TreeRow *newleaf=NewLeaf(deep,ev,v);
+   {   
+#if 0   
+   TreeRow *newleaf=NewLeaf(deep,ev,v);
 	    newleaf->initTCL(parent,tree); 
 	 tree.initDepth(newleaf,deep);
+#endif	 
     }
 }                                
