@@ -1,74 +1,81 @@
 --
--- Selected TOC Entries:
---
---
--- TOC Entry ID 2 (OID 42711013)
---
--- Name: ku_land Type: TABLE Owner: thoma
+-- PostgreSQL database dump
 --
 
-CREATE TABLE "ku_land" (
-	"id" integer NOT NULL,
-	"name" text NOT NULL,
-	"lkz" character varying(5),
-	"eu_member" boolean,
-	Constraint "ku_land_pkey" Primary Key ("id")
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+DROP TRIGGER "RI_ConstraintTrigger_1752168" ON public.ku_land;
+DROP TRIGGER "RI_ConstraintTrigger_1752167" ON public.ku_land;
+ALTER TABLE ONLY public.ku_land DROP CONSTRAINT ku_land_pkey;
+DROP INDEX public.ku_land_lkz;
+DROP INDEX public.ku_land_name;
+DROP TABLE public.ku_land;
+--
+-- TOC entry 2 (OID 960510)
+--
+
+CREATE TABLE ku_land (
+    id integer NOT NULL,
+    name text NOT NULL,
+    lkz character varying(5),
+    eu_member boolean,
+    w3stat_nr character(3),
+    w3stat_code character(2)
 );
 
---
--- TOC Entry ID 3 (OID 42711013)
---
--- Name: ku_land Type: ACL Owner: 
---
-
-REVOKE ALL on "ku_land" from PUBLIC;
-GRANT SELECT on "ku_land" to PUBLIC;
-GRANT INSERT,SELECT,RULE,UPDATE,DELETE,REFERENCES,TRIGGER on "ku_land" to "thoma";
 
 --
--- Data for TOC Entry ID 6 (OID 42711013)
---
--- Name: ku_land Type: TABLE DATA Owner: thoma
+-- TOC entry 3 (OID 960510)
 --
 
+REVOKE ALL ON TABLE ku_land FROM PUBLIC;
 
-COPY "ku_land" FROM stdin;
-1	Deutschland	D	\N
-2	Österreich	A	\N
-3	Schweiz	CH	\N
-4	Italien	I	\N
-5	Slowenien	SLO	\N
-6	Ungarn	H	\N
-7	Polen	PL	\N
-8	Finnland	FIN	\N
-9	Schweden	S	\N
-10	Norwegen	N	\N
-13	Irland	IRL	\N
-14	Niederlande	NL	\N
-15	Belgien	B	\N
-16	Luxemburg	L	\N
-17	Frankreich	F	\N
-18	Spanien	E	\N
-19	Portugal	P	\N
-20	Island	IS	\N
-22	Libanon	RL	\N
-11	Dänemark	DK	\N
-12	Groäbritannien	GB	\N
-21	U.S.A.	USA	\N
-\.
+
 --
--- TOC Entry ID 4 (OID 48493237)
---
--- Name: "ku_land_name" Type: INDEX Owner: thoma
+-- TOC entry 5 (OID 1752101)
 --
 
 CREATE UNIQUE INDEX ku_land_name ON ku_land USING btree (name);
 
+
 --
--- TOC Entry ID 5 (OID 48493238)
---
--- Name: "ku_land_lkz" Type: INDEX Owner: thoma
+-- TOC entry 4 (OID 1752102)
 --
 
 CREATE UNIQUE INDEX ku_land_lkz ON ku_land USING btree (lkz);
+
+
+--
+-- TOC entry 6 (OID 960515)
+--
+
+ALTER TABLE ONLY ku_land
+    ADD CONSTRAINT ku_land_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 7 (OID 1752167)
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER DELETE ON ku_land
+    FROM lkz_sprache
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_noaction_del" ('<unnamed>', 'lkz_sprache', 'ku_land', 'UNSPECIFIED', 'lkz', 'lkz');
+
+
+--
+-- TOC entry 8 (OID 1752168)
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER UPDATE ON ku_land
+    FROM lkz_sprache
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'lkz_sprache', 'ku_land', 'UNSPECIFIED', 'lkz', 'lkz');
+
 

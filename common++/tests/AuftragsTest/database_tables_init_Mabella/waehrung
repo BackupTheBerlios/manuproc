@@ -1,32 +1,41 @@
 --
--- Selected TOC Entries:
---
-DROP TABLE "waehrung";
---
--- TOC Entry ID 2 (OID 11499162)
---
--- Name: waehrung Type: TABLE Owner: thoma
+-- PostgreSQL database dump
 --
 
-CREATE TABLE "waehrung" (
-	"wid" numeric(2,0) NOT NULL,
-	"kurz" character varying(5) NOT NULL,
-	"lang" character varying(30),
-	"dmfkt" numeric(12,5) NOT NULL,
-	"tex" text,
-	Constraint "waehrung_pkey" Primary Key ("wid")
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+ALTER TABLE ONLY public.waehrung DROP CONSTRAINT waehrung_pkey;
+DROP TABLE public.waehrung;
+--
+-- TOC entry 2 (OID 960287)
+--
+
+CREATE TABLE waehrung (
+    wid numeric(2,0) NOT NULL,
+    kurz character varying(5) NOT NULL,
+    lang character varying(30),
+    dmfkt numeric(12,5) NOT NULL,
+    eufkt numeric(12,5),
+    tex text,
+    fkt numeric(12,5)
 );
 
+
 --
--- Data for TOC Entry ID 3 (OID 11499162)
---
--- Name: waehrung Type: TABLE DATA Owner: thoma
+-- TOC entry 3 (OID 960287)
 --
 
+REVOKE ALL ON TABLE waehrung FROM PUBLIC;
+GRANT SELECT ON TABLE waehrung TO PUBLIC;
 
-COPY "waehrung" FROM stdin;
-1	DM	Deutsche Mark	0.51129	\N
-4	PND	Englisches Pfund	1.50000	\\pounds{}
-2	EUR	Euro	1.00000	\\euro{}
-3	USD	US Dollar	1.16575	US\\$
-\.
+
+--
+-- TOC entry 4 (OID 960292)
+--
+
+ALTER TABLE ONLY waehrung
+    ADD CONSTRAINT waehrung_pkey PRIMARY KEY (wid);
+
+

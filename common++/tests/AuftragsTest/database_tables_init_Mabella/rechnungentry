@@ -1,0 +1,69 @@
+--
+-- PostgreSQL database dump
+--
+
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+DROP TRIGGER "RI_ConstraintTrigger_1752155" ON public.rechnungentry;
+DROP TRIGGER "RI_ConstraintTrigger_1752154" ON public.rechnungentry;
+DROP INDEX public.rechnungentry_pkey;
+DROP TABLE public.rechnungentry;
+--
+-- TOC entry 2 (OID 960332)
+--
+
+CREATE TABLE rechnungentry (
+    rngid numeric(6,0) NOT NULL,
+    zeilennr numeric(3,0) NOT NULL,
+    artikelid integer,
+    lfrsid numeric(6,0),
+    lfrszeile numeric(3,0),
+    menge numeric(8,2),
+    preis numeric(7,3) NOT NULL,
+    rabatt numeric(4,2),
+    preismenge integer NOT NULL,
+    stueck numeric(6,0) DEFAULT 1 NOT NULL,
+    provsatz numeric(4,2)
+);
+
+
+--
+-- TOC entry 3 (OID 960332)
+--
+
+REVOKE ALL ON TABLE rechnungentry FROM PUBLIC;
+
+
+--
+-- TOC entry 4 (OID 1752091)
+--
+
+CREATE INDEX rechnungentry_pkey ON rechnungentry USING btree (rngid);
+
+
+--
+-- TOC entry 5 (OID 1752154)
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER INSERT OR UPDATE ON rechnungentry
+    FROM rechnung
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'rechnungentry', 'rechnung', 'UNSPECIFIED', 'rngid', 'rngid');
+
+
+--
+-- TOC entry 6 (OID 1752155)
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER INSERT OR UPDATE ON rechnungentry
+    FROM lieferschein
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'rechnungentry', 'lieferschein', 'UNSPECIFIED', 'lfrsid', 'lfrsid');
+
+

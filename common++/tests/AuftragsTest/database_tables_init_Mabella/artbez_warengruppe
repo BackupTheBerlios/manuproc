@@ -1,25 +1,26 @@
 --
--- Selected TOC Entries:
---
-DROP TABLE "artbez_warengruppe";
---
--- TOC Entry ID 2 (OID 31639211)
---
--- Name: artbez_warengruppe Type: TABLE Owner: thoma
+-- PostgreSQL database dump
 --
 
-CREATE TABLE "artbez_warengruppe" (
-	"id" smallint,
-	"text" character varying(40)
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+DROP TABLE public.artbez_warengruppe;
+--
+-- TOC entry 2 (OID 960201)
+--
+
+CREATE TABLE artbez_warengruppe (
+    id smallint,
+    text character varying(40)
 );
 
+
 --
--- Data for TOC Entry ID 3 (OID 31639211)
---
--- Name: artbez_warengruppe Type: TABLE DATA Owner: thoma
+-- TOC entry 3 (OID 960201)
 --
 
+REVOKE ALL ON TABLE artbez_warengruppe FROM PUBLIC;
 
-COPY "artbez_warengruppe" FROM stdin;
-3	Band
-\.
+

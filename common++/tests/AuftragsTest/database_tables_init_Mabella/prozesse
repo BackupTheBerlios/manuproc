@@ -1,82 +1,37 @@
 --
--- Selected TOC Entries:
---
-DROP INDEX "prozesse_prozessid_key";
-DROP TABLE "prozesse";
---
--- TOC Entry ID 2 (OID 11499088)
---
--- Name: prozesse Type: TABLE Owner: thoma
+-- PostgreSQL database dump
 --
 
-CREATE TABLE "prozesse" (
-	"prozessid" integer DEFAULT nextval('prozesse_prozessid_seq'::text) NOT NULL,
-	"label" character varying(15) NOT NULL,
-	"meterprostk" numeric(4,1),
-	"text" character varying(20),
-	"tmp_conv_instanz" integer
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+DROP INDEX public.prozesse_prozessid_key;
+DROP TABLE public.prozesse;
+--
+-- TOC entry 2 (OID 960273)
+--
+
+CREATE TABLE prozesse (
+    prozessid integer DEFAULT nextval('prozesse_prozessid_seq'::text) NOT NULL,
+    label character varying(15) NOT NULL,
+    meterprostk numeric(4,1),
+    text character varying(20)
 );
 
+
 --
--- Data for TOC Entry ID 4 (OID 11499088)
---
--- Name: prozesse Type: TABLE DATA Owner: thoma
+-- TOC entry 3 (OID 960273)
 --
 
+REVOKE ALL ON TABLE prozesse FROM PUBLIC;
+GRANT SELECT ON TABLE prozesse TO PUBLIC;
 
-COPY "prozesse" FROM stdin;
-1	Drucken	\N	\N	3
-2	Färben	\N	410	2
-3	Färben	\N	775	2
-4	Färben	\N	795	2
-5	Färben	\N	458	2
-6	Färben	\N	760	2
-7	Färben	\N	340	2
-8	Färben	\N	247	2
-9	Färben	\N	342	2
-10	Färben	\N	786	2
-11	Färben	\N	430	2
-30	Färben	\N	\N	2
-12	Rollen	25.0	25m	10
-13	Rollen	20.0	20m	10
-14	Rollen	2.0	2m	10
-15	Rollen	5.0	5mDun	10
-16	Rollen	\N	Jumbo	10
-17	Rollen	5.0	5m	10
-18	Rollen	50.0	50m	10
-19	Rollen	7.0	7m	10
-20	Rollen	15.0	15m	10
-21	Rollen	25.0	25mDu	10
-22	Rollen	3.0	3m	10
-23	Rollen	7.0	7mDun	10
-24	Rollen	5.0	5mJoy	10
-25	Rollen	7.0	7mJoy	10
-26	Rollen	10.0	10m	10
-27	Rollen	9.1	10y	10
-28	Rollen	91.4	100y	10
-29	Rollen	100.0	100m	10
-32	Rollen	2.5	2,5m	10
-33	Rollen	15.0	15mDu	10
-34	Rollen	2.0	2mDun	10
-35	Rollen	2.0	2mB2k	10
-36	Rollen	3.0	3mB2k	10
-37	Rollen	2.0	2mSon	10
-40	Rollen	25.0	25mKnorr	10
-39	Rollen	50.0	50mFo	10
-41	Rollen	3.0	3mDun	10
-46	Rollen	\N	\N	10
-31	Verarbeitung	\N	\N	3
-38	Äquivalenz	\N	\N	7
-42	Weben	\N		4
-43	Schären	\N		5
-44	Verpacken	\N		1
-45	Gießen	\N		7
-\.
+
 --
--- TOC Entry ID 3 (OID 16135253)
---
--- Name: "prozesse_prozessid_key" Type: INDEX Owner: thoma
+-- TOC entry 4 (OID 1752085)
 --
 
 CREATE UNIQUE INDEX prozesse_prozessid_key ON prozesse USING btree (prozessid);
+
 

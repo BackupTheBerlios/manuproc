@@ -1,56 +1,64 @@
 --
--- Selected TOC Entries:
---
-DROP INDEX "auftrag_speed";
-DROP INDEX "auftrag_pkey";
-DROP TABLE "auftrag";
---
--- TOC Entry ID 2 (OID 16636854)
---
--- Name: auftrag Type: TABLE Owner: thoma
+-- PostgreSQL database dump
 --
 
-CREATE TABLE "auftrag" (
-	"auftragid" numeric(6,0) NOT NULL,
-	"kundennr" numeric(5,0) NOT NULL,
-	"datum" timestamp with time zone DEFAULT now() NOT NULL,
-	"status" character varying(10) DEFAULT '' NOT NULL,
-	"youraufnr" character varying(20),
-	"bemerkung" text,
-	"dispoid" numeric(7,0),
-	"jahrgang" numeric(4,0) DEFAULT 2002 NOT NULL,
-	"stat" smallint DEFAULT 0,
-	"waehrung" numeric(2,0),
-	"instanz" integer DEFAULT 1,
-	"zahlungsziel" date,
-	"rabatt" numeric(4,2),
-	"zahlart" integer,
-	"notiz" text,
-	"verknr" numeric(5)
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+DROP INDEX public.youraufnr_idx;
+DROP INDEX public.auftrag_speed;
+DROP INDEX public.auftrag_pkey;
+DROP TABLE public.auftrag;
+--
+-- TOC entry 2 (OID 960357)
+--
+
+CREATE TABLE auftrag (
+    auftragid numeric(6,0) NOT NULL,
+    kundennr numeric(5,0) NOT NULL,
+    datum timestamp(0) with time zone DEFAULT now() NOT NULL,
+    youraufnr character varying(20),
+    bemerkung text,
+    dispoid numeric(7,0),
+    jahrgang numeric(4,0) DEFAULT 2002 NOT NULL,
+    stat smallint DEFAULT 0,
+    waehrung numeric(2,0),
+    instanz integer DEFAULT 1,
+    zahlungsziel date,
+    rabatt numeric(4,2),
+    zahlart integer,
+    notiz text,
+    verknr numeric(5,0),
+    export_am date
 );
 
---
--- Data for TOC Entry ID 5 (OID 16636854)
---
--- Name: auftrag Type: TABLE DATA Owner: thoma
---
-
-
-COPY "auftrag" FROM stdin;
-\.
---
--- TOC Entry ID 3 (OID 16637853)
---
--- Name: "auftrag_pkey" Type: INDEX Owner: thoma
---
-
-CREATE UNIQUE INDEX auftrag_pkey ON auftrag USING btree (instanz, auftragid);
 
 --
--- TOC Entry ID 4 (OID 16637854)
---
--- Name: "auftrag_speed" Type: INDEX Owner: thoma
+-- TOC entry 3 (OID 960357)
 --
 
-CREATE INDEX auftrag_speed ON auftrag USING btree (status, auftragid);
+REVOKE ALL ON TABLE auftrag FROM PUBLIC;
+
+
+--
+-- TOC entry 4 (OID 1752094)
+--
+
+CREATE UNIQUE INDEX auftrag_pkey ON auftrag USING btree (auftragid, instanz);
+
+
+--
+-- TOC entry 5 (OID 1752095)
+--
+
+CREATE UNIQUE INDEX auftrag_speed ON auftrag USING btree (auftragid, instanz, stat);
+
+
+--
+-- TOC entry 6 (OID 1752122)
+--
+
+CREATE UNIQUE INDEX youraufnr_idx ON auftrag USING btree (youraufnr, kundennr);
+
 

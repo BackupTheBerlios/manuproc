@@ -1,0 +1,48 @@
+--
+-- PostgreSQL database dump
+--
+
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+ALTER TABLE ONLY public.ku_verkaeufer DROP CONSTRAINT "$1";
+ALTER TABLE ONLY public.ku_verkaeufer DROP CONSTRAINT verkaeufer_pkey;
+DROP TABLE public.ku_verkaeufer;
+--
+-- TOC entry 2 (OID 960432)
+--
+
+CREATE TABLE ku_verkaeufer (
+    verknr numeric(3,0) NOT NULL,
+    name character varying(30),
+    kurz character varying(5) NOT NULL,
+    abschlag numeric(5,0),
+    vknr numeric(5,0),
+    abrzyklus_mon numeric(2,0)
+);
+
+
+--
+-- TOC entry 3 (OID 960432)
+--
+
+REVOKE ALL ON TABLE ku_verkaeufer FROM PUBLIC;
+
+
+--
+-- TOC entry 4 (OID 960434)
+--
+
+ALTER TABLE ONLY ku_verkaeufer
+    ADD CONSTRAINT verkaeufer_pkey PRIMARY KEY (verknr);
+
+
+--
+-- TOC entry 5 (OID 1753645)
+--
+
+ALTER TABLE ONLY ku_verkaeufer
+    ADD CONSTRAINT "$1" FOREIGN KEY (vknr) REFERENCES kunden(kundennr) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+

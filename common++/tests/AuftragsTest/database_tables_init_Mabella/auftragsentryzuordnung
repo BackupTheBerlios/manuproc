@@ -1,56 +1,31 @@
 --
--- Selected TOC Entries:
---
-DROP INDEX "auftragsentryzuordnung_altauftr";
-DROP INDEX "ae_zo_neu";
-DROP INDEX "ae_zo_alt";
-DROP TABLE "auftragsentryzuordnung";
---
--- TOC Entry ID 2 (OID 11499362)
---
--- Name: auftragsentryzuordnung Type: TABLE Owner: thoma
+-- PostgreSQL database dump
 --
 
-CREATE TABLE "auftragsentryzuordnung" (
-	"altauftragid" integer NOT NULL,
-	"altinstanz" integer NOT NULL,
-	"altzeilennr" integer NOT NULL,
-	"neuauftragid" integer NOT NULL,
-	"neuinstanz" integer NOT NULL,
-	"neuzeilennr" integer NOT NULL,
-	"menge" integer
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+DROP TABLE public.auftragsentryzuordnung;
+--
+-- TOC entry 2 (OID 960337)
+--
+
+CREATE TABLE auftragsentryzuordnung (
+    altauftragid integer NOT NULL,
+    altinstanz integer NOT NULL,
+    altzeilennr integer NOT NULL,
+    neuauftragid integer NOT NULL,
+    neuinstanz integer NOT NULL,
+    neuzeilennr integer NOT NULL,
+    menge integer
 );
 
---
--- Data for TOC Entry ID 6 (OID 11499362)
---
--- Name: auftragsentryzuordnung Type: TABLE DATA Owner: thoma
---
-
-
-COPY "auftragsentryzuordnung" FROM stdin;
-\.
---
--- TOC Entry ID 4 (OID 16135276)
---
--- Name: "ae_zo_alt" Type: INDEX Owner: thoma
---
-
-CREATE INDEX ae_zo_alt ON auftragsentryzuordnung USING btree (altinstanz, altauftragid, altzeilennr);
 
 --
--- TOC Entry ID 5 (OID 16135277)
---
--- Name: "ae_zo_neu" Type: INDEX Owner: thoma
+-- TOC entry 3 (OID 960337)
 --
 
-CREATE INDEX ae_zo_neu ON auftragsentryzuordnung USING btree (neuinstanz, neuauftragid, neuzeilennr);
+REVOKE ALL ON TABLE auftragsentryzuordnung FROM PUBLIC;
 
---
--- TOC Entry ID 3 (OID 16695043)
---
--- Name: "auftragsentryzuordnung_altauftr" Type: INDEX Owner: thoma
---
-
-CREATE UNIQUE INDEX auftragsentryzuordnung_altauftr ON auftragsentryzuordnung USING btree (altauftragid, altinstanz, altzeilennr, neuauftragid, neuinstanz, neuzeilennr);
 

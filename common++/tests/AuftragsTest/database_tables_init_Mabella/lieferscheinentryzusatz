@@ -1,48 +1,38 @@
 --
--- Selected TOC Entries:
---
-\connect - thoma
-
-DROP INDEX "lfrsentryzusatz_idx";
-DROP TABLE "lieferscheinentryzusatz";
---
--- TOC Entry ID 2 (OID 48754495)
---
--- Name: lieferscheinentryzusatz Type: TABLE Owner: thoma
+-- PostgreSQL database dump
 --
 
-CREATE TABLE "lieferscheinentryzusatz" (
-	"instanz" integer NOT NULL,
-	"lfrsid" integer NOT NULL,
-	"lfsznr" integer NOT NULL,
-	"auftragid" integer,
-	"auftragznr" integer,
-	"menge" integer NOT NULL
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+DROP INDEX public.lfrsentryzusatz_idx;
+DROP TABLE public.lieferscheinentryzusatz;
+--
+-- TOC entry 2 (OID 960907)
+--
+
+CREATE TABLE lieferscheinentryzusatz (
+    instanz integer NOT NULL,
+    lfrsid integer NOT NULL,
+    lfsznr integer NOT NULL,
+    auftragid integer,
+    auftragznr integer,
+    menge integer NOT NULL
 );
 
---
--- TOC Entry ID 3 (OID 48754495)
---
--- Name: lieferscheinentryzusatz Type: ACL Owner: 
---
-
-REVOKE ALL on "lieferscheinentryzusatz" from PUBLIC;
-GRANT INSERT,SELECT,RULE,UPDATE,DELETE,REFERENCES,TRIGGER on "lieferscheinentryzusatz" to "thoma";
 
 --
--- Data for TOC Entry ID 5 (OID 48754495)
---
--- Name: lieferscheinentryzusatz Type: TABLE DATA Owner: thoma
+-- TOC entry 3 (OID 960907)
 --
 
+REVOKE ALL ON TABLE lieferscheinentryzusatz FROM PUBLIC;
 
-COPY "lieferscheinentryzusatz" FROM stdin;
-\.
+
 --
--- TOC Entry ID 4 (OID 48759006)
---
--- Name: "lfrsentryzusatz_idx" Type: INDEX Owner: thoma
+-- TOC entry 4 (OID 1752140)
 --
 
 CREATE INDEX lfrsentryzusatz_idx ON lieferscheinentryzusatz USING btree (instanz, lfrsid, lfsznr);
+
 

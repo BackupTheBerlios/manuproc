@@ -1,0 +1,64 @@
+--
+-- PostgreSQL database dump
+--
+
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+DROP INDEX public.ueberweisungen_pkey;
+DROP INDEX public.ueberweisungen_idx;
+DROP TABLE public.ueberweisungen;
+--
+-- TOC entry 2 (OID 960912)
+--
+
+CREATE TABLE ueberweisungen (
+    faellig date,
+    eigenes_konto numeric(10,0) NOT NULL,
+    eigene_blz numeric(8,0) NOT NULL,
+    dest_konto numeric(10,0) NOT NULL,
+    dest_blz numeric(8,0) NOT NULL,
+    betrag numeric(8,2) NOT NULL,
+    rechnungsbetrag numeric(8,2),
+    auftraggeber character varying(27) NOT NULL,
+    empfaenger character varying(27) NOT NULL,
+    verwendungszweck0 character varying(27) NOT NULL,
+    verwendungszweck1 character varying(27),
+    verwendungszweck2 character varying(27),
+    verwendungszweck3 character varying(27),
+    buchungskonto integer,
+    eingegeben_am timestamp with time zone NOT NULL,
+    eingegebendurch integer NOT NULL,
+    erfolgt_am timestamp with time zone,
+    erfolgtdurch integer,
+    kundennr integer,
+    belegdatum date,
+    belegnr integer,
+    buchungsjournal integer,
+    id integer NOT NULL,
+    disk_refnr numeric(30,0)
+);
+
+
+--
+-- TOC entry 3 (OID 960912)
+--
+
+REVOKE ALL ON TABLE ueberweisungen FROM PUBLIC;
+
+
+--
+-- TOC entry 4 (OID 1752142)
+--
+
+CREATE INDEX ueberweisungen_idx ON ueberweisungen USING btree (oid);
+
+
+--
+-- TOC entry 5 (OID 1752143)
+--
+
+CREATE UNIQUE INDEX ueberweisungen_pkey ON ueberweisungen USING btree (id);
+
+

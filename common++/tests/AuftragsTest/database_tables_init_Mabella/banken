@@ -1,25 +1,44 @@
 --
--- Selected TOC Entries:
---
---
--- TOC Entry ID 2 (OID 26006283)
---
--- Name: banken Type: TABLE Owner: thoma
+-- PostgreSQL database dump
 --
 
-CREATE TABLE "banken" (
-	"bankindex" integer DEFAULT nextval('"banken_bankindex_seq"'::text) NOT NULL,
-	"blz" numeric(8,0) NOT NULL,
-	"name" character varying(30) NOT NULL,
-	Constraint "banken_pkey" Primary Key ("bankindex")
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+ALTER TABLE ONLY public.banken DROP CONSTRAINT banken_pkey;
+DROP INDEX public.banken_bankindex_key;
+DROP TABLE public.banken;
+--
+-- TOC entry 2 (OID 960424)
+--
+
+CREATE TABLE banken (
+    bankindex integer DEFAULT nextval('"banken_bankindex_seq"'::text) NOT NULL,
+    blz numeric(8,0) NOT NULL,
+    name text NOT NULL
 );
 
+
 --
--- Data for TOC Entry ID 3 (OID 26006283)
---
--- Name: banken Type: TABLE DATA Owner: thoma
+-- TOC entry 3 (OID 960424)
 --
 
+REVOKE ALL ON TABLE banken FROM PUBLIC;
 
-COPY "banken" FROM stdin;
-\.
+
+--
+-- TOC entry 4 (OID 1752096)
+--
+
+CREATE UNIQUE INDEX banken_bankindex_key ON banken USING btree (bankindex);
+
+
+--
+-- TOC entry 5 (OID 960430)
+--
+
+ALTER TABLE ONLY banken
+    ADD CONSTRAINT banken_pkey PRIMARY KEY (blz);
+
+

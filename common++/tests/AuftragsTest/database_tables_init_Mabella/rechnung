@@ -1,0 +1,50 @@
+--
+-- PostgreSQL database dump
+--
+
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+ALTER TABLE ONLY public.rechnung DROP CONSTRAINT new_rechnung_pkey;
+DROP TABLE public.rechnung;
+--
+-- TOC entry 2 (OID 960659)
+--
+
+CREATE TABLE rechnung (
+    rngid numeric(6,0) NOT NULL,
+    kundennr numeric(5,0) NOT NULL,
+    datum timestamp(0) with time zone DEFAULT now() NOT NULL,
+    bezahlt boolean DEFAULT false NOT NULL,
+    zahlart numeric(2,0) NOT NULL,
+    zahlziel date,
+    rngart character(1) DEFAULT 'R' NOT NULL,
+    freitext text,
+    waehrung numeric(2,0) DEFAULT 1,
+    rabatt numeric(4,2),
+    einzug_refnr numeric(30,6),
+    entsorgung boolean,
+    gedruckt boolean,
+    notiz text,
+    verknr numeric(5,0),
+    kurs numeric(12,5),
+    export_am date
+);
+
+
+--
+-- TOC entry 3 (OID 960659)
+--
+
+REVOKE ALL ON TABLE rechnung FROM PUBLIC;
+
+
+--
+-- TOC entry 4 (OID 960668)
+--
+
+ALTER TABLE ONLY rechnung
+    ADD CONSTRAINT new_rechnung_pkey PRIMARY KEY (rngid);
+
+

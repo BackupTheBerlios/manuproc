@@ -1,37 +1,49 @@
 --
--- Selected TOC Entries:
---
---
--- TOC Entry ID 2 (OID 26006288)
---
--- Name: rechnung_zahlungsart Type: TABLE Owner: thoma
+-- PostgreSQL database dump
 --
 
-CREATE TABLE "rechnung_zahlungsart" (
-	"id" integer NOT NULL,
-	"kurzbezeichnung" text NOT NULL,
-	"bezeichnung" text,
-	"einzugrabatt" numeric(3,1),
-	"bankeinzug" boolean,
-	"zahlungsfrist" numeric(3,0),
-	"skontosatz_1" numeric(3,1),
-	"skontofrist_1" numeric(3,0),
-	"skontosatz_2" numeric(3,1),
-	"skontofrist_2" numeric(3,0),
-	"skontosatz_3" numeric(3,1),
-	"skontofrist_3" numeric(3,0),
-   "monatsende" bool,
-	Constraint "rechnung_zahlungsziel_pkey" Primary Key ("id")
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+ALTER TABLE ONLY public.rechnung_zahlungsart DROP CONSTRAINT rechnung_zahlungsziel_pkey;
+DROP TABLE public.rechnung_zahlungsart;
+--
+-- TOC entry 2 (OID 960800)
+--
+
+CREATE TABLE rechnung_zahlungsart (
+    id integer NOT NULL,
+    kurzbezeichnung text NOT NULL,
+    bezeichnung text,
+    einzugrabatt numeric(3,1),
+    bankeinzug boolean,
+    zahlungsfrist numeric(3,0),
+    skontosatz_1 numeric(3,1),
+    skontofrist_1 numeric(3,0),
+    skontosatz_2 numeric(3,1),
+    skontofrist_2 numeric(3,0),
+    skontosatz_3 numeric(3,1),
+    skontofrist_3 numeric(3,0),
+    monatsende boolean,
+    verfahren text,
+    frist_monate numeric(2,0)
 );
 
+
 --
--- Data for TOC Entry ID 3 (OID 26006288)
---
--- Name: rechnung_zahlungsart Type: TABLE DATA Owner: thoma
+-- TOC entry 3 (OID 960800)
 --
 
+REVOKE ALL ON TABLE rechnung_zahlungsart FROM PUBLIC;
+GRANT SELECT ON TABLE rechnung_zahlungsart TO PUBLIC;
 
-COPY "rechnung_zahlungsart" FROM stdin;
-0	sofort, ohne Abzug	sofort ohne Abzüge	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
-1	10d 4%, 30d 2,5%, 60d	Innerhalb von 10 Tagen 4% Skonto; 30 Tagen 2,5%; innerhalb von 60 Tagen netto	\N	\N	\N	4.0	10	2.5	30	0.0	60	\N
-\.
+
+--
+-- TOC entry 4 (OID 960805)
+--
+
+ALTER TABLE ONLY rechnung_zahlungsart
+    ADD CONSTRAINT rechnung_zahlungsziel_pkey PRIMARY KEY (id);
+
+

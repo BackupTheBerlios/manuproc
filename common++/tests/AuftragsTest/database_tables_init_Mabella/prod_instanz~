@@ -28,8 +28,3 @@ CREATE TABLE prod_instanz (
 );
 
 
-COPY prod_instanz (insid, name, lager_fuer, sortierung, lieferschein, lagername, produziert_selbst, prod_dauer_tage, einlagern_in, automatisch_einlagern, typ, externe_bestellung, geplant_von) FROM stdin;
-3	Einkauf	\N	3	t	\N	t	\N	2	f	P	t	\N
-2	Fertigwarenlager	3	2	f	rl_inhalt	f	\N	\N	t	L	\N	\N
-1	Kundenaufträge	\N	1	t	\N	t	\N	\N	\N	P	\N	\N
-\.

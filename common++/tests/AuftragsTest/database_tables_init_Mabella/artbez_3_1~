@@ -74,8 +74,5 @@ CREATE CONSTRAINT TRIGGER "<unnamed>"
     FOR EACH ROW
     EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'artbez_3_23001', 'artbez_3_1', 'UNSPECIFIED', 'id', 'id');
 
-COPY artbez_3_1 (id, artikel, breite, farbe, aufmachung, stand, ean, bezeichnung, draht) FROM stdin;
+
 38389	5013	40	300	25	2002-05-15 00:01:01+02	4031197007134	Heart	\N
-38391	5013	40	780	25	2002-05-15 00:01:01+02	4031197007158	Heart	\N
-38392	5013	40	785	25	2002-05-15 00:01:01+02	4031197007165	Heart	\N
-\.

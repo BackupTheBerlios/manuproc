@@ -1,40 +1,39 @@
 --
--- Selected TOC Entries:
+-- PostgreSQL database dump
 --
+
 \connect - jacek
 
-DROP INDEX "fw_lager_buchung_artid";
-DROP TABLE "fw_lager_buchung";
+SET search_path = public, pg_catalog;
+
+DROP INDEX public.fw_lager_buchung_artid;
+DROP TABLE public.fw_lager_buchung;
 --
--- TOC Entry ID 2 (OID 6223302)
---
--- Name: fw_lager_buchung Type: TABLE Owner: jacek
+-- TOC entry 2 (OID 960472)
 --
 
-CREATE TABLE "fw_lager_buchung" (
-	"artikelid" integer,
-	"menge" integer,
-	"datum" timestamp with time zone,
-	"aktion" character(1),
-	"pid" numeric(3,0),
-	"bestand" integer,
-	"lfrsid" numeric(5,0)
+CREATE TABLE fw_lager_buchung (
+    artikelid integer,
+    menge integer,
+    datum timestamp with time zone,
+    aktion character(1),
+    pid numeric(3,0),
+    bestand integer,
+    lfrsid numeric(5,0)
 );
 
---
--- TOC Entry ID 3 (OID 6223302)
---
--- Name: fw_lager_buchung Type: ACL Owner: 
---
-
-REVOKE ALL on "fw_lager_buchung" from PUBLIC;
-GRANT ALL on "fw_lager_buchung" to "jacek";
 
 --
--- TOC Entry ID 4 (OID 6814510)
+-- TOC entry 3 (OID 960472)
 --
--- Name: "fw_lager_buchung_artid" Type: INDEX Owner: jacek
+
+REVOKE ALL ON TABLE fw_lager_buchung FROM PUBLIC;
+
+
+--
+-- TOC entry 4 (OID 1752119)
 --
 
 CREATE INDEX fw_lager_buchung_artid ON fw_lager_buchung USING btree (artikelid);
+
 

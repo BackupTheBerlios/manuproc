@@ -1,0 +1,52 @@
+--
+-- PostgreSQL database dump
+--
+
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+DROP TRIGGER "RI_ConstraintTrigger_1752169" ON public.artbez_3_23001;
+ALTER TABLE ONLY public.artbez_3_23001 DROP CONSTRAINT artbez_3_99901_pkey;
+DROP TABLE public.artbez_3_23001;
+--
+-- TOC entry 2 (OID 960719)
+--
+
+CREATE TABLE artbez_3_23001 (
+    id integer NOT NULL,
+    stand timestamp with time zone DEFAULT now() NOT NULL,
+    artikel text,
+    breite text,
+    farbe text,
+    aufmachung text
+);
+
+
+--
+-- TOC entry 3 (OID 960719)
+--
+
+REVOKE ALL ON TABLE artbez_3_23001 FROM PUBLIC;
+
+
+--
+-- TOC entry 4 (OID 960725)
+--
+
+ALTER TABLE ONLY artbez_3_23001
+    ADD CONSTRAINT artbez_3_99901_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5 (OID 1752169)
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER INSERT OR UPDATE ON artbez_3_23001
+    FROM artbez_3_1
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'artbez_3_23001', 'artbez_3_1', 'UNSPECIFIED', 'id', 'id');
+
+

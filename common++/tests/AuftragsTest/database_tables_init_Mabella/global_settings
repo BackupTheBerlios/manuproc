@@ -1,36 +1,38 @@
 --
--- Selected TOC Entries:
---
---
--- TOC Entry ID 2 (OID 17928970)
---
--- Name: global_settings Type: TABLE Owner: thoma
+-- PostgreSQL database dump
 --
 
-CREATE TABLE "global_settings" (
-	"userid" integer NOT NULL,
-	"program" text NOT NULL,
-	"name" text NOT NULL,
-	"wert" text,
-	Constraint "global_settings_pkey" Primary Key ("userid", "program", "name")
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+ALTER TABLE ONLY public.global_settings DROP CONSTRAINT global_settings_pkey;
+DROP TABLE public.global_settings;
+--
+-- TOC entry 2 (OID 960398)
+--
+
+CREATE TABLE global_settings (
+    userid integer NOT NULL,
+    program text NOT NULL,
+    name text NOT NULL,
+    wert text
 );
 
---
--- TOC Entry ID 3 (OID 17928970)
---
--- Name: global_settings Type: ACL Owner: 
---
-
-REVOKE ALL on "global_settings" from PUBLIC;
-GRANT SELECT on "global_settings" to PUBLIC;
-GRANT INSERT,SELECT,RULE,UPDATE,DELETE,REFERENCES,TRIGGER on "global_settings" to "thoma";
 
 --
--- Data for TOC Entry ID 4 (OID 17928970)
---
--- Name: global_settings Type: TABLE DATA Owner: thoma
+-- TOC entry 3 (OID 960398)
 --
 
+REVOKE ALL ON TABLE global_settings FROM PUBLIC;
+GRANT SELECT ON TABLE global_settings TO PUBLIC;
 
-COPY "global_settings" FROM stdin;
-\.
+
+--
+-- TOC entry 4 (OID 960403)
+--
+
+ALTER TABLE ONLY global_settings
+    ADD CONSTRAINT global_settings_pkey PRIMARY KEY (userid, program, name);
+
+

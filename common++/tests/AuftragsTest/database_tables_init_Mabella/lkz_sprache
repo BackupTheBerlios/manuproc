@@ -1,0 +1,39 @@
+--
+-- PostgreSQL database dump
+--
+
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+DROP TRIGGER "RI_ConstraintTrigger_1752166" ON public.lkz_sprache;
+DROP TABLE public.lkz_sprache;
+--
+-- TOC entry 2 (OID 960526)
+--
+
+CREATE TABLE lkz_sprache (
+    sprid numeric(1,0),
+    lkz character varying(3)
+);
+
+
+--
+-- TOC entry 3 (OID 960526)
+--
+
+REVOKE ALL ON TABLE lkz_sprache FROM PUBLIC;
+
+
+--
+-- TOC entry 4 (OID 1752166)
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER INSERT OR UPDATE ON lkz_sprache
+    FROM ku_land
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'lkz_sprache', 'ku_land', 'UNSPECIFIED', 'lkz', 'lkz');
+
+

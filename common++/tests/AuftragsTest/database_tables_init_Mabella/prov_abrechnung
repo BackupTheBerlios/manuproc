@@ -1,0 +1,55 @@
+--
+-- PostgreSQL database dump
+--
+
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+DROP TRIGGER "RI_ConstraintTrigger_1752176" ON public.prov_abrechnung;
+ALTER TABLE ONLY public.prov_abrechnung DROP CONSTRAINT "$1";
+ALTER TABLE ONLY public.prov_abrechnung DROP CONSTRAINT prov_abrechnung_pkey;
+DROP TABLE public.prov_abrechnung;
+--
+-- TOC entry 2 (OID 960929)
+--
+
+CREATE TABLE prov_abrechnung (
+    provnr numeric(2,0) NOT NULL,
+    verknr numeric(5,0) NOT NULL,
+    datum date NOT NULL,
+    bis date NOT NULL,
+    notiz text,
+    vom date NOT NULL,
+    ueberwid integer
+);
+
+
+--
+-- TOC entry 3 (OID 960934)
+--
+
+ALTER TABLE ONLY prov_abrechnung
+    ADD CONSTRAINT prov_abrechnung_pkey PRIMARY KEY (provnr, verknr);
+
+
+--
+-- TOC entry 4 (OID 1861978)
+--
+
+ALTER TABLE ONLY prov_abrechnung
+    ADD CONSTRAINT "$1" FOREIGN KEY (ueberwid) REFERENCES ueberweisungen(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+
+--
+-- TOC entry 5 (OID 1752176)
+--
+
+CREATE CONSTRAINT TRIGGER "$1"
+    AFTER INSERT OR UPDATE ON prov_abrechnung
+    FROM kunden
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_check_ins" ('$1', 'prov_abrechnung', 'kunden', 'UNSPECIFIED', 'verknr', 'kundennr');
+
+

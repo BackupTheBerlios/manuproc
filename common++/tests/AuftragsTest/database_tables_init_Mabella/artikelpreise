@@ -1,0 +1,40 @@
+--
+-- PostgreSQL database dump
+--
+
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+DROP INDEX public.artikelpreise_uniq;
+DROP TABLE public.artikelpreise;
+--
+-- TOC entry 2 (OID 960301)
+--
+
+CREATE TABLE artikelpreise (
+    artikelid integer NOT NULL,
+    kundennr numeric(5,0) NOT NULL,
+    preis numeric(7,3) NOT NULL,
+    preismenge integer,
+    waehrung numeric(2,0),
+    mindestmenge numeric(4,0) DEFAULT 1,
+    CONSTRAINT mind_mng_null CHECK ((mindestmenge IS NOT NULL))
+);
+
+
+--
+-- TOC entry 3 (OID 960301)
+--
+
+REVOKE ALL ON TABLE artikelpreise FROM PUBLIC;
+GRANT SELECT ON TABLE artikelpreise TO PUBLIC;
+
+
+--
+-- TOC entry 4 (OID 1752130)
+--
+
+CREATE UNIQUE INDEX artikelpreise_uniq ON artikelpreise USING btree (artikelid, kundennr, mindestmenge);
+
+

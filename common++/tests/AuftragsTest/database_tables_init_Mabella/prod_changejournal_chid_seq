@@ -1,20 +1,28 @@
 --
--- Selected TOC Entries:
---
-DROP SEQUENCE "prod_changejournal_chid_seq";
---
--- TOC Entry ID 2 (OID 11499061)
---
--- Name: prod_changejournal_chid_seq Type: SEQUENCE Owner: thoma
+-- PostgreSQL database dump
 --
 
-CREATE SEQUENCE "prod_changejournal_chid_seq" start 1 increment 1 maxvalue 2147483647 minvalue 1 cache 1;
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+DROP SEQUENCE public.prod_changejournal_chid_seq;
+--
+-- TOC entry 2 (OID 960494)
+--
+
+CREATE SEQUENCE prod_changejournal_chid_seq
+    START 1
+    INCREMENT 1
+    MAXVALUE 9223372036854775807
+    MINVALUE 1
+    CACHE 1;
+
 
 --
--- TOC Entry ID 3 (OID 11499061)
---
--- Name: prod_changejournal_chid_seq Type: SEQUENCE SET Owner: 
+-- TOC entry 3 (OID 960494)
 --
 
-SELECT setval ('"prod_changejournal_chid_seq"', 44365, true);
+REVOKE ALL ON TABLE prod_changejournal_chid_seq FROM PUBLIC;
+
 

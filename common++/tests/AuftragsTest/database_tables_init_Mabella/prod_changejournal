@@ -1,41 +1,44 @@
 --
--- Selected TOC Entries:
---
-DROP TABLE "prod_changejournal";
---
--- TOC Entry ID 2 (OID 16613287)
---
--- Name: prod_changejournal Type: TABLE Owner: thoma
+-- PostgreSQL database dump
 --
 
-CREATE TABLE "prod_changejournal" (
-	"chid" integer NOT NULL,
-	"datum" timestamp with time zone DEFAULT now() NOT NULL,
-	"chtype" character(1) NOT NULL,
-	"insid" numeric(2,0) NOT NULL,
-	"auftragid" numeric(6,0) NOT NULL,
-	"auftragzeile" integer NOT NULL,
-	"artikelid" integer NOT NULL,
-	"status" numeric(1,0) DEFAULT 0 NOT NULL,
-	"new_val" numeric(10,2),
-	"new_dat" date,
-	"delta" numeric(10,2),
-	Constraint "prod_changejournal_pkey" Primary Key ("chid", "insid")
+\connect - jacek
+
+SET search_path = public, pg_catalog;
+
+ALTER TABLE ONLY public.prod_changejournal DROP CONSTRAINT prod_changejournal_pkey;
+DROP TABLE public.prod_changejournal;
+--
+-- TOC entry 2 (OID 2146773)
+--
+
+CREATE TABLE prod_changejournal (
+    datum timestamp(0) with time zone DEFAULT now() NOT NULL,
+    insid numeric(2,0) NOT NULL,
+    chid integer NOT NULL,
+    status numeric(1,0) DEFAULT 0 NOT NULL,
+    artikelid integer NOT NULL,
+    auftragid numeric(6,0) NOT NULL,
+    auftragzeile integer NOT NULL,
+    new_val numeric(8,2),
+    new_dat date,
+    delta numeric(8,2),
+    chtype character(1) NOT NULL
 );
 
+
 --
--- Data for TOC Entry ID 3 (OID 16613287)
---
--- Name: prod_changejournal Type: TABLE DATA Owner: thoma
+-- TOC entry 3 (OID 2146773)
 --
 
+REVOKE ALL ON TABLE prod_changejournal FROM PUBLIC;
 
-COPY "prod_changejournal" FROM stdin;
-\.
+
 --
--- TOC Entry ID 4 (OID 16618775)
+-- TOC entry 4 (OID 2206886)
 --
--- Name: "RI_ConstraintTrigger_16618774" Type: TRIGGER Owner: thoma
---
+
+ALTER TABLE ONLY prod_changejournal
+    ADD CONSTRAINT prod_changejournal_pkey PRIMARY KEY (chid, insid);
 
 

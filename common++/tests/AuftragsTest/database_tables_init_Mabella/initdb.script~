@@ -5,7 +5,7 @@ export PGDATABASE=mabella_testdb
 P="database_tables_init_Mabella"
 
 dropdb $PGDATABASE
-createdb -E SQL_ASCII $PGDATABASE
+createdb $PGDATABASE
 
 (for i in \
    waehrung \
