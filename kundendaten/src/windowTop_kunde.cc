@@ -12,7 +12,10 @@ void windowTop::on_buttonNeu_clicked()
    manage(new window_neue_Kundennummer(this));   
 }
 
-
+void windowTop::on_kunden_reset()
+{
+  clear_entrys();
+}
 
 void windowTop::show_kundendaten()
 {
@@ -30,27 +33,42 @@ void windowTop::show_kundendaten()
    entryPostfach->set_text(kundendaten->postfach());
    entryPostfachPLZ->set_text(kundendaten->postfachplz());
    entryIdNr->set_text(kundendaten->idnr());
+   landesbox->set_value(kundendaten->land()->Id());
 
    KundenTelefon->showTel(kundendaten->getTelefon());
   fire_enabled=true;
+  kunden_status->set_active(kundendaten->Aktiv());
 }
 
 
 void windowTop::kunden_activate()
 {
-   try{
+  try{
+
+// saveAll?   
+   assert (UpdateAdresse==0);
+   assert(UpdateFirma==0);
+   assert(UpdateBank==0);
+   assert(UpdateSonst==0);
+//   assert(UpdatePerson==0);
+   if(UpdatePerson!=0) cout << UpdatePerson<<'\n';
+//   clear_update_bits();
+
    kundendaten=H_Kunde(kundenauswahl->get_value());
+   frame_adresse->set_sensitive(true);
+   frame_kundenkontakt->set_sensitive(true);
+   
    }catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e);}
+
+
    show_kundendaten();
+   KundenTelefon->setKdPer(kundendaten->Id(),Person::none_id);
 }
 
-void windowTop::on_KundenTelefon_activate()
+void windowTop::on_KundenTelefon_activate(cH_Telefon ct)
 {
-   try{
-   Telefon::newTelefon(kundendaten->Id(),Person::none_id,
-            KundenTelefon->get_value());
-    }catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e);}
-   KundenTelefon->showTel(kundendaten->getTelefon());
+cout << "activated";
+//   KundenTelefon->showTel(kundendaten->getTelefon());
 }
 
 void windowTop::on_button_kunde_loeschen_clicked()

@@ -3,17 +3,28 @@
 #include "windowTop.hh"
 #include <Gtk_OStream.h>
 
-
 void windowTop::show_privatpersonen()
 {
   Kunde::st_ansprech P;
-  if(get_selected_person(P)) show_neue_personen_daten(P.Person)  ;
+  if(get_selected_person(P)) 
+   {
+     show_neue_personen_daten(P.Person)  ;
+   }
+  else
+   {
+    vboxPersonenDaten->set_sensitive(false);
+    PersonenTel->set_sensitive(false);
+   }
 }
 
 void windowTop::on_personen_box_activate()
 {
+ try{
    person=personenbox->get_value();
    show_neue_personen_daten(person);
+   }
+ catch(Petig::Datumsfehler &df)
+  { MyMessage *m=manage(new MyMessage()); m->Show("Datumsfehelr");}
 }
 
 
@@ -23,6 +34,7 @@ void windowTop::on_buttonPersonNeu_clicked()
    int nv=Person::createPerson();
    person=cH_Person(nv);
    personenbox->set_value(nv); 
+   show_neue_personen_daten(person);
    entryPersonenDatenName->grab_focus();
   }catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e);}
   clear_PersonenEntrys();
@@ -52,11 +64,11 @@ void windowTop::on_buttonPersonLoeschen_clicked()
    }
 }
 
-void windowTop::on_PersonenPrivatTelefon_activate()
+void windowTop::on_PersonenPrivatTelefon_activate(cH_Telefon ct)
 {
   cH_Person P(personenbox->get_value());
   try{
-  Telefon::newTelefon(Kunde::none_id,P->Id(),PersonenTel->get_value());
+//  Telefon::newTelefon(Kunde::none_id,P->Id(),PersonenTel->get_value());
   }catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e);}
   PersonenTel->showTel(P->getTelefon());
   PersonenTel->clear();
@@ -65,6 +77,8 @@ void windowTop::on_PersonenPrivatTelefon_activate()
 
 void windowTop::show_neue_personen_daten(cH_Person &P)
 {
+   vboxPersonenDaten->set_sensitive(true);
+   PersonenTel->set_sensitive(true);
    person=P;
    personenbox->set_value(P->Id());
    entryPersonenDatenName->set_text(P->Name());
@@ -74,7 +88,7 @@ void windowTop::show_neue_personen_daten(cH_Person &P)
    else
      geburtstag->set_value(Petig::Datum().today());     
 
-   scc_anrede->setContent(P->Anrede()->Name(),P->Anrede()->Id());
+   scc_anrede->setContent(P->Anrede()->getBrAnrede(),P->Anrede()->Id());
    std::string N=person->Notiz(); // zwischenspeichern, weil die nächste Zeile
                                  // ein 'changed' Signal sendet und damit die 
                                  // Notiz gelöscht wird.
@@ -82,6 +96,7 @@ void windowTop::show_neue_personen_daten(cH_Person &P)
    gint pos=0;
    textPersonenPrivatNotiz->insert_text(N.c_str(),N.size(),&pos);
    PersonenTel->showTel(P->getTelefon());
+   PersonenTel->setKdPer(Kunde::none_id,P->Id());
 }
 
 void windowTop::on_entryPersonenDatenName_activate()

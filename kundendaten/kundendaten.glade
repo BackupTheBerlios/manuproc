@@ -31,7 +31,7 @@
   <widget>
     <class>GtkTable</class>
     <name>table9</name>
-    <rows>2</rows>
+    <rows>3</rows>
     <columns>1</columns>
     <homogeneous>False</homogeneous>
     <row_spacing>0</row_spacing>
@@ -57,8 +57,8 @@
       <child>
 	<left_attach>0</left_attach>
 	<right_attach>1</right_attach>
-	<top_attach>0</top_attach>
-	<bottom_attach>1</bottom_attach>
+	<top_attach>1</top_attach>
+	<bottom_attach>2</bottom_attach>
 	<xpad>0</xpad>
 	<ypad>0</ypad>
 	<xexpand>True</xexpand>
@@ -112,17 +112,23 @@
 		<handler>kunden_activate</handler>
 		<last_modification_time>Wed, 28 Mar 2001 12:42:10 GMT</last_modification_time>
 	      </signal>
-	      <creation_function>KundenBox</creation_function>
+	      <signal>
+		<name>reset_signal</name>
+		<handler>on_kunden_reset</handler>
+		<last_modification_time>Thu, 16 May 2002 13:32:41 GMT</last_modification_time>
+	      </signal>
+	      <creation_function>KundenBox2</creation_function>
 	      <int1>0</int1>
 	      <int2>0</int2>
-	      <last_modification_time>Wed, 28 Mar 2001 12:41:47 GMT</last_modification_time>
+	      <last_modification_time>Wed, 17 Apr 2002 14:23:03 GMT</last_modification_time>
 	    </widget>
 	  </widget>
 	</widget>
 
 	<widget>
 	  <class>GtkFrame</class>
-	  <name>frame4</name>
+	  <name>frame_adresse</name>
+	  <cxx_visibility>protected</cxx_visibility>
 	  <label>Adresse</label>
 	  <label_xalign>0</label_xalign>
 	  <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
@@ -249,7 +255,7 @@
 	      <widget>
 		<class>GtkTable</class>
 		<name>table27</name>
-		<rows>7</rows>
+		<rows>8</rows>
 		<columns>1</columns>
 		<homogeneous>False</homogeneous>
 		<row_spacing>0</row_spacing>
@@ -642,6 +648,38 @@
 		    </widget>
 		  </widget>
 		</widget>
+
+		<widget>
+		  <class>GtkFrame</class>
+		  <name>frame19</name>
+		  <label>Landeskennzahl</label>
+		  <label_xalign>0</label_xalign>
+		  <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+		  <child>
+		    <left_attach>0</left_attach>
+		    <right_attach>1</right_attach>
+		    <top_attach>7</top_attach>
+		    <bottom_attach>8</bottom_attach>
+		    <xpad>0</xpad>
+		    <ypad>0</ypad>
+		    <xexpand>False</xexpand>
+		    <yexpand>True</yexpand>
+		    <xshrink>False</xshrink>
+		    <yshrink>False</yshrink>
+		    <xfill>True</xfill>
+		    <yfill>True</yfill>
+		  </child>
+
+		  <widget>
+		    <class>Custom</class>
+		    <name>landesbox</name>
+		    <cxx_visibility>protected</cxx_visibility>
+		    <creation_function>LandesBox</creation_function>
+		    <int1>0</int1>
+		    <int2>0</int2>
+		    <last_modification_time>Tue, 16 Apr 2002 09:15:54 GMT</last_modification_time>
+		  </widget>
+		</widget>
 	      </widget>
 	    </widget>
 
@@ -736,6 +774,7 @@
 	    <class>GtkButton</class>
 	    <name>button_kunde_loeschen</name>
 	    <border_width>4</border_width>
+	    <cxx_visibility>protected</cxx_visibility>
 	    <can_focus>True</can_focus>
 	    <signal>
 	      <name>clicked</name>
@@ -759,39 +798,12 @@
 	      <yfill>False</yfill>
 	    </child>
 	  </widget>
-
-	  <widget>
-	    <class>GtkButton</class>
-	    <name>buttonBeenden</name>
-	    <border_width>4</border_width>
-	    <can_focus>True</can_focus>
-	    <signal>
-	      <name>clicked</name>
-	      <handler>on_buttonBeenden_clicked</handler>
-	      <last_modification_time>Sun, 05 Dec 1999 02:00:52 GMT</last_modification_time>
-	    </signal>
-	    <stock_button>GNOME_STOCK_BUTTON_CLOSE</stock_button>
-	    <relief>GTK_RELIEF_NORMAL</relief>
-	    <child>
-	      <left_attach>2</left_attach>
-	      <right_attach>3</right_attach>
-	      <top_attach>0</top_attach>
-	      <bottom_attach>1</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>False</yfill>
-	    </child>
-	  </widget>
 	</widget>
 
 	<widget>
 	  <class>GtkFrame</class>
-	  <name>frame5</name>
+	  <name>frame_kundenkontakt</name>
+	  <cxx_visibility>protected</cxx_visibility>
 	  <label>Kundenkontakt</label>
 	  <label_xalign>0</label_xalign>
 	  <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
@@ -824,9 +836,14 @@
 	      <name>KundenTelefon</name>
 	      <cxx_visibility>protected</cxx_visibility>
 	      <signal>
-		<name>activate</name>
+		<name>add</name>
 		<handler>on_KundenTelefon_activate</handler>
-		<last_modification_time>Tue, 05 Mar 2002 07:24:41 GMT</last_modification_time>
+		<last_modification_time>Thu, 09 May 2002 16:43:03 GMT</last_modification_time>
+	      </signal>
+	      <signal>
+		<name>remove</name>
+		<handler>on_KundenTelefon_remove</handler>
+		<last_modification_time>Thu, 09 May 2002 16:43:20 GMT</last_modification_time>
 	      </signal>
 	      <creation_function>WTelefon</creation_function>
 	      <int1>0</int1>
@@ -845,6 +862,55 @@
 		<yshrink>False</yshrink>
 		<xfill>True</xfill>
 		<yfill>True</yfill>
+	      </child>
+	    </widget>
+	  </widget>
+	</widget>
+
+	<widget>
+	  <class>GtkFrame</class>
+	  <name>status_frame</name>
+	  <label>Status</label>
+	  <label_xalign>0</label_xalign>
+	  <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+	  <child>
+	    <left_attach>1</left_attach>
+	    <right_attach>2</right_attach>
+	    <top_attach>0</top_attach>
+	    <bottom_attach>1</bottom_attach>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <xexpand>False</xexpand>
+	    <yexpand>False</yexpand>
+	    <xshrink>False</xshrink>
+	    <yshrink>False</yshrink>
+	    <xfill>True</xfill>
+	    <yfill>True</yfill>
+	  </child>
+
+	  <widget>
+	    <class>GtkHBox</class>
+	    <name>hbox9</name>
+	    <homogeneous>False</homogeneous>
+	    <spacing>0</spacing>
+
+	    <widget>
+	      <class>GtkCheckButton</class>
+	      <name>kunden_status</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <can_focus>True</can_focus>
+	      <signal>
+		<name>clicked</name>
+		<handler>on_kunden_status_toggled</handler>
+		<last_modification_time>Tue, 18 Jun 2002 18:43:56 GMT</last_modification_time>
+	      </signal>
+	      <label>aktiv</label>
+	      <active>True</active>
+	      <draw_indicator>True</draw_indicator>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>False</fill>
 	      </child>
 	    </widget>
 	  </widget>
@@ -868,7 +934,7 @@
 	<class>GtkTable</class>
 	<name>table_details</name>
 	<cxx_visibility>protected</cxx_visibility>
-	<rows>5</rows>
+	<rows>3</rows>
 	<columns>1</columns>
 	<homogeneous>False</homogeneous>
 	<row_spacing>0</row_spacing>
@@ -1001,113 +1067,39 @@
 	</widget>
 
 	<widget>
-	  <class>GtkHSeparator</class>
-	  <name>hseparatorDetailDaten</name>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>1</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>2</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>True</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>True</yfill>
-	  </child>
-	</widget>
-
-	<widget>
 	  <class>GtkTable</class>
-	  <name>table19</name>
-	  <rows>3</rows>
-	  <columns>3</columns>
+	  <name>table24</name>
+	  <rows>7</rows>
+	  <columns>2</columns>
 	  <homogeneous>False</homogeneous>
 	  <row_spacing>0</row_spacing>
 	  <column_spacing>0</column_spacing>
 	  <child>
 	    <left_attach>0</left_attach>
 	    <right_attach>1</right_attach>
-	    <top_attach>4</top_attach>
-	    <bottom_attach>5</bottom_attach>
+	    <top_attach>2</top_attach>
+	    <bottom_attach>3</bottom_attach>
 	    <xpad>0</xpad>
 	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>True</yexpand>
+	    <xexpand>True</xexpand>
+	    <yexpand>False</yexpand>
 	    <xshrink>False</xshrink>
 	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>True</yfill>
+	    <xfill>False</xfill>
+	    <yfill>False</yfill>
 	  </child>
 
 	  <widget>
 	    <class>GtkFrame</class>
-	    <name>frame12</name>
-	    <label>Optionen</label>
+	    <name>frame51</name>
+	    <label>Firma</label>
 	    <label_xalign>0</label_xalign>
 	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
 	    <child>
 	      <left_attach>0</left_attach>
 	      <right_attach>1</right_attach>
-	      <top_attach>1</top_attach>
-	      <bottom_attach>2</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>True</yfill>
-	    </child>
-
-	    <widget>
-	      <class>GtkFixed</class>
-	      <name>fixed2</name>
-
-	      <widget>
-		<class>GtkCheckButton</class>
-		<name>checkbutton_entsorgung</name>
-		<x>0</x>
-		<y>0</y>
-		<width>0</width>
-		<height>0</height>
-		<cxx_visibility>protected</cxx_visibility>
-		<can_focus>True</can_focus>
-		<label>Entsorgung</label>
-		<active>False</active>
-		<draw_indicator>True</draw_indicator>
-	      </widget>
-
-	      <widget>
-		<class>GtkCheckButton</class>
-		<name>checkbutton_rng_an_postfach</name>
-		<x>0</x>
-		<y>16</y>
-		<width>0</width>
-		<height>0</height>
-		<cxx_visibility>protected</cxx_visibility>
-		<can_focus>True</can_focus>
-		<label>Rechnung an Postfach</label>
-		<active>False</active>
-		<draw_indicator>True</draw_indicator>
-	      </widget>
-	    </widget>
-	  </widget>
-
-	  <widget>
-	    <class>GtkFrame</class>
-	    <name>frameBank</name>
-	    <label>Bankverbindung</label>
-	    <label_xalign>0</label_xalign>
-	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	    <child>
-	      <left_attach>1</left_attach>
-	      <right_attach>2</right_attach>
 	      <top_attach>0</top_attach>
-	      <bottom_attach>2</bottom_attach>
+	      <bottom_attach>1</bottom_attach>
 	      <xpad>0</xpad>
 	      <ypad>0</ypad>
 	      <xexpand>False</xexpand>
@@ -1120,218 +1112,19 @@
 
 	    <widget>
 	      <class>GtkTable</class>
-	      <name>table3</name>
-	      <rows>6</rows>
+	      <name>table40</name>
+	      <rows>4</rows>
 	      <columns>2</columns>
 	      <homogeneous>False</homogeneous>
 	      <row_spacing>0</row_spacing>
 	      <column_spacing>0</column_spacing>
 
 	      <widget>
-		<class>GtkCheckButton</class>
-		<name>checkbuttonBankeinzug</name>
-		<cxx_visibility>protected</cxx_visibility>
-		<can_focus>True</can_focus>
-		<label>Bankeinzug</label>
-		<active>False</active>
-		<draw_indicator>True</draw_indicator>
-		<child>
-		  <left_attach>0</left_attach>
-		  <right_attach>1</right_attach>
-		  <top_attach>1</top_attach>
-		  <bottom_attach>2</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>False</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>True</xfill>
-		  <yfill>False</yfill>
-		</child>
-	      </widget>
-
-	      <widget>
-		<class>GtkLabel</class>
-		<name>labelBankBei</name>
-		<label>bei</label>
-		<justify>GTK_JUSTIFY_CENTER</justify>
-		<wrap>False</wrap>
-		<xalign>1.93715e-07</xalign>
-		<yalign>0.5</yalign>
-		<xpad>0</xpad>
-		<ypad>0</ypad>
-		<child>
-		  <left_attach>0</left_attach>
-		  <right_attach>1</right_attach>
-		  <top_attach>4</top_attach>
-		  <bottom_attach>5</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>False</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>True</xfill>
-		  <yfill>False</yfill>
-		</child>
-	      </widget>
-
-	      <widget>
-		<class>GtkOptionMenu</class>
-		<name>optionmenu_bankbei</name>
-		<cxx_visibility>protected</cxx_visibility>
-		<can_focus>True</can_focus>
-		<items>BANKNAME
-</items>
-		<initial_choice>0</initial_choice>
-		<child>
-		  <left_attach>1</left_attach>
-		  <right_attach>2</right_attach>
-		  <top_attach>4</top_attach>
-		  <bottom_attach>5</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>False</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>True</xfill>
-		  <yfill>False</yfill>
-		</child>
-	      </widget>
-
-	      <widget>
-		<class>GtkButton</class>
-		<name>button_neue_bank</name>
-		<cxx_visibility>protected</cxx_visibility>
-		<can_focus>True</can_focus>
-		<signal>
-		  <name>clicked</name>
-		  <handler>on_button_neue_bank_clicked</handler>
-		  <last_modification_time>Wed, 06 Jun 2001 09:22:06 GMT</last_modification_time>
-		</signal>
-		<label>Neue Bank anlegen</label>
-		<relief>GTK_RELIEF_NORMAL</relief>
-		<child>
-		  <left_attach>1</left_attach>
-		  <right_attach>2</right_attach>
-		  <top_attach>5</top_attach>
-		  <bottom_attach>6</bottom_attach>
-		  <xpad>5</xpad>
-		  <ypad>5</ypad>
-		  <xexpand>False</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>False</xfill>
-		  <yfill>False</yfill>
-		</child>
-	      </widget>
-
-	      <widget>
 		<class>GtkFrame</class>
-		<name>frame40</name>
-		<label>Konto Nr.</label>
+		<name>frame20</name>
+		<label>Fläche</label>
 		<label_xalign>0</label_xalign>
-		<shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-		<child>
-		  <left_attach>0</left_attach>
-		  <right_attach>2</right_attach>
-		  <top_attach>2</top_attach>
-		  <bottom_attach>3</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>False</xexpand>
-		  <yexpand>True</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>True</xfill>
-		  <yfill>True</yfill>
-		</child>
-
-		<widget>
-		  <class>GtkEntry</class>
-		  <name>entryBankKonto</name>
-		  <width>100</width>
-		  <cxx_visibility>protected</cxx_visibility>
-		  <can_focus>True</can_focus>
-		  <editable>True</editable>
-		  <text_visible>True</text_visible>
-		  <text_max_length>10</text_max_length>
-		  <text></text>
-		</widget>
-	      </widget>
-
-	      <widget>
-		<class>GtkFrame</class>
-		<name>frame41</name>
-		<label>BLZ</label>
-		<label_xalign>0</label_xalign>
-		<shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-		<child>
-		  <left_attach>0</left_attach>
-		  <right_attach>2</right_attach>
-		  <top_attach>3</top_attach>
-		  <bottom_attach>4</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>False</xexpand>
-		  <yexpand>True</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>True</xfill>
-		  <yfill>True</yfill>
-		</child>
-
-		<widget>
-		  <class>GtkEntry</class>
-		  <name>entry_blz</name>
-		  <cxx_visibility>protected</cxx_visibility>
-		  <tooltip>Die Eingabe der Bankleitzahl muß mit 'Enter' abgeschlossen werden.</tooltip>
-		  <can_focus>True</can_focus>
-		  <editable>True</editable>
-		  <text_visible>True</text_visible>
-		  <text_max_length>0</text_max_length>
-		  <text></text>
-		</widget>
-	      </widget>
-	    </widget>
-	  </widget>
-
-	  <widget>
-	    <class>GtkFrame</class>
-	    <name>frame10</name>
-	    <label>Adresse ist eine</label>
-	    <label_xalign>0</label_xalign>
-	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	    <child>
-	      <left_attach>0</left_attach>
-	      <right_attach>1</right_attach>
-	      <top_attach>0</top_attach>
-	      <bottom_attach>1</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>True</yfill>
-	    </child>
-
-	    <widget>
-	      <class>GtkTable</class>
-	      <name>table15</name>
-	      <rows>2</rows>
-	      <columns>1</columns>
-	      <homogeneous>False</homogeneous>
-	      <row_spacing>0</row_spacing>
-	      <column_spacing>0</column_spacing>
-
-	      <widget>
-		<class>GtkFixed</class>
-		<name>fixed1</name>
+		<shadow_type>GTK_SHADOW_NONE</shadow_type>
 		<child>
 		  <left_attach>0</left_attach>
 		  <right_attach>1</right_attach>
@@ -1348,44 +1141,81 @@
 		</child>
 
 		<widget>
-		  <class>GtkCheckButton</class>
-		  <name>checkbuttonLieferAdr</name>
-		  <border_width>2</border_width>
-		  <x>0</x>
-		  <y>0</y>
-		  <width>0</width>
-		  <height>0</height>
-		  <cxx_visibility>protected</cxx_visibility>
-		  <can_focus>True</can_focus>
-		  <label>Lieferadresse</label>
-		  <active>False</active>
-		  <draw_indicator>True</draw_indicator>
-		</widget>
+		  <class>GtkTable</class>
+		  <name>table23</name>
+		  <rows>1</rows>
+		  <columns>2</columns>
+		  <homogeneous>False</homogeneous>
+		  <row_spacing>0</row_spacing>
+		  <column_spacing>0</column_spacing>
 
-		<widget>
-		  <class>GtkCheckButton</class>
-		  <name>checkbuttonRchngAdr</name>
-		  <border_width>2</border_width>
-		  <x>0</x>
-		  <y>16</y>
-		  <width>0</width>
-		  <height>0</height>
-		  <cxx_visibility>protected</cxx_visibility>
-		  <can_focus>True</can_focus>
-		  <label>Rechnungsadresse</label>
-		  <active>False</active>
-		  <draw_indicator>True</draw_indicator>
+		  <widget>
+		    <class>GtkLabel</class>
+		    <name>labelQm</name>
+		    <label>qm</label>
+		    <justify>GTK_JUSTIFY_CENTER</justify>
+		    <wrap>False</wrap>
+		    <xalign>0.5</xalign>
+		    <yalign>0.5</yalign>
+		    <xpad>0</xpad>
+		    <ypad>0</ypad>
+		    <child>
+		      <left_attach>1</left_attach>
+		      <right_attach>2</right_attach>
+		      <top_attach>0</top_attach>
+		      <bottom_attach>1</bottom_attach>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <xexpand>False</xexpand>
+		      <yexpand>False</yexpand>
+		      <xshrink>False</xshrink>
+		      <yshrink>False</yshrink>
+		      <xfill>True</xfill>
+		      <yfill>False</yfill>
+		    </child>
+		  </widget>
+
+		  <widget>
+		    <class>GtkSpinButton</class>
+		    <name>spinbutton_Flaeche</name>
+		    <cxx_visibility>protected</cxx_visibility>
+		    <can_focus>True</can_focus>
+		    <climb_rate>1</climb_rate>
+		    <digits>0</digits>
+		    <numeric>True</numeric>
+		    <update_policy>GTK_UPDATE_ALWAYS</update_policy>
+		    <snap>False</snap>
+		    <wrap>False</wrap>
+		    <value>0</value>
+		    <lower>0</lower>
+		    <upper>1e+06</upper>
+		    <step>1</step>
+		    <page>10</page>
+		    <page_size>10</page_size>
+		    <child>
+		      <left_attach>0</left_attach>
+		      <right_attach>1</right_attach>
+		      <top_attach>0</top_attach>
+		      <bottom_attach>1</bottom_attach>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <xexpand>True</xexpand>
+		      <yexpand>False</yexpand>
+		      <xshrink>False</xshrink>
+		      <yshrink>False</yshrink>
+		      <xfill>True</xfill>
+		      <yfill>False</yfill>
+		    </child>
+		  </widget>
 		</widget>
 	      </widget>
 
 	      <widget>
-		<class>GtkTable</class>
-		<name>table16</name>
-		<rows>1</rows>
-		<columns>2</columns>
-		<homogeneous>False</homogeneous>
-		<row_spacing>0</row_spacing>
-		<column_spacing>0</column_spacing>
+		<class>GtkFrame</class>
+		<name>frame21</name>
+		<label>Mitarbeiter</label>
+		<label_xalign>0</label_xalign>
+		<shadow_type>GTK_SHADOW_NONE</shadow_type>
 		<child>
 		  <left_attach>0</left_attach>
 		  <right_attach>1</right_attach>
@@ -1400,8 +1230,1710 @@
 		  <xfill>True</xfill>
 		  <yfill>True</yfill>
 		</child>
+
+		<widget>
+		  <class>GtkSpinButton</class>
+		  <name>spinbutton_Mitarbeiter</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <can_focus>True</can_focus>
+		  <climb_rate>1</climb_rate>
+		  <digits>0</digits>
+		  <numeric>False</numeric>
+		  <update_policy>GTK_UPDATE_ALWAYS</update_policy>
+		  <snap>False</snap>
+		  <wrap>False</wrap>
+		  <value>1</value>
+		  <lower>1</lower>
+		  <upper>1e+06</upper>
+		  <step>1</step>
+		  <page>10</page>
+		  <page_size>10</page_size>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkFrame</class>
+		<name>frame23</name>
+		<label>Kundenumsatz</label>
+		<label_xalign>0</label_xalign>
+		<shadow_type>GTK_SHADOW_NONE</shadow_type>
+		<child>
+		  <left_attach>1</left_attach>
+		  <right_attach>2</right_attach>
+		  <top_attach>1</top_attach>
+		  <bottom_attach>2</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>False</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>True</yfill>
+		</child>
+
+		<widget>
+		  <class>GtkSpinButton</class>
+		  <name>spinbutton_Kundenumsatz</name>
+		  <width>110</width>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <can_focus>True</can_focus>
+		  <climb_rate>1</climb_rate>
+		  <digits>2</digits>
+		  <numeric>True</numeric>
+		  <update_policy>GTK_UPDATE_ALWAYS</update_policy>
+		  <snap>False</snap>
+		  <wrap>False</wrap>
+		  <value>0</value>
+		  <lower>0</lower>
+		  <upper>1e+07</upper>
+		  <step>1</step>
+		  <page>10</page>
+		  <page_size>10</page_size>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkFrame</class>
+		<name>frame24</name>
+		<label>Planumsatz</label>
+		<label_xalign>0</label_xalign>
+		<shadow_type>GTK_SHADOW_NONE</shadow_type>
+		<child>
+		  <left_attach>1</left_attach>
+		  <right_attach>2</right_attach>
+		  <top_attach>2</top_attach>
+		  <bottom_attach>3</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>False</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>True</yfill>
+		</child>
+
+		<widget>
+		  <class>GtkSpinButton</class>
+		  <name>spinbutton_Planumsatz</name>
+		  <width>100</width>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <can_focus>True</can_focus>
+		  <climb_rate>1</climb_rate>
+		  <digits>0</digits>
+		  <numeric>True</numeric>
+		  <update_policy>GTK_UPDATE_ALWAYS</update_policy>
+		  <snap>False</snap>
+		  <wrap>False</wrap>
+		  <value>0</value>
+		  <lower>0</lower>
+		  <upper>1e+07</upper>
+		  <step>1</step>
+		  <page>10</page>
+		  <page_size>10</page_size>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkFrame</class>
+		<name>frame22</name>
+		<label>Umsatz</label>
+		<label_xalign>0</label_xalign>
+		<shadow_type>GTK_SHADOW_NONE</shadow_type>
+		<child>
+		  <left_attach>1</left_attach>
+		  <right_attach>2</right_attach>
+		  <top_attach>0</top_attach>
+		  <bottom_attach>1</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>False</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>True</yfill>
+		</child>
+
+		<widget>
+		  <class>GtkSpinButton</class>
+		  <name>spinbutton_Umsatz</name>
+		  <width>70</width>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <can_focus>True</can_focus>
+		  <climb_rate>1</climb_rate>
+		  <digits>2</digits>
+		  <numeric>True</numeric>
+		  <update_policy>GTK_UPDATE_ALWAYS</update_policy>
+		  <snap>False</snap>
+		  <wrap>False</wrap>
+		  <value>0</value>
+		  <lower>0</lower>
+		  <upper>1e+08</upper>
+		  <step>1</step>
+		  <page>10</page>
+		  <page_size>10</page_size>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkFrame</class>
+		<name>frame16</name>
+		<label>Verein</label>
+		<label_xalign>0</label_xalign>
+		<shadow_type>GTK_SHADOW_NONE</shadow_type>
+		<child>
+		  <left_attach>0</left_attach>
+		  <right_attach>1</right_attach>
+		  <top_attach>2</top_attach>
+		  <bottom_attach>3</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>False</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>True</yfill>
+		</child>
+
+		<widget>
+		  <class>GtkEntry</class>
+		  <name>entryVerein</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <can_focus>True</can_focus>
+		  <editable>True</editable>
+		  <text_visible>True</text_visible>
+		  <text_max_length>30</text_max_length>
+		  <text></text>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkFrame</class>
+		<name>frame3</name>
+		<label>Notiz</label>
+		<label_xalign>0</label_xalign>
+		<shadow_type>GTK_SHADOW_NONE</shadow_type>
+		<child>
+		  <left_attach>0</left_attach>
+		  <right_attach>2</right_attach>
+		  <top_attach>3</top_attach>
+		  <bottom_attach>4</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>True</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>True</yfill>
+		</child>
+
+		<widget>
+		  <class>GtkScrolledWindow</class>
+		  <name>scrolledwindow1</name>
+		  <hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
+		  <vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
+		  <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
+		  <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
+
+		  <widget>
+		    <class>GtkText</class>
+		    <name>textNotiz</name>
+		    <cxx_visibility>protected</cxx_visibility>
+		    <can_focus>True</can_focus>
+		    <editable>True</editable>
+		    <text></text>
+		  </widget>
+		</widget>
 	      </widget>
 	    </widget>
+	  </widget>
+
+	  <widget>
+	    <class>GtkFrame</class>
+	    <name>frame52</name>
+	    <label>Zahlung &amp; Rabatt</label>
+	    <label_xalign>0</label_xalign>
+	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+	    <child>
+	      <left_attach>1</left_attach>
+	      <right_attach>2</right_attach>
+	      <top_attach>0</top_attach>
+	      <bottom_attach>1</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>True</yfill>
+	    </child>
+
+	    <widget>
+	      <class>GtkTable</class>
+	      <name>table41</name>
+	      <rows>5</rows>
+	      <columns>3</columns>
+	      <homogeneous>False</homogeneous>
+	      <row_spacing>0</row_spacing>
+	      <column_spacing>0</column_spacing>
+
+	      <widget>
+		<class>GtkFrame</class>
+		<name>frame13</name>
+		<label>Rabatt</label>
+		<label_xalign>0</label_xalign>
+		<shadow_type>GTK_SHADOW_NONE</shadow_type>
+		<child>
+		  <left_attach>0</left_attach>
+		  <right_attach>1</right_attach>
+		  <top_attach>1</top_attach>
+		  <bottom_attach>2</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>True</xexpand>
+		  <yexpand>True</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>True</yfill>
+		</child>
+
+		<widget>
+		  <class>GtkTable</class>
+		  <name>table20</name>
+		  <rows>2</rows>
+		  <columns>2</columns>
+		  <homogeneous>False</homogeneous>
+		  <row_spacing>0</row_spacing>
+		  <column_spacing>0</column_spacing>
+
+		  <widget>
+		    <class>GtkSpinButton</class>
+		    <name>spinbutton_Rabatt</name>
+		    <cxx_visibility>protected</cxx_visibility>
+		    <can_focus>True</can_focus>
+		    <climb_rate>1</climb_rate>
+		    <digits>1</digits>
+		    <numeric>True</numeric>
+		    <update_policy>GTK_UPDATE_ALWAYS</update_policy>
+		    <snap>False</snap>
+		    <wrap>False</wrap>
+		    <value>0</value>
+		    <lower>0</lower>
+		    <upper>100</upper>
+		    <step>1</step>
+		    <page>10</page>
+		    <page_size>10</page_size>
+		    <child>
+		      <left_attach>0</left_attach>
+		      <right_attach>1</right_attach>
+		      <top_attach>0</top_attach>
+		      <bottom_attach>1</bottom_attach>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <xexpand>True</xexpand>
+		      <yexpand>False</yexpand>
+		      <xshrink>False</xshrink>
+		      <yshrink>False</yshrink>
+		      <xfill>True</xfill>
+		      <yfill>False</yfill>
+		    </child>
+		  </widget>
+
+		  <widget>
+		    <class>GtkLabel</class>
+		    <name>labelProzent</name>
+		    <label>%</label>
+		    <justify>GTK_JUSTIFY_CENTER</justify>
+		    <wrap>False</wrap>
+		    <xalign>0.5</xalign>
+		    <yalign>0.5</yalign>
+		    <xpad>0</xpad>
+		    <ypad>0</ypad>
+		    <child>
+		      <left_attach>1</left_attach>
+		      <right_attach>2</right_attach>
+		      <top_attach>0</top_attach>
+		      <bottom_attach>1</bottom_attach>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <xexpand>False</xexpand>
+		      <yexpand>False</yexpand>
+		      <xshrink>False</xshrink>
+		      <yshrink>False</yshrink>
+		      <xfill>False</xfill>
+		      <yfill>False</yfill>
+		    </child>
+		  </widget>
+
+		  <widget>
+		    <class>GtkCheckButton</class>
+		    <name>checkbutton_zeilenrabatt</name>
+		    <cxx_visibility>protected</cxx_visibility>
+		    <can_focus>True</can_focus>
+		    <label>Zeilenrabatt</label>
+		    <active>True</active>
+		    <draw_indicator>True</draw_indicator>
+		    <child>
+		      <left_attach>0</left_attach>
+		      <right_attach>2</right_attach>
+		      <top_attach>1</top_attach>
+		      <bottom_attach>2</bottom_attach>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <xexpand>False</xexpand>
+		      <yexpand>False</yexpand>
+		      <xshrink>False</xshrink>
+		      <yshrink>False</yshrink>
+		      <xfill>False</xfill>
+		      <yfill>False</yfill>
+		    </child>
+		  </widget>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkFrame</class>
+		<name>frame25</name>
+		<label>Einzugrabatt</label>
+		<label_xalign>0</label_xalign>
+		<shadow_type>GTK_SHADOW_NONE</shadow_type>
+		<child>
+		  <left_attach>0</left_attach>
+		  <right_attach>1</right_attach>
+		  <top_attach>2</top_attach>
+		  <bottom_attach>3</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>False</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>True</yfill>
+		</child>
+
+		<widget>
+		  <class>GtkTable</class>
+		  <name>table25</name>
+		  <rows>1</rows>
+		  <columns>2</columns>
+		  <homogeneous>False</homogeneous>
+		  <row_spacing>0</row_spacing>
+		  <column_spacing>0</column_spacing>
+
+		  <widget>
+		    <class>GtkLabel</class>
+		    <name>label6</name>
+		    <label>%</label>
+		    <justify>GTK_JUSTIFY_CENTER</justify>
+		    <wrap>False</wrap>
+		    <xalign>0.5</xalign>
+		    <yalign>0.5</yalign>
+		    <xpad>0</xpad>
+		    <ypad>0</ypad>
+		    <child>
+		      <left_attach>1</left_attach>
+		      <right_attach>2</right_attach>
+		      <top_attach>0</top_attach>
+		      <bottom_attach>1</bottom_attach>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <xexpand>False</xexpand>
+		      <yexpand>False</yexpand>
+		      <xshrink>False</xshrink>
+		      <yshrink>False</yshrink>
+		      <xfill>True</xfill>
+		      <yfill>False</yfill>
+		    </child>
+		  </widget>
+
+		  <widget>
+		    <class>GtkSpinButton</class>
+		    <name>spinbutton_einzugRabatt</name>
+		    <cxx_visibility>protected</cxx_visibility>
+		    <sensitive>False</sensitive>
+		    <can_focus>True</can_focus>
+		    <climb_rate>1</climb_rate>
+		    <digits>2</digits>
+		    <numeric>True</numeric>
+		    <update_policy>GTK_UPDATE_ALWAYS</update_policy>
+		    <snap>False</snap>
+		    <wrap>False</wrap>
+		    <value>0</value>
+		    <lower>0</lower>
+		    <upper>10</upper>
+		    <step>1</step>
+		    <page>10</page>
+		    <page_size>10</page_size>
+		    <child>
+		      <left_attach>0</left_attach>
+		      <right_attach>1</right_attach>
+		      <top_attach>0</top_attach>
+		      <bottom_attach>1</bottom_attach>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <xexpand>True</xexpand>
+		      <yexpand>False</yexpand>
+		      <xshrink>False</xshrink>
+		      <yshrink>False</yshrink>
+		      <xfill>True</xfill>
+		      <yfill>False</yfill>
+		    </child>
+		  </widget>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkFrame</class>
+		<name>frame15</name>
+		<label>Währung</label>
+		<label_xalign>0</label_xalign>
+		<shadow_type>GTK_SHADOW_NONE</shadow_type>
+		<child>
+		  <left_attach>0</left_attach>
+		  <right_attach>1</right_attach>
+		  <top_attach>3</top_attach>
+		  <bottom_attach>4</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>True</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>True</yfill>
+		</child>
+
+		<widget>
+		  <class>Custom</class>
+		  <name>Waehrung</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <creation_function>WWaehrung</creation_function>
+		  <int1>0</int1>
+		  <int2>0</int2>
+		  <last_modification_time>Mon, 25 Feb 2002 14:23:06 GMT</last_modification_time>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkFrame</class>
+		<name>frameBank</name>
+		<label>Bankverbindung</label>
+		<label_xalign>0</label_xalign>
+		<shadow_type>GTK_SHADOW_IN</shadow_type>
+		<child>
+		  <left_attach>2</left_attach>
+		  <right_attach>3</right_attach>
+		  <top_attach>1</top_attach>
+		  <bottom_attach>4</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>True</xexpand>
+		  <yexpand>False</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>True</yfill>
+		</child>
+
+		<widget>
+		  <class>GtkTable</class>
+		  <name>table3</name>
+		  <rows>5</rows>
+		  <columns>2</columns>
+		  <homogeneous>False</homogeneous>
+		  <row_spacing>0</row_spacing>
+		  <column_spacing>0</column_spacing>
+
+		  <widget>
+		    <class>GtkCheckButton</class>
+		    <name>checkbuttonBankeinzug</name>
+		    <cxx_visibility>protected</cxx_visibility>
+		    <sensitive>False</sensitive>
+		    <can_focus>True</can_focus>
+		    <label>Bankeinzug</label>
+		    <active>False</active>
+		    <draw_indicator>True</draw_indicator>
+		    <child>
+		      <left_attach>0</left_attach>
+		      <right_attach>1</right_attach>
+		      <top_attach>0</top_attach>
+		      <bottom_attach>1</bottom_attach>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <xexpand>False</xexpand>
+		      <yexpand>False</yexpand>
+		      <xshrink>False</xshrink>
+		      <yshrink>False</yshrink>
+		      <xfill>True</xfill>
+		      <yfill>False</yfill>
+		    </child>
+		  </widget>
+
+		  <widget>
+		    <class>GtkLabel</class>
+		    <name>labelBankBei</name>
+		    <label>bei</label>
+		    <justify>GTK_JUSTIFY_CENTER</justify>
+		    <wrap>False</wrap>
+		    <xalign>0.0500002</xalign>
+		    <yalign>0.5</yalign>
+		    <xpad>0</xpad>
+		    <ypad>0</ypad>
+		    <child>
+		      <left_attach>0</left_attach>
+		      <right_attach>1</right_attach>
+		      <top_attach>3</top_attach>
+		      <bottom_attach>4</bottom_attach>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <xexpand>False</xexpand>
+		      <yexpand>False</yexpand>
+		      <xshrink>False</xshrink>
+		      <yshrink>False</yshrink>
+		      <xfill>True</xfill>
+		      <yfill>False</yfill>
+		    </child>
+		  </widget>
+
+		  <widget>
+		    <class>GtkOptionMenu</class>
+		    <name>optionmenu_bankbei</name>
+		    <cxx_visibility>protected</cxx_visibility>
+		    <can_focus>True</can_focus>
+		    <items>BANKNAME
+</items>
+		    <initial_choice>0</initial_choice>
+		    <child>
+		      <left_attach>1</left_attach>
+		      <right_attach>2</right_attach>
+		      <top_attach>3</top_attach>
+		      <bottom_attach>4</bottom_attach>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <xexpand>False</xexpand>
+		      <yexpand>False</yexpand>
+		      <xshrink>False</xshrink>
+		      <yshrink>False</yshrink>
+		      <xfill>True</xfill>
+		      <yfill>False</yfill>
+		    </child>
+		  </widget>
+
+		  <widget>
+		    <class>GtkButton</class>
+		    <name>button_neue_bank</name>
+		    <cxx_visibility>protected</cxx_visibility>
+		    <can_focus>True</can_focus>
+		    <signal>
+		      <name>clicked</name>
+		      <handler>on_button_neue_bank_clicked</handler>
+		      <last_modification_time>Wed, 06 Jun 2001 09:22:06 GMT</last_modification_time>
+		    </signal>
+		    <label>Neue Bank anlegen</label>
+		    <relief>GTK_RELIEF_NORMAL</relief>
+		    <child>
+		      <left_attach>1</left_attach>
+		      <right_attach>2</right_attach>
+		      <top_attach>4</top_attach>
+		      <bottom_attach>5</bottom_attach>
+		      <xpad>5</xpad>
+		      <ypad>5</ypad>
+		      <xexpand>False</xexpand>
+		      <yexpand>False</yexpand>
+		      <xshrink>False</xshrink>
+		      <yshrink>False</yshrink>
+		      <xfill>False</xfill>
+		      <yfill>False</yfill>
+		    </child>
+		  </widget>
+
+		  <widget>
+		    <class>GtkFrame</class>
+		    <name>frame40</name>
+		    <label>Konto Nr.</label>
+		    <label_xalign>0</label_xalign>
+		    <shadow_type>GTK_SHADOW_NONE</shadow_type>
+		    <child>
+		      <left_attach>0</left_attach>
+		      <right_attach>2</right_attach>
+		      <top_attach>1</top_attach>
+		      <bottom_attach>2</bottom_attach>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <xexpand>False</xexpand>
+		      <yexpand>True</yexpand>
+		      <xshrink>False</xshrink>
+		      <yshrink>False</yshrink>
+		      <xfill>True</xfill>
+		      <yfill>True</yfill>
+		    </child>
+
+		    <widget>
+		      <class>GtkEntry</class>
+		      <name>entryBankKonto</name>
+		      <width>100</width>
+		      <cxx_visibility>protected</cxx_visibility>
+		      <can_focus>True</can_focus>
+		      <editable>True</editable>
+		      <text_visible>True</text_visible>
+		      <text_max_length>10</text_max_length>
+		      <text></text>
+		    </widget>
+		  </widget>
+
+		  <widget>
+		    <class>GtkFrame</class>
+		    <name>frame41</name>
+		    <label>BLZ</label>
+		    <label_xalign>0</label_xalign>
+		    <shadow_type>GTK_SHADOW_NONE</shadow_type>
+		    <child>
+		      <left_attach>0</left_attach>
+		      <right_attach>2</right_attach>
+		      <top_attach>2</top_attach>
+		      <bottom_attach>3</bottom_attach>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <xexpand>False</xexpand>
+		      <yexpand>True</yexpand>
+		      <xshrink>False</xshrink>
+		      <yshrink>False</yshrink>
+		      <xfill>True</xfill>
+		      <yfill>True</yfill>
+		    </child>
+
+		    <widget>
+		      <class>GtkEntry</class>
+		      <name>entry_blz</name>
+		      <cxx_visibility>protected</cxx_visibility>
+		      <tooltip>Die Eingabe der Bankleitzahl muß mit 'Enter' abgeschlossen werden.</tooltip>
+		      <can_focus>True</can_focus>
+		      <editable>True</editable>
+		      <text_visible>True</text_visible>
+		      <text_max_length>0</text_max_length>
+		      <text></text>
+		    </widget>
+		  </widget>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkCheckButton</class>
+		<name>checkbutton_entsorgung</name>
+		<width>0</width>
+		<height>0</height>
+		<cxx_visibility>protected</cxx_visibility>
+		<can_focus>True</can_focus>
+		<label>Entsorgung</label>
+		<active>False</active>
+		<draw_indicator>True</draw_indicator>
+		<child>
+		  <left_attach>1</left_attach>
+		  <right_attach>2</right_attach>
+		  <top_attach>3</top_attach>
+		  <bottom_attach>4</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>False</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>False</yfill>
+		</child>
+	      </widget>
+
+	      <widget>
+		<class>GtkFrame</class>
+		<name>frame59</name>
+		<label>Zahlungsart</label>
+		<label_xalign>0</label_xalign>
+		<shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+		<child>
+		  <left_attach>0</left_attach>
+		  <right_attach>3</right_attach>
+		  <top_attach>0</top_attach>
+		  <bottom_attach>1</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>True</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>True</yfill>
+		</child>
+
+		<widget>
+		  <class>Custom</class>
+		  <name>zahlungsartbox</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <creation_function>ZahlungsArtBox</creation_function>
+		  <int1>0</int1>
+		  <int2>0</int2>
+		  <last_modification_time>Tue, 14 May 2002 13:48:23 GMT</last_modification_time>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkFrame</class>
+		<name>frame60</name>
+		<label>Skonto</label>
+		<label_xalign>0</label_xalign>
+		<shadow_type>GTK_SHADOW_IN</shadow_type>
+		<child>
+		  <left_attach>1</left_attach>
+		  <right_attach>2</right_attach>
+		  <top_attach>1</top_attach>
+		  <bottom_attach>2</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>False</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>False</xfill>
+		  <yfill>True</yfill>
+		</child>
+
+		<widget>
+		  <class>GtkTable</class>
+		  <name>table48</name>
+		  <rows>1</rows>
+		  <columns>2</columns>
+		  <homogeneous>False</homogeneous>
+		  <row_spacing>0</row_spacing>
+		  <column_spacing>0</column_spacing>
+
+		  <widget>
+		    <class>GtkFrame</class>
+		    <name>frame17</name>
+		    <label>Skontofrist</label>
+		    <label_xalign>0</label_xalign>
+		    <shadow_type>GTK_SHADOW_NONE</shadow_type>
+		    <child>
+		      <left_attach>0</left_attach>
+		      <right_attach>1</right_attach>
+		      <top_attach>0</top_attach>
+		      <bottom_attach>1</bottom_attach>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <xexpand>False</xexpand>
+		      <yexpand>False</yexpand>
+		      <xshrink>False</xshrink>
+		      <yshrink>False</yshrink>
+		      <xfill>False</xfill>
+		      <yfill>False</yfill>
+		    </child>
+
+		    <widget>
+		      <class>GtkTable</class>
+		      <name>table21</name>
+		      <rows>3</rows>
+		      <columns>2</columns>
+		      <homogeneous>False</homogeneous>
+		      <row_spacing>0</row_spacing>
+		      <column_spacing>0</column_spacing>
+
+		      <widget>
+			<class>GtkLabel</class>
+			<name>labelTage</name>
+			<label>Tage</label>
+			<justify>GTK_JUSTIFY_CENTER</justify>
+			<wrap>False</wrap>
+			<xalign>0.5</xalign>
+			<yalign>0.5</yalign>
+			<xpad>0</xpad>
+			<ypad>0</ypad>
+			<child>
+			  <left_attach>1</left_attach>
+			  <right_attach>2</right_attach>
+			  <top_attach>0</top_attach>
+			  <bottom_attach>1</bottom_attach>
+			  <xpad>0</xpad>
+			  <ypad>0</ypad>
+			  <xexpand>False</xexpand>
+			  <yexpand>False</yexpand>
+			  <xshrink>False</xshrink>
+			  <yshrink>False</yshrink>
+			  <xfill>False</xfill>
+			  <yfill>False</yfill>
+			</child>
+		      </widget>
+
+		      <widget>
+			<class>GtkLabel</class>
+			<name>label24</name>
+			<label>Tage</label>
+			<justify>GTK_JUSTIFY_CENTER</justify>
+			<wrap>False</wrap>
+			<xalign>0.5</xalign>
+			<yalign>0.5</yalign>
+			<xpad>0</xpad>
+			<ypad>0</ypad>
+			<child>
+			  <left_attach>1</left_attach>
+			  <right_attach>2</right_attach>
+			  <top_attach>1</top_attach>
+			  <bottom_attach>2</bottom_attach>
+			  <xpad>0</xpad>
+			  <ypad>0</ypad>
+			  <xexpand>False</xexpand>
+			  <yexpand>False</yexpand>
+			  <xshrink>False</xshrink>
+			  <yshrink>False</yshrink>
+			  <xfill>True</xfill>
+			  <yfill>False</yfill>
+			</child>
+		      </widget>
+
+		      <widget>
+			<class>GtkLabel</class>
+			<name>label25</name>
+			<label>Tage</label>
+			<justify>GTK_JUSTIFY_CENTER</justify>
+			<wrap>False</wrap>
+			<xalign>0.5</xalign>
+			<yalign>0.5</yalign>
+			<xpad>0</xpad>
+			<ypad>0</ypad>
+			<child>
+			  <left_attach>1</left_attach>
+			  <right_attach>2</right_attach>
+			  <top_attach>2</top_attach>
+			  <bottom_attach>3</bottom_attach>
+			  <xpad>0</xpad>
+			  <ypad>0</ypad>
+			  <xexpand>False</xexpand>
+			  <yexpand>False</yexpand>
+			  <xshrink>False</xshrink>
+			  <yshrink>False</yshrink>
+			  <xfill>True</xfill>
+			  <yfill>False</yfill>
+			</child>
+		      </widget>
+
+		      <widget>
+			<class>GtkSpinButton</class>
+			<name>spinbutton_skontofrist2</name>
+			<cxx_visibility>protected</cxx_visibility>
+			<sensitive>False</sensitive>
+			<can_focus>True</can_focus>
+			<climb_rate>1</climb_rate>
+			<digits>0</digits>
+			<numeric>True</numeric>
+			<update_policy>GTK_UPDATE_ALWAYS</update_policy>
+			<snap>False</snap>
+			<wrap>False</wrap>
+			<value>0</value>
+			<lower>0</lower>
+			<upper>180</upper>
+			<step>1</step>
+			<page>10</page>
+			<page_size>10</page_size>
+			<child>
+			  <left_attach>0</left_attach>
+			  <right_attach>1</right_attach>
+			  <top_attach>1</top_attach>
+			  <bottom_attach>2</bottom_attach>
+			  <xpad>0</xpad>
+			  <ypad>0</ypad>
+			  <xexpand>True</xexpand>
+			  <yexpand>False</yexpand>
+			  <xshrink>False</xshrink>
+			  <yshrink>False</yshrink>
+			  <xfill>True</xfill>
+			  <yfill>False</yfill>
+			</child>
+		      </widget>
+
+		      <widget>
+			<class>GtkSpinButton</class>
+			<name>spinbutton_skontofrist3</name>
+			<cxx_visibility>protected</cxx_visibility>
+			<sensitive>False</sensitive>
+			<can_focus>True</can_focus>
+			<climb_rate>1</climb_rate>
+			<digits>0</digits>
+			<numeric>True</numeric>
+			<update_policy>GTK_UPDATE_ALWAYS</update_policy>
+			<snap>False</snap>
+			<wrap>False</wrap>
+			<value>0</value>
+			<lower>0</lower>
+			<upper>180</upper>
+			<step>1</step>
+			<page>10</page>
+			<page_size>10</page_size>
+			<child>
+			  <left_attach>0</left_attach>
+			  <right_attach>1</right_attach>
+			  <top_attach>2</top_attach>
+			  <bottom_attach>3</bottom_attach>
+			  <xpad>0</xpad>
+			  <ypad>0</ypad>
+			  <xexpand>True</xexpand>
+			  <yexpand>False</yexpand>
+			  <xshrink>False</xshrink>
+			  <yshrink>False</yshrink>
+			  <xfill>True</xfill>
+			  <yfill>False</yfill>
+			</child>
+		      </widget>
+
+		      <widget>
+			<class>GtkSpinButton</class>
+			<name>spinbutton_skontofrist1</name>
+			<cxx_visibility>protected</cxx_visibility>
+			<sensitive>False</sensitive>
+			<can_focus>True</can_focus>
+			<climb_rate>1</climb_rate>
+			<digits>0</digits>
+			<numeric>True</numeric>
+			<update_policy>GTK_UPDATE_ALWAYS</update_policy>
+			<snap>False</snap>
+			<wrap>False</wrap>
+			<value>0</value>
+			<lower>0</lower>
+			<upper>180</upper>
+			<step>1</step>
+			<page>10</page>
+			<page_size>10</page_size>
+			<child>
+			  <left_attach>0</left_attach>
+			  <right_attach>1</right_attach>
+			  <top_attach>0</top_attach>
+			  <bottom_attach>1</bottom_attach>
+			  <xpad>0</xpad>
+			  <ypad>0</ypad>
+			  <xexpand>True</xexpand>
+			  <yexpand>False</yexpand>
+			  <xshrink>False</xshrink>
+			  <yshrink>False</yshrink>
+			  <xfill>True</xfill>
+			  <yfill>False</yfill>
+			</child>
+		      </widget>
+		    </widget>
+		  </widget>
+
+		  <widget>
+		    <class>GtkFrame</class>
+		    <name>frame18</name>
+		    <label>Skontosatz</label>
+		    <label_xalign>0</label_xalign>
+		    <shadow_type>GTK_SHADOW_NONE</shadow_type>
+		    <child>
+		      <left_attach>1</left_attach>
+		      <right_attach>2</right_attach>
+		      <top_attach>0</top_attach>
+		      <bottom_attach>1</bottom_attach>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <xexpand>False</xexpand>
+		      <yexpand>False</yexpand>
+		      <xshrink>False</xshrink>
+		      <yshrink>False</yshrink>
+		      <xfill>False</xfill>
+		      <yfill>False</yfill>
+		    </child>
+
+		    <widget>
+		      <class>GtkTable</class>
+		      <name>table22</name>
+		      <rows>3</rows>
+		      <columns>2</columns>
+		      <homogeneous>False</homogeneous>
+		      <row_spacing>0</row_spacing>
+		      <column_spacing>0</column_spacing>
+
+		      <widget>
+			<class>GtkLabel</class>
+			<name>label14</name>
+			<label>%</label>
+			<justify>GTK_JUSTIFY_CENTER</justify>
+			<wrap>False</wrap>
+			<xalign>0.5</xalign>
+			<yalign>0.5</yalign>
+			<xpad>0</xpad>
+			<ypad>0</ypad>
+			<child>
+			  <left_attach>1</left_attach>
+			  <right_attach>2</right_attach>
+			  <top_attach>0</top_attach>
+			  <bottom_attach>1</bottom_attach>
+			  <xpad>0</xpad>
+			  <ypad>0</ypad>
+			  <xexpand>False</xexpand>
+			  <yexpand>False</yexpand>
+			  <xshrink>False</xshrink>
+			  <yshrink>False</yshrink>
+			  <xfill>False</xfill>
+			  <yfill>False</yfill>
+			</child>
+		      </widget>
+
+		      <widget>
+			<class>GtkLabel</class>
+			<name>label26</name>
+			<label>%</label>
+			<justify>GTK_JUSTIFY_CENTER</justify>
+			<wrap>False</wrap>
+			<xalign>0.5</xalign>
+			<yalign>0.5</yalign>
+			<xpad>0</xpad>
+			<ypad>0</ypad>
+			<child>
+			  <left_attach>1</left_attach>
+			  <right_attach>2</right_attach>
+			  <top_attach>1</top_attach>
+			  <bottom_attach>2</bottom_attach>
+			  <xpad>0</xpad>
+			  <ypad>0</ypad>
+			  <xexpand>False</xexpand>
+			  <yexpand>False</yexpand>
+			  <xshrink>False</xshrink>
+			  <yshrink>False</yshrink>
+			  <xfill>True</xfill>
+			  <yfill>False</yfill>
+			</child>
+		      </widget>
+
+		      <widget>
+			<class>GtkLabel</class>
+			<name>label27</name>
+			<label>%</label>
+			<justify>GTK_JUSTIFY_CENTER</justify>
+			<wrap>False</wrap>
+			<xalign>0.5</xalign>
+			<yalign>0.5</yalign>
+			<xpad>0</xpad>
+			<ypad>0</ypad>
+			<child>
+			  <left_attach>1</left_attach>
+			  <right_attach>2</right_attach>
+			  <top_attach>2</top_attach>
+			  <bottom_attach>3</bottom_attach>
+			  <xpad>0</xpad>
+			  <ypad>0</ypad>
+			  <xexpand>False</xexpand>
+			  <yexpand>False</yexpand>
+			  <xshrink>False</xshrink>
+			  <yshrink>False</yshrink>
+			  <xfill>True</xfill>
+			  <yfill>False</yfill>
+			</child>
+		      </widget>
+
+		      <widget>
+			<class>GtkSpinButton</class>
+			<name>spinbutton_skontosatz2</name>
+			<cxx_visibility>protected</cxx_visibility>
+			<sensitive>False</sensitive>
+			<can_focus>True</can_focus>
+			<climb_rate>1</climb_rate>
+			<digits>2</digits>
+			<numeric>True</numeric>
+			<update_policy>GTK_UPDATE_ALWAYS</update_policy>
+			<snap>False</snap>
+			<wrap>False</wrap>
+			<value>0</value>
+			<lower>0</lower>
+			<upper>100</upper>
+			<step>1</step>
+			<page>10</page>
+			<page_size>10</page_size>
+			<child>
+			  <left_attach>0</left_attach>
+			  <right_attach>1</right_attach>
+			  <top_attach>1</top_attach>
+			  <bottom_attach>2</bottom_attach>
+			  <xpad>0</xpad>
+			  <ypad>0</ypad>
+			  <xexpand>True</xexpand>
+			  <yexpand>False</yexpand>
+			  <xshrink>False</xshrink>
+			  <yshrink>False</yshrink>
+			  <xfill>True</xfill>
+			  <yfill>False</yfill>
+			</child>
+		      </widget>
+
+		      <widget>
+			<class>GtkSpinButton</class>
+			<name>spinbutton_skontosatz3</name>
+			<cxx_visibility>protected</cxx_visibility>
+			<sensitive>False</sensitive>
+			<can_focus>True</can_focus>
+			<climb_rate>1</climb_rate>
+			<digits>2</digits>
+			<numeric>True</numeric>
+			<update_policy>GTK_UPDATE_ALWAYS</update_policy>
+			<snap>False</snap>
+			<wrap>False</wrap>
+			<value>0</value>
+			<lower>0</lower>
+			<upper>100</upper>
+			<step>1</step>
+			<page>10</page>
+			<page_size>10</page_size>
+			<child>
+			  <left_attach>0</left_attach>
+			  <right_attach>1</right_attach>
+			  <top_attach>2</top_attach>
+			  <bottom_attach>3</bottom_attach>
+			  <xpad>0</xpad>
+			  <ypad>0</ypad>
+			  <xexpand>True</xexpand>
+			  <yexpand>False</yexpand>
+			  <xshrink>False</xshrink>
+			  <yshrink>False</yshrink>
+			  <xfill>True</xfill>
+			  <yfill>False</yfill>
+			</child>
+		      </widget>
+
+		      <widget>
+			<class>GtkSpinButton</class>
+			<name>spinbutton_skontosatz1</name>
+			<cxx_visibility>protected</cxx_visibility>
+			<sensitive>False</sensitive>
+			<can_focus>True</can_focus>
+			<climb_rate>1</climb_rate>
+			<digits>2</digits>
+			<numeric>True</numeric>
+			<update_policy>GTK_UPDATE_ALWAYS</update_policy>
+			<snap>False</snap>
+			<wrap>False</wrap>
+			<value>0</value>
+			<lower>0</lower>
+			<upper>100</upper>
+			<step>1</step>
+			<page>10</page>
+			<page_size>10</page_size>
+			<child>
+			  <left_attach>0</left_attach>
+			  <right_attach>1</right_attach>
+			  <top_attach>0</top_attach>
+			  <bottom_attach>1</bottom_attach>
+			  <xpad>0</xpad>
+			  <ypad>0</ypad>
+			  <xexpand>True</xexpand>
+			  <yexpand>False</yexpand>
+			  <xshrink>False</xshrink>
+			  <yshrink>False</yshrink>
+			  <xfill>True</xfill>
+			  <yfill>False</yfill>
+			</child>
+		      </widget>
+		    </widget>
+		  </widget>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkFrame</class>
+		<name>frame61</name>
+		<label>Zahlungsfrist</label>
+		<label_xalign>0</label_xalign>
+		<shadow_type>GTK_SHADOW_NONE</shadow_type>
+		<child>
+		  <left_attach>1</left_attach>
+		  <right_attach>2</right_attach>
+		  <top_attach>2</top_attach>
+		  <bottom_attach>3</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>False</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>True</yfill>
+		</child>
+
+		<widget>
+		  <class>GtkTable</class>
+		  <name>table49</name>
+		  <rows>1</rows>
+		  <columns>2</columns>
+		  <homogeneous>False</homogeneous>
+		  <row_spacing>0</row_spacing>
+		  <column_spacing>0</column_spacing>
+
+		  <widget>
+		    <class>GtkLabel</class>
+		    <name>label28</name>
+		    <label>Tage</label>
+		    <justify>GTK_JUSTIFY_CENTER</justify>
+		    <wrap>False</wrap>
+		    <xalign>0.5</xalign>
+		    <yalign>0.5</yalign>
+		    <xpad>0</xpad>
+		    <ypad>0</ypad>
+		    <child>
+		      <left_attach>1</left_attach>
+		      <right_attach>2</right_attach>
+		      <top_attach>0</top_attach>
+		      <bottom_attach>1</bottom_attach>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <xexpand>False</xexpand>
+		      <yexpand>False</yexpand>
+		      <xshrink>False</xshrink>
+		      <yshrink>False</yshrink>
+		      <xfill>True</xfill>
+		      <yfill>False</yfill>
+		    </child>
+		  </widget>
+
+		  <widget>
+		    <class>GtkSpinButton</class>
+		    <name>spinbutton_zahlungsfrist</name>
+		    <cxx_visibility>protected</cxx_visibility>
+		    <sensitive>False</sensitive>
+		    <can_focus>True</can_focus>
+		    <climb_rate>1</climb_rate>
+		    <digits>0</digits>
+		    <numeric>True</numeric>
+		    <update_policy>GTK_UPDATE_ALWAYS</update_policy>
+		    <snap>False</snap>
+		    <wrap>False</wrap>
+		    <value>0</value>
+		    <lower>0</lower>
+		    <upper>10</upper>
+		    <step>1</step>
+		    <page>10</page>
+		    <page_size>10</page_size>
+		    <child>
+		      <left_attach>0</left_attach>
+		      <right_attach>1</right_attach>
+		      <top_attach>0</top_attach>
+		      <bottom_attach>1</bottom_attach>
+		      <xpad>0</xpad>
+		      <ypad>0</ypad>
+		      <xexpand>False</xexpand>
+		      <yexpand>False</yexpand>
+		      <xshrink>False</xshrink>
+		      <yshrink>False</yshrink>
+		      <xfill>True</xfill>
+		      <yfill>False</yfill>
+		    </child>
+		  </widget>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkCheckButton</class>
+		<name>checkbutton_lieferung_frei_haus</name>
+		<width>0</width>
+		<height>0</height>
+		<cxx_visibility>protected</cxx_visibility>
+		<can_focus>True</can_focus>
+		<label>Lieferung frei Haus</label>
+		<active>False</active>
+		<draw_indicator>True</draw_indicator>
+		<child>
+		  <left_attach>1</left_attach>
+		  <right_attach>2</right_attach>
+		  <top_attach>4</top_attach>
+		  <bottom_attach>5</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>False</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>False</yfill>
+		</child>
+	      </widget>
+	    </widget>
+	  </widget>
+
+	  <widget>
+	    <class>GtkFrame</class>
+	    <name>frame53</name>
+	    <label>Eigene Daten</label>
+	    <label_xalign>0</label_xalign>
+	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+	    <child>
+	      <left_attach>0</left_attach>
+	      <right_attach>1</right_attach>
+	      <top_attach>4</top_attach>
+	      <bottom_attach>7</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>True</yfill>
+	    </child>
+
+	    <widget>
+	      <class>GtkTable</class>
+	      <name>table42</name>
+	      <rows>4</rows>
+	      <columns>3</columns>
+	      <homogeneous>False</homogeneous>
+	      <row_spacing>0</row_spacing>
+	      <column_spacing>0</column_spacing>
+
+	      <widget>
+		<class>GtkFrame</class>
+		<name>frame50</name>
+		<label>Eigene Kundennummer</label>
+		<label_xalign>0</label_xalign>
+		<shadow_type>GTK_SHADOW_NONE</shadow_type>
+		<child>
+		  <left_attach>0</left_attach>
+		  <right_attach>1</right_attach>
+		  <top_attach>1</top_attach>
+		  <bottom_attach>2</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>True</xexpand>
+		  <yexpand>True</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>False</yfill>
+		</child>
+
+		<widget>
+		  <class>GtkEntry</class>
+		  <name>entry_eigene_kundennr</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <can_focus>True</can_focus>
+		  <editable>True</editable>
+		  <text_visible>True</text_visible>
+		  <text_max_length>0</text_max_length>
+		  <text></text>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkVBox</class>
+		<name>vbox5</name>
+		<homogeneous>False</homogeneous>
+		<spacing>0</spacing>
+		<child>
+		  <left_attach>2</left_attach>
+		  <right_attach>3</right_attach>
+		  <top_attach>3</top_attach>
+		  <bottom_attach>4</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>True</xexpand>
+		  <yexpand>True</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>True</yfill>
+		</child>
+
+		<widget>
+		  <class>Placeholder</class>
+		</widget>
+
+		<widget>
+		  <class>Placeholder</class>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkFrame</class>
+		<name>frame47</name>
+		<label>Buchung</label>
+		<label_xalign>0</label_xalign>
+		<shadow_type>GTK_SHADOW_IN</shadow_type>
+		<child>
+		  <left_attach>0</left_attach>
+		  <right_attach>2</right_attach>
+		  <top_attach>2</top_attach>
+		  <bottom_attach>3</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>True</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>True</yfill>
+		</child>
+
+		<widget>
+		  <class>GtkHBox</class>
+		  <name>hbox7</name>
+		  <homogeneous>False</homogeneous>
+		  <spacing>0</spacing>
+
+		  <widget>
+		    <class>GtkFrame</class>
+		    <name>frame48</name>
+		    <label>Lieferantenkonto</label>
+		    <label_xalign>0</label_xalign>
+		    <shadow_type>GTK_SHADOW_NONE</shadow_type>
+		    <child>
+		      <padding>0</padding>
+		      <expand>True</expand>
+		      <fill>True</fill>
+		    </child>
+
+		    <widget>
+		      <class>GtkSpinButton</class>
+		      <name>spinbutton_lieferantenkonto</name>
+		      <cxx_visibility>protected</cxx_visibility>
+		      <can_focus>True</can_focus>
+		      <climb_rate>1</climb_rate>
+		      <digits>0</digits>
+		      <numeric>False</numeric>
+		      <update_policy>GTK_UPDATE_ALWAYS</update_policy>
+		      <snap>False</snap>
+		      <wrap>False</wrap>
+		      <value>0</value>
+		      <lower>0</lower>
+		      <upper>100000</upper>
+		      <step>1</step>
+		      <page>10</page>
+		      <page_size>10</page_size>
+		    </widget>
+		  </widget>
+
+		  <widget>
+		    <class>GtkFrame</class>
+		    <name>frame49</name>
+		    <label>Gegenkonto</label>
+		    <label_xalign>0</label_xalign>
+		    <shadow_type>GTK_SHADOW_NONE</shadow_type>
+		    <child>
+		      <padding>0</padding>
+		      <expand>True</expand>
+		      <fill>True</fill>
+		    </child>
+
+		    <widget>
+		      <class>GtkSpinButton</class>
+		      <name>spinbutton_gegenkonto</name>
+		      <cxx_visibility>protected</cxx_visibility>
+		      <can_focus>True</can_focus>
+		      <climb_rate>1</climb_rate>
+		      <digits>0</digits>
+		      <numeric>False</numeric>
+		      <update_policy>GTK_UPDATE_ALWAYS</update_policy>
+		      <snap>False</snap>
+		      <wrap>False</wrap>
+		      <value>0</value>
+		      <lower>0</lower>
+		      <upper>100000</upper>
+		      <step>1</step>
+		      <page>10</page>
+		      <page_size>10</page_size>
+		    </widget>
+		  </widget>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkFrame</class>
+		<name>frame56</name>
+		<label>Drucken (Anzahl)</label>
+		<label_xalign>0</label_xalign>
+		<shadow_type>GTK_SHADOW_IN</shadow_type>
+		<child>
+		  <left_attach>0</left_attach>
+		  <right_attach>2</right_attach>
+		  <top_attach>3</top_attach>
+		  <bottom_attach>4</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>False</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>True</yfill>
+		</child>
+
+		<widget>
+		  <class>GtkHBox</class>
+		  <name>hbox8</name>
+		  <homogeneous>False</homogeneous>
+		  <spacing>0</spacing>
+
+		  <widget>
+		    <class>GtkFrame</class>
+		    <name>frame57</name>
+		    <label>Firmenpapier</label>
+		    <label_xalign>0</label_xalign>
+		    <shadow_type>GTK_SHADOW_NONE</shadow_type>
+		    <child>
+		      <padding>0</padding>
+		      <expand>True</expand>
+		      <fill>True</fill>
+		    </child>
+
+		    <widget>
+		      <class>GtkSpinButton</class>
+		      <name>spinbutton_firmenpapier</name>
+		      <cxx_visibility>protected</cxx_visibility>
+		      <can_focus>True</can_focus>
+		      <climb_rate>1</climb_rate>
+		      <digits>0</digits>
+		      <numeric>False</numeric>
+		      <update_policy>GTK_UPDATE_ALWAYS</update_policy>
+		      <snap>False</snap>
+		      <wrap>False</wrap>
+		      <value>1</value>
+		      <lower>0</lower>
+		      <upper>100</upper>
+		      <step>1</step>
+		      <page>10</page>
+		      <page_size>10</page_size>
+		    </widget>
+		  </widget>
+
+		  <widget>
+		    <class>GtkFrame</class>
+		    <name>frame58</name>
+		    <label>Weißes Papier</label>
+		    <label_xalign>0</label_xalign>
+		    <shadow_type>GTK_SHADOW_NONE</shadow_type>
+		    <child>
+		      <padding>0</padding>
+		      <expand>True</expand>
+		      <fill>True</fill>
+		    </child>
+
+		    <widget>
+		      <class>GtkSpinButton</class>
+		      <name>spinbutton_weissespapier</name>
+		      <cxx_visibility>protected</cxx_visibility>
+		      <can_focus>True</can_focus>
+		      <climb_rate>1</climb_rate>
+		      <digits>0</digits>
+		      <numeric>False</numeric>
+		      <update_policy>GTK_UPDATE_ALWAYS</update_policy>
+		      <snap>False</snap>
+		      <wrap>False</wrap>
+		      <value>1</value>
+		      <lower>0</lower>
+		      <upper>100</upper>
+		      <step>1</step>
+		      <page>10</page>
+		      <page_size>10</page_size>
+		    </widget>
+		  </widget>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkFrame</class>
+		<name>frame14</name>
+		<label>Verkäufer</label>
+		<label_xalign>0</label_xalign>
+		<shadow_type>GTK_SHADOW_NONE</shadow_type>
+		<child>
+		  <left_attach>1</left_attach>
+		  <right_attach>2</right_attach>
+		  <top_attach>1</top_attach>
+		  <bottom_attach>2</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>False</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>False</yfill>
+		</child>
+
+		<widget>
+		  <class>Custom</class>
+		  <name>scc_verkaeufer</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <signal>
+		    <name>activate</name>
+		    <handler>scc_verkaeufer_activate</handler>
+		    <last_modification_time>Wed, 27 Feb 2002 09:53:01 GMT</last_modification_time>
+		  </signal>
+		  <signal>
+		    <name>search</name>
+		    <handler>scc_verkaeufer_search</handler>
+		    <last_modification_time>Wed, 27 Feb 2002 13:07:13 GMT</last_modification_time>
+		  </signal>
+		  <creation_function>SearchComboContent&lt;int&gt;</creation_function>
+		  <int1>0</int1>
+		  <int2>0</int2>
+		  <last_modification_time>Wed, 27 Feb 2002 14:46:58 GMT</last_modification_time>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkFrame</class>
+		<name>frame62</name>
+		<label>Betreuer</label>
+		<label_xalign>0</label_xalign>
+		<shadow_type>GTK_SHADOW_NONE</shadow_type>
+		<child>
+		  <left_attach>0</left_attach>
+		  <right_attach>2</right_attach>
+		  <top_attach>0</top_attach>
+		  <bottom_attach>1</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>True</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>True</yfill>
+		</child>
+
+		<widget>
+		  <class>Custom</class>
+		  <name>betreuer</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <signal>
+		    <name>activate</name>
+		    <handler>on_betreuer_activate</handler>
+		    <last_modification_time>Tue, 30 Jul 2002 09:43:56 GMT</last_modification_time>
+		  </signal>
+		  <creation_function>PersonenBox</creation_function>
+		  <int1>0</int1>
+		  <int2>0</int2>
+		  <last_modification_time>Tue, 30 Jul 2002 09:42:44 GMT</last_modification_time>
+		</widget>
+	      </widget>
+	    </widget>
+	  </widget>
+
+	  <widget>
+	    <class>GtkHSeparator</class>
+	    <name>hseparator1</name>
+	    <child>
+	      <left_attach>0</left_attach>
+	      <right_attach>2</right_attach>
+	      <top_attach>3</top_attach>
+	      <bottom_attach>4</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>3</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>True</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>True</yfill>
+	    </child>
 	  </widget>
 
 	  <widget>
@@ -1411,13 +2943,13 @@
 	    <label_xalign>0</label_xalign>
 	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
 	    <child>
-	      <left_attach>2</left_attach>
-	      <right_attach>3</right_attach>
-	      <top_attach>0</top_attach>
-	      <bottom_attach>2</bottom_attach>
+	      <left_attach>1</left_attach>
+	      <right_attach>2</right_attach>
+	      <top_attach>6</top_attach>
+	      <bottom_attach>7</bottom_attach>
 	      <xpad>0</xpad>
 	      <ypad>0</ypad>
-	      <xexpand>True</xexpand>
+	      <xexpand>False</xexpand>
 	      <yexpand>False</yexpand>
 	      <xshrink>False</xshrink>
 	      <yshrink>False</yshrink>
@@ -1475,10 +3007,10 @@
 		      <class>Custom</class>
 		      <name>extartbez</name>
 		      <cxx_visibility>protected</cxx_visibility>
-		      <creation_function>KundenBox</creation_function>
+		      <creation_function>KundenBox2</creation_function>
 		      <int1>0</int1>
 		      <int2>0</int2>
-		      <last_modification_time>Wed, 28 Mar 2001 14:33:36 GMT</last_modification_time>
+		      <last_modification_time>Tue, 28 May 2002 08:07:38 GMT</last_modification_time>
 		    </widget>
 		  </widget>
 		</widget>
@@ -1536,10 +3068,10 @@
 			<class>Custom</class>
 			<name>rng_an</name>
 			<cxx_visibility>protected</cxx_visibility>
-			<creation_function>KundenBox</creation_function>
+			<creation_function>KundenBox2</creation_function>
 			<int1>0</int1>
 			<int2>0</int2>
-			<last_modification_time>Wed, 28 Mar 2001 14:33:36 GMT</last_modification_time>
+			<last_modification_time>Tue, 28 May 2002 08:07:40 GMT</last_modification_time>
 		      </widget>
 		    </widget>
 		  </widget>
@@ -1547,13 +3079,13 @@
 
 		<widget>
 		  <class>GtkFrame</class>
-		  <name>frame9</name>
-		  <label>Hauptpreisliste</label>
+		  <name>frame10</name>
+		  <label>Adresse ist eine</label>
 		  <label_xalign>0</label_xalign>
 		  <shadow_type>GTK_SHADOW_IN</shadow_type>
 		  <child>
 		    <left_attach>0</left_attach>
-		    <right_attach>3</right_attach>
+		    <right_attach>2</right_attach>
 		    <top_attach>2</top_attach>
 		    <bottom_attach>3</bottom_attach>
 		    <xpad>5</xpad>
@@ -1567,13 +3099,125 @@
 		  </child>
 
 		  <widget>
-		    <class>Custom</class>
-		    <name>preisliste</name>
+		    <class>GtkTable</class>
+		    <name>table15</name>
+		    <rows>1</rows>
+		    <columns>1</columns>
+		    <homogeneous>False</homogeneous>
+		    <row_spacing>0</row_spacing>
+		    <column_spacing>0</column_spacing>
+
+		    <widget>
+		      <class>GtkTable</class>
+		      <name>table45</name>
+		      <rows>1</rows>
+		      <columns>2</columns>
+		      <homogeneous>False</homogeneous>
+		      <row_spacing>0</row_spacing>
+		      <column_spacing>0</column_spacing>
+		      <child>
+			<left_attach>0</left_attach>
+			<right_attach>1</right_attach>
+			<top_attach>0</top_attach>
+			<bottom_attach>1</bottom_attach>
+			<xpad>0</xpad>
+			<ypad>0</ypad>
+			<xexpand>True</xexpand>
+			<yexpand>True</yexpand>
+			<xshrink>False</xshrink>
+			<yshrink>False</yshrink>
+			<xfill>True</xfill>
+			<yfill>True</yfill>
+		      </child>
+
+		      <widget>
+			<class>GtkCheckButton</class>
+			<name>checkbuttonLieferAdr</name>
+			<border_width>2</border_width>
+			<width>0</width>
+			<height>0</height>
+			<cxx_visibility>protected</cxx_visibility>
+			<can_focus>True</can_focus>
+			<label>Lieferadresse</label>
+			<active>True</active>
+			<draw_indicator>True</draw_indicator>
+			<child>
+			  <left_attach>0</left_attach>
+			  <right_attach>1</right_attach>
+			  <top_attach>0</top_attach>
+			  <bottom_attach>1</bottom_attach>
+			  <xpad>0</xpad>
+			  <ypad>0</ypad>
+			  <xexpand>True</xexpand>
+			  <yexpand>False</yexpand>
+			  <xshrink>False</xshrink>
+			  <yshrink>False</yshrink>
+			  <xfill>True</xfill>
+			  <yfill>False</yfill>
+			</child>
+		      </widget>
+
+		      <widget>
+			<class>GtkCheckButton</class>
+			<name>checkbuttonRchngAdr</name>
+			<border_width>2</border_width>
+			<width>0</width>
+			<height>0</height>
+			<cxx_visibility>protected</cxx_visibility>
+			<can_focus>True</can_focus>
+			<label>Rechnungsadresse</label>
+			<active>True</active>
+			<draw_indicator>True</draw_indicator>
+			<child>
+			  <left_attach>1</left_attach>
+			  <right_attach>2</right_attach>
+			  <top_attach>0</top_attach>
+			  <bottom_attach>1</bottom_attach>
+			  <xpad>0</xpad>
+			  <ypad>0</ypad>
+			  <xexpand>True</xexpand>
+			  <yexpand>False</yexpand>
+			  <xshrink>False</xshrink>
+			  <yshrink>False</yshrink>
+			  <xfill>True</xfill>
+			  <yfill>False</yfill>
+			</child>
+		      </widget>
+		    </widget>
+		  </widget>
+		</widget>
+
+		<widget>
+		  <class>GtkFrame</class>
+		  <name>frame55</name>
+		  <label>Option</label>
+		  <label_xalign>0</label_xalign>
+		  <shadow_type>GTK_SHADOW_IN</shadow_type>
+		  <child>
+		    <left_attach>2</left_attach>
+		    <right_attach>3</right_attach>
+		    <top_attach>2</top_attach>
+		    <bottom_attach>3</bottom_attach>
+		    <xpad>0</xpad>
+		    <ypad>0</ypad>
+		    <xexpand>False</xexpand>
+		    <yexpand>False</yexpand>
+		    <xshrink>False</xshrink>
+		    <yshrink>False</yshrink>
+		    <xfill>True</xfill>
+		    <yfill>True</yfill>
+		  </child>
+
+		  <widget>
+		    <class>GtkCheckButton</class>
+		    <name>checkbutton_rng_an_postfach</name>
+		    <width>0</width>
+		    <height>0</height>
 		    <cxx_visibility>protected</cxx_visibility>
-		    <creation_function>PreisBox</creation_function>
-		    <int1>0</int1>
-		    <int2>0</int2>
-		    <last_modification_time>Mon, 04 Mar 2002 08:55:14 GMT</last_modification_time>
+		    <can_focus>True</can_focus>
+		    <label>Rechnung an Postfach</label>
+		    <active>False</active>
+		    <draw_indicator>True</draw_indicator>
 		  </widget>
 		</widget>
 	      </widget>
@@ -1582,15 +3226,16 @@
 
 	  <widget>
 	    <class>GtkFrame</class>
-	    <name>frame3</name>
-	    <label>Notiz</label>
+	    <name>frame_preislisten</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <label>Preislisten</label>
 	    <label_xalign>0</label_xalign>
-	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+	    <shadow_type>GTK_SHADOW_IN</shadow_type>
 	    <child>
-	      <left_attach>0</left_attach>
+	      <left_attach>1</left_attach>
 	      <right_attach>2</right_attach>
-	      <top_attach>2</top_attach>
-	      <bottom_attach>3</bottom_attach>
+	      <top_attach>5</top_attach>
+	      <bottom_attach>6</bottom_attach>
 	      <xpad>0</xpad>
 	      <ypad>0</ypad>
 	      <xexpand>False</xexpand>
@@ -1602,96 +3247,13 @@
 	    </child>
 
 	    <widget>
-	      <class>GtkScrolledWindow</class>
-	      <name>scrolledwindow1</name>
-	      <hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
-	      <vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
-	      <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
-	      <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
-
-	      <widget>
-		<class>GtkText</class>
-		<name>textNotiz</name>
-		<cxx_visibility>protected</cxx_visibility>
-		<can_focus>True</can_focus>
-		<editable>True</editable>
-		<text></text>
-	      </widget>
-	    </widget>
-	  </widget>
-
-	  <widget>
-	    <class>GtkFrame</class>
-	    <name>frame44</name>
-	    <label>Sonderpreislisten</label>
-	    <label_xalign>0</label_xalign>
-	    <shadow_type>GTK_SHADOW_IN</shadow_type>
-	    <child>
-	      <left_attach>2</left_attach>
-	      <right_attach>3</right_attach>
-	      <top_attach>2</top_attach>
-	      <bottom_attach>3</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>True</yfill>
-	    </child>
-
-	    <widget>
 	      <class>GtkTable</class>
 	      <name>table33</name>
-	      <rows>2</rows>
+	      <rows>3</rows>
 	      <columns>2</columns>
 	      <homogeneous>False</homogeneous>
 	      <row_spacing>0</row_spacing>
 	      <column_spacing>0</column_spacing>
-
-	      <widget>
-		<class>GtkScrolledWindow</class>
-		<name>scrolledwindow5</name>
-		<hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
-		<vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
-		<hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
-		<vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
-		<child>
-		  <left_attach>0</left_attach>
-		  <right_attach>1</right_attach>
-		  <top_attach>0</top_attach>
-		  <bottom_attach>1</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>True</xexpand>
-		  <yexpand>True</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>True</xfill>
-		  <yfill>True</yfill>
-		</child>
-
-		<widget>
-		  <class>Custom</class>
-		  <name>SonderPreislisteTree</name>
-		  <cxx_visibility>protected</cxx_visibility>
-		  <signal>
-		    <name>leaf_selected</name>
-		    <handler>on_spreis_leaf_selected</handler>
-		    <last_modification_time>Thu, 07 Mar 2002 10:52:44 GMT</last_modification_time>
-		  </signal>
-		  <signal>
-		    <name>unselect_row</name>
-		    <handler>on_spreis_unselect_row</handler>
-		    <last_modification_time>Thu, 07 Mar 2002 10:53:47 GMT</last_modification_time>
-		  </signal>
-		  <creation_function>SimpleTree</creation_function>
-		  <int1>2</int1>
-		  <int2>0</int2>
-		  <last_modification_time>Wed, 06 Mar 2002 18:07:05 GMT</last_modification_time>
-		</widget>
-	      </widget>
 
 	      <widget>
 		<class>GtkButton</class>
@@ -1766,8 +3328,8 @@ löschen</label>
 		<child>
 		  <left_attach>0</left_attach>
 		  <right_attach>1</right_attach>
-		  <top_attach>1</top_attach>
-		  <bottom_attach>2</bottom_attach>
+		  <top_attach>2</top_attach>
+		  <bottom_attach>3</bottom_attach>
 		  <xpad>0</xpad>
 		  <ypad>0</ypad>
 		  <xexpand>False</xexpand>
@@ -1778,965 +3340,99 @@ löschen</label>
 		  <yfill>True</yfill>
 		</child>
 	      </widget>
+
+	      <widget>
+		<class>GtkScrolledWindow</class>
+		<name>scrolledwindow5</name>
+		<hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
+		<vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
+		<hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
+		<vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
+		<child>
+		  <left_attach>0</left_attach>
+		  <right_attach>1</right_attach>
+		  <top_attach>0</top_attach>
+		  <bottom_attach>2</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>True</xexpand>
+		  <yexpand>True</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>True</yfill>
+		</child>
+
+		<widget>
+		  <class>Custom</class>
+		  <name>SonderPreislisteTree</name>
+		  <cxx_visibility>protected</cxx_visibility>
+		  <signal>
+		    <name>leaf_selected</name>
+		    <handler>on_spreis_leaf_selected</handler>
+		    <last_modification_time>Thu, 07 Mar 2002 10:52:44 GMT</last_modification_time>
+		  </signal>
+		  <signal>
+		    <name>unselect_row</name>
+		    <handler>on_spreis_unselect_row</handler>
+		    <last_modification_time>Thu, 07 Mar 2002 10:53:47 GMT</last_modification_time>
+		  </signal>
+		  <creation_function>SimpleTree</creation_function>
+		  <int1>3</int1>
+		  <int2>0</int2>
+		  <last_modification_time>Wed, 06 Mar 2002 18:07:05 GMT</last_modification_time>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkCheckButton</class>
+		<name>preisautomatik</name>
+		<cxx_visibility>protected</cxx_visibility>
+		<can_focus>True</can_focus>
+		<signal>
+		  <name>clicked</name>
+		  <handler>on_preisautomatik_clicked</handler>
+		  <last_modification_time>Thu, 01 Aug 2002 09:40:26 GMT</last_modification_time>
+		</signal>
+		<label>Preisautomatik</label>
+		<active>True</active>
+		<draw_indicator>True</draw_indicator>
+		<child>
+		  <left_attach>1</left_attach>
+		  <right_attach>2</right_attach>
+		  <top_attach>2</top_attach>
+		  <bottom_attach>3</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>False</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>False</yfill>
+		</child>
+	      </widget>
 	    </widget>
 	  </widget>
 	</widget>
 
 	<widget>
-	  <class>GtkTable</class>
-	  <name>table24</name>
-	  <rows>6</rows>
-	  <columns>4</columns>
-	  <homogeneous>False</homogeneous>
-	  <row_spacing>0</row_spacing>
-	  <column_spacing>0</column_spacing>
+	  <class>GtkHSeparator</class>
+	  <name>hseparatorDetailDaten</name>
 	  <child>
 	    <left_attach>0</left_attach>
 	    <right_attach>1</right_attach>
-	    <top_attach>2</top_attach>
-	    <bottom_attach>3</bottom_attach>
+	    <top_attach>1</top_attach>
+	    <bottom_attach>2</bottom_attach>
 	    <xpad>0</xpad>
 	    <ypad>0</ypad>
-	    <xexpand>True</xexpand>
+	    <xexpand>False</xexpand>
 	    <yexpand>False</yexpand>
 	    <xshrink>False</xshrink>
 	    <yshrink>False</yshrink>
-	    <xfill>False</xfill>
-	    <yfill>False</yfill>
+	    <xfill>True</xfill>
+	    <yfill>True</yfill>
 	  </child>
-
-	  <widget>
-	    <class>GtkFrame</class>
-	    <name>frame18</name>
-	    <label>Skontosatz</label>
-	    <label_xalign>0</label_xalign>
-	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	    <child>
-	      <left_attach>1</left_attach>
-	      <right_attach>2</right_attach>
-	      <top_attach>4</top_attach>
-	      <bottom_attach>5</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>True</yfill>
-	    </child>
-
-	    <widget>
-	      <class>GtkTable</class>
-	      <name>table22</name>
-	      <rows>1</rows>
-	      <columns>2</columns>
-	      <homogeneous>False</homogeneous>
-	      <row_spacing>0</row_spacing>
-	      <column_spacing>0</column_spacing>
-
-	      <widget>
-		<class>GtkSpinButton</class>
-		<name>spinbutton_skontosatz</name>
-		<width>100</width>
-		<cxx_visibility>protected</cxx_visibility>
-		<can_focus>True</can_focus>
-		<climb_rate>1</climb_rate>
-		<digits>2</digits>
-		<numeric>True</numeric>
-		<update_policy>GTK_UPDATE_ALWAYS</update_policy>
-		<snap>False</snap>
-		<wrap>False</wrap>
-		<value>0</value>
-		<lower>0</lower>
-		<upper>100</upper>
-		<step>1</step>
-		<page>10</page>
-		<page_size>10</page_size>
-		<child>
-		  <left_attach>0</left_attach>
-		  <right_attach>1</right_attach>
-		  <top_attach>0</top_attach>
-		  <bottom_attach>1</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>True</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>True</xfill>
-		  <yfill>False</yfill>
-		</child>
-	      </widget>
-
-	      <widget>
-		<class>GtkLabel</class>
-		<name>label14</name>
-		<label>%</label>
-		<justify>GTK_JUSTIFY_CENTER</justify>
-		<wrap>False</wrap>
-		<xalign>0.5</xalign>
-		<yalign>0.5</yalign>
-		<xpad>0</xpad>
-		<ypad>0</ypad>
-		<child>
-		  <left_attach>1</left_attach>
-		  <right_attach>2</right_attach>
-		  <top_attach>0</top_attach>
-		  <bottom_attach>1</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>False</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>True</xfill>
-		  <yfill>False</yfill>
-		</child>
-	      </widget>
-	    </widget>
-	  </widget>
-
-	  <widget>
-	    <class>GtkFrame</class>
-	    <name>frame15</name>
-	    <label>Währung</label>
-	    <label_xalign>0</label_xalign>
-	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	    <child>
-	      <left_attach>2</left_attach>
-	      <right_attach>3</right_attach>
-	      <top_attach>4</top_attach>
-	      <bottom_attach>5</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>True</yfill>
-	    </child>
-
-	    <widget>
-	      <class>Custom</class>
-	      <name>Waehrung</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <creation_function>WWaehrung</creation_function>
-	      <int1>0</int1>
-	      <int2>0</int2>
-	      <last_modification_time>Mon, 25 Feb 2002 14:23:06 GMT</last_modification_time>
-	    </widget>
-	  </widget>
-
-	  <widget>
-	    <class>GtkFrame</class>
-	    <name>frame16</name>
-	    <label>Verein</label>
-	    <label_xalign>0</label_xalign>
-	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	    <child>
-	      <left_attach>0</left_attach>
-	      <right_attach>1</right_attach>
-	      <top_attach>5</top_attach>
-	      <bottom_attach>6</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>True</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>True</yfill>
-	    </child>
-
-	    <widget>
-	      <class>GtkEntry</class>
-	      <name>entryVerein</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <can_focus>True</can_focus>
-	      <editable>True</editable>
-	      <text_visible>True</text_visible>
-	      <text_max_length>30</text_max_length>
-	      <text></text>
-	    </widget>
-	  </widget>
-
-	  <widget>
-	    <class>GtkFrame</class>
-	    <name>frame19</name>
-	    <label>Landeskennzahl</label>
-	    <label_xalign>0</label_xalign>
-	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	    <child>
-	      <left_attach>1</left_attach>
-	      <right_attach>2</right_attach>
-	      <top_attach>5</top_attach>
-	      <bottom_attach>6</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>True</yfill>
-	    </child>
-
-	    <widget>
-	      <class>GtkEntry</class>
-	      <name>entry_lkz</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <can_focus>True</can_focus>
-	      <editable>True</editable>
-	      <text_visible>True</text_visible>
-	      <text_max_length>0</text_max_length>
-	      <text></text>
-	    </widget>
-	  </widget>
-
-	  <widget>
-	    <class>GtkFrame</class>
-	    <name>frame14</name>
-	    <label>Verkäufer</label>
-	    <label_xalign>0</label_xalign>
-	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	    <child>
-	      <left_attach>2</left_attach>
-	      <right_attach>3</right_attach>
-	      <top_attach>5</top_attach>
-	      <bottom_attach>6</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>True</yfill>
-	    </child>
-
-	    <widget>
-	      <class>Custom</class>
-	      <name>scc_verkaeufer</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <signal>
-		<name>activate</name>
-		<handler>scc_verkaeufer_activate</handler>
-		<last_modification_time>Wed, 27 Feb 2002 09:53:01 GMT</last_modification_time>
-	      </signal>
-	      <signal>
-		<name>search</name>
-		<handler>scc_verkaeufer_search</handler>
-		<last_modification_time>Wed, 27 Feb 2002 13:07:13 GMT</last_modification_time>
-	      </signal>
-	      <creation_function>SearchComboContent&lt;int&gt;</creation_function>
-	      <int1>0</int1>
-	      <int2>0</int2>
-	      <last_modification_time>Wed, 27 Feb 2002 14:46:58 GMT</last_modification_time>
-	    </widget>
-	  </widget>
-
-	  <widget>
-	    <class>GtkFrame</class>
-	    <name>frame20</name>
-	    <label>Fläche</label>
-	    <label_xalign>0</label_xalign>
-	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	    <child>
-	      <left_attach>0</left_attach>
-	      <right_attach>1</right_attach>
-	      <top_attach>0</top_attach>
-	      <bottom_attach>1</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>True</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>False</yfill>
-	    </child>
-
-	    <widget>
-	      <class>GtkTable</class>
-	      <name>table23</name>
-	      <rows>1</rows>
-	      <columns>2</columns>
-	      <homogeneous>False</homogeneous>
-	      <row_spacing>0</row_spacing>
-	      <column_spacing>0</column_spacing>
-
-	      <widget>
-		<class>GtkLabel</class>
-		<name>labelQm</name>
-		<label>qm</label>
-		<justify>GTK_JUSTIFY_CENTER</justify>
-		<wrap>False</wrap>
-		<xalign>0.5</xalign>
-		<yalign>0.5</yalign>
-		<xpad>0</xpad>
-		<ypad>0</ypad>
-		<child>
-		  <left_attach>1</left_attach>
-		  <right_attach>2</right_attach>
-		  <top_attach>0</top_attach>
-		  <bottom_attach>1</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>False</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>True</xfill>
-		  <yfill>False</yfill>
-		</child>
-	      </widget>
-
-	      <widget>
-		<class>GtkSpinButton</class>
-		<name>spinbutton_Flaeche</name>
-		<cxx_visibility>protected</cxx_visibility>
-		<can_focus>True</can_focus>
-		<climb_rate>1</climb_rate>
-		<digits>0</digits>
-		<numeric>True</numeric>
-		<update_policy>GTK_UPDATE_ALWAYS</update_policy>
-		<snap>False</snap>
-		<wrap>False</wrap>
-		<value>0</value>
-		<lower>0</lower>
-		<upper>1e+06</upper>
-		<step>1</step>
-		<page>10</page>
-		<page_size>10</page_size>
-		<child>
-		  <left_attach>0</left_attach>
-		  <right_attach>1</right_attach>
-		  <top_attach>0</top_attach>
-		  <bottom_attach>1</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>True</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>True</xfill>
-		  <yfill>False</yfill>
-		</child>
-	      </widget>
-	    </widget>
-	  </widget>
-
-	  <widget>
-	    <class>GtkFrame</class>
-	    <name>frame22</name>
-	    <label>Umsatz</label>
-	    <label_xalign>0</label_xalign>
-	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	    <child>
-	      <left_attach>0</left_attach>
-	      <right_attach>1</right_attach>
-	      <top_attach>1</top_attach>
-	      <bottom_attach>2</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>False</yfill>
-	    </child>
-
-	    <widget>
-	      <class>GtkSpinButton</class>
-	      <name>spinbutton_Umsatz</name>
-	      <width>70</width>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <can_focus>True</can_focus>
-	      <climb_rate>1</climb_rate>
-	      <digits>2</digits>
-	      <numeric>True</numeric>
-	      <update_policy>GTK_UPDATE_ALWAYS</update_policy>
-	      <snap>False</snap>
-	      <wrap>False</wrap>
-	      <value>0</value>
-	      <lower>0</lower>
-	      <upper>1e+08</upper>
-	      <step>1</step>
-	      <page>10</page>
-	      <page_size>10</page_size>
-	    </widget>
-	  </widget>
-
-	  <widget>
-	    <class>GtkFrame</class>
-	    <name>frame21</name>
-	    <label>Mitarbeiter</label>
-	    <label_xalign>0</label_xalign>
-	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	    <child>
-	      <left_attach>1</left_attach>
-	      <right_attach>2</right_attach>
-	      <top_attach>0</top_attach>
-	      <bottom_attach>1</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>True</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>True</yfill>
-	    </child>
-
-	    <widget>
-	      <class>GtkSpinButton</class>
-	      <name>spinbutton_Mitarbeiter</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <can_focus>True</can_focus>
-	      <climb_rate>1</climb_rate>
-	      <digits>0</digits>
-	      <numeric>False</numeric>
-	      <update_policy>GTK_UPDATE_ALWAYS</update_policy>
-	      <snap>False</snap>
-	      <wrap>False</wrap>
-	      <value>1</value>
-	      <lower>1</lower>
-	      <upper>1e+06</upper>
-	      <step>1</step>
-	      <page>10</page>
-	      <page_size>10</page_size>
-	    </widget>
-	  </widget>
-
-	  <widget>
-	    <class>GtkFrame</class>
-	    <name>frame23</name>
-	    <label>Kundenumsatz</label>
-	    <label_xalign>0</label_xalign>
-	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	    <child>
-	      <left_attach>1</left_attach>
-	      <right_attach>2</right_attach>
-	      <top_attach>1</top_attach>
-	      <bottom_attach>2</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>True</yfill>
-	    </child>
-
-	    <widget>
-	      <class>GtkSpinButton</class>
-	      <name>spinbutton_Kundenumsatz</name>
-	      <width>110</width>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <can_focus>True</can_focus>
-	      <climb_rate>1</climb_rate>
-	      <digits>2</digits>
-	      <numeric>True</numeric>
-	      <update_policy>GTK_UPDATE_ALWAYS</update_policy>
-	      <snap>False</snap>
-	      <wrap>False</wrap>
-	      <value>0</value>
-	      <lower>0</lower>
-	      <upper>1e+07</upper>
-	      <step>1</step>
-	      <page>10</page>
-	      <page_size>10</page_size>
-	    </widget>
-	  </widget>
-
-	  <widget>
-	    <class>GtkFrame</class>
-	    <name>frame24</name>
-	    <label>Planumsatz</label>
-	    <label_xalign>0</label_xalign>
-	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	    <child>
-	      <left_attach>2</left_attach>
-	      <right_attach>3</right_attach>
-	      <top_attach>1</top_attach>
-	      <bottom_attach>2</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>True</yfill>
-	    </child>
-
-	    <widget>
-	      <class>GtkSpinButton</class>
-	      <name>spinbutton_Planumsatz</name>
-	      <width>100</width>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <can_focus>True</can_focus>
-	      <climb_rate>1</climb_rate>
-	      <digits>0</digits>
-	      <numeric>True</numeric>
-	      <update_policy>GTK_UPDATE_ALWAYS</update_policy>
-	      <snap>False</snap>
-	      <wrap>False</wrap>
-	      <value>0</value>
-	      <lower>0</lower>
-	      <upper>1e+07</upper>
-	      <step>1</step>
-	      <page>10</page>
-	      <page_size>10</page_size>
-	    </widget>
-	  </widget>
-
-	  <widget>
-	    <class>GtkFrame</class>
-	    <name>frame13</name>
-	    <label>Rabatt</label>
-	    <label_xalign>0</label_xalign>
-	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	    <child>
-	      <left_attach>0</left_attach>
-	      <right_attach>1</right_attach>
-	      <top_attach>3</top_attach>
-	      <bottom_attach>4</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>True</yfill>
-	    </child>
-
-	    <widget>
-	      <class>GtkTable</class>
-	      <name>table20</name>
-	      <rows>2</rows>
-	      <columns>2</columns>
-	      <homogeneous>False</homogeneous>
-	      <row_spacing>0</row_spacing>
-	      <column_spacing>0</column_spacing>
-
-	      <widget>
-		<class>GtkSpinButton</class>
-		<name>spinbutton_Rabatt</name>
-		<cxx_visibility>protected</cxx_visibility>
-		<can_focus>True</can_focus>
-		<climb_rate>1</climb_rate>
-		<digits>1</digits>
-		<numeric>True</numeric>
-		<update_policy>GTK_UPDATE_ALWAYS</update_policy>
-		<snap>False</snap>
-		<wrap>False</wrap>
-		<value>0</value>
-		<lower>0</lower>
-		<upper>100</upper>
-		<step>1</step>
-		<page>10</page>
-		<page_size>10</page_size>
-		<child>
-		  <left_attach>0</left_attach>
-		  <right_attach>1</right_attach>
-		  <top_attach>0</top_attach>
-		  <bottom_attach>1</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>True</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>True</xfill>
-		  <yfill>False</yfill>
-		</child>
-	      </widget>
-
-	      <widget>
-		<class>GtkLabel</class>
-		<name>labelProzent</name>
-		<label>%</label>
-		<justify>GTK_JUSTIFY_CENTER</justify>
-		<wrap>False</wrap>
-		<xalign>0.5</xalign>
-		<yalign>0.5</yalign>
-		<xpad>0</xpad>
-		<ypad>0</ypad>
-		<child>
-		  <left_attach>1</left_attach>
-		  <right_attach>2</right_attach>
-		  <top_attach>0</top_attach>
-		  <bottom_attach>1</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>False</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>False</xfill>
-		  <yfill>False</yfill>
-		</child>
-	      </widget>
-
-	      <widget>
-		<class>GtkCheckButton</class>
-		<name>checkbutton_zeilenrabatt</name>
-		<cxx_visibility>protected</cxx_visibility>
-		<can_focus>True</can_focus>
-		<label>Zeilenrabatt</label>
-		<active>False</active>
-		<draw_indicator>True</draw_indicator>
-		<child>
-		  <left_attach>0</left_attach>
-		  <right_attach>2</right_attach>
-		  <top_attach>1</top_attach>
-		  <bottom_attach>2</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>False</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>False</xfill>
-		  <yfill>False</yfill>
-		</child>
-	      </widget>
-	    </widget>
-	  </widget>
-
-	  <widget>
-	    <class>GtkFrame</class>
-	    <name>frame17</name>
-	    <label>Skontofrist</label>
-	    <label_xalign>0</label_xalign>
-	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	    <child>
-	      <left_attach>0</left_attach>
-	      <right_attach>1</right_attach>
-	      <top_attach>4</top_attach>
-	      <bottom_attach>5</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>True</yfill>
-	    </child>
-
-	    <widget>
-	      <class>GtkTable</class>
-	      <name>table21</name>
-	      <rows>1</rows>
-	      <columns>2</columns>
-	      <homogeneous>False</homogeneous>
-	      <row_spacing>0</row_spacing>
-	      <column_spacing>0</column_spacing>
-
-	      <widget>
-		<class>GtkLabel</class>
-		<name>labelTage</name>
-		<label>Tage</label>
-		<justify>GTK_JUSTIFY_CENTER</justify>
-		<wrap>False</wrap>
-		<xalign>0.5</xalign>
-		<yalign>0.5</yalign>
-		<xpad>0</xpad>
-		<ypad>0</ypad>
-		<child>
-		  <left_attach>1</left_attach>
-		  <right_attach>2</right_attach>
-		  <top_attach>0</top_attach>
-		  <bottom_attach>1</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>False</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>True</xfill>
-		  <yfill>False</yfill>
-		</child>
-	      </widget>
-
-	      <widget>
-		<class>GtkSpinButton</class>
-		<name>spinbutton_Skontofrist</name>
-		<width>100</width>
-		<cxx_visibility>protected</cxx_visibility>
-		<can_focus>True</can_focus>
-		<climb_rate>1</climb_rate>
-		<digits>0</digits>
-		<numeric>True</numeric>
-		<update_policy>GTK_UPDATE_ALWAYS</update_policy>
-		<snap>False</snap>
-		<wrap>False</wrap>
-		<value>0</value>
-		<lower>0</lower>
-		<upper>180</upper>
-		<step>1</step>
-		<page>10</page>
-		<page_size>10</page_size>
-		<child>
-		  <left_attach>0</left_attach>
-		  <right_attach>1</right_attach>
-		  <top_attach>0</top_attach>
-		  <bottom_attach>1</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>False</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>False</xfill>
-		  <yfill>False</yfill>
-		</child>
-	      </widget>
-	    </widget>
-	  </widget>
-
-	  <widget>
-	    <class>GtkFrame</class>
-	    <name>frame25</name>
-	    <label>Einzugrabatt</label>
-	    <label_xalign>0</label_xalign>
-	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	    <child>
-	      <left_attach>1</left_attach>
-	      <right_attach>2</right_attach>
-	      <top_attach>3</top_attach>
-	      <bottom_attach>4</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>True</yfill>
-	    </child>
-
-	    <widget>
-	      <class>GtkTable</class>
-	      <name>table25</name>
-	      <rows>1</rows>
-	      <columns>2</columns>
-	      <homogeneous>False</homogeneous>
-	      <row_spacing>0</row_spacing>
-	      <column_spacing>0</column_spacing>
-
-	      <widget>
-		<class>GtkLabel</class>
-		<name>label6</name>
-		<label>%</label>
-		<justify>GTK_JUSTIFY_CENTER</justify>
-		<wrap>False</wrap>
-		<xalign>0.5</xalign>
-		<yalign>0.5</yalign>
-		<xpad>0</xpad>
-		<ypad>0</ypad>
-		<child>
-		  <left_attach>1</left_attach>
-		  <right_attach>2</right_attach>
-		  <top_attach>0</top_attach>
-		  <bottom_attach>1</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>False</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>True</xfill>
-		  <yfill>False</yfill>
-		</child>
-	      </widget>
-
-	      <widget>
-		<class>GtkSpinButton</class>
-		<name>spinbutton_einzugRabatt</name>
-		<cxx_visibility>protected</cxx_visibility>
-		<can_focus>True</can_focus>
-		<climb_rate>1</climb_rate>
-		<digits>2</digits>
-		<numeric>True</numeric>
-		<update_policy>GTK_UPDATE_ALWAYS</update_policy>
-		<snap>False</snap>
-		<wrap>False</wrap>
-		<value>0</value>
-		<lower>0</lower>
-		<upper>10</upper>
-		<step>1</step>
-		<page>10</page>
-		<page_size>10</page_size>
-		<child>
-		  <left_attach>0</left_attach>
-		  <right_attach>1</right_attach>
-		  <top_attach>0</top_attach>
-		  <bottom_attach>1</bottom_attach>
-		  <xpad>0</xpad>
-		  <ypad>0</ypad>
-		  <xexpand>True</xexpand>
-		  <yexpand>False</yexpand>
-		  <xshrink>False</xshrink>
-		  <yshrink>False</yshrink>
-		  <xfill>True</xfill>
-		  <yfill>False</yfill>
-		</child>
-	      </widget>
-	    </widget>
-	  </widget>
-
-	  <widget>
-	    <class>GtkHSeparator</class>
-	    <name>hseparator1</name>
-	    <child>
-	      <left_attach>0</left_attach>
-	      <right_attach>4</right_attach>
-	      <top_attach>2</top_attach>
-	      <bottom_attach>3</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>3</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>True</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>True</yfill>
-	    </child>
-	  </widget>
-
-	  <widget>
-	    <class>GtkFrame</class>
-	    <name>frame47</name>
-	    <label>Buchung</label>
-	    <label_xalign>0</label_xalign>
-	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	    <child>
-	      <left_attach>3</left_attach>
-	      <right_attach>4</right_attach>
-	      <top_attach>3</top_attach>
-	      <bottom_attach>5</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>True</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>True</yfill>
-	    </child>
-
-	    <widget>
-	      <class>GtkVBox</class>
-	      <name>vbox5</name>
-	      <homogeneous>False</homogeneous>
-	      <spacing>0</spacing>
-
-	      <widget>
-		<class>GtkFrame</class>
-		<name>frame48</name>
-		<label>Lieferantenkonto</label>
-		<label_xalign>0</label_xalign>
-		<shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-		<child>
-		  <padding>0</padding>
-		  <expand>True</expand>
-		  <fill>True</fill>
-		</child>
-
-		<widget>
-		  <class>GtkSpinButton</class>
-		  <name>spinbutton_lieferantenkonto</name>
-		  <cxx_visibility>protected</cxx_visibility>
-		  <can_focus>True</can_focus>
-		  <climb_rate>1</climb_rate>
-		  <digits>0</digits>
-		  <numeric>False</numeric>
-		  <update_policy>GTK_UPDATE_ALWAYS</update_policy>
-		  <snap>False</snap>
-		  <wrap>False</wrap>
-		  <value>0</value>
-		  <lower>0</lower>
-		  <upper>100000</upper>
-		  <step>1</step>
-		  <page>10</page>
-		  <page_size>10</page_size>
-		</widget>
-	      </widget>
-
-	      <widget>
-		<class>GtkFrame</class>
-		<name>frame49</name>
-		<label>Gegenkonto</label>
-		<label_xalign>0</label_xalign>
-		<shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-		<child>
-		  <padding>0</padding>
-		  <expand>True</expand>
-		  <fill>True</fill>
-		</child>
-
-		<widget>
-		  <class>GtkSpinButton</class>
-		  <name>spinbutton_gegenkonto</name>
-		  <cxx_visibility>protected</cxx_visibility>
-		  <can_focus>True</can_focus>
-		  <climb_rate>1</climb_rate>
-		  <digits>0</digits>
-		  <numeric>False</numeric>
-		  <update_policy>GTK_UPDATE_ALWAYS</update_policy>
-		  <snap>False</snap>
-		  <wrap>False</wrap>
-		  <value>0</value>
-		  <lower>0</lower>
-		  <upper>100000</upper>
-		  <step>1</step>
-		  <page>10</page>
-		  <page_size>10</page_size>
-		</widget>
-	      </widget>
-	    </widget>
-	  </widget>
-
-	  <widget>
-	    <class>GtkFrame</class>
-	    <name>frame50</name>
-	    <label>Eigene Kundennummer</label>
-	    <label_xalign>0</label_xalign>
-	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	    <child>
-	      <left_attach>3</left_attach>
-	      <right_attach>4</right_attach>
-	      <top_attach>0</top_attach>
-	      <bottom_attach>1</bottom_attach>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <xexpand>False</xexpand>
-	      <yexpand>False</yexpand>
-	      <xshrink>False</xshrink>
-	      <yshrink>False</yshrink>
-	      <xfill>True</xfill>
-	      <yfill>True</yfill>
-	    </child>
-
-	    <widget>
-	      <class>GtkEntry</class>
-	      <name>entry_eigene_kundennr</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <can_focus>True</can_focus>
-	      <editable>True</editable>
-	      <text_visible>True</text_visible>
-	      <text_max_length>0</text_max_length>
-	      <text></text>
-	    </widget>
-	  </widget>
 	</widget>
       </widget>
 
@@ -3068,9 +3764,14 @@ löschen</label>
 	  <name>KontaktPersonenTel</name>
 	  <cxx_visibility>protected</cxx_visibility>
 	  <signal>
-	    <name>activate</name>
+	    <name>add</name>
 	    <handler>on_KontaktPersonTelefon_activate</handler>
-	    <last_modification_time>Mon, 11 Mar 2002 09:12:41 GMT</last_modification_time>
+	    <last_modification_time>Thu, 09 May 2002 16:44:24 GMT</last_modification_time>
+	  </signal>
+	  <signal>
+	    <name>remove</name>
+	    <handler>on_KontaktPersonTelefon_remove</handler>
+	    <last_modification_time>Thu, 09 May 2002 16:44:38 GMT</last_modification_time>
 	  </signal>
 	  <creation_function>WTelefon</creation_function>
 	  <int1>0</int1>
@@ -3257,6 +3958,7 @@ löschen</label>
 	<widget>
 	  <class>GtkVBox</class>
 	  <name>vboxPersonenDaten</name>
+	  <cxx_visibility>protected</cxx_visibility>
 	  <homogeneous>False</homogeneous>
 	  <spacing>0</spacing>
 	  <child>
@@ -3638,9 +4340,14 @@ anlegen</label>
 	  <name>PersonenTel</name>
 	  <cxx_visibility>protected</cxx_visibility>
 	  <signal>
-	    <name>activate</name>
+	    <name>add</name>
 	    <handler>on_PersonenPrivatTelefon_activate</handler>
-	    <last_modification_time>Mon, 11 Mar 2002 09:43:58 GMT</last_modification_time>
+	    <last_modification_time>Thu, 09 May 2002 16:44:50 GMT</last_modification_time>
+	  </signal>
+	  <signal>
+	    <name>remove</name>
+	    <handler>on_PersonenPrivatTelefon_remove</handler>
+	    <last_modification_time>Thu, 09 May 2002 16:45:07 GMT</last_modification_time>
 	  </signal>
 	  <creation_function>WTelefon</creation_function>
 	  <int1>0</int1>
@@ -3675,182 +4382,6 @@ anlegen</label>
 	<xpad>0</xpad>
 	<ypad>0</ypad>
       </widget>
-
-      <widget>
-	<class>GtkTable</class>
-	<name>table34</name>
-	<rows>3</rows>
-	<columns>3</columns>
-	<homogeneous>False</homogeneous>
-	<row_spacing>0</row_spacing>
-	<column_spacing>0</column_spacing>
-
-	<widget>
-	  <class>GtkFrame</class>
-	  <name>frame45</name>
-	  <label>Sonderpreisliste anlegen</label>
-	  <label_xalign>0</label_xalign>
-	  <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	  <child>
-	    <left_attach>1</left_attach>
-	    <right_attach>2</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>2</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>False</xfill>
-	    <yfill>False</yfill>
-	  </child>
-
-	  <widget>
-	    <class>GtkTable</class>
-	    <name>table35</name>
-	    <rows>3</rows>
-	    <columns>3</columns>
-	    <homogeneous>False</homogeneous>
-	    <row_spacing>0</row_spacing>
-	    <column_spacing>0</column_spacing>
-
-	    <widget>
-	      <class>GtkSpinButton</class>
-	      <name>spinbutton_new_spreislist</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <sensitive>False</sensitive>
-	      <can_focus>True</can_focus>
-	      <climb_rate>1</climb_rate>
-	      <digits>0</digits>
-	      <numeric>False</numeric>
-	      <update_policy>GTK_UPDATE_ALWAYS</update_policy>
-	      <snap>False</snap>
-	      <wrap>False</wrap>
-	      <value>1</value>
-	      <lower>0</lower>
-	      <upper>100</upper>
-	      <step>1</step>
-	      <page>10</page>
-	      <page_size>10</page_size>
-	      <child>
-		<left_attach>0</left_attach>
-		<right_attach>1</right_attach>
-		<top_attach>1</top_attach>
-		<bottom_attach>2</bottom_attach>
-		<xpad>0</xpad>
-		<ypad>0</ypad>
-		<xexpand>True</xexpand>
-		<yexpand>False</yexpand>
-		<xshrink>False</xshrink>
-		<yshrink>False</yshrink>
-		<xfill>False</xfill>
-		<yfill>False</yfill>
-	      </child>
-	    </widget>
-
-	    <widget>
-	      <class>GtkButton</class>
-	      <name>button_neue_spl_anlegen</name>
-	      <can_focus>True</can_focus>
-	      <signal>
-		<name>clicked</name>
-		<handler>on_button_neue_spl_anlegen_clicked</handler>
-		<last_modification_time>Thu, 07 Mar 2002 12:08:41 GMT</last_modification_time>
-	      </signal>
-	      <label>Anlegen</label>
-	      <relief>GTK_RELIEF_NORMAL</relief>
-	      <child>
-		<left_attach>1</left_attach>
-		<right_attach>2</right_attach>
-		<top_attach>2</top_attach>
-		<bottom_attach>3</bottom_attach>
-		<xpad>0</xpad>
-		<ypad>0</ypad>
-		<xexpand>False</xexpand>
-		<yexpand>False</yexpand>
-		<xshrink>False</xshrink>
-		<yshrink>False</yshrink>
-		<xfill>True</xfill>
-		<yfill>False</yfill>
-	      </child>
-	    </widget>
-
-	    <widget>
-	      <class>GtkButton</class>
-	      <name>button_neu_spl_nummer</name>
-	      <can_focus>True</can_focus>
-	      <signal>
-		<name>clicked</name>
-		<handler>on_button_neu_spl_nummer_clicked</handler>
-		<last_modification_time>Thu, 07 Mar 2002 12:08:56 GMT</last_modification_time>
-	      </signal>
-	      <label>Neu</label>
-	      <relief>GTK_RELIEF_NORMAL</relief>
-	      <child>
-		<left_attach>1</left_attach>
-		<right_attach>2</right_attach>
-		<top_attach>1</top_attach>
-		<bottom_attach>2</bottom_attach>
-		<xpad>0</xpad>
-		<ypad>0</ypad>
-		<xexpand>False</xexpand>
-		<yexpand>False</yexpand>
-		<xshrink>False</xshrink>
-		<yshrink>False</yshrink>
-		<xfill>True</xfill>
-		<yfill>False</yfill>
-	      </child>
-	    </widget>
-
-	    <widget>
-	      <class>GtkFrame</class>
-	      <name>frame46</name>
-	      <label>Name</label>
-	      <label_xalign>0</label_xalign>
-	      <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	      <child>
-		<left_attach>0</left_attach>
-		<right_attach>1</right_attach>
-		<top_attach>2</top_attach>
-		<bottom_attach>3</bottom_attach>
-		<xpad>0</xpad>
-		<ypad>0</ypad>
-		<xexpand>False</xexpand>
-		<yexpand>False</yexpand>
-		<xshrink>False</xshrink>
-		<yshrink>False</yshrink>
-		<xfill>False</xfill>
-		<yfill>True</yfill>
-	      </child>
-
-	      <widget>
-		<class>GtkEntry</class>
-		<name>entry_new_spreislist_name</name>
-		<cxx_visibility>protected</cxx_visibility>
-		<can_focus>True</can_focus>
-		<editable>True</editable>
-		<text_visible>True</text_visible>
-		<text_max_length>0</text_max_length>
-		<text></text>
-	      </widget>
-	    </widget>
-	  </widget>
-	</widget>
-      </widget>
-
-      <widget>
-	<class>GtkLabel</class>
-	<child_name>Notebook:tab</child_name>
-	<name>label22</name>
-	<label>Extras</label>
-	<justify>GTK_JUSTIFY_CENTER</justify>
-	<wrap>False</wrap>
-	<xalign>0.5</xalign>
-	<yalign>0.5</yalign>
-	<xpad>0</xpad>
-	<ypad>0</ypad>
-      </widget>
     </widget>
 
     <widget>
@@ -3867,8 +4398,8 @@ anlegen</label>
       <child>
 	<left_attach>0</left_attach>
 	<right_attach>1</right_attach>
-	<top_attach>1</top_attach>
-	<bottom_attach>2</bottom_attach>
+	<top_attach>2</top_attach>
+	<bottom_attach>3</bottom_attach>
 	<xpad>0</xpad>
 	<ypad>0</ypad>
 	<xexpand>False</xexpand>
@@ -3878,6 +4409,69 @@ anlegen</label>
 	<xfill>True</xfill>
 	<yfill>False</yfill>
       </child>
+    </widget>
+
+    <widget>
+      <class>GtkTable</class>
+      <name>table39</name>
+      <rows>1</rows>
+      <columns>3</columns>
+      <homogeneous>False</homogeneous>
+      <row_spacing>0</row_spacing>
+      <column_spacing>0</column_spacing>
+      <child>
+	<left_attach>0</left_attach>
+	<right_attach>1</right_attach>
+	<top_attach>0</top_attach>
+	<bottom_attach>1</bottom_attach>
+	<xpad>0</xpad>
+	<ypad>0</ypad>
+	<xexpand>False</xexpand>
+	<yexpand>True</yexpand>
+	<xshrink>False</xshrink>
+	<yshrink>False</yshrink>
+	<xfill>True</xfill>
+	<yfill>True</yfill>
+      </child>
+
+      <widget>
+	<class>GtkToolbar</class>
+	<name>toolbar1</name>
+	<border_width>5</border_width>
+	<orientation>GTK_ORIENTATION_HORIZONTAL</orientation>
+	<type>GTK_TOOLBAR_BOTH</type>
+	<space_size>5</space_size>
+	<space_style>GTK_TOOLBAR_SPACE_EMPTY</space_style>
+	<relief>GTK_RELIEF_NORMAL</relief>
+	<tooltips>True</tooltips>
+	<child>
+	  <left_attach>0</left_attach>
+	  <right_attach>1</right_attach>
+	  <top_attach>0</top_attach>
+	  <bottom_attach>1</bottom_attach>
+	  <xpad>0</xpad>
+	  <ypad>0</ypad>
+	  <xexpand>False</xexpand>
+	  <yexpand>False</yexpand>
+	  <xshrink>False</xshrink>
+	  <yshrink>False</yshrink>
+	  <xfill>True</xfill>
+	  <yfill>False</yfill>
+	</child>
+
+	<widget>
+	  <class>GtkButton</class>
+	  <child_name>Toolbar:button</child_name>
+	  <name>buttonBeenden</name>
+	  <signal>
+	    <name>clicked</name>
+	    <handler>on_buttonBeenden_clicked</handler>
+	    <last_modification_time>Tue, 16 Apr 2002 13:43:50 GMT</last_modification_time>
+	  </signal>
+	  <label>Schließen</label>
+	  <stock_pixmap>GNOME_STOCK_PIXMAP_EXIT</stock_pixmap>
+	</widget>
+      </widget>
     </widget>
   </widget>
 </widget>

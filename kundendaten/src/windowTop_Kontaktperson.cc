@@ -4,8 +4,10 @@
 
 void windowTop::on_kontakt_personen_box_activate()
 {
+try{
   kundendaten->newKontaktperson(KontaktPersonenBox->get_value());
   show_kontaktpersonen();
+}catch (SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e);}
 }
 
 
@@ -78,13 +80,13 @@ bool windowTop::get_selected_person(Kunde::st_ansprech& P)
 }
 
 
-void windowTop::on_KontaktPersonTelefon_activate()
+void windowTop::on_KontaktPersonTelefon_activate(cH_Telefon ct)
 {
   Kunde::st_ansprech P;
   if(!get_selected_person(P)) return;
   try{
-  Telefon::newTelefon(kundendaten->Id(),P.Person->Id(),KontaktPersonenTel->get_value());
-  KontaktPersonenTel->showTel(P.Person->getTelefon());
+  KontaktPersonenTel->showTel(P.Person->getTelefon(kundendaten->Id(),true));
+  
   }catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e);}
 }
 
@@ -95,9 +97,10 @@ void windowTop::on_clistPersonenListe_select_row(gint row, gint column, GdkEvent
   if(!get_selected_person(P)) return;
   KontaktPersonenBox->set_value(P.Person->Id());
   entryPersonenPosition->set_text(P.position);
-  KontaktPersonenTel->showTel(P.Person->getTelefon());
+  KontaktPersonenTel->showTel(P.Person->getTelefon(kundendaten->Id()));
   zeige_notiz(P);
   button_kontakt_loeschen->set_sensitive(true);
+  KontaktPersonenTel->setKdPer(kundendaten->Id(),P.Person->Id());
 }
 
 void windowTop::on_clistPersonenListe_unselect_row(gint row, gint column, GdkEvent *event)

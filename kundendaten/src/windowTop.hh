@@ -28,7 +28,7 @@ class windowTop : public windowTop_glade
         Kunde::UpdateBitsSonst UpdateSonst;
         Person::UpdateBits UpdatePerson;
 
-        list<PreisListe::ID> sonder_preis_liste;
+//        list<PreisListe::ID> sonder_preis_liste;
 
         void saveAll();
         void saveKundenKontakt();
@@ -50,6 +50,7 @@ class windowTop : public windowTop_glade
         void activateFktP(Person::UpdateBits e);
         gint focus_outFktP(GdkEventFocus *ev,Person::UpdateBits e);
 
+        void on_landesbox_activate();
         void on_entry_blz_activate();
         void on_load_activate();
         void on_buttonBeenden_clicked();
@@ -57,16 +58,18 @@ class windowTop : public windowTop_glade
 //        void on_buttonSpeichern_clicked();
         void on_buttonNeu_clicked();
         void on_button_kunde_loeschen_clicked();
-        void on_KundenTelefon_activate();
+        void on_KundenTelefon_activate(cH_Telefon t);
         void get_entrys();
-        void save_kunde();
+//        void save_kunde();
         void save_kunde_anlegen();
         void show_kundendaten();
         void Info(std::string text);
         void clear_entrys();
 
-        void kunden_activate();
-        const TelArt getKTelArt();
+     void kunden_activate();
+     void on_kunden_reset();
+
+     const TelArt getKTelArt();
         
 
       ///////////////////////////////////////////////
@@ -77,12 +80,14 @@ class windowTop : public windowTop_glade
       void fillSPreis();
       void on_spreis_leaf_selected(cH_RowDataBase d);
       void on_spreis_unselect_row(gint row, gint column, GdkEvent *event);
+        void on_preisautomatik_clicked();
       void on_button_spreis_add_clicked();
       void on_SPreisListe_activate();
       void saveSonderpreisliste();
-      void on_button_neu_spl_nummer_clicked();
-      void on_button_neue_spl_anlegen_clicked();
+//      void on_button_neu_spl_nummer_clicked();
+//      void on_button_neue_spl_anlegen_clicked();
         void scc_verkaeufer_activate();
+        void on_betreuer_activate();
         void scc_verkaeufer_search(int *_continue, GtkSCContext newsearch);
         void scc_anrede_search(int *_continue, GtkSCContext newsearch);
         void on_checkbuttonBankeinzug_toggled();
@@ -96,24 +101,20 @@ class windowTop : public windowTop_glade
         void on_checkbutton_rng_an_postfach_toggled();
         void on_checkbutton_entsorgung_toggled();
         void show_details();
+        void show_zahlungsziel();
         void on_button_del_preisliste_clicked();
+        void on_kunden_status_toggled();
+        
+        void on_KundenTelefon_remove(cH_Telefon t) {}
+        void on_KontaktPersonTelefon_remove(cH_Telefon t) {}
+        void on_PersonenPrivatTelefon_remove(cH_Telefon t) {}
+        void clear_update_bits();
 
-public:
-
-        windowTop();
-        void neue_kundennmmer(unsigned int kid);
-        void kunde_loeschen();
-//        void load_kunde(const Kunde::ID kdnr);
-//          void load_telefon_list();
-//        void save_telefon_list();
-//	void delete_telefon(const cH_Telefon tel);
-   
-        // Details
-        void neue_bank_uebernehmen(unsigned long int bank_index);      
+// war public:
 
         // Kontaktpersonen
         void on_kontakt_personen_box_activate();
-        void on_KontaktPersonTelefon_activate();
+        void on_KontaktPersonTelefon_activate(cH_Telefon t);
         void show_kontaktpersonen();
         void on_button_kontakt_loeschen_clicked();
 
@@ -124,7 +125,7 @@ public:
         void on_buttonPersonNeu_clicked();
         void show_privatpersonen();
         void on_buttonPersonLoeschen_clicked();
-        void on_PersonenPrivatTelefon_activate();
+        void on_PersonenPrivatTelefon_activate(cH_Telefon t);
         void zeige_notiz(Kunde::st_ansprech &P);
         void on_personen_telefon_deactivate();
         void on_personen_box_activate();
@@ -137,6 +138,21 @@ public:
         void on_entryPersonenDatenVorname_activate();
         void geburtstag_activate();
         void on_comboentryPersonenDatenAnrede_activate();
+
+public:
+
+        windowTop();
+//        void load_kunde(const Kunde::ID kdnr);
+//          void load_telefon_list();
+//        void save_telefon_list();
+//	void delete_telefon(const cH_Telefon tel);
+
+        void kunde_loeschen();
+
+        // Details
+        void neue_bank_uebernehmen(unsigned long int bank_index);      
+
+        void neue_kundennmmer(unsigned int kid);
 };
 #endif
 

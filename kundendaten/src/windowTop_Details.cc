@@ -11,6 +11,10 @@ void windowTop::show_details()
   table_details->set_sensitive(true);
   fire_enabled=false;
    scc_verkaeufer->setContent(kundendaten->getVerkaeufer().name,kundendaten->getVerkaeufer().verknr);
+   if(kundendaten->getBetreuer() != Person::none_id)
+     betreuer->set_value(kundendaten->getBetreuer());
+   else
+     betreuer->reset();
 
    labelDetailKdNrEintrag->set_text(itos(kundendaten->Id()));
    labelDetailStandEintrag->set_text(kundendaten->stand());
@@ -22,10 +26,8 @@ void windowTop::show_details()
 	spinbutton_Umsatz->set_value(kundendaten->umsatz());
 	spinbutton_Kundenumsatz->set_value(kundendaten->kundenumsatz());
 	spinbutton_Rabatt->set_value(kundendaten->rabatt());
-	spinbutton_einzugRabatt->set_value(kundendaten->einzugrabatt());
-	spinbutton_Skontofrist->set_value(kundendaten->skontofrist());
-	spinbutton_skontosatz->set_value(kundendaten->skontosatz());
-   entry_lkz->set_text(kundendaten->lkz());
+   spinbutton_firmenpapier->set_value(kundendaten->anzahl_ausdruck_firmenpapier());
+   spinbutton_weissespapier->set_value(kundendaten->anzahl_ausdruck_weissespapier());
    entry_eigene_kundennr->set_text(kundendaten->UnsereKundenNr());
    spinbutton_lieferantenkonto->set_value(kundendaten->getLieferantenkonto());
    spinbutton_gegenkonto->set_value(kundendaten->getGegenkonto());
@@ -34,7 +36,6 @@ void windowTop::show_details()
 	entry_blz->set_text(itos(kundendaten->getblz()));
    rng_an->set_value(kundendaten->Rngan());
    extartbez->set_value(kundendaten->Schema());
-   preisliste->set_value(kundendaten->preisliste());
 
    Waehrung->set_value(kundendaten->getWaehrung());
 
@@ -51,18 +52,40 @@ void windowTop::show_details()
    textNotiz->delete_text(0,textNotiz->get_length());
    gint pos=0;
    textNotiz->insert_text(kundendaten->notiz().c_str(), (kundendaten->notiz()).size(), &pos);
-   checkbuttonBankeinzug->set_active(kundendaten->bankeinzug());
+//   checkbuttonBankeinzug->set_active(kundendaten->bankeinzug());
+//	spinbutton_einzugRabatt->set_value(kundendaten->einzugrabatt());
+//	spinbutton_Skontofrist->set_value(kundendaten->skontofrist());
+//	spinbutton_skontosatz->set_value(kundendaten->skontosatz());
+   show_zahlungsziel();
+
    fillSPreis();
 
    label_speichern->set_text("");
    SPreisBox->clear();
    fire_enabled=true;
    spinbutton_Flaeche->grab_focus();
+   preisautomatik->set_active(kundendaten->Preisautomatik());
 }
+
+void windowTop::show_zahlungsziel()
+{
+   zahlungsartbox->set_value(kundendaten->zahlungsart()->Id());
+   checkbuttonBankeinzug->set_active(kundendaten->zahlungsart()->getBankeinzug());
+	spinbutton_einzugRabatt->set_value(kundendaten->zahlungsart()->getEinzugrabatt());
+	spinbutton_zahlungsfrist->set_value(kundendaten->zahlungsart()->getZahlungsfrist());
+	spinbutton_skontofrist1->set_value(kundendaten->zahlungsart()->getSkonto(1).skontofrist);
+	spinbutton_skontosatz1->set_value(kundendaten->zahlungsart()->getSkonto(1).skontosatz);
+	spinbutton_skontofrist2->set_value(kundendaten->zahlungsart()->getSkonto(2).skontofrist);
+	spinbutton_skontosatz2->set_value(kundendaten->zahlungsart()->getSkonto(2).skontosatz);
+	spinbutton_skontofrist3->set_value(kundendaten->zahlungsart()->getSkonto(3).skontofrist);
+	spinbutton_skontosatz3->set_value(kundendaten->zahlungsart()->getSkonto(3).skontosatz);
+}
+
 
 void windowTop::on_entry_blz_activate()
 {
  unsigned long int blz = strtol(entry_blz->get_text().c_str(),NULL,10);
+ if(blz==0) return;
  try{
  int bank_index = fill_bank_bei(blz);
  if (bank_index==0) 
@@ -81,16 +104,16 @@ void windowTop::on_entry_blz_activate()
 
 void windowTop::on_button_neue_bank_clicked()
 {
-  manage(new window_neue_bank_anlegen(this,"",0));
+  manage(new window_neue_bank_anlegen(this,"",strtol(entry_blz->get_text().c_str(),NULL,10)));
 }
 
 void windowTop::neue_bank_uebernehmen(unsigned long int bank_index)
 {
 // entry_blz->set_text(itos(bank_index));
- entry_blz->set_text(itos(kundendaten->getblz()));
  try{
  kundendaten->get_blz_from_bankindex(bank_index);
  fill_bank_bei(kundendaten->getblz());
+ entry_blz->set_text(itos(kundendaten->getblz()));
  }catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e);}
  changedFktB(Kunde::FBankindex);
  saveAll();
@@ -107,11 +130,11 @@ void windowTop::fillSPreis()
 {
   std::vector<cH_RowDataBase> datavec;
   try{
-  sonder_preis_liste=kundendaten->Sonderpreislisten();
-  for(std::list<PreisListe::ID>::const_iterator i=sonder_preis_liste.begin();i!=sonder_preis_liste.end();++i)
+  for(std::list<pair<int,PreisListe::ID> >::const_iterator i=kundendaten->Preislisten().begin();
+  		i!=kundendaten->Preislisten().end();++i)
    {
-     cH_PreisListe P(*i);
-     datavec.push_back(new Data_SPreis(P));
+     cH_PreisListe P(i->second);
+     datavec.push_back(new Data_SPreis(i->first,P));
    }
   SonderPreislisteTree->setDataVec(datavec);
    }catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e);}
@@ -121,26 +144,18 @@ void windowTop::on_button_del_preisliste_clicked()
 {
   cH_RowDataBase rdb(SonderPreislisteTree->getSelectedRowDataBase());
   const Data_SPreis *dt=dynamic_cast<const Data_SPreis*>(&*rdb);
-  cH_PreisListe PL=dt->getPreisListe();
-  sonder_preis_liste.remove(PL->Id());
-  saveSonderpreisliste();
+  try {  kundendaten->deletePreisListe(dt->getPreisListe()->Id());}
+  catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e);}
+   fillSPreis();
 }
 
 void windowTop::on_button_spreis_add_clicked()
 {
- sonder_preis_liste.push_back(SPreisBox->get_value());
+ try{ kundendaten->push_backPreisListe(SPreisBox->get_value());}
+ catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e);}
  button_spreis_add->set_sensitive(false);
- saveSonderpreisliste();
-}
-
-void windowTop::saveSonderpreisliste()
-{
-  try{
-   kundendaten->setSonderpreisliste(sonder_preis_liste);
    fillSPreis();
-  }catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e);}
 }
-
 
 
 void windowTop::on_SPreisListe_activate()
@@ -157,3 +172,9 @@ void windowTop::on_spreis_unselect_row(gint row, gint column, GdkEvent *event)
 {
   button_del_preisliste->set_sensitive(false);
 }
+
+void windowTop::on_betreuer_activate()
+{  
+  changedFktS(Kunde::FBetreuer);
+}
+

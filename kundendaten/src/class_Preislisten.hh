@@ -7,17 +7,19 @@
 
 class Data_SPreis : public RowDataBase
 {
+   int sortierung;
    cH_PreisListe PL;
  public:
-   Data_SPreis(cH_PreisListe pl) : PL(pl) {}
+   Data_SPreis(int s,cH_PreisListe pl) : sortierung(s),PL(pl) {}
 
-   enum Spalten  {ID,NOTIZ};
+   enum Spalten  {SUCH,NOTIZ,ID};
    virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
      {
        switch((Spalten)seqnr) 
         {
           case ID    : return cH_EntryValueIntString(PL->Id());
           case NOTIZ : return cH_EntryValueIntString(PL->Name());
+          case SUCH  : return cH_EntryValueIntString(sortierung);
         }
       return cH_EntryValueIntString();
      }
