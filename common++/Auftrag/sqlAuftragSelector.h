@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.20 2002/11/22 15:31:05 christof Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.21 2003/03/20 17:30:33 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -56,7 +56,8 @@ public:
     AuftragBase auftrag;
     bool with_storno;
   };
- SQLFullAuftragSelector(const sel_Aufid& selstr);
+ SQLFullAuftragSelector(const sel_Aufid& selstr,
+ 		const std::string artbez_table="artbez_3_1");
 
  struct sel_AufidZnr
   { AufEintragBase auftrag_znr;

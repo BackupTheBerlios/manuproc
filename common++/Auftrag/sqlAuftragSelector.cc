@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.25 2003/03/12 09:06:29 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.26 2003/03/20 17:30:33 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -47,13 +47,15 @@
 	" using (instanz,auftragid,zeilennr) "
 	
 #ifdef MABELLA_EXTENSIONS	
-#define FULL_FROM_SORT "(auftrag a join auftragentry e using (instanz,auftragid))" \
+#define FULL_FROM_SORT(s) "(auftrag a join auftragentry e using (instanz,auftragid))" \
 	" left join auftrag_prozess p" \
 	" using (instanz,auftragid,zeilennr) " \
-	" join artbez_3_1 ab on (artikelid=id) "
+	" join "+s+" ab on (artikelid=id) "
 	
-#define FULL_SELECT_FROM_SORT_WHERE "select " FULL_SELECTIONS \
-	" from " FULL_FROM_SORT " where true "	
+#define FULL_SELECT_FROM_SORT_WHERE(s) "select " FULL_SELECTIONS \
+	" from " FULL_FROM_SORT(s) " where true "	
+	
+#define SORT_ORDER " order by ab.artikel,ab.breite,ab.farbe,ab.aufmachung ";	
 #endif
 
 
@@ -109,15 +111,17 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Status& selstr)
  setClausel(cl);
 }
 
-SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Aufid& selstr)
+SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Aufid& selstr,
+		const std::string artbez_table)
 {
 //cout << "\n\n\nSTORNO = "<<selstr.with_storno<<"\n\n\n";
 #ifdef MABELLA_EXTENSIONS
-   std::string s= FULL_SELECT_FROM_SORT_WHERE;
+   std::string s= FULL_SELECT_FROM_SORT_WHERE(artbez_table);
    if(!selstr.with_storno) s+=FULL_SELECT_NO_STORNO;
 	s+=" and (a.instanz, a.auftragid)="
-	   "("+itos(selstr.auftrag.InstanzID())+", "+itos(selstr.auftrag.Id())+")"
-	   " order by ab.artikel,ab.breite,ab.farbe,ab.aufmachung ";
+	   "("+itos(selstr.auftrag.InstanzID())+", "+itos(selstr.auftrag.Id())+")";
+	s+=SORT_ORDER;
+
     setClausel(s);
 #else
    std::string s= FULL_SELECT_FROM_WHERE;
