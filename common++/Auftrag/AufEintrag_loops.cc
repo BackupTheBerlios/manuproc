@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.cc,v 1.2 2003/07/23 08:14:24 christof Exp $ */
+/* $Id: AufEintrag_loops.cc,v 1.3 2003/07/24 11:16:24 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -51,6 +51,39 @@ bool distribute_children(const AufEintragBase &startAEB,
       AuftragBase::mengen_t AE_menge2=AE_faktor*menge;
       for(AufEintragZu::list_t::const_iterator zuloop_var=artloop_var->second.begin();
 	   		zuloop_var!=artloop_var->second.end();++zuloop_var)
+      {  AuftragBase::mengen_t mengen_var;
+         if (menge>=0) 
+            mengen_var=AuftragBase::min(zuloop_var->Menge,AE_menge2);
+         // für Rückgängig machen von Lieferscheinen
+//         else if (zuloop_var->AEB.Instanz()->ProduziertSelbst()) 
+//            mengen_var=AufEintrag(zuloop_var->AEB).ProdRueckgaengigMenge(AE_menge2);
+         else 
+            mengen_var=-AuftragBase::min(-AE_menge2,AufEintrag(zuloop_var->AEB).getGeliefert());
+         if (!mengen_var) continue;
+
+         mengen_var=callee(artloop_var->first,zuloop_var->AEB,mengen_var);
+
+         AE_menge2-=mengen_var;
+         if(!AE_menge2) break;
+      }
+      // pass the remainder
+      if (!!AE_menge2) callee(artloop_var->first,AE_menge2);
+   }
+   return !MapArt.empty();
+}
+
+bool distribute_children_rev(const AufEintragBase &startAEB,
+ 		AuftragBase::mengen_t menge,
+ 		const ArtikelBase &article, 
+ 		const distribute_children_cb &callee)
+{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,article,Nametrans(typeid(callee).name()));
+   AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel(startAEB));
+   ArtikelBaum AE_artbaum(article);
+   for(AufEintragZu::map_t::const_iterator artloop_var=MapArt.begin();artloop_var!=MapArt.end();++artloop_var)
+   {  ArtikelBaum::faktor_t AE_faktor = AE_artbaum.Faktor(artloop_var->first);
+      AuftragBase::mengen_t AE_menge2=AE_faktor*menge;
+      for(AufEintragZu::list_t::const_reverse_iterator zuloop_var=artloop_var->second.rbegin();
+	   		zuloop_var!=artloop_var->second.rend();++zuloop_var)
       {  AuftragBase::mengen_t mengen_var;
          if (menge>=0) 
             mengen_var=AuftragBase::min(zuloop_var->Menge,AE_menge2);

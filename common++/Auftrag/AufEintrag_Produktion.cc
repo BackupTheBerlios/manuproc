@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.1 2003/07/22 08:32:59 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.2 2003/07/24 11:16:24 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -343,10 +343,13 @@ void AufEintrag::KinderProduzieren(mengen_t M, const AufEintragBase &neuerAEB,
 			NV("neu",neuerAEB), NV("ctx",ctx));
    unsigned uid=getuid();
    // Kinder bearbeiten
-   distribute_children(*this,M,Artikel(),ProduziertNG_cb2(uid,*this,neuerAEB,ctx));
-   // bei ProduziertSelbst hilft obiges nicht allein (keine Pfeile nach unten)
+   ProduziertNG_cb2 callback(uid,*this,neuerAEB,ctx);
    if (M<0)
-   {  AufEintrag neuerAE=neuerAEB;
+   {  distribute_children(*this,M,Artikel(),callback);
+      // bei ProduziertSelbst hilft obiges nicht allein (keine Pfeile nach unten entstanden)
+      AufEintrag neuerAE=neuerAEB;
       distribute_children(neuerAE,M,Artikel(),ProduziertRueckgaengig2(uid,neuerAE));
    }
+   else
+      distribute_children_rev(*this,M,Artikel(),callback);
 }

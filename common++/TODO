@@ -36,5 +36,8 @@
 	lager2er unter/über Limit gefallen/-stiegen
 	Artikel war nicht auf Lager! (kein 1er für 0er gefunden)
 	
-Test: 2 Kundenaufträge, späterer wird ausgelagert, dann geliefert,
+- Test: 2 Kundenaufträge, späterer wird ausgelagert, dann geliefert,
 	rückgängig
+
+- Problem: Einen Auftrag 2mal planen zu unterschiedlichen Zeiten, welcher
+	wird zuerst produziert (Momentan zuletzt geplanter?)

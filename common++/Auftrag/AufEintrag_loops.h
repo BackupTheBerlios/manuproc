@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.h,v 1.2 2003/07/22 11:53:30 christof Exp $ */
+/* $Id: AufEintrag_loops.h,v 1.3 2003/07/24 11:16:24 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,7 +33,12 @@ struct distribute_children_cb
 	virtual void operator()(const ArtikelBase &,AuftragBase::mengen_t) const=0;
 };
 
+// 0er zuerst
 bool distribute_children(const AufEintragBase &startAEB,
+ 		AuftragBase::mengen_t menge,
+ 		const ArtikelBase &article, 
+ 		const distribute_children_cb &callee);
+bool distribute_children_rev(const AufEintragBase &startAEB,
  		AuftragBase::mengen_t menge,
  		const ArtikelBase &article, 
  		const distribute_children_cb &callee);
@@ -52,6 +57,7 @@ struct auf_positionen_verteilen_cb
 			AuftragBase::mengen_t abschreibmenge) const=0;
 };
 
+// erste Lieferung zuerst
 AuftragBase::mengen_t auf_positionen_verteilen(
 		const SQLFullAuftragSelector &selector,
  		AuftragBase::mengen_t menge, 

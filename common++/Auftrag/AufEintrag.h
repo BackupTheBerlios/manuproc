@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.60 2003/07/22 08:32:59 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.61 2003/07/24 11:16:24 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -272,7 +272,7 @@ public:
 		const AufEintragBase &elter_alt,
 		const AufEintragBase &elter_neu,
 		const ProductionContext2 &ctx);
- // neuen (geschlossenen) 1er erzeugen (völlig unverzeigert)
+ // neuen (geschlossenen) 1er erzeugen (völlig unverzeigert ?)
  static AufEintragBase unbestellteMengeProduzieren(cH_ppsInstanz instanz,
  		const ArtikelBase &artikel,
  		mengen_t menge, unsigned uid,bool rekursiv=false,

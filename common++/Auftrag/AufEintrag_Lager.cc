@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.3 2003/07/23 09:07:36 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.4 2003/07/24 11:16:24 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -127,12 +127,14 @@ AuftragBase::mengen_t AufEintrag::Auslagern
    { WiederEinlagern(uid,ab.Instanz(),artikel,-menge);
      return 0;
    }
-   return
-    auf_positionen_verteilen(SQLFullAuftragSelector(
-	  		SQLFullAuftragSelector::sel_Artikel_Planung_id
+   SQLFullAuftragSelector sel(make_value(SQLFullAuftragSelector::sel_Artikel_Planung_id
   			(ab.Instanz()->Id(),Kunde::eigene_id,artikel,ab.Id(),
-  			 menge<0?CLOSED:OPEN)),
-  		menge,Auslagern_cb(uid,fuer_auftraege,ctx));
+  			 menge<0?CLOSED:OPEN)));
+   Auslagern_cb callback(uid,fuer_auftraege,ctx);
+   if (fuer_auftraege)
+      return auf_positionen_verteilen(sel,menge,callback);
+   else 
+      return auf_positionen_verteilen_rev(sel,menge,callback);
      //if(abmenge<0)
      //   abschreibmenge=-min(-abmenge,i->getGeliefert());
 }
@@ -149,10 +151,22 @@ void AufEintrag::Auslagern
       abschreiben(menge);
    }
    else if (Id()==ungeplante_id)
-   {  // @@@
-#warning Könnte von anderem Auftrag weggenommen worden sein
-      // sollte ich das jetzt als Produziert markieren oder nicht?
+   {  // abbestellen
       MengeAendern(uid,-menge,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
+      // LagerMenge reduzieren (wir sollen ja das Lager führen)
+      mengen_t brauch_noch;
+// müsste Produzierte Menge unten löschen wenn nicht prod_selbst!
+      brauch_noch=Auslagern(AuftragBase(Instanz(),plan_auftrag_id),Artikel(),menge,
+      		uid,false,ctx.leb);
+      if (!!brauch_noch)
+      {  brauch_noch=Auslagern(AuftragBase(Instanz(),plan_auftrag_id),Artikel(),brauch_noch,
+      		uid,false,ctx.leb);
+      }
+      if (!!brauch_noch)
+         std::cerr << "LOG: ausgeliefert ohne Lagerinhalt\n";
+      // produzieren
+      unbestellteMengeProduzieren(Instanz(),Artikel(),menge,uid,true,
+      		ctx.aeb,ctx.leb);
    }
 }
 
@@ -217,6 +231,33 @@ void AufEintrag::Einlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase
   MengeVormerken(instanz,artikel,menge,!produziert,ctx);
 }
 
+namespace { class WiederEinlagern_cb : public auf_positionen_verteilen_cb
+{
+public:
+	AuftragBase::mengen_t operator()(AufEintrag &i, AuftragBase::mengen_t M) const
+	{  unsigned uid=getuid();
+	   assert(i.Id()==AuftragBase::plan_auftrag_id);
+           i.abschreiben(M);
+           // Eltern des 0ers sind Eltern des 1ers, allerdings waren dessen 
+           // Zuordnungen 0
+           // Menge nachbestellen
+           AuftragBase zielauftrag(i.Instanz(),AuftragBase::ungeplante_id);
+           AufEintragBase neuerAEB(zielauftrag,
+               	zielauftrag.PassendeZeile(i.getLieferdatum(),i.Artikel(),OPEN,uid));
+           AufEintrag ae(neuerAEB);
+           ae.MengeAendern(uid,-M,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
+           // Menge wird direkt neu verplant (evtl. wieder abbestellt)
+           i.MengeAendern(uid,M,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
+           // assert(i.getCombinedStatus()==CLOSED);
+           if (i.getCombinedStatus()!=CLOSED)
+           {  std::cerr << "merkwürdig ... " << i << ':' << i.getCombinedStatus() << ','
+           		<< i.getRestStk() << '\n';
+              i.setStatus(CLOSED,uid);
+           }
+           return M;
+	}
+};}
+
 // eigentlich auslagern mit negativer Menge ???
 // allerdings: Reihenfolge ist umgekehrt
 void AufEintrag::WiederEinlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
@@ -229,32 +270,7 @@ void AufEintrag::WiederEinlagern(const int uid,cH_ppsInstanz instanz,const Artik
   // eigentlich sind nur die 1er interessant, dann aber OPEN wie CLOSED ...
   SQLFullAuftragSelector sel(make_value(SQLFullAuftragSelector::
       			sel_Artikel(instanz->Id(),artikel)));
-  SelectedFullAufList auftraglist(sel);
-  for (SelectedFullAufList::reverse_iterator i=auftraglist.rbegin();i!=auftraglist.rend();++i)
-  {  mengen_t M=min(i->getGeliefert(),menge);
-     if (!M) continue;
-
-     assert(i->Id()==plan_auftrag_id);
-     i->abschreiben(-M);
-     // Eltern des 0ers sind Eltern des 1ers, allerdings waren dessen 
-     // Zuordnungen 0
-     // Menge nachbestellen
-      AuftragBase zielauftrag(i->Instanz(),ungeplante_id);
-      AufEintragBase neuerAEB(zielauftrag,
-         	zielauftrag.PassendeZeile(i->getLieferdatum(),artikel,OPEN,uid));
-      AufEintrag ae(neuerAEB);
-      ae.MengeAendern(uid,M,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
-     // Menge wird direkt neu verplant (evtl. wieder abbestellt)
-     i->MengeAendern(uid,-M,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
-//     assert(i->getCombinedStatus()==CLOSED);
-     if (i->getCombinedStatus()!=CLOSED)
-     {  std::cerr << "merkwürdig ... " << *i << ':' << i->getCombinedStatus() << ','
-     		<< i->getRestStk() << '\n';
-        i->setStatus(CLOSED,uid);
-     }
-     menge-=M;
-     if(!menge) break;
-  }
+  menge=auf_positionen_verteilen_rev(sel,-menge,WiederEinlagern_cb());
   if (!!menge)
   {  // eigentlich soll das nicht passieren, da es ja vorher produziert wurde ...
      ManuProC::Trace(trace_channel, __FUNCTION__,NV("es ist ein Rest geblieben",menge));
