@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.38 2004/02/17 12:49:17 christof Exp $
+# $Id: Makefile.am,v 1.39 2004/05/05 12:08:08 christof Exp $
 AM_CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
@@ -24,7 +24,8 @@ LINKS= EingabeBox.cc EingabeBox.hh datewin.cc datewin.h \
 	SimpleTree.hh ModelWidgetConnection.h string_Label.cc \
 	string_Label.hh Event.cc Association.h Association.cc \
 	bvector_item_CheckMenuItem.hh SimpleTreeStore_test.cc \
-	CellRendererSimpleTree.h CellRendererSimpleTree.cc
+	CellRendererSimpleTree.h CellRendererSimpleTree.cc \
+	TreeModelDebug.cc TreeModelDebug.h
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
@@ -33,7 +34,7 @@ include_HEADERS = datewin.h logwin.h \
 	EingabeBox.hh ProzessBox.hh \
 	ArtikelBox.hh datewin_glade.hh \
 	SearchComboContent.hh SearchCombo.hh \
-	Association.h
+	Association.h TreeModelDebug.h
    
 oldheaders=\
 	KundenBox.hh KundenBox_glade.hh \
