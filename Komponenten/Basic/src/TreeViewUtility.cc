@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.cc,v 1.4 2003/03/18 09:09:22 christof Exp $
+// $Id: TreeViewUtility.cc,v 1.5 2003/03/18 09:12:03 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -41,12 +41,12 @@ void TreeViewUtility::CListEmulator::attach_to(Gtk::TreeView &tv)
       tv.append_column(titles.at(i),cols.at(i));
 }
 
-TreeViewUtility::CListEmulator2::CListEmulator2(const std::vector<Glib::ustring> &titles)
+TreeViewUtility::CList::CList(const std::vector<Glib::ustring> &titles)
   : emu(titles)
 {  emu.attach_to(*this);
 }
 
-TreeViewUtility::CListEmulator2::CListEmulator2(const char *title1, ...)
+TreeViewUtility::CList::CList(const char *title1, ...)
   : emu()
 {  va_list ap;
    va_start(ap,title1);
