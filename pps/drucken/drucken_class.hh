@@ -25,6 +25,7 @@
 #include <fstream>
 #include "lr_base.h"
 //#include <Artikel/Einheiten.h>
+#include <Kunde/PreisListe.h>
 
 class Einheit;
 
@@ -55,6 +56,12 @@ public:
       if (Typ()==Rechnung) return u.r->getPreis(brutto); 
       return Preis();
       abort();}
+
+   const cH_PreisListe getPreisliste() const {
+	 if(Typ()==Auftrag) return u.a->getPreisliste();
+	 abort();
+	}
+
    LieferscheinEntryBase Lfrs() const {
       if (Typ()==Rechnung)     return u.r->Lfrs();
       if (Typ()==Lieferschein) return *u.l;  abort();}
@@ -92,6 +99,7 @@ public:
       if (Typ()==Rechnung) return u.r->AuftragId();
 	abort(); 
       }
+
    const ManuProC::Datum getLieferdatum() const {
 	   if (Typ()==Auftrag) return u.a->getLieferdatum(); 
 	   return ManuProC::Datum();}
@@ -295,6 +303,7 @@ public:
 	if (Typ()==Auftrag)
 	  return u.a->Zahlart()->getEinzugrabatt(); 
 	  abort();}
+
    bool getEntsorgung() const {
 	if(Typ()==Rechnung) return u.r->Entsorgung(); abort(); }
    std::string getBemerkung() const {
@@ -322,6 +331,8 @@ private:
         const int palette, const std::string &your_auftrag,
         const AufEintragBase AEB=AufEintragBase()
         );
+   void Zeile_Ausgeben(std::ostream &os, const LR_Entry &lre);
+
    void drucken_header(std::ostream &os);
    void drucken_footer(std::ostream &os);
    void page_header(std::ostream &os);

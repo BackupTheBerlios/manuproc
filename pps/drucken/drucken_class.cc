@@ -95,10 +95,10 @@ void LR_Abstraktion::drucken_header(std::ostream &os)
  // kein footer angegeben ???
 
  float mygrayvalue=0.5;
-#ifdef MABELLA_EXTENSIONS
+//#ifdef MABELLA_EXTENSIONS
   // I did not change this (CP)
- mygrayvalue=0.75;
-#endif
+// mygrayvalue=0.75;
+//#endif
  hf.preamble="\\newrgbcolor{mygray}{"+dtos(mygrayvalue)+" "+dtos(mygrayvalue)+" "+dtos(mygrayvalue)+"}\n"
 	"\\newlength{\\breite}\n"
 	"\\setlength{\\topsep}{0pt}\n"
@@ -114,6 +114,7 @@ void LR_Abstraktion::drucken_header(std::ostream &os)
 
  hf.preamble+="\\definecolor{backg}{gray}{0.985}\n"
 	      "\\definecolor{lgray}{gray}{.9}\n"
+	      "\\definecolor{altgray}{gray}{.6}\n"
 	"\\newcommand{\\shaderow}{\\raisebox{-1pt}[0pt][0pt]{\\makebox[0pt][l]"
 			"{\\kern-70pt\\colorbox{backg}%%\n"
 			"{\\rule{0pt}{7pt}\\rule{\\paperwidth}{0pt}}}}}\n";
@@ -462,7 +463,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
      	+(preise_addieren?1:0) // für Übertrag
      	+(lfrsid_drucken?2:0) // für Lieferschein X am Y an Z
 #ifdef MABELLA_EXTENSIONS
-	+(Typ()==Rechnung ? 1:0) // für Unsere Auftragsnr.....
+	+(Typ()==Rechnung ? 2:0) // für Unsere Auftragsnr.....
 #endif
 	)
      {   // Tabelle beenden, preis ausgeben
@@ -816,6 +817,11 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
            
          if (preise_addieren)       
           { neue_spalte(erste_spalte,os);
+#ifdef MABELLA_EXTENSIONS // Anzeigen, dass der Preis manuell eingegeben wurde
+//	    if(Typ()==Auftrag)
+//	      if(getPreisliste()->Id() == PreisListe::none_id)
+//	        os << "{\\color{altgray}(M) }";
+#endif
             if (rabatt_bool) 
               {os <<linecolor<<FormatiereTeX_Preis( BruttoPreis.Wert() );
                neue_spalte(erste_spalte,os); os << linecolor<<FormatiereTeX(rabatt); 
@@ -1321,9 +1327,9 @@ void LR_Abstraktion::page_header(std::ostream &os)
 
 #ifdef MABELLA_EXTENSIONS
      if(!kunde_an->isInGrp(KundengruppeID::Rechnungsadresse) && Typ()==Rechnung)
-       os <<"\n "<< string2TeX(kunde_rng->getName())<<"\\\\\\bigskip";
+       os <<"\n "<< string2TeX(kunde_rng->getFullName())<<"\\\\\\bigskip";
      else
-       os <<"\n  "<< string2TeX(kunde_an->getName())<<"\\\\\\bigskip";
+       os <<"\n  "<< string2TeX(kunde_an->getFullName())<<"\\\\\\bigskip";
        
      zeilen_passen_noch=ZEILEN_SEITE_N;
     }
