@@ -254,6 +254,7 @@ void auftrag_rechnung::preis_activate()
 
 bool auftrag_rechnung::checkVerkConsist(const cH_Lieferschein &chl)
 {
+#ifdef MABELLA_EXTENSIONS
  if(rechnung.getVerknr()!=Kunde::none_id)
    {if(rechnung.getVerknr()!=chl->getVerknr())
      { meldung->Show("Lieferscheine von verschiedenen Verkäufern dürfen nicht "
@@ -263,6 +264,7 @@ bool auftrag_rechnung::checkVerkConsist(const cH_Lieferschein &chl)
    }
  else
   rechnung.setVerknr(chl->getVerknr());
+#endif
 
  return true;
 }

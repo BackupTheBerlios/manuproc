@@ -6,6 +6,7 @@
 // This file is for your program, I won't touch it again!
 
 #include "config.h"
+#include <ManuProCConfig.h>
 #include "auftrag_provision.hh"
 #include <Gtk_OStream.h>
 #include "MyMessage.h"  
@@ -22,6 +23,7 @@ auf(auftrag)
  prov_aufdatum->setLabel("");
  prov_aufkunde->set_value(auftrag->getKundennr());
 
+#ifdef MABELLA_EXTENSIONS
  prov_verkaeufer->EinschraenkenKdGr(KundengruppeID::Verkaeufer);
 
  fillProvEntryList();
@@ -43,7 +45,7 @@ auf(auftrag)
 	itos(auftrag->getVerknr())+" nicht gefunden");
     }
    }
-
+#endif
 }
 
 void auftrag_provision::fillProvEntryList()
@@ -85,7 +87,7 @@ void auftrag_provision::on_prov_apply_clicked()
 
  if(ret!=0) return;
 
-
+#ifdef MABELLA_EXTENSIONS
   for(Gtk::CList::SelectionList::iterator s=prov_aufentries->selection().begin();
 	s!=prov_aufentries->selection().end(); ++s)
     {
@@ -99,6 +101,7 @@ void auftrag_provision::on_prov_apply_clicked()
 	<< znr;
      SQLerror::test(__FILELINE__);
     }
+#endif
 
  auf->loadEntries();
  fillProvEntryList();
@@ -172,5 +175,3 @@ void auftrag_provision::on_prov_provsatz_changed()
 {
  prov_apply->set_sensitive(true);  
 }
-
-

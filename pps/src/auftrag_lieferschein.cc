@@ -494,9 +494,9 @@ void auftrag_lieferschein::on_Palette_activate()
 }
 
 
-#ifdef MABELLA_EXTENSIONS
 bool auftrag_lieferschein::checkVerkConsist(const AufEintragBase &ae)
 {
+#ifdef MABELLA_EXTENSIONS
  if(lieferschein->getVerknr()!=Kunde::none_id)
    {if(lieferschein->getVerknr()!=ae.getVerknr())
      { meldung->Show("Aufträge von verschiedenen Verkäufern dürfen nicht "
@@ -506,10 +506,9 @@ bool auftrag_lieferschein::checkVerkConsist(const AufEintragBase &ae)
    }
  else
   lieferschein->setVerknr(ae.getVerknr());
-
+#endif
  return true;
 }
-#endif
 
 void auftrag_lieferschein::on_newlieferentryall_ok()
 {   
