@@ -1,8 +1,8 @@
-# $Id: Makefile.am,v 1.10 2002/07/08 08:10:29 christof Exp $
+# $Id: Makefile.am,v 1.12 2002/07/08 08:35:56 christof Exp $
 	
-LDADD=$(top_srcdir)/src/libManuProC_Base.a @ECPG_LIBS@
+LDADD=$(top_srcdir)/src/libManuProC_Base.a @ECPG_LIBS@ @SIGC_LIBS@
 
-CXXFLAGS=@CXXFLAGS@ -I$(top_srcdir)/src @ECPG_INCLUDES@
+CXXFLAGS=@CXXFLAGS@ -I$(top_srcdir)/src @ECPG_INCLUDES@ @SIGC_CFLAGS@
 
 LDFLAGS=@LDFLAGS@ @ECPG_LDFLAGS@
 
@@ -19,7 +19,7 @@ endif
 EXTRA_PROGRAMS=FetchIStream
 
 noinst_PROGRAMS=test_pgsql_conv testHandles testKW fixedpoint \
-	Zeitpunkt 
+	Zeitpunkt mvc
 
 test_pgsql_conv_SOURCES=test_pgsql_conv.cc
 testHandles_SOURCES=testHandles.cc

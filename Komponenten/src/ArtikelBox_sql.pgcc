@@ -535,7 +535,6 @@ ArtikelBoxAnzeige ArtikelBoxAnzeige::Laden(cH_ExtBezSchema schema)
          if (komma1!=std::string::npos) komma2=val.find(',',komma1+1);
          if (komma2!=std::string::npos)
          {  res.anzeige_pos=strtol(val.substr(0,komma1).c_str(),0,10);
-std::cout << "AB: " << val << "->" << val.substr(komma1+1,komma2-(komma1+1)) << '\n';
             res.anzeige_neg=strtol(val.substr(komma1+1,komma2-(komma1+1)).c_str(),0,10);
          }
    }

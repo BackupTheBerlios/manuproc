@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.16 2002/05/09 12:46:00 christof Exp $
+# $Id: configure.in,v 1.17 2002/07/08 08:35:56 christof Exp $
 
 AC_INIT(src/SQLerror.h)
 AC_CONFIG_AUX_DIR(.)
@@ -16,6 +16,8 @@ AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LDFLAGS)
 AC_SUBST(CXXFLAGS)
+
+AM_PATH_SIGC(1.0.0,,AC_MSG_ERROR("SigC++ 1.0.0 or newer not found or broken - see config.log for details."))
 
 if test "${with_postgresdir}" != "no"
 then

@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.19 2002/07/05 12:36:56 christof Exp $
+// $Id: ArtikelBox.cc,v 1.20 2002/07/08 08:26:54 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -467,13 +467,15 @@ void ArtikelBox::setzeSchemaId(int t)
 {  
    Benutzerprofil_speichern();
 //cout << "ArtikelBox::setzeSchemaId: "<<' '<<t<<'\n';
-   std::vector<cH_EntryValue> v=get_content(0,0); // ,sp);
+   std::vector<cH_EntryValue> v;
+   guint l,sp;
+   if (determineFocus(l,sp)) v=get_content(l,sp);
    try {
       setExtBezSchema(cH_ExtBezSchema(schema->Id(),t));
    } catch (SQLerror &e)
    {  setExtBezSchema(cH_ExtBezSchema(ExtBezSchema::default_ID,t));
    }
-//   set_content(0,sp);
+   set_content(v,0); // perhaps 0 is not the best choice ...
    if (sprogram!="")
       Global_Settings::create(0,sprogram,sposition,itos(schema->Id())+":"+itos(t));
 }
@@ -481,9 +483,11 @@ void ArtikelBox::setzeSchemaId(int t)
 void ArtikelBox::setzeSchemaTyp(int t2)
 {  
    Benutzerprofil_speichern();
-   std::vector<cH_EntryValue> v=get_content(0,0); // l,sp);
+   std::vector<cH_EntryValue> v;
+   guint l,sp;
+   if (determineFocus(l,sp)) v=get_content(l,sp);
    setExtBezSchema(cH_ExtBezSchema(t2,schema->Typ()));
-//   set_content(0,sp);
+   set_content(v,0);
    if (sprogram!="")
       Global_Settings::create(0,sprogram,sposition,itos(t2)+":"+itos(schema->Typ()));
 }
@@ -624,4 +628,12 @@ void ArtikelBox::AlleArtikelAnzeigenId(Gtk::CheckMenuItem *cmi)
   init();
 }
 
-
+bool ArtikelBox::determineFocus(guint &sigidx_out, guint &entryidx_out) const
+{  for (guint l=0;l<combos.size();++l)
+      for (guint sp=0;sp<combos[l].size();++sp)
+         if (combos[l][sp]->has_focus())
+         {  sigidx_out=l; entryidx_out=sp;
+            return true;
+         }
+   return false;
+}

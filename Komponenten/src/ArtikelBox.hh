@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.hh,v 1.16 2002/07/05 12:36:56 christof Exp $
+// $Id: ArtikelBox.hh,v 1.17 2002/07/08 08:26:54 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.16 2002/07/05 12:36:56 christof Exp $
+// $Id: ArtikelBox.hh,v 1.17 2002/07/08 08:26:54 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -184,6 +184,9 @@ class ArtikelBox : public Gtk::EventBox
  static std::string Kombinieren(cH_ExtBezSchema schema, unsigned int signif,const std::vector<cH_EntryValue> &v);
  enum enum_art_label {ARTIKEL,LABEL};
  std::vector<cH_EntryValue> expand_kombi(unsigned int l,enum_art_label eal) const;
+ 
+ // false=failed
+ bool determineFocus(guint &sigidx_out, guint &entryidx_out) const;
 
 public:
 	ArtikelBox(const cH_ExtBezSchema &_schema) throw(SQLerror);

@@ -1,4 +1,4 @@
-// $Id: WAuftragStatus.hh,v 1.4 2002/07/05 12:36:56 christof Exp $
+// $Id: WAuftragStatus.hh,v 1.6 2002/07/08 08:30:58 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma

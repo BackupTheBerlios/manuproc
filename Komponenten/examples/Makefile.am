@@ -1,4 +1,4 @@
-SUBDIRS=artikelbox eingabe tree_simplest 
+SUBDIRS=artikelbox eingabe tree_simplest MVC
 
 noinst_PROGRAMS=Handles
 

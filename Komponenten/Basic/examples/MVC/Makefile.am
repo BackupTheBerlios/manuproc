@@ -1,0 +1,18 @@
+# generated 2002/7/5 22:59:43 CEST by christof@puck.petig-baender.de
+# using glademm V1.1.0d_cvs
+#
+# newer (non customized) versions of this file go to Makefile.am_new
+bin_PROGRAMS = mvc
+
+mvc_SOURCES = \
+	mvc.cc\
+	window1_glade.cc \
+	window1.cc 
+
+noinst_HEADERS = \
+	window1_glade.hh \
+	window1.hh 
+
+CXXFLAGS = @CXXFLAGS@ @GTKMM_CFLAGS@ @KOMPONENTEN_INCLUDES@
+
+mvc_LDADD = @LIBS@ @GTKMM_LIBS@ @KOMPONENTEN_LIBS@
