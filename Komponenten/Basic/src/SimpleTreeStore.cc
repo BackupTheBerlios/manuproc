@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.35 2003/10/24 06:04:01 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.36 2003/11/07 10:28:20 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,10 +27,8 @@
 // property_editable
 
 #include <SimpleTreeStore.h>
-#ifdef MANUPROC_WITH_DATABASE
 #include <Misc/Global_Settings.h>
 #include <unistd.h> // getuid
-#endif
 #include <Misc/itos.h>
 #include <Misc/Trace.h>
 //#include <GType_cH_EntryValue.h>
