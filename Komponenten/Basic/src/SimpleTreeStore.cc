@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.69 2004/05/06 09:42:44 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.70 2004/05/06 09:43:49 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -729,7 +729,7 @@ bool SimpleTreeStore::iter_next_vfunc(vfunc_iter_t iter)
    newit++;
    if (newit==old->second.parent->children.end()) return false;
    iterinit(iter_next,newit);
-   ManuProC::Trace(trace_channel,"new iter",next_iter STS_GTKMM_22_24(,.gobj())->user_data);
+   ManuProC::Trace(trace_channel,"new iter",iter_next STS_GTKMM_22_24(,.gobj())->user_data);
    return true;
 }
 
