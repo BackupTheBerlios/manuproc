@@ -1,4 +1,4 @@
-// $Id: ExtraColumns.h,v 1.2 2004/09/24 15:30:09 christof Exp $
+// $Id: ExtraColumns.h,v 1.3 2004/09/24 16:00:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,15 +23,17 @@
 #include <Misc/Query.h>
 #include <set>
 #include <map>
+#include <vector>
 
 class ExtraColumns {
-    class TableInformation
+    struct TableInformation
     { std::string table_name;
-      std::set<std::string> key_columns;
+      std::vector<std::string> key_columns;
       std::set<std::string> requested_columns;
       std::set<std::string> available_columns;
+      TableInformation(const std::string &tab) : table_name(tab) {}
     };
-    static map<std::string,TableInformation> table_infos;
+    static std::map<std::string,TableInformation> table_infos;
     
     struct value_t
     { bool null;
@@ -42,11 +44,13 @@ class ExtraColumns {
     void Execute_if_complete();
 
     Query::Row::Fake &fake_istream(const std::string &column);
+    void register_table(const std::string &table, const std::vector<std::string> &keycols);
 public:
     ExtraColumns(const std::string &table, const std::string &keycol1);
     ExtraColumns(const std::string &table, const std::string &keycol1,
           const std::string &keycol2);
-    // 3 ...
+    // 3 ... insert as needed or use the following
+    ExtraColumns(const std::string &table, const std::vector<std::string> &keycols);
 
     template <class T>
      ExtraColumns &operator <<(const T &val)
