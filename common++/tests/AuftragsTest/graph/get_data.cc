@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.30 2002/12/12 10:42:01 thoma Exp $
+// $Id: get_data.cc,v 1.31 2002/12/12 15:52:24 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -392,8 +392,8 @@ std::vector<graph_data_node::st_files> graph_data_node::LSJfiles()
   vec_files.push_back(st_files("planen_kupfer","E"));  
   vec_files.push_back(st_files("LSZ","LW"));  
   vec_files.push_back(st_files("LSZP","LWV"));  
-  vec_files.push_back(st_files("LSZM","LWZ"));  
-  vec_files.push_back(st_files("zwei_auftraege_anlegen",""));
+//  vec_files.push_back(st_files("LSZM","LWZ"));  
+//  vec_files.push_back(st_files("zwei_auftraege_anlegen",""));
   return vec_files;
 }
 

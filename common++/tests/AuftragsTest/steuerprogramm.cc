@@ -61,7 +61,7 @@ static int kein_fehler()
 
 int auftragstests(e_mode mode)
 {
-//  ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+//  ManuProC::Tracer::Enable(AuftragBase::trace_channel);
 
    bool mit_reparatur_programm=false;
 #ifdef REPARATUR_PROGRAMM_TESTEN
@@ -79,8 +79,8 @@ int auftragstests(e_mode mode)
    // ANLEGEN eines Auftrags mit Bandlager und Rohwarenlager
    if (mode!=JumboLager)
    {  
-//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
-      AE.setStatus(OPEN,UID);
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
+      AE.setStatus(OPEN,UID,true);
       erfolgreich=C.teste(Check::Menge,"_mit_lager_open",mit_reparatur_programm);
       if(!erfolgreich) 
          { cout << "Öffnen des Auftrags fehlgeschlagen\n"; return fehler();}
@@ -145,7 +145,7 @@ int auftragstests(e_mode mode)
       }
 
       {// Produktion in der Werkstatt ohne daß vorher etwas geplant wurde
-//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+//ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
       ManuProC::st_produziert p(ARTIKEL_SCHRAUBENZIEHER_GELB,600,UID,ManuProC::DefaultValues::EigeneKundenId);
       cH_ppsInstanz I(WERKSTATT); 
       I->Produziert(p);
@@ -155,7 +155,7 @@ int auftragstests(e_mode mode)
 
       {// Lieferscheinschreiben für das Schraubenzieherlager => auslagern 
       Lieferschein liefs(SCHRAUBENZIEHERLAGER,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
-//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+//ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
       liefs.push_back(ARTIKEL_SCHRAUBENZIEHER_ROT,450,0,0);
       erfolgreich=C.teste(Check::Lieferschein|Check::Menge,"_LSZM",mit_reparatur_programm);
       if(!erfolgreich) { cout << "Lieferschein für das Rohwarenlager (auslagern)\n\n"; return  fehler();}
@@ -163,7 +163,7 @@ int auftragstests(e_mode mode)
 
       {// Lieferscheinschreiben für den Kunden 
       Lieferschein liefs(KUNDENINSTANZ,cH_Kunde(KUNDE));
-//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+//ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
       liefs.push_back(ARTIKEL_SORTIMENT_BUNT,450,0,0);
       erfolgreich=C.teste(Check::Lieferschein|Check::Menge,"_LSZMK",mit_reparatur_programm);
       if(!erfolgreich) { cout << "Lieferschein für den Kunden \n\n"; return  fehler();}
@@ -224,7 +224,7 @@ int auftragstests(e_mode mode)
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::_Garn__Einkauf),Kunde::default_id);
        int kupfer_znr=2;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::_Garn__Einkauf,AuftragBase::ungeplante_id,kupfer_znr));
-//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+//ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
        AEP.Planen(UID,100,PA,PLANDATUM5);
        erfolgreich=C.teste(Check::Menge,"_planen_kupfer",mit_reparatur_programm);
        if(!erfolgreich) { cout << "Planen des Kupfereinkaufs \n\n";
@@ -251,7 +251,7 @@ int auftragstests(e_mode mode)
 
 #ifdef PETIG_TEST
        Lieferschein liefs(ppsInstanzID::_Garn__Einkauf,cH_Kunde(Kunde::eigene_id));
-//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+//ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
        liefs.push_back(ARTIKEL_ACETAT,1,66,0);
        erfolgreich=C.teste(Check::Menge,"_planen_einkauf_lieferschein",mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferschein mit Teillieferung für Einkauf anlegen\n\n"; return fehler();}
@@ -292,7 +292,7 @@ std::cout << dummystring<<'\n';
         assert(!"FEHLER: MIT REPARATURPROGRAMM KOMPILIEREN\n");
       #endif
       // Physikalisches Lager ändern 
-//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+//ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
       std::string qB="insert into rl_inhalt (position_,kartons,reste,kg_per_karton,"
          " material,eingelagert,rest_kg)"
          " values ('07D5',10,0,5,211007,'2002-11-28',0)";
@@ -510,7 +510,7 @@ std::cout << "D2:" <<dummystring<<'\n';
       if(!erfolgreich) { cout << "Planen der Weberei zum späteren Test des Bandlagers \n\n";
                return fehler();}
 
-//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+//ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
       DataBase_init::createJumbo(-10,12000);
 std::cout << dummystring<<'\n';
       erfolgreich=C.teste(Check::Menge,"_bandlager_rein",mit_reparatur_programm);
@@ -635,7 +635,7 @@ std::cout << "D13: "<<dummystring<<'\n';
        if(!erfolgreich) { cout << "Teil-Abschreiben des zweiten Auftrags ["<<AEB<<"] \n\n";
                return fehler();}
 
-//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+//ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
  
        AufEintrag(AEB).setStatus(CLOSED,UID);
        erfolgreich=C.teste(Check::Menge,"_zwei_auftraege_datum_closed",mit_reparatur_programm);
@@ -786,7 +786,7 @@ std::cout << "D13: "<<dummystring<<'\n';
        liefs.push_back(ARTIKEL_TRIO,10,0,0);
        erfolgreich=C.teste(Check::Lieferschein|Check::Menge,"_LS_volllieferung",mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferschein mit Volllieferung (Mabella) anlegen\n\n"; return fehler();}
-//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+//ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
 
        int lznr=1;
        LieferscheinEntry le1(LieferscheinEntryBase(liefs,lznr));
@@ -817,7 +817,7 @@ std::cout << "D13: "<<dummystring<<'\n';
       Auftrag PA=Auftrag(Auftrag::Anlegen(EINKAUF),KUNDE2);
       int znr=1;
       AufEintrag AEP((AufEintragBase(EINKAUF,AuftragBase::ungeplante_id,znr)));
-//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
 //      int nznr=
       AEP.Planen(UID,27,PA,PLANDATUM5);
       erfolgreich=C.teste(Check::Menge,"_planen_kupfer",mit_reparatur_programm);
@@ -826,7 +826,7 @@ std::cout << "D13: "<<dummystring<<'\n';
 
       {// Weberei liefert mehr als geplant
        Lieferschein liefs(WEBEREI,cH_Kunde(Kunde::eigene_id));
-//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
        liefs.push_back(ARTIKEL_TRIO,5,0,0);
        erfolgreich=C.teste(Check::Menge|Check::Lieferschein,"_LSZ",mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferschein in Weberei mit Überlieferung (Mabella) \n\n"; return fehler();}
@@ -834,15 +834,15 @@ std::cout << "D13: "<<dummystring<<'\n';
 
       {// Einkauf liefert Teilmenge
        Lieferschein liefs(EINKAUF,cH_Kunde(KUNDE2));
-//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+ManuProC::Tracer::Enable(AuftragBase::trace_channel);
        liefs.push_back(ARTIKEL_TRIO,13,0,0);
        erfolgreich=C.teste(Check::Menge|Check::Lieferschein,"_LSZP",mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferschein im Einkauf mit Teillieferung (Mabella) \n\n"; return fehler();}
       }
-
+exit(0);
       {// Einkauf liefert Vollmenge
        Lieferschein liefs(EINKAUF,cH_Kunde(KUNDE2));
-//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+//ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
        liefs.push_back(ARTIKEL_TRIO,25,0,0);
        erfolgreich=C.teste(Check::Menge|Check::Lieferschein,"_LSZM",mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferschein im Einkauf Weberei mit Restlieferung (Mabella) \n\n"; return fehler();}
@@ -853,7 +853,7 @@ std::cout << "D13: "<<dummystring<<'\n';
         Auftrag PA=Auftrag(Auftrag::Anlegen(EINKAUF),KUNDE2);
         ManuProC::st_produziert sp(ARTIKEL_ZWEI,2222,getuid(),Kunde::eigene_id,LieferscheinBase::none_id,PA,SPLITDATUM);
         cH_ppsInstanz I(EINKAUF);
-//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+//ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
         I->Planen(sp);
         erfolgreich=C.teste(Check::Menge,"_zwei_auftraege_anlegen",mit_reparatur_programm);
         if(!erfolgreich) { cout << "Einkauf eines nicht-bestelleten Artikel (Mabella) \n\n"; return fehler();}       
@@ -918,7 +918,7 @@ std::cout << "D13: "<<dummystring<<'\n';
                return fehler();}
 
       {AufEintrag AE(AEB);
-//      ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+//      ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
         AE.Produziert(200,Lieferschein::none_id);
       }
       erfolgreich=C.teste(Check::Menge,"_ZK_abschreiben1U",mit_reparatur_programm);
@@ -1060,7 +1060,7 @@ int main(int argc,char *argv[])
    putenv("PGDATABASE=anleitungdb");
 #elif defined MABELLA_TEST
    system((std::string(MANU_DATAPATH)+"/initdb.script "+MANU_DATAPATH).c_str());
-   putenv("PGDATABASE=mabelladb");
+   putenv("PGDATABASE=mabella_test_db");
 #elif defined PETIG_TEST
    system("database_tables_init/initdb.script");
    putenv("PGDATABASE=testdb");
@@ -1071,7 +1071,7 @@ int main(int argc,char *argv[])
    try{
    Petig::dbconnect();  
 
-//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+//ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
    
    DataBase_init();
    return auftragstests(mode);
