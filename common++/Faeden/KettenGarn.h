@@ -1,4 +1,4 @@
-/* $Id: KettenGarn.h,v 1.8 2004/06/21 14:14:48 christof Exp $ */
+/* $Id: KettenGarn.h,v 1.9 2004/07/05 16:24:18 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -38,12 +38,14 @@ struct KS_Garn
 };
 
 struct Kettscheibe
-{	int index; // dies ist nicht relationale Normalform!
+{	int index;
         int laenge;
         int kettenzahl;
         std::vector<ArtikelGang> artikel;
         std::vector<KS_Garn> faeden;
         std::vector<Wiederholung> wiederholungen;
+        unsigned fadenzahl; // errechnet
+        unsigned max_fadenzahl; 
 
 // old routines
    int Index() const {return index;}
