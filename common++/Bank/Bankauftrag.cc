@@ -1,4 +1,4 @@
-/* $Id: Bankauftrag.cc,v 1.8 2003/01/08 09:46:56 christof Exp $ */
+/* $Id: Bankauftrag.cc,v 1.9 2003/01/08 10:18:51 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,7 +18,7 @@
  */
 
 #include "Bankauftrag.h"
-#include "Misc/Datum.h"
+#include <Misc/Datum.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <Misc/string0.h>
