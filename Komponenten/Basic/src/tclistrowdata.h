@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistrowdata.h,v 1.1 2001/06/21 09:05:27 christof Exp $
+// $Id: tclistrowdata.h,v 1.2 2001/06/25 08:20:23 christof Exp $
 
 #ifndef TCLISTROWDATA
 #define TCLISTROWDATA
@@ -39,7 +39,7 @@ protected:
  bool leaf;
  
 public: 
- virtual void cumulate(const cH_RowDataBase &rd, int seqnr) const=0;
+ virtual void cumulate(const cH_RowDataBase &rd, int seqnr,gpointer gp) const=0;
  virtual const vector<string> getColEntries(int cols);
  virtual const string getColText();
  virtual void refreshSum(const TreeBase &tb)=0;

@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: rowdata.h,v 1.1 2001/06/21 09:05:27 christof Exp $
+// $Id: rowdata.h,v 1.2 2001/06/25 08:20:23 christof Exp $
 
 #ifndef KOMPONENTEN_ROWDATA_H
 #define KOMPONENTEN_ROWDATA_H
@@ -27,7 +27,10 @@
 class RowDataBase : public HandleContent
 {
 public:
- virtual const cH_EntryValue Value(int _seqnr) const=0;
+ virtual const cH_EntryValue Value(int _seqnr,gpointer _g) const=0;
+// virtual const cH_EntryValue Value(int _seqnr) const=0;
+// virtual const cH_EntryValue Value(int _seqnr) const { Value(_seqnr,0) ; }
+
  virtual ~RowDataBase(){}
 };
 

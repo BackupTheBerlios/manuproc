@@ -42,7 +42,8 @@ public:
    data[5]=f;
  }
 	
- virtual const cH_EntryValue Value(int _seqnr) const
+
+ virtual const cH_EntryValue Value(int _seqnr, gpointer gp) const
  {if (_seqnr>=0 && _seqnr<max_arguments) return cH_EntryValueIntString(data[_seqnr]);
   return cH_EntryValueIntString("");
  }

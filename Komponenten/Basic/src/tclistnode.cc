@@ -16,15 +16,15 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistnode.cc,v 1.1 2001/06/21 09:05:27 christof Exp $
+// $Id: tclistnode.cc,v 1.2 2001/06/25 08:20:23 christof Exp $
 
 #include"tclistnode.h"
 #include"rowdata.h"
 #include"Aux/Ausgabe_neu.h"
 
-void TCListNode::cumulate(const cH_RowDataBase &rd, int seqnr) const
+void TCListNode::cumulate(const cH_RowDataBase &rd, int seqnr, gpointer gp) const
 {
- sumvalue+=rd->Value(seqnr)->getIntVal();
+ sumvalue+=rd->Value(seqnr,gp)->getIntVal();
 }
 
 const string TCListNode::getSumCol(int col)
@@ -32,9 +32,9 @@ const string TCListNode::getSumCol(int col)
  return Formatiere(sumvalue);
 }
 
-TCListNode::TCListNode(int _seqnr, const cH_RowDataBase &v, 
+TCListNode::TCListNode(int _seqnr, gpointer _gp, const cH_RowDataBase &v, 
 			int deep) :
-	TCListRowData(v->Value(_seqnr),deep,false),show(false), sumvalue(0)
+	TCListRowData(v->Value(_seqnr,_gp),deep,false),show(false), sumvalue(0)
 {}
 
 //#include <typeinfo>

@@ -25,7 +25,7 @@ public:
  MyRowData(int i,const string &s)
 	: intval(i),stringval(s) {}
 	
- virtual const cH_EntryValue Value(int _seqnr) const
+ virtual const cH_EntryValue Value(int _seqnr,gpointer gp) const
 	{switch(_seqnr)
 		{case 0 : return cH_EntryValueIntString(intval); break;
 		 case 1 : return cH_EntryValueIntString(stringval); break;
@@ -68,9 +68,9 @@ with_class::with_class()
    v.push_back("something else");
    v.push_back("summe 1");
    v.push_back("summe 2");
+//   treebase->set_value_data(0);
    treebase->setTitles(v);
    vector <cH_RowDataBase> datavec;
-//   datavec.push_back(cH_MyRowData(1,"X"));
    datavec.push_back(new MyRowData(1,"X"));
    datavec.push_back(new MyRowData(2,"Y"));
    datavec.push_back(new MyRowData(10,"Z"));

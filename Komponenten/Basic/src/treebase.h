@@ -37,7 +37,8 @@ class TreeBase : public TCList
  deque<guint> currseq; 
  deque<guint> clicked_seq;
  vector<bool> vec_hide_cols;
-
+ gpointer gp;
+ 
  Gtk::Menu *menu;  
  bool auffuellen_bool; 
  bool expandieren_bool; 
@@ -69,9 +70,9 @@ protected:
  // StandardReihenfolge setzen
  virtual void setSequence();
  virtual const string getColTitle(guint seq) const;
- virtual TCListNode *NewNode(guint _seqnr, const cH_RowDataBase &v,
+ virtual TCListNode *NewNode(guint _seqnr, gpointer _gp,const cH_RowDataBase &v,
  				guint deep);			 	
- virtual TCListLeaf *NewLeaf(guint _seqnr, const cH_RowDataBase &v,
+ virtual TCListLeaf *NewLeaf(guint _seqnr, gpointer _gp,const cH_RowDataBase &v,
  				guint deep);			 	 				
  virtual void setColTitles();
  virtual void fillDataVec() {};
@@ -84,6 +85,7 @@ public:
  ~TreeBase();
  guint Attrs() const { return attrcount; }
  guint Cols() const { return columns().size();}
+ void set_value_data(gpointer _p) {gp = _p;}
  void setDataVec(const vector<cH_RowDataBase> &d) 
  { datavec=d; 
    refillTCL();

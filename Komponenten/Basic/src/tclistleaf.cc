@@ -21,8 +21,8 @@
 
 
 
-TCListLeaf::TCListLeaf(int _seqnr, const cH_RowDataBase &v, int deep)
-	: TCListRowData(v->Value(_seqnr),deep,true),leafdata(v)
+TCListLeaf::TCListLeaf(int _seqnr,gpointer _g ,const cH_RowDataBase &v, int deep)
+	: TCListRowData(v->Value(_seqnr,_g),deep,true),leafdata(v)
 {}
 
 void TCListLeaf::initTCL(TCListRow_API *api, TCListRow_API::iterator davor,
