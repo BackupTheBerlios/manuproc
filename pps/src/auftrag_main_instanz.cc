@@ -126,8 +126,8 @@ void auftrag_main::on_button_instanz_get_selection_clicked()
       AufEintrag &AE=const_cast<Data_auftrag&>(dt).get_AufEintrag();
       if(!OptMen_Instanz_Bestellen->is_visible())
          AE.Planen(getuid(),AE.getRestStk(),*instanz_auftrag,Datum_instanz->get_value());
-      else
-         AE.ProduktionsPlanung(getuid(),AE.getRestStk(),*instanz_auftrag,Datum_instanz->get_value(),OptMen_Instanz_Bestellen->get_value());
+//      else
+//         AE.ProduktionsPlanung(getuid(),AE.getRestStk(),*instanz_auftrag,Datum_instanz->get_value(),OptMen_Instanz_Bestellen->get_value());
 //         AE.ProduktionsPlanung(OptMen_Instanz_Bestellen->get_value(),
 //                               AE.getRestStk(),Datum_instanz->get_value(),getuid());
      }     
@@ -151,8 +151,8 @@ void auftrag_main::on_button_instanz_get_selection_clicked()
   
        if(!OptMen_Instanz_Bestellen->is_visible())
          AE.Planen(getuid(),M,*instanz_auftrag,Datum_instanz->get_value());
-       else
-         AE.ProduktionsPlanung(getuid(),M,*instanz_auftrag,Datum_instanz->get_value(),OptMen_Instanz_Bestellen->get_value());
+//       else
+//         AE.ProduktionsPlanung(getuid(),M,*instanz_auftrag,Datum_instanz->get_value(),OptMen_Instanz_Bestellen->get_value());
 //         AE.ProduktionsPlanung(OptMen_Instanz_Bestellen->get_value(),
 //                               M,Datum_instanz->get_value(),getuid());
       }     

@@ -336,14 +336,14 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
        }
       else if(instanz->ExterneBestellung())
        {
-         AuftragBase AB(*auftrag);
-         ManuProC::st_produziert sp(artikelbox->get_value(),stkmtr_spinbutton->get_value_as_int(),
-               getuid(),Kunde::eigene_id,LieferscheinBase::none_id,AB,liefdatum_datewin->get_value());
-         instanz->Planen(sp);
-         AufEintrag AE((AufEintragBase(AB,sp.ZNr)));
-         AE.updatePreis(WPreis->get_Preis());
-         AE.updateRabatt(rabattentry_spinbutton->get_value_as_float());
-         auftrag->AuftragFull::push_back(AE);
+//         AuftragBase AB(*auftrag);
+//         ManuProC::st_produziert sp(artikelbox->get_value(),stkmtr_spinbutton->get_value_as_int(),
+//               getuid(),Kunde::eigene_id,LieferscheinBase::none_id,AB,liefdatum_datewin->get_value());
+//         instanz->Planen(sp);
+//         AufEintrag AE((AufEintragBase(AB,sp.ZNr)));
+//         AE.updatePreis(WPreis->get_Preis());
+//         AE.updateRabatt(rabattentry_spinbutton->get_value_as_float());
+//         auftrag->AuftragFull::push_back(AE);
        }
       else assert(!"never get here");
       fillCList();
