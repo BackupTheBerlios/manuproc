@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.27 2003/09/15 11:58:40 jacek Exp $
+// $Id: AufEintrag_Lager.cc,v 1.28 2003/12/02 17:46:24 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -217,7 +217,12 @@ AuftragBase::mengen_t AufEintrag::Auslagern
          brauch_noch=AufEintrag(opfer).Auslagern(brauch_noch,ctx,false);
      }
       // produzieren
-      unbestellteMengeProduzieren(Instanz(),Artikel(),menge,true,
+     if (Instanz()->LagerInstanz())
+     {  Lager L(Instanz());
+	L.raus_aus_lager(Artikel(),menge,true,ProductionContext(ctx.aeb,ctx.leb));
+     }
+     else
+        unbestellteMengeProduzieren(Instanz(),Artikel(),menge,true,
       		ctx.aeb/*oder *this?*/,ctx.leb,getLieferdatum());
    }
    return 0;
