@@ -1,4 +1,4 @@
-// $Id: Trace.cc,v 1.1 2002/10/24 14:17:17 christof Exp $
+// $Id: Trace.cc,v 1.2 2002/12/10 09:44:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -47,3 +47,5 @@ void ManuProC::Tracer::FunctionEnd()
 bool ManuProC::Tracer::enabled(Channel c)
 {  return enabled_parts&(1<<int(c));
 }
+
+UniqueValue ManuProC::Tracer::channels;

@@ -1,4 +1,4 @@
-// $Id: Trace.h,v 1.2 2002/10/31 08:29:37 christof Exp $
+// $Id: Trace.h,v 1.3 2002/12/10 09:44:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,6 +23,7 @@
 
 #include <string>
 #include <iostream>
+#include <Misc/UniqueValue.h>
 
 #define ENABLE_TRACES
 
@@ -31,6 +32,8 @@ namespace ManuProC {
 namespace Tracer {
 
 	enum Channel { Auftrag,Artikel };
+	extern UniqueValue channels;
+//	typedef UniqueValue::value_t Channel;
 
 	void Enable(Channel c, bool an=true);
 	
