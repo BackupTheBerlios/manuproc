@@ -1,4 +1,4 @@
-// $Id: Produziert.cc,v 1.2 2002/09/26 14:55:53 thoma Exp $
+// $Id: Produziert.cc,v 1.3 2002/09/27 06:43:29 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *

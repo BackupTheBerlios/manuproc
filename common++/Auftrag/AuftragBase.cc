@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.1 2002/09/26 15:09:32 thoma Exp $
+// $Id: AuftragBase.cc,v 1.2 2002/09/27 06:43:29 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *

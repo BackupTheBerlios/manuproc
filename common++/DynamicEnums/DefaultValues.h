@@ -1,4 +1,4 @@
-/* $Id: DefaultValues.h,v 1.1 2002/09/26 14:55:53 thoma Exp $ */
+/* $Id: DefaultValues.h,v 1.2 2002/09/27 06:43:29 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma

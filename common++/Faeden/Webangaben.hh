@@ -1,4 +1,4 @@
-// $Id: Webangaben.hh,v 1.1 2002/09/26 15:05:43 thoma Exp $
+// $Id: Webangaben.hh,v 1.2 2002/09/27 06:43:29 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma

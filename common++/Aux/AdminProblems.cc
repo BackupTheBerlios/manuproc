@@ -1,4 +1,4 @@
-// $Id: AdminProblems.cc,v 1.1 2002/09/26 15:03:55 thoma Exp $
+// $Id: AdminProblems.cc,v 1.2 2002/09/27 06:43:29 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
