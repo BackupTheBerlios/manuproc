@@ -1,4 +1,4 @@
-// $Id: createDynEnums.cc,v 1.22 2004/05/03 15:32:23 jacek Exp $
+// $Id: createDynEnums.cc,v 1.23 2004/05/03 15:41:50 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: createDynEnums.cc,v 1.22 2004/05/03 15:32:23 jacek Exp $
+// $Id: createDynEnums.cc,v 1.23 2004/05/03 15:41:50 jacek Exp $
 
 
 #include <Misc/dbconnect.h>
@@ -96,7 +96,8 @@ int main()
        else default_arttyp=DEFAULT_ARTTYP;
       }
 
-      std::cout << "const static enum enum_t defaultArtikelTyp="<<default_arttyp<<";\n\n";
+      std::cout << "const static enum enum_t defaultArtikelTyp="<<
+				toIdentifier(default_arttyp)<<";\n\n";
       std::cout << "  }\n\n";
       tr.close();
       tr.open();
