@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.30 2003/05/15 14:23:06 christof Exp $
+// $Id: FetchIStream.h,v 1.31 2003/05/15 14:28:41 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -138,6 +138,7 @@ public:
 	void setNeededParams(unsigned i)
 	{  params_needed=i; }
 	bool complete() const { return !params_needed; }
+	unsigned HowManyNeededParams() const { return params_needed; }
 	const_iterator begin() const { return params.begin(); }
 	const_iterator end() const { return params.end(); }
 
