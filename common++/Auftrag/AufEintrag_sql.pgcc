@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.58 2003/03/08 08:51:54 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.59 2003/03/10 10:24:20 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,6 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <Misc/TraceNV.h>
 #include <Auftrag/AufEintrag.h>
 #include <Auftrag/AuftragsBaum.h>
 #include <stdio.h>
@@ -37,8 +38,6 @@
 #include <Auftrag/Auftrag.h>
 #include <algorithm>
 #include <unistd.h>
-//#include <Auftrag/ppsInstanzProduziert.h>
-#include <Misc/Trace.h>
 #include <Auftrag/VerfuegbareMenge.h>
 #include <Misc/FetchIStream_ops.h>
 #include <Auftrag/AufEintrag_macros.h>
