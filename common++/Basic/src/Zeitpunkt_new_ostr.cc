@@ -1,4 +1,4 @@
-// $Id: Zeitpunkt_new_ostr.cc,v 1.6 2002/06/24 07:35:40 christof Exp $
+// $Id: Zeitpunkt_new_ostr.cc,v 1.7 2003/03/13 08:58:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -34,8 +34,10 @@ std::ostream &operator<<(std::ostream &o,const Zeitpunkt_new &t)
      o << t.second;
      if (t.prec>=Zeitpunkt_new::milliseconds && t.millisecond) 
      {  o << '.';
-        o.width(6);
-        o << t.millisecond;
+        unsigned w=6,ms=t.millisecond;
+        while (w>=2 && !(ms%10)) { ms/=10; --w; }
+        o.width(w);
+        o << ms;
      }
    }
    if (t.minutes_from_gmt)
