@@ -1,0 +1,55 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "ku_person";
+--
+--
+--
+
+CREATE TABLE "ku_person" (
+	"persnr" numeric(5,0) NOT NULL,
+	"name" character varying(30) NOT NULL,
+	"vname" character varying(30),
+	"gebdat" date,
+	"branr" numeric(1,0),
+	"notiz" character varying(500),
+	Constraint "ku_person_pkey" Primary Key ("persnr")
+);
+
+--
+--
+--
+
+
+COPY "ku_person" FROM stdin;
+\.
+--
+--
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "ku_person"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_telefon', 'ku_person', 'UNSPECIFIED', 'persnr', 'persnr');
+
+--
+--
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "ku_person"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_telefon', 'ku_person', 'UNSPECIFIED', 'persnr', 'persnr');
+
+--
+--
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER UPDATE ON "ku_person"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_ansprech', 'ku_person', 'UNSPECIFIED', 'persnr', 'persnr');
+
+--
+--
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER DELETE ON "ku_person"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_cascade_del" ('<unnamed>', 'ku_ansprech', 'ku_person', 'UNSPECIFIED', 'persnr', 'persnr');
+
+--
+--
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "ku_person"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'ku_person', 'ku_briefanr', 'UNSPECIFIED', 'branr', 'branr');
+

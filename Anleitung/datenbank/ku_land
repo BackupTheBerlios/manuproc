@@ -1,0 +1,58 @@
+--
+-- Selected TOC Entries:
+--
+DROP INDEX "ku_land_lkz";
+DROP INDEX "ku_land_name";
+DROP TABLE "ku_land";
+--
+--
+--
+
+CREATE TABLE "ku_land" (
+	"id" integer NOT NULL,
+	"name" text NOT NULL,
+	"lkz" character varying(5),
+	Constraint "ku_land_pkey" Primary Key ("id")
+);
+
+--
+--
+--
+
+
+COPY "ku_land" FROM stdin;
+1	Deutschland	D
+2	÷sterreich	A
+3	Schweiz	CH
+4	Italien	I
+5	Slowenien	SLO
+6	Ungarn	H
+7	Polen	PL
+8	Finnland	FIN
+9	Schweden	S
+10	Norwegen	N
+13	Irland	IRL
+14	Niederlande	NL
+15	Belgien	B
+16	Luxemburg	L
+17	Frankreich	F
+18	Spanien	E
+19	Portugal	P
+20	Island	IS
+22	Libanon	RL
+11	D‰nemark	DK
+12	Groﬂbritannien	GB
+21	U.S.A.	USA
+\.
+--
+--
+--
+
+CREATE UNIQUE INDEX ku_land_name ON ku_land USING btree (name);
+
+--
+--
+--
+
+CREATE UNIQUE INDEX ku_land_lkz ON ku_land USING btree (lkz);
+

@@ -1,0 +1,35 @@
+--
+-- Selected TOC Entries:
+--
+DROP INDEX "ku_ansprech_kundennr_key";
+DROP TABLE "ku_ansprech";
+--
+--
+--
+
+CREATE TABLE "ku_ansprech" (
+	"kundennr" numeric(5,0) NOT NULL,
+	"persnr" numeric(5,0) NOT NULL,
+	"_position" character varying(30),
+	"notiz" character varying(500)
+);
+
+--
+--
+--
+
+
+COPY "ku_ansprech" FROM stdin;
+\.
+--
+--
+--
+
+CREATE UNIQUE INDEX ku_ansprech_kundennr_key ON ku_ansprech USING btree (kundennr, persnr);
+
+--
+--
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "ku_ansprech"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'ku_ansprech', 'ku_person', 'UNSPECIFIED', 'persnr', 'persnr');
+

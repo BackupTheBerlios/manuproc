@@ -1,0 +1,39 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "ku_telefon";
+--
+--
+--
+
+CREATE TABLE "ku_telefon" (
+	"telid" numeric(5,0) NOT NULL,
+	"art" character varying(1) NOT NULL,
+	"ldkenn" numeric(4,0) DEFAULT 49 NOT NULL,
+	"vorwahl" numeric(6,0),
+	"telnr" numeric(8,0),
+	"durchwahl" numeric(5,0),
+	"kundennr" numeric(5,0),
+	"persnr" numeric(5,0),
+	"text" text,
+	CONSTRAINT "ku_telefon_art" CHECK ((((art = 'F'::"varchar") OR (art = 'T'::"varchar")) OR (art = 'M'::"varchar"))),
+	CONSTRAINT "ku_telefon_nummern" CHECK (((kundennr IS NOT NULL) OR (persnr IS NOT NULL))),
+	Constraint "ku_telefon_pkey" Primary Key ("telid")
+);
+
+--
+--
+--
+
+
+COPY "ku_telefon" FROM stdin;
+1	T	49	1234	5678	-1	1	\N	
+2	T	49	1234	7890	-1	1	\N	nach 19:00 Uhr
+3	T	49	202	0	-1	1	\N	name@name.com
+\.
+--
+--
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>" AFTER INSERT OR UPDATE ON "ku_telefon"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_check_ins" ('<unnamed>', 'ku_telefon', 'ku_person', 'UNSPECIFIED', 'persnr', 'persnr');
+

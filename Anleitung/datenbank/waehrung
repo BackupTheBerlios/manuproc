@@ -1,0 +1,28 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "waehrung";
+--
+--
+--
+
+CREATE TABLE "waehrung" (
+	"wid" numeric(2,0) NOT NULL,
+	"kurz" character varying(5) NOT NULL,
+	"lang" character varying(30),
+	"dmfkt" numeric(12,5) NOT NULL,
+	"tex" text,
+	Constraint "waehrung_pkey" Primary Key ("wid")
+);
+
+--
+--
+--
+
+
+COPY "waehrung" FROM stdin;
+1	DM	Deutsche Mark	0.51129	\N
+4	PND	Englisches Pfund	1.50000	\\pounds{}
+2	EUR	Euro	1.00000	\\euro{}
+3	USD	US Dollar	1.16575	US\\$
+\.

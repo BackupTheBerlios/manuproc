@@ -1,0 +1,33 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "rechnung_zahlungsart";
+--
+--
+--
+
+CREATE TABLE "rechnung_zahlungsart" (
+	"id" integer NOT NULL,
+	"kurzbezeichnung" text NOT NULL,
+	"bezeichnung" text,
+	"einzugrabatt" numeric(3,1),
+	"bankeinzug" boolean,
+	"zahlungsfrist" numeric(3,0),
+	"skontosatz_1" numeric(3,1),
+	"skontofrist_1" numeric(3,0),
+	"skontosatz_2" numeric(3,1),
+	"skontofrist_2" numeric(3,0),
+	"skontosatz_3" numeric(3,1),
+	"skontofrist_3" numeric(3,0),
+	Constraint "rechnung_zahlungsziel_pkey" Primary Key ("id")
+);
+
+--
+--
+--
+
+
+COPY "rechnung_zahlungsart" FROM stdin;
+0	sofort, ohne Abzug	sofort ohne Abzüge	\N	\N	\N	\N	\N	\N	\N	\N	\N
+1	10d 4%, 30d 2,5%, 60d	Innerhalb von 10 Tagen 4% Skonto; 30 Tagen 2,5%; innerhalb von 60 Tagen netto	\N	\N	\N	4.0	10	2.5	30	0.0	60
+\.

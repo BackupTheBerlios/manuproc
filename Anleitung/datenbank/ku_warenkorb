@@ -1,0 +1,35 @@
+--
+-- Selected TOC Entries:
+--
+DROP INDEX "ku_warenkorb_kundennr_key1";
+DROP INDEX "ku_warenkorb_kundennr_key";
+DROP TABLE "ku_warenkorb";
+--
+--
+--
+
+CREATE TABLE "ku_warenkorb" (
+	"prlsnr" numeric(5,0) NOT NULL,
+	"kundennr" numeric(5,0) NOT NULL,
+	"suchfolge" integer NOT NULL
+);
+
+--
+--
+--
+
+
+COPY "ku_warenkorb" FROM stdin;
+\.
+--
+--
+--
+
+CREATE UNIQUE INDEX ku_warenkorb_kundennr_key ON ku_warenkorb USING btree (kundennr, suchfolge);
+
+--
+--
+--
+
+CREATE UNIQUE INDEX ku_warenkorb_kundennr_key1 ON ku_warenkorb USING btree (kundennr, prlsnr);
+

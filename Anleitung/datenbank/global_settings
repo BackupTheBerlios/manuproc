@@ -1,0 +1,23 @@
+--
+-- Selected TOC Entries:
+--
+DROP TABLE "global_settings";
+--
+--
+--
+
+CREATE TABLE "global_settings" (
+	"userid" integer NOT NULL,
+	"program" text NOT NULL,
+	"name" text NOT NULL,
+	"wert" text,
+	Constraint "global_settings_pkey" Primary Key ("userid", "program", "name")
+);
+
+--
+--
+--
+
+
+COPY "global_settings" FROM stdin;
+\.
