@@ -39,6 +39,7 @@ auftrag_copy::auftrag_copy(AuftragFull *auftrag)
 void auftrag_copy::on_copy_ok_clicked()
 {  
  Transaction tr;
+ int provsatz;
 
  try {
    std::auto_ptr<AuftragFull> auftrag(new AuftragFull(Auftrag::Anlegen(
@@ -49,12 +50,14 @@ void auftrag_copy::on_copy_ok_clicked()
      if(auftrag->getKundennr() == alt_auftrag->getKundennr())
        {auftrag->Zahlart(alt_auftrag->Zahlart()->Id());
         auftrag->setRabatt(alt_auftrag->getAuftragsRabatt().as_float());
+        provsatz=-1;
        }
      else
        {cH_Kunde k(auftrag->getKundennr());
         auftrag->Zahlart(k->zahlungsart()->Id());     
         if(alt_auftrag->getAuftragsRabatt()!=0)
           auftrag->setRabatt(k->rabatt().as_float());
+        provsatz=0;  
        }
 
 
@@ -83,11 +86,11 @@ void auftrag_copy::on_copy_ok_clicked()
 	AuftragBase::ID neu_aufid=auftrag->Id();
 
 
-	((Query("insert into auftragentry (auftragid,zeilennr,bestellt,"
+	(((Query("insert into auftragentry (auftragid,zeilennr,bestellt,"
 		"geliefert,lastedit_uid,artikelid,status,preis,"
-		"rabatt,lieferdate,preismenge,instanz,preisliste) "
+		"rabatt,lieferdate,preismenge,instanz,preisliste,provsatz) "
 		"(select ?,zeilennr,?,0,?,artikelid,0,preis,rabatt,?,"
-		"preismenge,instanz,preisliste from auftragentry"
+		"preismenge,instanz,preisliste,? from auftragentry"
 		" where (auftragid,instanz)=(?,?) and status!=?)")
 		<< neu_aufid
 		).add_argument(
@@ -95,14 +98,34 @@ void auftrag_copy::on_copy_ok_clicked()
 		<< getuid()
 		).add_argument(
 			ld.valid() ? 
-			ld.postgres_null_if_invalid() : "lieferdate") 
+			ld.postgres_null_if_invalid() : "lieferdate")
+		).add_argument(
+			provsatz==0 ? 
+			itos(provsatz) : "provsatz")
 		<< alt_auftrag->Id()
 		<< alt_auftrag->Instanz()
 		<< (AufStatVal)STORNO;
 	SQLerror::test(__FILELINE__);
 
+
       std::auto_ptr<AuftragFull> full(new AuftragFull(
       	AuftragBase(auftrag->Instanz(),auftrag->Id())));
+
+	// set provision when different customer
+      if(auftrag->getKundennr() != alt_auftrag->getKundennr())
+        {
+         cH_Kunde k(auftrag->getKundennr());
+         fixedpoint<2> ps;
+         AuftragFull::AufEintragList::iterator i=full->begin();
+         for(;i!=full->end();++i)
+           {ps=k->getProvSatz_Artikel((*i).Artikel());
+            Query("update auftragentry set provsatz=? where " 
+            	" (auftragid,instanz,zeilennr)=(?,?,?)")
+            	<< ps << auftrag->Id() << auftrag->Instanz()
+            	<< (*i).getZnr();
+           }
+        }
+
 
       full->setStatusAuftragFull((AufStatVal)OPEN); 
       auftragbearbeiten->new_aufid_from_copy=auftrag->Id();

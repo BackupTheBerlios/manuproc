@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.65 2004/08/25 12:15:28 jacek Exp $
+// $Id: Kunde.h,v 1.66 2004/08/25 14:47:11 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -264,8 +264,7 @@ public:
         void setBetreuer(const Person::ID) throw(SQLerror);
   
   // gets the provsatz for article artid      
-  fixedpoint<2> getProvSatz_Artikel(const ArtikelBase artid, 
-  		ArtikelTyp::ID=ArtikelTyp::default_ID) const throw(SQLerror);
+  fixedpoint<2> getProvSatz_Artikel(const ArtikelBase artid) const throw(SQLerror);
 
   private:
   	void load_Gruppen() const throw(SQLerror);

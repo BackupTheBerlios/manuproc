@@ -501,12 +501,9 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
 
 #ifdef MABELLA_EXTENSIONS
     cH_Kunde kd(kundennr);
-    int at; // ArtikelTyp
     fixedpoint<2> provsatz;
     try{
-    Query("select warengruppe from artikelstamm where id=?") 
-	<< artikel.Id() >> at;
-    provsatz = kd->getProvSatz_Artikel(artikel,(ArtikelTyp::ID)at);}
+    provsatz = kd->getProvSatz_Artikel(artikel);}
     catch(SQLerror &e) {tr.rollback(); throw; }
     Query("update auftragentry set provsatz=?"
       	" where (instanz,auftragid,zeilennr)=(?,?,?)")

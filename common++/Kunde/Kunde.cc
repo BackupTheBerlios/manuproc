@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.45 2004/08/25 13:49:38 jacek Exp $
+// $Id: Kunde.cc,v 1.46 2004/08/25 14:47:11 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -356,8 +356,13 @@ void Kunde::set_idnr(const std::string& s)
 }
 
 
-fixedpoint<2> Kunde::getProvSatz_Artikel(const ArtikelBase art, ArtikelTyp::ID at) const throw(SQLerror)
+fixedpoint<2> Kunde::getProvSatz_Artikel(const ArtikelBase art) const throw(SQLerror)
 {
+ int t; // ArtikelTyp;
+ Query("select warengruppe from artikelstamm where id=?")   
+               << art.Id() >> t;
+ ArtikelTyp at(t);
+
  std::string tabelle="artbez_"+
         itos(at)+"_"+
         itos(ExtBezSchema::default_id);
