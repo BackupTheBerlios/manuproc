@@ -506,8 +506,10 @@ void ArtikelBox::Neuer_Eintrag_sql(int id, std::string where, std::string what,i
   exec sql begin declare section;
    int db_id=id, db_warengruppe,db_schema,db_bestellen_bei=bestellen_bei;   
    char db_query[1024];
+   int db_uid;
   exec sql end declare section;
 
+  db_uid=getuid();
   std::string strtyp = itos(schema->Typ());
   std::string table = "artbez_"+strtyp+"_"+itos(schema->Id());
   std::string sq = "insert into "+table +" "+ where+" values "+what;
@@ -518,11 +520,9 @@ void ArtikelBox::Neuer_Eintrag_sql(int id, std::string where, std::string what,i
   // Eintrag in Artikelbezeichnung
   db_warengruppe= atoi(strtyp.c_str());
   db_schema = schema->Id();
-  exec sql insert into artikelstamm (id,warengruppe,defaultschema,bestellen_bei)
-     values (:db_id,:db_warengruppe,:db_schema,:db_bestellen_bei);
+  exec sql insert into artikelstamm (id,warengruppe,defaultschema,bestellen_bei,uid)
+     values (:db_id,:db_warengruppe,:db_schema,:db_bestellen_bei,:db_uid);
   SQLerror::test(__FILELINE__);
-     
-
 }
 
 void ArtikelBox::where_what(std::string& where, std::string& what, bool jumbo)

@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.14 2002/04/03 06:38:09 christof Exp $
+// $Id: Kunde.h,v 1.15 2002/04/08 14:00:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -135,7 +135,8 @@ public:
 	static const ID none_id=_illegal;
 	Kunde(ID nr=default_id) throw(SQLerror);
 	static const cH_Kunde newKunde(const Kunde::ID kid, const std::string &firma) throw(SQLerror);
-        const std::string LaTeX_von(Kunde::ID kundennummer_von=none_id) const;
+        const std::string LaTeX_von() const;
+        const std::string LaTeX_von_gross(const ID kid) const;
         const std::string LaTeX_an(bool liefer,TelArt telart=TEL_NONE) const;
         
         const std::string getBank() const { return bankverb.getBankverb(); }
@@ -205,6 +206,7 @@ public:
         static void deleteKontaktperson(const H_Kunde& K,const cH_Person &P);
         // Telefon
         std::list<cH_Telefon> getTelefon() const;
+        std::string get_first_telefon(const TelArt& art) const;
 
   private:
         enum B_UPDATE_BITS_ADRESSE{B_Gruppennr,B_Sortname,B_Idnr,B_Firma,

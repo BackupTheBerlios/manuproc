@@ -1,4 +1,4 @@
-// $Id: FertigWaren.h,v 1.1 2002/03/20 07:46:26 christof Exp $
+// $Id: FertigWaren.h,v 1.2 2002/04/08 14:00:05 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -50,7 +50,7 @@ public:
 // FertigWaren(ArtikelBase a,Zeitpunkt_new z,enum_Aktion a2,int s)
 //   : artikel(a),zeit(z),aktion(a2),stk(s) {} throw(SQLerror);
  
- std::string artBezeichnung() const { return ArtikelBezeichnung(artikel).Bezeichnung();}
+ std::string artBezeichnung() const { return cH_ArtikelBezeichnung(artikel)->Bezeichnung();}
  int Stk() const {return stk;};
  Zeitpunkt_new Zeit() const { return zeit;}
  enum_Aktion Aktion() const {return aktion;}

@@ -9,8 +9,8 @@ void WTelefon::setNumber(int land,int vorwahl,int nummer)
 {
   spinbutton_land->set_value(land);
   spinbutton_vorwahl->set_value(vorwahl);
-  spinbutton_nummer->set_value(nummer);
-
+//  spinbutton_nummer->set_value(nummer);
+  spinbutton_nummer->set_text(itos(nummer));
 }
 
 gint WTelefon::try_grab_focus(GtkWidget *w,gpointer gp)
@@ -62,8 +62,9 @@ WTelefon::WTelefon()
   frame_vorwahl->add(*spinbutton_vorwahl);
 
   Gtk::Frame *frame_nummer=manage(new class Gtk::Frame("Nummer         "));
-  Gtk::Adjustment *spinbutton_nummer_adj = manage(new class Gtk::Adjustment(0, 0, 99999999, 1, 10, 10));
-  spinbutton_nummer = manage(new class Gtk::SpinButton(*spinbutton_nummer_adj, 1, 0));
+//  Gtk::Adjustment *spinbutton_nummer_adj = manage(new class Gtk::Adjustment(0, 0, 999999999, 1, 10, 10));
+//  spinbutton_nummer = manage(new class Gtk::SpinButton(*spinbutton_nummer_adj, 1, 0));
+  spinbutton_nummer = manage(new class Gtk::Entry(8));
   spinbutton_nummer->activate.connect_after(SigC::slot(this,&WTelefon::spinbutton_nummer_activate));
   frame_nummer->set_label_align(0, 0);
   frame_nummer->set_shadow_type(GTK_SHADOW_ETCHED_IN);
@@ -159,8 +160,10 @@ int WTelefon::getVorwahl() const
 
 int WTelefon::getNummer() const
 {
-  gtk_spin_button_update(spinbutton_nummer->gtkobj());
-  return spinbutton_nummer->get_value_as_int();
+//  gtk_spin_button_update(spinbutton_nummer->gtkobj());
+//  return spinbutton_nummer->get_value_as_int();
+  std::string s=spinbutton_nummer->get_text();
+  return atoi(s.c_str());
 }
 
 
@@ -186,7 +189,8 @@ void WTelefon::clear() const
 {
  spinbutton_land->set_value(Telefon::Landeskennzahl);
  spinbutton_vorwahl->set_value(Telefon::Vorwahl);
- spinbutton_nummer->set_value(0);
+// spinbutton_nummer->set_value(0);
+ spinbutton_nummer->set_text("");
  spinbutton_land->grab_focus();
  tree->clear();
 }

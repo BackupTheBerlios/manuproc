@@ -1,4 +1,4 @@
-/* $Id: selFullAufEntry.h,v 1.12 2002/02/28 15:19:29 christof Exp $ */
+/* $Id: selFullAufEntry.h,v 1.13 2002/04/08 14:00:05 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,7 +22,8 @@
 
 #include"Auftrag/sqlAuftragSelector.h"
 #include"Aux/SQLerror.h"
-#include<vector>
+//#include<vector>
+#include <list>
 #include"Auftrag/AufEintrag.h"
 #include"Auftrag/AuftragBase.h"
 #include<ExtBezSchema/ExtBezSchema.h>
@@ -30,12 +31,14 @@
 
 class SelectedFullAufList
 {
+ typedef std::list<AufEintrag> TYP ;
 
 public:
- typedef std::vector<AufEintrag>::const_iterator const_iterator;
- typedef std::vector<AufEintrag>::const_reverse_iterator const_reverse_iterator;
- typedef std::vector<AufEintrag>::iterator iterator;
- std::vector<AufEintrag> aufidliste;
+ typedef TYP::const_iterator const_iterator;
+ typedef TYP::const_reverse_iterator const_reverse_iterator;
+ typedef TYP::iterator iterator;
+ TYP aufidliste;
+ template <class T> void remove(const T &t) { aufidliste.remove(t); }
 
  SelectedFullAufList(const SQLFullAuftragSelector &sel)	throw(SQLerror);
  void insert(const AufEintragBase& aeb) throw(SQLerror);

@@ -16,8 +16,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "Lager.hh"
-#include "Lager_Vormerkungen.hh"
+#include "Lager.h"
+#include "Lager_Vormerkungen.h"
 #include <Auftrag/AufEintrag.h>
 #include <Auftrag/AuftragsEntryZuordnung.h>
 #include <Auftrag/selFullAufEntry.h>
@@ -72,60 +72,8 @@ void Lager::bewegung(bool raus,ArtikelBase artikel,AuftragBase::mengen_t menge)
 Lager::Lager(ppsInstanz::ppsInstId _instanz)
 : instanz(_instanz)
 {
-  check_lager_is_valid();
-}
-
-
-void Lager::check_lager_is_valid()
-{
   if(cH_ppsInstanz(instanz)->LagerInstanz()==ppsInstanz::INST_NONE)
      assert(!"Lager::check_lager_is_valid: Kein gültiges Lager\n");
 }
 
-std::list<Lager::st_menge_sortiert>  Lager::getMengeSorted(ArtikelBase artikel)
-{
- std::map<LagerPlatz,Lager::st_wo_ist_wieviel_rest> M=getPositionSorted(artikel);  
- std::list<st_menge_sortiert> L;
- for(std::map<LagerPlatz,Lager::st_wo_ist_wieviel_rest>::const_iterator i=M.begin();i!=M.end();++i)
-  {
-   L.push_back(st_menge_sortiert(i->first,i->second.volleRollenMeter,
-                        i->second.volleRollen,
-                        i->second.restRollenMeter,
-                        i->second.restRollen,
-                        i->second.GesamtGewichtetMeter));
-  }
- L.sort(Sort());
- return L;
-}
 
-
-
-std::map<LagerPlatz,Lager::st_wo_ist_wieviel_rest> Lager::getPositionSorted(ArtikelBase artikel)
-{
-  std::vector<st_wo_ist_wieviel> V=getPosition(artikel);
-  std::map<LagerPlatz,std::vector<st_wo_ist_wieviel> > M;
-  // sortierung nach Position
-  for(std::vector<st_wo_ist_wieviel>::const_iterator i=V.begin();i!=V.end();++i)
-     M[i->position].push_back(st_wo_ist_wieviel(i->position,i->meter,i->rest,i->code));
-  std::map<LagerPlatz,st_wo_ist_wieviel_rest> MR;
-  const static double restefaktor=0.3;
-  for(std::map<LagerPlatz,std::vector<st_wo_ist_wieviel> >::const_iterator i=M.begin();i!=M.end();++i)
-   {
-     for(std::vector<st_wo_ist_wieviel>::const_iterator j=i->second.begin();j!=i->second.end();++j)
-      {
-        if(j->rest)
-         {
-           MR[i->first].add_restRolle() ;
-           MR[i->first].add_restRolleMeter(j->meter*restefaktor) ;
-           MR[i->first].add_gesamtMeter(j->meter*restefaktor) ;
-         }
-        else 
-         {
-           MR[i->first].add_volleRolle() ;
-           MR[i->first].add_volleRolleMeter(j->meter) ;
-           MR[i->first].add_gesamtMeter(j->meter) ;
-         }
-      }
-   }
-  return MR;
-}

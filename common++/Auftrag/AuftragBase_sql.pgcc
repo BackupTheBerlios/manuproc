@@ -24,7 +24,7 @@
 #include "AufEintrag.h"
 #include <Artikel/ArtikelStamm.h>
 #include <Auftrag/AuftragsEntryZuordnung.h>
-#include <Lager/Lager_Vormerkungen.hh>
+#include <Lager/Lager_Vormerkungen.h>
 
 exec sql include sqlca;
 

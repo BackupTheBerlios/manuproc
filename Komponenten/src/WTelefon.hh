@@ -15,7 +15,8 @@ class WTelefon : public Gtk::Table
    class Gtk::OptionMenu *option_menu;
    class Gtk::SpinButton *spinbutton_land; 
    class Gtk::SpinButton *spinbutton_vorwahl; 
-   class Gtk::SpinButton *spinbutton_nummer; 
+//   class Gtk::SpinButton *spinbutton_nummer; 
+   class Gtk::Entry *spinbutton_nummer;
    class SimpleTree *tree;
 
    std::list<cH_Telefon> TelList;

@@ -28,8 +28,8 @@ AuftragFull::AuftragFull(const AuftragBase& auftrag) throw(SQLerror)
 {
  SelectedFullAufList aufids((SQLFullAuftragSelector)
  			(SQLFullAuftragSelector::sel_Aufid(auftrag)));
- for(std::vector<AufEintrag>::iterator i = aufids.aufidliste.begin();
-				 	 i!=aufids.aufidliste.end(); i++)
+ for(SelectedFullAufList::iterator i = aufids.aufidliste.begin();
+				 	 i!=aufids.aufidliste.end(); ++i)
  {  try { eintragliste.push_back(*i);
     } catch (SQLerror &e)
     {  if(e.Code() != 100) throw;

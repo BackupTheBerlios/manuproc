@@ -1,4 +1,4 @@
-// $Id: JumboRolle.h,v 1.1 2002/02/08 21:51:26 christof Exp $
+// $Id: JumboRolle.h,v 1.2 2002/04/08 14:00:05 christof Exp $
 
 #ifndef _JUMBOROLLE_HH
 #  define _JUMBOROLLE_HH
@@ -23,7 +23,6 @@ class JumboRolle
 public:
             
   enum Jumbo_Status{Gedruckt=0, Gewebt, ImLager, Verarbeitet};
-  
         
   // I do not like id in this struct too much CP            
  struct st_inventur
@@ -59,7 +58,7 @@ public:
  int Code() const {return code;} // Mit Prüfziffer!
  bool Rest() const {return rest;}
  std::string CodeStr() const;
- std::string artBezeichnung() const { return ArtikelBezeichnung(artikel).Bezeichnung();}
+ std::string artBezeichnung() const { return cH_ArtikelBezeichnung(artikel)->Bezeichnung();}
  std::string MeterStr() const;
  int Meter() const;
  std::string verarbDatum() const { return verarbdatum.Datum().c_str();}

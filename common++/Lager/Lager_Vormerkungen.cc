@@ -1,4 +1,4 @@
-#include "Lager_Vormerkungen.hh"
+#include "Lager_Vormerkungen.h"
 #include <Artikel/ArtikelStamm.h>
 #include <Artikel/ArtikelBaum.h>
 #include <Auftrag/Auftrag.h>

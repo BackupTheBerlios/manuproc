@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.3 2002/03/20 07:43:31 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.4 2002/04/08 14:00:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,7 +26,7 @@
 #include <Aux/Changejournal.h>
 #include "selFullAufEntry.h"
 #include <Auftrag/AuftragsEntryZuordnung.h>
-#include <Lager/Lager_Vormerkungen.hh>
+#include <Lager/Lager_Vormerkungen.h>
 
 exec sql include sqlca;
 
@@ -363,7 +363,8 @@ AufEintrag::AufEintrag(const AufEintragBase &aebb) throw (SQLerror,NoAEB_Error)
   if ( aufids.aufidliste.size()!=1 ) throw NoAEB_Error(aufids.aufidliste.size());
 //  assert(aufids.aufidliste.size()==1);
 
-  (*this)=aufids.aufidliste[0];
+//  (*this)=aufids.aufidliste[0];
+  *this=*(aufids.aufidliste.begin());
  } catch (SQLerror &e) {std::cerr << e <<'\n';}
 }
 

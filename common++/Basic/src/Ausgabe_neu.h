@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.h,v 1.6 2001/10/23 08:45:18 christof Exp $ */
+/* $Id: Ausgabe_neu.h,v 1.7 2002/04/08 14:00:05 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,6 +23,8 @@
 #include <iostream>
 #include <Aux/fixedpoint.h>
 #include <cmath>
+
+const std::string FormatiereEmptyInt(unsigned long Zahl);
 
 const std::string Formatiere(unsigned long Zahl,
                 unsigned int Nachkommastellen=0,

@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.2 2002/02/28 15:19:29 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.3 2002/04/08 14:00:05 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -39,7 +39,7 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
 
    AuftragBase::mengen_t menge(anzahl);
    Einheit e(artikel);
-   if (e==Einheit::Stueck) mengeneinheit=0;
+   if (!e.hatMenge() || e.MengeIstWaehrung()) mengeneinheit=0;
    else menge *= mengeneinheit;
 
    if (auftraglist.aufidliste.begin()==auftraglist.aufidliste.end())
@@ -64,7 +64,7 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
            
            int lstueck=1;
            LieferscheinBase::mengen_t lmenge=0;
-           if (e==Einheit::Stueck) lstueck=int(float(abmenge)+.5);
+           if (!e.hatMenge()) lstueck=int(float(abmenge)+.5);
            else lmenge=abmenge;
            LieferscheinEntry(*this,*i,artikel,lstueck,lmenge,0,true);
            
@@ -76,7 +76,7 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
         {  
            int lstueck=1;
            LieferscheinBase::mengen_t lmenge=0;
-           if (e==Einheit::Stueck) lstueck=int(float(menge)+.5);
+           if (!e.hatMenge()) lstueck=int(float(menge)+.5);
            else lmenge=menge;
            LieferscheinEntry(*this,artikel,lstueck,lmenge,0,true);
         }

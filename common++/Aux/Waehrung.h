@@ -1,4 +1,4 @@
-// $Id: Waehrung.h,v 1.7 2002/02/28 15:19:29 christof Exp $
+// $Id: Waehrung.h,v 1.8 2002/04/08 14:00:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -41,27 +41,30 @@ public:
  
 private:
  ID wid;  
- std::string kurz;
+ std::string kurz,tex;
  std::string lang;
- double dmfkt;
+ double faktor;
 
 public:
  Waehrung(ID id) throw(SQLerror);
- Waehrung() : wid(default_id), dmfkt(0) {}
- Waehrung(ID id, const std::string k, const std::string l, double f)
- 	: wid(id), kurz(k), lang(l), dmfkt(f) {}
+ Waehrung() : wid(default_id), faktor(0) {}
+ Waehrung(ID id, const std::string k, const std::string l, const std::string tx, double f)
+ 	: wid(id), kurz(k), tex(tx), lang(l), faktor(f) {}
  ID Id() const { return wid; }
  
- enum_t get_enum() const {return (enum_t)wid;} // finde ich praktischer als Id() MAT
- static double Umrechnung(const Waehrung &von, const Waehrung &nach);
+ // finde ich praktischer als Id() MAT. ich nicht! CP
+ ID get_enum() const { return wid; } 
+ 
+ static double Umrechnung(const Waehrung &von, const Waehrung &nach)
+ { return von.faktor/nach.faktor; }
  const std::string Kurzbezeichnung() const { return kurz; }
  const std::string Langbezeichnung() const { return lang; }
- // das sollte natuerlich etwas ausgefeilter werden!
- const std::string TeXsymbol() const; //  { return Kurzbezeichnung(); }
+ const std::string TeXsymbol() const  { return tex; }
  bool operator==(const Waehrung &b) const { return wid==b.wid; }
 }; 
 
 // Vorsicht !!! Dass dies ein cP ist, funktioniert nur wegen des Caches
+// und der Tatsache dass sich praktisch nie etwas hier dran aendern wird
 class cP_Waehrung : public Pointer<const Waehrung>
 {public:
 	typedef Waehrung::ID ID;
@@ -76,4 +79,7 @@ public:
 	cP_Waehrung(ID id);
 	cP_Waehrung(const Waehrung *w) : Pointer<const Waehrung>(w) {}
 };
+
+// damit (fast) egal ist, wie es realisiert ist 
+typedef cP_Waehrung cH_Waehrung;
 #endif 

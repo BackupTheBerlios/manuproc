@@ -1,4 +1,4 @@
-#include "Lager_Vormerkungen.hh"
+#include "Lager_Vormerkungen.h"
 #include <Aux/Transaction.h>
 exec sql include sqlca;
 #include <Aux/SQLerror.h>

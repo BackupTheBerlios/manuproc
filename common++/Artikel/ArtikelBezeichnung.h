@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.h,v 1.14 2001/12/19 11:02:08 christof Exp $
+// $Id: ArtikelBezeichnung.h,v 1.15 2002/04/08 14:00:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -90,15 +90,17 @@ private:
  void setID(const ArtikelBase::ID &id) throw(SQLerror)
  {  *this=ArtikelBezeichnung(id,schema->Id()); }
 
-public:
+// nur über cH_ArtikelBezeichnung verwenden !!!
  ArtikelBezeichnung(const ArtikelBase &artikel,
  	const ExtBezSchema::ID schema=ExtBezSchema::default_id) throw();
- ArtikelBezeichnung() : schema(ExtBezSchema::default_id) {}
 
 /// Artikel zu der externen Bezeichnung für einen Kunden erzeugen 
 /// (ID nach Bezeichnung ermitteln)
 /// Vorsicht: Der Artikeltyp muss stimmen!
  ArtikelBezeichnung(int signifikanz, const std::vector<cH_EntryValue> &values, const cH_ExtBezSchema &schema) throw(SQLerror);
+
+public:
+ ArtikelBezeichnung() : schema(ExtBezSchema::default_id) {}
 
  std::string Bezeichnung(int signifikanz=1, char separator=0,int felder=-1) const throw();
  std::string Komponente(int feldnr,int signifikanz=1) const throw()
@@ -124,8 +126,6 @@ public:
                                   (a3==b3 && a4 <b4)))));
          }
 
-// bloedes Konzept !!! eine Map waere besser als dieser HACK (erhoehen um 1)
-// bitte so nicht mehr verwenden
  const_sigiterator begin() const
  {  return sigbegin(1);
  }
@@ -148,7 +148,7 @@ public:
  // Zuweisung nicht sinnvoll !? daher const,
  // this might be not the right function for you, use sigbegin()/sigend() !
  const cH_EntryValue operator[](int feld) const throw(SQLerror)
- {  return feld<(int)value.size()?value[feld]:cH_EntryValueIntString("?"); }
+ {  return feld<(int)value.size()?value[feld]:cH_EntryValue(); }
 
 #if (defined PETIG_EXTENSIONS)  || (defined MABELLA_EXTENSIONS)
  int Breite() const { return Komponente_als_EntryValue(1,1)->getIntVal(); }

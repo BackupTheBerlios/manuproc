@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.12 2002/04/03 06:38:09 christof Exp $
+// $Id: Kunde.cc,v 1.13 2002/04/08 14:00:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -45,7 +45,7 @@ H_Kunde::H_Kunde(Kunde::ID id)
 }
 
 
-const std::string Kunde::LaTeX_von(Kunde::ID kundennummer_von) const
+const std::string Kunde::LaTeX_von() const
 {
   std::string s="\\underline{\\scriptsize ";
   s+= string2TeX(getName()+", ");
@@ -59,10 +59,36 @@ const std::string Kunde::LaTeX_von(Kunde::ID kundennummer_von) const
   else
     s+= string2TeX(adresse.strasse +" "+adresse.hsnr+", "+
 		lkz+adresse.plz+" "+adresse.ort);
-  if(kundennummer_von!=none_id) s+="\\qquad KdNr: "+Kunde(kundennummer_von).UnsereKundenNr(); 
+//  if(kundennummer_von!=none_id) s+="\\qquad KdNr: "+Kunde(kundennummer_von).UnsereKundenNr(); 
   s+= "}\\\\[3mm]\n";
   return  s;
 }
+
+const std::string Kunde::LaTeX_von_gross(const ID kid) const
+{
+  std::string s="\\parbox[t]{7cm}{\\footnotesize\\raggedleft ";
+  s+= string2TeX(getName())+"\\\\\n";
+  s+= string2TeX(strasse()+" "+hausnr())+"\\\\\n";
+  s+= string2TeX(plz()+" "+ort())+"\\\\\n";
+  s+= string2TeX("Tel. "+get_first_telefon(TEL_TEL))+"\\\\\n";
+  s+= string2TeX("Fax. "+get_first_telefon(TEL_FAX))+"\\\\[1ex]\n";
+  s+= "\\normalsize\n";
+  s+= string2TeX("Kd.-Nr. "+cH_Kunde(kid)->UnsereKundenNr())+"\\\\\n";
+  s+= "}\\\\[6mm]\n";
+  return  s;
+}
+
+std::string Kunde::get_first_telefon(const TelArt& art) const
+{
+ std::list<cH_Telefon> L=getTelefon();
+ for(std::list<cH_Telefon>::const_iterator i=L.begin();i!=L.end();++i)
+  {
+    if((*i)->TelefonArt()==art) return (*i)->NummerStr(); 
+  }
+ return "";
+}
+
+
 
 const std::string Kunde::LaTeX_an(bool liefer,TelArt telart) const
 {
@@ -85,7 +111,6 @@ const std::string Kunde::LaTeX_an(bool liefer,TelArt telart) const
   s+="{\\large ";
 #endif
   s+="Firma \\\\";
-
   s+= string2TeX(getName(),NEEDCHAR) +"\\\\";
   if (!postanwvor().empty()) s+= string2TeX(postanwvor(),NEEDCHAR) +"\\\\";
   s += string2TeX(strasse_postfach,NEEDCHAR); 
@@ -95,16 +120,19 @@ const std::string Kunde::LaTeX_an(bool liefer,TelArt telart) const
        					"}"
 #endif
 					   "}\n";
+  if(telart==TEL_NONE)
+    return s;
+
+
   std::string s2;
-  if(telart!=TEL_NONE)
-   {
-     std::list<cH_Telefon> T=getTelefon();
-     s2+="\\hfill\n\\parbox[t]{5cm}{\\scriptsize\\flushright~\n";
-     for(std::list<cH_Telefon>::const_iterator i=T.begin();i!=T.end();++i)
-      {s2+= "\t"+ (*i)->ArtString() +" "+(*i)->NummerStr()+"\\\\\n"; }
-     s2 +="}";
-   }
-  return  s+s2;
+  std::list<cH_Telefon> T=getTelefon();
+  s2+="\\parbox[t]{5cm}{\\scriptsize~\\\\\\vfill\n";
+  for(std::list<cH_Telefon>::const_iterator i=T.begin();i!=T.end();++i)
+     {s2+= (*i)->ArtString() +" "+(*i)->NummerStr()+"\\\\\n"; }
+  s2 +="}";
+
+  std::string p="\\parbox[t]{5cm}{"+s+s2+"}\n";
+  return  p;
 }
 
 

@@ -80,15 +80,17 @@ libcommon___a_LIBADD= \
 		Kunde/Telefon.o \
 		Lager/FertigWaren_sql.o \
 		Lager/FertigWarenLager_sql.o \
+		Lager/JumboLager.o \
+		Lager/JumboLager_sql.o \
 		Lager/JumboRolle.o \
 		Lager/JumboRolle_sql.o \
       Lager/LagerPlatz.o \
       Lager/Lager.o \
-      Lager/Lager_sql.o \
       Lager/Lager_Dispo_sql.o \
 		Lager/Lager_Vormerkungen.o \
 		Lager/Lager_Vormerkungen_sql.o \
 		Lager/maschinen_geschwindigkeit_sql.o \
+      Lager/RohwarenLager_sql.o \
 		Lieferschein/Lieferschein.o \
 		Lieferschein/LieferscheinEntry_sql.o \
 		Lieferschein/LieferscheinList.o \

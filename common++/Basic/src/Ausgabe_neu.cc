@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.cc,v 1.5 2002/01/22 09:15:55 christof Exp $ */
+/* $Id: Ausgabe_neu.cc,v 1.6 2002/04/08 14:00:05 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -122,6 +122,13 @@ std::string string2TeX(const std::string s, int flags) throw()
 }
 
 #include <strstream>
+
+const std::string FormatiereEmptyInt(unsigned long Zahl)
+{
+  std::string s=Formatiere(Zahl);
+  if(s=="0") return "";
+  return s;
+}
 
 const std::string Formatiere(unsigned long Zahl,
                 unsigned int Nachkommastellen,

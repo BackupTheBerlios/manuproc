@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Einheiten.h,v 1.7 2002/02/08 21:47:14 christof Exp $
+// $Id: Einheiten.h,v 1.8 2002/04/08 14:00:05 christof Exp $
 
 #ifndef ARTIKEL_EINHEITEN_H
 #define ARTIKEL_EINHEITEN_H
@@ -26,6 +26,7 @@
 #include <Aux/CacheStatic.h>
 //#include <Aux/Handles.h>
 #include <vector>
+#include <Aux/Waehrung.h>
 
 class Einheit //: public HandleContent
 {
@@ -37,6 +38,7 @@ public:
 private:
 	enum Einheiten einh;
 	std::string bez_anzahl,tex_anzahl, bez_menge,tex_menge;
+	Waehrung::ID waehrung;
 	
 	typedef CacheStatic<Einheiten,Einheit> cache_t;
 	static cache_t cache;
@@ -44,7 +46,7 @@ private:
 	// nicht auskommentieren !!! wichtige Fehlerabfrage
 	Einheit(int x); // not defined, use ID!
 	
-	Einheit() : einh(default_id) {}
+	Einheit() : einh(default_id), waehrung(Waehrung::ID(0)) {}
 	friend class map<Einheiten,Einheit>;
 
 public:
@@ -71,7 +73,17 @@ public:
 	std::string MengenEinheit_TeX() const
 	{  return tex_menge; }
 	std::string TeX() const;
-
+	
+	bool hatAnzahl() const
+	{  return true; } // hmmm, sobald ich es jemals brauche wird es geändert CP 
+	bool hatMenge() const
+	{  return !bez_menge.empty();
+	}
+	
+	bool MengeIstWaehrung() const
+	{  return waehrung!=0; }
+	Waehrung::ID getWaehrung() const
+	{  return waehrung; }
 
         static vector<Einheit> alleEinheiten();
 };

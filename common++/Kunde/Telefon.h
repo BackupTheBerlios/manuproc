@@ -1,4 +1,4 @@
-// $Id: Telefon.h,v 1.7 2002/03/20 07:43:31 christof Exp $
+// $Id: Telefon.h,v 1.8 2002/04/08 14:00:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -75,6 +75,7 @@ public:
  std::string NummerStr() const;
  ID Id() const { return telid; } 
 
+ TelArt TelefonArt() const {return nummer.art;}
  std::string ArtString() const;
  Kunde::ID getKunde() const { return kunde; }
  Person::ID getPerson() const { return person; }
