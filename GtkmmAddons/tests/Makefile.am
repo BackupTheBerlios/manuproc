@@ -1,10 +1,10 @@
-# $Id: Makefile.am,v 1.1 2003/01/06 15:07:33 christof Exp $
+# $Id: Makefile.am,v 1.2 2003/04/08 08:56:54 christof Exp $
 
 SUBDIRS=close_window
 
-CXXFLAGS=-I$(top_srcdir)/searchcombo/src -I$(top_srcdir)/src @CFLAGS@
+AM_CXXFLAGS=-I$(top_srcdir)/searchcombo/src -I$(top_srcdir)/src
 
-EXTRA_PROGRAMS = nsc_test sccont_test optionmenu
+EXTRA_PROGRAMS = nsc_test sccont_test optionmenu db_test
 
 sccont_test_SOURCES = sccont_test.cc
 sccont_test_LDADD = $(top_srcdir)/src/libGtkmmAddons.a
@@ -12,9 +12,12 @@ sccont_test_LDADD = $(top_srcdir)/src/libGtkmmAddons.a
 nsc_test_SOURCES = nsc_test.cc
 nsc_test_LDADD = $(top_srcdir)/src/libGtkmmAddons.a
 
+db_test_SOURCES = db_test.cc
+db_test_LDADD = $(top_srcdir)/src/libGtkmmAddons.a
+
 optionmenu_SOURCES = optionmenu.cc
 optionmenu_LDADD = $(top_srcdir)/src/libGtkmmAddons.a
 
 INCLUDES = -I$(top_srcdir)/searchcombo/src -I$(top_srcdir)/src @GTKMM_CFLAGS@ 
-LDFLAGS = @GTKMM_LIBS@
+AM_LDFLAGS = @GTKMM_LIBS@
 

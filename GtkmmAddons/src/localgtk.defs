@@ -7,6 +7,13 @@
   (gtype-id "GTK_TYPE_SEARCH_COMBO")
 )
 
+(define-object DoubleButton
+  (in-module "ManuProC")
+  (parent "GtkButton")
+  (c-name "doublebutton")
+  (gtype-id "TYPE_DOUBLEBUTTON")
+)
+
 ;; Enumerations and flags ...
 
 (define-enum SCContext
@@ -160,6 +167,15 @@
 )
 
 ;; by hand ... ?
+
+(define-signal secondpressed
+  (of-object "doublebutton")   
+  (return-type "void")
+  (when "first")
+  (parameters  
+    '("int" "button")
+  )
+)
 
 (define-property case-sensitive
   (of-object "GtkSearchCombo")

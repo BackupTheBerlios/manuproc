@@ -1,8 +1,8 @@
-# $Id: Makefile.am,v 1.2 2003/01/10 17:12:08 christof Exp $
+# $Id: Makefile.am,v 1.3 2003/04/08 08:56:54 christof Exp $
 
 CLEANFILES = *~
 
-GTKMMTOOLS=$(HOME)/sourceforge/gtkmm-2.0/tools
+GTKMMTOOLS=$(HOME)/sourceforge/gtkmm-2.2/tools
 
 INCLUDES = -I. -I$(top_srcdir)/searchcombo/src @GTKMM_CFLAGS@ 
 
@@ -17,12 +17,13 @@ noinst_HEADERS = green_minus.xpm red_plus.xpm
 libGtkmmAddons_a_SOURCES = Gtk_OStream_label.cc \
 		 Gtk_OStream_optionmenu.cc Gtk_OStream_stream.cc \
 		 SearchCombo.cc TeX.cc Gtk_OStream.cc \
-		 gtksearchcombo.c Gtk_OStream_TreeView.cc
+		 gtksearchcombo.c Gtk_OStream_TreeView.cc \
+		 DoubleButton.cc doublebutton.c
 
 BUILT_SOURCES=SearchCombo.cc SearchCombo.h gtksearchcombo.c gtksearchcombo.h \
-	gtkmm
+	gtkmm DoubleButton.h DoubleButton.cc doublebutton.c doublebutton.h
 
-EXTRA_DIST=SearchCombo.gen_h private/SearchCombo_p.h
+EXTRA_DIST=SearchCombo.hg SearchCombo.ccg private/SearchCombo_p.h
 
 gtkmm:
 	ln -sf . gtkmm
@@ -31,9 +32,10 @@ SearchCombo.cc SearchCombo.h: gtkmm SearchCombo.hg SearchCombo.ccg
 	if [ ! -d private ] ; then mkdir private ; fi
 	echo perl -I$(GTKMMTOOLS)/pm $(GTKMMTOOLS)/gtkmmproc -I $(GTKMMTOOLS)/m4 --defs . SearchCombo . .
 
-gtksearchcombo.h: $(top_srcdir)/searchcombo/src/gtksearchcombo.h
-	ln -s $(top_srcdir)/searchcombo/src/gtksearchcombo.h .
+DoubleButton.cc DoubleButton.h: gtkmm DoubleButton.hg DoubleButton.ccg
+	if [ ! -d private ] ; then mkdir private ; fi
+	echo perl -I$(GTKMMTOOLS)/pm $(GTKMMTOOLS)/gtkmmproc -I $(GTKMMTOOLS)/m4 --defs . DoubleButton . .
 
-gtksearchcombo.c: $(top_srcdir)/searchcombo/src/gtksearchcombo.c
-	ln -s $(top_srcdir)/searchcombo/src/gtksearchcombo.c .
-
+gtksearchcombo.h gtksearchcombo.c doublebutton.c doublebutton.h \
+		: $(top_srcdir)/searchcombo/src/$@
+	ln -sf $(top_srcdir)/searchcombo/src/$@ .

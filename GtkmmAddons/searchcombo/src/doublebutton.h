@@ -1,4 +1,4 @@
-// $Id: doublebutton.h,v 1.1 2003/04/07 16:16:15 christof Exp $
+// $Id: doublebutton.h,v 1.2 2003/04/08 08:56:54 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -27,26 +27,26 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define GTK_TYPE_DOUBLEBUTTON                 (doublebutton_get_type ())
-#define GTK_DOUBLEBUTTON(obj)                 (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_DOUBLEBUTTON, GtkDoubleButton))
-#define GTK_DOUBLEBUTTON_CLASS(klass)         (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_DOUBLEBUTTON, GtkDoubleButtonClass))
-#define GTK_IS_DOUBLEBUTTON(obj)              (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_DOUBLEBUTTON))
-#define GTK_IS_DOUBLEBUTTON_CLASS(klass)      (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_DOUBLEBUTTON))
-#define GTK_DOUBLEBUTTON_GET_CLASS(obj)       (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_DOUBLEBUTTON, GtkDoubleButtonClass))
+#define TYPE_DOUBLEBUTTON                 (doublebutton_get_type ())
+#define DOUBLEBUTTON(obj)                 (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_DOUBLEBUTTON, doublebutton))
+#define DOUBLEBUTTON_CLASS(klass)         (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_DOUBLEBUTTON, doublebuttonClass))
+#define IS_DOUBLEBUTTON(obj)              (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_DOUBLEBUTTON))
+#define IS_DOUBLEBUTTON_CLASS(klass)      (G_TYPE_CHECK_CLASS_TYPE ((klass), TYPE_DOUBLEBUTTON))
+#define DOUBLEBUTTON_GET_CLASS(obj)       (G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_DOUBLEBUTTON, doublebuttonClass))
 
-typedef struct _DoubleButton       DoubleButton;
-typedef struct _DoubleButtonClass  DoubleButtonClass;
+typedef struct _doublebutton       doublebutton;
+typedef struct _doublebuttonClass  doublebuttonClass;
 
-struct _DoubleButton
+struct _doublebutton
 {
   GtkButton button;
 };
 
-struct _DoubleButtonClass
+struct _doublebuttonClass
 {
   GtkButtonClass        parent_class;
   
-  void (* secondpressed)  (DoubleButton *button, int mbutton);
+  void (* secondpressed)  (doublebutton *button, int mbutton);
 };
 
 GType          doublebutton_get_type          (void) G_GNUC_CONST;

@@ -1,4 +1,4 @@
-// $Id: doublebutton.c,v 1.3 2003/04/08 06:57:13 christof Exp $
+// $Id: doublebutton.c,v 1.4 2003/04/08 08:56:54 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -23,8 +23,8 @@
 
 enum { SECONDPRESSED, LAST_SIGNAL };
 
-static void doublebutton_class_init     (DoubleButtonClass   *klass);
-static void doublebutton_init           (DoubleButton        *button);
+static void doublebutton_class_init     (doublebuttonClass   *klass);
+static void doublebutton_init           (doublebutton        *button);
 static gboolean doublebutton_button_press (GtkWidget      *widget, GdkEventButton *event);
 static gboolean doublebutton_expose (GtkWidget *widget, GdkEventExpose *event);
 
@@ -39,25 +39,25 @@ GType          doublebutton_get_type          (void)
     {
       static const GTypeInfo button_info =
       {
-	sizeof (DoubleButtonClass),
+	sizeof (doublebuttonClass),
 	NULL,		/* base_init */
 	NULL,		/* base_finalize */
 	(GClassInitFunc) doublebutton_class_init,
 	NULL,		/* class_finalize */
 	NULL,		/* class_data */
-	sizeof (DoubleButton),
+	sizeof (doublebutton),
 	0,		/* n_preallocs */
 	(GInstanceInitFunc) doublebutton_init,
       };
 
-      button_type = g_type_register_static (GTK_TYPE_BUTTON, "DoubleButton",
+      button_type = g_type_register_static (GTK_TYPE_BUTTON, "doublebutton",
 					    &button_info, 0);
     }
 
   return button_type;
 }
 
-void doublebutton_class_init(DoubleButtonClass *klass)
+void doublebutton_class_init(doublebuttonClass *klass)
 {  GtkObjectClass *object_class = (GtkObjectClass*) klass;
    GtkWidgetClass *widget_class = (GtkWidgetClass*) klass;
 
@@ -71,21 +71,21 @@ void doublebutton_class_init(DoubleButtonClass *klass)
    doublebutton_signals[SECONDPRESSED]= g_signal_new ("secondpressed",
                   G_OBJECT_CLASS_TYPE (object_class),
                   G_SIGNAL_RUN_FIRST,
-                  G_STRUCT_OFFSET (DoubleButtonClass, secondpressed),
+                  G_STRUCT_OFFSET (doublebuttonClass, secondpressed),
                   NULL, NULL,
                   g_cclosure_marshal_VOID__INT,
                   G_TYPE_NONE, 1, G_TYPE_INT);
 }
 
-void doublebutton_init(DoubleButton *button)
+void doublebutton_init(doublebutton *button)
 {
 }
 
 GtkWidget*     doublebutton_new               (void)
-{  return g_object_new (GTK_TYPE_DOUBLEBUTTON, NULL);
+{  return g_object_new (TYPE_DOUBLEBUTTON, NULL);
 }
 
-void doublebutton_paint         (DoubleButton    *button,
+void doublebutton_paint         (doublebutton    *button,
                                 GdkRectangle *area,  
                                 GtkStateType  state_type,
                                 GtkShadowType shadow_type,

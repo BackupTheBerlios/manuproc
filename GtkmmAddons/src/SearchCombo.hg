@@ -1,4 +1,4 @@
-/* $Id: SearchCombo.hg,v 1.1 2003/01/06 15:07:33 christof Exp $ */
+/* $Id: SearchCombo.hg,v 1.2 2003/04/08 08:56:54 christof Exp $ */
 
 /* searchcombo.h
  * 
@@ -19,12 +19,8 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-//#include <glibmm/listhandle.h>
-//#include <glibmm/helperlist.h>
 #include <gtkmm/box.h>
 #include <gtksearchcombo.h>
-//#include <gtkmm/entry.h>
-//#include <gtkmm/item.h>
 _DEFS(gtkmm,localgtk)
 _PINCLUDE(gtkmm/private/box_p.h)
 
