@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.19 2003/10/07 06:29:17 christof Exp $
+// $Id: db_upgrade.cc,v 1.20 2003/10/21 11:01:46 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -51,6 +51,33 @@ bool check_column(const std::string &table, const std::string &column,
    return false;
 }
 
+bool check_table(const std::string &table, const std::string &definition="")
+{ int oid;
+  try
+  {Query("select oid from pg_class where relname=?") 
+	<< table
+	>> oid;
+  } catch (SQLerror &e)
+  {  if (!definition.empty()) 
+     {  std::string q="create table "+table+" ("+definition+")";
+        std::cout << q << '\n';
+        Query x(q);
+     }
+     return true;
+  }
+  return false;
+}
+
+void Query_nt(const std::string &s)
+{  try
+   { Query q(s);
+     std::cout << s << '\n';
+   } 
+   catch (SQLerror &e)
+   {  std::cerr << s << ": " <<e << '\n';
+   }
+}
+
 int main(int argc,char *argv[])
 {
   ManuProC::PrintUncaughtExceptions();
@@ -80,7 +107,7 @@ int main(int argc,char *argv[])
   check_column("rechnungentry","provsatz","numeric(4,2)");
   check_column("rechnung","an_fibu_am","date");
   if(check_column("rechnung","fibu_buchid","integer"))
-    Query("ALTER TABLE rechnung add foreign key (fibu_buchid)"
+    Query_nt("ALTER TABLE rechnung add foreign key (fibu_buchid)"
 	" references buchung (buchungid)");
   
 
@@ -103,19 +130,19 @@ int main(int argc,char *argv[])
   // Preislisten
   if(check_column("ku_preisliste","art","char(1)"))
     {
-     Query("update ku_preisliste set art='V'");
-     Query("alter table ku_preisliste alter art set not null");
-     Query("alter table ku_preisliste alter art set not null");
+     Query_nt("update ku_preisliste set art='V'");
+     Query_nt("alter table ku_preisliste alter art set not null");
+     Query_nt("alter table ku_preisliste alter art set not null");
     }
 
   // FiBu
   check_column("buchjournal","geschlossen_am","date");
   if(check_column("buchung","buchungid","integer"))
     {
-     Query("alter table buchung alter buchung set not null");
-     Query("create sequence buchung_id_seq");
-     Query("alter table buchung alter buchungid set default nextval('buchung_id_seq')");
-     Query("create unique index buchung_uniq on buchung (buchungid)");
+     Query_nt("alter table buchung alter buchung set not null");
+     Query_nt("create sequence buchung_id_seq");
+     Query_nt("alter table buchung alter buchungid set default nextval('buchung_id_seq')");
+     Query_nt("create unique index buchung_uniq on buchung (buchungid)");
     }
      
 
@@ -126,13 +153,28 @@ int main(int argc,char *argv[])
   
   // Vertriebsabrechnung
   if (check_column("rechnung","kurs","numeric(10,5)"))
-  { Query("update rechnung set kurs=(select fkt from waehrung where "
+  { Query_nt("update rechnung set kurs=(select fkt from waehrung where "
   		"waehrung.wid=rechnung.waehrung)");
   }
   // haben wir uns nicht dagegen entschieden?
   // if (check_column("waehrung","eufkt","numeric(10,5)"))
-  //    Query("update  waehrung set eufkt=fkt");
+  //    Query_nt("update  waehrung set eufkt=fkt");
   check_column("rechnungentry","ek_preis","numeric(10,2)");
+  
+  // schaerangaben nun in webangaben mit drin
+  if (!check_table("webangaben"))
+  {  check_column("webang_faeden","kettscheibe","integer");
+     // für geteilte Ketten (Kantketten)
+     check_column("webang_faeden","max_kettlaenge","integer");
+     // für kombinierte Ketten
+     check_column("webang_faeden","max_fadenzahl","integer"); 
+
+     // references?     
+     if (check_table("webang_variante","artikel integer not null,"
+     		"altmaterial integer not null,"
+     		"neumaterial integer not null"))
+        Query_nt("create index webang_variante_art on webang_variante(artikel)");
+  }
   
   ManuProC::dbdisconnect();
   return 0;
