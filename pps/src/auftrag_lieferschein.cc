@@ -598,8 +598,10 @@ void auftrag_lieferschein::on_daten_leaf_selected(cH_RowDataBase d)
  else    
     lieferzeile_delete->set_sensitive(false);
  AufEintrag AE;
- try{ AE=dt->getAufEintragBase();}
- catch(AufEintrag::NoAEB_Error &e){}
+ if (!!dt->getAufEintragBase())
+ {  try{ AE=dt->getAufEintragBase();}
+    catch(AufEintrag::NoAEB_Error &e){}
+ }
  if(dt->istZusatzinfo()) button_zeile_modifizieren->set_sensitive(false);
  else                    button_zeile_modifizieren->set_sensitive(true);
  fill_input(AE,dt->get_LieferscheinEntry());

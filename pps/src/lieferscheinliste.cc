@@ -140,39 +140,23 @@ void lieferscheinliste::fill_tree()
   tree->detach_from_clist();
   std::vector<cH_RowDataBase> datavec;
   double size=LL.Size();
+ label_anzahl->set_text("Insgesamt "+itos(LL.Size())+" Eintr‰ge");
+ label_anzahl->show();
   double count=0;
 
   for (LieferscheinList::const_iterator i=LL.begin();i!=LL.end();++i)
    {
      Rechnung R;
      if((*i)->RngNr()!=ManuProcEntity<>::none_id) R = Rechnung((*i)->RngNr());
-//   cH_Lieferschein L(instanz,(*i)->Id());
-//   cH_LieferscheinVoll LV(instanz,(*i)->Id());
      for (std::vector<LieferscheinEntryBase>::const_iterator j=LL.begin((*i)->Id());
      		j!=LL.end((*i)->Id()); ++j)
-//	{if(artbase.Id()!=ArtikelBase::none_id) 
-		// man muﬂ noch LieferscheinVoll um Bedingungen erg‰nzen um
-		// das hier einzusparen (z.B. auf Artikel beschr.)
-//	   {ArtikelBase::ID aid=(*j).ArtikelID();
-//	    if( aid == artbase.Id())
-//             datavec.push_back(new Data_LListe(*i,*j,R));
-//	   }
-//	 else
-//	{try{
-             datavec.push_back(new Data_LListe(*i,LieferscheinEntry(*j),R,
+        datavec.push_back(new Data_LListe(*i,LieferscheinEntry(*j),R,
              	Data_LListe::KumVal(reinterpret_cast<int>(date_cumulate->get_menu()->get_active()->get_user_data()))
              	));
-//             }
-//	 catch (SQLerror &e) 
-//   	   {meldung->Show(e); return;}             
-//        }
-//	}
       progressbar->set_percentage(count/size);
       while(Gtk::Main::events_pending()) Gtk::Main::iteration() ;
       ++count;
    }
- label_anzahl->set_text("Insgesamt "+itos(datavec.size())+" Eintr‰ge");
- label_anzahl->show();
  tree->setDataVec(datavec);
  tree->attach_to_clist();
  progressbar->set_percentage(1);

@@ -14,7 +14,16 @@ const cH_EntryValue Data_LListe::Value(guint seqnr,gpointer gp) const
       return AB->Komponente_als_EntryValue(seqnr-ARTIKEL);
     }
    case KUNDE : return cH_EntryValueIntString(cH_Kunde(liefer->KdNr())->firma());
-   case AUFTRAG : return cH_EntryValueIntString(itos(entry.RefAuftrag().Id())+" ("+itos(entry.AufZeile())+")");
+   case AUFTRAG : 
+     {  std::string res;
+        std::vector<LieferscheinEntry::st_AuftragMenge> V=entry.getAuftragsMenge();
+        
+        for (std::vector<LieferscheinEntry::st_AuftragMenge>::const_iterator i=V.begin();i!=V.end();++i)
+        {  if (!i->ab) res+="- ";
+           else res+=itos(i->ab.Id())+" ";
+        }
+        return cH_EntryValueIntString(res);
+     }
    case LIEFERNR :return cH_EntryValueIntString( entry.Id());
    case LIEFERDATUM : 
    	{switch(option_timecumulate) {

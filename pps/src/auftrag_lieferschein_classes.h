@@ -67,8 +67,8 @@ class Data_Lieferdaten : public RowDataBase
 
   int get_Lieferschein_Id() const {return liefentry.Id();}
   LieferscheinEntry get_LieferscheinEntry() const {return liefentry;}
-  __deprecated AufEintragBase getAufEintragBase() const {return liefentry.getAufEintragBase();}
   bool istZusatzinfo() const {return zusatzinfo;}
+  AufEintragBase getAufEintragBase() const { return AEB; }
 };
 
 class cH_Data_Lieferdaten : public Handle<const Data_Lieferdaten>
