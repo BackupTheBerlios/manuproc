@@ -26,6 +26,7 @@
 #include <Aux/Ausgabe_neu.h>
 #include <Aux/dbconnect.h>
 #include <unistd.h>
+//#include <Auftrag/ppsInstanzProduziert.h>
 
 #ifndef OLD
 #include<Auftrag/selFullAufEntry.h>
@@ -59,8 +60,8 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
 
  WAufStat->set_history((AufStatVal)OPEN);
 #ifdef MABELLA_EXTENSIONS
- _tooltips.set_tip(*button_drucken,"Linke Maustaste: 1 Original
-Mittlere Maustaste: 1 Kopie","");
+ _tooltips.set_tip(*button_drucken,"Linke Maustaste: 1 Original"
+"Mittlere Maustaste: 1 Kopie","");
 
    std::string nurliefer(" and lieferadresse=true and coalesce(aktiv,true)=true");
    kundenbox->Einschraenkung(nurliefer);
@@ -160,6 +161,7 @@ void auftrag_bearbeiten::clearEntry()
 {
  aktaufeintrag=0;
  artikelbox->reset();
+ on_preisautomatik_clicked();
  stkmtr_spinbutton->set_value(0);
  WPreis->reset();
  selectedentry=-1;
@@ -334,27 +336,25 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
                rabattentry_spinbutton->get_value_as_float(),
                artpreis);
        }
-       // eigentlich könnte man dies für alle anderen Instanzen annehmen!
-       // statt einfach nur eine Zeile anzulegen, wird diese Menge geplant
       else if(instanz->ExterneBestellung())
        {
-#if 0
+#warning AUSKOMMENTIERT !!!
+/*
          AuftragBase AB(*auftrag);
          ManuProC::st_produziert sp(artikelbox->get_value(),stkmtr_spinbutton->get_value_as_int(),
                getuid(),Kunde::eigene_id,LieferscheinBase::none_id,AB,liefdatum_datewin->get_value());
-         // ruft nur abschreiben_oder_reduzieren auf
-         // das Argument ist eine Strafe!
          instanz->Planen(sp);
          AufEintrag AE((AufEintragBase(AB,sp.ZNr)));
          AE.updatePreis(WPreis->get_Preis());
          AE.updateRabatt(rabattentry_spinbutton->get_value_as_float());
          auftrag->AuftragFull::push_back(AE);
-#endif         
+*/         
        }
       else assert(!"never get here");
       fillCList();
       if (!masseneingabe1->get_active())
       {  artikelbox->reset();
+         on_preisautomatik_clicked();
          artikelbox->grab_focus();
       }
 #ifdef MABELLA_EXTENSIONS
@@ -428,6 +428,7 @@ void auftrag_bearbeiten::loadAuftrag(const AuftragBase& auftragbase)
  }
 
  artikelbox->reset();
+ on_preisautomatik_clicked(); 
  fillMask();
  aktaufeintrag = 0;
  stkmtr_spinbutton->set_value(0);
