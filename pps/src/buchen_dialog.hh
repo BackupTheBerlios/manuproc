@@ -14,5 +14,15 @@
 #  define _BUCHEN_DIALOG_HH
 class buchen_dialog : public buchen_dialog_glade
 {  
+public:
+ buchen_dialog(bool lief) 
+   {
+    if(lief)
+      text->set_text("Der Lieferschein ist noch nicht im Lager gebucht."
+		" Wollen Sie die Mengen jetzt vom Lager abbuchen ?");
+    else
+      text->set_text("Der Wareneingang ist noch nicht im Lager gebucht."
+		" Wollen Sie die Mengen jetzt dem Lager zubuchen ?");
+   }
 };
 #endif
