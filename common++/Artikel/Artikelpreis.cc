@@ -283,8 +283,8 @@ void Artikelpreis::changePreis(const Preis &p) throw(SQLerror)
 	"(select a.id from artbez_3_1 a join artbez_3_1 b "
 	"on (	a.artikel=b.artikel and "
 		"a.breite=b.breite and "
-		"a.aufmachung=b.aufmachung"
-		"and b.id=?)"
+		"a.aufmachung=b.aufmachung and "
+		"b.id=?)"
 	")")
 	<< p.Wert() << p.PreisMenge() << p.getWaehrung()->Id() << gefunden_in << MINDESTMENGE 
 	<< ARTIKELID;
