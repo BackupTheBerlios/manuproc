@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.18 2003/08/02 14:54:24 christof Exp $
+// $Id: AufEintragZu.cc,v 1.19 2003/08/07 08:28:50 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -183,8 +183,11 @@ AufEintragZu::list_t AufEintragZu::get_Referenz_list(const AufEintragBase& aeb,b
       +join+
       "where ("+specified+"instanz,"+specified+"auftragid,"
       			+specified+"zeilennr) = (?,?,?) "
-      "order by prioritaet,"+selected+"instanz,"+selected+"auftragid,"
-      			+selected+"zeilennr ";
+      "order by ";
+ if (!kinder) squery+="prioritaet,";
+ squery+=selected+"instanz,"+selected+"auftragid,"+selected+"zeilennr";
+ if (kinder) squery+=",prioritaet";
+ 
  std::list<st_reflist> vaeb;
  (Query(squery).lvalue() << aeb).FetchArray(vaeb);
  return vaeb;

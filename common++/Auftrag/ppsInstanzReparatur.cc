@@ -331,7 +331,7 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
          // schadet nicht ... ist aber wohl eher die Angelegenheit des 1ers
          if (i->AEB.Id()==AuftragBase::plan_auftrag_id && !!i->Menge)
          {  analyse("1er können keine Menge bestellen",ae,i->AEB,i->Menge);
-            if (!analyse_only) AufEintragZu(i->AEB).setMenge(ae,0);
+            if (!analyse_only) AufEintragZu(i->AEB).setMengeDiff__(ae,-i->Menge);
             i->Menge=0;
             alles_ok=false;
          }
