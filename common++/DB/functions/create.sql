@@ -40,3 +40,10 @@ drop function artikelid(text);
 create function artikelid(text) returns int4 as
 	'/usr/lib/postgresql/lib/artikelid.so' language 'c';
 update pg_proc set provolatile='i' where proname='artikelid';
+
+drop function ean_check(text);
+create function ean_check(text) returns int4 as
+	'/usr/lib/postgresql/lib/ean_check.so','ean_check' language 'c';
+update pg_proc set provolatile='i' where proname='ean_check';
+
+

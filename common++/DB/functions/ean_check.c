@@ -1,8 +1,8 @@
 #include "postgres.h"
 #include "fmgr.h"
 
-PG_FUNCTION_INFO_V1(myatoi);
-Datum myatoi(PG_FUNCTION_ARGS)
+PG_FUNCTION_INFO_V1(ean_check);
+Datum ean_check(PG_FUNCTION_ARGS)
 {  text *t=0;
    char buf[30];
    int len,sum,i;
