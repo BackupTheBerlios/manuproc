@@ -149,7 +149,7 @@ int AuftragBase::insertNewEntry(const mengen_t bestellt,
 	bestellt,geliefert,lieferdate,artikelid,status,
 	preis,rabatt,preismenge,preisliste,lastedit_uid)
 	values (:INSTANZ, :AUFTRAGID, :ZEILENNR, :BESTELLT, 0, :LIEFERDATUM,
-		:ARTIKELID, :STATUS, :PREIS, :RABATT/100.0,
+		:ARTIKELID, :STATUS, :PREIS, :RABATT,
 		:PREISMENGE, nullif(:PREISLISTE,:PREISLISTENULL),:UID) ;
  SQLerror::test(__FILELINE__" insert into auftragentry");	
 //ECPGdebug(false,0);

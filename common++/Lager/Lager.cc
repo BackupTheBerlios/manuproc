@@ -86,7 +86,7 @@ bool Lager::dispo_auftrag_aendern(ArtikelBase artikel,AuftragBase::mengen_t meng
    if(alt)
      {
       AuftragBase::mengen_t mt=AufEintragBase(da,znr).updateStkDiffBase__(getuid(),menge);
-      assert(mt=menge);
+      assert(mt==menge);
      }
    else
      {

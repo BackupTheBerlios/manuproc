@@ -53,6 +53,7 @@ void Check::vergleich(e_check check)
      case Datumsaenderung : zusatz="_datumsaenderung"; break;
      case StatusClosed : zusatz="_status_closed"; break;
      case Planen_Kupfer : zusatz="_planen_kupfer"; break;
+     case Planen_Faerberei_teil : zusatz="_planen_faerberei_teil"; break;
      case Planen_Faerberei : zusatz="_planen_faerberei"; break;
      case Planen_Weberei : zusatz="_planen_weberei"; break;
      case Split : zusatz="_split"; break;
@@ -60,6 +61,9 @@ void Check::vergleich(e_check check)
      case Split_Rohwarenlager_auslagern : zusatz="_split_rohwarenlager_raus"; break;
      case ZweiAuftraege_anlegen : zusatz="_zwei_auftraege_anlegen"; break;
      case ZweiterAuftrag_frueheresDatum : zusatz="_zwei_auftraege_datum"; break;
+// Zwei Zeilen für Christof :-)
+     case Jumbo_raus : zusatz="_jumbo_raus"; break;
+     case Jumbo_rein : zusatz="_jumbo_rein"; break;
    }
   fz2+=zusatz;
   fa2+=zusatz;  

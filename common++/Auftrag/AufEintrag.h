@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.8 2002/06/20 06:29:52 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.9 2002/06/20 06:54:51 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -136,7 +136,7 @@ public:
  // Ist (uid!=0) wird lasteditdate verändert.
  void setStatus(AufStatVal newstatus,int uid,bool force=false) throw(SQLerror);		
  void setInstanzen(AufStatVal newstatus,int uid,Petig::Datum lieferdate,mengen_t part,int myznr=-1,int yourznr=-1);
- void split(int uid,mengen_t newmenge, const Petig::Datum &newld,void (*callback)(void *,st_problems)=0,void* argument=0) throw(SQLerror);
+ int split(int uid,mengen_t newmenge, const Petig::Datum &newld,void (*callback)(void *,st_problems)=0,void* argument=0) throw(SQLerror);
  mengen_t getStueck() const { return bestellt;}
  mengen_t getRestStk() const {if(entrystatus==CLOSED)return 0; return bestellt-geliefert;}
  mengen_t getGeliefert() const { return geliefert;}

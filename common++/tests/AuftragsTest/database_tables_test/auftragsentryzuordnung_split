@@ -6,7 +6,7 @@ DROP INDEX "ae_zo_neu";
 DROP INDEX "ae_zo_alt";
 DROP TABLE "auftragsentryzuordnung";
 --
--- TOC Entry ID 2 (OID 17644910)
+-- TOC Entry ID 2 (OID 17798685)
 --
 -- Name: auftragsentryzuordnung Type: TABLE Owner: thoma
 --
@@ -22,7 +22,7 @@ CREATE TABLE "auftragsentryzuordnung" (
 );
 
 --
--- Data for TOC Entry ID 6 (OID 17644910)
+-- Data for TOC Entry ID 6 (OID 17798685)
 --
 -- Name: auftragsentryzuordnung Type: TABLE DATA Owner: thoma
 --
@@ -52,7 +52,7 @@ COPY "auftragsentryzuordnung" FROM stdin;
 20000	1	2	0	10	2	100
 \.
 --
--- TOC Entry ID 5 (OID 17644912)
+-- TOC Entry ID 3 (OID 17798687)
 --
 -- Name: "ae_zo_alt" Type: INDEX Owner: thoma
 --
@@ -60,7 +60,7 @@ COPY "auftragsentryzuordnung" FROM stdin;
 CREATE INDEX ae_zo_alt ON auftragsentryzuordnung USING btree (altinstanz, altauftragid, altzeilennr);
 
 --
--- TOC Entry ID 4 (OID 17644913)
+-- TOC Entry ID 4 (OID 17798688)
 --
 -- Name: "ae_zo_neu" Type: INDEX Owner: thoma
 --
@@ -68,7 +68,7 @@ CREATE INDEX ae_zo_alt ON auftragsentryzuordnung USING btree (altinstanz, altauf
 CREATE INDEX ae_zo_neu ON auftragsentryzuordnung USING btree (neuinstanz, neuauftragid, neuzeilennr);
 
 --
--- TOC Entry ID 3 (OID 17644914)
+-- TOC Entry ID 5 (OID 17798689)
 --
 -- Name: "auftragsentryzuordnung_altauftr" Type: INDEX Owner: thoma
 --

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.h,v 1.29 2002/06/20 06:29:52 christof Exp $
+// $Id: AufEintragBase.h,v 1.30 2002/06/20 06:54:51 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -80,6 +80,8 @@ public:
  static void Planen(int uid,std::vector<AufEintrag> LAE,mengen_t menge,
       const AuftragBase &zielauftrag,const Petig::Datum &datum);
 
+ int split_zuordnungen_to(mengen_t menge,Petig::Datum datum, 
+                         ArtikelBase artikel,AufStatVal status,int uid);
 
  bool operator<(const AufEintragBase& b) const 
        {return Instanz()<b.Instanz() 

@@ -5,7 +5,7 @@ DROP INDEX "auftragentry_artikelid";
 DROP INDEX "auftragentry_pkey";
 DROP TABLE "auftragentry";
 --
--- TOC Entry ID 2 (OID 17712701)
+-- TOC Entry ID 2 (OID 17828911)
 --
 -- Name: auftragentry Type: TABLE Owner: thoma
 --
@@ -35,7 +35,7 @@ CREATE TABLE "auftragentry" (
 );
 
 --
--- Data for TOC Entry ID 5 (OID 17712701)
+-- Data for TOC Entry ID 5 (OID 17828911)
 --
 -- Name: auftragentry Type: TABLE DATA Owner: thoma
 --
@@ -71,7 +71,7 @@ INSERT INTO "auftragentry" VALUES ('2','2','0','0',NULL,NULL,NULL,NULL,211007,NU
 INSERT INTO "auftragentry" VALUES ('20000','1','400','0',NULL,NULL,NULL,NULL,124555,NULL,1,'0.000','0.00',NULL,'2010-01-01',1,1,NULL,1000);
 INSERT INTO "auftragentry" VALUES ('20001','1','300','0',NULL,NULL,NULL,NULL,124555,NULL,1,'0.000','0.00',NULL,'2009-09-09',1,1,NULL,1000);
 --
--- TOC Entry ID 4 (OID 17712703)
+-- TOC Entry ID 3 (OID 17828913)
 --
 -- Name: "auftragentry_pkey" Type: INDEX Owner: thoma
 --
@@ -79,7 +79,7 @@ INSERT INTO "auftragentry" VALUES ('20001','1','300','0',NULL,NULL,NULL,NULL,124
 CREATE UNIQUE INDEX auftragentry_pkey ON auftragentry USING btree (instanz, auftragid, zeilennr);
 
 --
--- TOC Entry ID 3 (OID 17712704)
+-- TOC Entry ID 4 (OID 17828914)
 --
 -- Name: "auftragentry_artikelid" Type: INDEX Owner: thoma
 --
@@ -87,17 +87,17 @@ CREATE UNIQUE INDEX auftragentry_pkey ON auftragentry USING btree (instanz, auft
 CREATE INDEX auftragentry_artikelid ON auftragentry USING btree (artikelid, instanz);
 
 --
--- TOC Entry ID 7 (OID 17712706)
+-- TOC Entry ID 7 (OID 17828916)
 --
--- Name: "RI_ConstraintTrigger_17712705" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_17828915" Type: TRIGGER Owner: thoma
 --
 
 CREATE CONSTRAINT TRIGGER "chjour_constr" AFTER DELETE ON "auftragentry"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_del" ('chjour_constr', 'prod_changejournal', 'auftragentry', 'UNSPECIFIED', 'auftragid', 'auftragzeile', 'zeilennr', 'insid', 'instanz');
 
 --
--- TOC Entry ID 6 (OID 17712708)
+-- TOC Entry ID 6 (OID 17828918)
 --
--- Name: "RI_ConstraintTrigger_17712707" Type: TRIGGER Owner: thoma
+-- Name: "RI_ConstraintTrigger_17828917" Type: TRIGGER Owner: thoma
 --
 
 CREATE CONSTRAINT TRIGGER "chjour_constr" AFTER UPDATE ON "auftragentry"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('chjour_constr', 'prod_changejournal', 'auftragentry', 'UNSPECIFIED', 'auftragid', 'auftragzeile', 'zeilennr', 'insid', 'instanz');

@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.cc,v 1.1 2002/06/20 06:43:31 christof Exp $
+// $Id: steuerprogramm.cc,v 1.2 2002/06/20 06:54:51 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -30,7 +30,7 @@
 #include <Auftrag/Auftrag.h>
 
 enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
-      ZweiterAuftrag_frueheresDatum};
+      ZweiterAuftrag_frueheresDatum,JumboLager};
 
 void auftragstests(e_mode mode)
 {
@@ -83,14 +83,16 @@ void auftragstests(e_mode mode)
        C.teste(Check::Planen_Kupfer);
        cout << "Planen des Kupfereinkaufs beendet\n\n";
        }
+/*
        {
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Faerberei),Kunde::default_id);
        int faerberei_znr=1;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Faerberei,AuftragBase::ungeplante_id,faerberei_znr));
-       AEP.Planen(UID,15000,PA,PLANDATUM);
-       C.teste(Check::Planen_Faerberei);
-       cout << "Planen der Färberei beendet\n\n";
+       AEP.Planen(UID,8000,PA,PLANDATUM);
+       C.teste(Check::Planen_Faerberei_teil);
+       cout << "Teil-Planen der Färberei beendet\n\n";
        }
+*/
       break;
      }
     case Splittest :
@@ -150,13 +152,17 @@ void auftragstests(e_mode mode)
        cout << "Anlegen eines zweiten (offenen) Auftrags ["<<AEB<<"] mit früherem Liefertermin beendet\n\n";
       break;
      }    
+    case JumboLager:
+     {
+       break;
+     }
     case None: assert(!"Never get here\n");
    }
 }
 
 void usage(const std::string &argv0,const std::string &argv1)
 {
-  cerr << argv0 <<" muß mit [(M)engentest|(P)lantest|(L)agertest|(S)plittest,(Z)weiAuftraege,ZweiterAuftrag_frueheres(D)atum] aufgerufen werden\n"
+  cerr << argv0 <<" muß mit [(M)engentest|(P)lantest|(L)agertest|(S)plittest,(Z)weiAuftraege,ZweiterAuftrag_frueheres(D)atum,(J)umboLager] aufgerufen werden\n"
        << " nicht mit '"<<argv1<<"'\n";
   exit(1);
 }
@@ -171,6 +177,7 @@ int main(int argc,char *argv[])
    else if(std::string(argv[1])=="S" || std::string(argv[1])=="Splittest")  mode=Splittest;
    else if(std::string(argv[1])=="Z" || std::string(argv[1])=="ZweiAuftraege")  mode=ZweiAuftraege;
    else if(std::string(argv[1])=="D" || std::string(argv[1])=="ZweiterAuftrag_frueheresDatum")  mode=ZweiterAuftrag_frueheresDatum;
+   else if(std::string(argv[1])=="J" || std::string(argv[1])=="JumboLager")  mode=JumboLager;
 
    if(mode==None) usage(argv[0],argv[1]);
    

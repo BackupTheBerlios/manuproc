@@ -1,4 +1,4 @@
-// $Id: Check.hh,v 1.1 2002/06/20 06:43:31 christof Exp $
+// $Id: Check.hh,v 1.2 2002/06/20 06:54:51 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -32,9 +32,10 @@ class Check
    enum e_check {Open,Menge_Plus,Menge_Minus,Menge_MinusMinus,StatusClosed,
                  Datumsaenderung,Rohwarenlager_einlagern,Bandlager_einlagern,
                  Rohwarenlager_auslagern,Bandlager_auslagern,
-                 Planen_Kupfer,Planen_Weberei,Planen_Faerberei,
+                 Planen_Kupfer,Planen_Weberei,Planen_Faerberei_teil,Planen_Faerberei,
                  Split,Split_Rohwarenlager_einlagern,Split_Rohwarenlager_auslagern,
-                 ZweiAuftraege_anlegen,ZweiterAuftrag_frueheresDatum};
+                 ZweiAuftraege_anlegen,ZweiterAuftrag_frueheresDatum,
+                 Jumbo_raus,Jumbo_rein};
  private:
    void dump();
    void vergleich(e_check);

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.19 2002/06/20 06:29:52 christof Exp $
+// $Id: AufEintragBase.cc,v 1.20 2002/06/20 06:54:51 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -140,10 +140,30 @@ void AufEintragBase::PlanenDispo(int uid,const ArtikelBase& artikel,mengen_t men
    AufEintragZu(dispoAEB).Neu(*this,menge);
    updateStkDiffBase__(uid,menge);
   
-//   AuftragBase AB(ArtikelStamm(artikel).BestellenBei(),AuftragBase::ungeplante_id);
    AufEintrag AE(dispoAEB);
    dispoAEB.InstanzAuftraegeAnlegen(AE.Artikel(),znr,AE.getLieferdatum(),AE.getEntryStatus(),uid,menge);
+}
 
-//   AB.tryUpdateEntry(menge,AE.getLieferdatum(),AE.Artikel(),AE.getEntryStatus(),uid,dispoAEB);   
+
+int AufEintragBase::split_zuordnungen_to(mengen_t menge,Petig::Datum datum,
+                        ArtikelBase artikel,AufStatVal status,int uid)
+{
+  // ElternListe holen
+  std::list<AufEintragZu::st_reflist> L=AufEintragZu(*this).get_Referenz_list(*this,false);
+  int znr=none_znr;
+  assert(!L.empty());
+  for(std::list<AufEintragZu::st_reflist>::iterator i=L.begin();i!=L.end();++i)
+   {
+    mengen_t M;
+    if(i->Menge > menge) M=menge;
+    else M=i->Menge;
+
+    znr=tryUpdateEntry(M,datum,artikel,status,uid,i->AEB);
+    AufEintragBase aeb(*this,znr);
+    AufEintragZu(i->AEB).setMengeDiff__(*this,-M);
+    menge-=M;
+    if(M==mengen_t(0)) break;
+   }
+ return znr;
 }
 

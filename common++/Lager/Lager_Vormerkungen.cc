@@ -37,11 +37,11 @@ cout << instanz->Name() <<"\tMENGE VORGEMERKT = "<<menge_vorgemerkt<<'\n';
       if(menge_vorgemerkt<0) menge_vorgemerkt=0;
       if(getRestStk() <= menge_vorgemerkt)
        {
-//         artikel_schnappen(getRestStk(),Artikel(),uid,dispo_auftrag);
+         artikel_schnappen(getRestStk(),Artikel(),uid,dispo_auftrag);
        }
       else if(menge_vorgemerkt > AuftragBase::mengen_t(0)) 
        { 
-//         artikel_schnappen(menge_vorgemerkt,Artikel(),uid,dispo_auftrag);
+         artikel_schnappen(menge_vorgemerkt,Artikel(),uid,dispo_auftrag);
        }
       if(getRestStk()==AuftragBase::mengen_t(0)) return;
 
@@ -117,23 +117,22 @@ cout << "artikel_schnappen\t"<<dispo_auftrag.size()<<'\n';
                
      AuftragBase::mengen_t mt=i->first.updateStkDiffBase__(uid,-use_menge);
      assert(mt==-use_menge);
-/*
-         std::list<AufEintragZu::st_reflist> L=AufEintragZu(i->first).
-                                             get_Referenz_list(i->first);
-         AuftragBase::mengen_t M=i->second;
-         for(std::list<AufEintragZu::st_reflist>::iterator j=L.begin();j!=L.end();++j)
-          {
-            AuftragBase::mengen_t m;
-            if(j->Menge >= M) m=M;
-            else m=j->Menge;
-            AufEintragZu(j->AEB).setMengeDiff__(*this,m);
-            M-m;
-            if(M==AuftragBase::mengen_t(0)) break;
-          }         
-*/
-         abmenge-=use_menge;
-         if(abmenge==AuftragBase::mengen_t(0)) break;
-         assert(abmenge>AuftragBase::mengen_t(0));
+
+     // Zuordnung von Elternliste an alten 1er reduzieren
+     std::list<AufEintragZu::st_reflist> L=AufEintragZu(i->first).get_Referenz_list(i->first);
+     AuftragBase::mengen_t M=use_menge;
+     for(std::list<AufEintragZu::st_reflist>::iterator j=L.begin();j!=L.end();++j)
+       {
+         AuftragBase::mengen_t m;
+         if(j->Menge >= M) m=M;
+         else              m=j->Menge;
+         AufEintragZu(j->AEB).setMengeDiff__(i->first,-m);
+         M-=m;
+         if(M==AuftragBase::mengen_t(0)) break;
+       }         
+     abmenge-=use_menge;
+     if(abmenge==AuftragBase::mengen_t(0)) break;
+     assert(abmenge>AuftragBase::mengen_t(0));
     }
   if(Instanz()->LagerInstanz()) // neuen 1er anlegen
    {
@@ -213,10 +212,7 @@ AuftragBase::mengen_t  Lager_Vormerkungen::artikel_auf_lager(std::vector<pair<Au
   if(freie_menge)
      return artikel_auf_lager(Artikel(),Instanz(),dispo_auftrag);
   else 
-{
-//cout << *this<< "\tLIEFRDATUM = "<<getLieferdatum()<<'\n';
      return artikel_auf_lager(Artikel(),Instanz(),dispo_auftrag,getLieferdatum());
-}
 }
 
 
@@ -239,9 +235,11 @@ AuftragBase::mengen_t  Lager_Vormerkungen::artikel_auf_lager(const ArtikelBase &
       }
      else if(j->Id()==AuftragBase::PlanId_for(instanz)) 
       {
-        if(j->getLieferdatum() <= datum) continue;
-        menge+=j->getRestStk();        
-        V_dispo_auftrag.push_back(pair<AufEintragBase,AuftragBase::mengen_t>(*j,j->getRestStk()));
+        if(datum < j->getLieferdatum()) 
+         {
+           menge+=j->getRestStk();        
+           V_dispo_auftrag.push_back(pair<AufEintragBase,AuftragBase::mengen_t>(*j,j->getRestStk()));
+         }
       }
      else assert(!"Never get here");
    }
