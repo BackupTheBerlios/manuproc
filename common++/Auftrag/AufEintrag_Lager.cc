@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.23 2003/09/11 08:22:16 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.24 2003/09/11 15:25:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -68,13 +68,13 @@ class AufEintrag::AbbestellenUndVormerken : public distribute_parents_cb
 	
 public:
 	mengen_t operator()(const AufEintragBase &elter,mengen_t m) const
-	{  mythis.MengeAendern(-m,true,elter,ManuProC::Auftrag::r_Closed);
+	{  mythis.MengeAendern(-m,true,elter);
 	   AuftragBase zielauftrag(mythis.Instanz(),plan_auftrag_id);
 	   AufEintragBase neuerAEB(zielauftrag,
                        zielauftrag.PassendeZeile(mythis.getLieferdatum(),
                        			mythis.Artikel(),OPEN));
 	   AufEintrag ae(neuerAEB);
-	   ae.MengeAendern(m,false,elter,ManuProC::Auftrag::r_Closed);
+	   ae.MengeAendern(m,false,elter);
 	   return m;
 	}
 	AbbestellenUndVormerken(AufEintrag &_mythis) 
@@ -86,7 +86,7 @@ class AufEintrag::NeuBestellen : public distribute_parents_cb
 {	AufEintrag &mythis;
 public:
 	mengen_t operator()(const AufEintragBase &elter,mengen_t m) const
-	{  mythis.MengeAendern(-m,false,elter,ManuProC::Auftrag::r_Reparatur);
+	{  mythis.MengeAendern(-m,false,elter);
 	   // Optimierung: direkt 0er nehmen?
 #if 0	   
            // passenden 0er erhöhen
@@ -114,7 +114,7 @@ struct AufEintrag::Auslagern_cb : public auf_positionen_verteilen_cb
 	   }
 	   else
 	   {  assert(ae.Id()==dispo_auftrag_id);
-	      ae.MengeAendern(-abschreibmenge,false,AufEintragBase(),ManuProC::Auftrag::r_Reparatur);
+	      ae.MengeAendern(-abschreibmenge,false,AufEintragBase());
 	      // als produziert markieren!
 	      if (fuer_auftraege)
 	         AufEintrag::unbestellteMengeProduzieren(ae.Instanz(),
@@ -170,7 +170,20 @@ AuftragBase::mengen_t AufEintrag::Auslagern
 
    if (Id()==plan_auftrag_id)
    {  // Zuordnung muss Instanz darüber machen 
-      if (fuer_auftraege) abschreiben(menge);
+      if (fuer_auftraege) 
+      {  abschreiben(menge);
+         // wird für AP gebraucht
+         if (!Instanz()->ProduziertSelbst() && Instanz()->AutomatischEinlagern()
+         	&& Instanz()->LagerInstanz())
+         {  // war das nur ein unbestellteMengeProduzieren?
+            // dann ganz wegnehmen
+            AufEintragZu::list_t kinder=AufEintragZu::get_Referenz_list
+            		(*this,AufEintragZu::list_kinder,AufEintragZu::list_ohneArtikel);
+            const bool egal=false;
+            if (kinder.empty())
+               MengeAendern(menge,egal,AufEintragBase());
+         }
+      }
       else
       {  MengeNeubestellen(menge);
       }
@@ -178,7 +191,7 @@ AuftragBase::mengen_t AufEintrag::Auslagern
    else if (Id()==ungeplante_id)
    {  // abbestellen
       assert(fuer_auftraege);
-      MengeAendern(-menge,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
+      MengeAendern(-menge,true,AufEintragBase());
       // LagerMenge reduzieren (wir sollen ja das Lager führen)
       mengen_t brauch_noch=menge;
 // müsste Produzierte Menge unten löschen wenn nicht prod_selbst!
@@ -272,13 +285,11 @@ public:
 // ehemals AuftragBase::menge_neu_verplanen
 void AufEintrag::Einlagern(cH_ppsInstanz instanz,const ArtikelBase artikel,
          const mengen_t &menge,bool produziert,
-         const ProductionContext &ctx,
-         const ManuProC::Auftrag::Action reason) throw(SQLerror)
+         const ProductionContext &ctx) throw(SQLerror)
 {
   ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("Instanz",instanz),
-   NV("Artikel",artikel),NV("Menge",menge),NV("Reason",reason));
+   NV("Artikel",artikel),NV("Menge",menge));
 
-  assert(reason==ManuProC::Auftrag::r_Produziert);
   if (menge<0)
   {  // Rückgängig von EinlagernIn
      assert(ctx.aeb.valid());
@@ -299,7 +310,7 @@ public:
            {  AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(i,AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
               mengen_t sum=AufEintragZu::Summe(eltern);
               if (sum<i.getRestStk())
-              {  i.MengeAendern(sum-i.getRestStk(),true,AufEintragBase(),ManuProC::Auftrag::r_Reparatur);
+              {  i.MengeAendern(sum-i.getRestStk(),true,AufEintragBase());
               }
            }
 
@@ -314,9 +325,9 @@ public:
            AufEintragBase neuerAEB(zielauftrag,
                	zielauftrag.PassendeZeile(i.getLieferdatum(),i.Artikel(),OPEN));
            AufEintrag ae(neuerAEB);
-           ae.MengeAendern(-M,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
+           ae.MengeAendern(-M,true,AufEintragBase());
            // Menge wird direkt neu verplant (evtl. wieder abbestellt)
-           i.MengeAendern(M,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
+           i.MengeAendern(M,true,AufEintragBase());
            // assert(i.getCombinedStatus()==CLOSED);
            if (i.getCombinedStatus()!=CLOSED)
            {  std::cerr << "merkwürdig ... " << i << ':' << i.getCombinedStatus() << ','
@@ -330,12 +341,11 @@ public:
 // eigentlich auslagern mit negativer Menge ???
 // allerdings: Reihenfolge ist umgekehrt
 void AufEintrag::WiederEinlagern(cH_ppsInstanz instanz,const ArtikelBase artikel,
-         mengen_t menge,const ManuProC::Auftrag::Action reason) throw(SQLerror)
+         mengen_t menge) throw(SQLerror)
 {
   ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("Instanz",instanz),
-   NV("Artikel",artikel),NV("Menge",menge),NV("Reason",reason));
+   NV("Artikel",artikel),NV("Menge",menge));
 
-  assert(reason==ManuProC::Auftrag::r_Produziert);
   // eigentlich sind nur die 1er interessant, dann aber OPEN wie CLOSED ...
   SQLFullAuftragSelector sel(make_value(SQLFullAuftragSelector::
       			sel_Artikel(instanz->Id(),artikel)));
@@ -366,7 +376,7 @@ void AufEintrag::Einlagern2(mengen_t M,
    if (M<0) 
    {  assert(Id()==plan_auftrag_id);
       // Rekursion bedeutet hier: freigewordene Menge neu verplanen
-      MengeAendern(M,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
+      MengeAendern(M,true,AufEintragBase());
       if (!getRestStk()) setStatus(AufStatVal(CLOSED),true);
    }
    else // M>0
@@ -374,12 +384,12 @@ void AufEintrag::Einlagern2(mengen_t M,
       // true bewirkt in AP dass gelieferte Menge im Einkauf abbestellt wird
       // false bewirkt in L dass geliefert und nicht abbestellt wird
       bool instanzen=(Id()==ungeplante_id && Instanz()->AutomatischEinlagern());
-      MengeAendern(-M,instanzen,elter_alt,ManuProC::Auftrag::r_Produziert);
+      MengeAendern(-M,instanzen,elter_alt);
       AuftragBase zielauftrag(Instanz(),plan_auftrag_id);
       neuerAEB=AufEintragBase(zielauftrag,
          		zielauftrag.PassendeZeile(getLieferdatum(),Artikel(),OPEN));
       AufEintrag ae(neuerAEB);
-      ae.MengeAendern(M,false,elter_neu,ManuProC::Auftrag::r_Produziert);
+      ae.MengeAendern(M,false,elter_neu);
       if (ctx.aeb.valid()) // nach unten verzeigern
          AufEintragZu(neuerAEB).Neu(ctx.aeb,0);
    }

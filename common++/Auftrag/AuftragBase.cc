@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.44 2003/09/02 12:10:52 christof Exp $
+// $Id: AuftragBase.cc,v 1.45 2003/09/11 15:25:55 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -141,7 +141,7 @@ int AuftragBase::BestellmengeAendern(mengen_t deltamenge,
  // ist die Reihenfolge hier wichtig?
  // rekursion nur falls kein DispoAuftrag
  AufEintrag(NeuAEB).MengeAendern(deltamenge,kein_dispo,
- 	kein_dispo?altAEB:AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
+ 	kein_dispo?altAEB:AufEintragBase());
 
  // dispo=> andere Richtung des Pfeils muss geändert werden 
  if (!kein_dispo && altAEB.valid())

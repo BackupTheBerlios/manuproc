@@ -1,4 +1,4 @@
-// $Id: Auftrag.cc,v 1.9 2003/07/03 09:15:16 christof Exp $
+// $Id: Auftrag.cc,v 1.10 2003/09/11 15:25:55 christof Exp $
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -41,7 +41,7 @@ void Auftrag::setRabatt(const rabatt_t _auftragsrabatt) throw(SQLerror)
 Auftrag::ID Auftrag::Copy(AuftragCopy &ac) throw(SQLerror)
 {
 // Auftrag a(Anlegen(Instanz()), ac.kundennr, ac.yanr);
-
+  return none_id;
 }
 
 Auftrag::youraufnr_cache_t Auftrag::youraufnr_cache;

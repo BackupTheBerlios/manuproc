@@ -514,7 +514,7 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
       assert(Instanz()==ppsInstanzID::Kundenauftraege);
 
       AufEintrag AE(AEB);
-      AE.ArtikelInternNachbestellen(bestellt,ManuProC::Auftrag::r_Anlegen);
+      AE.ArtikelInternNachbestellen(bestellt);
     }
  tr.commit();
  return AEB;

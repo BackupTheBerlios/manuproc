@@ -1,4 +1,4 @@
-// $Id: AuftragsVerwaltung.cc,v 1.15 2003/09/02 12:10:52 christof Exp $
+// $Id: AuftragsVerwaltung.cc,v 1.16 2003/09/11 15:25:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -43,7 +43,7 @@ AufEintragBase AuftragsVerwaltung::anlegen()
 void AuftragsVerwaltung::kunden_bestellmenge_aendern(AufEintrag &AE,AuftragBase::mengen_t menge)
 {
    AuftragBase::mengen_t diffmenge=menge-AE.getStueck();
-   AE.MengeAendern(diffmenge,true,AufEintragBase(),ManuProC::Auftrag::r_Anlegen);
+   AE.MengeAendern(diffmenge,true,AufEintragBase());
 }
 
 AufEintragBase AuftragsVerwaltung::anlegen2()

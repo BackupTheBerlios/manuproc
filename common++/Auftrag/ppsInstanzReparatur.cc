@@ -69,7 +69,7 @@ bool ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al, const b
              { AuftragBase::mengen_t M2=AuftragBase::min(k->Menge,M_rest);
                 if (!M2) continue;
 
-                i->MengeAendern(-M2,true,k->AEB,ManuProC::Auftrag::r_Reparatur);
+                i->MengeAendern(-M2,true,k->AEB);
                 AufEintrag::ArtikelInternNachbestellen(Instanz(),M2,i->getLieferdatum(),
                 		i->Artikel(),k->AEB);
 
@@ -152,7 +152,7 @@ try_again:
                 if (!M2) continue;
 
 		// eine Rekursion würde die Menge neu verplanen ...
-                j->MengeAendern(-M2,false,k->AEB,ManuProC::Auftrag::r_Reparatur);
+                j->MengeAendern(-M2,false,k->AEB);
                 AufEintrag::ArtikelInternNachbestellen(Instanz(),M2,j->getLieferdatum(),
                 		j->Artikel(),k->AEB);
 
@@ -166,7 +166,7 @@ try_again:
                    goto try_again;
                 }
                 analyse("Es ist immer noch ein Rest geblieben, ignoriere Zuordnungen",*j,M_rest);
-                j->MengeAendern(-M_rest,false,AufEintragBase(),ManuProC::Auftrag::r_Reparatur);
+                j->MengeAendern(-M_rest,false,AufEintragBase());
              }
             }
             menge=0;
@@ -185,7 +185,7 @@ try_again:
           { analyse("set_dispo_to_zero",*j,j->getStueck());
             alles_ok=false;
             if(!analyse_only)
-               j->MengeAendern(-j->getStueck(),false,AufEintragBase(),ManuProC::Auftrag::r_Reparatur);
+               j->MengeAendern(-j->getStueck(),false,AufEintragBase());
           }
       }
       
@@ -268,7 +268,7 @@ void ppsInstanzReparatur::Zuordnung_erniedrigen(AufEintrag &ae,
 
 void ppsInstanzReparatur::KinderErniedrigen(AufEintrag &ae,
 	AufEintragZu::list_t &kinder,AuftragBase::mengen_t m)
-{  AufEintrag::ArtikelInternAbbestellen_cb aia(ae,ManuProC::Auftrag::r_Reparatur);
+{  AufEintrag::ArtikelInternAbbestellen_cb aia(ae);
    for (AufEintragZu::list_t::iterator i=kinder.begin();i!=kinder.end();++i)
    {  AuftragBase::mengen_t M=AuftragBase::min(m,i->Menge);
       if (!M) continue;
@@ -382,8 +382,7 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
       alles_ok=false;
       if (!analyse_only)
       {if (ae.Id()==AuftragBase::ungeplante_id) 
-         ae.MengeAendern(menge-ae.getRestStk(),true,AufEintragBase(),
-         	ManuProC::Auftrag::r_Reparatur);
+         ae.MengeAendern(menge-ae.getRestStk(),true,AufEintragBase());
        else
        { // Zuordnung erniedrigen, Reihenfolge: 2,0,1,3)
          // danach müssen die Eltern neu bestellen (Reparatur)!
@@ -405,8 +404,7 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
       alles_ok=false;
       if (!analyse_only)
       {if (ae.Id()==AuftragBase::ungeplante_id) 
-         ae.MengeAendern(menge-ae.getStueck(),true,AufEintragBase(),
-         	ManuProC::Auftrag::r_Reparatur);
+         ae.MengeAendern(menge-ae.getStueck(),true,AufEintragBase());
        else
        { // Zuordnung erniedrigen, Reihenfolge: 2,0,1,3)
          // danach müssen die Eltern neu bestellen (Reparatur)!
@@ -425,8 +423,7 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
       if (!analyse_only)
       {if (in(ae.Id(),AuftragBase::ungeplante_id,AuftragBase::plan_auftrag_id))
        {  assert(ae.Id()!=AuftragBase::plan_auftrag_id || ae.Instanz()->LagerInstanz());
-          ae.MengeAendern(menge-ae.getRestStk(),true,AufEintragBase(),
-         	ManuProC::Auftrag::r_Reparatur);
+          ae.MengeAendern(menge-ae.getRestStk(),true,AufEintragBase());
        }
        else 
        { assert(ae.Id()>=AuftragBase::handplan_auftrag_id);
@@ -507,7 +504,7 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
       {  analyse("2er: Zuordnungen!=eigene Menge",ae,menge2,ae.getStueck());
          if (!analyse_only) 
             ae.MengeAendern(menge2-ae.getStueck(),false,
-            		AufEintragBase(),ManuProC::Auftrag::r_Reparatur);
+            		AufEintragBase());
       }
    }
    else // 0er, 1er, 3er

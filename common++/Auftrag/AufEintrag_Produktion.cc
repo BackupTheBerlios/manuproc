@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.15 2003/09/10 07:05:25 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.16 2003/09/11 15:25:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -63,7 +63,7 @@ AufEintragBase AufEintrag::unbestellteMengeProduzieren(cH_ppsInstanz instanz,
                        zielauftrag.PassendeZeile(termin,artikel,CLOSED));
    AufEintrag ae(neuerAEB);
    // elter kann nicht übergeben werden, da sonst bereits mit Menge angelegt
-   ae.MengeAendern(menge,false,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
+   ae.MengeAendern(menge,false,AufEintragBase());
    ae.abschreiben(menge);
    if (elter.valid()) AufEintragZu(elter).Neu(ae,0);
    if (rekursiv)
@@ -207,9 +207,11 @@ public:
 	   if (!aeb.Instanz()->ProduziertSelbst())
 	   {  if (aeb.Instanz()->LagerInstanz())
 	      {  // Zuordnung anpassen
-	         AufEintragZu(alterAEB).setMengeDiff__(aeb,-M);
+	         if (M>0) AufEintragZu(alterAEB).setMengeDiff__(aeb,-M);
 		 Lager L(aeb.Instanz());
 		 L.raus_aus_lager(art,M,true,ProductionContext(neuerAEB,ctx,aeb));
+		 if (M<0) 
+		    AufEintrag(neuerAEB).MengeAendern(-M,true,AufEintragBase());
 	      }
 	      else
 	         AufEintrag(aeb).ProduziertNG(M,alterAEB,neuerAEB,ctx);
@@ -347,8 +349,7 @@ void AufEintrag::ProduziertNG(mengen_t M,
       {  assert(Id()==plan_auftrag_id);
          abschreiben(M);
       }
-      MengeAendern(-M.abs(),false,M>0 ? elter_alt : AufEintragBase(),
-      		ManuProC::Auftrag::r_Produziert);
+      MengeAendern(-M.abs(),false,M>0 ? elter_alt : AufEintragBase());
       if (M<0 && !getRestStk()) setStatus(AufStatVal(CLOSED),true);
       // mit M>0 bin ich mir nicht sicher ... CP
      if (M>0 || !cH_ppsInstanz(Instanz()->EinlagernIn())->AutomatischEinlagern())
@@ -358,8 +359,7 @@ void AufEintrag::ProduziertNG(mengen_t M,
          	zielauftrag.PassendeZeile(getLieferdatum(),Artikel(),st));
       AufEintrag ae(neuerAEB);
       ae.MengeAendern(M.abs(),false,
-         	M<0 ?elter_neu:AufEintragBase(),
-         	ManuProC::Auftrag::r_Produziert);
+         	M<0 ?elter_neu:AufEintragBase());
       if (M>0)
       {  ae.abschreiben(M);
          AufEintragZu(elter_neu).Neu(neuerAEB,0);

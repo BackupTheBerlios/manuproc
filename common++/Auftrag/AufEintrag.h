@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.72 2003/09/09 07:33:59 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.73 2003/09/11 15:25:55 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -139,24 +139,22 @@ public:
 
 	
  void updateDispoENr(int dinr) throw(SQLerror);
- mengen_t MengeAendern(mengen_t menge,bool instanzen,const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_None) throw(SQLerror);
+ mengen_t MengeAendern(mengen_t menge,bool instanzen,const AufEintragBase &ElternAEB) throw(SQLerror);
 private:
   // nimmt alle Zuordnungen mit (oben & unten)
-  void move_to(AufEintrag ziel,mengen_t menge,ManuProC::Auftrag::Action reason) throw(std::exception);
- void updateStkDiffInstanz__(mengen_t menge,ManuProC::Auftrag::Action reason) throw(SQLerror);
- void ArtikelInternAbbestellen(mengen_t menge,
- 	ManuProC::Auftrag::Action reason) const;
- void move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,const ArtikelBase artikel,ManuProC::Auftrag::Action reason);
+  void move_to(AufEintrag ziel,mengen_t menge) throw(std::exception);
+ void updateStkDiffInstanz__(mengen_t menge) throw(SQLerror);
+ void ArtikelInternAbbestellen(mengen_t menge) const;
+ void move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,const ArtikelBase artikel);
  // wurde von ProduziertNG abgelöst
  __deprecated void WurdeProduziert(mengen_t menge,const AufEintragBase &ElternAEB);
 
  class ArtikelInternAbbestellen_cb : public distribute_children_cb
- {	ManuProC::Auftrag::Action reason;
-	const AufEintrag &mythis;
+ {	const AufEintrag &mythis;
 	
   public:
-	ArtikelInternAbbestellen_cb(const AufEintrag &_mythis, ManuProC::Auftrag::Action _reason)
-		: reason(_reason), mythis(_mythis)
+	ArtikelInternAbbestellen_cb(const AufEintrag &_mythis)
+		: mythis(_mythis)
 	{}
 	// das 1. Argument wird nicht verwendet
 	mengen_t operator()(const ArtikelBase &,
@@ -222,7 +220,7 @@ public:
 private:
  void Produziert_0er(mengen_t menge);
  static void WiederEinlagern(cH_ppsInstanz instanz,const ArtikelBase artikel,
-         mengen_t menge,const ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Produziert) throw(SQLerror);
+         mengen_t menge) throw(SQLerror);
  // bitte ProduziertNG aufrufen!         
  void Produziert(mengen_t menge,ManuProcEntity<>::ID lfrsid);
  void KinderProduzieren(mengen_t M, const AufEintragBase &neuerAEB,
@@ -230,8 +228,7 @@ private:
 
 public:
  // wird z.B. von push_back verwendet
- void ArtikelInternNachbestellen(mengen_t menge,
- 	ManuProC::Auftrag::Action reason) const;
+ void ArtikelInternNachbestellen(mengen_t menge) const;
 
  bool allesOK() const;
  std::string Planung() const;
@@ -266,8 +263,12 @@ public:
 // gibt neue Zeile zurück; rekursiv = alle Instanzen darunter auch planen,
 // rekursiv wird asuschließlich vom Erfassungs/Reperaturprogramm verwendet
  AufEintragBase Planen(mengen_t menge,const AuftragBase &zielauftrag,
-      const ManuProC::Datum &datum, ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Planen,
-         AufEintragBase *verplanter_aeb=0,bool rekursiv=false) throw(std::exception);
+      const ManuProC::Datum &datum) throw(std::exception);
+ __deprecated AufEintragBase Planen(mengen_t menge,const AuftragBase &zielauftrag,
+      const ManuProC::Datum &datum, 
+      // diese Argumente können weg ... oder?
+      ManuProC::Auftrag::Action reason,
+      AufEintragBase *verplanter_aeb=0,bool rekursiv=false) throw(std::exception);
 private:         
  __deprecated void ProduktionsPlanung(mengen_t menge,const AuftragBase &zielauftrag,
       const ManuProC::Datum &datum,cH_ppsInstanz instanz) throw(std::exception);
@@ -318,8 +319,7 @@ public:
    // ehemals AuftragBase::menge_neu_verplanen
    static void Einlagern(cH_ppsInstanz instanz,const ArtikelBase artikel,
          const mengen_t &menge,bool produziert,
-         const ProductionContext &ctx,
-         const ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Produziert) throw(SQLerror);
+         const ProductionContext &ctx) throw(SQLerror);
    // Menge wurde als Produziert markiert, kam aber ins Lager zurück
 private:
 // intern aber public wegen der klassen
