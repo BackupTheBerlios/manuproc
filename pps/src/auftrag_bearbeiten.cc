@@ -1,3 +1,4 @@
+
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -958,6 +959,10 @@ void auftrag_bearbeiten::on_button_preview_clicked()
 
    std::string command = "auftrag_drucken -G -a"+art+" -n"+itos(auftrag->Id())+
    		" -i" + itos(instanz->Id())+optionen;
+
+   if(kunde->isInGrp("sort_AB_nach_KW"))
+     command += "-O\" order by lieferdate, artikelbezeichnung(artikelid)\"";
+
    system(command.c_str());
 }  
 
@@ -975,6 +980,8 @@ gint auftrag_bearbeiten::on_button_drucken_clicked(GdkEventButton *ev)
    {
    std::string command = "auftrag_drucken -Y1,0,0 -a"+art+" -n"+itos(auftrag->Id())+
    	" -i" + itos(instanz->Id())+optionen;
+   if(kunde->isInGrp("sort_AB_nach_KW"))
+     command += "-O\" order by lieferdate, artikelbezeichnung(artikelid)\"";
    system(command.c_str());
    }
 
@@ -982,6 +989,8 @@ gint auftrag_bearbeiten::on_button_drucken_clicked(GdkEventButton *ev)
    {
    std::string command = "auftrag_drucken -Y0,0,1 -a"+art+" -n"+itos(auftrag->Id())+
    	" -i" + itos(instanz->Id())+optionen;
+   if(kunde->isInGrp("sort_AB_nach_KW"))
+     command += "-O\" order by lieferdate, artikelbezeichnung(artikelid)\"";
    system(command.c_str());
    }
  return false;
@@ -1088,6 +1097,10 @@ void auftrag_bearbeiten::on_rueckstand_clicked()
  std::string command = std::string("auftrag_drucken -Y0,0,1 -a")+typ+
 	" -R -n"+itos(auftrag->Id())+
    	" -i" + itos(instanz->Id());
+
+ if(kunde->isInGrp("sort_AB_nach_KW"))
+     command += "-O\" order by lieferdate, artikelbezeichnung(artikelid)\"";
+
    system(command.c_str());  
 }
 

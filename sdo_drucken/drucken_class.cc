@@ -124,6 +124,11 @@ void LR_Abstraktion::drucken_header(std::ostream &os)
 			"{\\rule{0pt}{7pt}\\rule{\\paperwidth}{0pt}}}}}\n";
 #endif
 
+
+ if(Configuration.toTeX || Configuration.batch)
+  os << "\\def\\kopie{3}\n";
+
+
  Gtk2TeX::Header(os,hf);
 
    os << "% output thin lines at left side\n"
@@ -186,7 +191,6 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
 
   if (Typ()==Rechnung && !gutschrift() && !storniert())
    {
-#ifdef MABELLA_EXTENSIONS
     os << "\\vspace{0.5cm}\n";
 
     int passende_zeilen=8;
@@ -243,25 +247,6 @@ catch(SQLerror &e) { std::cout << e; return; }
      os << mld->MLT(MultiL_Dict::TXT_GEWNETTO)<<": " <<FormatiereTeX(u.r->NettoGew()) << " kg\\\\\n";
    }
 
-
-
-#else
-//     cH_Kunde kunde_von(Kunde::default_id);
-
-#ifdef PETIG_EXTENSIONS
-#warning // Ja ein Hack    
-     if (kunde_an->Id()==629)
-        os <<"\n\n\\footnotesize Stadtsparkasse Wuppertal, BLZ 330 500 00, Konto 406 728\\\\\n";
-     else
-#endif
-        os <<"\n\n\\footnotesize "<< kunde_von->getBank()<<"\\\\\n";
-
-     os << "Zahlung: "<< string2TeX(getZahlungsart()->Bezeichnung())<<"\\\\\n";
-     os <<"Die Lieferung erfolgt zu den Einheitsbedingungen der deutschen Textilindustrie.\\\\\n";
-     os <<"Gerichtsstand ist Wuppertal.\\\\\n";
-
-#endif
-
    }
  else if(Typ()==Auftrag && !Rueckstand())
    {
@@ -272,20 +257,17 @@ catch(SQLerror &e) { std::cout << e; return; }
 	page_header(os);
 	os << "\\bigskip\n";
 	}
-#ifdef PETIG_EXTENSIONS
-    os << "\\small Zahlung: "<< string2TeX(getZahlungsart()->getBezeichnung())<<"\\\\\n";
-#else
+
     os << mld->MLT(MultiL_Dict::TXT_ZAHLUNG) << ": "; 
     getZahlungsart()->TeX_out(os,u.a->Zahlziel(),kunde_an,skontobetrag,*mld);
-#endif
+
     zeilen_passen_noch-=8;
     os << "\\bigskip\n";
     if(kunde_an->get_lieferung_frei_haus()) 
       os << "\\\\" << mld->MLT(MultiL_Dict::TXT_LIEF_FREI) <<"\\\\\n";
-#ifndef PETIG_EXTENSIONS      
-    os << "\\\\"<<mld->MLT(MultiL_Dict::TXT_LIEFERWOCHE)<<": "<<min_KWStr<<"\\\\\n";
-#endif    
 
+    if(Configuration.order_clausel.empty())
+      os << "\\\\"<<mld->MLT(MultiL_Dict::TXT_LIEFERWOCHE)<<": "<<min_KWStr<<"\\\\\n";
    }
  else if(Typ()==Extern )
    {
@@ -367,9 +349,8 @@ catch(SQLerror &e) { std::cout << e; return; }
 }
 
 
-void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _instanz)
+void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
 {instanz=_instanz;
- kopie=_kopie;
 
  if (Typ()==Rechnung || Typ()==Auftrag || Typ()==Extern) 
  	preise_addieren=true;
@@ -865,7 +846,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
          if (preise_addieren)       
           { neue_spalte(erste_spalte,os);
 #ifdef MABELLA_EXTENSIONS // Anzeigen, dass der Preis manuell eingegeben wurde
-	    if(Typ()==Auftrag && !print)
+	    if(Typ()==Auftrag && Configuration.preview_only)
 	      if(pl->Id() == PreisListe::none_id)
 	        os << "{\\color{altgray}(M) }";
 #endif
@@ -898,7 +879,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 
 	if((Typ() == Auftrag) || (Typ()==Extern))
 	  {
-	    if(Typ()==Extern) 
+	    if(Typ()==Extern || !Configuration.order_clausel.empty()) 
 	      neue_spalte(erste_spalte,os);
 
 	    Kalenderwoche kw(lieferdatum.KW());
@@ -906,7 +887,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 	    snprintf(jahr,3,"%02d",kw.Jahr()%100);
 	    std::string kws = kw.valid() ? itos(kw.Woche())+"'"+jahr : "-";
 
-	    if(Typ()==Extern)
+	    if(Typ()==Extern || !Configuration.order_clausel.empty())
 	      os << linecolor << kws;
 
 	    if(!min_liefdatum.valid()) 
@@ -941,7 +922,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 //           if(schema_own->Id()!=own_bez->getExtBezSchema()->Id())
 //	     drucken_artikel(os,own_bez,false,linecolor,erste_spalte,schema_own);
            if(schema_own->Id()==own_bez->getExtBezSchema()->Id())	     
-	     os << "\\multicolumn{4}{l}{" <<own_bez->Bezeichnung()<<"}";
+	     os << "\\multicolumn{4}{l}{" <<Gtk2TeX::string2TeX(own_bez->Bezeichnung())<<"}";
            else
 	     os << "\\multicolumn{4}{l}{ }";
 	   os << "\\\\\n";
@@ -1005,7 +986,7 @@ void LR_Abstraktion::drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,
 	    if(ArtikelTyp::hasAttribute(s->Typ(),
 				ArtikelTypAttr::mit_bezeichnung))
 	      { neue_spalte( erste_spalte, os);
-	        os << bez->Bezeichnung(BEZEICHNUNG_SIGNIFIKANZ);
+	        os << Gtk2TeX::string2TeX(bez->Bezeichnung(BEZEICHNUNG_SIGNIFIKANZ));
 	      }
 	   }
 #endif 
@@ -1162,7 +1143,7 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
 #ifndef MABELLA_EXTENSIONS
   if((Typ()==Auftrag) || (Typ()==Extern))
 #else
-  if((Typ()==Extern))
+  if((Typ()==Extern) || !Configuration.order_clausel.empty())
 #endif
   { tabcolumn+="r"; spaltenzahl+=1; ueberschriften +=  "&{"+sg
 			+mld->MLT(MultiL_Dict::TXT_LIEFERKW)+"}"; }
@@ -1251,8 +1232,8 @@ void LR_Abstraktion::page_header(std::ostream &os)
       zeilen_passen_noch=ZEILEN_SEITE_1;
     }
    os << "\\LARGE "<<typString()<<' '<<RngNr()<<"\\hfill\\small "
-        <<(kopie?"Kopie, ":"");
-   os <<"\\hfill "<< getDatum() << "\\\\\n\n";
+	 "\\ifthenelse{\\kopie>1}{Kopie, }{}"
+         "\\hfill "<< getDatum() << "\\\\\n\n";
    os <<string2TeX(getBemerkung())<<"\n\n";
   }
  else
@@ -1400,8 +1381,9 @@ void LR_Abstraktion::page_header(std::ostream &os)
         	<< "E-Mail: "<<kunde_von->get_first_telefon(TEL_E_MAIL)<<"\\\\\n";
         }
 
-	if(kunde_an->VerkNr()!=Person::none_id && Typ()!=Extern)
-	  {kunde_an->getVerkaeufer();
+	if(kunde_an->VerkNr()!=Kunde::none_id && Typ()!=Extern)
+	  {
+//kunde_an->getVerkaeufer();
            os << "\\vspace*{2mm}\\bf "<<mld->MLT(MultiL_Dict::TXT_BESUCHTSIE)<<":\\rm \\\\\n"
            	<< kunde_an->VerkName() <<"~\\\\\n";
           }

@@ -1,4 +1,4 @@
-/* $Id: AuftragFull.h,v 1.29 2003/09/02 12:10:52 christof Exp $ */
+/* $Id: AuftragFull.h,v 1.30 2004/10/12 15:54:28 jacek Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -36,12 +36,14 @@ public:
 	typedef std::vector<AufEintrag>::const_reverse_iterator const_reverse_iterator;
 private:
 	AufEintragList eintragliste;
+	std::string sort_clausel;
 
 // die gefällt mir aber gar nicht (inkonsistente parameter etc) CP
 	void split(int idx,const ManuProC::Datum &liefdatum, int menge);
 //		{ eintragliste[idx].split(menge, liefdatum);}
 public:
 	AuftragFull(const AuftragBase& auftrag,bool with_storno=true) throw(SQLerror);
+	AuftragFull(const AuftragBase& auftrag,std::string sortierug,bool with_storno=true) throw(SQLerror);	
 	// neuen Auftrag anlegen
 	AuftragFull(Auftrag::Anlegen _instanz, long kundennr, 
 			const std::string yaufnr="") throw(SQLerror);

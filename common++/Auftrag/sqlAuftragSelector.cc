@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.36 2004/07/08 08:20:27 jacek Exp $
+// $Id: sqlAuftragSelector.cc,v 1.37 2004/10/12 15:54:28 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -60,7 +60,7 @@
 #define FULL_SELECT_FROM_SORT_WHERE(s) "select " FULL_SELECTIONS \
 	" from " FULL_FROM_SORT(s) " where true "	
 	
-#define SORT_ORDER " order by ab.artikel,ab.breite,ab.farbe,ab.aufmachung,e.lieferdate";
+#define SORT_ORDER " order by ab.artikel,ab.breite,ab.farbe,ab.aufmachung,e.lieferdate"
 
 #endif
 
@@ -140,12 +140,13 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Aufid& selstr,
 //cout << "\n\n\nSTORNO = "<<selstr.with_storno<<"\n\n\n";
 #ifdef MABELLA_EXTENSIONS
    std::string s= FULL_SELECT_FROM_SORT_WHERE(artbez_table);
-   if(!selstr.with_storno) s+=FULL_SELECT_NO_STORNO;
-	s+=" and (a.instanz, a.auftragid)="
-	   "("+itos(selstr.auftrag.InstanzID())+", "+itos(selstr.auftrag.Id())+")";
-	s+=SORT_ORDER;
-
+   if(!selstr.with_storno) 
+     s+=FULL_SELECT_NO_STORNO;
+   s+=" and (a.instanz, a.auftragid)="
+	   "("+itos(selstr.auftrag.InstanzID())+", "+
+	   itos(selstr.auftrag.Id())+")";
     setClausel(s);
+    setOrderClausel(SORT_ORDER);
 #else
    std::string s= FULL_SELECT_FROM_WHERE;
    if(!selstr.with_storno) s+=FULL_SELECT_NO_STORNO;
@@ -199,8 +200,8 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Kunde_Artikel &selstr)
 	     " and "+StatusQualifier(OPEN)+
 	     " and a.instanz="+itos(selstr.instanz) +
 	     " and a.kundennr="+itos(selstr.kundennr) +
-	     " and artikelid="+itos(selstr.artikel.Id()) +
-	     " order by e.lieferdate");
+	     " and artikelid="+itos(selstr.artikel.Id()));
+ setOrderClausel(" order by e.lieferdate");
 }
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel_Planung_id &selstr)
@@ -218,19 +219,18 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel_Planung_id &sel
    {
     if(selstr.auftragid!=AuftragBase::handplan_auftrag_id)
      {
-       clau+=" and a.auftragid="+itos(selstr.auftragid) +
-             " order by e.lieferdate, e.auftragid , e.zeilennr  ";
+       clau+=" and a.auftragid="+itos(selstr.auftragid);
      }
     else
      {
-       clau+=" and a.auftragid>="+itos(AuftragBase::handplan_auftrag_id) + 
-	          " order by e.lieferdate, e.auftragid , e.zeilennr ";
+       clau+=" and a.auftragid>="+itos(AuftragBase::handplan_auftrag_id);
      }
+    setOrderClausel(" order by e.lieferdate, e.auftragid , e.zeilennr");
    }
   else if(selstr.status==CLOSED)
    {
-       clau+=" and a.auftragid="+itos(selstr.auftragid) + 
-	          " order by e.lieferdate desc";
+       clau+=" and a.auftragid="+itos(selstr.auftragid);
+	setOrderClausel(" order by e.lieferdate desc");
   }
 //cout << "CLAUSEL:"<<clau<<"\n\n";
  setClausel(clau);
@@ -249,8 +249,8 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Kunde_Status &selstr)
 	FULL_SELECT_NO_0
 	     " and "+StatusQualifier(selstr.stat)+
 	     " and a.instanz="+itos(selstr.instanz) +
-	     " and a.kundennr=" + itos(selstr.kundennr) +
-	     " order by e.lieferdate");
+	     " and a.kundennr=" + itos(selstr.kundennr));
+ setOrderClausel(" order by e.lieferdate");
 }
 
 
@@ -278,10 +278,9 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(
         " and bestellt!=0 "
 	     " and "+StatusQualifier(selstr.stat)+
 	     " and a.instanz="+itos(selstr.instanz) +
-	     " and a.kundennr=" + itos(selstr.kundennr) +
-	     " order by e.lieferdate";
-
+	     " and a.kundennr=" + itos(selstr.kundennr);
  setClausel(query);
+ setOrderClausel(" order by e.lieferdate");
 
 // POST QUERY
 

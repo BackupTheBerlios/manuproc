@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.29 2004/05/04 10:44:20 jacek Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.30 2004/10/12 15:54:28 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -31,6 +31,8 @@
 class SQLFullAuftragSelector // : public SQLAuftragSelector
 {
  std::string clausel;
+ std::string order_clausel; // will be added to query int getClausel
+ 			   // can be manipulated after creation
  std::string pre_query; // do it as sql-query before run main clausel
  std::string post_query; // do it as sql-query after run main clausel 
 
@@ -161,7 +163,8 @@ public:
  SQLFullAuftragSelector(const sel_InstanzAlle &selstr);
 
  void setClausel(const std::string &cl) { clausel = cl;}
- const std::string getClausel() const { return clausel; }
+ void setOrderClausel(const std::string &ocl) { order_clausel = ocl;} 
+ const std::string getClausel() const { return clausel+order_clausel; }
  const std::string getPreQuery() const { return pre_query; }
  const std::string getPostQuery() const { return post_query; }
 };

@@ -67,6 +67,15 @@ AuftragFull::AuftragFull(const AuftragBase& auftrag,bool with_storno) throw(SQLe
  loadEntries(with_storno);
 }
 
+AuftragFull::AuftragFull(const AuftragBase& auftrag,
+		std::string sortierung,bool with_storno) throw(SQLerror)
+	: Auftrag(auftrag),sort_clausel(sortierung)
+{
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
+
+ loadEntries(with_storno);
+}
+
 
 void AuftragFull::loadEntries(bool with_storno) throw(SQLerror)
 {
@@ -78,6 +87,8 @@ void AuftragFull::loadEntries(bool with_storno) throw(SQLerror)
 
  SQLFullAuftragSelector sl(SQLFullAuftragSelector::sel_Aufid(*this,with_storno)
 				,tabelle);
+ if(!sort_clausel.empty())
+   sl.setOrderClausel(sort_clausel);
  SelectedFullAufList aufids(sl);
 
  for(SelectedFullAufList::iterator i = aufids.aufidliste.begin();
