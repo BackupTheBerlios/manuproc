@@ -1,4 +1,4 @@
-// $Id: germanstring.cc,v 1.3 2002/12/05 15:13:36 christof Exp $            
+// $Id: germanstring.cc,v 1.4 2002/12/16 09:48:51 christof Exp $            
 /*  Indexerstellung
  *  Copyright (C) 2002 Christof Petig
  *
@@ -62,6 +62,15 @@ const twostr myiterator::replacements[] =
 	  { "oe", "oe0" },
 	  { "ss", "ss0" },
 	  { "ue", "ue0" },
+#if defined(__MINGW32__) || defined(SIGC1_2) // UTF-8
+	  { "Ã„", "ae1" }, 
+	  { "Ã–", "oe1" }, 
+	  { "Ãœ", "ue1" }, 
+	  { "ÃŸ", "ss1" }, 
+	  { "Ã¤", "ae1" }, 
+	  { "Ã¶", "oe1" }, 
+	  { "Ã¼", "ue1" }, 
+#else // ISO 8859
 	  { "Ä", "ae1" }, 
 	  { "Ö", "oe1" }, 
 	  { "Ü", "ue1" }, 
@@ -69,6 +78,7 @@ const twostr myiterator::replacements[] =
 	  { "ä", "ae1" }, 
 	  { "ö", "oe1" }, 
 	  { "ü", "ue1" }, 
+#endif	  
 	};
 static const char dummy[16]={0};
 
