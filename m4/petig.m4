@@ -1,4 +1,4 @@
-dnl $Id: petig.m4,v 1.70 2004/04/22 15:56:37 christof Exp $
+dnl $Id: petig.m4,v 1.71 2004/04/22 16:20:05 christof Exp $
 
 dnl Configure paths for some libraries
 dnl derived from kde's acinclude.m4
@@ -356,6 +356,7 @@ fi
 COMMONXX_INCLUDES="$COMMONXX_INCLUDES $SIGC_CFLAGS"
 COMMONXX_LIBS="$COMMONXX_LIBS $SIGC_LIBS"
 
+AC_MSG_CHECKING(for which database to use)
 # check wether SQLite or PostgreSQL
 old_cxxflags="$CXXFLAGS"
 CXXFLAGS="$COMMONXX_INCLUDES $CXXFLAGS"
@@ -370,9 +371,13 @@ CXXFLAGS="$old_cxxflags"
 
 if test "x$MPC_SQLITE" = x
 then
-	AC_MSG_RESULT("Using PostgreSQL instead of SQlite") 
+	AC_MSG_RESULT("PostgreSQL") 
 	PETIG_CHECK_ECPG
+	COMMONXX_LDFLAGS="$COMMONXX_LDFLAGS $ECPG_LDFLAGS"
+	COMMONXX_INCLUDES="$COMMONXX_INCLUDES $ECPG_INCLUDES"
+	COMMONXX_LIBS="$COMMONXX_LIBS $ECPG_LIBS"
 else
+	AC_MSG_RESULT("SQLite") 
 	COMMONXX_LDFLAGS="$COMMONXX_LDFLAGS -lqlite"
 fi
 
