@@ -1,4 +1,4 @@
-// $Id: Zuordnung_zeigen.cc,v 1.1 2003/05/23 11:43:53 christof Exp $
+// $Id: Zuordnung_zeigen.cc,v 1.2 2003/05/23 13:53:27 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -21,6 +21,7 @@
 #include <Misc/dbconnect.h>
 #include <Auftrag/AufEintragZu.h>
 #include <Auftrag/AufEintrag.h>
+#include <Misc/exception.h>
 
 static void show(const AufEintrag &ae)
 {  std::cout << ae << ": " << ae.getStueck();
