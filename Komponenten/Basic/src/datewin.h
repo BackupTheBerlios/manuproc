@@ -1,4 +1,4 @@
-// $Id: datewin.h,v 1.5 2002/04/30 08:12:41 christof Exp $
+// $Id: datewin.h,v 1.6 2002/06/20 09:27:55 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,6 +28,7 @@ class datewin : public datewin_glade
         enum FELD {TAG=1,MONAT};
         enum PAGE { p_Datum, p_Woche, p_Kalender, p_leer };
         bool block;
+        std::string instance;
 
 	void on_activate(int i);
         void datum_activate();
@@ -39,7 +40,7 @@ class datewin : public datewin_glade
         void on_datewin_switch_page(Gtk::Notebook_Helpers::Page *p0, guint p1);
 
    public:
-	datewin();
+	datewin(const std::string &instance="");
 #if 0 // COMPATIBILITY ONLY
 	Petig::Datum get_Datum() const throw()
 	{  return get_value(); }
@@ -49,6 +50,7 @@ class datewin : public datewin_glade
 	Petig::Datum get_value() const throw(); 
 	void set_value(const Petig::Datum &d) throw();
 	void setLabel(const std::string &s);
+	void setInstance(const std::string &s);
 	
 	SigC::Signal0<void> activate;
 };

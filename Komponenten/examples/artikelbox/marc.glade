@@ -337,7 +337,7 @@
 	<handler>andererKunde</handler>
 	<last_modification_time>Wed, 30 Aug 2000 13:38:45 GMT</last_modification_time>
       </signal>
-      <creation_function>KundenBox</creation_function>
+      <creation_function>KundenBox2</creation_function>
       <int1>0</int1>
       <int2>0</int2>
       <last_modification_time>Wed, 30 Aug 2000 11:38:56 GMT</last_modification_time>

@@ -1,4 +1,4 @@
-// $Id: datewin.cc,v 1.4 2002/04/30 08:12:41 christof Exp $
+// $Id: datewin.cc,v 1.5 2002/06/20 09:27:55 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,7 +22,7 @@
 #include <Aux/Global_Settings.h>
 #include <unistd.h>
 
-datewin::datewin() : block(false)
+datewin::datewin(const std::string &inst) : block(false), instance(inst)
 {  set_value(Petig::Datum::today());
    jahr->activate.connect(activate.slot());
    gtk_signal_connect(GTK_OBJECT(gtkobj()), "grab_focus",
@@ -71,7 +71,11 @@ void datewin::set_value (const Petig::Datum &d) throw()
       block=true;
       calendar1->select_day(d.Tag());
       block=false;
-      set_page(load_settings());
+      int pg=load_settings();
+      // Tag ist in Kalenderwochendarstellung nicht exakt darstellbar
+      // (Informationsverlust) => Datum nehmen
+      if (pg==p_Woche && d.Tag()!=Petig::Datum(d.KW()).Tag()) pg=p_Datum;
+      set_page(pg);
    }
    else 
    {  set_page(p_leer);
@@ -83,15 +87,15 @@ gint datewin::try_grab_focus(GtkWidget *w,gpointer gp) throw()
    datewin *_this=static_cast<datewin*>(gp);
    switch(_this->get_current_page_num())
    {  case p_Datum:
-	  _this->tag->grab_focus();
    	  _this->tag->select_region(0,_this->tag->get_text_length());
    	  _this->monat->select_region(0,_this->monat->get_text_length());
    	  _this->jahr->select_region(0,_this->jahr->get_text_length());
+	  _this->tag->grab_focus();
    	  break;
       case p_Woche:
-          _this->kw_spinbutton->grab_focus();
    	  _this->kw_spinbutton->select_region(0,_this->kw_spinbutton->get_text_length());
    	  _this->jahr_spinbutton->select_region(0,_this->jahr_spinbutton->get_text_length());
+          _this->kw_spinbutton->grab_focus();
    	  break;
       case p_Kalender:
           _this->calendar1->grab_focus();
@@ -142,16 +146,19 @@ void datewin::on_day_selected()
    activate();
 }
 void datewin::datum_setzen()
-{  set_page(load_settings());
+{  if (!tag->get_value_as_int())
+   {  set_value(Petig::Datum::today());
+   }
+   else set_page(load_settings());
 }
 
 void datewin::save_settings() const
 {  int u=getuid();
-   Global_Settings(u,"","datewin:page").set_Wert(itos(get_current_page_num()));
+   Global_Settings(u,instance,"datewin:page").set_Wert(itos(get_current_page_num()));
 }
 
 int datewin::load_settings() const
-{  return atoi(Global_Settings(getuid(),"","datewin:page").get_Wert().c_str());
+{  return atoi(Global_Settings(getuid(),instance,"datewin:page").get_Wert().c_str());
 }
 
 void datewin::on_datewin_switch_page(Gtk::Notebook_Helpers::Page *p0, guint p1)

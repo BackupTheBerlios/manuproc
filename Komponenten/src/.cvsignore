@@ -27,3 +27,5 @@ WAuftragStatus_sql.cc
 ProzessBox_sql.cc
 KundenBox_sql.cc
 IntStringBox_sql.cc
+AB_Breitensuche_sql.cc
+Optionmenu_Instanz_sql.cc

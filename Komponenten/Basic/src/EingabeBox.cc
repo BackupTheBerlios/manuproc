@@ -1,4 +1,4 @@
-// $Id: EingabeBox.cc,v 1.4 2002/03/20 07:55:01 christof Exp $
+// $Id: EingabeBox.cc,v 1.5 2002/06/20 09:27:55 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -102,7 +102,10 @@ const std::string EingabeBox::get_value(int col) const
 }
 
 void EingabeBox::set_value(int col,const std::string &s)
-{  grow(col+1); entries[col]->set_text(s); }
+{  grow(col+1); entries[col]->set_text(s); 
+   // EAN-COde darf nicht editiert werden:
+   if(labels[col]->get_text()=="EAN-Code") entries[col]->set_editable(false);
+}
 
 void EingabeBox::set_width(int col,int width)
 {  grow(col+1); entries[col]->set_usize(width,-1);
@@ -145,9 +148,6 @@ void EingabeBox::set_size(int cols)
    check();
 }
 
-#warning ich fände es besser, wenn man bei einem activate die folgede Funktion aufrufen würde,
-#warning anstatt das grab Fokus in einem Vektor zu speichern. Aber VOR dem 
-#warning umbauen möchte ich Deine Mainung hören MAT
 /*
 void EingabeBox::activate_entry(int nr)
 {

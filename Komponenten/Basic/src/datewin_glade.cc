@@ -139,6 +139,7 @@ datewin_glade::datewin_glade(
    kw_spinbutton->activate.connect_after(jahr_spinbutton->grab_focus.slot());
    jahr_spinbutton->activate.connect_after(SigC::slot(static_cast<class datewin*>(this), &datewin::kw_activate));
    calendar1->day_selected.connect(SigC::slot(static_cast<class datewin*>(this), &datewin::on_day_selected));
+// clicked on label ???   label6->clicked.connect(SigC::slot(static_cast<class datewin*>(this), &datewin::datum_setzen));
    button1->clicked.connect(SigC::slot(static_cast<class datewin*>(this), &datewin::datum_setzen));
    datewin->switch_page.connect(SigC::slot(static_cast<class datewin*>(this), &datewin::on_datewin_switch_page));
 }

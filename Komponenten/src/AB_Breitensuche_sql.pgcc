@@ -1,0 +1,129 @@
+/*  libKomponenten: GUI components for ManuProC's libcommon++
+ *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include <ManuProCConfig.h>
+#include "ArtikelBox.hh"
+exec sql include sqlca;
+
+#if 0
+static ostream &operator<<(ostream &o,cH_ExtBezSchema s)
+{  return o << '[' << s->Id() << ';' << s->Typ().Id() << ']';
+}
+#endif
+
+// true: BreitenSuche aktiv
+bool ArtikelBox::BreitenSuche(GtkSCContext newsearch,unsigned int sp,unsigned int l, int *cont)
+{static std::list<cH_ExtBezSchema> breitensuche;
+ 
+//std::cout << "BreitenSuche("<<(newsearch==GTK_SEARCH_OPEN?"OPEN"
+//		:(newsearch==GTK_SEARCH_CLOSE?"CLOSE":"FETCH")) <<")\n";
+
+ if (newsearch==GTK_SEARCH_CLOSE) 
+ {  breitensuche.clear();
+    return false;
+ }
+ else if (newsearch==GTK_SEARCH_OPEN)
+ {  exec sql begin declare section;
+    int sch=schema->Id(),typ=schema->Typ().Id();
+    int schemas[40],typen[40];
+    exec sql end declare section;
+    
+    exec sql select distinct extartbezid into :schemas 
+    	from extbezschema where artikeltyp=:typ and extartbezid<>:sch;
+    SQLerror::test(__FILELINE__,100);
+    {  int res=sqlca.sqlerrd[2];
+       for (int i=0;i<res;++i) 
+          breitensuche.push_back(cH_ExtBezSchema(schemas[i],typ));
+    }
+    exec sql select distinct artikeltyp into :typen
+    	from extbezschema where artikeltyp<>:typ and extartbezid=:sch;
+    SQLerror::test(__FILELINE__,100);
+    {  int res=sqlca.sqlerrd[2];
+       for (int i=0;i<res;++i) 
+          breitensuche.push_back(cH_ExtBezSchema(sch,typen[i]));
+    }
+    exec sql select distinct extartbezid,artikeltyp into :schemas,:typen
+    	from extbezschema where artikeltyp<>:typ and extartbezid<>:sch;
+    SQLerror::test(__FILELINE__,100);
+    {  int res=sqlca.sqlerrd[2];
+       for (int i=0;i<res;++i) 
+          breitensuche.push_back(cH_ExtBezSchema(schemas[i],typen[i]));
+    }
+
+//std::copy(breitensuche.begin(),breitensuche.end(),
+// ostream_iterator<cH_ExtBezSchema>(std::cout,","));
+//std::cout<<'\n';
+
+    *cont=true;
+    return true;
+ }
+ else // newsearch==GTK_SEARCH_FETCH
+ {  if (breitensuche.empty()) return false;
+    
+    cH_ExtBezSchema s=breitensuche.front();
+    breitensuche.pop_front();
+    // analysieren
+//    std::cout<<s<<'\n';
+    
+    vector<cH_EntryValue> v=get_content(l,sp);
+    ArtikelBoxAnzeige anz=ArtikelBoxAnzeige::Laden(s);
+    for (unsigned int i=1;i<=32;++i)
+    {  if (anz.Sichtbar(i) && s->sigsize(i)>=v.size())
+       {  std::string squery="select exists(select true from "
+       		+Tabellenname(s)+" where ";
+
+          vector<cH_EntryValue>::const_iterator vi=v.begin();
+          for (ExtBezSchema::const_sigiterator j=s->sigbegin(i);
+ 		j!=s->sigend(i);++j,++vi)
+          { if (vi+1==v.end())
+            {  squery += "text("+j->spaltenname +") like '"+(*vi)->getStrVal()+"\%'";
+               break;
+            }
+            else 
+               squery += "text("+j->spaltenname +")='"+(*vi)->getStrVal()+"' AND ";
+          }
+          squery+=')';
+          exec sql begin declare section;
+          char *QUERY;
+          bool result=false;
+          exec sql end declare section;
+          
+          QUERY=const_cast<char*>(squery.c_str());
+          exec sql prepare STMT from :QUERY;
+          exec sql execute STMT into :result;
+          
+          if (result)
+          {  breitensuche.clear();
+             setExtBezSchema(s);
+             for (unsigned int k=0;k<signifikanz.size();++k)
+                if (signifikanz[k]==i)
+                {  set_content(v,k);
+                   combos[k][v.size()-1]->get_entry()->set_position(-1);
+                   combos[k][v.size()-1]->trigger_search();
+                   combos[k][v.size()-1]->grab_focus();
+                }
+             return true;
+          }
+       }
+    }
+    // nicht gefunden ... weiter suchen    
+    if (!breitensuche.empty()) *cont=true; 
+    return true;
+ }
+}
+

@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.16 2002/05/03 16:48:19 christof Exp $
+// $Id: ArtikelBox.cc,v 1.18 2002/06/20 09:31:46 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -31,13 +31,16 @@ void ArtikelBox::selectFunc(unsigned int sp,unsigned int l) throw(SQLerror)
  if(automatisch_anlegen_bool)
   {
     if(sp+1==combos[l].size()) Neuer_Eintrag() ;
-    else combos[l][sp+1]->grab_focus();
+    else 
+    {  combos[l][sp+1]->grab_focus(); // kein reset? CP
+       pixmap_setzen(false);
+    }
   }
  else
   {
     // Signifikanz testen
-    if(sp == (schema->sigsize(signifikanz[l])-1) || kombiniertbool)
-      {try
+    if(kombiniertbool || sp == (schema->sigsize(signifikanz[l])-1))
+    {try
         {
          loadArtikel(l);
          activate();
@@ -52,14 +55,10 @@ void ArtikelBox::selectFunc(unsigned int sp,unsigned int l) throw(SQLerror)
     }
     pixmap_setzen(false);
     artikel=ArtikelBase();
-
-//std::cout << l<<"\t"<<sp<<combos[l][sp+1]->get_text(); 
     combos[l][sp+1]->reset();
-//std::cout << l<<"\t"<<sp<< combos[l][sp+1]->get_text(); 
     combos[l][sp+1]->grab_focus();
-   }
+  }
 }
-
 
 const std::string ArtikelBoxErr::ErrMsg() const
 {
@@ -101,43 +100,23 @@ throw(SQLerror,ArtikelBoxErr)
  for (unsigned int j=0;j<signifikanz.size();++j)
  {  
     assert(j<combos.size());
-    ArtikelBezeichnung::const_sigiterator ci = artbez->sigbegin(signifikanz[j]);
-    if (!kombiniertbool)   
-       for (unsigned int i=0; ci!=artbez->sigend(signifikanz[j]) 
-       		&& i<combos[j].size(); ++ci, ++i)
-         { combos[j][i]->set_text((*ci)->getStrVal());
-         }
-    else
-      { std::string text;
-        cH_ExtBezSchema schema = artbez->getExtBezSchema();
-        ExtBezSchema::const_sigiterator is=schema->sigbegin(signifikanz[j]);
-        for(;ci!=artbez->sigend(signifikanz[j])
-            && is!=schema->sigend(signifikanz[j]) ;++ci,++is)
-          {  
-           std::string sep = is->separator;
-           if (sep==" ") sep = "_";
-           text += (*ci)->getStrVal() + sep;
-          }
-        combos[j][0]->set_text(text);
-      }
+    vector<cH_EntryValue> v;
+    for (ArtikelBezeichnung::const_sigiterator ci = artbez->sigbegin(signifikanz[j]);
+    		ci!=artbez->sigend(signifikanz[j]); ++ci)
+    	v.push_back((*ci));
+    set_content(v,j);
  }
 }
 
-vector<cH_EntryValue> ArtikelBox::expand_kombi(unsigned int l,enum_art_label eal)
-{
- std::string text;
- std::vector<cH_EntryValue> v;
- if (eal==ARTIKEL) 
-   { text = combos[l][0]->get_text(); 
-     v=expand_kombi_Artikel(l,text);
-   }
- if (eal==LABEL)
-    for (ExtBezSchema::const_sigiterator i=schema->sigbegin(signifikanz[l]);i!=schema->sigend(signifikanz[l]);++i)
-       v.push_back(cH_EntryValueIntString(i->spaltenname));
- return v;
+std::string ArtikelBox::kombinierterName(cH_ExtBezSchema schema,int signifikanz)
+{  vector<std::string> v;
+   for (ExtBezSchema::const_sigiterator i=schema->sigbegin(signifikanz);
+   	i!=schema->sigend(signifikanz);++i)
+       v.push_back(i->spaltenname);
+   return Kombinieren(schema,signifikanz,v);
 }
 
-vector<cH_EntryValue> ArtikelBox::expand_kombi_Artikel(unsigned int l,std::string text)
+vector<cH_EntryValue> ArtikelBox::expand_kombi_Artikel(unsigned int l,std::string text) const
 {
      std::vector<cH_EntryValue> v;
      std::string::size_type s1=0;
@@ -158,17 +137,57 @@ vector<cH_EntryValue> ArtikelBox::expand_kombi_Artikel(unsigned int l,std::strin
  return v;
 }
 
-void ArtikelBox::loadArtikel(unsigned int l) throw(SQLerror)
+std::vector<cH_EntryValue> ArtikelBox::get_content(unsigned int l,unsigned int spmax) const
 {std::vector<cH_EntryValue> v;
  if(!kombiniertbool)
-  { for (unsigned int i=0;i<combos[l].size();++i)
+  { spmax=min(combos[l].size(),spmax+1);
+    for (unsigned int i=0;i<spmax;++i)
      v.push_back(cH_EntryValueIntString(combos[l][i]->get_text()));
   }
- else v = expand_kombi(l,ARTIKEL);
+ else 
+  { v = expand_kombi_Artikel(l, combos[l][0]->get_text());
+  }
+  return v;
+}
+
+std::string ArtikelBox::Kombinieren(cH_ExtBezSchema schema, unsigned int sig,const std::vector<std::string> &v)
+{std::string text;
+ std::vector<std::string>::const_iterator vi=v.begin();
+ for (ExtBezSchema::const_sigiterator i=schema->sigbegin(sig);
+   			vi!=v.end() && i!=schema->sigend(sig);
+   			++i,++vi)
+    {text += *vi;
+     if (i->separator==" ") text += "_";
+     else text +=i->separator;
+    }
+  return text;
+}
+
+std::string ArtikelBox::Kombinieren(cH_ExtBezSchema schema, unsigned int sig,const std::vector<cH_EntryValue> &v)
+{  std::vector<std::string> u;
+   u.reserve(v.size());
+   for (std::vector<cH_EntryValue>::const_iterator i=v.begin();i!=v.end();++i)
+      u.push_back((*i)->getStrVal());
+   return Kombinieren(schema,sig,u);
+}
+
+void ArtikelBox::set_content(const std::vector<cH_EntryValue> &v,unsigned int l)
+{   unsigned int grenze=v.size();
+    if (!kombiniertbool)
+    {  grenze=min(grenze,combos[l].size());
+       for (unsigned int i=0; i<grenze; ++i)
+         { combos[l][i]->set_text(v[i]->getStrVal());
+         }
+    }
+         else combos[l][0]->set_text(Kombinieren(schema,signifikanz[l],v));
+}
+
+void ArtikelBox::loadArtikel(unsigned int l) throw(SQLerror)
+{
  try {
-  while (v.size()<schema->size(signifikanz[l])) 
-     v.push_back(cH_EntryValueIntString(""));
-  
+  std::vector<cH_EntryValue> v=get_content(l);
+  // das gefällt mir hier nicht, sollte das nicht C++ machen? CP
+  while (v.size()<schema->size(signifikanz[l])) v.push_back(cH_EntryValue());
   cH_ArtikelBezeichnung bez(signifikanz[l],v,schema);
   artikel=*bez;
   set_value(artikel);
@@ -187,18 +206,15 @@ ArtikelBox::~ArtikelBox()
 void ArtikelBox::init()
 {
    // Altes Widget löschen (Gtk::Container::)
-#if 1   
    remove();
    combos.clear();
    labels.clear();
-#else
-   assert(!combos.size());
-   assert(!labels.size());
-#endif   
 
  Benutzerprofil_laden();   // setzt signifikanz !!! 
 
+#ifdef ALLE_ARTIKEL
  if(!alle_artikel_anzeigen_bool)
+#endif 
   {
    reloop:
     for (std::vector<int>::iterator i=signifikanz.begin();i!=signifikanz.end();++i)
@@ -214,8 +230,10 @@ void ArtikelBox::init()
      {
        --l;
        Gtk::Container* table = init_table(l);
-       if (vertikalbool) 
-         {Gtk::VPaned* hp=manage(new Gtk::VPaned);
+       Gtk::Paned* hp=0;
+       if (vertikalbool) hp=manage(new Gtk::VPaned);
+       else hp=manage(new Gtk::HPaned);
+
           hp->set_handle_size(10);
           hp->set_gutter_size(10);
    //       hp->set_position(50*schema->sigsize(*i));
@@ -223,20 +241,10 @@ void ArtikelBox::init()
           hp->pack2(*oberstes, true, true);
           hp->show();
           oberstes = hp;
-         }
-       else 
-         {Gtk::HPaned* hp=manage(new Gtk::HPaned);
-          hp->set_handle_size(10);
-          hp->set_gutter_size(10);
-   //       hp->set_position(50*schema->sigsize(*i));
-          hp->pack1(*table, true, true);
-          hp->pack2(*oberstes, true, true);
-          hp->show();
-          oberstes = hp;
-         }
       }
     add(*oberstes);
    }
+#ifdef ALLE_ARTIKEL   
  else
    {
      int s=1;
@@ -246,6 +254,10 @@ void ArtikelBox::init()
      oberstes = init_table_alle_artikel(s);
      add(*oberstes);
    }
+#endif
+ std::string labtext = ArtikelTyp::get_string(schema->Typ())
+      +": "+ cH_Kunde(schema->Id())->firma();
+ tooltips.set_tip(*this,labtext);
  fuelleMenu();
 }
 
@@ -264,7 +276,7 @@ Gtk::Container* ArtikelBox::init_table(int l)
     Gtk::SearchCombo *sc;
     combos[l].push_back(sc=manage (new Gtk::SearchCombo(true)));
     sc->set_usize(50,0);
-    sc->set_autoexpand(false);
+    sc->set_autoexpand(autocompletebool);
     sc->set_enable_tab(true);
     sc->search.connect(SigC::bind(SigC::slot(this,&ArtikelBox::searchFunc),i,l));
     sc->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::selectFunc),i,l));
@@ -272,7 +284,7 @@ Gtk::Container* ArtikelBox::init_table(int l)
     Gtk::Label *lb;
 
     std::string text;
-    if(kombiniertbool) text = kombinierteAnzeige(signifikanz[l],schema->Typ(),schema->Id());
+    if(kombiniertbool) text = kombinierterName(schema,signifikanz[l]);
     else text = j->bezkomptext;
     labels[l].push_back(lb=manage(new Gtk::Label(text)));
 
@@ -302,7 +314,7 @@ Gtk::Container* ArtikelBox::init_table(int l)
  return ev;
 }
 
-
+#ifdef ALLE_ARTIKEL
 Gtk::Container* ArtikelBox::init_table_alle_artikel(int s)
 {
  Gtk::Table* table = manage(new Gtk::Table(2,s));
@@ -316,7 +328,7 @@ Gtk::Container* ArtikelBox::init_table_alle_artikel(int s)
     Gtk::SearchCombo *sc;
     combos[s].push_back(sc=manage (new Gtk::SearchCombo(true)));
     sc->set_usize(50,0);
-    sc->set_autoexpand(false);
+    sc->set_autoexpand(autocompletebool);
     sc->set_enable_tab(true);
     sc->search.connect(SigC::bind(SigC::slot(this,&ArtikelBox::searchFunc_alle_artikel),i));
     sc->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::selectFunc_alle_artikel),i));
@@ -349,29 +361,27 @@ Gtk::Container* ArtikelBox::init_table_alle_artikel(int s)
  ev->show();
  return ev;
 }
+#endif
 
+#define USUAL_INIT(sch) vertikalbool(false), autocompletebool(false), \
+   kombiniertbool(false),labelbool(true), \
+   automatisch_anlegen_bool(false),eingeschraenkt(false),\
+   alle_artikel_anzeigen_bool(false),alle_artikel_anzeigen_mit_id_bool(false),\
+   artikel_automatisch_finden(false), \
+  schema(sch), gewaehltesSchema(sch->Id()), tr("",false), tr2("",false),\
+  oberstes(0), menu(0),  pixmap(0), label_typ(0), label(0)
 
 ArtikelBox::ArtikelBox(const cH_ExtBezSchema &_schema)  throw(SQLerror)
-: vertikalbool(false), autocompletebool(false), 
-   kombiniertbool(false),labelbool(true), 
-   automatisch_anlegen_bool(false),eingeschraenkt(false),
-   alle_artikel_anzeigen_bool(false),alle_artikel_anzeigen_mit_id_bool(false),
-  schema(_schema), tr("",false), tr2("",false),
-  oberstes(0), menu(0),  pixmap(0), label_typ(0), label(0)
+: USUAL_INIT(_schema)
 { 
  artbox_start();
 }
 
 ArtikelBox::ArtikelBox(const std::string& _program,const std::string& _position)  throw(SQLerror)
-: vertikalbool(false), autocompletebool(false), 
-   kombiniertbool(false),labelbool(true), 
-   automatisch_anlegen_bool(false),eingeschraenkt(false),
-   alle_artikel_anzeigen_bool(false),alle_artikel_anzeigen_mit_id_bool(false),
-   sprogram(_program),sposition(_position),
-   schema(cH_ExtBezSchema(ExtBezSchema::default_ID)),
-   tr("",false), tr2("",false),
-   oberstes(0), menu(0),  pixmap(0), label_typ(0), label(0)
+: USUAL_INIT(cH_ExtBezSchema(ExtBezSchema::default_ID))
 { 
+  sprogram=_program;
+  sposition=_position;
   artbox_start();
   std::string gs = Global_Settings(0,sprogram,sposition).get_Wert();
   if (gs!="")
@@ -396,6 +406,9 @@ ArtikelBox::ArtikelBox(const std::string& _program,const std::string& _position)
 
 void ArtikelBox::artbox_start()
 {
+#ifdef PETIG_EXTENSIONS
+ artikel_automatisch_finden=true;
+#endif
  init();
  this->button_press_event.connect(SigC::slot(this,&ArtikelBox::MouseButton));
 
@@ -408,6 +421,19 @@ void ArtikelBox::setExtBezSchema(const cH_ExtBezSchema &_schema)
 {
    schema=_schema;
    init();
+}
+
+void ArtikelBox::setExtBezSchemaID(ExtBezSchema::ID id)
+{  gewaehltesSchema=id;
+   if (id==schema->Id()) return; // vielleicht gewähltesSchema setzen?
+
+   // replace this by a decent database driven last selected solution
+   // the API is already there
+#ifdef PETIG_EXTENSIONS
+   ArtikelBox::setExtBezSchema(cH_ExtBezSchema(id,ArtikelTypID::Band));
+#else
+   ArtikelBox::setExtBezSchema(cH_ExtBezSchema(id));
+#endif
 }
 
 void ArtikelBox::TypSelected(int typ)
@@ -440,7 +466,7 @@ void ArtikelBox::setzeSchemaId(int t)
    {  setExtBezSchema(cH_ExtBezSchema(ExtBezSchema::default_ID,t));
    }
    if (sprogram!="")
-      Global_Settings(0,sprogram,sposition,itos(schema->Id())+":"+itos(t));
+      Global_Settings::create(0,sprogram,sposition,itos(schema->Id())+":"+itos(t));
 }
 
 void ArtikelBox::setzeSchemaTyp(int t2)
@@ -448,7 +474,7 @@ void ArtikelBox::setzeSchemaTyp(int t2)
    Benutzerprofil_speichern();
    setExtBezSchema(cH_ExtBezSchema(t2,schema->Typ()));
    if (sprogram!="")
-      Global_Settings(0,sprogram,sposition,itos(t2)+":"+itos(schema->Typ()));
+      Global_Settings::create(0,sprogram,sposition,itos(t2)+":"+itos(schema->Typ()));
 }
 
 
@@ -499,6 +525,7 @@ void ArtikelBox::show_label(bool b)
   label->set_active(labelbool);
 }
 
+#ifdef PETIG_EXTENSIONS
 double ArtikelBox::get_menge_from_artikelbox()
 {
   std::string aufmachung;
@@ -510,7 +537,7 @@ double ArtikelBox::get_menge_from_artikelbox()
   for (std::string::const_iterator i=aufmachung.begin();i!=aufmachung.end();++i)
    {
      char c=*i;
-#warning KOMMA ist erlaubt MAT
+// KOMMA ist erlaubt MAT
      if (c=='0'||c=='1'||c=='2'||c=='3'||c=='4'||c=='5'||c=='6'||c=='7'||c=='8'||c=='9'||c=='.'||c==',')
        { if(c==',') c='.'; smenge += c; }
      else break;     
@@ -518,6 +545,7 @@ double ArtikelBox::get_menge_from_artikelbox()
   double menge=atof(smenge.c_str());
   return menge;
 }
+#endif
 
 void ArtikelBox::Einschraenken(const std::string &e, bool an)
 {  einschraenkung=e;
@@ -547,9 +575,11 @@ void ArtikelBox::einschraenken_cb(Gtk::CheckMenuItem *einschr_mi)
 #include "stock_button_apply.xpm"
 #include "stock_button_cancel.xpm"
 #include "E.xpm"
+#include "plus.xpm"
 
 void ArtikelBox::pixmap_setzen(bool valid)
 {  if (valid) pixmap->set(stock_button_apply_xpm);
+   else if (automatisch_anlegen_bool) pixmap->set(plus_xpm);
    else if (eingeschraenkt) pixmap->set(E_xpm);
    else pixmap->set(stock_button_cancel_xpm);
 }
@@ -582,3 +612,5 @@ void ArtikelBox::AlleArtikelAnzeigenId(Gtk::CheckMenuItem *cmi)
   alle_artikel_anzeigen_mit_id_bool=cmi->get_active();
   init();
 }
+
+
