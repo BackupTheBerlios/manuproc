@@ -1,4 +1,4 @@
-/* $Id: ArtikelGang.h,v 1.3 2001/11/05 08:58:29 christof Exp $ */
+/* $Id: ArtikelGang.h,v 1.4 2002/05/06 13:41:23 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

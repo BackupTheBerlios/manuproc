@@ -1,6 +1,6 @@
 #include"JumboRolle.h"
 
-bool JumboRolle::isRollNrOK(int eancode)
+bool JumboRolle::isRollNrOK(ID eancode)
 {
  int i=0;
  int code=eancode/10;

@@ -1,4 +1,4 @@
-/* $Id: Zahlvorgang.h,v 1.4 2002/03/20 07:43:31 christof Exp $ */
+/* $Id: Zahlvorgang.h,v 1.5 2002/05/06 13:41:22 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

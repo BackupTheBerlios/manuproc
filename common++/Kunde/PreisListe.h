@@ -1,4 +1,4 @@
-// $Id: PreisListe.h,v 1.2 2002/05/03 10:22:54 christof Exp $
+// $Id: PreisListe.h,v 1.3 2002/05/06 13:41:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

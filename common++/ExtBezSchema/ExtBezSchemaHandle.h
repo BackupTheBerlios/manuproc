@@ -1,4 +1,4 @@
-// $Id: ExtBezSchemaHandle.h,v 1.4 2002/04/19 06:23:22 christof Exp $
+// $Id: ExtBezSchemaHandle.h,v 1.5 2002/05/06 13:41:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

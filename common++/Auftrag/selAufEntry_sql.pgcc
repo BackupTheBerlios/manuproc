@@ -1,4 +1,4 @@
-// $Id: selAufEntry_sql.pgcc,v 1.16 2002/02/05 17:15:52 christof Exp $
+// $Id: selAufEntry_sql.pgcc,v 1.17 2002/05/06 13:41:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *

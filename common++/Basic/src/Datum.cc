@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.7 2002/04/19 06:23:22 christof Exp $ */
+/* $Id: Datum.cc,v 1.8 2002/05/06 13:41:22 christof Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>

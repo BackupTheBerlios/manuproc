@@ -1,4 +1,4 @@
-// $Id: Aufmachung.cc,v 1.1 2001/04/23 08:11:58 christof Exp $
+// $Id: Aufmachung.cc,v 1.2 2002/05/06 13:41:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *

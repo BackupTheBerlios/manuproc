@@ -1,4 +1,4 @@
-// $Id: Schussfaeden.pgcc,v 1.2 2001/10/19 08:59:36 christof Exp $
+// $Id: Schussfaeden.pgcc,v 1.1 2001/09/04 12:53:47 cvs_malte Exp $
 
 #include "Schussfaeden.hh"
 #include <Aux/Transaction.h>

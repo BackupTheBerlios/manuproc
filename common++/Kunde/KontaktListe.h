@@ -1,4 +1,4 @@
-// $Id: KontaktListe.h,v 1.1 2002/05/06 13:39:17 christof Exp $
+// $Id: KontaktListe.h,v 1.2 2002/05/06 13:41:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

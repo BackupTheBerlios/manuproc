@@ -1,4 +1,4 @@
-// $Id: preis.cc,v 1.4 2001/10/23 08:45:19 christof Exp $
+// $Id: preis.cc,v 1.5 2002/05/06 13:41:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

@@ -1,7 +1,7 @@
 #ifndef SFADEN_HH
 #define SFADEN_HH
 
-// $Id: Schussfaeden.hh,v 1.2 2001/10/23 08:45:19 christof Exp $
+// $Id: Schussfaeden.hh,v 1.3 2002/05/06 13:41:23 christof Exp $
 
 #include <Faeden/Faden.hh>
 #include <Artikel/ArtikelBase.h>

@@ -1,4 +1,4 @@
-/* $Id: EntryValueDatum.h,v 1.2 2001/12/04 08:42:10 christof Exp $ */
+/* $Id: EntryValueDatum.h,v 1.3 2002/05/06 13:41:22 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

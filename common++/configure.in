@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.14 2002/05/03 16:48:10 christof Exp $
+# $Id: configure.in,v 1.15 2002/05/06 13:41:22 christof Exp $
 
 AC_INIT(Artikel/ArtikelBase.h)
 

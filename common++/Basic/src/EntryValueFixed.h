@@ -1,4 +1,4 @@
-/* $Id: EntryValueFixed.h,v 1.2 2001/11/19 12:49:24 christof Exp $ */
+/* $Id: EntryValueFixed.h,v 1.3 2002/05/06 13:41:22 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

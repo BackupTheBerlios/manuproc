@@ -1,4 +1,4 @@
-// $Id: JumboRolle.h,v 1.3 2002/05/06 13:36:01 christof Exp $
+// $Id: JumboRolle.h,v 1.4 2002/05/06 13:41:23 christof Exp $
 
 #ifndef _JUMBOROLLE_HH
 #  define _JUMBOROLLE_HH

@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: exception.cc,v 1.2 2001/07/05 09:23:02 christof Exp $
+// $Id: exception.cc,v 1.3 2002/05/06 13:41:23 christof Exp $
 // long explantion at the end
 
 #include <exception>

@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.8 2002/01/23 13:43:53 christof Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.9 2002/05/06 13:41:23 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *

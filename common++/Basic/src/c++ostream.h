@@ -1,4 +1,4 @@
-// $Id: c++ostream.h,v 1.2 2001/06/27 08:04:09 christof Exp $
+// $Id: c++ostream.h,v 1.3 2002/05/06 13:41:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

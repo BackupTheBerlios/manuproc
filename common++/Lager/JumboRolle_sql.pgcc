@@ -6,7 +6,7 @@
 exec sql include sqlca;
 
 #if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
-JumboRolle::JumboRolle(int c) throw(SQLerror,CodeError)
+JumboRolle::JumboRolle(ID c) throw(SQLerror,CodeError)
  : code(c)
 {
  if(!isRollNrOK(c)) throw CodeError(c,"JumboRolle::JumboRolle");
@@ -21,7 +21,7 @@ JumboRolle::JumboRolle(int c) throw(SQLerror,CodeError)
  char VERARB_DATUM[30];
  char BARCOFERT_DATUM[30];
  char WIEDERINSLAGER[30];
- bool REST;
+/* bool REST; */
  exec sql end declare section;
 
  exec sql select coalesce(artikelid,0),maschine,coalesce(webmaschine,0)
@@ -59,6 +59,140 @@ JumboRolle::JumboRolle(int c) throw(SQLerror,CodeError)
  barcofertdatum= !*BARCOFERT_DATUM ? Petig::Datum(): Petig::Datum(BARCOFERT_DATUM);
  wiederinslager= !*WIEDERINSLAGER ? Petig::Datum():Petig::Datum(WIEDERINSLAGER);
  lagerposition=LagerPlatz(ppsInstanzID::Bandlager,LAGERPLATZ);
+}
+
+#include <Ketten/KettplanKette.h>
+
+//---- don't ask me ... -------------------
+// old code, from Jacek, copied ...
+// we need compatibility with the old C programs, so I won't touch it
+
+#define OK              0
+#define FAIL            1
+
+#define GENOK           0
+#define DBERROR         1
+
+static int ada_rfc_maxcode(int *lastcode)
+{  exec sql begin declare section;
+   int code = 0;
+   int icode;
+   exec sql end declare section;
+   exec sql whenever sqlerror sqlprint;
+
+   exec sql select max(code) into:code:icode from rohjumbo;
+   if (!sqlca.sqlcode)
+   {  if (!icode) *lastcode = code;
+      else *lastcode = 0;
+      return OK;
+   }
+   return FAIL;
+}
+
+static int ada_rfc_getlcode(int *lastcode)
+{  exec sql begin declare section;
+   int code;
+   exec sql end declare section;
+   exec sql whenever sqlerror sqlprint;
+
+   exec sql select code into:code from lastcode;
+   if (!sqlca.sqlcode)
+   {  *lastcode = code;
+      return OK;
+   }
+   return FAIL;
+}
+
+static int ada_rfc_setlcode(long lastcode)
+{  exec sql begin declare section;
+   int code;
+   exec sql end declare section;
+   exec sql whenever sqlerror sqlprint;
+
+   code = lastcode;
+   exec sql update lastcode set code = :code;
+
+   if (sqlca.sqlcode)
+      return FAIL;
+   return OK;
+}
+
+/****************************************
+* Liefert den Code der Tatsächlich als  *
+* nächster dran wäre.                   *
+*****************************************/
+static int get_real_code(long *code)
+{  int i = 0;
+
+   if (ada_rfc_maxcode(&i) == FAIL) return FAIL;
+   *code = (long)(i + 1);
+   return OK;
+}
+
+/************************************************
+* Die Fuktion generiert die naechste Codenummer *
+*************************************************/
+static int gen_code(unsigned *codep)
+{  int hilf;
+   long lhilf;
+
+   if (ada_rfc_getlcode(&hilf) == FAIL)
+   {  if (get_real_code(&lhilf) == FAIL) return DBERROR;
+      else if (ada_rfc_setlcode(++lhilf) == FAIL) return DBERROR;
+      *codep = lhilf-1;
+   }
+   else
+   {  if (ada_rfc_setlcode((long)(++hilf)) == FAIL) return DBERROR;
+      *codep = (long)hilf-1;
+   }
+   return OK;
+}
+
+// erzeugt einen ganzen Satz von Etiketten
+vector<JumboRolle> JumboRolle::create(const KettplanKette &k,bool rest)
+{  vector<JumboRolle> res;
+   exec sql begin declare section;
+   char datum[20];
+   int maschine=k.Maschine();
+   int lauf;
+   int gang=0;
+   exec sql end declare section;
+   k.Schaerdatum().write_postgres(datum,sizeof datum);
+   
+   Transaction tr;
+   exec sql lock table rohjumbo in exclusive mode;
+   exec sql lock table lastcode in exclusive mode;
+
+   exec sql select coalesce(max(lauf)+1,1) into :lauf
+   	from rohjumbo 
+   	where maschine=:maschine and plan_datum=:datum;
+   
+   const std::vector <ArtikelGang> ag=k.get_artikel_sorted();
+   for (std::vector <ArtikelGang>::const_iterator i=ag.begin();
+   		i!=ag.end();++i)
+   {  for (int j=1;j<=i->Gaenge();++j)
+      {  exec sql begin declare section;
+         unsigned int code, artikelid=i->Id();
+         int webmaschine=k.WebMaschine(),
+             soll_meter=rest?0:k.Stuecklaenge(),
+             status=Gedruckt;
+         exec sql end declare section;
+         ++gang;
+         
+         if (gen_code(&code)==FAIL) 
+            throw SQLerror("JumboRolle::create",-1,"gen_code failed");
+         exec sql insert into rohjumbo
+         	(code, maschine, plan_datum, webmaschine, soll_meter, 
+         	 status, lauf, gang, artikelid)
+         	VALUES (:code, :maschine, :datum, :webmaschine, :soll_meter,
+         	 :status, :lauf, :gang, :artikelid);
+         SQLerror::test(__FILELINE__);
+         res.push_back(JumboRolle(code,maschine,datum,webmaschine,
+         	soll_meter,status,lauf,gang,artikelid));
+      }
+   }
+   tr.commit();
+   return res;
 }
 
 #endif

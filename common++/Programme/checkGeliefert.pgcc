@@ -1,4 +1,4 @@
-// $Id: checkGeliefert.pgcc,v 1.2 2002/05/03 10:22:54 christof Exp $
+// $Id: checkGeliefert.pgcc,v 1.3 2002/05/06 13:41:23 christof Exp $
 
 //#include <Lieferschein/Lieferschein.h>
 #include <Auftrag/AuftragFull.h>

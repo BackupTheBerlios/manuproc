@@ -1,4 +1,4 @@
-// $Id: FertigWaren.h,v 1.2 2002/04/08 14:00:05 christof Exp $
+// $Id: FertigWaren.h,v 1.3 2002/05/06 13:41:23 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *

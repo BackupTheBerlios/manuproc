@@ -1,4 +1,4 @@
-// $Id: string0.c,v 1.2 2001/08/20 08:24:31 christof Exp $
+// $Id: string0.c,v 1.3 2002/05/06 13:41:22 christof Exp $
 
 // these are external functions for the static inline versions in string.h
 // just in case you don't want to optimize

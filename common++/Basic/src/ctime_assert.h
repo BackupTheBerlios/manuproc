@@ -1,4 +1,4 @@
-// $Id: ctime_assert.h,v 1.4 2001/05/10 16:34:04 christof Exp $
+// $Id: ctime_assert.h,v 1.5 2002/05/06 13:41:22 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

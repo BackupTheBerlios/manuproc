@@ -1,4 +1,4 @@
-/* $Id: Prozess.h,v 1.9 2002/05/03 10:22:54 christof Exp $ */
+/* $Id: Prozess.h,v 1.10 2002/05/06 13:41:22 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *

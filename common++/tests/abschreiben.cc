@@ -1,4 +1,4 @@
-// $Id: abschreiben.cc,v 1.8 2002/05/03 10:22:54 christof Exp $
+// $Id: abschreiben.cc,v 1.9 2002/05/06 13:41:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

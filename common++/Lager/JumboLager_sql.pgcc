@@ -1,0 +1,245 @@
+/*  pps: ManuProC's production planning system
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include "JumboLager.h"
+#include <Artikel/ArtikelBase.h>
+#include <Artikel/ArtikelBezeichnung.h>
+#include <Aux/Datum.h>
+#include <Aux/string0.h>
+exec sql include sqlca;
+#include <Aux/SQLerror.h>
+#include <Aux/Transaction.h>
+#include <Aux/itos.h>
+
+void JumboLager::Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jumbo_LogTyp typ,const std::string& user
+   ,const Zeitpunkt_new *zeit)
+{
+  jumbo.setLagerPosition_nodb(position);
+  exec sql begin declare section;
+    int CODE=jumbo.Code()/10;
+    int STATUS;
+    char ACTION[2];
+    int LAGERPLATZ=jumbo.LagerPosition().IPosition();
+    bool REST;
+    bool DUMMY;   
+    char ZEIT[32];
+    char DSTAMP[32];
+  exec sql end declare section;
+  REST = (typ==Rest || typ==Rest_L);
+  STATUS=JumboRolle::ImLager;
+  if ( zeit && jumbo.VerarbDatum().valid() &&  *zeit<jumbo.VerarbDatum()) 
+   { STATUS=JumboRolle::Verarbeitet;
+     LAGERPLATZ=0;
+   }
+
+  if (zeit) zeit->write(PostgresTimestamp(ZEIT,sizeof ZEIT));
+  else strncpy0(ZEIT,"now",sizeof ZEIT);
+
+  exec sql select true into :DUMMY from rohjumbo where code= :CODE;
+  SQLerror::test(__FILELINE__,100);
+  if (sqlca.sqlcode==100)
+   {
+     exec sql insert into rohjumbo 
+            (code,maschine,webmaschine,soll_meter,plan_datum,verarb_datum,
+             status,lauf,gang,barcoist,barcofert_datum,wiederinslager,
+             artikelid)
+      select code,maschine,webmaschine,soll_meter,plan_datum,verarb_datum,
+             status,lauf,gang,barcoist,barcofert_datum,wiederinslager,
+             artikelid
+            from rohjumbo_archiv where code=:CODE;
+     SQLerror::test("JumboRolle::buchen archiv-kopie",100);
+     if (sqlca.sqlcode==100)
+             throw SQLerror("JumboRolle::buchen",100,"Rolle nicht im Archiv");
+     exec sql delete from rohjumbo_archiv where code=:CODE;
+     SQLerror::test("JumboRolle::buchen archiv-löschen",100);
+   }
+  exec sql update rohjumbo
+       set wiederinslager=:ZEIT,rest= :REST,status=:STATUS ,
+             lagerplatz=nullif(:LAGERPLATZ,0)
+           where code= :CODE;
+  SQLerror::test("LagerSQL einlagern");
+
+
+  exec sql select coalesce(text(wiederinslager),'') into :DSTAMP from rohjumbo where code= :CODE;
+  SQLerror::test("JumboRolle::buchen: Einlagern",true);
+  if(!*DSTAMP)
+      throw SQLerror("JumboRolle::buchen:\tEinlagern\tInkonsistenz");
+
+  jumbo.setInsLager_nodb(Zeitpunkt_new(DSTAMP));
+  if(jumbo.getStatus()==JumboRolle::ImLager)
+      typ=Umraeumen;
+  jumbo.setStatus_nodb(JumboRolle::Jumbo_Status(STATUS));
+  Jumbo_Log(jumbo,typ,user,zeit);
+}
+
+void JumboLager::Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,
+   const std::string& user,const Zeitpunkt_new *zeit)
+{
+  exec sql begin declare section;
+    int CODE=jumbo.Code()/10;
+    int STATUS;
+    char ACTION[2];
+    char ZEIT[32];
+    char DSTAMP[32];
+  exec sql end declare section;
+  STATUS=JumboRolle::Verarbeitet;
+  if (zeit && jumbo.InsLagerDatum().valid() && *zeit<jumbo.InsLagerDatum()) STATUS=JumboRolle::ImLager;
+  if (zeit) zeit->write(PostgresTimestamp(ZEIT,sizeof ZEIT));
+  else strncpy0(ZEIT,"now",sizeof ZEIT);
+  
+  exec sql  update rohjumbo set verarb_datum=:ZEIT, status=:STATUS, 
+      lagerplatz=null 
+      where   ((verarb_datum is null and wiederinslager is not null)
+                 or (wiederinslager > verarb_datum))
+      and code= :CODE;  
+  SQLerror::test("JumboRolle::buchen entnahme",100);
+  if (sqlca.sqlcode==100)
+   {
+      Jumbo_Log(jumbo,SchonDraussen,user,zeit);
+      exec sql update rohjumbo set status=:STATUS, lagerplatz=null where code= :CODE;
+      throw SQLerror("JumboRolle::buchen",100,"Rolle ist nicht (mehr) im Lager");
+   }
+  exec sql select coalesce(text(verarb_datum),'') into :DSTAMP from rohjumbo where code= :CODE;
+  SQLerror::test("JumboRolle::buchen: Auslagern",true);
+  if(!*DSTAMP) 
+     throw SQLerror("JumboRolle::buchen: Auslagern Inkonsistenz");
+
+  jumbo.setVerarbDatum_nodb(Zeitpunkt_new(DSTAMP));
+  jumbo.setStatus_nodb(JumboRolle::Jumbo_Status(STATUS));
+  Jumbo_Log(jumbo,typ,user,zeit);
+}
+
+void JumboLager::Jumbo_Log(const JumboRolle& jumbo,Jumbo_LogTyp typ,const std::string& user,const Zeitpunkt_new *zeit)
+{
+  exec sql begin declare section;
+   int CODE=jumbo.Code()/10;
+   char ACTION=typ;
+   char NAME[5];
+   char ZEIT[15];
+   int POSITION=jumbo.LagerPosition().IPosition();
+  exec sql end declare section;
+  if (zeit) zeit->write(PostgresTimestamp(ZEIT,sizeof ZEIT));
+  else strncpy0(ZEIT,"now",sizeof ZEIT);
+  strncpy0(NAME,user.c_str(),sizeof(NAME));
+  exec sql  insert into lager_bewegung 
+      (code,action,name,lagerplatz,zeit) 
+      values (:CODE,:ACTION,:NAME,:POSITION, :ZEIT);  
+  ///////////////////////////////////////////////////////////////
+  // Jetzt die Lagerbewegung mit den offenen Aufträgen verrechen.
+  // Einlagern wird durch BarcoNG geregelt.
+  if(typ==Auslagern || typ==InventurMinus )
+   {
+     raus_aus_lager(jumbo.Artikel(),jumbo.Meter());
+   }
+} 
+
+
+
+/*
+std::vector<int> JumboLager::Jumbo_Inhalt(const LagerPlatz position) const
+{
+  exec sql begin declare section;
+   int CODE;
+   int POSITION=position.IPosition();
+  exec sql end declare section;
+  exec sql declare posein cursor for select code 
+      from rohjumbo where lagerplatz = :POSITION;
+  Transaction tr;
+  exec sql open posein;
+  std::vector<int> vi;
+  while(true)
+   {
+    exec sql fetch posein into :CODE;
+    SQLerror::test(__FILELINE__,100);  
+    if (sqlca.sqlcode) break;
+    vi.push_back(CODE);
+   }
+  exec sql close posein;
+  tr.close();
+  return vi;
+}
+
+std::vector<JumboLager::st_wo_ist_wieviel> JumboLager::getPosition(ArtikelBase artikel)
+{
+ exec sql begin declare section; 
+   int METER,CODE,POSITION;
+   bool REST;
+   int ARTIKEL=artikel.Id();
+ exec sql end declare section; 
+ exec sql declare artein cursor for select lagerplatz,code,
+      coalesce(barcoist,soll_meter),rest
+      from rohjumbo where artikelid= :ARTIKEL;
+  Transaction tr;
+  exec sql open artein;
+  std::vector<st_wo_ist_wieviel> vi;
+  ppsInstanz::ID inst=ppsInstanzID::Bandlager;
+  while(true)
+   {
+    exec sql fetch posein into :POSITION,:CODE,:METER,:REST;
+    SQLerror::test(__FILELINE__,100);  
+    if (sqlca.sqlcode) break;
+    vi.push_back(st_wo_ist_wieviel(LagerPlatz(inst,POSITION),METER,REST,CODE));
+   }
+  exec sql close artein;
+  tr.close();
+  return vi;
+}
+*/
+
+
+std::vector<class LagerInhalt> JumboLager::LagerInhalt_(const ArtikelBase& artikel) const
+{
+  exec sql begin declare section;
+    int ID,ROLLEN,RESTROLLEN,METER,RESTMETER;
+    char QUERY[1024];
+  exec sql end declare section;
+
+/*
+  std::string squery = "select coalesce(artikelid,0), count(soll_meter)," 
+         "coalesce(int4(sum((case rest when true then 0.3 else 1.0 end)*"
+         " float8 (coalesce(barcoist,soll_meter)))),0)"
+         " from rohjumbo where status="+itos(JumboRolle::ImLager)+
+         " and lagerplatz is not null";
+*/
+  std::string squery = "select coalesce(artikelid,0),"
+         " sum(case rest when true then 0 else 1 end),"
+         " sum(case rest when true then 1 else 0 end),"
+         " sum(coalesce(barcoist,soll_meter,0) * (case rest when true then 0 else 1 end)),"
+         " sum(coalesce(barcoist,soll_meter,0) * (case rest when true then 1 else 0 end))"
+         " from rohjumbo where status="+itos(JumboRolle::ImLager)+
+         " and lagerplatz is not null";
+  if(artikel.valid()) squery += " and artikelid ="+itos(artikel.Id());
+  squery += " group by artikelid";
+  strncpy(QUERY,squery.c_str(),sizeof(QUERY));
+  exec sql prepare summe_cursor_ from :QUERY;
+  exec sql declare summe_cursor cursor for summe_cursor_;
+  Transaction tr;  
+  exec sql open summe_cursor;
+  SQLerror::test(__FILELINE__);
+  std::vector<class LagerInhalt> V;
+  while(true)
+   {
+    exec sql fetch summe_cursor into :ID,:ROLLEN,:RESTROLLEN,:METER,:RESTMETER;
+    SQLerror::test(__FILELINE__,100);  
+    if (sqlca.sqlcode) break;
+    V.push_back(class LagerInhalt(ID,ROLLEN,RESTROLLEN,METER,RESTMETER*reste_faktor));    
+   }
+  exec sql close summe_cursor;
+  tr.close();
+  return V;
+}
