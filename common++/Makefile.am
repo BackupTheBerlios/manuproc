@@ -11,7 +11,7 @@ libcommon___a_DEPENDENCIES= Artikel/libArtikel.a Auftrag/libAuftrag.a \
 	Bank/libBank.a BaseObjects/libBaseObjects.a \
 	ExtBezSchema/libExtBezSchema.a Faeden/libFaeden.a \
 	Instanzen/libInstanzen.a Auftrag/libAuftrag.a \
-	Ketten/libKetten.a Kunde/libKunde.a Lager/libLager.a \
+	Ketten/libKetten.a Kunde/libKunde.a Lager/libProdLager.a \
 	Lieferschein/libLieferschein.a Misc/libMisc.a \
 	ostream/libostream.a Vertrieb/libVertrieb.a
 
