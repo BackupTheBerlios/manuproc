@@ -112,6 +112,8 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
 public:
 	auftrag_lieferschein(cH_ppsInstanz _instanz);
 	Kunde::ID getKdNr() { return liefer_kunde->get_value();}
+	const H_Lieferschein getLieferschein() const { return lieferschein; }
+        cH_ppsInstanz getInstanz() const { return instanz; }
 };
 
 

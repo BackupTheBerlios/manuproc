@@ -1,4 +1,4 @@
-// $Id: dbconnect.h,v 1.12 2004/08/31 12:34:53 jacek Exp $
+// $Id: dbconnect.h,v 1.13 2004/08/31 15:42:06 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,6 +26,19 @@ struct sqlite;
 
 namespace ManuProC
 {
+
+class AuthError : public std::exception
+{
+ std::string msg;
+ 
+public: 
+ 
+ ~AuthError() throw() {}
+ AuthError(const std::string &m) throw() :msg(m) {}
+ const std::string Msg() const { return msg; }
+ 
+};
+
 #ifdef MPC_SQLITE
 	extern sqlite *db_connection;
 #endif
@@ -47,7 +60,7 @@ namespace ManuProC
     const std::string Dbase() const { return dbase; }
     const std::string User() const { return user; }
     const std::string Name() const { return name; }
-    const std::string Pass() const throw();
+    const std::string Pass() const throw(AuthError);
     const int Port() const { return port; }
     void setHost(const std::string &h) { if(!h.empty()) host=h; }
     void setDbase(const std::string &d) { if(!d.empty()) dbase=d; }
@@ -64,7 +77,7 @@ namespace ManuProC
 
    void dbconnect_nt(const Connection &c=Connection()) throw();
    void dbdisconnect_nt(const std::string &name="") throw();  
-   void dbconnect(const Connection &c=Connection()) throw(SQLerror);
+   void dbconnect(const Connection &c=Connection()) throw(SQLerror,AuthError);
    void dbdisconnect(const std::string &name="") throw(SQLerror);
    void setDTstyle(char *style="ISO") throw(SQLerror);
    void dbdefault(const std::string &name="") throw(SQLerror);

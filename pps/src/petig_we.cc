@@ -9,8 +9,11 @@
 #include "petig_we.hh"
 #include <Misc/dbconnect.h>
 #include "MyMessage.h"
+#include "auftrag_lieferschein.hh"
 
 extern MyMessage *meldung;
+extern auftrag_lieferschein *auftraglieferschein;
+
 
 void petig_we::on_petig_we_ok_clicked()
 { 
@@ -29,10 +32,14 @@ void petig_we::on_petig_we_ok_clicked()
   { meldung->Show(e);
     return;
   }
+ catch(ManuProC::AuthError &a)
+  { meldung->Show(a.Msg()+": Anmeldung nicht möglich");
+    return;
+  }
 
  ManuProC::dbdefault(c_to_p.Name());
 
- ManuProC::dbdisconnect_nt(c_to_p.Name());
+ ManuProC::dbdisconnect(c_to_p.Name());
 }
 
 void petig_we::on_petig_we_cancel_clicked()

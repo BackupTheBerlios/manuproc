@@ -1,4 +1,4 @@
-// $Id: dbconnect.pgcc,v 1.19 2004/08/31 12:34:53 jacek Exp $
+// $Id: dbconnect.pgcc,v 1.20 2004/08/31 15:42:06 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -35,11 +35,12 @@
 extern "C" { int snprintf(char *str, size_t size, const  char  *format, ...); }
 #endif
 
-void ManuProC::dbconnect(const Connection &c) throw(SQLerror)
+void ManuProC::dbconnect(const Connection &c) throw(SQLerror,AuthError)
 {  exec sql begin declare section;
    char connstr[100];
    char NAME[80];
    char *USR;
+   char *PSW;
    exec sql end declare section;
 
    std::string host=c.Host();
@@ -76,10 +77,16 @@ void ManuProC::dbconnect(const Connection &c) throw(SQLerror)
    else
     {
      std::string us=c.User();
-     if(!c.Pass().empty())
-       us+="/"+c.Pass();
+     std::string pass=c.Pass();
      USR=(char *)us.c_str();
-     exec sql connect to :connstr as :NAME USER :USR;
+
+     if(!pass.empty())
+       {
+        PSW=(char*)pass.c_str();
+        exec sql connect to :connstr as :NAME USER :USR/:PSW;      
+       }
+     else
+       exec sql connect to :connstr as :NAME USER :USR;
     }
    SQLerror::test("dbconnect");
    exec sql at :NAME set autocommit to on;

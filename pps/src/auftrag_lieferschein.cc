@@ -37,6 +37,8 @@
 extern MyMessage *meldung;
 extern auftrag_main *auftragmain;
 
+auftrag_lieferschein *auftraglieferschein;
+
 typedef std::vector<cH_RowDataBase>::iterator DVI;
 
 gint auftrag_lieferschein::on_liefer_delete(GdkEventAny *ev)
@@ -414,6 +416,8 @@ auftrag_lieferschein::auftrag_lieferschein(cH_ppsInstanz _instanz)
  lager_buchen->hide();
  tree_daten->set_tree_column_visibility(Data_Lieferdaten::VOMLAGER_SEQ,false);
 #endif
+
+ auftraglieferschein=this;
 }
 
 void auftrag_lieferschein::set_tree_titles()
@@ -1020,7 +1024,7 @@ void auftrag_lieferschein::on_lager_buchen_clicked()
 				get_active()->get_user_data());
             Transaction tr;
 	    try {
-	    LE.changeStatus((AufStatVal)OPEN,true);
+	    LE.changeStatus((AufStatVal)OPEN,LE.getZusatzInfos().empty());
 	    LE.setLagerid(int(lagerwahl->get_menu()->
 			      get_active()->get_user_data()) );
 	
