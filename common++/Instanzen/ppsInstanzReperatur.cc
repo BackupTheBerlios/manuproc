@@ -117,7 +117,7 @@ bool ppsInstanzReparatur::ReparaturD_0_ZuSumme_1(const int uid,const bool analys
 bool ppsInstanzReparatur::ReparaturE_2_ZuSumme_1(const int uid,const bool analyse_only) const throw(SQLerror)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Name(),Id());
-  if(LagerInstanz()) {/*cout << "Sinnlos für LagerInstanz\n"; */return true;}
+  if(LagerInstanz()) {/*std::cout << "Sinnlos für LagerInstanz\n"; */return true;}
   else
      return Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::dispo_auftrag_id,true,Egeplant);
 }
@@ -125,7 +125,7 @@ bool ppsInstanzReparatur::ReparaturE_2_ZuSumme_1(const int uid,const bool analys
 bool ppsInstanzReparatur::ReparaturF_2_ZuSumme_1Rest(const int uid,const bool analyse_only) const throw(SQLerror)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Name(),Id());
-  if(LagerInstanz()) {/*cout << "Sinnlos für LagerInstanz\n";*/ return true;}
+  if(LagerInstanz()) {/*std::cout << "Sinnlos für LagerInstanz\n";*/ return true;}
   else
      return Reparatur_Zuordnungen(uid,analyse_only,AuftragBase::plan_auftrag_id,false,Fdispo);
 }
@@ -276,7 +276,7 @@ void ppsInstanzReparatur::Reparatur_0er_und_2er(const int uid,const bool analyse
    for(SelectedFullAufList::iterator i=AL.begin();i!=AL.end();++i)
     {
       SQLFullAuftragSelector sel2er;
-      if(PlanungsInstanz()) {cerr<<"U N G E T E S T E T für PlanungsInstenz\n"; continue;}
+      if(PlanungsInstanz()) {std::cerr<<"U N G E T E S T E T für PlanungsInstenz\n"; continue;}
       if(LagerInstanz())
          sel2er=SQLFullAuftragSelector::sel_Artikel_Planung_id(Id(),Kunde::eigene_id,i->Artikel(),AuftragBase::dispo_auftrag_id,OPEN,LagerBase::Lagerdatum());
       else 
@@ -290,9 +290,9 @@ void ppsInstanzReparatur::Reparatur_0er_und_2er(const int uid,const bool analyse
          AuftragBase::mengen_t M=AuftragBase::min(menge0er,j->getStueck());
          if(M==0) continue;
          AuftragBase zielauftrag(Id(),AuftragBase::plan_auftrag_id);
-cout << "RepLan: "<<*i<<'\t'<<zielauftrag<<"Menge: "<<M<<'\n';
+std::cout << "RepLan: "<<*i<<'\t'<<zielauftrag<<"Menge: "<<M<<'\n';
          if(analyse_only)
-           cout << "Analyse: Planen von "<<*i<<"  nach  "<<zielauftrag<<"\tMenge: "<<M<<'\n';
+           std::cout << "Analyse: Planen von "<<*i<<"  nach  "<<zielauftrag<<"\tMenge: "<<M<<'\n';
          else
           {
             int znr=i->Planen(uid,M,zielauftrag,i->getLieferdatum(),ManuProC::Auftrag::r_Reparatur);
@@ -448,7 +448,7 @@ void ppsInstanzReparatur::vormerkungen_subrahieren(int uid,const  std::vector<La
 //std::cout << "\t"<<AufEintragBase(*j)<<'\t'<<j->getRestStk()<<'\t'<<menge<<'\n';
 //std::cout << "\t\tReparaturMenge: "<<-menge<<'\n';
             if(analyse_only)
-              cout << "Analyse: Mengenupdate von "<<*j<<" Menge:"<<menge<<'\n';
+              std::cout << "Analyse: Mengenupdate von "<<*j<<" Menge:"<<menge<<'\n';
             else
              {
                j->updateStkDiffBase__(uid,menge);
@@ -469,7 +469,7 @@ void ppsInstanzReparatur::vormerkungen_subrahieren(int uid,const  std::vector<La
          if(set_dispo_to_zero)
           {
             if(analyse_only)
-              cout << "Analyse: Mengenupdate von "<<*j<<" Menge:"<<-j->getStueck()<<'\n';
+              std::cout << "Analyse: Mengenupdate von "<<*j<<" Menge:"<<-j->getStueck()<<'\n';
             else
               j->updateStkDiffBase__(uid,-j->getStueck());
           }
@@ -477,7 +477,7 @@ void ppsInstanzReparatur::vormerkungen_subrahieren(int uid,const  std::vector<La
      if(menge!=0 && !set_dispo_to_zero) 
       {
         if(analyse_only)
-             cout << "Analyse: DispoAufträge_anlegen: "<<Name()<<'\t'<<i->Artikel()<<"\tMenge:"<<menge<<'\n';
+             std::cout << "Analyse: DispoAufträge_anlegen: "<<Name()<<'\t'<<i->Artikel()<<"\tMenge:"<<menge<<'\n';
         else
             DispoAuftraege_anlegen(uid,i->Artikel(),menge);
       }
@@ -517,7 +517,7 @@ std::vector<LagerInhalt> ppsInstanzReparatur::getLagerInhalt() const
 
 void ppsInstanzReparatur::analyse(const std::string &s,const AufEintrag &AE,const std::string &x,const std::string &y) const
 {
-  cout<<"Fehler Analyse: " << AE <<"  => "<<s<<"\t("<<x<<"), ("<<y<<")\n";
+  std::cout<<"Fehler Analyse: " << AE <<"  => "<<s<<"\t("<<x<<"), ("<<y<<")\n";
 }
 
 void ppsInstanzReparatur::analyse(const std::string &s,const AufEintrag &AE,const ABmt &x,const ABmt &y) const
