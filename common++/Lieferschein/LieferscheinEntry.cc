@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.26 2003/07/03 17:17:40 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.27 2003/07/03 17:23:10 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -208,7 +208,9 @@ FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry& z)
  z.instanz=refauftrag.Instanz();
  
  if(!zusatzinfo) 
-   z.VZusatz.push_back(LieferscheinEntry::st_AufEintragMenge(refauftrag,z.menge)); 
+ { LieferscheinEntry::mengen_t m=z.menge;
+   if (!m) m=1;
+   z.VZusatz.push_back(LieferscheinEntry::st_AufEintragMenge(refauftrag,z.stueck*m)); 
  else
    z.ZusaetzeLaden();
  return is;  
