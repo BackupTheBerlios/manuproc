@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.22 2002/06/20 06:29:53 christof Exp $
+# $Id: Makefile.am,v 1.23 2002/07/08 08:09:15 christof Exp $
 
 SUBDIRS=auftragstest 
 #AuftragsTest
@@ -16,7 +16,7 @@ EXTRA_PROGRAMS=preis test_Bankauftrag test_pgsql_conv testHandles \
 	Zeitpunkt insert_bestellen_bei FetchIStream abschreiben \
 	ArtikelSumme long instanz_auftrag instanz_ArtikelBaum RL_lager \
    Jumbo_lager Lieferschein ppsInstanz auftrag_ohne_instanzen trans \
-   ean artikelbaum
+   ean artikelbaum mvc
 
 ean_SOURCES=ean.cc
 artikelbaum_SOURCES=artikelbaum.cc
@@ -42,11 +42,12 @@ abschreiben_SOURCES=abschreiben.cc
 ArtikelSumme_SOURCES=ArtikelSumme.cc
 long_SOURCES=long.cc
 trans_SOURCES=trans.cc
+mvc_SOURCES=mvc.cc
 
 CLEANFILES= *~ $(LINKS) $(EXTRA_PROGRAMS)
 
 LINKS=testHandles.cc testKW.cc test_pgsql_conv.cc FetchIStream.pgcc \
-	fixedpoint.cc Zeitpunkt.cc long.cc
+	fixedpoint.cc Zeitpunkt.cc long.cc mvc.cc
 #insert_bestellen_bei.pgcc
 
 $(LINKS):

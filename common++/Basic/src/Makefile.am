@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.14 2002/06/24 09:15:13 christof Exp $
+# $Id: Makefile.am,v 1.15 2002/07/08 08:09:15 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -37,13 +37,13 @@ include_HEADERS=Ausgabe_neu.h CacheStatic.h Cache_Pointer.h Datum.h Handles.h \
 	dbconnect.h exception.h fixedpoint.h itos.h safemap.h string0.h \
 	c++ostream.h mystream.h FetchIStream.h ctime_assert.h \
    EntryValueBase.h EntryValueIntString.h  EntryValueEmptyInt.h \
-   	EntryValueDatum.h EmptyInt_4TeX.h Long.h
+   	EntryValueDatum.h EmptyInt_4TeX.h Long.h MVC.h
 
 CLEANFILES= *~ $(BUILT_SOURCES)
 
 # create compatibility links
 
-Misc ostream:
+Misc ostream BaseObjects:
 	-if uname -s | fgrep -q MINGW32 ; \
 	then mkdir $@ ; cp *.h $@ ; \
 	else ln -sf . $@ ; \
@@ -52,6 +52,7 @@ Misc ostream:
 install-data-hook:
 	-cd $(includedir) ; ln -sf . Misc
 	-cd $(includedir) ; ln -sf . ostream
+	-cd $(includedir) ; ln -sf . BaseObjects
 
 # the links cannot be distributed ... and they are not rebuild automatically
-Ausgabe_neu.cc: Misc ostream
+Ausgabe_neu.cc: Misc ostream BaseObjects
