@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.58 2004/02/12 14:28:38 jacek Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.59 2004/02/12 15:15:45 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -76,7 +76,7 @@ void LieferscheinEntry::showZusatzInfos() const
 void LieferscheinEntry::changeStatus(AufStatVal new_status, 
 		const Lieferschein &ls, bool ein_auftrag) throw(SQLerror)
 { 
- if(status==OPEN && new_status==STORNO)
+ if((status==OPEN || status==CLOSED) && new_status==STORNO)
    changeStatus(new_status,ls,ein_auftrag,0,0);
  else
    changeStatus(new_status,ls,ein_auftrag,stueck,menge);
@@ -103,7 +103,7 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
 
   Transaction tr;
 
-  if(new_status==OPEN || (status==OPEN && new_status==STORNO))
+  if(new_status==OPEN || ((status==OPEN || status==CLOSED) && new_status==STORNO))
    {
     AuftragBase::mengen_t abmenge=Abschreibmenge(_stueck,_menge);
 
@@ -178,7 +178,9 @@ void LieferscheinEntry::changeStatus(AufStatVal new_status,
 //  if(new_status==STORNO)
 //    updateLieferscheinMenge(0,0);
 
-  } // END OF if(new_status==OPEN || new_status==STORNO)
+  } 
+  // END OF   
+  // if(new_status==OPEN || ((status==OPEN || status==CLOSED) && new_status==STORNO))
 
  Query("update lieferscheinentry set status=? where "
 	"(lfrsid,instanz,zeile)=(?,?,?)")

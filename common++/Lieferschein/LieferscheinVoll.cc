@@ -1,4 +1,4 @@
-/* $Id: LieferscheinVoll.cc,v 1.16 2004/02/12 15:15:45 jacek Exp $ */
+/* $Id: LieferscheinVoll.cc,v 1.17 2004/02/12 15:18:18 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -48,7 +48,7 @@ LieferscheinVoll::LieferscheinVoll(const cH_ppsInstanz& _instanz,int lid,bool au
 }
 
 
-void LieferscheinVoll::setStatusOnEntries(AufStatVal st) throw(SQLerror)
+void LieferscheinVoll::changeStatusOnEntries(AufStatVal st) throw(SQLerror)
 {
  bool fuer_auftrag=true;
  for(std::vector<LieferscheinEntry>::iterator i=lsentry.begin();
