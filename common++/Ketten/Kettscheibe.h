@@ -1,4 +1,4 @@
-/* $Id: Kettscheibe.h,v 1.10 2002/11/22 15:31:05 christof Exp $ */
+/* $Id: Kettscheibe.h,v 1.11 2004/02/25 09:56:17 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -24,7 +24,7 @@
 #include <vector>
 #include <Artikel/ArtikelBase.h>
 
-class Kettscheibe //: Kette
+class Kettscheibe_MT //: Kette
 {
       int index;
    public:
@@ -52,5 +52,7 @@ class Kettscheibe //: Kette
       bool operator==(const Kettscheibe& b) const {return Index()==b.Index();}
       bool operator<(const Kettscheibe& b) const {return Index()<b.Index();}
 };
+
+typedef Kettscheibe_MT Kettscheibe;
 
 #endif

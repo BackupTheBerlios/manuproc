@@ -1,4 +1,4 @@
-/* $Id: KettenGarn.h,v 1.9 2003/10/23 16:56:10 christof Exp $ */
+/* $Id: KettenGarn.h,v 1.10 2004/02/25 09:56:17 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,7 +23,7 @@
 #include <Ketten/Kettscheibe.h>
 class ArtikelGang;
 
-struct KettenGarn {
+struct KettenGarn_MT {
 
         int index;
         int zeile;
@@ -35,9 +35,9 @@ struct KettenGarn {
 public:
 	typedef ArtikelBase::ID ID;
 
-	KettenGarn() 
+	KettenGarn_MT() 
 	        : index(0),zeile(0),kettenzahl(0),faeden(0), art(0),laenge(0) {}
-	KettenGarn(int i,int z,int k,int f,ArtikelBase id,int l,std::string w) 
+	KettenGarn_MT(int i,int z,int k,int f,ArtikelBase id,int l,std::string w) 
 	        : index(i), zeile(z),kettenzahl(k),faeden(f), art(id),laenge(l),
 	          wiederholung(w) {}
 	bool operator==(const KettenGarn &b) const throw()
@@ -77,4 +77,6 @@ public:
 };
 
 //extern std::ostream& operator<<(std::ostream &o,const ArtikelGang &ag);
+
+typedef KettenGarn_MT KettenGarn;
 #endif
