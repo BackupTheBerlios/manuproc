@@ -1,17 +1,19 @@
 #!/bin/bash
 # 1. Argument: Test mit dem begonnen werden soll
 
-case `./where_are_the_tables` in
+TABLES=`./where_are_the_tables`
+case $TABLES in
    */Anleitung/datenbank)
    	ALLTESTS="MP AL ZK"
    	;;
-   petigdb)
+   database_tables_init)
    	ALLTESTS="M P S L Z D Ls Lm LZ LA ZK ZKM J ZI ZI2 AL RP Rg RK RZ RKZ"
    	;;
-   mabelladb)
+   database_tables_init_Mabella)
    	ALLTESTS="LJ ZK RM"
    	;;
-   *) ALLTESTS=""
+   *) echo "Kann $TABLES nicht identifizieren"
+   	exit 2
    	;;
 esac
 
