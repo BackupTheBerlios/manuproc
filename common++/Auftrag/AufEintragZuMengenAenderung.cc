@@ -1,4 +1,4 @@
-// $Id: AufEintragZuMengenAenderung.cc,v 1.12 2003/02/10 14:33:59 christof Exp $
+// $Id: AufEintragZuMengenAenderung.cc,v 1.13 2003/02/10 15:19:08 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -38,7 +38,7 @@ void AufEintragZuMengenAenderung::change_parent(const int uid,
    }
 }
 
-
+// und was heißt das auf Deutsch? CP
 void AufEintragZuMengenAenderung::increase_parents__reduce_assingments(const int uid,
                      const AufEintragBase &child_aeb,AuftragBase::mengen_t menge) throw(SQLerror)
 {
@@ -46,7 +46,6 @@ void AufEintragZuMengenAenderung::increase_parents__reduce_assingments(const int
   AufEintragZu::list_t L=AufEintragZu(child_aeb).get_Referenz_list(child_aeb);
   for(AufEintragZu::list_t::iterator j=L.begin();j!=L.end();++j)
     {
-//cout << child_aeb<<'\t'<<j->AEB<<'\t'<<menge<<'\t'<<j->Menge<<'\n';
       AuftragBase::mengen_t m=AuftragBase::min(j->Menge,menge);
 
       AufEintragZu(j->AEB).setMengeDiff__(child_aeb,-m);
@@ -55,22 +54,10 @@ void AufEintragZuMengenAenderung::increase_parents__reduce_assingments(const int
       for(AufEintragZu::list_t::iterator k=L2.begin();k!=L2.end();++k)
        {
          if(k->Art!=AufEintrag(child_aeb).Artikel()) continue;
-         AufEintragZu(j->AEB).setMengeDiff__(k->AEB,m);
+//         AufEintragZu(j->AEB).setMengeDiff__(k->AEB,m);
          AufEintrag(k->AEB).MengeAendern(uid,m,true,j->AEB,ManuProC::Auftrag::r_Planen);
          break;
        }   
-/*
-      AufEintrag cAE(child_aeb);
-      // Den er suchen
-      int znr,dummy;
-      AufEintragBase::mengen_t M_;
-      AuftragBase AB_(child_aeb.Instanz(),AuftragBase::ungeplante_id);
-      AB_.existEntry(cAE.Artikel(),cAE.getLieferdatum(),znr,dummy,M_,OPEN);
-//      AufEintrag(j->AEB).MengeAendern(uid,m,true,ManuProC::Auftrag::r_Produziert);
-      AufEintragBase AEB_(AB_,znr);
-      AufEintrag(AEB_).MengeAendern(uid,m,true,AufEintragBase(),ManuProC::Auftrag::r_Produziert);
-      AufEintragZu(j->AEB).setMengeDiff__(AEB_,m);
-*/
       menge-=m;
       if(menge==AuftragBase::mengen_t(0)) break;
     }         
@@ -122,6 +109,7 @@ void AufEintragZuMengenAenderung::move_zuordnung_zu_geplantem(const int uid,
 }
 
 // ElternAEB erhält die Menge vom 2er
+// dies scheint den 1er im Lager zu erhöhen
 void AufEintragZuMengenAenderung::freie_dispomenge_verwenden(const int uid,
          const AufEintrag &AE2er,AuftragBase::mengen_t menge,const AufEintragBase &ElternAEB) throw(SQLerror)
 {

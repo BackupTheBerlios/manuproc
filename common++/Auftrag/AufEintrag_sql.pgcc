@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.50 2003/02/10 15:07:49 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.51 2003/02/10 15:22:36 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -269,7 +269,10 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(int uid,mengen_t menge,bool insta
 
  menge=updateStkDiffBase__(uid,menge);
  bestellt+=menge;
- if (ElternAEB.valid()) AufEintragZu(ElternAEB).Neu(*this,menge);
+ if (ElternAEB.valid()) 
+ {  assert(Id()!=dispo_auftrag_id);
+    AufEintragZu(ElternAEB).Neu(*this,menge);
+ }
 
  if(auftragstatus==OPEN)
   {
