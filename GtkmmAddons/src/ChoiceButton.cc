@@ -29,16 +29,7 @@
 ManuProC::ChoiceButton::ChoiceButton(bool tearoff)
 	: actual_index(), image(), label(), menu(), tips(),
 		activate_on_change(true)
-{  Gtk::VBox *vbox=manage(new Gtk::VBox());
-   DoubleButton::add(*vbox);
-   image=manage(new Gtk::Image());
-   vbox->add(*image);
-   label=manage(new Gtk::Label());
-   vbox->add(*label);
-   
-   image->show();
-   label->show();
-   vbox->show();
+{  rebuild_button(false);
    
    menu=new Gtk::Menu();
    Gtk::TearoffMenuItem *tomi=manage(new Gtk::TearoffMenuItem());
@@ -53,15 +44,19 @@ ManuProC::ChoiceButton::~ChoiceButton()
 {  if (menu) delete menu;
 }
 
-void ManuProC::ChoiceButton::add(const Glib::RefPtr<Gdk::Pixbuf> &_image, const Glib::ustring &text, const SigC::Slot0<void> &callback)
+void ManuProC::ChoiceButton::add(const Glib::RefPtr<Gdk::Pixbuf> &_image, 
+        const Glib::ustring &text, const Glib::ustring &tooltip,
+        const SigC::Slot0<void> &callback)
 {  unsigned old_size=images.size();
    images.push_back(_image);
    texts.push_back(text);
+   tooltips.push_back(tooltip);
    callbacks.push_back(callback);
    // scale?
    Gtk::Image *im=manage(new Gtk::Image(_image));
    menu->items().push_back(Gtk::Menu_Helpers::ImageMenuElem(text,*im));
    Gtk::MenuItem *mi=(Gtk::ImageMenuItem *)&menu->items().back();
+   if (tips && !tooltip.empty()) tips->set_tip(*mi, tooltip);
    im->show();
    mi->show();
    mi->signal_activate().connect(SigC::bind(SigC::slot(*this,&ChoiceButton::on_menuitem_selected),old_size));
@@ -107,9 +102,15 @@ void ManuProC::ChoiceButton::set_index(unsigned idx)
 {  // index wechsel, Bild darstellen
    image->set(images[idx]);
    label->set_text(texts[idx]);
-   if (!label->is_visible() && tips) 
-      tips->set_tip(*this, texts[idx]);
-   actual_index=idx;
+  if (tips)
+  { if (!label->is_visible()) 
+      tips->set_tip(*this, texts[idx]+(tooltips[idx].empty()
+              ?Glib::ustring()
+              :("\n"+tooltips[idx])));
+    else if (!tooltips[idx].empty())
+      tips->set_tip(*this,tooltips[idx]);
+  }
+  actual_index=idx;
 //   signal_changed()(); ?
 }
 
@@ -125,18 +126,7 @@ void ManuProC::ChoiceButton::set_style(bool _image, bool _text, bool horizontal)
    }
    if (horizontal && !dynamic_cast<Gtk::HBox*>(get_child())) 
    // you cannot turn this off - if you want to do it, implement it
-   { remove();
-     Gtk::HBox *hbox=manage(new Gtk::HBox());
-     DoubleButton::add(*hbox);
-     image=manage(new Gtk::Image());
-     hbox->add(*image);
-     label=manage(new Gtk::Label());
-     hbox->add(*label);
-     
-     image->show();
-     label->show();
-     hbox->show();
-   }
+     rebuild_button(horizontal);
 }
 
 void ManuProC::ChoiceButton::set_tooltips(Gtk::Tooltips *_tips)
@@ -148,3 +138,29 @@ void ManuProC::ChoiceButton::set_tooltips(Gtk::Tooltips *_tips)
 void ManuProC::ChoiceButton::set_index_sensitive(unsigned idx,bool sensitive)
 { menu->items()[idx].set_sensitive(sensitive);
 }
+
+void ManuProC::ChoiceButton::rebuild_button(bool horizontal)
+{ remove();
+   Gtk::Box *box=0;
+   if (horizontal) box=manage(new Gtk::HBox());
+   else box=manage(new Gtk::VBox());
+   DoubleButton::add(*box);
+   image=manage(new Gtk::Image());
+   box->add(*image);
+   label=manage(new Gtk::Label());
+   box->add(*label);
+   
+   image->show();
+   label->show();
+   box->show();
+}
+
+void ManuProC::ChoiceButton::add(const Glib::RefPtr<Gdk::Pixbuf> &_image, 
+        const Glib::ustring &text, const SigC::Slot0<void> &callback)
+{ add(_image,text,Glib::ustring(),callback);
+}
+
+void ManuProC::ChoiceButton::add(const Glib::ustring &text, const SigC::Slot0<void> &callback)
+{ add(Glib::RefPtr<Gdk::Pixbuf>(),text,Glib::ustring(),callback);
+}
+
