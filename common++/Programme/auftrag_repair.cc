@@ -1,4 +1,4 @@
-// $Id: auftrag_repair.cc,v 1.2 2003/07/10 13:50:23 christof Exp $
+// $Id: auftrag_repair.cc,v 1.3 2003/08/05 10:37:53 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -28,6 +28,7 @@
 
 enum action_bits { b_physical, b_exclude, b_tree, b_raise, b_links };
 
+// auf bitmask<action_bits> umstellen;
 enum action_flags { f_none=0 };
 bool operator&(action_flags a,action_bits b) { return int(a)&(1<<int(b)); }
 void operator|=(action_flags &a,action_bits b) { ((int&)(a))|=1<<int(b); }
