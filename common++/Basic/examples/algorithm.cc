@@ -1,4 +1,4 @@
-// $Id: algorithm.cc,v 1.3 2004/07/06 12:53:25 christof Exp $
+// $Id: algorithm.cc,v 1.4 2004/07/06 12:54:56 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,7 +21,7 @@
 #include <iostream>
 #include <iterator>
 
-#if defined(__GNUC__) && __GNUC__>=3 && __GNUC_MINOR__>1
+#if defined(__GNUC__) && __GNUC__>=3 && (__GNUC_MINOR__>1 || !__GNUC_MINOR__)
 namespace std{ // hey, I did not invent Koenig lookup
 #endif
 
@@ -29,7 +29,7 @@ std::ostream &operator<<(std::ostream &o,const std::pair<unsigned,unsigned> &p)
 {  return o << p.first << ':' << p.second;
 }
 
-#if defined(__GNUC__) && __GNUC__>=3 && __GNUC_MINOR__>1
+#if defined(__GNUC__) && __GNUC__>=3 && (__GNUC_MINOR__>1 || !__GNUC_MINOR__)
 }
 #endif
 
