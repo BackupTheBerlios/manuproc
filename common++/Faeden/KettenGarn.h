@@ -1,6 +1,6 @@
-/* $Id: KettenGarn.h,v 1.4 2004/02/25 11:35:49 christof Exp $ */
+/* $Id: KettenGarn.h,v 1.5 2004/02/25 12:02:30 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,15 +31,16 @@ struct KettenGarn_CP {
      	  int faeden;
 	     ArtikelBase art;
         int laenge;
-        std::string wiederholung;
+        int wiederholungen;
+//        std::string wiederholung;
 public:
 	typedef ArtikelBase::ID ID;
 
 	KettenGarn_CP() 
-	        : index(),zeile(),kettenzahl(),faeden(), art(),laenge() {}
-	KettenGarn_CP(int i,int z,int k,int f,ArtikelBase id,int l,std::string w) 
+	        : index(),zeile(),kettenzahl(),faeden(), art(),laenge(),wiederholungen(1) {}
+	KettenGarn_CP(int i,int z,int k,int f,ArtikelBase id,int l,int w) 
 	        : index(i), zeile(z),kettenzahl(k),faeden(f), art(id),laenge(l),
-	          wiederholung(w) {}
+	          wiederholungen(w) {}
 	bool operator==(const KettenGarn_CP &b) const throw()
 	{  return Index()==b.Index() && 
 	          Artikel()==b.Artikel() &&
@@ -66,8 +67,8 @@ public:
    int Kettenzahl() const throw() { return kettenzahl;}
    int Laenge() const throw() { return laenge;}
    void setFaeden(int l) {faeden=l;}
-   std::string Wiederholung() const {return wiederholung;}
-   unsigned int Wiederholung_anzahl() const { return 0; }
+   std::string Wiederholung() const {return ""; } // wiederholung;}
+   unsigned int Wiederholung_anzahl() const { return wiederholungen; }
    
    static std::vector<KettenGarn_CP> Load(const ArtikelGang &ag,unsigned laenge);
 };
