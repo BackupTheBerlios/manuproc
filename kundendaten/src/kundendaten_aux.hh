@@ -43,6 +43,7 @@ class Data_Gruppe : public RowDataBase
    Data_Gruppe(int gid,const std::string obg, const std::string bez, 
 		const std::string komm) 
 		: kg((Kundengruppe::ID)gid,obg,bez,komm) {}
+   Kundengruppe::ID GrpId() const { return kg->Id(); }
    Data_Gruppe(cH_Kundengruppe _kg) : kg(_kg) {}
 
    enum Spalten  {GRP_ID=0,GRP_OBID,GRP_BEZ,GRP_KOMM};

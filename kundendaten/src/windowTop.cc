@@ -50,6 +50,7 @@ windowTop::windowTop()
    UpdateBank(Kunde::UpdateBitsBank(0)), 
    UpdateSonst(Kunde::UpdateBitsSonst(0)), 
    UpdatePerson(Person::UpdateBits(0)), fire_enabled(true)
+   allgrp=NULL,wahlgrp=NULL
 {
  clear_entrys();
  label_speichern->set_text("");
@@ -225,6 +226,7 @@ void windowTop::on_preisautomatik_clicked()
 void windowTop::on_gruppenwahl_activate()
 {  
  kundenauswahl->EinschraenkenKdGr(gruppenwahl->get_value());
+ kundenauswahl->reset();
  clear_entrys();
 }
 
@@ -424,23 +426,47 @@ void windowTop::load_notizen()
 
 
 void windowTop::on_selectrow_allegruppen(cH_RowDataBase leaf)
-{  
+{
+ gruppe_in->set_sensitive(true);
+ allgrp=dynamic_cast<const Data_Gruppe*>(&*leaf); 
 }
 
 void windowTop::on_unselectrow_allegruppen(gint row, gint column, GdkEvent *event)
 {  
+ gruppe_in->set_sensitive(false);
+ allgrp=NULL;
 }
 
 void windowTop::on_selectrow_gewaehltegruppen(cH_RowDataBase leaf)
 {  
+ gruppe_out->set_sensitive(true);
+ wahlgrp=dynamic_cast<const Data_Gruppe*>(&*leaf); 
 }
 
 void windowTop::on_unselectrow_gewaehltegruppen(gint row, gint column, GdkEvent *event)
 {  
+ gruppe_out->set_sensitive(false);
+ wahlgrp=NULL;
 }
 
 
 
 void windowTop::on_lfran_activate()
-{  
+{
+   
 }
+
+void windowTop::on_gruppe_in_clicked()
+{  
+ if(kundendatne->Id()==Kunde::none_id) return;
+ kundendaten->putInGrp(allgrp->GrpId());
+ show_Gruppen(); 
+}
+
+void windowTop::on_gruppe_out_clicked()
+{  
+ kundendaten->pullFromGrp(allgrp->GrpId());
+ show_Gruppen(); 
+}
+
+

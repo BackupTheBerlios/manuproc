@@ -68,6 +68,8 @@ class windowTop : public windowTop_glade
         void show_kundendaten();
         void Info(std::string text);
         void clear_entrys();
+        void on_gruppe_in_clicked();
+        void on_gruppe_out_clicked();
 
      void kunden_activate();
      void on_kunden_reset();
@@ -181,6 +183,11 @@ public:
         void neue_bank_uebernehmen(unsigned long int bank_index);      
 
         void neue_kundennmmer(unsigned int kid);
+
+private:
+	Data_Gruppe *allgrp;
+	Data_Gruppe *wahlgrp;
+
 };
 #endif
 
