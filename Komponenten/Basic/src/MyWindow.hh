@@ -16,34 +16,17 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef LABELSPIN
-#define LABELSPIN
-#include <gtkmm/box.h>
-#include <gtkmm/label.h>
-#include <gtkmm/spinbutton.h>
+#ifndef MYWINDOW
+#define MYWINDOW
+
+#include <gtkmm/window.h>
 
 
-class LabelSpin : public Gtk::HBox
+namespace MyWindow
 {
-      int value;
-      Gtk::Label *label;
-      Gtk::SpinButton *spinbutton;
-      
-      void spin_activate();
-      bool Focus_in_event(GdkEventFocus *ev);
-      bool Focus_out_event(GdkEventFocus *ev);
-
-   public:
-      LabelSpin(int value=0,int lower=0,int upper=100); 
-      SigC::Signal0<void> activate;
-      SigC::Signal0<void> FocusOutEvent;
-
-      void set_value(int v);
-      int get_value() const {return value;}
-      void deaktivate() const;
-      void edit_new() const;
-      void edit_add() const;
+    void setPositionSize(Gtk::Window &window,const std::string &programm);
+    void saveWindowSize(Gtk::Window &window,const std::string &programm);
 };
 
-#endif
 
+#endif

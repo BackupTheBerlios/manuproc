@@ -16,34 +16,41 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef LABELSPIN
-#define LABELSPIN
-#include <gtkmm/box.h>
+#ifndef MYSCALE
+#define MYSCALE
+
+#include <gtkmm/table.h>
 #include <gtkmm/label.h>
-#include <gtkmm/spinbutton.h>
+#include <gtkmm/scale.h>
+#include <gtkmm/button.h>
 
 
-class LabelSpin : public Gtk::HBox
+class MyScale : public Gtk::Table
 {
+   private:
       int value;
-      Gtk::Label *label;
-      Gtk::SpinButton *spinbutton;
-      
-      void spin_activate();
-      bool Focus_in_event(GdkEventFocus *ev);
-      bool Focus_out_event(GdkEventFocus *ev);
+      void init();
+      gint on_scale_release_event(GdkEventButton *ev);
+      void on_bup_clicked();
+      void on_bdown_clicked();
+      void set_labels();
+      void changed();
+
+
+      Gtk::Label *ltop,*lbottom;
+      Gtk::VScale *scale;
+      Gtk::Button *bup,*bdown;
 
    public:
-      LabelSpin(int value=0,int lower=0,int upper=100); 
-      SigC::Signal0<void> activate;
-      SigC::Signal0<void> FocusOutEvent;
+      MyScale():value(50),ltop(0),lbottom(0),bup(0),bdown(0) {init();}
 
-      void set_value(int v);
+      void show_arrows(bool b);
+
       int get_value() const {return value;}
-      void deaktivate() const;
-      void edit_new() const;
-      void edit_add() const;
+      void set_value(int v);
+
+      SigC::Signal0<void> activate;
 };
 
-#endif
 
+#endif

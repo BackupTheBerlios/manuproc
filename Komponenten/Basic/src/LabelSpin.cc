@@ -27,11 +27,11 @@ LabelSpin::LabelSpin(int v,int lower,int upper)
    label=manage(new class Gtk::Label(itos(value)));
    Gtk::Adjustment *adj = manage(new class Gtk::Adjustment(value, lower, upper));
    spinbutton = manage(new class Gtk::SpinButton(*adj));
-   spinbutton->signal_activate().connect_after(SigC::slot(*static_cast<class LabelSpin*>(this), &LabelSpin::spin_activate));   
+   spinbutton->signal_activate().connect(SigC::slot(*static_cast<class LabelSpin*>(this), &LabelSpin::spin_activate),true);   
    
    set_flags(Gtk::CAN_FOCUS);
-   signal_focus_in_event().connect_after(SigC::slot(*this, &LabelSpin::Focus_in_event));
-   signal_focus_out_event().connect_after(SigC::slot(*this, &LabelSpin::Focus_out_event));
+   signal_focus_in_event().connect(SigC::slot(*this, &LabelSpin::Focus_in_event),true);
+   signal_focus_out_event().connect(SigC::slot(*this, &LabelSpin::Focus_out_event),true);
 
 
    pack_start(*label);
