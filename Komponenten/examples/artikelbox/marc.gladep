@@ -1,0 +1,11 @@
+<?xml version="1.0" standalone="no"?> <!--*- mode: xml -*-->
+<!DOCTYPE glade-project SYSTEM "http://glade.gnome.org/glade-project-2.0.dtd">
+
+<glade-project>
+  <name>marc</name>
+  <program_name>marc</program_name>
+  <pixmaps_directory>src</pixmaps_directory>
+  <language>C++</language>
+  <gnome_support>FALSE</gnome_support>
+  <gettext_support>FALSE</gettext_support>
+</glade-project>
