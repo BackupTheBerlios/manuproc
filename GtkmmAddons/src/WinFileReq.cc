@@ -11,6 +11,8 @@
 #ifdef __MINGW32__
 # include <windows.h>
 # include <commdlg.h>
+# include <objidl.h> // IMalloc
+# include <shlobj.h>
 #include <gdk/gdkwin32.h>
 
 class TagStream { public: static void utf82iso(std::string &s); };
@@ -81,12 +83,21 @@ WinFileReq::WinFileReq(const SigC::Slot1<void,const std::string &> &sl,
      bi.lpszTitle = title.c_str();
      bi.ulFlags = BIF_EDITBOX | BIF_RETURNONLYFSDIRS;
      
-     LPITEMIDLIST *iidl=SHBrowseForFolder(&bi);
-     if (iidl) 
-     { std::string result=buf;
-       TagStream::utf82iso(result);
-       const_cast<SigC::Slot1<void,const std::string &>&>(sl)(result);
-       // SHGetMalloc -> Free (iidl)
+     LPITEMIDLIST pidl=SHBrowseForFolder(&bi);
+     if (pidl) 
+     { // get the name of the folder
+       if ( SHGetPathFromIDList ( pidl, buf ) )
+       { std::string result=buf;
+         TagStream::utf82iso(result);
+         const_cast<SigC::Slot1<void,const std::string &>&>(sl)(result);
+       }
+        // free memory used
+        IMalloc * imalloc = 0;
+        if ( SUCCEEDED( SHGetMalloc ( &imalloc )) )
+        {
+            imalloc->Free ( pidl );
+            imalloc->Release ( );
+        }     
      }
      else if (pass_cancel)
         const_cast<SigC::Slot1<void,const std::string &>&>(sl)(std::string());
