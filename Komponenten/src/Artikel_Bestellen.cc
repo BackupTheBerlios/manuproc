@@ -1,4 +1,4 @@
-// $Id: Artikel_Bestellen.cc,v 1.8 2004/11/08 08:53:19 christof Exp $
+// $Id: Artikel_Bestellen.cc,v 1.9 2004/11/08 08:53:53 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -19,7 +19,7 @@
  */
 
 #include "Artikel_Bestellen.hh"
-#include <gtk--/adjustment.h>
+#include <gtkmm/adjustment.h>
 #include <Gtk_OStream.h>
 
 Artikel_Bestellen::Artikel_Bestellen()
@@ -28,8 +28,8 @@ Artikel_Bestellen::Artikel_Bestellen()
   artikel();
   prozess();
 
-  PB_prozess->activate.connect(SP_menge->grab_focus.slot());
-  SP_menge->activate.connect(AB_artikel->grab_focus.slot());
+  PB_prozess->signal_activate().connect(SigC::Slot(*SP_menge,&grab_focus);
+  SP_menge->signal_activate().connect(SigC::Slot(*AB_artikel,&grab_focus);
 
 //  show();
 }
@@ -47,7 +47,7 @@ ArtikelBase Artikel_Bestellen::get_Artikel() const
 
 double Artikel_Bestellen::get_Menge() const
 {
-  gtk_spin_button_update(SP_menge->gtkobj());
+  gtk_spin_button_update(SP_menge->gobj());
   return SP_menge->get_value_as_float();
 }
 
@@ -69,7 +69,7 @@ void Artikel_Bestellen::menge()
    Gtk::Adjustment *SP_adj=manage(new class Gtk::Adjustment(1, 0, 10000, 1, 10, 10));
    SP_menge = manage(new class Gtk::SpinButton(*SP_adj, 1, 5));
    SP_menge->show();
-//   SP_menge->activate.connect(activate.slot());
+//   SP_menge->signal_activate().connect(activate.slot());
    attach(*SP_menge,2,3,0,1);
 }
 
@@ -78,7 +78,7 @@ void Artikel_Bestellen::artikel()
  AB_artikel = manage(new ArtikelBox("Artikeleingabe","Bestellen"));
  AB_artikel->show_label(true);
  AB_artikel->show();
- AB_artikel->activate.connect(activate.slot());
+ AB_artikel->signal_activate().connect(activate.slot());
  attach(*AB_artikel,0,4,1,2);
 }
 

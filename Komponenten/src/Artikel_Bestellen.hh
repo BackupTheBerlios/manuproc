@@ -1,4 +1,4 @@
-// $Id: Artikel_Bestellen.hh,v 1.8 2004/11/08 08:53:19 christof Exp $
+// $Id: Artikel_Bestellen.hh,v 1.9 2004/11/08 08:53:53 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -23,9 +23,9 @@
 
 
 #include "Optionmenu_Instanz.hh"
-#include <gtk--/table.h>
-#include <gtk--/label.h>
-#include <gtk--/spinbutton.h>
+#include <gtkmm/table.h>
+#include <gtkmm/label.h>
+#include <gtkmm/spinbutton.h>
 #include <Artikel/ArtikelBase.h>
 //#include <Instanzen/ppsInstanz.h>
 #include "ArtikelBox.hh"

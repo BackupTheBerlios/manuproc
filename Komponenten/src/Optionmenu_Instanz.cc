@@ -1,4 +1,4 @@
-// $Id: Optionmenu_Instanz.cc,v 1.6 2004/11/08 08:34:05 christof Exp $
+// $Id: Optionmenu_Instanz.cc,v 1.7 2004/11/08 08:49:57 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -33,7 +33,8 @@ void Optionmenu_Instanz::set_mode(emode mode)
 
 
 cH_ppsInstanz Optionmenu_Instanz::get_value() const
-{  return static_cast<ppsInstanz*>(get_menu()->get_active()->get_user_data());
+{  return static_cast<ppsInstanz*>(
+      const_cast<Gtk::MenuItem*>(get_menu()->get_active())->get_data("user_data"));
 }
 
 void Optionmenu_Instanz::fuelle_menu(emode mode)

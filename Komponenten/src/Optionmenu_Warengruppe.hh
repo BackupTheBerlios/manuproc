@@ -1,4 +1,4 @@
-// $Id: Optionmenu_Warengruppe.hh,v 1.5 2004/11/08 08:49:57 christof Exp $
+// $Id: Optionmenu_Warengruppe.hh,v 1.6 2004/11/08 08:50:30 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,11 +21,11 @@
 #ifndef _OPTIONMENU_WARENGRUPPE_HH
 #  define _OPTIONMENU_WARENGRUPPE_HH
 
-#include <gtk--/optionmenu.h>
+#include <gtkmm/optionmenu.h>
 #include <vector>
 #include <string>
 #include <Artikel/ArtikelTyp.h>
-#include <gtk--/menu.h>
+#include <gtkmm/menu.h>
 #include <ExtBezSchema/ExtBezSchema.h>
 
 class Optionmenu_Warengruppe :  public Gtk::OptionMenu
