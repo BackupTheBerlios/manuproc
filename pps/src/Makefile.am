@@ -31,7 +31,9 @@ pps_SOURCES = pps.cc \
 	auftrag_provision.cc \
 	auftrag_provision_glade.cc \
 	buchen_dialog.cc \
-	buchen_dialog_glade.cc
+	buchen_dialog_glade.cc \
+	info_dialog_glade.cc \
+	info_dialog.cc
 
 #	auftrag_main_lager.cc \
 
@@ -53,7 +55,9 @@ noinst_HEADERS = \
 	auftrag_provision.hh \
 	auftrag_provision_glade.hh \
 	buchen_dialog.hh \
-	buchen_dialog_glade.hh
+	buchen_dialog_glade.hh \
+	info_dialog_glade.hh \
+	info_dialog.hh
 
 BUILT_SOURCES= \
 	auftrag_bearbeiten_sql.cc \

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.35 2004/02/17 18:44:41 jacek Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.36 2004/02/19 15:59:32 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,6 +28,7 @@
 #include <Misc/fixedpoint.h>
 #include <Misc/compiler_ports.h>
 #include <Auftrag/auftrag_status.h>
+#include <Lager/FertigWarenLager.h>
 
 class Lieferschein;
 
@@ -97,9 +98,9 @@ public:
  void changeMenge(int stueck,mengen_t menge, bool ein_auftrag) throw(SQLerror);
 // void changeMenge(int stueck,mengen_t menge) throw(SQLerror); 
  void changeStatus(AufStatVal new_status, 
- 		bool ein_auftrag, int _stk, mengen_t _mng) throw(SQLerror);
- void changeStatus(AufStatVal new_status, 
- 		bool ein_auftrag) throw(SQLerror); 		
+ 		bool ein_auftrag, int _stk, mengen_t _mng) 
+ 				throw(SQLerror,LagerError);
+ void changeStatus(AufStatVal new_status, bool ein_auftrag);
  static void deleteEntry(LieferscheinEntry &lse) throw(SQLerror);
  void setLagerid(int _lagid) throw(SQLerror);
 

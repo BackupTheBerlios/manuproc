@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.65 2004/02/19 14:14:52 jacek Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.66 2004/02/19 15:59:32 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -74,7 +74,7 @@ void LieferscheinEntry::showZusatzInfos() const
 
 #warning Diese Funktion ist IMHO unsinnig
 void LieferscheinEntry::changeStatus(AufStatVal new_status, 
-				bool ein_auftrag) throw(SQLerror)
+				bool ein_auftrag) 
 { 
  if((status==OPEN || status==CLOSED) && new_status==STORNO)
    changeStatus(new_status,ein_auftrag,0,0);
@@ -92,7 +92,7 @@ namespace { struct stornoliste
 
 void LieferscheinEntry::changeStatus(AufStatVal new_status, 
 		bool ein_auftrag,
-		int _stueck, mengen_t _menge) throw(SQLerror)
+		int _stueck, mengen_t _menge) throw(SQLerror,LagerError)
 { ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
 	NV("new_status",new_status),
 	NV("status",status),NV("ein_auftrag",ein_auftrag),

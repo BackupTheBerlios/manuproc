@@ -110,7 +110,7 @@ void FertigWarenLager::Buchen(FertigWaren::e_buchen buchen,
  if( ((bestand+fw.Stk(buchen))) < 0  &&
 	buchen==FertigWaren::Raus
    )
-   throw(LagerError("NEGATIVER BESTAND !",fw.Artikel().Id()));
+   throw LagerError("NEGATIVER BESTAND !",fw.Artikel().Id());
    
 
  Query q("insert into "+tabelle+
@@ -170,7 +170,7 @@ void FertigWarenLager::Inventur() throw(LagerError)
 // we do not accept negativ mount from now on
 
  if(fw.Bestand()<0)
-   throw(LagerError("NEGATIVER BESTAND !",fw.Artikel().Id()));
+   throw LagerError("NEGATIVER BESTAND !",fw.Artikel().Id());
 
  q << fw.Artikel().Id()
    << buchmenge

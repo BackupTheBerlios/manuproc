@@ -32,6 +32,7 @@
 #include <unistd.h>
 #include <Misc/Trace.h>
 #include "buchen_dialog.hh"
+#include "info_dialog.hh"
 
 extern MyMessage *meldung;
 extern auftrag_main *auftragmain;
@@ -970,10 +971,11 @@ void auftrag_lieferschein::on_lager_buchen_clicked()
    buchen_dialog bd;
    bd.set_transient_for(*this);
    int ret=bd.run();
+   bd.destroy();
 
    if(ret==0)
      {
-
+      bool exists_ungebucht=false;
 
       if(datavec_liefdata.empty()) return;
       std::vector<cH_RowDataBase>::iterator i=datavec_liefdata.begin();
@@ -995,14 +997,23 @@ void auftrag_lieferschein::on_lager_buchen_clicked()
 	    }
             catch(SQLerror &e) {meldung->Show(e); tr.rollback(); return;}
 	    catch(LagerError &l) 
-		{meldung->Show(l); 
+		{std::cerr << l << "\n"; 
  		 tr.rollback(); 
+		 exists_ungebucht=true;
 		 continue;
 		}
-
 	   }
 	}
 
+    if(exists_ungebucht)
+      {
+       info_dialog id("Einige Zeilen konnten nicht"
+	 " vom Lager abgebucht werden, da der Lagerbestand nicht ausreicht");
+       id.set_transient_for(*this);
+       id.run();	
+       id.destroy();
+      }
+    
 
       datavec_liefoff.clear();
       on_liefnr_activate();     
