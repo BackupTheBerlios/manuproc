@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.20 2003/01/17 16:27:03 christof Exp $
+// $Id: FetchIStream.h,v 1.21 2003/01/17 16:29:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -176,9 +176,9 @@ public:
 
 	template <class T> FetchIStream &operator>>(T &x)
 	{  return FetchOne() >> x; }
-	template <class T> FetchIStream &operator>>(const FetchIStream::MapNull<T> &x);
+	template <class T> FetchIStream &operator>>(const FetchIStream::MapNull<T> &x)
 	{  return FetchOne() >> x; }
-	template <class T> FetchIStream &operator>>(const FetchIStream::WithIndicator<T> &x);
+	template <class T> FetchIStream &operator>>(const FetchIStream::WithIndicator<T> &x)
 	{  return FetchOne() >> x; }
 };
 
