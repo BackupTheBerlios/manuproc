@@ -1,4 +1,4 @@
-// $Id: dbconnect_shared.cc,v 1.3 2004/03/11 16:21:57 jacek Exp $
+// $Id: dbconnect_shared.cc,v 1.4 2004/08/30 13:55:35 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,8 +21,9 @@
 #include <Misc/dbconnect.h>
 #include <cassert>
 
-ManuProC::Connection::Connection(const std::string &h, const std::string &d, const std::string &u,const std::string &n)
-        	: host(h), dbase(d), user(u), name(n)
+ManuProC::Connection::Connection(const std::string &h, const std::string &d, 
+		const std::string &u,const std::string &n, const int p)
+        	: host(h), dbase(d), user(u), name(n), port(p)
 {
    std::string host_=DEFAULT_DBHOST;
    std::string db_=DEFAULT_DB;

@@ -1079,4 +1079,16 @@ void auftrag_lieferschein::on_ungeb_lief_print_activate()
  system(cmd.c_str());
 }
 
+#include "petig_we.hh"
+
+void auftrag_lieferschein::on_petig_we_activate()
+{
+ petig_we pwe;  
+ pwe.set_transient_for(*this);
+
+ int ret=pwe.run();
+
+ 
+
+}
 

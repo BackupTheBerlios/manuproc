@@ -72,6 +72,7 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
         void on_liefer_close();
         void on_ungeb_lief_show_activate();
         void on_ungeb_lief_print_activate();
+        void on_petig_we_activate();
         gint on_liefer_delete(GdkEventAny *ev);
         void on_liefer_neu();
         void on_lief_save();

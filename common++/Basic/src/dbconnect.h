@@ -1,4 +1,4 @@
-// $Id: dbconnect.h,v 1.10 2004/03/11 12:17:32 christof Exp $
+// $Id: dbconnect.h,v 1.11 2004/08/30 13:55:35 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,6 +22,8 @@
 struct sqlite;
 #endif
 
+#define POSTGRESQL_PORT	5432
+
 namespace ManuProC
 {
 #ifdef MPC_SQLITE
@@ -33,24 +35,30 @@ namespace ManuProC
     std::string dbase;
     std::string user;
     std::string name;
+    int port;
     
     public:
-         Connection(const std::string &h="", const std::string &d="", const std::string &u="",const std::string &n="");
+     Connection(const std::string &h="", const std::string &d="", 
+                const std::string &u="",const std::string &n="",
+                const int p=POSTGRESQL_PORT);
         	
         	
     const std::string Host() const { return host; }
     const std::string Dbase() const { return dbase; }
     const std::string User() const { return user; }
     const std::string Name() const { return name; }
+    const int Port() const { return port; }
     void setHost(const std::string &h) { if(!h.empty()) host=h; }
     void setDbase(const std::string &d) { if(!d.empty()) dbase=d; }
     void setUser(const std::string &u) { user=u; }
     void setName(const std::string &n) { name=n; }
+    void setPort(const int p) { port=p;}
     // alternative API:
     void Host(const std::string &h) { host=h; }
     void Dbase(const std::string &d) { dbase=d; }
     void User(const std::string &u) { user=u; }
     void Name(const std::string &n) { name=n; }
+    void Port(const int p) { port=p; }
    };
 
    void dbconnect_nt(const Connection &c=Connection()) throw();

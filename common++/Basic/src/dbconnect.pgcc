@@ -1,4 +1,4 @@
-// $Id: dbconnect.pgcc,v 1.17 2004/03/11 12:17:32 christof Exp $
+// $Id: dbconnect.pgcc,v 1.18 2004/08/30 13:55:35 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -43,6 +43,7 @@ void ManuProC::dbconnect(const Connection &c) throw(SQLerror)
 
    std::string host=c.Host();
    std::string db=c.Dbase();
+   int port=c.Port();
 
    if(!c.Name().empty()) strncpy0(NAME,c.Name().c_str(),sizeof NAME);
    else strncpy0(NAME,db.c_str(),sizeof NAME);
@@ -54,7 +55,7 @@ void ManuProC::dbconnect(const Connection &c) throw(SQLerror)
 #if 0  
      snprintf0(connstr,sizeof connstr,"tcp:postgresql://%s/%s",host.c_str(),db.c_str());
 #else     
-     snprintf0(connstr,sizeof connstr,"%s@%s",db.c_str(),host.c_str());
+     snprintf0(connstr,sizeof connstr,"%s@%s:%d",db.c_str(),host.c_str(),port);
 #endif     
    
    char *opt(getenv("SQLOPT"));
