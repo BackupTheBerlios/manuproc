@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.22 2004/04/08 16:22:25 jacek Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.23 2004/05/03 12:05:03 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,6 +25,9 @@
 exec sql include sqlca;
 #include <Misc/FetchIStream.h>
 //#include <Misc/dbconnect.h>
+#include <unistd.h>
+#include <sys/types.h>
+
 
 #ifdef MABELLA_EXTENSIONS
 #include <Aux/EAN.h>
@@ -220,10 +223,22 @@ void ArtikelBezeichnung::Anlegen(const cH_ExtBezSchema &schema,const ArtikelBase
      val += EAN::next_value(schema->Typ())+",";
      }  
 #endif
+
+#ifdef MABELLA_EXTENSIONS
+   int prozess=40; // Rollen allgemein   
+   if(schema->Typ()==ArtikelTypID::gewebtes_Band)
+     {col+="prozess,uid,";
+      val+=itos(prozess)+","+itos(getuid())+","; 
+     }
+#endif
+
    assert(col[col.size()-1]==',' && val[val.size()-1]==',');
    col[col.size()-1]=')';
    val[val.size()-1]=')';
-   
+
    Query("insert into "+Tabellenname(schema) +" "+ col+" values "+val);
    SQLerror::test(__FILELINE__,100);
 }
+
+
+
