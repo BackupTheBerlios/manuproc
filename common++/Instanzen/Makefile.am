@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.12 2003/01/31 16:23:15 christof Exp $
+# $Id: Makefile.am,v 1.13 2003/01/31 16:35:50 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -23,7 +23,7 @@ libInstanzen.a: $(libInstanzen_a_OBJECTS) $(libInstanzen_a_DEPENDENCIES)
 
 BUILT_SOURCES= $(PGCC_Sources) 
 
-include_HEADERS=ppsInstanz.h ppsInstanzProduziert.h
+include_HEADERS=ppsInstanz.h 
 
 CLEANFILES= *~ $(BUILT_SOURCES)
 
