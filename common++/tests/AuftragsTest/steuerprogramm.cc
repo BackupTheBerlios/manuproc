@@ -112,7 +112,7 @@ int main(int argc,char *argv[])
 {  putenv("LANG=C"); // omit any locale oddities/changes
    bool clean_only=true;
 
-#ifdef PETIG_TEST
+#if defined(PETIG_TEST) || defined(MANU_PROC_TEST)
    AuftragBase::setzeAktuellesJahr(2000);
 #else
    AuftragBase::setzeAktuellesJahr(2003);

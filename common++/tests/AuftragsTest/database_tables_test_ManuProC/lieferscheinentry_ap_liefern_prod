@@ -1,5 +1,5 @@
  instanz | lfrsid | zeile | artikelid | refauftragid | stueck | refzeilennr | menge 
 ---------+--------+-------+-----------+--------------+--------+-------------+-------
-      41 |  30000 |     1 |        41 |            1 |      5 |           1 |      
+      41 |      0 |     1 |        41 |            1 |      5 |           1 |      
 (1 row)
 
