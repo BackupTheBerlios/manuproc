@@ -1,4 +1,4 @@
-dnl $Id: petig.m4,v 1.47 2001/05/21 07:01:58 cvs_christof Exp $
+dnl $Id: petig.m4,v 1.48 2001/06/06 13:39:31 cvs_christof Exp $
 
 dnl Configure paths for some libraries
 dnl derived from kde's acinclude.m4
@@ -204,8 +204,6 @@ AC_DEFUN(PETIG_CHECK_LIB,
 dnl only if not already checked
 if test "x$$3_INCLUDES" == "x" 
 then
-  PETIG_CHECK_CONFIG
-  
   dnl dependancies
   if test "x$5" != "x" -a "x$$5_INCLUDES" == "x"
   then
@@ -238,12 +236,13 @@ then
     $3_LDFLAGS="-L$TEMP"
     $3_LIBS="-l$4"
     AC_MSG_RESULT($$3_INCLUDES)
-  elif test "x$PETIGLIBS_CONFIG" != "x-"
+  elif test -r "../$4/src/lib$4.a"
   then 
-    $3_INCLUDES=`$PETIGLIBS_CONFIG --cflags $2`
+    TEMP=`cd ../$4/src ; pwd` 
+    $3_INCLUDES="-I$TEMP"
+    $3_LDFLAGS="-L$TEMP"
+    $3_LIBS="-l$4"
     AC_MSG_RESULT($$3_INCLUDES)
-    $3_LIBS=`$PETIGLIBS_CONFIG --libs $2`
-    $3_LDFLAGS=""
   else
     if test "x$prefix" = "xNONE" 
     then mytmp="$ac_default_prefix"
@@ -290,14 +289,6 @@ then
 fi
 GTKMM_INCLUDES=$GTKMM_CFLAGS
 AC_SUBST(GTKMM_INCLUDES)
-])
-
-AC_DEFUN(PETIG_CHECK_CONFIG,
-[ 
-if test "x$PETIGLIBS_CONFIG" = "x" 
-then 
-  AC_PATH_PROG(PETIGLIBS_CONFIG,"petiglibs-config","-")
-fi
 ])
 
 AC_DEFUN(PETIG_CHECK_COMMONXX,
