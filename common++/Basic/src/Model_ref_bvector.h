@@ -1,4 +1,4 @@
-/* $Id: Model_ref_bvector.h,v 1.1 2003/10/22 10:59:04 christof Exp $ */
+/* $Id: Model_ref_bvector.h,v 1.2 2003/10/22 14:14:25 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -31,12 +31,12 @@ class Model_ref<bvector_item>
 {	bvector_iterator value;
 	SigC::Signal1<void,bvector_iterator> *changed;
 public:
-	Model_ref(const bvector_iterator &v, SigC::Signal1<void,void*> &sig)
+	Model_ref(const bvector_iterator &v, SigC::Signal1<void,bvector_iterator> &sig)
 	: value(v), changed(&sig) {}
 // dangerous - depends on internal representation
 // please use  Model_ref<bvector_item>(v.begin()+n,signal);
 #if 0
-	Model_ref(const bvector_reference &v, SigC::Signal1<void,void*> &sig)
+	Model_ref(const bvector_reference &v, SigC::Signal1<void,bvector_iterator> &sig)
 	: value(v._M_p,v._M_mask), changed(&sig) {}
 #endif
 	Model_ref() : value(), changed() {}
@@ -65,7 +65,7 @@ public:
 	   signal_changed()(Id());
 	   return *value;
 	}
-	const Model_ref<T> &operator=(const Model_ref<T> &m)
+	const Model_ref<bvector_item> &operator=(const Model_ref<bvector_item> &m)
 	{  value=m.value;
 	   changed=m.changed;
 	   return *this;
