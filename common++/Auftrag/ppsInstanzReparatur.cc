@@ -218,7 +218,7 @@ std::vector<LagerInhalt> ppsInstanzReparatur::getLagerInhalt() const
 
 void ppsInstanzReparatur::analyse(const std::string &s,const AufEintragBase &AE,const std::string &x,const std::string &y) const
 {
-  std::cout<<"Fehler Analyse: " << AE <<"  => "<<s<<"\t("<<x<<"), ("<<y<<")\n";
+  std::cout<< AE ": "<<s<<" ("<<x<<" "<<y<<")\n";
 }
 
 void ppsInstanzReparatur::analyse(const std::string &s,const AufEintragBase &AE,const ABmt &x,const ABmt &y) const
