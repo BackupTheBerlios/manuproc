@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList.h,v 1.17 2003/08/05 10:18:42 jacek Exp $ */
+/* $Id: LieferscheinList.h,v 1.18 2003/10/02 10:19:49 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -37,6 +37,7 @@ class LieferscheinList
  ManuProC::Datum vom;
  ManuProC::Datum bis;
  ManuProcEntity<>::ID kundenid;
+ ManuProcEntity<>::ID kundengruppe;
  ArtikelBase::ID artikelid;
  ArtikelTyp::ID arttyp;
  bool first_komponent;
@@ -72,6 +73,7 @@ public:
  LieferscheinList();
  void build_list(); 
  void setForKunde(const ManuProcEntity<>::ID kid) { kundenid=kid; }
+ void setKundenGruppe(const ManuProcEntity<>::ID kid) { kundengruppe=kid; }
  void setForArtikel(const ArtikelBase::ID aid) { artikelid=aid; }
  void setFirstKompOnly(bool fk) { first_komponent=fk; }
  void setFromDate(const ManuProC::Datum _vom) { vom=_vom;}

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList_sql.pgcc,v 1.23 2003/08/05 11:54:23 jacek Exp $ */
+/* $Id: LieferscheinList_sql.pgcc,v 1.24 2003/10/02 10:19:49 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,6 +26,7 @@ exec sql include sqlca;
 
 LieferscheinList::LieferscheinList()
 : instanz(ppsInstanz::default_id),kundenid(ManuProcEntity<>::none_id),
+kundengruppe(ManuProcEntity<>::none_id),
 artikelid(ArtikelBase::none_id),
 arttyp(ArtikelTyp::ID(ManuProcEntity<>::none_id)),
 first_komponent(false),hole_entries(false)
@@ -55,6 +56,11 @@ void LieferscheinList::build_list()
 
  if(kundenid!=ManuProcEntity<>::none_id)
    squery+= " and li.kundennr="+itos(kundenid);
+
+ if(kundengruppe!=ManuProcEntity<>::none_id)
+   squery+= " and exists(select true from ku_gruppen_map "
+   	"where ku_gruppen_map.grpnr="+itos(kundengruppe)+" and "
+   	"li.kundennr=ku_gruppen_map.kundennr)";
 
  if(vom.valid() && bis.valid())
    {squery+= " and coalesce(li.geliefertam,li.datum)"
