@@ -46,7 +46,7 @@ auftrag_bearbeiten *auftragbearbeiten;
 
 extern MyMessage *meldung;
 
-
+int RC_OffenMenge(cH_ArtikelBezeichnung b, ManuProC::Datum &d);
 
 auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEintragBase *auftragbase)
 : instanz(_instanz), auftrag(0), aktaufeintrag(0), kunde(Kunde::default_id),
@@ -183,6 +183,7 @@ void auftrag_bearbeiten::on_auftrag_clist_select_row
 
 #ifdef MABELLA_EXTENSIONS
  showBestandData();
+ lieferant_offen->set_text("(0)");
 #endif
 
  WAufStat->set_History(aktaufeintrag->getAufStatus());
@@ -1012,15 +1013,28 @@ void auftrag_bearbeiten::on_aufrabatt_spinbutton_activate()
  aufnr_scombo->grab_focus();  
 }
 
-int RC_OffenMenge(cH_ArtikelBezeichnung b);
+
 
 void auftrag_bearbeiten::on_offen_bei_lieferant_clicked()
 {  
+ ManuProC::Datum d;
+
+ if(artikelbox->get_value().Id() == ArtikelBase::none_id) return;
+
  int offen=
-	RC_OffenMenge(cH_ArtikelBezeichnung(artikelbox->get_value()));
+	RC_OffenMenge(cH_ArtikelBezeichnung(artikelbox->get_value()),d);
  if(offen==-1)
    lieferant_offen->set_text("--");
  else
-   lieferant_offen->set_text("("+itos(offen)+")");
+   {
+   std::string kwstr;
+   if(d.valid() && offen)
+      {
+      Kalenderwoche kw=d.KW();
+      kwstr=" "+itos(kw.Woche())+"'"+itos(kw.Jahr()%100);
+      }
+   lieferant_offen->set_text("("+itos(offen)+")"+kwstr);
+   }
+
 }
 

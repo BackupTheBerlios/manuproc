@@ -31,7 +31,7 @@ void RC_close()
 }
 
 
-int RC_OffenMenge(cH_ArtikelBezeichnung b)
+int RC_OffenMenge(cH_ArtikelBezeichnung b, ManuProC::Datum &d)
 {
  int forkedpid=0;
 
@@ -57,7 +57,6 @@ int RC_OffenMenge(cH_ArtikelBezeichnung b)
     {
      close(fdes_c2s[0]);
      close(fdes_s2c[1]);
-     sleep(4);
 
     }
   else		// server (child)
@@ -100,10 +99,10 @@ int RC_OffenMenge(cH_ArtikelBezeichnung b)
  FD_ZERO(&expt_fds);
  FD_SET(fdes_c2s[1],&fds);
  FD_SET(fdes_c2s[1],&expt_fds);
- tv.tv_sec=2;
+ tv.tv_sec=15;
  tv.tv_usec=0;
  
- ret=select(fdes_c2s[1]+1,NULL,&fds,&expt_fds,NULL);
+ ret=select(fdes_c2s[1]+1,NULL,&fds,&expt_fds,&tv);
 
  if(ret==-1) {perror("select() error"); return -1;}
  
@@ -142,14 +141,40 @@ int RC_OffenMenge(cH_ArtikelBezeichnung b)
  write(fdes_c2s[1],komp.c_str(),komp.size()); 
  write(fdes_c2s[1],"\x0a",1); 
 
- char buf[10];
+ const int buflen=20;
+ char buf[buflen];
  int len;
- len=read(fdes_s2c[0],buf,sizeof(buf));
- if(len<10)
-   buf[len]=0;
- else buf[9]=0;  
 
- return atoi(buf);
+ FD_ZERO(&fds);
+ FD_ZERO(&expt_fds);
+ FD_SET(fdes_s2c[0],&fds);
+ FD_SET(fdes_s2c[0],&expt_fds);
+ tv.tv_sec=20;
+ tv.tv_usec=0;
+ 
+ ret=select(fdes_s2c[0]+1,&fds,NULL,&expt_fds,&tv);
+
+ if(ret==-1) {perror("select() error "__FILELINE__); return -1;}
+ 
+ if(ret==0)
+	{perror("ssh: read would block"); return 0;}  
+
+ if(FD_ISSET(fdes_s2c[0],&expt_fds))
+	{perror("ssh: exception on pipe"); return -1;}  
+
+ len=read(fdes_s2c[0],buf,buflen);
+ if(len<buflen)
+   buf[len]=0;
+ else buf[buflen-1]=0;  
+
+ int menge(atoi(buf));
+
+ if(menge==-1) return menge;
+
+ char *datum=strstr(buf,"|");
+ d.from_postgres(datum+1);
+ 
+ return menge;
  
 }
 
