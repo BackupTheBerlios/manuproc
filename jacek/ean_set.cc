@@ -12,7 +12,7 @@
 
 #define COLUMNS		5
 #define ROWS		13
-
+#define EAN_KOMPTYPE	5
 
 const static struct option options[]=
 {
@@ -137,9 +137,12 @@ bool ean_set::cell_out(std::ostream &o,cH_ArtikelBezeichnung  ab,bool last_col)
  std::string bez=ab->Bezeichnung(DEF_SIGNIFIKANZ,'/');
  std::string ean=ab->Bezeichnung(EAN_SIGNIFIKANZ);
  cH_ExtBezSchema ebz=ab->getExtBezSchema();
- std::string tabcol=(*ebz)[std::pair<int,int>(1,EAN_SIGNIFIKANZ)].spaltenname;
+ ExtBezSchema::const_sigiterator i=ebz->sigbegin(EAN_SIGNIFIKANZ);
+ std::string tabcol;
+ if(i!=ebz->sigend(EAN_SIGNIFIKANZ)) tabcol=(*i).spaltenname;
  
  if(ean.empty() || tabcol!="ean") return false;
+ 
  
  o << "{\\rule[-2.6ex]{0mm}{21.1mm} ";
  o << "\\raisebox{1.2cm}[0pt][0pt]{\\makebox[0mm][s]{"
