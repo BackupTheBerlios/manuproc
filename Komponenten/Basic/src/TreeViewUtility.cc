@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.cc,v 1.17 2004/02/06 08:48:02 christof Exp $
+// $Id: TreeViewUtility.cc,v 1.18 2004/02/06 09:46:38 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -120,8 +120,23 @@ void TreeViewUtility::CListEmulator::set_column_justification(int col, Gtk::Just
    set_column_justification(col,al);
 }
 
-void TreeViewUtility::CListEmulator::append(const gchar* text[])
+Gtk::TreeModel::iterator TreeViewUtility::CListEmulator::append(const gchar* text[])
 {  Gtk::TreeModel::iterator iter =get_store()->append();
    for (unsigned i=0;i<cols.size();++i)
       (*iter)[cols[i]]=text[i];
+   return iter;
+}
+
+Gtk::TreeModel::iterator TreeViewUtility::CListEmulator::append(const std::vector<Glib::ustring> &text)
+{  Gtk::TreeModel::iterator iter =get_store()->append();
+   for (unsigned i=0;i<cols.size() && i<text.size();++i)
+      (*iter)[cols[i]]=text[i];
+   return iter;
+}
+
+void TreeViewUtility::CListEmulator::add(Gtk::TreeModelColumnBase& column)
+{  Gtk::TreeModelColumnRecord::add(column);
+   m_refStore=Gtk::ListStore::create(*this);
+   if (view) // eigentlich sollte das attach erst später passiert sein ...
+      attach_to(*view);
 }

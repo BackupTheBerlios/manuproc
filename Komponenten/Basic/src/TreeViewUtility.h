@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.h,v 1.14 2004/02/02 07:29:49 christof Exp $
+// $Id: TreeViewUtility.h,v 1.15 2004/02/06 09:46:38 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,6 +23,8 @@
 #include <vector>
 #include <gtkmm/treeview.h>
 #include <gtkmm/liststore.h>
+
+// see webkartei/src/Kette.cc for a nice example on how to use this
 
 namespace TreeViewUtility {  
 
@@ -53,10 +55,13 @@ public:
 	void set_column_justification(int col, Gtk::AlignmentEnum just);
 	void set_column_justification(int col, Gtk::Justification just);
 	void column_titles_passive() { view->set_headers_clickable(false); }
-	void append(const gchar* text[]);
+	Gtk::TreeModel::iterator append(const gchar* text[]);
+	Gtk::TreeModel::iterator append(const std::vector<Glib::ustring> &text);
 	void freeze() {}
 	void thaw() {}
 	void clear() { get_store()->clear(); }
+	
+	void add(Gtk::TreeModelColumnBase& column);
 };
 
 class CList : public Gtk::TreeView

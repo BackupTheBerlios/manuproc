@@ -1,4 +1,4 @@
-// $Id: logwin.cc,v 1.9 2004/02/02 07:29:49 christof Exp $
+// $Id: logwin.cc,v 1.10 2004/02/06 09:46:38 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -37,7 +37,6 @@ logwin::logwin(guint minimum_size) : color()
 void logwin::set_color()
 {  if (color) return;
    emu.add(colorcol);
-   emu.set_title(""); // recreate model
    Gtk::CellRendererText *crt = dynamic_cast<Gtk::CellRendererText *>(gtklist.get_column(0)->get_first_cell_renderer());
    gtklist.get_column(0)->add_attribute(crt->property_foreground_gdk(),colorcol);
    color=true;
@@ -45,7 +44,8 @@ void logwin::set_color()
 
 void logwin::append(const Glib::ustring &text, const Gdk::Color &col)
 {  if (!color) set_color();
-   Gtk::TreeModel::iterator iter =get_store()->append();
-   (*iter)[get_column()]=text;
+   std::vector<Glib::ustring> cols;
+   cols.push_back(text);
+   Gtk::TreeModel::iterator iter=emu.append(cols);
    (*iter)[colorcol]=col;
 }
