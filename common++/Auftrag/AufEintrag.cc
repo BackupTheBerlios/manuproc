@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.66 2003/07/02 11:04:46 christof Exp $
+// $Id: AufEintrag.cc,v 1.67 2003/07/03 15:54:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -29,7 +29,7 @@
 #include <Lager/Lager.h>
 #include <Auftrag/VerfuegbareMenge.h>
 #include <Misc/Changejournal.h>
-#include <Lieferschein/Lieferschein.h>
+//#include <Lieferschein/Lieferschein.h>
 #include <Auftrag/AufEintrag_macros.h>
 #include <Misc/inbetween.h>
 #include <Artikel/ArtikelStamm.h>

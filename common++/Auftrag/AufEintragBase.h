@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.h,v 1.46 2003/06/19 12:03:58 jacek Exp $
+// $Id: AufEintragBase.h,v 1.47 2003/07/03 15:54:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -70,7 +70,8 @@ public:
  void setMaxPlanInstanz(int anzahl_planinstanzen) const throw(SQLerror); // private?
  
  int ZNr() const { return zeilennr; }
- bool valid() const { return AuftragBase::valid(); }
+ bool valid() const { return AuftragBase::valid() && zeilennr>0; }
+ bool operator!() const { return !valid(); }
 
 /*
  void vormerken_oder_bestellen(int uid,const AuftragBase::mengen_t &vormerkmenge,

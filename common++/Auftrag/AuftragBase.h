@@ -1,4 +1,4 @@
-/* $Id: AuftragBase.h,v 1.50 2003/07/03 13:42:39 christof Exp $ */
+/* $Id: AuftragBase.h,v 1.51 2003/07/03 15:54:52 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -72,6 +72,7 @@ class AuftragBase
    ppsInstanz::ID InstanzID() const {return instanz->Id(); }
    cH_ppsInstanz Instanz() const {return instanz; }
 	bool valid() const { return auftragid!=invalid_id; }
+	bool operator!() const { return !valid(); }
    bool editierbar() const;
    void setStatusAuftragBase(AufStatVal st) const throw(SQLerror);
    void setRabatt(const rabatt_t auftragsrabatt) const throw(SQLerror);
