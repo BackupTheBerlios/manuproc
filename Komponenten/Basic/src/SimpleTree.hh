@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.8 2002/12/04 17:27:27 christof Exp $
+// $Id: SimpleTree.hh,v 1.9 2002/12/05 08:39:19 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -60,6 +60,8 @@ class SimpleTree_Basic : public Gtk::TreeView, public SimpleTreeStore_Proxy
 	SigC::Signal1<void,const TreeRow &> _node_selected;
 	SigC::Signal0<void> _reorder;
 	
+	void on_title_clicked(unsigned no);
+	
 public:
 	SimpleTree_Basic(unsigned int cols,int attrs=-1);
 	SigC::Signal1<void,cH_RowDataBase> &signal_leaf_selected()
@@ -67,7 +69,8 @@ public:
 	// perhaps Handle<const TreeRow> is more sensible now?
 	SigC::Signal1<void,const TreeRow &> &signal_node_selected()
 	{ return _node_selected; }
-
+	SigC::Signal0<void> &signal_reorder()
+	{ return _reorder; }
 };
 
 // I put the more esoteric features here, so they may not confuse the

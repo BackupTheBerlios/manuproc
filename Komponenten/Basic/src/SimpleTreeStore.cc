@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.15 2002/12/04 17:27:27 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.16 2002/12/05 08:39:19 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -77,7 +77,7 @@ void SimpleTreeStore::load_remembered()
    std::string::size_type k0=visible.find(','),k1=std::string::npos;
    if (k0!=std::string::npos) 
    {  guint sichtbar=strtoul(visible.substr(0,k0).c_str(),0,10),bit=1;
-      for (guint j=0;j<attrcount;++j,bit<<=1)
+      for (guint j=0;j<Cols();++j,bit<<=1)
          vec_hide_cols[j]=!bit ? true : !(sichtbar&bit);
       k1=visible.find(',',k0+1);
    }
@@ -116,11 +116,10 @@ void SimpleTreeStore::set_remember(const std::string &program, const std::string
 
 SimpleTreeStore::SimpleTreeStore(int cols,int attrs)
 	: node_creation(0), columns(cols),
-	  showdeep(0), attrcount(attrs), gp(0), 
+	  showdeep(0), gp(0), 
 	  auffuellen_bool(false), expandieren_bool(false),
 	  color_bool(false), m_columns(cols)
-{  if (attrs<1) attrcount=cols;
-   m_refTreeStore=Gtk::TreeStore::create(m_columns);
+{  m_refTreeStore=Gtk::TreeStore::create(m_columns);
    defaultSequence();
    getModel().signal_title_changed().connect(SigC::slot(*this,&SimpleTreeStore::on_title_changed));
    getModel().signal_redraw_needed().connect(SigC::slot(*this,&SimpleTreeStore::redisplay));

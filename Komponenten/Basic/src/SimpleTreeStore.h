@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.17 2002/12/04 17:31:10 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.18 2002/12/05 08:39:19 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -61,7 +61,6 @@ private:
 	
 	guint columns;
 	guint showdeep;
-	guint attrcount;
 	std::deque<guint> currseq; 
 	std::vector<bool> vec_hide_cols;
 	gpointer gp;
@@ -119,7 +118,6 @@ public:
 	SimpleTreeStore(int cols,int attrs=-1);
 	
 	void set_showdeep(int i) {showdeep=i;}
-	//guint Attrs() const { return attrcount; }
 	guint Cols() const  { return columns;}
 
 	void set_value_data(gpointer _p) {gp = _p;}
