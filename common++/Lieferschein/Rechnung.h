@@ -1,4 +1,4 @@
-/* $Id: Rechnung.h,v 1.31 2003/11/13 10:32:46 jacek Exp $ */
+/* $Id: Rechnung.h,v 1.32 2004/01/26 15:27:09 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -95,6 +95,8 @@ public:
  void Notiz(const std::string _notiz) throw(SQLerror);
  int getEinzugRefnr() const { return einzug_refnr; }
  int size() const throw(SQLerror);
+ 
+ static geldbetrag_t MwStProz;
 };
 
 /*

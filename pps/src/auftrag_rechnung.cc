@@ -233,8 +233,46 @@ void auftrag_rechnung::on_rngnr_activate()
  rtree_daten->show();
 // vbox_n_b_lieferscheine->show();
  frame_rechnungsdaten->show(); 
+
+ showBetraege(); 
  }
  catch(SQLerror &e) {meldung->Show(e);}
+}
+
+
+void auftrag_rechnung::showBetraege()
+{
+ bool as_brutto(true);
+ RechnungBase::geldbetrag_t brutto(rechnung.Betrag(as_brutto));
+ rgbetrag_warenwert->set_value(brutto.as_float());
+ as_brutto=false;
+ RechnungBase::geldbetrag_t netto(rechnung.Betrag(as_brutto));
+ rgbetrag_netto->set_value(netto.as_float());
+
+ RechnungBase::geldbetrag_t rabatt(brutto-netto);
+ rgbetrag_rabatt->set_value(rabatt.as_float());
+ 
+ bool with_update_on_db=false;
+ RechnungBase::geldbetrag_t endnetto(rechnung.Endbetrag(with_update_on_db));
+ RechnungBase::geldbetrag_t zuschl(endnetto-netto);
+ rgbetrag_zusabs->set_value(zuschl.as_float());
+ rgbetrag_zwsumme->set_value(endnetto.as_float());
+
+ RechnungBase::geldbetrag_t mwst(0);
+ if(rechnung.getKunde()->MwSt())
+   mwst=(rechnung.MwStProz.as_float()/100.0)*endnetto.as_float();
+ rgbetrag_mwst->set_value(mwst.as_float());
+
+ rgbetrag_endsumme->set_value((mwst+endnetto).as_float());
+
+ cP_Waehrung w(rechnung.getWaehrung());
+ label_waehrung1->set_text(w->Kurzbezeichnung());
+ label_waehrung2->set_text(w->Kurzbezeichnung());
+ label_waehrung3->set_text(w->Kurzbezeichnung());
+ label_waehrung4->set_text(w->Kurzbezeichnung());
+ label_waehrung5->set_text(w->Kurzbezeichnung());
+ label_waehrung6->set_text(w->Kurzbezeichnung());
+ label_waehrung7->set_text(w->Kurzbezeichnung());
 }
 
 void auftrag_rechnung::on_lieferkunde_activate()
