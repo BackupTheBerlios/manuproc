@@ -624,8 +624,12 @@ void auftrag_bearbeiten::on_youraufnrscombo_activate()
 			" Wollen Sie wirklich fortfahren ?");
    jnf.set_transient_for(*this);
    int ret=jnf.run();
+
    if(ret==0)
      auftrag->setYourAufNr(youraufnr_scombo->get_text());
+   else
+     youraufnr_scombo->setContent(auftrag->getYourAufNr(),auftrag->Id());
+
    return;
   }
  else
