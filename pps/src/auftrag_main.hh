@@ -41,6 +41,7 @@ class auftrag_main : public auftrag_main_glade
  AufEintrag *selected_AufEintrag;
  static const unsigned int Artikelgroesse = 4;
  bool block_callback;
+ ArtikelTyp atyp; // nur diese Warengruppe anzeigen;
 
  AuftragBase::ID SelectedAuftragsId() const;
 public:
@@ -139,6 +140,7 @@ private:
         void instanz_selected(const cH_ppsInstanz instanz);
          
         void on_button_faerben_clicked(); 
+        void on_offwarengrp_activate();
 
 	static std::string FirstRow(gpointer user_data, int deep, std::deque<guint> seq);
 

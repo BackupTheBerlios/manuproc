@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.22 2003/04/28 09:29:46 christof Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.23 2003/11/12 13:04:05 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -40,12 +40,15 @@ public:
  // id=AuftragBase::none_id => Alle Aufträge
  // id=AuftragBase::plan_auftrag_id => Alle außer 0er und 2er
  // id=ungeplante_id|dispo_auftrag_id => as is
+ // wg=nur für Warengruppe wg selektieren; wg==noen_id alle Warengruppen
  struct sel_Status
-  { sel_Status(ppsInstanz::ID in, AufStatVal st,AuftragBase::ID _id) 
-    : instanz(in),status(st),id(_id) {}
+  { sel_Status(ppsInstanz::ID in, AufStatVal st,AuftragBase::ID _id,
+  		ArtikelTyp _wg=ArtikelTyp::none_id) 
+    : instanz(in),status(st),id(_id),wg(_wg) {}
     ppsInstanz::ID instanz;
     AufStatVal status;
     AuftragBase::ID id; 
+    ArtikelTyp::ID wg;
   };  
 
  SQLFullAuftragSelector(const sel_Status& selstr);

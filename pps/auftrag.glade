@@ -948,6 +948,55 @@
 	  <spacing>0</spacing>
 
 	  <widget>
+	    <class>GtkHBox</class>
+	    <name>hbox32</name>
+	    <homogeneous>False</homogeneous>
+	    <spacing>0</spacing>
+	    <child>
+	      <padding>0</padding>
+	      <expand>False</expand>
+	      <fill>False</fill>
+	    </child>
+
+	    <widget>
+	      <class>GtkLabel</class>
+	      <name>label110</name>
+	      <label>für Warengruppe</label>
+	      <justify>GTK_JUSTIFY_CENTER</justify>
+	      <wrap>False</wrap>
+	      <xalign>0.5</xalign>
+	      <yalign>0.5</yalign>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>False</fill>
+	      </child>
+	    </widget>
+
+	    <widget>
+	      <class>Custom</class>
+	      <name>offen_warengruppe</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <signal>
+		<name>activate</name>
+		<handler>on_offwarengrp_activate</handler>
+		<last_modification_time>Wed, 12 Nov 2003 10:54:06 GMT</last_modification_time>
+	      </signal>
+	      <creation_function>Optionmenu_Warengruppe</creation_function>
+	      <int1>0</int1>
+	      <int2>0</int2>
+	      <last_modification_time>Wed, 12 Nov 2003 10:53:37 GMT</last_modification_time>
+	      <child>
+		<padding>0</padding>
+		<expand>False</expand>
+		<fill>False</fill>
+	      </child>
+	    </widget>
+	  </widget>
+
+	  <widget>
 	    <class>GtkScrolledWindow</class>
 	    <name>scrolledwindow_maintree_s</name>
 	    <cxx_visibility>protected</cxx_visibility>

@@ -107,7 +107,8 @@ void auftrag_bearbeiten::showBestandData()
     ArtBestandData(artikelbox->get_value().Id(),offen,bestand,verfuegbar);
     }
     catch(SQLerror &e)
-      {meldung->Show(e);
+      {if(e.Code()!=100) 
+         meldung->Show(e);
        bestellt_label->set_text("--");
        lagerbest_label->set_text("--");
        verfuegbar_label->set_text("--");
@@ -126,7 +127,7 @@ void auftrag_bearbeiten::onSelArtikel()
  assert(!aktaufeintrag);
  Einheit e(artikelbox->get_value());
  mengeeinheit->set_text((std::string)e);
- WPreis->set_Einheit((std::string)e);
+ WPreis->set_Einheit(e);
  cH_PreisListe artikel_preisliste;
 
  try {
@@ -178,8 +179,8 @@ void auftrag_bearbeiten::on_auftrag_clist_select_row
  try {
   artikelbox->set_value(aktaufeintrag->Artikel());
   Einheit e(artikelbox->get_value());
-  mengeeinheit->set_text((std::string)e);
-  WPreis->set_Einheit((std::string)e);
+  mengeeinheit->set_text(std::string(e));
+  WPreis->set_Einheit(e);
   WPreis->set_Waehrung(auftrag->getWaehrung());
   preislisten->set_value(aktaufeintrag->getPreisliste()->Id());  
  }
@@ -925,7 +926,7 @@ void auftrag_bearbeiten::on_auftrag_preislisten_activate()
      artikelbox->AlleWarenkorb(kunde->Rngan());
  else
      artikelbox->EinWarenkorb(p->Id());   
- artikelbox->Einschraenken_b(true);
+ artikelbox->Einschraenken_b(p->Id()!=PreisListe::none_id);
  artikelbox->grab_focus();
  Rabatt_setzen(p);
 #endif
@@ -965,18 +966,14 @@ void auftrag_bearbeiten::on_preisautomatik_clicked()
  if(preisautomatik->get_active())
      {artikelbox->AlleWarenkorb(kunde->Rngan());
       preislisten->set_sensitive(false);
+      artikelbox->Einschraenken_b(true);   
      }
  else
      {artikelbox->EinWarenkorb(preislisten->get_value());
       preislisten->set_sensitive(true);
+      artikelbox->Einschraenken_b(preislisten->get_value()!=PreisListe::none_id);
      }
-        
- artikelbox->Einschraenken_b(true);   
-   
- if(kunde->Id() != Kunde::none_id)
-   {  
-    (const_cast<Kunde*>(&*kunde))->Preisautomatik(preisautomatik->get_active());
-   }
+
 #endif    
 }
 

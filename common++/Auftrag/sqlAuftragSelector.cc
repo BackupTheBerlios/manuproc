@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.29 2003/06/18 10:17:57 jacek Exp $
+// $Id: sqlAuftragSelector.cc,v 1.30 2003/11/12 13:04:05 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -46,6 +46,8 @@
 #define FULL_FROM "(auftrag a join auftragentry e using (instanz,auftragid))" \
 	" left join auftrag_prozess p" \
 	" using (instanz,auftragid,zeilennr) "
+
+
 	
 #ifdef MABELLA_EXTENSIONS	
 #define FULL_FROM_SORT(s) "(auftrag a join auftragentry e using (instanz,auftragid))" \
@@ -60,8 +62,14 @@
 #endif
 
 
+#define WARENGRUPPE_JOIN " join artikelstamm ast on (ast.id=e.artikelid) "
+
+#define FULL_SELECT_FROM_WHERE2(s) "select " FULL_SELECTIONS \
+	" from " FULL_FROM s " where true "
+
 #define FULL_SELECT_FROM_WHERE "select " FULL_SELECTIONS \
 	" from " FULL_FROM " where true "
+
 
 //#define FULL_SELECT_NO_0 " and bestellt!=0 "
 #define FULL_SELECT_NO_STORNO " and e.status!="+itos(STORNO)+" "
@@ -103,10 +111,19 @@ std::string SQLFullAuftragSelector::IDQualifier(AuftragBase::ID id)
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Status& selstr)
 {
- std::string cl=FULL_SELECT_FROM_WHERE 
-    + IDQualifier(selstr.id) +" and "
+ std::string cl;
+
+ if(selstr.wg!=ArtikelTyp::none_id)
+   cl=FULL_SELECT_FROM_WHERE2(WARENGRUPPE_JOIN);
+ else
+   cl=FULL_SELECT_FROM_WHERE; 
+
+  cl+= IDQualifier(selstr.id) +" and "
     + StatusQualifier(selstr.status)+
    " and a.instanz="+itos(selstr.instanz);
+
+ if(selstr.wg!=ArtikelTyp::none_id)
+   cl+=" and ast.warengruppe="+itos(selstr.wg);
 
 // if(!selstr.geplant) cl +=" and a.auftragid!=0 ";
  setClausel(cl);

@@ -57,7 +57,7 @@ void auftrag_rechnung::on_rng_neu()
    if(lieferkunde->get_value()!=-1 && lieferkunde->get_value()!=0)
    {
     newRechnung(lieferkunde->get_value());
-    rngnr->setContent(Formatiere(rechnung.Id(),0,6,"","",'0'),rechnung.Id());
+    rngnr->setContent(Formatiere((unsigned long)rechnung.Id(),0,6,"","",'0'),rechnung.Id());
     rngdatum->set_value(ManuProC::Datum::today());
     on_rngnr_activate();
    }

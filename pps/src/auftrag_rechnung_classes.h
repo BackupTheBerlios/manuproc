@@ -24,13 +24,15 @@ class Data_Rechnung : public RowDataBase
          switch(seqnr)
            {
            case LIEFNR_SEQ :
-              return cH_EntryValueIntString(Formatiere(rentry.Lfrs().Id(),0,6,"","",'0'));
+              return cH_EntryValueIntString(
+              	Formatiere((unsigned long)rentry.Lfrs().Id(),0,6,"","",'0'));
            case ARTIKEL_SEQ :
               {cH_ArtikelBezeichnung AB(rentry.Artikel());
                return cH_EntryValueIntString(AB->Bezeichnung());
               }
            case STUECK_SEQ :
-              return cH_EntryValueIntString(FormatiereEmptyInt(rentry.Stueck()));
+              return cH_EntryValueIntString(
+              	FormatiereEmptyInt((unsigned long)rentry.Stueck()));
            case LIEFMNG_SEQ :
               return cH_EntryValueIntString(rentry.Menge().String());
            case LIEFZEILE_SEQ :
@@ -79,7 +81,8 @@ class Data_RLieferoffen : public RowDataBase
            case KUNDE_SEQ :
               return cH_EntryValueIntString(lieferschein->getKunde()->getName());
            case LIEFNR_SEQ :
-              return cH_EntryValueIntString(Formatiere(lieferschein->Id(),0,6,"","",'0'));
+              return cH_EntryValueIntString(
+              	Formatiere((unsigned long)lieferschein->Id(),0,6,"","",'0'));
            case LIEFDATUM_SEQ :
               return cH_EntryValueIntString(lieferschein->LsDatum().c_str());
            case LIEFKUNDE_SEQ:

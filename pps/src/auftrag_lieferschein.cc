@@ -55,7 +55,7 @@ void auftrag_lieferschein::on_liefer_neu()
  liefdate->set_value(ManuProC::Datum::today());
 
  tree_daten->clear();
- liefernr->setContent(Formatiere(lieferschein->Id(),0,6,"","",'0'),lieferschein->Id());
+ liefernr->setContent(Formatiere((unsigned long)lieferschein->Id(),0,6,"","",'0'),lieferschein->Id());
  vbox_eingabe->show();
  tree_daten->show();
 
@@ -98,7 +98,7 @@ void auftrag_lieferschein::display(int lfrsid)
  display2(lieferschein->KdNr());
  int rng = lieferschein->RngNr();
  if (rng!=-1)
-    rngnr->set_text(Formatiere(rng,0,6,"","",'0'));
+    rngnr->set_text(Formatiere((unsigned long)rng,0,6,"","",'0'));
  else rngnr->set_text("");
  vbox_eingabe->show();
  tree_daten->show();
@@ -307,7 +307,7 @@ void auftrag_lieferschein::fill_with(const AufEintrag& AE,const Einheit& E,
          int stueck,double menge)
 {
   artikelbox->set_value(AE.Artikel());
-  auftragnr->set_text(Formatiere(AE.Id()));
+  auftragnr->set_text(Formatiere((unsigned long)AE.Id()));
   menge_einheit->set_text(E);
   if (E.hatMenge())
    {
@@ -736,7 +736,7 @@ std::string Data_Lieferdaten::FormatiereMenge(ArtikelBase artikel, int stueck, L
 {
   std::string s;
   if (stueck!=1)
-   {  s=Formatiere(stueck)
+   {  s=Formatiere((unsigned long)stueck)
         + Einheit(artikel).StueckEinheit();
    }
   if (menge.Scaled()!=0)
@@ -745,7 +745,7 @@ std::string Data_Lieferdaten::FormatiereMenge(ArtikelBase artikel, int stueck, L
          + Einheit(artikel).MengenEinheit();
    }
   if (stueck==1 && menge.Scaled()==0)
-      s=Formatiere(stueck)+Einheit(artikel).MengenEinheit();
+      s=Formatiere((unsigned long)stueck)+Einheit(artikel).MengenEinheit();
  return s;
 }
 

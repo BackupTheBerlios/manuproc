@@ -390,6 +390,11 @@ void auftrag_main::loadEinstellungen()
   auftraege_mit_kunden_bool=str2bool(bs,false);
   auftraege_mit_kunde->set_active();
 
+  ArtikelTyp at=atoi(Global_Settings(int(getuid()),"pps",
+			"warengruppe maintree").
+			get_Wert().c_str());
+  offen_warengruppe->set_value(at);
+
   block_callback=false;
 }
 
@@ -409,7 +414,8 @@ gint auftrag_main::on_mainprint_button_clicked(GdkEventButton *ev)
 
 auftrag_main::auftrag_main()
   : allaufids(0), instanz(ppsInstanzID::Kundenauftraege), selected_AufEintrag(0),
-    block_callback(false),instanz_auftrag(0)
+    block_callback(false),instanz_auftrag(0),
+    atyp(ArtikelTyp::none_id)
 {
  menu_instanz();
  loadEinstellungen();
@@ -464,7 +470,11 @@ void auftrag_main::fill_simple_tree()
     selected_AufEintrag=0;
     if(!allaufids) 
       { 
-        SQLFullAuftragSelector psel= SQLFullAuftragSelector::sel_Status(instanz->Id(),selected_status,SelectedAuftragsId());
+        SQLFullAuftragSelector psel= SQLFullAuftragSelector::sel_Status(
+			instanz->Id(),
+			selected_status,
+			SelectedAuftragsId(),
+			offen_warengruppe->get_value());
         allaufids = new SelectedFullAufList(psel);
       }
     std::vector<cH_RowDataBase> datavec;
@@ -1060,3 +1070,10 @@ std::string auftrag_main::FirstRow(gpointer user_data, int deep,
 
  return ret;
 }
+
+void auftrag_main::on_offwarengrp_activate()
+{
+ Global_Settings::create(int(getuid()),"pps","warengruppe maintree",
+	itos(offen_warengruppe->get_value()));
+}
+

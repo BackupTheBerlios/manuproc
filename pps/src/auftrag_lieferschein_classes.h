@@ -52,7 +52,8 @@ class Data_Lieferdaten : public RowDataBase
       {
       case AUFNR_SEQ :
          { if (AEB.valid())
-           return cH_EntryValueIntString(Formatiere(AEB.Id(),0,6,"","",'0'));
+           return cH_EntryValueIntString(Formatiere(
+           			(unsigned long)AEB.Id(),0,6,"","",'0'));
            else return cH_EntryValue();
          }
       case ARTIKEL_SEQ :   return cH_EntryValueIntString(zusatzinfo?std::string()
@@ -101,7 +102,8 @@ class Data_Lieferoffen : public RowDataBase
        switch(seqnr)
         {
          case AUFNR_SEQ :
-            return cH_EntryValueIntString(Formatiere(AE.Id(),0,6,"","",'0'));
+            return cH_EntryValueIntString(Formatiere(
+            			(unsigned long)AE.Id(),0,6,"","",'0'));
          case ARTIKEL_SEQ :
             return cH_EntryValueIntString(cH_ArtikelBezeichnung(AE.Artikel())->Bezeichnung());
          case LIEFDAT_SEQ :
