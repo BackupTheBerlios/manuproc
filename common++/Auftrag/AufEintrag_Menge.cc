@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.25 2004/02/17 12:22:12 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.26 2004/02/17 12:30:55 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -117,7 +117,8 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(mengen_t menge,bool instanzen,
      const AufEintragBase &ElternAEB,bool planen) throw(SQLerror)
 {
  ManuProC::Trace _t(trace_channel, __FUNCTION__,*this,
-	   NV("Eltern",ElternAEB),NV("menge",menge),NV("instanzen",instanzen));
+	   NV("Eltern",ElternAEB),NV("menge",menge),
+	   NV("instanzen",instanzen),NV("planen",planen));
  assert(!planen || (!ElternAEB && instanzen));
  if (!menge)  return menge;
 
