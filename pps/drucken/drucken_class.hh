@@ -162,6 +162,10 @@ public:
       if (t==Rechnung)     return u.r->end();
       if (t==Auftrag)      return u.a->end();
       if (t==Lieferschein) return u.l->end(); abort();}
+  size_t size() const { 
+      if (t==Rechnung)     return u.r->size();
+      if (t==Auftrag)      return u.a->size();
+      if (t==Lieferschein) return u.l->size(); abort();}
 
 
    cP_Waehrung getWaehrung() const { 
@@ -191,13 +195,13 @@ public:
 
    void drucken_header(ofstream &os);
    void drucken_footer(ofstream &os);
-   void page_header(int page,ofstream &os,const string& kopie);
+   void page_header(int page,ofstream &os,const string& kopie,const cH_ppsInstanz& instanz);
    void lieferung_an(ofstream &os, unsigned int lfrs_id, const Petig::Datum& datum,const string& sKunde);
 
-   void drucken_table(ofstream &os,const string& kopie);
+   void drucken_table(ofstream &os,const string& kopie,const cH_ppsInstanz& instanz);
    unsigned int drucken_table_header(ofstream &os,  cH_ExtBezSchema& schema,
       unsigned int signifikanz,bool stueck_bool,bool menge_bool,bool rabatt_bool,
-      float preismenge, string waehrung, string einheit);
+      float preismenge, string waehrung, string einheit,const cH_ppsInstanz& instanz);
    fixedpoint<2> drucken_table_preissum_warengruppe(ofstream &os,
       vector<fixedpoint<2> >& preissum_zeile, vector<fixedpoint<2> >& preissum_warengruppe,
       unsigned int spaltenzahl,string text="");

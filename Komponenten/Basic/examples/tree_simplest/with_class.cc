@@ -15,7 +15,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// $Id: with_class.cc,v 1.8 2001/10/08 09:10:18 christof Exp $
+// $Id: with_class.cc,v 1.9 2001/10/23 08:56:40 christof Exp $
 
 #include "config.h"
 #include "with_class.hh"
@@ -132,6 +132,16 @@ void with_class::on_leaf_selected(cH_RowDataBase d)
    catch (const std::exception &e)
    {  std::cerr << e.what() << '\n';
    }
+}
+
+void with_class::on_button_data_clicked()
+{
+try{
+// geht beides
+//  cH_MyRowData dt=treebase->getSelectedRowDataBase_as<cH_MyRowData>();
+  cH_MyRowData dt(treebase->getSelectedRowDataBase_as<cH_MyRowData>());
+  std::cout << "Data " << dt->Data(0) << ',' << dt->Data(1) << ',' << dt->Data(2) << '\n';
+}catch(std::exception &e){cerr << e.what();}
 }
 
 with_class::with_class()

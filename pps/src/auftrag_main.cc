@@ -179,14 +179,14 @@ void auftrag_main::on_mainprint_button_clicked()
 
 
 auftrag_main::auftrag_main()
-  : instanz(ppsInstanz::INST_KNDAUF), selected_AufEintrag(0),an_instanz(ppsInstanz::INST_KNDAUF)
+  : instanz(ppsInstanz::INST_KNDAUF), selected_AufEintrag(0)
 {
 // frame_materialbedarf->hide();
  guint psize=GTK_WIDGET(vpaned_an_mat->gtkobj())->allocation.height;  
  vpaned_an_mat->set_position(5*psize); // Großer Wert
  frame_instanzen->hide();
  menu_instanz();
- instanz_menu();
+// instanz_menu();
  auftragmain=this;
  allaufids=0;
  interne_namen=true;
@@ -221,7 +221,7 @@ void auftrag_main::set_column_titles_of_simple_tree()
 
 void auftrag_main::fill_simple_tree()
 {
-//cout << "I="<<instanz<<"\t";
+//cout << "I="<<instanz->get_Name()<<"\t";
  if(!allaufids) 
    { SQLFullAuftragSelector psel= SQLFullAuftragSelector::sel_Status(instanz->Id(),(AufStatVal)OPEN);
      if(interne_namen)
@@ -255,8 +255,7 @@ void auftrag_main::on_leaf_selected(cH_RowDataBase d)
  prozlist_scombo->reset();
  prozlist_scombo->set_text(dt->ProzessText());
 
- if(instanz->Id() != 1) instanz_tree_inhalt_setzen(dt->get_Artikel_ID(),
-      dt->offene_Meter(),dt->get_Lieferdatum());
+ if(instanz->Id() != 1) instanz_leaf_auftrag(*selected_AufEintrag);
 
  // Zum Anzeigen der benötigten Menge
      vector<pair<ArtikelBase,long long int> > vec_artbase;
@@ -336,12 +335,15 @@ void auftrag_main::instanz_menge(const vector<pair<ArtikelBase,long long int> >&
      int col = AS.BestellenBei()->Id();
      int row = ++map_col_row[col];
      l->set_justify(GTK_JUSTIFY_LEFT);
+     l->set_alignment(0, 0.5);
+     l->set_padding(0, 0);
      l->show();
      table_materialbedarf->attach(*l,col,col+1,row,row+1,GTK_FILL,0,0,0);
      
 //cout <<AB.Bezeichnung()<<'\t'<<AS.BestellenBei()->get_Name()<<'\t'<<i->second<<'\n';
    }
  viewport_materialbedarf->remove();
+ table_materialbedarf->set_col_spacings(5);
  viewport_materialbedarf->add(*table_materialbedarf);
  table_materialbedarf->show();
  guint psize=GTK_WIDGET(vpaned_an_mat->gtkobj())->allocation.height;  
@@ -384,21 +386,30 @@ void auftrag_main::on_prozlistscombo_activate()
  if (selected_AufEintrag)
      {
       int pid=atoi(prozlist_scombo->get_text().c_str());
-      try{selected_AufEintrag->setVerarbeitung(cH_Prozess(pid));}
-      catch(SQLerror &e)
+      try{selected_AufEintrag->setVerarbeitung(cH_Prozess(pid));
+         cH_RowDataBase dt(maintree_s->getSelectedRowDataBase());
+         maintree_s->redisplay(dt,Data_auftrag::VERARBEITUNG);         
+      }catch(SQLerror &e)
         {meldung->Show(e); return;}
-
-      cH_EntryValue ev=AufEintrag(*selected_AufEintrag).getSeqValue(PROZ_SEQ);
-      deque<guint> buf = maintree_s->get_seq();
-      size_t i;
-      for(i=0; (i<buf.size()) && (buf[i]!=PROZ_SEQ); i++);
-
-// Schneller aber (noch?) nicht implementiert
-//      selectedmyrow->setText(i,ev->getStrVal());
-// stattdessen Neueinlesen der Liste:
-      fill_simple_tree();
      }
 }
+
+void auftrag_main::on_button_auftrag_erledigt_clicked()
+{
+ if (selected_AufEintrag)
+     {
+      try{
+//         int auftragid = selected_AufEintrag->getAuftragid();
+//         int zeilennr  = selected_AufEintrag->getZnr();
+         selected_AufEintrag->setStatus(CLOSED);
+         cH_RowDataBase dt(maintree_s->getSelectedRowDataBase());
+         maintree_s->redisplay(dt,Data_auftrag::METER);         
+         maintree_s->redisplay(dt,Data_auftrag::STUECK);         
+      }catch(SQLerror &e)
+        {meldung->Show(e); return;}
+     }
+}
+
 
 void auftrag_main::on_button_auftraege_clicked()
 {
@@ -408,11 +419,12 @@ void auftrag_main::on_button_auftraege_clicked()
 
 void auftrag_main::on_button_artikeleingabe_clicked()
 {
-cout << selected_Artikel.Id()<<'\n';
+//cout << selected_Artikel.Id()<<'\n';
  if (selected_Artikel.Id())
   {
-    std::string s = "artikeleingabe "+itos(selected_Artikel.Id());
+    std::string s = "artikeleingabe "+itos(selected_Artikel.Id())+" &";
     system(s.c_str());
+    ArtikelBaum::UnCache(selected_Artikel);
   }
 }
 
@@ -439,27 +451,28 @@ void auftrag_main::menu_instanz()
 
 void auftrag_main::instanz_selected(int _instanz_)
 {
+#warning drei SINNLOSE Zeilen wegen eines Bugs???? MAT
+  static int x=1;
+  if(x==1) {++x;return;}
+  else x=1;
+  
   instanz=(ppsInstanz::ID) _instanz_;
-cout << instanz->get_Name()<<'\n';
-//  neue_auftraege_beruecksichtigen(instanz);
+  set_title(instanz->get_Name());
+
+  if(_instanz_!=1) neue_auftraege_beruecksichtigen(instanz);
   on_neuladen_activate();
 
   if (_instanz_ != 1)
    {
-    label_instanz->set_text(instanz->get_Name());
     erfassen_button->hide();
     mainprint_button->hide();
     rechnung_button->hide();
     lieferschein_button->hide();
     table_prod_prozess->hide();
     frame_instanzen->show();
-    instanz_tree_titel_setzen(); // Kann auch in den Konstruktor MAT
     neuer_auftrag_tree_titel_setzen(); // Kann auch in den Konstruktor MAT
-    instanz_tree_herkunft->clear();
-    datavec_instanz_auftrag.clear();
     tree_neuer_auftrag->clear();
-    selected_instanz_znr=-1; // Kann auch in den Konstruktor MAT
-    instanz_eintrag_status->hide(); // Kann auch in den Konstruktor MAT
+    Datum_instanz->setLabel("");
    }
   else 
    { 
@@ -474,26 +487,29 @@ cout << instanz->get_Name()<<'\n';
 
 void auftrag_main::neue_auftraege_beruecksichtigen(cH_ppsInstanz instanz)
 {
-//cout << instanz->get_Name()<<'\n';
-  vector<int> new_aufids =  get_new_aufids(instanz);
+//cout << instanz->get_Name()<<'\t';
+  vector<AufEintragBase2> new_aufids =  get_new_aufids(instanz);
   Global_Settings GS(0,"pps",instanz->get_Name());
-//  GS.update_Date();
+  GS.update_Date();
   Auftrag A(AuftragBase(instanz->Id(), 0));
 
-cout << "Neue Aufträge "<<new_aufids.size()<<'\n';
-  for (vector<int>::const_iterator i=new_aufids.begin();i!=new_aufids.end();++i)
+//cout << "Neue Aufträge "<<new_aufids.size()<<'\n';
+  unsigned int count=0;
+  for (vector<AufEintragBase2>::const_iterator i=new_aufids.begin();i!=new_aufids.end();++i)
    {
-     AuftragBase AufB(instanz->Id(),*i);
-     AuftragFull AufF(AufB);
-     for(AuftragFull::const_iterator f=AufF.begin();f!=AufF.end();++f)
+     AufEintragBase AEB(*i);
+     ArtikelBaumFull ABF(AEB.ArtikelID());
+     map<ArtikelBase,fixedpoint<5> > artmap = ABF.get_Artikel_Map();
+     for (map<ArtikelBase,fixedpoint<5> >::const_iterator m=artmap.begin();m!=artmap.end();++m)
       {
-        ArtikelBaumFull ABF(f->ArtikelID());
-        map<ArtikelBase,fixedpoint<5> > artmap = ABF.get_Artikel_Map();
-cout << "Entrys für Artikel"<<f->ArtikelID()<<' '<<artmap.size(); 
-        for (map<ArtikelBase,fixedpoint<5> >::const_iterator m=artmap.begin();m!=artmap.end();++m)
+        if(ArtikelStamm(m->first.Id()).BestellenBei() == instanz)
          {
-            A.insertNewEntry(m->second * f->getStueck(),f->getLieferdatum(),m->first.Id());
+            int znr = A.insertNewEntry(double(m->second) * AEB.getStueck(),AEB.getLieferdatum(),m->first.Id());
+            AuftragsEntryZuordnung(AEB,A,znr);
+            ++count;
          }
       }
    }
+  info_label_instanzen->set_text("Es sind "+itos(count)+" neue Zeilen hinzugekommen.     ");
+  info_label_instanzen->show();
 }

@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.10 2001/09/19 15:00:04 christof Exp $
+// $Id: ArtikelBox.hh,v 1.11 2001/10/23 08:56:40 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -49,31 +49,45 @@ public:
 
 class ArtikelBox : public Gtk::EventBox
 {
- friend class SigC::ObjectSlot3_<void,int *,GtkSCContext,unsigned int,ArtikelBox>;
- friend class SigC::ObjectSlot1_<void,unsigned int,ArtikelBox>;
- friend class SigC::ObjectSlot1_<int,_GdkEventButton *,ArtikelBox>;
+// friend class SigC::ObjectSlot3_<void,int *,GtkSCContext,unsigned int,ArtikelBox>;
+// friend class SigC::ObjectSlot1_<void,unsigned int,ArtikelBox>;
+// friend class SigC::ObjectSlot1_<int,_GdkEventButton *,ArtikelBox>;
 
+ bool vertikalbool:1;
+ bool autocompletebool:1;
+ bool kombiniertbool:1;
+ bool labelbool:1;
+ bool eingeschraenkt:1;
+
+ std::string sprogram,sposition;
+ cH_ExtBezSchema schema;
+ std::string einschraenkung;
+
+ ArtikelBase artikel;
+
+ Transaction tr,tr2; // internal use (search)
+ std::vector<int> signifikanz;
+
+ typedef std::pair<std::string,gpointer> user_menu_t;
+ typedef std::vector<user_menu_t> user_menus_t;
+ user_menus_t user_menus;
+ 
+// ---- widgets ( GUI part ) ----
  typedef std::vector<Gtk::SearchCombo *> t_combos;
  typedef std::vector<t_combos> t_combos2;
  typedef std::vector<Gtk::Label *> t_labels;
  typedef std::vector<t_labels> t_labels2;
 
  Gtk::Container *oberstes;
- std::vector<int> signifikanz;
- bool vertikalbool;
- bool autocompletebool;
- bool kombiniertbool;
- 
- ArtikelBase artikel;
- cH_ExtBezSchema schema;
- 
  t_combos2 combos;
  t_labels2 labels;
 
  Gtk::Menu *menu;
  Gtk::Pixmap *pixmap;
- Transaction tr,tr2; // internal use (search)
+ Gtk::Label *label_typ;
+ Gtk::CheckMenuItem *label;
 
+ // ---- internal methods ----
  void searchFunc(int *cont, GtkSCContext newsearch, guint sp, guint l) throw(SQLerror);
  void selectFunc(guint sp, guint l) throw(SQLerror);
  gint MouseButton(GdkEventButton *);
@@ -82,10 +96,12 @@ class ArtikelBox : public Gtk::EventBox
  std::string kombinierteAnzeige(int sig, int atyp, int id);
  void Autocomplete(Gtk::CheckMenuItem *autocomplete);
  void kombiniert(Gtk::CheckMenuItem *kombi);
+ void set_Label(Gtk::CheckMenuItem *label);
  vector<cH_EntryValue> expand_kombi_Artikel(unsigned int l,std::string text);
  enum enum_art_label {ARTIKEL,LABEL};
  vector<cH_EntryValue> expand_kombi(unsigned int l,enum_art_label eal);
  void set_Vertikal(Gtk::CheckMenuItem *verti);
+ void einschraenken_cb(Gtk::CheckMenuItem *einschr_mi);
  void Benutzerprofil_speichern();
  void Benutzerprofil_laden();
  void Neuer_Eintrag();
@@ -100,40 +116,43 @@ class ArtikelBox : public Gtk::EventBox
  void loadArtikel(unsigned int l) throw(SQLerror);
  static gint try_grab_focus(GtkWidget *w,gpointer gp);
  
+ void artbox_start();
  void init();
  Gtk::Container *init_table(int l);
- void setzeTyp(int t);
- void setzeTyp2(int t2);
+ void setzeSchemaId(int t);
+ void setzeSchemaTyp(int t2);
  void setzeSignifikanz(int t);
+ void pixmap_setzen(bool);
 
 public:
 	ArtikelBox(const cH_ExtBezSchema &_schema) throw(SQLerror);
+	ArtikelBox(const std::string& _program,const std::string& _position) throw(SQLerror);
 	~ArtikelBox();
 
 	const cH_ExtBezSchema getBezSchema() const { return schema; }
 	void setExtBezSchema(const cH_ExtBezSchema &_schema);
 
+private: // come on, rethink your strategy
 // dangerous! no range checking!
-	const std::string operator[](guint i) const { return combos[0][i]->get_text(); }
-
+	const std::string operator[](guint i) const 
+	{ return combos[0][i]->get_text(); }
+	
+public:
    void reset()
    { for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
       for (t_combos::iterator i=j->begin();i!=j->end();++i)
         (*i)->reset(); }  
 
-	// war editable
 	void set_editable(bool edit)
    { for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
       for (t_combos::iterator i=j->begin();i!=j->end();++i)
         (*i)->set_editable(edit); }  
 
-	// war set_expand
 	void set_autoexpand(bool exp)
    { for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
       for (t_combos::iterator i=j->begin();i!=j->end();++i)
         (*i)->set_autoexpand(exp); }  
 
-	// war set_fill
 	void set_always_fill(bool fill)
    { for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
       for (t_combos::iterator i=j->begin();i!=j->end();++i)
@@ -141,9 +160,20 @@ public:
 
    const ArtikelBase &get_value() const
         {  return artikel; }
+        
 	void set_value(const ArtikelBase &art) throw(SQLerror,ArtikelBoxErr);
+   void show_label(bool b);
+   
+	void Einschraenken(const std::string &e, bool an=true);
+	// dies kann nicht Einschraenken heißen (char* -> bool geht vor)
+	void Einschraenken_b(bool an);
+	
+	void AddUserMenu(const std::string &text, gpointer data);
+	void ClearUserMenus();
 
+	// ----- Signale -----
 	SigC::Signal0<void> activate;
 	SigC::Signal1<void,ArtikelBase::ID> new_article_inserted;
+	SigC::Signal1<void,gpointer> MenueAusgewaehlt;
 };
 #endif

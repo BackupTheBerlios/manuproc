@@ -44,6 +44,7 @@ class window1 : public window1_glade
 	void on_show_complete();
 	void on_reset();
 	void andererKunde();
+	void menu_cb(gpointer data);
 
    void on_activate_wwaehrung();
    void on_activate_wpreis();

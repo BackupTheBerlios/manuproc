@@ -1,0 +1,42 @@
+#include "AuftragFull.h"
+#include <Auftrag/selFullAufEntry.h>
+
+void AuftragFull::deleteEintrag(int zeilennr, int idx) throw(SQLerror)
+{Auftrag::deleteEintrag(zeilennr);
+ iterator i = begin()+idx;
+ eintragliste.erase(i);    
+}
+
+AuftragFull::AuftragFull(const AuftragBase& auftrag) throw(SQLerror)
+	: Auftrag(auftrag)
+{
+ SelectedFullAufList aufids((SQLFullAuftragSelector)
+ 			(SQLFullAuftragSelector::sel_Aufid(auftrag)));
+ for(std::vector<AufEintragBase>::iterator i = aufids.aufidliste.begin();
+				 	 i!=aufids.aufidliste.end(); i++)
+ {  try { eintragliste.push_back(*i);
+    } catch (SQLerror &e)
+    {  if(e.Code() != 100) throw;
+       std::cerr << "AuftragFull::AuftragFull: " << e << '\n';
+    } 
+ }
+}
+
+AuftragFull::AuftragFull(Anlegen instanz, long kundennr, int jahr) throw(SQLerror)
+	: Auftrag(instanz, kundennr,jahr)
+{  // braucht nicht geladen zu werden
+}
+
+//AuftragFull::AuftragFull(const AuftragBase &AB, long kundennr, int jahr) throw(SQLerror)
+//	: Auftrag(AB, kundennr,jahr)
+//{  // braucht nicht geladen zu werden
+//}
+
+int AuftragFull::get_index_by_znr(int znr)
+{
+  int c=0;
+  for (AufEintragBaseList::const_iterator i=eintragliste.begin();i!=eintragliste.end();++i,++c)
+     { if((*i).getZnr()==znr) return c;}
+  assert(!"AuftragFull::get_index_by_znr: nichts gefunden");
+  abort();
+};

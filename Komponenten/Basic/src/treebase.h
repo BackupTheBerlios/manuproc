@@ -64,7 +64,8 @@ class TreeBase : public TCList
 		 	const cH_RowDataBase &d, std::deque<guint> q,guint deep);
  static bool stutzen(TCListRow_API *parent, TCListRow_API *child,
  				TCList &tclist);
-
+ bool redisplay_recurse(TCListRow_API *a, const RowDataBase *r, guint col);
+ 
 protected: 
  std::vector<cH_RowDataBase> datavec;
 
@@ -97,6 +98,7 @@ public:
    refillTCL();
  };
  void set_value_data(gpointer _p) {gp = _p;}
+ void redisplay(cH_RowDataBase row,guint index);
  gpointer ValueData() const { return gp; }
  void Stutzen ( bool s) {stutzen_bool=s;}
  
@@ -181,7 +183,6 @@ public:
    {  if (seq>=0 && seq<titles.size()) return titles[seq];
       return ""; 
    }
-
   
  void set_NewNode(NewNode_fp x) { node_creation=x; }
 };

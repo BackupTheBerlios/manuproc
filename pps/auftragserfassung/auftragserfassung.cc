@@ -52,7 +52,7 @@ int main(int argc,char *argv[])
 void create_new_auftrag(cH_ppsInstanz instanz)
 {
   // Neuen Auftrag anlegen
-  Auftrag A(AuftragBase(instanz->Id(),0), 1);//kundennummer=1
+  Auftrag A=Auftrag(Auftrag::Anlegen2(AuftragBase(instanz->Id(),0)), 1);//kundennummer=1
   A.setStatusAuftrag(OPEN);
   double size = map_artikel.size();
   unsigned long int count=0;

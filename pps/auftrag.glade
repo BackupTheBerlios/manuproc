@@ -842,6 +842,19 @@
 	  <new_group>True</new_group>
 	</child>
       </widget>
+
+      <widget>
+	<class>GtkButton</class>
+	<child_name>Toolbar:button</child_name>
+	<name>button_artikeleingabe</name>
+	<signal>
+	  <name>clicked</name>
+	  <handler>on_button_artikeleingabe_clicked</handler>
+	  <last_modification_time>Mon, 08 Oct 2001 11:31:14 GMT</last_modification_time>
+	</signal>
+	<label>Artikeleingabe</label>
+	<stock_pixmap>GNOME_STOCK_PIXMAP_COLORSELECTOR</stock_pixmap>
+      </widget>
     </widget>
 
     <widget>
@@ -870,25 +883,23 @@
 	<class>GtkTable</class>
 	<name>table_instanzen</name>
 	<cxx_visibility>protected</cxx_visibility>
-	<rows>8</rows>
-	<columns>5</columns>
+	<rows>3</rows>
+	<columns>4</columns>
 	<homogeneous>False</homogeneous>
 	<row_spacing>0</row_spacing>
 	<column_spacing>0</column_spacing>
 
 	<widget>
-	  <class>GtkLabel</class>
-	  <name>label75</name>
-	  <label>Auftragsnr:</label>
-	  <justify>GTK_JUSTIFY_CENTER</justify>
-	  <wrap>False</wrap>
-	  <xalign>0</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
+	  <class>GtkTable</class>
+	  <name>table18</name>
+	  <rows>1</rows>
+	  <columns>2</columns>
+	  <homogeneous>False</homogeneous>
+	  <row_spacing>0</row_spacing>
+	  <column_spacing>0</column_spacing>
 	  <child>
 	    <left_attach>0</left_attach>
-	    <right_attach>1</right_attach>
+	    <right_attach>4</right_attach>
 	    <top_attach>1</top_attach>
 	    <bottom_attach>2</bottom_attach>
 	    <xpad>0</xpad>
@@ -898,98 +909,413 @@
 	    <xshrink>False</xshrink>
 	    <yshrink>False</yshrink>
 	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>Custom</class>
-	  <name>searchcombo_auftragid</name>
-	  <width>150</width>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <signal>
-	    <name>activate</name>
-	    <handler>on_searchcombo_auftragid_activate</handler>
-	    <last_modification_time>Fri, 07 Sep 2001 13:47:38 GMT</last_modification_time>
-	  </signal>
-	  <signal>
-	    <name>search</name>
-	    <handler>on_searchcombo_auftragid_search</handler>
-	    <last_modification_time>Fri, 07 Sep 2001 13:47:45 GMT</last_modification_time>
-	  </signal>
-	  <creation_function>SearchComboContent&lt;int&gt;</creation_function>
-	  <int1>0</int1>
-	  <int2>0</int2>
-	  <last_modification_time>Fri, 07 Sep 2001 12:56:36 GMT</last_modification_time>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>1</right_attach>
-	    <top_attach>2</top_attach>
-	    <bottom_attach>3</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
 	    <yfill>True</yfill>
 	  </child>
-	</widget>
 
-	<widget>
-	  <class>GtkLabel</class>
-	  <name>label80</name>
-	  <label>Auftragstatus:</label>
-	  <justify>GTK_JUSTIFY_CENTER</justify>
-	  <wrap>False</wrap>
-	  <xalign>0</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>1</right_attach>
-	    <top_attach>3</top_attach>
-	    <bottom_attach>4</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-	</widget>
+	  <widget>
+	    <class>GtkFrame</class>
+	    <name>frame14</name>
+	    <label_xalign>0</label_xalign>
+	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+	    <child>
+	      <left_attach>1</left_attach>
+	      <right_attach>2</right_attach>
+	      <top_attach>0</top_attach>
+	      <bottom_attach>1</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>True</yfill>
+	    </child>
 
-	<widget>
-	  <class>Custom</class>
-	  <name>instanz_auftrag_status</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <signal>
-	    <name>activate</name>
-	    <handler>on_instanz_auftrag_status_activate</handler>
-	    <last_modification_time>Mon, 10 Sep 2001 07:18:51 GMT</last_modification_time>
-	  </signal>
-	  <creation_function>WAuftragStatus()</creation_function>
-	  <int1>0</int1>
-	  <int2>0</int2>
-	  <last_modification_time>Mon, 10 Sep 2001 07:17:52 GMT</last_modification_time>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>1</right_attach>
-	    <top_attach>4</top_attach>
-	    <bottom_attach>5</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>True</yfill>
-	  </child>
+	    <widget>
+	      <class>GtkTable</class>
+	      <name>table19</name>
+	      <rows>2</rows>
+	      <columns>4</columns>
+	      <homogeneous>False</homogeneous>
+	      <row_spacing>0</row_spacing>
+	      <column_spacing>5</column_spacing>
+
+	      <widget>
+		<class>GtkLabel</class>
+		<name>label75</name>
+		<label>Auftragsnummer</label>
+		<justify>GTK_JUSTIFY_CENTER</justify>
+		<wrap>False</wrap>
+		<xalign>0</xalign>
+		<yalign>0.5</yalign>
+		<xpad>0</xpad>
+		<ypad>0</ypad>
+		<child>
+		  <left_attach>0</left_attach>
+		  <right_attach>1</right_attach>
+		  <top_attach>0</top_attach>
+		  <bottom_attach>1</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>False</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>False</yfill>
+		</child>
+	      </widget>
+
+	      <widget>
+		<class>Custom</class>
+		<name>searchcombo_auftragid</name>
+		<width>150</width>
+		<cxx_visibility>protected</cxx_visibility>
+		<signal>
+		  <name>activate</name>
+		  <handler>on_searchcombo_auftragid_activate</handler>
+		  <last_modification_time>Fri, 07 Sep 2001 13:47:38 GMT</last_modification_time>
+		</signal>
+		<signal>
+		  <name>search</name>
+		  <handler>on_searchcombo_auftragid_search</handler>
+		  <last_modification_time>Fri, 07 Sep 2001 13:47:45 GMT</last_modification_time>
+		</signal>
+		<creation_function>SearchComboContent&lt;int&gt;</creation_function>
+		<int1>0</int1>
+		<int2>0</int2>
+		<last_modification_time>Fri, 07 Sep 2001 12:56:36 GMT</last_modification_time>
+		<child>
+		  <left_attach>0</left_attach>
+		  <right_attach>1</right_attach>
+		  <top_attach>1</top_attach>
+		  <bottom_attach>2</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>True</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>True</yfill>
+		</child>
+	      </widget>
+
+	      <widget>
+		<class>GtkLabel</class>
+		<name>label85</name>
+		<label>Auftragsdatum</label>
+		<justify>GTK_JUSTIFY_CENTER</justify>
+		<wrap>False</wrap>
+		<xalign>0</xalign>
+		<yalign>0.5</yalign>
+		<xpad>0</xpad>
+		<ypad>0</ypad>
+		<child>
+		  <left_attach>1</left_attach>
+		  <right_attach>2</right_attach>
+		  <top_attach>0</top_attach>
+		  <bottom_attach>1</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>False</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>False</yfill>
+		</child>
+	      </widget>
+
+	      <widget>
+		<class>Custom</class>
+		<name>Datum_instanz</name>
+		<cxx_visibility>protected</cxx_visibility>
+		<creation_function>Datewin</creation_function>
+		<int1>0</int1>
+		<int2>0</int2>
+		<last_modification_time>Thu, 18 Oct 2001 09:32:43 GMT</last_modification_time>
+		<child>
+		  <left_attach>1</left_attach>
+		  <right_attach>2</right_attach>
+		  <top_attach>1</top_attach>
+		  <bottom_attach>2</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>False</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>True</yfill>
+		</child>
+	      </widget>
+
+	      <widget>
+		<class>GtkButton</class>
+		<name>button_neue_anr</name>
+		<height>30</height>
+		<can_focus>True</can_focus>
+		<signal>
+		  <name>clicked</name>
+		  <handler>on_button_neue_anr_clicked</handler>
+		  <last_modification_time>Thu, 18 Oct 2001 09:35:04 GMT</last_modification_time>
+		</signal>
+		<relief>GTK_RELIEF_NORMAL</relief>
+		<child>
+		  <left_attach>2</left_attach>
+		  <right_attach>3</right_attach>
+		  <top_attach>0</top_attach>
+		  <bottom_attach>2</bottom_attach>
+		  <xpad>5</xpad>
+		  <ypad>3</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>False</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>False</yfill>
+		</child>
+
+		<widget>
+		  <class>GtkHBox</class>
+		  <name>hbox11</name>
+		  <homogeneous>False</homogeneous>
+		  <spacing>0</spacing>
+
+		  <widget>
+		    <class>GtkPixmap</class>
+		    <name>pixmap3</name>
+		    <filename>wintext.xpm</filename>
+		    <xalign>0.5</xalign>
+		    <yalign>0.5</yalign>
+		    <xpad>0</xpad>
+		    <ypad>0</ypad>
+		    <build_insensitive>True</build_insensitive>
+		    <child>
+		      <padding>0</padding>
+		      <expand>True</expand>
+		      <fill>True</fill>
+		    </child>
+		  </widget>
+
+		  <widget>
+		    <class>GtkLabel</class>
+		    <name>label84</name>
+		    <label>Neuer Auftrag</label>
+		    <justify>GTK_JUSTIFY_CENTER</justify>
+		    <wrap>False</wrap>
+		    <xalign>0.5</xalign>
+		    <yalign>0.5</yalign>
+		    <xpad>0</xpad>
+		    <ypad>0</ypad>
+		    <child>
+		      <padding>0</padding>
+		      <expand>False</expand>
+		      <fill>False</fill>
+		    </child>
+		  </widget>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkButton</class>
+		<name>button_instanz_print</name>
+		<tooltip>Linker Knopf: Drucken, rechter Knopf: Vorschau</tooltip>
+		<can_focus>True</can_focus>
+		<signal>
+		  <name>button_press_event</name>
+		  <handler>on_button_instanz_print_clicked</handler>
+		  <last_modification_time>Thu, 18 Oct 2001 12:24:44 GMT</last_modification_time>
+		</signal>
+		<relief>GTK_RELIEF_NORMAL</relief>
+		<child>
+		  <left_attach>3</left_attach>
+		  <right_attach>4</right_attach>
+		  <top_attach>0</top_attach>
+		  <bottom_attach>2</bottom_attach>
+		  <xpad>5</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>False</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>False</yfill>
+		</child>
+
+		<widget>
+		  <class>GtkHBox</class>
+		  <name>hbox12</name>
+		  <homogeneous>False</homogeneous>
+		  <spacing>0</spacing>
+
+		  <widget>
+		    <class>GtkPixmap</class>
+		    <name>pixmap4</name>
+		    <filename>print_image.xpm</filename>
+		    <xalign>0.5</xalign>
+		    <yalign>0.5</yalign>
+		    <xpad>0</xpad>
+		    <ypad>0</ypad>
+		    <build_insensitive>True</build_insensitive>
+		    <child>
+		      <padding>0</padding>
+		      <expand>True</expand>
+		      <fill>True</fill>
+		    </child>
+		  </widget>
+
+		  <widget>
+		    <class>GtkLabel</class>
+		    <name>label86</name>
+		    <label>Drucken</label>
+		    <justify>GTK_JUSTIFY_CENTER</justify>
+		    <wrap>False</wrap>
+		    <xalign>0.5</xalign>
+		    <yalign>0.5</yalign>
+		    <xpad>0</xpad>
+		    <ypad>0</ypad>
+		    <child>
+		      <padding>0</padding>
+		      <expand>False</expand>
+		      <fill>False</fill>
+		    </child>
+		  </widget>
+		</widget>
+	      </widget>
+	    </widget>
+	  </widget>
+
+	  <widget>
+	    <class>GtkFrame</class>
+	    <name>frame13</name>
+	    <label_xalign>0</label_xalign>
+	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+	    <child>
+	      <left_attach>0</left_attach>
+	      <right_attach>1</right_attach>
+	      <top_attach>0</top_attach>
+	      <bottom_attach>1</bottom_attach>
+	      <xpad>10</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>True</yfill>
+	    </child>
+
+	    <widget>
+	      <class>GtkTable</class>
+	      <name>table20</name>
+	      <rows>1</rows>
+	      <columns>2</columns>
+	      <homogeneous>False</homogeneous>
+	      <row_spacing>0</row_spacing>
+	      <column_spacing>0</column_spacing>
+
+	      <widget>
+		<class>GtkToggleButton</class>
+		<name>togglebutton_geplante_menge</name>
+		<cxx_visibility>protected</cxx_visibility>
+		<tooltip>Ist dieser Knopf NICHT gedrückt, so wird die komplette Menge verplant</tooltip>
+		<can_focus>True</can_focus>
+		<relief>GTK_RELIEF_NORMAL</relief>
+		<active>False</active>
+		<child>
+		  <left_attach>0</left_attach>
+		  <right_attach>1</right_attach>
+		  <top_attach>0</top_attach>
+		  <bottom_attach>1</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>False</xexpand>
+		  <yexpand>False</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>False</yfill>
+		</child>
+
+		<widget>
+		  <class>GtkHBox</class>
+		  <name>hbox8</name>
+		  <homogeneous>False</homogeneous>
+		  <spacing>0</spacing>
+
+		  <widget>
+		    <class>GtkPixmap</class>
+		    <name>pixmap1</name>
+		    <filename>configure.xpm</filename>
+		    <xalign>0.5</xalign>
+		    <yalign>0.5</yalign>
+		    <xpad>0</xpad>
+		    <ypad>0</ypad>
+		    <build_insensitive>True</build_insensitive>
+		    <child>
+		      <padding>0</padding>
+		      <expand>True</expand>
+		      <fill>True</fill>
+		    </child>
+		  </widget>
+
+		  <widget>
+		    <class>GtkLabel</class>
+		    <name>label82</name>
+		    <label>Geplante Menge</label>
+		    <justify>GTK_JUSTIFY_CENTER</justify>
+		    <wrap>False</wrap>
+		    <xalign>0.5</xalign>
+		    <yalign>0.5</yalign>
+		    <xpad>0</xpad>
+		    <ypad>0</ypad>
+		    <child>
+		      <padding>0</padding>
+		      <expand>False</expand>
+		      <fill>False</fill>
+		    </child>
+		  </widget>
+		</widget>
+	      </widget>
+
+	      <widget>
+		<class>GtkSpinButton</class>
+		<name>spinbutton_geplante_menge</name>
+		<width>80</width>
+		<cxx_visibility>protected</cxx_visibility>
+		<can_focus>True</can_focus>
+		<climb_rate>1</climb_rate>
+		<digits>0</digits>
+		<numeric>False</numeric>
+		<update_policy>GTK_UPDATE_ALWAYS</update_policy>
+		<snap>False</snap>
+		<wrap>False</wrap>
+		<value>1</value>
+		<lower>1</lower>
+		<upper>1e+07</upper>
+		<step>1</step>
+		<page>10</page>
+		<page_size>10</page_size>
+		<child>
+		  <left_attach>1</left_attach>
+		  <right_attach>2</right_attach>
+		  <top_attach>0</top_attach>
+		  <bottom_attach>1</bottom_attach>
+		  <xpad>0</xpad>
+		  <ypad>0</ypad>
+		  <xexpand>True</xexpand>
+		  <yexpand>True</yexpand>
+		  <xshrink>False</xshrink>
+		  <yshrink>False</yshrink>
+		  <xfill>True</xfill>
+		  <yfill>False</yfill>
+		</child>
+	      </widget>
+	    </widget>
+	  </widget>
 	</widget>
 
 	<widget>
@@ -1001,12 +1327,12 @@
 	  <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
 	  <child>
 	    <left_attach>0</left_attach>
-	    <right_attach>5</right_attach>
-	    <top_attach>7</top_attach>
-	    <bottom_attach>8</bottom_attach>
+	    <right_attach>4</right_attach>
+	    <top_attach>2</top_attach>
+	    <bottom_attach>3</bottom_attach>
 	    <xpad>0</xpad>
 	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
+	    <xexpand>True</xexpand>
 	    <yexpand>True</yexpand>
 	    <xshrink>False</xshrink>
 	    <yshrink>False</yshrink>
@@ -1037,11 +1363,19 @@
 	</widget>
 
 	<widget>
-	  <class>GtkHSeparator</class>
-	  <name>hseparator1</name>
+	  <class>GtkLabel</class>
+	  <name>info_label_instanzen</name>
+	  <cxx_visibility>protected</cxx_visibility>
+	  <label>info text (etwas länger)</label>
+	  <justify>GTK_JUSTIFY_CENTER</justify>
+	  <wrap>False</wrap>
+	  <xalign>0</xalign>
+	  <yalign>0.5</yalign>
+	  <xpad>0</xpad>
+	  <ypad>0</ypad>
 	  <child>
 	    <left_attach>0</left_attach>
-	    <right_attach>5</right_attach>
+	    <right_attach>4</right_attach>
 	    <top_attach>0</top_attach>
 	    <bottom_attach>1</bottom_attach>
 	    <xpad>0</xpad>
@@ -1051,324 +1385,7 @@
 	    <xshrink>False</xshrink>
 	    <yshrink>False</yshrink>
 	    <xfill>True</xfill>
-	    <yfill>True</yfill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>GtkLabel</class>
-	  <name>label_eintragstatus</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <visible>False</visible>
-	  <label>Eintragsstatus:</label>
-	  <justify>GTK_JUSTIFY_CENTER</justify>
-	  <wrap>False</wrap>
-	  <xalign>0</xalign>
-	  <yalign>0.5</yalign>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>1</right_attach>
-	    <top_attach>5</top_attach>
-	    <bottom_attach>6</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
 	    <yfill>False</yfill>
-	  </child>
-	</widget>
-
-	<widget>
-	  <class>GtkScrolledWindow</class>
-	  <name>scrolledwindow8</name>
-	  <height>100</height>
-	  <hscrollbar_policy>GTK_POLICY_AUTOMATIC</hscrollbar_policy>
-	  <vscrollbar_policy>GTK_POLICY_AUTOMATIC</vscrollbar_policy>
-	  <hupdate_policy>GTK_UPDATE_CONTINUOUS</hupdate_policy>
-	  <vupdate_policy>GTK_UPDATE_CONTINUOUS</vupdate_policy>
-	  <child>
-	    <left_attach>3</left_attach>
-	    <right_attach>5</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>7</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>True</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>True</yfill>
-	  </child>
-
-	  <widget>
-	    <class>GtkViewport</class>
-	    <name>viewport8</name>
-	    <shadow_type>GTK_SHADOW_NONE</shadow_type>
-
-	    <widget>
-	      <class>Custom</class>
-	      <name>instanz_tree_herkunft</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <signal>
-		<name>leaf_selected</name>
-		<handler>instanz_tree_herkunft_leaf_selected</handler>
-		<last_modification_time>Mon, 10 Sep 2001 11:19:30 GMT</last_modification_time>
-	      </signal>
-	      <creation_function>SimpleTree</creation_function>
-	      <int1>3</int1>
-	      <int2>0</int2>
-	      <last_modification_time>Mon, 10 Sep 2001 08:07:48 GMT</last_modification_time>
-	    </widget>
-	  </widget>
-	</widget>
-
-	<widget>
-	  <class>GtkFrame</class>
-	  <name>frame10</name>
-	  <label>Auftrag</label>
-	  <label_xalign>0</label_xalign>
-	  <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
-	  <child>
-	    <left_attach>1</left_attach>
-	    <right_attach>2</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>7</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>False</xfill>
-	    <yfill>False</yfill>
-	  </child>
-
-	  <widget>
-	    <class>GtkTable</class>
-	    <name>table13</name>
-	    <rows>2</rows>
-	    <columns>3</columns>
-	    <homogeneous>False</homogeneous>
-	    <row_spacing>0</row_spacing>
-	    <column_spacing>0</column_spacing>
-
-	    <widget>
-	      <class>GtkLabel</class>
-	      <name>label78</name>
-	      <label>von</label>
-	      <justify>GTK_JUSTIFY_CENTER</justify>
-	      <wrap>False</wrap>
-	      <xalign>0</xalign>
-	      <yalign>0.5</yalign>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <child>
-		<left_attach>0</left_attach>
-		<right_attach>1</right_attach>
-		<top_attach>0</top_attach>
-		<bottom_attach>1</bottom_attach>
-		<xpad>0</xpad>
-		<ypad>0</ypad>
-		<xexpand>False</xexpand>
-		<yexpand>False</yexpand>
-		<xshrink>False</xshrink>
-		<yshrink>False</yshrink>
-		<xfill>True</xfill>
-		<yfill>False</yfill>
-	      </child>
-	    </widget>
-
-	    <widget>
-	      <class>GtkLabel</class>
-	      <name>label_instanz</name>
-	      <cxx_visibility>protected</cxx_visibility>
-	      <label>von_instanz</label>
-	      <justify>GTK_JUSTIFY_CENTER</justify>
-	      <wrap>False</wrap>
-	      <xalign>0</xalign>
-	      <yalign>0.5</yalign>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <child>
-		<left_attach>0</left_attach>
-		<right_attach>1</right_attach>
-		<top_attach>1</top_attach>
-		<bottom_attach>2</bottom_attach>
-		<xpad>0</xpad>
-		<ypad>0</ypad>
-		<xexpand>False</xexpand>
-		<yexpand>False</yexpand>
-		<xshrink>False</xshrink>
-		<yshrink>False</yshrink>
-		<xfill>True</xfill>
-		<yfill>False</yfill>
-	      </child>
-	    </widget>
-
-	    <widget>
-	      <class>GtkLabel</class>
-	      <name>label79</name>
-	      <label>an</label>
-	      <justify>GTK_JUSTIFY_CENTER</justify>
-	      <wrap>False</wrap>
-	      <xalign>0</xalign>
-	      <yalign>0.5</yalign>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <child>
-		<left_attach>2</left_attach>
-		<right_attach>3</right_attach>
-		<top_attach>0</top_attach>
-		<bottom_attach>1</bottom_attach>
-		<xpad>0</xpad>
-		<ypad>0</ypad>
-		<xexpand>False</xexpand>
-		<yexpand>False</yexpand>
-		<xshrink>False</xshrink>
-		<yshrink>False</yshrink>
-		<xfill>True</xfill>
-		<yfill>False</yfill>
-	      </child>
-	    </widget>
-
-	    <widget>
-	      <class>GtkArrow</class>
-	      <name>arrow1</name>
-	      <width>30</width>
-	      <arrow_type>GTK_ARROW_RIGHT</arrow_type>
-	      <shadow_type>GTK_SHADOW_OUT</shadow_type>
-	      <xalign>0.5</xalign>
-	      <yalign>0.5</yalign>
-	      <xpad>0</xpad>
-	      <ypad>0</ypad>
-	      <child>
-		<left_attach>1</left_attach>
-		<right_attach>2</right_attach>
-		<top_attach>0</top_attach>
-		<bottom_attach>2</bottom_attach>
-		<xpad>5</xpad>
-		<ypad>0</ypad>
-		<xexpand>True</xexpand>
-		<yexpand>False</yexpand>
-		<xshrink>False</xshrink>
-		<yshrink>False</yshrink>
-		<xfill>True</xfill>
-		<yfill>True</yfill>
-	      </child>
-	    </widget>
-
-	    <widget>
-	      <class>GtkEventBox</class>
-	      <name>eventbox_instanz</name>
-	      <signal>
-		<name>button_press_event</name>
-		<handler>on_eventbox_instanz_button_press_event</handler>
-		<last_modification_time>Mon, 10 Sep 2001 11:42:26 GMT</last_modification_time>
-	      </signal>
-	      <child>
-		<left_attach>2</left_attach>
-		<right_attach>3</right_attach>
-		<top_attach>1</top_attach>
-		<bottom_attach>2</bottom_attach>
-		<xpad>0</xpad>
-		<ypad>0</ypad>
-		<xexpand>False</xexpand>
-		<yexpand>False</yexpand>
-		<xshrink>False</xshrink>
-		<yshrink>False</yshrink>
-		<xfill>True</xfill>
-		<yfill>True</yfill>
-	      </child>
-
-	      <widget>
-		<class>GtkLabel</class>
-		<name>label_an_instanz</name>
-		<cxx_visibility>protected</cxx_visibility>
-		<label>an_instanz</label>
-		<justify>GTK_JUSTIFY_CENTER</justify>
-		<wrap>False</wrap>
-		<xalign>0</xalign>
-		<yalign>0.5</yalign>
-		<xpad>0</xpad>
-		<ypad>0</ypad>
-	      </widget>
-	    </widget>
-	  </widget>
-	</widget>
-
-	<widget>
-	  <class>GtkToolbar</class>
-	  <name>toolbar10</name>
-	  <orientation>GTK_ORIENTATION_HORIZONTAL</orientation>
-	  <type>GTK_TOOLBAR_BOTH</type>
-	  <space_size>5</space_size>
-	  <space_style>GTK_TOOLBAR_SPACE_EMPTY</space_style>
-	  <relief>GTK_RELIEF_NORMAL</relief>
-	  <tooltips>True</tooltips>
-	  <child>
-	    <left_attach>2</left_attach>
-	    <right_attach>3</right_attach>
-	    <top_attach>1</top_attach>
-	    <bottom_attach>7</bottom_attach>
-	    <xpad>5</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>False</yfill>
-	  </child>
-
-	  <widget>
-	    <class>GtkButton</class>
-	    <child_name>Toolbar:button</child_name>
-	    <name>button_neue_anr</name>
-	    <tooltip>Zuerst muß (im Feld links) die Instanz gesetzt werden, an die der Auftrag gerichtet wird</tooltip>
-	    <signal>
-	      <name>clicked</name>
-	      <handler>on_button_neue_anr_clicked</handler>
-	      <last_modification_time>Fri, 07 Sep 2001 13:04:53 GMT</last_modification_time>
-	    </signal>
-	    <label>Neue Auftragsnr
-vergeben</label>
-	    <stock_pixmap>GNOME_STOCK_PIXMAP_BOOK_OPEN</stock_pixmap>
-	  </widget>
-	</widget>
-
-	<widget>
-	  <class>Custom</class>
-	  <name>instanz_eintrag_status</name>
-	  <cxx_visibility>protected</cxx_visibility>
-	  <visible>False</visible>
-	  <signal>
-	    <name>activate</name>
-	    <handler>on_instanz_eintrag_status_activate</handler>
-	    <last_modification_time>Tue, 11 Sep 2001 13:18:50 GMT</last_modification_time>
-	  </signal>
-	  <creation_function>WAuftragStatus()</creation_function>
-	  <int1>0</int1>
-	  <int2>0</int2>
-	  <last_modification_time>Mon, 10 Sep 2001 07:17:52 GMT</last_modification_time>
-	  <child>
-	    <left_attach>0</left_attach>
-	    <right_attach>1</right_attach>
-	    <top_attach>6</top_attach>
-	    <bottom_attach>7</bottom_attach>
-	    <xpad>0</xpad>
-	    <ypad>0</ypad>
-	    <xexpand>False</xexpand>
-	    <yexpand>False</yexpand>
-	    <xshrink>False</xshrink>
-	    <yshrink>False</yshrink>
-	    <xfill>True</xfill>
-	    <yfill>True</yfill>
 	  </child>
 	</widget>
       </widget>
@@ -1380,7 +1397,7 @@ vergeben</label>
       <border_width>5</border_width>
       <cxx_visibility>protected</cxx_visibility>
       <rows>1</rows>
-      <columns>3</columns>
+      <columns>4</columns>
       <homogeneous>False</homogeneous>
       <row_spacing>0</row_spacing>
       <column_spacing>0</column_spacing>
@@ -1463,14 +1480,13 @@ vergeben</label>
 
       <widget>
 	<class>GtkButton</class>
-	<name>button_artikeleingabe</name>
+	<name>button_auftrag_erledigt</name>
 	<can_focus>True</can_focus>
 	<signal>
 	  <name>clicked</name>
-	  <handler>on_button_artikeleingabe_clicked</handler>
-	  <last_modification_time>Tue, 02 Oct 2001 13:57:01 GMT</last_modification_time>
+	  <handler>on_button_auftrag_erledigt_clicked</handler>
+	  <last_modification_time>Thu, 18 Oct 2001 09:13:12 GMT</last_modification_time>
 	</signal>
-	<label>Artikeleingabe</label>
 	<relief>GTK_RELIEF_NORMAL</relief>
 	<child>
 	  <left_attach>2</left_attach>
@@ -1486,6 +1502,46 @@ vergeben</label>
 	  <xfill>True</xfill>
 	  <yfill>False</yfill>
 	</child>
+
+	<widget>
+	  <class>GtkHBox</class>
+	  <name>hbox10</name>
+	  <homogeneous>False</homogeneous>
+	  <spacing>0</spacing>
+
+	  <widget>
+	    <class>GtkPixmap</class>
+	    <name>pixmap2</name>
+	    <filename>delete_images.xpm</filename>
+	    <xalign>0.5</xalign>
+	    <yalign>0.5</yalign>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <build_insensitive>True</build_insensitive>
+	    <child>
+	      <padding>0</padding>
+	      <expand>True</expand>
+	      <fill>True</fill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkLabel</class>
+	    <name>label83</name>
+	    <label>Auftrag erledigt</label>
+	    <justify>GTK_JUSTIFY_CENTER</justify>
+	    <wrap>False</wrap>
+	    <xalign>0.5</xalign>
+	    <yalign>0.5</yalign>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <child>
+	      <padding>0</padding>
+	      <expand>False</expand>
+	      <fill>False</fill>
+	    </child>
+	  </widget>
+	</widget>
       </widget>
     </widget>
 
@@ -3576,22 +3632,17 @@ löschen</label>
 
 	  <widget>
 	    <class>Custom</class>
-	    <name>lieferschein_liste</name>
+	    <name>tree_daten</name>
 	    <cxx_visibility>protected</cxx_visibility>
 	    <signal>
-	      <name>select_row</name>
-	      <handler>on_selectrow_lieferschein</handler>
-	      <last_modification_time>Mon, 26 Mar 2001 10:14:00 GMT</last_modification_time>
+	      <name>leaf_selected</name>
+	      <handler>on_daten_leaf_selected</handler>
+	      <last_modification_time>Thu, 04 Oct 2001 12:20:02 GMT</last_modification_time>
 	    </signal>
-	    <signal>
-	      <name>unselect_row</name>
-	      <handler>on_unselectrow_lieferschein</handler>
-	      <last_modification_time>Mon, 26 Mar 2001 10:14:16 GMT</last_modification_time>
-	    </signal>
-	    <creation_function>Lief_TCList</creation_function>
+	    <creation_function>SimpleTree</creation_function>
 	    <int1>4</int1>
 	    <int2>3</int2>
-	    <last_modification_time>Wed, 14 Mar 2001 13:00:52 GMT</last_modification_time>
+	    <last_modification_time>Thu, 04 Oct 2001 12:19:17 GMT</last_modification_time>
 	  </widget>
 	</widget>
       </widget>
@@ -4020,22 +4071,22 @@ löschen</label>
 
 	    <widget>
 	      <class>Custom</class>
-	      <name>offene_auftraege</name>
+	      <name>tree_offen</name>
 	      <cxx_visibility>protected</cxx_visibility>
 	      <signal>
-		<name>select_row</name>
-		<handler>on_selectrow_offauf</handler>
-		<last_modification_time>Fri, 26 Jan 2001 09:02:02 GMT</last_modification_time>
+		<name>leaf_selected</name>
+		<handler>on_offen_leaf_selected</handler>
+		<last_modification_time>Thu, 04 Oct 2001 13:00:31 GMT</last_modification_time>
 	      </signal>
 	      <signal>
 		<name>unselect_row</name>
 		<handler>on_unselectrow_offauf</handler>
-		<last_modification_time>Fri, 26 Jan 2001 09:02:16 GMT</last_modification_time>
+		<last_modification_time>Thu, 04 Oct 2001 13:00:51 GMT</last_modification_time>
 	      </signal>
-	      <creation_function>OffAuf_TCList</creation_function>
+	      <creation_function>SimpleTree</creation_function>
 	      <int1>5</int1>
 	      <int2>3</int2>
-	      <last_modification_time>Tue, 30 Jan 2001 10:10:14 GMT</last_modification_time>
+	      <last_modification_time>Thu, 04 Oct 2001 12:59:53 GMT</last_modification_time>
 	    </widget>
 	  </widget>
 	</widget>
@@ -4171,13 +4222,72 @@ löschen</label>
 	<class>GtkButton</class>
 	<child_name>Toolbar:button</child_name>
 	<name>button27</name>
+	<tooltip>Linke Maustaste: Drucken wie gewählt. Mittlere Maustaste: Originalrechnung auf Firmanpapier und Kopie auf Standardpapier. Rechte Maustaste: Original auf Firmanpapier und je eine Kopie auf Firmenpapier und Standardpapier.</tooltip>
 	<signal>
-	  <name>clicked</name>
+	  <name>button_press_event</name>
 	  <handler>on_rng_print</handler>
-	  <last_modification_time>Wed, 28 Mar 2001 10:47:51 GMT</last_modification_time>
+	  <last_modification_time>Wed, 17 Oct 2001 10:58:14 GMT</last_modification_time>
 	</signal>
 	<label>Drucken</label>
 	<stock_pixmap>GNOME_STOCK_PIXMAP_PRINT</stock_pixmap>
+      </widget>
+
+      <widget>
+	<class>GtkTable</class>
+	<name>table17</name>
+	<rows>2</rows>
+	<columns>1</columns>
+	<homogeneous>False</homogeneous>
+	<row_spacing>0</row_spacing>
+	<column_spacing>0</column_spacing>
+
+	<widget>
+	  <class>GtkCheckButton</class>
+	  <name>checkbutton_firmenpapier</name>
+	  <cxx_visibility>protected</cxx_visibility>
+	  <can_focus>True</can_focus>
+	  <label>Firmenpapier</label>
+	  <active>True</active>
+	  <draw_indicator>True</draw_indicator>
+	  <child>
+	    <left_attach>0</left_attach>
+	    <right_attach>1</right_attach>
+	    <top_attach>0</top_attach>
+	    <bottom_attach>1</bottom_attach>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <xexpand>False</xexpand>
+	    <yexpand>False</yexpand>
+	    <xshrink>False</xshrink>
+	    <yshrink>False</yshrink>
+	    <xfill>True</xfill>
+	    <yfill>False</yfill>
+	  </child>
+	</widget>
+
+	<widget>
+	  <class>GtkCheckButton</class>
+	  <name>checkbutton_kopie</name>
+	  <cxx_visibility>protected</cxx_visibility>
+	  <can_focus>True</can_focus>
+	  <label>Kopie</label>
+	  <active>False</active>
+	  <draw_indicator>True</draw_indicator>
+	  <child>
+	    <left_attach>0</left_attach>
+	    <right_attach>1</right_attach>
+	    <top_attach>1</top_attach>
+	    <bottom_attach>2</bottom_attach>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <xexpand>False</xexpand>
+	    <yexpand>False</yexpand>
+	    <xshrink>False</xshrink>
+	    <yshrink>False</yshrink>
+	    <xfill>True</xfill>
+	    <yfill>False</yfill>
+	  </child>
+	</widget>
       </widget>
 
       <widget>
@@ -4615,22 +4725,22 @@ Zuschlag
 
 	    <widget>
 	      <class>Custom</class>
-	      <name>rechnung_liste</name>
+	      <name>rtree_daten</name>
 	      <cxx_visibility>protected</cxx_visibility>
 	      <signal>
-		<name>select_row</name>
-		<handler>on_selectrow_rechnung</handler>
-		<last_modification_time>Wed, 28 Mar 2001 10:48:51 GMT</last_modification_time>
+		<name>leaf_selected</name>
+		<handler>on_rdaten_leaf_selected</handler>
+		<last_modification_time>Fri, 05 Oct 2001 09:58:46 GMT</last_modification_time>
 	      </signal>
 	      <signal>
 		<name>unselect_row</name>
-		<handler>on_unselectrow_rechnung</handler>
-		<last_modification_time>Wed, 28 Mar 2001 10:48:59 GMT</last_modification_time>
+		<handler>on_unselectrow_rtree</handler>
+		<last_modification_time>Fri, 05 Oct 2001 09:59:23 GMT</last_modification_time>
 	      </signal>
-	      <creation_function>Rg_TCList</creation_function>
+	      <creation_function>SimpleTree</creation_function>
 	      <int1>6</int1>
 	      <int2>3</int2>
-	      <last_modification_time>Wed, 28 Mar 2001 10:44:55 GMT</last_modification_time>
+	      <last_modification_time>Fri, 05 Oct 2001 09:58:12 GMT</last_modification_time>
 	    </widget>
 	  </widget>
 	</widget>
@@ -4852,22 +4962,22 @@ Zuschlag
 
 	    <widget>
 	      <class>Custom</class>
-	      <name>offene_lieferscheine</name>
+	      <name>rtree_offen</name>
 	      <cxx_visibility>protected</cxx_visibility>
 	      <signal>
-		<name>select_row</name>
-		<handler>on_selectrow_offlief</handler>
-		<last_modification_time>Wed, 28 Mar 2001 10:54:57 GMT</last_modification_time>
+		<name>unselect_row</name>
+		<handler>on_unselectrow_rtree_offen</handler>
+		<last_modification_time>Fri, 05 Oct 2001 10:22:56 GMT</last_modification_time>
 	      </signal>
 	      <signal>
-		<name>unselect_row</name>
-		<handler>on_unselectrow_offlief</handler>
-		<last_modification_time>Wed, 28 Mar 2001 10:55:04 GMT</last_modification_time>
+		<name>leaf_selected</name>
+		<handler>on_roffen_leaf_selected</handler>
+		<last_modification_time>Fri, 05 Oct 2001 10:23:20 GMT</last_modification_time>
 	      </signal>
-	      <creation_function>OffLief_TCList</creation_function>
+	      <creation_function>SimpleTree</creation_function>
 	      <int1>3</int1>
 	      <int2>3</int2>
-	      <last_modification_time>Wed, 28 Mar 2001 10:54:34 GMT</last_modification_time>
+	      <last_modification_time>Fri, 05 Oct 2001 10:22:37 GMT</last_modification_time>
 	    </widget>
 	  </widget>
 	</widget>

@@ -176,6 +176,36 @@ TreeBase::~TreeBase()
 {  if (menu) delete menu;
 }
 
+// true = gefunden
+bool TreeBase::redisplay_recurse(TCListRow_API *a, const RowDataBase *r, guint col)
+{  for (TCListRow_API::iterator i=a->begin();i!=a->end();++i)
+   {  if ((*i).begin()!=(*i).end())
+      {  if (redisplay_recurse(&*i,r,col)) return true;
+      }
+      const TCListRowData *tlr=reinterpret_cast<const TCListRowData *>((*i).get_user_data());
+      if (tlr->Leaf())
+      {  if (&*(reinterpret_cast<const TCListLeaf *>(tlr)->LeafData()) == r)
+         {  dynamic_cast<TCListRow&>(*i).relabel(col,r->Value(col,ValueData())->getStrVal());
+            return true;
+         }
+      }
+   }
+   return false;
+}
+
+void TreeBase::redisplay(cH_RowDataBase row, guint index)
+{  if (index<attrcount)
+   {  int newindex=0;
+      for (std::deque<guint>::const_iterator i=currseq.begin();
+   		i!=currseq.end();++i,++newindex)
+      {  if (*i==index) 
+         { index=newindex; break; }
+      }
+   }
+   redisplay_recurse(this,&*row,index);
+}
+
+
 void TreeBase::refillTCL()
 {
 // liste loeschen
@@ -201,7 +231,6 @@ void TreeBase::refillTCL()
  for(TCListRow_API::iterator i = begin(); i!=end(); ++i)
  {  if (!((TCListRowData*)(*i).get_user_data())->Leaf())
    	((TCListNode*)(*i).get_user_data())->refreshSum(*this);
-//   	((TCListLeaf*)(*i).get_user_data())->refreshSum(*this); ///MAT?
  }
  show_or_hide_Spalten();
  expand();

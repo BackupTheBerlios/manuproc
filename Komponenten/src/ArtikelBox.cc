@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.10 2001/10/02 15:28:01 christof Exp $
+// $Id: ArtikelBox.cc,v 1.11 2001/10/23 08:56:40 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -24,8 +24,7 @@
 #include <gtk--/paned.h>
 #include <algorithm>
 #include <Artikel/ArtikelBezeichnung.h>
-#include "stock_button_apply.xpm"
-#include "stock_button_cancel.xpm"
+#include <Aux/Global_Settings.h>
 
 void ArtikelBox::selectFunc(unsigned int sp,unsigned int l) throw(SQLerror)
 {
@@ -38,12 +37,12 @@ void ArtikelBox::selectFunc(unsigned int sp,unsigned int l) throw(SQLerror)
      }
    catch(SQLerror &e)
      {std::cerr << e.Code() << e.Message() << e.Context() << "\n";
-      pixmap->set(stock_button_cancel_xpm);
+      pixmap_setzen(false);
       artikel=ArtikelBase();
      }
    return;
  }
- pixmap->set(stock_button_cancel_xpm);
+ pixmap_setzen(false);
  artikel=ArtikelBase();
 
 //cout << l<<"\t"<<sp<<combos[l][sp+1]->get_text(); 
@@ -80,7 +79,6 @@ gint ArtikelBox::try_grab_focus(GtkWidget *w,gpointer gp)
 }
 
 
-
 void ArtikelBox::set_value(const ArtikelBase &art)
 throw(SQLerror,ArtikelBoxErr)
 {cH_ArtikelBezeichnung artbez(art,schema->Id());
@@ -89,7 +87,7 @@ throw(SQLerror,ArtikelBoxErr)
 
  artikel=art;
 
- pixmap->set(stock_button_apply_xpm);
+ pixmap_setzen(true);
 
  for (unsigned int j=0;j<signifikanz.size();++j)
  {  
@@ -159,24 +157,11 @@ void ArtikelBox::loadArtikel(unsigned int l) throw(SQLerror)
   }
  else v = expand_kombi(l,ARTIKEL);
  try {
-  while (v.size()<schema->size(signifikanz[l])) v.push_back(cH_EntryValueIntString(""));
+  while (v.size()<schema->size(signifikanz[l])) 
+     v.push_back(cH_EntryValueIntString(""));
   cH_ArtikelBezeichnung bez(signifikanz[l],v,schema);
-  artikel=bez->Id();
-  pixmap->set(stock_button_apply_xpm);
+  artikel=*bez;
   set_value(artikel);
-/*
-  std::string st=bez->Bezeichnung();
-  for (unsigned int j=0;j<signifikanz.size();++j)
-   {  ExtBezSchema::const_sigiterator ci = schema->sigbegin(signifikanz[j]);
-      for (unsigned int i=0; ci!=schema->sigend(signifikanz[j]) 
-      		&& i<combos[j].size(); ++ci, ++i)
-       { if(kombiniertbool && schema->size(signifikanz[j])!=1)
-            combos[j][i]->set_text(st);
-         else  
-            combos[j][i]->set_text((*bez)[ci->bezkomptype]->getStrVal());
-       }
-   }
-*/
  } catch (SQLerror &e)
  {  std::cerr << "ArtikelBox::loadArtikel: setArtikel threw "<< e<< "\n";
  } catch (std::exception &e)
@@ -186,13 +171,20 @@ void ArtikelBox::loadArtikel(unsigned int l) throw(SQLerror)
 
 
 ArtikelBox::~ArtikelBox()
-{
+{  if (menu) delete menu;
 }  
 
 void ArtikelBox::init()
-{  
- assert(!combos.size());
- assert(!labels.size());
+{
+   // Altes Widget löschen (Gtk::Container::)
+#if 1   
+   remove();
+   combos.clear();
+   labels.clear();
+#else
+   assert(!combos.size());
+   assert(!labels.size());
+#endif   
  ArtikelBox::Benutzerprofil_laden();
 
 reloop:
@@ -232,6 +224,7 @@ reloop:
       }
   }
  add(*oberstes);
+ fuelleMenu();
 }
 
 Gtk::Container* ArtikelBox::init_table(int l)
@@ -264,7 +257,8 @@ Gtk::Container* ArtikelBox::init_table(int l)
     if (i==0&&l==0) 
      {
        Gtk::HBox *hb= manage(new Gtk::HBox());
-       pixmap= manage(new class Gtk::Pixmap(stock_button_cancel_xpm));
+       pixmap= manage(new class Gtk::Pixmap()); // stock_button_cancel_xpm));
+       pixmap_setzen(false);
        hb->pack_start(*pixmap,false,false);   pixmap->show();
        hb->pack_start(*lb);                   hb->show();
        table->attach(*hb,i,i+1,0,1);
@@ -277,6 +271,10 @@ Gtk::Container* ArtikelBox::init_table(int l)
     if(kombiniertbool) break;
    }
  ev->button_press_event.connect(SigC::slot(this,&ArtikelBox::MouseButton));
+ std::string labtext = ArtikelTyp::get_string(schema->Typ())
+   +": "+ cH_Kunde(schema->Id())->firma();
+ label_typ = manage(new class Gtk::Label(labtext));
+ table->attach(*label_typ,0,cls,2,3);
  table->show();
  ev->show();
  return ev;
@@ -284,12 +282,42 @@ Gtk::Container* ArtikelBox::init_table(int l)
 
 
 ArtikelBox::ArtikelBox(const cH_ExtBezSchema &_schema)  throw(SQLerror)
-: oberstes(0), vertikalbool(false), autocompletebool(false), kombiniertbool(false),
-  schema(_schema), menu(0), tr("",false), tr2("",false)
+: vertikalbool(false), autocompletebool(false), 
+   kombiniertbool(false),labelbool(false), eingeschraenkt(false),
+  schema(_schema), tr("",false), tr2("",false),
+  oberstes(0), menu(0),  pixmap(0), label_typ(0), label(0)
 { 
+ artbox_start();
+}
+
+ArtikelBox::ArtikelBox(const std::string& _program,const std::string& _position)  throw(SQLerror)
+: vertikalbool(false), autocompletebool(false), 
+   kombiniertbool(false),labelbool(false), eingeschraenkt(false),
+   sprogram(_program),sposition(_position),
+   schema(cH_ExtBezSchema(ExtBezSchema::default_ID)),
+   tr("",false), tr2("",false),
+   oberstes(0), menu(0),  pixmap(0), label_typ(0), label(0)
+{ 
+  artbox_start();
+  std::string gs = Global_Settings(0,sprogram,sposition).get_Wert();
+//cout << "GS="<<gs<<'\n';
+  if (gs!="")
+   {
+     std::string sep=":";
+     std::string::size_type  p=gs.find(sep);
+     std::string s(gs,0,p);
+     std::string t(gs,p+sep.size(),std::string::npos);
+//cout << s <<'-'<<t<<'\n';
+     ExtBezSchema::ID eid = atoi(s.c_str());
+     ArtikelTyp atyp      = atoi(t.c_str());
+//cout << eid<<'-'<<atyp<<'\n';
+     setExtBezSchema(cH_ExtBezSchema(eid,atyp)); 
+   }
+}
+
+void ArtikelBox::artbox_start()
+{
  init();
- menu=manage(new Gtk::Menu());
- fuelleMenu();
  this->button_press_event.connect(SigC::slot(this,&ArtikelBox::MouseButton));
 
  // redirect our grab_focus
@@ -299,26 +327,14 @@ ArtikelBox::ArtikelBox(const cH_ExtBezSchema &_schema)  throw(SQLerror)
 
 void ArtikelBox::setExtBezSchema(const cH_ExtBezSchema &_schema)
 {
-   if (menu)
-   {  menu->destroy();
-      menu=0;
-   }
-   reset();
-
-   // Altes Widget löschen
+#if 0
    remove();
    combos.clear();
    labels.clear();
+#endif
    schema=_schema;
-//   Benutzerprofil_laden(); // wird in init gemacht
+
    init();
-   menu=manage(new Gtk::Menu());
-   fuelleMenu();
-/*
-cout << signifikanz.size()<<"\t";
-for (int i=0;i<signifikanz.size();++i)std::cout << signifikanz[i]<<"\t";
-cout << "\n";
-*/
 }
 
 void ArtikelBox::TypSelected(int typ)
@@ -341,15 +357,21 @@ gint ArtikelBox::MouseButton(GdkEventButton *event)
    return false;
 }
 
-void ArtikelBox::setzeTyp(int t)
+void ArtikelBox::setzeSchemaId(int t)
 {  
-   ArtikelBox::Benutzerprofil_speichern();
+   Benutzerprofil_speichern();
    setExtBezSchema(cH_ExtBezSchema(schema->Id(),t));
+//cout << "Id"<<sprogram<<'\n';
+   if (sprogram!="")
+    Global_Settings(0,sprogram,sposition,itos(schema->Id())+":"+itos(t));
 }
-void ArtikelBox::setzeTyp2(int t2)
+void ArtikelBox::setzeSchemaTyp(int t2)
 {  
-   ArtikelBox::Benutzerprofil_speichern();
+   Benutzerprofil_speichern();
    setExtBezSchema(cH_ExtBezSchema(t2,schema->Typ()));
+//cout << "Typ"<<sprogram<<'\n';
+   if (sprogram!="")
+      Global_Settings(0,sprogram,sposition,itos(t2)+":"+itos(schema->Typ()));
 }
 
 
@@ -367,26 +389,39 @@ void ArtikelBox::setzeSignifikanz(int t)
 
 void ArtikelBox::Autocomplete(Gtk::CheckMenuItem *autocomplete)
 { 
+  autocompletebool=autocomplete->get_active();
    for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
       for (t_combos::iterator i=j->begin();i!=j->end();++i)
-        (*i)->set_autoexpand(autocomplete->get_active()); 
-  autocompletebool=autocomplete->get_active();
+        (*i)->set_autoexpand(autocompletebool); 
   Benutzerprofil_speichern();
 }  
 
 void ArtikelBox::set_Vertikal(Gtk::CheckMenuItem *verti)
 {
-  if (verti->get_active()) vertikalbool=true;
-  else vertikalbool=false;
+  vertikalbool=verti->get_active();
   setExtBezSchema(schema);
 }
 
 void ArtikelBox::kombiniert(Gtk::CheckMenuItem *kombi)
 {
-  if (kombi->get_active()) kombiniertbool=true;
-  else kombiniertbool=false;
+  kombiniertbool=kombi->get_active();
   Benutzerprofil_speichern();
   setExtBezSchema(schema);
+}
+
+void ArtikelBox::set_Label(Gtk::CheckMenuItem *label)
+{
+  labelbool=label->get_active();
+  show_label(labelbool);
+}
+
+void ArtikelBox::show_label(bool b)
+{
+  labelbool=b;
+  if(labelbool) label_typ->show();
+  else          label_typ->hide();
+  // vielleich einfach Menu neu aufbauen, dann kann label dort lokal bleiben
+  label->set_active(labelbool);
 }
 
 double ArtikelBox::get_menge_from_artikelbox()
@@ -408,3 +443,39 @@ double ArtikelBox::get_menge_from_artikelbox()
   double menge=atof(smenge.c_str());
   return menge;
 }
+
+void ArtikelBox::Einschraenken(const std::string &e, bool an)
+{  einschraenkung=e;
+   Einschraenken_b(an);
+}
+
+void ArtikelBox::Einschraenken_b(bool an)
+{  eingeschraenkt=an;
+   fuelleMenu();
+   pixmap_setzen(artikel.Id()!=0);
+}
+
+void ArtikelBox::ClearUserMenus()
+{  user_menus.clear();
+   fuelleMenu();
+}
+
+void ArtikelBox::AddUserMenu(const std::string &text, gpointer data)
+{  user_menus.push_back(user_menu_t(text,data));
+   fuelleMenu();
+}
+
+void ArtikelBox::einschraenken_cb(Gtk::CheckMenuItem *einschr_mi)
+{  Einschraenken_b(einschr_mi->get_active());
+}
+
+#include "stock_button_apply.xpm"
+#include "stock_button_cancel.xpm"
+#include "E.xpm"
+
+void ArtikelBox::pixmap_setzen(bool valid)
+{  if (valid) pixmap->set(stock_button_apply_xpm);
+   else if (eingeschraenkt) pixmap->set(E_xpm);
+   else pixmap->set(stock_button_cancel_xpm);
+}
+

@@ -64,15 +64,40 @@ void auftrag_rechnung::on_rng_save()
 void auftrag_rechnung::on_rng_preview()
 {   
    if (rngnr->get_text()=="") return;
-   string command = "auftrag_drucken Rechnung "+rngnr->get_text()+" Preview "+itos(instanz->Id());
+   string command = "auftrag_drucken -a Rechnung -n "+rngnr->get_text()+" -i "+itos(instanz->Id());
    system(command.c_str());
 }
 
-void auftrag_rechnung::on_rng_print()
+gint auftrag_rechnung::on_rng_print(GdkEventButton *ev)
 {   
-   if (rngnr->get_text()=="") return;
-   string command = "auftrag_drucken Rechnung "+rngnr->get_text()+" Plot "+itos(instanz->Id());
-   system(command.c_str());
+   if (rngnr->get_text()=="") return false;
+   std::string firma="";
+   if(checkbutton_firmenpapier->get_active()) firma=" --firma ";
+   std::string kopie="";
+   if(checkbutton_kopie->get_active()) kopie=" --kopie " ;
+
+   if (ev->button==1)
+    {
+     std::string command = "auftrag_drucken "+firma+kopie+"-a Rechnung -n "+rngnr->get_text()+" -p -i "+itos(instanz->Id());
+     system(command.c_str());
+    }
+   if (ev->button==2)
+    {
+     std::string command = "auftrag_drucken --firma -a Rechnung -n "+rngnr->get_text()+" -p -i "+itos(instanz->Id());
+     system(command.c_str());
+     command = "auftrag_drucken --kopie -a Rechnung -n "+rngnr->get_text()+" -p -i "+itos(instanz->Id());
+     system(command.c_str());
+    }
+   if (ev->button==3)
+    {
+     std::string command = "auftrag_drucken --kopie -a Rechnung -n "+rngnr->get_text()+" -p -i "+itos(instanz->Id());
+     system(command.c_str());
+     command = "auftrag_drucken --kopie --firma -a Rechnung -n "+rngnr->get_text()+" -p -i "+itos(instanz->Id());
+     system(command.c_str());
+     command = "auftrag_drucken --firma -a Rechnung -n "+rngnr->get_text()+" -p -i "+itos(instanz->Id());
+     system(command.c_str());
+    }
+ return false;
 }
 
 void auftrag_rechnung::rngzeile_delete()
@@ -142,6 +167,7 @@ void auftrag_rechnung::on_rngnr_activate()
  rngdatum->set_Datum(rechnung.getDatum());
 
 // rechnung_liste->show();
+ rtree_daten->show();
  vbox_n_b_lieferscheine->show();
 
  }
@@ -162,21 +188,16 @@ void auftrag_rechnung::preis_activate()
 void auftrag_rechnung::lieferschein_uebernehmen()
 {   
  try{
-// if(selectedrow_lief)
  if(rtree_offen->selection().size())
    {if (rechnung.Id()<1) on_rng_neu();
-//   const Rechnung &rg=rechnung_liste->getRechnung();
    if(!(rechnung.Bezahlt()))
 	{
-//	 cH_OffLief_RowData entry((dynamic_cast<TCListLeaf*>(selectedrow_lief))->LeafData());
-//	 const_cast<Rechnung&>(rg).addLieferschein(entry->Lief().Id());
     try {
-       cH_Data_Rechnung dt(rtree_daten->getSelectedRowDataBase_as<cH_Data_Rechnung>());
-       RechnungEntry RE=dt->get_RechnungEntry();
-       rechnung.addLieferschein(RE.Lfrs_Id());
+       cH_Data_RLieferoffen dt(rtree_offen->getSelectedRowDataBase_as<cH_Data_RLieferoffen>());
+       rechnung.addLieferschein(dt->get_Lieferschein()->Id());
    	 on_rngnr_activate();
       }
-    catch(...) {}
+    catch(std::exception &e) {cerr << e.what();}
 	}
    }
  }
@@ -263,7 +284,7 @@ void auftrag_rechnung::Preis_setzen()
 void auftrag_rechnung::Preis_ergaenzen()
 {  RechnungVoll rg=rechnung.Id();
    for (RechnungVoll::iterator i=rg.begin();i!=rg.end();++i)
-   {  if (!!i->getPreis())
+   {  if (!(i->getPreis()))
       {  Artikelpreis p(cH_Kunde(lieferkunde->get_value())->Preisliste(),i->ArtikelID());
          if (!(!p))
          {  i->setzePreis(p.In(rg.getWaehrung()));
@@ -297,7 +318,9 @@ auftrag_rechnung::auftrag_rechnung(cH_ppsInstanz _instanz)
 {
    set_tree_titles();
 //   rechnung_liste->hide();
+   rtree_daten->hide();
    vbox_n_b_lieferscheine->hide();
+   set_rtree_offen_content();
 }
 
 void auftrag_rechnung::set_tree_titles()

@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistrowdata.h,v 1.5 2001/07/05 12:58:06 christof Exp $
+// $Id: tclistrowdata.h,v 1.6 2001/10/23 08:56:40 christof Exp $
 
 #ifndef TCLISTROWDATA
 #define TCLISTROWDATA
@@ -68,7 +68,7 @@ public:
  const cH_EntryValue Value() const { return value; }
  virtual const std::string getColText() const { return value->getStrVal(); }
 
- bool Leaf() { return leaf; }
+ bool Leaf() const { return leaf; }
 };
 
 #endif

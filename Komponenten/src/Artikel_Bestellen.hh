@@ -14,22 +14,22 @@
 class Artikel_Bestellen :  public Gtk::Table
 {
    Gtk::SpinButton *SP_menge;
-//   Optionmenu_Instanz *OM_instanz;
    ArtikelBox *AB_artikel;
    ProzessBox *PB_prozess;
 
-//   void instanz();
    void menge();
    void artikel();
    void prozess();
  public: 
    Artikel_Bestellen();
-//   ~Artikel_Bestellen(){delete AB_artikel; delete OM_instanz;}  
 
    cH_Prozess get_Prozess();
+   void set_Prozess(const cH_Prozess& p) {PB_prozess->set_value(p);}
    ArtikelBase get_Artikel();
    int get_Menge();
-//   ppsInstanz::ppsInstId get_Instanz_Id();
+   void grab_focus_Artikel()
+   {  AB_artikel->grab_focus();
+   }
 
    SigC::Signal0<void> activate;
 };

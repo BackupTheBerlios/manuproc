@@ -1,4 +1,4 @@
-// $Id: window1.cc,v 1.6 2001/09/19 15:00:04 christof Exp $
+// $Id: window1.cc,v 1.7 2001/10/23 08:56:40 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -35,8 +35,17 @@ void window1::on_Beenden_activate()
 {  Gtk::Main::instance()->quit();
 }
 
+void window1::menu_cb(gpointer data)
+{  cout << "menu_cb " << data << '\n';
+}
+
 window1::window1()
 {  destroy.connect(Gtk::Main::quit.slot());
+   artikelbox->AddUserMenu("My User Menu 0",(gpointer)0);
+   artikelbox->AddUserMenu("My User Menu 1",(gpointer)1);
+   artikelbox->MenueAusgewaehlt.connect(SigC::slot(this,&window1::menu_cb));
+   artikelbox->Einschraenken("exists (select true from webangaben where "
+   		"artboxtable.id=webangaben.artikel)");
 }
 
 void window1::on_reset()

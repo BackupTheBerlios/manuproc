@@ -7,6 +7,7 @@ exec sql include sqlca;
 
 void auftrag_lieferschein::set_tree_offen_content()
 {
+ try{
  tree_offen->clear();
 
  exec sql begin declare section;
@@ -51,8 +52,8 @@ void auftrag_lieferschein::set_tree_offen_content()
 
    for(int i=0;i<sqlca.sqlerrd[2];++i)
     {
-      AufEintragBase2 AEB((ppsInstanz::ID)INSTANZ[i],AUFID[i],ZNR[i]);
-//      cH_ArtikelBezeichnung ABEZ(ArtikelBase(ARTNR[i]));
+      AufEintragBase2 AEB2((ppsInstanz::ID)INSTANZ[i],AUFID[i],ZNR[i]);
+      AufEintragBase AEB(AEB2);
       cH_ArtikelBezeichnung ABEZ(ARTNR[i]);
       datavec.push_back(new Data_Lieferoffen(AEB,ABEZ,BESTELLT[i]-GELIEFERT[i], GELIEFERT[i],
          ILIEFDATUM[i] ?Petig::Datum::today():Petig::Datum(LIEFDATUM[i])));
@@ -65,5 +66,5 @@ void auftrag_lieferschein::set_tree_offen_content()
  exec sql close LOADOFFAUF;
  tr.close();
  tree_offen->setDataVec(datavec);
-
+ }catch (SQLerror &e) {cerr <<e<<'\n';}
 }

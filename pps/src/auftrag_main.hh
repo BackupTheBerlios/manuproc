@@ -68,6 +68,7 @@ class auftrag_main : public auftrag_main_glade
         void on_node_selected(const TCListNode &node);
         void on_unselect_row(gint row, gint column, GdkEvent *event);
         void on_togglebutton_material_toggled();
+        void on_button_auftrag_erledigt_clicked();
         void instanz_menge(const vector<pair<ArtikelBase,long long int> >& vec_artbase);
         map<ArtikelBase,fixedpoint<5,double,long long> > get_artikelmap(const vector<pair<ArtikelBase,long long int> >& vec_artbase);
         void fillStamm(int *cont, GtkSCContext newsearch);
@@ -87,37 +88,28 @@ public:
  bool Zeit_kw_bool() const { return zeit_kw_bool; }
  bool Kunden_nr_bool() const { return kunden_nr_bool; }
  bool Kunden_anr_bool() const {return kunden_anr_bool;}
+ cH_ppsInstanz get_Instanz() const {return instanz;}
  
  auftrag_main();
 
 private:
-   // Ab hier für die Produktionsplanung
-   Gtk::Menu *menu_an_instanz;
-   vector<cH_RowDataBase> datavec_instanz_auftrag;
-   cH_ppsInstanz an_instanz;
-   Auftrag *instanz_auftrag;
-   AuftragFull *instanz_aufeintrag;
-   int selected_instanz_znr;
+   // Ab hier für die Produktionsplanung ////////////////////////
+   AuftragFull *instanz_auftrag;
 
    void neue_auftraege_beruecksichtigen(cH_ppsInstanz instanz);
-   vector<int> get_new_aufids(cH_ppsInstanz instanz);
+   vector<AufEintragBase2> get_new_aufids(cH_ppsInstanz instanz);
    void on_searchcombo_auftragid_activate();
    void on_searchcombo_auftragid_search(int *cont, GtkSCContext newsearch) throw(SQLerror);
    void on_button_neue_anr_clicked();
-   gint on_eventbox_instanz_button_press_event(GdkEventButton *event);
-   void instanz_menu();
-   void an_instanz_selected(ppsInstanz::ID insnr);
-   void on_instanz_auftrag_status_activate();
-   void on_instanz_eintrag_status_activate();
+   gint on_button_instanz_print_clicked(GdkEventButton *ev);
    void instanz_tree_titel_setzen();
    void neuer_auftrag_tree_titel_setzen();
-   void instanz_tree_inhalt_setzen(int artid,int laenge_m,Petig::Datum datum);
-   void get_faeden(int artid,Schussfaeden& schussfaeden, 
-            Fadenliste& fadenliste);
-   void instanz_tree_herkunft_leaf_selected(cH_RowDataBase d);
+   void instanz_leaf_auftrag(AufEintragBase& selected_AufEintrag);
+   void show_neuer_auftrag();
    void tree_neuer_auftrag_leaf_selected(cH_RowDataBase d);
    void loadAuftrag(const AuftragBase& auftragbase);
    int get_next_entry_znr(AuftragBase& auftrag);
+   void AuftragsEntryZuordnung(const AufEintragBase& AEB,const AuftragBase& AB,int znr);
 };
 
 class Data_auftrag : public RowDataBase
@@ -129,44 +121,50 @@ public:
    Data_auftrag(const AufEintragBase& ab, auftrag_main* am) :
       AB(ab),AM(am) {}
 
+   enum {KUNDE,A1,A2,A3,A4,LIEFERDATUM,AUFTRAG,VERARBEITUNG,METER,STUECK};
+
     virtual const cH_EntryValue Value(guint seqnr,gpointer gp) const
  { 
     switch (seqnr) {
-      case 0 : {
+      case KUNDE : {
+       if(AM->get_Instanz()->Id()==ppsInstanz::INST_KNDAUF)
+        {
          if (AM->Kunden_nr_bool())
           { int kundenid = AB.getKdNr();
             return cH_EntryValueIntString(kundenid); 
           }
-        else
+         else
           { cH_Kunde K(AB.getKdNr());
             return cH_EntryValueIntString(K->firma()); 
           }
-         }
-      case 1 ... 4 : {
+        }
+       else return cH_EntryValueIntString(AB.get_Kunde()->firma());
+       }
+      case A1 ... A4 : {
          int artikelid          = AB.ArtikelID();
          cH_ExtBezSchema schema = 1;
          ArtikelBase artbase=ArtikelBase(artikelid);
          cH_ArtikelBezeichnung artbez(artbase.Id(),schema);
-         return cH_EntryValueIntString(artbez->Komponente(seqnr-1));
+         return cH_EntryValueIntString(artbez->Komponente(seqnr-int(A1)));
          }
-      case 5 : {
+      case LIEFERDATUM : {
          std::string lw;
          if (AM->Zeit_kw_bool())
            {
             int lieferwoche = AB.getLieferdatum().KW().Woche();
             int lieferjahr = AB.getLieferdatum().KW().Jahr();
             string lj=itos (lieferjahr).substr(2,2);
-            lw = itos(lieferwoche)+"/"+lj;
+            lw = itos(lieferwoche)+"'"+lj;
             return cH_EntryValueIntString(lw);
            }
          else   return cH_EntryValueDatum(AB.getLieferdatum());
        }
-      case 6 : {
-         std::string auftrag;
-         if(AM->Kunden_anr_bool()) auftrag =      AB.getYourAufNr() ;
-         else                      auftrag = itos(AB.getAuftragid()) ;
-         return cH_EntryValueIntString(auftrag);}
-      case 7 : {
+      case AUFTRAG : {
+            std::string auftrag;
+            if(AM->Kunden_anr_bool()) auftrag =      AB.getYourAufNr() ;
+            else                      auftrag = itos(AB.getAuftragid()) ;
+            return cH_EntryValueIntString(auftrag);}
+      case VERARBEITUNG : {
          std::string verarbeitung;
          try {
           verarbeitung = AB.getProzess()->getTyp()+" "+AB.getProzess()->getText();
@@ -174,10 +172,10 @@ public:
          { verarbeitung=e.what(); }
 	 return cH_EntryValueIntString(verarbeitung);
 	 }
-      case 8 : {
+      case METER : {
          int offene_meter    = AB.getRest();     
          return cH_EntryValueIntString(Formatiere(offene_meter));   }
-      case 9 : {
+      case STUECK : {
          int offene_stueck   = AB.getRestStk();
          return cH_EntryValueIntString(Formatiere(offene_stueck)); }
      }
@@ -186,6 +184,8 @@ public:
 
    int offene_Stueck()const {return AB.getRestStk();}
    int offene_Meter() const {return AB.getRest();}
+//   void delete_StueckMeter()  {deleted=true;
+//      AB }
    int get_aid() const {return AB.getAuftragid();} 
    int get_zeilennr() const {return AB.getZnr();} 
    int get_Artikel_ID() const {return AB.ArtikelID();}
@@ -196,10 +196,10 @@ public:
 
 class cH_Data_auftrag : public Handle<const Data_auftrag>
 {
-protected:
- cH_Data_auftrag() {}
+//protected:
+// cH_Data_auftrag() {}
 public:
- cH_Data_auftrag(Data_auftrag *r) : Handle<const Data_auftrag>(r){}
+ cH_Data_auftrag(const Data_auftrag *r) : Handle<const Data_auftrag>(r){}
 };
 
 

@@ -19,16 +19,17 @@
 
 #include"auftrag_lieferschein_classes.h"
 #include<Auftrag/auftrag_status.h>
-#include<Aux/Transaction.h>
+//#include<Aux/Transaction.h>
 
-exec sql include sqlca;
+//exec sql include sqlca;
 
 void Data_Lieferoffen::abschreiben(int menge) 
-{  abschreiben(auftrag,menge);
+{  auftrag.abschreiben(menge);
    offen = (offen<=menge) ? 0 : (offen-menge);
    geliefert += menge;
 }
 
+/*
 void Data_Lieferoffen::abschreiben(const AufEintragBase2 &aeb,int menge) throw(SQLerror)
 {
  exec sql begin declare section;
@@ -66,3 +67,4 @@ void Data_Lieferoffen::abschreiben(const AufEintragBase2 &aeb,int menge) throw(S
  tr.commit();	
 }
 
+*/

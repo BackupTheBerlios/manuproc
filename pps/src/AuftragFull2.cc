@@ -37,8 +37,8 @@ void AuftragFull::fillCList(Gtk::CList &list)
 
  for(const_iterator i = begin(); i!=end(); ++i)
     {
-      ArtikelBezeichnung AB(ArtikelBase(i->ArtikelID()));
-      os << i->getStueck()<<"\t"<<AB.Bezeichnung()<<"\t"<<i->getMeter()<<"\t"
+      cH_ArtikelBezeichnung AB(ArtikelBase(i->ArtikelID()));
+      os << i->getStueck()<<"\t"<<AB->Bezeichnung()<<"\t"<<i->getMeter()<<"\t"
         << i->getRest()<<"\t"<<i->GPreis().Wert()<<"\t"
         <<i->getLieferdatum()
         << "\t"<<i->getEntryStatusStr()<<"\t"<<i->LastEditDate()<<"\n";

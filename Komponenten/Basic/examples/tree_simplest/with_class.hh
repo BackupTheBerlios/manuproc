@@ -15,7 +15,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// $Id: with_class.hh,v 1.2 2001/06/29 11:30:18 christof Exp $
+// $Id: with_class.hh,v 1.3 2001/10/23 08:56:40 christof Exp $
 
 #ifndef _WITH_CLASS_HH
 #  include "with_class_glade.hh"
@@ -23,6 +23,7 @@
 class with_class : public with_class_glade
 {	friend class with_class_glade;
         void on_Beenden_activate();
+        void on_button_data_clicked();
         void on_leaf_selected(cH_RowDataBase d);
    public:
       with_class();

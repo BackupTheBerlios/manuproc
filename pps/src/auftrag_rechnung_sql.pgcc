@@ -98,9 +98,9 @@ void auftrag_rechnung::set_rtree_offen_content()
    exec sql fetch offliefcur into :LFRSID;
    SQLerror::test(__FILELINE__": set_tree_offen_content:fetch lfrsid","offliefcur",100);
    if(sqlca.sqlcode==100) break;
-   
    datavec.push_back(new Data_RLieferoffen(LFRSID));
   }
  exec sql close offliefcur;
  tr.close();
+ rtree_offen->setDataVec(datavec);
 }

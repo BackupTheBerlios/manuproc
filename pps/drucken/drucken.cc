@@ -20,24 +20,21 @@
 #include <Gtk2TeX.h>
 #include <cstdio>
 #include "drucken_class.hh"
+#include <Aux/ppsInstanz.h>
 
-
-LR_drucken::LR_drucken(string RL_, unsigned int auftragsnr_, string view_plot,ppsInstanz::ID _instanz)
+LR_drucken::LR_drucken(string RL_, unsigned int auftragsnr_, string view_plot,
+   bool b_firmenpapier,bool b_kopie, cH_ppsInstanz _instanz)
 : auftragsnr(auftragsnr_),RL(RL_),instanz(_instanz)
 {
- LR_drucken::drucken(view_plot);
+ LR_drucken::drucken(view_plot,b_firmenpapier,b_kopie);
 }
 
-void LR_drucken::drucken(string view_plot)
+void LR_drucken::drucken(string view_plot,bool b_firmenpapier,bool b_kopie)
 {
- unsigned int plotanz = 1;
- if (RL=="Rechnung" && view_plot=="Plot") plotanz=3;
- for (unsigned int n=0;n<plotanz;++n)
-  {
    string kopie="";
-   if (n!=0) kopie="Kopie";
-   string texplotter= " -Phl1260lt ";
-   if (n==2) texplotter = " -Phl1260 ";
+   if (b_kopie) kopie="Kopie ,";
+   string texplotter= " -Phl1260 ";
+   if (b_firmenpapier) texplotter = " -Phl1260lt ";
    FILE *f;
    if (view_plot=="Preview") f=popen("tex2prn -2 -G ","w");
    if (view_plot=="Plot") f=popen(("tex2prn -q -2 "+texplotter).c_str(),"w");
@@ -46,17 +43,20 @@ void LR_drucken::drucken(string view_plot)
 
    if      (RL=="Rechnung")      
     { RechnungVoll r(auftragsnr);
-      LR_Abstraktion(&r).drucken_table(os,kopie);
+      LR_Abstraktion(&r).drucken_table(os,kopie,instanz);
     }
    else if (RL=="Lieferschein")  
     { cH_LieferscheinVoll l(auftragsnr);
-      LR_Abstraktion(&*l).drucken_table(os,kopie);
+      LR_Abstraktion(&*l).drucken_table(os,kopie,instanz);
     }
    else if (RL=="Auftrag")  
-    { AuftragFull a(instanz,(int)auftragsnr);
-      LR_Abstraktion(&a).drucken_table(os,kopie);
+    { AuftragFull a=AuftragBase(cH_ppsInstanz(instanz),(int)auftragsnr);
+      LR_Abstraktion(&a).drucken_table(os,kopie,instanz);
+    }
+   else if (RL=="Intern")  
+    { AuftragFull a=AuftragBase(cH_ppsInstanz(instanz),(int)auftragsnr);
+      LR_Abstraktion(&a).drucken_table(os,kopie,instanz);
     }
    else abort();
-  }
 }
 

@@ -51,8 +51,8 @@ void auftrag_lieferschein::on_liefer_neu()
     return;
  }
  lieferschein = new Lieferschein(cH_Kunde(liefer_kunde->get_value()));
+
  set_tree_daten_content(lieferschein->Id());
- 
 // lieferschein_liste->newLieferschein(liefer_kunde->get_value());
 //cout << "liefID" << lieferschein_liste->getLieferschein().Id() << "\n";
  liefernr->set_text(
@@ -68,14 +68,14 @@ void auftrag_lieferschein::on_lief_save()
 void auftrag_lieferschein::on_lief_preview()
 {  
    if (liefernr->get_text()=="") return;
-   string command = "auftrag_drucken Lieferschein "+liefernr->get_text()+" Preview "+ itos(instanz->Id());
+   string command = "auftrag_drucken -a Lieferschein -n "+liefernr->get_text()+" -i "+ itos(instanz->Id());
    system(command.c_str());
 }
 
 void auftrag_lieferschein::on_lief_print()
 {  
    if (liefernr->get_text()=="") return;
-   string command = "auftrag_drucken Lieferschein "+liefernr->get_text()+" Plot "+ itos(instanz->Id());
+   string command = "auftrag_drucken -a Lieferschein -n "+liefernr->get_text()+" -p -i "+ itos(instanz->Id());
    system(command.c_str()); 
 }
 
@@ -89,6 +89,7 @@ void auftrag_lieferschein::display(int lfrsid)
     rngnr->set_text(Formatiere(rng,0,6,"","",'0'));
  else rngnr->set_text("");
  vbox_eingabe->show();
+ tree_daten->show();
  liefdate->set_value(lieferschein->getDatum());
  
 /*
@@ -126,9 +127,11 @@ void auftrag_lieferschein::on_liefnr_activate()
 
 void auftrag_lieferschein::on_lieferkunde_activate()
 {
+//cout << "Kunde = "<<liefer_kunde->get_value()<<'\n';
+
 try{display2(liefer_kunde->get_value());
 // lieferschein_liste->setLieferschein(LieferscheinBase::none_id);
- lieferschein = new Lieferschein(LieferscheinBase::none_id);
+// lieferschein = new Lieferschein(LieferscheinBase::none_id);
  liefernr->reset();
 // lieferschein_liste->clear();
  } catch(SQLerror &e) {meldung->Show(e);}
@@ -247,7 +250,9 @@ void auftrag_lieferschein::set_tree_titles()
 void auftrag_lieferschein::set_tree_daten_content(LieferscheinBase::ID lfrsid)
 {
  tree_daten->clear();
+cout <<"1\n";
  cH_LieferscheinVoll LV=cH_LieferscheinVoll(LieferscheinBase::none_id);
+cout <<"2\n";
  if(lfrsid!=LieferscheinBase::none_id)
    {try{ LV=cH_LieferscheinVoll(lfrsid); }
     catch(SQLerror &e)
@@ -319,7 +324,8 @@ void auftrag_lieferschein::on_Palette_activate()
      	                        e==EINH_STUECK?0.0:mengeneinheit,
      	                        Palette->get_value_as_int(),false);
 //     	   OffAuf_RowData::abschreiben(*i,menge);
-     	   Data_Lieferoffen::abschreiben(*i,menge);
+//     	   Data_Lieferoffen::abschreiben(*i,menge);
+            i->abschreiben(menge);
         }
         else
         // stueckeln (1*Lieferung, dann Zuordnung)
@@ -338,7 +344,8 @@ void auftrag_lieferschein::on_Palette_activate()
      	                        e==EINH_STUECK?0.0:abmenge,
      	                        0,true);
 //              OffAuf_RowData::abschreiben(*i,abmenge);
-              Data_Lieferoffen::abschreiben(*i,abmenge);
+//              Data_Lieferoffen::abschreiben(*i,abmenge);
+              i->abschreiben(menge);
               menge-=abmenge;
        	   }
            if (menge)
@@ -373,7 +380,7 @@ void auftrag_lieferschein::on_Palette_activate()
   else
   {
    try {
-    cH_Data_Lieferoffen dt(tree_daten->getSelectedRowDataBase_as<cH_Data_Lieferoffen>());
+   cH_Data_Lieferoffen dt=tree_offen->getSelectedRowDataBase_as<cH_Data_Lieferoffen>();
     ArtikelBase artikel = dt->get_Artikel_Id();
     if(artikel.Id() == 0) return;
 
@@ -383,13 +390,10 @@ void auftrag_lieferschein::on_Palette_activate()
 		auftragentry, artikel, anzahl->get_value_as_int(), 
 		liefermenge->get_value_as_float(),Palette->get_value_as_int());
 
-//    cH_OffAuf_RowData entry((dynamic_cast<TCListLeaf*>(selectedrow))->LeafData()); 
     Einheit e(artikel);
     if (e!=EINH_STUECK)
-//     (const_cast<OffAuf_RowData*>(&*entry))->abschreiben(anzahl->get_value_as_int()*liefermenge->get_value_as_float());
        (const_cast<Data_Lieferoffen*>(&*dt))->abschreiben(anzahl->get_value_as_int()*liefermenge->get_value_as_float());
     else    
-//     (const_cast<OffAuf_RowData*>(&*entry))->abschreiben(anzahl->get_value_as_int());
      (const_cast<Data_Lieferoffen*>(&*dt))->abschreiben(anzahl->get_value_as_int());
 
     tr.commit();
@@ -403,13 +407,13 @@ void auftrag_lieferschein::on_Palette_activate()
 // offene_auftraege->clear();
 // offene_auftraege->showOffAuf();
     set_tree_offen_content();
-  }
- catch(SQLerror &e) 
+  } catch(SQLerror &e) 
 	{ if(e.Code()==-400) liefernr->grab_focus(); //noch kein Liefrschein vorhanden 
 	  else meldung->Show(e); 
 	  return; 
 	}
- catch(...){}
+
+ catch(std::exception &e){cerr << e.what();}
   }
 }
 

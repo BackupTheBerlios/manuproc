@@ -4,10 +4,8 @@
 
 void auftrag_main::on_button_neue_anr_clicked()
 {
- if(!an_instanz->Id()) {cerr << "Erst eine Instanz wählen, an die der Auftrag gehen soll\n"; 
-   return; }
  try { 
-    instanz_auftrag = new Auftrag(an_instanz->Id(),1,9999);
+    instanz_auftrag = new AuftragFull(Auftrag::Anlegen(instanz->Id()),1,Datum_instanz->get_value().Jahr());
     AuftragBase ab(*instanz_auftrag);
     loadAuftrag(ab);
     searchcombo_auftragid->setContent(instanz_auftrag->getAuftragidToStr(),'0');
@@ -22,154 +20,95 @@ void auftrag_main::loadAuftrag(const AuftragBase& auftragbase)
 {
   try { AuftragBase ab(auftragbase);
         if(instanz_auftrag) delete instanz_auftrag;
-        instanz_auftrag = new Auftrag(ab);
-        instanz_aufeintrag =new AuftragFull(ab);
+        instanz_auftrag =new AuftragFull(ab);
       } catch(SQLerror &e)
       { cerr << e ; instanz_auftrag=NULL; return;} 
         catch (Kalenderwoche::error &e)
       { cerr << "KW error\n"; } 
+/*
  datavec_instanz_auftrag.clear();
- for (AuftragFull::const_iterator i=instanz_aufeintrag->begin();i!=instanz_aufeintrag->end();++i)
-  {
-    datavec_instanz_auftrag.push_back(new Data_neuer_auftrag(
-      this,ArtikelBase(i->ArtikelID()),i->getStueck(),
-      i->getLieferdatum(),i->getEntryStatus(),i->getZnr()));  
-  }
+ for (AuftragFull::const_iterator i=instanz_auftrag->begin();i!=instanz_auftrag->end();++i)
+    datavec_instanz_auftrag.push_back(new Data_neuer_auftrag(this,*i));  
  tree_neuer_auftrag->clear();
  tree_neuer_auftrag->setDataVec(datavec_instanz_auftrag);
-
+*/
+ show_neuer_auftrag();
  searchcombo_auftragid->setContent(instanz_auftrag->getAuftragidToStr(),'0');
- 
- instanz_auftrag_status->set_History(instanz_auftrag->getStatus());
- instanz_eintrag_status->hide();
- label_eintragstatus->hide();
 }
 
 
 void auftrag_main::on_searchcombo_auftragid_activate()
 {
- loadAuftrag(AuftragBase(an_instanz->Id(),searchcombo_auftragid->Content()));
-}
-
-void auftrag_main::on_instanz_auftrag_status_activate()
-{
- if (instanz_auftrag)
-  {  
-    instanz_auftrag->setStatusAuftrag(instanz_auftrag_status->get_Status());
-    loadAuftrag(*instanz_auftrag);
-  }
-}
-void auftrag_main::on_instanz_eintrag_status_activate()
-{
- if (instanz_auftrag)
-  {  
-    instanz_aufeintrag->setStatusEntryZnr(selected_instanz_znr,instanz_eintrag_status->get_Status());
-    loadAuftrag(*instanz_auftrag);
-  }
-}
-
-gint auftrag_main::on_eventbox_instanz_button_press_event(GdkEventButton *event)
-{
- menu_an_instanz->popup(event->button,event->time);
- return true;
-}
-
-void auftrag_main::an_instanz_selected(ppsInstanz::ID insnr)
-{
- an_instanz =cH_ppsInstanz(insnr);
- label_an_instanz->set_text(an_instanz->get_Name());
-//cout<< an_instanz.get_Name()<<"\t"<<an_instanz.Id()<<"\n";
-}
-
-void auftrag_main::instanz_tree_herkunft_leaf_selected(cH_RowDataBase d)
-{
-  if(!instanz_auftrag) return;
-  const Data_instanz_herkunft *dt=dynamic_cast<const Data_instanz_herkunft*>(&*d);
-  AufStatVal status = instanz_auftrag_status->get_Status();
-  int znr = get_next_entry_znr(*instanz_auftrag);
-  datavec_instanz_auftrag.push_back(new Data_neuer_auftrag(this,dt->ArtBase(),dt->Menge(),
-         dt->get_Datum(),status,znr));  
-
-  if (instanz_auftrag)
-   {
-    instanz_auftrag->insertNewEntry(dt->Menge(),dt->get_Datum(),dt->ArtBase().Id());
-   }  
-
-  tree_neuer_auftrag->clear();
-  tree_neuer_auftrag->setDataVec(datavec_instanz_auftrag);
+ loadAuftrag(AuftragBase(instanz->Id(),searchcombo_auftragid->Content()));
 }
 
 void auftrag_main::tree_neuer_auftrag_leaf_selected(cH_RowDataBase d)
 {
+//  Data_neuer_auftrag *dt=dynamic_cast<Data_neuer_auftrag*>(&(const_cast<RowDataBase&>(*d)));
   const Data_neuer_auftrag *dt=dynamic_cast<const Data_neuer_auftrag*>(&*d);
-  selected_instanz_znr=dt->getZnr();
-  label_eintragstatus->show();
-  instanz_eintrag_status->show();
-  instanz_eintrag_status->set_History(dt->Status());
+  Data_neuer_auftrag *Dna = const_cast<Data_neuer_auftrag*>(dt); 
+  (Dna->get_AufEintragBase()).deleteAuftragEntry();
+  loadAuftrag(Dna->get_AufEintragBase());
 }
 
-
-void auftrag_main::instanz_tree_inhalt_setzen(int artid,int laenge_m,Petig::Datum datum)
+void auftrag_main::instanz_leaf_auftrag(AufEintragBase& selected_AufEintrag)
 {
-   std::vector<cH_RowDataBase> datavec;
-   ArtikelBase A(artid);
-   ArtikelBaum AB(A);
-   if(instanz->Id() != 8)
-    for (ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
-     {
-      ArtikelStamm AS(i->rohartikel);
-      an_instanz_selected(AS.BestellenBei()->Id());
-      datavec.push_back(new Data_instanz_herkunft(   
-         cH_ppsInstanz(AS.BestellenBei()),i->rohartikel,i->menge,datum));
-     }
-   else
-    {
-      // Die Schussfaeden sind doch wohl an dieser Stelle unwichtig, oder?
-      an_instanz_selected(ppsInstanz::INST_SCHAER);
-      Schussfaeden schussfaeden;
-      Fadenliste fadenliste;
-      get_faeden(artid,schussfaeden,fadenliste);
-      for (Fadenliste::const_iterator i=fadenliste.sumbegin();i!=fadenliste.sumend();++i)
-       {
-//        const double km_m=0.001;
-//        double menge = laenge_m * km_m *i->get_Gewicht_kg_pro_km_Faden() ;
-        cH_ppsInstanz instanz(ppsInstanz::INST_SCHAER);
-        datavec.push_back(new Data_instanz_herkunft(   
-           instanz,i->getMaterial(),laenge_m,datum,"m"));
-       }
-    }
-   instanz_tree_herkunft->setDataVec(datavec);
+  if(!instanz_auftrag) return;
+  long menge=0;
+  if (togglebutton_geplante_menge->get_active())
+   {
+    gtk_spin_button_update(spinbutton_geplante_menge->gtkobj());
+    menge = spinbutton_geplante_menge->get_value_as_int();
+    if(menge>selected_AufEintrag.getRestStk()) menge=selected_AufEintrag.getRestStk();
+   }   
+  else  menge = selected_AufEintrag.getRestStk();
+
+  selected_AufEintrag.abschreiben(menge);
+
+  int znr = (dynamic_cast<Auftrag*>(instanz_auftrag))->insertNewEntry(menge,
+     selected_AufEintrag.getLieferdatum(),selected_AufEintrag.ArtikelID());
+
+  AuftragsEntryZuordnung(selected_AufEintrag,*instanz_auftrag,znr);
+
+  cH_RowDataBase dt(maintree_s->getSelectedRowDataBase());
+  maintree_s->redisplay(dt,Data_auftrag::METER);         
+  maintree_s->redisplay(dt,Data_auftrag::STUECK);         
+                  
+//  show_neuer_auftrag();
+  loadAuftrag(*instanz_auftrag);
 }
 
-void auftrag_main::get_faeden(int artid,Schussfaeden& schussfaeden,
-      Fadenliste& fadenliste)
+void auftrag_main::show_neuer_auftrag()
 {
- Bindungsliste bindungsliste;
- ArtikelBase artbase(artid);
- try {                  
-    schussfaeden.Load(artbase);
-    bindungsliste.Load();
-    fadenliste.Load(artbase,bindungsliste);
-   }
- catch(SQLerror &e) {std::cerr << e << '\n';}
-}
-
-
-void auftrag_main::instanz_tree_titel_setzen()
-{
- vector<std::string> s;
- s.push_back("Instanz");
- s.push_back("Artikel");
- s.push_back("Menge");
- instanz_tree_herkunft->setTitles(s);
+  if (!instanz_auftrag) return;
+  tree_neuer_auftrag->clear();
+  vector<cH_RowDataBase> datavec;
+  for (AuftragFull::const_iterator i=instanz_auftrag->begin();i!=instanz_auftrag->end();++i)
+     datavec.push_back(new Data_neuer_auftrag(this,*i));  
+  tree_neuer_auftrag->setDataVec(datavec);
 }
 
 void auftrag_main::neuer_auftrag_tree_titel_setzen()
 {
  vector<std::string> s;
+ s.push_back("Kunde");
  s.push_back("Artikel");
  s.push_back("Menge");
  s.push_back("Datum");
- s.push_back("Status");
  tree_neuer_auftrag->setTitles(s);
+}
+
+gint auftrag_main::on_button_instanz_print_clicked(GdkEventButton *ev)
+{
+  if (ev->button==1)
+   {
+     std::string s="auftrag_drucken -p -a Auftrag -n "+searchcombo_auftragid->get_text()+" -i "+itos(instanz->Id());
+     system(s.c_str());
+   } 
+  if (ev->button==3); 
+   {
+     std::string s="auftrag_drucken -a Auftrag -n "+searchcombo_auftragid->get_text()+" -i "+itos(instanz->Id());
+     system(s.c_str());
+   }
+ return false;
 }

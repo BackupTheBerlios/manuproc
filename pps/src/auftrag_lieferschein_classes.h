@@ -9,6 +9,7 @@
 #include<rowdata.h>
 #include<Artikel/ArtikelBezeichnung.h>
 #include<Artikel/Einheiten.h>
+#include<Auftrag/AufEintragBase.h>
 
 class Data_Lieferdaten : public RowDataBase
 {
@@ -81,14 +82,14 @@ class Data_Lieferdaten_Node : public TCListNode
 
 class Data_Lieferoffen : public RowDataBase
 {
-      AufEintragBase2 auftrag;
+      AufEintragBase auftrag;
       cH_ArtikelBezeichnung artbez;
       int offen;
       int geliefert;
       Petig::Datum lieferdatum;
       
   public:
-   Data_Lieferoffen(AufEintragBase2& _auftrag, cH_ArtikelBezeichnung _artbez,
+   Data_Lieferoffen(AufEintragBase& _auftrag, cH_ArtikelBezeichnung _artbez,
          int _offen,int& _geliefert,Petig::Datum _lieferdatum    )
       :auftrag(_auftrag),artbez(_artbez),offen(_offen),geliefert(_geliefert),
         lieferdatum(_lieferdatum) {}
@@ -114,7 +115,7 @@ class Data_Lieferoffen : public RowDataBase
    int get_Auftrag_Id() const { return auftrag.AufId(); }
    const AufEintragBase2 &AuftragEntry() const { return auftrag; }
    void abschreiben(int menge);
-   static void abschreiben(const AufEintragBase2 &auf,int menge) throw(SQLerror);   
+//   static void abschreiben(const AufEintragBase2 &auf,int menge) throw(SQLerror);   
 };
 
 class cH_Data_Lieferoffen : public Handle<const Data_Lieferoffen>

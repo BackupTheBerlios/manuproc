@@ -574,13 +574,14 @@ void auftrag_bearbeiten::on_auftrag_abbruch_clicked()
 void auftrag_bearbeiten::on_auftrag_ok_clicked()
 {   
  try {
-      auftrag = new AuftragFull(instanz,kundenbox->get_value(),
+      auftrag = new AuftragFull(Auftrag::Anlegen(instanz),kundenbox->get_value(),
 			jahrgang_spinbutton->get_value_as_int());
 //NEU: Auftrag mit Auftrags ID 0 anlegen:
 //      auftrag = new AuftragFull(AuftragBase(instanz,0),kundenbox->get_value(),
 //			jahrgang_spinbutton->get_value_as_int());
  	auftrag->setBemerkung(aufbemerkung_entry->get_text());
  	auftrag->setYourAufNr(youraufnr_scombo->get_text());
+//cout << instanz<<'-'<<kundenbox->get_value()<<'\n';
       AuftragBase ab(*auftrag);
       on_clear_all(); // careful this deletes auftrag
  // eigentlich doch nur anzeigen oder? CP
@@ -612,14 +613,14 @@ void auftrag_bearbeiten::on_aufbemerkung_activate()
 
 void auftrag_bearbeiten::on_button_preview_clicked()
 {  if (!auftrag) return;
-   string command = "auftrag_drucken Auftrag "+itos(auftrag->Id())+" Preview " + itos(instanz) ;
+   string command = "auftrag_drucken -a Auftrag -n "+itos(auftrag->Id())+" -i " + itos(instanz) ;
    system(command.c_str());
 }  
 
 void auftrag_bearbeiten::on_button_drucken_clicked()
 {
    if (!auftrag) return;
-   string command = "auftrag_drucken Auftrag "+itos(auftrag->Id())+" Plot " + itos(instanz);
+   string command = "auftrag_drucken -a Auftrag "+itos(auftrag->Id())+" -p -i " + itos(instanz);
    system(command.c_str());
 }
 

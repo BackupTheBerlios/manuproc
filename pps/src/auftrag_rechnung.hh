@@ -41,7 +41,7 @@ class auftrag_rechnung : public auftrag_rechnung_glade
         void on_rng_neu();
         void on_rng_save();
         void on_rng_preview();
-        void on_rng_print();
+        gint on_rng_print(GdkEventButton *ev);
         void rngzeile_delete();
         void on_rngdate_activate();
         gint timeout();

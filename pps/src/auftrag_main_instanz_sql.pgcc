@@ -21,6 +21,7 @@ int auftrag_main::get_next_entry_znr(AuftragBase& auftrag)
 }
 
 
+/*
 void auftrag_main::instanz_menu()
 {
   try{
@@ -62,6 +63,7 @@ void auftrag_main::instanz_menu()
    {  std::cerr << e << '\n';}
 
 }
+*/
 
 void auftrag_main::on_searchcombo_auftragid_search(int *cont, GtkSCContext newsearch)
 throw(SQLerror)
@@ -73,7 +75,7 @@ throw(SQLerror)
  int KUNDE=1;
  int INSTANZ;
  exec sql end declare section;
- INSTANZ=an_instanz->Id();
+ INSTANZ=instanz->Id();
  static bool transaction = false;
   
  switch(newsearch)

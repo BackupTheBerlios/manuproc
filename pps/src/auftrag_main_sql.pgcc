@@ -2,6 +2,7 @@
 #include <Aux/Transaction.h>
 #include <Aux/SQLerror.h>
 #include <Aux/Datum.h>
+#include <Auftrag/AufEintragBase2.h>
 exec sql include sqlca;
 
 map<int,std::string> auftrag_main::get_all_instanz()
@@ -25,18 +26,21 @@ map<int,std::string> auftrag_main::get_all_instanz()
  return v;
 }
 
-vector<int> auftrag_main::get_new_aufids(cH_ppsInstanz instanz)
+vector<AufEintragBase2> auftrag_main::get_new_aufids(cH_ppsInstanz instanz)
 {
- vector<int> vec_newaufid;
+ vector<AufEintragBase2> vec_newaufein;
  exec sql begin declare section;
-  int ID;
+  int AUFTRAGID,ZEILENNR;
   char query[1024];
  exec sql end declare section;
- std::string squery = "SELECT auftragid from auftrag where instanz ='"+
-    itos(instanz->Id())+"' and datum > (select cast(wert as timestamp) 
-      from global_settings where userid=0 and program='pps' 
+ cH_ppsInstanz ivon(ppsInstanz::INST_KNDAUF);
+ std::string squery = "SELECT auftragid,zeilennr from 
+    auftragentry where instanz ='"+itos(ivon->Id())+"' and 
+      lasteditdate > (select cast(wert as timestamp) 
+      from global_settings where userid=0 and program='pps'
       and name='"+instanz->get_Name()+"')";
  strncpy(query,squery.c_str(),sizeof(query));
+//cout << query << '\n';
  Transaction tr;
  exec sql prepare newidein_ from :query;
  exec sql declare newidein cursor for newidein_;
@@ -44,13 +48,29 @@ vector<int> auftrag_main::get_new_aufids(cH_ppsInstanz instanz)
  SQLerror::test(__FILELINE__);
  while (true)
   {
-   exec sql fetch newidein into :ID;
+   exec sql fetch newidein into :AUFTRAGID,:ZEILENNR;
    SQLerror::test(__FILELINE__,100);
    if (sqlca.sqlcode) break; 
-   vec_newaufid.push_back(ID);               
+   AufEintragBase2 a(ivon,AUFTRAGID,ZEILENNR);
+   vec_newaufein.push_back(a);               
   }
  exec sql close newidein;
  tr.close();
- return vec_newaufid;
+ return vec_newaufein;
 }
 
+void auftrag_main::AuftragsEntryZuordnung(const AufEintragBase& AEB,const AuftragBase& AB,int znr)
+{
+ exec sql begin declare section;
+  int db_aaid=AEB.getAuftragid();
+  int db_ains=AEB.getAuftragInstanz();
+  int db_aznr=AEB.getZnr();
+  int db_naid=AB.Id();
+  int db_nins=AB.Instanz();
+  int db_nznr=znr;
+ exec sql end declare section;
+ exec sql insert into auftragsentryzuordnung 
+   (altauftragid,altinstanz,altzeilennr,neuauftragid,neuinstanz,neuzeilennr) values
+   (:db_aaid,:db_ains,:db_aznr,:db_naid,:db_nins,:db_nznr);
+ SQLerror::test(__FILELINE__);
+}

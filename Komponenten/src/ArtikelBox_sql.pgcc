@@ -17,13 +17,16 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <ManuProCConfig.h>
 #include "ArtikelBox.hh"
 #include <Aux/itos.h>
 #include <algorithm>
 #include <unistd.h>
-#include "stock_button_apply.xpm"
-#include "stock_button_cancel.xpm"
 #include <Aux/FetchIStream.h>
+#ifdef PETIG_EXTENSIONS
+#include <Aux/ppsInstanz.h>
+#include <Artikel/Prozess.h>
+#endif
 
 exec sql include sqlca;
 
@@ -36,13 +39,12 @@ void ArtikelBox::searchFunc(int *cont, GtkSCContext newsearch, unsigned int sp,u
  try
  {switch(newsearch)
   { case GTK_SEARCH_OPEN:
-    { 
-      pixmap->set(stock_button_cancel_xpm);
+    { pixmap_setzen(false);
       artikel=ArtikelBase();
  exec sql begin declare section;
    char *QUERY;
  exec sql end declare section;
- std::string table="artbez_"+itos(schema->Typ())+"_"+itos(schema->Id());
+ std::string table="artbez_"+itos(schema->Typ())+"_"+itos(schema->Id()) + " as artboxtable";
  std::string what;
  std::string combocontent=combos[l][sp]->get_text();
  std::string constraint;
@@ -77,8 +79,17 @@ void ArtikelBox::searchFunc(int *cont, GtkSCContext newsearch, unsigned int sp,u
       }    
   }
  squery = "SELECT DISTINCT "+what+" FROM "+table ;
- if (constraint!="") squery += " WHERE "+constraint;
-//cout << squery<<"\n";
+ if (constraint.size()) 
+ { squery += " WHERE "+constraint;
+   if (einschraenkung.size() && eingeschraenkt) squery += " AND " + einschraenkung;
+ }
+ else if (einschraenkung.size() && eingeschraenkt)
+ 	squery += " WHERE " + einschraenkung;
+ 
+//if (eingeschraenkt) 
+//{  cout << einschraenkung.size() << ", " << einschraenkung << '\n';
+//   cout << squery<<"\n";
+//}
     (const char*)QUERY=squery.c_str();
     tr.open();
     exec sql prepare QUERY from :QUERY;
@@ -147,35 +158,46 @@ void ArtikelBox::fuelleMenu()
 {  
    exec sql begin declare section;
      int eab_id,db_artikeltyp;
-     int id[20];
+   unsigned int id[20];
    char bez[20][41];
    exec sql end declare section;
    eab_id=schema->Id();
    bool typ_ok=false;
-//   bool typ2_ok=false;
    int neuerTyp=0;
-//   int neuerTyp2=0;
+   
    // Hauptmenü
+   if (menu)
+   {  menu->destroy();
+      menu=0;
+   }
+   menu=new Gtk::Menu();
+
    Gtk::Menu *typ_menu = manage(new class Gtk::Menu());
    Gtk::MenuItem *typ = manage(new class Gtk::MenuItem("Typ (Warengruppe)"));
-   Gtk::Menu *typ2_menu = manage(new class Gtk::Menu());
-   Gtk::MenuItem *typ2 = manage(new class Gtk::MenuItem("Schema (Kundengruppe)"));
+   typ->set_submenu(*typ_menu);
+   Gtk::Menu *schema_menu = manage(new class Gtk::Menu());
+   Gtk::MenuItem *schema_mi = manage(new class Gtk::MenuItem("Schema (Kundengruppe)"));
+   schema_mi->set_submenu(*schema_menu);
    Gtk::Menu *anzeige_menu = manage(new class Gtk::Menu());
    Gtk::MenuItem *anzeige = manage(new class Gtk::MenuItem("Anzeige"));
+   anzeige->set_submenu(*anzeige_menu);
    Gtk::Menu *optionen_menu = manage(new class Gtk::Menu());
    Gtk::MenuItem *optionen = manage(new class Gtk::MenuItem("Optionen"));
-   Gtk::Menu *neu_menu = manage(new class Gtk::Menu());
-   Gtk::MenuItem *neu = manage(new class Gtk::MenuItem("Neuen Eintrag anlegen"));
-   menu->append(*typ);   
-   typ->set_submenu(*typ_menu);
-   menu->append(*typ2);   
-   typ2->set_submenu(*typ2_menu);
-   menu->append(*anzeige);   
-   anzeige->set_submenu(*anzeige_menu);
-   menu->append(*optionen);   
    optionen->set_submenu(*optionen_menu);
-   menu->append(*neu);
+//   Gtk::Menu *neu_menu = manage(new class Gtk::Menu());
+   Gtk::MenuItem *neu = manage(new class Gtk::MenuItem("Neuen Eintrag anlegen"));
    neu->activate.connect(SigC::slot(this,&ArtikelBox::Neuer_Eintrag));
+
+   menu->append(*typ);   
+   typ->show();
+   menu->append(*schema_mi);   
+   schema_mi->show();
+   menu->append(*anzeige);   
+   anzeige->show();
+   menu->append(*optionen);   
+   optionen->show();
+   menu->append(*neu);
+   if (neuanlegen()) neu->show();
 
    // Einträge für den Menüeintrag 'Typ'
    exec sql select DISTINCT e.artikeltyp, w.text into :id, :bez
@@ -190,7 +212,7 @@ void ArtikelBox::fuelleMenu()
          Gtk::MenuItem *mi=manage(new Gtk::MenuItem(entr)); 
          typ_menu->append(*mi);
          mi->show();
-         mi->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::setzeTyp),id[i]));
+         mi->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::setzeSchemaId),id[i]));
 
    	 if (!typ_ok)
 	     { if (schema->Typ()==ArtikelTyp::typ(id[i])) typ_ok=true;
@@ -222,31 +244,13 @@ void ArtikelBox::fuelleMenu()
          else entr += " ";
          entr += bez[i];
          Gtk::MenuItem *mi=manage(new Gtk::MenuItem(entr)); 
-         typ2_menu->append(*mi);
+         schema_menu->append(*mi);
          mi->show();
-         mi->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::setzeTyp2),id[i]));
-/*
-   	 if (!typ2_ok)
-	     { if (schema->Id()==ArtikelTyp::typ(id[i])) typ2_ok=true;
-	       else if (!i) neuerTyp2=id[i];
-     	  }
-*/
+         mi->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::setzeSchemaTyp),id[i]));
        }
    }
    // Für neue Kundengruppe immer erste Warengruppe setzen:
 //   setExtBezSchema(cH_ExtBezSchema(schema->Id(),neuerTyp));
-/*
-   if (!typ2_ok)
-   // Diese Typ ist für diesen Kunden nicht vorhanden,
-   // nehmen wir den ersten anderen.
-   {  static bool block=false;
-      if (block) return;
-      block=true; // never recurse here
-      setExtBezSchema(cH_ExtBezSchema(schema->Id(),neuerTyp));
-      block=false;
-      return;
-   }
-*/
 
    // Einträge für den Menüeintrag 'Anzeige'
    exec sql begin declare section;
@@ -272,33 +276,40 @@ void ArtikelBox::fuelleMenu()
    }
 
    // Einträge für den Menüeintrag 'Optionen'
-   Gtk::CheckMenuItem *autocomplete = manage(new class Gtk::CheckMenuItem("Automatisches Ergänzen"));      
-   Gtk::CheckMenuItem *kombiniert = manage(new class Gtk::CheckMenuItem("Kombiniert"));      
-   Gtk::CheckMenuItem *vertikal = manage(new class Gtk::CheckMenuItem("Vertikal anordnen"));      
-   optionen_menu->append(*autocomplete);
-   optionen_menu->append(*kombiniert);
-   optionen_menu->append(*vertikal);
-   autocomplete->show();
-   kombiniert->show();
-   vertikal->show();
-   if(autocompletebool) autocomplete->set_active(true);
-   autocomplete->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::Autocomplete),autocomplete));
-   if (kombiniertbool) kombiniert->set_active(true);
-   kombiniert->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::kombiniert),kombiniert));
-   if (vertikalbool) vertikal->set_active(true);
-   vertikal->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::set_Vertikal),vertikal));
+   {  Gtk::CheckMenuItem *autocomplete = manage(new class Gtk::CheckMenuItem("Automatisches Ergänzen"));      
+      Gtk::CheckMenuItem *kombiniert = manage(new class Gtk::CheckMenuItem("Kombiniert"));      
+      Gtk::CheckMenuItem *vertikal = manage(new class Gtk::CheckMenuItem("Vertikal anordnen"));      
+      label = manage(new class Gtk::CheckMenuItem("Label anzeigen"));      
+      Gtk::CheckMenuItem *einschr_mi = manage(new class Gtk::CheckMenuItem("Suche einschränken"));
+      optionen_menu->append(*autocomplete);
+      optionen_menu->append(*kombiniert);
+      optionen_menu->append(*vertikal);
+      optionen_menu->append(*label);
+      optionen_menu->append(*einschr_mi);
+      autocomplete->show();
+      kombiniert->show();
+      vertikal->show();
+      label->show();
+      if (einschraenkung.size()) einschr_mi->show();
 
+      if(autocompletebool) autocomplete->set_active(true);
+      autocomplete->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::Autocomplete),autocomplete));
+      if (kombiniertbool) kombiniert->set_active(true);
+      kombiniert->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::kombiniert),kombiniert));
+      if (vertikalbool) vertikal->set_active(true);
+      vertikal->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::set_Vertikal),vertikal));
+      if (labelbool) {label->set_active(true); show_label(true);}
+      label->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::set_Label),label));
+      if (eingeschraenkt) einschr_mi->set_active(true);
+      einschr_mi->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::einschraenken_cb), einschr_mi));
+   }
 
-   // Menu anzeigen
-   typ_menu->show();
-   typ->show();
-   typ2_menu->show();
-   typ2->show();
-   anzeige_menu->show();
-   anzeige->show();
-   optionen_menu->show();
-   optionen->show();
-   if (neuanlegen()) neu->show();
+   for (user_menus_t::const_iterator i=user_menus.begin();i!=user_menus.end();++i)
+   {  Gtk::MenuItem *mi=manage(new Gtk::MenuItem(i->first));
+      menu->append(*mi);
+      mi->show();
+      mi->activate.connect(SigC::bind(MenueAusgewaehlt.slot(),i->second));
+   }
 }
 
 bool ArtikelBox::neuanlegen()
@@ -429,12 +440,16 @@ void ArtikelBox::Neuer_Eintrag()
   what  = "("+itos(db_id)+",now(),";
   where_what(where,what,false);
 
-#warning Was in die ArtikelBox eingegeben wird wird als Kundenauftrag = 9 bestellt
-#warning Das sollten wir unbedingt überdenken.
-  Neuer_Eintrag_sql(db_id,where,what,9);
-
- 
+  Neuer_Eintrag_sql(db_id,where,what,
+#ifdef PETIG_EXTENSIONS
+  		ppsInstanz::Kundenauftraege
+#else
+		ppsInstanz::default_id
+#endif  		
+  						);
+#ifdef PETIG_EXTENSIONS  // Jumborollen anlegen ?
  std::string aufmachung;
+#warning Fuer Malte: schneller wäre den Index zu vergleichen (BezKompType)
   for (unsigned int j=0;j<combos.size();++j)
    for (unsigned int i=0; i<combos[j].size(); ++i)
     if (labels[j][i]->get_text()==schema->JumboTitel())
@@ -451,15 +466,14 @@ void ArtikelBox::Neuer_Eintrag()
         what  = "("+itos(db_id_jumbo)+",now(),";
         where_what(where,what,true);
    
-#warning 'aufgemachte' Ware wird im Bandlager = 8 bestellt
-        Neuer_Eintrag_sql(db_id_jumbo,where,what,8);
+        Neuer_Eintrag_sql(db_id_jumbo,where,what,ppsInstanz::Bandlager);
       }
-    insert_into_artikelzusammensetzung(db_id,jumbo_id,31,get_menge_from_artikelbox());
+    insert_into_artikelzusammensetzung(db_id,jumbo_id,Prozess::Rollen_Jumbo,get_menge_from_artikelbox());
   }
-
+#endif
 
   artikel=db_id;
-  pixmap->set(stock_button_apply_xpm);
+  pixmap_setzen(true);
   new_article_inserted(db_id);
   activate();
   }catch (SQLerror &e)   {  /*std::cerr << e << '\n';*/}
@@ -489,32 +503,6 @@ void ArtikelBox::Neuer_Eintrag_sql(int id, std::string where, std::string what,i
      
 
 }
-
-#if 0
-unsigned int ArtikelBox::intern_id(int typ)
-{
-  exec sql begin declare section;
-   char db_query[1024];
-   int db_id;
-  exec sql end declare section;
-  std::string where, what;
-  where = "(" ;
-  what  = "(";
-  where_what(where,what);
-
-  std::string sq = "select id from artbez_"+itos(typ)+"_1 where "+where+"="+what;
-  strncpy(db_query,sq.c_str(),sizeof(db_query));
-  Transaction tr;
-  exec sql prepare e_ from :db_query;
-  exec sql declare e cursor for e_;
-  exec sql open e;
-  exec sql fetch e into :db_id;
-  SQLerror::test(__FILELINE__,100);
-  if (sqlca.sqlcode) return 0;
-  else return db_id;
-
-}
-#endif
 
 void ArtikelBox::where_what(std::string& where, std::string& what, bool jumbo)
 {
@@ -606,3 +594,5 @@ void ArtikelBox::insert_into_artikelzusammensetzung(int id, int id_jumbo, int pr
     values (:db_id,:db_prozess,:db_id_jumbo,:db_menge,now());
  SQLerror::test(__FILELINE__);
 }
+
+

@@ -245,6 +245,22 @@
 
     <widget>
       <class>Custom</class>
+      <name>artikelbox2</name>
+      <height>50</height>
+      <cxx_visibility>protected</cxx_visibility>
+      <creation_function>ArtikelBox(&quot;marc&quot;,&quot;test&quot;)</creation_function>
+      <int1>0</int1>
+      <int2>0</int2>
+      <last_modification_time>Thu, 11 Oct 2001 09:46:57 GMT</last_modification_time>
+      <child>
+	<padding>0</padding>
+	<expand>True</expand>
+	<fill>True</fill>
+      </child>
+    </widget>
+
+    <widget>
+      <class>Custom</class>
       <name>kundenbox</name>
       <height>40</height>
       <cxx_visibility>protected</cxx_visibility>

@@ -29,9 +29,10 @@ class LR_drucken
       unsigned int auftragsnr;
       const string RL;
       string kopie;
-      ppsInstanz::ID instanz;
+      cH_ppsInstanz instanz;
    private:
-      void drucken(string view_plot);
+      void drucken(string view_plot,bool b_firmenpapier,bool b_kopie);
    public:
-      LR_drucken(string RL, unsigned int auftragsnr,string view_plot, ppsInstanz::ID _instanz);
+      LR_drucken(string RL, unsigned int auftragsnr,string view_plot, 
+           bool b_firmenpapier,bool b_kopie,cH_ppsInstanz _instanz);
 };

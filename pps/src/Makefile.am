@@ -36,7 +36,6 @@ noinst_HEADERS = \
    lieferscheinliste_classes.hh \
    lieferscheinliste_glade.hh \
 	auftrag_rechnung.hh \
-   rechnung_classes.hh \
 	auftrag_rechnung_glade.hh \
 	auftragliste.hh \
 	auftragliste_glade.hh \
