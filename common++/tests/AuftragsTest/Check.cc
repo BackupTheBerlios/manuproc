@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.55 2003/08/07 09:48:29 christof Exp $
+// $Id: Check.cc,v 1.56 2003/08/07 09:50:19 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -94,7 +94,7 @@ bool Check::vergleich(was_checken was,const std::string &zusatz)
         std::cout << fz2<<" wurde neu erzeugt\n"; 
      }
      else
-     {  std::string s="diff -q "+fz1+" "+fz2;
+     {  std::string s="diff -q "+fz1+" "+fz2+" >/dev/null";
         if (resort) s="./resort"+s;
         int reg=system(s.c_str());
         if(reg==-1) { std::cout<< "Fehler im diff-Komando ("+*i+")\n"; exit(reg);}
