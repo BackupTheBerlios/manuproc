@@ -1,4 +1,4 @@
-// $Id: JumboRolle.h,v 1.2 2002/04/08 14:00:05 christof Exp $
+// $Id: JumboRolle.h,v 1.3 2002/05/06 13:36:01 christof Exp $
 
 #ifndef _JUMBOROLLE_HH
 #  define _JUMBOROLLE_HH
@@ -13,26 +13,29 @@
 #include <Aux/Zeitpunkt_new.h>
 #include <Lager/LagerPlatz.hh>
 
-
 #define CODELENGTH	8
 
 #define NOT_USED(x...) 
 
+class KettplanKette;
+
 class JumboRolle
 {
 public:
+ typedef unsigned int ID;
             
   enum Jumbo_Status{Gedruckt=0, Gewebt, ImLager, Verarbeitet};
         
   // I do not like id in this struct too much CP            
  struct st_inventur
- { int code;unsigned int id; bool drin;
+ { ID code; ArtikelBase::ID id; bool drin;
  
-   st_inventur(int c, unsigned int i,bool d=false) 
+   st_inventur(ID c, ArtikelBase::ID i,bool d=false) 
    : code(c),id(i),drin(d) {} 
  };
+ 
 private:
- int code; // mit PruefZiffer
+ ID code; // mit PrüfZiffer
  ArtikelBase artikel;
  int maschine;
  Petig::Datum plandatum;
@@ -50,12 +53,17 @@ private:
  
 public:
  JumboRolle() {}
- JumboRolle(int code) throw(SQLerror,CodeError);
+ JumboRolle(ID code) throw(SQLerror,CodeError);
+ JumboRolle(ID code,int maschine,const Petig::Datum &datum,int webmaschine,
+                 int soll_meter,int status,int lauf,int gang,
+                 ArtikelBase::ID artikelid) throw();
+ static vector<JumboRolle> create(const KettplanKette &k, bool rest=false);
  
  const std::vector<int> lagerPositionen() throw(SQLerror) { return lagerPositionen(artikel); }
  static const std::vector<int> lagerPositionen(const ArtikelBase &art) throw(SQLerror);
  
- int Code() const {return code;} // Mit Prüfziffer!
+ ID Code() const {return Id();} // Mit Prüfziffer!
+ ID Id() const {return code;} // Mit Prüfziffer!
  bool Rest() const {return rest;}
  std::string CodeStr() const;
  std::string artBezeichnung() const { return cH_ArtikelBezeichnung(artikel)->Bezeichnung();}
@@ -76,7 +84,7 @@ public:
  void setStatus_nodb(Jumbo_Status s)  {status=s;}
  void setLagerPosition_nodb(LagerPlatz LP) {lagerposition=LP;}
 
- static bool isRollNrOK(int code);
+ static bool isRollNrOK(ID code);
  static int Pruefziffer_anhaengen(int nummer);
 };
 

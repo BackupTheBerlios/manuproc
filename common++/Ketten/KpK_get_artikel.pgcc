@@ -1,4 +1,4 @@
-// $Id: KpK_get_artikel.pgcc,v 1.6 2002/02/05 17:15:52 christof Exp $
+// $Id: KpK_get_artikel.pgcc,v 1.7 2002/05/06 13:36:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,7 +23,7 @@
 
 exec sql include sqlca;
 
-const std::vector <ArtikelGang> &KettplanKette::get_artikel_sorted()
+const std::vector <ArtikelGang> &KettplanKette::get_artikel_sorted() const
 {  if (valid&VA_ARTIKEL) return artikel;
    if (!artikel.empty()) artikel.clear();
    // einlesen, sortieren, erzeugen

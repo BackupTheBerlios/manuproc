@@ -1,4 +1,4 @@
-// $Id: KettplanKette2.pgcc,v 1.8 2002/01/22 09:15:55 christof Exp $
+// $Id: KettplanKette2.pgcc,v 1.9 2002/05/06 13:36:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,6 +21,7 @@
 #include "KettplanKette.h"
 #include "Maschtyp.h"
 #include <Aux/Transaction.h>
+#include <algorithm>
 
 exec sql include sqlca;
 exec sql include ecpgerrno;
@@ -71,7 +72,7 @@ int KettplanKette::defaultKettlaenge() const throw(SQLerror)
    return ilaenge ? 0 : laenge;
 }
 
-int KettplanKette::defaultStuecklaenge() throw(SQLerror)
+int KettplanKette::defaultStuecklaenge() const throw(SQLerror)
 {  Maschtyp mt=Maschtyp::getMaschtyp(planMaschine());
    exec sql begin declare section;
    int refmasch;
@@ -102,7 +103,7 @@ int KettplanKette::defaultStuecklaenge() throw(SQLerror)
    return ilaenge ? 0 : laenge;
 }
 
-float KettplanKette::defaultSchussdichte() throw(SQLerror)
+float KettplanKette::defaultSchussdichte() const throw(SQLerror)
 {  exec sql begin declare section;
    long artikelid;
    float schussdichte=0; int isd=-1;
@@ -120,7 +121,7 @@ float KettplanKette::defaultSchussdichte() throw(SQLerror)
    return 0;
 }
 
-void KettplanKette::FrageNachSchussdichte() throw (SQLerror)
+void KettplanKette::FrageNachSchussdichte() const throw (SQLerror)
 {  exec sql begin declare section;
    long artikelid;
    exec sql end declare section;
@@ -152,7 +153,7 @@ void KettplanKette::Schussdichte(float sd) throw(SQLerror)
    SQLerror::test(__FILELINE__);
 }
 
-int KettplanKette::barcoMaschine() throw()
+int KettplanKette::barcoMaschine() const throw()
 {  if (valid&VA_WEBMASCH) return webmasch;
    exec sql begin declare section;
    int masch;
@@ -225,7 +226,7 @@ int KettplanKette::Kettlaenge() const throw()
   return kettlaenge;
 }
 
-int KettplanKette::Stuecklaenge() throw()
+int KettplanKette::Stuecklaenge() const throw()
 {  if (valid&VA_STUECKLEN) return stuecklaenge;
 
   try
@@ -254,7 +255,7 @@ int KettplanKette::Stuecklaenge() throw()
   return stuecklaenge;
 }
 
-float KettplanKette::Schussdichte() throw()
+float KettplanKette::Schussdichte() const throw()
 {  if (valid&VA_SCHUSS)
       return schussdichte;
   try
@@ -383,7 +384,7 @@ Kette KettplanKette::Aktuelle_Kette(int webmasch) throw(SQLerror)
    return AK;
 }
 
-Kette KettplanKette::Folge_Kette() throw(SQLerror)
+Kette KettplanKette::Folge_Kette() const throw(SQLerror)
 { 
   exec sql begin declare section;
       int masch=webmasch;
@@ -413,33 +414,46 @@ Petig::Datum KettplanKette::Fertig_am() const throw(SQLerror)
 }
 */
 
-
-void KettplanKette::save_Kette() const
-{
+KettplanKette KettplanKette::create(const Kette &k,const std::vector <ArtikelGang> &artikel, 
+	 int kettlaenge, int stuecklaenge, int planmaschine) 
+{if (!planmaschine) planmaschine=k.Maschine();
  exec sql begin declare section;
-   int MASCHINE=Maschine(),  KETTLAENGE=kettlaenge;
+   int MASCHINE=k.Maschine(),  KETTLAENGE=kettlaenge;
+   int STUECKLAENGE=stuecklaenge, PLANMASCHINE=planmaschine;
    char DATUM[30];
-   int JAHRGANG=Schaerdatum().Jahr();
+   int JAHRGANG=k.Schaerdatum().Jahr();
  exec sql end declare section;
- Schaerdatum().write_postgres(DATUM,sizeof DATUM);
+ k.Schaerdatum().write_postgres(DATUM,sizeof DATUM);
  exec sql INSERT INTO ketten 
-      (laenge, maschine, planmaschine, folgenr, schaerdatum, jahrgang)
-   SELECT :KETTLAENGE, :MASCHINE,
-            :MASCHINE, coalesce(max(folgenr)+1,0), :DATUM,
-            :JAHRGANG
-    FROM ketten WHERE planmaschine= :MASCHINE;
-
-// exec sql insert into ketten (maschine,schaerdatum,laenge)
-//                      values (:MASCHINE,:DATUM,:LAENGE);
- SQLerror::test("Kettplakette::save_Kette(): Kette schon eingetragen");
+      (maschine, schaerdatum, laenge, planmaschine, folgenr, 
+      		jahrgang,stucklaenge)
+   VALUES (:MASCHINE, :DATUM, :KETTLAENGE, :PLANMASCHINE, 
+   		(SELECT coalesce(max(folgenr)+1,0) FROM ketten 
+   			WHERE planmaschine= :MASCHINE),
+   		:JAHRGANG,:STUECKLAENGE);
+ SQLerror::test("KettplanKette::create(): Kette schon eingetragen");
+ 
+ KettplanKette res;
+ 
+ static_cast<Kette&>(res)=k; // no DB access wanted
+ res.kettlaenge=kettlaenge;
+ res.stuecklaenge=stuecklaenge;
+ res.planmasch=planmaschine;
+ res.valid=VA_PLAN|VA_KETTLEN|VA_STUECKLEN|VA_ARTIKEL|VA_WEBMASCH;
+ 
+ for (std::vector <ArtikelGang>::const_iterator i=artikel.begin();
+ 	i!=artikel.end();++i)
+ {  res.push_back(*i);
+ }
+ return res;
 }
 
-void KettplanKette::save_Artikel(const ArtikelGang& artikel) const
+void KettplanKette::push_back(const ArtikelGang& ag) const
 {
  exec sql begin declare section;
    int MASCHINE=Maschine();
-   int GAENGE=artikel.Gaenge();
-   int ARTIKEL=artikel.Id();
+   int GAENGE=ag.Gaenge();
+   int ARTIKEL=ag.Id();
    char DATUM[30];
    int JAHR=Schaerdatum().Jahr();
  exec sql end declare section;
@@ -448,24 +462,27 @@ void KettplanKette::save_Artikel(const ArtikelGang& artikel) const
     (maschine,schaerdatum,gaenge,menge,status,jahrgang,artikelid)
      values (:MASCHINE,:DATUM,:GAENGE,0,1,:JAHR,:ARTIKEL);
  SQLerror::test("Kette::save(): Artikel schon eingetragen");
-
+ artikel.begin(); // force load if not valid
+ artikel.push_back(ag);
 }
 
-void KettplanKette::delete_Artikel(const ArtikelGang& artikel) const
+void KettplanKette::delete_Artikel(const ArtikelGang& ag) const
 {
  exec sql begin declare section;
    int MASCHINE=Maschine();
-   int GAENGE=artikel.Gaenge();
-   int ARTIKEL=artikel.Id();
+   int GAENGE=ag.Gaenge();
+   int ARTIKEL=ag.Id();
    char DATUM[30];
  exec sql end declare section;
  Schaerdatum().write_postgres(DATUM,sizeof DATUM);
  exec sql delete from schaertabelle where maschine=:MASCHINE and
    schaerdatum=:DATUM and gaenge=:GAENGE and artikelid=:ARTIKEL;  
  SQLerror::test("Kette::delete(): Artikel schon weg");
+ std::remove_if(artikel.begin(),artikel.end(),std::bind2nd(std::equal_to<ArtikelGang>(),ag));
 }
 
 int KettplanKette::get_aktual_Index(const ArtikelGang& artikel) const
+// warum nicht aus dem vector? sollte doch einfacher sein
 {
  exec sql begin declare section;
    int GAENGE=artikel.Gaenge();
@@ -477,7 +494,6 @@ int KettplanKette::get_aktual_Index(const ArtikelGang& artikel) const
  SQLerror::test(__FILELINE__);
  return INDEX;
 }
-
 
 
 void KettplanKette::delete_Garn(const ArtikelGang& artikel, const KettenGarn& garn) const

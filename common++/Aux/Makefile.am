@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.13 2001/12/19 11:02:08 christof Exp $
+# $Id: Makefile.am,v 1.14 2002/05/06 13:36:01 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -24,7 +24,8 @@ PGCC_SOURCES=   dbconnect.cc SQLerror_postgres.cc Transaction.cc \
       ppsInstanz_sql.cc Global_Settings.cc
 
 LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
-	Datum.cc Datum.h Handles.h IOerror.cc IOerror.h Kalenderwoche.h Pointer.h \
+	Datum.cc Datum.h Handles.h Handles.cc \
+	IOerror.cc IOerror.h Kalenderwoche.h Pointer.h \
 	Postgres.h Rundungsmacros.h SQLerror.h SQLerror_postgres.h \
 	SQLerror_postgres.pgcc Transaction.h Transaction.pgcc Zeitpunkt_new.cc \
 	Zeitpunkt_new.h Zeitpunkt_new_ostr.cc Zeitpunkt_new_write.cc \

@@ -59,9 +59,6 @@ public:
 	iterator end() { return eintragliste.end(); }
 	size_t size() const { return eintragliste.size(); }
 	
-	// these do not belong here - they are part of pps
-//	void fillCList(Gtk::CList &clist);
-	
 	int insertNewEntry(unsigned long int bestellt,
                Petig::Datum lieferdatum, ArtikelBase::ID artid,
                AufStatVal status,

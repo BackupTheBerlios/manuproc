@@ -1,4 +1,4 @@
-// $Id: KettplanKette.h,v 1.5 2002/01/22 09:15:55 christof Exp $
+// $Id: KettplanKette.h,v 1.6 2002/05/06 13:36:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,12 +20,11 @@
 
 #ifndef KETTPLANKETTE_HH
 #define KETTPLANKETTE_HH
+
 #include "Kette.h"
 #include "ArtikelGang.h"
 #include "KettenGarn.h"
 #include <Aux/SQLerror.h>
-
-/*#warning this class is obselete (barco will vanish!) */
 
 class KettplanKette : public Kette {
 public:
@@ -37,17 +36,20 @@ public:
 	static const int VA_ARTIKEL=0x20;
 
 private:
-	int planmasch;
+	mutable int planmasch; // Maschine für die die Kette momentan geplant ist
 	mutable int kettlaenge;
-	int stuecklaenge;
-	float schussdichte;
-	int webmasch;
+	mutable int stuecklaenge;
+	mutable float schussdichte;
+	mutable int webmasch; // Maschine auf der sie gewebt wurde
         Petig::Datum abgzuletz;
         Petig::Datum maschinen_start;
-        Kette aktuelle_kette;
+        Kette aktuelle_kette; // na ob das Sinn macht ??? CP
         unsigned int abgeschnitten;
-	std::vector <ArtikelGang> artikel; // sortiert ??
+	mutable std::vector <ArtikelGang> artikel; // sortiert nach Namen (?)
 	mutable int valid;
+
+#define USUAL_INIT planmasch(0), kettlaenge(0), stuecklaenge(0), \
+		schussdichte(0), webmasch(0), abgeschnitten(0), valid(0)
 
 public:
 	typedef std::vector <ArtikelGang>::const_iterator const_iterator;
@@ -57,28 +59,87 @@ public:
 	const_iterator end()
 	{ if (!(valid&VA_ARTIKEL)) get_artikel();
 	   return artikel.end(); }
-	
+
 	KettplanKette()
-		: Kette(), planmasch(0), kettlaenge(0), stuecklaenge(0), 
-		  schussdichte(0), webmasch(0),
-		  valid(0)
+		: Kette(), USUAL_INIT
 	{}
 
-	KettplanKette(int m,const Petig::Datum _schaerdatum)
-		: Kette(m,_schaerdatum), planmasch(0), kettlaenge(0), stuecklaenge(0), 
-		  schussdichte(0), webmasch(0),
-		  valid(0)
-	{}
-	KettplanKette(int m,const Petig::Datum _schaerdatum,int l)
-		: Kette(m,_schaerdatum), planmasch(0), kettlaenge(l), stuecklaenge(0), 
-		  schussdichte(0), webmasch(0),
-		  valid(0)
-	{}
 	KettplanKette(const Kette &k)
-		: Kette(k), planmasch(0), kettlaenge(0), stuecklaenge(0), 
-		  schussdichte(0), webmasch(0),
-		  valid(0)
+		: Kette(k), USUAL_INIT
 	{}
+
+
+	static KettplanKette create(const Kette &k,const std::vector <ArtikelGang> &artikel, 
+		int kettlaenge, int stuecklaenge, int planmaschine=0);
+private:
+        void push_back(const ArtikelGang& artikel) const;
+public:
+	
+	int Kettlaenge() const throw();
+	int Stuecklaenge() const throw();
+	int WebMaschine() const;
+	int defaultKettlaenge() const throw(SQLerror);
+	int defaultStuecklaenge() const throw(SQLerror);
+	float defaultSchussdichte() const throw(SQLerror);
+	void Schussdichte(float sd) throw(SQLerror);
+	void BarcoMasch(int m) throw(SQLerror)
+	{  setzeBarcoMasch(m); }
+	void WebMaschine(int m) throw(SQLerror)
+	{  setzeBarcoMasch(m); }
+	void FrageNachSchussdichte() const throw(SQLerror);
+	float Schussdichte() const throw();
+	// wo in Barco verzeichnet
+	int barcoMaschine() const throw();
+	// für welche Maschine geplant
+	int planMaschine() const throw();
+        Petig::Datum Abgzuletzt() const throw(SQLerror);
+        Petig::Datum Maschinen_start() const throw(SQLerror);
+        unsigned int Abgeschnitten() const throw(SQLerror);
+        static Kette Aktuelle_Kette(int webmasch) throw(SQLerror);
+        Kette Folge_Kette() const throw(SQLerror);
+//        Petig::Datum Fertig_am() const throw(SQLerror);
+	void set_info(int pm,int kl,int sl,int sd) throw();
+	const std::vector <ArtikelGang> &get_artikel() const
+	{  return get_artikel_sorted(); }
+	const std::vector <ArtikelGang> &get_artikel_sorted() const;
+
+        void delete_Artikel(const ArtikelGang& artikel) const;
+        int get_aktual_Index(const ArtikelGang& artikel) const;
+        
+// warum hier ? CP
+        void save_Garn(const ArtikelGang& artikel, const KettenGarn& garn) const;
+        void delete_Garn(const ArtikelGang& artikel, const KettenGarn& garn) const;
+        std::vector<KettenGarn> load_Garn(const ArtikelGang& artikel) const;
+
+public:
+	void UnCache(int what) const
+	{  valid&=~what;
+	}
+	
+private:
+	int holePlanMaschine() const throw(SQLerror);
+	void LaengenArtikel(int &art,int &br);
+	/// deprecated, use Schussdichte(int sd)
+	void setzeSchussdichte(float sd) throw(SQLerror)
+	{  Schussdichte(sd); }
+	/// deprecate[Ad, use BarcoMasch(int m)
+	void setzeBarcoMasch(int m) throw(SQLerror);
+	
+public: // deprecated!!!
+	
+
+#if 0
+private:
+	// should kill this
+	KettplanKette(int m,const Petig::Datum _schaerdatum)
+		: Kette(m,_schaerdatum), USUAL_INIT
+	{}
+
+	// an this strange beast ...
+	KettplanKette(int m,const Petig::Datum _schaerdatum,int l)
+		: Kette(m,_schaerdatum), USUAL_INIT
+	{ kettlaenge=l; valid|=VA_KETTLEN; }
+	// kill this
 	KettplanKette(int m,const char *adabasDatum)
 		: Kette(m,adabasDatum), planmasch(0), kettlaenge(0), stuecklaenge(0), 
 		  schussdichte(0), webmasch(0),
@@ -89,55 +150,7 @@ public:
 		  schussdichte(0), webmasch(0),
 		  valid(0)
 	{}
-	
-	int Kettlaenge() const throw();
-	int Stuecklaenge() throw();
-	int defaultKettlaenge() const throw(SQLerror);
-	int defaultStuecklaenge() throw(SQLerror);
-	float defaultSchussdichte() throw(SQLerror);
-	void Schussdichte(float sd) throw(SQLerror);
-	void BarcoMasch(int m) throw(SQLerror)
-	{  setzeBarcoMasch(m); }
-	void WebMaschine(int m) throw(SQLerror)
-	{  setzeBarcoMasch(m); }
-	void FrageNachSchussdichte() throw(SQLerror);
-	float Schussdichte() throw();
-	// wo in Barco verzeichnet
-	int barcoMaschine() throw();
-	// für welche Maschine geplant
-	int planMaschine() const throw();
-        Petig::Datum Abgzuletzt() const throw(SQLerror);
-        Petig::Datum Maschinen_start() const throw(SQLerror);
-        unsigned int Abgeschnitten() const throw(SQLerror);
-        static Kette Aktuelle_Kette(int webmasch) throw(SQLerror);
-        Kette Folge_Kette() throw(SQLerror);
-//        Petig::Datum Fertig_am() const throw(SQLerror);
-	void set_info(int pm,int kl,int sl,int sd) throw();
-	const std::vector <ArtikelGang> &get_artikel()
-	{  return get_artikel_sorted(); }
-	const std::vector <ArtikelGang> &get_artikel_sorted();
-
-        void save_Kette() const;
-        void save_Artikel(const ArtikelGang& artikel) const;
-        void delete_Artikel(const ArtikelGang& artikel) const;
-        int get_aktual_Index(const ArtikelGang& artikel) const;
-        void save_Garn(const ArtikelGang& artikel, const KettenGarn& garn) const;
-        void delete_Garn(const ArtikelGang& artikel, const KettenGarn& garn) const;
-        std::vector<KettenGarn> load_Garn(const ArtikelGang& artikel) const;
-
-private:
-	int holePlanMaschine() const throw(SQLerror);
-	void LaengenArtikel(int &art,int &br);
-	
-public: // deprecated!!!
-	/// deprecated, use Schussdichte(int sd)
-	void setzeSchussdichte(float sd) throw(SQLerror)
-	{  Schussdichte(sd); }
-	/// deprecate[Ad, use BarcoMasch(int m)
-	void setzeBarcoMasch(int m) throw(SQLerror);
-	
-	void UnCache(int what) const
-	{  valid&=~what;
-	}
+#endif	
+#undef USUAL_INIT
 };
 #endif

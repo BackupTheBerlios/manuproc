@@ -1,0 +1,322 @@
+// $Id: ArtikelBaum_sql.pgcc,v 1.1 2002/05/06 13:39:17 christof Exp $
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include <Artikel/ArtikelBaum.h>
+#include <Artikel/ArtikelBezeichnung.h>
+#include <Faeden/Schussfaeden.hh>
+#include <Faeden/Faden.hh>
+#include <Faeden/Materialeigenschaft.hh>
+#include <Artikel/ArtikelStamm.h>
+#include <Auftrag/AufEintrag.h>
+#include <Auftrag/AuftragsBaum.h>
+#include <Auftrag/AufEintragZu.h>
+#include <list>
+exec sql include sqlca;
+#include <Aux/Transaction.h>
+
+
+
+ArtikelBaum::cache_t ArtikelBaum::cache;
+
+void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
+{ArtikelBase::setID(stamp);
+ zusammensetzung_t *cached=cache.lookup(Id());
+ if (cached) zusammensetzung=*cached;
+ else
+ {  zusammensetzung.clear();
+ 
+    exec sql begin declare section;
+    int ARTIKELID;
+    int ALTARTIKELID[30];
+    int PROZESSID[30];
+    double MENGE[30];
+    int IMENGE[30];
+    exec sql end declare section;
+    
+   ARTIKELID=Id();
+   exec sql select az.altartikelid, az.prozessid, az.menge
+        into :ALTARTIKELID, :PROZESSID, :MENGE:IMENGE
+ 	from artikelzusammensetzung az
+	where id= :ARTIKELID limit 30;
+   SQLerror::test(__FILELINE__,100);
+   if (!sqlca.sqlcode) 
+    {  int anz=sqlca.sqlerrd[2];
+       for (int i=0;i<anz;++i)
+       {  RohArtikel ra;
+          ra.rohartikel=ALTARTIKELID[i];
+          ra.erzeugung=cH_Prozess(Prozess::ID(PROZESSID[i]));
+          ra.menge= IMENGE[i] ? ra.erzeugung->getMtrProStk() : MENGE[i];
+          if (!ra.menge) ra.menge=1; // 0 ist Unsinn!?
+          zusammensetzung.push_back(ra);
+       }
+    }
+#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
+    try {  ArtikelStamm AS(*this);
+   if(AS.BestellenBei()==ppsInstanzID::Bandlager || 
+      AS.BestellenBei()==ppsInstanzID::Weberei)
+     {
+       Schussfaeden schussfaeden;
+       Fadenliste fadenliste;
+       static Bindungsliste bindungsliste;
+       try {                  
+          schussfaeden.Load(ARTIKELID);
+          if (bindungsliste.empty()) bindungsliste.Load();
+          fadenliste.Load(ARTIKELID,bindungsliste);
+         }
+       catch(SQLerror &e) {/*std::cerr << e << '\n';*/}
+       for (Fadenliste::const_iterator i=fadenliste.sumbegin();i!=fadenliste.sumend();++i)
+        { const double km_m= 1/1000.0;
+          double gewicht_kg_m = i->get_Gewicht_kg_pro_km_Faden() * km_m;
+          RohArtikel ra;
+          ra.rohartikel=i->getMaterial();
+          ra.menge= gewicht_kg_m;
+          ra.erzeugung=cH_Prozess(ProzessID::Weben);
+          zusammensetzung.push_back(ra);
+        }
+       int breite_mm=cH_ArtikelBezeichnung(*this)->Breite();
+       int anzschfaed=0;
+       for (Schussfaeden::const_iterator i=schussfaeden.begin();i!=schussfaeden.end();++i)
+            anzschfaed+=i->getAnzahl();  
+       for (Schussfaeden::const_iterator i=schussfaeden.begin();i!=schussfaeden.end();++i)
+        {
+          Materialeigenschaft M(i->getMaterial());
+          // Gewicht in kg/m ==> 1/cm*mm*(1cm/10mm) * g/10km*(kg/1000g)*(km/1000m)
+          const double cm_m = 100.0;
+          const double m_mm = 1/1000.0;
+          const double _10km_m = 1/10000.0;
+          const double kg_g = 1/1000.0;
+          double gewicht_kg_m = 
+          	2 * schussfaeden.Schussdichte_cm() * cm_m // Schuss per m
+          	* (i->getAnzahl() / (double)anzschfaed)	// Anteil des Mat.
+          	* breite_mm*m_mm	// m per Schuss
+          	* M.Gewicht_g_10km() * _10km_m * kg_g; // kg per m Mat.
+          RohArtikel ra;
+          ra.rohartikel=i->getMaterial();
+          ra.menge= gewicht_kg_m;
+          ra.erzeugung=cH_Prozess(ProzessID::Verarbeitung);
+          zusammensetzung.push_back(ra);
+        }
+      gleiche_Faeden_summieren();
+     }          
+    }
+    catch (SQLerror &e)
+    {  std::cerr << "Kein ArtikelStamm zu " << Id() << '\n';
+    }
+#endif
+
+   cache.Register(Id(),zusammensetzung);
+ }
+}
+
+void ArtikelBaum::gleiche_Faeden_summieren()
+{
+ std::map<unsigned int,menge_t > mmap;
+ for(std::vector<RohArtikel>::iterator i=zusammensetzung.begin();i!=zusammensetzung.end();++i)
+   mmap[(*i).rohartikel.Id()] += (*i).menge;
+ for (std::map<unsigned int,menge_t >::iterator m=mmap.begin();m!=mmap.end();++m)
+   for(std::vector<RohArtikel>::iterator i=zusammensetzung.begin();i!=zusammensetzung.end();++i)
+      if ((*i).rohartikel.Id() == m->first ) (*i).menge=m->second;
+ // Duplikate entfernen
+ sort(zusammensetzung.begin(),zusammensetzung.end());
+ zusammensetzung.erase(unique(zusammensetzung.begin(),zusammensetzung.end()),zusammensetzung.end());
+}
+
+
+int ArtikelBaum::Tiefe() const
+{
+  if(tiefe!=NoDepth) return tiefe;
+
+  tiefe=1;
+  for (const_iterator i=begin();i!=end();++i)
+   { int t=ArtikelBaum(i->rohartikel).Tiefe();
+     if (t>tiefe) tiefe=t;
+   }
+//sich selber nicht mitz‰hlen daher weg  ++tiefe;
+  if (ArtikelStamm(Id()).BestellenBei()->LagerInstanz())
+      ++tiefe;
+//cout << cH_ArtikelBezeichnung(Id())->Bezeichnung()
+//<< cH_ppsInstanz(ArtikelStamm(Id()).BestellenBei())->Name()<<'\t'
+//<< "  Tiefe: "<< tiefe<<'\n';
+  return tiefe;
+}
+
+
+
+void ArtikelBaum::new_Artikel(ArtikelBase fuer_artikel,const RohArtikel& RA)
+{
+ if (RA.rohartikel.Id()==0) assert(!"Fehler");
+ Transaction tr;
+ exec sql begin declare section;
+    int ARTIKELID;
+    int ALTARTIKELID;
+    int PROZESS;
+    double MENGE;
+ exec sql end declare section;
+ ARTIKELID=fuer_artikel.Id();
+ ALTARTIKELID=RA.rohartikel.Id();
+ PROZESS=RA.erzeugung->Id();
+ MENGE=RA.menge;
+ exec sql insert into artikelzusammensetzung 
+   (id,prozessid,altartikelid,menge,stand) values 
+   (:ARTIKELID,:PROZESS,:ALTARTIKELID,nullif(:MENGE,0.0),now()) ;
+ SQLerror::test(__FILELINE__);
+
+ create_in_zuordnung(fuer_artikel,RA.rohartikel,RA.menge);
+ tr.commit();
+}
+
+void ArtikelBaum::create_in_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel,faktor_t RohMenge)
+{
+  std::list<AufEintragBase> elternliste = AufEintragZu::get_AufEintragList_from_Artikel(alt_artikel,ArtikelStamm(alt_artikel).BestellenBei()->Id(),NOSTAT);
+//std::cout << "Create :"<<elternliste.size()<<"\n\n\n\n";
+  for(std::list<AufEintragBase>::const_iterator e=elternliste.begin();e!=elternliste.end();++e)
+   {
+     AufEintragBase AEB(*e);
+     if(AEB.Instanz()->LagerInstanz())
+       {
+         std::list<AufEintragZu::st_reflist> L=AufEintragZu(AEB).get_Referenz_list_ungeplant();
+         assert(L.begin()==++L.end());
+         AEB=L.begin()->AEB;
+       }
+     AufEintrag AE(AEB);
+     AufEintragBase::mengen_t menge=AE.getStueck()*RohMenge;
+     AuftragBase AB(ArtikelStamm(kind_artikel).BestellenBei(),0); 
+     AB.tryUpdateEntry(menge,AE.getLieferdatum(),
+                        kind_artikel,AE.getEntryStatus(),AEB);
+   }  
+}
+
+void ArtikelBaum::delete_Artikel(ArtikelBase fuer_artikel,ArtikelBase von_artikel)
+{
+ Transaction tr;
+ exec sql begin declare section;
+    int ARTIKELID   = fuer_artikel.Id();
+    int ALTARTIKELID= von_artikel.Id();
+ exec sql end declare section;
+
+ exec sql delete from artikelzusammensetzung 
+   where id=:ARTIKELID and altartikelid=:ALTARTIKELID;
+ SQLerror::test(__FILELINE__,100);
+
+ delete_from_zuordnung(fuer_artikel,von_artikel);
+ tr.commit();
+}
+
+  struct st_aam{AufEintrag AEB;AufEintrag oldAEB;AufEintragBase::mengen_t menge;
+         st_aam(const AufEintrag &_AEB,const AufEintrag &_oldAEB,AufEintragBase::mengen_t _menge)
+          :AEB(_AEB),oldAEB(_oldAEB),menge(_menge) {} };
+
+
+void ArtikelBaum::delete_from_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel)
+{
+     exec sql begin declare section;
+      int ALTARTID=alt_artikel.Id();
+      int KINDARTID=kind_artikel.Id();
+      int AUFID,INSTANZ,ZNR;
+      int AAUFID,AINSTANZ,AZNR;
+      double MENGE;
+     exec sql end declare section;
+
+     // Mengen holen und
+     // AufEntrys um die Menge reduzieren
+     exec sql declare mein cursor for select 
+         altauftragid,altinstanz,altzeilennr ,
+         neuauftragid,neuinstanz,neuzeilennr,menge 
+         from auftragsentryzuordnung where
+         (altauftragid,altinstanz,altzeilennr) in
+            (select auftragid,instanz,zeilennr from auftragentry
+               where artikelid=:ALTARTID) and    
+         (neuauftragid,neuinstanz,neuzeilennr) in
+            (select auftragid,instanz,zeilennr from auftragentry
+               where artikelid=:KINDARTID);
+     exec sql open mein;
+     // Der eingelesene Kram muﬂ zwischengespeichert werden, da die
+     // entsprechende Tabelle anschlieﬂend ver‰ndert wird.
+     std::vector<st_aam> V;
+     while(true)
+      {
+        exec sql fetch mein into :AAUFID,:AINSTANZ,:AZNR,:AUFID,:INSTANZ,:ZNR,:MENGE;
+        SQLerror::test(__FILELINE__,100);
+        if (sqlca.sqlcode) break;
+        AufEintrag AEB=AufEintrag(class AufEintragBase(
+               cH_ppsInstanz((ppsInstanz::ID)INSTANZ),AUFID,ZNR));
+        AufEintrag oldAEB=AufEintrag(class AufEintragBase(
+               cH_ppsInstanz((ppsInstanz::ID)AINSTANZ),AAUFID,AZNR));
+        V.push_back(st_aam(AEB,oldAEB,MENGE));
+      }
+     exec sql close mein;
+     
+     for(std::vector<st_aam>::const_iterator i=V.begin();i!=V.end();++i)
+      {
+        reduceChildren(i->AEB,i->oldAEB,i->menge);
+      }
+
+     exec sql delete from auftragsentryzuordnung 
+         where 
+         (altauftragid,altinstanz,altzeilennr) in
+            (select auftragid,instanz,zeilennr from auftragentry
+               where artikelid=:ALTARTID) and 
+         (neuauftragid,neuinstanz,neuzeilennr) in
+            (select auftragid,instanz,zeilennr from auftragentry
+               where artikelid=:KINDARTID) and menge=0 ;
+     SQLerror::test(__FILELINE__,100);
+}
+
+
+void ArtikelBaum::reduceChildren(const AufEintrag& AEB,
+                                 const AufEintrag& oldAEB,
+                                 AufEintragBase::mengen_t menge) 
+{
+//std::cout << AEB.Instanz()<<' '<<AEB.ZNr()<<'\t'
+//<<oldAEB.Instanz()<<' '<<oldAEB.ZNr()<<'\t'<<menge<<'\n';
+
+  AuftragBase::mengen_t mt=const_cast<AufEintrag&>(AEB).updateStkDiff__(-menge,false);
+//  assert(mt==-menge);
+  AuftragBase::mengen_t mt2=AufEintragZu(oldAEB).setMengeDiff__(AEB,-menge);
+//cout << oldAEB<<'\t'<<AEB<<'\t'<<-menge<<'\t'<<mt<<'\t'<<mt2<<'\n';
+  assert(mt2=menge);
+  std::list<AufEintragZu::st_reflist> L=AufEintragZu(AEB).get_Referenz_list(AEB,true);
+//std::cout << '\t'<<L.size()<<'\n';
+  for(std::list<AufEintragZu::st_reflist>::iterator i=L.begin();i!=L.end();++i)
+   {
+//std::cout << '\t'<<i->AEB2.Instanz()<<' '<<i->AEB2.ZNr()<<'\t'<<i->Menge<<'\n';
+     reduceChildren(AufEintrag(i->AEB),AEB,i->Menge);
+   }
+}        
+
+void ArtikelBaum::Sort()
+{
+ sort(zusammensetzung.begin(),zusammensetzung.end());
+}
+
+
+void ArtikelBaum::UnCache(const ArtikelBase &stamp)
+{  cache.deregister(stamp.Id());
+}
+
+ArtikelBaum::faktor_t ArtikelBaum::Faktor(const ArtikelBase &kind) throw(SQLerror)
+{  if (kind==static_cast<const ArtikelBase &>(*this)) return 1;
+   faktor_t result=0;
+   for (const_iterator i=begin();i!=end();++i)
+   {  if (i->rohartikel==kind) result+=i->menge;
+      else result+=i->menge*ArtikelBaum(i->rohartikel).Faktor(kind);
+   }
+   return result;
+}
+
