@@ -1,4 +1,4 @@
-/* $Id: RechnungBase.h,v 1.11 2003/06/19 12:48:11 jacek Exp $ */
+/* $Id: RechnungBase.h,v 1.12 2003/07/08 15:05:03 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -54,7 +54,7 @@ class RechnungBase // : ManuProcEntity
    // sobald von ManuProcEntity abgeleitet die folgende Zeile löschen MAT
    bool Valid() const {return ManuProcEntity<>::Valid(rngid);}
 	
-	void setEingezogen(int refnr) throw(SQLerror);
+	void setEingezogen(int refnr, bool bezahlt=true) throw(SQLerror);
 	Kunde::ID getVerknr() const throw(SQLerror);
 	void setVerknr(const Kunde::ID vid) const throw(SQLerror);	
 };

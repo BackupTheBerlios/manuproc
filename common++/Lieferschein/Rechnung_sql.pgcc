@@ -324,11 +324,12 @@ Rechnung::geldbetrag_t Rechnung::Betrag(bool brutto) const throw(SQLerror)
  return (IBETRAG ? 0 : BETRAG);
 }
 
-void RechnungBase::setEingezogen(int refnr) throw(SQLerror)
+void RechnungBase::setEingezogen(int refnr, bool bezahlt) throw(SQLerror)
 {
  exec sql begin declare section;
  int RNGID;
  int REFNR;
+ bool BEZAHLT=bezahlt;
  exec sql end declare section;
 
  Transaction tr;
@@ -336,7 +337,7 @@ void RechnungBase::setEingezogen(int refnr) throw(SQLerror)
  RNGID = rngid;
  REFNR = refnr;
 
- exec sql update rechnung set bezahlt=true, einzug_refnr= :REFNR
+ exec sql update rechnung set bezahlt=:BEZAHLT, einzug_refnr= :REFNR
 	where rngid= :RNGID;
  SQLerror::test(__FILELINE__);
 
