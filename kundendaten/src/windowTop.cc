@@ -63,6 +63,8 @@ windowTop::windowTop()
  gruppenwahl->set_value(Kundengruppe::default_ID);
  kundenauswahl->reset();
  kundenauswahl->EinschraenkenKdGr(gruppenwahl->get_value());
+ kundenauswahl->setExpandStr1(true);
+ kundenauswahl->setExpandStr2(true); 
  geburtstag->setLabel("Geburtstag");
  geburtstag->setExpandYear(false);
  
