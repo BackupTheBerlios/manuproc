@@ -1,4 +1,4 @@
-// $Id: datewin.cc,v 1.13 2003/04/24 10:50:12 christof Exp $
+// $Id: datewin.cc,v 1.14 2003/05/19 09:49:50 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <gtk/gtksignal.h>
 #include <iostream>
+#include <cassert>
 
 datewin::datewin(const std::string &inst) : block(false), instance(inst)
 {  set_value(ManuProC::Datum::today());
