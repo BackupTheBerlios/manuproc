@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.44 2003/05/22 12:50:48 christof Exp $
+// $Id: AufEintrag.cc,v 1.45 2003/05/22 13:25:48 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -625,7 +625,7 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(int uid,mengen_t menge,bool insta
    // keine Rekursion bei 1er im Lager 
    // Rekursion bei 1er oder 3er in Produktion
    if ((!Instanz()->LagerInstanz() || Id()==AuftragBase::ungeplante_id) 
-   	&& instanzen)
+   	&& instanzen && !!menge2)
       updateStkDiffInstanz__(uid,menge2,*this,reason);
   }
   tr.commit();
