@@ -27,7 +27,7 @@ kundendaten_SOURCES = \
    windowTop_Kontaktperson.cc \
    windowTop_kunde.cc \
    windowTop_Gruppen.cc
-#   windowTop_Person.cc \   
+#   windowTop_Person.cc 
 
 
 noinst_HEADERS = \
@@ -43,8 +43,8 @@ noinst_HEADERS = \
 	dialogError.hh
 
 
-CXXFLAGS = @CXXFLAGS@ @KOMPONENTEN_INCLUDES@ @GNOMEMM_CFLAGS@
+AM_CXXFLAGS = @KOMPONENTEN_INCLUDES@ @GNOMEMM_CFLAGS@
 
-LDFLAGS= @LDFLAGS@ @KOMPONENTEN_LDFLAGS@ 
+AM_LDFLAGS= @KOMPONENTEN_LDFLAGS@ 
 
 kundendaten_LDADD = @LIBS@ @KOMPONENTEN_LIBS@ @GNOMEMM_LIBS@ 
