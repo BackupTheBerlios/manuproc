@@ -1,4 +1,4 @@
-/* $Id: EntryValueIntGermanString.h,v 1.1 2002/12/05 10:07:15 thoma Exp $ */
+/* $Id: EntryValueIntGermanString.h,v 1.2 2004/01/20 08:04:44 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,7 +22,7 @@
 
 #include <Misc/EntryValueIntString.h>
 
-class EntryValueIntGermanString : public EntryValueIntString
+LIBMPC_BASE_API class EntryValueIntGermanString : public EntryValueIntString
 {
 
 public:

@@ -27,6 +27,8 @@ EXPORTS
 	_ZN13Zeitpunkt_newcvlEv 
 	_ZN14EntryValueBaseD0Ev 
 	_ZN14EntryValueBaseD1Ev 
+	_ZN14EntryValueSortD0Ev 
+	_ZN14EntryValueSortD1Ev 
 	_ZN15EntryValueDatumD0Ev 
 	_ZN15EntryValueDatumD1Ev 
 	_ZN15EntryValueMonatD0Ev 
@@ -50,6 +52,8 @@ EXPORTS
 	_ZN19EntryValueIntStringD1Ev 
 	_ZN19EntryValueTimeStampD0Ev 
 	_ZN19EntryValueTimeStampD1Ev 
+	_ZN21EntryValueReverseSortD0Ev 
+	_ZN21EntryValueReverseSortD1Ev 
 	_ZN23EntryValueKalenderwocheD0Ev 
 	_ZN23EntryValueKalenderwocheD1Ev 
 	_ZN25EntryValueIntGermanStringD0Ev 
@@ -147,6 +151,10 @@ EXPORTS
 	_ZNK14EntryValueBasecviEv 
 	_ZNK14EntryValueBaseeqERKS_ 
 	_ZNK14EntryValueBaseltERKS_ 
+	_ZNK14EntryValueSort9getIntValEv 
+	_ZNK14EntryValueSort9getStrValEv 
+	_ZNK14EntryValueSorteqERK14EntryValueBase 
+	_ZNK14EntryValueSortltERK14EntryValueBase 
 	_ZNK15EntryValueDatum9getIntValEv 
 	_ZNK15EntryValueDatum9getStrValEv 
 	_ZNK15EntryValueDatumeqERK14EntryValueBase 
@@ -168,6 +176,10 @@ EXPORTS
 	_ZNK19EntryValueTimeStamp9getStrValEv 
 	_ZNK19EntryValueTimeStampeqERK14EntryValueBase 
 	_ZNK19EntryValueTimeStampltERK14EntryValueBase 
+	_ZNK21EntryValueReverseSort9getIntValEv 
+	_ZNK21EntryValueReverseSort9getStrValEv 
+	_ZNK21EntryValueReverseSorteqERK14EntryValueBase 
+	_ZNK21EntryValueReverseSortltERK14EntryValueBase 
 	_ZNK23EntryValueKalenderwoche9getIntValEv 
 	_ZNK23EntryValueKalenderwoche9getStrValEv 
 	_ZNK23EntryValueKalenderwocheeqERK14EntryValueBase 
@@ -241,11 +253,13 @@ EXPORTS
 	_ZStplIcSt11char_traitsIcESaIcEESbIT_T0_T1_ERKS6_S8_ 
 	_ZTI13HandleContent DATA
 	_ZTI14EntryValueBase DATA
+	_ZTI14EntryValueSort  DATA
 	_ZTI15EntryValueDatum DATA
 	_ZTI15EntryValueMonat DATA
 	_ZTI17EntryValueQuartal DATA
 	_ZTI19EntryValueIntString DATA
 	_ZTI19EntryValueTimeStamp DATA
+	_ZTI21EntryValueReverseSort  DATA
 	_ZTI23EntryValueKalenderwoche DATA
 	_ZTI25EntryValueIntGermanString DATA
 	_ZTI7IOerror DATA
@@ -258,11 +272,13 @@ EXPORTS
 	_ZTISt9exception DATA
 	_ZTS13HandleContent DATA
 	_ZTS14EntryValueBase DATA
+	_ZTS14EntryValueSort  DATA
 	_ZTS15EntryValueDatum DATA
 	_ZTS15EntryValueMonat DATA
 	_ZTS17EntryValueQuartal DATA
 	_ZTS19EntryValueIntString DATA
 	_ZTS19EntryValueTimeStamp DATA
+	_ZTS21EntryValueReverseSort  DATA
 	_ZTS23EntryValueKalenderwoche DATA
 	_ZTS25EntryValueIntGermanString DATA
 	_ZTS7IOerror DATA
@@ -275,11 +291,13 @@ EXPORTS
 	_ZTSSt9exception DATA
 	_ZTV13HandleContent DATA
 	_ZTV14EntryValueBase DATA
+	_ZTV14EntryValueSort  DATA
 	_ZTV15EntryValueDatum DATA
 	_ZTV15EntryValueMonat DATA
 	_ZTV17EntryValueQuartal DATA
 	_ZTV19EntryValueIntString DATA
 	_ZTV19EntryValueTimeStamp DATA
+	_ZTV21EntryValueReverseSort  DATA
 	_ZTV23EntryValueKalenderwoche DATA
 	_ZTV25EntryValueIntGermanString DATA
 	_ZTV7IOerror DATA

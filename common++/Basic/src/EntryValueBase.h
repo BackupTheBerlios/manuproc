@@ -1,4 +1,4 @@
-/* $Id: EntryValueBase.h,v 1.14 2003/04/23 09:19:20 christof Exp $ */
+/* $Id: EntryValueBase.h,v 1.15 2004/01/20 08:04:44 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,13 +22,14 @@
 #include <Misc/Handles.h>
 #include <string>
 #include <Misc/compiler_ports.h>
+#include <Misc/libManuProC_Base_dll.h>
 
 class EntryValueBase : public HandleContent
 // opaque Data Type which is accessible as an int value or as a string
 {
 public:
- static const int int_NaN=-1;
- static const double double_NaN=-1;
+ static LIBMPC_BASE_API const int int_NaN=-1;
+ static LIBMPC_BASE_API const double double_NaN=-1;
  virtual operator const std::string() const { return getStrVal(); }
  virtual const std::string getStrVal() const { return std::string(); }
  virtual bool operator==(const EntryValueBase &v) const;

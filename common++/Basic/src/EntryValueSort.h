@@ -1,4 +1,4 @@
-/* $Id: EntryValueSort.h,v 1.2 2004/01/13 10:41:13 christof Exp $ */
+/* $Id: EntryValueSort.h,v 1.3 2004/01/20 08:04:44 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,7 +22,7 @@
 
 #include <Misc/EntryValueBase.h>
 
-class EntryValueSort : public EntryValueBase
+LIBMPC_BASE_API class EntryValueSort : public EntryValueBase
 {cH_EntryValue sort,value;
 
 public:
@@ -35,7 +35,7 @@ public:
  virtual const std::string getStrVal() const { return value->getStrVal();}
 };
 
-class EntryValueReverseSort : public EntryValueBase
+LIBMPC_BASE_API class EntryValueReverseSort : public EntryValueBase
 {cH_EntryValue sort,value;
 
 public:
