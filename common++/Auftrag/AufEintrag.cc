@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.24 2003/01/08 09:03:39 christof Exp $
+// $Id: AufEintrag.cc,v 1.25 2003/01/08 10:51:35 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -247,11 +247,13 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
 {
    Transaction tr;
    if(verplanter_aeb) *verplanter_aeb=*this;
-   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Menge=",menge,"Reason=",reason,"Zielauftrag=",zielauftrag);
+   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Menge=",menge,"Reason=",reason,"Zielauftrag=",zielauftrag,"rekursiv=",rekursiv);
    assert(Id()==AuftragBase::ungeplante_id);
-   assert(Instanz()->LagerInstanz() || entrystatus==OPEN);
-   assert(Instanz()->LagerInstanz() || auftragstatus==OPEN);
-   if(entrystatus==UNCOMMITED) entrystatus=OPEN; // Kein Datenbankzugriff nötig, 
+// wieso dürfen LagerAufträge geschlossen sein?
+   assert(/*Instanz()->LagerInstanz() || */entrystatus==OPEN);
+   assert(/*Instanz()->LagerInstanz() || */auftragstatus==OPEN);
+// gefällt mir nicht CP   
+//   if(entrystatus==UNCOMMITED) entrystatus=OPEN; // Kein Datenbankzugriff nötig, 
                                                 // das macht insertNewEntry
    Auftrag ZA(zielauftrag);
    ZA.setStatusAuftrag_(OPEN);
@@ -268,38 +270,47 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
     }
 */
 
-   int znr=-1,dummy;
-   mengen_t mdummy;
+   int znr=ManuProcEntity<>::none_id,dummy=ManuProcEntity<>::none_id;
+   mengen_t mdummy=0;
 
+// wenn schon eine Zeile mit diesem Datum/Artikel/Status in diesem Auftrag
+// existiert, Menge erhöhen. So kann man von Aufträge aus verschiedenen 
+// Quellen zusammen fertigen
    if (!zielauftrag.existEntry(Artikel(),datum,znr,dummy,mdummy,entrystatus))
     {
       AufEintragBase neuAEB=ZA.push_back(0,datum,Artikel(),entrystatus,uid,false);
       znr=neuAEB.ZNr();
     }
-   
-   if(menge==AuftragBase::mengen_t(0)) {tr.commit();   return znr;}
+
+// nix zu planen -> erledigt   
+   if(menge==0) {tr.commit();   return znr;}
    assert(menge>0);
+   
    // dispo (2er) Auftrag anlegen bei Überplanung
-   if(menge-getRestStk() > 0  && !Instanz()->LagerInstanz() )
-    {
+   if (menge-getRestStk() > 0) //  && !Instanz()->LagerInstanz() )
+    { assert(!Instanz()->LagerInstanz()); // CP
       mengen_t dispomenge = menge-getRestStk();
       menge=getRestStk();      
       AufEintragBase(zielauftrag,znr).PlanenDispo(uid,Artikel(),dispomenge,datum);
+
       // Produktionsplaner (ungetestet)
       if(zielauftrag.Instanz()->GeplantVon()!=ppsInstanzID::None)
        {
+	    assert(!"yet implemented");
          if(reason==ManuProC::Auftrag::r_Planen) 
            {
+#if 0	    
             AuftragBase DAB(zielauftrag.Instanz()->GeplantVon(),dispo_auftrag_id);
             int znr=DAB.tryUpdateEntry(dispomenge,datum,Artikel(),OPEN,uid,AufEintragBase());
             AuftragBase ab(Instanz(),ungeplante_id);
-            int nzr=ab.tryUpdateEntry(dispomenge,datum,Artikel(),OPEN,uid,AufEintragBase());
+            int nzr=ab.tryUpdateEntry(-dispomenge,datum,Artikel(),OPEN,uid,AufEintragBase());
 /*
             AufEintragZuMengenAenderung::move_zuordnung_zu_geplantem(AufEintragBase(DAB,znr),
                                                                      AufEintragBase(ab,nzr),
                                                                      dispomenge);       
 */
             AufEintragZu((class AufEintragBase(DAB,znr))).Neu(AufEintragBase(ab,nzr),dispomenge);
+#endif            
            }
          else
            {
