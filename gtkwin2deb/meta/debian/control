@@ -1,0 +1,28 @@
+Source: mingw32-gtkmm-meta
+Priority: optional
+Maintainers: Christof Petig <christof@petig-baender.de>
+Standards-Version: 3.6.1.0
+Build-Depends-Indep: cdbs, debhelper (>= 4.1.51)
+
+Package: mingw32-gtkmm-meta-dev
+Architecture: all
+Depends: mingw32-gtkmm-dev (>= 2.4.5), mingw32-runtime (>= 3.3), mingw32 (>= 3.3)
+Conflicts: mingw32-sigc, mingw32-zlib-lib
+Suggests: mingw32-gtkmm24-runtime
+Description: MinGW Gtkmm 2.4 cross development environment
+ This meta package contains all needed packages for setting up
+ a gtkmm 2.4 development environment for windows. As a side
+ benefit it conflicts with all old and intermediate versions of
+ this environment.
+
+Package: mingw32-gtkmm-meta-runtime
+Architecture: all
+Depends: mingw32-atk-runtime (>= 1.6.0), mingw32-zlib-runtime (>= 1.7.1), mingw32-jpeg-bin, 
+Conflicts: mingw32-zlib-bin, mingw32-atk, mingw32-glib, mingw32-glibmm, mingw32-gtk+, mingw32-gtkmm, mingw32-pango, mingw32-sigc
+Suggests: mingw32-glib-exe
+Description: Gtkmm for Windows 2.4: shared libraries
+ This meta package contains all needed packages for setting up
+ a gtkmm 2.4 runtime environment on windows. As a side
+ benefit it conflicts with all old and intermediate versions of
+ this environment.
+

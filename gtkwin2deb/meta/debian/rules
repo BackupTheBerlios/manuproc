@@ -1,0 +1,13 @@
+#!/usr/bin/make -f
+# -*- mode: makefile; coding: utf-8 -*-
+# Copyright © 2003 Colin Walters <walters@verbum.org>
+# Copyright © 2003 Jordi Mallach <jordi@debian.org>
+# Copyright © 2004 Christof Petig <christof@petig-baender.de>
+
+include /usr/share/cdbs/1/rules/buildcore.mk
+include /usr/share/cdbs/1/rules/debhelper.mk
+
+#binary-post-install/gnome-devel::
+#	rm -rf debian/gnome-devel/usr/share/doc/gnome-devel
+#	mkdir -p debian/gnome-devel/usr/share/doc/
+#	cd debian/gnome-devel/usr/share/doc && ln -s gnome-core-devel gnome-devel
