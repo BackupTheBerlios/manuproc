@@ -2,3 +2,7 @@ ArtikelBox:
 
 - beim Anlegen feuert activate nicht mehr
 - bei Breitensuche wird die Liste nicht gefüllt
+
+SimpleTree:
+
+- Spaltenausrichtung setzen
