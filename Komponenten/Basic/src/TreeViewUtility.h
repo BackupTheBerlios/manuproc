@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.h,v 1.15 2004/02/06 09:46:38 christof Exp $
+// $Id: TreeViewUtility.h,v 1.16 2004/06/28 15:11:11 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -74,6 +74,8 @@ public:
 	Glib::RefPtr<Gtk::ListStore> get_store()
 	{ return emu.get_store(); }
 };
+
+void MakeColumnEditable(Gtk::TreeView *tv,unsigned col,const SigC::Slot2<void,const Glib::ustring&,const Glib::ustring&> &slot);
 
 }
 #endif

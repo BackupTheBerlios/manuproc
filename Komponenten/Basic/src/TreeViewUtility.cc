@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.cc,v 1.20 2004/05/03 13:44:36 christof Exp $
+// $Id: TreeViewUtility.cc,v 1.21 2004/06/28 15:11:10 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -151,4 +151,12 @@ void TreeViewUtility::CListEmulator::add(Gtk::TreeModelColumnBase& column)
    m_refStore=Gtk::ListStore::create(*this);
    if (view) // eigentlich sollte das attach erst später passiert sein ...
       attach_to(*view);
+}
+
+void TreeViewUtility::MakeColumnEditable(Gtk::TreeView *tv,unsigned _col,const SigC::Slot2<void,const Glib::ustring&,const Glib::ustring&> &slot)
+{  Gtk::TreeViewColumn* col=tv->get_column(_col);
+   Gtk::CellRendererText* cr=dynamic_cast<Gtk::CellRendererText*>(col->get_first_cell_renderer());
+   assert(cr);
+   cr->property_editable()=true;
+   cr->signal_edited().connect(slot);
 }
