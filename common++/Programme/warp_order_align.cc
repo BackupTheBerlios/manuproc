@@ -1,4 +1,4 @@
-// $Id: warp_order_align.cc,v 1.3 2004/11/05 09:26:15 christof Exp $
+// $Id: warp_order_align.cc,v 1.4 2004/11/15 10:07:21 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,6 +25,7 @@
 #include <Auftrag/AufEintrag.h>
 #include <Ketten/KettplanKette.h>
 #include <set>
+#include <Misc/relops.h>
 
 int main()
 { ManuProC::dbconnect();
