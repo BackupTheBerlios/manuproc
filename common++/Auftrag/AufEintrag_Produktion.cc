@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.33 2004/02/09 15:14:29 jacek Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.34 2004/02/11 08:33:42 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -214,10 +214,12 @@ void AufEintrag::ProduziertNG(mengen_t M,const ProductionContext2 &ctx)
 class AufEintrag::ProduziertNG_cb2 : public distribute_children_twice_cb
 {  AufEintragBase alterAEB,neuerAEB;
    ProductionContext2 ctx;
+   bool reverse;
 public:
 	ProduziertNG_cb2(const AufEintragBase &aAEB, 
-		const AufEintragBase &nAEB,const ProductionContext2 &_ctx)
-		: alterAEB(aAEB), neuerAEB(nAEB), ctx(_ctx) {}
+		const AufEintragBase &nAEB,const ProductionContext2 &_ctx,
+		bool rev)
+		: alterAEB(aAEB), neuerAEB(nAEB), ctx(_ctx), reverse(rev) {}
 	AuftragBase::mengen_t operator()(const ArtikelBase &art,
 		const AufEintragBase &aeb,AuftragBase::mengen_t M,bool first) const
 	{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
@@ -280,6 +282,11 @@ public:
 	   if (wo==neuerAEB.Instanz()) wo=ppsInstanz::getProduktionsInstanz(art);
 	   assert(wo!=neuerAEB.Instanz());
 	   AufEintrag::unbestellteMengeProduzieren(wo,art,M,true,neuerAEB,ctx);
+	}
+	// sortierung
+	bool operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b)const
+	{  if (reverse) return distribute_children_cb::operator()(b,a);
+	   else return distribute_children_cb::operator()(a,b);
 	}
 };
 
@@ -362,17 +369,13 @@ void AufEintrag::KinderProduzieren(mengen_t M, const AufEintragBase &neuerAEB,
 			NV("this",*this),NV("M",M),
 			NV("neu",neuerAEB), NV("ctx",ctx));
    // Kinder bearbeiten
-   ProduziertNG_cb2 callback(*this,neuerAEB,ctx);
-   if (M<0)
-   {  // vielleicht hier artbaum statt alles unten?
-      distribute_children_artbaum(*this,M,Artikel(),callback);
-      // bei ProduziertSelbst hilft obiges nicht allein (keine Pfeile nach unten entstanden)
-//      AufEintrag neuerAE=neuerAEB;
-//      distribute_children_artbaum(neuerAE,M,Artikel(),ProduziertRueckgaengig2(neuerAE));
+   ProduziertNG_cb2 callback(*this,neuerAEB,ctx,M>0);
+   if (M<0) // normal direction
+   {  distribute_children_artbaum(*this,M,Artikel(),callback);
    }
-   else
+   else // reverse direction
    {  // bei ProdSelbst:
       // gelieferte 1er nutzen, 0er abbestellen dann erst 1er abbestellen
-      distribute_children_twice_rev(*this,M,Artikel(),callback);
+      distribute_children_twice(*this,M,Artikel(),callback);
    }
 }

@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.h,v 1.6 2003/11/29 12:13:55 christof Exp $ */
+/* $Id: AufEintrag_loops.h,v 1.7 2004/02/11 08:33:42 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,9 +21,27 @@
 #define CXX_AUFTRAG_AUFEINTRAGMACROS_H
 
 #include <Auftrag/AuftragBase.h>
+#include <Auftrag/AufEintragZu.h>
 class SQLFullAuftragSelector;
 class AufEintrag;
 class AufEintragBase;
+
+#if 0
+template <class T>
+class relop2stl
+{	typedef int (*compare_func)(const T &a, const T &b);
+	compare_func compare;
+public:
+	relop2stl() : compare() {}
+	explicit relop2stl(compare_func f) : compare(f) {}
+	void operator=(compare_func f) 
+	{ compare=f; }
+	bool operator==(const T &a, const T &b) const
+	{  return !(*compare)(a,b); }
+	bool operator<(const T &a, const T &b) const
+	{  return (*compare)(a,b)<0; }
+};
+#endif
 
 struct distribute_children_cb
 {	// return the amount of the third argument you processed
@@ -31,6 +49,22 @@ struct distribute_children_cb
 		const AufEintragBase &,AuftragBase::mengen_t) const=0;
 	// for the remainder
 	virtual void operator()(const ArtikelBase &,AuftragBase::mengen_t) const=0;
+	// Strict Weak Ordering (sort) a<b
+	virtual bool operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const;
+};
+
+class distribute_children_cb_inverter : public distribute_children_cb
+{	const distribute_children_cb &callee;
+public:
+	distribute_children_cb_inverter(const distribute_children_cb &c)
+		: callee(c) {}	
+	virtual AuftragBase::mengen_t operator()(const ArtikelBase &a, 
+		const AufEintragBase &e,AuftragBase::mengen_t m) const
+	{ return callee(a,e,m); }
+	virtual void operator()(const ArtikelBase &a,AuftragBase::mengen_t m) const
+	{ return callee(a,m); }
+	virtual bool operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const
+	{ return callee(b,a); }
 };
 
 // 0er zuerst
@@ -38,6 +72,7 @@ bool distribute_children(const AufEintragBase &startAEB,
  		AuftragBase::mengen_t menge,
  		const ArtikelBase &article, 
  		const distribute_children_cb &callee);
+// please use distribute_children(...,distribute_children_cb_inverter(callee));
 bool distribute_children_rev(const AufEintragBase &startAEB,
  		AuftragBase::mengen_t menge,
  		const ArtikelBase &article, 
@@ -60,13 +95,14 @@ struct distribute_children_twice_cb : public distribute_children_cb
 	virtual AuftragBase::mengen_t operator()(const ArtikelBase &,
 		const AufEintragBase &,AuftragBase::mengen_t,bool first) const=0;
 	virtual void operator()(const ArtikelBase &,AuftragBase::mengen_t) const=0;
+	virtual bool operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const;
 	// if we get called as a base class
 private: // forbid to overload again
 	AuftragBase::mengen_t operator()(const ArtikelBase &a,
 		const AufEintragBase &b,AuftragBase::mengen_t c) const
 	{  return operator()(a,b,c,true); }
 };
-bool distribute_children_twice_rev(const AufEintragBase &startAEB,
+bool distribute_children_twice(const AufEintragBase &startAEB,
  		AuftragBase::mengen_t menge,
  		const ArtikelBase &article, 
  		const distribute_children_twice_cb &callee);

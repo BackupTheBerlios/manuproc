@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.cc,v 1.9 2003/12/08 07:41:18 christof Exp $ */
+/* $Id: AufEintrag_loops.cc,v 1.10 2004/02/11 08:33:42 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,6 +24,14 @@
 #include <Auftrag/sqlAuftragSelector.h>
 #include <Auftrag/selFullAufEntry.h>
 #include <Artikel/ArtikelStamm.h>
+
+bool distribute_children_cb::operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const
+{  return a.Pri<b.Pri || (a.Pri==b.Pri && a.AEB<b.AEB);
+}
+
+bool distribute_children_twice_cb::operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const
+{  return distribute_children_cb::operator()(a,b);
+}
 
 static std::string Nametrans(std::string n)
 {  if (n[0]=='N')
@@ -65,16 +73,29 @@ static AufEintragBase::mengen_t
    }
 }
 
+// if anybody has a more straight way to do this tell me !
+/*  list::sort(comp) seems to try to allocate new objects of the passed type
+*/
+namespace{ class sort_wrapper
+{	const distribute_children_cb &c;
+public:
+	sort_wrapper(const distribute_children_cb &dcc) : c(dcc) {}
+	bool operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const
+	{  return c(a,b); }
+};}
+
 bool distribute_children(const AufEintragBase &startAEB,
  		AuftragBase::mengen_t menge,
  		const ArtikelBase &article, 
  		const distribute_children_cb &callee)
 {  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,article,Nametrans(typeid(callee).name()));
-   AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel(startAEB));
+   AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel
+   	(startAEB,AufEintragZu::list_kinder,AufEintragZu::list_unsorted));
    ArtikelBaum AE_artbaum(article);
-   for(AufEintragZu::map_t::const_iterator artloop_var=MapArt.begin();artloop_var!=MapArt.end();++artloop_var)
+   for(AufEintragZu::map_t::iterator artloop_var=MapArt.begin();artloop_var!=MapArt.end();++artloop_var)
    {  ArtikelBaum::faktor_t AE_faktor = AE_artbaum.Faktor(artloop_var->first);
       AuftragBase::mengen_t AE_menge2=AE_faktor*menge;
+      artloop_var->second.sort(sort_wrapper(callee));
       for(AufEintragZu::list_t::const_iterator zuloop_var=artloop_var->second.begin();
 	   		zuloop_var!=artloop_var->second.end();++zuloop_var)
       {  AuftragBase::mengen_t mengen_var
@@ -97,26 +118,8 @@ bool distribute_children_rev(const AufEintragBase &startAEB,
  		const ArtikelBase &article, 
  		const distribute_children_cb &callee)
 {  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,article,Nametrans(typeid(callee).name()));
-   AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel(startAEB));
-   ArtikelBaum AE_artbaum(article);
-   for(AufEintragZu::map_t::const_iterator artloop_var=MapArt.begin();artloop_var!=MapArt.end();++artloop_var)
-   {  ArtikelBaum::faktor_t AE_faktor = AE_artbaum.Faktor(artloop_var->first);
-      AuftragBase::mengen_t AE_menge2=AE_faktor*menge;
-      for(AufEintragZu::list_t::const_reverse_iterator zuloop_var=artloop_var->second.rbegin();
-	   		zuloop_var!=artloop_var->second.rend();++zuloop_var)
-      {  AuftragBase::mengen_t mengen_var
-      		=MinPfeil_or_MinGeliefert(*zuloop_var,AE_menge2);
-         if (!mengen_var) continue;
-
-         mengen_var=callee(artloop_var->first,zuloop_var->AEB,mengen_var);
-
-         AE_menge2-=mengen_var;
-         if(!AE_menge2) break;
-      }
-      // pass the remainder
-      if (!!AE_menge2) callee(artloop_var->first,AE_menge2);
-   }
-   return !MapArt.empty();
+   return distribute_children(startAEB,menge,
+		   	article,distribute_children_cb_inverter(callee));
 }
 
 void distribute_children_artbaum(const AufEintragBase &startAEB,
@@ -126,9 +129,10 @@ void distribute_children_artbaum(const AufEintragBase &startAEB,
 {  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,article,Nametrans(typeid(callee).name()));
    AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel(startAEB));
    ArtikelBaum AE_artbaum(article);
-   for(AufEintragZu::map_t::const_iterator artloop_var=MapArt.begin();artloop_var!=MapArt.end();++artloop_var)
+   for(AufEintragZu::map_t::iterator artloop_var=MapArt.begin();artloop_var!=MapArt.end();++artloop_var)
    {  ArtikelBaum::faktor_t AE_faktor = AE_artbaum.Faktor(artloop_var->first);
       AuftragBase::mengen_t AE_menge2=AE_faktor*menge;
+      artloop_var->second.sort(sort_wrapper(callee));
       for(AufEintragZu::list_t::const_iterator zuloop_var=artloop_var->second.begin();
 	   		zuloop_var!=artloop_var->second.end();++zuloop_var)
       {  AuftragBase::mengen_t mengen_var
@@ -159,37 +163,11 @@ void distribute_children_rev_artbaum(const AufEintragBase &startAEB,
  		const ArtikelBase &article, 
  		const distribute_children_cb &callee)
 {  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,article,Nametrans(typeid(callee).name()));
-   AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel(startAEB));
-   ArtikelBaum AE_artbaum(article);
-   for(AufEintragZu::map_t::const_iterator artloop_var=MapArt.begin();artloop_var!=MapArt.end();++artloop_var)
-   {  ArtikelBaum::faktor_t AE_faktor = AE_artbaum.Faktor(artloop_var->first);
-      AuftragBase::mengen_t AE_menge2=AE_faktor*menge;
-      for(AufEintragZu::list_t::const_reverse_iterator zuloop_var=artloop_var->second.rbegin();
-	   		zuloop_var!=artloop_var->second.rend();++zuloop_var)
-      {  AuftragBase::mengen_t mengen_var
-      		=MinPfeil_or_MinGeliefert(*zuloop_var,AE_menge2);
-         if (!mengen_var) continue;
-
-         mengen_var=callee(artloop_var->first,zuloop_var->AEB,mengen_var);
-
-         AE_menge2-=mengen_var;
-         if(!AE_menge2) break;
-      }
-      // pass the remainder
-      if (!!AE_menge2) callee(artloop_var->first,AE_menge2);
-   }
-   ppsInstanz::ID next= startAEB.Instanz()->NaechsteInstanz(ArtikelStamm(article));
-   if (next!=ppsInstanzID::None)
-   {  if (MapArt.find(article)==MapArt.end()) 
-         callee(article,menge);
-   }
-   else for(ArtikelBaum::const_iterator i=AE_artbaum.begin();i!=AE_artbaum.end();++i)
-   {  if (MapArt.find(i->rohartikel)==MapArt.end())
-         callee(i->rohartikel,menge*i->menge);
-   }
+   distribute_children_artbaum(startAEB,menge,article,
+   			distribute_children_cb_inverter(callee));
 }
 
-bool distribute_children_twice_rev(const AufEintragBase &startAEB,
+bool distribute_children_twice(const AufEintragBase &startAEB,
  		AuftragBase::mengen_t menge,
  		const ArtikelBase &article, 
  		const distribute_children_twice_cb &callee)
@@ -199,8 +177,9 @@ bool distribute_children_twice_rev(const AufEintragBase &startAEB,
    for(AufEintragZu::map_t::iterator artloop_var=MapArt.begin();artloop_var!=MapArt.end();++artloop_var)
    {  ArtikelBaum::faktor_t AE_faktor = AE_artbaum.Faktor(artloop_var->first);
       AuftragBase::mengen_t AE_menge2=AE_faktor*menge;
-      for(AufEintragZu::list_t::reverse_iterator zuloop_var=artloop_var->second.rbegin();
-	   		zuloop_var!=artloop_var->second.rend();++zuloop_var)
+      artloop_var->second.sort(sort_wrapper(callee));
+      for(AufEintragZu::list_t::iterator zuloop_var=artloop_var->second.begin();
+	   		zuloop_var!=artloop_var->second.end();++zuloop_var)
       {  AuftragBase::mengen_t mengen_var
       		=MinPfeil_or_MinGeliefert(*zuloop_var,AE_menge2);
          if (!mengen_var) continue;
@@ -211,8 +190,8 @@ bool distribute_children_twice_rev(const AufEintragBase &startAEB,
          AE_menge2-=mengen_var;
          if(!AE_menge2) break;
       }
-      for(AufEintragZu::list_t::reverse_iterator zuloop_var=artloop_var->second.rbegin();
-	   		zuloop_var!=artloop_var->second.rend();++zuloop_var)
+      for(AufEintragZu::list_t::iterator zuloop_var=artloop_var->second.begin();
+	   		zuloop_var!=artloop_var->second.end();++zuloop_var)
       {  AuftragBase::mengen_t mengen_var
       		=MinPfeil_or_MinGeliefert(*zuloop_var,AE_menge2);
          if (!mengen_var) continue;
