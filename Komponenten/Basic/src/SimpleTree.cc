@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.50 2004/06/25 09:14:07 christof Exp $
+// $Id: SimpleTree.cc,v 1.51 2004/06/30 10:57:25 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -58,7 +58,7 @@ void SimpleTree_Basic::on_redisplay()
 }
 
 SimpleTree_Basic::SimpleTree_Basic(unsigned maxcol)
-	: SimpleTreeStore_Proxy(maxcol), menu()
+	: SimpleTreeStore_Proxy(maxcol), button_press_vfunc(), menu()
 {  on_spaltenzahl_geaendert();
    
    getStore()->signal_title_changed().connect(SigC::slot(*this,&SimpleTree_Basic::on_title_changed));
@@ -338,6 +338,18 @@ void SimpleTree_Basic::fillMenu()
 
 bool SimpleTree_Basic::MouseButton(GdkEventButton *event)
 {  
+   if (event->type == GDK_BUTTON_PRESS && event->button==1 && button_press_vfunc
+       && event->window ==get_bin_window()->gobj())
+   {  Gtk::TreeModel::Path path;
+      Gtk::TreeViewColumn *col(0);
+      int cell_x(0),cell_y(0);
+      bool res=get_path_at_pos(int(event->x),int(event->y),path,col,cell_x,cell_y);
+      if (!res) return false;
+      Gtk::TreeModel::iterator it=getTreeModel()->get_iter(path);
+      if (!it) return false;
+      int idx=-1;
+      return (*button_press_vfunc)((*it)[getStore()->m_columns.leafdata],idx);
+   }
    if (event->type == GDK_BUTTON_PRESS && event->button==3  && menu)
    {  menu->popup(event->button,event->time);
       return true;
