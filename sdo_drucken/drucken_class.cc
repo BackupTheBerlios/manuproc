@@ -323,6 +323,7 @@ catch(SQLerror &e) { std::cout << e; return; }
 #endif	
   }
    
+
     if(Typ()==Auftrag || Typ()==Rechnung || Typ()==Lieferschein ||
 	Typ()==Extern)
       if(!Notiz().empty())
@@ -334,18 +335,12 @@ catch(SQLerror &e) { std::cout << e; return; }
 	os << "~" << string2TeX(Notiz(),sf)<<"~" << "\\\\\n";
 	}
 
-/* if(Typ()==Rechnung && !gutschrift() && !storniert())
- if(kunde_an->land()->Auslaender())
-   if(!kunde_an->land()->EU())
+ if(Typ()==Rechnung && !gutschrift() && !storniert())
+   if(kunde_an->land()->LKZ()=="A")
         {os << "~\\\\";
-	if(kunde_an->land()->LKZ()=="IL")
-	  os << mld->MLT(MultiL_Dict::TXT_EU_WARE_ISRAEL);
-	else
-	  os << mld->MLT(MultiL_Dict::TXT_EU_PREFERENZ);
-	os << "\\\\\n";
-	os << "~\\\\\n"<<kunde_von->ort()<<", "<<mld->MLT(MultiL_Dict::TXT_DEN);
+	 os << mld->MLT((MultiL_Dict::LangTXT)1000,"Liegerng nach § 6a UStG / Art. 28c Teil A der 6. EU-Richtlinie");
 	}
-*/
+
   Gtk2TeX::Footer(os);
 }
 
