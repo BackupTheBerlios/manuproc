@@ -1,4 +1,4 @@
-/* $Id: Bankauftrag.cc,v 1.12 2003/11/07 11:12:50 jacek Exp $ */
+/* $Id: Bankauftrag.cc,v 1.13 2005/01/21 09:31:34 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -164,7 +164,7 @@ Bankauftrag &Bankauftrag::operator<<(const Zahlvorgang &z) throw(IOerror)
    return *this;
 }
 
-void Bankauftrag::close(bool nodisk) throw(IOerror)
+void Bankauftrag::close(bool make_disk) throw(IOerror)
 {  /* Druckausgabe abschließen */
    if (druckerpipe)
    {  
@@ -225,7 +225,7 @@ void Bankauftrag::close(bool nodisk) throw(IOerror)
    if (::close(dtausfile)) throw IOerror();
 
    /* Diskette erstellen */
-   if(!nodisk)
+   if(make_disk)
      if(erzeugeDiskette()) throw IOerror();
    printEinzugListe();
    /* Diskette testen */

@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.cc,v 1.18 2004/08/02 16:52:49 jacek Exp $ */
+/* $Id: Ausgabe_neu.cc,v 1.19 2005/01/21 09:31:34 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -43,6 +43,7 @@ FP_STR(1,double,long)
 FP_STR(2,double,long)
 FP_STR(2,double,long long)
 FP_STR(3,double,long)
+FP_STR(4,double,long)
 FP_STR(5,double,long)
 
 

@@ -245,8 +245,10 @@ void Rechnung::push_back(unsigned &lineno,ArtikelBase art,
 	 	<< stk << Query::NullIf(menge)
  		<< p.Wert(getWaehrung(),p.BezugsMenge()) 
 	 	<< rabatt << p.BezugsMenge() << provsatz 
-	 	<< Query::NullIf(ek_preis.Wert(Waehrung::default_id,
-						p.BezugsMenge()));
+//	 	<< Query::NullIf(ek_preis.Wert(Waehrung::default_id,
+//						p.BezugsMenge()));
+	 	<< ek_preis.Wert(Waehrung::default_id,
+						p.BezugsMenge());
   lineno++;
 #if defined(PETIG_EXTENSIONS) && defined(MANUPROC_DYNAMICENUMS_CREATED)
   ArtikelStamm as(art);
