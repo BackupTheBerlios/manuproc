@@ -468,7 +468,7 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
          	* el.getGeliefert();
       }
       if (geliefert_eltern<ae.getGeliefert())
-      {  analyse("Mehr geliefert als von den Eltern ausgeliefert wurde\n",
+      {  analyse("Mehr geliefert als von den Eltern ausgeliefert wurde",
       		ae,ae.getGeliefert(),geliefert_eltern);
       }
    }

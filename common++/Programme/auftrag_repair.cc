@@ -1,4 +1,4 @@
-// $Id: auftrag_repair.cc,v 1.5 2003/12/04 08:01:37 christof Exp $
+// $Id: auftrag_repair.cc,v 1.6 2004/02/20 16:43:35 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -60,7 +60,9 @@ static void usage(const std::string &s)
            "\twobei die aktion=[A|C|X|T|*] ist.\n"
            "\t-y Analysemodus (keine Reparaturen)\n"
            "\t-l Reparatur wiederholen bis keine Fehler mehr auftreten\n"
-           "\t-I führt die Tests für alle Instanzen durch\n\n";
+           "\t-I führt die Tests für alle Instanzen durch\n\n"
+           "most common use:\n"
+           "\t./auftrag_repair -l -I -a\\*\trepair all (-aD to delete unneeded)\n";
  exit(1);
 }
 
