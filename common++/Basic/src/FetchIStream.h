@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.18 2003/01/16 16:04:40 christof Exp $
+// $Id: FetchIStream.h,v 1.19 2003/01/17 10:03:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -48,7 +48,9 @@ public:
 	
 	FetchIStream &operator>>(std::string &str);
 	FetchIStream &operator>>(int &i);
+	FetchIStream &operator>>(unsigned &i);
 	FetchIStream &operator>>(long &i);
+	FetchIStream &operator>>(unsigned long &i);
 	FetchIStream &operator>>(float &f);
 	FetchIStream &operator>>(double &f);
 	FetchIStream &operator>>(bool &b);

@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.25 2003/01/15 16:42:04 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.26 2003/01/17 10:03:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -104,6 +104,20 @@ FetchIStream &FetchIStream::operator>>(long &i)
 {  std::string s;
    *this >> s;
    i=strtol(s.c_str(),0,10);
+   return *this;
+}
+
+FetchIStream &FetchIStream::operator>>(unsigned &i)
+{  std::string s;
+   *this >> s;
+   i=strtoul(s.c_str(),0,10);
+   return *this;
+}
+
+FetchIStream &FetchIStream::operator>>(unsigned long &i)
+{  std::string s;
+   *this >> s;
+   i=strtoul(s.c_str(),0,10);
    return *this;
 }
 
