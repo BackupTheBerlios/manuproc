@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.44 2003/09/18 09:12:32 christof Exp $
+# $Id: Makefile.am,v 1.45 2003/10/09 11:56:35 jacek Exp $
 
 AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@ @SIGC_CFLAGS@
 
@@ -19,7 +19,7 @@ libMisc_a_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
 		EntryValueBase.cc EntryValueIntString.cc \
 		auto_conversion.cc $(PGCC_Sources) AdminProblems.cc \
 		exception.cc itos.cc EntryValueDatum.cc Handles.cc EAN.cc \
-		EntryValueQuartal.cc Trace.cc FetchIStream_ops.cc \
+		Trace.cc FetchIStream_ops.cc \
 		dbcapability.cc Tag.cc TagStream.cc \
 		multi_lang.cc EntryValueTimeStamp.cc \
 		Event.cc germanstring.cc EntryValueIntGermanString.cc
@@ -65,7 +65,7 @@ include_HEADERS=Ausgabe.h Ausgabe_neu.h Datum.h \
 		exception.h itos.h fixedpoint.h FetchIStream.h \
 		ctime_assert.h EntryValueEmptyInt.h EntryValueDatum.h \
 		EntryValueFixed.h Global_Settings.h EAN.h AdminProblems.h \
-		EntryValueQuartal.h EntryValueFixedEinheit.h \
+		EntryValueFixedEinheit.h \
 		dbcapability.h \
 		multi_lang.h EntryValueTimeStamp.h inbetween.h \
 		bitmask.h TemporaryValue.h vectormap.h germanstring.cc \
