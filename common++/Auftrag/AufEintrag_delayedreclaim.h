@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_delayedreclaim.h,v 1.1 2003/08/08 17:46:31 christof Exp $ */
+/* $Id: AufEintrag_delayedreclaim.h,v 1.2 2003/08/14 09:22:15 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,8 +27,14 @@ class AufEintrag::delayed_reclaim
    static std::list<std::pair<cH_ppsInstanz,ArtikelBase> > delayed;
    
    bool nested;
+   
+   void reclaim();
 public:
-   delayed_reclaim() : nested() {}
+   delayed_reclaim();
+   ~delayed_reclaim();
+   
+   void delay(cH_ppsInstanz inst,const ArtikelBase &ab);
+   static bool Active() { return active; }
 };
 
 #endif

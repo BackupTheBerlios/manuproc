@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.6 2003/08/14 08:35:01 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.7 2003/08/14 09:22:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -36,6 +36,7 @@
 #include <Misc/relops.h>
 #include <Auftrag/sqlAuftragSelector.h>
 #include <Auftrag/selFullAufEntry.h>
+#include <Auftrag/AufEintrag_delayedreclaim.h>
 
 #ifdef MABELLA_EXTENSIONS
 //#include <Lager/FertigWarenLager.h>
@@ -131,6 +132,8 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(int uid,mengen_t menge,bool insta
    bestellt+=menge2;
    if (menge2>0 && entrystatus==CLOSED)
       setStatus(OPEN,uid,true);
+   else if (!getRestStk() && entrystatus==OPEN)
+      setStatus(CLOSED,uid);
  }
 
  if (ElternAEB.valid())
@@ -181,7 +184,10 @@ void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftr
 
  // Menge im Lager freigeben == Einlagern ohne Produktion?
  if (Instanz()->LagerInstanz() && Id()==plan_auftrag_id)
- {  AufEintrag::MengeVormerken(Instanz(),Artikel(),menge,true,ProductionContext()); 
+ {  if (delayed_reclaim::Active())
+       ; // in 2er 
+    else
+       AufEintrag::MengeVormerken(Instanz(),Artikel(),menge,true,ProductionContext()); 
 	 // ,*this);
  }
  else try{

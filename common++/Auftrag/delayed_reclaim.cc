@@ -1,4 +1,4 @@
-// $Id: delayed_reclaim.cc,v 1.1 2003/08/08 17:46:31 christof Exp $
+// $Id: delayed_reclaim.cc,v 1.2 2003/08/14 09:22:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -19,3 +19,25 @@
  */
 
 #include <Auftrag/AufEintrag_delayedreclaim.h>
+
+bool AufEintrag::delayed_reclaim::active;
+std::list<std::pair<cH_ppsInstanz,ArtikelBase> > 
+	AufEintrag::delayed_reclaim::delayed;
+
+void AufEintrag::delayed_reclaim::reclaim()
+{  // @@@
+}
+
+AufEintrag::delayed_reclaim::delayed_reclaim()
+  : nested(active)
+{  if (!nested) active=true;
+}
+
+AufEintrag::delayed_reclaim::~delayed_reclaim()
+{  if (!nested) 
+   { reclaim(); active=false; }
+}
+
+void AufEintrag::delayed_reclaim::delay(cH_ppsInstanz inst,const ArtikelBase &ab)
+{  delayed.push_back(std::pair<cH_ppsInstanz,ArtikelBase>(inst,ab));
+}

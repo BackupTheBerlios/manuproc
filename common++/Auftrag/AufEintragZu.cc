@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.24 2003/08/14 08:35:01 christof Exp $
+// $Id: AufEintragZu.cc,v 1.25 2003/08/14 09:22:15 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -227,11 +227,13 @@ void AufEintragZu::Neu(const AufEintragBase& neuAEB,const mengen_t menge)
  }
 }
 
+#if 0
 void AufEintragZu::Neu(const AufEintragBase& neuAEB,
                        const mengen_t menge,const int oldZnr)
 { if (oldZnr) Neu(AufEintragBase(AuftragBase(*this),oldZnr),menge);
   else Neu(neuAEB,menge);
 }
+#endif
 
 namespace { struct pri_menge
 {  ManuProC::TimeStamp pri;
@@ -352,7 +354,7 @@ bool AufEintragZu::remove(const AufEintragBase& alt,const AufEintragBase& neu)
 AufEintragZu::mengen_t AufEintragZu::Summe(const list_t &l,ID wovon)
 {  mengen_t result;
    for (list_t::const_iterator i=l.begin(); i!=l.end(); ++i)
-      if (wovon==none_id || i->aeb->Id()==wovon)
-         result+=i->menge;
+      if (wovon==none_id || i->AEB.Id()==wovon)
+         result+=i->Menge;
    return result;
 }
