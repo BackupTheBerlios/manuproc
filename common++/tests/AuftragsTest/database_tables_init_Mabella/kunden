@@ -109,6 +109,8 @@ COPY kunden (kundennr, sortname, idnr, firma, postanwvor, strasse, postanwnach, 
 1	M	\N	M	\N	O	\N	12	4	\N	\N	W	0	\N	\N	0.00	2003-05-19 15:04:38+02	0	\N	423111	33050000	1	0.0	\N	1	f	f	\N	\N	t	t	RL	\N	8	2015	f	1	1.0	D	3.00	99	0	t	\N	\N	\N	\N	99	\N	1	\N	1	2	1	\N	t	t	f	\N	\N	\N	\N	\N	\N	\N	\N	f	99
 \.
 
+insert into kunden(kundennr,firma) values (99,'Mr. Dummy');
+insert into kunden(kundennr,firma) values (22817,'Ms. Dummy');
 
 --
 -- TOC entry 4 (OID 6018632)

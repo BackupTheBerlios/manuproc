@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.55 2004/09/24 22:52:15 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.56 2005/03/17 09:03:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -101,10 +101,19 @@ sqlca.sqlcode=0;
    if (sqlca.sqlcode) { DEBUG_FIS(SQLerror("allocate descriptor")); eof=true; }
 //   exec sql prepare com from :COMMAND;
 //   exec sql execute com into descriptor X;
+#ifdef MPC_ECPG_PREPARE
+   ECPGprepare(__LINE__, "com" , COMMAND);
+   ECPGdo(__LINE__, 0, 1, NULL, "?",
+	ECPGt_char_variable,ECPGprepared_statement("com"),1L,1L,sizeof(char),
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT,
+	ECPGt_descriptor, descriptor.c_str(), 0L, 0L, 0L,
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EORT);
+#else
    ECPGdo(__LINE__, ECPGdo300 NULL, COMMAND, 
    	ECPGt_EOIT,
    	ECPGt_descriptor, descriptor.c_str(), 0L, 0L, 0L,
    	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EORT);
+#endif
    error=sqlca.sqlcode;
    lines=sqlca.sqlerrd[2];
    if (sqlca.sqlcode && sqlca.sqlcode!=100)

@@ -164,6 +164,28 @@ static bool MindestMenge_Lief()
 
 static TestReihe MindestMenge_Lief_(&MindestMenge_Lief,"Mindestmenge LiefStorno","minMen_LS");
 
+static bool MinMenRepair()
+{  // FertigWaren fw(ARTIKEL_TRIO,FertigWaren::eManuell,5);
+   // FertigWarenLager fwl(fw,FertigWarenLager::default_lagerid);
+   // fwl.Einlagern(ProductionContext());
+
+   Check::NeedsRepair();
+   ArtikelStamm(make_value(ArtikelBase(ARTIKEL_TRIO))).setMindBest(5);
+   vergleichen(Check::Menge,"MinMRep0","Ausgangspunkt","a");
+
+   Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
+   AufEintragBase AEB2=auftrag.push_back(4,DATUM,ARTIKEL_TRIO,OPEN,true);
+   vergleichen(Check::Menge,"MinMRep1","Bestellung","b");   
+   
+   Query("update auftragentry set bestellt=0 "
+         "where (instanz,auftragid,zeilennr)=(?,?,?)")
+     << 2 << 2 << 1;
+   vergleichen(Check::Menge,"MinMRep2","Inkonsistenz","i");   
+   
+   return true;
+}
+
+static TestReihe MinMenRepair_(&MinMenRepair,"Mindestmenge Reparatur (bugcheck)","minMenRep");
 
 
 #endif
