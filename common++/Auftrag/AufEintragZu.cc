@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.16 2003/07/31 14:48:53 christof Exp $
+// $Id: AufEintragZu.cc,v 1.17 2003/08/01 07:05:46 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -112,6 +112,7 @@ AufEintragZu::list_t AufEintragZu::get_Referenz_list_for_geplant(bool kinder) co
 }
 #endif
 
+#if 0
 AuftragBase::mengen_t AufEintragZu::verteileMenge(list_t L, mengen_t menge,bool add)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Menge",menge),NV("Add",add));
@@ -127,6 +128,7 @@ AuftragBase::mengen_t AufEintragZu::verteileMenge(list_t L, mengen_t menge,bool 
       std::cerr << "WARNING: 'AufEintragZu::verteileMenge' Restmenge = "<<menge<<'\n';
   return menge;
 }
+#endif
 
 std::vector<AufEintragBase> AufEintragZu::getKundenAuftragV() const
 {
@@ -234,15 +236,16 @@ void AufEintragZu::Neu(const AufEintragBase& neuAEB,const mengen_t menge)
       "--",menge,"-->",neuAEB);
 
  // erst erhöhen versuchen 
- try{ mengen_t mt=setMengeDiff__(neuAEB,menge); 
-      if (!AufEintragBase::tolerate_inconsistency)
-         assert(menge==mt);
-    }
- catch (SQLerror &e) // anlegen
+ if (menge<0) 
+ {  mengen_t mt=setMengeDiff__(neuAEB,menge);   
+    assert(AufEintragBase::tolerate_inconsistency || menge==mt);
+    return;
+ }
  {  Query("insert into auftragsentryzuordnung "
          "(altinstanz,altauftragid,altzeilennr, menge, "
-           "neuinstanz,neuauftragid,neuzeilennr) "
-         "values (?,?,?, ?, ?,?,?)").lvalue() 
+           "neuinstanz,neuauftragid,neuzeilennr, prioritaet) "
+         "values (?,?,?, ?, ?,?,?, "
+            "cast(timeofday() as timestamp with time zone))")
       << static_cast<const AufEintragBase &>(*this) << menge << neuAEB;
     SQLerror::test(__FILELINE__);
  }
@@ -254,6 +257,7 @@ void AufEintragZu::Neu(const AufEintragBase& neuAEB,
   else Neu(neuAEB,menge);
 }
 
+#if 0
 bool AufEintragZu::setMenge(const AufEintragBase& neuAEB,const mengen_t menge)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,neuAEB,NV("Menge",menge));
@@ -266,32 +270,51 @@ bool AufEintragZu::setMenge(const AufEintragBase& neuAEB,const mengen_t menge)
  SQLerror::test(__FILELINE__,100);
  return !SQLerror::SQLCode();
 }
+#endif
 
+namespace { struct pri_menge
+{  ManuProC::TimeStamp pri;
+   AuftragBase::mengen_t menge;
+};}
+
+FetchIStream &operator>>(FetchIStream &is,pri_menge &a)
+{  return is >> a.pri >> a.menge;
+}
 
 AuftragBase::mengen_t AufEintragZu::setMengeDiff__(const AufEintragBase &neuAEB,mengen_t menge)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,neuAEB,NV("Menge",menge));
+ if (menge>0) { Neu(neuAEB,menge); return menge; }
  if(menge<0)
-  {  AuftragBase::mengen_t M;
-     Query("select menge from auftragsentryzuordnung "
+  {  std::vector<pri_menge> V;
+     // select for update?
+     (Query("select prioritaet,menge from auftragsentryzuordnung "
      	"where (altinstanz,altauftragid,altzeilennr, "
-     	       "neuinstanz,neuauftragid,neuzeilennr)= (?,?,?, ?,?,?)").lvalue()
-	<< static_cast<const AufEintragBase&>(*this) << neuAEB
-	>> M;
-     if(mengen_t(M)<-menge) menge=-M;
+     	       "neuinstanz,neuauftragid,neuzeilennr)= (?,?,?, ?,?,?) "
+     	       "order by prioritaet desc")
+	<< static_cast<const AufEintragBase&>(*this) << neuAEB)
+	.FetchArray(V);
+     AuftragBase::mengen_t noch_verteilen=menge;
+     for (std::vector<pri_menge>::const_iterator i=V.begin();i!=V.end();++i)
+     {  AuftragBase::mengen_t M=-AuftragBase::min(i->menge,-noch_verteilen);
+        Query("update auftragsentryzuordnung set menge=menge+? "
+     	"where (altinstanz,altauftragid,altzeilennr, "
+     	       "neuinstanz,neuauftragid,neuzeilennr, "
+     	       "prioritaet)= (?,?,?, ?,?,?, ?) ")
+     	   << M
+     	   << static_cast<const AufEintragBase&>(*this) << neuAEB
+     	   << i->pri;
+     	SQLerror::test("AufEintragZu::setMengeDiff__");
+     	noch_verteilen-=M;
+     	if (!noch_verteilen) break;
+     }
+     return menge-noch_verteilen;
   }
-//  if (menge!=0) auch 0er sind interessant (bei Produziert)
-  {  Query("update auftragsentryzuordnung set menge=menge+? "
- 	"where (altinstanz,altauftragid,altzeilennr, "
- 		"neuinstanz,neuauftragid,neuzeilennr)= (?,?,?, ?,?,?)").lvalue()
-	<< menge 		
- 	<< static_cast<const AufEintragBase&>(*this) << neuAEB;
-     SQLerror::test(__FILELINE__);
-  }
+  else Neu(neuAEB,menge);
  return menge;
 }
 
-
+#if 0
 // wer braucht denn so etwas krankes? CP
 bool AufEintragZu::setKindZnr(const AufEintragBase& neuAEB)
 {
@@ -307,6 +330,7 @@ bool AufEintragZu::setKindZnr(const AufEintragBase& neuAEB)
  SQLerror::test(__FILELINE__,100);
  return !SQLerror::SQLCode();
 }
+#endif
 
 void AufEintragZu::moveInstanz(const VonNachDel vdl,const AufEintragBase &oldAEB, const AufEintragBase &newAEB) throw(SQLerror)
 {
