@@ -219,6 +219,7 @@ int auftragstests(e_mode mode)
      }
     case Plantest:
      {
+      #ifdef PETIG_TEST
        {
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::_Garn__Einkauf),Kunde::default_id);
        int kupfer_znr=2;
@@ -259,6 +260,7 @@ int auftragstests(e_mode mode)
       cout << "Plan-Test erfolgreich\n";
 
       break;
+      #endif
      }
     case Splittest :
     case Rep_Petig_PhysikalischesLager:

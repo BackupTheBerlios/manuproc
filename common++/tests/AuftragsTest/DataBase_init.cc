@@ -1,4 +1,4 @@
-// $Id: DataBase_init.cc,v 1.10 2002/12/09 11:22:28 thoma Exp $
+// $Id: DataBase_init.cc,v 1.11 2002/12/12 10:42:01 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -32,7 +32,7 @@
 DataBase_init::DataBase_init() 
 {
 #ifdef PETIG_TEST
-//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
    ArtikelBaum_anlegen();
    RohwarenLager_initalisieren();
    JumboLager_initalisieren();
@@ -43,7 +43,7 @@ DataBase_init::DataBase_init()
    L.rein_ins_lager(3,100,getuid()); // Granulat gelb
 #elif defined MABELLA_TEST
    Lager L(FERTIGWARENLAGER); 
-//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
    L.rein_ins_lager(ARTIKEL_TRIO,4,getuid()); 
 //exit(1);
 #endif

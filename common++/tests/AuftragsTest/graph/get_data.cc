@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.29 2002/12/10 14:04:00 thoma Exp $
+// $Id: get_data.cc,v 1.30 2002/12/12 10:42:01 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -259,6 +259,7 @@ void graph_data_node::get_files(emode mode)
       case Rep_Petig_0er_2er_gleichzeitig: filenames=Rep02gleichzeitigfiles(); break;
       case Rep_Petig_Kunde: filenames=RepKunde_files(); break;
       case Rep_Petig_Zuordung: filenames=RepZu_files(); break;
+      case Rep_Petig_Kunden_Zuordung: filenames=RepKuZu_files(); break;
       case Legende: break;
       default: assert(!"never get here");
     }
@@ -461,6 +462,17 @@ std::vector<graph_data_node::st_files> graph_data_node::RepZu_files()
   vec_files.push_back(st_files("mit_lager_open"));  
   vec_files.push_back(st_files("rep_pf","P"));  
   vec_files.push_back(st_files("rep_pfE","E"));  
+  return vec_files;
+}
+
+std::vector<graph_data_node::st_files> graph_data_node::RepKuZu_files()
+{
+  std::vector<st_files>  vec_files;
+  vec_files.push_back(st_files("mit_lager_open"));  
+  vec_files.push_back(st_files("rep_zwei_auftraege_anlegen"));  
+  vec_files.push_back(st_files("rep_planen_spritz"));  
+  vec_files.push_back(st_files("rep_planen_spritz2"));  
+  vec_files.push_back(st_files("rep_lieferschein","L"));  
   return vec_files;
 }
 
