@@ -34,6 +34,6 @@ AM_CONDITIONAL(WINDOWS, test x$mingw = xtrue)
 
 
 
-AC_OUTPUT(Makefile src/Makefile  po/Makefile.in m4/Makefile )
+AC_OUTPUT(Makefile src/Makefile )
 
 
