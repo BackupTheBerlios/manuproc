@@ -1,4 +1,4 @@
-/* $Id: KettenGarn_CP.cc,v 1.9 2004/05/27 10:15:06 christof Exp $ */
+/* $Id: KettenGarn_CP.cc,v 1.10 2004/05/27 11:20:30 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -140,7 +140,10 @@ std::vector<KettenGarn_CP> KettenGarn_CP::Load(ArtikelGang const &ag, unsigned l
          }
       }
       // aus 6 mach 4
-      else if (ks_end-i==1 && anz_fd+anz_fd/2<=min_max_fd && alte_kettenzahl==6)
+      else if (ks_end-i==1 && alte_kettenzahl==6 && anz_fd+anz_fd/2<=min_max_fd)
+         neue_kettenzahl=4;
+      // aus 8 mach 6 :-O
+      else if (ks_end-i==1 && alte_kettenzahl==8 && (anz_fd*3/4)==min_max_fd)
          neue_kettenzahl=4;
       ManuProC::Trace(trace_channel,"",NV("neue_kettenzahl",neue_kettenzahl));
       if (neue_kettenzahl!=alte_kettenzahl) // geht es auf?
