@@ -158,8 +158,13 @@ public:
        switch(seqnr)
         {
          case AUFNR_SEQ :
-            return cH_EntryValueIntString(Formatiere(
-            			(unsigned long)AE.Id(),0,6,"","",'0'));
+             {std::string artnr;
+              artnr=Formatiere((unsigned long)AE.Id(),0,6,"","",'0');
+              if(AM->get_Instanz()->Id()==ppsInstanzID::Einkauf &&
+                     !AE.getYourAufNr().empty())
+                    artnr=AE.getYourAufNr()+" - "+artnr;
+              return cH_EntryValueIntString(artnr);
+              }
          case ARTIKEL_SEQ :
             return cH_EntryValueIntString(cH_ArtikelBezeichnung(AE.Artikel())->Bezeichnung());
          case LIEFDAT_SEQ :
