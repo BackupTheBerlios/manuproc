@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.56 2004/02/12 10:36:54 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.57 2004/02/12 10:41:31 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -209,8 +209,8 @@ void LieferscheinEntry::changeMenge(int _stueck, mengen_t _menge,
   Transaction tr;
   Query::Execute("lock table lieferscheinentry in exclusive mode");
 
-  updateLieferscheinMenge(_stueck,_menge);
   if(status==OPEN) changeStatus((AufStatVal)OPEN,ls,ein_auftrag,_stueck,_menge);
+  updateLieferscheinMenge(_stueck,_menge);
 
   tr.commit();
 }
