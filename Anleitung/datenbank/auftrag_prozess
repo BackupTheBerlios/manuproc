@@ -23,7 +23,7 @@ CREATE TABLE "auftrag_prozess" (
 
 
 COPY "auftrag_prozess" FROM stdin;
-20000	1	31	2002-10-16 13:22:15.087533+02	1	20	11
+20000	1	31	2002-10-17 09:13:05.371123+02	1	20	11
 \.
 --
 --
