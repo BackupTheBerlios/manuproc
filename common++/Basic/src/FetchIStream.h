@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.46 2004/03/11 14:35:53 christof Exp $
+// $Id: FetchIStream.h,v 1.47 2004/03/11 14:37:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,8 +23,9 @@
 #include <vector>
 #include <list>
 #include <map>
-#include <Misc/SQLerror.h>
 #include <ManuProCConfig.h>
+#include <Misc/SQLerror.h>
+#include <Misc/compiler_ports.h>
 
 #ifdef MPC_SQLITE
 #include <algorithm>

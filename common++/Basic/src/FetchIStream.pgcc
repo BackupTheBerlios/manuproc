@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.50 2004/03/11 14:35:53 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.51 2004/03/11 14:38:11 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -59,7 +59,7 @@ FetchIStream &FetchIStream::operator>>(std::string &str)
    const char *pval = PQgetvalue(result, zeile, naechstesFeld);
    if (pval) str=pval;
    else str="";
-   if (debugging.on) 
+   if (Query::debugging.on) 
       std::cerr << "FIS result["<<zeile<<','<<naechstesFeld<<"]="<<str << '\n';
    naechstesFeld++;
    return *this;
@@ -104,7 +104,7 @@ sqlca.sqlcode=0;
    {  eof=true;
       FetchIStream::mythrow(SQLerror(query)); 
    }
-   else if (sqlca.sqlcode==100 && debugging.on)
+   else if (sqlca.sqlcode==100 && Query::debugging.on)
    {  DEBUG_FIS("no lines returned/changed");
    }
    result=*(ECPGdescriptor_lvalue(__LINE__,descriptor.c_str()));
