@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.42 2003/06/24 07:21:48 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.43 2003/09/10 15:04:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,6 +23,11 @@ exec sql include sqlca;
 #include <Misc/itos.h>
 #include <locale.h>
 #include <cassert>
+#ifdef OLD_ECPG
+#define ECPGdo300
+#else
+#define ECPGdo300 0,1,
+#endif
 
 namespace {
 	struct debug_environment
@@ -172,7 +177,7 @@ sqlca.sqlcode=0;
    if (sqlca.sqlcode) { DEBUG_FIS(SQLerror("allocate descriptor")); eof=true; }
 //   exec sql prepare com from :COMMAND;
 //   exec sql execute com into descriptor X;
-   ECPGdo(__LINE__, NULL, COMMAND, 
+   ECPGdo(__LINE__, ECPGdo300 NULL, COMMAND, 
    	ECPGt_EOIT,
    	ECPGt_descriptor, descriptor.c_str(), 0L, 0L, 0L,
    	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EORT);
@@ -319,7 +324,12 @@ Query::~Query()
       sqlca.sqlcode=ECPG_TOO_FEW_ARGUMENTS;
    }
    else
-   {  struct sqlca copy=sqlca;
+   {  
+#ifdef OLD_ECPG
+      struct sqlca copy=sqlca;
+#else
+      struct sqlca_t copy=sqlca;
+#endif      
       //   exec sql deallocate descriptor X;
       ECPGdeallocate_desc(__LINE__, descriptor.c_str());
       // do not change sqlca ... believe me, you don't want to

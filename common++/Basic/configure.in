@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.20 2003/01/14 12:16:28 thoma Exp $
+# $Id: configure.in,v 1.21 2003/09/10 15:04:21 christof Exp $
 
 AC_INIT(src/SQLerror.h)
 AC_CONFIG_AUX_DIR(.)
@@ -35,6 +35,19 @@ then
  if test "${with_postgresdir+set}" = "set" -o ! -z "$ECPG"
  then
   PETIG_CHECK_POSTGRES
+  
+  AC_MSG_CHECKING(for ecpg version)
+  tmp_CXXFLAGS="$CXXFLAGS"
+  CXXFLAGS="$CXXFLAGS $ECPG_INCLUDES"
+  AC_COMPILE_IFELSE([
+#include <ecpgtype.h>
+#include <ecpglib.h>
+int main() {  ECPGdo(20, "test", "select true",ECPGt_EOIT, ECPGt_EORT); }
+	],[AC_DEFINE(OLD_ECPG, 1, [Define to 1 if you use ecpg 2.9.])
+		AC_MSG_RESULT([old (-2.9.0)])],
+	[AC_MSG_RESULT([new (3.0.0+)])])
+  CXXFLAGS="$tmp_CXXFLAGS"
+  
   AC_MSG_CHECKING(for standard database name)
   DEFAULT_DB="$USER"
   DEFAULT_DBHOST="localhost"
