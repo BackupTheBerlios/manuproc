@@ -1,4 +1,4 @@
-// $Id: createDynEnums.cc,v 1.9 2003/01/17 16:43:17 christof Exp $
+// $Id: createDynEnums.cc,v 1.10 2003/03/24 10:23:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: createDynEnums.cc,v 1.9 2003/01/17 16:43:17 christof Exp $
+// $Id: createDynEnums.cc,v 1.10 2003/03/24 10:23:03 christof Exp $
 
 #include <Misc/dbconnect.h>
 #include <Misc/FetchIStream.h>
@@ -104,7 +104,7 @@ int main()
       {  Query q("select prozessid,label,text from prozesse order by prozessid");
          while ((q >> is).good())
          {  int id; std::string label,text;
-            is >> id >> label >> FetchIStream::MapNull<std::string>(text,"");
+            is >> id >> label >> FetchIStream::MapNull(text,std::string());
             if (!text.empty()) label=label+'_'+text;
             std::cout << toIdentifier(label) << '=' << id << ',';
          }

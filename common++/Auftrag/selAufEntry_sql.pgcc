@@ -1,4 +1,4 @@
-// $Id: selAufEntry_sql.pgcc,v 1.25 2003/02/12 13:54:32 christof Exp $
+// $Id: selAufEntry_sql.pgcc,v 1.26 2003/03/24 10:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -58,13 +58,13 @@ FetchIStream &operator>>(FetchIStream &is, AufEintrag &ae)
    	>> ae.geliefert
 	>> ae.auftragstatus 
    	>> ae.kdnr 
-   	>> FetchIStream::MapNull<std::string>(ae.youraufnr,"")
+   	>> FetchIStream::MapNull(ae.youraufnr,std::string())
    	>> prozid 
    	>> ae.letztePlanInstanz
    	>> ae.maxPlanInstanz 
    	>> ae.prozdate
    	>> ae.preis 
-   	>> FetchIStream::MapNull<AufEintrag::rabatt_t>(ae.rabatt,AufEintrag::rabatt_t(0))
+   	>> FetchIStream::MapNull<AufEintrag::rabatt_t>(ae.rabatt,0)
    	>> ae.entrystatus
    	>> ae.lasteditdate_uid
    	>> ae.lasteditdate 

@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.30 2003/03/24 10:23:02 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.31 2003/03/24 10:27:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -100,7 +100,7 @@ void ArtikelStamm::set_BestellenBei(const ArtikelBase &artikel,const ppsInstanz:
 {
   Query("update artikelstamm set stand=now(),bestellen_bei=? "
   	"where id=? and (bestellen_bei!=? or bestellen_bei is null)").lvalue()
-  	<< Query::NullIf<ppsInstanz::ID>(instanz,ppsInstanzID::None)
+  	<< Query::NullIf(instanz,ppsInstanzID::None)
   	<< artikel.Id() 
   	<< instanz;
   SQLerror::test(__FILELINE__,100);
@@ -139,7 +139,7 @@ bool ArtikelStamm::getAktive() const throw(SQLerror)
 
 void ArtikelStamm::setMindBest(int mb) throw(SQLerror)
 { Query("update artikelstamm set stand=now(),mindbestand=? where id=?").lvalue()
-  	<< Query::NullIf<int>(mb,NO_CHECK) << art.Id();
+  	<< Query::NullIf(mb,NO_CHECK) << art.Id();
   SQLerror::test(__FILELINE__,100);
 
  cache.deregister(art.Id());

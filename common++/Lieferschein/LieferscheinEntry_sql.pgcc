@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry_sql.pgcc,v 1.31 2003/03/24 10:23:02 christof Exp $ */
+/* $Id: LieferscheinEntry_sql.pgcc,v 1.32 2003/03/24 10:27:11 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -98,8 +98,8 @@ LieferscheinEntry LieferscheinEntry::create(const LieferscheinBase &lsb,
  		"(instanz,lfrsid,zeile, artikelid, refauftragid,refzeilennr, stueck,"
 		"menge,palette,zusatzinfo)"
  	"values (?,?,?, ?, ?,?, ?,?,?,?)").lvalue()
- 	<< LE << art.Id() << Query::NullIf<int>(LE.RefAuftrag().Id(),0)
- 	<< Query::NullIf<int>(LE.AufZeile(),0)
+ 	<< LE << art.Id() << Query::NullIf(LE.RefAuftrag().Id(),0)
+ 	<< Query::NullIf(LE.AufZeile(),0)
  	<< LE.Stueck() 
  	<< Query::NullIf<mengen_t>(LE.Menge(),0)
  	<< LE.Palette() << LE.ZusatzInfo();
@@ -127,8 +127,8 @@ void LieferscheinEntry::setZusatzInfo(const AufEintragBase &AEB,const mengen_t &
   Query("insert into lieferscheinentryzusatz (instanz,lfrsid,lfsznr,"
       "auftragid,auftragznr,menge) values (?,?,?, ?,?, ?)").lvalue() 
 	<< *this 
-  	<< Query::NullIf<int>(AEB.Id(),ManuProcEntity<>::none_id)
-  	<< Query::NullIf<int>(AEB.ZNr(),ManuProcEintrag::none_znr)
+  	<< Query::NullIf(AEB.Id(),ManuProcEntity<>::none_id)
+  	<< Query::NullIf(AEB.ZNr(),ManuProcEintrag::none_znr)
   	<< menge;
   SQLerror::test(__FILELINE__);
 }
