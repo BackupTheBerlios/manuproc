@@ -1,6 +1,6 @@
-/* $Id: itos.h,v 1.7 2002/08/19 12:26:45 thoma Exp $ */
+/* $Id: itos.h,v 1.8 2002/08/31 07:45:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
+ *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

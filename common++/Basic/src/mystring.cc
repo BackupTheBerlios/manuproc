@@ -1,4 +1,4 @@
-// $Id: mystring.cc,v 1.4 2002/07/17 09:43:56 christof Exp $
+// $Id: mystring.cc,v 1.5 2002/08/31 07:45:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *

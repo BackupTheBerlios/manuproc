@@ -1,4 +1,4 @@
-// $Id: itos.cc,v 1.9 2002/08/19 12:26:45 thoma Exp $
+// $Id: itos.cc,v 1.10 2002/08/31 07:45:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *

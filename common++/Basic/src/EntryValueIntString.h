@@ -1,4 +1,4 @@
-/* $Id: EntryValueIntString.h,v 1.8 2002/06/24 07:35:40 christof Exp $ */
+/* $Id: EntryValueIntString.h,v 1.9 2002/08/31 07:45:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
