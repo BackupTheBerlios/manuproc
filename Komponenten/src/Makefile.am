@@ -1,27 +1,27 @@
-# $Id: Makefile.am,v 1.19 2003/03/17 15:48:10 christof Exp $
+# $Id: Makefile.am,v 1.20 2003/03/17 16:28:41 christof Exp $
 CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@  
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
 
 LINKS= EingabeBox.cc EingabeBox.hh datewin.cc datewin.h \
-	datewin_glade.cc datewin_glade.hh logwin.cc logwin.h \
+	datewin_glade.cc datewin_glade.hh logwin.h \
 	RowDataBase.h TreeRow.h \
 	SimpleTreeModel.h SimpleTreeStore.h \
-	treebase_data.h \
+	treebase_data.h TreeViewUtility.h \
 	bool_CheckButton.cc \
 	int_SpinButton.cc string_Entry.cc \
 	SimpleTreeModel.cc SimpleTreeStore.cc \
-	GType_cH_EntryValue.cc SimpleTree.cc \ 
-	bool_CheckMenuItem.cc char_Pixmap.cc \ 
+	GType_cH_EntryValue.cc SimpleTree.cc \
+	bool_CheckMenuItem.cc char_Pixmap.cc \
 	FlashingPixmap.cc LabelSpin.cc \
 	MyWindow.cc MyScale.cc logwin.cc TreeViewUtility.cc \
-	bool_properties.cc bool_ImageButton.cc
+	bool_properties.cc bool_ImageButton.cc 
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
 
-include_HEADERS = datewin.h logwin.h\
+include_HEADERS = datewin.h logwin.h \
 	EingabeBox.hh ProzessBox.hh \
 	ArtikelBox.hh datewin_glade.hh \
 	KundenBox.hh KundenBox_glade.hh \
@@ -43,13 +43,13 @@ libKomponenten_a_SOURCES=datewin.cc \
 	bool_CheckButton.cc \
 	int_SpinButton.cc string_Entry.cc \
 	SimpleTreeModel.cc SimpleTreeStore.cc \
-	GType_cH_EntryValue.cc SimpleTree.cc \ 
-	bool_CheckMenuItem.cc char_Pixmap.cc \ 
+	GType_cH_EntryValue.cc SimpleTree.cc \
+	bool_CheckMenuItem.cc char_Pixmap.cc \
 	FlashingPixmap.cc LabelSpin.cc \
 	MyWindow.cc MyScale.cc logwin.cc TreeViewUtility.cc \
 	bool_properties.cc bool_ImageButton.cc      
 
-lateron=\      
+lateron= \
 		$(BUILT_SOURCES_L) \
 		ArtikelBox.cc \
 		KundenBox_glade.cc \
