@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.40 2004/10/19 10:54:29 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.41 2004/10/20 07:33:08 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -40,7 +40,7 @@ class LieferscheinEntry : public LieferscheinEntryBase
  int palette;
  AufStatVal status;
  mutable Kunde::ID kid;
- std::string text;
+ std::string text,reforder_free;
  
 public:
  struct st_AufEintragMenge{AufEintragBase aeb; AuftragBase::mengen_t menge;

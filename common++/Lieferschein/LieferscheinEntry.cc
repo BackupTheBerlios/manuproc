@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.75 2004/10/19 11:15:00 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.76 2004/10/20 07:33:08 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,6 +30,7 @@
 #include <iostream>
 #include <Misc/relops.h>
 #include <Lager/FertigWarenLager.h>
+#include <Misc/ExtraColumns.h>
 
 #ifdef MABELLA_EXTENSIONS
 #include <Artikel/ArtikelBase.h>
@@ -320,6 +321,10 @@ FetchIStream& operator>>(FetchIStream& is,LieferscheinEntry& z)
  }  
  else
    z.ZusaetzeLaden();
+   
+ ExtraColumns ec("lieferscheinentry","instanz", "lfrsid", "zeile");
+ ec << z;
+ z.reforder_free=ec.get<std::string>("reforder_free");
  return is;  
 }
 

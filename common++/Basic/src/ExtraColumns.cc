@@ -1,4 +1,4 @@
-// $Id: ExtraColumns.cc,v 1.6 2004/09/27 14:48:45 christof Exp $
+// $Id: ExtraColumns.cc,v 1.7 2004/10/20 07:33:08 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -69,6 +69,16 @@ ExtraColumns::ExtraColumns(const std::string &table, const std::string &keycol1,
 { std::vector<std::string> cols(2);
   cols[0]=keycol1;
   cols[1]=keycol2;
+  register_table(table,cols);
+}
+
+ExtraColumns::ExtraColumns(const std::string &table, const std::string &keycol1,
+              const std::string &keycol2, const std::string &keycol3)
+  : which(), is_good()
+{ std::vector<std::string> cols(3);
+  cols[0]=keycol1;
+  cols[1]=keycol2;
+  cols[2]=keycol3;
   register_table(table,cols);
 }
 

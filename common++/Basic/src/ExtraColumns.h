@@ -1,4 +1,4 @@
-// $Id: ExtraColumns.h,v 1.5 2004/09/27 13:20:24 christof Exp $
+// $Id: ExtraColumns.h,v 1.6 2004/10/20 07:33:08 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -56,6 +56,8 @@ public:
     ExtraColumns(const std::string &table, const std::string &keycol1);
     ExtraColumns(const std::string &table, const std::string &keycol1,
           const std::string &keycol2);
+    ExtraColumns(const std::string &table, const std::string &keycol1,
+          const std::string &keycol2,const std::string &keycol3);
     // 3 ... insert as needed or use the following
     ExtraColumns(const std::string &table, const std::vector<std::string> &keycols);
 
