@@ -17,6 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <fstream>
 #include "steuerprogramm.hh"
 
 #ifdef PETIG_TEST
@@ -39,10 +40,31 @@
 #include <Auftrag/Verfuegbarkeit.h>
 #endif
 
+std::string AEB2filename(const AufEintragBase &AEB)
+{  return itos(AEB.Instanz()->Id())+"."+itos(AEB.Id())+"."+itos(AEB.ZNr());
+}
+
 void verf_vergleichen(const std::string &postfix,const AufEintragBase &AEB)
-{  Verfuegbarkeit::map_t map;
-//   Verfuegbarkeit::verfuegbar(
-//   Check::vergleich_open("verf_"+postfix+"_"+AEB.str());
+{  Verfuegbarkeit::map_t mp;
+   Verfuegbarkeit::verfuegbar(AEB,mp);
+   vergleichstream vos=getCheck().vergleich_open("verf_"+postfix+"_"+AEB2filename(AEB));
+   std::ofstream &os=(*vos.stream);
+   os << "Verfügbarkeit für " << AEB << '\n';
+   os << "Instanz\tArtikel\tKunde\tMenge\n";
+   for (Verfuegbarkeit::map_t::const_iterator i=mp.begin();i!=mp.end();++i)
+   {  os << i->first.inst << '\t'
+   	<< i->first.art << '\t'
+   	<< i->first.kunde << '\t';
+      if (!!i->second.vorraetig) os << 'v' << i->second.vorraetig << ' ';
+      if (!!i->second.geplant) os << 'p' << i->second.geplant << ' ';
+      if (!!i->second.ungeplant) os << 'u' << i->second.ungeplant << ' ';
+      if (!!i->second.error) os << 'E' << i->second.error;
+      os << '\n';
+   }
+   if (getCheck().vergleich_close(vos))
+   {  std::cout << postfix << " Verfügbarkeit fehlgeschlagen\n";
+      if (!Check::continue_) exit(1);
+   }
 }
 void ben_vergleichen(const std::string &postfix,const AufEintragBase &AEB)
 {

@@ -46,6 +46,10 @@ UniqueValue::value_t log_trace = ManuProC::Tracer::channels.get();
 
 static Check C;
 
+Check &getCheck()
+{  return C;
+}
+
 void vergleichen(Check::was_checken w, const std::string &zusatz,
         const std::string &name, const std::string &graphname, bool vor_dem_test_reparieren)
 {   (*testlog) << int(w) << ' ' << zusatz << ' ' << graphname << ' ' << name << '\n';

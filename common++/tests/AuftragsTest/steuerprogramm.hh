@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.hh,v 1.45 2004/02/16 08:46:20 christof Exp $
+// $Id: steuerprogramm.hh,v 1.46 2004/02/27 11:52:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -130,6 +130,7 @@
 // convenience functions
 void vergleichen(Check::was_checken w, const std::string &zusatz,
         const std::string &name, const std::string &graphname, bool vor_dem_test_reparieren=false);
+Check &getCheck();        
 extern UniqueValue::value_t log_trace;
 
 #endif
