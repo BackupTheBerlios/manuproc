@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.26 2002/12/18 17:41:24 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.27 2002/12/18 17:43:48 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -528,6 +528,6 @@ void SimpleTreeStore::redisplay_old(cH_RowDataBase data, unsigned index)
    std::list<Gtk::TreeStore::iterator> rows=find_row(data);
    if (rows.begin()!=rows.end())
    {  Gtk::TreeRow row=**rows.begin();
-      row[m_columns.cols[col]] = data->Value(index,ValueData());
+      row[m_columns.cols[col]] = data->Value(index,ValueData())->getStrVal();
    }
 }

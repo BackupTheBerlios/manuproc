@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.28 2002/12/16 08:29:33 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.29 2002/12/18 17:41:24 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -177,6 +177,8 @@ public:
 	{  return vec_hide_cols.at(idx); }
 
 	static const unsigned invisible_column=unsigned(-1);
+	
+	void redisplay_old(cH_RowDataBase row, unsigned index);
 };
 
 #endif

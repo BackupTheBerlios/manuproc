@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.14 2002/12/14 23:45:23 christof Exp $
+// $Id: SimpleTree.hh,v 1.15 2002/12/18 17:41:24 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -57,6 +57,8 @@ public:
 	
 	void set_column_visibility(unsigned index,bool on) { sts.set_tree_column_visibility(index,on); }
 	void set_value_data(gpointer _p) { sts.set_value_data(_p); }
+	
+	void redisplay(cH_RowDataBase row, unsigned index) {  sts.redisplay_old(row,index); }
 };
 
 // I took the more esoteric features out to SimpleTree, 
