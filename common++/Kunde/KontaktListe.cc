@@ -1,4 +1,4 @@
-// $Id: KontaktListe.cc,v 1.4 2002/10/24 14:06:50 thoma Exp $
+// $Id: KontaktListe.cc,v 1.5 2003/09/16 08:41:46 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -57,11 +57,22 @@ KontaktListe::KontaktListe
 std::string KontaktListe::get_first_kontakt(const TelArt &ta,
 	ManuProcEntity<>::ID kundeid, ManuProcEntity<>::ID personid)
 {
+
+if(personid<20000)
+ {
  for(std::vector<cH_Telefon>::iterator i=kontakt.begin();i!=kontakt.end(); ++i)
    {
     if(ta==(*i)->TelefonArt())
       if(kundeid==(*i)->getKunde())
         if(personid==(*i)->getPerson())
+	  return (*i)->Text();
+   }
+ }
+else
+ for(std::vector<cH_Telefon>::iterator i=kontakt.begin();i!=kontakt.end(); ++i)
+   {
+    if(ta==(*i)->TelefonArt())
+      if(personid==(*i)->getKunde())
 	  return (*i)->Text();
    }
 
