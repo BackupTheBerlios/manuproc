@@ -1,4 +1,4 @@
-// $Id: datewin.cc,v 1.17 2004/01/27 12:08:32 christof Exp $
+// $Id: datewin.cc,v 1.18 2004/01/29 14:45:08 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -96,7 +96,7 @@ void datewin::set_value (const ManuProC::Datum &d) throw()
 }
 
 gint datewin::try_grab_focus(GtkWidget *w,gpointer gp) throw()
-{  datewin *_this=dynamic_cast<datewin*>(gp);
+{  datewin *_this=dynamic_cast<datewin*>((Glib::Object*)gp);
    assert(_this);
    switch(_this->get_current_page())
    {  case p_Datum:

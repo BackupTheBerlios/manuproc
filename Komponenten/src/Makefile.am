@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.35 2004/01/27 11:49:13 christof Exp $
+# $Id: Makefile.am,v 1.36 2004/01/29 14:45:08 christof Exp $
 AM_CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
@@ -62,9 +62,7 @@ libKomponenten_a_SOURCES= \
 	string_Label.cc Event.cc Association.cc \
         CellRendererSimpleTree.cc
 
-lateron= \
-		$(BUILT_SOURCES_L) \
-		ArtikelBox.cc \
+lateron= ArtikelBox.cc \
 		KundenBox_glade.cc \
       Artikel_Bestellen.cc \
       PPixmap.cc \
@@ -79,12 +77,12 @@ lateron= \
       ZahlungsArtBox.cc \
       KundenBox2.cc
 
-BUILT_SOURCES_L= KundenBox_sql.cc $(LINKS) \
-	IntStringBox_sql.cc 
+BUILT_SOURCES_L= $(LINKS) \
+	IntStringBox_sql.cc ArtikelBox_sql.cc AB_Breitensuche_sql.cc
 
-lateron2 = ArtikelBox_sql.cc ProzessBox_sql.cc KundenBox_sql.cc $(LINKS) \
+lateron2 = ProzessBox_sql.cc KundenBox_sql.cc \
    WWaehrung_sql.cc WAuftragStatus_sql.cc \
-   Optionmenu_Warengruppe_sql.cc IntStringBox_sql.cc AB_Breitensuche_sql.cc
+   Optionmenu_Warengruppe_sql.cc IntStringBox_sql.cc 
 
 BUILT_SOURCES=datewin.hh logwin.hh $(BUILT_SOURCES_L) 
 

@@ -1,0 +1,147 @@
+/*  libKomponenten: GUI components for ManuProC's libcommon++
+ *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include <ManuProCConfig.h>
+#include "ArtikelBox.hh"
+#include <Misc/FetchIStream.h>
+
+//#define DODEBUG
+
+#ifdef DODEBUG
+static std::ostream &operator<<(std::ostream &o,cH_ExtBezSchema s)
+{  return o << '[' << s->Id() << ';' << s->Typ().Id() << ']';
+}
+#endif
+
+struct intint
+{  int first,second;
+};
+
+FetchIStream &operator>>(FetchIStream &is, intint &i)
+{  return is >> i.first >> i.second;
+}
+
+// true: BreitenSuche aktiv
+bool ArtikelBox::BreitenSuche(GtkSCContext newsearch,unsigned int sp,unsigned int l, int *cont)
+{static std::list<cH_ExtBezSchema> breitensuche;
+ 
+//std::cout << "BreitenSuche("<<(newsearch==GTK_SEARCH_OPEN?"OPEN"
+//		:(newsearch==GTK_SEARCH_CLOSE?"CLOSE":"FETCH")) <<")\n";
+
+ if (newsearch==GTK_SEARCH_CLOSE) 
+ {  breitensuche.clear();
+    return false;
+ }
+ else if (newsearch==GTK_SEARCH_OPEN || newsearch==GTK_SEARCH_REOPEN)
+ {  {  std::vector<int> res;
+       (Query("select distinct extartbezid from extbezschema"
+    	" where artikeltyp=? and extartbezid<>?"
+    	) << schema->Typ().Id() << schema->Id()).FetchArray(res);
+       for (std::vector<int>::const_iterator i=res.begin();i!=res.end();++i)
+          breitensuche.push_back(cH_ExtBezSchema(*i,schema->Typ().Id()));
+    }
+    {  std::vector<int> res;
+       (Query("select distinct artikeltyp from extbezschema"
+    	" where artikeltyp<>? and extartbezid=?"
+#ifdef PETIG_EXTENSIONS
+        " and artikeltyp<>"+itos(ArtikelTypID::Veraltet_Fehler)
+        +" order by artikeltyp desc"
+#endif    	
+    	) << schema->Typ().Id() << schema->Id()).FetchArray(res);
+       for (std::vector<int>::const_iterator i=res.begin();i!=res.end();++i)
+          breitensuche.push_back(cH_ExtBezSchema(schema->Id(),*i));
+    }
+    {  std::vector<intint> res;
+       (Query("select distinct extartbezid,artikeltyp from extbezschema"
+    	" where artikeltyp<>? and extartbezid<>?"
+#ifdef PETIG_EXTENSIONS
+        " and artikeltyp<>"+itos(ArtikelTypID::Veraltet_Fehler)
+        +" order by artikeltyp desc"
+#endif    	
+    	) << schema->Typ().Id() << schema->Id()).FetchArray(res);
+       for (std::vector<intint>::const_iterator i=res.begin();i!=res.end();++i)
+          breitensuche.push_back(cH_ExtBezSchema(i->first,i->second));
+    }
+
+#ifdef DODEBUG
+std::copy(breitensuche.begin(),breitensuche.end(),
+ ostream_iterator<cH_ExtBezSchema>(std::cout,","));
+std::cout<<'\n';
+#endif
+
+    *cont=true;
+    return true;
+ }
+ else // newsearch==GTK_SEARCH_FETCH
+ {  if (breitensuche.empty()) return false;
+    
+    cH_ExtBezSchema s=breitensuche.front();
+    breitensuche.pop_front();
+    // analysieren
+//    std::cout<<s<<'\n';
+    
+    std::vector<cH_EntryValue> v=get_content(l,sp);
+    ArtikelBoxAnzeige anz=ArtikelBoxAnzeige::Laden(s);
+    for (unsigned int i=1;i<=32;++i)
+    {  if (anz.Sichtbar(i) && s->sigsize(i)>=v.size())
+       {  std::string squery="select exists(select true from "
+       		+Tabellenname(s)+" where ";
+
+	  if (s->sigsize(i)==1 && s->sigbegin(i)->spaltenname=="id")
+	     continue;
+          std::vector<cH_EntryValue>::const_iterator vi=v.begin();
+          for (ExtBezSchema::const_sigiterator j=s->sigbegin(i);
+ 		j!=s->sigend(i);++j,++vi)
+          { if (vi+1==v.end())
+            {  squery += "text("+j->spaltenname +") like '"+(*vi)->getStrVal()+"\%'";
+               break;
+            }
+            else 
+               squery += "text("+j->spaltenname +")='"+(*vi)->getStrVal()+"' AND ";
+          }
+          squery+=')';
+          
+         try 
+         {bool result=false;
+          Query(squery).Fetch() >> result;
+
+          if (result)
+          {  breitensuche.clear();
+             setExtBezSchema(s);
+             for (unsigned int k=0;k<signifikanz.size();++k)
+                if (signifikanz[k]==i)
+                {  set_content(v,k);
+                   combos[k][v.size()-1]->get_entry()->set_position(-1);
+                   combos[k][v.size()-1]->trigger_search();
+                   bool rof=reset_on_focus;
+                   if (rof) reset_on_focus=false;
+                   combos[k][v.size()-1]->grab_focus();
+                   if (rof) reset_on_focus=rof;
+                }
+             return true;
+          }
+         } catch (SQLerror &e) 
+         { std::cerr << e <<'\n'; }
+       }
+    }
+    // nicht gefunden ... weiter suchen    
+    if (!breitensuche.empty()) *cont=true; 
+    return true;
+ }
+}
+
