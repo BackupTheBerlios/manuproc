@@ -1,0 +1,85 @@
+/*  libKomponenten: ManuProC's Widget library
+ *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
+ *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include "Optionmenu_Warengruppe.hh"
+#include <Aux/Transaction.h>
+#include <Aux/SQLerror.h>
+#include <Gtk_OStream.h>
+exec sql include sqlca;
+#include <SelectMatching.h>
+#include <Aux/itos.h>
+
+Optionmenu_Warengruppe::Optionmenu_Warengruppe(int extartbezid)
+{
+  set_extartbezid(extartbezid);
+//  show();
+}
+
+
+ArtikelTyp Optionmenu_Warengruppe::get_value() const
+{
+ return ArtikelTyp(int(get_menu()->get_active()->get_user_data()));
+}
+
+void Optionmenu_Warengruppe::set_extartbezid(int extartbezid)
+{
+  exec sql begin declare section;
+  int db_id;   
+  char *QU;
+  exec sql end declare section;
+
+  std::string qu;
+  if(extartbezid==ExtBezSchema::none_id)
+    qu="select distinct e.artikeltyp from extbezschema e "
+    		" order by e.artikeltyp";
+  else
+    qu="select distinct e.artikeltyp from extbezschema e "
+    		" where extartbezid="+itos(extartbezid)+" order by e.artikeltyp";
+
+  QU=(char *)qu.c_str();
+
+  exec sql prepare QUERY from :QU;
+  exec sql declare Win_ein cursor for QUERY;
+
+  Transaction tr;
+  exec sql open Win_ein;
+  SQLerror::test(__FILELINE__);
+
+  {Gtk::OStream os(this);
+  while(true)
+   {
+    exec sql fetch Win_ein into :db_id;
+    SQLerror::test(__FILELINE__,100);
+    if (sqlca.sqlcode) break; 
+    ArtikelTyp at(db_id);
+
+    os << ArtikelTyp::get_string(at);
+    os.flush((gpointer)at.Id());
+   }
+ exec sql close Win_ein;
+ tr.close();
+  os << "-- Alle Gruppen --"; os.flush((void*)(ArtikelTyp::none_id));
+ }
+  get_menu()->deactivate.connect(activate.slot());
+}
+
+void Optionmenu_Warengruppe::set_value(const ArtikelTyp& artikeltyp)
+{ Gtk::Menu_Helpers::SelectMatching(*this,(gpointer)int(artikeltyp));
+}
+  
