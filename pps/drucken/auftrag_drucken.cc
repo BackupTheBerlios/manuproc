@@ -41,13 +41,14 @@ const static struct option options[]=
  { "combine-names", no_argument, NULL, COMBINE },
  { "copies",	required_argument, NULL, 'Y' },
  { "preview",	no_argument, NULL, 'G' },
+ { "only_check",no_argument, NULL, 'c' },
  { NULL,      0,       NULL, 0 }
 };       
 
 
 void usage(std::string n,ppsInstanz::ID instanz,std::string database,std::string dbhost)
 {
-   std::cout << "$Id: auftrag_drucken.cc,v 1.23 2004/10/12 17:20:09 jacek Exp $\n\n"
+   std::cout << "$Id: auftrag_drucken.cc,v 1.24 2005/02/03 12:49:30 jacek Exp $\n\n"
               "USAGE:" << n << " -n <Nr> [-a <Typ>] [-kft] [-i <Instanz>] [-d <Datenbank>]\n"
 		"\n\t-t<file>\t nur TeX file erzeugen und uneter <file> speichern("<< (Configuration.toTeX?"an":"aus")<< ")\n"
 		"\n\t-B<printer>\t batch mode on <printer>; kein GUI ("<< (Configuration.batch?"an":"aus")<< ")\n"
@@ -64,6 +65,7 @@ void usage(std::string n,ppsInstanz::ID instanz,std::string database,std::string
 		"\t-G\t Direkt anzeigen (kann nicht gedruckt werden)\n"
 		"\t--EAN\t Mit EAN-Code\n"
 		"\t-Z\t Rechnung sortieren nach Zeilennr\n";
+		"\t-c\t Rechnungbetraege berechnen, ausgeben und sich beenden\n";
             exit(1);
 
 }
@@ -84,7 +86,7 @@ int main (int argc, char *argv[])
 
  if(argc==1) usage(argv[0],instanz,database,dbhost);
 
- while ((opt=getopt_long(argc,argv,"Ga:n:pi:d:RZY:t:B:O:",options,NULL))!=EOF)
+ while ((opt=getopt_long(argc,argv,"Ga:n:pi:d:RZY:t:B:O:c",options,NULL))!=EOF)
   { switch (opt)
     {  case 'a' : if(std::string("Rechnung")==optarg) was=LR_Base::Rechnung;
 		  else if(std::string("Lieferschein")==optarg) was=LR_Base::Lieferschein;
@@ -110,6 +112,7 @@ int main (int argc, char *argv[])
 	case 'Z' : sort_by_rownr=true; break;
 	case '?': usage(argv[0],instanz,database,dbhost); break;
 	case 'G': Configuration.preview_only=true; break;
+	case 'c': Configuration.only_check=true; break;
     }
   }
  

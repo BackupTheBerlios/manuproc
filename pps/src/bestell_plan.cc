@@ -145,6 +145,7 @@ void bestell_plan::load_data(const ArtikelBase a) throw(SQLerror)
 
  bp_offauftraege->set_text(itos(offauf));
  bp_bestellt->set_text(itos(bestellt));
+ bp_rohbestellt->set_text(itos(rohbestellt));
  abverk_12m->set_text(itos(abverkauf)); 
  
  KumVal kv=KumVal(reinterpret_cast<int>(abverkauf_kumul->
@@ -268,6 +269,7 @@ void bestell_plan::clear_all()
   bp_offauftraege->set_text("");
   bp_verfuegbar->set_text("");
   bp_bestellt->set_text("");
+  bp_rohbestellt->set_text("");
   bp_mindbestand->set_text("");
   lager_name1->set_text("Lager 1");
   lager_name2->set_text("Lager 2");  

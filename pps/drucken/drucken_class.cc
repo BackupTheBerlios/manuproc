@@ -90,6 +90,13 @@ void LR_Abstraktion::calc_all(cH_Kunde k,bool mwst)
    }
  skontobetrag = bruttobetrag * ((fixedpoint<2>(100) - skontosatz)/100.0);
  einzugbetrag = skontobetrag * ((fixedpoint<2>(100) - einzugrabattsatz)/100.0);
+
+
+ if(Configuration.only_check)
+   {
+    std::cerr << bruttobetrag <<"\n";
+    exit(0);
+   }
 }
 
 void LR_Abstraktion::drucken_header(std::ostream &os)
@@ -573,7 +580,7 @@ void LR_Abstraktion::drucken(std::ostream &os,const cH_ppsInstanz& _instanz)
         }
         
 
-std::cout << "table ends\n";
+//std::cout << "table ends\n";
 
 //------------------------- Kopf -------------------------
     if (lfrsid_drucken)
@@ -1049,7 +1056,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 	  }
 #endif         
 
-std::cout << "noch passende Zeilen" << zeilen_passen_noch <<"\n";
+//std::cout << "noch passende Zeilen" << zeilen_passen_noch <<"\n";
 }
 
 

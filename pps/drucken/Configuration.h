@@ -28,9 +28,11 @@ struct Configuration
 	std::string texfile;
 	std::string order_clausel;
 	bool zaehle_spalten;
+	bool only_check; // calcualte the amounts, get it out and exit
+			// For collecting the invoice data
 	
 	Configuration() : combine(), preview_only(), copies("1,1,1"),
 			printer("ps"), toTeX(false),
-			zaehle_spalten() {}
+			zaehle_spalten(),only_check(false) {}
 };
 extern struct Configuration Configuration;
