@@ -355,7 +355,7 @@ void Artikeleingabe::on_Artikel_Bestellen_activate()
   if(artikelboxb->get_Artikel().Id()==ArtikelBase::none_id ||
      artikelboxb->get_Menge()==0 )
    {
-    label_warnung->set_text("WARNUNG: Eingabe unvollständig");
+    mess->Show("Menge und Artikel müssen eingegebne werden");
     return;
    }
   label_warnung->set_text("");
@@ -364,9 +364,13 @@ void Artikeleingabe::on_Artikel_Bestellen_activate()
   ra.menge = artikelboxb->get_Menge();
   ra.erzeugung=artikelboxb->get_Prozess(); 
   ArtikelBaum::new_Artikel(artikelbox->get_value(),ra);
-  
-  cH_Data_tree dt=tree->getSelectedRowDataBase_as<cH_Data_tree>();
-  artikelbox->set_value(dt->Artikel2());
+ 
+
+// wozu das?  
+//  cH_Data_tree dt=tree->getSelectedRowDataBase_as<cH_Data_tree>();
+//  artikelbox->set_value(dt->Artikel2());
+
+
   on_neuladen_clicked();
 
 //  von_artikel = artikelboxb->get_Artikel();
