@@ -171,6 +171,8 @@ if(!firmenpapier)
 void LR_Abstraktion::drucken_footer(std::ostream &os)
 {
   cH_Kunde kunde_an(KdNr());
+  cH_Kunde kunde_von(Kunde::eigene_id);
+
   if(! kunde_an->isInGrp(KundengruppeID::Rechnungsadresse))
     kunde_an = cH_Kunde(kunde_an->Rngan());
     
@@ -202,7 +204,7 @@ void LR_Abstraktion::drucken_footer(std::ostream &os)
 
     if(kunde_an->land()->Auslaender())
          {if(zeilen_passen_noch<(passende_zeilen)) {  os << "\\newpage\n";++page_counter; page_header(os);}
-          cH_Kunde kunde_von(Kunde::eigene_id);
+
 	  if(!getZahlungsart()->getBankeinzug())
 	    {
 	     os << "~\\\\~\\\\"<<mld->MLT(MultiL_Dict::TXT_BANKVERB) <<": ";
@@ -238,7 +240,7 @@ catch(SQLerror &e) { std::cout << e; return; }
 
 
 #else
-     cH_Kunde kunde_von(Kunde::default_id);
+//     cH_Kunde kunde_von(Kunde::default_id);
 
 #ifdef PETIG_EXTENSIONS
 #warning // Ja ein Hack    
@@ -282,9 +284,15 @@ catch(SQLerror &e) { std::cout << e; return; }
  else if(Typ()==Extern )
    {
      os << "\n\\vspace{1cm}\n";
-     os << "\\hspace*{1cm} Mit freundlichen Grüßen\\\\[6ex]\n";
-     std::string name =  getpwuid(getuid())->pw_gecos;
-     os << "\\hspace*{1.5cm} "<<name<<"\\\\\n";
+     os << "Mit freundlichen Grüßen\\\\[6ex]\n";
+     if(kunde_an->getBetreuer()!=Person::none_id)
+	{cH_Person betr(kunde_an->getBetreuer());
+         os<< betr->Vorname()<<" "<<betr->Name()<<"\\\\\n";
+	}
+     else
+        {std::string name =  getpwuid(getuid())->pw_gecos;
+	 os <<name<<"\\\\\n";
+	}
    }
  else if(Typ()==Lieferschein)
   {
@@ -1202,6 +1210,8 @@ void LR_Abstraktion::drucken_betrag(std::ostream &os,const std::string &text, fi
 
 void LR_Abstraktion::page_header(std::ostream &os)
 {
+ cH_Kunde kunde_von(Kunde::default_id);
+
  if(Typ()==LR_Base::Intern)
   {
    os <<"\\begin{flushleft}\n";
@@ -1214,7 +1224,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
  else if(false)
   {
    cH_Kunde kunde_an(KdNr());
-   cH_Kunde kunde_von(Kunde::default_id);
+
    if (page_counter==1) // 1. Seite
     {
       os << kunde_an->LaTeX_an(Typ()==Lieferschein,TEL_FAX,"1\\textwidth");
@@ -1270,7 +1280,9 @@ void LR_Abstraktion::page_header(std::ostream &os)
 	      "\\begin{flushleft}\n";
 
         
-	if(!kunde_an->isInGrp(KundengruppeID::Rechnungsadresse) && Typ()!=Rechnung
+	if(!kunde_an->isInGrp(KundengruppeID::Rechnungsadresse) 
+		&& Typ()!=Rechnung
+		&& Typ()!=Extern
 		&& !kunde_an->AB_an_rngadresse())
 		{
 		os << "\\bf "<<mld->MLT(MultiL_Dict::TXT_RNGADRESSE)<<":\\rm\\\\\n"
@@ -1322,11 +1334,27 @@ void LR_Abstraktion::page_header(std::ostream &os)
 		   << string2TeX(kunde_lfr->firma())+"\\\\\n";
 		   if(kunde_lfr->name2()!="")
 		     os << string2TeX(kunde_lfr->name2())+"\\\\\n";
-		   os << string2TeX(kunde_lfr->strasse())+" "
-		   << string2TeX(kunde_lfr->hausnr())+"\\\\\n"		   
-		   << string2TeX(kunde_lfr->plz()+" "+kunde_lfr->ort())+"\\\\\n\n";
+		   if(!kunde_lfr->strasse().empty())
+		     {os << string2TeX(kunde_lfr->strasse())+" "
+		      << string2TeX(kunde_lfr->hausnr())+"\\\\\n";
+		     }
+		os << string2TeX(kunde_lfr->plz()+" "+kunde_lfr->ort())+"\\\\\n\n";
 		os << "\\smallskip\n";   
 		}
+	else
+	if(Typ()==Extern)
+		{
+		os << "\\bf "<<mld->MLT(MultiL_Dict::TXT_LIEFADRESSE)<<":\\rm\\\\\n"
+		   << string2TeX(kunde_von->firma())+"\\\\\n";
+		   if(kunde_von->name2()!="")
+		     os << string2TeX(kunde_von->name2())+"\\\\\n";
+		   if(!kunde_von->strasse().empty())
+		     {os << string2TeX(kunde_von->strasse())+" "
+		      << string2TeX(kunde_von->hausnr())+"\\\\\n";
+		     }
+		os << string2TeX(kunde_von->plz()+" "+kunde_von->ort())+"\\\\\n\n";
+		os << "\\smallskip\n";   		
+		}	
 		
 	if(kunde_rng->getBetreuer()!=Person::none_id)
 	  {cH_Person betr(kunde_rng->getBetreuer());
@@ -1342,7 +1370,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
 	os << "\\bf Bei Rückfragen:\\rm \\\\\n"
 		<< mld->MLT(MultiL_Dict::TXT_TELEFON)<<": "<<kunde_von->get_first_telefon(TEL_TEL)<<"\\\\\n"
 		<< mld->MLT(MultiL_Dict::TXT_TELEFAX)<<": "<<kunde_von->get_first_telefon(TEL_FAX)<<"\\\\\n"
-		<< "E-Mail: mabella@wtal.de\\\\\n"; 
+        	<< "E-Mail: "<<kunde_von->get_first_telefon(TEL_E_MAIL)<<"\\\\\n";
         }
 
 	if(kunde_an->VerkNr()!=Person::none_id)
@@ -1394,11 +1422,14 @@ void LR_Abstraktion::page_header(std::ostream &os)
    os.width(6);os.fill('0');
    os <<RngNr()<<"\\normalsize ~" << mld->MLT(MultiL_Dict::TXT_VOM)
 		<<" " <<getDatum()<<". ";
+   if(Typ()==Extern)
+     os << "\n~\\\\\\small Die Bestellnummer bitte auf Auftragsbestättigung,"
+	   " Lieferschein und Rechnung immer angeben \\normalsize\\\\[.5ex]\n";
 
 
    if(Typ()==Auftrag  && page_counter==1 && !Rueckstand())
      os <<mld->MLT(MultiL_Dict::TXT_DANKE_AUFTR)<<" \\\\\n";
-   else os << "~\\\\\n";
+   else if(Typ()!=Extern) os << "~\\\\\n";
 
 //   if(!Rueckstand())
    if(Typ()==Auftrag) 
@@ -1407,9 +1438,17 @@ void LR_Abstraktion::page_header(std::ostream &os)
    		}
 
    
-   os << "~\\\\\n"<<mld->MLT(MultiL_Dict::TXT_IHREKDNR)<<": ";
+   if(Typ()==Extern)
+     os << "Ihre Lieferantennummer: ";
+   else
+     os << "~\\\\\n"<<mld->MLT(MultiL_Dict::TXT_IHREKDNR)<<": ";
    os.width(5);os.fill('0');
-   os << kunde_an->Id() << "\\hfill "<<
+   os << kunde_an->Id();
+   if(Typ()==Extern)
+     if(!kunde_an->UnsereKundenNr().empty())
+	os << ", Unsere Kundennummer: "<<kunde_an->UnsereKundenNr();
+
+   os << "\\hfill "<<
    	(kunde_an->idnr().empty() ? "" : mld->MLT(MultiL_Dict::TXT_USTID)
 			+std::string(": ")+kunde_an->idnr()) << "\\\\\n";
 

@@ -1,0 +1,33 @@
+#! /bin/bash
+
+OUTFILE=ung_lfrs
+
+AKTION=$1
+
+psql mabelladb -o $OUTFILE -c " \
+SELECT \
+l.lfrsid as LS_NR, \
+e.zeile as zeile, \
+l.datum as datum, \
+artikel||'/'||breite||'/'||farbe||'/'||aufmachung as artikel \
+from lieferschein l join lieferscheinentry e on \
+((l.lfrsid,l.instanz)=(e.lfrsid,e.instanz) and e.status=0) left join \
+rechnung r on (r.rngid=l.rngid) join artbez_3_1 b on (b.id=e.artikelid) \
+where coalesce(r.rngart,'R')='R' order by l.lfrsid,e.zeile"
+
+
+
+a2ps -R -l60 --center-title="ungebuchte Lieferscheine" \
+--columns 1 $OUTFILE -o $OUTFILE.ps
+
+
+if [ $AKTION == "V" ]; then
+	gv $OUTFILE.ps
+else
+	lpr $OUTFILE.ps
+fi
+
+
+
+
+

@@ -52,6 +52,7 @@ public:
 			     break;     
 			case Intern : return std::string("Intern"); break;
 //			case Extern : return std::string("Bestellung \\small Nr."); break;
+			case Extern : return std::string("Bestellung"); break;
 			case NICHTS : default : return std::string("-");
 			}
 		}
