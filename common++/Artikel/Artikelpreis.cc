@@ -245,13 +245,13 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
     std::string query("insert into ");
    
     query+=pl->ViewTabelle();
-    query+="(artikelid,kundennr,preis,preismenge,waehrung,mindestmenge) "
+    query+=" (artikelid,kundennr,preis,preismenge,waehrung,mindestmenge) "
  		" values (?,?,?,?,?,?)";
 
     Query(query) << (*i) << liste << p.Wert() << p.PreisMenge() 
 		 << p.getWaehrung()->Id() << MINDESTMENGE;
-
-    SQLerror::test(__FILELINE__);	
+#warning 100 Code must go away, when ported to Postgresql > 7.2
+    SQLerror::test(__FILELINE__,100);	
  }
 
  tr.commit();
@@ -308,12 +308,17 @@ void Artikelpreis::changePreis(const Preis &p, int newmindmenge) throw(SQLerror)
 
  SQLerror::test(__FILELINE__);	
  
- query=std::string("update artikelpreise set "
- 	"preis=?,preismenge=?,waehrung=?,mindestmenge=? "
+
+ cH_PreisListe pl(gefunden_in);
+ 
+ query=std::string("update ");
+ query+=pl->ViewTabelle();
+
+ query+=std::string(" set preis=?,preismenge=?,waehrung=?,mindestmenge=? ")+
 	"where kundennr=? and "
 	"mindestmenge=? and artikelid in "
 	"(select a.id from "+artbez_tabelle+" a join "+
-	artbez_tabelle+" b on (	");
+	artbez_tabelle+" b on (	";
 
  query+=join_komponenten+"))";
 
@@ -321,7 +326,8 @@ void Artikelpreis::changePreis(const Preis &p, int newmindmenge) throw(SQLerror)
 	<< NEWMINDMENGE
 	<< gefunden_in << MINDESTMENGE 
 	<< ARTIKELID;
- SQLerror::test(__FILELINE__);	
+#warning 100 Code must go away, when ported to Postgresql > 7.2
+ SQLerror::test(__FILELINE__,100);	
  
  mindestmenge=NEWMINDMENGE;
 
@@ -417,11 +423,19 @@ void Artikelpreis::remove(const cH_PreisListe liste,const ArtikelBase &a,
    		"(?,?,now(),?,0.0,?,?)")
    		<< ARTIKELID << PRLSNR << PREIS << UID << MINDESTMENGE;
     SQLerror::test(__FILELINE__);	
-   	
-    Query("delete from artikelpreise "
-   	"where (kundennr,artikelid,mindestmenge)=(?,?,?)")
-	<< PRLSNR << ARTIKELID << MINDESTMENGE;
-    SQLerror::test(__FILELINE__);	
+
+
+    cH_PreisListe pl(PRLSNR);
+ 
+    std::string query=std::string("delete from ");
+    query+=pl->ViewTabelle();   	
+
+    query+=" where (kundennr,artikelid,mindestmenge)=(?,?,?)";
+
+    Query(query) << PRLSNR << ARTIKELID << MINDESTMENGE;
+
+#warning 100 Code must go away, when ported to Postgresql > 7.2
+    SQLerror::test(__FILELINE__,100);	
   }
 
  tr.commit();
