@@ -1125,12 +1125,15 @@ void LR_Abstraktion::page_header(std::ostream &os)
 #ifdef MABELLA_EXTENSIONS
    os << "\\large "<<typString(gutschrift())<<" ";
    os.width(6);os.fill('0');
-   os <<RngNr()<<"\\normalsize ~vom "<<getDatum();
+   os <<RngNr()<<"\\normalsize ~" << mld->MLT(TXT_VOM)<<" " <<getDatum();
 
    if(!Rueckstand())
    if(Typ()==Auftrag) auftrag_von(os,class Auftrag(AuftragBase(
    				ppsInstanzID::Kundenauftraege,u.a->Id())),true);
+   
+   os <<"\\\\~ \\hfill "<<mld->MLT(TXT_DANKE_AUFTR)<<"\\normalsize ";
    os <<"\\hfill Seite \\thepage\\\\\n";
+   
    os << "Ihre Kundennummer: ";
    os.width(5);os.fill('0');
    os << kunde_an->Id() << "\\hfill "<<
