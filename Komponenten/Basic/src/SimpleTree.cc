@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.49 2004/06/14 14:35:05 christof Exp $
+// $Id: SimpleTree.cc,v 1.50 2004/06/25 09:14:07 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -99,8 +99,7 @@ void SimpleTree_Basic::on_spaltenzahl_geaendert()
          crt->property_xalign()=alignment[idx];
       }
       if (getModel().is_editable(idx))
-      {  std::cout << idx << " is_editable\n";
-         crt->property_editable()=true;
+      {  crt->property_editable()=true;
          crt->signal_edited().connect(SigC::bind(SigC::slot(*this,&SimpleTree_Basic::on_column_edited),idx));
       }
       append_column(*pColumn);
