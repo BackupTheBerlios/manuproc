@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.37 2003/03/26 14:40:36 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.38 2003/04/08 16:40:52 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -34,10 +34,12 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    // return ersetzen
    if(_id == Kunde::none_id) return;
    exec sql begin declare section;
-   int ID=_id,GRUPPENID,BEZSCHEMA,BANKINDEX,RNG_AN;
+   int ID=_id,GRUPPENID,BEZSCHEMA,BANKINDEX,RNG_AN,LFR_AN;
+   int BRANRID;
    char SORTNAME[31], IDNR[21];
    char NAME[61], STRASSE[36], HSNR[8], POSTFACH[21],ORT[31],BANKNAME[51],
          PLZ[11],POSTFACHPLZ[11],KTONR[11],BLZ[11],POSTANWVOR[41],POSTANWNACH[41];
+   char *NAME2=0;
    int LANDESID;
    int ILLEGALLANDID;
    int FLAECHE,MITARBEITER;
@@ -58,6 +60,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    bool AKTIV;
    bool PREISAUTO;
    bool SHOWEAN;
+   char *GEBDATUM=0; int IGEBDATUM;
    exec sql end declare section;
    ILLEGALLANDID=LandesListe::none_id;
   
@@ -65,7 +68,9 @@ Kunde::Kunde(ID _id) throw(SQLerror)
  
    WAEHRUNGID = WaehrungID::EUR;
 
-   exec sql select coalesce(gruppennr,0), firma,coalesce(sortname,firma),
+   exec sql select coalesce(gruppennr,0), firma,
+	coalesce(name2,''),
+	coalesce(sortname,firma),
     coalesce(extartbezid,1),
 	 coalesce(strasse,''),
     coalesce(postanwvor,''),coalesce(postanwnach,''),
@@ -73,6 +78,9 @@ Kunde::Kunde(ID _id) throw(SQLerror)
          coalesce(postfplz,''),coalesce(ort,''),coalesce(text(ktonr),''),
          coalesce(text(b.blz),''), coalesce(b.name,''), coalesce(b.bankindex,0),
          coalesce(rechnung_an,kundennr), 
+	 coalesce(lieferung_an,kundnenr),
+	 coalesce(branr,0),
+	 gebdatum,
          coalesce(idnr,''),
          coalesce(lieferadresse,false), coalesce(rechnungsadresse,false), 
          coalesce(rng_an_postfach,false),
@@ -93,9 +101,10 @@ Kunde::Kunde(ID _id) throw(SQLerror)
 	coalesce(anz_weissespapier,1),coalesce(lieferung_frei_haus,'t'),
 	coalesce(aktiv,true), coalesce(preisauto,true),
 	coalesce(showean,false)
-   	into :GRUPPENID ,:NAME, :SORTNAME, :BEZSCHEMA, :STRASSE, :POSTANWVOR, :POSTANWNACH,
+   	into :GRUPPENID ,:NAME, :NAME2, :SORTNAME, :BEZSCHEMA, :STRASSE, :POSTANWVOR, :POSTANWNACH,
            :HSNR, :PLZ, :POSTFACH,
            :POSTFACHPLZ, :ORT, :KTONR, :BLZ, :BANKNAME, :BANKINDEX, :RNG_AN,
+	   :LFR_AN, :BRANRID, :GEBDATUM:IGEBDATUM,
            :IDNR,
             :LIEFERADRESSE,:RECHUNGSADRESSE,:RNGANLFRA,
            :FLAECHE,:MITARBEITER,:KUNDENUMSATZ,:PLANUMSATZ,:UMSATZ,
@@ -112,6 +121,8 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    lieferung_frei_haus=FREIHAUS;
    schema=BEZSCHEMA;
    adresse.firma=NAME;
+   adresse.name2=NAME2;
+   adresse.branr=BRANRID;
    adresse.sortname=SORTNAME;
    adresse.strasse=STRASSE;
    adresse.postanwvor=POSTANWVOR;
@@ -142,6 +153,8 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    }
 
    rngan=RNG_AN;
+   lfran=LFR_AN;
+   
    entsorg = ENTSORGUNG;
 
    kundendaten.flaeche = FLAECHE;
@@ -158,6 +171,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    kundendaten.verein=VEREIN;
 //   kundendaten.bankeinzug=BANKEINZUG;
    kundendaten.stand=STAND;
+   kundendaten.gebdatum=ManuProC::Datum(GEBDATUM);
    kundendaten.notiz=NOTIZ;
    waehrung = cP_Waehrung(Waehrung::ID(WAEHRUNGID));
 
@@ -184,11 +198,12 @@ const cH_Kunde Kunde::newKunde(const Kunde::ID kid, const std::string &firma,
 
  FIRMA=(char*)firma.c_str();
  
- exec sql insert into kunden (kundennr, firma, waehrungid,rechnung_an,aktiv) 
-      values (:KID, :FIRMA, :WAEHRUNG,:KID,true);
+ exec sql insert into kunden (kundennr, firma, waehrungid,rechnung_an,
+		lieferung_an,aktiv) 
+      values (:KID, :FIRMA, :WAEHRUNG,:KID,:KID,true);
  SQLerror::test(__FILELINE__);
- exec sql insert into ku_warenkorb (prlsnr,kundennr,suchfolge)
-   values (1,:KID,1);
+// exec sql insert into ku_warenkorb (prlsnr,kundennr,suchfolge)
+//   values (1,:KID,1);
  exec sql insert into ku_gruppen_map (kundennr,grpnr)
    values (:KID,:GRPNR);
  SQLerror::test(__FILELINE__);
@@ -199,17 +214,17 @@ const cH_Kunde Kunde::newKunde(const Kunde::ID kid, const std::string &firma,
 
 #endif
 
-void Kunde::delete_Kunde(const Kunde::ID kid) throw(SQLerror)
-{
-#ifdef MABELLA_EXTENSIONS
- exec sql begin declare section;
-    int KID=kid;
- exec sql end declare section;
-
- exec sql delete from kunden where kundennr = :KID;
- SQLerror::test(__FILELINE__);
-#endif
-}
+//void Kunde::delete_Kunde(const Kunde::ID kid) throw(SQLerror)
+//{
+//#ifdef MABELLA_EXTENSIONS
+// exec sql begin declare section;
+//    int KID=kid;
+// exec sql end declare section;
+//
+// exec sql delete from kunden where kundennr = :KID;
+// SQLerror::test(__FILELINE__);
+//#endif
+//}
 
 unsigned int Kunde::nextval()
 {

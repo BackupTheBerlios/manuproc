@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.41 2003/03/26 14:40:36 jacek Exp $
+// $Id: Kunde.h,v 1.42 2003/04/08 16:40:52 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -48,6 +48,8 @@ public:
 
  struct st_adresse
   {std::string firma;
+   std::string name2;
+   int branr;
    std::string sortname;
    std::string postanwvor;
    std::string strasse;
@@ -96,7 +98,8 @@ public:
     std::string verein; 
     std::string notiz; 
     ManuProC::Datum stand;
-
+    ManuProC::Datum gebdatum;
+    
     int anzahl_ausdruck_firmenpapier;
     int anzahl_ausdruck_weissespapier;
     st_kddata()
@@ -113,6 +116,7 @@ private:
 	std::string IDnr;
 	
 	ID rngan;
+	ID lfran;
         bool rng_an_postfach:1;
         bool lieferadresse:1;
         bool rechnungsadresse:1;

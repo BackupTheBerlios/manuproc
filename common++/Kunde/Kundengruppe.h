@@ -5,7 +5,6 @@
 #include <BaseObjects/ManuProcEntity.h>
 #include <DynamicEnums/DynamicEnums.h>
 #include <DynamicEnums/DefaultValues.h>
-
 #include <Misc/FetchIStream.h>
 
 
@@ -16,6 +15,8 @@ class Kundengruppe : public ManuProcEntity<KundengruppeID::enum_t>
 {
  static const ID default_ID=ManuProC::DefaultValues::Kunden;
  std::string grpname;
+ std::string obergruppe;
+ std::string kommentar;
   
 public:
 
@@ -24,9 +25,12 @@ public:
  
  Kundengruppe() : ManuProcEntity<ID>(KundengruppeID::None) {}
   
- Kundengruppe(ID kgid, std::string _grpnm);
+ Kundengruppe(ID kgid, const std::string _obg,const std::string _grpnm,
+ 	const std::string komm="");
  ID Id() const {return ID(entityid); }
  std::string GrpName() const { return grpname;}
+ std::string Obergruppe() const { return obergruppe; }
+ std::string Kommentar() const { return kommentar; } 
  
  friend FetchIStream &operator>>(FetchIStream &is, Kundengruppe &kg);
 
@@ -38,7 +42,8 @@ class cH_Kundengruppe : public Handle<const Kundengruppe>
 
 public:
 	typedef Kundengruppe::ID ID;
-	cH_Kundengruppe(ID nr, std::string grpname);
+	cH_Kundengruppe(ID nr, const std::string _obg,
+		const std::string grpname, const std::string komm);
         bool operator==(const cH_Kundengruppe& b) const
                 {return (*this)->Id()==b->Id();} 
         bool operator<(const cH_Kundengruppe& b) const
