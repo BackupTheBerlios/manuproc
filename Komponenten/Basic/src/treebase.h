@@ -36,7 +36,7 @@ class TreeBase : public TCList
  guint attrcount;
  deque<guint> currseq; 
  deque<guint> clicked_seq;
- vector<guint> vec_hide_cols;
+ vector<bool> vec_hide_cols;
 
  Gtk::Menu *menu;  
  bool auffuellen_bool; 
@@ -51,7 +51,8 @@ class TreeBase : public TCList
  void on_row_select(int row, int col, GdkEvent* b); // XX
  void fillMenu();
  gint MouseButton(GdkEventButton *event);
- void welche_Spalten(guint i);
+ void welche_Spalten(guint i,const Gtk::CheckMenuItem *sp);
+ void show_or_hide_Spalten();
  void on_click_column(int col);
  bool col_schon_ausgewaehlt(int col);
  void insertIntoTCL(TCListRow_API *tclapi,const TreeBase &tb,
@@ -88,6 +89,7 @@ public:
    refillTCL();
  };
  
+ void clear();
  SigC::Signal1<void,cH_RowDataBase> leaf_selected;
 };
 

@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.1 2001/06/21 09:27:52 christof Exp $
+# $Id: configure.in,v 1.2 2001/06/22 08:46:34 christof Exp $
 
 AC_INIT(src/treebase.h)
 
@@ -19,4 +19,4 @@ AC_SUBST(CXXFLAGS)
 PETIG_CHECK_COMMONXX
 PETIG_CHECK_COMMONGTK
 
-AC_OUTPUT(Makefile src/Makefile)
+AC_OUTPUT(Makefile src/Makefile examples/Makefile)

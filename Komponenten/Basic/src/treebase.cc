@@ -23,6 +23,14 @@
 #include<Aux/itos.h>
 #include<typeinfo>
 
+
+void TreeBase::clear()
+{
+  datavec.clear();
+  vec_hide_cols.clear();
+  TCList::clear();
+}
+
 const string TreeBase::getColTitle(guint seq) const
 {
  return "-";
@@ -36,15 +44,18 @@ void TreeBase::setSequence()
 void TreeBase::on_click_column(int col)
 {
 //cout << col<<"\t"<<currseq[col]<<"\t"<<Attrs()<<"\t"<<col_count<<"\n";
- if (col_schon_ausgewaehlt(col)) return;
  if (col<(int)Attrs()) 
    {
-    clicked_seq.push_back(currseq[col]);
-    set_column_title(col, itos(clicked_seq.size())); 
-    if (clicked_seq.size()==1) summen_knoepfe();
-    if (expandieren_bool) showdeep = clicked_seq.size();
-      else showdeep = 0;
-    if (clicked_seq.size()==Attrs()) on_neuordnen_clicked(); 
+    if (col_schon_ausgewaehlt(col)) on_neuordnen_clicked();
+    else 
+      {
+       clicked_seq.push_back(currseq[col]);
+       set_column_title(col, itos(clicked_seq.size())); 
+       if (clicked_seq.size()==1) summen_knoepfe();
+       if (expandieren_bool) showdeep = clicked_seq.size();
+         else showdeep = 0;
+       if (clicked_seq.size()==Attrs()) on_neuordnen_clicked(); 
+      }
    }
 
  else // kann nur neu/abbrechen sein
@@ -58,7 +69,7 @@ bool TreeBase::col_schon_ausgewaehlt(int col)
  deque<guint>::const_iterator i =clicked_seq.begin();
  while (i!=clicked_seq.end() && *i!=currseq[col]) ++i;
  if (i==clicked_seq.end()) return false;
- else return true;
+ else { cout << "gewählt\n"; return true;}
 }
 
 void TreeBase::summen_knoepfe()
@@ -77,6 +88,9 @@ TreeBase::TreeBase(guint cols, guint attr) :
   click_column.connect(SigC::slot(this,&TreeBase::on_click_column));
   select_row.connect(SigC::slot(this, &TreeBase::on_row_select));
   setSequence();
+  vec_hide_cols.resize(Cols());
+  for (vector<bool>::iterator i=vec_hide_cols.begin();i!=vec_hide_cols.end();++i)
+    (*i) = true;
 }
 
 // We can't call these virtual functions in the ctor because 
@@ -141,6 +155,14 @@ bool TreeBase::stutzen(TCListRow_API *parent, TCListRow_API *we,
     return true;
  }
 
+ if(we->size()>1)
+ {  TCListRow_API::iterator i = we->begin();
+    while(i!=we->end())
+    {  if (stutzen(we,&*i,tclist,deep+1)) return true;
+       i++;
+    }
+ }
+
   return false;
 }
 
@@ -178,6 +200,7 @@ void TreeBase::refillTCL()
  for(TCListRow_API::iterator i = begin(); i!=end(); ++i)
    ((TCListRowData*)(*i).get_user_data())->refreshSum(*this);
 
+ show_or_hide_Spalten();
  expand();
 
 //CList Breite anpassen
@@ -289,7 +312,7 @@ void TreeBase::fillMenu()
       spalten_menu->append(*sp);
       sp->set_active(true);
       sp->show();
-      sp->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::welche_Spalten),i));
+      sp->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::welche_Spalten),i,sp));
     }
    menu->append(*optionen);
    optionen->set_submenu(*optionen_menu);
@@ -322,28 +345,26 @@ void TreeBase::fillMenu()
    optionen->show();
 }
 
-void TreeBase::welche_Spalten(guint i)
+void TreeBase::welche_Spalten(guint i,const Gtk::CheckMenuItem *sp)
 {
-  vector<guint>::iterator k=vec_hide_cols.begin();
-  while (k!=vec_hide_cols.end() && *k!=i) ++k;
-  if (k==vec_hide_cols.end()) 
-   { vec_hide_cols.push_back(i); 
-     set_column_visibility(i,false);}
-  else
-   { vec_hide_cols.erase(k);
-     set_column_visibility(i,true);
+  if (sp->get_active()) vec_hide_cols[i] = true;
+  else vec_hide_cols[i] = false;
+  show_or_hide_Spalten();
+}
+
+
+void TreeBase::show_or_hide_Spalten()
+{
+  for (deque<guint>::const_iterator i=currseq.begin();i!=currseq.end();++i)
+   { if (vec_hide_cols[currseq[*i]]) set_column_visibility(*i,true);
+     else set_column_visibility(*i,false);
+   }
+ for (unsigned int i=currseq.size();i<=Cols();++i)
+   { if (vec_hide_cols[i]) set_column_visibility(i,true);
+     else set_column_visibility(i,false);
    }
 }
 
-/*
-bool TreeBase::show_column_nr(guint i)
-{
-  for (vector<guint>::const_iterator k=vec_hide_cols.begin();
-      k!=vec_hide_cols.end();++k)
-    if ((*k)==i) return false;
-  return true;
-}
-*/
 
 gint TreeBase::MouseButton(GdkEventButton *event)
 {
