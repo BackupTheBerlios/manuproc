@@ -87,6 +87,7 @@ void LR_drucken::drucken(bool print,bool b_firmenpapier,bool b_kopie,bool ean_co
      LR_Abstraktion LRA(RL,&a,b_firmenpapier);
      LRA.setEAN(ean_code);
      LRA.setRueckstand(rueckstand);
+     LRA.setPrint(print);
      LRA.drucken(os,b_kopie,instanz);
     }
    else abort();

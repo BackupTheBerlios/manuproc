@@ -183,6 +183,7 @@ class LR_Abstraktion: public LR_Base
  bool rabatt_bool:1;
  bool preise_addieren:1;
  bool ean_code:1;
+ bool print:1;
 
  cH_ppsInstanz instanz;
  
@@ -228,6 +229,7 @@ private:
 #define UEBLICHE_INITIALISIERUNG(fp,inst) \
 	firmenpapier(fp), kopie(false), stueck_bool(false), menge_bool(false), \
 	rabatt_bool(false), preise_addieren(false), ean_code(false), \
+	print(false), \
 	instanz(ppsInstanz::default_id), \
 	zeilen_passen_noch(0), page_counter(1), \
 	preisspalte(0), \
@@ -253,7 +255,7 @@ public:
 
   bool Firmenpapier() const {return firmenpapier;}
   void setEAN(bool b) {ean_code=b;}
-
+  void setPrint(bool p) { print=p;}
   
   const_iterator begin() const { 
       if (Typ()==Rechnung)     return u.r->begin();

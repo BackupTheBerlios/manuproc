@@ -796,12 +796,13 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
              for(int run=0;run<2;++run)
               {   
                //Rohware
-               if(run==0)  L=AufEintragZu(AEB).get_Referenz_list_for_geplant(true); 
+//               if(run==0)  L=AufEintragZu(AEB).get_Referenz_list_for_geplant(true); 
                //geplant für
-               if(run==1) L =AufEintragZu(AEB).get_Referenz_list_for_geplant(false); 
+//               if(run==1) L =AufEintragZu(AEB).get_Referenz_list_for_geplant(false); 
                neue_spalte(erste_spalte,os);
-               if(L.size()>1) os << "$\\left\\{\\mbox{" ;
+//               if(L.size()>1) os << "$\\left\\{\\mbox{" ;
                os << "\\begin{tabular}{ll}  ";
+/*
                for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();)
                 {
                    ArtikelBase artbase(AufEintrag(i->AEB).ArtId());
@@ -815,13 +816,14 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
                 }
                os << "\\end{tabular}\n";
                if(L.size()>1) os << "}\\right\\}$" ;
+*/
               }
             }
            
          if (preise_addieren)       
           { neue_spalte(erste_spalte,os);
 #ifdef MABELLA_EXTENSIONS // Anzeigen, dass der Preis manuell eingegeben wurde
-	    if(Typ()==Auftrag)
+	    if(Typ()==Auftrag && !print)
 	      if(pl->Id() == PreisListe::none_id)
 	        os << "{\\color{altgray}(M) }";
 #endif
