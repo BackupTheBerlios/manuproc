@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.cc,v 1.23 2003/01/30 10:08:14 jacek Exp $
+// $Id: Zahlungsart.cc,v 1.24 2003/01/30 11:10:59 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -74,16 +74,17 @@ void Zahlungsart::TeX_out(std::ostream &os,
   {
   if(verfahren==LCR)
     {
-     os << "par traite Lettre de change relev\\'e (LCR)";
-     if(zahlungsfrist)
-       {os << " \\`a "<<itos(zahlungsfrist)<<" jours";
-        if(!monatsende)
-          os << ".\\\\\n";
-        else   
-          os << " fin du mois.\\\\\n";
+     char tmpbuf[100];
+//     os << "par traite Lettre de change relev\\'e (LCR)";
+     if(zahlungsfrist && monatsende)
+       {
+	snprintf(tmpbuf,sizeof tmpbuf,mld.MLT(TID::PRINTF_ZAHLUNG6).c_str(),
+			zahlungsfrist);
+	os << tmpbuf << ".\\\\\n";
+//os << " \\`a "<<itos(zahlungsfrist)<<" jours";
        }
      else
-       os << ".\\\\\n";       
+       os << "par traite LCR.\\\\\n";       
     }
   else if(verfahren==RIBA)  
     {
@@ -185,16 +186,15 @@ void Zahlungsart::TeX_out(std::ostream &os,
   {
   if(verfahren==LCR)
     {
-     os << "par traite Lettre de change relev\\'e (LCR)";
-     if(zahlungsfrist)
-       {os << " \\`a "<<itos(zahlungsfrist)<<" jours";
-        if(!monatsende)
-          os << ".\\\\\n";
-        else   
-          os << " fin du mois.\\\\\n";
+     char tmpbuf[100];
+     if(zahlungsfrist && monatsende)
+       {
+	snprintf(tmpbuf,sizeof tmpbuf,mld.MLT(TID::PRINTF_ZAHLUNG6).c_str(),
+			zahlungsfrist);
+	os << tmpbuf << ".\\\\\n";
        }
      else
-       os << ".\\\\\n";       
+       os << "par traite LCR.\\\\\n";       
     }
   else if(verfahren==RIBA)  
     {
