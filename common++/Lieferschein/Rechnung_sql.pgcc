@@ -408,8 +408,9 @@ const std::string Rechnung::Notiz() const throw(SQLerror)
 void Rechnung::Notiz(const std::string n) throw(SQLerror)
 {
  ManuProC::Trace _t(trace_channel, __FUNCTION__,Id(),n);
+
  Query("update rechnung set notiz=? where rngid=?")
- 	<< Query::NullIf(notiz) << Id();
+ 	<< Query::NullIf(n) << Id();
  SQLerror::test(__FILELINE__);
  notiz=n;
 }
