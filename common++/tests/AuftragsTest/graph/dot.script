@@ -8,147 +8,147 @@ digraph G {
 		center=true;
 
 	node [shape=record];
-		filenames [label="{_mit_lager_open | _menge_plus | _menge_minus | _datumsaenderung | _menge_minus_bandlager | _status_closed}|{Öffnen des Auftrags | Erhöhen der Auftragmenge | Reduzieren der Auftragmenge unter Rohwarenlagerbestand | Datumsänderung | Reduzieren der Auftragmenge unter Bandlagerbestand | Statussänderung (Closed)}"];
+		filenames [label="{mit_lager_open | menge_plus | menge_minus | datumsaenderung | menge_minus_bandlager | status_closed}|{ |  |  | D |  | C}"];
 
 
 	subgraph p_1 {
 		node [shape=record];
-		my_1 [label="{Kundenaufträge/20000/1 | 1271.35.760.25 | Öffnen des Auftrags:(31.12.2010,1)/Erhöhen der Auftragmenge:/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:/Datumsänderung:(31.12.2020,1)/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed):(31.12.2020,2) | Öffnen des Auftrags:400/Erhöhen der Auftragmenge:500/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:100/Datumsänderung:/Reduzieren der Auftragmenge unter Bandlagerbestand:10/Statussänderung (Closed):}"];
+		my_1 [label="{Kundenaufträge/30000/1 | 1271.35.760.25 | (31.12.2010,1)///D:(31.12.2020,1)//C:(31.12.2020,2) | 400/500/100/D:/10/C:}"];
 		fontsize=12;}
 
 	subgraph p_2 {
 		node [shape=Mrecord];
-		my_2 [label="{Rollerei/0/1 | 1271.35.760.25 | Öffnen des Auftrags:(31.12.2010,1)/Erhöhen der Auftragmenge:/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:/Datumsänderung:/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Öffnen des Auftrags:400/Erhöhen der Auftragmenge:500/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:100/Datumsänderung:0/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed):}"];
+		my_2 [label="{Rollerei/0/1 | 1271.35.760.25 | (31.12.2010,1)///D://C: | 400/500/100/D:0//C:}"];
 		fontsize=12;}
 
 	subgraph p_3 {
 		node [shape=Mrecord];
-		my_3 [label="{Rollerei/0/2 | 1271.35.760.25 | Datumsänderung:(31.12.2020,1)/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Datumsänderung:100/Reduzieren der Auftragmenge unter Bandlagerbestand:10/Statussänderung (Closed):0}"];
+		my_3 [label="{Rollerei/0/2 | 1271.35.760.25 | D:(31.12.2020,1)//C: | D:100/10/C:0}"];
 		fontsize=12;}
 
 	subgraph p_4 {
 		node [shape=Mrecord];
-		my_4 [label="{Färberei/0/1 | 1550/60/665 | Öffnen des Auftrags:(29.12.2010,1)/Erhöhen der Auftragmenge:/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:/Datumsänderung:/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Öffnen des Auftrags:10000/Erhöhen der Auftragmenge:12500/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:2500/Datumsänderung:0/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed):}"];
+		my_4 [label="{Färberei/0/1 | 1550/60/665 | (29.12.2010,1)///D://C: | 10000/12500/2500/D:0//C:}"];
 		fontsize=12;}
 
 	subgraph p_5 {
 		node [shape=Mrecord];
-		my_5 [label="{Färberei/0/2 | 1550/60/665 | Datumsänderung:(31.12.2020,1)/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Datumsänderung:2500/Reduzieren der Auftragmenge unter Bandlagerbestand:250/Statussänderung (Closed):0}"];
+		my_5 [label="{Färberei/0/2 | 1550/60/665 | D:(31.12.2020,1)//C: | D:2500/250/C:0}"];
 		fontsize=12;}
 
 	subgraph p_6 {
 		node [shape=Mrecord];
-		my_6 [label="{Bandlager/0/1 | 1271/35/760 | Öffnen des Auftrags:(27.12.2010,1)/Erhöhen der Auftragmenge:/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:/Datumsänderung:/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Öffnen des Auftrags:8000/Erhöhen der Auftragmenge:10500/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:500/Datumsänderung:0/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed):}"];
+		my_6 [label="{Bandlager/0/1 | 1271/35/760 | (27.12.2010,1)///D://C: | 8000/10500/500/D:0//C:}"];
 		fontsize=12;}
 
 	subgraph p_7 {
 		node [shape=Mrecord];
-		my_7 [label="{Bandlager/0/2 | 1271/35/760 | Datumsänderung:(31.12.2020,1)/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Datumsänderung:500/Reduzieren der Auftragmenge unter Bandlagerbestand:0/Statussänderung (Closed):}"];
+		my_7 [label="{Bandlager/0/2 | 1271/35/760 | D:(31.12.2020,1)//C: | D:500/0/C:}"];
 		fontsize=12;}
 
 	subgraph p_8 {
 		node [shape=record];
-		my_8 [label="{Bandlager/1/1 | 1271/35/760 | Öffnen des Auftrags:(27.12.2010,1)/Erhöhen der Auftragmenge:/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:/Datumsänderung:/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Öffnen des Auftrags:2000/Erhöhen der Auftragmenge:/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:/Datumsänderung:0/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed):}"];
+		my_8 [label="{Bandlager/1/1 | 1271/35/760 | (27.12.2010,1)///D://C: | 2000///D:0//C:}"];
 		fontsize=12;}
 
 	subgraph p_9 {
 		node [shape=record];
-		my_9 [label="{Bandlager/1/2 | 1271/35/760 | Datumsänderung:(31.12.2020,1)/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Datumsänderung:2000/Reduzieren der Auftragmenge unter Bandlagerbestand:250/Statussänderung (Closed):0}"];
+		my_9 [label="{Bandlager/1/2 | 1271/35/760 | D:(31.12.2020,1)//C: | D:2000/250/C:0}"];
 		fontsize=12;}
 
 	subgraph p_10 {
 		node [shape=Mrecord];
-		my_10 [label="{Bandlager/2/1 | 1271/35/760 | Öffnen des Auftrags:(1.1.1970,1)/Erhöhen der Auftragmenge:/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:/Datumsänderung:/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Öffnen des Auftrags:0/Erhöhen der Auftragmenge:/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:/Datumsänderung:/Reduzieren der Auftragmenge unter Bandlagerbestand:1750/Statussänderung (Closed):2000}"];
+		my_10 [label="{Bandlager/2/1 | 1271/35/760 | (1.1.1970,1)///D://C: | 0///D:/1750/C:2000}"];
 		fontsize=12;}
 
 	subgraph p_11 {
 		node [shape=Mrecord];
-		my_11 [label="{Weberei/0/1 | 1271/35/760 | Öffnen des Auftrags:(27.12.2010,1)/Erhöhen der Auftragmenge:/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:/Datumsänderung:/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Öffnen des Auftrags:8000/Erhöhen der Auftragmenge:10500/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:500/Datumsänderung:0/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed):}"];
+		my_11 [label="{Weberei/0/1 | 1271/35/760 | (27.12.2010,1)///D://C: | 8000/10500/500/D:0//C:}"];
 		fontsize=12;}
 
 	subgraph p_12 {
 		node [shape=Mrecord];
-		my_12 [label="{Weberei/0/2 | 1271/35/760 | Datumsänderung:(31.12.2020,1)/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Datumsänderung:500/Reduzieren der Auftragmenge unter Bandlagerbestand:0/Statussänderung (Closed):}"];
+		my_12 [label="{Weberei/0/2 | 1271/35/760 | D:(31.12.2020,1)//C: | D:500/0/C:}"];
 		fontsize=12;}
 
 	subgraph p_13 {
 		node [shape=Mrecord];
-		my_13 [label="{Rohwarenlager/0/1 | Kupferdraht 0,10mm   daVinci | Öffnen des Auftrags:(29.11.2010,1)/Erhöhen der Auftragmenge:/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:/Datumsänderung:/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Öffnen des Auftrags:58/Erhöhen der Auftragmenge:83/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:0/Datumsänderung:/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed):}"];
+		my_13 [label="{Rohwarenlager/0/1 | Kupferdraht 0,10mm   daVinci | (29.11.2010,1)///D://C: | 58/83/0/D://C:}"];
 		fontsize=12;}
 
 	subgraph p_14 {
 		node [shape=Mrecord];
-		my_14 [label="{Rohwarenlager/0/2 | Acetat 133dTex arnica  daVinci | Öffnen des Auftrags:(29.11.2010,1)/Erhöhen der Auftragmenge:/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:/Datumsänderung:/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Öffnen des Auftrags:24/Erhöhen der Auftragmenge:39/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:0/Datumsänderung:/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed):}"];
+		my_14 [label="{Rohwarenlager/0/2 | Acetat 133dTex arnica  daVinci | (29.11.2010,1)///D://C: | 24/39/0/D://C:}"];
 		fontsize=12;}
 
 	subgraph p_15 {
 		node [shape=Mrecord];
-		my_15 [label="{Rohwarenlager/0/3 | Kupferdraht 0,10mm   daVinci | Datumsänderung:(31.12.2020,1)/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Datumsänderung:0/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed):}"];
+		my_15 [label="{Rohwarenlager/0/3 | Kupferdraht 0,10mm   daVinci | D:(31.12.2020,1)//C: | D:0//C:}"];
 		fontsize=12;}
 
 	subgraph p_16 {
 		node [shape=Mrecord];
-		my_16 [label="{Rohwarenlager/0/4 | Acetat 133dTex arnica  daVinci | Datumsänderung:(31.12.2020,1)/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Datumsänderung:0/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed):}"];
+		my_16 [label="{Rohwarenlager/0/4 | Acetat 133dTex arnica  daVinci | D:(31.12.2020,1)//C: | D:0//C:}"];
 		fontsize=12;}
 
 	subgraph p_17 {
 		node [shape=record];
-		my_17 [label="{Rohwarenlager/1/1 | Kupferdraht 0,10mm   daVinci | Öffnen des Auftrags:(29.11.2010,1)/Erhöhen der Auftragmenge:/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:/Datumsänderung:/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Öffnen des Auftrags:22/Erhöhen der Auftragmenge:/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:5/Datumsänderung:0/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed):}"];
+		my_17 [label="{Rohwarenlager/1/1 | Kupferdraht 0,10mm   daVinci | (29.11.2010,1)///D://C: | 22//5/D:0//C:}"];
 		fontsize=12;}
 
 	subgraph p_18 {
 		node [shape=record];
-		my_18 [label="{Rohwarenlager/1/2 | Acetat 133dTex arnica  daVinci | Öffnen des Auftrags:(29.11.2010,1)/Erhöhen der Auftragmenge:/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:/Datumsänderung:/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Öffnen des Auftrags:24/Erhöhen der Auftragmenge:/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:3/Datumsänderung:0/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed):}"];
+		my_18 [label="{Rohwarenlager/1/2 | Acetat 133dTex arnica  daVinci | (29.11.2010,1)///D://C: | 24//3/D:0//C:}"];
 		fontsize=12;}
 
 	subgraph p_19 {
 		node [shape=record];
-		my_19 [label="{Rohwarenlager/1/3 | Kupferdraht 0,10mm   daVinci | Datumsänderung:(31.12.2020,1)/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Datumsänderung:5/Reduzieren der Auftragmenge unter Bandlagerbestand:0/Statussänderung (Closed):}"];
+		my_19 [label="{Rohwarenlager/1/3 | Kupferdraht 0,10mm   daVinci | D:(31.12.2020,1)//C: | D:5/0/C:}"];
 		fontsize=12;}
 
 	subgraph p_20 {
 		node [shape=record];
-		my_20 [label="{Rohwarenlager/1/4 | Acetat 133dTex arnica  daVinci | Datumsänderung:(31.12.2020,1)/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Datumsänderung:3/Reduzieren der Auftragmenge unter Bandlagerbestand:0/Statussänderung (Closed):}"];
+		my_20 [label="{Rohwarenlager/1/4 | Acetat 133dTex arnica  daVinci | D:(31.12.2020,1)//C: | D:3/0/C:}"];
 		fontsize=12;}
 
 	subgraph p_21 {
 		node [shape=Mrecord];
-		my_21 [label="{Rohwarenlager/2/1 | Kupferdraht 0,10mm   daVinci | Öffnen des Auftrags:(1.1.1970,1)/Erhöhen der Auftragmenge:/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:/Datumsänderung:/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Öffnen des Auftrags:0/Erhöhen der Auftragmenge:/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:17/Datumsänderung:/Reduzieren der Auftragmenge unter Bandlagerbestand:22/Statussänderung (Closed):}"];
+		my_21 [label="{Rohwarenlager/2/1 | Kupferdraht 0,10mm   daVinci | (1.1.1970,1)///D://C: | 0//17/D:/22/C:}"];
 		fontsize=12;}
 
 	subgraph p_22 {
 		node [shape=Mrecord];
-		my_22 [label="{Rohwarenlager/2/2 | Acetat 133dTex arnica  daVinci | Öffnen des Auftrags:(1.1.1970,1)/Erhöhen der Auftragmenge:/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:/Datumsänderung:/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Öffnen des Auftrags:0/Erhöhen der Auftragmenge:/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:21/Datumsänderung:/Reduzieren der Auftragmenge unter Bandlagerbestand:24/Statussänderung (Closed):}"];
+		my_22 [label="{Rohwarenlager/2/2 | Acetat 133dTex arnica  daVinci | (1.1.1970,1)///D://C: | 0//21/D:/24/C:}"];
 		fontsize=12;}
 
 	subgraph p_23 {
 		node [shape=Mrecord];
-		my_23 [label="{(Garn-)Einkauf/0/1 | Kupferdraht 0,10mm   daVinci | Öffnen des Auftrags:(29.11.2010,1)/Erhöhen der Auftragmenge:/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:/Datumsänderung:/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Öffnen des Auftrags:58/Erhöhen der Auftragmenge:83/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:0/Datumsänderung:/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed):}"];
+		my_23 [label="{(Garn-)Einkauf/0/1 | Kupferdraht 0,10mm   daVinci | (29.11.2010,1)///D://C: | 58/83/0/D://C:}"];
 		fontsize=12;}
 
 	subgraph p_24 {
 		node [shape=Mrecord];
-		my_24 [label="{(Garn-)Einkauf/0/2 | Acetat 133dTex arnica  daVinci | Öffnen des Auftrags:(29.11.2010,1)/Erhöhen der Auftragmenge:/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:/Datumsänderung:/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Öffnen des Auftrags:24/Erhöhen der Auftragmenge:39/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:0/Datumsänderung:/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed):}"];
+		my_24 [label="{(Garn-)Einkauf/0/2 | Acetat 133dTex arnica  daVinci | (29.11.2010,1)///D://C: | 24/39/0/D://C:}"];
 		fontsize=12;}
 
 	subgraph p_25 {
 		node [shape=Mrecord];
-		my_25 [label="{(Garn-)Einkauf/0/3 | Kupferdraht 0,10mm   daVinci | Datumsänderung:(31.12.2020,1)/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Datumsänderung:0/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed):}"];
+		my_25 [label="{(Garn-)Einkauf/0/3 | Kupferdraht 0,10mm   daVinci | D:(31.12.2020,1)//C: | D:0//C:}"];
 		fontsize=12;}
 
 	subgraph p_26 {
 		node [shape=Mrecord];
-		my_26 [label="{(Garn-)Einkauf/0/4 | Acetat 133dTex arnica  daVinci | Datumsänderung:(31.12.2020,1)/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Datumsänderung:0/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed):}"];
+		my_26 [label="{(Garn-)Einkauf/0/4 | Acetat 133dTex arnica  daVinci | D:(31.12.2020,1)//C: | D:0//C:}"];
 		fontsize=12;}
 
 	subgraph p_27 {
 		node [shape=Mrecord];
-		my_27 [label="{Spritzgießerei/0/1 | Ringe 12 mm | Öffnen des Auftrags:(29.12.2010,1)/Erhöhen der Auftragmenge:/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:/Datumsänderung:/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Öffnen des Auftrags:800/Erhöhen der Auftragmenge:1000/Reduzieren der Auftragmenge unter Rohwarenlagerbestand:200/Datumsänderung:0/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed):}"];
+		my_27 [label="{Spritzgießerei/0/1 | Ringe 12 mm | (29.12.2010,1)///D://C: | 800/1000/200/D:0//C:}"];
 		fontsize=12;}
 
 	subgraph p_28 {
 		node [shape=Mrecord];
-		my_28 [label="{Spritzgießerei/0/2 | Ringe 12 mm | Datumsänderung:(31.12.2020,1)/Reduzieren der Auftragmenge unter Bandlagerbestand:/Statussänderung (Closed): | Datumsänderung:200/Reduzieren der Auftragmenge unter Bandlagerbestand:20/Statussänderung (Closed):0}"];
+		my_28 [label="{Spritzgießerei/0/2 | Ringe 12 mm | D:(31.12.2020,1)//C: | D:200/20/C:0}"];
 		fontsize=12;}
 
 	my_1 -> my_2 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="400/500/100"];
@@ -198,7 +198,7 @@ digraph G {
 	my_15 -> my_25 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="0//"];
 
 	my_16 -> my_26 [fontsize=12,labeldistance=2,labelangle=0, labelfontsize=14,labelfontcolor=black,headlabel="0//"];
-		label="M"
+		label="Mengen Test"
 		labelloc=top
 }
 END

@@ -33,6 +33,7 @@
 
 #include <fstream>
 #include <sys/stat.h>
+#include <getopt.h>
 
 #ifdef PETIG_EXTENSIONS
 #include <Lager/RohwarenLager.h>
@@ -65,15 +66,11 @@ static void graphheader(const std::string &name)
 {   (*testlog) << '#' << ' ' << name << '\n';
 }
 
-int auftragstests(e_mode mode)
+static int auftragstests(e_mode mode, bool mit_reparatur_programm)
 {
 //  ManuProC::Tracer::Enable(AuftragBase::trace_channel);
 
-   bool mit_reparatur_programm=false;
-#ifdef REPARATUR_PROGRAMM_TESTEN
-   mit_reparatur_programm=true;
-   cout << "Mit ReparaturProgrammTest\n";
-#endif
+   if (mit_reparatur_programm) cout << "Mit ReparaturProgrammTest\n";
 
    AuftragsVerwaltung  auftrag;
    AufEintragBase AEB=auftrag.anlegen();
@@ -269,9 +266,7 @@ std::cout << dummystring<<'\n';
       cout << "Split-Test erfolgreich\n";
 
       if(mode!=Rep_Petig_PhysikalischesLager) break;
-      #ifndef REPARATUR_PROGRAMM_TESTEN
-        assert(!"FEHLER: MIT REPARATURPROGRAMM KOMPILIEREN\n");
-      #endif
+      assert(mit_reparatur_programm);
       // Physikalisches Lager ändern
 //ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
       std::string qB="insert into rl_inhalt (position_,kartons,reste,kg_per_karton,"
@@ -315,9 +310,7 @@ std::cout << dummystring<<'\n';
     case Rep_Zuordnungen:
      {graphheader("Rep_Petig_Zuordnung");
       #ifdef PETIG_TEST
-       #ifndef REPARATUR_PROGRAMM_TESTEN
-          assert(!"FEHLER: MIT REPARATURPROGRAMM KOMPILIEREN\n");
-       #endif
+          assert(mit_reparatur_programm);
        {
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Faerberei),Kunde::default_id);
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Faerberei,AuftragBase::ungeplante_id,1));
@@ -352,9 +345,7 @@ std::cout << dummystring<<'\n';
     case Rep_KundenProgramm:
      {graphheader("Rep_Petig_Kunde");
        #ifdef PETIG_TEST
-       #ifndef REPARATUR_PROGRAMM_TESTEN
-          assert(!"FEHLER: MIT REPARATURPROGRAMM KOMPILIEREN\n");
-       #endif
+          assert(mit_reparatur_programm);
       {
        std::string q1="update auftragentry set artikelid="+itos(ARTIKEL_ROLLEREIK.Id())+" where "
                          " (auftragid,zeilennr,instanz) = (0,1,10)";
@@ -405,9 +396,7 @@ std::cout << dummystring<<'\n';
     case Rep_Kunden_Zuordnungen:
      {graphheader("Rep_Petig_Kunden_Zuordung");
       #ifdef PETIG_TEST
-       #ifndef REPARATUR_PROGRAMM_TESTEN
-          assert(!"FEHLER: MIT REPARATURPROGRAMM KOMPILIEREN\n");
-       #endif
+          assert(mit_reparatur_programm);
        AufEintragBase AEB=auftrag.anlegen2();
        vergleichen(C,Check::Menge,"rep_zwei_auftraege_anlegen","Anlegen eines zweiten (offenen) Auftrags ["+AEB.str()+"]","",mit_reparatur_programm);
       {
@@ -506,9 +495,7 @@ std::cout << "D13: "<<dummystring<<'\n';
      }
     case Rep_Petig_0er_2er_gleichzeitig:
      {graphheader("Rep_Petig_0er_2er_gleichzeitig");
-      #ifndef REPARATUR_PROGRAMM_TESTEN
-        assert(!"FEHLER: MIT REPARATURPROGRAMM KOMPILIEREN\n");
-      #endif
+        assert(mit_reparatur_programm);
 
       std::string q1="update auftragentry set bestellt=3000 where "
                      " (auftragid,zeilennr,instanz) = (2,1,8)";
@@ -759,9 +746,8 @@ ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
       cout << "Test für Mabella erfolgreich\n";
 
       if(mode!=Rep_Mabella) break;
-#ifndef REPARATUR_PROGRAMM_TESTEN
-      assert(!"FEHLER: MIT REPARATURPROGRAMM KOMPILIEREN\n");
-#endif
+      assert(mit_reparatur_programm);
+
       // Test 1a: 0er und 2er != OPEN
       // Test 1b: KundenID!=eigene_id
       // Test 1c: 0er und 2er bestellt != 0
@@ -888,9 +874,9 @@ ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
  return 0;
 }
 
-void usage(const std::string &argv0,const std::string &argv1)
+static void usage(const std::string &argv0,const std::string &argv1)
 {
-  cerr << argv0 <<" muß mit [(M)engentest|(P)lantest|(L)agertest|\n"
+  cerr << argv0 <<" [--verbose] [--repair] {(M)engentest|(P)lantest|(L)agertest|\n"
                   "\t(S)plittest|(Z)weiAuftraege|"
                   "\tZweiterAuftrag_frueheres(D)atum|\n"
                   "\t(L)iefer(s)cheine|(L)ieferscheine(m)engen|\n"
@@ -905,19 +891,31 @@ void usage(const std::string &argv0,const std::string &argv1)
                   "\t(R)eparatur_(K)undenprogramm\n"
                   "\t(R)eparatur_(Z)uordnungen\n"
                   "\t(R)eparatur_(K)unden_(Z)uordnungen\n"
-                  "\t(R)eparartur(M)Mabella, =0er+2er OPEN, bestellt=0, Kundenid=1]\n"
-                  "\taufgerufen werden\n"
-       << " nicht mit '"<<argv1<<"'\n";
+                  "\t(R)eparartur(M)Mabella, =0er+2er OPEN, bestellt=0, Kundenid=1}\n";
   exit(1);
 }
 
 int main(int argc,char *argv[])
-{
+{  bool mit_reparatur_programm=false;
 
-   if(argc==1) { usage(argv[0],""); return 1; }
+   static struct option long_options[] = {
+     { "verbose", no_argument, 0, 'v' },
+     { "repair", no_argument, 0, 'r' },
+     { 0,0,0,0 },
+   };
+   
+   int opt;
+   while ((opt=getopt_long(argc,argv,"vr",long_options,0))!=-1)
+    switch(opt)
+   {  case 'v': verbose=true; break;
+      case 'r': mit_reparatur_programm=true; break;
+      default: usage(argv[0],""); return 1;
+   }
+
+   if(argc-optind!=1) { usage(argv[0],""); return 1; }
    e_mode mode=None;
+   std::string mode_str=argv[optind];
 
-   std::string mode_str=argv[1];
    if(mode_str=="M" || mode_str=="Mengentest") mode=Mengentest;
    else if(mode_str=="P" || mode_str=="Plantest")  mode=Plantest;
    else if(mode_str=="L" || mode_str=="Lagertest")  mode=Lagertest;
@@ -940,7 +938,7 @@ int main(int argc,char *argv[])
    else if(mode_str=="RK")  mode=Rep_KundenProgramm;
    else if(mode_str=="RZ")  mode=Rep_Zuordnungen;
    else if(mode_str=="RKZ") mode=Rep_Kunden_Zuordnungen;
-   if(mode==None) { usage(argv[0],argv[1]); return 1; }
+   if(mode==None) { usage(argv[0],mode_str); return 1; }
 
    std::cout << "Initalisierung der Datenbank ...";
    std::cout.flush();
@@ -966,12 +964,12 @@ int main(int argc,char *argv[])
    testlog=&logstream;
    Petig::dbconnect();
 
-ManuProC::Tracer::Enable(AuftragBase::trace_channel);
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
 
    DataBase_init();
-   return auftragstests(mode);
+   return auftragstests(mode,mit_reparatur_programm);
 
    }catch(SQLerror &e){std::cout << e<<'\n';}
-  return 0;
+  return 1;
 }
 

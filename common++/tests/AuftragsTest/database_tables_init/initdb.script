@@ -7,7 +7,7 @@ createdb testdb
 
 P="database_tables_init"
 
-for i in \
+(for i in \
    artikelbezeichnung \
    artikelstamm \
    artikelzusammensetzung \
@@ -54,10 +54,8 @@ for i in \
    webang_schuss \
    webang_wiederhol
 do
-
-psql testdb -q < $P/$i
-
-done
+  cat $P/$i
+done ) | psql testdb -q
 
 ../../Programme/Instanzen testdb
 

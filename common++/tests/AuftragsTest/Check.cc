@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.37 2003/01/06 14:56:15 christof Exp $
+// $Id: Check.cc,v 1.38 2003/01/06 16:36:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -46,6 +46,7 @@ bool Check::teste(was_checken check,const std::string &zusatz, bool mit_reparatu
    }
   
   std::vector<cH_ppsInstanz> VI=cH_ppsInstanz::get_all_instanz();
+  Query::Execute("vacuum analyze");
   std::string Com="../../Programme/adjust_store -y -d "+std::string(getenv("PGDATABASE"));
   for(std::vector<cH_ppsInstanz>::const_iterator i=VI.begin();i!=VI.end();++i)
    {

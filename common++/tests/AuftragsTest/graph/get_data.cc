@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.37 2003/01/06 14:56:15 christof Exp $
+// $Id: get_data.cc,v 1.38 2003/01/06 16:36:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -254,14 +254,16 @@ void graph_data_node::get_files(const std::string &mode)
      {  graphtitle=line.substr(2);
         continue;
      }
-     std::string::size_type space1,space2;
+     std::string::size_type space1,space2,space3;
      space1=line.find(' ');
      if (space1==std::string::npos) continue;
      space2=line.find(' ',space1+1);
-     if (space1==std::string::npos) continue;
+     if (space2==std::string::npos) continue;
+     space3=line.find(' ',space2+1);
+     if (space3==std::string::npos) continue;
      filenames.push_back(st_files(line.substr(space1+1,space2-space1-1),
-     		line.substr(space2+1)));
-std::cerr << line.substr(space1+1,space2-space1-1) << ',' << line.substr(space2+1) << ",\n";
+     		line.substr(space2+1,space3-space2-1)));
+//std::cerr << line.substr(space1+1,space2-space1-1) << ',' << line.substr(space2+1) << ",\n";
   }
   for(std::vector<st_files>::const_iterator i=filenames.begin();i!=filenames.end();++i)
    {
