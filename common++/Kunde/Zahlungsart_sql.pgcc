@@ -1,4 +1,4 @@
-/* $Id: Zahlungsart_sql.pgcc,v 1.16 2003/03/06 15:33:00 jacek Exp $ */
+/* $Id: Zahlungsart_sql.pgcc,v 1.17 2003/03/10 08:49:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,53 +18,58 @@
  */
 
 #include "Zahlungsart.h"
+#include <Misc/FetchIStream.h>
 
-exec sql include sqlca;
+static const char * const to_select = 
+	"kurzbezeichnung,bezeichnung,"
+	"zahlungsfrist,"
+	"skontosatz_1,skontofrist_1,"
+	"skontosatz_2,skontofrist_2,"
+	"skontosatz_3,skontofrist_3"
+#ifdef MABELLA_EXTENSIONS
+	",einzugrabatt,bankeinzug,"
+	"monatsende,verfahren,frist_monate"
+#endif	
+	;
+
+FetchIStream &operator>>(FetchIStream &is, Zahlungsart &za)
+{  int frist[4]; // [0] is not used 
+   fixedpoint<2> satz[4];
+   std::string verfahren;
+   
+   is >> FetchIStream::MapNull<std::string>(za.kurzbezeichung,std::string())
+      >> FetchIStream::MapNull<std::string>(za.bezeichnung,std::string())
+      >> FetchIStream::MapNull<int>(za.zahlungsfrist,0)
+      >> FetchIStream::MapNull<fixedpoint<2>(satz[1],0)
+      >> FetchIStream::MapNull<int>(frist[1],0)
+      >> FetchIStream::MapNull<fixedpoint<2>(satz[2],0)
+      >> FetchIStream::MapNull<int>(frist[2],0)
+      >> FetchIStream::MapNull<fixedpoint<2>(satz[3],0)
+      >> FetchIStream::MapNull<int>(frist[3],0)
+#ifdef MABELLA_EXTENSIONS      
+      >> FetchIStream::MapNull<fixedpoint<2>(za.einzugrabatt,0)
+      >> FetchIStream::MapNull<bool>(za.bankeinzug,false)
+      >> FetchIStream::MapNull<bool>(za.monatsende,false)
+      >> FetchIStream::MapNull<std::string>(verfahren,std::string())
+      >> FetchIStream::MapNull<int>(za.frist_monate,0)
+#endif      
+      ;
+   if (!verfahren.empty()) za.setVerfahren(verfahren);
+   else za.verfahren=Zahlungsart::NONE;
+
+   if(satz[1]!=0) vec_skonto.push_back(st_skonto(frist[1],satz[1]));
+   if(satz[2]!=0) vec_skonto.push_back(st_skonto(frist[2],satz[2]));
+   if(satz[3]!=0) vec_skonto.push_back(st_skonto(frist[3],satz[3]));
+   return is;      
+}
 
 Zahlungsart::Zahlungsart(ID _id) throw (SQLerror)
 : ManuProcEntity<>(_id),bankeinzug(false),einzugrabatt(0),zahlungsfrist(0),
-	verfahren(NONE)
-{
-  if(_id == Zahlungsart::none_id) return;
-  exec sql begin declare section;
-   int ID=_id;
-   double EINZURABATT,SKONTOS1,SKONTOS2,SKONTOS3;
-   int SKONTOF1,SKONTOF2,SKONTOF3,ZAHLUNGSFRIST;
-   bool BANKEINZUG;
-   bool MONATSENDE;
-   char *VERFAHREN=0;
-   int IVERFAHREN;
-   int FRISTMONATE;
-   char *KURZBEZ=0,*BEZ=0;
-  exec sql end declare section;
-  exec sql select coalesce(kurzbezeichnung,''),coalesce(bezeichnung,''),
-      coalesce(einzugrabatt,0.0),coalesce(bankeinzug,false),
-      coalesce(zahlungsfrist,0),coalesce(skontosatz_1,0.0),
-      coalesce(skontofrist_1,0),coalesce(skontosatz_2,0.0),
-      coalesce(skontofrist_2,0),coalesce(skontosatz_3,0.0),
-      coalesce(skontofrist_3,0),
-	coalesce(monatsende,false),
-	verfahren, coalesce(frist_monate,0)
-      into :KURZBEZ,:BEZ,:EINZURABATT,:BANKEINZUG,:ZAHLUNGSFRIST,:SKONTOS1,
-         :SKONTOF1,:SKONTOS2,:SKONTOF2,:SKONTOS3,:SKONTOF3,
-	:MONATSENDE,:VERFAHREN:IVERFAHREN,:FRISTMONATE
-      from rechnung_zahlungsart where id=:ID;
-  SQLerror::test(__FILELINE__);
+	monatsende(false), frist_monate(0), verfahren(NONE)
+{ if(_id == Zahlungsart::none_id) return;
 
-   bankeinzug     = BANKEINZUG;
-   einzugrabatt   = EINZURABATT;
-   kurzbezeichung = KURZBEZ;
-   bezeichnung    = BEZ;
-   zahlungsfrist  = ZAHLUNGSFRIST;
-   monatsende	  = MONATSENDE;
-   frist_monate	  = FRISTMONATE;
-   
-   if(IVERFAHREN==0) setVerfahren(VERFAHREN);
-   else verfahren=NONE;
-
-   if(SKONTOS1) vec_skonto.push_back(st_skonto(SKONTOF1,SKONTOS1));
-   if(SKONTOS2) vec_skonto.push_back(st_skonto(SKONTOF2,SKONTOS2));
-   if(SKONTOS3) vec_skonto.push_back(st_skonto(SKONTOF3,SKONTOS3));
-
-   ECPGfree_auto_mem();
+  Query("select "+std::string(to_select)+" from "
+  		"rechnung_zahlungsart where id=?") 
+  	<< _id
+  	>> *this;
 }

@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.h,v 1.19 2003/03/06 15:33:00 jacek Exp $
+// $Id: Zahlungsart.h,v 1.20 2003/03/10 08:49:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -29,10 +29,11 @@
 #include <Misc/fixedpoint.h>
 #include <Misc/Datum.h>
 #include <Misc/multi_lang.h>
+#include <vector>
+#include <Misc/compiler_ports.h>
 
 class cH_Kunde;
-
-#include<vector>
+class FetchIStream;
 
 class Zahlungsart : public ManuProcEntity<>
 {
@@ -56,6 +57,7 @@ private:
     Verfahren verfahren;
 
     void setVerfahren(const std::string v);
+    friend FetchIStream &NOTGCC295(::)operator>>(FetchIStream &is, Zahlungsart &za);
     
 public:
     Zahlungsart(ID _id) throw (SQLerror) ;
@@ -107,19 +109,10 @@ class cH_Zahlungsart : public Handle<const Zahlungsart>
 #else
         friend cache_t::stl_type;
 #endif
-//	friend class std::map<int, cH_Zahlungsart>;
         cH_Zahlungsart() {}
 public:
 	typedef Zahlungsart::ID ID;
-//	static const ID default_id=Zahlungsart::default_id;
 	cH_Zahlungsart(ID nr);
-/*
-        bool operator==(const cH_Zahlungsart& b) const
-                {return (*this)->Id()==b->Id();} 
-        bool operator<(const cH_Zahlungsart& b) const
-                {return (*this)->Id()<b->Id();} 
-*/
 };
-
 
 #endif
