@@ -43,6 +43,8 @@ class TreeBase : public TCList
  bool auffuellen_bool; 
  bool expandieren_bool; 
 
+ bool stutzen_bool;
+ 
  void Auffuellen(Gtk::CheckMenuItem *auffuellen);
  void Expandieren(Gtk::CheckMenuItem *expandieren);
  void summen_knoepfe();
@@ -90,6 +92,7 @@ public:
  { datavec=d; 
    refillTCL();
  };
+ void Stutzen ( bool s) {stutzen_bool=s;}
  
  void clear();
  SigC::Signal1<void,cH_RowDataBase> leaf_selected;

@@ -83,7 +83,7 @@ void TreeBase::summen_knoepfe()
 
 TreeBase::TreeBase(guint cols, guint attr) : 
 	TCList(cols), showdeep(0), attrcount(attr ? attr : cols), menu(0),
-	auffuellen_bool(false), expandieren_bool(true), gp(0)
+	auffuellen_bool(false), expandieren_bool(true),stutzen_bool(true), gp(0)
 {
   this->button_press_event.connect(SigC::slot(this,&TreeBase::MouseButton));
   click_column.connect(SigC::slot(this,&TreeBase::on_click_column));
@@ -191,6 +191,7 @@ void TreeBase::refillTCL()
     insertIntoTCL((TCListRow_API*)this,*this,*i,currseq,0);
 
 // Aeste mit einem Blatt kuerzen 
+ if (stutzen_bool)
  for(TCListRow_API::iterator i = begin(); i!=end();)
  {if (stutzen((TCListRow_API*)this,(TCListRow_API*)(&(*i)),*this,0))
       i=begin(); // reloop
