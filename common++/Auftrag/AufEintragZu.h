@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.21 2003/05/16 06:43:40 christof Exp $
+// $Id: AufEintragZu.h,v 1.22 2003/07/31 14:48:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -27,6 +27,7 @@
 #include <map>
 #include <Kunde/Kunde.h>
 #include <Misc/compiler_ports.h>
+#include <Misc/TimeStamp.h>
 
 class AufEintragZu : public AufEintragBase
 {
@@ -38,11 +39,12 @@ public:
  {	AufEintragBase AEB;
  	ArtikelBase Art;
  	mengen_t Menge;
+ 	ManuProC::TimeStamp Pri;
         
-        st_reflist(AufEintragBase aeb,ArtikelBase ab,mengen_t menge) 
-              : AEB(aeb),Art(ab),Menge(menge) {}
+//        st_reflist(AufEintragBase aeb,ArtikelBase ab,mengen_t menge) 
+//              : AEB(aeb),Art(ab),Menge(menge) {}
         st_reflist() : Menge(0) {}
-        bool operator<(const st_reflist &b) const {return Art<b.Art;}
+//        bool operator<(const st_reflist &b) const {return Art<b.Art;}
         bool operator==(const st_reflist &b) const 
                {return AEB==b.AEB && Art==b.Art && Menge==b.Menge ;}
   };

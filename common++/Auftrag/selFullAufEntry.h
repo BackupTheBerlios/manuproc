@@ -1,4 +1,4 @@
-/* $Id: selFullAufEntry.h,v 1.20 2003/05/22 12:50:48 christof Exp $ */
+/* $Id: selFullAufEntry.h,v 1.21 2003/07/31 14:48:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -57,6 +57,7 @@ public:
  size_t size() const { return aufidliste.size();}
  bool empty() const {return aufidliste.empty();}
  void splice(iterator __position, SelectedFullAufList& __x) {aufidliste.splice(__position,__x.aufidliste);}
+ TYP::const_reference back() const { return aufidliste.back(); }
 };
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.15 2003/07/04 11:08:23 christof Exp $
+// $Id: AufEintragZu.cc,v 1.16 2003/07/31 14:48:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -65,17 +65,6 @@ AufEintragZu::list_t AufEintragZu::get_Referenz_list_geplant(bool kinder) const 
         i->AEB.Id()!=AuftragBase::invalid_id ) 
        N.push_back(*i);
   }
-/*
- else 
-   { assert(kinder);
-     assert(L.empty() || L.size()==1);
-     for(AufEintragZu::list_t::const_iterator i=L.begin();i!=L.end();++i)
-      {
-        list_t N_=AufEintragZu(i->AEB).get_Referenz_list_geplant(kinder);
-        N.splice(N.end(),N_);
-      }
-   }
-*/
  return N;
 }
       
@@ -103,7 +92,7 @@ reloop:
  return vaeb;
 }
 
-
+#if 0
 AufEintragZu::list_t AufEintragZu::get_Referenz_list_for_geplant(bool kinder) const throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Kinder",kinder));
@@ -121,19 +110,15 @@ AufEintragZu::list_t AufEintragZu::get_Referenz_list_for_geplant(bool kinder) co
    }
   return L; 
 }
-
-
-
+#endif
 
 AuftragBase::mengen_t AufEintragZu::verteileMenge(list_t L, mengen_t menge,bool add)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,NV("Menge",menge),NV("Add",add));
   for(list_t::const_iterator i=L.begin();i!=L.end();++i)
    {
-     if(menge==AuftragBase::mengen_t(0)) return menge;
+     if(!menge) return menge;
      AuftragBase::mengen_t M=AuftragBase::min(menge,i->Menge);
-//     if(i->Menge >= menge) M=menge;
-//     else M=i->Menge;
      if(add)  setMengeDiff__(i->AEB,M)  ;
      else     setMengeDiff__(i->AEB,-M) ;
      menge-=M;
@@ -168,7 +153,7 @@ AufEintragZu::map_t AufEintragZu::get_Kinder_nach_Artikel(const AufEintragBase &
 }
 
 FetchIStream &operator>>(FetchIStream &i, AufEintragZu::st_reflist &rl)
-{  return i >> rl.AEB >> rl.Menge >> rl.Art;
+{  return i >> rl.AEB >> rl.Menge >> rl.Art >> rl.Pri;
 }
 
 AufEintragZu::list_t AufEintragZu::get_Referenz_list(const AufEintragBase& aeb,bool kinder,bool artikel) throw(SQLerror) 
@@ -191,12 +176,12 @@ AufEintragZu::list_t AufEintragZu::get_Referenz_list(const AufEintragBase& aeb,b
  else { artsel="NULL"; }
  
  squery = "select "+selected+"instanz,"+selected+"auftragid,"
- 		+selected+"zeilennr,menge,"+artsel+" "
+ 		+selected+"zeilennr,menge,"+artsel+",prioritaet "
       "from auftragsentryzuordnung "
       +join+
       "where ("+specified+"instanz,"+specified+"auftragid,"
       			+specified+"zeilennr) = (?,?,?) "
-      "order by "+selected+"instanz,"+selected+"auftragid,"
+      "order by prioritaet,"+selected+"instanz,"+selected+"auftragid,"
       			+selected+"zeilennr ";
  std::list<st_reflist> vaeb;
  (Query(squery).lvalue() << aeb).FetchArray(vaeb);
