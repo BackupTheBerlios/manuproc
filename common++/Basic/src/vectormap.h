@@ -1,4 +1,4 @@
-// $Id: vectormap.h,v 1.3 2003/09/16 10:00:59 christof Exp $
+// $Id: vectormap.h,v 1.4 2003/09/16 21:42:18 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,13 +24,14 @@
 
 #include <vector>
 #include <utility> // for pair
-#include <algorithm> // for find_if (on 2.95)
+#include <algorithm> // for find_if (on 2.95), lower_bound
 
 // unsorted variant
 
 template <typename _Key, typename _Tp> // perhaps some day we might need _Compare
  class vectormap_u : public std::vector<std::pair<_Key,_Tp> >
 {
+protected:
 	typedef std::vector<std::pair<_Key,_Tp> > _Rep_type;
 public:
 	typedef _Key key_type;
@@ -38,7 +39,7 @@ public:
 	typedef typename _Rep_type::value_type value_type;
 	typedef typename _Rep_type::iterator iterator;
 	typedef typename _Rep_type::const_iterator const_iterator;
-private:
+protected:
 	void push_back(const value_type& __x);
 	
 	class equal
@@ -64,14 +65,43 @@ public:
 	}
 };
 
-#if 0
+#if 1
 template <typename _Key, typename _Tp>
  class vectormap_s : public vectormap_u<_Key,_Tp>
-{public:
+{
+	typedef vectormap_u<_Key,_Tp> parent_t;
+	typedef typename parent_t::_Rep_type _Rep_type;
+public:
+	typedef _Key key_type;
+	typedef _Tp mapped_type;
+	typedef typename _Rep_type::value_type value_type;
+	typedef typename _Rep_type::iterator iterator;
+	typedef typename _Rep_type::const_iterator const_iterator;
+private:
+	struct less
+	{  bool operator()(const value_type &a,const key_type &b) const
+	   { return a.first<b; }
+	};
+
+public:
+	iterator lower_bound(const key_type& x)
+	{ return std::lower_bound(begin(),end(),x,less()); }
+	const_iterator lower_bound(const key_type& x) const
+	{ return std::lower_bound(begin(),end(),x,less()); }
+	iterator find(const key_type& x)
+	{ iterator res=lower_bound(x);
+	  if (res->first==x) return res;
+	  return end();
+	}
+	const_iterator find(const key_type& x) const
+	{ const_iterator res=lower_bound(x);
+	  if (res->first==x) return res;
+	  return end();
+	}
 	mapped_type &operator[](const key_type& k)
 	{  iterator i=lower_bound(k);
 	   if (i==end()) 
-	   {  push_back(value_type(k,mapped_type()));
+	   {  _Rep_type::push_back(value_type(k,mapped_type()));
 	      return back().second;
 	   }
 	   if (i->first==k)
