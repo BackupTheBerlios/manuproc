@@ -1,4 +1,4 @@
-// $Id: AuftragsVerwaltung.hh,v 1.5 2002/10/09 14:47:22 thoma Exp $
+// $Id: AuftragsVerwaltung.hh,v 1.6 2003/01/29 12:30:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -42,7 +42,7 @@ class AuftragsVerwaltung
     AufEintragBase anlegen2();
     AufEintragBase anlegen3();
     AufEintragBase anlegenK();
-    static void kunden_bestellmenge_aendern(AufEintragBase aeb,AuftragBase::mengen_t menge);
+    static void kunden_bestellmenge_aendern(AufEintrag &ae,AuftragBase::mengen_t menge);
 };
 
 #endif

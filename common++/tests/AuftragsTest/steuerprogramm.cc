@@ -183,13 +183,13 @@ static int auftragstests(e_mode mode, bool mit_reparatur_programm)
       graphheader("Mengen Test");
       // Menge des Auftrags erhöhen
 //ManuProC::Tracer::Enable(AuftragBase::trace_channel);
-      auftrag.kunden_bestellmenge_aendern(AEB,500);
+      auftrag.kunden_bestellmenge_aendern(AE,500);
       vergleichen(C,Check::Menge,"menge_plus", "Erhöhen der Auftragmenge","",mit_reparatur_programm);
 
 //ManuProC::Tracer::Enable(AuftragBase::trace_channel);
 
       // Menge des Auftrags erniedrigen (Rohwarenlager Menge reicht jetzt aus)
-      auftrag.kunden_bestellmenge_aendern(AEB,100);
+      auftrag.kunden_bestellmenge_aendern(AE,100);
       vergleichen(C,Check::Menge,"menge_minus","Reduzieren der Auftragmenge unter Rohwarenlagerbestand","",mit_reparatur_programm);
 
       AE.updateLieferdatum(NEWDATUM,UID);
@@ -198,10 +198,10 @@ static int auftragstests(e_mode mode, bool mit_reparatur_programm)
 //exit(1);
 
       // Menge des Auftrags weiter erniedrigen (Bandlager Menge reicht jetzt aus)
-      auftrag.kunden_bestellmenge_aendern(AEB,10);
+      auftrag.kunden_bestellmenge_aendern(AE,10);
       vergleichen(C,Check::Menge,"menge_minus_bandlager","Reduzieren der Auftragmenge unter Bandlagerbestand","",mit_reparatur_programm);
 
-      AufEintrag(AEB).setStatus(CLOSED,UID);
+      AE.setStatus(CLOSED,UID);
       vergleichen(C,Check::Menge,"status_closed","Statussänderung (Closed)","C",mit_reparatur_programm);
       }
       break;

@@ -1,4 +1,4 @@
-/* $Id: Lager.h,v 1.11 2003/01/08 09:46:57 christof Exp $ */
+/* $Id: Lager.h,v 1.12 2003/01/29 12:30:33 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -77,7 +77,6 @@ class LagerBase : public cH_ppsInstanz
         const {assert(!"Nicht implementiert für Lager ohne eigene Tabelle");abort();} 
 
      // die folgenden Methoden müssen einlagern können
-     friend void AufEintrag::setInstanzen(const AufStatVal newstatus,const int uid,const Petig::Datum &lieferdate,const mengen_t &Menge,const int myznr,const int yourznr);
      friend void ppsInstanz::rekursion(ManuProC::st_produziert &P) const;
      friend void ppsInstanzReparatur::DispoAuftraege_anlegen(const int uid,const ArtikelBase &artikel,const AuftragBase::mengen_t &menge) const;
 

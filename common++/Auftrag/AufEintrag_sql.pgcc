@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.43 2003/01/15 15:10:16 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.44 2003/01/29 12:30:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -40,6 +40,7 @@
 //#include <Instanzen/ppsInstanzProduziert.h>
 #include <Misc/Trace.h>
 #include <Auftrag/VerfuegbareMenge.h>
+#include <Misc/FetchIStream_ops.h>
 
 exec sql include sqlca;
 
@@ -125,13 +126,27 @@ void AufEintrag::abschreiben(mengen_t menge,
 void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Status=",newstatus,"Force=",force);
+ if(entrystatus == newstatus)
+ {  ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,*this,"status bereits",newstatus);
+    return;
+ }
  if(newstatus == STORNO) force=true;
- if(newstatus == STORNO && getGeliefert()!=mengen_t(0))  return;
- if(entrystatus == CLOSED && !force ) return; // nichts geht mehr
- if(newstatus == UNCOMMITED) return; // zurück geht nicht, nur vor
- if(entrystatus == newstatus) return;     // nichts geändert
- if(newstatus == OPEN && entrystatus != UNCOMMITED && !force) return;
-
+ if(newstatus == STORNO && getGeliefert()!=mengen_t(0))  
+ {  std::cerr << "Kann nicht storniert werden da bereits geliefert\n";
+    return;
+ }
+ if(entrystatus == CLOSED && !force )
+ {  std::cerr << "Auftragszeile bereits geschlossen\n";
+    return;
+ }
+ if(newstatus == UNCOMMITED)
+ {  std::cerr << "bestätigte Zeilen können nicht wieder unbestätigt werden\n";
+    return;
+ }
+ if(newstatus == OPEN && entrystatus != UNCOMMITED && !force)
+ {  std::cerr << "nur unbestätigte Zeilen können geöffnet werden\n";
+    return;
+ }
 
  Transaction tr; 
  exec sql lock auftragentry in exclusive mode;
@@ -181,11 +196,16 @@ void AufEintrag::setStatus(AufStatVal newstatus,int uid,bool force) throw(SQLerr
  tr.commit(); 
 }
 
+#if 0
 #warning Kontrollieren !!!
-// wann wird das denn aufgerufen?
+// wird bei Lieferdatumsänderung aufgerufen
 void AufEintrag::setInstanzen(const AufStatVal newstatus,const int uid,const Petig::Datum &lieferdate,const mengen_t &Menge,const int myznr,const int yourznr)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Status=",newstatus,"Menge=",Menge,"MyZNr=",myznr,"YourZNr=",yourznr);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Status=",newstatus,"lieferdate=",lieferdate,"Menge=",Menge,"MyZNr=",myznr,"YourZNr=",yourznr);
+
+ ArtikelInternAbbestellen(uid,Menge,ManuProC::Auftrag::r_Anlegen);
+ ArtikelInternNachbestellen(uid,Menge,ManuProC::Auftrag::r_Anlegen);
+#if 0 
  std::list<AufEintragZu::st_reflist> KindListe = AufEintragZu(*this).get_Referenz_list(*this,true);
  for(std::list<AufEintragZu::st_reflist>::const_iterator i=KindListe.begin();i!=KindListe.end();++i)
   {
@@ -236,7 +256,9 @@ void AufEintrag::setInstanzen(const AufStatVal newstatus,const int uid,const Pet
     }
    AE.setInstanzen(newstatus,uid,lieferdate,Mauftrag,znr,newznr);
   }
+#endif
 }
+#endif
 
 // statische Variante (behandelt z.B. Vormerkungen, freie Menge etc.)
 AufEintragBase AufEintrag::ArtikelInternNachbestellen(const cH_ppsInstanz &wo,
@@ -310,14 +332,14 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(int uid,mengen_t menge,bool insta
  assert(reason!=ManuProC::Auftrag::r_None);
 // if (reason==ManuProC::Auftrag::r_None) assert(!instanzen);
  if (!menge)  return menge;
- if(auftragstatus==OPEN) //  || auftragstatus==UNCOMMITED) CP
+ Transaction tr;
+ Query("lock auftragentry in exclusive mode");
+ SQLerror::test("updateStkDiff: lock table auftragentry");
+
+ menge=updateStkDiffBase__(uid,menge);
+
+ if(auftragstatus==OPEN)
   {
-   Transaction tr;
-   exec sql lock auftragentry in exclusive mode;
-   SQLerror::test("updateStkDiff: lock table auftragentry");
-
-   menge=updateStkDiffBase__(uid,menge);
-
    // Rekursion von 2ern verbieten
    assert(Id()!=dispo_auftrag_id || !instanzen); 
    // keine Rekursion bei 1er im Lager 
@@ -325,20 +347,16 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(int uid,mengen_t menge,bool insta
    if ((!Instanz()->LagerInstanz() || Id()==AuftragBase::ungeplante_id) 
    	&& instanzen)
       updateStkDiffInstanz__(uid,menge,*this,reason);
-   tr.commit();
   }
- // könnte man doch viel eher machen ... oder?
- // ich bin unsicher wegen eventuell durch parallele Prozesse veränderter 
- // Datenbank
-  else if (getStueck()+menge<0) menge=-getStueck();
+  tr.commit();
 
  bestellt+=menge;
  return menge;
 }
 
-void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason) const
+void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftrag::Action reason) const
 {ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
-   "ElternAEB=",ElternAEB,"menge=",menge,"Reason=",reason);
+   "menge=",menge,"Reason=",reason);
 
  assert(menge>0);
  std::list<AufEintragZu::st_reflist> KindListeU = AufEintragZu(*this).get_Referenz_list(*this,true);
@@ -364,7 +382,7 @@ void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,const AufEintra
         mengen_t M=AuftragBase::min(j->Menge,menge2);
         
         if(j->AEB.Id()==AuftragBase::ungeplante_id || j->AEB.Instanz()->LagerInstanz())
-           M=-AE.MengeAendern(uid,-M,true,ElternAEB,reason);
+           M=-AE.MengeAendern(uid,-M,true,AufEintragBase(),reason);
         else // Abbestellung im Lager
           {
             assert(j->AEB.Id()!=AuftragBase::dispo_auftrag_id);
@@ -388,7 +406,10 @@ void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t menge,const AufEintragB
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
    "ElternAEB=",ElternAEB,"Menge=",menge,"Reason=",reason);
- if (menge<0) ArtikelInternAbbestellen(uid,-menge,ElternAEB,reason);
+ if (menge<0) 
+ {  assert(ElternAEB==AufEintragBase(*this)); // ?
+    ArtikelInternAbbestellen(uid,-menge,reason);
+ }
  else 
  {  assert(ElternAEB==AufEintragBase(*this));
     ArtikelInternNachbestellen(uid,menge,reason);
@@ -396,19 +417,12 @@ void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t menge,const AufEintragB
 }
 
 void AufEintrag::updatePreis(const Preis &pr) throw(SQLerror)
-{
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
- exec sql begin declare section;
- int AUFTRAGID = auftragid;
- int ZEILENNR = zeilennr;
- int INSTANZ=instanz->Id();
- float PREIS=pr.Wert().as_float();
- float PREISMENGE=pr.PreisMenge().as_float();
- exec sql end declare section;
- 
- exec sql update auftragentry 
- 	set preis= :PREIS, preismenge= :PREISMENGE
- 	where (instanz,auftragid,zeilennr)=(:INSTANZ,:AUFTRAGID,:ZEILENNR);
+{ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
+ Query("update auftragentry "
+ 	"set preis=?, preismenge=? "
+ 	"where (instanz,auftragid,zeilennr)=(?,?,?)").lvalue()
+ 	<< pr.Wert() << pr.PreisMenge() 
+ 	<< instanz->Id() << auftragid << zeilennr;
  SQLerror::test("updatePreis: update preis in auftragentry");
  preis=pr;
 }
@@ -416,47 +430,34 @@ void AufEintrag::updatePreis(const Preis &pr) throw(SQLerror)
 
 
 void AufEintrag::updateRabatt(rabatt_t rb) throw(SQLerror)
-{
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
- exec sql begin declare section;
- int AUFTRAGID = auftragid;
- int INSTANZ=instanz->Id();
- int ZEILENNR = zeilennr;
- float RABATT = rb.as_float();
- exec sql end declare section;
-
- exec sql update auftragentry set rabatt= :RABATT
- 	where (instanz,auftragid,zeilennr)=(:INSTANZ,:AUFTRAGID,:ZEILENNR);
+{ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
+ Query("update auftragentry "
+ 	"set rabatt=? "
+ 	"where (instanz,auftragid,zeilennr)=(?,?,?)").lvalue()
+ 	<< rb 
+ 	<< instanz->Id() << auftragid << zeilennr;
  SQLerror::test("updateRabatt: update rabatt in auftragentry");
- 
- rabatt=RABATT;
+ rabatt=rb;
 }
 
 
 void AufEintrag::updateLieferdatum(const Petig::Datum &ld,int uid) throw(SQLerror)
-{
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
-   "Datum=",ld);
- exec sql begin declare section;
- int AUFTRAGID = auftragid;
- int INSTANZ=instanz->Id();
- int ZEILENNR = zeilennr;
- char LIEFERDATUM[21];
- exec sql end declare section;
-//ECPGdebug(true,stdout);
-
+{ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Datum=",ld);
  Transaction tr;
- exec sql lock auftragentry in exclusive mode;
+ Query("lock auftragentry in exclusive mode"); // unnötig? CP
  SQLerror::test("updateLieferdatum: lock table auftragentry");
-  
- ld.write_postgres(LIEFERDATUM,sizeof LIEFERDATUM);
- 
- exec sql update auftragentry set lieferdate= :LIEFERDATUM
- 	where (instanz,auftragid,zeilennr)=(:INSTANZ,:AUFTRAGID,:ZEILENNR);
- SQLerror::test("updateLiefDatum: update lieferdate in auftragentry");
 
- //update Lieferdatum für Instanzen
- setInstanzen(entrystatus,uid,ld,getStueck()); 
+ ArtikelInternAbbestellen(uid,getStueck(),ManuProC::Auftrag::r_Anlegen);
+
+ Query("update auftragentry "
+ 	"set lieferdate=? "
+ 	"where (instanz,auftragid,zeilennr)=(?,?,?)").lvalue()
+ 	<< ld
+ 	<< instanz->Id() << auftragid << zeilennr;
+ SQLerror::test("updateLiefDatum: update lieferdate in auftragentry");
+ lieferdatum=ld;
+
+ ArtikelInternNachbestellen(uid,getStueck(),ManuProC::Auftrag::r_Anlegen);
 
  if(entrystatus==OPEN)// status->entrystatus
   {
@@ -472,7 +473,6 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld,int uid) throw(SQLerro
      {tr.rollback(); throw; }
   }
  
- lieferdatum=ld;
  tr.commit(); 
 }
 
@@ -544,88 +544,18 @@ AufEintrag::AufEintrag(const AufEintragBase &aebb) throw (SQLerror,NoAEB_Error)
  } catch (SQLerror &e) {std::cerr << e <<'\n';}
 }
 
-
-#if 0
-void AufEintrag::moveInstanz(int uid,const AuftragBase &newAuftrag) throw(SQLerror)
-{
-// abbestellen, neubestellen, eigentlich einfach ...
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"NewAuftrag=",newAuftrag);
- AufEintragBase oldAEB = *this;
- auftragid=newAuftrag.Id(); 
- instanz=newAuftrag.Instanz();
-
- exec sql begin declare section;
-  int OLDAUFTRAGID = oldAEB.Id();
-  int OLDINSTANZ   = oldAEB.Instanz()->Id();
-  int OLDZEILENNR  = oldAEB.ZNr();  
- exec sql end declare section;
-
- AuftragBase::mengen_t menge=getRestStk();
- mengen_t mt=oldAEB.updateStkDiffBase__(uid,-menge);
- assert(mt==-menge);
-
- VerfuegbareMenge AIL(instanz,artikel,lieferdatum);
- AuftragBase::mengen_t lagermenge=AIL.getMengeDispo();
-
-//cout << "AufEintrag_sql.pgcc: "<<lagermenge_new<<' '<<lagermenge<<'\n';
- 
- mengen_t bestellmenge;
- if(lagermenge>=bestellt) bestellmenge = 0;
- else                     bestellmenge = bestellt-lagermenge;
-
- Auftrag A(newAuftrag);
- AufEintragBase newaeb= A.push_back(bestellmenge,getLieferdatum(),Artikel(),
-                            getEntryStatus(),uid,false,EPreis(),Rabatt());
- zeilennr = newaeb.ZNr();
- AufEintragBase(newAuftrag,zeilennr).vormerken_oder_bestellen(uid,
-     bestellt-bestellmenge,bestellt,Artikel(),getLieferdatum(),AIL.getDispoAuftraege());
-
-// exec sql delete from prod_changejournal where 
-//      (insid,auftragid,auftragzeile)=(:OLDINSTANZ,:OLDAUFTRAGID,:OLDZEILENNR);
- exec sql delete from auftragentry where 
-   (instanz,auftragid,zeilennr) = (:OLDINSTANZ,:OLDAUFTRAGID,:OLDZEILENNR);
- SQLerror::test("moveInstanz: delete from auftragentry");
-
- if(oldAEB.Instanz()->LagerInstanz())
-   {
-     SQLFullAuftragSelector psel= SQLFullAuftragSelector::sel_Artikel(
-//                                  oldAEB.Instanz()->LagerFuer()
-                                  ppsInstanz::getProduktionsInstanz(Artikel())->Id()
-                                  ,Artikel());
-     SelectedFullAufList allaufids=SelectedFullAufList(psel);
-     for(SelectedFullAufList::iterator i=allaufids.begin();i!=allaufids.end();++i)
-      {
-        OLDINSTANZ=i->Instanz()->Id();
-        OLDAUFTRAGID=i->Id();
-        OLDZEILENNR=i->ZNr();
-        exec sql delete from auftragentry where 
-            (instanz,auftragid,zeilennr) = (:OLDINSTANZ,:OLDAUFTRAGID,:OLDZEILENNR);
-        SQLerror::test("moveInstanz: delete from auftragentry");
-        AufEintragZu::moveInstanz(AufEintragZu::Delete,oldAEB,*i);
-        AufEintragZu::moveInstanz(AufEintragZu::Von,*i,*this);
-      }
-   }
- else AufEintragZu::moveInstanz(AufEintragZu::Von,oldAEB,*this);
- AufEintragZu::moveInstanz(AufEintragZu::Nach,oldAEB,*this);
-}
-#endif
-
+// hässlich ! warum denn ein cH_Lieferschein statt eines LieferscheinEntryBase?
 cH_Lieferschein AufEintrag::getLieferschein() const
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__);
-  exec sql begin declare section;
-   int LFRSID=0,LFRZNR=0;
-   int AUFID=Id();
-   int AUFZNR=ZNr();
-   int INSTANZ=Instanz()->Id();
-  exec sql end declare section;
-  exec sql select lfrsid,zeile into :LFRSID,:LFRZNR
-      from lieferscheinentry where 
-      (instanz,refauftragid,refzeilennr)=(:INSTANZ,:AUFID,:AUFZNR) limit 1;
+  int LFRSID,LFRZNR;
+ // bislang cH_Lieferschein(ppsInstanzID::None,0); wenn keine Zeile
+ // jetzt SQLerror
+ Query("select lfrsid,zeile from lieferscheinentry "
+ 	"where (instanz,refauftragid,refzeilennr)=(?,?,?) "
+ 	"limit 1").lvalue()
+ 	<< instanz->Id() << Id() << ZNr()
+ 	>> LFRSID >> LFRZNR;
 #warning kann es mehr als eine Zeile geben? 
- SQLerror::test(__FILELINE__,100);
- if(sqlca.sqlcode) // keine Zeile gefunden ... warum nicht throw?
-   return cH_Lieferschein(ppsInstanzID::None,0);
- else 
-   return cH_Lieferschein(Instanz(),LFRSID);
+ return cH_Lieferschein(Instanz(),LFRSID);
 }

@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.26 2003/01/15 15:10:16 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.27 2003/01/29 12:30:33 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -125,7 +125,7 @@ private:
  	mengen_t menge,const ManuProC::Datum &lieferdatum,const ArtikelBase& artikel,
  	int uid,const AufEintragBase& ElternAEB);
  void ArtikelInternAbbestellen(int uid,mengen_t menge,
- 	const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason) const;
+ 	ManuProC::Auftrag::Action reason) const;
  void move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,const ArtikelBase artikel,int uid,ManuProC::Auftrag::Action reason);
 
 public:
@@ -137,7 +137,7 @@ public:
  void setLetzteLieferung(const ManuProC::Datum &datum) throw(SQLerror);
  // Ist (uid!=0) wird lasteditdate verändert.
  void setStatus(AufStatVal newstatus,int uid,bool force=false) throw(SQLerror);		
- void setInstanzen(const AufStatVal newstatus,const int uid,const Petig::Datum &lieferdate,const mengen_t &Menge,const int myznr=-1,const int yourznr=-1);
+// void setInstanzen(const AufStatVal newstatus,const int uid,const Petig::Datum &lieferdate,const mengen_t &Menge,const int myznr=-1,const int yourznr=-1);
 
  int split(int uid,mengen_t newmenge, const ManuProC::Datum &newld,bool dispoplanung=false) throw(SQLerror);
  mengen_t getStueck() const { return bestellt;}
