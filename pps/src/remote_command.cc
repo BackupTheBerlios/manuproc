@@ -5,12 +5,16 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <errno.h>
 #include <Artikel/ArtikelBezeichnung.h>
 
-#define SSH_HOST	"felix_ssh"
+#define SSH_HOST	"jacek@felix_ssh"
 
 int fdes_c2s[]={-1,-1};
 int fdes_s2c[]={-1,-1};
+
+extern char **env;
+
 
 void RC_close()
 {
@@ -64,17 +68,15 @@ int RC_OffenMenge(cH_ArtikelBezeichnung b)
     
      char *args[]={"ssh",
 		"-2",
-		"-i query_rsa",
 		"-C",
 		SSH_HOST,
-		"./bin/offen_fuer_artikel",
+		" ./bin/offen_fuer_artikel",
 		NULL};
-     char *envp[]={NULL};
 
      dup2(fdes_c2s[0],0);
      dup2(fdes_s2c[1],1);
 
-    execve("/usr/bin/ssh",args,envp);
+    execve("/usr/bin/ssh",args,env);
 
 	int err=errno;
    	std::cerr << "execve failed (errno:" << err << "):\n"
@@ -83,6 +85,8 @@ int RC_OffenMenge(cH_ArtikelBezeichnung b)
    	 	<< args[2] << "\t"
    	 	<< args[3] << "\t"     	 	
    	 	<< args[4] << "\n";	
+// 	 	<< args[5] << "\n";	
+
      exit(1);
     }
 

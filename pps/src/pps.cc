@@ -36,11 +36,14 @@ bool load_list=true; 	// Wenn false, dann auf keinen Fall die Liste beim
 			// Start laden, da die ISDN Leitung zu langsam ist
 
 void RC_close(void);
+char **env;
 
-int main(int argc, char **argv)
+int main(int argc, char **argv, char **envp)
 {  
  Conn = new ManuProC::Connection();
  int i;
+
+ env=envp;
 
  while ((i = getopt(argc, argv, "h:d:s")) != EOF)
  switch (i)
