@@ -66,6 +66,20 @@ mpc_agent::mpc_agent()
  orderid->set_autoexpand(true);
  label_orderid_prefix->set_text(itos(VERKNR)+label_orderid_prefix->get_text());
 
+ article_entry->set_always_fill(true);
+ article_entry->set_autoexpand(true);
+ width_entry->set_always_fill(true);
+ width_entry->set_start_on_idle(true);
+ width_entry->set_autoexpand(true);
+ color_entry->set_always_fill(true);
+ color_entry->set_start_on_idle(true);
+ color_entry->set_autoexpand(true);
+ makeup_entry->set_always_fill(true);
+ makeup_entry->set_start_on_idle(true);
+ makeup_entry->set_autoexpand(true);
+ ean_entry->set_always_fill(true);
+ ean_entry->set_autoexpand(true);
+
  set_title(get_title()+" - Ag.No.("+itos(VERKNR)+")");
 }
 
@@ -247,22 +261,32 @@ void mpc_agent::on_customer_search_clicked()
 
 
 void mpc_agent::on_article_entry_activate()
-{  
+{
+ width_entry->grab_focus();
+ article_entry->set_sensitive(false);
 }
 
 void mpc_agent::on_ean_entry_activate()
 {  
+ menge->grab_focus();
+ ean_entry->set_sensitive(false);
 }
 
 void mpc_agent::on_width_entry_activate()
 {  
+ color_entry->grab_focus();
+ width_entry->set_sensitive(false);
 }
 
 
 void mpc_agent::on_color_entry_activate()
 {  
+ makeup_entry->grab_focus();
+ color_entry->set_sensitive(false);
 }
 
 void mpc_agent::on_makeup_entry_activate()
 {  
+ menge->grab_focus();
+ makeup_entry->set_sensitive(false);
 }
