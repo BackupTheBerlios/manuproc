@@ -9,7 +9,7 @@ namespace ManuProC {
  namespace DynamicEnums {
   namespace ArtikelTyp {
    enum enum_t {
-    gewebtes_Band=0,gefaerbtes_Band=1,bedrucktes_Band=2,aufgemachtes_Band=3,Garn_per_kg=4,Spulen=5,Kartonagen=6,Sonstiges=7,Lohn=8,Farben___Pigmente=9,Etiketten=10,Garn_per_km=11,Musterkarten=12,
+    None=-1,gewebtes_Band=0,gefaerbtes_Band=1,bedrucktes_Band=2,aufgemachtes_Band=3,Garn_per_kg=4,Spulen=5,Kartonagen=6,Sonstiges=7,Lohn=8,Farben___Pigmente=9,Etiketten=10,Garn_per_km=11,Musterkarten=12,
    };
   }
 
