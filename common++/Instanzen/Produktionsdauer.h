@@ -1,7 +1,6 @@
-// $Id: EAN_sql.pgcc,v 1.2 2002/09/26 14:50:47 thoma Exp $
-/*  libKomponenten: GUI components for ManuProC's libcommon++
- *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
- *                             written by Christof Petig and Malte Thoma
+// $Id: Produktionsdauer.h,v 1.1 2002/09/26 14:54:03 thoma Exp $
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -12,27 +11,17 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */ 
-    
-exec sql include sqlca;
-#include <Aux/Transaction.h>
-#include <EAN.h>
-#include <Aux/itos.h>
+ */
 
-std::string EAN::next_value()
+#include <Artikel/ArtikelBase.h>
+#include <Instanzen/ppsInstanz.h>
+
+namespace Produktionsdauer
 {
-  exec sql begin declare section;
-   char *RESULT=0; 
-  exec sql end declare section;
-  exec sql select max(substr(ean,0,13)) into :RESULT from artbez_3_1;
+  int Tage(cH_ppsInstanz instanz,const ArtikelBase &artikel);
 
-  unsigned long long int ean=strtoll(RESULT,NULL,10);
-  ean+=1;
-  ECPGfree_auto_mem();
-  return add_Pruefsumme(ulltos(ean));                
-}    
-                 
+};

@@ -1,4 +1,4 @@
-// $Id: PreisListe.h,v 1.5 2002/06/20 06:29:53 christof Exp $
+// $Id: PreisListe.h,v 1.6 2002/09/26 14:50:47 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -40,7 +40,7 @@ private:
 
 public:
   PreisListe(ID id) throw(SQLerror);
-  PreisListe()  {}
+  PreisListe() : rabatt_gesetzt(false),rabatt(0)  {}
   ID Id() const { return entityid; } 
   const std::string Name() const { return name; }
   static ID createPreisliste(const std::string &name) throw(SQLerror);
