@@ -11,7 +11,7 @@
 #ifdef __MINGW32__
 # include <windows.h>
 # include <commdlg.h>
-//#include <gdk/gdkwin32.h>
+#include <gdk/gdkwin32.h>
 
 extern std::string utf82iso(const std::string &s);
 #endif
@@ -52,8 +52,7 @@ WinFileReq::WinFileReq(const SigC::Slot1<void,const std::string &> &sl,const std
 
    ZeroMemory(&ofn, sizeof (OPENFILENAME));
    ofn.lStructSize = sizeof (OPENFILENAME);
-//   ofn.hwndOwner = GDK_DRAWABLE_XID(parent->get_window()->gdkobj()); 
-   ofn.hwndOwner = GDK_WINDOW_HWND(parent->get_window()->gdkobj()); 
+   if (parent) ofn.hwndOwner = (HWND)GDK_WINDOW_HWND(parent->get_window()->gobj()); 
    ofn.lpstrFile = buf;
    ofn.nMaxFile = sizeof buf;
    if (filter.empty()) ofn.lpstrFilter = "Alle Dateien (*.*)\0*.*\0";

@@ -1,4 +1,4 @@
-// $Id: WinFileReq.hh,v 1.2 2003/04/09 08:30:40 christof Exp $
+// $Id: WinFileReq.hh,v 1.3 2003/04/09 08:52:05 christof Exp $
 
 #ifndef _FILESELECTION1_HH
 #  define _FILESELECTION1_HH
@@ -6,7 +6,8 @@
 #ifndef __MINGW32__
 #  include "WinFileReq_glade.hh"
 #else
-#  include <sigc++/basic_signal.h>
+#  include <gtkmm/window.h>
+//#  include <sigc++/slot.h>
 #endif
 
 #ifdef __MINGW32__
