@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.4 2002/11/22 14:28:20 christof Exp $
+// $Id: SimpleTree.hh,v 1.5 2002/12/03 08:44:30 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -43,9 +43,16 @@ public:
 class SimpleTree : public Gtk::TreeView, public SimpleTreeStore_Proxy
 {private:
 	void on_title_changed(guint nr);
-
+	SigC::Signal1<void,cH_RowDataBase> _leaf_selected;
+	SigC::Signal1<void,const TreeRow &> _node_selected;
+	
 public:
-   SimpleTree(unsigned int cols,int attrs=-1);
+	SimpleTree(unsigned int cols,int attrs=-1);
+	SigC::Signal1<void,cH_RowDataBase> &signal_leaf_selected()
+	{ return _leaf_selected; }
+	// perhaps Handle<const TreeRow> is more sensible now?
+	SigC::Signal1<void,const TreeRow &> &signal_node_selected()
+	{ return _node_selected; }
 };
 
 #if 0

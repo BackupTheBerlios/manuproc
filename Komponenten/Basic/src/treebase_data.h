@@ -1,4 +1,4 @@
-/* $Id: treebase_data.h,v 1.6 2002/07/05 12:36:56 christof Exp $ */
+/* $Id: treebase_data.h,v 1.7 2002/12/03 08:44:31 christof Exp $ */
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,7 +25,7 @@
 // it's not designed for efficiency!
 
 #include <Misc/EntryValueIntString.h>
-#include <tclistrowdata.h>
+#include <RowDataBase.h>
 
 class RowDataStrings : public RowDataBase
 {static const guint max_arguments=6;

@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.13 2002/11/29 09:34:48 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.14 2002/12/03 08:44:30 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -53,7 +53,7 @@ private:
 	NewNode_fp node_creation;
 
 	Glib::RefPtr<Gtk::TreeStore> m_refTreeStore;
-friend class SimpleTree;
+	friend class SimpleTree;
 	
 	guint columns;
 	guint showdeep;

@@ -1,4 +1,4 @@
-// $Id: simplest.hh,v 1.2 2002/07/05 12:36:56 christof Exp $
+// $Id: simplest.hh,v 1.3 2002/12/03 08:44:30 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -34,11 +34,9 @@
 #  define _SIMPLEST_HH
 class simplest : public simplest_glade
 {   
-        
-        friend class simplest_glade;
         void on_Beenden_activate();
         void on_leaf_selected(cH_RowDataBase d);
    public:
-      simplest();
+	simplest();
 };
 #endif

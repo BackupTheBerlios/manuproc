@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.7 2002/11/29 09:34:48 christof Exp $
+// $Id: SimpleTree.cc,v 1.8 2002/12/03 08:44:30 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,9 +26,17 @@ SimpleTree::SimpleTree(unsigned int cols,int attrs)
    for (unsigned int i=0;i<cols;++i)
       append_column("",sts.m_columns.cols[i]);
    getStore().signal_title_changed().connect(SigC::slot(*this,&SimpleTree::on_title_changed));
+   get_selection().signal_changed().connect(SigC::slot(*this,&SimpleTree::on_selection_changed));
 }
 
 void SimpleTree::on_title_changed(guint nr)
 {  get_column(nr)->set_title(getColTitle(nr));
 }
 
+void SimpleTree::on_selection_changed()
+{  Gtk::TreeRow row=*(get_selection().get_selected());
+   if (!row[getStore().m_columns.childrens_deep])
+      _leaf_selected(row[getStore().m_columns.leafdata]);
+   else
+      _node_selected(*row[getStore().m_columns.row]);
+}
