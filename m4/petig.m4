@@ -369,6 +369,7 @@ AC_COMPILE_IFELSE(
 CXXFLAGS="$old_cxxflags"
 
 if test "x$MPC_SQLITE" = x
+then
 	ECPG
 else
 	COMMONXX_LDFLAGS="$COMMONXX_LDFLAGS -lqlite"
