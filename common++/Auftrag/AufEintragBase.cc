@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.24 2002/06/27 07:42:50 christof Exp $
+// $Id: AufEintragBase.cc,v 1.25 2002/07/05 12:35:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -42,15 +42,11 @@ std::ostream &operator<<(std::ostream &o,const AufEintragBase &ae)
 
 void AufEintragBase::calculateProzessInstanz()
 {
-//cout << "BAUM\n";
   assert (Instanz()==ppsInstanzID::Kundenauftraege);
   AuftragsBaum AB(*this,true);
   int anz=0;
   for(AuftragsBaum::const_iterator i=AB.begin();i!=AB.end();++i)
    {
-//cout << "Baum\t"<<i->AEB2.Instanz()->Name()<<' '<<i->AEB2.Instanz()->Id()
-//<<' ' <<i->AEB2.Id()
-//<<' '<<i->AEB2.ZNr()<<'\n';
      if(i->AEB2.Id()==0) continue; // 0 = ungeplante Aufträge
      if(AufEintrag(i->AEB2).getStueck() == i->menge)
        ++anz;
@@ -121,8 +117,6 @@ int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
     mengen_t M;
     if(i->Menge > menge) M=menge;
     else M=i->Menge;
-
-//cout << "SPLIT: "<<*this<<' '<<M<<' '<<datum.c_str()<<'\t'<<i->AEB<<'\n';
     if(!dispoplanung)
        znr=tryUpdateEntry(M,datum,artikel,status,uid,i->AEB,false);
     else
@@ -130,9 +124,7 @@ int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
         assert(existEntry(artikel,datum,znr,dummy,menge,status));
         AufEintragBase aeb_verplant(*this,znr);
         AufEintragZu(i->AEB).setMengeDiff__(aeb_verplant,M);
-//cout << "ChangeZu: "<<i->AEB<<' '<<aeb_verplant<<'\t'<<M<<'\n';
       }
-//cout << "ChangeZu: "<<i->AEB<<' '<<*this<<'\t'<<-M<<'\n';
     AufEintragZu(i->AEB).setMengeDiff__(*this,-M);
     menge-=M;
     if(M==mengen_t(0)) break;
@@ -145,22 +137,11 @@ int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
 
 void AufEintragBase::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,ArtikelBase artikel,int uid)
 {
- // Geplante Kinder (20000er oder 1er) holen
- if(Instanz()->LagerInstanz())
-  {
-   H_Lager L(Instanz());
-//cout << "\tLager +"<<menge<<'\n';
-   L->dispo_auftrag_aendern(artikel,menge);
-   Lager_Vormerkungen::freigegeben_menge_neu_verplanen(Instanz(),artikel,menge,uid);
-  }
-
  std::list<AufEintragZu::st_reflist> K=AufEintragZu(*this).get_Referenz_list(*this,true);
-//cout <<"K = "<<K.size()<<'\n';
  for (std::list<AufEintragZu::st_reflist>::const_iterator i=K.begin();i!=K.end();++i)
   {
     if(i->AEB.Id()==AuftragBase::ungeplante_id) continue;
     AufEintrag GeplanterAE(i->AEB);
-//cout << GeplanterAE<<'\t'<<GeplanterAE.getRestStk()<<'\n';
     AuftragBase::mengen_t M;
     if(GeplanterAE.getRestStk()>=menge)  M=menge;
     else M=GeplanterAE.getRestStk();
@@ -170,17 +151,19 @@ void AufEintragBase::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,Artik
     if(Instanz()->LagerInstanz())
      {
       mengen_t mt=i->AEB.updateStkDiffBase__(uid,-M);
+
+      H_Lager L(Instanz());
+      L->dispo_auftrag_aendern(artikel,M);
+      Lager_Vormerkungen::freigegeben_menge_neu_verplanen(Instanz(),artikel,M,uid);
+
       assert(mt==mengen_t(-M));
      }
     else
      {
        std::list<AufEintragZu::st_reflist> E=AufEintragZu(i->AEB).get_Referenz_list(i->AEB);
-//cout <<"E="<<E.size()<<'\n';
        for (std::list<AufEintragZu::st_reflist>::const_iterator j=E.begin();j!=E.end();++j)
         {
-//cout << j->AEB<<' '<<i->AEB<<'\t'<<M<<'\n';
          if(j->AEB.Id()!=AuftragBase::dispo_auftrag_id) continue;
-//cout <<"Do it\n";
          AufEintragZu(j->AEB).setMengeDiff__(i->AEB,M);
          j->AEB.updateStkDiffBase__(uid,M);
         }

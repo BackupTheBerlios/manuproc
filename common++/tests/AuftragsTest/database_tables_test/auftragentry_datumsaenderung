@@ -1,103 +1,32 @@
---
--- Selected TOC Entries:
---
-DROP INDEX "auftragentry_artikelid";
-DROP INDEX "auftragentry_pkey";
-DROP TABLE "auftragentry";
---
--- TOC Entry ID 2 (OID 23361744)
---
--- Name: auftragentry Type: TABLE Owner: thoma
---
-
-CREATE TABLE "auftragentry" (
-	"auftragid" numeric(6,0) NOT NULL,
-	"zeilennr" numeric(4,0) NOT NULL,
-	"bestellt" numeric(8,0) NOT NULL,
-	"geliefert" numeric(8,0) NOT NULL,
-	"lasteditdate" timestamp with time zone DEFAULT now() NOT NULL,
-	"lasteditor" character varying(10),
-	"lieferdatum" numeric(6,0),
-	"lastedit" character varying(10),
-	"dispoentrynr" numeric(5,0),
-	"artikelid" integer NOT NULL,
-	"rohartikelid" integer,
-	"status" smallint,
-	"preis" numeric(7,3),
-	"rabatt" numeric(4,2),
-	"dummy" integer,
-	"lieferdate" date,
-	"preismenge" integer,
-	"instanz" integer DEFAULT 1,
-	"preisliste" integer,
-	"letzte_lieferung" timestamp with time zone,
-	"lastedit_uid" integer
-);
-
---
--- Data for TOC Entry ID 5 (OID 23361744)
---
--- Name: auftragentry Type: TABLE DATA Owner: thoma
---
-
-
-INSERT INTO "auftragentry" VALUES ('0','1','0','0',NULL,NULL,NULL,NULL,209813,NULL,1,'0.000','0.00',NULL,'2010-01-01',1,6,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('0','1','0','0',NULL,NULL,NULL,NULL,209813,NULL,1,'0.000','0.00',NULL,'2010-01-01',1,9,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('0','1','0','0',NULL,NULL,NULL,NULL,123755,NULL,1,'0.000','0.00',NULL,'2010-01-01',1,4,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('0','1','0','0',NULL,NULL,NULL,NULL,123755,NULL,1,'0.000','0.00',NULL,'2010-01-01',1,8,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('0','1','0','0',NULL,NULL,NULL,NULL,124551,NULL,1,'0.000','0.00',NULL,'2010-01-01',1,2,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('0','1','0','0',NULL,NULL,NULL,NULL,124555,NULL,1,'0.000','0.00',NULL,'2010-01-01',1,10,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('0','1','0','0',NULL,NULL,NULL,NULL,210120,NULL,1,'0.000','0.00',NULL,'2010-01-01',1,7,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('0','2','0','0',NULL,NULL,NULL,NULL,211007,NULL,1,'0.000','0.00',NULL,'2010-01-01',1,6,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('0','2','0','0',NULL,NULL,NULL,NULL,211007,NULL,1,'0.000','0.00',NULL,'2010-01-01',1,9,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('0','2','100','0',NULL,NULL,NULL,NULL,124555,NULL,1,'0.000','0.00',NULL,'2020-02-02',1,10,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('0','2','200','0',NULL,NULL,NULL,NULL,210120,NULL,1,'0.000','0.00',NULL,'2020-02-02',1,7,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('0','2','500','0',NULL,NULL,NULL,NULL,123755,NULL,1,'0.000','0.00',NULL,'2020-02-02',1,4,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('0','2','500','0',NULL,NULL,NULL,NULL,123755,NULL,1,'0.000','0.00',NULL,'2020-02-02',1,8,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('0','2','2500','0',NULL,NULL,NULL,NULL,124551,NULL,1,'0.000','0.00',NULL,'2020-02-02',1,2,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('0','3','0','0',NULL,NULL,NULL,NULL,209813,NULL,1,'0.000','0.00',NULL,'2020-02-02',1,6,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('0','3','0','0',NULL,NULL,NULL,NULL,209813,NULL,1,'0.000','0.00',NULL,'2020-02-02',1,9,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('0','4','0','0',NULL,NULL,NULL,NULL,211007,NULL,1,'0.000','0.00',NULL,'2020-02-02',1,6,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('0','4','0','0',NULL,NULL,NULL,NULL,211007,NULL,1,'0.000','0.00',NULL,'2020-02-02',1,9,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('1','1','0','0',NULL,NULL,NULL,NULL,123755,NULL,1,'0.000','0.00',NULL,'2010-01-01',1,8,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('1','1','0','0',NULL,NULL,NULL,NULL,209813,NULL,1,'0.000','0.00',NULL,'2010-01-01',1,9,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('1','2','0','0',NULL,NULL,NULL,NULL,211007,NULL,1,'0.000','0.00',NULL,'2010-01-01',1,9,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('1','2','2000','0',NULL,NULL,NULL,NULL,123755,NULL,1,'0.000','0.00',NULL,'2020-02-02',1,8,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('1','3','5','0',NULL,NULL,NULL,NULL,209813,NULL,1,'0.000','0.00',NULL,'2020-02-02',1,9,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('1','4','3','0',NULL,NULL,NULL,NULL,211007,NULL,1,'0.000','0.00',NULL,'2020-02-02',1,9,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('2','1','0','0',NULL,NULL,NULL,NULL,123755,NULL,1,'0.000','0.00',NULL,'1970-01-01',1,8,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('2','1','17','0',NULL,NULL,NULL,NULL,209813,NULL,1,'0.000','0.00',NULL,'1970-01-01',1,9,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('2','2','21','0',NULL,NULL,NULL,NULL,211007,NULL,1,'0.000','0.00',NULL,'1970-01-01',1,9,NULL,1000);
-INSERT INTO "auftragentry" VALUES ('20000','1','100','0',NULL,NULL,NULL,NULL,124555,NULL,1,'0.000','0.00',NULL,'2020-02-02',1,1,NULL,1000);
---
--- TOC Entry ID 4 (OID 23361746)
---
--- Name: "auftragentry_pkey" Type: INDEX Owner: thoma
---
-
-CREATE UNIQUE INDEX auftragentry_pkey ON auftragentry USING btree (instanz, auftragid, zeilennr);
-
---
--- TOC Entry ID 3 (OID 23361747)
---
--- Name: "auftragentry_artikelid" Type: INDEX Owner: thoma
---
-
-CREATE INDEX auftragentry_artikelid ON auftragentry USING btree (artikelid, instanz);
-
---
--- TOC Entry ID 7 (OID 23361749)
---
--- Name: "RI_ConstraintTrigger_23361748" Type: TRIGGER Owner: thoma
---
-
-CREATE CONSTRAINT TRIGGER "chjour_constr" AFTER DELETE ON "auftragentry"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_del" ('chjour_constr', 'prod_changejournal', 'auftragentry', 'UNSPECIFIED', 'auftragid', 'auftragzeile', 'zeilennr', 'insid', 'instanz');
-
---
--- TOC Entry ID 6 (OID 23361751)
---
--- Name: "RI_ConstraintTrigger_23361750" Type: TRIGGER Owner: thoma
---
-
-CREATE CONSTRAINT TRIGGER "chjour_constr" AFTER UPDATE ON "auftragentry"  NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('chjour_constr', 'prod_changejournal', 'auftragentry', 'UNSPECIFIED', 'auftragid', 'auftragzeile', 'zeilennr', 'insid', 'instanz');
+  instanz-id-znr  | bestellt | geliefert | lieferdate | status | artikelid 
+------------------+----------+-----------+------------+--------+-----------
+   1 -  20000 - 1 |      100 |         0 | 2020-12-31 |      1 |    124555
+   2 -      0 - 1 |        0 |         0 | 2010-12-29 |      1 |    124551
+   2 -      0 - 2 |     2500 |         0 | 2020-12-31 |      1 |    124551
+   4 -      0 - 1 |        0 |         0 | 2010-12-27 |      1 |    123755
+   4 -      0 - 2 |      500 |         0 | 2020-12-31 |      1 |    123755
+   6 -      0 - 1 |        0 |         0 | 2010-11-29 |      1 |    209813
+   6 -      0 - 2 |        0 |         0 | 2010-11-29 |      1 |    211007
+   6 -      0 - 3 |        0 |         0 | 2020-12-31 |      1 |    209813
+   6 -      0 - 4 |        0 |         0 | 2020-12-31 |      1 |    211007
+   7 -      0 - 1 |        0 |         0 | 2010-12-29 |      1 |    210120
+   7 -      0 - 2 |      200 |         0 | 2020-12-31 |      1 |    210120
+   8 -      0 - 1 |        0 |         0 | 2010-12-27 |      1 |    123755
+   8 -      0 - 2 |      500 |         0 | 2020-12-31 |      1 |    123755
+   8 -      1 - 1 |        0 |         0 | 2010-12-27 |      1 |    123755
+   8 -      1 - 2 |     2000 |         0 | 2020-12-31 |      1 |    123755
+   8 -      2 - 1 |        0 |         0 | 1970-01-01 |      1 |    123755
+   9 -      0 - 1 |        0 |         0 | 2010-11-29 |      1 |    209813
+   9 -      0 - 2 |        0 |         0 | 2010-11-29 |      1 |    211007
+   9 -      0 - 3 |        0 |         0 | 2020-12-31 |      1 |    209813
+   9 -      0 - 4 |        0 |         0 | 2020-12-31 |      1 |    211007
+   9 -      1 - 1 |        0 |         0 | 2010-11-29 |      1 |    209813
+   9 -      1 - 2 |        0 |         0 | 2010-11-29 |      1 |    211007
+   9 -      1 - 3 |        5 |         0 | 2020-12-31 |      1 |    209813
+   9 -      1 - 4 |        3 |         0 | 2020-12-31 |      1 |    211007
+   9 -      2 - 1 |       17 |         0 | 1970-01-01 |      1 |    209813
+   9 -      2 - 2 |       21 |         0 | 1970-01-01 |      1 |    211007
+  10 -      0 - 1 |        0 |         0 | 2010-12-31 |      1 |    124555
+  10 -      0 - 2 |      100 |         0 | 2020-12-31 |      1 |    124555
+(28 rows)
 

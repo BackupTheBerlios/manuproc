@@ -1,4 +1,4 @@
-// $Id: Check.hh,v 1.6 2002/06/27 07:26:10 christof Exp $
+// $Id: Check.hh,v 1.7 2002/07/05 12:35:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -17,6 +17,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+
+// Die folgende Zeile bzw. überschreibt die Sollzustände der Datenbank 
+// durch den Istzustand. Bitte nur verwenden, wenn sie genau wissen, 
+// was sie tun
+//#define CREATE_TEST_DATABASE  true
+
+
 ///////////////////////////////////////////////////////////////////////////
 // Do not change anything below this line /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
@@ -32,10 +39,11 @@ class Check
    enum e_check {Open,Menge_Plus,Menge_Minus,Menge_MinusMinus,StatusClosed,
                  Datumsaenderung,Rohwarenlager_einlagern,Bandlager_einlagern,
                  Rohwarenlager_auslagern,Bandlager_auslagern,
-                 Planen_Kupfer,Planen_Weberei,Planen_Weberei1,Planen_Faerberei_teil,Planen_Faerberei,
+                 Planen_Kupfer,Planen_WebereiL,Planen_WebereiP,Planen_Faerberei_teil,Planen_Faerberei,
                  Split,Split_Rohwarenlager_einlagern,Split_Rohwarenlager_auslagern,
                  Planen_Faerberei_ueber,ZweiAuftraege_anlegen,ZweiterAuftrag_frueheresDatum,
-                 Jumbo_richtig,Jumbo_falsch,Jumbo_doppelt};
+                 Jumbo_richtig,Jumbo_falsch,Jumbo_doppelt,
+                 Kunden_Teillieferung};
  private:
    void dump(e_check);
    void vergleich(e_check);

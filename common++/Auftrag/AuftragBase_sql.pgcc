@@ -60,9 +60,7 @@ bool AuftragBase::Exists() const throw(SQLerror)
 
 void AuftragBase::create_if_not_exists(AufStatVal status,Kunde::ID kunde) const
 {
-//cout << "create_if_not_exists: "<<Exists()<<'\n';
   if(Exists()) return;
-//cout << "Anlegen "<<Instanz()->Name()<<' '<<Id()<<'\n';
   exec sql begin declare section;
    int AUFTRAGID=Id();
    int INSTANZ=InstanzID();
@@ -109,8 +107,6 @@ int AuftragBase::insertNewEntry(const mengen_t bestellt,
   const Preis& preis,const fixedpoint<2> rabatt,
   const cH_PreisListe &preisliste) const throw(SQLerror)
 {
-//std::cout << "\n\n\ninsertfunktion: "<<bestellt<<' '
-//   <<cH_ArtikelBezeichnung(artikel)->Bezeichnung()<<' '<<Id()<<'\n';
  exec sql begin declare section;
  int AUFTRAGID =Id();
  long ARTIKELID=artikel.Id();
@@ -167,7 +163,6 @@ int AuftragBase::insertNewEntry(const mengen_t bestellt,
     catch(SQLerror &e)
       {tr.rollback(); throw; }
   }
-//std::cout <<"INSTANZ\n";
  // Kundenaufträge legen automatisch einen Auftrag bei der entsprechenden Instanz 
  // für denselben Artikel an.
  if(status!=UNCOMMITED) // Nur offene Aufträge kümmern sich um andere Instanzen
@@ -224,7 +219,6 @@ bool AuftragBase::existEntry(const ArtikelBase& artikel,
 
  if (sqlca.sqlcode==100) return false;
  else  {
-//std::cout << "EXIST=TRUE\n";
     znr=ZEILENNR;
     newznr=NEUZNR;
     menge=MENGE;
@@ -239,46 +233,45 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
       const throw(SQLerror)
 {
  create_if_not_exists(status);
-//cout << "TryUpdateEntry\t"<<Instanz()->Name()<<' '<<Id()<<' '<<bestellt<<'\n';
  int znr=-99,neuznr=-99;
- mengen_t dummymenge=0;
+ mengen_t altemenge=0;
  Transaction tr;
  exec sql lock table auftragentry in exclusive mode;
  SQLerror::test(__FILELINE__);  
  AuftragBase::mengen_t lagermenge=Lager_Vormerkungen::artikel_auf_lager(artikel,instanz,lieferdatum,AuftragBase::dispo_auftrag_id);
- mengen_t bestellmenge;
- if(lagermenge>=bestellt) bestellmenge = 0;
- else                     bestellmenge = bestellt-lagermenge;
-//cout << Instanz()->Name()<<" Lagermenge ="<<lagermenge<<'\t'<< "bestellmenge = "<<bestellmenge<<'\n';
+//cout << Instanz()->Name()<<"   Lagermenge = "<<lagermenge<<'\n';
+ mengen_t auftragbestellmenge;
+ if(lagermenge>=bestellt) {auftragbestellmenge = 0; lagermenge=bestellt;}
+ else                      auftragbestellmenge = bestellt-lagermenge;
 
- if(force_new || !existEntry(artikel,lieferdatum,znr,neuznr,dummymenge,status))
+ if(force_new || !existEntry(artikel,lieferdatum,znr,neuznr,altemenge,status))
   {
-//cout << "Insert "<<Instanz()->Name()<<' '<<Id()<<' '<<bestellmenge<<'\n';
-    znr=insertNewEntry(bestellmenge,lieferdatum,artikel,status,uid,false)  ;
-//cout << "\tNew: "<<znr<<'\n';
+    znr=insertNewEntry(auftragbestellmenge,lieferdatum,artikel,status,uid,false)  ;
    }
  else
    {
-     if(bestellmenge)
+     if(auftragbestellmenge)
       {
-       mengen_t mt=AufEintragBase(instanz,auftragid,znr).updateStkDiffBase__(uid,bestellmenge);
-       assert(mt==bestellt);
+       mengen_t mt=AufEintragBase(instanz,auftragid,znr).updateStkDiffBase__(uid,auftragbestellmenge);
+       assert(mt==auftragbestellmenge);
       }
    }
-   
+
+//cout << "\nTryUpdate: "<<AufEintragBase(instanz,auftragid,znr)<<'\t'
+//<<"Betsellte="<<bestellt<<" Lagermenge="<<lagermenge<<" auftragbestellmenge="
+//<<auftragbestellmenge<<'\t'<<dispoplanung<<'\n';
+
   if(!dispoplanung)
    {    
-//cout << Instanz()->Name()<<' '<<Id()<<'\t'<<bestellmenge<<' '<<lagermenge<<' '<<bestellt<<'\n';
-//     if(Instanz()->LagerInstanz())
-        Lager_Vormerkungen(class AufEintrag(Instanz()->Id(),Id(),znr,bestellmenge,artikel,lieferdatum,status)).vormerken_oder_bestellen(uid,lagermenge,bestellt);
      AufEintragZu(altAEB).Neu(AufEintragBase(*this,znr),bestellt);
+     Lager_Vormerkungen(class AufEintrag(Instanz()->Id(),Id(),znr,
+            altemenge+auftragbestellmenge,artikel,lieferdatum,status)).
+            vormerken_oder_bestellen(uid,lagermenge,bestellt);
    }
   else 
    {
      AufEintragZu(class AufEintragBase(*this,znr)).Neu(altAEB,bestellt);
    }
-//  mengen_t mt=AufEintragBase(instanz,auftragid,znr).updateStkDiffBase__(uid,bestellt);
-//  assert(mt==bestellt);
 
   tr.commit();
   return znr;

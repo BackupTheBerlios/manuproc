@@ -1,68 +1,16 @@
---
--- Selected TOC Entries:
---
-DROP INDEX "auftragsentryzuordnung_altauftr";
-DROP INDEX "ae_zo_neu";
-DROP INDEX "ae_zo_alt";
-DROP TABLE "auftragsentryzuordnung";
---
--- TOC Entry ID 2 (OID 17623144)
---
--- Name: auftragsentryzuordnung Type: TABLE Owner: thoma
---
-
-CREATE TABLE "auftragsentryzuordnung" (
-	"altauftragid" integer NOT NULL,
-	"altinstanz" integer NOT NULL,
-	"altzeilennr" integer NOT NULL,
-	"neuauftragid" integer NOT NULL,
-	"neuinstanz" integer NOT NULL,
-	"neuzeilennr" integer NOT NULL,
-	"menge" integer
-);
-
---
--- Data for TOC Entry ID 6 (OID 17623144)
---
--- Name: auftragsentryzuordnung Type: TABLE DATA Owner: thoma
---
-
-
-COPY "auftragsentryzuordnung" FROM stdin;
-0	2	1	0	8	1	2500
-0	4	1	0	9	1	5
-0	4	1	0	9	2	3
-0	8	1	0	4	1	500
-0	8	1	1	8	1	2000
-0	9	1	0	6	1	0
-0	9	1	1	9	1	5
-0	9	2	0	6	2	0
-0	9	2	1	9	2	3
-0	10	1	0	2	1	2500
-0	10	1	0	7	1	200
-20000	1	1	0	10	1	100
-\.
---
--- TOC Entry ID 5 (OID 17623146)
---
--- Name: "ae_zo_alt" Type: INDEX Owner: thoma
---
-
-CREATE INDEX ae_zo_alt ON auftragsentryzuordnung USING btree (altinstanz, altauftragid, altzeilennr);
-
---
--- TOC Entry ID 4 (OID 17623147)
---
--- Name: "ae_zo_neu" Type: INDEX Owner: thoma
---
-
-CREATE INDEX ae_zo_neu ON auftragsentryzuordnung USING btree (neuinstanz, neuauftragid, neuzeilennr);
-
---
--- TOC Entry ID 3 (OID 17623148)
---
--- Name: "auftragsentryzuordnung_altauftr" Type: INDEX Owner: thoma
---
-
-CREATE UNIQUE INDEX auftragsentryzuordnung_altauftr ON auftragsentryzuordnung USING btree (altauftragid, altinstanz, altzeilennr, neuauftragid, neuinstanz, neuzeilennr);
+ ALT:instanz-id-znr | NEU:instanz-id-znr | menge 
+--------------------+--------------------+-------
+   1 -  20000 - 1   |  10 -      0 - 1   |   100
+   2 -      0 - 1   |   8 -      0 - 1   |  2500
+   4 -      0 - 1   |   9 -      0 - 1   |     5
+   4 -      0 - 1   |   9 -      0 - 2   |     3
+   8 -      0 - 1   |   4 -      0 - 1   |   500
+   8 -      0 - 1   |   8 -      1 - 1   |  2000
+   9 -      0 - 1   |   6 -      0 - 1   |     0
+   9 -      0 - 1   |   9 -      1 - 1   |     5
+   9 -      0 - 2   |   6 -      0 - 2   |     0
+   9 -      0 - 2   |   9 -      1 - 2   |     3
+  10 -      0 - 1   |   2 -      0 - 1   |  2500
+  10 -      0 - 1   |   7 -      0 - 1   |   200
+(12 rows)
 

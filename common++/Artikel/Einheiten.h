@@ -1,3 +1,4 @@
+/* $Id: Einheiten.h,v 1.13 2002/07/05 12:35:01 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -16,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Einheiten.h,v 1.12 2002/05/09 12:45:59 christof Exp $
+// $Id: Einheiten.h,v 1.13 2002/07/05 12:35:01 christof Exp $
 
 #ifndef ARTIKEL_EINHEITEN_H
 #define ARTIKEL_EINHEITEN_H

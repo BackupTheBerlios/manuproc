@@ -1,3 +1,4 @@
+// $Id: with_class.cc,v 1.17 2002/07/05 12:36:56 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -15,7 +16,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// $Id: with_class.cc,v 1.16 2002/06/28 07:33:44 christof Exp $
+// $Id: with_class.cc,v 1.17 2002/07/05 12:36:56 christof Exp $
 
 #include "config.h"
 #include "with_class.hh"

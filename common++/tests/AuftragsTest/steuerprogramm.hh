@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.hh,v 1.5 2002/06/27 07:42:51 christof Exp $
+// $Id: steuerprogramm.hh,v 1.6 2002/07/05 12:35:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -35,12 +35,13 @@
 #define ARTIKEL_KUPFER ArtikelBase(209813)
 
 
-#define DATUM ManuProC::Datum(1,1,2010)
-#define SPLITDATUM ManuProC::Datum(2,2,2011)
-#define PLANDATUM4 ManuProC::Datum(4,4,2004)
-#define PLANDATUM5 ManuProC::Datum(5,5,2005)
-#define PLANDATUM6 ManuProC::Datum(6,6,2006)
-#define NEWDATUM ManuProC::Datum(2,2,2020)
+#define DATUM ManuProC::Datum(31,12,2010)
+#define SPLITDATUM ManuProC::Datum(31,12,2011)
+#define PLANDATUM4 ManuProC::Datum(31,12,2004)
+#define PLANDATUM5 ManuProC::Datum(31,12,2005)
+#define PLANDATUM6 ManuProC::Datum(31,12,2006)
+#define DATUM9 ManuProC::Datum(31,12,2009)
+#define NEWDATUM ManuProC::Datum(31,12,2020)
 
 #define KUNDE 1000
 

@@ -1,4 +1,4 @@
-// $Id: AufEintragZu_sql.pgcc,v 1.5 2002/06/26 09:04:27 christof Exp $
+// $Id: AufEintragZu_sql.pgcc,v 1.6 2002/07/05 12:35:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -136,14 +136,16 @@ std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_for_geplant(
 //cout << AEB.Instanz()->Name()<<' '<<AEB.Id()<<' '<<AEB.ZNr()<<'\n';
   // Ungeplante Referenz Aufträge
   std::list<st_reflist> URA=get_Referenz_list(AEB,false);
-  // ich gehe davon aus, daß zu jedem geplanten Auftrag GENAU 
-  // ein Elternauftrag gehört
-  assert(URA.size()==1);
-  std::list<st_reflist> L=AufEintragZu(URA.begin()->AEB).get_Referenz_list(URA.begin()->AEB,kinder);
-  // Aus dieser Liste muß eventuell noch der geplante Auftrag entfernt werden:
-  if(kinder)
-     for (std::list<st_reflist>::iterator i=L.begin();i!=L.end();++i)
-        if(i->AEB==AEB) {L.erase(i); break;}
+ //NEU
+  std::list<st_reflist> L;
+  for(std::list<st_reflist>::const_iterator i=URA.begin();i!=URA.end();++i)
+   {
+     std::list<st_reflist> l=AufEintragZu(i->AEB).get_Referenz_list(i->AEB,kinder);
+     if(kinder) // sich selber aus der Liste entfernen
+        for (std::list<st_reflist>::iterator j=l.begin();j!=l.end();++j)
+           if(j->AEB==AEB) {L.erase(j); break;}
+     L.merge(l);
+   }
   return L; 
 }
 

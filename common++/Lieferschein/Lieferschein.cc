@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.9 2002/06/27 07:42:50 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.10 2002/07/05 12:35:01 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -101,7 +101,7 @@ void Lieferschein::push_back(AufEintrag &aufeintrag,
 void Lieferschein::setDPDlnr(int d) const throw(SQLerror)
 {
  std::string query="update lieferschein set dpdliefnr=nullif("+itos(d)
-      +","+itos(Fertig)+") where (instanz,lfrsid) = ("+itos(Instanz())+","+itos(Id())+")";
+      +","+itos(Offen)+") where (instanz,lfrsid) = ("+itos(Instanz())+","+itos(Id())+")";
  Query::Execute(query);
  SQLerror::test(__FILELINE__);
 }

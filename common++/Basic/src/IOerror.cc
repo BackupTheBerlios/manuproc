@@ -1,3 +1,4 @@
+// $Id: IOerror.cc,v 1.7 2002/07/05 12:35:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -16,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: IOerror.cc,v 1.6 2002/06/24 07:35:40 christof Exp $ */
+/* $Id: IOerror.cc,v 1.7 2002/07/05 12:35:01 christof Exp $ */
 #include "Misc/IOerror.h"
 #include <errno.h>
 #include "Misc/Ausgabe_neu.h"

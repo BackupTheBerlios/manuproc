@@ -1,3 +1,4 @@
+// $Id: test_pgsql_conv.cc,v 1.5 2002/07/05 12:35:01 christof Exp $
 // $ID$
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig

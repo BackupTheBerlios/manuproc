@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.17 2002/06/20 09:27:56 christof Exp $
+// $Id: ArtikelBox.cc,v 1.19 2002/07/05 12:36:56 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -29,8 +29,15 @@
 void ArtikelBox::selectFunc(unsigned int sp,unsigned int l) throw(SQLerror)
 {
  if(automatisch_anlegen_bool)
-  {
-    if(sp+1==combos[l].size()) Neuer_Eintrag() ;
+  { if(sp+1==combos[l].size()) 
+    {  try  // erst gucken ob schon da ...
+       {  loadArtikel(l);
+          activate();
+       }
+       catch(SQLerror &e)
+       {  Neuer_Eintrag() ;
+       }
+    }
     else 
     {  combos[l][sp+1]->grab_focus(); // kein reset? CP
        pixmap_setzen(false);
@@ -276,7 +283,7 @@ Gtk::Container* ArtikelBox::init_table(int l)
     Gtk::SearchCombo *sc;
     combos[l].push_back(sc=manage (new Gtk::SearchCombo(true)));
     sc->set_usize(50,0);
-    sc->set_autoexpand(false);
+    sc->set_autoexpand(autocompletebool);
     sc->set_enable_tab(true);
     sc->search.connect(SigC::bind(SigC::slot(this,&ArtikelBox::searchFunc),i,l));
     sc->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::selectFunc),i,l));
@@ -328,7 +335,7 @@ Gtk::Container* ArtikelBox::init_table_alle_artikel(int s)
     Gtk::SearchCombo *sc;
     combos[s].push_back(sc=manage (new Gtk::SearchCombo(true)));
     sc->set_usize(50,0);
-    sc->set_autoexpand(false);
+    sc->set_autoexpand(autocompletebool);
     sc->set_enable_tab(true);
     sc->search.connect(SigC::bind(SigC::slot(this,&ArtikelBox::searchFunc_alle_artikel),i));
     sc->activate.connect(SigC::bind(SigC::slot(this,&ArtikelBox::selectFunc_alle_artikel),i));
@@ -460,11 +467,13 @@ void ArtikelBox::setzeSchemaId(int t)
 {  
    Benutzerprofil_speichern();
 //cout << "ArtikelBox::setzeSchemaId: "<<' '<<t<<'\n';
+   std::vector<cH_EntryValue> v=get_content(0,0); // ,sp);
    try {
       setExtBezSchema(cH_ExtBezSchema(schema->Id(),t));
    } catch (SQLerror &e)
    {  setExtBezSchema(cH_ExtBezSchema(ExtBezSchema::default_ID,t));
    }
+//   set_content(0,sp);
    if (sprogram!="")
       Global_Settings::create(0,sprogram,sposition,itos(schema->Id())+":"+itos(t));
 }
@@ -472,7 +481,9 @@ void ArtikelBox::setzeSchemaId(int t)
 void ArtikelBox::setzeSchemaTyp(int t2)
 {  
    Benutzerprofil_speichern();
+   std::vector<cH_EntryValue> v=get_content(0,0); // l,sp);
    setExtBezSchema(cH_ExtBezSchema(t2,schema->Typ()));
+//   set_content(0,sp);
    if (sprogram!="")
       Global_Settings::create(0,sprogram,sposition,itos(t2)+":"+itos(schema->Typ()));
 }

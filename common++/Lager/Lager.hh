@@ -1,3 +1,4 @@
+// $Id: identify,v 1.6 1998/06/04 07:38:44 cvs Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *

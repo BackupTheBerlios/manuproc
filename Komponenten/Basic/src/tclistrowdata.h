@@ -1,3 +1,4 @@
+/* $Id: tclistrowdata.h,v 1.9 2002/07/05 12:36:56 christof Exp $ */
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -16,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistrowdata.h,v 1.8 2001/11/19 12:49:56 christof Exp $
+// $Id: tclistrowdata.h,v 1.9 2002/07/05 12:36:56 christof Exp $
 
 // BAD name for this include file actually it's a TreeRow
 

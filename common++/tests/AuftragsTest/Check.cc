@@ -1,3 +1,4 @@
+// $Id: Check.cc,v 1.7 2002/07/05 12:35:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -66,8 +67,8 @@ void Check::vergleich(e_check check)
      case Planen_Kupfer : zusatz="_planen_kupfer"; break;
      case Planen_Faerberei_teil : zusatz="_planen_faerberei_teil"; break;
      case Planen_Faerberei : zusatz="_planen_faerberei"; break;
-     case Planen_Weberei : zusatz="_planen_weberei"; break;
-     case Planen_Weberei1 : zusatz="_planen_weberei1"; break;
+     case Planen_WebereiL : zusatz="_planen_weberei_fuer_lager"; break;
+     case Planen_WebereiP : zusatz="_planen_webereiP"; break;
      case Split : zusatz="_split"; break;
      case Split_Rohwarenlager_einlagern : zusatz="_split_rohwarenlager_rein"; break;
      case Split_Rohwarenlager_auslagern : zusatz="_split_rohwarenlager_raus"; break;
@@ -77,23 +78,30 @@ void Check::vergleich(e_check check)
      case Jumbo_richtig : zusatz="_richtig"; break;
      case Jumbo_falsch : zusatz="_falsch"; break;
      case Jumbo_doppelt : zusatz="_doppelt"; break;
+     case Kunden_Teillieferung : zusatz=""; break;
    }
    
   for (std::vector<std::string>::const_iterator i=files.begin();i!=files.end();++i)
   {  std::string fz1=tempdir+*i;
      std::string fz2=referenzdir+*i+zusatz;
       
-  std::string s="diff --ignore-matching-lines=OID --ignore-matching-lines=TRIGGER -q "+fz1+" "+fz2;
-  int reg=system(s.c_str());
-  if(reg==-1) 
-  {cout<< "Fehler im diff-Komando ("+*i+")\n"; exit(reg);}
-   else if(reg==0) {cout << *i << " OK\n";}
-   else 
-   { cout << "Probleme, Empfehlung: \n "<< "mgdiff "+fz1+" "+fz2<<"\n"; 
-     error=true;
-   }
+#ifdef CREATE_TEST_DATABASE
+#warning WARNUNG: 
+#warning WARNUNG: COMPILATION MIT CREATE_TEST_DATABASE
+#warning WARNUNG: 
+    system(("mv "+fz1+" "+fz2).c_str());
+    cout << fz2<<" wurde neu erzeugt\n"; 
+#else
+     std::string s="diff -q "+fz1+" "+fz2;
+     int reg=system(s.c_str());
+     if(reg==-1) { cout<< "Fehler im diff-Komando ("+*i+")\n"; exit(reg);}
+     else if(reg==0) {cout << *i << " OK\n";}
+     else 
+      { cout << "Probleme, Empfehlung: \n "<< "mgdiff "+fz1+" "+fz2<<"\n"; 
+        error=true;
+      }
+#endif
   }
-
   if (error) exit(1);
 }
 
@@ -119,14 +127,21 @@ void Check::dump(e_check check)
   unlink((tempdir+"auftragsentryzuordnung").c_str());
   unlink((tempdir+"auftragentry").c_str());
 
-  std::string s="pg_dump -i -c -O -x -T -t auftragsentryzuordnung testdb > "+tempdir+"auftragsentryzuordnung";
-  system(s.c_str());
+  std::string s1=psql_cmd+" \"select to_char(instanz,'99') ||' - ' "
+      "|| to_char(auftragid,'99999') || ' - ' || text(zeilennr) as "
+      "\\\"instanz-id-znr\\\",bestellt,"
+      "geliefert,lieferdate,status,artikelid from auftragentry "
+      "order by 1;\" > "+tempdir+"auftragentry"; 
+  system(s1.c_str());
 
-  s="pg_dump -i -c -O -x -T -d -t auftragentry testdb | "
-// Dieser Befehl eliminiert das lasteditdate aus dem sql-dump.
-      "  sed s/,/@/4 | sed s/,/@/4 | sed s/,/Ü/17 | sed s/,/Ü/17 |"
-      "  sed 's/\\(.*\\)\\@\\(.*\\)\\@\\(.*\\)/\\1\\,\\3/' | "
-      "  sed 's/\\(.*\\)\\Ü\\(.*\\)\\Ü\\(.*\\)/\\1\\,\\3/' > "+tempdir+"auftragentry ";
-  system(s.c_str());
+  std::string s2=psql_cmd+" \"select to_char(altinstanz,'99') ||' - ' "
+      "|| to_char(altauftragid,'99999') || ' - ' || text(altzeilennr) as "
+      "\\\"ALT:instanz-id-znr\\\",
+      to_char(neuinstanz,'99') ||' - ' "
+      "|| to_char(neuauftragid,'99999') || ' - ' || text(neuzeilennr) as "
+      "\\\"NEU:instanz-id-znr\\\",menge from auftragsentryzuordnung "
+      "order by 1,2;\" > "+tempdir+"auftragsentryzuordnung"; 
+  system(s2.c_str());
+
 }
 

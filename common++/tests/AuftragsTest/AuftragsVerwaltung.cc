@@ -1,4 +1,4 @@
-// $Id: AuftragsVerwaltung.cc,v 1.1 2002/06/20 06:43:31 christof Exp $
+// $Id: AuftragsVerwaltung.cc,v 1.2 2002/07/05 12:35:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -87,7 +87,7 @@ AufEintragBase AuftragsVerwaltung::anlegen2()
 AufEintragBase AuftragsVerwaltung::anlegen3()
 {
    Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
-   int znr=auftrag.insertNewEntry(300,DATUM3,ARTIKEL_ROLLEREI,OPEN,UID,true);
+   int znr=auftrag.insertNewEntry(300,DATUM9,ARTIKEL_ROLLEREI,OPEN,UID,true);
    return AufEintragBase(auftrag,znr);
 }
 

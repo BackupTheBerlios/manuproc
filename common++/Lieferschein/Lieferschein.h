@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.14 2002/06/27 07:42:50 christof Exp $ */
+/* $Id: Lieferschein.h,v 1.15 2002/07/05 12:35:01 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -68,7 +68,8 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  void setDPDDatum() const throw(SQLerror);
 			
 #ifdef MABELLA_EXTENSIONS
- const static int Fertig=-1;
+ const static int Fertig=0;
+ const static int Offen=-1;
  int getDPDlnr() const {return dpdliefnr;}
  void setDPDlnr(int dpdlnr) const throw(SQLerror);
  int Pakete() const {return pakete;}			
@@ -79,6 +80,7 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  fixedpoint<1> GewichtNetto() const {return netto_kg;}
  void setGewichtBrutto(const fixedpoint<1> i) throw(SQLerror);
  void setGewichtNetto(const fixedpoint<1> i) throw(SQLerror);
+ const ManuProC::Datum getMaxZahlziel() const throw(SQLerror);
 #endif 
  const Preis::rabatt_t AufRabatt() const throw(SQLerror);
  

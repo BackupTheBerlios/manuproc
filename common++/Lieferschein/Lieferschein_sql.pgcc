@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.13 2002/06/27 07:42:50 christof Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.14 2002/07/05 12:35:01 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -45,7 +45,7 @@ try{
 #ifdef MABELLA_EXTENSIONS
  exec sql select kundennr, date(datum), coalesce(rngid,0),
 		coalesce(paeckchen,0),
-		coalesce(pakete,0),date(coalesce(geliefertam,datum)),coalesce(dpdliefnr,0),
+		coalesce(pakete,0),date(coalesce(geliefertam,datum)),coalesce(dpdliefnr,-1),
       coalesce(brutto_kg,0), coalesce(netto_kg,0)
 		into :KDNR, :DATUM, :RNGID, :PAECKCHEN, :PAKETE,
 		:GELIEFERTAM:IGELIEFERTAM, :DPDLIEFNR,
@@ -93,7 +93,7 @@ Lieferschein::Lieferschein(const cH_ppsInstanz& _instanz,cH_Kunde k,int jahr) th
 	: LieferscheinBase(_instanz,none_id), lsdatum(ManuProC::Datum::today()),
       kunde(k),rngid(0)
 #ifdef MABELLA_EXTENSIONS
- 	,paeckchen(0),pakete(0),dpdliefnr(0) 
+ 	,paeckchen(0),pakete(0),dpdliefnr(-1) 
 #endif
 {
  exec sql begin declare section;
@@ -166,15 +166,36 @@ const Preis::rabatt_t Lieferschein::AufRabatt() const throw(SQLerror)
  exec sql begin declare section;
  int LFRSID = Id();
  float RABATT;
+ int INSTANZ=Instanz();
  exec sql end declare section;
 
  exec sql select coalesce(max(rabatt),0) into :RABATT from 
-	auftrag a, lieferscheinentry e where a.auftragid=e.refauftragid
-	and lfrsid= :LFRSID;
+ 	auftrag a join lieferscheinentry e
+   	on (refauftragid=auftragid and a.instanz=e.instanz) where 
+   	(e.instanz,e.lfrsid)=(:INSTANZ,:LFRSID);
  SQLerror::test(__FILELINE__,100);
 
  return RABATT;
 
 }
 
+#ifdef MABELLA_EXTENSIONS
+const ManuProC::Datum Lieferschein::getMaxZahlziel() const throw(SQLerror)
+{
+ exec sql begin declare section;
+ int LFRSID=Id();
+ char *DATUM;
+ int IDATUM;
+ int INSTANZ=Instanz();
+ exec sql end declare section;
+ 
+ exec sql SELECT max(a.zahlungsziel) into :DATUM:IDATUM from 
+ 	auftrag a join lieferscheinentry e
+   	on (refauftragid=auftragid and a.instanz=e.instanz) where 
+   	(e.instanz,e.lfrsid)=(:INSTANZ,:LFRSID);
+ SQLerror::test(__FILELINE__);
+
+ return (IDATUM==0 ? ManuProC::Datum(DATUM) : ManuProC::Datum());
+}
+#endif
 

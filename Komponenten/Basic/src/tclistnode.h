@@ -1,3 +1,4 @@
+/* $Id: tclistnode.h,v 1.11 2002/07/05 12:36:56 christof Exp $ */
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -16,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: tclistnode.h,v 1.10 2001/11/05 08:57:31 christof Exp $
+// $Id: tclistnode.h,v 1.11 2002/07/05 12:36:56 christof Exp $
 
 #ifndef KOMPONENTEN_TCLISTNODE
 #define KOMPONENTEN_TCLISTNODE

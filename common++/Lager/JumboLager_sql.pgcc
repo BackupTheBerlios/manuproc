@@ -125,7 +125,7 @@ void JumboLager::Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,
       where code= :CODE;  
   SQLerror::test("JumboRolle::buchen entnahme");
 
-#ifdef PETIG_EXTENSIONS 
+#if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
   jumbo.setLagerPosition_nodb(LagerPlatz(ppsInstanzID::Bandlager,LAGERPLATZ));
 #endif
   jumbo.setVerarbDatum_nodb(*zeit);

@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.14 2002/06/20 09:27:56 christof Exp $
+# $Id: Makefile.am,v 1.15 2002/07/05 12:36:56 christof Exp $
 CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK_INCLUDES@ @COMMONXX_INCLUDES@  
 
@@ -71,4 +71,4 @@ install-data-hook:
 		rohartikel_win_glade.hh
 	cd $(includedir) ; ln -s treebase.h SimpleTree.hh
 
-CLEANFILES= *~ $(BUILT_SOURCES)
+CLEANFILES= *~ $(BUILT_SOURCES) $(LINKS)

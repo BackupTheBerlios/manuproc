@@ -9,9 +9,12 @@ for i in \
    artikelbezeichnung \
    artikelstamm \
    artikelzusammensetzung \
-   artbez_0_1 \
    artbez_3_1 \
    artbez_3_1000 \
+   artbez_4_1 \
+   artbez_5_1 \
+   artbez_0_1 \
+   artbez_0_1000 \
    auftrag \
    auftragentry \
    auftrag_prozess \

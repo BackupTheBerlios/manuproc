@@ -1,3 +1,4 @@
+/* $Id: Auftrag.h,v 1.16 2002/07/05 12:35:01 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -36,6 +37,8 @@ protected:
 	AufStatVal status;
 	std::string youraufnr;
 	std::string bemerkung;
+	mutable std::string notiz;
+	mutable bool notiz_valid:1;
 	cP_Waehrung waehrung;
    rabatt_t auftragsrabatt;
    ManuProC::Datum zahlziel;
@@ -69,6 +72,8 @@ public:
 	void setRabatt(const rabatt_t auftragsrabatt) throw(SQLerror);
 	void Zahlziel(const ManuProC::Datum &zziel) throw(SQLerror);
 	void Zahlart(cH_Zahlungsart zart) throw(SQLerror);
+	void Notiz(const std::string n) throw(SQLerror);
+	const std::string Notiz() const throw(SQLerror);
 	
    const ManuProC::Datum &getDatum() const { return datum; } 
    const ManuProC::Datum &Zahlziel() const { return zahlziel; }

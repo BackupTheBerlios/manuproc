@@ -1,3 +1,4 @@
+/* $Id: ArtikelMengeSumme.h,v 1.4 2002/07/05 12:35:01 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *

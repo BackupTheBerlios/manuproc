@@ -1,3 +1,4 @@
+/* $Id: Rechnung.h,v 1.16 2002/07/05 12:35:01 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -72,6 +73,7 @@ public:
  const ManuProC::Datum getDatum() const { return rgdatum; }
  const ManuProC::Datum getZahlziel() const { return zahlziel; }
  void setze_Datum(ManuProC::Datum rgdatum) throw(SQLerror);
+ void setze_Zahlziel(ManuProC::Datum zziel) throw(SQLerror);
  cH_Zahlungsart getZahlungsart() const {return zahlungsart;}
  void setze_Zahlungsart(cH_Zahlungsart z)   throw(SQLerror);
 };

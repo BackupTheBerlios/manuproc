@@ -1,38 +1,29 @@
 --
 -- Selected TOC Entries:
 --
-DROP INDEX "artbez_0_1_uniq";
-DROP TABLE "artbez_0_1";
+
+DROP VIEW "artbez_0_1";
 --
--- TOC Entry ID 2 (OID 11499441)
+-- TOC Entry ID 2 (OID 10001124)
 --
--- Name: artbez_0_1 Type: TABLE Owner: thoma
+-- Name: artbez_0_1 Type: VIEW Owner: christof
 --
 
-CREATE TABLE "artbez_0_1" (
-	"id" integer DEFAULT nextval('artikelbezeichnun_artikelid_seq'::text) NOT NULL,
-	"artikel" character varying(11),
-	"breite" character varying(7),
-	"farbe" character varying(30) DEFAULT '',
-	"stand" timestamp with time zone DEFAULT now(),
-	Constraint "artbez_0_1_pkey" Primary Key ("id")
-);
+CREATE VIEW "artbez_0_1" as SELECT artbez_3_1.id, artbez_3_1.artikel, artbez_3_1.breite, artbez_3_1.farbe, artbez_3_1.stand FROM artbez_3_1 WHERE (artbez_3_1.aufmachung = '9999'::"varchar");
 
 --
--- Data for TOC Entry ID 4 (OID 11499441)
+-- TOC Entry ID 3 (OID 10001124)
 --
--- Name: artbez_0_1 Type: TABLE DATA Owner: thoma
---
-
-
-COPY "artbez_0_1" FROM stdin;
-123755	1271	35	760	1999-11-08 14:10:05+01
-\.
---
--- TOC Entry ID 3 (OID 16135273)
---
--- Name: "artbez_0_1_uniq" Type: INDEX Owner: thoma
+-- Name: artbez_0_1 Type: ACL Owner: 
 --
 
-CREATE UNIQUE INDEX artbez_0_1_uniq ON artbez_0_1 USING btree (artikel, breite, farbe);
+REVOKE ALL on "artbez_0_1" from PUBLIC;
+GRANT SELECT on "artbez_0_1" to PUBLIC;
 
+--
+-- TOC Entry ID 4 (OID 10015151)
+--
+-- Name: artbez_0_1_ins Type: RULE Owner: christof
+--
+
+CREATE RULE artbez_0_1_ins AS ON INSERT TO artbez_0_1 DO INSTEAD INSERT INTO artbez_3_1 (id, artikel, breite, farbe, aufmachung, stand) VALUES (new.id, new.artikel, new.breite, new.farbe, '9999'::"varchar", CASE WHEN (new.stand NOTNULL) THEN new.stand WHEN (now() NOTNULL) THEN now() ELSE NULL::"timestamp" END);

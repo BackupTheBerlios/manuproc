@@ -1,3 +1,4 @@
+/* $Id: AuftragFull.h,v 1.22 2002/07/05 12:35:01 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *

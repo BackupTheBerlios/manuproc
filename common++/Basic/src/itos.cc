@@ -1,3 +1,4 @@
+// $Id: itos.cc,v 1.8 2002/07/05 12:35:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,9 +25,9 @@
 extern "C" { int snprintf(char *str, size_t size, const  char  *format, ...); }
 #endif
 
-std::string itos0(int i)
+std::string itos0(int i, int c)
 {
-  if(i==0) return "";
+  if(i==c) return "";
   return itos(i);
 }
 

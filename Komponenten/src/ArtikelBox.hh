@@ -1,3 +1,4 @@
+// $Id: ArtikelBox.hh,v 1.16 2002/07/05 12:36:56 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -16,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.15 2002/06/20 09:27:56 christof Exp $
+// $Id: ArtikelBox.hh,v 1.16 2002/07/05 12:36:56 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH

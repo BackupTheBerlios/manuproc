@@ -138,6 +138,7 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
  int IZAHLZIEL;
  int ZAHLART;
  int NONE_ID;
+ char *NOTIZ=0;
  exec sql end declare section;
 
  NONE_ID=Zahlungsart::none_id;
@@ -145,9 +146,11 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
  exec sql select coalesce(kundennr,0), date(coalesce(datum,now())), 
  		stat, coalesce(youraufnr,''), coalesce(bemerkung,''),
 		 coalesce(waehrung,2),coalesce(rabatt,0),
-		zahlungsziel, coalesce(zahlart,:NONE_ID)
+		zahlungsziel, coalesce(zahlart,:NONE_ID),
+		coalesce(notiz,'')
 	into 	:KUNDENNR, :DATUM, :STATUS, :YOURAUFNR, :BEMERKUNG,
-		 :WAEHRUNG,:RABATT,:ZAHLZIEL:IZAHLZIEL, :ZAHLART
+		 :WAEHRUNG,:RABATT,:ZAHLZIEL:IZAHLZIEL, :ZAHLART,
+		:NOTIZ
 	from auftrag where (auftragid,instanz) = (:AUFTRAGID,:INSTANZ) ;
  SQLerror::test(__FILELINE__"Auftrag laden");
 
@@ -161,6 +164,8 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
  auftragsrabatt = RABATT;
  zahlziel = (IZAHLZIEL==0) ? ManuProC::Datum(ZAHLZIEL):ManuProC::Datum();
  zahlart = cH_Zahlungsart(ZAHLART);
+ notiz=NOTIZ;
+ notiz_valid=true;
  ECPGfree_auto_mem();
 }
 
@@ -294,4 +299,41 @@ int Auftrag::getIdFromYourAufId(const char *youraufid) throw(SQLerror)
  SQLerror::test("getIdFromYourAufId: select auftragid");
  return AUFTRAGID;
 }
+
+const std::string Auftrag::Notiz() const throw(SQLerror)
+{
+ if(notiz_valid) return notiz;
+
+ exec sql begin declare section;
+ int AUFID = Id();
+ char *NOTIZ=0;
+ exec sql end declare section;
+
+ exec sql select coalesce(notiz,'') into :NOTIZ from auftrag where auftragid= :AUFID;
+ SQLerror::test(__FILELINE__);
+
+ notiz=NOTIZ;
+ ECPGfree_auto_mem();
+ notiz_valid=true;
+ return notiz;
+}
+
+void Auftrag::Notiz(const std::string n) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int AUFID = Id();
+ char *NOTIZ;
+ exec sql end declare section;
+
+ NOTIZ = (char*)n.c_str();
+
+ Transaction tr;
+
+ exec sql update auftrag set notiz=:NOTIZ where auftragid= :AUFID;
+ SQLerror::test(__FILELINE__);
+
+ tr.commit();
+ notiz=n;
+}
+
 

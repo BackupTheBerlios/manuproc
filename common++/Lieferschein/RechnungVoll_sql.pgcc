@@ -1,4 +1,4 @@
-/* $Id: RechnungVoll_sql.pgcc,v 1.9 2002/06/27 07:42:50 christof Exp $ */
+/* $Id: RechnungVoll_sql.pgcc,v 1.10 2002/07/05 12:35:01 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,26 +26,44 @@ RechnungVoll::RechnungVoll(int rid) throw(SQLerror)
 : Rechnung(rid)
 {
  exec sql begin declare section;
-  int ARTIKELID, STUECK, ZEILE, RNGID=rid;
+  int ARTIKELID, STUECK, ZEILE;
   int LFRSID,LIEFERZEILE;
   int AUFTRAGID;
   float MENGE,RABATT,PREISMENGE,PREIS;
   char LIEFERDATUM[11];
   int ILIEFERDATUM,INSTANZ;
+  char *QU;
  exec sql end declare section;
  INSTANZ=ppsInstanzID::Kundenauftraege;
 
+ string qu("select ry.artikelid, ry.zeilennr");
+
+ qu=qu+", coalesce(ry.stueck,0), coalesce(ry.menge,0), "
+   	"coalesce(ry.rabatt,0.0), ry.lfrsid, ry.lfrszeile," 
+        "coalesce(ry.preismenge,1), l.geliefertam, abs(ry.preis),"
+	"coalesce(refauftragid,-1)"
+	"   from (rechnungentry ry "
+   	" left join lieferschein l on ("+itos(INSTANZ)+",ry.lfrsid) ="
+	"(l.instanz,l.lfrsid))"
+   	"left join lieferscheinentry e on (l.instanz,l.lfrsid,ry.lfrszeile)"
+	"=(e.instanz,e.lfrsid,e.zeile) ";
+
+#ifdef MABELLA_EXTENSIONS
+	qu=qu+" join artbez_3_1 b on b.id=e.artikelid";
+#endif
+	qu=qu+" where ry.rngid ="+itos(rid);
+
+#ifdef MABELLA_EXTENSIONS
+ qu=qu+" order by l.lfrsid,e.refauftragid,b.artikel,b.breite,b.farbe ";
+#else
+ qu=qu+" order by zeilennr";
+#endif
+
+ QU=(char*)qu.c_str();
+
  Transaction tr;
- exec sql declare lein cursor for
-   select ry.artikelid, ry.zeilennr, coalesce(ry.stueck,0), coalesce(ry.menge,0), 
-   	coalesce(ry.rabatt,0.0), ry.lfrsid, ry.lfrszeile, 
-      coalesce(ry.preismenge,1), l.geliefertam, abs(ry.preis),
-	coalesce(refauftragid,-1)
-   from (rechnungentry ry 
-   left join lieferschein l on (:INSTANZ,ry.lfrsid) = (l.instanz,l.lfrsid))
-   left join lieferscheinentry e on (l.instanz,l.lfrsid,ry.lfrszeile)
-				=(e.instanz,e.lfrsid,e.zeile)
-   where ry.rngid = :RNGID order by zeilennr;
+ exec sql prepare LQU from :QU;
+ exec sql declare lein cursor for LQU;
  exec sql open lein;
  SQLerror::test(__FILELINE__);
  while (true)

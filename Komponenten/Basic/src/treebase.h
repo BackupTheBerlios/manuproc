@@ -1,3 +1,4 @@
+/* $Id: treebase.h,v 1.27 2002/07/05 12:36:56 christof Exp $ */
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -112,7 +113,8 @@ public:
  
  static void Expand_recursively(TCListRow_API &api);
  void Expand_recursively();
- void Collapse(){collapse();}
+ static void Collapse_recursively(TCListRow_API &api);
+ void Collapse_recursively();
  
  const std::deque<guint> &get_seq() const {return currseq;}
  void show_titles(bool show);

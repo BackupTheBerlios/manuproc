@@ -1,3 +1,4 @@
+// $Id: EingabeBox.hh,v 1.5 2002/07/05 12:36:56 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -16,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: EingabeBox.hh,v 1.4 2002/03/20 07:55:01 christof Exp $
+// $Id: EingabeBox.hh,v 1.5 2002/07/05 12:36:56 christof Exp $
 
 #ifndef _EINGABEBOX_HH
 #define _EINGABEBOX_HH

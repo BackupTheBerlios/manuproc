@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.18 2002/06/26 09:04:27 christof Exp $
+# $Id: configure.in,v 1.19 2002/07/05 12:35:01 christof Exp $
 
 AC_INIT(Artikel/ArtikelBase.h)
 
@@ -15,6 +15,8 @@ AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LDFLAGS)
 AC_SUBST(CXXFLAGS)
+
+AM_PATH_SIGC(1.0.0,,AC_MSG_ERROR("SigC++ 1.0.0 or newer not found or broken - see config.log for details."))
 
 PETIG_CHECK_POSTGRES
 
@@ -102,5 +104,6 @@ AC_OUTPUT(Makefile Artikel/Makefile Auftrag/Makefile \
 	Kunde/Makefile Lieferschein/Makefile ostream/Makefile \
 	tests/Makefile tests/auftragstest/Makefile tests/AuftragsTest/Makefile \
    Material/Makefile Lager/Makefile Faeden/Makefile \
-   Programme/Makefile DynamicEnums/Makefile Instanzen/Makefile)
+   Programme/Makefile DynamicEnums/Makefile Instanzen/Makefile \
+   BaseObjects/Makefile)
 

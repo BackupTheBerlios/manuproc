@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList_sql.pgcc,v 1.11 2002/06/27 07:42:50 christof Exp $ */
+/* $Id: LieferscheinList_sql.pgcc,v 1.12 2002/07/05 12:35:01 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -71,10 +71,11 @@ void LieferscheinList::fuelle(const std::string &squery) throw(SQLerror)
  int PAECKCHEN, PAKETE;
  char GELIEFERTAM[11];
  int DPDLIEFNR;
- char query[1024];
+ char *query;
  exec sql end declare section;
 
- snprintf(query,sizeof(query),squery.c_str());
+ query = (char*) squery.c_str();
+
  Transaction tr;
  exec sql prepare llist_ein_ from :query ;
  exec sql declare llist_ein cursor for llist_ein_ ;
@@ -120,6 +121,8 @@ LieferscheinList::LieferscheinList(const cH_ppsInstanz _instanz,const sel_Gelief
  else
 	 squery += " where dpdliefnr is null and geliefertam is null";
  squery += " and instanz = "+itos(instanz->Id());
+
+ squery+=" order by lfrsid";
 
  fuelle(squery);
 }

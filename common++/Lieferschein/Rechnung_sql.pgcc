@@ -71,6 +71,7 @@ Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
  int KUNDENNR;
  int JAHR=jahr;
  int ZAHLUNGSART;
+ int WAEHRUNG;
  exec sql end declare section;
  
  if (!JAHR)
@@ -83,9 +84,13 @@ Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
  if(KUNDENNR != k->Rngan())
    {cH_Kunde krng(k->Rngan());
     ZAHLUNGSART=krng->zahlungsart()->Id();
+    WAEHRUNG=krng->getWaehrung()->Id();
    }
  else
-   ZAHLUNGSART=k->zahlungsart()->Id();
+   {
+    ZAHLUNGSART=k->zahlungsart()->Id();
+    WAEHRUNG=k->getWaehrung()->Id();
+   }
 
  Transaction tr;
   
@@ -97,14 +102,33 @@ Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
  		between :JAHR*10000 and (:JAHR+1)*10000-1;
  SQLerror::test(__FILELINE__":Rechnung: select next rngid");
  
- exec sql insert into rechnung (rngid, kundennr,zahlart)
- 	values (:RNGID, :KUNDENNR,:ZAHLUNGSART);
+ exec sql insert into rechnung (rngid, kundennr,zahlart,waehrung)
+ 	values (:RNGID, :KUNDENNR,:ZAHLUNGSART,:WAEHRUNG);
  SQLerror::test(__FILELINE__":Rechnung: insert into rechnung");	
 
  rngid=RNGID;
  rgdatum=ManuProC::Datum::today();
 
  tr.commit();
+}
+
+void Rechnung::setze_Zahlziel(ManuProC::Datum zziel) throw(SQLerror)
+{
+ exec sql begin declare section;
+   int RNGID=Id();
+   char DATE[50];
+   int IDATE; 
+ exec sql end declare section;
+
+ if(!zziel.valid()) IDATE=-1;
+ else 
+  {IDATE=0;
+   zziel.write_postgres(DATE,sizeof(DATE));
+  }
+
+ exec sql update rechnung set zahlziel=:DATE:IDATE where rngid=:RNGID;
+ SQLerror::test(__FILELINE__":Rechnung: setze_Zahlziel(ManuProC::Datum rgdatum)");	
+ zahlziel=zziel;
 }
 
 
@@ -114,7 +138,6 @@ void Rechnung::setze_Datum(ManuProC::Datum rgdatum) throw(SQLerror)
    int RNGID=Id();
    char DATE[50]; 
  exec sql end declare section;
- //strncpy(DATE,rgdatum.c_str(),sizeof(DATE));
  rgdatum.write_postgres(DATE,sizeof(DATE));
  exec sql update rechnung set datum=:DATE where rngid=:RNGID;
  SQLerror::test(__FILELINE__":Rechnung: setze_Datum(ManuProC::Datum rgdatum)");	

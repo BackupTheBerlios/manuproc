@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.5 2002/06/26 09:04:27 christof Exp $
+// $Id: AufEintragZu.h,v 1.6 2002/07/05 12:35:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -60,9 +60,9 @@ public:
 
     // Eine Benachbarte Liste von Kind- bzw. Elternaufträgen des zu mir gehörenden
     // geplanten Auftrags holen
-private:
     std::list<st_reflist> get_Referenz_list_for_geplant(bool kinder=false) const throw(SQLerror);
 public:
+    std::list<st_reflist> get_Referenz_list_for_geplant_neu(bool kinder=false) const throw(SQLerror);
     // Für einen KOMPLETTEN Auftragsbaum nur_ende=false setzen
     // die folgende Funktion liefert sonst nur die Endaufträge OHNE Knoten
     std::list<st_reflist> get_Referenz_listFull(bool kinder,bool nur_ende=true) const throw(SQLerror);

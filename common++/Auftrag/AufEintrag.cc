@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.6 2002/06/27 07:42:50 christof Exp $
+// $Id: AufEintrag.cc,v 1.7 2002/07/05 12:35:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -154,17 +154,12 @@ std::string AufEintrag::Planung() const
 
 void AufEintrag::move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,bool reduce_old) throw(std::exception)
 {
-//cout << "MOVE: "<<AufEintragBase(*this)<<'\t'<<AEB<<' '<<
-//entrystatus<<' '<<auftragstatus<<'\t'<<menge<<'\n';
-//cout << "move_to: "<<*this<<"  ==>  "<<AEB<<'\t'<<menge<<'\t';
   Transaction tr;
   if(reduce_old)
    {
-//cout << "reduce ME";
      mengen_t mt1=updateStkDiff__(uid,-menge,false);
      assert(-menge==mt1);
    }
-//cout << '\n';
   mengen_t mt2=AufEintrag(AEB).updateStkDiff__(uid,+menge,false);
   assert(menge==mt2);
   AufEintragZu(*this).Neu(AEB,menge); 

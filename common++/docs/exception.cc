@@ -1,3 +1,4 @@
+// $Id: exception.cc,v 1.5 2002/07/05 12:35:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -16,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: exception.cc,v 1.4 2002/05/09 12:46:01 christof Exp $
+// $Id: exception.cc,v 1.5 2002/07/05 12:35:02 christof Exp $
 // long explantion at the end
 
 #include <exception>

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.26 2002/06/27 07:42:50 christof Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.27 2002/07/05 12:35:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -179,10 +179,7 @@ AuftragBase::mengen_t AufEintragBase::updateStkDiffBase__(int uid,mengen_t menge
       where (instanz,auftragid,zeilennr) = (:INSTANZ,:AUFTRAGID,:ZEILENNR);
 
 // Sicherstellen, daﬂ keine negativen Mengen bestellt werden
-    if((MENGE < 0) && OLDMENGE < -MENGE) 
-      { 
-        MENGE = -OLDMENGE;
-      }
+    if((MENGE < 0) && OLDMENGE < -MENGE)  MENGE = -OLDMENGE;
 
  NEWMENGE=OLDMENGE+MENGE;
 //cout <<"\n\n"<<*this<<" AEB => "<< menge<<' '<<MENGE<<' '<<OLDMENGE<<' '<<NEWMENGE<<'\n';

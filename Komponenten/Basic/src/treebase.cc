@@ -1,3 +1,4 @@
+// $Id: treebase.cc,v 1.32 2002/07/05 12:36:56 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -346,6 +347,22 @@ void TreeBase::Expand_recursively()
    thaw();
 }         
 
+void TreeBase::Collapse_recursively(TCListRow_API &api)
+{  for (TCListRow_API::iterator i=api.begin();i!=api.end();++i)
+   { (*i).collapse();
+     if (!KeinKind(*i)) Collapse_recursively(*i);
+   }
+}
+
+void TreeBase::Collapse_recursively()
+{  
+   freeze();
+   detach_from_clist();
+   Collapse_recursively(*this);
+   attach_to_clist();
+   thaw();
+}         
+
 void TreeBase::on_Color(const Gtk::CheckMenuItem *sp)
 {  color_bool=sp->get_active();
    refillTCL();
@@ -414,7 +431,7 @@ void TreeBase::fillMenu()
    colorize->activate.connect(SigC::bind(SigC::slot(this,&TreeBase::on_Color),colorize));
 
    exp_all->activate.connect(SigC::slot(this,&TreeBase::Expand_recursively));
-   col_all->activate.connect(SigC::slot(this,&TreeBase::Collapse));
+   col_all->activate.connect(SigC::slot(this,&TreeBase::Collapse_recursively));
 
    // Menu anzeigen
 //   neuordnen->show();

@@ -1,4 +1,4 @@
-// $Id: ArtikelSumme.cc,v 1.5 2002/06/27 07:42:50 christof Exp $
+// $Id: ArtikelSumme.cc,v 1.6 2002/07/05 12:35:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -56,5 +56,28 @@ int main()
    std::cout << '+' << am << '\n';
    ams.cumulate(am);
    std::cout << "=\t" << ams << '\n';
+   std::cout << "-----------------\n";
+   ams=ArtikelMengeSumme();
+   am=ArtikelMenge(210967,900000);
+   std::cout << ams << '\n';
+   std::cout << '+' << am << '\n';
+   ams.cumulate(am);
+   std::cout << "=\t" << ams << '\n';
+   am=ArtikelMenge(210967,100000);
+   std::cout << ams << '\n';
+   std::cout << '+' << am << '\n';
+   ams.cumulate(am);
+   std::cout << "=\t" << ams << '\n';
+   am=ArtikelMenge(221118,250);
+   std::cout << ams << '\n';
+   std::cout << '+' << am << '\n';
+   ams.cumulate(am);
+   std::cout << "=\t" << ams << '\n';
+   am=ArtikelMenge(221120,1250);
+   std::cout << ams << '\n';
+   std::cout << '+' << am << '\n';
+   ams.cumulate(am);
+   std::cout << "=\t" << ams << '\n';
+   
    return 0;
 }
