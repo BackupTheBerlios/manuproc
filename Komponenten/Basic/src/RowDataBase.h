@@ -1,4 +1,4 @@
-/* $Id: RowDataBase.h,v 1.2 2002/11/22 13:40:11 christof Exp $ */
+/* $Id: RowDataBase.h,v 1.3 2002/11/22 14:19:25 christof Exp $ */
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: RowDataBase.h,v 1.2 2002/11/22 13:40:11 christof Exp $
+// $Id: RowDataBase.h,v 1.3 2002/11/22 14:19:25 christof Exp $
 
 #ifndef KOMPONENTEN_ROWDATA_H
 #define KOMPONENTEN_ROWDATA_H
