@@ -1,4 +1,4 @@
-// $Id: create_parse.h,v 1.2 2004/02/06 11:31:49 christof Exp $
+// $Id: create_parse.h,v 1.3 2004/02/09 08:05:31 christof Exp $
 /*  ManuProC_Base: Main ManuProC Library
  *  Copyright (C) 2004  Christof Petig
  *
@@ -25,28 +25,28 @@
 
 namespace ManuProC
 {       template <class T>
-    	 static T parse_value(const std::string &val) throw(std::out_of_range);
+    	 static T parse(const std::string &val) throw(std::out_of_range);
     	template <class T>
-    	 static T parse_value_def(const std::string &val, const T &def);
+    	 static T parse_def(const std::string &val, const T &def);
     	template <class T>
-    	 static std::string create_value(const T &val);
+    	 static std::string create(const T &val);
 }
 
 // you can skip these declarations while reading this file
-template <> std::string ManuProC::create_value<int>(const int &val);
-template <> std::string ManuProC::create_value<double>(const double &val);
-template <> std::string ManuProC::create_value<bool>(const bool &val);
-template <> int ManuProC::parse_value<int>(const std::string &value) throw(std::out_of_range);
-template <> bool ManuProC::parse_value<bool>(const std::string &value) throw(std::out_of_range);
-template <> long ManuProC::parse_value<long>(const std::string &value) throw(std::out_of_range);
-template <> double ManuProC::parse_value<double>(const std::string &value) throw(std::out_of_range);
-template <> float ManuProC::parse_value<float>(const std::string &value) throw(std::out_of_range);
-template <> std::string ManuProC::parse_value<std::string>(const std::string &value) throw(std::out_of_range);
+template <> std::string ManuProC::create<int>(const int &val);
+template <> std::string ManuProC::create<double>(const double &val);
+template <> std::string ManuProC::create<bool>(const bool &val);
+template <> int ManuProC::parse<int>(const std::string &value) throw(std::out_of_range);
+template <> bool ManuProC::parse<bool>(const std::string &value) throw(std::out_of_range);
+template <> long ManuProC::parse<long>(const std::string &value) throw(std::out_of_range);
+template <> double ManuProC::parse<double>(const std::string &value) throw(std::out_of_range);
+template <> float ManuProC::parse<float>(const std::string &value) throw(std::out_of_range);
+template <> std::string ManuProC::parse<std::string>(const std::string &value) throw(std::out_of_range);
 
 // g++ 2.95 does not like these inlined
 template <class T>
- T ManuProC::parse_value_def(const std::string &val, const T &def)
-{  try { return parse_value<T>(val); } 
+ T ManuProC::parse_def(const std::string &val, const T &def)
+{  try { return parse<T>(val); } 
    catch (std::out_of_range &e) { return def; }
 }
 
