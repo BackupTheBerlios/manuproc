@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.52 2004/03/11 14:44:42 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.53 2004/09/02 07:45:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -125,6 +125,13 @@ Query::~Query()
    {  std::cerr << "The query " << query << " still needed " 
    	<< params.HowManyNeededParams() 
    	<< " parameters on destruction and got never executed!\n";
+      if (Query::debugging.on)
+      {  std::cerr << "existing parameters: ";
+         for (ArgumentList::const_iterator i=params.begin();i!=params.end();
+			++i)
+            std::cerr << *i << ',';
+         std::cerr << '\n';
+      }
       sqlca.sqlcode=ECPG_TOO_FEW_ARGUMENTS;
    }
    else

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.52 2004/09/01 12:25:48 christof Exp $
+// $Id: AufEintragBase.cc,v 1.53 2004/09/02 07:45:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -118,7 +118,7 @@ void AufEintragBase::setVerarbeitung(const cH_Prozess p) const throw(SQLerror)
  if (SQLerror::SQLCode()==100)
  {  Query("insert into auftrag_prozess "
         "(instanz,auftragid,zeilennr,prozessid)"
-	"values (?,?,?,?)").lvalue()
+	"values (?,?,?,?)")
 	<< *this << p->getProzessID();
  }
  SQLerror::test("Prozessaktualisierung (Verarbeitung)");
@@ -139,13 +139,13 @@ bool AufEintragBase::deleteAuftragEntry() const throw(SQLerror)
  Transaction tr;
  // Löschen aus Auftragszuordnung
  Query("delete from auftragsentryzuordnung "
- 	"where (neuinstanz,neuauftragid,neuzeilennr)=(?,?,?)").lvalue()
+ 	"where (neuinstanz,neuauftragid,neuzeilennr)=(?,?,?)")
  	<< *this;
  SQLerror::test(__FILELINE__" DELETE AUFTRAG 1");
 
  // Löschen aus Auftragentry
  Query("delete from auftragentry "
- 	"where (instanz,auftragid,zeilennr)=(?,?,?)").lvalue()
+ 	"where (instanz,auftragid,zeilennr)=(?,?,?)")
  	<< *this;
  SQLerror::test(__FILELINE__" DELETE AUFTRAG 2");
  tr.commit();
@@ -166,9 +166,10 @@ void AufEintragBase::setLetztePlanungFuer(cH_ppsInstanz planinstanz) const throw
 	<< planinstanz->Id() << *this;
  if (SQLerror::SQLCode()==100)
  {  Query("insert into auftrag_prozess "
-        "(instanz,auftragid,zeilennr,prozessid,letztePlanInstanz)"
-	"values (?,?,?,?,?)").lvalue()
-	<< *this << planinstanz->get_Prozess()->Id() << planinstanz->Id();
+        "(instanz,auftragid,zeilennr,prozessid,letztePlanInstanz) "
+	"values (?,?,?,?,?)")
+	<< *this << planinstanz->get_Prozess()->Id() 
+	<< planinstanz->Id();
  }
  SQLerror::test("Prozessaktualisierung");
 }
@@ -187,7 +188,7 @@ void AufEintragBase::setLetzteLieferung(const ManuProC::Datum &datum) const thro
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,datum);
  Query("update auftragentry set letzte_lieferung=? "
- 	"where (instanz,auftragid,zeilennr)=(?,?,?)").lvalue()
+ 	"where (instanz,auftragid,zeilennr)=(?,?,?)")
  	<< datum << *this;
  SQLerror::test(__FILELINE__" setLetzeLieferung");
 }
@@ -204,7 +205,7 @@ AuftragBase::mengen_t AufEintragBase::updateStkDiffBase__(const mengen_t &menge)
  mengen_t OLDMENGE,MENGE=menge;
  ArtikelBase::ID ARTIKELID;
  Query("select bestellt,artikelid from auftragentry "
-      "where (instanz,auftragid,zeilennr) = (?,?,?)").lvalue()
+      "where (instanz,auftragid,zeilennr) = (?,?,?)")
       << *this
       >> OLDMENGE >> ARTIKELID;
 // Sicherstellen, daß keine negativen Mengen bestellt werden
@@ -214,7 +215,7 @@ AuftragBase::mengen_t AufEintragBase::updateStkDiffBase__(const mengen_t &menge)
  ManuProC::Trace(AuftragBase::trace_channel, __FILELINE__, OLDMENGE, MENGE, NEWMENGE);
 
  Query("update auftragentry set bestellt=?,lasteditdate=now(),lastedit_uid=? "
-	"where (instanz,auftragid,zeilennr)=(?,?,?)").lvalue()
+	"where (instanz,auftragid,zeilennr)=(?,?,?)")
 	<< NEWMENGE << getuid() << *this;
  SQLerror::test("updateStkDiff: update stk in auftragentry");
 

@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.30 2004/09/01 12:25:48 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.31 2004/09/02 07:45:54 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -121,7 +121,16 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(mengen_t menge,bool instanzen,
  assert(!planen || (!ElternAEB && instanzen));
  if (!menge)  return menge;
 
- Transaction tr; // Beschleunigung
+ if (instanzen && Instanz()->LagerInstanz() && Id()==plan_id && menge<0)
+ {  // hierbei handelt es sich nicht um Instanzen im engeren Sinne, da 
+    // 1er im Lager nie Kinder haben, sondern die Menge soll wiederverwendet
+    // werden
+    std::cerr << "MengeAendern: Deprecated, use Abbestellen() instead of instanzen=1\n";
+    assert(!planen);
+    return Abbestellen(-menge,ElternAEB);
+ }
+
+ Transaction tr; // Beschleunigung + Lock
  Query("lock auftragentry in exclusive mode");
  SQLerror::test("updateStkDiff: lock table auftragentry");
 
@@ -150,10 +159,7 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(mengen_t menge,bool instanzen,
  }
 
  if(auftragstatus==OPEN && instanzen && !!menge2)
-  {  if (Instanz()->LagerInstanz() && Id()==plan_id && menge2<0)
-     { assert(!"old usage use Abbestellen instead of instanzen=1");
-     }
-     else
+  {  
    // Rekursion von 0ern im Lager (es gibt keine 3er im Lager)
    // Rekursion bei 0er, 1er oder 3er in Produktion
         Verzeigern(menge2,planen);
@@ -220,6 +226,7 @@ struct AufEintrag::zweierKinderAbbestellen_cb : ArtikelInternAbbestellen_cb
 AuftragBase::mengen_t AufEintrag::Abbestellen(const mengen_t &menge,const AufEintragBase &parent)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
        NV("menge",menge),NV("parent",parent));
+   assert(menge>=0);
    if (Id()==ungeplante_id)
       return -MengeAendern(-menge,true,parent);
    else if (Instanz()->LagerInstanz())
