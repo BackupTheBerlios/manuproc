@@ -401,7 +401,7 @@ AufEintragBase Auftrag::push_back(const mengen_t bestellt,
  int BESTELLT=bestellt.as_int();
  char LIEFERDATUM[21];
  double PREIS=preis.Wert().as_float();
- int RABATT=rabatt.as_int();
+ float RABATT=rabatt.as_float();
  float PREISMENGE=preis.PreisMenge().as_float();
  int STATUS=status;
  int PREISLISTE=preisliste->Id();
