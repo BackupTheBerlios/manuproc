@@ -29,6 +29,7 @@
 #include <Misc/relops.h>
 #include <unistd.h>
 
+#if 0
 bool ppsInstanzReparatur::ReparaturKK_KundenKinder(const int uid,const bool analyse_only) const
 {
   SQLFullAuftragSelector psel=SQLFullAuftragSelector::sel_Status(ppsInstanzID::Kundenauftraege,OPEN,AuftragBase::plan_auftrag_id);
@@ -598,20 +599,20 @@ void ppsInstanzReparatur::force_eigene_KundenId(const bool analyse_only) const t
   force_execute(Vtable,Vauftragid,Kunde::eigene_id,"Kunden",analyse_only);
 }
 
-
+#endif // alter Code
 
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 void ppsInstanzReparatur::ReparaturLager(const int uid,const bool analyse_only) const throw(SQLerror)
 {
-//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Name(),Id());
   assert(LagerInstanz());
   std::vector<LagerInhalt> LI=getLagerInhalt(); 
   vormerkungen_subrahieren(uid,LI,analyse_only);
 }
 
+// hmm. das sieht sehr nach Baustelle aus CP
 void ppsInstanzReparatur::vormerkungen_subrahieren(int uid,const  std::vector<LagerInhalt> &LI,const bool analyse_only) const
 {
 //std::cout << "Anzahl der Artikel im Lager = "<<LI.size()<<'\n';
@@ -679,7 +680,6 @@ void ppsInstanzReparatur::vormerkungen_subrahieren(int uid,const  std::vector<La
 }   
 
 
-#include <Misc/Trace.h>
 void ppsInstanzReparatur::DispoAuftraege_anlegen(const int uid,const ArtikelBase &artikel,const AuftragBase::mengen_t &menge) const
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Name(),Id());
@@ -688,8 +688,6 @@ std::cout << "Mengenänderung im Lager "<<Name()<<'\t'<<menge<<'\n';
    if(menge>=0)
       LagerBase(this).rein_ins_lager(artikel,menge,uid);
 }
-
-
 
 std::vector<LagerInhalt> ppsInstanzReparatur::getLagerInhalt() const
 {
@@ -706,27 +704,6 @@ std::vector<LagerInhalt> ppsInstanzReparatur::getLagerInhalt() const
    }
   LagerBase::LagerInhaltSum(LI);
   return LI;
-}
-//////////////////////////////////////////////////////////////////////////////////
-bool ppsInstanzReparatur::ReparaturG_keine_Eltern(const int uid,const bool analyse_only) const
-{
-   AuftragBase::ID auftragid;
-   if(KundenInstanz()) auftragid=AuftragBase::plan_auftrag_id;
-   else auftragid=AuftragBase::dispo_auftrag_id;
-
-   SQLFullAuftragSelector sel1er= SQLFullAuftragSelector::sel_Status(Id(),OPEN,auftragid);
-   SelectedFullAufList AL1(sel1er);
-   for(SelectedFullAufList::iterator i=AL1.begin();i!=AL1.end();++i)
-    {
-      AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(*i,AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
-      if(!L.empty())
-       {
-         if(analyse_only) {analyse("Analyse: Kundenauftrag und 2er dürfen keine Eltern haben.\n",*i);
-                        return false; }
-         else assert(!"never get here\n");
-       }
-    }  
-  return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -837,8 +814,8 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
          ae.MengeAendern(getuid(),menge-ae.getStueck(),true,AufEintragBase(),
          	ManuProC::Auftrag::r_Reparatur);
        else
-       {  // Zuordnung erniedrigen, Reihenfolge: 2,0,1,3)
-         // danach müssen die Eltern repariert werden!
+       { // Zuordnung erniedrigen, Reihenfolge: 2,0,1,3)
+         // danach müssen die Eltern neu bestellen (Reparatur)!
          AuftragBase::mengen_t m=menge-ae.getStueck(); // positiv
          Zuordnung_erniedrigen(ae,eltern,m,AuftragBase::dispo_auftrag_id);
          if (!!m) Zuordnung_erniedrigen(ae,eltern,m,AuftragBase::ungeplante_id);
@@ -849,16 +826,16 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
    }
    // Sum zu klein: abbestellen (falls 0er, bei 1er 2er erzeugen)
    else if (menge<ae.getRestStk() && !ae.Instanz()->ProduziertSelbst())
-   {  analyse("weniger bestellt als nun benötigt",ae,menge,ae.getStueck());
+   {  analyse("weniger offen als nun v.o. benötigt",ae,menge,ae.getStueck());
       alles_ok=false;
       if (!analyse_only)
       {if (ae.Id()==AuftragBase::ungeplante_id)
-         ae.MengeAendern(getuid(),menge-ae.getStueck(),true,AufEintragBase(),
+         ae.MengeAendern(getuid(),menge-ae.getRestStk(),true,AufEintragBase(),
          	ManuProC::Auftrag::r_Reparatur);
        else
-         // 2er erzeugen
+         // 2er erhöhen
          AuftragBase(ae.Instanz(),AuftragBase::dispo_auftrag_id).
-              BestellmengeAendern(menge-ae.getStueck(),ae.getLieferdatum(),
+              BestellmengeAendern(menge-ae.getRestStk(),ae.getLieferdatum(),
               		ae.Artikel(),OPEN,getuid(),ae);
       }
    }
@@ -871,4 +848,8 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
    // Sum zu klein: nachbestellen
    // Sum zu gross: abbestellen (falls 0er, bei 1er 2er erzeugen)
    return true;
+}
+
+bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
+{
 }
