@@ -1,4 +1,4 @@
-// $Id: ExtraColumns.cc,v 1.7 2004/10/20 07:33:08 christof Exp $
+// $Id: ExtraColumns.cc,v 1.8 2004/10/22 16:14:32 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -37,14 +37,23 @@ void ExtraColumns::register_table(const std::string &table, const std::vector<st
 #ifndef MPC_SQLITE
     Query q("select attname from pg_attribute where attrelid"
         "=(select oid from pg_class where relname=?)");
-#else
-#  error SQLite not supported, yet        
-#endif
     q << table;
     Query::Row is;
     while ((q>>is).good()) 
     { info->second.available_columns.insert(is.Fetch<std::string>());
-    }
+    }        
+#else
+    Query q("pragma table_info(?)");
+    q << table;
+    Query::Row is;
+    while ((q>>is).good()) 
+    {std::string s;
+     is >> s;
+     is >> s;
+     info->second.available_columns.insert(s);
+    }        
+#endif
+
   }
   else assert(info->second.table_name==table && info->second.key_columns==keycols);
   which=&info->second;

@@ -12,6 +12,7 @@
 #include "mpc_agent.hh"
 #include <MyMessage.h>
 #include <Misc/itos.h>
+#include <Misc/exception.h>
 #include "kunden_selector.hh"
 #include <SearchComboContent.h>
 #include "yes_no_dialog.hh"
@@ -26,7 +27,8 @@ int main(int argc, char **argv)
    bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
    textdomain (GETTEXT_PACKAGE);
 #endif //ENABLE_NLS
-   
+
+   Petig::PrintUncaughtExceptions();
    ManuProC::Connection conn;
    Gtk::Main m(&argc, &argv);
 

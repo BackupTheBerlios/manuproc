@@ -1,4 +1,4 @@
-// $Id: dbconnect.h,v 1.13 2004/08/31 15:42:06 jacek Exp $
+// $Id: dbconnect.h,v 1.14 2004/10/22 16:14:32 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -77,7 +77,7 @@ public:
 
    void dbconnect_nt(const Connection &c=Connection()) throw();
    void dbdisconnect_nt(const std::string &name="") throw();  
-   void dbconnect(const Connection &c=Connection()) throw(SQLerror,AuthError);
+   void dbconnect(const Connection &c=Connection()) throw(SQLerror);
    void dbdisconnect(const std::string &name="") throw(SQLerror);
    void setDTstyle(char *style="ISO") throw(SQLerror);
    void dbdefault(const std::string &name="") throw(SQLerror);
