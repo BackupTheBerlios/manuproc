@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.5 2002/12/03 08:44:30 christof Exp $
+// $Id: SimpleTree.hh,v 1.6 2002/12/04 09:22:14 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -38,21 +38,129 @@ public:
 	SimpleTreeStore &getStore() { return sts; }
 	const SimpleTreeStore &getStore() const { return sts; }
 	const std::string getColTitle(guint idx) const { return sts.getColTitle(idx); }
+	void set_NewNode(SimpleTreeStore::NewNode_fp n) { sts.set_NewNode(n); }
+
+	typedef SimpleTreeStore::const_iterator const_iterator;
+	const_iterator begin() const { return sts.begin(); }
+	const_iterator end() const { return sts.end(); }
 };
 
-class SimpleTree : public Gtk::TreeView, public SimpleTreeStore_Proxy
+// I took the more esoteric features out to SimpleTree, 
+// so they do not confuse the beginner
+class SimpleTree_Basic : public Gtk::TreeView, public SimpleTreeStore_Proxy
 {private:
 	void on_title_changed(guint nr);
+	void on_selection_changed();
 	SigC::Signal1<void,cH_RowDataBase> _leaf_selected;
 	SigC::Signal1<void,const TreeRow &> _node_selected;
 	
 public:
-	SimpleTree(unsigned int cols,int attrs=-1);
+	SimpleTree_Basic(unsigned int cols,int attrs=-1);
 	SigC::Signal1<void,cH_RowDataBase> &signal_leaf_selected()
 	{ return _leaf_selected; }
 	// perhaps Handle<const TreeRow> is more sensible now?
 	SigC::Signal1<void,const TreeRow &> &signal_node_selected()
 	{ return _node_selected; }
+
+};
+
+// I put the more esoteric features here, so they may not confuse the
+// beginner
+class SimpleTree : public SimpleTree_Basic
+{
+public:
+	// attr is not needed any longer
+	SimpleTree(guint columns=0,guint attr=-1) : 
+		SimpleTree_Basic(columns,attr)
+	{}
+	
+private:
+ // strictly this belongs into SimpleTreeStore
+ template <class T> 
+  static void ForEachLeaf2(const_iterator b,const_iterator e, T &t)
+ {  for (const_iterator i=b;i!=e;++i)
+    {  if (!(*i)[getStore().m_columns.childrens_deep])
+          t((*i)[getStore().m_columns.leafdata]);
+       else if (i->children.begin()!=i->children.end())
+          ForEachLeaf2(i->children.begin(),i->children.end(),t);
+    }
+ }
+ 
+ template <class T> void selectMatchingLines2(const_iterator b, 
+ 			const_iterator e, const T &t,
+ 			bool only_one_line)
+ {  for (const_iterator i=b;i!=e;++i)
+    {  if (!(*i)[getStore().m_columns.childrens_deep]
+          && static_cast<cH_RowDataBase>((*i)[getStore().m_columns.leafdata])
+          	==t)
+       {  get_selection()->select(*i);
+          if (only_one_line) return;
+       }
+       else if (i->children.begin()!=i->children.end())
+          selectMatchingLines2(i->children.begin(),i->children.end(),t,only_one_line);
+    }
+ }
+
+public:
+ struct SelectionError : public std::exception
+ {  virtual const char* what() const throw() { return "TreeBase::SelectionError"; }
+    SelectionError() {}
+ };
+ struct noRowSelected : public SelectionError
+ {  virtual const char* what() const throw() { return "TreeBase::noRowSelected"; }
+    noRowSelected() {}
+ };
+ struct multipleRowsSelected : public SelectionError
+ {  virtual const char* what() const throw() { return "TreeBase::multipleRowsSelected"; }
+    multipleRowsSelected() {}
+ };
+ struct notLeafSelected : public SelectionError
+ {  virtual const char* what() const throw() { return "TreeBase::notLeafSelected"; }
+    notLeafSelected() {}
+ };
+ struct noNodeSelected : public SelectionError
+ {  virtual const char* what() const throw() { return "TreeBase::noNodeSelected"; }
+    noNodeSelected() {}
+ };
+ struct multipleNodesSelected : public SelectionError
+ {  virtual const char* what() const throw() { return "TreeBase::multipleNodesSelected"; }
+    multipleNodesSelected() {}
+ };
+ struct notNodeSelected : public SelectionError
+ {  virtual const char* what() const throw() { return "TreeBase::notNodeSelected"; }
+    notNodeSelected() {}
+ };
+
+ cH_RowDataBase getSelectedRowDataBase() const
+ 	throw(noRowSelected,multipleRowsSelected,notLeafSelected);
+ std::vector<cH_RowDataBase> getSelectedRowDataBase_vec() const 
+ 	throw(notLeafSelected);
+
+ template <class T,class CT> T getSelectedRowDataBase_as2() const
+// this could be optimzed to avoid the dynamic_cast within 
+// cH_RowDataBase::operator*, but it does not hurt that much
+ {  return T(dynamic_cast<CT*>(&*getSelectedRowDataBase()));
+ }
+ template <class T> T getSelectedRowDataBase_as() const
+ {  return getSelectedRowDataBase_as2<T,typename T::ContentType>(); 
+ }
+ TreeRow &getSelectedNode() const 
+ 	throw(noNodeSelected,multipleNodesSelected,notNodeSelected);
+ template <class T> T &getSelectedNode_as() const
+ {  return dynamic_cast<T&>(getSelectedNode());
+ }
+ 
+ template <class T> void selectMatchingLines(const T &t)
+ {  selection().clear();
+    selectMatchingLines2(begin(),end(),t,false);
+ }
+ template <class T> void selectFirstMatchingLine(const T &t)
+ {  selection().clear();
+    selectMatchingLines2(begin(),end(),t,true);
+ }
+ template <class T> void ForEachLeaf(T &t) const
+ {  ForEachLeaf2(begin(),end(),t); }
+ 
 };
 
 #if 0
@@ -128,99 +236,9 @@ public:
  SigC::Signal1<void,const TreeRow &> node_selected;
  SigC::Signal0<void> reorder;
  
- struct SelectionError : public std::exception
- {  virtual const char* what() const throw() { return "TreeBase::SelectionError"; }
-    SelectionError() {}
- };
- struct noRowSelected : public SelectionError
- {  virtual const char* what() const throw() { return "TreeBase::noRowSelected"; }
-    noRowSelected() {}
- };
- struct multipleRowsSelected : public SelectionError
- {  virtual const char* what() const throw() { return "TreeBase::multipleRowsSelected"; }
-    multipleRowsSelected() {}
- };
- struct notLeafSelected : public SelectionError
- {  virtual const char* what() const throw() { return "TreeBase::notLeafSelected"; }
-    notLeafSelected() {}
- };
- struct noNodeSelected : public SelectionError
- {  virtual const char* what() const throw() { return "TreeBase::noNodeSelected"; }
-    noNodeSelected() {}
- };
- struct multipleNodesSelected : public SelectionError
- {  virtual const char* what() const throw() { return "TreeBase::multipleNodesSelected"; }
-    multipleNodesSelected() {}
- };
- struct notNodeSelected : public SelectionError
- {  virtual const char* what() const throw() { return "TreeBase::notNodeSelected"; }
-    notNodeSelected() {}
- };
- 
- cH_RowDataBase getSelectedRowDataBase() const 
- 	throw(noRowSelected,multipleRowsSelected,notLeafSelected);
- std::vector<cH_RowDataBase> getSelectedRowDataBase_vec() const 
- 	throw(notLeafSelected);
-
- template <class T,class CT> T getSelectedRowDataBase_as2() const
-// this could be optimzed to avoid the dynamic_cast within 
-// cH_RowDataBase::operator*, but it does not hurt that much
- {  return T(dynamic_cast<CT*>(&*getSelectedRowDataBase()));
- }
- template <class T> T getSelectedRowDataBase_as() const
- {  return getSelectedRowDataBase_as2<T,typename T::ContentType>(); 
- }
-
-
- TreeRow &getSelectedNode() const 
- 	throw(noNodeSelected,multipleNodesSelected,notNodeSelected);
- template <class T> T &getSelectedNode_as() const
- {  return dynamic_cast<T&>(getSelectedNode());
- }
  
 
-private:
- template <class T> 
-  static void ForEachLeaf2(TCListRow_API::const_iterator b,
-                         TCListRow_API::const_iterator e, T &t)
- {  for (TCListRow_API::const_iterator i=b;i!=e;++i)
-    {  const TreeRow *tlr=reinterpret_cast<const TreeRow *>((*i).get_user_data());
-       if (!tlr->Leaf())
-       {  ForEachLeaf2(tlr->begin(),tlr->end(),t);
-       }
-       else t(tlr->LeafData());
-    }
- }
- 
- template <class T> void selectMatchingLines2(TCListRow_API::const_iterator b, 
- 			TCListRow_API::const_iterator e, const T &t,
- 			bool only_one_line)
- {  for (TCListRow_API::const_iterator i=b;i!=e;++i)
-    {  const TreeRow *tlr=reinterpret_cast<const TreeRow *>((*i).get_user_data());
-       if (tlr->LeafData()==t)
-       {  int rowno=static_cast<const TCListRow&>(*i).get_lineno();
-          if (rowno!=-1) 
-             { row(rowno).select();
-               if (only_one_line) return;
-             }
-       }
-       if ((*i).begin()!=(*i).end()) selectMatchingLines2((*i).begin(),
-                                        (*i).end(),t,only_one_line);
-    }
- }
 
-public:
- template <class T> void selectMatchingLines(const T &t)
- {  selection().clear();
-    selectMatchingLines2(begin(),end(),t,false);
- }
- template <class T> void selectFirstMatchingLine(const T &t)
- {  selection().clear();
-    selectMatchingLines2(begin(),end(),t,true);
- }
- template <class T> void ForEachLeaf(T &t) const
- {  ForEachLeaf2(begin(),end(),t); }
- 
 protected:
 
 // @ ins cc file ?

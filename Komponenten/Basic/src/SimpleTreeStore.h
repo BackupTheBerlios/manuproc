@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.14 2002/12/03 08:44:30 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.15 2002/12/04 09:22:14 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -48,12 +48,14 @@ class SimpleTreeStore : public SigC::Object, public SimpleTreeModel_Proxy
 {public:
 	// einen neuen Ast erzeugen, deep ist die Spalte, v der Wert dieser Spalte
 	typedef Handle<TreeRow> (*NewNode_fp)(const Handle<const TreeRow> &suminit);
+	// sadly there's no real const_iterator
+	typedef Gtk::TreeStore::iterator const_iterator;
 
 private:
 	NewNode_fp node_creation;
 
 	Glib::RefPtr<Gtk::TreeStore> m_refTreeStore;
-	friend class SimpleTree;
+	friend class SimpleTree_Basic;
 	
 	guint columns;
 	guint showdeep;
@@ -120,6 +122,16 @@ public:
 	SigC::Signal1<void,guint> &signal_title_changed()
 	{  return title_changed; }
 	const std::string getColTitle(guint idx) const;
+	
+	void set_NewNode(NewNode_fp n)
+	{  node_creation=n; }
+	
+	const_iterator begin() const
+	{  return m_refTreeStore->children().begin();
+	}
+	const_iterator end() const
+	{  return m_refTreeStore->children().end();
+	}
 };
 
 #endif

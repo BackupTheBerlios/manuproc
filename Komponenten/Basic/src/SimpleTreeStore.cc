@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.13 2002/11/30 08:38:01 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.14 2002/12/04 09:22:14 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -271,9 +271,8 @@ recurse:
 	 // darum muss sich eine andere Node kümmern
          if (child_s_deep==(*current_iter)[m_columns.childrens_deep])
          {weiter_unten_einhaengen:
-            if (!!static_cast<Handle<TreeRow> >((*current_iter)[m_columns.row]))
-               static_cast<Handle<TreeRow> >((*current_iter)[m_columns.row])
-               		->cumulate(v);
+            Handle<TreeRow> htr=(*current_iter)[m_columns.row];
+            if (!!htr) htr->cumulate(v);
             // goto ist schneller als (end?)rekursion !!!
             parent=current_iter->children();
             deep=child_s_deep;
@@ -361,7 +360,14 @@ Gtk::TreeStore::iterator SimpleTreeStore::MoveTree(
    //    this const_casting is for consistency only, 
    //    a Handle<const TreeRow> argument is more logical
    if (node_creation) 
-      newnode[m_columns.row]= (*node_creation)(const_cast<const TreeRow*>(&*static_cast<Handle<TreeRow> >(oldnode[m_columns.row])));
+   {  Handle<TreeRow> htr= (*node_creation)(const_cast<const TreeRow*>
+		(&*static_cast<Handle<TreeRow> >(oldnode[m_columns.row])));
+      newnode[m_columns.row]= htr;
+      // leaves have no row (so initial sum is always 0), 
+      // so we need to cumulate their data
+      if (!oldnode2[m_columns.childrens_deep] && htr) // leaf
+         htr->cumulate(oldnode2[m_columns.leafdata]);
+   }
    newnode[m_columns.leafdata]= static_cast<cH_RowDataBase>(oldnode[m_columns.leafdata]);
    newnode[m_columns.childrens_deep]= child_s_deep;
    newnode[m_columns.deep]= deep;

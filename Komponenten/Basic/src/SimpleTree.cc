@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.8 2002/12/03 08:44:30 christof Exp $
+// $Id: SimpleTree.cc,v 1.9 2002/12/04 09:22:14 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,24 +19,43 @@
 
 #include <SimpleTree.hh>
 
-SimpleTree::SimpleTree(unsigned int cols,int attrs)
+SimpleTree_Basic::SimpleTree_Basic(unsigned int cols,int attrs)
 	: SimpleTreeStore_Proxy(cols,attrs)
 {  set_model(sts.m_refTreeStore);
 
    for (unsigned int i=0;i<cols;++i)
       append_column("",sts.m_columns.cols[i]);
-   getStore().signal_title_changed().connect(SigC::slot(*this,&SimpleTree::on_title_changed));
-   get_selection().signal_changed().connect(SigC::slot(*this,&SimpleTree::on_selection_changed));
+   getStore().signal_title_changed().connect(SigC::slot(*this,&SimpleTree_Basic::on_title_changed));
+   get_selection()->signal_changed().connect(SigC::slot(*this,&SimpleTree_Basic::on_selection_changed));
 }
 
-void SimpleTree::on_title_changed(guint nr)
+void SimpleTree_Basic::on_title_changed(guint nr)
 {  get_column(nr)->set_title(getColTitle(nr));
 }
 
-void SimpleTree::on_selection_changed()
-{  Gtk::TreeRow row=*(get_selection().get_selected());
-   if (!row[getStore().m_columns.childrens_deep])
-      _leaf_selected(row[getStore().m_columns.leafdata]);
+void SimpleTree_Basic::on_selection_changed()
+{  Gtk::TreeModel::iterator sel=get_selection()->get_selected();
+   if (!sel) ; // unselect
    else
-      _node_selected(*row[getStore().m_columns.row]);
+   {  Gtk::TreeRow row=*sel;
+      if (!row[getStore().m_columns.childrens_deep])
+         _leaf_selected(row[getStore().m_columns.leafdata]);
+      else
+      {  Handle<TreeRow> htr=row[getStore().m_columns.row];
+         if (htr) _node_selected(*htr);
+      }
+   }
+}
+
+cH_RowDataBase SimpleTree::getSelectedRowDataBase() const
+	throw(noRowSelected,multipleRowsSelected,notLeafSelected)
+{  Gtk::TreeModel::iterator sel=const_cast<SimpleTree*>(this)
+		->get_selection()->get_selected();
+   if (sel)
+   {  const Gtk::TreeRow row=*sel;
+      if (!row[getStore().m_columns.childrens_deep])
+         return row[getStore().m_columns.leafdata];
+      else throw notLeafSelected();
+   }
+   else throw noRowSelected(); // oder multipleRowsSelected()
 }

@@ -1,4 +1,4 @@
-// $Id: simplest.cc,v 1.7 2002/12/03 08:44:30 christof Exp $
+// $Id: simplest.cc,v 1.8 2002/12/04 09:22:14 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -47,6 +47,6 @@ simplest::simplest()
    datavec.push_back(cH_RowDataStrings("10","B","<none>","3"));
    treebase->setDataVec(datavec);
    
-   treebase->signal_leaf_selected().connect(SigC::slot(this,&simplest::on_leaf_selected));
+   treebase->signal_leaf_selected().connect(SigC::slot(*this,&simplest::on_leaf_selected));
 }
 

@@ -1,4 +1,4 @@
-// $Id: with_class.cc,v 1.18 2002/12/03 08:44:30 christof Exp $
+// $Id: with_class.cc,v 1.19 2002/12/04 09:22:14 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -16,7 +16,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-// $Id: with_class.cc,v 1.18 2002/12/03 08:44:30 christof Exp $
+// $Id: with_class.cc,v 1.19 2002/12/04 09:22:14 christof Exp $
 
 #include "config.h"
 #include "with_class.hh"
@@ -24,6 +24,7 @@
 #include <Misc/EntryValueIntString.h>
 #include <Misc/EntryValueEmptyInt.h>
 #include <TreeRow.h>
+#include <iostream>
 
 void with_class::on_Beenden_activate()
 {   Gtk::Main::instance()->quit();
@@ -71,7 +72,7 @@ public:
 #endif   
 };
 
-class SumNode : public TCListNode
+class SumNode : public TreeRow
 {  int sum0;//,sum1,sum2;
 public:
 	// const for historical reasons
@@ -80,6 +81,10 @@ public:
     sum0 += (dynamic_cast<const MyRowData &>(*rd)).Data(0);
 //    sum1 += (dynamic_cast<const MyRowData &>(*rd)).Data(1);
 //    sum2 += (dynamic_cast<const MyRowData &>(*rd)).Data(2);
+   }
+ virtual void deduct(const cH_RowDataBase &rd)
+   {
+    sum0 -= (dynamic_cast<const MyRowData &>(*rd)).Data(0);
    }
 
    virtual const cH_EntryValue Value(guint col,gpointer gp) const
@@ -92,16 +97,12 @@ public:
       }
    }
 
- SumNode(guint col, const cH_EntryValue &v, guint child_s_deep, 
- 	cH_RowDataBase child_s_data, bool expand, const TreeRow &suminit)
-   : TCListNode(col, v, child_s_deep, child_s_data, expand), sum0(0) 
- {  if (suminit.Leaf()) cumulate(child_s_data);
-    else sum0=dynamic_cast<const SumNode&>(suminit).sum0;
+ SumNode(const Handle<const TreeRow> &suminit)
+   : sum0(0) 
+ {  if (suminit) sum0=dynamic_cast<const SumNode&>(*suminit).sum0;
  }
- static TCListNode *create(guint col, const cH_EntryValue &v, guint child_s_deep, 
- 	cH_RowDataBase child_s_data, bool expand,
- 	const TreeRow &suminit)
- {  return new SumNode(col,v, child_s_deep, child_s_data, expand, suminit); }
+ static Handle<TreeRow> create(const Handle<const TreeRow> &suminit)
+ {  return new SumNode(suminit); }
 };
 
 #if 1
@@ -145,13 +146,13 @@ try{
 //  cH_MyRowData dt=treebase->getSelectedRowDataBase_as<cH_MyRowData>();
   cH_MyRowData dt(treebase->getSelectedRowDataBase_as<cH_MyRowData>());
   std::cout << "Data " << dt->Data(0) << ',' << dt->Data(1) << ',' << dt->Data(2) << '\n';
-}catch(std::exception &e){cerr << e.what();}
+}catch(std::exception &e){std::cerr << e.what();}
 }
 
 bool operator==(const cH_RowDataBase &b, int i)
 {  try
    {  cH_MyRowData m(b);
-//      cout << m->Data(0) << ',' << i << '\n';
+//      std::cout << m->Data(0) << ',' << i << '\n';
       return m->Data(0)==i;
    }
    catch (...)
@@ -159,10 +160,10 @@ bool operator==(const cH_RowDataBase &b, int i)
 }
 
 class OutputFunctor
-{	ostream &os;
+{	std::ostream &os;
 	int sum;
 public:
-	OutputFunctor(ostream &o) : os(o), sum(0) {}
+	OutputFunctor(std::ostream &o) : os(o), sum(0) {}
 	void operator()(const cH_RowDataBase &b)
 	{  cH_MyRowData m(b);
 	   os << m->Data(0) << ',';
@@ -196,7 +197,7 @@ with_class::with_class()
 #if 1
    for (int i=0;i<100;++i)
       datavec.push_back(new MyRowData(i%4+1,/*"same" */
-      string(1,char('A'+(i%3))),(i%5),(i%7),itos(i)));
+      std::string(1,char('A'+(i%3))),(i%5),(i%7),itos(i)));
 #endif
 #if 0
    datavec.push_back(new MyRowData(1,"1810",25,755,"25m"));
@@ -207,12 +208,14 @@ with_class::with_class()
    treebase->set_NewNode(&SumNode::create);
    treebase->setDataVec(datavec);
    
-   treebase->leaf_selected.connect(SigC::slot(this,&with_class::on_leaf_selected));
+   treebase->signal_leaf_selected().connect(SigC::slot(*this,&with_class::on_leaf_selected));
+#if 0   
    treebase->selectMatchingLines(2);
-   
+
    {  OutputFunctor of(std::cout);
       treebase->ForEachLeaf(of);
       std::cout << "=" << of.Sum() << '\n';
    }
+#endif   
    treebase->set_remember("(example)","with_class");
 }
