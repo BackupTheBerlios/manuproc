@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.36 2004/09/06 10:35:57 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.37 2004/10/28 15:38:43 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -193,6 +193,8 @@ AuftragBase::mengen_t AufEintrag::Auslagern
       {  abschreiben(menge);
          // wird für AP gebraucht
          if (menge>0) AufEintragZu(ctx.aeb).Neu(*this,0);
+         
+#if 0	// sonst geht Storno_LS nicht         
          if (!Instanz()->ProduziertSelbst() && Instanz()->AutomatischEinlagern()
          	&& Instanz()->LagerInstanz() && menge<0)
          {  // war das nur ein unbestellteMengeProduzieren?
@@ -210,6 +212,8 @@ AuftragBase::mengen_t AufEintrag::Auslagern
                MengeAendern(menge,true,AufEintragBase());
             }
          }
+#endif         
+
       }
       else
       {  MengeNeubestellen(menge);
