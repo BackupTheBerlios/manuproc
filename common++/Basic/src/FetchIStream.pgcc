@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.23 2002/10/31 08:29:36 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.24 2003/01/15 11:35:24 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -70,13 +70,18 @@ FetchIStream &FetchIStream::operator>>(std::string &str)
    return *this;
 }
 
+void FetchIStream::ThrowIfNotEmpty(const char *where)
+{  if (!result)
+	mythrow(SQLerror(where,ECPG_UNKNOWN_DESCRIPTOR,"no result to fetch from"));
+   if (naechstesFeld<PQnfields(result))
+	mythrow(SQLerror(where,ECPG_TOO_FEW_ARGUMENTS,"too few arguments"));
+}
+
 int FetchIStream::getIndicator() const
 {  if (naechstesFeld>=PQnfields(result)) 
 	mythrow(SQLerror("FetchIStream::getIndicator",ECPG_INVALID_DESCRIPTOR_INDEX,"reading beyond line end"));
    return -PQgetisnull(result, zeile, naechstesFeld);
 }
-
-
 
 FetchIStream &FetchIStream::operator>>(char &c)
 {  std::string s;
@@ -126,14 +131,15 @@ FetchIStream &FetchIStream::operator>>(bool &b)
    return *this;
 }
 
+/// QUERY
+
 // note cursor is the name for both the cursor and the descriptor
-Query::Query(const std::string &command)
-: descriptor(std::string("Query")+ulltos(reinterpret_cast<unsigned long long>(this))), 
-	eof(false), line(0), result(0)
+void Query::Execute()
 {  exec sql begin declare section;
-   char *COMMAND=const_cast<char*>(command.c_str());
+   char *COMMAND=const_cast<char*>(query.c_str());
    exec sql end declare section;
-   
+
+   eof=false;   
 //   exec sql allocate descriptor X;
 sqlca.sqlcode=0;
    ECPGallocate_desc(__LINE__, descriptor.c_str());
@@ -149,6 +155,105 @@ sqlca.sqlcode=0;
       eof=true;
    }
    result=*(ECPGdescriptor_lvalue(__LINE__,descriptor.c_str()));
+}
+
+// copied from ecpg/lib/execute.c
+static const char *next_insert(const char *text)
+{   const char       *ptr = text;
+    bool        string = false;
+
+    for (; *ptr != '\0' && (*ptr != '?' || string); ptr++)
+    {   if (*ptr == '\\')       /* escape character */
+            ptr++;
+        else if (*ptr == '\'')
+            string = string ? false : true;
+    }
+
+    return (*ptr == '\0') ? 0 : ptr;
+}
+
+
+// note cursor is the name for both the cursor and the descriptor
+Query::Query(const std::string &command)
+: descriptor(std::string("Query")+ulltos(reinterpret_cast<unsigned long long>(this))), 
+	eof(true), line(0), result(0), num_params(0), params_needed(false),
+	query(command)
+{  const char *p=query.c_str();
+   while ((p=next_insert(p))) { ++num_params; ++p; }
+   params_needed=num_params;
+   if (!params_needed) Execute();
+}
+
+void Query::add_argument(const std::string &x)
+{  if (!params_needed)
+      FetchIStream::mythrow(SQLerror("",ECPG_TOO_MANY_ARGUMENTS,"too many arguments"));
+   params.push_back(x);
+   --params_needed;
+   if (!params_needed)
+   {  std::string expanded;
+      const char *p=query.c_str();
+      const char *last=p;
+      std::vector<std::string>::const_iterator piter=params.begin();
+      
+      do
+      {  p=next_insert(p);
+         if (!p) expanded+=last;
+         else
+         {  expanded+=std::string(last,p-last);
+            assert(piter!=params.end());
+            expanded+=*piter;
+            ++p;
+            ++piter;
+            last=p;
+         }
+      } while(p);
+      query=expanded;
+      Execute();
+   }
+}
+
+Query &Query::operator<<(const std::string &str)
+{  std::string p="'";
+   for (std::string::const_iterator i=str.begin();i!=str.end();++i)
+   {  if (*i=='\'' || *i=='\\') p+=*i;
+      p+=*i;
+   }
+   p+='\'';
+   add_argument(p);
+   return *this;
+}
+
+Query &Query::operator<<(long i)
+{  add_argument(itos(i));
+   return *this;
+}
+
+Query &Query::operator<<(unsigned i)
+{  add_argument(ulltos(i));
+   return *this;
+}
+
+Query &Query::operator<<(unsigned long long i)
+{  add_argument(ulltos(i));
+   return *this;
+}
+
+Query &Query::operator<<(double i)
+{  add_argument(dtos(i));
+   return *this;
+}
+
+Query &Query::operator<<(bool i)
+{  add_argument(btos(i));
+   return *this;
+}
+
+Query &Query::operator<<(char i)
+{  char x[2];
+   x[0]=i;
+   x[1]=0;
+   add_argument(x);
+   return *this;
 }
 
 FetchIStream Query::Fetch()
@@ -170,5 +275,24 @@ void Query::Execute(const std::string &command)
    exec sql end declare section;
 
    exec sql execute immediate :COMMAND;
+}
+
+Query &Query::operator>>(FetchIStream &s)
+{  s=Fetch();
+   return *this;
+}
+
+FetchIStream Query::FetchOne()
+{  ThrowOnBad(__FUNCTION__);
+   FetchIStream res=Fetch();
+   if (Fetch().good()) FetchIStream::mythrow(SQLerror(__FUNCTION__,-2,"more than one result"));
+   return res;
+}
+
+void Query::ThrowOnBad(const char *where) const
+{  if (!good()) 
+   {  SQLerror::test(__FUNCTION__); 
+      FetchIStream::mythrow(SQLerror(__FUNCTION__,-1,"unspecific bad result")); 
+   }
 }
 

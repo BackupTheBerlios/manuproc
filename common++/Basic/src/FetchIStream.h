@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.15 2003/01/02 17:36:37 jacek Exp $
+// $Id: FetchIStream.h,v 1.16 2003/01/15 11:35:24 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -90,6 +90,8 @@ public:
 	   else *this >> mn.var;
 	   return *this;
 	}
+	
+	void ThrowIfNotEmpty(const char *where);
 };
 
 class Query
@@ -97,73 +99,115 @@ class Query
 	bool eof;
 	int line;
 	const PGresult *result;
+	unsigned num_params;
+	unsigned params_needed;
+	std::string query;
+	std::vector<std::string> params;
 	
-	// not possible yet
-	const Query &operator=(const Query &b);
+	// not possible yet (because result can not refcount)
+	const Query &operator=(const Query &);
+	Query(const Query &);
+	
+	// perform it
+	void Execute();
 public:
 	Query(const std::string &command);
 	FetchIStream Fetch();
+	FetchIStream FetchOne();
 	bool good() const 
 	{ return !eof; }
 	~Query();
+	void ThrowOnBad(const char *where) const;
+
 	static void Execute(const std::string &command);
+
 	template <class T> void FetchArray(std::vector<T> &);
 	template <class T> void FetchArray(std::list<T> &);
-	template <class T1, class T2> void FetchArray(std::map<T1,T2> &);	
-	template <class T> void FetchOne(T &);
+	template <class T1, class T2> void FetchArray(std::map<T1,T2> &);
 	template <class T> std::vector<T> FetchArray();
+
 	template <class T> T FetchOne();
+	template <class T> void FetchOne(T &);
+
+	// must be already quoted
+	void add_argument(const std::string &s);
+
+	Query &operator<<(const std::string &str);
+	Query &operator<<(int i)
+	{  return operator<<(long(i)); }
+	Query &operator<<(long i);
+	Query &operator<<(unsigned i);
+	Query &operator<<(unsigned long long i);
+	Query &operator<<(double f);
+	Query &operator<<(bool b);
+	Query &operator<<(char c);
+	Query &operator<<(const char *s)
+	{  return operator<<(std::string(s)); }
+	struct null { null(){} };
+	Query &operator<<(null n)
+	{  add_argument("null"); return *this; }
+	
+        Query &operator>>(FetchIStream &s);
+	template <class T> FetchIStream operator>>(T &x);
 };
 
+template <class T>
+ FetchIStream Query::operator>>(T &x)
+{  FetchIStream res=FetchOne();
+   res >> x;
+   return res;
+}
+
+#if 0
 static inline Query &operator>>(Query &q, FetchIStream &s)
 {  s=q.Fetch();
    return q;
 }
+#endif
 
 template <class T> 
 void Query::FetchArray(std::vector<T> &res)
-{  if (!good()) 
-   { SQLerror::test(__FUNCTION__); FetchIStream::mythrow(SQLerror(__FUNCTION__,-1,"bad result")); }
+{  ThrowOnBad(__FUNCTION__);
    FetchIStream is;
    while (((*this)>>is).good()) 
    { T x;
      is >> x;
+     is.ThrowIfNotEmpty(__FUNCTION__);
      res.push_back(x);
    }
 }
 
 template <class T1, class T2> 
 void Query::FetchArray(std::map<T1,T2> &res)
-{  if (!good()) 
-   { SQLerror::test(__FUNCTION__); FetchIStream::mythrow(SQLerror(__FUNCTION__,-1,"bad result")); }
+{  ThrowOnBad(__FUNCTION__);
    FetchIStream is;
    while (((*this)>>is).good()) 
    { T1 x;
      T2 y;
      is >> x >> y;
+     is.ThrowIfNotEmpty(__FUNCTION__);
      res[x]=y;
    }
 }
 
 template <class T> 
 void Query::FetchArray(std::list<T> &res)
-{  if (!good()) 
-   { SQLerror::test(__FUNCTION__); FetchIStream::mythrow(SQLerror(__FUNCTION__,-1,"bad result")); }
+{  ThrowOnBad(__FUNCTION__);
    FetchIStream is;
    while (((*this)>>is).good()) 
    { T x;
      is >> x;
+     is.ThrowIfNotEmpty(__FUNCTION__);
      res.push_back(x);
    }
 }
 
 template <class T>
 void Query::FetchOne(T &res)
-{  if (!good()) 
-   { SQLerror::test(__FUNCTION__); FetchIStream::mythrow(SQLerror(__FUNCTION__,-1,"bad result")); }
-   FetchIStream is=Fetch();
+{  ThrowOnBad(__FUNCTION__);
+   FetchIStream is=FetchOne();
    is >> res;
-   if (Fetch().good()) FetchIStream::mythrow(SQLerror(__FUNCTION__,-2,"more than one result"));
+   is.ThrowIfNotEmpty(__FUNCTION__);
 }
 
 template <class T>
