@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.8 2003/06/23 12:02:43 jacek Exp $
+// $Id: db_upgrade.cc,v 1.9 2003/06/23 12:04:41 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -69,7 +69,7 @@ int main(int argc,char *argv[])
   check_column("kunden","ab_an_rngadresse","bool");
   
   // Provisionsaten in Rechnung
-  check_column("rechnung","verknr","nmeric(5)");
+  check_column("rechnung","verknr","numeric(5)");
   check_column("rechnungentry","provsatz","numeric(4,2)");
 
   // Provisionsaten in Auftrag
