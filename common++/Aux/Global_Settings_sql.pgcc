@@ -18,59 +18,44 @@
  */
 
 #include "Global_Settings.h"
-#include <Misc/SQLerror.h>
-exec sql include sqlca;
+#include <Misc/FetchIStream.h>
 
 Global_Settings::Global_Settings(int u,const std::string& p,const std::string& n)
 : userid(u),program(p),name(n)
-{
-  exec sql begin declare section;
-   int USERID=userid;
-   char PROGRAM[50],NAME[50],WERT[50];
-  exec sql end declare section;
-  strncpy(PROGRAM,program.c_str(),sizeof(PROGRAM));
-  strncpy(NAME,name.c_str(),sizeof(NAME));
-  exec sql select wert into :WERT from global_settings where 
-   (userid,program,name)=(:USERID,:PROGRAM,:NAME);
-  SQLerror::test(__FILELINE__,100);
-  if (sqlca.sqlcode) *WERT=0;
-  wert=WERT;
+{try
+ {Query("select wert from global_settings "
+ 	"where (userid,program,name)=(?,?,?)")
+   << userid << program << name
+   >> wert;
+ } catch (SQLerror &e)
+ {  SQLerror::print(__FILELINE__,100);
+ }
 }
 
 
 void Global_Settings::set_Wert(const std::string& wert)
-{
-  exec sql begin declare section;
-   int USERID=userid;
-   char PROGRAM[50],NAME[50],WERT[50];
-  exec sql end declare section;
-  strncpy(PROGRAM,program.c_str(),sizeof(PROGRAM));
-  strncpy(NAME,name.c_str(),sizeof(NAME));
-  strncpy(WERT,wert.c_str(),sizeof(WERT));
-  exec sql update global_settings set wert=:WERT where 
-   (userid,program,name)=(:USERID,:PROGRAM,:NAME);
+{ Query("update global_settings set wert=? "
+	"where (userid,program,name)=(?,?,?)")
+	<< wert << userid << program << name;
   if (sqlca.sqlcode==100)
-    exec sql insert into global_settings 
-    	(userid,program,name,wert) 
-    	VALUES (:USERID,:PROGRAM,:NAME,:WERT);
+  {  Query("insert into global_settings "
+	"(userid,program,name,wert)=(?,?,?,?)")
+	<< userid << program << name << wert;
+  }
   SQLerror::test(__FILELINE__);
 }
 
 void Global_Settings::create(int userid,const std::string& program,
                              const std::string& name,const std::string& wert)
-//: userid(u),program(p),name(n),wert(w)
-{
-  exec sql begin declare section;
-   int USERID=userid;
-   char PROGRAM[50],NAME[50],WERT[50];
-  exec sql end declare section;
-  strncpy(PROGRAM,program.c_str(),sizeof(PROGRAM));
-  strncpy(NAME,name.c_str(),sizeof(NAME));
-    strncpy(WERT,wert.c_str(),sizeof(WERT));
-    exec sql update global_settings set wert=:WERT 
-      where (userid,program,name) =  (:USERID,:PROGRAM,:NAME);
-    SQLerror::test(__FILELINE__,100);
-    if (sqlca.sqlcode) 
-       exec sql insert into global_settings (userid,program,name,wert) 
-         values (:USERID,:PROGRAM,:NAME,:WERT);
+{  // saves one query in comparison to Global_Settings().set_Wert
+   //  ... the select ...
+   Query("update global_settings set wert=? "
+	"where (userid,program,name)=(?,?,?)")
+	<< wert << userid << program << name;
+  if (sqlca.sqlcode==100)
+  {  Query("insert into global_settings "
+	"(userid,program,name,wert)=(?,?,?,?)")
+	<< userid << program << name << wert;
+  }
+  SQLerror::test(__FILELINE__);
 }
