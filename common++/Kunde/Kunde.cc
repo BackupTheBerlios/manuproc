@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.29 2003/04/14 13:33:46 jacek Exp $
+// $Id: Kunde.cc,v 1.30 2003/04/17 09:22:13 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -131,7 +131,12 @@ const std::string Kunde::LaTeX_an(bool liefer,TelArt telart,
   s+="Firma \\\\";
 #endif
 
-  s+= string2TeX(getName(),NEEDCHAR) +"~\\\\";
+  s+= string2TeX(getName(),NEEDCHAR);
+ 
+  if(!isInGrp(KundengruppeID::Personen)) 
+    s+="~\\\\";
+  s+=string2TeX(getName2(),NEEDCHAR);
+  
   if (!postanwvor().empty()) s+= string2TeX(postanwvor(),NEEDCHAR) +"~\\\\";
   s += string2TeX(strasse_postfach,NEEDCHAR); 
   if (!postanwnach().empty()) s+= "~\\\\" + string2TeX(postanwnach(),NEEDCHAR) ;

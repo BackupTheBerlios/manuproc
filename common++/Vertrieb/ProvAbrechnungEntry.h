@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnungEntry.h,v 1.4 2003/01/08 09:46:58 christof Exp $ */
+/* $Id: ProvAbrechnungEntry.h,v 1.5 2003/04/17 09:22:13 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -46,9 +46,9 @@ public:
  ProvAbrechnungEntry() : rngentry(RechnungEntryBase()),
  	provsatz(0.0), provision(0.0),verknr(Kunde::none_id) {}
  	
- ProvAbrechnungEntry(const ManuProcEntity<>::ID _abrnr, 
- 	const Kunde::ID _verknr, const RechnungEntry::ID _rngid,
-	int zeilennr) throw(SQLerror); 	
+// ProvAbrechnungEntry(const ManuProcEntity<>::ID _abrnr, 
+// 	const Kunde::ID _verknr, const RechnungEntry::ID _rngid,
+//	int zeilennr) throw(SQLerror); 	
 	
  ProvAbrechnungEntry(const ManuProcEntity<>::ID _abrnr, 
  	const Kunde::ID _verknr, const RechnungEntry::ID _rngid,

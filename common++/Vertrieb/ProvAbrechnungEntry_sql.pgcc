@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnungEntry_sql.pgcc,v 1.7 2003/04/02 16:25:03 jacek Exp $ */
+/* $Id: ProvAbrechnungEntry_sql.pgcc,v 1.8 2003/04/17 09:22:13 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,7 +21,7 @@
 #include <Misc/Transaction.h>
 #include <Misc/FetchIStream.h>
 
-ProvAbrechnungEntry::ProvAbrechnungEntry(const ManuProcEntity<>::ID _abrnr, 
+/*ProvAbrechnungEntry::ProvAbrechnungEntry(const ManuProcEntity<>::ID _abrnr, 
  	const Kunde::ID _verknr, const RechnungEntry::ID _rngid,
 	int zeilennr) throw(SQLerror)
 : ManuProcEntity<>(_abrnr), rngentry(RechnungEntryBase(_rngid,zeilennr)), verknr(_verknr)
@@ -44,6 +44,7 @@ ProvAbrechnungEntry::ProvAbrechnungEntry(const ManuProcEntity<>::ID _abrnr,
  provsatz=PROVSATZ;
  provision=umsatz.Wert() * (PROVSATZ/100.0);
 }
+*/
 
 ProvAbrechnungEntry::ProvAbrechnungEntry(const ManuProcEntity<>::ID _abrnr, 
  	const Kunde::ID _verknr, const RechnungEntry::ID _rngid,
