@@ -1,4 +1,4 @@
-/* $Id: KettenGarn_CP.cc,v 1.2 2004/02/25 12:02:30 christof Exp $ */
+/* $Id: KettenGarn_CP.cc,v 1.3 2004/02/26 10:43:28 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,8 +25,13 @@
 
 std::vector<KettenGarn_CP> KettenGarn_CP::Load(ArtikelGang const &ag, unsigned laenge)
 {  Fadenliste fdl;
-   fdl.Load(ag.art,Bindung::GlobaleListe());
    std::vector<KettenGarn_CP> result;
+   try {
+   fdl.Load(ag.art,Bindung::GlobaleListe());
+   }
+   catch (SQLerror &e)
+   {  return result;
+   }
 
    // ermitteln!
    unsigned new_scheibe=20;

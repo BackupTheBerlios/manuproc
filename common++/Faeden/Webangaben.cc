@@ -1,4 +1,4 @@
-// $Id: Webangaben.cc,v 1.12 2004/02/26 10:43:28 christof Exp $
+// $Id: Webangaben.cc,v 1.13 2004/02/26 10:46:08 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -60,14 +60,16 @@ bool Webangaben::Load() throw(SQLerror)
 	>> FetchIStream::MapNull(bemerkung)
 	>> FetchIStream::MapNull(fangfaden)
 	>> FetchIStream::MapNull(schussdichte);
+      return true;
    }
    catch (SQLerror &e)
-   { riet="";
-     bemerkung="";
-     fangfaden=ArtikelBase();
-     schussdichte=0;
-     return false;
+   {  erstellt=geaendert=ManuProC::Datum();
+      riet="";
+      bemerkung="";
+      fangfaden=ArtikelBase();
+      schussdichte=0;
    }
+   return false;
 }
 
 void Webangaben::set_datum(const Petig::Datum &datum) throw(SQLerror)

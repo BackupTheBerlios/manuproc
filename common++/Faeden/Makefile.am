@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.11 2004/02/25 11:35:49 christof Exp $
+# $Id: Makefile.am,v 1.12 2004/02/26 10:44:13 christof Exp $
 
 AM_CXXFLAGS=@ECPG_INCLUDES@ 
 
@@ -15,7 +15,7 @@ libFaeden.a : $(libFaeden_a_OBJECTS) $(libFaeden_a_DEPENDENCIES) Makefile
 	(for i in $(libFaeden_a_OBJECTS) ; do echo Faeden/$$i ; done ) >$@
 
 PGCC_Sources= Bindung_sql.cc Schussfaeden_sql.cc \
-   Materialeigenschaft_sql.cc Webangaben_sql.cc
+   Materialeigenschaft_sql.cc 
 
 BUILT_SOURCES= $(PGCC_Sources) 
 
