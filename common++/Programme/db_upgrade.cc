@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.1 2003/06/04 10:13:43 christof Exp $
+// $Id: db_upgrade.cc,v 1.2 2003/06/04 10:19:29 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -49,7 +49,19 @@ int main(int argc,char *argv[])
   ManuProC::PrintUncaughtExceptions();
   ManuProC::dbconnect();
 
+  // ältere Dinge
+  check_column("kunden","aktiv","boolean");
+  check_column("kunden","preisauto","boolean");
+  check_column("kunden","showean","boolean");
+  
+  // Vereinheitlichung mit personen
+  check_column("kunden","name2","text");
+  check_column("kunden","branr","smallint");
+  check_column("kunden","gebdatum","date");
+  
+  // Auftragsbestätigung an andere Adresse
   check_column("kunden","ab_an_rngadresse","bool");
+  
   ManuProC::dbdisconnect();
   return 0;
 }
