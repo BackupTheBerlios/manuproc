@@ -1,4 +1,4 @@
-// $Id: tag_speed.cc,v 1.1 2004/06/03 08:48:22 christof Exp $
+// $Id: tag_speed.cc,v 1.2 2004/06/03 08:51:19 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,7 +26,10 @@
 #include <cassert>
 
 std::ostream &operator<<(std::ostream &o, const timeval &x)
-{  return o << x.tv_sec << '.' << x.tv_usec;
+{  o << x.tv_sec << '.';
+   o.width(6);
+   o.fill('0');
+   return o << x.tv_usec;
 }
 
 timeval operator-(const timeval &a, const timeval &b)
