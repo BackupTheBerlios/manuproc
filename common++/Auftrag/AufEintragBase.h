@@ -1,4 +1,4 @@
-/* $Id: AufEintragBase.h,v 1.5 2001/06/22 09:42:44 christof Exp $ */
+/* $Id: AufEintragBase.h,v 1.6 2001/06/25 08:13:37 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -185,6 +185,7 @@ public:
  AufStatVal getAufStatus() const { return status; }
  int getZnr() const { return zeilennr;}
  int getAuftragid() const {return auftragid;}
+ ppsInstanz::ppsInstId getAuftragInstanz() const {return instanz;}
  AufStatVal getEntryStatus() const { return entrystatus;}
  const string getEntryStatusStr() const;
  const Petig::Datum LastEditDate() const { return lasteditdate; }

@@ -41,7 +41,8 @@ private:
 	string tmpstr;
 	
 public:
-	Auftrag(ppsInstanz::ppsInstId instanz,int auftragid) throw(SQLerror);
+//	Auftrag(ppsInstanz::ppsInstId instanz,int auftragid) throw(SQLerror);
+	Auftrag(const AuftragBase& auftrag) throw(SQLerror);
 	// neuen Auftrag anlegen
         Auftrag(ppsInstanz::ppsInstId instanz, long kundennr, int jahr=0) throw(SQLerror);
 //        void newArtWrkar(aktAufEintrag &entry) throw(SQLerror);
@@ -56,6 +57,7 @@ public:
         const Petig::Datum &getDatum() const { return datum; } 
 	AufStatVal getStatus() const { return status; }
 	int getAuftragid() const { return auftragid; }
+        ppsInstanz::ppsInstId Instanz() const {return instanz;}
 	string getAuftragidToStr() const;
 	string getYourAufNr() const { return youraufnr;}
 	string getBemerkung() const { return bemerkung;}

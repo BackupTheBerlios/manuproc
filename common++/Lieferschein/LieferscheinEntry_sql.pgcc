@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry_sql.pgcc,v 1.4 2001/06/22 09:42:44 christof Exp $ */
+/* $Id: LieferscheinEntry_sql.pgcc,v 1.5 2001/06/25 08:13:37 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -54,7 +54,7 @@ LieferscheinEntry::LieferscheinEntry(const LieferscheinBase &lsbase, int zeile)
  SQLerror::test(__FILELINE__);
  
  artikel=ArtikelBase(ARTIKELID);
- refauftrag=AufEintragBase2(REFAUFTRAGID,REFZEILENNR,(ppsInstanz::ppsInstId)INSTANZ);
+ refauftrag=AufEintragBase2((ppsInstanz::ppsInstId)INSTANZ,REFAUFTRAGID,REFZEILENNR);
  stueck=STUECK;
  menge=MENGE;
  palette=PALETTE;
@@ -118,7 +118,7 @@ LieferscheinEntry::LieferscheinEntry(const LieferscheinBase &lsb,
 			const ArtikelBase &art, int anzahl,
 			fixedpoint<3> _menge,int _palette, bool zusatz)
 							throw(SQLerror) 
-{  *this=LieferscheinEntry(lsb,AufEintragBase2(0,0,(ppsInstanz::ppsInstId) 0),art,anzahl,_menge,_palette,zusatz);
+{  *this=LieferscheinEntry(lsb,AufEintragBase2((ppsInstanz::ppsInstId) 0,0,0),art,anzahl,_menge,_palette,zusatz);
 }
 
 void LieferscheinEntry::deleteEntry(const LieferscheinEntry &lse) throw(SQLerror)

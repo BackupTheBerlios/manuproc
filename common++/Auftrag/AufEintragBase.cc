@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.2 2001/06/22 09:42:44 christof Exp $
+// $Id: AufEintragBase.cc,v 1.3 2001/06/25 08:13:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -32,7 +32,7 @@ AufEintragBase::AufEintragBase(ppsInstanz::ppsInstId _instanz,int _auftragid, in
 	const Preis &_preis, int _rabatt,
 	AufStatVal _entrystatus, const Petig::Datum _lasteditdate,
 	const cH_ExtBezSchema schema) throw()
-: AufEintragBase2(_auftragid,_zeilennr,_instanz),
+: AufEintragBase2(_instanz,_auftragid,_zeilennr),
   artikel(0,cH_ExtBezSchema(ExtBezSchema::default_ID)),
   prozess(Prozess::default_id)
 {

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.3 2001/06/22 09:42:44 christof Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.4 2001/06/25 08:13:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -147,7 +147,7 @@ void AufEintragBase::setStatus(AufStatVal st) throw(SQLerror)
    {
     pps_ChJournalEntry::newChange(
 			instanz,
-			AufEintragBase2(AUFTRAGID,ZEILENNR,instanz),
+			AufEintragBase2(instanz,AUFTRAGID,ZEILENNR),
 			ArtikelBase(artikel->Id()),
 			(double)bestellt,
 			(double)bestellt,
@@ -162,7 +162,7 @@ void AufEintragBase::setStatus(AufStatVal st) throw(SQLerror)
    {
     pps_ChJournalEntry::newChange(
 			instanz,
-			AufEintragBase2(AUFTRAGID,ZEILENNR,instanz),
+			AufEintragBase2(instanz,AUFTRAGID,ZEILENNR),
 			ArtikelBase(artikel->Id()),
 			(double)geliefert,
 			(double)geliefert-bestellt,
@@ -199,7 +199,7 @@ void AufEintragBase::updateStk(long stk) throw(SQLerror)
     {
      pps_ChJournalEntry::newChange(
   			instanz,
-  			AufEintragBase2(AUFTRAGID,ZEILENNR,instanz),
+  			AufEintragBase2(instanz,AUFTRAGID,ZEILENNR),
   			ArtikelBase(artikel->Id()),
   			(double)BESTELLT,
   			(double)(BESTELLT-bestellt),
@@ -279,7 +279,7 @@ void AufEintragBase::updateLieferdatum(const Petig::Datum &ld) throw(SQLerror)
     {
      pps_ChJournalEntry::newChange(
   			instanz,
-  			AufEintragBase2(AUFTRAGID,ZEILENNR,instanz),
+  			AufEintragBase2(instanz,AUFTRAGID,ZEILENNR),
   			ArtikelBase(artikel->Id()),
   			ld,
   			(double)(ld-getLieferdatum()),
@@ -373,7 +373,7 @@ void AufEintragBase::split(int newmenge, const Petig::Datum &newld) throw(SQLerr
       {
        pps_ChJournalEntry::newChange(
     			instanz,
-    			AufEintragBase2(AUFTRAGID,ZEILENNR_OLD,instanz),
+    			AufEintragBase2(instanz,AUFTRAGID,ZEILENNR_OLD),
     			ArtikelBase(ARTIKELID),
     			(double)BESTELLT_OLD,
     			(double)(BESTELLT_OLD-bestellt),
@@ -381,7 +381,7 @@ void AufEintragBase::split(int newmenge, const Petig::Datum &newld) throw(SQLerr
 
        pps_ChJournalEntry::newChange(
     			instanz,
-    			AufEintragBase2(AUFTRAGID,ZEILENNR,instanz),
+    			AufEintragBase2(instanz,AUFTRAGID,ZEILENNR),
     			ArtikelBase(ARTIKELID),
     			(double)BESTELLT,
     			(double)BESTELLT,

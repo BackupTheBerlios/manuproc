@@ -1,4 +1,4 @@
-// $Id: selAufEntry_sql.pgcc,v 1.4 2001/06/22 09:42:44 christof Exp $
+// $Id: selAufEntry_sql.pgcc,v 1.5 2001/06/25 08:13:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -259,7 +259,8 @@ throw(SQLerror)
 }
 
 
-void SelectedFullAufList::insert(ppsInstanz::ppsInstId instanz, int aid, int znr) throw(SQLerror)
+//void SelectedFullAufList::insert(ppsInstanz::ppsInstId instanz, int aid, int znr) throw(SQLerror)
+void SelectedFullAufList::insert(const AuftragBase& auftrag, int znr) throw(SQLerror)
 {
  exec sql begin declare section;
  int INSTANZ;
@@ -292,7 +293,7 @@ void SelectedFullAufList::insert(ppsInstanz::ppsInstId instanz, int aid, int znr
  exec sql end declare section;
 
  string cmd=SQLFullAuftragSelector(
-		SQLFullAuftragSelector::sel_AufidZnr(instanz,aid,znr)).getClausel();
+		SQLFullAuftragSelector::sel_AufidZnr(auftrag,znr)).getClausel();
 	clausel = (char *)cmd.c_str();
 
 	Transaction tr;

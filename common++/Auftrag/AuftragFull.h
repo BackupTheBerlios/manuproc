@@ -35,7 +35,8 @@ public:
 private:
 	AufEintragBaseList eintragliste;
 public:
-	AuftragFull(ppsInstanz::ppsInstId _instanz, int auftragid) throw(SQLerror);
+//	AuftragFull(ppsInstanz::ppsInstId _instanz, int auftragid) throw(SQLerror);
+	AuftragFull(const AuftragBase& auftrag) throw(SQLerror);
 	// neuen Auftrag anlegen
 	AuftragFull(ppsInstanz::ppsInstId _instanz, long kundennr, int jahr=0) throw(SQLerror);
 	void deleteEintrag(int zeilennr, int idx) throw(SQLerror);	

@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.3 2001/06/22 09:42:44 christof Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.4 2001/06/25 08:13:37 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,28 +17,40 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include<string>
-#include<Artikel/ArtikelBase.h>
-#include<Aux/ppsInstanz.h>
-
 #ifndef SQLSELECTORH
 #define SQLSELECTORH
 
+#include<string>
+#include<Artikel/ArtikelBase.h>
+#include<Auftrag/AuftragBase.h>
+#include<Aux/ppsInstanz.h>
+
+#if 0
 class SQLAuftragSelector
 {
  string clausel;
  
 public:
+/*
  struct sel_Aufid
   { sel_Aufid(ppsInstanz::ppsInstId _i, int id) : instanz(_i), aufid(id) {}
     ppsInstanz::ppsInstId instanz;
     int aufid;
   };
-  
  struct sel_AufidZnr
   { sel_AufidZnr(ppsInstanz::ppsInstId _i, int id, int zeile) : instanz(_i), aufid(id), znr(zeile) {}
     ppsInstanz::ppsInstId instanz;
     int aufid;
+    int znr;
+  };
+*/  
+ struct sel_Aufid
+  { sel_Aufid(const AuftragBase& a) : auftrag(a) {}
+    AuftragBase auftrag;
+  };
+ struct sel_AufidZnr
+  { sel_AufidZnr(const AuftragBase& a, int zeile) : auftrag(a), znr(zeile) {}
+    AuftragBase auftrag;
     int znr;
   };
   
@@ -94,6 +106,7 @@ public:
  // dann kann dass Objekt nicht vor dem Wert zerstoert werden
  const string getClausel() const { return clausel; }
 };
+#endif
 
 
 class SQLFullAuftragSelector : public SQLAuftragSelector

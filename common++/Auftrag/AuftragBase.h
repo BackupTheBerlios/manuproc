@@ -1,4 +1,3 @@
-/* $Id: AuftragBase.h,v 1.5 2001/06/22 09:53:41 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,7 +29,9 @@ class AuftragBase
 	AuftragBase() : instanz(ppsInstanz::INST_KNDAUF), auftragid(0) {}
 	AuftragBase(ppsInstanz::ppsInstId _instanz, int aufid) throw() : instanz(_instanz), auftragid(aufid) {}
 	int Id() const {return auftragid;}
+        void set_Id(int i) {auftragid = i;}
         ppsInstanz::ppsInstId Instanz() const {return instanz; }
+
 };
 
 #endif

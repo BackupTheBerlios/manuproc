@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.2 2001/06/06 07:27:39 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.3 2001/06/25 08:13:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,6 +22,7 @@
 #include <Aux/itos.h>
 #include<auftrag_status.h>
 
+#if 0
 #define NORMAL_SELECTIONS " a.auftragid, e.zeilennr, a.kundennr "
 #define NORMAL_FROM " auftrag a join auftragentry e using (auftragid) "
 //#define NORMAL_WHERE " a.auftragid=e.auftragid "
@@ -40,7 +41,7 @@ SQLAuftragSelector::SQLAuftragSelector(const sel_Aufid& selstr)
 {
  char tmp[200];
  snprintf0(tmp,sizeof tmp,NORMAL_SELECT_FROM_WHERE
-	     " where a.auftragid=%d order by zeilennr",selstr.aufid);
+	     " where a.auftragid=%d order by zeilennr",selstr.auftrag.Id());
  clausel=tmp;
 }
 
@@ -93,8 +94,9 @@ SQLAuftragSelector::SQLAuftragSelector(const sel_Status& selstr, char *order)
 	     " order by e.auftragid");
  clausel = tmp;
 }
+#endif
 
-#define FULL_SELECTIONS "a.auftragid, e.zeilennr, bestellt," \
+#define FULL_SELECTIONS "a.instanz, a.auftragid, e.zeilennr, bestellt," \
 	" e.artikelid, e.rohartikelid," \
 	" e.lieferdate, geliefert," \
 	" a.jahrgang, a.stat," \
@@ -105,9 +107,9 @@ SQLAuftragSelector::SQLAuftragSelector(const sel_Status& selstr, char *order)
 
 #define FULL_FROM "auftrag a join " \
 	" (auftragentry e left join auftrag_prozess p using(auftragid,zeilennr))" \
-	" using (auftragid) "
+	" using (instanz,auftragid) "
 
-//#define FULL_WHERE " a.auftragid=e.auftragid "
+//#define FULL_WHERE " a.instanz=e.instanz and a.auftragid=e.auftragid "
 
 #define FULL_SELECT_FROM_WHERE "select " FULL_SELECTIONS \
 	" from " FULL_FROM  
@@ -127,14 +129,14 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Status& selstr)
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Aufid& selstr)
 {
  setClausel(FULL_SELECT_FROM_WHERE
-	" where a.auftragid="+itos(selstr.aufid));
+	" where a.auftragid="+itos(selstr.auftrag.Id()));
 }
 
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_AufidZnr& selstr)
 {
  setClausel(FULL_SELECT_FROM_WHERE
-	" where a.auftragid="+itos(selstr.aufid)+
+	" where a.auftragid="+itos(selstr.auftrag.Id())+
 	" and e.zeilennr="+itos(selstr.znr));
 }
 

@@ -115,8 +115,8 @@ void Auftrag::deleteEintrag(int zeilennr) throw(SQLerror)
  tr.commit();
 }
 
-Auftrag::Auftrag(ppsInstanz::ppsInstId _instanz,int aufid) throw(SQLerror)
-: AuftragBase(_instanz,aufid)
+Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
+: AuftragBase(_auftrag)
 {
  exec sql begin declare section;
  int AUFTRAGID ;
@@ -151,11 +151,11 @@ Auftrag::Auftrag(ppsInstanz::ppsInstId _instanz,int aufid) throw(SQLerror)
  waehrung = cP_Waehrung(WAEHRUNG);
 }
 
-AuftragFull::AuftragFull(ppsInstanz::ppsInstId _instanz, int aufid) throw(SQLerror)
-	: Auftrag(_instanz,aufid)
+AuftragFull::AuftragFull(const AuftragBase& auftrag) throw(SQLerror)
+	: Auftrag(auftrag)
 {
  SelectedFullAufList aufids((SQLFullAuftragSelector)
- 			(SQLFullAuftragSelector::sel_Aufid(_instanz,aufid)));
+ 			(SQLFullAuftragSelector::sel_Aufid(auftrag)));
  for(vector<AufEintragBase>::iterator i = aufids.aufidliste.begin();
 				 	 i!=aufids.aufidliste.end(); i++)
  {  try { eintragliste.push_back(AufEintragBase(*i));

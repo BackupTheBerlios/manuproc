@@ -1,4 +1,4 @@
-// $Id: AufEintragBase2.h,v 1.6 2001/06/22 09:38:43 cvs_malte Exp $
+// $Id: AufEintragBase2.h,v 1.7 2001/06/22 17:45:50 cvs_malte Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,15 +27,14 @@
 class AufEintragBase2
 {
 protected:
+ ppsInstanz instanz;
  int auftragid;
  int zeilennr;
- ppsInstanz instanz;
   
 public:
- AufEintragBase2() :auftragid(0), zeilennr(0), 
-			instanz(ppsInstanz::INST_KNDAUF) {}
- AufEintragBase2(int a,int z, ppsInstanz::ppsInstId inst) 
- 	: auftragid(a), zeilennr(z), instanz(inst) {}
+ AufEintragBase2() :instanz(ppsInstanz::INST_KNDAUF),auftragid(0), zeilennr(0) {}
+ AufEintragBase2(ppsInstanz::ppsInstId inst,int a,int z) 
+ 	:  instanz(inst),auftragid(a), zeilennr(z) {}
  
  void setVerarbeitung(const cH_Prozess p) throw(SQLerror);
  inline int mapKey() const { return auftragid*10000+zeilennr; } 
@@ -46,7 +45,6 @@ public:
  int Id() const { return auftragid; }
  int ZNr() const { return zeilennr; }
  ppsInstanz::ppsInstId InstId() const { return instanz.Id(); }
-// int Instanz() const { return instanz; }
  
 };
 
