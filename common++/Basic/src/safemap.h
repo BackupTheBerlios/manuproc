@@ -1,4 +1,4 @@
-// $Id: safemap.h,v 1.7 2002/05/09 12:46:00 christof Exp $
+// $Id: safemap.h,v 1.8 2003/06/04 09:22:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
+#ifndef MANUPROC_MISC_SAFEMAP_H
+#define MANUPROC_MISC_SAFEMAP_H
 #include <map>
 //#include <cstdio>
 
@@ -77,3 +78,4 @@ public:
   // if your default constructor is private, friend this class  
   typedef _Rep_type stl_type;
 };
+#endif
