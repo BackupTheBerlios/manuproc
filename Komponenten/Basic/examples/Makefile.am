@@ -2,7 +2,8 @@ SUBDIRS=newtree tree_simplest dwhouse MVC
 
 EXTRA_PROGRAMS = Event TreeViewUtil TreeSelection test_sts test_logwin
 
-AM_CXXFLAGS=@KOMPONENTEN_INCLUDES@ -Wl,--enable-runtime-pseudo-reloc
+AM_CXXFLAGS=@KOMPONENTEN_INCLUDES@ 
+#-Wl,--enable-runtime-pseudo-reloc
 
 Event_SOURCES=Event.cc
 Event_LDADD=@KOMPONENTEN_LIBS@
