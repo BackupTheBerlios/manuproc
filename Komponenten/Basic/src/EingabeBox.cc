@@ -1,4 +1,4 @@
-// $Id: EingabeBox.cc,v 1.6 2002/09/27 09:48:44 christof Exp $
+// $Id: EingabeBox.cc,v 1.7 2002/10/17 07:17:24 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -73,7 +73,7 @@ void EingabeBox::grow(int cols)
    check();
 } 
 
-EingabeBox::EingabeBox(int cols=0)
+EingabeBox::EingabeBox(int cols)
 	: Gtk::Table(cols), visible_size(0)
 {  grow(cols);
 //   show();

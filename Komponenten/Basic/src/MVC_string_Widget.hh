@@ -1,4 +1,4 @@
-// $Id: MVC_string_Widget.hh,v 1.2 2002/09/27 09:48:44 christof Exp $
+// $Id: MVC_string_Widget.hh,v 1.3 2002/10/17 07:17:24 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -30,15 +30,15 @@ class MVC_string_Widget : public Gtk::Entry
 	SigC::Connection ch_con, my_ch_con;
 	Model_ref<T> model;
 	
-	gint on_focus_out(GdkEventFocus *ev);
-	gint on_focus_in(GdkEventFocus *ev);
+	bool on_focus_out(GdkEventFocus *ev);
+	bool on_focus_in(GdkEventFocus *ev);
 	void refresh(gpointer);
 	void keypress();
 	void on_activate();
 	// explicitely forbid to use these (make them private)
-	Gtk::string get_text() const;
+	Glib::ustring get_text() const;
 	unsigned int get_text_length() const;
-	void set_text(const Gtk::string& text);
+	void set_text(const Glib::ustring& text);
 public:
 	MVC_string_Widget(const Model_ref<T> &model);
 };

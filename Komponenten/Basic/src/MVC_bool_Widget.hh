@@ -1,4 +1,4 @@
-// $Id: MVC_bool_Widget.hh,v 1.5 2002/09/27 09:48:44 christof Exp $
+// $Id: MVC_bool_Widget.hh,v 1.6 2002/10/17 07:17:24 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -35,7 +35,7 @@ class MVC_bool_Widget : public Gtk::CheckButton
 	bool get_active() const;
 	void set_active(bool);
 public:
-	MVC_bool_Widget(const Model_ref<T> &model, const std::string &text,gfloat x=0.5,gfloat y=0.5);
+	MVC_bool_Widget(const Model_ref<T> &model, const std::string &text);
 };
 
 #endif
