@@ -1,4 +1,4 @@
-// $Id: auftrag_bearbeiten.hh,v 1.17 2003/05/07 11:55:07 jacek Exp $
+// $Id: auftrag_bearbeiten.hh,v 1.18 2003/05/14 21:08:04 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -41,6 +41,7 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
  bool artikel_preisliste_geaendert;
 
  bool newauftrag;
+
 
  termsplidial *splitdialog;
 
@@ -112,7 +113,7 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
 //#endif;
 
 public:
- 
+ AuftragBase::ID new_aufid_from_copy;
  bool splitEntry();
  void split_dialog_destroyed() { splitdialog=0; }
 

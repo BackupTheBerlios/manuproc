@@ -38,6 +38,7 @@
 
 
 extern auftrag_main *auftragmain;
+auftrag_bearbeiten *auftragbearbeiten;
 
 extern MyMessage *meldung;
 
@@ -47,7 +48,8 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
 : instanz(_instanz), auftrag(0), aktaufeintrag(0), kunde(Kunde::default_id),
 	aufentrystat_chid(0), aufstat_chid(0), selectedentry(-1),
 	artikel_preisliste_geaendert(false), newauftrag(false),
-	splitdialog(0)
+	splitdialog(0),
+	new_aufid_from_copy(AuftragBase::none_id)
 {
  MyWindow::setPositionSize(*this,"pps");
  set_title("Auftragserfassung: "+instanz->get_Name());
@@ -86,6 +88,7 @@ auftrag_bearbeiten::auftrag_bearbeiten(const cH_ppsInstanz& _instanz,const AufEi
        auftrag_clist->row(auftragbase->ZNr()-1).select();
       }
    }
+ auftragbearbeiten=this;  
 }
 
 void auftrag_bearbeiten::onSelArtikel()
@@ -895,12 +898,16 @@ void auftrag_bearbeiten::on_auftrag_kopieren_activate()
 {  
  if(!auftrag) return;
  
- auftrag_copy ac(*auftrag);
+ auftrag_copy ac(auftrag);
  
  ac.set_transient_for(*this);
  
  gint ret;
  ret=ac.run();
+
+ if(ret==0)
+   if(new_aufid_from_copy!=AuftragBase::none_id)
+     loadAuftrag(AuftragBase(instanz->Id(),new_aufid_from_copy));     
  
 }
 

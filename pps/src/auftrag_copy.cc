@@ -50,10 +50,12 @@ void auftrag_copy::on_copy_ok_clicked()
        }
 
 
-	int stueck=stueck_uebernehmen.activate() ? neu_stueck:0;
-	ManuProC::Datum ld=liefdate_uebernehemen.activate() ? neu_liefdate
-
-
+	int stueck=stueck_uebernehmen->active() ? neu_stueck:0;
+	ManuProC::Datum ld=liefdate_uebernehmen.activate() 
+			? neu_liefdate : ManuProC::Datum();
+			
+				
+			
 
       auftrag->setStatusAuftragFull((AufStatVal)OPEN,getuid()); 
       auftragbearbeiten->new_aufid_from_copy=auftrag->Id();

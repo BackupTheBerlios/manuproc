@@ -18,12 +18,13 @@
 
 class auftrag_copy : public auftrag_copy_glade
 {  
+ AuftragFull *alt_auftrag;
 
         void on_copy_ok_clicked();
         void on_copy_cancel_clicked();
 
 public:
- auftrag_copy(const AuftragFull &auftrag);
+                     auftrag_copy(AuftragFull *auftrag);
 
 };
 #endif
