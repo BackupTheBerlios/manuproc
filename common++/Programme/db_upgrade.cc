@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.2 2003/06/04 10:19:29 christof Exp $
+// $Id: db_upgrade.cc,v 1.3 2003/06/04 10:30:43 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -53,6 +53,7 @@ int main(int argc,char *argv[])
   check_column("kunden","aktiv","boolean");
   check_column("kunden","preisauto","boolean");
   check_column("kunden","showean","boolean");
+  check_column("artikelpreise","mindestmenge","integer");
   
   // Vereinheitlichung mit personen
   check_column("kunden","name2","text");
