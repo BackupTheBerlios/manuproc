@@ -747,6 +747,7 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
       }
    }
    if (ae.Instanz()!=ppsInstanzID::Kundenauftraege
+   	&& ae.Id()<AuftragBase::handplan_id
    	&& !in(ae.getCombinedStatus(),OPEN,CLOSED))
    {  alles_ok=false;
       analyse("Interne Aufträge müssen OPEN/CLOSED sein",ae,AuftragBase::getStatusStr(ae.getCombinedStatus()));
