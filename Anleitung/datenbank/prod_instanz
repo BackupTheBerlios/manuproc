@@ -37,4 +37,6 @@ COPY "prod_instanz" FROM stdin;
 30	Rohwarenlager	35	52	\N	\N	\N	\N	\N	t	l	\N	\N
 10	Werkstatt	\N	4	t	\N	t	1	5	\N	P	\N	\N
 21	Schmelze	\N	7	\N	\N	\N	10	\N	\N	P	\N	\N
+40	Lager	41	70	\N	\N	\N	\N	\N	t	l	\N	\N
+41	Produktion	\N	71	t	\N	t	2	40	\N	P	\N	\N
 \.

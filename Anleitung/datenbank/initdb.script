@@ -16,6 +16,7 @@ if [ ! -z "$1" ]; then P="$1"; fi
    artbez_3_1 \
    artbez_3_1 \
    artbez_4_1 \
+   artbez_4_1000 \
    artbez_5_1 \
    artbez_6_1 \
    artbez_6_1000 \

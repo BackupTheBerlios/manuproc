@@ -56,7 +56,7 @@ COPY "extbezschema" FROM stdin;
 1000	2	Anzahl	/	6	1	inhalt	l	\N
 1000	3	Farbe		6	1	farbe	X	\N
 1000	5	ID		6	2	id	X	\N
-1	1	Sortiment	/	6	1	sortiment	l	\N
+1	1	Sortiment	 	6	1	sortiment	l	\N
 1	2	Bezeichnung		6	1	bezeichnung	X	\N
 1	5	ID		6	2	id	X	
 \.
