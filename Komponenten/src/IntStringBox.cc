@@ -1,4 +1,4 @@
-// $Id: IntStringBox.cc,v 1.3 2003/03/17 16:34:48 christof Exp $
+// $Id: IntStringBox.cc,v 1.4 2003/03/17 17:15:01 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++ Copyright (C)
  *  1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -96,7 +96,7 @@ gint IntStringBox::try_grab_focus(GtkWidget *w,gpointer gp)
    return true;
 }
 
-IntStringBox::IntStringBox(ManuProcEntity::ID __none_id) 
+IntStringBox::IntStringBox(ManuProcEntity<>::ID __none_id) 
 : _none_id_(__none_id), id(__none_id),  tr("",false), tr2("",false), tr3("",false),
 #ifdef MABELLA_EXTENSIONS
   eingeschraenkt(false),
@@ -109,7 +109,7 @@ IntStringBox::IntStringBox(ManuProcEntity::ID __none_id)
                  GTK_SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
 }
 
-void IntStringBox::set_value(ManuProcEntity::ID i,const std::string &s, 
+void IntStringBox::set_value(ManuProcEntity<>::ID i,const std::string &s, 
 				const std::string& sz)
 {
    sc_int->set_text(itos(i));
@@ -136,7 +136,7 @@ void IntStringBox::Einschraenken(bool an)
   eingeschraenkt=true;
 }
 
-void IntStringBox::Einschraenkung(const std::string &e, bool an=true)
+void IntStringBox::Einschraenkung(const std::string &e, bool an)
 {
  eingeschraenkt=an;
  einschraenkung=e;
