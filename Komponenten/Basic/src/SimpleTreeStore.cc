@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.71 2004/05/06 09:47:29 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.72 2004/05/06 09:48:34 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -791,7 +791,8 @@ bool SimpleTreeStore::iter_parent_vfunc(vfunc_iter_t iter, vfunc_constiter_t chi
 
 Gtk::TreeModel::Path SimpleTreeStore::get_path_vfunc(const Gtk::TreeModel::iterator& iter) STS_VFUNC_CONST
 { ManuProC::Trace _t(trace_channel, __FUNCTION__,iter->gobj()->user_data);
-  if (!iter_valid(iter)) return Path();
+  if (!iter_valid(iter STS_GTKMM_22_24(->gobj(),))) 
+     return Path();
   return getPath(iterconv(iter STS_GTKMM_22_24(->gobj(),)));
 }
 
