@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.23 2003/03/20 15:32:01 christof Exp $
+// $Id: FetchIStream.h,v 1.24 2003/03/24 09:47:37 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -36,6 +36,27 @@ class FetchIStream
 	friend class Query;
 	// print if debugging on and then throw it	
 	static void mythrow(const SQLerror &e);
+
+	template <class T>
+	 class MapNull_s
+	{	T &var;
+		T nullval;
+		
+		friend class FetchIStream;
+	 public:
+	 	MapNull_s(T &v,const T &nv)
+	 	 : var(v), nullval(nv) {}
+	};
+	template <class T>
+	 class WithIndicator_s
+	{	T &var;
+		int &ind;
+		
+		friend class FetchIStream;
+	 public:
+	 	WithIndicator_s(T &v,int &i)
+	 	  : var(v), ind(i) {}
+	};
 public:
 	FetchIStream(const std::string &descr, int line=0);
 	FetchIStream(const PGresult *res=0, int line=0)
@@ -56,35 +77,19 @@ public:
 	FetchIStream &operator>>(bool &b);
 	FetchIStream &operator>>(char &c);
 	
+	template <class T> static WithIndicator_s<T> WithIndicator(T &v,int &i)
+	{ return WithIndicator_s<T>(v,i); }
 	template <class T>
-	 class WithIndicator
-	{	T &var;
-		int &ind;
-		
-		friend class FetchIStream;
-	 public:
-	 	WithIndicator(T &v,int &i)
-	 	  : var(v), ind(i) {}
-	};
-	template <class T>
-	 FetchIStream &operator>>(const WithIndicator<T> &wi)
+	 FetchIStream &operator>>(const WithIndicator_s<T> &wi)
 	{  if ((wi.ind=getIndicator())) ++naechstesFeld;
 	   else *this >> wi.var;
 	   return *this;
 	}
 
+	template <class T> static MapNull_s<T> MapNull(T &v,const T&nv)
+	{ return MapNull_s<T>(v,nv); }
 	template <class T>
-	 class MapNull
-	{	T &var;
-		T nullval;
-		
-		friend class FetchIStream;
-	 public:
-	 	MapNull(T &v,const T &nv)
-	 	 : var(v), nullval(nv) {}
-	};
-	template <class T>
-	 FetchIStream &operator>>(const MapNull<T> &mn)
+	 FetchIStream &operator>>(const MapNull_s<T> &mn)
 	{  if (getIndicator()) 
 	   {  ++naechstesFeld;
 	      mn.var=mn.nullval;
@@ -92,6 +97,7 @@ public:
 	   else *this >> mn.var;
 	   return *this;
 	}
+
 	template <class T>
 	 T Fetch()
 	{  T res;
@@ -119,6 +125,14 @@ class Query
 	
 	// perform it
 	void Execute();
+
+	template <class T>
+	 struct NullIf_s
+	{	T data;
+		bool null;
+		
+		NullIf_s(const T &a,const T &b) : data(a), null(a==b) {}
+	};
 public:
 	Query(const std::string &command);
 	~Query();
@@ -154,15 +168,11 @@ public:
 	struct null { null(){} };
 	Query &operator<<(null n)
 	{  add_argument("null"); return *this; }
+	
+	template <class T> static NullIf_s<T> NullIf(const T &a,const T &b)
+	{  return NullIf_s<T>(a,b); }
 	template <class T>
-	 struct NullIf
-	{	T data;
-		bool null;
-		
-		NullIf(const T &a,const T &b) : data(a), null(a==b) {}
-	};
-	template <class T>
-	 Query &operator<<(const NullIf<T> &n)
+	 Query &operator<<(const NullIf_s<T> &n)
 	{  if (n.null) return operator<<(null());
 	   return (*this)<<(n.data);
 	}
@@ -184,9 +194,9 @@ public:
 
 	template <class T> FetchIStream &operator>>(T &x)
 	{  return FetchOne() >> x; }
-	template <class T> FetchIStream &operator>>(const FetchIStream::MapNull<T> &x)
+	template <class T> FetchIStream &operator>>(const FetchIStream::MapNull_s<T> &x)
 	{  return FetchOne() >> x; }
-	template <class T> FetchIStream &operator>>(const FetchIStream::WithIndicator<T> &x)
+	template <class T> FetchIStream &operator>>(const FetchIStream::WithIndicator_s<T> &x)
 	{  return FetchOne() >> x; }
 };
 
