@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.cc,v 1.29 2004/02/10 11:01:10 christof Exp $
+// $Id: AufEintragZu.cc,v 1.30 2004/02/10 11:36:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -102,8 +102,8 @@ std::vector<AufEintragBase> AufEintragZu::getKundenAuftragV() const
   return V;
 }
 
-AufEintragZu::map_t AufEintragZu::get_Kinder_nach_Artikel(const AufEintragBase &aeb,bool kinder)
-{  list_t KindListeU(AufEintragZu::get_Referenz_list(aeb,kinder,AufEintragZu::list_Artikel));
+AufEintragZu::map_t AufEintragZu::get_Kinder_nach_Artikel(const AufEintragBase &aeb,bool kinder,bool sorted)
+{  list_t KindListeU(AufEintragZu::get_Referenz_list(aeb,kinder,AufEintragZu::list_Artikel,sorted));
    map_t MapArt;
 
    for(list_t::const_iterator i=KindListeU.begin();i!=KindListeU.end();++i)
@@ -170,7 +170,7 @@ std::list<cH_Kunde> AufEintragZu::get_Referenz_Kunden() const throw(SQLerror)
  for (std::list<st_reflist>::const_iterator i=vaeb.begin();i!=vaeb.end();++i)
   {
     int kdnr=(Query("select kundennr from auftrag "
-    		"where (instanz,auftragid)=(?,?) order by kundennr")
+    		"where (instanz,auftragid)=(?,?)")
     		<< i->AEB.InstanzID() << i->AEB.Id())
     	.FetchOne<int>(); 
     LK.push_back(cH_Kunde(kdnr));

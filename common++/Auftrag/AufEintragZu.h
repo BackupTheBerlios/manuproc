@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.26 2004/02/10 11:01:10 christof Exp $
+// $Id: AufEintragZu.h,v 1.27 2004/02/10 11:36:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -67,7 +67,7 @@ public:
     static const bool list_ohneArtikel=false;
     static const bool list_unsorted=false;
 
-    static map_t get_Kinder_nach_Artikel(const AufEintragBase &aeb,bool kinder=list_kinder);
+    static map_t get_Kinder_nach_Artikel(const AufEintragBase &aeb,bool kinder=list_kinder,bool sorted=true);
 
     // Eine Benachbarte Liste von (Kind-)aufträgen aber nur ungeplante(0er) Aufträge:
     __deprecated list_t get_Referenz_list_ungeplant(bool kinder=true,bool artikel=list_ohneArtikel) const throw(SQLerror)
