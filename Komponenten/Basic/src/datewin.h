@@ -1,4 +1,4 @@
-// $Id: datewin.h,v 1.14 2004/01/27 12:08:32 christof Exp $
+// $Id: datewin.h,v 1.15 2004/09/27 15:47:17 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,7 +33,8 @@ class datewin : public datewin_glade
 
         static PAGE defaultpage;
 
-	void on_activate(int i);
+	void on_tag_activate();
+	void on_monat_activate();	
         void datum_activate();
         void kw_activate();
         void on_day_selected();

@@ -11,6 +11,11 @@
   <property name="modal">False</property>
   <property name="resizable">True</property>
   <property name="destroy_with_parent">False</property>
+  <property name="decorated">True</property>
+  <property name="skip_taskbar_hint">False</property>
+  <property name="skip_pager_hint">False</property>
+  <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
+  <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
 
   <child>
     <widget class="GtkNotebook" id="datewin">
@@ -49,7 +54,7 @@
 	      <property name="snap_to_ticks">False</property>
 	      <property name="wrap">True</property>
 	      <property name="adjustment">1 1 31 1 7 7</property>
-	      <signal name="activate" handler="on_activate" after="yes"/>
+	      <signal name="activate" handler="on_tag_activate" after="yes" last_modification_time="Mon, 27 Sep 2004 14:47:03 GMT"/>
 	    </widget>
 	    <packing>
 	      <property name="padding">0</property>
@@ -91,7 +96,7 @@
 	      <property name="snap_to_ticks">False</property>
 	      <property name="wrap">True</property>
 	      <property name="adjustment">1 1 12 1 3 3</property>
-	      <signal name="activate" handler="on_activate" after="yes"/>
+	      <signal name="activate" handler="on_monat_activate" after="yes" last_modification_time="Mon, 27 Sep 2004 14:47:12 GMT"/>
 	    </widget>
 	    <packing>
 	      <property name="padding">0</property>
@@ -309,6 +314,7 @@
 	  <property name="label" translatable="yes">Datum setzen</property>
 	  <property name="use_underline">True</property>
 	  <property name="relief">GTK_RELIEF_NORMAL</property>
+	  <property name="focus_on_click">True</property>
 	  <signal name="clicked" handler="datum_setzen"/>
 	</widget>
 	<packing>
@@ -347,6 +353,11 @@
   <property name="modal">False</property>
   <property name="resizable">True</property>
   <property name="destroy_with_parent">False</property>
+  <property name="decorated">True</property>
+  <property name="skip_taskbar_hint">False</property>
+  <property name="skip_pager_hint">False</property>
+  <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
+  <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
 
   <child>
     <widget class="GtkTable" id="KundenBox">
@@ -462,6 +473,11 @@
   <property name="modal">False</property>
   <property name="resizable">True</property>
   <property name="destroy_with_parent">False</property>
+  <property name="decorated">True</property>
+  <property name="skip_taskbar_hint">False</property>
+  <property name="skip_pager_hint">False</property>
+  <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
+  <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
 
   <child>
     <widget class="GtkTable" id="PreisBox">
@@ -577,6 +593,11 @@
   <property name="modal">False</property>
   <property name="resizable">True</property>
   <property name="destroy_with_parent">False</property>
+  <property name="decorated">True</property>
+  <property name="skip_taskbar_hint">False</property>
+  <property name="skip_pager_hint">False</property>
+  <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
+  <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
 
   <child>
     <widget class="GtkTable" id="WTelefon">
@@ -596,6 +617,7 @@
 	  <property name="label" translatable="yes">Nummer l_oe_schen</property>
 	  <property name="use_underline">True</property>
 	  <property name="relief">GTK_RELIEF_NORMAL</property>
+	  <property name="focus_on_click">True</property>
 	  <signal name="clicked" handler="on_buttonNumLoeschen_clicked"/>
 	</widget>
 	<packing>
@@ -1017,6 +1039,11 @@
   <property name="modal">False</property>
   <property name="resizable">True</property>
   <property name="destroy_with_parent">False</property>
+  <property name="decorated">True</property>
+  <property name="skip_taskbar_hint">False</property>
+  <property name="skip_pager_hint">False</property>
+  <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
+  <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
 
   <child>
     <widget class="GtkEventBox" id="IntStringBox">
@@ -1024,6 +1051,8 @@
       <property agent="glademm" name="cxx_separate_file">True</property>
       <property name="visible">True</property>
       <property name="events">GDK_BUTTON_PRESS_MASK</property>
+      <property name="visible_window">True</property>
+      <property name="above_child">False</property>
 
       <child>
 	<widget class="GtkTable" id="table">
@@ -1180,6 +1209,7 @@
 	      <property name="label" translatable="yes">leeren</property>
 	      <property name="use_underline">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
+	      <property name="focus_on_click">True</property>
 	      <signal name="clicked" handler="reset"/>
 	    </widget>
 	    <packing>

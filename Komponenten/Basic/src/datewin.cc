@@ -1,4 +1,4 @@
-// $Id: datewin.cc,v 1.18 2004/01/29 14:45:08 christof Exp $
+// $Id: datewin.cc,v 1.19 2004/09/27 15:47:17 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -119,21 +119,18 @@ gint datewin::try_grab_focus(GtkWidget *w,gpointer gp) throw()
    return true;
 }
 
-void datewin::on_activate(int i)
+void datewin::on_tag_activate()
 {
-  FELD feld=FELD(i);
-  switch(feld) {
-    case TAG:  
-         { this->monat->grab_focus();
-           this->monat->select_region(0,this->monat->get_text_length());
-           break;
-         }
-    case MONAT:  
-         { this->jahr->grab_focus();
-           this->jahr->select_region(0,this->jahr->get_text_length());
-         }
-   }
+ this->monat->grab_focus();
+ this->monat->select_region(0,this->monat->get_text_length());
 }
+
+void datewin::on_monat_activate()
+{
+ this->jahr->grab_focus();
+ this->jahr->select_region(0,this->jahr->get_text_length());
+}
+
 
 void datewin::setLabel(const std::string &s)
 {  set_show_tabs(!s.empty());
