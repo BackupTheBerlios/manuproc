@@ -1,4 +1,4 @@
-// $Id: FertigWaren.h,v 1.11 2003/07/17 07:26:09 christof Exp $
+// $Id: FertigWaren.h,v 1.12 2003/07/18 17:47:17 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -31,13 +31,15 @@
 class FertigWaren
 {
 public:
-  enum enum_Aktion{eLieferschein='L', eManuell='M', eInventur='I'};
+  enum enum_Aktion{eLieferschein='L', eManuell='M', eInventur='I',
+  		eUnknown='U'};
   
 private:
   ArtikelBase artikel;
   Zeitpunkt_new zeit; // wird erst nach einer Aktion gesetzt;
   enum_Aktion aktion;
   int stk;
+  int bestand;  	// Wenn es sich um eine Inventurbuchung handelt
   ManuProcEntity<>::ID lieferschein;
   int uid;
   std::string uname;
@@ -48,10 +50,11 @@ public:
 
  FertigWaren(ArtikelBase a,enum_Aktion a2,int s,
  		ManuProcEntity<>::ID lfrsid=ManuProcEntity<>::none_id)
-   : artikel(a)/*,zeit()*/,aktion(a2),stk(s),lieferschein(lfrsid)
+   : artikel(a)/*,zeit()*/,aktion(a2),stk(s),bestand(0),lieferschein(lfrsid)
    	{ uid=getuid(); };
  
- FertigWaren() : aktion(eLieferschein),stk(0),lieferschein(ManuProcEntity<>::none_id)
+ FertigWaren() : aktion(eLieferschein),stk(0),bestand(0),
+ 	lieferschein(ManuProcEntity<>::none_id)
 	{ uid=getuid(); };
  		
  std::string artBezeichnung() const { return cH_ArtikelBezeichnung(artikel)->Bezeichnung();}
@@ -59,7 +62,9 @@ public:
  			    if (e==Rein) return abs(stk);
  			    return stk;
  			   }
+ int Bestand() const { return bestand; }
  void setStk(int s) { stk=s; }
+ void setBestand(int b) { bestand=b; }
  ManuProcEntity<>::ID Lfrsid() const { return lieferschein;}
  Zeitpunkt_new Zeit() const { return zeit;}
  void setZeit(const Zeitpunkt_new z) { zeit=z;}

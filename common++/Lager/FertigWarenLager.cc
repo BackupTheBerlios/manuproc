@@ -93,6 +93,8 @@ void FertigWarenLager::Buchen(FertigWaren::e_buchen buchen)
 
  SQLerror::test(__FILELINE__);   
 
+ fw.setStk(fw.Stk(buchen));
+
  if(buchen == FertigWaren::Rein)
    rein_ins_lager(fw.Artikel(),fw.Stk(FertigWaren::AsIs),fw.getUserID(),true);
  else
@@ -125,15 +127,17 @@ void FertigWarenLager::Inventur()
  fw.setZeit(z);
   
  int buchmenge=fw.Stk(FertigWaren::AsIs)-alte_menge;
+ fw.setBestand(fw.Stk(FertigWaren::AsIs));
 
  q << fw.Artikel().Id()
    << buchmenge
    << fw.Zeit()
    << char(FertigWaren::eInventur)
    << fw.getUserID()
-   << fw.Stk(FertigWaren::AsIs);
+   << fw.Bestand();
 
  fw.setStk(buchmenge);
+
 
  SQLerror::test(__FILELINE__);   
 
