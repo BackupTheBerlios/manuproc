@@ -1,4 +1,4 @@
-// $Id: bool_CheckButton.hh,v 1.3 2002/12/03 09:10:44 christof Exp $
+// $Id: bool_CheckButton.hh,v 1.4 2002/12/12 10:15:39 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -28,7 +28,8 @@ class bool_CheckButton : public Gtk::CheckButton
 {	typedef bool T;
 	SigC::Connection ch_con, my_ch_con;
 	Model_ref<T> model;
-	
+
+	void init();
 	void refresh(gpointer);
 	void on_toggled();
 	// explicitely forbid to use these (make them private)
@@ -36,6 +37,7 @@ class bool_CheckButton : public Gtk::CheckButton
 	void set_active(bool);
 public:
 	bool_CheckButton(const Model_ref<T> &model, const std::string &text);
+	bool_CheckButton(const Model_ref<T> &model,Gtk::Widget &widget);
 };
 
 #endif
