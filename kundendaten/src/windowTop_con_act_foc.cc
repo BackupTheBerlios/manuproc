@@ -86,7 +86,7 @@ void windowTop::changedFktS(Kunde::UpdateBitsSonst e)
      else if (e==Kunde::FNotiz      ) kundendaten->set_notiz(textNotiz->get_chars(0,textNotiz->get_length()));
      else if (e==Kunde::FEntsorgung ) kundendaten->entsorgung(checkbutton_entsorgung->get_active());
      else if (e==Kunde::Flieferung_frei_haus ) kundendaten->set_lieferung_frei_haus(checkbutton_lieferung_frei_haus->get_active());
-     else if (e==Kunde::FVerknr     ) kundendaten->setVerkNr(scc_verkaeufer->Content());
+//     else if (e==Kunde::FVerknr     ) kundendaten->setVerkNr(scc_verkaeufer->Content());
      else if (e==Kunde::FBetreuer     ) kundendaten->setBetreuer(betreuer->get_value()->Id());     
 //     else if (e==Kunde::FKalkulation)
      else if (e==Kunde::FKP_Position) ;

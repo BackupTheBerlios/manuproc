@@ -74,6 +74,12 @@ windowTop::windowTop()
   betreuer->setExpandStr1(true);
   betreuer->setExpandStr2(true); 
 
+
+ scc_verkaeufer->reset();
+ scc_verkaeufer->EinschraenkenKdGr(KundengruppeID::Verkaeufer);
+ scc_verkaeufer->setExpandStr1(true);
+ scc_verkaeufer->setExpandStr2(true); 
+
  connectFkt();
 }
 
@@ -517,5 +523,9 @@ void windowTop::on_ab_an_rngadresse_toggled()
 {
  if(kundendaten->Id()==Kunde::none_id) return;
    kundendaten->AB_an_rngadresse(ab_an_rngadresse->get_active());  
+}
+
+void windowTop::scc_verkaeufer_reset()
+{  
 }
 

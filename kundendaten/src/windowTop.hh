@@ -99,8 +99,8 @@ class windowTop : public windowTop_glade
 //      void on_button_neue_spl_anlegen_clicked();
         void scc_verkaeufer_activate();
         void on_betreuer_activate();
-        void scc_verkaeufer_search(int *_continue, GtkSCContext newsearch);
-        void scc_anrede_search(int *_continue, GtkSCContext newsearch);
+	void scc_verkaeufer_reset();
+        void scc_anrede_search(gboolean *_continue, GtkSCContext newsearch);
         void on_checkbuttonBankeinzug_toggled();
         int fill_bank_bei(unsigned long int blz);
         void on_button_neue_bank_clicked();

@@ -1695,23 +1695,35 @@
 		</child>
 
 		<widget>
-		  <class>Custom</class>
-		  <name>scc_verkaeufer</name>
-		  <cxx_visibility>protected</cxx_visibility>
-		  <signal>
-		    <name>activate</name>
-		    <handler>scc_verkaeufer_activate</handler>
-		    <last_modification_time>Wed, 27 Feb 2002 09:53:01 GMT</last_modification_time>
-		  </signal>
-		  <signal>
-		    <name>search</name>
-		    <handler>scc_verkaeufer_search</handler>
-		    <last_modification_time>Wed, 27 Feb 2002 13:07:13 GMT</last_modification_time>
-		  </signal>
-		  <creation_function>SearchComboContent&lt;int&gt;</creation_function>
-		  <int1>0</int1>
-		  <int2>0</int2>
-		  <last_modification_time>Wed, 27 Feb 2002 14:46:58 GMT</last_modification_time>
+		  <class>GtkVBox</class>
+		  <name>vbox13</name>
+		  <homogeneous>False</homogeneous>
+		  <spacing>0</spacing>
+
+		  <widget>
+		    <class>Custom</class>
+		    <name>scc_verkaeufer</name>
+		    <cxx_visibility>protected</cxx_visibility>
+		    <signal>
+		      <name>reset_signal</name>
+		      <handler>scc_verkaeufer_reset</handler>
+		      <last_modification_time>Sun, 25 Jan 2004 20:37:47 GMT</last_modification_time>
+		    </signal>
+		    <signal>
+		      <name>activate</name>
+		      <handler>scc_verkaeufer_activate</handler>
+		      <last_modification_time>Sun, 25 Jan 2004 20:26:48 GMT</last_modification_time>
+		    </signal>
+		    <creation_function>KundenBox2</creation_function>
+		    <int1>0</int1>
+		    <int2>0</int2>
+		    <last_modification_time>Sun, 25 Jan 2004 20:31:25 GMT</last_modification_time>
+		    <child>
+		      <padding>0</padding>
+		      <expand>True</expand>
+		      <fill>True</fill>
+		    </child>
+		  </widget>
 		</widget>
 	      </widget>
 

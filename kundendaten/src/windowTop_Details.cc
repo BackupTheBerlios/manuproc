@@ -10,7 +10,7 @@ void windowTop::show_details()
 {
   table_details->set_sensitive(true);
   fire_enabled=false;
-   scc_verkaeufer->setContent(kundendaten->getVerkaeufer().name,kundendaten->getVerkaeufer().verknr);
+   scc_verkaeufer->set_value(kundendaten->getVerkaeufer().verknr);
    if(kundendaten->getBetreuer() != Person::none_id)
      betreuer->set_value(kundendaten->getBetreuer());
    else
@@ -131,10 +131,23 @@ void windowTop::scc_verkaeufer_activate()
 {
  if(kundendaten->Id() == Kunde::none_id) return;
 
- Query q("update kunden set verknr=? where kundennr=?");
- q << Query::NullIf(scc_verkaeufer->Content(),Kunde::none_id) << kundendaten->Id();
+ Transaction tr;
 
-//  changedFktS(Kunde::FVerknr);
+
+ Query q("update kunden set verknr=? where kundennr=?");
+ q << Query::NullIf(scc_verkaeufer->get_value(),Kunde::none_id) << kundendaten->Id();
+
+ Query("delete from prov_verkaeufer where kundennr=?") << kundendaten->Id();
+
+ Query("insert into prov_verkaeufer (SELECT ?,?,provsatz1,provsatz2 from"
+   " prov_verkaeufer where verknr=? group by provsatz1,provsatz2 order by "
+   " count(*) desc limit 1)") << scc_verkaeufer->get_value()
+				<< kundendaten->Id()
+				<< scc_verkaeufer->get_value();
+ SQLerror::test(__FILELINE__,100);
+
+ tr.commit();
+//  changedFktS(Kunde::FVerknrku);
 }
 
 void windowTop::fillSPreis()
