@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.h,v 1.10 2004/01/30 16:59:27 christof Exp $
+// $Id: TreeViewUtility.h,v 1.11 2004/01/30 17:00:16 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -58,6 +58,8 @@ public:
 	void set_column_justification(int col, Gtk::Justification just);
 	void column_titles_passive() {}
 	void append(const gchar* text[]);
+	void freeze() {}
+	void thaw() {}
 };
 
 class CList : public Gtk::TreeView

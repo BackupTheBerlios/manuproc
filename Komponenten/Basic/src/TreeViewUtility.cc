@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.cc,v 1.10 2004/01/30 13:26:25 christof Exp $
+// $Id: TreeViewUtility.cc,v 1.11 2004/01/30 16:59:27 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -93,4 +93,21 @@ bool TreeViewUtility::CListEmulator::selection_empty() const
 {  int num=0;
    view->get_selection()->selected_foreach(SigC::bind(SigC::slot(&increment),&num));
    return !num;
+}
+
+void TreeViewUtility::CListEmulator::set_column_justification(int col, Gtk::Justification just)
+{  Gtk::AlignmentEnum al=Gtk::ALIGN_LEFT;
+   switch(just)
+   {  case Gtk::JUSTIFY_LEFT: al=Gtk::ALIGN_LEFT; break;
+      case Gtk::JUSTIFY_RIGHT: al=Gtk::ALIGN_RIGHT; break;
+      case Gtk::JUSTIFY_CENTER: al=Gtk::ALIGN_CENTER; break;
+      case Gtk::JUSTIFY_FILL: al=Gtk::ALIGN_LEFT; break;
+   }
+   set_column_justification(col,al);
+}
+
+void TreeViewUtility::CListEmulator::append(const gchar* text[])
+{  Gtk::TreeModel::iterator iter =get_store()->append();
+   for (unsigned i=0;i<cols.size();++i)
+      (*iter)[cols[i]]=text[i];
 }
