@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.79 2004/05/06 10:43:31 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.80 2004/06/14 14:35:06 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -200,6 +200,7 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
 	  Glib::ObjectBase( typeid(SimpleTreeStore) ), //register a custom GType.
 	  Glib::Object(), //The custom GType is actually registered here.
 #endif	  
+          columns_are_equivalent(true),
 	  node_creation(), columns(max_col), max_column(max_col),
 	  showdeep(), gp(), 
 	  auffuellen_bool(), expandieren_bool(), block_save(),
@@ -217,21 +218,12 @@ SimpleTreeStore::SimpleTreeStore(int max_col)
   for (std::vector<bool>::iterator i=vec_hide_cols.begin();i!=vec_hide_cols.end();++i)
     (*i) = true;
    defaultSequence();
-#if 0 && GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
-   getModel().signal_title_changed().connect(sigc::mem_fun(*this,&SimpleTreeStore::on_title_changed));
-   getModel().signal_redraw_needed().connect(sigc::mem_fun(*this,&SimpleTreeStore::redisplay));
-   getModel().signal_line_appended().connect(sigc::mem_fun(*this,&SimpleTreeStore::on_line_appended));
-   getModel().signal_line_to_remove().connect(sigc::mem_fun(*this,&SimpleTreeStore::on_line_removed));
-   signal_save.connect(sigc::mem_fun(*this,&SimpleTreeStore::save_remembered1));
-   signal_visibly_changed.connect(sigc::mem_fun(*this,&SimpleTreeStore::on_visibly_changed));
-#else
    getModel().signal_title_changed().connect(SigC::slot(*this,&SimpleTreeStore::on_title_changed));
    getModel().signal_redraw_needed().connect(SigC::slot(*this,&SimpleTreeStore::redisplay));
    getModel().signal_line_appended().connect(SigC::slot(*this,&SimpleTreeStore::on_line_appended));
    getModel().signal_line_to_remove().connect(SigC::slot(*this,&SimpleTreeStore::on_line_removed));
    signal_save.connect(SigC::slot(*this,&SimpleTreeStore::save_remembered1));
    signal_visibly_changed.connect(SigC::slot(*this,&SimpleTreeStore::on_visibly_changed));
-#endif
   Gdk::Color c;
   c.set_rgb(col1,col1,col1); colors.push_back(c); // white
   c.set_rgb(col1,col0,col0); colors.push_back(c); // red
@@ -267,6 +259,7 @@ SimpleTreeStore::ModelColumns::ModelColumns(int _cols)
 
 void SimpleTreeStore::on_title_changed(guint idx)
 {  unsigned col=ColumnFromIndex(idx);
+   ManuProC::Trace(trace_channel,__FUNCTION__,idx,col);
    if (col!=invisible_column) title_changed(col);
 }
 
@@ -478,10 +471,11 @@ void SimpleTreeStore::setSequence(const sequence_t &neu)
       save_remembered();
       spaltenzahl_geaendert();
    }
-   else
+   else if (columns_are_equivalent)
    {  for (unsigned i=0;i<Cols();++i) title_changed(i);
       redisplay();
    }
+   else spaltenzahl_geaendert();
 }
 
 unsigned SimpleTreeStore::ColumnFromIndex(unsigned idx) const

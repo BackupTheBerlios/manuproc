@@ -1,4 +1,4 @@
-// $Id: SimpleTreeModel.h,v 1.10 2003/12/19 14:44:39 jacek Exp $
+// $Id: SimpleTreeModel.h,v 1.11 2004/06/14 14:35:06 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,15 +30,19 @@
 class SimpleTreeModel : SigC::Object
 {public:
 	typedef std::vector<cH_RowDataBase> datavec_t;
+	
+	enum column_type_t { ct_string, ct_bool };
 private:
 	datavec_t datavec;
 	std::vector<std::string> titles;
 	std::vector<bool> column_editable;
+	std::vector<column_type_t> column_type;
 
 	SigC::Signal1<void,cH_RowDataBase> line_appended;
 	SigC::Signal1<void,cH_RowDataBase> line_to_remove;
 	SigC::Signal0<void> redraw_needed;
-//	SigC::Signal2<void,cH_RowDataBase,cH_RowDataBase> value_changed;
+	// a column was changed, change data, redraw?
+	SigC::Signal3<bool,cH_RowDataBase,unsigned,const std::string &> value_changed;
 	SigC::Signal1<void,guint> title_changed;
 public:
 	void append_line(const cH_RowDataBase &row);
@@ -59,11 +63,19 @@ public:
 	{  return title_changed; }
 	SigC::Signal0<void> &signal_redraw_needed()
 	{  return redraw_needed; }
+	SigC::Signal3<bool,cH_RowDataBase,unsigned,const std::string &> 
+		&signal_value_changed()
+	{  return value_changed; }
 
 	void about_to_change(const cH_RowDataBase &row)
 	{  signal_line_to_remove()(row); }
 	void has_changed(const cH_RowDataBase &row)
 	{  signal_line_appended()(row); }
+	
+	bool is_editable(unsigned idx) const;
+	column_type_t get_column_type(unsigned idx) const;
+	void set_editable(unsigned idx,bool v=true);
+	void set_column_type(unsigned idx, column_type_t t);
 };
 
 #endif

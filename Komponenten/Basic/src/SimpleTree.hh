@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.36 2004/05/17 09:15:55 christof Exp $
+// $Id: SimpleTree.hh,v 1.37 2004/06/14 14:35:06 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -92,6 +92,8 @@ class SimpleTree_Basic : public Gtk::TreeView, public SimpleTreeStore_Proxy
 	void sel_change_cb(const Gtk::TreeModel::iterator&it,
 			std::vector<cH_RowDataBase> *l,
 			std::vector<Handle<TreeRow> > *n);
+        void on_column_edited(const Glib::ustring &path,
+                  const Glib::ustring&new_text,unsigned idx);
 	
 public:
 	SimpleTree_Basic(unsigned max_col);
@@ -112,8 +114,8 @@ public:
 	void setDataVec(const std::vector<cH_RowDataBase> &d) 
 	{  detach(); SimpleTreeStore_Proxy::setDataVec(d); attach(); }
 
- void Expand_recursively();
- void Collapse();
+	void Expand_recursively();
+	void Collapse();
 	void setTitles(const std::vector<std::string> &T);
 	void setAlignment(const std::vector<gfloat> &A);
 };

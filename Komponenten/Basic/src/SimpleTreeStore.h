@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.46 2004/05/06 10:02:44 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.47 2004/06/14 14:35:06 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -115,6 +115,7 @@ protected:
 	friend class SimpleTree_Basic;
 	sequence_t currseq; 
 	SimpleTreeStoreNode root;
+	bool columns_are_equivalent;
 
 private:
 	NewNode_fp node_creation;

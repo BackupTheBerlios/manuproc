@@ -1,4 +1,4 @@
-// $Id: SimpleTreeModel.cc,v 1.4 2003/12/19 14:44:39 jacek Exp $
+// $Id: SimpleTreeModel.cc,v 1.5 2004/06/14 14:35:06 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -55,4 +55,26 @@ void SimpleTreeModel::setTitles(const std::vector<std::string> &T)
 const std::string SimpleTreeModel::getColTitle(guint idx) const
 {  if (idx<titles.size()) return titles[idx];
    return ""; 
+}
+
+bool SimpleTreeModel::is_editable(unsigned idx) const
+{  if (idx>=column_editable.size()) return false;
+   return column_editable[idx];
+}
+
+SimpleTreeModel::column_type_t SimpleTreeModel::get_column_type(unsigned idx) const
+{  if (idx>=column_type.size()) return ct_string;
+   return column_type[idx];
+}
+
+void SimpleTreeModel::set_editable(unsigned idx,bool v)
+{  if (idx>=column_editable.size()) column_editable.resize(idx+1);
+   column_editable[idx]=v;
+   title_changed(idx);
+}
+
+void SimpleTreeModel::set_column_type(unsigned idx, column_type_t t)
+{  if (idx>=column_type.size()) column_type.resize(idx+1);
+   column_type[idx]=t;
+   title_changed(idx);
 }

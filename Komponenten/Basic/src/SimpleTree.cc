@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.48 2004/05/17 12:04:34 christof Exp $
+// $Id: SimpleTree.cc,v 1.49 2004/06/14 14:35:05 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -73,6 +73,13 @@ SimpleTree_Basic::~SimpleTree_Basic()
 {  if (menu) delete menu;
 }
 
+void SimpleTree_Basic::on_column_edited(const Glib::ustring &path,const Glib::ustring&new_text,unsigned idx)
+{  const Gtk::TreeRow row=*getTreeModel()->get_iter(Gtk::TreeModel::Path(path));
+   if (!row) return;
+   // return value?
+   getModel().signal_value_changed()(row[getStore()->m_columns.leafdata],idx,new_text);
+}
+
 void SimpleTree_Basic::on_spaltenzahl_geaendert()
 {  remove_all_columns();
    for (unsigned int i=0;i<Cols();++i)
@@ -86,9 +93,15 @@ void SimpleTree_Basic::on_spaltenzahl_geaendert()
       if (getStore()->OptionColor().Value())
          pColumn->add_attribute(crt->property_background_gdk(),sts->m_columns.background);
       pColumn->add_attribute(crst->property_childrens_deep(),sts->m_columns.childrens_deep);
+      unsigned idx(IndexFromColumn(i));
       if (!alignment.empty())
-      {  pColumn->set_alignment(alignment[IndexFromColumn(i)]);
-         crt->property_xalign()=alignment[IndexFromColumn(i)];
+      {  pColumn->set_alignment(alignment[idx]);
+         crt->property_xalign()=alignment[idx];
+      }
+      if (getModel().is_editable(idx))
+      {  std::cout << idx << " is_editable\n";
+         crt->property_editable()=true;
+         crt->signal_edited().connect(SigC::bind(SigC::slot(*this,&SimpleTree_Basic::on_column_edited),idx));
       }
       append_column(*pColumn);
    }
@@ -145,7 +158,10 @@ void SimpleTree_Basic::on_neuordnen_clicked()
 }
 
 void SimpleTree_Basic::on_title_changed(guint nr)
-{  get_column(nr)->set_title(getColTitle(nr));
+{  if (getStore()->columns_are_equivalent && getModel().is_editable(IndexFromColumn(nr)))
+      getStore()->columns_are_equivalent=false;
+   if (!getStore()->columns_are_equivalent) on_spaltenzahl_geaendert();
+   else get_column(nr)->set_title(getColTitle(nr));
 }
 
 void SimpleTree_Basic::sel_change_cb(const Gtk::TreeModel::iterator&it,
