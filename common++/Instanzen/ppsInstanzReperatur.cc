@@ -23,6 +23,7 @@
 #include <Lager/RohwarenLager.h>
 #include <Misc/SQLerror.h>
 #include <sqlca.h>
+#include <Auftrag/AufEintragZuMengenAenderung.h>
 
 void ppsInstanz::Reparatur_0er_und_2er(int uid) const throw(SQLerror)
 {
@@ -164,13 +165,14 @@ std::cout <<i->Artikel().Id()<<' '<<cH_ArtikelBezeichnung(i->Artikel())->Bezeich
        {
          if(j->Id()!=AuftragBase::plan_auftrag_id) assert(!"never get here");
          menge-=j->getRestStk() ;
-std::cout << "\tPlanung abziehen "<<AufEintragBase(*j)<<'\t'<<j->getRestStk()<<'\t'<<menge<<'\n';
-//         assert(menge>=0);
+//std::cout << "\tPlanung abziehen "<<AufEintragBase(*j)<<'\t'<<j->getRestStk()<<'\t'<<menge<<'\n';
          if(menge<0) // mehr Menge vorgeplant als vorhanden
            {
             set_dispo_to_zero=true;
+std::cout << "\t"<<AufEintragBase(*j)<<'\t'<<j->getRestStk()<<'\t'<<menge<<'\n';
 std::cout << "\t\tReparaturMenge: "<<-menge<<'\n';
             j->updateStkDiffBase__(uid,menge);
+            AufEintragZuMengenAenderung::increase_parents__reduce_assingments(uid,*j,-menge);
             menge=0;
            }
        }
@@ -182,11 +184,10 @@ std::cout << "\t\tReparaturMenge: "<<-menge<<'\n';
          if(j->Id()!=AuftragBase::dispo_auftrag_id) assert(!"never get here");
          assert(j->getStueck()==j->getRestStk());
          menge-=j->getRestStk();
-std::cout << "\tDispo abziehne "<<AufEintragBase(*j)<<'\t'<<j->getRestStk()<<'\t'<<menge<<'\n';
+//std::cout << "\tDispo abziehne "<<AufEintragBase(*j)<<'\t'<<j->getRestStk()<<'\t'<<menge<<'\n';
          if(set_dispo_to_zero)
            j->updateStkDiffBase__(uid,-j->getStueck());
       }
-std::cout << "Endmenge: "<<menge<<'\n';
 
      if(menge!=0 && !set_dispo_to_zero) 
          DispoAuftraege_anlegen(uid,i->Artikel(),menge);
@@ -198,6 +199,7 @@ std::cout << "Endmenge: "<<menge<<'\n';
 void ppsInstanz::DispoAuftraege_anlegen(const int uid,const ArtikelBase &artikel,const AuftragBase::mengen_t &menge) const
 {
    assert(EigeneLagerKlasseImplementiert());
+std::cout << "Mengenänderung: "<<menge<<'\n';
    if(menge>=0)
       LagerBase(this).rein_ins_lager(artikel,menge,uid);
 /*

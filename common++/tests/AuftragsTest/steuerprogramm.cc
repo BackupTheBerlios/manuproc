@@ -327,9 +327,20 @@ std::cout << dummystring<<'\n';
          " 123755,false,712)";
       Query::Execute(qJ2);
       SQLerror::test(__FILELINE__);
-      erfolgreich=C.teste(Check::Menge,"_split_reparatur_bandlager",mit_reparatur_programm,true);
+      erfolgreich=C.teste(Check::Menge,"_split_reparatur_bandlager_minus",mit_reparatur_programm,true);
       if(!erfolgreich) { cout << "Reparatur-Split-Test (BandlagerMinus) auslagern\n";
                return fehler();}
+
+      std::string qB2="update rl_inhalt set kartons=4 where "
+         " (position_,reste,kg_per_karton,"
+         " material,eingelagert,rest_kg)"
+         " = ('07D5',0,5,211007,'2002-11-28',0)";
+      Query::Execute(qB2);
+      SQLerror::test(__FILELINE__);
+      erfolgreich=C.teste(Check::Menge,"_split_reparatur_garnlager_minus",mit_reparatur_programm,true);
+      if(!erfolgreich) { cout << "Reparatur-Split-Test (BandlagerMinus) auslagern\n";
+               return fehler();}
+
 
 
       cout << "Reparatur-Test (Petig, Physikalisches Lager) erfolgreich\n";

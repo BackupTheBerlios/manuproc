@@ -1,4 +1,4 @@
-// $Id: AufEintragZuMengenAenderung.cc,v 1.1 2002/11/22 15:57:02 christof Exp $
+// $Id: AufEintragZuMengenAenderung.cc,v 1.2 2002/11/29 07:17:22 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -45,10 +45,11 @@ void AufEintragZuMengenAenderung::increase_parents__reduce_assingments(const int
   ManuProC::Trace _t(ManuProC::Tracer::Auftrag, __FUNCTION__,"AEB=",child_aeb,"Menge=",menge);
   std::list<AufEintragZu::st_reflist> L=AufEintragZu(child_aeb).get_Referenz_list(child_aeb);
   AuftragBase::mengen_t M=menge;
+
   for(std::list<AufEintragZu::st_reflist>::iterator j=L.begin();j!=L.end();++j)
     {
       AuftragBase::mengen_t m=AuftragBase::min(j->Menge,M);
-      
+
       AufEintragZu(j->AEB).setMengeDiff__(child_aeb,-m);
       AufEintrag(j->AEB).updateStkDiff__(uid,m,true,ManuProC::Auftrag::r_Produziert);
       M-=m;
