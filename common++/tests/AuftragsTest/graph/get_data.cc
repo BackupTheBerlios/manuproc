@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.50 2003/09/12 11:06:50 christof Exp $
+// $Id: get_data.cc,v 1.51 2003/09/12 11:29:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -229,8 +229,10 @@ std::vector<std::pair<std::string,std::string> > graph_data_node::get_edges_for(
   AufEintragBase aeb_mem=list_child.front().aeb;
   std::vector<std::string> S(1);
   std::vector<AuftragBase::mengen_t> Mmem(1);
+  std::vector<unsigned> FImem(1);
   unsigned fileindex_mem=unsigned(-1);
   unsigned index=0;
+  FImem[0]=unsigned(-3);
   ManuProC::Trace _t(trace_channel, __FUNCTION__,aeb);
   for(std::list<st_child>::const_iterator i=list_child.begin();i!=list_child.end();++i)
    { ManuProC::Trace _t(trace_channel, "for",NV("fileindex",i->fileindex),
@@ -243,11 +245,19 @@ std::vector<std::pair<std::string,std::string> > graph_data_node::get_edges_for(
         }
         else
         { index=0; fileindex_mem=i->fileindex; }
-        bool was_empty=S[index].empty();
-        if (!was_empty) S[index]+="/";
-        else if (!vec_files_auftragentry[i->fileindex].prefix.empty())
-           S[index]=vec_files_auftragentry[i->fileindex].prefix+":";
-        if(Mmem[index] != i->menge || was_empty) 
+        
+        bool need_value=false;
+        if (FImem[index]+1!=i->fileindex)
+        {  if (!S[index].empty()) S[index]+=' ';
+           if (!vec_files_auftragentry[i->fileindex].prefix.empty())
+              S[index]+=vec_files_auftragentry[i->fileindex].prefix+":";
+           need_value=true;
+        }
+        else
+        {  S[index]+="/";
+        }
+        FImem[index]=i->fileindex;
+        if(need_value || Mmem[index] != i->menge)
         {  S[index]+=i->menge.String();
            Mmem[index]=i->menge;
         }
@@ -267,6 +277,8 @@ std::vector<std::pair<std::string,std::string> > graph_data_node::get_edges_for(
         S.push_back(n);
         Mmem.clear();
         Mmem.push_back(i->menge);
+        FImem.clear();
+        FImem.push_back(i->fileindex);
         aeb_mem=i->aeb;
         fileindex_mem=i->fileindex;
         index=0;
