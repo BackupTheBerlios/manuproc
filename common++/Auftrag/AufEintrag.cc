@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.89 2003/07/26 11:14:43 jacek Exp $
+// $Id: AufEintrag.cc,v 1.90 2003/08/14 08:30:09 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -126,26 +126,26 @@ AufEintragBase AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &ziel
 
   AufEintrag AE1er(neueZeile);
    // dispo (2er) Auftrag anlegen bei Überplanung
-   if (reason==ManuProC::Auftrag::r_Planen && menge-getRestStk() > 0)
+   mengen_t dispomenge;
+   
+   if (menge>getRestStk())
     { assert(!Instanz()->LagerInstanz()); // CP
-      mengen_t dispomenge = menge-getRestStk();
-      // nur soviel unten verwenden (tatsächlich zu uns ziehen,
-      // 	Rest wird von uns in Ueberplanen bestellt)
-      menge-=dispomenge;
-
-      AE1er.Ueberplanen(uid,Artikel(),dispomenge,datum);
-
       // Produktionsplaner (ungetestet)
-      if(zielauftrag.Instanz()->GeplantVon()!=ppsInstanzID::None)
-       {
-	    assert(!"yet implemented");
+      assert(zielauftrag.Instanz()->GeplantVon()==ppsInstanzID::None);
 	    // hier wurde ehemals ein 2er im Planer angelegt
 	    // Code siehe CVS
-       }
+
+      // nur soviel unten verwenden (tatsächlich zu uns ziehen,
+      // 	Rest wird von uns in Ueberplanen bestellt)
+      dispomenge = menge-getRestStk();
+      menge-=dispomenge;
     }
 
-    move_to(uid,AE1er,menge,reason);
+   move_to(uid,AE1er,menge,reason);
 
+   if (!!dispomenge)
+      AE1er.Ueberplanen(uid,Artikel(),dispomenge,datum);
+   
 //---- ProzessInstanz setzen ------
   // nur wenn aktiv durch Benutzer geplant
   if (ManuProC::Auftrag::r_Planen
