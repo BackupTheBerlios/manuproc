@@ -198,6 +198,94 @@ void windowTop::on_gruppenwahl_activate()
 }
 
 
+void windowTop::on_riba_save_clicked()
+{
+ riba_save->set_sensitive(false);
+ riba_abbruch->set_sensitive(false);
+ 
+ try{
+ kundendaten->setABI_CAB(abi_entry->get_text(),cab_entry->get_text());
+ abi_entry->set_text(kundendaten->getABI_Code(true));
+ cab_entry->set_text(kundendaten->getCAB_Code());
+ }  
+ catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e); }   
+}
+
+void windowTop::on_riba_abbruch_clicked()
+{  
+ riba_save->set_sensitive(false);
+ riba_abbruch->set_sensitive(false);
+ 
+ try{
+ abi_entry->set_text(kundendaten->getABI_Code());
+ cab_entry->set_text(kundendaten->getCAB_Code());
+ } 
+ catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e); } 
+}
+
+void windowTop::on_iban_save_clicked()
+{
+ iban_save->set_sensitive(false);
+ iban_abbruch->set_sensitive(false);
+ 
+ try{iban_entry->set_text(kundendaten->getIBAN_Code())}
+ catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e); } 
+  
+}
+
+void windowTop::on_iban_abbruch_clicked()
+{  
+ iban_save->set_sensitive(false);
+ iban_abbruch->set_sensitive(false);
+ 
+ try{
+ kundendaten->setIBAN(iban_entry->get_text());
+ iban_entry->set_text(kundendaten->getIBAN_Code(true));
+ }
+ catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e); } 
+
+}
+
+void windowTop::on_abi_entry_changed()
+{
+ riba_save->set_sensitive(true);
+ riba_abbruch->set_sensitive(true);  
+}
+
+void windowTop::on_cab_entry_changed()
+{  
+ riba_save->set_sensitive(true);
+ riba_abbruch->set_sensitive(true);  
+}
+
+
+void windowTop::on_iban_entry_changed()
+{
+ iban_save->set_sensitive(true);
+ iban_abbruch->set_sensitive(true);    
+}
+
+void windowTop::on_zahlverfahren_book_switch_page(Gtk::Notebook_Helpers::Page *p0, guint pagenr)
+{  
+ try{
+ switch(enum_zahl_verfahren(pagenr))
+   {
+    PAGE_DTAUS: break;
+    PAGE_RIBA:
+    	 abi_entry->set_text(kundendaten->getABI_Code());
+ 	 cab_entry->set_text(kundendaten->getCAB_Code());
+ 	 break;
+    PAGE_LCR:
+   	 iban_entry->set_text(kundendaten->getIBAN_Code(true)); 	 
+   	 break;
+    default: return;
+   }
+ }
+ catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e); } 
+ 
+}
+
+
 /////////////////////////////////////////////////////////////////////////
 // Extras
 /////////////////////////////////////////////////////////////////////////

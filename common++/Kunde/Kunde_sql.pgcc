@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.26 2002/12/18 12:45:39 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.27 2002/12/18 13:16:31 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -641,21 +641,38 @@ void Kunde::showEAN(bool ea) throw(SQLerror)
 }
 
 #ifdef MABELLA_EXTENSIONS
-std::string Kunde::getIBAN_Code() const throw(SQLerror)
+std::string Kunde::getIBAN_Code(bool force) const
 {
- if(iban.size())
+ if(iban.size() && !force)
    return iban;
  
- getRiBa_Code();
+ init_AuslandZahlung();
 
  return iban;
 }
 
-std::pair<std::string,std::string> Kunde::getRiBa_Code() const throw(SQLerror)
+std::string Kunde::getCAB_Code(bool force) const
 {
- if(cab.size() && abi.size())
-   return std::pair<std::string,std::string>(cab,abi);
+ if(cab.size() && !force)
+   return cab;
+ 
+ init_AuslandZahlung();
 
+ return cab;
+}
+
+std::string Kunde::getABI_Code(bool force) const
+{
+ if(abi.size() && !force)
+   return abi;
+ 
+ init_AuslandZahlung();
+
+ return abi;
+}
+
+void Kunde::init_AuslandZahlung() const throw(SQLerror)
+{
  exec sql begin declare section;
  unsigned int KUNDENNR = entityid;
  char *CAB=0;
@@ -663,6 +680,32 @@ std::pair<std::string,std::string> Kunde::getRiBa_Code() const throw(SQLerror)
  char *IBAN=0;
  int ICAB,IABI,IIBAN;
  exec sql end declare section;
+
+ exec sql select iban,cab,abi 
+	into :IBAN:IIBAN,:CAB:ICAB,:ABI:IABI from ausland_bankverbindung where
+	kundennr= :KUNDENNR;
+ SQLerror::test(__FILELINE__);
+
+ abi=string(ABI);
+ cab=string(CAB);
+ iban=string(IBAN);
+ 
+ ECPGfree_auto_mem(); 
+}
+
+void Kunde::setABI_CAB(const std::string abi, const std::string cab) const throw(SQLerror)
+{
+ exec sql begin declare section;
+ unsigned int KUNDENNR = entityid;
+ char *CAB;
+ char *ABI;
+ int ICAB,IABI,IIBAN;
+ exec sql end declare section;
+
+ CAB=(char*)cab.c_str();
+ ABI=(char*)abi.c_str();
+ 
+############
 
  exec sql select iban,cab,abi 
 	into :IBAN:IIBAN,:CAB:ICAB,:ABI:IABI from riba_code where
@@ -674,8 +717,16 @@ std::pair<std::string,std::string> Kunde::getRiBa_Code() const throw(SQLerror)
  iban=string(IBAN);
  
  ECPGfree_auto_mem(); 
- return std::pair<std::string,std::string>(cab,abi);
+
 }
+
+
+void Kunde::setIBAN(const std::string iban) const throw(SQLerror)
+{
+
+
+}
+
 #endif
 
 

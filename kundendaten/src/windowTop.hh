@@ -20,6 +20,7 @@ class windowTop : public windowTop_glade
         Transaction transaction; // Für die SearchCombos
         friend class windowTop_glade;
         enum enum_notebook{PAGE_KUNDE,PAGE_DETAILS,PAGE_KONTAKTPERSON,PAGE_PERSON};
+        enum enum_zahl_verfahren{PAGE_DTAUS,PAGE_RIBA,PAGE_LCR};
         void on_notebook1_switch_page(Gtk::Notebook_Helpers::Page* page,guint pagenr);
         void on_gruppenwahl_activate();
 
@@ -94,6 +95,16 @@ class windowTop : public windowTop_glade
         void on_checkbuttonBankeinzug_toggled();
         int fill_bank_bei(unsigned long int blz);
         void on_button_neue_bank_clicked();
+
+        void on_abi_entry_changed();
+        void on_cab_entry_changed();
+        void on_iban_entry_changed();
+
+        void on_riba_save_clicked();
+        void on_riba_abbruch_clicked();
+        void on_iban_save_clicked();
+        void on_iban_abbruch_clicked();
+        void on_zahlverfahren_book_switch_page(Gtk::Notebook_Helpers::Page *p0, guint p1);
         void extartbez_activate();
         void preisliste_activate();
         void rng_an_activate();
