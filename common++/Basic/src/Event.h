@@ -1,4 +1,4 @@
-// $Id: Event.h,v 1.6 2004/04/29 13:17:23 christof Exp $
+// $Id: Event.h,v 1.7 2004/04/29 13:20:35 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -50,7 +50,7 @@ public:
 	Event(const std::string &channel,const std::string &key="",const std::string &data="");
    	static fullsignal_t &signal_event()
    	{  return event_sig; }
-#ifdef MPC_SIGC_VERSION>=0x120   	
+#if MPC_SIGC_VERSION>=0x120   	
    	static filteredsignal_t &signal_event(const std::string &channel)
    	{  return channels[channel]; }
 #endif   	

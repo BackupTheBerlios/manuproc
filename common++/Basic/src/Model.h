@@ -1,4 +1,4 @@
-/* $Id: Model.h,v 1.12 2004/04/29 13:17:23 christof Exp $ */
+/* $Id: Model.h,v 1.13 2004/04/29 13:20:35 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -21,12 +21,10 @@
 #ifndef MANUPROC_MODEL_H
 #define MANUPROC_MODEL_H
 #include <ManuProCConfig.h>
-#if MPC_SIGC_VERSION >= 0x200
+#if MPC_SIGC_VERSION >= 0x120
 # include <sigc++/signal.h>
-#elif MPC_SIGC_VERSION >= 0x120
-# include <sigc++/basic_signal.h>
 #else
-# include <sigc++/signal.h>
+# include <sigc++/basic_signal.h>
 #endif
 
 // The pointer is needed to distinguish between elements in a shared
