@@ -1,4 +1,4 @@
-// $Id: MVC_int_Widget.cc,v 1.4 2002/11/15 11:55:47 christof Exp $
+// $Id: MVC_int_Widget.cc,v 1.5 2002/11/22 11:08:00 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -59,7 +59,7 @@ MVC_int_Widget::MVC_int_Widget(const Model_ref<T> &m,T min,T max)
    signal_focus_in_event().connect(SigC::slot(*this,&MVC_int_Widget::on_focus_in),true);
    // I'm not quite sure whether this is needed at all
    signal_activate().connect(SigC::slot(*this,&MVC_int_Widget::on_activate),true);
-   ch_con=model.changed.connect(SigC::slot(*this,&MVC_int_Widget::refresh));
+   ch_con=model.signal_changed().connect(SigC::slot(*this,&MVC_int_Widget::refresh));
    my_ch_con=signal_changed().connect(SigC::slot(*this,&MVC_int_Widget::keypress));
 };
 

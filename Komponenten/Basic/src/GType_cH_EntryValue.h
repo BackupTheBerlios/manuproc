@@ -1,4 +1,4 @@
-// $Id: GType_cH_EntryValue.h,v 1.1 2002/11/15 12:14:37 christof Exp $
+// $Id: GType_cH_EntryValue.h,v 1.2 2002/11/22 11:08:00 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *

@@ -1,6 +1,6 @@
-# $Id: configure.in,v 1.12 2002/09/27 09:48:44 christof Exp $
+# $Id: configure.in,v 1.13 2002/11/22 11:08:00 christof Exp $
 
-AC_INIT(src/treebase.h)
+AC_INIT(src/SimpleTreeModel.h)
 
 AM_INIT_AUTOMAKE(ManuProC_Widgets, 0.7.2)
 AM_CONFIG_HEADER(config.h)
@@ -28,4 +28,4 @@ AC_SUBST(KOMPONENTEN_LIBS)
 
 AC_OUTPUT(Makefile src/Makefile examples/Makefile \
    examples/dwhouse/Makefile examples/tree_simplest/Makefile \
-   examples/MVC/Makefile )
+   examples/MVC/Makefile examples/newtree/Makefile)

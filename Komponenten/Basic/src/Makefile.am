@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.11 2002/11/15 12:14:37 christof Exp $
+# $Id: Makefile.am,v 1.12 2002/11/22 11:08:00 christof Exp $
 CXXFLAGS=@CXXFLAGS@ @COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
@@ -17,19 +17,16 @@ EXTRA_PROGRAMS=dummy
 libManuProC_Widgets_a_SOURCES=EingabeBox.cc \
 		MVC_int_Widget.cc MVC_string_Widget.cc MVC_bool_Widget.cc \
 		SimpleTreeModel.cc SimpleTreeStore.cc \
-		GType_cH_EntryValue.cc
+		GType_cH_EntryValue.cc SimpleTree.cc
 
 dummy_SOURCES=datewin.cc datewin_glade.cc
 
-BUILT_SOURCES=datewin.hh SimpleTree.hh logwin.hh
+BUILT_SOURCES=datewin.hh logwin.hh
 
 # alias links
 datewin.hh: datewin.h
 	ln -sf datewin.h datewin.hh
 logwin.hh: logwin.h
 	ln -sf logwin.h logwin.hh
-
-install-data-hook:
-	cd $(includedir) ; ln -sf treebase.h SimpleTree.hh
 
 CLEANFILES= *~ $(BUILT_SOURCES)

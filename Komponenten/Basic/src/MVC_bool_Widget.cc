@@ -1,4 +1,4 @@
-// $Id: MVC_bool_Widget.cc,v 1.5 2002/11/15 11:55:47 christof Exp $
+// $Id: MVC_bool_Widget.cc,v 1.6 2002/11/22 11:08:00 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -32,7 +32,7 @@ MVC_bool_Widget::MVC_bool_Widget(const Model_ref<T> &m, const std::string &text)
 	: Gtk::CheckButton(text), model(m)
 {  Gtk::ToggleButton::set_active(m.get_value());
    my_ch_con=signal_toggled().connect(SigC::slot(*this,&MVC_bool_Widget::on_toggled));
-   ch_con=model.changed.connect(SigC::slot(*this,&MVC_bool_Widget::refresh));
+   ch_con=model.signal_changed().connect(SigC::slot(*this,&MVC_bool_Widget::refresh));
 };
 
 void MVC_bool_Widget::on_toggled()

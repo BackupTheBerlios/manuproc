@@ -1,2 +1,2 @@
-SUBDIRS=tree_simplest dwhouse MVC
+SUBDIRS=newtree tree_simplest dwhouse MVC
 

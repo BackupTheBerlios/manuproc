@@ -1,4 +1,4 @@
-// $Id: datewin.cc,v 1.9 2002/11/15 11:55:47 christof Exp $
+// $Id: datewin.cc,v 1.10 2002/11/22 11:08:00 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -78,7 +78,9 @@ void datewin::set_value (const ManuProC::Datum &d) throw()
       set_page(pg);
    }
    else 
-   {  set_page(p_leer);
+   {  block=true;
+      set_page(p_leer);
+      block=false;
    }
 }
 
@@ -166,6 +168,6 @@ void datewin::on_datewin_switch_page(_GtkNotebookPage *p0, guint p1)
 {  if (p1==p_Kalender)
       calendar1->show();
    else calendar1->hide();
-   if(p1==p_leer)  // um das Datum auch zurücksetzen zu können
+   if(p1==p_leer && !block)  // um das Datum auch zurücksetzen zu können
      activate();
 }

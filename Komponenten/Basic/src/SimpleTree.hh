@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.2 2002/11/15 11:55:47 christof Exp $
+// $Id: SimpleTree.hh,v 1.3 2002/11/22 11:08:00 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,6 +22,28 @@
 
 #include <SimpleTreeStore.h>
 #include <gtkmm/treeview.h>
+
+class SimpleTreeStore_Proxy
+{protected:
+	SimpleTreeStore sts;
+public:
+	SimpleTreeStore_Proxy(unsigned int cols,int attrs) : sts(cols,attrs) {}
+
+	void set_remember(const std::string &program, const std::string &instance) {  sts.set_remember(program,instance); }
+	guint Cols() const  { return sts.Cols();}
+
+	// these are from model
+	void setDataVec(const std::vector<cH_RowDataBase> &d) {  sts.getModel().setDataVec(d); }
+	void setTitles(const std::vector<std::string>& T) {  sts.getModel().setTitles(T); }
+};
+
+class SimpleTree : public Gtk::TreeView, public SimpleTreeStore_Proxy
+{public:
+   SimpleTree(unsigned int cols,int attrs=-1);
+   
+};
+
+#if 0
 #include <deque>
 #include <gtkmm/menu.h>
 #include <gtkmm/checkmenuitem.h>
@@ -229,4 +251,5 @@ public:
  void set_NewNode(NewNode_fp x) { node_creation=x; }
 };
   
+#endif
 #endif

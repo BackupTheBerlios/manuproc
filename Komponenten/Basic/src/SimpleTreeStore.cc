@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.2 2002/11/15 11:55:47 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.3 2002/11/22 11:08:00 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,6 +23,22 @@
 #include <unistd.h> // getuid
 #endif
 #include <Misc/itos.h>
+//#include <GType_cH_EntryValue.h>
+
+void SimpleTreeModel_Proxy::setModel(SimpleTreeModel &_model)
+{  if (model_is_ours) { delete model; model_is_ours=false; }
+   model=&_model;
+}
+
+SimpleTreeModel_Proxy::SimpleTreeModel_Proxy()
+	: model(new SimpleTreeModel), model_is_ours(true)
+{}
+
+SimpleTreeModel_Proxy::~SimpleTreeModel_Proxy()
+{  if (model_is_ours) { delete model; model_is_ours=false; }
+}
+
+// =========================================================
 
 void SimpleTreeStore::save_remembered() const
 {  if (mem_prog.empty()) return;
@@ -98,33 +114,30 @@ void SimpleTreeStore::set_remember(const std::string &program, const std::string
    }
 }
 
-void SimpleTreeStore::setModel(SimpleTreeModel &_model)
-{  if (model_is_ours) { delete model; model_is_ours=false; }
-   model=&_model;
-}
-
 SimpleTreeStore::SimpleTreeStore(int cols,int attrs)
-	: model(new SimpleTreeModel), node_creation(0), columns(cols),
+	: node_creation(0), columns(cols),
 	  showdeep(0), attrcount(attrs), gp(0), 
 	  auffuellen_bool(false), expandieren_bool(false),
-	  color_bool(false), model_is_ours(true),
-	  m_columns(cols)
+	  color_bool(false), m_columns(cols)
 {  if (attrs<1) attrcount=cols;
    m_refTreeStore=Gtk::TreeStore::create(m_columns);
 }
 
-SimpleTreeStore::~SimpleTreeStore()
-{  if (model_is_ours) { delete model; model_is_ours=false; }
-}
+class TreeModelColumn_C : public Gtk::TreeModelColumnBase
+{public:
+	TreeModelColumn_C(GType t) : Gtk::TreeModelColumnBase(t)
+	{}
+};
 
 // eigentlich müssen versteckte Spalten gar nicht hinzugenommen werden
 // aber wie dann das Model neu aufbauen?
 SimpleTreeStore::ModelColumns::ModelColumns(int _cols)
-{  for (int i=0; i<_cols; ++i)  // typ cH_EntryValue statt Glib::ustring
+{  // GType t=cH_entry_value_get_type();
+   for (int i=0; i<_cols; ++i)
    {  cols.push_back(Gtk::TreeModelColumn<Glib::ustring>());
       add(cols.back());
+//      assert(c.index()==i);
    }
 }
 
 // CellItem ^= TreeRow
-
