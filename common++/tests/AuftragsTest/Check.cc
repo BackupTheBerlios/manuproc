@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.46 2003/06/17 08:15:59 christof Exp $
+// $Id: Check.cc,v 1.47 2003/06/17 08:57:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -36,19 +36,25 @@ static std::string referenzdir="database_tables_test_Mabella/";
 static std::string referenzdir="database_tables_test/";
 #endif
 
-bool Check::teste(was_checken check,const std::string &zusatz, bool mit_reparatur_programm,bool vor_dem_test_reparieren)
+bool Check::analyse=false;
+bool Check::reparieren=false;
+
+bool Check::teste(was_checken check,const std::string &zusatz, bool vor_dem_test_reparieren)
 {
   if(!vor_dem_test_reparieren)
    { dump(check,zusatz);  
-     bool b=vergleich(check,zusatz);
-     if(!mit_reparatur_programm || !b) return b;
+     if (!vergleich(check,zusatz)) return false;
    }
+  if (!analyse && !reparieren) return true;
   
   std::vector<cH_ppsInstanz> VI=cH_ppsInstanz::get_all_instanz();
   Query::Execute("vacuum analyze");
-  int c=system("../../Programme/adjust_store -l -I -aAXC");
+  std::string cmd="../../Programme/adjust_store -I -aAXC";
+  if (analyse) cmd+=" -y";
+  else cmd+=" -l";
+  int c=system(cmd.c_str());
   if(c) 
-  { std::cerr << "adjust_store returned " << c<<'\n'; return false; }
+  { std::cerr << cmd << " returned " << c<<'\n'; return false; }
   
   dump(check,zusatz);  
   return vergleich(check,zusatz);
