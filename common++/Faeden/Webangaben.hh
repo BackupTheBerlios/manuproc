@@ -1,4 +1,4 @@
-// $Id: Webangaben.hh,v 1.10 2002/11/22 15:31:05 christof Exp $
+// $Id: Webangaben.hh,v 1.11 2004/02/26 11:18:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -28,9 +28,11 @@
 #include <Faeden/Schussfaeden.hh>
 
 class Webangaben
-{
+{     // enum wa_loaded { LD_BASE, LD_VARIANT, LD_SCHUSSFAEDEN }; ?
    public:
       typedef fixedpoint<1> schussdichte_t;
+      typedef std::map<ArtikelBase,ArtikelBase> ersetzen_t;
+      
    private:
       ArtikelBase artikel;
       Petig::Datum erstellt,geaendert;
@@ -38,6 +40,8 @@ class Webangaben
       ArtikelBase fangfaden;
       schussdichte_t schussdichte; // in cm
       Schussfaeden schussfaeden;
+      ArtikelBase variante_von;
+      ersetzen_t ersetzen;
 
    public:
       Webangaben() {}
@@ -63,7 +67,10 @@ class Webangaben
       const ArtikelBase& Fangfaden() const {return fangfaden;}
       const schussdichte_t& Schussdichte_cm() const {return schussdichte;}
       Schussfaeden& getSchussfaeden() {return schussfaeden;}
-
+      const Schussfaeden& getSchussfaeden() const {return schussfaeden;}
+      
+      const ArtikelBase &VarianteVon() const { return variante_von; }
+      const ersetzen_t &Ersetzen() const { return ersetzen; }
 };
 
 #endif

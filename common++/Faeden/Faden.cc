@@ -1,4 +1,4 @@
-// $Id: Faden.cc,v 1.16 2004/02/23 11:02:45 christof Exp $
+// $Id: Faden.cc,v 1.17 2004/02/26 11:18:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -23,6 +23,7 @@
 #include <Misc/relops.h>
 #include <Misc/compiler_ports.h>
 #include <Misc/FetchIStream.h>
+#include <Faeden/Webangaben.hh>
 
 std::ostream& operator<< (std::ostream& os, const Faden& f)
 {
@@ -392,30 +393,21 @@ static FetchIStream &operator>>(FetchIStream &is, Faden &f)
 }
 
 void Fadenliste::Load(const ArtikelBase &ab,const Bindungsliste &bindungsliste)
+{  assert(&bindungsliste==&Bindung::GlobaleListe());
+   Webangaben wa(ab);
+   wa.Load();
+   Load(wa);
+}
+
+void Fadenliste::Load(const Webangaben &wa)
 {  erase();
    FetchIStream is;
-   
-   ArtikelBase var_von,zu_laden=ab;
-   Query("select variante_von from webangaben where artikel=?")
-   	<< ab
-   	>> FetchIStream::MapNull(var_von);
-   if (!!var_von)
-   {  zu_laden=var_von;
-      // Ersetzungsliste holen
-      Query q("select altmaterial,neumaterial from webang_variante "
-      		"where artikel=?");
-      q << ab;
-      while ((q>>is).good())
-      {  ArtikelBase altmaterial,neumaterial;
-         is >> altmaterial >> neumaterial >> Query::check_eol();
-         ersetzen[altmaterial]=neumaterial;
-      }
-   }
+   const Webangaben::ersetzen_t &ersetzen=wa.Ersetzen();
       
       Query q("select zeilennummer, anzahl, material, bindung, kettscheibe, "
       	"max_kettlaenge, max_fadenzahl "
       	"from webang_faeden where artikel=? order by zeilennummer");
-      q << zu_laden;
+      q << wa.Artikel();
       while ((q>>is).good())
       {  Faden f;
          is >> f >> Query::check_eol();
@@ -430,7 +422,7 @@ void Fadenliste::Load(const ArtikelBase &ab,const Bindungsliste &bindungsliste)
 		"from webang_wiederhol where artikel=? "
 		// request small ones first so we print it right
 		"order by endzeile-anfangszeile");
-      q2 << zu_laden;
+      q2 << wa.Artikel();
       while ((q2>>is).good())
       {  int anfangszeile, endzeile, wiederholungen;
          is >> anfangszeile >> endzeile >> wiederholungen >> Query::check_eol();

@@ -1,4 +1,4 @@
-// $Id: Faden.hh,v 1.9 2004/02/06 16:06:30 christof Exp $
+// $Id: Faden.hh,v 1.10 2004/02/26 11:18:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -29,6 +29,7 @@
 #include <Artikel/ArtikelBase.h>
 #include <Aux/fixedpoint.h>
 class Wiederholung;
+class Webangaben;
 
 struct Faden {
         int zeilennummer;
@@ -77,8 +78,6 @@ class Fadenliste {
 	std::vector<Faden> sumliste;
 	std::vector<Wiederholung> repliste;
 	std::vector<unsigned int> repnumliste;
-	ArtikelBase variante_von;
-	std::map<ArtikelBase,ArtikelBase> ersetzen; // variante
 public:
 	typedef std::vector<Faden>::const_iterator const_iterator;
 	typedef std::vector<Faden>::iterator iterator;
@@ -87,7 +86,7 @@ public:
 	
 	Fadenliste() : liste(), sumliste(), repliste(), repnumliste() {}
 	void Load(const ArtikelBase &ab,const Bindungsliste &bindungsliste);
-	bool istVariante() const { return !!variante_von; }
+	void Load(const Webangaben &wa);
 	
 	const_iterator begin() const { return liste.begin(); }
 	iterator begin() { return liste.begin(); }

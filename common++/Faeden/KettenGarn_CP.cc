@@ -1,4 +1,4 @@
-/* $Id: KettenGarn_CP.cc,v 1.3 2004/02/26 10:43:28 christof Exp $ */
+/* $Id: KettenGarn_CP.cc,v 1.4 2004/02/26 11:18:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,6 +18,7 @@
  */
 
 #include <Faeden/KettenGarn.h>
+#include <Faeden/Webangaben.hh>
 #include <Faeden/Faden.hh>
 #include <Ketten/ArtikelGang.h>
 
@@ -27,7 +28,9 @@ std::vector<KettenGarn_CP> KettenGarn_CP::Load(ArtikelGang const &ag, unsigned l
 {  Fadenliste fdl;
    std::vector<KettenGarn_CP> result;
    try {
-   fdl.Load(ag.art,Bindung::GlobaleListe());
+   Webangaben wa(ag.art);
+   wa.Load();
+   fdl.Load(wa);
    }
    catch (SQLerror &e)
    {  return result;

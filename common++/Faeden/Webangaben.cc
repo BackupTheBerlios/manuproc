@@ -1,4 +1,4 @@
-// $Id: Webangaben.cc,v 1.13 2004/02/26 10:46:08 christof Exp $
+// $Id: Webangaben.cc,v 1.14 2004/02/26 11:18:40 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -48,18 +48,33 @@ bool Webangaben::exists() throw(SQLerror)
    return true;
 }
 
+FetchIStream &operator>>(FetchIStream &is, std::pair<ArtikelBase,ArtikelBase> &p)
+{  return is >> p.first >> p.second;
+}
 
 bool Webangaben::Load() throw(SQLerror)
 {  try
    {  Query("select erstellt, geaendert, riet, bemerkungen,"
-	"fangfaden,schussdichte "
+	"fangfaden,schussdichte,variante_von "
 	"from webangaben where artikel=?")
 	<< artikel.Id()
 	>> erstellt >> geaendert
 	>> FetchIStream::MapNull(riet)
 	>> FetchIStream::MapNull(bemerkung)
 	>> FetchIStream::MapNull(fangfaden)
-	>> FetchIStream::MapNull(schussdichte);
+	>> FetchIStream::MapNull(schussdichte)
+	>> FetchIStream::MapNull(variante_von);
+      if (!!variante_von)
+      {  Query q("select altmaterial,neumaterial from webang_variante "
+      		"where artikel=?");
+      	 q << artikel.Id();
+      	 FetchIStream is;
+      	 while ((q>>is).good())
+         {  ArtikelBase altmaterial,neumaterial;
+            is >> altmaterial >> neumaterial >> Query::check_eol();
+            ersetzen[altmaterial]=neumaterial;
+         }
+      }
       return true;
    }
    catch (SQLerror &e)
