@@ -1,4 +1,4 @@
-/* $Id: Verfuegbarkeit.cc,v 1.17 2004/09/06 13:48:47 christof Exp $ */
+/* $Id: Verfuegbarkeit.cc,v 1.18 2004/10/21 11:22:50 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -237,7 +237,7 @@ void Verfuegbarkeit::wozu_benoetigt(const AufEintrag &ae, map_t &result,
    ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,
    		NV("menge",menge),NV("offset",offset));
 
-   if (ae.Instanz()->LagerInstanz() && ae.Id()==AuftragBase::auffuellen_id)
+   if (ae.Instanz()->LagerInstanz() && ae.Id()==AuftragBase::dispo_id)
    {  result[idx].vorraetig+=menge;
       menge=0; // keine Rekursion
    }
@@ -444,7 +444,7 @@ void Verfuegbarkeit::wozu_benoetigt(const AufEintrag &ae, map_det_t &result, men
    ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,
    		NV("menge",menge),NV("offset",offset));
 
-   if (ae.Instanz()->LagerInstanz() && ae.Id()==AuftragBase::auffuellen_id)
+   if (ae.Instanz()->LagerInstanz() && ae.Id()==AuftragBase::dispo_id)
    {  result[ae]+=menge;
       menge=0; // keine Rekursion
    }
