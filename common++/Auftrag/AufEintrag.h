@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.51 2003/07/04 14:33:59 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.52 2003/07/07 10:51:03 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -121,7 +121,7 @@ public:
  mengen_t MengeAendern(int uid,mengen_t menge,bool instanzen,const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_None) throw(SQLerror);
 private:
   // nimmt alle Zuordnungen mit (oben & unten)
-  void move_to(int uid,AufEintrag ziel,AuftragBase::mengen_t menge,ManuProC::Auftrag::Action reason) throw(std::exception);
+  void move_to(int uid,AufEintrag ziel,mengen_t menge,ManuProC::Auftrag::Action reason) throw(std::exception);
  void updateStkDiffInstanz__(int uid,mengen_t menge,const AufEintragBase &ElternAEB,ManuProC::Auftrag::Action reason) throw(SQLerror);
  void ArtikelInternAbbestellen(int uid,mengen_t menge,
  	ManuProC::Auftrag::Action reason) const;
@@ -139,7 +139,7 @@ private:
 		: uid(_uid), reason(_reason), mythis(_mythis)
 	{}
 	// das 1. Argument wird nicht verwendet
-	AuftragBase::mengen_t operator()(const ArtikelBase &,
+	mengen_t operator()(const ArtikelBase &,
  		const AufEintragBase &,AuftragBase::mengen_t) const;
  	// ignore remainder
  	void operator()(const ArtikelBase &,AuftragBase::mengen_t) const {}
@@ -195,7 +195,9 @@ public:
 
 // intern aber public
  void abschreiben(mengen_t menge) throw(SQLerror);
- void AnElternMengeAnpassen();
+ 
+ // gibt überschüssige Menge zurück (ZI2)
+ mengen_t AnElternMengeAnpassen();
 
 private:
  void Produziert_0er(mengen_t menge);
@@ -250,9 +252,9 @@ public:
 
  // brauche ich noch ein statisches ProduziertNG (das nur eine Instanz erhält?)
  // z.B. (getRestStk())
- void ProduziertNG(AuftragBase::mengen_t M);
+ void ProduziertNG(mengen_t M);
 //internal ?
- void ProduziertNG(unsigned uid, AuftragBase::mengen_t M,
+ void ProduziertNG(unsigned uid, mengen_t M,
 		const AufEintragBase &elter_alt,
 		const AufEintragBase &elter_neu);
  // neuen (geschlossenen) 1er erzeugen (völlig unverzeigert)

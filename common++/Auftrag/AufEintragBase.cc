@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.45 2003/07/03 09:33:07 christof Exp $
+// $Id: AufEintragBase.cc,v 1.46 2003/07/07 10:51:03 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -52,14 +52,14 @@ ArgumentList &operator<<(ArgumentList &o, const AufEintragBase &aeb)
 }
 
 std::ostream &operator<<(std::ostream &o,const AufEintragBase &ae)
-{
- o<<ae.Instanz()->Name().substr(0,4)<<'='<<ae.Instanz()->Id()<<" "<<ae.Id()<<' '<<ae.ZNr();
- return o;
+{//if (!ae.valid()) o << "n.a.";
+ //else o<<ae.Instanz()->Name().substr(0,4)<<'='<<ae.Instanz()->Id()<<'.'<<ae.Id()<<'.'<<ae.ZNr();
+ return o << ae.str();
 }
 
 std::string AufEintragBase::str() const
-{
- return Instanz()->Name().substr(0,4)+"="+itos(Instanz()->Id())+"|"+itos(Id())+"|"+itos(ZNr());
+{if (!valid()) return "n.a.";
+ return Instanz()->Name().substr(0,4)+"="+itos(Instanz()->Id())+"."+itos(Id())+"."+itos(ZNr());
 }
 
 
@@ -79,7 +79,8 @@ void AufEintragBase::calculateProzessInstanz()
   setMaxPlanInstanz(anz);
 }   
 
-#warning sieht komisch aus ...
+#if 1 // wird von AufEintrag::split verwendet und scheint zu funktionieren ...
+//#warning sieht komisch aus ...
 int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
                         ArtikelBase artikel,AufStatVal status,int uid,
                         bool dispoplanung)
@@ -103,15 +104,6 @@ int AufEintragBase::split_zuordnungen_to(mengen_t menge,ManuProC::Datum datum,
     if(M==mengen_t(0)) break;
    }
  return znr;
-}
-
-#if 0
-void AufEintragBase::ExistMenge(const std::string &s) const
-{
- try{AufEintrag AE(*this);
-     std::cout << *this<<" existiert mit " <<AE.getStueck()<<" bestellt und "
-          <<AE.getGeliefert()<<" geliefert ("<<s<<")\n";
-   }catch(...){std::cout << *this<<"\texistiert noch nicht ("<<s<<")\n";}
 }
 #endif
 
