@@ -1,8 +1,17 @@
-# $Id: Makefile.am,v 1.1 2001/04/23 08:36:50 christof Exp $
-CXXFLAGS=@CXXFLAGS@ @GTKMM_CFLAGS@ \
-		@COMMONGTK_INCLUDES@ @COMMONXX_INCLUDES@ @ECPG_INCLUDES@ 
+# $Id: Makefile.am,v 1.2 2001/06/21 08:12:02 christof Exp $
+CXXFLAGS=@CXXFLAGS@  \
+		@COMMONGTK_INCLUDES@ @COMMONXX_INCLUDES@  
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
+
+LINKS= EingabeBox.cc EingabeBox.hh datewin.cc datewin.h \
+	datewin_glade.cc datewin_glade.hh logwin.cc logwin.h \
+	rowdata.h tclistleaf.cc tclistleaf.h tclistnode.cc tclistnode.h \
+	tclistrowdata.cc tclistrowdata.h treebase.cc treebase.h \
+	treebase_data.h
+
+$(LINKS):
+	ln -sf ../Basic/src/$@ .
 
 include_HEADERS = datewin.h logwin.h\
 	EingabeBox.hh ProzessBox.hh \
@@ -23,14 +32,20 @@ libKomponenten_a_SOURCES=datewin.cc \
 		tclistrowdata.cc \
 		tclistnode.cc tclistleaf.cc treebase.cc
 
-BUILT_SOURCES_L= ArtikelBox_sql.cc ProzessBox.cc KundenBox.cc 
-BUILT_SOURCES=datewin.hh $(BUILT_SOURCES_L)
+BUILT_SOURCES_L= ArtikelBox_sql.cc ProzessBox.cc KundenBox.cc $(LINKS)
+BUILT_SOURCES=datewin.hh SimpleTree.hh $(BUILT_SOURCES_L)
 
 # for datewin_glade.cc
 datewin.hh: datewin.h
 	ln -sf datewin.h datewin.hh
+	
+SimpleTree.hh: treebase.h
+	ln -sf treebase.h SimpleTree.hh
 
 install-data-hook:
 	cd $(includedir) ; chmod g+w $(include_HEADERS)
 	cd $(includedir) ; rm -f artikel_box_win.hh rohartikel_win.hh \
 		rohartikel_win_glade.hh
+	cd $(includedir) ; ln -s treebase.h SimpleTree.hh
+
+CLEANFILES= *~ $(BUILT_SOURCES)
