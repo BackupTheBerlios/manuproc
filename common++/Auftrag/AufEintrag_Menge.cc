@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.31 2004/09/02 07:45:54 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.32 2004/09/06 10:36:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -65,11 +65,13 @@ AufEintragBase AufEintrag::ArtikelInternNachbestellen(const cH_ppsInstanz &wo,
    mengen_t M_dispo=min(AIL.getMengeDispo(),menge);
    if(M_dispo>0) menge-=AIL.reduce_in_dispo(M_dispo,ElternAEB);
 
+#ifdef MENGE_KLAUEN
    // Im Lager von späteren Aufträgen vorgemerkte Menge wegschnappen
    if (menge>0 && wo->LagerInstanz())
    {  M_dispo=min(AIL.getMengePlan(),menge);
       if (!!M_dispo) menge-=AIL.reduce_in_plan(M_dispo,ElternAEB);
    }
+#endif   
    // Rest nachbestellen
    AuftragBase ab(wo,ungeplante_id);
    int znr=none_znr;
@@ -212,16 +214,38 @@ public:
  	{  return distribute_children_cb::operator()(b,a); }
 };
 
-struct AufEintrag::zweierKinderAbbestellen_cb : ArtikelInternAbbestellen_cb
-{  mengen_t &rest;
-
-   zweierKinderAbbestellen_cb(const AufEintragBase &z, mengen_t &m) 
-     : ArtikelInternAbbestellen_cb(z), rest(m) {}
-   void operator()(const ArtikelBase &,mengen_t m) const
-   {  rest=m; }
+struct AufEintrag::zweierKinderAbbestellen_cb : public distribute_children_twice_cb
+{	AufEintrag &zweier;
+        const ManuProC::Datum &ab_datum;
+	
+  public:
+	zweierKinderAbbestellen_cb(AufEintrag &_zweier, const ManuProC::Datum &_ab_datum)
+		: zweier(_zweier), ab_datum(_ab_datum)
+	{  ManuProC::Trace(trace_channel,__FUNCTION__,NV("zweier",zweier),
+	          NV("ab_datum",ab_datum));
+	}
+	// das 1. Argument wird nicht verwendet
+	mengen_t operator()(const ArtikelBase &,
+ 		const AufEintragBase &,AuftragBase::mengen_t,bool first) const;
+        void operator()(const ArtikelBase &,mengen_t m) const;
 };
 
-// Menge abbestellen und abhängige Dinge tun 
+// zuerst Nachbestellungen eliminieren, deren Datum später liegt
+AuftragBase::mengen_t AufEintrag::zweierKinderAbbestellen_cb::operator()
+            (const ArtikelBase &art,const AufEintragBase &j,
+                            AuftragBase::mengen_t M,bool first) const
+{  AufEintrag AE(j);
+   if (AE.getLieferdatum()<ab_datum && first) return 0;
+   return AE.Abbestellen(M,zweier);
+}
+// eventuellen Rest zum 2er zuschlagen
+void AufEintrag::zweierKinderAbbestellen_cb::operator()
+                                (const ArtikelBase &,mengen_t m) const
+{  zweier.MengeAendern(m,false,AufEintragBase());
+}
+
+/// Von oben wird etwas abbestellt:
+// Menge verringern oder anderweitig nutzen
 // (z.B. freie Menge erhöhen, neu verplanen)
 AuftragBase::mengen_t AufEintrag::Abbestellen(const mengen_t &menge,const AufEintragBase &parent)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),
@@ -231,49 +255,57 @@ AuftragBase::mengen_t AufEintrag::Abbestellen(const mengen_t &menge,const AufEin
       return -MengeAendern(-menge,true,parent);
    else if (Instanz()->LagerInstanz())
    {  // vorgemerkte Menge freigeben
+      // Menge im Lager freigeben == Einlagern ohne Produktion?
+
       assert(Id()==plan_id);
       mengen_t M=menge;
       M=-MengeAendern(-M,false,parent);
       // Ich brauche hier genau die geänderte Menge, da sonst bereits 
       // ausgelagerte (aber nicht gelieferte Mengen) miteinberechnet werden
-      
-     // Menge im Lager freigeben == Einlagern ohne Produktion?
-       // nach nachbestellten 2ern suchen ...
-        AufEintragBase zweier(AufEintragBase::PassendeZeile
-            (AuftragBase(Instanz(),dispo_id),LagerBase::Lagerdatum(),
-            Artikel(),OPEN));
+
+      mengen_t dummy=0;
+      int znr_2er=AuftragBase(Instanz(),dispo_id)
+          .existEntry(Artikel(),LagerBase::Lagerdatum(),OPEN,dummy);
+      AufEintragBase zweier(make_value(AuftragBase(Instanz(),dispo_id)),znr_2er);
+      if (znr_2er==none_id) 
+      // es gibt noch keine Zweier (somit auch keine zu verrechnende Menge)
+      {  // in 2er rein
+         // Abkürzung von PassendeZeile
+         AuftragBase AB(Instanz(),dispo_id);
+         AB.create_if_not_exists(OPEN);
+         zweier=Auftrag(AB).push_back(M,LagerBase::Lagerdatum(),Artikel(),OPEN,false);
+         // man beachte znr_2er ist immer noch none_id
+      }
+      AufEintrag zweier_ae(zweier);
+      if (znr_2er!=none_id)
+      {// nach nachbestellten 2ern suchen ...
+        
         AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel
             (zweier,AufEintragZu::list_kinder,AufEintragZu::list_unsorted));
-        AufEintrag zweier_ae(zweier);
-        ManuProC::Trace(trace_channel, __FILELINE__,M,MapArt.size(),zweier_ae.getRestStk());
+        ManuProC::Trace(trace_channel, __FILELINE__,NV("M",M),NV("Menge 2er",zweier_ae.getRestStk()),NV("Anz. Kinder",MapArt.size()));
         // Optimierung
         if (!MapArt.empty())
-        {  mengen_t freieMenge=zweier_ae.getRestStk()-Summe(MapArt[Artikel()]);
-           ManuProC::Trace(trace_channel, __FILELINE__,M,Summe(MapArt[Artikel()]),MapArt.size());
-           assert(freieMenge>=0);
-           // freie 2er Menge vom 2er abziehen
-           zweier_ae.MengeAendern(-freieMenge,false,AufEintragBase());
-           M+=freieMenge;
+        {  ManuProC::Trace(trace_channel, __FILELINE__,NV("M",M),NV("Menge K.",Summe(MapArt[Artikel()])),NV("Anz. K.",MapArt.size()));
            // alles verteilen
-           distribute_children(MapArt,M,Artikel(),zweierKinderAbbestellen_cb(zweier,M));
+           AufEintrag AE_parent(parent);
+           ManuProC::Datum ab_datum=AE_parent.getLieferdatum()-Instanz()->ProduktionsDauer();
+           distribute_children_twice(MapArt,M,Artikel(),zweierKinderAbbestellen_cb(zweier_ae,ab_datum));
+           // jetzt ist die freigewordene Menge im 2er inbegriffen (vorhanden)
         }
-        if (delayed_reclaim::Active())
-        {  // in 2er rein
-           zweier_ae.MengeAendern(M,false,AufEintragBase());
-           delayed_reclaim::delay(Instanz(),Artikel());
-        }
-        else
-           AufEintrag::MengeVormerken(Instanz(),Artikel(),M,true,ProductionContext());
-             // ,*this);
+        else zweier_ae.MengeAendern(M,false,AufEintragBase());
+      }
+      if (delayed_reclaim::Active())
+         delayed_reclaim::delay(Instanz(),Artikel());
+      else delayed_reclaim::reclaim(zweier_ae,M);
      return M;
    }
-   else
+   else // Kein Lager
      { // [1er oder] 3er - dispo anlegen, Bestellpfeil erniedrigen
        assert(Id()>=handplan_id);
        AufEintragZu(parent).setMengeDiff__(*this,-menge);
        mengen_t noch_frei=min(menge,getRestStk());
        if (!!noch_frei)
-       {  // wie oben (zusammenführen!!!)
+       {  // ähnlich wie oben (zusammenführen?)
 #warning zusammenführen
           if (delayed_reclaim::Active())
           {  AuftragBase(make_value(Instanz()),dispo_id)

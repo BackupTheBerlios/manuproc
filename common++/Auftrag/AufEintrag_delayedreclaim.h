@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_delayedreclaim.h,v 1.5 2004/02/20 10:44:53 christof Exp $ */
+/* $Id: AufEintrag_delayedreclaim.h,v 1.6 2004/09/06 10:36:01 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -35,6 +35,9 @@ public:
    
    static void delay(cH_ppsInstanz inst,const ArtikelBase &ab);
    static bool Active() { return active; }
+
+   // direkt nutzen   
+   static void reclaim(AufEintrag &zweier, mengen_t menge);
 };
 
 #endif

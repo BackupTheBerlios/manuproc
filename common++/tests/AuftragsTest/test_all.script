@@ -10,7 +10,7 @@ case $TABLES in
    	ALLTESTS="M P S L Z D Ls Lm LZ LA ZK ZKM J ZI ZI2 AL Pt V RP Rg RK RZ RKZ"
    	;;
    database_tables_init_Mabella)
-   	ALLTESTS="LJ ZK RM"
+   	ALLTESTS="ZK AM roll minMen"
    	;;
    *) echo "Kann $TABLES nicht identifizieren"
    	exit 2

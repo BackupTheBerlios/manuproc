@@ -116,13 +116,9 @@ int main(int argc,char *argv[])
 {  putenv("LANG=C"); // omit any locale oddities/changes
    bool clean_only=true;
 
-#if defined(PETIG_TEST) || defined(MANU_PROC_TEST)
-   AuftragBase::setzeAktuellesJahr(2000);
-#else
-   // wird zum Teil von den Tests in 2000 geändert ...
-   // sollte auch wenn möglich ...
-   AuftragBase::setzeAktuellesJahr(2003); 
-#endif
+   // damit die Auftragsnummern klein bleiben
+   AuftragBase::setzeAktuellesJahr(2000); 
+
    static struct option long_options[] = {
      { "verbose", no_argument, 0, 'v' },
      { "repair", no_argument, 0, 'r' },
@@ -172,6 +168,7 @@ int main(int argc,char *argv[])
 #elif defined PETIG_TEST
    putenv("PGDATABASE=testdb");
 #endif
+   putenv("LANG=C"); // to eliminate locale differences in psql/diff output
 
   TestReihe *mode=0;
   for (mode=TestReihe::first; mode; mode=mode->next)

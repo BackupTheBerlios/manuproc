@@ -1,6 +1,7 @@
-/* $Id: VerfuegbareMenge.cc,v 1.11 2004/09/01 12:25:48 christof Exp $ */
+/* $Id: VerfuegbareMenge.cc,v 1.12 2004/09/06 10:36:01 christof Exp $ */
 /*  pps: ManuProC's production planning system
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
+ *  Copyright (C) 1998-2004 Adolf Petig GmbH & Co. KG
+ *  written by Malte Thoma, Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,13 +28,48 @@
 //#define MENGE_KLAUEN
 #endif
 
+static AuftragBase::mengen_t FreieMenge2er(const AufEintrag &zweier)
+{  if (!zweier.Instanz()->LagerInstanz()) return zweier.getRestStk();
+
+    // nach nachbestellten 2ern suchen ...
+#if 0    
+    AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel
+            (zweier,AufEintragZu::list_kinder,AufEintragZu::list_unsorted));
+    ManuProC::Trace(trace_channel, __FUNCTION__,zweier,
+          NV("Menge 2er",zweier.getRestStk()),
+          NV("Anz. Kinder",MapArt.size()));
+    // Optimierung
+    if (MapArt.empty()) return zweier.getRestStk();
+    return zweier.getRestStk()-Summe(MapArt[Artikel()]);
+#else // schneller
+    AufEintragZu::list_t nachbestellt = AufEintragZu::get_Referenz_list
+                    (zweier,AufEintragZu::list_kinder,
+                   AufEintragZu::list_ohneArtikel,AufEintragZu::list_unsorted);
+    if (nachbestellt.empty()) return zweier.getRestStk();
+    return zweier.getRestStk()-Summe(nachbestellt);
+#endif
+}
+
 VerfuegbareMenge::VerfuegbareMenge(const cH_ppsInstanz &_instanz,const ArtikelBase &artikel,
    const Petig::Datum &_datum) throw(SQLerror)
-: ArtikelBase(artikel), menge_dispo_auftraege(0),menge_plan_auftraege(0),
+: ArtikelBase(artikel), menge_dispo_auftraege(),menge_plan_auftraege(),
 	datum(_datum), instanz(_instanz)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
      NV("Instanz",instanz),NV("Artikel",artikel));
+
+#ifndef MENGE_KLAUEN // Optimization (Lager: nur ein 2er)
+  if (instanz->LagerInstanz())
+  {  AuftragBase::mengen_t dummy=0;
+     int znr_2er=AuftragBase(instanz,AuftragBase::dispo_id)
+          .existEntry(artikel,LagerBase::Lagerdatum(),OPEN,dummy);
+     if (znr_2er==AuftragBase::none_id) return;
+     AufEintragBase AEB2er(make_value(AuftragBase(instanz,AuftragBase::dispo_id)),znr_2er);
+     menge_dispo_auftraege=FreieMenge2er(AEB2er);
+     V_dispo_auftraege.push_back(AEB2er);
+     return;
+  }
+#endif
 
 #warning SQL Anfrage optimierbar CP
 // wahrscheinlich wäre ein selector 2er (und im Lager 1er) bez. Datum
@@ -42,25 +78,19 @@ VerfuegbareMenge::VerfuegbareMenge(const cH_ppsInstanz &_instanz,const ArtikelBa
 #ifdef MENGE_KLAUEN  
      sel_Kunde_Artikel(instanz->Id(),Kunde::eigene_id,artikel));
 #else
-     sel_Artikel_Planung_id(instanz->Id(),Kunde::eigene_id,artikel,AuftragBase::dispo_auftrag_id));
+     sel_Artikel_Planung_id(instanz->Id(),Kunde::eigene_id,artikel,AuftragBase::dispo_id));
 #endif
   for (SelectedFullAufList::const_iterator i=auftraglist.begin();i!=auftraglist.end();++i)
    {
      // Nur wenn die freie Menge VOR dem Liefertermin frei wird AE verwenden
      if     (i->Id()==AuftragBase::none_id) ;
      else if(i->Id()==AuftragBase::ungeplante_id) ;
-     else if(i->Id()==AuftragBase::dispo_auftrag_id)
+     else if(i->Id()==AuftragBase::dispo_id)
       {
         assert(i->getRestStk()==i->getStueck());
         ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,i->getLieferdatum());
         if(i->getLieferdatum() > datum) continue;
-        AuftragBase::mengen_t freieMenge=i->getRestStk();
-        if (_instanz->LagerInstanz())
-        {  AufEintragZu::list_t nachbestellt = AufEintragZu::get_Referenz_list
-                    (*i,AufEintragZu::list_kinder,
-                   AufEintragZu::list_ohneArtikel,AufEintragZu::list_unsorted);
-           freieMenge-=Summe(nachbestellt);
-        }
+        AuftragBase::mengen_t freieMenge=FreieMenge2er(*i);
 	ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,freieMenge,*i);
         menge_dispo_auftraege+=freieMenge;
         V_dispo_auftraege.push_back(*i);
@@ -102,8 +132,7 @@ AuftragBase::mengen_t VerfuegbareMenge::reduce_in_dispo_or_plan(const bool dispo
      if(!dispo)  
         i->MengeNeubestellen(M);
      else // DispoAuftrag
-     {  // i->updateStkDiffBase__(-M);
-        i->MengeAendern(-M,false,AufEintragBase());
+     {  i->MengeAendern(-M,false,AufEintragBase());
         ArtikelStamm astamm(i->Artikel());
         if (instanz->LagerInstanz() && astamm.getMindBest()>0
             && i->getRestStk()<astamm.getMindBest())
@@ -124,10 +153,22 @@ AuftragBase::mengen_t VerfuegbareMenge::reduce_in_dispo_or_plan(const bool dispo
      if(menge==0) break;
    }
    if (wieviel_geschafft!=0 && instanz->LagerInstanz())
-   {  AuftragBase vormerkungen(instanz,AuftragBase::plan_auftrag_id);
+   {  AuftragBase vormerkungen(instanz,AuftragBase::plan_id);
       vormerkungen.BestellmengeAendern(wieviel_geschafft,datum,ArtikelBase(*this),OPEN,
 			ElternAEB);
    }
    return wieviel_geschafft;
 }
 
+#ifndef MENGE_KLAUEN // Optimization (Lager: nur ein 2er)
+VerfuegbareMenge::VerfuegbareMenge(const AufEintrag &lager_zweier)
+: ArtikelBase(lager_zweier.Artikel()), menge_dispo_auftraege(),
+        menge_plan_auftraege(),
+	datum(lager_zweier.getLieferdatum()), instanz(lager_zweier.Instanz())
+{ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("lager_zweier",lager_zweier));
+
+  assert (instanz->LagerInstanz());
+  menge_dispo_auftraege=FreieMenge2er(lager_zweier);
+  V_dispo_auftraege.push_back(lager_zweier);
+}
+#endif

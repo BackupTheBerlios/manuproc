@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.h,v 1.14 2004/09/01 12:25:48 christof Exp $ */
+/* $Id: AufEintrag_loops.h,v 1.15 2004/09/06 10:36:01 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -94,7 +94,12 @@ private: // forbid to overload again
 		const AufEintragBase &b,AuftragBase::mengen_t c) const
 	{  return operator()(a,b,c,true); }
 };
+// returns whether the list was non-empty
 bool distribute_children_twice(const AufEintragBase &startAEB,
+ 		AuftragBase::mengen_t menge,
+ 		const ArtikelBase &article, 
+ 		const distribute_children_twice_cb &callee);
+void distribute_children_twice(AufEintragZu::map_t &MapArt,
  		AuftragBase::mengen_t menge,
  		const ArtikelBase &article, 
  		const distribute_children_twice_cb &callee);

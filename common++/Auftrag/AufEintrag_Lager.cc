@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.35 2004/09/01 12:25:48 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.36 2004/09/06 10:35:57 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -18,6 +18,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <unistd.h>
+#include <sys/types.h>
+
 #include <Auftrag/AufEintrag.h>
 #include <Misc/FetchIStream.h>
 #include <Misc/string0.h>
@@ -36,10 +39,7 @@
 #include <Misc/relops.h>
 #include <Auftrag/sqlAuftragSelector.h>
 #include <Auftrag/selFullAufEntry.h>
-
-#include <unistd.h>
-#include <sys/types.h>
-
+#include <Auftrag/AufEintrag_delayedreclaim.h>
 
 #ifdef MABELLA_EXTENSIONS
 //#include <Lager/FertigWarenLager.h>
@@ -271,6 +271,8 @@ struct AufEintrag::Abbestellen_cb : public auf_positionen_verteilen_cb
 // abbestellen bedeutet: Menge wurde abbestellt und kann nun anderweitig vor-
 // 	gemerkt werden, es werden keine geschlossenen 1er erzeugt 
 //	sondern die Menge auf unteren Instanzen abgezogen
+
+// vielleicht nicht mehr voll genutzt? [wegen Mindestmenge]
 void AufEintrag::MengeVormerken(cH_ppsInstanz instanz,const ArtikelBase &artikel,
 		mengen_t menge, bool abbestellen, const ProductionContext &ctx)
 {
@@ -334,7 +336,17 @@ void AufEintrag::Einlagern(cH_ppsInstanz instanz,const ArtikelBase artikel,
      assert(produziert);
      distribute_parents(ctx.aeb,menge,EinlagernRueckgaengig(instanz,artikel,ctx));
   }
-  else MengeVormerken(instanz,artikel,menge,!produziert,ctx);
+  else 
+  {  if (produziert)
+     {  // sonst werden eventuell Mengen reserviert, die später abbestellt werden
+        // vielleicht maskiert dies aber auch nur einen bug beim Abbestellen
+        // (dass 1er im Lager nicht gelöscht werden, wenn die Menge zu groß wird)
+        // siehe test L
+        delayed_reclaim dlr;
+        MengeVormerken(instanz,artikel,menge,!produziert,ctx);
+     }
+     else MengeVormerken(instanz,artikel,menge,!produziert,ctx);
+  }
 }
 
 class AufEintrag::WiederEinlagern_cb : public auf_positionen_verteilen_cb

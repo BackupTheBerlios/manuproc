@@ -64,9 +64,7 @@ static TestReihe Rollereiplanung_(&Rollereiplanung,"Rollereiplanung","roll");
 #include <Artikel/ArtikelStamm.h>
 
 static bool MindestMenge()
-{  AuftragBase::setzeAktuellesJahr(2000);
-
-   Lager L(FERTIGWLAGER);
+{  Lager L(FERTIGWLAGER);
    L.rein_ins_lager(ARTIKEL_TRIO,5,false);
    ArtikelStamm(make_value(ArtikelBase(ARTIKEL_TRIO))).setMindBest(5);
    vergleichen(Check::Menge,"minmen_Ausgangspunkt","Ausgangspunkt","a");

@@ -1,4 +1,4 @@
-// $Id: delayed_reclaim.cc,v 1.10 2004/02/20 10:44:53 christof Exp $
+// $Id: delayed_reclaim.cc,v 1.11 2004/09/06 10:36:01 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -28,11 +28,53 @@
 #include <Misc/relops.h>
 //#include <Auftrag/AufEintragZu.h>
 #include <Misc/TemporaryValue.h>
+#include <Auftrag/sqlAuftragSelector.h>
 
 bool AufEintrag::delayed_reclaim::active;
 bool AufEintrag::delayed_reclaim::reclaiming;
 std::list<std::pair<cH_ppsInstanz,ArtikelBase> > 
 	AufEintrag::delayed_reclaim::delayed;
+
+// freie Menge nutzen
+class MengeNutzen_2er_Lager_cb2 : public distribute_parents_cb
+{	AufEintrag &nuller;
+	VerfuegbareMenge &vfm;
+	
+public:
+	AuftragBase::mengen_t operator()(const AufEintragBase &elter,AuftragBase::mengen_t m) const
+	{  m=vfm.reduce_in_dispo(m,elter);
+	   nuller.MengeAendern(-m,true,elter);
+	   return m;
+	}
+	MengeNutzen_2er_Lager_cb2(AufEintrag &_nuller,VerfuegbareMenge &_vfm) 
+		: nuller(_nuller), vfm(_vfm) {}
+};
+
+class MengeNutzen_2er_Lager_cb : public auf_positionen_verteilen_cb
+{	VerfuegbareMenge &vfm;
+public:
+	MengeNutzen_2er_Lager_cb(VerfuegbareMenge &_vfm) : vfm(_vfm) {}
+	AuftragBase::mengen_t operator()(AufEintrag &ae, AuftragBase::mengen_t m) const
+	{  vfm.setzeDatum(ae.getLieferdatum());
+	   distribute_parents(ae,m,MengeNutzen_2er_Lager_cb2(ae,vfm));
+	   return m;
+	}
+};
+
+void AufEintrag::delayed_reclaim::reclaim(AufEintrag &zweier, mengen_t menge)
+{  ManuProC::Trace _t(trace_channel, __FUNCTION__, zweier, menge);
+   // erstmal nur so gedacht ...
+   assert(zweier.Instanz()->LagerInstanz());
+   // siehe auch unten
+   VerfuegbareMenge vfm(zweier);
+   if (!vfm.getMengeDispo()) return;
+
+   SQLFullAuftragSelector sel(make_value(SQLFullAuftragSelector::
+      		sel_Artikel_Planung_id(zweier.Instanz()->Id(),Kunde::eigene_id,
+      		            zweier.Artikel(),ungeplante_id)));
+   auf_positionen_verteilen(sel,vfm.getMengeDispo(),
+               MengeNutzen_2er_Lager_cb(vfm));   
+}
 
 void AufEintrag::delayed_reclaim::reclaim()
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__);
@@ -42,26 +84,30 @@ void AufEintrag::delayed_reclaim::reclaim()
    Query::Execute("lock table auftragentry in exclusive mode");
    while (!delayed.empty())
    {  std::pair<cH_ppsInstanz,ArtikelBase> act=delayed.front();
-      AuftragBase ab(act.first,dispo_auftrag_id);
+      AuftragBase ab(act.first,dispo_id);
       if (act.first->LagerInstanz()) // wegen Lagerdatum sonst Liste
-      {  AuftragBase::mengen_t m;
-         AufEintragBase neuerAEB(ab,
-              ab.existEntry(act.second,LagerBase::Lagerdatum(),OPEN,m));
-         // verteilen
-         if (neuerAEB.valid())
-         {  MengeVormerken(act.first,act.second,m,true,ProductionContext());
-            AufEintrag(neuerAEB).MengeAendern(-m,false,AufEintragBase());
-         }
+      {  // 0er suchen, dann von verfügbarer Menge abziehen
+         VerfuegbareMenge vfm(act.first,act.second,LagerBase::Lagerdatum());
+         if (vfm.getDispoAuftraege().empty() || !vfm.getMengeDispo())
+           goto continue_loop;
+         // kopiert aus MengeVormerken
+         SQLFullAuftragSelector sel(make_value(SQLFullAuftragSelector::
+      		sel_Artikel_Planung_id(act.first->Id(),Kunde::eigene_id,act.second,
+      				ungeplante_id)));
+         auf_positionen_verteilen(sel,vfm.getMengeDispo(),
+               MengeNutzen_2er_Lager_cb(vfm));
       }
       else
       {  // alle 2er suchen
          VerfuegbareMenge vfm(act.first,act.second,ManuProC::Datum::Infinity());
+         // reduce in dispo?
          for (VerfuegbareMenge::iterator i=vfm.getDispoAuftraege().begin();
          		std_neq(i,vfm.getDispoAuftraege().end());++i)
          {  if (!i->getRestStk()) continue;
             AufEintrag::MengeNutzen_2er(*i);
          }
       }
+    continue_loop:
       delayed.pop_front();
    }
    tr.commit();

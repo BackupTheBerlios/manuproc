@@ -1,4 +1,4 @@
-/* $Id: VerfuegbareMenge.h,v 1.7 2004/02/16 15:29:05 christof Exp $ */
+/* $Id: VerfuegbareMenge.h,v 1.8 2004/09/06 10:36:01 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -44,19 +44,26 @@ class VerfuegbareMenge : public ArtikelBase
       typedef std::vector<AufEintrag>::iterator iterator;
       
       VerfuegbareMenge(const cH_ppsInstanz &instanz,const ArtikelBase &artikel,const ManuProC::Datum &datum) throw(SQLerror);
+      // abgekürzte Version wenn der zweier im Lager bereits bekannt ist
+      VerfuegbareMenge(const AufEintrag &lager_zweier);
 
       AuftragBase::mengen_t getMengeDispo() const {return menge_dispo_auftraege;}
-      AuftragBase::mengen_t getMengePlan() const {return menge_plan_auftraege;}
-
       const std::vector<AufEintrag> &getDispoAuftraege() const {return V_dispo_auftraege;}
       std::vector<AufEintrag> &getDispoAuftraege() {return V_dispo_auftraege;}
-      const std::vector<AufEintrag> &getPlanAuftraege() const {return V_plan_auftraege;}
-
 	// wird von AE::ArtikelInternNachbestellen verwendet
       AuftragBase::mengen_t reduce_in_dispo(AuftragBase::mengen_t menge,const AufEintragBase &ElternAEB)
          { return reduce_in_dispo_or_plan(true,menge,ElternAEB);}
+      
+#ifdef MENGE_KLAUEN      
+      AuftragBase::mengen_t getMengePlan() const {return menge_plan_auftraege;}
+      const std::vector<AufEintrag> &getPlanAuftraege() const {return V_plan_auftraege;}
       AuftragBase::mengen_t reduce_in_plan(AuftragBase::mengen_t menge,const AufEintragBase &ElternAEB)
          { return reduce_in_dispo_or_plan(false,menge,ElternAEB);}
+#endif      
+
+      // nur im Lager sinnvoll   
+      void setzeDatum(const ManuProC::Datum &d)
+      {  datum=d; }
 };
 
 #endif
