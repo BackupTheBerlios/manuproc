@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung.cc,v 1.4 2003/06/20 14:34:19 jacek Exp $ */
+/* $Id: ProvAbrechnung.cc,v 1.5 2003/06/26 16:36:00 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -39,7 +39,25 @@ const ManuProC::Datum ProvAbrechnung::getNextVomDate(const Kunde::ID verkid) thr
        " where verknr=?")
 	<< itos(verkid) >> newvom; 
 
+
  return newvom;
+}
+
+
+fixedpoint<2> ProvAbrechnung::getAuszahlung() const
+{
+ fixedpoint<2> summe=0;
+
+ for(std::vector<ProvAbrechnungEntry*>::const_iterator i=entries.begin();
+	i!=entries.end(); ++i)
+    summe+=(*i)->Provision();   
+
+ cH_Kunde vk(verkaeufer);
+ if(!vk->Auslaender())
+   summe = summe * (fixedpoint<2>(1) + ((float)MWST/100));
+
+ return summe; 
+
 }
 
 

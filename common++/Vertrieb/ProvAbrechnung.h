@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung.h,v 1.9 2003/06/26 14:15:18 jacek Exp $ */
+/* $Id: ProvAbrechnung.h,v 1.10 2003/06/26 16:36:00 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,6 +28,9 @@
 #include <Vertrieb/ProvAbrechnungEntry.h>
 #include <DynamicEnums/DefaultValues.h>
 #include <Misc/FetchIStream.h>
+#include <Bank/Ueberweisung.h>
+
+#define MWST	16
 
 class ProvAbrechnung : public ManuProcEntity<>
 {
@@ -38,7 +41,8 @@ class ProvAbrechnung : public ManuProcEntity<>
  std::string notiz;
  std::vector<ProvAbrechnungEntry*> entries;
  bool entries_valid;
-   
+ Ueberweisung ueberweisung;
+    
 public:
 
  typedef std::vector<ProvAbrechnungEntry*>::const_iterator const_iterator;
@@ -52,6 +56,11 @@ public:
  const ManuProC::Datum getDatum() const { return datum; }
  const ManuProC::Datum getBis() const { return bis; }
  const ManuProC::Datum getVom() const { return vom; }
+ Ueberweisung::ID getUeberweisungId() const { return ueberweisung.Id(); }
+ const ManuProC::Datum getUeberweisungDatum() const 
+ 			{ return ueberweisung.Erfasstam(); } 
+ void setUeberweisung(const Ueberweisung &u) throw(SQLerror);
+ fixedpoint<2> getAuszahlung() const;
 
  const_iterator begin() const
  	{ return entries.begin(); }

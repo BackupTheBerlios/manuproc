@@ -1,4 +1,4 @@
-/* $Id: Ueberweisung.h,v 1.6 2003/05/13 13:20:27 jacek Exp $ */
+/* $Id: Ueberweisung.h,v 1.7 2003/06/26 16:36:00 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -72,6 +72,7 @@ public:
 
   Ueberweisung(ManuProcEntity<>::ID uid) throw(SQLerror);
   Ueberweisung();
+  virtual ~Ueberweisung() {}
 
   static Ueberweisung *newUeberweisung(const InsertStr &is) throw(SQLerror);
 

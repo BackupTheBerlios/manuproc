@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung_sql.pgcc,v 1.6 2003/06/20 17:34:23 jacek Exp $ */
+/* $Id: ProvAbrechnung_sql.pgcc,v 1.7 2003/06/26 16:36:00 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -31,11 +31,15 @@ throw(SQLerror)
  char *BIS=0;
  char *VOM=0;
  char *NOTIZ=0;
+ int UEBERWID;
+ int NONEID;
  exec sql end declare section;
 
+ NONEID=Ueberweisung::none_id;
+ 
 
- exec sql select datum,bis,vom,notiz into
- 	:DATUM,:BIS,:VOM,:NOTIZ from prov_abrechnung
+ exec sql select datum,bis,vom,notiz,coalesce(ueberwid,:NONEID) into
+ 	:DATUM,:BIS,:VOM,:NOTIZ,:UEBERWID from prov_abrechnung
  	where (verknr,provnr) = (:VERKNR,:PROVNR);
  SQLerror::test(__FILELINE__);
  
@@ -45,8 +49,15 @@ throw(SQLerror)
  vom=ManuProC::Datum(VOM);
  notiz=NOTIZ;
 
- ECPGfree_auto_mem();
+ if(UEBERWID!=NONEID)
+   {Ueberweisung u(UEBERWID);
+    if(u.Erfolgtam() == ManuProC::Datum(1,1,1970,false))
+      setUeberweisung(Ueberweisung());
+    else
+      ueberweisung=u;
+   }
 
+ ECPGfree_auto_mem();
 }
 
 
@@ -112,6 +123,19 @@ void ProvAbrechnung::loadEntries(std::string sql_order) throw(SQLerror)
    }
  entries_valid=true;
  
+}
+
+
+void ProvAbrechnung::setUeberweisung(const Ueberweisung &u) throw(SQLerror)
+{
+ ueberweisung=u;
+
+ Query q("update prov_abrechnung set ueberwid=? where (provnr,verknr)=(?,?)"); 
+
+ q << Query::NullIf(ueberweisung.Id(),Ueberweisung::none_id) 
+	<< Id() << VerkNr();
+ SQLerror::test(__FILELINE__);
+
 }
 
 
