@@ -1,0 +1,73 @@
+--
+-- PostgreSQL database dump
+--
+
+\connect - christof
+
+SET search_path = public, pg_catalog;
+
+DROP TRIGGER "RI_ConstraintTrigger_18562816" ON public.ku_briefanr;
+DROP TRIGGER "RI_ConstraintTrigger_18562815" ON public.ku_briefanr;
+ALTER TABLE ONLY public.ku_briefanr DROP CONSTRAINT ku_briefanr_pkey;
+DROP TABLE public.ku_briefanr;
+--
+-- TOC entry 2 (OID 12451542)
+--
+
+CREATE TABLE ku_briefanr (
+    branr numeric(1,0) NOT NULL,
+    briefanrede character varying(40) NOT NULL,
+    anrede text
+);
+
+
+--
+-- TOC entry 3 (OID 12451542)
+--
+
+REVOKE ALL ON TABLE ku_briefanr FROM PUBLIC;
+
+
+--
+-- Data for TOC entry 5 (OID 12451542)
+--
+
+COPY ku_briefanr (branr, briefanrede, anrede) FROM stdin;
+0	none	none
+1	Herr	Herr
+2	Frau	Frau
+\.
+
+
+--
+-- TOC entry 4 (OID 12451547)
+--
+
+ALTER TABLE ONLY ku_briefanr
+    ADD CONSTRAINT ku_briefanr_pkey PRIMARY KEY (branr);
+
+
+--
+-- TOC entry 6 (OID 18562815)
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER UPDATE ON ku_briefanr
+    FROM ku_person
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('<unnamed>', 'ku_person', 'ku_briefanr', 'UNSPECIFIED', 'branr', 'branr');
+
+
+--
+-- TOC entry 7 (OID 18562816)
+--
+
+CREATE CONSTRAINT TRIGGER "<unnamed>"
+    AFTER DELETE ON ku_briefanr
+    FROM ku_person
+    NOT DEFERRABLE INITIALLY IMMEDIATE
+    FOR EACH ROW
+    EXECUTE PROCEDURE "RI_FKey_noaction_del" ('<unnamed>', 'ku_person', 'ku_briefanr', 'UNSPECIFIED', 'branr', 'branr');
+
+
