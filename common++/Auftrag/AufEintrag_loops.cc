@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.cc,v 1.21 2004/03/01 17:11:01 christof Exp $ */
+/* $Id: AufEintrag_loops.cc,v 1.22 2004/07/14 14:58:38 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -193,6 +193,9 @@ void distribute_children_artbaum(const AufEintragBase &startAEB,
          callee(artloop_var->first,AE_menge2);
       }
    }
+   // bei externer Bestellung Baum abschneiden
+   if (startAEB.Instanz()->ExterneBestellung()) return;
+   
    ppsInstanz::ID next= startAEB.Instanz()->NaechsteInstanz(ArtikelStamm(article));
    if (next!=ppsInstanzID::None)
    {  if (MapArt.find(article)==MapArt.end()) 
