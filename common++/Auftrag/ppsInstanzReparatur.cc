@@ -535,6 +535,7 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
    }
    
    if (ae.Instanz()!=ppsInstanzID::Kundenauftraege 
+   	&& !ae.Instanz()->ExterneBestellung()
    	&& ae.getKdNr()!=Kunde::eigene_id)
    {  alles_ok=false;
       analyse("Interne Kundennr falsch",ae,ae.getKdNr());
