@@ -1,4 +1,4 @@
-// $Id: SimpleTreeModel.cc,v 1.1 2002/10/18 10:39:42 christof Exp $
+// $Id: SimpleTreeModel.cc,v 1.2 2002/12/11 11:25:57 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,6 +22,19 @@
 void SimpleTreeModel::append_line(const cH_RowDataBase &row)
 {  datavec.push_back(row);
    line_appended(row);
+}
+
+namespace { struct remove_line_compare {
+	cH_RowDataBase a;
+	operator()(const cH_RowDataBase &b) { return &*a == &*b; }
+	remove_line_compare(const cH_RowDataBase &_a) : a(_a) {}
+};}
+
+void SimpleTreeModel::remove_line(const cH_RowDataBase &row)
+{  line_to_delete(row);
+   // I'd also have to call erase if I used remove_if()
+   datavec_t::iterator i=find_if(datavec.begin(),datavec.end(),remove_line_compare(row));
+   if (i!=datavec.end()) datavec.erase(i);
 }
 
 void SimpleTreeModel::clear()

@@ -5,6 +5,10 @@
 
 class window1 : public window1_glade
 {	SimpleTree st;
+	virtual void add_one();
+	virtual void eine_weg();
+	virtual void refresh();
+
 public:
 	window1();
 };

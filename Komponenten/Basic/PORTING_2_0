@@ -9,6 +9,9 @@
 	
 	"if (suminit.Leaf()) cumulate(child_s_data);"
 	entfällt, da unmöglich (wird von SimpleTree erledigt)
+	
+	allerdings muss wahrscheinlich beim dynamic_cast ein * vor suminit
+	und ein "if (suminit)" vor das Ganze
 
 - die Signatur von create ist nun:
 	"static Handle<TreeRow> create(const Handle<const TreeRow> &suminit)"

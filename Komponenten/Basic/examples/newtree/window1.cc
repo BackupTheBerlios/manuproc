@@ -1,14 +1,9 @@
-// generated 2002/11/7 16:33:48 CET by christof@puck.petig-baender.de
-// using glademm V1.1.2a_cvs
-//
-// newer (non customized) versions of this file go to window1.cc_new
-
-// This file is for your program, I won't touch it again!
-
 #include "config.h"
 #include "window1.hh"
 #include <Misc/EntryValueIntString.h>
+#include <Misc/EntryValueEmptyInt.h>
 #include <Misc/itos.h>
+#include <Misc/Trace.h>
 #include <iostream>
 
 enum Spalten
@@ -53,8 +48,7 @@ public:
 #endif   
 };
 
-#if 0
-class SumNode : public TCListNode
+class SumNode : public TreeRow
 {  int sum0;//,sum1,sum2;
 public:
 	// const for historical reasons
@@ -63,6 +57,12 @@ public:
     sum0 += (dynamic_cast<const MyRowData &>(*rd)).Data(0);
 //    sum1 += (dynamic_cast<const MyRowData &>(*rd)).Data(1);
 //    sum2 += (dynamic_cast<const MyRowData &>(*rd)).Data(2);
+   }
+ virtual void deduct(const cH_RowDataBase &rd)
+   {
+    sum0 -= (dynamic_cast<const MyRowData &>(*rd)).Data(0);
+//    sum1 -= (dynamic_cast<const MyRowData &>(*rd)).Data(1);
+//    sum2 -= (dynamic_cast<const MyRowData &>(*rd)).Data(2);
    }
 
    virtual const cH_EntryValue Value(guint col,gpointer gp) const
@@ -75,20 +75,14 @@ public:
       }
    }
 
- SumNode(guint col, const cH_EntryValue &v, guint child_s_deep, 
- 	cH_RowDataBase child_s_data, bool expand, const TreeRow &suminit)
-   : TCListNode(col, v, child_s_deep, child_s_data, expand), sum0(0) 
- {  if (suminit.Leaf()) cumulate(child_s_data);
-    else sum0=dynamic_cast<const SumNode&>(suminit).sum0;
+ SumNode(const Handle<const TreeRow> &suminit)
+   : sum0(0) 
+ {  if (suminit) sum0=dynamic_cast<const SumNode&>(*suminit).sum0;
  }
- static TCListNode *create(guint col, const cH_EntryValue &v, guint child_s_deep, 
- 	cH_RowDataBase child_s_data, bool expand,
- 	const TreeRow &suminit)
- {  return new SumNode(col,v, child_s_deep, child_s_data, expand, suminit); }
+ static Handle<TreeRow> create(const Handle<const TreeRow> &suminit)
+ {  return new SumNode(suminit); }
 };
-#endif
 
-#if 1
 // this creates a nice Handle class for convenience
 // not strictly needed
 class cH_MyRowData : public cH_RowDataBase
@@ -107,10 +101,32 @@ public:
  ContentType *operator->() const
  	{  return &((Handle<const ContentType>*)this)->operator*(); }
 };
-#endif
 
-window1::window1() : st(SP_ANZ,SP_SUM0)
-{  add(st);
+bool operator==(const cH_RowDataBase &b, int i)
+{  try
+   {  cH_MyRowData m(b);
+//      std::cout << m->Data(0) << ',' << i << '\n';
+      return m->Data(0)==i;
+   }
+   catch (...)
+   {  return false; }
+}
+
+class OutputFunctor
+{	std::ostream &os;
+	int sum;
+public:
+	OutputFunctor(std::ostream &o) : os(o), sum(0) {}
+	void operator()(const cH_RowDataBase &b)
+	{  cH_MyRowData m(b);
+	   os << m->Data(0) << ',';
+	   sum+=m->Data(0);
+	}
+	int Sum() const { return sum; }
+};
+
+window1::window1() : st(SP_ANZ)
+{  scrolledwindow1->add(st);
    st.show();
 
   std::vector <std::string> v(st.Cols());
@@ -145,17 +161,35 @@ window1::window1() : st(SP_ANZ,SP_SUM0)
    datavec.push_back(new MyRowData(1,"1955",25,855,"50m"));
    datavec.push_back(new MyRowData(1,"1955",40,210,"Jumbo"));
 #endif
-//   st.set_NewNode(&SumNode::create);
+   st.set_NewNode(&SumNode::create);
    st.setDataVec(datavec);
    
-//   st.leaf_selected.connect(SigC::slot(this,&with_class::on_leaf_selected));
-//   st.selectMatchingLines(2);
+//   st.signal_leaf_selected().connect(SigC::slot(this,&window1::on_leaf_selected));
+   st.selectMatchingLines(2);
 
-#if 0   
+#if 1
    {  OutputFunctor of(std::cout);
       st.ForEachLeaf(of);
       std::cout << "=" << of.Sum() << '\n';
    }
 #endif
    st.set_remember("(example)","newtree");
+   
+   ManuProC::Tracer::Enable(SimpleTreeStore::trace_channel);
 }
+
+cH_RowDataBase newrow;
+
+void window1::add_one()
+{  newrow=new MyRowData(1,"1810",25,755,"25m");
+   st.getModel().append_line(newrow);
+}
+
+void window1::eine_weg()
+{  st.getModel().remove_line(newrow);
+}
+
+void window1::refresh()
+{  st.getModel().signal_redraw_needed()();
+}
+                

@@ -1,4 +1,4 @@
-// $Id: SimpleTreeModel.h,v 1.6 2002/11/29 09:34:48 christof Exp $
+// $Id: SimpleTreeModel.h,v 1.7 2002/12/11 11:25:57 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -42,8 +42,11 @@ private:
 	SigC::Signal1<void,guint> title_changed;
 public:
 	void append_line(const cH_RowDataBase &row);
+	void remove_line(const cH_RowDataBase &row);
 	SigC::Signal1<void,cH_RowDataBase> &signal_line_appended()
 	{  return line_appended; }
+	SigC::Signal1<void,cH_RowDataBase> &signal_line_to_delete()
+	{  return line_to_delete; }
 	SigC::Signal1<void,guint> &signal_title_changed()
 	{  return title_changed; }
 	SigC::Signal0<void> &signal_redraw_needed()

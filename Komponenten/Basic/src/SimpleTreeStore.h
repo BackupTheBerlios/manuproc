@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.23 2002/12/05 17:51:35 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.24 2002/12/11 11:25:57 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,8 +24,9 @@
 #include <gtkmm/treestore.h>
 #include <RowDataBase.h>
 #include <TreeRow.h>
-#include<deque>
+#include <deque>
 #include <gdkmm/color.h>
+#include <Misc/UniqueValue.h>
 
 // for easily accessing model methods
 class SimpleTreeModel_Proxy
@@ -55,6 +56,7 @@ class SimpleTreeStore : public SigC::Object, public SimpleTreeModel_Proxy
 	typedef Gtk::TreeStore::iterator iterator;
 	typedef std::deque<guint> sequence_t;
 
+	static const UniqueValue::value_t trace_channel;
 protected:
 	friend class SimpleTree_Basic;
 
