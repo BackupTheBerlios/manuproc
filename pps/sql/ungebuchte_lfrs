@@ -21,10 +21,10 @@ a2ps -R -l60 --center-title="ungebuchte Lieferscheine" \
 --columns 1 $OUTFILE -o $OUTFILE.ps
 
 
-if [ $AKTION == "V" ]; then
-	gv $OUTFILE.ps
-else
+if [ "$AKTION" == "P" ]; then
 	lpr $OUTFILE.ps
+else
+	gv $OUTFILE.ps
 fi
 
 

@@ -1035,13 +1035,13 @@ void auftrag_lieferschein::on_lager_buchen_clicked()
 
 void auftrag_lieferschein::on_ungeb_lief_show_activate()
 {  
- std::string cmd("echo show");
+ std::string cmd("ungebuchte_lfrs V");
  system(cmd.c_str());
 }
 
 void auftrag_lieferschein::on_ungeb_lief_print_activate()
 {  
- std::string cmd("echo print");
+ std::string cmd("ungebuchte_lfrs P");
  system(cmd.c_str());
 }
 
