@@ -78,7 +78,7 @@ int main(int argc, char **argv)
 // if (argc-optind>1) instanz=cH_ppsInstanz(ppsInstanz::ID(atoi(argv[optind])));
 
   auftragmain = new auftrag_main();
-
+  ManuProC::Event::connect_glib();
 
 weiter:
 
