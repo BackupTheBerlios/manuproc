@@ -873,7 +873,19 @@ void LR_Abstraktion::drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,
 	 for(ExtBezSchema::const_sigiterator l=s->sigbegin(signifikanz);l!=s->sigend(signifikanz);++l)
 	   { neue_spalte( erste_spalte, os);
 	     if (!zusatzinfo)
-	        os <<"{"<<linecolor<< Gtk2TeX::string2TeX((*bez)[l->bezkomptype]->getStrVal()) <<"}";
+		{
+#ifdef MABELLA_EXTENSIONS
+		// Wenn im fremnden Schema die Bezeichnung nicht existiert,
+		// dann nichts ausgeben, damit es gleich auffällt.
+		if(s->Id()==bez->getExtBezSchema()->Id())	     
+#endif
+	          os <<"{"<<linecolor<< Gtk2TeX::string2TeX((*bez)[l->bezkomptype]->getStrVal()) <<"}";
+#ifdef MABELLA_EXTENSIONS
+		else
+	          os <<"{"<<linecolor<< " " <<"}";
+#endif
+		}
+
 #ifdef PETIG_EXTENSIONS // lieber zuwenige Zeilen als Umbruch riskieren
 	     if ((*bez)[l->bezkomptype]->getStrVal().size()>31) --zeilen_passen_noch;
 #endif	        
