@@ -1,4 +1,4 @@
-/* $Id: RechnungEntry.h,v 1.22 2003/11/19 09:03:07 jacek Exp $ */
+/* $Id: RechnungEntry.h,v 1.23 2004/01/23 10:27:19 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -108,7 +108,9 @@ public:
  const Preis getPreis(bool brutto=true) const 
  { 
    if(brutto) return preis;
-   else return Preis(preis.Gesamtpreis(preis.getWaehrung(),0,0.0,rabatt),
+#warning   
+#warning I think, it should be 1 for stueck here and not 0, but beware !   
+   else return Preis(preis.Gesamtpreis(preis.getWaehrung(),1,0.0,rabatt),
    			preis.getWaehrung(),preis.PreisMenge());
  }
  
