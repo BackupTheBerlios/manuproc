@@ -64,7 +64,11 @@ class Data_Lieferdaten : public RowDataBase
       		:cH_EntryValueEmptyInt(liefentry.Palette());
       case LIEFMNG_SEQ :   return cH_EntryValueIntString(smenge);
       case LIEFZEILE_SEQ : return cH_EntryValueIntString(zeile);
-      case VOMLAGER_SEQ : return cH_EntryValueIntString(liefentry.lagerid);
+      case VOMLAGER_SEQ : 
+      	if(liefentry.Status()==(AufStatVal)UNCOMMITED)
+      	  return cH_EntryValueIntString("-");
+      	else
+      	  return cH_EntryValueIntString(liefentry.lagerid);
       default : return cH_EntryValue();
      }
    }
