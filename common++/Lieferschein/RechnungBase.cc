@@ -1,4 +1,4 @@
-/* $Id: RechnungBase.cc,v 1.1 2003/06/19 12:48:11 jacek Exp $ */
+/* $Id: RechnungBase.cc,v 1.2 2003/06/19 13:20:29 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -25,14 +25,14 @@ Kunde::ID RechnungBase::getVerknr() const throw(SQLerror)
  if(verknr!=Kunde::none_id) return verknr;
 
  Query("select verknr from rechnung where rngid=?")
-	<< Id() >> verknr;
+	<< Id() >> FetchIStream::MapNull(verknr,Kunde::none_id);
  return verknr;
 }
 
 void RechnungBase::setVerknr(const Kunde::ID vid) const throw(SQLerror)	
 {
  Query("update rechnung set verknr=? where rngid=?")
-	<< vid << Id();
+	<< Query::NullIf(vid,Kunde::none_id) << Id();
  verknr=vid;
 }
 

@@ -135,6 +135,8 @@ void auftrag_rechnung::rngzeile_delete()
      cH_Data_Rechnung dt(rtree_daten->getSelectedRowDataBase_as<cH_Data_Rechnung>());
      RechnungEntry RE = dt->get_RechnungEntry();
      rechnung.deleteLieferschein(RE.Lfrs());
+     if(rechnung.size()==0)
+       rechnung.setVerknr(Kunde::none_id);
      } catch(...){}
 	 on_rngnr_activate(); // neu anzeigen
    }
@@ -250,6 +252,21 @@ void auftrag_rechnung::preis_activate()
 {   
 }
 
+bool auftrag_rechnung::checkVerkConsist(const cH_Lieferschein &chl)
+{
+ if(rechnung.getVerknr()!=Kunde::none_id)
+   {if(rechnung.getVerknr()!=chl->getVerknr())
+     { meldung->Show("Lieferscheine von verschiedenen Verkäufern dürfen nicht "
+		"auf eine Rechnung; Bitte getrennte Rechnungen erstellen");
+       return false;
+     }
+   }
+ else
+  rechnung.setVerknr(chl->getVerknr());
+
+ return true;
+}
+
 void auftrag_rechnung::lieferschein_uebernehmen()
 {   
  try{
@@ -277,6 +294,9 @@ void auftrag_rechnung::lieferschein_uebernehmen()
            }
        else
          rechnung.setze_Rabatt(chl->AufRabatt());
+
+	if(!checkVerkConsist(chl))
+	  return;
 
 // Versuch unterschiedliche Zahlungsziele zu handeln
 #ifdef MABELLA_EXTENSIONS         

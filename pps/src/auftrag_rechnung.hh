@@ -22,6 +22,7 @@
 
 #include<Instanzen/ppsInstanz.h>
 #include<Lieferschein/Rechnung.h>
+#include<Lieferschein/Lieferschein.h>
 
 class auftrag_rechnung : public auftrag_rechnung_glade
 {   
@@ -78,6 +79,8 @@ class auftrag_rechnung : public auftrag_rechnung_glade
 
         void on_gutschrift_activate();
         void on_storno_activate();
+
+   bool checkVerkConsist(const cH_Lieferschein &chl);
 
 // TreeRow *selectedrow_lief;
 // TreeRow *selectedrow_rng;

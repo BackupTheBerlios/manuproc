@@ -130,8 +130,8 @@ Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
 #ifdef MABELLA_EXTENSIONS
  exec sql begin declare section;
  bool ENTSORGUNG=krng->entsorgung();
- int VERKNR=k->VerkNr();
- int IVERKNR=0;
+// int VERKNR=k->VerkNr();
+// int IVERKNR=0;
  float KURS;
  exec sql end declare section;
 
@@ -141,9 +141,9 @@ Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
 
  kurs=KURS;
 
- if(VERKNR==-1) IVERKNR=-1;
+// if(VERKNR==-1) IVERKNR=-1;
  exec sql update rechnung set entsorgung=:ENTSORGUNG,
-	verknr=:VERKNR:IVERKNR,
+/*	verknr=:VERKNR:IVERKNR,*/
 	kurs=:KURS
 	where
 	rngid=:RNGID;
@@ -254,7 +254,7 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
  	(select :RNGID,l.zeile - :MINZNR + :MAXZNR,
  		l.artikelid, l.lfrsid,l.zeile, l.stueck,l.menge,
  		coalesce(ae.preis,0),coalesce(ae.rabatt,0),
- 		coalesce(ae.preismenge,1,ae.provsatz)
+ 		coalesce(ae.preismenge,1),ae.provsatz
  	 from lieferscheinentry l
  	 	left join auftragentry ae 
  	 	on (l.instanz,l.refauftragid,l.refzeilennr)
