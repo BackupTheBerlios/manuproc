@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.34 2003/02/26 18:20:56 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.35 2003/03/10 07:35:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -88,7 +88,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
 	 coalesce(waehrungid,:WAEHRUNGID),
 	 coalesce(entsorgung,false),
     coalesce(verknr,-1),coalesce(lieferantenkonto,0),
-    coalesce(gegenkonto,0),coalesce(unsere_kundennr,-1),
+    coalesce(gegenkonto,0),coalesce(unsere_kundennr,''),
 	coalesce(betreuer,0),coalesce(anz_firmenpapier,1),
 	coalesce(anz_weissespapier,1),coalesce(lieferung_frei_haus,'t'),
 	coalesce(aktiv,true), coalesce(preisauto,true),
