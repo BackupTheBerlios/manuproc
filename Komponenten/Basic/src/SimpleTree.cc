@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.37 2003/12/11 16:50:24 christof Exp $
+// $Id: SimpleTree.cc,v 1.38 2003/12/17 16:37:39 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -267,4 +267,12 @@ void SimpleTree_Basic::setTitles(const std::vector<std::string>& T)
 {  SimpleTreeStore_Proxy::setTitles(T);
    delete menu; menu=0;
    fillMenu();
+}
+
+void SimpleTree::ScrollToSelection()
+{  Glib::RefPtr<Gtk::TreeSelection> sel=get_selection();
+   if (!sel->get_selected())
+      scroll_to_cell(
+      	get_model()->get_path(sel->get_selected()),
+      	*get_column(0),0.5,0.0);
 }

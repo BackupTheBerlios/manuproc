@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.29 2003/12/11 16:50:24 christof Exp $
+// $Id: SimpleTree.hh,v 1.30 2003/12/17 16:37:39 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -215,6 +215,9 @@ public:
  template <class T> void ForEachLeaf(T &t) const
  {  ForEachLeaf2(begin(),end(),t); }
  
+ // very basic method for scrolling to a specific line - tell me if you 
+ // need more - CP
+ void ScrollToSelection();
 };
 
 #if 0
