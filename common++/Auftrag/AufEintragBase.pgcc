@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.pgcc,v 1.11 2002/02/07 17:10:54 cvs_malte Exp $
+// $Id: AufEintragBase.pgcc,v 1.14 2002/02/19 14:49:52 cvs_malte Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -41,7 +41,7 @@ void AufEintragBase::setVerarbeitung(const cH_Prozess p) const throw(SQLerror)
  
  exec sql update auftrag_prozess set prozessid= :PROZESSID,
  	datum= now() where auftragid= :AUFTRAGID and zeilennr= :ZEILENNR ;
- SQLerror::test("Prozessaktualisierung",100);
+ SQLerror::test("Prozessaktualisierung (1) ",100);
  
  if((sqlca.sqlcode==100) || sqlca.sqlerrd[2]==0)
    {
@@ -49,7 +49,7 @@ void AufEintragBase::setVerarbeitung(const cH_Prozess p) const throw(SQLerror)
       (auftragid,instanz,zeilennr,prozessid,datum)
       values
     	(:AUFTRAGID, :INSTANZ, :ZEILENNR, :PROZESSID, now());
-    SQLerror::test("Prozessaktualisierung");
+    SQLerror::test("Prozessaktualisierung (2)");
    }
  tr.commit();
 }
@@ -126,15 +126,19 @@ AuftragBase::mengen_t AufEintragBase::abschreiben(mengen_t menge) const throw(SQ
 
 
 
-void AufEintragBase::setLetztePlanungFuer(ppsInstanz::ID planinstanz) const throw(SQLerror)
+void AufEintragBase::setLetztePlanungFuer(cH_ppsInstanz planinstanz) const throw(SQLerror)
 {
 //cout << "Instanz: "<<planinstanz<<'\n';
  assert (Instanz()==ppsInstanz::Kundenauftraege);
+
+ if(planinstanz->LagerInstanz()) return;
+
  exec sql begin declare section;
   int AUFTRAGID=Id();
   int ZEILENNR=ZNr();
   int INSTANZ=InstanzID();
-  int PLANUNG=planinstanz;
+  int PLANUNG=planinstanz->Id();
+  int PROZESSID=planinstanz->get_Prozess()->Id();
  exec sql end declare section;
  Transaction tr;
  
@@ -142,17 +146,38 @@ void AufEintragBase::setLetztePlanungFuer(ppsInstanz::ID planinstanz) const thro
    maxPlanInstanz=null, datum= now() where 
    (instanz,auftragid,zeilennr) = (:INSTANZ,:AUFTRAGID,:ZEILENNR) ;
  SQLerror::test("Prozessaktualisierung",100);
- 
+
  if((sqlca.sqlcode==100) || sqlca.sqlerrd[2]==0)
    {
     exec sql insert into auftrag_prozess 
-        (instanz,auftragid,zeilennr,letztePlanInstanz)
+        (instanz,auftragid,prozessid,zeilennr,letztePlanInstanz)
       values
-    	(:INSTANZ,:AUFTRAGID,:ZEILENNR,:PLANUNG);
+    	(:INSTANZ,:AUFTRAGID,:PROZESSID,:ZEILENNR,:PLANUNG);
     SQLerror::test("Prozessaktualisierung");
    }
  tr.commit();
 }
+
+void AufEintragBase::setMaxPlanInstanz(int anzahl_maxplaninstanzen) const throw(SQLerror)
+{
+ exec sql begin declare section;
+  int AUFTRAGID=Id();
+  int ZEILENNR=ZNr();
+  int INSTANZ=InstanzID();
+  int PLANUNG=anzahl_maxplaninstanzen;
+ exec sql end declare section;
+
+ Transaction tr;
+ 
+ exec sql update auftrag_prozess set maxPlanInstanz= :PLANUNG,
+   datum= now() where 
+   auftragid= :AUFTRAGID and instanz=:INSTANZ and zeilennr= :ZEILENNR ;
+ SQLerror::test("Prozessaktualisierung",100);
+ // Wenn die Zeile nicht da ist, dann auch nichts eintragen
+
+ tr.commit();
+}
+
 
 void AufEintragBase::calculateProzessInstanz()
 {
@@ -172,25 +197,6 @@ void AufEintragBase::calculateProzessInstanz()
   setMaxPlanInstanz(anz);
 }   
 
-
-void AufEintragBase::setMaxPlanInstanz(int maxplaninstanz) const throw(SQLerror)
-{
- exec sql begin declare section;
-  int AUFTRAGID=Id();
-  int ZEILENNR=ZNr();
-  int INSTANZ=InstanzID();
-  int PLANUNG=maxplaninstanz;
- exec sql end declare section;
-
- Transaction tr;
- 
- exec sql update auftrag_prozess set maxPlanInstanz= :PLANUNG,
-   datum= now() where 
-   auftragid= :AUFTRAGID and instanz=:INSTANZ and zeilennr= :ZEILENNR ;
- SQLerror::test("Prozessaktualisierung");
- 
- tr.commit();
-}
 
 
 void AufEintragBase::updateStkDiff(mengen_t menge) const throw(SQLerror)

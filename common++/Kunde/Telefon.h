@@ -1,4 +1,4 @@
-// $Id: Telefon.h,v 1.5 2001/10/23 08:45:19 christof Exp $
+// $Id: Telefon.h,v 1.6 2002/02/28 15:19:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -28,7 +28,7 @@
 
 class cH_Telefon;
 
-class Telefon : protected HandleContent
+class Telefon : public HandleContent
 {
 public:
  typedef int ID;
@@ -80,10 +80,10 @@ public:
 
 class cH_Telefon : public Handle<const Telefon>
 {	
-  cH_Telefon(const Telefon *p) : Handle<const Telefon>(p) {}	
   cH_Telefon() {}
 public:
-	cH_Telefon(const Telefon::ID _tid);
+    cH_Telefon(const Telefon *p) : Handle<const Telefon>(p) {}	
+    cH_Telefon(const Telefon::ID _tid);
 };
 
 

@@ -1,4 +1,4 @@
-// $Id: Person_sql.pgcc,v 1.5 2001/12/04 08:42:11 christof Exp $
+// $Id: Person_sql.pgcc,v 1.6 2002/02/28 15:19:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,15 +18,18 @@
  */
 
 #include <Kunde/Person.h>
+#include <Kunde/Telefon.h>
 #include <Aux/Transaction.h>
+
 exec sql include sqlca;
 
 Person::Person(ID _id) throw(SQLerror) : personennr(_id)
 {  exec sql begin declare section;
    int ID=_id;
    int KUNDENNR;
+   int ANREDE;
    char NAME[50], VORNAME[50], POSITION[50];
-   char GEBDATE[21],ANREDE[50],NOTIZ[1500];
+   char GEBDATE[21],NOTIZ[1500];
    int IGEBDATE,IKUNDENNR;
    exec sql end declare section;
 
@@ -35,11 +38,11 @@ Person::Person(ID _id) throw(SQLerror) : personennr(_id)
    Transaction tr;
 
    exec sql select kundennr, name, coalesce(vname,''), coalesce(_position,''),
-	gebdat, coalesce(briefanrede,''), coalesce(p.notiz||' '||a.notiz,'')
+	gebdat, coalesce(branr,0), coalesce(p.notiz||' '||a.notiz,'')
 	into :KUNDENNR:IKUNDENNR, :NAME, :VORNAME, :POSITION,
 		:GEBDATE:IGEBDATE, :ANREDE, :NOTIZ
-	from ku_person p full join ku_ansprech a using(persnr), ku_briefanr b where 
-		b.branr=p.branr and p.persnr= :ID;
+	from ku_person p full join ku_ansprech a using(persnr)
+	   where  p.persnr= :ID;
 
    SQLerror::test(__FILELINE__);
 
@@ -49,26 +52,28 @@ Person::Person(ID _id) throw(SQLerror) : personennr(_id)
    vorname=VORNAME;
    position=POSITION;
    gebdatum=IGEBDATE ? Petig::Datum() : Petig::Datum(GEBDATE);
-   anrede=ANREDE;
+   anrede=cH_Anrede(ANREDE);
    notiz=NOTIZ;	
 }
 
 vector<Person::st_person> Person::get_Person(ID nr) throw(SQLerror)
-{  exec sql begin declare section;
-   int PERSNR;
-   int KUNDENNR=nr;
-   char NAME[50], VORNAME[50], POSITION[50];
-   char GEBDATE[21],ANREDE[50],NOTIZ[1500];
-   int IGEBDATE,IKUNDENNR;
+{
+   exec sql begin declare section;
+    int PERSNR;
+    char NAME[50], VORNAME[50], POSITION[50];
+    char GEBDATE[21];
+    int ANREDE;
+    char NOTIZ[1500];
+    int IGEBDATE;
    char *QU;
    exec sql end declare section;
 
    Transaction tr;
    std::string qu =  "select persnr,name, coalesce(vname,''), "
-	"coalesce(_position,''),gebdat, coalesce(anrede,''), "
+	"coalesce(_position,''),gebdat, coalesce(branr,0), "
 	"coalesce(p.notiz||' '||a.notiz,'') from "
-	"ku_person p, ku_ansprech a, ku_briefanr b "
-	" where p.persnr=a.persnr and b.branr=p.branr and a.kundennr="+itos(nr);
+	"ku_person p, ku_ansprech a "
+	" where p.persnr=a.persnr and a.kundennr="+itos(nr);
    QU = (char*)qu.c_str();
    exec sql prepare perqu from :QU;
     exec sql declare PER cursor for perqu;
@@ -82,7 +87,8 @@ vector<Person::st_person> Person::get_Person(ID nr) throw(SQLerror)
     SQLerror::test(__FILELINE__,100);
     if (sqlca.sqlcode) break;
     gebdatum=IGEBDATE ? Petig::Datum() : Petig::Datum(GEBDATE);
-    vec_person.push_back(st_person(PERSNR,NAME,VORNAME,POSITION,gebdatum,ANREDE,NOTIZ));
+    vec_person.push_back(st_person(PERSNR,NAME,VORNAME,POSITION,gebdatum,
+         cH_Anrede(ANREDE),NOTIZ));
    }
   exec sql close PER;
   tr.close();
@@ -96,10 +102,9 @@ cH_Person Person::newPerson(const Kunde::ID _knr, const std::string &_name, cons
 	const int _branr_id, const std::string &_not) throw(SQLerror)
 {
  exec sql begin declare section;
- int KUNDENNR = _knr, PERSNR;
- int BRANR_ID;
- short IBRANRID;
- char *NAME, *VORNAME, *POSITION, *GEBURT, *NOTIZ;   
+    int KUNDENNR = _knr, PERSNR;
+    int BRANR_ID;
+    char *NAME, *VORNAME, *POSITION, *GEBURT, *NOTIZ;   
  exec sql end declare section;
 
  NAME=(char*)_name.c_str();
@@ -149,9 +154,9 @@ void Person::update() throw(SQLerror)
 
  Transaction tr;
 
- exec sql update kunden_personen set
+ exec sql update ku_personen set
        name= :NAME, vname= :VORNAME, _position= :POSITION,
-	gebdat= :GEBURT, anrede= :BRANR_ID, notiz= :NOTIZ
+	gebdat= :GEBURT, branr= :BRANR_ID, notiz= :NOTIZ
 	where persnr= :PERSNR;
   SQLerror::test(__FILELINE__);
 
@@ -175,3 +180,33 @@ void Person::delPerson(const ID pid) throw(SQLerror)
  tr.commit();
 
 }
+
+const vector<cH_Telefon> Person::getTelefon() const
+{
+ exec sql begin declare section;
+   int TELID;  
+   int PID=Id();
+ exec sql end declare section;
+
+ Transaction tr;
+ 
+ exec sql declare telein cursor for
+   SELECT telid FROM ku_telefon WHERE persnr= :PID;
+ exec sql open telein;
+ SQLerror::test(__FILELINE__);
+
+ vector<cH_Telefon> T;
+ while(true)
+      {
+         exec sql fetch telein into :TELID;
+         SQLerror::test(__FILELINE__,"teleein",100);
+         if (sqlca.sqlcode) break;
+         T.push_back(cH_Telefon(TELID));
+      }
+
+ exec sql close telein;
+ tr.close(); 
+ return T;  
+}
+
+

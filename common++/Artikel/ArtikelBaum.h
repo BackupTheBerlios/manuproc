@@ -1,4 +1,4 @@
-/* $Id: ArtikelBaum.h,v 1.8 2002/02/05 17:15:52 christof Exp $ */
+/* $Id: ArtikelBaum.h,v 1.9 2002/02/28 15:19:29 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -50,15 +50,15 @@ public:
 	   RohArtikel() : menge(0), 
 	                  erzeugung(Prozess::default_id) 
 	   {}
-      RohArtikel(ArtikelBase _rohartikel,faktor_t _menge)
+      RohArtikel(ArtikelBase _rohartikel,faktor_t _menge,Prozess::ID proz)
               :rohartikel(_rohartikel),menge(_menge),
-               erzeugung(Prozess::default_id)
+               erzeugung(proz)
       {}
 
       bool operator==(const RohArtikel &b) const {return (*this).rohartikel==b.rohartikel;}
       bool operator<(const RohArtikel &b) const {return (*this).rohartikel<b.rohartikel;}
 
-//private:
+private:
 	   // obsolete, compatibility only!
 	   RohArtikel(const ArtikelBase &_altartikel,cH_Prozess proz)
 	   	: rohartikel(_altartikel), 

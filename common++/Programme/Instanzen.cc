@@ -1,4 +1,4 @@
-// $Id: Instanzen.cc,v 1.1 2002/02/08 21:51:26 christof Exp $
+// $Id: Instanzen.cc,v 1.2 2002/02/28 15:19:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -35,7 +35,7 @@ int main()
     {
      AuftragBase AB(*i,0);
      AB.create_if_not_exists(OPEN,Kunde::default_id);
-     if(!(*i)->LagerInstanz()) continue;
+//     if(!(*i)->LagerInstanz()) continue;
      cout << "Lager Aufträge initialisieren: "<<(*i)->Name()<<' '
           <<(*i)->Id()<<' '<<(*i)->LagerInstanz()<<'\n';
      AuftragBase ABL(*i,Lager_Vormerkungen::LagerAuftragsId);

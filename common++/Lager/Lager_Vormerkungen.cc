@@ -4,6 +4,9 @@
 #include <Auftrag/Auftrag.h>
 #include <Auftrag/AuftragsEntryZuordnung.h>
 //#include "maschinen_geschwindigkeit.hh"
+#include <Auftrag/sqlAuftragSelector.h>
+#include <Auftrag/selFullAufEntry.h>
+
 
 #include <Artikel/ArtikelBezeichnung.h> // debug
 
@@ -45,6 +48,7 @@ void Lager_Vormerkungen::vormerken_oder_bestellen()
 
 void Lager_Vormerkungen::artikel_vormerken(AuftragBase::mengen_t menge)
 {
+  if(menge==AuftragBase::mengen_t(0)) return ;
   Planen(menge,AuftragBase(Instanz()->Id(),LagerAuftragsId));
 }        
 
@@ -63,4 +67,30 @@ int ProdLager::Lieferzeit_in_Tagen()
 }
 */
 
+
+void Lager_Vormerkungen::freigegeben_menge_neu_verplanen(cH_ppsInstanz instanz,
+               const ArtikelBase& artikel,AuftragBase::mengen_t menge)
+{
+  assert(instanz->LagerInstanz());
+  assert(menge>=0);
+  if(menge==AuftragBase::mengen_t(0)) return;
+  SQLFullAuftragSelector sel(SQLFullAuftragSelector::sel_Artikel_Planung(instanz->Id(),artikel,false)); // false=ungeplant
+  SelectedFullAufList auftraglist=SelectedFullAufList(sel);
+  for (SelectedFullAufList::const_iterator i=auftraglist.begin();i!=auftraglist.end();++i)
+   {
+     AuftragBase::mengen_t fehlende_menge = i->getRestStk();
+     if(fehlende_menge>=menge)
+      {
+cout << "Freigegeben und KOMPLETT neu vorgemerkt: "<< menge <<'\n';;
+        Lager_Vormerkungen(*i).artikel_vormerken(menge);
+        return;
+      }
+     else
+      {
+cout << "Freigegeben und TEILWEISE neu vorgemerkt: "<< menge << ' '<<fehlende_menge <<'\n';;
+        Lager_Vormerkungen(*i).artikel_vormerken(fehlende_menge);
+        menge-=fehlende_menge;
+      }
+   }
+}
 

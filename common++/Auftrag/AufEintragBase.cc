@@ -31,7 +31,7 @@
 #include <Aux/Changejournal.h>
 
 
-#line 1 "/usr/lib/postgresql/include/sqlca.h"
+#line 1 "/usr/include/postgresql/sqlca.h"
 #ifndef POSTGRES_SQLCA_H
 #define POSTGRES_SQLCA_H
 
@@ -135,7 +135,7 @@ void AufEintragBase::setVerarbeitung(const cH_Prozess p) const throw(SQLerror)
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);}
 #line 43 "AufEintragBase.pgcc"
 
- SQLerror::test("Prozessaktualisierung",100);
+ SQLerror::test("Prozessaktualisierung (1) ",100);
  
  if((sqlca.sqlcode==100) || sqlca.sqlerrd[2]==0)
    {
@@ -150,7 +150,7 @@ void AufEintragBase::setVerarbeitung(const cH_Prozess p) const throw(SQLerror)
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);}
 #line 51 "AufEintragBase.pgcc"
 
-    SQLerror::test("Prozessaktualisierung");
+    SQLerror::test("Prozessaktualisierung (2)");
    }
  tr.commit();
 }
@@ -289,28 +289,35 @@ AuftragBase::mengen_t AufEintragBase::abschreiben(mengen_t menge) const throw(SQ
 
 
 
-void AufEintragBase::setLetztePlanungFuer(ppsInstanz::ID planinstanz) const throw(SQLerror)
+void AufEintragBase::setLetztePlanungFuer(cH_ppsInstanz planinstanz) const throw(SQLerror)
 {
  assert (Instanz()==ppsInstanz::Kundenauftraege);
+
+ if(planinstanz->LagerInstanz()) return;
+
  /* exec sql begin declare section */
    
    
    
    
- 
-#line 134 "AufEintragBase.pgcc"
-   int  AUFTRAGID  = Id () ;
- 
-#line 135 "AufEintragBase.pgcc"
-   int  ZEILENNR  = ZNr () ;
- 
-#line 136 "AufEintragBase.pgcc"
-   int  INSTANZ  = InstanzID () ;
+   
  
 #line 137 "AufEintragBase.pgcc"
-   int  PLANUNG  = planinstanz ;
-/* exec sql end declare section */
+   int  AUFTRAGID  = Id () ;
+ 
 #line 138 "AufEintragBase.pgcc"
+   int  ZEILENNR  = ZNr () ;
+ 
+#line 139 "AufEintragBase.pgcc"
+   int  INSTANZ  = InstanzID () ;
+ 
+#line 140 "AufEintragBase.pgcc"
+   int  PLANUNG  = planinstanz -> Id () ;
+ 
+#line 141 "AufEintragBase.pgcc"
+   int  PROZESSID  = planinstanz -> get_Prozess () -> Id () ;
+/* exec sql end declare section */
+#line 142 "AufEintragBase.pgcc"
 
  Transaction tr;
  
@@ -323,27 +330,71 @@ void AufEintragBase::setLetztePlanungFuer(ppsInstanz::ID planinstanz) const thro
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
 	ECPGt_int,&(ZEILENNR),1L,1L,sizeof(int), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);}
-#line 143 "AufEintragBase.pgcc"
+#line 147 "AufEintragBase.pgcc"
 
  SQLerror::test("Prozessaktualisierung",100);
- 
+
  if((sqlca.sqlcode==100) || sqlca.sqlerrd[2]==0)
    {
-    { ECPGdo(__LINE__, NULL, "insert into auftrag_prozess ( instanz  , auftragid  , zeilennr  , letztePlanInstanz  ) values ( ? , ? , ? , ? )", 
+    { ECPGdo(__LINE__, NULL, "insert into auftrag_prozess ( instanz  , auftragid  , prozessid  , zeilennr  , letztePlanInstanz  ) values ( ? , ? , ? , ? , ? )", 
 	ECPGt_int,&(INSTANZ),1L,1L,sizeof(int), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
 	ECPGt_int,&(AUFTRAGID),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(PROZESSID),1L,1L,sizeof(int), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
 	ECPGt_int,&(ZEILENNR),1L,1L,sizeof(int), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
 	ECPGt_int,&(PLANUNG),1L,1L,sizeof(int), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);}
-#line 151 "AufEintragBase.pgcc"
+#line 155 "AufEintragBase.pgcc"
 
     SQLerror::test("Prozessaktualisierung");
    }
  tr.commit();
 }
+
+void AufEintragBase::setMaxPlanInstanz(int anzahl_maxplaninstanzen) const throw(SQLerror)
+{
+ /* exec sql begin declare section */
+   
+   
+   
+   
+ 
+#line 164 "AufEintragBase.pgcc"
+   int  AUFTRAGID  = Id () ;
+ 
+#line 165 "AufEintragBase.pgcc"
+   int  ZEILENNR  = ZNr () ;
+ 
+#line 166 "AufEintragBase.pgcc"
+   int  INSTANZ  = InstanzID () ;
+ 
+#line 167 "AufEintragBase.pgcc"
+   int  PLANUNG  = anzahl_maxplaninstanzen ;
+/* exec sql end declare section */
+#line 168 "AufEintragBase.pgcc"
+
+
+ Transaction tr;
+ 
+ { ECPGdo(__LINE__, NULL, "update auftrag_prozess set maxPlanInstanz  = ? , datum  = now ()  where auftragid  = ? and instanz  = ? and zeilennr  = ?", 
+	ECPGt_int,&(PLANUNG),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(AUFTRAGID),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(INSTANZ),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(ZEILENNR),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);}
+#line 174 "AufEintragBase.pgcc"
+
+ SQLerror::test("Prozessaktualisierung",100);
+ 
+ tr.commit();
+}
+
 
 void AufEintragBase::calculateProzessInstanz()
 {
@@ -359,47 +410,6 @@ void AufEintragBase::calculateProzessInstanz()
 }   
 
 
-void AufEintragBase::setMaxPlanInstanz(int maxplaninstanz) const throw(SQLerror)
-{
- /* exec sql begin declare section */
-   
-   
-   
-   
- 
-#line 179 "AufEintragBase.pgcc"
-   int  AUFTRAGID  = Id () ;
- 
-#line 180 "AufEintragBase.pgcc"
-   int  ZEILENNR  = ZNr () ;
- 
-#line 181 "AufEintragBase.pgcc"
-   int  INSTANZ  = InstanzID () ;
- 
-#line 182 "AufEintragBase.pgcc"
-   int  PLANUNG  = maxplaninstanz ;
-/* exec sql end declare section */
-#line 183 "AufEintragBase.pgcc"
-
-
- Transaction tr;
- 
- { ECPGdo(__LINE__, NULL, "update auftrag_prozess set maxPlanInstanz  = ? , datum  = now ()  where auftragid  = ? and instanz  = ? and zeilennr  = ?", 
-	ECPGt_int,&(PLANUNG),1L,1L,sizeof(int), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
-	ECPGt_int,&(AUFTRAGID),1L,1L,sizeof(int), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
-	ECPGt_int,&(INSTANZ),1L,1L,sizeof(int), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
-	ECPGt_int,&(ZEILENNR),1L,1L,sizeof(int), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);}
-#line 189 "AufEintragBase.pgcc"
-
- SQLerror::test("Prozessaktualisierung");
- 
- tr.commit();
-}
-
 
 void AufEintragBase::updateStkDiff(mengen_t menge) const throw(SQLerror)
 {
@@ -409,19 +419,19 @@ void AufEintragBase::updateStkDiff(mengen_t menge) const throw(SQLerror)
       
     
  
-#line 199 "AufEintragBase.pgcc"
+#line 205 "AufEintragBase.pgcc"
    int  AUFTRAGID  = Id () ;
  
-#line 200 "AufEintragBase.pgcc"
+#line 206 "AufEintragBase.pgcc"
    int  INSTANZ  = instanz -> Id () ;
  
-#line 201 "AufEintragBase.pgcc"
+#line 207 "AufEintragBase.pgcc"
    int  ZEILENNR  = ZNr () ;
  
-#line 202 "AufEintragBase.pgcc"
+#line 208 "AufEintragBase.pgcc"
    double  MENGE  = menge ;
 /* exec sql end declare section */
-#line 203 "AufEintragBase.pgcc"
+#line 209 "AufEintragBase.pgcc"
 
 
  Transaction tr;
@@ -435,7 +445,7 @@ void AufEintragBase::updateStkDiff(mengen_t menge) const throw(SQLerror)
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
 	ECPGt_int,&(ZEILENNR),1L,1L,sizeof(int), 
 	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);}
-#line 209 "AufEintragBase.pgcc"
+#line 215 "AufEintragBase.pgcc"
 
  SQLerror::test("updateStkDiff: update stk in auftragentry");
 
@@ -449,37 +459,3 @@ void AufEintragBase::updateStkDiff(mengen_t menge) const throw(SQLerror)
 }
 
 
-void AufEintragBase::setStatus_raw(AufStatVal status)  const throw(SQLerror)
-{
- /* exec sql begin declare section */
-    
-  
-      
-  
- 
-#line 228 "AufEintragBase.pgcc"
-   int  AUFTRAGID  = Id () ;
- 
-#line 229 "AufEintragBase.pgcc"
-   int  INSTANZ  = InstanzID () ;
- 
-#line 230 "AufEintragBase.pgcc"
-   int  ZEILENNR  = ZNr () ;
- 
-#line 231 "AufEintragBase.pgcc"
-   int  STATUS  = status ;
-/* exec sql end declare section */
-#line 232 "AufEintragBase.pgcc"
-
-
- { ECPGdo(__LINE__, NULL, "update auftragentry set status  = STATUS   where ( instanz  , auftragid  , zeilennr  ) = ( ? , ? , ? )", 
-	ECPGt_int,&(INSTANZ),1L,1L,sizeof(int), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
-	ECPGt_int,&(AUFTRAGID),1L,1L,sizeof(int), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
-	ECPGt_int,&(ZEILENNR),1L,1L,sizeof(int), 
-	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);}
-#line 235 "AufEintragBase.pgcc"
-
- SQLerror::test("updateStatus_raw: update status in auftragentry");
-}

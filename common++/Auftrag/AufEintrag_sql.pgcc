@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.1 2002/02/08 21:51:26 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.2 2002/02/28 15:19:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -140,20 +140,19 @@ void AufEintrag::setInstanzen(AufStatVal newstatus,Petig::Datum lieferdate,menge
                 AufEintragZu(class AufEintragBase(*this,myznr)).AuftragsEntryZuordnung(M,AEB,znr);
          }
      }
-//cout << AEB.Instanz()->Id()<<' '<<AEB.Id()<<' '<<AEB.ZNr()<<'\t'
-//<<AEB.getStueck()-M<<'\n';
+//cout << AEB.Instanz()->Id()<<' '<<AEB.Id()<<' '<<AEB.ZNr()<<'\t';
    AEB.updateStk(AEB.getStueck()-M,false); // macht auch das Lager
    if(auftragstatus==UNCOMMITED && newstatus==OPEN ) 
       AEB.setStatusAuftragBase(newstatus);
-/*
-   if(ppsInstanz::LagerInstanz(InstanzID()))
+
+   if(instanz->LagerInstanz() && Id()==Lager_Vormerkungen::LagerAuftragsId && 
+       (newstatus==STORNO || M < 0 ))
     {
-//      ProdLager PL(class AufEintrag(class AufEintragBase(*this,znr)));
-//cout << Instanz()->Id()<<' '<<Id()<<' '<<ZNr()<<'\n';
-      ProdLager PL(*this);
-      PL.vormerkung_updateStk_LfrDate(M,lieferdate,newstatus);
+#warning noch nicht getestet!!!!
+#warning kommt aber bald  21.2.02 MAT
+//      Lager_Vormerkungen::freigegeben_menge_neu_verplanen(instanz,ArtId(),M);
     }
-*/
+
    AufEintrag(i->AEB2).setInstanzen(newstatus,lieferdate,M,znr,newznr);
   }
 }
@@ -397,19 +396,27 @@ AufEintrag::AufEintrag(const AufEintragBase &aebb) throw (SQLerror,NoAEB_Error)
  } catch (SQLerror &e) {std::cerr << e <<'\n';}
 }
 
-void AufEintrag::Planen(mengen_t menge, const AuftragBase &zielauftrag)
+int AufEintrag::Planen(mengen_t menge, const AuftragBase &zielauftrag)
 {  assert(!Id());
-   int znr = zielauftrag.insertNewEntry(0,getLieferdatum(),Artikel(),OPEN,false);
+   int znr=-1,dummy;
+   mengen_t mdummy;
+   if (!zielauftrag.existEntry(Artikel(),getLieferdatum(),znr,dummy,mdummy,OPEN))
+      znr = zielauftrag.insertNewEntry(0,getLieferdatum(),Artikel(),OPEN,false);
+
+   if(menge==AuftragBase::mengen_t(0)) return znr;
+   assert(menge>0);
    move_to(AufEintragBase(zielauftrag,znr),menge);
 
    std::list<AufEintragZu::st_reflist> ReferenzAufEintrag =
 			         AufEintragZu(*this).get_Referenz_listFull(false);
+
    for (std::list<AufEintragZu::st_reflist>::iterator i=ReferenzAufEintrag.begin();i!=ReferenzAufEintrag.end();++i)
    {
-     if(Instanz()->Id()!=ppsInstanz::Kundenauftraege) continue;
-     i->AEB2.setLetztePlanungFuer(instanz->Id());
+     if(i->AEB2.Instanz()->Id()!=ppsInstanz::Kundenauftraege) continue;
+     i->AEB2.setLetztePlanungFuer(instanz);
      i->AEB2.calculateProzessInstanz();
    }
+ return znr;
 }
 
 void AufEintrag::moveInstanz(const AuftragBase &newAuftrag) throw(SQLerror)
@@ -465,3 +472,21 @@ void AufEintrag::moveInstanz(const AuftragBase &newAuftrag) throw(SQLerror)
  AufEintragZu::moveInstanz(AufEintragZu::Nach,oldAEB,*this);
 }
 
+cH_Lieferschein AufEintrag::getLieferschein() const
+{
+  exec sql begin declare section;
+   int LFRSID=0,LFRZNR=0;
+   int AUFID=Id();
+   int AUFZNR=ZNr();
+   int INSTANZ=Instanz()->Id();
+  exec sql end declare section;
+  exec sql select lfrsid,zeile into :LFRSID,:LFRZNR
+      from lieferscheinentry where 
+      (instanz,refauftragid,refzeilennr)=(:INSTANZ,:AUFID,:AUFZNR) limit 1;
+#warning kann es mehr als eine Zeile geben? 
+ SQLerror::test(__FILELINE__,100);
+ if(sqlca.sqlcode) // keine Zeile gefunden
+   return cH_Lieferschein(ppsInstanz::None,0);
+ else 
+   return cH_Lieferschein(Instanz(),LFRSID);
+}

@@ -186,14 +186,15 @@ void Rechnung::addLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror)
  SQLerror::test(__FILELINE__);
  
  LFRSID=lfrsid;
- 
+
  exec sql insert into rechnungentry 
  	(rngid,zeilennr,artikelid,lfrsid,lfrszeile,menge,preis,
  		rabatt,preismenge,stueck)
  	(select :RNGID,:MAXZNR+nextval(:SEQNAME),
  		l.artikelid, l.lfrsid, l.zeile,l.menge,0,0,0,l.stueck
  	 from lieferscheinentry l 
- 	 where l.lfrsid= :LFRSID and not coalesce(zusatzinfo,'f'));
+ 	 where l.lfrsid= :LFRSID and not coalesce(zusatzinfo,'f')
+ 	 order by l.zeile);
  SQLerror::test(__FILELINE__); 
 
  exec sql update lieferschein set rngid=:RNGID where lfrsid=:LFRSID;

@@ -43,13 +43,19 @@ void ppsInstanz::get_name()
  lieferschein=db_liefer;
  lagername=db_lagername;
 
+/*
  if(lager_fuer!=None)
   {
-    exec sql select insid into :db_best_fuer from prod_instanz 
+*/
+  exec sql select insid into :db_best_fuer from prod_instanz 
          where lager_fuer=:db_nr;
-    bestellung_fuer=ppsInstId(db_best_fuer);
+  SQLerror::test(__FILELINE__,100);
+  if(sqlca.sqlcode) bestellung_fuer=None;
+  else              bestellung_fuer=ppsInstId(db_best_fuer);
+/*
   } 
  else bestellung_fuer=None;
+*/
  }catch(SQLerror &e) {cerr<<e<<'\n'; exit(1);}
 }
 

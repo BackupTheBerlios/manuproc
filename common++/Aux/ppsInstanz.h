@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.38 2002/02/05 17:12:58 christof Exp $
+// $Id: ppsInstanz.h,v 1.39 2002/02/12 15:46:42 cvs_malte Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -52,7 +52,7 @@ public:
         };
  
 private: 
- ppsInstId instid,lager_fuer,bestellung_fuer; 
+ ppsInstId instid,lager_fuer,bestellung_fuer;
  std::string name;
  int sortierung;
  bool lieferschein;
@@ -70,7 +70,8 @@ public:
                              sortierung(0),
                              lieferschein(false)
                              {get_name(); }
- ppsInstanz() : instid(None),sortierung(0),lieferschein(false) {}
+ ppsInstanz() : instid(None),bestellung_fuer(None),
+                             sortierung(0),lieferschein(false) {}
 
  ppsInstId Id() const { return instid; }
  int Sortierung() const {return sortierung; }

@@ -22,8 +22,6 @@
 #include <Auftrag/AufEintrag.h>
 #include <Aux/ppsInstanz.h>
 
-// soll umbenannt werden in Lager_Vormerkungen
-
 class Lager_Vormerkungen : AufEintrag 
 {
    public:
@@ -32,14 +30,9 @@ class Lager_Vormerkungen : AufEintrag
 
       AuftragBase::mengen_t artikel_auf_lager(const ArtikelBase& artikel);
 //      int Lieferzeit_in_Tagen(); 
-//      void vormerkung_update_LfrDate(const Petig::Datum datum);
-//      void delete_vormerkung();
-#warning Freigewordene Menge neu verplanen
-
    public:
       Lager_Vormerkungen(const AufEintrag&);
 
-//      static void LagerInitialisieren();
 
       // Das macht ein Auftrag:
       void vormerken_oder_bestellen();
@@ -48,11 +41,8 @@ class Lager_Vormerkungen : AufEintrag
       // Das macht das herausholen:
 //      void artikel_ausliefern(AuftragBase::mengen_t menge);
 
-      // Diverse Updates
-//      void vormerkung_updateStk_LfrDate(AuftragBase::mengen_t stk,
-//                                        const Petig::Datum datum,
-//                                        AufStatVal newstatus);
-      
+      static void freigegeben_menge_neu_verplanen(cH_ppsInstanz instanz,const ArtikelBase& artikel,AuftragBase::mengen_t menge);
+
 };
 
 #endif

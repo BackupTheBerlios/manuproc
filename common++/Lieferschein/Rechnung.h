@@ -64,7 +64,7 @@ public:
  
  cP_Waehrung getWaehrung() const { return waehrung; }
  void setzeWaehrung(const cP_Waehrung &w) throw(SQLerror);
- ExtBezSchema::ID getSchema() { return kunde->getSchema()->Id(); }
+ ExtBezSchema::ID getSchema() { return kunde->getSchemaId(); }
  bool Bezahlt() const { return bezahlt; }
  void addLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror);
  void deleteLieferschein(LieferscheinBase::ID lfrsid) throw(SQLerror);

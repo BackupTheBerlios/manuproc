@@ -268,7 +268,7 @@ void AuftragBase::tryUpdateEntry(mengen_t bestellt,
     if(Instanz()->LagerInstanz())
        Lager_Vormerkungen(class AufEintrag(Instanz()->Id(),Id(),znr,bestellt,artikel,lieferdatum,status)).vormerken_oder_bestellen();
     else 
-      InstanzAuftraegeAnlegen(artikel,znr,lieferdatum,status, bestellt) ;
+       InstanzAuftraegeAnlegen(artikel,znr,lieferdatum,status, bestellt) ;
     AufEintragBase(instanz,auftragid,znr).updateStkDiff(bestellt);
   }
   tr.commit();

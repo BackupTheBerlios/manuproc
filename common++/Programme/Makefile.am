@@ -1,16 +1,17 @@
-# $Id: Makefile.am,v 1.1 2002/02/08 21:51:26 christof Exp $
+# $Id: Makefile.am,v 1.2 2002/02/28 15:19:29 christof Exp $
 
-CXXFLAGS=-s @ECPG_INCLUDES@ @CXXFLAGS@
+CXXFLAGS=@CXXFLAGS@ -s @COMMONXX_INCLUDES@ 
+LDADD=@COMMONXX_LIBS@ @LIBS@
+LDFLAGS=@COMMONXX_LDFLAGS@
 
-
-LDADD=../libcommon++.a @ECPG_LIBS@ @ECPG_LDFLAGS@
+%.cc: %.pgcc ; @ECPG@ -o $*.cc $<
 
 noinst_PROGRAMS= Instanzen
-
-includedir=@includedir@/Programme
+EXTRA_PROGRAMS = checkGeliefert
 
 Instanzen_SOURCES = Instanzen.cc
-
+checkGeliefert_SOURCES= checkGeliefert.cc
 
 CLEANFILES= *~ 
 
+BUILT_SOURCES=checkGeliefert.cc

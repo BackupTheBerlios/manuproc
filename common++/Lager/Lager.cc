@@ -26,6 +26,7 @@ void Lager::abschreiben(ArtikelBase artikel,AuftragBase::mengen_t menge,
                         bool lager_rein,
                         ppsInstanz::ppsInstId abschreib_instanz,bool AuftragAbschreiben)
 {
+  assert(menge>=0);
   if(abschreib_instanz==ppsInstanz::None) 
    {
      if(!lager_rein) abschreib_instanz = instanz;
@@ -73,7 +74,7 @@ Lager::Lager(ppsInstanz::ppsInstId _instanz)
 
 void Lager::check_lager_is_valid()
 {
-  if(instanz==ppsInstanz::INST_NONE)
+  if(cH_ppsInstanz(instanz)->LagerInstanz()==ppsInstanz::INST_NONE)
      assert(!"Lager::check_lager_is_valid: Kein gültiges Lager\n");
 }
 

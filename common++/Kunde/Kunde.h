@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.11 2002/01/22 09:15:55 christof Exp $
+// $Id: Kunde.h,v 1.12 2002/02/28 15:19:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -29,6 +29,8 @@
 
 class cH_Kunde;
 class H_Kunde;
+class cH_Person;
+class cH_Telefon;
 
 class Kunde : protected HandleContent
 {
@@ -59,8 +61,16 @@ public:
     unsigned int blz;
     unsigned long long int konto;
     const std::string getBankverb() const { return  bank+": BLZ "+itos(blz)+", Kto.Nr. "+ulltos(konto);}
+    st_bankverb():bankindex(0),blz(0),konto(0) {}
    };
  typedef struct st_bankverb Bankverbindung;
+
+ struct st_verkaeufer {int verknr; std::string name; std::string kurz;
+        st_verkaeufer() : verknr(0),name(""),kurz("") {}
+        st_verkaeufer(int v,std::string n, std::string k)
+           : verknr(v),name(n),kurz(k) {} };
+ typedef struct st_verkaeufer Verkaeufer;
+    
  
  struct st_kddata
    {int flaeche;
@@ -88,6 +98,7 @@ public:
 
 private:
 	ID Kundennr;
+	ID KundenGruppennr;
 	ExtBezSchema::ID schema;
 	std::string IDnr;
 	
@@ -95,11 +106,13 @@ private:
         bool rng_an_postfach;
         bool lieferadresse;
         bool rechnungsadresse;
-        bool entsorgung;
+        bool entsorg;
         
 	Adresse adresse;
 	Bankverbindung bankverb;
         Kundendaten kundendaten;
+        
+        Verkaeufer verkaeufer;
 	
 	friend class Handle<const Kunde>;
 	friend class Handle<Kunde>;
@@ -132,6 +145,8 @@ public:
         const std::string ort() const { return adresse.ort; }
         const std::string postfach() const { return adresse.postfach; }
         const std::string postfachplz() const { return adresse.postfachplz; }
+//        const std::string land() const { return adresse.land; }
+        const std::string lkz() const { return adresse.lkz; }
 
         const long int flaeche() const { return kundendaten.flaeche; }
         const long int mitarbeiter() const { return kundendaten.mitarbeiter; }
@@ -141,7 +156,7 @@ public:
         const fixedpoint<2> rabatt() const { return kundendaten.rabatt; }
         const fixedpoint<2> einzugrabatt() const { return kundendaten.einzugrabatt; }
         const fixedpoint<2> skontosatz() const { return kundendaten.skontosatz; }
-        const ID Preisliste() const { return kundendaten.preisliste; }
+        const ID preisliste() const { return kundendaten.preisliste; }
         const int skontofrist() const { return kundendaten.skontofrist; }
         const std::string verein() const { return kundendaten.verein; }
         const bool bankeinzug() const { return kundendaten.bankeinzug; }
@@ -151,63 +166,127 @@ public:
         const std::string getName() const {  return adresse.firma; }
         const std::string getSortName() const {  return adresse.sortname; }
         ID Id() const {  return Kundennr; }
+        ID GruppenId() const {  return KundenGruppennr; }
         const std::string idnr() const { return IDnr; } 
         ID getNummer() const {  return Kundennr; }
-        cH_ExtBezSchema getSchema(ArtikelTyp t=ArtikelTyp::GewebtesBand) const
+        cH_ExtBezSchema getSchema(ArtikelTyp t=ArtikelTyp::Band) const
         	{  return cH_ExtBezSchema(schema,t); }
+        ExtBezSchema::ID getSchemaId() const {  return schema; }
         bool isLieferadresse() const { return lieferadresse; }
         bool isRechnungsadresse() const { return rechnungsadresse; }
         ID Rngan() const { return rngan; }
-        bool Entsorgung() const { return entsorgung; }
+        bool entsorgung() const { return entsorg; }
+        bool Rng_an_postfach() const {return rng_an_postfach;}
 
+        // Personen
+        std::vector<cH_Person> getPersonen() const;
+        // Telefon
+        std::vector<cH_Telefon> getTelefon() const;
 
-	void update() throw(SQLerror);
+  private:
+        enum B_UPDATE_BITS_ADRESSE{B_Gruppennr,B_Sortname,B_Idnr,B_Firma,
+           B_Postanwvor,B_Strasse,B_Postanwnach,B_Hsnr,B_Plz,B_Postfach,
+           B_Postfachplz,B_Ort,B_Lieferadresse,B_Rechnungadresse,
+           B_Rng_an_postfach,B_MaxAnzA};
+        enum B_UPDATE_BITS_FIRMA{B_Planumsatz,B_Umsatz,B_Mitarbeiter,
+           B_Kundenumsatz,B_Flaeche,B_Lkz,B_MaxAnzF};
+        enum B_UPDATE_BITS_BANK{B_Ktonr,B_Blz,B_Bankindex,B_Bankeinzug,
+           B_Rabatt,B_Waehrungid,B_Einzugrabatt,
+           B_Skontosatz,B_Skontofrist,B_MaxAnzB};
+        enum B_UPDATE_BITS_SONST{B_Rechnungan,B_Extartbezid,
+           B_Preisliste,B_Notiz,B_Entsorgung,B_Verknr,B_Kalkulation,
+           B_Verein,B_Stand,B_MaxAnzS};
+ public: 
+         enum UpdateBitsAdresse {FGruppennr=1<<B_Gruppennr,
+           FSortname=1<<B_Sortname,FIdnr=1<<B_Idnr,FFirma=1<<B_Firma,
+           FPostanwvor=1<<B_Postanwvor,FStrasse=1<<B_Strasse,
+           FPostanwnach=1<<B_Postanwnach,FHsnr=1<<B_Hsnr,FPlz=1<<B_Plz,
+           FPostfach=1<<B_Postfach,FPostfachplz=1<<B_Postfachplz,
+           FOrt=1<<B_Ort,FLieferadresse=1<<B_Lieferadresse,
+           FRechnungadresse=1<<B_Rechnungadresse,
+           FRng_an_postfach=1<<B_Rng_an_postfach};
+         enum UpdateBitsFirma{FPlanumsatz=1<<B_Planumsatz,FUmsatz=1<<B_Umsatz,
+           FMitarbeiter=1<<B_Mitarbeiter,FKundenumsatz=1<<B_Kundenumsatz,
+           FFlaeche=1<<B_Flaeche,FLkz=1<<B_Lkz,FVerein=1<<B_Verein};
+         enum UpdateBitsBank{FKtonr=1<<B_Ktonr,FBlz=1<<B_Blz,
+           FBankindex=1<<B_Bankindex,FBankeinzug=1<<B_Bankeinzug,
+           FRabatt=1<<B_Rabatt,FWaehrungid=1<<B_Waehrungid,
+           FEinzugrabatt=1<<B_Einzugrabatt,FSkontosatz=1<<B_Skontosatz,
+           FSkontofrist=1<<B_Skontofrist};
+         enum UpdateBitsSonst{FRechnungan=1<<B_Rechnungan,
+           FExtartbezid=1<<B_Extartbezid,FPreisliste=1<<B_Preisliste,
+           FNotiz=1<<B_Notiz,FEntsorgung=1<<B_Entsorgung,
+            FVerknr=1<<B_Verknr,Kalkulation=1<<B_Kalkulation,
+            FStand=1<<B_Stand};
+            
+
+/*
+  private:
+         enum B_UPDATE_BITS{B_Adresse,B_Firma,B_Bank,B_Zahlung,B_AdrTyp,
+                B_Gruppierung,B_Sonst,B_MaxAnz};
+  public: 
+         enum UpdateBits {BAdresse=1<<B_Adresse,BFirma=1<<B_Firma,
+                           BBank=1<<B_Bank,BZahlung=1<<B_Zahlung,
+                           BAdrTyp=1<<B_AdrTyp,BGruppierung=1<<B_Gruppierung,
+                           BSonst=1<<B_Sonst};
+*/
+        void update_e(UpdateBitsAdresse e);
+        void update_e(UpdateBitsFirma e);
+        void update_e(UpdateBitsBank e);
+        void update_e(UpdateBitsSonst e);
+
+//	void update() throw(SQLerror);
 	void delete_Kunde(Kunde::ID kid) throw(SQLerror);
         unsigned int nextval();
         
 	void reread_Stand() throw(SQLerror);                
 	
-	// HE und was ist mit der Datenbank? CP
-	void isLieferadresse(bool is) { lieferadresse=is; update();}
-	void isRechnungsadresse(bool is) { rechnungsadresse=is;update(); }
-	void RngAn(const Kunde::ID kid) { rngan=kid; update();}
+	void isLieferadresse(bool is) { lieferadresse=is; }
+	void isRechnungsadresse(bool is) { rechnungsadresse=is; }
+	void RngAn(const Kunde::ID kid) { rngan=kid; }
+        void Rng_an_postfach(bool b) {rng_an_postfach=b;}
+        void entsorgung(bool b) { entsorg=b; }
 
 	ID Schema() const { return schema; }
 
+        const Verkaeufer getVerkaeufer() ;
 
         // Datenbank schreiben
         void update_Bankeinzug(bool be) throw(SQLerror);
-        void set_sortname(const std::string& s) {adresse.sortname = s; update();} 
-        void set_firma(const std::string& s){adresse.firma = s; update();} 
-        void set_postanwvor(const std::string& s){adresse.postanwvor = s; update();} 
-        void set_strasse(const std::string& s){adresse.strasse = s; update();} 
-        void set_hausnr(const std::string& s){adresse.hsnr = s; update();}  
-        void set_postanwnach(const std::string& s){adresse.postanwnach = s; update();} 
-        void set_plz(const std::string& s){adresse.plz = s; update();} 
-        void set_ort(const std::string& s){adresse.ort = s; update();}  
-        void set_postfach(const std::string& s){adresse.postfach = s; update();} 
-        void set_postfachplz(const std::string& s){adresse.postfachplz = s; update();} 
-        void set_idnr(const std::string& s){IDnr = s; update();} 
-        void set_schema(ID s){schema = s; update();} 
+        void set_gruppen_nr(const ID i) {KundenGruppennr=i;}
+        void set_sortname(const std::string& s) {adresse.sortname = s; } 
+        void set_firma(const std::string& s){adresse.firma = s; } 
+        void set_postanwvor(const std::string& s){adresse.postanwvor = s; } 
+        void set_strasse(const std::string& s){adresse.strasse = s; } 
+        void set_hausnr(const std::string& s){adresse.hsnr = s; }  
+        void set_postanwnach(const std::string& s){adresse.postanwnach = s; } 
+        void set_plz(const std::string& s){adresse.plz = s; } 
+        void set_ort(const std::string& s){adresse.ort = s; }  
+        void set_postfach(const std::string& s){adresse.postfach = s; } 
+        void set_postfachplz(const std::string& s){adresse.postfachplz = s; } 
+        void set_idnr(const std::string& s){IDnr = s; } 
+        void set_lkz(const std::string& s){adresse.lkz = s; } 
+        void set_schema(ID s){schema = s; } 
 
-        void set_planumsatz(const fixedpoint<2> s){kundendaten.planumsatz = s; update();}
-        void set_rabatt(const fixedpoint<2> s){kundendaten.rabatt = s; update();}
-        void set_flaeche(const int s) {kundendaten.flaeche = s; update();}
-        void set_mitarbeiter(const int s){kundendaten.mitarbeiter = s; update();}
-        void set_kundenumsatz(const fixedpoint<2> s){kundendaten.kundenumsatz = s; update();}
-        void set_umsatz(const fixedpoint<2> s){kundendaten.umsatz = s; update();}
-        void set_verein(const std::string& s){kundendaten.verein = s; update();}
-        void set_preisliste(const ID s){kundendaten.preisliste = s; update();}
-        void set_skontofrist(const int s){kundendaten.skontofrist = s; update();}
-        void set_einzugrabatt(const fixedpoint<2> s){kundendaten.einzugrabatt = s; update();}
-        void set_skontosatz(const fixedpoint<2> s){kundendaten.skontosatz = s; update();}        
-        void set_notiz(const std::string& s){kundendaten.notiz = s; update();} 
-        void set_bankindex(const int s){bankverb.bankindex = s; update();} 
-        void set_bankkonto(const unsigned long long int s){bankverb.konto = s; update();} 
+        void set_planumsatz(const fixedpoint<2> s){kundendaten.planumsatz = s; }
+        void set_rabatt(const fixedpoint<2> s){kundendaten.rabatt = s; }
+        void set_flaeche(const int s) {kundendaten.flaeche = s; }
+        void set_mitarbeiter(const int s){kundendaten.mitarbeiter = s; }
+        void set_kundenumsatz(const fixedpoint<2> s){kundendaten.kundenumsatz = s; }
+        void set_umsatz(const fixedpoint<2> s){kundendaten.umsatz = s; }
+        void set_verein(const std::string& s){kundendaten.verein = s; }
+        void set_preisliste(const ID s){kundendaten.preisliste = s; }
+        void set_skontofrist(const int s){kundendaten.skontofrist = s; }
+        void set_einzugrabatt(const fixedpoint<2> s){kundendaten.einzugrabatt = s; }
+        void set_skontosatz(const fixedpoint<2> s){kundendaten.skontosatz = s; }        
+        void set_notiz(const std::string& s){kundendaten.notiz = s; } 
+        void set_bankindex(const int s){bankverb.bankindex = s; } 
+        void set_bankkonto(const unsigned long long int s) throw(SQLerror); 
         
         unsigned long int neue_bank_anlegen(const std::string& name, unsigned long int blz);        
         void get_blz_from_bankindex(unsigned int bankindex);
         cP_Waehrung getWaehrung() const { return waehrung; }
+        void setWaehrung(cP_Waehrung w) {waehrung=w; }
 
         bool operator==(const Kunde& b) const
                 {return Id()==b.Id();} 
@@ -232,6 +311,7 @@ public:
         bool operator<(const cH_Kunde& b) const
                 {return (*this)->Id()<b->Id();} 
 };
+
 
 class H_Kunde : public Handle<Kunde>
 {

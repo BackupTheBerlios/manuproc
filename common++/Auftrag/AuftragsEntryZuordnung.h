@@ -1,4 +1,4 @@
-// $Id: AuftragsEntryZuordnung.h,v 1.8 2002/02/08 21:47:14 christof Exp $
+// $Id: AuftragsEntryZuordnung.h,v 1.9 2002/02/28 15:19:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -45,14 +45,14 @@ private:
 public:
     // Eine Benachbarte Liste von Kind- bzw. Elternaufträgen:
     std::list<st_reflist> get_Referenz_list(const AufEintragBase& aeb,bool kinder=false) const throw(SQLerror);
-    // Für einen KOMPLETTEN Auftragsbaum die Klasse AuftragsBaum verwenden oder nur_ende=false setzen
+    // Eine Benachbarte Liste von Kind- bzw. Elternaufträgen des zu mir gehörenden
+    // geplanten Auftrags holen
+    std::list<st_reflist> get_Referenz_list_for_geplant(bool kinder=false) const throw(SQLerror);
+    // Für einen KOMPLETTEN Auftragsbaum nur_ende=false setzen
     // die folgende Funktion liefert sonst nur die Endaufträge OHNE Knoten
     std::list<st_reflist> get_Referenz_listFull(bool kinder,bool nur_ende=true) const throw(SQLerror);
                  //kinder=false:   Elternaufträge 
                  //kinder=true:    Kinderaufträge 
-    // Um diesen Werte zu erhalten muß zuvor(!) get_Referenz_listFull(kinder,false);
-    // aufgerufen werden.
-//    int Tiefe() const {return tiefe;}
 
 
     std::list<cH_Kunde> get_Referenz_Kunden() const throw(SQLerror);

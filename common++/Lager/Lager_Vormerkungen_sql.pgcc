@@ -59,6 +59,7 @@ AuftragBase::mengen_t  Lager_Vormerkungen::artikel_auf_lager(const ArtikelBase& 
 //cout << Instanz()->Id();
 //cout <<"S="<< summe<<'\n';
   SelectedFullAufList auftraglist=SelectedFullAufList(SQLFullAuftragSelector::sel_Artikel_Planung(Instanz()->Id(),artikel,true));
+  // der selector holt nur die Aufträge mit dem Status OPEN
   for (SelectedFullAufList::const_iterator i=auftraglist.begin();i!=auftraglist.end();++i)
    {
 //cout << "Id = "<<i->Id()<<'\n';

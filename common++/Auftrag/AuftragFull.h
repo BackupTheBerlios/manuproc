@@ -32,6 +32,7 @@ public:
 	typedef std::vector<AufEintrag> AufEintragList;
 	typedef std::vector<AufEintrag>::iterator iterator;
 	typedef std::vector<AufEintrag>::const_iterator const_iterator;
+	typedef std::vector<AufEintrag>::const_reverse_iterator const_reverse_iterator;
 private:
 	AufEintragList eintragliste;
 public:
@@ -52,6 +53,8 @@ public:
 	
 	const_iterator begin() const { return eintragliste.begin(); }
 	const_iterator end() const { return eintragliste.end(); }
+	const_reverse_iterator rbegin() const { return eintragliste.rbegin(); }
+	const_reverse_iterator rend() const { return eintragliste.rend(); }
 	iterator begin() { return eintragliste.begin(); }
 	iterator end() { return eintragliste.end(); }
 	size_t size() const { return eintragliste.size(); }

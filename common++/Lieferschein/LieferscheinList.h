@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList.h,v 1.7 2002/02/05 17:15:52 christof Exp $ */
+/* $Id: LieferscheinList.h,v 1.8 2002/02/28 15:19:29 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -73,6 +73,8 @@ public:
  std::string SQuery();
  unsigned int Size() {return sellist.size();}
  
+ const cH_Lieferschein operator[](unsigned int i)
+ 	{ return sellist[i]; }
 // friend std::ostream &operator<<(std::ostream &o,const LieferscheinList &l);
 };
 

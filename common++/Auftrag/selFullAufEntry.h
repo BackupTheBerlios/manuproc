@@ -1,4 +1,4 @@
-/* $Id: selFullAufEntry.h,v 1.11 2002/02/05 17:15:52 christof Exp $ */
+/* $Id: selFullAufEntry.h,v 1.12 2002/02/28 15:19:29 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -33,6 +33,7 @@ class SelectedFullAufList
 
 public:
  typedef std::vector<AufEintrag>::const_iterator const_iterator;
+ typedef std::vector<AufEintrag>::const_reverse_iterator const_reverse_iterator;
  typedef std::vector<AufEintrag>::iterator iterator;
  std::vector<AufEintrag> aufidliste;
 
@@ -40,6 +41,8 @@ public:
  void insert(const AufEintragBase& aeb) throw(SQLerror);
  const_iterator begin() const { return aufidliste.begin(); }
  const_iterator end() const { return aufidliste.end(); }
+ const_reverse_iterator rbegin() const { return aufidliste.rbegin(); }
+ const_reverse_iterator rend() const { return aufidliste.rend(); }
  iterator begin() { return aufidliste.begin(); }
  iterator end()  { return aufidliste.end(); }
  // please use size()!

@@ -31,10 +31,20 @@ std::string itos(int i)
 }
 
 
+#include <locale.h>
+
 std::string dtos(double i)
 {
+ char *oldlocale;
+ oldlocale = strdup(setlocale(LC_NUMERIC, NULL));
+ setlocale(LC_NUMERIC, "C");
+
  char buffer[100];
  snprintf(buffer,sizeof buffer,"%lf",i);
+
+ setlocale(LC_NUMERIC, oldlocale);
+ free(oldlocale);
+
  return(buffer);
 }
 
@@ -43,4 +53,10 @@ std::string ulltos(unsigned long long i)
  char buffer[100];
  snprintf(buffer,sizeof buffer,"%llu",i);
  return(buffer);
+}
+
+std::string btos(bool b)
+{
+ if(b) return "true";
+ else  return "false";
 }

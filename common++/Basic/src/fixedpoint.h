@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.7 2002/02/05 17:15:52 christof Exp $
+// $Id: fixedpoint.h,v 1.8 2002/02/28 15:19:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -56,8 +56,14 @@ static inline int zehnhochplusI<0>()
 { return 1; }
 
 #include <string>
-#include <cstdlib>
-#include <iostream>
+
+#if 0 // trying to avoid snprintf
+template <int dec,class Ftype,class Itype> class fixedpoint;
+template <int decimals,class Ftype,class Itype>
+ const std::string Formatiere_short(const fixedpoint<decimals,Ftype,Itype> &Zahl);
+#endif
+
+//#include <cstdlib>
 
 // I don't want to include <cstdio>
 #ifndef _STDIO_H
@@ -147,6 +153,7 @@ public:
 	// do we really need this function? Ausgabe_neu::Formatiere is for this
 	std::string String() const
 	{  char buf[64];
+//           return Formatiere(*this,0,"",".");
 	   snprintf(buf,sizeof buf,"%.*f",decimals,Ftype(*this));
 	   return buf;
 	}
@@ -177,6 +184,8 @@ public:
 	self_t operator+(const Ftype b) const
 	{  return *this+self_t(b); }
 };
+
+#include <iostream>
 
 template <int decimals,class Ftype,class Itype>
  inline std::ostream &operator<<(std::ostream &o,const fixedpoint<decimals,Ftype,Itype> &f)

@@ -8,8 +8,8 @@ libcommon___a_SOURCES=
 
 libcommon___a_LIBADD= \
 		Artikel/ArtikelBaum.o \
-		Artikel/ArtikelBaumFull.o \
 		Artikel/ArtikelBezeichnung.o \
+      Artikel/ArtikelDispo_sql.o \
 		Artikel/ArtikelMengeSumme.o \
 		Artikel/ArtikelStamm.o \
 		Artikel/ArtikelTyp.o \
@@ -70,17 +70,21 @@ libcommon___a_LIBADD= \
 		Ketten/KettplanKette.o \
 		Ketten/KettplanKette2.o \
 		Ketten/KpK_get_artikel.o \
+		Kunde/Adresse.o \
+		Kunde/Anrede_sql.o \
 		Kunde/Kunde.o \
 		Kunde/Kunde_sql.o \
 		Kunde/Person.o \
 		Kunde/Person_sql.o \
 		Kunde/Telefon.o \
-		Kunde/Adresse.o \
+		Lager/FertigWaren_sql.o \
+		Lager/FertigWarenLager_sql.o \
 		Lager/JumboRolle.o \
 		Lager/JumboRolle_sql.o \
       Lager/LagerPlatz.o \
       Lager/Lager.o \
       Lager/Lager_sql.o \
+      Lager/Lager_Dispo_sql.o \
 		Lager/Lager_Vormerkungen.o \
 		Lager/Lager_Vormerkungen_sql.o \
 		Lager/maschinen_geschwindigkeit_sql.o \

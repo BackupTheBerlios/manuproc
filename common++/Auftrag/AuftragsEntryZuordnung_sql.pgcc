@@ -1,4 +1,4 @@
-// $Id: AuftragsEntryZuordnung_sql.pgcc,v 1.7 2002/02/08 21:47:14 christof Exp $
+// $Id: AuftragsEntryZuordnung_sql.pgcc,v 1.8 2002/02/28 15:19:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -96,6 +96,23 @@ reloop:
      goto reloop;
    }
  return vaeb;
+}
+
+
+std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_for_geplant(bool kinder=false) const throw(SQLerror)
+{
+//cout << AEB.Instanz()->Name()<<' '<<AEB.Id()<<' '<<AEB.ZNr()<<'\n';
+  // Ungeplante Referenz Aufträge
+  std::list<st_reflist> URA=get_Referenz_list(AEB,false);
+  // ich gehe davon aus, daß zu jedem geplanten Auftrag GENAU 
+  // ein Elternauftrag gehört
+  assert(URA.size()==1);
+  std::list<st_reflist> L=AufEintragZu(URA.begin()->AEB2).get_Referenz_list(URA.begin()->AEB2,kinder);
+  // Aus dieser Liste muß eventuell noch der geplante Auftrag entfernt werden:
+  if(kinder)
+     for (std::list<st_reflist>::iterator i=L.begin();i!=L.end();++i)
+        if(i->AEB2==AEB) {L.erase(i); break;}
+  return L; 
 }
 
 

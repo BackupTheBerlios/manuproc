@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.1 2002/02/08 21:51:26 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.2 2002/02/28 15:19:29 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -38,6 +38,7 @@
 #include <vector>
 #include <list>
 #include <Aux/itos.h>
+#include <Lieferschein/Lieferschein.h>
 
 class AufEintrag : public AufEintragBase
 {
@@ -138,7 +139,7 @@ public:
  const cP_Waehrung getWaehrung() const { return preis.getWaehrung(); }
  const Preis GPreis() const; // Gesamtpreis
 // void setVerarbeitung(const cH_Prozess p);
- const Preis EPreis() const { return preis;} // Einzelpreis
+ const Preis EPreis(bool brutto=true) const; // Einzelpreis
  int Rabatt() const { return rabatt;}
  float PreisMenge() const { return preis.PreisMenge(); }
  void abschreiben(mengen_t menge) throw(SQLerror);
@@ -148,13 +149,17 @@ public:
  {  return letztePlanInstanz; }
  // gibt Zeilennummer zurück;
  void moveInstanz(const AuftragBase& auftrag) throw(SQLerror);
-
+ cH_Lieferschein getLieferschein() const ;
+private:
+ std::vector<AufEintragBase> getKundenAuftragV() const;
+public:
+ AufEintragBase getFirstKundenAuftrag() const;
 
  ArtikelBase::ID ArtId() const {return artikel.Id();}
  ArtikelBase Artikel() const {return artikel;}
 
 // einen Teil des Auftrages=0 verplanen (in anderen Auftrag<>0 setzen)
- void Planen(mengen_t menge, const AuftragBase &zielauftrag);
+ int Planen(mengen_t menge, const AuftragBase &zielauftrag);
 
  friend std::ostream &operator<<(std::ostream &o,const AufEintrag &aeb);
 };

@@ -1,4 +1,4 @@
-// $Id: Waehrung.h,v 1.6 2002/01/22 09:15:55 christof Exp $
+// $Id: Waehrung.h,v 1.7 2002/02/28 15:19:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,6 +19,7 @@
 
 #ifndef AUX_WAEHRUNG_H
 #define AUX_WAEHRUNG_H
+#include <ManuProCConfig.h>
 #include<Aux/SQLerror.h>
 #include <Aux/CacheStatic.h>
 #include <Aux/Pointer.h>
@@ -27,7 +28,13 @@ class Waehrung
 {
 public:
 // muesste aus Datenbank generiert werden 
- enum enum_t { DM=1, EUR, USD };
+
+#ifdef MABELLA_EXTENSIONS
+ enum enum_t { EUR=1, DM, USD, PND };
+#else
+ enum enum_t { DM=1, EUR, USD, PND };
+#endif
+
  static const enum_t default_id=EUR;
  typedef enum_t ID;
  typedef ID WaehID; // older variant

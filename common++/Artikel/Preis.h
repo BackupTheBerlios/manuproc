@@ -1,4 +1,4 @@
-// $Id: Preis.h,v 1.9 2002/02/05 17:15:52 christof Exp $
+// $Id: Preis.h,v 1.10 2002/02/28 15:19:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -34,7 +34,7 @@ public:
 	typedef fixedpoint<nachkommastellen> geldbetrag_t;
 	typedef geldbetrag_t pfennig_cent_t;
 	typedef fixedpoint<rabattnachkommastellen> rabatt_t;
-
+	
 private:
 	geldbetrag_t pfennig_cent;
     	preismenge_t preismenge; // 100 == /100m
@@ -43,6 +43,7 @@ private:
 
     	const static float DM_EURO=1.95583;
     	const static float EURO_DM=1.0/DM_EURO;
+    	
 public:
 	Preis(float dm_euro, cP_Waehrung w,preismenge_t pmenge=1)
 		: pfennig_cent(dm_euro), 

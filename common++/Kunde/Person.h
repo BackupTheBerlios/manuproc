@@ -1,4 +1,4 @@
-// $Id: Person.h,v 1.5 2001/12/04 08:42:11 christof Exp $
+// $Id: Person.h,v 1.6 2002/02/28 15:19:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -26,14 +26,18 @@
 #include<Aux/SQLerror.h>
 
 class cH_Person;
+class cH_Telefon;
+#include "Anrede.h"
 
-class Person : protected HandleContent
+class Person : public HandleContent
 {
 public:
         typedef long int ID;
-     struct st_person{ID id; std::string name; std::string vorname; std::string position; 
-                Petig::Datum gebdat; std::string anrede; std::string notiz;
-       st_person(ID i, std::string n,std::string v, std::string p,Petig::Datum g, std::string a, std::string no)
+     struct st_person{ID id; std::string name; std::string vorname; 
+                std::string position;
+                Petig::Datum gebdat; cH_Anrede anrede; std::string notiz;
+       st_person(ID i, std::string n,std::string v, std::string p,Petig::Datum g,
+                 cH_Anrede a, std::string no)
         :id(i),name(n),vorname(v),position(p),gebdat(g),anrede(a),notiz(no){}};
 	
 private:
@@ -43,7 +47,7 @@ private:
  std::string vorname;
  std::string position;
  Petig::Datum gebdatum;
- std::string anrede;
+ cH_Anrede anrede;
  int branr_id;
  std::string notiz;
  std::vector<Person::st_person> vec_person;
@@ -69,15 +73,17 @@ public:
  const std::string Name() const { return name; }
  const std::string Vorname() const { return vorname; }
  const Petig::Datum GebDatum() const { return gebdatum; }
- const std::string Anrede() const { return anrede; }
+ const cH_Anrede Anrede() const { return anrede; }
  const std::string Position() const { return position; }
  const std::string Notiz() const { return notiz; }
+
+ const std::vector<cH_Telefon> getTelefon() const;
  
  void setKundennr(unsigned long int i) { kundennr=i; }
  void setName(const std::string &s) { name=s; }
  void setVorname(const std::string &s) { vorname=s; }
  void setGebDatum(const Petig::Datum &d) { gebdatum=d; }
- void setAnrede(const std::string &s) { anrede=s; }
+ void setAnrede(const cH_Anrede &s) { anrede=s; }
  void setPosition(const std::string &s) { position=s; }
  void setNotiz(const std::string &s) { notiz=s; }
 };
@@ -85,9 +91,9 @@ public:
 
 class cH_Person : public Handle<const Person>
 {	
-  cH_Person(const Person *p) : Handle<const Person>(p) {}	
   cH_Person() {}
 public:
+  cH_Person(const Person *p) : Handle<const Person>(p) {}	
 	typedef Person::ID ID;
 	static const ID none_id=Person::none_id;
 	cH_Person(ID nr);

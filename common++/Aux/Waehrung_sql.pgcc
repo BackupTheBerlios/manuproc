@@ -1,4 +1,4 @@
-// $Id: Waehrung_sql.pgcc,v 1.8 2002/01/22 09:15:55 christof Exp $
+// $Id: Waehrung_sql.pgcc,v 1.9 2002/02/28 15:19:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -57,5 +57,6 @@ double Waehrung::Umrechnung(const Waehrung &von, const Waehrung &nach)
 const std::string Waehrung::TeXsymbol() const
 {  if (wid==EUR) return "\\euro{}";
    else if (wid==USD) return "US\\$";
+   else if (wid==PND) return "\\pounds";
    else return Kurzbezeichnung();
 }

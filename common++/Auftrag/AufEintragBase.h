@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.h,v 1.23 2002/02/08 21:47:14 christof Exp $
+// $Id: AufEintragBase.h,v 1.24 2002/02/28 15:19:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,8 +28,6 @@
 class cH_Kunde;
 
 
-// eigentlich AufEintragBase
-
 class AufEintragBase : public AuftragBase
 {
 public: 
@@ -56,11 +54,10 @@ public:
  mengen_t abschreiben(mengen_t menge) const throw(SQLerror);
  bool deleteAuftragEntry() const throw(SQLerror);
  void updateStkDiff(mengen_t menge) const throw(SQLerror);
-//??? void setStatus_raw(AufStatVal status) const throw(SQLerror);
 
-    void setLetztePlanungFuer(ppsInstanz::ID planinstanz) const throw(SQLerror);
+    void setLetztePlanungFuer(cH_ppsInstanz planinstanz) const throw(SQLerror);
     void calculateProzessInstanz(); // private?
-    void setMaxPlanInstanz(int planinstanz) const throw(SQLerror); // private?
+    void setMaxPlanInstanz(int anzahl_planinstanzen) const throw(SQLerror); // private?
  
     int ZNr() const { return zeilennr; }
     bool valid() const { return AuftragBase::valid(); }

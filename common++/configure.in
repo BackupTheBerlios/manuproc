@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.9 2002/02/05 17:15:52 christof Exp $
+# $Id: configure.in,v 1.10 2002/02/28 15:19:29 christof Exp $
 
 AC_INIT(Artikel/ArtikelBase.h)
 
@@ -30,19 +30,8 @@ PETIG_CHECK_POSTGRES
 #   CFLAGS="-g $CXXFLAGS"
 # fi
 
-AC_MSG_CHECKING(for standard database name)
 DEFAULT_DB=$USER
 DEFAULT_DBHOST="localhost"
-case `hostname -f` in
-   petig.petig.de|petig.petig-baender.de) 
-   	DEFAULT_DB=petigdb DEFAULT_DBHOST=petig ;;
-   *.petig.de|*.petig-baender.de) DEFAULT_DB=petigdb ;;
-   *.jacek.de) DEFAULT_DB=petigdb ;;
-   Tiger) DEFAULT_DB=petigdb ;;
-esac
-AC_DEFINE_UNQUOTED(DEFAULT_DB, "$DEFAULT_DB" )
-AC_DEFINE_UNQUOTED(DEFAULT_DBHOST, "$DEFAULT_DBHOST" )
-AC_MSG_RESULT($DEFAULT_DB@$DEFAULT_DBHOST)
 
 LIBS=@ECPG_LIBS@
 
@@ -57,6 +46,10 @@ AC_ARG_ENABLE(petig,[  --en/disable-petig	en/disable Petig extensions],
 if test "$petig_exts" != "no" ; then
 	AC_MSG_RESULT([enabled])
 	AC_DEFINE(PETIG_EXTENSIONS,1,[whether Petig extensions are enabled])
+	DEFAULT_DB=petigdb 
+	if test `hostname -f` = petig.petig-baender.de
+	then DEFAULT_DBHOST=petig
+	fi
 else
 	AC_MSG_RESULT([disabled])
 fi
@@ -71,9 +64,15 @@ AC_ARG_ENABLE(mabella,[  --en/disable-mabella	en/disable Mabella extensions],
 if test "$mabella_exts" != "no" ; then
 	AC_MSG_RESULT([enabled])
 	AC_DEFINE(MABELLA_EXTENSIONS,1,[whether Mabella extensions are enabled])
+	DEFAULT_DB=mabelladb
 else
 	AC_MSG_RESULT([disabled])
 fi
+
+AC_MSG_CHECKING(for standard database name)
+AC_DEFINE_UNQUOTED(DEFAULT_DB, "$DEFAULT_DB" )
+AC_DEFINE_UNQUOTED(DEFAULT_DBHOST, "$DEFAULT_DBHOST" )
+AC_MSG_RESULT($DEFAULT_DB@$DEFAULT_DBHOST)
 
 AC_ARG_ENABLE(handledebug,[  --enable-handledebug	enable Handle Content debugging code (slower, recompile everything if you switch this!)],
 	handledebug_exts="$enableval", handledebug_exts=no)
@@ -83,6 +82,13 @@ if test "$handledebug_exts" != "no" ; then
 else
 	AC_MSG_RESULT([disabled])
 fi
+
+COMMONXX_INCLUDES="$ECPG_INCLUDES -I\$(top_srcdir)"
+COMMONXX_LDFLAGS="$ECPG_LDFLAGS -L\$(top_srcdir)"
+COMMONXX_LIBS="$ECPG_LIBS -lcommon++"
+AC_SUBST(COMMONXX_INCLUDES)
+AC_SUBST(COMMONXX_LDFLAGS)
+AC_SUBST(COMMONXX_LIBS)
 
 AC_OUTPUT(Makefile Artikel/Makefile Auftrag/Makefile \
 	Aux/Makefile Bank/Makefile ExtBezSchema/Makefile Ketten/Makefile \

@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.7 2002/01/22 09:15:55 christof Exp $ */
+/* $Id: Lieferschein.h,v 1.8 2002/02/28 15:19:29 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -68,12 +68,16 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  const cH_Kunde &getKunde() const {return kunde; }	
  const Petig::Datum LsDatum() const { return lsdatum; }
  int RngNr() const { return rngid; }  
- ExtBezSchema::ID getSchema() const { return kunde->getSchema()->Id(); }
+ ExtBezSchema::ID getSchema() const { return kunde->getSchemaId(); }
  int maxZnr() throw(SQLerror);
  const Petig::Datum getDatum() const { return geliefertam; }
  void setDatum(const Petig::Datum &d) throw(SQLerror);
+ // DB Zugriff mit abschreiben
+ void push_back(const AufEintragBase &auftragentry, 
+ 		const ArtikelBase &artikel, int anzahl, mengen_t menge, int palette);
+ // DB: Menge verteilt auf mehrere Aufträge abschreiben
+ void push_back(const ArtikelBase &artikel, int anzahl, mengen_t menge, int palette);
 };
-
 
 class cH_Lieferschein : public Handle<const Lieferschein>
 {

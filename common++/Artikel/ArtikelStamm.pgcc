@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.13 2002/02/08 21:47:14 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.14 2002/02/28 15:19:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,6 +22,7 @@
 #include <Artikel/ArtikelBezeichnung.h>
 exec sql include sqlca;
 //#include <Aux/itos.h>
+#include <Aux/ppsInstanz.h>
 
 ArtikelStamm::cache_t ArtikelStamm::cache;
 
@@ -34,16 +35,18 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
    {  payload=*cached;
       return;
    }
+   int itmp=ppsInstanz::Rollerei;
    exec sql begin declare section;
     int id,typ,inttyp;
     int best_bei,defschem;
+    int best_bei_default=itmp;
     int einheit, ieinheit;
    exec sql end declare section;
    id=ab.Id();
 
 //std::cout << "ArtikelStamm "<<itos(id)<<'\n';      
    exec sql select warengruppe,coalesce(internwarengruppe,warengruppe)
-      ,coalesce(bestellen_bei,1),coalesce(defaultschema,1),
+      ,coalesce(bestellen_bei,:best_bei_default),coalesce(defaultschema,1),
       einheit
    	into :typ, :inttyp, :best_bei, :defschem, :einheit :ieinheit
    	from artikelstamm where id= :id;
