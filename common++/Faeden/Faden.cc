@@ -1,4 +1,4 @@
-// $Id: Faden.cc,v 1.11 2003/10/23 10:40:21 christof Exp $
+// $Id: Faden.cc,v 1.12 2003/10/23 14:26:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -393,38 +393,44 @@ static FetchIStream &operator>>(FetchIStream &is, Faden &f)
 
 void Fadenliste::Load(const ArtikelBase &ab,const Bindungsliste &bindungsliste)
 {  erase();
+   FetchIStream is;
    
-   ArtikelBase var_von;
+   ArtikelBase var_von,zu_laden=ab;
    Query("select variante_von from webangaben where artikel=?")
    	<< ab
    	>> FetchIStream::MapNull(var_von);
    if (!!var_von)
-   {
+   {  zu_laden=var_von;
+      // Ersetzungsliste holen
+      Query q("select altmaterial,neumaterial from webang_variante "
+      		"where artikel=?");
+      q << ab;
+      while ((q>>is).good())
+      {  ArtikelBase altmaterial,neumaterial;
+         is >> altmaterial >> neumaterial;
+         ersetzen[altmaterial]=neumaterial;
+         is.ThrowIfNotEmpty(__FILELINE__);
+      }
    }
-   else
-   {  std::vector<Faden> vfd;
       
       Query q("select zeilennummer, anzahl, material, bindung, kettscheibe, "
       	"max_kettlaenge, max_fadenzahl "
       	"from webang_faeden where artikel=? order by zeilennummer");
-      q << ab;
-      q.FetchArray(vfd);
-      for (std::vector<Faden>::const_iterator i=vfd.begin();i!=vfd.end();++i)
-      {  add(*i,-1);
+      q << zu_laden;
+      while ((q>>is).good())
+      {  add(is.Fetch<Faden>(),-1);
+         is.ThrowIfNotEmpty(__FILELINE__);
       }
 
       Query q2("select anfangszeile, endzeile, wiederholungen "
 		"from webang_wiederhol where artikel=? "
 		// request small ones first so we print it right
 		"order by endzeile-anfangszeile");
-      q2 << ab;
-      FetchIStream is;
+      q2 << zu_laden;
       while ((q2>>is).good())
       {  int anfangszeile, endzeile, wiederholungen;
          is >> anfangszeile >> endzeile >> wiederholungen;
          is.ThrowIfNotEmpty(__FILELINE__);
          rep_add(anfangszeile, endzeile, wiederholungen);
       }
-      
-   }
 }
