@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Menge.cc,v 1.24 2004/02/17 09:54:58 christof Exp $
+// $Id: AufEintrag_Menge.cc,v 1.25 2004/02/17 12:22:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -134,11 +134,11 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(mengen_t menge,bool instanzen,
  { menge2=updateStkDiffBase__(menge2);
    bestellt+=menge2;
    if (menge2>0 && entrystatus==CLOSED)
-   {  setStatus(OPEN,true); planen=false; /* schon geschehen */ }
+      setStatus(OPEN,true,false,false);
    else if (Id()!=ungeplante_id && Id()!=dispo_auftrag_id 
    		&& !getRestStk() && entrystatus==OPEN
    		&& (!Instanz()->LagerInstanz() || !!bestellt))
-   {  setStatus(CLOSED); planen=false; /* schon geschehen */ }
+      setStatus(CLOSED,false,false,false); 
  }
 
  if (ElternAEB.valid())
@@ -152,9 +152,7 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(mengen_t menge,bool instanzen,
    // Rekursion von 0ern im Lager (es gibt keine 3er im Lager)
    //  Verplanen von freigewordener Menge bei 1er im Lager
    // Rekursion bei 0er, 1er oder 3er in Produktion
-     if (planen) Verzeigern(menge2);
-     else if (menge2>=0) ArtikelInternNachbestellen(menge2);
-     else ArtikelInternAbbestellen(-menge2);
+     Verzeigern(menge2,planen);
   }
   tr.commit();
   // wir haben zwar weniger abbestellt, aber nur weil wir geliefert haben

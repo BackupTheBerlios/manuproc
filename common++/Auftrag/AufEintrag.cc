@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.101 2004/02/17 10:42:58 christof Exp $
+// $Id: AufEintrag.cc,v 1.102 2004/02/17 12:22:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -208,17 +208,17 @@ struct AufEintrag::Planen_cb : public auf_positionen_verteilen_cb
    }
 };
 
-void AufEintrag::Verzeigern(mengen_t M)
+void AufEintrag::Verzeigern(mengen_t M, bool nach_oben)
 { ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("this",*this),NV("M",M));
   if (!M) return;
-  assert(getCombinedStatus()==OPEN);
-  assert(Id()>=handplan_id);
-  if (Instanz()->KundenInstanz())
+  assert(!nach_oben || Id()>=handplan_id);
+  if (!nach_oben || Instanz()->KundenInstanz())
   {  if (M>=0) ArtikelInternNachbestellen(M);
      else ArtikelInternAbbestellen(-M);
   }
     else // planen (Pfeile von oben ebenfalls anlegen)
     {  assert(M>0);
+       assert(getCombinedStatus()==OPEN);
        SQLFullAuftragSelector sel(make_value(SQLFullAuftragSelector::sel_Artikel_Planung_id
     		(Instanz()->Id(),Kunde::eigene_id,Artikel(),ungeplante_id,
     			OPEN)));
@@ -234,10 +234,11 @@ void AufEintrag::Verzeigern(mengen_t M)
 }
 
 // 2 bool Parameter für instanzen (oben wie unten)
-void AufEintrag::setStatus(AufStatVal newstatus,bool force) throw(SQLerror)
+void AufEintrag::setStatus(AufStatVal newstatus,bool force,bool instanzen,bool planen) throw(SQLerror)
 {
  ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("status",newstatus),force?"force":"",
  	NV("open",bestellt-geliefert),NV("oldst",entrystatus));
+ assert(!planen || instanzen);
  if(entrystatus == newstatus)
  {  ManuProC::Trace(trace_channel,__FILELINE__,*this,NV("status bereits",newstatus));
     return;
@@ -265,8 +266,8 @@ void AufEintrag::setStatus(AufStatVal newstatus,bool force) throw(SQLerror)
  SQLerror::test("setStatus: lock table auftragentry");
 
  // InternAbbestellen
- if ((newstatus == CLOSED || newstatus == STORNO) && getRestStk()!=0)
- {   Verzeigern(-getRestStk());
+ if ((newstatus == CLOSED || newstatus == STORNO) && getRestStk()!=0 && instanzen)
+ {   Verzeigern(-getRestStk(),planen);
  }
 
  Query("update auftragentry "
@@ -284,8 +285,8 @@ void AufEintrag::setStatus(AufStatVal newstatus,bool force) throw(SQLerror)
     auftragstatus=newstatus;
  }
 
- if(newstatus == OPEN  &&  oldentrystatus==UNCOMMITED && getRestStk()!=0)
- {  Verzeigern(getRestStk());
+ if(newstatus == OPEN  &&  oldentrystatus==UNCOMMITED && getRestStk()!=0 && instanzen)
+ {  Verzeigern(getRestStk(),planen);
  }
 
  if(newstatus==OPEN && bestellt!=0 && Id()>=handplan_auftrag_id)
@@ -335,14 +336,14 @@ void AufEintrag::updateRabatt(rabatt_t rb) throw(SQLerror)
 }
 
 
-void AufEintrag::updateLieferdatum(const Petig::Datum &ld) throw(SQLerror)
+void AufEintrag::updateLieferdatum(const Petig::Datum &ld,bool planen) throw(SQLerror)
 {ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("Datum",ld));
  Transaction tr;
  Query("lock auftragentry in exclusive mode"); // unnötig? CP
  SQLerror::test("updateLieferdatum: lock table auftragentry");
 
  {delayed_reclaim dlr;
- if(getCombinedStatus()==OPEN) Verzeigern(-getStueck());
+ if(getCombinedStatus()==OPEN) Verzeigern(-getStueck(),planen);
 
  Query("update auftragentry "
  	"set lieferdate=? "
@@ -352,7 +353,7 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld) throw(SQLerror)
  SQLerror::test("updateLiefDatum: update lieferdate in auftragentry");
  lieferdatum=ld;
 
- if(getCombinedStatus()==OPEN) Verzeigern(getStueck());
+ if(getCombinedStatus()==OPEN) Verzeigern(getStueck(),planen);
  }
 
  if(getCombinedStatus()==OPEN)// status->entrystatus

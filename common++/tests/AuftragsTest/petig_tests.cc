@@ -304,7 +304,7 @@ static bool Rep_KundenProgramm(AufEintrag &AE)
        Query::Execute(q2);
        SQLerror::test(__FILELINE__);
        AufEintrag AE=AufEintrag(class AufEintragBase(class AuftragBase(ROLLEREI,AuftragBase::ungeplante_id),2));
-       AE.MengeAendern(-100);
+       AE.MengeAendern(-100,true,AufEintragBase(),false);
 
        vergleichen(Check::Menge,"reparatur_kunde_menge","Reparatur Kundenaufträge (Menge)","",true);
       }

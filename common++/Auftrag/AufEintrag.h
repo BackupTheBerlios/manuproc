@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.85 2004/02/17 09:54:58 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.86 2004/02/17 12:22:12 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -190,16 +190,15 @@ private:
  };
 
 public:
- void updateLieferdatum(const ManuProC::Datum &ld) throw(SQLerror);	
- void updateLieferdatum(const Kalenderwoche &K) {updateLieferdatum(ManuProC::Datum(K));}	
- // was ist das denn? CP
- void updateLieferdatumInstanz(const ManuProC::Datum &ld) throw(SQLerror);	
+ void updateLieferdatum(const ManuProC::Datum &ld,bool planen=true) throw(SQLerror);
+ void updateLieferdatum(const Kalenderwoche &K) {updateLieferdatum(ManuProC::Datum(K));}
  void updatePreis(const Preis &pr) throw(SQLerror);
  void updateRabatt(rabatt_t rb) throw(SQLerror);
  void setLetzteLieferung(const ManuProC::Datum &datum) throw(SQLerror);
  // Ist (uid!=0) wird lasteditdate verändert.
- void setStatus(AufStatVal newstatus,bool force=false) throw(SQLerror);		
-// void setInstanzen(const AufStatVal newstatus,const Petig::Datum &lieferdate,const mengen_t &Menge,const int myznr=-1,const int yourznr=-1);
+ void changeStatus(AufStatVal newstatus) throw(SQLerror)
+ {  setStatus(newstatus,false,true,true); }
+ void setStatus(AufStatVal newstatus,bool force=false,bool instanzen=true,bool planen=true) throw(SQLerror);
 
  int split(mengen_t newmenge, const ManuProC::Datum &newld,bool dispoplanung=false) throw(SQLerror);
  mengen_t getStueck() const { return bestellt;}
@@ -292,11 +291,13 @@ public:
 // rekursiv wird asuschließlich vom Erfassungs/Reperaturprogramm verwendet
  AufEintragBase Planen(mengen_t menge,const AuftragBase &zielauftrag,
       const ManuProC::Datum &datum) throw(std::exception);
+#if 0      
  __deprecated AufEintragBase Planen(mengen_t menge,const AuftragBase &zielauftrag,
       const ManuProC::Datum &datum, 
       // diese Argumente können weg ... oder?
       ManuProC::Auftrag::Action reason,
       AufEintragBase *verplanter_aeb=0,bool rekursiv=false) throw(std::exception);
+#endif      
 private:         
  // einen AuftragEintrag gezielt verplanen
  void Planen(mengen_t menge,AufEintrag &ziel) throw(std::exception);
@@ -322,8 +323,7 @@ public:
 		const AufEintragBase &elter_neu,
 		const ProductionContext2 &ctx);
  // Pfeile nach oben wie unten anlegen
- __deprecated void Verzeigern();
- void Verzeigern(mengen_t M);
+ void Verzeigern(mengen_t M,bool nach_oben=true);
 private:		
  void Einlagern2(mengen_t M,
 		const AufEintragBase &elter_alt,

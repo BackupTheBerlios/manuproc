@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.34 2004/02/11 08:33:42 christof Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.35 2004/02/17 12:22:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -163,7 +163,7 @@ void AufEintrag::abschreiben(mengen_t menge) throw(SQLerror)
 
  // zumindest 2er werden nie geschlossen, nur auf 0 gesetzt
  if(STATUS!=oldstatus && Id()!=dispo_auftrag_id)
-     setStatus(AufStatVal(STATUS),true);
+     setStatus(AufStatVal(STATUS),true,false,false);
 
  // eigentlich könnte das if hier weg ... geht aber schneller so
  // dispomenge auf offene Menge beschränken
@@ -334,7 +334,7 @@ void AufEintrag::ProduziertNG(mengen_t M,
          abschreiben(M);
       }
       MengeAendern(-M.abs(),false,M>0 ? elter_alt : AufEintragBase());
-      if (M<0 && !getRestStk()) setStatus(AufStatVal(CLOSED),true);
+      if (M<0 && !getRestStk()) setStatus(AufStatVal(CLOSED),true,false,false);
       // mit M>0 bin ich mir nicht sicher ... CP
      if (M>0 || !cH_ppsInstanz(Instanz()->EinlagernIn())->AutomatischEinlagern())
      {AuftragBase zielauftrag(Instanz(),M>=0?plan_auftrag_id:ungeplante_id);

@@ -676,7 +676,7 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
       if (ae.getCombinedStatus()!=OPEN)
       {  alles_ok=false;
          analyse("0/2er Einträge müssen offen sein",ae);
-         if (!analyse_only) ae.setStatus(OPEN,true);
+         if (!analyse_only) ae.setStatus(OPEN,true,true,false);
       }
    }
    else if (ae.Instanz()!=ppsInstanzID::Kundenauftraege 
@@ -743,7 +743,7 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
       if (ae.getCombinedStatus()!=CLOSED && !ae.Instanz()->LagerInstanz())
       {  alles_ok=false;
          analyse("1er Aufträge sollten CLOSED sein",ae,AuftragBase::getStatusStr(ae.getCombinedStatus()));
-         if (!analyse_only) ae.setStatus(CLOSED,true);
+         if (!analyse_only) ae.setStatus(CLOSED,true,true,false);
       }
    }
    if (ae.Instanz()!=ppsInstanzID::Kundenauftraege
@@ -751,7 +751,7 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
    	&& !in(ae.getCombinedStatus(),OPEN,CLOSED))
    {  alles_ok=false;
       analyse("Interne Aufträge müssen OPEN/CLOSED sein",ae,AuftragBase::getStatusStr(ae.getCombinedStatus()));
-      if (!analyse_only) ae.setStatus(CLOSED,true);
+      if (!analyse_only) ae.setStatus(CLOSED,true,true,false);
    }
    if (ae.getGeliefert()>=ae.getStueck()
    	&& ae.getCombinedStatus()!=CLOSED
@@ -760,7 +760,7 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
    	&& !(ae.Id()==AuftragBase::plan_auftrag_id && !ae.getStueck()))
    {  alles_ok=false;
       analyse("Erfüllte Aufträge müssen CLOSED sein",ae,ae.getGeliefert(),ae.getStueck());
-      if (!analyse_only) ae.setStatus(CLOSED,true);
+      if (!analyse_only) ae.setStatus(CLOSED,true,true,false);
    }
    else if (ae.Instanz()!=ppsInstanzID::Kundenauftraege
    	&& !(ae.Instanz()->Lieferschein() && ae.Id()>=AuftragBase::handplan_auftrag_id)
@@ -768,7 +768,7 @@ bool ppsInstanzReparatur::Lokal(AufEintrag &ae, bool analyse_only) const
    	&& ae.getCombinedStatus()!=OPEN)
    {  alles_ok=false;
       analyse("Offene interne Aufträge müssen OPEN sein",ae,ae.getGeliefert(),ae.getStueck());
-      if (!analyse_only) ae.setStatus(OPEN,true);
+      if (!analyse_only) ae.setStatus(OPEN,true,true,false);
    }
    
    if (ae.Instanz()->LagerInstanz() 

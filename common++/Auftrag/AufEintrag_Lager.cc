@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.33 2003/12/04 08:01:37 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.34 2004/02/17 12:22:12 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -370,7 +370,7 @@ public:
            if (i.getCombinedStatus()!=CLOSED)
            {  std::cerr << "merkwürdig ... " << i << ':' << i.getCombinedStatus() << ','
            		<< i.getRestStk() << '\n';
-              i.setStatus(CLOSED);
+              i.setStatus(CLOSED,false,true,false);
            }
            return M;
 	}
@@ -415,7 +415,7 @@ void AufEintrag::Einlagern2(mengen_t M,
    {  assert(Id()==plan_auftrag_id);
       // Rekursion bedeutet hier: freigewordene Menge neu verplanen
       MengeAendern(M,true,AufEintragBase());
-      if (!getRestStk()) setStatus(AufStatVal(CLOSED),true);
+      if (!getRestStk()) setStatus(AufStatVal(CLOSED),true,false,false);
    }
    else // M>0
    {  // true bewirkt in AP dass gelieferte Menge im Einkauf abbestellt wird
