@@ -35,6 +35,7 @@
 bool ppsInstanzReparatur::Reparatur_MindestMenge(bool analyse_only,ArtikelBase art) const
 {  bool alles_ok=true;
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,analyse_only,art);
+   std::string function(__FUNCTION__);
    AuftragBase ab(Instanz()->Id(),AuftragBase::dispo_id);
     AufEintragBase zweier(ab,ab.PassendeZeile(LagerBase::Lagerdatum(),
                 art,OPEN));
@@ -58,6 +59,8 @@ bool ppsInstanzReparatur::Reparatur_MindestMenge(bool analyse_only,ArtikelBase a
     }
    else if (ae.getRestStk()>=artstamm.getMindBest())
    {  // etwas nachbestellt obwohl nicht notwendig?
+   ManuProC::Trace t2(AuftragBase::trace_channel, function+":MABELLA_DEBUG: Rest,MindBest"
+                   ,ae.getRestStk(),artstamm.getMindBest());
       AufEintragZu::list_t nachbestellt
              = AufEintragZu::get_Referenz_list(ae,AufEintragZu::list_kinder,
                    AufEintragZu::list_Artikel,AufEintragZu::list_unsorted);
@@ -68,6 +71,10 @@ bool ppsInstanzReparatur::Reparatur_MindestMenge(bool analyse_only,ArtikelBase a
 //         AufEintrag::ArtikelInternAbbestellen_cb cb(ae);
          for (AufEintragZu::list_t::const_iterator i=nachbestellt.begin();i!=nachbestellt.end();++i)
          { AuftragBase::mengen_t M=AuftragBase::min(zuviel,i->Menge);
+         
+   ManuProC::Trace t1(AuftragBase::trace_channel, function+" MABELLA_DEBUG: zuviel"
+                    ,zuviel,nachbestellt.size());         
+         
            if (!M) continue;
            ae.MengeAendern(-i->Menge,false,AufEintragBase());
 #warning richtig?
@@ -79,7 +86,8 @@ bool ppsInstanzReparatur::Reparatur_MindestMenge(bool analyse_only,ArtikelBase a
    return alles_ok;
 }
 
-bool ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al, const bool analyse_only) const throw(SQLerror)
+bool ppsInstanzReparatur::Reparatur_0er_und_2er(SelectedFullAufList &al, 
+     const bool analyse_only) const throw(SQLerror)
 {  bool alles_ok=true;
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,analyse_only);
    assert(Instanz() != ppsInstanzID::Kundenauftraege);
@@ -149,23 +157,24 @@ bool ppsInstanzReparatur::ReparaturLager(const bool analyse_only,
 		const ArtikelBase::ID aid) const throw(SQLerror)
 { ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Instanz());
   assert(Instanz()->LagerInstanz());
-  std::vector<LagerInhalt> LI=getLagerInhalt(); 
-
+  
+//  std::vector<LagerInhalt> LI;
+//  if(aid==ArtikelBase::none_id) LI=getLagerInhalt(); 
+  std::vector<LagerInhalt> LI=getLagerInhalt(ArtikelBase(aid)); 
+  
   std::vector<ArtikelBase> arts;
-  if(aid==ArtikelBase::none_id)
-   {
-    Query q("select distinct artikelid from auftragentry where instanz=? "
-  	"and status=?");
-    q << Instanz()->Id() << OPEN;
-    q.FetchArray(arts);
-   }
-  else
-   arts.push_back(ArtikelBase(aid));
+  std::string qstr("select distinct artikelid from auftragentry where instanz=? "
+      "and status=?");
+  if(aid!=ArtikelBase::none_id)	
+    qstr+=" and artikelid="+itos(aid);
+  Query q(qstr);
+  q << Instanz()->Id() << OPEN;
+  q.FetchArray(arts);
   
   for (std::vector<ArtikelBase>::const_iterator i=arts.begin();i!=arts.end();++i)
   {  std::vector<LagerInhalt>::const_iterator j=LI.begin();
      for (;j!=LI.end();++j)
-     {  if (*i==j->Artikel()) break;
+     {  if (*i==(*j).Artikel()) break;
      }
      if (j==LI.end()) LI.push_back(LagerInhalt(*i));
   }
@@ -305,7 +314,7 @@ std::cout << "Mengenänderung im Lager "<<Instanz()<<'\t'<<menge<<" von " << arti
       LagerBase(make_value(Instanz())).rein_ins_lager(artikel,menge,false);
 }
 
-std::vector<LagerInhalt> ppsInstanzReparatur::getLagerInhalt() const
+std::vector<LagerInhalt> ppsInstanzReparatur::getLagerInhalt(const ArtikelBase ab) const
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Instanz());
   std::vector<LagerInhalt> LI;
@@ -315,7 +324,11 @@ std::vector<LagerInhalt> ppsInstanzReparatur::getLagerInhalt() const
   else 
 #elif defined(MABELLA_EXTENSIONS) && defined(MANUPROC_DYNAMICENUMS_CREATED)
   if(Instanz() == ppsInstanzID::Fertigwarenlager)  
+     {if(ab.valid())
+     	LI.push_back(FertigWarenLager(FertigWarenLager::default_lagerid).LagerInhalt(ab));
+      else 	
 	LI=FertigWarenLager(FertigWarenLager::default_lagerid).LagerInhalt();
+     }
   else 
 #endif 
    { std::cout << Instanz()<<' '<<"\tKeine LagerKlasse implementiert\n";

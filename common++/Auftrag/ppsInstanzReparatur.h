@@ -1,4 +1,4 @@
-// $Id: ppsInstanzReparatur.h,v 1.22 2004/09/01 12:25:48 christof Exp $
+// $Id: ppsInstanzReparatur.h,v 1.23 2005/02/23 16:12:23 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -45,7 +45,7 @@ class ppsInstanzReparatur : public cH_ppsInstanz
  private:
       typedef fixedpoint<ManuProC::Precision::AuftragsMenge> ABmt;
 
-      std::vector<LagerInhalt> getLagerInhalt() const;
+      std::vector<LagerInhalt> getLagerInhalt(const ArtikelBase ab=ArtikelBase()) const;
       bool vormerkungen_subtrahieren(const  std::vector<LagerInhalt> &LI,const bool analyse_only) const;
       void DispoAuftraege_anlegen(const ArtikelBase &artikel,const fixedpoint<ManuProC::Precision::AuftragsMenge> &menge) const;
 
@@ -68,7 +68,7 @@ class ppsInstanzReparatur : public cH_ppsInstanz
       		const ArtikelBase::ID aid=ArtikelBase::none_id) const throw(SQLerror);
       // Entweder existieren 0er oder es existieren 2er
       // void Reparatur_0er_und_2er(const bool analyse_only) const throw(SQLerror);
-      bool Reparatur_0er_und_2er(SelectedFullAufList &L,const bool analyse_only) const throw(SQLerror);
+      bool Reparatur_0er_und_2er(SelectedFullAufList &L, const bool analyse_only) const throw(SQLerror);
 
       // neues Interface!
       bool Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, bool analyse_only, bool raise_prodselbst) const;
