@@ -1,4 +1,4 @@
-/* $Id: Verfuegbarkeit.h,v 1.6 2004/02/27 17:21:21 christof Exp $ */
+/* $Id: Verfuegbarkeit.h,v 1.7 2004/03/02 11:44:11 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,7 +30,7 @@ namespace Verfuegbarkeit {
 typedef AuftragBase::mengen_t mengen_t;
 
 struct Mengen
-{	mengen_t // geliefert,
+{	mengen_t geliefert,
 		vorraetig,
 		geplant,
 		ungeplant,

@@ -1,4 +1,4 @@
-/* $Id: Verfuegbarkeit.cc,v 1.13 2004/03/02 10:49:47 christof Exp $ */
+/* $Id: Verfuegbarkeit.cc,v 1.14 2004/03/02 11:44:11 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,7 +24,7 @@
 #include <Misc/TraceNV.h>
 
 Verfuegbarkeit::mengen_t Verfuegbarkeit::Mengen::summe() const
-{  return  ungeplant+geplant+vorraetig+error;
+{  return  ungeplant+geplant+vorraetig+geliefert+error;
 }
 
 namespace
@@ -130,7 +130,7 @@ void Verfuegbarkeit::verfuegbar(const AufEintrag &ae, map_t &result,
    {  AuftragBase::mengen_t m=0;
       if (ae.getGeliefert()>offset)
          m=AuftragBase::min(menge,ae.getGeliefert()-offset);
-      result[idx].vorraetig+=m;
+      result[idx].geliefert+=m; // vorraetig+=m;
       menge-=m;
       offset-=ae.getGeliefert();
    }
@@ -224,17 +224,10 @@ void Verfuegbarkeit::wozu_benoetigt(const AufEintrag &ae, map_t &result,
 {  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("ae",ae),
 		NV("menge",menge),NV("offset",offset));
    mapindex idx(ae.Instanz(),ae.Artikel(),ae.getKdNr());
-   if (!menge && !offset) menge=ae.getStueck();
-#if 0   
-   if (!!ae.getGeliefert())
-   {  AuftragBase::mengen_t m=0;
-      if (ae.getGeliefert()>offset)
-         m=AuftragBase::min(menge,ae.getGeliefert()-offset);
-//      result[idx].vorraetig+=m;  nicht markieren
-      menge-=m;
-      offset-=ae.getGeliefert();
+   if (!menge && !offset) 
+   {  result[idx].geliefert+=ae.getGeliefert();
+      menge=ae.getRestStk();
    }
-#endif
    // shouldn't we error in verf too ?
    if (offset>=ae.getRestStk()) 
    { result[idx].error+=menge; verf_Trace(result[idx]); return; }
@@ -246,19 +239,30 @@ void Verfuegbarkeit::wozu_benoetigt(const AufEintrag &ae, map_t &result,
    ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,
    		NV("menge",menge),NV("offset",offset));
 
-   if (ae.Id()==AuftragBase::dispo_id)
+   if (ae.Instanz()->LagerInstanz() && ae.Id()==AuftragBase::auffuellen_id)
    {  result[idx].vorraetig+=menge;
+      menge=0; // keine Rekursion
+   }
+   else if (ae.Id()==AuftragBase::dispo_id)
+   {  assert(!ae.Instanz()->LagerInstanz());
+      result[idx].vorraetig+=menge; // vorraetig statt geplant
+      result[idx].geplant-=menge;
+      menge=0;
    }
    else if (ae.Id()==AuftragBase::plan_auftrag_id || ae.Id()>=AuftragBase::handplan_auftrag_id)
    {  assert(!ae.Instanz()->LagerInstanz());
       result[idx].geplant+=menge;
+      if (ae.Instanz()==ppsInstanzID::Kundenauftraege) menge=0;
    }
    else
    {  assert(ae.Id()==AuftragBase::ungeplante_id);
       result[idx].ungeplant+=menge;
    }
    
-   if (ae.Instanz()!=ppsInstanzID::Kundenauftraege)
+   if (!!menge)
+//       && ae.Id()!=AuftragBase::dispo_id
+//       && (ae.Id()!=AuftragBase::auffuellen_id || !ae.Instanz()->LagerInstanz())
+//       )
    {  // Rekursion (Priority)
       mengen_t rest=
          distribute_parents(ae,menge,benoe_recurse(offset,result,ae));

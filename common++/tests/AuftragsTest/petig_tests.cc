@@ -697,24 +697,6 @@ static bool AuftragLager(AufEintrag &AE)
 
 static TestReihe AuftragLager_(&AuftragLager,"Auftrag Lager Interaktion","AL");
 
-static bool Verfuegbarkeit()
-{   Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
-	// soll Bandlager aufnehmen
-    AufEintragBase AEB2=auftrag.push_back(2400,DATUM-20,ARTIKEL_FAERBEREI,OPEN,true);
-    AufEintragBase AEB3=auftrag.push_back(400,DATUM-10,ARTIKEL_FAERBEREI,OPEN,true);
-    AufEintragBase AEB4=auftrag.push_back(400,DATUM,ARTIKEL_FAERBEREI,OPEN,true);
-    vergleichen(Check::Menge,"V_Ausgangspunkt","Ausgangspunkt","");
-    
-    Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Weberei),Kunde::default_id);
-//  ehemals AufEintragBase AEBP=PA.Planen(1200,ARTIKEL_BANDLAGER,DATUM-40);
-    AufEintragBase AEBP=PA.push_back(1200,DATUM-40,ARTIKEL_BANDLAGER,OPEN,true);
-    vergleichen(Check::Menge,"V_Planung","Planung Weberei","");
-    
-    return true;
-}
-
-static TestReihe Verfuegbarkeit_(&Verfuegbarkeit,"Verfügbarkeit","V");
-
 static bool Planung_torture()
 {   Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
 	// soll Bandlager aufnehmen

@@ -55,6 +55,7 @@ void verf_vergleichen(const std::string &postfix,const AufEintragBase &AEB)
    {  os << i->first.inst << '\t'
    	<< i->first.art << '\t'
    	<< i->first.kunde << '\t';
+      if (!!i->second.geliefert) os << 'g' << i->second.geliefert << ' ';
       if (!!i->second.vorraetig) os << 'v' << i->second.vorraetig << ' ';
       if (!!i->second.geplant) os << 'p' << i->second.geplant << ' ';
       if (!!i->second.ungeplant) os << 'u' << i->second.ungeplant << ' ';
@@ -77,6 +78,7 @@ void ben_vergleichen(const std::string &postfix,const AufEintragBase &AEB)
    {  os << i->first.inst << '\t'
    	<< i->first.art << '\t'
    	<< i->first.kunde << '\t';
+      if (!!i->second.geliefert) os << 'g' << i->second.geliefert << ' ';
       if (!!i->second.vorraetig) os << 'v' << i->second.vorraetig << ' ';
       if (!!i->second.geplant) os << 'p' << i->second.geplant << ' ';
       if (!!i->second.ungeplant) os << 'u' << i->second.ungeplant << ' ';
@@ -88,6 +90,24 @@ void ben_vergleichen(const std::string &postfix,const AufEintragBase &AEB)
       if (!Check::continue_) exit(1);
    }
 }
+
+static bool f_Verfuegbarkeit()
+{   Auftrag auftrag=Auftrag(Auftrag::Anlegen(ppsInstanzID::Kundenauftraege),KUNDE);
+	// soll Bandlager aufnehmen
+    AufEintragBase AEB2=auftrag.push_back(2400,DATUM-20,ARTIKEL_FAERBEREI,OPEN,true);
+    AufEintragBase AEB3=auftrag.push_back(400,DATUM-10,ARTIKEL_FAERBEREI,OPEN,true);
+    AufEintragBase AEB4=auftrag.push_back(400,DATUM,ARTIKEL_FAERBEREI,OPEN,true);
+    vergleichen(Check::Menge,"V_Ausgangspunkt","Ausgangspunkt","");
+    
+    Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Weberei),Kunde::default_id);
+//  ehemals AufEintragBase AEBP=PA.Planen(1200,ARTIKEL_BANDLAGER,DATUM-40);
+    AufEintragBase AEBP=PA.push_back(1200,DATUM-40,ARTIKEL_BANDLAGER,OPEN,true);
+    vergleichen(Check::Menge,"V_Planung","Planung Weberei","");
+    
+    return true;
+}
+
+static TestReihe Verfuegbarkeit_(&f_Verfuegbarkeit,"Verfügbarkeit","V");
 
 static std::vector<AufEintragBase> Verfuegbarkeit2_init()
 {   std::vector<AufEintragBase> result;
