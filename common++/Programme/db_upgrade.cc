@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.17 2003/09/18 17:01:47 jacek Exp $
+// $Id: db_upgrade.cc,v 1.18 2003/09/19 11:32:59 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -112,9 +112,9 @@ int main(int argc,char *argv[])
   check_column("buchjournal","geschlossen_am","date");
   if(check_column("buchung","buchungid","integer"))
     {
-     Query("alter table buchung set not null");
+     Query("alter table buchung alter buchung set not null");
      Query("create sequence buchung_id_seq");
-     Query("alter table buchung set default nextval('buchung_id_seq')");
+     Query("alter table buchung alter buchungid set default nextval('buchung_id_seq')");
      Query("create unique index buchung_uniq on buchung (buchungid)");
     }
      
