@@ -670,9 +670,8 @@ void auftrag_lieferschein::on_button_zeile_modifizieren_clicked()
    if(LieferscheinBase::mengen_t(liefermenge->get_value_as_float()) != LE.Menge() ||
             anzahl->get_value_as_int() != LE.Stueck())
     {
-       bool ok=LE.changeMenge(anzahl->get_value_as_int(),liefermenge->get_value_as_float());
-       if(ok) set_tree_offen_content();
-       else {meldung->Show("Es hat nicht funktioniert.") ;}
+       LE.changeMenge(anzahl->get_value_as_int(),liefermenge->get_value_as_float());
+       set_tree_offen_content();
     }
    set_tree_daten_content(lieferschein->Id());
   } catch(std::exception &e) {std::cerr << e.what();}
