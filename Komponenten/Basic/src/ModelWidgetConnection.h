@@ -1,4 +1,4 @@
-// $Id: ModelWidgetConnection.h,v 1.4 2003/04/07 12:59:59 christof Exp $
+// $Id: ModelWidgetConnection.h,v 1.5 2003/05/09 20:56:00 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -22,6 +22,8 @@
 #define MODELWIDGETCONNECTION_H
 
 #include <BaseObjects/Model.h>
+#include <sigc++/object.h>
+#include <glib/gtypes.h>
 
 template <class T,class W>
  class ModelWidgetConnection : public SigC::Object
