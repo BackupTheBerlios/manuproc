@@ -70,6 +70,17 @@
 	  </child>
 
 	  <child>
+	    <widget class="button" id="preise_start">
+	      <property agent="glademm" name="cxx_visibility">protected</property>
+	      <property name="visible">True</property>
+	      <property name="label" translatable="yes">Preislisten</property>
+	      <property name="use_underline">True</property>
+	      <property name="stock_pixmap">gtk-justify-fill</property>
+	      <signal name="clicked" handler="on_preise_start_clicked" last_modification_time="Tue, 27 Jul 2004 16:15:03 GMT"/>
+	    </widget>
+	  </child>
+
+	  <child>
 	    <widget class="button" id="quit">
 	      <property agent="glademm" name="cxx_visibility">protected</property>
 	      <property name="visible">True</property>

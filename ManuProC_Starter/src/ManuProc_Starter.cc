@@ -37,3 +37,12 @@ void ManuProc_Starter::on_quit_clicked()
 {
  Gtk::Main::instance()->quit();
 }
+
+
+void ManuProc_Starter::on_preise_start_clicked()
+{  
+ std::string cmd("/bin/sh -c preise &");
+ system(cmd.c_str());
+}
+
+
