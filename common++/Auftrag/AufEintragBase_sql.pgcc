@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.10 2001/11/05 08:58:29 christof Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.11 2001/11/07 08:23:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -300,33 +300,43 @@ void AufEintragBase::abschreiben(int menge) throw(SQLerror)
 }
 
 
-list<pair<AufEintragBase2,long> > AufEintragBase::get_Referenz_list(const AufEintragBase2& aeb) const throw(SQLerror) 
+list<pair<AufEintragBase2,long> > AufEintragBase::get_Referenz_list(const AufEintragBase2& aeb,bool kinder) const throw(SQLerror) 
 {
  exec sql begin declare section;
-  int INSTANZ=aeb.Instanz();
-  int AUFTRAGID=aeb.Id();
-  int ZEILENNR=aeb.ZNr();
-  int OLDINSTANZ[30],OLDAUFTRAGID[30],OLDZEILENNR[30];
+  int INSTANZ[30],AUFTRAGID[30],ZEILENNR[30];
   long MENGE[30];
+  char query[1024];
  exec sql end declare section;
  Transaction tr;
- exec sql declare ONAUF cursor for select altauftragid,altinstanz,altzeilennr,menge
-   from auftragsentryzuordnung where neuauftragid=:AUFTRAGID and 
-      neuinstanz=:INSTANZ and neuzeilennr=:ZEILENNR;
+ std::string squery;
+ if(kinder)
+    squery = "select neuauftragid,neuinstanz,neuzeilennr,menge
+      from auftragsentryzuordnung where altauftragid='"+itos(aeb.Id())
+      +"' and altinstanz='"+itos(aeb.Instanz())
+      +"' and altzeilennr='"+itos(aeb.ZNr())+"'";
+ else
+    squery = "select altauftragid,altinstanz,altzeilennr,menge
+      from auftragsentryzuordnung where neuauftragid='"+itos(aeb.Id())
+      +"' and neuinstanz='"+itos(aeb.Instanz())
+      +"' and neuzeilennr='"+itos(aeb.ZNr())+"'";
+ strncpy(query,squery.c_str(),sizeof(query));
+ exec sql prepare ONAUF_ from :query;
+
+ exec sql declare ONAUF cursor for ONAUF_;
  exec sql open ONAUF;
           
  list<pair<AufEintragBase2, long> > vaeb;
  while(true)
   {
-    exec sql fetch 20 in ONAUF into :OLDAUFTRAGID,:OLDINSTANZ,:OLDZEILENNR,:MENGE;
+    exec sql fetch 20 in ONAUF into :AUFTRAGID,:INSTANZ,:ZEILENNR,:MENGE;
     SQLerror::test(__FILELINE__,100);
     if (sqlca.sqlcode) break;
     int j=sqlca.sqlerrd[2];
     for (int i=0;i<j;++i)
      {
       vaeb.push_back(pair<AufEintragBase2,long> 
-            ( AufEintragBase2(cH_ppsInstanz((ppsInstanz::ppsInstId)OLDINSTANZ[i]),
-                               OLDAUFTRAGID[i],OLDZEILENNR[i]),MENGE[i]));
+            ( AufEintragBase2(cH_ppsInstanz((ppsInstanz::ppsInstId)INSTANZ[i]),
+                               AUFTRAGID[i],ZEILENNR[i]),MENGE[i]));
      }
     if(j<30) break;
   }
@@ -380,3 +390,5 @@ list<cH_Kunde> AufEintragBase::get_Referenz_Kunden() const throw(SQLerror)
  LK.unique(); // Entfernt Duplikate
  return LK;
 }
+
+

@@ -1,4 +1,4 @@
-/* $Id: AufEintragBase.h,v 1.13 2001/11/05 08:58:29 christof Exp $ */
+/* $Id: AufEintragBase.h,v 1.14 2001/11/07 08:23:25 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -124,6 +124,8 @@ public:
  int getJahrgang() const { return jahrgang;}
  const Petig::Datum getProzDat() const { return prozdate;} 
  cH_Prozess getProzess() const { return prozess;}
+ std::vector<pair<cH_Prozess,long> > getProzess2() const;
+ std::string getProzess2_c_str() const;
  const cP_Waehrung getWaehrung() const { return preis.getWaehrung(); }
  const Preis GPreis() const; // Gesamtpreis
  void setVerarbeitung(const cH_Prozess p);
@@ -135,8 +137,10 @@ public:
 private:
  list<cH_Kunde> get_Referenz_Kunden_long() const throw(SQLerror);
 public:
- list<pair<AufEintragBase2,long> > get_Referenz_list(const AufEintragBase2& aeb) const throw(SQLerror);
+ list<pair<AufEintragBase2,long> > get_Referenz_list(const AufEintragBase2& aeb,bool kinder=false) const throw(SQLerror);
  list<pair<AufEintragBase2,long> > get_Referenz_AufEintragBase2(bool ursprung=true) const throw(SQLerror);
+                //false: Alle Referenzaufträge 
+                //true:  Alle Kinderaufträge
  list<cH_Kunde> get_Referenz_Kunden() const throw(SQLerror);
  ArtikelBase::ID ArtId() const {return artikel.Id();}
   

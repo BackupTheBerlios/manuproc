@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.8 2001/11/05 08:58:29 christof Exp $
+// $Id: AufEintragBase.cc,v 1.9 2001/11/07 08:23:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,7 +19,8 @@
 
 #include"AufEintragBase.h"
 #include <Aux/string0.h>
- 
+//#include <Aux/ppsInstanz.h>
+#include <Auftrag/AuftragsBaum.h> 
 
 AufEintragBase::AufEintragBase(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, int _bestellt,
 	int _artikel, const Petig::Datum _lieferdatum,
@@ -114,4 +115,35 @@ bool AufEintragBase::allesOK() const
  if (!getStueck()) return false;
  if (!getLieferdatum().valid()) return false;
  return true;
+}
+
+
+std::vector<pair<cH_Prozess,long> > AufEintragBase::getProzess2() const
+{
+  AuftragsBaum AB(*this,true);
+  std::vector<pair<cH_Prozess,long> > L;
+  for(AuftragsBaum::const_iterator i=AB.begin();i!=AB.end();++i)
+   {
+     if(i->AEB2.Id()!=0) // 0 = ungeplante Aufträge       
+       L.push_back(pair<cH_Prozess,long>(
+         cH_ppsInstanz(AufEintragBase(i->AEB2).getAuftragInstanz())->get_Prozess(),
+         i->menge));
+
+//cout << "Auftrag: "<<Id()<<' '<<Instanz()
+//     <<"\tKinder : " <<i->AEB2.Id()<<' ' <<i->AEB2.Instanz()<<'\n';
+   }
+ return L;
+}
+
+std::string AufEintragBase::getProzess2_c_str() const
+{
+ std::vector<pair<cH_Prozess,long> > L=getProzess2();
+ std::string s;
+ for(std::vector<pair<cH_Prozess,long> >::const_iterator i=L.begin();i!=L.end();++i)
+  {
+   int menge = i->second;
+   s+=i->first->getTyp()+" "+i->first->getText()+"("+itos(menge)+")";
+   if(i+1!=L.end()) s+= ", ";
+  }
+ return s;
 }

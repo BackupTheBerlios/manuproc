@@ -27,6 +27,7 @@ libcommon___a_LIBADD= \
 		Auftrag/selAufEntry_sql.o \
 		Auftrag/sqlAuftragSelector.o \
 		Auftrag/AuftragBase_sql.o \
+      Auftrag/AuftragsBaum.o \
 		Auftrag/Auftrag.o \
 		Auftrag/Auftrag_sql.o \
 		Auftrag/AuftragFull_sql.o \

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase2.h,v 1.21 2001/10/31 14:50:31 cvs_malte Exp $
+// $Id: AufEintragBase2.h,v 1.22 2001/11/06 14:40:34 cvs_malte Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -45,7 +45,7 @@ public:
  void setVerarbeitung(const cH_Prozess p) const throw(SQLerror);
  // gibt gelieferte Menge zurück
  int abschreiben(int menge) const throw(SQLerror);
- void deleteAuftragEntry() const throw(SQLerror);
+ bool deleteAuftragEntry() const throw(SQLerror);
  
  int ZNr() const { return zeilennr; }
  bool valid() const { return AuftragBase::valid(); }

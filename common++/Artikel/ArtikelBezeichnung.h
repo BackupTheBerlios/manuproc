@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.h,v 1.9 2001/10/23 08:45:18 christof Exp $
+// $Id: ArtikelBezeichnung.h,v 1.10 2001/11/07 08:23:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -185,6 +185,9 @@ public:
 	cH_ArtikelBezeichnung(const Default &d) 
 		: Handle<const ArtikelBezeichnung>(new ArtikelBezeichnung())
 	{}
+
+       static void Deregister(ExtBezSchema::ID sid, ArtikelBase::ID aid)
+           {cache.deregister(cache_key(sid,aid));}
 };
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase2.pgcc,v 1.14 2001/10/19 11:17:54 christof Exp $
+// $Id: AufEintragBase2.pgcc,v 1.15 2001/11/06 14:40:35 cvs_malte Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,6 +20,7 @@
 #include <Auftrag/AufEintragBase2.h>
 #include <Aux/Transaction.h>
 #include <Auftrag/auftrag_status.h>
+#include <Auftrag/AuftragsBaum.h> 
 
 exec sql include sqlca;
 
@@ -50,19 +51,31 @@ void AufEintragBase2::setVerarbeitung(const cH_Prozess p) const throw(SQLerror)
 }
 
 
-void AufEintragBase2::deleteAuftragEntry() const throw(SQLerror)
+bool AufEintragBase2::deleteAuftragEntry() const throw(SQLerror)
 {
  // Kundenaufträge DÜRFEN NICHT gelöscht werden !!!
  assert (Instanz()!=ppsInstanz::INST_KNDAUF) ;
+
+ // Testen, ob dieser Auftrag Kinder hat, wenn ja, dann darf dieser 
+ // Auftrag NICHT gelöscht werden
+ AuftragsBaum AB(*this,true);
+ if(AB.size()!=0) return false;
 
  exec sql begin declare section;
  int AUFTRAGID=auftragid;
  int ZEILENNR=zeilennr;
  int INSTANZ=Instanz();
  exec sql end declare section;
+ // Löschen aus Auftragszuordnung
+ exec sql delete from auftragsentryzuordnung where neuauftragid=:AUFTRAGID
+      and neuinstanz=:INSTANZ and neuzeilennr=:ZEILENNR;
+ SQLerror::test(__FILELINE__+(string)" DELETE AUFTRAG 1");
+
+ // Löschen aus Auftragentry
  exec sql delete from auftragentry where auftragid=:AUFTRAGID
       and zeilennr =:ZEILENNR and instanz=:INSTANZ;
- SQLerror::test("DELETE AUFTRAG");
+ SQLerror::test(__FILELINE__+(string)" DELETE AUFTRAG 2");
+ return true;
 }
 
 // gibt geliefert zurück
