@@ -111,4 +111,3 @@ void MyScale::on_bdown_clicked()
   set_value(v+1);
 }
 
-            
