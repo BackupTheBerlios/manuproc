@@ -87,10 +87,10 @@ void windowTop::show_zahlungsziel()
 void windowTop::on_entry_blz_activate()
 {
  unsigned long int blz = strtol(entry_blz->get_text().c_str(),NULL,10);
- if(blz==0) return;
+// if(blz==0) return;
  try{
  int bank_index = fill_bank_bei(blz);
- if (bank_index==0) 
+ if (bank_index==0 && blz!=0) 
   {
     label_speichern->set_text("WARNUNG: Bankleitzahl unbekannt");
     std::string st = "Bankleitzahl unbekannt, soll eine neue Bank angelegt werden?";
@@ -99,6 +99,7 @@ void windowTop::on_entry_blz_activate()
  else  
   {
    kundendaten->set_bankindex(bank_index);
+   changedFktB(Kunde::FBankindex);   
    saveAll();
   }
  }catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e);}
