@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.45 2003/06/18 10:17:57 jacek Exp $ */
+/* $Id: AufEintrag.h,v 1.46 2003/06/18 11:14:29 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -148,7 +148,6 @@ private:
  	void operator()(const ArtikelBase &,AuftragBase::mengen_t) const {}
  };
 
-
 public:
  void updateLieferdatum(const ManuProC::Datum &ld,int uid) throw(SQLerror);	
  void updateLieferdatum(const Kalenderwoche &K,int uid) {updateLieferdatum(ManuProC::Datum(K),uid);}	
@@ -196,6 +195,8 @@ public:
 
 // intern aber public
  void abschreiben(mengen_t menge) throw(SQLerror);
+ void AnElternMengeAnpassen();
+
 private:
  void Produziert_0er(mengen_t menge);
 

@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.38 2003/06/18 07:45:51 christof Exp $
+// $Id: adjust_store.cc,v 1.39 2003/06/18 11:14:30 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -81,9 +81,9 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,const bool analys
        for(SelectedFullAufList::iterator i = K.begin();i!=K.end(); ++i)
        {  AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(*i,
        			AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
-       	  AufEintragZu::map_t kinder=AufEintragZu::get_Kinder_nach_Artikel(*i);
        	  alles_ok&=RI.Eltern(*i,eltern,analyse_only,actions&b_raise);
        	  alles_ok&=RI.Lokal(*i,analyse_only);
+       	  AufEintragZu::map_t kinder=AufEintragZu::get_Kinder_nach_Artikel(*i);
        	  alles_ok&=RI.Kinder(*i,kinder,analyse_only);
        }
       }

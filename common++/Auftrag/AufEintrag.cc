@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.57 2003/06/18 10:17:57 jacek Exp $
+// $Id: AufEintrag.cc,v 1.58 2003/06/18 11:14:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -432,9 +432,10 @@ void AufEintrag::abschreiben(mengen_t menge) throw(SQLerror)
 
  Transaction tr;
  Query("lock table auftragentry in exclusive mode");
- bool delete_entry=false;
 
 #if 0
+ bool delete_entry=false;
+
   // Lieferung rückgängig machen, dann 1er löschen wenn es alle Menge war
   // funktioniert nicht gut, da Zeiger verloren gehen,
   // außerdem werden diese Einträge bald wieder erzeugt
@@ -865,7 +866,10 @@ public:
 		const AufEintragBase &aeb,AuftragBase::mengen_t M) const
 	{  if (!aeb.Instanz()->ProduziertSelbst())
               AufEintrag(aeb).ProduziertNG(uid,M,alterAEB,neuerAEB);
-           else AufEintragZu(alterAEB).setMengeDiff__(aeb,-M);
+           else 
+           {  AufEintragZu(alterAEB).setMengeDiff__(aeb,-M);
+              AufEintrag(aeb).AnElternMengeAnpassen();
+           }
            return M;
 	}
 	
@@ -890,7 +894,9 @@ public:
 	AuftragBase::mengen_t operator()(const ArtikelBase &art,
 		const AufEintragBase &aeb,AuftragBase::mengen_t M) const
 	{  if (aeb.Instanz()->ProduziertSelbst())
-              AufEintragZu(alterAEB).setMengeDiff__(aeb,-M);
+           {  AufEintragZu(alterAEB).setMengeDiff__(aeb,-M);
+              AufEintrag(aeb).AnElternMengeAnpassen();
+           }
            return M;
 	}
 	
@@ -1032,6 +1038,33 @@ AuftragBase::mengen_t AufEintrag::getRestStk() const
    return bestellt-geliefert;
 }
 
+// angepasste Variante von ppsInstanzReparatur::Eltern
+void AufEintrag::AnElternMengeAnpassen()
+{  AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(*this,
+		AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
+   unsigned uid=getuid();
+   assert(Id()!=dispo_auftrag_id);
+   assert(Instanz()!=ppsInstanzID::Kundenauftraege);
+   mengen_t menge,menge2;
+   for (AufEintragZu::list_t::iterator i=eltern.begin();i!=eltern.end();++i)
+   {  menge+=i->Menge;
+      if (i->AEB.Id()==dispo_auftrag_id) menge2+=i->Menge;
+   }
+   if (menge>getStueck())
+   // mehr v.o. benötigt als jemals bestellt (z.B. durch ProdRückgängig)
+   {  assert(Id()==ungeplante_id); // sonst Problem !
+      MengeAendern(uid,menge-getStueck(),true,AufEintragBase(),
+                      ManuProC::Auftrag::r_Reparatur);
+   }
+   else if (menge<getRestStk())
+   // mehr offen als nun v.o. benötigt
+   {  assert(in(Id(),ungeplante_id,plan_auftrag_id));
+      assert(Id()!=plan_auftrag_id || Instanz()->LagerInstanz());
+      MengeAendern(uid,menge-getRestStk(),true,AufEintragBase(),
+         	ManuProC::Auftrag::r_Reparatur);
+   }
+}
+
 void AufEintrag::setProvSatz(const fixedpoint<2> ps) throw(SQLerror)
 {
  Query q("update auftragentry set provsatz=? where"
@@ -1065,5 +1098,4 @@ void AufEintrag::setDefaultProvSatz() throw(SQLerror)
 
  SQLerror::test(__FILELINE__);
 }
-
 
