@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.43 2004/05/06 08:03:13 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.44 2004/05/06 09:20:48 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -163,11 +163,15 @@ private:
 	std::list<iterator> find_row(const cH_RowDataBase &,bool optimize=false);
 	bool find_row(Node &parent,const cH_RowDataBase &,bool optimize,std::list<iterator> &result);
 
+   typedef STS_GTKMM_22_24(const GtkTreeIter*,const TreeModel::iterator&) vfunc_constiter_t;
+   typedef STS_GTKMM_22_24(GtkTreeIter*,TreeModel::iterator&) vfunc_iter_t;
+
    int IterStamp() const;
-   iterator &iterconv(GtkTreeIter* iter);
-   const iterator &iterconv(const GtkTreeIter* iter) const;
-   void iterinit(GtkTreeIter* iter,const iterator &schema) const;
-   void iterinit(GtkTreeIter* iter,const const_iterator &schema) const;
+   iterator &iterconv(vfunc_iter_t iter);
+   const iterator &iterconv(vfunc_constiter_t iter) const;
+   bool iter_valid(vfunc_constiter_t iter) const;
+   void iterinit(vfunc_iter_t iter,const iterator &schema) const;
+   void iterinit(vfunc_iter_t iter,const const_iterator &schema) const;
    Path getPath(iterator it) const;
    TreeModel::iterator getIter(iterator it) const;
    
@@ -180,25 +184,25 @@ private:
    virtual int get_n_columns_vfunc() STS_VFUNC_CONST;
    virtual GType get_column_type_vfunc(int index) STS_VFUNC_CONST;
 #if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
-   virtual void get_value_vfunc(const TreeModel::iterator& iter, int column, Glib::ValueBase& value) const;
-   bool iter_next_vfunc(const TreeModel::iterator& iter, TreeModel::iterator& iter_next) const;
-   virtual bool iter_children_vfunc(const TreeModel::iterator& parent, TreeModel::iterator& iter) const;
-   virtual bool iter_has_child_vfunc(const TreeModel::iterator& iter) const;
-   virtual int iter_n_children_vfunc(const TreeModel::iterator& iter) const;
+   virtual void get_value_vfunc(vfunc_constiter_t iter, int column, Glib::ValueBase& value) const;
+   bool iter_next_vfunc(vfunc_constiter_t iter, vfunc_iter_t iter_next) const;
+   virtual bool iter_children_vfunc(vfunc_constiter_t parent, vfunc_iter_t iter) const;
+   virtual bool iter_has_child_vfunc(vfunc_constiter_t iter) const;
+   virtual int iter_n_children_vfunc(vfunc_constiter_t iter) const;
    virtual int iter_n_root_children_vfunc() const;
-   virtual bool iter_nth_child_vfunc(const TreeModel::iterator& parent, int n, TreeModel::iterator& iter) const;
-   virtual bool iter_nth_root_child_vfunc(int n, TreeModel::iterator& iter) const;
-   virtual bool iter_parent_vfunc(const TreeModel::iterator& child, TreeModel::iterator& iter) const;
-   virtual bool get_iter_vfunc(const Path& path, TreeModel::iterator& iter) const;
+   virtual bool iter_nth_child_vfunc(vfunc_constiter_t parent, int n, vfunc_iter_t iter) const;
+   virtual bool iter_nth_root_child_vfunc(int n, vfunc_iter_t iter) const;
+   virtual bool iter_parent_vfunc(vfunc_constiter_t child, vfunc_iter_t iter) const;
+   virtual bool get_iter_vfunc(const Path& path, vfunc_iter_t iter) const;
 #else
    virtual void get_value_vfunc(const TreeModel::iterator& iter, int column, GValue* value);
-   virtual bool iter_next_vfunc(GtkTreeIter* iter);
-   virtual bool iter_children_vfunc(GtkTreeIter* iter, const GtkTreeIter* parent);
-   virtual bool iter_has_child_vfunc(const GtkTreeIter* iter);
-   virtual int iter_n_children_vfunc(const GtkTreeIter* iter);
-   virtual bool iter_nth_child_vfunc(GtkTreeIter* iter, const GtkTreeIter* parent, int n);
-   virtual bool iter_parent_vfunc(GtkTreeIter* iter, const GtkTreeIter* child);
-   virtual bool get_iter_vfunc(GtkTreeIter* iter, const Path& path);
+   virtual bool iter_next_vfunc(vfunc_iter_t iter);
+   virtual bool iter_children_vfunc(vfunc_iter_t iter, vfunc_constiter_t parent);
+   virtual bool iter_has_child_vfunc(vfunc_constiter_t iter);
+   virtual int iter_n_children_vfunc(vfunc_constiter_t iter);
+   virtual bool iter_nth_child_vfunc(vfunc_iter_t iter, vfunc_constiter_t parent, int n);
+   virtual bool iter_parent_vfunc(vfunc_iter_t iter, vfunc_constiter_t child);
+   virtual bool get_iter_vfunc(vfunc_iter_t iter, const Path& path);
 #endif
    virtual Path get_path_vfunc(const TreeModel::iterator& iter) STS_VFUNC_CONST;
    

@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.65 2004/05/06 08:50:02 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.66 2004/05/06 09:20:48 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -606,31 +606,32 @@ int SimpleTreeStore::IterStamp() const
 {  return stamp;
 }
 
-SimpleTreeStore::iterator &SimpleTreeStore::iterconv(GtkTreeIter* iter)
+SimpleTreeStore::iterator &SimpleTreeStore::iterconv(vfunc_iter_t iter)
 {  //if (!iter->stamp && !iter->user_data) return root.children.begin();
-   assert(iter->stamp==stamp);
-   return reinterpret_cast<SimpleTreeStore::iterator&>(iter->user_data);
+   assert(iter STS_GTKMM_22_24(->,.)stamp==stamp);
+   return reinterpret_cast<SimpleTreeStore::iterator&>(iter STS_GTKMM_22_24(->,.)user_data);
 }
 
-const SimpleTreeStore::iterator &SimpleTreeStore::iterconv(const GtkTreeIter* iter) const
-{  if (iter->stamp!=stamp)
-   {  std::cerr << "iterconv: iterator mismatch " << iter->stamp << "!=" << IterStamp()
-   	<< " user_data=" << iter->user_data << '\n';
+const SimpleTreeStore::iterator &SimpleTreeStore::iterconv(vfunc_constiter_t iter) const
+{  if (iter STS_GTKMM_22_24(->,.)stamp!=stamp)
+   {  std::cerr << "iterconv: iterator mismatch " << iter STS_GTKMM_22_24(->,.)stamp << "!=" << IterStamp()
+   	<< " user_data=" << iter STS_GTKMM_22_24(->,.)user_data << '\n';
       abort();
    }
-//   assert(iter->stamp==stamp);
-   return reinterpret_cast<const SimpleTreeStore::iterator&>(iter->user_data);
+   return reinterpret_cast<const SimpleTreeStore::iterator&>(iter STS_GTKMM_22_24(->,.)user_data);
 }
 
-void SimpleTreeStore::iterinit(GtkTreeIter* iter,const const_iterator &schema) const
-{  assert(3*sizeof(iter->user_data)>=sizeof(SimpleTreeStore::const_iterator));
-   iter->stamp=stamp;
-   reinterpret_cast<SimpleTreeStore::const_iterator&>(iter->user_data)=schema;
-   ManuProC::Trace(trace_channel,__FUNCTION__,iter->stamp,iter->user_data,
-   		iter->user_data2,iter->user_data3);
+void SimpleTreeStore::iterinit(vfunc_iter_t iter,const const_iterator &schema) const
+{  assert(3*sizeof(iter STS_GTKMM_22_24(->,.)user_data)>=sizeof(SimpleTreeStore::const_iterator));
+   iter STS_GTKMM_22_24(->,.)stamp=stamp;
+   reinterpret_cast<SimpleTreeStore::const_iterator&>(iter STS_GTKMM_22_24(->,.)user_data)=schema;
+   ManuProC::Trace(trace_channel,__FUNCTION__,iter STS_GTKMM_22_24(->,.)stamp,
+   		iter STS_GTKMM_22_24(->,.)user_data,
+   		iter STS_GTKMM_22_24(->,.)user_data2,
+   		iter STS_GTKMM_22_24(->,.)user_data3);
 }
 
-void SimpleTreeStore::iterinit(GtkTreeIter* iter,const iterator &schema) const
+void SimpleTreeStore::iterinit(vfunc_iter_t iter,const iterator &schema) const
 {  iterinit(iter,static_cast<const_iterator>(schema));
 }
 
@@ -699,25 +700,33 @@ void SimpleTreeStore::get_value_vfunc(const TreeModel::iterator& iter,
    }
 }
 
-bool SimpleTreeStore::iter_next_vfunc(GtkTreeIter* iter)
-{  ManuProC::Trace _t(trace_channel, __FUNCTION__,iter->user_data);
+bool SimpleTreeStore::iter_valid(vfunc_constiter_t iter) const
+{  return iter STS_GTKMM_22_24(->,.) stamp==IterStamp();
+}
+
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+bool SimpleTreeStore::iter_next_vfunc(vfunc_constiter_t iter, vfunc_iter_t iter_next) const
+{
+#else
+bool SimpleTreeStore::iter_next_vfunc(vfunc_iter_t iter)
+{  GtkTreeIter *iter_next=iter;
+#endif
+   ManuProC::Trace _t(trace_channel, __FUNCTION__,iter->user_data);
+   iterclear(iter_next);
+   if (!iter_valid(iter)) return false;
+
    g_return_val_if_fail (iter, false);
    g_return_val_if_fail (iter->stamp == stamp, false);
-#if 0   
-   if (!iter->stamp && !iter->user_data) 
-   {  std::cerr << "iter_next_vfunc with empty iter\n";
-      return false; // how ever this happens
-   }
-#endif   
    iterator old=iterconv(iter),newit=old;
    if (!old->second.parent) return false;
    newit++;
    if (newit==old->second.parent->children.end()) return false;
-   iterinit(iter,newit);
+   iterinit(iter_next,newit);
    ManuProC::Trace(trace_channel,"new iter",iter->user_data);
    return true;
 }
-bool SimpleTreeStore::iter_children_vfunc(GtkTreeIter* iter, const GtkTreeIter* parent)
+
+bool SimpleTreeStore::iter_children_vfunc(vfunc_iter_t iter, vfunc_constiter_t parent)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,parent->user_data);
    g_return_val_if_fail (parent->stamp == stamp, false);   
    iterator p=iterconv(parent);
@@ -725,15 +734,15 @@ bool SimpleTreeStore::iter_children_vfunc(GtkTreeIter* iter, const GtkTreeIter* 
    iterinit(iter,p->second.children.begin());
    return true;
 }
-bool SimpleTreeStore::iter_has_child_vfunc(const GtkTreeIter* iter)
+bool SimpleTreeStore::iter_has_child_vfunc(vfunc_constiter_t iter)
 {  g_return_val_if_fail (iter->stamp == stamp, false);
    return !(iterconv(iter)->second.children.empty());
 }
-int SimpleTreeStore::iter_n_children_vfunc(const GtkTreeIter* iter)
+int SimpleTreeStore::iter_n_children_vfunc(vfunc_constiter_t iter)
 {  g_return_val_if_fail (iter->stamp == stamp, 0);
    return iterconv(iter)->second.children.size();
 }
-bool SimpleTreeStore::iter_nth_child_vfunc(GtkTreeIter* iter, const GtkTreeIter* parent, int n)
+bool SimpleTreeStore::iter_nth_child_vfunc(vfunc_iter_t iter, vfunc_constiter_t parent, int n)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,parent?parent->user_data:0,n);
    iterator res,end;
    if (parent)
@@ -762,7 +771,7 @@ bool SimpleTreeStore::iter_nth_child_vfunc(GtkTreeIter* iter, const GtkTreeIter*
    return true;
 }
 
-bool SimpleTreeStore::iter_parent_vfunc(GtkTreeIter* iter, const GtkTreeIter* child)
+bool SimpleTreeStore::iter_parent_vfunc(vfunc_iter_t iter, vfunc_constiter_t child)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,child->user_data);
    g_return_val_if_fail (child->stamp == stamp, false);
    iterator c=iterconv(child);
@@ -774,16 +783,16 @@ bool SimpleTreeStore::iter_parent_vfunc(GtkTreeIter* iter, const GtkTreeIter* ch
 }
 Gtk::TreeModel::Path SimpleTreeStore::get_path_vfunc(const Gtk::TreeModel::iterator& iter)
 { ManuProC::Trace _t(trace_channel, __FUNCTION__,iter->gobj()->user_data);
-  if (iter->gobj()->stamp != stamp) return Gtk::TreeModel::Path();
+  if (iter->gobj()->stamp != stamp) return Path();
   return getPath(iterconv(iter->gobj()));
 }
-bool SimpleTreeStore::get_iter_vfunc(GtkTreeIter* iter, const Gtk::TreeModel::Path& path)
+bool SimpleTreeStore::get_iter_vfunc(vfunc_iter_t iter, const Path& path)
 {  ManuProC::Trace _t(trace_channel, __FUNCTION__,path.to_string());
    
    iterator res=root.children.begin();
    iterator end=root.children.end();
    
-   for (Gtk::TreeModel::Path::const_iterator piter=path.begin();piter!=path.end();)
+   for (Path::const_iterator piter=path.begin();piter!=path.end();)
    {  if (res==end) return false;
       for (unsigned i=*piter;i>0;--i) 
       {  ++res;
@@ -898,7 +907,7 @@ Gtk::TreeModel::Path SimpleTreeStore::getPath(iterator it) const
       if (it->second.parent==&root) break;
       it=iterbyNode(*it->second.parent);
    }
-   Gtk::TreeModel::Path res;
+   Path res;
    for (std::vector<unsigned>::reverse_iterator i=store.rbegin();i!=store.rend();++i)
    {  res.push_back(*i);
    }
