@@ -1,4 +1,4 @@
-dnl $Id: petig.m4,v 1.52 2001/09/25 07:14:40 cvs_christof Exp $
+dnl $Id: petig.m4,v 1.53 2002/02/14 10:51:37 cvs_christof Exp $
 
 dnl Configure paths for some libraries
 dnl derived from kde's acinclude.m4
@@ -189,6 +189,8 @@ then
   AC_SUBST(ECPG_LDFLAGS)
   ECPG_LIBS='-lecpg -lpq -lcrypt'
   AC_SUBST(ECPG_LIBS)
+  ECPG_NODB_LIBS=""
+  AC_SUBST(ECPG_NODB_LIBS)
 fi
 ])
 
@@ -264,12 +266,14 @@ then
   then
     $3_INCLUDES="$$5_INCLUDES $$3_INCLUDES"
     $3_LIBS="$$3_LIBS $$5_LIBS"
+    $3_NODB_LIBS="$$3_LIBS $$5_LIBS"
     $3_LDFLAGS="$$3_LDFLAGS $$5_LDFLAGS" 
   fi
   if test "x$6" != "x"
   then
     $3_INCLUDES="$$6_INCLUDES $$3_INCLUDES"
     $3_LIBS="$$3_LIBS $$6_LIBS"
+    $3_NODB_LIBS="$$3_LIBS $$6_LIBS"
     $3_LDFLAGS="$$3_LDFLAGS $$6_LDFLAGS"
   fi
 
@@ -277,6 +281,7 @@ then
   AC_SUBST($3_INCLUDES)
   AC_SUBST($3_CFLAGS)
   AC_SUBST($3_LIBS)
+  AC_SUBST($3_NODB_LIBS)
   AC_SUBST($3_LDFLAGS)
 fi
 ])
