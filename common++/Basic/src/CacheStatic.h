@@ -1,4 +1,4 @@
-// $Id: CacheStatic.h,v 1.2 2001/07/05 12:41:42 christof Exp $
+// $Id: CacheStatic.h,v 1.3 2002/01/05 07:48:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -31,7 +31,9 @@ template <class Index,class Payload>
 {	typedef safemap<Index,Payload> map_t;
 	map_t _mp;
 public:
+	typedef map_t::const_iterator const_iterator;
 	// if your default constructor is private, friend this class
+	// I'd love if std C++ would allow to friend typedefs
 	typedef map_t::stl_type stl_type;
 	
 	CacheStatic() throw() {}
@@ -53,5 +55,9 @@ public:
 	   if (i!=_mp.end()) return &i->second;
 	   return 0;
 	}
+	const_iterator begin() const
+	{  return _mp.begin(); }
+	const_iterator end() const
+	{  return _mp.begin(); }
 };
 #endif

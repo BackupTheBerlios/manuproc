@@ -1,4 +1,4 @@
-// $Id: safemap.h,v 1.4 2001/10/01 12:55:40 christof Exp $
+// $Id: safemap.h,v 1.5 2002/01/05 07:48:31 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -50,7 +50,8 @@ public:
 private:
 	_Rep_type *m;
 	
-	void init() { if (!m) m=new _Rep_type; }
+	void init() const 
+	{ if (!m) const_cast<safemap<_Key,_Tp>*>(this)->m=new _Rep_type; }
 public:
 	// NOTICE: member functions might got called before we
 	//         enter the ctor, NEVER touch m unconditionally here
