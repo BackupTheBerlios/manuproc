@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema.h,v 1.19 2003/10/31 14:43:26 jacek Exp $
+// $Id: ExtBezSchema.h,v 1.20 2003/10/31 15:29:02 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -181,11 +181,21 @@ public:
  size_t size(int signifikanz) const
  {  return sigsize(signifikanz); }
  size_t sigsize(int signifikanz) const;
- size_t psigsize(bool psig) const;
  const_sigiterator sigbegin(int signifikanz) const
  {  return const_sigiterator(begin(),end(),signifikanz); }
  const_sigiterator sigend(int signifikanz) const
  {  return const_sigiterator(end(),end(),signifikanz); }
+ 
+
+// für Preissignifikanz; villeicht doch lieber ein template sig_iterator<>
+ size_t size(bool psig) const
+ {  return psigsize(psig); } 
+ size_t psigsize(bool psig) const; 
+  const_psigiterator psigbegin(bool psig) const
+ {  return const_psigiterator(begin(),end(),psig); }
+ const_psigiterator psigend(bool psig) const
+ {  return const_psigiterator(end(),end(),psig); }
+
  
  size_t size() const
  {  return bezkomps.size();}
