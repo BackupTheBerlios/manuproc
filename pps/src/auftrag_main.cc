@@ -32,15 +32,17 @@
 #include <algorithm>
 #include <Misc/Global_Settings.h>
 #include "MyMessage.h"
-#include <PPixmap.hh>
+#include <VerfuegbarPixmap.h>
 //#include <Lager/Lager_Vormerkungen.hh>
 #include <unistd.h>
 #include <MyWindow.hh>
 #include <Misc/Trace.h>
 #include <Misc/FILEstream.h>
+#include <Auftrag/Verfuegbarkeit.h>
 
 const UniqueValue::value_t auftrag_main::trace_instanzen
       = ManuProC::Tracer::channels.get();
+static ManuProC::Tracer::Environment trace_channel_e("DEBUG_INSTANZ",auftrag_main::trace_instanzen);
 
 extern MyMessage *meldung;
 
@@ -53,6 +55,24 @@ extern bool load_list;
 #include "aktAufEintrag.h" //wg. Lieferwoche ???
 #include <cstdio>
 #include "class_auftrag_tree.hh"
+
+class MatListSort
+{
+   public:  
+     enum esort {MENGE,ARTIKEL};
+   private:
+     esort es;
+   public:
+     MatListSort(enum esort _es):es(_es) {}
+     bool operator() (const auftrag_main::artmeng &x,
+                      const auftrag_main::artmeng &y) const
+           { 
+             switch(es) {
+               case(MENGE)   : return x.second.summe() > y.second.summe() ;
+               case(ARTIKEL) : return cH_ArtikelBezeichnung(x.first.art) < cH_ArtikelBezeichnung(y.first.art) ;
+           }return false;}
+};
+
 
 gint auftrag_main::on_delete_event(GdkEventAny*)
 {   
@@ -439,18 +459,22 @@ auftrag_main::auftrag_main()
 
 void auftrag_main::set_column_titles_of_simple_tree()
 {
- int signif=1;
- cH_ExtBezSchema ebz(ExtBezSchema::default_id,offen_warengruppe->get_value());
-
-
+ const int signif=1;
  std::vector<std::string> ct;
  ct.push_back("Kunde");
 
  int i=0;
+ try
+ {
+ cH_ExtBezSchema ebz(ExtBezSchema::default_id,offen_warengruppe->get_value());
  ExtBezSchema::const_sigiterator bezend=ebz->sigend(signif);
  for(ExtBezSchema::const_sigiterator bezit=ebz->sigbegin(signif); 
 	bezit!=bezend; ++bezit,i++) 
    ct.push_back(bezit->bezkomptext);
+ }
+ catch (SQLerror &e)
+ {  if (e.Code()!=100) throw;
+ }
  for(int j=i; j<4; j++) // auffüllen bis 4
    ct.push_back("");
 
@@ -499,15 +523,14 @@ void auftrag_main::fill_simple_tree()
 
 void auftrag_main::on_node_selected(const TreeRow &node)
 {
-  std::map<st_index,st_mengen> map_allart;
+  Verfuegbarkeit::map_t map_allart;
   getAufEintrag_fromNode(node.begin(),node.end(),map_allart);
   instanz_menge(map_allart);
   erfassen_button->set_sensitive(false);
 }
 
-
 void auftrag_main::getAufEintrag_fromNode(TCListRow_API::const_iterator b,
-         TCListRow_API::const_iterator e, std::map<st_index,st_mengen>& M)
+         TCListRow_API::const_iterator e, Verfuegbarkeit::map_t& M)
 {  
  for (TCListRow_API::const_iterator i=b;i!=e;++i)
   {  const TreeRow *tlr=reinterpret_cast<const TreeRow *>((*i).get_user_data());
@@ -515,7 +538,7 @@ void auftrag_main::getAufEintrag_fromNode(TCListRow_API::const_iterator b,
       {
         const Data_auftrag *dt=dynamic_cast<const Data_auftrag*>(&*(tlr->LeafData()));
         if(togglebutton_material->get_active()) 
-          get_ArtikelZusammensetzung(dt->get_AufEintrag(),M);
+          Verfuegbarkeit::verfuegbar(dt->get_AufEintrag(),M);
         else if(togglebutton_auftraege->get_active())
 ;//          get_ArtikelHerkunft(ArtikelBase(dt->get_Artikel_ID()),
 //                                        dt->get_AufEintrag(),M);
@@ -523,8 +546,6 @@ void auftrag_main::getAufEintrag_fromNode(TCListRow_API::const_iterator b,
     if ((*i).begin()!=(*i).end()) getAufEintrag_fromNode((*i).begin(),(*i).end(),M);
   }
 }
-
-
 
 void auftrag_main::on_button_faerben_clicked()
 {
@@ -566,41 +587,18 @@ void auftrag_main::show_something_for(AufEintrag& selAufEintrag)
  else
   {
  // Zum Anzeigen des benötigten Materials
-    std::map<st_index,st_mengen> map_allart;
+    Verfuegbarkeit::map_t map_allart;
     if(togglebutton_material->get_active()) 
-      get_ArtikelZusammensetzung(selAufEintrag,map_allart);
+       Verfuegbarkeit::verfuegbar(selAufEintrag,map_allart);
     else if(togglebutton_auftraege->get_active())
-      get_ArtikelHerkunft(selAufEintrag,map_allart);
+;//      get_ArtikelHerkunft(selAufEintrag,map_allart);
     instanz_menge(map_allart); 
   }
 }
 
-
-void auftrag_main::get_ArtikelZusammensetzung(const AufEintrag& AE_Kunde,
-                                   std::map<st_index,st_mengen>& map_allart)
-{ ManuProC::Trace _t(trace_instanzen, __FUNCTION__,AufEintragBase(AE_Kunde),AE_Kunde.Artikel());
-  std::list<AufEintragZu::st_reflist> artikelreflist=AufEintragZu(AE_Kunde).get_Referenz_listFull(true,false);
-  for(std::list<AufEintragZu::st_reflist>::const_iterator i=artikelreflist.begin();i!=artikelreflist.end();++i)
-   {
-     AufEintrag AE(i->AEB);
-     AuftragBase::mengen_t planMenge=0,geliefertMenge=0;
-     AuftragBase::mengen_t bestellMenge=AE.getStueck();
-     ArtikelBaum::faktor_t faktor = ArtikelBaum(AE_Kunde.Artikel()).Faktor(i->Art);
-     AuftragBase::mengen_t sollMenge=AE_Kunde.getStueck()*faktor;
-
-     if(i->AEB.Id()!=0) // nur Mengen der geplante Aufträge berücksichtigen
-      {
-        planMenge=AE.getStueck();
-        geliefertMenge=AE.getGeliefert();
-      }
-     map_allart[st_index(i->AEB.Instanz(),i->Art)] += 
-         st_mengen(sollMenge,planMenge,bestellMenge,geliefertMenge);
-//     ManuProC::Trace(trace_instanzen, __FILELINE__,i->AEB,i->AB,sollMenge,planMenge,bestellMenge,geliefertMenge);
-   }
-}
-
+#if 0
 void auftrag_main::get_ArtikelHerkunft(const AufEintrag& AEB,
-                                       std::map<st_index,st_mengen>& map_allart)
+                                       Verfuegbarkeit::map_t& map_allart)
 { ManuProC::Trace _t(trace_instanzen, __FUNCTION__,AufEintragBase(AEB),AEB.Artikel());
   std::list<AufEintragZu::st_reflist> artikelreflist=AufEintragZu(AEB).get_Referenz_listFull(false,false);
   if (ManuProC::Tracer::enabled(trace_instanzen))
@@ -621,7 +619,7 @@ void auftrag_main::get_ArtikelHerkunft(const AufEintrag& AEB,
                    += st_mengen(i->Menge,0,AE.getRestStk(),0);     
     }
 }
-
+#endif
 
 void auftrag_main::on_unselect_row(gint row, gint column, GdkEvent *event)
 {
@@ -658,7 +656,101 @@ void auftrag_main::show_selected_line(bool lager)
  show_frame_instanzen_material();   
 }
 
-void auftrag_main::instanz_menge(const std::map<st_index,st_mengen>& map_allart)
+void auftrag_main::instanz_menge(const Verfuegbarkeit::map_t& map_allart)
+{ ManuProC::Trace _t(trace_instanzen, __FUNCTION__);
+  if(!togglebutton_material->get_active() &&
+     !togglebutton_auftraege->get_active()) 
+    return;
+  // 1. Schritt: Wieviel Instanzen gibt es?
+  //             Und Artikel nach Instanzen sortiert in Listen schreiben
+  std::map<cH_ppsInstanz,std::list<artmeng> > LM;
+  for (Verfuegbarkeit::map_t::const_iterator i=map_allart.begin();i!=map_allart.end();++i)
+    {
+      LM[i->first.inst].push_back(artmeng(i->first,i->second));
+      ManuProC::Trace(trace_instanzen, __FILELINE__,i->first.inst,i->first.art,
+      		i->second.vorraetig,i->second.geplant,i->second.ungeplant);
+    }
+  // 2. Schritt Überschriften (Instanzen) in die Tabelle schreiben
+  //            UND Listen sortieren UND in Tabelle einfügen
+  Gtk::Table *table_materialbedarf = manage(new Gtk::Table(0,0,false));
+  table_materialbedarf->set_col_spacings(5);
+  for(std::map<cH_ppsInstanz,std::list<artmeng> >::iterator i=LM.begin();i!=LM.end();++i)
+    {
+      // Überschriften
+      Gtk::Label *l=manage (new Gtk::Label(" "+i->first->get_Name()+" "));
+      int col = i->first->Sortierung();
+      std::string pat;
+      for (guint u=0;u<i->first->get_Name().size()+2;++u) pat+="_";
+      l->set_pattern(pat);
+      l->set_alignment(0, 0.5);
+      l->set_padding(0, 0);
+      l->show();
+      table_materialbedarf->attach(*l,col,col+1,0,1,0,0,0,0);
+
+     // Spalten sortieren
+     if(materialbedarf_sortiert_nach_artikel->get_active())
+        i->second.sort(MatListSort(MatListSort::ARTIKEL)); 
+     else if(materialbedarf_sortiert_nach_menge->get_active())
+        i->second.sort(MatListSort(MatListSort::MENGE));
+
+     int row=1;
+     Gtk::Table *tab=manage(new Gtk::Table(0,0,false));
+     for(std::list<artmeng>::const_iterator j=i->second.begin();j!=i->second.end();/*siehe unten*/)
+      {
+        ++row;
+        if(togglebutton_material->get_active())
+        {  
+          Gtk::Pixmap *pixmapG=manage(ManuProC::VerfuegbarPixmap(j->second));
+           tab->attach(*pixmapG,0,1,row,row+1,GTK_FILL,0,0,0);
+           pixmapG->show();
+        }
+        int col2=1;
+        if(togglebutton_auftraege->get_active() && auftraege_mit_kunden_bool 
+        	&& j->first.kunde>Kunde::default_id)
+         {
+           Gtk::Label *lk=manage (new Gtk::Label(cH_Kunde(j->first.kunde)->firma()+": "));
+          lk->set_justify(GTK_JUSTIFY_LEFT);
+          lk->set_alignment(1.0, 0.5);
+          lk->set_padding(0, 0);
+          tab->attach(*lk,col2,col2+1,row,row+1,GTK_FILL,0,0,0);
+          lk->show();
+         }
+        ++col2;
+         
+        Gtk::Label *la=manage (new Gtk::Label(cH_ArtikelBezeichnung(j->first.art)->Bezeichnung()+" "));
+        Einheit E(j->first.art);
+        std::string menge = Formatiere_short(j->second.summe());
+        std::string einheit = E.MengenEinheit();
+        Gtk::Label *lm=manage (new Gtk::Label(menge+einheit+" "));
+        la->set_justify(GTK_JUSTIFY_LEFT);
+        la->set_alignment(0, 0.5);
+        la->set_padding(0, 0);
+        lm->set_justify(GTK_JUSTIFY_RIGHT);
+        lm->set_alignment(1.0, 0.5);
+        lm->set_padding(0, 0);
+        if(materialbedarf_sortiert_nach_artikel->get_active())
+          { tab->attach(*la,col2  ,col2+1,row,row+1,GTK_FILL,0,0,0);
+            tab->attach(*lm,col2+1,col2+2,row,row+1,GTK_FILL,0,0,0); }
+        else 
+          { tab->attach(*lm,col2  ,col2+1,row,row+1,GTK_FILL,0,0,0);
+            tab->attach(*la,col2+1,col2+2,row,row+1,GTK_FILL,0,0,0); }
+        lm->show();
+        la->show();
+        ++j;
+      }
+     table_materialbedarf->attach(*tab,col,col+1,1,2,GTK_FILL,GTK_EXPAND|GTK_FILL,0,0);
+     tab->show();
+   }
+ viewport_materialbedarf->remove();
+ viewport_materialbedarf->add(*table_materialbedarf);
+ table_materialbedarf->show();
+// table_materialbedarf->show_all();
+ show_frame_instanzen_material();
+}
+
+
+#if 0
+void auftrag_main::instanz_menge(const Verfuegbarkeit::map_t& map_allart)
 { ManuProC::Trace _t(trace_instanzen, __FUNCTION__);
   if(!togglebutton_material->get_active() &&
      !togglebutton_auftraege->get_active()) 
@@ -668,7 +760,7 @@ void auftrag_main::instanz_menge(const std::map<st_index,st_mengen>& map_allart)
   // 1. Schritt: Wieviel Instanzen gibt es?
   //             Und Artikel nach Instanzen sortiert in Listen schreiben
   std::map<cH_ppsInstanz,std::list<artmeng> > LM;
-  for (std::map<st_index,st_mengen>::const_iterator i=map_allart.begin();i!=map_allart.end();++i)
+  for (Verfuegbarkeit::map_t::const_iterator i=map_allart.begin();i!=map_allart.end();++i)
     {
       LM[i->first.instanz].push_back(artmeng(i->first,i->second));
       ManuProC::Trace(trace_instanzen, __FILELINE__,i->first.instanz,i->first.artikel,
@@ -765,7 +857,7 @@ void auftrag_main::instanz_menge(const std::map<st_index,st_mengen>& map_allart)
  table_materialbedarf->show_all();
  show_frame_instanzen_material();
 }
-
+#endif 
 
 void auftrag_main::on_button_auftrag_erledigt_clicked()
 {
@@ -1085,7 +1177,7 @@ void auftrag_main::on_offwarengrp_activate()
  Global_Settings::create(int(getuid()),"pps","warengruppe maintree",
 	itos(offen_warengruppe->get_value()));
 
- int signif=1;
+ const int signif=1;
  cH_ExtBezSchema ebz(ExtBezSchema::default_id,offen_warengruppe->get_value());
 
  std::vector<std::string> ct;

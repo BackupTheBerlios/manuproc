@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.cc,v 1.8 2003/09/09 07:33:59 christof Exp $ */
+/* $Id: AufEintrag_loops.cc,v 1.9 2003/12/08 07:41:18 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -131,6 +131,41 @@ void distribute_children_artbaum(const AufEintragBase &startAEB,
       AuftragBase::mengen_t AE_menge2=AE_faktor*menge;
       for(AufEintragZu::list_t::const_iterator zuloop_var=artloop_var->second.begin();
 	   		zuloop_var!=artloop_var->second.end();++zuloop_var)
+      {  AuftragBase::mengen_t mengen_var
+      		=MinPfeil_or_MinGeliefert(*zuloop_var,AE_menge2);
+         if (!mengen_var) continue;
+
+         mengen_var=callee(artloop_var->first,zuloop_var->AEB,mengen_var);
+
+         AE_menge2-=mengen_var;
+         if(!AE_menge2) break;
+      }
+      // pass the remainder
+      if (!!AE_menge2) callee(artloop_var->first,AE_menge2);
+   }
+   ppsInstanz::ID next= startAEB.Instanz()->NaechsteInstanz(ArtikelStamm(article));
+   if (next!=ppsInstanzID::None)
+   {  if (MapArt.find(article)==MapArt.end()) 
+         callee(article,menge);
+   }
+   else for(ArtikelBaum::const_iterator i=AE_artbaum.begin();i!=AE_artbaum.end();++i)
+   {  if (MapArt.find(i->rohartikel)==MapArt.end())
+         callee(i->rohartikel,menge*i->menge);
+   }
+}
+
+void distribute_children_rev_artbaum(const AufEintragBase &startAEB,
+ 		AuftragBase::mengen_t menge,
+ 		const ArtikelBase &article, 
+ 		const distribute_children_cb &callee)
+{  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,startAEB,menge,article,Nametrans(typeid(callee).name()));
+   AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel(startAEB));
+   ArtikelBaum AE_artbaum(article);
+   for(AufEintragZu::map_t::const_iterator artloop_var=MapArt.begin();artloop_var!=MapArt.end();++artloop_var)
+   {  ArtikelBaum::faktor_t AE_faktor = AE_artbaum.Faktor(artloop_var->first);
+      AuftragBase::mengen_t AE_menge2=AE_faktor*menge;
+      for(AufEintragZu::list_t::const_reverse_iterator zuloop_var=artloop_var->second.rbegin();
+	   		zuloop_var!=artloop_var->second.rend();++zuloop_var)
       {  AuftragBase::mengen_t mengen_var
       		=MinPfeil_or_MinGeliefert(*zuloop_var,AE_menge2);
          if (!mengen_var) continue;

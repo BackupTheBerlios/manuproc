@@ -102,7 +102,7 @@ public:
    AuftragBase::mengen_t offene_Stueck()const {return AB.getRestStk();}
    int get_aid() const {return AB.getAuftragid();} 
    int get_zeilennr() const {return AB.getZnr();} 
-   int get_Artikel_ID() const {return AB.ArtId();}
+   __deprecated int get_Artikel_ID() const {return AB.ArtId();}
    ArtikelBase get_Artikel() const {return AB.Artikel();}
    ManuProC::Datum get_Lieferdatum() const {return AB.getLieferdatum();}
    std::string ProzessText() const {return AB.getProzess()->getTyp()+" "+AB.getProzess()->getText() ;}

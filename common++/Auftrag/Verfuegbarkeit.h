@@ -1,4 +1,4 @@
-/* $Id: Verfuegbarkeit.h,v 1.3 2003/12/04 08:01:37 christof Exp $ */
+/* $Id: Verfuegbarkeit.h,v 1.4 2003/12/08 07:41:18 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -30,10 +30,10 @@ namespace Verfuegbarkeit {
 typedef AuftragBase::mengen_t mengen_t;
 
 struct Mengen
-{	mengen_t geliefert,
-		ungeplant,
-		geplant,
+{	mengen_t // geliefert,
 		vorraetig,
+		geplant,
+		ungeplant,
 		error;
 	mengen_t summe() const;
 };
@@ -41,10 +41,12 @@ struct Mengen
 struct mapindex
 {	cH_ppsInstanz inst;
 	ArtikelBase art;
+	Kunde::ID kunde;
 	bool operator<(const mapindex &b) const
-	{	return inst<b.inst || (inst==b.inst && art<b.art); }
-	mapindex(const cH_ppsInstanz &i,const ArtikelBase &a)
-		: inst(i),art(a) {}
+	{	return inst<b.inst || (inst==b.inst && 
+			(art<b.art || (art==b.art && kunde<b.kunde))); }
+	mapindex(const cH_ppsInstanz &i,const ArtikelBase &a, Kunde::ID id=Kunde::default_id)
+		: inst(i),art(a),kunde(id) {}
 };
 
 typedef std::map<mapindex,Mengen> map_t;

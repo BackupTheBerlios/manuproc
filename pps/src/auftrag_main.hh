@@ -29,6 +29,7 @@
 #include<Auftrag/selFullAufEntry.h>
 #include <Misc/Long.h>
 #include <Misc/UniqueValue.h>
+#include <Auftrag/Verfuegbarkeit.h>
 
 class auftrag_main : public auftrag_main_glade
 {   
@@ -48,6 +49,7 @@ public:
  static const UniqueValue::value_t trace_instanzen;
  
 private:
+#if 0
    struct st_index {cH_ppsInstanz instanz; cH_Kunde Kunde; ArtikelBase artikel;
           st_index(cH_ppsInstanz i,cH_Kunde k,ArtikelBase a)
               : instanz(i),Kunde(k),artikel(a) {}
@@ -71,8 +73,9 @@ private:
               return *this;
             }
            };
+#endif
 public:           
-   typedef std::pair<st_index,st_mengen> artmeng;
+   typedef std::pair<Verfuegbarkeit::mapindex,Verfuegbarkeit::Mengen> artmeng;
 
 private:
  std::vector<cH_Prozess> prozlist;
@@ -122,11 +125,11 @@ private:
         void handle_togglebutton(char c);
         void show_selected_line(bool lager=false);
         void on_button_auftrag_erledigt_clicked();
-        void instanz_menge(const std::map<st_index,st_mengen>& map_allart);
-        void get_ArtikelZusammensetzung(const AufEintrag& AEB,std::map<st_index,st_mengen>& map_allart);
-        void get_ArtikelHerkunft(const AufEintrag& AEB,std::map<st_index,st_mengen>& map_allart);
+        void instanz_menge(const Verfuegbarkeit::map_t& map_allart);
+        void get_ArtikelZusammensetzung(const AufEintrag& AEB,Verfuegbarkeit::map_t& map_allart);
+        void get_ArtikelHerkunft(const AufEintrag& AEB,Verfuegbarkeit::map_t& map_allart);
         void getAufEintrag_fromNode(TCListRow_API::const_iterator b,
-            TCListRow_API::const_iterator e, std::map<st_index,st_mengen>& M);
+            TCListRow_API::const_iterator e, Verfuegbarkeit::map_t& M);
         void fillStamm(int *cont, GtkSCContext newsearch);
 
         void set_column_titles_of_simple_tree();
@@ -199,23 +202,6 @@ private:
   void on_lager_node_selected(const TreeRow &node);
   void on_lager_unselect_row(gint row, gint column, GdkEvent *event);
 
-};
-
-class MatListSort
-{
-   public:  
-     enum esort {MENGE,ARTIKEL};
-   private:
-     esort es;
-   public:
-     MatListSort(enum esort _es):es(_es) {}
-     bool operator() (const auftrag_main::artmeng &x,
-                      const auftrag_main::artmeng &y) const
-           { 
-             switch(es) {
-               case(MENGE)   : return x.second.sollMenge > y.second.sollMenge ;
-               case(ARTIKEL) : return cH_ArtikelBezeichnung(x.first.artikel) < cH_ArtikelBezeichnung(y.first.artikel) ;
-           }return false;}
 };
 
 #endif
