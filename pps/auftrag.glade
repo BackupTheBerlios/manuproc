@@ -10011,10 +10011,13 @@ Jahr
 	<spacing>0</spacing>
 
 	<widget>
-	  <class>GtkHBox</class>
-	  <name>hbox35</name>
+	  <class>GtkTable</class>
+	  <name>table30</name>
+	  <rows>3</rows>
+	  <columns>3</columns>
 	  <homogeneous>False</homogeneous>
-	  <spacing>0</spacing>
+	  <row_spacing>0</row_spacing>
+	  <column_spacing>0</column_spacing>
 	  <child>
 	    <padding>0</padding>
 	    <expand>False</expand>
@@ -10032,9 +10035,18 @@ Jahr
 	    <xpad>0</xpad>
 	    <ypad>0</ypad>
 	    <child>
-	      <padding>0</padding>
-	      <expand>False</expand>
-	      <fill>False</fill>
+	      <left_attach>0</left_attach>
+	      <right_attach>1</right_attach>
+	      <top_attach>0</top_attach>
+	      <bottom_attach>1</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
 	    </child>
 	  </widget>
 
@@ -10043,24 +10055,83 @@ Jahr
 	    <name>abverkauf_kumul</name>
 	    <cxx_visibility>protected</cxx_visibility>
 	    <can_focus>True</can_focus>
-	    <signal>
-	      <name>clicked</name>
-	      <handler>on_abverkauf_kumul_clicked</handler>
-	      <last_modification_time>Fri, 28 Jan 2005 10:37:30 GMT</last_modification_time>
-	    </signal>
 	    <items>Datum
 Woche
 Monat
 Quartal
 Jahr
 </items>
-	    <initial_choice>0</initial_choice>
+	    <initial_choice>2</initial_choice>
 	    <child>
-	      <padding>0</padding>
-	      <expand>False</expand>
-	      <fill>False</fill>
+	      <left_attach>1</left_attach>
+	      <right_attach>2</right_attach>
+	      <top_attach>0</top_attach>
+	      <bottom_attach>1</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
 	    </child>
 	  </widget>
+
+	  <widget>
+	    <class>GtkToolbar</class>
+	    <name>toolbar20</name>
+	    <orientation>GTK_ORIENTATION_HORIZONTAL</orientation>
+	    <type>GTK_TOOLBAR_BOTH</type>
+	    <space_size>5</space_size>
+	    <space_style>GTK_TOOLBAR_SPACE_EMPTY</space_style>
+	    <relief>GTK_RELIEF_NORMAL</relief>
+	    <tooltips>True</tooltips>
+	    <child>
+	      <left_attach>2</left_attach>
+	      <right_attach>3</right_attach>
+	      <top_attach>0</top_attach>
+	      <bottom_attach>1</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
+
+	    <widget>
+	      <class>GtkButton</class>
+	      <child_name>Toolbar:button</child_name>
+	      <name>abverkauf_reload</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <signal>
+		<name>clicked</name>
+		<handler>on_abverkauf_reload_clicked</handler>
+		<last_modification_time>Tue, 01 Feb 2005 16:09:09 GMT</last_modification_time>
+	      </signal>
+	      <label>Neuladen</label>
+	      <stock_pixmap>GNOME_STOCK_PIXMAP_REFRESH</stock_pixmap>
+	    </widget>
+	  </widget>
+	</widget>
+
+	<widget>
+	  <class>GtkToolbar</class>
+	  <name>toolbar19</name>
+	  <orientation>GTK_ORIENTATION_HORIZONTAL</orientation>
+	  <type>GTK_TOOLBAR_BOTH</type>
+	  <space_size>5</space_size>
+	  <space_style>GTK_TOOLBAR_SPACE_EMPTY</space_style>
+	  <relief>GTK_RELIEF_NORMAL</relief>
+	  <tooltips>True</tooltips>
+	  <child>
+	    <padding>0</padding>
+	    <expand>False</expand>
+	    <fill>False</fill>
+	  </child>
 	</widget>
 
 	<widget>

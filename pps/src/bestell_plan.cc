@@ -246,8 +246,11 @@ void bestell_plan::clear_all()
 }
 
 
-void bestell_plan::on_abverkauf_kumul_clicked()
+void bestell_plan::on_abverkauf_reload_clicked()
 {  
+ KumVal kv=KumVal(reinterpret_cast<int>(abverkauf_kumul->
+                   get_menu()->get_active()->get_user_data()));
+ load_abverkauf(akt_artikel,kv);
 }
 
 
