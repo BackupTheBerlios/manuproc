@@ -700,23 +700,31 @@ void auftrag_lieferschein::set_tree_offen_content()
  tree_offen->clear();
 // if (!show_offen) return; 
 
- try {
-   SQLFullAuftragSelector sel;
+ try{
+   if(datavec_liefoff.empty())
+     {
+      SQLFullAuftragSelector sel;
 #ifdef MABELLA_EXTENSIONS
 
-sel=SQLFullAuftragSelector(SQLFullAuftragSelector::sel_Kunde_Status_Lager(
+      sel=SQLFullAuftragSelector(SQLFullAuftragSelector::sel_Kunde_Status_Lager(
                    instanz->Id(), liefer_kunde->get_value(), 
 			(AufStatVal)OPEN, 
 		int(lagerwahl->get_menu()->get_active()->get_user_data())));
 #else
-     sel=SQLFullAuftragSelector(SQLFullAuftragSelector::sel_Kunde_Status(
+      sel=SQLFullAuftragSelector(SQLFullAuftragSelector::sel_Kunde_Status(
                    instanz->Id(), liefer_kunde->get_value(), (AufStatVal)OPEN));
 #endif
+      SelectedFullAufList *offene_auftraege=new SelectedFullAufList(sel);
+      for (SelectedFullAufList::const_iterator i=offene_auftraege->begin();i!=offene_auftraege->end();++i)
+        datavec_liefoff.push_back(new Data_Lieferoffen(*i,auftragmain));
+     }
 
    std::vector<cH_RowDataBase> datavec;
-   SelectedFullAufList *offene_auftraege=new SelectedFullAufList(sel);
-   for (SelectedFullAufList::const_iterator i=offene_auftraege->begin();i!=offene_auftraege->end();++i)
-      datavec.push_back(new Data_Lieferoffen(*i,auftragmain));
+   std::vector<cH_RowDataBase>::const_iterator i=datavec_liefoff.begin();
+   for(;i!=datavec_liefoff.end();++i)
+     {
+      datavec.push_back(*i);
+     }
    tree_offen->setDataVec(datavec);
   }catch (SQLerror &e) {std::cerr <<e<<'\n';}
 }

@@ -30,6 +30,9 @@ class auftrag_lieferschein : public auftrag_lieferschein_glade
         cH_ppsInstanz instanz;
         H_Lieferschein lieferschein;
 //        bool show_offen;
+	std::vector<cH_RowDataBase> datavec_liefoff;
+	std::vector<cH_RowDataBase> datavec_liefdata;
+
         
         friend class auftrag_lieferschein_glade;
         void set_tree_titles();
