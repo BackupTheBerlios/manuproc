@@ -59,7 +59,8 @@ void ppsInstanz::get_name() throw(SQLerror)
  if(instid == ppsInstanzID::None) return;
  Query("select name,lager_fuer,sortierung,"
       "lieferschein,produziert_selbst,lagername,prod_dauer_tage,"
-      "einlagern_in,automatisch_einlagern,typ,externe_bestellung,geplant_von "
+      "einlagern_in,automatisch_einlagern,typ,externe_bestellung,geplant_von,"
+      "overview,alt_group_nr "
       "from prod_instanz where insid=?") << instid >> *this;
 }
 
