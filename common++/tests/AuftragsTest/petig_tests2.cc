@@ -257,4 +257,28 @@ static bool Verfuegbarkeit3()
 
 static TestReihe Verfuegbarkeit3_(&Verfuegbarkeit3,"Verfügbarkeit Grafik 3","V3");
 
+static bool Lieferscheinzeile_aufteilen(AufEintrag &AE)
+{ Auftrag auftrag=Auftrag(Auftrag::Anlegen(AE.Instanz()->Id()),AE.getKdNr());
+  AufEintragBase AEB2=auftrag.push_back(AE.getStueck(),AE.getLieferdatum()+1,AE.Artikel(),OPEN,true);
+  vergleichen(Check::Menge,"LZa_Ausgangspunkt","Ausgangspunkt","");
+
+  // Lieferung global
+  {Lieferschein liefs(AE.Instanz(),cH_Kunde(AE.getKdNr()));
+   LieferscheinEntryBase lsb(liefs,liefs.push_back(AE.Artikel(),1,1.5*AE.getStueck()));
+   LieferscheinEntry(lsb).changeStatus(OPEN,false);
+   vergleichen(Check::Menge|Check::Lieferschein,"LZa_LieferA","Lieferung 1.5","");
+   LieferscheinEntry(lsb).changeStatus(STORNO,false);
+  }
+  // Lieferung gezielt 2.
+  {Lieferschein liefs(AE.Instanz(),cH_Kunde(AE.getKdNr()));
+   AufEintrag AE2(AEB2);
+   LieferscheinEntryBase lsb(liefs,liefs.push_back(AE2,AE2.Artikel(),1,AE2.getStueck()));
+   LieferscheinEntry(lsb).changeStatus(OPEN,false);
+   vergleichen(Check::Menge|Check::Lieferschein,"LZa_LieferB","Lieferung B","b");
+  }
+  return true;
+}
+
+static TestReihe Lieferscheinzeile_aufteilen_(&Lieferscheinzeile_aufteilen,"Lieferscheinzeile aufteilen","LZa");
+
 #endif

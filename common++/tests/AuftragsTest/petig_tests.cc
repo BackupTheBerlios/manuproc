@@ -1,5 +1,5 @@
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
+ *  Copyright (C) 1998-2004 Adolf Petig GmbH & Co. KG
  *  written by Malte Thoma and Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
