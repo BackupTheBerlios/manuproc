@@ -20,4 +20,11 @@ CREATE TABLE "global_settings" (
 
 
 COPY "global_settings" FROM stdin;
+1000	ArtikelBox	0_1	1,0,
+1000	ArtikelBox	2_1	3,0,
+1000	ArtikelBox	3_1	3,0,
+1000	ArtikelBox	1_1	3,0,
+1000	ArtikelBox	4_1	3,0,
+1000	ArtikelBox	5_1	1,0,
+0	Artikeleingabe	Bestellen	1:4
 \.

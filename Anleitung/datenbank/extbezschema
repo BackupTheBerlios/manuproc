@@ -24,39 +24,39 @@ CREATE TABLE "extbezschema" (
 
 
 COPY "extbezschema" FROM stdin;
-1	1	Artikel		1	1	artikel	l	\N
-1	2	Farbe		1	1	farbe	l	\N
 1	3	Hersteller		1	1	hersteller	X	\N
 1	4	ID		1	2	id	X	
 1	5	EAN-Code		1	3	ean	X	\N
 1	6	Name		1	-1	name	X	\N
-1	1	Artikel		2	1	artikel	l	\N
-1	2	Länge		2	1	laenge	l	\N
-1	3	Breite		2	1	breite	l	\N
-1	4	Farbe		2	1	farbe	X	\N
-1	5	ID		2	2	id	X	
-1	1	Artikel		3	1	artikel	l	\N
-1	2	Länge		3	1	laenge	l	\N
 1	3	Breite		3	1	breite	X	\N
 1	5	ID		3	2	id	X	
-1	1	Artikel		4	1	artikel	l	\N
-1	2	Länge		4	1	laenge	l	\N
-1	3	Breite		4	1	breite	l	\N
-1	4	Farbe		4	1	farbe	X	\N
-1	5	ID		4	2	id	X	
-1	1	Material		5	1	material	l	\N
 1	2	Größe		5	1	groesse	X	\N
 1	5	ID		5	2	id	X	
-1	1	Sortiment		6	1	sortiment	l	\N
 1	2	Bezeichnung		6	1	bezeichnung	X	\N
 1	5	ID		6	2	id	X	
-1000	1	Artikel	/	4	1	artikel	l	\N
-1000	2	Länge	/	4	1	laenge	l	\N
-1000	3	Breite	/	4	1	breite	l	\N
-1000	4	Farbe		4	1	farbe	X	\N
-1000	5	ID		4	2	id	X	
 1000	1	Artikel	 mit 	6	1	artikel	l	\N
-1000	2	Anzahl	   	6	1	inhalt	l	\N
 1000	3	Farbe		6	1	farbe	X	\N
 1000	5	ID		6	2	id	X	\N
+1	5	ID	\N	2	2	id	X	
+1	5	ID		4	2	id	X	
+1000	4	Farbe		4	1	farbe	X	\N
+1000	5	ID		4	2	id	X	
+1	1	Artikel	/	1	1	artikel	l	\N
+1	2	Farbe	/	1	1	farbe	l	\N
+1	1	Artikel	/	2	1	artikel	l	\N
+1	2	Länge	/	2	1	laenge	l	\N
+1	1	Artikel	/	3	1	artikel	l	\N
+1	2	Länge	/	3	1	laenge	l	\N
+1	1	Material	/	5	1	material	l	\N
+1	1	Sortiment	/	6	1	sortiment	l	\N
+1000	2	Anzahl	/	6	1	inhalt	l	\N
+1	1	Artikel	/	4	1	artikel	l	\N
+1000	1	Artikel	.	4	1	artikel	l	\N
+1	4	Farbe	\N	4	1	farbe	X	\N
+1	3	Durchmesser	/	2	1	breite	l	\N
+1	4	Farbe	\N	2	1	farbe	X	\N
+1000	2	Griff	.	4	1	breite	l	\N
+1	2	Griff	/	4	1	breite	l	\N
+1000	3	Schafft	.	4	1	laenge	l	\N
+1	3	Schafft	/	4	1	laenge	l	\N
 \.

@@ -9,8 +9,25 @@ P="."
 
 for i in \
    artbez_warengruppe \
+   artbez_1_1 \
+   artbez_2_1 \
+   artbez_3_1 \
+   artbez_3_1 \
+   artbez_4_1 \
+   artbez_5_1 \
+   artbez_6_1 \
+   artbez_0_1000 \
+   artbez_6_1000 \
+   artbez_insert \
+   artikelbezeichnun_artikelid_seq \
    artikelstamm \
+   artikelzusammensetzung \
+   auftrag \
+   auftrag_prozess \
+   auftragentry \
+   auftragsentryzuordnung \
    banken \
+   banken_bankindex_seq \
    einheiten \
    extbezschema \
    global_settings \
@@ -19,9 +36,18 @@ for i in \
    ku_briefanr \
    ku_land \
    ku_person \
+   ku_preisliste \
    ku_telefon \
+   ku_verkaeufer \
+   kunden_personen_persnr_seq \
    kunden_telefon_telid_seq \
    ku_warenkorb \
+   lieferschein \
+   lieferscheinentry \
+   prod_instanz \
+   prozesse \
+   rechnung \
+   rechnungentry \
    rechnung_zahlungsart \
    waehrung
 do

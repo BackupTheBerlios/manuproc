@@ -1,0 +1,97 @@
+#!/bin/bash
+
+dot -Tps << END > M.ps
+digraph G {
+
+      size="10.5,4.9";
+      ratio=fill;
+      rotate=90;
+      center=true;
+
+
+# Rohware 
+   RMe [shape=ellipse,fontsize=14,label="Metall\nsilber" ];
+   RPir [shape=ellipse,fontsize=14,label="Pigment\nrot" ];
+   RPlge [shape=ellipse,fontsize=14,label="Granulat\ngelb" ];
+   RPlgr [shape=ellipse,fontsize=14,label="Granulat\ngrün" ];
+   RPlk [shape=ellipse,fontsize=14,label="Granulat\nklar" ];
+   RPls [shape=ellipse,fontsize=14,label="Granulat\nschwarz" ];
+
+#Griffe
+   G10_15ge [shape=ellipse,fontsize=14,label="Griff\n10cm 1.5cm\ngelb" ];
+   G10_15gr [shape=ellipse,fontsize=14,label="Griff\n10cm 1.5cm\ngrün" ];
+   G10_15r [shape=ellipse,fontsize=14,label="Griff\n10cm 1.5cm\nrot" ];
+   G10_15s [shape=ellipse,fontsize=14,label="Griff\n10cm 1.5cm\nschwarz" ];
+   G10_10s [shape=ellipse,fontsize=14,label="Griff\n10cm 1.0cm\nschwarz" ];
+   G10_20s [shape=ellipse,fontsize=14,label="Griff\n10cm 2.0cm\nschwarz" ];
+
+   RPir -> G10_15r   [label="0,005 g"];
+   RPlk -> G10_15r   [label="115 g"];
+   RPlge -> G10_15ge [label="115 g"];
+   RPlgr -> G10_15gr [label="115 g"];
+   RPls -> G10_15s   [label="115 g"];
+   RPls -> G10_10s   [label="110 g"];
+   RPls -> G10_20s   [label="120 g"];
+
+# Schäfte
+   S10_1 [shape=ellipse,fontsize=14,label="Schaft\n10cm 1mm" ];
+   S10_2 [shape=ellipse,fontsize=14,label="Schaft\n10cm 2mm" ];
+   S10_3 [shape=ellipse,fontsize=14,label="Schaft\n10cm 3mm" ];
+   S7_1 [shape=ellipse,fontsize=14,label="Schaft\n7cm 1mm" ];
+   S7_2 [shape=ellipse,fontsize=14,label="Schaft\n7cm 2mm" ];
+   S7_3 [shape=ellipse,fontsize=14,label="Schaft\n7cm 3mm" ];
+
+   RMe -> S10_1    [label="200 g"];
+   RMe -> S10_2    [label="200 g"];
+   RMe -> S10_3    [label="200 g"];
+   RMe -> S7_1     [label="140 g"];
+   RMe -> S7_2     [label="140 g"];
+   RMe -> S7_3     [label="140 g"];
+
+# Schraubenzieher
+#3xschwarz
+   Z10_15_10_1_s [shape=ellipse,fontsize=14,label="Schr.Zieher\n10-1.5/10-1\nschwarz" ];   
+   G10_15s -> Z10_15_10_1_s
+   S10_1 -> Z10_15_10_1_s
+   Z10_15_10_2_s [shape=ellipse,fontsize=14,label="Schr.Zieher\n10-1.5/10-2\nschwarz" ];   
+   G10_15s -> Z10_15_10_2_s
+   S10_2 -> Z10_15_10_2_s
+   Z10_15_10_3_s [shape=ellipse,fontsize=14,label="Schr.Zieher\n10-1.5/10-3\nschwarz" ];   
+   G10_15s -> Z10_15_10_3_s
+   S10_3 -> Z10_15_10_3_s
+#3x bunt
+   Z10_15_7_1_r [shape=ellipse,fontsize=14,label="Schr.Zieher\n10-1.5/7-1\nrot" ];   
+   G10_15r -> Z10_15_7_1_r
+   S7_1 -> Z10_15_7_1_r
+   Z10_15_7_2_ge [shape=ellipse,fontsize=14,label="Schr.Zieher\n10-1.5/7-2\ngelb" ];   
+   G10_15ge -> Z10_15_7_2_ge
+   S7_2 -> Z10_15_7_2_ge
+   Z10_15_7_3_gr [shape=ellipse,fontsize=14,label="Schr.Zieher\n10-1.5/7-3\ngrün" ];   
+   G10_15gr -> Z10_15_7_3_gr
+   S7_3 -> Z10_15_7_3_gr
+
+#Verpackungen
+   V7  [shape=ellipse,fontsize=14,label="3er Schachel\n10x7" ];   
+   V10 [shape=ellipse,fontsize=14,label="3er Schachel\n10x10" ];   
+
+
+#Sortimente
+   Sort_schwarz [shape=ellipse,fontsize=14,label="3er Sortiment\nkleiner Griff\nschwarz\n1-3" ];   
+   Z10_15_10_1_s -> Sort_schwarz
+   Z10_15_10_2_s -> Sort_schwarz
+   Z10_15_10_3_s -> Sort_schwarz
+   V10 -> Sort_schwarz
+   {rank=same; V10 RMe}
+
+   Sort_bunt [shape=ellipse,fontsize=14,label="3er Sortiment\ngroßer Griff\nbunt\n1-3" ];   
+   Z10_15_7_1_r -> Sort_bunt
+   Z10_15_7_2_ge -> Sort_bunt
+   Z10_15_7_3_gr -> Sort_bunt
+   V7 -> Sort_bunt 
+   {rank=same; V7 RMe}
+
+}
+END
+
+
+gv M.ps

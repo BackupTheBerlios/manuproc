@@ -12,6 +12,7 @@ CREATE TABLE "ku_land" (
 	"id" integer NOT NULL,
 	"name" text NOT NULL,
 	"lkz" character varying(5),
+	"eu_member" boolean,
 	Constraint "ku_land_pkey" Primary Key ("id")
 );
 
@@ -21,28 +22,28 @@ CREATE TABLE "ku_land" (
 
 
 COPY "ku_land" FROM stdin;
-1	Deutschland	D
-2	÷sterreich	A
-3	Schweiz	CH
-4	Italien	I
-5	Slowenien	SLO
-6	Ungarn	H
-7	Polen	PL
-8	Finnland	FIN
-9	Schweden	S
-10	Norwegen	N
-13	Irland	IRL
-14	Niederlande	NL
-15	Belgien	B
-16	Luxemburg	L
-17	Frankreich	F
-18	Spanien	E
-19	Portugal	P
-20	Island	IS
-22	Libanon	RL
-11	D‰nemark	DK
-12	Groﬂbritannien	GB
-21	U.S.A.	USA
+1	Deutschland	D	\N
+2	÷sterreich	A	\N
+3	Schweiz	CH	\N
+4	Italien	I	\N
+5	Slowenien	SLO	\N
+6	Ungarn	H	\N
+7	Polen	PL	\N
+8	Finnland	FIN	\N
+9	Schweden	S	\N
+10	Norwegen	N	\N
+13	Irland	IRL	\N
+14	Niederlande	NL	\N
+15	Belgien	B	\N
+16	Luxemburg	L	\N
+17	Frankreich	F	\N
+18	Spanien	E	\N
+19	Portugal	P	\N
+20	Island	IS	\N
+22	Libanon	RL	\N
+11	D‰nemark	DK	\N
+12	Groﬂbritannien	GB	\N
+21	U.S.A.	USA	\N
 \.
 --
 --
