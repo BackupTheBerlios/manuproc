@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.25 2002/12/10 12:28:50 thoma Exp $
+// $Id: ArtikelStamm.pgcc,v 1.26 2002/12/11 10:21:00 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -31,7 +31,7 @@ ArtikelStamm::cache_t ArtikelStamm::cache;
 ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
 	: art(ab)
 {
-   ManuProC::Trace _t(ArtikelStamm::trace_channel, __FUNCTION__,ab.Id());  
+   ManuProC::Trace _t(trace_channel, __FUNCTION__,ab.Id());  
 //std::cout << "ArtikelStamm(Id):" << ab.Id() << "\n";
    payload_t *cached(cache.lookup(ab.Id()));
    if (cached) 
