@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.29 2003/01/30 16:57:24 christof Exp $
+# $Id: Makefile.am,v 1.30 2003/02/04 10:14:52 christof Exp $
 
 AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -20,7 +20,7 @@ libAux_a_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
 		auto_conversion.cc $(PGCC_Sources) AdminProblems.cc \
 		exception.cc itos.cc EntryValueDatum.cc Handles.cc EAN.cc \
 		EntryValueQuartal.cc Trace.cc FetchIStream_ops.cc \
-		dbcapability.cc \
+		dbcapability.cc Tag.cc TagStream.cc \
 		multi_lang.cc
 		
 
@@ -41,7 +41,7 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
    EntryValueIntString.h EntryValueEmptyInt.h EntryValueDatum.h \
    EntryValueDatum.cc EmptyInt_4TeX.h EntryValueFixed.h Long.h \
    Trace.h Trace.cc relops.h EntryValueFixedEinheit.h UniqueValue.h \
-   compiler_ports.h FILEstream.h
+   compiler_ports.h FILEstream.h TagStream.cc TagStream.h Tag.cc Tag.h
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
