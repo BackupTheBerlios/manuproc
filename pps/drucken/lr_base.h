@@ -10,6 +10,7 @@
 
 extern MultiL_Dict *mld;
 
+
 class LR_Base
 {
 public:
@@ -27,6 +28,7 @@ public:
    void setRueckstand(bool r) { rueckstand=r;}
    bool Rueckstand() const { return rueckstand;}
 
+
   
     std::string typString() const { switch(t)
 			{case Lieferschein : 
@@ -42,17 +44,25 @@ public:
 				break;
 			case Auftrag : 
 			     if(rueckstand)
-			       {ManuProC::Datum heute=ManuProC::Datum().today();
-			        char buf[200];
-			        snprintf(buf,sizeof buf,mld->MLT(MultiL_Dict::PRINTF_RUECKSTAND).c_str(),heute.c_str());
-			        return std::string("~\\\\")+buf;	
+			        {char buf[200];
+			         ManuProC::Datum heute_datum=ManuProC::Datum::today();
+			         snprintf(buf,sizeof buf,mld->MLT(MultiL_Dict::PRINTF_RUECKSTAND).c_str(),
+			         			heute_datum.c_str());
+			         return std::string("~\\\\")+buf;	
 				}
 			     else
 			     	return mld->MLT(MultiL_Dict::TXT_AUFTRAG);
 			     break;     
 			case Intern : return std::string("Intern"); break;
 //			case Extern : return std::string("Bestellung \\small Nr."); break;
-			case Extern : return std::string("Bestellung"); break;
+			case Extern : 
+			     if(rueckstand)
+			         {ManuProC::Datum heute_datum=ManuProC::Datum::today();
+			          return std::string("~\\\\")+heute_datum.c_str()+" - Rückstand zur Bestellung";
+			         }
+			     else			
+				return std::string("Bestellung"); 
+			     break;
 			case NICHTS : default : return std::string("-");
 			}
 		}
