@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.32 2004/09/01 12:30:32 christof Exp $
+// $Id: db_upgrade.cc,v 1.33 2004/10/15 15:40:08 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -226,6 +226,18 @@ int main(int argc,char *argv[])
 
   // MindestMenge auf lager
   check_column("artikelstamm","mindbestand","integer");
+  
+  if (check_table("auftrag_label",
+          "alid integer primary key,"
+          "bezeichnung text,"
+          "kurz text not null"))
+  { Query_nt("create unique index auftrag_label_bezeichnung_key "
+                "on auftrag_label(bezeichnung)");
+    Query_nt("create unique index auftrag_label_kurz_key "
+                "on auftrag_label(kurz)");
+  }
+  check_column("auftrag","uid","integer");
+  check_column("auftrag","label","integer");
 
   ManuProC::dbdisconnect();
   return 0;
