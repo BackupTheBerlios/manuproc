@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.24 2003/01/31 16:23:15 christof Exp $
+// $Id: Lager.cc,v 1.25 2003/02/10 14:43:34 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -85,4 +85,3 @@ void LagerBase::LagerInhaltSum(std::vector<class LagerInhalt>& LI)
    }
 }
 
-        

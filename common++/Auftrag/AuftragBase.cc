@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.24 2003/02/10 14:33:59 christof Exp $
+// $Id: AuftragBase.cc,v 1.25 2003/02/10 14:43:16 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -113,6 +113,7 @@ void AuftragBase::menge_neu_verplanen(const int uid,cH_ppsInstanz instanz,const 
   for (SelectedFullAufList::iterator i=auftraglist.begin();i!=auftraglist.end();++i)
    {
      AuftragBase::mengen_t M=AuftragBase::min(i->getRestStk(),m);
+     if (!m) continue;
 //     i->Produziert_0er(M);
 //     i->abschreiben(
      // ich brauche hier keinen Artikel, ist das dann richtig?
@@ -124,6 +125,8 @@ void AuftragBase::menge_neu_verplanen(const int uid,cH_ppsInstanz instanz,const 
      		j!=eltern.end();++j)
      {  // Sortierung egal?
         AuftragBase::mengen_t m2=AuftragBase::min(j->Menge,M);
+        if (!m2) continue;
+        
         i->WurdeProduziert(m2,j->AEB);
         // 1er erhöhen
         // Rückgabewert?
