@@ -1,4 +1,4 @@
-// $Id: ModelWidgetConnection.h,v 1.9 2004/05/03 13:59:05 christof Exp $
+// $Id: ModelWidgetConnection.h,v 1.10 2004/07/15 08:10:00 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -89,6 +89,9 @@ public:
 	{  set_widget(w);
 	   set_model(m);
 	}
+
+	// silence gcc	
+	virtual ~ModelWidgetConnection() {}
 };
 
 #endif
