@@ -31,8 +31,10 @@
 #include <gtk--/menu.h>
 #include <tclistleaf.h>
 #include "auftrag_rechnung_classes.h"
-#include"MyMessage.h"
+#include "MyMessage.h"
+#include <Aux/dbconnect.h>
 extern MyMessage *meldung;
+//extern Petig::Connection *Conn;
 #include <Lieferschein/RechnungVoll.h>
 
 void auftrag_rechnung::on_rng_close()
@@ -69,7 +71,7 @@ void auftrag_rechnung::on_rng_save()
 void auftrag_rechnung::on_rng_preview()
 {   
    if (rngnr->get_text()=="") return;
-   string command = "auftrag_drucken -a Rechnung -n "
+   std::string command = "auftrag_drucken -a Rechnung -n "
          +rngnr->get_text()
          +" -i "+itos(instanz->Id());
    system(command.c_str());
@@ -210,7 +212,7 @@ void auftrag_rechnung::lieferschein_uebernehmen()
        rechnung.addLieferschein(dt->get_Lieferschein()->Id());
    	 on_rngnr_activate();
       }
-    catch(std::exception &e) {cerr << e.what();}
+    catch(std::exception &e) {std::cerr << e.what();}
 	}
    }
  }
@@ -338,7 +340,7 @@ auftrag_rechnung::auftrag_rechnung(cH_ppsInstanz _instanz)
 
 void auftrag_rechnung::set_tree_titles()
 {
- vector<std::string> t1;
+ std::vector<std::string> t1;
  t1.push_back("Zeile");
  t1.push_back("Lieferschein");
  t1.push_back("Artikel");   
@@ -347,7 +349,7 @@ void auftrag_rechnung::set_tree_titles()
  t1.push_back("G-Preis");
  rtree_daten->setTitles(t1);  
 
- vector<std::string> t2;
+ std::vector<std::string> t2;
  t2.push_back("Lieferschein");
  t2.push_back("Liefersch.Datum");
  t2.push_back("Lieferung an");
@@ -367,7 +369,7 @@ void auftrag_rechnung::set_rtree_daten_content(RechnungBase::ID rngid)
   }
  catch(SQLerror &e) { meldung->Show(e); return; }
 
- vector<cH_RowDataBase> datavec;
+ std::vector<cH_RowDataBase> datavec;
  for( RechnungVoll::const_iterator i=rechnungvoll.begin();i!=rechnungvoll.end();++i)
   {
    datavec.push_back(new Data_Rechnung(*i));

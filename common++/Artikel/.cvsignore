@@ -12,3 +12,4 @@ ArtikelTyp.cc
 Einheiten.cc
 ArtikelStamm.cc
 ArtikelBaumFull.cc
+Artikelpreis_sql.cc

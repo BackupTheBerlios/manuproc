@@ -9,3 +9,5 @@ selAufEntry_sql.cc
 selAufEntry_sql.pcl
 AufEintragBase2.cc
 AuftragBase_sql.cc
+AuftragFull_sql.cc
+AuftragsEntryZuordnung_sql.cc

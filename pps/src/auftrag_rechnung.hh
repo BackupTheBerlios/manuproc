@@ -28,7 +28,6 @@ class auftrag_rechnung : public auftrag_rechnung_glade
         cH_ppsInstanz instanz;
         friend class auftrag_rechnung_glade;
         SigC::Connection timeout_connection;
-//        RechnungVoll rechnungvoll;
         Rechnung rechnung;
          
         void fill_optionmenu_zahlungsart();

@@ -12,23 +12,14 @@
 #ifndef _LIEFERSCHEINLISTE_HH
 #  include "lieferscheinliste_glade.hh"
 #  define _LIEFERSCHEINLISTE_HH
-//#include <Aux/EntryValueIntString.h>
-//#include <Aux/Datum.h>
 #include <Lieferschein/LieferscheinList.h>
-//#include <Lieferschein/LieferscheinEntry.h>
-//#include <Lieferschein/Lieferschein.h>
-//#include <Lieferschein/Rechnung.h>
-//#include <Artikel/ArtikelBezeichnung.h>
-//#include <tclistnode.h>
-//#include <typeinfo>
-//#include <fstream>
-
 
 class lieferscheinliste : public lieferscheinliste_glade
 {   
         LieferscheinList *LL;
         ArtikelBase artbase;
         int kundenid;
+        cH_ppsInstanz instanz;
         
         friend class lieferscheinliste_glade;
         void kundenbox_activate();
@@ -49,7 +40,7 @@ class lieferscheinliste : public lieferscheinliste_glade
         static void praeambel(std::ostream &os,gpointer user_data);
 
   public:
-        lieferscheinliste();
+        lieferscheinliste(const cH_ppsInstanz& _instanz);
 };
 
 

@@ -50,11 +50,11 @@ void auftrag_lieferschein::on_liefer_neu()
  {  liefer_kunde->grab_focus();
     return;
  }
- lieferschein = new Lieferschein(cH_Kunde(liefer_kunde->get_value()));
+ lieferschein = new Lieferschein(instanz,cH_Kunde(liefer_kunde->get_value()));
 
  set_tree_daten_content(lieferschein->Id());
 // lieferschein_liste->newLieferschein(liefer_kunde->get_value());
-//cout << "liefID" << lieferschein_liste->getLieferschein().Id() << "\n";
+//std::cout << "liefID" << lieferschein_liste->getLieferschein().Id() << "\n";
  liefernr->set_text(
 //	Formatiere(lieferschein_liste->getLieferschein().Id(),0,6,"","",'0'));
  Formatiere(lieferschein->Id(),0,6,"","",'0'));
@@ -68,14 +68,14 @@ void auftrag_lieferschein::on_lief_save()
 void auftrag_lieferschein::on_lief_preview()
 {  
    if (liefernr->get_text()=="") return;
-   string command = "auftrag_drucken -a Lieferschein -n "+liefernr->get_text()+" -i "+ itos(instanz->Id());
+   std::string command = "auftrag_drucken -d mabelladb -a Lieferschein -n "+liefernr->get_text()+" -i "+ itos(instanz->Id());
    system(command.c_str());
 }
 
 void auftrag_lieferschein::on_lief_print()
 {  
    if (liefernr->get_text()=="") return;
-   string command = "auftrag_drucken -a Lieferschein -n "+liefernr->get_text()+" -p -i "+ itos(instanz->Id());
+   std::string command = "auftrag_drucken -a Lieferschein -n "+liefernr->get_text()+" -p -i "+ itos(instanz->Id());
    system(command.c_str()); 
 }
 
@@ -121,13 +121,13 @@ try{
 
 void auftrag_lieferschein::on_liefnr_activate()
 {
- lieferschein = new Lieferschein(atoi(liefernr->get_text().c_str()));
+ lieferschein = new Lieferschein(instanz,atoi(liefernr->get_text().c_str()));
  display(atoi(liefernr->get_text().c_str()));
 }
 
 void auftrag_lieferschein::on_lieferkunde_activate()
 {
-//cout << "Kunde = "<<liefer_kunde->get_value()<<'\n';
+//std::cout << "Kunde = "<<liefer_kunde->get_value()<<'\n';
 
 try{display2(liefer_kunde->get_value());
 // lieferschein_liste->setLieferschein(LieferscheinBase::none_id);
@@ -170,10 +170,14 @@ void auftrag_lieferschein::on_offen_leaf_selected(cH_RowDataBase d)
  if (e==EINH_STUECK) 
  {  anzahl->set_value(dt->Offen());
     liefermenge->set_value(0.0);
+    label_menge->hide();
+    liefermenge->hide();
  }
  else 
  {  liefermenge->set_value(dt->Offen());
     anzahl->set_value(1);
+    label_menge->show();
+    liefermenge->show();
  }
  artikelbox->set_value(dt->get_Artikel_Id());
  auftragnr->set_text(Formatiere(dt->get_Auftrag_Id()));
@@ -231,14 +235,14 @@ auftrag_lieferschein::auftrag_lieferschein(cH_ppsInstanz _instanz)
 
 void auftrag_lieferschein::set_tree_titles()
 {
- vector<std::string> t1;
+ std::vector<std::string> t1;
  t1.push_back("Lief.Zeile");
  t1.push_back("Artikel");
  t1.push_back("Auftrag");
  t1.push_back("Liefermenge");
  tree_daten->setTitles(t1); 
 
- vector<std::string> t2;
+ std::vector<std::string> t2;
  t2.push_back("Auftrag");
  t2.push_back("Artikel");
  t2.push_back("Lieferdatum");
@@ -250,16 +254,14 @@ void auftrag_lieferschein::set_tree_titles()
 void auftrag_lieferschein::set_tree_daten_content(LieferscheinBase::ID lfrsid)
 {
  tree_daten->clear();
-cout <<"1\n";
- cH_LieferscheinVoll LV=cH_LieferscheinVoll(LieferscheinBase::none_id);
-cout <<"2\n";
+ cH_LieferscheinVoll LV=cH_LieferscheinVoll(instanz,LieferscheinBase::none_id);
  if(lfrsid!=LieferscheinBase::none_id)
-   {try{ LV=cH_LieferscheinVoll(lfrsid); }
+   {try{ LV=cH_LieferscheinVoll(instanz,lfrsid); }
     catch(SQLerror &e)
    { meldung->Show(e); return; }
    }
 // ExtBezSchema::ID ebzid=LV.getSchema();
- vector<cH_RowDataBase> datavec;
+ std::vector<cH_RowDataBase> datavec;
 
  for(std::vector<LieferscheinEntry>::const_iterator i=LV->LsEntries().begin();i!=LV->LsEntries().end();++i)
    datavec.push_back(new Data_Lieferdaten(*i));
@@ -296,35 +298,33 @@ void auftrag_lieferschein::on_Palette_activate()
      if (!auftragnr->get_text().size() && artikelbox->get_value().Id())
      {  SQLFullAuftragSelector psel(SQLFullAuftragSelector::sel_Kunde_Artikel
      		(instanz->Id(),liefer_kunde->get_value(),artikelbox->get_value().Id()));
-     	SelectedFullAufList list(psel);
+     	SelectedFullAufList auftraglist(psel);
      	Transaction tr;
      	int _anzahl=anzahl->get_value_as_int();
-     	float menge(_anzahl);
+     	AuftragBase::mengen_t menge(_anzahl);
      	Einheit e(artikelbox->get_value());
      	// war e!=EINH_STUECK
-     	float mengeneinheit(liefermenge->get_value_as_float());
-     	if (mengeneinheit==0) mengeneinheit=1;
-     	else menge*=mengeneinheit;
-     	
+     	AuftragBase::mengen_t mengeneinheit(liefermenge->get_value_as_float());
+     	if (mengeneinheit==AuftragBase::mengen_t(0)) mengeneinheit=1;
+     	else menge *= mengeneinheit;
+
        try{
-        if (list.aufidliste.begin()==list.aufidliste.end())
+        if (auftraglist.aufidliste.begin()==auftraglist.aufidliste.end())
         // kann nicht abschreiben
         {  LieferscheinEntry le(*lieferschein,
      	                        artikelbox->get_value(),
      	                        _anzahl,
-     	                        e==EINH_STUECK?0.0:mengeneinheit,
+     	                        e==EINH_STUECK?AuftragBase::mengen_t(0):mengeneinheit,
      	                        Palette->get_value_as_int(),false);
         }
-        else if (menge<=list.aufidliste.begin()->getRestStk())
+        else if (menge<=auftraglist.aufidliste.begin()->getRestStk())
         // kann in einem Stueck abschreiben
-        {  vector<AufEintragBase>::iterator i=list.aufidliste.begin();
+        {  SelectedFullAufList::iterator i=auftraglist.aufidliste.begin();
            LieferscheinEntry le(*lieferschein,
      	                        *i,artikelbox->get_value(),
      	                        _anzahl,
-     	                        e==EINH_STUECK?0.0:mengeneinheit,
+     	                        e==EINH_STUECK?AuftragBase::mengen_t(0):mengeneinheit,
      	                        Palette->get_value_as_int(),false);
-//     	   OffAuf_RowData::abschreiben(*i,menge);
-//     	   Data_Lieferoffen::abschreiben(*i,menge);
             i->abschreiben(menge);
         }
         else
@@ -332,10 +332,10 @@ void auftrag_lieferschein::on_Palette_activate()
         {  LieferscheinEntry le(*lieferschein,
      	                        artikelbox->get_value(),
      	                        _anzahl,
-     	                        e==EINH_STUECK?0.0:mengeneinheit,
+     	                        e==EINH_STUECK?AuftragBase::mengen_t(0):mengeneinheit,
      	                        Palette->get_value_as_int(),false);
-           for (vector<AufEintragBase>::iterator i=list.aufidliste.begin();
-        	        menge && i!=list.aufidliste.end(); ++i)
+           for (SelectedFullAufList::iterator i=auftraglist.aufidliste.begin();
+        	        menge && i!=auftraglist.aufidliste.end(); ++i)
            {  float abmenge(menge);
               if (i->getRestStk()<abmenge) abmenge=i->getRestStk();
               LieferscheinEntry le(*lieferschein,
@@ -343,16 +343,14 @@ void auftrag_lieferschein::on_Palette_activate()
      	                        e==EINH_STUECK?abmenge:1,
      	                        e==EINH_STUECK?0.0:abmenge,
      	                        0,true);
-//              OffAuf_RowData::abschreiben(*i,abmenge);
-//              Data_Lieferoffen::abschreiben(*i,abmenge);
               i->abschreiben(menge);
               menge-=abmenge;
        	   }
            if (menge)
            {  LieferscheinEntry le(*lieferschein,
      	                        artikelbox->get_value(),
-     	                        e==EINH_STUECK?menge:1,
-     	                        e==EINH_STUECK?0.0:menge,
+     	                        e==EINH_STUECK?menge:AuftragBase::mengen_t(1),
+     	                        e==EINH_STUECK?AuftragBase::mengen_t(0):menge,
      	                        0,true);
            }
      	}
@@ -380,32 +378,33 @@ void auftrag_lieferschein::on_Palette_activate()
   else
   {
    try {
-   cH_Data_Lieferoffen dt=tree_offen->getSelectedRowDataBase_as<cH_Data_Lieferoffen>();
+    cH_Data_Lieferoffen dt=tree_offen->getSelectedRowDataBase_as<cH_Data_Lieferoffen>();
     ArtikelBase artikel = dt->get_Artikel_Id();
     if(artikel.Id() == 0) return;
 
     AufEintragBase2 auftragentry=dt->AuftragEntry();
     Transaction tr;
-    LieferscheinEntry le = LieferscheinEntry(*lieferschein,
-		auftragentry, artikel, anzahl->get_value_as_int(), 
-		liefermenge->get_value_as_float(),Palette->get_value_as_int());
-
     Einheit e(artikel);
+    clear_offauf();
     if (e!=EINH_STUECK)
+     {
+       LieferscheinEntry le = LieferscheinEntry(*lieferschein,
+		    auftragentry, artikel, anzahl->get_value_as_int(), 
+		    liefermenge->get_value_as_float(),Palette->get_value_as_int());
        (const_cast<Data_Lieferoffen*>(&*dt))->abschreiben(anzahl->get_value_as_int()*liefermenge->get_value_as_float());
+       set_tree_daten_content(le.Id());
+     }
     else    
-     (const_cast<Data_Lieferoffen*>(&*dt))->abschreiben(anzahl->get_value_as_int());
+     {
+       LieferscheinEntry le = LieferscheinEntry(*lieferschein,
+		    auftragentry, artikel, anzahl->get_value_as_int(), 
+		    1,Palette->get_value_as_int());
+       (const_cast<Data_Lieferoffen*>(&*dt))->abschreiben(anzahl->get_value_as_int());
+       set_tree_daten_content(le.Id());
+     }
 
     tr.commit();
- 
-    clear_offauf();
-
-// lieferschein_liste->clear();
-// lieferschein_liste->showLieferschein(le.Id());
-   set_tree_daten_content(le.Id());
-
-// offene_auftraege->clear();
-// offene_auftraege->showOffAuf();
+//    set_tree_daten_content(le.Id());
     set_tree_offen_content();
   } catch(SQLerror &e) 
 	{ if(e.Code()==-400) liefernr->grab_focus(); //noch kein Liefrschein vorhanden 
@@ -413,7 +412,7 @@ void auftrag_lieferschein::on_Palette_activate()
 	  return; 
 	}
 
- catch(std::exception &e){cerr << e.what();}
+ catch(std::exception &e){std::cerr << e.what();}
   }
 }
 
@@ -439,7 +438,7 @@ bool auftrag_lieferschein::deleteLiefEntry()
    LieferscheinEntry LE = dt->get_LieferscheinEntry();
    if (LE.Zeile()!=0)
     {
-     LieferscheinVoll(LE.Id()).deleteRow(LE);
+     LieferscheinVoll(instanz,LE.Id()).deleteRow(LE);
      return true;
     }
   } catch(...){}
@@ -478,13 +477,17 @@ void auftrag_lieferschein::on_artikelbox_activate()
  if (e!=Einheit(EINH_STUECK)) 
  { liefermenge->grab_focus();
    liefermenge->select_region(0,liefermenge->get_text().size());
+   label_menge->hide();
+   liefermenge->show();
  }
  else 
  { auftragnr->grab_focus();
+   label_menge->hide();
+   liefermenge->hide();
  }
 }
 
 void auftrag_lieferschein::on_button_liste_clicked()
 {
-  manage(new lieferscheinliste());
+  manage(new lieferscheinliste(instanz));
 }

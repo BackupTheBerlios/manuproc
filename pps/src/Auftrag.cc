@@ -28,9 +28,9 @@ int AuftragFull::insertNewEntry(const aktAufEintrag &aufentry, const cH_ExtBezSc
  return tmp.getZnr();
 }
 
-void AuftragFull::fillCList(Gtk::CList &list)
+void AuftragFull::fillCList(Gtk::CList &std::list)
 {
- Gtk::OStream os(&list);
+ Gtk::OStream os(&std::list);
  Preis psum;
 
  for(AufEintragList::const_iterator i = eintragliste.begin();
@@ -48,9 +48,9 @@ void AuftragFull::fillCList(Gtk::CList &list)
 }
 
 
-void AuftragFull::fillCListEntry(Gtk::CList &list, int idx)
+void AuftragFull::fillCListEntry(Gtk::CList &std::list, int idx)
 {
- Gtk::OStream os(&list, idx, (ios::out|ios::trunc), true);
+ Gtk::OStream os(&std::list, idx, (std::ios::out|std::ios::trunc), true);
 
  AufEintragList::const_iterator i;
  for(i = eintragliste.begin(); i!=eintragliste.end(); ++i);

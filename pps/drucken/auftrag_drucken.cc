@@ -28,11 +28,12 @@ const static struct option options[]=
  { "kopie",  no_argument, NULL, 'k' },  
  { "art",     required_argument,      NULL, 'a' }, 
  { "nr",     required_argument,      NULL, 'n' }, 
-  // ich mag den Namen nicht, schlieﬂlich ist das kein Plotter CP
+  // ich mag den Namen nicht, schlieﬂlich ist das kein Plotter CP; genau JJ:-)
  { "plot",     no_argument,      NULL, 'p' },
  { "print",     no_argument,      NULL, 'p' }, 
  { "instanz", required_argument,      NULL, 'i' }, 
  { "database", required_argument,      NULL, 'd' }, 
+ { "dbhost", required_argument,      NULL, 'h' }, 
  { NULL,      0,       NULL, 0 }
 };       
 
@@ -45,7 +46,8 @@ int main (int argc, char *argv[])
  bool toTeX=false;
  unsigned int auftragsnr = 0; 
  ppsInstanz::ppsInstId instanz = ppsInstanz::INST_KNDAUF;
- string database="petigdb";
+ std::string database="petigdb";
+ std::string dbhost="localhost";
  
  int opt;
 
@@ -55,19 +57,20 @@ int main (int argc, char *argv[])
   { switch (opt)
     {  case 'f' : firmenpapier=true; break;
        case 'k' : kopie=true; break;
-       case 'a' : if(string("Rechnung")==optarg) was=LR_Base::Rechnung;
-		  else if(string("Lieferschein")==optarg) was=LR_Base::Lieferschein;
-		  else if(string("Auftrag")==optarg) was=LR_Base::Auftrag;
-		  else if(string("Intern")==optarg) was=LR_Base::Intern;
+       case 'a' : if(std::string("Rechnung")==optarg) was=LR_Base::Rechnung;
+		  else if(std::string("Lieferschein")==optarg) was=LR_Base::Lieferschein;
+		  else if(std::string("Auftrag")==optarg) was=LR_Base::Auftrag;
+		  else if(std::string("Intern")==optarg) was=LR_Base::Intern;
 		  else was=LR_Base::NICHTS;
 		break;
        case 'n' : auftragsnr=atoi(optarg);break;
        case 'i' : instanz=(ppsInstanz::ppsInstId)atoi(optarg);break;
        case 'p' : plot=true;break;
 	case 'd' : database=optarg;break; 
+	case 'h' : dbhost=optarg;break; 
 	case 't' : toTeX=true;break; 
 	case '?':
-            cout << "$Id: auftrag_drucken.cc,v 1.9 2001/11/19 13:00:11 christof Exp $\n\n"
+            std::cout << "$Id: auftrag_drucken.cc,v 1.10 2002/01/22 09:44:06 christof Exp $\n\n"
                    "USAGE:" << argv[0] << " -n <Nr> [-a <Auftrag|Rechung|Lieferschein|Intern>] [-kft] [-i <Instanz>] [-d <Datenbank>]\n"
 		"\n\t-t\t nur TeX file erzeugen ("<< (toTeX?"an":"aus")<< ")\n"
 		"\t-p\t drucken ("<< (plot?"an":"aus")<< ")\n"
@@ -76,7 +79,8 @@ int main (int argc, char *argv[])
 		"\t-f\t auf Firmenpapier ("<< (firmenpapier?"an":"aus")<< ")\n"
 		"\t-f\t Kopien ("<< (kopie?"an":"aus")<< ")\n"
 		"\t-i\t Instanz ausw‰hlen ("<< instanz<< ")\n"
-		"\t-d\t Datenbank ("<< database<< ")\n";
+		"\t-d\t Datenbank ("<< database<< ")\n"
+		"\t-d\t DbHost ("<< dbhost<< ")\n";
             exit(1);
     }
   }                 
@@ -84,6 +88,7 @@ int main (int argc, char *argv[])
   try {
       Petig::Connection conn;
       conn.setDbase(database);
+      conn.setHost(dbhost);
       Petig::dbconnect(conn);  
 
       LR_drucken l(was,auftragsnr,plot,firmenpapier,
@@ -91,7 +96,7 @@ int main (int argc, char *argv[])
          
       Petig::dbdisconnect();
    } catch (SQLerror &e)
-   {  cerr << e << '\n';
+   {  std::cerr << e << '\n';
       return 1;
    }
    return 0;

@@ -25,7 +25,7 @@ class Lief_Value : public EntryValueIntString
 {
 public:
  Lief_Value(int v) : EntryValueIntString(v) {}
- Lief_Value(const string &s) : EntryValueIntString(s) {}
+ Lief_Value(const std::string &s) : EntryValueIntString(s) {}
 
 };
 
@@ -36,7 +36,7 @@ public:
  cH_Lief_Value() : cH_EntryValue() {}
  cH_Lief_Value(const EntryValueBase *r) : cH_EntryValue(r) {}
  cH_Lief_Value(int v) : cH_EntryValue(new Lief_Value(v)) {}
- cH_Lief_Value(const string &s) : cH_EntryValue(new Lief_Value(s)) {}
+ cH_Lief_Value(const std::string &s) : cH_EntryValue(new Lief_Value(s)) {}
     
 };
 

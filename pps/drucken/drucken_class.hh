@@ -41,7 +41,6 @@ public:
       : LR_Base(Auftrag), u(a) {}
 
 
-
    const ArtikelBase::ID ArtikelID() const {
       if (t==Rechnung)     return u.r->ArtikelID();
       if (t==Auftrag)      return u.a->ArtId();
@@ -67,8 +66,10 @@ public:
       if (t==Lieferschein) return u.l->Palette(); return 0;}
    bool ZusatzInfo() const { 
       if (t==Lieferschein) return u.l->ZusatzInfo(); return false;}
-   string YourAuftrag() const { 
+   std::string YourAuftrag() const { 
       if (t==Lieferschein) return u.l->YourAuftrag(); abort();}
+  int AufId() const { 
+      if (t==Lieferschein) return u.l->AufId(); abort();}
 
 };
 
@@ -141,7 +142,7 @@ class LR_Abstraktion: public LR_Base
  unsigned int zeilen_passen_noch;
  unsigned int page_counter;
  unsigned int spaltenzahl;
- string zur_preisspalte;
+ std::string zur_preisspalte;
 
  cH_ExtBezSchema schema_mem;
 
@@ -149,8 +150,16 @@ class LR_Abstraktion: public LR_Base
  static const unsigned int ZEILEN_SEITE_1=33;
  static const unsigned int ZEILEN_SEITE_N=43;
 
- fixedpoint<2> betrag;
- fixedpoint<2> tabellenbetrag;
+ fixedpoint<2> betrag;		//
+ fixedpoint<2> tabellenbetrag;	// 
+
+ fixedpoint<2> nettobetrag;	// netto
+ fixedpoint<2> entsbetrag;	// netto + entsorgungskosten
+ fixedpoint<2> entskosten;	// entsorgungskosten
+ fixedpoint<2> bruttobetrag;	// brutto (mit MWST)
+ fixedpoint<2> mwstbetrag;	// mwst betrag
+ fixedpoint<2> skontobetrag;	// brutto - skonto
+ fixedpoint<2> einzugbetrag;	// brutto - skonto - einzugrabatt
  
 public:
   typedef LR_Iterator const_iterator;
@@ -220,17 +229,23 @@ public:
    typ Typ()         const { return t; }
 
 private:
-   void drucken_header(ostream &os);
-   void drucken_footer(ostream &os);
-   void page_header(ostream &os);
-   void lieferung_an(ostream &os, unsigned int lfrs_id, const Petig::Datum& datum,const string& sKunde);
+   void drucken_header(std::ostream &os);
+   void drucken_footer(std::ostream &os);
+   void page_header(std::ostream &os);
+   void lieferung_an(std::ostream &os, unsigned int lfrs_id, const Petig::Datum& datum,const std::string& sKunde);
+   
+#ifdef MABELLA_EXTENSIONS
+   void auftrag_von(std::ostream &os, const class Auftrag &a);
+#endif
 
-   void drucken_table_header(ostream &os, const cH_ExtBezSchema& schema,
-      		float preismenge, const string &preiseinheit);
+   void drucken_table_header(std::ostream &os, const cH_ExtBezSchema& schema,
+      		float preismenge, const std::string &preiseinheit);
 
-   void drucken_betrag(ostream &os, const string &text, fixedpoint<2> betrag);
+   void drucken_betrag(std::ostream &os, const std::string &text, fixedpoint<2> betrag);
+
+   void calc_all(cH_Kunde k);
 public:
-   void drucken(ostream &os,bool kopie,const cH_ppsInstanz& instanz);
+   void drucken(std::ostream &os,bool kopie,const cH_ppsInstanz& instanz);
 };
 
 #endif

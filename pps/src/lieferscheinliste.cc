@@ -92,7 +92,8 @@ void lieferscheinliste::on_radiobutton_kunde_toggled()
 }
 
 
-lieferscheinliste::lieferscheinliste()
+lieferscheinliste::lieferscheinliste(const cH_ppsInstanz& _instanz)
+: instanz(_instanz)
 {
   label_anzahl->hide();
   Wdatum_von->setLabel("");
@@ -106,15 +107,17 @@ lieferscheinliste::lieferscheinliste()
 
 void lieferscheinliste::on_button_show_clicked()
 {
+  tree->freeze();
   try {
      if(artbase.Id() ) 
-       LL = new LieferscheinList(LieferscheinList::sel_ArtikelId(artbase.Id()));
+       LL = new LieferscheinList(instanz,LieferscheinList::sel_ArtikelId(artbase.Id()));
      else if (kundenid)
-       LL = new LieferscheinList(LieferscheinList::sel_KundenId(kundenid));
+       LL = new LieferscheinList(instanz,LieferscheinList::sel_KundenId(kundenid));
      else 
-       LL = new LieferscheinList();
-   } catch (SQLerror &e) {cerr << e<<'\n';} 
+       LL = new LieferscheinList(instanz);
+   } catch (SQLerror &e) {std::cerr << e<<'\n';} 
   fill_tree();
+  tree->thaw();
 }
 
 void lieferscheinliste::fill_tree()
@@ -131,10 +134,10 @@ void lieferscheinliste::fill_tree()
   Petig::Datum datum_bis = Wdatum_bis->get_value();
   for (LieferscheinList::const_iterator i=LL->begin();i!=LL->end();++i)
    {
-     LieferscheinVoll LV((*i)->Id());
+     LieferscheinVoll LV(instanz,(*i)->Id());
      Rechnung R;
      if((*i)->RngNr()) R = Rechnung((*i)->RngNr());
-     cH_Lieferschein L(new Lieferschein((*i)->Id()));
+     cH_Lieferschein L(new Lieferschein(instanz,(*i)->Id()));
      for (LieferscheinVoll::const_iterator j=LV.begin();j!=LV.end();++j)
       {
         if (  (artbase.Id()==0 || artbase.Id()==j->ArtikelID())
@@ -161,20 +164,21 @@ void lieferscheinliste::fill_tree()
 
 void lieferscheinliste::set_titles()
 {
-  vector<std::string> t;
+  std::vector<std::string> t;
   t.push_back("Kunde");
   t.push_back("Artikel");
   t.push_back("Breite");
   t.push_back("Farbe");
   t.push_back("Aufm.");
-  t.push_back("Stück");
-  t.push_back("Menge");
+//  t.push_back("Stück");
+//  t.push_back("Menge");
   t.push_back("Lieferschein");
   t.push_back("Lieferdatum");
   t.push_back("geliefert am");
   t.push_back("Rechnung");
   t.push_back("Rng.Datum");
-  t.push_back("Summe");
+  t.push_back("Menge");
+  t.push_back("Einzelmenge");
   tree->setTitles(t);
   tree->set_NewNode(&Data_ListeNode::create);
 }
@@ -191,7 +195,7 @@ void lieferscheinliste::on_button_drucken_clicked()
 {
    tree->Expand_recursively(*tree);
    FILE *f=popen(TEXCMD,"w");
-   ofstream os(fileno(f));   
+   std::ofstream os(fileno(f));   
 
    Gtk2TeX::HeaderFlags hf;
    hf.landscape=true;

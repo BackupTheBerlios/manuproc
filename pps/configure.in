@@ -28,8 +28,8 @@ AC_LANG_CPLUSPLUS
 
 # GNOME-CONFIG script knows about gnomemm:
 # ('gnome-config' is installed by GNOME)
-GNOMEMM_CFLAGS="`$GNOME_CONFIG --cflags gnomemm`" 
-GNOMEMM_LIBS="`$GNOME_CONFIG --libs gnomemm`"
+GNOMEMM_CFLAGS="`$GNOME_CONFIG --cflags gnomemm` `$GNOME_CONFIG --cflags gnomeui`" 
+GNOMEMM_LIBS="`$GNOME_CONFIG --libs gnomemm` `$GNOME_CONFIG --libs gnomeui`"
 AC_SUBST(GNOMEMM_CFLAGS)
 AC_SUBST(GNOMEMM_LIBS)
 

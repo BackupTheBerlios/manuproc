@@ -7,8 +7,8 @@
 
 bin_PROGRAMS = pps
 
-pps_SOURCES = $(BUILT_SOURCES) \
-	AuftragFull2.cc \
+pps_SOURCES = pps.cc\
+	$(BUILT_SOURCES) \
 	auftrag_main.cc \
 	auftrag_main_glade.cc \
    auftrag_main_instanz.cc \
@@ -20,9 +20,6 @@ pps_SOURCES = $(BUILT_SOURCES) \
    lieferscheinliste_glade.cc \
 	auftrag_rechnung.cc \
 	auftrag_rechnung_glade.cc \
-	auftragliste.cc \
-	auftragliste_glade.cc \
-	pps.cc\
 	termsplidial.cc \
 	termsplidial_glade.cc 
 
@@ -35,8 +32,6 @@ noinst_HEADERS = \
    lieferscheinliste_glade.hh \
 	auftrag_rechnung.hh \
 	auftrag_rechnung_glade.hh \
-	auftragliste.hh \
-	auftragliste_glade.hh \
 	termsplidial.hh \
 	termsplidial_glade.hh 
 

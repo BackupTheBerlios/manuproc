@@ -29,8 +29,8 @@ class AuftragFull : public Auftrag
 public:
 	AuftragFull(int auftragid) throw(SQLerror);
 	AuftragFull(long kundennr, int jahr=0) throw(SQLerror);
-	void fillCList(Gtk::CList &list);
-	void fillCListEntry(Gtk::CList &list, int idx);
+	void fillCList(Gtk::CList &std::list);
+	void fillCListEntry(Gtk::CList &std::list, int idx);
 	void deleteEintrag(int zeilennr, int idx) throw(SQLerror);	
 	bool existsAufEntry(int idx) const
 	{ return ((uint)idx) < eintragliste.size(); }

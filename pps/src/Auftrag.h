@@ -37,13 +37,13 @@ protected:
 	int kundennr;
 	Petig::Datum datum;
 	AufStatVal status;
-	string youraufnr;
-	string bemerkung;
+	std::string youraufnr;
+	std::string bemerkung;
 	enum wrkstatus_t {  LOADED, INSERTED } wrkstatus;
 	int jahrgang;
 	cP_Waehrung waehrung;
 private:
-	string tmpstr;
+	std::string tmpstr;
 	
 public:
 	Auftrag(int auftragid) throw(SQLerror);
@@ -52,21 +52,21 @@ public:
         void deleteAuftrag() throw(SQLerror);
 	void deleteEintrag(int zeilennr) throw(SQLerror);
 	int getIdFromYourAufId(const char *youraufid) throw(SQLerror);
-	void setBemerkung(const string &bem) throw(SQLerror);
-	void setYourAufNr(const string &yanr) throw(SQLerror);
+	void setBemerkung(const std::string &bem) throw(SQLerror);
+	void setYourAufNr(const std::string &yanr) throw(SQLerror);
 	void setStatusAuftrag(AufStatVal st) throw(SQLerror);
 	void setJahrgang(int jahr) throw(SQLerror);
 	
         const Petig::Datum &getDatum() const { return datum; } 
 	AufStatVal getStatus() const { return status; }
 	int getAuftragid() const { return auftragid; }
-	string getAuftragidToStr() const
+	std::string getAuftragidToStr() const
 	{ return Formatiere(auftragid,0,6,"","",'0'); }
-	string getYourAufNr() const { return youraufnr;}
-	string getBemerkung() const { return bemerkung;}
+	std::string getYourAufNr() const { return youraufnr;}
+	std::string getBemerkung() const { return bemerkung;}
 	bool isNew() const { return wrkstatus==INSERTED;}
 	void setWrkStatus(wrkstatus_t status) {wrkstatus=status;}
-	string getJahrgangStr() const { return Formatiere(jahrgang,0,4,"",""); }
+	std::string getJahrgangStr() const { return Formatiere(jahrgang,0,4,"",""); }
 	int getJahrgang() const { return jahrgang; }
 	Kunde::ID getKundennr() const { return kundennr; }
 	cP_Waehrung getWaehrung() const { return waehrung; }

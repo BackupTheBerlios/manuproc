@@ -1,0 +1,7 @@
+maschinen_geschwindigkeit_sql.cc
+Lager_sql.cc
+ProdLager_sql.cc
+.deps
+Makefile.in
+JumboRolle_sql.cc
+Makefile

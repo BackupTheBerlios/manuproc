@@ -21,50 +21,6 @@ int auftrag_main::get_next_entry_znr(AuftragBase& auftrag)
 }
 
 
-/*
-void auftrag_main::instanz_menu()
-{
-  try{
-  menu_an_instanz=manage(new Gtk::Menu());
-
-  exec sql allocate descriptor mydesc;
-  exec sql begin declare section;
-   char query[1024];
-   char db_name[50];
-   int db_insnr;
-  exec sql end declare section;
-  std::string squery="select insid,name from prod_instanz order by insid";  
-  snprintf(query,sizeof(query),squery.c_str());
-
-  Transaction tr;
-  exec sql prepare instanz_ein_ from :query ;
-  exec sql declare instanz_ein cursor for instanz_ein_ ;
-  exec sql open instanz_ein;
-  SQLerror::test(__FILELINE__);
-
-  while (true)
-   {  
-      exec sql fetch instanz_ein into :db_insnr, :db_name;
-      SQLerror::test(__FILELINE__,100);
-      if (sqlca.sqlcode) break; 
-
-      Gtk::MenuItem *mi = manage(new class Gtk::MenuItem(db_name));
-      menu_an_instanz->append(*mi);
-      mi->activate.connect(SigC::bind(SigC::slot(this,&auftrag_main::an_instanz_selected)
-            ,(ppsInstanz::ID)db_insnr));
-      mi->show();
-   }
-
-  exec sql close instanz_ein;  
-  tr.close();
-
-  menu_an_instanz->show();
-  }  catch (SQLerror &e)
-   {  std::cerr << e << '\n';}
-
-}
-*/
-
 void auftrag_main::on_searchcombo_auftragid_search(int *cont, GtkSCContext newsearch)
 throw(SQLerror)
 {

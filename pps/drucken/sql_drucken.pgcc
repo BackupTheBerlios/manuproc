@@ -37,14 +37,14 @@ std::string LR_drucken::get_Zahlungsziel(int z)
 */
 
 /*
-unsigned int LR_drucken::sql_kundennr(const string& RL,unsigned int auftragsnr)
+unsigned int LR_drucken::sql_kundennr(const std::string& RL,unsigned int auftragsnr)
 {
   exec sql begin declare section;
    unsigned int db_kundennr;
    char db_query[1024];
   exec sql end declare section;
-  string query;
-  string RL_table,idhead;
+  std::string query;
+  std::string RL_table,idhead;
 
   if (RL=="Lieferschein") 
     { RL_table = "lieferschein";

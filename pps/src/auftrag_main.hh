@@ -26,22 +26,42 @@
 #include <Auftrag/AufEintragBase.h>
 #include <Auftrag/AuftragFull.h>
 #include<Auftrag/selFullAufEntry.h>
+#include <Aux/Long.h>
 
 class auftrag_main : public auftrag_main_glade
 {   
  SelectedFullAufList *allaufids;
  cH_ppsInstanz instanz;
- bool interne_namen_bool, zeit_kw_bool, kunden_nr_bool,kunden_anr_bool;
+ bool interne_namen_bool, zeit_kw_bool, kunden_nr_bool,
+      kunden_anr_bool,auftraege_mit_kunden_bool;
+ AufStatVal selected_status;
  AufEintragBase *selected_AufEintrag;
  static const unsigned int Artikelgroesse = 4;
 
 public:
-   struct st_AufArt {ArtikelBase AB;AufEintragBase AEB;
-         st_AufArt(ArtikelBase ab,AufEintragBase aeb):AB(ab),AEB(aeb){}  
-         bool operator<(const st_AufArt& b) const
-            {return AB<b.AB || (AB==b.AB&&AEB<b.AEB);} 
-         };
+
 private:
+   struct st_index {cH_ppsInstanz instanz; cH_Kunde Kunde; ArtikelBase artikel;
+          st_index(cH_ppsInstanz i,cH_Kunde k,ArtikelBase a)
+              : instanz(i),Kunde(k),artikel(a) {}
+          bool operator<(const st_index& b) const
+            {return instanz <b.instanz ||
+                   (instanz==b.instanz && Kunde<b.Kunde )|| 
+                   (instanz==b.instanz && Kunde==b.Kunde && artikel<b.artikel);} 
+          };
+   struct st_mengen {long sollMenge;long planMenge;long bestellMenge;
+          st_mengen() : sollMenge(0),planMenge(0),bestellMenge(0) {} 
+          st_mengen(long s,long g,long b) 
+               : sollMenge(s),planMenge(g),bestellMenge(b) {} 
+          st_mengen operator+=(const st_mengen& b)
+            { sollMenge     += b.sollMenge; 
+              planMenge     += b.planMenge; 
+              bestellMenge  += b.bestellMenge; 
+              return *this;
+            }
+           };
+//   typedef pair<ArtikelBase,st_mengen> artmeng;
+   typedef pair<st_index,st_mengen> artmeng;
 
  std::vector<cH_Prozess> prozlist;
         
@@ -57,29 +77,30 @@ private:
         void on_kundendarstellung_activate();
         void on_materialbedarf_sortiert(){};
         void on_kunden_anr_activate();
+        void on_offene_auftraege_activate();
+        void on_auftraege_kunde_activate();
         void on_mainprint_button_clicked();
-	     void on_prozlistscombo_search(int *cont, GtkSCContext newsearch);
-        void on_prozlistscombo_activate();
-        void on_button_auftraege_clicked();
         void on_leaf_selected(cH_RowDataBase d);
         void on_node_selected(const TreeRow &node);
         void on_unselect_row(gint row, gint column, GdkEvent *event);
         void on_togglebutton_material_toggled();
+        void on_togglebutton_auftraege_toggled();
+        void show_selected_line();
         void on_button_auftrag_erledigt_clicked();
-//        void instanz_menge(const map<ArtikelBase,double>& map_artbase);
-        void instanz_menge(const map<AufEintragBase,double>& map_aufbase);
-        map<st_AufArt,fixedpoint<5,double,long long> > get_artikelmap(const map<AufEintragBase,double>& map_aufbase);
+        void instanz_menge(const std::map<st_index,st_mengen>& map_allart);
+        void get_ArtikelZusammensetzung(const ArtikelBase& art,const AufEintragBase& AEB,std::map<st_index,st_mengen>& map_allart);
+        void get_ArtikelHerkunft(const ArtikelBase& art,const AufEintragBase& AEB,std::map<st_index,st_mengen>& map_allart);
+        void geplanteMenge(const AufEintragBase& AEB,std::map<ArtikelBase,Long>& planmap);
         void getAufEintragBase_fromNode(TCListRow_API::const_iterator b,
-            TCListRow_API::const_iterator e, map<AufEintragBase,double>& M);
+            TCListRow_API::const_iterator e, std::map<st_index,st_mengen>& M);
         void fillStamm(int *cont, GtkSCContext newsearch);
-        bool auftrag_geplant(const AufEintragBase& aeb,int instanz);
 
         void set_column_titles_of_simple_tree();
         void fill_simple_tree();
 
         void on_button_artikeleingabe_clicked();
         void menu_instanz();
-        map<int,std::string> get_all_instanz();
+        std::map<int,std::string> get_all_instanz();
         void instanz_selected(int _instanz_);
 
 
@@ -99,8 +120,8 @@ private:
    // Ab hier für die Produktionsplanung ////////////////////////
    AuftragFull *instanz_auftrag;
 
-   void neue_auftraege_beruecksichtigen(cH_ppsInstanz instanz);
-   vector<AufEintragBase2> get_new_aufids(cH_ppsInstanz instanz);
+//   void neue_auftraege_beruecksichtigen(cH_ppsInstanz instanz); //WEG
+//   std::vector<AufEintragBase2> get_new_aufids(cH_ppsInstanz instanz); //WEG
    void on_searchcombo_auftragid_activate();
    void on_searchcombo_auftragid_search(int *cont, GtkSCContext newsearch) throw(SQLerror);
    void on_button_neue_anr_clicked();
@@ -110,10 +131,11 @@ private:
    void instanz_leaf_auftrag(AufEintragBase& selected_AufEintrag);
    void show_neuer_auftrag();
    void tree_neuer_auftrag_leaf_selected(cH_RowDataBase d);
-   void loadAuftrag(const AuftragBase& auftragbase);
+   void loadAuftragInstanz(const AuftragBase& auftragbase);
    int get_next_entry_znr(AuftragBase& auftrag);
-   void AuftragsEntryZuordnung(const AufEintragBase& AEB,long menge,const AuftragBase& AB,int znr);
+//   void AuftragsEntryZuordnung(const AufEintragBase& AEB,long menge,const AuftragBase& AB,int znr);
    void on_togglebutton_geplante_menge_toggled();
+   void on_button_Kunden_erledigt_clicked();
 };
 
 class MatListSort
@@ -124,24 +146,13 @@ class MatListSort
      esort es;
    public:
      MatListSort(enum esort _es):es(_es) {}
-/*
-     bool operator() (pair<cH_ArtikelBezeichnung,long long int> x,
-                      pair<cH_ArtikelBezeichnung,long long int> y) const
-           { switch(es) {
-               case(MENGE)   : return x.second > y.second  ; break;
-               case(ARTIKEL) : return x.first  < y.first   ; break;
-           }}
-*/
-     bool operator() (pair<auftrag_main::st_AufArt,long long int> x,
-                      pair<auftrag_main::st_AufArt,long long int> y) const
-           { cH_ArtikelBezeichnung ABx(x.first.AB);
-             cH_ArtikelBezeichnung ABy(y.first.AB);
+     bool operator() (const auftrag_main::artmeng &x,
+                      const auftrag_main::artmeng &y) const
+           { 
              switch(es) {
-               case(MENGE)   : return x.second > y.second  ; break;
-               case(ARTIKEL) : return ABx      < ABy   ; break;
-           }}
+               case(MENGE)   : return x.second.sollMenge > y.second.sollMenge ;
+               case(ARTIKEL) : return cH_ArtikelBezeichnung(x.first.artikel) < cH_ArtikelBezeichnung(y.first.artikel) ;
+           }return false;}
 };
-
-
 
 #endif

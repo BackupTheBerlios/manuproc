@@ -20,7 +20,14 @@
 #include "auftrag_main.hh"
 #include <Aux/ctime_assert.h>
 #include <Artikel/Einheiten.h>
+#include <Artikel/ArtikelStamm.h>
 #include <Artikel/Artikelpreis.h>
+#include <Gtk_OStream.h>
+#include <Aux/Ausgabe_neu.h>
+
+
+//#include <Auftrag/AuftragsEntryZuordnung.h>
+
 #ifndef OLD
 #include<Auftrag/selFullAufEntry.h>
 #include "MyMessage.h"  
@@ -37,14 +44,14 @@ extern MyMessage *meldung;
 auftrag_bearbeiten::auftrag_bearbeiten(const AufEintragBase2& auftragbase)
 : kunde(Kunde::default_id)
 {
- instanz = auftragbase.Instanz();
+ instanz = ppsInstanz::INST_KNDAUF;
  splitdialog=0;
  table_auftragseintraege->hide();
  scrolledwindow_auftraege->hide();
 
  liefertermin->set_page(0);
- zahlziel_datewin->setLabel(string("Zahlungsziel"));
- aufdatum_datewin->setLabel(string("Auftragsdatum"));
+ zahlziel_datewin->setLabel(std::string("Zahlungsziel"));
+ aufdatum_datewin->setLabel(std::string("Auftragsdatum"));
  jahr_spinbutton->set_value(Petig::Datum::today().Jahr());
  newauftrag=false;
  
@@ -67,8 +74,8 @@ void auftrag_bearbeiten::onSelArtikel()
  assert(auftrag);
  assert(!aktaufeintrag);
  Einheit e(artikelbox->get_value());
- mengeeinheit->set_text((string)e);
- WPreis->set_Einheit((string)e);
+ mengeeinheit->set_text((std::string)e);
+ WPreis->set_Einheit((std::string)e);
  try {
     WPreis->reset();
     Artikelpreis ap(kunde->Preisliste(),artikelbox->get_value());
@@ -76,9 +83,9 @@ void auftrag_bearbeiten::onSelArtikel()
     WPreis->set_Waehrung(auftrag->getWaehrung());
     WPreis->set_all(p.Wert(),p.PreisMenge());
   } catch (SQLerror &e) 
-  {  cerr << e <<'\n';  }
+  {  std::cerr << e <<'\n';  }
  stkmtr_spinbutton->grab_focus();
- stkmtr_spinbutton->select_region(0,WPreis->get_text_length());
+ stkmtr_spinbutton->select_region(0,stkmtr_spinbutton->get_text_length());
 }
 
 void auftrag_bearbeiten::on_auftrag_clist_select_row
@@ -88,8 +95,8 @@ void auftrag_bearbeiten::on_auftrag_clist_select_row
  aktaufeintrag = &auftrag->getAufEntry(row);
  try{artikelbox->set_value(ArtikelBase(aktaufeintrag->ArtId()));
  Einheit e(artikelbox->get_value());
- mengeeinheit->set_text((string)e);
- WPreis->set_Einheit((string)e);
+ mengeeinheit->set_text((std::string)e);
+ WPreis->set_Einheit((std::string)e);
  }
  catch(SQLerror &e)
    {meldung->Show(e); return;}
@@ -107,6 +114,7 @@ void auftrag_bearbeiten::on_auftrag_clist_select_row
 void auftrag_bearbeiten::on_auftrag_clist_unselect_row
 				(gint row, gint column, GdkEvent *event)
 {   
+ aufentry_ok->set_sensitive(true);
  clearEntry();
 }
 
@@ -145,8 +153,7 @@ void auftrag_bearbeiten::auftragstatus_geaendert()
 { 
  if (auftrag)
   { 
-     auftrag->setStatusAuftrag(WAufStat->get_Status());
-     loadAuftrag(*auftrag);
+     auftrag->setStatusAuftragFull(WAufStat->get_Status());
   }
 }
 
@@ -177,8 +184,8 @@ void auftrag_bearbeiten::on_stkmtr_spinbutton_activate()
  if(aktaufeintrag)
       {
        gtk_spin_button_update(stkmtr_spinbutton->gtkobj());
-       aktaufeintrag->updateStk(stkmtr_spinbutton->get_value_as_int());
-       auftrag->fillCList(*auftrag_clist);
+       aktaufeintrag->updateStk(stkmtr_spinbutton->get_value_as_int(),true);
+       fillCList();
        auftrag_clist->grab_focus();
        auftrag_clist->moveto(selectedentry,0,.5,0);
       }
@@ -194,7 +201,7 @@ void auftrag_bearbeiten::on_lieferdatum_activate()
   assert(auftrag);
   if(aktaufeintrag)
       {aktaufeintrag->updateLieferdatum(liefdatum_datewin->get_value());
-       auftrag->fillCList(*auftrag_clist);
+       fillCList();
 	    auftrag_clist->grab_focus();
        auftrag_clist->moveto(selectedentry,0,.5,0);
       }
@@ -211,7 +218,7 @@ void auftrag_bearbeiten::on_kw_spinbutton_activate()
      gtk_spin_button_update(kw_spinbutton->gtkobj());
       aktaufeintrag->updateLieferdatum(Petig::Datum(Kalenderwoche(kw_spinbutton->get_value_as_int(),
                			      jahr_spinbutton->get_value_as_int())) );
-       auftrag->fillCList(*auftrag_clist);
+       fillCList();
        auftrag_clist->grab_focus();
        auftrag_clist->moveto(selectedentry,0,.5,0);
       }
@@ -247,17 +254,50 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
  if (!aktaufeintrag)
    {
      gtk_spin_button_update(stkmtr_spinbutton->gtkobj());
-     int znr=auftrag->AuftragFull::insertNewEntry(
+//     int znr=
+     auftrag->AuftragFull::insertNewEntry(
                stkmtr_spinbutton->get_value_as_int(),
                liefdatum_datewin->get_value(),
                artikelbox->get_value().Id(),
+               WAufEntryStat->get_Status(),
                WPreis->get_Preis(),
                fixedpoint<2>(rabattentry_spinbutton->get_value_as_float()));
-      auftrag->fillCList(*auftrag_clist);
+      fillCList();
       artikelbox->reset();
       artikelbox->grab_focus();
-     }
+    }
 }
+
+/*
+void auftrag_bearbeiten::InstanzAuftraegeAnlegen(const Auftrag& altAuftrag,const int altZnr)
+{
+   ArtikelBase art=artikelbox->get_value();
+//   Petig::Datum lieferdatum=liefdatum_datewin->get_value();
+   long menge=stkmtr_spinbutton->get_value_as_int();
+   ArtikelBaum AB(art);
+   for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
+    {
+      InstanzAuftraegeAnlegenR(i->rohartikel,i->menge*menge,altAuftrag,altZnr);
+    }
+}
+
+void auftrag_bearbeiten::InstanzAuftraegeAnlegenR(const ArtikelBase& art,const long menge,
+                                                   const Auftrag& altAuftrag,const int altZnr)
+{
+   Petig::Datum lieferdatum=liefdatum_datewin->get_value();
+   ArtikelStamm AS(art);
+   Auftrag neuAuftrag(AuftragBase(AS.BestellenBei(),0));
+   int neuZnr = neuAuftrag.tryUpdateEntry(double(menge),lieferdatum,art);
+   AufEintragZu::AuftragsEntryZuordnung(altAuftrag,altZnr,menge,neuAuftrag,neuZnr);
+
+   ArtikelBaum AB(art);
+   for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
+    {
+      InstanzAuftraegeAnlegenR(i->rohartikel,i->menge*menge,altAuftrag,altZnr);
+    }
+}
+
+*/
 
 void auftrag_bearbeiten::on_showkal_button_clicked()
 {   
@@ -270,7 +310,7 @@ void auftrag_bearbeiten::on_rabattentry_spinbutton_activate()
    {
      gtk_spin_button_update(rabattentry_spinbutton->gtkobj());
      aktaufeintrag->updateRabatt((int)((rabattentry_spinbutton->get_value_as_float()+.0005)*100));
-       auftrag->fillCList(*auftrag_clist);
+       fillCList();
        auftrag_clist->grab_focus();
        auftrag_clist->moveto(selectedentry,0,.5,0);
       }
@@ -286,9 +326,10 @@ void auftrag_bearbeiten::on_aufentrystat_optionmenu_clicked()
   if (aktaufeintrag)
     {
        aktaufeintrag->setStatus(WAufEntryStat->get_Status());
-       auftrag->fillCList(*auftrag_clist);
+       fillCList();
 	    auftrag_clist->grab_focus();
        auftrag_clist->moveto(selectedentry,0,.5,0);
+       loadAuftrag(*auftrag);
     }
 }
 
@@ -299,11 +340,12 @@ void auftrag_bearbeiten::loadAuftrag(const AuftragBase& auftragbase)
   { AuftragBase ab(auftragbase); // in case we got passed *auftrag ...
     if(auftrag) delete auftrag; 
     auftrag = new AuftragFull(ab);
+    auftrag->setWaehrung(kunde->getWaehrung()->Id());
   } catch(SQLerror &e)
   {
    meldung->Show(e); auftrag=NULL; return;}
  catch (Kalenderwoche::error &e)
- { cerr << "KW error\n";
+ { std::cerr << "KW error\n";
  }
  fillMask();
  aktaufeintrag = 0;
@@ -323,14 +365,12 @@ void auftrag_bearbeiten::fillMask()
 {if (!auftrag) return;
  kundenbox->set_value(auftrag->getKundennr());
  andererKunde(); // adjust Schema
- auftrag_clist->freeze();
- auftrag_clist->clear();
- auftrag->fillCList(*auftrag_clist);
+ fillCList();
  WAufStat->set_history(auftrag->getStatus());
  aufnr_scombo->set_text(auftrag->getAuftragidToStr());
  youraufnr_scombo->set_text(auftrag->getYourAufNr());
  aufbemerkung_entry->set_text(auftrag->getBemerkung());
- jahrgang_spinbutton->set_value(auftrag->getJahrgang());
+// jahrgang_spinbutton->set_value(auftrag->getJahrgang());
  aufdatum_datewin->set_value(auftrag->getDatum());
  bea_WWaehrung->set_History( auftrag->getWaehrung()->get_enum() );
  WPreis->set_Waehrung( auftrag->getWaehrung()->get_enum() );
@@ -342,6 +382,7 @@ void auftrag_bearbeiten::andererKunde()
 {  kunde = kundenbox->get_value();
    cH_ExtBezSchema ebsh(kunde->getSchema(ArtikelTyp::AufgemachtesBand));
    artikelbox->setExtBezSchema(ebsh);
+    bea_WWaehrung->set_history(kunde->getWaehrung()->Id());
 }
 
 void auftrag_bearbeiten::on_aufnrscombo_activate()
@@ -362,7 +403,7 @@ void auftrag_bearbeiten::on_youraufnrscombo_activate()
  else
   try{
    loadAuftrag(AuftragBase(instanz,youraufnr_scombo->Content()));
-   } catch(SQLerror &e) {cerr << e<<'\n';}
+   } catch(SQLerror &e) {std::cerr << e<<'\n';}
 }
 
 void auftrag_bearbeiten::on_zahlzieldatewin_activate()
@@ -383,7 +424,7 @@ void auftrag_bearbeiten::setAufEntries()
  jahr_spinbutton->set_value(aktaufeintrag->getLieferdatum().KW().Jahr());
  liefdatum_datewin->set_value(aktaufeintrag->getLieferdatum());
 
- WPreis->set_Betrag(aktaufeintrag->GPreis().Wert());
+ WPreis->set_Betrag(aktaufeintrag->EPreis().Wert());
  rabattentry_spinbutton->set_value(aktaufeintrag->Rabatt()/100.0);
  WPreis->set_Preismenge(aktaufeintrag->PreisMenge());
  
@@ -402,7 +443,7 @@ bool auftrag_bearbeiten::splitEntry()
 
  Petig::Datum newlief = splitdialog->getLiefDatum();
  int newmenge = splitdialog->getMenge();
- if(!newmenge) {meldung->Show(string("Menge nicht korrekt")); return false;}
+ if(!newmenge) {meldung->Show(std::string("Menge nicht korrekt")); return false;}
  
  try{auftrag->split(selectedentry, newlief, newmenge);}
  catch(SQLerror &e)
@@ -430,7 +471,7 @@ void auftrag_bearbeiten::on_clear_all()
  aufrabatt_spinbutton->set_value(0);
  zahlziel_datewin->set_value(Petig::Datum::today());
  zahlart->set_history(0);
- bea_WWaehrung->set_history(0);
+ bea_WWaehrung->set_history(Waehrung::EUR);
 }
 
 
@@ -446,8 +487,7 @@ void auftrag_bearbeiten::on_auftrag_abbruch_clicked()
 void auftrag_bearbeiten::on_auftrag_ok_clicked()
 {   
  try {
-      auftrag = new AuftragFull(Auftrag::Anlegen(instanz),kundenbox->get_value(),
-			jahrgang_spinbutton->get_value_as_int());
+   auftrag = new AuftragFull(Auftrag::Anlegen(instanz),kundenbox->get_value());
  	auftrag->setBemerkung(aufbemerkung_entry->get_text());
  	auftrag->setYourAufNr(youraufnr_scombo->get_text());
       AuftragBase ab(*auftrag);
@@ -480,14 +520,14 @@ void auftrag_bearbeiten::on_aufbemerkung_activate()
 
 void auftrag_bearbeiten::on_button_preview_clicked()
 {  if (!auftrag) return;
-   string command = "auftrag_drucken -a Auftrag -n "+itos(auftrag->Id())+" -i " + itos(instanz) ;
+   std::string command = "auftrag_drucken -a Auftrag -n "+itos(auftrag->Id())+" -i " + itos(instanz) ;
    system(command.c_str());
 }  
 
 void auftrag_bearbeiten::on_button_drucken_clicked()
 {
    if (!auftrag) return;
-   string command = "auftrag_drucken -a Auftrag "+itos(auftrag->Id())+" -p -i " + itos(instanz);
+   std::string command = "auftrag_drucken -a Auftrag "+itos(auftrag->Id())+" -p -i " + itos(instanz);
    system(command.c_str());
 }
 
@@ -497,11 +537,10 @@ void auftrag_bearbeiten::on_activate_wpreis()
   assert(auftrag);
   if (aktaufeintrag)
    {
-     WPreis->update();
-     Preis pr(WPreis->get_Betrag(),auftrag->getWaehrung(),WPreis->get_Preismenge());
+     Preis pr(WPreis->get_value());
 
      aktaufeintrag->updatePreis(pr);
-     auftrag->fillCList(*auftrag_clist);
+     fillCList();
      auftrag_clist->grab_focus();
      auftrag_clist->moveto(selectedentry,0,.5,0);
    }
@@ -510,4 +549,32 @@ void auftrag_bearbeiten::on_activate_wpreis()
    rabattentry_spinbutton->grab_focus();
    rabattentry_spinbutton->select_region(0,rabattentry_spinbutton->get_text().size());
   }
+}
+
+
+void auftrag_bearbeiten::fillCList()
+{
+  auftrag_clist->freeze();
+  auftrag_clist->clear();
+  Gtk::OStream os(auftrag_clist);
+  Preis psum;
+  for(AuftragFull::const_iterator i = auftrag->begin();i!=auftrag->end();++i)
+   {
+     os << i->getStueck()<<'\t'
+        << cH_ArtikelBezeichnung(ArtikelBase(i->ArtId()))->Bezeichnung()<<'\t'
+        << '\t'
+        << i->getRestStk()<<'\t'
+        << i->GPreis().Wert()<<'\t'
+        << i->getLieferdatum()<<'\t'
+        << i->getEntryStatusStr()<<"\t"
+        << i->LastEditDate()<<"\n";
+     psum += i->GPreis();
+   } 
+  os << "\t\t\t\t-----------\n";
+  os << "\t\t\tAuftragswert\t";
+  os << Formatiere(psum.Wert()) << "\n";
+
+  for(guint i=0; i<auftrag_clist->columns().size();++i)
+    auftrag_clist->set_column_auto_resize(i,true);
+  auftrag_clist->thaw();
 }

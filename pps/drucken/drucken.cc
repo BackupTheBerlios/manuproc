@@ -32,7 +32,7 @@ LR_drucken::LR_drucken(const LR_Base::typ RL_, unsigned int _auftragsnr, bool pr
 void LR_drucken::drucken(bool print,bool b_firmenpapier,bool b_kopie)
 {
 //   if (b_kopie) kopie="Kopie ,";
-   string texplotter= " -Phl1260 ";
+   std::string texplotter= " -Phl1260 ";
    if (b_firmenpapier) texplotter = " -Phl1260lt ";
 
    FILE *f;
@@ -40,14 +40,19 @@ void LR_drucken::drucken(bool print,bool b_firmenpapier,bool b_kopie)
    else if (!print) f=popen("tex2prn -2 -G ","w");
    else f=popen(("tex2prn -q -2 "+texplotter).c_str(),"w");
 
-   ofstream os(fileno(f));
+   std::ofstream os(fileno(f));
 
    if      (RL==LR_Base::Rechnung)      
     { RechnungVoll r(auftragsnr);
       LR_Abstraktion(&r).drucken(os,b_kopie,instanz);
     }
    else if (RL==LR_Base::Lieferschein)  
-    { cH_LieferscheinVoll l(auftragsnr);
+    { 
+#ifdef MABELLA_EXTENSIONS    
+      cH_LieferscheinVoll l(auftragsnr,true);
+#else
+      cH_LieferscheinVoll l(instanz,auftragsnr);
+#endif
       LR_Abstraktion(&*l).drucken(os,b_kopie,instanz);
     }
    else if (RL==LR_Base::Auftrag)  

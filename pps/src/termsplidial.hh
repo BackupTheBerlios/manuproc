@@ -49,6 +49,5 @@ public:
 		}
 
         int getMenge() { return menge_neu->get_value_as_int();}
-
 };
 #endif

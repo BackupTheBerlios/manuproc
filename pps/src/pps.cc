@@ -35,21 +35,21 @@
 MyMessage *meldung;
 auftrag_main *auftragmain;
 auftrag_bearbeiten *auftragbearbeiten;
+Petig::Connection *Conn;
 
 int main(int argc, char **argv)
 {  
 
- Petig::Connection conn;
- conn.setDbase("petigdb");
+ Conn = new Petig::Connection();
  int i;
 
  while ((i = getopt(argc, argv, "h:d:")) != EOF)
  switch (i)
    {  case 'h':
-         conn.setHost(optarg);
+         Conn->setHost(optarg);
          break;
       case 'd':
-         conn.setDbase(optarg);
+         Conn->setDbase(optarg);
          break;
       default : break;
    }
@@ -62,7 +62,7 @@ int main(int argc, char **argv)
  Petig::PrintUncaughtExceptions();
 
  meldung = new MyMessage();
- try{ Petig::dbconnect(conn); }
+ try{ Petig::dbconnect(*Conn); }
   catch(SQLerror &e)
   { meldung->Show(e);
     return 1;
@@ -80,7 +80,8 @@ weiter:
    catch(SQLerror &e) {meldung->Show(e); goto weiter;}
 
  delete auftragmain;
- Petig::dbdisconnect_nt(conn.Dbase());
+ Petig::dbdisconnect_nt(Conn->Dbase());
+ delete Conn;
  delete meldung;
  return 0;
 }

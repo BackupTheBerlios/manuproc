@@ -70,6 +70,8 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
         void on_clear_all();
         void on_aufentry_abbruch_clicked();
         void on_aufentry_ok_clicked();
+//        void InstanzAuftraegeAnlegen(const Auftrag& altAuftrag,const int altZnr);
+//        void InstanzAuftraegeAnlegenR(const ArtikelBase& art,const long menge,const Auftrag& altAuftrag,const int altZnr);
         void on_auftrag_abbruch_clicked();
         void on_auftrag_ok_clicked();
         void on_aufbemerkung_activate();
@@ -81,6 +83,7 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
  void fillMask();
  void andererKunde();
  void clearEntry();
+ void fillCList();
 
  void on_aufnrscombo_search(int *_continue, GtkSCContext newsearch) throw(SQLerror);
  void on_aufnrscombo_activate();
@@ -89,6 +92,7 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
  void setAufStat_Option(AufStatVal as); 
  int get_active_index(Gtk::Menu *om); 
  void setAufEntries();
+ 
 
 public:
  

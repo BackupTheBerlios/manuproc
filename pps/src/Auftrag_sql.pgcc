@@ -149,7 +149,7 @@ AuftragFull::AuftragFull(int aufid) throw(SQLerror)
 
  SelectedFullAufList aufids((SQLFullAuftragSelector)
  			(SQLFullAuftragSelector::sel_Aufid(aufid)));
- for(vector<AufEintragBase>::iterator i = aufids.aufidliste.begin();
+ for(std::vector<AufEintragBase>::iterator i = aufids.aufidliste.begin();
 				 	 i!=aufids.aufidliste.end(); i++)
  {  try{
        eintragliste.push_back(AufEintrag(*i));
@@ -209,7 +209,7 @@ Auftrag::Auftrag(long kdnr,int jahr) throw(SQLerror)
  tr.commit();
 }
 
-void Auftrag::setBemerkung(const string &bem) throw(SQLerror)
+void Auftrag::setBemerkung(const std::string &bem) throw(SQLerror)
 {
  exec sql begin declare section;
  int AUFTRAGID;
@@ -231,7 +231,7 @@ void Auftrag::setBemerkung(const string &bem) throw(SQLerror)
 }
 
 
-void Auftrag::setYourAufNr(const string &yanr) throw(SQLerror)
+void Auftrag::setYourAufNr(const std::string &yanr) throw(SQLerror)
 {
  exec sql begin declare section;
  int AUFTRAGID;

@@ -30,7 +30,7 @@ class MainTree : public TCList
  int showdeep;
  std::vector<int> currseq;
  std::vector<int> tmpvec;
- deque<int> tmpq;
+ std::deque<int> tmpq;
 
 public :
 

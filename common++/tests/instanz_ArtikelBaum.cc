@@ -1,5 +1,6 @@
-/*  pps: ManuProC's ProductionPlanningSystem
- *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
+// $Id: instanz_ArtikelBaum.cc,v 1.1 2002/01/22 09:43:25 christof Exp $
+/*  libcommonc++: ManuProC's main OO library
+ *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,25 +17,19 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <iostream>
+#include <Aux/exception.h>
+#include <Aux/dbconnect.h>
+#include <Auftrag/AuftragsBaum.h>
+#include <Artikel/ArtikelBaum.h>
 
-#include <Aux/ppsInstanz.h>
-#include <string>
-#include "lr_base.h"
 
+int main()
+{  Petig::PrintUncaughtExceptions();
+   Petig::dbconnect();
+   
+   // Neues Garn anlegen:
+   ArtikelBaum::new_Artikel(ArtikelBase(218843),
+         ArtikelBaum::RohArtikel(ArtikelBase(210115),ArtikelBaum::menge_t(2))); // Seitenscheibe hinzufügen
 
-class LR_drucken 
-{
-      unsigned int auftragsnr;
-      const LR_Base::typ RL;
-      std::string kopie;
-      cH_ppsInstanz instanz;
-	bool toTeX;
-   private:
-      void drucken(bool print,bool b_firmenpapier,bool b_kopie);
-      std::string get_Zahlungsziel(int);
-   public:
-      LR_drucken(const LR_Base::typ RL, unsigned int _auftragsnr,bool print, 
-           	bool b_firmenpapier,bool b_kopie,cH_ppsInstanz _instanz,
-		bool toTeX);
-};
-
+}

@@ -41,7 +41,7 @@ void auftrag_lieferschein::set_tree_offen_content()
  exec sql open LOADOFFAUF;
  SQLerror::test(__FILELINE__"loadOffAuf:select from auftragentry");
 
- vector<cH_RowDataBase> datavec;
+ std::vector<cH_RowDataBase> datavec;
  bool weiter=true;
  while (weiter)
   {
@@ -66,5 +66,5 @@ void auftrag_lieferschein::set_tree_offen_content()
  exec sql close LOADOFFAUF;
  tr.close();
  tree_offen->setDataVec(datavec);
- }catch (SQLerror &e) {cerr <<e<<'\n';}
+ }catch (SQLerror &e) {std::cerr <<e<<'\n';}
 }

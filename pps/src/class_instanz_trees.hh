@@ -5,6 +5,7 @@
 #include <Aux/EntryValueIntString.h>
 #include <Aux/itos.h>
 #include <Aux/Datum.h>
+#include <Auftrag/AuftragsEntryZuordnung.h>
 
 //////////////////////////////////////////////////////////////////////
 
@@ -25,13 +26,16 @@ public:
     switch (seqnr) {
       case KUNDE : {//return cH_EntryValueIntString(AufEintrag.get_Kunde()->firma());
          std::string k;
-         list<cH_Kunde> LK=AufEintrag.get_Referenz_Kunden();
-//cout << "Kundenliste " <<LK.size()<<'\n';
-         for (list<cH_Kunde>::const_iterator i=LK.begin();i!=LK.end();)
+         std::list<cH_Kunde> LK=AufEintragZu(AufEintrag).get_Referenz_Kunden();
+         if(LK.size()==1)
+          {
+            if (AM->Kunden_nr_bool()) return cH_EntryValueIntString((*LK.begin())->Id());
+            else return cH_EntryValueIntString((*LK.begin())->firma());
+          }
+         for (std::list<cH_Kunde>::const_iterator i=LK.begin();i!=LK.end();)
            { k+=(*i)->firma();
              if (++i != LK.end()) k+=", ";
            }
-//         return cH_EntryValueIntString(AB.get_Kunde()->firma());
          return cH_EntryValueIntString(k);
         }
       case ARTIKEL : {
@@ -44,7 +48,7 @@ public:
          if (AM->Zeit_kw_bool())
            { int lieferwoche = AufEintrag.getLieferdatum().KW().Woche();
              int lieferjahr =  AufEintrag.getLieferdatum().KW().Jahr();
-             string lj=itos (lieferjahr).substr(2,2);
+             std::string lj=itos (lieferjahr).substr(2,2);
              lw = itos(lieferwoche)+"/"+lj;
            }
          else lw =  AufEintrag.getLieferdatum().c_str();

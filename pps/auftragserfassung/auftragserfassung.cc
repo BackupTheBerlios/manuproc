@@ -57,10 +57,10 @@ void create_new_auftrag(cH_ppsInstanz instanz)
   cout << "Neue Aufträge anlegen\n";
 
   Auftrag A=Auftrag(Auftrag::Anlegen2(AuftragBase(instanz->Id(),0)), 1);//kundennummer=1
-  A.setStatusAuftrag(OPEN);
+  A.setStatusAuftrag_(OPEN);
   for (map<st_art,st_menge>::const_iterator i=map_artikel.begin();i!=map_artikel.end();++i)
    {
-      int znr=A.insertNewEntry(i->second.menge,i->first.datum,i->first.artikelid);      
+      int znr=A.insertNewEntry(i->second.menge,i->first.datum,i->first.artikelid,OPEN,true);      
       for (vector<AufEintragBase2>::const_iterator j=i->second.vAEB.begin();j!=i->second.vAEB.end();++j)
        {
          AuftragsEntryZuordnung(*j,AufEintragBase(*j).getRestStk(),A,znr);
@@ -122,7 +122,7 @@ cout << "Artikel (" <<artikelid<<") ensteht aus "<<flush;
   for (ArtikelBaum::const_iterator ab=AB.begin();ab!=AB.end();++ab)
     {
 //cout << " => "<<flush; 
-      unsigned int rid = ab->rohartikel;
+      unsigned int rid = ab->rohartikel.Id();
       fixedpoint<2> menge = ab->menge;
       v.push_back(st_artmeng(rid,menge,aeb));
 //cout <<"("<<rid<<")  "<<ArtikelBezeichnung(rid).Bezeichnung()<<"\t"<<flush;

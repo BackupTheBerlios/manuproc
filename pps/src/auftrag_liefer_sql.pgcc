@@ -1,4 +1,4 @@
-// $Id: auftrag_liefer_sql.pgcc,v 1.4 2001/07/09 14:15:30 christof Exp $
+// $Id: auftrag_liefer_sql.pgcc,v 1.5 2002/01/22 09:44:06 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,6 +27,7 @@ void auftrag_lieferschein::on_liefnr_search(int *_continue,
 					GtkSCContext newsearch)
 {
  exec sql begin declare section;
+ int INSTANZ=instanz->Id();
  int LFSID;
  char LFSIDSTR[10];
  char *PAT;
@@ -50,6 +51,7 @@ void auftrag_lieferschein::on_liefnr_search(int *_continue,
                 from lieferschein where
                 ltrim(to_char(lfrsid,'000000')) like :PAT 
                 and (:KUNDE<1 or kundennr=:KUNDE)
+                and instanz=:INSTANZ
                 order by lfrsid;
        exec sql open LFSNR_CURSOR;
        SQLerror::test(__FILELINE__":on_lfrsnr_search: open cursor","LFSNR_CURSOR",transaction);

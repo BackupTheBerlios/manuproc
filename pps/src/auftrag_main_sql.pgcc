@@ -7,7 +7,7 @@ exec sql include sqlca;
 
 map<int,std::string> auftrag_main::get_all_instanz()
 {
- map<int,std::string> v;
+ std::map<int,std::string> v;
  exec sql begin declare section;  
    int db_i;
    char db_s[50];
@@ -26,9 +26,10 @@ map<int,std::string> auftrag_main::get_all_instanz()
  return v;
 }
 
+/*
 vector<AufEintragBase2> auftrag_main::get_new_aufids(cH_ppsInstanz instanz)
 {
- vector<AufEintragBase2> vec_newaufein;
+ std::vector<AufEintragBase2> vec_newaufein;
  exec sql begin declare section;
   int AUFTRAGID,ZEILENNR;
   char query[1024];
@@ -40,7 +41,7 @@ vector<AufEintragBase2> auftrag_main::get_new_aufids(cH_ppsInstanz instanz)
       from global_settings where userid=0 and program='pps'
       and name='"+instanz->get_Name()+"')";
  strncpy(query,squery.c_str(),sizeof(query));
-//cout << query << '\n';
+//std::cout << query << '\n';
  Transaction tr;
  exec sql prepare newidein_ from :query;
  exec sql declare newidein cursor for newidein_;
@@ -58,7 +59,8 @@ vector<AufEintragBase2> auftrag_main::get_new_aufids(cH_ppsInstanz instanz)
  tr.close();
  return vec_newaufein;
 }
-
+*/
+/*
 void auftrag_main::AuftragsEntryZuordnung(const AufEintragBase& AEB,long menge, const AuftragBase& AB,int znr)
 {
  exec sql begin declare section;
@@ -75,3 +77,4 @@ void auftrag_main::AuftragsEntryZuordnung(const AufEintragBase& AEB,long menge, 
    (:db_aaid,:db_ains,:db_aznr,:db_menge,:db_naid,:db_nins,:db_nznr);
  SQLerror::test(__FILELINE__);
 }
+*/
