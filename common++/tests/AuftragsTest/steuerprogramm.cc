@@ -316,18 +316,18 @@ std::cout << dummystring<<'\n';
          " 123755,false,712)";
       Query::Execute(qJ);
       SQLerror::test(__FILELINE__);
-      erfolgreich=C.teste(Check::Menge,"_split_reparatur",mit_reparatur_programm,true);
+      erfolgreich=C.teste(Check::Menge,"_split_reparatur_bandlager",mit_reparatur_programm,true);
       if(!erfolgreich) { cout << "Reparatur-Split-Test (Bandlager) auslagern\n";
                return fehler();}
 
-      std::string qJ="update rohjumbo set soll_meter=200 where "
-         (code,maschine,plan_datum,"
+      std::string qJ2="update rohjumbo set soll_meter=200 where "
+         "(code,maschine,plan_datum,"
          " status,lauf,gang,wiederinslager,artikelid,rest,lagerplatz) "
          " = (101,212,'2002-11-28',2,1,1,'2002-01-01 12:00:00+01',"
          " 123755,false,712)";
-      Query::Execute(qJ);
+      Query::Execute(qJ2);
       SQLerror::test(__FILELINE__);
-      erfolgreich=C.teste(Check::Menge,"_split_reparatur",mit_reparatur_programm,true);
+      erfolgreich=C.teste(Check::Menge,"_split_reparatur_bandlager",mit_reparatur_programm,true);
       if(!erfolgreich) { cout << "Reparatur-Split-Test (BandlagerMinus) auslagern\n";
                return fehler();}
 
