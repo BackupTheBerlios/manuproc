@@ -598,6 +598,7 @@ std::cout << "D13: "<<dummystring<<'\n';
      } 
     case ZweiAuftraege:
      {
+      #ifdef PETIG_TEST
        {
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Faerberei),Kunde::default_id);
        int faerberei_znr=1;
@@ -614,9 +615,12 @@ std::cout << "D13: "<<dummystring<<'\n';
       cout << "ZweiAufträge-Test erfolgreich\n";
  
        break;
+      #endif
      }    
     case ZweiterAuftrag_frueheresDatum:
      {
+      #ifdef PETIG_TEST
+      
        AufEintragBase AEB=auftrag.anlegen3();
 
        erfolgreich=C.teste(Check::Menge,"_zwei_auftraege_datum",mit_reparatur_programm);
@@ -658,6 +662,7 @@ std::cout << "D13: "<<dummystring<<'\n';
       cout << "ZweiAufträgeDatum erfolgreich\n";
 
       break;
+      #endif
      }    
     case Lieferscheintest:
      {
@@ -926,6 +931,8 @@ std::cout << "D13: "<<dummystring<<'\n';
      }
     case ZweiKundenMengeFreigebenTest:
      {
+      #ifdef PETIG_TEST
+
        AufEintragBase AEB2=auftrag.anlegenK();
        erfolgreich=C.teste(Check::Menge,"_ZK_anlegen",mit_reparatur_programm);
        if(!erfolgreich) { cout << "Anlegen eines zweiten (offenen) Auftrags für einen anderen Kunden ["<<AEB<<"] \n\n";
@@ -946,6 +953,7 @@ std::cout << "D13: "<<dummystring<<'\n';
        cout << "Zwei Kunden-Menge-Freigeben-Test erfolgreich\n";
 
        break;
+      #endif
      }
     case JumboLager:
      { 
