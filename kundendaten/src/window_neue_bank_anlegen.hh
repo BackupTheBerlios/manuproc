@@ -25,6 +25,6 @@ class window_neue_bank_anlegen : public window_neue_bank_anlegen_glade
         void on_button_uebernehmen_clicked();
         void on_button_abbrechen_clicked();
    public:
-        window_neue_bank_anlegen(windowTop* h, string st, long int blz);
+        window_neue_bank_anlegen(windowTop* h, std::string st, long int blz);
 };
 #endif

@@ -14,6 +14,6 @@ public:
   _msg = _msg + " DB-Error Message:"+e.Context();  
   Message::Show((char *)_msg.c_str());
  }
- void Show(const string _msg) {  Message::Show((char *)_msg.c_str());}
+ void Show(const std::string _msg) {  Message::Show((char *)_msg.c_str());}
 };
 

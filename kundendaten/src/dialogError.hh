@@ -12,7 +12,7 @@
 #ifndef _DIALOGERROR_HH
 #  include "dialogError_glade.hh"
 #  define _DIALOGERROR_HH
-#include "glademm_support.hh"
+//#include "glademm_support.hh"
 
 class dialogError : public dialogError_glade
 {   

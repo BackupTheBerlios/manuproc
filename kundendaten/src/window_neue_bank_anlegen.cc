@@ -21,7 +21,7 @@ void window_neue_bank_anlegen::on_entry_blz_activate()
 
 void window_neue_bank_anlegen::on_button_uebernehmen_clicked()
 {   
- string name = entry_bankname->get_text();
+std::string name = entry_bankname->get_text();
  long unsigned int blz = strtol(entry_blz->get_text().c_str(),NULL,10);
  Kunde K;
  unsigned long int bank_index = K.neue_bank_anlegen(name,blz);
@@ -34,7 +34,7 @@ void window_neue_bank_anlegen::on_button_abbrechen_clicked()
   destroy();
 }
 
-window_neue_bank_anlegen::window_neue_bank_anlegen(windowTop* h, string st, long int blz)
+window_neue_bank_anlegen::window_neue_bank_anlegen(windowTop* h,std::string st, long int blz)
 {
   hauptfenster=h;
   entry_blz->set_text(itos(blz));

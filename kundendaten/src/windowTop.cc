@@ -157,6 +157,7 @@ void windowTop::clear_entrys()
    iban_entry->set_text("");
    cab_entry->set_text("");
    abi_entry->set_text("");
+   bankname_italy->set_text("");
    iban_save->set_sensitive(false);
    iban_abbruch->set_sensitive(false);      
    riba_save->set_sensitive(false);
@@ -167,7 +168,7 @@ void windowTop::clear_entrys()
 
 void windowTop::setTitles()
 {
- std::vector<string> preis;
+ std::vector<std::string> preis;
  preis.push_back("Suchreinfolge");
  preis.push_back("Bezeichnung");
  preis.push_back("Nr");
@@ -217,6 +218,8 @@ void windowTop::on_riba_save_clicked()
  }  
  catch(SQLerror &e) { MyMessage *m=manage(new MyMessage()); m->Show(e); }   
 
+ bankname_italy->set_text(kundendaten->getABIBankName());
+ 
  riba_save->set_sensitive(false);
  riba_abbruch->set_sensitive(false); 
 }
@@ -296,6 +299,7 @@ void windowTop::on_zahlverfahren_book_switch_page(Gtk::Notebook_Helpers::Page *p
     case PAGE_RIBA:
     	 abi_entry->set_text(kundendaten->getABI_Code());
  	 cab_entry->set_text(kundendaten->getCAB_Code());
+ 	 bankname_italy->set_text(kundendaten->getABIBankName());
  	 break;
     case PAGE_LCR:
    	 iban_entry->set_text(kundendaten->getIBAN_Code(true)); 	 

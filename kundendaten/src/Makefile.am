@@ -19,7 +19,6 @@ kundendaten_SOURCES = \
    window_neue_bank_anlegen.cc \
    window_neue_bank_anlegen_glade.cc \
 	windowTop_glade.cc \
-	glademm_support.cc \
    window_neue_Kundennummer.cc \
    window_neue_Kundennummer_glade.cc \
 	dialogError_glade.cc \

@@ -23,6 +23,7 @@ class window_Dialog_Bestaetigen : public window_Dialog_Bestaetigen_glade
         void on_button_ok_clicked();
         void on_button_cancel_clicked();
    public:
-      window_Dialog_Bestaetigen::window_Dialog_Bestaetigen(windowTop *h, string st);
+      window_Dialog_Bestaetigen::window_Dialog_Bestaetigen(windowTop *h,
+			std::string st);
 };
 #endif

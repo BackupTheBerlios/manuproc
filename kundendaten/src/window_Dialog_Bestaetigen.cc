@@ -21,7 +21,7 @@ void window_Dialog_Bestaetigen::on_button_cancel_clicked()
   destroy();
 }
 
-window_Dialog_Bestaetigen::window_Dialog_Bestaetigen(windowTop *h,string st)
+window_Dialog_Bestaetigen::window_Dialog_Bestaetigen(windowTop *h,std::string st)
 {
   hauptfenster=h;
   label_text->set_text(st);
