@@ -1,0 +1,15 @@
+#!/bin/sh
+
+if [ $# -eq 2 ] ; then FILE1=$1 ; FILE2=$2 
+elif [ $# -eq 3 ] ; then OPTS=$1 ; FILE1=$2 ; FILE2=$3 
+else echo USAGE $0 file1 file2 ; exit -1
+fi
+
+TMPFILE1=`mktemp /tmp/example.XXXXXXXXXX` || exit -1
+TMPFILE2=`mktemp /tmp/example.XXXXXXXXXX` || exit -1
+sort <$FILE1 >$TMPFILE1
+sort <$FILE2 >$TMPFILE2
+diff $OPTS $TMPFILE1 $TMPFILE2
+RESULT=$?
+rm $TMPFILE1 $TMPFILE2
+exit $RESULT

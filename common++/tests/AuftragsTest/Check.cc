@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.54 2003/08/01 07:05:46 christof Exp $
+// $Id: Check.cc,v 1.55 2003/08/07 09:48:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -39,6 +39,7 @@ static std::string referenzdir="database_tables_test/";
 bool Check::analyse=false;
 bool Check::reparieren=false;
 bool Check::overwrite=false;
+bool Check::resort=false;
 
 bool Check::teste(was_checken check,const std::string &zusatz, bool vor_dem_test_reparieren)
 {
@@ -94,11 +95,12 @@ bool Check::vergleich(was_checken was,const std::string &zusatz)
      }
      else
      {  std::string s="diff -q "+fz1+" "+fz2;
+        if (resort) s="./resort"+s;
         int reg=system(s.c_str());
         if(reg==-1) { std::cout<< "Fehler im diff-Komando ("+*i+")\n"; exit(reg);}
         else if(reg==0) ;//zuviel Output :-( {std::cout << *i << " OK\n";}
         else 
-        { std::cout << "Probleme, Empfehlung: \n "<< "mgdiff "+fz1+" "+fz2<<" &\n"; 
+        { std::cout << (resort?"./resort":"") << "mgdiff "+fz1+" "+fz2<<"\n"; 
           error=true;
         }
      }

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if [ $# -lt 2 ] ; then echo USAGE $0 file1 file2 ; exit 1 ; fi
+
+TMPFILE1=`mktemp /tmp/example.XXXXXXXXXX` || exit 1
+TMPFILE2=`mktemp /tmp/example.XXXXXXXXXX` || exit 1
+sort <$1 >$TMPFILE1
+sort <$2 >$TMPFILE2
+mgdiff $TMPFILE1 $TMPFILE2
+rm $TMPFILE1 $TMPFILE2

@@ -1,4 +1,4 @@
-// $Id: Check.hh,v 1.28 2003/07/16 11:49:30 christof Exp $
+// $Id: Check.hh,v 1.29 2003/08/07 09:48:29 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, 
  *  written by Malte Thoma + Christof Petig
@@ -44,7 +44,7 @@ class Check
    Check(){}; 
    // Erfolgreich: true; sonst false
    bool teste(was_checken was, const std::string &name,bool vor_dem_test_reparieren=false);
-   static bool analyse,reparieren,overwrite;
+   static bool analyse,reparieren,overwrite,resort;
 };
 
 Check::was_checken operator|(Check::was_checken a, Check::was_checken b);
