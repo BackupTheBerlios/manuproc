@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.21 2002/12/04 16:06:45 thoma Exp $
+// $Id: get_data.cc,v 1.22 2002/12/04 16:35:42 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -422,6 +422,7 @@ std::vector<graph_data_node::st_files> graph_data_node::ManuProCfiles()
   vec_files.push_back(st_files("mit_lager_open"));  
   vec_files.push_back(st_files("planen_kupfer","P"));  
   vec_files.push_back(st_files("LS_teillieferung","L"));  
+/*
   vec_files.push_back(st_files("planen_weberei_fuer_lager","P2"));  
   vec_files.push_back(st_files("LS_volllieferung","L2"));  
   vec_files.push_back(st_files("planen_faerberei_teil","PG"));  
@@ -430,6 +431,7 @@ std::vector<graph_data_node::st_files> graph_data_node::ManuProCfiles()
   vec_files.push_back(st_files("LSZM","LR"));  
   vec_files.push_back(st_files("LSZMK","LK"));  
   vec_files.push_back(st_files("LSZA","LKÜ"));  
+*/
   return vec_files;
 }
 
