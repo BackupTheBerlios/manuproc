@@ -618,7 +618,7 @@
 	      <last_modification_time>Thu, 29 Nov 2001 15:21:19 GMT</last_modification_time>
 	    </signal>
 	    <label>offene Aufträge / Mengen</label>
-	    <active>True</active>
+	    <active>False</active>
 	    <always_show_toggle>True</always_show_toggle>
 	    <group>auftrag</group>
 	  </widget>
@@ -648,7 +648,7 @@
 	      <last_modification_time>Tue, 05 Nov 2002 07:51:48 GMT</last_modification_time>
 	    </signal>
 	    <label>geschlossene Aufträge / Mengen</label>
-	    <active>False</active>
+	    <active>True</active>
 	    <always_show_toggle>True</always_show_toggle>
 	    <group>auftrag</group>
 	  </widget>
@@ -684,7 +684,7 @@
 	      <last_modification_time>Sat, 31 Jan 2004 13:39:54 GMT</last_modification_time>
 	    </signal>
 	    <label>geplante / bestellte / reservierte Menge</label>
-	    <active>True</active>
+	    <active>False</active>
 	    <always_show_toggle>True</always_show_toggle>
 	    <group>auftrag_0_1_2_20000</group>
 	  </widget>
@@ -714,9 +714,34 @@
 	      <last_modification_time>Sat, 31 Jan 2004 13:40:29 GMT</last_modification_time>
 	    </signal>
 	    <label>alle Lagermengen</label>
-	    <active>False</active>
+	    <active>True</active>
 	    <always_show_toggle>True</always_show_toggle>
 	    <group>auftrag_0_1_2_20000</group>
+	  </widget>
+	</widget>
+      </widget>
+
+      <widget>
+	<class>GtkMenuItem</class>
+	<name>bestellplanung1</name>
+	<label>Bestellplanung</label>
+	<right_justify>False</right_justify>
+
+	<widget>
+	  <class>GtkMenu</class>
+	  <name>bestellplanung1_menu</name>
+
+	  <widget>
+	    <class>GtkPixmapMenuItem</class>
+	    <name>bestellplanung</name>
+	    <signal>
+	      <name>activate</name>
+	      <handler>on_bestellplanung_activate</handler>
+	      <last_modification_time>Thu, 03 Feb 2005 12:11:10 GMT</last_modification_time>
+	    </signal>
+	    <label>Bestellplanung</label>
+	    <right_justify>False</right_justify>
+	    <stock_icon>GNOME_STOCK_MENU_PROP</stock_icon>
 	  </widget>
 	</widget>
       </widget>
@@ -9967,34 +9992,8 @@ Jahr
 
       <widget>
 	<class>GtkLabel</class>
-	<name>label130</name>
-	<label>wird nicht verrechnet</label>
-	<justify>GTK_JUSTIFY_CENTER</justify>
-	<wrap>False</wrap>
-	<xalign>0</xalign>
-	<yalign>0.5</yalign>
-	<xpad>0</xpad>
-	<ypad>0</ypad>
-	<child>
-	  <left_attach>2</left_attach>
-	  <right_attach>3</right_attach>
-	  <top_attach>2</top_attach>
-	  <bottom_attach>3</bottom_attach>
-	  <xpad>0</xpad>
-	  <ypad>0</ypad>
-	  <xexpand>False</xexpand>
-	  <yexpand>False</yexpand>
-	  <xshrink>False</xshrink>
-	  <yshrink>False</yshrink>
-	  <xfill>True</xfill>
-	  <yfill>False</yfill>
-	</child>
-      </widget>
-
-      <widget>
-	<class>GtkLabel</class>
-	<name>label132</name>
-	<label>Abverkauf 12 Mon.</label>
+	<name>label134</name>
+	<label>Rohware Bestellt beim Lief.</label>
 	<justify>GTK_JUSTIFY_CENTER</justify>
 	<wrap>False</wrap>
 	<xalign>0</xalign>
@@ -10019,7 +10018,7 @@ Jahr
 
       <widget>
 	<class>GtkEntry</class>
-	<name>abverk_12m</name>
+	<name>bp_rohbestellt</name>
 	<cxx_visibility>protected</cxx_visibility>
 	<can_focus>True</can_focus>
 	<editable>False</editable>
@@ -10034,6 +10033,32 @@ Jahr
 	  <xpad>0</xpad>
 	  <ypad>0</ypad>
 	  <xexpand>True</xexpand>
+	  <yexpand>False</yexpand>
+	  <xshrink>False</xshrink>
+	  <yshrink>False</yshrink>
+	  <xfill>True</xfill>
+	  <yfill>False</yfill>
+	</child>
+      </widget>
+
+      <widget>
+	<class>GtkLabel</class>
+	<name>label135</name>
+	<label>zur Info</label>
+	<justify>GTK_JUSTIFY_CENTER</justify>
+	<wrap>False</wrap>
+	<xalign>0</xalign>
+	<yalign>0.5</yalign>
+	<xpad>0</xpad>
+	<ypad>0</ypad>
+	<child>
+	  <left_attach>2</left_attach>
+	  <right_attach>3</right_attach>
+	  <top_attach>2</top_attach>
+	  <bottom_attach>3</bottom_attach>
+	  <xpad>0</xpad>
+	  <ypad>0</ypad>
+	  <xexpand>False</xexpand>
 	  <yexpand>False</yexpand>
 	  <xshrink>False</xshrink>
 	  <yshrink>False</yshrink>
@@ -10065,7 +10090,7 @@ Jahr
 	  <class>GtkTable</class>
 	  <name>table30</name>
 	  <border_width>2</border_width>
-	  <rows>1</rows>
+	  <rows>2</rows>
 	  <columns>5</columns>
 	  <homogeneous>False</homogeneous>
 	  <row_spacing>0</row_spacing>
@@ -10089,8 +10114,8 @@ Jahr
 	    <child>
 	      <left_attach>0</left_attach>
 	      <right_attach>1</right_attach>
-	      <top_attach>0</top_attach>
-	      <bottom_attach>1</bottom_attach>
+	      <top_attach>1</top_attach>
+	      <bottom_attach>2</bottom_attach>
 	      <xpad>0</xpad>
 	      <ypad>0</ypad>
 	      <xexpand>False</xexpand>
@@ -10117,8 +10142,8 @@ Jahr
 	    <child>
 	      <left_attach>1</left_attach>
 	      <right_attach>2</right_attach>
-	      <top_attach>0</top_attach>
-	      <bottom_attach>1</bottom_attach>
+	      <top_attach>1</top_attach>
+	      <bottom_attach>2</bottom_attach>
 	      <xpad>0</xpad>
 	      <ypad>0</ypad>
 	      <xexpand>False</xexpand>
@@ -10142,8 +10167,8 @@ Jahr
 	    <child>
 	      <left_attach>2</left_attach>
 	      <right_attach>3</right_attach>
-	      <top_attach>0</top_attach>
-	      <bottom_attach>1</bottom_attach>
+	      <top_attach>1</top_attach>
+	      <bottom_attach>2</bottom_attach>
 	      <xpad>0</xpad>
 	      <ypad>0</ypad>
 	      <xexpand>False</xexpand>
@@ -10168,8 +10193,8 @@ Jahr
 	    <child>
 	      <left_attach>3</left_attach>
 	      <right_attach>4</right_attach>
-	      <top_attach>0</top_attach>
-	      <bottom_attach>1</bottom_attach>
+	      <top_attach>1</top_attach>
+	      <bottom_attach>2</bottom_attach>
 	      <xpad>0</xpad>
 	      <ypad>0</ypad>
 	      <xexpand>False</xexpand>
@@ -10196,11 +10221,62 @@ Jahr
 	    <child>
 	      <left_attach>4</left_attach>
 	      <right_attach>5</right_attach>
+	      <top_attach>1</top_attach>
+	      <bottom_attach>2</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkLabel</class>
+	    <name>label132</name>
+	    <label>Abverkauf 12 Mon.</label>
+	    <justify>GTK_JUSTIFY_CENTER</justify>
+	    <wrap>False</wrap>
+	    <xalign>0</xalign>
+	    <yalign>0.5</yalign>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <child>
+	      <left_attach>0</left_attach>
+	      <right_attach>1</right_attach>
 	      <top_attach>0</top_attach>
 	      <bottom_attach>1</bottom_attach>
 	      <xpad>0</xpad>
 	      <ypad>0</ypad>
 	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkEntry</class>
+	    <name>abverk_12m</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <can_focus>True</can_focus>
+	    <editable>False</editable>
+	    <text_visible>True</text_visible>
+	    <text_max_length>0</text_max_length>
+	    <text></text>
+	    <child>
+	      <left_attach>1</left_attach>
+	      <right_attach>3</right_attach>
+	      <top_attach>0</top_attach>
+	      <bottom_attach>1</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>True</xexpand>
 	      <yexpand>False</yexpand>
 	      <xshrink>False</xshrink>
 	      <yshrink>False</yshrink>

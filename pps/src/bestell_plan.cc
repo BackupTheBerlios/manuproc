@@ -113,7 +113,23 @@ void bestell_plan::load_data(const ArtikelBase a) throw(SQLerror)
    q1 << a.Id();
  FetchIStream fi=q1.Fetch();
  if(fi.good()) fi >> abverkauf; 
-     
+
+ ArtikelBase::ID rohart;
+ int rohbestellt=0;
+ Query q2("select altartikelid from artikelzusammensetzung where id=?");
+ q2 << a.Id();
+  fi=q2.Fetch();
+ if(fi.good())
+   {fi >> rohart;
+    Query("SELECT coalesce(sum(bestellt-geliefert),0) from auftrag a join auftragentry e"
+    " on (a.instanz=e.instanz and a.auftragid=e.auftragid and "
+    "a.instanz=? and a.stat=e.status and a.stat in (?,?) and "
+    " bestellt>geliefert and e.artikelid=? and a.auftragid>=?)")
+    << ppsInstanzID::Einkauf << OPEN << UNCOMMITED << rohart 
+    << AuftragBase::handplan_auftrag_id >> rohbestellt;
+   }
+  
+    
 // set entreis
  if(bestand.size()>0)
    {bp_lagerbestand->set_text(itos(bestand[0].first));

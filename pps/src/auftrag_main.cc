@@ -442,6 +442,13 @@ void auftrag_main::loadEinstellungen()
 }
 
 
+#include "bestell_plan.hh"
+extern bestell_plan *BP;
+void auftrag_main::on_bestellplanung_activate()
+{  
+ if(BP==NULL)
+   BP=new bestell_plan();
+}
 
 gint auftrag_main::on_mainprint_button_clicked(GdkEventButton *ev)
 {

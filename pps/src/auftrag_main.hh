@@ -110,6 +110,7 @@ private:
         void auftrags_id_aenderung();
 
         void on_auftraege_kunde_activate();
+        void on_bestellplanung_activate();        
         gint on_mainprint_button_clicked(GdkEventButton *ev);
         void on_leaf_selected(cH_RowDataBase d);
         void on_leaf_unselected(cH_RowDataBase d);
