@@ -20,3 +20,92 @@
 	icon="@PIXMAPDIR@/fibu.png" \
 	section="ManuProC/Fibu" \
 	title="Buchhaltung"
+
+?package(local.manuproc): \
+	command="@BINDIR@/artikeleingabe" needs="X11" \
+	section="ManuProC/Artikel" title="Artikel anlegen"
+
+?package(local.manuproc): \
+	command="@BINDIR@/bandlager" needs="X11" \
+	section="ManuProC/Lager" title="Bandlager"
+
+?package(local.manuproc): \
+	command="@BINDIR@/data_unit_frontend" needs="X11" \
+	section="ManuProC/Weberei" title="DataUnit fernbedienen"
+
+?package(local.manuproc): \
+	command="@BINDIR@/dbank" needs="X11" \
+	section="ManuProC/Weberei" title="Schärplanung"
+
+?package(local.manuproc): \
+	command="@BINDIR@/garnmenge" needs="X11" \
+	section="ManuProC/Weberei" title="Garnmenge berechnen"
+
+?package(local.manuproc): \
+	command="@BINDIR@/kalkulation" needs="X11" \
+	section="ManuProC/Fibu" title="Kalkulation"
+
+?package(local.manuproc): \
+	command="@BINDIR@/ketteneingabe" needs="X11" \
+	section="ManuProC/Weberei" title="(Ketten eingeben)"
+
+?package(local.manuproc): \
+	command="@BINDIR@/kettplan" needs="X11" \
+	section="ManuProC/Weberei" title="Kettplaner"
+
+?package(local.manuproc): \
+	command="@BINDIR@/kundendaten" needs="X11" \
+	section="ManuProC/Kunden" title="Kunden verwalten"
+
+?package(local.manuproc): \
+	command="@BINDIR@/lager" needs="X11" \
+	section="ManuProC/Lager" title="Rohwarenlager"
+
+?package(local.manuproc): \
+	command="@BINDIR@/maschinen_UPM" needs="X11" \
+	section="ManuProC/Weberei" title="Maschinengeschwindigkeit"
+
+?package(local.manuproc): \
+	command="@BINDIR@/maschv" needs="X11" \
+	section="ManuProC/Weberei" title="gewebte Menge"
+
+?package(local.manuproc): \
+	command="@BINDIR@/preise" needs="X11" \
+	section="ManuProC/Fibu" title="Artikelpreise"
+
+?package(local.manuproc): \
+	command="@BINDIR@/produktion" needs="X11" \
+	section="ManuProC/Weberei" title="(produzierte Menge)"
+
+?package(local.manuproc): \
+	command="@BINDIR@/Uebersicht" needs="X11" \
+	section="ManuProC/Weberei" title="(Auslastungsübersicht)"
+
+?package(local.manuproc): \
+	command="@BINDIR@/Ueberws," needs="X11" \
+	section="ManuProC/Fibu" title="Überweisungen eingeben"
+
+?package(local.manuproc): \
+	command="@BINDIR@/Ueberws2" needs="X11" \
+	section="ManuProC/Fibu" title="Überweisungen auf Diskette"
+
+?package(local.manuproc): \
+	command="@BINDIR@/urlclient," needs="X11" \
+	section="ManuProC/Zeit" title="Urlaub"
+
+?package(local.manuproc): \
+	command="@BINDIR@/webkartei" needs="X11" \
+	section="ManuProC/Weberei" title="Webangaben"
+
+?package(local.manuproc): \
+	command="@BINDIR@/xwin" needs="X11" \
+	section="Apps/Viewers" title="SWin viewer"
+
+?package(local.manuproc): \
+	command="@BINDIR@/zeitcontrol" needs="X11" \
+	section="ManuProC/Zeit" title="Zeiterfassung"
+
+?package(local.manuproc): \
+	command="@BINDIR@/zeitviewer" needs="X11" \
+	section="ManuProC/Zeit" title="Überblick"
+	        
