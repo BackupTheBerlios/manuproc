@@ -496,11 +496,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
        	lfrsid_drucken=false;
     }
     else 
-#ifdef MABELLA_EXTENSIONS
-    os << "~\\\\[-2ex]\n";
-#else    
     os << "~\\\\[-1ex]\n";
-#endif
 
 #ifdef MABELLA_EXTENSIONS    
     if(aufid_drucken && aufid_mem!=AuftragBase::none_id)
@@ -1422,11 +1418,7 @@ void LR_Abstraktion::lieferung_an(std::ostream &os, unsigned int lfrs_id,
 			const ManuProC::Datum& datum,const std::string& sKunde)
 { --zeilen_passen_noch;
 
-#ifdef MABELLA_EXTENSIONS
-  os << "~\\\\[-2ex]""\n";  
-#else
   os << "~\\\\[2ex]""\n";  
-#endif  
 
     --zeilen_passen_noch;  
 
