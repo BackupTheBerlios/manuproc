@@ -34,6 +34,10 @@ void windowTop::show_details()
 	entry_blz->set_text(itos(kundendaten->getblz()));
    rng_an->set_value(kundendaten->Rngan());
    lfr_an->set_value(kundendaten->Lfran());
+
+   // zeige nur Kunden, die ein eigenes Schema haben
+   extartbez->Einschraenkung(" and kundennr in (select distinct extartbezid"
+			" from extbezschema)");
    extartbez->set_value(kundendaten->Schema());
 
    Waehrung->set_value(kundendaten->getWaehrung());
