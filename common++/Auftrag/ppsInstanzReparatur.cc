@@ -132,7 +132,8 @@ void ppsInstanzReparatur::vormerkungen_subtrahieren(int uid,const  std::vector<L
              {  AuftragBase::mengen_t M2=AuftragBase::min(k->Menge,M_rest);
                 if (!M2) continue;
 
-                j->MengeAendern(uid,-M2,true,k->AEB,ManuProC::Auftrag::r_Reparatur);
+		// eine Rekursion würde die Menge neu verplanen ...
+                j->MengeAendern(uid,-M2,false,k->AEB,ManuProC::Auftrag::r_Reparatur);
                 AufEintrag::ArtikelInternNachbestellen(Instanz(),M2,j->getLieferdatum(),
                 		j->Artikel(),uid,k->AEB);
 
