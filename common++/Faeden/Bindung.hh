@@ -1,4 +1,4 @@
-// $Id: Bindung.hh,v 1.6 2003/10/23 09:27:27 christof Exp $
+// $Id: Bindung.hh,v 1.7 2004/02/06 08:41:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -54,10 +54,10 @@ public:
 	bool operator!= (const char *s) { return s != name; }
 	bool operator== (const std::string &s) const { return s == name; }
 	bool operator!= (const std::string &s) const { return s != name; }
-	std::string getName() const { return name; }
+	const std::string &getName() const { return name; }
 	const char* getCName() const { return name.c_str(); }
 	ID getId() const { return id; }
-	const std::string extraFunctionData(const ExtraFunc efid) const 
+	const std::string &extraFunctionData(const ExtraFunc efid) const 
 			{ return const_cast<Efs&>(ef)[efid]; }
 	bool haveExtraFunction(ExtraFunc ex) const;
 	static Bindung getById(ID id);
