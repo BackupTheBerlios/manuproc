@@ -1,4 +1,4 @@
-// $Id: TagStream.cc,v 1.9 2004/06/03 09:49:40 christof Exp $
+// $Id: TagStream.cc,v 1.10 2004/06/04 10:36:32 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2004  Christof Petig
  *
@@ -45,7 +45,7 @@ static void iso2utf8(std::string &s)
    }
 }
 
-static void utf82iso(std::string &s)
+void TagStream::utf82iso(std::string &s)
 {  for (unsigned i = 0; i+1<s.size() ; ++i)
    {  unsigned char x=s[i];
       if ((x&0xe0)==0xc0) 
