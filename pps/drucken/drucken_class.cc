@@ -286,7 +286,7 @@ catch(SQLerror &e) { cout << e; return; }
     			u.l->Pakete(),(u.l->Pakete()==1 ? 
 				(endE+string(".\n")).c_str():
 				(endM+string(".\n")).c_str() ));
-       os << buf;
+       os << " " << buf;
       }
     else os << ".\n";	
 	
