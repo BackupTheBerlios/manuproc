@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.100 2004/02/17 09:54:58 christof Exp $
+// $Id: AufEintrag.cc,v 1.101 2004/02/17 10:42:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -233,9 +233,11 @@ void AufEintrag::Verzeigern(mengen_t M)
     }
 }
 
+// 2 bool Parameter für instanzen (oben wie unten)
 void AufEintrag::setStatus(AufStatVal newstatus,bool force) throw(SQLerror)
 {
- ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("status",newstatus),force?"force":"");
+ ManuProC::Trace _t(trace_channel, __FUNCTION__,NV("status",newstatus),force?"force":"",
+ 	NV("open",bestellt-geliefert),NV("oldst",entrystatus));
  if(entrystatus == newstatus)
  {  ManuProC::Trace(trace_channel,__FILELINE__,*this,NV("status bereits",newstatus));
     return;
@@ -267,11 +269,11 @@ void AufEintrag::setStatus(AufStatVal newstatus,bool force) throw(SQLerror)
  {   Verzeigern(-getRestStk());
  }
 
- std::string sqlcommand = "update auftragentry set status=?"
- ", lasteditdate = now(), lastedit_uid=?"
- " where (instanz,auftragid,zeilennr)=(?,?,?)";
-
- Query(sqlcommand).lvalue() << newstatus << getuid() << static_cast<AufEintragBase&>(*this);
+ Query("update auftragentry "
+ 	"set status=?, lasteditdate=now(), lastedit_uid=? "
+	"where (instanz,auftragid,zeilennr)=(?,?,?)") 
+ 	<< newstatus << getuid() 
+ 	<< static_cast<AufEintragBase&>(*this);
  SQLerror::test("setStatus: update auftragentry");
  AufStatVal oldentrystatus=entrystatus;
  entrystatus=newstatus;
