@@ -7,6 +7,31 @@
 
 #include "config.h"
 #include "mpc_export.hh"
+#include <gtkmm/fileselection.h>
+#include <MyMessage.h>
+#include <WinFileReq.hh>
+#include <gtkmm/entry.h>
+
+void mpc_export::on_file_select_clicked()
+{  
+// Gtk::FileSelection fs;
+// int ret;
+// fs.set_transient_for(*this);
+
+// ret=fs.run();
+// fs.get_filename();
+
+  	SigC::Slot1<void,const std::string &> s(*export_file_name,&Gtk::Entry::set_text);
+
+ WinFileReq(
+	s,
+ 	"",
+ 	"",
+ 	"",
+ 	"Export to file",
+ 	false,
+ 	*this);
+}
 
 void mpc_export::on_do_file_export_clicked()
 {  

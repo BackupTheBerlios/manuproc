@@ -14,7 +14,7 @@
 #  define _MPC_EXPORT_HH
 class mpc_export : public mpc_export_glade
 {  
-        
+        void on_file_select_clicked();        
         void on_do_file_export_clicked();
         void on_do_file_send_clicked();
 };
