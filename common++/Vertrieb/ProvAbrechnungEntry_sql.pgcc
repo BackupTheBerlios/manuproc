@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnungEntry_sql.pgcc,v 1.9 2003/06/20 14:34:19 jacek Exp $ */
+/* $Id: ProvAbrechnungEntry_sql.pgcc,v 1.10 2003/09/12 13:03:39 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -56,6 +56,7 @@ ProvAbrechnungEntry::ProvAbrechnungEntry(const ManuProcEntity<>::ID _abrnr,
  provsatz=_psatz;
  provision=umsatz.Wert() * (_psatz.as_float()/100.0);
 }
+
 
 
 /*********************************************

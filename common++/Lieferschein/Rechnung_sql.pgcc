@@ -316,8 +316,8 @@ Rechnung::geldbetrag_t Rechnung::Betrag(bool brutto) const throw(SQLerror)
 	into :BETRAG:IBETRAG from rechnungentry
 	where rngid = :RNGID; 
     SQLerror::test(__FILELINE__);
-    fixedpoint<2> rab = rabatt / 100;
-    fixedpoint<2> betr = BETRAG * (!!rab ? (fixedpoint<2>(1)-rab) : 1); 
+    float rab = (100.0 - rabatt.as_float()) / 100.0;
+    fixedpoint<2> betr = BETRAG * rab; 
     BETRAG = betr.as_float();
    }
 

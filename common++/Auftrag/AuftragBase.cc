@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.45 2003/09/11 15:25:55 christof Exp $
+// $Id: AuftragBase.cc,v 1.46 2003/09/12 13:03:39 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -43,11 +43,11 @@ std::ostream &operator<<(std::ostream &o,const AuftragBase &a)
 const std::string AuftragBase::getStatusStr(AufStatVal a)
 {
  switch(a)
-   {case (AufStatVal)UNCOMMITED : return "unbestätigt"; 
-    case (AufStatVal)OPEN : return "offen"; 
-    case (AufStatVal)CLOSED : return "fertig";
-    case (AufStatVal)STORNO : return "storno";
-    case (AufStatVal)NOSTAT : ;
+   {case (AufStatVal)UNCOMMITED : return "unbestätigt"; break;
+    case (AufStatVal)OPEN : return "offen"; break;
+    case (AufStatVal)CLOSED : return "fertig"; break;
+    case (AufStatVal)STORNO : return "storno"; break;
+    case (AufStatVal)NOSTAT : break;
    }
  return "-";
 }

@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnungEntry.h,v 1.6 2003/06/26 14:15:18 jacek Exp $ */
+/* $Id: ProvAbrechnungEntry.h,v 1.7 2003/09/12 13:03:39 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -59,7 +59,7 @@ public:
  std::string getRngToStr() const { return rngentry.getRngidToStr(); }
  
  const RechnungEntry& RngEntry() const { return rngentry; }
-  	
+ 
  ManuProcEntity<>::ID Id() const { return entityid;} 		     
  static void newAbrechnungEntries(
  	const ManuProcEntity<>::ID _abrnr, 

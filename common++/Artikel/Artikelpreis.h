@@ -1,4 +1,4 @@
-// $Id: Artikelpreis.h,v 1.20 2003/07/30 19:38:21 jacek Exp $
+// $Id: Artikelpreis.h,v 1.21 2003/09/12 13:03:39 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -47,7 +47,14 @@ class Artikelpreis : public Preis
 	{}
 
 	friend FetchIStream &operator>>(FetchIStream &is,std::pair<int, float> &kg);  
-public:
+
+public:	
+ typedef struct {
+	ArtikelBase::ID artid;
+	int mindmenge;
+	PreisListe::ID plid;
+	} UniqPreis;	
+	
 	static const UniqueValue::value_t trace_channel;
 	 		
 	const Preis &getPreis() const
@@ -73,7 +80,7 @@ public:
 	void changeMindMenge(int mindmenge) throw(SQLerror) {}	
    static void remove(const PreisListe::ID liste,const ArtikelBase &a,
    		std::vector<std::string> del_all_komp=std::vector<std::string>(),
-   		int mindmenge=0) throw(SQLerror);
+   		int mindmenge=0, bool from_all_lists=false) throw(SQLerror);
 
 };
  
