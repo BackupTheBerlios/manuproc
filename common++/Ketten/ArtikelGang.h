@@ -1,4 +1,4 @@
-/* $Id: ArtikelGang.h,v 1.9 2003/10/02 07:40:30 christof Exp $ */
+/* $Id: ArtikelGang.h,v 1.10 2004/02/25 11:35:49 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,16 +22,14 @@
 #include <Artikel/ArtikelBase.h>
 #include <Artikel/ArtikelBezeichnung.h>
 
-class ArtikelGang {
-protected:
+struct ArtikelGang {
 	int gaenge;
 	ArtikelBase art;
 
-public:
 	typedef ArtikelBase::ID ID;
 	ArtikelGang(int g,ArtikelBase id) 
 	  : gaenge(g), art(id) {}
-	ArtikelGang() : gaenge(0), art(0) {}
+	ArtikelGang() : gaenge(), art() {}
 	bool operator==(const ArtikelGang &b) const throw()
 	{  return Id()==b.Id() && Gaenge()==b.Gaenge() ;}
 	bool operator<(const ArtikelGang &b) const throw()

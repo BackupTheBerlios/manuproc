@@ -1,4 +1,4 @@
-/* $Id: KettenGarn.h,v 1.3 2004/02/25 10:17:18 christof Exp $ */
+/* $Id: KettenGarn.h,v 1.4 2004/02/25 11:35:49 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -36,7 +36,7 @@ public:
 	typedef ArtikelBase::ID ID;
 
 	KettenGarn_CP() 
-	        : index(0),zeile(0),kettenzahl(0),faeden(0), art(0),laenge(0) {}
+	        : index(),zeile(),kettenzahl(),faeden(), art(),laenge() {}
 	KettenGarn_CP(int i,int z,int k,int f,ArtikelBase id,int l,std::string w) 
 	        : index(i), zeile(z),kettenzahl(k),faeden(f), art(id),laenge(l),
 	          wiederholung(w) {}
@@ -68,6 +68,8 @@ public:
    void setFaeden(int l) {faeden=l;}
    std::string Wiederholung() const {return wiederholung;}
    unsigned int Wiederholung_anzahl() const { return 0; }
+   
+   static std::vector<KettenGarn_CP> Load(const ArtikelGang &ag,unsigned laenge);
 };
 
 //extern std::ostream& operator<<(std::ostream &o,const ArtikelGang &ag);

@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.10 2003/10/23 14:26:21 christof Exp $
+# $Id: Makefile.am,v 1.11 2004/02/25 11:35:49 christof Exp $
 
 AM_CXXFLAGS=@ECPG_INCLUDES@ 
 
@@ -9,7 +9,7 @@ noinst_LIBRARIES=libFaeden.a
 includedir=@includedir@/Faeden
 
 libFaeden_a_SOURCES= $(PGCC_Sources) \
-	Faden.cc Bindung.cc Webangaben.cc
+	Faden.cc Bindung.cc Webangaben.cc KettenGarn_CP.cc
 
 libFaeden.a : $(libFaeden_a_OBJECTS) $(libFaeden_a_DEPENDENCIES) Makefile
 	(for i in $(libFaeden_a_OBJECTS) ; do echo Faeden/$$i ; done ) >$@

@@ -1,4 +1,4 @@
-// $Id: KettplanKette.cc,v 1.4 2002/11/29 15:49:56 thoma Exp $
+// $Id: KettplanKette.cc,v 1.5 2004/02/25 11:35:49 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,6 +19,7 @@
 
 
 #include "KettplanKette.h"
+//#include <Ketten/ArtikelGang_Malte.h>
 
 void KettplanKette::set_info(int pm,int kl,int sl,int sd) throw()
 {  planmasch=pm;
