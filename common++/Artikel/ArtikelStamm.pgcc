@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.1 2001/08/20 08:26:21 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.2 2001/08/27 09:33:49 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,18 +30,19 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
       return;
    }
    exec sql begin declare section;
-   int id,styp,ityp=-1;
-   int best_bei,defschem;
+    int id,typ,inttyp;
+    int best_bei,defschem;
    exec sql end declare section;
    id=ab.Id();
       
-   exec sql select warengruppe,coalesce(bestellen_bei,1),coalesce(defaultschema,1)
-   	into :styp:ityp, :best_bei, :defschem
+   exec sql select warengruppe,coalesce(internwarengruppe,warengruppe)
+      ,coalesce(bestellen_bei,1),coalesce(defaultschema,1)
+   	into :typ, :inttyp, :best_bei, :defschem
    	from artikelstamm where id= :id;
    SQLerror::test(__FILELINE__);
    
-   if (ityp) payload.typ=(ArtikelTyp::typ)ArtikelTyp::AufgemachtesBand;
-   else payload.typ=(ArtikelTyp::typ)styp;
+   payload.typ=(ArtikelTyp::typ)typ;
+   payload.interntyp=(ArtikelTyp::typ)inttyp;
    payload.bestellen_bei=best_bei;
    payload.defaultschema=defschem;
    cache.Register(ab.Id(),payload);

@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.h,v 1.1 2001/08/20 08:27:13 christof Exp $
+// $Id: ArtikelStamm.h,v 1.2 2001/08/27 09:33:49 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,11 +27,13 @@
 class ArtikelStamm
 {	
 	struct payload_t
-	{  ArtikelTyp::typ typ;
+	{  ArtikelTyp::typ typ,interntyp;
 	   int bestellen_bei;
 	   int defaultschema;
 	   
-	   payload_t() : typ((ArtikelTyp::typ)0),  bestellen_bei(1), defaultschema(1) {}
+	   payload_t() 
+	   : typ((ArtikelTyp::typ)0), interntyp((ArtikelTyp::typ)0),
+	                 bestellen_bei(1), defaultschema(1) {}
 	};
 	
 	ArtikelBase art;
@@ -43,6 +45,8 @@ public:
 	ArtikelStamm(const ArtikelBase &ab) throw (SQLerror);
 	ArtikelTyp::typ Warengruppe() const
 	{  return payload.typ; }
+	ArtikelTyp::typ InternWarengruppe() const
+	{  return payload.interntyp; }
 	int BestellenBei() const
 	{  return payload.bestellen_bei; }
 	int defaultSchema() const

@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema.h,v 1.4 2001/07/16 09:54:26 christof Exp $
+// $Id: ExtBezSchema.h,v 1.5 2001/08/27 09:33:49 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -92,6 +92,8 @@ public:
 private:
 	ID extartbezid;
 	ArtikelTyp typ;
+        std::string jumbotitel,jumbobez,jumbospalte;
+        int jumboindex;
    
 	std::vector<BezKomp> bezkomps;
  
@@ -119,6 +121,10 @@ public:
 
 // int AnzBezKomp() const { return bezkomps.size();}
  ID Id() const { return extartbezid; }
+ int JumboIndex() const {return jumboindex;}
+ std::string JumboBez() const {return jumbobez;}
+ std::string JumboTitel() const {return jumbotitel;}
+ std::string JumboSpalte() const {return jumbospalte;}
 
  const ArtikelTyp &Typ() const { return typ; }
  

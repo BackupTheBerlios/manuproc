@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.h,v 1.2 2001/07/05 09:23:02 christof Exp $
+// $Id: ArtikelTyp.h,v 1.3 2001/08/27 09:33:49 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,6 +21,7 @@
 #define ARTIKELTYP_H
 
 #include <Artikel/ArtikelBase.h>
+//#include <ExtBezSchema/ExtBezSchema.h>
 
 /* quick hack to support Types really fast,
    this should be replaced by a decent generic class/scheme */
@@ -32,6 +33,7 @@ public:
 	{ GewebtesBand, GefaerbtesBand, BedrucktesBand, AufgemachtesBand,
 	  Garn, Seitenscheiben, Verpackungsmaterial, Sonstiges };
 private:
+        typedef unsigned int ID;
 	typ t;
 	
 public:
@@ -46,6 +48,7 @@ public:
 	bool operator<(const ArtikelTyp &b) const { return t<b.t; }
 	
 	ArtikelTyp(const ArtikelBase &ab) throw(SQLerror);
+	ArtikelTyp(const ArtikelBase &ab,ID id) throw(SQLerror);
 	static ArtikelTyp vonArtikel(const ArtikelBase &ab) throw(SQLerror)
 	{  return ArtikelTyp(ab); }
 };
