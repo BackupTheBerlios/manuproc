@@ -17,7 +17,7 @@ CREATE TABLE fw_lager_buchung (
     menge integer,
     datum timestamp with time zone,
     aktion character(1),
-    pid numeric(3,0),
+    pid numeric(4,0),
     bestand integer,
     lfrsid numeric(5,0)
 );

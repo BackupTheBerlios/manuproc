@@ -6,15 +6,14 @@
 
 SET search_path = public, pg_catalog;
 
-DROP TRIGGER "RI_ConstraintTrigger_1752178" ON public.kunden;
-DROP TRIGGER "RI_ConstraintTrigger_1752177" ON public.kunden;
 ALTER TABLE ONLY public.kunden DROP CONSTRAINT kunden_pkey;
 DROP INDEX public.kunden_uniq;
 DROP INDEX public.kudnen_sort_idx;
 DROP INDEX public.kudnen_firma_idx;
 DROP TABLE public.kunden;
 --
--- TOC entry 2 (OID 960848)
+-- TOC entry 2 (OID 6012684)
+-- Name: kunden; Type: TABLE; Schema: public; Owner: jacek
 --
 
 CREATE TABLE kunden (
@@ -86,73 +85,61 @@ CREATE TABLE kunden (
     lieferung_an numeric(5,0),
     ab_an_rngadresse boolean DEFAULT false,
     verknr numeric(5,0),
-    CHECK ((aktiv IS NOT NULL)),
+    CONSTRAINT "$1" CHECK ((aktiv IS NOT NULL)),
     CONSTRAINT kunden_preisauto CHECK ((preisauto IS NOT NULL))
 );
 
 
 --
--- TOC entry 3 (OID 960848)
+-- TOC entry 3 (OID 6012684)
+-- Name: kunden; Type: ACL; Schema: public; Owner: jacek
 --
 
 REVOKE ALL ON TABLE kunden FROM PUBLIC;
 
 
 --
--- TOC entry 4 (OID 1752135)
+-- Data for TOC entry 8 (OID 6012684)
+-- Name: kunden; Type: TABLE DATA; Schema: public; Owner: jacek
+--
+
+COPY kunden (kundennr, sortname, idnr, firma, postanwvor, strasse, postanwnach, hsnr, plz, postfach, postfplz, ort, planumsatz, umsatz, mitarbeiter, kundenumsatz, stand, flaeche, kalkulation, ktonr, blz, preisliste, rabatt, notiz, rechnung_an, bankeinzug, rng_an_postfach, extbezschemaid, extartbezid, lieferadresse, rechnungsadresse, typ, verein, skontofrist, bankindex, entsorgung, waehrungid, einzugrabatt, lkz, skontosatz, verknr_old, gruppennr, zeilenrabatt, buchungskonto, unsere_kundennr, lieferantenkonto, gegenkonto, ku_verkaeufer, sonder_pliste, landid, betreuer, anz_firmenpapier, anz_weissespapier, zahlungsart, lieferung_frei_haus, aktiv, preisauto, showean, auf_notiz, lief_notiz, rng_notiz, debitorenkonto, name2, gebdatum, branr, lieferung_an, ab_an_rngadresse, verknr) FROM stdin;
+20104	Ambroso	IT 02724930231	Ambroso S.r.l.	\N	Viale del Lavoro,	\N	17	37036	\N	\N	S.Martino Buon Albergo (VR)	\N	\N	\N	\N	2003-03-04 11:11:01+01	\N	\N	59790	5188	15	0.0	\N	20104	f	f	\N	\N	t	t	RL	\N	60	\N	f	1	0.0	I	0.00	7	0	t	\N	\N	\N	\N	7	\N	4	227	1	2	1	\N	t	f	t	\N	\N	\N	\N	\N	\N	\N	\N	f	\N
+11302	Möller Floristik GmbH	\N	Möller Floristik GmbH	\N	Oberster Kamp	\N	17	59069	\N	\N	Hamm	\N	132608.00	\N	\N	1997-11-11 00:00:00+01	\N	\N	344150	40070080	1	0.0	\N	11302	t	f	\N	\N	t	t	RL	\N	8	2496	t	1	1.0	D	3.00	10	0	t	\N	\N	\N	\N	10	\N	1	226	1	2	1	\N	t	t	t	\N	\N	\N	\N	\N	\N	\N	\N	f	22817
+1	Mabella	\N	Mabella Decorbänder	\N	Otto-Hahn-Str	\N	12 A	42369	\N	\N	Wuppertal	0	\N	\N	0.00	2003-05-19 15:04:38+02	0	\N	423111	33050000	1	0.0	\N	1	f	f	\N	\N	t	t	RL	\N	8	2015	f	1	1.0	D	3.00	99	0	t	\N	\N	\N	\N	99	\N	1	\N	1	2	1	\N	t	t	f	\N	\N	\N	\N	\N	\N	\N	\N	f	99
+\.
+
+
+--
+-- TOC entry 4 (OID 6018632)
+-- Name: kudnen_firma_idx; Type: INDEX; Schema: public; Owner: jacek
 --
 
 CREATE INDEX kudnen_firma_idx ON kunden USING btree (firma);
 
 
 --
--- TOC entry 5 (OID 1752136)
+-- TOC entry 5 (OID 6018633)
+-- Name: kudnen_sort_idx; Type: INDEX; Schema: public; Owner: jacek
 --
 
 CREATE INDEX kudnen_sort_idx ON kunden USING btree (sortname);
 
 
 --
--- TOC entry 7 (OID 1752137)
+-- TOC entry 7 (OID 6018634)
+-- Name: kunden_uniq; Type: INDEX; Schema: public; Owner: jacek
 --
 
 CREATE UNIQUE INDEX kunden_uniq ON kunden USING btree (sortname, ort);
 
 
 --
--- TOC entry 6 (OID 960866)
+-- TOC entry 6 (OID 6012708)
+-- Name: kunden_pkey; Type: CONSTRAINT; Schema: public; Owner: jacek
 --
 
 ALTER TABLE ONLY kunden
     ADD CONSTRAINT kunden_pkey PRIMARY KEY (kundennr);
 
 
---
--- TOC entry 8 (OID 1752177)
---
-
-CREATE CONSTRAINT TRIGGER "$1"
-    AFTER DELETE ON kunden
-    FROM prov_abrechnung
-    NOT DEFERRABLE INITIALLY IMMEDIATE
-    FOR EACH ROW
-    EXECUTE PROCEDURE "RI_FKey_noaction_del" ('$1', 'prov_abrechnung', 'kunden', 'UNSPECIFIED', 'verknr', 'kundennr');
-
-
---
--- TOC entry 9 (OID 1752178)
---
-
-CREATE CONSTRAINT TRIGGER "$1"
-    AFTER UPDATE ON kunden
-    FROM prov_abrechnung
-    NOT DEFERRABLE INITIALLY IMMEDIATE
-    FOR EACH ROW
-    EXECUTE PROCEDURE "RI_FKey_noaction_upd" ('$1', 'prov_abrechnung', 'kunden', 'UNSPECIFIED', 'verknr', 'kundennr');
-
-
-COPY kunden (kundennr, sortname, idnr, firma, postanwvor, strasse, postanwnach, hsnr, plz, postfach, postfplz, ort, planumsatz, umsatz, mitarbeiter, kundenumsatz, stand, flaeche, kalkulation, ktonr, blz, preisliste, rabatt, notiz, rechnung_an, bankeinzug, rng_an_postfach, extbezschemaid, extartbezid, lieferadresse, rechnungsadresse, typ, verein, skontofrist, bankindex, entsorgung, waehrungid, einzugrabatt, lkz, skontosatz, verknr_old, gruppennr, zeilenrabatt, buchungskonto, unsere_kundennr, lieferantenkonto, gegenkonto, ku_verkaeufer, sonder_pliste, landid, betreuer, anz_firmenpapier, anz_weissespapier, zahlungsart, lieferung_frei_haus, aktiv, preisauto, showean, auf_notiz, lief_notiz, rng_notiz, debitorenkonto, name2, gebdatum, branr, lieferung_an, ab_an_rngadresse, verknr) FROM stdin;
-20104	Ambroso	IT 02724930231	Ambroso S.r.l.	\N	Viale del Lavoro,	\N	17	37036	\N	\N	S.Martino Buon Albergo (VR)	\N	\N	\N	\N	2003-03-04 11:11:01+01	\N	\N	59790	5188	15	0.0	37% Rabatt - RIBA 60 T zum Monatsende	20104	f	f	\N	\N	t	t	RL	\N	60	\N	f	1	0.0	I	0.00	7	0	t	\N	\N	\N	\N	7	\N	4	227	1	2	17	\N	t	f	t	\\\\\\center \\bf\nAttenzione nuove coordinate bancarie !\na partire dal 1.06.03 le nostre nuove coordinate bancarie\nsono le seguenti:\\\\\nBanca: Stadtsparkasse Wuppertal\\\\\nconto no.: 423 111\\\\\nSwift: WUPSDE33\\\\\nIBAN: DE91 3305 0000 0000 4231 11	\\\\\\center \\bf\nAttenzione nuove coordinate bancarie !\na partire dal 1.06.03 le nostre nuove coordinate bancarie\nsono le seguenti:\\\\\nBanca: Stadtsparkasse Wuppertal\\\\\nconto no.: 423 111\\\\\nSwift: WUPSDE33\\\\\nIBAN: DE91 3305 0000 0000 4231 11	\\\\\\center \\bf\nAttenzione nuove coordinate bancarie !\na partire dal 1.06.03 le nostre nuove coordinate bancarie\nsono le seguenti:\\\\\nBanca: Stadtsparkasse Wuppertal\\\\\nconto no.: 423 111\\\\\nSwift: WUPSDE33\\\\\nIBAN: DE91 3305 0000 0000 4231 11	\N	\N	\N	\N	\N	f	\N
-11302	Möller Floristik GmbH	\N	Möller Floristik GmbH	\N	Oberster Kamp	\N	17	59069	\N	\N	Hamm	\N	132608.00	\N	\N	1997-11-11 00:00:00+01	\N	\N	344150	40070080	1	0.0		11302	t	f	\N	\N	t	t	RL	\N	8	2496	t	1	1.0	D	3.00	10	0	t	\N	\N	\N	\N	10	\N	1	226	1	2	6	\N	t	t	t	\\\\\\center \\bf\nBitte beachten Sie ab dem 1.6.2003 unsere neue Bankverbindung:\\\\\nBank: Stadtsparkasse Wuppertal - BLZ: 3305 0000\\\\\nKto Nr.: 423 111\\\\\nSwift: WUPSDE33\\\\\nIBAN: DE91 3305 0000 0000 4231 11	\\\\\\center \\bf\nBitte beachten Sie ab dem 1.6.2003 unsere neue Bankverbindung:\\\\\nBank: Stadtsparkasse Wuppertal - BLZ: 3305 0000\\\\\nKto Nr.: 423 111\\\\\nSwift: WUPSDE33\\\\\nIBAN: DE91 3305 0000 0000 4231 11	\\\\\\center \\bf\nBitte beachten Sie ab dem 1.6.2003 unsere neue Bankverbindung:\\\\\nBank: Stadtsparkasse Wuppertal - BLZ: 3305 0000\\\\\nKto Nr.: 423 111\\\\\nSwift: WUPSDE33\\\\\nIBAN: DE91 3305 0000 0000 4231 11	\N	\N	\N	\N	\N	f	22817
-1	Mabella	\N	Mabella Decorbänder	\N	Otto-Hahn-Str	\N	12 A	42369	\N	\N	Wuppertal	0	\N	\N	0.00	2003-05-19 15:04:38+02	0	\N	423111	33050000	1	0.0	\n	1	f	f	\N	\N	t	t	RL	\N	8	2015	f	1	1.0	D	3.00	99	0	t	\N	\N	\N	\N	99	\N	1	\N	1	2	1	\N	t	t	f	\\\\\\center \\bf\nBitte beachten Sie ab dem 1.6.2003 unsere neue Bankverbindung:\\\\\nBank: Stadtsparkasse Wuppertal - BLZ: 3305 0000\\\\\nKto Nr.: 423 111\\\\\nSwift: WUPSDE33\\\\\nIBAN: DE91 3305 0000 0000 4231 11	\\\\\\center \\bf\nBitte beachten Sie ab dem 1.6.2003 unsere neue Bankverbindung:\\\\\nBank: Stadtsparkasse Wuppertal - BLZ: 3305 0000\\\\\nKto Nr.: 423 111\\\\\nSwift: WUPSDE33\\\\\nIBAN: DE91 3305 0000 0000 4231 11	\\\\\\center \\bf\nBitte beachten Sie ab dem 1.6.2003 unsere neue Bankverbindung:\\\\\nBank: Stadtsparkasse Wuppertal - BLZ: 3305 0000\\\\\nKto Nr.: 423 111\\\\\nSwift: WUPSDE33\\\\\nIBAN: DE91 3305 0000 0000 4231 11	\N	\N	\N	\N	\N	f	99
-\.

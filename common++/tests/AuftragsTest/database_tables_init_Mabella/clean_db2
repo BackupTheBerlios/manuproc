@@ -1,0 +1,5 @@
+#!/bin/sh
+
+psql $1 <<EOF
+delete from fw_lager_buchung;
+EOF

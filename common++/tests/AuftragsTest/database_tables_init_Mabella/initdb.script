@@ -45,7 +45,8 @@ createdb -E SQL_ASCII $PGDATABASE
    prov_abrechnung \
    prov_verkaeufer \
    prov_config \
-   artbez_insert
+   artbez_insert \
+   artikel_bestand
 do
   cat $P/$i
 done ) | psql $PGDATABSE -q

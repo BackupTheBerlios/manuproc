@@ -30,25 +30,36 @@
 #include <Lieferschein/Lieferschein.h>
 #include "TestReihe.h"
 
-static bool LieferscheinJacek(AufEintrag &AE)
+static bool Lieferschein_Kunde(AufEintrag &AE)
 {
-       Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
-       liefs.push_back(ARTIKEL_TRIO,10);
-       vergleichen(Check::Lieferschein|Check::Menge,"LS_volllieferung","Lieferschein mit Volllieferung (Mabella) anlegen","V");
 
+	{// Einkauf liefert Vollmenge
+        Auftrag auftrag=Auftrag(Auftrag::Anlegen(EINKAUF),KUNDE2);
+        AufEintragBase AEB2=auftrag.push_back(10,DATUM,ARTIKEL_TRIO,OPEN,false);
+       Lieferschein liefs(EINKAUF,cH_Kunde(KUNDE2));
+	AufEintrag ae(AEB2);
+       liefs.push_back(ae,ARTIKEL_TRIO,15);
+       vergleichen(Check::Menge|Check::Lieferschein,"LS_Einkauf","Lieferschein im Einkauf (Mabella) anlegen","VE");
+	}
+
+	{
+       Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
+       liefs.push_back(AE,ARTIKEL_TRIO,10);
+       vergleichen(Check::Lieferschein|Check::Menge,"LS_volllieferung","Lieferschein mit Volllieferung (Mabella) anlegen","V");
+	}
+
+       return true;
+}
+
+static TestReihe Lieferschein_Kunde_(&Lieferschein_Kunde,"Lieferschein Test für Mabella","LM");
+
+
+/*
        int lznr=1;
        LieferscheinEntry le1(LieferscheinEntryBase(liefs,lznr));
        int stueck=3;
        le1.changeMenge(stueck,0,liefs,true);
        vergleichen(Check::Lieferschein|Check::Menge,"LS_mengenaenderung_minus","Lieferscheinentry: Minus","M");
-
-      {// Überplanen des Einkaufs
-      Auftrag PA=Auftrag(Auftrag::Anlegen(EINKAUF),KUNDE2);
-      int znr=1;
-      AufEintrag AEP((AufEintragBase(EINKAUF,AuftragBase::ungeplante_id,znr)));
-      AEP.Planen(27,PA,PLANDATUM5);
-      vergleichen(Check::Menge,"planen_kupfer","Über-Planen des Einkaufs (Mabella)","E");
-      }
 
       {// Einkauf liefert Teilmenge
        Lieferschein liefs(EINKAUF,cH_Kunde(KUNDE2));
@@ -56,30 +67,25 @@ static bool LieferscheinJacek(AufEintrag &AE)
        vergleichen(Check::Menge|Check::Lieferschein,"LSZP","Lieferschein im Einkauf mit Teillieferung (Mabella)","");
       }
 
-      {// Einkauf liefert Vollmenge
-       Lieferschein liefs(EINKAUF,cH_Kunde(KUNDE2));
-       liefs.push_back(ARTIKEL_TRIO,25);
-       vergleichen(Check::Menge|Check::Lieferschein,"LSZM","Lieferschein im Einkauf Weberei mit Restlieferung (Mabella)","");
-      }
 
-
-/*      { // Bestellen eines Artikels ohne Kunden-Auftrag
+      { // Bestellen eines Artikels ohne Kunden-Auftrag
         Auftrag PA=Auftrag(Auftrag::Anlegen(EINKAUF),KUNDE2);
         ManuProC::st_produziert sp(ARTIKEL_ZWEI,2222,getuid(),Kunde::eigene_id,LieferscheinBase::none_id,PA,SPLITDATUM);
         cH_ppsInstanz I(EINKAUF);
         I->Planen(sp);
         vergleichen(Check::Menge,"zwei_auftraege_anlegen","Einkauf eines nicht-bestelleten Artikel (Mabella)","");
       }
-*/
-       return true;
+
 }
 
-static TestReihe LieferscheinJacek_(&LieferscheinJacek,"Lieferschein Test für Mabella","LJ");
+*/
 
+
+/*
 static bool Rep_Mabella(AufEintrag &AE)
 {  LieferscheinJacek(AE);
       assert(Check::reparieren);
-      graphheader("Reparatur-Test für Mabella");
+//      graphheader("Reparatur-Test für Mabella");
 
       // Test 1a: 0er und 2er != OPEN
       // Test 1b: KundenID!=eigene_id
@@ -110,5 +116,6 @@ static bool Rep_Mabella(AufEintrag &AE)
 }
 
 static TestReihe Rep_Mabella_(&Rep_Mabella,"Reparatur-Test für Mabella","RM");
+*/
 
 #endif

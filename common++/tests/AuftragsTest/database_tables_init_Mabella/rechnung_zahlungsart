@@ -38,6 +38,10 @@ CREATE TABLE rechnung_zahlungsart (
 REVOKE ALL ON TABLE rechnung_zahlungsart FROM PUBLIC;
 GRANT SELECT ON TABLE rechnung_zahlungsart TO PUBLIC;
 
+COPY rechnung_zahlungsart (id, kurzbezeichnung, bezeichnung, einzugrabatt, bankeinzug, zahlungsfrist, skontosatz_1, skontofrist_1, skontosatz_2, skontofrist_2, skontosatz_3, skontofrist_3, monatsende, verfahren, frist_monate) FROM stdin;
+1	sofort, ohne Abzug	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+\.
+
 
 --
 -- TOC entry 4 (OID 960805)
