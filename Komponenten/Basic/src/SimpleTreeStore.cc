@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.68 2004/05/06 09:35:19 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.69 2004/05/06 09:42:44 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -634,7 +634,7 @@ void SimpleTreeStore::iterinit(vfunc_iter_t iter,const const_iterator &schema) c
 void SimpleTreeStore::iterclear(vfunc_iter_t iter) const
 {  ManuProC::Trace(trace_channel,__FUNCTION__);
 #if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
-   iter=vfunc_iter_t();
+   iter=TreeModel::iterator();
 #else
    memset(iter,0,sizeof(*iter));
 #endif
@@ -667,7 +667,7 @@ void SimpleTreeStore::iterinit(vfunc_iter_t iter,const iterator &schema) const
 void SimpleTreeStore::get_value_vfunc(const TreeModel::iterator& iter, 
 		int column, STS_GTKMM_22_24(GValue*,Glib::ValueBase&) value) STS_VFUNC_CONST
 {  g_return_if_fail (iter->gobj()->stamp == stamp);
-   Node &nd=iterconv(iter->gobj())->second;
+   Node &nd=iterconv(iter STS_GTKMM_22_24(->gobj(),))->second;
    switch(e_spalten(column))
    {  case s_row: VALUE_INIT(row);
          return;
@@ -710,7 +710,7 @@ void SimpleTreeStore::get_value_vfunc(const TreeModel::iterator& iter,
 }
 
 bool SimpleTreeStore::iter_valid(vfunc_constiter_t iter) const
-{  return iter STS_GTKMM_22_24(->,.) stamp==IterStamp();
+{  return iter STS_GTKMM_22_24(->stamp,.get_stamp())==IterStamp();
 }
 
 #if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
@@ -720,18 +720,16 @@ bool SimpleTreeStore::iter_next_vfunc(vfunc_constiter_t iter, vfunc_iter_t iter_
 bool SimpleTreeStore::iter_next_vfunc(vfunc_iter_t iter)
 {  GtkTreeIter *iter_next=iter;
 #endif
-   ManuProC::Trace _t(trace_channel, __FUNCTION__,iter->user_data);
+   ManuProC::Trace _t(trace_channel, __FUNCTION__,iter STS_GTKMM_22_24(,.gobj())->user_data);
    iterclear(iter_next);
    if (!iter_valid(iter)) return false;
 
-   g_return_val_if_fail (iter, false);
-   g_return_val_if_fail (iter->stamp == stamp, false);
    iterator old=iterconv(iter),newit=old;
    if (!old->second.parent) return false;
    newit++;
    if (newit==old->second.parent->children.end()) return false;
    iterinit(iter_next,newit);
-   ManuProC::Trace(trace_channel,"new iter",iter->user_data);
+   ManuProC::Trace(trace_channel,"new iter",next_iter STS_GTKMM_22_24(,.gobj())->user_data);
    return true;
 }
 
