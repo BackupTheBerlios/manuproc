@@ -285,7 +285,8 @@ void Rechnung::addLieferschein(const LieferscheinBase &lfrs) throw(SQLerror)
  	"VALUES (?,?, ?, ?,?, ?,?,"
  		"?,?,?, ?,?)")
  	<< Id() << lineno << i->Artikel() << lfrs.Id() << i->ZNr() 
- 				<< i->Stueck() << i->Menge()
+ 				<< i->Stueck() 
+				<< Query::NullIf(i->Menge(),0)
  	<< p.Wert(getWaehrung(),p.BezugsMenge()) 
 	 	<< rabatt << p.BezugsMenge()
 	 	<< provsatz 
