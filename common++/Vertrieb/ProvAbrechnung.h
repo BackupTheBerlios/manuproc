@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung.h,v 1.13 2003/12/19 14:44:42 jacek Exp $ */
+/* $Id: ProvAbrechnung.h,v 1.14 2004/01/24 13:55:32 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -32,6 +32,9 @@
 
 #define MWST	16
 
+
+
+
 class ProvAbrechnung : public ManuProcEntity<>
 {
  Kunde::ID verkaeufer;
@@ -44,6 +47,11 @@ class ProvAbrechnung : public ManuProcEntity<>
  Ueberweisung ueberweisung;
     
 public:
+
+// no entry in table prov_config means the default provsatz, so you do not 
+// need to configure new articles except they shuld get different provsatz
+// or no one at all
+ typedef enum {NO_PROV=0,EXCEPT_PROV_1} ProvSatzKey;
 
  typedef std::vector<ProvAbrechnungEntry*>::const_iterator const_iterator;
  
