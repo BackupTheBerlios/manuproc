@@ -24,6 +24,10 @@ class auftrag_provision : public auftrag_provision_glade
         void on_prov_enable_toggled();
         void on_prov_verk_activate();
 
+ void auftrag_provision::fillProvEntryList();
+
+ AuftragFull *auf;
+
 public:
  auftrag_provision(AuftragFull *auftrag);
 };
