@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.h,v 1.17 2004/03/29 06:37:50 christof Exp $
+// $Id: ArtikelTyp.h,v 1.18 2004/03/29 07:59:20 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,8 +24,9 @@
 #include <Artikel/ArtikelBase.h>
 #include <DynamicEnums/DynamicEnums.h>
 #include <DynamicEnums/DefaultValues.h>
-#include <stdexcept>
+#include <exception>
 #include <map>
+#include <vector>
 
 namespace ArtikelTypID = ManuProC::DynamicEnums::ArtikelTyp;
 
@@ -39,7 +40,7 @@ public:
 private:
 	ID t;
 	
-	static std::map<ID, int > attributes;
+	static std::map<ID, std::vector<bool> > attributes;
 	
 public:
 	ArtikelTyp(ID a) : t(a) {}
@@ -59,6 +60,6 @@ public:
 	{  return ArtikelTyp(ab); }
         static std::string get_string(ID t);
         
-        static bool hasAttribute(ID typ, AttrID attrid) throw(std::runtime_error);
+        static bool hasAttribute(ID typ, AttrID attrid);
 };
 #endif

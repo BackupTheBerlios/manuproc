@@ -1,4 +1,4 @@
-// $Id: ArtikelTyp.pgcc,v 1.11 2004/03/26 16:13:38 jacek Exp $
+// $Id: ArtikelTyp.pgcc,v 1.12 2004/03/29 07:59:20 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,14 +21,13 @@
 #include <Artikel/ArtikelStamm.h>
 #include <ExtBezSchema/ExtBezSchema.h>
 #include <Misc/SQLerror.h>
+#include <DynamicEnums/DynamicDescr.h>
 exec sql include sqlca;
 
-std::map<ID,std::vector<bool> > ArtikelTyp::attributes;
+std::map<ArtikelTyp::ID,std::vector<bool> > ArtikelTyp::attributes;
 
 bool ArtikelTyp::hasAttribute(ID typ, AttrID attrid)
 {
- typedef ManuProC::DynamicDescriptions::ArtikelTyp::string* AttrArr;
- 
  if(!attributes.empty())
    {
     std::string cols;
@@ -44,12 +43,12 @@ bool ArtikelTyp::hasAttribute(ID typ, AttrID attrid)
     query+=" from artbez_warengruppe ";
     Query q(query);
 
-    FetchIStream is
+    FetchIStream is;
     std::vector<bool> attr_val;
     while((q>>is).good()) 
       {
        std::vector<bool> attr_val;       
-       ID in_typ;
+       int in_typ;
        
        is >> in_typ;
        for(int i=0;i<attr_num;i++)
@@ -58,7 +57,7 @@ bool ArtikelTyp::hasAttribute(ID typ, AttrID attrid)
           is >> in;
           attr_val.push_back(in); 
          }
-       attributes[in_typ]=attr_val;       
+       attributes[(ID)in_typ]=attr_val;       
       }
    }
    
