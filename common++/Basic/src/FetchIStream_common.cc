@@ -1,4 +1,4 @@
-// $Id: FetchIStream_common.cc,v 1.16 2004/10/22 15:50:31 christof Exp $
+// $Id: FetchIStream_common.cc,v 1.17 2004/10/22 15:51:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001-2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -384,6 +384,6 @@ FetchIStream::Fake::Fake(const Fake &a) : value(a.value)
 }
 
 FetchIStream::Fake::~Fake()
-{  if (result) free(result);
+{  if (result) free(const_cast<void*>(result));
 }
 #endif
