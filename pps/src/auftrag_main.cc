@@ -562,7 +562,7 @@ void auftrag_main::get_ArtikelZusammensetzung(const AufEintrag& AE_Kunde,
      AufEintrag AE(i->AEB);
      AuftragBase::mengen_t planMenge=0,geliefertMenge=0;
      AuftragBase::mengen_t bestellMenge=AE.getStueck();
-     ArtikelBaum::faktor_t faktor = ArtikelBaum(AE_Kunde.ArtId()).Faktor(i->Art);
+     ArtikelBaum::faktor_t faktor = ArtikelBaum(AE_Kunde.Artikel()).Faktor(i->Art);
      AuftragBase::mengen_t sollMenge=AE_Kunde.getStueck()*faktor;
 
      if(i->AEB.Id()!=0) // nur Mengen der geplante Aufträge berücksichtigen
@@ -765,7 +765,7 @@ void auftrag_main::on_button_artikeleingabe_clicked()
   {
     std::string s = "artikeleingabe "+itos(selected_AufEintrag->ArtId())+" &";
     system(s.c_str());
-    ArtikelBaum::UnCache(selected_AufEintrag->ArtId());
+    ArtikelBaum::UnCache(selected_AufEintrag->Artikel());
   }
 }
 
