@@ -266,11 +266,12 @@ void auftrag_rechnung::lieferschein_uebernehmen()
          }
        else {
          cH_Zahlungsart za(rechnung.getZahlungsart());
-         if(za->getBankeinzug())
+         if(za->getBankeinzug() || za->FristMonate())
           if(!zahlziel->get_value().valid())
              {rechnung.setze_Zahlziel(za->getZahlungstermin(rechnung.getDatum()));
               zahlziel->set_value(za->getZahlungstermin(rechnung.getDatum()));
              }
+
          }
 #endif         
              

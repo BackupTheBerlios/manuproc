@@ -69,7 +69,7 @@ void auftrag_main::tree_neuer_auftrag_leaf_selected(cH_RowDataBase d)
 
   // Referenzaufträge müssen gehohlt werden BEVOR der Auftrag gelöscht wird!!!
   std::list<AufEintragZu::st_reflist> ReferenzAufEintragK = AufEintragZu(IA).get_Referenz_listFull(false); // Entsprechenden Kundenauftrag (die 2er sind auch mit dabei) hohlen
-  std::list<AufEintragZu::st_reflist> ReferenzAufEintragR = AufEintragZu(IA).get_Referenz_list(IA,false); // direkte Referenen hohlen
+  std::list<AufEintragZu::st_reflist> ReferenzAufEintragR = AufEintragZu(IA).get_Referenz_list(IA,false,false); // direkte Referenen hohlen
   try{
   Transaction tr;
   if(!IA.deleteAuftragEntry())  // Auftrag hat noch Kinder?
