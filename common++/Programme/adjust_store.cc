@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.35 2003/06/13 09:38:30 christof Exp $
+// $Id: adjust_store.cc,v 1.36 2003/06/17 08:15:59 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -53,9 +53,10 @@ static void usage(const std::string &s)
            "\t*: Alle Analysen/Reparaturen auf einmal (meist mit -I)\n";
            
  std::cerr << "USAGE:  ";
- std::cerr << s <<" [-i<instanz>|-I]  -a<aktion> [-d<database>] [-h<dbhost>] [-y] \n"
+ std::cerr << s <<" [-i<instanz>|-I]  -a<aktion> [-d<database>] [-h<dbhost>] [-l] [-y] \n"
            "\twobei die aktion=[A|C|X|T|*] ist.\n"
            "\t-y Analysemodus (keine Reparaturen)\n"
+           "\t-l Reparatur wiederholen bis keine Fehler mehr auftreten\n"
            "\t-I führt die Tests für alle Instanzen durch\n\n";
  exit(1);
 }
@@ -66,14 +67,15 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,const bool analys
    bool alles_ok=true;
     if (actions&b_physical)
      {
-      if(I->EigeneLagerKlasseImplementiert()) RI.ReparaturLager(getuid(),analyse_only);
+      if(I->EigeneLagerKlasseImplementiert()) 
+         alles_ok&=RI.ReparaturLager(getuid(),analyse_only);
       else if (!(actions&b_tree)) // bei * unterdrücken
          std::cout << "\t"<< I << " 'A' nicht sinnvoll\n";
      }
     if (actions&b_tree || actions&b_exclude)
     {  SQLFullAuftragSelector psel=SQLFullAuftragSelector::sel_InstanzAlle(I->Id());
        SelectedFullAufList K(psel);
-      if (actions&b_exclude) RI.Reparatur_0er_und_2er(K,analyse_only);
+      if (actions&b_exclude) alles_ok&=RI.Reparatur_0er_und_2er(K,analyse_only);
       if (actions&b_tree)
       {AuftragBase::tolerate_inconsistency=true;
        for(SelectedFullAufList::iterator i = K.begin();i!=K.end(); ++i)
@@ -108,9 +110,10 @@ int main(int argc,char *argv[])
   std::string dbhost="";  
   bool analyse_only=false;
   bool all_instanz=false;
+  bool loop=false;
 
   if(argc==1) usage(argv[0]);
-  while ((opt=getopt_long(argc,argv,"h:d:i:a:yIt",options,NULL))!=EOF)
+  while ((opt=getopt_long(argc,argv,"h:d:i:a:yItl",options,NULL))!=EOF)
    {
     switch(opt)
      {
@@ -124,6 +127,7 @@ int main(int argc,char *argv[])
        case 'd' : database=optarg;break;
        case 'h' : dbhost=optarg;break;  
        case 'y' : analyse_only=true;break;  
+       case 'l' : loop=true; break;
        case 't' : ManuProC::Tracer::Enable(AuftragBase::trace_channel); break;
        case '?' : usage(argv[0]);        
      }
@@ -139,6 +143,8 @@ int main(int argc,char *argv[])
     conn.setDbase(database);
     ManuProC::dbconnect(conn);
 
+restart:
+    alles_ok=true;
     if(instanz!=ppsInstanzID::None) 
       alles_ok&=check_for(argv[0],cH_ppsInstanz(instanz),analyse_only);
     else
@@ -152,7 +158,8 @@ int main(int argc,char *argv[])
          actions=save;
         }
      }    
-
+    if (loop && !alles_ok) goto restart;
+    
     ManuProC::dbdisconnect();
   }catch(SQLerror &e){std::cout << e<<'\n'; return 1;}
   return !alles_ok;

@@ -415,8 +415,7 @@ std::cout << dummystring<<'\n';
         vergleichen(C,Check::Menge,"rep_lieferschein","Reparatur-Lieferschein anlegen","L",mit_reparatur_programm);
        }
 
-#warning: TODO: 'adjust_store KK'
-      #endif
+#endif
      }
        break;
     case Lagertest :
