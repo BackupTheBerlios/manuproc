@@ -1,6 +1,6 @@
-// $Id: mystream.h,v 1.7 2004/05/07 06:52:25 christof Exp $
+// $Id: testmystream.cc,v 1.1 2004/05/07 06:52:25 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
- *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
+ *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,32 +17,16 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if defined(__GNUC__) && __GNUC__<3
-#include<strstream.h>
-#include <string>
+#include <Misc/mystream.h>
+#include <iostream>
 
-class mystream : public ostrstream
-{
-public:
-  const std::string str(bool erase=false) 
-  {  (*this) << '\0'; 
-     const std::string res(this->std::ostrstream::str());
-     freeze(0);
-     if(erase) seekp(0); 
-     return res;
-  } 
-};
-#else
-#include <sstream>
-
-class mystream : public std::ostringstream
-{
-public:
-  const std::string str(bool erase=false) 
-  {  std::string res=std::ostringstream::str();
-     if(erase) { seekp(0); std::ostringstream::str(""); }
-     return res;
-  } 
-};
-
-#endif
+int main()
+{ mystream m;
+    m << 2.3 << ':' << "test";
+    std::cout << m.str() << '\n';
+    m << ":test2";
+    std::cout << m.str(true) << '\n';
+    m << ":test3";
+    std::cout << m.str(true) << '\n';
+   return 0;
+}
