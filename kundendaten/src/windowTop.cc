@@ -93,6 +93,13 @@ void windowTop::clear_update_bits()
    UpdatePerson=Person::UpdateBits(0);
 }
 
+gint windowTop::on_delete_event(GdkEventAny*)
+{
+ on_buttonBeenden_clicked();
+ return true;
+}
+
+
 void windowTop::on_buttonBeenden_clicked()
 {   
    saveAll();

@@ -58,6 +58,7 @@ class windowTop : public windowTop_glade
         void on_landesbox_activate();
         void on_entry_blz_activate();
         void on_load_activate();
+	gint on_delete_event(GdkEventAny*);
         void on_buttonBeenden_clicked();
         void on_buttonAuswaehlen_clicked();
 //        void on_buttonSpeichern_clicked();
