@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.3 2001/06/27 08:04:09 christof Exp $ */
+/* $Id: Datum.h,v 1.4 2001/07/16 09:54:26 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -93,7 +93,7 @@ public:
 	/// Gültigkeit testen
 	void teste() const throw(Datumsfehler);
 	/// Datumsformat automatisch raten
-        void from_auto(const char *datum) throw(Datumsfehler,Formatfehler);
+        void from_auto(const char *datum,const char **endptr=0) throw(Datumsfehler,Formatfehler);
 	/// Datum aus Postgres DATE oder TIMESTAMP erzeugen
         void from_postgres(const char *postgres_timestamp) throw(Datumsfehler,Formatfehler)
         {  from_auto(postgres_timestamp); }

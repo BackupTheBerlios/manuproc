@@ -21,7 +21,6 @@
 #include <string.h>
 #include <strstream>
 #include <Aux/SQLerror.h>
-#include <Auftrag/selAufEntry.h>
 #include <Aux/Transaction.h>
 exec sql include sqlca;
 #include <Auftrag/selFullAufEntry.h>
@@ -158,7 +157,7 @@ AuftragFull::AuftragFull(const AuftragBase& auftrag) throw(SQLerror)
  			(SQLFullAuftragSelector::sel_Aufid(auftrag)));
  for(std::vector<AufEintragBase>::iterator i = aufids.aufidliste.begin();
 				 	 i!=aufids.aufidliste.end(); i++)
- {  try { eintragliste.push_back(AufEintragBase(*i));
+ {  try { eintragliste.push_back(*i);
     } catch (SQLerror &e)
     {  if(e.Code() != 100) throw;
        std::cerr << "AuftragFull::AuftragFull: " << e << '\n';

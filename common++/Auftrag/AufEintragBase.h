@@ -1,4 +1,4 @@
-/* $Id: AufEintragBase.h,v 1.8 2001/07/05 09:23:02 christof Exp $ */
+/* $Id: AufEintragBase.h,v 1.9 2001/07/16 09:54:26 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,7 +26,6 @@
 #include <Artikel/Preis.h>
 #include <Auftrag/AufEintragBase2.h>
 #include <Auftrag/auftrag_status.h>
-#include <Auftrag/selAufEntry.h> //?
 #include <Aux/CacheStatic.h>
 #include <Aux/Datum.h>
 #include <Aux/Handles.h>
@@ -48,7 +47,7 @@ class AufArtikel : public ArtikelBaum, protected HandleContent
  cH_ArtikelBezeichnung bez;
 
  // Muﬂ das privat?
- AufArtikel(const std::vector<EntryValue> &_values, const cH_ExtBezSchema &schema)
+ AufArtikel(const std::vector<cH_EntryValue> &_values, const cH_ExtBezSchema &schema)
  	: bez(1,_values,schema)
  	{
  	 ArtikelBaum::setID(bez->Id());
@@ -57,19 +56,19 @@ class AufArtikel : public ArtikelBaum, protected HandleContent
 public:
 
  void setArtikelBezeichnung(const cH_ExtBezSchema &cs) 
- 	{ bez= cH_ArtikelBezeichnung(Id(),cs->Id(),ArtikelBezeichnung::dont_throw()); }
+ 	{ bez= cH_ArtikelBezeichnung(Id(),cs->Id()); }
  static const ID default_id=0;
 
  AufArtikel(const ID &stamp,const cH_ExtBezSchema &schema)
- 	: ArtikelBaum(stamp),ArtikelBase(stamp),bez(stamp,schema->Id(),ArtikelBezeichnung::dont_throw())
+ 	: ArtikelBaum(stamp),ArtikelBase(stamp),bez(stamp,schema->Id())
  	{}
  AufArtikel(const cH_ExtBezSchema &schema) 
- 	: bez(ID(),schema->Id(),ArtikelBezeichnung::dont_throw()) {}
+ 	: bez(ID(),schema->Id()) {}
  AufArtikel() : bez(cH_ArtikelBezeichnung::Default())
  	{}
 
  AufArtikel(const ArtikelBase &artb, const cH_ExtBezSchema &schema)
- 	: ArtikelBaum(artb.Id()), ArtikelBase(artb),  bez(artb,schema->Id(),ArtikelBezeichnung::dont_throw())
+ 	: ArtikelBaum(artb.Id()), ArtikelBase(artb),  bez(artb,schema->Id())
  	{ }
 
  double Stueckgroesse() const;
@@ -79,14 +78,14 @@ public:
  { rohartikel=ArtikelBase(i); }
  
  // ArtikelBezeichnung
- typedef ArtikelBezeichnung::const_iterator const_iterator;
+ typedef ArtikelBezeichnung::const_sigiterator const_iterator;
   const_iterator begin() const { return bez->begin(); }
   const_iterator end() const { return bez->end(); }
   int size() const { return bez->size(); }
-  const EntryValue operator[](int feld) const
+  const cH_EntryValue operator[](int feld) const
   {  return (*bez)[feld]; }
-  std::string Bezeichnung(char seperator=0,int felder=-1) const throw()
-  {  return bez->Bezeichnung(seperator,felder); }
+  std::string Bezeichnung(int sign=1,char seperator=0,int felder=-1) const throw()
+  {  return bez->Bezeichnung(sign,seperator,felder); }
   const cH_ExtBezSchema getExtBezSchema() const throw()
   {  return bez->getExtBezSchema(); }
 };
@@ -113,7 +112,6 @@ class AufEintragBase : public AufEintragBase2
 {
 protected: 
  cH_AufArtikel artikel;
- ppsInstanz::ppsInstId instanz;
 
  int dispoentrynr;
  int disponr;
@@ -133,27 +131,18 @@ protected:
  cH_Prozess prozess;
  Petig::Datum prozdate;
 
-// cP_Waehrung waehrung;
  Preis preis;
-// int preis;      // Pf
  int rabatt;     // % * 100
-// Preisflag pflag;
- float preismenge;
  	
 public:
  AufEintragBase() 
-   : artikel(0,cH_ExtBezSchema(ExtBezSchema::default_ID)), instanz(ppsInstanz::INST_KNDAUF),dispoentrynr(0),
+   : artikel(0,cH_ExtBezSchema(ExtBezSchema::default_ID)), dispoentrynr(0),
    	disponr(0), status((AufStatVal)OPEN), entrystatus((AufStatVal)OPEN),
    	kdnr(0), 
    	bestellt(0),
    	geliefert(0), rest(0), menge(0), jahrgang(0), prozess(Prozess::default_id),
 	rabatt(0)
  {}
-
-#if 0
- AufEintragBase(const SelectedAufentry &aufentry, 
- 		const cH_ExtBezSchema schema) throw(SQLerror);
-#endif 		
 
  AufEintragBase(ppsInstanz::ppsInstId _instanz,int _auftragid, int _zeilennr, int _bestellt,
 	int _artikel, const Petig::Datum _lieferdatum,
@@ -167,8 +156,6 @@ public:
 	AufStatVal _entrystat, const Petig::Datum _lasteditdate,
 	const cH_ExtBezSchema schema) throw();
 	
-// AufEintragBase(ppsInstanz::ppsInstId _instanz,int aufid, int znr, const cH_ExtBezSchema schema) throw(SQLerror);
-
  void updateDispoENr(int dinr) throw(SQLerror);
  void updateStk(long stk) throw(SQLerror);
  void updateLieferdatum(const Petig::Datum &ld) throw(SQLerror);	

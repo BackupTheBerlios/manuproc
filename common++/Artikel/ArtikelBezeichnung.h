@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.h,v 1.3 2001/07/09 14:13:38 christof Exp $
+// $Id: ArtikelBezeichnung.h,v 1.4 2001/07/16 09:54:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,7 +22,7 @@
 #define ARTIKELBEZEICHNUNG_H
 
 #include <Artikel/ArtikelBase.h>
-#include <Aux/EntryValue.h>
+#include <Aux/EntryValueIntString.h>
 #include <Kunde/Kunde.h>
 #include <vector>
 #include <string>
@@ -34,33 +34,61 @@ class ArtikelBezeichnung : public virtual ArtikelBase, protected HandleContent
 {	friend class const_Handle<ArtikelBezeichnung>;
 	friend class cH_ArtikelBezeichnung;
 public:
-	typedef std::vector<EntryValue>::const_iterator const_iterator;
-	struct dont_throw { dont_throw() {} };
+	typedef std::vector<cH_EntryValue>::const_iterator const_iterator;
 
+	class const_sigiterator
+	{	typedef const_sigiterator self;
+		ExtBezSchema::const_sigiterator actual,end;
+		const ArtikelBezeichnung &container;
+	public:
+		const_sigiterator(ExtBezSchema::const_sigiterator a,
+				ExtBezSchema::const_sigiterator e,
+				const ArtikelBezeichnung &ab)
+		: actual(a), end(e), container(ab)
+		{}
+		const_sigiterator(ExtBezSchema::const_sigiterator e,
+				const ArtikelBezeichnung &ab)
+		: actual(e), end(e), container(ab)
+		{}
+		self &operator++()
+		{  ++actual; return *this; }
+		self operator++(int)
+		{  self tmp=*this;
+		   ++(*this);
+		   return tmp;
+		}
+		bool operator==(const const_sigiterator &b) const
+		{  return actual==b.actual;
+		}
+		bool operator!=(const const_sigiterator &b) const
+		{  return actual!=b.actual;
+		}
+		// damit bin ich noch nicht gluecklich, wegen der notwendigen
+		// 2. Indirektion, vielleicht sollte ein const EntryValueBase&
+		// zurueckgegeben werden ?
+		// Untersuchen bezueglich Reference Count etc.
+		const cH_EntryValue operator*() const;
+		// geht nicht da temporary
+//		const cH_EntryValue *operator->() const;
+		
+		const ExtBezSchema::BezKomp &BezKomp() const
+		{  return *actual;
+		}
+	};
+	
 private:
  	cH_ExtBezSchema schema;
-	std::vector<EntryValue> value;
-
-// ich würde operator[] bevorzugen CP
- const EntryValue getExtBezFeld(int feld) const throw(SQLerror);
- 
+	std::vector<cH_EntryValue> value;
 
 public:
-// deprecated
- ArtikelBezeichnung(const ArtikelBase &artikel,const cH_ExtBezSchema &schema) throw();
-// use this one 
  ArtikelBezeichnung(const ArtikelBase &artikel,
  	const ExtBezSchema::ID schema=ExtBezSchema::default_id) throw();
- ArtikelBezeichnung(const ArtikelBase &artikel,ExtBezSchema::ID id,dont_throw dummy) throw();
- ArtikelBezeichnung(const ArtikelBase &artikel,dont_throw dummy) throw()
-        : schema(1)
- { *this=ArtikelBezeichnung(artikel,ExtBezSchema::default_id,dummy); }
  ArtikelBezeichnung() : schema(ExtBezSchema::default_id) {}
 
 /// Artikel zu der externen Bezeichnung für einen Kunden erzeugen 
 /// (ID nach Bezeichnung ermitteln)
 /// Vorsicht: Der Artikeltyp muss stimmen!
- ArtikelBezeichnung(int signifikanz, const std::vector<EntryValue> &values, const cH_ExtBezSchema &schema) throw(SQLerror);
+ ArtikelBezeichnung(int signifikanz, const std::vector<cH_EntryValue> &values, const cH_ExtBezSchema &schema) throw(SQLerror);
 
  std::string Bezeichnung(int signifikanz=1, char separator=0,int felder=-1) const throw();
  
@@ -69,33 +97,41 @@ public:
  {  return schema;
  }
 
- const_iterator begin() const
- {  const_iterator i(value.begin());
-    if (i!=value.end()) return ++i;
-    return i;
+// bloedes Konzept !!! eine Map waere besser als dieser HACK (erhoehen um 1)
+// bitte so nicht mehr verwenden
+ const_sigiterator begin() const
+ {  return sigbegin(1);
  }
- const_iterator end() const
- {  return value.end();
+ const_sigiterator end() const
+ {  return sigend(1);
  }
  size_t size() const
- {  size_t ret(value.size());
-    if (ret) return ret-1;
-    return ret;
+ {  return sigsize(1);
  }
- // Zuweisung nicht sinnvoll !?
- const EntryValue operator[](int feld) const throw(SQLerror)
- {  return getExtBezFeld(feld); }
+ size_t sigsize(int signifikanz=1) const
+ {  return schema->sigsize(signifikanz);
+ }
+ const_sigiterator sigbegin(int signifikanz=1) const
+ {  return const_sigiterator(schema->sigbegin(signifikanz),
+ 	schema->sigend(signifikanz),*this);
+ }
+ const_sigiterator sigend(int signifikanz=1) const
+ {  return const_sigiterator(schema->sigend(signifikanz),*this);
+ }
+ // Zuweisung nicht sinnvoll !? daher const,
+ // this might be not the right function for you, use sigbegin()/sigend() !
+ const cH_EntryValue operator[](int feld) const throw(SQLerror)
+ {  return feld<(int)value.size()?value[feld]:cH_EntryValueIntString("?"); }
  
  void setID(const ArtikelBase::ID &id) throw(SQLerror)
- {  *this=ArtikelBezeichnung(id,schema); }
+ {  *this=ArtikelBezeichnung(id,schema->Id()); }
+
+// deprecated
+ ArtikelBezeichnung(const ArtikelBase &artikel,const cH_ExtBezSchema &schema) throw();
 };
 
 class cH_ArtikelBezeichnung : public const_Handle<ArtikelBezeichnung>
-{
-public:
-	typedef ArtikelBezeichnung::dont_throw dont_throw;
-private:
-	// cache
+{	// cache
 	struct cache_key
 	{  ExtBezSchema::ID sid;
 	   ArtikelBase::ID aid;
@@ -119,14 +155,10 @@ public:
 	cH_ArtikelBezeichnung(const ArtikelBase &artikel,const cH_ExtBezSchema &schema) throw(SQLerror);
 	// recommended variant!
 	cH_ArtikelBezeichnung(const ArtikelBase &artikel,const ExtBezSchema::ID &id) throw(SQLerror);
-	// use this if you do not want to handle errors
-	cH_ArtikelBezeichnung(const ArtikelBase &artikel,const ExtBezSchema::ID &id,dont_throw dummy) throw();
- 	cH_ArtikelBezeichnung(const ArtikelBase &artikel,dont_throw dummy) throw()
-	{ *this=cH_ArtikelBezeichnung(artikel,ExtBezSchema::default_id,dummy); }
 
 /// Artikel zu der externen Bezeichnung für einen Kunden erzeugen 
 /// (ID nach Bezeichnung ermitteln)
-	cH_ArtikelBezeichnung(int signifikanz, const std::vector<EntryValue> &values, const cH_ExtBezSchema &schema) throw(SQLerror)
+	cH_ArtikelBezeichnung(int signifikanz, const std::vector<cH_EntryValue> &values, const cH_ExtBezSchema &schema) throw(SQLerror)
 		: const_Handle<ArtikelBezeichnung>(new ArtikelBezeichnung(signifikanz,values,schema))
 	{}
 /// default ctor

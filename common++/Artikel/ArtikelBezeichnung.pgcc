@@ -1,4 +1,4 @@
-// $Id: ArtikelBezeichnung.pgcc,v 1.4 2001/07/09 14:13:38 christof Exp $
+// $Id: ArtikelBezeichnung.pgcc,v 1.5 2001/07/16 09:54:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -38,23 +38,19 @@ ArtikelBezeichnung::ArtikelBezeichnung(const ArtikelBase &artikel, ExtBezSchema:
       try { setzeExtBezSchema(cH_ExtBezSchema(_schema,AS.Warengruppe()));
           }
       catch (SQLerror &e)
-         {  if (e.Code()!=100) throw; // die
+         {  // this is too narrow since the tables simply might lack existance
+            // if (e.Code()!=100) throw; // die
             try {
-                  setzeExtBezSchema(cH_ExtBezSchema(AS.defaultSchema(),AS.Warengruppe())); 
+                  setzeExtBezSchema(cH_ExtBezSchema(AS.defaultSchema(),AS.Warengruppe()));
                 }
             catch (SQLerror &e) 
-               { if (e.Code()!=100) throw; // die
+               { // if (e.Code()!=100) throw; // die
                }
          }
    }
   catch (SQLerror &e)
-   {if (e.Code()!=100) throw; // die
+   { // if (e.Code()!=100) throw; // die
    }
-}
-
-ArtikelBezeichnung::ArtikelBezeichnung(const ArtikelBase &artikel, ExtBezSchema::ID _schema, dont_throw dummy) throw()
- : ArtikelBase(artikel), schema(1)
-{  *this=ArtikelBezeichnung(artikel,_schema);
 }
 
 void ArtikelBezeichnung::setzeExtBezSchema(const cH_ExtBezSchema &_schema) throw(SQLerror)
@@ -90,51 +86,41 @@ void ArtikelBezeichnung::setzeExtBezSchema(const cH_ExtBezSchema &_schema) throw
      SQLerror::test(__FILELINE__);
      exec sql fetch from ein into sql descriptor mydesc; 
      SQLerror::test(__FILELINE__);
+     
      value.resize(gewaehlte_indizes[gewaehlte_indizes.size()-1]+1);
      FetchIStream is("mydesc");
-//     for (size_t i=0;i<gewaehlte_indizes.size();++i)
      for (std::vector<int>::const_iterator i=gewaehlte_indizes.begin();i!=gewaehlte_indizes.end();++i)
-      {
-           std::string s;
+      {  std::string s;
          is >> FetchIStream::MapNull<std::string>(s,"");
-         value[*i]=EntryValue(s);  
-//std::cout << *i <<"\t"<<s<<"  <--\n";
+         value[*i]=cH_EntryValueIntString(s);  
       }
      exec sql close ein;
      SQLerror::test(__FILELINE__);
      exec sql deallocate descriptor mydesc;
-//     tr.close(); // passiert automatisch
     }
 } 
-
-
-const EntryValue ArtikelBezeichnung::getExtBezFeld(int feld) const throw(SQLerror)
-{  return feld<(int)value.size()?value[feld]:EntryValue();
-}
 
 std::string ArtikelBezeichnung::Bezeichnung(int signifikanz, char separator,int felder) const throw()
 {   std::string ret;
     int f=0;
-    if (begin()!=end()) 
-    for (ExtBezSchema::const_iterator i=schema->begin();i!=schema->end();++i)
-    {  
-       if (signifikanz == i->signifikanz)
-        {
-          ret+=(const std::string)(value[i->bezkomptype]);
-          if (separator) // aber nur wenns nicht das letzte ist
-          {  if (i+1!=schema->end()) ret+=separator;
-          }
-          else ret+=i->separator;
-          f++;
-        }
+    const_sigiterator end=sigend(signifikanz);
+    for (const_sigiterator i=sigbegin(signifikanz);i!=end;++i)
+    {  ret+=value[i.BezKomp().bezkomptype]->getStrVal();
+       if (separator)
+       {  const_sigiterator h=i;
+          ++h;
+          if (h!=end) ret+=char(separator); 
+       }
+       else ret+=i.BezKomp().separator;
+       ++f;
     }
     if (separator)
-    {  for (;f<felder;++f) ret+=separator;
+    {  for (;f<felder;++f) ret+=char(separator);
     } 
     return ret;
 }
 
-ArtikelBezeichnung::ArtikelBezeichnung(int signifikanz, const std::vector<EntryValue> &_val, const cH_ExtBezSchema &_schema) throw(SQLerror)
+ArtikelBezeichnung::ArtikelBezeichnung(int signifikanz, const std::vector<cH_EntryValue> &_val, const cH_ExtBezSchema &_schema) throw(SQLerror)
 : schema(_schema)
 {
  exec sql begin declare section;
@@ -148,7 +134,7 @@ ArtikelBezeichnung::ArtikelBezeichnung(int signifikanz, const std::vector<EntryV
  for (ExtBezSchema::const_iterator i=schema->begin();i!=schema->end();)
    {
      if (i->signifikanz != signifikanz) {++i; continue;}
-     squery << i->spaltenname << " = '" << (std::string)_val[f] <<"'";
+     squery << i->spaltenname << " = '" << _val[f]->getStrVal() <<"'";
      ++f;
      do 
      ++i;
@@ -171,7 +157,6 @@ ArtikelBezeichnung::ArtikelBezeichnung(int signifikanz, const std::vector<EntryV
     tr.commit();
  }
  catch (SQLerror &e) { throw; }
-//std::cout << ARTIKELID<<"\n";
  
  *(ArtikelBase*)this=ARTIKELID;
  setzeExtBezSchema(schema);
@@ -192,12 +177,13 @@ cH_ArtikelBezeichnung::cH_ArtikelBezeichnung(const ArtikelBase &artikel,const Ex
    }
 }
 
-cH_ArtikelBezeichnung::cH_ArtikelBezeichnung(const ArtikelBase &artikel,
-		const ExtBezSchema::ID &id,dont_throw dummy) throw()
-{  cH_ArtikelBezeichnung *cached(cache.lookup(cache_key(artikel.Id(),id)));
-   if (cached) *this=*cached;
-   else
-   {  *this=cH_ArtikelBezeichnung(new ArtikelBezeichnung(artikel,id,dummy));
-      cache.Register(cache_key(artikel.Id(),id),*this);
-   }
+const cH_EntryValue ArtikelBezeichnung::const_sigiterator::operator*() const
+{  return container[BezKomp().bezkomptype];
 }
+
+#if 0
+const cH_EntryValue *ArtikelBezeichnung::const_sigiterator::operator->() const
+{  return &container[BezKomp().bezkomptype];
+}
+#endif
+

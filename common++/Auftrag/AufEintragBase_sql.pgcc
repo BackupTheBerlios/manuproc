@@ -1,4 +1,4 @@
-// $Id: AufEintragBase_sql.pgcc,v 1.5 2001/06/25 09:40:42 christof Exp $
+// $Id: AufEintragBase_sql.pgcc,v 1.6 2001/07/16 09:54:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,105 +19,11 @@
 
 #include <Auftrag/AufEintragBase.h>
 #include <stdio.h>
-#include <Auftrag/selAufEntry.h>
 #include <Aux/string0.h>
 #include <Aux/Transaction.h>
 #include <Aux/Changejournal.h>
 
 exec sql include sqlca;
-
-#if 0
-AufEintragBase::AufEintragBase(const SelectedAufentry &aufentry, 
-			const cH_ExtBezSchema schema) throw(SQLerror)
-	: artikel(0,cH_ExtBezSchema(ExtBezSchema::default_ID)),
-          prozess(Prozess::default_id)
-{
- exec sql begin declare section;
- int AUFTRAGID;
- int INSTANZ;
- int ZEILENNR;
- int KDNR;
- unsigned long ARTIKELID;
- unsigned long ROHARTIKELID;
- long BESTELLT, GELIEFERT;
- int LIEFERDATUM;
- short ILIEFERDATUM;
- char LASTEDITDATE[40];
- char LASTEDIT[11];
- char PROZDATE[40];
- int PROZESSID;
- int STATUS;
- int DISPOENTRYNR;
- int DISPONR;
- int JAHRGANG;
- short IDISPOENTNR, IDISPONR;
- char YOURAUFNR[21];
- short IYOURAUFNR;
- short IPROZDATE,IPROZESSID,ILASTEDIT,IROHARTIKELID;
- float PREIS;
- int RABATT;
- int WID;	//waehurng
- float PREISMENGE;
- short IWID;
- exec sql end declare section;
- 
- AUFTRAGID = aufentry.getAuftragid();
- INSTANZ  = aufentry.Instanz();
- ZEILENNR = aufentry.getZeilennr();
-
- exec sql select bestellt, e.artikelid, e.rohartikelid, 
-        e.lieferdate, date(lasteditdate),
-	lastedit, geliefert,
-	dispoentrynr, dispoid, jahrgang, a.stat, a.kundennr,
-	youraufnr, coalesce(e.preis,0),
-	int4(coalesce(e.rabatt,0)*100), coalesce(e.preismenge,1), waehrung
-	into 	:BESTELLT, :ARTIKELID, :ROHARTIKELID:IROHARTIKELID,
-		:LIEFERDATUM:ILIEFERDATUM,
-		:LASTEDITDATE, :LASTEDIT:ILASTEDIT, :GELIEFERT,
-		:DISPOENTRYNR:IDISPOENTNR, :DISPONR:IDISPONR, :JAHRGANG,
-		:STATUS, :KDNR, :YOURAUFNR:IYOURAUFNR,
-		:PREIS,:RABATT,:PREISMENGE, :WID:IWID
-	from auftragentry e
-	join auftrag a using (auftragid)
-        where e.auftragid = :AUFTRAGID and e.zeilennr = :ZEILENNR
-         and instanz = :INSTANZ;
- SQLerror::test("AufEintragBase: select from auftragentry");	
-
- exec sql select ap.prozessid, date(ap.datum) 
-	into :PROZESSID:IPROZESSID, :PROZDATE:IPROZDATE
-	from auftrag_prozess ap
-	where ap.auftragid = :AUFTRAGID and ap.zeilennr= :ZEILENNR;
- SQLerror::test("AufEintragBase: select from auftrag_prozess",100);	
- if (sqlca.sqlcode) IPROZESSID=IPROZDATE=-1;
- 
- artikel=cH_AufArtikel(ARTIKELID,schema);
-#warning Design Fehler!
- const_cast<AufArtikel&>(*artikel).setRohArtid(IROHARTIKELID ? 0 : ROHARTIKELID);
-
- auftragid = AUFTRAGID;
- zeilennr = ZEILENNR;
- bestellt = BESTELLT;
- jahrgang = JAHRGANG;
- float tmpstkgr = artikel->Stueckgroesse();
- tmpstkgr = tmpstkgr ? tmpstkgr : 1;
- menge = BESTELLT*tmpstkgr;
- rest = (BESTELLT-GELIEFERT)*tmpstkgr;
- lieferdatum = ILIEFERDATUM ? Petig::Datum() : Petig::Datum(LIEFERDATUM);
- status=(AufStatVal)STATUS;
- geliefert = GELIEFERT;
- dispoentrynr = IDISPOENTNR==0 ? DISPOENTRYNR : 0;
- disponr = IDISPONR==0 ? DISPONR : 0;
- youraufnr = IYOURAUFNR ? "" : YOURAUFNR;
- kdnr = KDNR;
- prozess=cH_Prozess(IPROZESSID ? cH_Prozess::default_pid : PROZESSID);
- if(IPROZDATE) prozdate=Petig::Datum();
- else prozdate.from_postgres(PROZDATE);
- 
- preis = Preis(PREIS,IWID ? 1 : WID,RABATT);
- rabatt = RABATT;
-}
-#endif
-
 
 void AufEintragBase::setStatus(AufStatVal st) throw(SQLerror)
 {exec sql begin declare section;

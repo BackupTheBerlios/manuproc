@@ -33,6 +33,7 @@ libcommon___a_LIBADD= \
 		Aux/Datum.o \
 		Aux/EntryValue.o \
 		Aux/EntryValueBase.o \
+		Aux/EntryValueDatum.o \
 		Aux/EntryValueIntString.o \
 		Aux/FetchIStream.o \
 		Aux/IOerror.o \

@@ -1,4 +1,4 @@
-/* $Id: EntryValueIntString.h,v 1.3 2001/06/27 08:04:09 christof Exp $ */
+/* $Id: EntryValueIntString.h,v 1.4 2001/07/16 09:54:26 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -34,11 +34,8 @@ public:
  EntryValueIntString(int v);
  EntryValueIntString(const std::string &s);
    
- operator const std::string() const { return strval;}
- operator int() const { return intval;}
- 
- int getIntVal() const { return intval;}
- const std::string getStrVal() const { return strval;}
+ virtual int getIntVal() const { return intval;}
+ virtual const std::string getStrVal() const { return strval;}
 };
 
 class cH_EntryValueIntString : public cH_EntryValue

@@ -1,4 +1,4 @@
-/* $Id: ArtikelBaum.h,v 1.1 2001/04/23 08:11:58 christof Exp $ */
+/* $Id: ArtikelBaum.h,v 1.2 2001/07/16 09:54:26 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,55 +20,86 @@
 #ifndef ARTIKELBAUM_H
 #define ARTIKELBAUM_H
 
-#include"Artikel/Prozess.h"
-#include<string>
-#include<vector>
-#include"Aux/SQLerror.h"
+#include <Artikel/Prozess.h>
+#include <string>
+#include <vector>
+#include <Aux/SQLerror.h>
 #include <Artikel/ArtikelBase.h>
+#include <Aux/fixedpoint.h>
+
+// besserer Name: ArtikelZusammensetzung
 
 class ArtikelBaum : public virtual ArtikelBase
 {
-private:
- ID altartikel;
-
-protected:
- cH_Prozess prozess;
- 
- 	// cache
-	struct cache_payload
-	{  ID altartikel;
-	   Prozess::ID pid;
+public:
+	struct RohArtikel
+	{  ID			rohartikel;
+	   fixedpoint<2>	menge;
+	   // eigentlich relativ uninteressant?
+	   cH_Prozess		erzeugung;
 	   
-	   cache_payload(const ID &i,const Prozess::ID &p)
-	   : altartikel(i), pid(p) {}
-	   cache_payload() : altartikel(0), pid(0) {}
+	   RohArtikel() : rohartikel(0), menge(0), erzeugung(Prozess::default_id) 
+	   {}
+	   // obsolete, compatibility only!
+	   RohArtikel(const ID &_altartikel,cH_Prozess proz)
+	   	: rohartikel(_altartikel), 
+	   	  menge(proz->getMtrProStk()), erzeugung(proz)
+	   {}
 	};
-	typedef CacheStatic<ID,cache_payload> cache_t;
+private:
+	typedef vector<RohArtikel> zusammensetzung_t;
+public:
+	typedef zusammensetzung_t::const_iterator const_iterator;
+private:
+	zusammensetzung_t zusammensetzung;
+
+ 	// cache
+	typedef CacheStatic<ID,zusammensetzung_t> cache_t;
 	static cache_t cache;
 
 public:
- ArtikelBaum()
-  : prozess(Prozess::default_id)
- {}
- ArtikelBaum(const ArtikelBase &stamp);
- ArtikelBaum(const ID &stamp,const ID &_altartikel,cH_Prozess proz)
-  : ArtikelBase(stamp), altartikel(_altartikel), prozess(proz)
- {}
+ ArtikelBaum() {}
+ ArtikelBaum(const ArtikelBase &stamp)
+ {  setID(stamp.Id()); }
 
+// hier passiert alles, ungeschickter Name
  void setID(const ID &id) throw(SQLerror);
-
- const ID getRohArtid() const
- {  return RohArtikelID(); }
- const ID RohArtikelID() const;
-
-public:
- const cH_Prozess &getErzeugendenProzess() const
- {  return prozess; }
- const ID &ParentArtikelID() const
- {  return altartikel; }
  
- /// gibt die Stückgröße des Artikels zurück (Meter/Stück) oder 0
- float Stueckgroesse() const;
+ size_t size() const
+ {  return zusammensetzung.size(); }
+ const_iterator begin() const
+ {  return zusammensetzung.begin(); }
+ const_iterator end() const
+ {  return zusammensetzung.end(); }
+
+// -------------------------------------------
+// ab hier alles veraltet, INFORMATIONSVERLUST !!!
+
+ ArtikelBaum(const ID &stamp,const ID &_altartikel,cH_Prozess proz)
+  : ArtikelBase(stamp)
+ {  if (_altartikel) zusammensetzung.push_back(RohArtikel(_altartikel,proz)); }
+
+// diese Funktion ist nun Bloedsinn, da nicht uebergeben wird, auf welcher 
+// Ebene zu stoppen ist, ersetzen. Abgesehen davon muesste sie einen
+// Vektor zurueckgeben!
+ const ID RohArtikelID() const
+ {  if (!ParentArtikelID()) return Id();
+    // Rekursion !!!
+    return ArtikelBaum(ParentArtikelID()).RohArtikelID();
+ }
+ const ID ParentArtikelID() const
+ {  if (zusammensetzung.size()==0) return 0;
+    return zusammensetzung[0].rohartikel;
+ }
+
+ const cH_Prozess getErzeugendenProzess() const
+ {  if (zusammensetzung.size()==0) return cH_Prozess(Prozess::default_id);
+    return zusammensetzung[0].erzeugung;
+ }
+ fixedpoint<2> Stueckgroesse() const
+ {  if (zusammensetzung.size()==0) return 0;
+    return zusammensetzung[0].menge;
+ }
 };
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: AufEintragBase.cc,v 1.4 2001/07/05 09:23:02 christof Exp $
+// $Id: AufEintragBase.cc,v 1.5 2001/07/16 09:54:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -87,11 +87,10 @@ std::ostream &operator<<(std::ostream &o,const AufEintragBase &aeb)
 }
 
 
+#warning geht so nicht mehr (Umstellung von ArtikelZusammensetzung)
 double AufArtikel::Stueckgroesse() const
-{ return prozess->getMtrProStk();
+{ return ArtikelBaum::Stueckgroesse();
 }
-
-
 
 cH_AufArtikel::cache_t cH_AufArtikel::cache;
 

@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.6 2001/06/22 09:52:02 christof Exp $
+# $Id: Makefile.am,v 1.7 2001/07/16 09:54:26 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -10,11 +10,11 @@ includedir=@includedir@/Aux
 
 libAux_o_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
 		postgres_conversion.cc Zeitpunkt_new.cc \
-		Zeitpunkt_new_ostr.cc EntryValue.cc \
+		Zeitpunkt_new_ostr.cc \
 		Zeitpunkt_new_write.cc string0.c \
 		EntryValueBase.cc EntryValueIntString.cc \
 		auto_conversion.cc $(PGCC_SOURCES) \
-		exception.cc itos.cc
+		exception.cc itos.cc EntryValueDatum.cc
 
 libAux.o: $(libAux_o_OBJECTS) $(libAux_o_DEPENDENCIES)
 	touch $@
@@ -32,12 +32,13 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
 	postgres_conversion.cc safemap.h string0.c string0.h itos.cc itos.h \
 	FetchIStream.pgcc FetchIStream.h ctime_assert.h \
    EntryValueBase.cc EntryValueBase.h EntryValueIntString.cc \
-   EntryValueIntString.h EntryValueEmptyInt.h
+   EntryValueIntString.h EntryValueEmptyInt.h EntryValueDatum.h \
+   EntryValueDatum.cc
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
 
-BUILT_SOURCES=$(PGCC_SOURCES) $(LINKS)
+BUILT_SOURCES=$(LINKS) $(PGCC_SOURCES) 
 
 include_HEADERS=Ausgabe.h Ausgabe_neu.h Datum.h \
 		IOerror.h Postgres.h \
@@ -49,7 +50,7 @@ include_HEADERS=Ausgabe.h Ausgabe_neu.h Datum.h \
 		Transaction.h Waehrung.h Pointer.h \
 		Changejournal.h ppsInstanz.h EntryValueIntString.h \
 		exception.h itos.h fixedpoint.h FetchIStream.h \
-		ctime_assert.h EntryValueEmptyInt.h
+		ctime_assert.h EntryValueEmptyInt.h EntryValueDatum.h
 
 CLEANFILES= *~ $(BUILT_SOURCES)
 

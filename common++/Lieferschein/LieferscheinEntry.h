@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.2 2001/07/05 09:23:02 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.3 2001/07/16 09:54:26 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -56,9 +56,12 @@ public:
  			const ArtikelBase &art, int anzahl, fixedpoint<3> menge,
  			int _palette=0,bool zusatzinfo=false) throw(SQLerror);
 // Konstruktor mit Datenbankdaten 			
-        LieferscheinEntry(int l,int z,int a, int s,fixedpoint<3> m,int p,std::string y,bool zi)
-                : LieferscheinBase(l),zeilennr(z),artikel(a),stueck(s),menge(m),
-                        palette(p),yourauftrag(y),zusatzinfo(zi) {};
+        LieferscheinEntry(int l,int z,int a, int s,fixedpoint<3> m,int p,
+        		const std::string &y,bool zi,const AufEintragBase2 &aeb)
+                : LieferscheinBase(l),zeilennr(z),artikel(a),refauftrag(aeb),
+                	stueck(s),menge(m),palette(p),yourauftrag(y),
+                	zusatzinfo(zi) 
+                {};
  fixedpoint<3> Menge() const { return menge; }
  int Anzahl() const { return stueck; }
  int Stueck() const { return stueck; }

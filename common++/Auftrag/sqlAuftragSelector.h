@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.7 2001/07/05 09:23:02 christof Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.8 2001/07/16 09:54:26 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,94 +23,52 @@
 #include<string>
 #include<Artikel/ArtikelBase.h>
 #include<Auftrag/AuftragBase.h>
+#include <Auftrag/AufEintragBase2.h>
 #include<Aux/ppsInstanz.h>
-
-#if 0
-class SQLAuftragSelector
-{
- std::string clausel;
- 
-public:
-/*
- struct sel_Aufid
-  { sel_Aufid(ppsInstanz::ppsInstId _i, int id) : instanz(_i), aufid(id) {}
-    ppsInstanz::ppsInstId instanz;
-    int aufid;
-  };
- struct sel_AufidZnr
-  { sel_AufidZnr(ppsInstanz::ppsInstId _i, int id, int zeile) : instanz(_i), aufid(id), znr(zeile) {}
-    ppsInstanz::ppsInstId instanz;
-    int aufid;
-    int znr;
-  };
-*/  
-  
- struct sel_Jahr
-  { sel_Jahr(int j) : jahrgang(j) {}
-    int jahrgang;
-  };  
-  
-  
- struct sel_Status_Mab
-  { sel_Status_Mab(const std::string st) : status(st) {}
-    std::string status;
-  };  
-
- struct sel_KdArtikel
-  { sel_KdArtikel(int kd, const ArtikelBase &a) :
-  	kdnr(kd),artikel(a) {}
-    int kdnr;
-    ArtikelBase artikel;
-  };  
-
- SQLAuftragSelector(const sel_Status& selstr, int aid=0);
- SQLAuftragSelector(const sel_Status_Mab& selstr);
- SQLAuftragSelector(const sel_Jahr& selstr, char *order=0);
- SQLAuftragSelector(const sel_Status& selstr, char *order);
-// SQLAuftragSelector(const sel_KdArtBrFbAuf& selstr);
- SQLAuftragSelector(const sel_KdArtikel& selstr);
- SQLAuftragSelector();
- 	
-};
-#endif
-
 
 class SQLFullAuftragSelector // : public SQLAuftragSelector
 {
  std::string clausel;
+
 public:
  struct sel_Status
   { sel_Status(ppsInstanz::ppsInstId in, int st) : instanz(in),status(st) {}
     ppsInstanz::ppsInstId instanz;
     int status;
   };  
-
  SQLFullAuftragSelector(const sel_Status& selstr);
+
  struct sel_Aufid
   { sel_Aufid(const AuftragBase& a) : auftrag(a) {}
     AuftragBase auftrag;
   };
  SQLFullAuftragSelector(const sel_Aufid& selstr);
+
  struct sel_AufidZnr
-  { sel_AufidZnr(const AuftragBase& a, int zeile) : auftrag(a), znr(zeile) {}
-    AuftragBase auftrag;
-    int znr;
+  { AufEintragBase2 auftrag_znr;
+    sel_AufidZnr(const AuftragBase& a, int zeile) : auftrag_znr(a.Instanz(),a.Id(),zeile) {}
+    sel_AufidZnr(const AufEintragBase2& a) : auftrag_znr(a) {}
   };
  SQLFullAuftragSelector(const sel_AufidZnr& selstr);
+
  struct sel_Jahr_Artikel 
 // wird von bestserv verwendet, sollte auch erfüllte Einträge selektieren
   { unsigned int jahr; // jahrgang _oder_ Lieferdatum in diesem Jahr
     unsigned int artikelid;
-    sel_Jahr_Artikel(ppsInstanz::ppsInstId instanz, unsigned int j,unsigned int a) : jahr(j), artikelid(a) {}
+    ppsInstanz::ppsInstId instanz;
+    sel_Jahr_Artikel(ppsInstanz::ppsInstId i, unsigned int j,unsigned int a) 
+    	: jahr(j), artikelid(a), instanz(i) {}
   };
-  
  SQLFullAuftragSelector(const sel_Jahr_Artikel &selstr);
+
  struct sel_Kunde_Artikel
 // wird zum Abschreiben verwendet
 // d.h. sortiert nach Lieferdatum (asc)
   { unsigned int kundennr;
     unsigned int artikelid;
-    sel_Kunde_Artikel(ppsInstanz::ppsInstId instanz, unsigned int k,unsigned int a) : kundennr(k), artikelid(a)
+    ppsInstanz::ppsInstId instanz;
+    sel_Kunde_Artikel(ppsInstanz::ppsInstId i, unsigned int k,unsigned int a) 
+    : kundennr(k), artikelid(a), instanz(i)
     {}
   };
  SQLFullAuftragSelector(const sel_Kunde_Artikel &selstr);

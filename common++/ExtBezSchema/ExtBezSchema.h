@@ -1,4 +1,4 @@
-// $Id: ExtBezSchema.h,v 1.3 2001/07/05 09:23:02 christof Exp $
+// $Id: ExtBezSchema.h,v 1.4 2001/07/16 09:54:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -122,7 +122,9 @@ public:
 
  const ArtikelTyp &Typ() const { return typ; }
  
- size_t size(int signifikanz) const;
+ size_t size(int signifikanz) const
+ {  return sigsize(signifikanz); }
+ size_t sigsize(int signifikanz) const;
  const_sigiterator sigbegin(int signifikanz) const
  {  return const_sigiterator(begin(),end(),signifikanz); }
  const_sigiterator sigend(int signifikanz) const

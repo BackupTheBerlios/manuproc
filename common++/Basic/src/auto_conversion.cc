@@ -1,4 +1,4 @@
-// $Id: auto_conversion.cc,v 1.1 2001/04/23 08:11:59 christof Exp $
+// $Id: auto_conversion.cc,v 1.2 2001/07/16 09:54:26 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -22,28 +22,40 @@
 #include <stdio.h>
 #include <cctype>
 #include <cassert>
+#include <cstdlib>
 
-void Petig::Datum::from_auto(const char *datum) throw(Datumsfehler,Formatfehler)
+void Petig::Datum::from_auto(const char *datum,const char **endptr) throw(Datumsfehler,Formatfehler)
 {   int numlen(0);
+    const char *ptr=0;
     for (const char *s=datum;isdigit(*s);s++,numlen++);
-    if (numlen>=6) // Adabas internal
-    {  tag = getnum((unsigned char*)datum+6, 2);
-	monat = getnum((unsigned char*)datum+4, 2);
-	jahr = getnum((unsigned char*)datum, 4);
+
+    if (numlen>=6) // Adabas internal, obsolete?
+    {  tag = getnum((const unsigned char*)datum+6, 2);
+	monat = getnum((const unsigned char*)datum+4, 2);
+	jahr = getnum((const unsigned char*)datum, 4);
+	if (endptr) *endptr=datum+8;
     }
     else if (numlen==4) // ISO
-    {  if (datum[4]!='-' || datum[7]!=datum[4]) throw Formatfehler();
-       jahr = getnum((unsigned char*)datum, 4);
-       monat = getnum((unsigned char*)datum+5, 2);
-       tag = getnum((unsigned char*)datum+8, 2);
+    {  if (datum[numlen]!='-') throw Formatfehler();
+       jahr = getnum((const unsigned char*)datum, numlen);
+       ptr=const_cast<char*>(datum+numlen+1);
+       monat = strtol(ptr,const_cast<char**>(&ptr),10);
+       if (*ptr!=datum[numlen]) throw Formatfehler();
+       ++ptr;
+       tag = strtol(ptr,const_cast<char**>(&ptr),10);
+       if (endptr) *endptr=ptr;
     }
-    else if (numlen==2 && datum[2]=='.') // European/German
-    {  if (datum[2]!='.' || datum[5]!=datum[2]) throw Formatfehler();
-       jahr = getnum((unsigned char*)datum+6, 4);
-       monat = getnum((unsigned char*)datum+3, 2);
-       tag = getnum((unsigned char*)datum, 2);
+    else if (numlen<=2 && datum[numlen]=='.') // European/German
+    {  tag=getnum((unsigned char*)datum, numlen);
+       ptr=const_cast<char*>(datum+numlen+1);
+       monat = strtol(ptr,const_cast<char**>(&ptr),10);
+       if (*ptr!=datum[numlen]) throw Formatfehler();
+       ++ptr;
+       jahr = strtol(ptr,const_cast<char**>(&ptr),10);
+       if (endptr) *endptr=ptr;
     }
-    else if (numlen==2 && datum[2]=='/') // European/SQL
+#if 0    
+    else if (numlen<=2 && datum[2]=='/') // European/SQL
     {  if (datum[2]!='/' || datum[5]!=datum[2]) throw Formatfehler();
        jahr = getnum((unsigned char*)datum+6, 4);
        monat = getnum((unsigned char*)datum+3, 2);
@@ -55,6 +67,7 @@ void Petig::Datum::from_auto(const char *datum) throw(Datumsfehler,Formatfehler)
        tag = getnum((unsigned char*)datum+3, 2);
        monat = getnum((unsigned char*)datum, 2);
     }
+#endif    
     else throw Formatfehler();
     teste();
 }
@@ -65,63 +78,73 @@ Zeitpunkt_new::Zeitpunkt_new(const char *stamp)
 	: hour(0), minute(0), second(0), millisecond(0), 
 	  minutes_from_gmt(0), prec(days)
 {  const char *payload=stamp;
+   datum.from_auto(payload,&payload);
    int len=strlen(payload);
-   datum.from_auto(payload);
    
-   if (!isdigit(stamp[2]) || !isdigit(stamp[4])) 
-  {if (len>10) assert(payload[10]==' ');
-   if (len>=13)
-   {  hour=(payload[11]-'0')*10+(payload[12]-'0');
+   if (!isdigit(payload[1]) || !isdigit(payload[2])|| !isdigit(payload[3])) 
+  {if (len>=1) { assert(*payload==' '); ++payload; --len; }
+   if (len>=1)
+   {  hour=strtol(payload,const_cast<char**>(&payload),10);
+      if (hour>23 || hour<0) hour=0;
       prec=hours;
+      len=strlen(payload);
    }
-   if (hour>23 || hour<0) hour=0;
-
-   if (len>=16)
-   {  assert(payload[13]==':');
-      minute=(payload[14]-'0')*10+(payload[15]-'0');
+   if (len>=1)
+   {  assert(*payload==':'); ++payload;
+      minute=strtol(payload,const_cast<char**>(&payload),10);
+      if (minute>59 || minute<0) minute=0;
       prec=minutes;
+      len=strlen(payload);
    }
-   if (minute>59 || minute<0) minute=0;
-
-   if (len>=19)
-   {  assert(payload[16]==':');
-      second=(payload[17]-'0')*10+(payload[18]-'0');
+   if (len>=1)
+   {  assert(*payload==':'); ++payload;
+      second=strtol(payload,const_cast<char**>(&payload),10);
+      if (second>59 || second<0) second=0;
       prec=seconds;
+      len=strlen(payload);
    }
-   if (second>59 || second<0) second=0;
-
-   assert (len==22);
-   assert(payload[19]=='+');
-   {  minutes_from_gmt=Petig::Datum::getnum((const unsigned char*)payload+20,2)*60;
+   if (len>=1 && *payload=='.') // second fractions
+   {  ++payload;
+      char *endptr;
+      millisecond=strtol(payload,&endptr,10);
+      for (int i=0;i<6-(endptr-payload);++i) millisecond*=10;
+      if (millisecond>999999 || millisecond<0) millisecond=0;
+      prec=milliseconds;
+      payload=endptr;
+      len=strlen(payload);
    }
-   if (minutes_from_gmt>12*60 || minutes_from_gmt<-12*60) minutes_from_gmt=0;
+   if (len>=1) // timezone
+   {  assert(*payload=='+' || *payload=='-');
+      minutes_from_gmt=strtol(payload,const_cast<char**>(&payload),10)*60;
+      if (minutes_from_gmt>12*60 || minutes_from_gmt<-12*60) minutes_from_gmt=0;
+   }
   }
-  else
-  {if (len>=12)
-   {  hour=(payload[8]-'0')*10+(payload[9]-'0');
+  else // fixed format, obsolete?
+  {if (len>=2)
+   {  hour=(payload[0]-'0')*10+(payload[1]-'0');
       prec=hours;
    }
    if (hour>23 || hour<0) hour=0;
 
-   if (len>=14)
-   {  minute=(payload[10]-'0')*10+(payload[11]-'0');
+   if (len>=4)
+   {  minute=(payload[2]-'0')*10+(payload[3]-'0');
       prec=minutes;
    }
    if (minute>59 || minute<0) minute=0;
 
-   if (len>=16)
-   {  second=(payload[12]-'0')*10+(payload[13]-'0');
+   if (len>=6)
+   {  second=(payload[4]-'0')*10+(payload[5]-'0');
       prec=seconds;
    }
    if (second>59 || second<0) second=0;
 
-   if (len>16)
-   {  millisecond=Petig::Datum::getnum((const unsigned char*)payload+14,6);
-      for (int i=len;i<22;i++) millisecond*=10;
+   if (len>=8)
+   {  millisecond=Petig::Datum::getnum((const unsigned char*)payload+6,6);
+      for (int i=len;i<14;i++) millisecond*=10;
       prec=milliseconds;
    }
    if (millisecond>999999 || millisecond<0) millisecond=0;
-   calculate_TZ();
+   calculate_TZ(); // will kill milliseconds?
   }
 }
 
