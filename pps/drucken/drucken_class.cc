@@ -751,8 +751,9 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
               		os << FormatiereTeX(stueck);
 
                std::string einheit;
-               if(Typ()==Rechnung || Typ()==Lieferschein) einheit=Einheit(artikelbase).StueckEinheit_TeX();
-               else einheit=Einheit(artikelbase).TeX(*mld);
+//               if(Typ()==Rechnung || Typ()==Lieferschein) einheit=Einheit(artikelbase).StueckEinheit_TeX();
+//               else 
+	       einheit=Einheit(artikelbase).TeX(*mld);
                if (einheit.size()) 
                   os <<'{'<< einheitsize <<einheit <<'}';
             }
@@ -947,7 +948,9 @@ void LR_Abstraktion::drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,
 	      os <<bez->Bezeichnung(2);
      	  }
 	if(s->Id()==ExtBezSchema::default_id
-		&& s->Typ()==ArtikelTypID::aufgemachtes_Band)
+		&& 
+		(s->Typ()==ArtikelTypID::aufgemachtes_Band
+		|| s->Typ()==ArtikelTypID::gewebtes_Band))
      	  { neue_spalte( erste_spalte, os);
 	    os << bez->Bezeichnung(3);
 	  }
