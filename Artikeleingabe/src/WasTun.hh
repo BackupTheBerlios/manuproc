@@ -1,4 +1,4 @@
-// $Id: WasTun.hh,v 1.1 2002/11/26 09:55:25 christof Exp $
+// $Id: WasTun.hh,v 1.3 2002/11/26 10:05:54 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
