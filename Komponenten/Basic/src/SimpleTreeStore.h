@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.h,v 1.32 2003/10/20 07:41:30 christof Exp $
+// $Id: SimpleTreeStore.h,v 1.33 2003/10/20 10:27:39 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -75,7 +75,7 @@ struct SimpleTreeStoreNode
 	SimpleTreeStoreNode(guint _deep=0, SimpleTreeStoreNode *_parent=0, 
 			const cH_RowDataBase &v=cH_RowDataBase(),
 			unsigned c_deep=0) 
-	        : leafdata(v), expanded(), expanding_column(-1), 
+	        : leafdata(v),  
 	          parent(_parent), deep(_deep), childrens_deep(c_deep) {}
 		
 	void swap(SimpleTreeStoreNode &b);
@@ -256,7 +256,7 @@ public:
 	
 	// these are accessors for SimpleTreeStates
 	Model_ref<guint> ShowDeep() { return Model_ref<guint>(showdeep,signal_save); }
-	Model_ref<bool> ShowColor() { return Model_ref<guint>(color_bool,signal_save); }
+	Model_ref<bool> ShowColor() { return Model_ref<bool>(color_bool,signal_save); }
 	
 	unsigned visible_size() { return currseq.size(); }
 };
