@@ -1,4 +1,4 @@
-// $Id: auftrag_repair.cc,v 1.1 2003/06/25 07:11:20 christof Exp $
+// $Id: auftrag_repair.cc,v 1.2 2003/07/10 13:50:23 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -98,6 +98,9 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,const bool analys
        	  alles_ok&=RI.Kinder(*i,kinder,analyse_only);
          } catch (SQLerror &e)
          {  std::cout << "SQL Fehler " << e << '\n';
+            alles_ok=false;
+         } catch (std::exception &e)
+         {  std::cout << "Exception " << e.what() << '\n';
             alles_ok=false;
          }
         }
