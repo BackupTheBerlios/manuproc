@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <glademm-callbacks>
-  <class name="mpc_agent_glade">
-    <callback name="on_activate_entry" args="int enr"/>
+  <class name="EingabeBox">
+    <callback name="activate_entry" args="int enr"/>
   </class>
+ <class name="SearchCombo">
+    <callback name="search" args="gboolean *cont,GtkSCContext context"/>
+  </class>
+ <class name="SearchComboContent&lt;int&gt;" parent="SearchCombo"/>
 </glademm-callbacks>

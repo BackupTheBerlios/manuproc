@@ -163,3 +163,18 @@ void mpc_agent::on_neu_clicked()
 }
 
 
+void mpc_agent::on_orderid_entry_editing_done()
+{  
+}
+
+
+void mpc_agent::on_orderid_activate()
+{  
+}
+
+void mpc_agent::on_orderid_search(gboolean *cont,GtkSCContext context)
+{  
+
+}
+
+
