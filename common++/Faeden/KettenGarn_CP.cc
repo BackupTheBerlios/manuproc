@@ -1,4 +1,4 @@
-/* $Id: KettenGarn_CP.cc,v 1.7 2004/05/26 10:44:01 christof Exp $ */
+/* $Id: KettenGarn_CP.cc,v 1.8 2004/05/26 11:00:40 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,9 +21,13 @@
 #include <Faeden/Webangaben.hh>
 #include <Faeden/Faden.hh>
 #include <Ketten/ArtikelGang.h>
+#include <Misc/TraceNV.h>
 
 #warning diese API unterstützt keine Kombinationen!!!
 
+static const UniqueValue::value_t trace_channel=ManuProC::Tracer::channels.get();
+static ManuProC::Tracer::Environment trace_channel_e("DEBUG_KETTEN",trace_channel);
+                  
 struct KG_compare
 {  bool operator()(const KettenGarn_CP &a,const KettenGarn_CP &b)
    {  return a.index<b.index || (a.index==b.index
@@ -63,6 +67,15 @@ std::vector<KettenGarn_CP> KettenGarn_CP::Load(ArtikelGang const &ag, unsigned l
       x.laenge=laenge;
       // 2do: wiederholungen 
       x.wiederholungen=1;
+      for (Fadenliste::const_repiterator r=fdl.repbegin();r!=fdl.repend();++r)
+      {  if (r->start==r->end && r->start==i->zeilennummer)
+         {  // Sonderfall: Einzelwiederholung
+            x.faeden*=r->anzahl;
+         }
+         else if (r->start<=i->zeilennummer && i->zeilennummer<=r->end)
+         {  x.wiederholungen*=r->anzahl;
+         }
+      }
       x.min_max_fd=i->max_fadenzahl;
       // vielleicht in gleich große Portionen teilen wenn möglich?
       while (i->max_fadenzahl && x.faeden>i->max_fadenzahl)
@@ -95,26 +108,31 @@ std::vector<KettenGarn_CP> KettenGarn_CP::Load(ArtikelGang const &ag, unsigned l
       unsigned anz_fd=0;
       while (ks_end!=result.end() && ks_end->index==i->index)
       {  if (ks_end->min_max_fd<min_max_fd) min_max_fd=ks_end->min_max_fd;
-         anz_fd+=ks_end->faeden;
+         anz_fd+=ks_end->faeden*ks_end->wiederholungen;
          assert(ks_end->kettenzahl==i->kettenzahl);
          ++ks_end;
       }
-      unsigned neue_kettenzahl=i->kettenzahl;
+      ManuProC::Trace(trace_channel,"",NV("min_max_fd",min_max_fd),
+      		NV("anz_fd",anz_fd));
+      unsigned alte_kettenzahl=i->kettenzahl;
+      unsigned neue_kettenzahl=alte_kettenzahl;
       if (2*anz_fd < min_max_fd)
-      {  neue_kettenzahl=(min_max_fd*i->kettenzahl+min_max_fd-1)/min_max_fd;
+      {  neue_kettenzahl=(anz_fd*alte_kettenzahl+min_max_fd-1)/min_max_fd;
          if (!(ag.gaenge&1) && (neue_kettenzahl&1)) ++neue_kettenzahl;
       }
-      if (neue_kettenzahl!=i->kettenzahl) // geht es auf?
+      ManuProC::Trace(trace_channel,"",NV("neue_kettenzahl",neue_kettenzahl));
+      if (neue_kettenzahl!=alte_kettenzahl) // geht es auf?
       {  for (vec_t::iterator j=i;j!=ks_end;++j)
-            if ((i->kettenzahl*j->faeden) % neue_kettenzahl) 
-               neue_kettenzahl=i->kettenzahl;
+            if ((alte_kettenzahl*j->faeden) % neue_kettenzahl) 
+               neue_kettenzahl=alte_kettenzahl;
       }
-      if (neue_kettenzahl!=i->kettenzahl) // dann kombinieren?
+      if (neue_kettenzahl!=alte_kettenzahl) // dann kombinieren?
       {  for (vec_t::iterator j=i;j!=ks_end;++j)
          {  j->kettenzahl=neue_kettenzahl;
-            j->faeden=(i->kettenzahl*j->faeden)/ neue_kettenzahl;
+            j->faeden=(alte_kettenzahl*j->faeden)/ neue_kettenzahl;
          }
       }
+      i=ks_end;
    }
    std::vector<KettenGarn_CP> real_result;
    real_result.reserve(result.size());
