@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList_sql.pgcc,v 1.22 2003/08/05 10:18:42 jacek Exp $ */
+/* $Id: LieferscheinList_sql.pgcc,v 1.23 2003/08/05 11:54:23 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -48,14 +48,17 @@ void LieferscheinList::build_list()
  std::string squery = SQuery(ohne_gts);
  std::string nametable = "artbez_3_1";
 
- squery += " where li.instanz="+itos(instanz->Id());
+ if(ohne_gts) squery+=" and "; // "where" gibt es schon in SQuery
+ else squery+=" where ";
+
+ squery += " li.instanz="+itos(instanz->Id());
 
  if(kundenid!=ManuProcEntity<>::none_id)
    squery+= " and li.kundennr="+itos(kundenid);
 
  if(vom.valid() && bis.valid())
-   {squery+= " and coalesce(li.geliefertam,datum)"
-   	" between '"+vom.to_iso()+"' and '"+(bis+1).to_iso()+"'";
+   {squery+= " and coalesce(li.geliefertam,li.datum)"
+   	" between '"+vom.to_iso()+"' and '"+bis.to_iso()+"'";
    }
 
  if(hole_entries)
