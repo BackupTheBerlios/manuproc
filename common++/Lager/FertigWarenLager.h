@@ -1,4 +1,4 @@
-// $Id: FertigWarenLager.h,v 1.10 2003/07/18 17:47:17 jacek Exp $
+// $Id: FertigWarenLager.h,v 1.11 2003/07/25 16:26:36 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -53,6 +53,8 @@ public:
   void WiederEinlagern() {Buchen(FertigWaren::WiederRein);}
   void Inventur();
   const FertigWaren &getFertigWaren() const { return fw; }
+  virtual std::vector<class LagerInhalt> LagerInhalt_
+  		(const ArtikelBase& artikel) const;
 };
 
 #endif

@@ -66,6 +66,19 @@ int FertigWarenLager::Bestand(ManuProC::Datum date)
   return STK + inventur.second ;
 }
 
+virtual std::vector<class LagerInhalt> FertigWarenLager::LagerInhalt_
+  		(const ArtikelBase& artikel) const
+{
+ std::string q="select artikelid,1,0,bestand,0 from artikel_bestand b";
+ if(artikel.valid()) q+=" where b.artikelid="+itos(artikel.Id());
+
+ std::vector<class LagerInhalt> V;
+ Query(q) >> V;
+
+ return V;
+}
+
+
 
 
 void FertigWarenLager::Buchen(FertigWaren::e_buchen buchen)

@@ -1,4 +1,4 @@
-/* $Id: Lager.h,v 1.27 2003/07/21 10:33:20 christof Exp $ */
+/* $Id: Lager.h,v 1.28 2003/07/25 16:26:36 jacek Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -49,12 +49,12 @@ class LagerInhalt
 
       // Bandlager: Stueck=Rollen , Menge (m) 
       // Rohwarenlager: Stueck=Kartons, Menge(kg)
-      int Stueck() const {return stueck;}
-      int RestStueck() const {return reststueck;}
-      int GesamtStueck() const {return stueck+reststueck;}
+      __deprecated      int Stueck() const {return stueck;}
+      __deprecated int RestStueck() const {return reststueck;}
+      __deprecated int GesamtStueck() const {return stueck+reststueck;}
       int Menge() const {return menge;}
-      int RestMenge() const {return restmenge;}
-      int GesamtMenge() const {return menge+restmenge;}
+      __deprecated      int RestMenge() const {return restmenge;}
+      __deprecated      int GesamtMenge() const {return menge+restmenge;}
       
       bool operator==(const LagerInhalt& b) const {return Artikel()==b.Artikel();}
       bool operator<(const LagerInhalt& b) const  {return Artikel()<b.Artikel();}
