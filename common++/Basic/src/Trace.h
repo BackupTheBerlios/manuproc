@@ -1,4 +1,4 @@
-// $Id: Trace.h,v 1.5 2003/03/10 10:17:50 christof Exp $
+// $Id: Trace.h,v 1.6 2003/03/10 10:21:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -183,13 +183,6 @@ template <class A, class B,class C,class D,class E,class F,class G,class H,class
 };
 
 }
-
-// define this to get ::NV as a shortcut
-#ifdef MANUPROC_NV
-template <class T> 
- struct ManuProC::NameValue_s<T> NV(const std::string &n, const T &v)
- { return ManuProC::NameValue_s<T>(n,v); }
-#endif
 
 template <class T>
  std::ostream &operator<<(std::ostream &o,const ManuProC::NameValue_s<T> &nv)
