@@ -26,11 +26,6 @@ void WinFileReq::on_cancel()
 {  delete this;
 }
 
-# if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
-#  include <sigc++/method_slot.h>
-#  include <sigc++/slot.h>
-# endif
-
 #include "WinFileReq_glade.cc"
 #endif
 
