@@ -1,4 +1,4 @@
-// $Id: string_Entry.cc,v 1.5 2003/04/07 12:33:17 christof Exp $
+// $Id: string_Entry.cc,v 1.6 2004/04/30 13:31:02 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -19,6 +19,7 @@
  */
 
 #include "string_Entry.hh"
+#include <sigc++/compatibility.h>
 
 void string_Entry::Connection::keypress()
 {  any_change=true;

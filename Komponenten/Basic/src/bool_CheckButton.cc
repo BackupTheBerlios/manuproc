@@ -1,4 +1,4 @@
-// $Id: bool_CheckButton.cc,v 1.7 2003/04/07 13:18:50 christof Exp $
+// $Id: bool_CheckButton.cc,v 1.8 2004/04/30 13:31:02 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -19,6 +19,9 @@
  */
 
 #include "bool_CheckButton.hh"
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#  include <sigc++/compatibility.h>
+#endif
 
 void bool_CheckButton::Connection::model2widget()
 {  widget->set_active(model.get_value());

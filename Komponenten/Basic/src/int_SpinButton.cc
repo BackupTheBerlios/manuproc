@@ -1,4 +1,4 @@
-// $Id: int_SpinButton.cc,v 1.5 2003/04/07 06:38:04 christof Exp $
+// $Id: int_SpinButton.cc,v 1.6 2004/04/30 13:31:02 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -20,6 +20,7 @@
 
 #include "int_SpinButton.hh"
 #include "gtkmm/adjustment.h"
+#include <sigc++/compatibility.h>
 
 void int_SpinButton::Connection::keypress()
 {  any_change=true;
