@@ -86,7 +86,24 @@ void ben_vergleichen(const std::string &postfix,const AufEintragBase &AEB)
       os << '\n';
    }
    if (getCheck().vergleich_close(vos))
-   {  std::cout << postfix << " Verfügbarkeit fehlgeschlagen\n";
+   {  std::cout << postfix << " Verwendung fehlgeschlagen\n";
+      if (!Check::continue_) exit(1);
+   }
+}
+
+void ben_vergleichen2(const std::string &postfix,const AufEintragBase &AEB)
+{  Verfuegbarkeit::map_det_t mp;
+   Verfuegbarkeit::wozu_benoetigt(AEB,mp);
+   vergleichstream vos=getCheck().vergleich_open("ben2_"+postfix+"_"+AEB2filename(AEB));
+   std::ofstream &os=(*vos.stream);
+   os << "Verwendung für " << AEB << '\n';
+   os << "AEB\tMenge\n";
+   for (Verfuegbarkeit::map_det_t::const_iterator i=mp.begin();i!=mp.end();++i)
+   {  os << i->first << '\t'
+   	<< i->second << '\n';
+   }
+   if (getCheck().vergleich_close(vos))
+   {  std::cout << postfix << " Verwendung2 fehlgeschlagen\n";
       if (!Check::continue_) exit(1);
    }
 }
@@ -161,6 +178,7 @@ static void Verfuegbarkeit2_check(const std::string &was, const std::vector<AufE
     verf_vergleichen(was,aebs[3]);
     ben_vergleichen(was,aebs[0]);
     ben_vergleichen(was,AufEintragBase(ppsInstanzID::_Garn__Einkauf,0,1));
+    ben_vergleichen2(was,aebs[0]);
 }
 
 static bool Verfuegbarkeit2()
