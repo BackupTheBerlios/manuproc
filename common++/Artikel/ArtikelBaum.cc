@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.cc,v 1.10 2003/06/27 08:04:44 christof Exp $
+// $Id: ArtikelBaum.cc,v 1.11 2003/07/15 09:04:41 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -110,6 +110,11 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
 }
 
 #if defined PETIG_EXTENSIONS && defined MANUPROC_DYNAMICENUMS_CREATED
+void ArtikelBaum::Sort()
+{
+ std::sort(zusammensetzung.begin(),zusammensetzung.end());
+}
+
 void ArtikelBaum::gleiche_Faeden_summieren()
 {typedef fixedpoint<3> menge_t;
  std::map<unsigned int,menge_t > mmap;
@@ -134,21 +139,10 @@ int ArtikelBaum::Tiefe() const
    { int t=ArtikelBaum(i->rohartikel).Tiefe();
      if (t>tiefe) tiefe=t;
    }
-//sich selber nicht mitzählen daher weg:  ++tiefe;
-//  if (ArtikelStamm(Id()).BestellenBei()->LagerInstanz())
-//      ++tiefe;
-#warning das muß noch getestet/überarbeitet werden
   if(ppsInstanz::getBestellInstanz(*this)->LagerInstanz())
     ++tiefe;
   return tiefe;
 }
-
-#ifdef PETIG_EXTENSIONS
-void ArtikelBaum::Sort()
-{
- std::sort(zusammensetzung.begin(),zusammensetzung.end());
-}
-#endif
 
 void ArtikelBaum::UnCache(const ArtikelBase &stamp)
 {  cache.deregister(stamp.Id());
