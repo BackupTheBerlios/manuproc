@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.63 2003/06/24 08:11:15 christof Exp $
+// $Id: AufEintrag.cc,v 1.64 2003/06/24 09:31:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -417,16 +417,16 @@ void AufEintrag::abschreiben(mengen_t menge) throw(SQLerror)
   mengen_t BESTELLT=getStueck();
   AufStatVal STATUS=getEntryStatus();
 
- if(menge>=0 && getEntryStatus()!=(AufStatVal)OPEN) 
+ if(menge>=0 && getCombinedStatus()!=(AufStatVal)OPEN) 
     throw(SQLerror(__FILELINE__,-1,"Auftragszeile ist nicht offen sondern "+itos(STATUS)));
- if(menge<0 && getEntryStatus()==(AufStatVal)UNCOMMITED) 
+ if(menge<0 && getCombinedStatus()==(AufStatVal)UNCOMMITED) 
     throw(SQLerror(__FILELINE__,-1,"Auftragszeile ist nicht bestätigt"));
  if (menge<0 && -menge>getGeliefert()) 
  {  menge=-getGeliefert(); GELIEFERT=0; }
 
  if (!menge) return;
 
- AufStatVal oldstatus=getEntryStatus();
+ AufStatVal oldstatus=getCombinedStatus();
 
  if(mengen_t(GELIEFERT)>=getStueck()) STATUS=(AufStatVal)CLOSED;
  else if(menge<0 && mengen_t(GELIEFERT)<getStueck()) STATUS=(AufStatVal)OPEN;
@@ -759,7 +759,7 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld,int uid) throw(SQLerro
 
  ArtikelInternNachbestellen(uid,getStueck(),ManuProC::Auftrag::r_Anlegen);
 
- if(entrystatus==OPEN)// status->entrystatus
+ if(getCombinedStatus()==OPEN)// status->entrystatus
   {
    try 
     {
@@ -779,7 +779,7 @@ void AufEintrag::updateLieferdatum(const Petig::Datum &ld,int uid) throw(SQLerro
 int AufEintrag::split(int uid,mengen_t newmenge, const Petig::Datum &newld,bool dispoplanung) throw(SQLerror)
 {
  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("NewMenge",newmenge),NV("NewDatum",newld),NV("dispoplanung(bool)",dispoplanung));
- if(entrystatus==CLOSED) return none_znr;
+ if(getCombinedStatus()==CLOSED) return none_znr;
 
  mengen_t BESTELLT_OLD=bestellt-newmenge;
  int STATUS=entrystatus;
@@ -937,7 +937,8 @@ void AufEintrag::ProduziertNG(unsigned uid, AuftragBase::mengen_t M,
    {  assert(!Instanz()->LagerInstanz());
       // Überproduktion wird einfach vermerkt (geht nur bei 3ern)
       if (M<0) assert(-M<=getGeliefert());
-      abschreiben(M); // M<0 ? -M : M);
+     try
+     {abschreiben(M); // M<0 ? -M : M);
       if (elter_alt.valid()) 
       {  mengen_t zmenge=AufEintragZu(elter_alt).getMenge(*this);
          if (M<0)
@@ -951,6 +952,10 @@ void AufEintrag::ProduziertNG(unsigned uid, AuftragBase::mengen_t M,
             	<< " keine " << M << " abziehen\n";
       }
       if (M>0 && elter_neu!=elter_alt) AufEintragZu(elter_neu).Neu(*this,0);
+     } catch (SQLerror &e)
+     {  if (tolerate_inconsistency) return;
+        throw;
+     }
    }
    else
    {  if (M<0) assert(Id()==plan_auftrag_id);

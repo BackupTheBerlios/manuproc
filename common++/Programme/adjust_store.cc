@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.43 2003/06/24 08:38:45 christof Exp $
+// $Id: adjust_store.cc,v 1.44 2003/06/24 09:31:58 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -70,8 +70,13 @@ static bool check_for(const std::string &pname,cH_ppsInstanz I,const bool analys
     if (actions&b_physical)
      {
       if(I->EigeneLagerKlasseImplementiert()) 
-         alles_ok&=RI.ReparaturLager(getuid(),analyse_only);
-      else if (!(actions&b_tree)) // bei * unterdrücken
+        try
+        {alles_ok&=RI.ReparaturLager(getuid(),analyse_only);
+        } catch (SQLerror &e)
+        {  std::cout << "SQL Fehler " << e << '\n';
+           alles_ok=false;
+        }
+      else if (!(actions&b_tree)) // Meldung bei * unterdrücken
          std::cout << "\t"<< I << " 'A' nicht sinnvoll\n";
      }
     if (actions&b_tree || actions&b_exclude)
