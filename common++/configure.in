@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.16 2002/05/09 12:45:59 christof Exp $
+# $Id: configure.in,v 1.17 2002/06/20 06:29:52 christof Exp $
 
 AC_INIT(Artikel/ArtikelBase.h)
 
@@ -39,7 +39,7 @@ AC_MSG_CHECKING(Petig Extensions)
 AC_ARG_ENABLE(petig,[  --en/disable-petig	en/disable Petig extensions],
 	petig_exts="$enableval",
 	[  case `hostname -f` in
-		*.petig-baender.de|Tiger) petig_exts=yes ;;
+		*.petig-baender.de|Tiger|sony) petig_exts=yes ;;
 		*) petig_exts=no ;;
 	   esac
 	])
@@ -99,6 +99,7 @@ AC_SUBST(COMMONXX_LIBS)
 AC_OUTPUT(Makefile Artikel/Makefile Auftrag/Makefile \
 	Aux/Makefile Bank/Makefile ExtBezSchema/Makefile Ketten/Makefile \
 	Kunde/Makefile Lieferschein/Makefile ostream/Makefile \
-	tests/Makefile tests/auftragstest/Makefile Material/Makefile Lager/Makefile Faeden/Makefile \
-   Programme/Makefile DynamicEnums/Makefile)
+	tests/Makefile tests/auftragstest/Makefile tests/AuftragsTest/Makefile \
+   Material/Makefile Lager/Makefile Faeden/Makefile \
+   Programme/Makefile DynamicEnums/Makefile Instanzen/Makefile)
 

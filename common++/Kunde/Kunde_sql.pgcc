@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.19 2002/05/09 12:46:00 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.20 2002/06/20 06:29:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,13 +23,13 @@
 #include <Aux/Transaction.h>
 #include <Kunde/Telefon.h>
 #include <Aux/FetchIStream.h>
-
+exec sql include sqlca;
 
 Kunde::Kunde(ID _id) throw(SQLerror) 
 : ManuProcEntity(_id), KundenGruppennr(0),schema(ExtBezSchema::default_id),rngan(0),
   rng_an_postfach(false),lieferadresse(false),rechnungsadresse(false),
   entsorg(false),
-  waehrung(WaehrungID::EUR)
+  waehrung(WaehrungID::EUR),lieferung_frei_haus(false)
 { 
    // return ersetzen
    if(_id == Kunde::none_id) return;
@@ -41,11 +41,11 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    int LANDESID;
    int ILLEGALLANDID;
    int FLAECHE,MITARBEITER;
-   double KUNDENUMSATZ,PLANUMSATZ,UMSATZ, RABATT,EINZUGRABATT,SKONTOSATZ;
+   double KUNDENUMSATZ,PLANUMSATZ,UMSATZ, RABATT;
    bool ZEILENRABATT;
-   int SKONTOFRIST;
+   int ZAHLUNGSART;
    char VEREIN[31];
-   bool BANKEINZUG,LIEFERADRESSE,RECHUNGSADRESSE,ENTSORGUNG,RNGANLFRA;
+   bool LIEFERADRESSE,RECHUNGSADRESSE,ENTSORGUNG,RNGANLFRA;
    char NOTIZ[2048];
    char STAND[50];
    int WAEHRUNGID;
@@ -53,6 +53,9 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    int BETREUER;
    int LIEFERANTENKONTO,GEGENKONTO;
    char UNSERE_KUNDENNR[128];
+   int ANZFIRMA,ANZWEISS;
+   bool FREIHAUS;
+   bool AKTIV;
    exec sql end declare section;
    ILLEGALLANDID=LandesListe::none_id;
   
@@ -60,7 +63,6 @@ Kunde::Kunde(ID _id) throw(SQLerror)
  
    WAEHRUNGID = WaehrungID::EUR;
 
-///XXX STAND 'now' stimmt noch nicht MAT
    exec sql select coalesce(gruppennr,0), firma,coalesce(sortname,''),
     coalesce(extartbezid,1),
 	 coalesce(strasse,''),
@@ -77,29 +79,34 @@ Kunde::Kunde(ID _id) throw(SQLerror)
       once it is read into the wrong variable */
          coalesce(kundenumsatz,0.0),
          coalesce(planumsatz,0.0),coalesce(umsatz,0.0),
-         coalesce(rabatt,0.0),coalesce(zeilenrabatt,false),coalesce(einzugrabatt,0.0),coalesce(skontofrist,0),
-         coalesce(verein,''),coalesce(bankeinzug,false), coalesce(notiz,''), 
+         coalesce(rabatt,0.0),coalesce(zeilenrabatt,false)
+         ,coalesce(zahlungsart,0),
+         coalesce(verein,''), coalesce(notiz,''), 
          coalesce(stand,now()),	coalesce(landid,:ILLEGALLANDID),
 	 coalesce(waehrungid,:WAEHRUNGID),
-	 coalesce(entsorgung,false), coalesce(skontosatz,0),
-    coalesce(verknr,0),coalesce(lieferantenkonto,0),
+	 coalesce(entsorgung,false),
+    coalesce(verknr,-1),coalesce(lieferantenkonto,0),
     coalesce(gegenkonto,0),coalesce(unsere_kundennr,''),
-	coalesce(betreuer,0)
+	coalesce(betreuer,0),coalesce(anz_firmenpapier,1),
+	coalesce(anz_weissespapier,1),coalesce(lieferung_frei_haus,'f'),
+	coalesce(aktiv,true)
    	into :GRUPPENID ,:NAME, :SORTNAME, :BEZSCHEMA, :STRASSE, :POSTANWVOR, :POSTANWNACH,
            :HSNR, :PLZ, :POSTFACH,
            :POSTFACHPLZ, :ORT, :KTONR, :BLZ, :BANKNAME, :BANKINDEX, :RNG_AN,
            :IDNR,
             :LIEFERADRESSE,:RECHUNGSADRESSE,:RNGANLFRA,
            :FLAECHE,:MITARBEITER,:KUNDENUMSATZ,:PLANUMSATZ,:UMSATZ,
-	   :RABATT,:ZEILENRABATT,:EINZUGRABATT,:SKONTOFRIST, :VEREIN, :BANKEINZUG,
-	   :NOTIZ,:STAND, :LANDESID, :WAEHRUNGID, :ENTSORGUNG, :SKONTOSATZ,:VERKNR,
-      :LIEFERANTENKONTO,:GEGENKONTO,:UNSERE_KUNDENNR,:BETREUER
+	   :RABATT,:ZEILENRABATT,:ZAHLUNGSART, :VEREIN, 
+	   :NOTIZ,:STAND, :LANDESID, :WAEHRUNGID, :ENTSORGUNG, :VERKNR,
+      :LIEFERANTENKONTO,:GEGENKONTO,:UNSERE_KUNDENNR,:BETREUER,
+      :ANZFIRMA,:ANZWEISS,:FREIHAUS,:AKTIV
    	from kunden k left join banken b using(bankindex)
    	where kundennr= :ID;
 
    SQLerror::test(__FILELINE__);
 
 
+   lieferung_frei_haus=FREIHAUS;
    schema=BEZSCHEMA;
    adresse.firma=NAME;
    adresse.sortname=SORTNAME;
@@ -123,6 +130,14 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    bankverb.bankindex=BANKINDEX;
    bankverb.lieferantenkonto=LIEFERANTENKONTO;
    bankverb.gegenkonto=GEGENKONTO;
+   try{
+   bankverb.zahlungsart=cH_Zahlungsart(ZAHLUNGSART);
+   }catch(SQLerror &e) 
+   { 
+    cerr << e<<"\tZahlungsart nicht gefunden\n";
+    bankverb.zahlungsart=cH_Zahlungsart(Zahlungsart::none_id);
+   }
+
    rngan=RNG_AN;
    entsorg = ENTSORGUNG;
 
@@ -133,11 +148,12 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    kundendaten.umsatz=UMSATZ;
    kundendaten.rabatt=RABATT;
    kundendaten.zeilenrabatt=ZEILENRABATT;
-   kundendaten.einzugrabatt=EINZUGRABATT;
-   kundendaten.skontosatz=SKONTOSATZ;
-   kundendaten.skontofrist=SKONTOFRIST;
+//   kundendaten.einzugrabatt=EINZUGRABATT;
+//   kundendaten.skontosatz=SKONTOSATZ;
+   kundendaten.anzahl_ausdruck_firmenpapier=ANZFIRMA;
+   kundendaten.anzahl_ausdruck_weissespapier=ANZWEISS;
    kundendaten.verein=VEREIN;
-   kundendaten.bankeinzug=BANKEINZUG;
+//   kundendaten.bankeinzug=BANKEINZUG;
    kundendaten.stand=STAND;
    kundendaten.notiz=NOTIZ;
    waehrung = cP_Waehrung(Waehrung::ID(WAEHRUNGID));
@@ -145,36 +161,42 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    verkaeufer.verknr=VERKNR;
    betreuer=BETREUER==0 ? Person::none_id : BETREUER;
    prlist_valid=false;
+   isaktiv=AKTIV;
 }
 
 const cH_Kunde Kunde::newKunde(const Kunde::ID kid, const std::string &firma) throw(SQLerror)
 {
  exec sql begin declare section;
- int KID=kid;
- char *FIRMA;
+  int KID=kid;
+  char *FIRMA;
+  int WAEHRUNG;
  exec sql end declare section;
-
+ WAEHRUNG=WaehrungID::EUR;
  Transaction tr;
 
  FIRMA=(char*)firma.c_str();
  
- exec sql insert into kunden (kundennr, firma) values (:KID, :FIRMA);
+ exec sql insert into kunden (kundennr, firma, waehrungid,rechnung_an,aktiv) 
+      values (:KID, :FIRMA, :WAEHRUNG,:KID,true);
  SQLerror::test(__FILELINE__);
- 
+ exec sql insert into ku_warenkorb (prlsnr,kundennr,suchfolge)
+   values (1,:KID,1);
+ SQLerror::test(__FILELINE__);
  tr.commit();
 
  return cH_Kunde(KID);
- 
 }
 
 void Kunde::delete_Kunde(const Kunde::ID kid) throw(SQLerror)
 {
+#ifdef MABELLA_EXTENSIONS
  exec sql begin declare section;
     int KID=kid;
  exec sql end declare section;
 
  exec sql delete from kunden where kundennr = :KID;
  SQLerror::test(__FILELINE__);
+#endif
 }
 
 unsigned int Kunde::nextval()
@@ -292,17 +314,22 @@ std::list<cH_Telefon> Kunde::getTelefon() const
  return T;
 }
 
-const Kunde::Verkaeufer Kunde::getVerkaeufer()
+const Kunde::Verkaeufer &Kunde::getVerkaeufer() const throw(SQLerror)
 {
+ if(verkaeufer.verknr == Kunde::none_id) return verkaeufer;
   exec sql begin declare section;
    int VERKNR=verkaeufer.verknr;
-   char NAME[31],KURZ[6];
+   char *NAME=0, *KURZ=0;
   exec sql end declare section;
+
   exec sql select name,kurz into :NAME,:KURZ
       from ku_verkaeufer where verknr=:VERKNR;
   SQLerror::test(__FILELINE__);
   verkaeufer.name=NAME;
   verkaeufer.kurz=KURZ;
+ 
+  ECPGfree_auto_mem(); 
+
   return verkaeufer;
 }
 
@@ -375,13 +402,13 @@ void Kunde::update_e(UpdateBitsBank e)
      if      (i==B_Ktonr       ) query += "ktonr  = '"+ulltos(getKtnr())+"',";
 //     else if (i==B_Blz         ) query += "bankindex  = "+itos(getindex())+",";
      else if (i==B_Bankindex   ) query += "bankindex  = "+itos(getindex())+",";
-     else if (i==B_Bankeinzug  ) query += "bankeinzug  = "+btos(bankeinzug())+",";
+//     else if (i==B_Bankeinzug  ) query += "bankeinzug  = "+btos(bankeinzug())+",";
      else if (i==B_Rabatt      ) query += "rabatt      = "+dtos(rabatt())+",";
      else if (i==B_Zeilenrabatt) query += "zeilenrabatt= "+btos(zeilenrabatt())+",";
      else if (i==B_Waehrungid  ) query += "waehrungid  = "+itos(getWaehrung()->Id())+",";
-     else if (i==B_Einzugrabatt) query += "einzugrabatt= "+dtos(einzugrabatt())+",";
-     else if (i==B_Skontosatz  ) query += "skontosatz  = "+dtos(skontosatz())+",";
-     else if (i==B_Skontofrist ) query += "skontofrist = "+itos(skontofrist())+",";
+//     else if (i==B_Einzugrabatt) query += "einzugrabatt= "+dtos(einzugrabatt())+",";
+//     else if (i==B_Skontosatz  ) query += "skontosatz  = "+dtos(skontosatz())+",";
+     else if (i==B_Zahlungsart ) query += "zahlungsart = "+itos(zahlungsart()->Id())+",";
      else if (i==B_Lieferantenkonto ) query += "lieferantenkonto = "+itos(getLieferantenkonto())+",";
      else if (i==B_Gegenkonto  ) query += "gegenkonto = "+itos(getGegenkonto())+",";
    }
@@ -395,12 +422,16 @@ void Kunde::update_e(UpdateBitsSonst e)
   std::string query ="update kunden set ";
   for(B_UPDATE_BITS_SONST i=B_UPDATE_BITS_SONST(0);i<B_MaxAnzS;++i)
    {
+cout << i<<'\t'<<e<<'\t'<<(e&(1<<i))<<'\n';
      if(!(e&(1<<i))) continue;
      if      (i==B_Rechnungan ) query += "rechnung_an  = "+itos(Rngan())+",";
      else if (i==B_Extartbezid) query += "extartbezid = "+itos(getSchemaId())+",";
      else if (i==B_Notiz      ) query += "notiz  = '"+notiz()+"',";
      else if (i==B_Entsorgung ) query += "entsorgung  = "+btos(entsorgung())+",";
      else if (i==B_Verknr     ) query += "verknr  = "+itos(verkaeufer.verknr)+",";
+     else if (i==B_AnzAusFirmenPapier) query += "anz_firmenpapier  = "+itos(anzahl_ausdruck_firmenpapier())+",";
+     else if (i==B_AnzAusWeissesPapier) query += "anz_weissespapier  = "+itos(anzahl_ausdruck_weissespapier())+",";
+     else if (i==B_lieferung_frei_haus) query += "lieferung_frei_haus  = "+btos(get_lieferung_frei_haus())+",";
 //     else if (i==B_Kalkulation) query += "kalkulation  = "+itos(kalkulation())+",";
    }
  query += "stand  = now() where kundennr = "+itos(Id());
@@ -408,19 +439,19 @@ void Kunde::update_e(UpdateBitsSonst e)
  SQLerror::test(__FILELINE__);
 } 
 
-const list<PreisListe::ID> &Kunde::Preislisten() const
+const std::list<pair<int,PreisListe::ID> > &Kunde::Preislisten() const
 {
  if(prlist_valid) return preislisten;
  
  preislisten.erase(preislisten.begin(),preislisten.end());
 
   exec sql begin declare section;
-   int P;
+   int P,S;
    char *QU;
   exec sql end declare section;
   Transaction tr;
 
-  std::string squery="select prlsnr from ku_warenkorb"
+  std::string squery="select prlsnr,suchfolge from ku_warenkorb"
          " where kundennr="+itos(Id())+" order by suchfolge";        
   QU=(char*)squery.c_str();
   exec sql prepare preiscursor_ from :QU;
@@ -430,10 +461,10 @@ const list<PreisListe::ID> &Kunde::Preislisten() const
 
   while(!sqlca.sqlcode)
    {
-     exec sql fetch preiscursor into :P;
+     exec sql fetch preiscursor into :P,:S;
      SQLerror::test(__FILELINE__,100);
      if(sqlca.sqlcode) break;
-     preislisten.push_back(P);
+     preislisten.push_back(pair<int,PreisListe::ID>(S,P));
    }
  prlist_valid=true;
  return preislisten;
@@ -486,7 +517,7 @@ void Kunde::deletePreisListe(const PreisListe::ID p) throw(SQLerror)
  
  exec sql update ku_warenkorb set suchfolge = suchfolge-1 where
  	kundennr= :KID and suchfolge > :SEQ;
- SQLerror::test(__FILELINE__);   	
+ SQLerror::test(__FILELINE__,100);   	
 
  prlist_valid=false;
  Preislisten(); 
@@ -522,7 +553,20 @@ void Kunde::push_backPreisListe(const PreisListe::ID p) throw(SQLerror)
 
 
 
+void Kunde::setAktiv(bool _aktiv) throw(SQLerror)
+{
+ exec sql begin declare section;
+ unsigned int KUNDENNR = entityid;
+ bool AKTIV=_aktiv;
+ exec sql end declare section;
 
+ Transaction tr;
 
+ exec sql update kunden set aktiv = :AKTIV where kundennr = :KUNDENNR;
+ SQLerror::test(__FILELINE__);
 
+ isaktiv=_aktiv;
+ 
+ tr.commit();
+}
 

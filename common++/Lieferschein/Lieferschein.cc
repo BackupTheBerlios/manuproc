@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.cc,v 1.7 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: Lieferschein.cc,v 1.8 2002/06/20 06:29:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,13 +21,15 @@
 #include <Aux/Transaction.h>
 #include <Auftrag/selFullAufEntry.h>
 #include <Artikel/Einheiten.h>
+#include <Aux/FetchIStream.h>
 
 Lieferschein::Lieferschein(const LieferscheinBase &lsbase, const Petig::Datum &_lsdatum,
 int _kdnr,int _rngid, int _paeckchen, int _pakete, const Petig::Datum &_geliefertam,
 int _dpdlnr)
-: LieferscheinBase(lsbase), lsdatum(_lsdatum), kunde(_kdnr), rngid(_rngid),
-paeckchen(_paeckchen),pakete(_pakete), geliefertam(_geliefertam),
-dpdliefnr(_dpdlnr)
+: LieferscheinBase(lsbase), lsdatum(_lsdatum), kunde(_kdnr), rngid(_rngid)
+#ifdef MABELLA_EXTENSIONS
+,dpdliefnr(_dpdlnr),paeckchen(_paeckchen),pakete(_pakete), geliefertam(_geliefertam)
+#endif
 {}
 
 void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl, 
@@ -51,7 +53,7 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
      // kann in einem Stueck abschreiben
    {  SelectedFullAufList::iterator i=auftraglist.aufidliste.begin();
       LieferscheinEntry(*this, *i,artikel, anzahl,mengeneinheit,palette,false);
-      i->abschreiben(menge);
+      i->abschreiben(menge,Id());
    }
    else
    // stueckeln (1*Lieferung, dann Zuordnung)
@@ -68,7 +70,7 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
            else lmenge=abmenge;
            LieferscheinEntry(*this,*i,artikel,lstueck,lmenge,0,true);
            
-           i->abschreiben(abmenge);
+           i->abschreiben(abmenge,Id());
 
            menge-=abmenge;
     	   }
@@ -84,13 +86,56 @@ void Lieferschein::push_back(const ArtikelBase &artikel, int anzahl,
    tr.commit();
 }
 
-void Lieferschein::push_back(const AufEintragBase &aufeintrag,
+void Lieferschein::push_back(AufEintrag &aufeintrag,
 		const ArtikelBase &artikel, int anzahl, 
 		mengen_t menge, int palette)
 {  LieferscheinEntry(*this, aufeintrag ,artikel, anzahl,menge,palette);
    if (!menge)
-      aufeintrag.abschreiben(anzahl);
+      aufeintrag.abschreiben(anzahl,Id());
    else
-      aufeintrag.abschreiben(anzahl*menge);
+      aufeintrag.abschreiben(anzahl*menge,Id());
 }
 
+#ifdef MABELLA_EXTENSIONS
+
+void Lieferschein::setDPDlnr(int d) const throw(SQLerror)
+{
+ std::string query="update lieferschein set dpdliefnr=nullif("+itos(d)
+      +","+itos(Fertig)+") where (instanz,lfrsid) = ("+itos(Instanz())+","+itos(Id())+")";
+ Query::Execute(query);
+ SQLerror::test(__FILELINE__);
+}
+
+void Lieferschein::setPakete(const int p) throw(SQLerror)
+{  
+ std::string query="update lieferschein set pakete="+itos(p)
+   +" where (instanz,lfrsid) = ("+itos(Instanz())+","+itos(Id())+")";
+ Query::Execute(query);
+ SQLerror::test(__FILELINE__);
+}
+
+void Lieferschein::setPaeckchen(const int p) throw(SQLerror)
+{  
+ std::string query="update lieferschein set paeckchen="+itos(p)
+   +" where (instanz,lfrsid) = ("+itos(Instanz())+","+itos(Id())+")";
+ Query::Execute(query);
+ SQLerror::test(__FILELINE__);
+}
+
+void Lieferschein::setGewichtNetto(const fixedpoint<1> i) throw(SQLerror)
+{  
+ std::string query="update lieferschein set netto_kg="+dtos(i)
+   +" where (instanz,lfrsid) = ("+itos(Instanz())+","+itos(Id())+")";
+ Query::Execute(query);
+ SQLerror::test(__FILELINE__);
+}
+
+void Lieferschein::setGewichtBrutto(const fixedpoint<1> i) throw(SQLerror)
+{  
+ std::string query="update lieferschein set brutto_kg="+dtos(i)
+   +" where (instanz,lfrsid) = ("+itos(Instanz())+","+itos(Id())+")";
+ Query::Execute(query);
+ SQLerror::test(__FILELINE__);
+}
+
+#endif

@@ -57,6 +57,7 @@ class RechnungEntry : public RechnungEntryBase
  rabatt_t rabatt;
  Petig::Datum lieferdatum;
  LieferscheinEntryBase lfrs;
+ AuftragBase auftrag;
 // LieferscheinBase::ID lfrsid;
 // int lieferzeile;
  
@@ -64,9 +65,10 @@ public:
 
  RechnungEntry(const RechnungEntryBase &reb);
  RechnungEntry(const RechnungBase &l, int z,int a, int s,mengen_t m,const Preis &p, rabatt_t r,
-                        Petig::Datum ld, const LieferscheinEntryBase ls)
+                        Petig::Datum ld, const LieferscheinEntryBase ls,
+                        const AuftragBase &ab)
   		: RechnungEntryBase(l,z),artikel(a),stueck(s),menge(m),preis(p),
-                        rabatt(r),lieferdatum(ld),lfrs(ls)
+                        rabatt(r),lieferdatum(ld),lfrs(ls),auftrag(ab)
                 {};
 
  mengen_t Menge() const { return menge; }
@@ -83,7 +85,7 @@ public:
  const Preis getPreis(bool brutto=true) const 
  { 
    if(brutto) return preis;
-   else return preis.Gesamtpreis(1,0,rabatt); 
+   else return preis.Gesamtpreis(preis.PreisMenge(),0,rabatt);
  }
  
  // Waehrung muss zu der in Rechnung passen (kein Vergleich)
@@ -94,6 +96,7 @@ public:
  const ArtikelBase::ID ArtikelID() const { return artikel.Id(); }
  const ArtikelBase Artikel() const { return artikel; }
  Petig::Datum LieferDatum() const {return lieferdatum; }
+ const int AuftragId() const { return auftrag.Id();}
  const Preis GPreis() const { return preis.Gesamtpreis(stueck,menge,rabatt); }
 };
 

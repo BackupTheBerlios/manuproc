@@ -2,14 +2,15 @@ CXXFLAGS=@CXXFLAGS@ @ECPG_INCLUDES@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
 
-noinst_PROGRAMS=libLieferschein.o
+noinst_LIBRARIES=libLieferschein.a
 
 includedir=@includedir@/Lieferschein
 
-libLieferschein_o_SOURCES=Lieferschein.cc LieferscheinEntry.cc \
-		LieferscheinList.cc LieferscheinVoll.cc $(BUILT_SOURCES)
+libLieferschein_a_SOURCES=Lieferschein.cc LieferscheinEntry.cc \
+		LieferscheinList.cc LieferscheinVoll.cc $(BUILT_SOURCES) \
+      Rechnung.cc 
 
-libLieferschein.o: $(libLieferschein_o_OBJECTS) $(libLieferschein_o_DEPENDENCIES)
+libLieferschein.a: $(libLieferschein_a_OBJECTS) $(libLieferschein_a_DEPENDENCIES)
 	touch $@
         
 BUILT_SOURCES=LieferscheinEntry_sql.cc LieferscheinList_sql.cc \

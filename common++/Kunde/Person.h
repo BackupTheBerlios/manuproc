@@ -1,4 +1,4 @@
-// $Id: Person.h,v 1.11 2002/05/09 12:46:00 christof Exp $
+// $Id: Person.h,v 1.12 2002/06/20 06:29:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -62,8 +62,10 @@ public:
  const cH_Anrede Anrede() const { return anrede; }
  const std::string Notiz() const { return notiz; }
 
- std::string Kontakt(const TelArt& art, ManuProcEntity::ID kundeid) const;
- const std::list<cH_Telefon> getTelefon(ManuProcEntity::ID kundenid=ManuProcEntity::none_id) const; 
+ std::string Kontakt(const TelArt& art, ManuProcEntity::ID kundeid,
+ 		bool forcereload=false) const;
+ const std::list<cH_Telefon> getTelefon(ManuProcEntity::ID kundenid=ManuProcEntity::none_id,
+ 				bool forcereload=false) const; 
  
  void setName(const std::string &s) { name=s; }
  void setVorname(const std::string &s) { vorname=s; }

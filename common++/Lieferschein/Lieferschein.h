@@ -1,4 +1,4 @@
-/* $Id: Lieferschein.h,v 1.11 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: Lieferschein.h,v 1.12 2002/06/20 06:29:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,17 +28,20 @@
 #include <vector>
 #include <Aux/Handles.h>
 #include <Aux/CacheStatic.h>
+#include <Artikel/Preis.h>
+#include <Auftrag/AufEintrag.h>
 
 class Lieferschein : public LieferscheinBase, public HandleContent
 {
  Petig::Datum lsdatum;
  cH_Kunde kunde;
  int rngid;
- int paeckchen, pakete;
  Petig::Datum geliefertam;
+#ifdef MABELLA_EXTENSIONS
  int dpdliefnr;
-
-
+ int paeckchen, pakete;
+ fixedpoint<1> brutto_kg,netto_kg;
+#endif
  public:
         
  	Lieferschein(const LieferscheinBase &source)
@@ -47,9 +50,12 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  	Lieferschein() : LieferscheinBase(),
  			lsdatum(Petig::Datum::today()),
  			kunde(Kunde::none_id),rngid(0),
- 			paeckchen(0),pakete(0),
- 			geliefertam(Petig::Datum::today()),
- 			dpdliefnr(0) {}
+ 			geliefertam(Petig::Datum::today())
+#ifdef MABELLA_EXTENSIONS
+ 			,dpdliefnr(0) ,
+ 			paeckchen(0),pakete(0)
+#endif
+ 			{}
  			
  	Lieferschein(const cH_ppsInstanz& instanz,int lid) throw(SQLerror);
 	Lieferschein(const LieferscheinBase &lsbase,
@@ -59,11 +65,22 @@ class Lieferschein : public LieferscheinBase, public HandleContent
 			
  Lieferschein(const cH_ppsInstanz& instanz,cH_Kunde k,int jahr=0) throw(SQLerror);
 			
- void setDPDlnr(int dpdlnr) const throw(SQLerror);
  void setDPDDatum() const throw(SQLerror);
 			
+#ifdef MABELLA_EXTENSIONS
+ const static int Fertig=-1;
+ int getDPDlnr() const {return dpdliefnr;}
+ void setDPDlnr(int dpdlnr) const throw(SQLerror);
  int Pakete() const {return pakete;}			
- int Paeckchen() const {return paeckchen;}			
+ int Paeckchen() const {return paeckchen;}
+ void setPakete(const int i) throw(SQLerror);
+ void setPaeckchen(const int i) throw(SQLerror);
+ fixedpoint<1> GewichtBrutto() const {return brutto_kg;}
+ fixedpoint<1> GewichtNetto() const {return netto_kg;}
+ void setGewichtBrutto(const fixedpoint<1> i) throw(SQLerror);
+ void setGewichtNetto(const fixedpoint<1> i) throw(SQLerror);
+#endif 
+ const Preis::rabatt_t AufRabatt() const throw(SQLerror);
  
  int KdNr() const {return kunde->Id();}		
  const cH_Kunde &getKunde() const {return kunde; }	
@@ -74,8 +91,11 @@ class Lieferschein : public LieferscheinBase, public HandleContent
  const Petig::Datum getDatum() const { return geliefertam; }
  void setDatum(const Petig::Datum &d) throw(SQLerror);
  // DB Zugriff mit abschreiben
- void push_back(const AufEintragBase &auftragentry, 
+ void push_back(AufEintrag &auftragentry, 
  		const ArtikelBase &artikel, int anzahl, mengen_t menge, int palette);
+// void push_back(const AufEintragBase &auftragentry, 
+// 		const ArtikelBase &artikel, int anzahl, mengen_t menge, int palette)
+// 	{push_back(class AufEintrag(auftragentry),artikel,anzahl,menge,palette);}
  // DB: Menge verteilt auf mehrere Aufträge abschreiben
  void push_back(const ArtikelBase &artikel, int anzahl, mengen_t menge, int palette);
 };

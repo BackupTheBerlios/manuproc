@@ -1,27 +1,27 @@
-# $Id: Makefile.am,v 1.16 2002/05/09 12:45:59 christof Exp $
+# $Id: Makefile.am,v 1.17 2002/06/20 06:29:53 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
 
-noinst_PROGRAMS=libAux.o
+noinst_LIBRARIES=libAux.a
 
 includedir=@includedir@/Aux
 
-libAux_o_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
+PGCC_Sources=dbconnect.cc SQLerror_postgres.cc Transaction.cc \
+		Waehrung_sql.cc Changejournal_sql.cc FetchIStream.cc \
+      Global_Settings.cc EAN_sql.cc 
+
+libAux_a_SOURCES= Ausgabe_neu.cc Datum.cc IOerror.cc \
 		postgres_conversion.cc Zeitpunkt_new.cc \
 		Zeitpunkt_new_ostr.cc \
 		Zeitpunkt_new_write.cc string0.c \
 		EntryValueBase.cc EntryValueIntString.cc \
-		auto_conversion.cc $(PGCC_SOURCES) \
-		exception.cc itos.cc EntryValueDatum.cc Handles.cc
+		auto_conversion.cc $(PGCC_Sources) AdminProblems.cc \
+		exception.cc itos.cc EntryValueDatum.cc Handles.cc EAN.cc
 
-libAux.o: $(libAux_o_OBJECTS) $(libAux_o_DEPENDENCIES)
+libAux.a: $(libAux_a_OBJECTS) $(libAux_a_DEPENDENCIES)
 	touch $@
-
-PGCC_SOURCES=   dbconnect.cc SQLerror_postgres.cc Transaction.cc \
-		Waehrung_sql.cc Changejournal_sql.cc FetchIStream.cc \
-      ppsInstanz_sql.cc Global_Settings.cc
 
 LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
 	Datum.cc Datum.h Handles.h Handles.cc \
@@ -35,12 +35,12 @@ LINKS= Ausgabe_neu.cc Ausgabe_neu.h CacheStatic.h Cache_Pointer.h \
 	FetchIStream.pgcc FetchIStream.h ctime_assert.h \
    EntryValueBase.cc EntryValueBase.h EntryValueIntString.cc \
    EntryValueIntString.h EntryValueEmptyInt.h EntryValueDatum.h \
-   EntryValueDatum.cc EmptyInt_4TeX.h EntryValueFixed.h Long.h 
+   EntryValueDatum.cc EmptyInt_4TeX.h EntryValueFixed.h Long.h
 
 $(LINKS):
 	ln -sf ../Basic/src/$@ .
 
-BUILT_SOURCES=$(LINKS) $(PGCC_SOURCES) 
+BUILT_SOURCES=$(LINKS) $(PGCC_Sources) 
 
 include_HEADERS=Ausgabe.h Ausgabe_neu.h Datum.h \
 		IOerror.h Postgres.h \
@@ -50,10 +50,10 @@ include_HEADERS=Ausgabe.h Ausgabe_neu.h Datum.h \
 		Handles.h Cache_Pointer.h CacheStatic.h \
 		EntryValueBase.h safemap.h string0.h \
 		Transaction.h Waehrung.h Pointer.h \
-		Changejournal.h ppsInstanz.h EntryValueIntString.h \
+		Changejournal.h EntryValueIntString.h \
 		exception.h itos.h fixedpoint.h FetchIStream.h \
 		ctime_assert.h EntryValueEmptyInt.h EntryValueDatum.h \
-		EntryValueFixed.h Global_Settings.h
+		EntryValueFixed.h Global_Settings.h EAN.h AdminProblems.h
 
 CLEANFILES= *~ $(BUILT_SOURCES)
 

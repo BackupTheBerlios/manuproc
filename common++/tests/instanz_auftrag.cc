@@ -1,4 +1,4 @@
-// $Id: instanz_auftrag.cc,v 1.9 2002/05/09 12:46:01 christof Exp $
+// $Id: instanz_auftrag.cc,v 1.10 2002/06/20 06:29:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -23,7 +23,7 @@
 #include <Aux/exception.h>
 #include <Aux/dbconnect.h>
 #include <Auftrag/AuftragsBaum.h>
-//#include <Aux/ppsInstanz.h>
+//#include <Instanzen/ppsInstanz.h>
 
 void showChildren(AufEintragBase AEB)
 {

@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.16 2002/05/09 12:45:59 christof Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.17 2002/06/20 06:29:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,7 +24,7 @@
 #include<Artikel/ArtikelBase.h>
 #include<Auftrag/AuftragBase.h>
 #include <Auftrag/AufEintragBase.h>
-#include<Aux/ppsInstanz.h>
+#include<Instanzen/ppsInstanz.h>
 #include <vector>
 
 class SQLFullAuftragSelector // : public SQLAuftragSelector
@@ -48,8 +48,10 @@ public:
  SQLFullAuftragSelector(const sel_Status& selstr);
 
  struct sel_Aufid
-  { sel_Aufid(const AuftragBase& a) : auftrag(a) {}
+  { sel_Aufid(const AuftragBase& a,const bool w=true) 
+      : auftrag(a),with_storno(w) {}
     AuftragBase auftrag;
+    bool with_storno;
   };
  SQLFullAuftragSelector(const sel_Aufid& selstr);
 
@@ -86,16 +88,18 @@ public:
 
  // bislang nur offene Aufträge
  // sortiert nach Lieferdatum (asc)
- struct sel_Artikel_Planung
+//bool=false -> 0;
+
+ struct sel_Artikel_Planung_id
   { ppsInstanz::ID instanz;
     ArtikelBase artikel;
-    bool geplant;
+    int auftragid;
     
-    sel_Artikel_Planung(ppsInstanz::ID i, ArtikelBase a, bool g=true) 
-    : instanz(i), artikel(a), geplant(g)
+    sel_Artikel_Planung_id(ppsInstanz::ID i, ArtikelBase a, int _id) 
+    : instanz(i), artikel(a), auftragid(_id)
     {}
   };
- SQLFullAuftragSelector(const sel_Artikel_Planung &selstr);
+ SQLFullAuftragSelector(const sel_Artikel_Planung_id &selstr);
 
  struct sel_Artikel
   { ppsInstanz::ID instanz;

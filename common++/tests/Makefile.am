@@ -1,6 +1,7 @@
-# $Id: Makefile.am,v 1.21 2002/05/09 12:46:01 christof Exp $
+# $Id: Makefile.am,v 1.22 2002/06/20 06:29:53 christof Exp $
 
-SUBDIRS=auftragstest
+SUBDIRS=auftragstest 
+#AuftragsTest
 
 CXXFLAGS=@CXXFLAGS@ @COMMONXX_INCLUDES@
 LDFLAGS=@LDFLAGS@  @COMMONXX_LDFLAGS@
@@ -14,8 +15,11 @@ EXTRA_PROGRAMS=preis test_Bankauftrag test_pgsql_conv testHandles \
 	testExtBezHandle testKW fixedpoint artbez \
 	Zeitpunkt insert_bestellen_bei FetchIStream abschreiben \
 	ArtikelSumme long instanz_auftrag instanz_ArtikelBaum RL_lager \
-   Jumbo_lager Lieferschein ppsInstanz auftrag_ohne_instanzen trans
+   Jumbo_lager Lieferschein ppsInstanz auftrag_ohne_instanzen trans \
+   ean artikelbaum
 
+ean_SOURCES=ean.cc
+artikelbaum_SOURCES=artikelbaum.cc
 auftrag_ohne_instanzen_SOURCES=auftrag_ohne_instanzen.cc
 ppsInstanz_SOURCES=ppsInstanz.cc
 Lieferschein_SOURCES=Lieferschein.cc

@@ -18,10 +18,17 @@
 
 #include <cstdio>
 #include <Aux/itos.h>
+#include <strstream>
 
 #ifdef __MINGW32__
 extern "C" { int snprintf(char *str, size_t size, const  char  *format, ...); }
 #endif
+
+std::string itos0(int i)
+{
+  if(i==0) return "";
+  return itos(i);
+}
 
 std::string itos(int i)
 {
@@ -29,7 +36,6 @@ std::string itos(int i)
  snprintf(buffer,sizeof buffer,"%i",i);
  return(buffer);
 }
-
 
 #include <locale.h>
 
@@ -40,7 +46,10 @@ std::string dtos(double i)
  setlocale(LC_NUMERIC, "C");
 
  char buffer[100];
- snprintf(buffer,sizeof buffer,"%lf",i);
+// snprintf(buffer,sizeof buffer,"%lf",i);
+ ostrstream o(buffer,sizeof buffer);
+ o << i << char(0);
+ o.flush();
 
  setlocale(LC_NUMERIC, oldlocale);
  free(oldlocale);

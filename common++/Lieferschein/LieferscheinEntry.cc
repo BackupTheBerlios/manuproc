@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.cc,v 1.6 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: LieferscheinEntry.cc,v 1.7 2002/06/20 06:29:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -48,10 +48,11 @@ bool LieferscheinEntry::changeMenge(int stueck,mengen_t menge) throw(SQLerror)
   if(RefAuftrag().valid()) // Keine Zusatzinfos
    {
      AufEintragBase AEB(RefAuftrag(),AufZeile());
-     mengen_t rest=AufEintrag(AEB).getRestStk();
+     AufEintrag AE(AEB);
+     mengen_t rest=AE.getRestStk();
      if(abmenge > rest ) return false;
      updateLieferscheinMenge(stueck,menge);
-     AEB.abschreiben(abmenge);
+     AE.abschreiben(abmenge,Id());
    }
   else // Zusatzinfos ODER kein Referenzauftrag
    {
@@ -101,7 +102,7 @@ bool LieferscheinEntry::menge_bei_zusatzinfos_abschreiben(std::vector<Liefersche
     else                       M=abmenge;
     if(i->RefAuftrag().valid()) 
      { AufEintragBase AEB(i->RefAuftrag(),i->AufZeile());
-       AEB.abschreiben(M);
+       AufEintrag(AEB).abschreiben(M,Id());
      }
     bool del_line=false;
     if(i->Stueck()==1)

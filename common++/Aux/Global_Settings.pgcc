@@ -30,22 +30,16 @@ void Global_Settings::set_Wert(const std::string& wert)
   strncpy(WERT,wert.c_str(),sizeof(WERT));
   exec sql update global_settings set wert=:WERT where 
    (userid,program,name)=(:USERID,:PROGRAM,:NAME);
+  if (sqlca.sqlcode==100)
+    exec sql insert into global_settings 
+    	(userid,program,name,wert) 
+    	VALUES (:USERID,:PROGRAM,:NAME,:WERT);
+  SQLerror::test(__FILELINE__);
 }
 
-void Global_Settings::update_Date()
-{
-  exec sql begin declare section;
-   int USERID=userid;
-   char PROGRAM[50],NAME[50];
-  exec sql end declare section;
-  strncpy(PROGRAM,program.c_str(),sizeof(PROGRAM));
-  strncpy(NAME,name.c_str(),sizeof(NAME));
-  exec sql update global_settings set wert=now() where 
-   (userid,program,name)=(:USERID,:PROGRAM,:NAME);
-}
-
-Global_Settings::Global_Settings(int u,const std::string& p,const std::string& n,const std::string& w)
-: userid(u),program(p),name(n),wert(w)
+void Global_Settings::create(int userid,const std::string& program,
+                             const std::string& name,const std::string& wert)
+//: userid(u),program(p),name(n),wert(w)
 {
   exec sql begin declare section;
    int USERID=userid;
@@ -53,8 +47,6 @@ Global_Settings::Global_Settings(int u,const std::string& p,const std::string& n
   exec sql end declare section;
   strncpy(PROGRAM,program.c_str(),sizeof(PROGRAM));
   strncpy(NAME,name.c_str(),sizeof(NAME));
-  if(wert!="now()")
-   {
     strncpy(WERT,wert.c_str(),sizeof(WERT));
     exec sql update global_settings set wert=:WERT 
       where (userid,program,name) =  (:USERID,:PROGRAM,:NAME);
@@ -62,14 +54,4 @@ Global_Settings::Global_Settings(int u,const std::string& p,const std::string& n
     if (sqlca.sqlcode) 
        exec sql insert into global_settings (userid,program,name,wert) 
          values (:USERID,:PROGRAM,:NAME,:WERT);
-   }
-  else
-   {
-    exec sql update global_settings set wert=now() 
-      where (userid,program,name) =  (:USERID,:PROGRAM,:NAME);
-    SQLerror::test(__FILELINE__,100);
-    if (sqlca.sqlcode) 
-       exec sql insert into global_settings (userid,program,name,wert) 
-         values (:USERID,:PROGRAM,:NAME,now());
-   }
 }

@@ -1,18 +1,18 @@
-# $Id: Makefile.am,v 1.13 2002/05/09 12:45:59 christof Exp $
+# $Id: Makefile.am,v 1.14 2002/06/20 06:29:52 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
 
-noinst_PROGRAMS=libArtikel.o
+noinst_LIBRARIES=libArtikel.a
 
 includedir=@includedir@/Artikel
 
-libArtikel_o_SOURCES=Aufmachung.cc Preis.cc \
+libArtikel_a_SOURCES=Aufmachung.cc Preis.cc \
 	ArtikelMengeSumme.cc \
 	$(BUILT_SOURCES_P)
 
-libArtikel.o: $(libArtikel_o_OBJECTS) $(libArtikel_o_DEPENDENCIES)
+libArtikel.a: $(libArtikel_a_OBJECTS) $(libArtikel_a_DEPENDENCIES)
 	touch $@
 	
 BUILT_SOURCES=$(BUILT_SOURCES_P)

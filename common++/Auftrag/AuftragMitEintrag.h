@@ -1,4 +1,4 @@
-/* $Id: AuftragMitEintrag.h,v 1.3 2002/05/09 12:45:59 christof Exp $ */
+/* $Id: AuftragMitEintrag.h,v 1.4 2002/06/20 06:29:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -37,7 +37,7 @@ public:
 	int _kdnr, const std::string _youraufnr,
 	const Petig::Datum& _prozdate,
 	int _prozess,int _letztePlanInstanz, int _maxPlanInstanz,
-	const Preis &_preis, int _rabatt,
+	const Preis &_preis, rabatt_t _rabatt,
 	AufStatVal _entrystat, const Petig::Datum _lasteditdate) throw();
 
    const Auftrag &getAuftrag() const { return auftrag; }

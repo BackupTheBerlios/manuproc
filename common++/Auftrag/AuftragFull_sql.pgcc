@@ -4,15 +4,15 @@
 
 int AuftragFull::insertNewEntry(unsigned long int bestellt,
                Petig::Datum lieferdatum, ArtikelBase::ID artid,
-               AufStatVal status,
-               Preis preis, fixedpoint<2> rabatt) throw (SQLerror)
+               AufStatVal status,int uid,
+               Preis preis, fixedpoint<2> rabatt,const cH_PreisListe &preisliste) throw (SQLerror)
 {
-  int znr=AuftragBase::insertNewEntry(bestellt,lieferdatum,artid,status,true,preis,rabatt);
+  int znr=AuftragBase::insertNewEntry(bestellt,lieferdatum,artid,status,uid,true,preis,rabatt,preisliste);
   eintragliste.push_back(AufEintrag(
       Instanz(),Id(),znr,bestellt,artid,lieferdatum,
       0,0,0,getStatus(),getKundennr(),getYourAufNr(),
       Petig::Datum(),Prozess::default_id,ppsInstanzID::None,0,
-      preis,rabatt,status,Petig::Datum::today()));
+      preis,rabatt,status,uid,Petig::Datum::today(),"",preisliste));
   return znr;
 }
 
@@ -23,11 +23,11 @@ void AuftragFull::deleteEintrag(int zeilennr, int idx) throw(SQLerror)
  eintragliste.erase(i);    
 }
 
-AuftragFull::AuftragFull(const AuftragBase& auftrag) throw(SQLerror)
+AuftragFull::AuftragFull(const AuftragBase& auftrag,bool with_storno=true) throw(SQLerror)
 	: Auftrag(auftrag)
 {
  SelectedFullAufList aufids((SQLFullAuftragSelector)
- 			(SQLFullAuftragSelector::sel_Aufid(auftrag)));
+ 			(SQLFullAuftragSelector::sel_Aufid(auftrag,with_storno)));
  for(SelectedFullAufList::iterator i = aufids.aufidliste.begin();
 				 	 i!=aufids.aufidliste.end(); ++i)
  {  try { eintragliste.push_back(*i);
@@ -57,10 +57,10 @@ int AuftragFull::get_index_by_znr(int znr)
   abort();
 };
 
-void AuftragFull::setStatusAuftragFull(AufStatVal status) throw(SQLerror)
+void AuftragFull::setStatusAuftragFull(AufStatVal status,int uid) throw(SQLerror)
 {
   Auftrag::setStatusAuftrag_(status);
   for (AufEintragList::iterator i=eintragliste.begin();i!=eintragliste.end();++i)
-    i->setStatus(status);
+    i->setStatus(status,uid);
 }
 

@@ -1,4 +1,4 @@
-// $Id: Jumbo_lager.cc,v 1.4 2002/05/09 12:46:01 christof Exp $
+// $Id: Jumbo_lager.cc,v 1.5 2002/06/20 06:29:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -20,7 +20,7 @@
 #include <iostream>
 #include <Aux/exception.h>
 #include <Aux/dbconnect.h>
-#include <Aux/ppsInstanz.h>
+#include <Instanzen/ppsInstanz.h>
 #include <Artikel/ArtikelBezeichnung.h>
 #include <Lager/Lager.hh>
 

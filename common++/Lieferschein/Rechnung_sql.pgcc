@@ -23,7 +23,8 @@
 exec sql include sqlca;
 
 Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
-: RechnungBase(rid), kunde(Kunde::default_id)
+: RechnungBase(rid), kunde(Kunde::default_id), 
+   zahlungsart(Zahlungsart::none_id)
 {
  if(rid==none_id) return;
 
@@ -43,7 +44,7 @@ Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
  Transaction tr;
 
  exec sql select r.kundennr, date(r.datum), r.rngart, 
-         zahlart, zahlziel, 
+         coalesce(zahlart,-1), zahlziel, 
  			coalesce(waehrung,1), coalesce(rabatt,0), bezahlt
 		into :KDNR, :DATUM, :RNGART, :ZAHLART, :ZAHLZIEL:IZAHLZIEL,
 		   :WAEHRUNG, :RABATT, :BEZAHLT
@@ -62,12 +63,14 @@ Rechnung::Rechnung(RechnungBase::ID rid) throw(SQLerror)
 }
 
 Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
-	: RechnungBase(none_id), kunde(k),rabatt(0)
+	: RechnungBase(none_id), kunde(k),rabatt(0),
+   zahlungsart(Zahlungsart::none_id)
 {
  exec sql begin declare section;
  int RNGID;
  int KUNDENNR;
  int JAHR=jahr;
+ int ZAHLUNGSART;
  exec sql end declare section;
  
  if (!JAHR)
@@ -77,6 +80,12 @@ Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
  else JAHR%=100;
 
  KUNDENNR=k->Id();
+ if(KUNDENNR != k->Rngan())
+   {cH_Kunde krng(k->Rngan());
+    ZAHLUNGSART=krng->zahlungsart()->Id();
+   }
+ else
+   ZAHLUNGSART=k->zahlungsart()->Id();
 
  Transaction tr;
   
@@ -89,7 +98,7 @@ Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
  SQLerror::test(__FILELINE__":Rechnung: select next rngid");
  
  exec sql insert into rechnung (rngid, kundennr,zahlart)
- 	values (:RNGID, :KUNDENNR,0);
+ 	values (:RNGID, :KUNDENNR,:ZAHLUNGSART);
  SQLerror::test(__FILELINE__":Rechnung: insert into rechnung");	
 
  rngid=RNGID;

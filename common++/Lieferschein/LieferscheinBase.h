@@ -1,4 +1,4 @@
-/* $Id: LieferscheinBase.h,v 1.6 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: LieferscheinBase.h,v 1.7 2002/06/20 06:29:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,7 +20,7 @@
 
 #ifndef LIEFERBASE
 #define LIEFERBASE
-#include<Aux/ppsInstanz.h>
+#include<Instanzen/ppsInstanz.h>
 #include <Aux/fixedpoint.h>
 
 class LieferscheinBase

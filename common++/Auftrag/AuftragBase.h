@@ -18,7 +18,7 @@
 
 #ifndef AUFTRAGBASE_H
 #define AUFTRAGBASE_H
-#include<Aux/ppsInstanz.h>
+#include<Instanzen/ppsInstanz.h>
 #include <Aux/Datum.h>
 #include <Artikel/ArtikelBase.h>
 #include <Aux/Preis.h>
@@ -33,12 +33,15 @@ class AuftragBase
 {
         bool Exists() const throw(SQLerror) ;
  public:
-        typedef fixedpoint<0> mengen_t;
-//        typedef Preis::rabatt_t rabatt_t;
-	typedef int rabatt_t; // vorläufig ...
-   static const int plan_auftrag_id =  1;
-   static const int invalid_id      = -1;
-   static const int ungeplante_id   =  0;
+   typedef fixedpoint<0> mengen_t;
+   typedef Preis::rabatt_t rabatt_t;
+   static const int handplan_auftrag_id =  20000; // gemeint sind alle Aufträge, die NICHT 0,1,2 sind
+   static const int dispo_auftrag_id =  2;
+   static const int plan_auftrag_id  =  1;
+   static const int invalid_id       = -1;
+   static const int ungeplante_id    =  0;
+
+   static const int PlanId_for(const cH_ppsInstanz &instanz);
 
  protected:
    cH_ppsInstanz instanz; 	
@@ -57,15 +60,16 @@ class AuftragBase
    cH_ppsInstanz Instanz() const {return instanz; }
 	bool valid() const { return auftragid!=invalid_id; }
    void setStatusAuftragBase(AufStatVal st) const throw(SQLerror);
+   void setRabatt(const rabatt_t auftragsrabatt) const throw(SQLerror);
 
    void create_if_not_exists(AufStatVal status,Kunde::ID kunde=Kunde::default_id) const;
    int insertNewEntry(const mengen_t bestellt, 
                 const Petig::Datum lieferdatum, const ArtikelBase& artikel,
-                const AufStatVal status,const bool setInstanzAuftraege,
-                const Preis& preis=Preis(),const fixedpoint<2> rabatt=0
-                ) const throw(SQLerror);
+                const AufStatVal status,int uid,const bool setInstanzAuftraege,
+                const Preis& preis=Preis(),const rabatt_t aufeintragsrabatt=0,
+                const cH_PreisListe &preisliste=PreisListe::none_id) const throw(SQLerror);
    void InstanzAuftraegeAnlegen(const ArtikelBase& art,const int altZnr,
-               const Petig::Datum& lieferdatum, const AufStatVal status, 
+               const Petig::Datum& lieferdatum, const AufStatVal status, int uid,
                 const mengen_t menge) const; 
    bool existEntry(const ArtikelBase& artid,
                         const Petig::Datum& lieferdatum,
@@ -74,7 +78,7 @@ class AuftragBase
    // gibt Zeilennummer zurück
    int tryUpdateEntry(mengen_t bestellt, 
                const Petig::Datum lieferdatum, const ArtikelBase& artikel,
-                AufStatVal status,const AufEintragBase& altAEB,bool force_new=false) 
+                AufStatVal status,int uid,const AufEintragBase& altAEB,bool force_new=false) 
                 const throw(SQLerror);
 
 	// wandelt enum in std::string um

@@ -25,9 +25,13 @@
 #include <Auftrag/AufEintrag.h>
 #include <Auftrag/AufEintragZu.h>
 #include <Auftrag/selFullAufEntry.h>
-#include <Aux/ppsInstanz.h>
+#include <Instanzen/ppsInstanz.h>
+#include <Aux/Transaction.h>
 #include <Artikel/ArtikelStamm.h>
 #include <algorithm>
+#include <unistd.h>
+#include <Aux/AdminProblems.h>
+#include <Instanzen/Produziert.h>
 
 H_Lager::H_Lager(const ArtikelBase& artikel) 
 {
@@ -50,52 +54,46 @@ H_Lager::H_Lager(const cH_ppsInstanz& instanz)
 }
 
 
-
-void Lager::rein_ins_lager(ArtikelBase artikel,AuftragBase::mengen_t menge)
-{
-  bewegung(false,artikel,menge);
-}
-
-void Lager::raus_aus_lager(ArtikelBase artikel,AuftragBase::mengen_t menge)
-{
-  bewegung(true,artikel,menge);
-}
-
-void Lager::bewegung(bool raus,ArtikelBase artikel,AuftragBase::mengen_t menge)
+void Lager::rein_ins_lager(ArtikelBase artikel,AuftragBase::mengen_t menge,int uid)
 {
   assert(menge>=0);
   try{
-    ppsInstanz::ID abschreib_instanz=instanz;
-    SQLFullAuftragSelector AEBSEL(SQLFullAuftragSelector::sel_Artikel_Planung
-                                 (abschreib_instanz,artikel,true));
-    if(!raus) 
-         { instanz=cH_ppsInstanz(instanz)->LagerFuer();
-           AEBSEL = SQLFullAuftragSelector::sel_Artikel_Planung
-                                 (abschreib_instanz,artikel,false);
-           
-         }
-    SelectedFullAufList AEBabschreiben(AEBSEL);
-    for(SelectedFullAufList::iterator i=AEBabschreiben.begin();i!=AEBabschreiben.end();++i)
-      {
-//cout << "\nAufEintrag: "<<i->Instanz()->Name()<<' '<<i->Id()<<' '<<i->ZNr()<<'\n'
-//   <<"Benötigt werden am "<<i->getLieferdatum().c_str()<<" noch "
-//   <<i->getRestStk()<<"   Menge:"<<menge<<'\n';
-
-       AuftragBase::mengen_t abschreibmenge;       
-       if(i->getRestStk() >= menge) abschreibmenge = menge;
-       else                         abschreibmenge = i->getRestStk();
-
-       if(raus) i->abschreiben(abschreibmenge);
-       else     Lager_Vormerkungen(*i).artikel_vormerken(abschreibmenge);
-
-       menge-=abschreibmenge;
-       if(!menge) break;
-      }
+     Transaction tr;
+     dispo_auftrag_aendern(artikel,menge);
+     Lager_Vormerkungen::freigegeben_menge_neu_verplanen(instanz,artikel,menge,uid);
+     cH_ppsInstanz I(instanz);
+     Produziert(I->LagerFuer(),artikel,menge,uid).NichtSelbst();
+     tr.commit();
    } catch(SQLerror &e)
      { std::cout << e <<'\n';}
 }
 
+void Lager::raus_aus_lager(ArtikelBase artikel,AuftragBase::mengen_t menge,int uid)
+{
+  assert(menge>=0);
+  try{
+    Produziert(instanz,artikel,menge,uid).Lager_abschreiben();
+   } catch(SQLerror &e) { std::cout << e <<'\n';}
+}
 
+
+bool Lager::dispo_auftrag_aendern(ArtikelBase artikel,AuftragBase::mengen_t menge)
+{
+   AuftragBase da(instanz,AuftragBase::dispo_auftrag_id);
+   int znr=-1,newznr=-1;
+   AuftragBase::mengen_t oldmenge;
+   bool alt=da.existEntry(artikel,Lager::Lagerdatum(),znr,newznr,oldmenge,OPEN);
+   if(alt)
+     {
+      AuftragBase::mengen_t mt=AufEintragBase(da,znr).updateStkDiffBase__(getuid(),menge);
+      assert(mt=menge);
+     }
+   else
+     {
+      da.insertNewEntry(menge,Lager::Lagerdatum(),artikel,OPEN,getuid(),false);
+     }
+  return alt;
+}
 
 Lager::Lager(ppsInstanz::ID _instanz)
 : instanz(_instanz)
@@ -114,7 +112,7 @@ class LagerInhalt Lager::LagerInhalt(const ArtikelBase& artikel) const
 {
   std::vector<class LagerInhalt> L=LagerInhalt_(artikel);
   if(L.empty()) return class LagerInhalt(artikel,0,0,0,0);
-  else return *(L.begin());
+  return *(L.begin());
 }
         
 void Lager::LagerInhaltSum(std::vector<class LagerInhalt>& LI) 

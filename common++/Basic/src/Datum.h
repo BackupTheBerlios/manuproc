@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.9 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: Datum.h,v 1.10 2002/06/20 06:29:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -75,7 +75,7 @@ public:
 	Datum(const char *datum) throw(Datumsfehler)
 	{  this->from_auto(datum);  }
 	/// Datum aus time_t (time(3)) erzeugen
-	Datum(time_t t) throw();
+	explicit Datum(time_t t) throw();
 	
 	Datum(const Kalenderwoche &kw) throw(Datumsfehler);
 	

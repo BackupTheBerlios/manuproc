@@ -24,6 +24,7 @@
 exec sql include sqlca;
 #include <Auftrag/selFullAufEntry.h>
 #include <Aux/string0.h>
+#include <Kunde/Zahlungsart.h>
 
 void Auftrag::deleteAuftrag() throw(SQLerror)
 {exec sql begin declare section;
@@ -57,13 +58,44 @@ void Auftrag::setWaehrung(cP_Waehrung w) throw(SQLerror)
  SQLerror::test(__FILELINE__"Waehrung setzen");
 }
 
-
-void Auftrag::setStatusAuftrag_(AufStatVal st) throw(SQLerror)
+void Auftrag::Zahlziel(const Petig::Datum &zziel) throw(SQLerror)
 {
- setStatusAuftragBase(st);
- status=st;
+ exec sql begin declare section;
+ int AUFTRAGID = Id();
+ int INSTANZ = int(Instanz());
+ char *ZAHLZIEL;
+ int IZAHLZIEL;
+ exec sql end declare section;
+
+ if(zziel.valid())
+   ZAHLZIEL = (char*)zziel.to_iso().c_str();
+ else
+  IZAHLZIEL = -1;
+  
+ exec sql update auftrag set zahlungsziel = :ZAHLZIEL:IZAHLZIEL 
+   where auftragid= :AUFTRAGID and instanz = :INSTANZ;
+ SQLerror::test(__FILELINE__"Zahlungsziel setzen");
 }
 
+void Auftrag::Zahlart(cH_Zahlungsart zart) throw(SQLerror)
+{
+ exec sql begin declare section;
+ int AUFTRAGID = Id();
+ int INSTANZ = int(Instanz());
+ int ZAHLART;
+ exec sql end declare section;
+
+ if(zart->Id()!=Zahlungsart::none_id)
+   ZAHLART = zart->Id();
+ else
+   {cH_Kunde k(kundennr);
+   ZAHLART = k->zahlungsart()->Id();
+   }
+  
+ exec sql update auftrag set zahlart = :ZAHLART 
+   where auftragid= :AUFTRAGID and instanz = :INSTANZ;
+ SQLerror::test(__FILELINE__"Zahlungsart setzen");
+}
 
 
 
@@ -90,25 +122,33 @@ void Auftrag::deleteEintrag(int zeilennr) throw(SQLerror)
 }
 
 Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
-: AuftragBase(_auftrag)
+: AuftragBase(_auftrag), zahlart(Zahlungsart::none_id)
 {
  exec sql begin declare section;
  int AUFTRAGID = Id();
  int INSTANZ =int(Instanz());
  int KUNDENNR;
  char DATUM[11];
+ char ZAHLZIEL[11];
  int STATUS;
  char YOURAUFNR[21];
  char *BEMERKUNG=0;
  int WAEHRUNG;
+ float RABATT;
+ int IZAHLZIEL;
+ int ZAHLART;
+ int NONE_ID;
  exec sql end declare section;
+
+ NONE_ID=Zahlungsart::none_id;
 
  exec sql select coalesce(kundennr,0), date(coalesce(datum,now())), 
  		stat, coalesce(youraufnr,''), coalesce(bemerkung,''),
-		 coalesce(waehrung,2)
+		 coalesce(waehrung,2),coalesce(rabatt,0),
+		zahlungsziel, coalesce(zahlart,:NONE_ID)
 	into 	:KUNDENNR, :DATUM, :STATUS, :YOURAUFNR, :BEMERKUNG,
-		 :WAEHRUNG
-	from auftrag where auftragid = :AUFTRAGID and instanz = :INSTANZ ;
+		 :WAEHRUNG,:RABATT,:ZAHLZIEL:IZAHLZIEL, :ZAHLART
+	from auftrag where (auftragid,instanz) = (:AUFTRAGID,:INSTANZ) ;
  SQLerror::test(__FILELINE__"Auftrag laden");
 
  kundennr = KUNDENNR;
@@ -118,12 +158,16 @@ Auftrag::Auftrag(const AuftragBase& _auftrag) throw(SQLerror)
  youraufnr = YOURAUFNR;
  bemerkung = BEMERKUNG;
  waehrung = cP_Waehrung(Waehrung::ID(WAEHRUNG));
+ auftragsrabatt = RABATT;
+ zahlziel = (IZAHLZIEL==0) ? Petig::Datum(ZAHLZIEL):Petig::Datum();
+ zahlart = cH_Zahlungsart(ZAHLART);
  ECPGfree_auto_mem();
 }
 
 
 Auftrag::Auftrag(Anlegen _instanz, long kdnr) throw(SQLerror)
-	: AuftragBase(cH_ppsInstanz(_instanz),invalid_id)
+	: AuftragBase(cH_ppsInstanz(_instanz),invalid_id),
+	  zahlart(Zahlungsart::none_id)
 {
  exec sql begin declare section;
  int AUFTRAGID;
@@ -171,7 +215,7 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr) throw(SQLerror)
 }
 
 Auftrag::Auftrag(Anlegen2 AB, long kdnr) throw(SQLerror)
-	: AuftragBase(AB)
+	: AuftragBase(AB), zahlart(Zahlungsart::none_id)
 {
  exec sql begin declare section;
  int AUFTRAGID=Id();
@@ -250,3 +294,4 @@ int Auftrag::getIdFromYourAufId(const char *youraufid) throw(SQLerror)
  SQLerror::test("getIdFromYourAufId: select auftragid");
  return AUFTRAGID;
 }
+

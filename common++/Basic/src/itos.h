@@ -18,6 +18,7 @@
 
 #include <string>
 std::string itos(int i);
+std::string itos0(int i);
 std::string dtos(double i);
 std::string ulltos(unsigned long long i);
 std::string btos(bool b);

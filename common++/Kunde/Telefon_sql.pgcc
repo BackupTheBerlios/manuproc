@@ -1,4 +1,4 @@
-// $Id: Telefon_sql.pgcc,v 1.3 2002/05/09 12:46:00 christof Exp $
+// $Id: Telefon_sql.pgcc,v 1.4 2002/06/20 06:29:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,7 +20,7 @@
 #include"Telefon.h"
 #include<Aux/Transaction.h>
 #include<Aux/itos.h>
-
+exec sql include sqlca;
 
 Telefon::Telefon(ManuProcEntity::ID _tid) throw(SQLerror)
 : ManuProcEntity(_tid), kunde(none_id), person(none_id)
@@ -118,7 +118,7 @@ void Telefon::update() const throw(SQLerror)
  int KUNDENNR=kunde;
  int PERSNR=person;
  int LAND=nummer.land;
- char *TEXT=(char*)text.c_str();
+ const char *TEXT=text.c_str();
  int VORWAHL=nummer.vorwahl;
  int NUMMER=nummer.nummer;
  int DURCHWAHL=nummer.durchwahl;
@@ -140,37 +140,45 @@ void Telefon::update() const throw(SQLerror)
  SQLerror::test(__FILELINE__);
 
  tr.commit();
-
 }
 
 
+const cH_Telefon Telefon::create(const ID kid, const ID pid, 
+                const st_nummer &nr, const std::string t="")
+   { return create(cH_Telefon(nr.art,kid,pid,nr.land,nr.vorwahl,
+                                nr.nummer,nr.durchwahl,t));
+   }
 
-const cH_Telefon Telefon::newTelefon(const ID kid,const ID pid,
- 		const st_nummer &nr, const string text) throw(SQLerror)
+const cH_Telefon Telefon::newTelefon(const ID kid, const ID pid,
+                const st_nummer &nr, const std::string t="")
+                { return create(kid,pid,nr,t);} 
+
+
+const cH_Telefon Telefon::create(const cH_Telefon newtel) throw(SQLerror)
 {
  exec sql begin declare section;
  int TELID;
  int KUNDENNR;
  int PERSNR;
- int LAND=nr.land;
- int VORWAHL=nr.vorwahl;
- int NUMMER=nr.nummer;
- int DURCHWAHL=nr.durchwahl;
+ int LAND=newtel->nummer.land;
+ int VORWAHL=newtel->nummer.vorwahl;
+ int NUMMER=newtel->nummer.nummer;
+ int DURCHWAHL=newtel->nummer.durchwahl;
  char ART[1];
- char *TEXT=(char*)text.c_str();
+ const char *TEXT=newtel->text.c_str();
  int IKUNDENNR=0, IPERSNR=0;
  exec sql end declare section;
- if(kid==none_id && pid==none_id)
+ if(newtel->kunde==none_id && newtel->person==none_id)
    throw(__FILELINE__"Kunde und Person dürfen nicht beide NULL sein");
 
  Transaction tr;
 
- if(kid == none_id) IKUNDENNR=-1;
- else KUNDENNR=kid;
- if(pid == none_id) IPERSNR=-1;
- else PERSNR=pid;
+ if(newtel->kunde == none_id) IKUNDENNR=-1;
+ else KUNDENNR=newtel->kunde;
+ if(newtel->person == none_id) IPERSNR=-1;
+ else PERSNR=newtel->person;
 
- ART[0]=nr.art; 
+ ART[0]=newtel->nummer.art; 
  
  exec sql select nextval('kunden_telefon_telid_seq') into :TELID;
  SQLerror::test(__FILELINE__);

@@ -1,4 +1,4 @@
-// $Id: Preis.h,v 1.12 2002/05/09 12:45:59 christof Exp $
+// $Id: Preis.h,v 1.13 2002/06/20 06:29:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -98,15 +98,15 @@ public:
 	{  return waehrung; }
 	const std::string Typtext() const;
 
-	Preis In(cP_Waehrung tp,preismenge_t stkgr=0) const
+	Preis In(cP_Waehrung w,preismenge_t stkgr=0) const
 	{  if (!stkgr) stkgr=preismenge;
-	   Preis ret(Wert(tp,stkgr),tp,stkgr);
+	   Preis ret(Wert_fr(w,stkgr),w,stkgr);
 	   ret.short_format(short_shl);
 	   return ret;
 	}
-	// Preis Gesamtpreis(cP_Waehrung tp,preismenge_t stkgr=0) const;
-	
+
 	geldbetrag_t Gesamtpreis(cP_Waehrung w,int anzahl,float menge,const rabatt_t &rabatt=rabatt_t(0.0)) const;
+	// braucht man diese Routine wirklich? ich würde den anderen Gesamtpreis empfehlen
 	const Preis Gesamtpreis(int anzahl,float menge,const rabatt_t &rabatt=rabatt_t(0.0)) const;
 	
 	void short_format(bool b=true)

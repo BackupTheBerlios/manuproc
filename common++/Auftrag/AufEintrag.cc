@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.3 2002/05/09 12:45:59 christof Exp $
+// $Id: AufEintrag.cc,v 1.4 2002/06/20 06:29:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -31,8 +31,11 @@ AufEintrag::AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, me
 	int _kdnr, const std::string _youraufnr,
 	const Petig::Datum& _prozdate,
 	int _prozess,ppsInstanz::ID _letztePlanInstanz, int _maxPlanInstanz,
-	const Preis &_preis, int _rabatt,
-	AufStatVal _entrystatus, const Petig::Datum _lasteditdate) throw()
+	const Preis &_preis, rabatt_t _rabatt,
+	AufStatVal _entrystatus, int _lasteditdate_uid,
+	const Petig::Datum _lasteditdate,
+	const Petig::Datum _letzte_lieferung,
+   const cH_PreisListe &_preisliste) throw()
 : AufEintragBase(_instanz,_auftragid,_zeilennr),
 
  bestellt(_bestellt),
@@ -40,7 +43,9 @@ AufEintrag::AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, me
  artikel(_artikel),
  entrystatus(_entrystatus),
  lieferdatum(_lieferdatum),
+ lasteditdate_uid(_lasteditdate_uid),
  lasteditdate(_lasteditdate),
+ letzte_lieferung(_letzte_lieferung),
  letztePlanInstanz(_letztePlanInstanz),
  maxPlanInstanz(_maxPlanInstanz),
  preis(_preis),
@@ -50,8 +55,8 @@ AufEintrag::AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, me
  disponr(_disponr),
  auftragstatus(_aufstatus), 
  dispoentrynr(_dispoentrynr),
- prozess(Prozess::default_id)
-
+ prozess(Prozess::default_id),
+ preisliste(_preisliste)
 {
  prozess=cH_Prozess(Prozess::ID(_prozess ? _prozess : cH_Prozess::default_pid));
  if(! _prozess) prozdate=Petig::Datum();
@@ -67,6 +72,7 @@ AufEintrag::AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr,
  geliefert(0),
  artikel(_artikel),
  entrystatus(_entrystatus),
+ lasteditdate_uid(0),
  lieferdatum(_lieferdatum),
  auftragstatus(_entrystatus),
  prozess(Prozess::default_id)
@@ -93,14 +99,22 @@ std::ostream &operator<<(std::ostream &o,const AufEintrag &aeb)
 */
 
 const Preis AufEintrag::GPreis() const
-{ return preis.Gesamtpreis(1,bestellt,rabatt/100.0);
+{ return preis.Gesamtpreis(1,bestellt,rabatt);
 }
 
 const Preis AufEintrag::EPreis(bool brutto) const
 {if(brutto) return preis;
  else
- return preis.Gesamtpreis(1,0,rabatt/100.0);
+ return preis.Gesamtpreis(preis.PreisMenge(),0,rabatt);
 }
+
+
+void AufEintrag::setLetztePlanungFuer(cH_ppsInstanz planinstanz) throw(SQLerror)
+{
+  AufEintragBase::setLetztePlanungFuer(planinstanz);
+  letztePlanInstanz=planinstanz->Id();
+}
+
 
 #if 0
 void AufEintrag::setVerarbeitung(const cH_Prozess p)
@@ -112,11 +126,13 @@ void AufEintrag::setVerarbeitung(const cH_Prozess p)
 }
 #endif
 
-void AufEintrag::abschreiben(mengen_t menge) throw(SQLerror)
+
+void AufEintrag::setLetzteLieferung(const Petig::Datum &datum) throw(SQLerror)
 {
- geliefert=AufEintragBase::abschreiben(menge);
- if(geliefert>=bestellt) entrystatus=(AufStatVal)CLOSED;
+ AufEintragBase::setLetzteLieferung(datum);
+ letzte_lieferung=datum;
 }
+
 
 const std::string AufEintrag::getEntryStatusStr() const
 {  return AuftragBase::getStatusStr(entrystatus);
@@ -136,14 +152,15 @@ std::string AufEintrag::Planung() const
 }
 
 
-void AufEintrag::move_to(AufEintragBase AEB,AuftragBase::mengen_t menge) throw(SQLerror)
+void AufEintrag::move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge) throw(std::exception)
 {
 //cout << "MOVE: "<<AufEintragBase(*this)<<'\t'<<AEB<<' '<<
 //entrystatus<<' '<<auftragstatus<<'\t'<<menge<<'\n';
+//cout << "move_to: "<<*this<<"  ==>  "<<AEB<<'\t'<<menge<<'\n';
   Transaction tr;
-  mengen_t mt1=updateStkDiff__(-menge,false);
+  mengen_t mt1=updateStkDiff__(uid,-menge,false);
   assert(-menge==mt1);
-  mengen_t mt2=AufEintrag(AEB).updateStkDiff__(+menge,false);
+  mengen_t mt2=AufEintrag(AEB).updateStkDiff__(uid,+menge,false);
   assert(menge==mt2);
   AufEintragZu(*this).Neu(AEB,menge); 
   tr.commit();

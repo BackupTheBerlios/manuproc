@@ -31,18 +31,21 @@ RechnungEntry::RechnungEntry(const RechnungEntryBase& rechnung)
    float PREISMENGE;
    float MENGE;
    float PREIS;
+   int AUFTRAGID;
   char LIEFERDATUM[21];
    int INSTANZ, RNGID=rechnung.Id(), ZEILENNR=rechnung.Zeile();
    float RABATT;
  exec sql end declare section;
  INSTANZ=ppsInstanzID::Kundenauftraege;
 
- exec sql select ry.artikelid, coalesce(ry.menge,0), coalesce(ry.preis,0),
+ exec sql select ry.artikelid, coalesce(ry.menge,0), coalesce(abs(ry.preis),0),
       coalesce(ry.stueck,1), coalesce(ry.preismenge,1), coalesce(ry.rabatt,0),
       coalesce(l.geliefertam,l.datum,date('today')), 
-      coalesce(ry.lfrsid,0), coalesce(ry.lfrszeile,0)
+      coalesce(ry.lfrsid,0), coalesce(ry.lfrszeile,0),
+	coalesce(l.refauftragid,-1)
    into :ARTIKELID, :MENGE, :PREIS, :STUECK, 
-         :PREISMENGE, :RABATT, :LIEFERDATUM, :LFRSID, :LFRSZN
+         :PREISMENGE, :RABATT, :LIEFERDATUM, :LFRSID, :LFRSZN,
+	:AUFTRAGID
    from rechnungentry ry 
    left join lieferschein l on (:INSTANZ,ry.lfrsid)=(l.instanz,l.lfrsid)
    where (ry.rngid,ry.zeilennr) = (:RNGID,:ZEILENNR);
@@ -55,6 +58,7 @@ RechnungEntry::RechnungEntry(const RechnungEntryBase& rechnung)
     rabatt=RABATT;
     lieferdatum.from_postgres(LIEFERDATUM);
     lfrs=LieferscheinEntryBase(ppsInstanz::ID(INSTANZ),LFRSID,LFRSZN);
+	auftrag=AuftragBase(ppsInstanz::ID(INSTANZ),AUFTRAGID);
 }
 
 

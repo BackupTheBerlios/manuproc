@@ -2,13 +2,13 @@ CXXFLAGS=@CXXFLAGS@ @ECPG_INCLUDES@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
 
-noinst_PROGRAMS=libExtBezSchema.o
+noinst_LIBRARIES=libExtBezSchema.a
 
 includedir=@includedir@/ExtBezSchema
 
-libExtBezSchema_o_SOURCES=$(BUILT_SOURCES)
+libExtBezSchema_a_SOURCES=$(BUILT_SOURCES)
 
-libExtBezSchema.o: $(libExtBezSchema_o_OBJECTS) $(libExtBezSchema_o_DEPENDENCIES)
+libExtBezSchema.a: $(libExtBezSchema_a_OBJECTS) $(libExtBezSchema_a_DEPENDENCIES)
 	touch $@
 
 BUILT_SOURCES=ExtBezSchema_sql.cc

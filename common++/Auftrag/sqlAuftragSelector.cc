@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.16 2002/05/09 12:45:59 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.17 2002/06/20 06:29:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,6 +21,7 @@
 #include<Aux/string0.h>
 #include <Aux/itos.h>
 #include<auftrag_status.h>
+#include<BaseObjects/ManuProcEntity.h>
 
 #define FULL_SELECTIONS "a.instanz, a.auftragid, e.zeilennr, bestellt, " \
 	"e.artikelid, e.rohartikelid, " \
@@ -28,21 +29,35 @@
 	"a.stat, " \
 	"a.kundennr, youraufnr, " \
 	"coalesce(p.prozessid,0), " \
-	"coalesce(p.letztePlanInstanz,0), " \
-   	"coalesce(p.maxPlanInstanz,0), " \
+	"coalesce(p.letzteplaninstanz,0), " \
+   	"coalesce(p.maxplaninstanz,0), " \
 	"date(coalesce(p.datum,now())), " \
-	"e.preis, int4(e.rabatt*100), " \
+	"e.preis, coalesce(e.rabatt,0.0), " \
 	"coalesce(e.preismenge,1), a.waehrung, " \
-	"e.status, e.lasteditdate "
+	"e.status,coalesce(e.lastedit_uid,0),e.lasteditdate," \
+	"coalesce(text(e.letzte_lieferung),'')," \
+	"coalesce(e.preisliste,"+itos(ManuProcEntity::none_id)+") "
 
 #define FULL_FROM "(auftrag a join auftragentry e using (instanz,auftragid))" \
 	" left join auftrag_prozess p" \
 	" using (instanz,auftragid,zeilennr) "
+	
+#ifdef MABELLA_EXTENSIONS	
+#define FULL_FROM_SORT "(auftrag a join auftragentry e using (instanz,auftragid))" \
+	" left join auftrag_prozess p" \
+	" using (instanz,auftragid,zeilennr) " \
+	" join artbez_3_1 ab on (artikelid=id) "
+	
+#define FULL_SELECT_FROM_SORT_WHERE "select " FULL_SELECTIONS \
+	" from " FULL_FROM_SORT " where true "	
+#endif
+
 
 #define FULL_SELECT_FROM_WHERE "select " FULL_SELECTIONS \
 	" from " FULL_FROM " where true "
 
 #define FULL_SELECT_NO_0 " and bestellt!=0 "
+#define FULL_SELECT_NO_STORNO " and e.status!="+itos(STORNO)+" "
 
 // Vorsicht: enthält keine führenden/abschließenden Leerzeichen
 std::string SQLFullAuftragSelector::StatusQualifier(AufStatVal stat)
@@ -55,11 +70,12 @@ std::string SQLFullAuftragSelector::StatusQualifier(AufStatVal stat)
 // if(nonstatus) op="!=";
 // if(nonstatus && UNCOMMITED) assert(!"Nicht implementert");
  switch (stat) {
-   case OPEN       : return "a.stat"+op+status+" and e.status"+op+status;
+   case OPEN       : return "a.stat=e.status and a.stat"+op+status;
    case UNCOMMITED : return "(a.stat= "+status+" and e.status "+nicht_erledigt+
                         " or (a.stat "+nicht_erledigt+" and e.status="+status+"))";
    case STORNO     : return "(a.stat"+op+status+" or e.status"+op+status+")";
    case CLOSED     : return "(a.stat"+op+status+" or e.status"+op+status+")";
+   case NOSTAT     : ;
    }
  assert(!"SQLFullAuftragSelector::StatusQualifier komischer Status");
  return "false";
@@ -77,9 +93,21 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Status& selstr)
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Aufid& selstr)
 {
-    setClausel(FULL_SELECT_FROM_WHERE
-	   " and (a.instanz, a.auftragid)="
-	   "("+itos(selstr.auftrag.InstanzID())+", "+itos(selstr.auftrag.Id())+")");
+//cout << "\n\n\nSTORNO = "<<selstr.with_storno<<"\n\n\n";
+#ifdef MABELLA_EXTENSIONS
+   std::string s= FULL_SELECT_FROM_SORT_WHERE;
+   if(!selstr.with_storno) s+=FULL_SELECT_NO_STORNO;
+	s+=" and (a.instanz, a.auftragid)="
+	   "("+itos(selstr.auftrag.InstanzID())+", "+itos(selstr.auftrag.Id())+")"
+	   " order by ab.artikel,ab.breite,ab.farbe,ab.aufmachung ";
+    setClausel(s);
+#else
+   std::string s= FULL_SELECT_FROM_WHERE;
+   if(!selstr.with_storno) s+=FULL_SELECT_NO_STORNO;
+	 s+=" and (a.instanz, a.auftragid)="
+	    "("+itos(selstr.auftrag.InstanzID())+", "+itos(selstr.auftrag.Id())+")";
+    setClausel(s);
+#endif	   
 }
 
 
@@ -118,14 +146,28 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Kunde_Artikel &selstr)
 	     " order by e.lieferdate");
 }
 
-SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel_Planung &selstr)
+SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel_Planung_id &selstr)
 {
- setClausel(FULL_SELECT_FROM_WHERE 
-        " and "+StatusQualifier(OPEN)+
-	     " and a.instanz="+itos(selstr.instanz) +
-	     " and artikelid="+itos(selstr.artikel.Id()) +
-	     " and a.auftragid" + (selstr.geplant ? "<>" : "=") + "0"
-	     " order by e.lieferdate");
+ if(selstr.auftragid!=AuftragBase::handplan_auftrag_id)
+  {
+    setClausel(FULL_SELECT_FROM_WHERE 
+           " and "+StatusQualifier(OPEN)+
+	        " and a.instanz="+itos(selstr.instanz) +
+   	     " and artikelid="+itos(selstr.artikel.Id()) +
+	        " and a.auftragid="+itos(selstr.auftragid) + 
+	        " order by e.lieferdate");
+  }
+ else
+  {
+    setClausel(FULL_SELECT_FROM_WHERE 
+           " and "+StatusQualifier(OPEN)+
+	        " and a.instanz="+itos(selstr.instanz) +
+   	     " and artikelid="+itos(selstr.artikel.Id()) +
+	        " and a.auftragid!="+itos(AuftragBase::dispo_auftrag_id) + 
+	        " and a.auftragid!="+itos(AuftragBase::plan_auftrag_id) + 
+	        " and a.auftragid!="+itos(AuftragBase::ungeplante_id) + 
+	        " order by e.lieferdate");
+  }
 }
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel &selstr)

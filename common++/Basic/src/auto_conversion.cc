@@ -1,4 +1,4 @@
-// $Id: auto_conversion.cc,v 1.5 2002/05/09 12:46:00 christof Exp $
+// $Id: auto_conversion.cc,v 1.6 2002/06/20 06:29:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,7 +25,13 @@
 #include <cstdlib>
 
 void Petig::Datum::from_auto(const char *datum,const char **endptr) throw(Datumsfehler,Formatfehler)
-{   int numlen(0);
+{   if (!*datum) 
+    {  if (endptr) *endptr=datum;
+       *this=Datum();
+       return; 
+    }
+
+    int numlen(0);
     const char *ptr=0;
     for (const char *s=datum;isdigit(*s);s++,numlen++);
 
@@ -77,10 +83,11 @@ void Petig::Datum::from_auto(const char *datum,const char **endptr) throw(Datums
 Zeitpunkt_new::Zeitpunkt_new(const char *stamp)
 	: hour(0), minute(0), second(0), millisecond(0), 
 	  minutes_from_gmt(0), prec(days)
-{  const char *payload=stamp;
+{  if (!*stamp) return;
+   const char *payload=stamp;
    datum.from_auto(payload,&payload);
    int len=strlen(payload);
-   
+
    if (!isdigit(payload[1]) || !isdigit(payload[2])|| !isdigit(payload[3])) 
   {if (len>=1) { assert(*payload==' '); ++payload; --len; }
    if (len>=1)

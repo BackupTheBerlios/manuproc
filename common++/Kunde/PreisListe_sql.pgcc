@@ -1,4 +1,4 @@
-// $Id: PreisListe_sql.pgcc,v 1.5 2002/05/09 12:46:00 christof Exp $
+// $Id: PreisListe_sql.pgcc,v 1.6 2002/06/20 06:29:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,7 +20,7 @@
 #include <Kunde/PreisListe.h>
 #include <Aux/Transaction.h>
 #include <Aux/Waehrung.h>
-
+exec sql include sqlca;
 
 
 
@@ -49,21 +49,20 @@ PreisListe::PreisListe(ID _id) throw(SQLerror)
      int  ID=_id;
      char NAME[41];
      int WAEHID;
-     float BRUTTOSATZ;
+     float BRUTTOSATZ=0;
+     int IBRUTTOSATZ=-1;
    exec sql end declare section;
 
    exec sql select coalesce(notiz,''),waehrungid,
-	coalesce(bruttosatz,0) into :NAME,:WAEHID,:BRUTTOSATZ from ku_preisliste
+	bruttosatz into :NAME,:WAEHID,:BRUTTOSATZ:IBRUTTOSATZ 
+      from ku_preisliste
       where prlsnr = :ID;
    SQLerror::test(__FILELINE__,100);
-   if (sqlca.sqlcode)
-    { exec sql select firma into :NAME from kunden
-      where kundennr = :ID;;
-    }
-   SQLerror::test(__FILELINE__);
+
    name=NAME;
    waehrung=cP_Waehrung((Waehrung::ID)WAEHID);
-   bruttosatz=BRUTTOSATZ;
+   rabatt_gesetzt=IBRUTTOSATZ!=-1;
+   rabatt=BRUTTOSATZ;
 }
 
 PreisListe::ID PreisListe::createPreisliste(const std::string &name) throw(SQLerror)
@@ -87,3 +86,14 @@ PreisListe::ID PreisListe::createPreisliste(const std::string &name) throw(SQLer
  return NR;
 }
 
+void PreisListe::setRabatt(bool fest, rabatt_t rab)
+{exec sql begin declare section;
+ int NR=Id();
+ int IRABATT=fest?0:-1;
+ float RABATT=rab;
+ exec sql end declare section;
+ 
+ exec sql update ku_preisliste set bruttosatz=:RABATT:IRABATT
+ 	where prlsnr=:NR;
+ SQLerror(__FILELINE__);
+}

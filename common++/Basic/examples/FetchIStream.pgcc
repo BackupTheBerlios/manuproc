@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.9 2002/05/09 12:46:00 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.10 2002/06/20 06:29:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,7 +20,6 @@
 
 #include <Aux/FetchIStream.h>
 #include <Aux/dbconnect.h>
-#include <Aux/Transaction.h>
 exec sql include sqlca;
 
 exec sql whenever sqlerror do X();
@@ -30,7 +29,6 @@ int main()
 {  Petig::dbconnect(Petig::Connection("","template1"));
    exec sql allocate descriptor mydesc;
    
-   Transaction tr;
   {Query query("select now(),date('yesterday'),null,null,200,20.5,'t'");
    std::string s,s2,s3,s4;
    bool b;
@@ -46,17 +44,12 @@ int main()
    std::cout << i << ", " << f << ", " << b << '\n';
   }
   {Query query("select relname from pg_class limit 10");
-   FetchIStream is;
-   while ((query>>is).good())
-   {  std::string s;
-      is >> s;
-      std::cout << s << '\n';
-   }
+   std::vector<std::string> v=query.FetchArray<std::string>();
+   std::copy(v.begin(),v.end(),ostream_iterator<std::string>(std::cout,"\n"));
   }
-// test nasty error?
+// test nasty error? (overlapping)
 {
   std::cout << "------\n";
-  Transaction tr2;
    Query query2("select 1;");
    FetchIStream is2;
    while ((query2>>is2).good())
@@ -72,8 +65,6 @@ int main()
       std::cout << s << '\n';
    }
 }   
-//   
-   tr.commit();
    Petig::dbdisconnect();
    return 0;
 }

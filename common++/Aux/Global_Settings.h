@@ -16,7 +16,7 @@ class Global_Settings
 
     //Neuen Eintrag anlegen :
       //Wenn 'wert' == "now()" dann wird ein Timestamp eingetragen
-    Global_Settings(int userid,const std::string& program,
+    static void create(int userid,const std::string& program,
                 const std::string& name,const std::string& wert);
 };
 #endif

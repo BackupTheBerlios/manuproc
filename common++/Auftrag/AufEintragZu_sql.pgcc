@@ -1,4 +1,4 @@
-// $Id: AufEintragZu_sql.pgcc,v 1.3 2002/05/09 12:45:59 christof Exp $
+// $Id: AufEintragZu_sql.pgcc,v 1.4 2002/06/20 06:29:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -78,32 +78,18 @@ std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list(const AufEin
 }
 
 
-std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_ungeplant() const throw(SQLerror)
+std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_id(const int id) const throw(SQLerror)
 {
    std::list<st_reflist> L=get_Referenz_list(AEB,true);
    std::list<st_reflist> N;
    for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
      {
-       if(i->AEB.Id()==0)
-         N.push_back(*i);
+       if(i->AEB.Id()==id) N.push_back(*i);
      }
    return N;
 }
 
-std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list_geplant() const throw(SQLerror)
-{
-   std::list<st_reflist> L=get_Referenz_list(AEB,true);
-   std::list<st_reflist> N;
-   for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
-     {
-       if(i->AEB.Id()==1)
-         N.push_back(*i);
-     }
-   return N;
-}
-
-
-list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_listFull(bool kinder,bool nur_ende) const throw(SQLerror)
+std::list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_listFull(bool kinder,bool nur_ende) const throw(SQLerror)
 {
  std::list<st_reflist> tv=get_Referenz_list(AEB,kinder);
  std::list<st_reflist> vaeb;
@@ -209,10 +195,16 @@ void AufEintragZu::Neu(const AufEintragBase& neuAEB,
   int db_nznr=neuAEB.ZNr();
  exec sql end declare section;
  if(oldZnr!=0) db_aznr=oldZnr;
+ try{ mengen_t mt=setMengeDiff__(neuAEB,menge); 
+      assert(menge==mt);
+    }
+ catch (SQLerror &e)
+ {
  exec sql insert into auftragsentryzuordnung
    (altinstanz,altauftragid,altzeilennr, menge, neuinstanz,neuauftragid,neuzeilennr) values
    (:db_ains,:db_aaid,:db_aznr, :db_menge, :db_nins,:db_naid,:db_nznr);
  SQLerror::test(__FILELINE__);
+ }
 }
 
 #include <Aux/itos.h>
@@ -255,16 +247,19 @@ AuftragBase::mengen_t AufEintragZu::setMengeDiff__(const AufEintragBase &neuAEB,
    exec sql select menge into :db_oldmenge from auftragsentryzuordnung where 
       (altinstanz,altauftragid,altzeilennr, neuinstanz,neuauftragid,neuzeilennr)
        = (:db_ains,:db_aaid,:db_aznr, :db_nins,:db_naid,:db_nznr);
+   SQLerror::test(__FILELINE__);
    if(db_oldmenge<-menge)
      {
        db_menge=-db_oldmenge;
      }
   } 
+//ECPGdebug(true,stdout);
  exec sql update auftragsentryzuordnung
    set menge=menge+:db_menge where
    (altinstanz,altauftragid,altzeilennr, neuinstanz,neuauftragid,neuzeilennr)
     = (:db_ains,:db_aaid,:db_aznr, :db_nins,:db_naid,:db_nznr);
  SQLerror::test(__FILELINE__);
+//ECPGdebug(false,0);
  return db_menge;
 }
 

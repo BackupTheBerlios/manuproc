@@ -19,7 +19,7 @@
 #ifndef _RL_LAGERPLATZ_HH_
 #define _RL_LAGERPLATZ_HH_
 #include <string>
-#include <Aux/ppsInstanz.h>
+#include <Instanzen/ppsInstanz.h>
 
 class LagerPlatz
 {

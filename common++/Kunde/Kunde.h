@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.20 2002/05/09 12:46:00 christof Exp $
+// $Id: Kunde.h,v 1.21 2002/06/20 06:29:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,9 +33,11 @@
 #include <Kunde/Person.h>
 #include <BaseObjects/ManuProcEntity.h>
 
+
 class cH_Kunde;
 class H_Kunde;
 class cH_Telefon;
+#include <Kunde/Zahlungsart.h>
 
 class Kunde : public ManuProcEntity
 {
@@ -65,14 +67,15 @@ public:
     unsigned long long int konto;
     int lieferantenkonto;
     int gegenkonto;
+    cH_Zahlungsart zahlungsart;
     const std::string getBankverb() const { return  bank+": BLZ "+itos(blz)+", Kto.Nr. "+ulltos(konto);}
     st_bankverb():bankindex(0),blz(0),konto(0),
-    lieferantenkonto(0),gegenkonto(0) {}
+    lieferantenkonto(0),gegenkonto(0),zahlungsart(Zahlungsart::none_id) {}
    };
  typedef struct st_bankverb Bankverbindung;
 
  struct st_verkaeufer {int verknr; std::string name; std::string kurz;
-        st_verkaeufer() : verknr(0),name(""),kurz("") {}
+        st_verkaeufer() : verknr(none_id),name(""),kurz("") {}
         st_verkaeufer(int v,std::string n, std::string k)
            : verknr(v),name(n),kurz(k) {} };
  typedef struct st_verkaeufer Verkaeufer;
@@ -87,19 +90,21 @@ public:
     int kalkulation;
     fixedpoint<2> rabatt;
     bool zeilenrabatt:1;
-    int skontofrist; 
+//    int skontofrist; 
 
     std::string verein; 
-    bool bankeinzug:1;
+//    bool bankeinzug:1;
     std::string notiz; 
     Petig::Datum stand;
-    fixedpoint<2> einzugrabatt;
-    fixedpoint<2> skontosatz;    
+//    fixedpoint<2> einzugrabatt;
+//    fixedpoint<2> skontosatz;    
+
+    int anzahl_ausdruck_firmenpapier;
+    int anzahl_ausdruck_weissespapier;
     st_kddata()
     	:flaeche(0),mitarbeiter(0),planumsatz(0),umsatz(0),kundenumsatz(0),
-    	 kalkulation(0),rabatt(0),zeilenrabatt(false),skontofrist(0),
-    	 bankeinzug(false),
-    	 einzugrabatt(0),skontosatz(0) {}
+    	 kalkulation(0),rabatt(0),zeilenrabatt(false),
+    	 anzahl_ausdruck_firmenpapier(1),anzahl_ausdruck_weissespapier(1) {}
    };
  typedef struct st_kddata Kundendaten;
 
@@ -114,12 +119,13 @@ private:
         bool lieferadresse:1;
         bool rechnungsadresse:1;
         bool entsorg:1;
+        mutable bool isaktiv:1;
         
 	Adresse adresse;
 	Bankverbindung bankverb;
         Kundendaten kundendaten;
         
-   Verkaeufer verkaeufer;
+   mutable Verkaeufer verkaeufer;
    Person::ID betreuer;
 	
 	friend class Handle<const Kunde>;
@@ -128,9 +134,10 @@ private:
 	cP_Waehrung waehrung;
    // ...
 
-    mutable list<PreisListe::ID> preislisten; 
+    mutable list<pair<int,PreisListe::ID> >preislisten; 
     mutable bool prlist_valid:1;
 
+   bool lieferung_frei_haus;
 public:
 	static const ID default_id=_wir;
 	Kunde(ID nr=default_id) throw(SQLerror);
@@ -142,6 +149,7 @@ public:
         			const string width="8cm",
         			const string telwidth="5cm") const;
         
+        const bool get_lieferung_frei_haus() const {return lieferung_frei_haus;}
         const std::string getBank() const { return bankverb.getBankverb(); }
         const unsigned long long int getKtnr() const { return bankverb.konto; }
         const unsigned int getblz() const { return bankverb.blz; }
@@ -149,6 +157,7 @@ public:
         const int getindex() const { return bankverb.bankindex; }
         const int getLieferantenkonto() const {return bankverb.lieferantenkonto;}
         const int getGegenkonto() const {return bankverb.gegenkonto;}
+        const cH_Zahlungsart zahlungsart() const { return bankverb.zahlungsart; }
 
         const std::string sortname() const { return adresse.sortname; }
         const std::string firma() const { return adresse.firma; }
@@ -160,8 +169,6 @@ public:
         const std::string ort() const { return adresse.ort; }
         const std::string postfach() const { return adresse.postfach; }
         const std::string postfachplz() const { return adresse.postfachplz; }
-//        const std::string land() const { return adresse.land; }
-//        const cH_LandesListe lkz() const { return adresse.lkz; }
         const cH_LandesListe land() const { return adresse.land; }
         const std::string UnsereKundenNr() const {return adresse.unsere_kundennr;}
 
@@ -172,16 +179,14 @@ public:
         const fixedpoint<2> umsatz() const { return kundendaten.umsatz; }
         const fixedpoint<2> rabatt() const { return kundendaten.rabatt; }
         const bool zeilenrabatt() const { return kundendaten.zeilenrabatt; }
-        const fixedpoint<2> einzugrabatt() const { return kundendaten.einzugrabatt; }
-        const fixedpoint<2> skontosatz() const { return kundendaten.skontosatz; }
+        const int anzahl_ausdruck_firmenpapier() const {return kundendaten.anzahl_ausdruck_firmenpapier;}
+        const int anzahl_ausdruck_weissespapier() const {return kundendaten.anzahl_ausdruck_weissespapier;}
         const PreisListe::ID preisliste() const;
         // ja das & ist von mir CP
-        const list<PreisListe::ID> &Preislisten() const;
+        const std::list<pair<int,PreisListe::ID> > &Preislisten() const;
         void push_backPreisListe(const PreisListe::ID p) throw(SQLerror);
         void deletePreisListe(const PreisListe::ID p) throw(SQLerror);
-        const int skontofrist() const { return kundendaten.skontofrist; }
         const std::string verein() const { return kundendaten.verein; }
-        const bool bankeinzug() const { return kundendaten.bankeinzug; }
         const std::string notiz() const { return kundendaten.notiz; }
         const std::string stand() const { return kundendaten.stand.c_str(); }
 
@@ -199,6 +204,7 @@ public:
         ID Rngan() const { return rngan; }
         bool entsorgung() const { return entsorg; }
         bool Rng_an_postfach() const {return rng_an_postfach;}
+        bool Auslaender() const { return adresse.land->Auslaender(); }
 
 
         // Personen
@@ -222,13 +228,15 @@ public:
            B_Rng_an_postfach,B_MaxAnzA};
         enum B_UPDATE_BITS_FIRMA{B_Planumsatz,B_Umsatz,B_Mitarbeiter,
            B_Kundenumsatz,B_Flaeche,B_UnsereKundenNr,B_Verein,B_MaxAnzF};
-        enum B_UPDATE_BITS_BANK{B_Ktonr,B_Blz,B_Bankindex,B_Bankeinzug,
-           B_Rabatt,B_Zeilenrabatt,B_Waehrungid,B_Einzugrabatt,
-           B_Skontosatz,B_Skontofrist,B_Lieferantenkonto,
+        enum B_UPDATE_BITS_BANK{B_Ktonr,B_Blz,B_Bankindex,
+           B_Rabatt,B_Zeilenrabatt,B_Waehrungid,
+           B_Zahlungsart,B_Lieferantenkonto,
            B_Gegenkonto,B_MaxAnzB};
         enum B_UPDATE_BITS_SONST{B_Rechnungan,B_Extartbezid,
            B_Preisliste,B_Notiz,B_Entsorgung,B_Verknr,B_Kalkulation,
-           B_Stand,B_KP_Position,B_KP_Notiz,B_MaxAnzS};
+           B_Stand,B_KP_Position,B_KP_Notiz,
+           B_AnzAusFirmenPapier,B_AnzAusWeissesPapier,
+           B_lieferung_frei_haus,B_MaxAnzS};
  public: 
          enum UpdateBitsAdresse {FGruppennr=1<<B_Gruppennr,
            FSortname=1<<B_Sortname,FIdnr=1<<B_Idnr,FFirma=1<<B_Firma,
@@ -243,18 +251,20 @@ public:
            FFlaeche=1<<B_Flaeche,FUnsereKundenNr=1<<B_UnsereKundenNr,
            FVerein=1<<B_Verein};
          enum UpdateBitsBank{FKtonr=1<<B_Ktonr,FBlz=1<<B_Blz,
-           FBankindex=1<<B_Bankindex,FBankeinzug=1<<B_Bankeinzug,
+           FBankindex=1<<B_Bankindex,
            FRabatt=1<<B_Rabatt,FZeilenrabatt=1<<B_Zeilenrabatt,
            FWaehrungid=1<<B_Waehrungid,
-           FEinzugrabatt=1<<B_Einzugrabatt,FSkontosatz=1<<B_Skontosatz,
-           FSkontofrist=1<<B_Skontofrist,FLieferantenkonto=1<<B_Lieferantenkonto,
+           FZahlungsart=1<<B_Zahlungsart,FLieferantenkonto=1<<B_Lieferantenkonto,
            FGegenkonto=1<<B_Gegenkonto};
          enum UpdateBitsSonst{FRechnungan=1<<B_Rechnungan,
            FExtartbezid=1<<B_Extartbezid,FPreisliste=1<<B_Preisliste,
            FNotiz=1<<B_Notiz,FEntsorgung=1<<B_Entsorgung,
             FVerknr=1<<B_Verknr,Kalkulation=1<<B_Kalkulation,
             FStand=1<<B_Stand,FKP_Position=1<<B_KP_Position,
-            FKP_Notiz=1<<B_KP_Notiz};
+            FKP_Notiz=1<<B_KP_Notiz,
+            FAnzAusFirmenPapier=1<<B_AnzAusFirmenPapier,
+            FAnzAusWeissesPapier=1<<B_AnzAusWeissesPapier,
+            Flieferung_frei_haus=1<<B_lieferung_frei_haus};
             
 
         void update_e(UpdateBitsAdresse e);
@@ -275,11 +285,15 @@ public:
 
 	ID Schema() const { return schema; }
 
-        const Verkaeufer getVerkaeufer() ;
+        const Verkaeufer &getVerkaeufer() const throw(SQLerror);
         void setVerkNr(int v) {verkaeufer.verknr = v;}
+        ManuProcEntity::ID VerkNr() const { return verkaeufer.verknr; }
+        const std::string VerkName() const { return verkaeufer.name; }
+        
 
         // update_Bankeinzug machte Datenbnakzugriff;
-        void update_Bank_einzug(bool b) {kundendaten.bankeinzug=b;}
+//        void update_Bank_einzug(bool b) {kundendaten.bankeinzug=b;}
+        void set_lieferung_frei_haus(bool b) {lieferung_frei_haus=b;}
         void set_gruppen_nr(const ID i) {KundenGruppennr=i;}
         void set_sortname(const std::string& s) {adresse.sortname = s; } 
         void set_firma(const std::string& s){adresse.firma = s; } 
@@ -304,20 +318,30 @@ public:
         void set_kundenumsatz(const fixedpoint<2> s){kundendaten.kundenumsatz = s; }
         void set_umsatz(const fixedpoint<2> s){kundendaten.umsatz = s; }
         void set_verein(const std::string& s){kundendaten.verein = s; }
-        void set_skontofrist(const int s){kundendaten.skontofrist = s; }
-        void set_einzugrabatt(const fixedpoint<2> s){kundendaten.einzugrabatt = s; }
-        void set_skontosatz(const fixedpoint<2> s){kundendaten.skontosatz = s; }        
+        void set_anzahl_ausdruck_firmenpapier(const int i){kundendaten.anzahl_ausdruck_firmenpapier=i; }        
+        void set_anzahl_ausdruck_weissespapier(const int i){kundendaten.anzahl_ausdruck_weissespapier=i; }        
         void set_notiz(const std::string& s){kundendaten.notiz = s; } 
         void set_bankindex(const int s){bankverb.bankindex = s; } 
         void set_bank_konto(const unsigned long long int s) {bankverb.konto = s;} 
         void set_Lieferantenkonto(const int i) {bankverb.lieferantenkonto=i;}
         void set_Gegenkonto(const int i) {bankverb.gegenkonto=i;}
+        void set_Zahlungsart(cH_Zahlungsart i) {bankverb.zahlungsart=i; }
+
+        // Notfall API sollte ersetzt werden MAT
+        fixedpoint<2> skontosatz() const {return zahlungsart()->getSkonto(1).skontosatz;} 
+        int skontofrist() const {return zahlungsart()->getSkonto(1).skontofrist;} 
+        fixedpoint<2> einzugrabatt() const {return zahlungsart()->getEinzugrabatt();} 
+        bool bankeinzug() const {return zahlungsart()->getBankeinzug();} 
+
         // set_bankkonto machte einen Datenbankzugriff
 
         unsigned long int neue_bank_anlegen(const std::string& name, unsigned long int blz);        
         void get_blz_from_bankindex(unsigned int bankindex);
         cP_Waehrung getWaehrung() const { return waehrung; }
         void setWaehrung(cP_Waehrung w) {waehrung=w; }
+        
+        bool Aktiv() const { return isaktiv; }
+        void setAktiv(bool a) throw(SQLerror);
 
         bool operator==(const Kunde& b) const
                 {return Id()==b.Id();} 

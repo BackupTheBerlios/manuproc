@@ -1,4 +1,4 @@
-/* $Id: RechnungVoll_sql.pgcc,v 1.7 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: RechnungVoll_sql.pgcc,v 1.8 2002/06/20 06:29:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -28,6 +28,7 @@ RechnungVoll::RechnungVoll(int rid) throw(SQLerror)
  exec sql begin declare section;
   int ARTIKELID, STUECK, ZEILE, RNGID=rid;
   int LFRSID,LIEFERZEILE;
+  int AUFTRAGID;
   float MENGE,RABATT,PREISMENGE,PREIS;
   char LIEFERDATUM[11];
   int ILIEFERDATUM,INSTANZ;
@@ -38,9 +39,12 @@ RechnungVoll::RechnungVoll(int rid) throw(SQLerror)
  exec sql declare lein cursor for
    select ry.artikelid, ry.zeilennr, coalesce(ry.stueck,0), coalesce(ry.menge,0), 
    	coalesce(ry.rabatt,0.0), ry.lfrsid, ry.lfrszeile, 
-      coalesce(ry.preismenge,1), l.geliefertam, ry.preis
-   from rechnungentry ry 
-   left join lieferschein l on (:INSTANZ,ry.lfrsid) = (l.instanz,l.lfrsid)
+      coalesce(ry.preismenge,1), l.geliefertam, abs(ry.preis),
+	coalesce(refauftragid,-1)
+   from (rechnungentry ry 
+   left join lieferschein l on (:INSTANZ,ry.lfrsid) = (l.instanz,l.lfrsid))
+   left join lieferscheinentry e on (l.instanz,l.lfrsid,ry.lfrszeile)
+				=(e.instanz,e.lfrsid,e.zeile)
    where ry.rngid = :RNGID order by zeilennr;
  exec sql open lein;
  SQLerror::test(__FILELINE__);
@@ -48,7 +52,8 @@ RechnungVoll::RechnungVoll(int rid) throw(SQLerror)
    {
     exec sql fetch lein into
          :ARTIKELID, :ZEILE, :STUECK, :MENGE, :RABATT, :LFRSID, :LIEFERZEILE,
-         :PREISMENGE, :LIEFERDATUM:ILIEFERDATUM, :PREIS;
+         :PREISMENGE, :LIEFERDATUM:ILIEFERDATUM, :PREIS,
+	 :AUFTRAGID;
     if (sqlca.sqlcode) break;
 
     Preis p(PREIS,Rechnung(rid).getWaehrung(),PREISMENGE);
@@ -56,8 +61,34 @@ RechnungVoll::RechnungVoll(int rid) throw(SQLerror)
     if(!ILIEFERDATUM) ldatum.from_postgres(LIEFERDATUM);
     rentry.push_back(RechnungEntry(rngid,ZEILE,
          ARTIKELID,STUECK,MENGE,p,RABATT,ldatum,
-         LieferscheinEntryBase(ppsInstanz::ID(INSTANZ),LFRSID,LIEFERZEILE)));
+         LieferscheinEntryBase(ppsInstanz::ID(INSTANZ),LFRSID,LIEFERZEILE),
+	 AuftragBase(ppsInstanz::ID(INSTANZ),AUFTRAGID)));
    }
  exec sql close lein;
  tr.close();
 }
+
+
+#ifdef MABELLA_EXTENSIONS
+void RechnungVoll::setGewicht() const throw(SQLerror)
+{
+ exec sql begin declare section;
+ int RNGID = Id();
+ float NETTO;
+ float BRUTTO;
+ int PAKETE;
+ exec sql end declare section; 
+ 
+ exec sql select coalesce(sum(coalesce(netto_kg,0)),0),
+		coalesce(sum(coalesce(brutto_kg,0)),0),
+		coalesce(sum(coalesce(pakete,0)),0)
+	into :NETTO, :BRUTTO, :PAKETE from lieferschein l
+	where l.rngid= :RNGID;
+ SQLerror::test(__FILELINE__);
+
+ netto_gewicht = NETTO;
+ brutto_gewicht = BRUTTO;
+ pakete= PAKETE; 
+}
+
+#endif

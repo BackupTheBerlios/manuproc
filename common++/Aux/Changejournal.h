@@ -1,4 +1,4 @@
-// $Id: Changejournal.h,v 1.7 2002/05/09 12:45:59 christof Exp $
+// $Id: Changejournal.h,v 1.8 2002/06/20 06:29:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,7 +21,7 @@
 #include<Aux/SQLerror.h>
 #include<Artikel/ArtikelBase.h>
 #include<Auftrag/AufEintragBase.h>
-#include<Aux/ppsInstanz.h>
+#include<Instanzen/ppsInstanz.h>
 
 
 class pps_ChJournalEntryBase

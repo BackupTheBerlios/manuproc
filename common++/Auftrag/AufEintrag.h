@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.7 2002/05/09 12:45:59 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.8 2002/06/20 06:29:52 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -38,7 +38,8 @@
 #include <vector>
 #include <list>
 #include <Aux/itos.h>
-#include <Lieferschein/Lieferschein.h>
+//#include <Lieferschein/Lieferschein.h>
+class cH_Lieferschein;
 
 class AufEintrag : public AufEintragBase
 {
@@ -57,13 +58,14 @@ private:
  
  Petig::Datum lieferdatum;
 
- Petig::Datum lasteditdate;
+ int lasteditdate_uid;
+ Petig::Datum lasteditdate, letzte_lieferung;
  ppsInstanz::ID letztePlanInstanz;
  int maxPlanInstanz;
  Petig::Datum prozdate;
 
  Preis preis;
- rabatt_t rabatt;     // % * 100
+ rabatt_t rabatt;
 
 private: // weg von hier!
  int kdnr;
@@ -75,6 +77,7 @@ private: // weg von hier!
  int dispoentrynr; // unnötig
  cH_Prozess prozess; // unnötig
 
+ cH_PreisListe preisliste;
 public:
  struct Error : public std::exception
    {  virtual const char* what() const throw() { return "AufEintrag::AufEintragError"; }
@@ -103,8 +106,11 @@ public:
 	int _kdnr, const std::string _youraufnr,
 	const Petig::Datum& _prozdate,
 	int _prozess,ppsInstanz::ID _letztePlanInstanz, int _maxPlanInstanz,
-	const Preis &_preis, int _rabatt,
-	AufStatVal _entrystat, const Petig::Datum _lasteditdate) throw();
+	const Preis &_preis, rabatt_t _rabatt,
+	AufStatVal _entrystat, int lasteditdate_uid,
+	const Petig::Datum _lasteditdate,
+	const Petig::Datum _letzte_lieferung,
+	const cH_PreisListe &preisliste) throw();
  // Dieser Konstuktor ist nur für ProdLager gedacht und macht KEINEN Datenbankzugriff
  AufEintrag(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, 
         mengen_t _bestellt,
@@ -114,21 +120,23 @@ public:
 
 	
  void updateDispoENr(int dinr) throw(SQLerror);
- mengen_t updateStkDiff__(mengen_t menge,bool instanzen=true,
+ mengen_t updateStkDiff__(int uid,mengen_t menge,bool instanzen /*=true*/,
            void (*callback)(void *,st_problems)=0,void* argument=0) throw(SQLerror);
- void move_to(AufEintragBase AEB,AuftragBase::mengen_t menge) throw(SQLerror);
+ void move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge) throw(std::exception);
 // void updateStk(mengen_t stk,bool instanz) throw(SQLerror);
 private:
- void updateStkDiffInstanz__(mengen_t menge,void (*callback)(void *,st_problems),void* argument) throw(SQLerror);
+ void updateStkDiffInstanz__(int uid,mengen_t menge,void (*callback)(void *,st_problems),void* argument) throw(SQLerror);
 public:
- void updateLieferdatum(const Petig::Datum &ld) throw(SQLerror);	
- void updateLieferdatum(const Kalenderwoche &K) {updateLieferdatum(Petig::Datum(K));}	
+ void updateLieferdatum(const Petig::Datum &ld,int uid) throw(SQLerror);	
+ void updateLieferdatum(const Kalenderwoche &K,int uid) {updateLieferdatum(Petig::Datum(K),uid);}	
  void updateLieferdatumInstanz(const Petig::Datum &ld) throw(SQLerror);	
  void updatePreis(const Preis &pr) throw(SQLerror);
- void updateRabatt(int rb) throw(SQLerror);
- void setStatus(AufStatVal newstatus,bool force=false) throw(SQLerror);		
- void setInstanzen(AufStatVal newstatus,Petig::Datum lieferdate,mengen_t part,int myznr=-1,int yourznr=-1);
- void split(mengen_t newmenge, const Petig::Datum &newld,void (*callback)(void *,st_problems)=0,void* argument=0) throw(SQLerror);
+ void updateRabatt(rabatt_t rb) throw(SQLerror);
+ void setLetzteLieferung(const Petig::Datum &datum) throw(SQLerror);
+ // Ist (uid!=0) wird lasteditdate verändert.
+ void setStatus(AufStatVal newstatus,int uid,bool force=false) throw(SQLerror);		
+ void setInstanzen(AufStatVal newstatus,int uid,Petig::Datum lieferdate,mengen_t part,int myznr=-1,int yourznr=-1);
+ void split(int uid,mengen_t newmenge, const Petig::Datum &newld,void (*callback)(void *,st_problems)=0,void* argument=0) throw(SQLerror);
  mengen_t getStueck() const { return bestellt;}
  mengen_t getRestStk() const {if(entrystatus==CLOSED)return 0; return bestellt-geliefert;}
  mengen_t getGeliefert() const { return geliefert;}
@@ -138,7 +146,9 @@ public:
  ppsInstanz::ID getAuftragInstanz() const {return instanz->Id();}
  AufStatVal getEntryStatus() const { return entrystatus;}
  const std::string getEntryStatusStr() const;
+ int getLastEditDateUID() const { return lasteditdate_uid;}
  const Petig::Datum LastEditDate() const { return lasteditdate; }
+ const Petig::Datum LetzteLieferung() const { return letzte_lieferung; }
  std::string getYourAufNr() const { return youraufnr;}
  int getDispoENr() const { return dispoentrynr;}
  const Petig::Datum getLieferdatum() const { return lieferdatum;}
@@ -149,15 +159,18 @@ public:
  const Preis GPreis() const; // Gesamtpreis
 // void setVerarbeitung(const cH_Prozess p);
  const Preis EPreis(bool brutto=true) const; // Einzelpreis
- int Rabatt() const { return rabatt;}
- float PreisMenge() const { return preis.PreisMenge(); }
- void abschreiben(mengen_t menge) throw(SQLerror);
+ cH_PreisListe getPreisliste() const {return preisliste;}
+ rabatt_t Rabatt() const { return rabatt;}
+ Preis::preismenge_t PreisMenge() const { return preis.PreisMenge(); }
+ void abschreiben(mengen_t menge,
+    ManuProcEntity::ID lfrsid=ManuProcEntity::none_id) throw(SQLerror);
  bool allesOK() const;
  std::string Planung() const;
- ppsInstanz::ID LetztePlanInstanz() const
- {  return letztePlanInstanz; }
- // gibt Zeilennummer zurück;
- void moveInstanz(const AuftragBase& auftrag) throw(SQLerror);
+ ppsInstanz::ID LetztePlanInstanz() const { return letztePlanInstanz; }
+ void setLetztePlanungFuer(cH_ppsInstanz planinstanz) throw(SQLerror);
+ // wird von Artikeleingabe verwendet; gibt Zeilennummer zurück;
+ void moveInstanz(int uid,const AuftragBase& auftrag) throw(SQLerror);
+
  cH_Lieferschein getLieferschein() const ;
 private:
  std::vector<AufEintragBase> getKundenAuftragV() const;
@@ -168,8 +181,10 @@ public:
  ArtikelBase Artikel() const {return artikel;}
 
 // einen Teil des Auftrages=0 verplanen (in anderen Auftrag<>0 setzen)
-// gibt Zeilennummer zurück; rekursiv = alle Instanzen darunter auch planen
- int Planen(mengen_t menge, const AuftragBase &zielauftrag,bool rekursiv=false);
+// gibt Zeilennummer zurück; rekursiv = alle Instanzen darunter auch planen,
+// rekursiv wird asuschließlich vom Erfassungs/Reperaturprogramm verwendet
+ int Planen(int uid,mengen_t menge, const AuftragBase &zielauftrag,
+      const Petig::Datum &datum,bool rekursiv=false) throw(std::exception);
 
 // friend std::ostream &operator<<(std::ostream &o,const AufEintrag &aeb);
 };

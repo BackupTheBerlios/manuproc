@@ -1,4 +1,4 @@
-// $Id: FertigWaren_sql.pgcc,v 1.3 2002/05/09 12:46:00 christof Exp $
+// $Id: FertigWaren_sql.pgcc,v 1.4 2002/06/20 06:29:53 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -29,15 +29,19 @@ void FertigWaren::Buchen(int pid,e_buchen buchen)
     int STK=Stk();
     int PID=pid;
     char TIME[32];
+    int LFRSID=lieferschein;
+    int ILFRSID;
   exec sql end declare section;
 
  Transaction tr;
 
+  ILFRSID = (lieferschein == ManuProcEntity::none_id) ? -1 : 0;
+
   if     (buchen==Rein) STK= abs(STK);
   else if(buchen==Raus) STK=-abs(STK);
   exec sql insert into fw_lager_buchung 
-      (artikelid,menge,datum,aktion,pid)
-      values (:ARTIKEL,:STK,now(),:ACTION,:PID);
+      (artikelid,menge,datum,aktion,pid,lfrsid)
+      values (:ARTIKEL,:STK,now(),:ACTION,:PID,:LFRSID:ILFRSID);
   SQLerror::test("FertigWaren::Einlagern");
 
   exec sql select now() into :TIME;

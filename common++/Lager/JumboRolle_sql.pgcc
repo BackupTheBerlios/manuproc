@@ -187,7 +187,8 @@ vector<JumboRolle> JumboRolle::create(const KettplanKette &k,bool rest)
          	VALUES (:code, :maschine, :datum, :webmaschine, :soll_meter,
          	 :status, :lauf, :gang, :artikelid);
          SQLerror::test(__FILELINE__);
-         res.push_back(JumboRolle(code,maschine,datum,webmaschine,
+         res.push_back(JumboRolle(JumboRolle::Pruefziffer_anhaengen(code),
+         	maschine,datum,webmaschine,
          	soll_meter,status,lauf,gang,artikelid));
       }
    }

@@ -1,4 +1,4 @@
-// $Id: FetchIStream.pgcc,v 1.15 2002/05/09 12:46:00 christof Exp $
+// $Id: FetchIStream.pgcc,v 1.16 2002/06/20 06:29:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,161 +21,107 @@
 #include <Aux/SQLerror.h>
 exec sql include sqlca;
 #include <Aux/itos.h>
+#include <locale.h>
 
-#define GARNIX
-// für ECPG 7.1
 #define DEBUG_FIS(x) std::cerr << x << '\n'
 // ,y...) x,##y
 
+extern "C" {
+extern PGresult **ECPGdescriptor_lvalue(int line, const char *descriptor);
+}
+
 // ecpg intcoming descriptor has to be FetchIStream
 
+FetchIStream::FetchIStream(const std::string &descr, int line)
+	: naechstesFeld(0), zeile(line), result(0)
+{  PGresult **r=ECPGdescriptor_lvalue(__LINE__,descr.c_str());
+   if (r) result=*r;
+}
+
 FetchIStream &FetchIStream::operator>>(std::string &str)
-{  exec sql begin declare section;
-   int spalte=naechstesFeld++;
-   int LENGTH=0;
-   char *data=0;
-   exec sql end declare section;
-   
-   // exec sql get descriptor ? value :spalte :LENGTH = returned_octet_length;
-   ECPGget_desc(__LINE__,const_cast<char*>(descriptor.c_str()),spalte,ECPGd_ret_octet,
-		ECPGt_int,&(LENGTH),1L,1L,sizeof(int), ECPGd_EODT);
-   SQLerror::test("FetchIStream::>>(std::string):returned_octet_length");
-   if (LENGTH<1) str="";
-   else
-   {  ++LENGTH;
-      data=(char*)alloca(LENGTH);
-      // exec sql get descriptor ? value :spalte :data = data;
-      ECPGget_desc(__LINE__,const_cast<char*>(descriptor.c_str()),spalte,ECPGd_data,
-		ECPGt_char, data, LENGTH, 1L, LENGTH*sizeof(char), ECPGd_EODT);
-      SQLerror::test("FetchIStream::>>(std::string):data");
-      str=data;
-   }
+{  const char *pval = PQgetvalue(result, zeile, naechstesFeld);
+   if (pval) str=pval;
+   else str="";
+//   DEBUG_FIS("PQgetvalue(,"<<zeile<<','<<naechstesFeld<<")="<<str);
+   naechstesFeld++;
    return *this;
 }
 
 int FetchIStream::getIndicator() const
-{  exec sql begin declare section;
-//   char *desc=const_cast<char*>(descriptor.c_str());
-   int spalte=naechstesFeld;
-   int indicator;
-   exec sql end declare section;
-   
-   // exec sql get descriptor ? value :spalte :indicator = indicator;
-   ECPGget_desc(__LINE__,const_cast<char*>(descriptor.c_str()),spalte,ECPGd_indicator,
-	ECPGt_int,&(indicator),1L,1L,sizeof(int), ECPGd_EODT);
-   SQLerror::test("FetchIStream::>>(std::string):indicator");
-   return indicator;
+{  return -PQgetisnull(result, zeile, naechstesFeld);
 }
 
 FetchIStream &FetchIStream::operator>>(int &i)
-{  exec sql begin declare section;
-   int spalte=naechstesFeld++;
-   int data=0;
-   exec sql end declare section;
-   
-   // exec sql get descriptor X value :spalte :data = data;
-   ECPGget_desc(__LINE__,const_cast<char*>(descriptor.c_str()),spalte,ECPGd_data,
-		ECPGt_int,&(data),1L,1L,sizeof(int), ECPGd_EODT);
-   SQLerror::test("FetchIStream::>>(int):data");
-   i=data;
+{  std::string s;
+   *this >> s;
+   i=strtol(s.c_str(),0,10);
    return *this;
 }
 
 FetchIStream &FetchIStream::operator>>(float &f)
-{  exec sql begin declare section;
-   int spalte=naechstesFeld++;
-   float data=0;
-   exec sql end declare section;
-   
-   // exec sql get descriptor X value :spalte :data = data;
-   ECPGget_desc(__LINE__,const_cast<char*>(descriptor.c_str()),spalte,ECPGd_data,
-		ECPGt_float,&(data),1L,1L,sizeof(float), ECPGd_EODT);
-   SQLerror::test("FetchIStream::>>(float):data");
-   f=data;
+{  double d=0;
+   *this >> d;
+   f=d;
    return *this;
 }
 
 FetchIStream &FetchIStream::operator>>(double &f)
-{  exec sql begin declare section;
-   int spalte=naechstesFeld++;
-   double data=0;
-   exec sql end declare section;
-   
-   // exec sql get descriptor X value :spalte :data = data;
-   ECPGget_desc(__LINE__,const_cast<char*>(descriptor.c_str()),spalte,ECPGd_data,
-		ECPGt_double,&(data),1L,1L,sizeof(double), ECPGd_EODT);
-   SQLerror::test("FetchIStream::>>(double):data");
-   f=data;
+{  std::string s;
+   *this >> s;
+   /* Make sure we do NOT honor the locale for numeric input */
+   /* since the database gives the standard decimal point */
+   std::string oldlocale= setlocale(LC_NUMERIC, NULL);
+   setlocale(LC_NUMERIC, "C");
+   f=strtod(s.c_str(),0);
+   setlocale(LC_NUMERIC, oldlocale.c_str());
    return *this;
 }
 
 FetchIStream &FetchIStream::operator>>(bool &b)
-{  exec sql begin declare section;
-   int spalte=naechstesFeld++;
-   bool data=0;
-   exec sql end declare section;
-   
-   // exec sql get descriptor X value :spalte :data = data;
-   ECPGget_desc(__LINE__,const_cast<char*>(descriptor.c_str()),spalte,ECPGd_data,
-		ECPGt_bool,&(data),1L,1L,sizeof(bool), ECPGd_EODT);
-   SQLerror::test("FetchIStream::>>(int):data");
-   b=data;
+{  std::string s;
+   *this >> s;
+   b=s[0]=='t' || s[0]=='T' || s[0]=='1';
    return *this;
 }
 
 // note cursor is the name for both the cursor and the descriptor
 Query::Query(const std::string &command)
-: cursor(std::string("Query")+ulltos(reinterpret_cast<unsigned long long>(this))), eof(false)
+: descriptor(std::string("Query")+ulltos(reinterpret_cast<unsigned long long>(this))), 
+	eof(false), line(0), result(0)
 {  exec sql begin declare section;
-   char *COMMAND=const_cast<char*>(command.c_str(GARNIX));
+   char *COMMAND=const_cast<char*>(command.c_str());
    exec sql end declare section;
    
 //   exec sql allocate descriptor X;
 sqlca.sqlcode=0;
-   ECPGallocate_desc(__LINE__, cursor.c_str());
+   ECPGallocate_desc(__LINE__, descriptor.c_str());
    if (sqlca.sqlcode) { DEBUG_FIS(SQLerror("allocate descriptor")); eof=true; }
-   exec sql prepare query from :COMMAND;
-//   exec sql declare Z cursor for query;
-//   exec sql open Z;
-   std::string cursorcmd("declare "+cursor+" cursor for ?");
-   ECPGdo(__LINE__, NULL, const_cast<char*>(cursorcmd.c_str()),
-   	ECPGt_char_variable,(ECPGprepared_statement("query")),1L,1L,
-   	1*sizeof(char), ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
-   	ECPGt_EOIT, ECPGt_EORT);
+//   exec sql prepare com from :COMMAND;
+//   exec sql execute com into descriptor X;
+   ECPGdo(__LINE__, NULL, COMMAND, 
+   	ECPGt_EOIT,
+   	ECPGt_descriptor, descriptor.c_str(), 0L, 0L, 0L,
+   	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EORT);
    if (sqlca.sqlcode) { DEBUG_FIS(SQLerror("open")); eof=true; }
+   result=*(ECPGdescriptor_lvalue(__LINE__,descriptor.c_str()));
 }
 
 FetchIStream Query::Fetch()
 {  if (!eof)
-   {  // exec sql fetch from Z into descriptor X;
-      std::string cursorcmd("fetch from "+cursor);
-//sqlca.sqlcode=0;
-      ECPGdo_descriptor(__LINE__, NULL, cursor.c_str(),cursorcmd.c_str());
-      // new syntax:
-      // ECPGdo(__LINE__, NULL, cursorcmd.c_str(), ECPGt_EOIT, 
-	//	ECPGt_descriptor, cursor.c_str(), 0L, 0L, 0L, 
-	//	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EORT);
-      if (sqlca.sqlcode) 
-      {  if (sqlca.sqlcode!=100) DEBUG_FIS(SQLerror("fetch")); 
-         eof=true; 
-      }
-      else return FetchIStream(cursor);
+   {  if (line<PQntuples(result)) return FetchIStream(result,line++);
+      eof=true;
    }
-   return FetchIStream();
+   return FetchIStream((PGresult*)0);
 }
 
 Query::~Query()
-{  std::string cursorcmd("close "+cursor);
-//   exec sql close Z;
-   ECPGdo(__LINE__, NULL, const_cast<char*>(cursorcmd.c_str()), ECPGt_EOIT, ECPGt_EORT);
-//   exec sql deallocate descriptor X;
-   ECPGdeallocate_desc(__LINE__, cursor.c_str());
+{  //   exec sql deallocate descriptor X;
+   ECPGdeallocate_desc(__LINE__, descriptor.c_str());
 }
 
-// note cursor is the name for both the cursor and the descriptor
 void Query::Execute(const std::string &command)
 {  exec sql begin declare section;
-   char *COMMAND=const_cast<char*>(command.c_str(GARNIX));
+   char *COMMAND=const_cast<char*>(command.c_str());
    exec sql end declare section;
 
    exec sql execute immediate :COMMAND;

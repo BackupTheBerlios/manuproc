@@ -22,12 +22,13 @@
 //#include <Aux/Zeitpunkt_new.h>
 #include <Artikel/ArtikelBase.h>
 //#include <Auftrag/AufEintrag.h>
-#include <Aux/ppsInstanz.h>
+#include <Instanzen/ppsInstanz.h>
 #include "LagerPlatz.hh"
 #include <Auftrag/AuftragBase.h>
 #include <vector>
 //#include <list>
 #include <Aux/Handles.h>
+#include <Auftrag/selFullAufEntry.h>
 
 class LagerInhalt
 {
@@ -37,6 +38,8 @@ class LagerInhalt
       int menge, restmenge;
 
    public:
+          
+
       LagerInhalt(ArtikelBase a) 
                : artikel(a),stueck(0),reststueck(0),menge(0),restmenge(0){}
       LagerInhalt(ArtikelBase a, int s, int rs, int m, int rm)
@@ -70,7 +73,7 @@ class Lager : public HandleContent
 {
    private:
       ppsInstanz::ID instanz;
-      void bewegung(bool raus,ArtikelBase artikel,AuftragBase::mengen_t menge);
+
       virtual std::vector<class LagerInhalt> LagerInhalt_(const ArtikelBase& artikel)const=0 ;
 
    protected:
@@ -81,9 +84,13 @@ class Lager : public HandleContent
       // Faßt gleiche Artikel des Vektors zusammenen:
       static void LagerInhaltSum(std::vector<class LagerInhalt>& LI);
       class LagerInhalt LagerInhalt(const ArtikelBase& artikel) const ;
+      bool dispo_auftrag_aendern(ArtikelBase artikel,AuftragBase::mengen_t menge);
 
-      void rein_ins_lager(ArtikelBase artikel,AuftragBase::mengen_t menge);
-      void raus_aus_lager(ArtikelBase artikel,AuftragBase::mengen_t menge);
+      void rein_ins_lager(ArtikelBase artikel,AuftragBase::mengen_t menge,int uid);
+      void raus_aus_lager(ArtikelBase artikel,AuftragBase::mengen_t menge,int uid);
+
+      /// Datum für freie Lagermengen (Aufträge)
+      static Petig::Datum Lagerdatum() {return Petig::Datum(Petig::Datum(1,1,1970));}
 
 };
 

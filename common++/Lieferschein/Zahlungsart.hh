@@ -5,7 +5,8 @@
 #include <Aux/Handles.h>
 #include <Aux/CacheStatic.h>  
 
-
+#warning ich glaub die Datei kann jetzt weg MAT 15.5.02
+/*
 class Zahlungsart  : public HandleContent
 {
         std::string kurzbezeichnung;
@@ -38,7 +39,7 @@ class cH_Zahlungsart : public Handle<const Zahlungsart>
 
 //     bool operator==(const cH_Zahlungsart &b) const {return (*this)->Id()==b->Id();}
 };
-  
+*/  
   
 #endif
 

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry_sql.pgcc,v 1.15 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: LieferscheinEntry_sql.pgcc,v 1.16 2002/06/20 06:29:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -128,7 +128,8 @@ void LieferscheinEntry::deleteEntry(const LieferscheinEntry &lse) throw(SQLerror
  {  AuftragBase::mengen_t geliefert=lse.Anzahl();
     if (lse.Menge()) geliefert *= lse.Menge();
     
-    AufEintragBase(lse.Instanz(),lse.AufId(),lse.AufZeile()).abschreiben(-geliefert);
+    AufEintragBase AEB(lse.Instanz(),lse.AufId(),lse.AufZeile());
+    AufEintrag(AEB).abschreiben(-geliefert,LFRSID);
  }
 
  tr.commit();

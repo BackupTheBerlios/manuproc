@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.12 2002/05/09 12:45:59 christof Exp $
+# $Id: Makefile.am,v 1.13 2002/06/20 06:29:53 christof Exp $
 
 ENDUSER=-DPETIG
 
@@ -6,15 +6,15 @@ CXXFLAGS=-I/home/share/include @CXXFLAGS@ @ECPG_INCLUDES@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
 
-noinst_PROGRAMS=libAuftrag.o
+noinst_LIBRARIES=libAuftrag.a
 
 includedir=@includedir@/Auftrag
 
 # this gives us free compilation
-libAuftrag_o_SOURCES=AufEintrag.cc \
+libAuftrag_a_SOURCES=AufEintrag.cc AufEintragBase.cc AuftragBase.cc \
 	sqlAuftragSelector.cc Auftrag.cc $(BUILT_SOURCES_P) AuftragsBaum.cc 
 
-libAuftrag.o: $(libAuftrag_o_OBJECTS) $(libAuftrag_o_DEPENDENCIES)
+libAuftrag.a: $(libAuftrag_a_OBJECTS) $(libAuftrag_a_DEPENDENCIES)
 	touch $@
 
 BUILT_SOURCES_P= AuftragBase_sql.cc AufEintrag_sql.cc selAufEntry_sql.cc\

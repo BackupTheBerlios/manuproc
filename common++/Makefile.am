@@ -1,5 +1,5 @@
 SUBDIRS= DynamicEnums Aux ostream Artikel Auftrag Bank ExtBezSchema Ketten \
-		Kunde Lieferschein Material Lager Faeden . Programme tests 
+		Kunde Lieferschein Material Lager Faeden Instanzen . Programme tests 
 	
 lib_LIBRARIES=libcommon++.a
 
@@ -21,16 +21,19 @@ libcommon___a_LIBADD= \
 		Artikel/Prozess_sql.o \
 		Artikel/Prozesspreis.o \
 		Auftrag/AufEintragBase_sql.o \
+		Auftrag/AufEintragBase.o \
 		Auftrag/AufEintrag.o \
 		Auftrag/AufEintrag_sql.o\
 		Auftrag/selAufEntry_sql.o \
 		Auftrag/sqlAuftragSelector.o \
+		Auftrag/AuftragBase.o \
 		Auftrag/AuftragBase_sql.o \
 		Auftrag/AuftragsBaum.o \
 		Auftrag/Auftrag.o \
 		Auftrag/Auftrag_sql.o \
 		Auftrag/AuftragFull_sql.o \
 		Auftrag/AufEintragZu_sql.o \
+      Aux/AdminProblems.o \
 		Aux/Ausgabe_neu.o \
 		Aux/Changejournal_sql.o \
 		Aux/Datum.o \
@@ -40,6 +43,8 @@ libcommon___a_LIBADD= \
 		Aux/FetchIStream.o \
 		Aux/Global_Settings.o \
 		Aux/Handles.o \
+		Aux/EAN.o \
+		Aux/EAN_sql.o \
 		Aux/IOerror.o \
 		Aux/SQLerror_postgres.o \
 		Aux/Transaction.o \
@@ -52,7 +57,6 @@ libcommon___a_LIBADD= \
 		Aux/exception.o \
 		Aux/itos.o \
 		Aux/postgres_conversion.o \
-		Aux/ppsInstanz_sql.o \
 		Aux/string0.o \
 		Bank/Bankauftrag.o \
 		Bank/Bankauftrag2.o \
@@ -65,6 +69,8 @@ libcommon___a_LIBADD= \
 		Faeden/Faden.o \
 		Faeden/Materialeigenschaft_sql.o \
 		Faeden/Schussfaeden.o \
+		Instanzen/Produziert.o \
+		Instanzen/ppsInstanz_sql.o \
 		Ketten/Kette.o \
 		Ketten/KettplanKette.o \
 		Ketten/KettplanKette2.o \
@@ -77,9 +83,12 @@ libcommon___a_LIBADD= \
 		Kunde/Person.o \
 		Kunde/Person_sql.o \
 		Kunde/PreisListe_sql.o \
+		Kunde/PreisListeFull_sql.o \
 		Kunde/KontaktListe.o \
 		Kunde/Telefon_sql.o \
 		Kunde/Telefon.o \
+		Kunde/Zahlungsart.o \
+		Kunde/Zahlungsart_sql.o \
 		Lager/FertigWaren_sql.o \
 		Lager/FertigWarenLager_sql.o \
 		Lager/JumboLager.o \
@@ -90,7 +99,6 @@ libcommon___a_LIBADD= \
       Lager/Lager.o \
       Lager/Lager_Dispo_sql.o \
 		Lager/Lager_Vormerkungen.o \
-		Lager/Lager_Vormerkungen_sql.o \
 		Lager/maschinen_geschwindigkeit_sql.o \
       Lager/RohwarenLager_sql.o \
 		Lieferschein/Lieferschein.o \
@@ -100,6 +108,7 @@ libcommon___a_LIBADD= \
 		Lieferschein/LieferscheinList_sql.o \
 		Lieferschein/LieferscheinVoll.o \
 		Lieferschein/Lieferschein_sql.o \
+		Lieferschein/Rechnung.o \
 		Lieferschein/Rechnung_sql.o \
 		Lieferschein/RechnungEntry_sql.o \
 		Lieferschein/RechnungVoll_sql.o \

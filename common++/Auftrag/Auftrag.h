@@ -37,6 +37,9 @@ protected:
 	std::string youraufnr;
 	std::string bemerkung;
 	cP_Waehrung waehrung;
+   rabatt_t auftragsrabatt;
+   Petig::Datum zahlziel;
+   cH_Zahlungsart zahlart;
 private:
 	std::string tmpstr;
 	
@@ -63,15 +66,22 @@ public:
 	void setYourAufNr(const std::string &yanr) throw(SQLerror);
 	void setStatusAuftrag_(AufStatVal st) throw(SQLerror);
 	void setWaehrung(cP_Waehrung w) throw(SQLerror);
+	void setRabatt(const rabatt_t auftragsrabatt) throw(SQLerror);
+	void Zahlziel(const Petig::Datum &zziel) throw(SQLerror);
+	void Zahlart(cH_Zahlungsart zart) throw(SQLerror);
 	
-        const Petig::Datum &getDatum() const { return datum; } 
+   const Petig::Datum &getDatum() const { return datum; } 
+   const Petig::Datum &Zahlziel() const { return zahlziel; }
+   const cH_Zahlungsart Zahlart() const { return zahlart; }   
+   
 	AufStatVal getStatus() const { return status; }
-        ppsInstanz::ID Instanz() const {return instanz->Id();}
+   ppsInstanz::ID Instanz() const {return instanz->Id();}
 	std::string getAuftragidToStr() const;
 	std::string getYourAufNr() const { return youraufnr;}
 	std::string getBemerkung() const { return bemerkung;}
 	Kunde::ID getKundennr() const { return kundennr; }
 	cP_Waehrung getWaehrung() const { return waehrung; }
+   rabatt_t getAuftragsRabatt() const {return auftragsrabatt;}
 };        
 
 #endif

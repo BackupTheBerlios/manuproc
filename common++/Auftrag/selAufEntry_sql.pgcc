@@ -1,4 +1,4 @@
-// $Id: selAufEntry_sql.pgcc,v 1.18 2002/05/09 12:45:59 christof Exp $
+// $Id: selAufEntry_sql.pgcc,v 1.19 2002/06/20 06:29:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -41,7 +41,9 @@ throw(SQLerror)
  char PROZESSDATUM[20][11];
  int STATUS[20];
  int ENTRYSTATUS[20];
+ int LASTEDITDATEUID[20];
  char LASTEDITDATE[20][21];
+ char LETZTELIEFERUNG[20][21];
  int DISPOENTNR[20];
  int DISPONR[20];
  int IDISPOENTNR[20], IDISPONR[20];
@@ -49,10 +51,11 @@ throw(SQLerror)
  int IYOURAUFNR[20];
  int IROHARTIKELID[20];
  float PREIS[20];
- int RABATT[20];
+ float RABATT[20];
  int PREISMENGE[20];
  int WAEHRUNG[20];
  int IPREIS[20],IRABATT[20],IWAEHRUNG[20];
+ int PREISLISTE[20];
  char *clausel;
  exec sql end declare section;
 	
@@ -75,7 +78,7 @@ throw(SQLerror)
 		:PROZESSID, :LETZTEPLANINSTANZ, :MAXPLANINSTANZ, :PROZESSDATUM,
 		:PREIS:IPREIS, :RABATT:IRABATT, :PREISMENGE,
 		:WAEHRUNG:IWAEHRUNG,
-		:ENTRYSTATUS, :LASTEDITDATE;
+		:ENTRYSTATUS, :LASTEDITDATEUID,:LASTEDITDATE, :LETZTELIEFERUNG, :PREISLISTE ;
    SQLerror::test(__FILELINE__":SelectedFullAufList: fetch all auftragids",
 						"AUFENTRYFULL",100);
 
@@ -101,7 +104,8 @@ throw(SQLerror)
 				IWAEHRUNG[i] ? Waehrung::ID(0):Waehrung::ID(WAEHRUNG[i]),
 				PREISMENGE[i]),
 			IRABATT[i] ? 0 : RABATT[i],
-		(AufStatVal)ENTRYSTATUS[i],Petig::Datum(LASTEDITDATE[i])	));
+		(AufStatVal)ENTRYSTATUS[i],LASTEDITDATEUID[i],Petig::Datum(LASTEDITDATE[i]),
+		 Petig::Datum(LETZTELIEFERUNG[i]),PREISLISTE[i]));
 	      } catch (SQLerror &e)
 	      {  std::cerr << e << '\n';
 	      }
@@ -131,7 +135,9 @@ void SelectedFullAufList::insert(const AufEintragBase& aeb) throw(SQLerror)
  char PROZESSDATUM[11];
  int STATUS;
  int ENTRYSTATUS;
+ int LASTEDITDATEUID;
  char LASTEDITDATE[21];
+ char LETZTELIEFERUNG[21];
  int DISPOENTNR=0;
  int DISPONR=0;
  int IDISPOENTNR=-1, IDISPONR=-1;
@@ -139,10 +145,11 @@ void SelectedFullAufList::insert(const AufEintragBase& aeb) throw(SQLerror)
  int IYOURAUFNR;
  int IROHARTIKELID;
  float PREIS;
- int RABATT;
+ float RABATT;
  int PREISMENGE;
  int WAEHRUNG;
  int IPREIS,IRABATT,IWAEHRUNG;
+ int PREISLISTE;
  char *clausel;
  exec sql end declare section;
 
@@ -165,7 +172,7 @@ void SelectedFullAufList::insert(const AufEintragBase& aeb) throw(SQLerror)
 		:PROZESSID, :LETZTEPLANINSTANZ, :MAXPLANINSTANZ, :PROZESSDATUM,
 		:PREIS:IPREIS, :RABATT:IRABATT, :PREISMENGE,
 		:WAEHRUNG:IWAEHRUNG,
-		:ENTRYSTATUS, :LASTEDITDATE;
+		:ENTRYSTATUS, :LASTEDITDATEUID,:LASTEDITDATE, :LETZTELIEFERUNG, :PREISLISTE;
    SQLerror::test(__FILELINE__":SelectedFullAufList::insert: fetch all auftragids",
 						"AUFENTRYINSERT");
 
@@ -184,7 +191,8 @@ void SelectedFullAufList::insert(const AufEintragBase& aeb) throw(SQLerror)
 				IWAEHRUNG ? Waehrung::ID(0):Waehrung::ID(WAEHRUNG),
 				PREISMENGE),
 			IRABATT ? 0 : RABATT,
-			(AufStatVal)ENTRYSTATUS,Petig::Datum(LASTEDITDATE)
+			(AufStatVal)ENTRYSTATUS,LASTEDITDATEUID,Petig::Datum(LASTEDITDATE),
+			Petig::Datum(LETZTELIEFERUNG),PREISLISTE
 			));
 
 	exec sql close AUFENTRYINSERT;

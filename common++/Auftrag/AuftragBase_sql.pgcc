@@ -89,14 +89,27 @@ void AuftragBase::setStatusAuftragBase(AufStatVal st) const throw(SQLerror)
 }
 
 
+void AuftragBase::setRabatt(const rabatt_t auftragsrabatt) const throw(SQLerror)
+{
+ exec sql begin declare section;
+  int AUFTRAGID=Id();
+  int INSTANZ=InstanzID();
+  double RABATT=auftragsrabatt;
+ exec sql end declare section;
+
+ exec sql update auftrag set rabatt= :RABATT
+       where (instanz,auftragid)= (:INSTANZ,:AUFTRAGID);
+ SQLerror::test(__FILELINE__"Rabatt setzen");
+}
 
 
 int AuftragBase::insertNewEntry(const mengen_t bestellt, 
   const Petig::Datum lieferdatum,const ArtikelBase& artikel,
-  const AufStatVal status,const bool setInstanzAuftraege,
-  const Preis& preis,const fixedpoint<2> rabatt) const throw(SQLerror)
+  const AufStatVal status,int uid,const bool setInstanzAuftraege,
+  const Preis& preis,const fixedpoint<2> rabatt,
+  const cH_PreisListe &preisliste) const throw(SQLerror)
 {
-//std::cout << "insertfunktion: "<<bestellt<<' '
+//std::cout << "\n\n\ninsertfunktion: "<<bestellt<<' '
 //   <<cH_ArtikelBezeichnung(artikel)->Bezeichnung()<<' '<<Id()<<'\n';
  exec sql begin declare section;
  int AUFTRAGID =Id();
@@ -109,25 +122,37 @@ int AuftragBase::insertNewEntry(const mengen_t bestellt,
  int RABATT=rabatt;
  float PREISMENGE=preis.PreisMenge();
  int STATUS=status;
+ int PREISLISTE=preisliste->Id();
+ int PREISLISTENULL;
+ int UID=uid;
  exec sql end declare section;
+ PREISLISTENULL=PreisListe::none_id;
  
+// bei Mabella auf keinen Fall UNCOMMITED
+#ifdef MABELLA_EXTENSIONS
+ if(status==UNCOMMITED)
+   STATUS=OPEN;   
+#endif
+
  lieferdatum.write_postgres(LIEFERDATUM,sizeof LIEFERDATUM);
 
  Transaction tr;
  exec sql lock table auftragentry in exclusive mode;
  SQLerror::test("AufEintrag: lock auftragentry");	
 
+//ECPGdebug(true,stdout);
  exec sql select coalesce(max(zeilennr)+1,1) into :ZEILENNR from auftragentry
 	where (instanz,auftragid)= (:INSTANZ,:AUFTRAGID);
  SQLerror::test("generate next zeilennr");
 
  exec sql insert into auftragentry (instanz,auftragid, zeilennr,
 	bestellt,geliefert,lieferdate,artikelid,status,
-	preis,rabatt,preismenge)
+	preis,rabatt,preismenge,preisliste,lastedit_uid)
 	values (:INSTANZ, :AUFTRAGID, :ZEILENNR, :BESTELLT, 0, :LIEFERDATUM,
 		:ARTIKELID, :STATUS, :PREIS, :RABATT/100.0,
-		:PREISMENGE);
+		:PREISMENGE, nullif(:PREISLISTE,:PREISLISTENULL),:UID) ;
  SQLerror::test(__FILELINE__" insert into auftragentry");	
+//ECPGdebug(false,0);
 	
  if(Instanz()==ppsInstanzID::Kundenauftraege)
   { try{
@@ -145,30 +170,20 @@ int AuftragBase::insertNewEntry(const mengen_t bestellt,
 //std::cout <<"INSTANZ\n";
  // Kundenaufträge legen automatisch einen Auftrag bei der entsprechenden Instanz 
  // für denselben Artikel an.
- if(Instanz()==ppsInstanzID::Kundenauftraege)
-  {
-    AuftragBase AB(ArtikelStamm(artikel).BestellenBei(),AuftragBase::ungeplante_id);   
-    AB.tryUpdateEntry(bestellt,lieferdatum,artikel,status,AufEintragBase(*this,ZEILENNR));
-  }
- else if(setInstanzAuftraege)
-    InstanzAuftraegeAnlegen(artikel,ZEILENNR,lieferdatum,status,bestellt);
+ if(status!=UNCOMMITED) // Nur offene Aufträge kümmern sich um andere Instanzen
+   {
+     if(Instanz()==ppsInstanzID::Kundenauftraege)
+      { cH_ppsInstanz i=ArtikelStamm(artikel).BestellenBei();
+        if (i!=ppsInstanzID::None && i!=ppsInstanzID::Kundenauftraege)
+        {  AuftragBase AB(ArtikelStamm(artikel).BestellenBei(),AuftragBase::ungeplante_id);
+           AB.tryUpdateEntry(bestellt,lieferdatum,artikel,status,uid,AufEintragBase(*this,ZEILENNR));
+        }
+      }
+     else if(setInstanzAuftraege)
+        InstanzAuftraegeAnlegen(artikel,ZEILENNR,lieferdatum,status,uid,bestellt);
+    }
  tr.commit();
  return ZEILENNR;
-}
-
-void AuftragBase::InstanzAuftraegeAnlegen(const ArtikelBase& artikel,
-      const int altZnr,const Petig::Datum& lieferdatum,
-      const AufStatVal status, const mengen_t menge) const
-{
-   ArtikelBaum AB(artikel);
-//cout << cH_ArtikelBezeichnung(artikel)->Bezeichnung()<<'\n';
-   for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
-    {
-//cout << '\t'<<cH_ArtikelBezeichnung(i->rohartikel)->Bezeichnung()<<'\n';
-      AuftragBase neuAuftrag(ArtikelStamm(i->rohartikel).BestellenBei(),0);
-      neuAuftrag.tryUpdateEntry(double(i->menge)*menge,lieferdatum,
-                 i->rohartikel,status,AufEintragBase(*this,altZnr));
-    }
 }
 
 bool AuftragBase::existEntry(const ArtikelBase& artikel,
@@ -214,15 +229,14 @@ bool AuftragBase::existEntry(const ArtikelBase& artikel,
     return true;  }
 }
 
-
 #include <Artikel/ArtikelBezeichnung.h> //debug
 int AuftragBase::tryUpdateEntry(mengen_t bestellt, 
   const Petig::Datum lieferdatum,const ArtikelBase& artikel,
-  AufStatVal status,const AufEintragBase& altAEB,bool force_new) 
+  AufStatVal status,int uid,const AufEintragBase& altAEB,bool force_new) 
       const throw(SQLerror)
 {
  create_if_not_exists(status);
-//std::cout << "Try: "<<altAuftrag.Instanz()->Name()<<' '<<altAuftrag.Id()<<' '<<altZnr<<'\n';
+//std::cout << "Try for: "<< altAEB <<"\n";
 // AufEintragBase AEB(altAuftrag,altZnr);
 //std::cout << "\tErfolg\n";
  int znr=-99,neuznr=-99;
@@ -232,50 +246,27 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
  SQLerror::test(__FILELINE__);  
  if(force_new || !existEntry(artikel,lieferdatum,znr,neuznr,menge,status))
   {
-//cout << "Neu\t";
-//cout << Instanz()->Name()<<"\n";
-    if(Instanz()->LagerInstanz())
-     {
-       znr=insertNewEntry(bestellt,lieferdatum,artikel,status,false)  ;
-//cout << Instanz()->Id()<<' '<<Id()<<" znr"<<' '<<znr<<'\t'<<bestellt<<'\t'<<status<<'\n';
-       Lager_Vormerkungen(class AufEintrag(Instanz()->Id(),Id(),znr,bestellt,artikel,lieferdatum,status)).vormerken_oder_bestellen();
-//cout << "F\n";
-     }
-    else 
-       znr=insertNewEntry(bestellt,lieferdatum,artikel,status,true)  ;
+    znr=insertNewEntry(bestellt,lieferdatum,artikel,status,uid,false)  ;
+    Lager_Vormerkungen(class AufEintrag(Instanz()->Id(),Id(),znr,bestellt,artikel,lieferdatum,status)).vormerken_oder_bestellen(uid);
 //std::cout <<"Zuordnung anlegen: "<< altAEB<<"\t==>\t"<<AufEintragBase(*this,znr)<<"\t"<<bestellt<<'\n';;
-   AufEintragZu(altAEB).Neu(AufEintragBase(*this,znr),bestellt);
+    AufEintragZu(altAEB).Neu(AufEintragBase(*this,znr),bestellt);
   }
  else
   {
-//cout << "Alt\t"<<znr<<' '<<altZnr<<' '<<neuznr<<' '
-//<<AufEintragBase(instanz,auftragid,znr).ZNr()<<"  MENGE:"<<bestellt<<'\n';
+//cout << "Alt\n";
     try{ mengen_t mt=AufEintragZu(altAEB).setMengeDiff__(AufEintragBase(*this,znr),bestellt);
          assert(mt==bestellt); } catch(SQLerror &e)
       { AufEintragZu(altAEB).Neu(AufEintragBase(*this,znr),bestellt);}
-//std::cout << "\t"<<instanz->Name()<<' '<<auftragid<<' '<<znr<<' '
+//std::cout << "\t"<<AufEintragBase(*this,znr)<<' '
 //<<cH_ArtikelBezeichnung(artikel)->Bezeichnung()<<' '<<menge<<'+'<<bestellt<<' '<<status<<'\n';
-//std::cout << "Alt\t"<<znr<<' '<<altZnr<<' '<<AufEintragBase(instanz,auftragid,znr).ZNr()<<'\n';
-//cout << Instanz()->Name()<<"  Lager ? : "<<ppsInstanz::LagerInstanz(InstanzID())<<'\n';
-    if(Instanz()->LagerInstanz())
-       Lager_Vormerkungen(class AufEintrag(Instanz()->Id(),Id(),znr,bestellt,artikel,lieferdatum,status)).vormerken_oder_bestellen();
-    else 
-       InstanzAuftraegeAnlegen(artikel,znr,lieferdatum,status, bestellt) ;
-    mengen_t mt=AufEintragBase(instanz,auftragid,znr).updateStkDiff__(bestellt);
+//std::cout << "Alt\t"<<AufEintragBase(instanz,auftragid,znr)<<'\n';
+//cout << Instanz()->Name()<<"  Lager ? : "<<Instanz()->LagerInstanz()<<'\n';
+    mengen_t mt=AufEintragBase(instanz,auftragid,znr).updateStkDiffBase__(uid,bestellt);
     assert(mt==bestellt);
+    Lager_Vormerkungen(class AufEintrag(Instanz()->Id(),Id(),znr,bestellt,artikel,lieferdatum,status)).vormerken_oder_bestellen(uid);
   }
   tr.commit();
   return znr;
 }
 
-const std::string AuftragBase::getStatusStr(AufStatVal a)
-{
- switch(a)
-   {case (AufStatVal)UNCOMMITED : return "unbestätigt"; 
-    case (AufStatVal)OPEN : return "offen"; 
-    case (AufStatVal)CLOSED : return "fertig";
-    case (AufStatVal)STORNO : return "storno";
-   }
- return "-";
-}
 

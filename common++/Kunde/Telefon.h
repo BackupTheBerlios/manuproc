@@ -1,4 +1,4 @@
-// $Id: Telefon.h,v 1.12 2002/05/09 12:46:00 christof Exp $
+// $Id: Telefon.h,v 1.13 2002/06/20 06:29:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -32,12 +32,10 @@ class cH_Telefon;
 class Telefon : public ManuProcEntity
 {
 public:
-// typedef int ID;
  const static int Landeskennzahl=49;
  const static int Vorwahl=202;
 
  
-// static const ID none_id=0;
 
  struct st_nummer{int land;int vorwahl;int nummer;int durchwahl;TelArt art;
         st_nummer():land(0),vorwahl(0),nummer(0),durchwahl(-1),art(TEL_NONE) {}
@@ -55,13 +53,10 @@ public:
  
 private: 
 
-// ID telid;
  ID kunde;
  ID person;
  st_nummer nummer;
  std::string text; // email, web, ... 
-
-// std::list<st_tel> vec_telefon;
 
   
  friend class Handle<const Telefon>;
@@ -70,21 +65,36 @@ public:
  
  Telefon() : kunde(none_id), person(none_id) {}
  Telefon(ID _tid) throw(SQLerror);
+ Telefon(const TelArt &ta, const ID kid, const ID pid,
+ 		int _land, int _vorw, int _nummer, int _druchw,
+ 		const std::string _text)
+ : kunde(kid), person(pid), nummer(_land,_vorw,_nummer,_druchw, ta), 
+ 	text(_text)
+ {}
 
  static void getTelIDs(std::vector<ID> &vec, const TelArt &ta, 
  		const ID kid, const ID pid) throw(SQLerror);
 
+ static const cH_Telefon create(const cH_Telefon newtel) throw(SQLerror); 		
+ 		
+ static const cH_Telefon create(const ID kid, const ID pid,
+ 		const st_nummer &nr, const std::string t="");
+
+ 
+ // ich bin für create() CP
  static const cH_Telefon newTelefon(const ID kid, const ID pid,
- 		const st_nummer &nr, const std::string t="") throw(SQLerror);
+ 		const st_nummer &nr, const std::string t="");
 
  static void delTelefon(const Telefon::ID tid) throw(SQLerror);
  static void delPersonsTelefon(const ID pid) throw(SQLerror);
  
  st_nummer Nummer() const { return nummer; }
  std::string NummerStr() const;
- std::string Text() const { if(nummer.art==TEL_TEL || nummer.art==TEL_FAX)
+ std::string Text() const { if(nummer.art==TEL_TEL || nummer.art==TEL_FAX
+ 				|| nummer.art==TEL_MOB)
  				return NummerStr();
  			    return text; }
+ std::string getText() const { return text; } 			    
  ID Id() const { return entityid; } 
 
  TelArt TelefonArt() const {return nummer.art;}
@@ -108,6 +118,12 @@ class cH_Telefon : public Handle<const Telefon>
 public:
     cH_Telefon(const Telefon *p) : Handle<const Telefon>(p) {}	
     cH_Telefon(const ManuProcEntity::ID _telid);
+    cH_Telefon(const TelArt &ta,
+ 		const Telefon::ID kid, const Telefon::ID pid,
+ 		int _land, int _vorw, int _nummer, int _druchw,
+ 		const std::string _text)
+ 	: Handle<const Telefon>(new Telefon(ta,kid,pid,_land,_vorw,_nummer,_druchw,_text))
+    {}
 };
 
 

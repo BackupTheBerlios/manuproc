@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList_sql.pgcc,v 1.9 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: LieferscheinList_sql.pgcc,v 1.10 2002/06/20 06:29:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -118,7 +118,7 @@ LieferscheinList::LieferscheinList(const cH_ppsInstanz _instanz,const sel_Gelief
  if(sp.geliefert)
 	 squery += " where dpdliefnr is not null";
  else
-	 squery += " where dpdliefnr is null";
+	 squery += " where dpdliefnr is null and geliefertam is null";
  squery += " and instanz = "+itos(instanz->Id());
 
  fuelle(squery);

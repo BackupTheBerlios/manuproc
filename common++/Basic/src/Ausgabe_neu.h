@@ -1,4 +1,4 @@
-/* $Id: Ausgabe_neu.h,v 1.11 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: Ausgabe_neu.h,v 1.12 2002/06/20 06:29:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -55,14 +55,18 @@ std::string string2TeX(const std::string s, int flags=0) throw();
 
 template <int decimals,class Ftype,class Itype>
  const std::string FormatiereTeX(const fixedpoint<decimals,Ftype,Itype> &Zahl)
-{  return FormatiereTeX(Zahl.Scaled(),Zahl.Scale());
+{  if (Zahl.Scaled()<0) return "-"+FormatiereTeX(-Zahl.Scaled(),Zahl.Scale());
+   return FormatiereTeX(Zahl.Scaled(),Zahl.Scale());
 }
 
 template <int decimals,class Ftype,class Itype>
  const std::string Formatiere(const fixedpoint<decimals,Ftype,Itype> &Zahl, unsigned int Ziellaenge=0,
                 const char *TausenderTrennzeichen=".",
                 const char *Komma=",",char fuehrendesZeichen=' ')
-{  return Formatiere(Zahl.Scaled(),Zahl.Scale(),Ziellaenge,
+{  if (Zahl.Scaled()<0) return "-"+Formatiere(-Zahl.Scaled(),Zahl.Scale(),
+		Ziellaenge?Ziellaenge-1:0,TausenderTrennzeichen,Komma,
+		fuehrendesZeichen);
+   return Formatiere(Zahl.Scaled(),Zahl.Scale(),Ziellaenge,
 		TausenderTrennzeichen,Komma,fuehrendesZeichen);
 }
 
@@ -70,9 +74,10 @@ template <int decimals,class Ftype,class Itype>
 template <int decimals,class Ftype,class Itype>
  const std::string FormatiereTeX_short(const fixedpoint<decimals,Ftype,Itype> &Zahl)
 {  Itype val(Zahl.Scaled());
+   if (val<0) val=-val;
    unsigned int scale(Zahl.Scale());
    while (scale>0 && !(val%10)) { val/=10; --scale; }
-   return FormatiereTeX(val,scale);
+   return (Zahl.Scaled()<0?"-":"")+FormatiereTeX(val,scale);
 }
 
 // um transparent zwischen fixedpoints und ints umschalten zu können
@@ -86,9 +91,10 @@ static inline const std::string FormatiereEmpty_short(unsigned int i)
 template <int decimals,class Ftype,class Itype>
  const std::string Formatiere_short(const fixedpoint<decimals,Ftype,Itype> &Zahl)
 {  Itype val(Zahl.Scaled());
+   if (val<0) val=-val;
    unsigned int scale(Zahl.Scale());
    while (scale>0 && !(val%10)) { val/=10; --scale; }
-   return Formatiere(val,scale);
+   return (Zahl.Scaled()<0?"-":"")+Formatiere(val,scale);
 }
 
 // als Preis (2 Nachkommastellen, alle weiteren als superscript (Potenzen))

@@ -1,4 +1,4 @@
-// $Id: fixedpoint.cc,v 1.9 2002/05/09 12:46:00 christof Exp $
+// $Id: fixedpoint.cc,v 1.10 2002/06/20 06:29:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -56,5 +56,11 @@ int main()
       a*=b;
       std::cout << a.Scaled() << '/' << a << '\n';
    }   
+   
+   std::cout << "\n---- negative Values ----\n";
+   std::cout << Formatiere(fixedpoint<2>(-1.20)) << ' '
+   	<< Formatiere_short(fixedpoint<2>(-1.20)) << ' '
+   	<< FormatiereTeX(fixedpoint<2>(-12345.60)) << ' '
+   	<< FormatiereTeX_short(fixedpoint<2>(-12345.60)) << '\n';
    return 0;
 }

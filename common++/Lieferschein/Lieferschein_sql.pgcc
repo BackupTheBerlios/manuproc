@@ -1,4 +1,4 @@
-/* $Id: Lieferschein_sql.pgcc,v 1.10 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: Lieferschein_sql.pgcc,v 1.11 2002/06/20 06:29:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,52 +26,57 @@ Lieferschein::Lieferschein(const cH_ppsInstanz& _instanz,int lid) throw(SQLerror
 {
 try{
  exec sql begin declare section;
- int INSTANZ=Instanz();
- int LFRSID=Id();
- int KDNR;
- int RNGID;
- char DATUM[11];
- int PAECKCHEN, PAKETE;
- char GELIEFERTAM[21];
- int IGELIEFERTAM;
- int DPDLIEFNR;
- int IDPDLIEFNR;
+  int INSTANZ=Instanz();
+  int LFRSID=Id();
+  int KDNR;
+  int RNGID;
+  char DATUM[11];
+  char GELIEFERTAM[21];
+  int IGELIEFERTAM;
  exec sql end declare section;
+#ifdef MABELLA_EXTENSIONS
+ exec sql begin declare section;
+  int DPDLIEFNR;
+  int PAECKCHEN, PAKETE;
+  double NETTO_KG,BRUTTO_KG;
+ exec sql end declare section;
+#endif
 
+#ifdef MABELLA_EXTENSIONS
  exec sql select kundennr, date(datum), coalesce(rngid,0),
 		coalesce(paeckchen,0),
-		coalesce(pakete,0),date(coalesce(geliefertam,datum)),dpdliefnr
+		coalesce(pakete,0),date(coalesce(geliefertam,datum)),coalesce(dpdliefnr,0),
+      coalesce(brutto_kg,0), coalesce(netto_kg,0)
 		into :KDNR, :DATUM, :RNGID, :PAECKCHEN, :PAKETE,
-		:GELIEFERTAM:IGELIEFERTAM, :DPDLIEFNR:IDPDLIEFNR
+		:GELIEFERTAM:IGELIEFERTAM, :DPDLIEFNR,
+      :BRUTTO_KG, :NETTO_KG
  	from lieferschein where (instanz,lfrsid) = (:INSTANZ,:LFRSID);
+#endif
+#ifdef PETIG_EXTENSIONS
+ exec sql select kundennr, date(datum), coalesce(rngid,0),
+		date(coalesce(geliefertam,datum))
+		into :KDNR, :DATUM, :RNGID, :GELIEFERTAM:IGELIEFERTAM
+ 	from lieferschein where (instanz,lfrsid) = (:INSTANZ,:LFRSID);
+#endif
  SQLerror::test(__FILELINE__);
  
  kunde=cH_Kunde(KDNR);
  rngid=RNGID;
 
  lsdatum.from_postgres(DATUM);	
- paeckchen=PAECKCHEN;
- pakete=PAKETE;
  if(IGELIEFERTAM) geliefertam=Petig::Datum();		 
  else geliefertam.from_postgres(GELIEFERTAM);		 
- dpdliefnr=IDPDLIEFNR ? 0 : DPDLIEFNR;
+#ifdef MABELLA_EXTENSIONS
+ dpdliefnr=DPDLIEFNR;
+ paeckchen=PAECKCHEN;
+ pakete=PAKETE;
+ brutto_kg=BRUTTO_KG;
+ netto_kg=NETTO_KG;
+#endif
+
  }catch (SQLerror &e) {std::cerr <<e<<'\n';}
 }
 
-void Lieferschein::setDPDlnr(int dpdlnr) const throw(SQLerror)
-{
- exec sql begin declare section;
- int INSTANZ=Instanz();
- int LFRSID=Id();
- int DPDLIEFNR=dpdlnr;
- exec sql end declare section;
-
- exec sql update lieferschein set dpdliefnr= :DPDLIEFNR
- 	where (instanz,lfrsid) = (:INSTANZ,:LFRSID) ;
- SQLerror::test(__FILELINE__);
-}
-
-// und was ist mit setDatum
 void Lieferschein::setDPDDatum() const throw(SQLerror)
 {
  exec sql begin declare section;
@@ -86,7 +91,10 @@ void Lieferschein::setDPDDatum() const throw(SQLerror)
 
 Lieferschein::Lieferschein(const cH_ppsInstanz& _instanz,cH_Kunde k,int jahr) throw(SQLerror)
 	: LieferscheinBase(_instanz,none_id), lsdatum(Petig::Datum::today()),
- 	kunde(k),rngid(0),paeckchen(0),pakete(0),dpdliefnr(0) 
+      kunde(k),rngid(0)
+#ifdef MABELLA_EXTENSIONS
+ 	,paeckchen(0),pakete(0),dpdliefnr(0) 
+#endif
 {
  exec sql begin declare section;
   int INSTANZ=_instanz->Id();
@@ -150,3 +158,23 @@ void Lieferschein::setDatum(const Petig::Datum &d) throw(SQLerror)
  	(instanz,lfrsid) = (:INSTANZ,:LFRSID) ;
  SQLerror::test(__FILELINE__);
 }
+
+
+
+const Preis::rabatt_t Lieferschein::AufRabatt() const throw(SQLerror)
+{
+ exec sql begin declare section;
+ int LFRSID = Id();
+ float RABATT;
+ exec sql end declare section;
+
+ exec sql select coalesce(max(rabatt),0) into :RABATT from 
+	auftrag a, lieferscheinentry e where a.auftragid=e.refauftragid
+	and lfrsid= :LFRSID;
+ SQLerror::test(__FILELINE__,100);
+
+ return RABATT;
+
+}
+
+

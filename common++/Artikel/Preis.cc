@@ -1,4 +1,4 @@
-// $Id: Preis.cc,v 1.11 2002/05/09 12:45:59 christof Exp $
+// $Id: Preis.cc,v 1.12 2002/06/20 06:29:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,11 +25,15 @@
 #include <iomanip.h>
 #include <Aux/Ausgabe_neu.h>
 
-Preis::geldbetrag_t Preis::Wert_fr(cP_Waehrung tp,preismenge_t stueckgr) const throw()
-{  float result=pfennig_cent;
+Preis::geldbetrag_t Preis::Wert_fr(cP_Waehrung w,preismenge_t stueckgr) const throw()
+{  if (w==waehrung && (!stueckgr || stueckgr==preismenge)) 
+	return pfennig_cent;
+
+   float result=pfennig_cent;
    preismenge_t preism=preismenge;
    if (!preism) preism=1;
-   if (tp!=waehrung) result*=Waehrung::Umrechnung(*waehrung,*tp);
+// Währung und Stückgröße werden zusammen umgerechnet und dann erst gerundet
+   if (w!=waehrung) result*=Waehrung::Umrechnung(*waehrung,*w);
    if (stueckgr>0 && preism!=stueckgr) result*=stueckgr/preism;
    return result; // erst hier wird wieder gerundet!
 }
@@ -45,7 +49,7 @@ Preis Preis::operator+(const Preis &b) const
 
 Preis Preis::operator-(const Preis &b) const
 {  Preis res(*this);
-   res.pfennig_cent-=b.Wert(waehrung,preismenge);
+   res.pfennig_cent-=b.Wert_fr(waehrung,preismenge);
    return res;
 }
 
@@ -70,15 +74,18 @@ const std::string Preis::Typtext() const
 Preis::geldbetrag_t Preis::Gesamtpreis(cP_Waehrung w,int anzahl,float menge,const rabatt_t &rabatt) const
 {  if (!*this) return 0;
    if (!menge) menge=1;
-   return (In(w,menge*anzahl)*(1-0.01*double(rabatt))).Wert();
+   Preis result=*this;
+   // Währung umrechnen?
+   if (w!=waehrung) result=result.In(w,result.preismenge);
+   // Rabattieren?
+   if (!!rabatt) result.pfennig_cent=result.pfennig_cent*(1-0.01*double(rabatt));
+   // mit Menge multiplizieren
+   return result.In(result.waehrung,menge*anzahl).Wert();
 }
 
+// braucht man diese Routine wirklich? ich würde den anderen Gesamtpreis empfehlen CP
 const Preis Preis::Gesamtpreis(int anzahl,float menge,const rabatt_t &rabatt) const
-{  if (!*this) return *this;
-   if (!menge) menge=1;
-   Preis result=In(waehrung,menge*anzahl)*(1-0.01*double(rabatt));
-   result.preismenge=1;
-   return result;
+{  return Preis(Gesamtpreis(waehrung,anzahl,menge,rabatt),waehrung,1);
 }
 
 const Preis operator*(fixedpoint<5> f, const Preis &p)

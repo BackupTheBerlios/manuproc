@@ -30,6 +30,12 @@
 class RechnungVoll : public Rechnung
 {
  std::vector<RechnungEntry> rentry;
+
+#ifdef MABELLA_EXTENSIONS
+ mutable fixedpoint<1> netto_gewicht;
+ mutable fixedpoint<1> brutto_gewicht;  
+ mutable int pakete;
+#endif
  
 public:
  
@@ -47,6 +53,14 @@ public:
  iterator begin()  { return rentry.begin();} 
  iterator end()  { return rentry.end();}   
  size_t size() const { return rentry.size();}
+
+#ifdef MABELLA_EXTENSIONS
+ void setGewicht() const throw(SQLerror);
+ fixedpoint<1> const NettoGew() const {return netto_gewicht;}
+ fixedpoint<1> const BruttoGew() const {return brutto_gewicht;} 
+ int const Pakete() const {return pakete;}
+#endif 
+ 
 };
 
 #endif

@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.6 2002/05/09 12:46:00 christof Exp $
+# $Id: Makefile.am,v 1.7 2002/06/20 06:29:53 christof Exp $
 
 ENDUSER=-DPETIG
 
@@ -6,21 +6,21 @@ CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
 
-noinst_PROGRAMS=libProdLager.o
+noinst_LIBRARIES=libProdLager.a
 
 includedir=@includedir@/Lager_Vormerkungen
 
-libProdLager_o_SOURCES= $(PGCC_SOURCES) Lager_Vormerkungen.cc Lager.cc \
+libProdLager_a_SOURCES= $(PGCC_Sources) Lager_Vormerkungen.cc Lager.cc \
    LagerPlatz.cc JumboRolle.cc JumboLager.cc
 
-libProdLager.o: $(libProdLager_o_OBJECTS) $(libProdLager_o_DEPENDENCIES)
+libProdLager.a: $(libProdLager_a_OBJECTS) $(libProdLager_a_DEPENDENCIES)
 	touch $@
 
-PGCC_SOURCES= Lager_Vormerkungen_sql.cc Lager_Dispo_sql.cc \
+PGCC_Sources= Lager_Dispo_sql.cc \
    maschinen_geschwindigkeit_sql.cc JumboRolle_sql.cc \
    FertigWarenLager_sql.cc FertigWaren_sql.cc JumboLager_sql.cc RohwarenLager_sql.cc
 
-BUILT_SOURCES= $(PGCC_SOURCES)
+BUILT_SOURCES= $(PGCC_Sources)
 
 include_HEADERS = Lager_Vormerkungen.h LagerPlatz.hh Lager_Dispo.h \
    maschinen_geschwindigkeit.hh Lager.h JumboRolle.h CodeError.h \

@@ -1,4 +1,4 @@
-/* $Id: EntryValueDatum.cc,v 1.5 2002/05/09 12:46:00 christof Exp $ */
+/* $Id: EntryValueDatum.cc,v 1.6 2002/06/20 06:29:53 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -24,6 +24,7 @@
 bool EntryValueDatum::operator==(const EntryValueBase &v) const
 {  try
    {  const EntryValueDatum &b=dynamic_cast<const EntryValueDatum &>(v);
+      if (!datum.valid()) return !b.datum.valid();
       return datum==b.datum;
    } catch (std::bad_cast &e)
    {  return false;
@@ -33,7 +34,9 @@ bool EntryValueDatum::operator==(const EntryValueBase &v) const
 bool EntryValueDatum::operator<(const EntryValueBase &v) const
 {  try
    {  const EntryValueDatum &b=dynamic_cast<const EntryValueDatum &>(v);
-      return datum<b.datum;
+      if (!datum.valid()) return false;
+      if (b.datum.valid()) return (datum<b.datum);
+      else return true;
    } catch (std::bad_cast &e)
    {  return false;
    }

@@ -25,7 +25,7 @@ exec sql include sqlca;
 #include <Aux/SQLerror.h>
 #include <Aux/Transaction.h>
 #include <Aux/itos.h>
-
+#include <unistd.h>
 
 
 bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,std::string &os,bool force,bool ist_leer)
@@ -236,7 +236,7 @@ void RohwarenLager::RL_Log(const st_rohlager& rohlager,RL_LogTyp typ,const std::
    {
      AuftragBase::mengen_t menge = rohlager.kartons*rohlager.kg_pro_karton 
                                     + rohlager.reste_kg;
-     raus_aus_lager(rohlager.artikel,menge);
+     raus_aus_lager(rohlager.artikel,menge,getuid());
    }
 }
 

@@ -20,29 +20,33 @@
 #define _PRODLAGER_HH_
 #include <Aux/Datum.h>
 #include <Auftrag/AufEintrag.h>
-#include <Aux/ppsInstanz.h>
+#include <Instanzen/ppsInstanz.h>
+#include <Lager/Lager.h>
 
 class Lager_Vormerkungen : AufEintrag 
 {
-   public:
-      static const int LagerAuftragsId = 1;
    private:
 
-      AuftragBase::mengen_t artikel_auf_lager(const ArtikelBase& artikel);
+      AuftragBase::mengen_t artikel_auf_lager(std::vector<pair<AufEintragBase,AuftragBase::mengen_t> > &dispo_auftrag,bool freie_menge=true);
+      static AuftragBase::mengen_t artikel_auf_lager(const ArtikelBase &artikel,
+                                                     cH_ppsInstanz instanz,
+                   std::vector<pair<AufEintragBase,AuftragBase::mengen_t> >&dispo_auftrag,
+                   const Petig::Datum &datum=Lager::Lagerdatum());
 //      int Lieferzeit_in_Tagen(); 
    public:
       Lager_Vormerkungen(const AufEintrag&);
 
-
       // Das macht ein Auftrag:
-      void vormerken_oder_bestellen();
-      // Das macht das einlagern:
-      void artikel_vormerken(AuftragBase::mengen_t menge);
-      // Das macht das herausholen:
-//      void artikel_ausliefern(AuftragBase::mengen_t menge);
+      void vormerken_oder_bestellen(int uid);
 
-      static void freigegeben_menge_neu_verplanen(cH_ppsInstanz instanz,const ArtikelBase& artikel,AuftragBase::mengen_t menge);
-      void reduziere_ungeplant(AuftragBase::mengen_t menge);
+      // Das macht das einlagern:
+      static void freigegeben_menge_neu_verplanen(cH_ppsInstanz instanz,const ArtikelBase& artikel,AuftragBase::mengen_t menge,int uid);
+ private:
+      void reduziere_ungeplant(int uid,AuftragBase::mengen_t menge);
+      void artikel_vormerken(AuftragBase::mengen_t menge,const ArtikelBase &artikel,int uid,
+         std::vector<pair<AufEintragBase,AuftragBase::mengen_t> > dispo_auftrag);
+      void artikel_schnappen(AuftragBase::mengen_t menge,const ArtikelBase &artikel,int uid,
+         std::vector<pair<AufEintragBase,AuftragBase::mengen_t> > dispo_auftrag);
 
 };
 

@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.3 2002/05/09 12:45:59 christof Exp $
+// $Id: AufEintragZu.h,v 1.4 2002/06/20 06:29:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -20,7 +20,7 @@
 #ifndef AUFTRAGSENTRYZUORDNUNG_H
 #define AUFTRAGSENTRYZUORDNUNG_H
 #include<Aux/SQLerror.h>
-#include<Aux/ppsInstanz.h>
+#include<Instanzen/ppsInstanz.h>
 #include <Auftrag/AufEintragBase.h>
 #include <Auftrag/auftrag_status.h>
 #include <list>
@@ -44,14 +44,18 @@ public:
 
  enum VonNachDel {Von,Nach,Delete} ;
 
+  std::list<st_reflist> get_Referenz_list_id(const int id) const throw(SQLerror);
+
 public:
     AuftragBase::mengen_t getMenge(const AufEintragBase& aeb) const;
     // Eine Benachbarte Liste von Kind- bzw. Elternaufträgen:
     std::list<st_reflist> get_Referenz_list(const AufEintragBase& aeb,bool kinder=false) const throw(SQLerror);
-    // Eine Benachbarte Liste von Kindaufträgen aber nur ungeplante Aufträge:
-    std::list<st_reflist> get_Referenz_list_ungeplant() const throw(SQLerror);
+    // Eine Benachbarte Liste von Kindaufträgen aber nur ungeplante(0er) Aufträge:
+    std::list<st_reflist> get_Referenz_list_ungeplant() const throw(SQLerror)
+      {return get_Referenz_list_id(AuftragBase::ungeplante_id);}
     // Eine Benachbarte Liste von Kindaufträgen aber nur geplante Aufträge:
-    std::list<st_reflist> get_Referenz_list_geplant() const throw(SQLerror);
+    std::list<st_reflist> get_Referenz_list_geplant() const throw(SQLerror)
+      {return get_Referenz_list_id(AuftragBase::plan_auftrag_id);}
     // Eine Benachbarte Liste von Kind- bzw. Elternaufträgen des zu mir gehörenden
     // geplanten Auftrags holen
     std::list<st_reflist> get_Referenz_list_for_geplant(bool kinder=false) const throw(SQLerror);

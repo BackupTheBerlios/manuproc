@@ -1,6 +1,4 @@
-# $Id: Makefile.am,v 1.7 2002/05/09 12:46:00 christof Exp $
-
-CLEANFILES= *~ 
+# $Id: Makefile.am,v 1.8 2002/06/20 06:29:53 christof Exp $
 
 includedir=@includedir@/DynamicEnums
 

@@ -1,4 +1,4 @@
-/* $Id: ArtikelBaum.h,v 1.14 2002/05/09 12:45:59 christof Exp $ */
+/* $Id: ArtikelBaum.h,v 1.15 2002/06/20 06:29:52 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,7 +27,7 @@
 #include <Aux/SQLerror.h>
 #include <Artikel/ArtikelBase.h>
 #include <Aux/fixedpoint.h>
-#include <Aux/ppsInstanz.h>
+#include <Instanzen/ppsInstanz.h>
 
 // besserer Name: ArtikelZusammensetzung
 
@@ -110,12 +110,12 @@ public:
 // Hrmpf, warum sind das keine Members?
 // Weil sie dann mehr Datanbankzugriffe machen würden als nötig, MAT
 // Für einen neuen Artikel:
- static void new_Artikel(ArtikelBase fuer_artikel,const RohArtikel& RA);
- static void delete_Artikel(ArtikelBase fuer_artikel,ArtikelBase von_artikel);
+ static void new_Artikel(int uid,ArtikelBase fuer_artikel,const RohArtikel& RA);
+ static void delete_Artikel(int uid,ArtikelBase fuer_artikel,ArtikelBase von_artikel);
 private:
- static void delete_from_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel); 
- static void reduceChildren(const AufEintrag& AEB,const AufEintrag& oldAEB,AufEintragBase::mengen_t menge);
- static void create_in_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel,fixedpoint<5> RohMenge); 
+ static void delete_from_zuordnung(int uid,ArtikelBase alt_artikel,ArtikelBase kind_artikel); 
+ static void reduceChildren(int uid,const AufEintrag& AEB,const AufEintrag& oldAEB,AufEintragBase::mengen_t menge);
+ static void create_in_zuordnung(int uid,ArtikelBase alt_artikel,ArtikelBase kind_artikel,fixedpoint<5> RohMenge); 
 
 public:
  faktor_t Faktor(const ArtikelBase &kind) throw(SQLerror);

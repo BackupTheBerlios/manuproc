@@ -19,15 +19,18 @@
 #include <Artikel/ArtikelMengeSumme.h>
 #include <Aux/Ausgabe_neu.h>
 
-void ArtikelMenge::summiere(const ArtikelBaum &baum, mengen_t menge, const Einheit &e)
+void ArtikelMenge::summiere(const ArtikelBaum &baum, mengen_t menge, const Einheit &e, bool add)
 {  bool same=false;
    lvalue(e); // damit dieser Eintrag vorher auftaucht, vorab einfügen.
    for (ArtikelBaum::const_iterator i=baum.begin();i!=baum.end();++i)
    {  Einheit e2=ArtikelBase(i->rohartikel);
       if (e2==e) same=true;
-      summiere(ArtikelBase(i->rohartikel),menge*i->menge,e2);
+      else if (find(emenge.begin(),emenge.end(),e2)!=emenge.end())
+      {  // ignore this unit because it is implied in something else
+      }
+      else summiere(ArtikelBase(i->rohartikel),menge*i->menge,e2,!same);
    }
-   if (!same) lvalue(e)+=menge;
+   if (add) lvalue(e)+=menge;
 }
 
 ArtikelMenge::ArtikelMenge(const ArtikelBase &_ab, int Stueck, mengen_t Menge)

@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum_sql.pgcc,v 1.3 2002/05/09 12:45:59 christof Exp $
+// $Id: ArtikelBaum_sql.pgcc,v 1.4 2002/06/20 06:29:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -158,30 +158,27 @@ int ArtikelBaum::Tiefe() const
 
 
 
-void ArtikelBaum::new_Artikel(ArtikelBase fuer_artikel,const RohArtikel& RA)
+void ArtikelBaum::new_Artikel(int uid,ArtikelBase fuer_artikel,const RohArtikel& RA)
 {
  if (RA.rohartikel.Id()==0) assert(!"Fehler");
  Transaction tr;
  exec sql begin declare section;
-    int ARTIKELID;
-    int ALTARTIKELID;
-    int PROZESS;
-    double MENGE;
+    int ARTIKELID=fuer_artikel.Id();
+    int ALTARTIKELID=RA.rohartikel.Id();
+    int PROZESS=RA.erzeugung->Id();
+    double MENGE=RA.menge;
+    int UID=uid;
  exec sql end declare section;
- ARTIKELID=fuer_artikel.Id();
- ALTARTIKELID=RA.rohartikel.Id();
- PROZESS=RA.erzeugung->Id();
- MENGE=RA.menge;
  exec sql insert into artikelzusammensetzung 
-   (id,prozessid,altartikelid,menge,stand) values 
-   (:ARTIKELID,:PROZESS,:ALTARTIKELID,nullif(:MENGE,0.0),now()) ;
+   (id,prozessid,altartikelid,menge,stand,uid) values 
+   (:ARTIKELID,:PROZESS,:ALTARTIKELID,nullif(:MENGE,0.0),now(),:UID) ;
  SQLerror::test(__FILELINE__);
 
- create_in_zuordnung(fuer_artikel,RA.rohartikel,RA.menge);
+ create_in_zuordnung(uid,fuer_artikel,RA.rohartikel,RA.menge);
  tr.commit();
 }
 
-void ArtikelBaum::create_in_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel,faktor_t RohMenge)
+void ArtikelBaum::create_in_zuordnung(int uid,ArtikelBase alt_artikel,ArtikelBase kind_artikel,faktor_t RohMenge)
 {
   std::list<AufEintragBase> elternliste = AufEintragZu::get_AufEintragList_from_Artikel(alt_artikel,ArtikelStamm(alt_artikel).BestellenBei()->Id(),NOSTAT);
 //std::cout << "Create :"<<elternliste.size()<<"\n\n\n\n";
@@ -198,11 +195,11 @@ void ArtikelBaum::create_in_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_a
      AufEintragBase::mengen_t menge=AE.getStueck()*RohMenge;
      AuftragBase AB(ArtikelStamm(kind_artikel).BestellenBei(),0); 
      AB.tryUpdateEntry(menge,AE.getLieferdatum(),
-                        kind_artikel,AE.getEntryStatus(),AEB);
+                        kind_artikel,AE.getEntryStatus(),uid,AEB);
    }  
 }
 
-void ArtikelBaum::delete_Artikel(ArtikelBase fuer_artikel,ArtikelBase von_artikel)
+void ArtikelBaum::delete_Artikel(int uid,ArtikelBase fuer_artikel,ArtikelBase von_artikel)
 {
  Transaction tr;
  exec sql begin declare section;
@@ -214,7 +211,7 @@ void ArtikelBaum::delete_Artikel(ArtikelBase fuer_artikel,ArtikelBase von_artike
    where id=:ARTIKELID and altartikelid=:ALTARTIKELID;
  SQLerror::test(__FILELINE__,100);
 
- delete_from_zuordnung(fuer_artikel,von_artikel);
+ delete_from_zuordnung(uid,fuer_artikel,von_artikel);
  tr.commit();
 }
 
@@ -223,7 +220,7 @@ void ArtikelBaum::delete_Artikel(ArtikelBase fuer_artikel,ArtikelBase von_artike
           :AEB(_AEB),oldAEB(_oldAEB),menge(_menge) {} };
 
 
-void ArtikelBaum::delete_from_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel)
+void ArtikelBaum::delete_from_zuordnung(int uid,ArtikelBase alt_artikel,ArtikelBase kind_artikel)
 {
      exec sql begin declare section;
       int ALTARTID=alt_artikel.Id();
@@ -264,7 +261,7 @@ void ArtikelBaum::delete_from_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind
      
      for(std::vector<st_aam>::const_iterator i=V.begin();i!=V.end();++i)
       {
-        reduceChildren(i->AEB,i->oldAEB,i->menge);
+        reduceChildren(uid,i->AEB,i->oldAEB,i->menge);
       }
 
      exec sql delete from auftragsentryzuordnung 
@@ -279,14 +276,14 @@ void ArtikelBaum::delete_from_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind
 }
 
 
-void ArtikelBaum::reduceChildren(const AufEintrag& AEB,
+void ArtikelBaum::reduceChildren(int uid,const AufEintrag& AEB,
                                  const AufEintrag& oldAEB,
                                  AufEintragBase::mengen_t menge) 
 {
 //std::cout << AEB.Instanz()<<' '<<AEB.ZNr()<<'\t'
 //<<oldAEB.Instanz()<<' '<<oldAEB.ZNr()<<'\t'<<menge<<'\n';
 
-  AuftragBase::mengen_t mt=const_cast<AufEintrag&>(AEB).updateStkDiff__(-menge,false);
+  AuftragBase::mengen_t mt=const_cast<AufEintrag&>(AEB).updateStkDiff__(uid,-menge,false);
 //  assert(mt==-menge);
   AuftragBase::mengen_t mt2=AufEintragZu(oldAEB).setMengeDiff__(AEB,-menge);
 //cout << oldAEB<<'\t'<<AEB<<'\t'<<-menge<<'\t'<<mt<<'\t'<<mt2<<'\n';
@@ -296,7 +293,7 @@ void ArtikelBaum::reduceChildren(const AufEintrag& AEB,
   for(std::list<AufEintragZu::st_reflist>::iterator i=L.begin();i!=L.end();++i)
    {
 //std::cout << '\t'<<i->AEB2.Instanz()<<' '<<i->AEB2.ZNr()<<'\t'<<i->Menge<<'\n';
-     reduceChildren(AufEintrag(i->AEB),AEB,i->Menge);
+     reduceChildren(uid,AufEintrag(i->AEB),AEB,i->Menge);
    }
 }        
 

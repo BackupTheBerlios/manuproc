@@ -1,4 +1,4 @@
-// $Id: FetchIStream.h,v 1.8 2002/05/09 12:46:00 christof Exp $
+// $Id: FetchIStream.h,v 1.9 2002/06/20 06:29:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,17 +20,24 @@
 #ifndef MPB_FETCHISTREAM_H
 #define MPB_FETCHISTREAM_H
 #include <string>
+#include <vector>
+extern "C" {
+#include <libpq-fe.h>
+}
 
 class FetchIStream
-{	std::string descriptor;
-	int naechstesFeld;
+{	int naechstesFeld;
+	/* const */ int zeile;
+	const PGresult * /* const */ result;
 public:
-	FetchIStream(const std::string &descr="")
-		: descriptor(descr), naechstesFeld(1)
+	FetchIStream(const std::string &descr, int line=0);
+	FetchIStream(const PGresult *res=0, int line=0)
+	  : naechstesFeld(0), zeile(line), result(res)
 	{}
+	
 	int getIndicator() const;
 	bool good() const
-	{  return !descriptor.empty(); }
+	{  return !result; }
 	
 	FetchIStream &operator>>(std::string &str);
 	FetchIStream &operator>>(int &i);
@@ -77,8 +84,10 @@ public:
 };
 
 class Query
-{	std::string cursor;
+{	std::string descriptor;
 	bool eof;
+	int line;
+	const PGresult *result;
 	
 	// not possible yet
 	const Query &operator=(const Query &b);
@@ -89,11 +98,24 @@ public:
 	{ return !eof; }
 	~Query();
 	static void Execute(const std::string &command);
+	template <class T> std::vector<T> FetchArray();
 };
 
 static inline Query &operator>>(Query &q, FetchIStream &s)
 {  s=q.Fetch();
    return q;
+}
+
+template <class T>
+std::vector<T> Query::FetchArray()
+{  std::vector<T> res;
+   FetchIStream is;
+   while (((*this)>>is).good()) 
+   { T x;
+     is >> x;
+     res.push_back(x);
+   }
+   return res;
 }
 
 #endif

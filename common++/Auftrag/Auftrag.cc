@@ -23,3 +23,16 @@ std::string Auftrag::getAuftragidToStr() const
 { return Formatiere(auftragid,0,6,"","",'0'); }
 
 
+
+void Auftrag::setStatusAuftrag_(AufStatVal st) throw(SQLerror)
+{
+ setStatusAuftragBase(st);
+ status=st;
+}
+
+void Auftrag::setRabatt(const rabatt_t _auftragsrabatt) throw(SQLerror)
+{
+  AuftragBase::setRabatt(_auftragsrabatt);
+  auftragsrabatt=_auftragsrabatt;
+}
+

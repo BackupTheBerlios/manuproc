@@ -40,7 +40,8 @@ pair<Zeitpunkt_new,int> FertigWarenLager::letzteInventur()
   exec sql select datum, bestand into :ZEIT,:BESTAND 
 	from fw_lager_buchung where datum = (select max(datum) from
 		fw_lager_buchung where
-	aktion= :AKTION and artikelid= :ARTIKEL);
+	aktion= :AKTION and artikelid= :ARTIKEL)
+	and artikelid = :ARTIKEL;
 
   SQLerror::test("FertigWaren::letzteInventur",100);
   if(sqlca.sqlcode==100)  

@@ -41,7 +41,7 @@ private:
 	vector_t emenge;
 
 	mengen_t &lvalue(const Einheit &e);
-	void summiere(const ArtikelBaum &baum, mengen_t menge,const Einheit &e);
+	void summiere(const ArtikelBaum &baum, mengen_t menge,const Einheit &e, bool add=true);
 public:
 	ArtikelMenge(const ArtikelBase &ab, int Stueck, mengen_t Menge=0);
 	std::string abgeleiteteMenge() const;

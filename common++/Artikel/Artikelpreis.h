@@ -1,4 +1,4 @@
-// $Id: Artikelpreis.h,v 1.8 2002/05/09 12:45:59 christof Exp $
+// $Id: Artikelpreis.h,v 1.9 2002/06/20 06:29:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -29,11 +29,15 @@
 class Artikelpreis : public Preis
 {	bool errechnet:1;
         bool gefunden:1;
+        PreisListe::ID gefunden_in;
+        ArtikelBase::ID artikel;
         
 	Preis &getPreis()
 	{  return *(Preis*)this; }
-	void setPreis(const Preis &p, bool e=false)
-	{  getPreis()=p; errechnet=e; gefunden=true; }
+	void setPreis(const ArtikelBase::ID art, const Preis &p, PreisListe::ID wo=ManuProcEntity::none_id, bool e=false)
+	{  artikel=art, getPreis()=p; errechnet=e; gefunden=true; gefunden_in=wo; }
+	Artikelpreis()
+	: errechnet(false), gefunden(false), gefunden_in(ManuProcEntity::none_id) {}
 public:
 	const Preis &getPreis() const
 	{  return (const Preis &)*this; }
@@ -42,7 +46,14 @@ public:
 
 	bool istErrechnet() const { return errechnet; }
 	bool Gefunden() const { return gefunden; }
+	PreisListe::ID GefundenIn() const { return gefunden_in; }
+	const ArtikelBase::ID Artikel() const { return artikel; }
 	
 	static void UnCache(const PreisListe::ID liste,const ArtikelBase &a);
+	static const Artikelpreis create(const PreisListe::ID liste,
+		const Preis &p, const ArtikelBase &a) throw(SQLerror);
+// tut nix sinnvolles, oder? MAT	void updatePreis(const Preis &p) throw(SQLerror);
+	void changePreis(const Preis &p) throw(SQLerror);
+   static void remove(const PreisListe::ID liste,const ArtikelBase &a) throw(SQLerror);
 };
 #endif
