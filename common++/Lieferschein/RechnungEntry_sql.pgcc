@@ -99,3 +99,46 @@ void RechnungEntry::setzePreis(const Preis &p) throw (SQLerror)
    	where (rngid,zeilennr)= (:RNGID,:ZNR);
    SQLerror::test(__FILELINE__);
 }
+
+
+
+const ManuProC::Datum RechnungEntry::RgDatum() const throw(SQLerror)
+{
+ if(rgdatum.valid()) return rgdatum;
+
+ exec sql begin declare section;
+ int RNGID=Id();
+ char *DATUM=0;
+ exec sql end declare section;
+
+ exec sql select datum into :DATUM from rechnung where rngid=:RNGID;
+ SQLerror::test(__FILELINE__);
+
+ rgdatum=ManuProC::Datum(DATUM);
+
+ ECPGfree_auto_mem();
+
+ return rgdatum;
+}
+
+
+const bool RechnungEntry::Bezahlt() const throw(SQLerror)
+{
+ if(bezahlt_valid) return bezahlt;
+
+ exec sql begin declare section;
+ int RNGID=Id();
+ bool BEZAHLT;
+ exec sql end declare section;
+
+ exec sql select bezahlt into :BEZAHLT from rechnung where rngid=:RNGID;
+ SQLerror::test(__FILELINE__);
+
+
+ bezahlt=BEZAHLT;
+ bezahlt_valid=true;
+
+ return bezahlt;
+}
+
+
