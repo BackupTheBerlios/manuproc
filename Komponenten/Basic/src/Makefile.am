@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.10 2002/10/21 06:39:07 christof Exp $
+# $Id: Makefile.am,v 1.11 2002/11/15 12:14:37 christof Exp $
 CXXFLAGS=@CXXFLAGS@ @COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
@@ -16,7 +16,8 @@ EXTRA_PROGRAMS=dummy
 
 libManuProC_Widgets_a_SOURCES=EingabeBox.cc \
 		MVC_int_Widget.cc MVC_string_Widget.cc MVC_bool_Widget.cc \
-		SimpleTreeModel.cc SimpleTreeStore.cc
+		SimpleTreeModel.cc SimpleTreeStore.cc \
+		GType_cH_EntryValue.cc
 
 dummy_SOURCES=datewin.cc datewin_glade.cc
 

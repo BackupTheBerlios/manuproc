@@ -1,7 +1,7 @@
 // register a GType for an cH_EntryValue
 
 #include <Misc/EntryValueBase.h>
-#include <glib-object.h>
+#include <GType_EntryValue.h>
 #include <Misc/ctime_assert.h>
 
 static inline cH_EntryValue &cH_from_GValue(GValue *value)
@@ -31,30 +31,22 @@ static gconstpointer cH_value_peek(const GValue *src)
 {  return &*cH_from_GValue(src);
 }
 
-static GTypeValueTable value_table =
-{  .value_init = &cH_value_init,
-   .value_free = &cH_value_free,
-   .value_copy = &cH_value_copy,
-
-   .value_peek_pointer = &cH_value_peek,
-
-// _perhaps_ lcopy might be interesting to prevent superflous referencing
-};
-
-static GType_Info info=
-{  /* value handling */
-  .value_table = &value_table;
-};
-
-static GTypeFundamentalInfo finfo =
-{ .type_flags = 0, // not instantiable, non derivable
-};
-
 GType 
 cH_entry_value_get_type (void)
 {
   static GType type = 0;
   if (!type) {
+          static GTypeValueTable value_table; 
+          value_table.value_init = &cH_value_init;
+          value_table.value_free = &cH_value_free;
+          value_table.value_copy = &cH_value_copy;
+          value_table.value_peek_pointer = &cH_value_peek;
+          
+          static GType_Info info;
+          info.value_table=&value_table;
+          
+          static GTypeFundamentalInfo finfo;
+          
 	  g_assert (G_TYPE_MAKE_FUNDAMENTAL (G_TYPE_RESERVED_USER_FIRST) <= g_type_fundamental_next ());
           type = g_type_register_fundamental (g_type_fundamental_next (), "cH_EntryValue", &info, &finfo, 0);
   }
