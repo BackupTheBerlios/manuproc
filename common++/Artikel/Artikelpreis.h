@@ -1,4 +1,4 @@
-// $Id: Artikelpreis.h,v 1.16 2003/06/05 11:00:01 christof Exp $
+// $Id: Artikelpreis.h,v 1.17 2003/07/08 08:46:53 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -66,18 +66,11 @@ public:
                	const Preis &p, const ArtikelBase &a,
 		int mindmenge,               	
                	std::vector<std::string> ins_all_komp=std::vector<std::string>()) throw(SQLerror);
-// tut nix sinnvolles, oder? MAT	void updatePreis(const Preis &p) throw(SQLerror);
+
 	void changePreis(const Preis &p) throw(SQLerror);
 	void changeMindMenge(int mindmenge) throw(SQLerror) {}	
    static void remove(const PreisListe::ID liste,const ArtikelBase &a,
    		std::vector<std::string> del_all_komp=std::vector<std::string>()) throw(SQLerror);
-   		
-
-   
 };
-
-
-
  
 #endif
-

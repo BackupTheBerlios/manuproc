@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.23 2003/05/09 10:25:22 christof Exp $
+# $Id: Makefile.am,v 1.24 2003/07/08 08:46:53 christof Exp $
 
 AM_CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -8,7 +8,7 @@ noinst_LIBRARIES=libArtikel.a
 
 includedir=@includedir@/Artikel
 
-libArtikel_a_SOURCES=Aufmachung.cc Preis.cc ArtikelBase.cc \
+libArtikel_a_SOURCES=Aufmachung.cc Preis.cc ArtikelBase.cc Artikelpreis.cc \
 	ArtikelMengeSumme.cc ArtikelBaum_new_del.cc ArtikelBaum.cc \
 	$(BUILT_SOURCES_P)
 
@@ -20,7 +20,7 @@ BUILT_SOURCES=$(BUILT_SOURCES_P)
 BUILT_SOURCES_P=ArtikelBezeichnung.cc \
 	Misc.cc Aufmachung_sql.cc Prozesspreis.cc \
 	Prozess_sql.cc ArtikelTyp.cc Einheiten.cc ArtikelStamm.cc \
-	Artikelpreis_sql.cc ArtikelDispo_sql.cc \
+	ArtikelDispo_sql.cc \
 	ArtikelEAN_sql.cc
 
 include_HEADERS=ArtikelBase.h ArtikelBaum.h ArtikelBezeichnung.h \

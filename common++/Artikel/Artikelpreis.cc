@@ -24,7 +24,6 @@
 #include <Artikel/ArtikelBaum.h>
 #include <Artikel/Prozesspreis.h>
 #include <Misc/Transaction.h>
-exec sql include sqlca;
 #include <Misc/TraceNV.h>
 
 #include <unistd.h>
@@ -101,46 +100,30 @@ Artikelpreis::Artikelpreis(const PreisListe::ID liste,const ArtikelBase &a,
 		}
    else
    {
-      exec sql begin declare section;
-      double PREIS[20];
-      double PREISMENGE[20];
-      int WAEHRUNG[20];
-      int MINDESTMENGE[20];
-      char *QU;
-      exec sql end declare section;
-      int ARTIKELID=a.Id();
-      int KUNDENNR=liste;      
-	std::string qu;
-
-	
-      Transaction tr;
-
-      qu=std::string("select preis, coalesce(mindestmenge,1), coalesce(preismenge,1), waehrung"
-	      	" from artikelpreise where artikelid=")+
-		itos(ARTIKELID)+" and kundennr="+itos(KUNDENNR);
-	QU=(char*) qu.c_str();
-	exec sql prepare PSTAFFEL_ from :QU;
-	exec sql declare PSTAFFEL cursor for PSTAFFEL_;
-	exec sql open PSTAFFEL;
-      SQLerror::test(__FILELINE__);
-
-
-	exec sql fetch 20 in PSTAFFEL into
-		:PREIS,:MINDESTMENGE,:PREISMENGE,:WAEHRUNG;
-      SQLerror::test(__FILELINE__,100);
-
-      payload_t pyl(sqlca.sqlcode==0, false);
-      if (!sqlca.sqlcode) 
-         {
-	  for(int i=0; i<sqlca.sqlerrd[2]; i++)
-	    pyl.preis[MINDESTMENGE[i]]=
-		Preis(PREIS[i],Waehrung::ID(WAEHRUNG[i]),PREISMENGE[i]);
+      Query q("select preis, mindestmenge, preismenge, waehrung"
+	      	" from artikelpreise where (artikelid,kundennr)=(?,?)");
+	// kein order by ??? CP	      	
+      q << a.Id() << liste;
+      payload_t pyl(!Query::Code(), false);
+      FetchIStream is;
+      if (!Query::Code())
+      {  while ((q>>is).good())
+         { geldbetrag_t PREIS;
+      	   preismenge_t PREISMENGE;
+           int WAEHRUNG;
+           int MINDESTMENGE;
+           is >> PREIS >> FetchIStream::MapNull(MINDESTMENGE,1) 
+           	>> FetchIStream::MapNull(PREISMENGE,1) >> WAEHRUNG;
+           is.ThrowIfNotEmpty(__FUNCTION__);
+	  pyl.preis[MINDESTMENGE]=
+		Preis(PREIS,Waehrung::ID(WAEHRUNG),PREISMENGE);
+	 }
 
 	  std::pair<int,Preis> p=pyl.get_preis(bestellmenge);
 	  setPreis(a.Id(),p.second,liste,false);
 	  mindestmenge=p.first;
 	  ManuProC::Trace(trace_channel,__FILELINE__,NV("db",static_cast<const Preis&>(*this)));
-	 }
+      }
          
       cache.Register(index_t(liste,a.Id()), pyl);
    }
@@ -179,7 +162,6 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
 		int mindmenge,
 		std::vector<std::string> ins_all_komp) throw(SQLerror)
 {
- exec sql begin declare section;
  int ARTIKELID;
  float PREIS;
  int PREISMENGE;
@@ -187,8 +169,6 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
  int WAEHRUNG;
  int UID;
  int MINDESTMENGE=mindmenge;
- exec sql end declare section;
-
 
  PREIS=p.Wert().as_float();
  PREISMENGE=p.PreisMenge().as_int();
@@ -206,6 +186,7 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
    {cH_ArtikelBezeichnung ab(a);
     cH_ExtBezSchema ebz=ab->getExtBezSchema();
     artbez_tabelle=" artbez_"+itos(ebz->Typ().Id())+"_"+itos(ebz->Id());
+
     query="select id from "+artbez_tabelle+" where ";
     for(std::vector<std::string>::const_iterator s=ins_all_komp.begin();
 	s!=ins_all_komp.end(); ++s)
@@ -216,10 +197,10 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
 	}
 
     query+=" not exists (select true from artikelpreise p "
-	"where "+artbez_tabelle+".id=p.artikelid and p.kundennr="+
-	itos(PRLSID)+" and p.mindestmenge="+itos(mindmenge)+")";
+	"where "+artbez_tabelle+".id=p.artikelid and p.kundennr=?"
+	" and p.mindestmenge=?)";
 
-    Query(query).FetchArray(to_insert);
+    (Query(query) << PRLSID << mindmenge).FetchArray(to_insert);
     
    }
  else
@@ -229,8 +210,6 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
 
  Transaction tr;
  
-
- 
  UID=int(getuid());
 
  for(std::vector<int>::const_iterator i=to_insert.begin();
@@ -238,15 +217,17 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
    {
     ARTIKELID=(*i);
 
- exec sql insert into preis_change_journal (artikelid,prlsnr,zeitpunkt,
-		preis_alt,preis_neu,uid,mindestmenge) values
-		(:ARTIKELID,:PRLSID,now(),null,:PREIS,:UID,:MINDESTMENGE);
- SQLerror::test(__FILELINE__);	
+    Query("insert into preis_change_journal (artikelid,prlsnr,zeitpunkt,"
+		"preis_alt,preis_neu,uid,mindestmenge) values "
+		"(?,?,now(),null,?,?,?)")
+	<< ARTIKELID << PRLSID << PREIS << UID << MINDESTMENGE;
+    SQLerror::test(__FILELINE__);	
 
- exec sql insert into artikelpreise 
- 	(artikelid,kundennr,preis,preismenge,waehrung,mindestmenge) values
- 	(:ARTIKELID,:PRLSID,:PREIS,:PREISMENGE,:WAEHRUNG,:MINDESTMENGE);
- SQLerror::test(__FILELINE__);	
+    Query("insert into artikelpreise "
+ 	"(artikelid,kundennr,preis,preismenge,waehrung,mindestmenge) values "
+ 	"(?,?,?,?,?,?)")
+ 	<< ARTIKELID << PRLSID << PREIS << PREISMENGE << WAEHRUNG << MINDESTMENGE;
+    SQLerror::test(__FILELINE__);	
  }
 
  tr.commit();
@@ -257,7 +238,6 @@ const Artikelpreis Artikelpreis::create(const PreisListe::ID liste,
 
 void Artikelpreis::changePreis(const Preis &p) throw(SQLerror)
 {
- exec sql begin declare section;
  int ARTIKELID=artikel;
  float PREIS=p.Wert().as_float();
  float PREIS_ALT;
@@ -266,7 +246,6 @@ void Artikelpreis::changePreis(const Preis &p) throw(SQLerror)
  int WAEHRUNG=p.getWaehrung()->Id();
  int UID;
  int MINDESTMENGE=mindestmenge;
- exec sql end declare section;
 
  if(gefunden_in == PreisListe::none_id) return;
 
@@ -274,37 +253,40 @@ void Artikelpreis::changePreis(const Preis &p) throw(SQLerror)
 
  Transaction tr;
 
- exec sql select preis into :PREIS_ALT from artikelpreise where
-	artikelid=:ARTIKELID and kundennr=:PRLSID
-	and mindestmenge=:MINDESTMENGE;
- SQLerror::test(__FILELINE__);	
+ Query("select preis from artikelpreise where "
+	"artikelid=? and kundennr=? and mindestmenge=?")
+	<< ARTIKELID << PRLSID << MINDESTMENGE
+	>> PREIS_ALT;
 
- exec sql insert into preis_change_journal 
-	(artikelid,prlsnr,zeitpunkt,preis_alt,preis_neu,uid,mindestmenge)
-	(select	artikelid, :PRLSID, now(), preis, :PREIS, :UID, :MINDESTMENGE
-	from
-	artikelpreise where kundennr=:PRLSID and 
-	mindestmenge=:MINDESTMENGE and
-	artikelid in 
-	(select a.id from artbez_3_1 a join artbez_3_1 b	
-	on (	a.artikel=b.artikel and 
-		a.breite=b.breite and 
-		a.aufmachung=b.aufmachung
-		and b.id=:ARTIKELID)
-	));
+ Query("insert into preis_change_journal "
+	"(artikelid,prlsnr,zeitpunkt,preis_alt,preis_neu,uid,mindestmenge) "
+	"(select artikelid, ?, now(), preis, ?, ?, ? "
+	"from artikelpreise where kundennr=? and "
+	"mindestmenge=? and "
+	"artikelid in "
+	"(select a.id from artbez_3_1 a join artbez_3_1 b "
+	"on ( a.artikel=b.artikel and "
+		"a.breite=b.breite and "
+		"a.aufmachung=b.aufmachung "
+		"and b.id=?)"
+	"))")
+	<< PRLSID << PREIS << UID << MINDESTMENGE
+	<< PRLSID << MINDESTMENGE 
+	<< ARTIKELID;
  SQLerror::test(__FILELINE__);	
  
- exec sql update artikelpreise set
- 	preis=:PREIS,preismenge=:PREISMENGE,
-	waehrung =:WAEHRUNG
-	where kundennr=:PRLSID and
-	mindestmenge=:MINDESTMENGE and artikelid in 
-	(select a.id from artbez_3_1 a join artbez_3_1 b	
-	on (	a.artikel=b.artikel and 
-		a.breite=b.breite and 
-		a.aufmachung=b.aufmachung
-		and b.id=:ARTIKELID)
-	);
+ Query("update artikelpreise set "
+ 	"preis=?,preismenge=?,waehrung=? "
+	"where kundennr=? and "
+	"mindestmenge=? and artikelid in "
+	"(select a.id from artbez_3_1 a join artbez_3_1 b "
+	"on (	a.artikel=b.artikel and "
+		"a.breite=b.breite and "
+		"a.aufmachung=b.aufmachung"
+		"and b.id=?)"
+	")")
+	<< PREIS << PREISMENGE << WAEHRUNG << PRLSID << MINDESTMENGE 
+	<< ARTIKELID;
  SQLerror::test(__FILELINE__);	
  
  tr.commit();
@@ -316,13 +298,11 @@ void Artikelpreis::changePreis(const Preis &p) throw(SQLerror)
 void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a,
 	std::vector<std::string> del_all_komp) throw(SQLerror)
 {
- exec sql begin declare section;
   int ARTIKELID=a.Id();
   int PRLSID=liste;
   float PREIS;
   int UID;
   int MINDESTMENGE=1;
- exec sql end declare section;
 
  UID=int(getuid());
 
@@ -353,9 +333,11 @@ void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a,
    }
  else
    {
-   exec sql select preis into :PREIS from artikelpreise where
-	artikelid=:ARTIKELID and kundennr=:PRLSID
-	and mindestmenge=:MINDESTMENGE;
+   Query("select preis from artikelpreise where "
+	"artikelid=? and kundennr=? and mindestmenge=?")
+	<< ARTIKELID << PRLSID
+	<< MINDESTMENGE
+	>> PREIS;
    SQLerror::test(__FILELINE__);
 
    to_delete.push_back(std::pair<int,float>(ARTIKELID,PREIS));	
@@ -371,14 +353,15 @@ void Artikelpreis::remove(const PreisListe::ID liste,const ArtikelBase &a,
     ARTIKELID=(*i).first;
     PREIS=(*i).second;
 
-    exec sql insert into preis_change_journal (artikelid,prlsnr,zeitpunkt,
-   		preis_alt,preis_neu,uid,mindestmenge) values
-   		(:ARTIKELID,:PRLSID,now(),:PREIS,0.0,:UID,:MINDESTMENGE);
+    Query("insert into preis_change_journal (artikelid,prlsnr,zeitpunkt,"
+   		"preis_alt,preis_neu,uid,mindestmenge) values "
+   		"(?,?,now(),?,0.0,?,?)")
+   		<< ARTIKELID << PRLSID << PREIS << UID << MINDESTMENGE;
     SQLerror::test(__FILELINE__);	
    	
-    exec sql delete from artikelpreise 
-   	where kundennr=:PRLSID and artikelid=:ARTIKELID
-	and mindestmenge=:MINDESTMENGE;
+    Query("delete from artikelpreise "
+   	"where (kundennr,artikelid,mindestmenge)=(?,?,?)")
+	<< PRLSID << ARTIKELID << MINDESTMENGE;
     SQLerror::test(__FILELINE__);	
   }
 
