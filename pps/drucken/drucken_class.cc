@@ -1423,7 +1423,7 @@ void LR_Abstraktion::page_header(std::ostream &os)
    os <<RngNr()<<"\\normalsize ~" << mld->MLT(MultiL_Dict::TXT_VOM)
 		<<" " <<getDatum()<<". ";
    if(Typ()==Extern)
-     os << "\n~\\\\\\small Die Bestellnummer bitte auf Auftragsbestättigung,"
+     os << "\n~\\\\\\small Die Bestellnummer bitte auf Auftragsbestätigung,"
 	   " Lieferschein und Rechnung immer angeben \\normalsize\\\\[.5ex]\n";
 
 
