@@ -1,4 +1,4 @@
-// $Id: SimpleTree.hh,v 1.35 2004/05/17 08:40:43 christof Exp $
+// $Id: SimpleTree.hh,v 1.36 2004/05/17 09:15:55 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -199,7 +199,7 @@ public:
  std::vector<cH_RowDataBase> getSelectedRowDataBase_vec() const 
  	throw(notLeafSelected);
 
-#if 0 // deprecated
+#if 1 // deprecated
  template <class T,class CT> T getSelectedRowDataBase_as2() const
 // this could be optimzed to avoid the dynamic_cast within 
 // cH_RowDataBase::operator*, but it does not hurt that much
@@ -207,8 +207,8 @@ public:
  }
 #endif
  template <class T> T getSelectedRowDataBase_as() const
-// {  return getSelectedRowDataBase_as2<T,typename T::ContentType>(); 
- {  return T::cast_dynamic(getSelectedRowDataBase()); 
+ {  return getSelectedRowDataBase_as2<T,typename T::ContentType>(); 
+// {  return T::cast_dynamic(getSelectedRowDataBase()); 
  }
  template <class T> T getCursorRowDataBase_as() const
  {  return T::cast_dynamic(getCursorRowDataBase()); 
