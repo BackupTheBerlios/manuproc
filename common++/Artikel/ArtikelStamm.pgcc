@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.29 2003/03/20 15:32:01 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.30 2003/03/24 10:23:02 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -57,7 +57,7 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
    is >> payload.typ >> payload.interntyp
       >> FetchIStream::MapNull<cH_ppsInstanz>(payload.bestellen_bei,ppsInstanzID::None)
       >> FetchIStream::MapNull<ExtBezSchema_ID>(payload.defaultschema,1)
-      >> FetchIStream::WithIndicator<Einheit>(payload.einh,ieinheit)
+      >> FetchIStream::WithIndicator(payload.einh,ieinheit)
 #ifdef MABELLA_EXTENSIONS
       >> FetchIStream::MapNull<int>(payload.mindbest,NO_CHECK)
 #endif
