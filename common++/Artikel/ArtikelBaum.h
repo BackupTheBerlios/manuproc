@@ -1,4 +1,4 @@
-/* $Id: ArtikelBaum.h,v 1.7 2002/01/07 16:23:09 christof Exp $ */
+/* $Id: ArtikelBaum.h,v 1.8 2002/02/05 17:15:52 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -21,7 +21,7 @@
 #define ARTIKELBAUM_H
 
 #include <Artikel/Prozess.h>
-#include <Auftrag/AufEintragBase2.h>
+#include <Auftrag/AufEintragBase.h>
 #include <string>
 #include <vector>
 #include <Aux/SQLerror.h>
@@ -33,13 +33,16 @@
 
 class ArtikelBaum : public virtual ArtikelBase
 {
+        mutable int tiefe;
+        static const int NoDepth=-1;
 public:
-	typedef fixedpoint<5> menge_t;
+	typedef fixedpoint<3> menge_t;
+	typedef fixedpoint<5> faktor_t;
 	struct RohArtikel
 	{  ArtikelBase			rohartikel;
 	   // in Einheit(rohartikel)/Einheit(ArtikelBase)
 	   // ist ein Faktor
-	   menge_t	menge; 
+	   faktor_t	menge; 
 	   
 	   // eigentlich relativ uninteressant?
 	   cH_Prozess		erzeugung;
@@ -47,7 +50,7 @@ public:
 	   RohArtikel() : menge(0), 
 	                  erzeugung(Prozess::default_id) 
 	   {}
-      RohArtikel(ArtikelBase _rohartikel,menge_t _menge)
+      RohArtikel(ArtikelBase _rohartikel,faktor_t _menge)
               :rohartikel(_rohartikel),menge(_menge),
                erzeugung(Prozess::default_id)
       {}
@@ -77,13 +80,15 @@ private:
 	static cache_t cache;
 
 public:
- ArtikelBaum() {}
- ArtikelBaum(const ArtikelBase &stamp)
- {  setID(stamp.Id()); }
+ ArtikelBaum() : tiefe(NoDepth) {}
+ ArtikelBaum(const ArtikelBase &stamp) : tiefe(NoDepth)
+         {  setID(stamp.Id()); }
 
+private:
 // hier passiert alles, ungeschickter Name
  void setID(const ID &id) throw(SQLerror);
- 
+
+public:
  bool empty() const
  {  return zusammensetzung.empty(); }
  size_t size() const
@@ -102,42 +107,13 @@ public:
  static void delete_Artikel(ArtikelBase fuer_artikel,ArtikelBase von_artikel);
 private:
  static void delete_from_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel); 
- static void reduceChildren(const AufEintragBase& AEB,const AufEintragBase& oldAEB,AufEintragBase2::mengen_t menge);
+ static void reduceChildren(const AufEintrag& AEB,const AufEintrag& oldAEB,AufEintragBase::mengen_t menge);
  static void create_in_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel,fixedpoint<5> RohMenge); 
 
 public:
- menge_t Faktor(const ArtikelBase &kind) throw(SQLerror);
+ faktor_t Faktor(const ArtikelBase &kind) throw(SQLerror);
+ int ArtikelBaum::Tiefe() const;
 
-// -------------------------------------------
-// ab hier alles veraltet, INFORMATIONSVERLUST !!!
-// Private seit 30.11.01 MAT - das kann CVS auch sagen ... CP
-private:
- ArtikelBaum(const ID &stamp,const ID &_altartikel,cH_Prozess proz)
-  : ArtikelBase(stamp)
- {  if (_altartikel) zusammensetzung.push_back(RohArtikel(_altartikel,proz)); }
-
-// diese Funktion ist nun Bloedsinn, da nicht uebergeben wird, auf welcher 
-// Ebene zu stoppen ist, ersetzen. Abgesehen davon muesste sie einen
-// Vektor zurueckgeben!
- const ID RohArtikelID() const
- {  if (!ParentArtikelID()) return Id();
-    // Rekursion !!!
-    return ArtikelBaum(ParentArtikelID()).RohArtikelID();
- }
- const ID ParentArtikelID() const
- {  if (zusammensetzung.size()==0) return 0;
-    return zusammensetzung[0].rohartikel.Id();
- }
-
- const cH_Prozess getErzeugendenProzess() const
- {  if (zusammensetzung.size()==0) return cH_Prozess(Prozess::default_id);
-    return zusammensetzung[0].erzeugung;
- }
-
- menge_t Stueckgroesse() const
- {  if (zusammensetzung.size()==0) return 0;
-    return zusammensetzung[0].menge;
- }
 };
 
 #endif

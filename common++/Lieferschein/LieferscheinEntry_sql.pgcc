@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry_sql.pgcc,v 1.8 2002/01/23 13:43:53 christof Exp $ */
+/* $Id: LieferscheinEntry_sql.pgcc,v 1.9 2002/02/05 17:15:52 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,7 +20,7 @@
 #include"LieferscheinEntry.h"
 #include"Lieferschein.h"
 #include<Aux/Transaction.h>
-#include <Auftrag/AufEintragBase2.h>
+#include <Auftrag/AufEintragBase.h>
 #include<Auftrag/auftrag_status.h>
 
 exec sql include sqlca;
@@ -51,7 +51,7 @@ LieferscheinEntry::LieferscheinEntry(const LieferscheinBase &lsbase, int zeile)
  SQLerror::test(__FILELINE__);
  
  artikel=ArtikelBase(ARTIKELID);
- refauftrag=AufEintragBase2(Instanz(),REFAUFTRAGID,REFZEILENNR);
+ refauftrag=AufEintragBase(Instanz(),REFAUFTRAGID,REFZEILENNR);
  stueck=STUECK;
  menge=MENGE;
  palette=PALETTE;
@@ -59,7 +59,7 @@ LieferscheinEntry::LieferscheinEntry(const LieferscheinBase &lsbase, int zeile)
 }
 
 LieferscheinEntry::LieferscheinEntry(const LieferscheinBase &lsb,
-	const AufEintragBase2 &auf, const ArtikelBase &art, int anzahl,
+	const AufEintragBase &auf, const ArtikelBase &art, int anzahl,
 	mengen_t _menge,int _palette, bool _zusatzinfo)
 throw(SQLerror) : LieferscheinBase(lsb),artikel(art),
 			refauftrag(auf),stueck(anzahl),menge(_menge),
@@ -105,7 +105,7 @@ LieferscheinEntry::LieferscheinEntry(const LieferscheinBase &lsb,
 			const ArtikelBase &art, int anzahl,
 			mengen_t _menge,int _palette, bool zusatz)
 							throw(SQLerror) 
-{  *this=LieferscheinEntry(lsb,AufEintragBase2(Instanz(),0,0),art,anzahl,_menge,_palette,zusatz);
+{  *this=LieferscheinEntry(lsb,AufEintragBase(Instanz(),0,0),art,anzahl,_menge,_palette,zusatz);
 }
 
 void LieferscheinEntry::deleteEntry(const LieferscheinEntry &lse) throw(SQLerror)
@@ -114,12 +114,11 @@ void LieferscheinEntry::deleteEntry(const LieferscheinEntry &lse) throw(SQLerror
  int INSTANZ=lse.Instanz();
  int LFRSID=lse.Id();
  int ZEILE=lse.Zeile();
- int AUFID=lse.AufId();  
- int AUFZNR=lse.AufZeile();
- int STATUS;   
- int BESTELLT; 
- int GELIEFERT;
-
+// int AUFID=lse.AufId();  
+// int AUFZNR=lse.AufZeile();
+// int STATUS;   
+// int BESTELLT; 
+// int GELIEFERT;
  exec sql end declare section;
 
  Transaction tr;
@@ -131,20 +130,23 @@ void LieferscheinEntry::deleteEntry(const LieferscheinEntry &lse) throw(SQLerror
 		(instanz,lfrsid,zeile) = (:INSTANZ,:LFRSID,:ZEILE);
  SQLerror::test(__FILELINE__":deleteEntry: delete from lieferscheinentry");
  
- if (AUFID || AUFZNR)
- {  exec sql select bestellt, geliefert, status
-        into :BESTELLT, :GELIEFERT, :STATUS
-        from auftragentry where
-        auftragid = :AUFID and zeilennr = :AUFZNR;
-    SQLerror::test(__FILELINE__);
+ if (lse.AufId() || lse.AufZeile())
+ {
+//  exec sql select bestellt, geliefert, status
+//        into :BESTELLT, :GELIEFERT, :STATUS
+//        from auftragentry where
+//        auftragid = :AUFID and zeilennr = :AUFZNR;
+//    SQLerror::test(__FILELINE__);
  
-    if (!lse.Menge()) GELIEFERT-=lse.Anzahl();
-    else GELIEFERT-=int(lse.Anzahl()*lse.Menge()+0.5);
-    if(GELIEFERT<BESTELLT) STATUS=(AufStatVal)OPEN;  
- 
-    exec sql update auftragentry set geliefert= :GELIEFERT, status= :STATUS
-        where auftragid= :AUFID and zeilennr= :AUFZNR;
-    SQLerror::test(__FILELINE__);
+    AuftragBase::mengen_t geliefert=0;
+    if (!lse.Menge()) geliefert = lse.Anzahl();
+    else              geliefert = lse.Anzahl()*lse.Menge();
+//    if(GELIEFERT<BESTELLT) STATUS=(AufStatVal)OPEN;  
+    AufEintragBase(lse.Instanz(),lse.AufId(),lse.AufZeile()).abschreiben(-geliefert);
+     
+//    exec sql update auftragentry set geliefert= :GELIEFERT, status= :STATUS
+//        where auftragid= :AUFID and zeilennr= :AUFZNR;
+//    SQLerror::test(__FILELINE__);
  }
 
  tr.commit();

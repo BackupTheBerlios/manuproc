@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.10 2002/01/22 09:15:55 christof Exp $
+// $Id: sqlAuftragSelector.cc,v 1.11 2002/02/05 17:15:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,7 +26,8 @@
 	"e.artikelid, e.rohartikelid, " \
 	"e.lieferdate, geliefert, " \
 	"a.stat, " \
-	"a.kundennr, youraufnr, coalesce(p.prozessid,0), " \
+	"a.kundennr, youraufnr, " \
+	"coalesce(p.prozessid,0), " \
 	"coalesce(p.letztePlanInstanz,0), " \
    	"coalesce(p.maxPlanInstanz,0), " \
 	"date(coalesce(p.datum,now())), " \
@@ -39,39 +40,64 @@
 	" using (instanz,auftragid,zeilennr) "
 
 #define FULL_SELECT_FROM_WHERE "select " FULL_SELECTIONS \
-	" from " FULL_FROM  
+	" from " FULL_FROM " where true "
 
+#define FULL_SELECT_NO_0 " and bestellt!=0 "
+
+// Vorsicht: enthält keine führenden/abschließenden Leerzeichen
+std::string SQLFullAuftragSelector::StatusQualifier(AufStatVal stat)
+{
+ const std::string status(itos(stat));
+ static const std::string nicht_erledigt
+ 	="not in ("+itos(CLOSED)+","+itos(STORNO)+")";
+ 
+ std::string op="=";
+// if(nonstatus) op="!=";
+// if(nonstatus && UNCOMMITED) assert(!"Nicht implementert");
+ switch (stat) {
+   case OPEN       : return "a.stat"+op+status+" and e.status"+op+status;
+   case UNCOMMITED : return "(a.stat= "+status+" and e.status "+nicht_erledigt+
+                        " or (a.stat "+nicht_erledigt+" and e.status="+status+"))";
+   case STORNO     : return "(a.stat"+op+status+" or e.status="+op+status+")";
+   case CLOSED     : return "(a.stat="+op+status+" or e.status="+op+status+")";
+   }
+ assert(!"SQLFullAuftragSelector::StatusQualifier komischer Status");
+ return "false";
+}
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Status& selstr)
 {
- const std::string status(itos(selstr.status));
- std::string wq;
- switch (selstr.status) {
-   case OPEN       : wq="  a.stat="+status+" and e.status="+status; break;
-   case UNCOMMITED : wq=" ((a.stat="+status+" and e.status!="+itos(STORNO)+")"+
-                        " or (a.stat!="+itos(STORNO)+" and e.status="+status+"))"; 
-                     break;
-   case STORNO     : wq=" (a.stat="+status+" or e.status="+status+")";break;
-   case CLOSED     : wq=" (a.stat="+status+" or e.status="+status+")";
-   }
- setClausel(FULL_SELECT_FROM_WHERE " where "+
-   wq+" and a.instanz="+itos(selstr.instanz));
+ std::string cl=FULL_SELECT_FROM_WHERE FULL_SELECT_NO_0 " and "
+    + StatusQualifier(selstr.status)+
+       " and a.instanz="+itos(selstr.instanz);
+
+ if(!selstr.geplant) cl +=" and a.auftragid!=0 ";
+ setClausel(cl);
+
+/*
+ setClausel(FULL_SELECT_FROM_WHERE " and "
+   + StatusQualifier(selstr.status,selstr.nonstatus)+
+   " and a.instanz="+itos(selstr.instanz));
+*/
 }
+
+
+
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Aufid& selstr)
 {
     setClausel(FULL_SELECT_FROM_WHERE
-	   " where a.auftragid="+itos(selstr.auftrag.Id())
-   	+ " and a.instanz="+itos(selstr.auftrag.Instanz()));
+	   " and (a.instanz, a.auftragid)="
+	   "("+itos(selstr.auftrag.InstanzID())+", "+itos(selstr.auftrag.Id())+")");
 }
 
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_AufidZnr& selstr)
 {
  setClausel(FULL_SELECT_FROM_WHERE
-	" where a.auftragid="+itos(selstr.auftrag_znr.Id())+
-	" and a.instanz="+itos(selstr.auftrag_znr.Instanz()) +
-	" and e.zeilennr="+itos(selstr.auftrag_znr.ZNr()));
+	   " and (a.instanz, a.auftragid, e.zeilennr)="
+	   "("+itos(selstr.auftrag_znr.InstanzID())+", "
+	   +itos(selstr.auftrag_znr.Id())+", "+itos(selstr.auftrag_znr.ZNr())+")");
 }
 
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Jahr_Artikel &selstr)
@@ -85,7 +111,7 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Jahr_Artikel &selstr)
  }
              
  setClausel(FULL_SELECT_FROM_WHERE
-	     " where ("
+	     " and ("
 	     " e.lieferdate between date('"+jahr+"-1-1') and date('"+jahr+"-12-31')) "
 	     " and artikelid in ("+artids +
 	     ") and a.instanz="+itos(selstr.instanz));
@@ -94,12 +120,28 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Jahr_Artikel &selstr)
 SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Kunde_Artikel &selstr)
 {
  setClausel(FULL_SELECT_FROM_WHERE
-	     " where a.stat=" + itos(OPEN) +
+	     " and "+StatusQualifier(OPEN)+
 	     " and a.instanz="+itos(selstr.instanz) +
-	     " and e.status=" + itos(OPEN) +
-	     " and a.kundennr=" + itos(selstr.kundennr) +
+	     " and a.kundennr="+itos(selstr.kundennr) +
 	     " and artikelid="+itos(selstr.artikel.Id()) +
 	     " order by e.lieferdate");
 }
 
-// VAR1: and e.instanz=1 and e.auftragid=10033;
+SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Artikel_Planung &selstr)
+{
+ setClausel(FULL_SELECT_FROM_WHERE
+	     " and "+StatusQualifier(OPEN)+
+	     " and a.instanz="+itos(selstr.instanz) +
+	     " and artikelid="+itos(selstr.artikel.Id()) +
+	     " and a.auftragid" + (selstr.geplant ? "<>" : "=") + "0"
+	     " order by e.lieferdate");
+}
+
+SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Kunde_Status &selstr)
+{
+ setClausel(FULL_SELECT_FROM_WHERE FULL_SELECT_NO_0
+	     " and "+StatusQualifier(selstr.stat)+
+	     " and a.instanz="+itos(selstr.instanz) +
+	     " and a.kundennr=" + itos(selstr.kundennr) +
+	     " order by e.lieferdate");
+}

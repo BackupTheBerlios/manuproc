@@ -1,4 +1,4 @@
-// $Id: abschreiben.cc,v 1.6 2002/01/22 09:15:55 christof Exp $
+// $Id: abschreiben.cc,v 1.7 2002/02/05 17:15:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -36,7 +36,7 @@ int main()
       a.insertNewEntry(30000, Petig::Datum::today(), 211234,OPEN,true);
    }
    
-   AufEintragBase2 zeile;
+   AufEintragBase zeile;
    {  AuftragFull af(id);
       for (AuftragFull::const_iterator i=af.begin(); i!=af.end(); ++i)
       {  zeile=*i;

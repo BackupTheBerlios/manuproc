@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: IOerror.cc,v 1.2 2001/06/27 08:04:09 christof Exp $ */
+/* $Id: IOerror.cc,v 1.3 2002/02/05 17:15:52 christof Exp $ */
 #include "Aux/IOerror.h"
 #include <errno.h>
 #include "Aux/Ausgabe_neu.h"
@@ -32,7 +32,7 @@ IOerror::IOerror(const std::string &n,int e) throw() : IOerrno(e), name(n)
 
 std::string IOerror::toString() const throw()
 {  std::string r=name;
-   if (name.size()) r+=':';
+   if (!name.empty()) r+=':';
    r+=strerror(IOerrno);
    return r;
 }

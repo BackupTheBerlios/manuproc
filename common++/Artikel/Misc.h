@@ -1,4 +1,4 @@
-// $Id: Misc.h,v 1.4 2001/10/16 06:53:12 christof Exp $
+// $Id: Misc.h,v 1.5 2002/02/05 17:15:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -64,7 +64,7 @@ public:   // methods
    {  LeseProzesse(ab,*this); }
    void ErzeugePreisArtikelDummy(void); // this is nearly const
    float BezugsMenge() const
-   {  return schritte.size() ? schritte[0].stueckgroesse : 0; }
+   {  return !schritte.empty() ? schritte[0].stueckgroesse : 0; }
    iterator begin() { return schritte.begin(); }
    iterator end() { return schritte.end(); }
    const_iterator begin() const { return schritte.begin(); }

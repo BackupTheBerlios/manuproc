@@ -1,4 +1,4 @@
-// $Id: Jumbo_lager.cc,v 1.1 2002/01/22 09:43:25 christof Exp $
+// $Id: Jumbo_lager.cc,v 1.2 2002/02/05 17:15:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -22,7 +22,7 @@
 #include <Aux/dbconnect.h>
 #include <Aux/ppsInstanz.h>
 #include <Artikel/ArtikelBezeichnung.h>
-#include <ProdLager/Lager.hh>
+#include <Lager/Lager.hh>
 
 void showJumbo(const JumboRolle& J)
 {
@@ -52,9 +52,9 @@ int main()
   try{
     JumboRolle J(123);
     LagerPlatz LP(ppsInstanz::Bandlager,418);
-    J.setLagerPosition(LP);
-    J.setVerarbDatum(zeit);
-    L.Jumbo_Einlagern(J,Lager::Einlagern,"Malt");
+    J.setVerarbDatum_nodb(zeit);
+    L.Jumbo_Einlagern(LP,J,Lager::Einlagern,"Malt");
+
     std::cout << "\nEingelagert:\n";
     J=JumboRolle(123);
     showJumbo(J);   
@@ -71,8 +71,7 @@ int main()
    try{
     JumboRolle J(123);
      LagerPlatz LP2(ppsInstanz::Bandlager,41);
-     J.setLagerPosition(LP2);
-     L.Jumbo_Einlagern(J,Lager::Einlagern,"MalN");
+     L.Jumbo_Einlagern(LP2,J,Lager::Einlagern,"MalN");
      std::cout << "\nEingelagert an neue Position:\n";
      J=JumboRolle(123);
      showJumbo(J);   

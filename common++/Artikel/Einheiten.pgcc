@@ -1,4 +1,4 @@
-// $Id: Einheiten.pgcc,v 1.7 2001/12/23 21:42:15 christof Exp $
+// $Id: Einheiten.pgcc,v 1.8 2002/02/05 17:15:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,43 +18,54 @@
  */
 
 exec sql include sqlca;
+
 #include <Artikel/Einheiten.h>
 #include <Artikel/ArtikelStamm.h>
+#include <Aux/SQLerror.h>
 
-// furs erste sollte das funktionieren .. spater per Datenbank CP(?)
-// ... aber dann bitte mit cache MAT
+Einheit::cache_t Einheit::cache;
+
 Einheit::Einheit(const ArtikelBase &ab) throw(SQLerror)
-{  *this=ArtikelStamm(ab).getEinheit();
+{   *this=ArtikelStamm(ab).getEinheit();
 }
 
-// aus StueckEinheit, MengenEinheit erzeugen
 Einheit::operator std::string() const
-{  if (einh==Meter) return "m";
-   if (einh==kg) return "kg";
-   if (einh==Fdkm) return "Fd*km";
-   if (einh==Stueck) return "St.";
-   if (einh==DM) return "DM";
-   if (einh==Euro) return "Euro";
-   return "";
+{  std::string a=StueckEinheit(),
+	b=MengenEinheit();
+   if (!a.empty() && !b.empty()) return a+"*"+b;
+   return a+b;
 }
 
 std::string Einheit::TeX() const
-{  if (einh==Fdkm) return "Fd$\\times$km";
-   if (einh==Euro) return "\\euro{}";
-   return std::string(*this);
+{  std::string a=StueckEinheit_TeX(),
+	b=MengenEinheit_TeX();
+   if (!a.empty() && !b.empty()) return a+"\\times{}"+b;
+   return a+b;
 }
 
-std::string Einheit::StueckEinheit() const
-{  if (einh==Fdkm) return "Fd";
-   if (einh==Stueck) return "St.";
-   return "";
-}
-
-std::string Einheit::MengenEinheit() const
-{  if (einh==Meter) return "m";
-   if (einh==kg) return "kg";
-   if (einh==Fdkm) return "km";
-   if (einh==DM) return "DM";
-   if (einh==Euro) return "Euro";
-   return "";
+Einheit::Einheit(ID id) : einh(id)
+{  Einheit *cached=cache.lookup(id);
+   if (cached) *this=*cached;
+   else
+   {  exec sql begin declare section;
+      int eid=id;
+      char bez_anz[60],tex_anz[60],bez_men[60],tex_men[60];
+      exec sql end declare section;
+      *bez_anz=*tex_anz=*bez_men=*tex_men=0;
+      
+      exec sql select 
+      		coalesce(bez_anzahl,''),coalesce(tex_anzahl,bez_anzahl,''),
+	      	coalesce(bez_menge,''),coalesce(tex_menge,bez_menge,'')
+	into :bez_anz, :tex_anz, :bez_men, :tex_men
+      	from einheiten
+      	where id=:eid;
+      SQLerror::test(__FILELINE__, 100);
+      if (!sqlca.sqlcode) 
+      {  bez_anzahl=bez_anz;
+         tex_anzahl=tex_anz;
+         bez_menge=bez_men;
+         tex_menge=tex_men;
+      }
+      cache.Register(id,*this);
+   }
 }

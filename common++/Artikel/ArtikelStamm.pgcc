@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.pgcc,v 1.11 2002/01/23 13:43:53 christof Exp $
+// $Id: ArtikelStamm.pgcc,v 1.12 2002/02/05 17:15:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -55,12 +55,12 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
    payload.defaultschema=defschem;
    if (!ieinheit) payload.einh=Einheit::ID(einheit);
    else
-   {  payload.einh=EINH_STUECK;
+   {  payload.einh=Einheit::Stueck;
 
 #ifdef PETIG_EXTENSIONS
       switch(payload.interntyp)
       {  case ArtikelTyp::JumboRollen:
-            payload.einh=EINH_METER; break;
+            payload.einh=Einheit::Meter; break;
          
          case ArtikelTyp::Band:
             {  cache.Register(ab.Id(),payload); 
@@ -70,21 +70,21 @@ ArtikelStamm::ArtikelStamm(const ArtikelBase &ab)  throw (SQLerror)
                cH_ArtikelBezeichnung AB(ab);
 //               float stkgr(baum.Stueckgroesse());
                // this is because Prozess_sql.pgcc is mad (Jumbo = 1m)
-//               if (baum.size()<=1 && stkgr && stkgr!=1) payload.einh=EINH_STUECK;
-               if (!AB->Jumbo()) payload.einh=EINH_STUECK;
-               else payload.einh=EINH_METER;
+//               if (baum.size()<=1 && stkgr && stkgr!=1) payload.einh=Einheit::Stueck;
+               if (!AB->Jumbo()) payload.einh=Einheit::Stueck;
+               else payload.einh=Einheit::Meter;
                break;
             }
 
          case ArtikelTyp::Spulen:
          default:
-            payload.einh=EINH_STUECK; break;
+            payload.einh=Einheit::Stueck; break;
             
          case ArtikelTyp::Garn:
-            payload.einh=EINH_KG; break;
+            payload.einh=Einheit::kg; break;
          
          case ArtikelTyp::Lohn:
-            payload.einh=EINH_FDKM; break;
+            payload.einh=Einheit::Fdkm; break;
       }
 #endif      
 

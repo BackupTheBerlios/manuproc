@@ -55,7 +55,7 @@ public:
            explicit Anlegen2(const AuftragBase& _AB) : AB(_AB) {}
            operator AuftragBase() const { return AB; }
         };
-	Auftrag(ppsInstanz::ID instanz,int auftragid) throw(SQLerror);
+//	Auftrag(ppsInstanz::ID instanz,int auftragid) throw(SQLerror);
 	Auftrag(const AuftragBase& auftrag) throw(SQLerror);
 	// neuen Auftrag anlegen
         Auftrag(Anlegen2 Auftragsnr, long kundennr) throw(SQLerror);

@@ -1,4 +1,4 @@
-// $Id: dbconnect.pgcc,v 1.6 2001/10/23 08:45:18 christof Exp $
+// $Id: dbconnect.pgcc,v 1.7 2002/02/05 17:15:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -45,9 +45,9 @@ void Petig::dbconnect(const Connection &c) throw(SQLerror)
    if(h_opt) host=h_opt;
    if(d_opt) db=d_opt;
 
-   if(c.Host().size()) host=c.Host();
-   if(c.Dbase().size()) db=c.Dbase();
-   if(c.Name().size()) strncpy0(NAME,c.Name().c_str(),sizeof NAME);
+   if(!c.Host().empty()) host=c.Host();
+   if(!c.Dbase().empty()) db=c.Dbase();
+   if(!c.Name().empty()) strncpy0(NAME,c.Name().c_str(),sizeof NAME);
    else strncpy0(NAME,db.c_str(),sizeof NAME);
 
 #ifndef __MINGW32__
@@ -84,7 +84,7 @@ void Petig::dbconnect(const Connection &c) throw(SQLerror)
 }
 
 void Petig::dbdisconnect(const std::string &name) throw(SQLerror)
-{  if (!name.size()) 
+{  if (name.empty()) 
    {  exec sql disconnect; }
    else 
    {  exec sql begin declare section;
@@ -101,7 +101,7 @@ void Petig::dbdefault(const std::string &name) throw(SQLerror)
 {  exec sql begin declare section;
    const char *NAME;
    exec sql end declare section;
-   if (!name.size()) NAME=DEFAULT_DB;
+   if (name.empty()) NAME=DEFAULT_DB;
    else NAME=name.c_str();
    
    exec sql set connection to :NAME;

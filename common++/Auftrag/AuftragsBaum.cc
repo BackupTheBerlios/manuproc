@@ -1,9 +1,9 @@
 #include <Auftrag/AuftragsBaum.h>
-#include <Auftrag/AufEintragBase.h>
+#include <Auftrag/AufEintrag.h>
 #include <Auftrag/AuftragsEntryZuordnung.h>
 #include <list>
 
-AuftragsBaum::AuftragsBaum(const AufEintragBase2 aeb,bool kinder)
+AuftragsBaum::AuftragsBaum(const AufEintragBase aeb,bool kinder)
 {
  std::list<AufEintragZu::st_reflist> tv=AufEintragZu(aeb).get_Referenz_list(aeb,kinder);
  std::list<AufEintragZu::st_reflist> tvxx;

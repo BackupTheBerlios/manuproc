@@ -1,4 +1,4 @@
-// $Id: AuftragsEntryZuordnung.h,v 1.6 2002/01/22 09:15:55 christof Exp $
+// $Id: AuftragsEntryZuordnung.h,v 1.7 2002/02/05 17:15:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -17,32 +17,32 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef AUFTRAGENTRYZU
-#define AUFTRAGENTRYZU
+#ifndef AUFTRAGSENTRYZUORDNUNG_H
+#define AUFTRAGSENTRYZUORDNUNG_H
 #include<Aux/SQLerror.h>
 #include<Aux/ppsInstanz.h>
-#include <Auftrag/AufEintragBase2.h>
+#include <Auftrag/AufEintragBase.h>
 #include <Auftrag/auftrag_status.h>
 #include <list>
 #include <Kunde/Kunde.h>
 
-class AufEintragZu : public AufEintragBase2
+class AufEintragZu : public AufEintragBase
 {
- AufEintragBase2 AEB;
- mutable int tiefe; // Geasamtmenge der zu planenden Instanzen
+ AufEintragBase AEB;
+// mutable int tiefe; // Geasamtmenge der zu planenden Instanzen
 
 public:
- AufEintragZu(AufEintragBase2 aeb) 
-     : AEB(aeb), tiefe(-1) {}
+ AufEintragZu(AufEintragBase aeb) 
+     : AEB(aeb) /*, tiefe(-1)*/ {}
 
- struct st_reflist {AufEintragBase2 AEB2;ArtikelBase AB;mengen_t Menge;
-         st_reflist(AufEintragBase2 aeb2,ArtikelBase ab,mengen_t menge) 
+ struct st_reflist {AufEintragBase AEB2;ArtikelBase AB;mengen_t Menge;
+         st_reflist(AufEintragBase aeb2,ArtikelBase ab,mengen_t menge) 
               :AEB2(aeb2),AB(ab),Menge(menge){}};
 private:
    std::list<cH_Kunde> get_Referenz_Kunden_long() const throw(SQLerror);
 public:
     // Eine Benachbarte Liste von Kind- bzw. Elternaufträgen:
-    std::list<st_reflist> get_Referenz_list(const AufEintragBase2& aeb,bool kinder=false) const throw(SQLerror);
+    std::list<st_reflist> get_Referenz_list(const AufEintragBase& aeb,bool kinder=false) const throw(SQLerror);
     // Für einen KOMPLETTEN Auftragsbaum die Klasse AuftragsBaum verwenden oder nur_ende=false setzen
     // die folgende Funktion liefert sonst nur die Endaufträge OHNE Knoten
     std::list<st_reflist> get_Referenz_listFull(bool kinder,bool nur_ende=true) const throw(SQLerror);
@@ -50,15 +50,15 @@ public:
                  //kinder=true:    Kinderaufträge 
     // Um diesen Werte zu erhalten muß zuvor(!) get_Referenz_listFull(kinder,false);
     // aufgerufen werden.
-    int Tiefe() const {return tiefe;}
+//    int Tiefe() const {return tiefe;}
 
 
     std::list<cH_Kunde> get_Referenz_Kunden() const throw(SQLerror);
 /*
-    static AufEintragBase2 get_AufEintrag_from_Artikel_by_Lfdate   
+    static AufEintragBase get_AufEintrag_from_Artikel_by_Lfdate   
                    (const ArtikelBase& artikel,ppsInstanz::ppsInstId instanz);
 */
-    static std::list<AufEintragBase2> get_AufEintragList_from_Artikel
+    static std::list<AufEintragBase> get_AufEintragList_from_Artikel
                (const ArtikelBase& artikel,ppsInstanz::ppsInstId instanz,AufStatVal status);
 
 

@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.8 2002/01/22 09:15:55 christof Exp $
+// $Id: Kunde.cc,v 1.9 2002/02/05 17:15:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -47,13 +47,16 @@ const std::string Kunde::LaTeX_von() const
 {
   std::string s="\\underline{\\scriptsize ";
   s+= string2TeX(getName()+", ");
+  
+  std::string lkz=adresse.lkz;
+  if (!lkz.empty()) lkz+='-';
 
   if(!adresse.postfach.empty())
-    s+= string2TeX(adresse.postfach +", Postfach "+adresse.postfach+", "+
-		adresse.lkz+"-"+adresse.postfachplz+" "+adresse.ort); 
+    s+= string2TeX("Postfach "+adresse.postfach+", "+
+		lkz+adresse.postfachplz+" "+adresse.ort); 
   else
     s+= string2TeX(adresse.strasse +" "+adresse.hsnr+", "+
-		adresse.lkz+"-"+adresse.plz+" "+adresse.ort);
+		lkz+adresse.plz+" "+adresse.ort);
  
   s+= "}\\\\[3mm]\n";
   return  s;
@@ -61,32 +64,31 @@ const std::string Kunde::LaTeX_von() const
 
 const std::string Kunde::LaTeX_an(bool liefer=false) const
 {
-  std::string adr1,adr4;
-
-  adr4 = !adresse.lkz.empty() ? (adresse.lkz+"-") : "";
+  std::string strasse_postfach;
+  std::string lkz_plz_ort = !adresse.lkz.empty() ? (adresse.lkz+"-") : "";
 
   if ((!liefer && !adresse.postfach.empty() && rng_an_postfach) || adresse.strasse.empty())
      {
-      adr1 = "Postfach "+adresse.postfach;
-      adr4 +=  adresse.postfachplz+" "+adresse.ort;
+      strasse_postfach = "Postfach "+adresse.postfach;
+      lkz_plz_ort +=  adresse.postfachplz+" "+adresse.ort;
      }
      else
      { 
-      adr1 = adresse.strasse+ " " +adresse.hsnr;
-      adr4 += adresse.plz+" "+adresse.ort;
+      strasse_postfach = adresse.strasse+ " " +adresse.hsnr;
+      lkz_plz_ort += adresse.plz+" "+adresse.ort;
      }
 
-#ifdef MABELLA_EXTENSIONS
-  std::string s="\nFirma\\\\ ";
-#else
-  std::string s="{\\large Firma\\\\ ";
+  std::string s="\n";
+#ifndef MABELLA_EXTENSIONS
+  s+="{\\large ";
 #endif
+  s+="Firma\\\\ ";
 
   s+= string2TeX(getName(),NEEDCHAR) +"\\\\";
   if (!postanwvor().empty()) s+= string2TeX(postanwvor(),NEEDCHAR) +"\\\\";
-  s += string2TeX(adr1,NEEDCHAR); 
+  s += string2TeX(strasse_postfach,NEEDCHAR); 
   if (!postanwnach().empty()) s+= "\\\\" + string2TeX(postanwnach(),NEEDCHAR) ;
-  s += "\\\\[1ex]" + string2TeX(adr4,NEEDCHAR) +
+  s += "\\\\[1ex]" + string2TeX(lkz_plz_ort,NEEDCHAR) +
 #ifndef MABELLA_EXTENSIONS
        					"}"
 #endif

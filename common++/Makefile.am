@@ -1,6 +1,6 @@
 
 SUBDIRS= Aux ostream Artikel Auftrag Bank ExtBezSchema Ketten Kunde \
-		Lieferschein Material ProdLager Faeden . tests 
+		Lieferschein Material Lager Faeden . Programme tests
 	
 lib_LIBRARIES=libcommon++.a
 
@@ -22,9 +22,8 @@ libcommon___a_LIBADD= \
 		Artikel/Prozess_sql.o \
 		Artikel/Prozesspreis.o \
 		Auftrag/AufEintragBase.o \
-		Auftrag/AufEintragBase2.o \
-		Auftrag/AufEintragBase_sql.o\
-		Auftrag/selAufEntry.o \
+		Auftrag/AufEintrag.o \
+		Auftrag/AufEintrag_sql.o\
 		Auftrag/selAufEntry_sql.o \
 		Auftrag/sqlAuftragSelector.o \
 		Auftrag/AuftragBase_sql.o \
@@ -77,24 +76,23 @@ libcommon___a_LIBADD= \
 		Kunde/Person_sql.o \
 		Kunde/Telefon.o \
 		Kunde/Adresse.o \
+		Lager/JumboRolle.o \
+		Lager/JumboRolle_sql.o \
+      Lager/LagerPlatz.o \
+      Lager/Lager.o \
+      Lager/Lager_sql.o \
+		Lager/Lager_Vormerkungen.o \
+		Lager/Lager_Vormerkungen_sql.o \
+		Lager/maschinen_geschwindigkeit_sql.o \
 		Lieferschein/Lieferschein.o \
 		Lieferschein/LieferscheinEntry_sql.o \
 		Lieferschein/LieferscheinList.o \
 		Lieferschein/LieferscheinList_sql.o \
 		Lieferschein/LieferscheinVoll.o \
-		Lieferschein/LieferscheinVoll_sql.o \
 		Lieferschein/Lieferschein_sql.o \
 		Lieferschein/Rechnung_sql.o \
 		Lieferschein/RechnungEntry_sql.o \
 		Lieferschein/RechnungVoll_sql.o \
 		Lieferschein/Zahlungsart_sql.o \
-		ProdLager/JumboRolle.o \
-		ProdLager/JumboRolle_sql.o \
-      ProdLager/LagerPlatz.o \
-      ProdLager/Lager.o \
-      ProdLager/Lager_sql.o \
-		ProdLager/ProdLager.o \
-		ProdLager/ProdLager_sql.o \
-		ProdLager/maschinen_geschwindigkeit_sql.o \
 		ostream/time_t_ostr.o
 

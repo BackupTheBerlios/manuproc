@@ -1,4 +1,4 @@
-// $Id: RL_lager.cc,v 1.1 2002/01/22 09:43:25 christof Exp $
+// $Id: RL_lager.cc,v 1.2 2002/02/05 17:15:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -22,7 +22,7 @@
 #include <Aux/dbconnect.h>
 #include <Aux/ppsInstanz.h>
 #include <Artikel/ArtikelBezeichnung.h>
-#include <ProdLager/Lager.hh>
+#include <Lager/Lager.hh>
 
 void showLager(const Lager& L,const LagerPlatz& P)
 {
@@ -38,21 +38,24 @@ int main()
    Petig::dbconnect();
 
    Petig::Datum datum(15,1,2011);
-   ArtikelBase artikel(10000096);
+   ArtikelBase artikel(44502);
 //   ArtikelBase artikel2(218267);
    
+   std::string nachricht;
    LagerPlatz LP(ppsInstanz::INST_ROHLAGER,"08F2");
    Lager L(ppsInstanz::INST_ROHLAGER);
+/*
    // Lagerplatz löschen:
    Lager::st_rohlager rohlager(LP,0,0,0,0,artikel,datum);
-   std::string nachricht;
 //   L.RL_Entnahme(rohlager,nachricht,true);
 //   std::cout << nachricht<<'\n';
+*/
    showLager (L,LP);
 
+
    // Etwas rein
-   Lager::st_rohlager rohlager2(LP,2,60,0,0,artikel,datum);
-   L.RL_Einlagern(rohlager2,nachricht);
+   Lager::st_rohlager rohlager2(LP,1,100,0,0,artikel,datum);
+   L.RL_Einlagern(LP,rohlager2,nachricht);
    std::cout << nachricht<<'\n';
    showLager(L,LP);
 
@@ -63,11 +66,13 @@ int main()
    std::cout << nachricht<<'\n';
    showLager(L,LP);
 */
+/*
    // Etwas herausholen 
    Lager::st_rohlager rohlager4(LP,1,60,0,0,artikel,datum);
    L.RL_Entnahme(rohlager4,nachricht);
    std::cout << nachricht<<'\n';
    showLager(L,LP);
+*/
 /*
    // Noch etwas anderes rein:
    Lager::st_rohlager rohlager5(LP,100,20,5,22,artikel2,datum);

@@ -1,4 +1,4 @@
-// $Id: instanz_auftrag.cc,v 1.5 2002/01/23 13:43:53 christof Exp $
+// $Id: instanz_auftrag.cc,v 1.6 2002/02/05 17:15:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -25,24 +25,24 @@
 #include <Auftrag/AuftragsBaum.h>
 //#include <Aux/ppsInstanz.h>
 
-void showChildren(AufEintragBase2 AEB)
+void showChildren(AufEintragBase AEB)
 {
   AuftragsBaum AB(AEB,true);
-  std::cout << "Self: "<<AEB.Instanz()<<' '<<AEB.Id()<<' '<<AEB.ZNr()<<' '<<'\n';
+  std::cout << "Self: "<<AEB.Instanz()->Name()<<' '<<AEB.Id()<<' '<<AEB.ZNr()<<' '<<'\n';
   for (AuftragsBaum::const_iterator i=AB.begin();i!=AB.end();++i)
    {
-     std::cout <<i->AEB2.Instanz()<<' '<<i->AEB2.Id()<<' '<<i->AEB2.ZNr()
+     std::cout <<i->AEB2.Instanz()->Name()<<' '<<i->AEB2.Id()<<' '<<i->AEB2.ZNr()
          <<' '<<cH_ArtikelBezeichnung(i->AB)->Bezeichnung()
          <<'\t'<<i->menge<<' '
          <<'\t'<<cH_ArtikelBezeichnung(i->AB)->Bezeichnung()<<' '
-         <<cH_ppsInstanz(i->AEB2.Instanz())->Name()<<'\n';
+         <<i->AEB2.Instanz()->Name()<<'\n';
    }
 }
 
-vector<AufEintragBase> showTest(Auftrag id)
+vector<AufEintrag> showTest(Auftrag id)
 {
    AuftragFull af(id);
-   std::vector<AufEintragBase> VAEB;
+   std::vector<AufEintrag> VAEB;
    for (AuftragFull::const_iterator i=af.begin(); i!=af.end(); ++i)
     {  
       showChildren(*i);
@@ -62,17 +62,18 @@ int main()
       id=a;
       std::cout << "Auftrag " << a.Id() << '\n';
    
-      Petig::Datum date(1,1,2012);
+      Petig::Datum date(1,6,2012);
       int znr;
-      znr=a.insertNewEntry(1000, date, 210014,OPEN,true);
+      znr=a.insertNewEntry(10000, date, 190449,OPEN,true);
+      znr=a.insertNewEntry(10000, date, 190449,OPEN,true);
 //      znr=a.insertNewEntry(2000, date, 218849,UNCOMMITED,true);
    }
-   std::vector<AufEintragBase> VAEB=showTest(id);
+   std::vector<AufEintrag> VAEB=showTest(id);
 /*
    static const int TESTZEILE = 1;
    int znr=0;
 //   Petig::Datum newdate(3,3,2100);
-   for(std::vector<AufEintragBase>::iterator i=VAEB.begin();i!=VAEB.end();++i)
+   for(std::vector<AufEintrag>::iterator i=VAEB.begin();i!=VAEB.end();++i)
     {
       if(++znr==TESTZEILE)
        {

@@ -24,7 +24,7 @@
 #include <Aux/Preis.h>
 #include <Auftrag/auftrag_status.h>
 //#include <Aux/Datum.h>
-class AufEintragBase;
+class AufEintrag;
 #include <Kunde/Kunde.h>
 // hier sollten noch viel mehr Funktionen aus Auftrag rein !!!
 
@@ -33,6 +33,8 @@ class AuftragBase
         bool Exists() const throw(SQLerror) ;
  public:
         typedef fixedpoint<0> mengen_t;
+//        typedef Preis::rabatt_t rabatt_t;
+	typedef int rabatt_t; // vorläufig ...
 
  protected:
         cH_ppsInstanz instanz; 	
@@ -47,7 +49,8 @@ class AuftragBase
         
 	int Id() const {return auftragid;}
         void set_Id(int i) {auftragid = i;}
-        ppsInstanz::ID Instanz() const {return instanz->Id(); }
+        ppsInstanz::ID InstanzID() const {return instanz->Id(); }
+        cH_ppsInstanz Instanz() const {return instanz; }
 	bool valid() const { return auftragid!=0; }
         void setStatusAuftragBase(AufStatVal st) const throw(SQLerror);
 

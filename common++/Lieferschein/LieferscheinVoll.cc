@@ -1,4 +1,4 @@
-/* $Id: LieferscheinVoll.cc,v 1.4 2002/01/23 13:43:53 christof Exp $ */
+/* $Id: LieferscheinVoll.cc,v 1.5 2002/02/05 17:15:52 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -43,7 +43,7 @@ LieferscheinVoll::LieferscheinVoll(const cH_ppsInstanz& _instanz,int lid,bool au
   "coalesce(ly.zusatzinfo,'f'), coalesce(ly.refauftragid,0),"
   " coalesce(ly.refzeilennr,0)"
   " from lieferscheinentry ly "
-  " left join auftrag a on ly.refauftragid = a.auftragid"
+  " left join auftrag a on (ly.refauftragid,ly.instanz) = (a.auftragid,a.instanz)"
   " where (ly.instanz,ly.lfrsid) = ("+itos(Instanz())+","+itos(Id())+") order by "+
   (auforder ? "ly.refauftragid,ly.zeile":"ly.zeile");
   
@@ -64,7 +64,7 @@ LieferscheinVoll::LieferscheinVoll(const cH_ppsInstanz& _instanz,int lid,bool au
    
     lsentry.push_back(LieferscheinEntry(Instanz(),Id(),zeile,artikelid,
 		stueck,menge,palette,yourauftrag,zusatzinfo,
-		AufEintragBase2(Instanz(),refauftrag,refaufzeile)));
+		AufEintragBase(Instanz(),refauftrag,refaufzeile)));
    }
  SQLerror::test("LieferscheinVoll::LieferscheinVoll",100);
 

@@ -1,4 +1,4 @@
-/* $Id: sqlAuftragSelector.h,v 1.12 2002/01/22 09:15:55 christof Exp $ */
+/* $Id: sqlAuftragSelector.h,v 1.13 2002/02/05 17:15:52 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,7 +23,7 @@
 #include<string>
 #include<Artikel/ArtikelBase.h>
 #include<Auftrag/AuftragBase.h>
-#include <Auftrag/AufEintragBase2.h>
+#include <Auftrag/AufEintragBase.h>
 #include<Aux/ppsInstanz.h>
 #include <vector>
 
@@ -31,12 +31,20 @@ class SQLFullAuftragSelector // : public SQLAuftragSelector
 {
  std::string clausel;
 
+ static std::string SQLFullAuftragSelector::StatusQualifier(AufStatVal v);
+
 public:
+ SQLFullAuftragSelector() {}
+
  struct sel_Status
-  { sel_Status(ppsInstanz::ID in, int st) : instanz(in),status(st) {}
+  { sel_Status(ppsInstanz::ID in, AufStatVal st,bool _geplant=true) 
+    : instanz(in),status(st),geplant(_geplant) {}
     ppsInstanz::ID instanz;
-    int status;
+    AufStatVal status;
+    bool geplant; 
   };  
+
+
  SQLFullAuftragSelector(const sel_Status& selstr);
 
  struct sel_Aufid
@@ -46,8 +54,8 @@ public:
  SQLFullAuftragSelector(const sel_Aufid& selstr);
 
  struct sel_AufidZnr
-  { AufEintragBase2 auftrag_znr;
-    sel_AufidZnr(const AufEintragBase2& a) : auftrag_znr(a) {}
+  { AufEintragBase auftrag_znr;
+    sel_AufidZnr(const AufEintragBase& a) : auftrag_znr(a) {}
   };
  SQLFullAuftragSelector(const sel_AufidZnr& selstr);
 
@@ -75,6 +83,30 @@ public:
     {}
   };
  SQLFullAuftragSelector(const sel_Kunde_Artikel &selstr);
+
+ // bislang nur offene Aufträge
+ // sortiert nach Lieferdatum (asc)
+ struct sel_Artikel_Planung
+  { ppsInstanz::ID instanz;
+    ArtikelBase artikel;
+    bool geplant;
+    
+    sel_Artikel_Planung(ppsInstanz::ID i, ArtikelBase a, bool g=true) 
+    : instanz(i), artikel(a), geplant(g)
+    {}
+  };
+ SQLFullAuftragSelector(const sel_Artikel_Planung &selstr);
+
+ struct sel_Kunde_Status
+  { Kunde::ID kundennr;
+    ppsInstanz::ID instanz;
+    AufStatVal stat;
+    
+    sel_Kunde_Status(ppsInstanz::ID i, Kunde::ID k, AufStatVal s) 
+    : kundennr(k), instanz(i), stat(s)
+    {}
+  };
+ SQLFullAuftragSelector(const sel_Kunde_Status &selstr);
 
  void setClausel(const std::string &cl) { clausel = cl;}
  const std::string getClausel() const { return clausel; }

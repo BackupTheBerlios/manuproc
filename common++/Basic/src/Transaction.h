@@ -1,4 +1,4 @@
-// $Id: Transaction.h,v 1.2 2001/06/27 08:04:09 christof Exp $
+// $Id: Transaction.h,v 1.3 2002/02/05 17:15:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,12 +21,15 @@
 #ifndef CXX_AUX_TRANSACTION_H
 #define CXX_AUX_TRANSACTION_H
 #include <Aux/SQLerror.h>
+#include <list>
 
 // default is to roll back on close
 class Transaction
 {	bool owner:1;
 	bool commit_vs_rollback:1;
 	std::string connection;
+	
+	static list<std::string> open_connections;
 public:
 	Transaction(const std::string &connection="",bool open_now=true) throw(SQLerror);
 //	Transaction(bool open_now) throw(SQLerror); // old ctor

@@ -1,5 +1,6 @@
 #include "ppsInstanz.h"
 #include <Aux/SQLerror.h>
+#include <Aux/Transaction.h>
 exec sql include sqlca;
 
 cH_ppsInstanz::cache_t cH_ppsInstanz::cache;
@@ -17,18 +18,39 @@ cH_ppsInstanz::cH_ppsInstanz(ppsInstanz::ID iid)
 
 void ppsInstanz::get_name()
 {
+ if(instid == INST_NONE) return;
+ try{
+
  exec sql begin declare section;
    char db_name[50];
-   int db_nr=instid,db_lager_fuer;
+   int db_nr=instid,db_lager_fuer, db_best_fuer,db_sortierung;
    int IN=INST_NONE;
+   bool db_liefer;
+   char db_lagername[50];
  exec sql end declare section;
- exec sql select name,coalesce(lager_fuer,:IN) 
-      into :db_name,:db_lager_fuer 
+ exec sql select name,coalesce(lager_fuer,:IN),sortierung ,
+      coalesce(lieferschein,'f'),coalesce(lagername,'')
+      into :db_name,:db_lager_fuer,:db_sortierung ,:db_liefer,:db_lagername
       from prod_instanz where insid= :db_nr;
- SQLerror::test(__FILELINE__,100);
- if(sqlca.sqlcode) *db_name=0;
+ SQLerror::test(__FILELINE__);
+// if(sqlca.sqlcode) *db_name=0;
+
+cout << instid<< ' ' <<db_name<<' '<<db_lager_fuer<<' '
+<<db_sortierung<<' '<<db_liefer<<' '<<db_lagername<<'\n';
  name=db_name;
  lager_fuer=ppsInstId(db_lager_fuer);
+ sortierung=db_sortierung;
+ lieferschein=db_liefer;
+ lagername=db_lagername;
+
+ if(lager_fuer!=None)
+  {
+    exec sql select insid into :db_best_fuer from prod_instanz 
+         where lager_fuer=:db_nr;
+    bestellung_fuer=ppsInstId(db_best_fuer);
+  } 
+ else bestellung_fuer=None;
+ }catch(SQLerror &e) {cerr<<e<<'\n'; exit(1);}
 }
 
 cH_Prozess ppsInstanz::get_Prozess() const
@@ -44,9 +66,31 @@ cH_Prozess ppsInstanz::get_Prozess() const
 	}
 }
 
-bool ppsInstanz::LagerInstanz(ppsInstId instanz)
+bool ppsInstanz::LagerInstanz() const
 {
-  if       (instanz == ppsInstanz::INST_BANDLAGER) return true;
-  else if  (instanz == ppsInstanz::INST_ROHLAGER ) return true;
+  if (LagerFuer()!=None) return true;
   return false;
+}
+
+std::vector<cH_ppsInstanz> cH_ppsInstanz::get_all_instanz()
+{
+ vector<cH_ppsInstanz> v;
+ try{
+  exec sql begin declare section;
+    int db_i;
+  exec sql end declare section;
+  exec sql declare ins_ein cursor for select insid from 
+      prod_instanz order by sortierung;
+  Transaction tr;
+  exec sql open ins_ein;
+  SQLerror::test(__FILELINE__);
+  while (true)
+   {
+     exec sql fetch ins_ein into :db_i;
+     SQLerror::test(__FILELINE__,100);
+     if (sqlca.sqlcode) break;
+     v.push_back(cH_ppsInstanz(ppsInstanz::ppsInstId(db_i)));
+   }
+ }catch(SQLerror &e){cerr << e<<'\n';}
+ return v;
 }

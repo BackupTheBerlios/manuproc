@@ -1,4 +1,4 @@
-// $Id: ArtikelBaum.pgcc,v 1.15 2002/01/22 09:15:55 christof Exp $
+// $Id: ArtikelBaum.pgcc,v 1.16 2002/02/05 17:15:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,7 +23,7 @@
 #include <Faeden/Faden.hh>
 #include <Faeden/Materialeigenschaft.hh>
 #include <Artikel/ArtikelStamm.h>
-#include <Auftrag/AufEintragBase.h>
+#include <Auftrag/AufEintrag.h>
 #include <Auftrag/AuftragsBaum.h>
 #include <Auftrag/AuftragsEntryZuordnung.h>
 #include <list>
@@ -68,15 +68,15 @@ void ArtikelBaum::setID(const ID &stamp) throw(SQLerror)
     }
 #ifdef PETIG_EXTENSIONS    
     try {  ArtikelStamm AS(*this);
-   if(AS.BestellenBei()==ppsInstanz::INST_BANDLAGER || 
-      AS.BestellenBei()==ppsInstanz::INST_WEB)
+   if(AS.BestellenBei()==ppsInstanz::Bandlager || 
+      AS.BestellenBei()==ppsInstanz::Weberei)
      {
        Schussfaeden schussfaeden;
        Fadenliste fadenliste;
        static Bindungsliste bindungsliste;
        try {                  
           schussfaeden.Load(ARTIKELID);
-          if (!bindungsliste.size()) bindungsliste.Load();
+          if (bindungsliste.empty()) bindungsliste.Load();
           fadenliste.Load(ARTIKELID,bindungsliste);
          }
        catch(SQLerror &e) {/*std::cerr << e << '\n';*/}
@@ -138,9 +138,29 @@ void ArtikelBaum::gleiche_Faeden_summieren()
 }
 
 
+int ArtikelBaum::Tiefe() const
+{
+  if(tiefe!=NoDepth) return tiefe;
+
+  tiefe=0;
+  for (const_iterator i=begin();i!=end();++i)
+   { int t=ArtikelBaum(i->rohartikel).Tiefe();
+     if (t>tiefe) tiefe=t;
+   }
+  ++tiefe;
+  if (ArtikelStamm(Id()).BestellenBei()->LagerInstanz())
+      ++tiefe;
+//cout << cH_ArtikelBezeichnung(Id())->Bezeichnung()
+//<< cH_ppsInstanz(ArtikelStamm(Id()).BestellenBei())->Name()<<'\t'
+//<< "  Tiefe: "<< tiefe<<'\n';
+  return tiefe;
+}
+
+
+
 void ArtikelBaum::new_Artikel(ArtikelBase fuer_artikel,const RohArtikel& RA)
 {
- if (RA.rohartikel.Id()==0 || RA.menge==menge_t(0) ) abort();
+ if (RA.rohartikel.Id()==0 || RA.menge==faktor_t(0) ) abort();
  Transaction tr;
  exec sql begin declare section;
     int ARTIKELID;
@@ -161,17 +181,17 @@ void ArtikelBaum::new_Artikel(ArtikelBase fuer_artikel,const RohArtikel& RA)
  tr.commit();
 }
 
-void ArtikelBaum::create_in_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel,menge_t RohMenge)
+void ArtikelBaum::create_in_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind_artikel,faktor_t RohMenge)
 {
 #warning erstezen durch FullAuftragSelector? MAT
-  std::list<AufEintragBase2> elternliste = AufEintragZu::get_AufEintragList_from_Artikel(alt_artikel,ArtikelStamm(alt_artikel).BestellenBei()->Id(),NOSTAT);
+  std::list<AufEintragBase> elternliste = AufEintragZu::get_AufEintragList_from_Artikel(alt_artikel,ArtikelStamm(alt_artikel).BestellenBei()->Id(),NOSTAT);
 //std::cout << "Create :"<<elternliste.size()<<"\n\n\n\n";
-  for(std::list<AufEintragBase2>::const_iterator e=elternliste.begin();e!=elternliste.end();++e)
+  for(std::list<AufEintragBase>::const_iterator e=elternliste.begin();e!=elternliste.end();++e)
    {
-     AufEintragBase AEB(*e);
-     AufEintragBase2::mengen_t menge=AEB.getStueck()*RohMenge;
+     AufEintrag AEB(*e);
+     AufEintragBase::mengen_t menge=AEB.getStueck()*RohMenge;
      AuftragBase AB(ArtikelStamm(kind_artikel).BestellenBei(),0); 
-cout << ArtikelStamm(kind_artikel).BestellenBei()->Name()<<'\n';
+//cout << ArtikelStamm(kind_artikel).BestellenBei()->Name()<<'\n';
 //     int znr = AB.tryUpdateEntry(menge,AEB.getLieferdatum(),
 //         kind_artikel,AEB.getEntryStatus(),*e,e->ZNr(),true);
 //     AufEintragZu(*e).AuftragsEntryZuordnung(menge,AB,znr);
@@ -196,8 +216,8 @@ void ArtikelBaum::delete_Artikel(ArtikelBase fuer_artikel,ArtikelBase von_artike
  tr.commit();
 }
 
-  struct st_aam{AufEintragBase AEB;AufEintragBase oldAEB;AufEintragBase2::mengen_t menge;
-         st_aam(const AufEintragBase &_AEB,const AufEintragBase &_oldAEB,AufEintragBase2::mengen_t _menge)
+  struct st_aam{AufEintrag AEB;AufEintrag oldAEB;AufEintragBase::mengen_t menge;
+         st_aam(const AufEintrag &_AEB,const AufEintrag &_oldAEB,AufEintragBase::mengen_t _menge)
           :AEB(_AEB),oldAEB(_oldAEB),menge(_menge) {} };
 
 
@@ -232,9 +252,9 @@ void ArtikelBaum::delete_from_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind
         exec sql fetch mein into :AAUFID,:AINSTANZ,:AZNR,:AUFID,:INSTANZ,:ZNR,:MENGE;
         SQLerror::test(__FILELINE__,100);
         if (sqlca.sqlcode) break;
-        AufEintragBase AEB=AufEintragBase(class AufEintragBase2(
+        AufEintrag AEB=AufEintrag(class AufEintragBase(
                cH_ppsInstanz((ppsInstanz::ppsInstId)INSTANZ),AUFID,ZNR));
-        AufEintragBase oldAEB=AufEintragBase(class AufEintragBase2(
+        AufEintrag oldAEB=AufEintrag(class AufEintragBase(
                cH_ppsInstanz((ppsInstanz::ppsInstId)AINSTANZ),AAUFID,AZNR));
         V.push_back(st_aam(AEB,oldAEB,MENGE));
       }
@@ -260,21 +280,21 @@ void ArtikelBaum::delete_from_zuordnung(ArtikelBase alt_artikel,ArtikelBase kind
 }
 
 
-void ArtikelBaum::reduceChildren(const AufEintragBase& AEB,
-                                 const AufEintragBase& oldAEB,
-                                 AufEintragBase2::mengen_t menge) 
+void ArtikelBaum::reduceChildren(const AufEintrag& AEB,
+                                 const AufEintrag& oldAEB,
+                                 AufEintragBase::mengen_t menge) 
 {
 //std::cout << AEB.Instanz()<<' '<<AEB.ZNr()<<'\t'
 //<<oldAEB.Instanz()<<' '<<oldAEB.ZNr()<<'\t'<<menge<<'\n';
 
-  const_cast<AufEintragBase&>(AEB).updateStk(AEB.getStueck()-menge,false);
+  const_cast<AufEintrag&>(AEB).updateStk(AEB.getStueck()-menge,false);
   AufEintragZu(oldAEB).setMengeDiff(-menge,AEB,AEB.ZNr());
   std::list<AufEintragZu::st_reflist> L=AufEintragZu(AEB).get_Referenz_list(AEB,true);
 //std::cout << '\t'<<L.size()<<'\n';
   for(std::list<AufEintragZu::st_reflist>::iterator i=L.begin();i!=L.end();++i)
    {
 //std::cout << '\t'<<i->AEB2.Instanz()<<' '<<i->AEB2.ZNr()<<'\t'<<i->Menge<<'\n';
-     reduceChildren(AufEintragBase(i->AEB2),AEB,i->Menge);
+     reduceChildren(AufEintrag(i->AEB2),AEB,i->Menge);
    }
 }        
 
@@ -283,9 +303,9 @@ void ArtikelBaum::UnCache(const ArtikelBase &stamp)
 {  cache.deregister(stamp.Id());
 }
 
-ArtikelBaum::menge_t ArtikelBaum::Faktor(const ArtikelBase &kind) throw(SQLerror)
+ArtikelBaum::faktor_t ArtikelBaum::Faktor(const ArtikelBase &kind) throw(SQLerror)
 {  if (kind==static_cast<const ArtikelBase &>(*this)) return 1;
-   menge_t result=0;
+   faktor_t result=0;
    for (const_iterator i=begin();i!=end();++i)
    {  if (i->rohartikel==kind) result+=i->menge;
       else result+=i->menge*ArtikelBaum(i->rohartikel).Faktor(kind);

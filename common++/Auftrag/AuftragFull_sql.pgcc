@@ -8,11 +8,11 @@ int AuftragFull::insertNewEntry(unsigned long int bestellt,
                Preis preis, fixedpoint<2> rabatt) throw (SQLerror)
 {
   int znr=AuftragBase::insertNewEntry(bestellt,lieferdatum,artid,status,true,preis,rabatt);
-  eintragliste.push_back(AufEintragBase(
+  eintragliste.push_back(AufEintrag(
       Instanz(),Id(),znr,bestellt,artid,lieferdatum,
       0,0,0,getStatus(),getKundennr(),getYourAufNr(),
-      Petig::Datum(),Prozess::default_id,0,0,preis,rabatt,status,
-      Petig::Datum::today()));
+      Petig::Datum(),Prozess::default_id,ppsInstanz::None,0,
+      preis,rabatt,status,Petig::Datum::today()));
   return znr;
 }
 
@@ -28,7 +28,7 @@ AuftragFull::AuftragFull(const AuftragBase& auftrag) throw(SQLerror)
 {
  SelectedFullAufList aufids((SQLFullAuftragSelector)
  			(SQLFullAuftragSelector::sel_Aufid(auftrag)));
- for(std::vector<AufEintragBase>::iterator i = aufids.aufidliste.begin();
+ for(std::vector<AufEintrag>::iterator i = aufids.aufidliste.begin();
 				 	 i!=aufids.aufidliste.end(); i++)
  {  try { eintragliste.push_back(*i);
     } catch (SQLerror &e)
@@ -51,7 +51,7 @@ AuftragFull::AuftragFull(Anlegen instanz, long kundennr) throw(SQLerror)
 int AuftragFull::get_index_by_znr(int znr)
 {
   int c=0;
-  for (AufEintragBaseList::const_iterator i=eintragliste.begin();i!=eintragliste.end();++i,++c)
+  for (AufEintragList::const_iterator i=eintragliste.begin();i!=eintragliste.end();++i,++c)
      { if((*i).getZnr()==znr) return c;}
   assert(!"AuftragFull::get_index_by_znr: nichts gefunden");
   abort();
@@ -60,7 +60,7 @@ int AuftragFull::get_index_by_znr(int znr)
 void AuftragFull::setStatusAuftragFull(AufStatVal status) throw(SQLerror)
 {
   Auftrag::setStatusAuftrag_(status);
-  for (AufEintragBaseList::iterator i=eintragliste.begin();i!=eintragliste.end();++i)
+  for (AufEintragList::iterator i=eintragliste.begin();i!=eintragliste.end();++i)
     i->setStatus(status);
 }
 

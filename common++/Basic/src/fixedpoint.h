@@ -1,4 +1,4 @@
-// $Id: fixedpoint.h,v 1.6 2001/12/04 08:42:10 christof Exp $
+// $Id: fixedpoint.h,v 1.7 2002/02/05 17:15:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -144,8 +144,7 @@ public:
 	{  return scaled!=b.scaled;
 	}
 	
-	// do we really need this function?
-        // yes, I do MAT
+	// do we really need this function? Ausgabe_neu::Formatiere is for this
 	std::string String() const
 	{  char buf[64];
 	   snprintf(buf,sizeof buf,"%.*f",decimals,Ftype(*this));
@@ -173,6 +172,10 @@ public:
 	{  *this=(Ftype)(f.as_float());
 	   return *this;
 	}
+	
+	// to tell the compiler which way to prefer
+	self_t operator+(const Ftype b) const
+	{  return *this+self_t(b); }
 };
 
 template <int decimals,class Ftype,class Itype>

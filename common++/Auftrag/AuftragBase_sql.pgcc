@@ -21,10 +21,10 @@
 #include <Aux/Transaction.h>
 #include<Aux/Changejournal.h>
 #include <Auftrag/auftrag_status.h>
-#include "AufEintragBase.h"
+#include "AufEintrag.h"
 #include <Artikel/ArtikelStamm.h>
 #include <Auftrag/AuftragsEntryZuordnung.h>
-#include <ProdLager/ProdLager.hh>
+#include <Lager/Lager_Vormerkungen.hh>
 
 exec sql include sqlca;
 
@@ -48,10 +48,11 @@ bool AuftragBase::Exists() const throw(SQLerror)
 {
  exec sql begin declare section;
   int AUFTRAGID=Id();
-  int INSTANZ=int(Instanz());
+  int INSTANZ=InstanzID();
   bool DUMMY;
  exec sql end declare section;
- exec sql select true into :DUMMY from auftrag where auftragid=:AUFTRAGID and instanz=:INSTANZ;
+ exec sql select true into :DUMMY from auftrag where 
+	auftragid= :AUFTRAGID and instanz= :INSTANZ;
  SQLerror::test(__FILELINE__,100);
  if(sqlca.sqlcode) return false;
  return true;
@@ -59,12 +60,12 @@ bool AuftragBase::Exists() const throw(SQLerror)
 
 void AuftragBase::create_if_not_exists(AufStatVal status,Kunde::ID kunde) const
 {
-cout << "create_if_not_exists: "<<Exists()<<'\n';
+//cout << "create_if_not_exists: "<<Exists()<<'\n';
   if(Exists()) return;
-cout << "Anlegen "<<Instanz()<<' '<<Id()<<'\n';
+//cout << "Anlegen "<<Instanz()->Name()<<' '<<Id()<<'\n';
   exec sql begin declare section;
    int AUFTRAGID=Id();
-   int INSTANZ=int(Instanz());
+   int INSTANZ=InstanzID();
    int KUNDE=kunde;
    int STATUS=status;
   exec sql end declare section;
@@ -78,7 +79,7 @@ void AuftragBase::setStatusAuftragBase(AufStatVal st) const throw(SQLerror)
 {
  exec sql begin declare section;
   int AUFTRAGID=Id();
-  int INSTANZ=int(Instanz());
+  int INSTANZ=InstanzID();
   int STATUS=st;
  exec sql end declare section;
 
@@ -100,7 +101,7 @@ int AuftragBase::insertNewEntry(const mengen_t bestellt,
  exec sql begin declare section;
  int AUFTRAGID =Id();
  long ARTIKELID=artikel.Id();
- int INSTANZ =Instanz();
+ int INSTANZ =InstanzID();
  int ZEILENNR;
  int BESTELLT=bestellt;
  char LIEFERDATUM[21];
@@ -124,7 +125,7 @@ int AuftragBase::insertNewEntry(const mengen_t bestellt,
 	bestellt,geliefert,lieferdate,artikelid,status,
 	preis,rabatt,preismenge)
 	values (:INSTANZ, :AUFTRAGID, :ZEILENNR, :BESTELLT, 0, :LIEFERDATUM,
-		:ARTIKELID, :STATUS, :PREIS/100.0, :RABATT/100.0,
+		:ARTIKELID, :STATUS, :PREIS, :RABATT/100.0,
 		:PREISMENGE);
  SQLerror::test(__FILELINE__" insert into auftragentry");	
 	
@@ -132,7 +133,7 @@ int AuftragBase::insertNewEntry(const mengen_t bestellt,
   { try{
      pps_ChJournalEntry::newChange(
                         instanz,
-			AufEintragBase2(instanz,AUFTRAGID,ZEILENNR),
+			AufEintragBase(instanz,AUFTRAGID,ZEILENNR),
                         artikel,
                         (double)BESTELLT,
                         (double)BESTELLT,
@@ -179,7 +180,7 @@ bool AuftragBase::existEntry(const ArtikelBase& artikel,
  exec sql begin declare section;
    int AUFTRAGID =Id();
    long ARTIKELID=artikel.Id();
-   int INSTANZ =Instanz();
+   int INSTANZ =InstanzID();
    int ZEILENNR,NEUZNR=-99;
    double MENGE;
    char LIEFERDATUM[21];
@@ -230,17 +231,9 @@ void AuftragBase::tryUpdateEntry(mengen_t bestellt,
       const throw(SQLerror)
 {
  create_if_not_exists(status);
-//std::cout << "Try: "<<altAuftrag.Instanz()<<' '<<altAuftrag.Id()<<' '<<altZnr<<'\n';
- AufEintragBase2 XAEB(altAuftrag,altZnr);
+//std::cout << "Try: "<<altAuftrag.Instanz()->Name()<<' '<<altAuftrag.Id()<<' '<<altZnr<<'\n';
+ AufEintragBase XAEB(altAuftrag,altZnr);
 //std::cout << "\tErfolg\n";
-/*
- if(ppsInstanz::LagerInstanz(Instanz()))
-   {
-cout << "Lagerbestellung: "<<Instanz()<<' '<<Id()<<' '<<altZnr<<'\n';
-     ProdLager(class AufEintragBase(XAEB));
-     return;
-   }
-*/
  int znr=-99,neuznr=-99;
  mengen_t menge=0;
  Transaction tr;
@@ -248,11 +241,12 @@ cout << "Lagerbestellung: "<<Instanz()<<' '<<Id()<<' '<<altZnr<<'\n';
  SQLerror::test(__FILELINE__);  
  if(!existEntry(artikel,lieferdatum,znr,neuznr,menge,status))
   {
-cout << "Neu\n";
-    if(ppsInstanz::LagerInstanz(Instanz()))
+//cout << "Neu\n";
+//cout << Instanz()->Name()<<"  Lager ? : "<<ppsInstanz::LagerInstanz(InstanzID())<<'\n';
+    if(Instanz()->LagerInstanz())
      {
        znr=insertNewEntry(bestellt,lieferdatum,artikel,status,false)  ;
-       ProdLager(class AufEintragBase(class AufEintragBase2(*this,znr))).vormerken_oder_bestellen();
+       Lager_Vormerkungen(class AufEintrag(Instanz()->Id(),Id(),znr,bestellt,artikel,lieferdatum,status)).vormerken_oder_bestellen();
      }
     else 
        znr=insertNewEntry(bestellt,lieferdatum,artikel,status,true)  ;
@@ -261,19 +255,20 @@ cout << "Neu\n";
   }
  else
   {
-cout << "Alt\t"<<znr<<' '<<altZnr<<' '<<neuznr<<' '
-<<AufEintragBase2(instanz,auftragid,znr).ZNr()<<"  MENGE:"<<bestellt<<'\n';
+//cout << "Alt\t"<<znr<<' '<<altZnr<<' '<<neuznr<<' '
+//<<AufEintragBase(instanz,auftragid,znr).ZNr()<<"  MENGE:"<<bestellt<<'\n';
     if(!AufEintragZu(XAEB).setMengeDiff(bestellt,*this,znr))
         AufEintragZu(XAEB).AuftragsEntryZuordnung(bestellt,*this,znr);
 
-   AufEintragBase2(instanz,auftragid,znr).updateStkDiff(bestellt);
 //std::cout << "\t"<<instanz->Name()<<' '<<auftragid<<' '<<znr<<' '
 //<<cH_ArtikelBezeichnung(artikel)->Bezeichnung()<<' '<<menge<<'+'<<bestellt<<' '<<status<<'\n';
-//std::cout << "Alt\t"<<znr<<' '<<altZnr<<' '<<AufEintragBase2(instanz,auftragid,znr).ZNr()<<'\n';
-    if(ppsInstanz::LagerInstanz(Instanz()))
-      ProdLager(class AufEintragBase(class AufEintragBase2(*this,znr))).vormerken_oder_bestellen();
+//std::cout << "Alt\t"<<znr<<' '<<altZnr<<' '<<AufEintragBase(instanz,auftragid,znr).ZNr()<<'\n';
+//cout << Instanz()->Name()<<"  Lager ? : "<<ppsInstanz::LagerInstanz(InstanzID())<<'\n';
+    if(Instanz()->LagerInstanz())
+       Lager_Vormerkungen(class AufEintrag(Instanz()->Id(),Id(),znr,bestellt,artikel,lieferdatum,status)).vormerken_oder_bestellen();
     else 
       InstanzAuftraegeAnlegen(artikel,znr,lieferdatum,status, bestellt) ;
+    AufEintragBase(instanz,auftragid,znr).updateStkDiff(bestellt);
   }
   tr.commit();
 }

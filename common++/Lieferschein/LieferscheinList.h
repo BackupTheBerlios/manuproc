@@ -1,4 +1,4 @@
-/* $Id: LieferscheinList.h,v 1.6 2002/01/22 09:15:55 christof Exp $ */
+/* $Id: LieferscheinList.h,v 1.7 2002/02/05 17:15:52 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -65,7 +65,7 @@ public:
 
 
  LieferscheinList(const cH_ppsInstanz instanz,const sel_GeliefStat &selparam) throw(SQLerror);
- LieferscheinList(const sel_DPDLNr &selparam) throw(SQLerror);
+ LieferscheinList(const cH_ppsInstanz _instanz,const sel_DPDLNr &selparam) throw(SQLerror);
  bool setDPDData(int dpdlnr) throw(SQLerror);
 #endif
 

@@ -1,4 +1,4 @@
-// $Id: ppsInstanz.h,v 1.25 2002/01/21 15:17:59 christof Exp $
+// $Id: ppsInstanz.h,v 1.38 2002/02/05 17:12:58 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -24,51 +24,75 @@
 #include <Aux/Handles.h>
 #include <Aux/CacheStatic.h>
 #include <Artikel/Prozess.h>
+#include <vector>
 
 class ppsInstanz : public HandleContent
 {
 public:
- enum ppsInstId {INST_NONE,INST_KNDAUF=1,
- 	None=INST_NONE, Kundenauftraege=INST_KNDAUF, 
+ enum ppsInstId {None=0,
+ 	Kundenauftraege=1,
 #if defined(PETIG_EXTENSIONS) || defined(MABELLA_EXTENSIONS)
- 	INST_FAERB=2,INST_DRUCK=3,INST_WEB=4,
-        INST_SCHAER=5,INST_SPRITZ=7,INST_GARNEINKAUF=6,INST_BANDLAGER=8,
-        INST_ROHLAGER=9,
-        // das gefaellt mir besser CP 10'2001
-        Faerberei=INST_FAERB,
-        Druckerei=INST_DRUCK, Bandlager=INST_BANDLAGER,
-        Rollerei=10
+        Faerberei=2,
+        Druckerei=3, 
+        Weberei=4,
+        Schaererei=5,
+        Einkauf=6,
+        Spritzgiesserei=7,
+        Bandlager=8,
+        Rohlager=9,
+        Rollerei=10, 
 #endif
+//	MaxInstanz,
+// veraltet
+ 	INST_KNDAUF=Kundenauftraege, INST_NONE=None, 
+ 	INST_FAERB=Faerberei,INST_DRUCK=Druckerei,INST_WEB=Weberei,
+        INST_SCHAER=Schaererei,INST_SPRITZ=Spritzgiesserei,
+        INST_GARNEINKAUF=Einkauf,INST_BANDLAGER=Bandlager,
+        INST_ROHLAGER=Rohlager,
         };
  
 private: 
- ppsInstId instid,lager_fuer; 
+ ppsInstId instid,lager_fuer,bestellung_fuer; 
  std::string name;
+ int sortierung;
+ bool lieferschein;
+ std::string lagername;
  
  void get_name();
  
 public:
  typedef ppsInstId ID;
- static const ID default_id=INST_NONE;
- 
- ppsInstanz(ppsInstId iid) : instid(iid) {get_name();}
- ppsInstanz() : instid(INST_NONE) {}
+ static const ID default_id=Kundenauftraege;
 
-// absolet void set_Instanz(ppsInstId iid) {instid=iid; get_name();}
+ 
+ ppsInstanz(ppsInstId iid) : instid(iid),
+                             lager_fuer(None),bestellung_fuer(None),
+                             sortierung(0),
+                             lieferschein(false)
+                             {get_name(); }
+ ppsInstanz() : instid(None),sortierung(0),lieferschein(false) {}
+
  ppsInstId Id() const { return instid; }
+ int Sortierung() const {return sortierung; }
+ bool Lieferschein() const {return lieferschein;}
  std::string get_Name() const {return name;}
  std::string Name() const {return name;}
  ppsInstId LagerFuer() const { return lager_fuer; }
+ bool LagerInstanz() const ;
+ std::string LagerName() const {return lagername;}
+ ppsInstId BestellungFuer() const { return bestellung_fuer; }
  cH_Prozess get_Prozess() const;
- 
- static bool LagerInstanz(ppsInstId instid);
+ bool Lieferant() const {return lieferschein;} // Gegenteil von 'Lieferant' ist 'Kunde'
 
 
  operator ppsInstId () const {return instid;}
  void set(ppsInstId i) {instid=i; get_name();}
  
+
  bool operator==(const ppsInstanz &b) const
  {  return instid==b.instid; }
+ bool operator<(const ppsInstanz &b) const
+ {  return Sortierung()<b.Sortierung(); }
  bool operator!=(const ppsInstanz &b) const
  {  return instid!=b.instid; }
  bool operator==(ppsInstId b) const
@@ -87,8 +111,15 @@ class cH_ppsInstanz : public Handle<const ppsInstanz>
      cH_ppsInstanz(ppsInstanz::ID iid);
      cH_ppsInstanz(const ppsInstanz *s) : Handle<const ppsInstanz>(s) {};
 
-     bool operator==(const cH_ppsInstanz &b) const 
-     {return (*this)->Id()==b->Id();}
+     static std::vector<cH_ppsInstanz> get_all_instanz();
+
+     bool operator==(ppsInstanz::ppsInstId b) const
+     {  return *(*this)==b; }
+     bool operator!=(ppsInstanz::ppsInstId b) const
+     {  return *(*this)!=b; }
+     bool operator==(const cH_ppsInstanz &b) const
+     {  return *(*this)==*b; }
 };
+
 
 #endif

@@ -54,6 +54,7 @@ public:
 	Bindung getByName (const string) const;
 	Bindung	getById (const ID) const;
 	void print_out() const;
+	bool empty() const { return liste.empty(); }
 };
 
 #endif

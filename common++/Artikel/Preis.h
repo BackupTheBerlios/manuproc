@@ -1,4 +1,4 @@
-// $Id: Preis.h,v 1.8 2002/01/23 13:43:53 christof Exp $
+// $Id: Preis.h,v 1.9 2002/02/05 17:15:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -77,7 +77,7 @@ public:
 	bool operator<(const Preis &b) const;
 	
 	const Preis operator+=(const Preis &b)
-	{  pfennig_cent+=b.Wert(waehrung,preismenge);
+	{  *this=*this+b;
 	   return *this;
 	}
 	

@@ -1,4 +1,4 @@
-// $Id: Changejournal.h,v 1.4 2001/10/08 09:08:12 christof Exp $
+// $Id: Changejournal.h,v 1.5 2002/02/05 17:15:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,7 +20,7 @@
 #include<Aux/Datum.h>
 #include<Aux/SQLerror.h>
 #include<Artikel/ArtikelBase.h>
-#include<Auftrag/AufEintragBase2.h>
+#include<Auftrag/AufEintragBase.h>
 #include<Aux/ppsInstanz.h>
 
 
@@ -52,7 +52,7 @@ private:
  Petig::Datum datum;
  ChJStatVal status;
  ArtikelBase artikel;
- AufEintragBase2 auftragentry;
+ AufEintragBase auftragentry;
  double newval;
  Petig::Datum newdate;
  double delta;
@@ -60,12 +60,12 @@ private:
 
 public:
  static const pps_ChJournalEntry newChange(cH_ppsInstanz inst,
- 		const AufEintragBase2 &aufe, const ArtikelBase &art,
+ 		const AufEintragBase &aufe, const ArtikelBase &art,
  		double _newval, double _delta, ChJType _type,
  		CID change=0) throw(SQLerror);
  	
  static const pps_ChJournalEntry newChange(cH_ppsInstanz inst,
- 		const AufEintragBase2 &aufe, const ArtikelBase &art,
+ 		const AufEintragBase &aufe, const ArtikelBase &art,
  		const Petig::Datum &_newdat, double _delta, ChJType _type,
  		CID change=0) throw(SQLerror); 	
  		

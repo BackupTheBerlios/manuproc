@@ -1,4 +1,10 @@
-// $Id: AufEintragBase.cc,v 1.14 2002/01/22 09:15:55 christof Exp $
+/* Processed by ecpg (2.9.0) */
+/* These three include files are added by the preprocessor */
+#include <ecpgtype.h>
+#include <ecpglib.h>
+#include <ecpgerrno.h>
+#include <sqlca.h>
+#line 1 "AufEintragBase.pgcc"
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,161 +23,464 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include"AufEintragBase.h"
-#include <Aux/string0.h>
-//#include <Aux/ppsInstanz.h>
-//#include <Auftrag/AuftragsBaum.h> 
-#include <Artikel/ArtikelBaumFull.h>
-#include <Auftrag/AuftragsEntryZuordnung.h>
+#include <Auftrag/AufEintragBase.h>
+#include "AufEintrag.h"
+#include <Aux/Transaction.h>
+#include <Auftrag/auftrag_status.h>
+#include <Auftrag/AuftragsBaum.h> 
+#include <Aux/Changejournal.h>
 
-AufEintragBase::AufEintragBase(ppsInstanz::ID _instanz,int _auftragid, int _zeilennr, mengen_t _bestellt,
-	int _artikel, const Petig::Datum _lieferdatum,
-	mengen_t _geliefert,
-	int _dispoentrynr, int _disponr,
-	AufStatVal _aufstatus,
-	int _kdnr, const std::string _youraufnr,
-	const Petig::Datum& _prozdate,
-	int _prozess,int _letztePlanInstanz, int _maxPlanInstanz,
-	const Preis &_preis, int _rabatt,
-	AufStatVal _entrystatus, const Petig::Datum _lasteditdate) throw()
-: AufEintragBase2(_instanz,_auftragid,_zeilennr),
- artikel(_artikel),
- dispoentrynr(_dispoentrynr),
- disponr(_disponr),
- auftragstatus(_aufstatus),
- entrystatus(_entrystatus),
- kdnr(_kdnr),
- youraufnr(_youraufnr),
- geliefert(_geliefert),
- lieferdatum(_lieferdatum),
- lasteditdate(_lasteditdate),
- prozess(Prozess::default_id),
- letztePlanInstanz(_letztePlanInstanz),
- maxPlanInstanz(_maxPlanInstanz),
- bestellt(_bestellt),
- preis(_preis),
- rabatt(_rabatt)
+
+#line 1 "/usr/lib/postgresql/include/sqlca.h"
+#ifndef POSTGRES_SQLCA_H
+#define POSTGRES_SQLCA_H
+
+#ifndef DLLIMPORT
+#ifdef __CYGWIN__
+#define DLLIMPORT __declspec (dllimport)
+#else
+#define DLLIMPORT
+#endif   /* __CYGWIN__ */
+#endif   /* DLLIMPORT */
+
+#define SQLERRMC_LEN	70
+
+#ifdef __cplusplus
+extern		"C"
 {
- prozess=cH_Prozess(Prozess::ID(_prozess ? _prozess : cH_Prozess::default_pid));
- if(! _prozess) prozdate=Petig::Datum();
- else prozdate.from_postgres(_prozdate.c_str());
-}
-	
+#endif
 
-
-
-std::ostream &operator<<(std::ostream &o,const AufEintragBase &aeb)
-{  o << "{artikel="<< cH_ArtikelBezeichnung(aeb.artikel)->Bezeichnung() << "Instanz = "<<aeb.instanz->Id()<< " menge="
-	<</*aeb.menge <<*/ " dispoentrynr="
-	<<aeb.dispoentrynr
-	<< " auftragid="<<aeb.auftragid
-	<<" zeilennr="<<aeb.zeilennr << " bestellt="<<aeb.bestellt
-	<<" geliefert="<<aeb.geliefert << " rest=" /*<< aeb.rest*/
-	<<" lieferdatum="<< aeb.lieferdatum.c_str() << " meterprostk="<<
-	 /*aeb.artikel->Stueckgroesse()<<*/
-	 "Auftrag-Prozess="<<aeb.prozess->Id()<<
-	 "Prozess-Datum="<<aeb.prozdate<<
-	 "Preis"<<aeb.preis<<
-	 "Rabatt"<<aeb.rabatt<<
-	 "EntryStat"<<aeb.entrystatus<<
-	 "LasteEditDate"<<aeb.lasteditdate<<
-	 "}";
-   return o;
-}
-
-
-const Preis AufEintragBase::GPreis() const
-{ return preis.In(preis.getWaehrung(),bestellt)*(1-rabatt/10000.0);
-// Braucht man die warnings noch? 14.11.01 MAT
-#warning rabatt auf fixedpoint umstellen
-#warning ob rabatt auf den Einzelpreis oder den Gesamtpreis (wie hier) gerechnet werden soll?
-}
-
-
-void AufEintragBase::setVerarbeitung(const cH_Prozess p)
+struct sqlca
 {
- AufEintragBase2::setVerarbeitung(p);
+	char		sqlcaid[8];
+	long		sqlabc;
+	long		sqlcode;
+	struct
+	{
+		int			sqlerrml;
+		char		sqlerrmc[SQLERRMC_LEN];
+	}			sqlerrm;
+	char		sqlerrp[8];
+	long		sqlerrd[6];
+	/* Element 0: empty						*/
+	/* 1: OID of processed tuple if applicable			*/
+	/* 2: number of rows processed				*/
+	/* after an INSERT, UPDATE or				*/
+	/* DELETE statement					*/
+	/* 3: empty						*/
+	/* 4: empty						*/
+	/* 5: empty						*/
+	char		sqlwarn[8];
+	/* Element 0: set to 'W' if at least one other is 'W'	*/
+	/* 1: if 'W' at least one character string		*/
+	/* value was truncated when it was			*/
+	/* stored into a host variable.				*/
 
- prozess=p;
- prozdate=Petig::Datum().today();
+	/*
+	 * 2: if 'W' a (hopefully) non-fatal notice occured
+	 */	/* 3: empty */
+	/* 4: empty						*/
+	/* 5: empty						*/
+	/* 6: empty						*/
+	/* 7: empty						*/
+
+	char		sqlext[8];
+};
+
+extern DLLIMPORT struct sqlca sqlca;
+
+
+#ifdef __cplusplus
 }
+#endif
 
-void AufEintragBase::abschreiben(mengen_t menge) throw(SQLerror)
+#endif
+
+#line 27 "AufEintragBase.pgcc"
+
+
+void AufEintragBase::setVerarbeitung(const cH_Prozess p) const throw(SQLerror)
 {
- geliefert=AufEintragBase2::abschreiben(menge);
- if(geliefert>=bestellt) entrystatus=(AufStatVal)CLOSED;
+ assert (Instanz()==ppsInstanz::Kundenauftraege);
+ /* exec sql begin declare section */
+   
+   
+   
+   
+ 
+#line 33 "AufEintragBase.pgcc"
+   int  AUFTRAGID  = Id () ;
+ 
+#line 34 "AufEintragBase.pgcc"
+   int  INSTANZ  = InstanzID () ;
+ 
+#line 35 "AufEintragBase.pgcc"
+   int  ZEILENNR  = ZNr () ;
+ 
+#line 36 "AufEintragBase.pgcc"
+   int  PROZESSID   ;
+/* exec sql end declare section */
+#line 37 "AufEintragBase.pgcc"
+
+ PROZESSID=p->getProzessID();
+ 
+ Transaction tr;
+ 
+ { ECPGdo(__LINE__, NULL, "update auftrag_prozess set prozessid  = ? , datum  = now ()  where auftragid  = ? and zeilennr  = ?", 
+	ECPGt_int,&(PROZESSID),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(AUFTRAGID),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(ZEILENNR),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);}
+#line 43 "AufEintragBase.pgcc"
+
+ SQLerror::test("Prozessaktualisierung",100);
+ 
+ if((sqlca.sqlcode==100) || sqlca.sqlerrd[2]==0)
+   {
+    { ECPGdo(__LINE__, NULL, "insert into auftrag_prozess ( auftragid  , instanz  , zeilennr  , prozessid  , datum  ) values ( ? , ? , ? , ? , now () )", 
+	ECPGt_int,&(AUFTRAGID),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(INSTANZ),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(ZEILENNR),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(PROZESSID),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);}
+#line 51 "AufEintragBase.pgcc"
+
+    SQLerror::test("Prozessaktualisierung");
+   }
+ tr.commit();
 }
 
 
-
-const std::string AufEintragBase::getEntryStatusStr() const
-{  return AuftragBase::getStatusStr(entrystatus);
-}
-
-
-bool AufEintragBase::allesOK() const
+bool AufEintragBase::deleteAuftragEntry() const throw(SQLerror)
 {
- if (!getStueck()) return false;
- if (!getLieferdatum().valid()) return false;
+  assert (InstanzID()!=ppsInstanz::INST_KNDAUF) ;
+
+   AuftragsBaum AB(*this,true);
+ if(AB.size()!=0) return false;
+
+ /* exec sql begin declare section */
+  
+  
+  
+ 
+#line 69 "AufEintragBase.pgcc"
+   int  AUFTRAGID  = auftragid ;
+ 
+#line 70 "AufEintragBase.pgcc"
+   int  ZEILENNR  = zeilennr ;
+ 
+#line 71 "AufEintragBase.pgcc"
+   int  INSTANZ  = InstanzID () ;
+/* exec sql end declare section */
+#line 72 "AufEintragBase.pgcc"
+
+  { ECPGdo(__LINE__, NULL, "delete from auftragsentryzuordnung where neuauftragid  = ? and neuinstanz  = ? and neuzeilennr  = ?", 
+	ECPGt_int,&(AUFTRAGID),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(INSTANZ),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(ZEILENNR),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);}
+#line 75 "AufEintragBase.pgcc"
+
+ SQLerror::test(__FILELINE__+(std::string)" DELETE AUFTRAG 1");
+
+  { ECPGdo(__LINE__, NULL, "delete from auftragentry where auftragid  = ? and zeilennr  = ? and instanz  = ?", 
+	ECPGt_int,&(AUFTRAGID),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(ZEILENNR),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(INSTANZ),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);}
+#line 80 "AufEintragBase.pgcc"
+
+ SQLerror::test(__FILELINE__+(std::string)" DELETE AUFTRAG 2");
  return true;
 }
 
-
-/*
-std::vector<pair<cH_Prozess,long> > AufEintragBase::getProzess2() const
+AuftragBase::mengen_t AufEintragBase::abschreiben(mengen_t menge) const throw(SQLerror)
 {
+ /* exec sql begin declare section */
+  
+  
+  
+   
+  
+  
+ 
+#line 89 "AufEintragBase.pgcc"
+   int  AUFID  = Id () ;
+ 
+#line 90 "AufEintragBase.pgcc"
+   int  AUFZNR  = ZNr () ;
+ 
+#line 91 "AufEintragBase.pgcc"
+   int  INSTANZ  = InstanzID () ;
+ 
+#line 92 "AufEintragBase.pgcc"
+   int  STATUS   ;
+ 
+#line 93 "AufEintragBase.pgcc"
+   int  BESTELLT   ;
+ 
+#line 94 "AufEintragBase.pgcc"
+   int  GELIEFERT   ;
+/* exec sql end declare section */
+#line 95 "AufEintragBase.pgcc"
+
+ 
+ Transaction tr;
+ { ECPGdo(__LINE__, NULL, "lock table auftragentry in exclusive mode", ECPGt_EOIT, ECPGt_EORT);}
+#line 98 "AufEintragBase.pgcc"
+
+ { ECPGdo(__LINE__, NULL, "select  bestellt  , geliefert  , status   from auftragentry where auftragid  = ? and zeilennr  = ? and instanz  = ?  ", 
+	ECPGt_int,&(AUFID),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(AUFZNR),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(INSTANZ),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, 
+	ECPGt_int,&(BESTELLT),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(GELIEFERT),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(STATUS),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EORT);}
+#line 102 "AufEintragBase.pgcc"
+
+ SQLerror::test(__FILELINE__);
+ AufStatVal oldstatus=AufStatVal(STATUS);
+
+ if(menge>=0 && STATUS!=(AufStatVal)OPEN) 
+    throw(SQLerror(__FILELINE__,-1,"Auftragszeile ist bereits geschlossen"));
+ if(menge<0 && STATUS==(AufStatVal)UNCOMMITED) 
+    throw(SQLerror(__FILELINE__,-1,"Auftragszeile ist nicht bestätigt"));
+ GELIEFERT+=menge;
+ if(GELIEFERT>=BESTELLT) STATUS=(AufStatVal)CLOSED;
+ else if(menge<0 && GELIEFERT<BESTELLT) STATUS=(AufStatVal)OPEN;
+
+ if(STATUS!=oldstatus)
+   AufEintrag(*this).setStatus(AufStatVal(STATUS),true);
+
+ { ECPGdo(__LINE__, NULL, "update auftragentry set geliefert  = ? , status  = ?  where auftragid  = ? and zeilennr  = ? and instanz  = ?", 
+	ECPGt_int,&(GELIEFERT),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(STATUS),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(AUFID),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(AUFZNR),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(INSTANZ),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);}
+#line 118 "AufEintragBase.pgcc"
+  
+ SQLerror::test(__FILELINE__);
+ tr.commit();
+
+cout << STATUS<<' '<<oldstatus<<'\n';
+
+ return GELIEFERT;
+}
+
+
+
+void AufEintragBase::setLetztePlanungFuer(ppsInstanz::ID planinstanz) const throw(SQLerror)
+{
+ assert (Instanz()==ppsInstanz::Kundenauftraege);
+ /* exec sql begin declare section */
+   
+   
+   
+   
+ 
+#line 133 "AufEintragBase.pgcc"
+   int  AUFTRAGID  = Id () ;
+ 
+#line 134 "AufEintragBase.pgcc"
+   int  ZEILENNR  = ZNr () ;
+ 
+#line 135 "AufEintragBase.pgcc"
+   int  INSTANZ  = InstanzID () ;
+ 
+#line 136 "AufEintragBase.pgcc"
+   int  PLANUNG  = planinstanz ;
+/* exec sql end declare section */
+#line 137 "AufEintragBase.pgcc"
+
+ Transaction tr;
+ 
+ { ECPGdo(__LINE__, NULL, "update auftrag_prozess set letztePlanInstanz  = ? , maxPlanInstanz  = null , datum  = now ()  where auftragid  = ? and instanz  = ? and zeilennr  = ?", 
+	ECPGt_int,&(PLANUNG),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(AUFTRAGID),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(INSTANZ),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(ZEILENNR),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);}
+#line 142 "AufEintragBase.pgcc"
+
+ SQLerror::test("Prozessaktualisierung",100);
+ 
+ if((sqlca.sqlcode==100) || sqlca.sqlerrd[2]==0)
+   {
+    { ECPGdo(__LINE__, NULL, "insert into auftrag_prozess ( instanz  , auftragid  , zeilennr  , datum  , letztePlanInstanz  ) values ( ? , ? , ? , now () , ? )", 
+	ECPGt_int,&(INSTANZ),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(AUFTRAGID),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(ZEILENNR),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(PLANUNG),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);}
+#line 150 "AufEintragBase.pgcc"
+
+    SQLerror::test("Prozessaktualisierung");
+   }
+ tr.commit();
+}
+
+void AufEintragBase::calculateProzessInstanz()
+{
+  assert (Instanz()==ppsInstanz::Kundenauftraege);
   AuftragsBaum AB(*this,true);
-  std::vector<pair<cH_Prozess,long> > L;
+  int anz=0;
   for(AuftragsBaum::const_iterator i=AB.begin();i!=AB.end();++i)
    {
-     if(i->AEB2.Id()==0) continue; // 0 = ungeplante Aufträge       
-     L.push_back(pair<cH_Prozess,long>(
-        cH_ppsInstanz(AufEintragBase(i->AEB2).getAuftragInstanz())->get_Prozess(),
-        i->menge));
-
-//std::cout << "Auftrag: "<<Id()<<' '<<Instanz()
-//     <<"\tKinder : " <<i->AEB2.Id()<<' ' <<i->AEB2.Instanz()<<'\n';
+     if(i->AEB2.Id()==0) continue;      if(AufEintrag(i->AEB2).getStueck() == i->menge)
+       ++anz;
    }
- return L;
-}
-*/
-/*
-std::string AufEintragBase::getProzess2_c_str() const
+   setMaxPlanInstanz(anz);
+}   
+
+
+void AufEintragBase::setMaxPlanInstanz(int maxplaninstanz) const throw(SQLerror)
 {
- std::vector<pair<cH_Prozess,long> > L=getProzess2();
- std::string s;
- for(std::vector<pair<cH_Prozess,long> >::const_iterator i=L.begin();i!=L.end();++i)
+ /* exec sql begin declare section */
+   
+   
+   
+   
+ 
+#line 174 "AufEintragBase.pgcc"
+   int  AUFTRAGID  = Id () ;
+ 
+#line 175 "AufEintragBase.pgcc"
+   int  ZEILENNR  = ZNr () ;
+ 
+#line 176 "AufEintragBase.pgcc"
+   int  INSTANZ  = InstanzID () ;
+ 
+#line 177 "AufEintragBase.pgcc"
+   int  PLANUNG  = maxplaninstanz ;
+/* exec sql end declare section */
+#line 178 "AufEintragBase.pgcc"
+
+
+ Transaction tr;
+ 
+ { ECPGdo(__LINE__, NULL, "update auftrag_prozess set maxPlanInstanz  = ? , datum  = now ()  where auftragid  = ? and instanz  = ? and zeilennr  = ?", 
+	ECPGt_int,&(PLANUNG),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(AUFTRAGID),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(INSTANZ),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(ZEILENNR),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);}
+#line 184 "AufEintragBase.pgcc"
+
+ SQLerror::test("Prozessaktualisierung");
+ 
+ tr.commit();
+}
+
+
+void AufEintragBase::updateStkDiff(mengen_t menge) const throw(SQLerror)
+{
+ /* exec sql begin declare section */
+    
+  
+      
+    
+ 
+#line 194 "AufEintragBase.pgcc"
+   int  AUFTRAGID  = Id () ;
+ 
+#line 195 "AufEintragBase.pgcc"
+   int  INSTANZ  = instanz -> Id () ;
+ 
+#line 196 "AufEintragBase.pgcc"
+   int  ZEILENNR  = ZNr () ;
+ 
+#line 197 "AufEintragBase.pgcc"
+   double  MENGE  = menge ;
+/* exec sql end declare section */
+#line 198 "AufEintragBase.pgcc"
+
+
+ Transaction tr;
+
+ { ECPGdo(__LINE__, NULL, "update auftragentry set bestellt  = bestellt  + ?  where ( instanz  , auftragid  , zeilennr  ) = ( ? , ? , ? )", 
+	ECPGt_double,&(MENGE),1L,1L,sizeof(double), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(INSTANZ),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(AUFTRAGID),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(ZEILENNR),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);}
+#line 204 "AufEintragBase.pgcc"
+
+ SQLerror::test("updateStkDiff: update stk in auftragentry");
+
+#warning updateStk im Moment FALSCHE Einträge in ProdChageJournal!!! 
   {
-   mengen_t menge = i->second;
-   s+=i->first->getTyp()+" "+i->first->getText()+"("+itos(menge)+")";
-   if(i+1!=L.end()) s+= ", ";
+     pps_ChJournalEntry::newChange(
+         instanz, *this,
+         0,0,MENGE,pps_ChJournalEntry::CH_MENGE);
   }
- return s;
+ tr.commit(); 
 }
-*/
-std::string AufEintragBase::Planung() const
+
+
+void AufEintragBase::setStatus_raw(AufStatVal status)  const throw(SQLerror)
 {
-//  int tiefe = ArtikelBaumFull(ArtId()).Tiefe();
-  AufEintragZu AEZ(*this);
-  AEZ.get_Referenz_listFull(true,false); // nur um die Tiefe zu berechnen
-  int tiefe = AEZ.Tiefe();
-  return itos(maxPlanInstanz)+"/"+itos(tiefe);  
-//  return cH_ppsInstanz((ppsInstanz::ppsInstId)letztePlanInstanz)->Name();  
+ /* exec sql begin declare section */
+    
+  
+      
+  
+ 
+#line 223 "AufEintragBase.pgcc"
+   int  AUFTRAGID  = Id () ;
+ 
+#line 224 "AufEintragBase.pgcc"
+   int  INSTANZ  = InstanzID () ;
+ 
+#line 225 "AufEintragBase.pgcc"
+   int  ZEILENNR  = ZNr () ;
+ 
+#line 226 "AufEintragBase.pgcc"
+   int  STATUS  = status ;
+/* exec sql end declare section */
+#line 227 "AufEintragBase.pgcc"
+
+
+ { ECPGdo(__LINE__, NULL, "update auftragentry set status  = STATUS   where ( instanz  , auftragid  , zeilennr  ) = ( ? , ? , ? )", 
+	ECPGt_int,&(INSTANZ),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(AUFTRAGID),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_int,&(ZEILENNR),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, ECPGt_EORT);}
+#line 230 "AufEintragBase.pgcc"
+
+ SQLerror::test("updateStatus_raw: update status in auftragentry");
 }
-
-
-/*
-long AufEintragBase::get_Referenz_AufEintragBase2_Summe(int instanz,bool ursprung,bool kinder) const throw(SQLerror)
-{
-  std::list<pair<AufEintragBase2,long> > L=get_Referenz_AufEintragBase2(ursprung,kinder);
-  long int summe=0;
-  for(std::list<pair<AufEintragBase2,long> >::const_iterator i=L.begin();i!=L.end();++i)
-   {
-     //Aufträge mit Id=0 sind ungeplant!
-     if(i->first.Instanz()==instanz && i->first.Id()!=0)
-        summe+=i->second;
-   }
-  return summe;
-}
-
-*/

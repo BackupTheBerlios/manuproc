@@ -20,7 +20,7 @@
 #define AUFTRAGFULL_H
 
 #include <Auftrag/Auftrag.h>
-#include <Auftrag/AufEintragBase.h>
+#include <Auftrag/AufEintrag.h>
 
 // for pps only
 namespace Gtk { class CList; }
@@ -29,22 +29,22 @@ class aktAufEintrag;
 class AuftragFull : public Auftrag
 {	
 public:
-	typedef std::vector<AufEintragBase> AufEintragBaseList;
-	typedef std::vector<AufEintragBase>::iterator iterator;
-	typedef std::vector<AufEintragBase>::const_iterator const_iterator;
+	typedef std::vector<AufEintrag> AufEintragList;
+	typedef std::vector<AufEintrag>::iterator iterator;
+	typedef std::vector<AufEintrag>::const_iterator const_iterator;
 private:
-	AufEintragBaseList eintragliste;
+	AufEintragList eintragliste;
 public:
 	AuftragFull(const AuftragBase& auftrag) throw(SQLerror);
 	// neuen Auftrag anlegen
 	AuftragFull(Auftrag::Anlegen _instanz, long kundennr) throw(SQLerror);
 	
 	void deleteEintrag(int zeilennr, int idx) throw(SQLerror);	
-	const AufEintragBase &getAufEntry(int idx) const 
+	const AufEintrag &getAufEntry(int idx) const 
 	        { return eintragliste[idx];}
-	AufEintragBase &getAufEntry(int idx)  
+	AufEintrag &getAufEntry(int idx)  
         	{ return eintragliste[idx];}
-	AufEintragBase getAufEntry_by_znr(int znr)  
+	AufEintrag getAufEntry_by_znr(int znr)  
         	{ return eintragliste[get_index_by_znr(znr)];}
         int get_index_by_znr(int znr);
 	void split(int idx, const Petig::Datum &liefdatum, int menge)

@@ -23,7 +23,7 @@
 #include<Aux/SQLerror.h>
 #include<Aux/Datum.h>
 #include<Artikel/ArtikelBase.h>
-#include<Auftrag/AufEintragBase2.h>
+#include<Auftrag/AufEintragBase.h>
 #include<Artikel/Preis.h>
 #include"RechnungBase.h"
 #include"LieferscheinBase.h"
@@ -38,7 +38,7 @@ public:
 private:
  int zeilennr;
  ArtikelBase artikel;
- AufEintragBase2 refauftrag;
+ AufEintragBase refauftrag;
  int stueck;
  mengen_t menge;
  Preis preis;

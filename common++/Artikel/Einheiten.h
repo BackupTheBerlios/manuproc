@@ -16,47 +16,73 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Einheiten.h,v 1.5 2001/12/23 21:42:15 christof Exp $
-
-// diese Datei ... sollte vielleicht demnaechst aus einer Datenbanktabelle
-// erzeugt werden? Tabelle: Einheiten
+// $Id: Einheiten.h,v 1.6 2002/02/05 17:15:52 christof Exp $
 
 #ifndef ARTIKEL_EINHEITEN_H
 #define ARTIKEL_EINHEITEN_H
 
 #include <Artikel/ArtikelBase.h>
 #include <Aux/SQLerror.h>
+#include <Aux/CacheStatic.h>
+//#include <Aux/Handles.h>
 
-class Einheit
-{public:
+
+class Einheit //: public HandleContent
+{
+public:
 	enum Einheiten { Stueck, Meter, kg, Fdkm, DM, Euro };
 	typedef enum Einheiten ID;
 	static const ID default_id=Stueck;
 
 private:
 	enum Einheiten einh;
+	std::string bez_anzahl,tex_anzahl, bez_menge,tex_menge;
+	
+	typedef CacheStatic<Einheiten,Einheit> cache_t;
+	static cache_t cache;
+
+	// nicht auskommentieren !!! wichtige Fehlerabfrage
+	Einheit(int x); // not defined, use ID!
+	
+	Einheit() : einh(default_id) {}
+	friend class map<Einheiten,Einheit>;
 
 public:
-	Einheit(ID e) : einh(e) {}
+	Einheit(const ArtikelBase &ab) throw(SQLerror);
+	Einheit(const ID e);
 	ID Id() const { return einh; }
-	operator std::string() const;
-	operator Einheiten() const
+	operator ID() const
 	{ return einh;
 	}
-	Einheit(const ArtikelBase &ab) throw(SQLerror);
-	bool operator!=(enum Einheiten b) const
+	bool operator!=(const ID b) const
 	{ return einh!=b; }
-	bool operator==(enum Einheiten b) const
+	bool operator==(const ID b) const
 	{ return einh==b; }
-	std::string StueckEinheit() const;
-	std::string MengenEinheit() const;
+
+	std::string Bezeichnung() const
+	{ return (std::string)(*this); }
+	operator std::string() const;
+	std::string StueckEinheit() const
+	{  return bez_anzahl; }
+	std::string MengenEinheit() const
+	{  return bez_menge; }
+	std::string StueckEinheit_TeX() const
+	{  return tex_anzahl; }
+	std::string MengenEinheit_TeX() const
+	{  return tex_menge; }
 	std::string TeX() const;
 };
-
-// bitte nicht mehr verwenden ! (globaler Namensraum)
-static const Einheit::ID EINH_STUECK=Einheit::Stueck;
-static const Einheit::ID EINH_METER=Einheit::Meter;
-static const Einheit::ID EINH_KG=Einheit::kg;
-static const Einheit::ID EINH_FDKM=Einheit::Fdkm;
+/*
+class cH_Einheit : public Handle<const Einheit>   
+{
+  typedef CacheStatic<Einheit::ID,cH_Einheit> cache_t; 
+  static cache_t cache;
+  cH_Einheit(const Einheit *s) : Handle<const Einheit>(s) {};
+  friend class std::map<Einheit::ID,cH_Einheit>;
+  cH_Einheit(){};
+ public:
+  cH_Einheit(const Einheit::ID id) ;
+};
+*/
 
 #endif

@@ -1,7 +1,7 @@
 #ifndef CXX_AUFTRAG_AUFTRAGSBAUM_H
 #define CXX_AUFTRAG_AUFTRAGSBAUM_H
 
-#include <Auftrag/AufEintragBase2.h>
+#include <Auftrag/AufEintragBase.h>
 #include <vector>
 
 
@@ -9,10 +9,10 @@ class AuftragsBaum
 {
  public:
         struct st_AuftragsBlatt
-                { AufEintragBase2 AEB2; 
+                { AufEintragBase AEB2; 
                   ArtikelBase AB;
-                  AufEintragBase2::mengen_t menge;
-                  st_AuftragsBlatt(AufEintragBase2 a,ArtikelBase ab,AufEintragBase2::mengen_t m)
+                  AufEintragBase::mengen_t menge;
+                  st_AuftragsBlatt(AufEintragBase a,ArtikelBase ab,AufEintragBase::mengen_t m)
                     : AEB2(a),AB(ab),menge(m) {} 
                 };
 
@@ -25,7 +25,7 @@ class AuftragsBaum
         auftragsbaum_t auftragsbaum;
         
  public:
-        AuftragsBaum(const AufEintragBase2 aeb,bool kinder=false); 
+        AuftragsBaum(const AufEintragBase aeb,bool kinder=false); 
                 //kinder=false: Alle Elternaufträge
                 //kinder=true : Alle Kinderaufträge
                                                 
@@ -35,6 +35,8 @@ class AuftragsBaum
           {  return auftragsbaum.begin(); }
          const_iterator end() const
           {  return auftragsbaum.end(); }
+         bool empty() const
+          {  return auftragsbaum.empty(); }
               
 };                    
 #endif

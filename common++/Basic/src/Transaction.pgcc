@@ -1,4 +1,4 @@
-// $Id: Transaction.pgcc,v 1.2 2001/06/27 08:04:09 christof Exp $
+// $Id: Transaction.pgcc,v 1.3 2002/02/05 17:15:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -18,14 +18,16 @@
  */
 
 #include <Aux/Transaction.h>
+#include <algorithm>
 exec sql include sqlca;
 
-#if 0
-Transaction::Transaction(bool open_now) throw(SQLerror)
-	: owner(false)
-{  if (open_now) open(connection);
-}
-#endif
+list<std::string> Transaction::open_connections;
+
+#define GARNIX
+// for ecpg 7.1
+
+#define USE_SPEED_HACK 
+  // this can get confused (if you use dbdefault)
 
 Transaction::Transaction(const std::string &_connection,bool open_now) throw(SQLerror)
 	: owner(false), connection(_connection)
@@ -34,24 +36,38 @@ Transaction::Transaction(const std::string &_connection,bool open_now) throw(SQL
 
 void Transaction::open(const std::string &_connection) throw(SQLerror)
 {  assert(!owner); // crash and burn on recursion!
-   if (_connection.size()) connection=_connection;
-   
-   if (connection.size()) 
+   if (!_connection.empty()) connection=_connection;
+
+#ifdef USE_SPEED_HACK
+   if (std::find(open_connections.begin(),open_connections.end(),connection)!=
+   		open_connections.end())
+   {  owner=commit_vs_rollback=false;
+      return;
+   }
+#endif
+
+   if (!connection.empty()) 
    {  exec sql begin declare section;
-      const char *conn;
+      const char *conn=connection.c_str(GARNIX);
       exec sql end declare section;
-      conn=connection.c_str();
+
       exec sql at :conn begin work;
    }
    else exec sql begin work;
    SQLerror::test(__FILELINE__"Transaction::open",ECPG_NOTICE_IN_TRANSACTION);
+   
+   open_connections.push_back(connection);
+   
+#ifdef USE_SPEED_HACK   
+   assert(!sqlca.sqlcode);
+#endif
    owner=!sqlca.sqlcode;
    commit_vs_rollback=false;
 }
 
 void Transaction::close() throw(SQLerror)
 {  if (owner)
-   {  if (connection.size()) 
+   {  if (!connection.empty()) 
       {  exec sql begin declare section;
          const char *conn;
          exec sql end declare section;
@@ -64,6 +80,9 @@ void Transaction::close() throw(SQLerror)
       {  if (commit_vs_rollback) exec sql commit work;
          else exec sql rollback work;
       }
+#ifdef USE_SPEED_HACK
+      open_connections.remove(connection);
+#endif
       owner=false;
       SQLerror::test(__FILELINE__"Transaction::close");
    }

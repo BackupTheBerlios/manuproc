@@ -1,4 +1,4 @@
-// $Id: AuftragsEntryZuordnung_sql.pgcc,v 1.5 2002/01/22 09:15:55 christof Exp $
+// $Id: AuftragsEntryZuordnung_sql.pgcc,v 1.6 2002/02/05 17:15:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -18,7 +18,7 @@
  */
 
 #include <Auftrag/AuftragsEntryZuordnung.h>
-#include "AufEintragBase.h"
+//#include "AufEintrag.h"
 #include <Aux/Transaction.h>
 #include <Auftrag/auftrag_status.h>
 #include <Auftrag/AuftragsBaum.h> 
@@ -27,7 +27,7 @@
 
 exec sql include sqlca;
 
-list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list(const AufEintragBase2& aeb,bool kinder) const throw(SQLerror) 
+list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list(const AufEintragBase& aeb,bool kinder) const throw(SQLerror) 
 {
  exec sql begin declare section;
   int INSTANZ[30],AUFTRAGID[30],ZEILENNR[30];
@@ -43,14 +43,14 @@ list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list(const AufEintragB
       join auftragentry on (neuauftragid,neuinstanz,neuzeilennr)
          = (auftragid,instanz,zeilennr)
       where (altauftragid,altinstanz,altzeilennr) = 
-       ("+itos(aeb.Id())+","+itos(aeb.Instanz())+","+itos(aeb.ZNr())+")";
+       ("+itos(aeb.Id())+","+itos(aeb.InstanzID())+","+itos(aeb.ZNr())+")";
  else
     squery = "select altauftragid,altinstanz,altzeilennr,menge,artikelid
       from auftragsentryzuordnung 
       join auftragentry on (altauftragid,altinstanz,altzeilennr)
          = (auftragid,instanz,zeilennr)
       where (neuauftragid,neuinstanz,neuzeilennr) = 
-       ("+itos(aeb.Id())+","+itos(aeb.Instanz())+","+itos(aeb.ZNr())+")";
+       ("+itos(aeb.Id())+","+itos(aeb.InstanzID())+","+itos(aeb.ZNr())+")";
  strncpy(query,squery.c_str(),sizeof(query));
  exec sql prepare ONAUF_ from :query;
 //std::cout << query<<"\n\n\n";
@@ -66,7 +66,7 @@ list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_list(const AufEintragB
     for (int i=0;i<j;++i)
      {
       vaeb.push_back(st_reflist(
-         AufEintragBase2(cH_ppsInstanz((ppsInstanz::ppsInstId)INSTANZ[i]),
+         AufEintragBase(cH_ppsInstanz((ppsInstanz::ppsInstId)INSTANZ[i]),
              AUFTRAGID[i],ZEILENNR[i]),ARTIKEL[i],MENGE[i]));
      }
     if(j<30) break;
@@ -81,7 +81,7 @@ list<AufEintragZu::st_reflist> AufEintragZu::get_Referenz_listFull(bool kinder,b
  std::list<st_reflist> tv=get_Referenz_list(AEB,kinder);
  std::list<st_reflist> vaeb;
  std::list<st_reflist> tvxx;
- ++tiefe;
+// ++tiefe;
 reloop:
  tv.splice(tv.end(),tvxx);
  for (std::list<st_reflist>::iterator i=tv.begin();i!=tv.end();++i)
@@ -89,7 +89,7 @@ reloop:
      tvxx=get_Referenz_list(i->AEB2,kinder);
      if(nur_ende)
       {
-        if (tvxx.size()==0) vaeb.splice(vaeb.end(),tv,i) ;
+        if (tvxx.empty()) vaeb.splice(vaeb.end(),tv,i) ;
         else tv.erase(i) ; 
       }
      else vaeb.splice(vaeb.end(),tv,i) ;
@@ -102,7 +102,7 @@ reloop:
 list<cH_Kunde> AufEintragZu::get_Referenz_Kunden_long() const throw(SQLerror)
 {
  std::list<cH_Kunde> LK;
-// std::list<st_reflist> vaeb = get_Referenz_AufEintragBase2();
+// std::list<st_reflist> vaeb = get_Referenz_AufEintragBase();
  std::list<st_reflist> vaeb = get_Referenz_listFull(false);
  exec sql begin declare section;
   int KUNDE;
@@ -111,7 +111,7 @@ list<cH_Kunde> AufEintragZu::get_Referenz_Kunden_long() const throw(SQLerror)
  exec sql end declare section;
  for (std::list<st_reflist>::const_iterator i=vaeb.begin();i!=vaeb.end();++i)
   {
-    INSTANZ=i->AEB2.Instanz();
+    INSTANZ=i->AEB2.InstanzID();
     AUFTRAGID=i->AEB2.Id();
     exec sql select kundennr into :KUNDE from auftrag where
       auftragid=:AUFTRAGID and instanz=:INSTANZ; 
@@ -129,10 +129,10 @@ list<cH_Kunde> AufEintragZu::get_Referenz_Kunden() const throw(SQLerror)
  return LK;
 }
 
-std::list<AufEintragBase2> AufEintragZu::get_AufEintragList_from_Artikel
+std::list<AufEintragBase> AufEintragZu::get_AufEintragList_from_Artikel
                (const ArtikelBase& artikel,ppsInstanz::ppsInstId instanz,AufStatVal status)
 {
-  std::list<AufEintragBase2> L;
+  std::list<AufEintragBase> L;
   exec sql begin declare section;
    char query[1024];
    int db_auftragid,db_zeilennr;
@@ -154,39 +154,39 @@ std::list<AufEintragBase2> AufEintragZu::get_AufEintragList_from_Artikel
      exec sql fetch AELfAein into :db_auftragid,:db_zeilennr;
      SQLerror::test(__FILELINE__,100);
      if (sqlca.sqlcode) break;
-     L.push_back(AufEintragBase2(instanz,db_auftragid,db_zeilennr));
+     L.push_back(AufEintragBase(instanz,db_auftragid,db_zeilennr));
 //std::cout << "Liste: "<<I->Name()<<' '<<db_auftragid<<' '<<db_zeilennr<<'\n';
    }  
   return L;
 }
 
 /*
-AufEintragBase2 AufEintragZu::get_AufEintrag_from_Artikel_by_Lfdate   
+AufEintragBase AufEintragZu::get_AufEintrag_from_Artikel_by_Lfdate   
                (const ArtikelBase& artikel,ppsInstanz::ppsInstId instanz)
 {
-  std::list<AufEintragBase2> LI=get_AufEintragList_from_Artikel(artikel,instanz,OPEN);
+  std::list<AufEintragBase> LI=get_AufEintragList_from_Artikel(artikel,instanz,OPEN);
 
 //  std::list<st_reflist> LR;
-//  for(std::list<AufEintragBase2>::const_iterator i=LI.begin();i!=LI.end();++i)
+//  for(std::list<AufEintragBase>::const_iterator i=LI.begin();i!=LI.end();++i)
 //   {
 //     std::list<st_reflist> LRtmp = AufEintragZu(*i).get_Referenz_listFull(false);
 //     LR.splice(LR.end(),LRtmp);
 //   }
 
   Petig::Datum lieferdatum;
-  AufEintragBase2 AEB;
+  AufEintragBase AEB;
   if(LI.begin()!=LI.end()) //LI->LR ab hier
   { 
     // lieferdatum initialisieren
-//    lieferdatum=AufEintragBase(LI.begin()->AEB2).getLieferdatum();
-    lieferdatum=AufEintragBase(*(LI.begin())).getLieferdatum();
+//    lieferdatum=AufEintrag(LI.begin()->AEB2).getLieferdatum();
+    lieferdatum=AufEintrag(*(LI.begin())).getLieferdatum();
 //    AEB=LI.begin()->AEB2;
     AEB=*(LI.begin());
 //    for(std::list<st_reflist>::const_iterator i=LR.begin();i!=LR.end();++i)
-    for(std::list<AufEintragBase2>::const_iterator i=LI.begin();i!=LI.end();++i)
+    for(std::list<AufEintragBase>::const_iterator i=LI.begin();i!=LI.end();++i)
      {
-//       Petig::Datum ld=AufEintragBase(i->AEB2).getLieferdatum();
-       Petig::Datum ld=AufEintragBase(*i).getLieferdatum();
+//       Petig::Datum ld=AufEintrag(i->AEB2).getLieferdatum();
+       Petig::Datum ld=AufEintrag(*i).getLieferdatum();
        if(ld<lieferdatum) 
         {
 //          AEB=i->AEB2;
@@ -206,11 +206,11 @@ void AufEintragZu::AuftragsEntryZuordnung(const mengen_t menge,
 {
  exec sql begin declare section;
   int db_aaid=AEB.Id();
-  int db_ains=AEB.Instanz();
+  int db_ains=AEB.InstanzID();
   int db_aznr=AEB.ZNr();
   double db_menge=menge;
   int db_naid=neuAuftrag.Id();
-  int db_nins=neuAuftrag.Instanz();
+  int db_nins=neuAuftrag.InstanzID();
   int db_nznr=neuZnr;
  exec sql end declare section;
  if(oldZnr!=0) db_aznr=oldZnr;
@@ -226,11 +226,11 @@ void AufEintragZu::setMenge(const mengen_t menge,const AuftragBase& neuAuftrag,c
 {
  exec sql begin declare section;
   int db_aaid=AEB.Id();
-  int db_ains=AEB.Instanz();
+  int db_ains=AEB.InstanzID();
   int db_aznr=AEB.ZNr();
   double db_menge=menge;
   int db_naid=neuAuftrag.Id();
-  int db_nins=neuAuftrag.Instanz();
+  int db_nins=neuAuftrag.InstanzID();
   int db_nznr=neuZnr;
  exec sql end declare section;
  exec sql update auftragsentryzuordnung
@@ -254,11 +254,11 @@ bool AufEintragZu::setMengeDiff(const mengen_t menge,const AuftragBase& neuAuftr
 {
  exec sql begin declare section;
   int db_aaid=AEB.Id();
-  int db_ains=AEB.Instanz();
+  int db_ains=AEB.InstanzID();
   int db_aznr=AEB.ZNr();
   double db_menge=menge;
   int db_naid=neuAuftrag.Id();
-  int db_nins=neuAuftrag.Instanz();
+  int db_nins=neuAuftrag.InstanzID();
   int db_nznr=neuZnr;
  exec sql end declare section;
  exec sql update auftragsentryzuordnung
@@ -279,10 +279,10 @@ bool AufEintragZu::setKindZnr(const AuftragBase& neuAuftrag,const int neuZnr)
 {
  exec sql begin declare section;
   int db_aaid=AEB.Id();
-  int db_ains=AEB.Instanz();
+  int db_ains=AEB.InstanzID();
   int db_aznr=AEB.ZNr();
   int db_naid=neuAuftrag.Id();
-  int db_nins=neuAuftrag.Instanz();
+  int db_nins=neuAuftrag.InstanzID();
   int db_nznr=neuZnr;
  exec sql end declare section;
  exec sql update auftragsentryzuordnung

@@ -1,4 +1,4 @@
-/* $Id: LieferscheinEntry.h,v 1.6 2002/01/23 13:43:53 christof Exp $ */
+/* $Id: LieferscheinEntry.h,v 1.7 2002/02/05 17:15:52 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -23,7 +23,7 @@
 
 #include<Aux/SQLerror.h>
 #include<Artikel/ArtikelBase.h>
-#include<Auftrag/AufEintragBase2.h>
+#include<Auftrag/AufEintragBase.h>
 #include"LieferscheinBase.h"
 #include <Aux/fixedpoint.h>
 
@@ -31,7 +31,7 @@ class LieferscheinEntry : public LieferscheinBase
 {
  int zeilennr;
  ArtikelBase artikel;
- AufEintragBase2 refauftrag;
+ AufEintragBase refauftrag;
  int stueck;
  mengen_t menge;
  int palette;
@@ -48,7 +48,7 @@ public:
  	LieferscheinEntry(const LieferscheinBase &lsbase, int zeile) throw(SQLerror);
 // erzeugen entsprechende Zeilen in der Datenbank 	
  	LieferscheinEntry(const LieferscheinBase &lsb,	
- 			const AufEintragBase2 &auf,
+ 			const AufEintragBase &auf,
  			const ArtikelBase &art, int anzahl, mengen_t menge,
  			int _palette=0,bool zusatzinfo=false) throw(SQLerror);
  	LieferscheinEntry(const LieferscheinBase &lsb,	
@@ -56,7 +56,7 @@ public:
  			int _palette=0,bool zusatzinfo=false) throw(SQLerror);
 // Konstruktor mit Datenbankdaten 			
         LieferscheinEntry(const cH_ppsInstanz& _instanz,int l,int z,int a, int s,mengen_t m,int p,
-        		const std::string &y,bool zi,const AufEintragBase2 &aeb)
+        		const std::string &y,bool zi,const AufEintragBase &aeb)
                 : LieferscheinBase(_instanz,l),zeilennr(z),artikel(a),refauftrag(aeb),
                 	stueck(s),menge(m),palette(p),yourauftrag(y),
                 	zusatzinfo(zi) 

@@ -1,4 +1,4 @@
-// $Id: selAufEntry_sql.pgcc,v 1.15 2002/01/22 09:15:55 christof Exp $
+// $Id: selAufEntry_sql.pgcc,v 1.16 2002/02/05 17:15:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -85,17 +85,18 @@ throw(SQLerror)
          try {
 //         Petig::Datum datum(); datum->from_postgres(PROZESSDATUM[i]);
 	      aufidliste.push_back(
-			AufEintragBase((ppsInstanz::ID)INSTANZ[i],
+			AufEintrag(ppsInstanz::ID(INSTANZ[i]),
 			AUFID[i], ZNUMMER[i], BESTELLT[i], ARTIKELID[i],
       	ILIEFERDATUM[i] ? Petig::Datum() : Petig::Datum(LIEFERDATUM[i]),
 			GELIEFERT[i],
 			IDISPOENTNR[i] ? 0 : DISPOENTNR[i],
 			IDISPONR[i] ? 0 : DISPONR[i],
-			 (AufStatVal)STATUS[i], KDNR[i],
+			AufStatVal(STATUS[i]), KDNR[i],
 			IYOURAUFNR[i] ? std::string("") : std::string(YOURAUFNR[i]),
-			Petig::Datum(PROZESSDATUM[i])
+			Petig::Datum(PROZESSDATUM[i]),
 //Petig::Datum()
-         ,PROZESSID[i],LETZTEPLANINSTANZ[i],MAXPLANINSTANZ[i],
+         PROZESSID[i], // wird nicht mehr gebraucht -- oder ?
+         ppsInstanz::ID(LETZTEPLANINSTANZ[i]),MAXPLANINSTANZ[i],
 			Preis(IPREIS[i] ? 0 : PREIS[i],
 				IWAEHRUNG[i] ? Waehrung::ID(0):Waehrung::ID(WAEHRUNG[i]),
 				PREISMENGE[i]),
@@ -114,7 +115,7 @@ throw(SQLerror)
 }
 
 
-void SelectedFullAufList::insert(const AufEintragBase2& aeb) throw(SQLerror)
+void SelectedFullAufList::insert(const AufEintragBase& aeb) throw(SQLerror)
 {
  exec sql begin declare section;
  int INSTANZ;
@@ -169,7 +170,7 @@ void SelectedFullAufList::insert(const AufEintragBase2& aeb) throw(SQLerror)
 						"AUFENTRYINSERT");
 
 	      aufidliste.push_back(
-			AufEintragBase((ppsInstanz::ID)INSTANZ,
+			AufEintrag((ppsInstanz::ID)INSTANZ,
 			AUFID, ZNUMMER, BESTELLT, ARTIKELID,
       	ILIEFERDATUM ? Petig::Datum() : Petig::Datum(LIEFERDATUM),
 			GELIEFERT,
@@ -177,7 +178,8 @@ void SelectedFullAufList::insert(const AufEintragBase2& aeb) throw(SQLerror)
 			IDISPONR ? 0 : DISPONR,
 			(AufStatVal)STATUS, KDNR,
 			IYOURAUFNR ? std::string("") : std::string(YOURAUFNR),
-			Petig::Datum(PROZESSDATUM),PROZESSID,LETZTEPLANINSTANZ,MAXPLANINSTANZ,
+			Petig::Datum(PROZESSDATUM),PROZESSID,
+			ppsInstanz::ID(LETZTEPLANINSTANZ),MAXPLANINSTANZ,
 			Preis(IPREIS ? 0 : PREIS,
 				IWAEHRUNG ? Waehrung::ID(0):Waehrung::ID(WAEHRUNG),
 				PREISMENGE),

@@ -1,4 +1,4 @@
-// $Id: ArtikelStamm.h,v 1.5 2001/10/23 08:45:18 christof Exp $
+// $Id: ArtikelStamm.h,v 1.6 2002/02/05 17:15:52 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -41,7 +41,7 @@ class ArtikelStamm
 	   : typ((ArtikelTyp::typ)0), interntyp((ArtikelTyp::typ)0),
 	                 bestellen_bei(cH_ppsInstanz(ppsInstanz::INST_NONE)), 
 	                 defaultschema(ExtBezSchema_default_ID),
-	                 einh(EINH_STUECK) {}
+	                 einh(Einheit::Stueck) {}
 	};
 	
 	ArtikelBase art;
