@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.cc,v 1.12 2002/11/22 15:31:05 christof Exp $
+// $Id: Zahlungsart.cc,v 1.13 2002/12/03 22:15:32 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -39,6 +39,22 @@ const Zahlungsart::st_skonto Zahlungsart::getSkonto(unsigned int i) const
   return vec_skonto[--i];
 }
 
+const ManuProC::Datum Zahlungsart::getZahlungstermin
+(const ManuProC::Datum rgdatum) const
+{
+ if(!rgdatum.valid()) return ManuProC::Datum::today();
+ 
+ ManuProC::Datum termin(rgdatum+zahlungsfrist);
+ 
+ if(!zahlungsfrist) termin=rgdatum+getSkonto(0).skontofrist;
+
+ if(monatsende)
+   {
+   termin=termin+(termin.Tage_in_Monat() - termin.Tag());
+   }
+ 
+ return termin;
+}
 
 
 void Zahlungsart::TeX_out(std::ostream &os,

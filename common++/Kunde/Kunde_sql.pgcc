@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.23 2002/11/07 07:48:53 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.24 2002/12/03 22:15:32 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -639,4 +639,27 @@ void Kunde::showEAN(bool ea) throw(SQLerror)
 
  tr.commit();
 }
+
+std::pair<std::string,std::string> Kunde::getRiBa_Code() const throw(SQLerror)
+{
+ if(cab.size() && abi.size())
+   return std::pair<std::string,std::string>(cab,abi);
+
+ exec sql begin declare section;
+ unsigned int KUNDENNR = entityid;
+ char *CAB=0;
+ char *ABI=0;
+ exec sql end declare section;
+
+ exec sql select cab,abi into :CAB,:ABI from riba_code where
+	kundennr= :KUNDENNR;
+ SQLerror::test(__FILELINE__);
+
+ abi=string(ABI);
+ cab=string(CAB);
+ 
+ ECPGfree_auto_mem(); 
+ return std::pair<std::string,std::string>(cab,abi);
+}
+
 

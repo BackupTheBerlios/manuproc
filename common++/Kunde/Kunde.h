@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.31 2002/11/27 12:35:52 thoma Exp $
+// $Id: Kunde.h,v 1.32 2002/12/03 22:15:32 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -363,6 +363,15 @@ friend enum Kunde::B_UPDATE_BITS_ADRESSE &operator++(enum Kunde::B_UPDATE_BITS_A
 friend enum Kunde::B_UPDATE_BITS_FIRMA &operator++(enum Kunde::B_UPDATE_BITS_FIRMA &s);
 friend enum Kunde::B_UPDATE_BITS_BANK &operator++(enum Kunde::B_UPDATE_BITS_BANK &s);
 friend enum Kunde::B_UPDATE_BITS_SONST &operator++(enum Kunde::B_UPDATE_BITS_SONST &s);
+
+
+#ifdef MABELLA_EXTENSIONS
+private:
+	mutable std::string cab, abi; // RiBa Kontobeschreibung; Bankeinzug in Italy
+public:	
+	std::pair<std::string,std::string> getRiBa_Code() const throw(SQLerror);
+#endif
+
 };
 
 class cH_Kunde : public Handle<const Kunde>

@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.h,v 1.12 2002/11/22 15:31:05 christof Exp $
+// $Id: Zahlungsart.h,v 1.13 2002/12/03 22:15:32 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -48,6 +48,7 @@ private:
     std::vector<st_skonto> vec_skonto;
     std::string kurzbezeichung,bezeichnung;
     int zahlungsfrist;
+    bool monatsende;
 
 public:
     Zahlungsart(ID _id) throw (SQLerror) ;
@@ -56,6 +57,7 @@ public:
     const std::vector<st_skonto> getSkonto() const { return vec_skonto; }
     const st_skonto getSkonto(unsigned int i) const;
     const bool getBankeinzug() const { return bankeinzug; }
+    const bool getMonatsende() const { return monatsende; }
     const fixedpoint<2> getEinzugrabatt() const {return einzugrabatt;} 
     const std::string Kurzbezeichung() const {return kurzbezeichung;}
     const std::string Bezeichnung() const {return bezeichnung;}
@@ -63,6 +65,7 @@ public:
     const std::string getBezeichnung() const {return bezeichnung;}
     const int getZahlungsfrist() const {return zahlungsfrist;}
     const std::string Name() const {return kurzbezeichung;}
+    const ManuProC::Datum getZahlungstermin(const ManuProC::Datum rgdatum) const;
     
     void TeX_out(std::ostream &os,
 		cP_Waehrung w, 
