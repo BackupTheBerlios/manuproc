@@ -36,7 +36,6 @@ noinst_HEADERS = \
    window_Dialog_Bestaetigen_glade.hh \
    window_neue_bank_anlegen.hh \
    window_neue_bank_anlegen_glade.hh \
-	glademm_support.hh \
    window_neue_Kundennummer.hh \
    window_neue_Kundennummer_glade.hh \
 	dialogError_glade.hh \
