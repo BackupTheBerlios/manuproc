@@ -1,4 +1,4 @@
-// $Id: Tag.cc,v 1.2 2002/12/12 10:38:10 christof Exp $
+// $Id: Tag.cc,v 1.3 2002/12/13 19:14:39 christof Exp $
 /*  glade--: C++ frontend for glade (Gtk+ User Interface Builder)
  *  Copyright (C) 1998-2002  Christof Petig
  *
@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <utility> // pair
 #include <locale.h>
+#include <iostream>
 
 #ifdef __MINGW32__
 extern "C" { int snprintf(char *str, size_t size, const  char  *format, ...); }
