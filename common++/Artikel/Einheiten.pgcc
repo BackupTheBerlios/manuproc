@@ -1,4 +1,4 @@
-// $Id: Einheiten.pgcc,v 1.16 2003/01/08 09:46:56 christof Exp $
+// $Id: Einheiten.pgcc,v 1.17 2003/01/15 23:38:23 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -40,14 +40,22 @@ Einheit::operator std::string() const
    return a+b;
 }
 
-std::string Einheit::TeX() const
+
+
+std::string Einheit::TeX(const MultiL_Dict &mld) const
 {  std::string a=StueckEinheit_TeX(),
 	b=MengenEinheit_TeX();
    if (!a.empty() && !b.empty()) 
-   {  if (a=="St.") return b;
+   {  if (a=="St.")
+	{
+	 return b;
+	}
       return a+"$\\times$"+b;
    }
-   return a+b;
+
+ if(mld.valid() && a=="St.")
+   a=const_cast<MultiL_Dict&>(mld).MLT(MultiL_Dict::TXT_STUECK);
+ return a+b;
 }
 
 Einheit::Einheit(ID id) : einh(id)

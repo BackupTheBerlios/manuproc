@@ -1,4 +1,4 @@
-/* $Id: Einheiten.h,v 1.16 2003/01/08 09:46:56 christof Exp $ */
+/* $Id: Einheiten.h,v 1.17 2003/01/15 23:38:23 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Einheiten.h,v 1.16 2003/01/08 09:46:56 christof Exp $
+// $Id: Einheiten.h,v 1.17 2003/01/15 23:38:23 jacek Exp $
 
 #ifndef ARTIKEL_EINHEITEN_H
 #define ARTIKEL_EINHEITEN_H
@@ -28,6 +28,7 @@
 //#include <Misc/Handles.h>
 #include <vector>
 #include <DynamicEnums/DynamicEnums.h>
+#include <Aux/multi_lang.h>
 
 namespace EinheitID=ManuProC::DynamicEnums::Einheiten;
 
@@ -74,8 +75,8 @@ public:
 	{  return tex_anzahl; }
 	std::string MengenEinheit_TeX() const
 	{  return tex_menge; }
-	std::string TeX() const;
-	
+	std::string TeX(const MultiL_Dict &mld=MultiL_Dict()) const;
+
 	bool hatAnzahl() const
 	{  return true; } // hmmm, sobald ich es jemals brauche wird es geändert CP 
 	bool hatMenge() const

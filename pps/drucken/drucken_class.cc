@@ -248,7 +248,7 @@ catch(SQLerror &e) { cout << e; return; }
     os << "\\bigskip\n";
     if(kunde_an->get_lieferung_frei_haus()) 
       os << "\\\\" << mld->MLT(MultiL_Dict::TXT_LIEF_FREI) <<"\\\\\n";
-    os << "\\\\Die Liefertermine bitte den einzelnen Positionen entnehmen\\\\\n";
+    os << "\\\\"<<mld->MLT(MultiL_Dict::TXT_LIEFERINFO)<<"\\\\\n";
 
    }
  else if(Typ()==Extern )
@@ -420,7 +420,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
 	)
      {   // Tabelle beenden, preis ausgeben
          if (preise_addieren)
-         {  drucken_betrag(os,"Übertrag",betrag);
+         {  drucken_betrag(os,mld->MLT(MultiL_Dict::TXT_UEBERTRAG),betrag);
              os << "\\end{tabularx}\n";
          }
          os << "\\newpage\n";
@@ -462,11 +462,11 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
     }         
 #endif
     
-     drucken_table_header(os,schema_mem,preismenge_mem, einheit_mem.TeX());
+     drucken_table_header(os,schema_mem,preismenge_mem, einheit_mem.TeX(*mld));
      
     std::string einheitsize = "\\scriptsize \\,";
     if (neue_seite && preise_addieren)
-    {  os << zur_preisspalte << "Vortrag & "<< FormatiereTeX(betrag) <<"\\\\";
+    {  os << zur_preisspalte <<mld->MLT(MultiL_Dict::TXT_VORTRAG)<<" & "<< FormatiereTeX(betrag) <<"\\\\";
        --zeilen_passen_noch;
     }
 
@@ -506,7 +506,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
   if(preisspalte==0 && Typ()==Rechnung) // Mabella muß auch NULL Rechnung drucken
   	{Einheit e(Einheit::default_id);
   	 stueck_bool=true;
-         drucken_table_header(os,schema_own, 1, e.TeX());
+         drucken_table_header(os,schema_own, 1, e.TeX(*mld));
 	}
 #endif	
 
@@ -529,7 +529,7 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
      if (zeilen_passen_noch<8)
 #endif     
      {   // Tabelle beenden, preis ausgeben
-         drucken_betrag(os,"Summe",betrag);
+         drucken_betrag(os,mld->MLT(MultiL_Dict::TXT_SUMME),betrag);
 	 os << "\\end{tabularx}\n";
          os << "\\newpage\n";
          ++page_counter;
@@ -538,12 +538,12 @@ void LR_Abstraktion::drucken(std::ostream &os,bool _kopie,const cH_ppsInstanz& _
          spaltenzahl=4;
          preisspalte=spaltenzahl;
          zur_preisspalte="&&";
-         os << zur_preisspalte << "Summe & "<< FormatiereTeX(betrag) <<"\\\\";
+         os << zur_preisspalte << mld->MLT(MultiL_Dict::TXT_SUMME)<<" & "<< FormatiereTeX(betrag) <<"\\\\";
          --zeilen_passen_noch;
      }
      else 
      {  
-       drucken_betrag(os,"Summe",betrag);
+       drucken_betrag(os,mld->MLT(MultiL_Dict::TXT_SUMME),betrag);
      }
      
   calc_all(kunde_rng);     
@@ -661,15 +661,15 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
         if (zeilen_passen_noch<=1)
           {
             if (preise_addieren)
-            {  drucken_betrag(os,"Übertrag",betrag);
+            {  drucken_betrag(os,mld->MLT(MultiL_Dict::TXT_UEBERTRAG),betrag);
             }
    	    os << "\\end{tabularx}%XF\n"
             	 "\\newpage\n";
             ++page_counter;
             page_header(os);
-            drucken_table_header(os,schema_mem,preismenge_mem,einheit_mem.TeX());
+	    drucken_table_header(os,schema_mem,preismenge_mem,einheit_mem.TeX(*mld));
             if (preise_addieren)
-            {  os << zur_preisspalte << "Vortrag & "<< FormatiereTeX(betrag) <<"\\\\";
+            {  os << zur_preisspalte << mld->MLT(MultiL_Dict::TXT_VORTRAG)<<" & "<< FormatiereTeX(betrag) <<"\\\\";
                --zeilen_passen_noch;
             }
           }
@@ -697,7 +697,7 @@ void LR_Abstraktion::Zeile_Ausgeben(std::ostream &os,
 
                std::string einheit;
                if(Typ()==Rechnung || Typ()==Lieferschein) einheit=Einheit(artikelbase).StueckEinheit_TeX();
-               else einheit=Einheit(artikelbase).TeX();
+               else einheit=Einheit(artikelbase).TeX(*mld);
                if (einheit.size()) 
                   os <<'{'<< einheitsize <<einheit <<'}';
             }
@@ -865,15 +865,14 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
    {
 
     if(Rueckstand())
-      ueberschriften="\\multicolumn{1}{c}{"+ug+"Offen}";
-    else
-      ueberschriften="\\multicolumn{1}{c}{"+ug+"Menge}";
+	ueberschriften="\\multicolumn{1}{c}{"+ug+mld->MLT(MultiL_Dict::TXT_OFFEN)+"}";
+    else ueberschriften="\\multicolumn{1}{c}{"+ug+mld->MLT(MultiL_Dict::TXT_MENGE)+"}";
     tabcolumn+="r"; spaltenzahl++;
 
    }   
    if (menge_bool && stueck_bool) 
    { tabcolumn+="r"; spaltenzahl++;
-     ueberschriften="\\multicolumn{2}{c}{"+ug+"Menge}";
+     ueberschriften="\\multicolumn{2}{c}{"+ug+mld->MLT(MultiL_Dict::TXT_MENGE)+"}";
    
      tabcolumn+="r"; spaltenzahl++; 
      ueberschriften+="&\\multicolumn{1}{c}{"+sg+"Gesamtmenge}";
@@ -890,10 +889,25 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
        ueberschriften+= "&\\mbox{"+ug+"Artikel}";
      }
   else
+#ifdef MABELLA_EXTENSIONS
+#warning Provisorium !!
+     {MultiL_Dict::LangTXT mld_idx=MultiL_Dict::TXT_ARTIKEL;
+     for(ExtBezSchema::const_sigiterator j=schema->sigbegin(signifikanz);j!=schema->sigend(signifikanz);++j)
+         { tabcolumn += j->TeXtabformat ; ++spaltenzahl ; 
+//           ueberschriften += "&\\mbox{"+ug + j->bezkomptext+"}";
+           ueberschriften += "&\\mbox{"+ug +mld->MLT(mld_idx)+"}";
+	  int t=(int)mld_idx; 
+	  t++; 
+	  mld_idx=(MultiL_Dict::LangTXT)t;
+         }
+     }
+#else
      for(ExtBezSchema::const_sigiterator j=schema->sigbegin(signifikanz);j!=schema->sigend(signifikanz);++j)
          { tabcolumn += j->TeXtabformat ; ++spaltenzahl ; 
            ueberschriften += "&\\mbox{"+ug + j->bezkomptext+"}";
          }
+#endif
+
 
 #ifdef MABELLA_EXTENSIONS
   if(ean_code)
@@ -907,7 +921,8 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
   for(ExtBezSchema::const_sigiterator j=schema_mem->sigbegin(3);
   			j!=schema_mem->sigend(3);++j)
       { tabcolumn += j->TeXtabformat ; ++spaltenzahl ; 
-        ueberschriften += "&\\mbox{"+ug + j->bezkomptext+"}";
+//        ueberschriften += "&\\mbox{"+ug + j->bezkomptext+"}";
+        ueberschriften += "&\\mbox{"+ug +mld->MLT(MultiL_Dict::TXT_BEZEICHNUNG)+"}";
       }
   if(schema_mem->Id() != schema_own->Id())
     {
@@ -944,18 +959,20 @@ void LR_Abstraktion::drucken_table_header(std::ostream &os,
      
     if (preise_addieren && rabatt_bool)  // Rabatt
       {  tabcolumn+="r"; ++spaltenzahl;
-         ueberschriften += "&\\multicolumn{1}{c}{"+ug+"Rabatt}";
+         ueberschriften += "&\\multicolumn{1}{c}{"+ug+mld->MLT(MultiL_Dict::TXT_RABATT)+"}";
       }     
      
 #ifndef MABELLA_EXTENSIONS
      ueberschriften += "&\\multicolumn{1}{c}{"+sg+"{Gesamtpreis}}";
 #else     
-     ueberschriften += "&\\multicolumn{1}{c}{"+sg+"{"+ getWaehrung()->TeXsymbol()+" Wert}}";
+     ueberschriften += "&\\multicolumn{1}{c}{"+sg+"{"+ 
+		getWaehrung()->TeXsymbol()+" "+mld->MLT(MultiL_Dict::TXT_WERT)+"}}";
 #endif
   }
 
   if (Typ()==Auftrag)
-  { tabcolumn+="r"; spaltenzahl+=1; ueberschriften +=  "&{"+sg+"Lief.KW}"; }
+  { tabcolumn+="r"; spaltenzahl+=1; ueberschriften +=  "&{"+sg
+			+mld->MLT(MultiL_Dict::TXT_LIEFERKW)+"}"; }
   
   os << "\\settowidth{\\breite}{"<<ug<<" Bezeichnung}%\n";
   os << "\\begin{tabularx}{" << TABW << "cm}{"<<tabcolumn<<"}"<<"\\\\\n";
@@ -1090,20 +1107,20 @@ void LR_Abstraktion::page_header(std::ostream &os)
            	<< betr->Anrede()->getAnrede(*mld) <<" "
            	<< betr->Vorname()<<" "<<betr->Name()<<"\\\\\n"
         	<< mld->MLT(MultiL_Dict::TXT_TELEFON)<<": "<<betr->Kontakt(TEL_TEL,kunde_von->Id())<<"\\\\\n"
-        	<< "Telefax: "<<betr->Kontakt(TEL_FAX,kunde_von->Id())<<"\\\\\n"
+        	<< mld->MLT(MultiL_Dict::TXT_TELEFAX)<<": "<<betr->Kontakt(TEL_FAX,kunde_von->Id())<<"\\\\\n"
         	<< "E-Mail: "<<betr->Kontakt(TEL_E_MAIL,kunde_von->Id())<<"\\\\\n";
           }
        else
 	{   	
 	os << "\\bf Bei Rückfragen:\\rm \\\\\n"
-		<< "Telefon: "<<kunde_von->get_first_telefon(TEL_TEL)<<"\\\\\n"
-		<< "Telefax: "<<kunde_von->get_first_telefon(TEL_FAX)<<"\\\\\n"
+		<< mld->MLT(MultiL_Dict::TXT_TELEFON)<<": "<<kunde_von->get_first_telefon(TEL_TEL)<<"\\\\\n"
+		<< mld->MLT(MultiL_Dict::TXT_TELEFAX)<<": "<<kunde_von->get_first_telefon(TEL_FAX)<<"\\\\\n"
 		<< "E-Mail: mabella@wtal.de\\\\\n"; 
         }
 
 	if(kunde_an->VerkNr()!=Person::none_id)
 	  {kunde_an->getVerkaeufer();
-           os << "\\vspace*{2mm}\\bf Es besucht Sie:\\rm \\\\\n"
+           os << "\\vspace*{2mm}\\bf "<<mld->MLT(MultiL_Dict::TXT_BESUCHTSIE)<<":\\rm \\\\\n"
            	<< kunde_an->VerkName() <<"~\\\\\n";
           }
           
@@ -1138,24 +1155,24 @@ void LR_Abstraktion::page_header(std::ostream &os)
    os <<"\\hfill " << mld->MLT(MultiL_Dict::TXT_SEITE) << " \\thepage\\\\\n";
    os << "\\large "<<typString(gutschrift())<<" ";
    os.width(6);os.fill('0');
-   os <<RngNr()<<"\\normalsize ~" << mld->MLT(MultiL_Dict::TXT_VOM)<<" " <<getDatum();
+   os <<RngNr()<<"\\normalsize ~" << mld->MLT(MultiL_Dict::TXT_VOM)
+		<<" " <<getDatum()<<". ";
 
-   if(Typ()==Auftrag)
-     os <<"\\hfill "<<mld->MLT(MultiL_Dict::TXT_DANKE_AUFTR)<<"\\normalsize\\\\\n ";
-   else
-     os <<"~\\\\\n";
+
+   if(Typ()==Auftrag && page_counter==1)
+     os <<mld->MLT(MultiL_Dict::TXT_DANKE_AUFTR)<<" \\\\\n";
 
    if(!Rueckstand())
    if(Typ()==Auftrag) {auftrag_von(os,class Auftrag(AuftragBase(
    				ppsInstanzID::Kundenauftraege,u.a->Id())),true);
    		      }
-   		      
-   if(Typ()==Auftrag) os << "~\\\\\n";
+
    
-   os << "Ihre Kundennummer: ";
+   os << "~\\\\\n"<<mld->MLT(MultiL_Dict::TXT_IHREKDNR)<<": ";
    os.width(5);os.fill('0');
    os << kunde_an->Id() << "\\hfill "<<
-   	(kunde_an->idnr().empty() ? "" : string("USt-ID:")+kunde_an->idnr()) << "\\\\\n";
+   	(kunde_an->idnr().empty() ? "" : mld->MLT(MultiL_Dict::TXT_USTID)
+			+string(": ")+kunde_an->idnr()) << "\\\\\n";
 
 
 #else
@@ -1175,9 +1192,9 @@ void LR_Abstraktion::page_header(std::ostream &os)
 
 #ifdef MABELLA_EXTENSIONS
    if (page_counter==1 && (Typ()==Lieferschein || Typ()==Rechnung))
-    {os << "\\scriptsize{Sie erhielten zu unseren allgemeinen Geschäftsbedingungen}";
+    {os << "\\scriptsize{"<<mld->MLT(MultiL_Dict::TXT_SIEERHIELTEN)<<"}";
      if(Typ()==Rechnung)
-       os <<  "\\hfill \\scriptsize{unsere Steuernummer: 5131/5923/0168}\\\\\n";
+       os <<  "\\hfill \\scriptsize{"<<mld->MLT(MultiL_Dict::TXT_UNSERESTNR)<<": 5131/5923/0168}\\\\\n";
      else os << "\\\\\n";
      --zeilen_passen_noch; // immer besser
     }
@@ -1204,8 +1221,8 @@ void LR_Abstraktion::lieferung_an(std::ostream &os, unsigned int lfrs_id,
 
   --zeilen_passen_noch;  
 
-  os << "Unsere Lieferung "<<lfrs_id;
-  os << " am "<<datum;
+  os << mld->MLT(MultiL_Dict::TXT_UNSERELIEF)<<" "<<lfrs_id;
+  os << " "<<mld->MLT(MultiL_Dict::TXT_VOM)<<" "<<datum;
   if(!sKunde.empty())  os << " an "<< string2TeX(sKunde);
   os << "\\\\[-2ex]\n";
 }
@@ -1216,16 +1233,17 @@ void LR_Abstraktion::auftrag_von(std::ostream &os, const class Auftrag &a,
 { 
   if(! only_braces)
     {--zeilen_passen_noch;
-       os << "~\\\\Unsere Auf.Nr. ";
+       os << "~\\\\"<<mld->MLT(MultiL_Dict::TXT_UNSEREAUFNR)<<" ";
      os.width(6);os.fill('0'); os<< a.Id();
-     os << " vom "<< a.getDatum();
+     os << " "<< mld->MLT(MultiL_Dict::TXT_VOM)<<" "<< a.getDatum();
     }
     
   if(a.getYourAufNr() != a.getBemerkung())
     {os <<" \\small{";
-      if(!a.getYourAufNr().empty()) os << "Ihre Auf.Nr. "<<a.getYourAufNr()
-      			<< (a.getBemerkung().empty() ? ")}" : "; ");
-      if(!a.getBemerkung().empty()) os << "  "<<a.getBemerkung()<<"}";
+      os << mld->MLT(MultiL_Dict::TXT_IHRAUFTRAG);	
+      if(!a.getYourAufNr().empty()) os <<" "<<a.getYourAufNr();
+      if(!a.getBemerkung().empty()) os << " "<<a.getBemerkung();
+     os << "}";
     }
   os << "\\normalsize";
   if(! only_braces) os << "\\\\[-3ex]\n";
