@@ -77,6 +77,7 @@ private:
         
         friend class auftrag_main_glade;
         void loadEinstellungen();
+	gint on_delete_event(GdkEventAny*);
         void on_beenden_activate();
         void save_WindowSize();
         void on_erfassen_activate();

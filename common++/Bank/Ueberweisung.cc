@@ -1,4 +1,4 @@
-/* $Id: Ueberweisung.cc,v 1.1 2003/04/24 10:21:51 jacek Exp $ */
+/* $Id: Ueberweisung.cc,v 1.2 2003/04/24 15:38:04 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -23,13 +23,13 @@
 Ueberweisung::Ueberweisung(ManuProcEntity<>::ID uid) throw(SQLerror)
 : ManuProcEntity<ID>(uid),euro(true),vzweck(std::vector<std::string>(4))
 {
- std::string query="select eigenes_konto, eigene_blz, dest_konto, dest_blz "
+ std::string query="select eigenes_konto, eigene_blz, dest_konto, dest_blz, "
  	" faellig, betrag, rechnungsbetrag, auftraggeber, "
- 	" empfaenger, eingegeben_am, eingebebendurch, "
+ 	" empfaenger, eingegeben_am, eingegebendurch, "
  	" erfolgt_am, erfolgtdurch, kundennr, "
  	" verwendungszweck0,verwendungszweck1,verwendungszweck2,verwendungszweck3, "
- 	" belegdatum, belegnr, buchungsjournal, buchungskonto, "
- 	" from ueberweisung where id=?";
+ 	" belegdatum, belegnr, buchungsjournal, buchungskonto "
+ 	" from ueberweisungen where id=?";
  	
  Query(query) << uid >> ownkonto >> ownblz >> konto >> blz 
  	>> FetchIStream::MapNull(faelligam,ManuProC::Datum())

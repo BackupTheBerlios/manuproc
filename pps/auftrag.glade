@@ -220,6 +220,11 @@
   <cxx_separate_file>True</cxx_separate_file>
   <cxx_separate_class>True</cxx_separate_class>
   <cxx_visibility>protected</cxx_visibility>
+  <signal>
+    <name>delete_event</name>
+    <handler>on_delete_event</handler>
+    <last_modification_time>Thu, 24 Apr 2003 15:25:43 GMT</last_modification_time>
+  </signal>
   <title>Auftragsbearbeitung</title>
   <type>GTK_WINDOW_TOPLEVEL</type>
   <position>GTK_WIN_POS_NONE</position>

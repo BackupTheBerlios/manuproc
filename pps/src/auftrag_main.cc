@@ -54,6 +54,14 @@ extern bool load_list;
 #include <cstdio>
 #include "class_auftrag_tree.hh"
 
+gint auftrag_main::on_delete_event(GdkEventAny*)
+{   
+ on_beenden_activate();
+ 
+ return true;
+}
+
+
 void auftrag_main::on_beenden_activate()
 {   
  save_WindowSize();
