@@ -1,4 +1,4 @@
-// $Id: Check.hh,v 1.31 2003/09/11 13:34:30 christof Exp $
+// $Id: Check.hh,v 1.32 2004/02/27 11:10:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG, 
  *  written by Malte Thoma + Christof Petig
@@ -26,6 +26,12 @@
 #include <Auftrag/AufEintragZu.h>
 #include <Auftrag/AufEintrag.h>
 
+struct vergleichstream
+{  std::ofstream *stream;
+   std::string name;
+   vergleichstream(const std::string &n="") : stream(), name(n) {}
+};
+
 class Check
 {
    enum was_checken_p { b_Jumbo, b_Lieferschein, b_Menge, b_RohLager };
@@ -40,12 +46,17 @@ class Check
  private:
    void dump(was_checken,const std::string &name);
    bool vergleich(was_checken,const std::string &name);
+   bool vergleich_close(const std::string &name);
  public:
    Check(){}; 
    // Erfolgreich: true; sonst false
    bool teste(was_checken was, const std::string &name,bool vor_dem_test_reparieren=false);
    static bool analyse,reparieren,overwrite,resort,verbose,continue_,
    	delete_repair;
+
+   vergleichstream vergleich_open(const std::string &name) const;
+   // true=error
+   bool vergleich_close(vergleichstream &v);
 };
 
 Check::was_checken operator|(Check::was_checken a, Check::was_checken b);

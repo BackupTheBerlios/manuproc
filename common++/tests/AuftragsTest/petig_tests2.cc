@@ -36,7 +36,17 @@
 #include <Lager/RohwarenLager.h>
 #include <Lager/JumboLager.h>
 #include <Ketten/KettplanKette.h>
+#include <Auftrag/Verfuegbarkeit.h>
 #endif
+
+void verf_vergleichen(const std::string &postfix,const AufEintragBase &AEB)
+{  Verfuegbarkeit::map_t map;
+//   Verfuegbarkeit::verfuegbar(
+//   Check::vergleich_open("verf_"+postfix+"_"+AEB.str());
+}
+void ben_vergleichen(const std::string &postfix,const AufEintragBase &AEB)
+{
+}
 
 static bool Verfuegbarkeit2()
 {   // Lager leeren
@@ -94,6 +104,11 @@ static bool Verfuegbarkeit2()
     }
     vergleichen(Check::Menge,"V2_Auslieferung","Auslieferung","L");
     
+    verf_vergleichen("V2_Auslieferung",AEB3);
+    verf_vergleichen("V2_Auslieferung",AEB4);
+    ben_vergleichen("V2_Auslieferung",AEBPE);
+    ben_vergleichen("V2_Auslieferung",AufEintragBase(ppsInstanzID::_Garn__Einkauf,0,1));
+
     return true;
 }
 

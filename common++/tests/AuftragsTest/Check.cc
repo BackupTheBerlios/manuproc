@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.60 2003/09/11 16:38:51 christof Exp $
+// $Id: Check.cc,v 1.61 2004/02/27 11:10:14 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -26,6 +26,7 @@
 #include <Artikel/ArtikelBezeichnung.h>
 #include <unistd.h>
 #include "steuerprogramm.hh"
+#include <fstream>
 
 static std::string resultdir="results/";
 #ifdef  MANU_PROC_TEST
@@ -43,6 +44,43 @@ bool Check::resort=false;
 bool Check::verbose=false;
 bool Check::continue_=false;
 bool Check::delete_repair=false;
+
+vergleichstream Check::vergleich_open(const std::string &name) const
+{  vergleichstream result(name);
+   result.stream=new std::ofstream((resultdir+name).c_str());
+   return result;
+}
+bool Check::vergleich_close(const std::string &name)
+{  vergleichstream v(name);
+   return vergleich_close(v);
+}
+bool Check::vergleich_close(vergleichstream &v)
+{  if (v.stream) 
+   {  v.stream->close();
+      delete v.stream;
+      v.stream=0;
+   }
+   bool error=false;
+   std::string fz1=resultdir+v.name;
+     std::string fz2=referenzdir+v.name;
+
+     if (overwrite)      
+     {  system(("cp \""+fz1+"\" \""+fz2+"\"").c_str());
+        std::cout << fz2<<" wurde neu erzeugt\n"; 
+     }
+     else
+     {  std::string s="diff -q \""+fz1+"\" \""+fz2+"\" >/dev/null";
+        if (resort) s="./resort"+s;
+        int reg=system(s.c_str());
+        if(reg==-1) { std::cout<< "Fehler im diff-Komando ("+v.name+")\n"; exit(reg);}
+        else if(reg==0) ;//zuviel Output :-( {std::cout << v.name << " OK\n";}
+        else 
+        { std::cout << (resort?"./resort":"") << "mgdiff "+fz1+" "+fz2<<"\n"; 
+          error=true;
+        }
+     }
+   return error;
+}
 
 bool Check::teste(was_checken check,const std::string &zusatz, bool vor_dem_test_reparieren)
 {
@@ -95,24 +133,7 @@ bool Check::vergleich(was_checken was,const std::string &zusatz)
   }
 
   for (std::vector<std::string>::const_iterator i=files.begin();i!=files.end();++i)
-  {  std::string fz1=resultdir+*i+"_"+zusatz;
-     std::string fz2=referenzdir+*i+"_"+zusatz;
-
-     if (overwrite)      
-     {  system(("cp "+fz1+" "+fz2).c_str());
-        std::cout << fz2<<" wurde neu erzeugt\n"; 
-     }
-     else
-     {  std::string s="diff -q "+fz1+" "+fz2+" >/dev/null";
-        if (resort) s="./resort"+s;
-        int reg=system(s.c_str());
-        if(reg==-1) { std::cout<< "Fehler im diff-Komando ("+*i+")\n"; exit(reg);}
-        else if(reg==0) ;//zuviel Output :-( {std::cout << *i << " OK\n";}
-        else 
-        { std::cout << (resort?"./resort":"") << "mgdiff "+fz1+" "+fz2<<"\n"; 
-          error=true;
-        }
-     }
+  {  error|=vergleich_close(*i+"_"+zusatz);
   }
   return continue_?true:(!error);
 }
