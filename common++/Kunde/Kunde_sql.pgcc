@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.64 2004/08/19 17:45:38 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.65 2004/10/11 16:44:10 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -19,7 +19,7 @@
 
 
 #include "Kunde/Kunde.h"
-#include <Kunde/Person.h>
+//#include <Kunde/Person.h>
 #include <Misc/Transaction.h>
 #include <Kunde/Telefon.h>
 #include <Misc/FetchIStream.h>
@@ -365,8 +365,8 @@ std::vector<Kunde::st_ansprech> Kunde::getPersonen() const
   exec sql end declare section;
 
   std::string QU=" SELECT a.persnr,coalesce(a._position,''),coalesce(a.notiz,'') FROM "
-         "ku_person p, ku_ansprech a"
-         " WHERE p.persnr=a.persnr and a.kundennr ="+
+         "kunden p, ku_ansprech a"
+         " WHERE p.kundennr=a.persnr and a.kundennr ="+
          itos(Id())+" ORDER BY name";
 
   QUERY=(char*)QU.c_str();
@@ -383,7 +383,7 @@ std::vector<Kunde::st_ansprech> Kunde::getPersonen() const
      exec sql fetch ein into :PERSNR,:POSITION,:NOTIZ;
      SQLerror::test(__FILELINE__,"ein",100);
      if (sqlca.sqlcode) break;
-     VP.push_back(st_ansprech(cH_Person(PERSNR),POSITION,NOTIZ));
+     VP.push_back(st_ansprech(PERSNR,POSITION,NOTIZ));
    }
   exec sql close ein;
 
@@ -391,18 +391,29 @@ std::vector<Kunde::st_ansprech> Kunde::getPersonen() const
   return VP;  
 }
 
-std::list<cH_Telefon> Kunde::getTelefon() const
+std::list<cH_Telefon> Kunde::getTelefon(Kunde::ID pid) const
 {
  exec sql begin declare section;
    int TELID;   
-   int KUNDENNR=Id();
+   char *QU;
  exec sql end declare section;
 
+ int KUNDENNR=Id();
+
+ std::string query("SELECT telid FROM ku_telefon WHERE kundennr= ");
+ 
+ query += itos(KUNDENNR);
+
+ if(pid==Kunde::none_id) query += " and persnr is null";
+ else query += " and persnr="+itos(pid);
+ 
+ QU=(char *)query.c_str();
  Transaction tr;
  
- exec sql declare telein cursor for
-   SELECT telid FROM ku_telefon WHERE kundennr= :KUNDENNR and persnr is null;
+ exec sql prepare telein_ from :QU;
+ exec sql declare telein cursor for telein_;
  exec sql open telein;
+
  SQLerror::test(__FILELINE__);
  std::list<cH_Telefon> T;
  while(true)
@@ -587,7 +598,7 @@ const std::list<std::pair<int,PreisListe::ID> > &Kunde::Preislisten() const
 }
 
 
-void Kunde::newKontaktperson(const cH_Person &Person) const
+void Kunde::newKontaktperson(const cH_Kunde Person) const
 {
   std::string query="insert into ku_ansprech (kundennr,persnr) "
       "values ("+itos(Id())+","+itos(Person->Id())+")";
@@ -599,12 +610,12 @@ void Kunde::updateKontaktperson(const st_ansprech &A) const
 {
   std::string query="update ku_ansprech set _position='"+A.position
       +"', notiz='"+A.notiz+"' "
-      " where (kundennr,persnr) = ("+itos(Id())+","+itos(A.Person->Id())+")";
+      " where (kundennr,persnr) = ("+itos(Id())+","+itos(A.Person)+")";
   Query::Execute(query);  
   SQLerror::test(__FILELINE__);
 }
 
-void Kunde::deleteKontaktperson(const H_Kunde&K,const cH_Person &P)
+void Kunde::deleteKontaktperson(const H_Kunde K,const cH_Kunde P)
 {
   std::string query="delete from ku_ansprech  "
       " where (kundennr,persnr) = ("+itos(K->Id())+","+itos(P->Id())+")";
@@ -686,7 +697,7 @@ void Kunde::setAktiv(bool _aktiv) throw(SQLerror)
  tr.commit();
 }
 
-void Kunde::setBetreuer(const Person::ID pid) throw(SQLerror)
+void Kunde::setBetreuer(const ID pid) throw(SQLerror)
 {
  exec sql begin declare section;
  unsigned int KUNDENNR = entityid;

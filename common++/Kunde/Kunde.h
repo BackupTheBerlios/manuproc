@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.66 2004/08/25 14:47:11 jacek Exp $
+// $Id: Kunde.h,v 1.67 2004/10/11 16:44:10 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -30,7 +30,7 @@
 #include <list>
 #include <Kunde/TelefonArt.h>
 #include <Kunde/LandesListe.h>
-#include <Kunde/Person.h>
+#include <Kunde/Anrede.h>
 #include <BaseObjects/ManuProcHandle.h>
 #include <DynamicEnums/DefaultValues.h>
 #include <utility> // for pair
@@ -140,7 +140,7 @@ private:
         Kundendaten kundendaten;
         
 //   mutable Verkaeufer verkaeufer;
-   Person::ID betreuer;
+   ID betreuer;
 	
 	friend class Handle<const Kunde>;
 	friend class Handle<Kunde>;
@@ -249,19 +249,22 @@ public:
 	
 
         // Personen
-        struct st_ansprech{cH_Person Person;std::string position;std::string notiz;
-               st_ansprech():Person(Person::none_id) {}
-               st_ansprech(cH_Person P,std::string p,std::string n)             
-                     :Person(P),position(p),notiz(n) {}};
+        struct st_ansprech{ID Person;
+			   std::string position;
+			   std::string notiz;
+               st_ansprech():Person(Kunde::none_id) {}
+               st_ansprech(ID P,std::string p,std::string n)             
+                     :Person(P),position(p),notiz(n) {}
+                          };
         std::vector<st_ansprech> getPersonen() const;
-        void newKontaktperson(const cH_Person &Person) const;
+        void newKontaktperson(const cH_Kunde Person) const;
         void updateKontaktperson(const st_ansprech &A) const;
-        static void deleteKontaktperson(const H_Kunde& K,const cH_Person &P);
+        static void deleteKontaktperson(const H_Kunde K,const cH_Kunde P);
         // Telefon
-        std::list<cH_Telefon> getTelefon() const;
+        std::list<cH_Telefon> getTelefon(Kunde::ID pid=Kunde::none_id) const;
         std::string get_first_telefon(const TelArt& art) const;
-        Person::ID getBetreuer() const { return betreuer;}
-        void setBetreuer(const Person::ID) throw(SQLerror);
+        ID getBetreuer() const { return betreuer;}
+        void setBetreuer(const ID) throw(SQLerror);
   
   // gets the provsatz for article artid      
   fixedpoint<2> getProvSatz_Artikel(const ArtikelBase artid) const throw(SQLerror);
