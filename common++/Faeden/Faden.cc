@@ -1,4 +1,4 @@
-// $Id: Faden.cc,v 1.20 2004/05/27 10:15:05 christof Exp $
+// $Id: Faden.cc,v 1.21 2004/06/23 09:03:13 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -43,11 +43,9 @@ int Faden::displayBreite() const
    return getAnzahl();
 }
 
-Faden::Faden (int znr, unsigned int z, ArtikelBase::ID s, Bindung b) 
+Faden::Faden (int znr, unsigned z, ArtikelBase::ID s, Bindung b) 
 : zeilennummer(znr), anzahl(z), material(s), bindung(b), kettscheibe(-1),
-	max_kettlaenge(), max_fadenzahl(), verlaengern(),
-	ausn_gaenge(), ausn_faeden(), ausn_maxfd(),
-	ausn_gaenge2(), ausn_maxfd2()
+	ausn_gaenge(), ausn_faeden()
 {
 }
 
@@ -61,7 +59,7 @@ bool Faden::operator!= (const Faden& f) const
    return ((material != f.material) || (bindung != f.bindung));
 }
 
-Wiederholung::Wiederholung (const unsigned int s, const unsigned int e, const unsigned int a)
+Wiederholung::Wiederholung (const unsigned s, const unsigned e, const unsigned a)
 {
    if (s < e)
    {
@@ -87,15 +85,15 @@ bool Wiederholung::operator< (const Wiederholung& w) const
 }
 
 // war mal const Faden
-int Fadenliste::add (Faden f, const unsigned int r)
+int Fadenliste::add (Faden f, const unsigned r)
 {
-   unsigned int index = 0, row = r;
+   unsigned index = 0, row = r;
 
    if (row < liste.size())
    {
       std::vector<Faden>::iterator li = liste.begin();
       liste.insert (li+row, f);
-      std::vector<unsigned int>::iterator ri = repnumliste.begin();
+      std::vector<unsigned>::iterator ri = repnumliste.begin();
       repnumliste.insert (ri+row, repnumliste [row]);
    }
    else
@@ -118,7 +116,7 @@ int Fadenliste::add (Faden f, const unsigned int r)
       // f.setAnzahl (f.getAnzahl() * repnumliste [row]);
       sumliste.push_back (f);
       index = sumliste.size()-1;
-      // index = (unsigned int)-1; // designfehler !
+      // index = (unsigned)-1; // designfehler !
       // index_max+1 muesste ok sein!
    }
    else
@@ -129,10 +127,10 @@ int Fadenliste::add (Faden f, const unsigned int r)
    std::vector<Wiederholung>::reverse_iterator ie = repliste.rend();
    while (std_neq(i,ie) && (i->getEnd() >= row))
    {
-      unsigned int s = i->getStart();
+      unsigned s = i->getStart();
       if (s > row)
          i->setStart (s+1);
-      unsigned int e = i->getEnd();
+      unsigned e = i->getEnd();
       if (e >= row)
          i->setEnd (e+1);
       i++;
@@ -140,7 +138,7 @@ int Fadenliste::add (Faden f, const unsigned int r)
    return index;
 }
 
-bool Fadenliste::del (const unsigned int row, unsigned int& index)
+bool Fadenliste::del (const unsigned row, unsigned& index)
 {
    bool erased = false;
    Faden* f;
@@ -178,10 +176,10 @@ bool Fadenliste::del (const unsigned int row, unsigned int& index)
    std::vector<Wiederholung>::reverse_iterator ie = repliste.rend();
    while (std_neq(i,ie) && (i->getEnd() >= row))
    {
-      unsigned int s = i->getStart();
+      unsigned s = i->getStart();
       if (s > row)
          i->setStart (s-1);
-      unsigned int e = i->getEnd();
+      unsigned e = i->getEnd();
       if (e >= row)
          i->setEnd (e-1);
       if ((s == row) && (e == row))
@@ -194,12 +192,12 @@ bool Fadenliste::del (const unsigned int row, unsigned int& index)
 
    std::vector<Faden>::iterator li = liste.begin();
    liste.erase (li+row);
-   std::vector<unsigned int>::iterator ri = repnumliste.begin();
+   std::vector<unsigned>::iterator ri = repnumliste.begin();
    repnumliste.erase (ri+row);
    return erased;
 }
 
-bool Fadenliste::rep_add (const unsigned int s, const unsigned int e, const unsigned int a)
+bool Fadenliste::rep_add (const unsigned s, const unsigned e, const unsigned a)
 {
    if ((s < 0) || (s > liste.size()-1) || (e < 0) || (e > liste.size()-1))
       return false;
@@ -216,9 +214,9 @@ bool Fadenliste::rep_add (const unsigned int s, const unsigned int e, const unsi
    else
       repliste.insert (i, w);
 
-   std::vector<unsigned int>::iterator ri = repnumliste.begin();
+   std::vector<unsigned>::iterator ri = repnumliste.begin();
    std::vector<Faden>::iterator fi = liste.begin();
-   for (unsigned int i = w.getStart(); i <= w.getEnd(); i++)
+   for (unsigned i = w.getStart(); i <= w.getEnd(); i++)
    {
       Faden f = *(fi+i);
       std::vector<Faden>::iterator si = sumliste.begin();
@@ -235,7 +233,7 @@ bool Fadenliste::rep_add (const unsigned int s, const unsigned int e, const unsi
    return true;
 }
 
-bool Fadenliste::rep_del (const unsigned int s, const unsigned int e)
+bool Fadenliste::rep_del (const unsigned s, const unsigned e)
 {
     if ((s < 0) || (s > liste.size()-1) || (e < 0) || (e > liste.size()-1))
       return false;
@@ -251,9 +249,9 @@ bool Fadenliste::rep_del (const unsigned int s, const unsigned int e)
    int anzahl = i->getAnzahl();
    repliste.erase (i);
 
-   std::vector<unsigned int>::iterator ri = repnumliste.begin();
+   std::vector<unsigned>::iterator ri = repnumliste.begin();
    std::vector<Faden>::iterator fi = liste.begin();
-   for (unsigned int i = w.getStart(); i <= w.getEnd(); i++)
+   for (unsigned i = w.getStart(); i <= w.getEnd(); i++)
    {
       *(ri+i) /= anzahl;
 
@@ -301,7 +299,7 @@ void Fadenliste::sort_sumliste()
 
 void Fadenliste::EntfalteWiederholungen_recurse(std::vector<Faden> &liste_out,
 	std::vector<Wiederholung>::const_iterator ri,std::vector<Faden>::const_iterator i,
-	std::vector<Faden>::const_iterator e,unsigned int index) const
+	std::vector<Faden>::const_iterator e,unsigned index) const
 {reloop:
    if (i==e) return;
    // Zeilen vor der aktuellen Wiederholung
@@ -313,13 +311,13 @@ void Fadenliste::EntfalteWiederholungen_recurse(std::vector<Faden> &liste_out,
    // Wiederholung
    std::vector<Faden>::const_iterator new_end(i);
    ++new_end; // Muss ja eine Zeile nach der Wiederholung stehen
-   for (unsigned int j=ri->getStart();j<ri->getEnd();++j) 
+   for (unsigned j=ri->getStart();j<ri->getEnd();++j) 
    {  if (new_end==e) return; // da ist was schiefgelaufen !!!
       ++new_end;
    }
    std::vector<Wiederholung>::const_iterator next_ri(ri);
    ++next_ri;
-   for (unsigned int j=0;j<ri->getAnzahl();++j)
+   for (unsigned j=0;j<ri->getAnzahl();++j)
       EntfalteWiederholungen_recurse(liste_out,next_ri,i,new_end,index);
    // Zeilen nach der Wiederholung (von vorne beginnen)
    i=new_end;
@@ -388,17 +386,23 @@ static FetchIStream &operator>>(FetchIStream &is, Bindung &b)
    return is;
 }
 
-static FetchIStream &operator>>(FetchIStream &is, Faden &f)
-{  is >> f.zeilennummer >> f.anzahl >> f.material >> f.bindung
-   	>> FetchIStream::MapNull(f.kettscheibe,-1)
+static FetchIStream &operator>>(FetchIStream &is, Fd_Kettscheibe &f)
+{  is >> f.nr
    	>> FetchIStream::MapNull(f.max_kettlaenge)
    	>> FetchIStream::MapNull(f.max_fadenzahl)
    	>> FetchIStream::MapNull(f.verlaengern)
    	>> FetchIStream::MapNull(f.ausn_gaenge)
-   	>> FetchIStream::MapNull(f.ausn_faeden)
    	>> FetchIStream::MapNull(f.ausn_maxfd)
    	>> FetchIStream::MapNull(f.ausn_gaenge2)
    	>> FetchIStream::MapNull(f.ausn_maxfd2);
+   return is;
+}
+
+static FetchIStream &operator>>(FetchIStream &is, Faden &f)
+{  is >> f.zeilennummer >> f.anzahl >> f.material >> f.bindung
+   	>> FetchIStream::MapNull(f.kettscheibe,-1)
+   	>> FetchIStream::MapNull(f.ausn_gaenge)
+   	>> FetchIStream::MapNull(f.ausn_faeden);
    return is;
 }
 
@@ -417,8 +421,7 @@ void Fadenliste::Load(const Webangaben &wa)
    if (!!wa.VarianteVon()) ab=wa.VarianteVon();
       
       Query q("select zeilennummer, anzahl, material, bindung, kettscheibe, "
-      	"max_kettlaenge,max_fadenzahl,verlaengern,"
-      	"ausn_gaenge,ausn_faeden,ausn_maxfd,ausn_gaenge2,ausn_maxfd2 "
+      	"ausn_gaenge,ausn_faeden "
       	"from webang_faeden where artikel=? order by zeilennummer");
       q << ab;
       while ((q>>is).good())
@@ -440,5 +443,19 @@ void Fadenliste::Load(const Webangaben &wa)
       {  int anfangszeile, endzeile, wiederholungen;
          is >> anfangszeile >> endzeile >> wiederholungen >> Query::check_eol();
          rep_add(anfangszeile, endzeile, wiederholungen);
+      }
+
+      Query q3("select kettscheibe, endzeile, wiederholungen "
+      	"max_kettlaenge,max_fadenzahl,verlaengern,"
+      	"ausn_gaenge,ausn_faeden,ausn_maxfd,ausn_gaenge2,ausn_maxfd2 "
+		"from webang_wiederhol where artikel=? "
+		// request small ones first so we print it right
+		"order by endzeile-anfangszeile");
+      q3 << ab;
+      while ((q3>>is).good())
+      {  Fd_Kettscheibe ks;
+         is >> ks >> Query::check_eol();
+         if (ks.nr>=kettscheiben.size()) kettscheiben.resize(ks.nr+1);
+         kettscheiben[ks.nr]=ks;
       }
 }

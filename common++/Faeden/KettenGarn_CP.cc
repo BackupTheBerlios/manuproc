@@ -1,4 +1,4 @@
-/* $Id: KettenGarn_CP.cc,v 1.13 2004/06/23 08:38:29 christof Exp $ */
+/* $Id: KettenGarn_CP.cc,v 1.14 2004/06/23 09:03:13 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -40,7 +40,7 @@ struct intermediate_data : KettenGarn_CP
    unsigned min_max_fd;
 };
 
-
+#if 0
 std::vector<KettenGarn_CP> KettenGarn_CP::Load(ArtikelGang const &ag, unsigned laenge)
 {  Fadenliste fdl;
    typedef std::vector<intermediate_data> vec_t;
@@ -176,6 +176,7 @@ std::vector<KettenGarn_CP> KettenGarn_CP::Load(ArtikelGang const &ag, unsigned l
       real_result.push_back(*i);
    return real_result;
 }
+#endif
 
 bool KettenGarn::operator==(const KettenGarn_CP &b) const throw()
 	{  return Index()==b.Index() && 
@@ -188,7 +189,7 @@ bool KettenGarn::operator<(const KettenGarn_CP &b) const throw()
 	          (Index()==b.Index() && Artikel()<b.Artikel() );}
 
 #if 0
-struct intermediate_data : KettenGarn_CP
+struct intermediate_data2 : Kettscheibe
 {  // Fadenliste::const_iterator source; ?
    unsigned min_max_fd;
 };

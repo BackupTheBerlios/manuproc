@@ -1,4 +1,4 @@
-// $Id: Faden.hh,v 1.11 2004/05/27 10:15:06 christof Exp $
+// $Id: Faden.hh,v 1.12 2004/06/23 09:03:13 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -31,6 +31,21 @@
 class Wiederholung;
 class Webangaben;
 
+struct Fd_Kettscheibe
+{	unsigned nr;
+        
+        unsigned max_kettlaenge;
+        unsigned max_fadenzahl;
+        bool verlaengern;
+        unsigned ausn_gaenge,ausn_maxfd;
+        unsigned ausn_gaenge2,ausn_maxfd2;
+        
+        Fd_Kettscheibe() : nr(), max_kettlaenge(), max_fadenzahl(),
+        	verlaengern(), ausn_gaenge(), ausn_maxfd(),
+        	ausn_gaenge2(), ausn_maxfd2()
+	{}
+};
+
 struct Faden {
         int zeilennummer;
         unsigned anzahl;
@@ -38,19 +53,13 @@ struct Faden {
         Bindung bindung;
         int kettscheibe;
 
-        unsigned max_kettlaenge;
-        unsigned max_fadenzahl;
-        bool verlaengern;
-        unsigned ausn_gaenge,ausn_faeden,ausn_maxfd;
-        unsigned ausn_gaenge2,ausn_maxfd2;
+        unsigned ausn_gaenge,ausn_faeden;
         
 	friend std::ostream& operator<< (std::ostream&, const Faden&);
 public:
-	Faden (int zeilennr, unsigned int anzahl, ArtikelBase::ID, Bindung=Bindung());
+	Faden (int zeilennr, unsigned anzahl, ArtikelBase::ID, Bindung=Bindung());
 	Faden() : zeilennummer(-1), anzahl(), kettscheibe(-1), 
-		max_kettlaenge(), max_fadenzahl(), verlaengern(), 
-		ausn_gaenge(), ausn_faeden(), ausn_maxfd(),
-		ausn_gaenge2(), ausn_maxfd2()
+		ausn_gaenge(), ausn_faeden()
 	{}
 	bool operator== (const Faden&) const;
 	bool operator!= (const Faden&) const;
@@ -68,24 +77,25 @@ public:
 };
 
 struct Wiederholung {
-	unsigned int start, end, anzahl;
+	unsigned start, end, anzahl;
 public:
-	Wiederholung (const unsigned int s, const unsigned int e, const unsigned int a);
+	Wiederholung (const unsigned s, const unsigned e, const unsigned a);
 	bool operator== (const Wiederholung&) const;
 	bool operator< (const Wiederholung&) const;
-	unsigned int getStart() const { return start; }
-	unsigned int getEnd() const { return end; }
-	unsigned int getAnzahl() const { return anzahl; }
-	void setStart (const unsigned int z) { start = z; }
-	void setEnd (const unsigned int z) { end = z; }
-	void setAnzahl (const unsigned int z) { anzahl = z; }
+	unsigned getStart() const { return start; }
+	unsigned getEnd() const { return end; }
+	unsigned getAnzahl() const { return anzahl; }
+	void setStart (const unsigned z) { start = z; }
+	void setEnd (const unsigned z) { end = z; }
+	void setAnzahl (const unsigned z) { anzahl = z; }
 };
 
 class Fadenliste {
 	std::vector<Faden> liste;
 	std::vector<Faden> sumliste;
 	std::vector<Wiederholung> repliste;
-	std::vector<unsigned int> repnumliste;
+	std::vector<unsigned> repnumliste;
+	std::vector<Fd_Kettscheibe> kettscheiben;
 public:
 	typedef std::vector<Faden>::const_iterator const_iterator;
 	typedef std::vector<Faden>::iterator iterator;
@@ -105,22 +115,23 @@ public:
 	const_repiterator repbegin() const { return repliste.begin(); }
 	const_repiterator repend() const { return repliste.end(); }
 	
-	int add (const Faden, const unsigned int);
-	bool del (const unsigned int, unsigned  int&);
-	bool rep_add (const unsigned int, const unsigned int, const unsigned int);
-	bool rep_del (const unsigned int, const unsigned int);
+	int add (const Faden, const unsigned);
+	bool del (const unsigned, unsigned&);
+	bool rep_add (const unsigned, const unsigned, const unsigned);
+	bool rep_del (const unsigned, const unsigned);
 	void erase();
-	Faden getSumByIndex (const unsigned int i) const { return sumliste [i]; }
+	Faden getSumByIndex (unsigned i) const { return sumliste [i]; }
 	size_t size() const { return liste.size(); }
 	size_t sumsize() const { return sumliste.size(); }
 	void print_out() const;
 	
 	void sort_sumliste();
 	void EntfalteWiederholungen(std::vector<Faden> &liste_out) const;
+	const Fd_Kettscheibe &Kettscheibe(unsigned idx) const;
 private:
 	void EntfalteWiederholungen_recurse(std::vector<Faden> &liste_out,
 		const_repiterator ri,const_iterator i,
-		const_iterator e,unsigned int index) const;
+		const_iterator e,unsigned index) const;
 };
 
 #endif
