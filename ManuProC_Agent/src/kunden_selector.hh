@@ -13,7 +13,7 @@
 #  include "kunden_selector_glade.hh"
 #  define _KUNDEN_SELECTOR_HH
 
-#include <FetchIStream.h>
+#include <Misc/FetchIStream.h>
 
 
 class kunden_selector : public kunden_selector_glade
