@@ -6,7 +6,7 @@
 #include "scan_list.hh"
 
 #define COLUMNS 	6
-#define ROWS		20
+#define ROWS		21
 
 int tex_table::rows_left;
 
@@ -38,7 +38,7 @@ void scan_list::TeX_out(std::ostream &o)
 {
  o << "\\documentclass[a4paper]{article}\n"
    << "\\usepackage{tabularx,longtable,vmargin}\n"
-   << "\\setmarginsrb{0.3in}{0.3in}{0.3in}{0.3in}{0pt}{0pt}{0pt}{0pt}\n";
+   << "\\setmarginsrb{0.1in}{0.2in}{0.5in}{0.2in}{0pt}{0pt}{0pt}{0pt}\n";
  
  o << "\\begin{document}\n"
    << "\\input ean13\n";
@@ -100,10 +100,10 @@ void tex_table::cell_out(std::ostream &o, const std::string c,
  c_to_ean::const_iterator s=(*i).second.find(c);
 
  if(s!=(*i).second.end())
-   o << " & \\font\\ocrb=ocrb7 \\barheight=0.65cm \\X=0.25mm "
-     << " \\EAN " << (*s).second;
+   o << " &{\\font\\ocrb=ocrb7 \\barheight=0.65cm \\X=0.25mm "
+     << " \\EAN " << (*s).second<<"}";
  else
-   o << " & "; 
+   o << "&"; 
 }
 
 void tex_table::row_out(std::ostream &o, const std::string c, 
@@ -125,6 +125,7 @@ void tex_table::row_out(std::ostream &o, const std::string c,
    }
 
  o << "\\\\ \\hline\n";
+ rows_left--;
 }
 
 
@@ -175,13 +176,14 @@ void tex_table::begin_table(std::ostream &o,
    
  o << "\\\\\n";
  o << "\\multicolumn{"+itos(columns)+"}{l}{Farbe $\\downarrow$}\\\\\n";
- 
+ rows_left-=2;
 }
 
 void tex_table::new_page(std::ostream &o) const
 {
- o << "\\end{tabularx}\n\n"
-   << "\\newpage\n";
+
+ o  << "\\newpage\n";
+ rows_left=ROWS;
 }
 
 void tex_table::tex_table_out(std::ostream &o) const
@@ -191,39 +193,28 @@ void tex_table::tex_table_out(std::ostream &o) const
  
  while(it_breite!=it_end)
    {
-    if(rows_left<2)
-       {new_page(o); rows_left=ROWS;
-        rows_left--;
-       }
-    else
-      rows_left-=2;
-      
-    begin_table(o,it_breite);   
+    if(rows_left<3)
+      new_page(o); 
 
+    begin_table(o,it_breite);   
    
     std::vector<std::string>::const_iterator it_colors=colors.begin();
     for(it_colors=colors.begin(); it_colors!=colors.end(); ++it_colors)
       {
        if(rows_left<1)
-         {new_page(o); 
-          rows_left=ROWS;
+         {o << "\\end{tabularx}\n\n";
+          new_page(o); 
           begin_table(o,it_breite);   
-	  rows_left--;
 	 }
        row_out(o,*it_colors,it_breite);
-       rows_left--;
       }
 
     for(int c=0; c<columns-1; c++)
       if(it_breite!=it_end) 
         ++it_breite;
 
-    if(rows_left>=2 && it_breite!=it_end)          
-      o << "\\end{tabularx}\n";
+    o << "\\end{tabularx}\n\n";
    }	
-    
- o << "\\end{tabularx}\n";
-
 }
 
 
