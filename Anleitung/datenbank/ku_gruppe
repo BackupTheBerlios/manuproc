@@ -1,0 +1,51 @@
+--
+-- PostgreSQL database dump
+--
+
+SET search_path = public, pg_catalog;
+
+ALTER TABLE ONLY public.ku_gruppe DROP CONSTRAINT ku_gruppe_pkey;
+DROP INDEX public.ku_gruppe_name_key;
+DROP TABLE public.ku_gruppe;
+--
+-- TOC entry 2 (OID 19103063)
+--
+
+CREATE TABLE ku_gruppe (
+    grpnr numeric(4,0) NOT NULL,
+    name text NOT NULL,
+    obergruppe text,
+    kommentar text
+);
+
+
+--
+-- Data for TOC entry 5 (OID 19103063)
+--
+
+COPY ku_gruppe (grpnr, name, obergruppe, kommentar) FROM stdin;
+1	Kunden	\N	\N
+2	Lieferanten	\N	\N
+3	Personen	\N	\N
+4	Privat	\N	\N
+5	Lieferadresse	\N	\N
+6	Rechnungsadresse	\N	\N
+7	Auftragsadresse	\N	\N
+\.
+
+
+--
+-- TOC entry 3 (OID 19103077)
+--
+
+CREATE UNIQUE INDEX ku_gruppe_name_key ON ku_gruppe USING btree (name);
+
+
+--
+-- TOC entry 4 (OID 19103068)
+--
+
+ALTER TABLE ONLY ku_gruppe
+    ADD CONSTRAINT ku_gruppe_pkey PRIMARY KEY (grpnr);
+
+
