@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.39 2003/01/06 17:26:44 christof Exp $
+// $Id: get_data.cc,v 1.40 2003/01/06 17:27:33 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -265,7 +265,7 @@ void graph_data_node::get_files(const std::string &mode)
 //std::cerr << line.substr(space1+1,space2-space1-1) << ',' << line.substr(space2+1) << ",\n";
   }
   std::string dir=referenzdir;
-  if (!use_referenz) dir="../results";
+  if (!show_referenz) dir="../results";
   for(std::vector<st_files>::const_iterator i=filenames.begin();i!=filenames.end();++i)
    {
      vec_files_auftragentry.push_back(st_files(dir+"/auftragentry_"+i->filename,i->prefix));
