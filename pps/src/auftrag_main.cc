@@ -439,8 +439,9 @@ auftrag_main::auftrag_main()
 
 void auftrag_main::set_column_titles_of_simple_tree()
 {
+ int signif=1;
  cH_ExtBezSchema ebz(ExtBezSchema::default_id,offen_warengruppe->get_value());
- ExtBezSchema::const_iterator bezit=ebz->begin();
+
 
  std::vector<std::string> ct;
  ct.push_back("Kunde");
@@ -449,10 +450,11 @@ void auftrag_main::set_column_titles_of_simple_tree()
 // ct.push_back("Farbe");
 // ct.push_back("Aufmachung");
 
- int signif=1;
- int i;
- for(i=0; i<ebz->sigsize(signif); i++) 
-   ct.push_back((*ebz)[std::pair<int,int>(signif,i+1)].bezkomptext);
+
+ int i=0;
+ for(ExtBezSchema::const_sigiterator bezit=ebz->sigbegin(signif); 
+	bezit!=ebz->sigend(signif); ++bezit,i++) 
+   ct.push_back(bezit->bezkomptext);
  for(int j=i; j<4; j++) // auffüllen bis 4
    ct.push_back("");
 
