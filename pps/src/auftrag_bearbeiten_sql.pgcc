@@ -1,4 +1,4 @@
-// $Id: auftrag_bearbeiten_sql.pgcc,v 1.14 2004/02/13 10:24:31 jacek Exp $
+// $Id: auftrag_bearbeiten_sql.pgcc,v 1.15 2004/09/24 10:09:00 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -33,6 +33,7 @@ throw(SQLerror)
  char *PAT;
  int KUNDE;
  int INSTANZ=instanz->Id();
+ char *DATUM=0;
  exec sql end declare section;
  static Transaction tr("",false);
  KUNDE= kundenbox->get_value();
@@ -47,7 +48,8 @@ throw(SQLerror)
        tr.open();       
                    
        exec sql declare AUFNR_CURSOR cursor for
-       		select auftragid, ltrim(to_char(auftragid,'000000'))
+       		select auftragid, ltrim(to_char(auftragid,'000000')),
+       		date(datum)
        		from auftrag where
        		ltrim(to_char(auftragid,'000000')) like :PAT
                 and (:KUNDE<1 or kundennr=:KUNDE)
@@ -61,13 +63,13 @@ throw(SQLerror)
            
   case GTK_SEARCH_FETCH :
        {
-        exec sql fetch AUFNR_CURSOR into :AUFID, :AUFIDCHR;
+        exec sql fetch AUFNR_CURSOR into :AUFID, :AUFIDCHR, :DATUM;
 	SQLerror::test(__FILELINE__":on_aufnrscombo_search: "
 			" fetch","AUFNR_CURSOR",100);
 			
 	if(sqlca.sqlcode==100){*_continue=false; break; }
 	
-	aufnr_scombo->add_item(AUFIDCHR,AUFID);
+	aufnr_scombo->add_item(std::string(AUFIDCHR)+" "+DATUM,AUFID);
 	*_continue=true;
         break;
        }
