@@ -64,6 +64,7 @@ windowTop::windowTop()
  kundenauswahl->reset();
  kundenauswahl->EinschraenkenKdGr(gruppenwahl->get_value());
  geburtstag->setLabel("Geburtstag");
+ geburtstag->setExpandYear(false);
  connectFkt();
 }
 
@@ -124,7 +125,8 @@ void windowTop::clear_entrys()
    landesbox->clear();
 
    // Details
-   scc_verkaeufer->setContent("",0);
+   scc_verkaeufer->clear();
+   scc_anrede->clear();
    betreuer->reset();
    spinbutton_Flaeche->set_value(0);
    spinbutton_Kundenumsatz->set_value(0);
@@ -177,6 +179,8 @@ void windowTop::clear_entrys()
    rngnotiz_save->set_sensitive(false);   
    liefnotiz_save->set_sensitive(false);   
    
+   geburtstag->set_value(ManuProC::Datum());
+   
 }
 
 
@@ -225,8 +229,9 @@ void windowTop::on_preisautomatik_clicked()
 
 void windowTop::on_gruppenwahl_activate()
 {  
- kundenauswahl->EinschraenkenKdGr(gruppenwahl->get_value());
+cout << "gruppe:" <<  gruppenwahl->get_value();
  kundenauswahl->reset();
+ kundenauswahl->EinschraenkenKdGr(gruppenwahl->get_value());
  clear_entrys();
 }
 
@@ -465,9 +470,14 @@ void windowTop::on_gruppe_in_clicked()
 
 void windowTop::on_gruppe_out_clicked()
 {  
- if(kundendaten->Id()==Kunde::none_id) return;
- kundendaten->pullFromGrp(wahlgrp->GrpId());
+ kundendaten->pullFromGrp(allgrp->GrpId());
  showGruppen(); 
+}
+
+
+void windowTop::on_clear_button_clicked()
+{
+ on_gruppenwahl_activate();
 }
 
 

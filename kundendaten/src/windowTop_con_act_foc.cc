@@ -91,7 +91,7 @@ void windowTop::changedFktS(Kunde::UpdateBitsSonst e)
      else if (e==Kunde::FKP_Notiz   ) ;
      else if (e==Kunde::FAnzAusFirmenPapier) { spinbutton_firmenpapier->update(); kundendaten->set_anzahl_ausdruck_firmenpapier(spinbutton_firmenpapier->get_value_as_int());}
      else if (e==Kunde::FAnzAusWeissesPapier){ spinbutton_weissespapier->update();kundendaten->set_anzahl_ausdruck_weissespapier(spinbutton_weissespapier->get_value_as_int());}
-     else if (e==Kunde::FGebDatum	) kundendaten->setGebDatum(geburtstag->get_value());     
+     else if (e==Kunde::FGebDatum	) kundendaten->setGebDatum(geburtstag->get_value());
      else cerr<< "Falsche Funktion konektiert\n";
 
   if(e==Kunde::FNotiz || e==Kunde::FRechnungan || e==Kunde::FExtartbezid 

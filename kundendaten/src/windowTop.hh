@@ -74,8 +74,10 @@ class windowTop : public windowTop_glade
 
      void kunden_activate();
      void on_kunden_reset();
+     void on_clear_button_clicked();
 
      const TelArt getKTelArt();
+
         
 
       ///////////////////////////////////////////////

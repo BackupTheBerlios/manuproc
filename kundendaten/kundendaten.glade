@@ -111,6 +111,20 @@
 	  <label>Neu</label>
 	  <stock_pixmap>GNOME_STOCK_PIXMAP_NEW</stock_pixmap>
 	</widget>
+
+	<widget>
+	  <class>GtkButton</class>
+	  <child_name>Toolbar:button</child_name>
+	  <name>clear_button</name>
+	  <cxx_visibility>protected</cxx_visibility>
+	  <signal>
+	    <name>clicked</name>
+	    <handler>on_clear_button_clicked</handler>
+	    <last_modification_time>Fri, 11 Apr 2003 14:05:11 GMT</last_modification_time>
+	  </signal>
+	  <label>leeren</label>
+	  <stock_pixmap>GNOME_STOCK_PIXMAP_CLEAR</stock_pixmap>
+	</widget>
       </widget>
 
       <widget>
