@@ -1,4 +1,4 @@
-/* $Id: ProvAbrechnung.h,v 1.5 2003/05/30 11:57:59 jacek Exp $ */
+/* $Id: ProvAbrechnung.h,v 1.6 2003/06/02 09:46:57 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -44,7 +44,7 @@ public:
  
  ProvAbrechnung() : verkaeufer(Kunde::none_id),entries_valid(false) {}
  ProvAbrechnung(const Kunde::ID verk, const ID abrnr) throw(SQLerror);
- void loadEntries(std::string sql_order="") throw(SQLerror);
+ void loadEntries(std::string sql_order=std::string("")) throw(SQLerror);
  ManuProcEntity<>::ID Id() const { return entityid; }
  Kunde::ID VerkNr() const { return verkaeufer; }
  const ManuProC::Datum getDatum() const { return datum; }
