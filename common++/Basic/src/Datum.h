@@ -1,4 +1,4 @@
-/* $Id: Datum.h,v 1.20 2003/05/14 11:19:31 christof Exp $ */
+/* $Id: Datum.h,v 1.21 2004/02/09 10:46:41 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -101,6 +101,7 @@ public:
    std::string postgres_null_if_invalid() const;
 	/// in Europäisches Format wandeln
 	void write_euro(char *b,unsigned int sz) const throw(Datumsfehler);
+	std::string write_euro() const throw(Datumsfehler);
 	/// Gültigkeit testen
 	void teste() const throw(Datumsfehler);
 	/// Datumsformat automatisch raten
