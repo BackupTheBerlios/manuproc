@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.10 2002/11/28 18:06:36 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.11 2002/11/29 07:43:30 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -327,9 +327,9 @@ Gtk::TreeRow SimpleTreeStore::CopyTree(Gtk::TreeRow src, Gtk::TreeModel::Childre
    newrow[m_columns.value]= static_cast<cH_EntryValue>(src[m_columns.value]);
    newrow[m_columns.leafdata]= static_cast<cH_RowDataBase>(src[m_columns.leafdata]);
    newrow[m_columns.deep]= static_cast<guint>(src[m_columns.deep]);
-@   newrow.set_value(m_columns.childrens_deep, src[m_columns.childrens_deep]);
+   newrow[m_columns.childrens_deep]= static_cast<guint>(src[m_columns.childrens_deep]);
    for (guint i=0;i<m_columns.cols.size();++i)
-      newrow.set_value(m_columns.cols[i], src[m_columns.cols[i]]);
+      newrow[m_columns.cols[i]]= static_cast<Glib::ustring>(src[m_columns.cols[i]]);
       
    for (Gtk::TreeStore::iterator i=src.children().begin();
    		i!=src.children().end();++i)
@@ -353,13 +353,15 @@ Gtk::TreeStore::iterator SimpleTreeStore::MoveTree(
    Gtk::TreeRow oldnode2 = CopyTree(oldnode, newnode.children());
    
    // initialize the sum
-   newnode[m_columns.row]= (*node_creation)(oldnode[m_columns.row]);
-   newnode[m_columns.leafdata]= oldnode[m_columns.leafdata];
+   //    this const_casting is for consistency only, 
+   //    a Handle<const TreeRow> argument is more logical
+   newnode[m_columns.row]= (*node_creation)(const_cast<const TreeRow*>(&*static_cast<Handle<TreeRow> >(oldnode[m_columns.row])));
+   newnode[m_columns.leafdata]= static_cast<cH_RowDataBase>(oldnode[m_columns.leafdata]);
    newnode[m_columns.childrens_deep]= child_s_deep;
    newnode[m_columns.deep]= deep;
-   newnode[m_columns.value]= oldnode[m_columns.value];
+   newnode[m_columns.value]= static_cast<cH_EntryValue>(oldnode[m_columns.value]);
    for (guint i=deep;i<child_s_deep;++i)
-      newnode[m_columns.cols[i]]=oldnode[m_columns.cols[i]];
+      newnode[m_columns.cols[i]]= static_cast<Glib::ustring>(oldnode[m_columns.cols[i]]);
    // aufklappen wenn child_s_deep < showdeep
 
    for (guint i=child_s_deep;i<Cols();++i) oldnode2[m_columns.cols[i]]="";
@@ -368,6 +370,6 @@ Gtk::TreeStore::iterator SimpleTreeStore::MoveTree(
    	static_cast<cH_RowDataBase>(oldnode2[m_columns.leafdata])
    		->Value(value_index,ValueData());
 
-   m_refTreeStore->remove(current_iter);
+   m_refTreeStore->erase(current_iter);
    return new_iter;
 }
