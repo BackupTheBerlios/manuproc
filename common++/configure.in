@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.35 2004/03/10 14:03:39 christof Exp $
+# $Id: configure.in,v 1.36 2004/03/10 16:06:41 jacek Exp $
 
 AC_PREREQ(2.50)
 AC_INIT(libcommon++, 0.0, [manuproc-developer-de@berlios.de])
@@ -32,7 +32,7 @@ AC_ARG_ENABLE(sigc1-0, [  --enable-sigc1-0	prefer sigc 1.0],
 	 ]) 
 	])
 
-AC_ARG_ENABLE(sqlite, [  --enable-sqllite	prefer SQLite over PostgreSQL],
+AC_ARG_ENABLE(sqlite, [  --enable-sqlite	prefer SQLite over PostgreSQL],
 	[prefer_sqlite=1],[prefer_sqlite=0])
 if test $prefer_sqlite -eq 0
 then
@@ -58,7 +58,7 @@ fi
 
 if test $prefer_sqlite -eq 1
 then
-  AC_DEFINE(MPC_SQLLITE, 1, [Define to 1 if you want to use the SQLite backend])
+  AC_DEFINE(MPC_SQLITE, 1, [Define to 1 if you want to use the SQLite backend])
   ECPG_LIBS=-lsqlite
   AC_SUBST(ECPG_LIBS)
   ECPG="/bin/touch --"
