@@ -1,4 +1,4 @@
-// $Id: Zahlungsart.cc,v 1.31 2003/04/23 11:01:40 jacek Exp $
+// $Id: Zahlungsart.cc,v 1.32 2003/05/13 10:37:33 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -266,7 +266,11 @@ void Zahlungsart::TeX_out(std::ostream &os,
           << vec_skonto[0].skontosatz<<"\\.\\% Skonto\\\\\n";
 	    }
       else     
-       os << "Zahlung bis zum "<<zahlziel<<" netto\\\\\n";
+	{
+	   snprintf(strbuf,BSIZE,
+		mld.MLT(TID::PRINTF_ZAHLUNG9).c_str(),zahlziel.c_str());
+	   os << strbuf<<"\\\\\n";
+	}
      }
    else
      {
