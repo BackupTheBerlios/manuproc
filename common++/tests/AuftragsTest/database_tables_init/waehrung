@@ -12,7 +12,7 @@ CREATE TABLE "waehrung" (
 	"wid" integer NOT NULL,
 	"kurz" character varying(5) NOT NULL,
 	"lang" character varying(30),
-	"dmfkt" numeric(12,5) NOT NULL,
+	"fkt" numeric(12,5) NOT NULL,
 	"tex" text,
 	Constraint "waehrung_pkey" Primary Key ("wid")
 );

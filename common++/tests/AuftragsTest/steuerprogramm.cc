@@ -786,7 +786,7 @@ std::cout << "D13: "<<dummystring<<'\n';
          AufEintrag Fuer((class AufEintragBase(AuftragBase(I,AuftragBase::ungeplante_id),znrnach)));
 #warning Test neu designen
 //         AufEintrag(Von).menge_fuer_aeb_freigeben(3000,Fuer,getuid());
-         vergleichen(C,Check::Menge,"ZKM","Menge freigeben für einen anderen Auftrag","",mit_reparatur_programm);
+//         vergleichen(C,Check::Menge,"ZKM","Menge freigeben für einen anderen Auftrag","",mit_reparatur_programm);
        }
        break;
       #endif

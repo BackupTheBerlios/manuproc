@@ -1,4 +1,4 @@
-// $Id: Datum.cc,v 1.19 2003/04/03 08:08:00 christof Exp $
+// $Id: Datum.cc,v 1.20 2003/04/28 06:38:43 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* $Id: Datum.cc,v 1.19 2003/04/03 08:08:00 christof Exp $ */
+/* $Id: Datum.cc,v 1.20 2003/04/28 06:38:43 christof Exp $ */
 #include "Datum.h"
 #include <time.h>
 #include <ctype.h>
@@ -337,9 +337,9 @@ int ManuProC::Datum::Wochentag(void) const throw(Datumsfehler)
 
 ManuProC::Datum::Datum(int t, int m, int j,bool expandyear) throw(Datumsfehler)
   : woche(0),woche_jahrdiff(0),quart(0),tag(t),monat(m),jahr(j) 
-{  if (expandyear) 
-   {  if (jahr<1900) jahr+=1900;
-      if (jahr<1970) jahr+=100;
+{  if (expandyear && jahr<100) 
+   {  if (jahr<70) jahr+=100;
+      jahr+=1900;
    }
    teste();
 }

@@ -34,6 +34,7 @@ createdb $PGDATABASE
    ketten_kettid_seq \
    kunden \
    ku_land \
+   ku_briefanr \
    lager_bewegung \
    lastcode \
    problems \
