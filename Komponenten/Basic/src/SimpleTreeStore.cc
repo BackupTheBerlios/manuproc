@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore.cc,v 1.38 2003/11/20 13:27:33 christof Exp $
+// $Id: SimpleTreeStore.cc,v 1.39 2003/12/10 07:30:35 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -33,6 +33,10 @@
 #include <Misc/Trace.h>
 //#include <GType_cH_EntryValue.h>
 #include <gtkmm/treepath.h>
+
+#ifdef __MINGW32__
+#define getuid() 0
+#endif
 
 void SimpleTreeModel_Proxy::setModel(SimpleTreeModel &_model)
 {  if (model_is_ours) { delete model; model_is_ours=false; }

@@ -21,6 +21,9 @@
 #include <Misc/itos.h>
 #include <unistd.h>
 
+#ifdef __MINGW32__
+#define getuid() 0
+#endif
 
 void MyWindow::saveWindowSize(Gtk::Window &window,const std::string &programm)
 {
