@@ -26,6 +26,8 @@ window1::window1()
    mybool3.signal_changed().connect(SigC::slot(*this,&window1::someth_changed));
    Gtk::AssociateVisibility(stringwidget,mybool2);
    Gtk::AssociateSensitivity(boolwidget,mybool2);
+   slconn.set(mystring,label1);
+   isconn.set(myint,spinbutton1);
    srand(time(0));
 }
 

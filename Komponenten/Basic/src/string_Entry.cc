@@ -1,4 +1,4 @@
-// $Id: string_Entry.cc,v 1.4 2003/03/07 08:10:25 christof Exp $
+// $Id: string_Entry.cc,v 1.5 2003/04/07 12:33:17 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -20,47 +20,51 @@
 
 #include "string_Entry.hh"
 
-void string_Entry::refresh(gpointer x)
-{ if (model.matches(x))
-  {my_ch_con.block();
-   Gtk::Entry::set_text(model.get_value());
-   any_change=false;
-   my_ch_con.unblock();
-  }
+void string_Entry::Connection::keypress()
+{  any_change=true;
 }
 
-bool string_Entry::on_focus_out(GdkEventFocus *ev)
-{  if (any_change)
-   {  ch_con.block();
-      model=Gtk::Entry::get_text();
-      ch_con.unblock();
-      any_change=false;
-   }
+void string_Entry::Connection::on_activate()
+{  on_focus_out(0);
+}
+
+bool string_Entry::Connection::on_focus_out(GdkEventFocus *ev)
+{  if (any_change) controller2model();
 //   select_region(0,0); // needed ?
    return false;
 }
 
-bool string_Entry::on_focus_in(GdkEventFocus *ev)
-{  select_region(0,-1);
+bool string_Entry::Connection::on_focus_in(GdkEventFocus *ev)
+{  widget->select_region(0,-1);
    return false;
 }
 
-string_Entry::string_Entry(const Model_ref<T> &m)
-	: any_change(false), model(m)
-{  Gtk::Entry::set_text(model.get_value());
-   signal_focus_out_event().connect(SigC::slot(*this,&string_Entry::on_focus_out),true);
-   signal_focus_in_event().connect(SigC::slot(*this,&string_Entry::on_focus_in),true);
+void string_Entry::Connection::model2widget()
+{  widget->set_text(model.get_value());
+   any_change=false;
+}
+
+void string_Entry::Connection::widget2model()
+{  model=widget->get_text();
+   any_change=false;
+}
+
+SigC::Connection string_Entry::Connection::connect()
+{  cm_con2[0]=widget->signal_focus_out_event().connect(SigC::slot(*this,&string_Entry::Connection::on_focus_out),true);
+   cm_con2[1]=widget->signal_focus_in_event().connect(SigC::slot(*this,&string_Entry::Connection::on_focus_in),true);
    // I'm not quite sure whether this is needed at all
-   signal_activate().connect(SigC::slot(*this,&string_Entry::on_activate),true);
-   ch_con=model.signal_changed().connect(SigC::slot(*this,&string_Entry::refresh));
-   my_ch_con=signal_changed().connect(SigC::slot(*this,&string_Entry::keypress));
-};
-
-void string_Entry::keypress()
-{  any_change=true;
+   cm_con2[2]=widget->signal_activate().connect(SigC::slot(*this,&string_Entry::Connection::on_activate),true);
+   return widget->signal_changed().connect(SigC::slot(*this,&string_Entry::Connection::keypress));
 }
 
-void string_Entry::on_activate()
-{  on_focus_out(0);
+void string_Entry::Connection::disconnect()
+{  cm_con2[0].disconnect();
+   cm_con2[1].disconnect();
+   cm_con2[2].disconnect();
+   this_t::disconnect();
 }
 
+string_Entry::string_Entry(const Model_ref<T> &m)
+	: conn(m,this)
+{  
+}

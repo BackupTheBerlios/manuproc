@@ -1,4 +1,4 @@
-// $Id: ModelWidgetConnection.h,v 1.1 2003/04/07 06:38:20 christof Exp $
+// $Id: ModelWidgetConnection.h,v 1.2 2003/04/07 12:33:17 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -33,9 +33,11 @@ template <class T,class W>
 	Model_ref<T> model;
 	widget_t *widget;
 
+	// these default actions fit for views, override them for controllers
 	virtual void model2widget()=0;
-	virtual void widget2model()=0;
-	virtual SigC::Connection connect()=0;
+	virtual void widget2model() {}
+	virtual SigC::Connection connect() { return SigC::Connection(); }
+
 	virtual void disconnect() { cm_con.disconnect(); }
 
 private:
@@ -55,15 +57,15 @@ protected:
 	}
 	// I cannot call set_widget since model2view is pure
 	// virtual at this point, please do it in your ctor
-	ModelWidgetConnection(const Model_ref<T> &m=Model_ref<T>()) 
-		: widget(0) 
+	ModelWidgetConnection(const Model_ref<T> &m=Model_ref<T>())
+		: widget(0)
 	{ if (m.valid()) set_model(m); }
 
 public:
 	virtual void set_widget(widget_t *w)
-	{  cm_con.disconnect();
+	{  disconnect();
 	   widget=w;
-	   if (widget) 
+	   if (widget && model.valid())
 	   {  model2view();
 	      cm_con=connect();
 	   }
@@ -73,6 +75,10 @@ public:
 	   model=m;
 	   if (widget) model2view();
 	   mv_con=model.signal_changed().connect(SigC::slot(*this,&this_t::refresh));
+	}
+	void set(const Model_ref<T> &m,widget_t *w)
+	{  set_widget(w);
+	   set_model(m);
 	}
 };
 

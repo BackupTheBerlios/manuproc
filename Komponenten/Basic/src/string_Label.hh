@@ -1,7 +1,7 @@
-// $Id: int_SpinButton.hh,v 1.6 2003/04/07 12:33:17 christof Exp $
+// $Id: string_Label.hh,v 1.1 2003/04/07 12:33:17 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
- *  Copyright (C) 2002-2003 Adolf Petig GmbH & Co. KG
- *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
+ *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
+ *  written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,43 +18,30 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef MANUPROC_WIDGETS_MVC_INT_H
-#define MANUPROC_WIDGETS_MVC_INT_H
+#ifndef MANUPROC_WIDGETS_STRING_LABEL_H
+#define MANUPROC_WIDGETS_STRING_LABEL_H
 
-#include <gtkmm/spinbutton.h>
+#include <gtkmm/label.h>
 #include <ModelWidgetConnection.h>
 
-class int_SpinButton : public Gtk::SpinButton
-{	typedef int T;
+class string_Label : public Gtk::Label
+{	typedef std::string T;
 public:
-	class Connection : public ModelWidgetConnection<T,Gtk::SpinButton>
-	{	bool any_change;
-		SigC::Connection cm_con2[3];
-
-		bool on_focus_out(GdkEventFocus *ev);
-		bool on_focus_in(GdkEventFocus *ev);
-		void keypress();
-		void on_activate();
-		
-		void model2widget();
-		void widget2model();
-		SigC::Connection connect();
-		void disconnect();
+	class Connection : public ModelWidgetConnection<T,Gtk::Label>
+	{	void model2widget();
 	public:
-		Connection(widget_t *w=0) : any_change(false) 
-		{ set_widget(w); }
+		Connection(widget_t *w=0) { set_widget(w); }
 		Connection(const Model_ref<T> &m, widget_t *w=0) 
-		: this_t(m), any_change(false) { set_widget(w); }
+		: this_t(m) { set_widget(w); }
 	};
 private:
 	Connection conn;
 	
 	// explicitely forbid to use these (make them private)
-	gfloat get_value_as_float() const;
-	gint get_value_as_int() const;
-	void set_value(gfloat);
+	Glib::ustring get_text() const;
+	void set_text(const Glib::ustring& text);
 public:
-	int_SpinButton(const Model_ref<T> &model,T min,T max);
+	string_Label(const Model_ref<T> &model);
 };
 
 #endif

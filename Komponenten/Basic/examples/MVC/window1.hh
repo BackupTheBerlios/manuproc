@@ -3,8 +3,11 @@
 //
 
 #ifndef _WINDOW1_HH
-#  include "window1_glade.hh"
-#  define _WINDOW1_HH
+#define _WINDOW1_HH
+
+#include "window1_glade.hh"
+#include <int_SpinButton.hh>
+#include <string_Label.hh>
 
 class window1 : public window1_glade
 {	friend class window1_glade;
@@ -14,6 +17,9 @@ class window1 : public window1_glade
         void someth_changed(gpointer);
         void bool_changed(gpointer);
         void randomize();
+        
+        int_SpinButton::Connection isconn;
+        string_Label::Connection slconn;
 public:
 	window1();
 };
