@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.33 2003/04/13 20:42:17 christof Exp $
+// $Id: AuftragBase.cc,v 1.34 2003/05/16 10:26:35 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -29,7 +29,6 @@
 #include <Auftrag/AufEintragZu.h>
 #include <Misc/TraceNV.h>
 #include <Lager/Lager.h>
-#include <Misc/FetchIStream_ops.h>
 
 std::string AuftragBase::str() const
 {

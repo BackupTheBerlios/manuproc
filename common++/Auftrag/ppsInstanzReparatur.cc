@@ -27,7 +27,7 @@
 #include <Auftrag/AufEintragZuMengenAenderung.h>
 #include <Misc/Transaction.h>
 #include <Misc/relops.h>
-
+#include <unistd.h>
 
 bool ppsInstanzReparatur::ReparaturKK_KundenKinder(const int uid,const bool analyse_only) const
 {
@@ -748,16 +748,124 @@ void ppsInstanzReparatur::analyse(const std::string &s,const AufEintrag &AE,cons
 void ppsInstanzReparatur::analyse(const std::string &s,const AufEintrag &AE,const cH_ppsInstanz &x,const cH_ppsInstanz &y) const
 {analyse(s,AE,x->Name(),y->Name());}
 
-bool ppsInstanzReparatur::SummeEltern(AufEintrag &ae, const AufEintragZu::list_t &eltern, bool analyse_only) const
-{  // schauen ob Sum(eltern)=offeneMenge,
-   // wenn produziert selbst kann Sum(eltern) niedriger sein (sollte aber nicht)
-   
-   // Sum zu groß: nachbestellen
-   // Sum zu klein: abbestellen (falls 0er, bei 1er 2er erzeugen)
-   return true;
+static void Zuordnung_erniedrigen(AufEintrag &ae,
+	AufEintragZu::list_t &eltern,AuftragBase::mengen_t &m,
+	AuftragBase::ID typ)
+{  for (AufEintragZu::list_t::iterator i=eltern.begin();i!=eltern.end();++i)
+   {  if ((typ==AuftragBase::handplan_auftrag_id && i->AEB.Id()<typ)
+   		|| i->AEB.Id()!=typ) continue;
+      AuftragBase::mengen_t M=AuftragBase::min(m,i->Menge);
+      if (!M) continue;
+      AufEintragZu(i->AEB).setMengeDiff__(ae,-M);
+      i->Menge-=M;
+      m-=M;
+      if (!m) break;
+   }
 }
 
-bool ppsInstanzReparatur::SummeKinder(AufEintrag &ae, const AufEintragZu::map_t &kinder, bool analyse_only) const
+bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, bool analyse_only) const
+{  // 2er und Kundenaufträge dürfen keine Kinder haben!
+   if (ae.Id()==AuftragBase::dispo_auftrag_id || ae.Instanz()==ppsInstanzID::Kundenauftraege)
+   {  if (!eltern.empty())
+      {  analyse("2er und Kundenaufträge dürfen keine Kinder haben!",ae);
+         for (AufEintragZu::list_t::iterator i=eltern.begin();i!=eltern.end();)
+         {  if (!analyse_only) AufEintragZu::remove(i->AEB,ae);
+            i=eltern.erase(i);
+         }
+         return false;
+      }
+      return true;
+   }
+   // 
+   bool alles_ok=true;
+   for (AufEintragZu::list_t::iterator i=eltern.begin();i!=eltern.end();)
+   {  if (ae.Instanz()==i->AEB.Instanz())
+      {  if (i->AEB.Id()!=AuftragBase::dispo_auftrag_id)
+         {  analyse("Eltern auf gleicher Instanz müssen 2er sein",ae,i->AEB,i->Menge);
+           weg:
+            if (!analyse_only) AufEintragZu::remove(i->AEB,ae);
+            i=eltern.erase(i);
+            alles_ok=false;
+            continue;
+         }
+         AufEintrag ae2(i->AEB);
+         if (ae2.Artikel()!=ae.Artikel()
+         	|| ae2.getLieferdatum()!=ae.getLieferdatum()) 
+         {  analyse("Artikel oder Datum passt nicht",ae,i->AEB,i->Menge);
+            goto weg;
+         }
+      }
+      else
+      {  if (i->AEB.Id()==AuftragBase::dispo_auftrag_id) 
+         {  analyse("2er müssen auf der gleichen instanz liegen",ae,i->AEB,i->Menge);
+            goto weg;
+         }
+         // schadet nicht ... ist aber wohl eher die Angelegenheit des 1ers
+         if (i->AEB.Id()==AuftragBase::plan_auftrag_id && !!i->Menge)
+         {  analyse("1er können keine Menge bestellen",ae,i->AEB,i->Menge);
+            if (!analyse_only) AufEintragZu(i->AEB).setMenge(ae,0);
+            i->Menge=0;
+            alles_ok=false;
+         }
+      }
+      ++i;
+   }
+   
+   // schauen ob Sum(eltern)=offeneMenge,
+   // wenn produziert selbst kann Sum(eltern) niedriger sein (sollte aber nicht)
+   AufEintragBase::mengen_t menge2,menge;
+   for (AufEintragZu::list_t::iterator i=eltern.begin();i!=eltern.end();++i)
+   {  menge+=i->Menge;
+      if (i->AEB.Id()==AuftragBase::dispo_auftrag_id)
+      {  menge2+=i->Menge;
+         if (menge2>=ae.getRestStk())
+         {  analyse("Mehr Dispomenge als noch frei",ae,i->AEB,menge2-ae.getRestStk());
+            if (!analyse_only) 
+               AufEintragZu(i->AEB).setMengeDiff__(ae,ae.getRestStk()-menge2);
+            i->Menge+=ae.getRestStk()-menge2;
+            // vielleicht noch den Ziel 2er reduzieren?
+            alles_ok=false;
+         }
+      }
+   }
+   // Sum zu groß: nachbestellen
+   if (menge>ae.getStueck())
+   {  analyse("mehr v.o. benötigt als jemals bestellt",ae,menge,ae.getStueck());
+      alles_ok=false;
+      if (!analyse_only)
+      {if (ae.Id()==AuftragBase::ungeplante_id) 
+         ae.MengeAendern(getuid(),menge-ae.getStueck(),true,AufEintragBase(),
+         	ManuProC::Auftrag::r_Reparatur);
+       else
+       {  // Zuordnung erniedrigen, Reihenfolge: 2,0,1,3)
+         // danach müssen die Eltern repariert werden!
+         AuftragBase::mengen_t m=menge-ae.getStueck(); // positiv
+         Zuordnung_erniedrigen(ae,eltern,m,AuftragBase::dispo_auftrag_id);
+         if (!!m) Zuordnung_erniedrigen(ae,eltern,m,AuftragBase::ungeplante_id);
+         if (!!m) Zuordnung_erniedrigen(ae,eltern,m,AuftragBase::plan_auftrag_id);
+         if (!!m) Zuordnung_erniedrigen(ae,eltern,m,AuftragBase::handplan_auftrag_id);
+       }
+      }
+   }
+   // Sum zu klein: abbestellen (falls 0er, bei 1er 2er erzeugen)
+   else if (menge<ae.getRestStk() && !ae.Instanz()->ProduziertSelbst())
+   {  analyse("weniger bestellt als nun benötigt",ae,menge,ae.getStueck());
+      alles_ok=false;
+      if (!analyse_only)
+      {if (ae.Id()==AuftragBase::ungeplante_id)
+         ae.MengeAendern(getuid(),menge-ae.getStueck(),true,AufEintragBase(),
+         	ManuProC::Auftrag::r_Reparatur);
+       else
+         // 2er erzeugen
+         AuftragBase(ae.Instanz(),AuftragBase::dispo_auftrag_id).
+              BestellmengeAendern(menge-ae.getStueck(),ae.getLieferdatum(),
+              		ae.Artikel(),OPEN,getuid(),ae);
+      }
+   }
+   return alles_ok;
+}
+
+bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bool analyse_only) const
 {  // schauen ob offeneMenge=Sum(kinder)
    
    // Sum zu klein: nachbestellen
