@@ -1,4 +1,4 @@
-/* $Id: ManuProcEintrag.h,v 1.1 2002/07/08 08:09:15 christof Exp $ */
+/* $Id: ManuProcEintrag.h,v 1.3 2002/07/08 08:11:18 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
