@@ -1,4 +1,4 @@
-// $Id: Rechnung.cc,v 1.12 2003/09/16 11:21:27 jacek Exp $
+// $Id: Rechnung.cc,v 1.13 2003/10/08 16:22:58 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -31,11 +31,14 @@ void Rechnung::setRngArt(const RngArt &art) throw(SQLerror)
       +itos(Id());
   Query::Execute(query);
   SQLerror::test(__FILELINE__);
-  if(art==RART_GUT) convert_to_gutschrift();
+
+// must be called separately due to bool argument not known here;
+//  if(art==RART_GUT) convert_to_gutschrift();
+
   tr.commit();
 }
 
-void Rechnung::convert_to_gutschrift() throw(SQLerror)
+void Rechnung::convert_to_gutschrift(bool lager_buchung) throw(SQLerror)
 {
   Transaction tr;
   std::string query="update rechnungentry set preis=preis*-1 "
@@ -44,13 +47,16 @@ void Rechnung::convert_to_gutschrift() throw(SQLerror)
   SQLerror::test(__FILELINE__);
 
 #ifdef MABELLA_EXTENSIONS
-  query="insert into fw_lager_buchung "
+  if(lager_buchung)
+    {
+     query="insert into fw_lager_buchung "
 	"(artikelid,menge,datum,aktion,pid,lfrsid) "
 	"(select artikelid,stueck,now(),'L',1,lfrsid from rechnungentry"
 	" where rngid="+itos(Id());
-  query=query+")"; 
-  Query::Execute(query);
-  SQLerror::test(__FILELINE__);
+     query=query+")"; 
+     Query::Execute(query);
+     SQLerror::test(__FILELINE__);
+    }
 #endif
   tr.commit();
 }

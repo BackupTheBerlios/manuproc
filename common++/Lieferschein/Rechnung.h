@@ -1,4 +1,4 @@
-/* $Id: Rechnung.h,v 1.29 2003/09/16 11:21:27 jacek Exp $ */
+/* $Id: Rechnung.h,v 1.30 2003/10/08 16:22:58 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -70,7 +70,7 @@ public:
 // std::string RngArt() const {return rngart; } 
  const RngArt rngArt() const {return rngart; } 
  void setRngArt(const RngArt &art) throw(SQLerror);
- void convert_to_gutschrift() throw(SQLerror);
+ void convert_to_gutschrift(bool lager_buchung=false) throw(SQLerror);
  rabatt_t Rabatt() const { return rabatt; }
 
 // don't know where is using this and i assume a bug in it. 

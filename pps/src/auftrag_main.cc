@@ -115,12 +115,14 @@ void auftrag_main::neuladen()
 
 static std::string print_cmd;
 
-static std::string kopfzeile(int col,const std::string &typ,const std::string &title,gpointer user_data)
+static std::string kopfzeile(int col,const std::string &typ,
+const std::string &title,gpointer user_data)
 {  if (!strncmp(title.c_str(),"Verarbeitung",12)) return "p{3.5cm}";
    return typ;
 }
 
-static std::string shorten_some(int col,const std::string &title,gpointer user_data)
+static std::string shorten_some(int col,const std::string &title,
+gpointer user_data)
 {  if (!strncmp(title.c_str(),"Artikel",7) ||
 	!strncmp(title.c_str(),"Breite",6) ||
 	!strncmp(title.c_str(),"Farbe",5) ||
@@ -170,7 +172,8 @@ void auftrag_main::on_main_drucken_activate()
       tf.sequence=maintree_s->get_seq();
 
       try{
-      tf.user_data=(gpointer)(&*(maintree_s->getSelectedRowDataBase_as<Handle<const Data_auftrag> >()));
+      tf.user_data=(gpointer)(&*(maintree_s->getSelectedRowDataBase_as
+		<Handle<const Data_auftrag> >()));
 #warning how to get deep from a selected leaf ?
       tf.deep=0; 
       }

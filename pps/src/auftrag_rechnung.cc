@@ -724,7 +724,16 @@ void auftrag_rechnung::on_gutschrift_activate()
  
  if(ret==0)
    {
-    try{rechnung.setRngArt(Rechnung::RART_GUT);}
+    try{
+    rechnung.setRngArt(Rechnung::RART_GUT);
+
+    ja_nein_frage lag("Soll die Ware dem Lager zugebucht gemacht werden ?");
+    lag.set_transient_for(*this);
+    ret=lag.run();
+
+    rechnung.convert_to_gutschrift(ret==0);
+
+    }
     catch(SQLerror &e) 
       {meldung->Show(e);
        redisplay();
