@@ -1,7 +1,7 @@
-// $Id: bool_ImageButton.cc,v 1.3 2003/03/11 07:57:57 christof Exp $
+// $Id: bool_ImageButton.cc,v 1.4 2003/04/07 14:16:38 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
- *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
- *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
+ *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
+ *  written by Christof Petig
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,34 +20,44 @@
 
 #include "bool_ImageButton.hh"
 
-void bool_ImageButton::refresh(gpointer x)
-{  if (model.matches(x))
-   {  my_ch_con.block();
-      Gtk::CheckButton::set_active(model.get_value());
+bool bool_ImageButton::Connection::toggle(GdkEventButton *ev)
+{  model=!model;
+   return false;
+}
 
-      imag->set(model.Value()?on:off);
-      my_ch_con.unblock();
-   }
+void bool_ImageButton::Connection::model2widget()
+{  widget->set(model.Value()?on:off);
+}
+
+SigC::Connection bool_ImageButton::Connection::connect()
+{  if (eventbox) toggleconn=eventbox->signal_button_press_event().connect(SigC::slot(*this,&bool_ImageButton::Connection::toggle));
+   return SigC::Connection();
+}
+
+void bool_ImageButton::Connection::disconnect()
+{  toggleconn.disconnect();
 }
 
 bool_ImageButton::bool_ImageButton(const Model_ref<T> &m, 
 		const Glib::RefPtr<Gdk::Pixbuf> &_off,
 		const Glib::RefPtr<Gdk::Pixbuf> &_on)
-	: off(_off), on(_on), model(m), imag(0)
-{  imag=Gtk::manage(new Gtk::Image(model.Value()?on:off));
+	: conn(m), imag(0)
+{  set_events(Gdk::BUTTON_PRESS_MASK);
+   imag=Gtk::manage(new Gtk::Image());
+   add(*imag);
+   conn.set_images(_off,_on);
+   conn.set_widget(imag,this);
    imag->show();
-   Gtk::ToggleButton::add(*imag);
-   set_relief(Gtk::RELIEF_NONE);
-   set_border_width(0);
-   set_mode(false);
-   Gtk::ToggleButton::set_active(model.get_value());
-   my_ch_con=signal_toggled().connect(SigC::slot(*this,&bool_ImageButton::on_toggled));
-   ch_con=model.signal_changed().connect(SigC::slot(*this,&bool_ImageButton::refresh));
 };
 
-void bool_ImageButton::on_toggled()
-{  ch_con.block();
-   model=Gtk::CheckButton::get_active();
-   imag->set(model.Value()?on:off);
-   ch_con.unblock();
+void bool_ImageButton::Connection::set_widget(widget_t *w,Widget *ev)
+{  eventbox=ev;
+   set_widget(w);
+}
+
+void bool_ImageButton::Connection::set_images(const Glib::RefPtr<Gdk::Pixbuf> &_off,
+				const Glib::RefPtr<Gdk::Pixbuf> &_on)
+{  off=_off;
+   on=_on;
+   if (widget) model2widget();
 }

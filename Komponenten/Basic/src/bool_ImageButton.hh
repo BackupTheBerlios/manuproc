@@ -1,4 +1,4 @@
-// $Id: bool_ImageButton.hh,v 1.4 2003/03/11 07:57:57 christof Exp $
+// $Id: bool_ImageButton.hh,v 1.5 2003/04/07 14:16:38 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -21,23 +21,34 @@
 #ifndef MANUPROC_WIDGETS_MVC_BOOLIMAGEBUTTON_H
 #define MANUPROC_WIDGETS_MVC_BOOLIMAGEBUTTON_H
 
-#include <gtkmm/checkbutton.h>
-#include <BaseObjects/Model.h>
+#include <gtkmm/eventbox.h>
+#include <ModelWidgetConnection.h>
 #include <gtkmm/image.h>
 
-class bool_ImageButton : public Gtk::CheckButton
+class bool_ImageButton : public Gtk::EventBox
 {	typedef bool T;
-	Glib::RefPtr<Gdk::Pixbuf> off,on;
-	SigC::Connection ch_con, my_ch_con;
-	Model_ref<T> model;
+public:
+	class Connection : public ModelWidgetConnection<T,Gtk::Image>
+	{	Glib::RefPtr<Gdk::Pixbuf> off,on;
+		Gtk::Widget *eventbox;
+		SigC::Connection toggleconn;
+
+		void model2widget();
+		void widget2model() {}
+		SigC::Connection connect();
+		void disconnect();
+		
+		bool toggle(GdkEventButton *ev);
+	public:
+		Connection(const Model_ref<T> &m) : this_t(m), eventbox(0) { }
+		void set_widget(widget_t *w, Widget *eventbox=0);
+		void set_images(const Glib::RefPtr<Gdk::Pixbuf> &off,
+				const Glib::RefPtr<Gdk::Pixbuf> &on);
+	};
+private:
+	Connection conn;
 	Gtk::Image *imag;
 
-	void init();
-	void refresh(gpointer);
-	void on_toggled();
-	// explicitely forbid to use these (make them private)
-	bool get_active() const;
-	void set_active(bool);
 public:
 	bool_ImageButton(const Model_ref<T> &model, 
 		const Glib::RefPtr<Gdk::Pixbuf> &off,

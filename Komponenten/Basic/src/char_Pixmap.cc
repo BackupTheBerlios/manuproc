@@ -1,4 +1,4 @@
-// $Id: char_Pixmap.cc,v 1.4 2003/03/07 08:10:25 christof Exp $
+// $Id: char_Pixmap.cc,v 1.5 2003/04/07 14:16:38 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -20,21 +20,10 @@
 
 #include "char_Pixmap.hh"
 
-void char_Pixmap::refresh(gpointer x)
-{
-  if (model.matches(x))
-   { set(Gdk::Pixbuf::create_from_xpm_data(model.get_value()));
-   }
+void char_Pixmap::Connection::model2widget()
+{  widget->set(Gdk::Pixbuf::create_from_xpm_data(model.get_value()));
 }
 
 char_Pixmap::char_Pixmap(const Model_ref<T> &m)
-	:  Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(m.get_value())),model(m)
-{  
- init();
-};
-
-void char_Pixmap::init()
-{
-  ch_con=model.signal_changed().connect(SigC::slot(*this,&char_Pixmap::refresh));
-}
-
+	: conn(m,this)
+{  }
