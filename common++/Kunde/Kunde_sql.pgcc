@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.60 2004/08/05 10:20:32 jacek Exp $
+// $Id: Kunde_sql.pgcc,v 1.61 2004/08/05 10:31:56 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -27,9 +27,19 @@ exec sql include sqlca;
 
 void Kunde::setVerkNr(Kunde::ID v) throw(SQLerror)
 {
+ if(Id()==Kunde::none_id) return;
+
+ Transaction tr;
+
  Query("update kunden set verknr=? where kundennr=?")
  << Query::NullIf(v,Kunde::none_id) << Id();
  SQLerror::test(__FILELINE__);
+
+ if(v==Kunde::none_id)
+   Query("delete from prov_config where kundennr=?") << Id();
+ SQLerror::test(__FILELINE__);
+
+ tr.commit(); 
 
  verkaeufer = v;
 }
