@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.37 2004/10/12 15:54:28 jacek Exp $
+// $Id: sqlAuftragSelector.cc,v 1.38 2004/11/26 17:32:06 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -22,6 +22,7 @@
 #include <Misc/itos.h>
 #include<auftrag_status.h>
 #include<BaseObjects/ManuProcEntity.h>
+#include<Misc/Waehrung.h>
 
 #include<DynamicEnums/DynamicEnums.h>
 
@@ -36,7 +37,8 @@
 	"coalesce(p.letzteplaninstanz,"+itos(ppsInstanzID::None)+"), " \
    	"coalesce(p.maxplaninstanz,"+itos(ppsInstanzID::None)+"), " \
 	"coalesce(p.datum,cast(now() as date)), " \
-	"e.preis, coalesce(e.preismenge,1), a.waehrung, " \
+	"e.preis, coalesce(e.preismenge,1), " \
+	"coalesce(a.waehrung,"+itos(Waehrung::default_id)+"), " \
 	"coalesce(e.rabatt,0.0), " \
 	"e.status,coalesce(e.lastedit_uid,0),e.lasteditdate," \
 	"e.letzte_lieferung," \

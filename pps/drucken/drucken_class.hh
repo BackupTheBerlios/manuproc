@@ -59,8 +59,10 @@ public:
               else
                 {
                  Artikelpreis ap(u.l->KdID(),u.l->Artikel(),u.l->Stueck());
-                 Preis p=we_preis[AufEintragBase()];
-                 we_preis[AufEintragBase()]= (p + Preis(ap.Wert(),Waehrung::default_id));
+                 if(ap.Gefunden())
+                   we_preis[AufEintragBase()]= Preis(ap.Wert(),Waehrung::default_id);
+		 else
+                   we_preis[AufEintragBase()]= Preis((float)0,Waehrung::default_id);
                 }
              }
           }
@@ -80,8 +82,8 @@ public:
       if (Typ()==Auftrag)  return u.a->EPreis(brutto);  
       if (Typ()==Rechnung) return u.r->getPreis(brutto); 
       if (Typ()==Wareneingang) 
-        {if(u.l->getZusatzInfos().empty())
-           return (*(we_preis.find(AufEintragBase()))).second;          
+        {if(u.l->getZusatzInfos().size() > 1)
+           return Preis((float)0.0,Waehrung::default_id);          
         else
            return (*(we_preis.find((u.l->getZusatzInfos()[0]).aeb))).second;
         }
