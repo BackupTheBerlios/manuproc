@@ -1,0 +1,79 @@
+#include "Artikel_Bestellen.hh"
+#include <gtk--/adjustment.h>
+
+Artikel_Bestellen::Artikel_Bestellen()
+{
+//  instanz();
+  menge();
+  artikel();
+  prozess();
+
+//  OM_instanz->activate.connect(PB_prozess->grab_focus.slot());
+  PB_prozess->activate.connect(SP_menge->grab_focus.slot());
+  SP_menge->activate.connect(AB_artikel->grab_focus.slot());
+
+  show();
+}
+
+
+cH_Prozess Artikel_Bestellen::get_Prozess()
+{
+  return PB_prozess->get_value();
+}
+
+ArtikelBase Artikel_Bestellen::get_Artikel()
+{
+  return AB_artikel->get_value();
+}
+
+int Artikel_Bestellen::get_Menge()
+{
+  gtk_spin_button_update(SP_menge->gtkobj());
+  return SP_menge->get_value_as_int();
+}
+/*
+ppsInstanz::ppsInstId Artikel_Bestellen::get_Instanz_Id()
+{
+  return OM_instanz->get_Instanz_Id();
+}
+
+
+void Artikel_Bestellen::instanz()
+{
+ OM_instanz = manage(new Optionmenu_Instanz());
+ OM_instanz->show();
+// OM_instanz->activate.connect(activate.slot());
+ attach(*OM_instanz,0,1,0,1);
+}
+*/
+
+void Artikel_Bestellen::prozess()
+{
+ PB_prozess = manage(new ProzessBox());
+ PB_prozess->set_value(Prozess::standard_id);
+ PB_prozess->show();
+ attach(*PB_prozess,0,1,0,1);
+}
+
+
+void Artikel_Bestellen::menge()
+{
+   Gtk::Label *label=manage(new Gtk::Label("Menge"));
+   label->show();
+   attach(*label,1,2,0,1);
+   
+   Gtk::Adjustment *SP_adj=manage(new class Gtk::Adjustment(0, 0, 10000, 1, 10, 10));
+   SP_menge = manage(new class Gtk::SpinButton(*SP_adj, 1, 2));
+   SP_menge->show();
+//   SP_menge->activate.connect(activate.slot());
+   attach(*SP_menge,2,3,0,1);
+}
+
+void Artikel_Bestellen::artikel()
+{
+ AB_artikel = manage(new ArtikelBox(1));
+ AB_artikel->show();
+ AB_artikel->activate.connect(activate.slot());
+ attach(*AB_artikel,0,3,1,2);
+}
+

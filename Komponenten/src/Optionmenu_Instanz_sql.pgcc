@@ -1,0 +1,54 @@
+#include "Optionmenu_Instanz.hh"
+#include <Aux/Transaction.h>
+#include <Aux/SQLerror.h>
+#include <Gtk_OStream.h>
+exec sql include sqlca;
+
+
+Optionmenu_Instanz::Optionmenu_Instanz()
+{
+  fuelle_menu();
+  get_menu()->deactivate.connect(activate.slot());
+  show();
+}
+
+ppsInstanz::ppsInstId  Optionmenu_Instanz::get_Instanz_Id() const
+{
+ int iw = int(get_menu()->get_active()->get_user_data());
+ return (ppsInstanz::ppsInstId)iw;
+}
+std::string Optionmenu_Instanz::get_Instanz_Name() const
+{
+ int iw = int(get_menu()->get_active()->get_user_data());
+ std::string s = vec_instanz[iw-1];
+ return s;
+}
+
+void Optionmenu_Instanz::fuelle_menu()
+{
+  exec sql begin declare section;
+   char db_name[30];
+   int db_id;   
+  exec sql end declare section;
+  exec sql declare in_ein cursor for 
+   select insid, name from prod_instanz order by insid;
+  Transaction tr;
+  exec sql open in_ein;
+  SQLerror::test(__FILELINE__);
+  
+  Gtk::OStream os(this);
+  while(true)
+   {
+    exec sql fetch in_ein into :db_id,:db_name;
+    SQLerror::test(__FILELINE__,100);
+    if (sqlca.sqlcode) break; 
+    vec_instanz.push_back(db_name);
+    os << db_name;
+    os.flush((gpointer)db_id);      
+   }
+ exec sql close in_ein;
+ tr.close();
+}
+
+void Optionmenu_Instanz::set_History(ppsInstanz::ppsInstId i)
+{set_history(i-1);}
