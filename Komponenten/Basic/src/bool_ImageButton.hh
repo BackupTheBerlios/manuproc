@@ -1,4 +1,4 @@
-// $Id: bool_ImageButton.hh,v 1.2 2003/03/07 08:20:31 christof Exp $
+// $Id: bool_ImageButton.hh,v 1.3 2003/03/07 08:27:17 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG
  *  written by Christof Petig
@@ -41,8 +41,8 @@ class bool_ImageButton : public Gtk::CheckButton
 	void set_active(bool);
 public:
 	bool_ImageButton(const Model_ref<T> &model, 
-		Glib::RefPtr<Gdk::Pixmap> off, Glib::RefPtr<Gdk::Bitmap> offm,
-		Glib::RefPtr<Gdk::Pixmap> on, Glib::RefPtr<Gdk::Bitmap> onm);
+		const Glib::RefPtr<Gdk::Pixmap> &off, const Glib::RefPtr<Gdk::Bitmap> &offm,
+		const Glib::RefPtr<Gdk::Pixmap> &on, const Glib::RefPtr<Gdk::Bitmap> &onm);
 };
 
 #endif
