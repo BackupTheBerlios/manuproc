@@ -31,7 +31,7 @@ WWaehrung::WWaehrung(darstellung kl)
 }
 
 cP_Waehrung WWaehrung::get_value() const
-{  return static_cast<Waehrung*>(get_menu()->get_active()->get_user_data());
+{  return static_cast<Waehrung*>(const_cast<Gtk::MenuItem*>(get_menu()->get_active())->get_data("user_data"));
 }
 
 static bool operator==(gpointer data,const cP_Waehrung &i)

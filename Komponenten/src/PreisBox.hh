@@ -1,4 +1,4 @@
-// $Id: window1.hh,v 1.6 2004/11/16 14:07:52 christof Exp $
+// $Id: PreisBox.hh,v 1.6 2004/11/16 14:09:02 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,41 +17,30 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// generated 1999/11/17 16:24:15 MET by christof@petig.petig.de
-// using glademm V0.5.4a
+// generated 2000/8/28 14:42:53 CEST by christof@puck.petig.de
+// using glademm V0.5.9a
 //
-// newer (non customized) versions of this file go to window1.hh_glade
+// newer (non customized) versions of this file go to PreisBox.hh_glade
 
 // you might replace
-//    class Foo : public Foo_Glade { ... };
+//    class Foo : public Foo_glade { ... };
 // by
-//    typedef Foo_Glade Foo;
+//    typedef Foo_glade Foo;
 // if you didn't make any modifications to the widget
 
-#ifndef _WINDOW1_HH
-#  include "window1_glade.hh"
-#  define _WINDOW1_HH
-#include <datewin.h>
-#include <ArtikelBox.hh>
-#include <Artikel/ArtikelBase.h>
-#include <ProzessBox.hh>
-#include <ExtBezSchema/ExtBezSchemaHandle.h>
+#ifndef _PREISBOXX_HH
+#  define _PREISBOXX_HH
 
-class window1 : public window1_glade
-{   
-        friend class window1_glade;
-        void on_Beenden_activate();
-        void on_show_clicked();
-	void on_show_complete();
-	void on_reset();
-	void andererKunde();
-	void menu_cb(gpointer data);
+#include <Kunde/PreisListe.h>
+#include <IntStringBox.hh>
+#include <BaseObjects/ManuProcEntity.h>
 
-   void on_activate_wwaehrung();
-   void on_activate_wpreis();
-   void OW_activate(){std::cerr << "Activate W\n";}
-   void OI_activate(){std::cerr << "Activate I\n";}
+class PreisBox : public IntStringBox
+{	
+
 public:
-	window1();
+	PreisBox(ManuProcEntity<>::ID __none_id=ManuProcEntity<>::none_id);
+	void set_value(int i) ;
+	
 };
 #endif

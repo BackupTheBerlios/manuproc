@@ -1,4 +1,4 @@
-// $Id: window1.cc,v 1.11 2004/11/16 11:40:06 christof Exp $
+// $Id: window1.cc,v 1.12 2004/11/16 14:11:30 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -20,6 +20,7 @@
 #include "window1.hh"
 #include <gtkmm/main.h>
 #include <Artikel/ArtikelBezeichnung.h>
+#include <iostream>
 
 void window1::andererKunde()
 {  artikelbox->setExtBezSchema(cH_Kunde(kundenbox->get_value())->getSchema(0));
@@ -30,7 +31,7 @@ void window1::on_Beenden_activate()
 }
 
 void window1::menu_cb(gpointer data)
-{  cout << "menu_cb " << data << '\n';
+{  std::cout << "menu_cb " << data << '\n';
 }
 
 window1::window1()

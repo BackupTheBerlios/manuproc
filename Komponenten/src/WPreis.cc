@@ -1,4 +1,4 @@
-// $Id: WPreis.cc,v 1.6 2004/11/16 14:04:39 christof Exp $
+// $Id: WPreis.cc,v 1.7 2004/11/16 14:06:32 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -144,5 +144,5 @@ cP_Waehrung WPreis::getWaehrung() const
 
 const Preis WPreis::get_value() const
 { const_cast<WPreis*>(this)->update();
-  return Preis(SP->get_value_as_float(),getWaehrung(),SP2->get_value_as_float());
+  return Preis(SP->get_value(),getWaehrung(),SP2->get_value());
 }
