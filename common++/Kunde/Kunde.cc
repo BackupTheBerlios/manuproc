@@ -1,4 +1,4 @@
-// $Id: Kunde.cc,v 1.32 2003/05/07 13:25:00 jacek Exp $
+// $Id: Kunde.cc,v 1.33 2003/05/22 09:20:37 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -133,6 +133,7 @@ const std::string Kunde::LaTeX_an(bool liefer,TelArt telart,
 
   s+= string2TeX(getName(),NEEDCHAR);
  
+#ifdef MANUPROC_DYNAMICENUMS_CREATED
   if(!isInGrp(KundengruppeID::Personen)) 
     s+="~\\\\";
   if(!getName2().empty())
@@ -140,6 +141,7 @@ const std::string Kunde::LaTeX_an(bool liefer,TelArt telart,
   else
     if(isInGrp(KundengruppeID::Personen)) 
       s+="~\\\\";
+#endif
   
   if (!postanwvor().empty()) s+= string2TeX(postanwvor(),NEEDCHAR) +"~\\\\";
   s += string2TeX(strasse_postfach,NEEDCHAR); 
