@@ -1,4 +1,4 @@
-dnl $Id: petig.m4,v 1.43 2001/05/07 07:19:50 cvs_christof Exp $
+dnl $Id: petig.m4,v 1.47 2001/05/21 07:01:58 cvs_christof Exp $
 
 dnl Configure paths for some libraries
 dnl derived from kde's acinclude.m4
@@ -152,33 +152,40 @@ then
     petig_postgresdir=$withval,
     petig_postgresdir=`which ecpg | sed s+/bin/ecpg++`
   )
-  if test ! -x  $petig_postgresdir/bin/ecpg; then
-     AC_MSG_ERROR([ecpg not found, please specify --with-postgresdir=PATH])
+  ECPG="$petig_postgresdir/bin/ecpg"
+  if test ! -x  $ECPG; then
+     AC_MSG_ERROR([ecpg not found ($ECPG), please specify --with-postgresdir=PATH])
   fi
-  AC_MSG_RESULT($petig_postgresdir/bin/ecpg)
+  AC_MSG_RESULT($ECPG)
+  
   AC_MSG_CHECKING(for ECPG include files)
-  ECPG=$petig_postgresdir/bin/ecpg
-  if test -r $petig_postgresdir/include/ecpgerrno.h ; then
-    ECPG_INCLUDES=-I$petig_postgresdir/include
-    AC_MSG_RESULT($ECPG_INCLUDES)
-  elif test -r $petig_postgresdir/include/postgresql/ecpgerrno.h ; then
-    dnl debian looks really strange AFA ecpg is concerned
-    ECPG_INCLUDES=-I$petig_postgresdir/include/postgresql
-    ECPG="$petig_postgresdir/bin/ecpg $ECPG_INCLUDES"
-    AC_MSG_RESULT($ECPG_INCLUDES)
-  elif test -r $petig_postgresdir/include/pgsql/ecpgerrno.h ; then
-    dnl SuSE is no better ...
-    ECPG_INCLUDES=-I$petig_postgresdir/include/pgsql
-    ECPG="$petig_postgresdir/bin/ecpg $ECPG_INCLUDES"
-    AC_MSG_RESULT($ECPG_INCLUDES)
+  ECPG_PATH=`$ECPG -v 2>&1 | fgrep -v 'ecpg - ' | fgrep -v 'search starts here:' | fgrep -v 'End of search list.'`
+  ECPG_PATH_OK=0
+  for i in $ECPG_PATH
+  do
+    if test -r $i/ecpgerrno.h ; then ECPG_PATH_OK=1 ; fi
+    if (echo $i | fgrep -q include )
+    then
+      LDIR=`echo $i | sed s+/include+/lib+`
+      if test -d $LDIR
+      then
+      	 dnl perhaps test for libpq etc.
+         ECPG_LDFLAGS="$ECPG_LDFLAGS -L$LDIR"
+      fi
+    fi
+    ECPG_INCLUDES="$ECPG_INCLUDES -I$i"
+  done
+  if test $ECPG_PATH_OK = 0
+  then
+    AC_MSG_ERROR([No ecpgerrno.h found. Please report. ($ECPG_PATH)])
   else
-    AC_MSG_ERROR([No ecpgerrno.h found. Please install or fix petig.m4.])
+    AC_MSG_RESULT($ECPG_INCLUDES)
   fi
+  
   AC_SUBST(ECPG)
   AC_SUBST(ECPG_INCLUDES)
   ECPG_CFLAGS=$ECPG_INCLUDES
   AC_SUBST(ECPG_CFLAGS)
-  ECPG_LDFLAGS=-L$petig_postgresdir/lib
   AC_SUBST(ECPG_LDFLAGS)
   ECPG_LIBS='-lecpg -lpq -lcrypt'
   AC_SUBST(ECPG_LIBS)
