@@ -954,34 +954,17 @@ bool operator==(cH_RowDataBase rdb, const show_maching_compare &comp)
 }
 
 void auftrag_main::radio_instanz_selected(const Gtk::RadioMenuItem *rm,const cH_ppsInstanz _instanz)
-{
-  unbestaetigte_auftraege->set_sensitive(
-    (_instanz->Id()==ppsInstanzID::Kundenauftraege) ||
-    (_instanz->Id()==ppsInstanzID::Einkauf));
+{ bool unbestaetigt=_instanz->KundenInstanz() || _instanz->ExterneBestellung();
 
-  offene_auftraege->set_sensitive(
-    (_instanz->Id()==ppsInstanzID::Kundenauftraege) ||
-    (_instanz->Id()==ppsInstanzID::Einkauf));
+  unbestaetigte_auftraege->set_sensitive(!_instanz->LagerInstanz() && unbestaetigt);
+  offene_auftraege->set_sensitive(!_instanz->LagerInstanz());
+  stornierte_auftraege->set_sensitive(!_instanz->LagerInstanz());
+  geschlossene_auftraege->set_sensitive(!_instanz->LagerInstanz());
 
-  stornierte_auftraege->set_sensitive(
-    (_instanz->Id()==ppsInstanzID::Kundenauftraege) ||
-    (_instanz->Id()==ppsInstanzID::Einkauf));
-
-  geschlossene_auftraege->set_sensitive(
-    (_instanz->Id()==ppsInstanzID::Kundenauftraege) ||
-    (_instanz->Id()==ppsInstanzID::Einkauf));
-
-  plan_menge_menu->set_sensitive(
-    (_instanz->Id()==ppsInstanzID::Fertigwarenlager) ||
-    (_instanz->Id()==ppsInstanzID::Einkauf));
-  ungeplante_menge_menu->set_sensitive(
-    (_instanz->Id()==ppsInstanzID::Fertigwarenlager) ||
-    (_instanz->Id()==ppsInstanzID::Einkauf));
-  dispo_menge_menu->set_sensitive(
-    (_instanz->Id()==ppsInstanzID::Fertigwarenlager));
-  alle_lagermengen->set_sensitive(
-    (_instanz->Id()==ppsInstanzID::Fertigwarenlager));
-
+  plan_menge_menu->set_sensitive(!_instanz->KundenInstanz());
+  ungeplante_menge_menu->set_sensitive(!_instanz->KundenInstanz());
+  dispo_menge_menu->set_sensitive(_instanz->LagerInstanz());
+  alle_lagermengen->set_sensitive(_instanz->LagerInstanz());
 
   // do select action
   if(rm==NULL) return;
@@ -1016,7 +999,7 @@ void auftrag_main::instanz_selected(const cH_ppsInstanz _instanz)
 }
    }
 
-  if(instanz == ppsInstanzID::Kundenauftraege)
+  if(instanz->KundenInstanz())
        plan_menge_menu->set_active(true);
   else ungeplante_menge_menu->set_active();
 
