@@ -9,6 +9,7 @@
 #include <cstdio>
 #include <fstream.h>
 #include "MyMessage.h"  
+#include <Misc/FILEstream.h>
 
 extern MyMessage *meldung;
 
@@ -220,7 +221,7 @@ gint lieferscheinliste::on_button_drucken_button_release_event(GdkEventButton *e
 void lieferscheinliste::on_button_drucken_clicked()
 {
    FILE *f=popen(TEXCMD,"w");
-   std::ofstream os(fileno(f));   
+   oFILEstream os(f);   
 
    Gtk2TeX::HeaderFlags hf;
    hf.landscape=true;
