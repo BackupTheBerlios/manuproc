@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Produktion.cc,v 1.39 2004/03/11 20:43:18 jacek Exp $
+// $Id: AufEintrag_Produktion.cc,v 1.40 2004/04/08 15:13:17 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -198,7 +198,9 @@ void AufEintrag::ProduziertNG(mengen_t M,const ProductionContext2 &ctx)
  if(Instanz()->getBestellInstanz(Artikel())==ppsInstanzID::None)
      {
       ArtikelStamm as(artikel);
-      if(as.Warengruppe()==ArtikelTypID::aufgemachtes_Band)
+//      if(as.Warengruppe()==ArtikelTypID::aufgemachtes_Band)
+      if(ArtikelTyp::hasAttribute(as.Warengruppe(),
+		ManuProC::DynamicEnums::ArtikelTyp_Attributes::lagerartikel))
         if(Instanz() == ppsInstanzID::Kundenauftraege)
           {  FertigWaren fw(artikel,(FertigWaren::enum_Aktion)'L',
                             M.abs().as_int(),ctx.Id());
