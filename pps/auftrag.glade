@@ -3692,7 +3692,8 @@ Auftrag</label>
 
 	<widget>
 	  <class>GtkFrame</class>
-	  <name>frame24</name>
+	  <name>frame_notiz</name>
+	  <cxx_visibility>protected</cxx_visibility>
 	  <label>Notiz</label>
 	  <label_xalign>0</label_xalign>
 	  <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
@@ -4634,7 +4635,8 @@ Fertig</label>
 
 	  <widget>
 	    <class>GtkFrame</class>
-	    <name>frame33</name>
+	    <name>frame_notiz</name>
+	    <cxx_visibility>protected</cxx_visibility>
 	    <label>Notiz</label>
 	    <label_xalign>0.0899999</label_xalign>
 	    <shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
