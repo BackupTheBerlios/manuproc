@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.8 2003/07/14 07:16:10 christof Exp $
+# $Id: Makefile.am,v 1.9 2003/07/16 12:02:23 christof Exp $
 
 AM_CXXFLAGS=@COMMONXX_INCLUDES@
 AM_LDFLAGS=@COMMONXX_LDFLAGS@
@@ -13,7 +13,8 @@ EXTRA_PROGRAMS=steuerprogramm
 BUILT_SOURCES=DynamicEnums
 
 steuerprogramm_SOURCES=steuerprogramm.cc DataBase_init.cc \
-      AuftragsVerwaltung.cc Check.cc
+	AuftragsVerwaltung.cc Check.cc petig_tests.cc common_tests.cc \
+	mabella_tests.cc manuproc_tests.cc
 
 CLEANFILES= *~ $(EXTRA_PROGRAMS)
 
