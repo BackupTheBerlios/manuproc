@@ -1,4 +1,4 @@
-// $Id: SimpleTree.cc,v 1.24 2003/10/21 10:54:17 christof Exp $
+// $Id: SimpleTree.cc,v 1.25 2003/10/21 11:47:38 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -54,6 +54,8 @@ SimpleTree_Basic::SimpleTree_Basic(unsigned maxcol)
    getStore()->signal_title_changed().connect(SigC::slot(*this,&SimpleTree_Basic::on_title_changed));
    get_selection()->signal_changed().connect(SigC::slot(*this,&SimpleTree_Basic::on_selection_changed));
    getStore()->signal_redisplay().connect(SigC::slot(*this,&SimpleTree_Basic::on_redisplay));
+   fillMenu();
+   signal_button_press_event().connect(SigC::slot(*this,&SimpleTree_Basic::MouseButton),false);
 }
 
 SimpleTree_Basic::~SimpleTree_Basic()
@@ -85,6 +87,12 @@ void SimpleTree_Basic::on_abbrechen_clicked()
       // Titel wiederherstellen
       for (unsigned i=0;i<Cols();++i) 
          get_column(i)->set_title(getColTitle(i));
+}
+
+void SimpleTree_Basic::on_zuruecksetzen_clicked()
+{  // bool alte_reihenfolge;
+   clicked_seq.clear();
+   on_neuordnen_clicked();
 }
 
 void SimpleTree_Basic::on_neuordnen_clicked()
@@ -236,4 +244,13 @@ void SimpleTree_Basic::fillMenu()
 //   optionen->show();
    menu->show_all();
 #endif
+}
+
+bool SimpleTree_Basic::MouseButton(GdkEventButton *event)
+{  
+   if (event->type == GDK_BUTTON_PRESS && event->button==3  && menu)
+   {  menu->popup(event->button,event->time);
+      return true;
+   }
+   return false;
 }

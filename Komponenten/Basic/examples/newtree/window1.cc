@@ -180,7 +180,7 @@ window1::window1() : st(SP_ANZ)
 #endif
    st.set_remember("(example)","newtree");
    
-   ManuProC::Tracer::Enable(SimpleTreeStore::trace_channel);
+//   ManuProC::Tracer::Enable(SimpleTreeStore::trace_channel);
 }
 
 void window1::add_one()
