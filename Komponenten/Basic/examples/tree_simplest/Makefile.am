@@ -17,10 +17,10 @@ noinst_HEADERS = \
 	simplest.hh \
 	simplest_glade.hh
 
-CXXFLAGS = @CXXFLAGS@  -I$(top_srcdir)/src @COMMONGTK2_INCLUDES@ \
+AM_CXXFLAGS =-I$(top_srcdir)/src @COMMONGTK2_INCLUDES@ \
 		@COMMONXX_INCLUDES@
 
 tree_LDADD = @LIBS@ $(top_srcdir)/src/libManuProC_Widgets.a \
         @COMMONGTK2_LIBS@ @COMMONXX_LIBS@
 
-LDFLAGS= @LDFLAGS@ @COMMONXX_LDFLAGS@ @COMMONGTK2_LDFLAGS@
+AM_LDFLAGS= @COMMONXX_LDFLAGS@ @COMMONGTK2_LDFLAGS@

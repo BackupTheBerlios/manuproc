@@ -15,10 +15,10 @@ noinst_HEADERS = \
 	window1_glade.hh window1.hh \
 	MyNode.h MyRowData.hh MyTreeBase.hh MyValue.h
 
-CXXFLAGS = @CXXFLAGS@ -I$(top_srcdir)/src \
+AM_CXXFLAGS = -I$(top_srcdir)/src \
 	@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
 main_LDADD = @LIBS@ $(top_srcdir)/src/libManuProC_Widgets.a \
 	@COMMONGTK2_LIBS@ @COMMONXX_LIBS@
 
-LDFLAGS= @LDFLAGS@ @COMMONXX_LDFLAGS@ @COMMONGTK2_LDFLAGS@
+AM_LDFLAGS= @COMMONXX_LDFLAGS@ @COMMONGTK2_LDFLAGS@

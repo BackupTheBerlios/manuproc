@@ -1,8 +1,8 @@
-# $Id: Makefile.am,v 1.13 2003/07/15 13:18:25 jacek Exp $
+# $Id: Makefile.am,v 1.14 2003/07/30 09:24:54 christof Exp $
 
 ENDUSER=-DPETIG
 
-CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
+AM_CXXFLAGS=@ECPG_INCLUDES@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
 

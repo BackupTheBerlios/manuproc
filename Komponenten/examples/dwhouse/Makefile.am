@@ -24,10 +24,10 @@ noinst_HEADERS = \
 	window1_glade.hh \
 	window1.hh 
 
-CXXFLAGS = @CXXFLAGS@ -I$(top_srcdir)/src \
+AM_CXXFLAGS = -I$(top_srcdir)/src \
 	@COMMONGTK_INCLUDES@ @COMMONXX_INCLUDES@
 
 main_LDADD = @LIBS@ $(top_srcdir)/src/libKomponenten.a \
 	@COMMONGTK_LIBS@ @COMMONXX_LIBS@
 
-LDFLAGS= @LDFLAGS@ @COMMONXX_LDFLAGS@ @COMMONGTK_LDFLAGS@
+AM_LDFLAGS= @COMMONXX_LDFLAGS@ @COMMONGTK_LDFLAGS@

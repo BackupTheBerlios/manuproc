@@ -15,7 +15,7 @@ noinst_HEADERS = \
 	window2_glade.hh \
 	window2.hh 
 
-CXXFLAGS = @GTKMM_CFLAGS@
+AM_CXXFLAGS = @GTKMM_CFLAGS@
 
 close_window_LDADD = @GTKMM_LIBS@
 

@@ -1,4 +1,4 @@
-CXXFLAGS=@CXXFLAGS@ @ECPG_INCLUDES@
+AM_CXXFLAGS=@ECPG_INCLUDES@
 
 %.cc: %.pgcc ; @ECPG@ -o $*.cc $<
 
