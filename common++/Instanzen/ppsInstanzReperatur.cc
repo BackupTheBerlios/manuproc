@@ -26,7 +26,7 @@
 #include <sqlca.h>
 #include <Auftrag/AufEintragZuMengenAenderung.h>
 #include <Aux/Transaction.h>
-
+#include <Misc/relops.h>
 
 bool ppsInstanzReparatur::ReparaturK_Kundenzuordnung(const int uid,const bool analyse_only) const
 {
