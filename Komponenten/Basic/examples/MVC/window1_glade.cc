@@ -47,7 +47,7 @@ window1_glade::window1_glade(
    intwidget->activate.connect_after(stringwidget->grab_focus.slot());
    stringwidget->activate.connect_after(intwidget->grab_focus.slot());
    button1->clicked.connect(SigC::slot(static_cast<class window1*>(this), &window1::loeschen));
-   button2->activate.connect(SigC::slot(static_cast<class window1*>(this), &window1::randomize));
+   button2->clicked.connect(SigC::slot(static_cast<class window1*>(this), &window1::randomize));
 }
 
 window1_glade::~window1_glade()
