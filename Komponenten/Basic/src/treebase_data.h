@@ -1,4 +1,4 @@
-/* $Id: treebase_data.h,v 1.7 2002/12/03 08:44:31 christof Exp $ */
+/* $Id: treebase_data.h,v 1.8 2003/10/06 13:21:27 jacek Exp $ */
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -42,8 +42,14 @@ public:
    data[4]=e;
    data[5]=f;
  }
-	
 
+ const std::string getStrAt(guint i) const 
+   {
+    if (i>=0 && i<max_arguments) 
+       return data[i];
+    return "";
+   }
+   
  virtual const cH_EntryValue Value(guint _seqnr, gpointer gp) const
  {if (_seqnr>=0 && _seqnr<max_arguments) return cH_EntryValueIntString(data[_seqnr]);
   return cH_EntryValueIntString("");
@@ -57,6 +63,10 @@ public:
  cH_RowDataStrings(const std::string &a, const std::string &b="", const std::string &c="", 
  	   const std::string &d="", const std::string &e="", const std::string &f="")
 	: cH_RowDataBase(new RowDataStrings(a,b,c,d,e,f)) {}
+	
+ 		
 };
+
+
 
 #endif

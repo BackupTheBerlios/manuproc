@@ -1,4 +1,4 @@
-// $Id: IntStringBox_sql.pgcc,v 1.6 2003/10/06 12:04:23 jacek Exp $
+// $Id: IntStringBox_sql.pgcc,v 1.7 2003/10/06 13:21:27 jacek Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++ Copyright (C)
  *  1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -25,7 +25,7 @@ bool IntStringBox::try_to_get_id()
 {
  bool check_str2=(!_string2_.empty() && !string_2_info_only);
 
-  std::string squery="select "+_int_;
+  std::string squery="select "+_tabelle_+"."+_int_;
   if(string_2_info_only) squery +=", "+_string2_ ;
   squery +=" from "+_tabelle_+joinstring+" where lower("+_string1_+")=lower(?)";
   if(check_str2) 
@@ -72,13 +72,13 @@ void IntStringBox::int_search(gboolean *_continue, GtkSCContext newsearch)
          case GTK_SEARCH_OPEN:
 	   {tr.open();
            squery="declare int_search cursor for "
-		  "select "+_int_+" from "+_tabelle_+joinstring
-                  +" where text("+_int_+") like ? ";
+		  "select "+_tabelle_+"."+_int_+" from "+_tabelle_+joinstring
+                  +" where text("+_tabelle_+"."+_int_+") like ? ";
 
 	   if(eingeschraenkt)
 	     squery+=einschraenkung;
 
-	    squery+=" order by "+_int_;
+	    squery+=" order by "+_tabelle_+"."+_int_;
 
             Query(squery) << (sc_int->get_text()+'%');
       	    // fall through
