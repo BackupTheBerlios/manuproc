@@ -1,4 +1,4 @@
-// $Id: Faden.hh,v 1.12 2004/06/23 09:03:13 christof Exp $
+// $Id: Faden.hh,v 1.13 2004/06/24 08:24:05 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma
@@ -101,6 +101,7 @@ public:
 	typedef std::vector<Faden>::iterator iterator;
 	typedef std::vector<Faden>::const_iterator const_sumiterator;
 	typedef std::vector<Wiederholung>::const_iterator const_repiterator;
+	typedef std::vector<Fd_Kettscheibe>::const_iterator const_kettiterator;
 	
 	Fadenliste() : liste(), sumliste(), repliste(), repnumliste() {}
 	void Load(const ArtikelBase &ab,const Bindungsliste &bindungsliste);
@@ -114,6 +115,8 @@ public:
 	const_sumiterator sumend() const { return sumliste.end(); }
 	const_repiterator repbegin() const { return repliste.begin(); }
 	const_repiterator repend() const { return repliste.end(); }
+	const_kettiterator kettbegin() const { return kettscheiben.begin(); }
+	const_kettiterator kettend() const { return kettscheiben.end(); }
 	
 	int add (const Faden, const unsigned);
 	bool del (const unsigned, unsigned&);
