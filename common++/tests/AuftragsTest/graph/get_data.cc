@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.44 2003/02/12 13:54:32 christof Exp $
+// $Id: get_data.cc,v 1.45 2003/02/15 22:53:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -272,7 +272,7 @@ void graph_data_node::get_files(const std::string &mode)
      exit(1);
   }
   char buf[1024];
-  int linenum=0;
+  unsigned int linenum=0;
   while (!i.eof())
   {  i.getline(buf,sizeof buf);
      std::string line=buf;

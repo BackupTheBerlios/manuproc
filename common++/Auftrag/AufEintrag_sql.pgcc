@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.54 2003/02/13 13:08:26 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.55 2003/02/15 22:53:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -308,26 +308,15 @@ void AufEintrag::ArtikelInternAbbestellen(int uid,mengen_t menge,ManuProC::Auftr
    "menge=",menge,"Reason=",reason);
 
  assert(menge>0);
- AufEintragZu::list_t KindListeU 
- 	= AufEintragZu::get_Referenz_list(*this,
- 			AufEintragZu::list_kinder,AufEintragZu::list_Artikel);
  try{
-   typedef  std::map<ArtikelBase,AufEintragZu::list_t > MapArt_t;
-   MapArt_t MapArt;
+   AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel(*this));
 
-   for(AufEintragZu::list_t::iterator i=KindListeU.begin();i!=KindListeU.end();++i)
-    {
-      // Nach dem Planen kann es zu einem Auftrag mehrere Kindaufträge 
-      // mit demselben Artikel geben, nur bei EINEM darf die Menge geändert
-      // werden
-      MapArt[i->Art].push_back(*i);
-     }
-  for(MapArt_t::iterator i=MapArt.begin();i!=MapArt.end();++i)
+  for(AufEintragZu::map_t::const_iterator i=MapArt.begin();i!=MapArt.end();++i)
    {
      ArtikelBaum::faktor_t faktor = ArtikelBaum(ArtId()).Faktor(i->first);
      AuftragBase::mengen_t menge2=faktor*menge;
      
-     for(AufEintragZu::list_t::iterator j=i->second.begin();j!=i->second.end();++j)
+     for(AufEintragZu::list_t::const_iterator j=i->second.begin();j!=i->second.end();++j)
       {
         AufEintrag AE(j->AEB);
         mengen_t M=AuftragBase::min(j->Menge,menge2);
@@ -516,7 +505,6 @@ cH_Lieferschein AufEintrag::getLieferschein() const
 // & ehemals ppsInstanz::Produziert
 void AufEintrag::WurdeProduziert(AuftragBase::mengen_t M,const AufEintragBase &ElternAEB)
 {  int uid=getuid();
-   // Gilt für Lager && 
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,M,"Eltern=",ElternAEB);
    assert(M>=0);
    if (Instanz()->LagerInstanz()) // && Id()==ungeplante_id)
@@ -540,17 +528,36 @@ void AufEintrag::WurdeProduziert(AuftragBase::mengen_t M,const AufEintragBase &E
       {  // reduzieren!
          // 1er anlegen
          assert(ElternAEB.valid());
-         Planen(uid,M,AuftragBase(Instanz(),plan_auftrag_id),getLieferdatum(),
-         	ManuProC::Auftrag::r_Produziert);
+         AuftragBase ab(Instanz(),plan_auftrag_id);
+         ab.create_if_not_exists(OPEN);
+         Planen(uid,M,ab,getLieferdatum(),ManuProC::Auftrag::r_Produziert);
       }
       else
       {  if (ElternAEB.valid()) AufEintragZu(ElternAEB).setMengeDiff__(*this,-M);
-         abschreiben(M); // LieferscheinId?
-      }
-      cH_ppsInstanz EI=Instanz()->EinlagernIn();
-      if(EI->AutomatischEinlagern())
-      {  assert(Instanz()->ProduziertSelbst()); // sonst Endlosrekursion
-         LagerBase(EI).rein_ins_lager(Artikel(),M,uid);
+         abschreiben(M);
+         AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel(*this));
+
+         for(AufEintragZu::map_t::const_iterator i=MapArt.begin();i!=MapArt.end();++i)
+         { ArtikelBaum::faktor_t faktor = ArtikelBaum(ArtId()).Faktor(i->first);
+           AuftragBase::mengen_t menge2=faktor*M;
+           
+           for(AufEintragZu::list_t::const_iterator j=i->second.begin();j!=i->second.end();++j)
+           {  mengen_t M2=AuftragBase::min(j->Menge,menge2);
+              if (!M2) continue;
+
+              if (!j->AEB.Instanz()->ProduziertSelbst())
+                 AufEintrag(j->AEB).WurdeProduziert(M2,*this);
+              else AufEintragZu(*this).setMengeDiff__(j->AEB,-M2);
+              menge2-=M2;
+              if(!menge2) break;
+            }
+         }
+         // dies darf bei den 0ern nicht auch noch geschehen, sonst war es doppelt
+         cH_ppsInstanz EI=Instanz()->EinlagernIn();
+         if(EI->AutomatischEinlagern())
+         {  assert(Instanz()->ProduziertSelbst()); // sonst Endlosrekursion
+            LagerBase(EI).rein_ins_lager(Artikel(),M,uid);
+         }
       }
    }
 

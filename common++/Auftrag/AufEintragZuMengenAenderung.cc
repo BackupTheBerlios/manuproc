@@ -1,4 +1,4 @@
-// $Id: AufEintragZuMengenAenderung.cc,v 1.15 2003/02/14 07:22:57 christof Exp $
+// $Id: AufEintragZuMengenAenderung.cc,v 1.16 2003/02/15 22:53:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -47,10 +47,10 @@ void AufEintragZuMengenAenderung::increase_parents__reduce_assingments(const int
   for(AufEintragZu::list_t::iterator j=L.begin();j!=L.end();++j)
     {
       AuftragBase::mengen_t m=AuftragBase::min(j->Menge,menge);
-
+      if (!m) continue;
       AufEintragZu(j->AEB).setMengeDiff__(child_aeb,-m);
 
-      AufEintragZu::list_t L2=AufEintragZu(j->AEB).get_Referenz_list_ungeplant();
+      AufEintragZu::list_t L2=AufEintragZu(j->AEB).get_Referenz_list_ungeplant(AufEintragZu::list_kinder,AufEintragZu::list_Artikel);
       for(AufEintragZu::list_t::iterator k=L2.begin();k!=L2.end();++k)
        {
          if(k->Art!=AufEintrag(child_aeb).Artikel()) continue;
@@ -90,6 +90,7 @@ void AufEintragZuMengenAenderung::Change_Zuordnung_to_Children(const bool child,
    }
 }
 
+#if 0
 void AufEintragZuMengenAenderung::move_zuordnung_zu_geplantem(const int uid,
          AufEintrag &AE0er, AufEintrag &AE1er,
          AuftragBase::mengen_t menge,
@@ -107,6 +108,7 @@ void AufEintragZuMengenAenderung::move_zuordnung_zu_geplantem(const int uid,
     if(!menge) break;
    }
 }
+#endif
 
 // ElternAEB erhält die Menge vom 2er
 // dies scheint den 1er im Lager zu erhöhen
@@ -123,4 +125,3 @@ void AufEintragZuMengenAenderung::freie_dispomenge_verwenden(const int uid,
     if(!menge) break;
    }
 }
-                  

@@ -1,4 +1,4 @@
-// $Id: AufEintragZu.h,v 1.17 2003/02/14 09:53:53 christof Exp $
+// $Id: AufEintragZu.h,v 1.18 2003/02/15 22:53:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -24,6 +24,7 @@
 #include <Auftrag/AufEintragBase.h>
 #include <Auftrag/auftrag_status.h>
 #include <list>
+#include <map>
 #include <Kunde/Kunde.h>
 #include <Misc/compiler_ports.h>
 
@@ -46,10 +47,11 @@ public:
                {return AEB==b.AEB && Art==b.Art && Menge==b.Menge ;}
   };
  typedef std::list<st_reflist> list_t;
+ typedef std::map<ArtikelBase,list_t> map_t;
 
  enum VonNachDel {Von,Nach,Delete} ;
 
-  list_t get_Referenz_list_id(const AuftragBase::ID id,bool kinder) const throw(SQLerror);
+  list_t get_Referenz_list_id(const AuftragBase::ID id,bool kinder,bool artikel=list_ohneArtikel) const throw(SQLerror);
   list_t select_Id(const AuftragBase::ID id,const list_t &L) const;
   list_t get_Referenz_list_without_child() const throw(SQLerror);
 
@@ -62,9 +64,11 @@ public:
     static const bool list_Artikel=true;
     static const bool list_ohneArtikel=false;
 
+    static map_t get_Kinder_nach_Artikel(const AufEintragBase &aeb,bool kinder=list_kinder);
+
     // Eine Benachbarte Liste von (Kind-)aufträgen aber nur ungeplante(0er) Aufträge:
-    list_t get_Referenz_list_ungeplant(bool kinder=true) const throw(SQLerror)
-      {return get_Referenz_list_id(AuftragBase::ungeplante_id,kinder);}
+    list_t get_Referenz_list_ungeplant(bool kinder=true,bool artikel=list_ohneArtikel) const throw(SQLerror)
+      {return get_Referenz_list_id(AuftragBase::ungeplante_id,kinder,artikel);}
 
     // Eine Benachbarte Liste von (Kind-)aufträgen aber nur dispo(2er) Aufträge:
     list_t get_Referenz_list_dispo(bool kinder=true) const throw(SQLerror)

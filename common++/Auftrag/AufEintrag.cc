@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.30 2003/02/13 13:08:26 christof Exp $
+// $Id: AufEintrag.cc,v 1.31 2003/02/15 22:53:21 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -134,29 +134,23 @@ void AufEintrag::move_to(int uid,AufEintrag ziel,AuftragBase::mengen_t menge,Man
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"To=",ziel,"Menge=",menge,"Reason=",reason);
   Transaction tr;
-    // da Eltern beliebig ... könnte doch schöner sein - oder?
+
   AufEintragZu::list_t L=AufEintragZu::get_Referenz_list(*this,
 		AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
   for(AufEintragZu::list_t::reverse_iterator i=L.rbegin();i!=L.rend();++i)
   { AuftragBase::mengen_t M=AuftragBase::min(i->Menge,menge);
+    if (!M) continue;
     MengeAendern(uid,-M,true,i->AEB,reason);
     if (reason!=ManuProC::Auftrag::r_Produziert)
-       ziel.MengeAendern(uid,M,true,i->AEB,reason);
+    {  ziel.MengeAendern(uid,M,true,i->AEB,reason);
+    }
     else
-    {  ziel.MengeAendern(uid,M,false,i->AEB,reason);
-       ziel.abschreiben(M);
+    {  ziel.MengeAendern(uid,M,true,i->AEB,reason);
+       ziel.WurdeProduziert(M,i->AEB);
     }
     menge-=M;
     if(!menge) break;
   }
-
-//    AufEintragZuMengenAenderung::move_zuordnung_zu_geplantem(uid,*this,
-//                                                           ziel,menge,reason);
-    // z.B. die Zuordnung könnte das hier miterledigen ...                                                           
-    // ähnlich wie abbestellen/neubestellen ???
-//    MengeAendern(uid,-menge,true,AufEintragBase(),reason);
-//    ziel.MengeAendern(uid,menge,true,AufEintragBase(),reason);
-
   tr.commit();
 }      
 
