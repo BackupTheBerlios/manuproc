@@ -1861,7 +1861,7 @@ Auftrag</label>
 	      <signal>activate</signal>
 	    </accelerator>
 	    <label>Masseneingabe</label>
-	    <active>False</active>
+	    <active>True</active>
 	    <always_show_toggle>True</always_show_toggle>
 	  </widget>
 
@@ -3308,8 +3308,8 @@ Auftrag</label>
 	  <widget>
 	    <class>GtkTable</class>
 	    <name>table_vorraetige_menge</name>
-	<visible>False</visible>
 	    <cxx_visibility>protected</cxx_visibility>
+	    <visible>False</visible>
 	    <rows>3</rows>
 	    <columns>3</columns>
 	    <homogeneous>False</homogeneous>
@@ -3946,7 +3946,7 @@ Auftrag</label>
 	      <signal>activate</signal>
 	    </accelerator>
 	    <label>Masseneingabe</label>
-	    <active>False</active>
+	    <active>True</active>
 	    <always_show_toggle>True</always_show_toggle>
 	  </widget>
 	</widget>
