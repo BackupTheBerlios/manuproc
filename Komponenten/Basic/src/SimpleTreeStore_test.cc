@@ -1,4 +1,4 @@
-// $Id: SimpleTreeStore_test.cc,v 1.1 2003/12/23 00:10:22 christof Exp $
+// $Id: SimpleTreeStore_test.cc,v 1.2 2004/05/06 10:26:25 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -21,6 +21,7 @@
 #include <iostream>
 #include <gtkmm/treepath.h> 
 
+#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION<2
 void SimpleTreeStore::test_sub(unsigned indent,const GtkTreeIter *i,const GtkTreeIter *parent)
 {  GtkTreeIter i2=*i;
 loop:
@@ -54,3 +55,4 @@ void SimpleTreeStore::test()
    if (get_iter_vfunc(&it,Gtk::TreeModel::Path("0")))
       test_sub(1,&it,0);
 }
+#endif
