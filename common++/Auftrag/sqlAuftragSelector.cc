@@ -1,4 +1,4 @@
-// $Id: sqlAuftragSelector.cc,v 1.31 2004/01/14 20:10:06 jacek Exp $
+// $Id: sqlAuftragSelector.cc,v 1.32 2004/01/20 09:57:49 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library 
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -245,6 +245,7 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(const sel_Kunde_Status &selstr)
 }
 
 
+#ifdef MABELLA_EXTENSIONS
 SQLFullAuftragSelector::SQLFullAuftragSelector(
 			const sel_Kunde_Status_Lager &selstr)
 {
@@ -261,6 +262,7 @@ SQLFullAuftragSelector::SQLFullAuftragSelector(
 
  setClausel(query);
 }
+#endif
 
 
 
