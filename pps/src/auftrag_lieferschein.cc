@@ -435,7 +435,7 @@ void auftrag_lieferschein::clear_input()
 
 void auftrag_lieferschein::on_Palette_activate()
 { 
-//ManuProC::Tracer::Enable(ManuProC::Tracer::Artikel);
+ ManuProC::Tracer::Enable(AuftragBase::trace_channel);
  if(lieferschein->Id()==LieferscheinBase::none_id) return;
 
   anzahl->update();
