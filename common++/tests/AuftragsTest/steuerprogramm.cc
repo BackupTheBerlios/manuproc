@@ -283,12 +283,12 @@ static int auftragstests(e_mode mode)
       RohwarenLager RL;
       RohwarenLager::st_rohlager stRL(LagerPlatzKupfer2,100,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
       std::string dummystring;
-      RL.RL_Einlagern(LagerPlatzKupfer2,stRL,UID,dummystring);
+      RL.RL_Einlagern(LagerPlatzKupfer2,stRL,UID,dummystring,false,true);
 std::cout << dummystring<<'\n';
       vergleichen(C,Check::Menge,"split_rohwarenlager_rein","Rohwarenlager einlagern\n","+");
 
       RohwarenLager::st_rohlager stRL2(LagerPlatzKupfer2,100,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
-      RL.RL_Entnahme(stRL2,UID,dummystring);
+      RL.RL_Entnahme(stRL2,UID,dummystring,false,false,true);
 std::cout << dummystring<<'\n';
       vergleichen(C,Check::Menge,"split_rohwarenlager_raus","Rohwarenlager auslagern\n","-");
 
@@ -450,14 +450,14 @@ std::cout << dummystring<<'\n';
       RohwarenLager RL;
       RohwarenLager::st_rohlager stRL(LagerPlatzKupfer2,100,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
       std::string dummystring;
-      RL.RL_Einlagern(LagerPlatzKupfer2,stRL,UID,dummystring);
+      RL.RL_Einlagern(LagerPlatzKupfer2,stRL,UID,dummystring,false,true);
       vergleichen(C,Check::Menge,"rohwarenlager_rein","Rohwarenlager einlagern\n","+");
 
       RohwarenLager::st_rohlager stRL2(LagerPlatzKupfer2,100,1,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
-      RL.RL_Entnahme(stRL2,UID,dummystring);
+      RL.RL_Entnahme(stRL2,UID,dummystring,false,false,true);
 std::cout << "D1: "<<dummystring<<'\n';
       RohwarenLager::st_rohlager stRL3(LagerPlatzKupfer,2,10,0,0,ARTIKEL_KUPFER,ManuProC::Datum().today());
-      RL.RL_Entnahme(stRL3,UID,dummystring);
+      RL.RL_Entnahme(stRL3,UID,dummystring,false,false,true);
 std::cout << "D2:" <<dummystring<<'\n';
       vergleichen(C,Check::Menge,"rohwarenlager_raus","Rohwarenlager auslagern\n","-");
 
@@ -486,26 +486,26 @@ std::cout << dummystring<<'\n';
 
 
       // test von force, leer, etc
-#if 0
+#if 1
       dummystring="";
       RohwarenLager::st_rohlager stRL10(LagerPlatzKupfer2,6,35,1,7,ARTIKEL_ACETAT,ManuProC::Datum().today());
-      RL.RL_Einlagern(LagerPlatzKupfer2,stRL10,UID,dummystring,true);
+      RL.RL_Einlagern(LagerPlatzKupfer2,stRL10,UID,dummystring,true,true);
 std::cout << "D10: "<<dummystring<<'\n';
 
       dummystring="";
       RohwarenLager::st_rohlager stRL11(LagerPlatzKupfer,0,0,2,1,ARTIKEL_ACETAT,ManuProC::Datum().today());
-      RL.RL_Entnahme(stRL10,UID,dummystring);
+      RL.RL_Entnahme(stRL10,UID,dummystring,false,false,true);
 std::cout << "D11: "<<dummystring<<'\n';
       vergleichen(C,Check::Menge|Check::RohLager,"force_art","force, falscher Artikel","");
 
       dummystring="";
       RohwarenLager::st_rohlager stRL12(LagerPlatzKupfer2,10,35,0,0,ARTIKEL_ACETAT,ManuProC::Datum().today());
-      RL.RL_Entnahme(stRL10,UID,dummystring);
+      RL.RL_Entnahme(stRL10,UID,dummystring,false,false,true);
 std::cout << "D12: "<<dummystring<<'\n';
 
       dummystring="";
       RohwarenLager::st_rohlager stRL13(LagerPlatzAcetat,2,7,0,0,ARTIKEL_ACETAT,ManuProC::Datum().today());
-      RL.RL_Entnahme(stRL10,UID,dummystring,false,true);
+      RL.RL_Entnahme(stRL10,UID,dummystring,false,true,true);
 std::cout << "D13: "<<dummystring<<'\n';
       vergleichen(C,Check::Menge|Check::RohLager,"zuviel","zuviel Entnommen","");
 #endif
@@ -808,7 +808,8 @@ std::cout << "D13: "<<dummystring<<'\n';
          AufEintragBase Von(AuftragBase(I,AuftragBase::plan_auftrag_id),znrvon);
          int znrnach=2;
          AufEintrag Fuer((class AufEintragBase(AuftragBase(I,AuftragBase::ungeplante_id),znrnach)));
-#warning Test neu designen
+// hmmm was sollte das tun?         
+//#warning Test neu designen
 //         AufEintrag(Von).menge_fuer_aeb_freigeben(3000,Fuer,getuid());
 //         vergleichen(C,Check::Menge,"ZKM","Menge freigeben für einen anderen Auftrag","");
        }
@@ -827,36 +828,36 @@ std::cout << "D13: "<<dummystring<<'\n';
        Zeitpunkt_new zp0("2002-3-1 11:00"),
        		zp1("2002-3-1 11:11"),
        		zp0b("2002-3-1 11:02");
-       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0);
-       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp1);
+       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0,true);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp1,true);
        //   101 |      3 | 2002-03-01 11:00:00+01 | 2002-03-01 11:11:00+01
        JR=JumboRolle::create(KK); // 102
-       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0);
-       JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp1);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0,true);
+       JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp1,true);
        vergleichen(C,Check::Jumbo,"richtig","Jumbo richtig","");
        //  102 |      2 | 2002-03-01 11:11:00+01 | 2002-03-01 11:00:00+01
        JR=JumboRolle::create(KK); // 103
-       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp1);
-       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp1,true);
+       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0,true);
        //  103 |      3 | 2002-03-01 11:00:00+01 | 2002-03-01 11:11:00+01
        JR=JumboRolle::create(KK); // 104
-       JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp1);
-       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0);
+       JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp1,true);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0,true);
        vergleichen(C,Check::Jumbo,"falsch","Jumbo falsche Reihenfolge","");
        //  104 |      2 | 2002-03-01 11:11:00+01 | 2002-03-01 11:00:00+01
        JR=JumboRolle::create(KK); // 105
-       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0,true);
        try // kein Log Eintrag ist richtig
-       {JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0b);
+       {JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp0b,true);
         assert(!"Jumbo_Entnahme sollte 100 werfen");
        }catch (SQLerror &e)
        {  assert(e.Code()==100);
        }
-       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp1);
+       JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,UID,"TEST",&zp1,true);
        //   105 |      3 |                        | 2002-03-01 11:11:00+01
        JR=JumboRolle::create(KK); // 106
-       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0);
-       JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp1);
+       JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp0,true);
+       JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,UID,"TEST",&zp1,true);
        //   106 |      2 | 2002-03-01 11:11:00+01 | 
        vergleichen(C,Check::Jumbo,"doppelt","Jumbo doppelt Aus-/Einlagern","");
        break;

@@ -41,7 +41,7 @@ AuftragBase::mengen_t RohwarenLager::st_rohlager::Menge_fuer_Auftrag() const
 {  return kartons*kg_pro_karton  + reste_kg;
 }
 
-bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,const int uid,std::string &os,bool force,bool ist_leer)
+bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,const int uid,std::string &os,bool force,bool ist_leer,bool fuer_auftrag)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
   	NV("kartons",rohlager.kartons),NV("reste",rohlager.reste),
@@ -129,15 +129,20 @@ bool RohwarenLager::RL_Entnahme(st_rohlager& rohlager,const int uid,std::string 
        SQLerror::test(__FILELINE__);                  
     }
 
-   raus_aus_lager(rohlager.artikel,rohlager.Menge_fuer_Auftrag(),uid);
+   raus_aus_lager(rohlager.artikel,rohlager.Menge_fuer_Auftrag(),uid,fuer_auftrag);
    RL_Log(rohlager,RLEntnehmen,uid,misc);
 
    tr.commit();
    return true;
 }
 
+void RohwarenLager::RL_Einlagern_real(st_rohlager& rohlager,unsigned uid,bool geliefert)
+{  if (geliefert) rein_ins_lager(rohlager.artikel,rohlager.Menge_fuer_Auftrag(),uid,true);
+   else wiedereinlagern(rohlager.artikel,rohlager.Menge_fuer_Auftrag(),uid);
+   RL_Log(rohlager,RLEinlagern,uid);
+}
 
-bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager,const int uid,std::string &os,bool force)
+bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager,const int uid,std::string &os,bool force,bool geliefert)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
   	NV("kartons",rohlager.kartons),NV("reste",rohlager.reste),
@@ -169,8 +174,7 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
         values (:POSITION, :KARTONS, :MATERIAL, :KG_PER_KARTON,
               nullif(:RESTE,0), nullif(:RESTE_KG,0), :DATUM);
       SQLerror::test(__FILELINE__);
-      rein_ins_lager(rohlager.artikel,rohlager.Menge_fuer_Auftrag(),uid);
-      RL_Log(rohlager,RLEinlagern,uid);
+      RL_Einlagern_real(rohlager,uid,geliefert);
       tr.commit();
       return true;
    }
@@ -178,7 +182,8 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
    {
      st_rohlager was_ist_drin = RL_Inhalt(rohlager.position);
      if(force) // überschreiben, ohne Rücksicht auf Material
-      { RL_Entnahme(was_ist_drin,uid,os,true,true);
+      { // wird nicht als Verbrauch gerechnet
+        RL_Entnahme(was_ist_drin,uid,os,true,true,false);
         if (!os.empty()) os+='\n';
         tr.close();
         tr.open(); // neue Transaktion beginnen
@@ -187,8 +192,7 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
            kg_per_karton=:KG_PER_KARTON, reste=nullif(:RESTE,0), 
            rest_kg=nullif(:RESTE_KG,0), eingelagert=:DATUM where position_=:POSITION;
         SQLerror::test(__FILELINE__);
-        rein_ins_lager(rohlager.artikel,rohlager.Menge_fuer_Auftrag(),uid);
-        RL_Log(rohlager,RLEinlagern,uid);
+        RL_Einlagern_real(rohlager,uid,geliefert);
         tr.commit();
         return true;
       }
@@ -212,8 +216,7 @@ bool RohwarenLager::RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager
                        reste=nullif(:RESTE,0), rest_kg=nullif(:RESTE_KG,0),
                         eingelagert=:DATUM where position_=:POSITION;
               SQLerror::test(__FILELINE__);
-              rein_ins_lager(rohlager.artikel,rohlager.Menge_fuer_Auftrag(),uid);
-              RL_Log(rohlager,RLEinlagern,uid);
+              RL_Einlagern_real(rohlager,uid,geliefert);
               tr.commit();
               return true;
             }

@@ -1,4 +1,4 @@
-/* $Id: JumboLager.h,v 1.8 2002/11/27 13:26:51 christof Exp $ */
+/* $Id: JumboLager.h,v 1.9 2003/07/04 14:33:59 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -47,8 +47,8 @@ class JumboLager : public LagerBase
 	JumboLager() : LagerBase(ppsInstanzID::None) {}      
 #endif
 
-      void Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jumbo_LogTyp typ,const int uid,const std::string& user,const Zeitpunkt_new *zeit=0);
-      void Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,const int uid,const std::string& user,const Zeitpunkt_new *zeit=0);
+      void Jumbo_Einlagern(const LagerPlatz position,JumboRolle& jumbo,Jumbo_LogTyp typ,const int uid,const std::string& user,const Zeitpunkt_new *zeit,bool produziert);
+      void Jumbo_Entnahme(JumboRolle& jumbo,Jumbo_LogTyp typ,const int uid,const std::string& user,const Zeitpunkt_new *zeit, bool fuer_auftrag);
 };
 
 #endif

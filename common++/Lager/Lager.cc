@@ -1,4 +1,4 @@
-// $Id: Lager.cc,v 1.28 2003/06/16 16:35:07 christof Exp $
+// $Id: Lager.cc,v 1.29 2003/07/04 14:33:59 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -22,7 +22,7 @@
 #include <algorithm>
 #include <Misc/relops.h>
 #include <Misc/TraceNV.h>
-
+#include <Misc/FetchIStream.h>
 
 Lager::Lager(cH_ppsInstanz instanz)
 : LagerBase(instanz)
@@ -36,13 +36,13 @@ Lager::Lager(cH_ppsInstanz instanz)
 }
 
 
-void LagerBase::rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const
+void LagerBase::rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid,bool produziert) const
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
      NV("Lager",*this),NV("Artikel",artikel),NV("Menge",menge));
   assert(menge>=0);
   // vielleicht doch besser nach AufEintrag?
-  AufEintrag::Einlagern(uid,*this,artikel,menge);
+  AufEintrag::Einlagern(uid,*this,artikel,menge,produziert);
 }
 
 void LagerBase::wiedereinlagern(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const
@@ -53,7 +53,7 @@ void LagerBase::wiedereinlagern(const ArtikelBase &artikel,const AuftragBase::me
   AufEintrag::WiederEinlagern(uid,*this,artikel,menge);
 }
 
-void LagerBase::raus_aus_lager(const ArtikelBase &artikel,AuftragBase::mengen_t menge,const int uid) const 
+void LagerBase::raus_aus_lager(const ArtikelBase &artikel,AuftragBase::mengen_t menge,const int uid,bool fuer_auftrag) const 
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,
      				NV("artikel",artikel),NV("menge",menge));
@@ -65,15 +65,18 @@ void LagerBase::raus_aus_lager(const ArtikelBase &artikel,AuftragBase::mengen_t 
 
   // alle Aufträge zu einem Artikel suchen, 1er vor 2er, 0er nicht
   // geringstes Datum zuerst, abschreiben
-  // bei einem 2er 1er erzeugen
-  
-  menge=AufEintrag::Auslagern(
-	  	AuftragBase(*this,AuftragBase::plan_auftrag_id),artikel,menge,uid);
+  // bei einem 2er 1er erzeugen  
+  if (menge!=0 && fuer_auftrag)
+     menge=AufEintrag::Auslagern(
+	  	AuftragBase(*this,AuftragBase::plan_auftrag_id),artikel,menge,uid,fuer_auftrag);
   if (menge!=0)
      menge=AufEintrag::Auslagern(
-     		AuftragBase(*this,AuftragBase::dispo_auftrag_id),artikel,menge,uid);
+     		AuftragBase(*this,AuftragBase::dispo_auftrag_id),artikel,menge,uid,fuer_auftrag);
+  if (menge!=0 && !fuer_auftrag)
+     menge=AufEintrag::Auslagern(
+	  	AuftragBase(*this,AuftragBase::plan_auftrag_id),artikel,menge,uid,fuer_auftrag);
   
-  if (menge!=0)
+  if (menge!=0 && fuer_auftrag)
      // einfach als produziert vermerken
      AufEintrag::unbestellteMengeProduzieren(*this,artikel,menge,uid);
   
@@ -105,5 +108,14 @@ void LagerBase::LagerInhaltSum(std::vector<class LagerInhalt>& LI)
      for(;k!=LI.end() && *i==*k ;++k)  *i+=*k ;
      i=LI.erase(j,k);     
    }
+}
+
+FetchIStream &operator>>(FetchIStream &is, LagerInhalt &li)
+{  is >> FetchIStream::MapNull(li.artikel) 
+	>> FetchIStream::MapNull(li.stueck) 
+	>> FetchIStream::MapNull(li.reststueck) 
+	>> FetchIStream::MapNull(li.menge)
+	>> FetchIStream::MapNull(li.restmenge);
+   return is;
 }
 

@@ -1,4 +1,4 @@
-/* $Id: RohwarenLager.h,v 1.8 2002/11/27 13:26:51 christof Exp $ */
+/* $Id: RohwarenLager.h,v 1.9 2003/07/04 14:33:59 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -49,6 +49,7 @@ class RohwarenLager : public LagerBase
    private:
 
       void RL_Log(const st_rohlager& rohlager,RL_LogTyp typ,const int uid,const std::string& misc="");
+      void RL_Einlagern_real(st_rohlager& rohlager,unsigned uid,bool geliefert);
       void auftragsentry_verwaltung(const RL_LogTyp typ,const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const;
       virtual std::vector<class LagerInhalt> LagerInhalt_(const ArtikelBase& artikel) const;
 
@@ -62,8 +63,8 @@ class RohwarenLager : public LagerBase
       st_rohlager RL_Inhalt(const LagerPlatz position) const;
       // force legt fest, ob ein bestehender Inhalt überschrieben weren soll
       // defautmäßig wird nur dann eingelagert, wenn die Lagerposition leer ist.
-      bool RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager,const int uid,std::string &os,bool force=false);
-      bool RL_Entnahme(st_rohlager& rohlager,const int uid,std::string &os,bool force=false,bool ist_leer=false);
+      bool RL_Einlagern(const LagerPlatz position,st_rohlager& rohlager,const int uid,std::string &os,bool force,bool geliefert);
+      bool RL_Entnahme(st_rohlager& rohlager,const int uid,std::string &os,bool force,bool ist_leer,bool fuer_auftrag);
 };
 
 #endif

@@ -1,4 +1,4 @@
-/* $Id: Lager.h,v 1.19 2003/06/16 16:35:07 christof Exp $ */
+/* $Id: Lager.h,v 1.20 2003/07/04 14:33:59 christof Exp $ */
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -27,9 +27,10 @@ class ppsInstanzReparatur;
 #include <Misc/Handles.h>
 #include <Auftrag/selFullAufEntry.h>
 #include <Auftrag/auftrag_enums.h>
+class FetchIStream;
 
 class LagerInhalt
-{
+{	friend FetchIStream &operator>>(FetchIStream &is, LagerInhalt &li);
    private:
       ArtikelBase artikel;
       int stueck,reststueck;
@@ -37,9 +38,8 @@ class LagerInhalt
 
    public:
           
-
-      LagerInhalt(ArtikelBase a) 
-               : artikel(a),stueck(0),reststueck(0),menge(0),restmenge(0){}
+      LagerInhalt(ArtikelBase a=ArtikelBase())
+      		: artikel(a),stueck(),reststueck(),menge(), restmenge() {}
       LagerInhalt(ArtikelBase a, int s, int rs, int m, int rm)
                : artikel(a),stueck(s),reststueck(rs),menge(m),restmenge(rm){}
 
@@ -92,19 +92,18 @@ class LagerBase : public cH_ppsInstanz
       class LagerInhalt LagerInhalt(const ArtikelBase& artikel) const ;
 
    protected:
-     void rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const;
+     // produziert bedeutet, dass der Artikel hergestellt wurde 
+     // und nicht irgendwo "gefunden" (z.B. Inventur)
+     void rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid,bool produziert) const;
      void wiedereinlagern(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const;
-     void raus_aus_lager(const ArtikelBase &artikel,AuftragBase::mengen_t menge,const int uid) const;
+     // fuer_auftrag bedeutet, dass der Artikel für einen Auftrag verwendet wurde
+     // und nicht verschwunden ist (Entnahme außer der Reihe/Inventur)
+     void raus_aus_lager(const ArtikelBase &artikel,AuftragBase::mengen_t menge,const int uid,bool fuer_auftrag) const;
 };
 
 class Lager : LagerBase
 {
   public:  
       Lager(cH_ppsInstanz  instanz) ;
-//      void rein_ins_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const 
-//         {LagerBase::rein_ins_lager(artikel,menge,uid);}
-//      void raus_aus_lager(const ArtikelBase &artikel,const AuftragBase::mengen_t &menge,const int uid) const
-//         {LagerBase::raus_aus_lager(artikel,menge,uid);}
 };
 #endif
-

@@ -1,4 +1,4 @@
-// $Id: DataBase_init.cc,v 1.12 2003/01/08 09:46:58 christof Exp $
+// $Id: DataBase_init.cc,v 1.13 2003/07/04 14:33:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -102,7 +102,7 @@ void DataBase_init::RohwarenLager_initalisieren_execute(const ArtikelBase &artik
   RohwarenLager::st_rohlager rohlager(LP,kartons,kg_pro_karton,reste,kg_reste,
                                       artikel,ManuProC::Datum().today());
 #ifdef MIT_ROHWARENLAGER
-  RL.RL_Einlagern(LP,rohlager,UID,os,true);
+  RL.RL_Einlagern(LP,rohlager,UID,os,true,true);
   SQLerror::test(__FILELINE__);
 #endif
 }
@@ -118,7 +118,7 @@ void DataBase_init::createJumbo(const int diffmaschine,const int menge)
   assert(JR.size()==1);
   Zeitpunkt_new zp("2002-1-1 12:00");
   class JumboLager JL;
-  JL.Jumbo_Einlagern(LagerPlatzJumbo,JR.front(),JumboLager::Einlagern,UID,"testuser",&zp);
+  JL.Jumbo_Einlagern(LagerPlatzJumbo,JR.front(),JumboLager::Einlagern,UID,"testuser",&zp,true);
   SQLerror::test(__FILELINE__);
 #endif
 }

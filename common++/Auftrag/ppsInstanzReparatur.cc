@@ -194,7 +194,7 @@ void ppsInstanzReparatur::DispoAuftraege_anlegen(const int uid,const ArtikelBase
    assert(Instanz()->EigeneLagerKlasseImplementiert());
 std::cout << "Mengenänderung im Lager "<<Instanz()<<'\t'<<menge<<" von " << artikel.Id() << '\n';
    if(menge>=0)
-      LagerBase(make_value(Instanz())).rein_ins_lager(artikel,menge,uid);
+      LagerBase(make_value(Instanz())).rein_ins_lager(artikel,menge,uid,false);
 }
 
 std::vector<LagerInhalt> ppsInstanzReparatur::getLagerInhalt() const

@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.50 2003/06/24 07:02:40 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.51 2003/07/04 14:33:59 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -264,13 +264,13 @@ public:
  // wird üblicherweise erst für 1er dann 2er aufgerufen
  // mit ProduziertNG vereinen?
  static mengen_t Auslagern
-	(const AuftragBase &ab,const ArtikelBase &artikel,mengen_t menge, unsigned uid);
+	(const AuftragBase &ab,const ArtikelBase &artikel,mengen_t menge, unsigned uid,bool fuer_auftraege);
    // wird aufgerufen wenn Menge ins Lager kommt (LagerBase::rein_ins_lager)
    // kümmert sich um 1er und 2er
    // sollte Aufträge als produziert markieren
    // ehemals AuftragBase::menge_neu_verplanen
    static void Einlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
-         const mengen_t &menge,const ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Produziert) throw(SQLerror);
+         const mengen_t &menge,bool produziert,const ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Produziert) throw(SQLerror);
    // Menge wurde als Produziert markiert, kam aber ins Lager zurück
    static void WiederEinlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
          mengen_t menge,const ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_Produziert) throw(SQLerror);

@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.67 2003/07/03 15:54:52 christof Exp $
+// $Id: AufEintrag.cc,v 1.68 2003/07/04 14:33:59 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -314,7 +314,7 @@ namespace { struct Auslagern_cb
 };}
 
 AuftragBase::mengen_t AufEintrag::Auslagern
-	(const AuftragBase &ab,const ArtikelBase &artikel,mengen_t menge, unsigned uid)
+	(const AuftragBase &ab,const ArtikelBase &artikel,mengen_t menge, unsigned uid, bool fuer_auftraege)
 {  assert(ab.Instanz()->LagerInstanz());
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,ab,
 				   NV("artikel",artikel),NV("menge",menge));
@@ -370,7 +370,7 @@ void AufEintrag::MengeVormerken(cH_ppsInstanz instanz,const ArtikelBase &artikel
    // sollte Aufträge als produziert markieren
 // ehemals AuftragBase::menge_neu_verplanen
 void AufEintrag::Einlagern(const int uid,cH_ppsInstanz instanz,const ArtikelBase artikel,
-         const mengen_t &menge,const ManuProC::Auftrag::Action reason) throw(SQLerror)
+         const mengen_t &menge,bool produziert,const ManuProC::Auftrag::Action reason) throw(SQLerror)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("Instanz",instanz),
    NV("Artikel",artikel),NV("Menge",menge),NV("Reason",reason));
@@ -991,7 +991,7 @@ void AufEintrag::ProduziertNG(unsigned uid, AuftragBase::mengen_t M,
    cH_ppsInstanz EI=Instanz()->EinlagernIn();
    if(EI->AutomatischEinlagern())
    {  assert(Instanz()->ProduziertSelbst()); // sonst Endlosrekursion
-      LagerBase(EI).rein_ins_lager(Artikel(),M,uid);
+      LagerBase(EI).rein_ins_lager(Artikel(),M,uid,true);
    }
 }
 
