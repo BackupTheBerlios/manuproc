@@ -1,4 +1,4 @@
-// $Id: MVC_bool_Widget.hh,v 1.2 2002/09/18 08:11:36 thoma Exp $
+// $Id: MVC_bool_Widget.hh,v 1.3 2002/09/18 08:49:48 christof Exp $
 /*  libKomponenten: ManuProC's Widget library
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski, Christof Petig, Malte Thoma

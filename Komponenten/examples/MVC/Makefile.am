@@ -22,9 +22,9 @@ noinst_HEADERS = \
 	window1_glade.hh \
 	window1.hh baseclasses.hh
 
-CXXFLAGS = @CXXFLAGS@ @GTKMM_CFLAGS@ @KOMPONENTEN_INCLUDES@
+CXXFLAGS = @CXXFLAGS@ @KOMPONENTEN_INCLUDES@
 
-mvc_LDADD = @LIBS@ @GTKMM_LIBS@ @KOMPONENTEN_LIBS@
+mvc_LDADD = @LIBS@ @KOMPONENTEN_LIBS@
 
 $(LINKS):
 	ln -sf ../../Basic/examples/MVC/$@ .

@@ -79,7 +79,7 @@
     <widget>
       <class>Custom</class>
       <name>boolwidget</name>
-      <creation_function>MVC_bool_widget(mybool,&quot;an/aus&quot;)</creation_function>
+      <creation_function>MVC_bool_Widget(mybool,&quot;an/aus&quot;)</creation_function>
       <int1>0</int1>
       <int2>0</int2>
       <last_modification_time>Wed, 18 Sep 2002 08:01:17 GMT</last_modification_time>

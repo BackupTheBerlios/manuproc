@@ -373,7 +373,7 @@ void ArtikelBox::Benutzerprofil_speichern()
 
 void ArtikelBox::Neuer_Eintrag()
 {
- if(kombiniertbool) return;
+// if(kombiniertbool) return;
  try {
 // hier (und weiter unten) sollte man irgendwann mal 'ID' und 'EAN-Code' in die 
 // Tabellenspalten der jeweiligen Schemata umwandeln.
