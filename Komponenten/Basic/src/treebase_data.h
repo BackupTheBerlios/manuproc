@@ -1,4 +1,4 @@
-/* $Id: treebase_data.h,v 1.8 2003/10/06 13:21:27 jacek Exp $ */
+/* $Id: treebase_data.h,v 1.9 2003/10/07 06:49:57 christof Exp $ */
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -43,10 +43,13 @@ public:
    data[5]=f;
  }
 
+// warum so kompliziert ...
  const std::string getStrAt(guint i) const 
-   {
-    if (i>=0 && i<max_arguments) 
-       return data[i];
+   {return operator[](i);
+   }
+// ... wenns auch einfach geht
+ const std::string operator[](guint i) const
+   {if (i>=0 && i<max_arguments) return data[i];
     return "";
    }
    
