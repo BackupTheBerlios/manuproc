@@ -1,4 +1,4 @@
-/* $Id: ManuProCConfig.h.in,v 1.20 2004/03/12 11:53:23 christof Exp $ */
+/* $Id: ManuProCConfig.h.in,v 1.21 2004/03/12 20:51:16 jacek Exp $ */
 /*  ManuProCBase: ManuProC's main OO library
  *  Copyright (C) 2004 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -16,6 +16,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+
 
 /*
    Database and host to use
