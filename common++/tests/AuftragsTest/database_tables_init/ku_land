@@ -34,27 +34,6 @@ GRANT INSERT,SELECT,RULE,UPDATE,DELETE,REFERENCES,TRIGGER on "ku_land" to "chris
 
 COPY "ku_land" FROM stdin;
 1	Deutschland	D	\N
-2	Österreich	A	\N
-3	Schweiz	CH	\N
-4	Italien	I	\N
-5	Slowenien	SLO	\N
-6	Ungarn	H	\N
-7	Polen	PL	\N
-8	Finnland	FIN	\N
-9	Schweden	S	\N
-10	Norwegen	N	\N
-13	Irland	IRL	\N
-14	Niederlande	NL	\N
-15	Belgien	B	\N
-16	Luxemburg	L	\N
-17	Frankreich	F	\N
-18	Spanien	E	\N
-19	Portugal	P	\N
-20	Island	IS	\N
-22	Libanon	RL	\N
-11	Dänemark	DK	\N
-12	Groäbritannien	GB	\N
-21	U.S.A.	USA	\N
 \.
 --
 -- TOC Entry ID 4 (OID 48493237)
