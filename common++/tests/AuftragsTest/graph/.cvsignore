@@ -2,3 +2,5 @@ G.ps
 Makefile
 graph
 DEADJOE
+.deps
+.libs

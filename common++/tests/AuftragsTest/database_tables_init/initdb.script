@@ -30,6 +30,7 @@ for i in \
    lieferscheinentry \
    lieferscheinentryzusatz \
    ketten \
+   ketten_garn \
    ketten_kettid_seq \
    kunden \
    lager_bewegung \

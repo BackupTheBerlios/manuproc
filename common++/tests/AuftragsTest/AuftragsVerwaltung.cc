@@ -1,4 +1,4 @@
-// $Id: AuftragsVerwaltung.cc,v 1.8 2002/11/07 07:49:16 christof Exp $
+// $Id: AuftragsVerwaltung.cc,v 1.9 2002/11/22 15:19:37 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -27,40 +27,6 @@
 #include <Auftrag/Auftrag.h>
 #include <Auftrag/AufEintrag.h>
 
-void Problems(void *,AufEintrag::st_problems e)
-{
-assert(!"never get here\n");
-  switch (e.art) {
-     case AufEintrag::Geplant :
-        cout << "WARNUNG: es werden "<<e.menge_input<<" in Auftrag "<<e.AEB
-             << " geändert, aber es sind nur noch "<<e.menge_output
-             << " nicht verplant\n\n";
-        break;          
-     case AufEintrag::Geliefert :
-        cout << "WARNUNG: Auftrag "<<e.AEB<<" ist schon ausgeliefert worden, reduzieren nicht möglich\n";
-        break;
-     case AufEintrag::GeliefertFatal :
-        cout << "ACHTUNG: Zuviel ausgeliefert, vollständige Änderung nicht möglich:\n"
-             << "Auftrag "<<e.AEB<<"\tgewünschte Menge: "<<e.menge_input<<
-             "\tgeänderte Menge: "<<e.menge_output<<'\n';
-        break;
-     case AufEintrag::Lager :
-        cout << "Im Lager ist von Artikel "<<AufEintrag(e.AEB).ArtId()<<' '
-             <<cH_ArtikelBezeichnung(AufEintrag(e.AEB).ArtId())->Bezeichnung()
-             << " "<<(e.menge_input-e.menge_output).abs()<<" freigeworden\n";
-         break;
-     case AufEintrag::Geplant_nolager :
-       {
-         AufEintrag AE(e.AEB);
-         cout << "Artikel "<<cH_ArtikelBezeichnung(AE.ArtId())->Bezeichnung()
-             << " ist in Instanz "<<e.AEB.Instanz()->Name()
-             << " am "<<AE.LastEditDate().c_str() <<" geplant worden"
-             << " Mengenreduzierung nicht möglich.\n";
-         break;
-       }
-      default :  assert(!"never get here");
-   }
-}
 
 AufEintragBase AuftragsVerwaltung::anlegen()
 {
@@ -78,7 +44,7 @@ void AuftragsVerwaltung::kunden_bestellmenge_aendern(AufEintragBase aeb,AuftragB
 {
    AufEintrag AE(aeb);
    AuftragBase::mengen_t diffmenge=menge-AE.getStueck();
-   AufEintrag(aeb).updateStkDiff__(UID,diffmenge,true,AufEintragBase::r_Standard);
+   AufEintrag(aeb).updateStkDiff__(UID,diffmenge,true,ManuProC::Auftrag::r_Anlegen);
 }
 
 AufEintragBase AuftragsVerwaltung::anlegen2()

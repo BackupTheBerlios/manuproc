@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.hh,v 1.9 2002/11/07 07:49:16 christof Exp $
+// $Id: steuerprogramm.hh,v 1.10 2002/11/22 15:19:37 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -20,6 +20,7 @@
 #ifndef STEUERFILE_H
 #define STEUERFILE_H
 
+//#define REPARATUR_PROGRAMM_TESTEN
 
 //#define MANU_PROC_TEST
 //#define MABELLA_TEST
@@ -30,7 +31,6 @@
 #else if defined MABELLA_TEST
   #define MANU_DATAPATH "./database_tables_init_Mabella"
 #endif
-
 
 
 #include <Artikel/ArtikelBase.h>
@@ -70,10 +70,12 @@
 #elif defined MABELLA_TEST
 
 #define ARTIKEL_TRIO ArtikelBase(44803)
+#define ARTIKEL_ZWEI ArtikelBase(44800)
 
 #define FERTIGWARENLAGER (ppsInstanz::ID(2))
 #define EINKAUF (ppsInstanz::ID(4))
 #define PRODPLANUNG (ppsInstanz::ID(3))
+#define WEBEREI (ppsInstanz::ID(5))
 
 #endif
 

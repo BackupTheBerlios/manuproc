@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.15 2002/11/07 07:49:16 christof Exp $
+// $Id: Check.cc,v 1.16 2002/11/22 15:19:37 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -36,9 +36,25 @@ static std::string referenzdir="database_tables_test_Mabella/";
 static std::string referenzdir="database_tables_test/";
 #endif
 
-bool Check::teste(e_check check)
+bool Check::teste(e_check check,bool mit_reparatur_programm)
 {
   dump(check);  
+  bool b=vergleich(check);
+  if(!mit_reparatur_programm || !b) return b;
+  std::vector<cH_ppsInstanz> VI=cH_ppsInstanz::get_all_instanz();
+  for(std::vector<cH_ppsInstanz>::const_iterator i=VI.begin();i!=VI.end();++i)
+   {
+     if((*i)->KundenInstanz()) continue;
+     std::string com="../../Programme/adjust_store -i "+itos((*i)->Id())+" -a B";
+     system(com.c_str());
+     if((*i)->LagerInstanz())
+      {
+        std::string com="../../Programme/adjust_store -i "+itos((*i)->Id())+" -a A";
+//        system(com.c_str());
+      }
+     std::string com2="../../Programme/adjust_store -i "+itos((*i)->Id())+" -a C";
+     system(com2.c_str());
+   }  
   return vergleich(check);
 }
 
@@ -117,10 +133,13 @@ bool Check::vergleich(e_check check)
      case LieferscheinZweiAufTeil: zusatz="_LSZA"; break;
      case LieferscheinZweiAufVoll: zusatz="_LSZAV"; break;
      case LieferscheinJacek0 : zusatz="_LSJ0"; break;
+     case ProduktionsPlanungWeberei : zusatz="_PP"; break;
+     case ProduktionsPlanungEinkauf : zusatz="_PPE"; break;
      case ZweiKundenTest_anlegen: zusatz="_ZK_anlegen"; break;
      case ZweiKunden_Teil1: zusatz="_ZK_abschreiben1T"; break;
      case ZweiKunden_Teil2: zusatz="_ZK_abschreiben2T"; break;
      case ZweiKunden_Ueber1:zusatz="_ZK_abschreiben1U"; break;
+     case ZweiKundenMengeFuer: zusatz="_ZKM"; break;
 
      // Jumbo 
      case Jumbo_richtig : zusatz="_richtig"; break;

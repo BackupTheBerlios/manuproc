@@ -1,4 +1,4 @@
-// $Id: Check.hh,v 1.14 2002/11/07 07:49:16 christof Exp $
+// $Id: Check.hh,v 1.15 2002/11/22 15:19:37 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -50,13 +50,14 @@ class Check
                  LieferscheinMengenaenderungPlus,LieferscheinMengenaenderungMinus,
                  LieferscheinZusatz,LieferscheinZusatzPlus,LieferscheinZusatzMinus,
                  LieferscheinZusatzMinusKunde,LieferscheinZweiAufTeil,
-                 LieferscheinZweiAufVoll,LieferscheinJacek0,
+                 LieferscheinZweiAufVoll,LieferscheinJacek0,ProduktionsPlanungWeberei,
+                 ProduktionsPlanungEinkauf,
                  ZweiKundenTest_anlegen,ZweiKunden_Teil1,ZweiKunden_Teil2,
-                     ZweiKunden_Ueber1};
+                     ZweiKunden_Ueber1,ZweiKundenMengeFuer};
  private:
    void dump(e_check);
    bool vergleich(e_check);
  public:
    Check(){}; 
-   bool teste(e_check check); // Erfolgreich: true; sonst false
+   bool teste(e_check check,bool mit_reparatur_programm); // Erfolgreich: true; sonst false
 };

@@ -1,11 +1,12 @@
 #!/bin/bash
 
-for x in M P S L Z D Ls Lm LZ LA ZK ; do
+for x in M P S L Z D Ls Lm LZ LA ZK ZKM ; do
 
-  ./steuerprogramm $x
-
-  if [ $? -eq 1 ] ; then
-    echo Abbruch
+  if ./steuerprogramm $x
+  then
+    echo $x OK ;
+  else
+    echo Abbruch bei $x
     exit;
   fi
 

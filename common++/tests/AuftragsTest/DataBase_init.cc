@@ -1,4 +1,4 @@
-// $Id: DataBase_init.cc,v 1.6 2002/11/07 07:49:16 christof Exp $
+// $Id: DataBase_init.cc,v 1.7 2002/11/22 15:19:37 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -26,11 +26,13 @@
 #include <Lager/JumboLager.h>
 #include <Ketten/KettplanKette.h>
 #include <unistd.h>
+#include <Misc/Trace.h>
 
 
 DataBase_init::DataBase_init() 
 {
 #ifdef PETIG_TEST
+//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
    ArtikelBaum_anlegen();
    RohwarenLager_initalisieren();
    JumboLager_initalisieren();
@@ -41,7 +43,9 @@ DataBase_init::DataBase_init()
    L.rein_ins_lager(3,100,getuid()); // Granulat gelb
 #elif defined MABELLA_TEST
    Lager L(FERTIGWARENLAGER); 
+//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
    L.rein_ins_lager(ARTIKEL_TRIO,4,getuid()); 
+//exit(1);
 #endif
 }
 
@@ -81,7 +85,7 @@ void DataBase_init::RohwarenLager_initalisieren()
   LP=LagerPlatz(ppsInstanzID::Rohwarenlager,KUPFER_LAGERPLATZ);
   RohwarenLager_initalisieren_execute(ARTIKEL_KUPFER,LP,KUPFER_KARTONS,KUPFER_KG_PRO_KARTON,KUPFER_RESTE,KUPFER_RESTE_KG);
 
-  std::string com="../../Programme/adjust_store -d testdb -i "+itos(ppsInstanzID::Rohwarenlager);
+  std::string com="../../Programme/adjust_store -d testdb -a A -i "+itos(ppsInstanzID::Rohwarenlager);
   system(com.c_str());
 }
 
@@ -127,7 +131,7 @@ void DataBase_init::JumboLager_initalisieren()
   SQLerror::test(__FILELINE__);
 #endif
 
-  std::string com="../../Programme/adjust_store -d testdb -i "+itos(ppsInstanzID::Bandlager);
+  std::string com="../../Programme/adjust_store -d testdb -a A -i "+itos(ppsInstanzID::Bandlager);
   system(com.c_str());
 }
 

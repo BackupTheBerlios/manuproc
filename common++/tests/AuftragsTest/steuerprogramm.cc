@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.cc,v 1.18 2002/11/07 07:49:16 christof Exp $
+// $Id: steuerprogramm.cc,v 1.19 2002/11/22 15:19:37 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -41,7 +41,7 @@ enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
       ZweiterAuftrag_frueheresDatum,Lieferscheintest,LieferscheintestMenge,
       LieferscheintestZusatz,Lieferscheintest_ZweiterAuftrag_frueheresDatum,
       LieferscheinJacek,
-      ZweiKundenTest,ManuProCTest,
+      ZweiKundenTest,ZweiKundenMengeFreigebenTest,ManuProCTest,
       JumboLager};
 
 int fehler()
@@ -59,8 +59,13 @@ int kein_fehler()
 
 int auftragstests(e_mode mode)
 {
-//   ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+//  ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
 
+   bool mit_reparatur_programm=false;
+#ifdef REPARATUR_PROGRAMM_TESTEN
+   mit_reparatur_programm=true;
+   cout << "Mit ReparaturProgrammTest\n";
+#endif   
 
    AuftragsVerwaltung  auftrag; 
    AufEintragBase AEB=auftrag.anlegen();
@@ -72,13 +77,12 @@ int auftragstests(e_mode mode)
    // ANLEGEN eines Auftrags mit Bandlager und Rohwarenlager
    if (mode!=JumboLager)
    {  
+//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
       AE.setStatus(OPEN,UID);
-      erfolgreich=C.teste(Check::Open);
+      erfolgreich=C.teste(Check::Open,mit_reparatur_programm);
       if(!erfolgreich) 
          { cout << "Öffnen des Auftrags fehlgeschlagen\n"; return fehler();}
    }
-
-//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
 
    switch(mode) {
     case ManuProCTest :
@@ -89,16 +93,16 @@ int auftragstests(e_mode mode)
       Auftrag PA=Auftrag(Auftrag::Anlegen(EINKAUF),ManuProC::DefaultValues::EigeneKundenId);
       int znr=4;
       AufEintrag AEP((AufEintragBase(EINKAUF,AuftragBase::ungeplante_id,znr)));
-      int nznr=AEP.Planen(UID,200,true,PA,PLANDATUM5);
+      int nznr=AEP.Planen(UID,200,PA,PLANDATUM5);
       AufEintrag PAE(AufEintragBase(PA,nznr));
-      erfolgreich=C.teste(Check::Planen_Kupfer);
+      erfolgreich=C.teste(Check::Planen_Kupfer,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Planen des Einkaufs(Granulat) \n\n"; return fehler();}       
 
       // Spezifischen Lieferschein schreiben
       Lieferschein liefs(EINKAUF,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
       liefs.push_back(PAE,ARTIKEL_GRANULAT_GRUEN,1,200,0);
 //unspezifisch   liefs.push_back(ARTIKEL_GRANULAT_GRUEN,1,200,0);
-      erfolgreich=C.teste(Check::LieferscheinTeil);
+      erfolgreich=C.teste(Check::LieferscheinTeil,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Lieferschein (mit AEB, Granulat) anlegen\n\n"; return  fehler();}
       }
 
@@ -107,16 +111,16 @@ int auftragstests(e_mode mode)
       Auftrag PA=Auftrag(Auftrag::Anlegen(EINKAUF),ManuProC::DefaultValues::EigeneKundenId);
       int znr=5;
       AufEintrag AEP((AufEintragBase(EINKAUF,AuftragBase::ungeplante_id,znr)));
-      int nznr=AEP.Planen(UID,10,true,PA,PLANDATUM5);
+      int nznr=AEP.Planen(UID,10,PA,PLANDATUM5);
       AufEintrag PAE(AufEintragBase(PA,nznr));
-      erfolgreich=C.teste(Check::Planen_WebereiL);
+      erfolgreich=C.teste(Check::Planen_WebereiL,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Planen des Einkaufs(Metall) \n\n"; return fehler();}       
 
 
       // Unspezifischen Lieferschein schreiben
       Lieferschein liefs(EINKAUF,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
       liefs.push_back(ARTIKEL_METALL,1,5,0);
-      erfolgreich=C.teste(Check::LieferscheinVoll);
+      erfolgreich=C.teste(Check::LieferscheinVoll,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Lieferschein (unbestimmt, Metall) anlegen\n\n"; return  fehler();}
       }
 
@@ -125,16 +129,16 @@ int auftragstests(e_mode mode)
       Auftrag PA=Auftrag(Auftrag::Anlegen(GIESSEREI),ManuProC::DefaultValues::EigeneKundenId);
       int znr=1;
       AufEintrag AEP((AufEintragBase(GIESSEREI,AuftragBase::ungeplante_id,znr)));
-      int nznr=AEP.Planen(UID,500,true,PA,PLANDATUM5);
+      int nznr=AEP.Planen(UID,500,PA,PLANDATUM5);
       AufEintrag PAE(AufEintragBase(PA,nznr));
-      erfolgreich=C.teste(Check::Planen_Faerberei_teil);
+      erfolgreich=C.teste(Check::Planen_Faerberei_teil,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Planen der Giesserei (Griff rot) \n\n"; return fehler();}       
 
 
       // Unspezifischen Lieferschein schreiben
       Lieferschein liefs(GIESSEREI,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
       liefs.push_back(ARTIKEL_GRIFF_ROT,500,0,0);
-      erfolgreich=C.teste(Check::LieferscheinZusatz);
+      erfolgreich=C.teste(Check::LieferscheinZusatz,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Lieferschein (Gießerei) anlegen\n\n"; return  fehler();}
       }
 
@@ -146,7 +150,7 @@ int auftragstests(e_mode mode)
       ManuProC::st_produziert p(ARTIKEL_SCHRAUBENZIEHER_GELB,600,UID,ManuProC::DefaultValues::EigeneKundenId);
       cH_ppsInstanz I(WERKSTATT); 
       I->Produziert(p);
-      erfolgreich=C.teste(Check::LieferscheinZusatzPlus);
+      erfolgreich=C.teste(Check::LieferscheinZusatzPlus,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Produktion in der Werkstatt anlegen\n\n"; return  fehler();}
       }
 
@@ -155,7 +159,7 @@ int auftragstests(e_mode mode)
 //ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
 //cout << "\n\n\nHier gehts los\n";
       liefs.push_back(ARTIKEL_SCHRAUBENZIEHER_ROT,450,0,0);
-      erfolgreich=C.teste(Check::LieferscheinZusatzMinus);
+      erfolgreich=C.teste(Check::LieferscheinZusatzMinus,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Lieferschein für das Rohwarenlager (auslagern)\n\n"; return  fehler();}
       }
 
@@ -164,14 +168,14 @@ int auftragstests(e_mode mode)
 //ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
 //cout << "\n\n\nHier gehts los\n";
       liefs.push_back(ARTIKEL_SORTIMENT_BUNT,450,0,0);
-      erfolgreich=C.teste(Check::LieferscheinZusatzMinusKunde);
+      erfolgreich=C.teste(Check::LieferscheinZusatzMinusKunde,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Lieferschein für den Kunden \n\n"; return  fehler();}
       }
 
       {// Lieferscheinschreiben für den Kunden  (Überlieferung)
       Lieferschein liefs(KUNDENINSTANZ,cH_Kunde(KUNDE));
       liefs.push_back(ARTIKEL_SORTIMENT_BUNT,60,0,0);
-      erfolgreich=C.teste(Check::LieferscheinZweiAufTeil);
+      erfolgreich=C.teste(Check::LieferscheinZweiAufTeil,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Lieferschein für den Kunden (Überlieferung)\n\n"; return  fehler();}
       }
 
@@ -183,32 +187,31 @@ int auftragstests(e_mode mode)
      {    
       // Menge des Auftrags erhöhen
       auftrag.kunden_bestellmenge_aendern(AEB,500);
-      erfolgreich=C.teste(Check::Menge_Plus);
+      erfolgreich=C.teste(Check::Menge_Plus,mit_reparatur_programm);
       if(!erfolgreich) {cout << "Erhöhen der Auftragmenge \n\n";
                         return fehler();}
 
-
       // Menge des Auftrags erniedrigen (Rohwarenlager Menge reicht jetzt aus)
       auftrag.kunden_bestellmenge_aendern(AEB,100);
-      erfolgreich=C.teste(Check::Menge_Minus);
+      erfolgreich=C.teste(Check::Menge_Minus,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Reduzieren der Auftragmenge unter Rohwarenlagerbestand \n\n";
                return fehler();}
 
 
       AE.updateLieferdatum(NEWDATUM,UID);
-      erfolgreich=C.teste(Check::Datumsaenderung);
+      erfolgreich=C.teste(Check::Datumsaenderung,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Datumsänderung \n\n";
                return fehler();}
 
 
       // Menge des Auftrags weiter erniedrigen (Bandlager Menge reicht jetzt aus)
       auftrag.kunden_bestellmenge_aendern(AEB,10);
-      erfolgreich=C.teste(Check::Menge_MinusMinus);
+      erfolgreich=C.teste(Check::Menge_MinusMinus,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Reduzieren der Auftragmenge unter Bandlagerbestand \n\n";
                return fehler();}
 
       AufEintrag(AEB).setStatus(CLOSED,UID);
-      erfolgreich=C.teste(Check::StatusClosed);
+      erfolgreich=C.teste(Check::StatusClosed,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Statussänderung (Closed) \n\n";
                return fehler();}
 
@@ -219,12 +222,14 @@ int auftragstests(e_mode mode)
     case Plantest:
      {
        {
+
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::_Garn__Einkauf),Kunde::default_id);
        int kupfer_znr=2;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::_Garn__Einkauf,AuftragBase::ungeplante_id,kupfer_znr));
+//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
 
-       AEP.Planen(UID,100,true,PA,PLANDATUM5);
-       erfolgreich=C.teste(Check::Planen_Kupfer);
+       AEP.Planen(UID,100,PA,PLANDATUM5);
+       erfolgreich=C.teste(Check::Planen_Kupfer,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Planen des Kupfereinkaufs \n\n";
                return fehler();}       
        }
@@ -232,8 +237,8 @@ int auftragstests(e_mode mode)
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Faerberei),Kunde::default_id);
        int faerberei_znr=1;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Faerberei,AuftragBase::ungeplante_id,faerberei_znr));
-       AEP.Planen(UID,7000,true,PA,PLANDATUM4);
-       erfolgreich=C.teste(Check::Planen_Faerberei_teil);
+       AEP.Planen(UID,7000,PA,PLANDATUM4);
+       erfolgreich=C.teste(Check::Planen_Faerberei_teil,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Teil-Planen der Färberei \n\n";
                return fehler();}
        }
@@ -244,8 +249,8 @@ int auftragstests(e_mode mode)
 
 //ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
 
-       AEP.Planen(UID,5000,true,PA,PLANDATUM6);
-       erfolgreich=C.teste(Check::Planen_WebereiP);
+       AEP.Planen(UID,5000,PA,PLANDATUM6);
+       erfolgreich=C.teste(Check::Planen_WebereiP,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Planen der Weberei \n\n";
                return fehler();}
        }
@@ -256,19 +261,19 @@ int auftragstests(e_mode mode)
     case Splittest :
      {
       AE.split(UID,300,SPLITDATUM);
-      erfolgreich=C.teste(Check::Split);
+      erfolgreich=C.teste(Check::Split,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Splitten einer Auftragszeile \n\n";
                return fehler();}
 
 #ifdef PETIG_TEST
-      H_Lager RL((cH_ppsInstanz(ppsInstanzID::Rohwarenlager)));
-      RL->rein_ins_lager(ARTIKEL_KUPFER,100,UID);
-      erfolgreich=C.teste(Check::Split_Rohwarenlager_einlagern);
+      Lager RL((cH_ppsInstanz(ppsInstanzID::Rohwarenlager)));
+      RL.rein_ins_lager(ARTIKEL_KUPFER,100,UID);
+      erfolgreich=C.teste(Check::Split_Rohwarenlager_einlagern,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Rohwarenlager einlagern\n";
                return fehler();}
 
-      RL->raus_aus_lager(ARTIKEL_KUPFER,100,UID);
-      erfolgreich=C.teste(Check::Split_Rohwarenlager_auslagern);
+      RL.raus_aus_lager(ARTIKEL_KUPFER,100,UID);
+      erfolgreich=C.teste(Check::Split_Rohwarenlager_auslagern,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Rohwarenlager auslagern\n";
                return fehler();}
       cout << "Split-Test erfolgreich\n";
@@ -279,14 +284,14 @@ int auftragstests(e_mode mode)
     case Lagertest :
      {    
 #ifdef PETIG_TEST
-      H_Lager RL((cH_ppsInstanz(ppsInstanzID::Rohwarenlager)));
-      RL->rein_ins_lager(ARTIKEL_KUPFER,100,UID);
-      erfolgreich=C.teste(Check::Rohwarenlager_einlagern);
+      Lager RL((cH_ppsInstanz(ppsInstanzID::Rohwarenlager)));
+      RL.rein_ins_lager(ARTIKEL_KUPFER,100,UID);
+      erfolgreich=C.teste(Check::Rohwarenlager_einlagern,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Rohwarenlager einlagern\n";
                return fehler();}
 
-      RL->raus_aus_lager(ARTIKEL_KUPFER,120,UID);
-      erfolgreich=C.teste(Check::Rohwarenlager_auslagern);
+      RL.raus_aus_lager(ARTIKEL_KUPFER,120,UID);
+      erfolgreich=C.teste(Check::Rohwarenlager_auslagern,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Rohwarenlager auslagern\n";
                return fehler();}
 
@@ -294,21 +299,21 @@ int auftragstests(e_mode mode)
       int weberei_znr=1;
       AufEintrag AEP(AufEintragBase(ppsInstanzID::Weberei,AuftragBase::ungeplante_id,weberei_znr));
       assert(AEP.getStueck()==AEP.getRestStk());
-      AEP.Planen(UID,5000,true,PA,PLANDATUM5);
-      erfolgreich=C.teste(Check::Planen_WebereiL);
+      AEP.Planen(UID,5000,PA,PLANDATUM5);
+      erfolgreich=C.teste(Check::Planen_WebereiL,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Planen der Weberei zum späteren Test des Bandlagers \n\n";
                return fehler();}
 
-      H_Lager BL((cH_ppsInstanz(ppsInstanzID::Bandlager)));
-      BL->rein_ins_lager(ARTIKEL_BANDLAGER,12000,UID);
-      erfolgreich=C.teste(Check::Bandlager_einlagern);
+      Lager BL((cH_ppsInstanz(ppsInstanzID::Bandlager)));
+      BL.rein_ins_lager(ARTIKEL_BANDLAGER,12000,UID);
+      erfolgreich=C.teste(Check::Bandlager_einlagern,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Bandlager einlagern\n";
                return fehler();}
 
       {AufEintrag AE(AEB);
         AE.Produziert(300,Lieferschein::none_id);
       }
-      erfolgreich=C.teste(Check::Kunden_Teillieferung);
+      erfolgreich=C.teste(Check::Kunden_Teillieferung,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Kunde Teillieferung\n";
                return fehler();}
 
@@ -316,7 +321,7 @@ int auftragstests(e_mode mode)
       {AufEintrag AE(AEB);
         AE.Produziert(120,Lieferschein::none_id);
       }
-      erfolgreich=C.teste(Check::Kunden_Ueberlieferung);
+      erfolgreich=C.teste(Check::Kunden_Ueberlieferung,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Kunde Überlieferung\n";
                return fehler();} 
 
@@ -331,13 +336,13 @@ int auftragstests(e_mode mode)
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Faerberei),Kunde::default_id);
        int faerberei_znr=1;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Faerberei,AuftragBase::ungeplante_id,faerberei_znr));
-       AEP.Planen(UID,13000,true,PA,PLANDATUM6);
-       erfolgreich=C.teste(Check::Planen_Faerberei_ueber);
+       AEP.Planen(UID,13000,PA,PLANDATUM6);
+       erfolgreich=C.teste(Check::Planen_Faerberei_ueber,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Über-Planen der Färberei \n\n";
                return fehler();}
        }
        AufEintragBase AEB=auftrag.anlegen2();
-       erfolgreich=C.teste(Check::ZweiAuftraege_anlegen);
+       erfolgreich=C.teste(Check::ZweiAuftraege_anlegen,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Anlegen eines zweiten (offenen) Auftrags ["<<AEB<<"] \n\n";
                return fehler();}
       cout << "ZweiAufträge-Test erfolgreich\n";
@@ -348,7 +353,7 @@ int auftragstests(e_mode mode)
      {
        AufEintragBase AEB=auftrag.anlegen3();
 
-       erfolgreich=C.teste(Check::ZweiterAuftrag_frueheresDatum);
+       erfolgreich=C.teste(Check::ZweiterAuftrag_frueheresDatum,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Anlegen eines zweiten (offenen) Auftrags ["<<AEB<<"] mit früherem Liefertermin \n\n";
                return fehler();}
 
@@ -356,12 +361,14 @@ int auftragstests(e_mode mode)
           AufEintrag AE(AEB);
         AE.Produziert(200,Lieferschein::none_id);
        }
-       erfolgreich=C.teste(Check::ZweiterAuftrag_frueheresDatum_abschreiben);
+       erfolgreich=C.teste(Check::ZweiterAuftrag_frueheresDatum_abschreiben,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Teil-Abschreiben des zweiten Auftrags ["<<AEB<<"] \n\n";
                return fehler();}
+
+//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
  
        AufEintrag(AEB).setStatus(CLOSED,UID);
-       erfolgreich=C.teste(Check::ZweiterAuftrag_frueheresDatum_closed);
+       erfolgreich=C.teste(Check::ZweiterAuftrag_frueheresDatum_closed,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Statussänderung(2) (Closed) \n\n";
                return fehler();}
 
@@ -369,13 +376,13 @@ int auftragstests(e_mode mode)
        int weberei_znr=1;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Weberei,AuftragBase::ungeplante_id,weberei_znr));
        assert(AEP.getStueck()==AEP.getRestStk());
-       AEP.Planen(UID,7000,true,PA,PLANDATUM5);
-       erfolgreich=C.teste(Check::Planen_WebereiD);
+       AEP.Planen(UID,7000,PA,PLANDATUM5);
+       erfolgreich=C.teste(Check::Planen_WebereiD,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Planen der Weberei\n\n";
                return fehler();}
  
        AE.setStatus(CLOSED,UID);
-       erfolgreich=C.teste(Check::ErsterAuftrag_frueheresDatum_closed);
+       erfolgreich=C.teste(Check::ErsterAuftrag_frueheresDatum_closed,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Statussänderung(1) (Closed)\n\n";
                return fehler();}       
 
@@ -388,22 +395,22 @@ int auftragstests(e_mode mode)
 #ifdef PETIG_TEST
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
        liefs.push_back(ARTIKEL_ROLLEREI,150,0,0);
-       erfolgreich=C.teste(Check::LieferscheinTeil);
+       erfolgreich=C.teste(Check::LieferscheinTeil,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferschein mit Teillieferung anlegen\n\n"; return fehler();}
 
        int lznr=1;
        LieferscheinEntry le((LieferscheinEntryBase(liefs,lznr)));
        LieferscheinEntry::deleteEntry(le);
-       erfolgreich=C.teste(Check::LieferscheinZeileLoeschen);
+       erfolgreich=C.teste(Check::LieferscheinZeileLoeschen,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferscheinzeile löschen\n\n";return fehler();}              
 
        liefs.push_back(ARTIKEL_ROLLEREI,450,0,0);
-       erfolgreich=C.teste(Check::LieferscheinVoll);
+       erfolgreich=C.teste(Check::LieferscheinVoll,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferschein mit Volllieferung \n\n"; return fehler();}
 
        LieferscheinEntry le2((LieferscheinEntryBase(liefs,lznr)));
        LieferscheinEntry::deleteEntry(le2);
-       erfolgreich=C.teste(Check::LieferscheinZeileLoeschen_n);
+       erfolgreich=C.teste(Check::LieferscheinZeileLoeschen_n,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferscheinzeile nochmal löschen\n\n";return fehler();}              
       
       cout << "Lieferschein Test erfolgreich\n";
@@ -416,7 +423,7 @@ int auftragstests(e_mode mode)
 #ifdef PETIG_TEST
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
        liefs.push_back(ARTIKEL_ROLLEREI,150,0,0);
-       erfolgreich=C.teste(Check::LieferscheinTeil);
+       erfolgreich=C.teste(Check::LieferscheinTeil,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferschein mit Teillieferung anlegen\n\n"; return fehler();}
 
        int stueck=140;
@@ -424,13 +431,13 @@ int auftragstests(e_mode mode)
        int lznr=1;
        LieferscheinEntry le(LieferscheinEntryBase(liefs,lznr));
        le.changeMenge(stueck,menge);
-       erfolgreich=C.teste(Check::LieferscheinMengenaenderungMinus);
+       erfolgreich=C.teste(Check::LieferscheinMengenaenderungMinus,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferschein Mengenaenderung Minus \n\n"; return fehler();}
 
        stueck=400;
        LieferscheinEntry le2(LieferscheinEntryBase(liefs,lznr));
        le2.changeMenge(stueck,menge);
-       erfolgreich=C.teste(Check::LieferscheinMengenaenderungPlus);
+       erfolgreich=C.teste(Check::LieferscheinMengenaenderungPlus,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferschein Mengenaenderung Plus \n\n"; return fehler();}
 
       cout << "Lieferschein Mengen-Test erfolgreich\n";
@@ -443,7 +450,7 @@ int auftragstests(e_mode mode)
     case Lieferscheintest_ZweiterAuftrag_frueheresDatum:
      {
        AufEintragBase AEB=auftrag.anlegen3();
-       erfolgreich=C.teste(Check::ZweiterAuftrag_frueheresDatum);
+       erfolgreich=C.teste(Check::ZweiterAuftrag_frueheresDatum,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Anlegen eines zweiten (offenen) Auftrags ["<<AEB<<"] mit früherem Liefertermin \n\n";
                           return fehler();}
 
@@ -451,11 +458,11 @@ int auftragstests(e_mode mode)
 
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
        liefs.push_back(ARTIKEL_ROLLEREI,50,0,0);
-       erfolgreich=C.teste(Check::LieferscheinZweiAufTeil);
+       erfolgreich=C.teste(Check::LieferscheinZweiAufTeil,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferschein mit Teillieferung und 2 Aufträgen anlegen\n\n"; return fehler();}
 
        liefs.push_back(ARTIKEL_ROLLEREI,600,0,0);
-       erfolgreich=C.teste(Check::LieferscheinZweiAufVoll);
+       erfolgreich=C.teste(Check::LieferscheinZweiAufVoll,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferschein mit Volllieferung und 2 Aufträgen anlegen\n\n"; return fehler();}
 
       cout << "Lieferschein Datums-Test erfolgreich\n";
@@ -468,7 +475,7 @@ int auftragstests(e_mode mode)
 #ifdef PETIG_TEST
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
        liefs.push_back(ARTIKEL_ROLLEREI,550,0,0);
-       erfolgreich=C.teste(Check::LieferscheinZusatz);
+       erfolgreich=C.teste(Check::LieferscheinZusatz,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferschein mit Zusatzeintrag anlegen\n\n"; return fehler();}
 
        int stueck=633;
@@ -477,19 +484,19 @@ int auftragstests(e_mode mode)
        int lznr=1;
        LieferscheinEntry le3(LieferscheinEntryBase(liefs,lznr));
        le3.changeMenge(stueck,menge);
-       erfolgreich=C.teste(Check::LieferscheinZusatzPlus);
+       erfolgreich=C.teste(Check::LieferscheinZusatzPlus,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferscheinentry mit Zusatzeintrag Plus \n\n"; return fehler();}
 
        LieferscheinEntry le4(LieferscheinEntryBase(liefs,lznr));
        stueck=450;
        le4.changeMenge(stueck,menge);
-       erfolgreich=C.teste(Check::LieferscheinZusatzMinus);
+       erfolgreich=C.teste(Check::LieferscheinZusatzMinus,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferscheinentry mit Zusatzeintrag Minus \n\n"; return fehler();}
 
        LieferscheinEntry le5(LieferscheinEntryBase(liefs,lznr));
        stueck=350;
        le5.changeMenge(stueck,menge);
-       erfolgreich=C.teste(Check::LieferscheinZusatzMinusKunde);
+       erfolgreich=C.teste(Check::LieferscheinZusatzMinusKunde,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferscheinentry mit Zusatzeintrag Minus Kunde \n\n"; return fehler();}
 
       cout << "Lieferschein Zusatz-Test erfolgreich\n";
@@ -502,16 +509,82 @@ int auftragstests(e_mode mode)
 #ifdef MABELLA_TEST
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
        liefs.push_back(ARTIKEL_TRIO,10,0,0);
-       erfolgreich=C.teste(Check::LieferscheinVoll);
+       erfolgreich=C.teste(Check::LieferscheinVoll,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferschein mit Volllieferung (Mabella) anlegen\n\n"; return fehler();}
-
+//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
 
        int lznr=1;
        LieferscheinEntry le1(LieferscheinEntryBase(liefs,lznr));
        int stueck=3;
        le1.changeMenge(stueck,0);
-       erfolgreich=C.teste(Check::LieferscheinMengenaenderungMinus);
+       erfolgreich=C.teste(Check::LieferscheinMengenaenderungMinus,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferscheinentry: Minus \n\n"; return fehler();}
+
+
+       {// Produktionsplaner
+        int znr=1;
+        AufEintragBase OldAEB((AuftragBase(PRODPLANUNG,AuftragBase::ungeplante_id)),znr);
+        {AufEintrag OldAE(OldAEB);
+         Auftrag PA=Auftrag(Auftrag::Anlegen(PRODPLANUNG),ManuProC::DefaultValues::EigeneKundenId);
+         OldAE.ProduktionsPlanung(UID,2,PA,PLANDATUM6,WEBEREI);
+         erfolgreich=C.teste(Check::ProduktionsPlanungWeberei,mit_reparatur_programm);
+         if(!erfolgreich) { cout << "ProduktionsPlanungWeberei \n\n"; return fehler();}
+        }
+
+        {AufEintrag OldAE(OldAEB);
+         Auftrag PA=Auftrag(Auftrag::Anlegen(PRODPLANUNG),ManuProC::DefaultValues::EigeneKundenId);
+         OldAE.ProduktionsPlanung(UID,20,PA,PLANDATUM6,EINKAUF);
+         erfolgreich=C.teste(Check::ProduktionsPlanungEinkauf,mit_reparatur_programm);
+         if(!erfolgreich) { cout << "ProduktionsPlanungEinkauf \n\n"; return fehler();}
+        }
+       }
+
+      {// Überplanen des Einkaufs
+      Auftrag PA=Auftrag(Auftrag::Anlegen(EINKAUF),KUNDE2);
+      int znr=1;
+      AufEintrag AEP((AufEintragBase(EINKAUF,AuftragBase::ungeplante_id,znr)));
+//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+      int nznr=AEP.Planen(UID,27,PA,PLANDATUM5);
+      erfolgreich=C.teste(Check::Planen_Kupfer,mit_reparatur_programm);
+      if(!erfolgreich) { cout << "Über-Planen des Einkaufs (Mabella) \n\n"; return fehler();}       
+      }
+//exit(1);
+
+      {// Weberei liefert mehr als geplant
+       Lieferschein liefs(WEBEREI,cH_Kunde(Kunde::eigene_id));
+//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+       liefs.push_back(ARTIKEL_TRIO,5,0,0);
+       erfolgreich=C.teste(Check::LieferscheinZusatz,mit_reparatur_programm);
+       if(!erfolgreich) { cout << "Lieferschein in Weberei mit Überlieferung (Mabella) \n\n"; return fehler();}
+      }
+
+      {// Einkauf liefert Teilmenge
+       Lieferschein liefs(EINKAUF,cH_Kunde(KUNDE2));
+//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+       liefs.push_back(ARTIKEL_TRIO,13,0,0);
+       erfolgreich=C.teste(Check::LieferscheinZusatzPlus,mit_reparatur_programm);
+       if(!erfolgreich) { cout << "Lieferschein im Einkauf mit Teillieferung (Mabella) \n\n"; return fehler();}
+      }
+
+      {// Einkauf liefert Vollmenge
+       Lieferschein liefs(EINKAUF,cH_Kunde(KUNDE2));
+//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+       liefs.push_back(ARTIKEL_TRIO,25,0,0);
+       erfolgreich=C.teste(Check::LieferscheinZusatzMinus,mit_reparatur_programm);
+       if(!erfolgreich) { cout << "Lieferschein im Einkauf Weberei mit Restlieferung (Mabella) \n\n"; return fehler();}
+      }
+
+
+      { // Bestellen eines Artikels ohne Kunden-Auftrag
+        Auftrag PA=Auftrag(Auftrag::Anlegen(EINKAUF),KUNDE2);
+        ManuProC::st_produziert sp(ARTIKEL_ZWEI,2222,getuid(),Kunde::eigene_id,LieferscheinBase::none_id,PA,SPLITDATUM);
+        cH_ppsInstanz I(EINKAUF);
+//cout << "L O S \n";
+//ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
+        I->Planen(sp);
+        erfolgreich=C.teste(Check::ZweiAuftraege_anlegen,mit_reparatur_programm);
+        if(!erfolgreich) { cout << "Einkauf eines nicht-bestelleten Artikel (Mabella) \n\n"; return fehler();}       
+      }
 
       cout << "Test für Mabella erfolgreich\n";
 
@@ -521,21 +594,21 @@ int auftragstests(e_mode mode)
     case ZweiKundenTest:
      {
        AufEintragBase AEB2=auftrag.anlegenK();
-       erfolgreich=C.teste(Check::ZweiKundenTest_anlegen);
+       erfolgreich=C.teste(Check::ZweiKundenTest_anlegen,mit_reparatur_programm);
        if(!erfolgreich) { cout << "Anlegen eines zweiten (offenen) Auftrags für einen anderen Kunden ["<<AEB<<"] \n\n";
                return fehler();}
 
       {AufEintrag AE(AEB);
         AE.Produziert(300,Lieferschein::none_id);
       }
-      erfolgreich=C.teste(Check::ZweiKunden_Teil1);
+      erfolgreich=C.teste(Check::ZweiKunden_Teil1,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Zwei Kunden Teillieferung 1\n";
                return fehler();}
 
       {AufEintrag AE(AEB2);
         AE.Produziert(180,Lieferschein::none_id);
       }
-      erfolgreich=C.teste(Check::ZweiKunden_Teil2);
+      erfolgreich=C.teste(Check::ZweiKunden_Teil2,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Zwei Kunden Teillieferung 2\n";
                return fehler();}
 
@@ -545,12 +618,35 @@ int auftragstests(e_mode mode)
 //      ManuProC::Tracer::Enable(ManuProC::Tracer::Auftrag);
         AE.Produziert(200,Lieferschein::none_id);
       }
-      erfolgreich=C.teste(Check::ZweiKunden_Ueber1);
+      erfolgreich=C.teste(Check::ZweiKunden_Ueber1,mit_reparatur_programm);
       if(!erfolgreich) { cout << "Zwei Kunden Volllieferung 1\n";
                return fehler();}
 
       cout << "Zwei Kunden-Test erfolgreich\n";
 
+
+       break;
+     }
+    case ZweiKundenMengeFreigebenTest:
+     {
+       AufEintragBase AEB2=auftrag.anlegenK();
+       erfolgreich=C.teste(Check::ZweiKundenTest_anlegen,mit_reparatur_programm);
+       if(!erfolgreich) { cout << "Anlegen eines zweiten (offenen) Auftrags für einen anderen Kunden ["<<AEB<<"] \n\n";
+               return fehler();}
+
+       {
+         cH_ppsInstanz I(ppsInstanzID::Bandlager);
+         int znrvon=1;
+         AufEintragBase Von(AuftragBase(I,AuftragBase::plan_auftrag_id),znrvon);
+         int znrnach=2;
+         AufEintrag Fuer((class AufEintragBase(AuftragBase(I,AuftragBase::ungeplante_id),znrnach)));
+         AufEintrag(Von).menge_fuer_aeb_freigeben(3000,Fuer,getuid());
+         erfolgreich=C.teste(Check::ZweiKundenMengeFuer,mit_reparatur_programm);
+         if(!erfolgreich) { cout << "Menge freigeben für einen anderen Auftrag \n\n";
+               return fehler();}
+       }
+       
+       cout << "Zwei Kunden-Menge-Freigeben-Test erfolgreich\n";
 
        break;
      }
@@ -571,14 +667,14 @@ int auftragstests(e_mode mode)
        JR=JumboRolle::create(KK);
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp0);
        JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,"TEST",&zp1);
-       erfolgreich=C.teste(Check::Jumbo_richtig);
+       erfolgreich=C.teste(Check::Jumbo_richtig,mit_reparatur_programm);
        JR=JumboRolle::create(KK);
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp1);
        JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,"TEST",&zp0);
        JR=JumboRolle::create(KK);
        JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,"TEST",&zp1);
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp0);
-       erfolgreich=C.teste(Check::Jumbo_falsch);
+       erfolgreich=C.teste(Check::Jumbo_falsch,mit_reparatur_programm);
        JR=JumboRolle::create(KK);
        JL.Jumbo_Entnahme(JR.front(),JumboLager::Auslagern,"TEST",&zp0);
        try
@@ -591,7 +687,7 @@ int auftragstests(e_mode mode)
        JR=JumboRolle::create(KK);
        JL.Jumbo_Einlagern(LP,JR.front(),JumboLager::Einlagern,"TEST",&zp0);
        JL.Jumbo_Einlagern(LP2,JR.front(),JumboLager::Einlagern,"TEST",&zp1);
-       erfolgreich=C.teste(Check::Jumbo_doppelt);
+       erfolgreich=C.teste(Check::Jumbo_doppelt,mit_reparatur_programm);
        break;
 #endif
      }
@@ -607,6 +703,7 @@ void usage(const std::string &argv0,const std::string &argv1)
                   "\t(L)iefer(s)cheine|(L)ieferscheine(m)engen|\n"
                   "\t(L)ieferschein(Z)usatzeintrag|(L)ieferscheinZweiter(A)uftrag_frueheresDatum|\n"
                   "\t(Z)wei(K)unden)\n"
+                  "\t(Z)wei(K)unden(M)engeFreigeben\n"
                   "\t(M)anu(P)roCTest\n"
                   "\t(J)umboLager] aufgerufen werden\n"
        << " nicht mit '"<<argv1<<"'\n";
@@ -631,6 +728,7 @@ int main(int argc,char *argv[])
    else if(std::string(argv[1])=="LA" || std::string(argv[1])=="Lieferscheintest_ZweiterAuftrag_frueheresDatum")  mode=Lieferscheintest_ZweiterAuftrag_frueheresDatum;
    else if(std::string(argv[1])=="LJ" || std::string(argv[1])=="Lieferscheintest_ZweiterAuftrag_frueheresDatum")  mode=LieferscheinJacek;
    else if(std::string(argv[1])=="ZK" || std::string(argv[1])=="ZweiKunden")  mode=ZweiKundenTest;
+   else if(std::string(argv[1])=="ZKM"|| std::string(argv[1])=="ZweiKundenMengeFreigebenTest")  mode=ZweiKundenMengeFreigebenTest;
    else if(std::string(argv[1])=="MP" || std::string(argv[1])=="ManuProCTest")  mode=ManuProCTest;
    else if(std::string(argv[1])=="J" || std::string(argv[1])=="JumboLager")  mode=JumboLager;
 
