@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.hh,v 1.30 2002/12/20 14:31:35 christof Exp $
+// $Id: steuerprogramm.hh,v 1.31 2002/12/20 14:37:45 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -27,6 +27,8 @@
 //#define PETIG_TEST
 
 // automatically guess the correct test set (comment all above out!)
+
+#include <ManuProCConfig.h>
 
 #if !defined(PETIG_TEST) && !defined(MANU_PROC_TEST) && !defined(MABELLA_TEST)
 # if defined(PETIG_EXTENSIONS)
