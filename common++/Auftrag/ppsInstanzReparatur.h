@@ -1,4 +1,4 @@
-// $Id: ppsInstanzReparatur.h,v 1.17 2003/09/02 12:10:52 christof Exp $
+// $Id: ppsInstanzReparatur.h,v 1.18 2003/12/03 15:00:44 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -27,13 +27,12 @@ class LagerInhalt;
 class SelectedFullAufList;
 
 class ppsInstanzReparatur : public cH_ppsInstanz
-{
- public:
+{public:
    ppsInstanzReparatur(ppsInstanz::ID iid=ppsInstanzID::None)
       : cH_ppsInstanz(iid) {}
    const cH_ppsInstanz &Instanz() const { return *this; }
    
-   // not yet used - might indicate that already fetched information changed to adjust_store
+   // indicates that already fetched information changed
    struct reload : public std::exception
    {	virtual const char* what() const throw() 
         { return "ppsInstanzReparatur::reload"; }
@@ -74,6 +73,8 @@ class ppsInstanzReparatur : public cH_ppsInstanz
       bool Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, bool analyse_only, bool raise_prodselbst) const;
       bool Lokal(AufEintrag &ae, bool analyse_only) const;
       bool Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bool analyse_only) const;
+
+      bool Lagermenge_setzen(bool analyse_only, const ArtikelBase &art,const AuftragBase::mengen_t &gesmenge,bool retry=false) const;
       
       static bool really_delete;
 };

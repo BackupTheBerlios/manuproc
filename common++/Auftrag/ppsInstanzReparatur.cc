@@ -111,27 +111,17 @@ bool ppsInstanzReparatur::ReparaturLager(const bool analyse_only) const throw(SQ
   return vormerkungen_subtrahieren(LI,analyse_only);
 }
 
-
-bool ppsInstanzReparatur::vormerkungen_subtrahieren(const  std::vector<LagerInhalt> &LI,const bool analyse_only) const
-{ bool looped=false;
+bool ppsInstanzReparatur::Lagermenge_setzen(bool analyse_only, const ArtikelBase &art,const AuftragBase::mengen_t &gesmenge,bool retry) const
+{   ManuProC::Trace(AuftragBase::trace_channel, __FUNCTION__,
+     		NV("art",art),NV("art.Id()",art.Id()),NV("gesmenge",gesmenge));
   bool alles_ok=true;
-try_again:
-//std::cout << "Anzahl der Artikel im Lager = "<<LI.size()<<'\n';
-  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Instanz());
-  for(std::vector<LagerInhalt>::const_iterator i=LI.begin();
-				  		std_neq(i,LI.end());++i)
-   {
+
      bool set_dispo_to_zero=false;
-     AuftragBase::mengen_t menge=i->GesamtMenge();
-
-     ManuProC::Trace(AuftragBase::trace_channel, __FILELINE__,
-     		NV("artikel",i->Artikel()),NV("id",i->Artikel().Id()),
-     		NV("menge",menge));
-
+     AuftragBase::mengen_t menge=gesmenge;
      // Vorgemerkte Menge (1er Aufträge) wieder abziehen
      // Schon eingetragene Menge wieder abziehen
      SelectedFullAufList auftraglist1=SelectedFullAufList(SQLFullAuftragSelector::
-       sel_Artikel_Planung_id(Instanz()->Id(),ManuProC::DefaultValues::EigeneKundenId,i->Artikel(),AuftragBase::plan_auftrag_id));
+       sel_Artikel_Planung_id(Instanz()->Id(),ManuProC::DefaultValues::EigeneKundenId,art,AuftragBase::plan_auftrag_id));
      // der Selector holt nur die Aufträge mit dem Status OPEN
      for (SelectedFullAufList::iterator j=auftraglist1.begin();j!=auftraglist1.end();++j)
        {
@@ -139,7 +129,7 @@ try_again:
          menge-=j->getRestStk() ;
          if(menge<0) // mehr Menge vorgeplant als vorhanden
          {  analyse("mehr Menge vorgeplant als vorhanden",*j,
-         	cH_ArtikelBezeichnung(i->Artikel())->Bezeichnung(),
+         	cH_ArtikelBezeichnung(art)->Bezeichnung(),
          	menge.String());
             alles_ok=false;
             set_dispo_to_zero=true;
@@ -160,10 +150,9 @@ try_again:
                 if(!M_rest) break;
              }
              if (!!M_rest) 
-             {  if (!looped)
+             {  if (retry)
                 {  analyse("Es ist ein Rest geblieben, erneuter Versuch",*j,M_rest);
-                   looped=true;
-                   goto try_again;
+                   throw reload();
                 }
                 analyse("Es ist immer noch ein Rest geblieben, ignoriere Zuordnungen",*j,M_rest);
                 j->MengeAendern(-M_rest,false,AufEintragBase());
@@ -174,7 +163,7 @@ try_again:
         }
 
      SelectedFullAufList auftraglist2=SelectedFullAufList(SQLFullAuftragSelector::
-          sel_Artikel_Planung_id(Instanz()->Id(),ManuProC::DefaultValues::EigeneKundenId,i->Artikel(),AuftragBase::dispo_auftrag_id));
+          sel_Artikel_Planung_id(Instanz()->Id(),ManuProC::DefaultValues::EigeneKundenId,art,AuftragBase::dispo_auftrag_id));
      assert(auftraglist2.empty() || auftraglist2.size()==1);
      for (SelectedFullAufList::iterator j=auftraglist2.begin();j!=auftraglist2.end();++j)
       {
@@ -191,11 +180,30 @@ try_again:
       
      if(menge>0 && !set_dispo_to_zero) 
       { alles_ok=false;
-        analyse("DispoAufträge_anlegen",AufEintragBase(Instanz(),2,-1),cH_ArtikelBezeichnung(i->Artikel())->Bezeichnung(),menge.String());
+        analyse("DispoAufträge_anlegen",AufEintragBase(Instanz(),2,-1),cH_ArtikelBezeichnung(art)->Bezeichnung(),menge.String());
         if (!analyse_only)
-            DispoAuftraege_anlegen(i->Artikel(),menge);
+            DispoAuftraege_anlegen(art,menge);
       }
-   }
+      return alles_ok;
+}
+
+bool ppsInstanzReparatur::vormerkungen_subtrahieren(const  std::vector<LagerInhalt> &LI,const bool analyse_only) const
+{ bool retry=true;
+  bool alles_ok=true;
+try_again:
+//std::cout << "Anzahl der Artikel im Lager = "<<LI.size()<<'\n';
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Instanz());
+  for(std::vector<LagerInhalt>::const_iterator i=LI.begin();
+				  		std_neq(i,LI.end());++i)
+  {  try
+     {  alles_ok&=Lagermenge_setzen(analyse_only,i->Artikel(),
+     						i->GesamtMenge(),retry);
+     }
+     catch (reload &e)
+     {  retry=false;
+        goto try_again;
+     }
+  }
    return alles_ok;
 }   
 
