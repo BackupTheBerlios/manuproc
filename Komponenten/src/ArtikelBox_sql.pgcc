@@ -491,9 +491,9 @@ void ArtikelBox::Neuer_Eintrag()
   where_what(where,what,false);
   Neuer_Eintrag_sql(db_id,where,what,
 #if (defined PETIG_EXTENSIONS) 
-  		ppsInstanz::Rollerei
+  		ppsInstanzID::Rollerei
 #else
-		ppsInstanz::None
+		ppsInstanzID::None
 #endif
   						);
 #ifdef PETIG_EXTENSIONS  // Jumborollen anlegen ?
@@ -515,9 +515,9 @@ void ArtikelBox::Neuer_Eintrag()
         what  = "("+itos(db_id_jumbo)+",";
         where_what(where,what,true);
    
-        Neuer_Eintrag_sql(db_id_jumbo,where,what,ppsInstanz::Bandlager);
+        Neuer_Eintrag_sql(db_id_jumbo,where,what,ppsInstanzID::Bandlager);
       }
-    insert_into_artikelzusammensetzung(db_id,jumbo_id,Prozess::Rollen,get_menge_from_artikelbox());
+    insert_into_artikelzusammensetzung(db_id,jumbo_id,ProzessID::Rollen,get_menge_from_artikelbox());
   }
 #endif
 

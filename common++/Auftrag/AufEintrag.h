@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.4 2002/05/03 10:22:54 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.5 2002/05/03 16:48:10 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -172,9 +172,9 @@ public:
 // gibt Zeilennummer zurück; rekursiv = alle Instanzen darunter auch planen
  int Planen(mengen_t menge, const AuftragBase &zielauftrag,bool rekursiv=false);
 
- friend std::ostream &operator<<(std::ostream &o,const AufEintrag &aeb);
+// friend std::ostream &operator<<(std::ostream &o,const AufEintrag &aeb);
 };
 
-std::ostream &operator<<(std::ostream &o,const AufEintrag &aeb);
+//std::ostream &operator<<(std::ostream &o,const AufEintrag &aeb);
 
 #endif

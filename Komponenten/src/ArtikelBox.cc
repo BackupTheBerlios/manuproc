@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.15 2002/04/11 11:57:59 christof Exp $
+// $Id: ArtikelBox.cc,v 1.16 2002/05/03 16:48:19 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -374,11 +374,11 @@ ArtikelBox::ArtikelBox(const std::string& _program,const std::string& _position)
 { 
   artbox_start();
   std::string gs = Global_Settings(0,sprogram,sposition).get_Wert();
-//std::cout << "GS="<<gs<<'\n';
   if (gs!="")
    {
      std::string sep=":";
      std::string::size_type  p=gs.find(sep);
+     if(p==std::string::npos) return;
      std::string s(gs,0,p);
      std::string t(gs,p+sep.size(),std::string::npos);
 //std::cout << s <<'-'<<t<<'\n';
@@ -389,7 +389,7 @@ ArtikelBox::ArtikelBox(const std::string& _program,const std::string& _position)
      {  setExtBezSchema(cH_ExtBezSchema(eid,atyp)); 
      }
      catch (SQLerror &e)
-     {  std::cout << e << '\n';
+     {  std::cout <<"Global_Settings konnte nicht korrekt ausgewert: "<<e << '\n';
      }
    }
 }

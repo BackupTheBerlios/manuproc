@@ -4,6 +4,7 @@
 #include <gtk--/viewport.h>
 #include <gtk--/scrolledwindow.h>
 #include <gtk--/button.h>
+#include <Aux/itos.h>
 
 void WTelefon::setNumber(int land,int vorwahl,int nummer)
 {
@@ -143,7 +144,7 @@ bool WTelefon::getSelectedTel(cH_Telefon &T) const
 Telefon::st_nummer WTelefon::get_value() const
 {
   TelArt TA = (TelArt) int(option_menu->get_menu()->get_active()->get_user_data());
-  return Telefon::st_nummer(getLand(),getVorwahl(),getNummer(),TA);
+  return Telefon::st_nummer(getLand(),getVorwahl(),getNummer(),-1,TA);
 }
 
 int WTelefon::getLand() const

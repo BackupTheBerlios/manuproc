@@ -22,13 +22,13 @@ class Optionmenu_Instanz :  public Gtk::OptionMenu
    cH_ppsInstanz get_value() const;
 
 // ---- veraltet !!!!
-   ppsInstanz::ppsInstId get_Instanz_Id() const
+   ppsInstanz::ID get_Instanz_Id() const
    {  return get_value()->Id();
    }
    std::string get_Instanz_Name() const
    {  return get_value()->Name();
    }
-   void set_History(ppsInstanz::ppsInstId i)
+   void set_History(ppsInstanz::ID i)
    {  set_value(i); }
 };
 #endif

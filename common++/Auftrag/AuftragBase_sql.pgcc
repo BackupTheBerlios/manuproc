@@ -243,8 +243,7 @@ int AuftragBase::tryUpdateEntry(mengen_t bestellt,
      }
     else 
        znr=insertNewEntry(bestellt,lieferdatum,artikel,status,true)  ;
-//std::cout << "Zeile: "<<znr<<'\n';
-//   AufEintragZu(XAEB).AuftragsEntryZuordnung(bestellt,*this,znr);
+//std::cout <<"Zuordnung anlegen: "<< altAEB<<"\t==>\t"<<AufEintragBase(*this,znr)<<"\t"<<bestellt<<'\n';;
    AufEintragZu(altAEB).Neu(AufEintragBase(*this,znr),bestellt);
   }
  else

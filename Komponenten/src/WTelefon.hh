@@ -7,7 +7,7 @@
 #include <gtk--/frame.h>
 #include <SimpleTree.hh>
 #include <Kunde/Telefon.h>
- 
+#include <list> 
 
 class WTelefon : public Gtk::Table
 {

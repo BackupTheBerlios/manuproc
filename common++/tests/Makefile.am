@@ -1,4 +1,6 @@
-# $Id: Makefile.am,v 1.18 2002/05/03 10:22:54 christof Exp $
+# $Id: Makefile.am,v 1.19 2002/05/03 16:48:10 christof Exp $
+
+SUBDIRS=auftragstest
 
 CXXFLAGS=@CXXFLAGS@ @COMMONXX_INCLUDES@
 LDFLAGS=@LDFLAGS@  @COMMONXX_LDFLAGS@

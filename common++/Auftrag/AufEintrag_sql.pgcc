@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.8 2002/05/03 10:22:54 christof Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.9 2002/05/03 16:48:10 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -118,6 +118,7 @@ void AufEintrag::setInstanzen(AufStatVal newstatus,Petig::Datum lieferdate,menge
 //std::cout << menge<<'+'<<M<<'='<<menge+M<<'\n';
       AufEintragBase AEBZ(AE,znr); 
       mengen_t mt=AEBZ.updateStkDiff__(M);
+//cout <<*this<<'\t'<< AEBZ<<'\t'<<mt<<' '<<M<<'\n';
       assert(mt==M);
       if(Instanz()==ppsInstanzID::Kundenauftraege) 
             AufEintragZu(*this).setKindZnr(AEBZ);
@@ -125,6 +126,7 @@ void AufEintrag::setInstanzen(AufStatVal newstatus,Petig::Datum lieferdate,menge
          {
 //std::cout<<"Reduce:   "<<Id()<<' '<<ZNr()<<'\t'<<AE.Id()<<' '<<AE.ZNr()<<'\t'<<i->Menge<<'\n';
             mengen_t mt=AufEintragZu(*this).setMengeDiff__(AE,-M);
+//cout <<*this<<'\t'<< AE<<'\t'<<mt<<' '<<-M<<'\n';
             assert(mt==-M);
 //std::cout<<"Increase: "<<Id()<<' '<<myznr<<'\t'<<AE.Id()<<' '<<znr<<'\n';
             try{ mengen_t mt=AufEintragZu(class AufEintragBase(*this,myznr)).setMengeDiff__(AEBZ,M);
@@ -135,7 +137,8 @@ void AufEintrag::setInstanzen(AufStatVal newstatus,Petig::Datum lieferdate,menge
 //cout << AE.Instanz()->Id()<<' '<<AE.Id()<<' '<<AE.ZNr()<<'\t';
 //   AE.updateStk(AE.getStueck()-M,false); // macht auch das Lager
    mengen_t mt=AE.updateStkDiff__(-M,false); // macht auch das Lager
-   assert(mt==-M);
+//cout <<*this<<'\t'<< AE<<'\t'<<mt<<' '<<-M<<'\n';
+//   assert(mt==-M);
    if(auftragstatus==UNCOMMITED && newstatus==OPEN ) 
       AE.setStatusAuftragBase(newstatus);
 

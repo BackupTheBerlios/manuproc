@@ -18,10 +18,10 @@ void Optionmenu_Instanz::fuelle_menu(emode mode,bool nokunde)
   for (std::vector<cH_ppsInstanz>::const_iterator i=VI.begin();i!=VI.end();++i)
    {
     if     (mode== nurLager           && !(*i)->LagerInstanz() ) continue;
-    else if(mode==ohneLagerZulieferer && (*i)->BestellungFuer()!=ppsInstanz::None ) continue;
+    else if(mode==ohneLagerZulieferer && (*i)->BestellungFuer()!=ppsInstanzID::None ) continue;
     else if(mode==nurLieferanten      && !(*i)->Lieferant() ) continue;
     
-    if(nokunde && (*i)->Id()==ppsInstanz::Kundenauftraege ) continue;
+    if(nokunde && (*i)->Id()==ppsInstanzID::Kundenauftraege ) continue;
 
     os << (*i)->Name();
     os.flush((*i)->ref(), &HandleContent::unref);      

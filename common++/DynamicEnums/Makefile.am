@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.4 2002/05/03 10:22:54 christof Exp $
+# $Id: Makefile.am,v 1.5 2002/05/03 16:48:10 christof Exp $
 
 CLEANFILES= *~ 
 

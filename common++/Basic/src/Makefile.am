@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.9 2002/04/19 15:16:36 christof Exp $
+# $Id: Makefile.am,v 1.10 2002/05/03 16:48:10 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -20,11 +20,11 @@ libManuProC_Base_a_SOURCES=Ausgabe_neu.cc Datum.cc IOerror.cc \
 		postgres_conversion.cc Zeitpunkt_new.cc \
 		Zeitpunkt_new_ostr.cc \
 		Zeitpunkt_new_write.cc string0.c \
-		auto_conversion.cc $(DB_SRCES) \
+		auto_conversion.cc \
 		exception.cc itos.cc \
 		time_t_ostr.cc \
-      EntryValueBase.cc \
-      EntryValueIntString.cc EntryValueDatum.cc
+      EntryValueBase.cc Handles.cc \
+      EntryValueIntString.cc EntryValueDatum.cc $(DB_SRCES) 
 
 EXTRA_DIST=dbconnect.pgcc SQLerror_postgres.pgcc Transaction.pgcc \
 	FetchIStream.pgcc
