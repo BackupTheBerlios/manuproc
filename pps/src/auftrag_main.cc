@@ -146,9 +146,11 @@ gpointer user_data)
 {  if (!strncmp(title.c_str(),"Artikel",7) ||
 	!strncmp(title.c_str(),"Breite",6) ||
 	!strncmp(title.c_str(),"Farbe",5) ||
+	!strncmp(title.c_str(),"Meter",5) ||
 	!strncmp(title.c_str(),"Aufmachung",10) ||
 	!strncmp(title.c_str(),"Lieferwoche",11) ||
-	!strncmp(title.c_str(),"offen ",6))
+	!strncmp(title.c_str(),"Letzte Lief",11) ||
+	!strncmp(title.c_str(),"offene",6))
       return "\\tiny "+Gtk2TeX::string2TeX(title);
    else
       return Gtk2TeX::string2TeX(title);
@@ -513,9 +515,14 @@ void auftrag_main::set_column_titles_of_simple_tree()
 
  ct.push_back("L.P.");
  ct.push_back("Ver.");
- ct.push_back("Letze Lieferung");
+ ct.push_back("Letzte Lief.");
  ct.push_back("offene Menge (Rohware)");
  ct.push_back("offene Menge");
+#ifdef PETIG_EXTENSIONS
+ // einige kleine Korrekturen (ich glaube nicht ganz, dass obiges irgendwo stimmt
+ ct[10]="offene Meter";
+ ct[11]="offene Stück";
+#endif
  maintree_s->setTitles(ct);
  maintree_s->set_NewNode(&Data_Node::create);
  int cols=maintree_s->columns().size();
