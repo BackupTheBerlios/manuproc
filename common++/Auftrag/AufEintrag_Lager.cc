@@ -1,4 +1,4 @@
-// $Id: AufEintrag_Lager.cc,v 1.24 2003/09/11 15:25:55 christof Exp $
+// $Id: AufEintrag_Lager.cc,v 1.25 2003/09/11 16:59:23 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -169,12 +169,13 @@ AuftragBase::mengen_t AufEintrag::Auslagern
    assert(Id()==plan_auftrag_id || Id()==ungeplante_id);
 
    if (Id()==plan_auftrag_id)
-   {  // Zuordnung muss Instanz darüber machen 
+   {  // Zuordnung muss Instanz darüber machen (Ausnahme: 0er Pfeil anlegen)
       if (fuer_auftraege) 
       {  abschreiben(menge);
          // wird für AP gebraucht
+         if (menge>0) AufEintragZu(ctx.aeb).Neu(*this,0);
          if (!Instanz()->ProduziertSelbst() && Instanz()->AutomatischEinlagern()
-         	&& Instanz()->LagerInstanz())
+         	&& Instanz()->LagerInstanz() && menge<0)
          {  // war das nur ein unbestellteMengeProduzieren?
             // dann ganz wegnehmen
             AufEintragZu::list_t kinder=AufEintragZu::get_Referenz_list
