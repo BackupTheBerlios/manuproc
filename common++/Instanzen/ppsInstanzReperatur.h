@@ -1,4 +1,4 @@
-// $Id: ppsInstanzReperatur.h,v 1.4 2002/12/13 09:27:21 thoma Exp $
+// $Id: ppsInstanzReperatur.h,v 1.5 2002/12/19 13:57:22 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -58,11 +58,12 @@ class ppsInstanzReparatur : public ppsInstanz
          const  ManuProcEntity<>::ID auftragid,const bool kinder,const e_zumode zumode) const throw(SQLerror);
 
       typedef fixedpoint<ManuProC::Precision::AuftragsMenge> ABmt;
-      bool check_D_ungeplant(const int uid,const bool analyse_only,const AufEintrag &AE,const ABmt &M0sum,const ABmt &Msum) const;
+//      bool check_D_ungeplant(const int uid,const bool analyse_only,const AufEintrag &AE,const ABmt &M0sum,const ABmt &Msum) const;
+      bool check_D_ungeplant(const int uid,const bool analyse_only,const AufEintrag &AE,const std::list<AufEintragZu::st_reflist> &L) const;
       bool check_E_geplant(const int uid,const bool analyse_only,const AufEintrag &AE,const ABmt &Msum) const;
       bool check_F_dispo(const int uid,const bool analyse_only,const AufEintrag &AE,const ABmt &Msum) const;
 
-      void check_D_ungeplantReparatur(const int uid,const AufEintrag &AE,const AuftragBase::mengen_t &menge) const; 
+//      void check_D_ungeplantReparatur(const int uid,const AufEintrag &AE,const AuftragBase::mengen_t &menge) const; 
       void check_F_dispoReparatur(const int uid,const AufEintrag &AE,const AuftragBase::mengen_t &menge) const; 
 
       void Reparatur_Kundenauftrag_AE(const int uid,const AufEintrag &KundeAE,AufEintrag &KindAE,const ABmt &menge) const;
@@ -94,7 +95,12 @@ class ppsInstanzReparatur : public ppsInstanz
       // Zuordnung von Kunden an Bestell-Instanz' entspricht Kundenbestellmenge
       bool ReparaturK_Kundenzuordnung(const int uid,const bool analyse_only) const;
       bool ReparaturKK_KundenKinder(const int uid,const bool analyse_only) const;
-
+      // keine Eltern für Kunden und 2er
+      bool ReparaturG_keine_Eltern(const int uid,const bool analyse_only) const;
+      // ZuordnungsReparatur
+      bool ReparaturST_AuftragsZuordnung(const int uid,const bool analyse_only,const bool kinder) const;
+      // Lager-Zuordnungen
+      bool ReparaturH_LagerZuordnungen(const int uid,const bool analyse_only) const;
 };
 
 #endif

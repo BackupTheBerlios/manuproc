@@ -1,4 +1,4 @@
-// $Id: AufEintragZuMengenAenderung.h,v 1.2 2002/12/17 13:55:32 thoma Exp $
+// $Id: AufEintragZuMengenAenderung.h,v 1.3 2002/12/19 13:57:21 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -38,5 +38,13 @@ namespace AufEintragZuMengenAenderung {
 
   void Change_Zuordnung_to_Children(const bool child,const AufEintrag &AE,
                         const AuftragBase::mengen_t &menge) throw(SQLerror);
+
+  // beim 'planen' eines AufEintrags
+  void move_zuordnung_zu_geplantem(const int uid,
+                                   AufEintrag &AE0er, 
+                                   AufEintrag &AE1er,
+                                   AuftragBase::mengen_t menge,
+                                   ManuProC::Auftrag::Action reason) throw(SQLerror);
+
 }
 

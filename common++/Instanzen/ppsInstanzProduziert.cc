@@ -1,4 +1,4 @@
-// $Id: ppsInstanzProduziert.cc,v 1.15 2002/12/17 22:40:14 jacek Exp $
+// $Id: ppsInstanzProduziert.cc,v 1.16 2002/12/19 13:57:22 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -275,7 +275,12 @@ void ManuProC::st_produziert::Reduce_DispoEltern(const AufEintragBase &aeb,Auftr
   std::list<AufEintragZu::st_reflist> L=AufEintragZu(aeb).get_Referenz_list(aeb,false);
   for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
    {
-     if (i->AEB.Id()==AuftragBase::ungeplante_id)    menge-=i->Menge;
+     if (i->AEB.Id()==AuftragBase::ungeplante_id)
+      {  
+         AuftragBase::mengen_t M=AuftragBase::min(i->Menge,menge);
+         menge-=i->Menge;
+         if(M>0) AufEintragZu(i->AEB).setMengeDiff__(aeb,-M);
+      }
    }
   for(std::list<AufEintragZu::st_reflist>::const_iterator i=L.begin();i!=L.end();++i)
    {

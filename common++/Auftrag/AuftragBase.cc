@@ -1,4 +1,4 @@
-// $Id: AuftragBase.cc,v 1.16 2002/12/10 12:28:50 thoma Exp $
+// $Id: AuftragBase.cc,v 1.17 2002/12/19 13:57:22 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -80,19 +80,14 @@ void AuftragBase::InstanzAuftraegeAnlegen(const AufEintrag& AE,mengen_t menge,in
       "Status=",AE.getEntryStatus(),"LieferDatum=",AE.getLieferdatum(),
       "Menge=",menge);
    ArtikelBaum AB(AE.Artikel());
-//cout << cH_ArtikelBezeichnung(artikel)->Bezeichnung()<<'\n';
    for(ArtikelBaum::const_iterator i=AB.begin();i!=AB.end();++i)
     {
-//cout << '\t'<<cH_ArtikelBezeichnung(i->rohartikel)->Bezeichnung()<<'\n';
       AuftragBase neuAuftrag(ppsInstanz::getBestellInstanz(i->rohartikel),ungeplante_id);
       // Instanzen, die selber Produzieren dürfen bei einer automatischen
       // Auftragsplanung (AuftragID=plan_auftrag_id=1)
       // NICHT erhöt werden.
       if(neuAuftrag.Instanz()->ProduziertSelbst() && automatisch_geplant)
          continue;
-
-//cout << neuAuftrag.Instanz()->Name()<<'\t'
-//<<neuAuftrag.Instanz()->ProduziertSelbst()<<'\t'<<automatisch_geplant<<'\n';
 
       Petig::Datum newdate=AE.getLieferdatum()-Instanz()->ProduktionsDauer();
       st_tryUpdateEntry st(automatisch_geplant);

@@ -102,12 +102,12 @@ int auftragstests(e_mode mode)
 
       // Spezifischen Lieferschein schreiben
       Lieferschein liefs(EINKAUF,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
       liefs.push_back(PAE,ARTIKEL_GRANULAT_GRUEN,1,200,0);
 //unspezifisch   liefs.push_back(ARTIKEL_GRANULAT_GRUEN,1,200,0);
       erfolgreich=C.teste(Check::Menge|Check::Lieferschein,"_LS_teillieferung",mit_reparatur_programm);
       if(!erfolgreich) { cout << "Lieferschein (mit AEB, Granulat) anlegen\n\n"; return  fehler();}
       }
-
 
       {// Planen des Einkaufs (Metall)
       Auftrag PA=Auftrag(Auftrag::Anlegen(EINKAUF),ManuProC::DefaultValues::EigeneKundenId);
@@ -125,7 +125,6 @@ int auftragstests(e_mode mode)
       erfolgreich=C.teste(Check::Lieferschein|Check::Menge,"_LS_volllieferung",mit_reparatur_programm);
       if(!erfolgreich) { cout << "Lieferschein (unbestimmt, Metall) anlegen\n\n"; return  fehler();}
       }
-
 
       {// Planen der Gießerei (ARTIKEL_GRIFF_ROT)
       Auftrag PA=Auftrag(Auftrag::Anlegen(GIESSEREI),ManuProC::DefaultValues::EigeneKundenId);
@@ -188,6 +187,7 @@ int auftragstests(e_mode mode)
       if(!erfolgreich) {cout << "Erhöhen der Auftragmenge \n\n";
                         return fehler();}
 
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
 
       // Menge des Auftrags erniedrigen (Rohwarenlager Menge reicht jetzt aus)
       auftrag.kunden_bestellmenge_aendern(AEB,100);
@@ -195,7 +195,6 @@ int auftragstests(e_mode mode)
       if(!erfolgreich) { cout << "Reduzieren der Auftragmenge unter Rohwarenlagerbestand \n\n";
                return fehler();}
 
-//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
       AE.updateLieferdatum(NEWDATUM,UID);
       erfolgreich=C.teste(Check::Menge,"_datumsaenderung",mit_reparatur_programm);
       if(!erfolgreich) { cout << "Datumsänderung \n\n";
@@ -221,25 +220,30 @@ int auftragstests(e_mode mode)
     case Plantest:
      {
       #ifdef PETIG_TEST
+cout << "A\n";
        {
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::_Garn__Einkauf),Kunde::default_id);
        int kupfer_znr=2;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::_Garn__Einkauf,AuftragBase::ungeplante_id,kupfer_znr));
-//ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
        AEP.Planen(UID,100,PA,PLANDATUM5);
        erfolgreich=C.teste(Check::Menge,"_planen_kupfer",mit_reparatur_programm);
        if(!erfolgreich) { cout << "Planen des Kupfereinkaufs \n\n";
                return fehler();}       
        }
+cout << "B\n";
+
        {
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Faerberei),Kunde::default_id);
        int faerberei_znr=1;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Faerberei,AuftragBase::ungeplante_id,faerberei_znr));
+ManuProC::Tracer::Enable(AuftragBase::trace_channel);
        AEP.Planen(UID,7000,PA,PLANDATUM4);
        erfolgreich=C.teste(Check::Menge,"_planen_faerberei_teil",mit_reparatur_programm);
        if(!erfolgreich) { cout << "Teil-Planen der Färberei \n\n";
                return fehler();}
        }
+cout << "C\n";
+exit(0);
        {
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Weberei),Kunde::default_id);
        int weberei_znr=1;
@@ -477,7 +481,8 @@ std::cout << dummystring<<'\n';
         erfolgreich=C.teste(Check::Menge,"_rep_lieferschein",mit_reparatur_programm);
         if(!erfolgreich) { cout << "Reparatur-Lieferschein anlegen\n\n"; return  fehler();}
        }                  
-       
+
+#warning: TODO: 'adjust_store KK' 
        cout << "Reparatur Kunden Zuordnungen erfolgreich\n";
        break;
       #endif
@@ -844,7 +849,7 @@ std::cout << "D13: "<<dummystring<<'\n';
        erfolgreich=C.teste(Check::Menge|Check::Lieferschein,"_LSZP",mit_reparatur_programm);
        if(!erfolgreich) { cout << "Lieferschein im Einkauf mit Teillieferung (Mabella) \n\n"; return fehler();}
       }
-exit(0);
+
       {// Einkauf liefert Vollmenge
        Lieferschein liefs(EINKAUF,cH_Kunde(KUNDE2));
 ManuProC::Tracer::Enable(~AuftragBase::trace_channel);

@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.20 2002/11/25 15:21:52 thoma Exp $ */
+/* $Id: AufEintrag.h,v 1.21 2002/12/19 13:57:21 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -117,10 +117,9 @@ public:
  void updateDispoENr(int dinr) throw(SQLerror);
  mengen_t updateStkDiff__(int uid,mengen_t menge,bool instanzen,ManuProC::Auftrag::Action reason=ManuProC::Auftrag::r_None) throw(SQLerror);
 private:
-// void move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,bool reduce_old) throw(std::exception);
  void move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,ManuProC::Auftrag::Action reason) throw(std::exception);
  void updateStkDiffInstanz__(int uid,mengen_t menge,ManuProC::Auftrag::Action reason) throw(SQLerror);
- void move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,int uid,ManuProC::Auftrag::Action reason);
+ void move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,const ArtikelBase artikel,int uid,ManuProC::Auftrag::Action reason);
 
 public:
  void updateLieferdatum(const ManuProC::Datum &ld,int uid) throw(SQLerror);	

@@ -1,4 +1,4 @@
-// $Id: AufEintragZu_sql.pgcc,v 1.14 2002/12/17 13:55:32 thoma Exp $
+// $Id: AufEintragZu_sql.pgcc,v 1.15 2002/12/19 13:57:21 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -202,7 +202,7 @@ void AufEintragZu::Neu(const AufEintragBase& neuAEB,
  exec sql end declare section;
  if(oldZnr!=0) db_aznr=oldZnr;
  try{ mengen_t mt=setMengeDiff__(neuAEB,menge); 
-      assert(menge==mt);
+//      assert(menge==mt);
     }
  catch (SQLerror &e)
  {

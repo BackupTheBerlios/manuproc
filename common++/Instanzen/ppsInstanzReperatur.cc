@@ -104,6 +104,91 @@ cout << "\n";
 }
 
 ////////////////////////////////////////////////////////////////////////////
+/*
+struct st_art_instanz{cH_ppsInstanz instanz; ArtikelBase artikel;
+            st_art_instanz(cH_ppsInstanz i,const ArtikelBase a) : instanz(i),artikel(a) {}
+            st_art_instanz() : instanz(ppsInstanzID::None)  {}
+            bool operator<(const st_art_instanz &b) const
+               {return instanz<b.instanz || (instanz==b.instanz && artikel<b.artikel);}
+            };
+*/
+
+bool ppsInstanzReparatur::ReparaturST_AuftragsZuordnung(const int uid,const bool analyse_only,const bool kinder) const
+{
+  if(KundenInstanz() && !kinder) 
+      return ReparaturG_keine_Eltern(uid,analyse_only);
+
+  SQLFullAuftragSelector sel1er= SQLFullAuftragSelector::sel_Status(Id(),OPEN,AuftragBase::none_id);
+  SelectedFullAufList AL1(sel1er);
+  for(SelectedFullAufList::iterator i=AL1.begin();i!=AL1.end();++i)
+   {
+     std::list<AufEintragZu::st_reflist> L=AufEintragZu(*i).get_Referenz_list(*i,kinder);
+     if(i->Id() == AuftragBase::dispo_auftrag_id && !kinder && !L.empty())
+         return ReparaturG_keine_Eltern(uid,analyse_only);
+
+//     std::map<st_art_instanz,AuftragBase::mengen_t> MArt;
+     std::map<ArtikelBase,AuftragBase::mengen_t> MArt;
+     for(std::list<AufEintragZu::st_reflist>::const_iterator j=L.begin();j!=L.end();++j)
+      {
+//         MArt[st_art_instanz(j->AEB.Instanz(),j->Art)]+=j->Menge;
+        MArt[j->Art]+=j->Menge;
+      }
+     
+//     for(std::map<st_art_instanz,AuftragBase::mengen_t>::const_iterator j=MArt.begin();j!=MArt.end();++j)
+     for(std::map<ArtikelBase,AuftragBase::mengen_t>::const_iterator j=MArt.begin();j!=MArt.end();++j)
+      {
+        ArtikelBaum::faktor_t F=ArtikelBaum(i->Artikel()).Faktor(j->first);
+//cout << i->getRestStk()<<'*'<<F<<'='<<i->getRestStk()*F<<'\n';
+        if     ( kinder && j->second != i->getRestStk()*F)
+         { if(analyse_only) {analyse("Zumme der Zuordnung an Kinder != getRestStk()",*i,j->second, i->getRestStk()*F);return false;}
+           else assert(!"nicht implementiert");
+         }
+        else if(!kinder && j->second != i->getStueck())         
+         { if(analyse_only) {analyse("Zumme der Zuordnung von Eltern != getStueck()",*i,j->second, i->getRestStk());return false;}
+           else assert(!"nicht implementiert");
+         }
+      }
+   }
+ return true;
+}
+
+////////////////////////////////////////////////////////////////////////////
+bool ppsInstanzReparatur::ReparaturH_LagerZuordnungen(const int uid,const bool analyse_only) const
+{
+  assert(LagerInstanz());
+  // 1er haben keien Kinder
+  SQLFullAuftragSelector psel=SQLFullAuftragSelector::sel_Status(Id(),OPEN,AuftragBase::plan_auftrag_id);
+  SelectedFullAufList K(psel);
+  for(SelectedFullAufList::const_iterator i = K.begin();i!=K.end(); ++i)
+   {
+     std::list<AufEintragZu::st_reflist> L=AufEintragZu(*i).get_Referenz_list(*i,true);
+     if(!L.empty())
+      { if(analyse_only) {analyse("Analyse: 1er im Lager dürfen keine Kinder haben\n",*i); return false;}
+        else assert(!"nicht implementiert");
+      }
+   } 
+  // 2er haben keine Kinder und keine Eltern
+  SQLFullAuftragSelector psel2=SQLFullAuftragSelector::sel_Status(Id(),OPEN,AuftragBase::dispo_auftrag_id);
+  SelectedFullAufList K2(psel);
+  for(SelectedFullAufList::const_iterator i = K2.begin();i!=K2.end(); ++i)
+   {
+     std::list<AufEintragZu::st_reflist> L=AufEintragZu(*i).get_Referenz_list(*i,true);
+     if(!L.empty())
+      { if(analyse_only) {analyse("Analyse: 2er im Lager dürfen keine Kinder haben\n",*i); return false;}
+        else assert(!"nicht implementiert");
+      }
+     std::list<AufEintragZu::st_reflist> L2=AufEintragZu(*i).get_Referenz_list(*i,false);
+     if(!L.empty())
+      { if(analyse_only) {analyse("Analyse: 2er im Lager dürfen keine Eltern haben\n",*i); return false;}
+        else assert(!"nicht implementiert");
+      }
+   } 
+  return true;
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////
 
 bool ppsInstanzReparatur::ReparaturK_Kundenzuordnung(const int uid,const bool analyse_only) const
 {
@@ -128,27 +213,32 @@ bool ppsInstanzReparatur::ReparaturK_Kundenzuordnung(const int uid,const bool an
           if(j->Menge!=i->getRestStk()) {
             alles_ok=false;
             if(analyse_only) analyse("Menge des Kundenauftrags und der Zuordnung ans Kind stimmt nicht überein",*i,i->getStueck(),j->Menge);
-            else MengenReparatur(uid,*i,AE,j->Menge);
+            else assert(!"nicht implementiert");
+//            else MengenReparatur(uid,*i,AE,j->Menge);
            }
           if(AE.Artikel()!=i->Artikel()){
             alles_ok=false;
             if(analyse_only) analyse("Artikel des Kundenauftrags und dem Kind stimmt nicht überein",*i,i->Artikel(),AE.Artikel());
-            else Reparatur_Kundenauftrag_AE(uid,*i,AE,j->Menge);
+            else assert(!"nicht implementiert");
+//            else Reparatur_Kundenauftrag_AE(uid,*i,AE,j->Menge);
            }
           if(AE.Instanz()!=I){
             alles_ok=false;
             if(analyse_only) analyse("Instanzen des Kundenauftrags und des Kindes stimmt nicht überein",*i,I,AE.Instanz());
-            else Reparatur_Kundenauftrag_AE(uid,*i,AE,j->Menge);
+            else assert(!"nicht implementiert");
+//            else Reparatur_Kundenauftrag_AE(uid,*i,AE,j->Menge);
            }
           if(AE.getLieferdatum()!=i->getLieferdatum()){
             alles_ok=false;
             if(analyse_only) analyse("Datum des Kundenauftrags und des Kindes stimmt nicht überein",*i,i->getLieferdatum().to_iso(),AE.getLieferdatum().to_iso());
-            else Reparatur_Kundenauftrag_AE(uid,*i,AE,j->Menge);
+            else assert(!"nicht implementiert");
+//            else Reparatur_Kundenauftrag_AE(uid,*i,AE,j->Menge);
            }
          } catch(AufEintrag::NoAEB_Error &e) 
            {  
             if(analyse_only) analyse("Kundenauftrag-Zuordnung, zeigt ins nichts\n",*i,j->AEB,j->Menge);
-            else  Reparatur_Kundenauftrag_AEB(uid,*i,j->AEB,j->Menge);
+            else assert(!"nicht implementiert");
+//            else  Reparatur_Kundenauftrag_AEB(uid,*i,j->AEB,j->Menge);
            }
         }      
     }
@@ -222,9 +312,9 @@ bool ppsInstanzReparatur::Reparatur_Zuordnungen(const int uid,const bool analyse
       AuftragBase::mengen_t Msum=0, M0sum=0;
       std::list<AufEintragZu::st_reflist> L;
       switch (zumode) {
-         case Dungeplant: { L=AufEintragZu(*i).get_Referenz_list_ungeplant(kinder);
-                              std::list<AufEintragZu::st_reflist> L2=AufEintragZu(*i).get_Referenz_list_dispo(kinder);
-                              L.splice(L.end(),L2);
+         case Dungeplant: { L=AufEintragZu(*i).get_Referenz_list_dispo(kinder);
+//                            std::list<AufEintragZu::st_reflist> L2=AufEintragZu(*i).get_Referenz_list_dispo(kinder);
+//                              L.splice(L.end(),L2);
                               break;}
          case Egeplant: {  L=AufEintragZu(*i).get_Referenz_list_geplant(kinder); 
                            if(PlanungsInstanz() && L.empty())
@@ -240,7 +330,7 @@ bool ppsInstanzReparatur::Reparatur_Zuordnungen(const int uid,const bool analyse
 //cout << *i<<'\t'<<j->AEB<<'\t'<<j->Menge<<'\t'<<Msum<<'\n';
         }
       switch (zumode) {
-         case Dungeplant: alles_ok=check_D_ungeplant(uid,analyse_only,*i,M0sum,Msum+M0sum); break;
+         case Dungeplant: alles_ok=check_D_ungeplant(uid,analyse_only,*i,L); break;
          case Egeplant:   alles_ok=check_E_geplant(uid,analyse_only,*i,Msum+M0sum); break;   
          case Fdispo:     alles_ok=check_F_dispo(uid,analyse_only,*i,Msum+M0sum);break;
        }
@@ -248,12 +338,28 @@ bool ppsInstanzReparatur::Reparatur_Zuordnungen(const int uid,const bool analyse
  return alles_ok;
 } 
 
+bool ppsInstanzReparatur::check_D_ungeplant(const int uid,const bool analyse_only,const AufEintrag &AE,const std::list<AufEintragZu::st_reflist> &L) const
+{
+  int count=0;
+  for(std::list<AufEintragZu::st_reflist>::const_iterator j=L.begin();j!=L.end();++j)
+      if(j->AEB.Id()==AuftragBase::ungeplante_id) ++count;
+  if(!count) return true;
+  if(analyse_only) { 
+       analyse("Zuordung von 0er an 1|20000er darf es in einer Instanz nicht geben",AE);
+       return false; }
+  else assert(!"nicht implementiert\n");  
+  return true;
+}
+
+
+/*
 bool ppsInstanzReparatur::check_D_ungeplant(const int uid,const bool analyse_only,const AufEintrag &AE,const ABmt &M0sum,const ABmt &Msum) const
 {
   if(AE.getGeliefert() <= M0sum) 
     { bool k=check_E_geplant(uid,analyse_only,AE,Msum);
       if(analyse_only) return k;
-      if(!k) check_D_ungeplantReparatur(uid,AE,Msum);
+      if(!k) assert(!"nicht implementiert");
+//      if(!k) check_D_ungeplantReparatur(uid,AE,Msum);
     }
   else if(Msum>AE.getStueck())
    { 
@@ -266,6 +372,8 @@ bool ppsInstanzReparatur::check_D_ungeplant(const int uid,const bool analyse_onl
   return true;
 }
 
+*/
+/*
 void ppsInstanzReparatur::check_D_ungeplantReparatur(const int uid,const AufEintrag &AE,const AuftragBase::mengen_t &menge) const
 {
   AuftragBase::mengen_t DiffMenge=AE.getStueck()-menge;
@@ -296,7 +404,7 @@ void ppsInstanzReparatur::check_D_ungeplantReparatur(const int uid,const AufEint
      if(!DiffMenge) return;
    } 
 }
-
+*/
 
 bool ppsInstanzReparatur::check_E_geplant(const int uid,const bool analyse_only,const AufEintrag &AE,const ABmt &Msum) const
 {
@@ -306,7 +414,8 @@ bool ppsInstanzReparatur::check_E_geplant(const int uid,const bool analyse_only,
      if(analyse_only || AE.Id()!=AuftragBase::dispo_auftrag_id) {
         std::cout << "Analyse: Zuord.-Summen ("<<Msum<<") stimmen nicht ("<<AE.getStueck()<<") für "<<AE<<'\n';
         return false; }
-     else AE.updateStkDiffBase__(uid,Msum-AE.getStueck());
+     else assert(!"nicht implementiert\n");  
+//     else AE.updateStkDiffBase__(uid,Msum-AE.getStueck());
    }
  return true;
 }
@@ -317,7 +426,8 @@ bool ppsInstanzReparatur::check_F_dispo(const int uid,const bool analyse_only,co
    { 
      if(analyse_only) { std::cout << "Analyse: Zuord.-Summen ("<<Msum<<") sind größer als ("<<AE.getRestStk()<<") für "<<AE<<'\n';
                         return false; }
-     else check_F_dispoReparatur(uid,AE,Msum);
+     else assert(!"nicht implementiert\n");  
+//     else check_F_dispoReparatur(uid,AE,Msum);
    }
   return true;
 }
@@ -373,9 +483,10 @@ std::cout << "RepLan: "<<*i<<'\t'<<zielauftrag<<"Menge: "<<M<<'\n';
            std::cout << "Analyse: Planen von "<<*i<<"  nach  "<<zielauftrag<<"\tMenge: "<<M<<'\n';
          else
           {
-            int znr=i->Planen(uid,M,zielauftrag,i->getLieferdatum(),ManuProC::Auftrag::r_Reparatur);
-            j->updateStkDiffBase__(uid,-M);
-            if(!LagerInstanz()) AufEintragZu(*j).Neu(AufEintragBase(zielauftrag,znr),0);
+      assert(!"nicht implementiert\n");  
+//            int znr=i->Planen(uid,M,zielauftrag,i->getLieferdatum(),ManuProC::Auftrag::r_Reparatur);
+//            j->updateStkDiffBase__(uid,-M);
+//            if(!LagerInstanz()) AufEintragZu(*j).Neu(AufEintragBase(zielauftrag,znr),0);
           }
          menge0er-=M;
          if(menge0er<=0) break;
@@ -493,7 +604,7 @@ void ppsInstanzReparatur::force_eigene_KundenId(const bool analyse_only) const t
 
 void ppsInstanzReparatur::ReparaturLager(const int uid,const bool analyse_only) const throw(SQLerror)
 {
-ManuProC::Tracer::Enable(AuftragBase::trace_channel);
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,Name(),Id());
   assert(LagerInstanz());
   std::vector<LagerInhalt> LI=getLagerInhalt(); 
@@ -530,8 +641,9 @@ void ppsInstanzReparatur::vormerkungen_subrahieren(int uid,const  std::vector<La
               std::cout << "Analyse: Mengenupdate von "<<*j<<" Menge:"<<menge<<'\n';
             else
              {
-               j->updateStkDiffBase__(uid,menge);
-               AufEintragZuMengenAenderung::increase_parents__reduce_assingments(uid,*j,-menge);
+      assert(!"nicht implementiert\n");  
+//               j->updateStkDiffBase__(uid,menge);
+//               AufEintragZuMengenAenderung::increase_parents__reduce_assingments(uid,*j,-menge);
              }
             menge=0;
            }
@@ -550,7 +662,8 @@ void ppsInstanzReparatur::vormerkungen_subrahieren(int uid,const  std::vector<La
             if(analyse_only)
               std::cout << "Analyse: Mengenupdate von "<<*j<<" Menge:"<<-j->getStueck()<<'\n';
             else
-              j->updateStkDiffBase__(uid,-j->getStueck());
+      assert(!"nicht implementiert\n");  
+//              j->updateStkDiffBase__(uid,-j->getStueck());
           }
       }
      if(menge!=0 && !set_dispo_to_zero) 
@@ -558,7 +671,8 @@ void ppsInstanzReparatur::vormerkungen_subrahieren(int uid,const  std::vector<La
         if(analyse_only)
              std::cout << "Analyse: DispoAufträge_anlegen: "<<Name()<<'\t'<<i->Artikel()<<"\tMenge:"<<menge<<'\n';
         else
-            DispoAuftraege_anlegen(uid,i->Artikel(),menge);
+      assert(!"nicht implementiert\n");  
+//            DispoAuftraege_anlegen(uid,i->Artikel(),menge);
       }
    }
 }   
@@ -592,7 +706,29 @@ std::vector<LagerInhalt> ppsInstanzReparatur::getLagerInhalt() const
   LagerBase::LagerInhaltSum(LI);
   return LI;
 }
+//////////////////////////////////////////////////////////////////////////////////
+bool ppsInstanzReparatur::ReparaturG_keine_Eltern(const int uid,const bool analyse_only) const
+{
+   AuftragBase::ID auftragid;
+   if(KundenInstanz()) auftragid=AuftragBase::plan_auftrag_id;
+   else auftragid=AuftragBase::dispo_auftrag_id;
 
+   SQLFullAuftragSelector sel1er= SQLFullAuftragSelector::sel_Status(Id(),OPEN,auftragid);
+   SelectedFullAufList AL1(sel1er);
+   for(SelectedFullAufList::iterator i=AL1.begin();i!=AL1.end();++i)
+    {
+      std::list<AufEintragZu::st_reflist> L=AufEintragZu(*i).get_Referenz_list(*i);
+      if(!L.empty())
+       {
+         if(analyse_only) {analyse("Analyse: Kundenauftrag und 2er dürfen keine Eltern haben.\n",*i);
+                        return false; }
+         else assert(!"never get here\n");
+       }
+    }  
+  return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 
 void ppsInstanzReparatur::analyse(const std::string &s,const AufEintrag &AE,const std::string &x,const std::string &y) const
 {

@@ -1,4 +1,4 @@
-// $Id: AufEintrag_sql.pgcc,v 1.35 2002/12/17 13:55:32 thoma Exp $
+// $Id: AufEintrag_sql.pgcc,v 1.36 2002/12/19 13:57:22 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -248,7 +248,8 @@ AuftragBase::mengen_t AufEintrag::updateStkDiff__(int uid,mengen_t menge,bool in
 
 //cout << "M;"<<menge<<'\t'<<mt<<'\n';
 
-   if(instanzen || reason==ManuProC::Auftrag::r_Reparatur)
+//   if(instanzen || reason==ManuProC::Auftrag::r_Reparatur)
+   if(!Instanz()->LagerInstanz())
       updateStkDiffInstanz__(uid,mt,reason);
    bestellt+=menge;
 
@@ -300,7 +301,8 @@ void AufEintrag::updateStkDiffInstanz__(int uid,mengen_t oldmenge,ManuProC::Auft
       {
         AuftragBase::mengen_t restmenge=mt-menge;
         assert(restmenge>AuftragBase::mengen_t(0));
-        AE.move_menge_to_dispo_zuordnung_or_lager(restmenge,uid,reason);
+        move_menge_to_dispo_zuordnung_or_lager(restmenge,AE.Artikel(),uid,reason);
+//        AE.move_menge_to_dispo_zuordnung_or_lager(restmenge,uid,reason);
       }
     }
 

@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.24 2002/12/13 09:27:21 thoma Exp $
+// $Id: adjust_store.cc,v 1.25 2002/12/19 13:57:22 thoma Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -41,11 +41,15 @@ void usage(const std::string &s)
            "\t   Menge null ist.\n"
            "\tC: Es wird sichergestellt, daﬂ nur entweder 0er- oder 2er-Auftr‰ge\n"
            "\t   (pro Instanz,Artikel,Lieferdatum) existieren.\n"
-           "\tD: Summe der Zuordnungen VON 0er-Auftr‰gen AN 1|20000 == 1|20000.getStueck().\n"
+           "\tD: Zuordnungen VON 0er-Auftr‰gen AN 1|20000 existieren auf EINER Instanz NICHT.\n"
            "\tE: Summe der Zuordnungen VON 2er-Auftr‰gen AN 1|20000 == 2.getStueck().\n"
            "\tF: Summe der Zuordnungen VON 2er-Auftr‰gen AN 1|20000 <= 1|20000.getRestStueck().\n"
+           "\tG: Kundenauftr‰ge und 2er haben keine Eltern.\n"
+           "\tH: LagerInstanzen: 1er haben keine Kinder, 2er haben weder Kinder noch Eltern\n"
            "\tK: Zuordnungen VON Kundenauftr‰gen: ZuordnungsMENGE,AuftragsINSTANZ,\n"
            "\t                                    AuftragsARTIKEL.\n"
+           "\tS: Zuordnungen AN einen Auftrag (von den Eltern) testen\n"
+           "\tT: Zuordnungen VON einen Auftrag (an die Kinder) testen\n"
            "\tKK:Kinder der Kundenauftr‰ge an die noch benˆtigte Menge anpassen\n";
  std::cerr << "USAGE:  ";
  std::cerr << s <<" [-i<instanz>|-I]  -a<aktion> [-d<database> -h<dbhost> -y] \n"
@@ -69,7 +73,11 @@ bool check_for(const std::string &pname,cH_ppsInstanz I,const std::string &aktio
     else if(aktion=="D" &&!I->KundenInstanz()) alles_ok=RI.ReparaturD_0_ZuSumme_1(getuid(),analyse_only);
     else if(aktion=="E" &&!I->KundenInstanz()) alles_ok=RI.ReparaturE_2_ZuSumme_1(getuid(),analyse_only);
     else if(aktion=="F" &&!I->KundenInstanz()) alles_ok=RI.ReparaturF_2_ZuSumme_1Rest(getuid(),analyse_only);
+    else if(aktion=="G")                       alles_ok=RI.ReparaturG_keine_Eltern(getuid(),analyse_only);
+    else if(aktion=="H" && I->LagerInstanz())  alles_ok=RI.ReparaturH_LagerZuordnungen(getuid(),analyse_only);
     else if(aktion=="K" && I->KundenInstanz()) alles_ok=RI.ReparaturK_Kundenzuordnung(getuid(),analyse_only);
+    else if(aktion=="S")                       alles_ok=RI.ReparaturST_AuftragsZuordnung(getuid(),analyse_only,false);
+    else if(aktion=="T")                       alles_ok=RI.ReparaturST_AuftragsZuordnung(getuid(),analyse_only,true);
     else if(aktion=="KK"&& I->KundenInstanz()) alles_ok=RI.ReparaturKK_KundenKinder(getuid(),analyse_only);
     else usage(pname);
    return alles_ok;

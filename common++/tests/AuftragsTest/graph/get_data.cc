@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.33 2002/12/17 13:55:33 thoma Exp $
+// $Id: get_data.cc,v 1.34 2002/12/19 13:57:22 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -288,8 +288,10 @@ std::vector<graph_data_node::st_files> graph_data_node::Pfiles()
   vec_files.push_back(st_files("mit_lager_open"));  
   vec_files.push_back(st_files("planen_kupfer","K"));  
   vec_files.push_back(st_files("planen_faerberei_teil","F"));  
+/*
   vec_files.push_back(st_files("planen_webereiP","P"));  
   vec_files.push_back(st_files("planen_einkauf_lieferschein","L"));  
+*/
   return vec_files;
 }
 
@@ -302,10 +304,8 @@ std::vector<graph_data_node::st_files> graph_data_node::Sfiles()
   vec_files.push_back(st_files("split_rohwarenlager_raus","-100"));  
   vec_files.push_back(st_files("split_reparatur","R"));  
   vec_files.push_back(st_files("split_reparatur_bandlager","RB"));  
-/*
   vec_files.push_back(st_files("split_reparatur_bandlager_minus","RBM"));  
-  vec_files.push_back(st_files("split_reparatur_garnlager_minus","RGM"));  
-*/
+//  vec_files.push_back(st_files("split_reparatur_garnlager_minus","RGM"));  
   return vec_files;
 }
 

@@ -1,4 +1,4 @@
-// $Id: AufEintragZuMengenAenderung.cc,v 1.4 2002/12/17 13:55:32 thoma Exp $
+// $Id: AufEintragZuMengenAenderung.cc,v 1.5 2002/12/19 13:57:21 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -76,8 +76,35 @@ void AufEintragZuMengenAenderung::Change_Zuordnung_to_Children(const bool child,
      if (reduce) M=-AuftragBase::min(i->Menge,Me*F);
      else        M=Me*F;
      IM[i->AEB.Instanz()] += F*M.abs();
-cout << "Change_Zuordnung_to_Children: "<<AE<<'\t'<<i->AEB<<'\t'<<M;
+//cout << "Change_Zuordnung_to_Children: "<<AE<<'\t'<<i->AEB<<'\t'<<M;
      AufEintragZu(AE).setMengeDiff__(i->AEB,M);
-cout <<"Faktor="<<F<<'\t'<<M<<'\n';
+//cout <<"Faktor="<<F<<'\t'<<M<<'\n';
+   }
+}
+
+
+void AufEintragZuMengenAenderung::move_zuordnung_zu_geplantem(const int uid,
+         AufEintrag &AE0er, AufEintrag &AE1er,
+         AuftragBase::mengen_t menge,
+         ManuProC::Auftrag::Action reason) throw(SQLerror)
+{
+  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AE0er=",AE0er,"AE1er=",AE1er,"Menge=",menge);
+/*
+  switch (reason) {
+    case ManuProC::Auftrag::r_Anlegen:  AE1er.updateStkDiff__(uid,menge,false,reason);break;
+    case ManuProC::Auftrag::r_Planen:   AE1er.updateStkDiff__(uid,menge,false,reason); 
+                                        AE0er.updateStkDiff__(uid,-menge,false,reason);
+                                        break;
+    default : cout << "Unbekannter Grund: "<<reason<<'\n'; abort();
+   }
+*/
+  std::list<AufEintragZu::st_reflist> L=AufEintragZu(AE0er).get_Referenz_list(AE0er);
+  for(std::list<AufEintragZu::st_reflist>::reverse_iterator i=L.rbegin();i!=L.rend();++i)
+   {
+    AuftragBase::mengen_t M=AuftragBase::min(i->Menge,menge);
+    AufEintragZu(i->AEB).setMengeDiff__(AE0er,-M);
+    AufEintragZu(i->AEB).Neu(AE1er,M);
+    menge-=M;
+    if(!menge) break;
    }
 }

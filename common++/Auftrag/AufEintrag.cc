@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.17 2002/12/10 12:28:50 thoma Exp $
+// $Id: AufEintrag.cc,v 1.18 2002/12/19 13:57:16 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -26,6 +26,7 @@
 #include <Instanzen/ppsInstanzProduziert.h>
 #include <Aux/Trace.h>
 #include <Lager/Lager.h>
+#include <Auftrag/AufEintragZuMengenAenderung.h>
 
 AufEintrag::AufEintrag(const AufEintragBase &aeb, mengen_t _bestellt,
 	ArtikelBase _artikel, const ManuProC::Datum _lieferdatum,
@@ -129,6 +130,7 @@ std::string AufEintrag::Planung() const
 }
 
 
+
 void AufEintrag::move_to(int uid,AufEintragBase AEB,AuftragBase::mengen_t menge,ManuProC::Auftrag::Action reason) throw(std::exception)
 {
   ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,*this,"To=",AEB,"Menge=",menge,"Reason=",reason);
@@ -159,9 +161,26 @@ AufEintragBase AufEintrag::getFirstKundenAuftrag() const
 
 
 
-void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,int uid,ManuProC::Auftrag::Action reason)
+#warning diese Methode kann zu AufEintragBase werden
+void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,const ArtikelBase artikel,int uid,ManuProC::Auftrag::Action reason)
 {
- ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"Menge=",menge,"Reason=",reason);
+ ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,"AE=",*this,"Menge=",menge,"Reason=",reason);
+ std::list<AufEintragZu::st_reflist> K=AufEintragZu(*this).get_Referenz_list_geplant();
+ for (std::list<AufEintragZu::st_reflist>::const_iterator i=K.begin();i!=K.end();++i)
+  {
+   if(artikel!=i->Art) continue;
+   AuftragBase::mengen_t M=AuftragBase::min(i->Menge,menge);
+   AufEintragZu(*this).setMengeDiff__(i->AEB,-M);
+   if(i->AEB.Instanz()->LagerInstanz())
+     {
+      AufEintrag AE(i->AEB);
+      mengen_t mt=i->AEB.updateStkDiffBase__(uid,-M);
+      dispo_auftrag_aendern(uid,AE.Instanz(),AE.Artikel(),M);
+      menge_neu_verplanen(uid,AE.Instanz(),AE.Artikel(),M,reason);
+      assert(mt==mengen_t(-M));
+     }
+  }
+/*
  std::list<AufEintragZu::st_reflist> K=AufEintragZu(*this).get_Referenz_list(*this,true);
  for (std::list<AufEintragZu::st_reflist>::const_iterator i=K.begin();i!=K.end();++i)
   {
@@ -206,6 +225,7 @@ void AufEintrag::move_menge_to_dispo_zuordnung_or_lager(mengen_t menge,int uid,M
     menge-=M;
     if(menge==AuftragBase::mengen_t(0)) return;
   }
+*/
 }
 
 
@@ -234,6 +254,7 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
    Auftrag ZA(zielauftrag);
    ZA.setStatusAuftrag_(OPEN);
 
+/*
    // wenn Lieferdatum rekursiv korrigieren (VOR dem Planen)
    if(datum!=getLieferdatum())
     {
@@ -243,6 +264,7 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
       tr.commit();
       return ae.Planen(uid,menge,zielauftrag,datum,reason,verplanter_aeb,rekursiv);
     }
+*/
 
    int znr=-1,dummy;
    mengen_t mdummy;
@@ -252,14 +274,16 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
       AufEintragBase neuAEB=ZA.push_back(0,datum,Artikel(),entrystatus,uid,false);
       znr=neuAEB.ZNr();
     }
-   tr.commit();
-   if(menge==AuftragBase::mengen_t(0)) return znr;
+   
+   if(menge==AuftragBase::mengen_t(0)) {tr.commit(); return znr;}
    assert(menge>0);
+   // dispo (2er) Auftrag anlegen bei Überplanung
    if(menge-getRestStk() > 0  && !Instanz()->LagerInstanz() )
     {
       mengen_t dispomenge = menge-getRestStk();
       menge=getRestStk();      
       AufEintragBase(zielauftrag,znr).PlanenDispo(uid,Artikel(),dispomenge,datum);
+      // Produktionsplaner (ungetestet)
       if(zielauftrag.Instanz()->GeplantVon()!=ppsInstanzID::None)
        {
          if(reason==ManuProC::Auftrag::r_Planen) 
@@ -268,6 +292,11 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
             int znr=DAB.tryUpdateEntry(dispomenge,datum,Artikel(),OPEN,uid,AufEintragBase());
             AuftragBase ab(Instanz(),ungeplante_id);
             int nzr=ab.tryUpdateEntry(dispomenge,datum,Artikel(),OPEN,uid,AufEintragBase());
+/*
+            AufEintragZuMengenAenderung::move_zuordnung_zu_geplantem(AufEintragBase(DAB,znr),
+                                                                     AufEintragBase(ab,nzr),
+                                                                     dispomenge);       
+*/
             AufEintragZu((class AufEintragBase(DAB,znr))).Neu(AufEintragBase(ab,nzr),dispomenge);
            }
          else
@@ -276,8 +305,22 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
            }
        }
     }
+  AufEintrag AE1er(AufEintragBase(zielauftrag,znr));
+  AufEintragZuMengenAenderung::move_zuordnung_zu_geplantem(uid,*this,
+                                                           AE1er,menge,reason);       
 
-   move_to(uid,AufEintragBase(zielauftrag,znr),menge,reason);
+  if(reason==ManuProC::Auftrag::r_Planen) 
+   {
+     updateStkDiff__(uid,-menge,true,reason);     
+//     BaumAnlegen(*this,uid,true);
+//      updateStkDiff__(uid,-menge,true,reason);
+   }
+
+//  if(reason==ManuProC::Auftrag::r_Anlegen) 
+//  AE1er.updateStkDiff__(uid,menge,false,reason)
+   InstanzAuftraegeAnlegen(AE1er,menge,uid);
+
+//   move_to(uid,AufEintragBase(zielauftrag,znr),menge,reason);
 
    std::list<AufEintragZu::st_reflist> ReferenzAufEintrag =
 			         AufEintragZu(*this).get_Referenz_listFull(false);
@@ -290,7 +333,10 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
     }
 
 
-   if(rekursiv) // Braucht nur das Erfassungs/Reperaturprogramm
+
+   if(rekursiv) // Braucht nur das ALTE Erfassungs/Reperaturprogramm
+      assert(!"never get here");
+/*
     {
      // bei dem gerade geplaneten Auftrag abschreiben:
      AufEintrag(class AufEintragBase(zielauftrag,znr)).
@@ -305,6 +351,7 @@ int AufEintrag::Planen(int uid,mengen_t menge,const AuftragBase &zielauftrag,
         AufEintrag(i->AEB).Planen(uid,M,ab,datum,reason,0,rekursiv);
       }
     }
+*/
  tr.commit();
  return znr;
 }

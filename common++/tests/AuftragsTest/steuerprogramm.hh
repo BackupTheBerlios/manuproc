@@ -1,4 +1,4 @@
-// $Id: steuerprogramm.hh,v 1.28 2002/12/13 09:27:21 thoma Exp $
+// $Id: steuerprogramm.hh,v 1.29 2002/12/19 13:57:22 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -20,7 +20,7 @@
 #ifndef STEUERFILE_H
 #define STEUERFILE_H
 
-#define REPARATUR_PROGRAMM_TESTEN
+//#define REPARATUR_PROGRAMM_TESTEN
 
 //#define MANU_PROC_TEST
 //#define MABELLA_TEST

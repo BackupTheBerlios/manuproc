@@ -1,4 +1,4 @@
-// $Id: Check.cc,v 1.34 2002/12/17 13:55:32 thoma Exp $
+// $Id: Check.cc,v 1.35 2002/12/19 13:57:22 thoma Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -50,7 +50,7 @@ bool Check::teste(was_checken check,const std::string &zusatz, bool mit_reparatu
    }
   
   std::vector<cH_ppsInstanz> VI=cH_ppsInstanz::get_all_instanz();
-  std::string Com="../../Programme/adjust_store -d "+std::string(getenv("PGDATABASE"));
+  std::string Com="../../Programme/adjust_store -y -d "+std::string(getenv("PGDATABASE"));
   for(std::vector<cH_ppsInstanz>::const_iterator i=VI.begin();i!=VI.end();++i)
    {
      if((*i)->KundenInstanz())
@@ -70,13 +70,26 @@ bool Check::teste(was_checken check,const std::string &zusatz, bool mit_reparatu
 
      std::string com2=Com+" -i "+itos((*i)->Id())+" -a C";
      system(com2.c_str());
-     std::string comD=Com+" -i "+itos((*i)->Id())+" -a D -y ";
+     std::string comD=Com+" -i "+itos((*i)->Id())+" -a D  ";
      int d=system(comD.c_str());
-     std::string comE=Com+" -i "+itos((*i)->Id())+" -a E -y ";
+     std::string comE=Com+" -i "+itos((*i)->Id())+" -a E  ";
      int e=system(comE.c_str());
-     std::string comF=Com+" -i "+itos((*i)->Id())+" -a F -y ";
+     std::string comF=Com+" -i "+itos((*i)->Id())+" -a F  ";
      int f=system(comF.c_str());
-     if(d || e || f) {cout <<*i<<'\t'<< d<<e<<f<<'\n'; return false; }
+     std::string comG=Com+" -i "+itos((*i)->Id())+" -a G  ";
+     int g=system(comG.c_str());
+     int h=0;
+     if((*i)->LagerInstanz())
+      {
+        std::string comH=Com+" -i "+itos((*i)->Id())+" -a H  ";
+        h=system(comH.c_str());
+      }
+     std::string comS=Com+" -i "+itos((*i)->Id())+" -a S  ";
+     int s=system(comS.c_str());
+     std::string comT=Com+" -i "+itos((*i)->Id())+" -a T  ";
+     int t=system(comT.c_str());
+     if(d||e||f||g||h||s||t) 
+         {cout <<*i<<'\t'<< d<<e<<f<<g<<h<<s<<t<<'\n'; return false; }
    }  
   dump(check);  
   return vergleich(check,zusatz);
