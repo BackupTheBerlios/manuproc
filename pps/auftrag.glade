@@ -227,7 +227,7 @@
   </signal>
   <title>Auftragsbearbeitung</title>
   <type>GTK_WINDOW_TOPLEVEL</type>
-  <position>GTK_WIN_POS_NONE</position>
+  <position>GTK_WIN_POS_CENTER</position>
   <modal>False</modal>
   <default_width>800</default_width>
   <default_height>600</default_height>
@@ -3293,9 +3293,15 @@ Auftrag</label>
 
 	    <widget>
 	      <class>GtkButton</class>
-	      <name>button32</name>
+	      <name>lager_bestand</name>
+	      <cxx_visibility>protected</cxx_visibility>
 	      <tooltip>Lagerbestand</tooltip>
 	      <can_focus>True</can_focus>
+	      <signal>
+		<name>clicked</name>
+		<handler>on_lager_bestand_clicked</handler>
+		<last_modification_time>Sat, 18 Oct 2003 11:40:13 GMT</last_modification_time>
+	      </signal>
 	      <label>L:</label>
 	      <relief>GTK_RELIEF_NORMAL</relief>
 	      <child>
@@ -3482,6 +3488,33 @@ Auftrag</label>
 	      <yshrink>False</yshrink>
 	      <xfill>True</xfill>
 	      <yfill>True</yfill>
+	    </child>
+	  </widget>
+
+	  <widget>
+	    <class>GtkLabel</class>
+	    <name>lieferant_offen</name>
+	    <cxx_visibility>protected</cxx_visibility>
+	    <label>0</label>
+	    <justify>GTK_JUSTIFY_CENTER</justify>
+	    <wrap>False</wrap>
+	    <xalign>0.9</xalign>
+	    <yalign>0.5</yalign>
+	    <xpad>0</xpad>
+	    <ypad>0</ypad>
+	    <child>
+	      <left_attach>5</left_attach>
+	      <right_attach>6</right_attach>
+	      <top_attach>2</top_attach>
+	      <bottom_attach>3</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>False</yfill>
 	    </child>
 	  </widget>
 	</widget>

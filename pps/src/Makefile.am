@@ -7,7 +7,8 @@
 
 bin_PROGRAMS = pps
 
-pps_SOURCES = pps.cc\
+pps_SOURCES = pps.cc \
+	remote_command.cc \
 	$(BUILT_SOURCES) \
 	auftrag_main.cc \
 	auftrag_main_lager.cc \

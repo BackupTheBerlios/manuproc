@@ -35,6 +35,8 @@ DBCapability *dbcapability;
 bool load_list=true; 	// Wenn false, dann auf keinen Fall die Liste beim
 			// Start laden, da die ISDN Leitung zu langsam ist
 
+void RC_close(void);
+
 int main(int argc, char **argv)
 {  
  Conn = new ManuProC::Connection();
@@ -91,8 +93,14 @@ weiter:
   
  delete auftragmain;
  ManuProC::dbdisconnect_nt(Conn->Dbase());
+
+#ifdef MABELLA_EXTENSIONS
+ RC_close();
+#endif
+
  delete meldung;
  delete Conn;
  return 0;
 }
+
 

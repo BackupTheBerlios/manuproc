@@ -1,4 +1,4 @@
-// $Id: auftrag_bearbeiten.hh,v 1.23 2003/10/17 11:41:59 jacek Exp $
+// $Id: auftrag_bearbeiten.hh,v 1.24 2003/10/18 13:41:56 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -97,6 +97,7 @@ class auftrag_bearbeiten : public auftrag_bearbeiten_glade
 
         void on_notiz_changed();
         void on_notiz_save_clicked();
+	void on_lager_bestand_clicked();
 
  void loadAuftrag(const AuftragBase& auftrag);
  void fillMask();

@@ -1010,3 +1010,12 @@ void auftrag_bearbeiten::on_aufrabatt_spinbutton_activate()
  aufnr_scombo->grab_focus();  
 }
 
+int RC_OffenMenge(cH_ArtikelBezeichnung b);
+
+void auftrag_bearbeiten::on_lager_bestand_clicked()
+{
+ int offen=
+	RC_OffenMenge(cH_ArtikelBezeichnung(artikelbox->get_value()));
+ lieferant_offen->set_text(itos(offen));
+}
+
