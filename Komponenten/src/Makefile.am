@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.36 2004/01/29 14:45:08 christof Exp $
+# $Id: Makefile.am,v 1.37 2004/01/29 15:34:07 christof Exp $
 AM_CXXFLAGS=@CXXFLAGS@  \
 		@COMMONGTK2_INCLUDES@ @COMMONXX_INCLUDES@
 
@@ -32,14 +32,17 @@ $(LINKS):
 include_HEADERS = datewin.h logwin.h \
 	EingabeBox.hh ProzessBox.hh \
 	ArtikelBox.hh datewin_glade.hh \
-	KundenBox.hh KundenBox_glade.hh \
 	SearchComboContent.hh SearchCombo.hh \
-   WWaehrung.hh WPreis.hh WAuftragStatus.hh \
+	Association.h
+   
+oldheaders=\
+	KundenBox.hh KundenBox_glade.hh \
+	   WWaehrung.hh WPreis.hh WAuftragStatus.hh \
    Optionmenu_Instanz.hh Artikel_Bestellen.hh \
    Optionmenu_Warengruppe.hh PPixmap.hh \
    Optionmenu_Einheit.hh PreisBox.hh WTelefon.hh \
    IntStringBox.hh IntStringBox_gui.hh PersonenBox.hh \
-   LandesBox.hh KundenBox2.hh ZahlungsArtBox.hh  Association.h
+   LandesBox.hh KundenBox2.hh ZahlungsArtBox.hh
 
 lib_LIBRARIES= libKomponenten.a
 
@@ -60,9 +63,9 @@ libKomponenten_a_SOURCES= \
 	bool_properties.cc bool_ImageButton.cc \
 	IntStringBox_glade.cc IntStringPopup_glade.cc \
 	string_Label.cc Event.cc Association.cc \
-        CellRendererSimpleTree.cc
+        CellRendererSimpleTree.cc ArtikelBox.cc 
 
-lateron= ArtikelBox.cc \
+lateron= \
 		KundenBox_glade.cc \
       Artikel_Bestellen.cc \
       PPixmap.cc \

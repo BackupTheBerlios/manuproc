@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.hh,v 1.20 2004/01/29 14:45:08 christof Exp $
+// $Id: ArtikelBox.hh,v 1.21 2004/01/29 15:34:07 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: ArtikelBox.hh,v 1.20 2004/01/29 14:45:08 christof Exp $
+// $Id: ArtikelBox.hh,v 1.21 2004/01/29 15:34:07 christof Exp $
 
 #ifndef _ARTIKELBOX_HH
 #  define _ARTIKELBOX_HH
@@ -30,7 +30,7 @@
 #include <gtkmm/label.h>
 #include <gtkmm/eventbox.h>
 #include "SearchCombo.h"
-#include <gtkmm/pixmap.h>
+#include <gtkmm/image.h>
 #include <gtkmm/tooltips.h>
 #include <Artikel/Einheiten.h>
 #include <Artikel/Artikelpreis.h>
@@ -147,7 +147,7 @@ class ArtikelBox : public Gtk::EventBox
  t_labels2 labels;
 
  Gtk::Menu *menu;
- Gtk::Pixmap *pixmap;
+ Gtk::Image *pixmap;
  Gtk::Label *label_typ;
  Gtk::CheckMenuItem *label;
  Gtk::SearchCombo *active_sc;
@@ -159,8 +159,8 @@ class ArtikelBox : public Gtk::EventBox
  void selectFunc(guint sp, guint l) throw(SQLerror);
  void searchFunc_alle_artikel(int *cont, GtkSCContext newsearch, guint sp) throw(SQLerror) {};
  void selectFunc_alle_artikel(guint sp) throw(SQLerror){};
- gint FocusInFunc(GdkEventFocus*, guint sp, guint l); 
- gint MouseButton(GdkEventButton *);
+ bool FocusInFunc(GdkEventFocus*, guint sp, guint l); 
+ bool MouseButton(GdkEventButton *);
  void TypSelected(int typ);
  void fuelleMenu();
  void adjust_combo_behaviour();

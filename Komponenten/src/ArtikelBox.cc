@@ -1,4 +1,4 @@
-// $Id: ArtikelBox.cc,v 1.24 2004/01/29 14:45:08 christof Exp $
+// $Id: ArtikelBox.cc,v 1.25 2004/01/29 15:34:07 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 1998-2001 Adolf Petig GmbH & Co. KG
  *                             written by Christof Petig and Malte Thoma
@@ -30,7 +30,9 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <gtkmm/main.h>
-
+#include <gtk/gtksignal.h>
+#include <gtkmm/stock.h>
+#include <gdkmm/pixbufloader.h>
 
 ArtikelBox::st_default::st_default()
 :
@@ -105,8 +107,8 @@ const std::string ArtikelBoxErr::ErrMsg() const
 
 
 gint ArtikelBox::try_grab_focus(GtkWidget *w,gpointer gp)
-{  ArtikelBox *this2((ArtikelBox*)gp);
-   assert(Gtk::EventBox::isA(this2)); // very weak check
+{  ArtikelBox *this2=dynamic_cast<ArtikelBox*>((Glib::Object*)gp);
+   assert(this2);
    assert(this2->combos.size());
       	 this2->combos[0][0]->grab_focus();
    return true;
@@ -180,7 +182,7 @@ std::string ArtikelBox::Kombinieren(cH_ExtBezSchema schema, unsigned int sig,con
 {std::string text;
  std::vector<std::string>::const_iterator vi=v.begin();
  for (ExtBezSchema::const_sigiterator i=schema->sigbegin(sig);
-   			vi!=v.end() && i!=schema->sigend(sig);
+   			std_neq(vi,v.end()) && i!=schema->sigend(sig);
    			++i,++vi)
     {text += *vi;
      if (i->separator==" ") text += "_";
@@ -192,7 +194,7 @@ std::string ArtikelBox::Kombinieren(cH_ExtBezSchema schema, unsigned int sig,con
 std::string ArtikelBox::Kombinieren(cH_ExtBezSchema schema, unsigned int sig,const std::vector<cH_EntryValue> &v)
 {  std::vector<std::string> u;
    u.reserve(v.size());
-   for (std::vector<cH_EntryValue>::const_iterator i=v.begin();i!=v.end();++i)
+   for (std::vector<cH_EntryValue>::const_iterator i=v.begin();std_neq(i,v.end());++i)
       u.push_back((*i)->getStrVal());
    return Kombinieren(schema,sig,u);
 }
@@ -241,7 +243,7 @@ void ArtikelBox::init()
 
   {
    reloop:
-    for (std::vector<int>::iterator i=signifikanz.begin();i!=signifikanz.end();++i)
+    for (std::vector<int>::iterator i=signifikanz.begin();std_neq(i,signifikanz.end());++i)
       if (schema->sigsize(*i) == 0) {signifikanz.erase(i);goto reloop;}
     if (signifikanz.size()==0)  signifikanz.push_back(1); 
 
@@ -258,8 +260,8 @@ void ArtikelBox::init()
        if (vertikalbool) hp=manage(new Gtk::VPaned);
        else hp=manage(new Gtk::HPaned);
 
-          hp->set_handle_size(10);
-          hp->set_gutter_size(10);
+//          hp->set_handle_size(10);
+//          hp->set_gutter_size(10);
    //       hp->set_position(50*schema->sigsize(*i));
           hp->pack1(*table, true, true);
           hp->pack2(*oberstes, true, true);
@@ -289,7 +291,7 @@ Gtk::Container* ArtikelBox::init_table(int l)
    {
     Gtk::SearchCombo *sc;
     combos[l].push_back(sc=manage (new Gtk::SearchCombo(true,autocompletebool)));
-    sc->set_usize(50,0);
+    sc->set_size_request(50,-1);
 //    sc->set_autoexpand(autocompletebool);
     sc->set_enable_tab(true);
     sc->signal_search().connect(SigC::bind(SigC::slot(*this,&ArtikelBox::searchFunc),i,l));
@@ -306,7 +308,7 @@ Gtk::Container* ArtikelBox::init_table(int l)
     if (i==0&&l==0) 
      {
        Gtk::HBox *hb= manage(new Gtk::HBox());
-       pixmap= manage(new class Gtk::Pixmap()); // stock_button_cancel_xpm));
+       pixmap= manage(new class Gtk::Image());
        pixmap_setzen(false);
        hb->pack_start(*pixmap,false,false);   pixmap->show();
        hb->pack_start(*lb);                   hb->show();
@@ -390,8 +392,8 @@ void ArtikelBox::artbox_start()
  this->signal_button_press_event().connect(SigC::slot(*this,&ArtikelBox::MouseButton));
 
  // redirect our grab_focus
- gtk_signal_connect_after(Gtk::OBJECT(gobj()), "grab_focus",
-                 Gtk::SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
+ gtk_signal_connect_after(GTK_OBJECT(gobj()), "grab_focus",
+                 GTK_SIGNAL_FUNC (&try_grab_focus),(gpointer)this);
 }
 
 void ArtikelBox::setExtBezSchema(const cH_ExtBezSchema &_schema)
@@ -424,7 +426,7 @@ void ArtikelBox::TypSelected(int typ)
    }
 }
 
-gint ArtikelBox::MouseButton(GdkEventButton *event)
+bool ArtikelBox::MouseButton(GdkEventButton *event)
 {  // std::cout << "MB\n";
    if ((event->type == GDK_BUTTON_PRESS) && menu)
    {  menu->popup(event->button,event->time);
@@ -466,7 +468,7 @@ void ArtikelBox::setzeSchemaTyp(int t2)
 void ArtikelBox::setzeSignifikanz(int t)
 {  
  bool add = true;
- for (std::vector<int>::iterator i=signifikanz.begin();i!=signifikanz.end();++i)
+ for (std::vector<int>::iterator i=signifikanz.begin();std_neq(i,signifikanz.end());++i)
    if ( (*i)==t ) { signifikanz.erase(i); add=false; break;}
  if (add) signifikanz.push_back(t);
    {  ArtikelBox::Benutzerprofil_speichern();
@@ -541,7 +543,7 @@ double ArtikelBox::get_menge_from_artikelbox()
     if (labels[j][i]->get_text()==schema->JumboTitel())
        aufmachung=combos[j][i]->get_text();
   std::string smenge;
-  for (std::string::const_iterator i=aufmachung.begin();i!=aufmachung.end();++i)
+  for (std::string::const_iterator i=aufmachung.begin();std_neq(i,aufmachung.end());++i)
    {
      char c=*i;
 // KOMMA ist erlaubt MAT
@@ -579,16 +581,62 @@ void ArtikelBox::einschraenken_cb(Gtk::CheckMenuItem *einschr_mi)
 {  Einschraenken_b(einschr_mi->get_active());
 }
 
-#include "stock_button_apply.xpm"
-#include "stock_button_cancel.xpm"
-#include "E.xpm"
-#include "plus.xpm"
+static const unsigned char E_png_data[] = 
+{       137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,
+        0,0,0,14,0,0,0,14,8,3,0,0,0,40,150,221,
+        227,0,0,0,180,80,76,84,69,0,0,0,248,0,0,94,
+        0,0,74,0,0,54,0,0,51,0,0,182,0,0,105,0,
+        0,162,0,0,219,0,0,85,0,0,159,0,0,25,0,0,
+        216,0,0,196,0,0,253,0,0,119,0,0,156,0,0,2,
+        0,0,56,0,0,113,0,0,16,0,0,187,0,0,244,0,
+        0,167,0,0,33,0,0,224,0,0,144,0,0,201,0,0,
+        238,0,0,27,0,0,255,0,0,44,0,0,4,0,0,118,
+        0,0,21,0,0,1,0,0,229,0,0,18,0,0,189,0,
+        0,226,0,0,92,0,0,206,0,0,72,0,0,146,0,0,
+        29,0,0,200,0,0,46,0,0,160,0,0,83,0,0,6,
+        0,0,254,0,0,177,0,0,214,0,0,137,0,0,117,0,
+        0,40,0,0,20,0,0,211,0,0,77,0,0,131,40,239,
+        112,0,0,0,130,73,68,65,84,120,156,101,206,215,18,130,
+        48,20,4,208,181,98,84,20,236,125,85,80,131,93,209,216,
+        254,255,191,76,8,60,113,103,118,118,206,203,206,5,114,231,
+        52,164,148,74,231,102,189,38,187,8,156,66,209,178,198,185,
+        169,199,201,82,210,7,154,248,133,137,202,49,35,108,119,217,
+        148,199,248,122,220,251,25,91,156,245,15,155,40,213,167,77,
+        165,231,198,41,235,100,9,168,96,113,73,56,226,48,208,181,
+        170,190,141,238,19,186,186,150,231,111,199,240,37,132,59,85,
+        131,167,232,229,223,255,3,59,60,10,90,253,185,43,150,0,
+        0,0,0,73,69,78,68,174,66,96,130,
+};
+static const unsigned E_png_size = 379;
+static const unsigned char plus_png_data[] = 
+{       137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,
+        0,0,0,14,0,0,0,14,4,3,0,0,0,237,102,48,
+        226,0,0,0,36,80,76,84,69,0,0,0,28,0,0,85,
+        0,0,99,0,0,56,0,0,170,0,0,141,0,0,198,0,
+        0,255,0,0,152,0,0,226,0,0,109,0,0,80,192,190,
+        145,0,0,0,46,73,68,65,84,120,156,99,96,96,144,158,
+        194,0,6,26,173,248,104,214,208,138,174,208,16,6,6,142,
+        14,32,104,102,96,96,82,202,104,87,82,196,167,111,6,148,
+        70,1,0,8,224,12,142,117,200,35,17,0,0,0,0,73,
+        69,78,68,174,66,96,130,
+};
+static const unsigned plus_png_size = 151;
 
 void ArtikelBox::pixmap_setzen(bool valid)
-{  if (valid) pixmap->set(stock_button_apply_xpm);
-   else if (automatisch_anlegen_bool) pixmap->set(plus_xpm);
-   else if (eingeschraenkt) pixmap->set(E_xpm);
-   else pixmap->set(stock_button_cancel_xpm);
+{  if (valid) pixmap->set(Gtk::Stock::APPLY,Gtk::ICON_SIZE_SMALL_TOOLBAR);
+   else if (automatisch_anlegen_bool) 
+   {  Glib::RefPtr<Gdk::PixbufLoader> loader=Gdk::PixbufLoader::create();
+      loader->write(plus_png_data, plus_png_size);
+      loader->close();
+      pixmap->set(loader->get_pixbuf());
+   }
+   else if (eingeschraenkt) 
+   {  Glib::RefPtr<Gdk::PixbufLoader> loader=Gdk::PixbufLoader::create();
+      loader->write(E_png_data, E_png_size);
+      loader->close();
+      pixmap->set(loader->get_pixbuf());
+   }
+   else pixmap->set(Gtk::Stock::CANCEL,Gtk::ICON_SIZE_SMALL_TOOLBAR);
 }
 
 void ArtikelBox::Neuer_Eintrag_automatisch(Gtk::CheckMenuItem *cmi)
@@ -614,8 +662,8 @@ bool ArtikelBox::determineFocus(guint &sigidx_out, guint &entryidx_out) const
 }
 
 void ArtikelBox::reset()
-   { for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
-      for (t_combos::iterator i=j->begin();i!=j->end();++i)
+   { for (t_combos2::iterator j=combos.begin();std_neq(j,combos.end());++j)  
+      for (t_combos::iterator i=j->begin();std_neq(i,j->end());++i)
         (*i)->reset(); 
 //     eingeschraenkt=false;
 //     einschraenkung="";
@@ -623,18 +671,18 @@ void ArtikelBox::reset()
    }  
 
 void ArtikelBox::set_editable(bool edit)
-   { for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
-      for (t_combos::iterator i=j->begin();i!=j->end();++i)
+   { for (t_combos2::iterator j=combos.begin();std_neq(j,combos.end());++j)  
+      for (t_combos::iterator i=j->begin();std_neq(i,j->end());++i)
         (*i)->set_editable(edit); }  
 
 void ArtikelBox::set_autoexpand(bool exp)
-   { for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
-      for (t_combos::iterator i=j->begin();i!=j->end();++i)
+   { for (t_combos2::iterator j=combos.begin();std_neq(j,combos.end());++j)  
+      for (t_combos::iterator i=j->begin();std_neq(i,j->end());++i)
         (*i)->set_autoexpand(exp); }  
 
 void ArtikelBox::set_always_fill(bool fill)
-   { for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)  
-      for (t_combos::iterator i=j->begin();i!=j->end();++i)
+   { for (t_combos2::iterator j=combos.begin();std_neq(j,combos.end());++j)  
+      for (t_combos::iterator i=j->begin();std_neq(i,j->end());++i)
         (*i)->set_always_fill(fill); }  
 
 void ArtikelBox::set_focus(int sig, int field)
@@ -655,18 +703,18 @@ void ArtikelBox::set_automatisch_anlegen(bool b)
 
 void ArtikelBox::adjust_combo_behaviour()
 {  // z.B. search
- for (t_combos2::iterator j=combos.begin();j!=combos.end();++j)
-  for (t_combos::iterator i=j->begin(); i!=j->end(); ++i)
+ for (t_combos2::iterator j=combos.begin();std_neq(j,combos.end());++j)
+  for (t_combos::iterator i=j->begin(); std_neq(i,j->end()); ++i)
    {  (*i)->set_value_in_list(!automatisch_anlegen_bool,automatisch_anlegen_bool);
    }
 }
 
-static gint select_all_text(Gtk::Editable *e)
+static bool select_all_text(Gtk::Editable *e)
 {  e->select_region(0,-1);
    return false;
 }
 
-gint ArtikelBox::FocusInFunc(GdkEventFocus *ev, guint sp, guint l)
+bool ArtikelBox::FocusInFunc(GdkEventFocus *ev, guint sp, guint l)
 {  if (reset_on_focus) combos[l][sp]->reset();
    else 
    {  // HACK: show available options (even nonmatching and enable overwrite)
@@ -674,7 +722,7 @@ gint ArtikelBox::FocusInFunc(GdkEventFocus *ev, guint sp, guint l)
       combos[l][sp]->gobj()->value_selected=true;
       combos[l][sp]->trigger_search();
       // wenn es durch Mausclick passiert ist
-      Gtk::Main::signal_idle().connect(SigC::bind(SigC::slot(&select_all_text),combos[l][sp]->get_entry()));
+      Glib::signal_idle().connect(SigC::bind(SigC::slot(&select_all_text),combos[l][sp]->get_entry()));
 //      Gtk::Main::signal_idle().connect(SigC::bind(SigC::slot(*combos[l][sp]->get_entry(),
 //      		&Gtk::Editable::select_region),0,-1));
    }

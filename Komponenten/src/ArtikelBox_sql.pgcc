@@ -162,7 +162,7 @@ void ArtikelBox::fuelleMenu()
    
    // Hauptmenü
    if (menu)
-   {  menu->destroy();
+   {  delete menu;
       menu=0;
    }
    menu=new Gtk::Menu();
