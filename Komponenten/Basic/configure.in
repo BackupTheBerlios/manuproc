@@ -1,4 +1,4 @@
-# $Id: configure.in,v 1.9 2002/07/08 08:43:21 christof Exp $
+# $Id: configure.in,v 1.10 2002/07/26 07:43:28 christof Exp $
 
 AC_INIT(src/treebase.h)
 
@@ -18,6 +18,13 @@ AC_SUBST(CXXFLAGS)
 
 PETIG_CHECK_COMMONXX
 PETIG_CHECK_COMMONGTK
+
+KOMPONENTEN_INCLUDES="$COMMONXX_INCLUDES $COMMONGTK_INCLUDES -I\$(top_srcdir)/src"
+KOMPONENTEN_LDFLAGS="$COMMONXX_LDFLAGS $COMMONGTK_LDFLAGS"
+KOMPONENTEN_LIBS="\$(top_srcdir)/src/libKomponenten.a $COMMONXX_LIBS $COMMONGTK_LIBS"
+AC_SUBST(KOMPONENTEN_INCLUDES)
+AC_SUBST(KOMPONENTEN_LDFLAGS)
+AC_SUBST(KOMPONENTEN_LIBS)
 
 AC_OUTPUT(Makefile src/Makefile examples/Makefile \
    examples/dwhouse/Makefile examples/tree_simplest/Makefile \
