@@ -988,7 +988,9 @@ void LR_Abstraktion::drucken_artikel(std::ostream &os,cH_ArtikelBezeichnung bez,
 #ifdef MABELLA_EXTENSIONS
 	if(s->Id()==ExtBezSchema::default_id && ean_code)
      	  { neue_spalte( erste_spalte, os);
-	    if(ArtikelTyp::hasAttribute(s->Typ(),ArtikelTypAttr::mit_ean))
+	    if(ArtikelTyp::hasAttribute(s->Typ(),ArtikelTypAttr::mit_ean) ||
+		!bez->Bezeichnung(EAN_SIGNIFIKANZ).empty()
+	      )
 	      {if(rabatt_bool)
 	        os <<"{\\small" << bez->Bezeichnung(EAN_SIGNIFIKANZ) <<"}";
 	      else
