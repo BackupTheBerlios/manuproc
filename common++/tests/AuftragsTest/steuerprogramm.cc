@@ -52,21 +52,29 @@ enum e_mode {None,Mengentest,Plantest,Lagertest,Splittest,ZweiAuftraege,
 
 static ostream *testlog;
 // for more output ...
-bool verbose=false;
-bool do_not_stop=false;
+static bool verbose=false;
+static bool do_not_stop=false;
+static std::string header;
+
+static UniqueValue::value_t log_trace = ManuProC::Tracer::channels.get();
 
 static void vergleichen(Check &C, Check::was_checken w, const std::string &zusatz,
         const std::string &name, const std::string &graphname, bool mit_reparatur_programm, bool vor_dem_test_reparieren=false)
 {   (*testlog) << int(w) << ' ' << zusatz << ' ' << graphname << ' ' << name << '\n';
     bool erfolgreich=C.teste(w,zusatz,mit_reparatur_programm,vor_dem_test_reparieren);
     if(!erfolgreich)
-    { cout << name << " fehlgeschlagen\n\n"; 
+    { std::cout << name << " fehlgeschlagen\n\n"; 
       if (!do_not_stop) exit(1); 
     }
 }
 
 static void graphheader(const std::string &name)
 {   (*testlog) << '#' << ' ' << name << '\n';
+    header=name;
+}
+
+static void erfolgreich()
+{   std::cout << header << " erfolgreich\n\n";
 }
 
 static int auftragstests(e_mode mode, bool mit_reparatur_programm)
@@ -79,7 +87,6 @@ static int auftragstests(e_mode mode, bool mit_reparatur_programm)
    AufEintragBase AEB=auftrag.anlegen();
    AufEintrag AE=AEB;
    Check C;
-//   bool erfolgreich=false;
    cout << "Anlegen eines Auftrags ["<<AEB<<"] beendet\n\n";
 
    // ANLEGEN eines Auftrags mit Bandlager und Rohwarenlager
@@ -90,19 +97,18 @@ static int auftragstests(e_mode mode, bool mit_reparatur_programm)
       vergleichen(C,Check::Menge,"mit_lager_open","Öffnen des Auftrags","",mit_reparatur_programm);
    }
 
-//exit(0);
    switch(mode) {
     case ManuProCTest :
      {
       #ifdef MANU_PROC_TEST
-
+      graphheader("ManuProC Test");
       {// Planen des Einkaufs (Granulat, grün)
       Auftrag PA=Auftrag(Auftrag::Anlegen(EINKAUF),ManuProC::DefaultValues::EigeneKundenId);
       int znr=4;
       AufEintrag AEP((AufEintragBase(EINKAUF,AuftragBase::ungeplante_id,znr)));
       int nznr=AEP.Planen(UID,200,PA,PLANDATUM5);
       AufEintrag PAE(AufEintragBase(PA,nznr));
-      vergleichen(C,Check::Menge,"planen_kupfer","Planen des Einkaufs(Granulat)","P",mit_reparatur_programm);
+      vergleichen(C,Check::Menge,"planen_granulat","Planen des Einkaufs(Granulat)","P",mit_reparatur_programm);
 
       // Spezifischen Lieferschein schreiben
       Lieferschein liefs(EINKAUF,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
@@ -143,7 +149,7 @@ static int auftragstests(e_mode mode, bool mit_reparatur_programm)
       }
 
       {// Produktion in der Werkstatt ohne daß vorher etwas geplant wurde
-//ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
       ManuProC::st_produziert p(ARTIKEL_SCHRAUBENZIEHER_GELB,600,UID,ManuProC::DefaultValues::EigeneKundenId);
       cH_ppsInstanz I(WERKSTATT);
       I->Produziert(p);
@@ -152,14 +158,14 @@ static int auftragstests(e_mode mode, bool mit_reparatur_programm)
 
       {// Lieferscheinschreiben für das Schraubenzieherlager => auslagern
       Lieferschein liefs(SCHRAUBENZIEHERLAGER,cH_Kunde(ManuProC::DefaultValues::EigeneKundenId));
-//ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
       liefs.push_back(ARTIKEL_SCHRAUBENZIEHER_ROT,450,0,0);
       vergleichen(C,Check::Lieferschein|Check::Menge,"LSZM","Lieferschein für das Rohwarenlager (auslagern)","LR",mit_reparatur_programm);
       }
 
       {// Lieferscheinschreiben für den Kunden
       Lieferschein liefs(KUNDENINSTANZ,cH_Kunde(KUNDE));
-//ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
       liefs.push_back(ARTIKEL_SORTIMENT_BUNT,450,0,0);
       vergleichen(C,Check::Lieferschein|Check::Menge,"LSZMK","Lieferschein für den Kunden","LK",mit_reparatur_programm);
       }
@@ -169,11 +175,9 @@ static int auftragstests(e_mode mode, bool mit_reparatur_programm)
       liefs.push_back(ARTIKEL_SORTIMENT_BUNT,60,0,0);
       vergleichen(C,Check::Lieferschein|Check::Menge,"LSZA","Lieferschein für den Kunden (Überlieferung)","LKÜ",mit_reparatur_programm);
       }
-
-      cout << "ManuProcTest erfolgreich\n";
       #endif
-      break;
      }
+      break;
     case Mengentest :
      {
       graphheader("Mengen Test");
@@ -199,59 +203,53 @@ static int auftragstests(e_mode mode, bool mit_reparatur_programm)
 
       AufEintrag(AEB).setStatus(CLOSED,UID);
       vergleichen(C,Check::Menge,"status_closed","Statussänderung (Closed)","C",mit_reparatur_programm);
-
-      cout << "Mengen Test erfolgreich\n";
-
+      }
       break;
-     }
     case Plantest:
      {graphheader("Planungs Test");
       #ifdef PETIG_TEST
-cout << "A\n";
+       ManuProC::Trace(log_trace,__FILELINE__);
        {
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::_Garn__Einkauf),Kunde::default_id);
        int kupfer_znr=2;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::_Garn__Einkauf,AuftragBase::ungeplante_id,kupfer_znr));
 
        AEP.Planen(UID,100,PA,PLANDATUM5);
-       vergleichen(C,Check::Menge,"planen_kupfer","Planen des Kupfereinkaufs","K",mit_reparatur_programm);
+       vergleichen(C,Check::Menge,"planen_acetat","Planen des Acetateinkaufs","A",mit_reparatur_programm);
        }
-cout << "B\n";
+       ManuProC::Trace(log_trace,__FILELINE__);
 
        {
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Faerberei),Kunde::default_id);
        int faerberei_znr=1;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Faerberei,AuftragBase::ungeplante_id,faerberei_znr));
-//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
-//cout << "LOS GEHTS\n";
+
+       ManuProC::Trace(log_trace,__FILELINE__);
        AEP.Planen(UID,7000,PA,PLANDATUM4);
        vergleichen(C,Check::Menge,"planen_faerberei_teil","Teil-Planen der Färberei","F",mit_reparatur_programm);
        }
-cout << "C\n";
+       ManuProC::Trace(log_trace,__FILELINE__);
        {
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Weberei),Kunde::default_id);
        int weberei_znr=1;
        AufEintrag AEP(AufEintragBase(ppsInstanzID::Weberei,AuftragBase::ungeplante_id,weberei_znr));
+ManuProC::Tracer::Enable(AuftragBase::trace_channel);
        AEP.Planen(UID,5000,PA,PLANDATUM6);
+ManuProC::Tracer::Enable(AuftragBase::trace_channel,false);
        vergleichen(C,Check::Menge,"planen_webereiP","Planen der Weberei","P",mit_reparatur_programm);
        }
-cout << "D\n";
+       ManuProC::Trace(log_trace,__FILELINE__);
 
-#ifdef PETIG_TEST
        Lieferschein liefs(ppsInstanzID::_Garn__Einkauf,cH_Kunde(Kunde::eigene_id));
-//ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
        liefs.push_back(ARTIKEL_ACETAT,1,66,0);
        vergleichen(C,Check::Menge,"planen_einkauf_lieferschein","Lieferschein mit Teillieferung für Einkauf anlegen","L",mit_reparatur_programm);
-#endif
-
-      cout << "Plan-Test erfolgreich\n";
-
-      break;
       #endif
      }
+      break;
     case Splittest :
     case Rep_Petig_PhysikalischesLager:
-     {graphheader(mode==Splittest?"Split Test":"Reparatur phys. Lager");
+     {graphheader("Split Test");
       AE.split(UID,300,SPLITDATUM);
       vergleichen(C,Check::Menge,"split","Splitten einer Auftragszeile","",mit_reparatur_programm);
 #ifdef PETIG_TEST
@@ -266,12 +264,13 @@ std::cout << dummystring<<'\n';
       RL.RL_Entnahme(stRL2,UID,dummystring);
 std::cout << dummystring<<'\n';
       vergleichen(C,Check::Menge,"split_rohwarenlager_raus","Rohwarenlager auslagern\n","- ",mit_reparatur_programm);
-      cout << "Split-Test erfolgreich\n";
 
       if(mode!=Rep_Petig_PhysikalischesLager) break;
+      
       assert(mit_reparatur_programm);
+      graphheader("Reparatur-Test (Petig, Physikalisches Lager)");
       // Physikalisches Lager ändern
-//ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
       std::string qB="insert into rl_inhalt (position_,kartons,reste,kg_per_karton,"
          " material,eingelagert,rest_kg)"
          " values ('07D5',10,0,5,211007,'2002-11-28',0)";
@@ -304,14 +303,11 @@ std::cout << dummystring<<'\n';
       Query::Execute(qB2);
       SQLerror::test(__FILELINE__);
       vergleichen(C,Check::Menge,"split_reparatur_garnlager_minus","Reparatur-Split-Test (GarnlagerMinus)","RG-",mit_reparatur_programm,true);
-
-      cout << "Reparatur-Test (Petig, Physikalisches Lager) erfolgreich\n";
-
 #endif
       break;
      }
     case Rep_Zuordnungen:
-     {graphheader("Rep_Petig_Zuordnung");
+     {graphheader("Reparatur-Test (Petig, Zuordnungen)");
       #ifdef PETIG_TEST
           assert(mit_reparatur_programm);
        {
@@ -341,12 +337,11 @@ std::cout << dummystring<<'\n';
         SQLerror::test(__FILELINE__);
         vergleichen(C,Check::Menge,"rep_pfE","Reparatur-Zuordungen ()","E",mit_reparatur_programm,true);
       }
-      cout << "Reparatur-Test (Petig, Zuordnungen) erfolgreich\n";
-      break;
       #endif
      }
+      break;
     case Rep_KundenProgramm:
-     {graphheader("Rep_Petig_Kunde");
+     {graphheader("Reparatur Kundeaufträge (Artikel, Instanz)");
        #ifdef PETIG_TEST
           assert(mit_reparatur_programm);
       {
@@ -391,14 +386,12 @@ std::cout << dummystring<<'\n';
        SQLerror::test(__FILELINE__);
        vergleichen(C,Check::Menge,"reparatur_kunde_datum","Reparatur Kundenaufträge (Datum)","D",mit_reparatur_programm,true);
       }
-       cout << "Reparatur Kundeaufträge (Artikel, Instanz) erfolgreich\n";
-
-       break;
       #endif
      }
+       break;
     case Rep_Kunden_Zuordnungen:
-     {graphheader("Rep_Petig_Kunden_Zuordung");
-      #ifdef PETIG_TEST
+     {graphheader("Reparatur Kunden Zuordnungen");
+#ifdef PETIG_TEST
           assert(mit_reparatur_programm);
        AufEintragBase AEB=auftrag.anlegen2();
        vergleichen(C,Check::Menge,"rep_zwei_auftraege_anlegen","Anlegen eines zweiten (offenen) Auftrags ["+AEB.str()+"]","",mit_reparatur_programm);
@@ -422,10 +415,9 @@ std::cout << dummystring<<'\n';
        }
 
 #warning: TODO: 'adjust_store KK'
-       cout << "Reparatur Kunden Zuordnungen erfolgreich\n";
-       break;
       #endif
      }
+       break;
     case Lagertest :
      {graphheader("Lager");
 #ifdef PETIG_TEST
@@ -491,13 +483,11 @@ std::cout << "D12: "<<dummystring<<'\n';
 std::cout << "D13: "<<dummystring<<'\n';
       vergleichen(C,Check::Menge|Check::RohLager,"zuviel","zuviel Entnommen","",mit_reparatur_programm);
 #endif
-
-      cout << "Lager-Test erfolgreich\n";
 #endif
       break;
      }
     case Rep_Petig_0er_2er_gleichzeitig:
-     {graphheader("Rep_Petig_0er_2er_gleichzeitig");
+     {graphheader("Reparatur 2er und 0er gleichzeitig");
         assert(mit_reparatur_programm);
 
       std::string q1="update auftragentry set bestellt=3000 where "
@@ -515,13 +505,10 @@ std::cout << "D13: "<<dummystring<<'\n';
          " values (2,5,3000,0,'2009-01-01',123755,1,4)";
       Query::Execute(q2);
       vergleichen(C,Check::Menge,"Rep0er2ergleichzeitigP","Reparatur 0er und 2er gleichzeitig (Produktionsinstanz)", "P",mit_reparatur_programm,true);
-
-      cout << "Reparatur 2er und 0er gleichzeitig erfolgreich\n";
-
-      break;
      }
+      break;
     case ZweiAuftraege:
-     {graphheader("ZweiAuftraege");
+     {graphheader("Zwei Aufträge");
       #ifdef PETIG_TEST
        {
        Auftrag PA=Auftrag(Auftrag::Anlegen(ppsInstanzID::Faerberei),Kunde::default_id);
@@ -532,14 +519,12 @@ std::cout << "D13: "<<dummystring<<'\n';
        }
        AufEintragBase AEB=auftrag.anlegen2();
        vergleichen(C,Check::Menge,"zwei_auftraege_anlegen","Anlegen eines zweiten (offenen) Auftrags ["+AEB.str()+"]","Z",mit_reparatur_programm);
-      cout << "ZweiAufträge-Test erfolgreich\n";
-
-       break;
       #endif
      }
+       break;
     case ZweiterAuftrag_frueheresDatum:
      {graphheader("Zwei Aufträge, zweiter Auftrag früheres Datum Test");
-      #ifdef PETIG_TEST
+#ifdef PETIG_TEST
 
        AufEintragBase AEB=auftrag.anlegen3();
 
@@ -551,7 +536,7 @@ std::cout << "D13: "<<dummystring<<'\n';
        }
        vergleichen(C,Check::Menge,"zwei_auftraege_datum_abschreiben","Teil-Abschreiben des zweiten Auftrags ["+AEB.str()+"]","A",mit_reparatur_programm);
 
-//ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
 
        AufEintrag(AEB).setStatus(CLOSED,UID);
        vergleichen(C,Check::Menge,"zwei_auftraege_datum_closed","Statussänderung(2) (Closed)","C",mit_reparatur_programm);
@@ -567,11 +552,9 @@ std::cout << "D13: "<<dummystring<<'\n';
 // OHNE ReparaturProgramm, da CLOSED-Kundedenaufträge noch nicht nach
 //  unten korrigiert werden
        vergleichen(C,Check::Menge,"erster_auftrag_closed","Statussänderung(1) (Closed)","CL",false);
-
-      cout << "ZweiAufträgeDatum erfolgreich\n";
-
+#endif
       break;
-      #endif
+
      }
     case Lieferscheintest:
      {graphheader("Lieferschein");
@@ -591,14 +574,12 @@ std::cout << "D13: "<<dummystring<<'\n';
        LieferscheinEntry le2((LieferscheinEntryBase(liefs,lznr)));
        LieferscheinEntry::deleteEntry(le2);
        vergleichen(C,Check::Menge|Check::Lieferschein,"LS_zeileloeschen2","Lieferscheinzeile nochmal löschen","",mit_reparatur_programm);
-
-      cout << "Lieferschein Test erfolgreich\n";
 #endif
-
        break;
      }
+
     case LieferscheintestMenge:
-     {graphheader("LieferscheinMengen");
+     {graphheader("Lieferschein Mengen-Test");
 #ifdef PETIG_TEST
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
        liefs.push_back(ARTIKEL_ROLLEREI,150,0,0);
@@ -615,16 +596,11 @@ std::cout << "D13: "<<dummystring<<'\n';
        LieferscheinEntry le2(LieferscheinEntryBase(liefs,lznr));
        le2.changeMenge(stueck,menge);
        vergleichen(C,Check::Menge|Check::Lieferschein,"LS_mengenaenderung_plus","Lieferschein Mengenaenderung Plus","",mit_reparatur_programm);
-
-      cout << "Lieferschein Mengen-Test erfolgreich\n";
-
 #endif
-
-
        break;
      }
     case Lieferscheintest_ZweiterAuftrag_frueheresDatum:
-     {graphheader("Zwei Aufträge, zweiter Auftrag früheres Datum Test");
+     {graphheader("Zwei Aufträge, zweiter Auftrag früheres Datum");
        AufEintragBase AEB=auftrag.anlegen3();
        vergleichen(C,Check::Menge,"zwei_auftraege_datum","Anlegen eines zweiten (offenen) Auftrags ["+AEB.str()+"] mit früherem Liefertermin","D",mit_reparatur_programm);
 
@@ -636,10 +612,7 @@ std::cout << "D13: "<<dummystring<<'\n';
 
        liefs.push_back(ARTIKEL_ROLLEREI,600,0,0);
        vergleichen(C,Check::Lieferschein|Check::Menge,"LSZAV","Lieferschein mit Volllieferung und 2 Aufträgen anlegen","V",mit_reparatur_programm);
-
-      cout << "Lieferschein Datums-Test erfolgreich\n";
 #endif
-
        break;
      }
     case LieferscheintestZusatz:
@@ -669,20 +642,17 @@ std::cout << "D13: "<<dummystring<<'\n';
        stueck=350;
        le5.changeMenge(stueck,menge);
        vergleichen(C,Check::Lieferschein|Check::Menge,"LSZMK","Lieferscheinentry mit Zusatzeintrag Minus Kunde","-K",mit_reparatur_programm);
-
-      cout << "Lieferschein Zusatz-Test erfolgreich\n";
-
 #endif
        break;
      }
     case LieferscheinJacek:
     case Rep_Mabella:
-     { graphheader("Lieferschein Test für Jacek");
+     { graphheader("Lieferschein Test für Mabella");
 #ifdef MABELLA_TEST
        Lieferschein liefs(ppsInstanzID::Kundenauftraege,cH_Kunde(KUNDE));
        liefs.push_back(ARTIKEL_TRIO,10,0,0);
        vergleichen(C,Check::Lieferschein|Check::Menge,"LS_volllieferung","Lieferschein mit Volllieferung (Mabella) anlegen","V",mit_reparatur_programm);
-//ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
 
        int lznr=1;
        LieferscheinEntry le1(LieferscheinEntryBase(liefs,lznr));
@@ -732,7 +702,7 @@ std::cout << "D13: "<<dummystring<<'\n';
 
       {// Einkauf liefert Vollmenge
        Lieferschein liefs(EINKAUF,cH_Kunde(KUNDE2));
-ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
+ManuProC::Tracer::Enable(AuftragBase::trace_channel);
        liefs.push_back(ARTIKEL_TRIO,25,0,0);
        vergleichen(C,Check::Menge|Check::Lieferschein,"LSZM","Lieferschein im Einkauf Weberei mit Restlieferung (Mabella)","",mit_reparatur_programm);
       }
@@ -742,14 +712,15 @@ ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
         Auftrag PA=Auftrag(Auftrag::Anlegen(EINKAUF),KUNDE2);
         ManuProC::st_produziert sp(ARTIKEL_ZWEI,2222,getuid(),Kunde::eigene_id,LieferscheinBase::none_id,PA,SPLITDATUM);
         cH_ppsInstanz I(EINKAUF);
-//ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
+//ManuProC::Tracer::Enable(AuftragBase::trace_channel);
         I->Planen(sp);
         vergleichen(C,Check::Menge,"zwei_auftraege_anlegen","Einkauf eines nicht-bestelleten Artikel (Mabella)","",mit_reparatur_programm);
       }
-      cout << "Test für Mabella erfolgreich\n";
 
       if(mode!=Rep_Mabella) break;
+
       assert(mit_reparatur_programm);
+      graphheader("Reparatur-Test für Mabella");
 
       // Test 1a: 0er und 2er != OPEN
       // Test 1b: KundenID!=eigene_id
@@ -776,14 +747,11 @@ ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
       SQLerror::test(__FILELINE__);
 
       vergleichen(C,Check::Menge,"zwei_auftraege_anlegen","Reparatur (Mabella)", "",mit_reparatur_programm,true);
-
-      cout << "Reparatur-Test für Mabella erfolgreich\n";
-
 #endif
       break;
      }
     case ZweiKundenTest:
-     { graphheader("ZweiKunden");
+     { graphheader("Zwei Kunden-Test");
        AufEintragBase AEB2=auftrag.anlegenK();
        vergleichen(C,Check::Menge,"ZK_anlegen","Anlegen eines zweiten (offenen) Auftrags für einen anderen Kunden ["+AEB.str()+"]","",mit_reparatur_programm);
 
@@ -798,18 +766,14 @@ ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
       vergleichen(C,Check::Menge,"ZK_abschreiben2T","Zwei Kunden Teillieferung 2\n","",mit_reparatur_programm);
 
       {AufEintrag AE(AEB);
-//      ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
+//      ManuProC::Tracer::Enable(AuftragBase::trace_channel);
         AE.Produziert(200,Lieferschein::none_id);
       }
       vergleichen(C,Check::Menge,"ZK_abschreiben1U","Zwei Kunden Volllieferung 1\n","",mit_reparatur_programm);
-
-      cout << "Zwei Kunden-Test erfolgreich\n";
-
-
        break;
      }
     case ZweiKundenMengeFreigebenTest:
-     { graphheader("ZweiKundenMengeFreigeben");
+     { graphheader("Zwei Kunden-Menge-Freigeben-Test");
 #      ifdef PETIG_TEST
 
        AufEintragBase AEB2=auftrag.anlegenK();
@@ -825,9 +789,6 @@ ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
 //         AufEintrag(Von).menge_fuer_aeb_freigeben(3000,Fuer,getuid());
          vergleichen(C,Check::Menge,"ZKM","Menge freigeben für einen anderen Auftrag","",mit_reparatur_programm);
        }
-
-       cout << "Zwei Kunden-Menge-Freigeben-Test erfolgreich\n";
-
        break;
       #endif
      }
@@ -874,6 +835,7 @@ ManuProC::Tracer::Enable(~AuftragBase::trace_channel);
      }
     case None: assert(!"Never get here\n");
    }
+   if (!do_not_stop) erfolgreich();
  return 0;
 }
 

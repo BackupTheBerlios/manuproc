@@ -1,4 +1,4 @@
-// $Id: get_data.cc,v 1.40 2003/01/06 17:27:33 christof Exp $
+// $Id: get_data.cc,v 1.41 2003/01/07 13:59:49 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -30,6 +30,7 @@ static std::string referenzdir="../database_tables_test";
 #endif
 
 bool graph_data_node::show_referenz;
+unsigned graph_data_node::limit=~0;
 
 graph_data_node::graph_data_node(const std::string &mode)
 {
@@ -153,21 +154,20 @@ void graph_data_node::fill_map()
 
 graph_data_node::st_node_strings graph_data_node::get_mengen_for_node(AufEintragBase aeb)
 {
-//  std::string A=aeb.Instanz()->Name()+"/"+itos(aeb.Id())+"/"+itos(aeb.ZNr());
   std::string M,Mmem,Z,Zmem;
-  std::vector<st_auftrag> V=map_aeb[aeb];
+  std::vector<st_auftrag> &V=map_aeb[aeb];
   for(std::vector<st_auftrag>::const_iterator j=V.begin();j!=V.end();++j)
-    {
-      if(j->prefix!="") {M+=j->prefix+":"; Z+=j->prefix+":";}
+    { std::string prefix=j->prefix;
+      if (!prefix.empty()) prefix+=':';
       
       std::string m=j->bestellt.String();
       if(j->geliefert!=AuftragBase::mengen_t(0)) m+="("+j->geliefert.String()+")";
-      if(Mmem != m) M+=m;
+      if(Mmem != m) M+=prefix+m;
       M+=+"/";
       Mmem=m;
 
       std::string z="("+string(j->datum.c_str())+","+itos(j->status)+")";
-      if(Zmem != z )  Z+=z ;
+      if(Zmem != z )  Z+=prefix+z ;
       Z+="/";
       Zmem=z;
     }
@@ -262,6 +262,7 @@ void graph_data_node::get_files(const std::string &mode)
      if (space3==std::string::npos) continue;
      filenames.push_back(st_files(line.substr(space1+1,space2-space1-1),
      		line.substr(space2+1,space3-space2-1)));
+     if (filenames.size()==limit) break;
 //std::cerr << line.substr(space1+1,space2-space1-1) << ',' << line.substr(space2+1) << ",\n";
   }
   std::string dir=referenzdir;

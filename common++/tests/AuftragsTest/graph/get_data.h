@@ -1,4 +1,4 @@
-// $Id: get_data.h,v 1.19 2003/01/06 17:26:44 christof Exp $
+// $Id: get_data.h,v 1.20 2003/01/07 13:59:49 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -79,7 +79,10 @@ class graph_data_node
      st_node_strings get_mengen_for_node(AufEintragBase aeb);
      std::vector<pair<std::string,std::string> >  get_edges_for(AufEintragBase aeb);
 
+// global parameters - evil ... but I don't want to rewrite the program
 	static bool show_referenz;
+	// limit number of files to display
+	static unsigned limit;
 };
 
 #endif

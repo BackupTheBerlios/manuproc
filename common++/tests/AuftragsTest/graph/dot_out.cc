@@ -1,4 +1,4 @@
-// $Id: dot_out.cc,v 1.18 2003/01/06 14:56:15 christof Exp $
+// $Id: dot_out.cc,v 1.19 2003/01/07 13:59:49 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -22,35 +22,13 @@
 #include <Artikel/ArtikelBezeichnung.h>
 #include <Auftrag/AufEintrag.h>
 
+#define CUSTOM_ORDERNO 10
+
 void dot_out::write()
 {
   ofstream fout("dot.script");
   write_header(fout);
 
-#if 0  
-  switch(mode) {
-     case Menge : label="Mengen Test"; break;
-     case Planung : label="Planungs Test"; break;
-     case Split : label="Split Test"; break;
-     case Lager : label="Lager Test"; break;
-     case ZweiAuftraege : label="Zwei Aufträge Test"; break;
-     case ZweiterAuftrag_frueheresDatum : label="Zwei Aufträge, zweiter Auftrag früheres Datum Test"; break;
-     case Lieferschein : label="Lieferschein Test"; break;
-     case LieferscheinMenge : label="LieferscheinMengen Test"; break;
-     case LieferscheinZusatz : label="Lieferschein Zusatz Test"; break;
-     case LieferscheinZweiAuftraege : label="Lieferschein Zwei Aufträge"; break;
-     case LieferscheinJacek : label="Lieferschein Test für Jacek"; break;
-     case ZweiKunden : label="ZweiKunden"; break;
-     case ZweiKundenMengeFreigeben : label="ZweiKundenMengeFreigeben"; break;
-     case ManuProCTest : label="ManuProC"; break;
-     case Rep_Petig_0er_2er_gleichzeitig :label="Rep_Petig_0er_2er_gleichzeitig";break;
-     case Rep_Petig_Kunde :label="Rep_Petig_Kunde";break;
-     case Rep_Petig_Zuordung:label="Rep_Petig_Zuordung";break;
-     case Rep_Petig_Kunden_Zuordung:label="Rep_Petig_Kunden_Zuordung";break;
-     case Legende : label="Legende"; break;
-     default: label= "Fehler, kein Label gestze \n"; 
-   }
-#endif
   if(mode=="X" || mode=="?") 
   {  write_legend(fout);
      write_footer(fout,"Legende");
@@ -119,8 +97,11 @@ void dot_out::write_node(ofstream &fout)
               AufEintragBase a2=k->node.Auftrag();
               if(a1.Instanz()==a2.Instanz())
                {
-                 if(a2.Id()>=20000 ) rank=sink;
-                 else rank=same;
+#if 0               
+                 if(a2.Id()>=CUSTOM_ORDERNO ) rank=sink;
+                 else 
+#endif                 
+                    rank=same;
                }
               Edge(fout,i->node,k->node,j->second,rank);
             }
@@ -132,7 +113,7 @@ void dot_out::write_node(ofstream &fout)
 void Node::write(ofstream &fout,AufEintragBase auftrag,std::string menge,std::string zusatz)
 {
   std::string shape="Mrecord";
-  if(Auftrag().Id()>=20000 || Auftrag().Id()==1) shape="record";
+  if(Auftrag().Id()>=CUSTOM_ORDERNO || Auftrag().Id()==1) shape="record";
   std::string artikel="?";
   try{
     artikel=cH_ArtikelBezeichnung(AufEintrag(auftrag).Artikel())->Bezeichnung();

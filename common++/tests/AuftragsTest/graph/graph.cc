@@ -1,4 +1,4 @@
-// $Id: graph.cc,v 1.18 2003/01/06 17:26:44 christof Exp $
+// $Id: graph.cc,v 1.19 2003/01/07 13:59:49 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Malte Thoma  
  *
@@ -32,6 +32,7 @@ const static struct option options[]=
 {{ "black",  no_argument, NULL, 'b' },
  { "colour",  no_argument, NULL, 'c' },
  { "referenz", no_argument, 0, 'r' },
+ { "limit", required_argument, 0, 'l' },
  { NULL,      0,       NULL, 0 }
 };       
         
@@ -61,7 +62,8 @@ void usage(std::string s)
 #endif       
   cout << "\t -b --black [default]\n"
        << "\t -c --colour\n"
-       << "\t -r --referenz\n"
+       << "\t -r --referenz\tReferenz anzeigen\n"
+       << "\t -l --limit <number>\tHöchstanzahl von angezeigten Schritten\n"
        << "\n";
 }
 
@@ -72,11 +74,12 @@ int main(int argc, char *argv[])
 
   dot_out::e_colour colour=dot_out::Black;
   int opt;
-  while ((opt=getopt_long(argc,argv,"bcr",options,NULL))!=EOF)
+  while ((opt=getopt_long(argc,argv,"bcrl:",options,NULL))!=EOF)
    { switch (opt) {
       case 'b' : colour=dot_out::Black; break;
       case 'c' : colour=dot_out::Colour; break;
       case 'r' : graph_data_node::show_referenz=true; break;
+      case 'l': graph_data_node::limit=atol(optarg); break;
      }
    }  
 
