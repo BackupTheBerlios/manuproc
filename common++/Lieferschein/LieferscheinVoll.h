@@ -47,6 +47,7 @@ public:
  { return lsentry.end();}   
  size_t size() const
  { return lsentry.size();}
+ void setStatusOnEntries(AufStatVal st) throw(SQLerror);
 };
 
 class cH_LieferscheinVoll : public Handle<const LieferscheinVoll>
