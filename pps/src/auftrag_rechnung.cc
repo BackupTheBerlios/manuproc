@@ -294,7 +294,7 @@ void auftrag_rechnung::lieferschein_uebernehmen()
            
           // Wenn Zahlungsziel schon vergangen, dann auf Standard setzten
             
-          if(rechnung.getDatum() >= zahlziel->get_value())
+          if((zahlziel->get_value()-8)<rechnung.getDatum())
             rechnung.setze_Zahlungsart(cH_Zahlungsart(
             			Zahlungsart::default_Zahlart));
             

@@ -7067,6 +7067,11 @@ Jahr
 	<name>copy_ok</name>
 	<can_default>True</can_default>
 	<can_focus>True</can_focus>
+	<signal>
+	  <name>clicked</name>
+	  <handler>on_copy_ok_clicked</handler>
+	  <last_modification_time>Sat, 10 May 2003 16:07:01 GMT</last_modification_time>
+	</signal>
 	<stock_button>GNOME_STOCK_BUTTON_OK</stock_button>
       </widget>
 
@@ -7075,12 +7080,358 @@ Jahr
 	<name>copy_cancel</name>
 	<can_default>True</can_default>
 	<can_focus>True</can_focus>
+	<signal>
+	  <name>clicked</name>
+	  <handler>on_copy_cancel_clicked</handler>
+	  <last_modification_time>Sat, 10 May 2003 16:06:53 GMT</last_modification_time>
+	</signal>
 	<stock_button>GNOME_STOCK_BUTTON_CANCEL</stock_button>
       </widget>
     </widget>
 
     <widget>
-      <class>Placeholder</class>
+      <class>GtkVBox</class>
+      <name>vbox18</name>
+      <homogeneous>False</homogeneous>
+      <spacing>0</spacing>
+      <child>
+	<padding>0</padding>
+	<expand>True</expand>
+	<fill>True</fill>
+      </child>
+
+      <widget>
+	<class>GtkFrame</class>
+	<name>frame35</name>
+	<label>Ursprungsauftrag</label>
+	<label_xalign>0</label_xalign>
+	<shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+	<child>
+	  <padding>0</padding>
+	  <expand>True</expand>
+	  <fill>True</fill>
+	</child>
+
+	<widget>
+	  <class>GtkTable</class>
+	  <name>table25</name>
+	  <rows>2</rows>
+	  <columns>2</columns>
+	  <homogeneous>False</homogeneous>
+	  <row_spacing>0</row_spacing>
+	  <column_spacing>0</column_spacing>
+
+	  <widget>
+	    <class>GtkFrame</class>
+	    <name>frame37</name>
+	    <label>Nummer</label>
+	    <label_xalign>0</label_xalign>
+	    <shadow_type>GTK_SHADOW_NONE</shadow_type>
+	    <child>
+	      <left_attach>0</left_attach>
+	      <right_attach>1</right_attach>
+	      <top_attach>0</top_attach>
+	      <bottom_attach>1</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>True</xexpand>
+	      <yexpand>True</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>True</yfill>
+	    </child>
+
+	    <widget>
+	      <class>GtkEntry</class>
+	      <name>alt_aufnr</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <sensitive>False</sensitive>
+	      <can_focus>True</can_focus>
+	      <editable>False</editable>
+	      <text_visible>True</text_visible>
+	      <text_max_length>0</text_max_length>
+	      <text></text>
+	    </widget>
+	  </widget>
+
+	  <widget>
+	    <class>GtkFrame</class>
+	    <name>frame38</name>
+	    <label>vom</label>
+	    <label_xalign>0</label_xalign>
+	    <shadow_type>GTK_SHADOW_NONE</shadow_type>
+	    <child>
+	      <left_attach>1</left_attach>
+	      <right_attach>2</right_attach>
+	      <top_attach>0</top_attach>
+	      <bottom_attach>1</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>True</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>True</yfill>
+	    </child>
+
+	    <widget>
+	      <class>Custom</class>
+	      <name>alt_aufdatum</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <sensitive>False</sensitive>
+	      <creation_function>datewin</creation_function>
+	      <int1>0</int1>
+	      <int2>0</int2>
+	      <last_modification_time>Sat, 10 May 2003 15:28:55 GMT</last_modification_time>
+	    </widget>
+	  </widget>
+
+	  <widget>
+	    <class>GtkFrame</class>
+	    <name>frame39</name>
+	    <label>Kunde</label>
+	    <label_xalign>0</label_xalign>
+	    <shadow_type>GTK_SHADOW_NONE</shadow_type>
+	    <child>
+	      <left_attach>0</left_attach>
+	      <right_attach>2</right_attach>
+	      <top_attach>1</top_attach>
+	      <bottom_attach>2</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>True</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>True</yfill>
+	    </child>
+
+	    <widget>
+	      <class>Custom</class>
+	      <name>alt_aufkunde</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <sensitive>False</sensitive>
+	      <creation_function>KundenBox2</creation_function>
+	      <int1>0</int1>
+	      <int2>0</int2>
+	      <last_modification_time>Sat, 10 May 2003 15:32:28 GMT</last_modification_time>
+	    </widget>
+	  </widget>
+	</widget>
+      </widget>
+
+      <widget>
+	<class>GtkFrame</class>
+	<name>frame36</name>
+	<label>neuer Auftrag</label>
+	<label_xalign>0</label_xalign>
+	<shadow_type>GTK_SHADOW_ETCHED_IN</shadow_type>
+	<child>
+	  <padding>0</padding>
+	  <expand>True</expand>
+	  <fill>True</fill>
+	</child>
+
+	<widget>
+	  <class>GtkTable</class>
+	  <name>table26</name>
+	  <rows>3</rows>
+	  <columns>2</columns>
+	  <homogeneous>False</homogeneous>
+	  <row_spacing>0</row_spacing>
+	  <column_spacing>0</column_spacing>
+
+	  <widget>
+	    <class>GtkFrame</class>
+	    <name>frame_neukunde</name>
+	    <label>Kunde</label>
+	    <label_xalign>0</label_xalign>
+	    <shadow_type>GTK_SHADOW_NONE</shadow_type>
+	    <child>
+	      <left_attach>0</left_attach>
+	      <right_attach>2</right_attach>
+	      <top_attach>0</top_attach>
+	      <bottom_attach>1</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>True</xexpand>
+	      <yexpand>True</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>True</yfill>
+	    </child>
+
+	    <widget>
+	      <class>Custom</class>
+	      <name>neu_aufkunde</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <creation_function>KundenBox2</creation_function>
+	      <int1>0</int1>
+	      <int2>0</int2>
+	      <last_modification_time>Sat, 10 May 2003 15:35:40 GMT</last_modification_time>
+	    </widget>
+	  </widget>
+
+	  <widget>
+	    <class>GtkFrame</class>
+	    <name>frame41</name>
+	    <label>Auftragsrabatt</label>
+	    <label_xalign>0</label_xalign>
+	    <shadow_type>GTK_SHADOW_NONE</shadow_type>
+	    <child>
+	      <left_attach>0</left_attach>
+	      <right_attach>1</right_attach>
+	      <top_attach>1</top_attach>
+	      <bottom_attach>2</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>True</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>True</yfill>
+	    </child>
+
+	    <widget>
+	      <class>GtkSpinButton</class>
+	      <name>neu_aufrabatt</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <can_focus>True</can_focus>
+	      <climb_rate>1</climb_rate>
+	      <digits>2</digits>
+	      <numeric>False</numeric>
+	      <update_policy>GTK_UPDATE_ALWAYS</update_policy>
+	      <snap>False</snap>
+	      <wrap>False</wrap>
+	      <value>0</value>
+	      <lower>0</lower>
+	      <upper>100</upper>
+	      <step>1</step>
+	      <page>10</page>
+	      <page_size>10</page_size>
+	    </widget>
+	  </widget>
+
+	  <widget>
+	    <class>GtkFrame</class>
+	    <name>neu_zeilenrabatt_frame</name>
+	    <label>Zeilenrabatt</label>
+	    <label_xalign>0</label_xalign>
+	    <shadow_type>GTK_SHADOW_NONE</shadow_type>
+	    <child>
+	      <left_attach>1</left_attach>
+	      <right_attach>2</right_attach>
+	      <top_attach>1</top_attach>
+	      <bottom_attach>2</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>True</yfill>
+	    </child>
+
+	    <widget>
+	      <class>GtkSpinButton</class>
+	      <name>neu_zeilenrabatt</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <can_focus>True</can_focus>
+	      <climb_rate>1</climb_rate>
+	      <digits>2</digits>
+	      <numeric>False</numeric>
+	      <update_policy>GTK_UPDATE_ALWAYS</update_policy>
+	      <snap>False</snap>
+	      <wrap>False</wrap>
+	      <value>0</value>
+	      <lower>0</lower>
+	      <upper>100</upper>
+	      <step>1</step>
+	      <page>10</page>
+	      <page_size>10</page_size>
+	    </widget>
+	  </widget>
+
+	  <widget>
+	    <class>GtkFrame</class>
+	    <name>frame43</name>
+	    <label>Lieferdatum</label>
+	    <label_xalign>0</label_xalign>
+	    <shadow_type>GTK_SHADOW_NONE</shadow_type>
+	    <child>
+	      <left_attach>0</left_attach>
+	      <right_attach>1</right_attach>
+	      <top_attach>2</top_attach>
+	      <bottom_attach>3</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>True</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>True</yfill>
+	    </child>
+
+	    <widget>
+	      <class>Custom</class>
+	      <name>neu_lieferdatum</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <creation_function>datewin</creation_function>
+	      <int1>0</int1>
+	      <int2>0</int2>
+	      <last_modification_time>Sat, 10 May 2003 15:45:16 GMT</last_modification_time>
+	    </widget>
+	  </widget>
+
+	  <widget>
+	    <class>GtkFrame</class>
+	    <name>frame44</name>
+	    <label>Stück</label>
+	    <label_xalign>0</label_xalign>
+	    <shadow_type>GTK_SHADOW_NONE</shadow_type>
+	    <child>
+	      <left_attach>1</left_attach>
+	      <right_attach>2</right_attach>
+	      <top_attach>2</top_attach>
+	      <bottom_attach>3</bottom_attach>
+	      <xpad>0</xpad>
+	      <ypad>0</ypad>
+	      <xexpand>False</xexpand>
+	      <yexpand>False</yexpand>
+	      <xshrink>False</xshrink>
+	      <yshrink>False</yshrink>
+	      <xfill>True</xfill>
+	      <yfill>True</yfill>
+	    </child>
+
+	    <widget>
+	      <class>GtkSpinButton</class>
+	      <name>neu_stueck</name>
+	      <cxx_visibility>protected</cxx_visibility>
+	      <can_focus>True</can_focus>
+	      <climb_rate>1</climb_rate>
+	      <digits>0</digits>
+	      <numeric>False</numeric>
+	      <update_policy>GTK_UPDATE_ALWAYS</update_policy>
+	      <snap>False</snap>
+	      <wrap>False</wrap>
+	      <value>0</value>
+	      <lower>0</lower>
+	      <upper>10000</upper>
+	      <step>1</step>
+	      <page>10</page>
+	      <page_size>10</page_size>
+	    </widget>
+	  </widget>
+	</widget>
+      </widget>
     </widget>
   </widget>
 </widget>

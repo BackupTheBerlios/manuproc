@@ -1,4 +1,4 @@
-/* $Id: Ueberweisung.cc,v 1.6 2003/05/06 14:46:01 jacek Exp $ */
+/* $Id: Ueberweisung.cc,v 1.7 2003/05/10 16:07:40 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -102,7 +102,12 @@ Ueberweisung *Ueberweisung::newUeberweisung(const InsertStr &is) throw(SQLerror)
  	"  verwendungszweck3,"
  	"  eingegeben_am,eingegebendurch,faellig) values "
  	" (?,?,?,?,?,"
- 	"  ?,?,?,?,?,?,?,"
+ 	"  ?,substr(trim(?),1,27),"
+ 	"  substr(trim(?),1,27)," 	
+ 	"  substr(trim(?),1,27),"
+ 	"  substr(trim(?),1,27)," 	
+ 	"  substr(trim(?),1,27),"
+ 	"  substr(trim(?),1,27)," 	
  	"  now(),?,?)") << ui << 
  	(long long unsigned int)(is.ownkonto) << 
  	is.ownblz << 
@@ -165,11 +170,11 @@ void Ueberweisung::Update(const InsertStr &is) throw(SQLerror)
  Query("update ueberweisungen set"
  	" dest_konto=?, dest_blz=?,"
  	"  betrag=?,"
- 	"  empfaenger=?,"
- 	"  verwendungszweck0=?,"
- 	"  verwendungszweck1=?,"
- 	"  verwendungszweck2=?,"
- 	"  verwendungszweck3=?,"
+ 	"  empfaenger=substr(trim(?),1,27),"
+ 	"  verwendungszweck0=substr(trim(?),1,27),"
+ 	"  verwendungszweck1=substr(trim(?),1,27),"
+ 	"  verwendungszweck2=substr(trim(?),1,27),"
+ 	"  verwendungszweck3=substr(trim(?),1,27),"
  	"  eingegeben_am=?,"
  	"  eingegebendurch=?,"
  	"  faellig=?"
