@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.53 2003/06/03 16:38:30 christof Exp $
+// $Id: AufEintrag.cc,v 1.54 2003/06/13 09:38:30 christof Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -620,15 +620,22 @@ AuftragBase::mengen_t AufEintrag::MengeAendern(int uid,mengen_t menge,bool insta
     else AufEintragZu(*this).Neu(ElternAEB,menge);
  }
 
- if(auftragstatus==OPEN)
+ if(auftragstatus==OPEN && instanzen)
   {
    // Rekursion von 2ern verbieten
-   assert(Id()!=dispo_auftrag_id || !instanzen); 
-   // keine Rekursion bei 1er im Lager 
-   // Rekursion bei 1er oder 3er in Produktion
-   if ((!Instanz()->LagerInstanz() || Id()==AuftragBase::ungeplante_id) 
-   	&& instanzen && !!menge2)
+   assert(Id()!=dispo_auftrag_id); 
+   if (Instanz()->LagerInstanz() && Id()==AuftragBase::plan_auftrag_id)
+   {  if (menge2<0)
+         // Menge im Lager freigeben == Einlagern ohne Produktion?
+         AufEintrag::MengeVormerken(Instanz(),Artikel(),-menge2,true);
+      else ; // 1er wird erhöht ... nichts tun
+   }
+   else if (!!menge2)
+   // Rekursion von 0ern im Lager (es gibt keine 3er im Lager)
+   // Rekursion bei 0er, 1er oder 3er in Produktion
+   {  // keine Rekursion bei 1er im Lager (wie soll man auch hierher gelangen?)
       updateStkDiffInstanz__(uid,menge2,*this,reason);
+   }
   }
   tr.commit();
   // wir haben zwar weniger abbestellt, aber nur weil wir geliefert haben
@@ -644,12 +651,8 @@ AuftragBase::mengen_t AufEintrag::ArtikelInternAbbestellen_cb::operator()
    else if (j.Instanz()->LagerInstanz())
    {  // vorgemerkte Menge freigeben
       assert(j.Id()==AuftragBase::plan_auftrag_id);
-      AuftragBase::mengen_t wahreMenge=AuftragBase::min(M,AE.getRestStk());
+      // AuftragBase::mengen_t wahreMenge=AuftragBase::min(M,AE.getRestStk());
       M=-AE.MengeAendern(uid,-M,true,mythis,reason);
-      // == Einlagern ohne Produktion?
-      if (j.Instanz()->LagerInstanz() && j.Id()==AuftragBase::plan_auftrag_id)
-      {  AufEintrag::MengeVormerken(AE.Instanz(),AE.Artikel(),wahreMenge,true);
-      }
    }
    else 
      { // 1er oder 3er - dispo anlegen, Bestellpfeil erniedrigen

@@ -1,4 +1,4 @@
-// $Id: adjust_store.cc,v 1.34 2003/06/12 17:09:47 christof Exp $
+// $Id: adjust_store.cc,v 1.35 2003/06/13 09:38:30 christof Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 1998-2002 Adolf Petig GmbH & Co. KG, written by Malte Thoma
  *
@@ -26,7 +26,18 @@
 #include <Auftrag/selFullAufEntry.h>
 #include <Misc/Trace.h>
 
-void usage(const std::string &s)
+enum action_bits { b_physical, b_exclude, b_tree, b_cut };
+
+enum action_flags { f_none=0 };
+bool operator&(action_flags a,action_bits b) { return int(a)&(1<<int(b)); }
+void operator|=(action_flags &a,action_bits b) { ((int&)(a))|=1<<int(b); }
+void operator-=(action_flags &a,action_bits b) { ((int&)(a))&=~(1<<int(b)); }
+//action_flags operator|(action_flags a,action_bits b) { return action_flags(int(a)|(1<<int(b))); }
+//action_flags operator|(action_bits a,action_bits b) { return action_flags((1<<int(a))|(1<<int(b))); }
+
+static action_flags actions=f_none;
+
+static void usage(const std::string &s)
 {
  std::cerr <<"\nDieses Programm ermöglicht die folgenden Aktionen:\n"
            "\tA: Für eine Lagerinstanz wird aus dem physikalischen Lagertabellen\n"
@@ -34,46 +45,47 @@ void usage(const std::string &s)
            "\t   entsprechend angepaßt. Dabei werden die eventuelle Vormerkungen\n"
            "\t   (in form von 1er(plan-)Aufträgen berücksichtigt. Sollte mehr\n"
            "\t   vorgemerkt sein, als im Lager drin ist, so sird die Vormerkung\n"
-           "\t   reduziert.\n"
+           "\t   reduziert. (nicht mit -I!)\n"
            "\tC: Es wird sichergestellt, daß nur entweder 0er- oder 2er-Aufträge\n"
            "\t   (pro Instanz,Artikel,Lieferdatum) existieren.\n"
-           "\t*/X: Alle Analysen/Reparaturen auf einmal (meist mit -I) (außer A,C)\n";
+           "\tX: Reparaturen von Zuordnungen+lokalen Einschränkungen\n"
+           "\tT: Beschränken von produziert_selbst Instanzen auf benötigte Menge\n"
+           "\t*: Alle Analysen/Reparaturen auf einmal (meist mit -I)\n";
            
  std::cerr << "USAGE:  ";
  std::cerr << s <<" [-i<instanz>|-I]  -a<aktion> [-d<database>] [-h<dbhost>] [-y] \n"
-           "\twobei die aktion=[A|C|X|*] ist.\n"
+           "\twobei die aktion=[A|C|X|T|*] ist.\n"
            "\t-y Analysemodus (keine Reparaturen)\n"
            "\t-I führt die Tests für alle Instanzen durch\n\n";
  exit(1);
 }
 
-bool check_for(const std::string &pname,cH_ppsInstanz I,const std::string &aktion,const bool analyse_only)
+static bool check_for(const std::string &pname,cH_ppsInstanz I,const bool analyse_only)
 {   
    ppsInstanzReparatur RI(I->Id());
    bool alles_ok=true;
-    if     (aktion=="A")
+    if (actions&b_physical)
      {
       if(I->EigeneLagerKlasseImplementiert()) RI.ReparaturLager(getuid(),analyse_only);
-      else std::cout << "\t"<< I << "'A' nicht sinnvoll\n";
+      else if (!(actions&b_tree)) // bei * unterdrücken
+         std::cout << "\t"<< I << " 'A' nicht sinnvoll\n";
      }
-    else if (aktion=="*" || aktion=="X" || aktion=="C")
+    if (actions&b_tree || actions&b_exclude)
     {  SQLFullAuftragSelector psel=SQLFullAuftragSelector::sel_InstanzAlle(I->Id());
        SelectedFullAufList K(psel);
-      if (aktion=="*" || aktion=="C")
-       RI.Reparatur_0er_und_2er(K,analyse_only);
-      if (aktion=="*" || aktion=="X")
+      if (actions&b_exclude) RI.Reparatur_0er_und_2er(K,analyse_only);
+      if (actions&b_tree)
       {AuftragBase::tolerate_inconsistency=true;
        for(SelectedFullAufList::iterator i = K.begin();i!=K.end(); ++i)
        {  AufEintragZu::list_t eltern=AufEintragZu::get_Referenz_list(*i,
        			AufEintragZu::list_eltern,AufEintragZu::list_ohneArtikel);
        	  AufEintragZu::map_t kinder=AufEintragZu::get_Kinder_nach_Artikel(*i);
-       	  alles_ok&=RI.Eltern(*i,eltern,analyse_only);
+       	  alles_ok&=RI.Eltern(*i,eltern,analyse_only,actions&b_cut);
        	  alles_ok&=RI.Lokal(*i,analyse_only);
        	  alles_ok&=RI.Kinder(*i,kinder,analyse_only);
        }
       }
     }
-    else usage(pname);
    return alles_ok;
 }
 
@@ -94,7 +106,6 @@ int main(int argc,char *argv[])
   ppsInstanz::ID instanz= ppsInstanzID::None;
   std::string database="";
   std::string dbhost="";  
-  std::string aktion;
   bool analyse_only=false;
   bool all_instanz=false;
 
@@ -105,7 +116,11 @@ int main(int argc,char *argv[])
      {
        case 'i' : instanz = ppsInstanz::ID(atoi(optarg));break;
        case 'I' : all_instanz=true;break;
-       case 'a' : aktion = optarg; break;
+       case 'a' : if (strchr(optarg,'A')||strchr(optarg,'*')) actions|=b_physical;
+          if (strchr(optarg,'C')||strchr(optarg,'*')) actions|=b_exclude;
+          if (strchr(optarg,'T')||strchr(optarg,'*')) actions|=b_cut;
+          if (strchr(optarg,'X')||strchr(optarg,'*')||strchr(optarg,'T')) actions|=b_tree;
+          break;
        case 'd' : database=optarg;break;
        case 'h' : dbhost=optarg;break;  
        case 'y' : analyse_only=true;break;  
@@ -114,9 +129,7 @@ int main(int argc,char *argv[])
      }
    }
 
-  if     (instanz==ppsInstanzID::None && !all_instanz) usage(argv[0]);
-  else if(instanz!=ppsInstanzID::None &&  all_instanz) usage(argv[0]);
-
+  if (((instanz==ppsInstanzID::None) ^ all_instanz) || actions==f_none) usage(argv[0]);
 
   ManuProC::PrintUncaughtExceptions();
   bool alles_ok=true;
@@ -127,13 +140,16 @@ int main(int argc,char *argv[])
     ManuProC::dbconnect(conn);
 
     if(instanz!=ppsInstanzID::None) 
-      alles_ok&=check_for(argv[0],cH_ppsInstanz(instanz),aktion,analyse_only);
+      alles_ok&=check_for(argv[0],cH_ppsInstanz(instanz),analyse_only);
     else
      { std::vector<cH_ppsInstanz> VI=cH_ppsInstanz::get_all_instanz();
        for(std::vector<cH_ppsInstanz>::const_iterator i=VI.begin();i!=VI.end();++i)
-        {
-         //if((*i)->KundenInstanz()) continue;
-         alles_ok&=check_for(argv[0],*i,aktion,analyse_only);
+        {action_flags save=actions;
+         if((*i)->KundenInstanz()) actions-=b_exclude;
+         if((*i)->LagerInstanz() && !(*i)->EigeneLagerKlasseImplementiert())
+            actions-=b_physical;
+         alles_ok&=check_for(argv[0],*i,analyse_only);
+         actions=save;
         }
      }    
 

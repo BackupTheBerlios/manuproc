@@ -244,7 +244,7 @@ void ppsInstanzReparatur::KinderErniedrigen(AufEintrag &ae,
    }
 }
 
-bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, bool analyse_only) const
+bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, bool analyse_only, bool limit_prodselbst) const
 {  // 2er und Kundenaufträge dürfen keine Kinder haben!
    unsigned uid=getuid();
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,ae,/*eltern.size(),*/analyse_only);
@@ -331,18 +331,23 @@ bool ppsInstanzReparatur::Eltern(AufEintrag &ae, AufEintragZu::list_t &eltern, b
       }
    }
    // Sum zu klein: abbestellen (falls 0er, bei 1er 2er erzeugen)
-   else if (menge<ae.getRestStk() && !ae.Instanz()->ProduziertSelbst())
+   else if (menge<ae.getRestStk() 
+   	&& (!ae.Instanz()->ProduziertSelbst() || limit_prodselbst))
    {  analyse("mehr offen als nun v.o. benötigt",ae,menge,ae.getStueck());
       alles_ok=false;
       if (!analyse_only)
-      {if (ae.Id()==AuftragBase::ungeplante_id)
-         ae.MengeAendern(uid,menge-ae.getRestStk(),true,AufEintragBase(),
+      {if (in(ae.Id(),AuftragBase::ungeplante_id,AuftragBase::plan_auftrag_id))
+       {  assert(ae.Id()!=AuftragBase::plan_auftrag_id || ae.Instanz()->LagerInstanz());
+          ae.MengeAendern(uid,menge-ae.getRestStk(),true,AufEintragBase(),
          	ManuProC::Auftrag::r_Reparatur);
-       else
+       }
+       else 
+       { assert(ae.Id()>=AuftragBase::handplan_auftrag_id);
          // 2er erhöhen
          AuftragBase(ae.Instanz(),AuftragBase::dispo_auftrag_id).
               BestellmengeAendern(ae.getRestStk()-menge,ae.getLieferdatum(),
               		ae.Artikel(),OPEN,uid,ae);
+       }
       }
    }
    return alles_ok;
@@ -353,15 +358,14 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
    unsigned uid=getuid();
    ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,ae,/*kinder.size(),*/analyse_only);
    
-   if (ae.Id()==AuftragBase::dispo_auftrag_id 
-   	|| (ae.Id()==AuftragBase::plan_auftrag_id && ae.Instanz()->LagerInstanz()))
+   if (ae.Id()==AuftragBase::dispo_auftrag_id)
    {  // 2er: Kinder gleiche instanz
       AuftragBase::mengen_t menge2;
       
       for (AufEintragZu::map_t::iterator i=kinder.begin();i!=kinder.end();++i)
       {  for (AufEintragZu::list_t::iterator j=i->second.begin();j!=i->second.end();)
          {  if (ae.Instanz()->LagerInstanz())
-            {  analyse("Ein Lager 2er/1er darf keine Kinder haben",ae,j->AEB,j->Menge);
+            {  analyse("Ein Lager 2er darf keine Kinder haben",ae,j->AEB,j->Menge);
              weg:
                if (!analyse_only) AufEintragZu::remove(ae,j->AEB);
                j=i->second.erase(j);
@@ -427,6 +431,11 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
                   goto weg1;
                }
             }
+            if (ae.Id()==AuftragBase::plan_auftrag_id && ae.Instanz()->LagerInstanz()
+            	&& (!!j->Menge || j->AEB.Id()==AuftragBase::ungeplante_id))
+            {  analyse("Ein Lager 1er darf keine Kinder >0||->0er haben",ae,j->AEB,j->Menge);
+               goto weg1;
+            }
             if (j->AEB.Id()==AuftragBase::dispo_auftrag_id)
             {  analyse("Kind darf kein 2er sein",ae,j->AEB,j->Menge);
                goto weg1;
@@ -450,7 +459,8 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
                continue;
          }
          else // Intern
-            if (artikel_passt_nicht) 
+            if (artikel_passt_nicht 
+            	|| (ae.Id()==AuftragBase::plan_auftrag_id && ae.Instanz()->LagerInstanz()))
                continue;
          
          AuftragBase::mengen_t richtigeMenge=
@@ -478,6 +488,8 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
             }
          }
       }
+      if (ae.Id()==AuftragBase::plan_auftrag_id && ae.Instanz()->LagerInstanz())
+         goto exit;
       // kam der Artikel überhaupt vor ?
       if (next!=ppsInstanzID::None)
       {  AufEintragZu::map_t::const_iterator f=kinder.find(ae.Artikel());
@@ -505,6 +517,7 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
          }
       }
    }
+exit:
    return alles_ok;
 }
 
