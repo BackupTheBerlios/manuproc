@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.111 2004/05/13 15:17:36 christof Exp $
+// $Id: AufEintrag.cc,v 1.112 2004/11/02 10:46:03 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -43,6 +43,8 @@
 //#include <Lager/FertigWarenLager.h>
 #include <Artikel/ArtikelBase.h>
 #endif
+
+AufEintrag::NoAEB_Error::NoAEB_Error(int i):x(i) {}
 
 void AufEintrag::setLetztePlanungFuer(cH_ppsInstanz planinstanz) throw(SQLerror)
 {

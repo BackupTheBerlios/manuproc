@@ -1,4 +1,4 @@
-/* $Id: AufEintrag.h,v 1.89 2004/09/01 12:25:48 christof Exp $ */
+/* $Id: AufEintrag.h,v 1.90 2004/11/02 10:46:03 jacek Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -144,7 +144,7 @@ public:
    {  int x; 
       virtual const char* what() const throw() 
         { return "AufEintrag::NoAEB_Error"; }
-       NoAEB_Error(int i):x(i) {}
+       NoAEB_Error(int i);
    };
 
  AufEintrag() 
