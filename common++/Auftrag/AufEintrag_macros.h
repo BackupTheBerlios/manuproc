@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_macros.h,v 1.1 2003/03/07 08:27:50 christof Exp $ */
+/* $Id: AufEintrag_macros.h,v 1.2 2003/03/07 09:00:31 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -46,5 +46,32 @@
 	      if(!AE_menge2) break; \
 	   } \
 	}
+
+/* callee needs:
+ *   AuftragBase::mengen_t operator()(const ArtikelBase &,
+ *		const AufEintragBase &,AuftragBase::mengen_t) const;
+ */
+
+template <class T>
+ void distribute_children(const AufEintragBase &startAEB,
+ 		AuftragBase::mengen_t menge,
+ 		const ArtikelBase &article, const T &callee)
+{  AufEintragZu::map_t MapArt(AufEintragZu::get_Kinder_nach_Artikel(startAEB)); 
+   ArtikelBaum AE_artbaum(article); 
+   for(AufEintragZu::map_t::const_iterator artloop_var=MapArt.begin();artloop_var!=MapArt.end();++artloop_var) 
+   {  ArtikelBaum::faktor_t AE_faktor = AE_artbaum.Faktor(artloop_var->first); 
+      AuftragBase::mengen_t AE_menge2=AE_faktor*menge; 
+      for(AufEintragZu::list_t::const_iterator zuloop_var=artloop_var->second.begin(); 
+	   		zuloop_var!=artloop_var->second.end();++j) 
+      {  AuftragBase::mengen_t mengen_var=AuftragBase::min(zuloop_var->Menge,AE_menge2); 
+         if (!mengen_var) continue;
+
+         mengen_var=callee(artloop_var->first,zuloop_var->AEB,mengen_var);
+         
+         AE_menge2-=mengen_var;
+         if(!AE_menge2) break;
+      }
+   }
+}
 
 #endif
