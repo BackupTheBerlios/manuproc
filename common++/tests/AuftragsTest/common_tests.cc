@@ -31,15 +31,15 @@ static bool ZweiKundenTest(AufEintrag &AE)
        AufEintragBase AEB2=auftrag.anlegenK();
        vergleichen(Check::Menge,"ZK_anlegen","Anlegen eines zweiten (offenen) Auftrags für einen anderen Kunden ["+AE.str()+"]","");
 
-        AE.Produziert(300,Lieferschein::none_id);
+        AE.ProduziertNG(300,LieferscheinEntryBase());
       vergleichen(Check::Menge,"ZK_abschreiben1T","Zwei Kunden Teillieferung 1\n","");
 
       {AufEintrag AE(AEB2);
-        AE.Produziert(180,Lieferschein::none_id);
+        AE.ProduziertNG(180,LieferscheinEntryBase());
       }
       vergleichen(Check::Menge,"ZK_abschreiben2T","Zwei Kunden Teillieferung 2\n","");
 
-        AE.Produziert(200,Lieferschein::none_id);
+        AE.ProduziertNG(200,LieferscheinEntryBase());
       vergleichen(Check::Menge,"ZK_abschreiben1U","Zwei Kunden Volllieferung 1\n","");
        return true;
 }
