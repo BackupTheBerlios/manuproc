@@ -228,7 +228,8 @@ Auftrag::Auftrag(Anlegen _instanz, long kdnr, const std::string &yaufnr) throw(S
  SQLerror::test(__FILELINE__":Auftrag: update auftrag");	
 
  exec sql update auftrag set notiz=(select auf_notiz from kunden
-	where kundennr=:KUNDENNR) where auftragid=:AUFTRAGID;
+	where kundennr=:KUNDENNR) where (auftragid,instanz)=
+	  (:AUFTRAGID,:INSTANZ);
  SQLerror::test(__FILELINE__":Auftrag: update notiz");	
 #endif
 
