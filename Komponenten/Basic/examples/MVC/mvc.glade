@@ -5,7 +5,7 @@
   <name>mvc</name>
   <program_name>mvc</program_name>
   <directory></directory>
-  <source_directory>src</source_directory>
+  <source_directory>.</source_directory>
   <pixmaps_directory>pixmaps</pixmaps_directory>
   <language>C++</language>
   <gnome_support>False</gnome_support>
@@ -77,6 +77,20 @@
     </widget>
 
     <widget>
+      <class>Custom</class>
+      <name>boolwidget</name>
+      <creation_function>MVC_bool_widget(mybool,&quot;an/aus&quot;)</creation_function>
+      <int1>0</int1>
+      <int2>0</int2>
+      <last_modification_time>Wed, 18 Sep 2002 08:01:17 GMT</last_modification_time>
+      <child>
+	<padding>0</padding>
+	<expand>True</expand>
+	<fill>True</fill>
+      </child>
+    </widget>
+
+    <widget>
       <class>GtkButton</class>
       <name>button1</name>
       <can_focus>True</can_focus>
@@ -86,6 +100,24 @@
 	<last_modification_time>Fri, 05 Jul 2002 20:57:21 GMT</last_modification_time>
       </signal>
       <label>löschen</label>
+      <relief>GTK_RELIEF_NORMAL</relief>
+      <child>
+	<padding>0</padding>
+	<expand>False</expand>
+	<fill>False</fill>
+      </child>
+    </widget>
+
+    <widget>
+      <class>GtkButton</class>
+      <name>button2</name>
+      <can_focus>True</can_focus>
+      <signal>
+	<name>activate</name>
+	<handler>randomize</handler>
+	<last_modification_time>Wed, 18 Sep 2002 08:02:04 GMT</last_modification_time>
+      </signal>
+      <label>randomize</label>
       <relief>GTK_RELIEF_NORMAL</relief>
       <child>
 	<padding>0</padding>

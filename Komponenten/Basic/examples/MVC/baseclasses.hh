@@ -11,7 +11,8 @@ class window1_base
 {protected:
         MVC<int> myint;
         MVC<std::string> mystring;
+        MVC<bool> mybool;
 public: 
-	window1_base() : myint(0) {}
+	window1_base() : myint(0), mybool(false) {}
 };
 #endif //

@@ -12,7 +12,8 @@ class window1 : public window1_glade
         void int_changed(gpointer);
         void string_changed(gpointer);
         void someth_changed(gpointer);
-        
+        void bool_changed(gpointer);
+        void randomize();
 public:
 	window1();
 };
