@@ -17,37 +17,24 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// $Id: Schussfaeden.pgcc,v 1.3 2002/07/04 10:34:32 cvs_christof Exp $
+// $Id: Schussfaeden_sql.pgcc,v 1.1 2002/09/26 15:27:29 thoma Exp $
 
 #include "Schussfaeden.hh"
 #include <Aux/Transaction.h>
 exec sql include sqlca;
 
 void Schussfaeden::Load(const ArtikelBase &ab)
-{  exec sql begin declare section;
-   float SCHUSSDICHTE;
-   int ANZAHL[20];
-   int ARTIKEL, SCHUSSMATERIAL[20], FANGFADEN;
+{  
+   exec sql begin declare section;
+      int ANZAHL[20];
+      int ARTIKEL=ab.Id(), SCHUSSMATERIAL[20];
    exec sql end declare section;
-
    clear();
-   ARTIKEL=ab.Id();
-
-   exec sql select
-         coalesce(schussdichte,0), coalesce(fangfaden,0)
-      into :SCHUSSDICHTE, :FANGFADEN
-      from webangaben where artikel= :ARTIKEL;
-   SQLerror::test(__FILELINE__ "select from webangaben");
-
-   schussdichte=SCHUSSDICHTE;
-   fangfaden=FANGFADEN;
 
    // schussfaeden einlesen!
    exec sql declare sf cursor for
-   	select anzahl,material 
-   	from webang_schuss 
-   	where artikel= :ARTIKEL
-   	order by index;
+   	select anzahl,material from webang_schuss 
+   	where artikel= :ARTIKEL order by index;
    Transaction tr;
    exec sql open sf;
    SQLerror::test(__FILELINE__,100);

@@ -1,4 +1,11 @@
-/* $Id: Adresse.pgcc,v 1.16 2001/12/04 21:21:42 jacek Exp $ */
+/* Processed by ecpg (2.9.0) */
+/* These three include files are added by the preprocessor */
+#include <ecpgtype.h>
+#include <ecpglib.h>
+#include <ecpgerrno.h>
+#include <sqlca.h>
+#line 1 "Adresse.pgcc"
+/* $Id: Adresse.cc,v 1.1 2002/09/26 15:32:50 thoma Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -25,40 +32,178 @@
 #include "Aux/Ausgabe_neu.h"
 #include "Aux/string0.h"
 
-exec sql include sqlca;
+
+#line 1 "/usr/include/postgresql/sqlca.h"
+#ifndef POSTGRES_SQLCA_H
+#define POSTGRES_SQLCA_H
+
+#ifndef DLLIMPORT
+#ifdef __CYGWIN__
+#define DLLIMPORT __declspec (dllimport)
+#else
+#define DLLIMPORT
+#endif   /* __CYGWIN__ */
+#endif   /* DLLIMPORT */
+
+#define SQLERRMC_LEN	70
+
+#ifdef __cplusplus
+extern		"C"
+{
+#endif
+
+struct sqlca
+{
+	char		sqlcaid[8];
+	long		sqlabc;
+	long		sqlcode;
+	struct
+	{
+		int			sqlerrml;
+		char		sqlerrmc[SQLERRMC_LEN];
+	}			sqlerrm;
+	char		sqlerrp[8];
+	long		sqlerrd[6];
+	/* Element 0: empty						*/
+	/* 1: OID of processed tuple if applicable			*/
+	/* 2: number of rows processed				*/
+	/* after an INSERT, UPDATE or				*/
+	/* DELETE statement					*/
+	/* 3: empty						*/
+	/* 4: empty						*/
+	/* 5: empty						*/
+	char		sqlwarn[8];
+	/* Element 0: set to 'W' if at least one other is 'W'	*/
+	/* 1: if 'W' at least one character string		*/
+	/* value was truncated when it was			*/
+	/* stored into a host variable.				*/
+
+	/*
+	 * 2: if 'W' a (hopefully) non-fatal notice occured
+	 */	/* 3: empty */
+	/* 4: empty						*/
+	/* 5: empty						*/
+	/* 6: empty						*/
+	/* 7: empty						*/
+
+	char		sqlext[8];
+};
+
+extern DLLIMPORT struct sqlca sqlca;
+
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+
+#line 28 "Adresse.pgcc"
+
 
 Adresse::Adresse(int kdnr) throw(SQLerror)
-{  exec sql begin declare section;
-   int KUNDENNR=kdnr;
-   char IDNR[21];
-   char FIRMA[61];
-   char POSTANWVOR[41];
-   char STRASSE[36];
-   char POSTANWNACH[41];
-   char HSNR[8];
-   char _PLZ[11];
-   char POSTFACH[21];
-   char POSTFPLZ[11];
-   char ORT[31];
-   bool RNG_AN_POSTFACH;
-   char LANDNAME[41];
-   char POSTFACHNAME[41];
-   char ISOCODE[4];
+{  /* exec sql begin declare section */
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
-   int IIDNR, IPOSTANWVOR, ISTRASSE, IPOSTANWNACH, IHSNR, IPLZ,
-      IPOSTFACH, IPOSTFPLZ, IORT, IRNG_AN_POSTFACH;
-   int ILANDNAME,IPOSTFACHNAME;
-   exec sql end declare section;
+         
+         
+    
+   
+#line 32 "Adresse.pgcc"
+   int  KUNDENNR  = kdnr ;
+ 
+#line 33 "Adresse.pgcc"
+   char  IDNR [ 21 ]   ;
+ 
+#line 34 "Adresse.pgcc"
+   char  FIRMA [ 61 ]   ;
+ 
+#line 35 "Adresse.pgcc"
+   char  POSTANWVOR [ 41 ]   ;
+ 
+#line 36 "Adresse.pgcc"
+   char  STRASSE [ 36 ]   ;
+ 
+#line 37 "Adresse.pgcc"
+   char  POSTANWNACH [ 41 ]   ;
+ 
+#line 38 "Adresse.pgcc"
+   char  HSNR [ 8 ]   ;
+ 
+#line 39 "Adresse.pgcc"
+   char  _PLZ [ 11 ]   ;
+ 
+#line 40 "Adresse.pgcc"
+   char  POSTFACH [ 21 ]   ;
+ 
+#line 41 "Adresse.pgcc"
+   char  POSTFPLZ [ 11 ]   ;
+ 
+#line 42 "Adresse.pgcc"
+   char  ORT [ 31 ]   ;
+ 
+#line 43 "Adresse.pgcc"
+   bool  RNG_AN_POSTFACH   ;
+ 
+#line 44 "Adresse.pgcc"
+   char  LANDNAME [ 41 ]   ;
+ 
+#line 45 "Adresse.pgcc"
+   char  POSTFACHNAME [ 41 ]   ;
+ 
+#line 46 "Adresse.pgcc"
+   char  ISOCODE [ 4 ]   ;
+ 
+#line 48 "Adresse.pgcc"
+   int  IIDNR   ,  IPOSTANWVOR   ,  ISTRASSE   ,  IPOSTANWNACH   ,  IHSNR   ,  IPLZ   ,  IPOSTFACH   ,  IPOSTFPLZ   ,  IORT   ,  IRNG_AN_POSTFACH   ;
+ 
+#line 50 "Adresse.pgcc"
+   int  ILANDNAME   ,  IPOSTFACHNAME   ;
+/* exec sql end declare section */
+#line 51 "Adresse.pgcc"
 
-   exec sql SELECT firma, postanwvor, strasse, hsnr, postanwnach,
-         	plz, ort, postfach, postfplz, rng_an_postfach, idnr 
-	into :FIRMA, :POSTANWVOR:IPOSTANWVOR, :STRASSE:ISTRASSE,
-   		:HSNR:IHSNR, :POSTANWNACH:IPOSTANWNACH, :_PLZ:IPLZ,
-   		:ORT:IORT, :POSTFACH:IPOSTFACH, 
-   		:POSTFPLZ:IPOSTFPLZ, :RNG_AN_POSTFACH:IRNG_AN_POSTFACH,
-   		:IDNR:IIDNR
-   	FROM kunden
-   	WHERE kundennr= :KUNDENNR;
+
+   { ECPGdo(__LINE__, NULL, "select  firma  , postanwvor  , strasse  , hsnr  , postanwnach  , plz  , ort  , postfach  , postfplz  , rng_an_postfach  , idnr   from kunden where kundennr  = ?  ", 
+	ECPGt_int,&(KUNDENNR),1L,1L,sizeof(int), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, ECPGt_EOIT, 
+	ECPGt_char,(FIRMA),61L,1L,61*sizeof(char), 
+	ECPGt_NO_INDICATOR, NULL , 0L, 0L, 0L, 
+	ECPGt_char,(POSTANWVOR),41L,1L,41*sizeof(char), 
+	ECPGt_int,&(IPOSTANWVOR),1L,1L,sizeof(int), 
+	ECPGt_char,(STRASSE),36L,1L,36*sizeof(char), 
+	ECPGt_int,&(ISTRASSE),1L,1L,sizeof(int), 
+	ECPGt_char,(HSNR),8L,1L,8*sizeof(char), 
+	ECPGt_int,&(IHSNR),1L,1L,sizeof(int), 
+	ECPGt_char,(POSTANWNACH),41L,1L,41*sizeof(char), 
+	ECPGt_int,&(IPOSTANWNACH),1L,1L,sizeof(int), 
+	ECPGt_char,(_PLZ),11L,1L,11*sizeof(char), 
+	ECPGt_int,&(IPLZ),1L,1L,sizeof(int), 
+	ECPGt_char,(ORT),31L,1L,31*sizeof(char), 
+	ECPGt_int,&(IORT),1L,1L,sizeof(int), 
+	ECPGt_char,(POSTFACH),21L,1L,21*sizeof(char), 
+	ECPGt_int,&(IPOSTFACH),1L,1L,sizeof(int), 
+	ECPGt_char,(POSTFPLZ),11L,1L,11*sizeof(char), 
+	ECPGt_int,&(IPOSTFPLZ),1L,1L,sizeof(int), 
+	ECPGt_bool,&(RNG_AN_POSTFACH),1L,1L,sizeof(bool), 
+	ECPGt_int,&(IRNG_AN_POSTFACH),1L,1L,sizeof(int), 
+	ECPGt_char,(IDNR),21L,1L,21*sizeof(char), 
+	ECPGt_int,&(IIDNR),1L,1L,sizeof(int), ECPGt_EORT);}
+#line 61 "Adresse.pgcc"
+
    SQLerror::test(__FILELINE__" select from kunden");
    
    if (IRNG_AN_POSTFACH) RNG_AN_POSTFACH=false;
@@ -112,7 +257,6 @@ static const std::string Dform(unsigned int i,bool TeX=false) throw()
 int Adresse::putIntoNLines(char **buf,int num,int len,bool TeX) const throw()
 {  int lines=0,line=0;
    bool postfachflag=false;
-//   bool ausland=landname[0]!=0;
    bool postfach_valid = postfach!="" && postfPLZ!="";
    
    for (int i=0;i<num;i++) buf[i][0]=0;
@@ -125,9 +269,7 @@ int Adresse::putIntoNLines(char **buf,int num,int len,bool TeX) const throw()
    if (postfachflag || strasse[0] || hsnr[0]) lines++;
    if (postanwnach[0]) lines++;
    if (ort!="") lines++;
-//   if (ausland) lines++;
    
-//   if (!ausland && lines<num && num>4) 
    if (lines<num && num>4) 
    { strncpy0(buf[line++],"Firma",len); lines++; }
    if (firma!="") strncpy0(buf[line++],TeX?string2TeX(firma).c_str():firma.c_str(),len);
@@ -144,7 +286,6 @@ int Adresse::putIntoNLines(char **buf,int num,int len,bool TeX) const throw()
       else snprintf0(buf[line++],len,"%s %s",strasse.c_str(),hsnr.c_str());
    }
    if (postanwnach[0] && line+1<num) strncpy0(buf[line++],TeX?string2TeX(postanwnach).c_str():postanwnach,len);
-//   if (line+1+ausland<num) { buf[line++][0]=0; lines++; }
    if (line+1<num) { buf[line++][0]=0; lines++; }
    if (ort!="" && line<num) 
    {  if (PLZ!="") 
