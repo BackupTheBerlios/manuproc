@@ -243,22 +243,22 @@ void auftrag_rechnung::on_rngnr_activate()
 void auftrag_rechnung::showBetraege()
 {
  bool as_brutto(true);
- RechnungBase::geldbetrag_t brutto(rechnung.Betrag(as_brutto));
+ Preis::geldbetrag_out brutto(rechnung.Betrag(as_brutto));
  rgbetrag_warenwert->set_value(brutto.as_float());
  as_brutto=false;
- RechnungBase::geldbetrag_t netto(rechnung.Betrag(as_brutto));
+ Preis::geldbetrag_out netto(rechnung.Betrag(as_brutto));
  rgbetrag_netto->set_value(netto.as_float());
 
- RechnungBase::geldbetrag_t rabatt(brutto-netto);
+ Preis::geldbetrag_out rabatt(brutto-netto);
  rgbetrag_rabatt->set_value(rabatt.as_float());
  
  bool with_update_on_db=false;
- RechnungBase::geldbetrag_t endnetto(rechnung.Endbetrag(with_update_on_db));
- RechnungBase::geldbetrag_t zuschl(endnetto-netto);
+ Preis::geldbetrag_out endnetto(rechnung.Endbetrag(with_update_on_db));
+ Preis::geldbetrag_out zuschl(endnetto-netto);
  rgbetrag_zusabs->set_value(zuschl.as_float());
  rgbetrag_zwsumme->set_value(endnetto.as_float());
 
- RechnungBase::geldbetrag_t mwst(0);
+ Preis::geldbetrag_out mwst(0);
  if(rechnung.getKunde()->MwSt())
    mwst=(rechnung.MwStProz.as_float()/100.0)*endnetto.as_float();
  rgbetrag_mwst->set_value(mwst.as_float());
