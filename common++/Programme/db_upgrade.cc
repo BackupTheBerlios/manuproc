@@ -1,4 +1,4 @@
-// $Id: db_upgrade.cc,v 1.25 2004/01/14 20:10:06 jacek Exp $
+// $Id: db_upgrade.cc,v 1.26 2004/01/21 13:00:31 jacek Exp $
 /*  pps: ManuProC's production planning system
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -94,6 +94,7 @@ int main(int argc,char *argv[])
   check_column("kunden","rng_notiz","text");
   check_column("kunden","auf_notiz","text");
   check_column("kunden","lief_notiz","text");
+  check_column("kunden","mwst","bool");
   
   // Vereinheitlichung mit personen
   check_column("kunden","name2","text");

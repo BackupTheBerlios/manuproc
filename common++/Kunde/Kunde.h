@@ -1,4 +1,4 @@
-// $Id: Kunde.h,v 1.57 2003/10/23 14:56:08 jacek Exp $
+// $Id: Kunde.h,v 1.58 2004/01/21 13:00:17 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -132,6 +132,7 @@ private:
         mutable bool isaktiv:1;
         mutable bool preisautomatik:1;
         bool showean:1;
+        bool mwst:1;
         
 	Adresse adresse;
 	Bankverbindung bankverb;

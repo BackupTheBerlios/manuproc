@@ -1,4 +1,4 @@
-// $Id: Kunde_sql.pgcc,v 1.52 2003/09/05 10:43:46 christof Exp $
+// $Id: Kunde_sql.pgcc,v 1.53 2004/01/21 13:00:17 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2000 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -32,7 +32,8 @@ Kunde::Kunde(ID _id) throw(SQLerror)
 //lieferadresse(false),
 //rechnungsadresse(false),
   entsorg(false),
-  waehrung(WaehrungID::EUR),lieferung_frei_haus(true)
+  waehrung(WaehrungID::EUR),lieferung_frei_haus(true),
+  mwst(true)
 { 
    // return ersetzen
    if(_id == Kunde::none_id) return;
@@ -51,7 +52,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    int ZAHLUNGSART;
    char VEREIN[31];
 /*   bool LIEFERADRESSE,RECHUNGSADRESSE; */
-   bool ENTSORGUNG,RNGANLFRA,ABANRNG;
+   bool ENTSORGUNG,RNGANLFRA,ABANRNG,MWST;
    char NOTIZ[2048];
    char STAND[50];
    int WAEHRUNGID;
@@ -105,7 +106,8 @@ Kunde::Kunde(ID _id) throw(SQLerror)
 	coalesce(betreuer,0),coalesce(anz_firmenpapier,1),
 	coalesce(anz_weissespapier,1),coalesce(lieferung_frei_haus,'t'),
 	coalesce(aktiv,true), coalesce(preisauto,true),
-	coalesce(showean,false)
+	coalesce(showean,false),
+	coalesce(mwst,true)
    	into :GRUPPENID ,:NAME, :NAME2, :SORTNAME, :BEZSCHEMA, :STRASSE, :POSTANWVOR, :POSTANWNACH,
            :HSNR, :PLZ, :POSTFACH,
            :POSTFACHPLZ, :ORT, :KTONR, :BLZ, :BANKNAME, :BANKINDEX, :RNG_AN,
@@ -117,7 +119,8 @@ Kunde::Kunde(ID _id) throw(SQLerror)
 	   :RABATT,:ZEILENRABATT,:ZAHLUNGSART, :VEREIN, 
 	   :NOTIZ,:STAND, :LANDESID, :WAEHRUNGID, :ENTSORGUNG, :VERKNR,
       :LIEFERANTENKONTO,:GEGENKONTO,:UNSERE_KUNDENNR,:BETREUER,
-      :ANZFIRMA,:ANZWEISS,:FREIHAUS,:AKTIV,:PREISAUTO,:SHOWEAN
+      :ANZFIRMA,:ANZWEISS,:FREIHAUS,:AKTIV,:PREISAUTO,:SHOWEAN,
+	:MWST
    	from kunden k left join banken b using(bankindex)
    	where kundennr= :ID;
 
@@ -189,6 +192,7 @@ Kunde::Kunde(ID _id) throw(SQLerror)
    isaktiv=AKTIV;
    preisautomatik=PREISAUTO;
    showean=SHOWEAN;
+   mwst=MWST;
 }
 
 #ifdef MANUPROC_DYNAMICENUMS_CREATED
