@@ -49,8 +49,8 @@ windowTop::windowTop()
    UpdateFirma(Kunde::UpdateBitsFirma(0)), 
    UpdateBank(Kunde::UpdateBitsBank(0)), 
    UpdateSonst(Kunde::UpdateBitsSonst(0)), 
-   UpdatePerson(Person::UpdateBits(0)), fire_enabled(true)
-   allgrp=NULL,wahlgrp=NULL
+   UpdatePerson(Person::UpdateBits(0)), fire_enabled(true),
+   allgrp(NULL),wahlgrp(NULL)
 {
  clear_entrys();
  label_speichern->set_text("");
@@ -428,7 +428,7 @@ void windowTop::load_notizen()
 void windowTop::on_selectrow_allegruppen(cH_RowDataBase leaf)
 {
  gruppe_in->set_sensitive(true);
- allgrp=dynamic_cast<const Data_Gruppe*>(&*leaf); 
+ allgrp=const_cast<Data_Gruppe*>(dynamic_cast<const Data_Gruppe*>(&*leaf)); 
 }
 
 void windowTop::on_unselectrow_allegruppen(gint row, gint column, GdkEvent *event)
@@ -440,7 +440,7 @@ void windowTop::on_unselectrow_allegruppen(gint row, gint column, GdkEvent *even
 void windowTop::on_selectrow_gewaehltegruppen(cH_RowDataBase leaf)
 {  
  gruppe_out->set_sensitive(true);
- wahlgrp=dynamic_cast<const Data_Gruppe*>(&*leaf); 
+ wahlgrp=const_cast<Data_Gruppe*>(dynamic_cast<const Data_Gruppe*>(&*leaf)); 
 }
 
 void windowTop::on_unselectrow_gewaehltegruppen(gint row, gint column, GdkEvent *event)
@@ -458,15 +458,15 @@ void windowTop::on_lfran_activate()
 
 void windowTop::on_gruppe_in_clicked()
 {  
- if(kundendatne->Id()==Kunde::none_id) return;
+ if(kundendaten->Id()==Kunde::none_id) return;
  kundendaten->putInGrp(allgrp->GrpId());
- show_Gruppen(); 
+ showGruppen(); 
 }
 
 void windowTop::on_gruppe_out_clicked()
 {  
  kundendaten->pullFromGrp(allgrp->GrpId());
- show_Gruppen(); 
+ showGruppen(); 
 }
 
 

@@ -3826,7 +3826,7 @@ löschen</label>
 
 	    <widget>
 	      <class>Custom</class>
-	      <name>custom2</name>
+	      <name>geburtstag</name>
 	      <cxx_visibility>protected</cxx_visibility>
 	      <creation_function>Datewin</creation_function>
 	      <int1>0</int1>
@@ -4475,7 +4475,7 @@ löschen</label>
 
 	      <widget>
 		<class>Custom</class>
-		<name>geburtstag</name>
+		<name>custom2</name>
 		<cxx_visibility>protected</cxx_visibility>
 		<creation_function>Datewin</creation_function>
 		<int1>0</int1>
@@ -5058,6 +5058,11 @@ anlegen</label>
 	      <name>gruppe_in</name>
 	      <cxx_visibility>protected</cxx_visibility>
 	      <sensitive>False</sensitive>
+	      <signal>
+		<name>clicked</name>
+		<handler>on_gruppe_in_clicked</handler>
+		<last_modification_time>Fri, 11 Apr 2003 11:34:01 GMT</last_modification_time>
+	      </signal>
 	      <label>zuweisen</label>
 	      <stock_pixmap>GNOME_STOCK_PIXMAP_FORWARD</stock_pixmap>
 	    </widget>
@@ -5068,6 +5073,11 @@ anlegen</label>
 	      <name>gruppe_out</name>
 	      <cxx_visibility>protected</cxx_visibility>
 	      <sensitive>False</sensitive>
+	      <signal>
+		<name>clicked</name>
+		<handler>on_gruppe_out_clicked</handler>
+		<last_modification_time>Fri, 11 Apr 2003 11:33:56 GMT</last_modification_time>
+	      </signal>
 	      <label>löschen</label>
 	      <stock_pixmap>GNOME_STOCK_PIXMAP_BACK</stock_pixmap>
 	    </widget>
