@@ -1,4 +1,4 @@
-dnl $Id: petig.m4,v 1.73 2004/05/17 13:07:59 christof Exp $
+dnl $Id: petig.m4,v 1.74 2004/05/17 17:43:55 christof Exp $
 
 dnl Configure paths for some libraries
 dnl derived from kde's acinclude.m4
@@ -336,6 +336,7 @@ AC_SUBST(GTKMM2_NODB_LIBS)
 AC_DEFUN([MPC_CHECK_COMMONXX_SIGC],
 [ if test -z "$MPC_SIGC_VERSION"
   then
+   old_cxxflags="$CXXFLAGS"
    CXXFLAGS="$COMMONXX_INCLUDES $CXXFLAGS"
    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([
 #include <ManuProCConfig.h>
