@@ -137,7 +137,7 @@ Rechnung::Rechnung(const cH_Kunde k,int jahr) throw(SQLerror)
  float KURS;
  exec sql end declare section;
 
- exec sql select 1/(coalesce(eufkt,1)) into :KURS from waehrung where 
+ exec sql select 1/(coalesce(fkt,1)) into :KURS from waehrung where 
 	wid= :WAEHRUNG;
  SQLerror::test(__FILELINE__":Rechnung: select kurs from waehrung");	
 
