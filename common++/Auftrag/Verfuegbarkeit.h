@@ -1,4 +1,4 @@
-/* $Id: Verfuegbarkeit.h,v 1.1 2003/11/29 12:15:14 christof Exp $ */
+/* $Id: Verfuegbarkeit.h,v 1.2 2003/11/29 13:30:28 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -20,7 +20,7 @@
 #ifndef AUFTRAG_VERFUEGBARKEIT_H
 #define AUFTRAG_VERFUEGBARKEIT_H
 
-#include <Auftrag/Auftrag_Base.h>
+#include <Auftrag/AuftragBase.h>
 //#include <Artikel/ArtikelBase.h>
 #include <map>
 class AufEintrag;
@@ -41,13 +41,13 @@ struct Mengen
 struct mapindex
 {	cH_ppsInstanz inst;
 	ArtikelBase art;
-	bool operator<(const mapindex &b)
+	bool operator<(const mapindex &b) const
 	{	return inst<b.inst || (inst==b.inst && art<b.art); }
 	mapindex(const cH_ppsInstanz &i,const ArtikelBase &a)
 		: inst(i),art(a) {}
 };
 
-typedef map<mapindex,Mengen> map_t;
+typedef std::map<mapindex,Mengen> map_t;
 
 void verfuegbar(const AufEintrag &ae, map_t &result, mengen_t menge=0, mengen_t offset=0);
 

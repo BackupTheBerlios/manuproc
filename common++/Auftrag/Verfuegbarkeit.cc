@@ -1,4 +1,4 @@
-/* $Id: Verfuegbarkeit.cc,v 1.1 2003/11/29 12:14:49 christof Exp $ */
+/* $Id: Verfuegbarkeit.cc,v 1.2 2003/11/29 13:30:28 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -19,6 +19,7 @@
 
 #include <Auftrag/AufEintrag.h>
 #include <Auftrag/Verfuegbarkeit.h>
+//#include <Auftrag/AufEintrag_loops.h>
 
 Verfuegbarkeit::mengen_t Verfuegbarkeit::Mengen::summe() const
 {  return  geliefert+ungeplant+geplant+vorraetig+error;
@@ -26,7 +27,7 @@ Verfuegbarkeit::mengen_t Verfuegbarkeit::Mengen::summe() const
 
 namespace
 {
-struct verf_recurse : distribute_children_artbaum
+struct verf_recurse : distribute_children_cb
 {	Verfuegbarkeit::mengen_t offset;
 
 	AuftragBase::mengen_t operator()(const ArtikelBase &, 
@@ -59,7 +60,7 @@ void Verfuegbarkeit::verfuegbar(const AufEintrag &ae, map_t &result,
    }
    assert(ae.Id()!=AuftragBase::dispo_auftrag_id);
    if (ae.Id()==AuftragBase::plan_auftrag_id || ae.Id()>=AuftragBase::handplan_auftrag_id)
-   {  if (ae.Instanz().LagerInstanz())
+   {  if (ae.Instanz()->LagerInstanz())
       {  result[idx].vorraetig+=ae.getRestStk();
          return;
       }
@@ -72,5 +73,5 @@ void Verfuegbarkeit::verfuegbar(const AufEintrag &ae, map_t &result,
    }
    
    // Rekursion
-   distribute_children_artbaum_rev(ae,menge,ae.Artikel(),verf_recurse(offset));
+//   distribute_children_artbaum_rev(ae,menge,ae.Artikel(),verf_recurse(offset));
 }
