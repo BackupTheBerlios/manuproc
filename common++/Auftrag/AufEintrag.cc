@@ -1,4 +1,4 @@
-// $Id: AufEintrag.cc,v 1.70 2003/07/07 14:25:08 christof Exp $
+// $Id: AufEintrag.cc,v 1.71 2003/07/08 12:27:24 jacek Exp $
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 1998-2003 Adolf Petig GmbH & Co. KG
  *  written by Jacek Jakubowski & Christof Petig
@@ -1046,7 +1046,7 @@ fixedpoint<2> AufEintrag::ProvSatz() const throw(SQLerror)
  Query("select provsatz from auftragentry where"
 	" (instanz,auftragid,zeilennr) = (?,?,?)")
  	<< InstanzID() << Id() << getZnr()
- 	>> FetchIStream::MapNull(provsatz);
+ 	>> FetchIStream::MapNull(provsatz,0);
 
  return provsatz;
 }
@@ -1115,7 +1115,7 @@ void AufEintrag::setDefaultProvSatz() throw(SQLerror)
  Query("select provsatz from auftragentry where "
 	"(instanz,auftragid,zeilennr)=(?,?,?)")
 	<< InstanzID() << Id() << getZnr()
- 	>> FetchIStream::MapNull(provsatz);
+ 	>> FetchIStream::MapNull(provsatz,0);
 
  SQLerror::test(__FILELINE__);
 }
