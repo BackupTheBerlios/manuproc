@@ -1,4 +1,4 @@
-/* $Id: Verfuegbarkeit.cc,v 1.10 2004/02/27 17:21:21 christof Exp $ */
+/* $Id: Verfuegbarkeit.cc,v 1.11 2004/03/01 17:11:01 christof Exp $ */
 /*  pps: ManuProC's ProductionPlanningSystem
  *  Copyright (C) 2001 Adolf Petig GmbH & Co. KG, written by Jacek Jakubowski
  *
@@ -165,36 +165,66 @@ namespace
 {
 struct benoe_recurse : distribute_parents_cb
 {	// offset wird von oben gerechnet (0=letzte benötigte Menge)
-	Verfuegbarkeit::mengen_t offset;
+	mutable Verfuegbarkeit::mengen_t offset;
 	mutable Verfuegbarkeit::map_t &result;
-	mutable ArtikelBaum artbaum;
+	const AufEintrag &kind;
 
-	mutable ArtikelBase lastart;
-	mutable Verfuegbarkeit::mengen_t lastoffs;
-	mutable cH_ppsInstanz lastinst;
-	
-	AufEintragBase elter;
-
-	AuftragBase::mengen_t operator()(const AufEintragBase &aeb,AuftragBase::mengen_t m) const
-	{  return m; }
+	AuftragBase::mengen_t operator()(const AufEintragZu::st_reflist &aeb,AuftragBase::mengen_t m) const;
 	bool operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const
 	{  return AufEintragZu_sort::priority(b,a);
 	}
 
 	virtual ~benoe_recurse() {}
 	benoe_recurse(const Verfuegbarkeit::mengen_t &o, Verfuegbarkeit::map_t &r,
-			const ArtikelBaum &ab, const AufEintragBase &e) 
-		: offset(o), result(r), artbaum(ab), elter(e) 
+			const AufEintrag &e) 
+		: offset(o), result(r), kind(e) 
 	{}
 };
 }
 
+namespace{ struct ben_recurse_sort
+{	bool operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const
+	{  return AufEintragZu_sort::auftr_1230(b,a); }
+};}
+
+AuftragBase::mengen_t benoe_recurse::operator()(const AufEintragZu::st_reflist &rl,AuftragBase::mengen_t m) const
+{  // offset ist in Kindereinheit und bezüglich Pfeil
+   if (offset>rl.Menge) { offset-=rl.Menge; return 0; }
+   if (offset+m>rl.Menge) { m=rl.Menge-offset; }
+
+   AufEintrag ae(rl.AEB);
+   AufEintragZu::list_t Kinder= 
+   	AufEintragZu::get_Referenz_list(ae,AufEintragZu::list_kinder,
+					AufEintragZu::list_Artikel,
+					AufEintragZu::list_unsorted);
+   Kinder.sort(ben_recurse_sort());
+   // in Kindeinheit
+   AuftragBase::mengen_t local_offset=0;
+   for (AufEintragZu::list_t::iterator i=Kinder.begin();i!=Kinder.end();++i)
+   {  if (i->Art!=kind.Artikel()) continue; // ignore
+      local_offset+=i->Menge;
+      if (i->AEB==kind && i->Pri==rl.Pri) break;
+   }
+   
+   ArtikelBaum ab(ae.Artikel());
+   double faktor=ab.Faktor(kind.Artikel()).as_float();
+   AuftragBase::mengen_t offset_elter=(offset+local_offset)/faktor;
+   AuftragBase::mengen_t m_elter=m/faktor;
+   ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,
+   		NV("local_offset",local_offset),NV("offset",offset),
+   		NV("offset_elter",offset_elter),NV("m_elter",m_elter));
+   Verfuegbarkeit::wozu_benoetigt(ae,result,m_elter,offset_elter);
+   return m; 
+}
+
+// offset wird von hinten an gerechnet, das vereinfacht die Sache deutlich
 void Verfuegbarkeit::wozu_benoetigt(const AufEintrag &ae, map_t &result, 
 	mengen_t menge, mengen_t offset)
 {  ManuProC::Trace _t(AuftragBase::trace_channel, __FUNCTION__,NV("ae",ae),
 		NV("menge",menge),NV("offset",offset));
    mapindex idx(ae.Instanz(),ae.Artikel()); // ,ae.Kunde);
-   if (!menge) menge=ae.getStueck();
+   if (!menge && !offset) menge=ae.getStueck();
+#if 0   
    if (!!ae.getGeliefert())
    {  AuftragBase::mengen_t m=0;
       if (ae.getGeliefert()>offset)
@@ -203,8 +233,14 @@ void Verfuegbarkeit::wozu_benoetigt(const AufEintrag &ae, map_t &result,
       menge-=m;
       offset-=ae.getGeliefert();
    }
-   if (offset>=ae.getRestStk()) { verf_Trace(result[idx]); return; }
-   if (offset+menge>ae.getRestStk()) menge=ae.getRestStk()-offset;
+#endif
+   // shouldn't we error in verf too ?
+   if (offset>=ae.getRestStk()) 
+   { result[idx].error+=menge; verf_Trace(result[idx]); return; }
+   if (offset+menge>ae.getRestStk()) 
+   { result[idx].error+=offset+menge-ae.getRestStk();
+     menge=ae.getRestStk()-offset;
+   }
    if (!menge) { verf_Trace(result[idx]); return; }
    ManuProC::Trace(AuftragBase::trace_channel,__FILELINE__,
    		NV("menge",menge),NV("offset",offset));
@@ -222,6 +258,8 @@ void Verfuegbarkeit::wozu_benoetigt(const AufEintrag &ae, map_t &result,
    }
    
    // Rekursion (Priority)
-   distribute_parents(ae,menge,benoe_recurse(ae.getRestStk()-(offset+menge),result,ae.Artikel(),ae));
+   mengen_t rest=
+   distribute_parents(ae,menge,benoe_recurse(offset,result,ae));
+   if (!!rest) result[idx].error+=rest;
    verf_Trace(result[idx]);
 }

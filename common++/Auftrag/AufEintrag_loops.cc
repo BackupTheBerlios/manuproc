@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.cc,v 1.20 2004/02/27 16:35:59 christof Exp $ */
+/* $Id: AufEintrag_loops.cc,v 1.21 2004/03/01 17:11:01 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -40,6 +40,10 @@ bool distribute_parents_cb::operator()(AufEintragZu::st_reflist const &a, AufEin
 {  return AufEintragZu_sort::priority(a,b);
 }
 
+AuftragBase::mengen_t distribute_parents_cb::operator()(const AufEintragBase &,
+                                AuftragBase::mengen_t) const
+{  assert(!"called");
+}
 
 static std::string Nametrans(std::string n)
 {  static const UniqueValue::value_t trace_channel=ManuProC::Tracer::channels.get();
@@ -275,7 +279,7 @@ AuftragBase::mengen_t distribute_parents(const AufEintragBase &startAEB,
       if (!m) continue;
 
       {ManuProC::Trace _t(AuftragBase::trace_channel,callee_t,i->AEB,m);
-       m=callee(i->AEB,m);
+       m=callee(*i,m);
       }
 
       menge-=m;

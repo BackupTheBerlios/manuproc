@@ -1,4 +1,4 @@
-/* $Id: AufEintrag_loops.h,v 1.12 2004/02/27 16:35:59 christof Exp $ */
+/* $Id: AufEintrag_loops.h,v 1.13 2004/03/01 17:11:01 christof Exp $ */
 /*  libcommonc++: ManuProC's main OO library
  *  Copyright (C) 2003 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -96,8 +96,13 @@ bool distribute_children_twice(const AufEintragBase &startAEB,
 
 struct distribute_parents_cb
 {	// return the amount of the third argument you processed
+	virtual AuftragBase::mengen_t operator()(const AufEintragZu::st_reflist &rl,
+				AuftragBase::mengen_t m) const
+	// call comp. wrapper
+	{  return operator()(rl.AEB,m); }
+	// compatibility wrapper
 	virtual AuftragBase::mengen_t operator()(const AufEintragBase &,
-				AuftragBase::mengen_t) const=0;
+				AuftragBase::mengen_t) const;
 	// Strict Weak Ordering (sort) a<b
 	virtual bool operator()(const AufEintragZu::st_reflist &a,const AufEintragZu::st_reflist &b) const;
 };
