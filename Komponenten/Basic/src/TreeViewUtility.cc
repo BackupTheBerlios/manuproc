@@ -1,4 +1,4 @@
-// $Id: TreeViewUtility.cc,v 1.12 2004/01/30 23:27:46 christof Exp $
+// $Id: TreeViewUtility.cc,v 1.13 2004/01/31 23:33:33 christof Exp $
 /*  libKomponenten: GUI components for ManuProC's libcommon++
  *  Copyright (C) 2002 Adolf Petig GmbH & Co. KG, written by Christof Petig
  *
@@ -74,9 +74,9 @@ void TreeViewUtility::CListEmulator::set_titles(const std::vector<Glib::ustring>
 }
 
 void TreeViewUtility::CListEmulator::set_title(const Glib::ustring &_title)
-{  std::vector<Glib::ustring> titles;
+{  std::vector<Glib::ustring> _titles;
    titles.push_back(_title);
-   set_titles(titles);
+   set_titles(_titles);
 }
 
 int TreeViewUtility::CListEmulator::get_selected_row_num() const
