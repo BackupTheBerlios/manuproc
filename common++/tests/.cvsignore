@@ -17,3 +17,7 @@ insert_bestellen_bei.cc
 insert_bestellen_bei
 Zeitpunkt
 artbez
+Datum
+ArtikelSumme
+abschreiben
+long

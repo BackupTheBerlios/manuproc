@@ -15,3 +15,4 @@ Rechnung_sql.cc
 RechnungEntry_sql.cc
 LieferscheinVoll_sql.cc
 RechnungVoll_sql.cc
+Zahlungsart_sql.cc

@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.6 2001/08/20 08:24:31 christof Exp $
+# $Id: Makefile.am,v 1.7 2001/12/04 11:24:00 christof Exp $
 
 CXXFLAGS=@ECPG_INCLUDES@ @CXXFLAGS@
 
@@ -33,7 +33,7 @@ include_HEADERS=Ausgabe_neu.h CacheStatic.h Cache_Pointer.h Datum.h Handles.h \
 	dbconnect.h exception.h fixedpoint.h itos.h safemap.h string0.h \
 	c++ostream.h mystream.h FetchIStream.h ctime_assert.h \
    EntryValueBase.h EntryValueIntString.h  EntryValueEmptyInt.h \
-   	EntryValueDatum.h EmptyInt_4TeX.h
+   	EntryValueDatum.h EmptyInt_4TeX.h Long.h
 
 CLEANFILES= *~ $(BUILT_SOURCES)
 
