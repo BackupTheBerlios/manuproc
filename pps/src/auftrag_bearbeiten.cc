@@ -436,7 +436,10 @@ void auftrag_bearbeiten::on_aufentry_ok_clicked()
       }
 #ifdef MABELLA_EXTENSIONS
       else
-      {  artikelbox->set_focus(0,2);
+      {  
+	cH_ExtBezSchema es(artikelbox->getBezSchema());
+	int sigfkz=1;
+	artikelbox->set_focus(sigfkz-1,es->sigsize(sigfkz)-1);
       }
 #else      
       else
