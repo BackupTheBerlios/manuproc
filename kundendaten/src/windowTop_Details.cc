@@ -129,7 +129,12 @@ void windowTop::neue_bank_uebernehmen(unsigned long int bank_index)
 
 void windowTop::scc_verkaeufer_activate()
 {
-  changedFktS(Kunde::FVerknr);
+ if(kundendaten->Id() == Kunde::none_id) return;
+
+ Query q("update kunden set verknr=? where kundennr=?");
+ q << Query::NullIf(scc_verkaeufer->Content(),Kunde::none_id) << kundendaten->Id();
+
+//  changedFktS(Kunde::FVerknr);
 }
 
 void windowTop::fillSPreis()
