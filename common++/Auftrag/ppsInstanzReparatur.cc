@@ -395,7 +395,8 @@ bool ppsInstanzReparatur::Kinder(AufEintrag &ae, AufEintragZu::map_t &kinder, bo
       {  AuftragBase::mengen_t menge;
          bool artikel_passt_nicht=false;
          ManuProC::Trace(AuftragBase::trace_channel,"-Artikel-",i->first/*,i->second.size()*/);
-         cH_ppsInstanz bestellinstanz=next!=ppsInstanzID::None?next
+         cH_ppsInstanz bestellinstanz=next!=ppsInstanzID::None?
+				cH_ppsInstanz(next)
                           :ppsInstanz::getBestellInstanz(i->first);
          for (AufEintragZu::list_t::iterator j=i->second.begin();j!=i->second.end();)
          {  if (next!=ppsInstanzID::None && j->AEB.Instanz()!=next)
